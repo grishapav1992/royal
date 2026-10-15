@@ -1,0 +1,67 @@
+name: royal-nile-creditor
+
+services:
+  nile-creditor:
+    build:
+      context: ../..
+      dockerfile: deployment/finance/Dockerfile.nile-creditor
+    image: royal-nile-creditor:local
+    container_name: royal-nile-creditor
+    restart: unless-stopped
+    init: true
+    environment:
+      DATABASE_LOCAL_SNAPSHOTS: "false"
+      PGHOST: ${ROYAL_PGHOST:-finance-db}
+      PGPORT: ${ROYAL_PGPORT:-5432}
+      PGDATABASE: ${ROYAL_PGDATABASE:-royal_finance_sim}
+      PGUSER: royal_nile_deposits_app
+      PGPASSWORD_FILE: /run/secrets/royal_database_password
+      PGSSLMODE: ${ROYAL_PGSSLMODE:-disable}
+      NILE_TEST_SCHEMA: royal_nile_deposits
+      TRON_READER_SCHEMA: royal_tron_reader
+      NILE_TEST_MODE: testnet-only
+      NILE_TEST_NETWORK: nile
+      NILE_TEST_CONFIG_FILE: /config/nile-test.json
+    secrets: [royal_database_password]
+    volumes:
+      - type: bind
+        source: ${NILE_TEST_DATA_DIR:-/opt/royal-nile-test-data}
+        target: /data
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${NILE_TEST_CONFIG_DIR:-/opt/royal-nile-test-config}
+        target: /config
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${TRON_READER_DATA_DIR:-/opt/royal-tron-reader-data}
+        target: /reader
+        read_only: true
+        bind: {create_host_path: false}
+    networks: [royal_database]
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 192m
+    cpus: 0.25
+    pids_limit: 32
+    stop_grace_period: 15s
+    healthcheck:
+      test: [CMD, node, creditor.js, health]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+    logging:
+      driver: json-file
+      options: {max-size: 10m, max-file: "3"}
+
+networks:
+  royal_database:
+    external: true
+    name: ${ROYAL_PGNETWORK:-royal-finance-sim_finance_private}
+
+secrets:
+  royal_database_password:
+    file: ${ROYAL_POSTGRES_SECRETS_DIR:-/opt/royal-postgres-secrets}/nile-deposits-password

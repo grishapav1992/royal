@@ -1,0 +1,11 @@
+[Unit]
+Description=Financial checks every minute
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=60s
+AccuracySec=5s
+Unit=royal-finance-monitor.service
+
+[Install]
+WantedBy=timers.target

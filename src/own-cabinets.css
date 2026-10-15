@@ -1,0 +1,11 @@
+.mini-dialog.originals-mode { width: min(980px, calc(100% - 24px)); }
+.mini-dialog.originals-mode .mini-stage { aspect-ratio: auto; }
+.mini-dialog.originals-mode #mini-game { height: auto; touch-action: auto; }
+.mini-dialog.originals-mode .mini-top { padding-bottom: 16px; }
+.mini-dialog.originals-mode .mini-bottom { gap: 12px; flex-wrap: wrap; }
+.mini-dialog.originals-mode .mini-bottom > span { max-width: 100%; }
+.cabinet-list { overflow-y: auto; scrollbar-width: thin; }
+@media (max-width: 480px) {
+  .mini-dialog.originals-mode { width: calc(100% - 16px); }
+  .mini-dialog.originals-mode .mini-top { padding: 16px; }
+}

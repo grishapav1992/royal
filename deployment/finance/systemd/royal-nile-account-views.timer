@@ -1,0 +1,9 @@
+[Unit]
+Description=Refresh Nile test account views every minute
+[Timer]
+OnBootSec=30
+OnUnitActiveSec=60
+AccuracySec=1
+Unit=royal-nile-account-views.service
+[Install]
+WantedBy=timers.target

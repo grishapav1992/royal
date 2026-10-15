@@ -1,0 +1,57 @@
+.ez-slots-game {
+  color: #f4eddc;
+  background: radial-gradient(ellipse at 50% 0, #4c3526 0, #241c1d 48%, #161317 100%);
+  border: 1px solid #b58a4a66;
+  border-radius: 22px;
+  padding: clamp(16px, 4vw, 28px);
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  text-align: center;
+  box-shadow: 0 20px 64px #0005;
+}
+.ez-slots-game * { box-sizing: border-box; }
+.ez-fruits-header > span { color: #d5b479; font-size: 10px; font-weight: 700; letter-spacing: .2em; }
+.ez-fruits-header h3 { margin: 8px 0 4px; font-size: clamp(30px, 7vw, 42px); line-height: 1.1; color: #ffdfa0; font-family: Georgia, serif; }
+.ez-fruits-header p { margin: 0; color: #c4b6a8; font-size: 13px; }
+.ez-fruits-line-label { color: #ead39f; font-size: 11px; margin: 22px 0 8px; }
+.ez-fruits-line-label span { color: #e9b654; }
+.ez-fruits-stage { height: 252px; width: 100%; overflow: hidden; border-radius: 20px; }
+.ez-fruits-stage .ezslots-main-content { height: 100%; padding: 3%; }
+.ez-fruits-stage .ezslots-reels-container { height: 100%; padding: 2%; }
+.ez-fruits-stage .ezslots-symbol { font-size: clamp(34px, 9vw, 60px); }
+.ez-fruits-stage .ezslots-symbol[data-row="0"],
+.ez-fruits-stage .ezslots-symbol[data-row="2"] { opacity: .2; filter: grayscale(.7); }
+.ez-fruits-stage .ezslots-symbol[data-row="1"] { color: #ffdf94; font-weight: 800; background: linear-gradient(145deg, #584226, #38291d); border-top: 2px solid #ebbc65; border-bottom: 2px solid #ebbc65; box-shadow: 0 0 22px #d4a55733; }
+.ez-fruits-outcome { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.ez-fruits-result { min-height: 38px; margin: 17px 0 8px; color: #cec4b7; font-size: 13px; line-height: 1.5; }
+.ez-slots-game[data-result="win"] .ez-fruits-result { color: #ffe1a2; }
+.ez-fruits-controls { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 12px; align-items: end; text-align: left; }
+.ez-fruits-controls label, .ez-fruits-balance-label { font-size: 11px; color: #b9ad9a; }
+.ez-fruits-balance-label strong { display: block; font-size: 23px; color: #fff0ce; height: 45px; line-height: 45px; }
+.ez-fruits-controls select { display: block; width: 100%; min-width: 0; height: 45px; margin-top: 5px; padding: 0 12px; border-radius: 11px; border: 1px solid #b18b5366; color: #fff0ce; background: #2d2520; font-size: 16px; }
+.ez-fruits-controls .primary-button { min-height: 45px; border-radius: 11px; margin: 0; padding: 9px 12px; font-size: 14px; background: linear-gradient(130deg, #ffdd91, #d6a84f); color: #302216; border: 1px solid #ffe5ab; font-weight: 700; }
+.ez-fruits-controls .primary-button:disabled { opacity: .45; cursor: default; }
+.ez-slots-game #ez-fruits-wallet { margin: 9px 0 14px; color: #e3c58a; font-size: 12px; }
+.ez-fruits-paytable { width: 100%; max-width: 400px; border-collapse: collapse; margin: 2px auto 0; font-size: 13px; }
+.ez-fruits-paytable caption { padding: 8px 0 12px; font-size: 12px; color: #d8cab4; }
+.ez-fruits-paytable thead { font-size: 10px; color: #9e907f; }
+.ez-fruits-paytable th, .ez-fruits-paytable td { padding: 7px 14px; border-bottom: 1px solid #ffffff09; }
+.ez-fruits-paytable th[scope="row"] { font-size: 19px; letter-spacing: .2em; }
+.ez-fruits-paytable td { color: #ecd091; font-weight: 700; }
+.ez-fruits-rules { font-size: 11px; line-height: 1.5; color: #a99d8c; margin: 16px 0 12px; }
+.ez-fruits-footer { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px 12px; font-size: 10px; color: #a99d8c; line-height: 1.5; }
+.ez-fruits-footer a { color: #a99d8c; text-underline-offset: 3px; }
+.ez-slots-game button:focus-visible, .ez-slots-game select:focus-visible, .ez-slots-game a:focus-visible { outline: 2px solid #ffe2a1; outline-offset: 3px; }
+@media (max-width: 480px) {
+  .ez-slots-game { border-radius: 16px; }
+  .ez-fruits-stage { height: 212px; }
+  .ez-fruits-controls { grid-template-columns: 1fr 1fr; gap: 9px 14px; }
+  .ez-fruits-controls .primary-button { grid-column: 1 / -1; width: 100%; }
+  .ez-fruits-result { min-height: 42px; }
+  .ez-fruits-line-label { font-size: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ez-slots-game *, .ez-slots-game *::before, .ez-slots-game *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}

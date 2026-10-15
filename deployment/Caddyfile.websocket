@@ -1,0 +1,21 @@
+{$SITE_DOMAIN} {
+	encode zstd gzip
+	handle_path /workers/main/* {
+		reverse_proxy game:2567
+	}
+	handle_path /workers/worker-1/* {
+		reverse_proxy worker-1:2567
+	}
+	handle_path /workers/worker-2/* {
+		reverse_proxy worker-2:2567
+	}
+	handle_path /workers/worker-3/* {
+		reverse_proxy worker-3:2567
+	}
+	handle /workers/* {
+		respond "Unknown lobby worker" 404
+	}
+	handle {
+		reverse_proxy game:2567
+	}
+}

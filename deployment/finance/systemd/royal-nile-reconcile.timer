@@ -1,0 +1,11 @@
+[Unit]
+Description=Reconcile confirmed Nile token balances every five minutes
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=5min
+Persistent=true
+Unit=royal-nile-reconcile.service
+
+[Install]
+WantedBy=timers.target

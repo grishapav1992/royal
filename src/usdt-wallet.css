@@ -1,0 +1,9 @@
+#usdt-wallet-address,#usdt-wallet-sender{display:block;box-sizing:border-box;width:100%;margin:8px 0 12px;padding:12px 9px;border:1px solid #988164;border-radius:4px;background:#141325;color:#fff0d6;font-family:monospace;font-size:13px}
+#usdt-wallet-content label,#usdt-wallet-message{font-size:13px;line-height:1.5}
+#usdt-wallet-history,#usdt-wallet-rounds{list-style:none;padding:0;max-height:230px;overflow:auto}
+#usdt-wallet-history li,#usdt-wallet-rounds li{padding:12px 0;border-bottom:1px solid #544357;font-size:12px;line-height:1.6}
+#usdt-wallet-history strong,#usdt-wallet-history a{display:block}
+#usdt-wallet-history a{margin-top:7px;color:#f1d496;font-size:11px}
+.royal-coins[data-currency="usdt"] #coins-balance{font-size:18px;overflow-wrap:anywhere;line-height:1.5}
+.royal-coins[data-currency="usdt"] .coins-controls label{min-width:0}
+@media(max-width:480px){#usdt-wallet-address,#usdt-wallet-sender{font-size:12px}#usdt-wallet-button{font-size:10px;padding:5px 7px}}

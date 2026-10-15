@@ -1,0 +1,6 @@
+.venv/
+.pip-cache/
+.wheel-evidence/
+.state/
+__pycache__/
+*.pyc

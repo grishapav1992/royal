@@ -1,0 +1,8 @@
+.mini-dialog .game-chat-toggle{display:grid;place-items:center;flex:0 0 34px;width:34px;height:34px;padding:6px;margin-left:auto;border:1px solid #ad8c51;border-radius:7px;background:#30273b;color:#f3e3c5}
+.mini-dialog .game-chat-toggle svg{width:21px;height:21px}
+.mini-dialog .game-chat-toggle[aria-expanded=true]{background:#5c473c;color:#fff0b7}
+.mini-dialog .game-chat-dock{position:fixed;z-index:1000;inset:auto 16px max(16px,calc(100dvh - var(--app-height,100dvh) + 16px)) auto;box-sizing:border-box;width:min(310px,calc(100vw - 32px));height:min(380px,calc(var(--app-height,100dvh) - 92px));max-height:calc(100dvh - 92px);margin:0;align-self:auto;box-shadow:0 10px 40px #0009}
+.mini-dialog .game-chat-dock[hidden]{display:none!important}
+.mini-dialog .game-chat-dock .chat-panel{height:100%;min-height:0}
+.mini-dialog .game-chat-dock .chat-log{flex:1;min-height:0;height:0}
+@media(max-width:700px){.mini-dialog .game-chat-dock{inset:auto 8px max(8px,calc(100dvh - var(--app-height,100dvh) + 8px)) auto;width:min(310px,calc(100vw - 16px));padding:8px}.mini-dialog .game-chat-dock .chat-heading{display:flex}}

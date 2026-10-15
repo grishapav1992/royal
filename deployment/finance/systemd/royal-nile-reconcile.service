@@ -1,0 +1,13 @@
+[Unit]
+Description=Read-only Nile token and test ledger reconciliation
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/royal-finance
+ExecStart=/usr/bin/python3 deployment/finance/operations.py nile-reconcile
+TimeoutStartSec=2min
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true

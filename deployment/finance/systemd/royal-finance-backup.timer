@@ -1,0 +1,11 @@
+[Unit]
+Description=Hourly financial simulator backups
+
+[Timer]
+OnCalendar=hourly
+RandomizedDelaySec=120
+Persistent=true
+Unit=royal-finance-backup.service
+
+[Install]
+WantedBy=timers.target

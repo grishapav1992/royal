@@ -1,0 +1,1 @@
+declare const engine: { init(min: number, small: number, big: number, size: number): void; cardsValue(cards: {type:number;color:string}[]): {value:number;justify:unknown}; getWinners(): {type:number;winners:string[]}; hands: unknown[]; table: unknown[]; [key:string]: any }; export default engine;

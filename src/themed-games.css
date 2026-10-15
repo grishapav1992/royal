@@ -1,0 +1,51 @@
+.themed-game{--themed-gold:#e9cb87;--themed-muted:#aab6c8;--themed-line:#d9c28b26;color:#eff3fa;background:#0a1323;font-family:Inter,Arial,sans-serif;padding:24px;border:1px solid var(--themed-line);border-radius:18px;width:100%;box-sizing:border-box;overflow:hidden}
+.themed-game *{box-sizing:border-box}
+.themed-header{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:22px}
+.themed-eyebrow,.themed-label{display:block;color:var(--themed-gold);font-size:10px;letter-spacing:2.2px;font-weight:700;text-transform:uppercase}
+.themed-header h3{margin:7px 0 4px;font-family:Georgia,serif;font-size:32px;line-height:1.1;font-weight:400;letter-spacing:.2px;color:#f4e5c6}
+.themed-header p{margin:0;color:var(--themed-muted);font-size:12px}
+.themed-wallet{display:grid;grid-template-columns:1fr 30px;gap:5px 12px;align-items:center;text-align:right;flex-shrink:0}
+.themed-wallet>span{font-size:10px;color:var(--themed-muted);grid-column:1}
+.themed-wallet strong{font-size:22px;letter-spacing:.4px;font-variant-numeric:tabular-nums;grid-column:1}
+.themed-wallet button{grid-column:2;grid-row:1/3;border:1px solid #e9cb8755;background:#e9cb8710;color:var(--themed-gold);width:30px;height:36px;border-radius:7px;font-size:21px;cursor:pointer}
+.themed-layout{display:grid;grid-template-columns:minmax(0,1fr) 230px;border:1px solid var(--themed-line);border-radius:12px;overflow:hidden}
+.themed-scene{position:relative;min-width:0;background:#080e1d;isolation:isolate}
+.themed-game #themed-canvas{display:block;width:100%;height:100%;min-height:370px;aspect-ratio:920/650;max-width:none;max-height:none;border:0;border-radius:0;touch-action:pan-y}
+.themed-scene-top{position:absolute;inset:22px 22px auto;display:flex;justify-content:space-between;gap:8px;color:#c2d4e3;font-size:8px;font-weight:700;letter-spacing:1.5px;pointer-events:none}
+.themed-scene-top #themed-scene-status:before{content:'';display:inline-block;width:5px;height:5px;background:#a5b4c8;border-radius:50%;margin-right:7px;vertical-align:1px;box-shadow:0 0 8px #a5b4c850}
+.themed-game[data-active=true] #themed-scene-status:before{background:#88d1bb;box-shadow:0 0 8px #88d1bb80}
+.themed-scene-tag{opacity:.6;white-space:nowrap}
+.themed-flight-hud{position:absolute;left:28px;top:70px;max-width:75%;pointer-events:none;text-shadow:0 2px 15px #0007}
+.themed-flight-hud>span{font-size:8px;color:#d2e0ec;letter-spacing:2px}
+.themed-flight-hud strong{display:block;font-size:clamp(32px,5.4vw,62px);font-weight:500;line-height:1.25;letter-spacing:-1px;font-variant-numeric:tabular-nums;color:#eefaff}
+.themed-flight-hud>div{font-size:11px;color:#bcdbef;line-height:1.5;max-width:220px;margin-top:5px}
+.themed-wheel-caption{position:absolute;bottom:14px;left:16px;right:16px;text-align:center;color:#e8d399;font-size:9px;letter-spacing:1.3px;pointer-events:none}
+.themed-controls{display:flex;flex-direction:column;gap:10px;padding:23px 20px;background:linear-gradient(140deg,#172237,#0f182a);border-left:1px solid var(--themed-line)}
+.themed-controls label{font-size:11px;font-weight:600;color:#cbd5e1;margin-top:3px}
+.themed-controls select,.themed-controls input{width:100%;font-family:inherit;font-size:14px;font-variant-numeric:tabular-nums;border:1px solid #a9b7d33b;border-radius:7px;background:#0a1426;color:#f1e6ce;padding:11px 12px;min-height:42px;outline:none}
+.themed-controls select:focus-visible,.themed-controls input:focus-visible,.themed-game button:focus-visible,.themed-rules summary:focus-visible{outline:2px solid #92cdf1;outline-offset:3px}
+.themed-input-suffix{position:relative}.themed-input-suffix input{padding-right:34px}.themed-input-suffix>span{position:absolute;right:15px;top:11px;color:var(--themed-gold);pointer-events:none}
+.themed-presets{display:flex;gap:5px}.themed-presets button{flex:1;min-width:0;padding:6px 2px;border:1px solid #e4cb9035;border-radius:5px;background:#c5ab7810;color:#d7c498;font-size:10px;cursor:pointer}
+.themed-control-note{font-size:10px;color:#bdc7d6;line-height:1.65;margin:3px 0 2px}
+.themed-odds{display:flex;justify-content:space-between;gap:7px;font-size:10px;color:#9facbe;padding:12px 0;margin-top:auto;border-top:1px solid #d9c28b1a}
+.themed-odds strong{font-size:12px;color:#e4cd98;font-weight:600;margin-left:4px}
+.themed-game .themed-play{min-height:45px;width:100%;border:1px solid #f2d699;border-radius:7px;background:linear-gradient(135deg,#f3dba4,#d0a969);color:#172038;font-family:inherit;font-size:13px;font-weight:700;letter-spacing:.2px;box-shadow:0 4px 15px #edc87918;cursor:pointer}
+.themed-game .themed-play.is-cashout{color:#092a2b;background:linear-gradient(135deg,#b4e8d6,#6dbfba);border-color:#b4e8d6}
+.themed-game .themed-secondary{border:1px solid #c1d5e84a;background:transparent;border-radius:6px;color:#c1d5e8;font-size:11px;font-family:inherit;min-height:35px;cursor:pointer}
+.themed-game button:disabled,.themed-controls input:disabled,.themed-controls select:disabled{cursor:default;opacity:.52}
+.themed-demo-note{font-size:9px;text-align:center;color:#ceb987;margin:0}
+.themed-close-note{font-size:9px;line-height:1.6;color:#a7b3c7;margin:2px 0 0}
+.themed-result{font-size:12px;line-height:1.6;padding:15px 2px;min-height:49px;color:#bec9d9}
+.themed-game[data-result=win] .themed-result{color:#a4ddc4}.themed-game[data-result=loss] .themed-result{color:#e7bcc0}
+.themed-paytable-wrap,.themed-history-wrap{margin:3px 0 19px}.themed-paytable,.themed-history{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.themed-paytable-chip{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;padding:11px 10px;min-width:85px;border:1px solid #d9c28b30;border-radius:7px;background:#e9cb8707}
+.themed-paytable-chip strong{font-size:14px;color:#efdaa8}.themed-paytable-chip span{font-size:9px;color:#aebacb}
+.themed-history{font-size:11px;color:#9caabd}.themed-history-chip{display:flex;flex-direction:column;gap:5px;border:1px solid #a9b7d321;border-radius:7px;padding:9px 12px;background:#0f1b2e;font-size:9px}
+.themed-history-chip strong{font-size:11px;color:#cdd8e7}.themed-history-chip[data-result=win]{border-color:#80c4a53b}.themed-history-chip[data-result=win] strong{color:#94d4b3}.themed-history-chip[data-result=loss] strong{color:#d7a6ad}
+.themed-rules{font-size:11px;line-height:1.7;border-top:1px solid var(--themed-line);padding-top:14px;color:#acb9ca}.themed-rules summary{cursor:pointer;color:#ddc58f}.themed-rules p{margin:10px 0 0}
+.themed-game [hidden]{display:none!important}
+@media(min-width:1050px){.themed-game #themed-canvas{aspect-ratio:920/560}}
+@media(max-width:700px){.themed-game{padding:16px;border-radius:12px}.themed-header{margin-bottom:16px;gap:10px}.themed-header h3{font-size:27px}.themed-layout{grid-template-columns:1fr}.themed-game #themed-canvas{min-height:0;height:auto;aspect-ratio:920/520}.themed-controls{border-left:0;border-top:1px solid var(--themed-line);display:grid;grid-template-columns:1fr 1fr;gap:9px 12px;padding:16px}.themed-controls>label{grid-column:1}.themed-controls>select,.themed-controls>.themed-input-suffix{grid-column:2}.themed-presets,.themed-control-note,.themed-odds,.themed-play,.themed-secondary,.themed-demo-note,.themed-close-note{grid-column:1/-1}.themed-controls>label{align-self:center;grid-row:auto;margin:0}.themed-controls>select,.themed-controls>.themed-input-suffix{align-self:center}.themed-controls>.themed-input-suffix input{min-height:37px;padding-top:8px;padding-bottom:8px}.themed-input-suffix>span{top:8px}.themed-controls select{min-height:37px;padding:8px 10px}.themed-control-note{margin:3px 0}.themed-odds{margin-top:3px;padding:9px 0}.themed-header p{font-size:10px}.themed-wallet strong{font-size:19px}.themed-scene-top{inset:14px 15px auto;font-size:6px;letter-spacing:1px}.themed-flight-hud{top:42px;left:18px}.themed-flight-hud>span{font-size:6px}.themed-flight-hud strong{font-size:36px}.themed-flight-hud>div{font-size:9px;max-width:180px;margin-top:0}.themed-wheel-caption{font-size:7px;bottom:10px}.themed-result{font-size:11px;padding:13px 0}.themed-label{font-size:8px}.themed-paytable-chip{min-width:65px;padding:9px 5px}.themed-paytable-chip strong{font-size:12px}.themed-paytable-chip span{font-size:8px}.themed-history-chip{padding:8px}.themed-history{gap:6px}}
+@media(max-width:700px){.themed-game[data-game=royal-wheel] #themed-canvas{aspect-ratio:1/1}}
+@media(max-width:380px){.themed-game{padding:12px}.themed-header h3{font-size:23px}.themed-wallet{gap:4px 7px}.themed-wallet strong{font-size:17px}.themed-wallet>span{font-size:8px}.themed-flight-hud strong{font-size:30px}.themed-flight-hud>div{max-width:135px;font-size:8px}.themed-controls{padding:12px}.themed-scene-tag{display:none}}
+@media(prefers-reduced-motion:reduce){.themed-game *{scroll-behavior:auto!important;animation:none!important;transition:none!important}}

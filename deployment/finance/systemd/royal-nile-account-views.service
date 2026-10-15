@@ -1,0 +1,9 @@
+[Unit]
+Description=Export read-only Nile test balances for game accounts
+After=docker.service
+Requires=docker.service
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/royal-finance
+ExecStart=/usr/bin/python3 /opt/royal-finance/deployment/finance/nile-account-views.py export
+TimeoutStartSec=55

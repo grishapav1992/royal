@@ -1,0 +1,13 @@
+[Unit]
+Description=Financial API, ledger, disk and backup checks
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/royal-finance
+ExecStart=/usr/bin/python3 deployment/finance/operations.py monitor
+TimeoutStartSec=2min
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true

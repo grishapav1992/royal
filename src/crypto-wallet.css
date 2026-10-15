@@ -1,0 +1,34 @@
+.crypto-wallet { max-width: 620px; }
+.crypto-payment { max-width: 520px; }
+.crypto-payment::backdrop { background: #080715d9; }
+.crypto-payment-result { padding: 16px; border: 1px solid #ffdb88; border-radius: 8px; }
+#crypto-deposit-continue { margin-top: 16px; }
+.crypto-wallet form, .crypto-wallet section { display: grid; gap: 12px; }
+.crypto-wallet section[hidden], .crypto-wallet form[hidden] { display: none; }
+.crypto-wallet label { display: grid; gap: 6px; }
+.crypto-wallet fieldset { display: grid; gap: 12px; min-width: 0; margin: 0; padding: 0; border: 0; }
+.crypto-wallet fieldset:disabled input, .crypto-wallet fieldset:disabled select { opacity: .65; }
+.crypto-qr-placeholder { display: grid; gap: 8px; padding: 24px 16px; margin-top: 16px; border: 1px dashed #988164; border-radius: 8px; text-align: center; color: #decbb1; }
+.crypto-qr-placeholder span { font-size: 13px; }
+.crypto-qr-placeholder[hidden], .crypto-payment-memo[hidden] { display: none; }
+.crypto-payment-qr { display: grid; justify-items: center; gap: 12px; margin: 8px 0; }
+.crypto-payment-qr img { display: block; width: 240px; max-width: 100%; height: auto; aspect-ratio: 1; background: #fff; border: 8px solid #fff; border-radius: 8px; box-sizing: border-box; }
+.crypto-payment-qr img[hidden] { display: none; }
+.crypto-payment-qr figcaption { max-width: 360px; font-size: 13px; line-height: 1.6; text-align: center; }
+.crypto-payment-network { padding: 10px 12px; border-radius: 5px; background: #141325; color: #ffdb88; }
+.crypto-payment-memo { display: grid; gap: 8px; padding: 12px; border: 1px solid #ffdb88; border-radius: 5px; }
+.crypto-payment-memo p { margin: 0; }
+.crypto-wallet form { border-top: 1px solid #ffffff20; padding-top: 16px; margin-top: 16px; }
+.crypto-wallet input, .crypto-wallet select { box-sizing: border-box; width: 100%; min-width: 0; padding: 11px 10px; border: 1px solid #988164; border-radius: 5px; background: #141325; color: #fff0d6; font: inherit; font-size: 16px; }
+.crypto-wallet label { font-size: 13px; line-height: 1.5; }
+.crypto-wallet input:focus-visible, .crypto-wallet select:focus-visible, .crypto-wallet button:focus-visible { outline: 3px solid #ffdb88; outline-offset: 2px; }
+.crypto-wallet .wallet-heading { position: sticky; top: 0; z-index: 2; padding-bottom: 10px; background: #241e32; }
+.crypto-wallet h3 { margin: 12px 0 4px; font-size: 19px; }
+.crypto-wallet p, .crypto-wallet li { font-size: 13px; line-height: 1.6; }
+.crypto-wallet button:disabled { opacity: .6; }
+.royal-coins[data-currency="crypto"] #coins-balance { font-size: 18px; overflow-wrap: anywhere; line-height: 1.5; }
+.crypto-wallet ol { padding-left: 20px; overflow-wrap: anywhere; }
+.crypto-wallet li { margin: 12px 0; }
+.crypto-wallet li button { margin-left: 8px; }
+#crypto-withdraw-calculation, #crypto-deposit-info { overflow-wrap: anywhere; }
+@media (max-width: 480px) { #crypto-wallet-button { font-size: 10px; padding: 5px 7px; } }

@@ -1,0 +1,10 @@
+services:
+  game:
+    environment:
+      USDT_MAINNET_SOCKET_FILE: /run/usdt/mainnet.sock
+    volumes:
+      - type: bind
+        source: /opt/royal-mainnet-sockets
+        target: /run/usdt
+        read_only: true
+        bind: {create_host_path: false}

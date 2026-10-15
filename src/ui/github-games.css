@@ -1,0 +1,20 @@
+.github-game{width:100%;padding:24px;color:#f1e8ce;background:radial-gradient(ellipse at 50% 32%,#1d5145,#101f2b 78%);border-radius:20px;box-sizing:border-box;font-family:Arial,sans-serif}
+.github-header{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:22px}
+.github-header h3{margin:8px 0 0;font-size:30px;color:#f8dda0}
+.github-header span,.github-table-label{font-size:11px;letter-spacing:2px;color:#c9bc98}
+.github-balance{text-align:right;flex-shrink:0}.github-balance small{display:block;font-size:11px;color:#c9bc98}.github-balance strong{font-size:28px}
+.github-table{padding:16px 8px;border:1px solid #ae97584f;border-radius:50px;background:#163d326e;text-align:center;min-height:170px}
+.github-table-label{margin:12px 0 9px}.github-cards{display:flex;align-items:flex-start;justify-content:center;flex-wrap:wrap;gap:10px;min-height:104px}
+.github-card{display:inline-flex;flex-direction:column;align-items:center;gap:8px;width:clamp(46px,8vw,82px);padding:0;border:0;border-radius:7px;background:none;color:#ccbaa1;box-shadow:none;font-size:9px;letter-spacing:1px;flex-shrink:0}
+.github-card img{display:block;width:100%;aspect-ratio:210/304;object-fit:contain;border-radius:6px;filter:drop-shadow(0 4px 4px #0005)}
+.github-card span{font-size:8px;letter-spacing:0}
+button.github-card:disabled{opacity:1;cursor:default}button.github-card.held img{outline:3px solid #f3cc83;transform:translateY(-4px)}button.github-card.held span{color:#f3cc83}
+.github-result{min-height:36px;font-size:15px;line-height:1.5;text-align:center;color:#ffe2a4;margin:18px 0}
+.github-controls{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:center;gap:10px}.github-controls label{display:flex;flex-direction:column;gap:7px;font-size:11px;color:#c9bc98}
+.github-controls select{background:#172835;color:#fff1d2;border:1px solid #887554;border-radius:8px;padding:11px;font-size:14px;min-width:84px}
+.github-game [data-action]{padding:12px 18px;border:1px solid #d2b372;border-radius:9px;background:#ebc584;color:#202b2b;font-weight:bold;cursor:pointer}.github-game [data-action]:disabled{opacity:.45;cursor:default}.github-game [data-action="fold"]{background:#39242c;color:#f0d5b7;border-color:#795957}
+.github-history{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:18px}.github-history span{padding:6px 10px;border:1px solid #ffffff20;border-radius:7px;font-size:11px;color:#d4d3b9}
+.github-rules{margin:20px 0 12px;font-size:12px;line-height:1.7}.github-rules summary{cursor:pointer;color:#e7d1a3}.github-rules p{color:#c6c4ad}
+.github-footer{border-top:1px solid #ffffff20;padding-top:12px;font-size:11px;color:#b2bbaa;line-height:1.5}.github-footer a{color:#dcca9f;display:inline-block;margin-right:20px}.github-footer [data-action]{font-size:11px;padding:8px 10px;background:none;color:#dcc9a1;border-color:#826e4c}
+.github-dice{display:flex;justify-content:center;gap:20px;padding:20px}.github-dice span{font-size:86px;line-height:1;color:#fae9c4}.github-point{font-size:13px;color:#d1c7a4}
+@media(max-width:600px){.github-game{padding:16px 10px;border-radius:14px}.github-header h3{font-size:25px}.github-header span{font-size:8px;letter-spacing:1px}.github-balance strong{font-size:23px}.github-table{padding:8px 4px;border-radius:22px}.github-card{width:clamp(42px,13vw,67px)}.github-cards{gap:6px;min-height:82px}.github-controls{gap:8px}.github-game [data-action]{padding:12px;font-size:12px}.github-result{font-size:13px}.github-footer a{margin-bottom:10px}}

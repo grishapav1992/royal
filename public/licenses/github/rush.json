@@ -1,0 +1,19 @@
+{
+  "repo": "vafc21/Rush",
+  "commit": "bc55199db43cdae829b5c001de15afb2bbe13ff6",
+  "license": "MIT",
+  "games": [
+    "hilo",
+    "dragontower",
+    "diamonds",
+    "crash"
+  ],
+  "changes": [
+    "Original mathematical functions retained",
+    "Server-side persistent sessions and exact rational payouts",
+    "Hi-Lo uses a maximum of two correct guesses per session to bound reserved payouts",
+    "Tower retains all nine rows and three difficulties",
+    "Source snapshots normalize comment punctuation to the project convention; game logic is unchanged.",
+    "Diamonds preserves the original paytable on demo money; Crash uses private persistent solo rounds, a 100x cap, server time and atomic payouts without upstream grace-window cashouts."
+  ]
+}

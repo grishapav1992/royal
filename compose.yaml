@@ -1,0 +1,83 @@
+services:
+  game:
+    cpu_shares: 8192
+    build: .
+    restart: unless-stopped
+    init: true
+    environment:
+      NODE_ENV: production
+      PORT: 2567
+      LOBBY_MAX_ROOMS: ${LOBBY_MAX_ROOMS:-10}
+      WS_MAX_CONNECTIONS: ${WS_MAX_CONNECTIONS:-330}
+      LOBBY_AUTH_CONCURRENCY: ${LOBBY_AUTH_CONCURRENCY:-8}
+      LOBBY_MATCHMAKING_RATE: ${LOBBY_MATCHMAKING_RATE:-30}
+      LOBBY_MATCHMAKING_BURST: ${LOBBY_MATCHMAKING_BURST:-60}
+      WS_MAX_BUFFERED_BYTES: ${WS_MAX_BUFFERED_BYTES:-262144}
+      PGHOST: ${ROYAL_PGHOST:-finance-db}
+      PGPORT: ${ROYAL_PGPORT:-5432}
+      PGDATABASE: ${ROYAL_PGDATABASE:-royal_finance_sim}
+      PGUSER: royal_game_app
+      PGPASSWORD_FILE: /run/secrets/royal_game_password
+      PGSSLMODE: ${ROYAL_PGSSLMODE:-disable}
+      CODEX_SALE_API_KEY: ${CODEX_SALE_API_KEY:-}
+      CODEX_SALE_NPC_MODEL: ${CODEX_SALE_NPC_MODEL:-gpt-6-luna}
+      PUBLIC_ORIGIN: ${PUBLIC_ORIGIN:?Set PUBLIC_ORIGIN to the HTTPS address}
+      CASINOAPIPRO_ENABLED: ${CASINOAPIPRO_ENABLED:-false}
+      CASINOAPIPRO_API_KEY: ${CASINOAPIPRO_API_KEY:-}
+      CASINOAPIPRO_API_SECRET: ${CASINOAPIPRO_API_SECRET:-}
+      CASINOAPIPRO_WALLET_SECRET: ${CASINOAPIPRO_WALLET_SECRET:-}
+      CASINOAPIPRO_CURRENCY: ${CASINOAPIPRO_CURRENCY:-USD}
+      NOWPAYMENTS_ENABLED: "false"
+      NOWPAYMENTS_WITHDRAWALS_ENABLED: "false"
+      NOWPAYMENTS_GAMES_ENABLED: "false"
+    secrets: [royal_game_password]
+    networks: [default, royal_database]
+    volumes:
+      - game_data:/app/data
+    expose:
+      - "2567"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:2567/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+  caddy:
+    cpu_shares: 4096
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      game:
+        condition: service_healthy
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN:?Set SITE_DOMAIN in .env}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./deployment/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+volumes:
+  game_data:
+  caddy_data:
+  caddy_config:
+
+networks:
+  royal_database:
+    external: true
+    name: ${ROYAL_PGNETWORK:-royal-finance-sim_finance_private}
+
+secrets:
+  royal_game_password:
+    file: ${ROYAL_POSTGRES_SECRETS_DIR:-/opt/royal-postgres-secrets}/game-password

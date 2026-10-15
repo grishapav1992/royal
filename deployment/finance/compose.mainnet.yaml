@@ -1,0 +1,65 @@
+name: royal-usdt-mainnet
+services:
+  usdt-mainnet:
+    build:
+      context: ../..
+      dockerfile: deployment/finance/Dockerfile.mainnet
+    image: royal-usdt-mainnet:local
+    restart: unless-stopped
+    init: true
+    environment:
+      DATABASE_LOCAL_SNAPSHOTS: "false"
+      PGHOST: ${ROYAL_PGHOST:-finance-db}
+      PGPORT: ${ROYAL_PGPORT:-5432}
+      PGDATABASE: ${ROYAL_PGDATABASE:-royal_finance_sim}
+      PGUSER: royal_mainnet_app
+      PGPASSWORD_FILE: /run/secrets/royal_database_password
+      PGSSLMODE: ${ROYAL_PGSSLMODE:-disable}
+      USDT_MAINNET_SCHEMA: royal_mainnet
+      USDT_MAINNET_MODE: pilot-mainnet
+      USDT_MAINNET_CONFIG_FILE: /config/mainnet.json
+      USDT_MAINNET_SOCKET_FILE: /run/usdt/mainnet.sock
+      TRONGRID_API_KEY_FILE: ${TRONGRID_API_KEY_FILE:-}
+    secrets: [royal_database_password]
+    volumes:
+      - type: bind
+        source: /opt/royal-mainnet-config
+        target: /config
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: /opt/royal-mainnet-data
+        target: /data
+        bind: {create_host_path: false}
+      - type: bind
+        source: /opt/royal-mainnet-sockets
+        target: /run/usdt
+        bind: {create_host_path: false}
+    networks: [rpc, royal_database]
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 512m
+    cpus: 1
+    pids_limit: 32
+    stop_grace_period: 30s
+    healthcheck:
+      test: [CMD, node, mainnet.js, health]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+    logging:
+      driver: json-file
+      options: {max-size: 10m, max-file: "3"}
+
+networks:
+  rpc:
+  royal_database:
+    external: true
+    name: ${ROYAL_PGNETWORK:-royal-finance-sim_finance_private}
+
+secrets:
+  royal_database_password:
+    file: ${ROYAL_POSTGRES_SECRETS_DIR:-/opt/royal-postgres-secrets}/mainnet-password

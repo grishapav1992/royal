@@ -1,0 +1,20 @@
+import { HALL_DOORS } from '../src/shared/world';
+import {test,expect} from '@playwright/test';
+import {worldPoint} from './room-ui';
+test('clicking a doorway walks there, and walking across the threshold changes halls without a button',async({page})=>{
+ const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto('/?offline=1',{waitUntil:'domcontentloaded'});await expect(page.locator('#loading')).toHaveCount(0);
+ const state=()=>page.evaluate(()=>(window as any).royalDemo.getState());
+ await expect(page.locator('[data-hall]:not([data-cabinet])')).toHaveCount(0);
+ await page.locator('#room-overview').click();
+ const floor=await worldPoint(page,900,285);await page.mouse.click(floor.x,floor.y);
+ await expect.poll(async()=>Math.abs((await state()).x-900)+Math.abs((await state()).y-285),{timeout:12000}).toBeLessThan(4);
+ expect((await state()).hall).toBe('arcade');
+ await page.keyboard.down('w');await expect.poll(async()=>(await state()).hall).toBe('tables');
+ expect((await state()).y).toBeGreaterThan(530);await page.waitForTimeout(3300);await page.keyboard.up('w');
+ expect((await state()).hall).toBe('tables');expect((await state()).y).toBeLessThan(HALL_DOORS.tables.arrival.y-350);
+ await page.screenshot({path:'artifacts/door-tables.png'});
+ const door=await worldPoint(page,HALL_DOORS.tables.click.x,HALL_DOORS.tables.click.y);await page.mouse.click(door.x,door.y);expect((await state()).hall).toBe('tables');
+ await expect.poll(async()=>(await state()).hall,{timeout:20000}).toBe('arcade');await page.waitForTimeout(400);expect((await state()).hall).toBe('arcade');
+ await page.screenshot({path:'artifacts/door-arcade.png'});expect(errors).toEqual([]);
+});

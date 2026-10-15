@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# Resolve only the official helper alias before the authentication mount is hidden.
+# Exec preserves bubblewrap's inherited descriptors and process lifecycle.
+royal_helper_args() {
+  local royal_auth="$1" royal_native="$2" royal_helper="$3"
+  shift 3
+  ROYAL_BWRAP_ARGS=("$@")
+  local royal_i royal_command royal_suffix royal_target royal_expected royal_replacement
+  for ((royal_i=0; royal_i<${#ROYAL_BWRAP_ARGS[@]}; royal_i++)); do
+    if [[ "${ROYAL_BWRAP_ARGS[$royal_i]}" != -- ]]; then continue; fi
+    if ((royal_i+1>=${#ROYAL_BWRAP_ARGS[@]})); then break; fi
+    royal_command="${ROYAL_BWRAP_ARGS[$((royal_i+1))]}"
+    if [[ "$royal_command" == "$royal_auth/tmp/arg0/"* ]]; then
+      royal_suffix="${royal_command#"$royal_auth/tmp/arg0/"}"
+      if [[ "$royal_suffix" =~ ^codex-arg0[A-Za-z0-9]+/codex-linux-sandbox$ ]]; then
+        [[ -L "$royal_command" ]] || return 1
+        royal_target=$(/usr/bin/readlink -f -- "$royal_command") || return 1
+        royal_expected=$(/usr/bin/readlink -f -- "$royal_native") || return 1
+        royal_replacement=$(/usr/bin/readlink -f -- "$royal_helper") || return 1
+        [[ -n "$royal_expected" && "$royal_target" == "$royal_expected" && "$royal_replacement" == "$royal_expected" ]] || return 1
+        ROYAL_BWRAP_ARGS[$((royal_i+1))]="$royal_helper"
+      fi
+    fi
+    break
+  done
+}
+
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+  royal_helper_args /home/node/.codex \
+    /usr/local/lib/node_modules/@openai/codex/node_modules/@openai/codex-linux-x64/vendor/x86_64-unknown-linux-musl/bin/codex \
+    /usr/local/bin/codex-linux-sandbox "$@" || {
+      printf '%s\n' 'The trusted Codex sandbox helper could not be resolved.' >&2
+      exit 1
+    }
+  exec /usr/bin/bwrap "${ROYAL_BWRAP_ARGS[@]}"
+fi

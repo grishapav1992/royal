@@ -1,0 +1,203 @@
+name: royal-finance-sim
+
+services:
+  finance-db:
+    image: postgres:17-bookworm
+    command:
+      - postgres
+      - -c
+      - shared_preload_libraries=pg_stat_statements
+      - -c
+      - compute_query_id=on
+      - -c
+      - pg_stat_statements.max=2000
+      - -c
+      - pg_stat_statements.track=top
+      - -c
+      - pg_stat_statements.track_utility=off
+      - -c
+      - pg_stat_statements.track_planning=off
+      - -c
+      - track_io_timing=on
+      - -c
+      - track_wal_io_timing=on
+    user: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: finance_schema_owner
+      POSTGRES_DB: royal_finance_sim
+      POSTGRES_PASSWORD_FILE: /run/secrets/finance_admin_password
+      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
+    secrets:
+      - finance_admin_password
+    volumes:
+      - finance_data:/var/lib/postgresql/data
+    networks:
+      - finance_private
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/run/postgresql:uid=999,gid=999,mode=0775
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 512m
+    cpus: 0.75
+    pids_limit: 128
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U finance_schema_owner -d royal_finance_sim"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    logging: &finance_logging
+      driver: json-file
+      options: {max-size: 10m, max-file: "3"}
+
+  finance-migrate:
+    build:
+      context: .
+      dockerfile: deployment/finance/Dockerfile
+    image: royal-finance-sim:local
+    command: [node, dist-finance-tools/finance-migrate.js]
+    restart: "no"
+    group_add: ["999"]
+    depends_on:
+      finance-db: {condition: service_healthy}
+    environment:
+      NODE_ENV: development
+      FINANCE_MODE: simulation
+      FINANCE_DB_HOST: finance-db
+      FINANCE_DB_NAME: royal_finance_sim
+      FINANCE_DB_USER: finance_schema_owner
+      FINANCE_DB_PASSWORD_FILE: /run/secrets/finance_admin_password
+      FINANCE_BOOTSTRAP_APP_PASSWORD_FILE: /run/secrets/finance_app_password
+      FINANCE_BOOTSTRAP_OBSERVER_PASSWORD_FILE: /run/secrets/finance_observer_password
+    secrets:
+      - finance_admin_password
+      - finance_app_password
+      - finance_observer_password
+    networks:
+      - finance_private
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 256m
+    pids_limit: 64
+    logging: *finance_logging
+
+  finance-api:
+    image: royal-finance-sim:local
+    restart: unless-stopped
+    init: true
+    deploy:
+      replicas: 2
+    depends_on:
+      finance-db: {condition: service_healthy}
+      finance-migrate: {condition: service_completed_successfully}
+    environment:
+      NODE_ENV: development
+      FINANCE_MODE: simulation
+      FINANCE_BIND_HOST: 0.0.0.0
+      FINANCE_NETWORK_SCOPE: private-docker
+      FINANCE_PORT: "2570"
+      FINANCE_DB_HOST: finance-db
+      FINANCE_DB_NAME: royal_finance_sim
+      FINANCE_DB_USER: finance_app
+      FINANCE_DB_TLS: disabled
+      FINANCE_DB_PASSWORD_FILE: /run/secrets/finance_app_password
+      FINANCE_SANDBOX_TOKEN_FILE: /run/secrets/finance_sandbox_token
+    secrets:
+      - finance_app_password
+      - finance_sandbox_token
+    networks:
+      - finance_private
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 256m
+    cpus: 0.75
+    pids_limit: 64
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:2570/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging: *finance_logging
+
+  finance-gateway:
+    image: haproxy:3.0-alpine@sha256:56b887da77428b7a6621e59e480cdbd330cc805c22d3cedb66ceea76ffdea2c6
+    user: haproxy
+    restart: unless-stopped
+    depends_on:
+      finance-api: {condition: service_healthy}
+    volumes:
+      - ./deployment/finance/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    networks:
+      - finance_private
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 64m
+    cpus: 0.25
+    pids_limit: 32
+    healthcheck:
+      test: [CMD-SHELL, "wget -q -O /dev/null http://127.0.0.1:2570/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging: *finance_logging
+
+  finance-deposit-scan:
+    image: royal-finance-sim:local
+    profiles: [deposit-lab]
+    command: [node, dist-finance-tools/finance-deposits.js]
+    depends_on:
+      finance-db: {condition: service_healthy}
+      finance-migrate: {condition: service_completed_successfully}
+    environment:
+      NODE_ENV: development
+      FINANCE_MODE: simulation
+      FINANCE_DB_HOST: finance-db
+      FINANCE_DB_NAME: royal_finance_sim
+      FINANCE_DB_USER: finance_ingest
+      FINANCE_DB_PASSWORD_FILE: /run/secrets/finance_observer_password
+      FINANCE_DB_POOL_MAX: "2"
+      FINANCE_DEPOSIT_NETWORK: tron-sim-v1
+      FINANCE_DEPOSIT_SOURCE_A_FILE: /lab/source-a.json
+      FINANCE_DEPOSIT_SOURCE_B_FILE: /lab/source-b.json
+    secrets: [finance_observer_password]
+    volumes:
+      - type: bind
+        source: ${FINANCE_DEPOSIT_LAB_DIR:-/opt/royal-finance-deposit-lab}
+        target: /lab
+        read_only: true
+        bind: {create_host_path: false}
+    networks: [finance_private]
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 128m
+    cpus: 0.25
+    pids_limit: 32
+    logging: *finance_logging
+
+networks:
+  finance_private:
+    internal: true
+
+volumes:
+  finance_data:
+
+secrets:
+  finance_admin_password:
+    file: ${FINANCE_SECRETS_DIR:-/opt/royal-finance-secrets}/admin-password
+  finance_app_password:
+    file: ${FINANCE_SECRETS_DIR:-/opt/royal-finance-secrets}/app-password
+  finance_sandbox_token:
+    file: ${FINANCE_SECRETS_DIR:-/opt/royal-finance-secrets}/sandbox-token
+  finance_observer_password:
+    file: ${FINANCE_SECRETS_DIR:-/opt/royal-finance-secrets}/observer-password

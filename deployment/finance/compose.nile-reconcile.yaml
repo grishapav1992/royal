@@ -1,0 +1,50 @@
+name: royal-nile-reconcile
+
+services:
+  nile-reconcile:
+    build:
+      context: ../..
+      dockerfile: deployment/finance/Dockerfile.nile-reconcile
+    image: royal-nile-reconcile:local
+    init: true
+    environment:
+      PGHOST: ${ROYAL_PGHOST:-finance-db}
+      PGPORT: ${ROYAL_PGPORT:-5432}
+      PGDATABASE: ${ROYAL_PGDATABASE:-royal_finance_sim}
+      PGUSER: royal_nile_reconcile_app
+      PGPASSWORD_FILE: /run/secrets/royal_database_password
+      PGSSLMODE: ${ROYAL_PGSSLMODE:-disable}
+      NILE_TEST_SCHEMA: royal_nile_deposits
+      NILE_TEST_MODE: testnet-only
+      NILE_TEST_NETWORK: nile
+      NILE_TEST_CONFIG_FILE: /config/nile-test.json
+    secrets: [royal_database_password]
+    volumes:
+      - type: bind
+        source: ${NILE_TEST_DATA_DIR:-/opt/royal-nile-test-data}
+        target: /ledger
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${NILE_TEST_CONFIG_DIR:-/opt/royal-nile-test-config}
+        target: /config
+        read_only: true
+        bind: {create_host_path: false}
+    networks: [rpc, royal_database]
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 256m
+    cpus: 0.5
+    pids_limit: 32
+
+networks:
+  rpc:
+  royal_database:
+    external: true
+    name: ${ROYAL_PGNETWORK:-royal-finance-sim_finance_private}
+
+secrets:
+  royal_database_password:
+    file: ${ROYAL_POSTGRES_SECRETS_DIR:-/opt/royal-postgres-secrets}/nile-reconcile-password

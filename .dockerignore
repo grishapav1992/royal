@@ -1,0 +1,14 @@
+node_modules
+dist
+dist-server
+dist-load
+.git
+.tmp
+.env
+.env.*
+!.env.example
+deployment/finance/secrets
+data
+artifacts
+test-results
+playwright-report

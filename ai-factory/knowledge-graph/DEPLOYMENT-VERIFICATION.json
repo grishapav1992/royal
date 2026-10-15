@@ -1,0 +1,179 @@
+{
+  "verified_at": "2026-10-10T06:36:16Z",
+  "engine": {
+    "name": "Graphiti by Zep",
+    "version": "0.30.2",
+    "storage": "FalkorDB Lite",
+    "storage_version": "0.10.0",
+    "mode": "structured_bm25_bfs_rrf",
+    "providers": {
+      "llm": "disabled",
+      "embeddings": "disabled",
+      "reranker": "rrf"
+    }
+  },
+  "server": {
+    "backup": "/opt/royal-ai-backups/graph-20261010T010608Z",
+    "health": {
+      "ok": true,
+      "ready": true,
+      "mode": "structured_bm25_bfs_rrf",
+      "graphiti_version": "0.30.2",
+      "falkordblite_version": "0.10.0",
+      "providers": {
+        "llm": "disabled",
+        "embeddings": "disabled",
+        "reranker": "rrf"
+      },
+      "hash": "bfeb4b98226f7b976a6a93495dcc4b25009d70926da8ea59f09c9ee69210c035",
+      "projected_at": "2026-10-10T01:08:54.349858+00:00",
+      "generated_at": "2026-10-10T01:08:53.797Z",
+      "counts": {
+        "nodes": 62,
+        "edges": 47,
+        "historical_edges": 0,
+        "episodes": 112
+      },
+      "memory_rss_bytes": 139554816,
+      "database_bytes": 109697
+    },
+    "runtime": {
+      "paused": false,
+      "auto_develop": true,
+      "auto_release": false,
+      "authenticated": true,
+      "worker_status": "idle",
+      "active_jobs": 0
+    },
+    "images": {
+      "api": "sha256:9ae9aa47bed1e3d364fd3735b8607f709a2ee4339ec0721ba733b899b99a27b2",
+      "worker": "sha256:7fdbbbad83667c27844db3f0e24df3900f767d932360e1cb0f586c38bcb125bc",
+      "knowledge_graph": "sha256:31b5bf2945e3c95aecc0aaba0ee2d23aabc7aa7173022ed8fe99dbfe75d18b87"
+    },
+    "private_service": true,
+    "memory_limit_mib": 384
+  },
+  "local": {
+    "health": {
+      "ok": true,
+      "ready": true,
+      "mode": "structured_bm25_bfs_rrf",
+      "graphiti_version": "0.30.2",
+      "falkordblite_version": "0.10.0",
+      "providers": {
+        "llm": "disabled",
+        "embeddings": "disabled",
+        "reranker": "rrf"
+      },
+      "hash": "bfeb4b98226f7b976a6a93495dcc4b25009d70926da8ea59f09c9ee69210c035",
+      "projected_at": "2026-10-10T01:08:40.603623+00:00",
+      "generated_at": "2026-10-10T01:08:39.715Z",
+      "counts": {
+        "nodes": 62,
+        "edges": 47,
+        "historical_edges": 0,
+        "episodes": 112
+      },
+      "memory_rss_bytes": 125927424,
+      "database_bytes": 109670,
+      "last_exchange_at": "2026-10-10T06:34:30.222Z"
+    },
+    "launch_agent": {
+      "label": "com.royal.knowledge-sync",
+      "state": "running",
+      "automatic_after_login": true,
+      "interval_seconds": 60,
+      "successful_exchanges": [
+        "2026-10-10T06:19:37.008Z",
+        "2026-10-10T06:20:43.700Z",
+        "2026-10-10T06:34:30.222Z"
+      ],
+      "macos_security_permissions_changed": false
+    }
+  },
+  "synchronization": {
+    "equal_hashes": true,
+    "events": 112,
+    "nodes": 62,
+    "edges": 47,
+    "conflicts": 0,
+    "repeat_preserves_hash_and_event_count": true
+  },
+  "roles": {
+    "analyst": true,
+    "developer": true,
+    "tester": true,
+    "context_installed_before_runner": true,
+    "readonly_fixture": ".factory/knowledge-graph.json",
+    "role_skills_version": "1.2.0",
+    "runtime_context_audited_by_independent_agent": true,
+    "new_live_model_run_for_this_release": false
+  },
+  "preserved": {
+    "task_counts": [
+      {
+        "status": "inbox",
+        "count": 20
+      },
+      {
+        "status": "needs_answers",
+        "count": 1
+      },
+      {
+        "status": "ready_release",
+        "count": 1
+      }
+    ],
+    "analysis": {
+      "status": "needs_answers",
+      "requirements_version": 2,
+      "answered": 4,
+      "open": 6
+    },
+    "candidate": {
+      "status": "ready_release",
+      "commit": "87d5a6d80f47d8b01cfca0359ef1ee7fe1762a4b"
+    },
+    "game": {
+      "healthy": true,
+      "started_at": "2026-10-09T17:16:26.57219704Z",
+      "image": "sha256:096c92633cf256d58db9a670b73190732938fec047c8f7509f15c014c167334c"
+    },
+    "game_release_performed": false
+  },
+  "validation": {
+    "factory": {
+      "passed": 175,
+      "failed": 0,
+      "skipped": 0
+    },
+    "graphiti": {
+      "passed": 9,
+      "failed": 0
+    },
+    "browser": {
+      "desktop": true,
+      "mobile_390": true,
+      "search_race": true,
+      "unavailable_fallback": true,
+      "escaping": true,
+      "production_search": {
+        "query": "шлюз",
+        "nodes": 4,
+        "edges": 2,
+        "finance_gateway_found": true
+      }
+    }
+  },
+  "board": "https://stealth-spark-gokmxooi.expresshost.cloud/team/",
+  "screenshot": "ai-factory/knowledge-graph/graph-board.jpg",
+  "limits": {
+    "automatic_fact_extraction": false,
+    "semantic_embeddings": false,
+    "all_codex_chats_imported": false,
+    "curated_facts_require_maintenance": true,
+    "journal_events": 20000,
+    "journal_bytes": 8388608,
+    "local_sync_requires_awake_mac_and_network": true
+  }
+}

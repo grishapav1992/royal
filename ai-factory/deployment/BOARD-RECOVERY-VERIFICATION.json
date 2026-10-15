@@ -1,0 +1,119 @@
+{
+  "verified_at": "2026-10-10T14:22:37.681Z",
+  "paused": false,
+  "auto_release": false,
+  "runtime": {
+    "available": true,
+    "authenticated": true,
+    "release_enabled": false
+  },
+  "tasks_total": 22,
+  "statuses": {
+    "ready_release": 1,
+    "analyzing": 2,
+    "inbox": 19
+  },
+  "resumed_tasks": [
+    {
+      "id": "17465529-14d4-49a9-957e-dd9ad7343a6d",
+      "status": "analyzing",
+      "latest_job": {
+        "id": "187845c3-b7e9-401c-a18a-453a4ac6ed83",
+        "role": "analyst",
+        "status": "running"
+      },
+      "latest_run": {
+        "id": "2f8a1e44-f54d-45bd-b8f9-e8f77102fdfe",
+        "role": "analyst",
+        "status": "running",
+        "error": null,
+        "phase": "model"
+      }
+    },
+    {
+      "id": "8753aaa8-8ec0-4d1a-9ea7-885c7f5851ac",
+      "status": "analyzing",
+      "latest_job": {
+        "id": "bf318ffc-3130-4c83-a08b-0d29e603f32f",
+        "role": "analyst",
+        "status": "pending"
+      },
+      "latest_run": null,
+      "previous_attempt": {
+        "id": "fc449719-a83c-49f7-9999-aa269f26f21d",
+        "role": "analyst",
+        "status": "failed",
+        "error": "Knowledge graph: invalid or sensitive text",
+        "phase": "preparing"
+      }
+    }
+  ],
+  "backups": [
+    "/opt/royal-ai-backups/board-recovery-20261010T141149Z",
+    "/opt/royal-ai-backups/board-20261010T141931Z"
+  ],
+  "tests": {
+    "factory_passed": 223,
+    "factory_failed": 0,
+    "factory_skipped": 0,
+    "board_browser": "passed",
+    "poll_recovery_regression": "passed",
+    "null_failure_regression": "passed",
+    "production_move_retry": "passed",
+    "production_card_retry": "passed",
+    "production_result_view": "passed"
+  },
+  "root_cause": {
+    "question_id": "08db176b-b8fb-4f29-99a5-29f285865056",
+    "generated_name_bytes": 505,
+    "max_name_bytes": 500,
+    "fix": "Bound graph decision names separately; preserve original task question and permitted evidence"
+  },
+  "knowledge_graph_validated": true,
+  "source_hashes_match_server": true,
+  "sha256": {
+    "public/app.js": "36bc2f7ebfd5fd5cf3019d528f9027a66d6cf0951ab308a6e1fc0b614239aa27",
+    "public/styles.css": "b23a9ff894aad5d3912bc0031c2a8e00a90c36298542107b989f1c2d90c22787",
+    "lib/store.mjs": "a0a728f9ea518047a6de0196ff17e2979cf0a950d0f4f98b0c5f2e56b2775b4b",
+    "lib/graph-store.mjs": "7397933cdc33fcfe8100e874e060695a63aba5dadb2f7927123ad182b79bd817",
+    "server.mjs": "2fbe8ee01cf6b1a57a33e2812bb9a0ffff4673dffab8697e19845b9104c8ab2d"
+  },
+  "services": {
+    "api": {
+      "image": "sha256:2b5dffc99994b049cdb7939026ad3a29e5e188d17288b09c7ad13b5841a0ebed",
+      "status": "running",
+      "health": "healthy",
+      "started_at": "2026-10-10T14:19:58.464582722Z",
+      "unchanged": false
+    },
+    "worker": {
+      "image": "sha256:26239840e527ab564ac97d3d503f8216d4e483db26a4e922a49ed09dfcb55100",
+      "status": "running",
+      "health": null,
+      "started_at": "2026-10-10T14:13:14.707432345Z",
+      "unchanged": false
+    },
+    "knowledge_graph": {
+      "image": "sha256:31b5bf2945e3c95aecc0aaba0ee2d23aabc7aa7173022ed8fe99dbfe75d18b87",
+      "status": "running",
+      "health": "healthy",
+      "started_at": "2026-10-10T01:07:32.732954239Z",
+      "unchanged": true
+    },
+    "game": {
+      "image": "sha256:096c92633cf256d58db9a670b73190732938fec047c8f7509f15c014c167334c",
+      "status": "running",
+      "health": "healthy",
+      "started_at": "2026-10-09T17:16:26.57219704Z",
+      "unchanged": true
+    }
+  },
+  "release": {
+    "implemented": false,
+    "candidate_commit": "87d5a6d80f47d8b01cfca0359ef1ee7fe1762a4b",
+    "qa_passed": true,
+    "result_and_patch_available": true,
+    "published": false
+  },
+  "screenshot": "board-recovery.jpg"
+}

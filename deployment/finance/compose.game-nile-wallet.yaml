@@ -1,0 +1,16 @@
+services:
+  game:
+    environment:
+      NILE_WALLET_VIEW_FILE: /nile-view/wallets.json
+      NILE_PLAY_SOCKET_FILE: /nile-play/play.sock
+    volumes:
+      - type: bind
+        source: /opt/royal-nile-account-views
+        target: /nile-view
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: /opt/royal-nile-play-sockets
+        target: /nile-play
+        read_only: true
+        bind: {create_host_path: false}

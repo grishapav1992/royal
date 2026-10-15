@@ -1,0 +1,49 @@
+package taixiu
+
+import (
+	"context"
+	"errors"
+	"github.com/BornToBuildGame/ultimate-game-server/pkg/runtime"
+	"testing"
+)
+
+type royalFailedCredit struct{ runtime.RuntimeModule }
+
+func (r *royalFailedCredit) WalletUpdate(ctx context.Context, id string, changes map[string]int64, meta map[string]interface{}, ledger bool) (map[string]int64, map[string]int64, error) {
+	return nil, nil, errors.New("audit credit failure")
+}
+
+func TestRoyalAuditTaiXiuFailedCredit(t *testing.T) {
+	m := &TaiXiuMatch{}
+	s := &TaiXiuState{RoundNumber: 1, Bets: map[string]*PlayerBet{"audit": {UserID: "audit", Choice: ChoiceTai, Amount: 10}}}
+	p := m.calculateAndDistributePayouts(context.Background(), &mockLogger{t: t}, &royalFailedCredit{}, s, ChoiceTai)
+	if len(p) != 1 || p[0].Payout != 20 || p[0].NetProfit != 10 || p[0].NewBalance != 0 {
+		t.Fatalf("unexpected fixture: %+v", p)
+	}
+	t.Log("upstream reports winning payout after failed credit; no durable pending payment is recorded")
+}
+
+func TestRoyalAuditTaiXiuRepeatedSettlement(t *testing.T) {
+	m := &TaiXiuMatch{}
+	s := &TaiXiuState{RoundNumber: 1, Bets: map[string]*PlayerBet{"audit": {UserID: "audit", Choice: ChoiceTai, Amount: 10}}}
+	nk := newMockRuntimeModule()
+	nk.wallets["audit"] = map[string]int64{"coins": 990}
+	for i := 0; i < 2; i++ {
+		m.calculateAndDistributePayouts(context.Background(), &mockLogger{t: t}, nk, s, ChoiceTai)
+	}
+	if nk.wallets["audit"]["coins"] != 1030 {
+		t.Fatal(nk.wallets)
+	}
+	t.Log("replaying the same settlement function credits twice; no idempotency key")
+}
+
+func TestRoyalAuditTaiXiuPayoutOverflow(t *testing.T) {
+	m := &TaiXiuMatch{}
+	amount := int64(1) << 62
+	s := &TaiXiuState{RoundNumber: 1, Bets: map[string]*PlayerBet{"audit": {UserID: "audit", Choice: ChoiceTai, Amount: amount}}}
+	p := m.calculateAndDistributePayouts(context.Background(), &mockLogger{t: t}, &royalFailedCredit{}, s, ChoiceTai)
+	if p[0].Payout >= 0 {
+		t.Fatal("expected signed overflow in original calculation")
+	}
+	t.Logf("unbounded bet doubles to negative payout: %d", p[0].Payout)
+}

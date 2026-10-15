@@ -1,0 +1,6 @@
+.floor-links{display:flex;align-items:center;gap:6px}
+.floor-links button{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:36px;padding:7px 11px;border:1px solid #b6a180;border-radius:10px;background:#f2e6cf;color:#433429;font:inherit;font-size:12px;font-weight:700;white-space:nowrap;cursor:pointer}
+.floor-links button:hover{background:#e9d7b5;border-color:#77533e}
+.floor-links button:focus-visible{outline:3px solid #a17037;outline-offset:3px}
+.floor-links button span{font-size:16px}
+@media(max-width:620px){.room-heading{align-items:flex-start}.room-tools{flex-wrap:wrap;justify-content:flex-end;gap:6px}.floor-links button{padding:6px 8px;font-size:11px}.room-tools .local-label{display:none}}

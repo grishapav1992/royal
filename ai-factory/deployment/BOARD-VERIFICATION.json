@@ -1,0 +1,64 @@
+{
+  "verified_at": "2026-10-10T13:45:53Z",
+  "url": "https://stealth-spark-gokmxooi.expresshost.cloud/team/",
+  "backup": "/opt/royal-ai-backups/board-20261010T133245Z",
+  "scope": "Persistent board ordering, allowed task transitions and card presentation",
+  "tests": {
+    "factory_passed": 214,
+    "factory_failed": 0,
+    "factory_skipped": 0,
+    "board_browser": "passed",
+    "existing_usage_ui_smoke": "passed",
+    "production_owner_menu_reorder": "passed",
+    "production_order_survives_reload": true,
+    "production_original_order_restored": true,
+    "production_verification_started_model_jobs": false,
+    "source_hashes_match_server": true,
+    "api_health_status": 200
+  },
+  "production_board_observed": {
+    "total": 22,
+    "inbox": 19,
+    "needs_attention": 2,
+    "ready_release": 1,
+    "in_progress": 0
+  },
+  "allowed_cross_column_moves": {
+    "inbox": ["analysis"],
+    "ready": ["working"]
+  },
+  "same_column_ordering": "Allowed without changing task priority or worker selection order",
+  "services": {
+    "api": {
+      "image": "sha256:038483b59d148b9da03aae7832fa520b533c0f84a2d5cccdd32bf89dbc870ef8",
+      "started_at": "2026-10-10T13:33:11.300283691Z",
+      "health": "healthy"
+    },
+    "worker": {
+      "image": "sha256:e06726da626b223ccf13b5de88b595cc6d1153d97db7b724b06db9b435cca347",
+      "started_at": "2026-10-10T12:50:40.251474551Z",
+      "unchanged": true
+    },
+    "knowledge_graph": {
+      "image": "sha256:31b5bf2945e3c95aecc0aaba0ee2d23aabc7aa7173022ed8fe99dbfe75d18b87",
+      "started_at": "2026-10-10T01:07:32.732954239Z",
+      "health": "healthy",
+      "unchanged": true
+    },
+    "game": {
+      "image": "sha256:096c92633cf256d58db9a670b73190732938fec047c8f7509f15c014c167334c",
+      "started_at": "2026-10-09T17:16:26.57219704Z",
+      "health": "healthy",
+      "unchanged": true
+    }
+  },
+  "sha256": {
+    "public/app.js": "2ea5d695f48f81cd3efd4ea80328f5fbeb2e24322096d042c1f61a42caf14f1e",
+    "public/index.html": "8394955cd32d90181d2d82f02ce1ddc25eae16fe95bf98b0401ffb830f882a99",
+    "public/styles.css": "f5315acb2c34dcdc8183fcad122887c32e078ecfe0e3b31721aa6aa71f9c2d80",
+    "lib/store.mjs": "eef4babaa20a4d005ba94033718f66e2a28f5d260b375afc14afca37bb76d795",
+    "lib/schema.sql": "7c655fddcbebd5cb192e39004ac96746bdbd31d859527647021e0fd0c7705494",
+    "server.mjs": "90bd8f0ca6039f485c2217f0d3ce9af5fbb1fea7ffb18770a59fac9aa537c116"
+  },
+  "screenshot": "board-drag.jpg"
+}

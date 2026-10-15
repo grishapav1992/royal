@@ -1,0 +1,16 @@
+[Unit]
+Description=Isolated restore and reconciliation of a financial backup
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/royal-finance
+ExecStart=/usr/bin/python3 deployment/finance/operations.py restore-check
+TimeoutStartSec=15min
+UMask=0077
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+NoNewPrivileges=true
+PrivateTmp=true

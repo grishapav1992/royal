@@ -1,0 +1,83 @@
+# Optional overlay. Preserve production compose.override.yaml and prepare the image before rollout.
+# See deployment/WEBSOCKET_CLUSTER.md for validation and controlled rollout requirements.
+# Four room processes, one API ingress. Capacity must be measured on the target host.
+services:
+  game:
+    environment:
+      REDIS_URL: redis://lobby-redis:6379/0
+      LOBBY_WORKER_ID: main
+      LOBBY_WORKER_ONLY: "false"
+      PGAPPNAME: royal-game-main
+    depends_on:
+      lobby-redis:
+        condition: service_healthy
+  worker-1:
+    extends:
+      file: compose.yaml
+      service: game
+    environment:
+      REDIS_URL: redis://lobby-redis:6379/0
+      LOBBY_WORKER_ID: worker-1
+      LOBBY_WORKER_ONLY: "true"
+      PGPOOL_MAX: ${LOBBY_WORKER_PGPOOL_MAX:-6}
+      LOBBY_AUTH_CONCURRENCY: ${LOBBY_WORKER_AUTH_CONCURRENCY:-4}
+      PGAPPNAME: royal-lobby-worker-1
+    depends_on:
+      lobby-redis:
+        condition: service_healthy
+  worker-2:
+    extends:
+      file: compose.yaml
+      service: game
+    environment:
+      REDIS_URL: redis://lobby-redis:6379/0
+      LOBBY_WORKER_ID: worker-2
+      LOBBY_WORKER_ONLY: "true"
+      PGPOOL_MAX: ${LOBBY_WORKER_PGPOOL_MAX:-6}
+      LOBBY_AUTH_CONCURRENCY: ${LOBBY_WORKER_AUTH_CONCURRENCY:-4}
+      PGAPPNAME: royal-lobby-worker-2
+    depends_on:
+      lobby-redis:
+        condition: service_healthy
+  worker-3:
+    extends:
+      file: compose.yaml
+      service: game
+    environment:
+      REDIS_URL: redis://lobby-redis:6379/0
+      LOBBY_WORKER_ID: worker-3
+      LOBBY_WORKER_ONLY: "true"
+      PGPOOL_MAX: ${LOBBY_WORKER_PGPOOL_MAX:-6}
+      LOBBY_AUTH_CONCURRENCY: ${LOBBY_WORKER_AUTH_CONCURRENCY:-4}
+      PGAPPNAME: royal-lobby-worker-3
+    depends_on:
+      lobby-redis:
+        condition: service_healthy
+  lobby-redis:
+    image: valkey/valkey:7.2.14-alpine
+    restart: unless-stopped
+    command: ["valkey-server", "--save", "", "--appendonly", "no", "--maxmemory", "128mb", "--maxmemory-policy", "noeviction"]
+    expose: ["6379"]
+    mem_limit: 192m
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+  caddy:
+    depends_on:
+      game:
+        condition: service_healthy
+      worker-1:
+        condition: service_healthy
+      worker-2:
+        condition: service_healthy
+      worker-3:
+        condition: service_healthy
+    volumes:
+      - ./deployment/Caddyfile.websocket:/etc/caddy/Caddyfile:ro

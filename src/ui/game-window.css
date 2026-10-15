@@ -1,0 +1,52 @@
+html:has(#mini-dialog[open]),body:has(#mini-dialog[open]){overflow:hidden}
+#mini-dialog.game-window{--window-edge:#ad8c51;position:fixed;inset:0;box-sizing:border-box;margin:auto;width:min(1440px,calc(100vw - 20px));height:min(980px,calc(100dvh - 20px));max-width:none;max-height:none;padding:0;overflow:hidden;border:2px solid var(--window-edge);border-radius:14px;background:#191b27;color:#f7ebd2;box-shadow:0 0 0 3px #26232e,0 18px 90px #000a}
+#mini-dialog.game-window[open]{display:flex;flex-direction:column}
+#mini-dialog.game-window::backdrop{background:#10131dda;backdrop-filter:blur(5px)}
+#mini-dialog.game-window .mini-top{flex:0 0 44px;min-height:44px;padding:5px 10px;gap:8px;background:linear-gradient(100deg,#292735,#22242f);border-bottom:1px solid #b28c4a66;align-items:center}
+#mini-dialog.game-window .mini-top>div:first-child{min-width:0;flex:1}
+#mini-dialog.game-window .mini-top .eyebrow{display:none}
+#mini-dialog.game-window .mini-top h2{margin:0;font-size:15px;line-height:1.2;letter-spacing:0;color:#f7ebd2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#mini-dialog.game-window .mini-top>[data-close],#mini-dialog.game-window .game-window-tool{display:grid;place-items:center;flex:0 0 32px;width:32px;height:32px;min-height:32px;padding:5px;border:1px solid #b49b6a66;border-radius:7px;background:#ffffff07;box-shadow:none;color:#e6d9bb}
+#mini-dialog.game-window .game-window-tools{display:flex;align-items:center;gap:4px;flex:0 0 auto}
+#mini-dialog.game-window .game-window-tool svg{display:block;width:18px;height:18px}
+#mini-dialog.game-window .game-window-tool:hover,#mini-dialog.game-window .game-window-tool[aria-expanded=true]{background:#b58d4340;color:#ffe0a2;border-color:#d7b262}
+#mini-dialog.game-window .mini-top>[data-close]{margin-left:2px;background:#f0d9a2;color:#332d26;border-color:#d8b671}
+#mini-dialog.game-window .mini-stage{position:relative;flex:1 1 0;min-width:0;min-height:0;aspect-ratio:auto;display:flex;flex-direction:column;isolation:isolate;overflow:hidden}
+#mini-dialog.game-window #mini-game{position:relative;flex:1 1 0;width:100%;height:100%;min-width:0;min-height:0;touch-action:manipulation}
+#mini-dialog.game-window .mini-bottom{display:none}
+#mini-dialog.game-window .mini-stats{flex:0 0 auto;padding:6px 14px;font-size:9px}
+#mini-dialog.game-window .mini-stats strong{font-size:12px}
+#mini-dialog.game-window .demo-footer{flex:0 0 auto;padding:5px 10px;font-size:9px}
+#mini-dialog.game-window .mini-message{z-index:15}
+#mini-dialog.game-window .game-window-sheet{display:none;position:absolute;inset:8px;z-index:100;min-width:0;min-height:0;margin:0;overflow:hidden;border:1px solid #b29662;border-radius:12px;background:#242431;color:#f3e7ce;box-shadow:0 10px 50px #000a;text-align:left}
+#mini-dialog.game-window[data-window-panel=rules] [data-window-sheet=rules],#mini-dialog.game-window[data-window-panel=history] [data-window-sheet=history],#mini-dialog.game-window[data-window-panel=settings] [data-window-sheet=settings],#mini-dialog.game-window[data-window-panel=variants] [data-window-sheet=variants]{display:flex;flex-direction:column}
+#mini-dialog.game-window .game-window-sheet-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex:0 0 auto;margin:0;padding:10px 14px;border-bottom:1px solid #b49b6a44;background:#2f2a36}
+#mini-dialog.game-window .game-window-sheet-heading h3{margin:0;font-size:16px;line-height:1.2;color:#f3e7ce;letter-spacing:0}
+#mini-dialog.game-window .game-window-sheet-close{display:grid;place-items:center;width:36px;height:36px;min-height:36px;flex:0 0 36px;padding:0;border:1px solid #a08a62;border-radius:7px;background:#f4dfb3;color:#382e25;font-size:24px;box-shadow:none}
+#mini-dialog.game-window .game-window-sheet-content{flex:1 1 0;min-height:0;min-width:0;padding:16px;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;line-height:1.6;font-size:14px}
+#mini-dialog.game-window .game-window-sheet-content>*{max-width:100%;height:auto;margin:0 0 18px}
+#mini-dialog.game-window .game-window-sheet-content details{padding:0;border:0;color:inherit}
+#mini-dialog.game-window .game-window-sheet-content summary{font-size:14px;min-height:32px;color:#f1d79f}
+#mini-dialog.game-window .game-window-sheet-content p{font-size:13px;line-height:1.7;color:#dbcfb8}
+#mini-dialog.game-window .game-window-setting{display:grid;gap:5px;max-width:420px}
+#mini-dialog.game-window .game-window-sheet-content input,#mini-dialog.game-window .game-window-sheet-content select{max-width:100%;min-height:40px;padding:8px 10px;border:1px solid #a48a60;border-radius:7px;background:#373341;color:#fff0d3;font:inherit}
+#mini-dialog.game-window .game-window-audio{min-height:42px;margin-bottom:18px;padding:8px 15px;border:1px solid #b49b6a;border-radius:8px;background:#463b3c;color:#f8e5ba;font-size:14px}
+#mini-dialog.game-window .game-window-recovery{flex:0 0 auto;display:flex;justify-content:center}
+#mini-dialog.game-window .game-window-recovery:not(:has([data-retry]:not([hidden]))){display:none}
+#mini-dialog.game-window .game-window-recovery button{min-height:40px;padding:6px 14px;border:1px solid #c49d56;border-radius:7px;background:#705331;color:#fff2ce;font-size:13px}
+#mini-dialog.game-window .game-window-panel-backdrop{display:none;position:absolute;inset:0;z-index:90;background:#080b13aa;border:0;border-radius:0}
+#mini-dialog.game-window[data-window-panel] .game-window-panel-backdrop{display:block}
+#mini-dialog.game-window[data-window-panel] #mini-game{z-index:95}
+#mini-dialog.game-window .game-window-sheet .casino-mode-picker{display:flex;flex-wrap:wrap;padding:0;background:none;gap:10px}
+#mini-dialog.game-window .game-window-sheet .casino-mode-picker button{min-height:44px;padding:9px 16px}
+#mini-dialog.game-window #mini-game>canvas{object-fit:contain;max-width:100%;max-height:100%}
+#casinoapipro-dialog.capro-dialog{width:min(1440px,calc(100vw - 20px));height:min(980px,calc(100dvh - 20px));max-height:none;border:2px solid #ad8c51;border-radius:14px;background:#20212e;color:#f7ebd2}
+#casinoapipro-dialog .capro-heading{min-height:44px;padding:5px 10px;background:#292735;border-bottom:1px solid #b28c4a66}
+#casinoapipro-dialog .capro-heading .eyebrow{display:none}
+#casinoapipro-dialog .capro-heading h2{margin:0;font-size:15px;color:#f7ebd2}
+#casinoapipro-dialog .capro-toolbar{padding:5px 10px;border-top:0;background:#292735}
+#casinoapipro-dialog .capro-footer{padding:5px 10px;font-size:9px}
+#casinoapipro-dialog #capro-close{width:32px;height:32px;border:1px solid #d8b671;border-radius:7px;background:#f0d9a2;color:#332d26}
+@media(max-width:600px){#casinoapipro-dialog.capro-dialog{width:100vw;height:100dvh;border-width:1px;border-radius:0}#casinoapipro-dialog .capro-heading h2{font-size:13px}#casinoapipro-dialog .capro-footer>span{max-width:70%;font-size:9px}}
+@media(max-width:600px){#mini-dialog.game-window{width:100vw;height:100dvh;inset:0;border-width:1px;border-radius:0;margin:0;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}#mini-dialog.game-window .mini-top{flex-basis:46px;min-height:46px;padding:5px 7px;gap:4px}#mini-dialog.game-window .mini-top h2{font-size:13px}#mini-dialog.game-window .game-window-tools{gap:3px}#mini-dialog.game-window .game-window-tool,#mini-dialog.game-window .mini-top>[data-close]{width:32px;flex-basis:32px}#mini-dialog.game-window .game-window-sheet{inset:5px}#mini-dialog.game-window .game-window-sheet-content{padding:12px}#mini-dialog.game-window .demo-footer span{display:none}}
+@media(max-height:500px){#mini-dialog.game-window{height:100dvh;width:min(1440px,100vw);border-radius:0}#mini-dialog.game-window .mini-top{min-height:38px;flex-basis:38px}}

@@ -1,0 +1,31 @@
+[Unit]
+Description=Royal AI isolated browser checks
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /opt/royal-ai-browser-checker/browser-checker.py
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=20
+User=root
+Group=root
+UMask=0027
+RuntimeDirectory=royal-ai-browser-checker
+RuntimeDirectoryMode=0700
+NoNewPrivileges=yes
+CapabilityBoundingSet=
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/opt/royal-ai-browser-queue /run/royal-ai-browser-checker
+RestrictAddressFamilies=AF_UNIX
+RestrictSUIDSGID=yes
+LockPersonality=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,416 @@
+{
+  "repo": "yuta-yoshinaga/go_trumpcards",
+  "commit": "055be77a3f19485c283505a0b0b9816f5102b2b9",
+  "license": "MIT",
+  "files": [
+    {
+      "path": "ActionLog.go",
+      "upstream": [
+        "ActionLog.go"
+      ],
+      "adaptedSha256": "49b1cf460f8c1ce7eebe4a383c560802b01bdf3d11b09447aa39754ed3a17072"
+    },
+    {
+      "path": "Card.go",
+      "upstream": [
+        "Card.go"
+      ],
+      "adaptedSha256": "cfe1922bc89ccad35ed3f63ca96b7d9a6c1d6a639895237f2562b6f2023d07ad"
+    },
+    {
+      "path": "CaribbeanStud.go",
+      "upstream": [
+        "CaribbeanStud.go"
+      ],
+      "adaptedSha256": "ec7676c0d2337d4a02abb0ccaeb6a9b7e1d4a5d0046aab5b6ff0f3c1ed635b58"
+    },
+    {
+      "path": "CasinoWar.go",
+      "upstream": [
+        "CasinoWar.go"
+      ],
+      "adaptedSha256": "e14353aed2a0c91b6f91e8a7a7a41c011c4ddd559596dbda1d1eed2bfdd2ca17"
+    },
+    {
+      "path": "ChipHolder.go",
+      "upstream": [
+        "ChipHolder.go"
+      ],
+      "adaptedSha256": "a8a25e558d0d3d6c3abc82dc95955ff2ca86046843bf673cd4eb3c1f8a81547d"
+    },
+    {
+      "path": "DragonTiger.go",
+      "upstream": [
+        "DragonTiger.go"
+      ],
+      "adaptedSha256": "c187ebafd4324399dcc08d82e65c8c1760b68c9d13b3d804158d1369cf9c5bbb"
+    },
+    {
+      "path": "LetItRide.go",
+      "upstream": [
+        "LetItRide.go"
+      ],
+      "adaptedSha256": "c2e5920678f20df7acc00c3eeecb0671421f9032f448eea53685f99aa633d7e4"
+    },
+    {
+      "path": "PaiGow.go",
+      "upstream": [
+        "PaiGow.go"
+      ],
+      "adaptedSha256": "71ea0388b782178f03c92067806f853631402b97045467dc78fa353a198a9929"
+    },
+    {
+      "path": "RedDog.go",
+      "upstream": [
+        "RedDog.go"
+      ],
+      "adaptedSha256": "a3f592ce04e8193416bd0f6fb98c367ce393c9817906b2e330853d91b0eaa27f"
+    },
+    {
+      "path": "ThreeCard.go",
+      "upstream": [
+        "ThreeCard.go"
+      ],
+      "adaptedSha256": "24c0491ac4cb6ed5ed0dcf8d4cd7b0f6d154e8870a25b1b0403611c96ef53bc1"
+    },
+    {
+      "path": "TrumpCards.go",
+      "upstream": [
+        "TrumpCards.go"
+      ],
+      "adaptedSha256": "c145c62a03468662b5ab96fc78d3f7128e61953abfa4f92b5013fbaf0dfcdf66"
+    },
+    {
+      "path": "UltimateTexasHoldem.go",
+      "upstream": [
+        "UltimateTexasHoldem.go"
+      ],
+      "adaptedSha256": "404079d7165b6c8e1e222100ca85615cb0f8ad8ea79ccec71211d2615e34ae34"
+    },
+    {
+      "path": "VideoPoker.go",
+      "upstream": [
+        "VideoPoker.go"
+      ],
+      "adaptedSha256": "4a6c7f6c173dbcb8783764c67eaacb579e4d591f8c9d9f892926a15edac4fdad"
+    },
+    {
+      "path": "VideoPokerStrategy.go",
+      "upstream": [
+        "VideoPokerStrategy.go"
+      ],
+      "adaptedSha256": "8cc7b8a71c8a52f1d2bcbe8b697c7513d06e50a72f54c5e10fdbb38d4e5caa91"
+    },
+    {
+      "path": "VideoPokerVariant.go",
+      "upstream": [
+        "VideoPokerVariant.go"
+      ],
+      "adaptedSha256": "43d3de4f4e09edd87a6e58939e4cc0a09966c3b21a9e72c331edb80e2b46f590"
+    },
+    {
+      "path": "action_log_base.go",
+      "upstream": [
+        "action_log_base.go"
+      ],
+      "adaptedSha256": "55d942211b278679b825996dcf7a87857192e47a5761951602a58f0b44098661"
+    },
+    {
+      "path": "errors.go",
+      "upstream": [
+        "errors.go"
+      ],
+      "adaptedSha256": "8ccccc96a2bc4acaed43c58f566c5287582899bdf184245d117728f33ed3bb5a"
+    },
+    {
+      "path": "game_result.go",
+      "upstream": [
+        "game_result.go"
+      ],
+      "adaptedSha256": "d804654bd888fb7409c9f2d3f663bab1c8c018f56c90db009d9acef6c5151d53"
+    },
+    {
+      "path": "hand_eval.go",
+      "upstream": [
+        "hand_eval.go"
+      ],
+      "adaptedSha256": "7e72a5aeaee2088c78416c9358c5e7bfeabc03426fe8e45540d4913588db0987"
+    },
+    {
+      "path": "hand_eval_wild.go",
+      "upstream": [
+        "hand_eval_wild.go"
+      ],
+      "adaptedSha256": "8a692fa4a112f14cd030a25e4ccec286dab2814b606ae60f708eb9e574760493"
+    },
+    {
+      "path": "poker_hand_helpers.go",
+      "upstream": [
+        "poker_hand_helpers.go"
+      ],
+      "adaptedSha256": "25f795fa425ad80b33e454215341a698d10d23e2c55ca700f39bc05fc513881e"
+    },
+    {
+      "path": "poker_hand_rank.go",
+      "upstream": [
+        "poker_hand_rank.go"
+      ],
+      "adaptedSha256": "5e996096477882fe2a937ac0f74079876399598e98f6a6182fe6fe4178f86da8"
+    },
+    {
+      "path": "selected_helpers.go",
+      "upstream": [
+        "DaifugoEval.go:IsJoker",
+        "HoldemEquity.go:evalBestFromSeven"
+      ],
+      "adaptedSha256": "419752adb65cd133899d1cf82e2a0c95a8a96eaafc1874e47b78b38ed1a9d7c8"
+    },
+    {
+      "path": "slice_helpers.go",
+      "upstream": [
+        "slice_helpers.go:sliceOrEmpty"
+      ],
+      "adaptedSha256": "849af9b7c40e151acd030221afce6aac9aa6863adc9a814a743b018272c41460"
+    },
+    {
+      "path": "AndarBahar.go",
+      "upstream": [
+        "AndarBahar.go"
+      ],
+      "adaptedSha256": "b2dcc4751781b7007726773cc859e3bdf56e4c7daae3fda8a0dc68b7b867c3b8"
+    },
+    {
+      "path": "BlackJack.go",
+      "upstream": [
+        "BlackJack.go"
+      ],
+      "adaptedSha256": "97465820d432f88dbb4b40d35ddc77070cc7c6ac0a03e608a10641bbfb0901d4"
+    },
+    {
+      "path": "BlackJackBasicStrategy.go",
+      "upstream": [
+        "BlackJackBasicStrategy.go"
+      ],
+      "adaptedSha256": "a5b4e7a93172db6aeadaa875f529a92b07eee39bf68c937e0d3e9844310bb91c"
+    },
+    {
+      "path": "BlackJackCPU.go",
+      "upstream": [
+        "BlackJackCPU.go"
+      ],
+      "adaptedSha256": "4f49da65588d73672b79ae15684df88b36540e61fb4e4ca58b103267f6545840"
+    },
+    {
+      "path": "BlackJackConfig.go",
+      "upstream": [
+        "BlackJackConfig.go"
+      ],
+      "adaptedSha256": "cad21fe1036b39b18dc9a8918786243ccf99fb52c8881fbfffc792cbd520e100"
+    },
+    {
+      "path": "BlackJackCountingStrategy.go",
+      "upstream": [
+        "BlackJackCountingStrategy.go"
+      ],
+      "adaptedSha256": "0978163d176856dae04995fa532058ef5b176778f82dd664c85bb2154314b226"
+    },
+    {
+      "path": "BlackJackCpuSeat.go",
+      "upstream": [
+        "BlackJackCpuSeat.go"
+      ],
+      "adaptedSha256": "2fb160d06638fa793a2e955a7598dcfd767716c840d3f0f3d03b8d1e76fd6795"
+    },
+    {
+      "path": "BlackJackDoubleExposureStrategy.go",
+      "upstream": [
+        "BlackJackDoubleExposureStrategy.go"
+      ],
+      "adaptedSha256": "dc5c0b459712ed4dc669264def03f161eb647faf29f6f3b138d9b673bdbdc072"
+    },
+    {
+      "path": "BlackJackEval.go",
+      "upstream": [
+        "BlackJackEval.go"
+      ],
+      "adaptedSha256": "6e3c352273c7eedbe68c70f6a397cc65733f4d1bae213cd8bf6315a1b636a5aa"
+    },
+    {
+      "path": "BlackJackHand.go",
+      "upstream": [
+        "BlackJackHand.go"
+      ],
+      "adaptedSha256": "0073dd57971eaaee92f2f911f7b653e30eba0a25c5fa661f4c2080551227397d"
+    },
+    {
+      "path": "BlackJackPlayer.go",
+      "upstream": [
+        "BlackJackPlayer.go"
+      ],
+      "adaptedSha256": "be55ed0bc99dfe84b8ae63393959e15ba6ffa20596ed4890d23a30f2592b34cc"
+    },
+    {
+      "path": "BlackJackSideBet.go",
+      "upstream": [
+        "BlackJackSideBet.go"
+      ],
+      "adaptedSha256": "d881edec1228d41bf7caa857ca06e0c88b8908212d146fe4949587c7597b0ef8"
+    },
+    {
+      "path": "BlackJackSpanish21Strategy.go",
+      "upstream": [
+        "BlackJackSpanish21Strategy.go"
+      ],
+      "adaptedSha256": "dade09eb10c6b48d81ce80b59f766a36c2d87824ebb970c0ad3391630adfd5de"
+    },
+    {
+      "path": "BlackJackSwitch.go",
+      "upstream": [
+        "BlackJackSwitch.go"
+      ],
+      "adaptedSha256": "cb3758a059be188ad0c1cbea5f788f0dc310fbae58d5fe075bfbeb992c950d3d"
+    },
+    {
+      "path": "BlackJackVariant.go",
+      "upstream": [
+        "BlackJackVariant.go"
+      ],
+      "adaptedSha256": "3bade9fa308832b3314f1ab3ffd7db47f01351a09b3d838be60dee6da4088030"
+    },
+    {
+      "path": "CaribbeanDraw.go",
+      "upstream": [
+        "CaribbeanDraw.go"
+      ],
+      "adaptedSha256": "41d6d86d67325c284aa508c5fc998164f28aad9e8930333e07c1b45c0b418271"
+    },
+    {
+      "path": "CrazyFourPoker.go",
+      "upstream": [
+        "CrazyFourPoker.go"
+      ],
+      "adaptedSha256": "c57d3de51b4b7ddbeceae2a4dc9ad74e2c4d628e7665ee5e13f1f9e6348795d7"
+    },
+    {
+      "path": "CrazyFourPokerConfig.go",
+      "upstream": [
+        "CrazyFourPokerConfig.go"
+      ],
+      "adaptedSha256": "91adb97df02ecba07fbb2fc028773e0d78487389db745d5a48889d5d54de0b2a"
+    },
+    {
+      "path": "CrazyFourPokerPlayer.go",
+      "upstream": [
+        "CrazyFourPokerPlayer.go"
+      ],
+      "adaptedSha256": "d5fbd1e586ba67843ea277f6aeb817e0a03f736a7b60adc2626b46129d75484f"
+    },
+    {
+      "path": "FourCardPoker.go",
+      "upstream": [
+        "FourCardPoker.go"
+      ],
+      "adaptedSha256": "e8d85100f45d1b621b7dc144c1d01e06c8280ca258f48e415bf61ba238857796"
+    },
+    {
+      "path": "FreeBetBlackjack.go",
+      "upstream": [
+        "FreeBetBlackjack.go"
+      ],
+      "adaptedSha256": "b7f5e6487d3efa359f999afe2ae0d264390603f66e2efcc02fbac5bcbc764779"
+    },
+    {
+      "path": "FreeBetBlackjackConfig.go",
+      "upstream": [
+        "FreeBetBlackjackConfig.go"
+      ],
+      "adaptedSha256": "f8a0789b7210a05aee843f3d1fae9b17b6ee3a3deab69de125390e3926f46d57"
+    },
+    {
+      "path": "FreeBetBlackjackPlayer.go",
+      "upstream": [
+        "FreeBetBlackjackPlayer.go"
+      ],
+      "adaptedSha256": "9cabd202fe984734553aca4e53a6577de52e2fc0e1a7c8589afaadb71073f09b"
+    },
+    {
+      "path": "HighCardFlush.go",
+      "upstream": [
+        "HighCardFlush.go"
+      ],
+      "adaptedSha256": "74ba10f44507bd8418d03a228fc88fb811da4d34e428116a18de067fecf7916b"
+    },
+    {
+      "path": "MississippiStud.go",
+      "upstream": [
+        "MississippiStud.go"
+      ],
+      "adaptedSha256": "a54d9884b6a218938d726be5aa77c238aa945b9fa8b009bee2302b11d12a589b"
+    },
+    {
+      "path": "OasisPoker.go",
+      "upstream": [
+        "OasisPoker.go"
+      ],
+      "adaptedSha256": "5e718f82a40eee721a79db5ff56e9597a0cd09d0666fdfe6f512e212f0b58a91"
+    },
+    {
+      "path": "Player.go",
+      "upstream": [
+        "Player.go"
+      ],
+      "adaptedSha256": "4bbfe9120f68399b7558849ea9142346360be448ecd8053024d162c993f6dd3b"
+    },
+    {
+      "path": "RussianPoker.go",
+      "upstream": [
+        "RussianPoker.go"
+      ],
+      "adaptedSha256": "a1aeddb9524dc33cbf68686bc6c7ed2dffd2c6fa1b974dba55b185f4420d6907"
+    },
+    {
+      "path": "TexasHoldemBonus.go",
+      "upstream": [
+        "TexasHoldemBonus.go"
+      ],
+      "adaptedSha256": "2e2de5f44b66172143c161a11934d491add877e1a74bf0cbe8e8d1e90e9544d6"
+    },
+    {
+      "path": "ThreeCardRummy.go",
+      "upstream": [
+        "ThreeCardRummy.go"
+      ],
+      "adaptedSha256": "fb7d93b6dcd3f1b64fb46f41854baad7f83012a7c79f44148616fa2a2ddfc5da"
+    },
+    {
+      "path": "four_card_hand_eval.go",
+      "upstream": [
+        "four_card_hand_eval.go"
+      ],
+      "adaptedSha256": "a9d9360eb5bfd5d0597e8a23b142a7ea5d83a87f46e45a0be52160b1e9441aa2"
+    },
+    {
+      "path": "threecardrummy_score.go",
+      "upstream": [
+        "threecardrummy_score.go"
+      ],
+      "adaptedSha256": "8d501c2ded5be38ba3338c283d7be3ff37581400afa3907d0c3090704c8aba87"
+    },
+    {
+      "path": "validation.go",
+      "upstream": [
+        "validation.go"
+      ],
+      "adaptedSha256": "51a78d7d7d5296c1f94c21234137669bf2d9545c5f01f9e7c10b4d3cb4b8496b"
+    }
+  ],
+  "changes": [
+    "Selected twenty-three casino engines and their shared helpers; other games and upstream web services are not included.",
+    "Cryptographic shuffle replaces math/rand; Pair Plus winnings on Fold credited.",
+    "Action logs copy card slices instead of mutating past deal records.",
+    "Normalized stakes (1000 chips, 100 for Crazy 4 and Free Bet, five for Deuces Wild) preserve rational payouts. These chips never become a user balance.",
+    "Royal owns account authorization, all money, hidden persistent snapshots, reservations and action idempotency. Reset and arbitrary chip balances are never exposed.",
+    "Royal screens use text playing cards; no upstream artwork or trademarks are imported. Comment punctuation follows the Royal convention.",
+    "Round-level completion adapters for Crazy 4 and Free Bet; multihand Blackjack views; per-card exchange fees; Andar Bahar retains its revealed key card after the initial wager."
+  ]
+}

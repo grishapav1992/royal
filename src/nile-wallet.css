@@ -1,0 +1,17 @@
+#nile-wallet-address{display:block;box-sizing:border-box;width:100%;margin-top:8px;padding:12px 9px;border:1px solid #988164;border-radius:4px;background:#141325;color:#fff0d6;font-family:monospace;font-size:13px}
+#nile-wallet-content label,#nile-wallet-message{font-size:13px;line-height:1.5}
+#nile-wallet-history{list-style:none;padding:0;max-height:230px;overflow:auto}
+#nile-wallet-history li{padding:12px 0;border-bottom:1px solid #544357;font-size:12px}
+#nile-wallet-history strong,#nile-wallet-history small{display:block}
+#nile-wallet-history small{margin-top:7px;overflow-wrap:anywhere;color:#b4a5be;font-size:10px}
+#nile-wallet-dialog a.text-button{display:inline-block}
+#nile-wallet-code{display:block;box-sizing:border-box;width:100%;padding:10px;margin:8px 0 12px;border:1px solid #988164;border-radius:4px;background:#141325;color:#fff0d6;font-family:monospace}
+#nile-wallet-rounds{list-style:none;padding:0;max-height:200px;overflow:auto}
+#nile-wallet-rounds li{padding:10px 0;border-bottom:1px solid #544357;font-size:12px}
+#nile-wallet-rounds strong,#nile-wallet-rounds small{display:block}
+#nile-wallet-rounds small{overflow-wrap:anywhere;color:#b4a5be;font-size:10px;margin-top:7px}
+#coins-currency{padding:8px;border:1px solid #b28a5c;background:#35263f;color:#fff0ce;border-radius:5px;margin:8px;max-width:100%}
+.royal-coins[data-currency="nile"] #coins-balance{font-size:18px;overflow-wrap:anywhere;line-height:1.5}
+.royal-coins[data-currency="nile"] .coins-controls label{min-width:0}
+.header .profile{flex-wrap:wrap;justify-content:flex-end}
+@media(max-width:480px){#nile-wallet-button{font-size:10px;padding:5px 7px}#nile-wallet-address{font-size:12px}}
