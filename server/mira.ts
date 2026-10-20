@@ -47,7 +47,7 @@ export class MiraService {
   private loading = new Map<string, Promise<Conversation>>();
   private resetting = new Set<string>();
   constructor(private request: typeof fetch = fetch, private store?: MiraMemoryRepository, private now: () => number = Date.now,
-    private drinkingState: (id: string) => DrinkingState | Promise<DrinkingState> = () => ({ soberAt: 0, lastDrink: '', lastDrinkAt: 0 })) {}
+    private drinkingState: (id: string) => DrinkingState | Promise<DrinkingState> = () => ({ soberAt: 0, lastDrink: '', lastDrinkAt: 0, controlLayout: 0 })) {}
   private async state(id: string): Promise<Conversation> {
     if (this.resetting.has(id)) throw new MiraError(409, 'Память разговора обновляется. Подожди немного.');
     const now = this.now();

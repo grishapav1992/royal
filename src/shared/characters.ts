@@ -12,6 +12,10 @@ export const PLAYER_CHARACTERS = [
   { id: 10, name: 'Мэй', detail: 'Два пучка и полосатый свитер' },
   { id: 11, name: 'Джейк', detail: 'Кепка с козырьком и худи' },
   { id: 12, name: 'Гас', detail: 'Седые волосы, усы и костюм' },
+  { id: 13, name: 'Юн', detail: 'Короткая чёлка и бирюзовая спортивная куртка' },
+  { id: 14, name: 'Аки', detail: 'Тёмное каре и коралловое пальто' },
+  { id: 15, name: 'Линь', detail: 'Высокий хвост и лиловый бомбер' },
+  { id: 16, name: 'Рэн', detail: 'Взъерошенные волосы и жёлтое худи' },
 ] as const;
 export function isPlayerCharacter(value: unknown): value is number {
   return typeof value === 'number' && PLAYER_CHARACTERS.some(character => character.id === value);

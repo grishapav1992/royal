@@ -85,7 +85,7 @@ export class MiraChat {
     this.talk.append(replyScroll, this.form);
     this.menu.className = 'mira-menu';
     const menuTitle = document.createElement('p'); menuTitle.textContent = 'Выбирай. Всё за счёт клуба.';
-    const menuHint = document.createElement('small'); menuHint.className = 'mira-menu-hint'; menuHint.textContent = 'Алкоголь меняет походку и управление. Играть можно на любой стадии.';
+    const menuHint = document.createElement('small'); menuHint.className = 'mira-menu-hint'; menuHint.textContent = 'Сильное опьянение путает клавиши, клики ведут мимо. Играть можно на любой стадии.';
     drinks.className = 'drink-list'; drinks.replaceChildren();
     for (const drink of DRINKS) {
       const button = document.createElement('button'); button.type = 'button'; button.dataset.drink = drink.id; button.style.setProperty('--drink-color', drink.color); button.setAttribute('aria-label', `Выпить: ${drink.name}`);

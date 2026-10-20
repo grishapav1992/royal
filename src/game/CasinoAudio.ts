@@ -49,8 +49,14 @@ export class CasinoAudio {
     const now = this.context.currentTime;
     for (const voice of this.voices) {
       if (!voice.background) continue;
-      voice.gain.gain.cancelAndHoldAtTime(now);
-      voice.gain.gain.linearRampToValueAtTime(0, now + .025);
+      const gain = voice.gain.gain;
+      if (typeof gain.cancelAndHoldAtTime === 'function') gain.cancelAndHoldAtTime(now);
+      else {
+        const level = gain.value;
+        gain.cancelScheduledValues(now);
+        gain.setValueAtTime(level, now);
+      }
+      gain.linearRampToValueAtTime(0, now + .025);
       voice.source.stop(now + .03);
     }
   }

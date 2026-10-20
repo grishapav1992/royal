@@ -1,0 +1,9 @@
+Chat media for Royal
+
+Animal stickers: original AI-generated illustrations created for this project on 16 October 2026. They are independent characters, not Utya Duck or other third-party character packs. Original generated PNG retained without editing.
+
+Animated emoji: Google Noto Emoji, downloaded from the official Google Fonts CDN.
+Source: https://googlefonts.github.io/noto-emoji-files/
+License: Creative Commons Attribution 4.0 International (CC BY 4.0).
+License URL: https://creativecommons.org/licenses/by/4.0/
+Assets are copied without modification. Full source URLs and checksums are listed in sources.json.

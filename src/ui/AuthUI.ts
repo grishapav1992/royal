@@ -1,6 +1,5 @@
 import { gameAudio } from '../game/GameAudio';
-import { appearanceFromLegacy } from '../shared/appearance';
-import { CharacterEditor } from './CharacterEditor';
+import { CharacterSelector } from './CharacterSelector';
 import type { Account } from '../../server/accounts';
 import type { RoomScene } from '../game/RoomScene';
 
@@ -18,8 +17,8 @@ export class AuthUI {
     this.currentAccount = value;
     window.dispatchEvent(new CustomEvent('royal-account', { detail: value?.id ?? null }));
   }
-  private entryEditor = new CharacterEditor('entry');
-  private settingsEditor = new CharacterEditor('settings');
+  private entrySelector = new CharacterSelector('entry');
+  private settingsSelector = new CharacterSelector('settings');
   private busy = false;
   private inRoom = false;
   private logoutButton = document.createElement('button');
@@ -41,12 +40,12 @@ export class AuthUI {
         <small class="auth-hint">Используй свой пароль для этого клуба. Подтверждение почты пока не требуется.</small>
       </section>
       <section id="character-step" hidden>
-        <p class="auth-description">Собери своего персонажа. Внешность сохранится в аккаунте, её можно менять в настройках.</p>
+        <p class="auth-description">Выбери готового персонажа. Позже его можно сменить в настройках.</p>
         <div class="account-badge"><strong id="account-name"></strong><span id="account-email"></span></div>
         <label for="game-name">Игровое имя</label><input id="game-name" name="nickname" autocomplete="nickname" maxlength="48" required aria-describedby="name-hint" placeholder="Как тебя называть?">
         <small id="name-hint" class="name-hint">От 1 до 24 символов. Можно использовать русский, латиницу, пробелы и эмодзи.</small>
-        <div id="character-customization"></div>
-        <div class="wardrobe-actions"><button id="join-button" class="primary-button" type="button" disabled>Войти в зал</button>
+        <div id="character-selection"></div>
+        <div class="character-selection-actions"><button id="join-button" class="primary-button" type="button" disabled>Войти в зал</button>
         <button id="switch-account" class="text-button" type="button">Другой аккаунт</button></div>
       </section>
       <section id="connection-step" hidden>
@@ -60,24 +59,28 @@ export class AuthUI {
     document.body.append(this.dialog);
     this.nameDialog.id = 'name-dialog'; this.nameDialog.className = 'join-dialog auth-dialog';
     this.nameDialog.setAttribute('aria-labelledby','name-title');
-    this.nameDialog.innerHTML = `<span class="eyebrow">РОЯЛЬ / ТВОЙ ПРОФИЛЬ</span><h2 id="name-title">Настройки игрока</h2><form id="name-form"><label for="new-game-name">Новое игровое имя</label><input id="new-game-name" name="nickname" autocomplete="nickname" maxlength="48" required><small class="name-hint">От 1 до 24 символов. Имя увидят другие игроки.</small><p class="auth-description">Твой персонаж</p><div id="settings-character-customization"></div><p id="name-error" role="alert" hidden></p><div class="wardrobe-actions"><button class="primary-button" type="submit">Сохранить настройки</button><button id="cancel-name" class="text-button" type="button">Отмена</button></div></form>`;
+    this.nameDialog.innerHTML = `<span class="eyebrow">РОЯЛЬ / ТВОЙ ПРОФИЛЬ</span><h2 id="name-title">Настройки игрока</h2><form id="name-form"><label for="new-game-name">Новое игровое имя</label><input id="new-game-name" name="nickname" autocomplete="nickname" maxlength="48" required><small class="name-hint">От 1 до 24 символов. Имя увидят другие игроки.</small><p class="auth-description">Твой персонаж</p><div id="settings-character-selection"></div><p id="name-error" role="alert" hidden></p><div class="character-selection-actions"><button class="primary-button" type="submit">Сохранить настройки</button><button id="cancel-name" class="text-button" type="button">Отмена</button></div></form>`;
     this.nameDialog.querySelector('h2')!.after(gameAudio.createSettings());
     document.body.append(this.nameDialog);
     this.nameDialog.querySelector('#cancel-name')!.addEventListener('click', () => this.nameDialog.close());
-    this.nameDialog.addEventListener('close', () => { this.settingsEditor.setActive(false); if (this.inRoom) scene.setLocked(Boolean(document.querySelector('dialog[open]'))); });
+    this.nameDialog.addEventListener('close', () => { if (this.inRoom) scene.setLocked(Boolean(document.querySelector('dialog[open]'))); });
     this.nameDialog.querySelector('form')!.addEventListener('submit', event => {
       event.preventDefault(); void this.perform(async () => {
-        const result = await this.api('/character', { appearance: this.settingsEditor.value, name: this.nameDialog.querySelector<HTMLInputElement>('#new-game-name')!.value });
+        const name = this.nameDialog.querySelector<HTMLInputElement>('#new-game-name')!.value;
+        const skin = this.settingsSelector.value;
+        const result = this.settingsSelector.hasSelection && skin !== null
+          ? await this.api('/character', { skin, name })
+          : await this.api('/profile', { name });
         this.account = result.account;
         document.querySelector('.profile-name')!.firstChild!.textContent = this.account!.name;
         this.nameDialog.close();
       });
     });
     this.error = this.dialog.querySelector<HTMLParagraphElement>('#join-error')!;
-    this.dialog.querySelector('#character-customization')!.append(this.entryEditor.element);
-    this.nameDialog.querySelector('#settings-character-customization')!.append(this.settingsEditor.element);
+    this.dialog.querySelector('#character-selection')!.append(this.entrySelector.element);
+    this.nameDialog.querySelector('#settings-character-selection')!.append(this.settingsSelector.element);
     this.dialog.addEventListener('cancel', event => event.preventDefault());
-    this.dialog.addEventListener('close', () => { this.entryEditor.setActive(false); scene.setLocked(false); });
+    this.dialog.addEventListener('close', () => { scene.setLocked(false); });
     this.dialog.querySelector('#reveal-password')!.addEventListener('click', () => {
       const input = this.dialog.querySelector<HTMLInputElement>('#password')!; const reveal = input.type === 'password'; input.type = reveal ? 'text' : 'password';
       const button = this.dialog.querySelector<HTMLButtonElement>('#reveal-password')!;
@@ -93,7 +96,9 @@ export class AuthUI {
     this.dialog.querySelector('#join-button')!.addEventListener('click', () => { void this.perform(async () => {
       const name = this.dialog.querySelector<HTMLInputElement>('#game-name')!;
       if (!name.reportValidity()) return;
-      const result = await this.api('/character', { appearance: this.entryEditor.value, name: name.value }); this.account = result.account;
+      const skin = this.entrySelector.value;
+      if (skin === null) throw new Error('Выбери персонажа из списка.');
+      const result = await this.api('/character', { skin, name: name.value }); this.account = result.account;
       await this.enter(); this.inRoom = true; this.logoutButton.hidden = false; this.renameButton.hidden = false;
     }); });
     this.dialog.querySelector('#new-room')!.addEventListener('click', () => {
@@ -111,9 +116,9 @@ export class AuthUI {
     this.renameButton.addEventListener('click', () => {
       if (!this.account || this.dialog.open || this.nameDialog.open) return;
       this.nameDialog.querySelector<HTMLInputElement>('#new-game-name')!.value = this.account.name;
-      this.settingsEditor.value = this.account.appearance ?? appearanceFromLegacy(this.account.skin); this.renderSelection();
+      this.settingsSelector.value = this.account.appearance ? null : this.account.skin; this.renderSelection();
       this.nameDialog.querySelector<HTMLElement>('#name-error')!.hidden = true;
-      scene.setLocked(true); this.nameDialog.showModal(); this.settingsEditor.setActive(true); this.nameDialog.querySelector<HTMLElement>('#sound-enabled')!.focus();
+      scene.setLocked(true); this.nameDialog.showModal(); this.nameDialog.querySelector<HTMLElement>('#sound-enabled')!.focus();
     });
     this.logoutButton.before(this.renameButton);
     scene.setLocked(true); this.dialog.showModal();
@@ -138,7 +143,7 @@ export class AuthUI {
     } finally { this.busy = false; this.renderSelection(); }
   }
   private renderSelection() {
-    this.entryEditor.setBusy(this.busy); this.settingsEditor.setBusy(this.busy);
+    this.entrySelector.setBusy(this.busy); this.settingsSelector.setBusy(this.busy);
     this.dialog.querySelector<HTMLButtonElement>('#join-button')!.disabled = this.busy;
     this.dialog.querySelector<HTMLButtonElement>('#login-button')!.disabled = this.busy;
     this.dialog.querySelector<HTMLButtonElement>('#switch-account')!.disabled = this.busy;
@@ -156,7 +161,6 @@ export class AuthUI {
     this.logoutButton.hidden = false; this.renameButton.hidden = false;
   }
   private showConnection() {
-    this.entryEditor.setActive(false);
     this.dialog.querySelector('#join-title')!.textContent = 'Вход в зал';
     this.dialog.querySelector<HTMLElement>('#login-step')!.hidden = true;
     this.dialog.querySelector<HTMLElement>('#character-step')!.hidden = true;
@@ -164,9 +168,8 @@ export class AuthUI {
   }
   private showCharacter() {
     if (!this.account) return;
-    this.entryEditor.value = this.account.appearance ?? appearanceFromLegacy(this.account.skin);
-    this.entryEditor.setActive(true);
-    this.dialog.querySelector('#join-title')!.textContent = 'Создай персонажа';
+    this.entrySelector.value = this.account.skin ?? 0;
+    this.dialog.querySelector('#join-title')!.textContent = 'Выбери персонажа';
     this.dialog.querySelector<HTMLElement>('#login-step')!.hidden = true;
     this.dialog.querySelector<HTMLElement>('#character-step')!.hidden = false;
     this.dialog.querySelector<HTMLElement>('#connection-step')!.hidden = true;
@@ -176,7 +179,6 @@ export class AuthUI {
     this.logoutButton.hidden = false; this.renameButton.hidden = false; this.renderSelection();
   }
   private showLogin() {
-    this.entryEditor.setActive(false);
     this.inRoom = false;
     this.logoutButton.hidden = true; this.renameButton.hidden = true; this.nameDialog.close();
     this.dialog.querySelector('#join-title')!.textContent = 'Твой вход в клуб';

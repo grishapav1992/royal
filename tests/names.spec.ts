@@ -33,11 +33,11 @@ test('custom name persists and can be changed live for other players and chat', 
     await expect(a.locator('#name-error')).toContainText('24');
     await expect(b.locator('#people-list')).toContainText('Лунный кот 🎮');
     await a.getByLabel('Новое игровое имя',{exact:true}).fill('<b>Маша ★</b>');
-    await a.getByRole('button',{name:'Телосложение: Толстый',exact:true}).click();
+    await a.locator('#settings-character-selection').getByRole('button',{name:'Майлз',exact:true}).click();
     await a.getByRole('button',{name:'Сохранить настройки',exact:true}).click();
     await expect(a.locator('#name-dialog')).not.toBeVisible();
-    await expect.poll(async()=>JSON.parse((await state(a)).appearance).body).toBe(1);
-    await expect.poll(async()=>JSON.parse((await state(b)).remotePositions.find((p:any)=>p.id===initialNet.selfId)?.appearance || '{}').body).toBe(1);
+    await expect.poll(async()=>(await state(a)).skin).toBe(7);
+    await expect.poll(async()=>(await state(b)).remotePositions.find((p:any)=>p.id===initialNet.selfId)?.skin).toBe(7);
     expect((await net(a)).selfId).toBe(initialNet.selfId);
     await expect(b.locator('#people-list')).toContainText('<b>Маша ★</b>');
     await expect(b.locator('#people-list b')).toHaveCount(0);
@@ -49,7 +49,7 @@ test('custom name persists and can be changed live for other players and chat', 
     await expect.poll(async()=>(await net(a)).status).toBe('connected');
     await expect(a.locator('#join-dialog')).not.toBeVisible();
     await expect(a.locator('.profile-name')).toContainText('<b>Маша ★</b>');
-    await expect.poll(async()=>JSON.parse((await state(a)).appearance).body).toBe(1);
+    await expect.poll(async()=>(await state(a)).skin).toBe(7);
     expect((await ca.request.post('/api/auth/profile',{data:{name:''}})).status()).toBe(400);
     expect((await ca.request.post('/api/auth/profile',{headers:{Origin:'https://other.example'},data:{name:'Чужой'}})).status()).toBe(403);
     await ca.request.post('/api/auth/logout');
@@ -64,13 +64,13 @@ test('mobile name editor fits and cancel keeps saved name',async({browser})=>{
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
     await page.getByRole('button',{name:'Настройки игрока',exact:true}).tap();
     await page.getByLabel('Новое игровое имя',{exact:true}).fill('Другой ник');
-    await page.getByRole('button',{name:'Телосложение: Длинный',exact:true}).tap();
+    await page.locator('#settings-character-selection').getByRole('button',{name:'Гас',exact:true}).tap();
     await page.screenshot({path:'artifacts/name-editor-mobile.png'});
     await page.getByRole('button',{name:'Отмена',exact:true}).tap();
     await expect(page.locator('#people-list')).toContainText('Космический странник');
     expect((await state(page)).skin).toBe(0);
     await page.getByRole('button',{name:'Настройки игрока',exact:true}).tap();
-    await expect(page.getByRole('button',{name:'Телосложение: Стандартный',exact:true})).toHaveAttribute('aria-pressed','true');
+    await expect(page.locator('#settings-character-selection').getByRole('button',{name:'Эдди',exact:true})).toHaveAttribute('aria-pressed','true');
     await page.keyboard.press('Escape');
     await expect.poll(async()=>(await state(page)).locked).toBe(false);
   }finally{await context.close();}

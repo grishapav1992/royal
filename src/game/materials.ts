@@ -85,7 +85,7 @@ export function createDetailedArt(scene: Phaser.Scene) {
     box(c,1,12,260,17,'#303446',2);line(c,3,29,259,29,'#e7bd72',3);line(c,18,66,244,66,'#f0c55d',3);
     oval(c,44,16,8,2,'#cfb890');box(c,40,3,8,13,'#dfddbe');box(c,41,9,6,6,'#e0b265');
     oval(c,127,16,8,2,'#cfb890');box(c,122,6,10,9,'#eddfc0',2);oval(c,134,10,3,3,'#eddfc0');oval(c,127,6,5,2,'#624a3f');
-    box(c,205,3,8,13,'#c8d4c6');box(c,206,10,6,5,'#b06f83');line(c,211,0,209,9,'#e6d5aa',1);
+    box(c,175,3,8,13,'#c8d4c6');box(c,176,10,6,5,'#b06f83');line(c,181,0,179,9,'#e6d5aa',1);
   });
   make('bar-stool',48,44,c=>{
     box(c,22,12,4,26,'#656863');oval(c,24,38,15,3,'#7c7c70');

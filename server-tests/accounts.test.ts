@@ -86,13 +86,18 @@ test('character profiles and active sessions retain integrity through PostgreSQL
     assert.equal((await store.session(first.token))?.account.name,'Старый профиль');
     assert.equal((await store.session(first.token))?.account.skin,4);
     assert.equal((await store.login('profile@example.test','profile-password')).account.id,first.account.id);
-    for (const skin of [0,1,2,3,4,5,7,8,9,10,11,12]) {
+    for (const skin of [0,1,2,3,4,5,7,8,9,10,11,12,13,14,15,16]) {
       await store.select(first.account.id,skin);
       assert.equal((await store.session(first.token))?.account.skin,skin);
+      if (skin >= 13) {
+        await store.close(); store = new AccountStore(file);
+        assert.equal((await store.session(first.token))?.account.skin,skin);
+      }
     }
-    for (const invalid of [6,13,-1,1.5,'12',null]) await assert.rejects(()=>store.select(first.account.id,invalid));
+    for (const invalid of [6,17,-1,1.5,'16',null]) await assert.rejects(()=>store.select(first.account.id,invalid));
     await store.close(); store = new AccountStore(file);
-    assert.equal((await store.session(first.token))?.account.skin,12);
+    assert.equal((await store.session(first.token))?.account.skin,16);
+    assert.equal((await store.session(first.token))?.account.name,'Старый профиль');
     const check = new PostgresDatabase(file);
     try { assert.equal(await check.integrityCheck(),true); }
     finally { await check.close(); }

@@ -1,7 +1,10 @@
 import { characterGamePose, drawAvatar, drawSeatedGameArm } from './avatarArt';
-import { appearanceKey, parseAppearance } from '../shared/appearance';
+import { appearanceKey, parseAppearance, SKIN_COLORS, CLOTHING_COLORS } from '../shared/appearance';
 import Phaser from 'phaser';
 import { drawMira } from './miraArt';
+import { drawCitizenGlasses, drawCitizenHatStitch } from './citizenAccessories';
+import { drawCitizenHair, isNewCitizenHair } from './citizenHair';
+import { drawCitizenFace } from './citizenFace';
 
 import type { Facing } from '../shared/movement';
 export type { Facing } from '../shared/movement';
@@ -10,7 +13,7 @@ export const CHARACTER_RESOLUTION = 3;
 export const CHARACTER_SCALE = 1.8 / CHARACTER_RESOLUTION;
 const W = 32, H = 48, TOP_PADDING = 8, ATLAS_COLUMNS = 23;
 
-type Palette = { skin: string; shade: string; hair: string; hairLight: string; shirt: string; light: string; dark: string; pants: string; shoes: string; style: 'hoodie' | 'long' | 'cap' | 'jacket'; bartender?: boolean; look?: 'curls' | 'beanie' | 'punk' | 'buns' | 'baseball' | 'silver'; width?: number; glasses?: boolean };
+type Palette = { skin: string; shade: string; hair: string; hairLight: string; shirt: string; light: string; dark: string; pants: string; shoes: string; style: 'hoodie' | 'long' | 'cap' | 'jacket'; bartender?: boolean; look?: 'curls' | 'beanie' | 'punk' | 'buns' | 'baseball' | 'silver' | 'swept' | 'bob' | 'ponytail' | 'tousled'; width?: number; glasses?: boolean; hat?: boolean };
 const palettes: Palette[] = [
   { skin: '#e8b18b', shade: '#c78468', hair: '#343044', hairLight: '#514255', shirt: '#e94b38', light: '#f4d24b', dark: '#3a9da9', pants: '#3f4967', shoes: '#f0e8d1', style: 'hoodie' },
   { skin: '#efc2a1', shade: '#cd917e', hair: '#644760', hairLight: '#956b8a', shirt: '#996ac5', light: '#d3b6ed', dark: '#725b9b', pants: '#39475e', shoes: '#e9dcdb', style: 'long' },
@@ -25,11 +28,15 @@ const palettes: Palette[] = [
   { skin:'#bc825a',shade:'#915538',hair:'#39473a',hairLight:'#748260',shirt:'#6cac93',light:'#e9deb6',dark:'#3d7768',pants:'#715b74',shoes:'#e9dfcb',style:'jacket',look:'buns',width:0 },
   { skin:'#e0ab85',shade:'#b77b5d',hair:'#4f3c31',hairLight:'#8d6550',shirt:'#c16d45',light:'#f3cf78',dark:'#327a76',pants:'#3e5163',shoes:'#ebdbb5',style:'hoodie',look:'baseball',width:1 },
   { skin:'#e8c4aa',shade:'#bd917a',hair:'#b4b8b7',hairLight:'#e9e6d9',shirt:'#695e80',light:'#f4e7cf',dark:'#3f3d57',pants:'#3a3b4e',shoes:'#ded0ba',style:'jacket',look:'silver',width:3 },
+  { skin:'#d6ad89',shade:'#ae7b60',hair:'#272d36',hairLight:'#505563',shirt:'#388e91',light:'#f2e0b6',dark:'#245b67',pants:'#394655',shoes:'#eee1c7',style:'jacket',look:'swept',width:0 },
+  { skin:'#ecc4a4',shade:'#c38c70',hair:'#34303b',hairLight:'#67556a',shirt:'#d16f68',light:'#f5dba9',dark:'#934a52',pants:'#4c485f',shoes:'#f1dfcd',style:'long',look:'bob',width:-2 },
+  { skin:'#b77f5c',shade:'#8e573f',hair:'#2d292c',hairLight:'#64504c',shirt:'#9c81b5',light:'#e8cf9e',dark:'#655278',pants:'#475b63',shoes:'#e4d7bc',style:'jacket',look:'ponytail',width:1 },
+  { skin:'#e0b08a',shade:'#b77c59',hair:'#30332e',hairLight:'#626751',shirt:'#dfb942',light:'#f6e4af',dark:'#80713e',pants:'#4d5869',shoes:'#f3e8cd',style:'hoodie',look:'tousled',width:-1,hat:false },
 ];
 
 /** Paper cutout frames keep the same ground anchor in every pose. */
 export function createCharacters(scene: Phaser.Scene) {
-  palettes.forEach((palette, person) => createCharacterTexture(scene, `citizen-${person}`, (ctx, direction, frame, seated, sip) => drawFrame(ctx, palette, direction, frame, seated, sip, person), person));
+  palettes.forEach((_, person) => createCharacterTexture(scene, `citizen-${person}`, (ctx, direction, frame, seated, sip) => drawCitizen(ctx, person, direction, frame, seated, sip), person));
 }
 
 export function characterTexture(scene: Phaser.Scene, skin: number, serialized = ''): string {
@@ -42,6 +49,19 @@ export function characterTexture(scene: Phaser.Scene, skin: number, serialized =
 
 export function characterScaleY(serialized = ''): number {
   return CHARACTER_SCALE * (parseAppearance(serialized)?.body === 2 ? 1.12 : 1);
+}
+
+/** The short hug uses the same sleeves and hands as the player's own outfit. */
+export function characterHugColors(skin = 0, serialized = '') {
+  const appearance=parseAppearance(serialized),palette=palettes[skin]??palettes[0];
+  const color=(value:string)=>Number.parseInt(value.slice(1),16);
+  return {skin:color(appearance?SKIN_COLORS[appearance.skinTone]:palette.skin),sleeve:color(appearance?CLOTHING_COLORS[appearance.topColor]:palette.shirt)};
+}
+
+/** Share the native citizen artwork between map sprites, selection cards and detail previews. */
+export function drawCitizen(context: CanvasRenderingContext2D, skin: number, facing: Facing, frame: number, seated = false, sip = -1) {
+  const person = Number.isInteger(skin) && skin >= 0 && skin < palettes.length ? skin : 0;
+  context.save(); drawFrame(context, palettes[person], facing, frame, seated, sip, person); context.restore();
 }
 
 /** Render dialogue portraits from the drawing paths instead of enlarging a room atlas cell. */
@@ -57,7 +77,7 @@ export function createCharacterPortrait(skin: number, serialized: string, frame:
   if (appearance) drawAvatar(context, appearance, 'down', sipping ? 6 : frame, false, sipping ? frame - 11 : -1);
   else {
     const person = Number.isInteger(skin) && skin >= 0 && skin < palettes.length ? skin : 0;
-    drawFrame(context, palettes[person], 'down', sipping ? 6 : frame, false, sipping ? frame - 11 : -1, person);
+    drawCitizen(context, person, 'down', sipping ? 6 : frame, false, sipping ? frame - 11 : -1);
   }
   context.restore();
   if (stage) {
@@ -123,12 +143,12 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
   const game = characterGamePose(frame);
   seated ||= !!game;
   const side = facing === 'left' || facing === 'right', back = facing === 'up';
+  const hasHat = (p.style === 'hoodie' || p.style === 'cap') && p.hat !== false;
+  const newHair = isNewCitizenHair(p.look);
   const walking = frame < 6;
   const step = walking ? [0, 1, .55, 0, -1, -.55][frame] : 0;
   const bounce = walking ? [0, -1.4, -.6, 0, -1.4, -.6][frame] : 0;
   const lean = walking ? [-1.8, 1.8, 2.8, 1.8, -1.8, -2.8][frame] : 0;
-  const blink = frame === 8;
-  const glance = frame === 7 ? -1.7 : frame === 9 ? 1.7 : 0;
   const width = p.width ?? [3, -1, 1, 0, -2, 2, -1][person] ?? 0;
   const headRadius = 22.4 + width * .22;
   const ink = '#39332c';
@@ -160,7 +180,18 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
     const legWidth = side ? 10 : 14;
     box(x - legWidth / 2, seated ? 64 : 63 + bounce, legWidth, y - (seated ? 64 : 63 + bounce), p.pants, 1);
     if (game) line(32 + leg * (side ? 3 : 8), 58, x, 65, p.pants, legWidth);
-    oval(x + (side ? 2 : 0), y, (side ? 9 : 10) + width * .2, 2.7, '#272823', swing * (side ? -6 : 3));
+    piece(x + (side ? 2 : 0), y, swing * (side ? -6 : 3), () => {
+      const shoeWidth = (side ? 9 : 10) + width * .2;
+      oval(0, 0, shoeWidth, 2.7, '#272823');
+      c.beginPath(); c.moveTo(-shoeWidth + .8, -.6);
+      c.quadraticCurveTo(-shoeWidth + 1, -4.7, side ? -2 : 0, -4.2);
+      c.quadraticCurveTo(shoeWidth - 1, -4.5, shoeWidth - .5, -.4);
+      c.quadraticCurveTo(0, 1.4, -shoeWidth + .8, -.6); c.closePath(); fill(p.shoes, .5);
+      line(-shoeWidth + 2, .5, shoeWidth - 1.5, .5, '#fff5dd', .55);
+      if (!back) {
+        for (const lace of [-1.5, 1]) line(lace - 1.5, -3.1, lace + 1, -1.5, p.pants, .55);
+      } else line(-2.5, -3.2, 2.5, -3.2, p.pants, .7);
+    });
   }
   const bodyY = game ? -8 + (game.action === 'win' ? -game.pulse : game.action === 'lose' ? 3 + game.pulse * .5 : game.pulse * .3) : (seated ? 3 : 0) + bounce;
   piece(32, 66 + bodyY, game ? game.sway * (game.action === 'lose' ? 3.5 : 1.6) : lean, () => {
@@ -180,6 +211,13 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
         c.beginPath(); c.moveTo(-4.5, 0); c.quadraticCurveTo(-5, 7, -3.5, 15);
         c.lineTo(3.5, 15); c.quadraticCurveTo(6, 8, 4.5, 1);
         c.closePath(); fill(far && side ? p.dark : p.shirt);
+        line(-3.5, 13, 3.7, 13, p.dark, .8);
+        if (p.look === 'buns') line(-4, 8, 4.8, 8, p.light, 2.2);
+        if (p.look === 'swept') {
+          line(-1.5, 2, -1, 11.5, p.light, 1);
+          line(1, 2, 1.5, 11.5, p.light, 1);
+        }
+        if (p.look === 'ponytail') line(-3.3, 11.5, 3.9, 11.5, p.light, .8);
         c.beginPath(); c.moveTo(-2.3, 15.2); c.lineTo(2.8, 15.2);
         c.quadraticCurveTo(4.7, 17, 4.3, 20.1); c.quadraticCurveTo(3.8, 23, .7, 22.9);
         c.quadraticCurveTo(-2, 22.7, -2.3, 20.5); c.quadraticCurveTo(-4, 19.4, -3.4, 17.8);
@@ -189,17 +227,32 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
       });
     };
     if (side) arm(true);
-    if (p.style === 'long') oval(side ? 23 : 31, 36, side ? 12 : 24, 25, p.hair);
-    c.beginPath(); c.moveTo(side ? 28 : 20, 42);
-    c.quadraticCurveTo(side ? 20 : 10, 43, left, 57);
-    c.lineTo(left - 1, 66); c.quadraticCurveTo(side ? 34 : 31, 72, right + 1, 66);
-    c.lineTo(right, 55); c.quadraticCurveTo(side ? 44 : 51, 43, side ? 39 : 43, 42);
-    c.closePath(); fill(p.shirt);
+    if (p.style === 'long' && !newHair) oval(side ? 23 : 31, 36, side ? 12 : 24, 25, p.hair);
+    const traceTorso = () => {
+      c.beginPath(); c.moveTo(side ? 28 : 20, 42);
+      c.quadraticCurveTo(side ? 20 : 10, 43, left, 57);
+      c.lineTo(left - 1, 66); c.quadraticCurveTo(side ? 34 : 31, 72, right + 1, 66);
+      c.lineTo(right, 55); c.quadraticCurveTo(side ? 44 : 51, 43, side ? 39 : 43, 42);
+      c.closePath();
+    };
+    traceTorso(); fill(p.shirt);
+    // Cloth details share the garment outline, including in profile and seated poses.
+    c.save(); traceTorso(); c.clip();
     if (!back) {
-      const seam = side ? 43 : 32;
-      line(seam, 48, seam, 68);
-      for (const y of [52, 58, 64]) oval(seam + 2.6, y, .9, 1, ink, 0, 0);
-      if (p.style === 'jacket') {
+      const seam = side ? 41.5 : 32;
+      if (p.style === 'hoodie' || p.look === 'swept' || p.look === 'ponytail') {
+        if (p.look !== 'baseball' && p.look !== 'tousled') {
+          line(seam, 48, seam, 67, p.dark, .8);
+          box(seam - 1, 54, 2, 2.5, p.light, .4);
+          if (!side) line(18, 63, 26, 61, p.dark, .7);
+          line(side ? 33 : 38, 61, side ? 39 : 46, 63, p.dark, .7);
+        }
+      } else if (p.look !== 'buns') {
+        line(seam, 48, seam, 68, p.dark, .8);
+        for (const y of [53, 59, 65]) oval(seam + (side ? .9 : 2.6), y, .75, .9, p.dark, 0, 0);
+      }
+      line(left + 3, 66, right - 3, 66, p.dark, .65);
+      if (p.style === 'jacket' && p.look !== 'swept' && p.look !== 'ponytail') {
         if (!side) line(19, 53, 26, 53, p.dark);
         line(side ? 37 : 40, 53, side ? 42 : 47, 53, p.dark);
         c.beginPath(); c.moveTo(side ? 35 : 22, 44);
@@ -210,12 +263,17 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
         c.beginPath();c.moveTo(side?40:29,49);c.lineTo(side?44:35,49);c.lineTo(side?43:34,60);c.lineTo(side?41:31,64);c.lineTo(side?40:29,60);c.closePath();fill(p.dark);
         if(!side)line(21,46,26,60,p.dark,1.2);
         line(side?34:43,46,38,60,p.dark,1.2);
+        if (p.look === 'silver') {
+          box(side ? 34 : 42, 54, 6, 1.4, p.dark, .3);
+          c.beginPath(); c.moveTo(side ? 35 : 43, 53); c.lineTo(side ? 36 : 44, 50);
+          c.lineTo(side ? 38 : 46, 53); c.closePath(); fill(p.light, .35);
+        } else for (const y of [60, 65]) oval(side ? 41 : 33, y, .8, .9, p.light, 0, .3);
       }
       if (p.look === 'punk') {
         line(side?30:23,47,side?43:38,67,p.light,1.8);line(side?30:23,47,side?26:19,52,p.light,1.5);
         for(const x of side?[40]:[18,45])oval(x,48,1.4,1.4,p.light,0,0);
       }
-      if (p.look === 'baseball') {
+      if (p.look === 'baseball' || p.look === 'tousled') {
         box(side?34:23,58,side?10:19,8,p.dark,2);
         if(!side){line(24,60,28,63,p.light);line(27,46,27,53,p.light,1.4);}
         line(side?43:41,60,side?40:37,63,p.light);
@@ -223,6 +281,36 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
       }
       if (p.look === 'buns') {
         for(const y of [54,61])line(side?20:17,y,side?44:48,y,p.light,3);
+        line(left + 3, 67, right - 3, 67, p.dark, 1.5);
+      }
+      if (person === 0 || person === 3) {
+        const badgeX = side ? 35 : 23;
+        oval(badgeX, 55, 2.5, 2.7, p.light, 0, .45);
+        line(badgeX - 1, 55, badgeX + 1, 55, p.dark, .8);
+      }
+      if (person === 1 || person === 4) {
+        const pocketX = side ? 34 : 40;
+        box(pocketX, 58, 7, 5, p.dark, 1);
+        line(pocketX + 1, 59, pocketX + 6, 59, p.light, .65);
+      }
+      if (person === 2) {
+        line(side ? 35 : 22, 55, side ? 40 : 26, 58, p.dark, .8);
+        box(side ? 36 : 42, 56, 5, 2, p.light, .4);
+      }
+      if (p.look === 'swept') {
+        line(side ? 34 : 23, 46, side ? 39 : 29, 49, p.light, 1.5);
+        if (!side) line(35, 49, 41, 46, p.light, 1.5);
+        box(side ? 34 : 42, 54, 5, 2, p.light, .5);
+      }
+      if (p.look === 'bob') {
+        if (!side) for (const y of [55, 61, 66]) oval(29.5, y, .75, .9, p.dark, 0, 0);
+        line(side ? 34 : 40, 60, side ? 40 : 47, 60, p.dark, .9);
+      }
+      if (p.look === 'ponytail') {
+        line(left + 2, 66, right - 2, 66, p.dark, 2.5);
+        line(side ? 32 : 20, 57, side ? 37 : 25, 62, p.light, 1.2);
+        if (!side) line(43, 57, 38, 62, p.light, 1.2);
+        oval(side ? 35 : 24, 51, 1.6, 1.6, p.light, 0, .4);
       }
       if (p.bartender) { box(20, 48, 25, 20, '#e3e9cc', 1); box(27, 57, 12, 7, '#628c70', 1); }
     } else {
@@ -242,11 +330,13 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
         c.beginPath(); c.moveTo(32, 62); c.lineTo(38, 59); c.lineTo(38, 65); c.closePath(); fill('#e3e9cc');
       }
     }
+    if(back&&p.look==='buns')for(const y of [56,63])line(17,y,48,y,p.light,3);
+    c.restore();
     if(p.look==='beanie'){
       box(side?24:18,43,side?21:29,6,p.light,2);box(back?21:39,47,6,13,p.light,1);
       line(back?22:40,56,back?25:43,56,p.dark,.8);
+      for (const x of [back ? 22 : 40, back ? 24 : 42, back ? 26 : 44]) line(x, 59, x, 61, p.light, .65);
     }
-    if(back&&p.look==='buns')for(const y of [56,63])line(17,y,48,y,p.light,3);
     if (!side) arm(true);
     const drawNearArm = () => {
       if (sip >= 0) {
@@ -264,6 +354,7 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
     // The head is a rigid paper disc. Eyes and mouth switch independently of the torso.
     piece(32, 30, game ? game.sway * (game.action === 'lose' ? 5 : 1.5) : walking ? -lean * .32 : frame === 9 ? 1.2 : 0, () => {
       c.translate(-32, -30);
+      if (newHair) drawCitizenHair(c, p, p.look, side, back, step, 'behind');
       if (side) {
         // A single eye, an exposed ear and the nose outline define a true profile.
         c.beginPath(); c.moveTo(20, 14); c.quadraticCurveTo(32, 2, 44, 10);
@@ -272,8 +363,9 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
         c.quadraticCurveTo(55, 40, 51, 41); c.quadraticCurveTo(49, 49, 38, 50);
         c.quadraticCurveTo(25, 51, 18, 41); c.quadraticCurveTo(10, 23, 20, 14);
         c.closePath(); fill(p.skin);
-        const hat = p.style === 'hoodie' || p.style === 'cap';
-        if (p.style === 'long') {
+        const hat = hasHat;
+        if (newHair) drawCitizenHair(c, p, p.look, true, false, step, 'front');
+        else if (p.style === 'long') {
           c.beginPath(); c.moveTo(14, 26); c.quadraticCurveTo(9, 7, 28, 4);
           c.quadraticCurveTo(48, 1, 52, 18); c.lineTo(46, 20); c.lineTo(39, 13);
           c.lineTo(30, 20); c.quadraticCurveTo(27, 37, 27 + step, 57);
@@ -312,6 +404,8 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
           line(33, 10, 36, 16, p.hairLight, 2);
         }
         if (hat) {
+          c.save();
+          if (p.look === 'beanie') c.translate(0, -4);
           c.beginPath(); c.moveTo(12, 21); c.bezierCurveTo(11, -1, 54, -1, 54, 21);
           c.closePath(); fill(p.dark);
           c.beginPath(); c.moveTo(12, 17); c.quadraticCurveTo(33, 14, 54, 17);
@@ -327,50 +421,22 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
           } else {
             for (const [x, y] of [[27, 4], [31, 3], [34, 4], [30, 6]]) oval(x + step * .6, y, 3, 2.6, p.light, 0, .3);
           }
+          drawCitizenHatStitch(c, p, true, false, p.look);
+          c.restore();
         }
         oval(26, 34, 3.2, 4.4, p.skin);
         c.beginPath(); c.moveTo(25.5, 32); c.quadraticCurveTo(28, 33, 26, 36);
         c.strokeStyle = p.shade; c.lineWidth = .65; c.stroke();
-        const eyeX = 45, eyeY = 27.3;
-        if (game?.action === 'win') {
-          c.beginPath(); c.moveTo(eyeX - 6.2, 28); c.quadraticCurveTo(eyeX, 21, eyeX + 6.2, 28); c.strokeStyle = ink; c.lineWidth = 1; c.stroke();
-        } else if (blink) line(eyeX - 6.2, 28, eyeX + 6.2, 28.4, ink, .95);
-        else {
-          oval(eyeX, eyeY, 6.7, 9.4, '#fffdf5', -.08, .32);
-          oval(eyeX + 2.5 + glance * .35, 28, 1.35, 1.65, '#252724', 0, 0);
-          if (frame === 24) {
-            c.save(); c.beginPath(); c.ellipse(eyeX, eyeY, 6.7, 9.4, -.08, 0, Math.PI * 2); c.clip();
-            c.fillStyle = p.skin; c.fillRect(eyeX - 8, 16, 16, 12);
-            line(eyeX - 8, 28, eyeX + 8, 28, ink, .65); c.restore();
-          }
-        }
-        if (p.glasses) {
-          c.beginPath(); c.ellipse(eyeX, 28, 7, 9.6, 0, 0, Math.PI * 2);
-          c.strokeStyle = p.dark; c.lineWidth = 1.5; c.stroke();
-          line(eyeX - 7, 26, 27, 31, p.dark, 1.5); line(eyeX + 7, 27, 54, 28, p.dark, 1);
-        }
+        drawCitizenFace(c, p, person, true, frame, sip, game?.action);
+        if (p.look === 'beanie') for (const [x, y] of [[45, 39], [48, 38], [51, 39]]) oval(x, y, .55, .5, p.shade, 0, 0);
         if (p.look === 'silver') oval(50, 39, 4.8, 2.4, p.hair);
-        const mouthX = 49;
-        if (game?.action === 'win') {
-          c.beginPath(); c.moveTo(mouthX - 3, 40.5); c.quadraticCurveTo(mouthX, 48, mouthX + 3, 40.5); c.closePath(); fill('#51372e'); line(mouthX - 2, 41.5, mouthX + 2, 41.5, '#fff8df', 1.3);
-        } else if (game?.action === 'lose') {
-          c.beginPath(); c.moveTo(mouthX - 3, 44); c.quadraticCurveTo(mouthX, 39, mouthX + 3, 44); c.strokeStyle = ink; c.lineWidth = 1.2; c.stroke();
-        } else if (sip === 2 || sip === 3) oval(mouthX, 43, 2.2, 2, '#633e31');
-        else if (frame === 23) {
-          c.beginPath(); c.moveTo(mouthX - 3, 41); c.quadraticCurveTo(mouthX, 48, mouthX + 3, 41);
-          c.closePath(); fill('#51372e'); line(mouthX - 2, 42, mouthX + 2, 42, '#fff8df', 1.3);
-        } else if (frame === 9) {
-          c.beginPath(); c.moveTo(mouthX - 3, 42); c.quadraticCurveTo(mouthX, 45, mouthX + 3, 42);
-          c.strokeStyle = ink; c.lineWidth = .85; c.stroke();
-        } else line(mouthX - 2, 43, mouthX + 3, 43.2, ink, .9);
+        if (p.glasses) drawCitizenGlasses(c, p, true, false);
         return;
       }
       // Skin, ears, hair and hats remain separate pieces in every direction.
-      if (back) {
-        for (const earX of [10, 54]) {
-          oval(earX, 34, 3.7, 5.1, p.skin);
-          line(earX, 32, earX + (earX < 32 ? 1 : -1), 36, p.shade, .7);
-        }
+      for (const earX of [10, 54]) {
+        oval(earX, 34, 3.7, 5.1, p.skin);
+        line(earX, 32, earX + (earX < 32 ? 1 : -1), 36, p.shade, .7);
       }
       if(p.look==='curls'){
         oval(32,21,26,19,p.hair);
@@ -381,7 +447,8 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
       }
       oval(32, 27, headRadius, 23.1, p.skin);
       if (back) {
-        if (p.style === 'long') {
+        if (newHair) drawCitizenHair(c, p, p.look, false, true, step, 'front');
+        else if (p.style === 'long') {
           const sway = walking ? step * 1.3 : 0;
           c.beginPath(); c.moveTo(10, 24); c.bezierCurveTo(8, -3, 55, -3, 55, 24);
           c.bezierCurveTo(54, 38, 59 + sway, 48, 51 + sway, 59);
@@ -411,11 +478,17 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
           line(20, 38, 25, 39, p.hairLight, .8); line(39, 39, 44, 38, p.hairLight, .8);
         }
       } else {
+        if (newHair) drawCitizenHair(c, p, p.look, false, false, step, 'front');
         if ((p.style === 'long' || p.style === 'jacket') && !p.look) {
           c.beginPath(); c.moveTo(10, 29); c.quadraticCurveTo(3, 9, 22, 4);
           c.quadraticCurveTo(47, -1, 55, 18); c.lineTo(55, 29); c.lineTo(49, 21);
           c.lineTo(42, 15); c.lineTo(35, 21); c.lineTo(29, 14); c.lineTo(18, 20); c.closePath(); fill(p.hair);
-          if (p.style === 'long') { oval(11, 36, 3.8, 16, p.hair); oval(53, 37, 3.8, 15, p.hair); }
+          if (p.style === 'long') {
+            oval(11, 36, 3.8, 16, p.hair); oval(53, 37, 3.8, 15, p.hair);
+            line(10.5, 29, 10.5, 46, p.hairLight, .9); line(53.5, 30, 53.5, 47, p.hairLight, .9);
+          }
+          line(21, 12, 28, 9, p.hairLight, 1.2);
+          line(39, 9, 47, 14, p.hairLight, 1);
         }
         if(p.look==='curls'){
           for(let n=0;n<7;n++)oval(12+n*6.4,15-Math.sin(n/6*Math.PI)*7,5,6,p.hair);
@@ -434,42 +507,11 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
         if(p.look==='punk'){
           oval(13,23,3.3,10,p.hairLight);oval(52,23,3.3,10,p.hairLight);
         }
-        const eyes = [24, 40];
-        eyes.forEach((x, i) => {
-          const tilt = i === 0 ? .13 : -.13;
-          if (game?.action === 'win') {
-            c.beginPath(); c.moveTo(x - 6.6, 28); c.quadraticCurveTo(x, 21, x + 6.6, 28); c.strokeStyle = ink; c.lineWidth = 1; c.stroke();
-          } else if (blink) line(x - 6.6, 28, x + 6.6, 28.4, ink, .95);
-          else {
-            oval(x, 27.3, 8.2, 9.4, '#fffdf5', tilt, .32);
-            // A shared gaze avoids the cross-eyed expression of the previous sprites.
-            oval(x + glance, 28, 1.35, 1.65, '#252724', 0, 0);
-            if (frame === 24) {
-              c.save(); c.beginPath(); c.ellipse(x, 27.3, 8.2, 9.4, tilt, 0, Math.PI * 2); c.clip();
-              c.fillStyle=p.skin; c.fillRect(x-10,16,20,12); line(x-9,28,x+9,28,ink,.65); c.restore();
-            }
-          }
-        });
-        if(p.glasses){
-          c.strokeStyle=p.dark;c.lineWidth=1.5;
-          for(const x of eyes){c.beginPath();c.ellipse(x,28,8.7,9.6,0,0,Math.PI*2);c.stroke();}
-          line(eyes[0]+7,27,eyes[1]-7,27,p.dark,1.5);line(eyes[0]-8,26,10,24,p.dark,1.5);
+        drawCitizenFace(c, p, person, false, frame, sip, game?.action);
+        if (p.look === 'beanie') for (const x of [18, 22, 26, 38, 42, 46]) oval(x, x % 4 ? 40 : 39, .55, .5, p.shade, 0, 0);
+        if (p.look === 'silver') {
+          oval(28, 39, 4.5, 2.4, p.hair); oval(36, 39, 4.5, 2.4, p.hair);
         }
-        if(p.look==='silver'){
-          oval(28,39,4.5,2.4,p.hair);oval(36,39,4.5,2.4,p.hair);
-        }
-        const mouthX = 32;
-        if (game?.action === 'win') {
-          c.beginPath(); c.moveTo(mouthX - 5, 40.5); c.quadraticCurveTo(mouthX, 49, mouthX + 5, 40.5); c.closePath(); fill('#51372e'); line(mouthX - 3, 41.5, mouthX + 3, 41.5, '#fff8df', 1.6);
-        } else if (game?.action === 'lose') {
-          c.beginPath(); c.moveTo(mouthX - 4, 44); c.quadraticCurveTo(mouthX, 38.5, mouthX + 4, 44); c.strokeStyle = ink; c.lineWidth = 1.2; c.stroke();
-        } else if (sip === 2 || sip === 3) oval(mouthX, 43, 2.8, 2, '#633e31');
-        else if (frame === 23) {
-          c.beginPath(); c.moveTo(mouthX-5, 41); c.quadraticCurveTo(mouthX, 49, mouthX+5, 41); c.closePath(); fill('#51372e');
-          line(mouthX-3, 42, mouthX+3, 42, '#fff8df', 1.6);
-        } else if (frame === 9) {
-          c.beginPath(); c.moveTo(mouthX-4, 42); c.quadraticCurveTo(mouthX, 46, mouthX+4, 42); c.strokeStyle=ink; c.lineWidth=.85; c.stroke();
-        } else line(mouthX-3, 43, mouthX+3, 43.2, ink, .9);
       }
       if(back&&p.look==='curls'){
         for(let n=0;n<7;n++)oval(13+n*6,37+(n%2)*2,4.5,4,p.hair);
@@ -483,7 +525,9 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
         c.lineTo(37,1);c.lineTo(39,9);c.lineTo(44,5);c.lineTo(40,back?39:17);c.closePath();fill(p.hair);
         line(33,10,35,back?34:16,p.hairLight,2);
       }
-      if (p.style === 'hoodie' || p.style === 'cap') {
+      if (hasHat) {
+        c.save();
+        if (!back && p.look === 'beanie') c.translate(0, -4);
         if (back) {
           // The hat wraps around the skull; its rear brim sits lower than the front.
           c.beginPath(); c.moveTo(8, 34); c.bezierCurveTo(3, -5, 60, -5, 56, 34);
@@ -512,7 +556,10 @@ function drawFrame(c: CanvasRenderingContext2D, p: Palette, facing: Facing, fram
         } else {
           for (const [x,y] of [[29,4],[33,3],[36,4],[32,6]]) oval(x+step*.6,y,3,2.6,p.light,0,.3);
         }
+        drawCitizenHatStitch(c, p, false, back, p.look);
+        c.restore();
       }
+      if (p.glasses) drawCitizenGlasses(c, p, false, back);
     });
     if (!back || game) drawNearArm();
   });

@@ -5,6 +5,8 @@ import { FURNITURE, furnitureBounds, BAR_SOLID, BAR_OFFSET, PLANTS, plantBounds 
 import { ACTIVITIES } from './activities';
 import { CABINETS, cabinetsInHall, cabinetBounds } from './cabinets';
 import type { GameReaction } from './cabinetSeating';
+import type { CatAction } from './cat';
+import { CAT_CARE } from './catCare';
 export const PLAYER_SPEED = 155;
 export const PLAYER_SPRINT_SPEED = PLAYER_SPEED * 1.75;
 export const ROOM_CAPACITY = 30;
@@ -60,7 +62,7 @@ const GITHUB_OBSTACLES = [...clubObstacles('github'), ...cabinetsInHall('github'
 const ARCADE_OBSTACLES = [
   ...clubObstacles('arcade'),
   ...cabinetsInHall('arcade').map(cabinetBounds),
-  BAR_SOLID, ACTIVITIES.piano.bounds,
+  BAR_SOLID, ACTIVITIES.piano.bounds, CAT_CARE.scratcher.bounds,
 ];
 const TABLE_OBSTACLES = [
   ...clubObstacles('tables'),
@@ -78,6 +80,6 @@ export const DRINKS = [
 ] as const;
 export const atBar = (p: { x: number; y: number }) => p.x >= 720 && p.x <= 1005 && p.y >= 482+BAR_OFFSET && p.y <= 590+BAR_OFFSET;
 export type PlayerAction = 'idle' | 'sit' | 'drink';
-export type PlayerView = { security?: string; id: string; hall: HallId; hallRevision: number; name: string; x: number; y: number; skin: number; appearance?: string; facing: 'up' | 'down' | 'left' | 'right'; moving: boolean; connected: boolean; playing: boolean; cabinet?: string; gameReaction?: string; gameReactionUntil?: number; activity?: string; ears?: boolean; seat: string; action: PlayerAction; drink: string; actionUntil: number; soberAt: number; inputSeq: number };
+export type PlayerView = { security?: string; id: string; hall: HallId; hallRevision: number; name: string; x: number; y: number; skin: number; appearance?: string; facing: 'up' | 'down' | 'left' | 'right'; moving: boolean; connected: boolean; playing: boolean; cabinet?: string; gameReaction?: string; gameReactionUntil?: number; activity?: string; ears?: boolean; seat: string; action: PlayerAction; drink: string; actionUntil: number; soberAt: number; controlLayout?: number; inputSeq: number };
 export type ChatMessage = { id: string; senderId: string; name: string; text: string; time: number; system?: boolean };
-export type NetworkCommands = { inputs: (inputs: MovementInput[]) => void; move: (x: number, y: number) => void; target: (x: number, y: number) => void; stop: () => void; sit: (seat: string) => void; stand: () => void; drink: (drink: string) => void; cabinetPlay?: (id: string) => Promise<boolean>; cabinetLeave?: () => void; cabinetReaction?: (id: string, reaction: GameReaction) => void };
+export type NetworkCommands = { cat?: (action: CatAction) => void; inputs: (inputs: MovementInput[]) => void; move: (x: number, y: number) => void; target: (x: number, y: number, wander?: boolean) => void; stop: () => void; sit: (seat: string) => void; stand: () => void; drink: (drink: string) => void; cabinetPlay?: (id: string) => Promise<boolean>; cabinetLeave?: () => void; cabinetReaction?: (id: string, reaction: GameReaction) => void };

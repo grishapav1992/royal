@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { MAX_SOBER_TIME_MS } from '../src/shared/intoxication';
+import { CABINETS } from '../src/shared/cabinets';
 import { worldPoint } from './room-ui';
 
 const state = (page: Page) => page.evaluate(() => (window as any).royalDemo.getState());
@@ -23,6 +24,13 @@ async function drink(page: Page, id: string) {
   await button.click();
   await expect.poll(async () => (await state(page)).drink).toBe(id);
   await expect(button).toBeDisabled();
+}
+
+async function actualCabinet(page: Page, id: string) {
+  if (await page.locator('#room-overview').getAttribute('aria-pressed') !== 'true') await page.locator('#room-overview').click();
+  const cabinet = CABINETS.find(item => item.id === id)!;
+  const point = await worldPoint(page, cabinet.x, cabinet.y - 65);
+  await page.mouse.click(point.x, point.y);
 }
 
 test('drinking is explicit, has multiple stages, persists offline and never prevents a game', async ({ page }) => {
@@ -60,17 +68,18 @@ test('drinking is explicit, has multiple stages, persists offline and never prev
   await expect.poll(async () => (await state(page)).intoxication.stage).toBe(3);
   expect((await state(page)).soberAt).toBe(maximum.soberAt);
   expect((await state(page)).intoxication.remainingMs).toBeLessThan(maximum.intoxication.remainingMs);
-  await page.locator('#games-tab').click();
-  await page.locator('[data-cabinet="royal-coins"]').click();
+  await actualCabinet(page, 'royal-fruits');
   await expect(page.locator('#mini-dialog')).toBeVisible({ timeout: 15000 });
-  await expect(page.locator('.royal-coins')).toBeVisible();
-  await expect(page.locator('#coins-game')).toBeEnabled();
-  await page.locator('#coins-game').selectOption('royal-fruits');
-  await expect(page.locator('.royal-coins')).toHaveAttribute('data-game', 'royal-fruits');
-  await expect(page.locator('.fruits-paytable')).toBeVisible();
-  await page.locator('#coins-game').selectOption('royal-roulette');
-  await expect(page.locator('.royal-coins')).toHaveAttribute('data-game', 'royal-roulette');
-  await expect(page.locator('.roulette-wheel')).toBeVisible();
+  await expect(page.locator('.ez-slots-game')).toBeVisible();
+  await page.getByRole('button', { name: 'Правила игры', exact: true }).click();
+  await expect(page.locator('.ez-fruits-paytable')).toBeVisible();
+  await page.locator('[data-window-sheet="rules"] .game-window-sheet-close').click();
+  expect((await state(page)).playing).toBe(true);
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#mini-dialog')).toBeHidden();
+  await actualCabinet(page, 'royal-dice');
+  await expect(page.locator('.original-game[data-game="royal-dice"]')).toBeVisible({ timeout: 15000 });
+  expect((await state(page)).playing).toBe(true);
   expect((await state(page)).intoxication.stage).toBe(3);
   await page.keyboard.press('Escape');
   await expect.poll(async () => (await state(page)).locked).toBe(false);

@@ -3,8 +3,10 @@ import { Room, type Client, type ClientPrivate, type AuthContext, ClientState, S
 import { Guards } from './guards';
 import { Bartender } from './bartender';
 import { AmbientGuests } from './ambientGuests';
+import { RoomCat } from './cat';
 import { chatModerator } from './moderation';
 import { chatSpam } from './chatSpam';
+import { chatQueue } from './chatQueue';
 import { guardBumps } from './guardBumps';
 import { blockedByGuard } from '../src/shared/guardCollision';
 import type { SecurityDecision } from '../src/shared/security';
@@ -20,11 +22,13 @@ import { cabinetSeat } from '../src/shared/cabinetSeating';
 import { findPath, walkable, type Point } from '../src/game/navigation';
 import { PLAYER_SPEED, PLAYER_SPRINT_SPEED, ROOM_CAPACITY, hallObstacles, hallLinkAt, inHallDoor, SEATS, DRINKS, atBar, type ChatMessage, type HallId } from '../src/shared/world';
 import { intoxicatedMovement } from '../src/shared/intoxication';
+import { drunkKeyboardDirection } from '../src/shared/drunkControls';
+import { clickMovementPath } from '../src/game/drunkNavigation';
 import type { DrinkingState } from './intoxicationStore';
 import { lobbyAdmission, settleAuthWork } from './lobbyAdmission';
 import { ACCOUNT_LEASE_RENEW_MS, type AccountLease } from './accountLeases';
 
-type Control = { dx: number; dy: number; at: number; path: Point[]; lastTarget: number; chatRevision: number; inputs: MovementInputs; predicted: boolean; afterMovement?: () => void };
+type Control = { dx: number; dy: number; at: number; path: Point[]; lastTarget: number; chatRevision: number; pendingChat?: number; inputs: MovementInputs; predicted: boolean; afterMovement?: () => void };
 type ProfileRevision = { name: number; skin: number; appearance: number };
 type Access = { active: boolean; banUntil: number; drinking: DrinkingState; revision: number; profileRevision: ProfileRevision; pendingDrink: boolean; pendingEject: boolean };
 const pendingDrinks = new Set<string>();
@@ -78,6 +82,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
   private disposed = false;
   private bartender = new Bartender(this.state);
   private guests=new AmbientGuests(this.state);
+  private cat=new RoomCat(this.state);
   private history: ChatMessage[] = [];
   private nextSpawn = 0;
   private logoutListener = (hash: string) => {
@@ -92,7 +97,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     for (const client of this.clients) if ((client.auth as RoomAuth)?.account.id === id) {
       const access = this.access.get(client.sessionId); if (access) { access.drinking = state; access.revision++; }
       const player = this.state.players.get(client.sessionId);
-      if (player) player.soberAt = state.soberAt;
+      if (player) { player.soberAt = state.soberAt; player.controlLayout = state.controlLayout; }
     }
   };
   private nameListener = (id: string, name: string) => {
@@ -137,14 +142,23 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     this.setSimulationInterval(delta => {
       this.fenceAccountLeases();
       const dt=Math.min(delta,100)/1000;
-      this.activities.tick(dt);this.guards.tick(dt);this.bartender.tick(dt);this.guests.tick(dt);hallElapsed+=dt;
+      this.activities.tick(dt);this.guards.tick(dt);this.bartender.tick(dt);this.guests.tick(dt);this.cat.tick(dt);hallElapsed+=dt;
       while(hallElapsed>=.05){this.tick(.05);hallElapsed-=.05;}
     }, 1000/60);
-    const movementActions = new Set(['move', 'target', 'stop', 'playing', 'cabinet-play', 'stand', 'sit', 'drink', 'activity']);
+    const movementActions = new Set(['move', 'target', 'stop', 'playing', 'cabinet-play', 'stand', 'sit', 'drink', 'activity', 'cat']);
+    const hugBlockedActions = new Set([...movementActions,'inputs','cabinet-reaction']);
     const listen = (type: string, handler: (client: Client, value: any) => void | Promise<void>) => this.onMessage(type, (client, value) => {
       const apply = () => {
         const p = this.state.players.get(client.sessionId);
         if (!p?.connected || p.security || !this.accessAllowed(client)) return;
+        if (this.cat.isHugging(client.sessionId) && hugBlockedActions.has(type) && type!=='cat' && type!=='stop') {
+          if(type==='cabinet-play') {
+            const request=value as {id?:unknown;requestId?:unknown};
+            if(typeof request?.id==='string'&&request.id.length<=100&&Number.isSafeInteger(request.requestId)&&(request.requestId as number)>=0)
+              client.send('cabinet-play-result',{id:request.id,requestId:request.requestId,accepted:false,reason:'Сначала отпусти Кошку.'});
+          }
+          return;
+        }
         const result = handler(client, value);
         if (result) return result.catch(() => client.send('notice', 'Не удалось подтвердить действие. Попробуй ещё раз.'));
       };
@@ -154,6 +168,14 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       else return apply();
     });
     listen('activity', (client,value:unknown)=>this.activities.handle(client.sessionId,value));
+    listen('cat', (client, value: unknown) => {
+      const message = this.cat.handle(client.sessionId, value);
+      if(this.cat.isHugging(client.sessionId)) {
+        this.stop(client.sessionId);
+        const player=this.state.players.get(client.sessionId);if(player)player.facing='down';
+      }
+      if (message) client.send('notice', message);
+    });
     this.onMessage('activities', client=>client.send('activities',this.activities.snapshot()));
     listen('inputs', (client, data: unknown) => {
       const p = this.state.players.get(client.sessionId), c = this.controls.get(client.sessionId);
@@ -188,7 +210,8 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       this.stand(client.sessionId);
       control.predicted = false;
       control.lastTarget = Date.now(); control.dx = control.dy = 0;
-      control.path = findPath(p, { x, y }, hallObstacles(p.hall));
+      control.path = clickMovementPath(p, { x, y }, (data as { wander?: unknown }).wander === true);
+      client.send('walk-target', { target: control.path.at(-1) ?? null, revision: p.hallRevision });
     });
     listen('stop', client => this.stop(client.sessionId));
     listen('playing', (client, value: unknown) => {
@@ -235,7 +258,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       const accountId = (client.auth as RoomAuth).account.id, chatRevision = control.chatRevision, hallRevision = p.hallRevision;
       if (pendingDrinks.has(accountId) || Date.now() < access.drinking.lastDrinkAt + 3200) return;
       pendingDrinks.add(accountId); access.pendingDrink = true;
-      const valid = () => this.currentAction(client, p, control, chatRevision, hallRevision) && this.canDrink(p, id);
+      const valid = () => !this.cat.isHugging(client.sessionId) && this.currentAction(client, p, control, chatRevision, hallRevision) && this.canDrink(p, id);
       try {
         const active = await accounts.active((client.auth as RoomAuth).hash);
         if (!active) { this.logoutListener((client.auth as RoomAuth).hash); return; }
@@ -247,7 +270,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
         if (!p.seat) p.facing = 'down';
         const drinking = await accounts.drinking.consume(accountId, id as string, Date.now());
         if (!this.currentAction(client, p, control, chatRevision, hallRevision)) return;
-        access.drinking = drinking; p.soberAt = drinking.soberAt;
+        access.drinking = drinking; p.soberAt = drinking.soberAt; p.controlLayout = drinking.controlLayout;
       } catch (error) {
         if (this.currentAction(client, p, control, chatRevision, hallRevision) && p.action === 'drink' && p.drink === id) {
           p.action = p.seat ? 'sit' : 'idle'; p.drink = ''; p.actionUntil = 0;
@@ -262,19 +285,21 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       if (!text || text.length > 300) return;
       const id = (client.auth as RoomAuth).account.id, chatRevision = control.chatRevision, hallRevision = player.hallRevision;
       const valid = () => this.currentAction(client, player, control, chatRevision, hallRevision);
-      const active = await accounts.active((client.auth as RoomAuth).hash);
-      if (!active) { this.logoutListener((client.auth as RoomAuth).hash); return; }
-      if (!valid()) return;
+      // Count arrivals immediately so a slow provider cannot hide a burst of spam.
       const spam = chatSpam.check(id,text);
       if (spam === 'spam') {
+        if (!await accounts.active((client.auth as RoomAuth).hash)) { this.logoutListener((client.auth as RoomAuth).hash); return; }
+        if (!valid()) return;
         const decision = await accounts.moderation.record(id);
         // Persisted sanctions update the account in every room, including after a disconnect.
         accounts.events.emit('security', id, {...decision, reason:'spam'});
         return;
       }
       if (spam === 'slow') { client.send('notice', 'Слишком быстро. Продолжение спама вызовет охранника.'); return; }
-      client.send('chat-check', true);
-      try {
+      const pending = chatQueue.enqueue(id, async () => {
+        if (!valid()) return;
+        if (!await accounts.active((client.auth as RoomAuth).hash)) { this.logoutListener((client.auth as RoomAuth).hash); return; }
+        if (!valid()) return;
         const violation = await chatModerator.check(id, text);
         if (!valid()) return;
         if (!await accounts.active((client.auth as RoomAuth).hash)) { this.logoutListener((client.auth as RoomAuth).hash); return; }
@@ -284,9 +309,16 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
           const decision = await accounts.moderation.record(id);
           accounts.events.emit('security', id, {...decision, reason:'insult'});
         } else this.publish({ id: randomUUID(), senderId: client.sessionId, name: player.name, text, time: Date.now() });
-      } catch (error) {
+      });
+      if (!pending) { client.send('notice', 'Очередь проверки заполнена. Сообщение не отправлено. Подожди немного и повтори.'); return; }
+      control.pendingChat = (control.pendingChat ?? 0) + 1;
+      client.send('chat-check', true);
+      try { await pending; } catch (error) {
         if (valid()) client.send('notice', error instanceof Error ? error.message : 'Сообщение не отправлено.');
-      } finally { if (this.state.players.get(client.sessionId) === player) client.send('chat-check', false); }
+      } finally {
+        control.pendingChat = (control.pendingChat ?? 1) - 1;
+        if (!control.pendingChat && this.state.players.get(client.sessionId) === player) client.send('chat-check', false);
+      }
     });
     this.onMessage('history', client => client.send('history', this.history));
   }
@@ -312,7 +344,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     // Dropped clients leave this.clients before their reserved player is removed.
     if (this.joiningAccounts.has(auth.account.id) || [...this.playerAccounts.values()].includes(auth.account.id)) throw duplicate();
     this.joiningAccounts.add(auth.account.id);
-    const access: Access = { active: true, banUntil: 0, drinking: { soberAt: 0, lastDrink: '', lastDrinkAt: 0 }, revision: 0, profileRevision: { name: 0, skin: 0, appearance: 0 }, pendingDrink: false, pendingEject: false };
+    const access: Access = { active: true, banUntil: 0, drinking: { soberAt: 0, lastDrink: '', lastDrinkAt: 0, controlLayout: 0 }, revision: 0, profileRevision: { name: 0, skin: 0, appearance: 0 }, pendingDrink: false, pendingEject: false };
     this.access.set(client.sessionId, access);
     let lease: AccountLease | undefined;
     try {
@@ -343,7 +375,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       if (!this.leaseAllowed(client.sessionId)) throw new ServerError(503, 'Не удалось подтвердить подключение к залу. Попробуй снова.');
       this.applyProfile(auth, access, profile, profileRevision);
       if (auth.account.skin === null) throw new ServerError(401, 'Выбери персонажа и войди в зал ещё раз.');
-      const p = new Player(); p.name = auth.account.name; p.soberAt = access.drinking.soberAt;
+      const p = new Player(); p.name = auth.account.name; p.soberAt = access.drinking.soberAt; p.controlLayout = access.drinking.controlLayout;
       const index = this.nextSpawn++;
       p.x = 420 + index % 8 * 40; p.y = 570 + Math.floor(index % 24 / 8) * 25; p.skin = auth.account.skin!; p.appearance = serializeAppearance(auth.account.appearance);
       this.playerAccounts.set(client.sessionId, auth.account.id);
@@ -403,7 +435,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       if (!this.leaseAllowed(client.sessionId)) { this.expireAccountLease(client.sessionId); return; }
       access.banUntil = Math.max(until, access.banUntil);
       if (access.banUntil > Date.now()) { client.leave(4003); return; }
-      if (revision === access.revision) { access.drinking = drinking; p.soberAt = drinking.soberAt; }
+      if (revision === access.revision) { access.drinking = drinking; p.soberAt = drinking.soberAt; p.controlLayout = drinking.controlLayout; }
       this.applyProfile(auth, access, profile, profileRevision);
       if (auth.account.skin === null) { client.leave(4001); return; }
       p.name = auth.account.name; p.skin = auth.account.skin; p.appearance = serializeAppearance(auth.account.appearance);
@@ -515,7 +547,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
         const revision = access.revision, auth = client.auth as RoomAuth;
         const [active, until, drinking] = await Promise.all([accounts.active(auth.hash), accounts.moderation.banUntil(auth.account.id), accounts.drinking.read(auth.account.id)]);
         if (this.disposed || this.access.get(client.sessionId) !== access || this.state.players.get(client.sessionId) !== player || access.revision !== revision) return;
-        access.active = active; access.banUntil = until; access.drinking = drinking; player.soberAt = drinking.soberAt;
+        access.active = active; access.banUntil = until; access.drinking = drinking; player.soberAt = drinking.soberAt; player.controlLayout = drinking.controlLayout;
         if (!active || until > Date.now()) { player.connected = false; this.releaseCabinet(client.sessionId); this.stop(client.sessionId); client.leave(active ? 4003 : 4001); }
       }));
     } finally { this.refreshingAccess = false; }
@@ -531,6 +563,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     return Math.hypot(player.x - entry.x, player.y - entry.y);
   }
   private claimCabinet(id: string, cabinetId: string): string | undefined {
+    if(this.cat.isHugging(id))return 'Сначала отпусти Кошку.';
     const p = this.state.players.get(id);
     const cabinet = p && cabinetsInHall(p.hall).find(c => c.id === cabinetId && c.playable);
     if (!p || !cabinet) return 'Этот автомат недоступен в этом зале.';
@@ -577,7 +610,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
   }
   private enterDoor(id:string){
     const p=this.state.players.get(id),c=this.controls.get(id);
-    if(!p?.connected||p.security||!c||p.playing||p.seat||p.action==='drink'||!inHallDoor(p))return false;
+    if(!p?.connected||p.security||!c||this.cat.isHugging(id)||p.playing||p.seat||p.action==='drink'||!inHallDoor(p))return false;
     this.activities.leave(id);this.releaseCabinet(id);this.stop(id);this.stand(id);
     const link=hallLinkAt(p)!;const hall=link.target,door=link.arrival;
     p.hall=hall;p.hallRevision++;p.x=door.arrival.x;p.y=door.arrival.y;p.facing=door.facing;c.lastTarget=0;
@@ -592,7 +625,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       const c = this.controls.get(id)!;
       if (p.gameReaction && now >= p.gameReactionUntil) { p.gameReaction = ''; p.gameReactionUntil = 0; }
       if (p.action === 'drink' && now >= p.actionUntil) { p.action = p.seat ? 'sit' : 'idle'; p.drink = ''; p.actionUntil = 0; }
-      if (p.security || !p.connected || p.playing) { p.moving = false; continue; }
+      if (p.security || !p.connected || p.playing || this.cat.isHugging(id)) { p.moving = false; continue; }
       if (c.predicted) {
         c.inputs.advance(p, now, guards, () => this.guards.contact(id));
         p.inputSeq = c.inputs.sequence;
@@ -622,7 +655,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
         const distance = target ? Math.min(remaining, length) : remaining;
         // Keep click routes on their collision-checked path so every approach stays reachable.
         const steering = target ? { x: dx / length, y: dy / length }
-          : intoxicatedMovement(p.soberAt, { x: dx, y: dy, ms: dt * 1000 }, now / 50, now);
+          : intoxicatedMovement(p.soberAt, { ...drunkKeyboardDirection(p.soberAt, p.controlLayout, { x: dx, y: dy }, now), ms: dt * 1000 }, now / 50, now);
         const segmentX = p.x, segmentY = p.y;
         let guardBlocked = false;
         // Small substeps prevent crossing a thin obstacle between ticks.

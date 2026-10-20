@@ -50,6 +50,7 @@ import { DRINKS, HALLS, hallLinks, activityHall, type HallId } from './shared/wo
 import type { BreakerStatus } from './game/breaker';
 import type { ArcadeMode } from './game/arcades';
 import { SocialUI } from './ui/SocialUI';
+import { CatUI } from './ui/CatUI';
 import { RoomLayout } from './ui/RoomLayout';
 const offline = new URL(location.href).searchParams.get('offline') === '1';
 let social: SocialUI | undefined;
@@ -329,6 +330,7 @@ const room = new RoomScene({
     const portrait = document.createElement('img'); portrait.src = game.textures.getBase64('citizen-0', 'down-6'); portrait.alt = ''; $('#player-portrait').append(portrait);
     if (!offline) social = new SocialUI(room, toast);
     else { room.onActivity=()=>toast('Войди в онлайн-зал, чтобы играть вместе и слушать рояль.'); prefetchDemoGames(); }
+    new CatUI(room);
     if (offline) {
       const settings=document.createElement('dialog');settings.id='name-dialog';settings.className='join-dialog auth-dialog';settings.setAttribute('aria-labelledby','name-title');
       settings.innerHTML='<h2 id="name-title">Настройки игрока</h2><button type="button" id="close-settings" class="primary-button">Готово</button>';

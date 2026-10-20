@@ -42,6 +42,7 @@ test('all cabinet previews retain their positions, artwork and depth as atlas im
     const room = (window as any).__performanceRoom, details = room.details;
     const cabinets = cabinetsInHall('arcade');
     return {
+      expectedScreens: cabinets.length,
       screens: details.screens.map((screen: any, index: number) => {
         const cabinet = cabinets[index], bounds = cabinetScreen(cabinet);
         return {
@@ -61,7 +62,7 @@ test('all cabinet previews retain their positions, artwork and depth as atlas im
       emptyFloors: ['tables', 'github'].map(hall => ({ hall, screens: room.hallDetails.get(hall).screens.length, atlas: Boolean(room.hallDetails.get(hall).atlas) })),
     };
   });
-  expect(result.screens).toHaveLength(52);
+  expect(result.screens).toHaveLength(result.expectedScreens);
   expect(new Set(result.screens.map(screen => screen.texture)).size).toBe(1);
   for (const screen of result.screens) {
     expect(screen.type).toBe('Image');
@@ -109,7 +110,7 @@ test('preview updates bound work per frame, cover visible cabinets and reuse all
     upload.update = function (...args: any[]) { uploads++; return originalRefresh.apply(this, args); };
     let time = (details.lastFrame + 1) * 110;
     let maxPaintsPerUpdate=0,maxUploadsPerUpdate=0;
-    const update = () => { for(let pass=0;pass<7;pass++){const p=paints,u=uploads;details.update(time);maxPaintsPerUpdate=Math.max(maxPaintsPerUpdate,paints-p);maxUploadsPerUpdate=Math.max(maxUploadsPerUpdate,uploads-u);} time += 110; };
+    const update = () => { for(let pass=0;pass<=Math.ceil(details.screens.length/8);pass++){const p=paints,u=uploads;details.update(time);maxPaintsPerUpdate=Math.max(maxPaintsPerUpdate,paints-p);maxUploadsPerUpdate=Math.max(maxUploadsPerUpdate,uploads-u);} time += 110; };
     try {
       camera.worldView.setTo(0, 0, 1100, 900);
       const before = details.screens.map(hashCell);
@@ -134,7 +135,7 @@ test('preview updates bound work per frame, cover visible cabinets and reuse all
       const beforeEmptyPaints = paints, beforeEmptyUploads = uploads;
       update();
       return {
-        normalPaints, normalUploads, repeatedFramePaints, repeatedPaints, repeatedUploads,
+        screenCount:details.screens.length,normalPaints, normalUploads, repeatedFramePaints, repeatedPaints, repeatedUploads,
         normalChangedCount: normalChanges.filter(Boolean).length,
         overviewPaints, overviewUploads,
         animatedCellCount: beforeAnimation.filter((hash: number, index: number) => hash !== afterAnimation[index]).length,
@@ -149,11 +150,11 @@ test('preview updates bound work per frame, cover visible cabinets and reuse all
       room.game.loop.wake();
     }
   });
-  expect(result.normalPaints).toBeGreaterThan(0); expect(result.normalPaints).toBeLessThan(52);
+  expect(result.normalPaints).toBeGreaterThan(0); expect(result.normalPaints).toBeLessThan(result.screenCount);
   expect(result.normalUploads).toBe(Math.ceil(result.normalPaints/8)); expect(result.repeatedFramePaints).toBe(0);
   expect(result.repeatedPaints).toBe(result.normalPaints * 20); expect(result.repeatedUploads).toBe(result.normalUploads*20);
   expect(result.normalChangedCount).toBeGreaterThan(0); expect(result.normalChangedCount).toBeLessThanOrEqual(result.normalPaints);
-  expect(result.overviewPaints).toBe(52); expect(result.overviewUploads).toBe(7);
+  expect(result.overviewPaints).toBe(result.screenCount); expect(result.overviewUploads).toBe(Math.ceil(result.screenCount/8));
   expect(result.maxPaintsPerUpdate).toBeLessThanOrEqual(8); expect(result.maxUploadsPerUpdate).toBeLessThanOrEqual(1);
   expect(result.animatedCellCount).toBeGreaterThan(0);
   expect(result.emptyPaints).toBe(0); expect(result.emptyUploads).toBe(0);
@@ -183,11 +184,12 @@ test('floor buttons reach every floor and cabinet animation resumes after return
       const room = (window as any).__performanceRoom;
       return { active: room.details.screens.filter((screen: any) => screen.visible).length,
         arcadeVisible: room.hallDetails.get('arcade').screens.filter((screen: any) => screen.visible).length,
+        arcadeCount:room.hallDetails.get('arcade').screens.length,
         sameAtlas: room.hallDetails.get('arcade').atlas === (window as any).__previewAtlas,
         atlasCount: room.textures.getTextureKeys().filter((key: string) => key === (window as any).__previewAtlas.key).length };
     });
-    expect(state.active).toBe(target === 'arcade' ? 52 : 0);
-    expect(state.arcadeVisible).toBe(target === 'arcade' ? 52 : 0);
+    expect(state.active).toBe(target === 'arcade' ? state.arcadeCount : 0);
+    expect(state.arcadeVisible).toBe(target === 'arcade' ? state.arcadeCount : 0);
     expect(state.sameAtlas).toBe(true); expect(state.atlasCount).toBe(1);
   }
   await page.locator('#room-overview').click();
@@ -221,11 +223,11 @@ test('reduced motion paints every initial preview and shutdown removes its resou
     upload.update = refresh;
     const atlasKeysBefore = room.textures.getTextureKeys().filter((textureKey: string) => textureKey === key).length;
     room.scene.manager.stop('room');
-    return { initialized, unchanged, uploads, atlasKeysBefore,
+    return { initialized, expectedScreens:details.cabinets.length, unchanged, uploads, atlasKeysBefore,
       atlasExistsAfter: room.textures.exists(key), painterDestroyed: painter.scene == null,
       allPreviewAtlasesRemoved: [...room.hallDetails.values()].every((floor: any) => !floor.atlas || !room.textures.exists(floor.atlas.key)) };
   });
-  expect(result.initialized).toHaveLength(52);
+  expect(result.initialized).toHaveLength(result.expectedScreens);
   for (const cell of result.initialized) { expect(cell.opaque).toBe(cell.pixels); expect(cell.art).toBeGreaterThan(0); }
   expect(result.unchanged).toBe(true); expect(result.uploads).toBe(0); expect(result.atlasKeysBefore).toBe(1);
   expect(result.atlasExistsAfter).toBe(false); expect(result.painterDestroyed).toBe(true); expect(result.allPreviewAtlasesRemoved).toBe(true);

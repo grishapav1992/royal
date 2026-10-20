@@ -10,18 +10,18 @@ export class MovementPrediction {
   active = false;
   finishing = false;
   reset() { this.active = false; this.finishing = false; this.pending = []; this.outgoing = []; }
-  step(body: MovementBody, x: number, y: number, ms: number, sprint = false, guards:readonly GuardCollider[] = []) {
+  step(body: MovementBody, x: number, y: number, ms: number, sprint = false, guards:readonly GuardCollider[] = [], directions?: number) {
     // Stop speculative movement if the server has not acknowledged input for several seconds.
     // Reserve one slot for releasing the keys or handing control to a UI action.
-    if (this.pending.length >= MAX_PENDING_MOVEMENT_INPUTS - (x || y ? 1 : 0)) { body.moving = false; return; }
+    if (this.pending.length >= MAX_PENDING_MOVEMENT_INPUTS - (x || y || directions ? 1 : 0)) { body.moving = false; return; }
     this.active = true; this.finishing = false;
-    const input = { seq: ++this.sequence, x, y, ms: Math.min(MAX_MOVEMENT_INPUT_MS, Math.max(0, ms)), sprint };
+    const input: MovementInput = { seq: ++this.sequence, x, y, ms: Math.min(MAX_MOVEMENT_INPUT_MS, Math.max(0, ms)), sprint, ...(directions === undefined ? {} : { directions }) };
     this.pending.push(input); this.outgoing.push(input);
     applyMovementInput(body, input, guards);
   }
   finish(body: MovementBody) {
     if (!this.active || this.finishing) return;
-    this.step(body, 0, 0, 0);
+    this.step(body, 0, 0, 0, false, [], 0);
     this.finishing = true;
   }
   flush(send: (inputs: MovementInput[]) => void) {

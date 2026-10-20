@@ -1,5 +1,6 @@
 import { SecurityUI } from './SecurityUI';
 import { installGameChat } from './GameChat';
+import { ChatMedia } from './ChatMedia';
 import { prefetchDemoGames } from '../game/demoGames';
 import { AuthUI } from './AuthUI';
 import { ActivitiesUI } from './ActivitiesUI';
@@ -29,6 +30,7 @@ export class SocialUI {
   private unread = 0;
   private scrollAnchor?: { id: string; offset: number };
   private newMessages: HTMLButtonElement;
+  private media: ChatMedia;
   constructor(private scene: RoomScene, private toast: (message: string) => void) {
     const sidebar = document.querySelector<HTMLElement>('.sidebar')!;
     const catalog = document.createElement('div'); catalog.className = 'catalog-panel'; catalog.id = 'catalog-panel';
@@ -53,6 +55,10 @@ export class SocialUI {
     this.list.addEventListener('scroll', () => this.saveChatPosition());
     new ResizeObserver(()=>this.restoreChatPosition()).observe(this.list);
     this.input = chat.querySelector<HTMLInputElement>('#chat-input')!;
+    this.media = new ChatMedia(chat, this.input, text => {
+      if (this.input.disabled || this.client.status !== 'connected') return false;
+      this.showLatest(); this.client.send('chat', text); return true;
+    }, value => this.scene.setTyping(value));
     this.invite = document.createElement('button'); this.invite.className = 'invite-button'; this.invite.id='invite'; this.invite.textContent = 'Пригласить'; this.invite.disabled = true;
     document.querySelector('.room-tools')!.prepend(this.invite);
     this.invite.addEventListener('click', async () => {
@@ -68,8 +74,10 @@ export class SocialUI {
     this.security = new SecurityUI(scene, () => this.auth.showRejoin());
     this.client = new LobbyClient({
       guests: guests => this.scene.syncGuests(guests),
+      cat: cat => this.scene.syncCat(cat),
       guards: guards => this.scene.syncGuards(guards),
       mira: mira => this.scene.syncMira(mira),
+      target: point => this.scene.confirmWalkTarget(point),
       security: decision => { this.sanctioned = true; this.security.intervention(decision); this.chatAvailability(); },
       ejected: until => this.security.ejected(until),
       checking: value => { this.checking = value; this.chatAvailability(); },
@@ -80,10 +88,10 @@ export class SocialUI {
         });
         this.sanctioned = false; this.scene.setSecurity(false); this.checking = false;
         this.roomId = roomId; this.selfId = selfId;
-        this.messages.clear(); this.list.replaceChildren();
+        this.messages.clear(); this.list.replaceChildren(); this.media.prune(); this.media.close(false);
         this.showLatest();
         const url = new URL(location.href); url.searchParams.set('room', roomId); history.replaceState({ royalJoinedRoom: roomId }, '', url);
-        this.scene.enableOnline({ inputs: inputs => this.client.send('inputs',inputs), move: (x,y) => this.client.send('move',{x,y}), target: (x,y) => this.client.send('target',{x,y}), stop: () => this.client.send('stop'), sit: seat => this.client.send('sit',seat), stand: () => this.client.send('stand'), drink: drink => this.client.send('drink',drink), cabinetPlay: id => this.client.claimCabinet(id), cabinetLeave: () => this.client.releaseCabinet(), cabinetReaction: (id,reaction) => this.client.send('cabinet-reaction',{id,reaction}) });
+        this.scene.enableOnline({ inputs: inputs => this.client.send('inputs',inputs), move: (x,y) => this.client.send('move',{x,y}), target: (x,y,wander) => this.client.send('target',{x,y,wander}), stop: () => this.client.send('stop'), sit: seat => this.client.send('sit',seat), stand: () => this.client.send('stand'), drink: drink => this.client.send('drink',drink), cat: action => this.client.send('cat',action), cabinetPlay: id => this.client.claimCabinet(id), cabinetLeave: () => this.client.releaseCabinet(), cabinetReaction: (id,reaction) => this.client.send('cabinet-reaction',{id,reaction}) });
         this.dialog.close(); this.scene.setLocked(false); prefetchDemoGames();
         document.querySelector('.profile-name')!.firstChild!.textContent = this.auth.account?.name || 'Игрок';
       },
@@ -101,7 +109,7 @@ export class SocialUI {
     });
     chat.querySelector('form')!.addEventListener('submit', event => {
       event.preventDefault(); const text = this.input.value.trim();
-      if (!text || this.client.status !== 'connected') return;
+      if (!text || this.input.disabled || this.client.status !== 'connected') return;
       this.showLatest();
       this.client.send('chat', text); this.input.value = ''; this.input.focus();
     });
@@ -110,7 +118,8 @@ export class SocialUI {
     this.input.addEventListener('keydown', event => { event.stopPropagation(); if (event.key === 'Escape') { this.input.blur(); document.querySelector<HTMLElement>('#game')!.focus(); } });
     document.querySelector('#game')!.addEventListener('pointerdown', () => this.input.blur());
     document.addEventListener('visibilitychange', () => { if (document.hidden) this.scene.finishMovement(() => this.client.send('stop')); });
-    window.addEventListener('pagehide', () => this.client.leave());
+    // Page teardown closes the socket; keep its recovery token for a reload.
+    window.addEventListener('pagehide', () => this.client.send('stop'));
     this.statusLabel.textContent = 'Вход в зал';
     document.querySelector('.npc-count')!.textContent = '';
     this.scene.setLocked(true);
@@ -130,9 +139,10 @@ export class SocialUI {
     }
   }
   private chatAvailability() {
-    const disabled = this.client.status !== 'connected' || this.checking || this.sanctioned;
+    const disabled = this.client.status !== 'connected' || this.sanctioned;
     this.input.disabled = disabled;
-    this.input.placeholder = this.checking ? 'Охрана проверяет сообщение…' : this.sanctioned ? 'Подожди, охранник обращается к тебе' : 'Напиши что-нибудь…';
+    this.media?.setDisabled(disabled);
+    this.input.placeholder = this.sanctioned ? 'Подожди, охранник обращается к тебе' : this.checking ? 'Можно написать следующее сообщение…' : 'Напиши что-нибудь…';
     document.querySelector<HTMLButtonElement>('#send-chat')!.disabled = disabled;
   }
   private updatePlayers(players: PlayerView[], selfId: string) {
@@ -177,7 +187,7 @@ export class SocialUI {
         const time = document.createElement('time'); time.textContent = new Date(item.time).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
         meta.append(name,time); row.append(meta);
       }
-      const content = document.createElement('p'); content.textContent = item.text; row.append(content); this.list.append(row);
+      row.append(this.media.content(item.text, item.system)); this.list.append(row);
     }
     // Reorder only nodes that moved, keeping the current reading position intact.
     const rows = new Map(Array.from(this.list.children, row => [(row as HTMLElement).dataset.messageId!, row]));
@@ -185,6 +195,7 @@ export class SocialUI {
       const row = rows.get(item.id)!;
       if (this.list.children[index] !== row) this.list.insertBefore(row, this.list.children[index] || null);
     });
+    this.media.prune();
     if (!this.followChat) {
       this.unread++;
       this.newMessages.textContent = `Новые сообщения: ${this.unread} ↓`;

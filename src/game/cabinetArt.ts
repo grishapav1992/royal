@@ -1,7 +1,7 @@
 import type { Cabinet } from '../shared/cabinets';
 
-export const CABINET_SCALE = 1.16;
-export const CABINET_SIZE = { width: 84, height: 122 };
+import { CABINET_SCALE, CABINET_SIZE } from '../shared/cabinetGeometry';
+export { CABINET_SCALE, CABINET_SIZE };
 
 // Screen coordinates belong to the same drawing as the cabinet body.
 export function cabinetScreen(cabinet: Cabinet) {

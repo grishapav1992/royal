@@ -1,6 +1,7 @@
 import type { GuardView, SecurityDecision } from '../shared/security';
 import type { MiraView } from '../shared/miraRoutine';
 import type { AmbientGuestView } from '../shared/ambientGuests';
+import type { CatView } from '../shared/cat';
 import { Client, ErrorCode, type Room } from '@colyseus/sdk';
 import type { LobbyState } from '../../server/state';
 import type { PlayerView, ChatMessage } from '../shared/world';
@@ -24,6 +25,7 @@ export class LobbyClient {
   constructor(private events: {
     guards: (guards: GuardView[]) => void;
     guests: (guests: AmbientGuestView[]) => void;
+    cat?: (cat: CatView) => void;
     mira: (mira: MiraView) => void;
     security: (decision: SecurityDecision) => void;
     ejected: (until: number) => void;
@@ -36,6 +38,7 @@ export class LobbyClient {
     notice: (message: string) => void;
     activities: (state: ActivitiesState) => void;
     note: (note: PianoNote) => void;
+    target?: (point: { x: number; y: number } | null) => void;
   }) {}
   join(roomId?: string, returningToRoom = false, accountId?: string): Promise<void> {
     if (this.joining) return this.joining;
@@ -113,11 +116,14 @@ export class LobbyClient {
         }
         this.events.note(note);
       });
+      room.onMessage('walk-target', (data: { target: { x: number; y: number } | null; revision: number }) => {
+        if (current() && data.revision === this.revision) this.events.target?.(data.target);
+      });
       room.onStateChange(state => {
         if (!current()) return;
         const players: PlayerView[] = [];
         const { serverNow, localNow } = clock.snapshot(state.serverNow);
-        state.players?.forEach((p, id) => players.push({ id, security: p.security, hall: p.hall as PlayerView['hall'], hallRevision: p.hallRevision, name: p.name, x: p.x, y: p.y, skin: p.skin, appearance: p.appearance, facing: p.facing as PlayerView['facing'], moving: p.moving, connected: p.connected, playing: p.playing, cabinet: p.cabinet, gameReaction: p.gameReaction, gameReactionUntil: p.gameReactionUntil > serverNow ? localNow + p.gameReactionUntil - serverNow : 0, activity: p.activity, ears: p.ears, seat: p.seat, action: p.action as PlayerView['action'], drink: p.drink, actionUntil: p.actionUntil, soberAt: p.soberAt > serverNow ? localNow + p.soberAt - serverNow : 0, inputSeq: p.inputSeq }));
+        state.players?.forEach((p, id) => players.push({ id, security: p.security, hall: p.hall as PlayerView['hall'], hallRevision: p.hallRevision, name: p.name, x: p.x, y: p.y, skin: p.skin, appearance: p.appearance, facing: p.facing as PlayerView['facing'], moving: p.moving, connected: p.connected, playing: p.playing, cabinet: p.cabinet, gameReaction: p.gameReaction, gameReactionUntil: p.gameReactionUntil > serverNow ? localNow + p.gameReactionUntil - serverNow : 0, activity: p.activity, ears: p.ears, seat: p.seat, action: p.action as PlayerView['action'], drink: p.drink, actionUntil: p.actionUntil, soberAt: p.soberAt > serverNow ? localNow + p.soberAt - serverNow : 0, controlLayout: p.controlLayout, inputSeq: p.inputSeq }));
         this.revision=players.find(p=>p.id===room.sessionId)?.hallRevision??0;
         const guards: GuardView[] = []; state.guards?.forEach(g => guards.push({hall:g.hall as GuardView['hall'],x:g.x,y:g.y,facing:g.facing,phase:g.phase,target:g.target,progress:g.progress,speech:g.speech,routine:g.routine,reply:g.reply}));
         this.events.guards(guards);
@@ -125,6 +131,7 @@ export class LobbyClient {
         const guests:AmbientGuestView[]=[];
         state.guests?.forEach(guest=>guests.push({id:guest.id,name:guest.name,hall:guest.hall as AmbientGuestView['hall'],x:guest.x,y:guest.y,skin:guest.skin,facing:guest.facing as AmbientGuestView['facing'],moving:guest.moving,mood:guest.mood as AmbientGuestView['mood'],drink:guest.drink,seat:guest.seat,destination:guest.destination}));
         this.events.guests(guests);
+        if (state.cat) this.events.cat?.({ hall: state.cat.hall as CatView['hall'], x: state.cat.x, y: state.cat.y, facing: state.cat.facing as CatView['facing'], mood: state.cat.mood as CatView['mood'], moving: state.cat.moving, onPillow: state.cat.onPillow, onBar: state.cat.onBar, carriedBy: state.cat.carriedBy, targetId: state.cat.targetId, progress: state.cat.progress, hugCooldown:state.cat.hugCooldown, surfaceId:state.cat.surfaceId, jumpingDown:state.cat.jumpingDown });
         if (state.mira) this.events.mira({ x: state.mira.x, y: state.mira.y, facing: state.mira.facing as MiraView['facing'], action: state.mira.action as MiraView['action'], progress: state.mira.progress });
       });
       room.onDrop(() => { if (current()) this.setStatus('reconnecting'); });

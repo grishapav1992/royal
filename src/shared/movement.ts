@@ -3,20 +3,22 @@ import { walkable } from '../game/navigation';
 import { PLAYER_SPEED, PLAYER_SPRINT_SPEED, hallObstacles, SEATS } from './world';
 import { blockedByGuard, type GuardCollider } from './guardCollision';
 import { intoxicatedMovement } from './intoxication';
+import { drunkKeyboardDirection } from './drunkControls';
 
-export type MovementInput = { seq: number; x: number; y: number; ms: number; sprint?: boolean };
-export type MovementBody = { hall?: string; soberAt?: number; x: number; y: number; facing: string; moving: boolean; seat: string; action: string; drink: string; actionUntil: number };
+export type MovementInput = { seq: number; x: number; y: number; ms: number; sprint?: boolean; directions?: number };
+export type MovementBody = { hall?: string; soberAt?: number; controlLayout?: number; x: number; y: number; facing: string; moving: boolean; seat: string; action: string; drink: string; actionUntil: number };
 
 /** Shared collision integration for local prediction, server validation and replay. */
 export function applyMovementInput(body: MovementBody, input: MovementInput, guards:readonly GuardCollider[] = []) {
   let contact=false;
-  const length = Math.hypot(input.x, input.y);
+  const direction = drunkKeyboardDirection(body.soberAt ?? 0, body.controlLayout ?? 0, input);
+  const length = Math.hypot(direction.x, direction.y);
   if (!length) { body.moving = false; return; }
   const seat = SEATS.find(s => s.id === body.seat);
   if (seat) { body.x = seat.entry.x; body.y = seat.entry.y; }
   body.seat = ''; body.action = 'idle'; body.drink = ''; body.actionUntil = 0;
   const beforeX = body.x, beforeY = body.y;
-  const impaired = intoxicatedMovement(body.soberAt ?? 0, input);
+  const impaired = intoxicatedMovement(body.soberAt ?? 0, { ...input, ...direction });
   const distance = (input.sprint === true ? PLAYER_SPRINT_SPEED : PLAYER_SPEED) * impaired.speedMultiplier * input.ms / 1000 / 3;
   const stepX = impaired.x * distance, stepY = impaired.y * distance;
   const obstacles = hallObstacles(body.hall);

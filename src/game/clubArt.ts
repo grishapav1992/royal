@@ -2,6 +2,8 @@ import Phaser from 'phaser';
 import { CLUB_ZONES, LOUNGES, clubPlants } from '../shared/clubLayout';
 import { SEATS, type HallId } from '../shared/world';
 import { WORLD, FLOOR } from '../shared/clubGeometry';
+import { CAT_HOME } from '../shared/catHome';
+import { drawCatHome } from './catHomeArt';
 
 export function drawClubFloor(scene: Phaser.Scene, hall: HallId, onSeat: (id:string)=>void) {
   const g=scene.make.graphics({x:0,y:0},false);
@@ -62,6 +64,7 @@ export function drawClubFloor(scene: Phaser.Scene, hall: HallId, onSeat: (id:str
   }
   // A quiet row of windows runs around the far side of the enlarged club.
   for(const x of [1190,1510,1900,2330,2580,3020,3340,3660,3980]) {
+    if (hall === CAT_HOME.hall && x === CAT_HOME.window.x) { drawCatHome(scene); continue; }
     scene.add.image(x,113,hall==='arcade'?'window-city':'window-garden').setDisplaySize(176,112).setDepth(2);
   }
   scene.add.text(WORLD.width-170,1280,hall==='arcade'?'ROYAL STUDIO · ЭТАЖ 1':hall==='tables'?'БАЛКОН · ЭТАЖ 2':'КАРТОЧНЫЙ САЛОН · ЭТАЖ 3',{fontFamily:'Arial',fontSize:'13px',color:'#b4a58e',letterSpacing:2}).setOrigin(1,.5).setDepth(.04);

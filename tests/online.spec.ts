@@ -94,7 +94,7 @@ async function join(page: Page, _name: string, url = '/', skin = 'Эдди') {
   await expect(page.getByLabel('Пароль', {exact:true})).toHaveValue(password);
   await page.getByRole('button', { name: 'Продолжить', exact:true }).click();
   await expect(page.locator('#character-step')).toBeVisible();
-  if (skin === 'Лиззи') await page.getByRole('button', { name: 'Пол: Женский', exact: true }).click();
+  await page.locator('#character-selection').getByRole('button', { name: skin, exact: true }).click();
   const alias = await page.locator('#account-name').textContent();
   if ((page.viewportSize()?.width || 1440) < 500) await page.screenshot({path:'artifacts/character-picker-mobile.png'});
   await page.getByRole('button', { name: 'Войти в зал', exact: true }).click();
@@ -113,7 +113,8 @@ test('two guests share movement, chat, typing focus and mini-game presence', asy
   await expect(a.locator('#people-list')).toContainText(boris);
   await expect(b.locator('#people-list')).toContainText(anna);
   await expect.poll(async () => (await state(a)).remotes).toBeGreaterThanOrEqual(1);
-  expect(JSON.parse((await state(a)).appearance).gender).toBe(1);
+  expect((await state(a)).skin).toBe(1);
+  expect((await state(a)).texture).toBe('citizen-1');
   const before = await state(a);
   await a.keyboard.down('ArrowRight'); await a.waitForTimeout(450); await a.keyboard.up('ArrowRight');
   await expect.poll(async () => (await state(a)).x).toBeGreaterThan(before.x + 30);
@@ -171,11 +172,11 @@ test('account login, saved character, wrong password, logout and expired invitat
   await page.getByLabel('Почта', {exact:true}).fill(address);
   await page.getByLabel('Пароль', {exact:true}).fill(password);
   await page.getByRole('button', {name:'Продолжить',exact:true}).click();
-  await page.getByRole('button', { name: 'Телосложение: Длинный', exact: true }).click();
+  await page.locator('#character-selection').getByRole('button', { name: 'Гас', exact: true }).click();
   await page.screenshot({path:'artifacts/character-picker.png'});
   await page.getByRole('button', {name:'Войти в зал',exact:true}).click();
   await expect(page.locator('#join-dialog')).not.toBeVisible();
-  await expect.poll(async () => JSON.parse((await state(page)).appearance).body).toBe(2);
+  await expect.poll(async () => (await state(page)).skin).toBe(12);
   expect(await page.evaluate(() => document.cookie)).not.toContain('royal_session');
   const cookies = await context.cookies();
   expect(cookies.find(c=>c.name==='royal_session')?.httpOnly).toBe(true);
@@ -189,7 +190,7 @@ test('account login, saved character, wrong password, logout and expired invitat
   await page.reload({waitUntil:'domcontentloaded'});
   await expect.poll(async () => (await net(page)).status).toBe('connected');
   await expect(page.locator('#join-dialog')).not.toBeVisible();
-  await expect.poll(async () => JSON.parse((await state(page)).appearance).body).toBe(2);
+  await expect.poll(async () => (await state(page)).skin).toBe(12);
   await page.route('**/matchmake/joinById/**', route => route.fulfill({status:522,contentType:'application/json',body:JSON.stringify({code:522,error:'room has been disposed'})}), {times:1});
   await page.reload({waitUntil:'domcontentloaded'});
   await expect.poll(async () => (await net(page)).status).toBe('connected');
@@ -205,7 +206,7 @@ test('account login, saved character, wrong password, logout and expired invitat
   await page.getByRole('button',{name:'Продолжить',exact:true}).click();
   await expect.poll(async () => (await net(page)).status).toBe('connected');
   await expect(page.locator('#join-dialog')).not.toBeVisible();
-  await expect.poll(async () => JSON.parse((await state(page)).appearance).body).toBe(2);
+  await expect.poll(async () => (await state(page)).skin).toBe(12);
   await page.goto('/?room=does-not-exist',{waitUntil:'domcontentloaded'});
   await expect(page.locator('#join-error')).toBeVisible();
   await expect(page.locator('#character-step')).not.toBeVisible();
@@ -226,6 +227,7 @@ test('unauthenticated and cross-origin requests cannot enter or edit an account'
 test('character validation and repeated password attempts are limited', async ({request}) => {
   const address=email();
   expect((await request.post('/api/auth/login',{data:{email:address,password}})).ok()).toBe(true);
+  expect((await request.post('/api/auth/character',{data:{skin:6}})).status()).toBe(400);
   expect((await request.post('/api/auth/character',{data:{skin:99}})).status()).toBe(400);
   expect((await request.post('/api/auth/character',{data:{skin:'2'}})).status()).toBe(400);
   for(let i=0;i<9;i++) expect((await request.post('/api/auth/login',{data:{email:address,password:'incorrect-password'}})).status()).toBe(401);

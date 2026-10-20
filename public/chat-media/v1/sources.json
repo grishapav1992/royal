@@ -1,0 +1,143 @@
+{
+  "animals": {
+    "file": "royal-animals.png",
+    "sha256": "6e04d25d8c7c7929b55eb6a7ba530b778a3055d77559d8d81829e080700d0b2e",
+    "origin": "Original AI-generated illustration for Royal, 2026-10-16",
+    "grid": {
+      "columns": 4,
+      "rows": 3,
+      "width": 1536,
+      "height": 1024
+    }
+  },
+  "emoji": [
+    {
+      "file": "1f602.webp",
+      "source": "https://fonts.gstatic.com/s/e/notoemoji/latest/1f602/512.webp",
+      "bytes": 623904,
+      "sha256": "281d5ceb7881fe9393c200ea16c73a4d53af58b4ff04d76a46c432e7e4dd0901",
+      "license": "CC-BY-4.0",
+      "author": "Google Noto Emoji"
+    },
+    {
+      "file": "1f923.webp",
+      "source": "https://fonts.gstatic.com/s/e/notoemoji/latest/1f923/512.webp",
+      "bytes": 314528,
+      "sha256": "6dc164b225a4688da15a6642c366e9eb536a0bfb5fe5a475a75c94d2fe14eba5",
+      "license": "CC-BY-4.0",
+      "author": "Google Noto Emoji"
+    },
+    {
+      "file": "1f60d.webp",
+      "source": "https://fonts.gstatic.com/s/e/notoemoji/latest/1f60d/512.webp",
+      "bytes": 443836,
+      "sha256": "f9a12dd0779299de1c77d8c6168be39ad0f5c579b7ac46f9c77d60be042bc3de",
+      "license": "CC-BY-4.0",
+      "author": "Google Noto Emoji"
+    },
+    {
+      "file": "1f970.webp",
+      "source": "https://fonts.gstatic.com/s/e/notoemoji/latest/1f970/512.webp",
+      "bytes": 490694,
+      "sha256": "7734ab5ea4f0f8169df1f9d0faa00983d1d535b9d73b8d4243250531ea9ed898",
+      "license": "CC-BY-4.0",
+      "author": "Google Noto Emoji"
+    },
+    {
+      "file": "1f60e.webp",
+      "source": "https://fonts.gstatic.com/s/e/notoemoji/latest/1f60e/512.webp",
+      "bytes": 508282,
+      "sha256": "16e9f241e5471c77bd94b3ff1fbdfd4a37e2056d6485256db41729165b57e66f",
+      "license": "CC-BY-4.0",
+      "author": "Google Noto Emoji"
+    },
+    {
+      "file": "1f62d.webp",
+      "source": "https://fonts.gstatic.com/s/e/notoemoji/latest/1f62d/512.webp",
+      "bytes": 589062,
+      "sha256": "13a7a4b7e6d920b83f899ca64312bed80280507e93c04bd6e2361764db975a50",
+      "license": "CC-BY-4.0",
+      "author": "Google Noto Emoji"
+    },
+    {
+      "file": "1f973.webp",
+      "source": "https://fonts.gstatic.com/s/e/notoemoji/latest/1f973/512.webp",
+      "bytes": 534632,
+      "sha256": "fcf2af3bb9244afe32685f0293ff2ad3f4fb3575e93fec3054f59c052b82762f",
+      "license": "CC-BY-4.0",
+      "author": "Google Noto Emoji"
+    },
+    {
+      "file": "1f92f.webp",
+      "source": "https://fonts.gstatic.com/s/e/notoemoji/latest/1f92f/512.webp",
+      "bytes": 610664,
+      "sha256": "9bda8e4f7c8941625b0ae64c2c3c85c794bbbe14f8e7bdd13b92b34c726ac59e",
+      "license": "CC-BY-4.0",
+      "author": "Google Noto Emoji"
+    },
+    {
+      "file": "1f914.webp",
+      "source": "https://fonts.gstatic.com/s/e/notoemoji/latest/1f914/512.webp",
+      "bytes": 555780,
+      "sha256": "4f8cbd8d563d8bf16d4d7043c3e91afcfe514389bd7e81cc5624f6097aa2053c",
+      "license": "CC-BY-4.0",
+      "author": "Google Noto Emoji"
+    },
+    {
+      "file": "1f621.webp",
+      "source": "https://fonts.gstatic.com/s/e/notoemoji/latest/1f621/512.webp",
+      "bytes": 677356,
+      "sha256": "0404e358adb2ed3bcefe415af7d5dfe3fd150946b1ffde7926337b34ce05ac3d",
+      "license": "CC-BY-4.0",
+      "author": "Google Noto Emoji"
+    },
+    {
+      "file": "1f44d.webp",
+      "source": "https://fonts.gstatic.com/s/e/notoemoji/latest/1f44d/512.webp",
+      "bytes": 159212,
+      "sha256": "f456f329ec2457828e0511f31b855e1b3b21c91f53d7d465dc3a1aa7d3b73383",
+      "license": "CC-BY-4.0",
+      "author": "Google Noto Emoji"
+    },
+    {
+      "file": "2764_fe0f.webp",
+      "source": "https://fonts.gstatic.com/s/e/notoemoji/latest/2764_fe0f/512.webp",
+      "bytes": 294160,
+      "sha256": "8f02722ca349a1b1a0c7a02d7ec3c716e09eccdbf696adf89c67afe2bb175b56",
+      "license": "CC-BY-4.0",
+      "author": "Google Noto Emoji"
+    },
+    {
+      "file": "1f525.webp",
+      "source": "https://fonts.gstatic.com/s/e/notoemoji/latest/1f525/512.webp",
+      "bytes": 189752,
+      "sha256": "8c18972a71041700a1da4d9a1586640fb6d55eff4dc64efd29efde6a384a2ff5",
+      "license": "CC-BY-4.0",
+      "author": "Google Noto Emoji"
+    },
+    {
+      "file": "1f389.webp",
+      "source": "https://fonts.gstatic.com/s/e/notoemoji/latest/1f389/512.webp",
+      "bytes": 304340,
+      "sha256": "aeff875df341bb7136fa4c84538000a3d4aea8a6dd16245ee8fa1c8bbfeb6ddc",
+      "license": "CC-BY-4.0",
+      "author": "Google Noto Emoji"
+    },
+    {
+      "file": "1f480.webp",
+      "source": "https://fonts.gstatic.com/s/e/notoemoji/latest/1f480/512.webp",
+      "bytes": 504704,
+      "sha256": "dc404ecc31c03d4c4e5d650300f5b6468b6cc05ca30afa7b483eb07776bef3ed",
+      "license": "CC-BY-4.0",
+      "author": "Google Noto Emoji"
+    },
+    {
+      "file": "1f921.webp",
+      "source": "https://fonts.gstatic.com/s/e/notoemoji/latest/1f921/512.webp",
+      "bytes": 595638,
+      "sha256": "3827a17cc811a5c131a69220eca0d8330135ae1a60184db61cadc6c959d5c58b",
+      "license": "CC-BY-4.0",
+      "author": "Google Noto Emoji"
+    }
+  ]
+}

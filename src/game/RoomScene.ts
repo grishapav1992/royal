@@ -1,6 +1,12 @@
 import { cabinetSeat, type GameReaction } from '../shared/cabinetSeating';
 import { drawCabinetStool } from './cabinetStoolArt';
 import { drawClubFloor } from './clubArt';
+import { CatRoutine, catApproachPoint, canHearCat, type CatAction, type CatView, type CatPerson } from '../shared/cat';
+import { CAT_HOME } from '../shared/catHome';
+import { CatRenderer, CAT_TEXTURE } from './CatRenderer';
+import { CAT_SIDE_PARTS_TEXTURE } from './CatSideWalkRenderer';
+import { CAT_HABITS_TEXTURE, CAT_CLIMB_TEXTURE, CAT_SCRATCH_TEXTURE, CAT_WALK_TEXTURE } from './CatRenderer';
+import { drawCatCare } from './catCareArt';
 import { FLOOR, BOUNDS } from '../shared/clubGeometry';
 import { AmbientGuests, type AmbientGuestView } from '../shared/ambientGuests';
 import type { MiraView } from '../shared/miraRoutine';
@@ -20,6 +26,8 @@ import { drawActivities } from './activityArt';
 import { ACTIVITIES, type ActivityId } from '../shared/activities';
 import { movementFacing } from '../shared/movement';
 import { addDrink, getIntoxication, intoxicatedMovement, MAX_SOBER_TIME_MS } from '../shared/intoxication';
+import { drunkKeyboardDirection, nextDrunkLayout } from '../shared/drunkControls';
+import { clickMovementPath } from './drunkNavigation';
 import { MovementPrediction } from '../network/MovementPrediction';
 import { ClickTargetScheduler } from '../network/ClickTargetScheduler';
 import { NpcMotion } from '../network/NpcMotion';
@@ -31,7 +39,7 @@ import { findPath, walkable, WORLD, type Point, type Obstacle } from './navigati
 
 import { CABINETS, cabinetsInHall, type Cabinet } from '../shared/cabinets';
 export { CABINETS, type Cabinet };
-type Actor = { hall: HallId; sprite: Phaser.GameObjects.Sprite; shadow: Phaser.GameObjects.Ellipse; blush: Phaser.GameObjects.Graphics; label?: Phaser.GameObjects.Text; x: number; y: number; path: Point[]; phase: number; nextMove: number; facing: Facing; skin: number; appearance: string; soberAt: number; moving: boolean; lastStep: number; strideDistance: number; visualAt: number; visualX: number; visualY: number; seat: string; action: PlayerAction; drink: string; actionUntil: number; cabinet: string; gameReaction: string; gameReactionUntil: number; visualSeat: string; seatedAt: number };
+type Actor = { hall: HallId; sprite: Phaser.GameObjects.Sprite; shadow: Phaser.GameObjects.Ellipse; blush: Phaser.GameObjects.Graphics; label?: Phaser.GameObjects.Text; x: number; y: number; path: Point[]; phase: number; nextMove: number; facing: Facing; skin: number; appearance: string; soberAt: number; controlLayout: number; moving: boolean; lastStep: number; strideDistance: number; visualAt: number; visualX: number; visualY: number; seat: string; action: PlayerAction; drink: string; actionUntil: number; cabinet: string; gameReaction: string; gameReactionUntil: number; visualSeat: string; seatedAt: number };
 export class RoomScene extends Phaser.Scene {
   player!: Actor;
   hall: HallId = 'arcade';
@@ -44,11 +52,20 @@ export class RoomScene extends Phaser.Scene {
   private pianoEffects=new Set<Phaser.GameObjects.GameObject>();
   onHall: (hall: HallId) => void = () => {};
   private guestRoutine=new AmbientGuests();
+  private catRoutine = new CatRoutine();
+  private catView = this.catRoutine.snapshot();
+  private catRenderer?: CatRenderer;
+  private catUiAt = 0;
+  private approachingCat = false;
+  private catApproachAt = 0;
+  onCat: () => void = () => {};
+  onCatOpen: () => void = () => {};
   private guestViews:AmbientGuestView[]=this.guestRoutine.snapshot();
   private guests=new Map<string,Actor>();
   private guestMotion=new Map<string,NpcMotion<AmbientGuestView>>();
   private keys!: Record<string, Phaser.Input.Keyboard.Key>;
   private marker!: Phaser.GameObjects.Arc;
+  private walkTarget: Point | null = null;
   private halo!: Phaser.GameObjects.Ellipse;
   private near: Cabinet | null = null;
   private pendingCabinet: Cabinet | null = null;
@@ -61,7 +78,7 @@ export class RoomScene extends Phaser.Scene {
   private network?: NetworkCommands;
   private networkSelf?: PlayerView;
   private remotePlayers = new Map<string, { actor: Actor; target: PlayerView }>();
-  private lastInput = '0,0';
+  private lastInput = '0,0,0';
   private lastInputAt = 0;
   private prediction = new MovementPrediction();
   private clickTargets = new ClickTargetScheduler();
@@ -86,13 +103,21 @@ export class RoomScene extends Phaser.Scene {
   constructor(options: { onNear: (cabinet: Cabinet | null) => void; onPlay: (cabinet: Cabinet) => void; onReady: () => void }) {
     super('room'); this.onNear = options.onNear; this.onPlay = options.onPlay; this.onReady = options.onReady;
   }
+  preload() {
+    this.load.image(CAT_TEXTURE, '/assets/cat/zverochka-atlas.png');
+    this.load.image(CAT_HABITS_TEXTURE, '/assets/cat/zverochka-habits.png');
+    this.load.image(CAT_CLIMB_TEXTURE, '/assets/cat/zverochka-climb.png');
+    this.load.image(CAT_SCRATCH_TEXTURE, '/assets/cat/zverochka-scratch.png');
+    this.load.image(CAT_WALK_TEXTURE, '/assets/cat/zverochka-walk-v3.png');
+    this.load.image(CAT_SIDE_PARTS_TEXTURE, '/assets/cat/zverochka-side-parts.png');
+  }
   create() {
     createDetailedArt(this);
     createCharacters(this);
     for(const hall of ['arcade','tables','github'] as const){
       const before=new Set(this.children.list);this.hall=hall;this.drawRoom();
       this.hallDetails.set(hall,new RoomDetails(this,cabinetsInHall(hall).filter(cabinet=>!isCardGame(cabinet.id)),hall));
-      if(hall==='arcade')this.bar=new Bar(this,id=>this.approachSeat(id),()=>this.approachBar());
+      if(hall==='arcade'){this.bar=new Bar(this,id=>this.approachSeat(id),()=>this.approachBar());drawCatCare(this);}
       drawActivities(this,id=>this.approachActivity(id),hall);
       for (const link of hallLinks(hall)) this.drawDoor(link);
       this.hallObjects.set(hall,this.children.list.filter(object=>!before.has(object)));
@@ -112,15 +137,16 @@ export class RoomScene extends Phaser.Scene {
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer, objects: Phaser.GameObjects.GameObject[]) => {
       if (this.locked || this.typing || objects.length) return;
       this.pendingCabinet = null; this.pendingLounge = null;
-      this.goTo({ x: pointer.worldX, y: pointer.worldY });
+      this.goTo({ x: pointer.worldX, y: pointer.worldY }, true);
     });
-    this.game.events.on(Phaser.Core.Events.BLUR, () => { this.input.keyboard?.resetKeys(); this.player.path = []; this.endPrediction(); this.network?.stop(); });
+    this.game.events.on(Phaser.Core.Events.BLUR, () => { this.input.keyboard?.resetKeys(); this.player.path = []; this.confirmWalkTarget(null); this.endPrediction(); this.network?.stop(); });
     if (this.reducedMotion) this.tweens.pauseAll();
     this.guard = new SecurityGuard(this);
+    this.catRenderer = new CatRenderer(this);
     this.onReady();
   }
   private changeHall(hall:HallId){
-    if(this.network||this.locked||this.switching||hall===this.hall||!inHallDoor(this.player))return;
+    if(this.network||this.locked||this.isHuggingCat()||this.switching||hall===this.hall||!inHallDoor(this.player))return;
     this.endPrediction();this.pendingCabinet=null;this.pendingLounge=null;this.player.path=[];this.marker.setVisible(false);
     const link=hallLinkAt(this.player);if(!link||link.target!==hall)return;
     const door=link.arrival;
@@ -161,6 +187,7 @@ export class RoomScene extends Phaser.Scene {
     this.add.zone(link.door.entry.x,166,116,158).setDepth(230).setInteractive({useHandCursor:true}).on('pointerdown',()=>{this.pendingCabinet=null;this.pendingLounge=null;this.goTo(link.door.entry);});
   }
   private showHall(hall:HallId){
+    this.walkTarget = null; this.marker?.setVisible(false);
     this.clickTargets.reset();
     for(const effect of this.pianoEffects){this.tweens.killTweensOf(effect);effect.destroy();}this.pianoEffects.clear();
     this.hall=hall;this.obstacles=hallObstacles(hall);this.details=this.hallDetails.get(hall)!;
@@ -249,18 +276,34 @@ export class RoomScene extends Phaser.Scene {
     const label = name ? this.add.text(x, y - 83, name, { fontFamily: 'Arial, sans-serif', fontSize: '11px', color: '#342f2a', backgroundColor: isPlayer ? '#f5d369' : '#fff4d9', padding: { x: 8, y: 4 } }).setOrigin(.5) : undefined;
     let soberAt = 0;
     if (isPlayer) try { soberAt = Math.min(Date.now() + MAX_SOBER_TIME_MS, Number(localStorage.getItem('royal-offline-sober-at')) || 0); } catch { /* The demo can run without browser storage. */ }
-    return { hall:this.hall, x, y, sprite, shadow, blush, label, path: [], phase: (x * 7 + y * 11 + skin * 17 + Array.from(name ?? '').reduce((hash, char) => (hash * 31 + char.charCodeAt(0)) % 997, 0)) % 100, nextMove: 0, facing: 'down', skin, appearance, soberAt, moving: false, lastStep: 0, strideDistance: 0, visualAt: 0, visualX: x, visualY: y, seat: '', action: 'idle', drink: '', actionUntil: 0, cabinet: '', gameReaction: '', gameReactionUntil: 0, visualSeat: '', seatedAt: 0 };
+    let controlLayout = 0;
+    if (isPlayer) {
+      try { controlLayout = Number(localStorage.getItem('royal-offline-control-layout')) || 0; } catch { /* Controls also work without storage. */ }
+      if (!Number.isInteger(controlLayout) || controlLayout < 0 || controlLayout > 9) controlLayout = 0;
+      if (getIntoxication(soberAt).remainingMs && !controlLayout) {
+        controlLayout = nextDrunkLayout(0);
+        try { localStorage.setItem('royal-offline-control-layout', String(controlLayout)); } catch { /* Keep this episode in memory. */ }
+      }
+    }
+    return { hall:this.hall, x, y, sprite, shadow, blush, label, path: [], phase: (x * 7 + y * 11 + skin * 17 + Array.from(name ?? '').reduce((hash, char) => (hash * 31 + char.charCodeAt(0)) % 997, 0)) % 100, nextMove: 0, facing: 'down', skin, appearance, soberAt, controlLayout, moving: false, lastStep: 0, strideDistance: 0, visualAt: 0, visualX: x, visualY: y, seat: '', action: 'idle', drink: '', actionUntil: 0, cabinet: '', gameReaction: '', gameReactionUntil: 0, visualSeat: '', seatedAt: 0 };
   }
-  goTo(point: Point) {
-    if (this.locked || this.typing || this.switching || this.player.cabinet || this.networkSelf?.playing) return;
-    if (this.network) { this.clickTargets.cancel(); this.afterMovement=undefined; this.endPrediction(); this.network.target(point.x, point.y); this.marker.setPosition(point.x, point.y).setVisible(true); return; }
+  goTo(point: Point, wander = false) {
+    this.approachingCat = false;
+    if (this.locked || this.isHuggingCat() || this.typing || this.switching || this.player.cabinet || this.networkSelf?.playing) return;
+    if (this.network) { this.clickTargets.cancel(); this.afterMovement=undefined; this.endPrediction(); this.walkTarget = null; this.network.target(point.x, point.y, wander); this.marker.setPosition(point.x, point.y).setVisible(true); return; }
     this.stand();
-    const path = findPath(this.player, point, this.obstacles);
+    const path = clickMovementPath(this.player, point, wander);
     if (!path.length) return;
-    this.player.path = path; this.marker.setPosition(point.x, point.y).setVisible(true);
+    this.player.path = path; this.confirmWalkTarget(path.at(-1)!);
+  }
+  confirmWalkTarget(point: Point | null) {
+    if (point && (this.locked || this.typing || this.switching || this.network && this.lastInput !== '0,0,0')) return;
+    this.walkTarget = point ? { ...point } : null;
+    if (point) this.marker.setPosition(point.x, point.y).setVisible(true);
+    else this.marker.setVisible(false);
   }
   approach(id: string) {
-    if (this.locked) return;
+    if (this.locked || this.isHuggingCat()) return;
     const occupant = this.cabinetOccupant(id);
     if (occupant) { this.onNotice('Это место уже занято: ' + occupant + '. Выбери другую игру.'); return; }
     this.pendingLounge = null;
@@ -268,12 +311,15 @@ export class RoomScene extends Phaser.Scene {
     this.pendingCabinet = cabinet; this.goTo(cabinetSeat(cabinet).entry);
   }
   approachFloor(target: HallId) {
-    if (this.locked || this.typing || this.switching) return;
+    if (this.locked || this.isHuggingCat() || this.typing || this.switching) return;
     const link = hallLinks(this.hall).find(candidate => candidate.target === target); if (!link) return;
     this.pendingCabinet = null; this.pendingLounge = null; this.goTo(link.door.entry);
   }
   interact() {
     if (this.locked || this.typing) return;
+    if (this.isHuggingCat()) { this.onCatOpen(); return; }
+    const cat=this.catInfo();
+    if (cat.near&&!cat.busy) { this.onCatOpen(); return; }
     const activity=(Object.keys(ACTIVITIES) as ActivityId[]).find(id=>activityHall(id)===this.hall&&Math.hypot(this.player.x-ACTIVITIES[id].entry.x,this.player.y-ACTIVITIES[id].entry.y)<45);
     if(activity){this.onActivity(activity);return;}
     if (this.near) { this.player.facing = 'up'; this.onPlay(this.near); }
@@ -283,12 +329,12 @@ export class RoomScene extends Phaser.Scene {
   }
   approachBar() {
     if(this.hall!=='arcade')return;
-    if (this.locked || this.typing) return;
+    if (this.locked || this.isHuggingCat() || this.typing) return;
     if (atBar(this.player)) { this.onBar(); return; }
     this.pendingCabinet = null; this.pendingLounge = 'bar'; this.goTo(BAR_APPROACH);
   }
   approachActivity(id:ActivityId){
-    if(this.locked||this.typing||this.switching||activityHall(id)!==this.hall)return;
+    if(this.locked||this.isHuggingCat()||this.typing||this.switching||activityHall(id)!==this.hall)return;
     this.pendingCabinet=null;this.pendingLounge='activity:'+id;this.goTo(ACTIVITIES[id].entry);
   }
   pianoNote(note:number){
@@ -300,7 +346,7 @@ export class RoomScene extends Phaser.Scene {
     this.tweens.add({targets:music,y:245,x:130,alpha:0,duration:700,onComplete:()=>{music.destroy();this.pianoEffects.delete(music);}});
   }
   approachSeat(id: string) {
-    if (this.locked || this.typing) return;
+    if (this.locked || this.isHuggingCat() || this.typing) return;
     const seat = SEATS.find(s=>s.id===id&&(s.hall??'arcade')===this.hall); if(!seat)return;
     this.pendingCabinet = null; this.pendingLounge = id; this.goTo(seat.entry);
   }
@@ -313,6 +359,7 @@ export class RoomScene extends Phaser.Scene {
     return [...this.remotePlayers.values()].find(remote => remote.target.cabinet === id)?.target.name;
   }
   async beginCabinet(cabinet: Cabinet): Promise<boolean> {
+    if (this.isHuggingCat()) return false;
     const occupant = this.cabinetOccupant(cabinet.id);
     if (occupant) { this.onNotice('Это место уже занято: ' + occupant + '. Выбери другую игру.'); return false; }
     if (this.securityLocked || this.player.cabinet) return false;
@@ -351,7 +398,7 @@ export class RoomScene extends Phaser.Scene {
     else { this.player.gameReaction = reaction; this.player.gameReactionUntil = Date.now() + 2400; }
   }
   stand() {
-    if (this.player.cabinet) return;
+    if (this.player.cabinet || this.isHuggingCat()) return;
     if(this.network) { this.endPrediction(); this.network.stand(); return; }
     const seat=SEATS.find(s=>s.id===this.player.seat);
     if(seat){this.player.x=seat.entry.x;this.player.y=seat.entry.y;}
@@ -359,13 +406,16 @@ export class RoomScene extends Phaser.Scene {
   }
   orderDrink(id: string): boolean {
     const drink = DRINKS.find(d=>d.id===id);
-    if(!this.player || !drink || this.hall!=='arcade' || !atBar(this.player) || this.player.action==='drink' || this.securityLocked)return false;
+    if(!this.player || this.isHuggingCat() || !drink || this.hall!=='arcade' || !atBar(this.player) || this.player.action==='drink' || this.securityLocked)return false;
     if(this.network){
       if(!this.networkSelf?.connected || this.networkSelf.playing)return false;
       this.endPrediction();this.network.drink(id);return true;
     }
     this.player.path=[];this.player.action='drink';this.player.drink=id;this.player.actionUntil=Date.now()+3200;
+    const wasSober = !getIntoxication(this.player.soberAt).remainingMs;
     this.player.soberAt = addDrink(this.player.soberAt, drink.strength);
+    if (this.player.soberAt > Date.now() && (!this.player.controlLayout || wasSober && drink.strength > 0)) this.player.controlLayout = nextDrunkLayout(this.player.controlLayout);
+    try { localStorage.setItem('royal-offline-control-layout', String(this.player.controlLayout)); } catch { /* Keep the episode stable in memory. */ }
     try { localStorage.setItem('royal-offline-sober-at', String(this.player.soberAt)); } catch { /* Drinking does not require browser storage. */ }
     return true;
   }
@@ -399,6 +449,59 @@ export class RoomScene extends Phaser.Scene {
     }
   }
   syncMira(mira: MiraView) { this.bar?.sync(mira); }
+  isHuggingCat() { return this.catView.carriedBy === (this.selfId || 'local-player'); }
+  private stopForCatHug() {
+    this.approachingCat=false;this.pendingCabinet=null;this.pendingLounge=null;this.afterMovement=undefined;
+    this.clickTargets.cancel();this.player.path=[];this.confirmWalkTarget(null);
+    this.prediction.reset();this.correction={x:0,y:0};this.lastInput='0,0,0';
+    this.input.keyboard?.resetKeys();this.player.facing='down';
+    this.animateActor(this.player,this.time.now,false);
+  }
+  syncCat(cat: CatView) {
+    const wasHugging=this.isHuggingCat();this.catView = cat;
+    if(this.isHuggingCat()&&!wasHugging) {
+      this.stopForCatHug();this.player.x=cat.x;this.player.y=cat.y;
+    }
+  }
+  catInfo() {
+    const cat = this.catView, player = this.player;
+    const anchor = catApproachPoint(cat);
+    const sameHall = cat.hall === this.hall, selfId = this.selfId || 'local-player';
+    const near = Boolean(player && sameHall && Math.hypot(player.x-anchor.x,player.y-anchor.y) <= 100);
+    return { cat: { ...cat }, near, sameHall, selfId, busy: this.locked || this.securityLocked || Boolean(player?.cabinet) || Boolean(player?.seat) || player?.action==='drink' || Boolean(this.networkSelf?.playing) || Boolean(this.networkSelf?.activity) };
+  }
+  approachCat() {
+    if(this.isHuggingCat())return;
+    if (this.catView.hall !== this.hall) {
+      const link = hallLinks(this.hall).find(link => link.target === this.catView.hall) ?? hallLinks(this.hall)[0];
+      this.approachFloor(link.target); this.approachingCat=true; return;
+    }
+    const anchor = catApproachPoint(this.catView);
+    for (const [dx,dy] of [[0,30],[30,0],[-30,0],[0,-30],[0,0]]) {
+      const point = { x: anchor.x+dx, y: anchor.y+dy };
+      if (walkable(point.x,point.y,this.obstacles,18)) { this.pendingCabinet=null;this.pendingLounge=null;this.goTo(point);this.approachingCat=true;return; }
+    }
+  }
+  catAction(action: CatAction) {
+    if(action==='release'&&this.isHuggingCat()) {
+      if(this.network)this.network.cat?.(action);
+      else { const message=this.catRoutine.interact(action,this.catPerson());this.catView=this.catRoutine.snapshot();if(message)this.onNotice(message);this.onCat(); }
+      return;
+    }
+    if (this.catInfo().busy || this.isHuggingCat() || this.typing || this.switching) return;
+    if (action === 'pet' || action === 'feed' || action === 'hug') {
+      this.approachingCat=false;this.player.path=[];this.network?.stop();this.confirmWalkTarget(null);
+    }
+    if (this.network) { this.finishMovement(()=>this.network?.cat?.(action)); return; }
+    const person = this.catPerson();
+    const message = this.catRoutine.interact(action,person);
+    this.catView = this.catRoutine.snapshot();
+    if(this.isHuggingCat())this.stopForCatHug();
+    if (message) this.onNotice(message);
+    this.onCat();
+  }
+  private catPerson(): CatPerson { return {id:'local-player',hall:this.hall,x:this.player.x,y:this.player.y,connected:true,playing:Boolean(this.player.cabinet),cabinet:this.player.cabinet,security:this.securityLocked?'locked':'',seat:this.player.seat,action:this.player.action}; }
+  catPortrait() { return this.textures.getBase64(CAT_TEXTURE,'17'); }
   syncGuards(guards: GuardView[]) { this.guard.sync(guards); }
   setSecurity(locked: boolean) { this.securityLocked = locked; this.setLocked(locked || Boolean(document.querySelector('dialog[open]'))); }
   setLocked(locked: boolean) {
@@ -406,6 +509,7 @@ export class RoomScene extends Phaser.Scene {
     this.clickTargets.cancel();
     this.endPrediction();
     if(locked)this.switching=false;
+    this.confirmWalkTarget(null);
     this.locked = locked; this.player.path = []; this.pendingCabinet = null; this.pendingLounge = null; this.marker.setVisible(false);
     this.input.keyboard?.resetKeys();
     this.network?.stop();
@@ -423,7 +527,7 @@ export class RoomScene extends Phaser.Scene {
       this.input.keyboard.enabled = !typing && !this.locked;
       this.input.keyboard.manager.enabled = !typing && !this.locked;
     }
-    if (typing) { this.player.path = []; this.pendingCabinet = null; this.pendingLounge = null; this.network?.stop(); this.lastInput = '0,0'; }
+    if (typing) { this.confirmWalkTarget(null); this.player.path = []; this.pendingCabinet = null; this.pendingLounge = null; this.network?.stop(); this.lastInput = '0,0,0'; }
   }
   enableOnline(commands: NetworkCommands) {
     this.clickTargets.reset();
@@ -432,15 +536,15 @@ export class RoomScene extends Phaser.Scene {
     this.network = {
       inputs: commands.inputs,
       move: (x,y) => { this.clickTargets.cancel(); this.finishMovement(() => commands.move(x,y)); },
-      target: (x,y) => this.finishMovement(() => this.clickTargets.request(() => commands.target(x,y))),
+      target: (x,y,wander) => this.finishMovement(() => this.clickTargets.request(() => commands.target(x,y,wander))),
       stop: () => { this.clickTargets.cancel(); this.finishMovement(commands.stop); },
       sit: seat => { this.clickTargets.cancel(); this.finishMovement(() => commands.sit(seat)); },
       stand: () => { this.clickTargets.cancel(); this.finishMovement(commands.stand); },
       drink: drink => { this.clickTargets.cancel(); this.finishMovement(() => commands.drink(drink)); },
-      cabinetPlay: commands.cabinetPlay, cabinetLeave: commands.cabinetLeave, cabinetReaction: commands.cabinetReaction,
+      cat: commands.cat, cabinetPlay: commands.cabinetPlay, cabinetLeave: commands.cabinetLeave, cabinetReaction: commands.cabinetReaction,
     };
     this.networkSelf = undefined;
-    this.player.path = []; this.lastInput = '0,0';
+    this.player.path = []; this.lastInput = '0,0,0';
 
   }
   syncPlayers(players: PlayerView[], selfId: string) {
@@ -456,7 +560,7 @@ export class RoomScene extends Phaser.Scene {
       }
       if (!this.networkSelf) { this.player.x = self.x; this.player.y = self.y; }
       this.networkSelf = self;
-      this.player.soberAt = self.soberAt;
+      this.player.soberAt = self.soberAt; this.player.controlLayout = self.controlLayout ?? 0;
       this.player.cabinet = self.cabinet ?? ''; this.player.gameReaction = self.gameReaction ?? ''; this.player.gameReactionUntil = self.gameReactionUntil ?? 0;
       if (this.prediction.active) {
         const next = this.prediction.reconcile(self, self.inputSeq, this.guard.getState());
@@ -500,7 +604,7 @@ export class RoomScene extends Phaser.Scene {
     }
     const factor = Math.min(1, dt * 18);
     actor.x += (target.x - actor.x) * factor; actor.y += (target.y - actor.y) * factor;
-    actor.facing = target.facing; actor.seat = target.seat; actor.action = target.action; actor.drink = target.drink; actor.actionUntil = target.actionUntil; actor.soberAt = target.soberAt;
+    actor.facing = target.facing; actor.seat = target.seat; actor.action = target.action; actor.drink = target.drink; actor.actionUntil = target.actionUntil; actor.soberAt = target.soberAt; actor.controlLayout = target.controlLayout ?? 0;
     actor.cabinet = target.cabinet ?? ''; actor.gameReaction = target.gameReaction ?? ''; actor.gameReactionUntil = target.gameReactionUntil ?? 0;
     this.animateActor(actor, time, target.moving && target.connected);
     actor.sprite.setAlpha(target.connected ? 1 : .4);
@@ -508,9 +612,10 @@ export class RoomScene extends Phaser.Scene {
   }
   private flushPrediction() { if (this.network) this.prediction.flush(inputs => this.network!.inputs(inputs)); }
   cancelMovement() {
+    this.confirmWalkTarget(null);
     this.cancelCabinetAdmission?.();
     this.clickTargets.cancel();
-    this.prediction.reset(); this.afterMovement = undefined; this.lastInput = '0,0'; this.correction = { x: 0, y: 0 };
+    this.prediction.reset(); this.afterMovement = undefined; this.lastInput = '0,0,0'; this.correction = { x: 0, y: 0 };
   }
   private endPrediction() {
     if (this.securityLocked || !this.network) {
@@ -518,14 +623,14 @@ export class RoomScene extends Phaser.Scene {
     } else {
       this.prediction.finish(this.player); this.flushPrediction();
     }
-    this.lastInput = '0,0';
+    this.lastInput = '0,0,0';
   }
   finishMovement(action: () => void) {
     this.endPrediction();
     if (this.prediction.active) this.afterMovement = action;
     else { this.afterMovement = undefined; action(); }
   }
-  getState() { const c=this.cameras.main;return { world:{...WORLD,bounds:BOUNDS},guests:this.guestViews.filter(v=>v.hall===this.hall).map(v=>({...v})), playing:this.networkSelf?.playing??Boolean(this.player.cabinet), cabinet:this.player.cabinet, gameReaction:this.player.gameReactionUntil>Date.now()?this.player.gameReaction:'', gameReactionUntil:this.player.gameReactionUntil, stools:[...this.cabinetStools.keys()], mira:this.bar?.getState(), guards:this.guard?.getState(), security:this.networkSelf?.security, hall:this.hall,switching:this.switching, view:{width:c.width,height:c.height,zoom:c.zoom,x:c.worldView.x,y:c.worldView.y,overview:this.overview}, x: this.player.x, y: this.player.y, moving: this.player.moving, seat: this.player.seat, action: this.player.action, drink: this.player.drink, actionUntil: this.player.actionUntil, soberAt: this.player.soberAt, intoxication: getIntoxication(this.player.soberAt), near: this.near?.id ?? null, locked: this.locked, online: !!this.network, predicted: this.prediction.active, pendingInputs: this.prediction.pendingCount, serverX: this.networkSelf?.x, serverY: this.networkSelf?.y, renderX: this.player.sprite.x, renderY: this.player.sprite.y, skin: this.player.skin, appearance: this.player.appearance, texture: this.player.sprite.texture.key, remotes: this.remotePlayers.size, remotePositions: [...this.remotePlayers].map(([id, { actor }]) => ({ id, skin: actor.skin, appearance: actor.appearance, texture: actor.sprite.texture.key, x: actor.x, y: actor.y, seat: actor.seat, cabinet: actor.cabinet, gameReaction:actor.gameReactionUntil>Date.now()?actor.gameReaction:'', gameReactionUntil:actor.gameReactionUntil, action: actor.action, soberAt: actor.soberAt, angle: actor.sprite.angle, frame: actor.sprite.frame.name })), facing: this.player.facing, animation: this.player.sprite.anims.currentAnim?.key, frame: this.player.sprite.frame.name, reducedMotion: this.reducedMotion }; }
+  getState() { const c=this.cameras.main;return { cat: this.catView, world:{...WORLD,bounds:BOUNDS},guests:this.guestViews.filter(v=>v.hall===this.hall).map(v=>({...v})), playing:this.networkSelf?.playing??Boolean(this.player.cabinet), cabinet:this.player.cabinet, gameReaction:this.player.gameReactionUntil>Date.now()?this.player.gameReaction:'', gameReactionUntil:this.player.gameReactionUntil, stools:[...this.cabinetStools.keys()], mira:this.bar?.getState(), guards:this.guard?.getState(), security:this.networkSelf?.security, hall:this.hall,switching:this.switching, view:{width:c.width,height:c.height,zoom:c.zoom,x:c.worldView.x,y:c.worldView.y,overview:this.overview}, x: this.player.x, y: this.player.y, moving: this.player.moving, seat: this.player.seat, action: this.player.action, drink: this.player.drink, actionUntil: this.player.actionUntil, soberAt: this.player.soberAt, controlLayout: this.player.controlLayout, walkTarget: this.walkTarget ? { ...this.walkTarget } : null, intoxication: getIntoxication(this.player.soberAt), near: this.near?.id ?? null, locked: this.locked, online: !!this.network, predicted: this.prediction.active, pendingInputs: this.prediction.pendingCount, serverX: this.networkSelf?.x, serverY: this.networkSelf?.y, renderX: this.player.sprite.x, renderY: this.player.sprite.y, skin: this.player.skin, appearance: this.player.appearance, texture: this.player.sprite.texture.key, remotes: this.remotePlayers.size, remotePositions: [...this.remotePlayers].map(([id, { actor }]) => ({ id, skin: actor.skin, appearance: actor.appearance, texture: actor.sprite.texture.key, x: actor.x, y: actor.y, seat: actor.seat, cabinet: actor.cabinet, gameReaction:actor.gameReactionUntil>Date.now()?actor.gameReaction:'', gameReactionUntil:actor.gameReactionUntil, action: actor.action, soberAt: actor.soberAt, angle: actor.sprite.angle, frame: actor.sprite.frame.name })), facing: this.player.facing, animation: this.player.sprite.anims.currentAnim?.key, frame: this.player.sprite.frame.name, reducedMotion: this.reducedMotion }; }
   update(time: number, delta: number) {
     if (!this.player) return;
     if (time >= this.sobrietyBadgeAt) {
@@ -535,37 +640,54 @@ export class RoomScene extends Phaser.Scene {
         badge.hidden = drunk.stage === 0; badge.dataset.stage = String(drunk.stage);
         const seconds = Math.ceil(drunk.remainingMs / 1000);
         badge.textContent = `${drunk.label} · ${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
-        badge.title = 'Время до полного отрезвления';
+        badge.title = drunk.stage === 3 ? 'Клавиши движения перепутаны. Клики по полу ведут в случайное место этого зала.' : 'Время до полного отрезвления';
       }
     }
-    if(!this.network&&!this.locked&&!this.typing&&inHallDoor(this.player))this.changeHall(hallLinkAt(this.player)!.target);
+    if(!this.network&&!this.locked&&!this.isHuggingCat()&&!this.typing&&inHallDoor(this.player))this.changeHall(hallLinkAt(this.player)!.target);
     this.details.update(time);
     if (this.hall === 'github') this.cardTables?.update(time);
     if(this.hall==='arcade')this.bar.update(this.player.action==='drink'||[...this.remotePlayers.values()].some(p=>p.target.action==='drink'),this.reducedMotion,this.guard.barConversation(),delta/1000,Boolean(this.network));
     if(!this.network && this.player.action==='drink' && Date.now()>=this.player.actionUntil){this.player.action=this.player.seat?'sit':'idle';this.player.drink='';}
     const standButton = document.querySelector<HTMLButtonElement>('#stand-up'); if(standButton)standButton.hidden = Boolean(this.player.cabinet) || (!this.player.seat && this.player.action!=='drink');
     const dt = Math.min(delta, 40) / 1000;
+    if (!this.network) { this.catRoutine.tick(dt,[this.catPerson()]); this.catView=this.catRoutine.snapshot(); }
+    const carrier = this.catView.carriedBy === (this.selfId || 'local-player') ? this.player : this.remotePlayers.get(this.catView.carriedBy)?.actor;
+    const catAudible = canHearCat(this.catView,{hall:this.hall,x:this.player.x,y:this.player.y});
+    this.catRenderer?.update(this.catView,this.hall,time,dt,this.reducedMotion,carrier,catAudible);
+    if (time >= this.catUiAt) { this.catUiAt=time+200;this.onCat(); }
+    if (this.walkTarget && Math.hypot(this.player.x - this.walkTarget.x, this.player.y - this.walkTarget.y) < 3) this.confirmWalkTarget(null);
     const now = performance.now(), inputMs = Math.min(50, now-this.predictionClock); this.predictionClock = now;
     this.correction.x *= Math.exp(-dt*18); this.correction.y *= Math.exp(-dt*18);
-    if (!this.locked && !this.typing && !this.switching && !this.player.cabinet && !this.networkSelf?.playing) {
+    if (!this.locked && !this.isHuggingCat() && !this.typing && !this.switching && !this.player.cabinet && !this.networkSelf?.playing) {
       const dx = Number(this.keys.D!.isDown || this.keys.RIGHT!.isDown) - Number(this.keys.A!.isDown || this.keys.LEFT!.isDown);
       const dy = Number(this.keys.S!.isDown || this.keys.DOWN!.isDown) - Number(this.keys.W!.isDown || this.keys.UP!.isDown);
+      const directions = Number(this.keys.W!.isDown || this.keys.UP!.isDown)
+        | Number(this.keys.D!.isDown || this.keys.RIGHT!.isDown) << 1
+        | Number(this.keys.S!.isDown || this.keys.DOWN!.isDown) << 2
+        | Number(this.keys.A!.isDown || this.keys.LEFT!.isDown) << 3;
       const sprint = this.keys.SHIFT!.isDown;
+      if (directions) this.approachingCat=false;
+      if (this.approachingCat && time >= this.catApproachAt) {
+        this.catApproachAt=time+750;
+        const anchor=catApproachPoint(this.catView);
+        if (this.catView.hall===this.hall && Math.hypot(this.player.x-anchor.x,this.player.y-anchor.y)<60) { this.approachingCat=false;this.player.path=[];this.network?.stop();this.confirmWalkTarget(null); }
+        else this.approachCat();
+      }
       let moving = false;
       if (this.network) {
-        const input = String(dx) + ',' + String(dy) + (sprint && (dx || dy) ? ',sprint' : '');
-        if (this.networkSelf && (dx || dy || input !== this.lastInput)) {
-          if (dx || dy) { this.clickTargets.cancel(); this.afterMovement = undefined; }
-          this.prediction.step(this.player, dx, dy, dx || dy ? inputMs : 0, sprint, this.guard.getState());
+        const input = String(dx) + ',' + String(dy) + ',' + String(directions) + (sprint && directions ? ',sprint' : '');
+        if (this.networkSelf && (directions || input !== this.lastInput)) {
+          if (directions) { this.clickTargets.cancel(); this.afterMovement = undefined; this.confirmWalkTarget(null); }
+          this.prediction.step(this.player, dx, dy, directions ? inputMs : 0, sprint, this.guard.getState(), directions);
           if (input !== this.lastInput || now-this.lastInputAt >= 50) { this.flushPrediction(); this.lastInputAt = now; }
           this.lastInput = input;
-          if (dx || dy) { this.pendingCabinet = null; this.pendingLounge = null; this.player.path = []; this.marker.setVisible(false); }
+          if (directions) { this.pendingCabinet = null; this.pendingLounge = null; this.player.path = []; this.marker.setVisible(false); }
         }
-        if (this.prediction.active) { if (!dx && !dy) this.player.moving = false; this.animateActor(this.player, time, this.player.moving); }
-      } else if (dx || dy) {
-        this.stand(); this.pendingLounge = null;
+        if (this.prediction.active) { if (!directions) this.player.moving = false; this.animateActor(this.player, time, this.player.moving); }
+      } else if (directions) {
+        this.stand(); this.pendingLounge = null; this.confirmWalkTarget(null);
         this.player.path = []; this.pendingCabinet = null; this.marker.setVisible(false);
-        const impaired = intoxicatedMovement(this.player.soberAt, { x: dx, y: dy, ms: dt * 1000 }, Math.floor(time / 50));
+        const impaired = intoxicatedMovement(this.player.soberAt, { ...drunkKeyboardDirection(this.player.soberAt, this.player.controlLayout, { x: dx, y: dy, directions }), ms: dt * 1000 }, Math.floor(time / 50));
         const speed = (sprint ? PLAYER_SPRINT_SPEED : PLAYER_SPEED) * impaired.speedMultiplier * dt;
         moving = this.move(this.player, impaired.x * speed, impaired.y * speed);
       } else if (!this.player.seat && this.player.action!=='drink') moving = this.follow(this.player, dt, PLAYER_SPRINT_SPEED);
@@ -591,12 +713,12 @@ export class RoomScene extends Phaser.Scene {
       const nearKey = near ? near.id + ':' + (this.cabinetOccupant(near.id) ?? '') : '';
       if (nearKey !== this.lastNear) { this.lastNear = nearKey; this.onNear(near); }
       if (!this.player.path.length) {
-        this.marker.setVisible(false);
+        if (!this.walkTarget) this.marker.setVisible(false);
         if (this.pendingCabinet && near?.id === this.pendingCabinet.id) { this.pendingCabinet = null; this.player.facing = 'up'; this.onPlay(near); }
       }
     }
     if (this.prediction.active && (this.locked || this.typing || this.switching)) this.animateActor(this.player, time, false);
-    if (!this.network && (this.locked || this.typing || this.switching)) this.animateActor(this.player, time, false);
+    if (!this.network && (this.locked || this.isHuggingCat() || this.typing || this.switching)) this.animateActor(this.player, time, false);
     if (this.networkSelf && !this.prediction.active) this.interpolate(this.player, this.networkSelf, dt, time);
     for (const { actor, target } of this.remotePlayers.values()) this.interpolate(actor, target, dt, time);
     if (time >= this.nextTextureCleanup) {

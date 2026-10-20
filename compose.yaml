@@ -34,6 +34,7 @@ services:
     networks: [default, royal_database]
     volumes:
       - game_data:/app/data
+      - /opt/royal-game-modules:/app/game-modules:ro
     expose:
       - "2567"
     healthcheck:
