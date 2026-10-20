@@ -1,0 +1,75 @@
+{
+  "release": "girlhub-cabinet-20261020-v1",
+  "sourceCommit": "bc4d0fd05b7bed84c5d83425f235ede66d833397",
+  "changedSources": {
+    "src/game/RoomScene.ts": "f22eea40c1246370eab0f92424b85d4bd6500327727fc4bf367b7223a0f4b512",
+    "src/game/cabinetArt.ts": "c43138833d81ef8097d7e99b4465edbd1b9c8c879e8ae503a7761ff8077bdb83"
+  },
+  "clientDelta": {
+    "assets/arcades-pOcrZ0R6.js": "063c51475eb9fa3e5a0d733205c279fac5811710f7ed6c44bc0581ec0dd129ae",
+    "assets/breaker-BQ7z68W1.js": "5284cccc01b596880cc50e1258eae900183d0a4a90b6eff0ec30b7934a7b907c",
+    "assets/index-0R13mdff.js": "db3ceeb0ace0a935313b4f034066a2bb49e0ed69a82980b78247fd8c0c37be29",
+    "index.html": "2b5cbf6f51f42561981df94a1a7c8fb5ce6b2545ca2b15c8a371f41471deb39c"
+  },
+  "baselineImage": "sha256:644f6f0b3a367324d624db7c39033411cc124b89d1fc1922c1bd977655b49b8d",
+  "preparedImage": "sha256:70afedb8f351d2513493b2463052775a5be80f6ac6c6da1f4be50fa561464569",
+  "runningImage": "sha256:644f6f0b3a367324d624db7c39033411cc124b89d1fc1922c1bd977655b49b8d",
+  "preservedSourceFiles": 935,
+  "publicHTTP": {
+    "verified": true,
+    "origin": "https://stealth-spark-gokmxooi.expresshost.cloud",
+    "health": {
+      "ok": true,
+      "service": "royal-arcade"
+    },
+    "files": [
+      {
+        "path": "assets/arcades-pOcrZ0R6.js",
+        "status": 200,
+        "sha256": "063c51475eb9fa3e5a0d733205c279fac5811710f7ed6c44bc0581ec0dd129ae",
+        "bytes": 9359
+      },
+      {
+        "path": "assets/breaker-BQ7z68W1.js",
+        "status": 200,
+        "sha256": "5284cccc01b596880cc50e1258eae900183d0a4a90b6eff0ec30b7934a7b907c",
+        "bytes": 3968
+      },
+      {
+        "path": "assets/index-0R13mdff.js",
+        "status": 200,
+        "sha256": "db3ceeb0ace0a935313b4f034066a2bb49e0ed69a82980b78247fd8c0c37be29",
+        "bytes": 3622240
+      },
+      {
+        "path": "index.html",
+        "status": 200,
+        "sha256": "2b5cbf6f51f42561981df94a1a7c8fb5ce6b2545ca2b15c8a371f41471deb39c",
+        "bytes": 708
+      }
+    ],
+    "girlhubModule": {
+      "format": 1,
+      "gameId": "studio-afterglow",
+      "manifest": "/game-modules/studio-afterglow/versions/1.0.1-12d70f39e556/manifest.json",
+      "sha256": "4c7a1374984245c8385f6cddec519b633f44bb5893abac081952b39caf94caf4"
+    }
+  },
+  "publicBrowser": {
+    "verified": true,
+    "origin": "https://stealth-spark-gokmxooi.expresshost.cloud",
+    "hall": "arcade",
+    "near": "studio-afterglow",
+    "gameTitle": "GIRLHUB",
+    "openedWithE": true,
+    "returnedToHall": true,
+    "errors": [],
+    "accountsOrWagersCreated": false
+  },
+  "independentModulePreserved": true,
+  "containerRestarted": false,
+  "backendPreserved": true,
+  "configurationsPreserved": true,
+  "gameDataPreserved": true,
+  "oldAssetsPreserved": true
+}

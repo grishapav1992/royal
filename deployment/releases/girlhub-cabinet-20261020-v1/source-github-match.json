@@ -1,0 +1,10 @@
+{
+  "verified": true,
+  "commit": "bc4d0fd05b7bed84c5d83425f235ede66d833397",
+  "applicationSourceFilesMatched": 935,
+  "operationalExclusions": [
+    "deployment/SERVER.md",
+    "server/LobbyRoom.ts.orig"
+  ],
+  "runtimeMatchesBuiltImage": true
+}
