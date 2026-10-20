@@ -1,3 +1,4 @@
+import { miraProvider, requestMiraReply } from './miraProvider';
 import { DRINKS } from '../src/shared/world';
 import { getIntoxication } from '../src/shared/intoxication';
 import type { DrinkingState } from './intoxicationStore';
@@ -116,8 +117,8 @@ export class MiraService {
   async reply(id: string, message: unknown) { return (await this.respond(id, message)).reply; }
   async respond(id: string, message: unknown, language: 'ru' | 'en' = 'ru') {
     if (typeof message !== 'string' || !message.trim() || message.length > 600) throw new MiraError(400, 'Напиши от 1 до 600 символов.');
-    const key = process.env.CODEX_SALE_API_KEY;
-    if (!key) throw new MiraError(503, 'Разговор с Мирой пока не настроен. Напитки доступны в меню.');
+    const provider = miraProvider();
+    if (!provider) throw new MiraError(503, 'Разговор с Мирой пока не настроен. Напитки доступны в меню.');
     const state = await this.state(id), now = this.now(), previous = state.memory;
     if (now < previous.cooldownUntil) throw new MiraError(429, `Мира занялась стаканами. Вернись через ${Math.ceil((previous.cooldownUntil - now) / 1000)} сек.`);
     if (state.busy || now < state.next) throw new MiraError(429, 'Дай Мире пару секунд перед следующей репликой.');
@@ -140,14 +141,7 @@ export class MiraService {
       + `\nСерверное наблюдение (подтверждённые данные): ${JSON.stringify({ intoxication: intoxication.label, stage: intoxication.stage, soberInMinutes: Math.ceil(intoxication.remainingMs / 60000), lastDrink: DRINKS.find(drink => drink.id === drinking.lastDrink)?.name ?? null, lastDrinkAt: drinking.lastDrinkAt || null })}. ${mayOffer ? 'Допустимо редкое предложение одного напитка, если оно подходит теме.' : 'Сейчас не предлагай напитки, не уговаривай, drinkOffer=null.'}`
       + (alcoholRefused ? '\nГость отказался от алкоголя. Не предлагай алкоголь и не уговаривай. Допустимы только безалкогольные напитки, если гость не отказался от напитков вообще; просьба о лимонаде или кофе не отменяет отказ от алкоголя.' : '')
       + (repetition > 1 ? `\nСлужебное наблюдение: текущую реплику этот гость отправляет уже ${repetition}-й раз подряд или за последние 30 минут. Явно заметь повтор. При четырёх и более повторах закончи разговор и поставь endConversation=true, кроме личных переживаний (tone=confiding).` : '');
-      const response = await this.request('https://codex.sale/v1/responses', {
-        method: 'POST', headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ model: process.env.CODEX_SALE_NPC_MODEL || 'gpt-6-luna', instructions, input, max_output_tokens: 1000, stream: false, store: false }),
-        signal: AbortSignal.timeout(20000),
-      });
-      if (!response.ok) throw new Error('Provider failed');
-      const data = await response.json() as { output?: { type?: string; role?: string; content?: { type?: string; text?: string }[] }[] };
-      const text = data.output?.filter(item => item.type === 'message' && item.role === 'assistant').flatMap(item => item.content ?? []).filter(item => item.type === 'output_text').map(item => item.text ?? '').join('').trim();
+      const text = await requestMiraReply(this.request, provider, instructions, input);
       const result = JSON.parse((text ?? '').replace(/^```(?:json)?\s*|\s*```$/g, ''));
       let reply = clean(result.reply, 2000);
       if (!reply || !['neutral', 'interest', 'rude', 'apology', 'confiding'].includes(result.tone) || !Array.isArray(result.facts)) throw new Error('Invalid provider reply');
