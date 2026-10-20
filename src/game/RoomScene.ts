@@ -110,7 +110,7 @@ export class RoomScene extends Phaser.Scene {
     this.load.image(CAT_HABITS_TEXTURE, '/assets/cat/zverochka-habits.png');
     this.load.image(CAT_CLIMB_TEXTURE, '/assets/cat/zverochka-climb.png');
     this.load.image(CAT_SCRATCH_TEXTURE, '/assets/cat/zverochka-scratch.png');
-    this.load.image(CAT_WALK_TEXTURE, '/assets/cat/zverochka-walk-v3.png');
+    this.load.image(CAT_WALK_TEXTURE, '/assets/cat/zverochka-walk-v4.png');
   }
   create() {
     createDetailedArt(this);
