@@ -1,0 +1,175 @@
+{
+  "release": "veil-of-night-20261020-v1",
+  "sourceCommit": "4a44f067e8f7cedfbb46535876eb306ef5badddc",
+  "status": "verified_production_release",
+  "origin": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "changedSources": {
+    "docs/volcanic-plinko.md": "12331b8e61d8380221bd9b021e4ae63f8f7b994f2000b88b655c74364f0f95b8",
+    "public/assets/arcane-plinko/artwork.json": "d40a652ffad02e5acf1597a6051e70cad9d1acc803900409b7b902b5ba34f630",
+    "public/assets/arcane-plinko/hero.png": "e7d059e50aa613c52087d0bab4b6ebaddca50f1be4a33238410239b30ab59130",
+    "public/assets/arcane-plinko/world.png": "93d9bce647d8f99814dcccb6e473dabbc00d827808af15aba3e2e5511f3a39cb",
+    "scripts/game-math/plinko-bankroll-simulation.mjs": "573ff0d6d9b9d77f3226dbc9d406bcd5d6659a635612b0cae7745ed03807d38d",
+    "scripts/game-math/plinko-player-api-check.mjs": "ff42099537370d6aed6da9cd96f29f611db4dc8a68c9fb6a17f65eca70d8778d",
+    "scripts/game-math/plinko-player-audit.mjs": "578f77267ac2f47de9ec94a4dc37ef3c77406b3043a613763babc28ee2acde5c",
+    "src/game/VolcanicPlinkoAudio.ts": "59a2e84d3776157199359b8b8abcc2ec4d680928b8995609790b7a9cbc350394",
+    "src/i18n/en.ts": "b2e440e4494e7bff40c9bd108ba6db0ed044e428c05f694b7e8d0eb351e9f9bd",
+    "src/i18n/volcanicPlinkoEn.ts": "74aae913e12d633d1bfd6feb0ce12677df023395476b8ddf58d8d288788273bd",
+    "src/shared/cabinets.ts": "0fe17dc7cfb719a382bd4e4b46a72fc1a8bb6661d16daa39797d0e86d637cd6a",
+    "src/ui/GameViewport.ts": "e297766232a4a86347dab505783b57ffcf60a0901acc785cfa5777602e56f9ef",
+    "src/ui/OriginalGames.ts": "6fc11d528984ab9fa487ad3fa0dd60cb13dfb0e784f366a1fb0851636d2bef2e",
+    "src/ui/VolcanicPlinkoBoard.ts": "f0f63836536b228b26f407ef4c9ce44df999c52c16d19b77b4dd4ecda8f47434",
+    "src/ui/VolcanicPlinkoUI.ts": "f2ebb87d9eb325ad6be7d7658c48ec189b2f3dbd0b489debed7e221f2e1f4474",
+    "src/ui/volcanic-plinko.css": "56c1b366232e4fee255f4f91d6e7e65c4fe529b732e8afbcd1e75fd445ed25d2",
+    "src/ui/volcanicPlinkoModel.ts": "203bcae345e6b378ae490a371e2f7a978cdb62bf8f32de1fdb950c7c2b705d65"
+  },
+  "clientDelta": {
+    "index.html": "11508f6c159a067ed4ca6be88d07fb2fd3c87a429a8e8c64ca0e0d57aed59a06",
+    "assets/arcades-swmBIEFy.js": "95a60983f339069ddceaef74a7f7f8f5880e7963309d565d4bafed33b5d69862",
+    "assets/breaker-D3xNYzaB.js": "50dbf88fff14b85ead69c6d48c8e5c6a4f52f5de0b2aeb212c2212d7d03565f3",
+    "assets/index-BsUC7pSF.js": "2a37e871a586624aee6bd31f7181433432ad0273db0c205892186121c83a16a5",
+    "assets/index-CcAa0Pb2.css": "c231fb67b1d560c6588d8a063df9680394207e3b43128d7e6612949b9c2a3745",
+    "assets/arcane-plinko/artwork.json": "1ae45aa9babdc214437b2bc997fdc4d5e507e4f3cb2c590119e1b755e4117c1a",
+    "assets/arcane-plinko/hero.png": "e7d059e50aa613c52087d0bab4b6ebaddca50f1be4a33238410239b30ab59130",
+    "assets/arcane-plinko/world.png": "93d9bce647d8f99814dcccb6e473dabbc00d827808af15aba3e2e5511f3a39cb"
+  },
+  "preparedImage": "sha256:705145d9ba5460aa183345e2b8e6f4cbae4b4e55f288e85d0c60016588f3b8c5",
+  "runningContainerBaseImage": "sha256:644f6f0b3a367324d624db7c39033411cc124b89d1fc1922c1bd977655b49b8d",
+  "runningContainerStartedAt": "2026-10-20T19:13:57.351320869Z",
+  "containerRestarted": false,
+  "backup": {
+    "directory": "/opt/royal-backups/veil-of-night-20261020-v1",
+    "sourceSHA256": "7599445668b000e284cdb488c921f9f75f494fabf4b17e4716ff561700dc4691",
+    "previousImage": "sha256:644f6f0b3a367324d624db7c39033411cc124b89d1fc1922c1bd977655b49b8d",
+    "previousPrepared": "sha256:70afedb8f351d2513493b2463052775a5be80f6ac6c6da1f4be50fa561464569"
+  },
+  "previousImageTags": [
+    "royal-game:before-veil-of-night-20261020-v1",
+    "royal-game:before-veil-of-night-20261020-v1-prepared"
+  ],
+  "source": {
+    "qualifiedFiles": 950,
+    "unchangedExistingFiles": 933,
+    "existingFilesChanged": 4,
+    "filesAdded": 13,
+    "githubMatch": {
+      "verified": true,
+      "commit": "4a44f067e8f7cedfbb46535876eb306ef5badddc",
+      "applicationSourceFilesMatched": 948,
+      "operationalExclusions": [
+        "deployment/SERVER.md",
+        "server/LobbyRoom.ts.orig"
+      ],
+      "runtimeMatchesBuiltImage": true,
+      "method": "935 original application files matched GitHub base 415fbad; only the 17 canonical Git source blobs in this release changed or were added; server snapshot equals that expected source map."
+    }
+  },
+  "preservation": {
+    "backendPrograms": {
+      "dist-server/card-engine": "73444032de29085af28719f00afe4683dcb00118695e3401e05e0e52de641a64",
+      "dist-server/card-engine-v1": "c408bb0929442f0ae724e2723a971d70919fa6db25e1c903a991e6cf24dd3f41",
+      "dist-server/crypto-reconcile.js": "afe3e44eb292bab518224182be34d6f8d8b3b0ac0dc400aaf7b07e68d315c6da",
+      "dist-server/index.js": "b95db0c2e10fdc0262ebdda2e72b02ea7d74101c756c0bbad7472b742f2199d0",
+      "dist-server/payments.js": "561f122c79d236c9b114b2c64915c6becaafd0c9e5531835df0868cdc9610247",
+      "package.json": "511a0e474ad9d641016ceed1b63c451d8ed9e0e5476f9afa0115f32fe2d24a32",
+      "package-lock.json": "de2292b2c79cd2a2f4149ca46c1395e4dc1b458e6eb6e636cf19bea13007d734"
+    },
+    "configurationHashesUnchanged": true,
+    "domainAndEnvironmentUnchanged": true,
+    "mountsAndGameDataUnchanged": true,
+    "otherServicesUnchanged": 13,
+    "oldAssetUrlsPreserved": true,
+    "databaseOrFinancialOperationsPerformed": false
+  },
+  "verification": {
+    "typeScript": true,
+    "clientProductionBuild": true,
+    "focusedTestsPassed": 40,
+    "isolatedApiNormalRounds": 120,
+    "localDesktopLayout": "native layout fills stage",
+    "localNarrow390Layout": "no horizontal overflow, play button inside dialog",
+    "publicHTTP": {
+      "verified": true,
+      "origin": "https://stealth-spark-gokmxooi.expresshost.cloud",
+      "sourceCommit": "4a44f067e8f7cedfbb46535876eb306ef5badddc",
+      "files": [
+        {
+          "path": "index.html",
+          "status": 200,
+          "bytes": 720,
+          "sha256": "11508f6c159a067ed4ca6be88d07fb2fd3c87a429a8e8c64ca0e0d57aed59a06"
+        },
+        {
+          "path": "assets/arcades-swmBIEFy.js",
+          "status": 200,
+          "bytes": 9359,
+          "sha256": "95a60983f339069ddceaef74a7f7f8f5880e7963309d565d4bafed33b5d69862"
+        },
+        {
+          "path": "assets/breaker-D3xNYzaB.js",
+          "status": 200,
+          "bytes": 3968,
+          "sha256": "50dbf88fff14b85ead69c6d48c8e5c6a4f52f5de0b2aeb212c2212d7d03565f3"
+        },
+        {
+          "path": "assets/index-BsUC7pSF.js",
+          "status": 200,
+          "bytes": 3654252,
+          "sha256": "2a37e871a586624aee6bd31f7181433432ad0273db0c205892186121c83a16a5"
+        },
+        {
+          "path": "assets/index-CcAa0Pb2.css",
+          "status": 200,
+          "bytes": 755677,
+          "sha256": "c231fb67b1d560c6588d8a063df9680394207e3b43128d7e6612949b9c2a3745"
+        },
+        {
+          "path": "assets/arcane-plinko/artwork.json",
+          "status": 200,
+          "bytes": 3731,
+          "sha256": "1ae45aa9babdc214437b2bc997fdc4d5e507e4f3cb2c590119e1b755e4117c1a"
+        },
+        {
+          "path": "assets/arcane-plinko/hero.png",
+          "status": 200,
+          "bytes": 2821473,
+          "sha256": "e7d059e50aa613c52087d0bab4b6ebaddca50f1be4a33238410239b30ab59130"
+        },
+        {
+          "path": "assets/arcane-plinko/world.png",
+          "status": 200,
+          "bytes": 2539678,
+          "sha256": "93d9bce647d8f99814dcccb6e473dabbc00d827808af15aba3e2e5511f3a39cb"
+        }
+      ],
+      "health": {
+        "ok": true,
+        "service": "royal-arcade"
+      },
+      "productionAccountsCreated": 0,
+      "productionBets": 0
+    },
+    "publicBrowser": {
+      "url": "https://stealth-spark-gokmxooi.expresshost.cloud/?offline=1&lang=ru",
+      "canvasHeight": 274,
+      "canvasWidth": 284,
+      "gameWidth": 1214,
+      "guestPlayDisabled": true,
+      "heroLoaded": true,
+      "horizontalOverflow": false,
+      "pockets": 13,
+      "renderError": null,
+      "riskButtons": 3,
+      "stageWidth": 1214,
+      "title": "Завеса ночи · Plinko",
+      "viewportMode": "layout",
+      "rulesText": "×\nVEIL OF NIGHT · ROYAL\nПравила и выплаты\n\nОдин шар проходит 12 рядов. Каждый поворот влево или вправо имеет вероятность 50%. Лунка определяет полную выплату, включая возвращаемую часть ставки. Выплата меньше ставки означает убыток.\n\nПрофиль меняет таблицу выплат. Скорость, время нажатия и предыдущие броски не меняют шансы. Игра использует общий тестовый кошелёк клуба.\n\nПолная выплата при ставке 50,00\nЛунка\tШёпот\nRTP 98.9795%\n\tЧары\nRTP 98.9893%\n\tЗатмение\nRTP 99.1162%\n\n1\t10×\n500,00\n\t33×\n1 650,00\n\t170×\n8 500,00\n\n2\t3×\n150,00\n\t11×\n550,00\n\t24×\n1 200,00\n\n3\t1,6×\n80,00\n\t4×\n200,00\n\t8,1×\n405,00\n\n4\t1,4×\n70,00\n\t2×\n100,00\n\t2×\n100,00\n\n5\t1,1×\n55,00\n\t1,1×\n55,00\n\t0,7×\n35,00\n\n6\t1×\n50,00\n\t0,6×\n30,00\n\t0,2×\n10,00\n\n7\t0,5×\n25,00\n\t0,3×\n15,00\n\t0,2×\n10,00\n\n8\t1×\n50,00\n\t0,6×\n30,00\n\t0,2×\n10,00\n\n9\t1,1×\n55,00\n\t1,1×\n55,00\n\t0,7×\n35,00\n\n10\t1,4×\n70,00\n\t2×\n100,00\n\t2×\n100,00\n\n11\t1,6×\n80,00\n\t4×\n200,00\n\t8,1×\n405,00\n\n12\t3×\n150,00\n\t11×\n550,00\n\t24×\n1 200,00\n\n13\t10×\n500,00\n\t33×\n1 650,00\n\t170×\n8 500,00\n\nМатематика vFair, Apache-2.0. RTP указан до денежного округления. Начисление округляется вниз до 0,01 монеты. Незавершённый запрос восстанавливается с прежним идентификатором.",
+      "consoleErrors": [],
+      "productionAccountsCreated": 0,
+      "productionBets": 0
+    },
+    "limitations": [
+      "No production account or bet was created; public browser checks used guest offline mode.",
+      "The full legacy browser suite was not run."
+    ]
+  }
+}
