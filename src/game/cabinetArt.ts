@@ -63,8 +63,7 @@ export function paintCabinet(c: CanvasRenderingContext2D, cabinet: Cabinet) {
     panel(15, 3, 54, 10, '#cba568', 2);
     panel(23, 1, 38, 6, '#f0d397', 1);
     panel(13, 13, 58, 12, '#302b32', 2);
-    if (cabinet.id === 'studio-afterglow') paintGirlhubLogo(c, 13, 12, 58, 15);
-    else text(cabinet.demo ? 'ROYAL PLAY' : cabinet.id === 'royal-coins' ? 'ROYAL GAMES' : cabinet.name.toUpperCase(), 22, 6.3, accent);
+    text(cabinet.demo ? 'ROYAL PLAY' : cabinet.id === 'royal-coins' ? 'ROYAL GAMES' : cabinet.name.toUpperCase(), 22, 6.3, accent);
     panel(15, 26, 54, 48, '#d0ad72', 3);
     for (const x of [11, 73]) line(x, 28, x, 76, '#f0d598', 2);
     panel(8, 78, 68, 15, '#b78650', 2);

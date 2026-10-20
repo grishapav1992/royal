@@ -18,7 +18,7 @@ import { gameAudio } from './GameAudio';
 import Phaser from 'phaser';
 import { COLORS } from './art';
 import { createDetailedArt } from './materials';
-import { CABINET_SCALE, CABINET_SIZE, paintGirlhubLogo } from './cabinetArt';
+import { CABINET_SCALE, CABINET_SIZE } from './cabinetArt';
 import { plantTexture, drawHallIdentity } from './interiorArt';
 import { FURNITURE, PLANTS } from '../shared/furniture';
 import { createCharacters, createCharacterPortrait, characterTexture, characterScaleY, pruneCharacterTextures, CHARACTER_SCALE, type Facing } from './characters';
@@ -252,16 +252,6 @@ export class RoomScene extends Phaser.Scene {
       const glow = this.add.ellipse(cabinet.x, cabinet.y - 10, 72, 30, cabinet.color, .16);
       this.tweens.add({ targets: glow, alpha: .4, duration: 1600 + i * 210, yoyo: true, repeat: -1 });
       const machine = this.add.image(cabinet.x, cabinet.y, `cabinet-${i}`).setOrigin(.5, 1).setDisplaySize(CABINET_SIZE.width*CABINET_SCALE,CABINET_SIZE.height*CABINET_SCALE).setDepth(cabinet.y);
-      if (cabinet.id === 'studio-afterglow') {
-        const key = 'cabinet-logo-girlhub';
-        if (!this.textures.exists(key)) {
-          const texture = this.textures.createCanvas(key, 384, 96)!;
-          paintGirlhubLogo(texture.context, 0, 0, 384, 96); texture.refresh();
-        }
-        this.add.image(cabinet.x, cabinet.y - CABINET_SIZE.height * CABINET_SCALE + 14, key)
-          .setOrigin(.5, 1).setDisplaySize(128, 32).setDepth(cabinet.y + .3).setName('girlhub-cabinet-logo')
-          .setInteractive({ useHandCursor: true }).on('pointerdown', () => this.approach(cabinet.id));
-      }
       if (cabinet.demo) addDemoCabinetArt(this, cabinet);
       machine.setInteractive({ useHandCursor: true }).on('pointerdown', () => this.approach(cabinet.id));
       const lamp = this.add.rectangle(cabinet.x + 21, cabinet.y - 19, 3, 2, cabinet.color).setDepth(cabinet.y + 1);
