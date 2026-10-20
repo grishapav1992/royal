@@ -17,6 +17,9 @@ dist-load/
 *.key
 *.p12
 *.pfx
+.ssh/
+royal_server_ed25519
+deployment/ssh_config.local
 *.sqlite
 *.sqlite3
 *.db

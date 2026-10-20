@@ -1,0 +1,13 @@
+# Copy to deployment/ssh_config.local and replace the placeholders before use.
+# Connect from the repository root: ssh -F deployment/ssh_config.local royal-production
+# The private key must exist locally and must never be added to the repository.
+Host royal-production
+    HostName server.example.invalid
+    User YOUR_SSH_USER
+    Port 22
+    IdentityFile ~/.ssh/YOUR_PRIVATE_KEY
+    IdentitiesOnly yes
+    BatchMode yes
+    StrictHostKeyChecking yes
+    ForwardAgent no
+    ConnectTimeout 10
