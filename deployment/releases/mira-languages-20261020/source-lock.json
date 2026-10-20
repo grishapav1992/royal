@@ -1,12 +1,8 @@
 {
-  "gitBase": "4a45197f0e69c04724a5e5534b63fb68a23f3892",
+  "gitBase": "e63dc6e9d4e2164f49ae046c5a5b5d58cf59dcb8",
   "productionBaseImage": "sha256:7ad171727edc2f1437939c3354a073644673f54c06dbfe206b18e4eb6396645b",
-  "productionPins": {
-    "src/game/RoomScene.ts": {
-      "sha256": "62fdfdfaea398347504b22a77662662e0df37ec61729ef28f8fea76433911f75",
-      "gitCommit": "90cabdf7ed5511c8c31a65b3d2766f575539d197"
-    }
-  },
+  "preparedBaseImage": "sha256:0143c445cae4c079d0b07da5134483e86b91610fe4b77957018b0b646eeb1aa9",
+  "productionPins": {},
   "sourceDelta": [
     "server/mira.ts",
     "server/miraMemory.ts",
@@ -37,7 +33,7 @@
     "src/game/CatWalkCycle.ts": "32cd0638c2ccf3394bd23fc3f123584e71798ac257db7adaca606242d7d282b0",
     "src/game/GameAudio.ts": "4b876566a0585498c2f07ed8efc695aac7d8f40eae4bf528ba39ef7fb1e260c9",
     "src/game/PianoAudio.ts": "5fbc000ee9939e486fd27bf5a6b584522262b8d165697280427aa133ed085039",
-    "src/game/RoomScene.ts": "62fdfdfaea398347504b22a77662662e0df37ec61729ef28f8fea76433911f75",
+    "src/game/RoomScene.ts": "cd06ceda418f888ff2db09e1af4dba2e15d83340ccded7103fe8554f7a609f3f",
     "src/game/SecurityGuard.ts": "100228292703496614e6b4545afc2c81664b845ef0a23500bbed5c4b28bb7a93",
     "src/game/SlotAudio.ts": "db8bd5a92a91cbf4a57ae70166c022d41f3de93a6b893fe331f9bfdfb245cb92",
     "src/game/TableAudio.ts": "1877d4cf8f2b299513819c043b3294c1f84bf0477ea6194173d059d2d32c887d",
@@ -695,6 +691,7 @@
     "public/assets/cat/zverochka-habits.png": "8b91909e9647a701143dff0d9928a1eb85d550d23ea5bf43a46cd039828a2584",
     "public/assets/cat/zverochka-scratch.png": "16995697b6846472ec7899069fb02c32c14344d903048d6032125a0fd9606c4c",
     "public/assets/cat/zverochka-walk-v3.png": "cdb389b406ea9b84d752abaa130d3b1024a6d2770073392b9d73ef22e84fef1d",
+    "public/assets/cat/zverochka-walk-v4.png": "1837e890f8d77ec18a69ce246554071d1143ab74e47cfe33ffdabec6a2f28b72",
     "public/assets/characters.png": "771d51ca84b2c5b412027ba80c6a6b8a98bb5a983b2c58ac4f0ccf08ae4d10f2",
     "public/assets/cosmic-guardians/v1/alien.webp": "188bd8973f446976b01b9805880b958df5761f1dd545e0c5e7a6418f60a19599",
     "public/assets/cosmic-guardians/v1/background.webp": "0e185ec675a1bcc7b4fc7bdf43d6bb4c5adc15f3a7141075cf6549471829689c",
