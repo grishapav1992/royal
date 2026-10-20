@@ -1,3 +1,4 @@
+import { miraText, type MiraLanguage } from './miraLanguages';
 import { DRINKS } from '../src/shared/world';
 import type { MiraTurn } from './miraMemory';
 
@@ -29,14 +30,14 @@ const replySchema = {
   required: ['reply', 'facts', 'impression', 'tone', 'choices', 'endConversation', 'drinkOffer', 'emotion'],
 };
 
-export async function requestMiraReply(request: typeof fetch, provider: Provider, instructions: string, input: MiraTurn[]): Promise<string> {
+export async function requestMiraReply(request: typeof fetch, provider: Provider, instructions: string, input: MiraTurn[], language: MiraLanguage = 'ru'): Promise<string> {
   const venice = provider.name === 'venice';
   const response = await request(venice ? 'https://api.venice.ai/api/v1/chat/completions' : 'https://codex.sale/v1/responses', {
     method: 'POST', headers: { Authorization: `Bearer ${provider.key}`, 'Content-Type': 'application/json' },
     body: JSON.stringify(venice ? {
       model: provider.model, messages: [{ role: 'system', content: instructions }, ...input],
       max_tokens: 1000, temperature: 0.65, stream: false, store: false,
-      response_format: { type: 'json_schema', json_schema: { name: 'mira_reply', strict: true, schema: replySchema } },
+      response_format: { type: 'json_schema', json_schema: { name: 'mira_reply', strict: true, schema: { ...replySchema, properties: { ...replySchema.properties, reply: { ...replySchema.properties.reply, description: miraText[language].replyDescription }, choices: { ...replySchema.properties.choices, description: miraText[language].choicesDescription } } } } },
       venice_parameters: { include_venice_system_prompt: false, enable_web_search: 'off' },
     } : { model: provider.model, instructions, input, max_output_tokens: 1000, stream: false, store: false }),
     signal: AbortSignal.timeout(20000),

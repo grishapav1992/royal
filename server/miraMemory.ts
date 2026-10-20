@@ -1,9 +1,11 @@
+import type { MiraLanguage } from './miraLanguages';
 import { PostgresDatabase } from './database';
 
 export type MiraTurn = { role: 'user' | 'assistant'; content: string };
 export type MiraEmotion = 'neutral' | 'smile' | 'tease' | 'concern';
 export type MiraMemory = {
   turns: MiraTurn[]; facts: string[]; impression: string; warmth: number; strikes: number;
+  language?: MiraLanguage;
   lastSeen: number; visits: number; cooldownUntil: number;
   repeats: { key: string; count: number; at: number }[]; choices: string[];
   drinkOffer?: string | null; emotion?: MiraEmotion; drinkRefused?: boolean; alcoholRefused?: boolean; lastOfferAt?: number;

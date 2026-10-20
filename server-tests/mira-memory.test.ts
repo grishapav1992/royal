@@ -34,7 +34,18 @@ test('Mira API initializes its memory in the account PostgreSQL schema and persi
     const reply = await nativeFetch(endpoint, { method: 'POST', headers, body: JSON.stringify({ message: 'Люблю джаз' }) });
     assert.equal(reply.status, 200); assert.equal((await reply.json()).reply, 'Джаз запомню.');
     assert.deepEqual((await memory.read(login.account.id))?.facts, ['Гость любит джаз']);
-    await accounts.logout(login.token); assert.equal((await nativeFetch(endpoint, { headers })).status, 401);
+    const englishHeaders = { ...headers, 'Accept-Language': 'ru;q=0.2,en-US;q=0.9' };
+    const english = await nativeFetch(endpoint, { headers: englishHeaders });
+    assert.equal(english.headers.get('Content-Language'), 'en');
+    assert.equal((await english.json()).turns.at(-1).content, 'Go on. I remember you.');
+    const russian = await nativeFetch(endpoint, { headers: { ...headers, 'Accept-Language': 'ru-RU' } });
+    assert.equal((await russian.json()).turns.at(-1).content, 'Продолжим. Я тебя помню.');
+    assert.deepEqual((await memory.read(login.account.id))?.facts, ['Гость любит джаз']);
+    const invalid = await nativeFetch(endpoint, { method: 'POST', headers: englishHeaders, body: JSON.stringify({ message: '' }) });
+    assert.equal(invalid.status, 400); assert.equal((await invalid.json()).error, 'Write 1 to 600 characters.');
+    await accounts.logout(login.token);
+    const signedOut = await nativeFetch(endpoint, { headers: englishHeaders });
+    assert.equal(signedOut.status, 401); assert.equal((await signedOut.json()).error, 'Enter the online hall to talk to Mira.');
   } finally {
     await memory.close(); server.closeAllConnections(); await new Promise<void>(resolve => server.close(() => resolve()));
     if (previous === undefined) delete process.env.CODEX_SALE_API_KEY; else process.env.CODEX_SALE_API_KEY = previous;

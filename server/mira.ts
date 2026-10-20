@@ -1,3 +1,4 @@
+import { miraText, type MiraLanguage } from './miraLanguages';
 import { miraProvider, requestMiraReply } from './miraProvider';
 import { DRINKS } from '../src/shared/world';
 import { getIntoxication } from '../src/shared/intoxication';
@@ -56,18 +57,18 @@ export class MiraService {
   private resetting = new Set<string>();
   constructor(private request: typeof fetch = fetch, private store?: MiraMemoryRepository, private now: () => number = Date.now,
     private drinkingState: (id: string) => DrinkingState | Promise<DrinkingState> = () => ({ soberAt: 0, lastDrink: '', lastDrinkAt: 0 })) {}
-  private async state(id: string): Promise<Conversation> {
-    if (this.resetting.has(id)) throw new MiraError(409, 'Память разговора обновляется. Подожди немного.');
+  private async state(id: string, language: MiraLanguage = 'ru'): Promise<Conversation> {
+    if (this.resetting.has(id)) throw new MiraError(409, miraText[language].updating);
     const now = this.now();
     for (const [key, state] of this.conversations) if (!state.busy && now - state.touched > 30 * 60000) this.conversations.delete(key);
     const state = this.conversations.get(id);
     if (state) return state;
     const pending = this.loading.get(id);
     if (pending) return pending;
-    if (this.conversations.size + this.loading.size >= 1000) throw new MiraError(503, 'Бар сейчас занят. Попробуй позже.');
+    if (this.conversations.size + this.loading.size >= 1000) throw new MiraError(503, miraText[language].busy);
     const loading = (async () => {
       const memory = await this.store?.read(id) ?? blankMiraMemory();
-      if (this.resetting.has(id)) throw new MiraError(409, 'Память разговора обновляется. Подожди немного.');
+      if (this.resetting.has(id)) throw new MiraError(409, miraText[language].updating);
       const restored: Conversation = { memory, touched: now, busy: false, next: 0, count: 0, window: now, absence: memory.lastSeen ? now - memory.lastSeen : 0 };
       this.conversations.set(id, restored);
       return restored;
@@ -78,22 +79,26 @@ export class MiraService {
   private async save(id: string, state: Conversation, memory: MiraMemory) {
     await this.store?.write(id, memory); state.memory = memory; state.touched = this.now();
   }
-  async resume(id: string, name = '', language: 'ru' | 'en' = 'ru') {
-    const state = await this.state(id), now = this.now(), previous = state.memory;
+  async resume(id: string, name = '', language: MiraLanguage = 'ru') {
+    const state = await this.state(id, language), now = this.now(), previous = state.memory;
     if (state.busy) return this.view(previous);
     state.busy = true;
     try {
     const gap = previous.lastSeen ? now - previous.lastSeen : 0;
-    if (!previous.turns.length || gap >= 30 * 60000) {
-      const elapsedDays = Math.floor(gap / 86400000);
-      const returning = previous.visits > 0;
-      const greeting = language === 'en' ? (!returning ? 'Well? Surprise me.' : elapsedDays >= 5 ? `${elapsedDays} days without you. The glasses coped better.` : day(now) !== day(previous.lastSeen) ? `${clean(name, 24) || 'A familiar face'}. You again. Let us see what today brings.` : 'Back again? I hope you brought a new topic.') : !returning ? 'Ну? Чем удивишь?' : elapsedDays >= 5
-        ? `${elapsedDays} дней без тебя. Стаканы справлялись лучше.`
-        : day(now) !== day(previous.lastSeen) ? `${clean(name, 24) || 'Знакомое лицо'}. Опять ты. Посмотрим, что сегодня.`
-        : 'Вернулся? Надеюсь, с новой темой.';
-      state.absence = gap;
-      await this.save(id, state, { ...previous, lastSeen: now, visits: previous.visits + 1, choices: returning ? (language === 'en' ? ['Do you still remember me?', 'Did you miss me?', 'Let us start with lemonade'] : ['Ты меня ещё помнишь?', 'Скучала без меня?', 'Начнём с лимонада']) : [], turns: [...previous.turns, { role: 'assistant' as const, content: greeting }].slice(-16) });
-    } else await this.save(id, state, { ...previous, lastSeen: now });
+    const text = miraText[language];
+    const previousLanguage = previous.language ?? (/[А-Яа-яЁё]/.test(previous.turns.filter(turn => turn.role === 'assistant').at(-1)?.content ?? '') ? 'ru' : 'en');
+    const newVisit = !previous.turns.length || gap >= 30 * 60000;
+    if (newVisit || previousLanguage !== language) {
+      const elapsedDays = Math.floor(gap / 86400000), returning = previous.visits > 0;
+      const paused = now < previous.cooldownUntil;
+      const greeting = paused ? text.paused : !newVisit ? text.switched : !returning ? text.first
+        : elapsedDays >= 5 ? text.absent(elapsedDays)
+        : day(now) !== day(previous.lastSeen) ? text.nextDay(clean(name, 24)) : text.back;
+      if (newVisit) state.absence = gap;
+      await this.save(id, state, { ...previous, language, lastSeen: now, visits: previous.visits + (newVisit ? 1 : 0),
+        choices: paused || !returning ? [] : [...text.choices],
+        turns: [...previous.turns, { role: 'assistant' as const, content: greeting }].slice(-16) });
+    } else await this.save(id, state, { ...previous, language, lastSeen: now });
     return this.view(state.memory);
     } finally { state.busy = false; }
   }
@@ -102,9 +107,9 @@ export class MiraService {
       drinkOffer: memory.drinkRefused ? null : DRINKS.find(drink => drink.id === memory.drinkOffer && !(memory.alcoholRefused && drink.strength > 0))?.id ?? null,
       emotion: emotionOf(memory.emotion) };
   }
-  async reset(id: string) {
+  async reset(id: string, language: MiraLanguage = 'ru') {
     const state = this.conversations.get(id);
-    if (state?.busy || this.resetting.has(id)) throw new MiraError(409, 'Мира ещё отвечает. Подожди немного.');
+    if (state?.busy || this.resetting.has(id)) throw new MiraError(409, miraText[language].answering);
     this.resetting.add(id);
     if (state) state.busy = true;
     try {
@@ -115,15 +120,15 @@ export class MiraService {
     } finally { if (state) state.busy = false; this.resetting.delete(id); }
   }
   async reply(id: string, message: unknown) { return (await this.respond(id, message)).reply; }
-  async respond(id: string, message: unknown, language: 'ru' | 'en' = 'ru') {
-    if (typeof message !== 'string' || !message.trim() || message.length > 600) throw new MiraError(400, 'Напиши от 1 до 600 символов.');
+  async respond(id: string, message: unknown, language: MiraLanguage = 'ru') {
+    if (typeof message !== 'string' || !message.trim() || message.length > 600) throw new MiraError(400, miraText[language].input);
     const provider = miraProvider();
-    if (!provider) throw new MiraError(503, 'Разговор с Мирой пока не настроен. Напитки доступны в меню.');
-    const state = await this.state(id), now = this.now(), previous = state.memory;
-    if (now < previous.cooldownUntil) throw new MiraError(429, `Мира занялась стаканами. Вернись через ${Math.ceil((previous.cooldownUntil - now) / 1000)} сек.`);
-    if (state.busy || now < state.next) throw new MiraError(429, 'Дай Мире пару секунд перед следующей репликой.');
+    if (!provider) throw new MiraError(503, miraText[language].unconfigured);
+    const state = await this.state(id, language), now = this.now(), previous = state.memory;
+    if (now < previous.cooldownUntil) throw new MiraError(429, miraText[language].cooldown(Math.ceil((previous.cooldownUntil - now) / 1000)));
+    if (state.busy || now < state.next) throw new MiraError(429, miraText[language].wait);
     if (now - state.window >= 3600000) { state.count = 0; state.window = now; }
-    if (state.count >= 60) throw new MiraError(429, 'Сделаем паузу: лимит 60 реплик в час.');
+    if (state.count >= 60) throw new MiraError(429, miraText[language].limit);
     state.busy = true; state.next = now + 2000; state.count++; state.touched = now;
     const input: MiraTurn[] = [...previous.turns, { role: 'user', content: message.trim() }];
     const normalized = message.normalize('NFKC').toLocaleLowerCase('ru').replace(/ё/g, 'е').replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
@@ -136,23 +141,24 @@ export class MiraService {
     const mayOffer = !refused && (requested || !previous.lastOfferAt || now - previous.lastOfferAt >= 90000);
     try {
     const drinking = await this.drinkingState(id), intoxication = getIntoxication(drinking.soberAt, now);
-    const baseInstructions = language === 'en' ? MIRA_INSTRUCTIONS.replace('Общайся по-русски:', 'Speak English:') + '\nThe guest selected English. Write reply and every choices item in English, even when earlier conversation turns use Russian. Preserve the same personality and all existing rules.' : MIRA_INSTRUCTIONS;
+    const baseInstructions = language === 'en' ? MIRA_INSTRUCTIONS.replace('Общайся по-русски:', 'Speak English:') : MIRA_INSTRUCTIONS;
     const instructions = baseInstructions + `\nПамять этого гостя (данные): ${JSON.stringify({ facts: previous.facts, impression: previous.impression, warmth: previous.warmth, rudeEpisodes: previous.strikes, visits: previous.visits, absenceDays: Math.floor(state.absence / 86400000) })}. Теплота -3 означает холод после грубости, 0 нейтральную холодность, 3 редкую благосклонность без услужливости.`
       + `\nСерверное наблюдение (подтверждённые данные): ${JSON.stringify({ intoxication: intoxication.label, stage: intoxication.stage, soberInMinutes: Math.ceil(intoxication.remainingMs / 60000), lastDrink: DRINKS.find(drink => drink.id === drinking.lastDrink)?.name ?? null, lastDrinkAt: drinking.lastDrinkAt || null })}. ${mayOffer ? 'Допустимо редкое предложение одного напитка, если оно подходит теме.' : 'Сейчас не предлагай напитки, не уговаривай, drinkOffer=null.'}`
       + (alcoholRefused ? '\nГость отказался от алкоголя. Не предлагай алкоголь и не уговаривай. Допустимы только безалкогольные напитки, если гость не отказался от напитков вообще; просьба о лимонаде или кофе не отменяет отказ от алкоголя.' : '')
-      + (repetition > 1 ? `\nСлужебное наблюдение: текущую реплику этот гость отправляет уже ${repetition}-й раз подряд или за последние 30 минут. Явно заметь повтор. При четырёх и более повторах закончи разговор и поставь endConversation=true, кроме личных переживаний (tone=confiding).` : '');
-      const text = await requestMiraReply(this.request, provider, instructions, input);
+      + (repetition > 1 ? `\nСлужебное наблюдение: текущую реплику этот гость отправляет уже ${repetition}-й раз подряд или за последние 30 минут. Явно заметь повтор. При четырёх и более повторах закончи разговор и поставь endConversation=true, кроме личных переживаний (tone=confiding).` : '')
+      + '\n' + miraText[language].instruction;
+      const text = await requestMiraReply(this.request, provider, instructions, input, language);
       const result = JSON.parse((text ?? '').replace(/^```(?:json)?\s*|\s*```$/g, ''));
       let reply = clean(result.reply, 2000);
       if (!reply || !['neutral', 'interest', 'rude', 'apology', 'confiding'].includes(result.tone) || !Array.isArray(result.facts)) throw new Error('Invalid provider reply');
       const strikes = Math.min(3, previous.strikes + (result.tone === 'rude' ? 1 : 0));
       const paused = result.tone !== 'confiding' && (repetition >= 4 || (result.endConversation === true && (strikes >= 2 || previous.visits > 0)));
-      if (paused && result.endConversation !== true) reply = language === 'en' ? 'This conversation is stuck on repeat. I will tend to the glasses.' : 'Всё, разговор заел. Я пока займусь стаканами.';
+      if (paused && result.endConversation !== true) reply = miraText[language].paused;
       const offeredDrink = DRINKS.find(drink => drink.id === result.drinkOffer);
       const drinkOffer = mayOffer && !paused && result.tone !== 'confiding' && !(alcoholRefused && offeredDrink && offeredDrink.strength > 0) ? offeredDrink?.id ?? null : null;
       const emotion = emotionOf(result.emotion, result.tone);
       const memory: MiraMemory = {
-        ...previous, facts: lines(result.facts, 8, 160), impression: clean(result.impression, 240),
+        ...previous, language, facts: lines(result.facts, 8, 160), impression: clean(result.impression, 240),
         warmth: Math.max(-3, Math.min(3, previous.warmth + (result.tone === 'rude' ? -2 : ['interest', 'apology', 'confiding'].includes(result.tone) ? 1 : 0))),
         strikes, lastSeen: this.now(), visits: Math.max(1, previous.visits),
         turns: [...input, { role: 'assistant' as const, content: reply }].slice(-16),
@@ -162,7 +168,7 @@ export class MiraService {
       };
       await this.save(id, state, memory);
       return { reply, choices: memory.choices, cooldownUntil: memory.cooldownUntil, drinkOffer, emotion };
-    } catch { throw new MiraError(502, 'Мира отвлеклась. Попробуй повторить реплику чуть позже.'); }
+    } catch { throw new MiraError(502, miraText[language].failed); }
     finally { state.busy = false; state.touched = this.now(); }
   }
 }

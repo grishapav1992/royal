@@ -1,3 +1,4 @@
+import { miraLanguage, miraText } from './miraLanguages';
 import express, { type Application } from 'express';
 import { accounts, allowedOrigin, cookieToken } from './accounts';
 import { MiraError, MiraService } from './mira';
@@ -8,22 +9,24 @@ export function installMira(app: Application) {
   const service = new MiraService(fetch, memory, Date.now, id => accounts.drinking.read(id));
   app.use('/api/npc/mira', express.json({ limit: '4kb' }), async (req, res, next) => {
     res.setHeader('Cache-Control', 'no-store');
-    if (!allowedOrigin(req.get('origin')) || req.get('sec-fetch-site') === 'cross-site') { res.status(403).json({ error: 'Этот источник запросов не разрешён.' }); return; }
+    res.locals.miraLanguage = miraLanguage(req.get('Accept-Language'));
+    res.setHeader('Content-Language', res.locals.miraLanguage);
+    if (!allowedOrigin(req.get('origin')) || req.get('sec-fetch-site') === 'cross-site') { res.status(403).json({ error: miraText[res.locals.miraLanguage as keyof typeof miraText].origin }); return; }
     const account = (await accounts.session(cookieToken(req.headers.cookie)))?.account;
-    if (!account) { res.status(401).json({ error: 'Войди в онлайн-зал, чтобы поговорить с Мирой.' }); return; }
+    if (!account) { res.status(401).json({ error: miraText[res.locals.miraLanguage as keyof typeof miraText].login }); return; }
     res.locals.accountId = account.id; res.locals.accountName = account.name; next();
   });
   app.get('/api/npc/mira', async (req, res) => {
-    try { res.json(await service.resume(res.locals.accountId, res.locals.accountName, req.get('Accept-Language') === 'en' ? 'en' : 'ru')); }
-    catch { res.status(500).json({ error: 'Не получилось вспомнить разговор. Попробуй позже.' }); }
+    try { res.json(await service.resume(res.locals.accountId, res.locals.accountName, res.locals.miraLanguage)); }
+    catch { res.status(500).json({ error: miraText[res.locals.miraLanguage as keyof typeof miraText].remember }); }
   });
   app.post('/api/npc/mira', async (req, res) => {
-    try { res.json(await service.respond(res.locals.accountId, req.body?.message, req.get('Accept-Language') === 'en' ? 'en' : 'ru')); }
-    catch (error) { res.status(error instanceof MiraError ? error.status : 500).json({ error: error instanceof MiraError ? error.message : 'Не получилось поговорить с Мирой.' }); }
+    try { res.json(await service.respond(res.locals.accountId, req.body?.message, res.locals.miraLanguage)); }
+    catch (error) { res.status(error instanceof MiraError ? error.status : 500).json({ error: error instanceof MiraError ? error.message : miraText[res.locals.miraLanguage as keyof typeof miraText].talk }); }
   });
   app.post('/api/npc/mira/reset', async (_req, res) => {
-    try { await service.reset(res.locals.accountId); res.json({ ok: true }); }
-    catch (error) { res.status(error instanceof MiraError ? error.status : 500).json({ error: 'Дождись ответа Миры.' }); }
+    try { await service.reset(res.locals.accountId, res.locals.miraLanguage); res.json({ ok: true }); }
+    catch (error) { res.status(error instanceof MiraError ? error.status : 500).json({ error: miraText[res.locals.miraLanguage as keyof typeof miraText].reset }); }
   });
   return memory.ready;
 }
