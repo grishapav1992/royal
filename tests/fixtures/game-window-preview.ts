@@ -1,11 +1,7 @@
 import '../../src/style.css';
 import '../../src/paper-theme.css';
 import '../../src/own-cabinets.css';
-import '../../src/ui/game-window.css';
-import '../../src/ui/machine-game-layout.css';
-import '../../src/ui/slot-game-layout.css';
-import '../../src/ui/card-game-layout.css';
-import { GameWindow } from '../../src/ui/GameWindow';
+import { GameViewport } from '../../src/ui/GameViewport';
 import { CardDealerStage } from '../../src/ui/CardDealerStage';
 import { OriginalGames } from '../../src/ui/OriginalGames';
 import { EZSlotsGame } from '../../src/ui/EZSlotsGame';
@@ -32,7 +28,12 @@ import { isCardGame } from '../../src/shared/cardTables';
 const dialog = document.querySelector<HTMLDialogElement>('#mini-dialog')!;
 const host = document.querySelector<HTMLElement>('#mini-game')!;
 const dealerHost = document.querySelector<HTMLElement>('#card-dealer-stage')!;
-new GameWindow(dialog);
+new GameViewport(dialog);
+const dimensions = new URL(location.href).searchParams;
+const width = Number(dimensions.get('width')), height = Number(dimensions.get('height'));
+if (width >= 300 && width <= 1900 && height >= 540 && height <= 1300) {
+  dialog.style.width = width + 'px'; dialog.style.height = height + 'px';
+}
 let game: { destroy(): void } | undefined, dealer: CardDealerStage | undefined;
 dialog.querySelector('[data-close]')!.addEventListener('click', () => dialog.close());
 const account = new URL(location.href).searchParams.get('account') ?? 'window-preview';
