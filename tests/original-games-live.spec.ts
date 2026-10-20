@@ -18,7 +18,8 @@ async function loginAndFund(page: Page) {
 async function open(page: Page, game: string) {
   await page.locator('#games-tab').click();
   await page.locator(`[data-cabinet="${game}"]`).click();
-  await expect(page.locator(`.original-game[data-game="${game}"]`)).toBeVisible({ timeout: 20000 });
+  await expect(page.locator(`${game === 'royal-plinko' ? '.volcanic-plinko' : '.original-game'}[data-game="${game}"]`)).toBeVisible({ timeout: 20000 });
+  if (game === 'royal-plinko') await page.locator('[data-vp="enter"]').click();
 }
 const responseFor = (page: Page, path: string) => page.waitForResponse(response => response.url().endsWith(path) && response.request().method() === 'POST');
 
@@ -30,9 +31,11 @@ test('four Originals settle real server wagers into one shared demo balance', as
   let balanceUnits = 100000n;
   for (const gameId of ['royal-dice', 'royal-plinko', 'royal-limbo', 'royal-keno']) {
     await open(page, gameId);
-    await page.locator('#original-bet').selectOption('10');
+    const plinko = gameId === 'royal-plinko';
+    if (plinko) await page.locator('[data-vp="minus"]').click();
+    else await page.locator('#original-bet').selectOption('10');
     const awaiting = responseFor(page, '/api/demo-wallet/operations');
-    await page.locator('#original-play').click();
+    await page.locator(plinko ? '[data-vp="drop"]' : '#original-play').click();
     const response = await awaiting;
     expect(response.ok()).toBe(true);
     const result = await response.json() as WalletResult;
@@ -44,11 +47,10 @@ test('four Originals settle real server wagers into one shared demo balance', as
     expect(Math.round(result.wallet.balance * 100)).toBe(Number(balanceUnits));
     const requestId = response.request().postDataJSON().id;
     expect(result.wallet.entries.filter(entry => entry.operationId === requestId).map(entry => [entry.kind, Math.round(entry.amount * 100)]).reverse()).toEqual([['bet', -1000], ['win', Number(payout)]]);
-    await expect(page.locator('#original-play')).toBeEnabled();
-    await expect(page.locator('#original-balance')).toHaveText(result.wallet.balance.toLocaleString('ru-RU'));
-    await expect(page.locator('#original-result')).not.toContainText('подтверждает');
-    await expect(page.locator('.original-history-chip')).toHaveCount(1);
-    if (gameId === 'royal-plinko') await expect(page.locator(`[data-plinko-bucket="${(result.gameRound as any).outcome.bucket}"]`)).toHaveClass(/is-hit/);
+    await expect(page.locator(plinko ? '[data-vp="drop"]' : '#original-play')).toBeEnabled();
+    await expect(page.locator(plinko ? '[data-vp="balance"]' : '#original-balance')).toHaveText(result.wallet.balance.toLocaleString('ru-RU', plinko ? { minimumFractionDigits: 2, maximumFractionDigits: 2 } : undefined));
+    if (plinko) await expect(page.locator(`[data-pocket="${(result.gameRound as any).outcome.bucket}"]`)).toHaveClass(/vp-landed/);
+    else { await expect(page.locator('#original-result')).not.toContainText('подтверждает'); await expect(page.locator('.original-history-chip')).toHaveCount(1); }
     if (gameId === 'royal-keno') await expect(page.locator('[data-keno-number].is-drawn')).toHaveCount(10);
     await page.screenshot({ path: `artifacts/${gameId}-live.png` });
     await page.locator('#mini-dialog .mini-top [data-close]').click();

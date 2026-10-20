@@ -1,4 +1,7 @@
+import { volcanicPlinkoEnglish } from './volcanicPlinkoEn';
+
 export const english: Record<string, string> = {
+  ...volcanicPlinkoEnglish,
   "Загрузка игры…": "Loading game…",
   "Не удалось загрузить игру. Повтори попытку. Монеты не списывались.": "The game could not load. Try again. No coins were charged.",
   "ЛИМОНАД  ·  КОФЕ  ·  ЯГОДЫ": "LEMONADE  ·  COFFEE  ·  BERRIES",

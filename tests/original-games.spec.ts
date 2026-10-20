@@ -14,7 +14,8 @@ async function login(page: Page) {
 async function open(page: Page, id: string) {
   await page.locator('#games-tab').click();
   await page.locator(`[data-cabinet="${id}"]`).click();
-  await expect(page.locator(`.original-game[data-game="${id}"]`)).toBeVisible({ timeout: 20000 });
+  await expect(page.locator(`${id === 'royal-plinko' ? '.volcanic-plinko' : '.original-game'}[data-game="${id}"]`)).toBeVisible({ timeout: 20000 });
+  if (id === 'royal-plinko') { await page.locator('[data-vp="enter"]').click(); await page.locator('[data-risk="medium"]').click(); await page.locator('[data-vp="plus"]').click(); }
 }
 async function close(page: Page) { await page.locator('#mini-dialog .mini-top [data-close]').click(); }
 
@@ -47,7 +48,6 @@ async function mockWallet(page: Page, fixture: ReturnType<typeof walletFixture>)
 
 const games = [
   { id: 'royal-dice', outcome: { rolledValue: 12.34, won: true }, multiplier: 1.96, board: '.original-dice-display', result: /12,34/ },
-  { id: 'royal-plinko', outcome: { path: [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0], bucket: 2 }, multiplier: 4, board: '#original-plinko-svg', result: /4×/ },
   { id: 'royal-limbo', outcome: { rolledMultiplier: 4.2, won: true }, multiplier: 2, board: '.original-limbo-display', result: /4,2×/ },
   { id: 'royal-keno', outcome: { drawnNumbers: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], hits: [1, 2, 3] }, multiplier: 10.4, board: '.original-keno-grid', result: /Совпадений: 3/ },
 ];
@@ -74,7 +74,6 @@ for (const game of games) {
     await expect(page.locator('#original-balance')).toHaveText(fixture.get().balance.toLocaleString('ru-RU'));
     await expect(page.locator('.original-history-chip span')).toHaveText('Ставка 100');
     await expect(page.locator('.original-history-chip')).toHaveAttribute('data-result', 'win');
-    if (game.id === 'royal-plinko') await expect(page.locator('[data-plinko-bucket="2"]')).toHaveClass(/is-hit/);
     if (game.id === 'royal-keno') {
       await expect(page.locator('[data-keno-number].is-drawn')).toHaveCount(10);
       await expect(page.locator('[data-keno-number].is-hit')).toHaveCount(3);
@@ -109,103 +108,43 @@ async function mockPlinkoRounds(page: Page, fixture: ReturnType<typeof walletFix
   return ids;
 }
 
-test('Plinko animation completes from the server result when its animation frames stop', async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: 'no-preference' });
-  const fixture = walletFixture(); await mockWallet(page, fixture);
-  const ids = await mockPlinkoRounds(page, fixture);
+test('volcanic Plinko finishes the accepted result when animation frames stop', async ({ page }) => {
+  const fixture = walletFixture(); await mockWallet(page, fixture); const ids = await mockPlinkoRounds(page, fixture);
   await login(page); await open(page, 'royal-plinko');
-  await expect(page.locator('#original-play')).toBeEnabled();
-  await page.evaluate(() => {
-    const originalRequest = window.requestAnimationFrame;
-    const hidden = Object.getOwnPropertyDescriptor(document, 'hidden');
-    Object.defineProperty(document, 'hidden', { configurable: true, value: false });
-    let blocked = 0;
-    window.requestAnimationFrame = () => { blocked++; return 0; };
-    (window as Window & { restorePlinkoFrames?: () => number }).restorePlinkoFrames = () => {
-      window.requestAnimationFrame = originalRequest;
-      if (hidden) Object.defineProperty(document, 'hidden', hidden);
-      else Reflect.deleteProperty(document, 'hidden');
-      return blocked;
-    };
-  });
-  await page.locator('#original-play').evaluate(button => { (button as HTMLButtonElement).click(); (button as HTMLButtonElement).click(); });
-  await expect(page.locator('#original-result')).toHaveText('Начислено 400 монет · 4×', { timeout: 6000 });
-  await expect(page.locator('[data-plinko-bucket="2"]')).toHaveClass(/is-hit/);
-  await expect(page.locator('#original-plinko-ball')).toHaveAttribute('cy', '420');
-  await expect(page.locator('#original-play')).toHaveText('Бросить шар');
-  await expect(page.locator('#original-play')).toBeEnabled();
-  await expect(page.locator('#original-balance')).toHaveText(/1\s300/);
-  expect(ids).toHaveLength(1);
-  const blocked = await page.evaluate(() => (window as Window & { restorePlinkoFrames: () => number }).restorePlinkoFrames());
-  expect(blocked).toBeGreaterThan(0);
-  await page.locator('#original-play').evaluate(button => { (button as HTMLButtonElement).click(); (button as HTMLButtonElement).click(); });
-  await expect(page.locator('#original-play')).toBeEnabled();
-  await expect(page.locator('#original-result')).toHaveText('Начислено 400 монет · 4×');
-  await expect(page.locator('#original-balance')).toHaveText(/1\s600/);
-  await expect(page.locator('.original-history-chip')).toHaveCount(2);
-  expect(ids).toHaveLength(2); expect(new Set(ids).size).toBe(2);
+  await page.evaluate(() => { window.requestAnimationFrame = () => 0; });
+  await page.locator('[data-vp="drop"]').evaluate(button => { (button as HTMLButtonElement).click(); (button as HTMLButtonElement).click(); });
+  await expect(page.locator('.volcanic-plinko')).toHaveAttribute('data-state', 'ready', { timeout: 6000 });
+  await expect(page.locator('[data-vp="result-amount"]')).toHaveText('4× · 400,00');
+  await expect(page.locator('[data-pocket="2"]')).toHaveClass(/vp-landed/);
+  await expect(page.locator('[data-vp="balance"]')).toHaveText(/1\s300,00/);
+  await expect(page.locator('[data-vp="drop"]')).toBeEnabled(); expect(ids).toHaveLength(1);
 });
 
-test('Plinko animation preserves the confirmed payout and unlocks after a ball frame throws', async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: 'no-preference' });
+test('volcanic Plinko preserves the payout when drawing a frame throws', async ({ page }) => {
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
-  const fixture = walletFixture(); await mockWallet(page, fixture);
-  const ids = await mockPlinkoRounds(page, fixture);
+  const fixture = walletFixture(); await mockWallet(page, fixture); const ids = await mockPlinkoRounds(page, fixture);
   await login(page); await open(page, 'royal-plinko');
-  await expect(page.locator('#original-play')).toBeEnabled();
   await page.evaluate(() => {
-    Object.defineProperty(document, 'hidden', { configurable: true, value: false });
-    window.requestAnimationFrame = callback => window.setTimeout(() => callback(performance.now()), 16);
-    window.cancelAnimationFrame = request => clearTimeout(request);
-  });
-  await page.locator('#original-plinko-ball').evaluate(element => {
-    const ball = element as SVGCircleElement, originalSetAttribute = ball.setAttribute;
-    let failed = false;
-    ball.setAttribute = function(name: string, value: string) {
-      if (!failed && name === 'cx' && !this.hasAttribute('hidden')) {
-        failed = true; this.dataset.testFrameFailed = 'true';
-        throw new Error('Injected Plinko ball frame failure');
-      }
-      originalSetAttribute.call(this, name, value);
+    const arc = CanvasRenderingContext2D.prototype.arc; let failed = false;
+    CanvasRenderingContext2D.prototype.arc = function(...args: Parameters<CanvasRenderingContext2D['arc']>) {
+      if (!failed) { failed = true; throw new Error('Injected crystal frame failure'); }
+      return arc.apply(this, args);
     };
   });
-  await page.locator('#original-play').evaluate(button => { (button as HTMLButtonElement).click(); (button as HTMLButtonElement).click(); });
-  await expect(page.locator('#original-plinko-ball')).toHaveAttribute('data-test-frame-failed', 'true');
-  await expect(page.locator('#original-result')).toHaveText('Начислено 400 монет · 4×');
-  await expect(page.locator('[data-plinko-bucket="2"]')).toHaveClass(/is-hit/);
-  await expect(page.locator('#original-plinko-ball')).toHaveAttribute('cy', '420');
-  await expect(page.locator('#original-play')).toHaveText('Бросить шар');
-  await expect(page.locator('#original-play')).toBeEnabled();
-  await expect(page.locator('#original-balance')).toHaveText(/1\s300/);
-  await expect(page.locator('.original-history-chip')).toHaveCount(1);
-  expect(ids).toHaveLength(1);
-  expect(errors).toEqual([]);
+  await page.locator('[data-vp="drop"]').click();
+  await expect(page.locator('.vp-board canvas')).toHaveAttribute('data-render-error', 'true');
+  await expect(page.locator('[data-vp="result-amount"]')).toHaveText('4× · 400,00', { timeout: 6000 });
+  await expect(page.locator('[data-vp="drop"]')).toBeEnabled(); expect(ids).toHaveLength(1); expect(errors).toEqual([]);
 });
 
-test('Plinko animation accepts a first frame timestamp before its start', async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: 'no-preference' });
-  const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
-  const fixture = walletFixture(); await mockWallet(page, fixture);
-  const ids = await mockPlinkoRounds(page, fixture);
+test('volcanic Plinko clamps an early frame timestamp and retains its paid pocket', async ({ page }) => {
+  const fixture = walletFixture(); await mockWallet(page, fixture); const ids = await mockPlinkoRounds(page, fixture);
   await login(page); await open(page, 'royal-plinko');
-  await expect(page.locator('#original-play')).toBeEnabled();
-  await page.evaluate(() => {
-    Object.defineProperty(document, 'hidden', { configurable: true, value: false });
-    const delivered = new WeakSet<FrameRequestCallback>();
-    window.requestAnimationFrame = callback => window.setTimeout(() => {
-      const first = !delivered.has(callback); delivered.add(callback);
-      callback(performance.now() - (first ? 100 : 0));
-    }, 16);
-    window.cancelAnimationFrame = request => clearTimeout(request);
-  });
-  await page.locator('#original-play').evaluate(button => { (button as HTMLButtonElement).click(); (button as HTMLButtonElement).click(); });
-  await expect(page.locator('#original-result')).toHaveText('Начислено 400 монет · 4×');
-  await expect(page.locator('[data-plinko-bucket="2"]')).toHaveClass(/is-hit/);
-  await expect(page.locator('#original-plinko-ball')).toHaveAttribute('cy', '420');
-  await expect(page.locator('#original-play')).toHaveText('Бросить шар');
-  await expect(page.locator('#original-play')).toBeEnabled();
-  await expect(page.locator('#original-balance')).toHaveText(/1\s300/);
-  expect(ids).toHaveLength(1); expect(errors).toEqual([]);
+  await page.evaluate(() => { window.requestAnimationFrame = callback => window.setTimeout(() => callback(performance.now() - 100), 16); window.cancelAnimationFrame = id => clearTimeout(id); });
+  await page.locator('[data-vp="drop"]').click();
+  await expect(page.locator('[data-vp="result-amount"]')).toHaveText('4× · 400,00', { timeout: 6000 });
+  await expect(page.locator('[data-pocket="2"]')).toHaveClass(/vp-landed/);
+  await expect(page.locator('[data-vp="drop"]')).toBeEnabled(); expect(ids).toHaveLength(1);
 });
 
 test('Dice slider changes odds and an uncertain round survives reload with the same request ID', async ({ page }) => {

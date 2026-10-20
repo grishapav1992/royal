@@ -84,13 +84,19 @@ async function createGame(page: Page, gameId: string, accountId = accountA) {
     await window.royalSecurity.demoWallet.refresh();
     window.securityGame = gameId === 'royal-fruits'
       ? new window.royalSecurity.EZSlotsGame(document.querySelector('#security-stage')!)
-      : new window.royalSecurity.OriginalGames(document.querySelector('#security-stage')!, gameId as ConstructorParameters<typeof OriginalGames>[1]);
+      : new window.royalSecurity.OriginalGames(document.querySelector('#security-stage')!, gameId as ConstructorParameters<typeof OriginalGames>[1], { skipIntro: true });
   }, { gameId, accountId });
+  if (gameId === 'royal-plinko') { await page.locator('[data-risk="medium"]').click(); await page.locator('[data-vp="plus"]').click(); }
 }
 async function switchAccount(page: Page, accountId = accountB) {
   await page.evaluate(async accountId => { window.royalSecurity.demoWallet.setAccount(accountId); await window.royalSecurity.demoWallet.refresh(); }, accountId);
 }
 async function expectCleanResult(page: Page, gameId: string) {
+  if (gameId === 'royal-plinko') {
+    await expect(page.locator('.volcanic-plinko')).toHaveAttribute('data-result', 'idle');
+    await expect(page.locator('[data-vp="result-amount"]')).toBeEmpty();
+    await expect(page.locator('.vp-landed')).toHaveCount(0); return;
+  }
   if (gameId === 'royal-fruits') {
     await expect(page.locator('.ez-fruits-outcome')).toHaveAttribute('aria-label', 'Результат ещё не получен');
     await expect(page.locator('#ez-fruits-result')).toHaveText('Выбери ставку и запусти барабаны.');
@@ -104,10 +110,7 @@ async function expectCleanResult(page: Page, gameId: string) {
     await expect(page.locator('#original-dice-value')).toHaveText('00,00');
     await expect(page.locator('#original-dice-marker')).toHaveJSProperty('hidden', true);
   } else if (gameId === 'royal-limbo') await expect(page.locator('#original-limbo-value')).toHaveText('1,00×');
-  else if (gameId === 'royal-plinko') {
-    await expect(page.locator('#original-plinko-ball')).toHaveAttribute('hidden', '');
-    await expect(page.locator('[data-plinko-bucket].is-hit')).toHaveCount(0);
-  } else if (gameId === 'royal-keno') {
+  else if (gameId === 'royal-keno') {
     await expect(page.locator('[data-keno-number].is-drawn')).toHaveCount(0);
     await expect(page.locator('[data-keno-number].is-hit')).toHaveCount(0);
   }
@@ -117,25 +120,25 @@ for (const game of fixtureGames) {
   test(`${game.id} cancels the previous account animation and clears its result`, async ({ page }) => {
     const api = await fixture(page); await createGame(page, game.id);
     const fruits = game.id === 'royal-fruits';
-    await page.locator(fruits ? '#ez-fruits-spin' : '#original-play').click();
+    await page.locator(fruits ? '#ez-fruits-spin' : game.id === 'royal-plinko' ? '[data-vp=drop]' : '#original-play').click();
     await page.waitForFunction(() => !window.royalSecurity.demoWallet.pending && !window.royalSecurity.demoWallet.busy && window.royalSecurity.demoWallet.wallet!.balance !== 1000);
     await switchAccount(page); await expectCleanResult(page, game.id);
     await page.waitForTimeout(fruits ? 3500 : 1400);
     await expectCleanResult(page, game.id);
-    await expect(page.locator(fruits ? '#ez-fruits-balance' : '#original-balance')).toHaveText('321');
-    await expect(page.locator(fruits ? '#ez-fruits-spin' : '#original-play')).toBeEnabled();
+    await expect(page.locator(fruits ? '#ez-fruits-balance' : game.id === 'royal-plinko' ? '[data-vp=balance]' : '#original-balance')).toHaveText(game.id === 'royal-plinko' ? '321,00' : '321');
+    await expect(page.locator(fruits ? '#ez-fruits-spin' : game.id === 'royal-plinko' ? '[data-vp=drop]' : '#original-play')).toBeEnabled();
     expect(api.posts).toHaveLength(1); expect(api.posts[0].accountId).toBe(accountA);
     expect(api.wallets.get(accountB)!.balance).toBe(321);
   });
   test(`${game.id} clears a completed result before showing the next account`, async ({ page }) => {
     const api = await fixture(page); await createGame(page, game.id);
     const fruits = game.id === 'royal-fruits';
-    await page.locator(fruits ? '#ez-fruits-spin' : '#original-play').click();
-    await expect(page.locator(fruits ? '.ez-slots-game' : '.original-game')).toHaveAttribute('data-result', 'win');
+    await page.locator(fruits ? '#ez-fruits-spin' : game.id === 'royal-plinko' ? '[data-vp=drop]' : '#original-play').click();
+    await expect(page.locator(fruits ? '.ez-slots-game' : game.id === 'royal-plinko' ? '.volcanic-plinko' : '.original-game')).toHaveAttribute('data-result', 'win');
     if (fruits) await expect(page.locator('[class$="-win-line"]')).toHaveCount(1);
     await switchAccount(page); await expectCleanResult(page, game.id);
     if (fruits) await expect(page.locator('[class$="-win-line"]')).toHaveCount(0);
-    await expect(page.locator(fruits ? '#ez-fruits-balance' : '#original-balance')).toHaveText('321');
+    await expect(page.locator(fruits ? '#ez-fruits-balance' : game.id === 'royal-plinko' ? '[data-vp=balance]' : '#original-balance')).toHaveText(game.id === 'royal-plinko' ? '321,00' : '321');
     expect(api.wallets.get(accountB)!.balance).toBe(321);
   });
 }

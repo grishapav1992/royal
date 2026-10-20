@@ -52,16 +52,15 @@ test('all game renderers fit desktop and portrait phone with visible controls', 
 test('settings and history retain live controls after rendering, Escape returns to the game', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 667 });
   await preview(page, 'royal-plinko');
-  await page.getByRole('button', { name: 'Настройки игры', exact: true }).click();
-  await expect(page.locator('[data-window-sheet=settings]')).toBeVisible();
-  expect(await page.locator('#original-play').evaluate(el => !!el.closest('[inert]'))).toBe(true);
-  await page.locator('#original-rows').selectOption('16');
-  await expect(page.locator('#original-rows')).toHaveValue('16');
-  await expect(page.locator('#original-plinko-pins circle')).toHaveCount(168);
+  await page.locator('[data-vp="rules"]').click();
+  await expect(page.locator('.vp-modal')).toBeVisible();
+  await expect(page.locator('.vp-modal table tbody tr')).toHaveCount(13);
   await page.keyboard.press('Escape');
   await expect(page.locator('#mini-dialog')).toBeVisible();
-  await expect(page.locator('[data-window-sheet=settings]')).toBeHidden();
-  expect(await page.locator('#original-play').evaluate(el => !!el.closest('[inert]'))).toBe(false);
+  await expect(page.locator('.vp-modal')).toBeHidden();
+  await page.locator('[data-risk="hard"]').click();
+  await expect(page.locator('[data-risk="hard"]')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('[data-pocket]')).toHaveCount(13);
   await fits(page);
   await page.evaluate(() => (window as any).windowPreview.mount('github-blackjack'));
   await page.locator('[data-action=start]').click();

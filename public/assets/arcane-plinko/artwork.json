@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-20",
+  "mode": "built-in image_gen",
+  "prompts": {
+    "heroine": "Use case: concept-art. Asset type: a single transparent-background game character cutout for the right side of a dark fantasy Plinko game. Generate a beautiful, clearly adult woman around age 30, a powerful sorceress inspired by Yennefer from The Witcher: long flowing raven-black wavy hair, luminous violet eyes, pale porcelain skin, confident sensual expression, elegant feminine hourglass silhouette. She wears a sophisticated fitted black velvet and leather off-shoulder gown with tasteful deep neckline, silver filigree corset belt, long lace sleeves, dark feathers at the shoulders, a black choker with a small silver star-shaped amethyst pendant. Her outfit is alluring but fully clothed. Three-quarter frontal pose looking toward viewer, left hand raised holding a swirling violet magical sphere, right hand gracefully near her waist, from head down to mid-thigh. Premium realistic dark fantasy game illustration with rich cinematic detail, fine expressive face, polished illustration rather than photograph. Cool silver moonlight along hair and shoulders and violet spell glow lighting her face and hands. Clean silhouette, all hair, hands and garment comfortably within frame; generous clear space around the silhouette; portrait format. True transparent alpha background. No environment, no floor, no text, no logo, no watermark.",
+    "world": "Use case: concept-art. Asset type: panoramic background illustration for a premium dark fantasy magic Plinko game. A moonlit sorceress's sanctuary in an ancient gothic citadel, dark basalt and obsidian architecture with delicate silver filigree, tall pointed windows and ruined arches framing a distant misty mountain lake, an enormous pale crescent moon in the upper right, subtle violet aurora and drifting tiny magical motes, amethyst mineral accents only along the bottom and side edges, a few mystical candles. The central 65 percent must be dark calm uncluttered atmospheric negative space for a readable game board; the most detailed architecture is placed at the left and far right edges. Distinct from a volcanic or steampunk laboratory: no lava, no volcano, no gears, no telescopes, no brass. Palette midnight navy, ink black, lavender, desaturated plum, cool silver. Cinematic realistic fantasy illustration with elegant texture and depth, restrained contrast in the center, widescreen 16:9 landscape composition. No characters, no people, no text, no lettering, no logo, no game board or UI. This is an environment asset, not a screenshot."
+  },
+  "assets": {
+    "hero": {
+      "generated": "C:/Users/Aorus/.codex/generated_images/01a15a92-03d4-79d1-bb38-1bc16d5b040c/exec-c9392386-d7ed-4433-8bda-bb6d2da62ba4.png",
+      "workspace": "public/assets/arcane-plinko/hero.png",
+      "transparentRequested": true,
+      "sha256": "e7d059e50aa613c52087d0bab4b6ebaddca50f1be4a33238410239b30ab59130"
+    },
+    "world": {
+      "generated": "C:/Users/Aorus/.codex/generated_images/01a15a92-03d4-79d1-bb38-1bc16d5b040c/exec-920f028d-1d7e-44e3-abcd-6ad8a652b4e8.png",
+      "workspace": "public/assets/arcane-plinko/world.png",
+      "sha256": "93d9bce647d8f99814dcccb6e473dabbc00d827808af15aba3e2e5511f3a39cb"
+    }
+  },
+  "design": {
+    "title": "Veil of Night / Завеса ночи",
+    "character": "Vespera, adult sorceress inspired by Yennefer from The Witcher",
+    "layout": "sorceress on left, ritual board on right, horizontal risk controls",
+    "palette": "midnight navy, cool silver, lavender",
+    "note": "New generated artwork replaces the original Luelon world, hero and cover. Game math and wallet contract are unchanged."
+  }
+}

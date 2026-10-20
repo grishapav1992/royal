@@ -15,7 +15,7 @@ export const CABINETS: Cabinet[] = [
   { id: 'royal-dice', name: 'Royal Dice', subtitle: translateText('Выбери число и шанс выигрыша'), x: 1200, y: 320, color: 0x75cbd9, playable: true, wallet: true },
   { id: 'royal-limbo', name: 'Royal Limbo', subtitle: translateText('Задай свой множитель'), x: 1430, y: 320, color: 0xc6a0ed, playable: true, wallet: true },
   { id: 'royal-mines', name: 'Royal Mines', subtitle: translateText('Открывай клетки · Забирай выигрыш'), x: 1660, y: 320, color: 0x7bcaa1, playable: true, wallet: true },
-  { id: 'royal-plinko', name: 'Royal Plinko', subtitle: translateText('Шарик · Пирамидка · Множители'), x: 1890, y: 320, color: 0xeb91af, playable: true, wallet: true },
+  { id: 'royal-plinko', name: language === 'en' ? 'Veil of Night · Plinko' : 'Завеса ночи · Plinko', subtitle: language === 'en' ? 'Night magic · 12 rows · Three risks' : 'Магия ночи · 12 рядов · Три риска', x: 1890, y: 320, color: 0xeb91af, playable: true, wallet: true },
   { id: 'royal-keno', name: 'Royal Keno', subtitle: translateText('Выбирай числа от 1 до 40'), x: 1890, y: 620, color: 0x9babec, playable: true, wallet: true },
   { id: 'luelon', name: 'Luelon Play', subtitle: translateText('Каталог демоигр · Кредиты Luelon'), x: 780, y: 810, color: 0xd6aaef, playable: true, hall: 'arcade', demo: true },
   { id: 'github-blackjack', name: translateText('Блэкджек'), subtitle: translateText('Карты · Дилер · 21'), x: 1200, y: 570, color: 0x79c9bb, playable: true, hall: 'arcade', github: true },

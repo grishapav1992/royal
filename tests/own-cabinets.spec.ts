@@ -22,7 +22,7 @@ test('six upstream game cabinets open and fully custom games are absent', async 
     ['royal-dice', 'Royal Dice'],
     ['royal-limbo', 'Royal Limbo'],
     ['royal-mines', 'Royal Mines'],
-    ['royal-plinko', 'Royal Plinko'],
+    ['royal-plinko', 'Завеса ночи · Plinko'],
     ['royal-keno', 'Royal Keno'],
   ];
   for (const [id, name] of games) {

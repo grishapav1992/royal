@@ -2,7 +2,7 @@ import { t as translateText, tr, locale } from '../i18n/index';
 import { emitGameOutcome, observeGameOutcome } from './gameReactions';
 import { LimboSlotUI } from './LimboSlotUI';
 import { DiceSlotUI } from './DiceSlotUI';
-import { PlinkoSlotUI } from './PlinkoSlotUI';
+import { VolcanicPlinkoUI } from './VolcanicPlinkoUI';
 import '../original-games.css';
 import { DEMO_BETS, type DemoWallet } from '../shared/demoWallet';
 import type { GameInput, GameRound } from '../shared/gameCore';
@@ -35,7 +35,7 @@ const percent = (value: number) => value.toLocaleString(locale, { maximumFractio
 export class OriginalGames {
   private limboUI?: LimboSlotUI;
   private diceUI?: DiceSlotUI;
-  private plinkoUI?: PlinkoSlotUI;
+  private plinkoUI?: VolcanicPlinkoUI;
   private root = document.createElement('section');
   private alive = true;
   private working = false;
@@ -62,10 +62,10 @@ export class OriginalGames {
     void this.showRound(result.gameRound, false);
   };
 
-  constructor(container: HTMLElement, private gameId: OriginalGameId) {
+  constructor(container: HTMLElement, private gameId: OriginalGameId, options: { skipIntro?: boolean } = {}) {
     if (gameId === 'royal-limbo') { this.limboUI = new LimboSlotUI(container, gameId); return; }
     if (gameId === 'royal-dice') { this.diceUI = new DiceSlotUI(container, gameId); return; }
-    if (gameId === 'royal-plinko') { this.plinkoUI = new PlinkoSlotUI(container, gameId); return; }
+    if (gameId === 'royal-plinko') { this.plinkoUI = new VolcanicPlinkoUI(container, options); return; }
     const detail = gameDetails[gameId];
     this.root.className = 'original-game'; this.root.dataset.game = gameId;
     this.root.innerHTML = tr`<header class="original-header"><div class="original-brand"><span class="original-mark" aria-hidden="true">${detail.mark}</span><div><span class="original-eyebrow">ROYAL ORIGINALS</span><h3>${detail.name}</h3></div></div><div class="original-wallet"><span>Демобаланс</span><strong id="original-balance">…</strong><button type="button" id="original-wallet" aria-label="Пополнить демобаланс">+</button></div></header>

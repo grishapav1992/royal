@@ -53,7 +53,7 @@ function mount(id: string) {
   else if (isSessionGame(id)) game = new CasinoSessionsUI(host, id);
   else if (isGithubGame(id)) game = new GithubGames(host, id);
   else if (id === 'royal-fruits') game = new EZSlotsGame(host);
-  else game = new OriginalGames(host, id as ConstructorParameters<typeof OriginalGames>[1]);
+  else game = new OriginalGames(host, id as ConstructorParameters<typeof OriginalGames>[1], { skipIntro: true });
   if (!dialog.open) dialog.showModal();
 }
 (window as any).windowPreview = { games, mount, demoWallet, expansionClient, casinoClients };
