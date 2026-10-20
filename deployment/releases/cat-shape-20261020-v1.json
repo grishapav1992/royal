@@ -1,5 +1,5 @@
 {
-  "baselineSourceCommit": "ed3eb420b46cb2042c6e18b76e0622574dedf0d1",
+  "baselineSourceCommit": "90cabdf",
   "baselineSource": {
     "Dockerfile": "1b1b544e061346798c108a291a941a165f9e8aadaffb9c89515a8957625b6719",
     ".dockerignore": "f6cb0baa5103c7525be74be609d6551f7ffb5d6d9268756594e281bbc0e93533",
@@ -616,8 +616,9 @@
     "server/index.ts": "44b03aa227b03a2054c3db4d5b44b6e25004332f296b36adf4b2dfdcc740a5d1",
     "server/intoxicationStore.ts": "7c5b74fea951e449e5bebc621621e1222cea9252d0873d2e15eafe22eedefe5c",
     "server/lastExitCashoutDelay.ts": "a65fdb48822ab46fc913b72cd4c70fc904b0d66c97e7ebc7c0960899c1849edd",
-    "server/mira.ts": "ab18eaa179defd259c9bd03e336a5a5476d6353424d3c50649264e17dae1dafa",
+    "server/mira.ts": "b7ceece701ef81a74ab39a50a64546d5c8b393741dbc397eccb35919044c3f63",
     "server/miraMemory.ts": "7834e2bf755834dedd6a40b9ae095b0d1c9a0fc11d70f4512836edf9e6faf74a",
+    "server/miraProvider.ts": "be613d5af41eb3190e7d9364a8ac433087719816eb47a3679be96db04ca2ac9c",
     "server/miraRoutes.ts": "9db7bbc0469bcd2ee9827636a195e04cdf52730736c7ce7760b7e71900ca4808",
     "server/moderation.ts": "34d1405e51d4f2255fa4c1bbbb10ec43d16055996b3b90f4e76a364c35d30f72",
     "server/movementInputs.ts": "801b9d62225ce08fd374d2ca7d9d799c764c060ec752750eee5efe90fff52825",
@@ -920,6 +921,7 @@
     "docs/meme-overload-audio.md": "0b463c42be5e842326d1ee9bdb1ca46b177c42e5bcce21a97b1addac1773f7a0",
     "docs/meme-overload-review.md": "71634fc0ee6e2c00b8179507473d5732cb264a6c0bc54da5f63824fcd4af232a",
     "docs/meme-overload.md": "601205a8440fc55e93e0f9550431d2ee4bafd70f7ba4980878840b2ab58fc119",
+    "docs/mira-provider.md": "d95f586a1afa7a116f295e4a917e73e9bd524419adea1acdfa01dad54e48aa89",
     "docs/neon-slot-release.md": "923920c1ac1788ae7111c01d0267b5d23a09ba802eb45c8f53ada556c8c54787",
     "docs/nitro-run.md": "c20ac82ab49ba33433bb2cd910696f5653512da62c3619a2225e4c812658f0ac",
     "docs/slot-kit-phase2.md": "6b92cd308df2d185e62ef24ecd5e8c469b1c3c559236c579ae1c896a28b2a7d0",
@@ -938,7 +940,7 @@
     "src/game/RoomScene.ts": "cd06ceda418f888ff2db09e1af4dba2e15d83340ccded7103fe8554f7a609f3f",
     "public/assets/cat/zverochka-walk-v4.png": "1837e890f8d77ec18a69ce246554071d1143ab74e47cfe33ffdabec6a2f28b72"
   },
-  "preservedFiles": 931,
+  "preservedFiles": 933,
   "backendChanged": false,
   "pixelSourceSHA256": "cdb389b406ea9b84d752abaa130d3b1024a6d2770073392b9d73ef22e84fef1d",
   "release": "cat-shape-20261020-v1",
@@ -949,5 +951,7 @@
     "protectedVisiblePixelChanges": 0,
     "forwardAndBackwardCels": "unchanged",
     "serverRuntime": "unchanged"
-  }
+  },
+  "baselinePreparedImage": "sha256:7ad171727edc2f1437939c3354a073644673f54c06dbfe206b18e4eb6396645b",
+  "baselineNote": "Includes the published Mira Venice overlay; backend and environment remain unchanged by the cat release"
 }
