@@ -1,3 +1,4 @@
+import { language } from '../i18n/index';
 import { coinsMultiplier } from './gameCore';
 import type { GamePlayRequest, GameRound } from './gameCore';
 
@@ -10,7 +11,7 @@ export function providerCoins(value:string):string {
   if(!validProviderBalance(value))throw new Error('Invalid provider balance');
   const [whole,fraction]=value.split('.'),groups:string[]=[];
   for(let end=whole.length;end>0;end-=3)groups.push(whole.slice(Math.max(0,end-3),end));
-  return `${groups.reverse().join('\u00a0')},${fraction}`;
+  return `${groups.reverse().join(language === 'en' ? ',' : '\u00a0')}${language === 'en' ? '.' : ','}${fraction}`;
 }
 export type DemoRound = { symbols: number[]; bet: number; payout: number; multiplier: number };
 export type WalletOperation = { id: string; kind: 'deposit' | 'spin'; amount: number } | GamePlayRequest;

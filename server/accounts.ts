@@ -7,10 +7,9 @@ import { PaymentCredits } from './payments/credits';
 import { normalizeAppearance, type Appearance } from '../src/shared/appearance';
 import { isPlayerCharacter } from '../src/shared/characters';
 import { PostgresDatabase } from './database';
-import { AccountLeaseStore } from './accountLeases';
 import { applyAccountSchemaMigrations } from './game-database-migrations';
 import { randomBytes, randomUUID, scrypt, timingSafeEqual, createHash } from 'node:crypto';
-import { AccountEvents, type AccountEvent } from './accountEvents';
+import { EventEmitter } from 'node:events';
 
 export type Account = { id: string; email: string; name: string; skin: number | null; appearance?: Appearance | null };
 type StoredAccount = Account & { password: string };
@@ -39,8 +38,7 @@ export class AccountStore {
   readonly cryptoWallet: PaymentClient;
   readonly paymentCredits: PaymentCredits;
   readonly paymentEventSecret: string;
-  readonly lobbyLeases: AccountLeaseStore;
-  readonly events = new AccountEvents({ resolveRemote: (event, args) => this.remoteAccountEvent(event, args) });
+  readonly events = new EventEmitter();
   private sessionCleanup?: Promise<void>;
   private nextSessionCleanup = 0;
   constructor(name = 'royal_game') {
@@ -58,8 +56,7 @@ export class AccountStore {
     this.paymentCredits = new PaymentCredits(this.db, schemaReady);
     this.paymentEventSecret = payments.eventSecret;
     this.cryptoWallet = new PaymentClient(payments, this.paymentCredits);
-    this.lobbyLeases = new AccountLeaseStore(this.db, schemaReady);
-    this.ready = Promise.all([schemaReady, this.wallet.ready, this.casinoApiProWallet.ready, this.moderation.ready, this.drinking.ready, this.paymentCredits.ready, this.lobbyLeases.ready]).then(() => {});
+    this.ready = Promise.all([schemaReady, this.wallet.ready, this.casinoApiProWallet.ready, this.moderation.ready, this.drinking.ready, this.paymentCredits.ready]).then(() => {});
     this.events.setMaxListeners(0);
   }
   async login(rawEmail: unknown, rawPassword: unknown) {
@@ -102,20 +99,6 @@ export class AccountStore {
     const row = await this.db.prepare('SELECT id,email,name,skin,appearance FROM accounts WHERE id=?').get(id) as Account | undefined;
     return row ? this.publicAccount(row) : undefined;
   }
-  private async remoteAccountEvent(event: AccountEvent, args: readonly unknown[]): Promise<readonly unknown[] | undefined> {
-    const id = args[0] as string;
-    if (event === 'logout') return await this.active(id) ? undefined : args;
-    if (event === 'name' || event === 'skin' || event === 'appearance') {
-      const account = await this.currentAccount(id);
-      return account && (event === 'name' || account.skin !== null) ? [id, event === 'name' ? account.name : event === 'appearance' ? account.appearance ?? null : account.skin] : undefined;
-    }
-    if (event === 'drinking') return [id, await this.drinking.read(id)];
-    await this.ready;
-    const row = await this.db.prepare('SELECT warned_until,banned_until FROM chat_conduct_discipline WHERE account_id=?').get(id);
-    const now = Date.now(), banUntil = Number(row?.banned_until ?? 0), warnedUntil = Number(row?.warned_until ?? 0);
-    const until = banUntil > now ? banUntil : warnedUntil > now ? warnedUntil : 0;
-    return until ? [id, { ...(args[1] as object), kind: banUntil > now ? 'ejecting' : 'warning', until }] : undefined;
-  }
   async session(token: string | undefined) {
     await this.ready;
     if (!token || !/^[a-f0-9]{64}$/.test(token)) return undefined;
@@ -151,7 +134,7 @@ export class AccountStore {
     const hash = digest(token); (await this.db.prepare('DELETE FROM sessions WHERE hash=?').run(hash));
     this.events.emit('logout', hash);
   }
-  async close() { await this.events.close(); await this.ready; await this.db.close(); }
+  async close() { await this.ready; await this.db.close(); }
 }
 export const accounts = new AccountStore(process.env.NODE_ENV === 'test' ? process.env.AUTH_DB_PATH || ':memory:' : 'royal_game');
 export function cookieToken(cookie: string | undefined) { return cookie?.split(';').map(part => part.trim()).find(part => part.startsWith('royal_session='))?.slice('royal_session='.length); }

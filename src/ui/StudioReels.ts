@@ -1,3 +1,4 @@
+import { tr } from '../i18n/index';
 import { STUDIO_INFO, studioStrip } from '../shared/studioGames';
 import { slotSymbol, SLOT_SYMBOL_NAMES, type PresentedSlotGame } from './StudioSlotArtwork';
 type Reel = { root: HTMLElement; track: HTMLElement; pins: HTMLElement; cells: HTMLElement[]; offset: number; stopped: boolean; stop?: { at: number; from: number; target: number } };
@@ -20,7 +21,7 @@ export class StudioReels {
       root.append(track, result, pins, beam); host.append(root); return { root, track, pins, cells, offset: 0, stopped: true };
     }); this.show(this.shown);
   }
-  private setCell(cell: HTMLElement, symbol: number) { cell.dataset.symbol = String(symbol); cell.innerHTML = slotSymbol(this.game, symbol); cell.setAttribute('aria-label', `Ячейка ${Number(cell.dataset.slotCell) + 1}: ${SLOT_SYMBOL_NAMES[this.game][symbol]}`); }
+  private setCell(cell: HTMLElement, symbol: number) { cell.dataset.symbol = String(symbol); cell.innerHTML = slotSymbol(this.game, symbol); cell.setAttribute('aria-label', tr`Ячейка ${Number(cell.dataset.slotCell) + 1}: ${SLOT_SYMBOL_NAMES[this.game][symbol]}`); }
   show(grid: readonly number[]) { this.shown = [...grid]; this.reels.forEach((reel, col) => { reel.root.dataset.state = 'stopped'; reel.cells.forEach((cell, row) => this.setCell(cell, grid[row * this.cols + col])); }); }
   pins(positions: readonly number[]) { this.reels.forEach((reel, col) => { reel.pins.innerHTML = positions.filter(i => i % this.cols === col).map(i => `<div class="slot-pin" data-slot-pin="${i}" style="top:${Math.floor(i / this.cols) / this.rows * 100}%;height:${100 / this.rows}%">${slotSymbol(this.game, 3)}<span class="slot-lock" aria-hidden="true">●</span></div>`).join(''); }); }
   expand(column: number, sourcePositions: readonly number[]) { const reel = this.reels[column]; reel.root.style.setProperty('--wild-origin', `${Math.floor(sourcePositions[0] / this.cols) / this.rows * 100}%`); reel.root.classList.add('expanding'); }

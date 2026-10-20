@@ -1,3 +1,4 @@
+import { t as translateText, tr } from '../i18n/index';
 import { DEMO_CATEGORIES, getCabinetDemoGame, getDemoGame, getDemoGames, selectCabinetDemoGame, type DemoGame } from '../game/demoGames';
 import '../demo-library.css';
 
@@ -21,9 +22,9 @@ export class DemoSlot {
 
   constructor(container: HTMLElement, private setTitle: (name: string) => void) {
     this.root.className = 'demo-slot';
-    this.root.innerHTML = '<div class="demo-library-toolbar"><button type="button" class="primary-button" id="all-demo-games">Все демоигры</button><span>Кредиты Luelon</span></div>';
+    this.root.innerHTML = translateText('<div class="demo-library-toolbar"><button type="button" class="primary-button" id="all-demo-games">Все демоигры</button><span>Кредиты Luelon</span></div>');
     this.stage.className = 'demo-slot-stage';
-    this.stage.innerHTML = '<div class="demo-slot-status" role="status"><p></p><button type="button" class="primary-button">Повторить загрузку</button></div><section class="demo-library" aria-label="Каталог демоигр" hidden><div class="demo-library-intro"><h3>Выбери демоигру</h3><p>У каждой новой сессии свои 2 500 виртуальных кредитов Luelon.</p></div><div class="demo-library-filters"><label>Поиск<input type="search" placeholder="Название игры" aria-label="Поиск демоигр"></label><label>Категория<select aria-label="Категория демоигр"><option value="">Все категории</option></select></label></div><p class="demo-library-count" role="status"></p><div class="demo-library-grid"></div></section>';
+    this.stage.innerHTML = translateText('<div class="demo-slot-status" role="status"><p></p><button type="button" class="primary-button">Повторить загрузку</button></div><section class="demo-library" aria-label="Каталог демоигр" hidden><div class="demo-library-intro"><h3>Выбери демоигру</h3><p>У каждой новой сессии свои 2 500 виртуальных кредитов Luelon.</p></div><div class="demo-library-filters"><label>Поиск<input type="search" placeholder="Название игры" aria-label="Поиск демоигр"></label><label>Категория<select aria-label="Категория демоигр"><option value="">Все категории</option></select></label></div><p class="demo-library-count" role="status"></p><div class="demo-library-grid"></div></section>');
     this.status = this.stage.querySelector('.demo-slot-status')!;
     this.message = this.status.querySelector('p')!;
     this.retry = this.status.querySelector('button')!;
@@ -49,7 +50,7 @@ export class DemoSlot {
     this.root.classList.toggle('is-catalogue', catalogue);
     this.library.hidden = true;
     this.status.hidden = false; this.retry.hidden = true;
-    this.message.textContent = catalogue ? 'Загружаем каталог демоигр…' : 'Загружаем демоигру…';
+    this.message.textContent = catalogue ? translateText('Загружаем каталог демоигр…') : translateText('Загружаем демоигру…');
     return version;
   }
 
@@ -59,19 +60,19 @@ export class DemoSlot {
     this.frame?.remove(); this.frame = undefined;
     this.status.hidden = false; this.retry.hidden = false;
     this.message.textContent = this.catalogue
-      ? 'Каталог сейчас недоступен. Попробуй загрузить его ещё раз.'
-      : 'Игра сейчас недоступна. Попробуй ещё раз или выбери другую демоигру.';
+      ? translateText('Каталог сейчас недоступен. Попробуй загрузить его ещё раз.')
+      : translateText('Игра сейчас недоступна. Попробуй ещё раз или выбери другую демоигру.');
   }
 
   async showLibrary() {
     const version = this.begin(true);
-    this.setTitle('Демоигры Luelon');
+    this.setTitle(translateText('Демоигры Luelon'));
     try {
       const games = await getDemoGames();
       if (version !== this.version) return;
       this.games = games;
       const selected = this.category.value;
-      this.category.replaceChildren(new Option('Все категории', ''));
+      this.category.replaceChildren(new Option(translateText('Все категории'), ''));
       for (const [category, label] of Object.entries(DEMO_CATEGORIES)) {
         if (games.some(game => game.category === category)) this.category.add(new Option(label, category));
       }
@@ -85,27 +86,27 @@ export class DemoSlot {
   private renderGames() {
     const query = this.search.value.trim().toLocaleLowerCase();
     const games = this.games.filter(game => (!this.category.value || game.category === this.category.value) && game.name.toLocaleLowerCase().includes(query));
-    this.count.textContent = `Показано ${games.length} из ${this.games.length}`;
+    this.count.textContent = tr`Показано ${games.length} из ${this.games.length}`;
     this.grid.replaceChildren();
     for (const game of games) {
       const button = document.createElement('button');
       button.type = 'button'; button.className = 'demo-library-card'; button.dataset.demoGame = game.id;
-      button.setAttribute('aria-label', `Играть в ${game.name}`);
+      button.setAttribute('aria-label', tr`Играть в ${game.name}`);
       const art = document.createElement('span'); art.className = 'demo-library-art';
       const placeholder = document.createElement('span'); placeholder.className = 'demo-library-placeholder'; placeholder.textContent = '✦'; placeholder.setAttribute('aria-hidden', 'true'); art.append(placeholder);
       if (game.artworkUrl) {
-        const image = document.createElement('img'); image.alt = `Обложка ${game.name}`;
+        const image = document.createElement('img'); image.alt = tr`Обложка ${game.name}`;
         image.loading = 'lazy'; image.referrerPolicy = 'no-referrer'; image.src = game.artworkUrl;
         image.onerror = () => image.remove(); art.append(image);
       }
       const name = document.createElement('strong'); name.textContent = game.name;
-      const detail = document.createElement('small'); detail.textContent = `${DEMO_CATEGORIES[game.category]} · Демо`;
+      const detail = document.createElement('small'); detail.textContent = tr`${DEMO_CATEGORIES[game.category]} · Демо`;
       button.append(art, name, detail);
       button.onclick = () => { void this.load(game.id); };
       this.grid.append(button);
     }
     if (!games.length) {
-      const empty = document.createElement('p'); empty.className = 'demo-library-empty'; empty.textContent = 'Ничего не найдено. Измени название или категорию.'; this.grid.append(empty);
+      const empty = document.createElement('p'); empty.className = 'demo-library-empty'; empty.textContent = translateText('Ничего не найдено. Измени название или категорию.'); this.grid.append(empty);
     }
   }
 
@@ -119,7 +120,7 @@ export class DemoSlot {
       selectCabinetDemoGame(game);
       this.setTitle(game.name);
       const frame = document.createElement('iframe');
-      frame.title = `${game.name}: демоигра Luelon Play`;
+      frame.title = tr`${game.name}: демоигра Luelon Play`;
       frame.allow = 'autoplay; fullscreen';
       frame.allowFullscreen = true;
       frame.referrerPolicy = 'no-referrer';

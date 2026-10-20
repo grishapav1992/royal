@@ -1,0 +1,9 @@
+.studio-motion-root{position:relative}
+.studio-motion-layer{position:absolute;inset:0;pointer-events:none;z-index:20;overflow:visible}
+.studio-motion-carry{position:absolute;width:38px;height:38px;display:grid;place-items:center;filter:drop-shadow(0 0 9px #ffe79d);pointer-events:none}
+.studio-motion-carry svg,.studio-motion-carry img{width:100%;height:100%;object-fit:contain}
+.studio-motion-factor{display:inline-block;margin:0 8px;padding:3px 12px;border-radius:999px;background:#ffe6a3;color:#443454;font-size:22px;font-weight:900;box-shadow:0 0 18px #fff0a780}
+@media(max-width:600px){.studio-motion-carry{width:28px;height:28px}.studio-motion-factor{font-size:18px;padding:2px 8px}}
+@media(prefers-reduced-motion:reduce){.studio-motion-layer,.studio-motion-factor{display:none}}
+
+[data-hold-award-button][hidden]{display:none!important}

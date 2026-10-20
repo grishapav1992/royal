@@ -1,0 +1,26 @@
+import { t as translateText } from '../i18n/index';
+export type CollectSlotGame = 'studio-deep-current' | 'studio-blazing-orchard';
+export const COLLECT_SYMBOL_NAMES: Record<CollectSlotGame, string[]> = {
+  'studio-deep-current': [translateText('Жемчужная раковина'), translateText('Морская черепаха'), translateText('Коралловая ветвь'), translateText('Звезда WILD'), translateText('Хранитель глубин'), translateText('Сундук сокровищ')],
+  'studio-blazing-orchard': [translateText('Золотой персик'), translateText('Алые вишни'), translateText('Лиловая слива'), translateText('Солнце WILD'), translateText('Садовый сборщик'), translateText('Мешочек семян')],
+};
+const deep = [
+  '<path d="M19 48Q17 25 32 18Q44 7 56 21Q78 25 80 48L67 76H32Z" fill="#83e2f3"/><path d="M22 48L36 62M34 23L42 57M49 19V57M64 22L55 57M79 47L63 62" stroke="#e8fcff"/><circle cx="49" cy="60" r="14" fill="#fff5d7"/><circle cx="45" cy="55" r="4" fill="#fff"/>',
+  '<ellipse cx="49" cy="51" rx="24" ry="25" fill="#7beaaf"/><path d="M27 33L16 26L11 33L23 43M29 68L17 77L27 81L38 75M70 34L82 26L86 34L76 43M68 69L78 78L67 82L61 76" fill="#48baa1"/><ellipse cx="49" cy="20" rx="9" ry="12" fill="#8cf5be"/><path d="M37 42L49 35L61 43V59L49 67L37 59ZM26 51H36M62 51H74" stroke="#24776f" fill="none"/><circle cx="46" cy="17" r="1" fill="#123f42"/>',
+  '<path d="M49 83V52L25 32V14M49 67L72 45V22M49 52L50 28L62 15M27 34L13 30M72 44L85 39M50 29L39 15" fill="none" stroke="#f08daf" stroke-width="10"/><circle cx="25" cy="13" r="6" fill="#ffd1c8"/><circle cx="73" cy="21" r="6" fill="#ffd1c8"/><circle cx="62" cy="14" r="5" fill="#ffe2b7"/>',
+  '<path d="M49 10L61 33L86 37L68 56L73 83L49 70L25 83L30 56L12 37L38 33Z" fill="#ffe390"/><path d="M49 22V61M28 42L64 60M70 42L35 60" stroke="#edac50"/><circle cx="49" cy="50" r="13" fill="#fff5c0"/><text x="49" y="56" text-anchor="middle" font-size="12" font-weight="900" fill="#5d4c37" stroke="none">WILD</text>',
+  '<path d="M18 64Q13 47 21 32Q34 13 49 12Q72 18 80 39L77 66L66 80H34Z" fill="#247b96"/><path d="M21 42Q33 26 49 28Q69 29 77 44V58Q63 67 49 62Q33 67 21 58Z" fill="#fff3a9"/><path d="M25 44H43V57H25ZM54 44H73V57H54Z" fill="#6de7e4" stroke="#4183a2"/><path d="M43 48H55M45 64L49 71L54 64" stroke="#e0e3ac"/><path d="M77 45L87 50V73H72" fill="none" stroke="#a5e9e8" stroke-width="6"/>',
+  '<path d="M18 49Q17 23 49 23Q79 24 80 49V78H18Z" fill="#c78645"/><path d="M18 49H80V78H18ZM30 27V77M68 27V77" fill="none" stroke="#ffd97d" stroke-width="6"/><path d="M22 33Q49 9 77 34" fill="none" stroke="#a9673e"/><circle cx="49" cy="54" r="12" fill="#ffe49a"/><path d="M46 50H52V59H46Z" fill="#8c6041" stroke="none"/>',
+];
+const orchard = [
+  '<path d="M49 31Q76 14 85 45Q94 79 51 89Q11 80 14 51Q17 23 49 31Z" fill="#ffc466"/><path d="M49 31Q56 49 47 83" fill="none" stroke="#ef8b63"/><path d="M47 31L53 12" stroke="#715749" stroke-width="6"/><path d="M52 24Q66 8 80 16Q70 32 52 24Z" fill="#86d66b"/><path d="M25 45Q29 33 37 36" fill="none" stroke="#fff3be" stroke-width="5"/>',
+  '<path d="M34 48Q33 25 58 15L64 20Q54 29 61 51" fill="none" stroke="#55885c" stroke-width="5"/><path d="M55 17Q48 5 32 12Q32 24 55 17Z" fill="#82cb71"/><circle cx="32" cy="65" r="22" fill="#f96985"/><circle cx="66" cy="65" r="22" fill="#ed536d"/><path d="M19 56L24 51M54 57L59 51" stroke="#ffe4c0" stroke-width="5"/>',
+  '<path d="M49 27Q78 22 83 54Q84 88 49 91Q16 87 16 54Q20 20 49 27Z" fill="#b996ef"/><path d="M49 28L48 10" stroke="#76535e" stroke-width="5"/><path d="M48 20Q65 2 76 15Q65 30 48 20Z" fill="#77cc8b"/><path d="M29 43Q25 52 29 60" stroke="#eae0ff" stroke-width="6"/><path d="M50 37V79" stroke="#966fc9"/>',
+  '<path d="M49 7L56 23L71 13L70 31L89 29L79 44L94 53L77 60L83 78L65 75L63 93L49 81L34 92L33 74L15 79L21 62L5 53L21 45L11 29L29 30L28 13L42 22Z" fill="#ffc95f"/><circle cx="49" cy="50" r="27" fill="#fff1a5"/><path d="M37 39Q49 33 60 39M35 64Q49 73 65 60" stroke="#f8b36d" fill="none"/><text x="49" y="55" text-anchor="middle" font-size="13" font-weight="900" fill="#9b534d" stroke="none">WILD</text>',
+  '<path d="M22 49Q20 21 49 17Q77 22 78 49V57H22Z" fill="#80c784"/><path d="M29 28Q50 15 68 30M31 25L43 9M57 24L66 10" stroke="#e7e4ae" stroke-width="5"/><circle cx="49" cy="43" r="18" fill="#ffd7af"/><circle cx="42" cy="41" r="2" fill="#735057"/><circle cx="57" cy="41" r="2" fill="#735057"/><path d="M41 49Q49 55 57 48" fill="none" stroke="#cd7b72"/><path d="M22 63Q49 54 77 63L70 87H29Z" fill="#e4a55d"/><path d="M29 66L35 84M45 62V85M60 63L59 85M72 67L65 86" stroke="#ffe1a0"/>',
+  '<path d="M32 30L27 12L48 20L69 12L66 30Q84 55 75 79Q50 96 24 79Q15 57 32 30Z" fill="#e8bd65"/><path d="M31 29H66" stroke="#9e7149" stroke-width="7"/><path d="M38 58Q49 36 64 52Q67 72 44 75Z" fill="#fff0b0"/><path d="M45 72L59 51" stroke="#c79354"/><path d="M32 47Q23 58 29 70" stroke="#ffe8a1" stroke-width="5"/>',
+];
+export function collectSymbol(game: CollectSlotGame, symbol: number): string {
+  const ocean = game === 'studio-deep-current';
+  return `<svg viewBox="0 0 100 100" class="collect-art" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><circle cx="49" cy="50" r="44" fill="${ocean ? '#194965' : '#794954'}" opacity=".19"/><g stroke="${ocean ? '#357c92' : '#a46c66'}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${(ocean ? deep : orchard)[symbol] ?? ''}</g></svg>`;
+}

@@ -1,3 +1,4 @@
+import { t as translateText } from '../i18n/index';
 export const COINS_SYMBOL_COUNT = 5;
 export const COINS_REEL_COUNT = 3;
 export const COINS_MAX_MULTIPLIER = 12;
@@ -7,10 +8,10 @@ export const FRUITS_REEL_SIZE = 20;
 export const FRUITS_SYMBOL_COUNT = 4;
 export const FRUITS_MAX_MULTIPLIER = 140;
 export const FRUITS_PAYTABLE = Object.freeze([
-  Object.freeze({ symbol: 0, key: 'cherry', label: 'Вишня', weight: 8, multiplier: 5 } as const),
-  Object.freeze({ symbol: 1, key: 'lemon', label: 'Лимон', weight: 6, multiplier: 10 } as const),
-  Object.freeze({ symbol: 2, key: 'grape', label: 'Виноград', weight: 4, multiplier: 30 } as const),
-  Object.freeze({ symbol: 3, key: 'seven', label: 'Семёрка', weight: 2, multiplier: 140 } as const),
+  Object.freeze({ symbol: 0, key: 'cherry', label: translateText('Вишня'), weight: 8, multiplier: 5 } as const),
+  Object.freeze({ symbol: 1, key: 'lemon', label: translateText('Лимон'), weight: 6, multiplier: 10 } as const),
+  Object.freeze({ symbol: 2, key: 'grape', label: translateText('Виноград'), weight: 4, multiplier: 30 } as const),
+  Object.freeze({ symbol: 3, key: 'seven', label: translateText('Семёрка'), weight: 2, multiplier: 140 } as const),
 ]);
 
 export type GameId = 'royal-coins' | 'royal-fruits' | 'royal-roulette' | 'royal-wheel' | OriginalGameId;

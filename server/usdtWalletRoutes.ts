@@ -4,7 +4,6 @@ import { playCommand } from './nilePlayRoutes';
 import { USDT_SCOPE, validUsdtRequest, validUsdtRound, validUsdtWallet } from '../src/shared/usdtWallet';
 import { WALLET_ACCOUNT_HEADER } from '../src/shared/walletAccount';
 import { validCasinoAction, validCasinoSession } from '../src/shared/casinoSessions';
-import { HttpRateLimits } from './requestRateLimit';
 
 const messages: Record<string, string> = {
   invalid_usdt_request: 'Некорректный запрос игры.', usdt_not_ready: 'Подтверждение USDT временно недоступно. Обнови баланс позже.',
@@ -12,19 +11,15 @@ const messages: Record<string, string> = {
   usdt_idempotency_conflict: 'Этот номер операции уже использован с другой ставкой.', usdt_rate_limit: 'Слишком много ставок. Подожди минуту.',
   usdt_session_active:'Сначала заверши текущую партию этой игры.',usdt_session_missing:'Партия не найдена.',invalid_usdt_action:'Этот ход недоступен или партия уже завершена.',
 };
-export function installUsdtWallet(app: Application, socket = process.env.USDT_MAINNET_SOCKET_FILE, limits = new HttpRateLimits()) {
-  app.use('/api/usdt-wallet', async (req, res, next) => {
+export function installUsdtWallet(app: Application, socket = process.env.USDT_MAINNET_SOCKET_FILE) {
+  app.use('/api/usdt-wallet', express.json({ limit: '2kb' }), async (req, res, next) => {
     res.setHeader('Cache-Control', 'no-store'); res.setHeader('Vary', 'Cookie');
     if (!allowedOrigin(req.get('origin')) || req.get('sec-fetch-site') === 'cross-site') { res.status(403).json({ error: 'Этот источник запросов не разрешён.' }); return; }
     const account = (await accounts.session(cookieToken(req.headers.cookie)))?.account;
     if (!account || req.get(WALLET_ACCOUNT_HEADER) !== account.id) { res.status(401).json({ error: 'Войди в свой аккаунт, чтобы использовать USDT.' }); return; }
     if (Object.keys(req.query).length) { res.status(400).json({ error: 'Параметры запроса не поддерживаются.' }); return; }
     res.locals.accountId = account.id; next();
-  }, limits.account(), express.json({ limit: '2kb', inflate: false }));
-  app.use('/api/usdt-wallet', ((error, _req, res, next) => {
-    if (error?.status >= 400 && error.status < 500) res.status(error.status).json({ error: 'Некорректный запрос USDT.' });
-    else next(error);
-  }) as express.ErrorRequestHandler);
+  });
   async function forward(action: string, value: unknown, res: express.Response) {
     if (!socket) { if (action === 'wallet') res.json({ ...USDT_SCOPE, state: 'disabled' }); else if(action==='casino-wallet')res.json({wallet:{...USDT_SCOPE,state:'disabled'},sessions:[]});else res.status(503).json({ error: 'Настоящие USDT пока не подключены.' }); return; }
     try {

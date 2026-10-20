@@ -1,0 +1,9 @@
+import {randomInt} from 'node:crypto';
+import {afterInitial,afterNext,validAfterStake,validAfterSettings,validAfterSettlement,type AfterSettings,type AfterView,type AfterResult} from '../../src/shared/afterglow';
+export class AfterMoveError extends Error{}
+export const AFTER_MATH={version:1,weights:[25,22,18,14,11,8,1,2,3]} as const;
+export type AfterDraw=(max:number)=>number;
+export function afterRandomSymbol(draw:AfterDraw){const sum=AFTER_MATH.weights.reduce((a,b)=>a+b,0);let n=draw(sum);if(!Number.isSafeInteger(n)||n<0||n>=sum)throw Error('Invalid Afterglow entropy');for(let i=0;i<AFTER_MATH.weights.length;i++){if(n<AFTER_MATH.weights[i])return i;n-=AFTER_MATH.weights[i];}throw Error('Invalid Afterglow weights');}
+function finish(view:AfterView,stake:string):AfterResult{const ended=!view.bonus?.remaining||view.capped;if(!validAfterSettlement(ended?'settled':'active',stake,stake,ended?view.totalPayoutUnits:'0',view))throw Error('Invalid Afterglow settlement');return{view,ended,credit:ended?Number(view.totalPayoutUnits):0,message:ended?'Раунд завершён. Альбом сохранён, выплата в тестовом кошельке.':'Фотосессия сохранена. Продолжение бесплатно.',actions:ended?[]:[{move:'afterglow-spin',label:'Продолжить фотосессию',cost:0}]};}
+export function startAfter(settings:AfterSettings,stake:string,albumStart=0,draw:AfterDraw=randomInt){if(!validAfterStake(stake)||!validAfterSettings(settings))throw new AfterMoveError('Недопустимая ставка или режим.');return finish(afterNext(afterInitial(albumStart),stake,()=>afterRandomSymbol(draw)),stake);}
+export function moveAfter(view:AfterView,stake:string,revision:unknown,draw:AfterDraw=randomInt){if(!view||revision!==view.revision||!validAfterSettlement('active',stake,stake,'0',view))throw new AfterMoveError('Фотосессия уже изменилась. Проверь сохранённый ход.');return finish(afterNext(view,stake,()=>afterRandomSymbol(draw)),stake);}

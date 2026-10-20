@@ -1,9 +1,9 @@
+import { t as translateText } from '../i18n/index';
 import { CABINETS, cabinetsInHall } from './cabinets';
 import { hallObstacles, type HallId } from './world';
 import { LOUNGES } from './clubLayout';
 import { findPath, walkable, type Point } from '../game/navigation';
 import { movementFacing, type Facing } from './movement';
-import { PLAYER_CHARACTERS } from './characters';
 
 export type GuestMood = 'walking' | 'playing' | 'drinking' | 'resting';
 export type AmbientGuestView = { id: string; name: string; hall: HallId; skin: number; x: number; y: number; facing: Facing; moving: boolean; mood: GuestMood; drink: string; seat: string; destination: string };
@@ -19,7 +19,7 @@ export function guestStops(hall: HallId): Stop[] {
     ...(hall==='github'?[{id:'salon-reading',x:430,y:450,mood:'resting' as const,facing:'up' as const},{id:'salon-welcome',x:730,y:530,mood:'resting' as const,facing:'left' as const}]:[]),
   ];
 }
-const names=['Лена','Марк','Ника','Саша','Лев','Даша','Макс','Оля','Илья','Вера'];
+const names=[translateText('Лена'),translateText('Марк'),translateText('Ника'),translateText('Саша'),translateText('Лев'),translateText('Даша'),translateText('Макс'),translateText('Оля'),translateText('Илья'),translateText('Вера')];
 const cabinetIds = new Set(CABINETS.map(cabinet => cabinet.id));
 type Routine = { view: AmbientGuestView; stops: Stop[]; path: Point[]; elapsed: number; duration: number; index: number; seed: number };
 // The same routine runs on the server and in offline practice. Guests never own
@@ -30,12 +30,9 @@ export class AmbientGuests {
   constructor() {
     for (const hall of ['arcade','tables','github'] as const) {
       const stops=guestStops(hall);
-      const count = hall === 'arcade' ? 10 : 8;
-      const skinOffset = hall === 'arcade' ? 0 : hall === 'tables' ? 3 : 6;
-      for(let i=0;i<count;i++) {
+      for(let i=0;i<(hall==='arcade'?10:8);i++) {
         const index=i%stops.length,stop=stops[index];
-        const skin = PLAYER_CHARACTERS[(Math.floor(i * PLAYER_CHARACTERS.length / count) + skinOffset) % PLAYER_CHARACTERS.length].id;
-        const view:AmbientGuestView={id:'guest-'+hall+'-'+i,name:names[i],hall,skin,x:stop.x,y:stop.y,facing:stop.facing,moving:false,mood:stop.mood,drink:stop.mood==='drinking'?'lemonade':'',seat:stop.seat??'',destination:stop.id};
+        const view:AmbientGuestView={id:'guest-'+hall+'-'+i,name:names[i],hall,skin:i%6,x:stop.x,y:stop.y,facing:stop.facing,moving:false,mood:stop.mood,drink:stop.mood==='drinking'?'lemonade':'',seat:stop.seat??'',destination:stop.id};
         this.routines.push({view,stops,path:[],elapsed:0,duration:12+i*2,index,seed:53+i*971+hall.length*271});
       }
     }

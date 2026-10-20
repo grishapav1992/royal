@@ -1,0 +1,12 @@
+import { t as translateText } from '../i18n/index';
+import type {LuelonSlotInfo,LuelonSlotView,LuelonSlotFeatures,LuelonSlotWild} from './luelonSlots';
+export const VELVET_GAME='studio-velvet-reign' as const;
+export const VELVET_CLIENT_HEADER='X-Royal-Velvet-Rules';
+export const VELVET_FACTORS=[2,3,4,5,8,10,20,50,100] as const;
+export const VELVET_NAMES=[translateText('Валет'),translateText('Дама'),translateText('Король'),translateText('Туз'),translateText('Маска'),translateText('Веер'),translateText('Духи'),translateText('Корона'),'WILD',translateText('Самоцвет')];
+export const VELVET_STARS=[translateText('Эвелин'),translateText('Селеста'),translateText('Мэй'),translateText('Виола'),translateText('Амира')];
+export const VELVET_PAYLINES=[[0,0,0,0,0],[1,1,1,1,1],[2,2,2,2,2],[3,3,3,3,3],[0,1,2,1,0],[3,2,1,2,3],[1,0,0,0,1],[2,3,3,3,2],[0,0,1,2,3],[3,3,2,1,0],[0,1,1,1,0],[3,2,2,2,3],[1,2,3,2,1],[2,1,0,1,2]];
+export const VELVET_PAYTABLE=[[30,70,250],[40,80,300],[50,100,400],[60,120,500],[100,200,500],[150,300,800],[200,400,1000],[300,600,1500]];
+export const VELVET_INFO:LuelonSlotInfo={id:VELVET_GAME,name:'Velvet Reign',family:'lines',cols:5,rows:4,maxRows:4,paylines:VELVET_PAYLINES,symbols:[...VELVET_PAYTABLE.map((pays,id)=>({id,name:VELVET_NAMES[id],role:'ordinary' as const,pays:{'3':pays[0],'4':pays[1],'5':pays[2]}})),{id:8,name:'WILD',role:'wild',pays:{'5':1500}},{id:9,name:translateText('Самоцвет'),role:'scatter',pays:{}}],modes:[{id:'normal',name:translateText('Обычный'),cost:1,bonus:null,spins:0,startMultiplier:1},{id:'booster',name:'Booster',cost:2,bonus:null,spins:0,startMultiplier:1},{id:'hyper',name:'Hyper',cost:10,bonus:null,spins:0,startMultiplier:1},{id:'spotlight',name:'Spotlight',cost:100,bonus:'spotlight',spins:10,startMultiplier:1},{id:'super-encore',name:'Super Encore',cost:300,bonus:'super-encore',spins:10,startMultiplier:1}],maxWin:10000,intro:[translateText('Пять барабанов, четыре ряда, 14 фиксированных линий.'),translateText('Три самоцвета открывают Spotlight, четыре и более дают Super Encore.'),translateText('Каждые три самоцвета в серии добавляют постоянную звезду WILD и два вращения.')],verified:true};
+export const velvetSame=(a:unknown,b:unknown)=>JSON.stringify(a)===JSON.stringify(b);
+export function velvetEmptyFeatures():LuelonSlotFeatures{return {multiplier:1,wilds:[],charges:[],counters:[0,0],held:[],chosenSymbol:null,route:0,rows:4,heights:[4,4,4,4,4]};}

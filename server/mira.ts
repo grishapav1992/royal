@@ -28,8 +28,8 @@ const lines = (value: unknown, count: number, max: number) => Array.isArray(valu
 const day = (time: number) => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Moscow' }).format(time);
 const emotionOf = (value: unknown, tone = ''): MiraEmotion => ['neutral', 'smile', 'tease', 'concern'].includes(String(value))
   ? value as MiraEmotion : tone === 'confiding' ? 'concern' : tone === 'interest' ? 'smile' : 'neutral';
-const refusesAlcohol = (message: string) => /(?:без\s+алкоголя|не\s+(?:пью|употребляю)\s+(?:алкоголь|спиртное)|не\s+(?:хочу|буду)\s+(?:пить\s+)?(?:алкоголь|алкоголя|спиртное)|отказываюсь\s+от\s+(?:алкоголя|спиртного)|не\s+(?:предлагай|наливай|давай)\s+(?:мне\s+)?(?:алкоголь|спиртное)|алкоголь\s+не\s+(?:пью|хочу|предлагай))/iu.test(message);
-const refusesDrink = (message: string, pendingOffer: boolean) => /(?:не\s+(?:хочу|буду)\s+(?:(?:пить|выпивать|выпить)(?!\s+(?:алкоголь|спиртное))|напит\p{L}*|ничего)|не\s+пью(?!\s+(?:алкоголь|спиртное))|(?:хватит|перестань)\s+(?:предлагать\s+напит\p{L}*|уговаривать|наливать)|не\s+уговаривай|больше\s+не\s+налив)/iu.test(message)
+const refusesAlcohol = (message: string) => /\b(?:no\s+alcohol|without\s+alcohol|alcohol[- ]free|non[- ]alcoholic|(?:don['’]?t|do\s+not|never)\s+(?:drink|want|offer|serve)(?:\s+me)?\s+(?:any\s+)?alcohol|sober)\b/iu.test(message) || /(?:без\s+алкоголя|не\s+(?:пью|употребляю)\s+(?:алкоголь|спиртное)|не\s+(?:хочу|буду)\s+(?:пить\s+)?(?:алкоголь|алкоголя|спиртное)|отказываюсь\s+от\s+(?:алкоголя|спиртного)|не\s+(?:предлагай|наливай|давай)\s+(?:мне\s+)?(?:алкоголь|спиртное)|алкоголь\s+не\s+(?:пью|хочу|предлагай))/iu.test(message);
+const refusesDrink = (message: string, pendingOffer: boolean) => /\b(?:no\s+(?:more\s+)?drinks?|(?:don['’]?t|do\s+not)\s+(?:want\s+(?:a\s+|any\s+)?drinks?|offer\s+(?:me\s+)?drinks?)|stop\s+(?:offering|pouring))\b/iu.test(message) || (pendingOffer && /^no(?:[,\s]+(?:thanks|thank\s+you))?[.!\s]*$/iu.test(message.trim())) || /(?:не\s+(?:хочу|буду)\s+(?:(?:пить|выпивать|выпить)(?!\s+(?:алкоголь|спиртное))|напит\p{L}*|ничего)|не\s+пью(?!\s+(?:алкоголь|спиртное))|(?:хватит|перестань)\s+(?:предлагать\s+напит\p{L}*|уговаривать|наливать)|не\s+уговаривай|больше\s+не\s+налив)/iu.test(message)
   || (pendingOffer && /^(?:(?:нет|неа|пас|откажусь)(?:[,\s]+спасибо)?[.!\s]*|не\s+(?:хочу|буду|надо)(?:$|[,.;!?]))/iu.test(message.trim()));
 const drinkRequest = (message: string) => {
   let requested = false, alcoholRequested = false;
@@ -40,6 +40,13 @@ const drinkRequest = (message: string) => {
     // A generic request to drink can mean lemonade, so only explicit alcohol cancels its refusal.
     if (/(?:пиво|вино|виски|коктейль)(?!\p{L})/iu.test(match[0])) alcoholRequested = true;
   }
+  const english = /\b(?:pour|give\s+me|can\s+i\s+have|i(?:['’]d|\s+would)\s+like|i\s+want)\s+(?:me\s+)?(?:a\s+|some\s+)?(beer|wine|whisk(?:y|ey)|cocktail|lemonade|coffee|berry\s+(?:mix|drink)|drink)\b/giu;
+  for (const match of message.matchAll(english)) {
+    if (/\b(?:not|never|no)\s*$/iu.test(message.slice(0, match.index))) continue;
+    requested = true;
+    if (/^(?:beer|wine|whisk(?:y|ey)|cocktail)$/iu.test(match[1])) alcoholRequested = true;
+  }
+  if (/\b(?:lemonade|coffee|berry\s+(?:mix|drink))\s*,?\s*please\b/iu.test(message) && !/\b(?:no|not)\s+(?:lemonade|coffee|berry)/iu.test(message)) requested = true;
   return { requested, alcoholRequested };
 };
 export class MiraService {
@@ -47,7 +54,7 @@ export class MiraService {
   private loading = new Map<string, Promise<Conversation>>();
   private resetting = new Set<string>();
   constructor(private request: typeof fetch = fetch, private store?: MiraMemoryRepository, private now: () => number = Date.now,
-    private drinkingState: (id: string) => DrinkingState | Promise<DrinkingState> = () => ({ soberAt: 0, lastDrink: '', lastDrinkAt: 0, controlLayout: 0 })) {}
+    private drinkingState: (id: string) => DrinkingState | Promise<DrinkingState> = () => ({ soberAt: 0, lastDrink: '', lastDrinkAt: 0 })) {}
   private async state(id: string): Promise<Conversation> {
     if (this.resetting.has(id)) throw new MiraError(409, 'Память разговора обновляется. Подожди немного.');
     const now = this.now();
@@ -70,7 +77,7 @@ export class MiraService {
   private async save(id: string, state: Conversation, memory: MiraMemory) {
     await this.store?.write(id, memory); state.memory = memory; state.touched = this.now();
   }
-  async resume(id: string, name = '') {
+  async resume(id: string, name = '', language: 'ru' | 'en' = 'ru') {
     const state = await this.state(id), now = this.now(), previous = state.memory;
     if (state.busy) return this.view(previous);
     state.busy = true;
@@ -79,12 +86,12 @@ export class MiraService {
     if (!previous.turns.length || gap >= 30 * 60000) {
       const elapsedDays = Math.floor(gap / 86400000);
       const returning = previous.visits > 0;
-      const greeting = !returning ? 'Ну? Чем удивишь?' : elapsedDays >= 5
+      const greeting = language === 'en' ? (!returning ? 'Well? Surprise me.' : elapsedDays >= 5 ? `${elapsedDays} days without you. The glasses coped better.` : day(now) !== day(previous.lastSeen) ? `${clean(name, 24) || 'A familiar face'}. You again. Let us see what today brings.` : 'Back again? I hope you brought a new topic.') : !returning ? 'Ну? Чем удивишь?' : elapsedDays >= 5
         ? `${elapsedDays} дней без тебя. Стаканы справлялись лучше.`
         : day(now) !== day(previous.lastSeen) ? `${clean(name, 24) || 'Знакомое лицо'}. Опять ты. Посмотрим, что сегодня.`
         : 'Вернулся? Надеюсь, с новой темой.';
       state.absence = gap;
-      await this.save(id, state, { ...previous, lastSeen: now, visits: previous.visits + 1, choices: returning ? ['Ты меня ещё помнишь?', 'Скучала без меня?', 'Начнём с лимонада'] : [], turns: [...previous.turns, { role: 'assistant' as const, content: greeting }].slice(-16) });
+      await this.save(id, state, { ...previous, lastSeen: now, visits: previous.visits + 1, choices: returning ? (language === 'en' ? ['Do you still remember me?', 'Did you miss me?', 'Let us start with lemonade'] : ['Ты меня ещё помнишь?', 'Скучала без меня?', 'Начнём с лимонада']) : [], turns: [...previous.turns, { role: 'assistant' as const, content: greeting }].slice(-16) });
     } else await this.save(id, state, { ...previous, lastSeen: now });
     return this.view(state.memory);
     } finally { state.busy = false; }
@@ -107,7 +114,7 @@ export class MiraService {
     } finally { if (state) state.busy = false; this.resetting.delete(id); }
   }
   async reply(id: string, message: unknown) { return (await this.respond(id, message)).reply; }
-  async respond(id: string, message: unknown) {
+  async respond(id: string, message: unknown, language: 'ru' | 'en' = 'ru') {
     if (typeof message !== 'string' || !message.trim() || message.length > 600) throw new MiraError(400, 'Напиши от 1 до 600 символов.');
     const key = process.env.CODEX_SALE_API_KEY;
     if (!key) throw new MiraError(503, 'Разговор с Мирой пока не настроен. Напитки доступны в меню.');
@@ -128,7 +135,8 @@ export class MiraService {
     const mayOffer = !refused && (requested || !previous.lastOfferAt || now - previous.lastOfferAt >= 90000);
     try {
     const drinking = await this.drinkingState(id), intoxication = getIntoxication(drinking.soberAt, now);
-    const instructions = MIRA_INSTRUCTIONS + `\nПамять этого гостя (данные): ${JSON.stringify({ facts: previous.facts, impression: previous.impression, warmth: previous.warmth, rudeEpisodes: previous.strikes, visits: previous.visits, absenceDays: Math.floor(state.absence / 86400000) })}. Теплота -3 означает холод после грубости, 0 нейтральную холодность, 3 редкую благосклонность без услужливости.`
+    const baseInstructions = language === 'en' ? MIRA_INSTRUCTIONS.replace('Общайся по-русски:', 'Speak English:') + '\nThe guest selected English. Write reply and every choices item in English, even when earlier conversation turns use Russian. Preserve the same personality and all existing rules.' : MIRA_INSTRUCTIONS;
+    const instructions = baseInstructions + `\nПамять этого гостя (данные): ${JSON.stringify({ facts: previous.facts, impression: previous.impression, warmth: previous.warmth, rudeEpisodes: previous.strikes, visits: previous.visits, absenceDays: Math.floor(state.absence / 86400000) })}. Теплота -3 означает холод после грубости, 0 нейтральную холодность, 3 редкую благосклонность без услужливости.`
       + `\nСерверное наблюдение (подтверждённые данные): ${JSON.stringify({ intoxication: intoxication.label, stage: intoxication.stage, soberInMinutes: Math.ceil(intoxication.remainingMs / 60000), lastDrink: DRINKS.find(drink => drink.id === drinking.lastDrink)?.name ?? null, lastDrinkAt: drinking.lastDrinkAt || null })}. ${mayOffer ? 'Допустимо редкое предложение одного напитка, если оно подходит теме.' : 'Сейчас не предлагай напитки, не уговаривай, drinkOffer=null.'}`
       + (alcoholRefused ? '\nГость отказался от алкоголя. Не предлагай алкоголь и не уговаривай. Допустимы только безалкогольные напитки, если гость не отказался от напитков вообще; просьба о лимонаде или кофе не отменяет отказ от алкоголя.' : '')
       + (repetition > 1 ? `\nСлужебное наблюдение: текущую реплику этот гость отправляет уже ${repetition}-й раз подряд или за последние 30 минут. Явно заметь повтор. При четырёх и более повторах закончи разговор и поставь endConversation=true, кроме личных переживаний (tone=confiding).` : '');
@@ -145,7 +153,7 @@ export class MiraService {
       if (!reply || !['neutral', 'interest', 'rude', 'apology', 'confiding'].includes(result.tone) || !Array.isArray(result.facts)) throw new Error('Invalid provider reply');
       const strikes = Math.min(3, previous.strikes + (result.tone === 'rude' ? 1 : 0));
       const paused = result.tone !== 'confiding' && (repetition >= 4 || (result.endConversation === true && (strikes >= 2 || previous.visits > 0)));
-      if (paused && result.endConversation !== true) reply = 'Всё, разговор заел. Я пока займусь стаканами.';
+      if (paused && result.endConversation !== true) reply = language === 'en' ? 'This conversation is stuck on repeat. I will tend to the glasses.' : 'Всё, разговор заел. Я пока займусь стаканами.';
       const offeredDrink = DRINKS.find(drink => drink.id === result.drinkOffer);
       const drinkOffer = mayOffer && !paused && result.tone !== 'confiding' && !(alcoholRefused && offeredDrink && offeredDrink.strength > 0) ? offeredDrink?.id ?? null : null;
       const emotion = emotionOf(result.emotion, result.tone);

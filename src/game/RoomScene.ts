@@ -1,10 +1,11 @@
+import { t as translateText, tr } from '../i18n/index';
 import { cabinetSeat, type GameReaction } from '../shared/cabinetSeating';
 import { drawCabinetStool } from './cabinetStoolArt';
 import { drawClubFloor } from './clubArt';
+import { LUELON_NEW_ZONE } from '../shared/clubLayout';
 import { CatRoutine, catApproachPoint, canHearCat, type CatAction, type CatView, type CatPerson } from '../shared/cat';
 import { CAT_HOME } from '../shared/catHome';
 import { CatRenderer, CAT_TEXTURE } from './CatRenderer';
-import { CAT_SIDE_PARTS_TEXTURE } from './CatSideWalkRenderer';
 import { CAT_HABITS_TEXTURE, CAT_CLIMB_TEXTURE, CAT_SCRATCH_TEXTURE, CAT_WALK_TEXTURE } from './CatRenderer';
 import { drawCatCare } from './catCareArt';
 import { FLOOR, BOUNDS } from '../shared/clubGeometry';
@@ -17,7 +18,7 @@ import { gameAudio } from './GameAudio';
 import Phaser from 'phaser';
 import { COLORS } from './art';
 import { createDetailedArt } from './materials';
-import { CABINET_SCALE, CABINET_SIZE } from './cabinetArt';
+import { CABINET_SCALE, CABINET_SIZE, paintGirlhubLogo } from './cabinetArt';
 import { plantTexture, drawHallIdentity } from './interiorArt';
 import { FURNITURE, PLANTS } from '../shared/furniture';
 import { createCharacters, createCharacterPortrait, characterTexture, characterScaleY, pruneCharacterTextures, CHARACTER_SCALE, type Facing } from './characters';
@@ -26,11 +27,10 @@ import { drawActivities } from './activityArt';
 import { ACTIVITIES, type ActivityId } from '../shared/activities';
 import { movementFacing } from '../shared/movement';
 import { addDrink, getIntoxication, intoxicatedMovement, MAX_SOBER_TIME_MS } from '../shared/intoxication';
-import { drunkKeyboardDirection, nextDrunkLayout } from '../shared/drunkControls';
-import { clickMovementPath } from './drunkNavigation';
-import { MovementPrediction } from '../network/MovementPrediction';
+import { MovementPrediction, advanceClickMovement } from '../network/MovementPrediction';
 import { ClickTargetScheduler } from '../network/ClickTargetScheduler';
 import { NpcMotion } from '../network/NpcMotion';
+import { NpcTimeline } from '../network/NpcTimeline';
 import { RoomDetails } from './roomDetails';
 import { CardTablesRenderer } from './CardTablesRenderer';
 import { isCardGame, type DealerAction } from '../shared/cardTables';
@@ -39,7 +39,7 @@ import { findPath, walkable, WORLD, type Point, type Obstacle } from './navigati
 
 import { CABINETS, cabinetsInHall, type Cabinet } from '../shared/cabinets';
 export { CABINETS, type Cabinet };
-type Actor = { hall: HallId; sprite: Phaser.GameObjects.Sprite; shadow: Phaser.GameObjects.Ellipse; blush: Phaser.GameObjects.Graphics; label?: Phaser.GameObjects.Text; x: number; y: number; path: Point[]; phase: number; nextMove: number; facing: Facing; skin: number; appearance: string; soberAt: number; controlLayout: number; moving: boolean; lastStep: number; strideDistance: number; visualAt: number; visualX: number; visualY: number; seat: string; action: PlayerAction; drink: string; actionUntil: number; cabinet: string; gameReaction: string; gameReactionUntil: number; visualSeat: string; seatedAt: number };
+type Actor = { hall: HallId; sprite: Phaser.GameObjects.Sprite; shadow: Phaser.GameObjects.Ellipse; blush: Phaser.GameObjects.Graphics; label?: Phaser.GameObjects.Text; x: number; y: number; path: Point[]; phase: number; nextMove: number; facing: Facing; skin: number; appearance: string; soberAt: number; moving: boolean; lastStep: number; strideDistance: number; visualAt: number; visualX: number; visualY: number; seat: string; action: PlayerAction; drink: string; actionUntil: number; cabinet: string; gameReaction: string; gameReactionUntil: number; visualSeat: string; seatedAt: number };
 export class RoomScene extends Phaser.Scene {
   player!: Actor;
   hall: HallId = 'arcade';
@@ -63,9 +63,11 @@ export class RoomScene extends Phaser.Scene {
   private guestViews:AmbientGuestView[]=this.guestRoutine.snapshot();
   private guests=new Map<string,Actor>();
   private guestMotion=new Map<string,NpcMotion<AmbientGuestView>>();
+  private npcTimeline=new NpcTimeline();
+  private npcSimulationAt=0;
+  private guestsAt=0;
   private keys!: Record<string, Phaser.Input.Keyboard.Key>;
   private marker!: Phaser.GameObjects.Arc;
-  private walkTarget: Point | null = null;
   private halo!: Phaser.GameObjects.Ellipse;
   private near: Cabinet | null = null;
   private pendingCabinet: Cabinet | null = null;
@@ -78,7 +80,7 @@ export class RoomScene extends Phaser.Scene {
   private network?: NetworkCommands;
   private networkSelf?: PlayerView;
   private remotePlayers = new Map<string, { actor: Actor; target: PlayerView }>();
-  private lastInput = '0,0,0';
+  private lastInput = '0,0';
   private lastInputAt = 0;
   private prediction = new MovementPrediction();
   private clickTargets = new ClickTargetScheduler();
@@ -109,7 +111,6 @@ export class RoomScene extends Phaser.Scene {
     this.load.image(CAT_CLIMB_TEXTURE, '/assets/cat/zverochka-climb.png');
     this.load.image(CAT_SCRATCH_TEXTURE, '/assets/cat/zverochka-scratch.png');
     this.load.image(CAT_WALK_TEXTURE, '/assets/cat/zverochka-walk-v3.png');
-    this.load.image(CAT_SIDE_PARTS_TEXTURE, '/assets/cat/zverochka-side-parts.png');
   }
   create() {
     createDetailedArt(this);
@@ -125,7 +126,7 @@ export class RoomScene extends Phaser.Scene {
     this.showHall('arcade');
     this.marker = this.add.circle(0, 0, 12, COLORS.lime, .08).setStrokeStyle(1.5, COLORS.lime, .8).setVisible(false).setDepth(1);
     this.halo = this.add.ellipse(540, 572, 48, 19, COLORS.lime, .11).setStrokeStyle(1, COLORS.lime, .7);
-    this.player = this.actor(540, 570, 0, 'Вы', true);
+    this.player = this.actor(540, 570, 0, translateText('Вы'), true);
     this.cameras.main.setBounds(0,0,WORLD.width,WORLD.height).startFollow(this.player.sprite,false,1,1);
     this.scale.on(Phaser.Scale.Events.RESIZE,this.resizeView,this);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN,()=>{this.clickTargets.cancel();this.afterMovement=undefined;this.scale.off(Phaser.Scale.Events.RESIZE,this.resizeView,this);});
@@ -137,9 +138,9 @@ export class RoomScene extends Phaser.Scene {
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer, objects: Phaser.GameObjects.GameObject[]) => {
       if (this.locked || this.typing || objects.length) return;
       this.pendingCabinet = null; this.pendingLounge = null;
-      this.goTo({ x: pointer.worldX, y: pointer.worldY }, true);
+      this.goTo({ x: pointer.worldX, y: pointer.worldY });
     });
-    this.game.events.on(Phaser.Core.Events.BLUR, () => { this.input.keyboard?.resetKeys(); this.player.path = []; this.confirmWalkTarget(null); this.endPrediction(); this.network?.stop(); });
+    this.game.events.on(Phaser.Core.Events.BLUR, () => { this.input.keyboard?.resetKeys(); this.player.path = []; this.marker.setVisible(false); this.endPrediction(); this.network?.stop(); });
     if (this.reducedMotion) this.tweens.pauseAll();
     this.guard = new SecurityGuard(this);
     this.catRenderer = new CatRenderer(this);
@@ -154,7 +155,7 @@ export class RoomScene extends Phaser.Scene {
     this.syncGuests(this.guestViews);
   }
   private drawDoor(link:HallLink){
-    const destination=HALLS[link.target],doorLabel=destination.floor!==HALLS[this.hall].floor?'ЭТАЖ '+destination.floor:'ЗАЛ '+destination.number,g=this.add.graphics().setDepth(225);
+    const destination=HALLS[link.target],doorLabel=destination.floor!==HALLS[this.hall].floor?translateText('ЭТАЖ ')+destination.floor:translateText('ЗАЛ ')+destination.number,g=this.add.graphics().setDepth(225);
     if(link.door.facing==='up') {
       // The near wall is cut away so the doorway stays readable from above.
       const offset=link.door.entry.y-640;g.setDepth(2).setPosition(0,offset);
@@ -183,11 +184,10 @@ export class RoomScene extends Phaser.Scene {
     const floor=this.add.graphics().setDepth(1).setPosition(link.door.entry.x-900,0);
     floor.fillStyle(0x73d4ca,.12).fillTriangle(853,236,947,236,975,303);floor.fillTriangle(853,236,975,303,825,303);
     this.add.text(link.door.entry.x,68,doorLabel,{fontFamily:'Arial',fontSize:'19px',fontStyle:'bold',color:'#342f2a',backgroundColor:'#f5d369',padding:{x:12,y:6}}).setOrigin(.5).setDepth(226);
-    this.add.text(link.door.entry.x,159,destination.name.replace(' и ','\nи ').replace(' на ','\nна '),{fontFamily:'Arial',fontSize:'13px',fontStyle:'bold',align:'center',color:'#ecf8dc',wordWrap:{width:80}}).setOrigin(.5).setDepth(226);
+    this.add.text(link.door.entry.x,159,destination.name.replace(translateText(' и '),translateText('\nи ')).replace(translateText(' на '),translateText('\nна ')),{fontFamily:'Arial',fontSize:'13px',fontStyle:'bold',align:'center',color:'#ecf8dc',wordWrap:{width:80}}).setOrigin(.5).setDepth(226);
     this.add.zone(link.door.entry.x,166,116,158).setDepth(230).setInteractive({useHandCursor:true}).on('pointerdown',()=>{this.pendingCabinet=null;this.pendingLounge=null;this.goTo(link.door.entry);});
   }
   private showHall(hall:HallId){
-    this.walkTarget = null; this.marker?.setVisible(false);
     this.clickTargets.reset();
     for(const effect of this.pianoEffects){this.tweens.killTweensOf(effect);effect.destroy();}this.pianoEffects.clear();
     this.hall=hall;this.obstacles=hallObstacles(hall);this.details=this.hallDetails.get(hall)!;
@@ -238,7 +238,7 @@ export class RoomScene extends Phaser.Scene {
     r(casino?0x3c1829:0x3a322a,WORLD.width-53,62,15,WORLD.height-129);r(casino?0xf1c679:0x948269,WORLD.width-50,62,3,WORLD.height-129);
     r(casino?0x271921:0x332e29,35,1320,WORLD.width-69,17);r(casino?0xd7aa58:0x8f7958,35,1320,WORLD.width-69,3);
     drawHallIdentity(this,this.hall);
-    drawClubFloor(this,this.hall,id=>this.approachSeat(id));
+    drawClubFloor(this,this.hall,id=>this.approachSeat(id),()=>this.approachLuelonZone());
     const cardTables = cabinetsInHall(this.hall).filter(cabinet=>isCardGame(cabinet.id));
     if (cardTables.length) {
       this.cardTables = new CardTablesRenderer(this, cardTables, id=>this.approach(id));
@@ -252,6 +252,16 @@ export class RoomScene extends Phaser.Scene {
       const glow = this.add.ellipse(cabinet.x, cabinet.y - 10, 72, 30, cabinet.color, .16);
       this.tweens.add({ targets: glow, alpha: .4, duration: 1600 + i * 210, yoyo: true, repeat: -1 });
       const machine = this.add.image(cabinet.x, cabinet.y, `cabinet-${i}`).setOrigin(.5, 1).setDisplaySize(CABINET_SIZE.width*CABINET_SCALE,CABINET_SIZE.height*CABINET_SCALE).setDepth(cabinet.y);
+      if (cabinet.id === 'studio-afterglow') {
+        const key = 'cabinet-logo-girlhub';
+        if (!this.textures.exists(key)) {
+          const texture = this.textures.createCanvas(key, 384, 96)!;
+          paintGirlhubLogo(texture.context, 0, 0, 384, 96); texture.refresh();
+        }
+        this.add.image(cabinet.x, cabinet.y - CABINET_SIZE.height * CABINET_SCALE + 14, key)
+          .setOrigin(.5, 1).setDisplaySize(128, 32).setDepth(cabinet.y + .3).setName('girlhub-cabinet-logo')
+          .setInteractive({ useHandCursor: true }).on('pointerdown', () => this.approach(cabinet.id));
+      }
       if (cabinet.demo) addDemoCabinetArt(this, cabinet);
       machine.setInteractive({ useHandCursor: true }).on('pointerdown', () => this.approach(cabinet.id));
       const lamp = this.add.rectangle(cabinet.x + 21, cabinet.y - 19, 3, 2, cabinet.color).setDepth(cabinet.y + 1);
@@ -259,10 +269,10 @@ export class RoomScene extends Phaser.Scene {
 
     });
     for (const [key,item] of Object.entries(FURNITURE).filter(([key])=>this.hall==='tables'&&key!=='sofa')) this.prop(key,item.x,item.y,item.scale);
-    if(this.hall==='tables')this.add.text(ACTIVITIES.chess.entry.x, ACTIVITIES.chess.entry.y+10, 'Ш А Х М А Т Ы', { fontFamily: 'Arial', fontSize: '9px', color: '#d4b880' }).setOrigin(.5).setDepth(2);
-    if(this.hall==='tables')this.add.text(562, 516, 'Б И Л Ь Я Р Д', { fontFamily: 'Arial', fontSize: '9px', color: '#d4b880' }).setOrigin(.5).setDepth(2);
+    if(this.hall==='tables')this.add.text(ACTIVITIES.chess.entry.x, ACTIVITIES.chess.entry.y+10, translateText('Ш А Х М А Т Ы'), { fontFamily: 'Arial', fontSize: '9px', color: '#d4b880' }).setOrigin(.5).setDepth(2);
+    if(this.hall==='tables')this.add.text(562, 516, translateText('Б И Л Ь Я Р Д'), { fontFamily: 'Arial', fontSize: '9px', color: '#d4b880' }).setOrigin(.5).setDepth(2);
     if(this.hall==='tables')PLANTS.forEach((p,i) => this.prop(plantTexture(this.hall,i),p.x,p.y,p.scale));
-    if(this.hall==='arcade')this.add.text(540,650,'ВХОД В КЛУБ',{fontFamily:'Arial',fontSize:'10px',color:'#cdb887'}).setOrigin(.5).setDepth(.04);
+    if(this.hall==='arcade')this.add.text(540,650,translateText('ВХОД В КЛУБ'),{fontFamily:'Arial',fontSize:'10px',color:'#cdb887'}).setOrigin(.5).setDepth(.04);
   }
 
   private prop(key: string, x: number, y: number, scale: number) {
@@ -276,39 +286,42 @@ export class RoomScene extends Phaser.Scene {
     const label = name ? this.add.text(x, y - 83, name, { fontFamily: 'Arial, sans-serif', fontSize: '11px', color: '#342f2a', backgroundColor: isPlayer ? '#f5d369' : '#fff4d9', padding: { x: 8, y: 4 } }).setOrigin(.5) : undefined;
     let soberAt = 0;
     if (isPlayer) try { soberAt = Math.min(Date.now() + MAX_SOBER_TIME_MS, Number(localStorage.getItem('royal-offline-sober-at')) || 0); } catch { /* The demo can run without browser storage. */ }
-    let controlLayout = 0;
-    if (isPlayer) {
-      try { controlLayout = Number(localStorage.getItem('royal-offline-control-layout')) || 0; } catch { /* Controls also work without storage. */ }
-      if (!Number.isInteger(controlLayout) || controlLayout < 0 || controlLayout > 9) controlLayout = 0;
-      if (getIntoxication(soberAt).remainingMs && !controlLayout) {
-        controlLayout = nextDrunkLayout(0);
-        try { localStorage.setItem('royal-offline-control-layout', String(controlLayout)); } catch { /* Keep this episode in memory. */ }
-      }
-    }
-    return { hall:this.hall, x, y, sprite, shadow, blush, label, path: [], phase: (x * 7 + y * 11 + skin * 17 + Array.from(name ?? '').reduce((hash, char) => (hash * 31 + char.charCodeAt(0)) % 997, 0)) % 100, nextMove: 0, facing: 'down', skin, appearance, soberAt, controlLayout, moving: false, lastStep: 0, strideDistance: 0, visualAt: 0, visualX: x, visualY: y, seat: '', action: 'idle', drink: '', actionUntil: 0, cabinet: '', gameReaction: '', gameReactionUntil: 0, visualSeat: '', seatedAt: 0 };
+    return { hall:this.hall, x, y, sprite, shadow, blush, label, path: [], phase: (x * 7 + y * 11 + skin * 17 + Array.from(name ?? '').reduce((hash, char) => (hash * 31 + char.charCodeAt(0)) % 997, 0)) % 100, nextMove: 0, facing: 'down', skin, appearance, soberAt, moving: false, lastStep: 0, strideDistance: 0, visualAt: 0, visualX: x, visualY: y, seat: '', action: 'idle', drink: '', actionUntil: 0, cabinet: '', gameReaction: '', gameReactionUntil: 0, visualSeat: '', seatedAt: 0 };
   }
-  goTo(point: Point, wander = false) {
+  goTo(point: Point) {
     this.approachingCat = false;
     if (this.locked || this.isHuggingCat() || this.typing || this.switching || this.player.cabinet || this.networkSelf?.playing) return;
-    if (this.network) { this.clickTargets.cancel(); this.afterMovement=undefined; this.endPrediction(); this.walkTarget = null; this.network.target(point.x, point.y, wander); this.marker.setPosition(point.x, point.y).setVisible(true); return; }
+    if (this.network) {
+      this.clickTargets.cancel(); this.afterMovement=undefined; this.endPrediction();
+      if (!this.networkSelf) return;
+      const origin = SEATS.find(seat => seat.id === this.player.seat)?.entry ?? this.player;
+      this.player.path = findPath(origin, point, this.obstacles);
+      this.marker.setPosition(point.x, point.y).setVisible(this.player.path.length > 0);
+      return;
+    }
     this.stand();
-    const path = clickMovementPath(this.player, point, wander);
+    const path = findPath(this.player, point, this.obstacles);
     if (!path.length) return;
-    this.player.path = path; this.confirmWalkTarget(path.at(-1)!);
-  }
-  confirmWalkTarget(point: Point | null) {
-    if (point && (this.locked || this.typing || this.switching || this.network && this.lastInput !== '0,0,0')) return;
-    this.walkTarget = point ? { ...point } : null;
-    if (point) this.marker.setPosition(point.x, point.y).setVisible(true);
-    else this.marker.setVisible(false);
+    this.player.path = path; this.marker.setPosition(point.x, point.y).setVisible(true);
   }
   approach(id: string) {
     if (this.locked || this.isHuggingCat()) return;
     const occupant = this.cabinetOccupant(id);
-    if (occupant) { this.onNotice('Это место уже занято: ' + occupant + '. Выбери другую игру.'); return; }
+    if (occupant) { this.onNotice(translateText('Это место уже занято: ') + occupant + translateText('. Выбери другую игру.')); return; }
     this.pendingLounge = null;
     const cabinet = cabinetsInHall(this.hall).find(c => c.id === id); if (!cabinet) return;
     this.pendingCabinet = cabinet; this.goTo(cabinetSeat(cabinet).entry);
+  }
+  approachLuelonZone() {
+    if(this.hall!=='arcade'||this.locked||this.typing||this.switching)return;
+    this.pendingCabinet=null;this.pendingLounge=null;
+    if(this.overview){
+      this.setOverview(false);
+      const overview=document.querySelector<HTMLButtonElement>('#room-overview');
+      if(overview){overview.setAttribute('aria-pressed','false');overview.textContent=translateText('Весь этаж');}
+    }
+    this.goTo(LUELON_NEW_ZONE.entrance);
+    this.onNotice(translateText('Новая зона Luelon находится в правом крыле первого этажа. Идём к светящемуся входу.'));
   }
   approachFloor(target: HallId) {
     if (this.locked || this.isHuggingCat() || this.typing || this.switching) return;
@@ -353,7 +366,7 @@ export class RoomScene extends Phaser.Scene {
   sitAnywhere(kind: 'bar' | 'sofa') {
     const occupied = new Set([...this.remotePlayers.values()].map(p=>p.target.seat));
     const seat = SEATS.find(s=>s.kind===kind && (s.hall??'arcade')===this.hall && !occupied.has(s.id));
-    if(seat)this.approachSeat(seat.id);else this.onNotice('Все места заняты. Попробуй чуть позже.');
+    if(seat)this.approachSeat(seat.id);else this.onNotice(translateText('Все места заняты. Попробуй чуть позже.'));
   }
   cabinetOccupant(id: string): string | undefined {
     return [...this.remotePlayers.values()].find(remote => remote.target.cabinet === id)?.target.name;
@@ -361,7 +374,7 @@ export class RoomScene extends Phaser.Scene {
   async beginCabinet(cabinet: Cabinet): Promise<boolean> {
     if (this.isHuggingCat()) return false;
     const occupant = this.cabinetOccupant(cabinet.id);
-    if (occupant) { this.onNotice('Это место уже занято: ' + occupant + '. Выбери другую игру.'); return false; }
+    if (occupant) { this.onNotice(translateText('Это место уже занято: ') + occupant + translateText('. Выбери другую игру.')); return false; }
     if (this.securityLocked || this.player.cabinet) return false;
     this.setLocked(true);
     if (this.network) {
@@ -412,15 +425,12 @@ export class RoomScene extends Phaser.Scene {
       this.endPrediction();this.network.drink(id);return true;
     }
     this.player.path=[];this.player.action='drink';this.player.drink=id;this.player.actionUntil=Date.now()+3200;
-    const wasSober = !getIntoxication(this.player.soberAt).remainingMs;
     this.player.soberAt = addDrink(this.player.soberAt, drink.strength);
-    if (this.player.soberAt > Date.now() && (!this.player.controlLayout || wasSober && drink.strength > 0)) this.player.controlLayout = nextDrunkLayout(this.player.controlLayout);
-    try { localStorage.setItem('royal-offline-control-layout', String(this.player.controlLayout)); } catch { /* Keep the episode stable in memory. */ }
     try { localStorage.setItem('royal-offline-sober-at', String(this.player.soberAt)); } catch { /* Drinking does not require browser storage. */ }
     return true;
   }
   getDialoguePlayer() {
-    return { skin: this.player?.skin ?? 0, appearance: this.player?.appearance ?? '', soberAt: this.player?.soberAt ?? 0, action: this.player?.action ?? 'idle', drink: this.player?.drink ?? '', name: this.networkSelf?.name ?? 'Ты' };
+    return { skin: this.player?.skin ?? 0, appearance: this.player?.appearance ?? '', soberAt: this.player?.soberAt ?? 0, action: this.player?.action ?? 'idle', drink: this.player?.drink ?? '', name: this.networkSelf?.name ?? translateText('Ты') };
   }
   getPortraitFrame(action: 'idle' | 'drink', index: number) {
     if (!this.player) return '';
@@ -435,7 +445,7 @@ export class RoomScene extends Phaser.Scene {
     this.guestViews=views;
     const active=new Set(views.filter(v=>v.hall===this.hall).map(v=>v.id));
     const counter=document.querySelector<HTMLElement>('.npc-count');
-    if(counter){const label=(this.network?'Игроки: '+(counter.dataset.players??'0')+' · ':'')+'НПС: '+active.size;if(counter.textContent!==label)counter.textContent=label;}
+    if(counter){const label=(this.network?translateText('Игроки: ')+(counter.dataset.players??'0')+' · ':'')+translateText('НПС: ')+active.size;if(counter.textContent!==label)counter.textContent=label;}
     for(const [id,actor] of this.guests)if(!active.has(id)){actor.sprite.destroy();actor.shadow.destroy();actor.blush.destroy();actor.label?.destroy();this.guests.delete(id);this.guestMotion.delete(id);}
     for(const view of views){
       if(!active.has(view.id))continue;
@@ -443,17 +453,26 @@ export class RoomScene extends Phaser.Scene {
       if(!actor){actor=this.actor(view.x,view.y,view.skin);actor.label=this.add.text(view.x,view.y-83,'',{fontFamily:'Arial',fontSize:'10px',color:'#e4d6b9',backgroundColor:'#2a313ccc',padding:{x:5,y:3}}).setOrigin(.5);this.guests.set(view.id,actor);}
       if(this.network){
         let motion=this.guestMotion.get(view.id);
-        if(!motion){motion=new NpcMotion<AmbientGuestView>({isMoving:view=>view.moving});this.guestMotion.set(view.id,motion);}
-        motion.push(view);
+        if(!motion){motion=new NpcMotion<AmbientGuestView>({delayMs:0,isMoving:view=>view.moving});this.guestMotion.set(view.id,motion);}
+        motion.push(view,this.guestsAt||this.npcSimulationAt||performance.now());
       }
     }
   }
-  syncMira(mira: MiraView) { this.bar?.sync(mira); }
+  syncNpcTime(simulationAt: number, guestsAt: number) {
+    if(simulationAt===0&&guestsAt===0){this.resetNpcMotion();return;}
+    if(Number.isFinite(simulationAt)&&simulationAt>0){this.npcSimulationAt=simulationAt;this.npcTimeline.receive(simulationAt);}
+    if(Number.isFinite(guestsAt)&&guestsAt>0)this.guestsAt=guestsAt;
+  }
+  syncMira(mira: MiraView) { this.bar?.sync(mira,this.npcSimulationAt||performance.now()); }
+  syncGuards(guards: GuardView[]) { this.guard.sync(guards,this.npcSimulationAt||performance.now()); }
+  private resetNpcMotion() {
+    this.npcTimeline.reset();this.npcSimulationAt=0;this.guestsAt=0;this.guestMotion.clear();this.bar?.resetMotion();this.guard?.resetMotion();
+  }
   isHuggingCat() { return this.catView.carriedBy === (this.selfId || 'local-player'); }
   private stopForCatHug() {
     this.approachingCat=false;this.pendingCabinet=null;this.pendingLounge=null;this.afterMovement=undefined;
-    this.clickTargets.cancel();this.player.path=[];this.confirmWalkTarget(null);
-    this.prediction.reset();this.correction={x:0,y:0};this.lastInput='0,0,0';
+    this.clickTargets.cancel();this.player.path=[];this.marker.setVisible(false);
+    this.prediction.reset();this.correction={x:0,y:0};this.lastInput='0,0';
     this.input.keyboard?.resetKeys();this.player.facing='down';
     this.animateActor(this.player,this.time.now,false);
   }
@@ -490,7 +509,7 @@ export class RoomScene extends Phaser.Scene {
     }
     if (this.catInfo().busy || this.isHuggingCat() || this.typing || this.switching) return;
     if (action === 'pet' || action === 'feed' || action === 'hug') {
-      this.approachingCat=false;this.player.path=[];this.network?.stop();this.confirmWalkTarget(null);
+      this.approachingCat=false;this.player.path=[];this.network?.stop();this.marker.setVisible(false);
     }
     if (this.network) { this.finishMovement(()=>this.network?.cat?.(action)); return; }
     const person = this.catPerson();
@@ -502,14 +521,12 @@ export class RoomScene extends Phaser.Scene {
   }
   private catPerson(): CatPerson { return {id:'local-player',hall:this.hall,x:this.player.x,y:this.player.y,connected:true,playing:Boolean(this.player.cabinet),cabinet:this.player.cabinet,security:this.securityLocked?'locked':'',seat:this.player.seat,action:this.player.action}; }
   catPortrait() { return this.textures.getBase64(CAT_TEXTURE,'17'); }
-  syncGuards(guards: GuardView[]) { this.guard.sync(guards); }
   setSecurity(locked: boolean) { this.securityLocked = locked; this.setLocked(locked || Boolean(document.querySelector('dialog[open]'))); }
   setLocked(locked: boolean) {
     locked ||= this.securityLocked;
     this.clickTargets.cancel();
     this.endPrediction();
     if(locked)this.switching=false;
-    this.confirmWalkTarget(null);
     this.locked = locked; this.player.path = []; this.pendingCabinet = null; this.pendingLounge = null; this.marker.setVisible(false);
     this.input.keyboard?.resetKeys();
     this.network?.stop();
@@ -527,16 +544,17 @@ export class RoomScene extends Phaser.Scene {
       this.input.keyboard.enabled = !typing && !this.locked;
       this.input.keyboard.manager.enabled = !typing && !this.locked;
     }
-    if (typing) { this.confirmWalkTarget(null); this.player.path = []; this.pendingCabinet = null; this.pendingLounge = null; this.network?.stop(); this.lastInput = '0,0,0'; }
+    if (typing) { this.marker.setVisible(false); this.player.path = []; this.pendingCabinet = null; this.pendingLounge = null; this.network?.stop(); this.lastInput = '0,0'; }
   }
   enableOnline(commands: NetworkCommands) {
+    this.resetNpcMotion();
     this.clickTargets.reset();
     this.prediction = new MovementPrediction(); this.correction = { x: 0, y: 0 };
     this.afterMovement = undefined;
     this.network = {
       inputs: commands.inputs,
       move: (x,y) => { this.clickTargets.cancel(); this.finishMovement(() => commands.move(x,y)); },
-      target: (x,y,wander) => this.finishMovement(() => this.clickTargets.request(() => commands.target(x,y,wander))),
+      target: (x,y) => this.finishMovement(() => this.clickTargets.request(() => commands.target(x,y))),
       stop: () => { this.clickTargets.cancel(); this.finishMovement(commands.stop); },
       sit: seat => { this.clickTargets.cancel(); this.finishMovement(() => commands.sit(seat)); },
       stand: () => { this.clickTargets.cancel(); this.finishMovement(commands.stand); },
@@ -544,7 +562,7 @@ export class RoomScene extends Phaser.Scene {
       cat: commands.cat, cabinetPlay: commands.cabinetPlay, cabinetLeave: commands.cabinetLeave, cabinetReaction: commands.cabinetReaction,
     };
     this.networkSelf = undefined;
-    this.player.path = []; this.lastInput = '0,0,0';
+    this.player.path = []; this.lastInput = '0,0';
 
   }
   syncPlayers(players: PlayerView[], selfId: string) {
@@ -560,7 +578,7 @@ export class RoomScene extends Phaser.Scene {
       }
       if (!this.networkSelf) { this.player.x = self.x; this.player.y = self.y; }
       this.networkSelf = self;
-      this.player.soberAt = self.soberAt; this.player.controlLayout = self.controlLayout ?? 0;
+      this.player.soberAt = self.soberAt;
       this.player.cabinet = self.cabinet ?? ''; this.player.gameReaction = self.gameReaction ?? ''; this.player.gameReactionUntil = self.gameReactionUntil ?? 0;
       if (this.prediction.active) {
         const next = this.prediction.reconcile(self, self.inputSeq, this.guard.getState());
@@ -581,7 +599,7 @@ export class RoomScene extends Phaser.Scene {
       }
       this.player.appearance = self.appearance ?? '';
       this.player.skin = self.skin;
-      this.player.label?.setText(`${self.name} · вы${self.ears?' 🙉':''}`);
+      this.player.label?.setText(tr`${self.name} · вы${self.ears?' 🙉':''}`);
     }
     const occupied = new Set(players.map(p => p.cabinet).filter(Boolean));
     for (const [id, stool] of this.cabinetStools) stool.setOccupied(occupied.has(id));
@@ -604,35 +622,38 @@ export class RoomScene extends Phaser.Scene {
     }
     const factor = Math.min(1, dt * 18);
     actor.x += (target.x - actor.x) * factor; actor.y += (target.y - actor.y) * factor;
-    actor.facing = target.facing; actor.seat = target.seat; actor.action = target.action; actor.drink = target.drink; actor.actionUntil = target.actionUntil; actor.soberAt = target.soberAt; actor.controlLayout = target.controlLayout ?? 0;
+    actor.facing = target.facing; actor.seat = target.seat; actor.action = target.action; actor.drink = target.drink; actor.actionUntil = target.actionUntil; actor.soberAt = target.soberAt;
     actor.cabinet = target.cabinet ?? ''; actor.gameReaction = target.gameReaction ?? ''; actor.gameReactionUntil = target.gameReactionUntil ?? 0;
     this.animateActor(actor, time, target.moving && target.connected);
     actor.sprite.setAlpha(target.connected ? 1 : .4);
-    if (actor !== this.player) actor.label?.setText(target.name + (target.ears?' 🙉':'') + (!target.connected ? ' · нет связи' : target.activity==='piano' ? ' · ♫' : target.playing ? (target.gameReactionUntil && target.gameReactionUntil > Date.now() && target.gameReaction === 'win' ? ' · радуется' : target.gameReactionUntil && target.gameReactionUntil > Date.now() && target.gameReaction === 'lose' ? ' · негодует' : ' · играет') : target.action === 'drink' ? ' · пьёт' : target.seat ? ' · сидит' : ''));
+    if (actor !== this.player) actor.label?.setText(target.name + (target.ears?' 🙉':'') + (!target.connected ? translateText(' · нет связи') : target.activity==='piano' ? ' · ♫' : target.playing ? (target.gameReactionUntil && target.gameReactionUntil > Date.now() && target.gameReaction === 'win' ? translateText(' · радуется') : target.gameReactionUntil && target.gameReactionUntil > Date.now() && target.gameReaction === 'lose' ? translateText(' · негодует') : translateText(' · играет')) : target.action === 'drink' ? translateText(' · пьёт') : target.seat ? translateText(' · сидит') : ''));
   }
   private flushPrediction() { if (this.network) this.prediction.flush(inputs => this.network!.inputs(inputs)); }
   cancelMovement() {
-    this.confirmWalkTarget(null);
+    this.marker?.setVisible(false);
     this.cancelCabinetAdmission?.();
     this.clickTargets.cancel();
-    this.prediction.reset(); this.afterMovement = undefined; this.lastInput = '0,0,0'; this.correction = { x: 0, y: 0 };
+    this.player.path = []; this.marker?.setVisible(false);
+    this.prediction.reset(); this.afterMovement = undefined; this.lastInput = '0,0'; this.correction = { x: 0, y: 0 };
   }
   private endPrediction() {
+    if (this.player) this.player.path = [];
     if (this.securityLocked || !this.network) {
       this.cancelMovement();
     } else {
       this.prediction.finish(this.player); this.flushPrediction();
     }
-    this.lastInput = '0,0,0';
+    this.lastInput = '0,0';
   }
   finishMovement(action: () => void) {
     this.endPrediction();
     if (this.prediction.active) this.afterMovement = action;
     else { this.afterMovement = undefined; action(); }
   }
-  getState() { const c=this.cameras.main;return { cat: this.catView, world:{...WORLD,bounds:BOUNDS},guests:this.guestViews.filter(v=>v.hall===this.hall).map(v=>({...v})), playing:this.networkSelf?.playing??Boolean(this.player.cabinet), cabinet:this.player.cabinet, gameReaction:this.player.gameReactionUntil>Date.now()?this.player.gameReaction:'', gameReactionUntil:this.player.gameReactionUntil, stools:[...this.cabinetStools.keys()], mira:this.bar?.getState(), guards:this.guard?.getState(), security:this.networkSelf?.security, hall:this.hall,switching:this.switching, view:{width:c.width,height:c.height,zoom:c.zoom,x:c.worldView.x,y:c.worldView.y,overview:this.overview}, x: this.player.x, y: this.player.y, moving: this.player.moving, seat: this.player.seat, action: this.player.action, drink: this.player.drink, actionUntil: this.player.actionUntil, soberAt: this.player.soberAt, controlLayout: this.player.controlLayout, walkTarget: this.walkTarget ? { ...this.walkTarget } : null, intoxication: getIntoxication(this.player.soberAt), near: this.near?.id ?? null, locked: this.locked, online: !!this.network, predicted: this.prediction.active, pendingInputs: this.prediction.pendingCount, serverX: this.networkSelf?.x, serverY: this.networkSelf?.y, renderX: this.player.sprite.x, renderY: this.player.sprite.y, skin: this.player.skin, appearance: this.player.appearance, texture: this.player.sprite.texture.key, remotes: this.remotePlayers.size, remotePositions: [...this.remotePlayers].map(([id, { actor }]) => ({ id, skin: actor.skin, appearance: actor.appearance, texture: actor.sprite.texture.key, x: actor.x, y: actor.y, seat: actor.seat, cabinet: actor.cabinet, gameReaction:actor.gameReactionUntil>Date.now()?actor.gameReaction:'', gameReactionUntil:actor.gameReactionUntil, action: actor.action, soberAt: actor.soberAt, angle: actor.sprite.angle, frame: actor.sprite.frame.name })), facing: this.player.facing, animation: this.player.sprite.anims.currentAnim?.key, frame: this.player.sprite.frame.name, reducedMotion: this.reducedMotion }; }
+  getState() { const c=this.cameras.main;return { cat: this.catView, world:{...WORLD,bounds:BOUNDS},guests:this.guestViews.filter(v=>v.hall===this.hall).map(v=>({...v})), playing:this.networkSelf?.playing??Boolean(this.player.cabinet), cabinet:this.player.cabinet, gameReaction:this.player.gameReactionUntil>Date.now()?this.player.gameReaction:'', gameReactionUntil:this.player.gameReactionUntil, stools:[...this.cabinetStools.keys()], mira:this.bar?.getState(), guards:this.guard?.getState(), security:this.networkSelf?.security, hall:this.hall,switching:this.switching, view:{width:c.width,height:c.height,zoom:c.zoom,x:c.worldView.x,y:c.worldView.y,overview:this.overview}, x: this.player.x, y: this.player.y, moving: this.player.moving, seat: this.player.seat, action: this.player.action, drink: this.player.drink, actionUntil: this.player.actionUntil, soberAt: this.player.soberAt, intoxication: getIntoxication(this.player.soberAt), near: this.near?.id ?? null, locked: this.locked, online: !!this.network, npcTiming:this.npcTimeline.getState(), guestRenderPositions:[...this.guests].map(([id,actor])=>({id,x:actor.x,y:actor.y,spriteX:actor.sprite.x,spriteY:actor.sprite.y,moving:actor.moving})), predicted: this.prediction.active, pendingInputs: this.prediction.pendingCount, serverX: this.networkSelf?.x, serverY: this.networkSelf?.y, renderX: this.player.sprite.x, renderY: this.player.sprite.y, skin: this.player.skin, appearance: this.player.appearance, texture: this.player.sprite.texture.key, remotes: this.remotePlayers.size, remotePositions: [...this.remotePlayers].map(([id, { actor }]) => ({ id, skin: actor.skin, appearance: actor.appearance, texture: actor.sprite.texture.key, x: actor.x, y: actor.y, seat: actor.seat, cabinet: actor.cabinet, gameReaction:actor.gameReactionUntil>Date.now()?actor.gameReaction:'', gameReactionUntil:actor.gameReactionUntil, action: actor.action, soberAt: actor.soberAt, angle: actor.sprite.angle, frame: actor.sprite.frame.name })), facing: this.player.facing, animation: this.player.sprite.anims.currentAnim?.key, frame: this.player.sprite.frame.name, reducedMotion: this.reducedMotion }; }
   update(time: number, delta: number) {
     if (!this.player) return;
+    const npcRenderAt=this.npcTimeline.renderTime(performance.now(),this.guestsAt||this.npcSimulationAt||undefined)??performance.now()-300;
     if (time >= this.sobrietyBadgeAt) {
       this.sobrietyBadgeAt = time + 1000;
       const badge = document.getElementById('room-intoxication'), drunk = getIntoxication(this.player.soberAt);
@@ -640,13 +661,13 @@ export class RoomScene extends Phaser.Scene {
         badge.hidden = drunk.stage === 0; badge.dataset.stage = String(drunk.stage);
         const seconds = Math.ceil(drunk.remainingMs / 1000);
         badge.textContent = `${drunk.label} · ${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
-        badge.title = drunk.stage === 3 ? 'Клавиши движения перепутаны. Клики по полу ведут в случайное место этого зала.' : 'Время до полного отрезвления';
+        badge.title = translateText('Время до полного отрезвления');
       }
     }
     if(!this.network&&!this.locked&&!this.isHuggingCat()&&!this.typing&&inHallDoor(this.player))this.changeHall(hallLinkAt(this.player)!.target);
     this.details.update(time);
     if (this.hall === 'github') this.cardTables?.update(time);
-    if(this.hall==='arcade')this.bar.update(this.player.action==='drink'||[...this.remotePlayers.values()].some(p=>p.target.action==='drink'),this.reducedMotion,this.guard.barConversation(),delta/1000,Boolean(this.network));
+    if(this.hall==='arcade')this.bar.update(this.player.action==='drink'||[...this.remotePlayers.values()].some(p=>p.target.action==='drink'),this.reducedMotion,this.guard.barConversation(),delta/1000,Boolean(this.network),npcRenderAt);
     if(!this.network && this.player.action==='drink' && Date.now()>=this.player.actionUntil){this.player.action=this.player.seat?'sit':'idle';this.player.drink='';}
     const standButton = document.querySelector<HTMLButtonElement>('#stand-up'); if(standButton)standButton.hidden = Boolean(this.player.cabinet) || (!this.player.seat && this.player.action!=='drink');
     const dt = Math.min(delta, 40) / 1000;
@@ -655,39 +676,39 @@ export class RoomScene extends Phaser.Scene {
     const catAudible = canHearCat(this.catView,{hall:this.hall,x:this.player.x,y:this.player.y});
     this.catRenderer?.update(this.catView,this.hall,time,dt,this.reducedMotion,carrier,catAudible);
     if (time >= this.catUiAt) { this.catUiAt=time+200;this.onCat(); }
-    if (this.walkTarget && Math.hypot(this.player.x - this.walkTarget.x, this.player.y - this.walkTarget.y) < 3) this.confirmWalkTarget(null);
     const now = performance.now(), inputMs = Math.min(50, now-this.predictionClock); this.predictionClock = now;
     this.correction.x *= Math.exp(-dt*18); this.correction.y *= Math.exp(-dt*18);
     if (!this.locked && !this.isHuggingCat() && !this.typing && !this.switching && !this.player.cabinet && !this.networkSelf?.playing) {
       const dx = Number(this.keys.D!.isDown || this.keys.RIGHT!.isDown) - Number(this.keys.A!.isDown || this.keys.LEFT!.isDown);
       const dy = Number(this.keys.S!.isDown || this.keys.DOWN!.isDown) - Number(this.keys.W!.isDown || this.keys.UP!.isDown);
-      const directions = Number(this.keys.W!.isDown || this.keys.UP!.isDown)
-        | Number(this.keys.D!.isDown || this.keys.RIGHT!.isDown) << 1
-        | Number(this.keys.S!.isDown || this.keys.DOWN!.isDown) << 2
-        | Number(this.keys.A!.isDown || this.keys.LEFT!.isDown) << 3;
       const sprint = this.keys.SHIFT!.isDown;
-      if (directions) this.approachingCat=false;
+      if (dx || dy) this.approachingCat=false;
       if (this.approachingCat && time >= this.catApproachAt) {
         this.catApproachAt=time+750;
         const anchor=catApproachPoint(this.catView);
-        if (this.catView.hall===this.hall && Math.hypot(this.player.x-anchor.x,this.player.y-anchor.y)<60) { this.approachingCat=false;this.player.path=[];this.network?.stop();this.confirmWalkTarget(null); }
+        if (this.catView.hall===this.hall && Math.hypot(this.player.x-anchor.x,this.player.y-anchor.y)<60) { this.approachingCat=false;this.player.path=[];this.network?.stop();this.marker.setVisible(false); }
         else this.approachCat();
       }
       let moving = false;
       if (this.network) {
-        const input = String(dx) + ',' + String(dy) + ',' + String(directions) + (sprint && directions ? ',sprint' : '');
-        if (this.networkSelf && (directions || input !== this.lastInput)) {
-          if (directions) { this.clickTargets.cancel(); this.afterMovement = undefined; this.confirmWalkTarget(null); }
-          this.prediction.step(this.player, dx, dy, directions ? inputMs : 0, sprint, this.guard.getState(), directions);
-          if (input !== this.lastInput || now-this.lastInputAt >= 50) { this.flushPrediction(); this.lastInputAt = now; }
+        const input = String(dx) + ',' + String(dy) + (sprint && (dx || dy) ? ',sprint' : '');
+        const previousInput = this.lastInput;
+        if (this.networkSelf && !dx && !dy && this.player.path.length) {
+          advanceClickMovement(this.player, this.player.path, inputMs, this.prediction, this.guard.getState());
+          this.lastInput = 'route';
+          if (!this.player.path.length) this.endPrediction();
+        } else if (this.networkSelf && (dx || dy || input !== this.lastInput)) {
+          if (dx || dy) { this.clickTargets.cancel(); this.afterMovement = undefined; }
+          this.prediction.step(this.player, dx, dy, dx || dy ? inputMs : 0, sprint, this.guard.getState());
           this.lastInput = input;
-          if (directions) { this.pendingCabinet = null; this.pendingLounge = null; this.player.path = []; this.marker.setVisible(false); }
+          if (dx || dy) { this.pendingCabinet = null; this.pendingLounge = null; this.player.path = []; this.marker.setVisible(false); }
         }
-        if (this.prediction.active) { if (!directions) this.player.moving = false; this.animateActor(this.player, time, this.player.moving); }
-      } else if (directions) {
-        this.stand(); this.pendingLounge = null; this.confirmWalkTarget(null);
+        if (this.prediction.active && (previousInput !== this.lastInput || now-this.lastInputAt >= 50)) { this.flushPrediction(); this.lastInputAt = now; }
+        if (this.prediction.active) { if (!dx && !dy && !this.player.path.length) this.player.moving = false; this.animateActor(this.player, time, this.player.moving); }
+      } else if (dx || dy) {
+        this.stand(); this.pendingLounge = null;
         this.player.path = []; this.pendingCabinet = null; this.marker.setVisible(false);
-        const impaired = intoxicatedMovement(this.player.soberAt, { ...drunkKeyboardDirection(this.player.soberAt, this.player.controlLayout, { x: dx, y: dy, directions }), ms: dt * 1000 }, Math.floor(time / 50));
+        const impaired = intoxicatedMovement(this.player.soberAt, { x: dx, y: dy, ms: dt * 1000 }, Math.floor(time / 50));
         const speed = (sprint ? PLAYER_SPRINT_SPEED : PLAYER_SPEED) * impaired.speedMultiplier * dt;
         moving = this.move(this.player, impaired.x * speed, impaired.y * speed);
       } else if (!this.player.seat && this.player.action!=='drink') moving = this.follow(this.player, dt, PLAYER_SPRINT_SPEED);
@@ -713,7 +734,7 @@ export class RoomScene extends Phaser.Scene {
       const nearKey = near ? near.id + ':' + (this.cabinetOccupant(near.id) ?? '') : '';
       if (nearKey !== this.lastNear) { this.lastNear = nearKey; this.onNear(near); }
       if (!this.player.path.length) {
-        if (!this.walkTarget) this.marker.setVisible(false);
+        this.marker.setVisible(false);
         if (this.pendingCabinet && near?.id === this.pendingCabinet.id) { this.pendingCabinet = null; this.player.facing = 'up'; this.onPlay(near); }
       }
     }
@@ -726,16 +747,16 @@ export class RoomScene extends Phaser.Scene {
       pruneCharacterTextures(this, new Set([this.player.sprite.texture.key, ...[...this.remotePlayers.values()].map(remote => remote.actor.sprite.texture.key)]));
     }
     this.halo.setPosition(this.player.x, this.player.y).setDepth(this.player.y - 2);
-    this.guard.update(this.hall, time, dt, id => id===this.selfId ? this.player : this.remotePlayers.get(id)?.actor);
+    this.guard.update(this.hall, time, dt, id => id===this.selfId ? this.player : this.remotePlayers.get(id)?.actor,npcRenderAt);
     if(!this.network){this.guestRoutine.setOccupiedCabinets([this.player.cabinet]);this.guestRoutine.tick(dt);this.syncGuests(this.guestRoutine.snapshot());}
     for(const latest of this.guestViews){
       const actor=this.guests.get(latest.id);if(!actor||latest.hall!==this.hall)continue;
-      const view=this.network?this.guestMotion.get(latest.id)?.sample(now)??latest:latest;
+      const view=this.network?this.guestMotion.get(latest.id)?.sample(npcRenderAt)??latest:latest;
       const moved=Math.hypot(view.x-actor.x,view.y-actor.y)>.001;
       actor.x=view.x;actor.y=view.y;
       actor.facing=view.facing;actor.seat=view.seat;actor.action=view.mood==='drinking'?'drink':view.seat?'sit':'idle';actor.drink=view.drink;
-      const status=view.mood==='playing'?'играет':view.mood==='drinking'?'пьёт':view.mood==='resting'?'отдыхает':'гуляет';
-      const label='НПС · '+status;if(actor.label?.text!==label)actor.label?.setText(label);
+      const status=view.mood==='playing'?translateText('играет'):view.mood==='drinking'?translateText('пьёт'):view.mood==='resting'?translateText('отдыхает'):translateText('гуляет');
+      const label=translateText('НПС · ')+status;if(actor.label?.text!==label)actor.label?.setText(label);
       this.animateActor(actor,time,view.moving&&moved);
       if(view.mood==='playing'&&!view.moving&&!this.reducedMotion)actor.sprite.setAngle(Math.sin(time/400+actor.phase)*1.5);
     }

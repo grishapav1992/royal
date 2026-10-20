@@ -1,11 +1,12 @@
+import { t as translateText } from '../i18n/index';
 import { CABINETS } from '../shared/cabinets';
 
 const PROVIDER = 'https://luelonplay.com';
 export const DEMO_CATALOG_URL = `${PROVIDER}/demo-api/v1/games?lang=en`;
 export type DemoGame = { id: string; name: string; embedUrl: string; category: string; artworkUrl?: string };
 export const DEMO_CATEGORIES: Record<string, string> = {
-  slot: 'Слоты', flight: 'Полёт', crash: 'Crash', keno: 'Keno',
-  plinko: 'Plinko', dice: 'Dice', wheel: 'Колёса', mines: 'Mines',
+  slot: translateText('Слоты'), flight: translateText('Полёт'), crash: 'Crash', keno: 'Keno',
+  plinko: 'Plinko', dice: 'Dice', wheel: translateText('Колёса'), mines: 'Mines',
 };
 let cached: DemoGame[] | undefined;
 let expiresAt = 0;

@@ -1,11 +1,12 @@
+import { t as translateText } from '../i18n/index';
 import { CHAT_EMOJI, CHAT_MEDIA_BASE, CHAT_STICKERS, chatEmojiFromText, chatStickerFromId, chatStickerFromText, type ChatEmoji, type ChatSticker } from '../shared/chatMedia';
 import './chat-media.css';
 
 type Pack = 'emoji' | 'duck' | 'cat' | 'capybara' | 'recent';
 const PACKS: { id: Pack; icon: string; name: string }[] = [
-  { id: 'emoji', icon: '😊', name: 'Смайлики' }, { id: 'duck', icon: '🦆', name: 'Уточка' },
-  { id: 'cat', icon: '🐱', name: 'Котики' }, { id: 'capybara', icon: '🤎', name: 'Капибара' },
-  { id: 'recent', icon: '◷', name: 'Недавние' },
+  { id: 'emoji', icon: '😊', name: translateText('Смайлики') }, { id: 'duck', icon: '🦆', name: translateText('Уточка') },
+  { id: 'cat', icon: '🐱', name: translateText('Котики') }, { id: 'capybara', icon: '🤎', name: translateText('Капибара') },
+  { id: 'recent', icon: '◷', name: translateText('Недавние') },
 ];
 const RECENT_KEY = 'royal.chat-media.recent.v1';
 const MAX_ANIMATIONS = 8;
@@ -44,25 +45,25 @@ export class ChatMedia {
       if (Array.isArray(stored)) this.recent = [...new Set(stored.filter((id): id is string => typeof id === 'string' && Boolean(chatStickerFromId(id) || chatEmojiFromText(id))))].slice(0, 20);
     } catch { /* An unavailable preference store does not block chat. */ }
     this.toggle.id = 'chat-media-toggle'; this.toggle.type = 'button'; this.toggle.textContent = '😊';
-    this.toggle.setAttribute('aria-label', 'Смайлики и стикеры'); this.toggle.title = 'Смайлики и стикеры';
+    this.toggle.setAttribute('aria-label', translateText('Смайлики и стикеры')); this.toggle.title = translateText('Смайлики и стикеры');
     this.toggle.setAttribute('aria-controls', 'chat-media-panel'); this.toggle.setAttribute('aria-expanded', 'false'); this.toggle.disabled = true;
     input.before(this.toggle);
     this.panel.id = 'chat-media-panel'; this.panel.className = 'chat-media-panel'; this.panel.hidden = true;
-    this.panel.dataset.chatMediaPanel = ''; this.panel.setAttribute('aria-label', 'Смайлики и стикеры');
+    this.panel.dataset.chatMediaPanel = ''; this.panel.setAttribute('aria-label', translateText('Смайлики и стикеры'));
     const top = document.createElement('div'); top.className = 'chat-media-top';
-    const close = document.createElement('button'); close.type = 'button'; close.textContent = '×'; close.setAttribute('aria-label', 'Закрыть смайлики и стикеры');
+    const close = document.createElement('button'); close.type = 'button'; close.textContent = '×'; close.setAttribute('aria-label', translateText('Закрыть смайлики и стикеры'));
     close.addEventListener('click', () => this.close(true)); top.append(this.heading, close);
-    const tabs = document.createElement('div'); tabs.className = 'chat-media-tabs'; tabs.setAttribute('aria-label', 'Наборы стикеров');
+    const tabs = document.createElement('div'); tabs.className = 'chat-media-tabs'; tabs.setAttribute('aria-label', translateText('Наборы стикеров'));
     for (const pack of PACKS) {
       const tab = document.createElement('button'); tab.type = 'button'; tab.textContent = pack.icon; tab.title = pack.name;
       tab.setAttribute('aria-label', pack.name); tab.setAttribute('aria-pressed', 'false'); tab.dataset.chatPack = pack.id;
       tab.addEventListener('click', () => { this.pack = pack.id; this.search.value = ''; this.render(); });
       tabs.append(tab); this.tabs.set(pack.id, tab);
     }
-    this.search.type = 'search'; this.search.placeholder = 'Найти эмоцию…'; this.search.setAttribute('aria-label', 'Найти смайлик или стикер');
+    this.search.type = 'search'; this.search.placeholder = translateText('Найти эмоцию…'); this.search.setAttribute('aria-label', translateText('Найти смайлик или стикер'));
     this.search.maxLength = 60; this.search.addEventListener('input', () => this.render());
-    this.grid.className = 'chat-media-grid'; this.grid.setAttribute('aria-label', 'Выбрать смайлик или стикер');
-    const credits = document.createElement('a'); credits.href = CHAT_MEDIA_BASE + 'credits.html'; credits.target = '_blank'; credits.rel = 'noopener'; credits.textContent = 'Наборы и авторы'; credits.className = 'chat-media-credits';
+    this.grid.className = 'chat-media-grid'; this.grid.setAttribute('aria-label', translateText('Выбрать смайлик или стикер'));
+    const credits = document.createElement('a'); credits.href = CHAT_MEDIA_BASE + 'credits.html'; credits.target = '_blank'; credits.rel = 'noopener'; credits.textContent = translateText('Наборы и авторы'); credits.className = 'chat-media-credits';
     this.panel.append(top, tabs, this.search, this.grid, credits); chat.append(this.panel);
     const rememberSelection = () => { this.selection = { start: input.selectionStart ?? input.value.length, end: input.selectionEnd ?? input.value.length }; };
     for (const event of ['input', 'select', 'keyup', 'pointerup']) input.addEventListener(event, rememberSelection);
@@ -132,7 +133,7 @@ export class ChatMedia {
       }
       this.grid.append(button);
     }
-    if (!this.grid.childElementCount) { const empty = document.createElement('p'); empty.className = 'chat-media-empty'; empty.textContent = this.pack === 'recent' && !query ? 'Здесь появятся отправленные стикеры и выбранные смайлики.' : 'Ничего не найдено'; this.grid.append(empty); }
+    if (!this.grid.childElementCount) { const empty = document.createElement('p'); empty.className = 'chat-media-empty'; empty.textContent = this.pack === 'recent' && !query ? translateText('Здесь появятся отправленные стикеры и выбранные смайлики.') : translateText('Ничего не найдено'); this.grid.append(empty); }
   }
 
   content(text: string, system = false): HTMLElement {

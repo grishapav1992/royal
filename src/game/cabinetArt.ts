@@ -3,6 +3,21 @@ import type { Cabinet } from '../shared/cabinets';
 import { CABINET_SCALE, CABINET_SIZE } from '../shared/cabinetGeometry';
 export { CABINET_SCALE, CABINET_SIZE };
 
+export function paintGirlhubLogo(c: CanvasRenderingContext2D, x: number, y: number, width: number, height: number) {
+  c.save();
+  c.translate(x, y); c.scale(width / 128, height / 32);
+  c.beginPath(); c.roundRect(1, 1, 126, 30, 5);
+  c.fillStyle = '#101010'; c.fill(); c.strokeStyle = '#ff9900'; c.lineWidth = 1.5; c.stroke();
+  c.font = '900 20px Arial, sans-serif'; c.textAlign = 'left'; c.textBaseline = 'middle';
+  const girlWidth = c.measureText('GIRL').width, hubWidth = c.measureText('HUB').width;
+  const start = (128 - girlWidth - hubWidth - 12) / 2;
+  c.fillStyle = '#ffffff'; c.fillText('GIRL', start, 17);
+  c.beginPath(); c.roundRect(start + girlWidth + 3, 4, hubWidth + 9, 24, 3);
+  c.fillStyle = '#ff9900'; c.fill();
+  c.fillStyle = '#101010'; c.fillText('HUB', start + girlWidth + 7, 17);
+  c.restore();
+}
+
 // Screen coordinates belong to the same drawing as the cabinet body.
 export function cabinetScreen(cabinet: Cabinet) {
   return cabinet.provider
@@ -48,7 +63,8 @@ export function paintCabinet(c: CanvasRenderingContext2D, cabinet: Cabinet) {
     panel(15, 3, 54, 10, '#cba568', 2);
     panel(23, 1, 38, 6, '#f0d397', 1);
     panel(13, 13, 58, 12, '#302b32', 2);
-    text(cabinet.demo ? 'ROYAL PLAY' : cabinet.id === 'royal-coins' ? 'ROYAL GAMES' : cabinet.name.toUpperCase(), 22, 6.3, accent);
+    if (cabinet.id === 'studio-afterglow') paintGirlhubLogo(c, 13, 12, 58, 15);
+    else text(cabinet.demo ? 'ROYAL PLAY' : cabinet.id === 'royal-coins' ? 'ROYAL GAMES' : cabinet.name.toUpperCase(), 22, 6.3, accent);
     panel(15, 26, 54, 48, '#d0ad72', 3);
     for (const x of [11, 73]) line(x, 28, x, 76, '#f0d598', 2);
     panel(8, 78, 68, 15, '#b78650', 2);

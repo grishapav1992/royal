@@ -1,7 +1,8 @@
+import { t as translateText } from '../i18n/index';
 export type PresentedSlotGame = 'studio-cosmic-escape' | 'studio-velvet-reign';
 export const SLOT_SYMBOL_NAMES: Record<PresentedSlotGame, string[]> = {
-  'studio-cosmic-escape': ['Звёздный кристалл', 'Спутник', 'Комета', 'WILD-портал', 'Бонусная ракета', 'Звёздная монета'],
-  'studio-velvet-reign': ['Рубин', 'Бокал', 'Театральная маска', 'WILD-корона', 'Бонусный билет', 'Золотая монета'],
+  'studio-cosmic-escape': [translateText('Звёздный кристалл'), translateText('Спутник'), translateText('Комета'), translateText('WILD-портал'), translateText('Бонусная ракета'), translateText('Звёздная монета')],
+  'studio-velvet-reign': [translateText('Рубин'), translateText('Бокал'), translateText('Театральная маска'), translateText('WILD-корона'), translateText('Бонусный билет'), translateText('Золотая монета')],
 };
 
 /** Original symbols with stable numeric IDs matching the native server slot. */
@@ -22,5 +23,5 @@ export function slotSymbol(game: PresentedSlotGame, symbol: number): string {
     '<path fill="#b57935" d="M19 19h58v17c-12 0-12 16 0 16v18H19V52c12 0 12-16 0-16Z"/><path fill="#f8d88f" d="M23 16h50v17c-12 0-12 16 0 16v18H23V49c12 0 12-16 0-16Z"/><path fill="#9d2f61" d="m48 26 5 10 11 2-8 8 2 12-10-6-10 6 2-12-8-8 11-2Z"/>',
     '<circle cx="48" cy="45" r="30" fill="#a46928"/><circle cx="48" cy="41" r="30" fill="#f9d796"/><circle cx="48" cy="41" r="23" fill="#c58c43"/><path fill="#fff0c0" d="m34 34 8 7 6-12 6 12 8-7-4 21H38Zm4 23h20v4H38Z"/>',
   ];
-  return `<svg class="slot-symbol symbol-${symbol}" viewBox="0 0 96 88" aria-hidden="true"><g stroke="${game === 'studio-cosmic-escape' ? '#b6efff' : '#e8bf80'}" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">${(game === 'studio-cosmic-escape' ? cosmic : velvet)[symbol] ?? cosmic[0]}</g></svg>${symbol === 3 ? '<span class="slot-symbol-label">WILD</span>' : symbol === 4 ? '<span class="slot-symbol-label scatter-label">БОНУС</span>' : ''}`;
+  return `<svg class="slot-symbol symbol-${symbol}" viewBox="0 0 96 88" aria-hidden="true"><g stroke="${game === 'studio-cosmic-escape' ? '#b6efff' : '#e8bf80'}" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">${(game === 'studio-cosmic-escape' ? cosmic : velvet)[symbol] ?? cosmic[0]}</g></svg>${symbol === 3 ? '<span class="slot-symbol-label">WILD</span>' : symbol === 4 ? translateText('<span class="slot-symbol-label scatter-label">БОНУС</span>') : ''}`;
 }

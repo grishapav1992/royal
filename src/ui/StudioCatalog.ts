@@ -1,27 +1,42 @@
-import { STUDIO_GAMES, STUDIO_INFO, type StudioGameId } from '../shared/studioGames';
-import { STUDIO_ART, studioEscape as escape } from './StudioArtwork';
+import { t as translateText, tr } from '../i18n/index';
+import { ACTIVE_STUDIO_GAMES } from '../shared/arcadeCatalog';
+import { CABINETS } from '../shared/cabinets';
+import type { StudioGameId } from '../shared/studioGames';
+import { studioEscape as escape } from './StudioArtwork';
 import './studio-catalog.css';
 
-type Filter = 'all'|'slot'|'risk'|'other';
-const labels: Record<Filter,string> = {all:'Все',slot:'Слоты',risk:'Полёт и риск',other:'Другие'};
-const match = (game: StudioGameId, filter: Filter) => filter==='all'||filter==='slot'&&STUDIO_INFO[game].kind==='slot'||filter==='risk'&&['crash','flight'].includes(STUDIO_INFO[game].kind)||filter==='other'&&!['slot','crash','flight'].includes(STUDIO_INFO[game].kind);
-const sorted = [...STUDIO_GAMES].sort((first,second)=>Number(STUDIO_INFO[second].kind==='slot')-Number(STUDIO_INFO[first].kind==='slot'));
-const kindNames = {slot:'СЛОТ',crash:'МАРШРУТ',flight:'ПОЛЁТ',keno:'КЕНО',plinko:'ПЛИНКО',dice:'КОСТИ',wheel:'КОЛЕСО',mines:'ПОИСК'};
+const artwork: Record<string, string> = {
+  'studio-meme-overload':'/assets/meme-overload/v1/desktop.svg',
+  'studio-afterglow':'/assets/afterglow/v1/background-studio-v3.webp',
+  'studio-nitro-run':'/assets/nitro-run/v1/background.webp',
+  'studio-cosmic-escape': '/assets/cosmic-guardians/v1/background.webp',
+  'studio-caramel-carnival': '/assets/caramel-rebuild/v1/background.webp',
+  'studio-velvet-reign': '/assets/velvet-rebuild/v1/background.webp',
+  'studio-last-convoy': '/assets/last-convoy/v1/background.webp',
+};
+const descriptions: Record<string, string> = {
+  'studio-meme-overload':translateText('Каскады · Разгон ×5 · Вирусный режим'),
+  'studio-afterglow':translateText('14 линий · Фотосессия · Альбом героинь'),
+  'studio-nitro-run':translateText('20 линий · Передачи · Нитро-рывок'),
+  'studio-cosmic-escape': translateText('20 линий · Три космические миссии'),
+  'studio-caramel-carnival': translateText('Каскады · Билеты · Энергия до ×50'),
+  'studio-velvet-reign': translateText('14 линий · Пять звёзд · Два бонуса'),
+  'studio-last-convoy': translateText('Каскады · Баррикады · Эвакуация'),
+};
 
-/** Native games from the club's collection, all connected to one test wallet. */
+/** The physical cabinet list also defines which games can appear in the catalogue. */
 export class StudioCatalog {
-  private filter: Filter = 'all';
-  private destroyed = false;
-  constructor(private host: HTMLElement, private select: (game: StudioGameId)=>void) { this.render(); }
-
-  private render(focus?: string) {
-    if(this.destroyed)return;
-    const games=sorted.filter(game=>match(game,this.filter));
-    this.host.innerHTML=`<section class="studio-catalog" aria-label="Новые слоты и казино-игры"><div class="studio-catalog-heading"><div><span>ROYAL STUDIO</span><h3>Миры удачи</h3></div><strong>${STUDIO_GAMES.length}<small>новых игр</small></strong></div><p>23 слота с линиями, способами и бонусами. Один тестовый кошелёк для всей коллекции.</p><div class="studio-catalog-tabs" role="group" aria-label="Категории коллекции">${(['all','slot','risk','other'] as Filter[]).map(filter=>`<button type="button" data-studio-filter="${filter}" aria-pressed="${this.filter===filter}">${labels[filter]}<span>${STUDIO_GAMES.filter(game=>match(game,filter)).length}</span></button>`).join('')}</div><div class="studio-catalog-grid">${games.map(game=>{const info=STUDIO_INFO[game],index=STUDIO_GAMES.indexOf(game);const mode=info.kind==='slot'?info.paylines.length?`${info.paylines.length} линий`:info.ways?`${info.ways} способов`:info.features.includes('cluster')?'Группы символов':'Каскады':kindNames[info.kind];return `<button type="button" class="studio-catalog-card theme-${info.theme}" data-studio="${game}" aria-label="Играть в ${escape(info.name)}" style="--studio-card-accent:${info.palette[1]}"><span class="studio-catalog-art"><img src="${STUDIO_ART[info.theme]}" alt="" loading="lazy" style="object-position:${25+index%3*25}% ${30+index%2*30}%"><span class="studio-catalog-kind">${kindNames[info.kind]}</span><span class="studio-catalog-mode">${escape(mode)}</span></span><span class="studio-catalog-copy"><strong>${escape(info.name)}</strong><small>${escape(info.subtitle)}</small></span><span class="studio-catalog-arrow" aria-hidden="true">↗</span></button>`;}).join('')}</div><div class="studio-catalog-footer"><span>В коллекции: ${games.length}</span><span>Тестовые монеты</span></div></section>`;
-    this.host.querySelectorAll<HTMLButtonElement>('[data-studio-filter]').forEach(button=>button.onclick=()=>{this.filter=button.dataset.studioFilter as Filter;this.render(this.filter);});
-    this.host.querySelectorAll<HTMLButtonElement>('[data-studio]').forEach(button=>button.onclick=()=>this.select(button.dataset.studio as StudioGameId));
-    if(focus)this.host.querySelector<HTMLButtonElement>(`[data-studio-filter="${focus}"]`)?.focus({preventScroll:true});
+  constructor(private host: HTMLElement, private select: (game: StudioGameId) => void, private visitNewZone?: () => void) {
+    const games = ACTIVE_STUDIO_GAMES.flatMap(id => {
+      const cabinet = CABINETS.find(item => item.id === id);
+      return cabinet ? [cabinet] : [];
+    });
+    this.host.innerHTML = tr`<section class="studio-catalog" aria-label="Новые игры"><div class="studio-catalog-heading"><div><span>РЯДОМ СО ВХОДОМ · ЭТАЖ 1</span><h3>Новые игры</h3></div><strong>${games.length}<small>${games.length===1?translateText('игра'):games.length<5?translateText('игры'):translateText('игр')}</small></strong></div><p>Отдельные миры с бонусами и общим тестовым кошельком. Все автоматы стоят рядом.</p><div class="studio-catalog-grid">${games.map(game => tr`<button type="button" class="studio-catalog-card" data-studio="${game.id}" aria-label="Подойти к ${escape(game.name)}" style="--studio-card-accent:#${game.color.toString(16).padStart(6, '0')}"><span class="studio-catalog-art"><img src="${artwork[game.id]}" alt="" loading="lazy"><span class="studio-catalog-kind">СЛОТ</span><span class="studio-catalog-mode">${escape(descriptions[game.id])}</span></span><span class="studio-catalog-copy"><strong>${escape(game.name)}</strong><small>${escape(game.subtitle)}</small></span><span class="studio-catalog-arrow" aria-hidden="true">↗</span></button>`).join('')}</div>${this.visitNewZone ? translateText('<button type="button" class="luelon-new-visit" data-luelon-zone>Показать новые игры в зале <span aria-hidden="true">→</span></button>') : ''}<div class="studio-catalog-footer"><span>Общий кошелёк клуба</span><span>Тестовые монеты</span></div></section>`;
+    this.host.querySelectorAll<HTMLButtonElement>('[data-studio]').forEach(button => {
+      button.onclick = () => this.select(button.dataset.studio as StudioGameId);
+    });
+    this.host.querySelector<HTMLButtonElement>('[data-luelon-zone]')?.addEventListener('click', () => this.visitNewZone?.());
   }
 
-  destroy(){this.destroyed=true;this.host.replaceChildren();}
+  destroy() { this.host.replaceChildren(); }
 }

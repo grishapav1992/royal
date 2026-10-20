@@ -1,3 +1,4 @@
+import { isUserMessage, t as translateText } from '../i18n/index';
 import type { MinesOperation, MinesResult, MinesSession } from '../shared/minesGame';
 import { WALLET_ACCOUNT_HEADER } from '../shared/walletAccount';
 import { demoWallet } from './WalletClient';
@@ -24,7 +25,7 @@ export class MinesClient extends EventTarget {
       try {
         const stored = sessionStorage.getItem(this.key());
         if (stored) this.pending = JSON.parse(stored);
-      } catch { this.error = 'Не удалось восстановить действие. Разреши хранилище браузера.'; }
+      } catch { this.error = translateText('Не удалось восстановить действие. Разреши хранилище браузера.'); }
       void this.refresh();
     }
     demoWallet.setExternalBusy('mines', !!this.pending);
@@ -40,30 +41,30 @@ export class MinesClient extends EventTarget {
         signal: AbortSignal.timeout(10000),
       });
       const result = await response.json() as MinesResult & { error?: string };
-      if (!response.ok) throw new Error(result.error || 'Не удалось восстановить партию.');
+      if (!response.ok) throw new Error(result.error || translateText('Не удалось восстановить партию.'));
       if (epoch !== this.epoch || version !== this.readVersion) return;
       this.session = result.session; this.ready = true; this.error = '';
       demoWallet.acceptExternalWallet(this.accountId!, result.wallet);
     } catch (error) {
       if (epoch !== this.epoch || version !== this.readVersion) return;
-      this.error = readableError(error, 'Не удалось восстановить партию. Проверь соединение.');
+      this.error = readableError(error, translateText('Не удалось восстановить партию. Проверь соединение.'));
     } finally {
       if (epoch === this.epoch && version === this.readVersion) { this.loading = false; this.notify(); }
     }
   }
   async act(operation: Omit<MinesOperation, 'id'>): Promise<MinesResult> {
-    if (this.pending) throw new Error('Сначала проверь предыдущий ход.');
+    if (this.pending) throw new Error(translateText('Сначала проверь предыдущий ход.'));
     return this.send({ id: crypto.randomUUID(), ...operation } as MinesOperation);
   }
   async retry(): Promise<MinesResult> {
-    if (!this.pending) throw new Error('Нет неподтверждённого хода.');
+    if (!this.pending) throw new Error(translateText('Нет неподтверждённого хода.'));
     return this.send(this.pending);
   }
   private async send(operation: MinesOperation): Promise<MinesResult> {
-    if (!this.accountId) throw new Error('Войди в аккаунт, чтобы играть.');
-    if (this.busy || demoWallet.busy || demoWallet.pending || demoWallet.hasExternalBusy('mines')) throw new Error('Дождись подтверждения предыдущей операции в кошельке.');
+    if (!this.accountId) throw new Error(translateText('Войди в аккаунт, чтобы играть.'));
+    if (this.busy || demoWallet.busy || demoWallet.pending || demoWallet.hasExternalBusy('mines')) throw new Error(translateText('Дождись подтверждения предыдущей операции в кошельке.'));
     try { sessionStorage.setItem(this.key(), JSON.stringify(operation)); }
-    catch { throw new Error('Разреши хранилище браузера для сохранения хода.'); }
+    catch { throw new Error(translateText('Разреши хранилище браузера для сохранения хода.')); }
     const epoch = this.epoch, accountId = this.accountId, key = this.key();
     let refreshAfterConflict = false;
     this.pending = operation; this.busy = true; this.error = ''; this.readVersion++; this.loading = false; this.notify();
@@ -75,7 +76,7 @@ export class MinesClient extends EventTarget {
         body: JSON.stringify(operation), signal: AbortSignal.timeout(15000),
       });
       const result = await response.json() as MinesResult & { error?: string };
-      if (epoch !== this.epoch) throw new Error('Аккаунт изменился. Открой игру после входа.');
+      if (epoch !== this.epoch) throw new Error(translateText('Аккаунт изменился. Открой игру после входа.'));
       if (!response.ok) {
         if (response.status >= 400 && response.status < 500 && response.status !== 401 && response.status !== 429) {
           this.pending = undefined; sessionStorage.removeItem(key);
@@ -83,14 +84,14 @@ export class MinesClient extends EventTarget {
         if (response.status === 404 || response.status === 409) {
           this.ready = false; refreshAfterConflict = true;
         }
-        throw new Error(result.error || 'Не удалось подтвердить ход.');
+        throw new Error(result.error || translateText('Не удалось подтвердить ход.'));
       }
       this.session = result.session; this.ready = true; this.pending = undefined;
       sessionStorage.removeItem(key); this.readVersion++;
       demoWallet.acceptExternalWallet(accountId, result.wallet);
       return result;
     } catch (error) {
-      const message = readableError(error, 'Ответ не получен. Нажми «Проверить ход»: действие повторится с тем же номером.');
+      const message = readableError(error, translateText('Ответ не получен. Нажми «Проверить ход»: действие повторится с тем же номером.'));
       if (epoch === this.epoch) this.error = message;
       throw new Error(message);
     } finally {
@@ -104,7 +105,7 @@ export class MinesClient extends EventTarget {
 }
 
 function readableError(error: unknown, fallback: string) {
-  return error instanceof Error && /[а-я]/i.test(error.message) ? error.message : fallback;
+  return error instanceof Error && isUserMessage(error.message) ? translateText(error.message) : fallback;
 }
 
 export const minesClient = new MinesClient();

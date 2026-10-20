@@ -1,3 +1,4 @@
+import { t as translateText, tr } from '../i18n/index';
 import type { Cabinet } from '../shared/cabinets';
 import { watchCabinetDemoGame, type DemoGame } from '../game/demoGames';
 
@@ -16,18 +17,18 @@ export class DemoPreview {
       const version = ++this.version;
       const card = document.querySelector<HTMLButtonElement>('[data-cabinet="luelon"]')!;
       card.querySelector('strong')!.textContent = game.name;
-      card.querySelector('.card-kicker')!.textContent = 'LUELON PLAY · ДЕМОИГРЫ';
-      card.setAttribute('aria-label', `Подойти к автомату ${game.name} (Luelon Play)`);
+      card.querySelector('.card-kicker')!.textContent = translateText('LUELON PLAY · ДЕМОИГРЫ');
+      card.setAttribute('aria-label', tr`Подойти к автомату ${game.name} (Luelon Play)`);
       const art = card.querySelector<HTMLElement>('.cabinet-art')!;
       const img = document.createElement('img');
-      img.alt = `Обложка ${game.name}`; img.referrerPolicy = 'no-referrer';
+      img.alt = tr`Обложка ${game.name}`; img.referrerPolicy = 'no-referrer';
       art.replaceChildren(); art.classList.remove('game-cover');
       img.onload = () => {
         if (version !== this.version) return;
         art.replaceChildren(img); art.classList.add('game-cover');
       };
       if (game.artworkUrl) img.src = game.artworkUrl;
-      this.image.alt = `Обложка ${game.name}`;
+      this.image.alt = tr`Обложка ${game.name}`;
       this.image.onload = () => this.updateNear(this.near);
       this.image.onerror = () => { this.image.hidden = true; };
       if (game.artworkUrl) this.image.src = game.artworkUrl;

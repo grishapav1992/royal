@@ -1,3 +1,4 @@
+import { t as translateText } from '../i18n/index';
 import { CasinoAudio } from './CasinoAudio';
 import { TableAudio, type TableSoundSet } from './TableAudio';
 import {SlotAudio,SLOT_AUDIO_GAMES,type SlotCue,type SlotAudioGame} from './SlotAudio';
@@ -83,7 +84,7 @@ export class GameAudio {
     const value=this.getPreferences();for(const listener of this.preferences)listener(value);
   }
   createSettings(){
-    const panel=document.createElement('fieldset');panel.className='audio-preferences';panel.innerHTML='<legend>Звук</legend><label><input id="sound-enabled" type="checkbox"> Звуки игры</label><label><input id="casino-ambience" type="checkbox"> Атмосфера казино</label><label for="sound-volume">Громкость <output id="sound-volume-value"></output></label><input id="sound-volume" type="range" min="0" max="100" aria-label="Громкость игры"><div id="piano-sound-setting"></div><small>Изменения звука сохраняются сразу.</small>';
+    const panel=document.createElement('fieldset');panel.className='audio-preferences';panel.innerHTML=translateText('<legend>Звук</legend><label><input id="sound-enabled" type="checkbox"> Звуки игры</label><label><input id="casino-ambience" type="checkbox"> Атмосфера казино</label><label for="sound-volume">Громкость <output id="sound-volume-value"></output></label><input id="sound-volume" type="range" min="0" max="100" aria-label="Громкость игры"><div id="piano-sound-setting"></div><small>Изменения звука сохраняются сразу.</small>');
     const enabled=panel.querySelector<HTMLInputElement>('#sound-enabled')!,volume=panel.querySelector<HTMLInputElement>('#sound-volume')!;enabled.checked=!this.muted;volume.value=String(Math.round(this.volume*100));
     const casino=panel.querySelector<HTMLInputElement>('#casino-ambience')!;casino.checked=this.casinoEnabled;
     const apply=()=>{this.muted=!enabled.checked;this.volume=Number(volume.value)/100;this.casinoEnabled=casino.checked;this.applyPreferences();};
@@ -93,8 +94,8 @@ export class GameAudio {
     return panel;
   }
   addSettingsButton(parent:HTMLElement){
-    const button=document.createElement('button');button.type='button';button.className='settings-shortcut text-button';button.textContent='Настройки';button.setAttribute('aria-label','Открыть настройки');parent.append(button);
-    button.addEventListener('click',()=>document.querySelector<HTMLButtonElement>('.profile [aria-label="Настройки игрока"]')?.click());
+    const button=document.createElement('button');button.type='button';button.className='settings-shortcut text-button';button.textContent=translateText('Настройки');button.setAttribute('aria-label',translateText('Открыть настройки'));parent.append(button);
+    button.addEventListener('click',()=>document.querySelector<HTMLButtonElement>(translateText('.profile [aria-label="Настройки игрока"]'))?.click());
   }
   setGame(game:string){
     for(const owner of this.slotOwners)if(owner.gameId!==game)owner.cancel();

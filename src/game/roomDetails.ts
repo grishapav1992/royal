@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import type { Cabinet } from '../shared/cabinets';
 import type { HallId } from '../shared/world';
-import { CABINET_SCALE, CABINET_SIZE, cabinetScreen } from './cabinetArt';
+import { CABINET_SCALE, CABINET_SIZE, cabinetScreen, paintGirlhubLogo } from './cabinetArt';
 import { isStudioGame, STUDIO_INFO } from '../shared/studioGames';
 import { isCardGame } from '../shared/cardTables';
 
@@ -304,6 +304,10 @@ export class RoomDetails {
       const cellWidth = this.scratch!.width, cellHeight = this.scratch!.height;
       this.scratch!.getContext('2d',{willReadFrequently:true})!.clearRect(0, 0, cellWidth, cellHeight);
       g.generateTexture(this.scratch!, cellWidth, cellHeight);
+      if (cabinetId === 'studio-afterglow') {
+        paintGirlhubLogo(this.scratch!.getContext('2d', { willReadFrequently: true })!,
+          2 * PREVIEW_RESOLUTION, PREVIEW_RESOLUTION, 42 * PREVIEW_RESOLUTION, 11 * PREVIEW_RESOLUTION);
+      }
       // The shared texture camera has no render loop to clear its temporary render list.
       Phaser.GameObjects.Graphics.TargetCamera.renderList.length = 0;
       if(this.uploadBytes){

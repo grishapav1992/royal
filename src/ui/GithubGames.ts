@@ -1,4 +1,6 @@
-import { observeGameOutcome } from './gameReactions';
+import { t as translateText, tr, locale } from '../i18n/index';
+import { observeGameOutcome, resetGameOutcomes } from './gameReactions';
+import { ConfirmedVisualMotion } from './ConfirmedVisualMotion';
 import { CABINETS } from '../shared/cabinets';
 import { blackjackScore, shuffledDeck, dealBaccarat, pokerHand, comparePoker, VIDEO_NAMES, VIDEO_PAYOUTS, videoRank, randomInt, type GithubGameId } from '../shared/githubGames';
 import { Game, PlayerBet, DiceRoll, PassLineBet, FieldBet, AnySevenBet } from '../vendor/github/craps/engine';
@@ -6,7 +8,7 @@ import './github-games.css';
 import { emitCardDealer } from './CardDealerStage';
 import { isCardGame } from '../shared/cardTables';
 
-const format = (value: number) => value.toLocaleString('ru-RU', { maximumFractionDigits: 2 });
+const format = (value: number) => value.toLocaleString(locale, { maximumFractionDigits: 2 });
 const SOURCES: Record<GithubGameId, string> = {
   'github-blackjack': 'Kusnierewicz/Blackjack-game-in-JS',
   'github-poker': 'benjaminrathelot/javascript-poker-engine',
@@ -15,11 +17,11 @@ const SOURCES: Record<GithubGameId, string> = {
   'github-craps': 'wschmrdr/crapsengine',
 };
 const RULES: Record<GithubGameId, string> = {
-  'github-blackjack': 'Набери до 21 очка. Туз даёт 1 или 11. Дилер берёт карты до 17, включая остановку на мягких 17. Блэкджек возвращает 2,5 ставки, обычный выигрыш 2 ставки, ничья возвращает ставку. Одна колода, без split и double.',
-  'github-poker': 'Учебный холдем против бота. По две личные карты, пять общих. Сравниваются лучшие пять карт. Бот всегда уравнивает. На каждой улице можно продолжить, повысить ставку или сделать пас. При ничьей банк делится поровну.',
-  'github-video-poker': 'Колода из 53 карт с одним джокером. Удержи нужные карты и один раз замени остальные. Джокер заменяет любую карту. Множители: две пары 1, тройка 2, стрит 4, флеш 5, фулл-хаус 8, каре 20, стрит-флеш 40, роял-флеш 100, пять одинаковых 250. Одна пара не оплачивается.',
-  'github-baccarat': 'Выбери игрока, банкира или ничью. Очки считаются по последней цифре суммы: туз 1, десятки и картинки 0. Добор карт выполняется автоматически. Игрок возвращает 2 ставки, банкир 1,95, ничья 9. При ничьей ставки на игрока и банкира возвращаются.',
-  'github-craps': 'Pass Line: первый бросок 7/11 выигрывает, 2/3/12 проигрывает. Иначе устанавливается цель: повтор цели выигрывает, 7 проигрывает. Field: один бросок, 3/4/9/10/11 дают полный возврат ×2, 2 даёт ×3, 12 даёт ×4. Any Seven: 7 даёт ×5, прочие числа проигрывают.',
+  'github-blackjack': translateText('Набери до 21 очка. Туз даёт 1 или 11. Дилер берёт карты до 17, включая остановку на мягких 17. Блэкджек возвращает 2,5 ставки, обычный выигрыш 2 ставки, ничья возвращает ставку. Одна колода, без split и double.'),
+  'github-poker': translateText('Учебный холдем против бота. По две личные карты, пять общих. Сравниваются лучшие пять карт. Бот всегда уравнивает. На каждой улице можно продолжить, повысить ставку или сделать пас. При ничьей банк делится поровну.'),
+  'github-video-poker': translateText('Колода из 53 карт с одним джокером. Удержи нужные карты и один раз замени остальные. Джокер заменяет любую карту. Множители: две пары 1, тройка 2, стрит 4, флеш 5, фулл-хаус 8, каре 20, стрит-флеш 40, роял-флеш 100, пять одинаковых 250. Одна пара не оплачивается.'),
+  'github-baccarat': translateText('Выбери игрока, банкира или ничью. Очки считаются по последней цифре суммы: туз 1, десятки и картинки 0. Добор карт выполняется автоматически. Игрок возвращает 2 ставки, банкир 1,95, ничья 9. При ничьей ставки на игрока и банкира возвращаются.'),
+  'github-craps': translateText('Pass Line: первый бросок 7/11 выигрывает, 2/3/12 проигрывает. Иначе устанавливается цель: повтор цели выигрывает, 7 проигрывает. Field: один бросок, 3/4/9/10/11 дают полный возврат ×2, 2 даёт ×3, 12 даёт ×4. Any Seven: 7 даёт ×5, прочие числа проигрывают.'),
 };
 
 export class GithubGames {
@@ -28,7 +30,7 @@ export class GithubGames {
   private credits = 1000;
   private bet = 10;
   private roundStake = 10;
-  private message = 'Выбери ставку и начни игру.';
+  private message = translateText('Выбери ставку и начни игру.');
   private deck: string[] = [];
   private player: string[] = [];
   private opponent: string[] = [];
@@ -42,18 +44,37 @@ export class GithubGames {
   private roundNumber = 0;
   private roundPayout = 0;
   private alive = true;
+  private crapsMotion?: ConfirmedVisualMotion;
+  private crapsBefore?: { phase: 'idle' | 'active' | 'done'; credits: number; message: string; history: string[]; dice: number[]; point: number };
+  private crapsToken = 0;
+  private visibility = () => { if (document.hidden) { this.crapsMotion?.cancel(); this.crapsBefore = undefined; resetGameOutcomes(this.root); this.render(); } };
   constructor(container: HTMLElement, private id: GithubGameId) {
     this.root.className = 'github-game';
     this.root.dataset.game = id;
     container.replaceChildren(this.root);
+    if (id === 'github-craps') { this.crapsMotion = new ConfirmedVisualMotion(); document.addEventListener('visibilitychange', this.visibility); }
     this.render();
   }
-  destroy() { this.alive = false; this.root.remove(); }
+  destroy() { this.alive = false; this.crapsToken++; this.crapsMotion?.destroy(); document.removeEventListener('visibilitychange', this.visibility); resetGameOutcomes(this.root); this.root.remove(); }
+  private async presentCraps(action: string) {
+    if (this.crapsBefore || !this.alive || document.hidden) return;
+    if (action === 'start' && (this.phase === 'active' || this.credits < this.bet) || action === 'roll' && this.phase !== 'active') return;
+    const token = ++this.crapsToken;
+    this.crapsBefore = {phase: this.phase, credits: this.credits, message: this.message, history: [...this.history], dice: [...this.dice], point: this.craps?.pointValue ?? 0};
+    observeGameOutcome(this.root, { gameId: this.id, account: 'practice', sessionId: 'practice-' + this.roundNumber, active: this.phase === 'active', busy: true, pending: true, spentUnits: String(Math.round(this.roundStake * 100)), returnedUnits: '0' });
+    this.action(action);
+    this.render();
+    const nodes = Array.from(this.root.querySelectorAll<HTMLElement>('.github-dice span'));
+    const completed = await this.crapsMotion!.run(nodes, 900, () => this.alive && token === this.crapsToken && !document.hidden, 'dice');
+    if (!this.alive || token !== this.crapsToken) return;
+    if (!completed) resetGameOutcomes(this.root);
+    this.crapsBefore = undefined; this.render();
+  }
   private card(card: string | null, index?: number): string {
     const name = card ?? 'cardBack';
     const red = card && 'DH'.includes(card[1]);
-    const content = `<img src="/assets/github-cards/${name}.svg" alt="${card ? card === 'JJ' ? 'Джокер' : card[0] + ({ C: ' треф', D: ' бубен', H: ' червей', S: ' пик' }[card[1]] ?? '') : 'Закрытая карта'}" draggable="false">`;
-    if (index !== undefined) return `<button type="button" class="github-card ${red ? 'red' : ''} ${this.held.has(index) ? 'held' : ''}" data-hold="${index}" aria-label="${this.held.has(index) ? 'Отпустить' : 'Удержать'} карту ${index + 1}" aria-pressed="${this.held.has(index)}" ${this.phase !== 'active' ? 'disabled' : ''}>${content}<span>${this.held.has(index) ? 'ДЕРЖУ' : 'ЗАМЕНА'}</span></button>`;
+    const content = `<img src="/assets/github-cards/${name}.svg" alt="${card ? card === 'JJ' ? translateText('Джокер') : card[0] + ({ C: translateText(' треф'), D: translateText(' бубен'), H: translateText(' червей'), S: translateText(' пик') }[card[1]] ?? '') : translateText('Закрытая карта')}" draggable="false">`;
+    if (index !== undefined) return tr`<button type="button" class="github-card ${red ? 'red' : ''} ${this.held.has(index) ? 'held' : ''}" data-hold="${index}" aria-label="${this.held.has(index) ? translateText('Отпустить') : translateText('Удержать')} карту ${index + 1}" aria-pressed="${this.held.has(index)}" ${this.phase !== 'active' ? 'disabled' : ''}>${content}<span>${this.held.has(index) ? translateText('ДЕРЖУ') : translateText('ЗАМЕНА')}</span></button>`;
     return `<span class="github-card ${red ? 'red' : ''}">${content}</span>`;
   }
   private cards(cards: readonly (string | null)[], hold = false): string {
@@ -65,34 +86,40 @@ export class GithubGames {
   private render() {
     if (!this.alive) return;
     const detail = CABINETS.find(c => c.id === this.id)!;
-    const active = this.phase === 'active';
+    const shownPhase = this.crapsBefore?.phase ?? this.phase;
+    const active = shownPhase === 'active', rolling = !!this.crapsBefore;
+    this.root.dataset.motion = rolling ? 'rolling' : 'static';
     let table = '', controls = '';
     if (this.id === 'github-video-poker') {
-      table = `<p class="github-table-label">ТВОИ КАРТЫ</p>${this.cards(this.player.length ? this.player : Array(5).fill(null), true)}`;
-      controls = this.button(active ? 'draw' : 'start', active ? 'Заменить карты' : 'Раздать карты', !active && this.credits < this.bet);
+      table = tr`<p class="github-table-label">ТВОИ КАРТЫ</p>${this.cards(this.player.length ? this.player : Array(5).fill(null), true)}`;
+      controls = this.button(active ? 'draw' : 'start', active ? translateText('Заменить карты') : translateText('Раздать карты'), !active && this.credits < this.bet);
     } else if (this.id === 'github-blackjack') {
-      table = `<p class="github-table-label">ДИЛЕР ${this.phase === 'done' ? '· ' + blackjackScore(this.opponent) : ''}</p>${this.cards(this.opponent.length ? this.opponent.map((c, i) => active && i === 1 ? null : c) : [null, null])}<p class="github-table-label">ТЫ ${this.player.length ? '· ' + blackjackScore(this.player) : ''}</p>${this.cards(this.player.length ? this.player : [null, null])}`;
-      controls = active ? this.button('hit', 'Ещё карту') + this.button('stand', 'Хватит') : this.button('start', 'Раздать карты', this.credits < this.bet);
+      table = tr`<p class="github-table-label">ДИЛЕР ${this.phase === 'done' ? '· ' + blackjackScore(this.opponent) : ''}</p>${this.cards(this.opponent.length ? this.opponent.map((c, i) => active && i === 1 ? null : c) : [null, null])}<p class="github-table-label">ТЫ ${this.player.length ? '· ' + blackjackScore(this.player) : ''}</p>${this.cards(this.player.length ? this.player : [null, null])}`;
+      controls = active ? this.button('hit', translateText('Ещё карту')) + this.button('stand', translateText('Хватит')) : this.button('start', translateText('Раздать карты'), this.credits < this.bet);
     } else if (this.id === 'github-poker') {
-      table = `<p class="github-table-label">БОТ</p>${this.cards(this.opponent.length ? this.opponent.map(card => active ? null : card) : [null, null])}<p class="github-table-label">ОБЩИЕ КАРТЫ · БАНК ${active ? format(2 * this.roundStake) : '0'}</p>${this.cards([...this.board, ...Array(5 - this.board.length).fill(null)])}<p class="github-table-label">ТВОЯ РУКА</p>${this.cards(this.player.length ? this.player : [null, null])}`;
-      const street = this.board.length === 0 ? 'Открыть флоп' : this.board.length === 3 ? 'Открыть тёрн' : this.board.length === 4 ? 'Открыть ривер' : 'Сравнить руки';
-      controls = active ? this.button('call', street) + this.button('raise', 'Повысить на ' + format(this.bet), this.credits < this.bet) + this.button('fold', 'Пас') : this.button('start', 'Новая раздача', this.credits < this.bet);
+      table = tr`<p class="github-table-label">БОТ</p>${this.cards(this.opponent.length ? this.opponent.map(card => active ? null : card) : [null, null])}<p class="github-table-label">ОБЩИЕ КАРТЫ · БАНК ${active ? format(2 * this.roundStake) : '0'}</p>${this.cards([...this.board, ...Array(5 - this.board.length).fill(null)])}<p class="github-table-label">ТВОЯ РУКА</p>${this.cards(this.player.length ? this.player : [null, null])}`;
+      const street = this.board.length === 0 ? translateText('Открыть флоп') : this.board.length === 3 ? translateText('Открыть тёрн') : this.board.length === 4 ? translateText('Открыть ривер') : translateText('Сравнить руки');
+      controls = active ? this.button('call', street) + this.button('raise', translateText('Повысить на ') + format(this.bet), this.credits < this.bet) + this.button('fold', translateText('Пас')) : this.button('start', translateText('Новая раздача'), this.credits < this.bet);
     } else if (this.id === 'github-baccarat') {
-      table = `<p class="github-table-label">БАНКИР</p>${this.cards(this.opponent.length ? this.opponent : [null, null])}<p class="github-table-label">ИГРОК</p>${this.cards(this.player.length ? this.player : [null, null])}`;
-      controls = `<label class="github-choice">На кого ставим<select id="github-choice"><option value="player_win" ${this.choice === 'player_win' ? 'selected' : ''}>Игрок</option><option value="banker_win" ${this.choice === 'banker_win' ? 'selected' : ''}>Банкир</option><option value="tie" ${this.choice === 'tie' ? 'selected' : ''}>Ничья</option></select></label>` + this.button('start', 'Открыть карты', this.credits < this.bet);
+      table = tr`<p class="github-table-label">БАНКИР</p>${this.cards(this.opponent.length ? this.opponent : [null, null])}<p class="github-table-label">ИГРОК</p>${this.cards(this.player.length ? this.player : [null, null])}`;
+      controls = tr`<label class="github-choice">На кого ставим<select id="github-choice"><option value="player_win" ${this.choice === 'player_win' ? 'selected' : ''}>Игрок</option><option value="banker_win" ${this.choice === 'banker_win' ? 'selected' : ''}>Банкир</option><option value="tie" ${this.choice === 'tie' ? 'selected' : ''}>Ничья</option></select></label>` + this.button('start', translateText('Открыть карты'), this.credits < this.bet);
     } else {
-      table = `<p class="github-table-label">ДВЕ КОСТИ</p><div class="github-dice" role="img" aria-label="${this.dice.length ? this.dice.join(' и ') : 'Кости ещё не брошены'}">${(this.dice.length ? this.dice : [0, 0]).map(value => `<span>${value ? '⚀⚁⚂⚃⚄⚅'[value - 1] : '?'}</span>`).join('')}</div><p class="github-point">${active ? 'Цель: ' + this.craps.pointValue + ' · повтори её раньше семёрки' : 'Бросай кости и следи за суммой'}</p>`;
-      controls = `<label class="github-choice">Ставка на<select id="github-choice" ${active ? 'disabled' : ''}><option value="pass" ${this.choice === 'pass' ? 'selected' : ''}>Pass Line</option><option value="field" ${this.choice === 'field' ? 'selected' : ''}>Field</option><option value="seven" ${this.choice === 'seven' ? 'selected' : ''}>Any Seven</option></select></label>` + this.button(active ? 'roll' : 'start', active ? 'Бросить ещё' : 'Бросить кости', !active && this.credits < this.bet);
+      table = tr`<p class="github-table-label">ДВЕ КОСТИ</p><div class="github-dice" role="img" aria-label="${rolling ? translateText('Кости вращаются, итог ещё не открыт') : this.dice.length ? this.dice.join(translateText(' и ')) : translateText('Кости ещё не брошены')}">${(rolling ? [0, 0] : this.dice.length ? this.dice : [0, 0]).map(value => `<span class="${rolling ? 'craps-rolling-cover' : ''}">${rolling ? '◇' : value ? '⚀⚁⚂⚃⚄⚅'[value - 1] : '?'}</span>`).join('')}</div><p class="github-point">${rolling ? this.crapsBefore!.point ? translateText('Подтверждённая цель: ') + this.crapsBefore!.point : translateText('Бросок подтверждён. Показываем кости…') : active ? translateText('Цель: ') + this.craps.pointValue + translateText(' · повтори её раньше семёрки') : translateText('Бросай кости и следи за суммой')}</p>`;
+      controls = tr`<label class="github-choice">Ставка на<select id="github-choice" ${active ? 'disabled' : ''}><option value="pass" ${this.choice === 'pass' ? 'selected' : ''}>Pass Line</option><option value="field" ${this.choice === 'field' ? 'selected' : ''}>Field</option><option value="seven" ${this.choice === 'seven' ? 'selected' : ''}>Any Seven</option></select></label>` + this.button(active ? 'roll' : 'start', active ? translateText('Бросить ещё') : translateText('Бросить кости'), !active && this.credits < this.bet);
     }
-    this.root.innerHTML = `<header class="github-header"><div><span>${isCardGame(this.id)?'ЭТАЖ 3':'ЭТАЖ 1'} · УЧЕБНЫЙ СТОЛ</span><h3>${detail.name}</h3></div><div class="github-balance"><small>Учебные фишки</small><strong>${format(this.credits)}</strong></div></header><div class="github-table">${table}</div><p class="github-result" role="status" aria-live="polite">${this.message}</p><div class="github-controls"><label>Ставка<select id="github-bet" ${active ? 'disabled' : ''}>${[10, 25, 50, 100].map(value => `<option ${this.bet === value ? 'selected' : ''}>${value}</option>`).join('')}</select></label>${controls}</div><div class="github-history" aria-label="Последние раунды">${this.history.map(line => `<span>${line}</span>`).join('')}</div><details class="github-rules"><summary>Правила игры</summary><p>${RULES[this.id]}</p></details><footer class="github-footer"><p>Бесплатная тренировка. Учебные фишки действуют только за этим столом и сбрасываются при открытии. Их нельзя пополнить, перевести или вывести.</p><a href="https://github.com/${SOURCES[this.id]}" target="_blank" rel="noopener noreferrer">Исходный проект · MIT</a>${this.button('reset', 'Начать заново')}</footer>`;
+    this.root.innerHTML = tr`<header class="github-header"><div><span>${isCardGame(this.id)?translateText('ЭТАЖ 3'):translateText('ЭТАЖ 1')} · УЧЕБНЫЙ СТОЛ</span><h3>${detail.name}</h3></div><div class="github-balance"><small>Учебные фишки</small><strong>${format(this.crapsBefore?.credits ?? this.credits)}</strong></div></header><div class="github-table">${table}</div><p class="github-result" role="status" aria-live="polite">${rolling ? translateText('Кости вращаются…') : this.message}</p><div class="github-controls"><label>Ставка<select id="github-bet" ${active ? 'disabled' : ''}>${[10, 25, 50, 100].map(value => `<option ${this.bet === value ? 'selected' : ''}>${value}</option>`).join('')}</select></label>${controls}</div><div class="github-history" aria-label="Последние раунды">${(this.crapsBefore?.history ?? this.history).map(line => `<span>${line}</span>`).join('')}</div><details class="github-rules"><summary>Правила игры</summary><p>${RULES[this.id]}</p></details><footer class="github-footer"><p>Бесплатная тренировка. Учебные фишки действуют только за этим столом и сбрасываются при открытии. Их нельзя пополнить, перевести или вывести.</p><a href="https://github.com/${SOURCES[this.id]}" target="_blank" rel="noopener noreferrer">Исходный проект · MIT</a>${this.button('reset', translateText('Начать заново'))}</footer>`;
     if(isCardGame(this.id))emitCardDealer(this.root,{gameId:this.id,account:'practice',sessionId:this.phase==='idle'?'':'practice-'+this.roundNumber,phase:this.board.length+this.player.length,cards:JSON.stringify([this.player,this.opponent.map((card,index)=>active&&(this.id==='github-poker'||this.id==='github-blackjack'&&index===1)?'?':card),this.board]),active,busy:false,pending:false,spentUnits:String(Math.round(this.roundStake*100)),returnedUnits:String(Math.round(this.roundPayout*100))});
-    if (!isCardGame(this.id)) observeGameOutcome(this.root, { gameId: this.id, account: 'practice', sessionId: this.phase === 'idle' ? '' : 'practice-' + this.roundNumber, active, busy: false, pending: false, spentUnits: String(Math.round(this.roundStake * 100)), returnedUnits: String(Math.round(this.roundPayout * 100)) });
+    if (!isCardGame(this.id)) observeGameOutcome(this.root, { gameId: this.id, account: 'practice', sessionId: this.phase === 'idle' ? '' : 'practice-' + this.roundNumber, active, busy: rolling || document.hidden, pending: false, spentUnits: String(Math.round(this.roundStake * 100)), returnedUnits: String(Math.round(this.roundPayout * 100)) });
+    if (rolling) this.root.querySelectorAll<HTMLButtonElement | HTMLSelectElement>('button,select').forEach(control => control.disabled = true);
     this.root.querySelector<HTMLSelectElement>('#github-bet')!.onchange = event => { this.bet = Number((event.target as HTMLSelectElement).value); this.render(); };
     const choice = this.root.querySelector<HTMLSelectElement>('#github-choice');
     if (choice) { if (this.id === 'github-craps' && !['pass', 'field', 'seven'].includes(this.choice)) this.choice = 'pass'; choice.value = this.choice; choice.onchange = event => { this.choice = (event.target as HTMLSelectElement).value; }; }
     this.root.querySelectorAll<HTMLButtonElement>('[data-action]').forEach(button => { button.onclick = () => {
       if (Date.now() - this.lastAction < 220) return;
-      this.lastAction = Date.now(); this.action(button.dataset.action!); this.render();
+      if (rolling) return;
+      this.lastAction = Date.now();
+      if (this.id === 'github-craps' && ['start', 'roll'].includes(button.dataset.action!)) void this.presentCraps(button.dataset.action!);
+      else { this.action(button.dataset.action!); this.render(); }
     }; });
     this.root.querySelectorAll<HTMLButtonElement>('[data-hold]').forEach(button => { button.onclick = () => {
       if (this.phase !== 'active') return;
@@ -103,11 +130,11 @@ export class GithubGames {
     this.roundPayout = payout;
     this.credits = Math.round((this.credits + payout) * 100) / 100;
     this.phase = 'done';
-    this.message = message + ' Начислено ' + format(payout) + ' фишек.';
+    this.message = message + translateText(' Начислено ') + format(payout) + translateText(' фишек.');
     this.history.unshift(message + ' · ' + format(payout)); this.history.length = Math.min(4, this.history.length);
   }
   private action(action: string) {
-    if (action === 'reset') { this.credits = 1000; this.phase = 'idle'; this.player = []; this.opponent = []; this.board = []; this.dice = []; this.held.clear(); this.history = []; this.message = 'Новый учебный стол: 1000 фишек.'; return; }
+    if (action === 'reset') { this.credits = 1000; this.phase = 'idle'; this.player = []; this.opponent = []; this.board = []; this.dice = []; this.held.clear(); this.history = []; this.message = translateText('Новый учебный стол: 1000 фишек.'); return; }
     if (action === 'start') {
       if (this.phase === 'active' || this.credits < this.bet) return;
       this.credits -= this.bet; this.roundStake = this.bet; this.phase = 'active';
@@ -115,17 +142,17 @@ export class GithubGames {
       observeGameOutcome(this.root, { gameId: this.id, account: 'practice', sessionId: 'practice-' + this.roundNumber, active: true, busy: false, pending: false, spentUnits: String(Math.round(this.roundStake * 100)), returnedUnits: '0' });
       this.deck = shuffledDeck(this.id === 'github-video-poker', this.id === 'github-baccarat' ? 8 : 1);
       this.player = []; this.opponent = []; this.board = []; this.held.clear();
-      if (this.id === 'github-video-poker') { this.player = this.deck.splice(0, 5); this.message = 'Нажми на карты, которые хочешь удержать, затем замени остальные.'; }
+      if (this.id === 'github-video-poker') { this.player = this.deck.splice(0, 5); this.message = translateText('Нажми на карты, которые хочешь удержать, затем замени остальные.'); }
       if (this.id === 'github-blackjack') {
-        this.player = this.deck.splice(0, 2); this.opponent = this.deck.splice(0, 2); this.message = 'Ещё карту или хватит?';
+        this.player = this.deck.splice(0, 2); this.opponent = this.deck.splice(0, 2); this.message = translateText('Ещё карту или хватит?');
         const p = blackjackScore(this.player), d = blackjackScore(this.opponent);
-        if (p === 21 || d === 21) this.finish(p === d ? this.roundStake : p === 21 ? this.roundStake * 2.5 : 0, p === d ? 'Ничья.' : p === 21 ? 'Блэкджек!' : 'Блэкджек у дилера.');
+        if (p === 21 || d === 21) this.finish(p === d ? this.roundStake : p === 21 ? this.roundStake * 2.5 : 0, p === d ? translateText('Ничья.') : p === 21 ? translateText('Блэкджек!') : translateText('Блэкджек у дилера.'));
       }
-      if (this.id === 'github-poker') { this.player = this.deck.splice(0, 2); this.opponent = this.deck.splice(0, 2); this.message = 'Бот уравнял ставку. Открой флоп или сделай пас.'; }
+      if (this.id === 'github-poker') { this.player = this.deck.splice(0, 2); this.opponent = this.deck.splice(0, 2); this.message = translateText('Бот уравнял ставку. Открой флоп или сделай пас.'); }
       if (this.id === 'github-baccarat') {
         const result = dealBaccarat(this.deck); this.player = result.player; this.opponent = result.banker;
         const payout = result.result === this.choice ? this.roundStake * (this.choice === 'banker_win' ? 1.95 : this.choice === 'tie' ? 9 : 2) : result.result === 'tie' && this.choice !== 'tie' ? this.roundStake : 0;
-        this.finish(payout, `Игрок ${result.playerTotal}, банкир ${result.bankerTotal}. ${result.result === 'tie' ? 'Ничья.' : result.result === 'player_win' ? 'Выиграл игрок.' : 'Выиграл банкир.'}`);
+        this.finish(payout, tr`Игрок ${result.playerTotal}, банкир ${result.bankerTotal}. ${result.result === 'tie' ? translateText('Ничья.') : result.result === 'player_win' ? translateText('Выиграл игрок.') : translateText('Выиграл банкир.')}`);
       }
       if (this.id === 'github-craps') {
         this.craps = new Game(1, 10000, 10000);
@@ -142,17 +169,17 @@ export class GithubGames {
     }
     if (action === 'hit' && this.id === 'github-blackjack') {
       this.player.push(this.deck.pop()!);
-      if (blackjackScore(this.player) > 21) this.finish(0, 'Перебор.');
+      if (blackjackScore(this.player) > 21) this.finish(0, translateText('Перебор.'));
       else if (blackjackScore(this.player) === 21) this.stand();
-      else this.message = 'У тебя ' + blackjackScore(this.player) + '. Ещё карту или хватит?';
+      else this.message = translateText('У тебя ') + blackjackScore(this.player) + translateText('. Ещё карту или хватит?');
     }
     if (action === 'stand' && this.id === 'github-blackjack') this.stand();
     if (this.id === 'github-poker') {
-      if (action === 'fold') { this.finish(0, 'Пас. Банк у бота.'); return; }
+      if (action === 'fold') { this.finish(0, translateText('Пас. Банк у бота.')); return; }
       if (action === 'raise') { if (this.credits < this.bet) return; this.credits -= this.bet; this.roundStake += this.bet; }
       if (action === 'call' || action === 'raise') {
-        if (this.board.length < 5) { this.deck.pop(); this.board.push(...this.deck.splice(0, this.board.length ? 1 : 3)); this.message = 'Бот уравнял. Продолжай или сделай пас.'; }
-        else { const yours = pokerHand([...this.player, ...this.board]), bot = pokerHand([...this.opponent, ...this.board]); const comparison = comparePoker(yours, bot); this.finish(comparison > 0 ? this.roundStake * 2 : comparison === 0 ? this.roundStake : 0, comparison > 0 ? 'Ты выиграл: ' + VIDEO_NAMES[yours.rank] + '.' : comparison === 0 ? 'Ничья.' : 'Бот выиграл: ' + VIDEO_NAMES[bot.rank] + '.'); }
+        if (this.board.length < 5) { this.deck.pop(); this.board.push(...this.deck.splice(0, this.board.length ? 1 : 3)); this.message = translateText('Бот уравнял. Продолжай или сделай пас.'); }
+        else { const yours = pokerHand([...this.player, ...this.board]), bot = pokerHand([...this.opponent, ...this.board]); const comparison = comparePoker(yours, bot); this.finish(comparison > 0 ? this.roundStake * 2 : comparison === 0 ? this.roundStake : 0, comparison > 0 ? translateText('Ты выиграл: ') + VIDEO_NAMES[yours.rank] + '.' : comparison === 0 ? translateText('Ничья.') : translateText('Бот выиграл: ') + VIDEO_NAMES[bot.rank] + '.'); }
       }
     }
     if (action === 'roll' && this.id === 'github-craps') this.roll();
@@ -160,13 +187,13 @@ export class GithubGames {
   private stand() {
     while (blackjackScore(this.opponent) < 17) this.opponent.push(this.deck.pop()!);
     const p = blackjackScore(this.player), d = blackjackScore(this.opponent);
-    this.finish(d > 21 || p > d ? this.roundStake * 2 : p === d ? this.roundStake : 0, d > 21 ? 'Перебор у дилера.' : p > d ? 'Ты выиграл.' : p === d ? 'Ничья.' : 'Дилер выиграл.');
+    this.finish(d > 21 || p > d ? this.roundStake * 2 : p === d ? this.roundStake : 0, d > 21 ? translateText('Перебор у дилера.') : p > d ? translateText('Ты выиграл.') : p === d ? translateText('Ничья.') : translateText('Дилер выиграл.'));
   }
   private roll() {
     this.dice = [randomInt(6) + 1, randomInt(6) + 1];
     this.craps.rollComplete(new DiceRoll(...this.dice), (bet: { pid: number } | null, pay: number) => {
-      if (bet?.pid === 1) this.finish(Math.max(0, this.roundStake + pay), 'Сумма ' + this.dice.reduce((a, b) => a + b, 0) + (pay > 0 ? ': выигрыш.' : pay < 0 ? ': проигрыш.' : ': возврат.'));
+      if (bet?.pid === 1) this.finish(Math.max(0, this.roundStake + pay), translateText('Сумма ') + this.dice.reduce((a, b) => a + b, 0) + (pay > 0 ? translateText(': выигрыш.') : pay < 0 ? translateText(': проигрыш.') : translateText(': возврат.')));
     });
-    if (this.phase === 'active') this.message = 'Сумма ' + this.dice.reduce((a, b) => a + b, 0) + '. Цель ' + this.craps.pointValue + ': повтори её раньше семёрки.';
+    if (this.phase === 'active') this.message = translateText('Сумма ') + this.dice.reduce((a, b) => a + b, 0) + translateText('. Цель ') + this.craps.pointValue + translateText(': повтори её раньше семёрки.');
   }
 }

@@ -1,3 +1,4 @@
+import { t as translateText } from '../i18n/index';
 export type MiraEmotion = 'neutral' | 'smile' | 'tease' | 'concern';
 
 /** Portrait frames animate the face independently from the breathing pose. */
@@ -19,10 +20,10 @@ export class MiraPortrait {
     this.element.className = 'mira-portrait';
     this.canvas.width = 600; this.canvas.height = 900;
     this.canvas.setAttribute('role', 'img');
-    this.canvas.setAttribute('aria-label', 'Мира, рыжая барменша с дерзкой усмешкой');
+    this.canvas.setAttribute('aria-label', translateText('Мира, рыжая барменша с дерзкой усмешкой'));
     const caption = document.createElement('figcaption');
-    const name = document.createElement('strong'); name.textContent = 'Мира';
-    const role = document.createElement('small'); role.textContent = 'Барменша «Рояля»';
+    const name = document.createElement('strong'); name.textContent = translateText('Мира');
+    const role = document.createElement('small'); role.textContent = translateText('Барменша «Рояля»');
     caption.append(name, role); this.element.append(this.canvas, caption);
     this.original.onload = () => { this.originalReady = true; this.lastFrame = -1; this.tick(Date.now()); };
     this.atlas.onload = () => { this.atlasReady = true; this.lastFrame = -1; this.tick(Date.now()); };

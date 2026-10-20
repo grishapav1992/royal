@@ -1,0 +1,34 @@
+{
+  "files": [
+    {
+      "file": "/assets/afterglow/audio/v2/win-1.mp3",
+      "sourceName": "zhenskie-stony (mp3cut.net).mp3",
+      "source": "user-provided",
+      "sha256": "151c42720eb200187294e1ce25f4f03a06802b8a4b924b35d309a8d07d2e15ad",
+      "bytes": 154732,
+      "transformation": "none; byte-identical copy",
+      "listened": false,
+      "license": "not asserted; user-provided file"
+    },
+    {
+      "file": "/assets/afterglow/audio/v2/win-2.mp3",
+      "sourceName": "zvuk-stona-devushki (mp3cut.net).mp3",
+      "source": "user-provided",
+      "sha256": "1965cd8c4560edbff8d14662d1e302ab4ec0eac1e9c3adeeabc6842b55ac0085",
+      "bytes": 41335,
+      "transformation": "none; byte-identical copy",
+      "listened": false,
+      "license": "not asserted; user-provided file"
+    },
+    {
+      "file": "/assets/afterglow/audio/v2/win-3.mp3",
+      "sourceName": "stony-udovolstvija-zhenschiny (mp3cut.net).mp3",
+      "source": "user-provided",
+      "sha256": "04cb450cffb0cc1ee5e39b6d49647cc725367eb3617725635d5eab436b817179",
+      "bytes": 71952,
+      "transformation": "none; byte-identical copy",
+      "listened": false,
+      "license": "not asserted; user-provided file"
+    }
+  ]
+}

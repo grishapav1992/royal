@@ -13,12 +13,12 @@ export function installMira(app: Application) {
     if (!account) { res.status(401).json({ error: 'Войди в онлайн-зал, чтобы поговорить с Мирой.' }); return; }
     res.locals.accountId = account.id; res.locals.accountName = account.name; next();
   });
-  app.get('/api/npc/mira', async (_req, res) => {
-    try { res.json(await service.resume(res.locals.accountId, res.locals.accountName)); }
+  app.get('/api/npc/mira', async (req, res) => {
+    try { res.json(await service.resume(res.locals.accountId, res.locals.accountName, req.get('Accept-Language') === 'en' ? 'en' : 'ru')); }
     catch { res.status(500).json({ error: 'Не получилось вспомнить разговор. Попробуй позже.' }); }
   });
   app.post('/api/npc/mira', async (req, res) => {
-    try { res.json(await service.respond(res.locals.accountId, req.body?.message)); }
+    try { res.json(await service.respond(res.locals.accountId, req.body?.message, req.get('Accept-Language') === 'en' ? 'en' : 'ru')); }
     catch (error) { res.status(error instanceof MiraError ? error.status : 500).json({ error: error instanceof MiraError ? error.message : 'Не получилось поговорить с Мирой.' }); }
   });
   app.post('/api/npc/mira/reset', async (_req, res) => {

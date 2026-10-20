@@ -3,7 +3,6 @@ import express, { type Application } from 'express';
 import { accounts, allowedOrigin, cookieToken, type AccountStore } from './accounts';
 import { CasinoApiProClient, CasinoApiProError, casinoApiProConfig, walletBinding, type CasinoApiProConfig } from './casinoApiPro';
 import { ProviderWalletError, type ProviderOperation } from './casinoApiProWallet';
-import { HttpRateLimits } from './requestRateLimit';
 
 export function verifyWalletSignature(secret: string, timestamp: unknown, signature: unknown, raw: Buffer, now = Date.now()) {
   if (typeof timestamp !== 'string' || !/^\d{10}$/.test(timestamp) || Math.abs(now / 1000 - Number(timestamp)) > 300 || typeof signature !== 'string' || !/^[a-f0-9]{64}$/.test(signature)) return false;
@@ -11,7 +10,7 @@ export function verifyWalletSignature(secret: string, timestamp: unknown, signat
   return timingSafeEqual(expected,Buffer.from(signature,'hex'));
 }
 
-export function installCasinoApiPro(app: Application, config = casinoApiProConfig(), store: AccountStore = accounts, request: typeof fetch = fetch, limits = new HttpRateLimits()) {
+export function installCasinoApiPro(app: Application, config = casinoApiProConfig(), store: AccountStore = accounts, request: typeof fetch = fetch) {
   const client = config ? new CasinoApiProClient(config,request) : undefined;
   const binding = config ? walletBinding(config) : '';
   app.use('/api/casinoapipro/wallet', express.raw({type:'application/json',limit:'16kb'}), (req,res,next) => {
@@ -30,13 +29,13 @@ export function installCasinoApiPro(app: Application, config = casinoApiProConfi
       }
     });
   }
-  app.use('/api/casinoapipro', async (req,res,next) => {
+  app.use('/api/casinoapipro', express.json({limit:'2kb'}), async (req,res,next) => {
     res.setHeader('Cache-Control','no-store');
     if (!allowedOrigin(req.get('origin')) || req.get('sec-fetch-site') === 'cross-site') { res.status(403).json({error:'Этот источник запросов не разрешён.'}); return; }
     const account = (await store.session(cookieToken(req.headers.cookie)))?.account;
     if (!account) { res.status(401).json({error:'Войди в онлайн-зал, чтобы играть на свой демобаланс.'}); return; }
     res.locals.accountId = account.id; next();
-  }, limits.account('demo'), express.json({limit:'2kb',inflate:false}));
+  });
   app.post('/api/casinoapipro/status', async (_req,res) => {
     const playerId = await store.casinoApiProWallet.player(res.locals.accountId);
     await store.wallet.snapshot(res.locals.accountId);

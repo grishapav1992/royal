@@ -31,7 +31,7 @@ function surfaceDestination(id:string):Destination {
 const TOUR: Destination[] = [
   { hall: CAT_CARE.hall, ...CAT_CARE.food.approach, mood: 'eating-bowl' },
   { hall: CAT_CARE.hall, ...CAT_CARE.scratcher.approach, mood: 'scratching' },
-  surfaceDestination('cabinet:variant-target-plinko'),
+  surfaceDestination('cabinet:studio-cosmic-escape'),
   { hall: 'arcade', x: 2240, y: 700 },
   { hall: CAT_CARE.hall, ...CAT_CARE.bar.approach, bar: true },
   { hall: 'tables', x: 1480, y: 1140 },

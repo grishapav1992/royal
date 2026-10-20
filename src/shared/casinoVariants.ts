@@ -1,3 +1,4 @@
+import { t as translateText } from '../i18n/index';
 import { getPlinkoMultipliers } from './originalGames';
 import { NEXT_VARIANT_GAMES, NEXT_VARIANT_NAMES, NEXT_VARIANT_RULES, NEXT_VARIANT_DEFAULTS, NEXT_VARIANT_BASES, NEXT_VARIANT_INFO, NEXT_VARIANT_MAX, isNextVariantGame, validNextVariantSettings, validNextVariantView, nextVariantKindForGame, type NextVariantSettings, type NextVariantView } from './casinoNextVariants';
 import { BATCH_VARIANT_GAMES, BATCH_VARIANT_NAMES, BATCH_VARIANT_RULES, BATCH_VARIANT_DEFAULTS, BATCH_VARIANT_BASES, BATCH_VARIANT_INFO, BATCH_VARIANT_MAX, isBatchVariantGame, validBatchVariantSettings, validBatchVariantView, batchVariantKindForGame, type BatchVariantSettings, type BatchVariantView } from './casinoBatchVariants';
@@ -23,18 +24,18 @@ export type VariantView = BaseVariantView | NextVariantView | BatchVariantView;
 export const VARIANT_NAMES:Record<VariantGameId,string> = {
   ...BATCH_VARIANT_NAMES,
   ...NEXT_VARIANT_NAMES,
-  'variant-dice':'Неоновый коридор','variant-plinko':'Плинко: два потока','variant-limbo':'Лимбо: два рубежа',
-  'variant-mines':'Хранилище','variant-sic-bo':'Сик Бо: точная сумма','variant-diamonds':'Самоцветы: охота',
+  'variant-dice':translateText('Неоновый коридор'),'variant-plinko':translateText('Плинко: два потока'),'variant-limbo':translateText('Лимбо: два рубежа'),
+  'variant-mines':translateText('Хранилище'),'variant-sic-bo':translateText('Сик Бо: точная сумма'),'variant-diamonds':translateText('Самоцветы: охота'),
 };
 export const VARIANT_RULES:Record<VariantGameId,string> = {
   ...BATCH_VARIANT_RULES,
   ...NEXT_VARIANT_RULES,
-  'variant-dice':'Выбери коридор шириной 30%, 50% или 70% вокруг отметки 50. Результат от 0 до 99,99 должен попасть внутрь: нижняя граница включена, верхняя исключена. Чем уже коридор, тем выше выплата. Расчётный возврат до округления: 98%.',
-  'variant-plinko':'Одна ставка делится поровну между двумя шариками. Каждый независимо проходит 12 рядов. Выбери риск и получи сумму обеих выплат по исходной таблице Плинко. Два пути меняют разброс результатов, сохраняя таблицу выплат.',
-  'variant-limbo':'Одна ставка делится поровну: первый рубеж 1,5×, второй 3×, 5× или 10×. Один общий результат определяет обе выплаты. Каждый достигнутый рубеж выплачивает свою половину ставки отдельно. Расчётный возврат: около 98%.',
-  'variant-mines':'В хранилище 16 ячеек и 3 ловушки. Открывай безопасные ячейки и забирай выплату после первой. Ловушка теряет ставку, шестая безопасная ячейка завершает игру автоматически. Ловушки сохраняются на сервере при закрытии окна. Расчётный возврат до округления: 98%.',
-  'variant-sic-bo':'Выбери точную сумму трёх костей от 3 до 18. Триплеты тоже участвуют. Редкие суммы платят больше; сумма должна совпасть с выбором. Расчётный возврат до округления: 98%.',
-  'variant-diamonds':'Выбери самоцвет перед раскрытием пяти символов. Два или больше выбранных самоцветов дают выплату. Редкие самоцветы встречаются реже и платят больше. Частоты взяты из Diamonds; расчётный возврат до округления: 98%.',
+  'variant-dice':translateText('Выбери коридор шириной 30%, 50% или 70% вокруг отметки 50. Результат от 0 до 99,99 должен попасть внутрь: нижняя граница включена, верхняя исключена. Чем уже коридор, тем выше выплата. Расчётный возврат до округления: 98%.'),
+  'variant-plinko':translateText('Одна ставка делится поровну между двумя шариками. Каждый независимо проходит 12 рядов. Выбери риск и получи сумму обеих выплат по исходной таблице Плинко. Два пути меняют разброс результатов, сохраняя таблицу выплат.'),
+  'variant-limbo':translateText('Одна ставка делится поровну: первый рубеж 1,5×, второй 3×, 5× или 10×. Один общий результат определяет обе выплаты. Каждый достигнутый рубеж выплачивает свою половину ставки отдельно. Расчётный возврат: около 98%.'),
+  'variant-mines':translateText('В хранилище 16 ячеек и 3 ловушки. Открывай безопасные ячейки и забирай выплату после первой. Ловушка теряет ставку, шестая безопасная ячейка завершает игру автоматически. Ловушки сохраняются на сервере при закрытии окна. Расчётный возврат до округления: 98%.'),
+  'variant-sic-bo':translateText('Выбери точную сумму трёх костей от 3 до 18. Триплеты тоже участвуют. Редкие суммы платят больше; сумма должна совпасть с выбором. Расчётный возврат до округления: 98%.'),
+  'variant-diamonds':translateText('Выбери самоцвет перед раскрытием пяти символов. Два или больше выбранных самоцветов дают выплату. Редкие самоцветы встречаются реже и платят больше. Частоты взяты из Diamonds; расчётный возврат до округления: 98%.'),
 };
 export const VARIANT_DEFAULTS:Record<VariantGameId,VariantSettings> = {
   ...BATCH_VARIANT_DEFAULTS,
@@ -51,16 +52,16 @@ export const VARIANT_BASES:Record<VariantGameId,string> = {
 export const VARIANT_INFO:Record<VariantGameId,{name:string;base:string;tagline:string;theme:string}> = {
   ...BATCH_VARIANT_INFO,
   ...NEXT_VARIANT_INFO,
-  'variant-dice':{name:VARIANT_NAMES['variant-dice'],base:'royal-dice',tagline:'Попади в светящийся коридор',theme:'neon'},
-  'variant-plinko':{name:VARIANT_NAMES['variant-plinko'],base:'royal-plinko',tagline:'Два шарика на одну ставку',theme:'streams'},
-  'variant-limbo':{name:VARIANT_NAMES['variant-limbo'],base:'royal-limbo',tagline:'Один результат, два рубежа',theme:'orbit'},
-  'variant-mines':{name:VARIANT_NAMES['variant-mines'],base:'royal-mines',tagline:'Открой шесть ячеек хранилища',theme:'vault'},
-  'variant-sic-bo':{name:VARIANT_NAMES['variant-sic-bo'],base:'github-sic-bo',tagline:'Угадай точную сумму трёх костей',theme:'jade'},
-  'variant-diamonds':{name:VARIANT_NAMES['variant-diamonds'],base:'github-diamonds',tagline:'Найди два выбранных самоцвета',theme:'gems'},
+  'variant-dice':{name:VARIANT_NAMES['variant-dice'],base:'royal-dice',tagline:translateText('Попади в светящийся коридор'),theme:'neon'},
+  'variant-plinko':{name:VARIANT_NAMES['variant-plinko'],base:'royal-plinko',tagline:translateText('Два шарика на одну ставку'),theme:'streams'},
+  'variant-limbo':{name:VARIANT_NAMES['variant-limbo'],base:'royal-limbo',tagline:translateText('Один результат, два рубежа'),theme:'orbit'},
+  'variant-mines':{name:VARIANT_NAMES['variant-mines'],base:'royal-mines',tagline:translateText('Открой шесть ячеек хранилища'),theme:'vault'},
+  'variant-sic-bo':{name:VARIANT_NAMES['variant-sic-bo'],base:'github-sic-bo',tagline:translateText('Угадай точную сумму трёх костей'),theme:'jade'},
+  'variant-diamonds':{name:VARIANT_NAMES['variant-diamonds'],base:'github-diamonds',tagline:translateText('Найди два выбранных самоцвета'),theme:'gems'},
 };
 export const variantForBase = (base:string):VariantGameId|undefined => VARIANT_GAMES.find(id=>VARIANT_BASES[id]===base);
 export const VARIANT_GEMS = ['🟡','🟢','🔵','🟣','🟠','💎'] as const;
-export const VARIANT_GEM_NAMES = ['Цитрин','Изумруд','Сапфир','Аметист','Янтарь','Алмаз'] as const;
+export const VARIANT_GEM_NAMES = [translateText('Цитрин'),translateText('Изумруд'),translateText('Сапфир'),translateText('Аметист'),translateText('Янтарь'),translateText('Алмаз')] as const;
 export const VARIANT_GEM_WEIGHTS = [30,25,20,15,8,2] as const;
 export const isVariantGame = (value:unknown):value is VariantGameId => (VARIANT_GAMES as readonly unknown[]).includes(value);
 function record(value:unknown):value is Record<string,unknown>{return !!value&&typeof value==='object'&&!Array.isArray(value);}

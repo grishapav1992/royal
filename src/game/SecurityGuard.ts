@@ -1,3 +1,4 @@
+import { t as translateText } from '../i18n/index';
 import Phaser from 'phaser';
 import type { GuardView } from '../shared/security';
 import type { HallId } from '../shared/world';
@@ -136,7 +137,7 @@ export class SecurityGuard {
   private shadow: Phaser.GameObjects.Ellipse;
   private speech: Phaser.GameObjects.Text;
   private guards: GuardView[] = [];
-  private motion=new NpcMotion<GuardView>({isMoving:view=>['approach','return','carry','patrol','transit','enter'].includes(view.phase)});
+  private motion=new NpcMotion<GuardView>({delayMs:0,isMoving:view=>['approach','return','carry','patrol','transit','enter'].includes(view.phase)});
   private reply: Phaser.GameObjects.Text;
   constructor(private scene: Phaser.Scene) {
     createGuard(scene);
@@ -145,16 +146,17 @@ export class SecurityGuard {
     this.reply = scene.add.text(866,337,'',{fontFamily:'Arial',fontSize:'12px',color:'#fff0d9',backgroundColor:'#513045',align:'center',padding:{x:11,y:8},wordWrap:{width:210}}).setOrigin(.5,1).setDepth(1500).setVisible(false);
     this.speech = scene.add.text(585,505,'', { fontFamily:'Arial', fontSize:'12px', fontStyle:'bold', color:'#ffe49b', backgroundColor:'#25212c', align:'center', padding:{x:12,y:9}, wordWrap:{width:240} }).setOrigin(.5,1).setVisible(false);
   }
-  sync(guards: GuardView[]) {
+  sync(guards: GuardView[], at=performance.now()) {
     this.guards = guards;
     // One guard travels between halls. Missing samples must not retain an old route.
-    if(guards[0])this.motion.push(guards[0]);else this.motion.reset();
+    if(guards[0])this.motion.push(guards[0],at);else this.motion.reset();
   }
+  resetMotion() { this.motion.reset(); }
   getState() { return this.guards; }
   barConversation() { const g=this.guards.find(g=>g.hall==='arcade');return { active:g?.phase==='chat', speaking:Boolean(g?.reply) }; }
-  update(hall: HallId, time: number, dt: number, getPerson: (id: string) => Person | undefined) {
+  update(hall: HallId, time: number, dt: number, getPerson: (id: string) => Person | undefined, renderAt=performance.now()) {
     const latest = this.guards.find(guard => guard.hall === hall);
-    const buffered=this.motion.sample();
+    const buffered=this.motion.sample(renderAt);
     const g=latest&&buffered?.hall===hall?buffered:latest;
     this.sprite.setVisible(Boolean(g)); this.shadow.setVisible(Boolean(g));
     if (!g) { this.speech.setVisible(false); this.reply.setVisible(false); return; }
@@ -173,8 +175,8 @@ export class SecurityGuard {
     if(['idle','watch','chat'].includes(g.phase)&&time%5100<130)frame=22;
     this.sprite.setFrame(`${g.facing}-${frame}`).setPosition(x,y).setDepth(y+.2);
     this.shadow.setPosition(x,y-2).setDepth(y-1);
-    this.speech.setText(g.speech).setPosition(Phaser.Math.Clamp(x,160,WORLD.width-160),y-116).setDepth(1500).setVisible(Boolean(g.speech));
-    this.reply.setText(g.reply || '').setVisible(hall==='arcade'&&Boolean(g.reply));
+    this.speech.setText(translateText(g.speech)).setPosition(Phaser.Math.Clamp(x,160,WORLD.width-160),y-116).setDepth(1500).setVisible(Boolean(g.speech));
+    this.reply.setText(translateText(g.reply || '')).setVisible(hall==='arcade'&&Boolean(g.reply));
     const person = getPerson(g.target);
     if (person && ['grab','carry','throw'].includes(g.phase)) {
       const lift = g.phase==='grab'?g.progress:1;

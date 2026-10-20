@@ -3,7 +3,6 @@ import { request } from 'node:http';
 import { accounts, allowedOrigin, cookieToken } from './accounts';
 import { NILE_PLAY_SCOPE, validNileRoundRequest, validNilePlayWallet, validNileRound } from '../src/shared/nilePlay';
 import { WALLET_ACCOUNT_HEADER } from '../src/shared/walletAccount';
-import { HttpRateLimits } from './requestRateLimit';
 
 const messages: Record<string,string> = {
   play_deposit_pool_exhausted:'Свободные адреса временно закончились. Попробуй позже.',play_deposit_unavailable:'Пополнение тестового USDT временно недоступно.',
@@ -25,8 +24,8 @@ export function playCommand(socketPath:string,accountId:string,action:string,val
     req.setTimeout(10000,()=>req.destroy(new Error('play_timeout')));req.on('error',reject);req.end(body);
   });
 }
-export function installNilePlay(app:Application,socket=process.env.NILE_PLAY_SOCKET_FILE,limits=new HttpRateLimits()) {
-  app.use('/api/nile-play',async (req,res,next)=>{
+export function installNilePlay(app:Application,socket=process.env.NILE_PLAY_SOCKET_FILE) {
+  app.use('/api/nile-play',express.json({limit:'2kb'}),async (req,res,next)=>{
     res.setHeader('Cache-Control','no-store');res.setHeader('Vary','Cookie');
     if (!allowedOrigin(req.get('origin'))||req.get('sec-fetch-site')==='cross-site') {res.status(403).json({error:'Этот источник запросов не разрешён.'});return;}
     const account=(await accounts.session(cookieToken(req.headers.cookie)))?.account;
@@ -35,11 +34,7 @@ export function installNilePlay(app:Application,socket=process.env.NILE_PLAY_SOC
     if(req.get(WALLET_ACCOUNT_HEADER)!==account.id){res.status(401).json({error:'Аккаунт изменился. Войди в прежний аккаунт, чтобы проверить операцию.'});return;}
     if(Object.keys(req.query).length){res.status(400).json({error:'Параметры запроса не поддерживаются.'});return;}
     res.locals.accountId=account.id;next();
-  },limits.account(),express.json({limit:'2kb',inflate:false}));
-  app.use('/api/nile-play',((error,_req,res,next)=>{
-    if(error?.status>=400&&error.status<500)res.status(error.status).json({error:'Некорректный запрос тестового USDT.'});
-    else next(error);
-  }) as express.ErrorRequestHandler);
+  });
   async function forward(accountId:string,action:string,value:unknown,res:express.Response) {
     if(!socket){if(action==='wallet')res.json({...NILE_PLAY_SCOPE,state:'disabled'});else res.status(503).json({error:'Игра на тестовом USDT пока не подключена.'});return;}
     try {

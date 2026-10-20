@@ -1,3 +1,4 @@
+import { t as translateText, locale } from '../i18n/index';
 import Phaser from 'phaser';
 import { dealerForGame, type DealerAction, type DealerProfile } from '../shared/cardTables';
 import type { Cabinet } from '../shared/cabinets';
@@ -95,7 +96,7 @@ export class CardTablesRenderer {
     for (const cabinet of cabinets) {
       const profile = dealerForGame(cabinet.id); if (!profile) continue;
       const x = cabinet.x, y = cabinet.y;
-      this.stools.set(cabinet.id, drawCabinetStool(scene, cabinet, () => onApproach(cabinet.id), { label: 'Сесть', width: 60 }));
+      this.stools.set(cabinet.id, drawCabinetStool(scene, cabinet, () => onApproach(cabinet.id), { label: translateText('Сесть'), width: 60 }));
       this.scene.add.ellipse(x, y + 2, 260, 142, Phaser.Display.Color.HexStringToColor(profile.tableColor).color, .12).setDepth(.08).setName('card-table-rug-' + cabinet.id);
       for (const side of [-1, 1]) this.scene.add.image(x + side * 94, y - 7, 'card-salon-chair').setOrigin(.5, 1).setDisplaySize(35, 38).setDepth(y - 8).setAngle(side * 12);
       const top = y - 72 - DEALER_SIZE.height * DEALER_SCALE;
@@ -103,7 +104,7 @@ export class CardTablesRenderer {
       this.scene.add.image(x, y + 10, 'card-table-' + cabinet.id).setOrigin(.5, 1).setDisplaySize(TABLE_SIZE.width, TABLE_SIZE.height).setDepth(y + 10).setName('card-table-' + cabinet.id);
       const hands = this.scene.add.image(x, top + HAND_TOP * DEALER_SCALE, profile.id + '-hands', 'idle-0').setOrigin(.5, 0).setScale(DEALER_SCALE).setDepth(y + 11).setName(profile.id + '-hands');
       const cards = Array.from({ length: 3 }, (_, index) => this.scene.add.image(x - 22 + index * 22, y - 49, 'card-salon-card').setDisplaySize(14, 19).setAngle((index - 1) * 8).setDepth(y + 12).setName('card-deck-' + cabinet.id + '-' + index));
-      this.scene.add.text(x, y - 170, 'КРУПЬЕ ' + profile.name.toLocaleUpperCase('ru-RU'), { fontFamily: 'Arial', fontSize: '9px', fontStyle: 'bold', color: profile.accent, backgroundColor: '#282231', padding: { x: 8, y: 4 }, letterSpacing: 1 }).setOrigin(.5).setDepth(y + 13).setName('card-dealer-name-' + cabinet.id);
+      this.scene.add.text(x, y - 170, translateText('КРУПЬЕ ') + profile.name.toLocaleUpperCase(locale), { fontFamily: 'Arial', fontSize: '9px', fontStyle: 'bold', color: profile.accent, backgroundColor: '#282231', padding: { x: 8, y: 4 }, letterSpacing: 1 }).setOrigin(.5).setDepth(y + 13).setName('card-dealer-name-' + cabinet.id);
       this.scene.add.text(x, y - 7, cabinet.name, { fontFamily: 'Arial', fontSize: '10px', fontStyle: 'bold', color: '#f0dbad', align: 'center', wordWrap: { width: 185 } }).setOrigin(.5, 1).setDepth(y + 13).setName('card-table-name-' + cabinet.id);
       this.scene.add.zone(x, y - 62, 238, 220).setDepth(y + 14).setInteractive({ useHandCursor: true }).on('pointerdown', () => onApproach(cabinet.id)).setName('card-table-hit-' + cabinet.id);
       this.actors.set(cabinet.id, { cabinet, profile, body, hands, cards, action: 'idle', actionAt: 0, frame: '' });

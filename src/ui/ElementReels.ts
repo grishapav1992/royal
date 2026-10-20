@@ -1,3 +1,4 @@
+import { tr } from '../i18n/index';
 import { STUDIO_INFO, studioStrip } from '../shared/studioGames';
 import { elementSymbol, ELEMENT_SYMBOL_NAMES, type ElementSlotGame } from './ElementArtwork';
 type Reel = { root: HTMLElement; track: HTMLElement; cells: HTMLElement[]; offset: number; stopped: boolean; stop?: { at: number; from: number; target: number } };
@@ -19,7 +20,7 @@ export class ElementReels {
       root.append(track, result, beam); host.append(root); return { root, track, cells, offset: 0, stopped: true };
     }); this.show(this.shown);
   }
-  private setCell(cell: HTMLElement, symbol: number) { cell.dataset.symbol = String(symbol); cell.innerHTML = elementSymbol(this.game, symbol); cell.setAttribute('aria-label', `Ячейка ${Number(cell.dataset.elementCell) + 1}: ${ELEMENT_SYMBOL_NAMES[this.game][symbol]}`); }
+  private setCell(cell: HTMLElement, symbol: number) { cell.dataset.symbol = String(symbol); cell.innerHTML = elementSymbol(this.game, symbol); cell.setAttribute('aria-label', tr`Ячейка ${Number(cell.dataset.elementCell) + 1}: ${ELEMENT_SYMBOL_NAMES[this.game][symbol]}`); }
   show(grid: readonly number[]) { this.shown = [...grid]; this.reels.forEach((reel, col) => { reel.root.dataset.state = 'stopped'; reel.cells.forEach((cell, row) => this.setCell(cell, grid[row * this.cols + col])); }); }
   expand(column: number, sourcePositions: readonly number[], kind: string) { const reel = this.reels[column]; reel.root.style.setProperty('--wild-origin', `${Math.floor(sourcePositions[0] / this.cols) / this.rows * 100}%`); reel.root.dataset.effectKind = kind; reel.root.classList.add('expanding'); }
   clearTransforms() { this.reels.forEach(reel => { reel.root.classList.remove('expanding'); delete reel.root.dataset.effectKind; }); }

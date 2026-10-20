@@ -6,8 +6,6 @@ import { CAT_CARE } from '../shared/catCare';
 import { characterHugColors } from './characters';
 import { catSurface } from '../shared/catSurfaces';
 import { CatWalkCycle } from './CatWalkCycle';
-import { CatSideWalkRenderer } from './CatSideWalkRenderer';
-import { CAT_SIDE_STRIDE } from './CatSideGait';
 import walkFrames from '../../public/assets/cat/walk-v3-frames.json';
 
 export const CAT_TEXTURE = 'zverochka';
@@ -53,8 +51,6 @@ export class CatRenderer {
   private mood = '';
   private purrAt = -Infinity;
   private walkCycle = new CatWalkCycle();
-  private sideWalk: CatSideWalkRenderer;
-  private sideCycle=new CatWalkCycle(CAT_SIDE_STRIDE);
   constructor(private scene: Phaser.Scene) {
     const texture = scene.textures.get(CAT_TEXTURE), source = texture.getSourceImage() as HTMLImageElement;
     FRAMES.forEach(([left,top,right,bottom], index) => {
@@ -77,7 +73,6 @@ export class CatRenderer {
         if (!texture.has(name)) texture.add(name,0,left,top,right-left,bottom-top);
       });
     }
-    this.sideWalk=new CatSideWalkRenderer(scene,CAT_WALK_TEXTURE);
     this.shadow = scene.add.ellipse(0,0,35,10,0x100f19,.22).setName('cat-shadow');
     this.sprite = scene.add.image(0,0,CAT_TEXTURE,'16').setOrigin(.5,1).setScale(.22).setName('cat');
     this.bubble = scene.add.text(0,0,'',{fontFamily:'Arial',fontSize:'11px',color:'#3d3038',backgroundColor:'#fff4dc',padding:{x:8,y:5}}).setOrigin(.5,1).setName('cat-bubble');
@@ -88,9 +83,8 @@ export class CatRenderer {
   update(view: CatView, hall: HallId, time: number, dt: number, reducedMotion: boolean, carrier?: {x:number;y:number;skin?:number;appearance?:string}, audible = false) {
     const visible = view.hall === hall;
     this.sprite.setVisible(visible); this.shadow.setVisible(visible && view.mood !== 'carried');
-    this.sideWalk.hide();
     this.bubble.setVisible(false); this.treat.setVisible(false);this.hugArms.setVisible(false);
-    if (!visible) { if(this.hall)stopCatPurr();this.hall = undefined;this.walkCycle.update(view,false,true);this.sideCycle.update(view,false,true); return; }
+    if (!visible) { if(this.hall)stopCatPurr();this.hall = undefined;this.walkCycle.update(view,false,true); return; }
     const enteringMood=this.mood!==view.mood;
     if(enteringMood) {
       stopCatPurr();
@@ -107,7 +101,6 @@ export class CatRenderer {
     const blend = snap ? 1 : 1-Math.exp(-dt*20);
     this.x += (targetX-this.x)*blend; this.y += (targetY-this.y)*blend; this.hall = hall;
     const walkFrame=this.walkCycle.update({x:this.x,y:this.y},view.mood==='walking'&&view.moving,snap);
-    this.sideCycle.update({x:this.x,y:this.y},view.mood==='walking',snap);
     const jump = view.mood === 'jumping' && !reducedMotion ? Math.sin(view.progress*Math.PI)*(23+(surface?.height??0)*.14) : 0;
     let frame = '17', textureKey = CAT_TEXTURE;
     let scale = carried ? .17 : .22;
@@ -148,10 +141,6 @@ export class CatRenderer {
     const depth = surface?.depth ?? (carried ? view.y+5 : view.y+1);
     const footY=this.y+(surface?0:view.mood==='eating-bowl'?-5:7)-jump;
     this.sprite.setPosition(this.x,footY).setDepth(depth).setScale(scale*(1+stretch*.18),scale*(1+breathe-stretch*.16));
-    if(view.mood==='walking'&&(view.facing==='left'||view.facing==='right')) {
-      this.sideWalk.update(view.facing,reducedMotion?0:this.sideCycle.progress,this.x,footY,depth);
-      this.sprite.setVisible(false);
-    }
     const airborne=view.mood==='jumping';
     this.sprite.setFlipX(airborne&&this.jumpFacesRight(view)).setAngle(airborne&&view.jumpingDown&&!reducedMotion?(this.jumpFacesRight(view)?25:-25)*Math.sin(view.progress*Math.PI):0);
     this.shadow.setPosition(this.x,airborne&&surface?surface.approach.y:footY-2).setDepth(airborne?2:depth-1).setScale(surface?.kind==='pillow'?1.4:surface?.kind==='cabinet' ? .8 : 1,airborne ? .6 : 1).setAlpha(airborne ? .12 : .22);

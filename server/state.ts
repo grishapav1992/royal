@@ -9,7 +9,7 @@ export const Player = schema({
   activity: t.string().default(''), ears: t.boolean().default(false),
   security: t.string().default(''),
   seat: t.string().default(''), action: t.string().default('idle'), drink: t.string().default(''), actionUntil: t.number().default(0),
-  soberAt: t.number().default(0), controlLayout: t.uint8().default(0), appearance: t.string().default(''),
+  soberAt: t.number().default(0), appearance: t.string().default(''),
 }, 'RoyalPlayer');
 export type Player = SchemaType<typeof Player>;
 export const Guest = schema({
@@ -32,5 +32,5 @@ export const Cat = schema({
   onPillow: t.boolean().default(true), onBar: t.boolean().default(false), carriedBy: t.string().default(''), targetId: t.string().default(''), progress: t.number().default(0), hugCooldown: t.number().default(0),
   surfaceId:t.string().default('pillow'),jumpingDown:t.boolean().default(false),
 }, 'RoyalCat');
-export const LobbyState = schema({ players: t.map(Player), guests:t.map(Guest), guards: t.map(Guard), mira: t.ref(Mira).default(() => new Mira()), cat: t.ref(Cat).default(() => new Cat()), serverNow: t.number().default(0) }, 'RoyalLobby');
+export const LobbyState = schema({ players: t.map(Player), guests:t.map(Guest), guards: t.map(Guard), mira: t.ref(Mira).default(() => new Mira()), cat: t.ref(Cat).default(() => new Cat()), serverNow: t.number().default(0), guestsAt: t.number().default(0) }, 'RoyalLobby');
 export type LobbyState = SchemaType<typeof LobbyState>;

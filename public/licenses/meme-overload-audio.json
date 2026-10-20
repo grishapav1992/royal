@@ -1,0 +1,75 @@
+{
+  "clips": [
+    {
+      "id": "wow",
+      "name": "anime-wow.mp3",
+      "source": "https://raw.githubusercontent.com/3kh0/soundboard/34d6123bd28dd4ace40259edfc9ec3184c1ceaaa/sounds/anime-wow.mp3",
+      "sourceSHA256": "a91c889bd1c83c599d16a8a0e7165163a51376a4c7274f0ba1447ef8feae288f",
+      "sourceDuration": 4.179592,
+      "file": "/assets/meme-overload/audio/v1/wow.mp3",
+      "sha256": "04cbbfd7fc08bd170b1d1e3e009786090ebcb5c6368329c92a5664db0f7ba440",
+      "bytes": 45694,
+      "processing": "Original recording, loudness normalized to -20 LUFS, mono 44.1 kHz, capped at 2.8 seconds, brief fades; no synthesis or voice imitation."
+    },
+    {
+      "id": "nice",
+      "name": "nice.mp3",
+      "source": "https://raw.githubusercontent.com/3kh0/soundboard/34d6123bd28dd4ace40259edfc9ec3184c1ceaaa/sounds/nice.mp3",
+      "sourceSHA256": "4b2cd44b5c265a2930e90d5d1fd5e133c06a5030a5d4644775b58d3758b77624",
+      "sourceDuration": 2.102857,
+      "file": "/assets/meme-overload/audio/v1/nice.mp3",
+      "sha256": "2dda70369a29bcb1a68705d114cb5238a55e41f65a48f4abf3aedd4c5fbb5622",
+      "bytes": 34827,
+      "processing": "Original recording, loudness normalized to -20 LUFS, mono 44.1 kHz, capped at 2.8 seconds, brief fades; no synthesis or voice imitation."
+    },
+    {
+      "id": "boom",
+      "name": "vine-boom.mp3",
+      "source": "https://raw.githubusercontent.com/3kh0/soundboard/34d6123bd28dd4ace40259edfc9ec3184c1ceaaa/sounds/vine-boom.mp3",
+      "sourceSHA256": "3d0052a434533015db728c748d62cf1206f85a842bb6c7da2a157993690c412b",
+      "sourceDuration": 1.266939,
+      "file": "/assets/meme-overload/audio/v1/boom.mp3",
+      "sha256": "b302941bc7e3d5ef99795356f47e9e1b8cc57d4a37b5b040627ebf250877b6ce",
+      "bytes": 21439,
+      "processing": "Original recording, loudness normalized to -20 LUFS, mono 44.1 kHz, capped at 2.8 seconds, brief fades; no synthesis or voice imitation."
+    },
+    {
+      "id": "error",
+      "name": "WinError.mp3",
+      "source": "https://raw.githubusercontent.com/3kh0/soundboard/34d6123bd28dd4ace40259edfc9ec3184c1ceaaa/sounds/WinError.mp3",
+      "sourceSHA256": "3a9bf060611b0d585a537a46b3911648c40a3e728b1c5efbf147f33df9915a9e",
+      "sourceDuration": 0.990375,
+      "file": "/assets/meme-overload/audio/v1/error.mp3",
+      "sha256": "2e300b4a0ab5f69a95cd987818252c10b5f33fa74644ac2593ec4f8ecf954c76",
+      "bytes": 16762,
+      "processing": "Original recording, loudness normalized to -20 LUFS, mono 44.1 kHz, capped at 2.8 seconds, brief fades; no synthesis or voice imitation."
+    },
+    {
+      "id": "bruh",
+      "name": "bruh.mp3",
+      "source": "https://raw.githubusercontent.com/3kh0/soundboard/34d6123bd28dd4ace40259edfc9ec3184c1ceaaa/sounds/bruh.mp3",
+      "sourceSHA256": "c36f3094b60e6bba6db5ebfbdef4ad7005ace4c0913beb5f0748baa38050c186",
+      "sourceDuration": 0.828,
+      "file": "/assets/meme-overload/audio/v1/bruh.mp3",
+      "sha256": "a0f3daa795b1f7f6709723364ef80e917b63693ffb7612ef3acb6a0587a8515a",
+      "bytes": 14254,
+      "processing": "Original recording, loudness normalized to -20 LUFS, mono 44.1 kHz, capped at 2.8 seconds, brief fades; no synthesis or voice imitation."
+    },
+    {
+      "id": "bonus",
+      "name": "taco-bell.mp3",
+      "source": "https://raw.githubusercontent.com/3kh0/soundboard/34d6123bd28dd4ace40259edfc9ec3184c1ceaaa/sounds/taco-bell.mp3",
+      "sourceSHA256": "49ea674c6b90274f1c5b3206ac6bfd0591ba21a9bc011b9f62646fc5ad297d7e",
+      "sourceDuration": 1.92,
+      "file": "/assets/meme-overload/audio/v1/bonus.mp3",
+      "sha256": "3e95f23154ff6bcf04349a33891757fbf9fe5ddc20336d52175d26ca22311204",
+      "bytes": 31808,
+      "processing": "Original recording, loudness normalized to -20 LUFS, mono 44.1 kHz, capped at 2.8 seconds, brief fades; no synthesis or voice imitation."
+    }
+  ],
+  "sourceRepository": "https://github.com/3kh0/soundboard",
+  "commit": "34d6123bd28dd4ace40259edfc9ec3184c1ceaaa",
+  "use": "Local development reference recordings",
+  "commercialRightsCleared": false,
+  "rightsNote": "Public soundboard availability does not establish rights to commercial distribution. No CC0 or royalty-free claim is made."
+}

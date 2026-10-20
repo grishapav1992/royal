@@ -1,0 +1,17 @@
+import { expansionClient } from '../wallet/ExpansionClient';
+import { demoWallet, coins } from '../wallet/WalletClient';
+import { gameAudio } from '../game/GameAudio';
+import * as i18n from '../i18n/index';
+import * as reactions from '../ui/gameReactions';
+import { GAME_HOST_KEY, type GameHostV1 } from './GameHostContract';
+
+const runtime: GameHostV1 = Object.freeze({ apiVersion: 1, expansionClient, demoWallet,
+ walletCoins: coins, gameAudio, i18n, reactions });
+
+/** Modules receive the existing host services, including their pending-operation state. */
+export function installGameHost(): GameHostV1 {
+ const previous = Object.getOwnPropertyDescriptor(globalThis, GAME_HOST_KEY);
+ if (previous && previous.value !== runtime) throw Error('A different game host is already installed');
+ if (!previous) Object.defineProperty(globalThis, GAME_HOST_KEY, { value: runtime, writable: false, configurable: false });
+ return runtime;
+}

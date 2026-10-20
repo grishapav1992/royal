@@ -1,3 +1,4 @@
+import { t as translateText } from '../i18n/index';
 import { FRUITS_MAX_MULTIPLIER, fruitsMultiplier } from './gameCore';
 
 export const NEXT_VARIANT_GAMES = ['variant-keno','variant-color','variant-keys','variant-fruits','variant-duel','variant-war'] as const;
@@ -18,16 +19,16 @@ export type NextVariantView =
   | {kind:'war';mode:WarMode;fronts:{player:string;dealer:string;result:WarOutcome;stakeUnits:string;multiplier:number;returnedUnits:string}[]};
 
 export const NEXT_VARIANT_NAMES:Record<NextVariantGameId,string> = {
-  'variant-keno':'Кено: мини-билет','variant-color':'Красное / чёрное','variant-keys':'Лестница: два ключа',
-  'variant-fruits':'Фрукты: три линии','variant-duel':'Дракон: точный разрыв','variant-war':'Война: два фронта',
+  'variant-keno':translateText('Кено: мини-билет'),'variant-color':translateText('Красное / чёрное'),'variant-keys':translateText('Лестница: два ключа'),
+  'variant-fruits':translateText('Фрукты: три линии'),'variant-duel':translateText('Дракон: точный разрыв'),'variant-war':translateText('Война: два фронта'),
 };
 export const NEXT_VARIANT_RULES:Record<NextVariantGameId,string> = {
-  'variant-keno':'Выбери пять чисел от 1 до 20. Из двадцати чисел выпадут пять разных. Билет выигрывает при двух или трёх совпадениях, в зависимости от выбранной цели. Более трудная цель платит больше. Расчётный возврат до округления: 98%.',
-  'variant-color':'Предсказывай красный или чёрный цвет следующей карты. Карты выходят из одной колоды без возвращения; оставшиеся количества цветов видны. Можно забрать выплату после первого успеха, шестой завершает серию автоматически. Ошибка теряет ставку. Будущие карты сохраняются на сервере. Расчётный возврат до округления: 98%.',
-  'variant-keys':'На каждой из шести ступеней четыре замка, один с ловушкой. Выбери два замка одновременно: оба должны быть безопасными. После успешной ступени можно забрать выплату, шестая завершает игру автоматически. Ловушки сохраняются на сервере. Расчётный возврат до округления: 98%.',
-  'variant-fruits':'Ставка делится между двумя или тремя независимыми горизонтальными линиями. На каждой три барабана и исходная таблица Royal Fruits: три вишни 5×, лимона 10×, винограда 30×, семёрки 140×. Смешанные линии не платят. Выплата каждой линии считается отдельно. Расчётный возврат до округления: 97%.',
-  'variant-duel':'Две разные карты выходят из одной колоды. Выбери разрыв между рангами: ничья, 1-3, 4-7 или 8-12. Туз считается единицей. Направление разрыва не важно. Редкие интервалы платят больше. Расчётный возврат до округления: 98%.',
-  'variant-war':'Ставка делится между двумя независимыми фронтами, каждый получает пару разных карт из своей колоды. Туз старший. В режиме «Щит» победа платит 1,96× доли ставки, ничья 0,98×. В режиме «Атака» победа платит 2,0825×, ничья теряет долю. Поражение всегда теряет долю. Расчётный возврат до округления: 98%.',
+  'variant-keno':translateText('Выбери пять чисел от 1 до 20. Из двадцати чисел выпадут пять разных. Билет выигрывает при двух или трёх совпадениях, в зависимости от выбранной цели. Более трудная цель платит больше. Расчётный возврат до округления: 98%.'),
+  'variant-color':translateText('Предсказывай красный или чёрный цвет следующей карты. Карты выходят из одной колоды без возвращения; оставшиеся количества цветов видны. Можно забрать выплату после первого успеха, шестой завершает серию автоматически. Ошибка теряет ставку. Будущие карты сохраняются на сервере. Расчётный возврат до округления: 98%.'),
+  'variant-keys':translateText('На каждой из шести ступеней четыре замка, один с ловушкой. Выбери два замка одновременно: оба должны быть безопасными. После успешной ступени можно забрать выплату, шестая завершает игру автоматически. Ловушки сохраняются на сервере. Расчётный возврат до округления: 98%.'),
+  'variant-fruits':translateText('Ставка делится между двумя или тремя независимыми горизонтальными линиями. На каждой три барабана и исходная таблица Royal Fruits: три вишни 5×, лимона 10×, винограда 30×, семёрки 140×. Смешанные линии не платят. Выплата каждой линии считается отдельно. Расчётный возврат до округления: 97%.'),
+  'variant-duel':translateText('Две разные карты выходят из одной колоды. Выбери разрыв между рангами: ничья, 1-3, 4-7 или 8-12. Туз считается единицей. Направление разрыва не важно. Редкие интервалы платят больше. Расчётный возврат до округления: 98%.'),
+  'variant-war':translateText('Ставка делится между двумя независимыми фронтами, каждый получает пару разных карт из своей колоды. Туз старший. В режиме «Щит» победа платит 1,96× доли ставки, ничья 0,98×. В режиме «Атака» победа платит 2,0825×, ничья теряет долю. Поражение всегда теряет долю. Расчётный возврат до округления: 98%.'),
 };
 export const NEXT_VARIANT_DEFAULTS:Record<NextVariantGameId,NextVariantSettings> = {
   'variant-keno':{variant:{numbers:[1,5,9,13,17],target:2}},'variant-color':{variant:{}},'variant-keys':{variant:{}},
@@ -38,12 +39,12 @@ export const NEXT_VARIANT_BASES:Record<NextVariantGameId,string> = {
   'variant-fruits':'royal-fruits','variant-duel':'github-dragon-tiger','variant-war':'github-war',
 };
 export const NEXT_VARIANT_INFO:Record<NextVariantGameId,{name:string;base:string;tagline:string;theme:string}> = {
-  'variant-keno':{name:NEXT_VARIANT_NAMES['variant-keno'],base:NEXT_VARIANT_BASES['variant-keno'],tagline:'Пять чисел, две цели',theme:'tickets'},
-  'variant-color':{name:NEXT_VARIANT_NAMES['variant-color'],base:NEXT_VARIANT_BASES['variant-color'],tagline:'Угадай цвет, сохрани серию',theme:'contrast'},
-  'variant-keys':{name:NEXT_VARIANT_NAMES['variant-keys'],base:NEXT_VARIANT_BASES['variant-keys'],tagline:'Два ключа на каждой ступени',theme:'keys'},
-  'variant-fruits':{name:NEXT_VARIANT_NAMES['variant-fruits'],base:NEXT_VARIANT_BASES['variant-fruits'],tagline:'Несколько линий на одну ставку',theme:'orchard'},
-  'variant-duel':{name:NEXT_VARIANT_NAMES['variant-duel'],base:NEXT_VARIANT_BASES['variant-duel'],tagline:'Угадай расстояние между картами',theme:'duel'},
-  'variant-war':{name:NEXT_VARIANT_NAMES['variant-war'],base:NEXT_VARIANT_BASES['variant-war'],tagline:'Два фронта, щит или атака',theme:'fronts'},
+  'variant-keno':{name:NEXT_VARIANT_NAMES['variant-keno'],base:NEXT_VARIANT_BASES['variant-keno'],tagline:translateText('Пять чисел, две цели'),theme:'tickets'},
+  'variant-color':{name:NEXT_VARIANT_NAMES['variant-color'],base:NEXT_VARIANT_BASES['variant-color'],tagline:translateText('Угадай цвет, сохрани серию'),theme:'contrast'},
+  'variant-keys':{name:NEXT_VARIANT_NAMES['variant-keys'],base:NEXT_VARIANT_BASES['variant-keys'],tagline:translateText('Два ключа на каждой ступени'),theme:'keys'},
+  'variant-fruits':{name:NEXT_VARIANT_NAMES['variant-fruits'],base:NEXT_VARIANT_BASES['variant-fruits'],tagline:translateText('Несколько линий на одну ставку'),theme:'orchard'},
+  'variant-duel':{name:NEXT_VARIANT_NAMES['variant-duel'],base:NEXT_VARIANT_BASES['variant-duel'],tagline:translateText('Угадай расстояние между картами'),theme:'duel'},
+  'variant-war':{name:NEXT_VARIANT_NAMES['variant-war'],base:NEXT_VARIANT_BASES['variant-war'],tagline:translateText('Два фронта, щит или атака'),theme:'fronts'},
 };
 export const isNextVariantGame = (value:unknown):value is NextVariantGameId => (NEXT_VARIANT_GAMES as readonly unknown[]).includes(value);
 const record=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v);

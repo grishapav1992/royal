@@ -1,33 +1,41 @@
+import { t as translateText } from '../i18n/index';
 import type { HallId } from './world';
 import type { Obstacle } from '../game/navigation';
 
 export type ClubZone = { name: string; x: number; y: number; w: number; h: number; color: number };
+export const LUELON_NEW_ZONE = {
+  name: translateText('НОВЫЕ ИГРЫ · ЧЕТЫРЕ МИРА'),
+  x: 1100, y: 245, w: 930, h: 225, color: 0x263653,
+  entrance: {x: 1060, y: 400},
+  cosmic: {x: 1200, y: 330},
+  caramel: {x: 1420, y: 330},
+  velvet: {x: 1640, y: 330},
+  convoy: {x: 1860, y: 330},
+} as const;
+// The collection now shares the main hall without a distant gateway.
+export const LUELON_NEW_ZONE_OBSTACLES: Obstacle[] = [];
 export const CLUB_ZONES: Record<HallId, ClubZone[]> = {
   arcade: [
-    {name:'МУЗЫКАЛЬНЫЙ САЛОН',x:90,y:270,w:250,h:180,color:0x443042},
-    {name:'БАР МИРЫ',x:710,y:300,w:330,h:350,color:0x352b38},
-    {name:'ГАЛЕРЕЯ АВТОМАТОВ',x:1130,y:245,w:890,h:430,color:0x303441},
-    {name:'ГОСТИНАЯ',x:170,y:780,w:470,h:370,color:0x453141},
-    {name:'КАРТЫ И КОСТИ',x:1130,y:720,w:890,h:170,color:0x244639},
-    {name:'КАТАЛОГ ДЕМОИГР',x:700,y:735,w:300,h:220,color:0x3d3447},
-    {name:'КАЗИНО-СТОЛЫ',x:1170,y:985,w:790,h:300,color:0x293d3a},
-    {name:'НОВЫЕ ИГРЫ',x:2150,y:255,w:520,h:320,color:0x3d3447},
-    {name:'ЗАЛ УДАЧИ',x:2150,y:775,w:520,h:320,color:0x293d3a},
-    {name:'ROYAL STUDIO · ЛИНИИ И БОНУСЫ',x:2880,y:240,w:1260,h:425,color:0x29384e},
-    {name:'ПУТЕШЕСТВИЯ И ПРИЗОВЫЕ МИРЫ',x:2880,y:880,w:1260,h:355,color:0x383144},
+    {name:translateText('МУЗЫКАЛЬНЫЙ САЛОН'),x:90,y:270,w:250,h:180,color:0x443042},
+    {name:translateText('ВНЕШНИЕ КАТАЛОГИ'),x:375,y:245,w:240,h:405,color:0x3d3447},
+    {name:translateText('БАР МИРЫ'),x:710,y:300,w:330,h:350,color:0x352b38},
+    LUELON_NEW_ZONE,
+    {name:translateText('ИГРЫ С GITHUB'),x:1100,y:485,w:930,h:170,color:0x303441},
+    {name:translateText('ИГРЫ С GITHUB · ПРОДОЛЖЕНИЕ'),x:1100,y:755,w:930,h:375,color:0x293d3a},
+    {name:translateText('ГОСТИНАЯ'),x:170,y:780,w:470,h:370,color:0x453141},
   ],
   tables: [
-    {name:'БИЛЬЯРДНЫЙ ЗАЛ',x:330,y:285,w:440,h:370,color:0x2d4c3f},
-    {name:'АЭРОХОККЕЙ',x:1050,y:300,w:350,h:310,color:0x334653},
-    {name:'ЗОНА ОТДЫХА',x:1500,y:245,w:480,h:380,color:0x3d3447},
-    {name:'ТИХАЯ БИБЛИОТЕКА',x:1240,y:730,w:730,h:400,color:0x414237},
-    {name:'ГОСТИНАЯ НАВЕРХУ',x:170,y:780,w:640,h:370,color:0x3b4844},
+    {name:translateText('БИЛЬЯРДНЫЙ ЗАЛ'),x:330,y:285,w:440,h:370,color:0x2d4c3f},
+    {name:translateText('АЭРОХОККЕЙ'),x:1050,y:300,w:350,h:310,color:0x334653},
+    {name:translateText('ЗОНА ОТДЫХА'),x:1500,y:245,w:480,h:380,color:0x3d3447},
+    {name:translateText('ТИХАЯ БИБЛИОТЕКА'),x:1240,y:730,w:730,h:400,color:0x414237},
+    {name:translateText('ГОСТИНАЯ НАВЕРХУ'),x:170,y:780,w:640,h:370,color:0x3b4844},
   ],
   github: [
-    {name:'ПРИВЕТСТВИЕ И ПРАВИЛА',x:170,y:245,w:650,h:360,color:0x383345},
-    {name:'КАРТОЧНЫЙ САЛОН',x:980,y:235,w:3120,h:615,color:0x244639},
-    {name:'ПОКЕР И АВТОРСКИЕ РАЗДАЧИ',x:980,y:875,w:3120,h:435,color:0x293e47},
-    {name:'ГОСТИНАЯ КАРТОЧНОГО ЭТАЖА',x:170,y:780,w:640,h:510,color:0x453344},
+    {name:translateText('ПРИВЕТСТВИЕ И ПРАВИЛА'),x:170,y:245,w:650,h:360,color:0x383345},
+    {name:translateText('КАРТОЧНЫЙ САЛОН'),x:980,y:235,w:3120,h:615,color:0x244639},
+    {name:translateText('ПОКЕР И АВТОРСКИЕ РАЗДАЧИ'),x:980,y:875,w:3120,h:435,color:0x293e47},
+    {name:translateText('ГОСТИНАЯ КАРТОЧНОГО ЭТАЖА'),x:170,y:780,w:640,h:510,color:0x453344},
   ],
 };
 export type Lounge = { hall: HallId; x: number; y: number; color: number };
@@ -38,9 +46,10 @@ export const LOUNGES: Lounge[] = [
 ];
 export const CLUB_PLANTS = [ {x:1110,y:440}, {x:2020,y:460}, {x:1080,y:900}, {x:2020,y:1120}, {x:110,y:1180}, {x:2670,y:610}, {x:2670,y:1160}, {x:2810,y:560}, {x:2810,y:1080}, {x:4160,y:520}, {x:4160,y:1050} ];
 const CARD_FLOOR_PLANTS = [{x:110,y:350},{x:110,y:1180},{x:940,y:400},{x:940,y:1100},{x:4160,y:520},{x:4160,y:1050}];
-export const clubPlants = (hall: HallId) => hall === 'github' ? CARD_FLOOR_PLANTS : CLUB_PLANTS;
+export const clubPlants = (hall: HallId) => hall === 'github' ? CARD_FLOOR_PLANTS : hall === 'arcade' ? CLUB_PLANTS.filter(plant=>plant.x<2100) : CLUB_PLANTS;
 export const loungeBounds = (lounge: Lounge): Obstacle => ({x:lounge.x-94,y:lounge.y-80,w:188,h:60});
 export const clubObstacles = (hall: HallId): Obstacle[] => [
+  ...(hall==='arcade'?LUELON_NEW_ZONE_OBSTACLES:[]),
   ...[220,750,1140,2000].map(x=>({x:x-19,y:670,w:38,h:63})),
   ...LOUNGES.filter(lounge=>lounge.hall===hall).map(loungeBounds),
   ...LOUNGES.filter(lounge=>lounge.hall===hall).map(lounge=>({x:lounge.x-47,y:lounge.y+76,w:94,h:36})),

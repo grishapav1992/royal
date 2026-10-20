@@ -1,11 +1,12 @@
+import { t as translateText } from '../i18n/index';
 import { validDecimal } from './cryptoWallet';
 
 export const DISPLAY_FIAT_CURRENCIES = {
-  RUB: 'Российский рубль', USD: 'Доллар США', EUR: 'Евро', KZT: 'Казахстанский тенге',
-  UAH: 'Украинская гривна', BYN: 'Белорусский рубль', GEL: 'Грузинский лари', AMD: 'Армянский драм',
-  GBP: 'Британский фунт', TRY: 'Турецкая лира', CNY: 'Китайский юань', INR: 'Индийская рупия',
-  BRL: 'Бразильский реал', AED: 'Дирхам ОАЭ', JPY: 'Японская иена', CAD: 'Канадский доллар',
-  AUD: 'Австралийский доллар', PLN: 'Польский злотый', CHF: 'Швейцарский франк',
+  RUB: translateText('Российский рубль'), USD: translateText('Доллар США'), EUR: translateText('Евро'), KZT: translateText('Казахстанский тенге'),
+  UAH: translateText('Украинская гривна'), BYN: translateText('Белорусский рубль'), GEL: translateText('Грузинский лари'), AMD: translateText('Армянский драм'),
+  GBP: translateText('Британский фунт'), TRY: translateText('Турецкая лира'), CNY: translateText('Китайский юань'), INR: translateText('Индийская рупия'),
+  BRL: translateText('Бразильский реал'), AED: translateText('Дирхам ОАЭ'), JPY: translateText('Японская иена'), CAD: translateText('Канадский доллар'),
+  AUD: translateText('Австралийский доллар'), PLN: translateText('Польский злотый'), CHF: translateText('Швейцарский франк'),
 } as const;
 export type DisplayFiatCurrency = keyof typeof DISPLAY_FIAT_CURRENCIES;
 export type CryptoDisplayRate = { currency: DisplayFiatCurrency; usdtRate: string; updatedAt: number; expiresAt: number };

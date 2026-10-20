@@ -96,8 +96,3 @@ export const applyFlightRequestIntegrityMigration = (db: PostgresDatabase) => ap
     'ALTER TABLE demo_flight_requests VALIDATE CONSTRAINT demo_flight_requests_session_v1',
   ],
 });
-
-export const applyDrinkingControlLayoutMigration = (db: PostgresDatabase) => applySchemaMigration(db, {
-  id: 'game-drinking-control-layout-v1', indexes: [],
-  statements: ['ALTER TABLE player_drinking ADD COLUMN IF NOT EXISTS control_layout BIGINT NOT NULL DEFAULT 0 CHECK(control_layout BETWEEN 0 AND 9)'],
-});

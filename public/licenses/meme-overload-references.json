@@ -1,0 +1,49 @@
+{
+  "use": "local-development-candidate",
+  "images": [
+    {
+      "file": "assets/meme-overload/v1/doge.jpg",
+      "source": "https://cdn.jsdelivr.net/gh/jacebrowning/memegen@34e899ee763cb515ae3af3dbcb986232d19f3a5b/templates/doge/default.jpg",
+      "sha256": "17168539cd19221ef3c506b37eb615bbc47c05bf6ac437c589f1abfef8976b98",
+      "bytes": 27264,
+      "rights": "Uncleared reference image for local development. Public availability is not a license. Commercial release requires rights clearance or replacement."
+    },
+    {
+      "file": "assets/meme-overload/v1/harold.jpg",
+      "source": "https://cdn.jsdelivr.net/gh/jacebrowning/memegen@34e899ee763cb515ae3af3dbcb986232d19f3a5b/templates/harold/default.jpg",
+      "sha256": "349045f2fc28d1450a122e2d797dd34c276a4dc06ef01e6388cd56b3d9b36da4",
+      "bytes": 247278,
+      "rights": "Uncleared reference image for local development. Public availability is not a license. Commercial release requires rights clearance or replacement."
+    },
+    {
+      "file": "assets/meme-overload/v1/grumpy.jpg",
+      "source": "https://cdn.jsdelivr.net/gh/jacebrowning/memegen@34e899ee763cb515ae3af3dbcb986232d19f3a5b/templates/grumpycat/default.jpg",
+      "sha256": "e7f54c07211d4f65acb249a1f64c1fb384f6e3bede8f8de8fb5b5f419e9f46a7",
+      "bytes": 38420,
+      "rights": "Uncleared reference image for local development. Public availability is not a license. Commercial release requires rights clearance or replacement."
+    },
+    {
+      "file": "assets/meme-overload/v1/smudge.jpg",
+      "source": "https://cdn.jsdelivr.net/gh/jacebrowning/memegen@34e899ee763cb515ae3af3dbcb986232d19f3a5b/templates/woman-cat/default.jpg",
+      "sha256": "f99d1e9414b2efe958aa5ddca01e88c87ce2fa5d3ed5614f4c4bc11dfd41d518",
+      "bytes": 32517,
+      "rights": "Uncleared reference image for local development. Public availability is not a license. Commercial release requires rights clearance or replacement."
+    },
+    {
+      "file": "assets/meme-overload/v1/stonks.png",
+      "source": "https://cdn.jsdelivr.net/gh/jacebrowning/memegen@34e899ee763cb515ae3af3dbcb986232d19f3a5b/templates/stonks/default.png",
+      "sha256": "4f1d14516f92614b0ff8d0c0624f3e5aa71630159d5c32f1244b20c3224a3528",
+      "bytes": 1581164,
+      "rights": "Uncleared reference image for local development. Public availability is not a license. Commercial release requires rights clearance or replacement."
+    },
+    {
+      "file": "assets/meme-overload/v1/pepe.jpg",
+      "source": "https://cdn.jsdelivr.net/gh/jacebrowning/memegen@34e899ee763cb515ae3af3dbcb986232d19f3a5b/templates/sadfrog/default.jpg",
+      "sha256": "1b1d9a3318cf05933613b299ece3ed9bf0e05ad43cf8b85c205a4a53efc4c07f",
+      "bytes": 33585,
+      "rights": "Uncleared reference image for local development. Public availability is not a license. Commercial release requires rights clearance or replacement."
+    }
+  ],
+  "originalFilesPreserved": true,
+  "releaseRightsCleared": false
+}

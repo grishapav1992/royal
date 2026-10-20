@@ -39,9 +39,7 @@ export class Guards {
     const pushes:{p:PlayerBody;x:number;y:number}[]=[];
     for(const [id,p] of this.state.players){
       if(!p.connected||p.hall!==d.guard.hall||id===d.job?.id)continue;
-      const dx=p.x-x,dy=p.y-y;
-      if(Math.abs(dx)>=GUARD_CONTACT_RADIUS||Math.abs(dy)>=GUARD_CONTACT_RADIUS)continue;
-      const length=Math.hypot(dx,dy);
+      const dx=p.x-x,dy=p.y-y,length=Math.hypot(dx,dy);
       if(length>=GUARD_CONTACT_RADIUS)continue;
       if(p.seat||p.playing||p.activity)return false;
       const nx=length>.001?dx/length:1,ny=length>.001?dy/length:0;
@@ -115,12 +113,8 @@ export class Guards {
       const turn=Math.min(3,Math.floor(d.elapsed/3.2)),text=GUARD_BAR_TALKS[d.conversation][turn];
       g.speech=turn%2===0?text:'';g.reply=turn%2===1?text:'';
     } else if(g.phase==='watch'){
-      let nearby:PlayerBody|undefined,nearest=220;
-      for(const player of this.state.players.values()){
-        if(!player.connected||player.hall!==g.hall)continue;
-        const distance=Math.hypot(player.x-g.x,player.y-g.y);
-        if(distance<nearest){nearby=player;nearest=distance;}
-      }
+      const nearby=[...this.state.players.values()].filter(p=>p.connected&&p.hall===g.hall&&Math.hypot(p.x-g.x,p.y-g.y)<220)
+        .sort((a,b)=>Math.hypot(a.x-g.x,a.y-g.y)-Math.hypot(b.x-g.x,b.y-g.y))[0];
       const scan=Math.floor(d.elapsed/3)%3;
       g.facing=scan===1&&nearby?movementFacing(nearby.x-g.x,nearby.y-g.y,visit.facing):scan===2?(visit.facing==='left'?'right':'left'):visit.facing;
     } else if(g.phase==='window')g.facing=d.elapsed>d.duration-2?'down':visit.facing;

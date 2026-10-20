@@ -1,0 +1,2 @@
+export type LuelonTheme = {name:string;gameId:string;accent:string;secondary:string;background:string;ink:string;motif:'space'|'royal'|'sea'|'forge'|'forest'|'city'|'flower'|'ice'|'sun'|'desert';root:number;tempo:number};
+export function luelonTheme(game:string):LuelonTheme {if(game!=='studio-cosmic-escape')throw Error('Unsupported cosmic theme');return {gameId:game,name:'Cosmic Escape',accent:'#8cdeff',secondary:'#c6a5ff',background:'#161e3b',ink:'#f5e3ce',motif:'space',root:174.61,tempo:500};}

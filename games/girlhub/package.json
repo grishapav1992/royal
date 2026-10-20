@@ -1,0 +1,13 @@
+{
+  "name": "@royal/girlhub",
+  "version": "1.0.1",
+  "private": true,
+  "gameId": "studio-afterglow",
+  "apiVersion": 1,
+  "rulesVersion": 2,
+  "progressVersion": 3,
+  "entry": "entry.ts",
+  "scripts": {
+    "build": "node ../../node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && node ../../scripts/build-game-module.mjs"
+  }
+}

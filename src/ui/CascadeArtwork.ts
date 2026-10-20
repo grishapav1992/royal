@@ -1,7 +1,8 @@
+import { t as translateText } from '../i18n/index';
 export type CascadeGame = 'studio-caramel-carnival' | 'studio-starfall-oracle';
 export const CASCADE_NAMES: Record<CascadeGame, string[]> = {
-  'studio-caramel-carnival': ['Вишнёвое желе', 'Лимонный леденец', 'Виноградная конфета', 'Символ', 'Символ', 'Карамельная монета'],
-  'studio-starfall-oracle': ['Звезда', 'Луна', 'Ночной кристалл', 'Символ', 'Символ', 'Сфера'],
+  'studio-caramel-carnival': [translateText('Вишнёвое желе'), translateText('Лимонный леденец'), translateText('Виноградная конфета'), translateText('Символ'), translateText('Символ'), translateText('Карамельная монета')],
+  'studio-starfall-oracle': [translateText('Звезда'), translateText('Луна'), translateText('Ночной кристалл'), translateText('Символ'), translateText('Символ'), translateText('Сфера')],
 };
 
 /** Original glossy symbols. IDs and paid groups retain the existing server rules. */

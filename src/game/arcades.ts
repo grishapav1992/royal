@@ -1,3 +1,4 @@
+import { t as translateText } from '../i18n/index';
 import { gameAudio } from './GameAudio';
 import Phaser from 'phaser';
 import type { BreakerStatus } from './breaker';
@@ -114,7 +115,7 @@ export function createArcade(parent: HTMLElement, mode: ArcadeMode, onStatus: (s
         for(const s of this.shots)g.fillStyle(0xabedee).fillRect(s.x-2,s.y,4,14);
         for(const e of this.enemies){g.fillStyle(0x9879c1).fillTriangle(e.x-22,e.y-12,e.x+22,e.y-12,e.x,e.y+17);g.fillStyle(0xefbadc).fillRect(e.x-6,e.y-8,12,10);}
         if(this.elapsed>this.invincible||Math.floor(this.elapsed*12)%2){g.fillStyle(0x88dcd5).fillTriangle(this.x,352,this.x-20,392,this.x+20,392);g.fillStyle(0xf5d391).fillTriangle(this.x-6,390,this.x+6,390,this.x,405+Math.sin(this.elapsed*20)*5);g.fillStyle(0xe4f4ed).fillRect(this.x-4,367,8,13);}
-        this.text.setText('SPACE ORBIT  /  СБЕЙ 20 КОРАБЛЕЙ');
+        this.text.setText(translateText('SPACE ORBIT  /  СБЕЙ 20 КОРАБЛЕЙ'));
       }else if(mode==='drift'){
         g.fillStyle(0x707c79).fillRect(168,40,304,400);g.lineStyle(3,0x342f2a).strokeRect(165,40,310,400);
         for(let y=-20;y<450;y+=58)for(const x of [270,370])g.fillStyle(0xfff5d2).fillRect(x-2,40+(y+this.distance*4)%400,4,26);
@@ -124,7 +125,7 @@ export function createArcade(parent: HTMLElement, mode: ArcadeMode, onStatus: (s
         }
         for(const o of this.obstacles){const x=220+o.lane*100;if(o.coin){g.fillStyle(0xf0d187).fillCircle(x,o.y,10);g.lineStyle(2,0xb68455).strokeCircle(x,o.y,6);}else this.car(x,o.y,0xc7749a);}
         if(this.elapsed>this.invincible||Math.floor(this.elapsed*12)%2)this.car(this.x,373,0x74d5d8);
-        this.text.setText('NIGHT DRIFT  /  '+Math.min(1000,Math.floor(this.distance))+' / 1000 М');
+        this.text.setText('NIGHT DRIFT  /  '+Math.min(1000,Math.floor(this.distance))+translateText(' / 1000 М'));
       }else{
         for(let y=0;y<9;y++)for(let x=0;x<13;x++){
           const px=60+x*40,py=55+y*40;
@@ -141,7 +142,7 @@ export function createArcade(parent: HTMLElement, mode: ArcadeMode, onStatus: (s
         g.fillStyle(0x342f2a).fillCircle(px-2,py-7,1);g.fillCircle(px+2,py-7,1);
         g.fillStyle(0x419dad).fillRoundedRect(px-12,py-19,24,7,3);g.fillStyle(0xf2c745).fillRect(px-12,py-14,24,3);
 
-        this.text.setText('PIXEL QUEST  /  КРИСТАЛЛЫ '+(5-this.gems.size)+'/5  /  '+Math.max(0,Math.ceil(this.mazeTime))+' С');
+        this.text.setText(translateText('PIXEL QUEST  /  КРИСТАЛЛЫ ')+(5-this.gems.size)+'/5  /  '+Math.max(0,Math.ceil(this.mazeTime))+translateText(' С'));
       }
     }
     private car(x:number,y:number,color:number){const g=this.art;g.fillStyle(0x080c14).fillRoundedRect(x-22,y-31,44,62,5);g.fillStyle(color).fillRoundedRect(x-17,y-29,34,58,5);g.fillStyle(0x293d53).fillRect(x-13,y-16,26,15);g.fillStyle(0xa5dcdf).fillRect(x-11,y-14,22,3);g.fillStyle(0xefdeb0).fillRect(x-16,y-26,7,4);g.fillRect(x+9,y-26,7,4);g.fillStyle(0xdb82a2).fillRect(x-15,y+22,6,4);g.fillRect(x+9,y+22,6,4);}

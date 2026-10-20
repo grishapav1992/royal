@@ -1,38 +1,5 @@
 import { BOUNDS, findPath, walkable, type Obstacle, type Point } from '../src/game/navigation';
 
-const MAX_CACHED_PATHS = 128;
-type PathCache = { geometry: number[]; paths: Map<string, Point[]> };
-const caches = new WeakMap<Obstacle[], PathCache>();
-const copyPath = (path: readonly Point[]) => path.map(point => ({ x: point.x, y: point.y }));
-
-function unchangedGeometry(obstacles: Obstacle[], geometry: readonly number[]) {
-  if (geometry.length !== obstacles.length * 4) return false;
-  for (let index = 0; index < obstacles.length; index++) {
-    const obstacle = obstacles[index], at = index * 4;
-    if (!Object.is(obstacle.x, geometry[at]) || !Object.is(obstacle.y, geometry[at + 1])
-      || !Object.is(obstacle.w, geometry[at + 2]) || !Object.is(obstacle.h, geometry[at + 3])) return false;
-  }
-  return true;
-}
-
-export function guardPath(from: Point, to: Point, obstacles: Obstacle[]): Point[] {
-  let cache = caches.get(obstacles);
-  if (!cache || !unchangedGeometry(obstacles, cache.geometry)) {
-    cache = { geometry: obstacles.flatMap(obstacle => [obstacle.x, obstacle.y, obstacle.w, obstacle.h]), paths: new Map() };
-    caches.set(obstacles, cache);
-  }
-  const key = from.x + ',' + from.y + ':' + to.x + ',' + to.y;
-  const cached = cache.paths.get(key);
-  if (cached) {
-    cache.paths.delete(key); cache.paths.set(key, cached);
-    return copyPath(cached);
-  }
-  const path = findGuardPath(from, to, obstacles);
-  cache.paths.set(key, copyPath(path));
-  if (cache.paths.size > MAX_CACHED_PATHS) cache.paths.delete(cache.paths.keys().next().value!);
-  return path;
-}
-
 function clear(a: Point, b: Point, obstacles: Obstacle[]) {
   return !obstacles.some(o => {
     let enter=0, exit=1;
@@ -49,7 +16,7 @@ function clear(a: Point, b: Point, obstacles: Obstacle[]) {
 }
 
 // Furniture corners preserve narrow, walkable passages that the normal 20 px grid cannot represent.
-function findGuardPath(from: Point, to: Point, obstacles: Obstacle[]): Point[] {
+export function guardPath(from: Point, to: Point, obstacles: Obstacle[]): Point[] {
   if(!walkable(from.x,from.y,obstacles)||!walkable(to.x,to.y,obstacles))return [];
   const grid=findPath(from,to,obstacles);
   if(grid.length && grid.every((p,i)=>clear(i?grid[i-1]:from,p,obstacles)))return grid;

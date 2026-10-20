@@ -1,3 +1,4 @@
+import { t as translateText } from '../i18n/index';
 import { clubObstacles } from './clubLayout';
 import type { Obstacle } from '../game/navigation';
 import type { Facing, MovementInput } from './movement';
@@ -27,9 +28,9 @@ export const ROOM_OBSTACLES: Obstacle[] = [
 ];
 export type HallId = 'arcade' | 'tables' | 'github';
 export const HALLS = {
-  arcade: { floor:1, name: 'Казино и бар', number: '01', spawn: { x: 540, y: 590 } },
-  tables: { floor:2, name: 'Игры на двоих', number: '02', spawn: { x: 540, y: 590 } },
-  github: { floor:3, name: 'Карточный салон', number: '03', spawn: { x: 540, y: 590 } },
+  arcade: { floor:1, name: translateText('Казино и бар'), number: '01', spawn: { x: 540, y: 590 } },
+  tables: { floor:2, name: translateText('Игры на двоих'), number: '02', spawn: { x: 540, y: 590 } },
+  github: { floor:3, name: translateText('Карточный салон'), number: '03', spawn: { x: 540, y: 590 } },
 } as const;
 export const HALL_DOORS = {
   arcade: { entry: { x: 900, y: 240 }, arrival: { x: 900, y: 290 }, facing: 'down', click: { x: 900, y: 166 }, left: 860, right: 940, top: 225, bottom: 247 },
@@ -70,16 +71,16 @@ const TABLE_OBSTACLES = [
   furnitureBounds(FURNITURE.pool), furnitureBounds(FURNITURE.table), ACTIVITIES.hockey.bounds, ...PLANTS.map(plantBounds),
 ];
 export const DRINKS = [
-  { id: 'lemonade', name: 'Лимонад', description: 'Лимон, мята и пузырьки · без алкоголя', color: '#d6ed88', strength: 0 },
-  { id: 'coffee', name: 'Кофе', description: 'Горячий кофе · без алкоголя', color: '#d5af8a', strength: 0 },
-  { id: 'berry', name: 'Ягодный микс', description: 'Ягодный напиток со льдом · без алкоголя', color: '#e39bb8', strength: 0 },
-  { id: 'beer', name: 'Пиво', description: 'Холодное светлое · лёгкое опьянение', color: '#e7bb5b', strength: .18 },
-  { id: 'wine', name: 'Вино', description: 'Красное сухое · средняя крепость', color: '#b74f71', strength: .26 },
-  { id: 'whisky', name: 'Виски', description: 'Янтарный виски со льдом · крепкий', color: '#ce884a', strength: .38 },
-  { id: 'cocktail', name: 'Коктейль «Рояль»', description: 'Цитрус, ром и лёд · средняя крепость', color: '#cc81b4', strength: .30 },
+  { id: 'lemonade', name: translateText('Лимонад'), description: translateText('Лимон, мята и пузырьки · без алкоголя'), color: '#d6ed88', strength: 0 },
+  { id: 'coffee', name: translateText('Кофе'), description: translateText('Горячий кофе · без алкоголя'), color: '#d5af8a', strength: 0 },
+  { id: 'berry', name: translateText('Ягодный микс'), description: translateText('Ягодный напиток со льдом · без алкоголя'), color: '#e39bb8', strength: 0 },
+  { id: 'beer', name: translateText('Пиво'), description: translateText('Холодное светлое · лёгкое опьянение'), color: '#e7bb5b', strength: .18 },
+  { id: 'wine', name: translateText('Вино'), description: translateText('Красное сухое · средняя крепость'), color: '#b74f71', strength: .26 },
+  { id: 'whisky', name: translateText('Виски'), description: translateText('Янтарный виски со льдом · крепкий'), color: '#ce884a', strength: .38 },
+  { id: 'cocktail', name: translateText('Коктейль «Рояль»'), description: translateText('Цитрус, ром и лёд · средняя крепость'), color: '#cc81b4', strength: .30 },
 ] as const;
 export const atBar = (p: { x: number; y: number }) => p.x >= 720 && p.x <= 1005 && p.y >= 482+BAR_OFFSET && p.y <= 590+BAR_OFFSET;
 export type PlayerAction = 'idle' | 'sit' | 'drink';
-export type PlayerView = { security?: string; id: string; hall: HallId; hallRevision: number; name: string; x: number; y: number; skin: number; appearance?: string; facing: 'up' | 'down' | 'left' | 'right'; moving: boolean; connected: boolean; playing: boolean; cabinet?: string; gameReaction?: string; gameReactionUntil?: number; activity?: string; ears?: boolean; seat: string; action: PlayerAction; drink: string; actionUntil: number; soberAt: number; controlLayout?: number; inputSeq: number };
+export type PlayerView = { security?: string; id: string; hall: HallId; hallRevision: number; name: string; x: number; y: number; skin: number; appearance?: string; facing: 'up' | 'down' | 'left' | 'right'; moving: boolean; connected: boolean; playing: boolean; cabinet?: string; gameReaction?: string; gameReactionUntil?: number; activity?: string; ears?: boolean; seat: string; action: PlayerAction; drink: string; actionUntil: number; soberAt: number; inputSeq: number };
 export type ChatMessage = { id: string; senderId: string; name: string; text: string; time: number; system?: boolean };
-export type NetworkCommands = { cat?: (action: CatAction) => void; inputs: (inputs: MovementInput[]) => void; move: (x: number, y: number) => void; target: (x: number, y: number, wander?: boolean) => void; stop: () => void; sit: (seat: string) => void; stand: () => void; drink: (drink: string) => void; cabinetPlay?: (id: string) => Promise<boolean>; cabinetLeave?: () => void; cabinetReaction?: (id: string, reaction: GameReaction) => void };
+export type NetworkCommands = { cat?: (action: CatAction) => void; inputs: (inputs: MovementInput[]) => void; move: (x: number, y: number) => void; target: (x: number, y: number) => void; stop: () => void; sit: (seat: string) => void; stand: () => void; drink: (drink: string) => void; cabinetPlay?: (id: string) => Promise<boolean>; cabinetLeave?: () => void; cabinetReaction?: (id: string, reaction: GameReaction) => void };

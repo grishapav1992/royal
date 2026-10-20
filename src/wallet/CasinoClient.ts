@@ -1,3 +1,4 @@
+import { isUserMessage, t as translateText } from '../i18n/index';
 import { validCasinoAction, validCasinoSession, type CasinoAction, type CasinoAsset, type CasinoSession } from '../shared/casinoSessions';
 import type { DemoWallet } from '../shared/demoWallet';
 import { validUsdtWallet, type UsdtWallet } from '../shared/usdtWallet';
@@ -30,7 +31,7 @@ export class CasinoClient extends EventTarget {
     this.pending = undefined; this.busy = false; this.loading = false; this.error = '';
     if (id) {
       try { const saved = sessionStorage.getItem(this.key()); if (saved) { const op = JSON.parse(saved); if (!validCasinoAction(op)) throw Error(); this.pending = op; } }
-      catch { this.error = 'Не удалось восстановить ход. Проверь баланс перед игрой.'; }
+      catch { this.error = translateText('Не удалось восстановить ход. Проверь баланс перед игрой.'); }
     }
     this.lock(); this.notify(); if (id) void this.refresh();
   }
@@ -56,24 +57,24 @@ export class CasinoClient extends EventTarget {
       const response = await fetch(`/api/${this.asset}-wallet/casino-sessions`, { credentials: 'same-origin', cache: 'no-store', headers: { [WALLET_ACCOUNT_HEADER]: account }, signal: AbortSignal.timeout(10000) });
       const r = await response.json();
       if (!response.ok) throw new Error(r.error);
-      if (!this.valid(r)) throw new Error('Баланс и партия не подтверждены.');
+      if (!this.valid(r)) throw new Error(translateText('Баланс и партия не подтверждены.'));
       if (epoch !== this.epoch || version !== this.version) return;
       this.accept(r); this.error = '';
     } catch (e) { if (epoch === this.epoch && version === this.version) this.error = this.message(e); }
     finally { if (epoch === this.epoch && version === this.version) { this.loading = false; this.notify(); } }
   }
   async act(action: NewCasinoAction) {
-    if (this.pending) throw new Error('Сначала проверь предыдущий ход.');
+    if (this.pending) throw new Error(translateText('Сначала проверь предыдущий ход.'));
     return this.send({ ...action, id: crypto.randomUUID() } as CasinoAction);
   }
   async retry() { if (!this.pending) return; return this.send(this.pending); }
-  private message(e: unknown) { return e instanceof Error && /[а-я]/i.test(e.message) ? e.message : 'Ответ не получен. Нажми «Проверить ход», чтобы подтвердить ту же операцию.'; }
+  private message(e: unknown) { return e instanceof Error && isUserMessage(e.message) ? translateText(e.message) : translateText('Ответ не получен. Нажми «Проверить ход», чтобы подтвердить ту же операцию.'); }
   private async send(op: CasinoAction) {
-    if (!this.accountId || this.busy) throw new Error('Войди в аккаунт и дождись завершения хода.');
+    if (!this.accountId || this.busy) throw new Error(translateText('Войди в аккаунт и дождись завершения хода.'));
     if (this.asset === 'demo' ? demoWallet.busy || !!demoWallet.pending || demoWallet.hasExternalBusy('casino') : usdtWallet.busy || !!usdtWallet.pending)
-      throw new Error('Сначала проверь предыдущую операцию в кошельке.');
+      throw new Error(translateText('Сначала проверь предыдущую операцию в кошельке.'));
     const epoch = this.epoch, account = this.accountId, key = this.key();
-    try { sessionStorage.setItem(key, JSON.stringify(op)); } catch { throw new Error('Разреши хранилище браузера для сохранения хода.'); }
+    try { sessionStorage.setItem(key, JSON.stringify(op)); } catch { throw new Error(translateText('Разреши хранилище браузера для сохранения хода.')); }
     this.pending = op; this.busy = true; this.loading = false; this.version++; this.error = ''; this.lock(); this.notify();
     try {
       const response = await fetch(`/api/${this.asset}-wallet/casino-sessions`, { method: 'POST', credentials: 'same-origin',
@@ -84,7 +85,7 @@ export class CasinoClient extends EventTarget {
         if ([400, 403, 404, 409].includes(response.status)) { this.pending = undefined; sessionStorage.removeItem(key); }
         throw new Error(r.error);
       }
-      if (!this.valid(r, op)) throw new Error('Ответ хода не подтверждён. Проверь ту же операцию.');
+      if (!this.valid(r, op)) throw new Error(translateText('Ответ хода не подтверждён. Проверь ту же операцию.'));
       this.accept(r); this.pending = undefined; sessionStorage.removeItem(key); this.version++;
       if (this.asset === 'usdt') void usdtWallet.refresh();
     } catch (e) { if (epoch === this.epoch) { this.error = this.message(e); throw new Error(this.error); } }

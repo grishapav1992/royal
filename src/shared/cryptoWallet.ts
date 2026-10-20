@@ -1,3 +1,4 @@
+import { t as translateText } from '../i18n/index';
 import { gameAccountId, nileUnits } from './nileWallet';
 import { validUsdtRound, type UsdtRound } from './usdtWallet';
 
@@ -14,10 +15,10 @@ export type CryptoWallet = { state: 'disabled' } | { state: 'enabled'; provider:
 export const validCurrency = (value: unknown): value is string => typeof value === 'string' && /^[a-z0-9]{2,24}$/.test(value);
 export const validDecimal = (value: unknown): value is string => typeof value === 'string' && /^(0|[1-9]\d{0,12})(\.\d{1,18})?$/.test(value);
 export function usdtUnits(value: string): string {
-  if (!/^(0|[1-9]\d{0,6})(\.\d{1,6})?$/.test(value)) throw new Error('Укажи сумму USDT, не больше шести знаков после запятой.');
+  if (!/^(0|[1-9]\d{0,6})(\.\d{1,6})?$/.test(value)) throw new Error(translateText('Укажи сумму USDT, не больше шести знаков после запятой.'));
   const [whole, fraction = ''] = value.split('.');
   const units = BigInt(whole) * 1000000n + BigInt(fraction.padEnd(6, '0'));
-  if (units <= 0n || units > 1000000000000n) throw new Error('Сумма должна быть от 0,000001 до 1 000 000 USDT.');
+  if (units <= 0n || units > 1000000000000n) throw new Error(translateText('Сумма должна быть от 0,000001 до 1 000 000 USDT.'));
   return String(units);
 }
 export function validCryptoWallet(value: unknown): value is CryptoWallet {

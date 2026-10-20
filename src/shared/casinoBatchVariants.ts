@@ -1,3 +1,4 @@
+import { t as translateText } from '../i18n/index';
 import { combinations, NEXT_CARD_LABELS } from './casinoNextVariants';
 import { DEMO_BETS } from './demoWallet';
 
@@ -19,16 +20,16 @@ export type BatchVariantView =
 
 export const BATCH_GEM_WEIGHTS = [30,25,20,15,8,2] as const;
 export const BATCH_VARIANT_NAMES:Record<BatchVariantGameId,string> = {
-  'variant-target-plinko':'Плинко: мишень','variant-triple-poker':'Три карты: комбинация','variant-blackjack-target':'21: тройной расклад',
-  'variant-gem-collection':'Самоцветы: коллекция','variant-double-mines':'Мины: парный поиск','variant-dice-streak':'Кости: серия',
+  'variant-target-plinko':translateText('Плинко: мишень'),'variant-triple-poker':translateText('Три карты: комбинация'),'variant-blackjack-target':translateText('21: тройной расклад'),
+  'variant-gem-collection':translateText('Самоцветы: коллекция'),'variant-double-mines':translateText('Мины: парный поиск'),'variant-dice-streak':translateText('Кости: серия'),
 };
 export const BATCH_VARIANT_RULES:Record<BatchVariantGameId,string> = {
-  'variant-target-plinko':'Один шарик проходит 12 рядов. Выбери центральную лунку 6, коридор 4-8 или края 0-2 и 10-12. Любой поворот равновероятен. Попадание в выбранную область даёт выплату. Расчётный возврат до округления: 98%.',
-  'variant-triple-poker':'Три разные карты из колоды 52 карт. До раздачи выбери пару (включая тройку), три карты одной масти или три последовательных ранга. Туз участвует в А-2-3 и Д-К-А. Стрит и флеш могут пересекаться. Расчётный возврат до округления: 98%.',
-  'variant-blackjack-target':'Три разные карты из колоды 52 карт. До раздачи выбери сумму 17-18, 19-20 или ровно 21. Картинки стоят 10; туз стоит 11 и снижается до 1, если сумма больше 21. Добора нет. Расчётный возврат до округления: 98%.',
-  'variant-gem-collection':'Выбери три разных самоцвета и открой пять символов. Для выигрыша каждый выбранный самоцвет должен встретиться хотя бы один раз. Редкие коллекции платят больше. Расчётный возврат до округления: 98%.',
-  'variant-double-mines':'В поле 16 ячеек и 4 ловушки. За ход открой две разные закрытые ячейки: обе должны быть безопасными. Можно забрать выплату после первой безопасной пары. Пятая завершает игру автоматически. Ловушки сохраняются на сервере. Расчётный возврат до округления: 98%.',
-  'variant-dice-streak':'Перед каждым броском выбери порог 2+, 3+ или 4+. Кость от 1 до 6 должна достичь порога. Можно забрать выплату после первого успеха; пятый завершает серию автоматически. Ошибка теряет ставку. Будущие броски сохраняются на сервере. Расчётный возврат до округления: 98%.',
+  'variant-target-plinko':translateText('Один шарик проходит 12 рядов. Выбери центральную лунку 6, коридор 4-8 или края 0-2 и 10-12. Любой поворот равновероятен. Попадание в выбранную область даёт выплату. Расчётный возврат до округления: 98%.'),
+  'variant-triple-poker':translateText('Три разные карты из колоды 52 карт. До раздачи выбери пару (включая тройку), три карты одной масти или три последовательных ранга. Туз участвует в А-2-3 и Д-К-А. Стрит и флеш могут пересекаться. Расчётный возврат до округления: 98%.'),
+  'variant-blackjack-target':translateText('Три разные карты из колоды 52 карт. До раздачи выбери сумму 17-18, 19-20 или ровно 21. Картинки стоят 10; туз стоит 11 и снижается до 1, если сумма больше 21. Добора нет. Расчётный возврат до округления: 98%.'),
+  'variant-gem-collection':translateText('Выбери три разных самоцвета и открой пять символов. Для выигрыша каждый выбранный самоцвет должен встретиться хотя бы один раз. Редкие коллекции платят больше. Расчётный возврат до округления: 98%.'),
+  'variant-double-mines':translateText('В поле 16 ячеек и 4 ловушки. За ход открой две разные закрытые ячейки: обе должны быть безопасными. Можно забрать выплату после первой безопасной пары. Пятая завершает игру автоматически. Ловушки сохраняются на сервере. Расчётный возврат до округления: 98%.'),
+  'variant-dice-streak':translateText('Перед каждым броском выбери порог 2+, 3+ или 4+. Кость от 1 до 6 должна достичь порога. Можно забрать выплату после первого успеха; пятый завершает серию автоматически. Ошибка теряет ставку. Будущие броски сохраняются на сервере. Расчётный возврат до округления: 98%.'),
 };
 export const BATCH_VARIANT_DEFAULTS:Record<BatchVariantGameId,BatchVariantSettings> = {
   'variant-target-plinko':{variant:{target:'center'}},'variant-triple-poker':{variant:{target:'pair'}},'variant-blackjack-target':{variant:{target:'21'}},
@@ -39,12 +40,12 @@ export const BATCH_VARIANT_BASES:Record<BatchVariantGameId,string> = {
   'variant-gem-collection':'github-diamonds','variant-double-mines':'royal-mines','variant-dice-streak':'royal-dice',
 };
 export const BATCH_VARIANT_INFO:Record<BatchVariantGameId,{name:string;base:string;tagline:string;theme:string}> = {
-  'variant-target-plinko':{name:BATCH_VARIANT_NAMES['variant-target-plinko'],base:BATCH_VARIANT_BASES['variant-target-plinko'],tagline:'Поставь на область приземления',theme:'target'},
-  'variant-triple-poker':{name:BATCH_VARIANT_NAMES['variant-triple-poker'],base:BATCH_VARIANT_BASES['variant-triple-poker'],tagline:'Три карты, три цели',theme:'combination'},
-  'variant-blackjack-target':{name:BATCH_VARIANT_NAMES['variant-blackjack-target'],base:BATCH_VARIANT_BASES['variant-blackjack-target'],tagline:'Выбери итог трёх карт',theme:'twenty-one'},
-  'variant-gem-collection':{name:BATCH_VARIANT_NAMES['variant-gem-collection'],base:BATCH_VARIANT_BASES['variant-gem-collection'],tagline:'Собери три разных самоцвета',theme:'collection'},
-  'variant-double-mines':{name:BATCH_VARIANT_NAMES['variant-double-mines'],base:BATCH_VARIANT_BASES['variant-double-mines'],tagline:'Две ячейки за один ход',theme:'paired'},
-  'variant-dice-streak':{name:BATCH_VARIANT_NAMES['variant-dice-streak'],base:BATCH_VARIANT_BASES['variant-dice-streak'],tagline:'Меняй порог каждого броска',theme:'streak'},
+  'variant-target-plinko':{name:BATCH_VARIANT_NAMES['variant-target-plinko'],base:BATCH_VARIANT_BASES['variant-target-plinko'],tagline:translateText('Поставь на область приземления'),theme:'target'},
+  'variant-triple-poker':{name:BATCH_VARIANT_NAMES['variant-triple-poker'],base:BATCH_VARIANT_BASES['variant-triple-poker'],tagline:translateText('Три карты, три цели'),theme:'combination'},
+  'variant-blackjack-target':{name:BATCH_VARIANT_NAMES['variant-blackjack-target'],base:BATCH_VARIANT_BASES['variant-blackjack-target'],tagline:translateText('Выбери итог трёх карт'),theme:'twenty-one'},
+  'variant-gem-collection':{name:BATCH_VARIANT_NAMES['variant-gem-collection'],base:BATCH_VARIANT_BASES['variant-gem-collection'],tagline:translateText('Собери три разных самоцвета'),theme:'collection'},
+  'variant-double-mines':{name:BATCH_VARIANT_NAMES['variant-double-mines'],base:BATCH_VARIANT_BASES['variant-double-mines'],tagline:translateText('Две ячейки за один ход'),theme:'paired'},
+  'variant-dice-streak':{name:BATCH_VARIANT_NAMES['variant-dice-streak'],base:BATCH_VARIANT_BASES['variant-dice-streak'],tagline:translateText('Меняй порог каждого броска'),theme:'streak'},
 };
 export const isBatchVariantGame=(value:unknown):value is BatchVariantGameId=>(BATCH_VARIANT_GAMES as readonly unknown[]).includes(value);
 const record=(value:unknown):value is Record<string,unknown>=>!!value&&typeof value==='object'&&!Array.isArray(value);

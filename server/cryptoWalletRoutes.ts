@@ -4,10 +4,10 @@ import { CryptoError } from './crypto/config';
 import type { PaymentClient } from './payments/client';
 import { WALLET_ACCOUNT_HEADER } from '../src/shared/walletAccount';
 import { gameAccountId } from '../src/shared/nileWallet';
-import { HttpRateLimits } from './requestRateLimit';
+import { createDemoWalletRequestLimit } from './demoWalletRequestLimit';
 
 export function installCryptoWallet(app: Application, store: Pick<PaymentClient, 'snapshot' | 'currencies' | 'displayRate' | 'deposit' | 'quote' | 'withdraw' | 'refresh' | 'receiveIpn'> & { play(id: string, value: unknown): Promise<unknown> } = accounts.cryptoWallet,
-  session: (token: string | undefined) => Promise<{ account: { id: string } } | null | undefined> = token => accounts.session(token), limits = new HttpRateLimits()) {
+  session: (token: string | undefined) => Promise<{ account: { id: string } } | null | undefined> = token => accounts.session(token)) {
   const bodyError: ErrorRequestHandler = (error, _req, res, next) => {
     if (error?.type === 'entity.too.large') res.status(413).json({ error: 'Слишком большой запрос.' });
     else if (error?.type === 'entity.parse.failed') res.status(400).json({ error: 'Некорректный запрос.' });
@@ -25,7 +25,7 @@ export function installCryptoWallet(app: Application, store: Pick<PaymentClient,
     if (Object.keys(req.query).length) { res.status(400).json({ error: 'Параметры запроса не поддерживаются.' }); return; }
     res.locals.accountId = account.id; next();
   };
-  app.use('/api/crypto-wallet', authorize, limits.account('crypto'), express.json({ limit: '2kb', inflate: false }), bodyError);
+  app.use('/api/crypto-wallet', authorize, createDemoWalletRequestLimit({ limit: 60 }), express.json({ limit: '2kb', inflate: false }), bodyError);
   const handle = (fn: (req: express.Request, accountId: string) => Promise<unknown>): RequestHandler => async (req, res) => {
     try { res.json(await fn(req, res.locals.accountId)); }
     catch (error) { res.status(error instanceof CryptoError ? error.status : 503).json({ error: error instanceof CryptoError ? error.message : 'Не удалось подтвердить операцию. Проверь ее статус позже.' }); }

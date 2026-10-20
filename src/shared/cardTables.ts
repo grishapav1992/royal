@@ -1,3 +1,4 @@
+import { t as translateText } from '../i18n/index';
 export const CARD_GAME_IDS = [
   'github-blackjack', 'github-spanish', 'github-exposure', 'github-switch', 'github-free-bet', 'variant-blackjack-target',
   'github-three-card', 'github-caribbean', 'github-let-it-ride', 'github-ultimate', 'github-pai-gow', 'github-deuces',
@@ -18,24 +19,24 @@ export const isRetiredCardGame = (id: unknown): id is CardGameId =>
 export type DealerAction = 'idle' | 'deal' | 'win' | 'lose';
 export const isCardGame = (id: unknown): id is CardGameId => (CARD_GAME_IDS as readonly unknown[]).includes(id);
 export const CARD_GAME_NAMES: Record<CardGameId, string> = {
-  'github-blackjack':'Блэкджек', 'github-spanish':'Spanish 21', 'github-exposure':'Double Exposure',
-  'github-switch':'Blackjack Switch', 'github-free-bet':'Free Bet Blackjack', 'variant-blackjack-target':'21: тройной расклад',
-  'github-three-card':'Трёхкарточный покер', 'github-caribbean':'Карибский покер', 'github-let-it-ride':'Три ставки',
-  'github-ultimate':'Казино Холдем', 'github-pai-gow':'Пай Гоу', 'github-deuces':'Deuces Wild',
+  'github-blackjack':translateText('Блэкджек'), 'github-spanish':'Spanish 21', 'github-exposure':'Double Exposure',
+  'github-switch':'Blackjack Switch', 'github-free-bet':'Free Bet Blackjack', 'variant-blackjack-target':translateText('21: тройной расклад'),
+  'github-three-card':translateText('Трёхкарточный покер'), 'github-caribbean':translateText('Карибский покер'), 'github-let-it-ride':translateText('Три ставки'),
+  'github-ultimate':translateText('Казино Холдем'), 'github-pai-gow':translateText('Пай Гоу'), 'github-deuces':'Deuces Wild',
   'github-mississippi':'Mississippi Stud', 'github-four-card':'Four Card Poker', 'github-crazy-four':'Crazy 4 Poker',
   'github-flush':'High Card Flush', 'github-holdem-bonus':'Texas Hold’em Bonus', 'github-oasis':'Oasis Poker',
-  'github-russian':'Русский покер', 'github-caribbean-draw':'Caribbean Draw', 'github-poker':'Покер',
-  'github-video-poker':'Видеопокер', 'variant-triple-poker':'Три карты: комбинация', 'github-baccarat':'Баккара',
-  'github-war':'Карточная война', 'github-red-dog':'Red Dog', 'github-dragon-tiger':'Дракон и тигр',
+  'github-russian':translateText('Русский покер'), 'github-caribbean-draw':'Caribbean Draw', 'github-poker':translateText('Покер'),
+  'github-video-poker':translateText('Видеопокер'), 'variant-triple-poker':translateText('Три карты: комбинация'), 'github-baccarat':translateText('Баккара'),
+  'github-war':translateText('Карточная война'), 'github-red-dog':'Red Dog', 'github-dragon-tiger':translateText('Дракон и тигр'),
   'github-rummy':'Three Card Rummy', 'github-andar-bahar':'Andar Bahar', 'github-hilo':'Hi-Lo',
-  'variant-color':'Красное / чёрное', 'variant-duel':'Дракон: точный разрыв', 'variant-war':'Война: два фронта',
+  'variant-color':translateText('Красное / чёрное'), 'variant-duel':translateText('Дракон: точный разрыв'), 'variant-war':translateText('Война: два фронта'),
 };
 export type DealerProfile = {
   id: string; name: string; index: number; skin: string; hair: string;
   hairStyle: 'swept' | 'bob' | 'curls' | 'bun' | 'silver' | 'braids';
   uniform: string; accent: string; glasses: boolean; beard: boolean; earrings: boolean; body: number; tableColor: string;
 };
-const names = ['Адель','Томас','Рената','Эмиль','Зоя','Лука','Селина','Рафаэль','Инес','Оскар','Мэй','Габриэль','Лилия','Мартин','Кира','Ноа','Амира','Феликс','Валентина','Даниэль','Элис','Виктор','Роза','Алекс','Наоми','Стефан','Акира','Беатрис','Рави','Соня','Николь','Тео','Эстель'];
+const names = [translateText('Адель'),translateText('Томас'),translateText('Рената'),translateText('Эмиль'),translateText('Зоя'),translateText('Лука'),translateText('Селина'),translateText('Рафаэль'),translateText('Инес'),translateText('Оскар'),translateText('Мэй'),translateText('Габриэль'),translateText('Лилия'),translateText('Мартин'),translateText('Кира'),translateText('Ноа'),translateText('Амира'),translateText('Феликс'),translateText('Валентина'),translateText('Даниэль'),translateText('Элис'),translateText('Виктор'),translateText('Роза'),translateText('Алекс'),translateText('Наоми'),translateText('Стефан'),translateText('Акира'),translateText('Беатрис'),translateText('Рави'),translateText('Соня'),translateText('Николь'),translateText('Тео'),translateText('Эстель')];
 const skin = ['#f2cba5','#dba680','#b97d57','#8d573f','#e5bb94','#c8916a','#a56e51'];
 const hair = ['#322931','#c8a065','#744237','#eee5d2','#493b32','#bc5e47','#4d344e','#8b7464','#d9ad78','#292e37','#a77a48'];
 const uniforms = ['#274b57','#704351','#496451','#5a436e','#6f533a','#3d6671','#73515a','#405149','#676071','#466277','#89503f','#526b66','#643849','#4b536f','#805e4a','#35615d','#6d546e','#70603e','#385875','#715445','#557051','#624967','#4f6565','#723b50','#675539','#405c65','#4d3f6c','#7b5956','#3e6050','#806648','#624052','#506779','#6d6353'];

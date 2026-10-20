@@ -1,3 +1,4 @@
+import { isUserMessage, t as translateText } from '../i18n/index';
 import { DEMO_BETS } from '../shared/demoWallet';
 import type { FlightOperation, FlightResult, FlightSession } from '../shared/flightGame';
 import { WALLET_ACCOUNT_HEADER } from '../shared/walletAccount';
@@ -49,9 +50,9 @@ export class FlightClient extends EventTarget {
         const stored = sessionStorage.getItem(this.key());
         if (stored) {
           this.pending = restoredOperation(JSON.parse(stored));
-          if (!this.pending) { this.error = 'Не удалось прочитать сохранённую операцию. Обнови состояние игры.'; sessionStorage.removeItem(this.key()); }
+          if (!this.pending) { this.error = translateText('Не удалось прочитать сохранённую операцию. Обнови состояние игры.'); sessionStorage.removeItem(this.key()); }
         }
-      } catch { this.error = 'Не удалось восстановить операцию. Разреши хранилище браузера.'; }
+      } catch { this.error = translateText('Не удалось восстановить операцию. Разреши хранилище браузера.'); }
     }
     this.lock(); this.notify();
     if (accountId) void this.refresh();
@@ -70,23 +71,23 @@ export class FlightClient extends EventTarget {
       });
       const result = await response.json() as FlightResult & { error?: string };
       if (epoch !== this.epoch || version !== this.readVersion) return;
-      if (!response.ok) throw new Error(result.error || 'Не удалось восстановить полёт.');
+      if (!response.ok) throw new Error(result.error || translateText('Не удалось восстановить полёт.'));
       this.accept(accountId, result); if (!this.pending) this.error = '';
     } catch (error) {
       if (epoch !== this.epoch || version !== this.readVersion) return;
-      this.error = readableError(error, 'Нет свежего подтверждения сервера. Проверяем состояние полёта…');
+      this.error = readableError(error, translateText('Нет свежего подтверждения сервера. Проверяем состояние полёта…'));
       this.ready = false;
     } finally {
       if (epoch === this.epoch && version === this.readVersion) { this.loading = false; this.notify(); this.schedule(); }
     }
   }
   async act(action: FlightAction): Promise<FlightResult> {
-    if (this.pending) throw new Error('Сначала проверь предыдущую операцию полёта.');
-    if (!this.ready) throw new Error('Дождись восстановления состояния полёта.');
+    if (this.pending) throw new Error(translateText('Сначала проверь предыдущую операцию полёта.'));
+    if (!this.ready) throw new Error(translateText('Дождись восстановления состояния полёта.'));
     return this.send({ id: crypto.randomUUID(), ...action });
   }
   async retry(): Promise<FlightResult> {
-    if (!this.pending) throw new Error('Нет неподтверждённой операции полёта.');
+    if (!this.pending) throw new Error(translateText('Нет неподтверждённой операции полёта.'));
     return this.send(this.pending);
   }
   private accept(accountId: string, result: FlightResult) {
@@ -106,11 +107,11 @@ export class FlightClient extends EventTarget {
     this.poll = setTimeout(() => { if (!document.hidden) void this.refresh(); else this.schedule(); }, this.session?.state === 'active' ? 1000 : this.pending || !this.ready ? 2000 : 5000);
   }
   private async send(operation: FlightOperation): Promise<FlightResult> {
-    if (!this.accountId || this.accountId !== demoWallet.accountId) throw new Error('Войди в аккаунт, чтобы играть.');
-    if (this.busy || demoWallet.busy || demoWallet.pending || demoWallet.hasExternalBusy('flight')) throw new Error('Дождись подтверждения предыдущей операции.');
+    if (!this.accountId || this.accountId !== demoWallet.accountId) throw new Error(translateText('Войди в аккаунт, чтобы играть.'));
+    if (this.busy || demoWallet.busy || demoWallet.pending || demoWallet.hasExternalBusy('flight')) throw new Error(translateText('Дождись подтверждения предыдущей операции.'));
     const epoch = this.epoch, accountId = this.accountId, key = this.key();
     try { sessionStorage.setItem(key, JSON.stringify(operation)); }
-    catch { throw new Error('Разреши хранилище браузера для сохранения операции.'); }
+    catch { throw new Error(translateText('Разреши хранилище браузера для сохранения операции.')); }
     clearTimeout(this.poll); this.readVersion++; this.loading = false;
     this.pending = operation; this.busy = true; this.error = ''; this.lock(); this.notify();
     let refreshAfterConflict = false;
@@ -121,18 +122,18 @@ export class FlightClient extends EventTarget {
         body: JSON.stringify(operation), signal: AbortSignal.timeout(15000),
       });
       const result = await response.json() as FlightResult & { error?: string };
-      if (epoch !== this.epoch) throw new Error('Аккаунт изменился. Открой игру после входа.');
+      if (epoch !== this.epoch) throw new Error(translateText('Аккаунт изменился. Открой игру после входа.'));
       if (!response.ok) {
         if (response.status >= 400 && response.status < 500 && response.status !== 401 && response.status !== 429) {
           this.pending = undefined; sessionStorage.removeItem(key);
         }
         if (response.status === 404 || response.status === 409) { this.ready = false; refreshAfterConflict = true; }
-        throw new Error(result.error || 'Не удалось подтвердить полёт.');
+        throw new Error(result.error || translateText('Не удалось подтвердить полёт.'));
       }
       this.accept(accountId, result); this.pending = undefined; sessionStorage.removeItem(key); this.readVersion++;
       return result;
     } catch (error) {
-      const message = readableError(error, 'Ответ не получен. Нажми «Проверить полёт»: операция повторится с тем же номером.');
+      const message = readableError(error, translateText('Ответ не получен. Нажми «Проверить полёт»: операция повторится с тем же номером.'));
       if (epoch === this.epoch) this.error = message;
       throw new Error(message);
     } finally {
@@ -143,6 +144,6 @@ export class FlightClient extends EventTarget {
     }
   }
 }
-function readableError(error: unknown, fallback: string) { return error instanceof Error && /[а-я]/i.test(error.message) ? error.message : fallback; }
+function readableError(error: unknown, fallback: string) { return error instanceof Error && isUserMessage(error.message) ? translateText(error.message) : fallback; }
 export const flightClient = new FlightClient();
 demoWallet.addEventListener('change', () => flightClient.setAccount(demoWallet.accountId));

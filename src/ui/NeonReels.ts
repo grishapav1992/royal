@@ -1,6 +1,7 @@
+import { t as translateText, tr } from '../i18n/index';
 import { studioStrip } from '../shared/studioGames';
 
-export const NEON_SYMBOL_NAMES = ['Кристалл', 'Звёздный колокол', 'Орбитальная шестерня', 'WILD', 'Звезда', 'Монета'];
+export const NEON_SYMBOL_NAMES = [translateText('Кристалл'), translateText('Звёздный колокол'), translateText('Орбитальная шестерня'), 'WILD', translateText('Звезда'), translateText('Монета')];
 
 /** Original neon signs. Symbol IDs retain the existing server rules. */
 export function neonSymbol(symbol: number): string {
@@ -53,7 +54,7 @@ export class NeonReels {
       const reel = this.reels[col]; reel.root.dataset.state = 'stopped'; reel.track.style.transform = 'translate3d(0,0,0)';
       reel.cells.forEach((cell, row) => {
         const symbol = grid[row * 3 + col]; cell.dataset.symbol = String(symbol); cell.innerHTML = neonSymbol(symbol);
-        cell.setAttribute('aria-label', `Ячейка ${row * 3 + col + 1}: ${NEON_SYMBOL_NAMES[symbol]}`);
+        cell.setAttribute('aria-label', tr`Ячейка ${row * 3 + col + 1}: ${NEON_SYMBOL_NAMES[symbol]}`);
       });
     }
   }
@@ -98,7 +99,7 @@ export class NeonReels {
         reel.offset = reel.stop.from + (reel.stop.target - reel.stop.from) * ease;
         if (progress === 1) {
           reel.stopped = true; reel.root.dataset.state = 'stopped';
-          reel.cells.forEach((cell, row) => { const symbol = this.finalGrid![row * 3 + col]; cell.dataset.symbol = String(symbol); cell.innerHTML = neonSymbol(symbol); cell.setAttribute('aria-label', `Ячейка ${row * 3 + col + 1}: ${NEON_SYMBOL_NAMES[symbol]}`); });
+          reel.cells.forEach((cell, row) => { const symbol = this.finalGrid![row * 3 + col]; cell.dataset.symbol = String(symbol); cell.innerHTML = neonSymbol(symbol); cell.setAttribute('aria-label', tr`Ячейка ${row * 3 + col + 1}: ${NEON_SYMBOL_NAMES[symbol]}`); });
           this.callbacks.stop(col);
         }
       } else reel.offset = distance < 3 ? distance : 3 + (distance - 3) % 6;

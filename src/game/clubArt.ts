@@ -1,11 +1,12 @@
+import { t as translateText } from '../i18n/index';
 import Phaser from 'phaser';
-import { CLUB_ZONES, LOUNGES, clubPlants } from '../shared/clubLayout';
+import { CLUB_ZONES, LOUNGES, LUELON_NEW_ZONE, clubPlants } from '../shared/clubLayout';
 import { SEATS, type HallId } from '../shared/world';
 import { WORLD, FLOOR } from '../shared/clubGeometry';
 import { CAT_HOME } from '../shared/catHome';
 import { drawCatHome } from './catHomeArt';
 
-export function drawClubFloor(scene: Phaser.Scene, hall: HallId, onSeat: (id:string)=>void) {
+export function drawClubFloor(scene: Phaser.Scene, hall: HallId, onSeat: (id:string)=>void, onNewZone?:()=>void) {
   const g=scene.make.graphics({x:0,y:0},false);
   g.translateCanvas(-FLOOR.x,-FLOOR.y);
   for(const zone of CLUB_ZONES[hall]) {
@@ -16,15 +17,7 @@ export function drawClubFloor(scene: Phaser.Scene, hall: HallId, onSeat: (id:str
   }
   // Wide circulation routes connect distinct destinations rather than a wall of cabinets.
   g.lineStyle(2,0xd0b988,.3).lineBetween(130,700,WORLD.width-140,700);
-  if(hall==='arcade'){
-    g.fillStyle(0x13253b,.35).fillRoundedRect(2790,690,1390,160,30);
-    g.lineStyle(2,0x7bcdd4,.45).lineBetween(2810,710,4160,710).lineBetween(2810,830,4160,830);
-    for(const x of [2890,3150,3410,3670,3930]){
-      g.fillStyle(0xbdd2df,.4).fillTriangle(x,764,x+14,770,x,776);
-    }
-    scene.add.text(3520,769,'ROYAL STUDIO',{fontFamily:'Georgia',fontSize:'31px',fontStyle:'bold',letterSpacing:4,color:'#d9e7ef'}).setOrigin(.5).setDepth(.04);
-    scene.add.text(2820,860,'ЛИНИИ · КАСКАДЫ · WILD · ПРИЗОВЫЕ МИРЫ',{fontFamily:'Arial',fontSize:'11px',letterSpacing:1,color:'#aac3d2'}).setDepth(.04);
-  }
+  if(hall==='arcade') drawLuelonWing(scene,onNewZone);
   for(const x of [220,750,1140,2000]) {
     g.fillStyle(0x775d48).fillRoundedRect(x-19,670,38,63,4);
     g.fillStyle(0xd7b785).fillRect(x-22,670,44,7);
@@ -67,11 +60,22 @@ export function drawClubFloor(scene: Phaser.Scene, hall: HallId, onSeat: (id:str
     if (hall === CAT_HOME.hall && x === CAT_HOME.window.x) { drawCatHome(scene); continue; }
     scene.add.image(x,113,hall==='arcade'?'window-city':'window-garden').setDisplaySize(176,112).setDepth(2);
   }
-  scene.add.text(WORLD.width-170,1280,hall==='arcade'?'ROYAL STUDIO · ЭТАЖ 1':hall==='tables'?'БАЛКОН · ЭТАЖ 2':'КАРТОЧНЫЙ САЛОН · ЭТАЖ 3',{fontFamily:'Arial',fontSize:'13px',color:'#b4a58e',letterSpacing:2}).setOrigin(1,.5).setDepth(.04);
+  scene.add.text(WORLD.width-170,1280,hall==='arcade'?translateText('КАЗИНО И БАР · ЭТАЖ 1'):hall==='tables'?translateText('БАЛКОН · ЭТАЖ 2'):translateText('КАРТОЧНЫЙ САЛОН · ЭТАЖ 3'),{fontFamily:'Arial',fontSize:'13px',color:'#b4a58e',letterSpacing:2}).setOrigin(1,.5).setDepth(.04);
   const rail=scene.make.graphics({x:0,y:0},false);
   rail.lineStyle(4,0x977b50).lineBetween(1230,FLOOR.y+FLOOR.height-8,FLOOR.x+FLOOR.width-55,FLOOR.y+FLOOR.height-8);
   for(let x=1240;x<FLOOR.x+FLOOR.width-55;x+=42)rail.lineStyle(2,0xbea171).lineBetween(x,1300,x,1320);
   decoration(scene,rail,'rail',1227,1297,FLOOR.x+FLOOR.width-55-1227+3,26,0,0,3);
+}
+
+function drawLuelonWing(scene:Phaser.Scene,onVisit?:()=>void){
+  const zone=LUELON_NEW_ZONE,art=scene.make.graphics({x:0,y:0},false);
+  for(const position of [zone.cosmic,zone.caramel,zone.velvet,zone.convoy]){
+    art.fillStyle(0x71d9e4,.1).fillEllipse(position.x,position.y+18,170,65);
+    art.lineStyle(2,0x8ee7e8,.55).strokeEllipse(position.x,position.y+18,154,54);
+  }
+  decoration(scene,art,'luelon-floor',zone.x,zone.y,zone.w,zone.h,0,0,.045);
+  scene.add.text(zone.x+zone.w/2,zone.y+20,translateText('НОВАЯ КОЛЛЕКЦИЯ'),{fontFamily:'Arial',fontSize:'15px',fontStyle:'bold',letterSpacing:3,color:'#e1faff'}).setOrigin(.5).setDepth(.05);
+  if(onVisit)scene.add.zone(zone.entrance.x,zone.entrance.y,48,90).setDepth(4).setInteractive({useHandCursor:true}).on('pointerdown',onVisit);
 }
 
 function decoration(scene:Phaser.Scene,g:Phaser.GameObjects.Graphics,id:string,x:number,y:number,width:number,height:number,worldX:number,worldY:number,depth:number){

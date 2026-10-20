@@ -1,12 +1,11 @@
 import { serializeAppearance, type Appearance } from '../src/shared/appearance';
-import { Room, type Client, type ClientPrivate, type AuthContext, ClientState, ServerError } from '@colyseus/core';
+import { Room, type Client, type AuthContext, ServerError } from '@colyseus/core';
 import { Guards } from './guards';
 import { Bartender } from './bartender';
 import { AmbientGuests } from './ambientGuests';
 import { RoomCat } from './cat';
 import { chatModerator } from './moderation';
 import { chatSpam } from './chatSpam';
-import { chatQueue } from './chatQueue';
 import { guardBumps } from './guardBumps';
 import { blockedByGuard } from '../src/shared/guardCollision';
 import type { SecurityDecision } from '../src/shared/security';
@@ -22,23 +21,15 @@ import { cabinetSeat } from '../src/shared/cabinetSeating';
 import { findPath, walkable, type Point } from '../src/game/navigation';
 import { PLAYER_SPEED, PLAYER_SPRINT_SPEED, ROOM_CAPACITY, hallObstacles, hallLinkAt, inHallDoor, SEATS, DRINKS, atBar, type ChatMessage, type HallId } from '../src/shared/world';
 import { intoxicatedMovement } from '../src/shared/intoxication';
-import { drunkKeyboardDirection } from '../src/shared/drunkControls';
-import { clickMovementPath } from '../src/game/drunkNavigation';
 import type { DrinkingState } from './intoxicationStore';
-import { lobbyAdmission, settleAuthWork } from './lobbyAdmission';
-import { ACCOUNT_LEASE_RENEW_MS, type AccountLease } from './accountLeases';
 
-type Control = { dx: number; dy: number; at: number; path: Point[]; lastTarget: number; chatRevision: number; pendingChat?: number; inputs: MovementInputs; predicted: boolean; afterMovement?: () => void };
+type Control = { dx: number; dy: number; at: number; path: Point[]; lastTarget: number; chatRevision: number; inputs: MovementInputs; predicted: boolean; afterMovement?: () => void };
 type ProfileRevision = { name: number; skin: number; appearance: number };
 type Access = { active: boolean; banUntil: number; drinking: DrinkingState; revision: number; profileRevision: ProfileRevision; pendingDrink: boolean; pendingEject: boolean };
 const pendingDrinks = new Set<string>();
 const CABINET_REACTION_MS = 2400;
 const CABINET_REACTION_INTERVAL_MS = 450;
 const CABINET_PLAY_DISTANCE = 90;
-const liveClient = (client: Client) => {
-  const readyState = (client as Client & Partial<ClientPrivate>).readyState;
-  return (readyState === undefined || readyState === 1) && client.state !== ClientState.LEAVING && client.state !== ClientState.CLOSED;
-};
 export class LobbyRoom extends Room<{ state: LobbyState }> {
   state = new LobbyState();
   maxClients = ROOM_CAPACITY;
@@ -75,9 +66,6 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
   private access = new Map<string, Access>();
   private joiningAccounts = new Set<string>();
   private playerAccounts = new Map<string, string>();
-  private accountLeases = new Map<string, AccountLease>();
-  private readonly leaseRoomId = randomUUID();
-  private renewingLeases = false;
   private refreshingAccess = false;
   private disposed = false;
   private bartender = new Bartender(this.state);
@@ -97,7 +85,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     for (const client of this.clients) if ((client.auth as RoomAuth)?.account.id === id) {
       const access = this.access.get(client.sessionId); if (access) { access.drinking = state; access.revision++; }
       const player = this.state.players.get(client.sessionId);
-      if (player) { player.soberAt = state.soberAt; player.controlLayout = state.controlLayout; }
+      if (player) player.soberAt = state.soberAt;
     }
   };
   private nameListener = (id: string, name: string) => {
@@ -122,11 +110,6 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     }
   };
   onCreate() {
-    lobbyAdmission.claimRoom(this);
-    try { this.createLobby(); }
-    catch (error) { this.onDispose(); this.clock.clear(); throw error; }
-  }
-  private createLobby() {
     this.state.serverNow = Date.now();
     accounts.events.on('security', this.securityListener);
     accounts.events.on('logout', this.logoutListener);
@@ -134,13 +117,11 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     accounts.events.on('skin', this.skinListener);
     accounts.events.on('appearance', this.appearanceListener);
     accounts.events.on('drinking', this.drinkingListener);
-    this.clock.setInterval(() => { this.state.serverNow = Date.now(); }, 1000);
     this.clock.setInterval(() => { void this.refreshAccess().catch(() => console.error('Room access refresh failed')); }, 60000);
-    this.clock.setInterval(() => { void this.renewAccountLeases(); }, ACCOUNT_LEASE_RENEW_MS);
     this.setPatchRate(50);
     let hallElapsed=0;
     this.setSimulationInterval(delta => {
-      this.fenceAccountLeases();
+      this.state.serverNow = Date.now();
       const dt=Math.min(delta,100)/1000;
       this.activities.tick(dt);this.guards.tick(dt);this.bartender.tick(dt);this.guests.tick(dt);this.cat.tick(dt);hallElapsed+=dt;
       while(hallElapsed>=.05){this.tick(.05);hallElapsed-=.05;}
@@ -210,8 +191,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       this.stand(client.sessionId);
       control.predicted = false;
       control.lastTarget = Date.now(); control.dx = control.dy = 0;
-      control.path = clickMovementPath(p, { x, y }, (data as { wander?: unknown }).wander === true);
-      client.send('walk-target', { target: control.path.at(-1) ?? null, revision: p.hallRevision });
+      control.path = findPath(p, { x, y }, hallObstacles(p.hall));
     });
     listen('stop', client => this.stop(client.sessionId));
     listen('playing', (client, value: unknown) => {
@@ -270,7 +250,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
         if (!p.seat) p.facing = 'down';
         const drinking = await accounts.drinking.consume(accountId, id as string, Date.now());
         if (!this.currentAction(client, p, control, chatRevision, hallRevision)) return;
-        access.drinking = drinking; p.soberAt = drinking.soberAt; p.controlLayout = drinking.controlLayout;
+        access.drinking = drinking; p.soberAt = drinking.soberAt;
       } catch (error) {
         if (this.currentAction(client, p, control, chatRevision, hallRevision) && p.action === 'drink' && p.drink === id) {
           p.action = p.seat ? 'sit' : 'idle'; p.drink = ''; p.actionUntil = 0;
@@ -285,21 +265,19 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       if (!text || text.length > 300) return;
       const id = (client.auth as RoomAuth).account.id, chatRevision = control.chatRevision, hallRevision = player.hallRevision;
       const valid = () => this.currentAction(client, player, control, chatRevision, hallRevision);
-      // Count arrivals immediately so a slow provider cannot hide a burst of spam.
+      const active = await accounts.active((client.auth as RoomAuth).hash);
+      if (!active) { this.logoutListener((client.auth as RoomAuth).hash); return; }
+      if (!valid()) return;
       const spam = chatSpam.check(id,text);
       if (spam === 'spam') {
-        if (!await accounts.active((client.auth as RoomAuth).hash)) { this.logoutListener((client.auth as RoomAuth).hash); return; }
-        if (!valid()) return;
         const decision = await accounts.moderation.record(id);
         // Persisted sanctions update the account in every room, including after a disconnect.
         accounts.events.emit('security', id, {...decision, reason:'spam'});
         return;
       }
       if (spam === 'slow') { client.send('notice', 'Слишком быстро. Продолжение спама вызовет охранника.'); return; }
-      const pending = chatQueue.enqueue(id, async () => {
-        if (!valid()) return;
-        if (!await accounts.active((client.auth as RoomAuth).hash)) { this.logoutListener((client.auth as RoomAuth).hash); return; }
-        if (!valid()) return;
+      client.send('chat-check', true);
+      try {
         const violation = await chatModerator.check(id, text);
         if (!valid()) return;
         if (!await accounts.active((client.auth as RoomAuth).hash)) { this.logoutListener((client.auth as RoomAuth).hash); return; }
@@ -309,73 +287,45 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
           const decision = await accounts.moderation.record(id);
           accounts.events.emit('security', id, {...decision, reason:'insult'});
         } else this.publish({ id: randomUUID(), senderId: client.sessionId, name: player.name, text, time: Date.now() });
-      });
-      if (!pending) { client.send('notice', 'Очередь проверки заполнена. Сообщение не отправлено. Подожди немного и повтори.'); return; }
-      control.pendingChat = (control.pendingChat ?? 0) + 1;
-      client.send('chat-check', true);
-      try { await pending; } catch (error) {
+      } catch (error) {
         if (valid()) client.send('notice', error instanceof Error ? error.message : 'Сообщение не отправлено.');
-      } finally {
-        control.pendingChat = (control.pendingChat ?? 1) - 1;
-        if (!control.pendingChat && this.state.players.get(client.sessionId) === player) client.send('chat-check', false);
-      }
+      } finally { if (this.state.players.get(client.sessionId) === player) client.send('chat-check', false); }
     });
     this.onMessage('history', client => client.send('history', this.history));
   }
-  static async onAuth(_token: string, _options: unknown, context: AuthContext): Promise<RoomAuth> {
+  async onAuth(_client: Client, _options: unknown, context: AuthContext) {
     if (!allowedOrigin(context.headers.get('origin') || undefined)) throw new ServerError(403, 'Недопустимый источник подключения.');
-    const token = cookieToken(context.headers.get('cookie') || undefined);
-    if (!token) throw new ServerError(401, 'Сначала войди по почте и паролю.');
-    return lobbyAdmission.authenticate(async () => {
-      const auth = await accounts.session(token);
-      if (!auth) throw new ServerError(401, 'Сначала войди по почте и паролю.');
-      const until = await accounts.moderation.banUntil(auth.account.id);
-      if (until) throw new ServerError(403, 'Охрана закрыла вход за нарушение правил клуба. Осталось '+Math.ceil((until-Date.now())/60000)+' мин.');
-      if (auth.account.skin === null) throw new ServerError(400, 'Сначала выбери персонажа.');
-      return auth;
-    });
+    const auth = await accounts.session(cookieToken(context.headers.get('cookie') || undefined));
+    if (!auth) throw new ServerError(401, 'Сначала войди по почте и паролю.');
+    const until = await accounts.moderation.banUntil(auth.account.id);
+    if (until) throw new ServerError(403, 'Охрана закрыла вход за нарушение правил клуба. Осталось '+Math.ceil((until-Date.now())/60000)+' мин.');
+    if (auth.account.skin === null) throw new ServerError(400, 'Сначала выбери персонажа.');
+    return auth;
   }
   async onJoin(client: Client, options: unknown, auth: RoomAuth) {
-    return lobbyAdmission.reserved(() => this.joinLobby(client, options, auth));
-  }
-  private async joinLobby(client: Client, options: unknown, auth: RoomAuth) {
-    if (this.disposed || !liveClient(client)) throw new ServerError(503, 'Подключение к залу уже закрыто.');
-    const duplicate = () => new ServerError(409, 'Этот аккаунт уже находится в зале. Закрой другую вкладку или подожди немного.');
+    const duplicate = () => new ServerError(409, 'Этот аккаунт уже находится в зале. Закрой другую вкладку или подожди 20 секунд.');
     // Dropped clients leave this.clients before their reserved player is removed.
     if (this.joiningAccounts.has(auth.account.id) || [...this.playerAccounts.values()].includes(auth.account.id)) throw duplicate();
     this.joiningAccounts.add(auth.account.id);
-    const access: Access = { active: true, banUntil: 0, drinking: { soberAt: 0, lastDrink: '', lastDrinkAt: 0, controlLayout: 0 }, revision: 0, profileRevision: { name: 0, skin: 0, appearance: 0 }, pendingDrink: false, pendingEject: false };
+    const access: Access = { active: true, banUntil: 0, drinking: { soberAt: 0, lastDrink: '', lastDrinkAt: 0 }, revision: 0, profileRevision: { name: 0, skin: 0, appearance: 0 }, pendingDrink: false, pendingEject: false };
     this.access.set(client.sessionId, access);
-    let lease: AccountLease | undefined;
     try {
-      const revision = access.revision;
-      const [active, until, drinking] = await settleAuthWork([
-        accounts.active(auth.hash), accounts.moderation.banUntil(auth.account.id), accounts.drinking.read(auth.account.id),
+      const revision = access.revision, profileRevision = { ...access.profileRevision };
+      const [active, until, drinking, profile] = await Promise.all([
+        accounts.active(auth.hash), accounts.moderation.banUntil(auth.account.id), accounts.drinking.read(auth.account.id), accounts.currentAccount(auth.account.id),
       ]);
-      if (this.disposed || !liveClient(client) || this.access.get(client.sessionId) !== access || !active || !access.active) throw new ServerError(401, 'Войди в аккаунт ещё раз.');
+      if (this.disposed || this.access.get(client.sessionId) !== access || !active || !access.active) throw new ServerError(401, 'Войди в аккаунт ещё раз.');
       access.banUntil = Math.max(until, access.banUntil);
       if (access.banUntil > Date.now()) throw new ServerError(403, 'Вход временно закрыт охраной.');
       if (revision === access.revision) access.drinking = drinking;
-      lease = await accounts.lobbyLeases.claim(auth.account.id, auth.hash, this.roomId || this.leaseRoomId, client.sessionId);
-      if (!lease) {
-        const [stillActive, latestBan] = await settleAuthWork([
-          accounts.active(auth.hash), accounts.moderation.banUntil(auth.account.id),
-        ]);
-        if (!stillActive || !access.active) throw new ServerError(401, 'Войди в аккаунт ещё раз.');
-        if (Math.max(latestBan, access.banUntil) > Date.now()) throw new ServerError(403, 'Вход временно закрыт охраной.');
-        throw duplicate();
-      }
-      this.accountLeases.set(client.sessionId, lease);
-      if (this.disposed || !liveClient(client) || this.access.get(client.sessionId) !== access || !access.active) throw new ServerError(401, 'Войди в аккаунт ещё раз.');
-      const profileRevision = { ...access.profileRevision };
-      const profile = await accounts.currentAccount(auth.account.id);
-      if (this.disposed || !liveClient(client) || this.access.get(client.sessionId) !== access || !access.active) throw new ServerError(401, 'Войди в аккаунт ещё раз.');
-      if (!profile) throw new ServerError(401, 'Войди в аккаунт ещё раз.');
-      if (access.banUntil > Date.now()) throw new ServerError(403, 'Вход временно закрыт охраной.');
-      if (!this.leaseAllowed(client.sessionId)) throw new ServerError(503, 'Не удалось подтвердить подключение к залу. Попробуй снова.');
       this.applyProfile(auth, access, profile, profileRevision);
       if (auth.account.skin === null) throw new ServerError(401, 'Выбери персонажа и войди в зал ещё раз.');
-      const p = new Player(); p.name = auth.account.name; p.soberAt = access.drinking.soberAt; p.controlLayout = access.drinking.controlLayout;
+      const others = this.clients.filter(other => other !== client && (other.auth as RoomAuth)?.account.id === auth.account.id);
+      const activeOthers = await Promise.all(others.map(other => accounts.active((other.auth as RoomAuth).hash)));
+      if (this.disposed || this.access.get(client.sessionId) !== access || !access.active) throw new ServerError(401, 'Войди в аккаунт ещё раз.');
+      if (access.banUntil > Date.now()) throw new ServerError(403, 'Вход временно закрыт охраной.');
+      if (activeOthers.some(Boolean)) throw duplicate();
+      const p = new Player(); p.name = auth.account.name; p.soberAt = access.drinking.soberAt;
       const index = this.nextSpawn++;
       p.x = 420 + index % 8 * 40; p.y = 570 + Math.floor(index % 24 / 8) * 25; p.skin = auth.account.skin!; p.appearance = serializeAppearance(auth.account.appearance);
       this.playerAccounts.set(client.sessionId, auth.account.id);
@@ -383,14 +333,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       this.controls.set(client.sessionId, { dx: 0, dy: 0, at: 0, path: [], lastTarget: 0, chatRevision: 0, inputs: new MovementInputs(), predicted: false });
       if((options as {activityProtocol?:unknown}|null)?.activityProtocol===1)this.activityProtocols.add(client.sessionId);
       this.system(p.name+' заходит в зал');
-    } catch (error) {
-      if (this.access.get(client.sessionId) === access) this.access.delete(client.sessionId);
-      if (lease) {
-        if (this.accountLeases.get(client.sessionId) === lease) this.accountLeases.delete(client.sessionId);
-        await this.releaseAccountLeases([lease]);
-      }
-      throw error;
-    }
+    } catch (error) { if (this.access.get(client.sessionId) === access) this.access.delete(client.sessionId); throw error; }
     finally { this.joiningAccounts.delete(auth.account.id); }
   }
   onDrop(client: Client) {
@@ -403,47 +346,32 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     void this.allowReconnection(client, 20).catch(() => {});
   }
   onDispose() {
-    const leases = [...this.accountLeases.values()];
-    this.accountLeases.clear();
     for (const id of this.state.players.keys()) this.releaseCabinet(id);
-    try {
-      this.disposed = true;
-      accounts.events.off('security', this.securityListener); accounts.events.off('logout', this.logoutListener);
-      accounts.events.off('name', this.nameListener); accounts.events.off('skin', this.skinListener); accounts.events.off('appearance', this.appearanceListener); accounts.events.off('drinking', this.drinkingListener);
-    } finally { lobbyAdmission.releaseRoom(this); }
-    return this.releaseAccountLeases(leases);
+    this.disposed = true;
+    accounts.events.off('security', this.securityListener); accounts.events.off('logout', this.logoutListener);
+    accounts.events.off('name', this.nameListener); accounts.events.off('skin', this.skinListener); accounts.events.off('appearance', this.appearanceListener); accounts.events.off('drinking', this.drinkingListener);
   }
   async onReconnect(client: Client) {
-    return lobbyAdmission.reserved(() => this.reconnectLobby(client));
-  }
-  private async reconnectLobby(client: Client) {
-    if (this.disposed || !liveClient(client)) return;
-    const p = this.state.players.get(client.sessionId), access = this.access.get(client.sessionId), lease = this.accountLeases.get(client.sessionId);
-    if (!p || !access || !lease || !this.leaseAllowed(client.sessionId)) { client.leave(4001); return; }
+    const p = this.state.players.get(client.sessionId), access = this.access.get(client.sessionId);
+    if (!p || !access) { client.leave(4001); return; }
+    const auth = client.auth as RoomAuth;
     try {
-      const revision = access.revision;
-      const profileRevision = { ...access.profileRevision };
-      const auth = client.auth as RoomAuth;
-      const [active, until, drinking, profile, renewed] = await settleAuthWork([
-        accounts.active(auth.hash), accounts.moderation.banUntil(auth.account.id), accounts.drinking.read(auth.account.id),
-        accounts.currentAccount(auth.account.id), accounts.lobbyLeases.renew([lease]),
+      const revision = access.revision, profileRevision = { ...access.profileRevision };
+      const [active, until, drinking, profile] = await Promise.all([
+        accounts.active(auth.hash), accounts.moderation.banUntil(auth.account.id), accounts.drinking.read(auth.account.id), accounts.currentAccount(auth.account.id),
       ]);
-      const nextLease = renewed.get(lease.token);
-      if (this.disposed || !liveClient(client) || this.access.get(client.sessionId) !== access || this.state.players.get(client.sessionId) !== p
-        || this.accountLeases.get(client.sessionId)?.token !== lease.token || !active || !access.active || !profile || !nextLease) { client.leave(4001); return; }
-      this.accountLeases.set(client.sessionId, nextLease);
-      if (!this.leaseAllowed(client.sessionId)) { this.expireAccountLease(client.sessionId); return; }
+      if (this.disposed || this.access.get(client.sessionId) !== access || this.state.players.get(client.sessionId) !== p || !active || !access.active) { client.leave(4001); return; }
       access.banUntil = Math.max(until, access.banUntil);
       if (access.banUntil > Date.now()) { client.leave(4003); return; }
-      if (revision === access.revision) { access.drinking = drinking; p.soberAt = drinking.soberAt; p.controlLayout = drinking.controlLayout; }
+      if (revision === access.revision) { access.drinking = drinking; p.soberAt = drinking.soberAt; }
       this.applyProfile(auth, access, profile, profileRevision);
       if (auth.account.skin === null) { client.leave(4001); return; }
       p.name = auth.account.name; p.skin = auth.account.skin; p.appearance = serializeAppearance(auth.account.appearance);
       p.connected = true;
     } catch { client.leave(4001); }
   }
-  private applyProfile(auth: RoomAuth, access: Access, profile: Account, captured: ProfileRevision) {
-    // Preserve fields changed by an event while this database snapshot was pending.
+  private applyProfile(auth: RoomAuth, access: Access, profile: Account | undefined, captured: ProfileRevision) {
+    if (!profile) throw new ServerError(401, 'Войди в аккаунт ещё раз.');
     auth.account = { ...profile,
       name: captured.name === access.profileRevision.name ? profile.name : auth.account.name,
       skin: captured.skin === access.profileRevision.skin ? profile.skin : auth.account.skin,
@@ -452,72 +380,19 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
   }
   onLeave(client: Client) {
     this.playerAccounts.delete(client.sessionId);
-    const lease = this.accountLeases.get(client.sessionId);
-    this.accountLeases.delete(client.sessionId);
     this.activities.leave(client.sessionId);
     this.releaseCabinet(client.sessionId);
     const p = this.state.players.get(client.sessionId);
     this.state.players.delete(client.sessionId); this.controls.delete(client.sessionId); this.access.delete(client.sessionId);this.activityProtocols.delete(client.sessionId);
     if (p) this.system(p.name+' покидает зал');
-    return this.releaseAccountLeases(lease ? [lease] : []);
   }
   private accessAllowed(client: Client, allowPendingEject = false) {
     const access = this.access.get(client.sessionId);
-    return !!access?.active && this.leaseAllowed(client.sessionId) && access.banUntil <= Date.now() && (allowPendingEject || !access.pendingEject);
+    return !!access?.active && access.banUntil <= Date.now() && (allowPendingEject || !access.pendingEject);
   }
   private currentAction(client: Client, player: Player, control: Control, chatRevision: number, hallRevision: number, allowPendingEject = false) {
     return !this.disposed && this.state.players.get(client.sessionId) === player && this.controls.get(client.sessionId) === control
       && control.chatRevision === chatRevision && player.hallRevision === hallRevision && player.connected && !player.security && this.accessAllowed(client, allowPendingEject);
-  }
-  private leaseAllowed(id: string) {
-    const lease = this.accountLeases.get(id);
-    // State-only room fixtures and NPCs do not own an authenticated lease.
-    return !lease || lease.deadline > performance.now();
-  }
-  private fenceAccountLeases() {
-    for (const [id, lease] of this.accountLeases) if (lease.deadline <= performance.now()) this.expireAccountLease(id);
-  }
-  private expireAccountLease(id: string) {
-    const lease = this.accountLeases.get(id);
-    if (!lease) return;
-    this.accountLeases.delete(id);
-    const access = this.access.get(id);
-    if (access) { access.active = false; access.revision++; }
-    const player = this.state.players.get(id);
-    if (player) player.connected = false;
-    this.activities.leave(id); this.releaseCabinet(id); this.stop(id);
-    // Remove the fenced avatar before NPC simulation can keep carrying or
-    // displacing it while the closing WebSocket awaits its final leave callback.
-    this.state.players.delete(id); this.controls.delete(id); this.activityProtocols.delete(id);
-    this.clients.get(id)?.leave(4001);
-    void this.releaseAccountLeases([lease]);
-  }
-  private async releaseAccountLeases(leases: readonly AccountLease[]) {
-    if (!leases.length) return;
-    try { await accounts.lobbyLeases.release(leases); }
-    catch { console.error('Room account lease release failed'); }
-  }
-  private async renewAccountLeases() {
-    if (this.renewingLeases || this.disposed || !this.accountLeases.size) return;
-    this.renewingLeases = true;
-    const leases = [...this.accountLeases.values()];
-    try {
-      const renewed = await accounts.lobbyLeases.renew(leases);
-      for (const lease of leases) {
-        const current = this.accountLeases.get(lease.sessionId), next = renewed.get(lease.token);
-        if (current?.token !== lease.token) {
-          if (next) await this.releaseAccountLeases([next]);
-          continue;
-        }
-        if (!next || current.deadline <= performance.now()) this.expireAccountLease(lease.sessionId);
-        else this.accountLeases.set(lease.sessionId, next);
-      }
-      this.fenceAccountLeases();
-    } catch {
-      // A short database outage can recover before the locally fenced deadline.
-      this.fenceAccountLeases();
-      console.error('Room account lease renewal failed');
-    } finally { this.renewingLeases = false; }
   }
   private canDrink(player: Player, id: unknown) {
     return player.hall === 'arcade' && atBar(player) && !player.playing && player.action !== 'drink' && DRINKS.some(drink => drink.id === id);
@@ -547,7 +422,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
         const revision = access.revision, auth = client.auth as RoomAuth;
         const [active, until, drinking] = await Promise.all([accounts.active(auth.hash), accounts.moderation.banUntil(auth.account.id), accounts.drinking.read(auth.account.id)]);
         if (this.disposed || this.access.get(client.sessionId) !== access || this.state.players.get(client.sessionId) !== player || access.revision !== revision) return;
-        access.active = active; access.banUntil = until; access.drinking = drinking; player.soberAt = drinking.soberAt; player.controlLayout = drinking.controlLayout;
+        access.active = active; access.banUntil = until; access.drinking = drinking; player.soberAt = drinking.soberAt;
         if (!active || until > Date.now()) { player.connected = false; this.releaseCabinet(client.sessionId); this.stop(client.sessionId); client.leave(active ? 4003 : 4001); }
       }));
     } finally { this.refreshingAccess = false; }
@@ -618,31 +493,28 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     return true;
   }
   private tick(dt: number) {
-    this.fenceAccountLeases();
-    const now = Date.now(), guards = [...this.state.guards.values()];
     for (const [id, p] of this.state.players) {
       if(this.enterDoor(id))continue;
       const c = this.controls.get(id)!;
-      if (p.gameReaction && now >= p.gameReactionUntil) { p.gameReaction = ''; p.gameReactionUntil = 0; }
-      if (p.action === 'drink' && now >= p.actionUntil) { p.action = p.seat ? 'sit' : 'idle'; p.drink = ''; p.actionUntil = 0; }
+      if (p.gameReaction && Date.now() >= p.gameReactionUntil) { p.gameReaction = ''; p.gameReactionUntil = 0; }
+      if (p.action === 'drink' && Date.now() >= p.actionUntil) { p.action = p.seat ? 'sit' : 'idle'; p.drink = ''; p.actionUntil = 0; }
       if (p.security || !p.connected || p.playing || this.cat.isHugging(id)) { p.moving = false; continue; }
       if (c.predicted) {
-        c.inputs.advance(p, now, guards, () => this.guards.contact(id));
+        c.inputs.advance(p, Date.now(), [...this.state.guards.values()], () => this.guards.contact(id));
         p.inputSeq = c.inputs.sequence;
         if (this.enterDoor(id)) continue;
         if (!c.inputs.pendingCount) {
           const action = c.afterMovement; c.afterMovement = undefined; action?.();
-          if (now-c.at > 250) p.moving = false;
+          if (Date.now()-c.at > 250) p.moving = false;
         }
         continue;
       }
       if (p.seat || p.action === 'drink') { p.moving = false; continue; }
       let dx = c.dx, dy = c.dy;
-      if (now - c.at > 450) dx = dy = 0;
+      if (Date.now() - c.at > 450) dx = dy = 0;
       if (!dx && !dy && !c.path.length) { p.moving = false; continue; }
-      let remaining = (c.path.length ? PLAYER_SPRINT_SPEED : PLAYER_SPEED) * (c.inputs.sequence ? c.inputs.takeDuration(dt*1000, now)/1000 : dt)
-        * intoxicatedMovement(p.soberAt, { x: dx, y: dy, ms: dt * 1000 }, now / 50, now).speedMultiplier;
-      const obstacles = hallObstacles(p.hall);
+      let remaining = (c.path.length ? PLAYER_SPRINT_SPEED : PLAYER_SPEED) * (c.inputs.sequence ? c.inputs.takeDuration(dt*1000)/1000 : dt)
+        * intoxicatedMovement(p.soberAt, { x: dx, y: dy, ms: dt * 1000 }, Date.now() / 50).speedMultiplier;
       const beforeX = p.x, beforeY = p.y;
       while (remaining > 0) {
         const target = c.path[0];
@@ -655,15 +527,16 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
         const distance = target ? Math.min(remaining, length) : remaining;
         // Keep click routes on their collision-checked path so every approach stays reachable.
         const steering = target ? { x: dx / length, y: dy / length }
-          : intoxicatedMovement(p.soberAt, { ...drunkKeyboardDirection(p.soberAt, p.controlLayout, { x: dx, y: dy }, now), ms: dt * 1000 }, now / 50, now);
+          : intoxicatedMovement(p.soberAt, { x: dx, y: dy, ms: dt * 1000 }, Date.now() / 50);
         const segmentX = p.x, segmentY = p.y;
         let guardBlocked = false;
         // Small substeps prevent crossing a thin obstacle between ticks.
         for (let step = 0; step < 3; step++) {
           const mx = steering.x * distance / 3, my = steering.y * distance / 3;
-          if (walkable(p.x + mx, p.y, obstacles)) {if(blockedByGuard(p,p.x+mx,p.y,guards)){guardBlocked=true;this.guards.contact(id);}else p.x+=mx;}
+          const guards=[...this.state.guards.values()];
+          if (walkable(p.x + mx, p.y, hallObstacles(p.hall))) {if(blockedByGuard(p,p.x+mx,p.y,guards)){guardBlocked=true;this.guards.contact(id);}else p.x+=mx;}
           if(p.security)break;
-          if (walkable(p.x, p.y + my, obstacles)) {if(blockedByGuard(p,p.x,p.y+my,guards)){guardBlocked=true;this.guards.contact(id);}else p.y+=my;}
+          if (walkable(p.x, p.y + my, hallObstacles(p.hall))) {if(blockedByGuard(p,p.x,p.y+my,guards)){guardBlocked=true;this.guards.contact(id);}else p.y+=my;}
           if(p.security)break;
         }
         remaining -= distance;

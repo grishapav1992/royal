@@ -1,7 +1,8 @@
+import { t as translateText } from '../i18n/index';
 export type ClusterGame = 'studio-lumen-grove'|'studio-prism-atelier';
 export const CLUSTER_SYMBOL_NAMES:Record<ClusterGame,string[]>={
-  'studio-lumen-grove':['Капля росы','Янтарный лист','Ночной цветок','Дикий знак','Фонарь-сборщик','Светящееся семя'],
-  'studio-prism-atelier':['Лазурная грань','Малиновая призма','Бирюзовый ромб','Дикий знак','Бонусный портал','Стеклянная медаль'],
+  'studio-lumen-grove':[translateText('Капля росы'),translateText('Янтарный лист'),translateText('Ночной цветок'),translateText('Дикий знак'),translateText('Фонарь-сборщик'),translateText('Светящееся семя')],
+  'studio-prism-atelier':[translateText('Лазурная грань'),translateText('Малиновая призма'),translateText('Бирюзовый ромб'),translateText('Дикий знак'),translateText('Бонусный портал'),translateText('Стеклянная медаль')],
 };
 
 /** Original SVG symbols; numeric identities come from the saved native game. */

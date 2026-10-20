@@ -1,3 +1,4 @@
+import { t as translateText, tr } from '../i18n/index';
 export type ThemedGameId = 'royal-flight' | 'royal-wheel';
 export type ThemedArtState = {
   phase: 'idle' | 'pending' | 'active' | 'cashed_out' | 'crashed';
@@ -53,7 +54,7 @@ export class ThemedGameArt {
     if (this.gameId === 'royal-wheel') {
       this.canvas.dataset.rotation = String(this.state.rotation);
       this.canvas.dataset.segment = this.state.selectedSegment === null ? '' : String(this.state.selectedSegment);
-      this.canvas.setAttribute('aria-label', this.state.selectedSegment === null ? 'Колесо Royal Fortune, 50 секторов' : `Колесо Royal Fortune: сектор ${this.state.selectedSegment + 1} из 50, ${this.state.multipliers[this.state.selectedSegment]}×`);
+      this.canvas.setAttribute('aria-label', this.state.selectedSegment === null ? translateText('Колесо Royal Fortune, 50 секторов') : tr`Колесо Royal Fortune: сектор ${this.state.selectedSegment + 1} из 50, ${this.state.multipliers[this.state.selectedSegment]}×`);
     }
     this.draw(performance.now());
   }

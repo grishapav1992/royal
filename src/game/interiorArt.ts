@@ -1,3 +1,4 @@
+import { t as translateText } from '../i18n/index';
 import { FLOOR } from '../shared/clubGeometry';
 import type Phaser from 'phaser';
 import { CABINETS } from '../shared/cabinets';
@@ -46,16 +47,16 @@ export function drawHallIdentity(scene: Phaser.Scene, hall: HallId) {
     art('casino-chandelier',282,251,64,88,3);
     art('casino-chandelier',712,243,64,88,3);
     for(const x of [282,712])lights.fillStyle(0xf4ca7e,.045).fillEllipse(x,285,154,90);
-    scene.add.text(3510,113,'ROYAL STUDIO',{fontFamily:'Georgia',fontSize:'31px',fontStyle:'bold',letterSpacing:4,color:'#d9e7ef'}).setOrigin(.5).setDepth(3);
-    scene.add.text(3510,151,'35 МИРОВ · ОБЩИЙ ТЕСТОВЫЙ КОШЕЛЁК',{fontFamily:'Arial',fontSize:'11px',letterSpacing:2,color:'#b2c8d4'}).setOrigin(.5).setDepth(3);
+    scene.add.text(1560,113,translateText('КАЗИНО И БАР'),{fontFamily:'Georgia',fontSize:'31px',fontStyle:'bold',letterSpacing:4,color:'#d9e7ef'}).setOrigin(.5).setDepth(3);
+    scene.add.text(1560,151,translateText('НОВЫЕ ИГРЫ · GITHUB · ДЕМОКАТАЛОГИ'),{fontFamily:'Arial',fontSize:'11px',letterSpacing:2,color:'#b2c8d4'}).setOrigin(.5).setDepth(3);
   }else if(hall==='github'){
     art('card-salon-sign',540,170,342,106);
     for(const x of [1240,2170,3100,4030]){
       art('casino-chandelier',x,225,62,85,3);
       lights.fillStyle(0xf4ca7e,.05).fillEllipse(x,250,175,98);
     }
-    scene.add.text(2620,113,'КАРТОЧНЫЙ САЛОН',{fontFamily:'Georgia',fontSize:'30px',fontStyle:'bold',letterSpacing:3,color:'#e5d5b0'}).setOrigin(.5).setDepth(3);
-    scene.add.text(2620,151,'33 ИГРЫ · 33 КРУПЬЕ · ЭТАЖ 3',{fontFamily:'Arial',fontSize:'11px',letterSpacing:2,color:'#c2d0c8'}).setOrigin(.5).setDepth(3);
+    scene.add.text(2620,113,translateText('КАРТОЧНЫЙ САЛОН'),{fontFamily:'Georgia',fontSize:'30px',fontStyle:'bold',letterSpacing:3,color:'#e5d5b0'}).setOrigin(.5).setDepth(3);
+    scene.add.text(2620,151,translateText('33 ИГРЫ · 33 КРУПЬЕ · ЭТАЖ 3'),{fontFamily:'Arial',fontSize:'11px',letterSpacing:2,color:'#c2d0c8'}).setOrigin(.5).setDepth(3);
   }else{
     art('billiard-sign',540,166,316,98);
     art('billiard-lamp',562,323,156,66,3);

@@ -1,17 +1,20 @@
+import { t as translateText, tr } from '../i18n/index';
+import {AFTER_LINES} from './afterglow';
 import { DEMO_BETS } from './demoWallet';
+import {NITRO_LINES} from './nitroRun';
 
-export const STUDIO_REFERENCE_IDS = ['cosmic-escape','caramel-carnival','orbit','velvet-reign','deep-current','ember-vault','lumen-grove','neon-crown','sky-lanterns','stormforge-duel','copperline-express','saffron-cipher','prism-atelier','midnight-market','pulse-district','rivet-rally','petal-parlor','frostline-courier','beacon-bay','sunbird-trails','gale-riders','dune-hopper','canopy-crossing','aurora-lift','tidal-relay','mosaic-muse','obsidian-drop','signal-fox','saffron-spin','fossil-trail','blazing-orchard','jade-koi','moonlit-mint','starfall-oracle','lucky-spotlight'] as const;
+export const STUDIO_REFERENCE_IDS = ['cosmic-escape','caramel-carnival','orbit','velvet-reign','deep-current','ember-vault','lumen-grove','neon-crown','sky-lanterns','stormforge-duel','copperline-express','saffron-cipher','prism-atelier','midnight-market','pulse-district','rivet-rally','petal-parlor','frostline-courier','beacon-bay','sunbird-trails','gale-riders','dune-hopper','canopy-crossing','aurora-lift','tidal-relay','mosaic-muse','obsidian-drop','signal-fox','saffron-spin','fossil-trail','blazing-orchard','jade-koi','moonlit-mint','starfall-oracle','lucky-spotlight','last-convoy','nitro-run','afterglow','meme-overload'] as const;
 export type StudioGameId = `studio-${typeof STUDIO_REFERENCE_IDS[number]}`;
 export const STUDIO_GAMES = STUDIO_REFERENCE_IDS.map(id => `studio-${id}` as StudioGameId);
 export type StudioKind = 'slot'|'crash'|'flight'|'keno'|'plinko'|'dice'|'wheel'|'mines';
 export type StudioTheme = 'space'|'candy'|'ocean'|'forge'|'garden';
 export type StudioFeature = 'expand'|'tumble'|'multiplier-wild'|'collect'|'hold'|'cluster'|'ways'|'sticky'|'chosen'|'cell-multipliers'|'walking'|'synced'|'wheels'|'mystery'|'beam'|'trail'|'wish'|'orbs';
 export type StudioInfo = {id:StudioGameId;sourceReferenceId:string;name:string;category:StudioKind;kind:StudioKind;cols:number;rows:number;grid:{cols:number;rows:number};paylines:number[][];ways:number;features:StudioFeature[];theme:StudioTheme;palette:string[];color:number;subtitle:string;description:string};
-const titles = ['Звёздный побег','Карамельный праздник','Орбитальный рейс','Бархатная корона','Сокровища глубин','Огненный сейф','Светящийся лес','Неоновый трон','Небесные фонари','Кузница стихий','Медный экспресс','Золотой шифр','Мастерская призм','Ночной базар','Пульс мегаполиса','Механический ралли','Цветочная гостиная','Полярная доставка','Маяк удачи','Тропа жар-птицы','На крыльях ветра','Прыжок через дюны','Лесной переход','Северный подъём','Морской маршрут','Мозаика чисел','Обсидиановый шар','Лисий сигнал','Золотое вращение','Тропа ископаемых','Огненный сад 40','Нефритовый карп','Лунный монетный двор','Звёздный оракул','Колесо прожекторов'];
-const themes:StudioTheme[] = ['space','candy','space','space','ocean','forge','garden','space','garden','forge','forge','forge','space','forge','space','forge','garden','ocean','ocean','garden','ocean','forge','garden','space','ocean','space','forge','space','forge','garden','candy','garden','forge','space','candy'];
+const titles = [translateText('Звёздный побег'),translateText('Карамельный праздник'),translateText('Орбитальный рейс'),translateText('Бархатная корона'),translateText('Сокровища глубин'),translateText('Огненный сейф'),translateText('Светящийся лес'),translateText('Неоновый трон'),translateText('Небесные фонари'),translateText('Кузница стихий'),translateText('Медный экспресс'),translateText('Золотой шифр'),translateText('Мастерская призм'),translateText('Ночной базар'),translateText('Пульс мегаполиса'),translateText('Механический ралли'),translateText('Цветочная гостиная'),translateText('Полярная доставка'),translateText('Маяк удачи'),translateText('Тропа жар-птицы'),translateText('На крыльях ветра'),translateText('Прыжок через дюны'),translateText('Лесной переход'),translateText('Северный подъём'),translateText('Морской маршрут'),translateText('Мозаика чисел'),translateText('Обсидиановый шар'),translateText('Лисий сигнал'),translateText('Золотое вращение'),translateText('Тропа ископаемых'),translateText('Огненный сад 40'),translateText('Нефритовый карп'),translateText('Лунный монетный двор'),translateText('Звёздный оракул'),translateText('Колесо прожекторов'),translateText('Последний конвой'),translateText('Нитро-заезд'),'GIRLHUB','MEME OVERLOAD'];
+const themes:StudioTheme[] = ['space','candy','space','space','ocean','forge','garden','space','garden','forge','forge','forge','space','forge','space','forge','garden','ocean','ocean','garden','ocean','forge','garden','space','ocean','space','forge','space','forge','garden','candy','garden','forge','space','candy','forge','forge','forge','space'];
 const category:Record<string,StudioKind> = {orbit:'flight','gale-riders':'crash','dune-hopper':'crash','canopy-crossing':'crash','aurora-lift':'crash','tidal-relay':'crash','mosaic-muse':'keno','obsidian-drop':'plinko','signal-fox':'dice','saffron-spin':'wheel','fossil-trail':'mines','lucky-spotlight':'wheel'};
-const features:Record<string,StudioFeature[]> = {'cosmic-escape':['expand'],'caramel-carnival':['tumble'],'velvet-reign':['multiplier-wild','sticky'],'deep-current':['collect'],'ember-vault':['hold'],'lumen-grove':['cluster','collect'],'neon-crown':[],'sky-lanterns':['ways'],'stormforge-duel':['expand','multiplier-wild'],'copperline-express':['sticky','multiplier-wild'],'saffron-cipher':['chosen'],'prism-atelier':['cluster','cell-multipliers'],'midnight-market':['collect','hold'],'pulse-district':['walking'],'rivet-rally':['ways','synced'],'petal-parlor':['wheels'],'frostline-courier':['ways','mystery'],'beacon-bay':['beam'],'sunbird-trails':['trail'],'blazing-orchard':['expand','collect'],'jade-koi':['wish'],'moonlit-mint':['hold'],'starfall-oracle':['tumble','orbs']};
-const dimensions:Record<string,[number,number]> = {'caramel-carnival':[6,5],'velvet-reign':[5,4],'ember-vault':[5,4],'lumen-grove':[6,5],'neon-crown':[3,3],'sky-lanterns':[6,4],'prism-atelier':[6,6],'rivet-rally':[5,3],'frostline-courier':[5,3],'blazing-orchard':[5,4],'jade-koi':[3,3],'moonlit-mint':[3,3],'starfall-oracle':[6,5]};
+const features:Record<string,StudioFeature[]> = {'meme-overload':['tumble','collect'],'afterglow':['tumble','sticky','cell-multipliers','collect'],'nitro-run':['tumble','collect'],'last-convoy':['tumble','sticky'],'cosmic-escape':['expand'],'caramel-carnival':['tumble'],'velvet-reign':['multiplier-wild','sticky'],'deep-current':['collect'],'ember-vault':['hold'],'lumen-grove':['cluster','collect'],'neon-crown':[],'sky-lanterns':['ways'],'stormforge-duel':['expand','multiplier-wild'],'copperline-express':['sticky','multiplier-wild'],'saffron-cipher':['chosen'],'prism-atelier':['cluster','cell-multipliers'],'midnight-market':['collect','hold'],'pulse-district':['walking'],'rivet-rally':['ways','synced'],'petal-parlor':['wheels'],'frostline-courier':['ways','mystery'],'beacon-bay':['beam'],'sunbird-trails':['trail'],'blazing-orchard':['expand','collect'],'jade-koi':['wish'],'moonlit-mint':['hold'],'starfall-oracle':['tumble','orbs']};
+const dimensions:Record<string,[number,number]> = {'meme-overload':[6,5],'afterglow':[6,5],'nitro-run':[6,5],'last-convoy':[6,5],'caramel-carnival':[6,5],'velvet-reign':[5,4],'ember-vault':[5,4],'lumen-grove':[6,5],'neon-crown':[3,3],'sky-lanterns':[6,4],'prism-atelier':[6,6],'rivet-rally':[5,3],'frostline-courier':[5,3],'blazing-orchard':[5,4],'jade-koi':[3,3],'moonlit-mint':[3,3],'starfall-oracle':[6,5]};
 const lineCounts:Record<string,number> = {'cosmic-escape':20,'velvet-reign':14,'neon-crown':5,'stormforge-duel':16,'copperline-express':20,'saffron-cipher':15,'midnight-market':10,'pulse-district':10,'petal-parlor':10,'beacon-bay':20,'sunbird-trails':10,'blazing-orchard':40,'jade-koi':5,'moonlit-mint':5};
 const palettes:Record<StudioTheme,string[]> = {space:['#161d44','#83c7ff','#e7bdff'],candy:['#4c183d','#ff97c4','#f5ce65'],ocean:['#082c40','#48d5d8','#efd6a1'],forge:['#301c16','#e69248','#eed27e'],garden:['#14382f','#7ce0a2','#e9c783']};
 export function makeStudioLines(cols:number,rows:number,count:number):number[][] {
@@ -23,8 +26,8 @@ export function makeStudioLines(cols:number,rows:number,count:number):number[][]
 }
 export const STUDIO_INFO = Object.fromEntries(STUDIO_REFERENCE_IDS.map((sourceReferenceId,i)=>{
   const id=`studio-${sourceReferenceId}` as StudioGameId,kind=category[sourceReferenceId]??'slot',theme=themes[i],f=features[sourceReferenceId]??[],[cols,rows]=kind==='slot'?(dimensions[sourceReferenceId]??[5,3]):[0,0],ways=f.includes('ways')?rows**cols:0;
-  const paylines=kind==='slot'&&!ways&&!f.includes('cluster')&&!f.includes('tumble')?makeStudioLines(cols,rows,lineCounts[sourceReferenceId]??20):[];
-  const description=kind==='slot'?(f.includes('tumble')?'Совпадения от восьми символов · До двух каскадов':f.includes('cluster')?'Соседние группы от пяти символов':ways?`${ways} способов · Совпадения слева направо`:`${paylines.length} линий · WILD и совпадения от трёх`):({crash:'Шаги риска · Забери выплату вовремя',flight:'Пять этапов полёта · Общий кошелёк',keno:'Пять чисел · Две цели',plinko:'Двенадцать рядов · Три уровня риска',dice:'Порог и направление · Числа 0-99',wheel:'Секторы удачи · Серверный исход',mines:'Шестнадцать ячеек · Четыре ловушки'} as Record<string,string>)[kind];
+  const paylines=sourceReferenceId==='afterglow'?AFTER_LINES.map(line=>[...line]):(sourceReferenceId==='nitro-run'||sourceReferenceId==='meme-overload')?NITRO_LINES.map(line=>[...line]):kind==='slot'&&!ways&&!f.includes('cluster')&&!f.includes('tumble')?makeStudioLines(cols,rows,lineCounts[sourceReferenceId]??20):[];
+  const description=sourceReferenceId==='meme-overload'?translateText('Каскады · Разгон до ×5 · Вирусный режим'):sourceReferenceId==='afterglow'?translateText('14 линий · Фотосессия · Альбом героинь'):sourceReferenceId==='nitro-run'?translateText('20 линий · Передачи · Нитро-рывок'):sourceReferenceId==='last-convoy'?translateText('Каскады · Баррикады до ×7 · Эвакуация'):kind==='slot'?(f.includes('tumble')?translateText('Совпадения от восьми символов · До двух каскадов'):f.includes('cluster')?translateText('Соседние группы от пяти символов'):ways?tr`${ways} способов · Совпадения слева направо`:tr`${paylines.length} линий · WILD и совпадения от трёх`):({crash:translateText('Шаги риска · Забери выплату вовремя'),flight:translateText('Пять этапов полёта · Общий кошелёк'),keno:translateText('Пять чисел · Две цели'),plinko:translateText('Двенадцать рядов · Три уровня риска'),dice:translateText('Порог и направление · Числа 0-99'),wheel:translateText('Секторы удачи · Серверный исход'),mines:translateText('Шестнадцать ячеек · Четыре ловушки')} as Record<string,string>)[kind];
   return [id,{id,sourceReferenceId,name:titles[i],category:kind,kind,cols,rows,grid:{cols,rows},paylines,ways,features:f,theme,palette:palettes[theme],color:parseInt(palettes[theme][1].slice(1),16),subtitle:description,description} satisfies StudioInfo];
 })) as Record<StudioGameId,StudioInfo>;
 export type StudioSettings = {studio:Record<string,never>|{numbers:number[];target:2|3}|{risk:'low'|'medium'|'high'}|{chance:25|50|75;direction:'under'|'over'}|{target:0|1|2|3}};
@@ -34,18 +37,44 @@ export type StudioSlotView = {kind:'slot';cols:number;rows:number;grid:number[];
 export type StudioCascadePresentationGameId = 'studio-caramel-carnival'|'studio-starfall-oracle';
 export type StudioClusterPresentationGameId = 'studio-lumen-grove'|'studio-prism-atelier';
 export type StudioElementPresentationGameId = 'studio-stormforge-duel'|'studio-saffron-cipher'|'studio-beacon-bay';
-export type StudioPresentationGameId = 'studio-cosmic-escape'|'studio-velvet-reign'|StudioCascadePresentationGameId|StudioClusterPresentationGameId|StudioElementPresentationGameId;
+export type StudioJourneyPresentationGameId = 'studio-copperline-express'|'studio-pulse-district'|'studio-jade-koi';
+export type StudioWaysPresentationGameId = 'studio-sky-lanterns'|'studio-rivet-rally'|'studio-frostline-courier';
+export type StudioWaysPresentationAward = {winIndex:number;symbol:0|1|2|3;count:number;columns:number[][];paths:number;excludedFullyWildPaths:number;paidWays:number};
+export type StudioWaysPresentation = {awards:StudioWaysPresentationAward[]};
+export type StudioSyncedPresentation = {sourceColumn:0;columns:number[]};
+export type StudioMysteryPresentation = {sourcePosition:0;sourceSymbol:number;symbol:0|1|2;positions:number[]};
+export type StudioCollectPresentationGameId = 'studio-deep-current'|'studio-blazing-orchard';
+export type StudioCollectionPresentationAward = {winIndex:number;collector:number;coins:{position:number;rawValue:number}[]};
+export type StudioCollectionPresentation = {awards:StudioCollectionPresentationAward[]};
+export type StudioHoldPresentationGameId = 'studio-ember-vault'|'studio-midnight-market'|'studio-moonlit-mint';
+export type StudioHeldCoinPresentation = {position:number;rawValue:number};
+export type StudioHoldPresentationAward = StudioHeldCoinPresentation & {winIndex:number};
+export type StudioHoldPresentation = {coinValues:StudioHeldCoinPresentation[];newPositions:number[];awards:StudioHoldPresentationAward[]};
+export type StudioWheelTrailPresentationGameId = 'studio-petal-parlor'|'studio-sunbird-trails';
+export type StudioWheelPresentationAward = {winIndex:number;position:number;count:number;rawValue:number};
+export type StudioWheelPresentation = {awards:StudioWheelPresentationAward[]};
+export type StudioTrailPresentationAward = {winIndex:number;line:number;positions:number[];factor:number};
+export type StudioTrailPresentation = {coinPositions:number[];factor:number;awards:StudioTrailPresentationAward[]};
+export type StudioPresentationGameId = 'studio-cosmic-escape'|'studio-velvet-reign'|StudioCascadePresentationGameId|StudioClusterPresentationGameId|StudioElementPresentationGameId|StudioJourneyPresentationGameId|StudioWaysPresentationGameId|StudioCollectPresentationGameId|StudioHoldPresentationGameId|StudioWheelTrailPresentationGameId;
 export type StudioSlotPresentationEvent = {kind:'expand-wild'|'chosen-wild'|'beam-wild';column:number;positions:number[];sourcePositions:number[]}|{kind:'sticky-wild';positions:number[]};
 export type StudioSlotPresentationMultiplier = {winIndex:number;line:number;factor:2|3|4;positions:number[]};
 export type StudioChosenPresentation = {symbol:0|1|2;sourcePosition:0;sourceSymbol:number;matchingColumns:number[];active:boolean};
+export type StudioWalkingPresentation = {forcedColumn:number|null;positions:number[];previousForcedColumn:number|null};
+export type StudioWishPin = {position:number;symbol:0|1|2};
+export type StudioWishPresentation = {symbol:0|1|2|null;pinsBefore:StudioWishPin[];pinsAfter:StudioWishPin[];newPins:StudioWishPin[];completed:boolean};
 export type StudioCascadePresentation = {fromStep:number|null;removedPositions:number[];drops:{from:number;to:number;symbol:number}[];refills:{position:number;symbol:number}[];groups:{winIndex:number;symbol:number;count:number;positions:number[]}[];orbPositions:number[];orbFactor:number;orbFactorBefore:number;addedOrbPositions:number[]};
 export type StudioClusterPresentation = {groups:{winIndex:number;symbol:number;count:number;positions:number[]}[];collects:{winIndex:number;collector:number;coins:{position:number;rawValue:number}[]}[];cellValues:{position:number;value:1|2|3}[];groupFactors:{winIndex:number;factor:number}[]};
-export type StudioSlotPresentationFrame = {gameId:StudioPresentationGameId;step:number;stage:StudioSlotFrame['stage'];beforeGrid:number[];afterGrid:number[];heldBefore:number[];heldAfter:number[];events:StudioSlotPresentationEvent[];multipliers:StudioSlotPresentationMultiplier[];cascade?:StudioCascadePresentation;cluster?:StudioClusterPresentation;chosen?:StudioChosenPresentation};
+export type StudioSlotPresentationFrame = {gameId:StudioPresentationGameId;step:number;stage:StudioSlotFrame['stage'];beforeGrid:number[];afterGrid:number[];heldBefore:number[];heldAfter:number[];events:StudioSlotPresentationEvent[];multipliers:StudioSlotPresentationMultiplier[];cascade?:StudioCascadePresentation;cluster?:StudioClusterPresentation;chosen?:StudioChosenPresentation;walking?:StudioWalkingPresentation;wish?:StudioWishPresentation;ways?:StudioWaysPresentation;synced?:StudioSyncedPresentation;mystery?:StudioMysteryPresentation;collection?:StudioCollectionPresentation;hold?:StudioHoldPresentation;wheels?:StudioWheelPresentation;trail?:StudioTrailPresentation};
 export type StudioSlotPresentation = StudioSlotPresentationFrame & {version:1;sessionId:string;phase:number};
 export const isStudioCascadePresentationGame = (game:unknown):game is StudioCascadePresentationGameId => game==='studio-caramel-carnival'||game==='studio-starfall-oracle';
 export const isStudioClusterPresentationGame = (game:unknown):game is StudioClusterPresentationGameId => game==='studio-lumen-grove'||game==='studio-prism-atelier';
 export const isStudioElementPresentationGame = (game:unknown):game is StudioElementPresentationGameId => game==='studio-stormforge-duel'||game==='studio-saffron-cipher'||game==='studio-beacon-bay';
-export const isStudioPresentationGame = (game:unknown):game is StudioPresentationGameId => game==='studio-cosmic-escape'||game==='studio-velvet-reign'||isStudioCascadePresentationGame(game)||isStudioClusterPresentationGame(game)||isStudioElementPresentationGame(game);
+export const isStudioJourneyPresentationGame = (game:unknown):game is StudioJourneyPresentationGameId => game==='studio-copperline-express'||game==='studio-pulse-district'||game==='studio-jade-koi';
+export const isStudioWaysPresentationGame = (game:unknown):game is StudioWaysPresentationGameId => game==='studio-sky-lanterns'||game==='studio-rivet-rally'||game==='studio-frostline-courier';
+export const isStudioCollectPresentationGame = (game:unknown):game is StudioCollectPresentationGameId => game==='studio-deep-current'||game==='studio-blazing-orchard';
+export const isStudioHoldPresentationGame = (game:unknown):game is StudioHoldPresentationGameId => game==='studio-ember-vault'||game==='studio-midnight-market'||game==='studio-moonlit-mint';
+export const isStudioWheelTrailPresentationGame = (game:unknown):game is StudioWheelTrailPresentationGameId => game==='studio-petal-parlor'||game==='studio-sunbird-trails';
+export const isStudioPresentationGame = (game:unknown):game is StudioPresentationGameId => game==='studio-cosmic-escape'||game==='studio-velvet-reign'||isStudioCascadePresentationGame(game)||isStudioClusterPresentationGame(game)||isStudioElementPresentationGame(game)||isStudioJourneyPresentationGame(game)||isStudioWaysPresentationGame(game)||isStudioCollectPresentationGame(game)||isStudioHoldPresentationGame(game)||isStudioWheelTrailPresentationGame(game);
 export type StudioRiskView = {kind:'crash'|'flight';history:{safe:boolean;threshold:number}[];steps:number;maxSteps:number;multiplier:number;cashoutUnits:string};
 export type StudioView = StudioSlotView|StudioRiskView
   |{kind:'keno';numbers:number[];drawn:number[];target:2|3;hits:number;won:boolean;multiplier:number}
@@ -55,7 +84,7 @@ export type StudioView = StudioSlotView|StudioRiskView
   |{kind:'mines';cells:('hidden'|'safe'|'mine')[];opened:number[];steps:number;maxSteps:6;multiplier:number;cashoutUnits:string};
 export const isStudioGame=(value:unknown):value is StudioGameId=>(STUDIO_GAMES as readonly unknown[]).includes(value);
 export const STUDIO_DEFAULTS=Object.fromEntries(STUDIO_GAMES.map(id=>[id,{studio:STUDIO_INFO[id].kind==='keno'?{numbers:[1,5,9,13,17],target:2}:STUDIO_INFO[id].kind==='plinko'?{risk:'medium'}:STUDIO_INFO[id].kind==='dice'?{chance:50,direction:'under'}:STUDIO_INFO[id].kind==='wheel'?{target:0}:{}}])) as Record<StudioGameId,StudioSettings>;
-export const STUDIO_SYMBOLS=[{id:0,name:'Символ I',label:'◆'},{id:1,name:'Символ II',label:'●'},{id:2,name:'Символ III',label:'▲'},{id:3,name:'WILD',label:'W'},{id:4,name:'SCATTER / сборщик',label:'S'},{id:5,name:'Монета',label:'₿'}] as const;
+export const STUDIO_SYMBOLS=[{id:0,name:translateText('Символ I'),label:'◆'},{id:1,name:translateText('Символ II'),label:'●'},{id:2,name:translateText('Символ III'),label:'▲'},{id:3,name:'WILD',label:'W'},{id:4,name:translateText('SCATTER / сборщик'),label:'S'},{id:5,name:translateText('Монета'),label:'₿'}] as const;
 export const STUDIO_STRIPS = [[0,1,2,3,4,5],[1,0,2,4,3,5],[2,1,0,5,4,3],[0,2,1,3,5,4],[1,2,0,4,5,3],[2,0,1,5,3,4]] as const;
 export function studioStrip(game:StudioGameId,col:number):readonly number[] {const f=STUDIO_INFO[game].features;if(f.includes('tumble'))return [0,0,1,1,2,5].map((_,i)=>[0,0,1,1,2,5][(i+col*2)%6]);if(f.includes('cluster'))return [0,0,1,2,4,5].map((_,i)=>[0,0,1,2,4,5][(i+col)%6]);return STUDIO_STRIPS[col];}
 const record=(value:unknown):value is Record<string,unknown>=>!!value&&typeof value==='object'&&!Array.isArray(value);
@@ -157,6 +186,60 @@ export function studioSlotPresentationDetails(game:StudioPresentationGameId,befo
   return {gameId:game,step,stage:frame.stage,beforeGrid:[...beforeGrid],afterGrid:[...frame.grid],heldBefore:[...heldBefore],heldAfter:[...frame.held],events,multipliers,...(chosen?{chosen}:{})};
 }
 
+/** Facts of current pins and forced columns, using only confirmed frames. */
+export function studioJourneyPresentationDetails(game:StudioJourneyPresentationGameId,beforeGrid:number[],previous:StudioRawFrame|StudioSlotFrame|null,frame:StudioRawFrame|StudioSlotFrame,step:number):StudioSlotPresentationFrame {
+  const info=STUDIO_INFO[game],heldBefore=previous?.held??[],events:StudioSlotPresentationEvent[]=[],multipliers:StudioSlotPresentationMultiplier[]=[];
+  if(game==='studio-copperline-express'){
+    const positions=frame.held.filter(position=>!heldBefore.includes(position));
+    if(positions.length)events.push({kind:'sticky-wild',positions});
+    frame.wins.forEach((win,winIndex)=>{
+      if(win.kind!=='line'||win.line===undefined)return;
+      const positions=win.positions.filter(position=>frame.grid[position]===3);
+      if(positions.length)multipliers.push({winIndex,line:win.line,factor:(1+Math.min(3,positions.length)) as 2|3|4,positions});
+    });
+  }
+  const base:StudioSlotPresentationFrame={gameId:game,step,stage:frame.stage,beforeGrid:[...beforeGrid],afterGrid:[...frame.grid],heldBefore:[...heldBefore],heldAfter:[...frame.held],events,multipliers};
+  if(game==='studio-pulse-district'){
+    const forcedColumn=step?(info.cols-step)%info.cols:null;
+    return {...base,walking:{forcedColumn,positions:forcedColumn===null?[]:Array.from({length:info.rows},(_,row)=>row*info.cols+forcedColumn),previousForcedColumn:step>1?(info.cols-step+1)%info.cols:null}};
+  }
+  if(game==='studio-jade-koi'){
+    const pinsBefore:StudioWishPin[]=heldBefore.map(position=>({position,symbol:previous!.grid[position] as 0|1|2}));
+    const pinsAfter:StudioWishPin[]=frame.held.map(position=>({position,symbol:frame.grid[position] as 0|1|2}));
+    const symbol=frame.grid[0]<3?frame.grid[0] as 0|1|2:null;
+    return {...base,wish:{symbol,pinsBefore,pinsAfter,newPins:pinsAfter.filter(pin=>!heldBefore.includes(pin.position)),completed:symbol!==null&&frame.grid.every(value=>value===symbol)}};
+  }
+  return base;
+}
+
+/** Current ways awards and effective synchronized or revealed symbols, without future outcomes. */
+export function studioWaysPresentationDetails(game:StudioWaysPresentationGameId,beforeGrid:number[],frame:StudioRawFrame|StudioSlotFrame,step:number):StudioSlotPresentationFrame {
+  const info=STUDIO_INFO[game],awards:StudioWaysPresentationAward[]=frame.wins.map((win,winIndex)=>{
+    const columns=Array.from({length:win.count},(_,column)=>win.positions.filter(position=>position%info.cols===column));
+    const paths=columns.reduce((product,positions)=>product*positions.length,1);
+    const excludedFullyWildPaths=win.symbol===3?0:columns.reduce((product,positions)=>product*positions.filter(position=>frame.grid[position]===3).length,1);
+    return {winIndex,symbol:win.symbol as 0|1|2|3,count:win.count,columns,paths,excludedFullyWildPaths,paidWays:paths-excludedFullyWildPaths};
+  });
+  const base:StudioSlotPresentationFrame={gameId:game,step,stage:frame.stage,beforeGrid:[...beforeGrid],afterGrid:[...frame.grid],heldBefore:[],heldAfter:[],events:[],multipliers:[],ways:{awards}};
+  if(game==='studio-rivet-rally'){
+    const first=studioStrip(game,0).indexOf(frame.grid[0]),count=Math.min(info.cols,2+first%4);
+    return {...base,beforeGrid:[...frame.grid],synced:{sourceColumn:0,columns:Array.from({length:count},(_,column)=>column)}};
+  }
+  if(game==='studio-frostline-courier')return {...base,mystery:{sourcePosition:0,sourceSymbol:beforeGrid[0],symbol:beforeGrid[0]%3 as 0|1|2,positions:beforeGrid.flatMap((symbol,position)=>symbol===4?[position]:[])}};
+  return base;
+}
+
+/** Describes current expansion and already-scored collections from confirmed canonical awards. */
+export function studioCollectPresentationDetails(game:StudioCollectPresentationGameId,beforeGrid:number[],frame:StudioRawFrame|StudioSlotFrame,step:number):StudioSlotPresentationFrame {
+  const info=STUDIO_INFO[game],events:StudioSlotPresentationEvent[]=[],awards:StudioCollectionPresentationAward[]=[];
+  if(game==='studio-blazing-orchard')for(let column=1;column<info.cols-1;column++){
+    const positions=Array.from({length:info.rows},(_,row)=>row*info.cols+column),sourcePositions=positions.filter(position=>beforeGrid[position]===3);
+    if(sourcePositions.length)events.push({kind:'expand-wild',column,positions,sourcePositions});
+  }
+  frame.wins.forEach((win,winIndex)=>{if(win.kind==='collect')awards.push({winIndex,collector:win.positions[0],coins:win.positions.slice(1).map(position=>({position,rawValue:2+position%4}))});});
+  return {gameId:game,step,stage:frame.stage,beforeGrid:[...beforeGrid],afterGrid:[...frame.grid],heldBefore:[],heldAfter:[],events,multipliers:[],collection:{awards}};
+}
+
 /** The current paid grid supplies refills; no unplayed seed is read or exposed. */
 export function studioCascadePresentationDetails(game:StudioCascadePresentationGameId,previous:StudioRawFrame|StudioSlotFrame|null,frame:StudioRawFrame|StudioSlotFrame,step:number):StudioSlotPresentationFrame {
   const info=STUDIO_INFO[game],beforeGrid=previous?.grid??frame.grid,removedPositions=previous?[...new Set(previous.wins.flatMap(win=>win.positions))].sort((a,b)=>a-b):[],removed=new Set(removedPositions),drops:StudioCascadePresentation['drops']=[],refills:StudioCascadePresentation['refills']=[];
@@ -183,13 +266,57 @@ export function studioClusterPresentationDetails(game:StudioClusterPresentationG
   return {gameId:game,step,stage:frame.stage,beforeGrid:[...frame.grid],afterGrid:[...frame.grid],heldBefore:[],heldAfter:[],events:[],multipliers:[],cluster:{groups,collects,cellValues,groupFactors}};
 }
 
+/** Confirmed coin retention and actual current awards, with no future bonus roll. */
+export function studioHoldPresentationDetails(game:StudioHoldPresentationGameId,beforeGrid:number[],previous:StudioRawFrame|StudioSlotFrame|null,frame:StudioRawFrame|StudioSlotFrame,step:number):StudioSlotPresentationFrame {
+  const heldBefore=previous?.held??[],awards:StudioHoldPresentationAward[]=[],collections:StudioCollectionPresentationAward[]=[];
+  frame.wins.forEach((win,winIndex)=>{
+    if(win.kind==='coin')awards.push({winIndex,position:win.positions[0],rawValue:2+win.positions[0]%4});
+    if(game==='studio-midnight-market'&&step===0&&win.kind==='collect')collections.push({winIndex,collector:win.positions[0],coins:win.positions.slice(1).map(position=>({position,rawValue:2+position%4}))});
+  });
+  return {gameId:game,step,stage:frame.stage,beforeGrid:[...beforeGrid],afterGrid:[...frame.grid],heldBefore:[...heldBefore],heldAfter:[...frame.held],events:[],multipliers:[],hold:{coinValues:frame.held.map(position=>({position,rawValue:2+position%4})),newPositions:frame.held.filter(position=>!heldBefore.includes(position)),awards},collection:{awards:collections}};
+}
+
+/** Current independent wheel award or already-included line factor, without a future result. */
+export function studioWheelTrailPresentationDetails(game:StudioWheelTrailPresentationGameId,frame:StudioRawFrame|StudioSlotFrame,step:number):StudioSlotPresentationFrame {
+  const base:StudioSlotPresentationFrame={gameId:game,step,stage:frame.stage,beforeGrid:[...frame.grid],afterGrid:[...frame.grid],heldBefore:[],heldAfter:[],events:[],multipliers:[]};
+  if(game==='studio-petal-parlor')return {...base,wheels:{awards:frame.wins.flatMap((win,winIndex)=>win.kind==='wheel'?[{winIndex,position:win.positions[0],count:win.count,rawValue:win.raw}]:[])}};
+  const coinPositions=frame.grid.flatMap((symbol,position)=>symbol===5?[position]:[]),factor=Math.min(8,1+step+coinPositions.length);
+  return {...base,trail:{coinPositions,factor,awards:frame.wins.flatMap((win,winIndex)=>win.kind==='line'&&win.line!==undefined?[{winIndex,line:win.line,positions:[...win.positions],factor}]:[])}};
+}
+
 /** Separate from strict legacy Studio view validation because this is a read-only response. */
 export function validStudioSlotPresentation(value:unknown,game:StudioPresentationGameId,sessionId:string,phase:number,view:StudioSlotView):value is StudioSlotPresentation {
   try{
-    const cascade=isStudioCascadePresentationGame(game),cluster=isStudioClusterPresentationGame(game),element=isStudioElementPresentationGame(game);
-    if(!isStudioPresentationGame(game)||!record(value)||!fields(value,'version,sessionId,gameId,phase,step,stage,beforeGrid,afterGrid,heldBefore,heldAfter,events,multipliers'+(cascade?',cascade':'')+(cluster?',cluster':'')+(game==='studio-saffron-cipher'?',chosen':''))||value.version!==1||value.sessionId!==sessionId||value.gameId!==game||value.phase!==phase||value.step!==view.step||value.stage!==view.stage)return false;
+    const cascade=isStudioCascadePresentationGame(game),cluster=isStudioClusterPresentationGame(game),element=isStudioElementPresentationGame(game),journey=isStudioJourneyPresentationGame(game),ways=isStudioWaysPresentationGame(game),collect=isStudioCollectPresentationGame(game),hold=isStudioHoldPresentationGame(game),wheelTrail=isStudioWheelTrailPresentationGame(game);
+    if(!isStudioPresentationGame(game)||!record(value)||!fields(value,'version,sessionId,gameId,phase,step,stage,beforeGrid,afterGrid,heldBefore,heldAfter,events,multipliers'+(cascade?',cascade':'')+(cluster?',cluster':'')+(game==='studio-saffron-cipher'?',chosen':'')+(game==='studio-pulse-district'?',walking':'')+(game==='studio-jade-koi'?',wish':'')+(ways?',ways':'')+(game==='studio-rivet-rally'?',synced':'')+(game==='studio-frostline-courier'?',mystery':'')+(collect||hold?',collection':'')+(hold?',hold':'')+(game==='studio-petal-parlor'?',wheels':'')+(game==='studio-sunbird-trails'?',trail':''))||value.version!==1||value.sessionId!==sessionId||value.gameId!==game||value.phase!==phase||value.step!==view.step||value.stage!==view.stage)return false;
     const info=STUDIO_INFO[game];if(view.kind!=='slot'||view.cols!==info.cols||view.rows!==info.rows||!integer(view.step,0,2)||!Array.isArray(view.history)||view.history.length!==view.step+1||!Array.isArray(value.beforeGrid)||value.beforeGrid.length!==info.cols*info.rows||!value.beforeGrid.every(symbol=>integer(symbol,0,5)))return false;
     const before=value.beforeGrid as number[],last=view.history[view.step],heldBefore=view.step?view.history[view.step-1].held:[];
+    if(wheelTrail){
+      if(last.stage!==(view.step?'free-spin':'base')||!same(before,view.grid)||!same(last.grid,view.grid)||!same(last.wins,view.wins)||!same(last.held,view.held)||view.held.length||heldBefore.length)return false;
+      const first=view.history[0],baseWins=studioScore(game,first.grid),base:StudioRawFrame={stage:'base',grid:first.grid,held:[],wins:baseWins,raw:baseWins.reduce((sum,win)=>sum+win.raw,0)};
+      if(!studioBaseGridReachable(game,first.grid)||!same(rawFrame(first),base)||view.step>0&&!studioSlotHasBonus(game,base))return false;
+      const remaining=studioSlotHasBonus(game,base)?2-view.step:0;
+      if(view.remaining!==remaining||view.maxSteps!==3||phase!==(remaining?view.step+1:1))return false;
+      for(let step=1;step<=view.step;step++)if(!Array.from({length:6},(_,seed)=>seed).some(seed=>same(rawFrame(view.history[step]),studioBonusFrame(game,rawFrame(view.history[step-1]),seed,step))))return false;
+      return same(value,{version:1,sessionId,phase,...studioWheelTrailPresentationDetails(game,last,view.step)});
+    }
+    if(hold){
+      if(last.stage!==(view.step?'hold':'base')||!same(last.grid,view.grid)||!same(last.wins,view.wins)||!same(last.held,view.held))return false;
+      const first=view.history[0],baseHeld=studioHeld(game,first.grid),baseWins=studioScore(game,first.grid);
+      if(baseHeld.length>=3)for(const position of baseHeld)baseWins.push({kind:'coin',symbol:5,positions:[position],count:1,raw:2+position%4});
+      const base:StudioRawFrame={stage:'base',grid:first.grid,held:baseHeld,wins:baseWins,raw:baseWins.reduce((sum,win)=>sum+win.raw,0)};
+      if(!studioBaseGridReachable(game,first.grid)||!same(rawFrame(first),base)||view.step>0&&!studioSlotHasBonus(game,base))return false;
+      const remaining=studioSlotHasBonus(game,base)?2-view.step:0;
+      if(view.remaining!==remaining||view.maxSteps!==3||phase!==(remaining?view.step+1:1))return false;
+      for(let step=1;step<=view.step;step++)if(!Array.from({length:6},(_,seed)=>seed).some(seed=>same(rawFrame(view.history[step]),studioBonusFrame(game,rawFrame(view.history[step-1]),seed,step))))return false;
+      if(view.step===0){if(!same(before,view.grid))return false;}
+      else{
+        if(!Array.from({length:6},(_,seed)=>seed).some(seed=>before.every((symbol,i)=>symbol===studioStrip(game,i%info.cols)[(seed*(i%info.cols+1)+Math.floor(i/info.cols)+view.step+i%info.cols)%6])))return false;
+        const grid=[...before];for(const position of heldBefore)grid[position]=5;
+        if(!same(grid,view.grid))return false;
+      }
+      return same(value,{version:1,sessionId,phase,...studioHoldPresentationDetails(game,before,view.step?view.history[view.step-1]:null,last,view.step)});
+    }
     if(element&&(view.held.length||heldBefore.length||last.stage!==(view.step?'free-spin':'base')||view.step>0&&!studioSlotHasBonus(game,view.history[0])||!same(last.wins.map(({kind,symbol,positions,count,raw,line})=>({kind,symbol,positions,count,...(line===undefined?{}:{line}),raw})),studioScore(game,view.grid,view.step))))return false;
     if(cluster){
       if(!same(before,view.grid)||!same(last.grid,view.grid)||!same(last.wins,view.wins)||!same(last.held,view.held)||view.held.length||last.stage!==(view.step?'free-spin':'base'))return false;
@@ -213,9 +340,45 @@ export function validStudioSlotPresentation(value:unknown,game:StudioPresentatio
       if(!same(last.wins.map(({kind,symbol,positions,count,raw,..._})=>({kind,symbol,positions,count,raw})),studioScore(game,view.grid,view.step)))return false;
       return same(value,{version:1,sessionId,phase,...studioCascadePresentationDetails(game,previous,last,view.step)});
     }
+    if(collect){
+      if(last.stage!==(view.step?'free-spin':'base')||!same(last.grid,view.grid)||!same(last.wins,view.wins)||!same(last.held,view.held)||view.held.length||heldBefore.length)return false;
+      if(view.step===0){
+        for(let column=0;column<info.cols;column++)if(!Array.from({length:6},(_,stop)=>stop).some(stop=>Array.from({length:info.rows},(_,row)=>before[row*info.cols+column]===studioStrip(game,column)[(stop+row)%6]).every(Boolean)))return false;
+      }else if(!studioSlotHasBonus(game,view.history[0])||!Array.from({length:6},(_,seed)=>seed).some(seed=>before.every((symbol,i)=>symbol===studioStrip(game,i%info.cols)[(seed*(i%info.cols+1)+Math.floor(i/info.cols)+view.step+i%info.cols)%6])))return false;
+      if(!same(studioTransformGrid(game,before,view.step,[]),view.grid)||!same(last.wins.map(({kind,symbol,positions,count,raw,line})=>({kind,symbol,positions,count,...(line===undefined?{}:{line}),raw})),studioScore(game,view.grid,view.step)))return false;
+      return same(value,{version:1,sessionId,phase,...studioCollectPresentationDetails(game,before,last,view.step)});
+    }
+    if(ways){
+      if(last.stage!==(view.step?'free-spin':'base')||!same(last.grid,view.grid)||!same(last.wins,view.wins)||!same(last.held,view.held)||view.held.length||heldBefore.length)return false;
+      if(game==='studio-rivet-rally'){
+        if(view.step!==0||!same(before,view.grid))return false;
+        const first=studioStrip(game,0).indexOf(before[0]);if(first<0)return false;
+        const linked=Math.min(info.cols,2+first%4);
+        for(let column=0;column<info.cols;column++){
+          if(column<linked){if(!Array.from({length:info.rows},(_,row)=>before[row*info.cols+column]===studioStrip(game,0)[(first+row)%6]).every(Boolean))return false;}
+          else if(!Array.from({length:6},(_,stop)=>stop).some(stop=>Array.from({length:info.rows},(_,row)=>before[row*info.cols+column]===studioStrip(game,column)[(stop+row)%6]).every(Boolean)))return false;
+        }
+      }else{
+        if(view.step===0){
+          for(let column=0;column<info.cols;column++)if(!Array.from({length:6},(_,stop)=>stop).some(stop=>Array.from({length:info.rows},(_,row)=>before[row*info.cols+column]===studioStrip(game,column)[(stop+row)%6]).every(Boolean)))return false;
+        }else if(!studioSlotHasBonus(game,view.history[0])||!Array.from({length:6},(_,seed)=>seed).some(seed=>before.every((symbol,i)=>symbol===studioStrip(game,i%info.cols)[(seed*(i%info.cols+1)+Math.floor(i/info.cols)+view.step+i%info.cols)%6])))return false;
+        if(!same(studioTransformGrid(game,before,view.step,[]),view.grid))return false;
+      }
+      if(!same(last.wins.map(({kind,symbol,positions,count,raw,line})=>({kind,symbol,positions,count,...(line===undefined?{}:{line}),raw})),studioScore(game,view.grid,view.step)))return false;
+      return same(value,{version:1,sessionId,phase,...studioWaysPresentationDetails(game,before,last,view.step)});
+    }
     if(view.step===0){
       for(let column=0;column<info.cols;column++)if(!Array.from({length:6},(_,stop)=>stop).some(stop=>Array.from({length:info.rows},(_,row)=>before[row*info.cols+column]===studioStrip(game,column)[(stop+row)%6]).every(Boolean)))return false;
     }else if(!Array.from({length:6},(_,seed)=>seed).some(seed=>before.every((symbol,i)=>symbol===studioStrip(game,i%info.cols)[(seed*(i%info.cols+1)+Math.floor(i/info.cols)+view.step+i%info.cols)%6])))return false;
+    if(journey){
+      const previous=view.step?view.history[view.step-1]:null;
+      if(last.stage!==(view.step?'free-spin':'base')||view.step>0&&!studioSlotHasBonus(game,view.history[0])||!same(last.grid,view.grid)||!same(last.wins,view.wins)||!same(last.held,view.held))return false;
+      if(!unique(view.held,view.held.length,0,info.cols*info.rows-1)||!unique(heldBefore,heldBefore.length,0,info.cols*info.rows-1))return false;
+      const grid=studioTransformGrid(game,before,view.step,heldBefore);
+      if(game==='studio-jade-koi')for(const position of heldBefore){if(!integer(previous!.grid[position],0,2))return false;grid[position]=previous!.grid[position];}
+      if(!same(grid,view.grid)||!same(studioHeld(game,grid,heldBefore),view.held)||!same(last.wins.map(({kind,symbol,positions,count,raw,line})=>({kind,symbol,positions,count,...(line===undefined?{}:{line}),raw})),studioScore(game,grid,view.step)))return false;
+      return same(value,{version:1,sessionId,phase,...studioJourneyPresentationDetails(game,before,previous,last,view.step)});
+    }
     if(!same(studioTransformGrid(game,before,view.step,heldBefore),view.grid)||!same(studioHeld(game,view.grid,heldBefore),view.held)||!same(last.grid,view.grid)||!same(last.wins,view.wins)||!same(last.held,view.held))return false;
     return same(value,{version:1,sessionId,phase,...studioSlotPresentationDetails(game,before,last,view.step,heldBefore)});
   }catch{return false;}
@@ -344,9 +507,9 @@ export const STUDIO_SLOT_MATH:Partial<Record<StudioGameId,StudioSlotMath>> = {
 export const studioSlotMultiplier=(game:StudioGameId,raw:number)=>{const math=STUDIO_SLOT_MATH[game];if(!math)throw Error('Missing studio slot math');return studioRatio(98n*BigInt(math.total)*BigInt(raw),100n*BigInt(math.sum));};
 export function studioSlotPaytable(game:StudioGameId){const info=STUDIO_INFO[game],cluster=info.features.includes('cluster'),tumble=info.features.includes('tumble'),symbols=info.ways||cluster?[0,1,2,3]:[0,1,2],counts=cluster?[5,6,8,10,12]:tumble?[8,10,12,15,20]:Array.from({length:info.cols-2},(_,i)=>i+3);return symbols.map(symbol=>({symbol,pays:counts.map(count=>{const raw=cluster?(count-4)*(symbol+2)*2*count:tumble?(count-7)*(symbol+2)*4:(symbol===3?6:symbol+2)*lengthPay(count);return {count,raw,multiplier:studioSlotMultiplier(game,raw)};})}));}
 export function studioPayFrame(game:StudioGameId,frame:StudioRawFrame,stake:string):StudioSlotFrame {const wins=frame.wins.map(win=>{const multiplier=studioSlotMultiplier(game,win.raw);return {...win,multiplier,payoutUnits:studioPaid(stake,multiplier)};});return {...frame,wins,payoutUnits:wins.reduce((sum,win)=>sum+BigInt(win.payoutUnits),0n).toString()};}
-export const STUDIO_MAX=Object.fromEntries(STUDIO_GAMES.map(game=>{const kind=STUDIO_INFO[game].kind;let max:number;if(kind==='slot'){const math=STUDIO_SLOT_MATH[game];max=math?Math.ceil(studioSlotMultiplier(game,math.max)):100000;}else if(kind==='crash'||kind==='flight')max=Math.ceil(studioRiskMultiplier(game,studioRiskMax(game)));else if(kind==='keno')max=Math.ceil(studioKenoMultiplier(3));else if(kind==='plinko')max=Math.ceil(Math.max(...studioPlinkoTable('high')));else if(kind==='dice')max=4;else if(kind==='wheel')max=Math.ceil(Math.max(...[0,1,2,3].map(target=>studioWheelMultiplier(game,target))));else max=Math.ceil(studioMinesMultiplier(6));return [game,max];})) as Record<StudioGameId,number>;
-export const STUDIO_RULES=Object.fromEntries(STUDIO_GAMES.map(game=>{const info=STUDIO_INFO[game];const featureText=info.features.map(f=>({expand:'WILD расширяется на барабан',tumble:'выигравшие символы исчезают, остальные падают',sticky:'WILD остаются на следующих вращениях',hold:'монеты закрепляются на двух бесплатных повторных вращениях',collect:'сборщики суммируют монеты',cluster:'оплачиваются соседние группы от пяти символов',ways:'совпадения считаются слева направо по всем способам',chosen:'выбранный первым символом знак расширяется при появлении на трёх барабанах',walking:'бонусная WILD-колонна движется влево',synced:'от двух до пяти барабанов синхронизируются',mystery:'все тайные символы раскрываются одним знаком','multiplier-wild':'WILD усиливает выигрышную линию','cell-multipliers':'ячейки усиливают соседние группы',wheels:'бонусные колёса дают дополнительные награды',beam:'WILD-луч превращает свой барабан',trail:'монеты и этап бонуса усиливают выплату',wish:'желанные символы остаются на бесплатных вращениях',orbs:'монеты усиливают выплату каскада'} as Record<StudioFeature,string>)[f]).join('; ');return [game,info.kind==='slot'?`${info.cols}×${info.rows}. ${info.description}. ${featureText?featureText+'. ':''}Линии оплачиваются от трёх совпадений, группы от пяти, россыпь от восьми. WILD заменяет обычные знаки в линиях и способах. Бонус содержит максимум два бесплатных этапа, без продления. Наша самостоятельная математика: расчётный возврат 98% до округления; каждая награда округляется вниз до 0,01 монеты.`:info.kind==='crash'||info.kind==='flight'?`Дискретная серия до ${studioRiskMax(game)} этапов. На каждом скрытый бросок должен достичь ${studioRiskThreshold(game)} из шести. После первого успеха можно забрать выплату. Ошибка теряет ставку, последний этап оплачивается автоматически. Возврат 98% до округления.`:info.kind==='mines'?'Шестнадцать ячеек и четыре скрытые ловушки. Забери выплату после первой безопасной ячейки; шестая оплачивается автоматически. Возврат 98% до округления.':`${info.description}. Ставка и выплата проходят через общий тестовый кошелёк. Возврат 98% до округления.`];})) as Record<StudioGameId,string>;
-for(const game of STUDIO_GAMES)if(STUDIO_INFO[game].ways)STUDIO_RULES[game]+=' Полностью WILD-цепочка оплачивается отдельно. Более короткая WILD-цепочка может дать дополнительную награду рядом с более длинной обычной комбинацией.';
+export const STUDIO_MAX=Object.fromEntries(STUDIO_GAMES.map(game=>{if(game==='studio-afterglow')return [game,5000];if(game==='studio-nitro-run'||game==='studio-meme-overload')return [game,3000];if(game==='studio-last-convoy')return [game,5000];const kind=STUDIO_INFO[game].kind;let max:number;if(kind==='slot'){const math=STUDIO_SLOT_MATH[game];max=math?Math.ceil(studioSlotMultiplier(game,math.max)):100000;}else if(kind==='crash'||kind==='flight')max=Math.ceil(studioRiskMultiplier(game,studioRiskMax(game)));else if(kind==='keno')max=Math.ceil(studioKenoMultiplier(3));else if(kind==='plinko')max=Math.ceil(Math.max(...studioPlinkoTable('high')));else if(kind==='dice')max=4;else if(kind==='wheel')max=Math.ceil(Math.max(...[0,1,2,3].map(target=>studioWheelMultiplier(game,target))));else max=Math.ceil(studioMinesMultiplier(6));return [game,max];})) as Record<StudioGameId,number>;
+export const STUDIO_RULES=Object.fromEntries(STUDIO_GAMES.map(game=>{const info=STUDIO_INFO[game];const featureText=info.features.map(f=>({expand:translateText('WILD расширяется на барабан'),tumble:translateText('выигравшие символы исчезают, остальные падают'),sticky:translateText('WILD остаются на следующих вращениях'),hold:translateText('монеты закрепляются на двух бесплатных повторных вращениях'),collect:translateText('сборщики суммируют монеты'),cluster:translateText('оплачиваются соседние группы от пяти символов'),ways:translateText('совпадения считаются слева направо по всем способам'),chosen:translateText('выбранный первым символом знак расширяется при появлении на трёх барабанах'),walking:translateText('бонусная WILD-колонна движется влево'),synced:translateText('от двух до пяти барабанов синхронизируются'),mystery:translateText('все тайные символы раскрываются одним знаком'),'multiplier-wild':translateText('WILD усиливает выигрышную линию'),'cell-multipliers':translateText('ячейки усиливают соседние группы'),wheels:translateText('бонусные колёса дают дополнительные награды'),beam:translateText('WILD-луч превращает свой барабан'),trail:translateText('монеты и этап бонуса усиливают выплату'),wish:translateText('желанные символы остаются на бесплатных вращениях'),orbs:translateText('монеты усиливают выплату каскада')} as Record<StudioFeature,string>)[f]).join('; ');return [game,info.kind==='slot'?tr`${info.cols}×${info.rows}. ${info.description}. ${featureText?featureText+'. ':''}Линии оплачиваются от трёх совпадений, группы от пяти, россыпь от восьми. WILD заменяет обычные знаки в линиях и способах. Бонус содержит максимум два бесплатных этапа, без продления. Наша самостоятельная математика: расчётный возврат 98% до округления; каждая награда округляется вниз до 0,01 монеты.`:info.kind==='crash'||info.kind==='flight'?tr`Дискретная серия до ${studioRiskMax(game)} этапов. На каждом скрытый бросок должен достичь ${studioRiskThreshold(game)} из шести. После первого успеха можно забрать выплату. Ошибка теряет ставку, последний этап оплачивается автоматически. Возврат 98% до округления.`:info.kind==='mines'?translateText('Шестнадцать ячеек и четыре скрытые ловушки. Забери выплату после первой безопасной ячейки; шестая оплачивается автоматически. Возврат 98% до округления.'):tr`${info.description}. Ставка и выплата проходят через общий тестовый кошелёк. Возврат 98% до округления.`];})) as Record<StudioGameId,string>;
+for(const game of STUDIO_GAMES)if(STUDIO_INFO[game].ways)STUDIO_RULES[game]+=translateText(' Полностью WILD-цепочка оплачивается отдельно. Более короткая WILD-цепочка может дать дополнительную награду рядом с более длинной обычной комбинацией.');
 
 function same(a:unknown,b:unknown):boolean {if(a===b)return true;if(Array.isArray(a)||Array.isArray(b))return Array.isArray(a)&&Array.isArray(b)&&a.length===b.length&&a.every((value,i)=>same(value,b[i]));if(!record(a)||!record(b))return false;const keys=Object.keys(a).sort();return keys.join()===Object.keys(b).sort().join()&&keys.every(key=>same(a[key],b[key]));}
 export const studioSamePayload=(a:unknown,b:unknown):boolean=>same(a,b);
@@ -551,3 +714,5 @@ export const STUDIO_SLOT_RTP:Partial<Record<StudioGameId,Record<string,number>>>
   }
 };
 export const studioSlotRtp=(game:StudioGameId,stakeUnits:string):number|undefined=>STUDIO_SLOT_RTP[game]?.[stakeUnits];
+
+STUDIO_RULES['studio-last-convoy']=translateText('Поле 6×5, 8+ одинаковых припасов в любом месте, до 20 каскадов. Каждая закреплённая баррикада добавляет +1 к множителю, максимум ×7. 3/4/5+ маяков на конечном поле дают 10/12/15 бесплатных вращений. В эвакуации баррикады сохраняются, 3 маяка добавляют 2 вращения, до 20 всего. Предел 5000 ставок. Одна ставка и одна итоговая выплата в тестовый кошелёк.');

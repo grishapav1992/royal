@@ -1,4 +1,5 @@
-import { observeExpansionOutcome } from './gameReactions';
+import { t as translateText, tr, locale } from '../i18n/index';
+import { observeExpansionOutcome, resetGameOutcomes } from './gameReactions';
 import { STUDIO_INFO, STUDIO_DEFAULTS, studioSlotPaytable, studioSlotRtp, type StudioSlotView } from '../shared/studioGames';
 import { DEMO_BETS } from '../shared/demoWallet';
 import type { ExpansionSession } from '../shared/casinoExpansion';
@@ -10,8 +11,8 @@ import './neon-slot.css';
 
 const GAME = 'studio-neon-crown' as const;
 const INITIAL_GRID = [0, 1, 2, 1, 2, 0, 2, 0, 1];
-const amount = (units: string | number) => (Number(units) / 100).toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-const number = (value: number) => value.toLocaleString('ru-RU', { maximumFractionDigits: 4 });
+const amount = (units: string | number) => (Number(units) / 100).toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const number = (value: number) => value.toLocaleString(locale, { maximumFractionDigits: 4 });
 type LiveSpin = { token: string; account: string; operationId: string; accepted: boolean; motion: boolean; balance: number };
 type NeonSession = ExpansionSession & { view: ExpansionSession['view'] & { studio: StudioSlotView } };
 
@@ -64,7 +65,7 @@ export class NeonSlotUI {
 
   private markup() {
     const lines = STUDIO_INFO[GAME].paylines;
-    return `<section class="neon-slot" data-neon-slot="${GAME}" data-studio-game="${GAME}" data-phase="idle" data-neon-state="idle" data-session-id="" aria-label="Неоновый трон">
+    return tr`<section class="neon-slot" data-neon-slot="${GAME}" data-studio-game="${GAME}" data-phase="idle" data-neon-state="idle" data-session-id="" aria-label="Неоновый трон">
       <header class="neon-header"><div class="neon-title"><span>ROYAL STUDIO</span><h3>Неоновый трон</h3><p>Три барабана. Пять линий. Твой момент.</p></div><div class="neon-balance"><small>Монеты клуба</small><strong data-neon-balance data-studio-balance>…</strong></div></header>
       <div class="neon-cabinet"><div class="neon-lounge" aria-hidden="true"><i></i><i></i><i></i><i></i></div><div class="neon-crown-logo" aria-hidden="true">${neonSymbol(3)}</div><div class="neon-machine-top"><span class="neon-machine-brand">NEON CROWN</span><span class="neon-five">5 ЛИНИЙ</span></div>
         <div class="neon-frame"><div class="neon-line-markers" aria-hidden="true"><i>2</i><i>1</i><i>3</i></div><div class="neon-reels" data-neon-reels role="group" aria-label="Три барабана, три ряда"><svg class="neon-lines" data-neon-lines viewBox="0 0 300 300" preserveAspectRatio="none" aria-hidden="true"></svg></div><div class="neon-line-markers right" aria-hidden="true"><i>2</i><i>1</i><i>3</i></div></div>
@@ -74,7 +75,7 @@ export class NeonSlotUI {
       <div class="neon-line-list" data-neon-line-list aria-label="Выигрышные линии"></div>
       <p class="neon-status" data-neon-status role="status">Выбери ставку и вращай барабаны.</p><p class="neon-error studio-error" data-neon-error role="alert"></p>
       <div class="neon-tools"><div class="neon-audio"><button type="button" data-neon-mute aria-label="Выключить звук" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4ZM17 8c3 2 3 6 0 8M20 5c5 4 5 10 0 14"/></svg><span data-neon-audio-label>Звук</span></button><label>Громкость<input type="range" min="0" max="100" data-neon-volume aria-label="Громкость игры"></label></div><div class="neon-network"><button type="button" data-neon-retry data-retry hidden>Проверить ход</button><button type="button" data-neon-refresh data-refresh>Обновить</button></div></div>
-      <details class="neon-rules"><summary>Правила, символы и линии</summary><p>Ставка оплачивает все пять линий. Три одинаковых обычных знака слева направо дают выплату. WILD заменяет обычный знак; на каждой линии оплачивается лучшая комбинация. Звезда и монета в этом слоте не дают отдельной выплаты. Бонусных ходов нет.</p><div class="neon-paytable" data-neon-paytable></div><div class="neon-rule-lines">${lines.map((line, index) => `<div><span>Линия ${index + 1}</span><svg viewBox="0 0 100 60" aria-hidden="true">${Array.from({ length: 9 }, (_, cell) => `<circle cx="${15 + cell % 3 * 35}" cy="${10 + Math.floor(cell / 3) * 20}" r="3"/>`).join('')}<polyline points="${line.map((row, col) => `${15 + col * 35},${10 + row * 20}`).join(' ')}"/></svg></div>`).join('')}</div><p data-neon-rtp></p><p>Множитель включает ставку. Каждая выплата округляется вниз до 0,01 монеты, затем выплаты линий суммируются. Результат и баланс сохраняются на сервере. «Проверить ход» подтверждает прежнюю операцию без новой ставки.</p></details><p class="neon-demo-note">Игра на тестовые монеты клуба</p>
+      <details class="neon-rules"><summary>Правила, символы и линии</summary><p>Ставка оплачивает все пять линий. Три одинаковых обычных знака слева направо дают выплату. WILD заменяет обычный знак; на каждой линии оплачивается лучшая комбинация. Звезда и монета в этом слоте не дают отдельной выплаты. Бонусных ходов нет.</p><div class="neon-paytable" data-neon-paytable></div><div class="neon-rule-lines">${lines.map((line, index) => tr`<div><span>Линия ${index + 1}</span><svg viewBox="0 0 100 60" aria-hidden="true">${Array.from({ length: 9 }, (_, cell) => `<circle cx="${15 + cell % 3 * 35}" cy="${10 + Math.floor(cell / 3) * 20}" r="3"/>`).join('')}<polyline points="${line.map((row, col) => `${15 + col * 35},${10 + row * 20}`).join(' ')}"/></svg></div>`).join('')}</div><p data-neon-rtp></p><p>Множитель включает ставку. Каждая выплата округляется вниз до 0,01 монеты, затем выплаты линий суммируются. Результат и баланс сохраняются на сервере. «Проверить ход» подтверждает прежнюю операцию без новой ставки.</p></details><p class="neon-demo-note">Игра на тестовые монеты клуба</p>
     </section>`;
   }
 
@@ -94,10 +95,10 @@ export class NeonSlotUI {
     if (this.owner !== client.accountId) {
       this.cancelPresentation(); this.owner = client.accountId; this.presentedId = ''; this.localError = ''; this.stake = '1000'; this.stakeChosen = false;
       this.root.dataset.sessionId = ''; this.reels.show(INITIAL_GRID); this.clearWins(); this.setPayout(0, 0); this.setPhase('idle');
-      this.find('[data-neon-result-caption]').textContent = 'Поймай светящуюся линию'; this.find('[data-neon-win-multiple]').textContent = 'WILD заменяет знаки'; this.updateRules();
+      this.find('[data-neon-result-caption]').textContent = translateText('Поймай светящуюся линию'); this.find('[data-neon-win-multiple]').textContent = translateText('WILD заменяет знаки'); this.updateRules();
     }
     const session = this.currentSession();
-    observeExpansionOutcome(this.root, GAME, session, client.accountId, client.busy, client.pending?.gameId === GAME);
+    observeExpansionOutcome(this.root, GAME, session, client.accountId, true, !!this.live && client.pending?.gameId === GAME);
     if (this.live) {
       if (this.live.accepted && session?.id !== this.live.operationId) this.cancelPresentation();
     }
@@ -124,30 +125,30 @@ export class NeonSlotUI {
   private updateControls() {
     const balance = this.balance(), ready = !!client.accountId && balance !== undefined, blocked = this.blocked();
     const shownBalance = this.live && this.root.dataset.phase !== 'result' ? this.live.balance : balance;
-    this.find('[data-neon-balance]').textContent = shownBalance === undefined ? '…' : shownBalance.toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    this.find('[data-neon-balance]').textContent = shownBalance === undefined ? '…' : shownBalance.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     this.find<HTMLSelectElement>('[data-neon-stake]').value = this.stake; this.find<HTMLSelectElement>('[data-neon-stake]').disabled = blocked;
     this.find<HTMLButtonElement>('[data-neon-spin]').disabled = blocked || !ready || Number(this.stake) > (balance ?? 0) * 100;
     const retry = this.find<HTMLButtonElement>('[data-neon-retry]'); retry.hidden = !client.pending; retry.disabled = !!this.live || client.busy || !ready || document.hidden;
     this.find<HTMLButtonElement>('[data-neon-refresh]').disabled = !!this.live || client.busy || client.loading || !client.accountId;
     this.root.setAttribute('aria-busy', String(!!this.live || client.busy));
-    let status = 'Выбери ставку и вращай барабаны.';
-    if (!client.accountId) status = 'Войди в аккаунт, чтобы играть на монеты клуба.';
-    else if (!ready) status = 'Загружаем баланс…';
-    else if (client.pending && !client.busy) status = 'Ответ ещё не подтверждён. «Проверить ход» продолжит ту же операцию.';
-    else if (client.busy && !this.live) status = 'Проверяем сохранённый ход…';
-    else if (this.live && !this.live.accepted) status = 'Барабаны вращаются. Ждём подтверждение спина…';
-    else if (this.live && this.root.dataset.phase !== 'result') status = 'Барабаны останавливаются…';
+    let status = translateText('Выбери ставку и вращай барабаны.');
+    if (!client.accountId) status = translateText('Войди в аккаунт, чтобы играть на монеты клуба.');
+    else if (!ready) status = translateText('Загружаем баланс…');
+    else if (client.pending && !client.busy) status = translateText('Ответ ещё не подтверждён. «Проверить ход» продолжит ту же операцию.');
+    else if (client.busy && !this.live) status = translateText('Проверяем сохранённый ход…');
+    else if (this.live && !this.live.accepted) status = translateText('Барабаны вращаются. Ждём подтверждение спина…');
+    else if (this.live && this.root.dataset.phase !== 'result') status = translateText('Барабаны останавливаются…');
     else if (this.presentedId) status = this.find('[data-neon-result-caption]').textContent || status;
-    if (demoWallet.pending || demoWallet.busy || demoWallet.hasExternalBusy('expansion')) status = 'Дождись завершения операции в кошельке клуба.';
+    if (demoWallet.pending || demoWallet.busy || demoWallet.hasExternalBusy('expansion')) status = translateText('Дождись завершения операции в кошельке клуба.');
     this.find('[data-neon-status]').textContent = status;
     this.find('[data-neon-error]').textContent = this.localError || client.error;
   }
 
   private async spin() {
     const balance = this.balance(); if (this.blocked() || !client.accountId || balance === undefined || Number(this.stake) > balance * 100) return;
-    this.localError = ''; this.clearWins(); this.setPayout(0, 0); this.find('[data-neon-result-caption]').textContent = 'Твой момент…';
+    this.localError = ''; this.clearWins(); this.setPayout(0, 0); this.find('[data-neon-result-caption]').textContent = translateText('Твой момент…');
     const live: LiveSpin = { token: crypto.randomUUID(), account: client.accountId, operationId: '', accepted: false, motion: !this.reduced.matches, balance };
-    this.live = live; this.root.dataset.animationToken = live.token; this.setPhase(live.motion ? 'accelerating' : 'spinning');
+    this.live = live; observeExpansionOutcome(this.root, GAME, this.currentSession(), client.accountId, true, true); this.root.dataset.animationToken = live.token; this.setPhase(live.motion ? 'accelerating' : 'spinning');
     this.reels.begin(live.token, live.motion); this.audio.begin(live.token, { motion: live.motion }); this.updateControls();
     try { await client.act({ gameId: GAME, action: 'start', stakeUnits: this.stake, settings: structuredClone(STUDIO_DEFAULTS[GAME]) }); }
     catch (error) { if (!this.destroyed && client.accountId === live.account) this.localError = (error as Error).message; }
@@ -173,7 +174,7 @@ export class NeonSlotUI {
     this.showResult(session, live.motion);
     const payout = Number(session.returnedUnits), stake = Number(session.stakeUnits);
     const outcome = () => this.audio.outcome(live.token, payout >= stake * 4 ? 'bigwin' : payout > stake ? 'win' : payout > 0 ? 'return' : 'loss');
-    if (!live.motion) { outcome(); this.live = undefined; this.root.dataset.animationToken = ''; this.setPhase('result'); this.updateControls(); return; }
+    if (!live.motion) { outcome(); this.live = undefined; this.root.dataset.animationToken = ''; this.setPhase('result'); this.updateControls(); observeExpansionOutcome(this.root, GAME, session, client.accountId, false, false); return; }
     const wins = session.view.studio.wins;
     wins.forEach((win, index) => this.later(() => {
       if (this.live !== live) return; this.highlightLine(win.line ?? 0); this.audio.line(live.token, win.line ?? 0);
@@ -189,6 +190,7 @@ export class NeonSlotUI {
     this.later(() => {
       if (this.live !== live) return; cancelAnimationFrame(this.payoutFrame); this.payoutFrame = 0; this.setPayout(payout, payout); this.highlightLine(); this.root.classList.remove('neon-celebrating');
       this.live = undefined; this.root.dataset.animationToken = ''; this.setPhase('result'); this.updateControls();
+      if (!this.destroyed && !document.hidden && client.accountId === live.account) observeExpansionOutcome(this.root, GAME, session, client.accountId, false, false);
     }, Math.max(duration, wins.length * 330 + 200));
     this.updateControls();
   }
@@ -202,17 +204,17 @@ export class NeonSlotUI {
   private showResult(session: NeonSession, animate: boolean) {
     this.clearWins(); const payout = Number(session.returnedUnits), stake = Number(session.stakeUnits), wins = session.view.studio.wins;
     this.setPayout(animate ? 0 : payout, payout);
-    const label = payout >= stake * 4 ? 'Крупный выигрыш!' : payout > stake ? 'Твоя светящаяся комбинация!' : payout > 0 ? 'Выплата за спин' : 'Новый спин, новый шанс';
+    const label = payout >= stake * 4 ? translateText('Крупный выигрыш!') : payout > stake ? translateText('Твоя светящаяся комбинация!') : payout > 0 ? translateText('Выплата за спин') : translateText('Новый спин, новый шанс');
     this.find('[data-neon-result-caption]').textContent = label;
-    this.find('[data-neon-win-multiple]').textContent = payout > 0 ? `${number(payout / stake)}× за спин` : 'Пять линий ждут тебя';
+    this.find('[data-neon-win-multiple]').textContent = payout > 0 ? tr`${number(payout / stake)}× за спин` : translateText('Пять линий ждут тебя');
     this.find('[data-neon-bigwin]').hidden = payout < stake * 4; this.root.classList.toggle('neon-celebrating', animate && payout >= stake * 4);
     const winning = new Set(wins.flatMap(win => win.positions));
     this.root.querySelectorAll<HTMLElement>('[data-neon-cell]').forEach(cell => {
       const index = Number(cell.dataset.neonCell); cell.classList.toggle('win', winning.has(index));
-      if (winning.has(index)) cell.setAttribute('aria-label', `${cell.getAttribute('aria-label')}, участвует в выигрыше`);
+      if (winning.has(index)) cell.setAttribute('aria-label', tr`${cell.getAttribute('aria-label')}, участвует в выигрыше`);
     });
     this.find('[data-neon-lines]').innerHTML = wins.map(win => `<polyline data-line="${win.line ?? 0}" points="${win.positions.map(index => `${(index % 3 + .5) * 100},${(Math.floor(index / 3) + .5) * 100}`).join(' ')}"/>`).join('');
-    this.find('[data-neon-line-list]').innerHTML = wins.map(win => `<button type="button" data-neon-line-button="${win.line ?? 0}"><span>Линия ${(win.line ?? 0) + 1}</span><strong>+${amount(win.payoutUnits)}</strong></button>`).join('');
+    this.find('[data-neon-line-list]').innerHTML = wins.map(win => tr`<button type="button" data-neon-line-button="${win.line ?? 0}"><span>Линия ${(win.line ?? 0) + 1}</span><strong>+${amount(win.payoutUnits)}</strong></button>`).join('');
     this.highlightLine();
   }
 
@@ -226,7 +228,7 @@ export class NeonSlotUI {
 
   private clearWins() {
     this.root.classList.remove('neon-celebrating'); this.find('[data-neon-bigwin]').hidden = true;
-    this.root.querySelectorAll<HTMLElement>('[data-neon-cell]').forEach(cell => { cell.classList.remove('win', 'active-win'); cell.setAttribute('aria-label', `Ячейка ${Number(cell.dataset.neonCell) + 1}: ${NEON_SYMBOL_NAMES[Number(cell.dataset.symbol)]}`); });
+    this.root.querySelectorAll<HTMLElement>('[data-neon-cell]').forEach(cell => { cell.classList.remove('win', 'active-win'); cell.setAttribute('aria-label', tr`Ячейка ${Number(cell.dataset.neonCell) + 1}: ${NEON_SYMBOL_NAMES[Number(cell.dataset.symbol)]}`); });
     this.find('[data-neon-lines]').replaceChildren(); this.find('[data-neon-line-list]').replaceChildren();
   }
 
@@ -236,18 +238,19 @@ export class NeonSlotUI {
 
   private updateRules() {
     this.find('[data-neon-paytable]').innerHTML = studioSlotPaytable(GAME).map(row => `<div>${neonSymbol(row.symbol)}<span>${NEON_SYMBOL_NAMES[row.symbol]}</span><strong>${number(row.pays[0].multiplier)}×</strong></div>`).join('');
-    this.find('[data-neon-rtp]').textContent = `Расчётный возврат при ставке ${amount(this.stake)} монет: ${number(studioSlotRtp(GAME, this.stake) ?? 98)}% с учётом округления. Средний показатель на длинной серии спинов.`;
+    this.find('[data-neon-rtp]').textContent = tr`Расчётный возврат при ставке ${amount(this.stake)} монет: ${number(studioSlotRtp(GAME, this.stake) ?? 98)}% с учётом округления. Средний показатель на длинной серии спинов.`;
   }
 
   private updateAudio() {
     const preferences = gameAudio.getPreferences(), button = this.find<HTMLButtonElement>('[data-neon-mute]');
-    button.setAttribute('aria-pressed', String(preferences.muted)); button.setAttribute('aria-label', preferences.muted ? 'Включить звук' : 'Выключить звук');
-    this.find('[data-neon-audio-label]').textContent = preferences.muted ? 'Без звука' : 'Звук'; this.find<HTMLInputElement>('[data-neon-volume]').value = String(Math.round(preferences.volume * 100));
+    button.setAttribute('aria-pressed', String(preferences.muted)); button.setAttribute('aria-label', preferences.muted ? translateText('Включить звук') : translateText('Выключить звук'));
+    this.find('[data-neon-audio-label]').textContent = preferences.muted ? translateText('Без звука') : translateText('Звук'); this.find<HTMLInputElement>('[data-neon-volume]').value = String(Math.round(preferences.volume * 100));
   }
 
   private later(action: () => void, ms: number) { const timer = setTimeout(() => { this.timers.delete(timer); if (!this.destroyed) action(); }, ms); this.timers.add(timer); }
 
   private cancelPresentation() {
+    resetGameOutcomes(this.root);
     this.audio.cancel(this.live?.token); this.live = undefined; this.root.dataset.animationToken = ''; this.reels.cancel();
     this.setPhase('idle');
     cancelAnimationFrame(this.payoutFrame); this.payoutFrame = 0; this.timers.forEach(timer => clearTimeout(timer)); this.timers.clear();

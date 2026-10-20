@@ -1,7 +1,8 @@
+import { t as translateText } from '../i18n/index';
 import qrcode from 'qrcode-generator';
 
 export function paymentQr(address: string): string {
-  if (!/^[\x21-\x7e]{1,512}$/.test(address)) throw new Error('Адрес для QR-кода не подтвержден.');
+  if (!/^[\x21-\x7e]{1,512}$/.test(address)) throw new Error(translateText('Адрес для QR-кода не подтвержден.'));
   const code = qrcode(0, 'M');
   code.addData(address, 'Byte');
   code.make();

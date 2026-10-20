@@ -1,9 +1,10 @@
+import { t as translateText } from '../i18n/index';
 export type ElementSlotGame = 'studio-stormforge-duel' | 'studio-saffron-cipher' | 'studio-beacon-bay';
 
 export const ELEMENT_SYMBOL_NAMES: Record<ElementSlotGame, readonly string[]> = {
-  'studio-stormforge-duel': ['Искра', 'Ледяной клинок', 'Грозовой кристалл', 'WILD: наковальня стихий', 'SCATTER: врата кузницы', 'Щит'],
-  'studio-saffron-cipher': ['Лазурная печать', 'Шафрановое перо', 'Алый свиток', 'WILD: золотой ключ', 'SCATTER: тайная арка', 'Чернильница'],
-  'studio-beacon-bay': ['Волна', 'Жемчужная раковина', 'Компас', 'WILD: маяк', 'SCATTER: штурвал', 'Парус'],
+  'studio-stormforge-duel': [translateText('Искра'), translateText('Ледяной клинок'), translateText('Грозовой кристалл'), translateText('WILD: наковальня стихий'), translateText('SCATTER: врата кузницы'), translateText('Щит')],
+  'studio-saffron-cipher': [translateText('Лазурная печать'), translateText('Шафрановое перо'), translateText('Алый свиток'), translateText('WILD: золотой ключ'), translateText('SCATTER: тайная арка'), translateText('Чернильница')],
+  'studio-beacon-bay': [translateText('Волна'), translateText('Жемчужная раковина'), translateText('Компас'), translateText('WILD: маяк'), translateText('SCATTER: штурвал'), translateText('Парус')],
 };
 
 const forge = [

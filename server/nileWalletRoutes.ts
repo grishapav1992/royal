@@ -2,7 +2,6 @@ import { open } from 'node:fs/promises';
 import type { Application } from 'express';
 import { accounts, allowedOrigin, cookieToken } from './accounts';
 import { NILE_WALLET_SCOPE, gameAccountId, nileUnits, type NileWallet, type NileDeposit } from '../src/shared/nileWallet';
-import { HttpRateLimits } from './requestRateLimit';
 
 export function selectNileWallet(value: any, accountId: string, now = Date.now()): NileWallet {
   if (!gameAccountId(accountId) || !value || value.version !== 1 || value.ready !== true
@@ -31,7 +30,7 @@ export function selectNileWallet(value: any, accountId: string, now = Date.now()
     updatedAt: value.generatedAt, ledgerHeight: value.ledgerHeight, deposits: wallet.deposits.map(({txId,logIndex,height,amountUnits}: NileDeposit) => ({txId,logIndex,height,amountUnits})) }
     : { ...NILE_WALLET_SCOPE, state: 'unassigned' };
 }
-export function installNileWallet(app: Application, file = process.env.NILE_WALLET_VIEW_FILE, limits = new HttpRateLimits()) {
+export function installNileWallet(app: Application, file = process.env.NILE_WALLET_VIEW_FILE) {
   app.use('/api/nile-wallet', async (req, res, next) => {
     res.setHeader('Cache-Control', 'no-store'); res.setHeader('Vary', 'Cookie');
     if (!allowedOrigin(req.get('origin')) || req.get('sec-fetch-site') === 'cross-site') { res.status(403).json({ error: 'Этот источник запросов не разрешён.' }); return; }
@@ -39,7 +38,7 @@ export function installNileWallet(app: Application, file = process.env.NILE_WALL
     if (!account) { res.status(401).json({ error: 'Войди в аккаунт, чтобы посмотреть кошелёк.' }); return; }
     if (req.method !== 'GET') { res.setHeader('Allow', 'GET'); res.status(405).json({ error: 'Тестовый кошелёк доступен только для просмотра.' }); return; }
     res.locals.accountId = account.id; next();
-  }, limits.account());
+  });
   app.get('/api/nile-wallet', async (req, res) => {
     if (Object.keys(req.query).length) { res.status(400).json({ error: 'Параметры запроса не поддерживаются.' }); return; }
     if (!file) { res.json({ ...NILE_WALLET_SCOPE, state: 'disabled' }); return; }

@@ -1,0 +1,270 @@
+/* This layer has no box in iframe and Phaser modes, so their available viewport is unchanged. */
+.game-viewport-plane { display: contents; }
+
+#mini-dialog.originals-mode:not(.game-chat-layout)[open] {
+  display: flex;
+  flex-direction: column;
+  width: min(1220px, calc(100vw - 16px));
+  height: calc(var(--app-height, 100dvh) - 16px);
+  max-width: calc(100vw - 16px);
+  max-height: calc(var(--app-height, 100dvh) - 16px);
+  overflow: hidden;
+}
+#mini-dialog.originals-mode:not(.game-chat-layout) .mini-top,
+#mini-dialog.originals-mode:not(.game-chat-layout) .mini-bottom,
+#mini-dialog.originals-mode:not(.game-chat-layout) .mini-stats {
+  flex: 0 0 auto;
+}
+#mini-dialog.originals-mode:not(.game-chat-layout) .mini-top { padding: 8px 14px; }
+#mini-dialog.originals-mode:not(.game-chat-layout) .mini-top .eyebrow { display: none; }
+#mini-dialog.originals-mode:not(.game-chat-layout) .mini-top h2 { margin: 0; font-size: 18px; }
+#mini-dialog.originals-mode:not(.game-chat-layout) .mini-bottom { padding: 6px 14px; }
+
+#mini-dialog.originals-mode[data-game-viewport] .mini-stage {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+  aspect-ratio: auto;
+  overscroll-behavior: contain;
+}
+#mini-dialog.originals-mode[data-game-viewport="fit"] .mini-stage { overflow: hidden; }
+#mini-dialog[data-game-viewport="fit"] .game-viewport-plane {
+  display: flow-root;
+  position: absolute;
+  top: 0;
+  left: 0;
+  box-sizing: border-box;
+  max-width: none;
+  transform-origin: 0 0;
+}
+#mini-dialog[data-game-viewport="fit"] #mini-game { height: auto; }
+
+/* Small portrait screens keep readable controls and touch targets in a scrollable flow. */
+#mini-dialog[data-game-viewport="flow"] .mini-stage {
+  overflow: auto;
+  touch-action: pan-y;
+}
+#mini-dialog[data-game-viewport="flow"] .game-viewport-plane {
+  display: flow-root;
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+#mini-dialog[data-game-viewport="flow"] #mini-game { height: auto; touch-action: pan-y; }
+
+/* Fit the cabinet's useful content before reducing its final scale on a short monitor. */
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-heading {
+  height: 66px;
+  padding: 5px 14px;
+}
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-heading>div { padding: 4px 24px; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-heading small { display: none; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-heading h2 { font-size: 32px; line-height: 1.08; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-heading>div>span { font-size: 9px; letter-spacing: 1.4px; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-heading>p { display: none; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-scene { gap: 12px; padding: 6px 14px 0; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-stage-heading { font-size: 10px; letter-spacing: 0; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-stage-heading>b { font-size: 11px; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-tickets h3,
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-factor-card h3 { font-size: 13px; }
+#mini-dialog[data-game-viewport="fit"] .cc-game:not(.cv-game) .cc-tickets { gap: 6px; padding: 10px 8px; }
+#mini-dialog[data-game-viewport="fit"] .cc-game:not(.cv-game) .cc-ticket-slots { max-width: 116px; }
+#mini-dialog[data-game-viewport="fit"] .cc-game:not(.cv-game) .cc-tickets>p { min-height: 26px; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-series>div { height: 36px; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-series button { min-height: 36px; padding: 4px 6px; font-size: 10px; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-energy { gap: 6px; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-top { width: 100px; height: 100px; aspect-ratio: 1; align-self: center; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-top>strong { font-size: 32px; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-factor-card { padding: 10px 6px; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-factor-card>strong { font-size: 52px; line-height: 1.15; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-factor-card>small { min-height: 26px; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-buy { min-height: 56px; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-buy strong { font-size: 12px; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-tickets>p,
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-factor-card>small,
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-series>strong,
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-buy small { font-size: 10px; line-height: 1.25; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-results {
+  height: 68px;
+  min-height: 68px;
+  grid-template-rows: 24px 32px;
+  gap: 2px;
+  padding: 5px 14px;
+}
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-results>p {
+  height: 24px;
+  min-height: 0;
+  overflow: auto;
+  font-size: 12px;
+}
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-results>div {
+  height: 32px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 8px;
+}
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-results>div>span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+  font-size: 10px;
+  letter-spacing: 0;
+  white-space: normal;
+}
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-results strong {
+  display: inline;
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.15;
+}
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-groups { height: 32px; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-groups>span { height: 30px; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-groups .cc-symbol { width: 24px; height: 24px; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-controls {
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr) minmax(0, 1.2fr) 96px;
+  grid-template-rows: auto auto;
+  grid-template-areas: "balance last stake spin" "auto auto tools spin";
+  gap: 8px 10px;
+  padding: 10px 14px;
+}
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-balance { grid-area: balance; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-last { grid-area: last; }
+#mini-dialog[data-game-viewport="fit"] .cc-game:not(.cv-game) .cc-balance>strong,
+#mini-dialog[data-game-viewport="fit"] .cc-game:not(.cv-game) .cc-last>strong { font-size: 24px; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-controls small,
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-controls label { font-size: 10px; letter-spacing: .25px; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-last>small { max-width: none; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-balance>span { font-size: 10px; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-stake { grid-area: stake; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-stake>div { grid-template-columns: 36px minmax(0, 1fr) 36px; margin: 3px 0; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-stake button {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+}
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-stake select { min-height: 36px; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-spin {
+  grid-area: spin;
+  width: 96px;
+  min-width: 96px;
+  margin: 0;
+  transform: none;
+  justify-self: center;
+  align-self: center;
+}
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-spin>b { font-size: 61px; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-spin>span { font-size: 10px; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-auto-controls {
+  grid-area: auto;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  max-width: none;
+  width: 100%;
+  gap: 6px;
+}
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-auto-controls>button,
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-auto-controls select,
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-auto-controls>div>button {
+  min-height: 36px;
+  padding: 5px;
+  font-size: 12px;
+}
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-tools {
+  grid-area: tools;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  max-width: none;
+  width: 100%;
+  gap: 5px;
+}
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-tools button { min-width: 36px; min-height: 36px; font-size: 22px; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-wallet-help { min-height: 40px; padding: 5px 12px; font-size: 11px; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-wallet-help a,
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-wallet-help button { font-size: 11px; padding: 6px 9px; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-feedback {
+  height: 32px;
+  min-height: 32px;
+  grid-template-rows: 32px;
+}
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-feedback p { max-height: 32px; font-size: 11px; line-height: 13px; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-footer { gap: 6px; padding: 5px 12px; font-size: 10px; min-height: 36px; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-footer button { min-height: 36px; padding: 5px 8px; font-size: 10px; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cc-footer>label { font-size: 10px; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cv-display-settings { flex-basis: 185px; max-width: 240px; }
+#mini-dialog[data-game-viewport="fit"] .cc-game .cv-display-settings summary { min-height: 36px; padding: 8px 0; }
+
+#mini-dialog[data-game-viewport="fit"] .ce-game.lg-game { min-height: 0; }
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-header { height: 66px; padding: 8px 22px 0; }
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-wordmark>span { font-size: 24px; }
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-wordmark>strong { font-size: 28px; }
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-wordmark>small { font-size: 9px; line-height: 1.4; letter-spacing: 1px; }
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-stage { min-height: 0; gap: 14px; padding: 0 18px 8px 8px; }
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-mothership { top: -58px; width: 180px; height: 76px; }
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-cabinet-heading>span,
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-cabinet-heading>small { font-size: 10px; letter-spacing: 0; }
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-results {
+  height: 72px;
+  min-height: 72px;
+  margin: 3px auto 5px;
+  grid-template-rows: 24px 42px;
+}
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-results .lg-message { font-size: 12px; letter-spacing: .3px; }
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-results .lg-win-bar { height: 42px; grid-template-rows: 30px 12px; }
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-results .lg-win-bar>div:first-child>span { font-size: 10px; letter-spacing: 0; }
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-results .lg-win-bar>div:first-child>strong { font-size: 25px; }
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-results .lg-win-groups { height: 24px; max-height: 24px; }
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-console {
+  height: auto;
+  min-height: 0;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr) minmax(0, 1.2fr) 96px;
+  grid-template-rows: auto auto;
+  gap: 8px 10px;
+  padding: 10px 14px;
+}
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-money { grid-column: 1; grid-row: 1; }
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-lastwin { grid-column: 2; grid-row: 1; }
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-stake { grid-column: 3; grid-row: 1; }
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-money>span,
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-lastwin>span,
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-stake>label,
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-money>small,
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-stake>small { font-size: 10px; letter-spacing: 0; }
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-money>strong,
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-lastwin>strong { font-size: 24px; }
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-stake button { width: 36px; height: 36px; }
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-stake select { width: min(104px, calc(100% - 80px)); font-size: 24px; }
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-spin {
+  grid-column: 4;
+  grid-row: 1 / 3;
+  width: 96px;
+  height: 96px;
+  min-width: 96px;
+  margin: 0;
+  justify-self: center;
+  align-self: center;
+}
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-spin>span { font-size: 10px; }
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-right-controls {
+  grid-column: 1 / 3;
+  grid-row: 2;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+}
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-right-controls>button { flex: 1; width: auto; min-height: 36px; padding: 6px; font-size: 12px; }
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-right-controls .lg-autoplay { flex: 1; width: auto; }
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-right-controls select { min-width: 44px; min-height: 36px; font-size: 12px; }
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-right-controls .lg-autoplay button { min-height: 36px; font-size: 12px; }
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-tools { grid-column: 3; grid-row: 2; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; }
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-tools button { width: auto; min-width: 36px; height: 36px; font-size: 22px; }
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-wallet-help { height: auto; min-height: 36px; gap: 8px; padding: 4px 10px; font-size: 11px; }
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-wallet-help a,
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-wallet-help button { font-size: 11px; padding: 6px 9px; }
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-feedback { height: 32px; min-height: 32px; grid-template-rows: 32px; }
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-feedback .lg-status,
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-feedback .lg-error { max-height: 32px; font-size: 11px; line-height: 13px; }
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-footer { height: auto; min-height: 36px; gap: 8px; padding: 5px 12px; font-size: 10px; }
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-footer>span,
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-footer label,
+#mini-dialog[data-game-viewport="fit"] .ce-game .ce-footer button { font-size: 10px; }

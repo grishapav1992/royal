@@ -1,3 +1,4 @@
+import { t as translateText } from '../i18n/index';
 import type { RoomScene } from '../game/RoomScene';
 
 export class RoomLayout {
@@ -14,16 +15,21 @@ export class RoomLayout {
       this.setPanel(this.panel===button.id?'':button.id);
     });
     this.close.onclick=()=>this.setPanel('');
-    this.sidebar.addEventListener('click',e=>{if((e.target as HTMLElement).closest('[data-cabinet],[data-variant],[data-studio],[data-card-table],[data-activity]'))this.setPanel('',false);},true);
+    this.sidebar.addEventListener('click',e=>{if((e.target as HTMLElement).closest('[data-cabinet],[data-variant],[data-studio],[data-card-table],[data-activity],[data-luelon-zone]'))this.setPanel('',false);},true);
     document.querySelector('#game')!.addEventListener('pointerdown',()=>{if(this.panel)this.setPanel('',false);},true);
     document.addEventListener('keydown',e=>{if(e.key==='Escape'&&this.panel&&!document.querySelector('dialog[open]')){e.preventDefault();this.setPanel('');}});
   }
   attach(scene:RoomScene){
     this.scene=scene;
-    if(!this.tabs.children.length)this.tabs.innerHTML='<button id="games-tab" type="button" aria-expanded="false" aria-controls="room-sidebar">Игры</button>';
+    const newZone=document.createElement('button');
+    newZone.id='luelon-zone-shortcut';newZone.type='button';newZone.textContent=translateText('Новые игры');
+    newZone.setAttribute('aria-label',translateText('Подойти к новым играм на первом этаже'));
+    newZone.onclick=()=>{this.setPanel('',false);scene.approachLuelonZone();};
+    document.querySelector('.lounge-controls')!.append(newZone);
+    if(!this.tabs.children.length)this.tabs.innerHTML=translateText('<button id="games-tab" type="button" aria-expanded="false" aria-controls="room-sidebar">Игры</button>');
     this.tabs.querySelectorAll('button').forEach(b=>{b.setAttribute('aria-expanded','false');b.setAttribute('aria-controls','room-sidebar');});
     const overview=document.querySelector<HTMLButtonElement>('#room-overview')!;
-    overview.onclick=()=>{const on=overview.getAttribute('aria-pressed')!=='true';overview.setAttribute('aria-pressed',String(on));overview.textContent=on?'Вернуться к игроку':'Весь этаж';scene.setOverview(on);};
+    overview.onclick=()=>{const on=overview.getAttribute('aria-pressed')!=='true';overview.setAttribute('aria-pressed',String(on));overview.textContent=on?translateText('Вернуться к игроку'):translateText('Весь этаж');scene.setOverview(on);};
     const viewport=window.visualViewport;
     const resize=()=>{
       // Keep the drawer and composer above a mobile software keyboard.

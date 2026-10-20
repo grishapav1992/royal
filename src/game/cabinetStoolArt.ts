@@ -1,3 +1,4 @@
+import { t as translateText } from '../i18n/index';
 import Phaser from 'phaser';
 import type { Cabinet } from '../shared/cabinets';
 import { cabinetSeat } from '../shared/cabinetSeating';
@@ -63,7 +64,7 @@ export function drawCabinetStool(scene: Phaser.Scene, cabinet: Cabinet, onClick:
   if (label) container.add(label);
   return {
     container,
-    setOccupied: occupied => { occupiedMark.setVisible(occupied); label?.setText(occupied ? 'Занято' : options.label!); },
+    setOccupied: occupied => { occupiedMark.setVisible(occupied); label?.setText(occupied ? translateText('Занято') : options.label!); },
     destroy: () => container.destroy(),
   };
 }
