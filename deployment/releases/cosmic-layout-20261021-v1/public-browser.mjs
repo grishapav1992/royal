@@ -7,7 +7,7 @@ import { transform } from 'esbuild';
 const root = fileURLToPath(new URL('../../../', import.meta.url));
 const proof = process.env.ROYAL_COSMIC_PROOF_DIR || resolve(root, 'artifacts/cosmic-layout-publish-20261021');
 const candidate = process.argv.includes('--candidate');
-const expected = process.env.ROYAL_COSMIC_VERSION || '1.0.0-3277b369c29d';
+const expected = process.env.ROYAL_COSMIC_VERSION || JSON.parse(await readFile(new URL('./module-proof.json',import.meta.url),'utf8')).version;
 const origin = 'https://stealth-spark-gokmxooi.expresshost.cloud';
 const packageRoot = resolve(root, 'module-dist/studio-cosmic-escape');
 const mime = {'.js':'text/javascript','.css':'text/css','.json':'application/json','.webp':'image/webp'};

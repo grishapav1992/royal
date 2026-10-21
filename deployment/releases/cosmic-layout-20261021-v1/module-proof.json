@@ -1,7 +1,7 @@
 {
   "gameId": "studio-cosmic-escape",
-  "version": "1.0.0-3277b369c29d",
-  "sourceSha256": "3277b369c29d6e81024ffa66e11675cc7e0737f0a5c4e93f2e1e371279e309b0",
+  "version": "1.0.0-c9d080cfba0a",
+  "sourceSha256": "c9d080cfba0aba24285109083fd573528d074fcb62016f6124e285da916e6703",
   "sourceFiles": {
     "games/cosmic-escape/entry.ts": "889b958e5fb589d2e4787403a12c46458e6340e7890f129879b37f89316df814",
     "src/modules/GameHostContract.ts": "285c29e7da861a27f8c1dbaca755dda027ae903962242063ef16581585142131",
@@ -42,7 +42,7 @@
     "src/ui/slotKit/SlotScreens.ts": "a5b5baea8205af1f8cd6338f5f44ccd3679b90b2f960e0f7f55465aa6c3ba9c8",
     "src/ui/slotKit/SlotSessions.ts": "e32e9369aa215ea3ad36e3ebf52f0c68d27466a6a399e984f37647a8f318ca68",
     "src/ui/slotKit/SlotSettings.ts": "1eafc83af9243873b3eb75242183e19de94f63c783a6045e7054e3479e6d13c4",
-    "src/ui/slotKit/nativeSlots.ts": "8633861a2731a1d83ffd0ea3b5614570e7fd398306118dafbfdc786e6529de7c",
+    "src/ui/slotKit/nativeSlots.ts": "716c38496a5e688dbe55830bf8d2ca6b297b31ce7dc262c00bdc5f39335afe85",
     "src/ui/slotKit/slot-settings.css": "5d298e10918e5ae4af9a3115cce67e477d0f25f3c69ff9c4b75124621de040a0",
     "src/ui/studio-games.css": "5b97209b92564b2ae9cbbff1721500b107edaf2e70fce1c0c22b4a18c407dced",
     "src/ui/studio-motion.css": "39d859a6d82c328240ee07a695bbec756e75c0e704debd1ccb1343cde03b1905",
