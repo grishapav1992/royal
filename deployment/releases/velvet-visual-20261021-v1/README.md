@@ -1,0 +1,11 @@
+# Velvet Reign: enlarged cast and reel symbols
+
+Published compatible independent module `studio-velvet-reign` version `1.0.0-c8960e04eed9`. Source commit: `1617d910a99be06c1d1f3de93b464cc054469b89`, pushed to main before publication.
+
+Five separate generated portraits show the cast through the waist and upper hips. The leading character uses a wider stage column, held WILD portraits fill each reel, and J/Q/K/A use larger lettering with a gold outline. All seven images participate in loading and retry. Existing rules, saved sessions, payouts, wallet and audio remain unchanged.
+
+The package has twelve resources totaling 5,337,233 bytes. Public HTTPS verified the pointer, manifest, all resource hashes and health. The actual published hall opened the module from its catalogue at 1920, 1366 and 390 pixels, then closed and reopened without JavaScript errors or server writes. Before publication, the built hall was also checked using the real host GameChat controller and a local display-only chat dock. The targeted uncertain-operation test verifies the preserved request ID, storage and shared wallet lock after closing and retrying. No production accounts or wagers were created.
+
+`deploy.py` holds the application and module locks, validates a fresh production fingerprint, verifies a full source backup, tags both previous images, copies only nine source/asset paths and atomically installs the immutable module. Other source files, modules, runtime programs, settings, mounts, services and persistent data were verified unchanged. The application was not restarted. Source backup and previous-image tags are under `velvet-visual-20261021-v1`; see `backup.json` and `published.json` for exact identifiers. The protected historical server deployment journal remains unchanged; the current release record is committed in the repository.
+
+If reverting is necessary, first compare the current production state and preserve later releases, restore the corresponding Velvet sources in main and push them, then remove this first external override to select the retained image baseline. Retain the immutable version for already open games and preserve all current user data. Record and push verification of that separate rollback. Do not replay this release's automatic failure recovery after a later publication.

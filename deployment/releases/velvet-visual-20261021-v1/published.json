@@ -1,0 +1,30 @@
+{
+  "published": true,
+  "release": "velvet-visual-20261021-v1",
+  "sourceCommit": "1617d910a99be06c1d1f3de93b464cc054469b89",
+  "moduleVersion": "1.0.0-c8960e04eed9",
+  "module": {
+    "verified": true,
+    "gameId": "studio-velvet-reign",
+    "version": "1.0.0-c8960e04eed9",
+    "bytes": 5337233,
+    "files": 12,
+    "beforeSha256": "none",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "activeSha256": "9316a570a444ccecffd51dcdf2b2449037a480e1dacd1c0f4333ca29ab5cc9cd",
+    "history": "/opt/royal-game-modules-state/history/20261021T203312-804bf9603bb64e48b9a77cc17570e034.json"
+  },
+  "backup": "/opt/royal-backups/velvet-visual-20261021-v1",
+  "runningImage": "sha256:4208c6b3462a76ee4717c41f42f43ac9cd9d7574a38e56c3d6eb1aaa75c82d19",
+  "preparedImage": "sha256:d41c4b5ecdb58725595c455d2d9db8c449caa1eedc7517364f0da0de46d6af89",
+  "containerRestarted": false,
+  "otherModulesPreserved": true,
+  "programsPreserved": true,
+  "settingsPreserved": true,
+  "otherServicesPreserved": true,
+  "databaseTouched": false
+}
