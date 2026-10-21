@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { createServer, type ViteDevServer } from 'vite';
-import { mkdir, readFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { resolve, sep, extname } from 'node:path';
 
@@ -8,6 +8,7 @@ let server: ViteDevServer;
 let baseURL: string;
 const packageRoot = resolve('module-dist');
 const publicOrigin = process.env.ROYAL_MODULE_PUBLIC_ORIGIN ? new URL(process.env.ROYAL_MODULE_PUBLIC_ORIGIN).origin : undefined;
+const artworkTimeout = publicOrigin ? 90000 : 20000;
 const publicResources = new Map<string, Promise<{ bytes: Buffer; type: string; cache: string }>>();
 const mime: Record<string, string> = { '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.svg': 'image/svg+xml', '.webp': 'image/webp', '.png': 'image/png', '.jpg': 'image/jpeg', '.mp3': 'audio/mpeg', '.woff2': 'font/woff2' };
 
@@ -63,7 +64,7 @@ async function open(page: Page, gameId: string) {
 }
 
 test('all defined games mount as actual independent packages and dispose their styles', async ({ page }) => {
- test.setTimeout(publicOrigin ? 420000 : 180000);
+ test.setTimeout(publicOrigin ? 600000 : 180000);
  const errors: string[] = [], failures: string[] = [], originalAssetRequests: string[] = [];
  page.on('pageerror', error => errors.push(error.message));
  page.on('response', response => { if (response.url().includes('/game-modules/') && response.status() >= 400) failures.push(response.url()); });
@@ -71,22 +72,33 @@ test('all defined games mount as actual independent packages and dispose their s
  await fixture(page);
  const games = await page.evaluate(() => (window as any).moduleHarness.games as string[]);
  expect(games).toHaveLength(111);
- for (const game of games) {
+ const startAt = process.env.ROYAL_MODULE_START_AT;
+ if (startAt) expect(games).toContain(startAt);
+ const selected = startAt ? games.slice(games.indexOf(startAt)) : games;
+ const mounted: string[] = [];
+ for (const game of selected) {
   await open(page, game);
   if (game !== 'casinoapipro') await expect(page.locator(`#primary > :not([role="status"])`).first()).toBeAttached();
   await expect(page.locator(`link[data-royal-game-module="${game}"]`)).toHaveCount(1);
   const assets = page.locator('#primary [data-asset-state]');
-  if (await assets.count()) await expect(assets.first()).toHaveAttribute('data-asset-state', 'ready', { timeout: 20000 });
-  if (game === 'github-crash') await expect(page.locator('#primary canvas')).toHaveAttribute('data-assets', '16', { timeout: 20000 });
+  if (await assets.count()) await expect(assets.first()).toHaveAttribute('data-asset-state', 'ready', { timeout: artworkTimeout });
+  if (game === 'github-crash') await expect(page.locator('#primary canvas')).toHaveAttribute('data-assets', '16', { timeout: artworkTimeout });
   if (game === 'original-cr-vs-leo') await expect(page.locator('#primary .cr-leo')).toHaveAttribute('data-loading', 'false', { timeout: 60000 });
   expect(await page.evaluate(() => (window as any).moduleHarness.snapshot())).toMatchObject({ sharedWallet: true, sharedExpansion: true, sharedMines: true, sharedCasino: true, sharedFlight: true, sharedNile: true, sharedUsdt: true, sharedCrypto: true, sharedDemoGames: true, locked: false });
   await page.evaluate(() => (window as any).moduleHarness.close());
   await expect(page.locator('link[data-royal-game-module]')).toHaveCount(0);
   await expect(page.locator('#primary')).not.toHaveAttribute('data-game-module-version', /.+/);
+  mounted.push(game);
  }
  expect(errors).toEqual([]);
  expect(failures).toEqual([]);
  expect(originalAssetRequests).toEqual([]);
+ if (process.env.ROYAL_MODULE_PROOF_DIR) {
+  const directory = resolve(process.env.ROYAL_MODULE_PROOF_DIR);
+  await mkdir(directory, { recursive: true });
+  await writeFile(resolve(directory, `package-mounts-${startAt || 'all'}.json`), JSON.stringify({ origin: publicOrigin || 'local', catalogCount: games.length, selectedCount: selected.length, mounted, errors, failures, originalAssetRequests }, null, 2) + '\n');
+ }
+ console.log(`Mounted and disposed ${mounted.length} independent packages${startAt ? ` starting at ${startAt}` : ''}`);
 });
 
 test('the published external GIRLHUB package retains host API 1 compatibility', async ({ page }) => {
@@ -124,7 +136,7 @@ test('current production CR vs Leo selections and Veil of Night presentation sur
  await open(page, 'royal-plinko');
  await expect(page.locator('#primary .volcanic-plinko')).toHaveAttribute('aria-label', 'Завеса ночи · Plinko');
  await expect(page.locator('#primary .vp-sorceress img')).toBeVisible();
- expect(await page.locator('#primary .vp-sorceress img').evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
+ await expect.poll(() => page.locator('#primary .vp-sorceress img').evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0), { timeout: artworkTimeout }).toBe(true);
  expect(posts).toBe(0);
 });
 
@@ -411,7 +423,7 @@ test('representative native and generic modules retain desktop and mobile presen
     await expect(page.locator('[data-cc-action="enter"]')).toBeEnabled({ timeout: 20000 });
     await page.locator('[data-cc-action="enter"]').click();
    }
-   if (game === 'github-crash') await expect(page.locator('#primary canvas')).toHaveAttribute('data-assets', '16', { timeout: 20000 });
+   if (game === 'github-crash') await expect(page.locator('#primary canvas')).toHaveAttribute('data-assets', '16', { timeout: artworkTimeout });
    if (game === 'original-cr-vs-leo') await expect(page.locator('#primary .cr-leo')).toHaveAttribute('data-loading', 'false', { timeout: 60000 });
    if (game === 'royal-plinko') await page.locator('[data-vp="enter"]').click();
    await page.screenshot({ path: resolve(directory, `${game}-${name}.png`), fullPage: true });
