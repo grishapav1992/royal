@@ -4,6 +4,7 @@ import type { HallId } from '../shared/world';
 import { CABINET_SCALE, CABINET_SIZE, cabinetScreen, paintGirlhubLogo } from './cabinetArt';
 import { isStudioGame, STUDIO_INFO } from '../shared/studioGames';
 import { isCardGame } from '../shared/cardTables';
+import { cabinetArtworkReady } from './cabinetArtwork';
 
 const PREVIEW_WIDTH = 46;
 const PREVIEW_HEIGHT = 42;
@@ -24,7 +25,7 @@ export class RoomDetails {
   private reducedMotion: boolean;
   constructor(private scene: Phaser.Scene, private cabinets: Cabinet[], private hall: HallId) {
     this.reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    this.cabinets = cabinets.filter(cabinet => !isCardGame(cabinet.id));
+    this.cabinets = cabinets.filter(cabinet => !isCardGame(cabinet.id) && !cabinetArtworkReady(scene,cabinet.id));
     this.walls();
     if (!this.cabinets.length) return;
     const cellWidth = PREVIEW_WIDTH * PREVIEW_RESOLUTION;

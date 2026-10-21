@@ -25,8 +25,12 @@ export const RETIRED_ARCADE_GAMES: readonly string[] = [
 const retired = new Set<unknown>(RETIRED_ARCADE_GAMES);
 export const isRetiredArcadeGame = (id: unknown): boolean => retired.has(id);
 
+// LAST EXIT keeps the historical Crash ID, but belongs with the house games.
+export const ARCADE_HOUSE_GAMES = [...ACTIVE_STUDIO_GAMES, 'github-crash', 'royal-plinko', PENALTY_GAME] as const;
+export const ARCADE_GITHUB_GAMES = ARCADE_CLASSIC_GAMES.filter(id => !(ARCADE_HOUSE_GAMES as readonly string[]).includes(id));
+
 export const ARCADE_CABINET_POSITIONS: Readonly<Record<string, {x:number;y:number}>> = {
-  casinoapipro: {x:480, y:330}, luelon: {x:480, y:550},
-  ...Object.fromEntries(ACTIVE_STUDIO_GAMES.map((id,index) => [id, {x:1200+index*220, y:330}])),
-  ...Object.fromEntries(ARCADE_CLASSIC_GAMES.map((id,index) => [id, {x:1200+index%5*180, y:[550,820,1050][Math.floor(index/5)]}])),
+  luelon: {x:2045, y:430}, casinoapipro: {x:2415, y:430},
+  ...Object.fromEntries(ARCADE_HOUSE_GAMES.map((id,index) => [id, {x:1200+index%5*135, y:430+Math.floor(index/5)*270}])),
+  ...Object.fromEntries(ARCADE_GITHUB_GAMES.map((id,index) => [id, {x:1950+index%5*140, y:760+Math.floor(index/5)*250}])),
 };

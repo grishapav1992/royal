@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { CABINETS } from '../shared/cabinets';
 import { CABINET_SIZE, paintCabinet } from './cabinetArt';
+import { paintCabinetArtwork } from './cabinetArtwork';
 import { createInteriorArt } from './interiorArt';
 import { isCardGame } from '../shared/cardTables';
 import { createCardTableArt } from './CardTablesRenderer';
@@ -57,7 +58,12 @@ export function createDetailedArt(scene: Phaser.Scene) {
     oval(c,81,23,11,4,'#fff4d7');box(c,76,12,11,11,'#f5cf49',2);oval(c,81.5,12,5.5,2,'#694132');
     box(c,58,14,10,17,'#375568',2);box(c,60,16,6,10,'#93ced7');
   });
-  CABINETS.forEach((cabinet, i) => { if (!isCardGame(cabinet.id)) make(`cabinet-${i}`, CABINET_SIZE.width, CABINET_SIZE.height, c => paintCabinet(c, cabinet)); });
+  CABINETS.forEach((cabinet, i) => {
+    if (!isCardGame(cabinet.id)) make(`cabinet-${i}`, CABINET_SIZE.width, CABINET_SIZE.height, c => {
+      paintCabinet(c, cabinet);
+      paintCabinetArtwork(scene, c, cabinet);
+    });
+  });
   createCardTableArt(scene, CABINETS.filter(cabinet => isCardGame(cabinet.id)));
   createInteriorArt(scene, ART_RESOLUTION);
   make('bar-back',248,99,c=>{
