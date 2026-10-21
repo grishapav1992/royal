@@ -1,0 +1,18 @@
+{
+  "sourceCommit": "a2b1619b020caa5b2ca7740b31f903eac0c265c5",
+  "module": "1.0.0-95e36da51682",
+  "runningImage": "sha256:569d517f4fa1e81e1e12f1324cac5e5f4e16190edb376e047f6118ba52fac6c0",
+  "manifestSha256": "ccf1dca60c3134c368f06895b446a8ce14a6e253e768f1cba8e15b13f96fc37c",
+  "activeSha256": "09b77b0b5c277b1a486cc05a398c51e0f136f2ed60c7e06318a2b393a3fe8364",
+  "sourceBackupSha256": "5cb380ec9540cfb2f2828a72a0ef883b7a0e670a5e0dbfa8405ed80cfe0c6a3b",
+  "typescript": true,
+  "audioLifecycleTests": 7,
+  "moduleTests": 6,
+  "decodedMp3Checks": 10,
+  "publicHttpChecks": 40,
+  "publicBrowserLoaded": 10,
+  "publicBrowserErrors": [],
+  "containerRestarted": false,
+  "walletOrRulesChanged": false,
+  "productionTransactions": 0
+}
