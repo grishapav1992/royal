@@ -121,6 +121,8 @@ def baseline_guard():
     payload_bytes += (ROOT / 'prebuilt/index.js').stat().st_size
     # Budget full uncompressed backups, three payload copies and a 1 GiB reserve.
     required = max(2 * 1024**3, source_bytes + static_bytes + payload_bytes * 3 + 1024**3)
+    if (BACKUP / 'source.tgz').is_file() and (ROOT / 'runtime-context').is_dir():
+        required = max(768 * 1024**2, payload_bytes * 2 + 256 * 1024**2)
     require(state['availableBytes'] > required, 'Insufficient free disk')
     return state
 
@@ -198,11 +200,12 @@ def verify_tar(path, expected):
 def build():
     payload_guard()
     old = baseline_guard()
-    BACKUP.mkdir(mode=0o700, exist_ok=False)
-    with tarfile.open(BACKUP / 'source.tgz', 'w:gz') as archive:
-        for name, digest in BASE.items():
-            require(sha(LIVE / name) == digest, 'Source changed during backup')
-            archive.add(LIVE / name, arcname=name, recursive=False)
+    BACKUP.mkdir(mode=0o700, exist_ok=True)
+    if not (BACKUP / 'source.tgz').exists():
+        with tarfile.open(BACKUP / 'source.tgz', 'w:gz') as archive:
+            for name, digest in BASE.items():
+                require(sha(LIVE / name) == digest, 'Source changed during backup')
+                archive.add(LIVE / name, arcname=name, recursive=False)
     verify_tar(BACKUP / 'source.tgz', BASE)
     shutil.copy2(HOST, BACKUP / 'host.json')
     require(sha(BACKUP / 'host.json') == old['moduleHostContract'], 'Private host contract backup differs')
@@ -212,13 +215,16 @@ def build():
                                   'sourceCommit': M['sourceCommit'], 'databaseRestored': False})
     run(['docker', 'tag', old['container']['image'], 'royal-game:before-' + NAME])
     run(['docker', 'tag', old['preparedImage'], 'royal-game:before-' + NAME + '-prepared'])
-    run(['docker', 'cp', 'royal-game-1:/app/dist', str(BACKUP / 'dist')])
+    if not (BACKUP / 'dist').exists():
+        run(['docker', 'cp', 'royal-game-1:/app/dist', str(BACKUP / 'dist')])
     require({'dist/' + name: digest for name, digest in inventory(BACKUP / 'dist').items()}
             == {name: digest for name, digest in old['program'].items() if name.startswith('dist/')}, 'Client backup differs')
     context = ROOT / 'runtime-context'
-    context.mkdir(exist_ok=False)
-    shutil.copytree(ROOT / 'prebuilt/dist', context / 'dist-delta')
-    shutil.copytree(ROOT / 'prebuilt/module-dist', context / 'module-dist')
+    context.mkdir(exist_ok=True)
+    shutil.copytree(ROOT / 'prebuilt/dist', context / 'dist-delta', dirs_exist_ok=True)
+    shutil.copytree(ROOT / 'prebuilt/module-dist', context / 'module-dist', dirs_exist_ok=True)
+    require(inventory(context / 'dist-delta') == M['delta'] and inventory(context / 'module-dist') == MODULES,
+            'Resumed build context differs')
     shutil.copy2(ROOT / 'prebuilt/index.js', context / 'index.js')
     shutil.copy2(ROOT / 'prebuilt/package.json', context / 'package.json')
     old_package = json.loads(run(['docker', 'exec', 'royal-game-1', 'node', '-p', 'JSON.stringify(require("/app/package.json"))']))
