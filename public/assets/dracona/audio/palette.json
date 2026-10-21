@@ -1,0 +1,80 @@
+{
+  "title": "Moonlit Manor",
+  "original": true,
+  "source": "games/dracona/tools/make_audio.py",
+  "sampleRate": 44100,
+  "channels": 2,
+  "recordingsOrMelodiesFromFilms": false,
+  "cues": {
+    "cast": {
+      "seconds": 1.35,
+      "peakDbfs": -2.85,
+      "rmsDbfs": -19.18,
+      "sha256": "599e63f751d60ef955c0a3765245c9b7ebece307c47e30e6d8c6243b00f444b6",
+      "bytes": 24824
+    },
+    "settle": {
+      "seconds": 0.65,
+      "peakDbfs": -11.8,
+      "rmsDbfs": -22.88,
+      "sha256": "c43e3f8f4bc7620f1160629fc7bf3b19c4b0859a33e0f647c81f202061e0a8a0",
+      "bytes": 8102
+    },
+    "cascade": {
+      "seconds": 1.24,
+      "peakDbfs": -4.39,
+      "rmsDbfs": -18.83,
+      "sha256": "d94902466cbbcaf2a187ff381322749c789a1e780663c02c46fa7f5a88df8494",
+      "bytes": 20803
+    },
+    "portal": {
+      "seconds": 2.05,
+      "peakDbfs": -2.85,
+      "rmsDbfs": -18.82,
+      "sha256": "c45c4577c09782c6caebeab948cd53289799230790a46b8e795781e05c0d5d12",
+      "bytes": 32017
+    },
+    "bonus": {
+      "seconds": 3.7,
+      "peakDbfs": -2.85,
+      "rmsDbfs": -16.8,
+      "sha256": "f36ba468685e2b9f513d0008702ceb8a0bdfdce6b1e804d000252f07ec080b1c",
+      "bytes": 59563
+    },
+    "finish": {
+      "seconds": 2.8,
+      "peakDbfs": -4.21,
+      "rmsDbfs": -18.19,
+      "sha256": "3aeaa18bd06a38eb66d6038f6176ababd0dd6abd5fb8205c3239906f2c5c073b",
+      "bytes": 35636
+    },
+    "fizzle": {
+      "seconds": 0.95,
+      "peakDbfs": -11.6,
+      "rmsDbfs": -26.64,
+      "sha256": "6231fcf8787b4667c89cc5277f58775e9a06886a917be29fffce43a5eab43212",
+      "bytes": 13578
+    },
+    "cast-quick": {
+      "seconds": 0.64,
+      "peakDbfs": -7.65,
+      "rmsDbfs": -20.28,
+      "sha256": "0f19f980a13447461584687335b44e9227b881e53e1a672268cc0ad2d602f1a3",
+      "bytes": 10683
+    },
+    "cascade-quick": {
+      "seconds": 0.64,
+      "peakDbfs": -6.95,
+      "rmsDbfs": -20.23,
+      "sha256": "3d5daa7e83fbb981f100f9d39f7bb522d6274d3b71cb764c16dc0a08ac26e576",
+      "bytes": 10735
+    },
+    "portal-quick": {
+      "seconds": 0.78,
+      "peakDbfs": -4.95,
+      "rmsDbfs": -20.09,
+      "sha256": "2d40e49dd5e465c15a855ffb3233c1bc41d876c884867ceb566328d2c0ff4737",
+      "bytes": 10057
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "title": "Moonlit Manor",
+  "game": "studio-dracona",
+  "creator": "Original procedural sound design for the Royal project",
+  "source": "games/dracona/tools/make_audio.py",
+  "method": "Layered filtered air, inharmonic glass and celesta resonances, stereo early reflections and warm harmonic pads",
+  "thirdPartyRecordings": false,
+  "filmMusicOrDialogueSamples": false,
+  "files": "public/assets/dracona/audio/*.mp3"
+}

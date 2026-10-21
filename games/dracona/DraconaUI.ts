@@ -2,6 +2,7 @@ import { COLS, CREST, PORTAL, SIZE, SYMBOLS, type Grid, type Movement, type Step
 import { CharacterDirector } from './character';
 import { MagicEffects } from './effects';
 import { Autoplay } from './autoplay';
+import { DraconaAudio } from './audio';
 import { readGameHost } from '../../src/modules/GameHostContract';
 import { locale } from '../../src/i18n/index';
 import { DRACONA_GAME, DRACONA_BETS, DRACONA_RULES, type DraconaView } from '../../src/shared/dracona';
@@ -46,6 +47,7 @@ export class Dracona {
   private cells: HTMLElement[] = [];
   private hero: CharacterDirector;
   private effects: MagicEffects;
+  private audio: DraconaAudio;
   private grid = [...initial];
   private runes = Array(SIZE).fill(1) as number[];
   private reserveGrid: Grid = [0, 1, 2, 3];
@@ -75,7 +77,8 @@ export class Dracona {
     this.reserve = this.find('#reserve-grid');
     this.dialog = this.find<HTMLDialogElement>('#dialog');
     this.hero = new CharacterDirector(this.find('#hero'));
-    this.effects = new MagicEffects(this.find<HTMLCanvasElement>('#magic-canvas'), kind => this.hostServices.gameAudio.effect(kind === 'cast' ? 'start' : kind === 'portal' ? 'cabinet' : 'win'));
+    this.audio = new DraconaAudio(this.hostServices.gameAudio, this.document, fetch, state => { this.root.dataset.audioState = JSON.stringify(state); });
+    this.effects = new MagicEffects(this.find<HTMLCanvasElement>('#magic-canvas'), kind => { void this.audio.play(kind === 'win' ? 'cascade' : kind); });
     this.cells = Array.from({ length: SIZE }, (_, index) => {
       const cell = this.document.createElement('div');
       cell.className = 'cell'; cell.setAttribute('role', 'gridcell'); cell.dataset.index = String(index);
@@ -223,6 +226,7 @@ export class Dracona {
   private sync() {
     if (!this.alive) return;
     if (this.owner !== this.client.accountId) {
+      this.audio.cancel();
       this.owner = this.client.accountId;
       this.autoplay.stop();
       this.presented = '';
@@ -281,6 +285,7 @@ export class Dracona {
       this.find('#hero-caption').textContent = 'Посмотрим, что скрывает шкаф.';
       this.root.dataset.phase = 'spinning';
       this.find('#transfer-dots').querySelectorAll('i').forEach(dot => dot.classList.remove('lit'));
+      this.audio.begin(this.spinSpeed);
       void this.hero.cast().catch(error => console.error(error)); this.effects.cue('cast');
       this.effects.cast(this.find('#hero').getBoundingClientRect(), this.board.getBoundingClientRect());
       this.board.classList.add('spinning');
@@ -299,6 +304,10 @@ export class Dracona {
       this.applyView(view);
       await this.hero.react(result.bonusAward > 0 ? 'bonus' : result.payout > 0 ? 'win' : 'neutral');
       if (!this.alive || account !== this.client.accountId) return false;
+      if (!free && !result.bonusAward) {
+        if (result.payout >= this.bet * 10) void this.audio.play('finish');
+        else if (result.payout === 0) void this.audio.play('fizzle');
+      }
       this.find('#hero-caption').textContent = result.bonusAward ? 'Поместье помнит каждое заклинание.' : result.payout > 0 ? 'Мне нравится эта магия.' : 'У каждого секрета свое время.';
       if (result.bonusAward > 0 && !free) this.showBonus(result.bonusAward);
       else if (free && view.remaining === 0) this.showBonusResult();
@@ -317,7 +326,7 @@ export class Dracona {
   }
 
   private async present(step: Step) {
-    if (step.type === 'initial') { this.draw(step.grid); this.drawReserve(step.reserve); await this.wait(260); }
+    if (step.type === 'initial') { this.draw(step.grid); this.drawReserve(step.reserve); void this.audio.play('settle'); await this.wait(260); }
     if (step.type === 'win') {
       this.root.dataset.phase = 'winning'; this.effects.cue('win');
       step.clusters.flatMap(c => c.cells).forEach(index => this.cells[index].classList.add('winning'));
@@ -328,7 +337,7 @@ export class Dracona {
       step.clusters.flatMap(c => c.cells).forEach(index => this.cells[index].classList.add('vanishing'));
       await this.wait(230);
     }
-    if (step.type === 'drop') { this.root.dataset.phase = 'falling'; this.draw(step.grid, step.movements); await this.wait(450); }
+    if (step.type === 'drop') { this.root.dataset.phase = 'falling'; this.draw(step.grid, step.movements); void this.audio.play('settle'); await this.wait(450); }
     if (step.type === 'portal') {
       this.root.dataset.phase = 'portal'; this.effects.cue('portal');
       this.status(`Исчезающий шкаф · перенос ${step.number}`);
@@ -371,17 +380,17 @@ export class Dracona {
     this.effects.cue('bonus');
     this.showDialog('Память поместья', `<img class="dialog-emblem" src="/assets/dracona/crest.webp" alt="Фамильный герб"><div class="bonus-count">${count}<span>БЕСПЛАТНЫХ ВРАЩЕНИЙ</span></div><p>Шкаф открывается на каждом вращении. Переносы оставляют серебряные руны от ×2 до ×5. Зачарованный резерв иногда приносит четыре одинаковых символа.</p>`, 'ПОМЕСТЬЕ ПРОБУЖДАЕТСЯ');
   }
-  private showBonusResult() { this.showDialog('Магия сохранена', `<div class="bonus-count">${amount(this.bonusTotal)}<span>ТЕСТОВЫХ МОНЕТ ЗА БОНУС</span></div><p>Серебряные руны гаснут. Поместье снова ждет твоего заклинания.</p>`, 'БОНУС ЗАВЕРШЕН'); this.runes.fill(1); this.draw(this.grid); }
+  private showBonusResult() { void this.audio.play('finish'); this.showDialog('Магия сохранена', `<div class="bonus-count">${amount(this.bonusTotal)}<span>ТЕСТОВЫХ МОНЕТ ЗА БОНУС</span></div><p>Серебряные руны гаснут. Поместье снова ждет твоего заклинания.</p>`, 'БОНУС ЗАВЕРШЕН'); this.runes.fill(1); this.draw(this.grid); }
 
   private showRules() {
     this.showDialog('Тайны шкафа', `<div class="rules-copy"><p><b>Автовращения.</b> Выбери серию из 10, 25 или 50 вращений и нажми «Старт». Скорость настраивается отдельно: обычная, быстрая или турбо. Изменение скорости применяется со следующего спина. «Стоп» завершает текущий спин и отменяет оставшиеся. При открытии бонуса, правил, нехватке монет или ошибке серия останавливается.</p><p><b>Каскады.</b> Пять одинаковых символов, соединенных по горизонтали или вертикали, дают выигрыш. Они исчезают, остальные падают, сверху приходят новые. До 8 каскадов за вращение.</p><p><b>Переносы.</b> Символ шкафа дает обмен участка 2 × 2 с четырьмя символами по ту сторону. После обмена поле снова проверяется. До 3 переносов за вращение.</p><p><b>Память поместья.</b> Три герба на одном показе поля открывают 8 бесплатных вращений. Во время бонуса три герба добавляют еще 2, максимум 20 за серию. Ставка фиксируется при входе в бонус. В 45% бонусных вращений резерв зачарован: все четыре его символа одинаковые.</p><p><b>Серебряные руны.</b> В бонусе каждый перенос повышает руны своих клеток на один, от ×2 до ×5. Для группы берется наибольшая руна, множители не перемножаются. После бонуса руны сбрасываются.</p><p><b>Выплаты за группу.</b> 5–6 символов: 2,5 ставки; 7–8: 5,5; 9–11: 12; 12–15: 30; 16–20: 80. Затем применяется ценность символа: зелье ×1,3, кольцо ×1,2, книга ×1,1, ключ ×1, изумруд ×0,9, перо ×0,8, и руна. Итог округляется до целой тестовой монеты.</p><p>${DRACONA_RULES}</p></div>`);
   }
-  getState() { return { gameId: DRACONA_GAME, ready: !!this.client.accountId, busy: this.busy, remaining: this.bonusRemaining, autoplay: this.autoplay.state }; }
+  getState() { return { gameId: DRACONA_GAME, ready: !!this.client.accountId, busy: this.busy, remaining: this.bonusRemaining, autoplay: this.autoplay.state, audio: this.audio.getState() }; }
   destroy() {
     if (!this.alive) return;
     this.alive = false; this.autoplay.stop(); this.controller.abort();
     this.client.removeEventListener('change', this.changed); this.wallet.removeEventListener('change', this.changed);
-    this.stopAudio?.(); this.hero.destroy(); this.effects.destroy();
+    this.stopAudio?.(); this.audio.destroy(); this.hero.destroy(); this.effects.destroy();
     if (this.dialog.open) this.dialog.close();
     this.host.replaceChildren();
   }
