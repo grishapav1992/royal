@@ -113,7 +113,14 @@ def baseline_guard():
     require(state['preparedImage'] == M['before']['preparedImage'] and state['program'] == M['before']['program']
             and state['preparedProgram'] == state['program'],
             'Runtime or prepared image changed')
-    required = max(3 * 1024**3, sum((ROOT / 'prebuilt/module-dist' / name).stat().st_size for name in MODULES) * 4)
+    source_bytes = sum((LIVE / name).stat().st_size for name in BASE)
+    static_bytes = int(run(['docker', 'exec', 'royal-game-1', 'node', '-e',
+        "const f=require('fs'),p=require('path');function size(d){return f.readdirSync(d).reduce((n,x)=>{const q=p.join(d,x),s=f.lstatSync(q);return n+(s.isDirectory()?size(q):s.size);},0)}console.log(size('/app/dist'))"]))
+    payload_bytes = sum((ROOT / 'prebuilt/module-dist' / name).stat().st_size for name in MODULES)
+    payload_bytes += sum((ROOT / 'prebuilt/dist' / name).stat().st_size for name in M['delta'])
+    payload_bytes += (ROOT / 'prebuilt/index.js').stat().st_size
+    # Budget full uncompressed backups, three payload copies and a 1 GiB reserve.
+    required = max(2 * 1024**3, source_bytes + static_bytes + payload_bytes * 3 + 1024**3)
     require(state['availableBytes'] > required, 'Insufficient free disk')
     return state
 
