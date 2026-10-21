@@ -1,0 +1,3 @@
+Last Convoy holds two or three finished poses per outfit for 7-14 seconds. Each outfit keeps a fixed scale and floor; the whole portrait fits its panel. Pausing, visibility and reduced motion retain the current pose and unspent hold time.
+
+Only two presentation sources and this compatible independent module are released. Source artwork, rules, progress, wallet, server programs and user data are preserved. Deploy with the shared application and module locks, a fresh snapshot, source backup, previous-image tags and expected active-pointer hash. Follow deployment/SERVER.md for the final verification record.

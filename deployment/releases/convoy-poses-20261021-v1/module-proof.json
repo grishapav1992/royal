@@ -1,0 +1,72 @@
+{
+  "gameId": "studio-last-convoy",
+  "version": "1.0.0-6d069bca8c1c",
+  "sourceSha256": "6d069bca8c1c0a22d958d6441183133bed02df086a6b50f1854986ad0097fcf3",
+  "sourceFiles": {
+    "games/last-convoy/entry.ts": "6a26834a48d6638eb98d5e89765b6ca8f3c3cce22f8fc7abcec17bb3b69c7d61",
+    "src/modules/GameHostContract.ts": "b554b9672d551a9d95a1fd27e1483fb9a0ba9b8fed13506c1e17e3f5003259c6",
+    "src/shared/convoyWardrobe.ts": "e00ff55831b480cfc785354d0bddebef35bd58f754c8bb3dc26fdbd1fe8b60fa",
+    "src/shared/lastConvoy.ts": "f4d1b22f8a67dfda6fadbb4539b85211d8ad6c165657ba394bcd5c258e1f280a",
+    "src/shared/walletAccount.ts": "f048e9d0e18ffe32619ee9e8b5f457d9d6af69329dbd2b26b994c2bcf6448560",
+    "src/ui/ConvoyArtwork.ts": "2fe04a440fb3d6260506baddccf462c63785e5ba995a4b927f886a175967a3a8",
+    "src/ui/ConvoyBoard.ts": "34616fef7e1bc2d53418d371e009a5f767c2ee5ddbb648baff982938dfa5b1af",
+    "src/ui/ConvoyHeroine.ts": "808191d0a8926441c80d21eede20c066685506dc15a5b8f0f49eed67d9118dd6",
+    "src/ui/ConvoyPortraitAnimation.ts": "66040221e403a88f4b81e1ff82d92e1a7c4d2b8381ab3cb65e3d8c63d674e14c",
+    "src/ui/LastConvoyAssets.ts": "5c768a0f88cfd16ff2f60ec0a898bfe3101bccf8e7ac65df0d08506afde39b78",
+    "src/ui/LastConvoyAudio.ts": "f3bc53b3546e4e442b7ac6139de5e98fb4b673822f171c0a030cedc7d55803c0",
+    "src/ui/LastConvoyUI.ts": "c588d21a1ddee819ee4f0adc1807d1dfcbef72569cb9b7f278bed4da9cb34f81",
+    "src/ui/caramel-carnival.css": "2e0078654fb9754e15c09e837aaea32f08aa10e4947dffe6b7eb342a0b1a3bb6",
+    "src/ui/convoy-heroine.css": "8aed278e5870cfb12853d281c1dfb45722b992c8724fcb1b069a33c0fe1649dd",
+    "src/ui/last-convoy.css": "e2a23eb842c5a7c813a962f2b770fa9e2d46b751d80cde541a7bcaf3dd3d7da4",
+    "src/ui/slotKit/SlotAssets.ts": "a2126e8a45f362192098ac3a5a6ae7c3222b19ddd69971bb38dddc4d5f14b2e1",
+    "src/ui/slotKit/SlotAudio.ts": "7f7c3536e0202ebd39dd79bcd36c886882332c6d5e84e4a73831d46e06aefbc0",
+    "src/ui/slotKit/SlotCascadeBoard.ts": "4191802cc8bb47fd16fa90c11560393adae6004336bf701e48480674b3b54928",
+    "src/ui/slotKit/SlotControls.ts": "64d08da02ff7e5fa34add413acdd1ad804c91ccab14d6bf5504d2d4b4cef0be7",
+    "src/ui/slotKit/SlotDialog.ts": "ab1afa6596855626571b00824b7b22b57a7b3f1045857fbe410b23af65d5e295",
+    "src/ui/slotKit/SlotGeometry.ts": "9050e51c87d77646845e206f2618a1ab6a3887e008f17abb0b1fbd29303ee90f",
+    "src/ui/slotKit/SlotLifecycle.ts": "33c227f915cbff994e7218a7e98410f7ae4d1fee129dfd013f531092e9eee71f",
+    "src/ui/slotKit/SlotPlayback.ts": "b16043b19396cabe7cf67d8864400ccb8f20c5a916565eb6c90ca148cc3d6954",
+    "src/ui/slotKit/SlotScreens.ts": "834b88a2a71a997033734bf7d1e3700efc206f20820094c87c4a42bd1a40bc99",
+    "src/ui/slotKit/SlotSessions.ts": "f51283d66ea4936932d496d9daee46db703bab1c2e8c55c4445c57955968a5d2",
+    "src/ui/slotKit/SlotSettings.ts": "d71f7ef39e2b982d99fe8538387162d3b78ed19d940ff763bfa54c59627aae91",
+    "src/ui/slotKit/nativeSlots.ts": "d50e3f7795e4bdf10b008a7c44875017e16e3daa5dc8206fe9f5840cd01f4cf6",
+    "src/ui/slotKit/slot-settings.css": "a9bc7aabfd5f8649a3220820199d709f57b8cd260205c3d18cfa5236ea854f5b",
+    "src/ui/studio-games.css": "0a3c6fc2d4655e9814b349952d5c9578d49c194d483cdaba0e9a76eb23b12259",
+    "src/wallet/ConvoyProgressClient.ts": "292f57d2807fa8a522b8c51b52a11fef4c32f763ee1b0177981a71ed96decb1a"
+  },
+  "hostSingletonsExternalized": true,
+  "hostBridges": [
+    "royal-host:src/game/GameAudio",
+    "royal-host:src/i18n/index",
+    "royal-host:src/ui/gameReactions",
+    "royal-host:src/wallet/ExpansionClient",
+    "royal-host:src/wallet/WalletClient"
+  ],
+  "nativeImplementations": [
+    "LastConvoyUI"
+  ],
+  "serverImplementationIncluded": false,
+  "sharedMathInputs": [],
+  "assetRoots": [
+    "studio",
+    "last-convoy"
+  ],
+  "assetFiles": [],
+  "mediaReferences": [
+    "last-convoy/v1/background.webp",
+    "last-convoy/v1/heroine.webp",
+    "last-convoy/v1/symbols.webp",
+    "last-convoy/v2/commander.webp",
+    "last-convoy/v2/medic.webp",
+    "last-convoy/v2/pilot.webp",
+    "last-convoy/v2/recon.webp",
+    "last-convoy/v2/urban.webp",
+    "last-convoy/v3/",
+    "studio/symbols.webp"
+  ],
+  "dynamicMediaDirectories": [
+    "last-convoy/v3"
+  ],
+  "bytes": 6302240,
+  "files": 17
+}

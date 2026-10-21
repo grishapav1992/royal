@@ -1,0 +1,21 @@
+{
+  "module": "1.0.0-6d069bca8c1c",
+  "typecheck": true,
+  "build": true,
+  "looks": 6,
+  "layouts": 8,
+  "bundledLayouts": 3,
+  "pause": true,
+  "hiddenTab": true,
+  "reducedMotion": true,
+  "atlasFailure": true,
+  "cleanup": true,
+  "browserErrors": 0,
+  "productionSourceFilesCompared": 1423,
+  "moduleSourceDependencies": 30,
+  "moduleResources": 17,
+  "changedSourcePaths": [
+    "src/ui/ConvoyPortraitAnimation.ts",
+    "src/ui/convoy-heroine.css"
+  ]
+}
