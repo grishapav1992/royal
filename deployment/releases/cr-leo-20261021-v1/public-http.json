@@ -1,0 +1,106 @@
+{
+  "verified": true,
+  "origin": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "health": {
+    "ok": true,
+    "service": "royal-arcade"
+  },
+  "files": [
+    {
+      "path": "assets/arcades-CTeVbzzr.js",
+      "status": 200,
+      "sha256": "a0331eee9abee31d06bdbfd9023868909b9c900357ea9286b38139fa44c83e13",
+      "bytes": 9359
+    },
+    {
+      "path": "assets/breaker-6KU7C0Tx.js",
+      "status": 200,
+      "sha256": "6c136cbea3cda36022185129d7d4a6f89ee0cfabfff3c74b63787f297a85fcdf",
+      "bytes": 3968
+    },
+    {
+      "path": "assets/cr-vs-leo/v1/cr-white.png",
+      "status": 200,
+      "sha256": "600b29cdf679a72e2fd9d6782560584f9a4edfe8a40fb530c501f42b9aa6afa2",
+      "bytes": 1290556
+    },
+    {
+      "path": "assets/cr-vs-leo/v1/cr.png",
+      "status": 200,
+      "sha256": "173357b51ad198e2cbc82e3da0b941d141c903c1f8bf009a416d57eef79e53bf",
+      "bytes": 1195650
+    },
+    {
+      "path": "assets/cr-vs-leo/v1/keeper-dive.png",
+      "status": 200,
+      "sha256": "c62c2fb2ba6a3a0efca9d7c21567e867deab1071298aa4a908d2550e6637e07a",
+      "bytes": 795792
+    },
+    {
+      "path": "assets/cr-vs-leo/v1/keeper-empty.png",
+      "status": 200,
+      "sha256": "aebe5f3ba3de61af15da4c964e0ce27e62d52db9e867547c84aa40f7a6ecac8e",
+      "bytes": 817780
+    },
+    {
+      "path": "assets/cr-vs-leo/v1/keeper-reach.png",
+      "status": 200,
+      "sha256": "eef5127470b8bed87338f09b055b79dec10d7087630bb8097f864d04daf3ad1b",
+      "bytes": 795643
+    },
+    {
+      "path": "assets/cr-vs-leo/v1/keeper.png",
+      "status": 200,
+      "sha256": "cf3fd1c70f1e339448280b209eba5c69300e487d78f4691e3b7ba7a41a021f95",
+      "bytes": 840297
+    },
+    {
+      "path": "assets/cr-vs-leo/v1/leo.png",
+      "status": 200,
+      "sha256": "ac704d7f03b30f15d424f39d2f9fedce01e89e4f9491a2c7b7103f484e5821b7",
+      "bytes": 1018403
+    },
+    {
+      "path": "assets/cr-vs-leo/v1/stadium-free.png",
+      "status": 200,
+      "sha256": "0516c1f416d419602a9ef7ee6a0e8a9390ec903bc0675a437b0fd4ceb0596f3f",
+      "bytes": 3453119
+    },
+    {
+      "path": "assets/cr-vs-leo/v1/stadium.png",
+      "status": 200,
+      "sha256": "1b3cb714d9ff3a1b76a79aa391a9c261a87f35f3261efabd9e9ab4d839038ddc",
+      "bytes": 3619391
+    },
+    {
+      "path": "assets/cr-vs-leo/v1/wall-far.png",
+      "status": 200,
+      "sha256": "050d4aad6e29ae84d58413c5fa78913b2930f73c2e229747c2dd2d72a2e3f816",
+      "bytes": 1603392
+    },
+    {
+      "path": "assets/cr-vs-leo/v1/wall.png",
+      "status": 200,
+      "sha256": "31a7ef52cd4d895a17899deeefd900d51cd45ed49c93bf82f4f3b52c0f14ab79",
+      "bytes": 1634011
+    },
+    {
+      "path": "assets/index-Bfyw28kh.js",
+      "status": 200,
+      "sha256": "68853b16e4c91167530daba29f4d49ceb3187d6e5d971319c5609bd5df4b082e",
+      "bytes": 3693225
+    },
+    {
+      "path": "assets/index-DeZ2IW8H.css",
+      "status": 200,
+      "sha256": "cef260866c404038c140e87c22b4525cbc7adfb468ea1d3de45c6c478bd3515e",
+      "bytes": 765499
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "sha256": "7868c74119f7f9dabebf1d6a7b17ef5f1f1f6501df08b014212252721bc3530f",
+      "bytes": 708
+    }
+  ]
+}
