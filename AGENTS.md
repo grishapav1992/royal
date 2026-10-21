@@ -2,6 +2,13 @@
 
 - Never use the em dash character (Unicode U+2014) in generated text.
 
+## New games and module boundaries
+
+- Implement every new game as an independent client module under `games/<slug>/`, with its own entry, package metadata, TypeScript configuration and game-specific assets. Follow `docs/game-modules.md` and register its identity and compatibility contract in `src/modules/GameModuleCatalog.ts`.
+- Open games through the shared module loader. Keep the wallet, operation transport, sessions, authentication, language, audio and server rules in the common host/backend. Do not create a separate wallet, balance store or microservice for a new game.
+- Preserve the host game window, responsive sizing and the connected chat beside the game. Verify the real host with chat enabled on desktop and mobile; mounting a game in an isolated fixture is not sufficient for layout verification.
+- Before publishing a new module or update, build and verify its package, confirm that wallet recovery and close/reopen behavior remain correct, and follow the production and GitHub requirements below. A new incompatible host contract requires a compatible host release before independent publication.
+
 ## Production server access
 
 - Read deployment/SERVER.md before deploying.
