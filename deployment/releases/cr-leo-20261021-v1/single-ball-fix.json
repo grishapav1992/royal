@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-21",
+  "status": "fixed-local",
+  "published": false,
+  "issue": "An extra ball baked into keeper landing artwork was visible alongside the animated ball after post impacts.",
+  "mode": "built-in image_gen",
+  "asset": "stage/public/assets/cr-vs-leo/v1/keeper-empty.png",
+  "original": "/Users/grigory_pavlenko/.codex/generated_images/01a152d9-9138-7ce0-9530-71ca838e81a8/exec-40ac0a7e-2fc2-42b0-8c5c-65e3e1cd881f.png",
+  "prompt": "Use case: precise-object-edit. Edit target: the supplied transparent football goalkeeper sprite sheet, 4 columns by 2 rows. Remove the pale round football held between the gloves in the two lying landing poses (top row column 4 and bottom row column 3). Replace only those hands with clearly empty open gloves, fingers extended, hands apart, no spherical object or round beige shape. Preserve the same eight poses, exact cell layout and dimensions, green uniform, person, lighting, body positions, scale, all other pixels as closely as possible. The two landing poses must look like an unsuccessful dive with empty hands, palms separated. No footballs anywhere in any of the eight cells. Transparent background, no text.",
+  "validation": {
+    "frames": 96,
+    "risks": 3,
+    "heroes": 2,
+    "outcomes": [
+      "save",
+      "post",
+      "wide",
+      "goal"
+    ],
+    "sides": 2,
+    "phases": [
+      "result",
+      "landing"
+    ],
+    "singleBallPerNonCelebrationFrame": true,
+    "heldOnlyOnSave": true
+  },
+  "math": "No changes to outcome probabilities, payout functions or the server engine."
+}

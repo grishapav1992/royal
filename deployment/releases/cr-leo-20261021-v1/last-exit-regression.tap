@@ -1,0 +1,18 @@
+✔ real cashout waits 200 ms; starts do not wait and retries share the gate (204.30625ms)
+✔ wallet accepts after the delay, including crash during wait, first millisecond at the deadline and duplicate protection (191.207ms)
+✔ real settlement follows independent accepted-time cents across all offered stakes (10848.665625ms)
+✔ instant 1x crash pays zero even when exit is sent at start (378.755541ms)
+✔ last integer millisecond before a deadline wins and first after it loses (833.270583ms)
+✔ fixed HUD equals the 1.19x payout at the same accepted clock (381.287833ms)
+✔ manual exit uses exact payout and concurrent retries never duplicate it (383.425083ms)
+✔ cashout at or after the crash deadline cannot win; a saved flight settles on next access (527.947208ms)
+✔ 100x cap is automatically credited once after leaving the game (129.366541ms)
+✔ another account cannot exit a saved run and a premature exit preserves it (535.893667ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 12818.89025

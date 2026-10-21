@@ -1,6 +1,7 @@
 import { t as translateText, language } from '../i18n/index';
 export type Cabinet = { id: string; name: string; subtitle: string; x: number; y: number; color: number; playable: boolean; hall?: 'arcade' | 'tables' | 'github'; demo?: boolean; wallet?: boolean; provider?: boolean; github?: boolean };
 
+import { PENALTY_GAME } from './crLeo';
 import { BASE_EXPANSION_GAMES, EXPANSION_NAMES } from './casinoExpansion';
 import { STUDIO_GAMES, STUDIO_INFO } from './studioGames';
 import { CARD_GAME_IDS, CARD_GAME_NAMES, isCardGame, isRetiredCardGame, cardTableBounds } from './cardTables';
@@ -27,6 +28,8 @@ export const CABINETS: Cabinet[] = [
   { id: 'github-tower', name: 'Dragon Tower', subtitle: translateText('Девять уровней · Демомонеты / USDT'), x: 1890, y: 810, color: 0x8ecba2, playable: true, hall: 'arcade', github: true },
   ...BASE_EXPANSION_GAMES.map((id,i):Cabinet=>({id,name:id==='github-crash'?'LAST EXIT':EXPANSION_NAMES[id],subtitle:id==='github-crash'?(language==='en'?'Car chase · Take the exit':'Погоня · Успей уйти'):translateText('Общий тестовый кошелёк · Ставки и выплаты'),x:expansionPositions[i][0],y:expansionPositions[i][1],color:id==='github-crash'?0xd3b477:[0xe2c484,0x8ecba2,0xc6a0ed,0x75cbd9][i%4],playable:true,hall:'arcade',github:true})),
 ];
+
+CABINETS.push({id:PENALTY_GAME,name:'CR vs. Leo',subtitle:translateText('Серия ударов · Пенальти и штрафные'),x:1380,y:1050,color:0xdce6ca,playable:true,wallet:true,hall:'arcade'});
 
 const leftCabinets=new Set(['casinoapipro','royal-fruits','luelon','github-diamonds','github-crash','github-deuces','github-sic-bo']);
 let tableIndex=0;

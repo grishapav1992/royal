@@ -1,3 +1,4 @@
+import {PENALTY_GAME} from './crLeo';
 import {STUDIO_GAMES, type StudioGameId} from './studioGames';
 import {VARIANT_GAMES} from './casinoVariants';
 import {isCardGame} from './cardTables';
@@ -9,7 +10,7 @@ export const ACTIVE_STUDIO_GAMES = [
 
 export const ARCADE_CLASSIC_GAMES = [
   'royal-fruits', 'royal-dice', 'royal-limbo', 'royal-mines', 'royal-plinko',
-  'royal-keno', 'github-craps', 'github-tower', 'github-diamonds', 'github-crash', 'github-sic-bo',
+  'royal-keno', 'github-craps', 'github-tower', 'github-diamonds', 'github-crash', 'github-sic-bo', PENALTY_GAME,
 ] as const;
 export const ARCADE_PROVIDER_GAMES = ['casinoapipro', 'luelon'] as const;
 export const ACTIVE_ARCADE_GAMES: readonly string[] = [

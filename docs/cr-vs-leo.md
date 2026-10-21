@@ -1,0 +1,73 @@
+# CR vs. Leo
+
+Local candidate on the verified last-exit-20261020-v1 source. It is not deployed. Rebase its bounded source delta on a fresh production snapshot before any publication; independent Mira and other chats' later changes must be preserved.
+
+## Rules and mathematics
+
+One stake starts a series and resolves its first shot. Choose CR or Leo and the first shot risk before the stake. The character stays fixed; the player may change the risk before each subsequent shot. Goal probability is constant per shot: safe 75/100, sharp 60/100, extreme 45/100. Characters have identical probability and payment rules. A successful shot offers another free shot or a cashout. Missing loses the stake and all unbanked winnings. Five goals automatically pay. There is no clock between shots and no additional 200 ms acceptance delay in this game.
+
+For stake S in integer hundredths of a coin and n successful shots with their accepted risk numerators p1 through pn, the payment is floor(S * 99 * 100^n / (100 * product(p1..pn))). On a constant risk this is exactly the previous floor(S * 99 * 100^n / (100 * p^n)). Changing the next risk cannot alter the already available cashout. All 363 risk paths, 1452 offered stake/path quotes and optimal adaptive stopping and switching are checked. Apply the house edge once. Do not round intermediate coefficients. Display coefficients as approximate and show the exact available money on the cashout button. The theoretical return before the final money rounding is 99% for any fixed or adapted risk path and stopping after any goal from 1 to 5. Final rounding can only reduce that return. Maximum payout is below 54 stakes, which is reserved by the existing wallet system. Offered stakes are 10, 50, 100 and 500 simulated club coins.
+
+Each new shot uses Node crypto.randomInt(100) on the server. Outcomes are committed in the account transaction. The public state includes only resolved shots, never future outcomes. A separate CSPRNG draw chooses one of 18 cosmetic sectors uniformly after the goal roll. Sector and failure type do not change payments. View version 2 persists each shot risk and sector; version 1 remains valid and its fixed-risk history is preserved when advancing it. Moves bind the next risk to the same idempotent request and revision. The client cannot supply a sector or a probability. Request IDs retain the existing transaction ledger idempotency. A revision is mandatory for every next shot and cashout; different concurrent requests with a stale revision cannot advance the series twice. Sessions, pending requests and reserved balances use the established common wallet storage without a new database schema.
+
+## Presentation
+
+Leo is a fictional adult football character with a short crew haircut, narrow neck, relaxed sloping shoulders, slender arms and fitted torso across sixteen poses. His ready pose has both hands on his hips and a narrower foot placement. The revision preserves left-foot contact and the fully clothed shirt-display celebration. It edits the fictional atlas without using real-person reference photographs or requesting a real person's likeness. Its final built-in image generation prompt is recorded in leo-fictional-revision.json alongside artwork.json.
+
+Photographic daytime Canvas 2D stadium. The 75% mode is the original 11m penalty. The 60% mode is a near free kick around 20m, with a separate grass plate, smaller more distant goal and keeper, penalty-area lines and arc, and five defenders in the wall. The keeper starts on the uncovered side. The wall crouches and jumps around contact and lands before arrival. Raised trajectories clear the jumping wall; low shots and selected side shots bend around it. The ball draws behind the defenders once it has crossed their plane, preserving occlusion. The kicker follows through to the side so low trajectories remain visible. CR uses the right foot; Leo the left. Player faces remain turned away from the camera. The keeper is a separate fictional character. Contact, ball flight, net, glove capture, post rebound and result all share one presentation clock. The player cannot see a result amount on the controls before the ball reaches its destination. A normal goal gets a brief reaction; full celebrations follow confirmed cashout or the automatic fifth-goal payment. CR jumps and lands in a Siu pose. Leo removes the outer shirt and holds it toward the stands while wearing a white sports base layer. This adaptation was disclosed after two image generation outputs were rejected. Failure poses retain each player's outer playing shirt.
+
+The nine runtime PNG assets contain two stadium plates, sixteen CR poses, sixteen Leo poses, sixteen keeper poses and four five-man wall group frames and four three-man wall group frames. The wall has ready, crouching, jumping and flinching poses. Group extraction retains up to five large connected silhouettes per frame rather than discarding four defenders as noise. Eight new keeper poses cover high left/right, middle left/right, low left/right, high centre and crouching centre. Saved shots map to the supplied 6-column by 3-row reference, with labels 9/8/7/7/8/9, 6/5/4/4/5/6 and 3/2/1/1/2/3. High shots arc, middle shots bend gently and low shots stay low. Keeper glove centroids align with the ball at contact; a saved ball stays with the gloves during landing. Post and crossbar impacts and wide trajectories stay outside the scored sectors. The animation gallery exposes sector selection only for presentation review. In the actual game all sectors are random. Runtime atlas extraction isolates connected keeper silhouettes, including limbs crossing nominal cells. CR cells are separated at grid boundaries, while Leo uses full silhouettes to retain the raised shirt and boots. Source PNG files remain unchanged by the renderer. Generated asset paths and final prompts are recorded in the candidate's artwork.json.
+
+Synthetic Web Audio provides stadium ambience, boot contact, cheering, post contact, keeper impact, a dull wall impact and distinct celebration accents. It uses no external voice service or original athlete recording. Audio suspends on a hidden page and closes with the game. Reduced motion uses a static confirmed result. The game uses container queries for narrow embedded widths.
+
+## Local preview and checks
+
+Preview: http://cr-leo.localhost:5220/cr-leo-preview.html?shot=far
+
+Animation gallery: http://cr-leo.localhost:5220/cr-leo-animations.html
+
+The preview runs on a separate temporary PostgreSQL database and simulated coins, with payment services disabled. The isolated fixture alone maps its local alias to the existing loopback origin policy. The production auth source is unchanged. The fixture's deterministic QA modes, drop-response controls, automatic local login, preview HTML and gallery are excluded from the qualified source delta. Normal user preview mode is random.
+
+Checks cover exact odds for both heroes, sixty risk/stake/stopping-point quotes, all loss steps, five-goal completion, stale revisions, concurrent retries, wallet reserve release, account isolation, saved-series recovery and lost HTTP responses. Existing LAST EXIT payout and delay checks also pass. Physical mobile hardware and speaker listening are not claimed.
+
+## Staged visual work
+
+Stage 1 implements the eighteen penalty trajectories, eight new keeper saves and mixed-risk arithmetic and controls. Stage 2 implements near free kicks around 20m with a five-player wall. Its chance remains 60%, with identical exact path payouts, CSPRNG draws and wallet persistence. For near free kicks, an existing resolved wide loss aimed at an interior column is shown as a wall block; it remains the same loss with zero payout and introduces no new random draws or outcome chances. Result disclosure follows wall collision (1.55s) or goal arrival (2.12s); normal penalties keep the 1.70s arrival. Normal near free kicks are ready for the next action at 2.77s. Stage 3 implements distant free kicks around 30m with a separate three-player wall atlas and smaller goal and keeper. The 45% chance and exact payouts remain unchanged. The wall is crossed at 30% of the longer flight, with the jump timed to that crossing. Ball arrival and ordinary outcome disclosure occur at 2.50s, and the next action at 3.15s. A central-column existing wide loss may be shown as a wall block, disclosing the loss at 1.534s. No new server draws are introduced. Raised trajectories clear all three jumping defenders, low trajectories bend around them, and the source atlas is scaled by its registered body height to keep the ball visible above heads. The approved CR and fictional Leo PNGs are byte-for-byte unchanged. Asset prompts and paths are recorded in near-free-kick-stage2.json. Geometry and timing tests cover wall clearance, continuous speed, foot contact, collisions and group extraction; 144 browser outcome/sector/player combinations were checked. Stage 3 also passed 144 browser outcome/sector/player combinations and narrow-container review; asset prompt and source are recorded in far-free-kick-stage3.json. Review stage 3 locally.
+
+
+## Goal geometry revision
+
+The goal uses one perspective projection for the rear net, both side panels and roof. Its rear columns are vertical and its rear rows are horizontal; shared corners and all mesh intersections agree. The front goal mouth is unchanged. A localized damped ripple is triggered only after a confirmed goal arrives and keeps panel boundaries fixed. The rigid front frame is drawn ahead of the keeper and a ball reaching the goal plane, behind the nearer wall and kicker. Net geometry is independent of shot time and outcome. Browser review covers 96 frames across both heroes, all three shot types, four outcomes and contact/result/net/settled moments. The model and geometry suite passes 22 tests. No odds, money handling, shot timing, sectors or approved hero assets changed.
+
+
+## White kit and larger ball revision
+
+CR now uses cr-white.png, a separate 4x4 atlas with a white shirt, white shorts and white socks, black parallel shoulder/sleeve and shorts stripes, black CR/7 lettering and the original orange boots. The original cr.png is retained for recovery. All sixteen actions, right-foot strike registration and celebrations remain intact. The player thumbnail uses the same new atlas. Leo artwork is unchanged. Built-in image generation edit prompt and final path are recorded in cr-kit-ball-revision.json and artwork.json.
+
+The ball radius at the spot is now 2.8% of the scene height, up from 2%. Perspective still reduces the apparent size during flight, with a minimum radius of 5.5 CSS pixels or 1.5% of scene height. This keeps the ball visible at both free-kick goals. A wall rebound continues to grow toward the camera. Over-wall arcs have extra head clearance for the larger ball. Start and goal centres, goal sectors, glove anchors, shot clocks and monetary decisions are unchanged. Model/geometry checks pass 23 tests; 24 browser frames cover contact and arrival for goals and saves across all three shot types and both characters. White-kit contact, Siu landing and a 320-pixel container were visually checked. No real wagers or production changes are made in this revision.
+
+
+## Ревью перед публикацией: 21 октября 2026
+
+Ревью модуля пройдено. Боевой сервер не изменён. Исходная математика и все изображения сохранены; в shared-модель добавлена только константа версии клиента. Подробные результаты и доказательства: prerelease-review.json и proof/review-*.json в каталоге артефакта.
+
+Расчётный RTP составляет 99% до округления конечной суммы. На всех разрешённых ставках и 363 сочетаниях риска фактический RTP находится между 98,971875% и 99%. Смена риска и адаптивный выбор момента остановки не повышают возврат выше 99%. Шанс относится к каждому отдельному удару, а не к успешному завершению пяти ударов.
+
+| Тип | Шанс гола | Выплата после одного гола при ставке 500 | Выплата за пять голов при ставке 500 |
+| --- | --- | --- | --- |
+| Пенальти | 75% | 660,00 | 2 085,92 |
+| Ближний штрафной | 60% | 825,00 | 6 365,74 |
+| Дальний штрафной | 45% | 1 100,00 | 26 825,17 |
+
+Все суммы включают исходную ставку. Проигрыш теряет одну ставку и всю незабранную выплату, дополнительные удары не списывают новую ставку. На временной PostgreSQL полный перебор 100 значений первого броска для каждого риска и обоих героев дал ровно 99% в настоящем журнале 600 раундов. Дополнительно проверены 60 точных выплат, 1452 котировки, повторные и одновременные запросы, перезагрузка и потери ответов. Пройдены 23 теста модели/геометрии, 20 тестов расчётов и кошелька, восемь HTTP-сценариев и отдельная проверка старого клиента.
+
+Исправлены: получение незнакомой футбольной сессии старой вкладкой, отсутствие автомата в зале, скачок камеры при cashout после смены типа, лишняя перерисовка неподвижной сцены и устаревшее описание выбора риска. Новый автомат расположен в (1380, 1050), первый этаж. Сохранены все 27 текущих автоматов, включая опубликованные подписи «Завеса ночи · Plinko», их позиции и доступный маршрут к новому автомату. Каталог перенесён из текущих боевых исходников.
+
+В браузере проверены 102 варианта гола/сейва, все восемь позиций сейва, четыре попадания в стенки, двенадцать штанг/промахов, обе победные реакции и фактическая автоматическая выплата пятого гола Leo. На ширине 320 пикселей максимальная выплата помещается без горизонтального переполнения. Результат и новый баланс скрыты до прилёта мяча. Статическая сцена не перерисовывается без изменений, во время движения кадры продолжают обновляться.
+
+Физический телефон, прослушивание через настоящую акустику и реальные платежи не проверялись. Перед публикацией применять только ограниченный source-delta.zip к свежим production-исходникам с проверкой семи хешей из release-base-guards.json. Сохранить опубликованные изменения Миры, Plinko и прочих игр, синхронизировать соответствующий код с origin/main и выполнить deployment/SERVER.md. Полный старый stage поверх production не переносить. Локальные QA-фикстуры, принудительные исходы и preview-страницы исключены из публикуемого пакета.
+
+
+## Исправление второго мяча: 21 октября 2026
+
+Вратарь использует keeper-empty.png вместо keeper.png. В обеих позах приземления убран нарисованный в руках мяч: перчатки открыты и пусты. Единственный игровой мяч рисуется сценой, при сейве следует за перчатками, при штанге отскакивает отдельно. Исходный атлас сохранён для истории. Встроенный image_gen, точный промпт и исходный файл записаны в deployment/releases/cr-leo-20261021-v1/artwork.json. Проверены 96 кадров для обоих игроков, трёх типов удара, гола, сейва, штанги и промаха с обеих сторон. Шансы и выплаты не изменены.

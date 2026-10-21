@@ -1,3 +1,4 @@
+import { PENALTY_CLIENT_HEADER, PENALTY_GAME, validPenaltySession, validPenaltySettings } from '../shared/crLeo';
 import { isUserMessage, t as translateText } from '../i18n/index';
 import {AFTER_PROGRESS_HEADER,AFTER_PROGRESS_VERSION} from '../shared/afterglowWardrobe';
 import {MEME_CLIENT_HEADER,MEME_GAME,isNitroFamily,validMemeSession} from '../shared/memeOverload';
@@ -16,7 +17,7 @@ import type { DemoWallet } from '../shared/demoWallet';
 import { demoWallet } from './WalletClient';
 export type NewExpansionAction = ExpansionAction extends infer T ? T extends ExpansionAction ? Omit<T,'id'> : never : never;
 type Reply={wallet:DemoWallet;sessions:ExpansionSession[];session?:ExpansionSession;replayed?:boolean};
-function validSession(s:ExpansionSession){if(s?.gameId===AFTER_GAME)return validAfterSession(s);if(s?.gameId===MEME_GAME)return validMemeSession(s);if(s?.gameId===NITRO_GAME)return validNitroSession(s);return !!s&&isExpansionGame(s.gameId)&&validExpansionRulesVersion(s.gameId,s.rulesVersion)&&['active','settled'].includes(s.state)
+function validSession(s:ExpansionSession){if(s?.gameId===PENALTY_GAME)return validPenaltySession(s);if(s?.gameId===AFTER_GAME)return validAfterSession(s);if(s?.gameId===MEME_GAME)return validMemeSession(s);if(s?.gameId===NITRO_GAME)return validNitroSession(s);return !!s&&isExpansionGame(s.gameId)&&validExpansionRulesVersion(s.gameId,s.rulesVersion)&&['active','settled'].includes(s.state)
   &&typeof s.id==='string'&&/^[a-f0-9-]{36}$/i.test(s.id)&&[s.stakeUnits,s.spentUnits,s.returnedUnits].every(n=>typeof n==='string'&&/^[0-9]{1,15}$/.test(n))
   &&!!s.view&&[s.view.player,s.view.dealer,s.view.community].every(a=>Array.isArray(a)&&a.every(c=>typeof c==='string'))
   &&Array.isArray(s.view.actions)&&s.view.actions.every(a=>typeof a.move==='string'&&typeof a.label==='string'&&Number.isSafeInteger(a.cost)&&a.cost>=0&&[a.perPick,a.minPicks,a.maxPicks].every(n=>n===undefined||Number.isSafeInteger(n)&&n>=0))
@@ -106,13 +107,14 @@ export class ExpansionClient extends EventTarget {
   private valid(r:Reply,op?:ExpansionAction){return !!r&&!!r.wallet&&Number.isFinite(r.wallet.balance)&&r.wallet.balance>=0&&Array.isArray(r.wallet.entries)
     &&Array.isArray(r.sessions)&&r.sessions.every(s=>this.checkedSession(s))&&new Set(r.sessions.map(s=>s.gameId)).size===r.sessions.length
     &&(!op||!!r.session&&this.checkedSession(r.session)&&r.session.gameId===op.gameId&&r.session.id===(op.action==='start'?op.id:op.sessionId)&&typeof r.replayed==='boolean'
+      &&(op.gameId!==PENALTY_GAME||(op.action==='start'?validPenaltySettings(op.settings)&&r.session.stakeUnits===op.stakeUnits&&r.session.view.penalty?.hero===op.settings.penalty.hero&&(r.session.view.penalty?.shots[0].risk??r.session.view.penalty?.risk)===op.settings.penalty.risk:r.session.view.penalty!.revision>op.revision!&&(r.replayed===true||r.session.view.penalty!.revision===op.revision!+1)&&(op.penaltyRisk===undefined||r.session.view.penalty!.shots[op.revision!]?.risk===op.penaltyRisk)))
       &&validAfterReply(r.session,op,r.replayed===true)&&validNitroReply(r.session,op,r.replayed===true)&&validConvoyReply(r.session,op,r.replayed===true)&&validLuelonReply(r.session,op,r.replayed===true)&&validCaramelReply(r.session,op,r.replayed===true)
       &&(!isStudioGame(op.gameId)||validStudioStart(r.session,op)&&r.sessions.some(s=>s.gameId===op.gameId)&&(r.replayed===true||r.sessions.some(s=>s.gameId===op.gameId&&s.id===r.session!.id))&&r.sessions.every(s=>s.id!==r.session!.id||s.gameId!==r.session!.gameId||studioSamePayload(s,r.session))));}
   private accept(r:Reply){this.wallet=r.wallet;this.sessions=r.sessions;demoWallet.acceptExternalWallet(this.accountId!,r.wallet);}
   private message(e:unknown){return e instanceof Error&&isUserMessage(e.message)?translateText(e.message):translateText('Ответ не получен. Нажми «Проверить ход», чтобы подтвердить ту же операцию.');}
   async refresh(){
     if(!this.accountId||this.busy||this.loading)return;const epoch=this.epoch,version=++this.version,account=this.accountId;this.loading=true;
-    try{const response=await fetch('/api/demo-wallet/expansion',{credentials:'same-origin',cache:'no-store',headers:{[WALLET_ACCOUNT_HEADER]:account,[CARAMEL_CLIENT_HEADER]:'1',[VELVET_CLIENT_HEADER]:'1',[CONVOY_CLIENT_HEADER]:'1',[AFTER_CLIENT_HEADER]:'1',[AFTER_PROGRESS_HEADER]:AFTER_PROGRESS_VERSION,[NITRO_CLIENT_HEADER]:'1',[MEME_CLIENT_HEADER]:'1'},signal:AbortSignal.timeout(10000)});const r=await response.json();
+    try{const response=await fetch('/api/demo-wallet/expansion',{credentials:'same-origin',cache:'no-store',headers:{[WALLET_ACCOUNT_HEADER]:account,[CARAMEL_CLIENT_HEADER]:'1',[VELVET_CLIENT_HEADER]:'1',[CONVOY_CLIENT_HEADER]:'1',[AFTER_CLIENT_HEADER]:'1',[AFTER_PROGRESS_HEADER]:AFTER_PROGRESS_VERSION,[NITRO_CLIENT_HEADER]:'1',[MEME_CLIENT_HEADER]:'1',[PENALTY_CLIENT_HEADER]:'1'},signal:AbortSignal.timeout(10000)});const r=await response.json();
       if(epoch!==this.epoch||version!==this.version)return;if(!response.ok)throw Error(r.error);if(!this.valid(r))throw Error(translateText('Баланс и партия не подтверждены.'));this.accept(r);this.error='';
     }catch(e){if(epoch===this.epoch&&version===this.version)this.error=this.message(e);}
     finally{if(epoch===this.epoch&&version===this.version){this.loading=false;this.notify();}}
@@ -124,7 +126,7 @@ export class ExpansionClient extends EventTarget {
     if(demoWallet.busy||demoWallet.pending||demoWallet.hasExternalBusy('expansion'))throw Error(translateText('Сначала проверь предыдущую операцию кошелька.'));
     const epoch=this.epoch,account=this.accountId,key=this.key();try{sessionStorage.setItem(key,JSON.stringify(op));}catch{throw Error(translateText('Разреши хранилище браузера для сохранения хода.'));}
     this.pending=op;this.busy=true;this.loading=false;this.version++;this.error='';this.lock();this.notify();
-    try{const response=await fetch('/api/demo-wallet/expansion',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json',[WALLET_ACCOUNT_HEADER]:account,'X-Royal-Card-Rules':'2',[CARAMEL_CLIENT_HEADER]:'1',[VELVET_CLIENT_HEADER]:'1',[CONVOY_CLIENT_HEADER]:'1',[AFTER_CLIENT_HEADER]:'1',[AFTER_PROGRESS_HEADER]:AFTER_PROGRESS_VERSION,[NITRO_CLIENT_HEADER]:'1',[MEME_CLIENT_HEADER]:'1'},body:JSON.stringify(op),signal:AbortSignal.timeout(15000)});const r=await response.json();
+    try{const response=await fetch('/api/demo-wallet/expansion',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json',[WALLET_ACCOUNT_HEADER]:account,'X-Royal-Card-Rules':'2',[CARAMEL_CLIENT_HEADER]:'1',[VELVET_CLIENT_HEADER]:'1',[CONVOY_CLIENT_HEADER]:'1',[AFTER_CLIENT_HEADER]:'1',[AFTER_PROGRESS_HEADER]:AFTER_PROGRESS_VERSION,[NITRO_CLIENT_HEADER]:'1',[MEME_CLIENT_HEADER]:'1',[PENALTY_CLIENT_HEADER]:'1'},body:JSON.stringify(op),signal:AbortSignal.timeout(15000)});const r=await response.json();
       if(epoch!==this.epoch)return;if(!response.ok){if([400,403,404,409].includes(response.status)){this.pending=undefined;sessionStorage.removeItem(key);}throw Error(r.error);}
       if(!this.valid(r,op))throw Error(translateText('Ход не подтверждён. Проверь ту же операцию.'));this.accept(r);this.pending=undefined;sessionStorage.removeItem(key);this.version++;
     }catch(e){if(epoch===this.epoch){this.error=this.message(e);throw Error(this.error);}}

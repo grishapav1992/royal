@@ -1,0 +1,40 @@
+✔ near free kicks have five defenders and each successful sector clears the wall with continuous speed (7.164292ms)
+✔ wall impacts are a cosmetic existing loss, touch a defender and rebound without going through the wall (0.257166ms)
+✔ free-kick outcome and celebration clocks follow arrival or wall collision, while penalty timing stays unchanged (0.154042ms)
+✔ group extraction retains five separate full defenders instead of discarding four as sprite noise (2.12825ms)
+✔ distant free kicks use three defenders, a smaller goal, earlier wall plane and smooth clear trajectories for every sector (1.803875ms)
+✔ distant wall contact and result clock agree, preserving all accepted loss types and probabilities (0.184916ms)
+✔ three-member group extraction preserves full silhouettes in all four atlas cells (2.547875ms)
+✔ goal rear net uses parallel columns and rows instead of diagonal hanging threads (0.560542ms)
+✔ goal mouth and every net seam stay fixed throughout an impact ripple (2.071583ms)
+✔ net reaction starts after contact, stays local and settles without moving the rigid frame (0.496ms)
+✔ football stays visible throughout every shot and rebound, including the distant goal on a narrow screen (0.515791ms)
+✔ each risk has its exact advertised chance and both heroes share the outcome distribution (4.131125ms)
+✔ exact integer quotes apply 99 percent once, rounding only final money for every risk, stake and stop (0.285125ms)
+✔ all five goals auto-complete; losing any shot removes the entire unbanked series (0.742208ms)
+✔ banking closes the series without drawing another outcome; stale revisions cannot advance it (0.224416ms)
+✔ settings, fabricated histories and fabricated money are rejected (0.158333ms)
+✔ flight starts at the striking foot and resolves at the goal before result poses; celebrations differ (1.080833ms)
+✔ atlas extraction keeps a whole diving body that crosses a cell and rejects detached fragments (0.846458ms)
+✔ right and left strike anchors land exactly on the same penalty ball (0.102333ms)
+✔ every mixed risk path has its exact payout, one house edge and only final-money rounding (3.641583ms)
+✔ risk switching preserves accepted history and cashout, supports legacy saves and rejects fabricated paths (0.801875ms)
+✔ all eighteen sectors are cosmetic and have the same exact goal chance for either player and every risk (38.90575ms)
+✔ sector trajectories finish inside each referenced cell; saves meet gloves and misses hit frame or go outside (0.772958ms)
+✔ actual PostgreSQL ledger returns exactly 99 percent across all 100 rolls for each risk and either hero (7577.940625ms)
+✔ actual settlements match independent integer amounts for all four stakes, three risks and five stopping points (739.113333ms)
+✔ losing any step after changing risks forfeits one stake and releases the whole reserve (156.534417ms)
+✔ cashout racing a next shot commits exactly one action and never duplicates a credit (130.608542ms)
+✔ older clients never receive football sessions and cannot debit a football stake without the capability (117.409084ms)
+✔ start debits once, concurrent duplicate cashouts credit once and release the reserve (193.381208ms)
+✔ series survives store reload, fifth goal auto-pays and stale parallel commands cannot add shots (153.448208ms)
+✔ a miss after goals loses the entire stake; other accounts cannot access or finish the series (142.047875ms)
+✔ mixed-risk attempts survive reload and retry, reject changed retry payloads and settle the exact path once (162.815208ms)
+ℹ tests 32
+ℹ suites 0
+ℹ pass 32
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 9162.587584

@@ -1,3 +1,5 @@
+import { CrLeoUI } from './CrLeoUI';
+import { PENALTY_GAME } from '../shared/crLeo';
 import { t as translateText, tr, locale } from '../i18n/index';
 import { resetGameOutcomes } from './gameReactions';
 import {LastExitUI as CrashMotionUI} from './LastExitUI';
@@ -12,11 +14,13 @@ const escape=(s:string)=>translateText(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<
 const amount=(units:string|number)=>(Number(units)/100).toLocaleString(locale,{maximumFractionDigits:2})+translateText(' монет');
 export class CasinoExpansionUI {
   private crashMotion?: CrashMotionUI;
+  private penalty?: CrLeoUI;
   private motion?: CasinoConfirmedMotion;
   private stake='1000';private side=false;private bet!:'dragon'|'tiger'|'small'|'big';private selected=new Set<number>();private error='';private sessionId='';private phase=-1;private timer!:ReturnType<typeof setInterval>;private destroyed=false;
   private change=()=>this.render();
   constructor(private host:HTMLElement,private game:ExpansionGameId){
     resetGameOutcomes(host);
+    if(game===PENALTY_GAME){this.penalty=new CrLeoUI(host);return;}
     if(game==='github-crash'){this.crashMotion=new CrashMotionUI(host);return;}
     this.motion=CasinoConfirmedMotion.forGame(host,game,()=>this.render());
     this.bet=game==='github-sic-bo'?'small':'dragon';client.addEventListener('change',this.change);demoWallet.addEventListener('change',this.change);
@@ -58,5 +62,5 @@ export class CasinoExpansionUI {
     this.host.querySelector<HTMLButtonElement>('[data-refresh]')!.onclick=()=>{this.error='';void client.refresh();};
     this.motion?.paint();
   }
-  destroy(){if(this.crashMotion){this.crashMotion.destroy();return;}this.motion?.destroy();this.destroyed=true;clearInterval(this.timer);client.removeEventListener('change',this.change);demoWallet.removeEventListener('change',this.change);this.host.replaceChildren();}
+  destroy(){if(this.penalty){this.penalty.destroy();return;}if(this.crashMotion){this.crashMotion.destroy();return;}this.motion?.destroy();this.destroyed=true;clearInterval(this.timer);client.removeEventListener('change',this.change);demoWallet.removeEventListener('change',this.change);this.host.replaceChildren();}
 }
