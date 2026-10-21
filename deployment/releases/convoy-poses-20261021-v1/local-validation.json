@@ -1,5 +1,5 @@
 {
-  "module": "1.0.0-6d069bca8c1c",
+  "module": "1.0.0-3d08bcc3b4e4",
   "typecheck": true,
   "build": true,
   "looks": 6,
@@ -11,7 +11,7 @@
   "atlasFailure": true,
   "cleanup": true,
   "browserErrors": 0,
-  "productionSourceFilesCompared": 1423,
+  "productionSourceFilesCompared": 1428,
   "moduleSourceDependencies": 30,
   "moduleResources": 17,
   "changedSourcePaths": [

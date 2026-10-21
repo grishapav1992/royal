@@ -1,7 +1,7 @@
 {
   "gameId": "studio-last-convoy",
-  "version": "1.0.0-6d069bca8c1c",
-  "sourceSha256": "6d069bca8c1c0a22d958d6441183133bed02df086a6b50f1854986ad0097fcf3",
+  "version": "1.0.0-3d08bcc3b4e4",
+  "sourceSha256": "3d08bcc3b4e4e3b6b1e6f8b4dbc943386ec72d28e6146b5d517d0a83641c1f3a",
   "sourceFiles": {
     "games/last-convoy/entry.ts": "6a26834a48d6638eb98d5e89765b6ca8f3c3cce22f8fc7abcec17bb3b69c7d61",
     "src/modules/GameHostContract.ts": "b554b9672d551a9d95a1fd27e1483fb9a0ba9b8fed13506c1e17e3f5003259c6",
@@ -29,7 +29,7 @@
     "src/ui/slotKit/SlotScreens.ts": "834b88a2a71a997033734bf7d1e3700efc206f20820094c87c4a42bd1a40bc99",
     "src/ui/slotKit/SlotSessions.ts": "f51283d66ea4936932d496d9daee46db703bab1c2e8c55c4445c57955968a5d2",
     "src/ui/slotKit/SlotSettings.ts": "d71f7ef39e2b982d99fe8538387162d3b78ed19d940ff763bfa54c59627aae91",
-    "src/ui/slotKit/nativeSlots.ts": "d50e3f7795e4bdf10b008a7c44875017e16e3daa5dc8206fe9f5840cd01f4cf6",
+    "src/ui/slotKit/nativeSlots.ts": "716c38496a5e688dbe55830bf8d2ca6b297b31ce7dc262c00bdc5f39335afe85",
     "src/ui/slotKit/slot-settings.css": "a9bc7aabfd5f8649a3220820199d709f57b8cd260205c3d18cfa5236ea854f5b",
     "src/ui/studio-games.css": "0a3c6fc2d4655e9814b349952d5c9578d49c194d483cdaba0e9a76eb23b12259",
     "src/wallet/ConvoyProgressClient.ts": "292f57d2807fa8a522b8c51b52a11fef4c32f763ee1b0177981a71ed96decb1a"
