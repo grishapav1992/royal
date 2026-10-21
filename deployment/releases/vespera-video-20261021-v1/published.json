@@ -1,0 +1,32 @@
+{
+  "published": true,
+  "release": "vespera-video-20261021-v1",
+  "sourceCommit": "a983f6193996cabf6476b3c87327573dd7d65c28",
+  "moduleVersion": "1.0.0-5ece62982f1d",
+  "module": {
+    "verified": true,
+    "gameId": "royal-plinko",
+    "version": "1.0.0-5ece62982f1d",
+    "bytes": 2636721,
+    "files": 8,
+    "beforeSha256": "none",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "activeSha256": "78a3d80291bbd45b3bc17109c38f36ff9b9ee8ac0e475f522ac683e4299b0cc2",
+    "history": "/opt/royal-game-modules-state/history/20261021T192349-05819c087f984e2b805fdfd20e1f69e0.json"
+  },
+  "preparedImage": "sha256:d41c4b5ecdb58725595c455d2d9db8c449caa1eedc7517364f0da0de46d6af89",
+  "runningBaseImage": "sha256:4208c6b3462a76ee4717c41f42f43ac9cd9d7574a38e56c3d6eb1aaa75c82d19",
+  "containerRestarted": false,
+  "sourceChanges": 19,
+  "clientDeltaFiles": 2,
+  "allOtherModulesPreserved": true,
+  "configurationsPreserved": true,
+  "backendPreserved": true,
+  "gameDataPreserved": true,
+  "otherServicesPreserved": true,
+  "backup": "/opt/royal-backups/vespera-video-20261021-v1"
+}
