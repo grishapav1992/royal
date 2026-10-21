@@ -1,0 +1,31 @@
+✔ near free kicks have five defenders and each successful sector clears the wall with continuous speed (4.826833ms)
+✔ wall impacts are a cosmetic existing loss, touch a defender and rebound without going through the wall (0.270458ms)
+✔ free-kick outcome and celebration clocks follow arrival or wall collision, while penalty timing stays unchanged (0.158333ms)
+✔ group extraction retains five separate full defenders instead of discarding four as sprite noise (1.659417ms)
+✔ distant free kicks use three defenders, a smaller goal, earlier wall plane and smooth clear trajectories for every sector (1.4515ms)
+✔ distant wall contact and result clock agree, preserving all accepted loss types and probabilities (0.189083ms)
+✔ three-member group extraction preserves full silhouettes in all four atlas cells (2.537125ms)
+✔ goal rear net uses parallel columns and rows instead of diagonal hanging threads (0.781417ms)
+✔ goal mouth and every net seam stay fixed throughout an impact ripple (1.302125ms)
+✔ net reaction starts after contact, stays local and settles without moving the rigid frame (0.218375ms)
+✔ football stays visible throughout every shot and rebound, including the distant goal on a narrow screen (0.4765ms)
+✔ each risk has its exact advertised chance and both heroes share the outcome distribution (3.919583ms)
+✔ exact integer quotes apply 99 percent once, rounding only final money for every risk, stake and stop (0.299459ms)
+✔ all five goals auto-complete; losing any shot removes the entire unbanked series (0.739459ms)
+✔ banking closes the series without drawing another outcome; stale revisions cannot advance it (0.220834ms)
+✔ settings, fabricated histories and fabricated money are rejected (0.106791ms)
+✔ flight starts at the striking foot and resolves at the goal before result poses; celebrations differ (1.063ms)
+✔ atlas extraction keeps a whole diving body that crosses a cell and rejects detached fragments (0.829875ms)
+✔ right and left strike anchors land exactly on the same penalty ball (0.090583ms)
+✔ every mixed risk path has its exact payout, one house edge and only final-money rounding (3.123084ms)
+✔ risk switching preserves accepted history and cashout, supports legacy saves and rejects fabricated paths (0.622291ms)
+✔ all eighteen sectors are cosmetic and have the same exact goal chance for either player and every risk (33.078708ms)
+✔ sector trajectories finish inside each referenced cell; saves meet gloves and misses hit frame or go outside (0.544292ms)
+ℹ tests 23
+ℹ suites 0
+ℹ pass 23
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 418.206542

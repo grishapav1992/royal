@@ -1,5 +1,6 @@
 import { drawGoalFrame, drawGoalNet } from './crLeoGoal';
-import { extractSpriteFrames, type SpriteFrame } from './crLeoSprites';
+import { type SpriteFrame } from './crLeoSprites';
+import { crLeoAssets } from './crLeoAssets';
 import { penaltyZone, shotZone, type PenaltyHero, type PenaltyRisk, type PenaltyView } from '../shared/crLeo';
 import { celebrationPose, flightPosition, keeperPlacement, PENALTY_CELEBRATION, PENALTY_CONTACT, shotPose, shotTarget, shotTiming, shotBallRadius, strikePlacement } from './crLeoTimeline';
 import { freeKickFlight, isWallHit, shotLayout, wallMotion, wallCrossing, type FreeKickWall } from './crLeoFreeKick';
@@ -20,22 +21,33 @@ export class CrLeoScene {
   private painted = '';
   private renderedFrames = 0;
   private presentationRevision = 0;
+  private releaseAssets: () => void;
   private reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   constructor(private canvas: HTMLCanvasElement, private sound: (event: 'kick' | 'goal' | 'post' | 'save' | 'wall' | 'celebrate') => void) {
     this.ctx = canvas.getContext('2d')!;
     canvas.dataset.renderer = 'canvas2d'; canvas.dataset.assets = '0';
-    for (const name of ['stadium', 'stadium-free', 'cr', 'leo', 'keeper', 'keeper-reach', 'keeper-dive', 'wall', 'wall-far']) {
-      const img = new Image(); img.onload = () => { if (!this.alive) return; try { if (!name.startsWith('stadium')) this.frames.set(name, extractSpriteFrames(img, name.startsWith('keeper-') || name.startsWith('wall') ? 2 : 4, name.startsWith('keeper') || name.startsWith('wall') ? 2 : 4, name === 'cr' || name.startsWith('wall'), name === 'keeper' ? [undefined,undefined,'left','left',undefined,'right','right',undefined] : name === 'keeper-reach' ? ['left','right','high','center'] : name === 'keeper-dive' ? ['left','right','left','right'] : undefined, name === 'wall-far' ? 3 : name === 'wall' ? 5 : 1)); } catch { canvas.dataset.assetError = name; return; } this.images.set(name, img); canvas.dataset.spriteFrames = String([...this.frames.values()].reduce((n, a) => n + a.length, 0)); canvas.dataset.assets = String(this.images.size); }; img.onerror = () => { if (this.alive) canvas.dataset.assetError = name; }; img.src = '/assets/cr-vs-leo/v1/' + (name === 'cr' ? 'cr-white' : name) + (name === 'keeper' ? '-empty' : '') + '.png';
-    }
+    this.releaseAssets = crLeoAssets.subscribe(() => {
+      for (const name of ['stadium','stadium-free','cr','leo','keeper','keeper-reach','keeper-dive','wall','wall-far']) {
+        const asset = crLeoAssets.get(name); if (!asset) continue;
+        this.images.set(name, asset.image); if (asset.frames) this.frames.set(name, asset.frames);
+      }
+      canvas.dataset.spriteFrames = String([...this.frames.values()].reduce((n,a) => n+a.length,0));
+      canvas.dataset.assets = String(this.images.size);
+    });
+    void crLeoAssets.start(this.requiredAssets());
   }
-  ready() { return this.images.size === 9; }
-  select(hero: PenaltyHero, risk = this.previewRisk) { this.presentationRevision++; this.hero = hero; this.previewRisk = risk; this.mode = 'idle'; this.view = undefined; this.celebrationRisk = undefined; }
-  chooseRisk(risk: PenaltyRisk) { this.presentationRevision++; this.previewRisk = risk; }
+  private requiredAssets() { return [this.previewRisk === 'safe' ? 'stadium' : 'stadium-free', this.hero, 'keeper', 'keeper-reach', 'keeper-dive', ...(this.previewRisk === 'safe' ? [] : [this.previewRisk === 'sharp' ? 'wall' : 'wall-far'])]; }
+  loading() { return crLeoAssets.state(this.requiredAssets()); }
+  ready() { return this.loading().ready; }
+  retryAssets() { void crLeoAssets.start(this.requiredAssets()); }
+  select(hero: PenaltyHero, risk = this.previewRisk) { this.presentationRevision++; this.hero = hero; this.previewRisk = risk; this.mode = 'idle'; this.view = undefined; this.celebrationRisk = undefined; void crLeoAssets.start(this.requiredAssets()); }
+  chooseRisk(risk: PenaltyRisk) { this.presentationRevision++; this.previewRisk = risk; void crLeoAssets.start(this.requiredAssets()); }
   show(view: PenaltyView, animate: boolean, cashout = false) {
     this.presentationRevision++;
     this.celebrationRisk = cashout ? this.previewRisk : undefined;
     this.hero = view.hero; this.previewRisk = this.celebrationRisk ?? view.risk; this.view = structuredClone(view); this.started = performance.now(); this.fired.clear();
     this.mode = !animate || this.reduced ? 'restored' : cashout ? 'celebrate' : 'shot';
+    void crLeoAssets.start(this.requiredAssets());
   }
   private emit(name: 'kick' | 'goal' | 'post' | 'save' | 'wall' | 'celebrate') { if (!this.fired.has(name)) { this.fired.add(name); this.sound(name); } }
   state(now = performance.now()) {
@@ -66,7 +78,7 @@ export class CrLeoScene {
     c.fillStyle = '#17242a'; for (let i = 0; i < 5; i++) { const a = i * Math.PI * .4; c.beginPath(); c.moveTo(Math.cos(a) * radius * .65, Math.sin(a) * radius * .65); c.lineTo(Math.cos(a + .45) * radius * .45, Math.sin(a + .45) * radius * .45); c.lineTo(Math.cos(a - .45) * radius * .45, Math.sin(a - .45) * radius * .45); c.fill(); } c.restore();
   }
   paint(now: number) {
-    if (!this.alive) return;
+    if (!this.alive || !this.ready()) return;
     const canvas = this.canvas, w = canvas.clientWidth, h = canvas.clientHeight, dpr = Math.min(devicePixelRatio || 1, 2);
     if (!w || !h) return;
     if (canvas.width !== Math.round(w * dpr) || canvas.height !== Math.round(h * dpr)) { canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr); }
@@ -167,5 +179,5 @@ export class CrLeoScene {
     if (playing && t >= timing.result && shot) this.emit(shot.goal ? 'goal' : wallHit ? 'wall' : shot.finish === 'post' ? 'post' : 'save');
     if (celebrating && this.mode !== 'restored') this.emit('celebrate');
   }
-  destroy() { this.alive = false; for (const image of this.images.values()) { image.onload = null; image.onerror = null; } this.images.clear(); this.frames.clear(); }
+  destroy() { this.alive = false; this.releaseAssets(); this.images.clear(); this.frames.clear(); }
 }

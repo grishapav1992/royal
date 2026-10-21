@@ -24,15 +24,16 @@ export class CrLeoUI {
   private shownBalance = '0';
   private selectionPreview = false;
   private controlsKey = '';
+  private loadingKey = '';
   private pipsKey = '';
   private epoch = 0;
   private onChange = () => this.sync();
   private onVisibility = () => { if (document.hidden) this.audio.silence(); };
   constructor(host: HTMLElement, preview?: { hero: PenaltyHero; risk: PenaltyRisk }) {
     if (preview) { this.hero = preview.hero; this.risk = preview.risk; }
-    this.root.className = 'cr-leo'; this.root.setAttribute('aria-label', 'CR vs. Leo');
+    this.root.className = 'cr-leo'; this.root.dataset.loading = 'true'; this.root.setAttribute('aria-label', 'CR vs. Leo');
     this.root.innerHTML = `<header class="cl-header"><div class="cl-brand"><b>CR</b><i>vs.</i><b>Leo</b></div><div class="cl-heading"><span>ДВА ИГРОКА. ОДНА СЕРИЯ.</span><strong>Серия ударов</strong></div><button class="cl-rules" data-rules>Как играть <span>↗</span></button></header>
-      <div class="cl-stage"><canvas aria-label="Пенальти на дневном стадионе"></canvas><div class="cl-stadium"><i></i> ДЕНЬ МАТЧА <span data-situation>ПЕНАЛЬТИ · 11 М</span></div><div class="cl-score"><span data-caption>ТВОЯ СЕРИЯ</span><strong data-coefficient>1,00×</strong><small data-award>Пять ударов. Решение после каждого гола.</small></div><div class="cl-moment" data-moment hidden><b data-moment-title></b><span data-moment-detail></span></div><div class="cl-player-label"><span data-hero-name>CR</span><small data-foot>ПРАВАЯ НОГА</small></div><div class="cl-pips" aria-label="Результаты пяти ударов" data-pips></div></div>
+      <div class="cl-stage"><div class="cl-loader" data-loader><div class="cl-loader-mark" aria-hidden="true">CR <i>vs.</i> <span>Leo</span></div><strong data-load-title>Готовим стадион</strong><div class="cl-loader-meter"><progress max="100" value="0" aria-label="Загрузка игры" data-load-progress></progress><span data-load-percent>0%</span></div><button type="button" data-load-retry hidden>Повторить загрузку</button></div><canvas aria-label="Пенальти на дневном стадионе"></canvas><div class="cl-stadium"><i></i> ДЕНЬ МАТЧА <span data-situation>ПЕНАЛЬТИ · 11 М</span></div><div class="cl-score"><span data-caption>ТВОЯ СЕРИЯ</span><strong data-coefficient>1,00×</strong><small data-award>Пять ударов. Решение после каждого гола.</small></div><div class="cl-moment" data-moment hidden><b data-moment-title></b><span data-moment-detail></span></div><div class="cl-player-label"><span data-hero-name>CR</span><small data-foot>ПРАВАЯ НОГА</small></div><div class="cl-pips" aria-label="Результаты пяти ударов" data-pips></div></div>
       <div class="cl-progress" aria-label="Выплаты по серии" data-progress></div>
       <div class="cl-controls"><div class="cl-choose"><span class="cl-label">ТВОЙ ИГРОК</span><div class="cl-heroes"><button data-hero="cr" aria-pressed="true"><i class="cl-mini cl-mini-cr"></i><span><b>CR</b><small>ПРАВАЯ</small></span><em>07</em></button><button data-hero="leo" aria-pressed="false"><i class="cl-mini cl-mini-leo"></i><span><b>Leo</b><small>ЛЕВАЯ</small></span><em>10</em></button></div></div>
       <div class="cl-risk-panel"><span class="cl-label">ТИП УДАРА <small>ШАНС КАЖДОГО ГОЛА</small></span><div class="cl-risks">${Object.entries(PENALTY_RISKS).map(([id, v]) => `<button data-risk="${id}" aria-pressed="${id === 'safe'}"><b>${v.name}</b><span>${v.chance}%</span></button>`).join('')}</div><p data-hint>Игрок на всю серию. Риск выбирается перед каждым ударом.</p></div>
@@ -42,6 +43,7 @@ export class CrLeoUI {
     host.replaceChildren(this.root);
     this.scene = new CrLeoScene(this.find('canvas'), event => { if (document.hidden) return; if (event === 'kick') this.audio.kick(); else if (event === 'goal') this.audio.goal(); else if (event === 'celebrate') this.audio.celebrate(this.hero); else if (event === 'wall') this.audio.wall(); else this.audio.miss(event === 'post'); });
     this.scene.select(this.hero, this.risk);
+    this.find('[data-load-retry]').onclick = () => this.scene.retryAssets();
     this.root.querySelectorAll<HTMLButtonElement>('[data-hero]').forEach(b => b.onclick = () => { if (this.blocked() || this.active()) return; this.hero = b.dataset.hero as PenaltyHero; this.selectionPreview = true; this.scene.select(this.hero, this.risk); this.syncControls(); });
     this.root.querySelectorAll<HTMLButtonElement>('[data-risk]').forEach(b => b.onclick = () => { if (this.blocked()) return; this.risk = b.dataset.risk as PenaltyRisk; this.scene.chooseRisk(this.risk); if (!this.active()) { this.selectionPreview = true; this.scene.select(this.hero, this.risk); } this.syncControls(); });
     this.find<HTMLSelectElement>('[data-stake]').onchange = e => { if (!this.active() && !this.blocked()) { this.stake = (e.target as HTMLSelectElement).value; this.syncControls(); } };
@@ -93,6 +95,17 @@ export class CrLeoUI {
   }
   private tick(now: number) {
     if (!this.alive) return;
+    const loading = this.scene.loading();
+    const loadingKey = JSON.stringify(loading);
+    if (loadingKey !== this.loadingKey) {
+      this.loadingKey = loadingKey; this.root.dataset.loading = String(!loading.ready);
+      this.find('[data-loader]').hidden = loading.ready;
+      this.find<HTMLProgressElement>('[data-load-progress]').value = loading.percent;
+      this.text('[data-load-percent]', loading.percent + '%');
+      this.text('[data-load-title]', loading.failed ? 'Не удалось загрузить графику' : 'Готовим стадион');
+      this.find<HTMLButtonElement>('[data-load-retry]').hidden = !loading.failed;
+      this.find<HTMLButtonElement>('[data-load-retry]').disabled = loading.loading;
+    }
     this.scene.paint(now);
     const state = this.scene.state(now), s = this.session(), v = this.selectionPreview ? undefined : s?.view.penalty;
     const shots = v?.shots ?? [], shown = state.reveal ? shots : shots.slice(0, -1), goals = shown.filter(s => s.goal).length;
