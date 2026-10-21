@@ -1,0 +1,30 @@
+{
+  "published": false,
+  "baseCommit": "9938722",
+  "gameId": "original-cr-vs-leo",
+  "moduleVersion": "1.0.0-d7e1b79a7590",
+  "tests": {
+    "loader": 4,
+    "modelGeometry": 23,
+    "failed": 0,
+    "moduleTypecheck": true,
+    "moduleBuild": true
+  },
+  "browser": {
+    "held": {
+      "loadedAssets": 8,
+      "spriteFrames": 52,
+      "percent": 83,
+      "sceneHidden": true
+    },
+    "ready": {
+      "assets": 9,
+      "spriteFrames": 56
+    },
+    "heroRiskSwitches": 6,
+    "newImageRequestsOnSwitches": 0,
+    "newImageRequestsOnReopen": 0
+  },
+  "mathChanged": false,
+  "runtimeAssetsBytes": 6587748
+}

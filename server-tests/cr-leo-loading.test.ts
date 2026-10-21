@@ -21,29 +21,33 @@ test('progress follows downloaded bytes and reaches 100 only after image prepara
   a.resolve(asset());await pending;assert.equal(store.state().percent,100);assert.equal(store.state().ready,true);
 });
 
-test('windows share in-flight downloads and cached frames while a ready scene can open before background art',async()=>{
+test('windows share in-flight downloads and cached frames and wait for every image before opening',async()=>{
   const a=deferred(),b=deferred(),calls:string[]=[];
   const store=new CrLeoAssetStore(specs.slice(0,2),spec=>{calls.push(spec.key);return spec.key==='a'?a.promise:b.promise;});
   let firstUpdates=0,secondUpdates=0;
   const release=store.subscribe(()=>firstUpdates++);store.subscribe(()=>secondUpdates++);
-  const first=store.start(['a']),second=store.start(['a']);assert.equal(first,second);
-  assert.deepEqual(calls,['a']);
+  const first=store.start(),second=store.start();assert.equal(first,second);
+  assert.deepEqual(calls,['a','b']);
   release();const stoppedAt=firstUpdates;const prepared=asset();a.resolve(prepared);await flush();
-  assert.equal(store.state(['a']).ready,true);assert.equal(store.state().ready,false);assert.equal(firstUpdates,stoppedAt);
+  assert.equal(store.state().ready,false);assert.equal(firstUpdates,stoppedAt);
   b.resolve(asset());await first;await store.start();assert.deepEqual(calls,['a','b']);assert.equal(store.get('a'),prepared);assert(secondUpdates>firstUpdates);
 });
 
-test('a failed image blocks that scene, retries only unfinished art and preserves successful frames',async()=>{
+test('a failed image blocks the game, retries only unfinished art and preserves successful frames',async()=>{
   const calls:string[]=[],retries:boolean[]=[],cached=asset();let fail=true;
   const store=new CrLeoAssetStore(specs.slice(0,2),async(spec,_progress,retry)=>{calls.push(spec.key);retries.push(retry);if(spec.key==='a'&&fail)throw Error('offline');return cached;});
-  await store.start();assert.equal(store.state(['a']).ready,false);assert.equal(store.state(['a']).failed,true);assert.equal(store.state(['b']).ready,true);
-  fail=false;await store.start(['a']);assert.deepEqual(calls,['a','b','a']);assert.deepEqual(retries,[false,false,true]);assert.equal(store.get('b'),cached);assert.equal(store.state().failed,false);assert.equal(store.state().percent,100);
+  await store.start();assert.equal(store.state().ready,false);assert.equal(store.state().failed,true);assert.equal(store.get('b'),cached);
+  fail=false;await store.start();assert.deepEqual(calls,['a','b','a']);assert.deepEqual(retries,[false,false,true]);assert.equal(store.get('b'),cached);assert.equal(store.state().failed,false);assert.equal(store.state().percent,100);
 });
 
-test('switching the selected scene prioritizes its pending art ahead of optional background downloads',async()=>{
-  const jobs=new Map<string,ReturnType<typeof deferred>>(),calls:string[]=[];
-  specs.forEach(s=>jobs.set(s.key,deferred()));
-  const store=new CrLeoAssetStore(specs,spec=>{calls.push(spec.key);return jobs.get(spec.key)!.promise;});
-  const pending=store.start();assert.deepEqual(calls,['a','b']);store.start(['e']);jobs.get('a')!.resolve(asset());await flush();assert.deepEqual(calls,['a','b','e']);
-  jobs.forEach(job=>job.resolve(asset()));await pending;assert.equal(store.state().ready,true);
+test('the last image keeps the whole game loading, then every mode and player switch reuses the complete cache',async()=>{
+  const all=Array.from({length:9},(_,i)=>({key:String(i),file:i+'.webp',bytes:100}));
+  const jobs=new Map(all.map(spec=>[spec.key,deferred()])),calls:string[]=[];
+  const store=new CrLeoAssetStore(all,spec=>{calls.push(spec.key);return jobs.get(spec.key)!.promise;});
+  const pending=store.start();
+  for(let i=0;i<8;i++)jobs.get(String(i))!.resolve(asset());
+  await flush();assert.equal(calls.length,9);assert.equal(store.state().ready,false);assert(store.state().percent<100);
+  jobs.get('8')!.resolve(asset());await pending;assert.equal(store.state().ready,true);assert.equal(store.state().percent,100);
+  for(let hero=0;hero<2;hero++)for(let risk=0;risk<3;risk++){await store.start();assert.equal(store.state().ready,true);}
+  assert.equal(calls.length,9);
 });

@@ -34,20 +34,18 @@ export class CrLeoScene {
       canvas.dataset.spriteFrames = String([...this.frames.values()].reduce((n,a) => n+a.length,0));
       canvas.dataset.assets = String(this.images.size);
     });
-    void crLeoAssets.start(this.requiredAssets());
+    void crLeoAssets.start();
   }
-  private requiredAssets() { return [this.previewRisk === 'safe' ? 'stadium' : 'stadium-free', this.hero, 'keeper', 'keeper-reach', 'keeper-dive', ...(this.previewRisk === 'safe' ? [] : [this.previewRisk === 'sharp' ? 'wall' : 'wall-far'])]; }
-  loading() { return crLeoAssets.state(this.requiredAssets()); }
+  loading() { return crLeoAssets.state(); }
   ready() { return this.loading().ready; }
-  retryAssets() { void crLeoAssets.start(this.requiredAssets()); }
-  select(hero: PenaltyHero, risk = this.previewRisk) { this.presentationRevision++; this.hero = hero; this.previewRisk = risk; this.mode = 'idle'; this.view = undefined; this.celebrationRisk = undefined; void crLeoAssets.start(this.requiredAssets()); }
-  chooseRisk(risk: PenaltyRisk) { this.presentationRevision++; this.previewRisk = risk; void crLeoAssets.start(this.requiredAssets()); }
+  retryAssets() { void crLeoAssets.start(); }
+  select(hero: PenaltyHero, risk = this.previewRisk) { this.presentationRevision++; this.hero = hero; this.previewRisk = risk; this.mode = 'idle'; this.view = undefined; this.celebrationRisk = undefined; }
+  chooseRisk(risk: PenaltyRisk) { this.presentationRevision++; this.previewRisk = risk; }
   show(view: PenaltyView, animate: boolean, cashout = false) {
     this.presentationRevision++;
     this.celebrationRisk = cashout ? this.previewRisk : undefined;
     this.hero = view.hero; this.previewRisk = this.celebrationRisk ?? view.risk; this.view = structuredClone(view); this.started = performance.now(); this.fired.clear();
     this.mode = !animate || this.reduced ? 'restored' : cashout ? 'celebrate' : 'shot';
-    void crLeoAssets.start(this.requiredAssets());
   }
   private emit(name: 'kick' | 'goal' | 'post' | 'save' | 'wall' | 'celebrate') { if (!this.fired.has(name)) { this.fired.add(name); this.sound(name); } }
   state(now = performance.now()) {

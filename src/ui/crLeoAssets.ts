@@ -45,31 +45,24 @@ export class CrLeoAssetStore {
   private listeners = new Set<() => void>();
   private pending?: Promise<void>;
   private jobs: AssetSpec[] = [];
-  private priority: readonly string[] = [];
-  private waiters = new Set<() => void>();
   constructor(private specs: readonly AssetSpec[] = CR_LEO_ASSETS, private load: LoadAsset = loadAsset) {}
   get(key: string) { return this.values.get(key); }
-  state(keys?: readonly string[]) {
-    const specs = keys ? this.specs.filter(spec => keys.includes(spec.key)) : this.specs;
+  state() {
+    const specs = this.specs;
     const ready = specs.every(spec => this.values.has(spec.key));
     const total = specs.reduce((n, spec) => n + spec.bytes, 0);
     const loaded = specs.reduce((n, spec) => n + spec.bytes * (this.progress.get(spec.key) ?? 0), 0);
     return { ready, percent: ready ? 100 : Math.min(99, Math.floor(100 * loaded / Math.max(1, total))), failed: specs.some(spec => this.failures.has(spec.key)), loading: !!this.pending };
   }
   subscribe(listener: () => void) { this.listeners.add(listener); listener(); return () => { this.listeners.delete(listener); }; }
-  private notify() { this.listeners.forEach(listener => listener()); const waiters=[...this.waiters];this.waiters.clear();waiters.forEach(resolve=>resolve()); }
-  start(priority: readonly string[] = []): Promise<void> {
-    this.priority = priority.filter(key => this.specs.some(spec => spec.key === key));
-    const sort = () => this.jobs.sort((a,b) => Number(priority.includes(b.key)) - Number(priority.includes(a.key)));
-    if (this.pending) { sort(); this.notify(); return this.pending; }
-    this.jobs = this.specs.filter(spec => !this.values.has(spec.key)); sort();
+  private notify() { this.listeners.forEach(listener => listener()); }
+  start(): Promise<void> {
+    if (this.pending) return this.pending;
+    this.jobs = this.specs.filter(spec => !this.values.has(spec.key));
     if (!this.jobs.length) return Promise.resolve();
     this.failures.clear(); this.jobs.forEach(spec => this.progress.set(spec.key, 0));
     const worker = async () => {
       while (this.jobs.length) {
-        if (!this.priority.includes(this.jobs[0].key) && this.priority.some(key => !this.values.has(key) && !this.failures.has(key))) {
-          await new Promise<void>(resolve => this.waiters.add(resolve)); continue;
-        }
         const spec = this.jobs.shift()!;
         const key = spec.key;
         try {
