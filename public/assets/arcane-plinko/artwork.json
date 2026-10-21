@@ -2,27 +2,62 @@
   "date": "2026-10-20",
   "mode": "built-in image_gen",
   "prompts": {
+    "wink": "Use case: precise-object-edit. Edit target: the exact supplied 1024x1536 adult sorceress game sprite. Make one registered FACIAL EXPRESSION keyframe. Change ONLY her facial expression: close the eye on the RIGHT SIDE OF THE IMAGE in a playful natural wink; keep the eye on the LEFT SIDE OF THE IMAGE open, looking directly at the viewer. Slightly lift the eyebrow above the open eye and give her a subtle asymmetric flirtatious closed-mouth smirk, with one mouth corner slightly lifted. She is a confident adult woman around age 30. Keep the exact head angle, head position, face identity, nose, skin lighting, lip centre and size, costume, body, hands, fingers, hair strands and magic sphere. No pose change. Match the original canvas, pixel scale and registration exactly because ONLY the eyelid, eyebrow and lips will be used as patches over the original portrait. Do not move the facial features or repaint the rest of the character. Preserve existing true transparency. No background, text, new objects or cropping.",
     "heroine": "Use case: concept-art. Asset type: a single transparent-background game character cutout for the right side of a dark fantasy Plinko game. Generate a beautiful, clearly adult woman around age 30, a powerful sorceress inspired by Yennefer from The Witcher: long flowing raven-black wavy hair, luminous violet eyes, pale porcelain skin, confident sensual expression, elegant feminine hourglass silhouette. She wears a sophisticated fitted black velvet and leather off-shoulder gown with tasteful deep neckline, silver filigree corset belt, long lace sleeves, dark feathers at the shoulders, a black choker with a small silver star-shaped amethyst pendant. Her outfit is alluring but fully clothed. Three-quarter frontal pose looking toward viewer, left hand raised holding a swirling violet magical sphere, right hand gracefully near her waist, from head down to mid-thigh. Premium realistic dark fantasy game illustration with rich cinematic detail, fine expressive face, polished illustration rather than photograph. Cool silver moonlight along hair and shoulders and violet spell glow lighting her face and hands. Clean silhouette, all hair, hands and garment comfortably within frame; generous clear space around the silhouette; portrait format. True transparent alpha background. No environment, no floor, no text, no logo, no watermark.",
-    "world": "Use case: concept-art. Asset type: panoramic background illustration for a premium dark fantasy magic Plinko game. A moonlit sorceress's sanctuary in an ancient gothic citadel, dark basalt and obsidian architecture with delicate silver filigree, tall pointed windows and ruined arches framing a distant misty mountain lake, an enormous pale crescent moon in the upper right, subtle violet aurora and drifting tiny magical motes, amethyst mineral accents only along the bottom and side edges, a few mystical candles. The central 65 percent must be dark calm uncluttered atmospheric negative space for a readable game board; the most detailed architecture is placed at the left and far right edges. Distinct from a volcanic or steampunk laboratory: no lava, no volcano, no gears, no telescopes, no brass. Palette midnight navy, ink black, lavender, desaturated plum, cool silver. Cinematic realistic fantasy illustration with elegant texture and depth, restrained contrast in the center, widescreen 16:9 landscape composition. No characters, no people, no text, no lettering, no logo, no game board or UI. This is an environment asset, not a screenshot."
+    "world": "Use case: concept-art. Asset type: panoramic background illustration for a premium dark fantasy magic Plinko game. A moonlit sorceress's sanctuary in an ancient gothic citadel, dark basalt and obsidian architecture with delicate silver filigree, tall pointed windows and ruined arches framing a distant misty mountain lake, an enormous pale crescent moon in the upper right, subtle violet aurora and drifting tiny magical motes, amethyst mineral accents only along the bottom and side edges, a few mystical candles. The central 65 percent must be dark calm uncluttered atmospheric negative space for a readable game board; the most detailed architecture is placed at the left and far right edges. Distinct from a volcanic or steampunk laboratory: no lava, no volcano, no gears, no telescopes, no brass. Palette midnight navy, ink black, lavender, desaturated plum, cool silver. Cinematic realistic fantasy illustration with elegant texture and depth, restrained contrast in the center, widescreen 16:9 landscape composition. No characters, no people, no text, no lettering, no logo, no game board or UI. This is an environment asset, not a screenshot.",
+    "blink": "Use case: precise-object-edit. Edit target: the supplied exact game character sprite. Create the CLOSED-EYES animation frame for this exact adult sorceress. Change ONLY the two eyelids: both eyes gently fully closed, dark lashes resting naturally, relaxed natural blink. Preserve exact pixel registration, canvas dimensions 1024 by 1536, head location and head angle, face structure, eyebrows, lips, expression, nose, skin, every strand of hair, costume, hands, pose and violet magic. Do not redraw or move any other feature. Eyes must close at their present positions. This will be overlaid onto the original sprite for a seamless blink; identical scale and alignment are essential. Keep true transparent alpha background and the existing silhouette. No text, no extra objects."
   },
   "assets": {
     "hero": {
       "generated": "C:/Users/Aorus/.codex/generated_images/01a15a92-03d4-79d1-bb38-1bc16d5b040c/exec-c9392386-d7ed-4433-8bda-bb6d2da62ba4.png",
       "workspace": "public/assets/arcane-plinko/hero.png",
       "transparentRequested": true,
-      "sha256": "e7d059e50aa613c52087d0bab4b6ebaddca50f1be4a33238410239b30ab59130"
+      "sha256": "e7d059e50aa613c52087d0bab4b6ebaddca50f1be4a33238410239b30ab59130",
+      "fallbackFile": "public/assets/arcane-plinko/vespera-poster-46d5ebf7e7cd.webp"
     },
     "world": {
       "generated": "C:/Users/Aorus/.codex/generated_images/01a15a92-03d4-79d1-bb38-1bc16d5b040c/exec-920f028d-1d7e-44e3-abcd-6ad8a652b4e8.png",
       "workspace": "public/assets/arcane-plinko/world.png",
-      "sha256": "93d9bce647d8f99814dcccb6e473dabbc00d827808af15aba3e2e5511f3a39cb"
+      "sha256": "93d9bce647d8f99814dcccb6e473dabbc00d827808af15aba3e2e5511f3a39cb",
+      "deliveryFile": "public/assets/arcane-plinko/world-ef0d9320252e.webp"
+    },
+    "blink": {
+      "generated": "C:/Users/Aorus/.codex/generated_images/01a15a92-03d4-79d1-bb38-1bc16d5b040c/exec-04970e8b-f374-4104-a622-3efd0383f95d.png",
+      "workspace": "public/assets/arcane-plinko/hero-blink.png",
+      "transparentRequested": true,
+      "sha256": "ca6ccd7b639e02dec24cc93b0ad1d070e29cf4f1b8d33d43fcecab1c62ff620f"
+    },
+    "wink": {
+      "generated": "C:/Users/Aorus/.codex/generated_images/01a15a92-03d4-79d1-bb38-1bc16d5b040c/exec-d6b7dbfd-323c-444a-b544-3a33425db7cc.png",
+      "workspace": "public/assets/arcane-plinko/hero-wink.png",
+      "transparentRequested": true,
+      "sha256": "4ec80936adbe4dfe788aa747ec68dc297dee592dd25b5740e428133f82d38191"
     }
   },
   "design": {
     "title": "Veil of Night / Завеса ночи",
     "character": "Vespera, adult sorceress inspired by Yennefer from The Witcher",
     "layout": "sorceress on left, ritual board on right, horizontal risk controls",
-    "palette": "midnight navy, cool silver, lavender",
-    "note": "New generated artwork replaces the original Luelon world, hero and cover. Game math and wallet contract are unchanged."
+    "palette": "charcoal black, cool silver, amethyst",
+    "note": "New generated artwork replaces the original Luelon world, hero and cover. Game math and wallet contract are unchanged.",
+    "background": {
+      "date": "2026-10-21",
+      "revision": 2,
+      "base": "#080808",
+      "technique": "Broad radial charcoal veil under the desktop portrait; the complete portrait composites with lighten after its internal video crossfade, allowing the world to continue through the dark backing.",
+      "mobile": "Vertical scene fade and a soft lower edge on the cropped welcome artwork",
+      "portrait": "Native original-colour MP4 with the existing edge fades; no chroma key, silhouette matte or spatial deformation",
+      "glow": "Frame-aligned CSS amethyst halo continues the spell's low-intensity light beyond the video boundary in the welcome and sidebar views. No extra image or video request."
+    }
+  },
+  "animation": {
+    "date": "2026-10-21",
+    "revision": 6,
+    "technique": "Two native video layers: 3-second quiet idle and a 7.75-second one-shot gesture; 24fps",
+    "scenes": "Idle by default. One-shot on entry, portrait interaction and confirmed wins >= 3x, with an 18-second cooldown and 350ms fade.",
+    "artwork": "public/assets/arcane-plinko/vespera-video.json",
+    "accessibility": "Static original while loading, on media error, blocked autoplay or reduced motion; pause when hidden or offscreen",
+    "previousFrames": "public/assets/arcane-plinko/frames/artwork.json",
+    "delivery": "Content-hashed mobile/desktop H.264 clips; priority idle load, deferred full gesture, light WebP poster"
   }
 }

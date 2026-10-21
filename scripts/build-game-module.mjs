@@ -3,6 +3,7 @@ import { readFile, writeFile, mkdir, readdir, lstat, rename, rm } from 'node:fs/
 import { resolve, relative, dirname, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash, randomUUID } from 'node:crypto';
+import { setTimeout as delay } from 'node:timers/promises';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const sha = value => createHash('sha256').update(value).digest('hex');
@@ -34,7 +35,7 @@ const bridgeModules = new Map([
  ['src/ui/gameReactions', ['GAME_REACTION_EVENT', 'resetGameOutcomes', 'emitGameReaction', 'gameReactionForAmounts', 'emitGameOutcome', 'observeGameOutcome', 'observeExpansionOutcome']],
  ['phaser', ['Phaser']],
 ]);
-const allowedResources = /\.(?:webp|png|jpe?g|avif|gif|svg|mp3|ogg|wav|m4a|json|woff2?|ttf|otf)$/;
+const allowedResources = /\.(?:webp|png|jpe?g|avif|gif|svg|mp4|mp3|ogg|wav|m4a|json|woff2?|ttf|otf)$/;
 const nativeEntries = ['AfterglowUI', 'CosmicEscapeUI', 'CaramelCarnivalUI', 'VelvetReignUI', 'LastConvoyUI', 'NitroRunUI', 'MemeOverloadUI', 'LastExitUI', 'CrLeoUI', 'VolcanicPlinkoUI'];
 // Existing shared presentation helpers use these pure probability functions in both browser and server builds.
 const backendImplementation = name => name.startsWith('server/') && !name.startsWith('server/games/vfair/');
@@ -55,10 +56,21 @@ async function walk(directory, prefix = '') {
  return files;
 }
 
+async function renameBuilt(source, destination) {
+ // Windows scanners can briefly hold a newly written file or directory.
+ for (let attempt = 0; ; attempt++) {
+  try { await rename(source, destination); return; }
+  catch (error) {
+   if (process.platform !== 'win32' || !['EPERM', 'EBUSY', 'EACCES'].includes(error.code) || attempt >= 4) throw error;
+   await delay(50 * 2 ** attempt);
+  }
+ }
+}
+
 async function atomicFile(path, bytes) {
  const temporary = path + '.pending-' + randomUUID();
  await writeFile(temporary, bytes, { flag: 'wx' });
- await rename(temporary, path);
+ await renameBuilt(temporary, path);
 }
 
 async function referencedMedia(outputs, sentinel, assetRoots, assetFiles) {
@@ -111,7 +123,7 @@ async function buildGame(slug) {
   plugins: [{ name: 'royal-host-and-module-media', setup(builder) {
    builder.onResolve({ filter: /^phaser$/ }, () => ({ path: 'phaser', namespace: 'royal-host' }));
    builder.onResolve({ filter: /^\./ }, args => {
-    const path = relative(root, resolve(args.resolveDir, args.path)).replace(/\.ts$/, '');
+    const path = relative(root, resolve(args.resolveDir, args.path)).replaceAll('\\', '/').replace(/\.ts$/, '');
     if (bridgeModules.has(path)) return { path, namespace: 'royal-host' };
    });
    builder.onLoad({ filter: /.*/, namespace: 'royal-host' }, args => {
@@ -180,7 +192,7 @@ async function buildGame(slug) {
   await mkdir(temporary);
   try {
    for (const [name, bytes] of outputs) { const target = resolve(temporary, name); await mkdir(dirname(target), { recursive: true }); await writeFile(target, bytes, { flag: 'wx' }); }
-   await rename(temporary, destination);
+   await renameBuilt(temporary, destination);
   } finally { await rm(temporary, { recursive: true, force: true }); }
  }
  await atomicFile(resolve(root, 'module-dist', config.gameId, 'active.json'), JSON.stringify({ format: 1, gameId: config.gameId, manifest: urlRoot + 'manifest.json', sha256: sha(json) }, null, 2) + '\n');

@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-21",
+  "applicationTypes": "passed",
+  "fixtureTypes": "passed",
+  "clientBuild": "passed",
+  "independentPackagesBuilt": 111,
+  "moduleAndPlinkoTests": {"passed": 9, "failed": 0},
+  "publisherTests": {"passed": 11, "failed": 0, "environment": "Linux temporary directories; no production publication or data access"},
+  "module": {"gameId": "royal-plinko", "version": "1.0.0-5ece62982f1d", "bytes": 2636721, "files": 8, "mediaFiles": 6},
+  "browser": {"versionedMediaUrls": true, "idlePlayback": true, "win3xGesturePlayback": true, "consoleErrors": 0},
+  "productionBase": "7fdb80e201c868e54412ea5b266c0f098f628f34",
+  "productionFilesMatched": 1412,
+  "operationalExclusions": ["deployment/SERVER.md", "server/LobbyRoom.ts.orig"]
+}

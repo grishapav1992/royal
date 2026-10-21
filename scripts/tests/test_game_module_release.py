@@ -19,6 +19,7 @@ GAMES = {
     'orbit': {'apiVersion': 1, 'rulesVersion': 1, 'progressVersion': 1},
     'studio-orbit': {'apiVersion': 1, 'rulesVersion': 1, 'progressVersion': 1},
     'original-cr-vs-leo': {'apiVersion': 1, 'rulesVersion': 1, 'progressVersion': 1},
+    'royal-plinko': {'apiVersion': 1, 'rulesVersion': 1, 'progressVersion': 1},
 }
 
 
@@ -108,6 +109,24 @@ class ModuleReleaseTests(unittest.TestCase):
         self.assertFalse(self.pointer('studio-signal-fox').exists())
         self.assertFalse((self.root / 'studio-signal-fox').exists())
         self.assertFalse((self.state / 'history').exists())
+
+    def test_video_package_retains_verified_bytes_and_rejects_tampering(self):
+        source, metadata = self.package('royal-plinko')
+        name = 'media/arcane-plinko/vespera-idle.mp4'
+        video = source / name
+        video.parent.mkdir(parents=True)
+        video.write_bytes(b'\x00\x00\x00\x18ftypmp42video-fixture')
+        metadata['files'][name] = digest(video.read_bytes())
+        (source / 'manifest.json').write_text(json.dumps(metadata))
+        result = self.command('check', package=source)
+        self.assertEqual(result['files'], 3)
+        installed = self.command('install', package=source, expected='none')
+        retained = self.root / 'royal-plinko' / 'versions' / metadata['version'] / name
+        self.assertEqual(retained.read_bytes(), video.read_bytes())
+        before = self.pointer('royal-plinko').read_bytes()
+        video.write_bytes(video.read_bytes() + b'tampered')
+        self.assertIn('hash mismatch', self.command('install', package=source, expected=installed['activeSha256'], success=False))
+        self.assertEqual(self.pointer('royal-plinko').read_bytes(), before)
 
     def test_wrong_game_and_contract_are_rejected(self):
         source, metadata = self.package('studio-signal-fox')

@@ -8,6 +8,7 @@ export const volcanicPlinkoEnglish: Record<string, string> = {
   'Взрослая черноволосая магичка в чёрном платье с фиолетовой магией': 'An adult raven-haired sorceress in a black gown wielding violet magic',
   'ВЕСПЕРА': 'VESPERA',
   'Веспера, хранительница ночной магии': 'Vespera, keeper of night magic',
+  'Позвать Весперу': 'Call Vespera',
   '«У каждого падения есть своя судьба»': '“Every fall has a destiny of its own”',
   'Выбери силу чар. Пробуди магическую сферу.': 'Choose your spell. Awaken the magic orb.',
   '12 РУН · 13 ПЕЧАТЕЙ': '12 RUNES · 13 SEALS',

@@ -97,6 +97,15 @@ test('all built game packages pass runtime validation and every inventoried byte
  }
 });
 
+test('portrait MP4 resources are accepted without widening resource paths', () => {
+ const game = 'royal-plinko', root = moduleRoot(version, game), good = manifest(game);
+ const withVideo = (name: string) => ({ ...good, files: { ...good.files, [name]: 'e'.repeat(64) } });
+ assert.equal(validModuleManifest(withVideo('media/arcane-plinko/vespera-idle.mp4'), root + 'manifest.json', game), true);
+ for (const name of ['media/../secret.mp4', 'media/./clip.mp4', 'media/clip.mp4.exe', 'https://example.test/clip.mp4']) {
+  assert.equal(validModuleManifest(withVideo(name), root + 'manifest.json', game), false, name);
+ }
+});
+
 test('the hall bundle contains host services without importing any independent game renderer', async () => {
  const implementations = new Set<string>();
  for (const game of GAME_MODULES) {

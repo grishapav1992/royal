@@ -1,0 +1,17 @@
+✔ every defined game has a distinct module package and matching public contract (46.4079ms)
+✔ manifests and active pointers are bound to the requested game (2.1655ms)
+✔ module metadata rejects traversal, foreign origins, missing files and malformed digests (0.4984ms)
+✔ all built game packages pass runtime validation and every inventoried byte matches its digest (1006.4842ms)
+✔ portrait MP4 resources are accepted without widening resource paths (0.6488ms)
+✔ the hall bundle contains host services without importing any independent game renderer (141.6038ms)
+✔ all 4096 accepted paths collide with their exact crystal pins and reach the paid pocket (34.1459ms)
+✔ the three profiles retain the original 12-row vFair payouts and returns (0.5873ms)
+✔ a mismatched path, payout or table is never presented as a verified round (0.6382ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1712.275

@@ -1,0 +1,258 @@
+{
+  "date": "2026-10-21",
+  "source": {
+    "file": "seedance-25-max_video_2026_10_21_19_54_47.mp4",
+    "bytes": 8461054,
+    "sha256": "8623f8d3b13f8289d28add5f0c3d92f023f53ce6b988586f32b4c0c8d9c69e8d",
+    "origin": "User supplied Seedance video; original retained outside repository",
+    "frames": 193,
+    "fps": 24,
+    "width": 786,
+    "height": 1178
+  },
+  "loop": {
+    "file": "vespera-loop-v1.mp4",
+    "bytes": 2804626,
+    "sha256": "86a57797bc3382d02216326258d9986ae58cfb68dce2c5f5c8d4a27995648fa8",
+    "frames": 186,
+    "fps": 24,
+    "durationSeconds": 7.75,
+    "width": 786,
+    "height": 1178,
+    "videoCodec": "H.264 high / yuv420p",
+    "audioCodec": "AAC stereo 32000 Hz",
+    "audio": "Preserved with a seam crossfade; portrait is muted in game",
+    "fastStart": true
+  },
+  "poster": {
+    "file": "vespera-loop-poster.jpg",
+    "bytes": 144265,
+    "sha256": "46502650ecba253ba5f3ee996fe5d7e77c175f2993657f01fadbbbe67ebb0902"
+  },
+  "edit": {
+    "frameNumbering": "zero-based, ends exclusive",
+    "discardedOutlierFrame": 0,
+    "body": [
+      7,
+      187
+    ],
+    "crossfadeTail": [
+      187,
+      193
+    ],
+    "crossfadeHead": [
+      1,
+      7
+    ],
+    "crossfadeFrames": 6,
+    "crossfadeSeconds": 0.25,
+    "blend": "tail*(1-T*24/5) + head*(T*24/5), clamped 0..1",
+    "wrap": "Last blended pose is source frame 6; first loop pose is adjacent source frame 7",
+    "encoding": "libx264 crf=18 preset=slow; r=24 fps_mode=cfr; AAC 128k; movflags=+faststart"
+  },
+  "quality": {
+    "frames": 186,
+    "fps": 24,
+    "duration": 7.75,
+    "seamMeanAbsoluteRgbDifference": 1.1993902921676636,
+    "medianAdjacentMeanAbsoluteRgbDifference": 2.283435106277466,
+    "analysisResolution": [
+      196,
+      294
+    ]
+  },
+  "idle": {
+    "file": "vespera-idle-v1.mp4",
+    "bytes": 578675,
+    "sha256": "c5b43252f8101cf655e9199136d8af3755eccc1fa85ee4451ecf42d52d664952",
+    "fps": 24,
+    "frames": 72,
+    "durationSeconds": 3,
+    "width": 786,
+    "height": 1178,
+    "audio": false,
+    "sourceFrames": [
+      0,
+      12
+    ],
+    "timeline": "frame=6*(1-cos(2*pi*tick/72)), tick 0..71",
+    "interpolation": "Linear blend of neighboring video frames. No spatial deformation."
+  },
+  "playback": {
+    "revision": 5,
+    "default": "Quiet idle loop",
+    "gesture": "One complete 7.75 second playback, then idle",
+    "triggers": [
+      "Enter from welcome or direct game entry",
+      "Portrait button via click, touch or keyboard",
+      "Visible confirmed result with multiplier >= 3"
+    ],
+    "cooldownSeconds": 18,
+    "transitionSeconds": 0.35,
+    "repeatDuringGesture": "Ignored, no queue",
+    "hiddenEvents": "Ignored",
+    "reducedMotion": "Static fallback and no gesture"
+  },
+  "delivery": {
+    "revision": 6,
+    "date": "2026-10-21",
+    "storage": "Project public/assets/arcane-plinko; build dist/assets/arcane-plinko; published application container /app/dist/assets/arcane-plinko",
+    "assets": [
+      {
+        "name": "vespera-idle-desktop",
+        "input": "vespera-idle-v1.mp4",
+        "args": [
+          "-vf",
+          "scale=720:1080",
+          "-an",
+          "-c:v",
+          "libx264",
+          "-crf",
+          "24",
+          "-preset",
+          "slow",
+          "-threads",
+          "2",
+          "-pix_fmt",
+          "yuv420p",
+          "-g",
+          "48",
+          "-movflags",
+          "+faststart"
+        ],
+        "ext": "mp4",
+        "file": "vespera-idle-desktop-da016db2c4a2.mp4",
+        "bytes": 296530,
+        "sha256": "da016db2c4a2b25ebc75aa55f61464b423702eb8bcfde2c850026828b7b3f150"
+      },
+      {
+        "name": "vespera-gesture-desktop",
+        "input": "vespera-loop-v1.mp4",
+        "args": [
+          "-vf",
+          "scale=720:1080",
+          "-an",
+          "-c:v",
+          "libx264",
+          "-crf",
+          "24",
+          "-preset",
+          "slow",
+          "-threads",
+          "2",
+          "-pix_fmt",
+          "yuv420p",
+          "-g",
+          "48",
+          "-movflags",
+          "+faststart"
+        ],
+        "ext": "mp4",
+        "file": "vespera-gesture-desktop-fb5fd347ff2e.mp4",
+        "bytes": 1116100,
+        "sha256": "fb5fd347ff2eccc1b31ffd7cb978de0afe22c6b3c3149bd52ba8e4bd1fca7b61"
+      },
+      {
+        "name": "vespera-idle-mobile",
+        "input": "vespera-idle-v1.mp4",
+        "args": [
+          "-vf",
+          "scale=480:720",
+          "-an",
+          "-c:v",
+          "libx264",
+          "-crf",
+          "23",
+          "-preset",
+          "slow",
+          "-threads",
+          "2",
+          "-pix_fmt",
+          "yuv420p",
+          "-g",
+          "48",
+          "-movflags",
+          "+faststart"
+        ],
+        "ext": "mp4",
+        "file": "vespera-idle-mobile-2f656e82a1c8.mp4",
+        "bytes": 184565,
+        "sha256": "2f656e82a1c8a5c2b51a2dbe7f723824aeee5870982a440cda7e09a3c6c7cc2a"
+      },
+      {
+        "name": "vespera-gesture-mobile",
+        "input": "vespera-loop-v1.mp4",
+        "args": [
+          "-vf",
+          "scale=480:720",
+          "-an",
+          "-c:v",
+          "libx264",
+          "-crf",
+          "23",
+          "-preset",
+          "slow",
+          "-threads",
+          "2",
+          "-pix_fmt",
+          "yuv420p",
+          "-g",
+          "48",
+          "-movflags",
+          "+faststart"
+        ],
+        "ext": "mp4",
+        "file": "vespera-gesture-mobile-537b990a656e.mp4",
+        "bytes": 698012,
+        "sha256": "537b990a656e09139de02097640aa2d830b1275da0d1b2174eae3ea5936f6705"
+      },
+      {
+        "name": "vespera-poster",
+        "input": "vespera-loop-poster.jpg",
+        "args": [
+          "-frames:v",
+          "1",
+          "-c:v",
+          "libwebp",
+          "-quality",
+          "82",
+          "-compression_level",
+          "6"
+        ],
+        "ext": "webp",
+        "file": "vespera-poster-46d5ebf7e7cd.webp",
+        "bytes": 70896,
+        "sha256": "46d5ebf7e7cd5406f677c320d1b1c84006fff36e4e42184f745ecb8df3030968"
+      },
+      {
+        "name": "world",
+        "input": "world.png",
+        "args": [
+          "-frames:v",
+          "1",
+          "-c:v",
+          "libwebp",
+          "-quality",
+          "82",
+          "-compression_level",
+          "6"
+        ],
+        "ext": "webp",
+        "file": "world-ef0d9320252e.webp",
+        "bytes": 197120,
+        "sha256": "ef0d9320252ea3d99981ccdddbbcdd09c81f0509349c4f37de9dfb62f5520e59"
+      }
+    ],
+    "totals": {
+      "beforeBytes": 8888717,
+      "desktopFirstBytes": 564546,
+      "desktopTotalBytes": 1680646,
+      "mobileFirstBytes": 452581,
+      "mobileTotalBytes": 1150593
+    },
+    "profile": "480x720 for game containers <= 650px; 720x1080 otherwise; chosen when opening the game",
+    "loading": "Light WebP poster first; idle clip before gesture. Gesture preload starts 250ms after idle appears or on explicit request.",
+    "pending": "A manual/entry request during buffering may run once after load, within 8 seconds. Hidden or expired requests are cancelled.",
+    "cache": "Prepared production policy: one-year immutable only for content-hashed files. Local Vite keeps development no-cache validation."
+  }
+}

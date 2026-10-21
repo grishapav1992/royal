@@ -82,7 +82,7 @@ export class VolcanicPlinkoBoard {
     const c = this.ctx, reduced = this.reduced();
     c.setTransform(this.ratio, 0, 0, this.canvas.height / BOARD.height, 0, 0); c.clearRect(0, 0, BOARD.width, BOARD.height);
     c.beginPath(); c.roundRect(13, 2, 794, 775, 25);
-    const panel = c.createLinearGradient(0, 0, 0, 790); panel.addColorStop(0, '#10122155'); panel.addColorStop(1, '#090c19d9'); c.fillStyle = panel; c.fill();
+    const panel = c.createLinearGradient(0, 0, 0, 790); panel.addColorStop(0, '#15101966'); panel.addColorStop(1, '#09090bd9'); c.fillStyle = panel; c.fill();
     c.strokeStyle = '#b0a2c92c'; c.lineWidth = 1; c.stroke();
     c.save(); c.translate(410, 380);
     for (const radius of [182, 255, 298, 314]) {

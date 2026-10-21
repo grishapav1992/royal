@@ -14,7 +14,7 @@ GAME = 'studio-afterglow'
 VERSION = re.compile(r'[0-9]+\.[0-9]+\.[0-9]+-[a-f0-9]{12}')
 DIGEST = re.compile(r'[a-f0-9]{64}')
 GAME_ID = re.compile(r'[a-z0-9]+(?:-[a-z0-9]+)*')
-RESOURCE = re.compile(r'(?:entry-[a-f0-9]{16}\.js|style-[a-f0-9]{16}\.css|media/[a-zA-Z0-9_./-]+\.(?:webp|png|jpe?g|avif|gif|svg|mp3|ogg|wav|m4a|json|woff2?|ttf|otf))')
+RESOURCE = re.compile(r'(?:entry-[a-f0-9]{16}\.js|style-[a-f0-9]{16}\.css|media/[a-zA-Z0-9_./-]+\.(?:webp|png|jpe?g|avif|gif|svg|mp4|mp3|ogg|wav|m4a|json|woff2?|ttf|otf))')
 
 def require(ok, message):
     if not ok:
