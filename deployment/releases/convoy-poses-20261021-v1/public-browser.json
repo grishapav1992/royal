@@ -1,0 +1,72 @@
+[
+  {
+    "width": 1920,
+    "height": 1080,
+    "version": "1.0.0-3d08bcc3b4e4",
+    "heldForSixSeconds": true,
+    "nextPose": true,
+    "pause": true,
+    "closed": true,
+    "geometry": {
+      "portrait": {
+        "x": 371,
+        "y": 132,
+        "width": 191.40625,
+        "height": 516,
+        "top": 132,
+        "right": 562.40625,
+        "bottom": 648,
+        "left": 371
+      },
+      "canvas": {
+        "x": 371,
+        "y": 132,
+        "width": 191.40625,
+        "height": 516,
+        "top": 132,
+        "right": 562.40625,
+        "bottom": 648,
+        "left": 371
+      },
+      "fit": "contain",
+      "animation": "none"
+    },
+    "errors": [],
+    "badResources": []
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "version": "1.0.0-3d08bcc3b4e4",
+    "heldForSixSeconds": true,
+    "nextPose": true,
+    "pause": true,
+    "closed": true,
+    "geometry": {
+      "portrait": {
+        "x": 23,
+        "y": -262,
+        "width": 69.9375,
+        "height": 164,
+        "top": -262,
+        "right": 92.9375,
+        "bottom": -98,
+        "left": 23
+      },
+      "canvas": {
+        "x": 23,
+        "y": -262,
+        "width": 69.9375,
+        "height": 164,
+        "top": -262,
+        "right": 92.9375,
+        "bottom": -98,
+        "left": 23
+      },
+      "fit": "contain",
+      "animation": "none"
+    },
+    "errors": [],
+    "badResources": []
+  }
+]
