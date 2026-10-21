@@ -1,5 +1,5 @@
 {
-  "published": false,
+  "published": true,
   "baseCommit": "9938722",
   "gameId": "original-cr-vs-leo",
   "moduleVersion": "1.0.0-d7e1b79a7590",
@@ -26,5 +26,140 @@
     "newImageRequestsOnReopen": 0
   },
   "mathChanged": false,
-  "runtimeAssetsBytes": 6587748
+  "runtimeAssetsBytes": 6587748,
+  "sourceCommit": "db34f73797bd9d3f2ee5a0eb4e0866f9630b5110",
+  "production": {
+    "published": true,
+    "release": "cr-leo-global-load-20261021-v1",
+    "sourceCommit": "db34f73797bd9d3f2ee5a0eb4e0866f9630b5110",
+    "moduleVersion": "1.0.0-d7e1b79a7590",
+    "module": {
+      "verified": true,
+      "gameId": "original-cr-vs-leo",
+      "version": "1.0.0-d7e1b79a7590",
+      "bytes": 6747756,
+      "files": 13,
+      "beforeSha256": "none",
+      "hostProgramTouched": false,
+      "databaseTouched": false,
+      "restartRequired": false,
+      "published": true,
+      "operation": "install",
+      "activeSha256": "6933306af58375daca0b86f8f6552d41720f9ddff277592321314ce9407a93d9",
+      "history": "/opt/royal-game-modules-state/history/20261021T202031-d2461cee7d60453490a0376f2b2b8555.json"
+    },
+    "backup": "/opt/royal-backups/cr-leo-global-load-20261021-v1",
+    "runningImage": "sha256:4208c6b3462a76ee4717c41f42f43ac9cd9d7574a38e56c3d6eb1aaa75c82d19",
+    "preparedImage": "sha256:d41c4b5ecdb58725595c455d2d9db8c449caa1eedc7517364f0da0de46d6af89",
+    "containerRestarted": false,
+    "otherModulesPreserved": true,
+    "programsPreserved": true,
+    "settingsPreserved": true,
+    "otherServicesPreserved": true,
+    "databaseTouched": false
+  },
+  "publicHttps": {
+    "gameId": "original-cr-vs-leo",
+    "version": "1.0.0-d7e1b79a7590",
+    "manifestSha256": "c2ce219f5644ef99842d376557c393d70e0b9efbdfcaabb53e7770c6eb528139",
+    "resources": [
+      {
+        "path": "entry-1dea6228613984b9.js",
+        "bytes": 47568,
+        "sha256": "1dea6228613984b9013867cbaa18b0724b3282afcf57f43286bd11d74408ccc2"
+      },
+      {
+        "path": "media/cr-vs-leo/v2/cr-white-thumb.webp",
+        "bytes": 53458,
+        "sha256": "f74054bb9714f7a1f6e31a22c84c214b399d053efdad65eaceb3cc136392d36c"
+      },
+      {
+        "path": "media/cr-vs-leo/v2/cr-white.webp",
+        "bytes": 867484,
+        "sha256": "6f17d912319ab61c745c4e60b784962d0830875f1781c1d7ed54a30d9f5fae0e"
+      },
+      {
+        "path": "media/cr-vs-leo/v2/keeper-dive.webp",
+        "bytes": 533804,
+        "sha256": "42d1e309b730eda13c1c44290c4c813ec9e5ac9e45e64204593db15264bbffba"
+      },
+      {
+        "path": "media/cr-vs-leo/v2/keeper-empty.webp",
+        "bytes": 582340,
+        "sha256": "9b5291eaffeb17215ae0efd98fe971db0f9d4852c3d5dbd10e1a6383b2f6a10f"
+      },
+      {
+        "path": "media/cr-vs-leo/v2/keeper-reach.webp",
+        "bytes": 530760,
+        "sha256": "1149b45f40bff1882c4e79bf582f509433bdc71a45a162ca77ad8aaf6bdb9302"
+      },
+      {
+        "path": "media/cr-vs-leo/v2/leo-thumb.webp",
+        "bytes": 47642,
+        "sha256": "fc205e3b36032e68c64e166a710b15bf0bcb685a1b5f7aea2d3ee02c469d953c"
+      },
+      {
+        "path": "media/cr-vs-leo/v2/leo.webp",
+        "bytes": 783588,
+        "sha256": "dc352bac0f7c21079ea437ebac94395793ae54a00148505b17e86ce27f35ba92"
+      },
+      {
+        "path": "media/cr-vs-leo/v2/stadium-free.webp",
+        "bytes": 489234,
+        "sha256": "91024de3d3cbe29293e6461c23c4a59109c0afc7dfb13731a0e203d5ce98409c"
+      },
+      {
+        "path": "media/cr-vs-leo/v2/stadium.webp",
+        "bytes": 521850,
+        "sha256": "40836e046fcbf157e80b6afc6b497c623c695051944e97fd7b10cc77cf408ea3"
+      },
+      {
+        "path": "media/cr-vs-leo/v2/wall-far.webp",
+        "bytes": 1118900,
+        "sha256": "8676722cdd894272f155c5a8613e5aa052903541230eddae0e612df3fc34535d"
+      },
+      {
+        "path": "media/cr-vs-leo/v2/wall.webp",
+        "bytes": 1159788,
+        "sha256": "bf9daf9caa361b0ac43fe82bd690019f3c6d709d15990da6dec2f90afd15d46a"
+      },
+      {
+        "path": "style-7c23e792835de07e.css",
+        "bytes": 11340,
+        "sha256": "7c23e792835de07e5a315524880fddb389d7f10b79b903c852fffefec9200f0f"
+      }
+    ],
+    "activeUncached": true,
+    "resourcesImmutable": true,
+    "health": {
+      "ok": true,
+      "service": "royal-arcade"
+    },
+    "productionAccountOrWagerCreated": false
+  },
+  "backup": {
+    "path": "/opt/royal-backups/cr-leo-global-load-20261021-v1",
+    "sourceSha256": "dc1386054ffb86904285ea25c33cc6f939d44754169ffe7b0af92f6a5dbe9edb",
+    "priorExternalPointer": false
+  },
+  "additionalTests": {
+    "publisher": 11,
+    "wallet": 5,
+    "failures": 0
+  },
+  "hostLayout": {
+    "desktopWithChat": true,
+    "mobile390WithChat": true,
+    "fixtureGuestChatNotConnected": true
+  },
+  "publicBrowser": {
+    "version": "1.0.0-d7e1b79a7590",
+    "assets": 9,
+    "spriteFrames": 56,
+    "heroRiskSwitches": 6,
+    "allSwitchesReady": true,
+    "javascriptErrors": 0,
+    "productionAccountOrWagerCreated": false,
+    "reopenReady": true
+  }
 }

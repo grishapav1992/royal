@@ -1,9 +1,11 @@
 # CR vs. Leo: global asset readiness
 
-Validated candidate, not yet published by this release. Built against main 9938722.
+Published on 21 October 2026 after explicit approval. Source commit db34f73797bd9d3f2ee5a0eb4e0866f9630b5110 includes the game fix from 1df6200328fc4f9a0f4bdb21f6416f2ed80c10d7. Built against main 9938722 and rebased onto 37555ea before publication.
 
 The game waits for all nine runtime images and all 56 prepared sprite frames before exposing the stadium. Both heroes, penalty, near free kick and far free kick are ready together. Mode selection no longer schedules or prioritizes asset downloads. Failures remain retryable without reloading completed assets. Existing WebP bytes, math, wallet and host contract are unchanged.
 
 Module: original-cr-vs-leo, version 1.0.0-d7e1b79a7590, 13 resources. Publish only this compatible independent module after authorization and a fresh production comparison. Preserve every other module, the application image and running container, environment and persistent data. Follow deployment/SERVER.md for source synchronization, backup, previous-image tags and verification record.
 
 Verification: four asset-store tests, 23 model/geometry tests, module TypeScript and module build passed. Browser review used the built module through IndependentGameUI. Holding wall-far.webp kept the scene hidden at 83% with eight assets and 52 frames. Releasing it prepared all nine assets and 56 frames. All six hero/mode combinations and close/open reused the assets without new image requests. No production account or wager was used. Detailed local evidence: artifacts/cr-leo-global-load-20261021/proof.
+
+Production result: only this compatible module and three corresponding source paths changed. All host programs, prepared/running images, other module files, 14 service identities, settings and persistent data were preserved. The container did not restart. Public HTTPS verified the active pointer, manifest and all 13 resources with SHA-256; healthz returned ok:true. Six hero/mode switches stayed ready with all nine images and 56 frames, with no JavaScript errors. The real hall layout and its guest chat panel were checked locally on desktop and at 390px; the fixture did not establish a chat connection or account. Five temporary PostgreSQL wallet tests and eleven publisher tests passed. Full record is in deployment/SERVER.md and verification.json.
