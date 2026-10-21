@@ -1,0 +1,32 @@
+import { readFile, writeFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+const root=fileURLToPath(new URL('../../../',import.meta.url));
+const proof=process.env.ROYAL_COSMIC_PROOF_DIR || resolve(root,'artifacts/cosmic-layout-publish-20261021');
+const expected=JSON.parse(await readFile(new URL('./module-proof.json',import.meta.url),'utf8'));
+const manifest=JSON.parse(await readFile(resolve(root,'module-dist/studio-cosmic-escape/versions',expected.version,'manifest.json'),'utf8'));
+const before=JSON.parse(await readFile(resolve(proof,'before.json'),'utf8'));
+const origin='https://stealth-spark-gokmxooi.expresshost.cloud';
+const checks=[];
+const hash=b=>createHash('sha256').update(b).digest('hex');
+async function get(path,digest){
+  const response=await fetch(origin+path,{cache:'no-store',redirect:'error'});
+  if(!response.ok)throw Error(`HTTP ${response.status}: ${path}`);
+  const bytes=Buffer.from(await response.arrayBuffer());
+  if(digest && hash(bytes)!==digest)throw Error('Published hash differs: '+path);
+  checks.push({path,status:response.status,sha256:hash(bytes),cache:response.headers.get('cache-control')});
+  return bytes;
+}
+const pointer=JSON.parse(await get('/game-modules/studio-cosmic-escape/active.json'));
+if(!pointer.manifest.includes('/'+expected.version+'/'))throw Error('Unexpected active version');
+const published=JSON.parse(await get(pointer.manifest,pointer.sha256));
+if(JSON.stringify(published)!==JSON.stringify(manifest))throw Error('Published manifest differs');
+const base=pointer.manifest.slice(0,pointer.manifest.lastIndexOf('/')+1);
+for(const [name,digest] of Object.entries(manifest.files))await get(base+name,digest);
+const old=Object.keys(before.program).find(n=>n.startsWith('module-dist/studio-cosmic-escape/versions/')&&n.endsWith('/manifest.json'));
+if(old)await get('/game-modules/'+old.slice('module-dist/'.length),before.program[old]);
+await get('/',before.program['dist/index.html']);
+const health=JSON.parse(await get('/healthz'));if(health.ok!==true)throw Error('Health check failed');
+await writeFile(resolve(proof,'public-http.json'),JSON.stringify({passed:true,version:expected.version,hostIndexPreserved:true,baselineVersionRetained:!!old,checks},null,2));
+console.log(JSON.stringify({passed:true,version:expected.version,checks:checks.length}));

@@ -1,0 +1,86 @@
+{
+  "passed": true,
+  "version": "1.0.0-c9d080cfba0a",
+  "hostIndexPreserved": true,
+  "baselineVersionRetained": true,
+  "checks": [
+    {
+      "path": "/game-modules/studio-cosmic-escape/active.json",
+      "status": 200,
+      "sha256": "5bbc04c905badbd50dfd84e96a2e93f609e2c087b3975a34c61d27885761e89d",
+      "cache": "no-store"
+    },
+    {
+      "path": "/game-modules/studio-cosmic-escape/versions/1.0.0-c9d080cfba0a/manifest.json",
+      "status": 200,
+      "sha256": "2042d0c1a6b4d5f040413736caa3e7b1712f89d6904e78bb186e824934880d2a",
+      "cache": "public, max-age=31536000, immutable"
+    },
+    {
+      "path": "/game-modules/studio-cosmic-escape/versions/1.0.0-c9d080cfba0a/entry-7ed52d75ac83764b.js",
+      "status": 200,
+      "sha256": "7ed52d75ac83764bfe447849c3244aab13cde8baf62025f1f4bd92e7d1882f3f",
+      "cache": "public, max-age=31536000, immutable"
+    },
+    {
+      "path": "/game-modules/studio-cosmic-escape/versions/1.0.0-c9d080cfba0a/media/cosmic-guardians/v1/alien.webp",
+      "status": 200,
+      "sha256": "188bd8973f446976b01b9805880b958df5761f1dd545e0c5e7a6418f60a19599",
+      "cache": "public, max-age=31536000, immutable"
+    },
+    {
+      "path": "/game-modules/studio-cosmic-escape/versions/1.0.0-c9d080cfba0a/media/cosmic-guardians/v1/background.webp",
+      "status": 200,
+      "sha256": "0e185ec675a1bcc7b4fc7bdf43d6bb4c5adc15f3a7141075cf6549471829689c",
+      "cache": "public, max-age=31536000, immutable"
+    },
+    {
+      "path": "/game-modules/studio-cosmic-escape/versions/1.0.0-c9d080cfba0a/media/cosmic-guardians/v1/symbols-v2.webp",
+      "status": 200,
+      "sha256": "6e5d58ecb7d3cc3d2e95c57838cd6ef06b5ccecdb35e3a7f26a6e75792e8bce9",
+      "cache": "public, max-age=31536000, immutable"
+    },
+    {
+      "path": "/game-modules/studio-cosmic-escape/versions/1.0.0-c9d080cfba0a/media/cosmic-rebuild/load-v2/background.webp",
+      "status": 200,
+      "sha256": "0296ec45a7307fc69b4a0da58ec46805f9ff2bd6a9dc1b85552e53ce563abe37",
+      "cache": "public, max-age=31536000, immutable"
+    },
+    {
+      "path": "/game-modules/studio-cosmic-escape/versions/1.0.0-c9d080cfba0a/media/studio/space-world.webp",
+      "status": 200,
+      "sha256": "0a9a41dd898f368f43c562c58523bb622b96c778ad927ce9ed8f3aba17512f3d",
+      "cache": "public, max-age=31536000, immutable"
+    },
+    {
+      "path": "/game-modules/studio-cosmic-escape/versions/1.0.0-c9d080cfba0a/media/studio/symbols.webp",
+      "status": 200,
+      "sha256": "63d92524d8634e72a8a6c32cc973e6baf64498a2ce7a944534628b962de7b406",
+      "cache": "public, max-age=31536000, immutable"
+    },
+    {
+      "path": "/game-modules/studio-cosmic-escape/versions/1.0.0-c9d080cfba0a/style-74d57045fe8fbd10.css",
+      "status": 200,
+      "sha256": "74d57045fe8fbd105965df2c890f692a6aa18d2f46a95db853cd5db5b2aaf015",
+      "cache": "public, max-age=31536000, immutable"
+    },
+    {
+      "path": "/game-modules/studio-cosmic-escape/versions/1.0.0-8bd5a67fcbad/manifest.json",
+      "status": 200,
+      "sha256": "b99d0e07ed0bf4bc8be53074e3ef2329f9c02deb24d50703660ced17c1a41fbf",
+      "cache": "public, max-age=31536000, immutable"
+    },
+    {
+      "path": "/",
+      "status": 200,
+      "sha256": "9ae3948b2e22162e8874d8da4e7a9787413bf0ba4eee186144283e4bde5ee33b",
+      "cache": "no-store"
+    },
+    {
+      "path": "/healthz",
+      "status": 200,
+      "sha256": "7482326171995296103a4f794befc2c7831df741969bdbe936bdb637195e4dfc",
+      "cache": null
+    }
+  ]
+}

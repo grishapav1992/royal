@@ -1,8 +1,15 @@
 {
-  "productionFiles": 1423,
-  "exact": 154,
-  "lineEndingsOnly": 1267,
-  "different": [
+  "productionFiles": 1428,
+  "changedSourceFiles": [
+    "src/ui/CosmicEscapeUI.ts",
+    "src/ui/cosmic-guardians.css"
+  ],
+  "unchangedSourceFiles": 1426,
+  "moduleBuildDependenciesMatchProduction": true,
+  "moduleMediaMatchProduction": true,
+  "sourceCommit": "9d3b02bcb2d056aedb022965601ee026dde4b87d",
+  "version": "1.0.0-c9d080cfba0a",
+  "excludedOperationalPaths": [
     "deployment/SERVER.md",
     "server/LobbyRoom.ts.orig"
   ]
