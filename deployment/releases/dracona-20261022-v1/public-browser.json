@@ -1,0 +1,51 @@
+{
+  "origin": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "module": "1.0.0-6d7aa0f75ec5",
+  "desktop": {
+    "frame": {
+      "bottom": 951,
+      "height": 889,
+      "left": 113,
+      "right": 1327,
+      "top": 62,
+      "width": 1214,
+      "x": 113,
+      "y": 62
+    },
+    "hostHeight": 1000,
+    "hostScroll": 1440,
+    "hostWidth": 1440,
+    "open": true,
+    "version": "1.0.0-6d7aa0f75ec5"
+  },
+  "settings": {
+    "count": "25",
+    "scroll": 1214,
+    "speed": "turbo",
+    "spinDisabled": true,
+    "width": 1214
+  },
+  "mobile": {
+    "count": "25",
+    "scrollWidth": 368,
+    "scrollY": 125.5,
+    "speed": {
+      "bottom": 655.390625,
+      "height": 30,
+      "left": 80.4453125,
+      "right": 154.9453125,
+      "top": 625.390625,
+      "width": 74.5,
+      "x": 80.4453125,
+      "y": 625.390625
+    },
+    "width": 368
+  },
+  "closeReopen": true,
+  "rules": true,
+  "productionTransactions": 0,
+  "productionAccountsCreated": 0,
+  "guest": true,
+  "connectedChatCheckedLocally": true,
+  "errors": []
+}
