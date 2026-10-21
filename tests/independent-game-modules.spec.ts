@@ -177,10 +177,14 @@ test('closing a delayed module cannot overwrite a newly opened game', async ({ p
  await expect(page.locator('link[data-royal-game-module="studio-saffron-spin"]')).toHaveCount(1);
 });
 
-for (const game of ['studio-signal-fox', 'studio-nitro-run', 'github-crash', 'original-cr-vs-leo']) test(`${game}: an uncertain operation keeps its identity and shared wallet lock across game modules`, async ({ page }) => {
+for (const game of ['studio-signal-fox', 'studio-nitro-run', 'studio-afterglow', 'github-crash', 'original-cr-vs-leo']) test(`${game}: an uncertain operation keeps its identity and shared wallet lock across game modules`, async ({ page }) => {
  test.setTimeout(publicOrigin ? 90000 : 60000);
  await fixture(page);
  const sent: unknown[] = [];
+ if (game === 'studio-afterglow') await page.route('**/api/demo-wallet/afterglow-wardrobe', route => route.fulfill({ json: {
+  version: 3, revision: 0, selectedGirl: 0, selectedLook: 0, albumUnits: 0,
+  pointsUnits: [0, 0, 0, 0], unlocked: [false, false, false, false], active: false, activeGirl: null,
+ } }));
  await page.route('**/api/demo-wallet', route => route.fulfill({ json: { balance: 1000, entries: [] } }));
  await page.route('**/api/demo-wallet/expansion', async route => {
   if (route.request().method() === 'GET') return route.fulfill({ json: { wallet: { balance: 1000, entries: [] }, sessions: [] } });
@@ -189,12 +193,12 @@ for (const game of ['studio-signal-fox', 'studio-nitro-run', 'github-crash', 'or
  });
  await page.evaluate(() => (window as any).moduleHarness.account('isolated-module-account'));
  await open(page, game);
- if (game === 'studio-nitro-run') {
+ if (game === 'studio-nitro-run' || game === 'studio-afterglow') {
   await expect(page.locator('[data-cc-action="enter"]')).toBeEnabled({ timeout: 20000 });
   await page.locator('[data-cc-action="enter"]').click();
  }
  if (game === 'original-cr-vs-leo') await expect(page.locator('.cr-leo')).toHaveAttribute('data-loading', 'false', { timeout: 60000 });
- const play = page.locator(game === 'studio-nitro-run' ? '[data-cc-spin]' : game === 'github-crash' ? '[data-start]' : game === 'original-cr-vs-leo' ? '[data-shoot]' : '[data-dice-play]');
+ const play = page.locator(game === 'studio-nitro-run' || game === 'studio-afterglow' ? '[data-cc-spin]' : game === 'github-crash' ? '[data-start]' : game === 'original-cr-vs-leo' ? '[data-shoot]' : '[data-dice-play]');
  await expect(play).toBeEnabled();
  await play.click();
  await expect.poll(() => sent.length).toBe(1);
@@ -202,6 +206,13 @@ for (const game of ['studio-signal-fox', 'studio-nitro-run', 'github-crash', 'or
  const before = await page.evaluate(() => (window as any).moduleHarness.snapshot());
  expect(before).toMatchObject({ sharedWallet: true, sharedExpansion: true, balance: 1000, locked: true });
  expect(JSON.parse(before.storage)).toEqual(before.pending);
+ if (game === 'studio-afterglow') {
+  await page.evaluate(() => (window as any).moduleHarness.close());
+  await open(page, game);
+  expect(await page.evaluate(() => (window as any).moduleHarness.snapshot())).toMatchObject({
+   sharedWallet: true, sharedExpansion: true, balance: 1000, locked: true, pending: before.pending, storage: before.storage,
+  });
+ }
  await open(page, 'studio-saffron-spin');
  const reopened = await page.evaluate(() => (window as any).moduleHarness.snapshot());
  expect(reopened.pending).toEqual(before.pending);

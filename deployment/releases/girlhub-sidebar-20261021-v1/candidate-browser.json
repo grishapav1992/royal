@@ -1,0 +1,344 @@
+[
+  {
+    "width": 2193,
+    "height": 1259,
+    "override": true,
+    "chat": "shared host installer with an empty panel; no online session",
+    "reopened": true,
+    "posts": 0,
+    "errors": [],
+    "missing": [],
+    "metrics": {
+      "version": "1.0.2-21c5f5b46130",
+      "mode": "layout",
+      "panel": {
+        "x": 1606,
+        "y": 58,
+        "width": 212,
+        "height": 411.171875,
+        "top": 58,
+        "right": 1818,
+        "bottom": 469.171875,
+        "left": 1606
+      },
+      "results": {
+        "x": 459.078125,
+        "y": 1046,
+        "width": 1370.921875,
+        "height": 40,
+        "top": 1046,
+        "right": 1830,
+        "bottom": 1086,
+        "left": 459.078125
+      },
+      "chat": {
+        "x": 1830,
+        "y": 3,
+        "width": 360,
+        "height": 1253,
+        "top": 3,
+        "right": 2190,
+        "bottom": 1256,
+        "left": 1830
+      },
+      "stage": {
+        "x": 3,
+        "y": 54,
+        "width": 1827,
+        "height": 1164,
+        "top": 54,
+        "right": 1830,
+        "bottom": 1218,
+        "left": 3
+      },
+      "horizontalOverflow": 0,
+      "cards": [
+        {
+          "className": "cc-factor-card",
+          "height": 135.171875,
+          "children": [
+            {
+              "overflow": 0
+            },
+            {
+              "overflow": 0
+            },
+            {
+              "overflow": 0
+            }
+          ]
+        },
+        {
+          "className": "ag-camera-card",
+          "height": 96,
+          "children": [
+            {
+              "overflow": 0
+            },
+            {
+              "overflow": 0
+            },
+            {
+              "overflow": 0
+            }
+          ]
+        },
+        {
+          "className": "ag-pin-card",
+          "height": 96,
+          "children": [
+            {
+              "overflow": 0
+            },
+            {
+              "overflow": 0
+            },
+            {
+              "overflow": 0
+            }
+          ]
+        },
+        {
+          "className": "ag-side-actions",
+          "height": 36,
+          "children": [
+            {
+              "overflow": 0
+            },
+            {
+              "overflow": 0
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "width": 1366,
+    "height": 768,
+    "override": true,
+    "chat": "shared host installer with an empty panel; no online session",
+    "reopened": true,
+    "posts": 0,
+    "errors": [],
+    "missing": [],
+    "metrics": {
+      "version": "1.0.2-21c5f5b46130",
+      "mode": "layout",
+      "panel": {
+        "x": 888.828125,
+        "y": 58,
+        "width": 148,
+        "height": 367.25,
+        "top": 58,
+        "right": 1036.828125,
+        "bottom": 425.25,
+        "left": 888.828125
+      },
+      "results": {
+        "x": 271.59375,
+        "y": 555,
+        "width": 777.234375,
+        "height": 40,
+        "top": 555,
+        "right": 1048.828125,
+        "bottom": 595,
+        "left": 271.59375
+      },
+      "chat": {
+        "x": 1048.828125,
+        "y": 3,
+        "width": 314.171875,
+        "height": 762,
+        "top": 3,
+        "right": 1363,
+        "bottom": 765,
+        "left": 1048.828125
+      },
+      "stage": {
+        "x": 3,
+        "y": 54,
+        "width": 1045.828125,
+        "height": 673,
+        "top": 54,
+        "right": 1048.828125,
+        "bottom": 727,
+        "left": 3
+      },
+      "horizontalOverflow": 0,
+      "cards": [
+        {
+          "className": "cc-factor-card",
+          "height": 122.5625,
+          "children": [
+            {
+              "overflow": 0
+            },
+            {
+              "overflow": 0
+            },
+            {
+              "overflow": 0
+            }
+          ]
+        },
+        {
+          "className": "ag-camera-card",
+          "height": 80.6875,
+          "children": [
+            {
+              "overflow": 0
+            },
+            {
+              "overflow": 0
+            },
+            {
+              "overflow": 0
+            }
+          ]
+        },
+        {
+          "className": "ag-pin-card",
+          "height": 80,
+          "children": [
+            {
+              "overflow": 0
+            },
+            {
+              "overflow": 0
+            },
+            {
+              "overflow": 0
+            }
+          ]
+        },
+        {
+          "className": "ag-side-actions",
+          "height": 36,
+          "children": [
+            {
+              "overflow": 0
+            },
+            {
+              "overflow": 0
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "override": true,
+    "chat": "shared host installer with an empty panel; no online session",
+    "reopened": true,
+    "posts": 0,
+    "errors": [],
+    "missing": [],
+    "metrics": {
+      "version": "1.0.2-21c5f5b46130",
+      "mode": "flow",
+      "panel": {
+        "x": 199,
+        "y": 139,
+        "width": 180,
+        "height": 360,
+        "top": 139,
+        "right": 379,
+        "bottom": 499,
+        "left": 199
+      },
+      "results": {
+        "x": 11,
+        "y": 859.65625,
+        "width": 368,
+        "height": 74,
+        "top": 859.65625,
+        "right": 379,
+        "bottom": 933.65625,
+        "left": 11
+      },
+      "chat": {
+        "x": 3,
+        "y": 614.75,
+        "width": 384,
+        "height": 226.25,
+        "top": 614.75,
+        "right": 387,
+        "bottom": 841,
+        "left": 3
+      },
+      "stage": {
+        "x": 3,
+        "y": 54,
+        "width": 384,
+        "height": 524.75,
+        "top": 54,
+        "right": 387,
+        "bottom": 578.75,
+        "left": 3
+      },
+      "horizontalOverflow": 0,
+      "cards": [
+        {
+          "className": "cc-factor-card",
+          "height": 156,
+          "children": [
+            {
+              "overflow": 0
+            },
+            {
+              "overflow": 0
+            },
+            {
+              "overflow": 0
+            }
+          ]
+        },
+        {
+          "className": "ag-camera-card",
+          "height": 70,
+          "children": [
+            {
+              "overflow": 0
+            },
+            {
+              "overflow": 0
+            },
+            {
+              "overflow": 0
+            }
+          ]
+        },
+        {
+          "className": "ag-pin-card",
+          "height": 70,
+          "children": [
+            {
+              "overflow": 0
+            },
+            {
+              "overflow": 0
+            },
+            {
+              "overflow": 0
+            }
+          ]
+        },
+        {
+          "className": "ag-side-actions",
+          "height": 40,
+          "children": [
+            {
+              "overflow": 0
+            },
+            {
+              "overflow": 0
+            }
+          ]
+        }
+      ]
+    }
+  }
+]
