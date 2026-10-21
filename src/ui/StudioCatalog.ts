@@ -6,6 +6,7 @@ import { studioEscape as escape } from './StudioArtwork';
 import './studio-catalog.css';
 
 const artwork: Record<string, string> = {
+  'studio-dracona':'/assets/dracona/manor.webp',
   'studio-meme-overload':'/assets/meme-overload/v1/desktop.svg',
   'studio-afterglow':'/assets/afterglow/v1/background-studio-v3.webp',
   'studio-nitro-run':'/assets/nitro-run/v1/background.webp',
@@ -15,6 +16,7 @@ const artwork: Record<string, string> = {
   'studio-last-convoy': '/assets/last-convoy/v1/background.webp',
 };
 const descriptions: Record<string, string> = {
+  'studio-dracona':'Каскады · Исчезающий шкаф · Три герба',
   'studio-meme-overload':translateText('Каскады · Разгон ×5 · Вирусный режим'),
   'studio-afterglow':translateText('14 линий · Фотосессия · Альбом героинь'),
   'studio-nitro-run':translateText('20 линий · Передачи · Нитро-рывок'),

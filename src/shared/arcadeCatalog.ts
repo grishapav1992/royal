@@ -5,7 +5,7 @@ import {isCardGame} from './cardTables';
 
 export const ACTIVE_STUDIO_GAMES = [
   'studio-cosmic-escape', 'studio-caramel-carnival',
-  'studio-velvet-reign', 'studio-last-convoy', 'studio-nitro-run', 'studio-afterglow', 'studio-meme-overload',
+  'studio-velvet-reign', 'studio-last-convoy', 'studio-nitro-run', 'studio-afterglow', 'studio-meme-overload', 'studio-dracona',
 ] as const satisfies readonly StudioGameId[];
 
 export const ARCADE_CLASSIC_GAMES = [
@@ -26,7 +26,7 @@ const retired = new Set<unknown>(RETIRED_ARCADE_GAMES);
 export const isRetiredArcadeGame = (id: unknown): boolean => retired.has(id);
 
 // LAST EXIT keeps the historical Crash ID, but belongs with the house games.
-export const ARCADE_HOUSE_GAMES = [...ACTIVE_STUDIO_GAMES, 'github-crash', 'royal-plinko', PENALTY_GAME] as const;
+export const ARCADE_HOUSE_GAMES = [...ACTIVE_STUDIO_GAMES.filter(id => id !== 'studio-dracona'), 'github-crash', 'royal-plinko', PENALTY_GAME, 'studio-dracona'] as const;
 export const ARCADE_GITHUB_GAMES = ARCADE_CLASSIC_GAMES.filter(id => !(ARCADE_HOUSE_GAMES as readonly string[]).includes(id));
 
 export const ARCADE_CABINET_POSITIONS: Readonly<Record<string, {x:number;y:number}>> = {

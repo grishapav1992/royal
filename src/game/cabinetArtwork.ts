@@ -10,6 +10,10 @@ type Artwork = {background: string; focus?: number; layers: readonly Layer[]};
 
 // Reuse each game's own art. The roster also requires artwork for every house cabinet.
 export const CABINET_ARTWORK: Record<HouseGameId, Artwork> = {
+  'studio-dracona': {
+    background: '/assets/dracona/manor.webp',
+    layers: [{url:'/assets/dracona/hero-idle-a.png',source:[0,0,1024,1536],target:[8,1,30,42]}],
+  },
   'studio-cosmic-escape': {
     background: '/assets/cosmic-guardians/v1/background.webp', focus: .7,
     layers: [{url:'/assets/cosmic-guardians/v1/alien.webp',source:[120,0,850,1000],target:[10,1,36,42]}],

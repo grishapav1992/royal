@@ -1,0 +1,46 @@
+{
+  "finalModule": "1.0.0-6d7aa0f75ec5",
+  "desktop": {
+    "chatParent": "mini-dialog",
+    "frame": {
+      "bottom": 959,
+      "height": 905,
+      "left": 3,
+      "right": 1105.8046875,
+      "top": 54,
+      "width": 1102.8046875,
+      "x": 3,
+      "y": 54
+    },
+    "mode": "off",
+    "stage": {
+      "bottom": 959,
+      "height": 905,
+      "left": 3,
+      "right": 1105.8046875,
+      "top": 54,
+      "width": 1102.8046875,
+      "x": 3,
+      "y": 54
+    },
+    "version": "1.0.0-6d7aa0f75ec5"
+  },
+  "mobile": {
+    "width": 390,
+    "height": 844,
+    "frameHeight": 525,
+    "stageHeight": 524.7421875,
+    "horizontalOverflow": 0,
+    "controlsAccessible": true,
+    "stopAfterOne": true
+  },
+  "bonus": {
+    "awarded": 8,
+    "total": 7445,
+    "balance": 17345,
+    "closeReopen": true
+  },
+  "connectedChat": true,
+  "previousReviewedModule": "1.0.0-e7522c02e9a6",
+  "finalChange": "Removed only a trailing empty source line; final package reopened in real local host"
+}

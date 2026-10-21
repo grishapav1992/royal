@@ -4,7 +4,7 @@ Every existing game definition has an independent client package. The catalogue 
 
 | Family | Module identities |
 | --- | ---: |
-| Studio games, including the seven current native slots | 39 |
+| Studio games, including the eight current native slots | 40 |
 | Original Royal games, GitHub practice games, session games and all casino/card variants, including LAST EXIT | 62 |
 | Air hockey, pool, chess and piano | 4 |
 | Breaker, Orbit, Drift and Pixel legacy arcade games | 4 |
@@ -73,3 +73,7 @@ Run `npm run test:modules` to build all packages, verify their contracts and byt
 Run `python3 -m unittest discover -s scripts/tests -p test_game_module_release.py` for publication isolation, contract compatibility, content tampering, stale SHA guards, rollback and symlink protections. The existing historical `server-tests/studio-games.test.ts` still assumes 35 games and older native request contracts; its pre-existing failures are separate from this client packaging change.
 
 The completed local migration passed the full application build, five catalogue/contract/source/bundle-boundary checks, two static-delivery checks, ten publisher checks and fifteen browser scenarios. A real offline hall opened Royal Dice, Cosmic Escape and LAST EXIT through the module loader with no JavaScript errors. The shared backend checks passed 21 activity/physics cases and eight wallet cases. One combined backend run hit a temporary pool-shutdown race; the isolated wallet suite passed all eight cases with `--test-concurrency=1`. The production publication status and verification record are maintained in `deployment/SERVER.md`. Local proof, screenshots and version fingerprints are in `artifacts/independent-game-modules/`.
+
+## Dracona
+
+`games/dracona/` registers `studio-dracona` with host API 1, server rules 2 and progress contract 1. The common backend owns its clustered cascades, reserve exchanges, persistent bonus and rune state. Paid starts and free continuation use the existing serialized expansion transport and shared demo wallet. Responses include only the already used entropy needed to validate the presentation. Closing and reopening preserves the server session and pending operation UUID. The module uses an iframe that follows the actual host stage size, preserving the connected chat on desktop and mobile.

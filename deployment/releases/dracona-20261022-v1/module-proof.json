@@ -1,0 +1,45 @@
+{
+  "gameId": "studio-dracona",
+  "version": "1.0.0-6d7aa0f75ec5",
+  "sourceSha256": "6d7aa0f75ec51eee77902717587ad905170127baeca86f6fa5a3d0a055bd3299",
+  "sourceFiles": {
+    "games/dracona/DraconaUI.ts": "0d8120a7c27aa345b900c9f5f65cbe73eff880e1ac6cd50736a218740557f6ce",
+    "games/dracona/autoplay.ts": "00cab60b393b04a2cc278eef19732d6c1a9baaff05e9aa731fb4273c80793402",
+    "games/dracona/character.ts": "af85cf435837f6a9d257782b59ea5262b46d7a9c9b6795ff4ae30f85763b6c9c",
+    "games/dracona/effects.ts": "04e478648b2696edd047eeaf94f63aff9b97611faee1891dc33e2a17b6d9b3b6",
+    "games/dracona/entry.ts": "41ceea8d3fd266b4604dbb0497d206b9764a5a4f7826225aa9f7f36ee3ee3126",
+    "games/dracona/shell.css": "0e54d5e5431b632bddf5a9b62e47f0de5b2d6839e80176668e6807250e6c6501",
+    "games/dracona/styles.ts": "860a23aa6e24c7c3ad4cc01679a33db774deae0f8ca90354b5a7f937c71bdcaa",
+    "src/modules/GameHostContract.ts": "b554b9672d551a9d95a1fd27e1483fb9a0ba9b8fed13506c1e17e3f5003259c6",
+    "src/shared/dracona.ts": "6768a9cd647f2c0718d5f923cd41a796636ab7aff56a7ddf7de287e0487e6e49",
+    "src/shared/draconaMath.ts": "760b567c64aae4a5190641cad162fd9a6ff9e5764e8bd9d91d06dcb1d707ee21"
+  },
+  "hostSingletonsExternalized": true,
+  "hostBridges": [
+    "royal-host:src/i18n/index"
+  ],
+  "nativeImplementations": [],
+  "serverImplementationIncluded": false,
+  "sharedMathInputs": [],
+  "assetRoots": [
+    "dracona"
+  ],
+  "assetFiles": [],
+  "mediaReferences": [
+    "dracona/",
+    "dracona/crest.webp",
+    "dracona/hero-cast-b.webp",
+    "dracona/hero-cast.webp",
+    "dracona/hero-idle-a.png",
+    "dracona/hero-idle-b.png",
+    "dracona/hero-stance-ab.webp",
+    "dracona/hero-stance-ba.webp",
+    "dracona/hero-wink.png",
+    "dracona/manor.webp"
+  ],
+  "dynamicMediaDirectories": [
+    "dracona"
+  ],
+  "bytes": 4811959,
+  "files": 18
+}

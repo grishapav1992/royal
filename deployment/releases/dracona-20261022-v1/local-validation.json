@@ -1,0 +1,41 @@
+{
+  "typescript": true,
+  "applicationBuild": true,
+  "moduleBuild": true,
+  "moduleCount": 112,
+  "cabinetCount": 29,
+  "mathProtocolAutoplayTests": 18,
+  "postgresWalletTests": 4,
+  "existingWalletRegression": {
+    "combinedPassed": 15,
+    "combinedFailed": 1,
+    "failure": "Existing pool shutdown race during roulette restart",
+    "isolatedRestartPassed": 1
+  },
+  "moduleInventoryTests": 6,
+  "localBrowser": {
+    "realHost": true,
+    "connectedChat": true,
+    "desktop": [
+      1440,
+      1000
+    ],
+    "mobile": [
+      390,
+      844
+    ],
+    "baseStake": 100,
+    "bonusAward": 8,
+    "bonusTotal": 7445,
+    "balanceAfterBonus": 17345,
+    "bonusCloseReopen": true,
+    "mobileStopAfterOne": true,
+    "balanceAfterStoppedSpin": 17245,
+    "horizontalOverflow": 0,
+    "consoleErrors": []
+  },
+  "approvedAssets": 16,
+  "separateWallet": false,
+  "sourceMainBaseline": "98e42ad",
+  "productionChanged": false
+}

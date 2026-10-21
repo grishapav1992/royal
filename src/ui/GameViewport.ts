@@ -115,6 +115,10 @@ export class GameViewport {
       this.reset('off');
       return;
     }
+    if (this.plane.querySelector('.dracona-frame')) {
+      this.reset('off');
+      return;
+    }
     const nativeSlot = this.plane.querySelector('#mini-game > .cc-game, #mini-game > .ce-game, #mini-game > .volcanic-plinko');
     if (nativeSlot && this.stage.clientWidth >= 740 && this.stage.clientHeight >= 580) {
       this.mode('layout');
