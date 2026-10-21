@@ -7,6 +7,10 @@
   "rulesVersion": 2,
   "progressVersion": 3,
   "entry": "entry.ts",
+  "assetRoots": [
+    "studio",
+    "afterglow"
+  ],
   "scripts": {
     "build": "node ../../node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && node ../../scripts/build-game-module.mjs"
   }

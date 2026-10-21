@@ -7,6 +7,8 @@ import '../demo-library.css';
 import '../casino-api-pro.css';
 
 export class CasinoApiProUI {
+  private disposed = false;
+  private lifetime = new AbortController();
   private dialog = document.createElement('dialog');
   private frame?: HTMLIFrameElement;
   private games: CasinoApiProGame[] = [];
@@ -26,7 +28,7 @@ export class CasinoApiProUI {
   private category: HTMLSelectElement;
   private count: HTMLElement;
   private atCabinet = false;
-  constructor(private scene: RoomScene, private onPlaying: (playing: boolean) => void = () => {}) {
+  constructor(private scene: Pick<RoomScene, 'setLocked' | 'approach'>, private onPlaying: (playing: boolean) => void = () => {}, private onClosed: () => void = () => {}, navigation = true) {
     this.dialog.id='casinoapipro-dialog'; this.dialog.className='capro-dialog'; this.dialog.setAttribute('aria-labelledby','capro-title');
     this.dialog.innerHTML=translateText('<div class="capro-heading"><div><span class="eyebrow">CASINO API PRO / ТЕСТ</span><h2 id="capro-title">Игры на демобаланс</h2></div><button class="icon-button" id="capro-close" aria-label="Вернуться из Casino Api Pro в зал">×</button></div><div class="capro-toolbar"><button type="button" id="capro-catalogue" class="primary-button">Все игры</button><button type="button" id="capro-wallet" class="text-button" aria-label="Демокошелёк в Casino Api Pro">Демобаланс: …</button></div><p id="capro-connection" role="status"></p><div class="capro-stage"><p id="capro-message" role="status"></p><section class="demo-library" aria-label="Тестовые игры Casino Api Pro" hidden><div class="demo-library-intro"><h3>Выбери игру</h3></div><div class="demo-library-filters"><label>Поиск<input type="search" aria-label="Поиск игр Casino Api Pro" placeholder="Название игры"></label><label>Категория<select aria-label="Категория Casino Api Pro"><option value="">Все категории</option></select></label></div><p class="demo-library-count"></p><div class="demo-library-grid"></div></section></div><div class="capro-footer"><span>Тестовый режим · Без реальных платежей и вывода</span><button type="button" id="capro-retry" class="text-button">Обновить</button></div><details id="capro-setup" hidden><summary>Настройка тестового доступа</summary><p>В кабинете поставщика проверь соединение нашего кошелька для этого игрока:</p><code id="capro-player"></code><p>До подтверждённого запроса баланса запуск игр закрыт.</p></details>');
     this.stage=this.dialog.querySelector('.capro-stage')!; this.message=this.dialog.querySelector('#capro-message')!;
@@ -38,19 +40,21 @@ export class CasinoApiProUI {
     this.dialog.querySelector<HTMLButtonElement>('#capro-retry')!.onclick=()=>{void (this.selected ? this.launch(this.selected) : this.library());};
     this.dialog.querySelector<HTMLButtonElement>('#capro-wallet')!.onclick=()=>window.dispatchEvent(new Event('royal-open-wallet'));
     this.dialog.addEventListener('close',()=>{
+      if(this.disposed)return;
       if(this.atCabinet) this.onPlaying(false); this.atCabinet=false;
       this.stop(); clearInterval(this.poll); this.account=null; void demoWallet.refresh(); scene.setLocked(!!document.querySelector('dialog[open]'));
       document.getElementById('game')?.focus({preventScroll:true});
+      this.onClosed();
     });
-    window.addEventListener('royal-account',()=>{if(this.dialog.open && this.account !== demoWallet.accountId) this.dialog.close();});
-    window.addEventListener('royal-open-casinoapipro',()=>this.scene.approach('casinoapipro'));
+    window.addEventListener('royal-account',()=>{if(this.dialog.open && this.account !== demoWallet.accountId) this.dialog.close();},{signal:this.lifetime.signal});
+    if(navigation)window.addEventListener('royal-open-casinoapipro',()=>this.scene.approach('casinoapipro'),{signal:this.lifetime.signal});
     document.body.append(this.dialog);
   }
   private stop() {
     this.version++; this.abort?.abort(); this.abort=new AbortController(); clearTimeout(this.timer); this.frame?.remove(); this.frame=undefined;
   }
   open(atCabinet = false) {
-    if (this.dialog.open) return;
+    if (this.disposed || this.dialog.open) return;
     this.account=demoWallet.accountId; this.status=undefined; this.scene.setLocked(true); this.dialog.showModal();
     this.atCabinet=atCabinet;
     this.dialog.querySelector('#capro-wallet')!.textContent=translateText('Демобаланс: …');
@@ -58,6 +62,12 @@ export class CasinoApiProUI {
     this.dialog.querySelector<HTMLElement>('#capro-setup')!.hidden=true;
     void this.library();
     this.poll=setInterval(()=>{if(this.dialog.open && this.account) {void this.refreshStatus(); void demoWallet.refresh();}},3000);
+  }
+  destroy() {
+    if(this.disposed)return;
+    this.disposed=true;this.lifetime.abort();this.atCabinet=false;
+    this.stop();clearInterval(this.poll);
+    this.dialog.close();this.dialog.remove();
   }
   private async request(path: string, body?: unknown) {
     const response=await fetch(`/api/casinoapipro/${path}`,{method:body === undefined?'GET':'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body),signal:AbortSignal.any([this.abort!.signal,AbortSignal.timeout(25000)])});

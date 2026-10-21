@@ -6,7 +6,7 @@ import { blackjackScore, shuffledDeck, dealBaccarat, pokerHand, comparePoker, VI
 import { Game, PlayerBet, DiceRoll, PassLineBet, FieldBet, AnySevenBet } from '../vendor/github/craps/engine';
 import './github-games.css';
 import { emitCardDealer } from './CardDealerStage';
-import { isCardGame } from '../shared/cardTables';
+import { isCardGame, CARD_GAME_NAMES } from '../shared/cardTables';
 
 const format = (value: number) => value.toLocaleString(locale, { maximumFractionDigits: 2 });
 const SOURCES: Record<GithubGameId, string> = {
@@ -85,7 +85,7 @@ export class GithubGames {
   }
   private render() {
     if (!this.alive) return;
-    const detail = CABINETS.find(c => c.id === this.id)!;
+    const detail = { name: CABINETS.find(c => c.id === this.id)?.name ?? (isCardGame(this.id) ? CARD_GAME_NAMES[this.id] : 'Craps') };
     const shownPhase = this.crapsBefore?.phase ?? this.phase;
     const active = shownPhase === 'active', rolling = !!this.crapsBefore;
     this.root.dataset.motion = rolling ? 'rolling' : 'static';

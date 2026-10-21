@@ -1,11 +1,8 @@
 import { t as translateText } from '../i18n/index';
-import {VelvetReignUI} from './VelvetReignUI';
 import {CARAMEL_GAME,validCaramelSettings} from '../shared/caramelCarnival';
-import {CaramelCarnivalUI} from './CaramelCarnivalUI';
 import { expansionClient as client } from '../wallet/ExpansionClient';
 import { isLuelonSlotGame, validLuelonSlotSettings } from '../shared/luelonSlots';
 import type { ExpansionGameId } from '../shared/casinoExpansion';
-import { CosmicEscapeUI } from './CosmicEscapeUI';
 
 /** Finish an already saved legacy round before opening the revised game. */
 export class LuelonGameRouter {
@@ -32,7 +29,7 @@ export class LuelonGameRouter {
         :translateText('Прежний раунд завершён. Можно открыть новую версию с полными правилами.');
     }
   };
-  constructor(private host:HTMLElement,private game:ExpansionGameId,private old:(host:HTMLElement)=>{destroy():void}){client.addEventListener('change',this.change);void this.load();}
+  constructor(private host:HTMLElement,private game:ExpansionGameId,private old:(host:HTMLElement)=>{destroy():void},private current:(host:HTMLElement)=>{destroy():void}){client.addEventListener('change',this.change);void this.load();}
   private async load(){
     if(this.destroyed||this.loading)return;
     if(!client.accountId){this.mount(false);return;}
@@ -55,7 +52,7 @@ export class LuelonGameRouter {
   }
   private mount(legacy:boolean){
     this.child?.destroy();this.child=undefined;this.host.replaceChildren();this.legacy=legacy;
-    if(!legacy){this.status=undefined;this.upgrade=undefined;this.child=this.game===CARAMEL_GAME?new CaramelCarnivalUI(this.host):this.game==='studio-velvet-reign'?new VelvetReignUI(this.host):new CosmicEscapeUI(this.host);return;}
+    if(!legacy){this.status=undefined;this.upgrade=undefined;this.child=this.current(this.host);return;}
     const banner=document.createElement('div'),text=document.createElement('p'),button=document.createElement('button'),body=document.createElement('div');
     banner.className='cosmic-legacy-notice';text.setAttribute('role','status');button.type='button';button.textContent=translateText('Открыть новую версию');
     button.onclick=()=>{if(!button.disabled)this.mount(false);};banner.append(text,button);this.host.append(banner,body);this.status=text;this.upgrade=button;

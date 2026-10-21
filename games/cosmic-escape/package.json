@@ -1,0 +1,18 @@
+{
+  "name": "@royal/cosmic-escape",
+  "version": "1.0.0",
+  "private": true,
+  "gameId": "studio-cosmic-escape",
+  "apiVersion": 1,
+  "rulesVersion": 2,
+  "progressVersion": 1,
+  "entry": "entry.ts",
+  "assetRoots": [
+    "studio",
+    "cosmic-rebuild",
+    "cosmic-guardians"
+  ],
+  "scripts": {
+    "build": "node ../../node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && node ../../scripts/build-game-module.mjs"
+  }
+}

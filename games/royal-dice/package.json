@@ -1,0 +1,14 @@
+{
+  "name": "@royal/royal-dice",
+  "version": "1.0.0",
+  "private": true,
+  "gameId": "royal-dice",
+  "apiVersion": 1,
+  "rulesVersion": 1,
+  "progressVersion": 1,
+  "entry": "entry.ts",
+  "assetRoots": [],
+  "scripts": {
+    "build": "node ../../node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && node ../../scripts/build-game-module.mjs"
+  }
+}

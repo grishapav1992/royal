@@ -1,21 +1,16 @@
+import { IndependentGameUI } from './modules/IndependentGameUI';
+import { gameModuleContract } from './modules/GameModuleCatalog';
+import { ProviderGameUI } from './modules/ProviderGameUI';
 import { installLanguageSwitcher, t as translateText, tr } from './i18n/index';
 import { GAME_REACTION_EVENT } from './ui/gameReactions';
 import { GameViewport } from './ui/GameViewport';
-import { CasinoSessionsUI } from './ui/CasinoSessionsUI';
-import { CasinoExpansionUI } from './ui/CasinoExpansionUI';
-import { CasinoVariantsUI } from './ui/CasinoVariantsUI';
-import { CasinoNextVariantsUI } from './ui/CasinoNextVariantsUI';
-import { CasinoBatchVariantsUI } from './ui/CasinoBatchVariantsUI';
-import { StudioGamesUI } from './ui/StudioGamesUI';
 import { StudioCatalog } from './ui/StudioCatalog';
 import { CardTablesCatalog } from './ui/CardTablesCatalog';
 import { CardDealerStage } from './ui/CardDealerStage';
 import { isCardGame, dealerForGame } from './shared/cardTables';
 import './ui/floor-navigation.css';
 import { isStudioGame } from './shared/studioGames';
-import { isBatchVariantGame } from './shared/casinoBatchVariants';
-import { isVariantGame, type BaseVariantGameId } from './shared/casinoVariants';
-import { isNextVariantGame } from './shared/casinoNextVariants';
+import { isVariantGame } from './shared/casinoVariants';
 import { ARCADE_CLASSIC_GAMES, ARCADE_PROVIDER_GAMES, isRetiredArcadeGame } from './shared/arcadeCatalog';
 import { RetiredArcadeRounds, RetiredArcadeRoundGuard, ownsRetiredArcadeRound, type RetiredArcadeRound } from './ui/RetiredArcadeRounds';
 import { isExpansionGame, EXPANSION_NAMES } from './shared/casinoExpansion';
@@ -26,14 +21,9 @@ import { NileWalletUI } from './ui/NileWalletUI';
 import { UsdtWalletUI } from './ui/UsdtWalletUI';
 import { CryptoWalletUI } from './ui/CryptoWalletUI';
 import { MiraChat } from './ui/MiraChat';
-import { EZSlotsGame } from './ui/EZSlotsGame';
-import { OriginalGames, type OriginalGameId } from './ui/OriginalGames';
 import { isGithubGame } from './shared/githubGames';
-import { GithubGames } from './ui/GithubGames';
 import { DemoPreview } from './ui/DemoPreview';
 import './demo-preview.css';
-import { DemoSlot } from './ui/DemoSlot';
-import { CasinoApiProUI } from './ui/CasinoApiProUI';
 import { prefetchDemoGames } from './game/demoGames';
 import { gameAudio } from './game/GameAudio';
 import Phaser from 'phaser';
@@ -46,7 +36,6 @@ import './own-cabinets.css';
 import './mira-dialog.css';
 import { DRINKS, HALLS, hallLinks, activityHall, type HallId } from './shared/world';
 import type { BreakerStatus } from './game/breaker';
-import type { ArcadeMode } from './game/arcades';
 import { SocialUI } from './ui/SocialUI';
 import { CatUI } from './ui/CatUI';
 import { RoomLayout } from './ui/RoomLayout';
@@ -113,20 +102,10 @@ const miniDialog = $<HTMLDialogElement>('#mini-dialog');
 new GameViewport(miniDialog);
 const helpDialog = $<HTMLDialogElement>('#help-dialog');
 const barDialog = $<HTMLDialogElement>('#bar-dialog');
-let mini: ReturnType<typeof import('./game/breaker').createBreaker> | ReturnType<typeof import('./game/arcades').createArcade> | undefined;
-let demoSlot: DemoSlot | undefined;
-let ezSlots: EZSlotsGame | undefined;
-let originalGames: OriginalGames | undefined;
-let githubGames: GithubGames | undefined;
-let sessionGames: CasinoSessionsUI | undefined;
-let expansionGames: CasinoExpansionUI | undefined;
-let variantGames: CasinoVariantsUI | undefined;
-let nextVariantGames: CasinoNextVariantsUI | undefined;
-let batchVariantGames: CasinoBatchVariantsUI | undefined;
-let studioGames: StudioGamesUI | undefined;
+let mini: IndependentGameUI | undefined;
 let cardDealerStage: CardDealerStage | undefined;
 let retiredRoundGuard: RetiredArcadeRoundGuard | undefined;
-let casinoGames: CasinoApiProUI | undefined;
+let casinoGames: ProviderGameUI | undefined;
 let demoPreview: DemoPreview | undefined;
 let activeGameId = 'breaker';
 const descriptions: Record<string,{goal:string;controls:string}> = { breaker:{goal:translateText('Разбей все блоки'),controls:translateText('Лови мяч платформой. Мышь, палец или стрелки.')}, orbit:{goal:translateText('Защити орбиту'),controls:translateText('Сбей 20 кораблей. Стрельба автоматическая, движение мышью, пальцем или ← →.')}, drift:{goal:translateText('Ночная тысяча'),controls:translateText('Проедь 1000 м, обходи машины и собирай монеты. ← → или касание полосы.')}, pixel:{goal:translateText('Кристаллы ждут'),controls:translateText('Собери 5 кристаллов и найди выход за 75 секунд. Стрелки или касание клетки.')} };
@@ -185,67 +164,30 @@ async function openCabinetGame(cabinet: Cabinet, recovery?: RetiredArcadeRound) 
     const practice=isGithubGame(cabinet.id)&&!isExpansionGame(cabinet.id)&&!isSessionGame(cabinet.id);
     $('.mini-bottom>span').textContent=practice?translateText('Отдельные учебные фишки'):translateText('Общий тестовый кошелёк клуба');
     cardDealerStage=new CardDealerStage($('#card-dealer-stage'),cabinet.id,$('#mini-game'),action=>room.setDealerAction(cabinet.id,action));
-    if(isBatchVariantGame(cabinet.id))batchVariantGames=new CasinoBatchVariantsUI($('#mini-game'),cabinet.id);
-    else if(isNextVariantGame(cabinet.id))nextVariantGames=new CasinoNextVariantsUI($('#mini-game'),cabinet.id);
-    else if(isExpansionGame(cabinet.id))expansionGames=new CasinoExpansionUI($('#mini-game'),cabinet.id);
-    else if(isSessionGame(cabinet.id))sessionGames=new CasinoSessionsUI($('#mini-game'),cabinet.id);
-    else if(isGithubGame(cabinet.id))githubGames=new GithubGames($('#mini-game'),cabinet.id);
-    return;
-  }
-  if (isVariantGame(cabinet.id)) {
-    $('#mini-message').hidden = true;
-    if (isBatchVariantGame(cabinet.id)) batchVariantGames = new CasinoBatchVariantsUI($('#mini-game'), cabinet.id);
-    else if (isNextVariantGame(cabinet.id)) nextVariantGames = new CasinoNextVariantsUI($('#mini-game'), cabinet.id);
-    else variantGames = new CasinoVariantsUI($('#mini-game'), cabinet.id as BaseVariantGameId);
-    return;
-  }
-  if (isStudioGame(cabinet.id)) {
-    $('#mini-message').hidden = true;
+  } else if (isStudioGame(cabinet.id)) {
     $('.mini-top .eyebrow').textContent = translateText('НОВЫЕ МИРЫ / ЭТАЖ 1');
     $('.mini-bottom>span').textContent = translateText('Общий тестовый кошелёк клуба');
-    studioGames = new StudioGamesUI($('#mini-game'), cabinet.id);
-    return;
-  }
-  if (isExpansionGame(cabinet.id)) {
-    $('#mini-message').hidden = true;
+  } else if (isVariantGame(cabinet.id) || isExpansionGame(cabinet.id)) {
     $('.mini-top .eyebrow').textContent = translateText('ЭТАЖ 1 / ТЕСТОВЫЙ КОШЕЛЁК');
     $('.mini-bottom>span').textContent = translateText('Общий демобаланс клуба');
-    expansionGames = new CasinoExpansionUI($('#mini-game'), cabinet.id);
-    return;
-  }
-  if (isSessionGame(cabinet.id)) {
-    $('#mini-message').hidden = true;
+  } else if (isSessionGame(cabinet.id)) {
     $('.mini-top .eyebrow').textContent = translateText('ЭТАЖ 1 / СТАВКИ');
     $('.mini-bottom>span').textContent = translateText('Выбери демокошелёк или настоящий USDT');
-    sessionGames = new CasinoSessionsUI($('#mini-game'), cabinet.id);
-    return;
-  }
-  if (cabinet.github && isGithubGame(cabinet.id)) {
-    $('#mini-message').hidden = true;
+  } else if (cabinet.github && isGithubGame(cabinet.id)) {
     $('.mini-top .eyebrow').textContent = translateText('ЭТАЖ 1 / УЧЕБНЫЕ ИГРЫ');
     $('.mini-bottom>span').textContent = translateText('Бесплатные игры с отдельными учебными фишками');
-    githubGames = new GithubGames($('#mini-game'), cabinet.id);
-    return;
-  }
-  if (cabinet.wallet) {
-    $('#mini-message').hidden = true;
+  } else if (cabinet.wallet) {
     $('.mini-top .eyebrow').textContent = translateText('РОЯЛЬ / ДЕМОКОШЕЛЁК');
     $('.mini-bottom>span').textContent = translateText('Ставки и выигрыши в виртуальных монетах');
-    if (cabinet.id === 'royal-fruits') ezSlots = new EZSlotsGame($('#mini-game'));
-    else originalGames = new OriginalGames($('#mini-game'), cabinet.id as OriginalGameId);
-    return;
-  }
-  if (cabinet.demo) {
-    $('#mini-message').hidden = true;
+  } else if (cabinet.demo) {
     $('.mini-bottom>span').textContent = translateText('Звук и управление внутри игры');
-    demoSlot = new DemoSlot($('#mini-game'), name => { if (miniDialog.open && version === openVersion) $('#mini-title').textContent = name; });
-    return;
   }
-  try {
-    const module = cabinet.id==='breaker' ? await import('./game/breaker') : await import('./game/arcades');
-    if (!miniDialog.open || version !== openVersion) return;
-    let previousPhase = '';
-    const onStatus = (state: BreakerStatus) => {
+  const contract = gameModuleContract(cabinet.id);
+  if (!contract) { miniDialog.close(); toast(translateText('Не получилось загрузить игру. Попробуй открыть автомат ещё раз.')); return; }
+  if (!Object.hasOwn(descriptions, cabinet.id)) $('#mini-message').hidden = true;
+  let previousPhase = '';
+  const onStatus = (state: BreakerStatus) => {
+      if (!miniDialog.open || version !== openVersion) return;
       if (state.phase !== previousPhase && (state.phase === 'won' || state.phase === 'lost')) room.reactToGame(state.phase === 'won' ? 'win' : 'lose');
       previousPhase = state.phase;
       $('#score').textContent = String(state.score).padStart(4, '0');
@@ -256,10 +198,11 @@ async function openCabinetGame(cabinet: Cabinet, recovery?: RetiredArcadeRound) 
       $('#mini-message-copy').textContent = state.phase === 'won' ? translateText('Отличный результат! Попробуй побить свой рекорд.') : state.phase === 'lost' ? tr`Твой результат: ${state.score} очков.` : descriptions[cabinet.id].controls;
       $('#start-game').textContent = state.phase === 'won' || state.phase === 'lost' ? translateText('Сыграть ещё') : cabinet.id==='breaker' && state.lives < 3 ? translateText('Продолжить') : translateText('Начать игру');
     };
-    mini = 'createBreaker' in module ? module.createBreaker($('#mini-game'),onStatus) : module.createArcade($('#mini-game'),cabinet.id as ArcadeMode,onStatus);
-  } catch {
-    miniDialog.close(); toast(translateText('Не получилось загрузить игру. Попробуй открыть автомат ещё раз.'));
-  }
+
+  mini = new IndependentGameUI($('#mini-game'), contract.gameId, {
+    onStatus,
+    setTitle: name => { if (miniDialog.open && version === openVersion) $('#mini-title').textContent = name; },
+  });
 }
 const room = new RoomScene({
   onNear: cabinet => {
@@ -285,7 +228,7 @@ const room = new RoomScene({
     });
     if (CABINETS.some(cabinet => cabinet.demo)) demoPreview = new DemoPreview();
     new DemoWalletUI(room);
-    casinoGames = new CasinoApiProUI(room, playing => { if (!playing) room.endCabinet(); });
+    casinoGames = new ProviderGameUI(room, playing => { if (!playing) room.endCabinet(); });
     new NileWalletUI(room);
     new UsdtWalletUI(room);
     new CryptoWalletUI(room);
@@ -344,7 +287,7 @@ $('#floor-links').addEventListener('click', event => {
 $('#interact').addEventListener('click', () => room.interact());
 $('#help').addEventListener('click', () => { room.setLocked(true); helpDialog.showModal(); });
 $('#start-game').addEventListener('click', () => mini?.start());
-$('#retry-demo').addEventListener('click', () => { void demoSlot?.load(); });
+$('#retry-demo').addEventListener('click', () => { void mini?.load(); });
 room.onBar = () => { room.setLocked(true); miraChat.open(); if (!barDialog.open) barDialog.show(); };
 room.onNotice = toast;
 document.addEventListener(GAME_REACTION_EVENT, event => {
@@ -382,7 +325,7 @@ for (const dialog of [miniDialog, helpDialog, barDialog]) {
       cardDealerStage?.destroy();cardDealerStage=undefined;
       $('#card-dealer-stage').hidden=true;$('#card-dealer-stage').replaceChildren();
     }
-    if (dialog === miniDialog) { room.endCabinet(); openVersion++; demoSlot?.destroy(); demoSlot = undefined; ezSlots?.destroy(); ezSlots = undefined; originalGames?.destroy(); originalGames = undefined; githubGames?.destroy(); githubGames = undefined; sessionGames?.destroy(); sessionGames = undefined; expansionGames?.destroy(); expansionGames = undefined;variantGames?.destroy();variantGames=undefined;nextVariantGames?.destroy();nextVariantGames=undefined;batchVariantGames?.destroy();batchVariantGames=undefined;studioGames?.destroy();studioGames=undefined; gameAudio.setGame('');mini?.game.destroy(true); mini = undefined; $('#mini-game').replaceChildren(); }
+    if (dialog === miniDialog) { room.endCabinet(); openVersion++; mini?.destroy(); mini = undefined; gameAudio.setGame(''); $('#mini-game').replaceChildren(); }
     room.setLocked(Boolean(document.querySelector('dialog[open]'))); $('#game').focus({ preventScroll: true });
   });
 }
@@ -390,6 +333,6 @@ $('#fullscreen').addEventListener('click', async () => {
   try { if (document.fullscreenElement) await document.exitFullscreen(); else await document.documentElement.requestFullscreen(); }
   catch { toast(translateText('Полный экран недоступен в этом браузере.')); }
 });
-document.addEventListener('visibilitychange', () => { if (document.hidden && miniDialog.open) { mini?.game.scene.pause(activeGameId); } else if (miniDialog.open) { mini?.game.scene.resume(activeGameId); } });
+document.addEventListener('visibilitychange', () => { if (document.hidden && miniDialog.open) { mini?.pause(); } else if (miniDialog.open) { mini?.resume(); } });
 // Read-only diagnostics for browser smoke checks.
 Object.assign(window, { royalDemo: { getState: () => room.getState(), getMiniState: () => mini?.getState() ?? null, getNetworkState: () => social?.client.getState() ?? null, getAudio: () => gameAudio.getState(), getActivities: () => social?.activities.getState() ?? null } });

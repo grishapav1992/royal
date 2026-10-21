@@ -1,6 +1,9 @@
 node_modules
 dist
 dist-server
+module-dist
+module-build
+game-modules
 .git
 .tmp
 .env

@@ -1,0 +1,17 @@
+{
+  "name": "@royal/caramel-carnival",
+  "version": "1.0.0",
+  "private": true,
+  "gameId": "studio-caramel-carnival",
+  "apiVersion": 1,
+  "rulesVersion": 2,
+  "progressVersion": 1,
+  "entry": "entry.ts",
+  "assetRoots": [
+    "studio",
+    "caramel-rebuild"
+  ],
+  "scripts": {
+    "build": "node ../../node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && node ../../scripts/build-game-module.mjs"
+  }
+}
