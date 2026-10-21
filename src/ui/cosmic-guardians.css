@@ -108,3 +108,146 @@
 @media(max-width:520px) {
   .ce-game .ce-spin { box-shadow: 0 0 0 3px #26182b, 0 0 0 5px #c89456, inset 0 0 0 3px #ffe0a6; }
 }
+
+/* Keep the captain, cabinet and controls in one composition on large displays. */
+[data-cosmic-escape].ce-game {
+  container-type: inline-size;
+  container-name: cosmic-cabinet;
+}
+[data-cosmic-escape] .ce-composition { display: contents; }
+#mini-dialog[data-game-viewport="layout"] [data-cosmic-escape].ce-game.lg-game {
+  grid-template-rows: 48px minmax(0, 1fr) 42px;
+  grid-template-areas: "heading" "composition" "status";
+}
+#mini-dialog[data-game-viewport="layout"] [data-cosmic-escape] .ce-composition {
+  grid-area: composition;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) 64px 152px;
+  grid-template-areas: "scene" "results" "controls";
+  width: 100%;
+  max-width: 1560px;
+  height: min(100%, 800px);
+  min-height: 0;
+  align-self: center;
+  justify-self: center;
+}
+#mini-dialog[data-game-viewport="layout"] [data-cosmic-escape] .ce-header {
+  height: 48px;
+  padding: 10px 24px;
+}
+#mini-dialog[data-game-viewport="layout"] [data-cosmic-escape] .ce-stage {
+  width: calc(100% - 48px);
+  max-width: 1480px;
+  justify-self: center;
+  grid-template-columns: minmax(170px, 1fr) minmax(0, min(860px, calc((var(--slot-layout-height) - 370px) * 1.666667), calc(100% - 408px))) 190px;
+  grid-template-rows: minmax(0, 1fr);
+  gap: 24px;
+  padding: 10px 0 8px;
+}
+#mini-dialog[data-game-viewport="layout"] [data-cosmic-escape] .ce-alien {
+  position: relative;
+  grid-column: 1;
+  grid-row: 1;
+  inset: auto;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  min-height: 0;
+  align-self: stretch;
+}
+#mini-dialog[data-game-viewport="layout"] [data-cosmic-escape] .ce-alien img {
+  object-position: center;
+}
+#mini-dialog[data-game-viewport="layout"] [data-cosmic-escape] .ce-alien-shadow {
+  display: none;
+}
+#mini-dialog[data-game-viewport="layout"] [data-cosmic-escape] .ce-reels-wrap {
+  grid-column: 2;
+  grid-row: 1;
+}
+#mini-dialog[data-game-viewport="layout"] [data-cosmic-escape] .ce-sidebar {
+  grid-column: 3;
+  grid-row: 1;
+  align-self: center;
+  max-width: 190px;
+  gap: 16px;
+}
+#mini-dialog[data-game-viewport="layout"] [data-cosmic-escape] .ce-cabinet-heading {
+  padding-inline: 4px;
+}
+#mini-dialog[data-game-viewport="layout"] [data-cosmic-escape] .ce-cabinet-heading>small {
+  display: none;
+}
+#mini-dialog[data-game-viewport="layout"] [data-cosmic-escape] .ce-results {
+  justify-self: center;
+  max-width: 900px;
+  height: 64px;
+  min-height: 64px;
+  grid-template-rows: 24px 32px;
+  padding: 4px 16px;
+}
+#mini-dialog[data-game-viewport="layout"] [data-cosmic-escape] .ce-results .lg-message {
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+}
+#mini-dialog[data-game-viewport="layout"] [data-cosmic-escape] .ce-console {
+  width: calc(100% - 48px);
+  max-width: 1040px;
+  justify-self: center;
+  align-self: center;
+  height: 136px;
+  min-height: 136px;
+  padding: 14px 20px;
+  border: 1px solid #bc8c5877;
+  border-radius: 18px;
+  grid-template-columns: minmax(140px, 1fr) minmax(130px, 1fr) minmax(218px, 1fr) 104px;
+  grid-template-rows: 54px 44px;
+  grid-template-areas: "balance last stake spin" "tools tools auto spin";
+  gap: 8px 20px;
+}
+#mini-dialog[data-game-viewport="layout"] [data-cosmic-escape] .ce-tools {
+  width: auto;
+  justify-self: start;
+  grid-template-columns: repeat(5, 44px);
+}
+#mini-dialog[data-game-viewport="layout"] [data-cosmic-escape] .ce-right-controls {
+  gap: 6px;
+  max-width: none;
+}
+#mini-dialog[data-game-viewport="layout"] [data-cosmic-escape] .ce-right-controls>button,
+#mini-dialog[data-game-viewport="layout"] [data-cosmic-escape] .ce-right-controls .lg-autoplay button {
+  padding: 5px 6px;
+  font-size: 12px;
+}
+#mini-dialog[data-game-viewport="layout"] [data-cosmic-escape] .ce-right-controls .lg-autoplay {
+  grid-template-columns: 54px minmax(44px, 1fr);
+}
+#mini-dialog[data-game-viewport="layout"] [data-cosmic-escape] .ce-right-controls select {
+  font-size: 13px;
+  padding-inline: 3px;
+}
+#mini-dialog[data-game-viewport="layout"] [data-cosmic-escape] .ce-stake>div {
+  grid-template-columns: 42px minmax(0, 1fr) 42px;
+}
+#mini-dialog[data-game-viewport="layout"] [data-cosmic-escape] .ce-money>strong,
+#mini-dialog[data-game-viewport="layout"] [data-cosmic-escape] .ce-lastwin>strong {
+  font-size: 24px;
+  letter-spacing: 0;
+}
+
+@container cosmic-cabinet (max-width:1050px) {
+  #mini-dialog[data-game-viewport="layout"] [data-cosmic-escape] .ce-stage {
+    width: calc(100% - 32px);
+    gap: 16px;
+    grid-template-columns: minmax(150px, 1fr) minmax(0, min(860px, calc((var(--slot-layout-height) - 370px) * 1.666667), calc(100% - 352px))) 170px;
+  }
+  #mini-dialog[data-game-viewport="layout"] [data-cosmic-escape] .ce-console {
+    width: calc(100% - 32px);
+    padding-inline: 14px;
+    grid-template-columns: minmax(110px, 1fr) minmax(110px, 1fr) minmax(218px, 1fr) 104px;
+    column-gap: 12px;
+  }
+  #mini-dialog[data-game-viewport="layout"] [data-cosmic-escape] .ce-money>strong,
+  #mini-dialog[data-game-viewport="layout"] [data-cosmic-escape] .ce-lastwin>strong { font-size: 18px; }
+}
