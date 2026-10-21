@@ -26,6 +26,11 @@ export const velvetSlot = {
   gameId: 'studio-velvet-reign', title: 'Velvet Reign', protocol: 'luelon',
   assets: {
   symbols: '/assets/velvet-rebuild/v1/symbols.webp',
+  star0: '/assets/velvet-rebuild/v2/evelyn.webp',
+  star1: '/assets/velvet-rebuild/v2/celeste.webp',
+  star2: '/assets/velvet-rebuild/v2/mei.webp',
+  star3: '/assets/velvet-rebuild/v2/viola.webp',
+  star4: '/assets/velvet-rebuild/v2/amira.webp',
   background: '/assets/velvet-rebuild/v1/background.webp',
 },
   audio: {musicStorageKey: 'royal-velvet-music', musicChords: [[196,246.94,293.66,369.99],[220,261.63,329.63,392],[174.61,220,261.63,349.23],[146.83,196,233.08,293.66]],

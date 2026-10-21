@@ -177,7 +177,7 @@ test('closing a delayed module cannot overwrite a newly opened game', async ({ p
  await expect(page.locator('link[data-royal-game-module="studio-saffron-spin"]')).toHaveCount(1);
 });
 
-for (const game of ['studio-signal-fox', 'studio-nitro-run', 'studio-afterglow', 'github-crash', 'original-cr-vs-leo']) test(`${game}: an uncertain operation keeps its identity and shared wallet lock across game modules`, async ({ page }) => {
+for (const game of ['studio-signal-fox', 'studio-nitro-run', 'studio-afterglow', 'studio-velvet-reign', 'github-crash', 'original-cr-vs-leo']) test(`${game}: an uncertain operation keeps its identity and shared wallet lock across game modules`, async ({ page }) => {
  test.setTimeout(publicOrigin ? 90000 : 60000);
  await fixture(page);
  const sent: unknown[] = [];
@@ -197,8 +197,12 @@ for (const game of ['studio-signal-fox', 'studio-nitro-run', 'studio-afterglow',
   await expect(page.locator('[data-cc-action="enter"]')).toBeEnabled({ timeout: 20000 });
   await page.locator('[data-cc-action="enter"]').click();
  }
+ if (game === 'studio-velvet-reign') {
+  await expect(page.locator('[data-velvet-reign]')).toHaveAttribute('data-asset-state', 'ready');
+  await page.locator('[data-lg-dialog-action="enter"]').click();
+ }
  if (game === 'original-cr-vs-leo') await expect(page.locator('.cr-leo')).toHaveAttribute('data-loading', 'false', { timeout: 60000 });
- const play = page.locator(game === 'studio-nitro-run' || game === 'studio-afterglow' ? '[data-cc-spin]' : game === 'github-crash' ? '[data-start]' : game === 'original-cr-vs-leo' ? '[data-shoot]' : '[data-dice-play]');
+ const play = page.locator(game === 'studio-velvet-reign' ? '[data-lg-spin]' : game === 'studio-nitro-run' || game === 'studio-afterglow' ? '[data-cc-spin]' : game === 'github-crash' ? '[data-start]' : game === 'original-cr-vs-leo' ? '[data-shoot]' : '[data-dice-play]');
  await expect(play).toBeEnabled();
  await play.click();
  await expect.poll(() => sent.length).toBe(1);

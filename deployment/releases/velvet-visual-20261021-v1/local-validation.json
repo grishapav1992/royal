@@ -1,0 +1,11 @@
+{
+  "moduleVersion": "1.0.0-c8960e04eed9",
+  "moduleFiles": 12,
+  "moduleBytes": 5337233,
+  "typecheck": "Full application tsc --noEmit passed",
+  "hostBuild": "Vite production client build passed; host programs will not be deployed",
+  "recoveryTest": "Uncertain Velvet operation retains identity, storage and shared wallet lock across module close and retry",
+  "layout": "Actual built hall, catalog and IndependentGameUI at 1920, 1366 and 390 px; real GameChat controller with display-only local dock; close/reopen and immutable portrait URLs verified",
+  "preview": "14 previous viewport scenarios and five detail checks passed",
+  "productionAccountsOrStakes": 0
+}

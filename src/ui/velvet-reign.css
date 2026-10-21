@@ -18,3 +18,56 @@
 /* Bonus artwork must stay inside its counter and never cover the start button. */
 .vr-game .ce-bonus-orbit{pointer-events:none}
 .vr-game .ce-bonus-orbit>.lg-symbol{position:absolute;inset:0;width:100%;height:100%}
+
+/* Dedicated waist-up character art, sized by the stage rather than a symbol cell. */
+#mini-dialog[data-game-viewport="layout"] .vr-game .ce-stage { grid-template-columns:minmax(200px,1fr) minmax(0,min(calc((var(--slot-layout-height) - 318px)*1.25),calc(100% - 520px))) minmax(170px,.65fr); }
+.vr-game .vr-host { position:relative; display:flex; grid-column:1; width:100%; height:100%; min-height:0; max-width:440px; align-self:stretch; justify-self:center; align-items:center; justify-content:flex-end; flex-direction:column; pointer-events:none; filter:drop-shadow(0 12px 18px #0008); }
+.vr-game .vr-host>.vr-portrait { display:block; width:116%; height:calc(100% - 66px); min-height:0; max-height:none; flex:1; overflow:visible; }
+.vr-game .vr-host>span { position:relative; z-index:1; width:100%; padding:10px 0 4px; font-size:clamp(22px,2vw,34px); line-height:1.1; text-align:center; color:#ffe2a1; text-shadow:0 2px 6px #000; background:radial-gradient(ellipse,#06232ce8,transparent 72%); }
+.vr-game .vr-host>span>small { font:11px/1.5 Arial,sans-serif; letter-spacing:1px; padding:4px 0; color:#f4debb; }
+.vr-game .vr-host>span>small:first-child { font-size:10px; letter-spacing:2.5px; color:#c6a770; }
+#mini-dialog[data-game-viewport="layout"] .vr-game .vr-host { display:flex; width:100%; max-width:440px; height:100%; max-height:none; }
+#mini-dialog[data-game-viewport="flow"] .vr-game .vr-host { display:flex; height:100%; min-height:300px; }
+
+/* The letter owns its sizing container, so reels and paytables use the same art. */
+.vr-game .lg-symbol.vr-letter { container-type:size; display:grid; place-items:center; width:100%; height:100%; padding:0; background:none; text-shadow:none; }
+.vr-game .vr-letter>span { display:block; font:700 min(78cqw,88cqh)/1 Georgia,'Times New Roman',serif; letter-spacing:-.035em; padding:0 .04em .06em 0; color:#c7e4fa; background:linear-gradient(160deg,#fffdf2 8%,var(--vr-letter-light) 28%,var(--vr-letter-dark) 67%,var(--vr-letter-light) 88%); background-clip:text; -webkit-text-fill-color:transparent; -webkit-text-stroke:clamp(.65px,.85cqw,1.8px) #ebcc89; filter:drop-shadow(0 2px 0 #755020) drop-shadow(0 4px 3px #0009); }
+.vr-game .vr-letter-0 { --vr-letter-light:#e2f4ff; --vr-letter-dark:#6096bd; }
+.vr-game .vr-letter-1 { --vr-letter-light:#f5ddff; --vr-letter-dark:#a86fc1; }
+.vr-game .vr-letter-2 { --vr-letter-light:#b1ffeb; --vr-letter-dark:#2c9b91; }
+.vr-game .vr-letter-3 { --vr-letter-light:#fff0b8; --vr-letter-dark:#c99838; }
+
+/* A held WILD is a full-height stage portrait with its multiplier below the face. */
+.vr-game .vr-held-star { display:block; overflow:hidden; background:radial-gradient(ellipse at 50% 20%,#276c66,#082a34 75%); box-shadow:inset 0 0 0 2px #e7cf86,inset 0 0 30px #9cf7cd22; }
+.vr-game .vr-star-portrait { position:absolute; inset:0; }
+.vr-game .vr-star-portrait>.vr-portrait { display:block; width:100%; height:100%; filter:drop-shadow(0 5px 8px #0005); }
+.vr-game .vr-star-caption { position:absolute; bottom:0; left:0; right:0; padding:40px 2px 12px; display:flex; align-items:center; flex-direction:column; background:linear-gradient(transparent,#041d2aea 42%,#05202cf5); color:#fff1bb; text-shadow:0 2px 4px #000; }
+.vr-game .vr-star-caption>small { font:italic clamp(11px,1.4vw,21px)/1.3 Georgia,serif; letter-spacing:.4px; }
+.vr-game .vr-star-caption>span { margin:4px 0 2px; font:700 clamp(8px,.9vw,13px)/1.2 Arial,sans-serif; letter-spacing:2px; color:#c8dfd5; }
+.vr-game .vr-star-caption>strong { font:700 clamp(24px,3.3vw,58px)/1 Georgia,serif; color:#ffe4a1; }
+.vr-game .vr-star-roster .vr-portrait { height:64px; }
+.vr-game .vr-star-roster small { font-size:8px; }
+.vr-game .ce-intro-cards .vr-intro-star>.vr-portrait { width:62px; height:100%; }
+.vr-game .vr-intro-star>strong { font-size:26px; }
+.vr-game .vr-bonus-cards .vr-portrait { height:100%; width:100%; }
+@media(min-width:901px) {
+ .vr-game.ce-game .ce-stage { align-items:stretch; }
+ .vr-game .ce-reels-wrap { align-self:center; }
+}
+@media(min-width:601px) and (max-width:900px) {
+ #mini-dialog[data-game-viewport="layout"] .vr-game .ce-stage { grid-template-columns:minmax(140px,.7fr) minmax(0,2fr) 150px; gap:14px; }
+ #mini-dialog[data-game-viewport="flow"] .vr-game .ce-stage { grid-template-columns:minmax(130px,.7fr) minmax(0,2fr) 145px; gap:14px; padding-left:10px; }
+ #mini-dialog[data-game-viewport="flow"] .vr-game .ce-reels-wrap { grid-column:2; }
+ #mini-dialog[data-game-viewport="flow"] .vr-game .ce-sidebar { grid-column:3; }
+ .vr-game .vr-host>span { font-size:23px; }
+ .vr-game .vr-host>span>small { font-size:9px; letter-spacing:0; }
+}
+@media(max-width:600px) {
+ .vr-game .vr-host,#mini-dialog[data-game-viewport="flow"] .vr-game .vr-host { display:none; }
+ .vr-game .vr-star-caption { padding:23px 1px 7px; }
+ .vr-game .vr-star-caption>small { font-size:10px; letter-spacing:0; }
+ .vr-game .vr-star-caption>span { font-size:7px; letter-spacing:.8px; margin:3px 0; }
+ .vr-game .vr-star-caption>strong { font-size:24px; }
+ .vr-game .vr-star-roster .vr-portrait { height:32px; }
+ .vr-game .vr-star-roster small { font-size:5px; }
+}

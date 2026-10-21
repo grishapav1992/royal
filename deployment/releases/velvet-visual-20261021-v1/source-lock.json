@@ -1,0 +1,22 @@
+{
+  "baseCommit": "db34f73797bd9d3f2ee5a0eb4e0866f9630b5110",
+  "productionBaseMatched": [
+    "src/ui/VelvetReignUI.ts",
+    "src/ui/VelvetReignBoard.ts",
+    "src/ui/velvet-reign.css",
+    "src/ui/slotKit/nativeSlots.ts"
+  ],
+  "unchangedModuleInputs": 39,
+  "unexpectedProductionInputDifferences": [],
+  "changes": {
+    "src/ui/VelvetReignUI.ts": "2e5b76408d94ab899b7268ece49606f1872a3aac15f8e50cc0d2119ac78f30e1",
+    "src/ui/VelvetReignBoard.ts": "f8eb01fbbcd7863b6043d8e35b82a543c730dcb18baf33b99b7161f99b959377",
+    "src/ui/velvet-reign.css": "baa526ce816c7a98c023db4d805c3b782519df2b8155f0e850ade4b44f8fa0fb",
+    "src/ui/slotKit/nativeSlots.ts": "716c38496a5e688dbe55830bf8d2ca6b297b31ce7dc262c00bdc5f39335afe85",
+    "public/assets/velvet-rebuild/v2/evelyn.webp": "f1d644436f22f71adbfcf00150dd947fb3b42bdbe214cca3702d6a12857e1082",
+    "public/assets/velvet-rebuild/v2/celeste.webp": "3020409f9e129be85099f0dc66852e1682162f2cd5cfc9c426c07bd75afe4acd",
+    "public/assets/velvet-rebuild/v2/mei.webp": "54c88ac8dd7f7668c5ce03488abf6e9c54bb4b37d47a5ceec3dc5491816cab36",
+    "public/assets/velvet-rebuild/v2/viola.webp": "c117cb9ca6cea9ed61a37e92efc0596e436e9f30bbd5e515412b41120a181c6d",
+    "public/assets/velvet-rebuild/v2/amira.webp": "c4664c58b802046742cd0c26a258bd5d66973e94388cb22dca5590556f4d65bd"
+  }
+}
