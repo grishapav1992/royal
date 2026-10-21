@@ -1,0 +1,186 @@
+{
+  "verified": true,
+  "moduleVersion": "1.0.2-21c5f5b46130",
+  "manifestSha256": "ab83f9ddead05a7537bc4fa5fdb67975d4d25375e502db1976f20c0be497de9b",
+  "requests": 25,
+  "health": {
+    "ok": true
+  },
+  "results": [
+    {
+      "path": "/game-modules/studio-afterglow/active.json",
+      "status": 200,
+      "bytes": 220,
+      "sha256": "da626b5e010d99f1ec6e1ed901a04a8dd15765b12975d7212a576fc55face25a",
+      "cache": "no-store"
+    },
+    {
+      "path": "/game-modules/studio-afterglow/versions/1.0.2-21c5f5b46130/manifest.json",
+      "status": 200,
+      "bytes": 2637,
+      "sha256": "ab83f9ddead05a7537bc4fa5fdb67975d4d25375e502db1976f20c0be497de9b",
+      "cache": "public, max-age=31536000, immutable"
+    },
+    {
+      "path": "/game-modules/studio-afterglow/versions/1.0.2-21c5f5b46130/media/afterglow/audio/v1/laugh-1.mp3",
+      "status": 200,
+      "bytes": 12450,
+      "sha256": "fff6df47947edc00aa5a21c90e6888dfa991f21696e350b36cf425d4c2a57982",
+      "cache": "public, max-age=31536000, immutable"
+    },
+    {
+      "path": "/game-modules/studio-afterglow/versions/1.0.2-21c5f5b46130/entry-8bd12cc315b9a103.js",
+      "status": 200,
+      "bytes": 107411,
+      "sha256": "8bd12cc315b9a1039e027961d207f2cce2b8af827c15447ecf1f0c68b22bc114",
+      "cache": "public, max-age=31536000, immutable"
+    },
+    {
+      "path": "/game-modules/studio-afterglow/versions/1.0.2-21c5f5b46130/media/afterglow/audio/v1/laugh-4.mp3",
+      "status": 200,
+      "bytes": 11795,
+      "sha256": "e959ee4a972d43d754a2e933e363d9865a77eb344abd3615f5828bc6f0beb7b7",
+      "cache": "public, max-age=31536000, immutable"
+    },
+    {
+      "path": "/game-modules/studio-afterglow/versions/1.0.2-21c5f5b46130/media/afterglow/audio/v1/laugh-3.mp3",
+      "status": 200,
+      "bytes": 12388,
+      "sha256": "e5309e1e51a63dc839dcd9e3f3ae4369fd37f1b8b63580e74cdafb68671675ad",
+      "cache": "public, max-age=31536000, immutable"
+    },
+    {
+      "path": "/game-modules/studio-afterglow/versions/1.0.2-21c5f5b46130/media/afterglow/audio/v1/unlock.mp3",
+      "status": 200,
+      "bytes": 14046,
+      "sha256": "d4fc67cd79bbc5e19d87e2759720b4018c433a8510eb37aceba102dc6a57816a",
+      "cache": "public, max-age=31536000, immutable"
+    },
+    {
+      "path": "/game-modules/studio-afterglow/versions/1.0.2-21c5f5b46130/media/afterglow/audio/v1/laugh-2.mp3",
+      "status": 200,
+      "bytes": 10720,
+      "sha256": "99c3762857337f56dea6114b648ab1f2c10f306a88e3916903d8121634da810f",
+      "cache": "public, max-age=31536000, immutable"
+    },
+    {
+      "path": "/game-modules/studio-afterglow/versions/1.0.2-21c5f5b46130/media/afterglow/v1/background-studio-v3.webp",
+      "status": 200,
+      "bytes": 90364,
+      "sha256": "72c66ad7c649a56cfb0ca1b49154e5bb66d6fda86a00407189141e029eb013aa",
+      "cache": "public, max-age=31536000, immutable"
+    },
+    {
+      "path": "/game-modules/studio-afterglow/versions/1.0.2-21c5f5b46130/media/afterglow/audio/v2/win-2.mp3",
+      "status": 200,
+      "bytes": 41335,
+      "sha256": "1965cd8c4560edbff8d14662d1e302ab4ec0eac1e9c3adeeabc6842b55ac0085",
+      "cache": "public, max-age=31536000, immutable"
+    },
+    {
+      "path": "/game-modules/studio-afterglow/versions/1.0.2-21c5f5b46130/media/afterglow/audio/v2/win-3.mp3",
+      "status": 200,
+      "bytes": 71952,
+      "sha256": "04cb450cffb0cc1ee5e39b6d49647cc725367eb3617725635d5eab436b817179",
+      "cache": "public, max-age=31536000, immutable"
+    },
+    {
+      "path": "/game-modules/studio-afterglow/versions/1.0.2-21c5f5b46130/media/afterglow/v1/symbols.webp",
+      "status": 200,
+      "bytes": 293106,
+      "sha256": "eb98a828cd992874300de3f5d0e8b0ef70cbf4374e84b7c4c5510c32168c6e64",
+      "cache": "public, max-age=31536000, immutable"
+    },
+    {
+      "path": "/game-modules/studio-afterglow/versions/1.0.2-21c5f5b46130/media/afterglow/audio/v2/win-1.mp3",
+      "status": 200,
+      "bytes": 154732,
+      "sha256": "151c42720eb200187294e1ce25f4f03a06802b8a4b924b35d309a8d07d2e15ad",
+      "cache": "public, max-age=31536000, immutable"
+    },
+    {
+      "path": "/game-modules/studio-afterglow/versions/1.0.2-21c5f5b46130/media/afterglow/v3/base-0.webp",
+      "status": 200,
+      "bytes": 67096,
+      "sha256": "3b6a1e232f4b674bd2bf1c1cc369f6c7ff94b564a2398b0368924b39bd9b3246",
+      "cache": "public, max-age=31536000, immutable"
+    },
+    {
+      "path": "/game-modules/studio-afterglow/versions/1.0.2-21c5f5b46130/media/afterglow/v3/base-2.webp",
+      "status": 200,
+      "bytes": 66254,
+      "sha256": "8d3d45d58fb1480c410921264700e8039973bc9e901523c4137528b46002c8d0",
+      "cache": "public, max-age=31536000, immutable"
+    },
+    {
+      "path": "/game-modules/studio-afterglow/versions/1.0.2-21c5f5b46130/media/afterglow/v3/base-3.webp",
+      "status": 200,
+      "bytes": 57748,
+      "sha256": "673f95c71b608bf378a9fe66ca8e5f7f331decea9341690f96288edd6a55a70b",
+      "cache": "public, max-age=31536000, immutable"
+    },
+    {
+      "path": "/game-modules/studio-afterglow/versions/1.0.2-21c5f5b46130/media/afterglow/v3/look-2-user.webp",
+      "status": 200,
+      "bytes": 129424,
+      "sha256": "7e4effff686b458984e813a161925a8c57a62d33adf483d5878615a73c3ebaf1",
+      "cache": "public, max-age=31536000, immutable"
+    },
+    {
+      "path": "/game-modules/studio-afterglow/versions/1.0.2-21c5f5b46130/media/afterglow/v3/look-3-user.webp",
+      "status": 200,
+      "bytes": 144266,
+      "sha256": "82e0c7197af5781ff2e0e116d974266806a2680a411392613a7c3fae8d8fe7e2",
+      "cache": "public, max-age=31536000, immutable"
+    },
+    {
+      "path": "/game-modules/studio-afterglow/versions/1.0.2-21c5f5b46130/media/afterglow/v3/base-1.webp",
+      "status": 200,
+      "bytes": 63576,
+      "sha256": "e4db61d6b633a4f38d3256dbd9e7f94711e40ee2e2709b3f7ecec57c91a3e542",
+      "cache": "public, max-age=31536000, immutable"
+    },
+    {
+      "path": "/game-modules/studio-afterglow/versions/1.0.2-21c5f5b46130/media/afterglow/v3/look-1-user.webp",
+      "status": 200,
+      "bytes": 111648,
+      "sha256": "0f1960fef60f293fda3086c7609efdd883844f4e1a21422de72808788ce8eff0",
+      "cache": "public, max-age=31536000, immutable"
+    },
+    {
+      "path": "/game-modules/studio-afterglow/versions/1.0.2-21c5f5b46130/style-94a2fce756933c3b.css",
+      "status": 200,
+      "bytes": 86706,
+      "sha256": "94a2fce756933c3bc2d9911a7dc99584f09e0b6812dd7a62d54d89e844f9fcdd",
+      "cache": "public, max-age=31536000, immutable"
+    },
+    {
+      "path": "/game-modules/studio-afterglow/versions/1.0.2-21c5f5b46130/media/afterglow/v4/look-0-legendary.webp",
+      "status": 200,
+      "bytes": 166196,
+      "sha256": "c6aa7af2551b2781e5d3782481e18372f3596519a5c35a18c325c1be5ed5f57a",
+      "cache": "public, max-age=31536000, immutable"
+    },
+    {
+      "path": "/game-modules/studio-afterglow/versions/1.0.2-21c5f5b46130/media/studio/symbols.webp",
+      "status": 200,
+      "bytes": 1480190,
+      "sha256": "63d92524d8634e72a8a6c32cc973e6baf64498a2ce7a944534628b962de7b406",
+      "cache": "public, max-age=31536000, immutable"
+    },
+    {
+      "path": "/healthz",
+      "status": 200,
+      "bytes": 36,
+      "sha256": "7482326171995296103a4f794befc2c7831df741969bdbe936bdb637195e4dfc",
+      "cache": null
+    },
+    {
+      "path": "/api/demo-wallet",
+      "status": 401,
+      "bytes": 99,
+      "sha256": "73b970e47d6bf990e9c3dfe858b8e2a83e72e904f4aeb01374be698bbc27b4ed",
+      "cache": "no-store"
+    }
+  ]
+}

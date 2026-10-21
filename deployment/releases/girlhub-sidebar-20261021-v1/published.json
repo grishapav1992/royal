@@ -1,0 +1,17 @@
+{
+  "verified": true,
+  "gameId": "studio-afterglow",
+  "version": "1.0.2-21c5f5b46130",
+  "bytes": 3193403,
+  "files": 21,
+  "beforeSha256": "03823d8beb5d291f417fbff33f0fac0779828d3334dabedf4ccd9f5fe2f79100",
+  "hostProgramTouched": false,
+  "databaseTouched": false,
+  "restartRequired": false,
+  "published": true,
+  "operation": "install",
+  "activeSha256": "da626b5e010d99f1ec6e1ed901a04a8dd15765b12975d7212a576fc55face25a",
+  "history": "/opt/royal-game-modules-state/history/20261021T202743-c239be327b994a60993e0cf911347946.json",
+  "sourceCommit": "77638b5275a3247a68bfa8af1a3ccad63b82357b",
+  "backupSourceSha256": "fa6a65c5e3541cbd1fc9b459e0af31eabbdad8fe1a1cb34e89159e590f949bd7"
+}
