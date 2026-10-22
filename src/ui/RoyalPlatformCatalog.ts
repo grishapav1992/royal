@@ -6,7 +6,7 @@ import type { CasinoApiProGame, CasinoApiProStatus } from '../shared/casinoApiPr
 import { demoWallet, coins } from '../wallet/WalletClient';
 import { FIRST_FLOOR_ART, FIRST_FLOOR_GAME_THEMES } from './FirstFloorGameArt';
 const studioCatalogName=(id:import('../shared/studioGames').StudioGameId)=>({'studio-cosmic-escape':'Cosmic Escape','studio-caramel-carnival':'Caramel Carnival','studio-velvet-reign':'Velvet Reign'} as Record<string,string>)[id]??STUDIO_INFO[id].name;
-import { royalGameArtwork } from './RoyalGameArtwork';
+import { royalCatalogArtwork } from './RoyalCatalogArtwork';
 import './royal-platform.css';
 
 export type PlatformChoice = {gameId:string; providerGame?:CasinoApiProGame};
@@ -32,7 +32,7 @@ function localEntry(id: string): Entry {
   const studio = isStudioGame(id) ? STUDIO_INFO[id] : undefined;
   const theme = github.has(id) && Object.hasOwn(FIRST_FLOOR_GAME_THEMES,id) ? FIRST_FLOOR_ART[FIRST_FLOOR_GAME_THEMES[id as keyof typeof FIRST_FLOOR_GAME_THEMES]] : undefined;
   return {gameId:id, name:game.name, subtitle:theme?.title[language === 'en' ? 1 : 0] ?? game.subtitle,
-    kind:studio?.kind ?? classicKinds[id], source:github.has(id) ? 'github' : 'royal', art:royalGameArtwork(id),
+    kind:studio?.kind ?? classicKinds[id], source:github.has(id) ? 'github' : 'royal', art:royalCatalogArtwork(id),
     keywords:`${studio?.sourceReferenceId ?? ''} ${theme?.title.join(' ') ?? ''}`};
 }
 
@@ -97,7 +97,7 @@ export class RoyalPlatformCatalog {
       if(this.selected?.gameId===entry.gameId&&this.selected?.providerGame?.id===entry.providerGame?.id)button.setAttribute('aria-current','true');
       button.disabled=entry.source==='casinoapipro'&&!this.providerStatus?.walletConnected;
       const art=document.createElement('span');art.className='rp-art';
-      if(entry.art){const img=document.createElement('img');img.src=entry.art;img.alt='';img.loading='lazy';img.referrerPolicy='no-referrer';img.onerror=()=>img.remove();art.append(img);}
+      if(entry.art){const img=document.createElement('img');img.src=entry.art;img.alt='';img.loading='lazy';img.decoding='async';img.width=512;img.height=320;img.referrerPolicy='no-referrer';img.onerror=()=>img.remove();art.append(img);}
       const kind=document.createElement('span');kind.className='rp-kind';kind.textContent=kindNames[entry.kind]??entry.kind;art.append(kind);
       const copy=document.createElement('span');copy.className='rp-copy';
       for(const [tag,text] of [['small',sourceNames[entry.source]],['strong',entry.name],['span',entry.subtitle]]){const el=document.createElement(tag);el.textContent=text;copy.append(el);}
