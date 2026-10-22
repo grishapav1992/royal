@@ -46,6 +46,7 @@ const harness = {
    scene: { setLocked(value) { locked = value; }, approach() { return undefined; } },
    onPlaying(value) { messages.push({ type: 'provider-playing', value }); },
    onClosed() { messages.push({ type: 'provider-closed' }); },
+   pvp: { get: () => undefined, busy: () => false, subscribe: () => () => {}, move(value) { messages.push(value); } },
    activity: {
     scene: { hall: gameId === 'piano' ? 'arcade' : 'tables', player: { x: 100, y: 200 } as any, setLocked(value) { locked = value; }, pianoNote(note) { messages.push({ type: 'piano-visual', note }); } },
     send(value) { messages.push(value); }, state: structuredClone(state),
@@ -86,7 +87,7 @@ const harness = {
    sharedUsdt: runtime.usdtWallet === usdtWallet, sharedCrypto: runtime.cryptoWallet === cryptoWallet, title, lockedScene: locked,
    sharedDemoGames: runtime.demoGames === demoGames,
    pending: structuredClone(expansionClient.pending), balance: demoWallet.wallet?.balance,
-   storage: expansionClient.accountId ? sessionStorage.getItem('royal-expansion:' + expansionClient.accountId) : null,
+   storage: expansionClient.accountId ? sessionStorage.getItem('royal-nile-expansion:' + expansionClient.accountId) : null,
    locked: demoWallet.externalBusy };
  },
 };

@@ -17,10 +17,7 @@ import { RetiredArcadeRounds, RetiredArcadeRoundGuard, ownsRetiredArcadeRound, t
 import { isExpansionGame, EXPANSION_NAMES } from './shared/casinoExpansion';
 import { isSessionGame } from './shared/casinoSessions';
 import { ClubMap } from './ui/ClubMap';
-import { DemoWalletUI } from './ui/DemoWalletUI';
 import { NileWalletUI } from './ui/NileWalletUI';
-import { UsdtWalletUI } from './ui/UsdtWalletUI';
-import { CryptoWalletUI } from './ui/CryptoWalletUI';
 import { MiraChat } from './ui/MiraChat';
 import { isGithubGame } from './shared/githubGames';
 import { DemoPreview } from './ui/DemoPreview';
@@ -57,7 +54,7 @@ const icon = (name: keyof typeof icons, cls = '') => `<svg class="icon ${cls}" v
 const classicCabinets = ARCADE_CLASSIC_GAMES.flatMap(id => CABINETS.filter(cabinet => cabinet.id === id));
 const providerCabinets = ARCADE_PROVIDER_GAMES.flatMap(id => CABINETS.filter(cabinet => cabinet.id === id));
 const catalogCabinets = [...classicCabinets, ...providerCabinets];
-const hallGameCount = (hall: HallId) => cabinetsInHall(hall).length + (hall === 'tables' ? 3 : 0);
+const hallGameCount = (hall: HallId) => cabinetsInHall(hall).length + (hall === 'tables'||hall==='github' ? 3 : 0);
 const cabinetCards = (cabinets: Cabinet[]) => cabinets.map(cabinet => {
   const index = catalogCabinets.indexOf(cabinet);
   return tr`<button id="${cabinet.provider ? 'casinoapipro-open' : 'cabinet-' + cabinet.id}" class="cabinet-card" data-cabinet="${cabinet.id}" data-hall="${cabinetHall(cabinet)}" aria-label="Подойти к автомату ${cabinet.name}"><div class="cabinet-art art-${index}" id="art-${index}"></div><div class="cabinet-copy">${cabinet.demo ? translateText('<span class="card-kicker">ДЕМО</span>') : ''}<strong>${cabinet.name}</strong><small>${cabinet.subtitle}</small></div>${icon('arrow', 'card-arrow')}</button>`;
@@ -83,7 +80,7 @@ app.innerHTML = tr`
         <section id="studio-catalog" aria-label="Новые миры Рояля"></section>
         <section id="card-tables-catalog" aria-label="Карточные столы и крупье" hidden></section>
         <section class="arcade-catalog-group" data-arcade-catalog aria-label="Игры из GitHub"><h3>Игры из GitHub</h3><p>Классические игры из открытых проектов</p><div class="cabinet-list">${cabinetCards(classicCabinets)}</div></section>
-        <section class="arcade-catalog-group" data-arcade-catalog aria-label="Каталоги игр"><h3>Каталоги игр</h3><p>Casino API Pro и демостенд Luelon</p><div class="cabinet-list">${cabinetCards(providerCabinets)}</div></section>
+        ${providerCabinets.length?`<section class="arcade-catalog-group" data-arcade-catalog aria-label="Каталоги игр"><h3>Каталоги игр</h3><div class="cabinet-list">${cabinetCards(providerCabinets)}</div></section>`:''}
         <section data-arcade-catalog><div id="retired-arcade-rounds" hidden></div></section>
         <div class="player-card"><span class="player-portrait" id="player-portrait"></span><div><strong>Это ты</strong><small>Исследователь клуба</small></div><span class="player-dot"></span></div>
       </aside>
@@ -170,23 +167,23 @@ async function openCabinetGame(cabinet: Cabinet, recovery?: RetiredArcadeRound) 
     $('#card-dealer-stage').hidden=false;
     $('.mini-top .eyebrow').textContent=translateText('КАРТОЧНЫЙ САЛОН / ЭТАЖ 3');
     const practice=isGithubGame(cabinet.id)&&!isExpansionGame(cabinet.id)&&!isSessionGame(cabinet.id);
-    $('.mini-bottom>span').textContent=practice?translateText('Отдельные учебные фишки'):translateText('Общий тестовый кошелёк клуба');
+    $('.mini-bottom>span').textContent=practice?translateText('Отдельные учебные фишки'):translateText('Общий баланс USDT · Nile');
     cardDealerStage=new CardDealerStage($('#card-dealer-stage'),cabinet.id,$('#mini-game'),action=>room.setDealerAction(cabinet.id,action));
   } else if (isStudioGame(cabinet.id)) {
     $('.mini-top .eyebrow').textContent = translateText('НОВЫЕ МИРЫ / ЭТАЖ 1');
     $('.mini-bottom>span').textContent = translateText('Общий тестовый кошелёк клуба');
   } else if (isVariantGame(cabinet.id) || isExpansionGame(cabinet.id)) {
     $('.mini-top .eyebrow').textContent = translateText('ЭТАЖ 1 / ТЕСТОВЫЙ КОШЕЛЁК');
-    $('.mini-bottom>span').textContent = translateText('Общий демобаланс клуба');
+    $('.mini-bottom>span').textContent = translateText('Общий баланс USDT · Nile');
   } else if (isSessionGame(cabinet.id)) {
     $('.mini-top .eyebrow').textContent = translateText('ЭТАЖ 1 / СТАВКИ');
-    $('.mini-bottom>span').textContent = translateText('Выбери демокошелёк или настоящий USDT');
+    $('.mini-bottom>span').textContent = translateText('Общий баланс USDT · Nile');
   } else if (cabinet.github && isGithubGame(cabinet.id)) {
     $('.mini-top .eyebrow').textContent = translateText('ЭТАЖ 1 / УЧЕБНЫЕ ИГРЫ');
     $('.mini-bottom>span').textContent = translateText('Бесплатные игры с отдельными учебными фишками');
   } else if (cabinet.wallet) {
-    $('.mini-top .eyebrow').textContent = translateText('РОЯЛЬ / ДЕМОКОШЕЛЁК');
-    $('.mini-bottom>span').textContent = translateText('Ставки и выигрыши в виртуальных монетах');
+    $('.mini-top .eyebrow').textContent = translateText('РОЯЛЬ / USDT · NILE');
+    $('.mini-bottom>span').textContent = translateText('Общий баланс USDT · Nile');
   } else if (cabinet.demo) {
     $('.mini-bottom>span').textContent = translateText('Звук и управление внутри игры');
   }
@@ -235,11 +232,8 @@ const room = new RoomScene({
       const img = document.createElement('img'); img.src = game.textures.getBase64(`cabinet-${i}`); img.alt = ''; document.querySelector(`#art-${artIndex}`)?.append(img);
     });
     if (CABINETS.some(cabinet => cabinet.demo)) demoPreview = new DemoPreview();
-    new DemoWalletUI(room);
     casinoGames = new ProviderGameUI(room, playing => { if (!playing) room.endCabinet(); });
     new NileWalletUI(room);
-    new UsdtWalletUI(room);
-    new CryptoWalletUI(room);
     const portrait = document.createElement('img'); portrait.src = game.textures.getBase64('citizen-0', 'down-6'); portrait.alt = ''; $('#player-portrait').append(portrait);
     if (!offline) social = new SocialUI(room, toast);
     else { room.onActivity=()=>toast(translateText('Войди в онлайн-зал, чтобы играть вместе и слушать рояль.')); prefetchDemoGames(); }
@@ -319,7 +313,7 @@ document.addEventListener(GAME_REACTION_EVENT, event => {
 function updateHall(hall:HallId){
   document.querySelector('h1')!.innerHTML=HALLS[hall].name+' <span>'+HALLS[hall].number+'</span>';
   document.querySelectorAll<HTMLElement>('[data-activity]').forEach(b=>b.hidden=b.dataset.activity==='piano'||activityHall(b.dataset.activity!)!==hall);
-  const sharedCards=document.querySelector<HTMLElement>('.shared-cards');if(sharedCards)sharedCards.hidden=hall!=='tables';
+  const sharedCards=document.querySelector<HTMLElement>('.shared-cards');if(sharedCards)sharedCards.hidden=hall!=='tables'&&hall!=='github';
   document.querySelectorAll<HTMLElement>('[data-arcade-catalog]').forEach(section => section.hidden = hall !== 'arcade');
   $('#studio-catalog').hidden=hall!=='arcade';
   $('#card-tables-catalog').hidden=hall!=='github';

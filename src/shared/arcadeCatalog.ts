@@ -12,7 +12,8 @@ export const ARCADE_CLASSIC_GAMES = [
   'royal-fruits', 'royal-dice', 'royal-limbo', 'royal-mines', 'royal-plinko',
   'royal-keno', 'github-craps', 'github-tower', 'github-diamonds', 'github-crash', 'github-sic-bo', PENALTY_GAME,
 ] as const;
-export const ARCADE_PROVIDER_GAMES = ['casinoapipro', 'luelon'] as const;
+// Provider demos use their own credits and are hidden in the single Nile wallet release.
+export const ARCADE_PROVIDER_GAMES = [] as const;
 export const ACTIVE_ARCADE_GAMES: readonly string[] = [
   ...ACTIVE_STUDIO_GAMES, ...ARCADE_CLASSIC_GAMES, ...ARCADE_PROVIDER_GAMES,
 ];

@@ -24,8 +24,8 @@ export const CABINETS: Cabinet[] = [
   { id: 'github-video-poker', name: translateText('Видеопокер'), subtitle: translateText('Пять карт · Удержание · Джокер'), x: 1660, y: 570, color: 0xf5bc64, playable: true, hall: 'arcade', github: true },
   { id: 'github-baccarat', name: translateText('Баккара'), subtitle: translateText('Игрок · Банкир · Ничья'), x: 1200, y: 810, color: 0xeb91af, playable: true, hall: 'arcade', github: true },
   { id: 'github-craps', name: 'Craps', subtitle: translateText('Две кости · Pass Line · Field'), x: 1430, y: 810, color: 0x75cbd9, playable: true, hall: 'arcade', github: true },
-  { id: 'github-hilo', name: 'Hi-Lo', subtitle: translateText('Выше или ниже · Демомонеты / USDT'), x: 1660, y: 810, color: 0xe2c484, playable: true, hall: 'arcade', github: true },
-  { id: 'github-tower', name: 'Dragon Tower', subtitle: translateText('Девять уровней · Демомонеты / USDT'), x: 1890, y: 810, color: 0x8ecba2, playable: true, hall: 'arcade', github: true },
+  { id: 'github-hilo', name: 'Hi-Lo', subtitle: translateText('Выше или ниже · USDT · Nile'), x: 1660, y: 810, color: 0xe2c484, playable: true, hall: 'arcade', github: true },
+  { id: 'github-tower', name: 'Dragon Tower', subtitle: translateText('Девять уровней · USDT · Nile'), x: 1890, y: 810, color: 0x8ecba2, playable: true, hall: 'arcade', github: true },
   ...BASE_EXPANSION_GAMES.map((id,i):Cabinet=>({id,name:id==='github-crash'?'LAST EXIT':EXPANSION_NAMES[id],subtitle:id==='github-crash'?(language==='en'?'Car chase · Take the exit':'Погоня · Успей уйти'):translateText('Общий тестовый кошелёк · Ставки и выплаты'),x:expansionPositions[i][0],y:expansionPositions[i][1],color:id==='github-crash'?0xd3b477:[0xe2c484,0x8ecba2,0xc6a0ed,0x75cbd9][i%4],playable:true,hall:'arcade',github:true})),
 ];
 

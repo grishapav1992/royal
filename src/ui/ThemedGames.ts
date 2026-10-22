@@ -48,20 +48,20 @@ export class ThemedGames {
   constructor(container: HTMLElement, private gameId: ThemedGameId) {
     const flight = gameId === 'royal-flight';
     this.root.className = 'themed-game'; this.root.dataset.game = gameId; this.root.dataset.result = 'idle';
-    this.root.innerHTML = tr`<header class="themed-header"><div><span class="themed-eyebrow">ROYAL ORIGINALS</span><h3>${flight ? 'Royal Orbit' : 'Royal Fortune'}</h3><p>${flight ? translateText('За пределы земного притяжения') : translateText('Твой счастливый поворот')}</p></div><div class="themed-wallet"><span>Демобаланс</span><strong id="themed-balance">…</strong><button type="button" id="themed-wallet" aria-label="Пополнить демобаланс">+</button></div></header>
+    this.root.innerHTML = tr`<header class="themed-header"><div><span class="themed-eyebrow">ROYAL ORIGINALS</span><h3>${flight ? 'Royal Orbit' : 'Royal Fortune'}</h3><p>${flight ? translateText('За пределы земного притяжения') : translateText('Твой счастливый поворот')}</p></div><div class="themed-wallet"><span>Баланс USDT</span><strong id="themed-balance">…</strong><button type="button" id="themed-wallet" aria-label="Пополнить баланс USDT">+</button></div></header>
       <div class="themed-layout"><div class="themed-scene"><canvas id="themed-canvas" aria-label="${flight ? translateText('Космический полёт Royal Orbit') : translateText('Колесо Royal Fortune, 50 секторов')}" role="img"></canvas>
         <div class="themed-scene-top"><span id="themed-scene-status">${flight ? translateText('ГОТОВ К СТАРТУ') : translateText('50 РАВНЫХ СЕКТОРОВ')}</span><span class="themed-scene-tag">${flight ? 'ORBIT / 01' : 'FORTUNE / 02'}</span></div>
         ${flight ? translateText('<div class="themed-flight-hud"><span>МНОЖИТЕЛЬ ПОЛЁТА</span><strong id="themed-multiplier">1,00×</strong><div id="themed-flight-value">Выбери цель и отправляйся в полёт</div></div>') : translateText('<div class="themed-wheel-caption"><span id="themed-wheel-value">ВОЗМОЖНОСТЬ НА КАЖДОМ ПОВОРОТЕ</span></div>')}
-      </div><aside class="themed-controls"><label for="themed-bet">Ставка, монеты</label><select id="themed-bet" data-themed-input>${DEMO_BETS.map(value => `<option value="${value}" ${value === 100 ? 'selected' : ''}>${value}</option>`).join('')}</select>
+      </div><aside class="themed-controls"><label for="themed-bet">Ставка, USDT</label><select id="themed-bet" data-themed-input>${DEMO_BETS.map(value => `<option value="${value}" ${value === 100 ? 'selected' : ''}>${value}</option>`).join('')}</select>
         ${flight ? tr`<label for="themed-target">Автоматически забрать при</label><div class="themed-input-suffix"><input id="themed-target" data-themed-input type="number" min="${FLIGHT_MIN_AUTO_CASHOUT}" max="${FLIGHT_MAX_MULTIPLIER}" step="0.01" value="2.00"><span>×</span></div><div class="themed-presets"><button type="button" data-flight-target="1.5">1,50×</button><button type="button" data-flight-target="2">2×</button><button type="button" data-flight-target="5">5×</button><button type="button" data-flight-target="10">10×</button></div><p class="themed-control-note">Можешь забрать раньше вручную. Если полёт закончится первым, ставка сгорает.</p>`
           : tr`<label for="themed-risk">Уровень риска</label><select id="themed-risk" data-themed-input>${WHEEL_RISKS.map(risk => `<option value="${risk}" ${risk === 'medium' ? 'selected' : ''}>${riskLabels[risk]}</option>`).join('')}</select><p class="themed-control-note" id="themed-risk-note"></p>`}
         <div class="themed-odds"><span>RTP <strong>98%</strong></span><span>${flight ? translateText('Цель') : translateText('Секторов')} <strong id="themed-odds-value">${flight ? '2,00×' : '50'}</strong></span></div>
-        <button type="button" id="themed-play" class="themed-play">${flight ? translateText('Начать полёт') : translateText('Вращать колесо')}</button><button type="button" id="themed-refresh" class="themed-secondary" hidden>Восстановить полёт</button><p class="themed-demo-note">Бесплатные демомонеты</p>
+        <button type="button" id="themed-play" class="themed-play">${flight ? translateText('Начать полёт') : translateText('Вращать колесо')}</button><button type="button" id="themed-refresh" class="themed-secondary" hidden>Восстановить полёт</button><p class="themed-demo-note">Бесплатные USDT</p>
         <p class="themed-close-note">${flight ? translateText('Окно можно закрыть. Полёт продолжится, сервер заберёт выплату на выбранной цели, если полёт её достигнет.') : translateText('Результат определяет сервер до анимации. Закрытие окна не отменяет ставку.')}</p></aside></div>
       <div id="themed-result" class="themed-result" role="status" aria-live="polite">${this.message}</div>
       ${flight ? '' : translateText('<section class="themed-paytable-wrap" aria-label="Таблица выплат"><span class="themed-label">Начисление и вероятность</span><div id="themed-paytable" class="themed-paytable"></div></section>')}
       <section class="themed-history-wrap" aria-label="История этой игры"><span class="themed-label">Подтверждённые ставки</span><div id="themed-history" class="themed-history"></div></section>
-      <details class="themed-rules"><summary>Правила и выплаты</summary><p>${flight ? translateText('Множитель растёт во время полёта. Нажми «Забрать» до его завершения или выбери автоматическую цель от 1,10× до 100×. Успешное получение выигрыша подтверждает сервер. Множитель на экране показывает последнее подтверждённое состояние и обновляется примерно раз в секунду. При потере связи показания останавливаются, автоматическая цель сохраняется.') : translateText('Колесо содержит 50 одинаковых по размеру секторов. Каждый сектор выпадает с вероятностью 2%. Риск меняет только таблицу выплат. Указатель всегда показывает сектор, выбранный сервером. Суммарный RTP для каждого риска равен 98%.')}</p><p>Множитель показывает полное начисление, включая возврат ставки. Показанная возможная выплата ещё не является начислением. Выплата округляется вниз до сотой монеты. Это игры на виртуальные монеты.</p></details>`;
+      <details class="themed-rules"><summary>Правила и выплаты</summary><p>${flight ? translateText('Множитель растёт во время полёта. Нажми «Забрать» до его завершения или выбери автоматическую цель от 1,10× до 100×. Успешное получение выигрыша подтверждает сервер. Множитель на экране показывает последнее подтверждённое состояние и обновляется примерно раз в секунду. При потере связи показания останавливаются, автоматическая цель сохраняется.') : translateText('Колесо содержит 50 одинаковых по размеру секторов. Каждый сектор выпадает с вероятностью 2%. Риск меняет только таблицу выплат. Указатель всегда показывает сектор, выбранный сервером. Суммарный RTP для каждого риска равен 98%.')}</p><p>Множитель показывает полное начисление, включая возврат ставки. Показанная возможная выплата ещё не является начислением. Выплата округляется вниз до сотой USDT. Это игры на виртуальные USDT.</p></details>`;
     container.replaceChildren(this.root);
     this.art = new ThemedGameArt(this.element<HTMLCanvasElement>('#themed-canvas'), gameId);
     this.element<HTMLButtonElement>('#themed-play').onclick = () => { void this.play(); };
@@ -126,12 +126,12 @@ export class ThemedGames {
     refresh.disabled = flightClient.loading || flightClient.busy; refresh.textContent = flightClient.loading ? translateText('Восстанавливаем…') : translateText('Восстановить полёт');
     let message = flight ? this.renderFlight() : this.message;
     if (!flight) this.renderWheel();
-    if (!demoWallet.accountId) message = translateText('Войди в онлайн-зал, чтобы играть на демомонеты.');
+    if (!demoWallet.accountId) message = translateText('Войди в онлайн-зал, чтобы играть на USDT.');
     else if (ownPending) message = (flight ? flightClient.error : demoWallet.error) || translateText('Операция ожидает подтверждения. Проверь её перед следующей ставкой.');
     else if (blocked) message = translateText('Сначала проверь предыдущую операцию в её игре или кошельке.');
     else if (flight && flightClient.error) message = flightClient.error;
     if (!busy && !ownPending && !blocked && this.localError) message = this.localError;
-    if (demoWallet.accountId && !busy && !blocked && !ownPending && !active && demoWallet.wallet && demoWallet.wallet.balance < this.amount()) message = translateText('Недостаточно демомонет. Нажми + у баланса или уменьши ставку.');
+    if (demoWallet.accountId && !busy && !blocked && !ownPending && !active && demoWallet.wallet && demoWallet.wallet.balance < this.amount()) message = translateText('Недостаточно USDT. Нажми + у баланса или уменьши ставку.');
     if (!valid && !locked) message = tr`Укажи цель от ${mult(FLIGHT_MIN_AUTO_CASHOUT)} до ${mult(FLIGHT_MAX_MULTIPLIER)} с точностью до 0,01.`;
     this.element('#themed-result').textContent = message;
     this.renderHistory();
@@ -146,13 +146,13 @@ export class ThemedGames {
     this.element('#themed-odds-value').textContent = mult(Number(this.element<HTMLInputElement>('#themed-target').value) || 2);
     this.element('#themed-scene-status').textContent = stale ? translateText('ОЖИДАЕМ СЕРВЕР') : active ? translateText('ПОЛЁТ ПРОДОЛЖАЕТСЯ') : session?.state === 'lost' ? translateText('ПОЛЁТ ЗАВЕРШЁН') : session?.state === 'cashed_out' ? translateText('ВЫПЛАТА ПОДТВЕРЖДЕНА') : translateText('ГОТОВ К СТАРТУ');
     this.element('#themed-flight-value').textContent = active
-      ? stale ? translateText('Показано последнее подтверждённое состояние') : tr`Сейчас можно забрать ${coins(session.cashoutValue)} монет`
-      : session?.state === 'cashed_out' ? tr`Начислено ${coins(session.payout)} монет` : session?.state === 'lost' ? translateText('Без выплаты') : translateText('Выбери цель и отправляйся в полёт');
+      ? stale ? translateText('Показано последнее подтверждённое состояние') : tr`Сейчас можно забрать ${coins(session.cashoutValue)} USDT`
+      : session?.state === 'cashed_out' ? tr`Начислено ${coins(session.payout)} USDT` : session?.state === 'lost' ? translateText('Без выплаты') : translateText('Выбери цель и отправляйся в полёт');
     if (session && session.state !== 'active') {
       const soundKey = `${session.id}:${session.state}`;
       if (this.lastFlightSound && this.lastFlightSound !== soundKey) gameAudio.effect(session.state === 'lost' ? 'crash' : 'win');
       this.lastFlightSound = soundKey;
-      return session.state === 'lost' ? tr`Полёт завершился на ${mult(session.multiplier)}. Без выплаты.` : tr`${session.reason === 'auto' ? translateText('Автоматическая цель достигнута.') : translateText('Выплата подтверждена.')} Начислено ${coins(session.payout)} монет · ${mult(session.multiplier)}`;
+      return session.state === 'lost' ? tr`Полёт завершился на ${mult(session.multiplier)}. Без выплаты.` : tr`${session.reason === 'auto' ? translateText('Автоматическая цель достигнута.') : translateText('Выплата подтверждена.')} Начислено ${coins(session.payout)} USDT · ${mult(session.multiplier)}`;
     }
     if (active) { this.lastFlightSound = `${session.id}:active`; return stale ? translateText('Связь с сервером проверяется. Показания приостановлены, автоматическая цель сохраняется.') : translateText('Можно забрать вручную. Выплату подтверждает сервер в момент получения запроса.'); }
     return flightClient.error || (!flightClient.ready ? translateText('Проверяем незавершённый полёт…') : this.message);
@@ -188,7 +188,7 @@ export class ThemedGames {
       if (item.stake !== undefined && item.payout !== undefined) chip.dataset.result = item.payout >= item.stake ? 'win' : 'loss';
       const stake = document.createElement('span'), payout = document.createElement('strong');
       stake.textContent = item.stake === undefined ? translateText('Ставка вне текущей истории') : tr`Ставка ${coins(item.stake)}`;
-      payout.textContent = item.payout === undefined ? translateText('Игра начата') : tr`${coins(item.payout)} монет`; chip.append(stake, payout); container.append(chip);
+      payout.textContent = item.payout === undefined ? translateText('Игра начата') : tr`${coins(item.payout)} USDT`; chip.append(stake, payout); container.append(chip);
     }
     if (!container.childElementCount) container.textContent = translateText('Здесь появятся подтверждённые результаты.');
   }
@@ -227,9 +227,9 @@ export class ThemedGames {
     const payout = Number(round.payoutUnits) / 100, stake = Number(round.stakeUnits) / 100;
     this.root.dataset.result = payout >= stake ? 'win' : 'loss';
     emitGameOutcome(this.root, round.stakeUnits, round.payoutUnits);
-    this.element('#themed-wheel-value').textContent = tr`${mult(round.multiplier)} · ${coins(payout)} монет`;
+    this.element('#themed-wheel-value').textContent = tr`${mult(round.multiplier)} · ${coins(payout)} USDT`;
     this.element('#themed-scene-status').textContent = translateText('РЕЗУЛЬТАТ ПОДТВЕРЖДЁН');
-    this.message = payout > 0 ? tr`Начислено ${coins(payout)} монет · ${mult(round.multiplier)}. Сектор ${round.outcome.segment + 1} из 50.` : tr`Без выплаты. Ставка ${coins(stake)} монет. Сектор ${round.outcome.segment + 1} из 50.`;
+    this.message = payout > 0 ? tr`Начислено ${coins(payout)} USDT · ${mult(round.multiplier)}. Сектор ${round.outcome.segment + 1} из 50.` : tr`Без выплаты. Ставка ${coins(stake)} USDT. Сектор ${round.outcome.segment + 1} из 50.`;
     if (animate) gameAudio.effect(payout >= stake ? 'win' : 'lose'); this.render();
   }
   private animate(duration: number, draw: (progress: number) => void) {

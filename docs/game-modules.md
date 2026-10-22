@@ -1,18 +1,21 @@
 # Independently published games
 
-Every existing game definition has an independent client package. The catalogue contains 111 module identities across the current and historical game families. This is a technical inventory, not a claim that the hall has 111 visible machines:
+Every existing game definition has an independent client package. The catalogue contains 115 module identities across the current and historical game families. This is a technical inventory, not a claim that the hall has 115 visible machines:
 
 | Family | Module identities |
 | --- | ---: |
 | Studio games, including the eight current native slots | 40 |
 | Original Royal games, GitHub practice games, session games and all casino/card variants, including LAST EXIT | 62 |
 | Air hockey, pool, chess and piano | 4 |
+| Durak, transfer Durak and Crazy Eights PvP | 3 |
 | Breaker, Orbit, Drift and Pixel legacy arcade games | 4 |
 | Luelon and Casino API Pro provider adapters | 2 |
 
 Supported identities and host contracts are in `src/modules/GameModuleCatalog.ts`. Each `games/<slug>/` directory contains its entry, package metadata and TypeScript configuration. GIRLHUB keeps slug `girlhub` and identity `studio-afterglow`. LAST EXIT keeps identity `github-crash` and uses slug `last-exit`. CR vs. Leo keeps its production identity `original-cr-vs-leo` in package `cr-vs-leo`; Royal Plinko keeps the current «Завеса ночи» implementation and its assets. The arcade Orbit uses identity `orbit` and slug `arcade-orbit`, distinct from `studio-orbit`.
 
 The hall keeps its existing visible cabinets, card tables, activities and recovery paths. Historical definitions are packaged without changing their retired status. Provider games remain hosted by their providers; Royal independently packages the local catalogue, launch and iframe adapter for each provider. Their remote game engines are already loaded separately.
+
+The single Nile wallet release hides the two provider demos and the three practice tables with separate chips. Their module identities remain available for historical compatibility. New PvP packages use the optional host `pvp` context for snapshots, legal moves and operation transport. The common backend owns their rules, hidden hands, stakes and settlement. See [PvP and the shared Nile wallet](pvp.md).
 
 
 ## Shared services and saved rounds

@@ -133,7 +133,7 @@ test('all defined games mount as actual independent packages and dispose their s
  page.on('request', request => { if (new URL(request.url()).pathname.startsWith('/assets/')) originalAssetRequests.push(request.url()); });
  await fixture(page);
  const games = await page.evaluate(() => (window as any).moduleHarness.games as string[]);
- expect(games).toHaveLength(111);
+ expect(games).toHaveLength(115);
  const startAt = process.env.ROYAL_MODULE_START_AT;
  if (startAt) expect(games).toContain(startAt);
  const selected = startAt ? games.slice(games.indexOf(startAt)) : games;
@@ -210,7 +210,7 @@ test('failed package loading can retry without creating a wallet operation', asy
   if (attempts === 1) await route.fulfill({ status: 503, body: 'temporarily unavailable' });
   else await route.continue();
  });
- page.on('request', request => { if (request.method() === 'POST' && request.url().includes('/api/demo-wallet')) operations++; });
+ page.on('request', request => { if (request.method() === 'POST' && request.url().includes('/api/game-wallet')) operations++; });
  await page.evaluate(() => (window as any).moduleHarness.open('studio-signal-fox'));
  await expect(page.getByRole('button', { name: 'Повторить загрузку' })).toBeVisible();
  await page.getByRole('button', { name: 'Повторить загрузку' }).click();
@@ -243,12 +243,12 @@ for (const game of ['studio-signal-fox', 'studio-nitro-run', 'studio-afterglow',
  test.setTimeout(publicOrigin ? 90000 : 60000);
  await fixture(page);
  const sent: unknown[] = [];
- if (game === 'studio-afterglow') await page.route('**/api/demo-wallet/afterglow-wardrobe', route => route.fulfill({ json: {
+ if (game === 'studio-afterglow') await page.route('**/api/game-wallet/afterglow-wardrobe', route => route.fulfill({ json: {
   version: 3, revision: 0, selectedGirl: 0, selectedLook: 0, albumUnits: 0,
   pointsUnits: [0, 0, 0, 0], unlocked: [false, false, false, false], active: false, activeGirl: null,
  } }));
- await page.route('**/api/demo-wallet', route => route.fulfill({ json: { balance: 1000, entries: [] } }));
- await page.route('**/api/demo-wallet/expansion', async route => {
+ await page.route('**/api/game-wallet', route => route.fulfill({ json: { balance: 1000, entries: [] } }));
+ await page.route('**/api/game-wallet/expansion', async route => {
   if (route.request().method() === 'GET') return route.fulfill({ json: { wallet: { balance: 1000, entries: [] }, sessions: [] } });
   sent.push(route.request().postDataJSON());
   await route.abort('failed');
@@ -419,7 +419,7 @@ test('provider packages preserve iframe launching and host callbacks without a l
  expect(await page.evaluate(async () => (await (window as any).moduleHarness.selectedDemo()).id)).toBe('module-provider-second');
  await page.evaluate(() => (window as any).moduleHarness.close());
  await expect(page.locator('iframe')).toHaveCount(0);
- await page.route('**/api/demo-wallet', route => route.fulfill({ json: { balance: 1000, entries: [] } }));
+ await page.route('**/api/game-wallet', route => route.fulfill({ json: { balance: 1000, entries: [] } }));
  await page.route('**/api/casinoapipro/status', route => route.fulfill({ json: { configured: true, walletConnected: true, currency: 'DEMO', playerId: 'provider-fixture', balance: '1000.00' } }));
  await page.route('**/api/casinoapipro/games', route => route.fulfill({ json: { games: [{ id: 'fixture-slot', slug: 'fixture-slot', name: 'Connected fixture', category: 'SLOTS', minBet: '1', maxBet: '100' }] } }));
  let launches = 0;
