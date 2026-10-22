@@ -11,6 +11,16 @@ spec.loader.exec_module(cleanup)
 
 
 class HistoryScopeTest(unittest.TestCase):
+    def test_service_guard_ignores_mount_order_but_checks_mount_content(self):
+        mounts = [{'Source': '/keep-a', 'Destination': '/a', 'RW': False},
+                  {'Source': '/keep-b', 'Destination': '/b', 'RW': True}]
+        container = {'Id': 'same', 'Image': 'same-image', 'State': {'StartedAt': 'same-time'}, 'Mounts': mounts}
+        first = cleanup.service_identity(container)
+        container['Mounts'] = list(reversed(mounts))
+        self.assertEqual(first, cleanup.service_identity(container))
+        container['Mounts'] = [{**mounts[0], 'Source': '/changed'}, mounts[1]]
+        self.assertNotEqual(first, cleanup.service_identity(container))
+
     def test_keeps_current_and_only_deletes_reviewed_entries(self):
         with tempfile.TemporaryDirectory() as base:
             root = Path(base)

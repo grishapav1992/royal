@@ -114,11 +114,15 @@ def modules():
             if path.is_file() and not path.is_symlink()}
 
 
+def service_identity(container):
+    return {'id': container['Id'], 'image': container['Image'], 'started': container['State']['StartedAt'],
+            'mounts': sorted(container['Mounts'], key=lambda mount: mount['Destination'])}
+
+
 def persistent_services():
     ids = run(['docker', 'ps', '-q']).split()
     data = json.loads(run(['docker', 'inspect', *ids]))
-    return {c['Name']: {'id': c['Id'], 'image': c['Image'], 'started': c['State']['StartedAt'],
-                       'mounts': c['Mounts']} for c in data if c['Name'] not in PERIODIC}
+    return {c['Name']: service_identity(c) for c in data if c['Name'] not in PERIODIC}
 
 
 def healthy():
