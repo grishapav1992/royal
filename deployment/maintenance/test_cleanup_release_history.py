@@ -4,6 +4,7 @@ from pathlib import Path
 import tempfile
 import time
 import unittest
+from unittest.mock import Mock, patch
 
 spec = importlib.util.spec_from_file_location('cleanup', Path(__file__).with_name('cleanup-release-history.py'))
 cleanup = importlib.util.module_from_spec(spec)
@@ -11,6 +12,13 @@ spec.loader.exec_module(cleanup)
 
 
 class HistoryScopeTest(unittest.TestCase):
+    def test_image_references_use_the_existing_stable_container_inventory(self):
+        helper = Mock()
+        helper.container_rows.return_value = [{'image': 'active'}, {'image': 'another'}, {'image': 'active'}]
+        with patch.object(cleanup, 'native_retention', return_value=helper):
+            self.assertEqual(cleanup.referenced_images(), {'active', 'another'})
+        helper.container_rows.assert_called_once_with()
+
     def test_new_unreviewed_release_is_preserved_during_exact_cleanup(self):
         with tempfile.TemporaryDirectory() as base:
             root = Path(base)

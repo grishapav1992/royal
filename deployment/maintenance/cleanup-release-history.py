@@ -206,9 +206,7 @@ def recovery(release):
 
 def image_candidates(protected):
     ids = set(run(['docker', 'image', 'ls', '--filter', 'reference=royal-game:*', '-aq', '--no-trunc']).split())
-    containers = run(['docker', 'ps', '-aq']).split()
-    if containers:
-        protected |= {c['Image'] for c in json.loads(run(['docker', 'inspect', *containers]))}
+    protected |= referenced_images()
     result = []
     candidates = sorted(ids - protected)
     rows = json.loads(run(['docker', 'image', 'inspect', *candidates])) if candidates else []
@@ -218,6 +216,11 @@ def image_candidates(protected):
         if tags and all(tag.startswith('royal-game:') for tag in tags):
             result.append({'id': identity, 'tags': sorted(tags), 'created': row['Created']})
     return sorted(result, key=lambda row: row['created'], reverse=True)
+
+
+def referenced_images():
+    # The installed helper retries known periodic containers that exit during inspection.
+    return {row['image'] for row in native_retention().container_rows()}
 
 
 def verify(plan):
@@ -249,8 +252,7 @@ def apply(plan, state):
         write(state / 'progress.json', {'removedEntries': removed})
     removed_tags, retained_images = [], []
     for row in plan['images']:
-        live_ids = run(['docker', 'ps', '-aq']).split()
-        referenced = {c['Image'] for c in json.loads(run(['docker', 'inspect', *live_ids]))}
+        referenced = referenced_images()
         require(row['id'] not in referenced | {plan['currentImage'], plan['rollbackImage']}, 'Image acquired a container reference')
         try:
             actual = docker_object('image', row['id'])
