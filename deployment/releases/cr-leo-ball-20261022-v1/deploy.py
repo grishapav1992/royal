@@ -116,8 +116,11 @@ def restore():
         for name in M['changes']:
             target = ROOT / 'restore' / name
             target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_bytes(archive.extractfile(name).read())
-            atomic(target, LIVE / name)
+            if name in OLD['source']:
+                target.write_bytes(archive.extractfile(name).read())
+                atomic(target, LIVE / name)
+            else:
+                (LIVE / name).unlink(missing_ok=True)
     write('recovered.json', {'priorPointerAndSourceRestored': True, 'immutableVersionRetained': True, 'databaseTouched': False})
 
 
