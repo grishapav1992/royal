@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
+import {GAME_MODULES} from '../src/modules/GameModuleCatalog';
 import { createServer, type ViteDevServer } from 'vite';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
@@ -133,7 +134,7 @@ test('all defined games mount as actual independent packages and dispose their s
  page.on('request', request => { if (new URL(request.url()).pathname.startsWith('/assets/')) originalAssetRequests.push(request.url()); });
  await fixture(page);
  const games = await page.evaluate(() => (window as any).moduleHarness.games as string[]);
- expect(games).toHaveLength(111);
+ expect(games).toHaveLength(GAME_MODULES.length);
  const startAt = process.env.ROYAL_MODULE_START_AT;
  if (startAt) expect(games).toContain(startAt);
  const selected = startAt ? games.slice(games.indexOf(startAt)) : games;

@@ -77,3 +77,11 @@ The completed local migration passed the full application build, five catalogue/
 ## Dracona
 
 `games/dracona/` registers `studio-dracona` with host API 1, server rules 2 and progress contract 1. The common backend owns its clustered cascades, reserve exchanges, persistent bonus and rune state. Paid starts and free continuation use the existing serialized expansion transport and shared demo wallet. Responses include only the already used entropy needed to validate the presentation. Closing and reopening preserves the server session and pending operation UUID. The module uses an iframe that follows the actual host stage size, preserving the connected chat on desktop and mobile.
+
+## Shared cabinet platform
+
+The first floor has 20 cabinets, each with a fixed default game and matching game artwork. Entering opens that game directly. All games opens the same catalogue in every cabinet: all 40 copied Studio games, LAST EXIT, the native Plinko and CR vs. Leo under RoyalGames, nine current GitHub games and the available Casino API Pro catalogue. Physical cabinet occupancy is independent of the selected game module. Switching keeps the seat, chat and shared wallet services. Closing releases the seat; reentry opens the cabinet default and saved game rounds remain recoverable.
+
+Casino API Pro accepts an optional embedded provider context. The shared host owns its window and navigation, while the provider adapter rechecks configuration, wallet acknowledgement and game availability. The existing launch URL validation and iframe sandbox remain active. Switching cancels provider requests, polling and the iframe without releasing the seat. Standalone provider callbacks remain compatible. The original remote Luelon demo catalogue is outside the platform.
+
+Existing native artwork, the small startup previews, preparation cache, latest chat implementation, server engines, payout rules and wallet transport are preserved. GitHub decoration is scoped to the current nine GitHub identities; native Plinko keeps its production design. Use the platform browser scenarios with the real host and connected chat on desktop and mobile, and verify package integrity and recovery before publication.

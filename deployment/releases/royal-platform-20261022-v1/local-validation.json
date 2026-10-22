@@ -1,0 +1,12 @@
+{
+  "applicationBuild": "passed",
+  "catalogueAndModuleChecks": 9,
+  "realHostScenarios": 3,
+  "otherModuleBrowserScenarios": 21,
+  "allModulesScenario": {
+    "result": "passed",
+    "mountedAndDisposed": 112
+  },
+  "providerLaunch": "mocked provider responses; no production wager",
+  "sourcePreservation": "latest server, wallet, native game rules and chat sources preserved byte-for-byte"
+}

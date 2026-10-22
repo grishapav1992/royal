@@ -1,0 +1,181 @@
+{
+  "release": "github-motion-20261022-v1",
+  "baseCommit": "0e5fbaabc014178683d5d0fdb9beda32c32fe669",
+  "sourceChanges": {
+    "docs/imported-game-motion.md": "567c2d0f75b7156b05cf2d67ddb2d23d4ea4e8a4b141482774209d5e667271cc",
+    "games/royal-fruits/entry.ts": "2c1e7b3e998e9162fe772d0bc9163491cbabd3a2fd7cfcec76d24b3d98faf566",
+    "games/royal-dice/entry.ts": "1a325c3d93f0eab66ed998f085dde0b852c43bd9bf98dafdfadbd9baba6ea71d",
+    "games/royal-limbo/entry.ts": "8a04e45c24b85a7a1f8f3dcaadbbe48ffd05edd7729f0d8e2556df107c862b06",
+    "games/royal-mines/entry.ts": "8c57fcd8a4a2ebaa1f8837f6c6860a0b49f4bc603353a8dac2bc03970337a9b2",
+    "games/royal-keno/entry.ts": "5cd478a3ecdc45faba65a47705aebbb358c7a3155a440c14aa2c5b21e5583d28",
+    "games/github-craps/entry.ts": "4377603d86aafa8b663dd787c025ef5f1c5f184cb1d9a127883eec121424cb0a",
+    "games/github-tower/entry.ts": "7bc9ac74f1d321c61d5af5f242083a711ecef9a960bef376138571c9f3305762",
+    "games/github-diamonds/entry.ts": "05529fe4e8d408de9aa05b7e26eeebf6d51d0b282ca561993b126e7aa2b88ca7",
+    "games/github-sic-bo/entry.ts": "108e2ad9c88000df974494fadd2dd966ea0efe0e2d9753fcfd85184bf9dc64d5",
+    "src/ui/CasinoConfirmedMotion.ts": "46d55c5572740680d11a1194d55442a5246d945796e2c2cf37a5f6b1cc4511b0",
+    "src/ui/CasinoSessionsUI.ts": "10b9622653a98dfbc1deea4c600926519b8f684a6ebd52f1a5d169b6334eecbe",
+    "src/ui/DiceSlotUI.ts": "79fc55a6491748554b7952a1ea9ba0e4ef058d68daf26552dd38b43ba813d041",
+    "src/ui/FruitsReels.ts": "45c3f7ff6150bfaeecd3d4b169227307898a9386ff7cfe1579f5a769d1584448",
+    "src/ui/FruitsSlotUI.ts": "04a12ac36220bae6b0531d56c2d139e2848527b41765b17857a321223c7f7142",
+    "src/ui/GithubGames.ts": "638b7204d1c7db7370f529f5cf82414bd5ed52c6e88ba93e0b8335a7a61a1065",
+    "src/ui/LimboSlotUI.ts": "7a6b2c2dcb81efbbbbb13b35524807db665719d311a3fc2c8041dc51a3cbfa43",
+    "src/ui/OriginalGameView.ts": "604f9a3ba79a481bfeb322c94329ee74499ba94f93461825b04662331a882f12",
+    "src/ui/importedMotion/Audio.ts": "2cc55d92c5a1091dc9efac57db8944f0a2daef179dd8ecd7d9608f9fc6d2d922",
+    "src/ui/importedMotion/ImportedMotion.ts": "87718b839c23c6ae30cae1f4c629beaea9b3b47d09588de1aefec071d25d7ab5",
+    "src/ui/importedMotion/Outcome.ts": "38eb12bff5e798447b2f98e3627206fd9ba2ee1af9777a9541f2568b9c1f284c",
+    "src/ui/importedMotion/Profiles.ts": "0ec8b8ba3744e93c48e6b23e9400c3fbc81b7958a62fd93181139b8fb80607e7",
+    "src/ui/importedMotion/imported-motion.css": "d6d8fbd9f474c0b8c5496920c9c989afe7a1906f839e499625e74ef5bea137f6"
+  },
+  "games": {
+    "royal-fruits": {
+      "version": "1.0.0-c3b6167b7b04",
+      "sourceSha256": "c3b6167b7b04ea02a9a69c09a053a9150d9dbe1dba634d1a071d93c2b342fd48",
+      "priorPointerSha256": "none",
+      "files": {
+        "manifest.json": "368897cf2af9bc51d1a46662e015c1ad74844a46c1f8483425d22bd42ae3390d",
+        "entry-66515812b5a396e9.js": "66515812b5a396e9617b0c9abda9df3047c34c89592c04335dc6b5b6065305cc",
+        "style-9a4ad0542bada881.css": "9a4ad0542bada8812b289a1104500e5a7b0c3bd43bb25c68c337a55d913f4c49"
+      }
+    },
+    "royal-dice": {
+      "version": "1.0.0-ff0cac711ced",
+      "sourceSha256": "ff0cac711cede4599bdde0f485a4bf487fc7141bb8170af89e89abc39a0ffe4b",
+      "priorPointerSha256": "none",
+      "files": {
+        "manifest.json": "aba99941111eda4419b2fe429e1bf0aab795a0dd19414a34e27c6cdd886f4895",
+        "entry-0d53b09eae1afe55.js": "0d53b09eae1afe554938ac9f97ed2477ae5a71eee31daad546266835833d41ec",
+        "style-4fc6836dbc89bfe7.css": "4fc6836dbc89bfe79832665ea1e708c7eb451f94ad1e0cee0a7f9a2413f8b0a9"
+      }
+    },
+    "royal-limbo": {
+      "version": "1.0.0-eff21c9ec91e",
+      "sourceSha256": "eff21c9ec91e3efce9e1fef717214e3b4daa337fb35cef99f6777803a4951943",
+      "priorPointerSha256": "none",
+      "files": {
+        "manifest.json": "b3d77430b2855457c1924b92ed23a9935c57847610ce6894839187cf77bf5a05",
+        "entry-e5e907bd75b6ac24.js": "e5e907bd75b6ac24e64f625fc70d1c7d85fb3aed57e6b51577c0b5b7703ed398",
+        "style-7594545b5c52f377.css": "7594545b5c52f3775a77aa9f82a6908e7107042ac85ea49601f7dde15bb8f777"
+      }
+    },
+    "royal-mines": {
+      "version": "1.0.0-291762f5e7c6",
+      "sourceSha256": "291762f5e7c66f86fb4ec5618692484bf444a667d7114709148b5229cab3bf05",
+      "priorPointerSha256": "none",
+      "files": {
+        "manifest.json": "74df6c3b6598aeae1e87f6db472a7856e83671053291961bec7b0f044ede7f3e",
+        "entry-7ef5f56abc79ebe7.js": "7ef5f56abc79ebe7a21735780dba3e7eb4a5df9f31ea034278428c6e637ad9f0",
+        "style-2798e0d52d80ab1d.css": "2798e0d52d80ab1dd8383e7ebb2f615a1a15e954295c8dca68b1f4024b83d5bc"
+      }
+    },
+    "royal-keno": {
+      "version": "1.0.0-6b431980ebf1",
+      "sourceSha256": "6b431980ebf170bd4f4b88716c748d86354a16441588769a76c1bb1c4f5f5ad7",
+      "priorPointerSha256": "none",
+      "files": {
+        "manifest.json": "78f8bad2f42ac74a1ec4fa369c5e28e57593673a68e0bb97d3aa16b70e8bb3d5",
+        "entry-21eac8b6d88368a1.js": "21eac8b6d88368a10f24a50eda790a75b5426e08b767d8eee075363ed29cec17",
+        "style-2798e0d52d80ab1d.css": "2798e0d52d80ab1dd8383e7ebb2f615a1a15e954295c8dca68b1f4024b83d5bc"
+      }
+    },
+    "github-craps": {
+      "version": "1.0.0-8870509e5510",
+      "sourceSha256": "8870509e5510e41e0119015ddac7b5d1e66ad12b994342b420fd9208353aba17",
+      "priorPointerSha256": "none",
+      "files": {
+        "manifest.json": "13fc35c7729d6fb71144f5985e7c1ba558108e973a73ea17ce6bc1080dde4858",
+        "entry-1be66a0843e024ac.js": "1be66a0843e024ac88e37011ed038363a3e972f47916be00a4aca1d8a7ebd0c5",
+        "media/github-cards/2C.svg": "7add295eca173f92a7e94923dd83d4be88c121fe1f80dd3498b6ed4a9362c51a",
+        "media/github-cards/2D.svg": "11ad0de2fa409f51f2dbd11ea70774661b825efb075688ee774ed57f2579fe14",
+        "media/github-cards/2H.svg": "9d73eee3985b38f11fbb010a442eaa20a44ce94abb41ca6df3d8e61ed6256fac",
+        "media/github-cards/2S.svg": "8b3edf0f52c78935cb93fdb21628dcf725b44f8c686807daaa588fbbe7214747",
+        "media/github-cards/3C.svg": "e7c9fa6309a2d8b303a32b65c0cced39c2f1891a7f912defac43d993d869c16d",
+        "media/github-cards/3D.svg": "fcef35d60cd4ca099b753110d8c32db8ebb1cdd6de201c8a759740b74ae8c7a9",
+        "media/github-cards/3H.svg": "427797d5e06b9926dab40626b10b795cee2b7ac95d1c159436785f96730e767e",
+        "media/github-cards/3S.svg": "1e86577671ec30024f986006a4e3963a6d5909d19edf5641c034c9b1252ba7fd",
+        "media/github-cards/4C.svg": "7bd407fb54268793ea80cec235670d5f5d7981f3d608cd90fbef321674205d4e",
+        "media/github-cards/4D.svg": "77b266d257d61ac2734eacf3c645e0be3eb4967be55aa7332111449daa1cb28b",
+        "media/github-cards/4H.svg": "a28c9ad0ad57bd2c1b9afee9713d64dab290bd11f1c4e95af65e4b4dde9b0f8f",
+        "media/github-cards/4S.svg": "2760714bf1eabb0bae051a75cfbbe3403c2fd38011ed60d5e55bc231423f503c",
+        "media/github-cards/5C.svg": "17ea29a3e9c70f742b938b6f133a8d12c8a5edbe73dead11a11d1e1c8d1dfed0",
+        "media/github-cards/5D.svg": "22821fe17b3c41909e6d2fba9d0ef306dbd493ca12df63c849f33bb3a2f773cd",
+        "media/github-cards/5H.svg": "bc012b5dcb04708de1dfa67506a04b1ec7f6e212a3156e03ff44bcbe171eaec6",
+        "media/github-cards/5S.svg": "7729f6838b96314e28ad2c94771d658a6f0d4cafe80f4638c7d508fcaad13115",
+        "media/github-cards/6C.svg": "4e3c50dc57415651d212223c452ce7555e80f41739bc20ea7ff56f19b21e0a9f",
+        "media/github-cards/6D.svg": "0539ebb73f07b326d32ccd69dfe802889d2a517d2654893521e3d09ff2dce1ae",
+        "media/github-cards/6H.svg": "12aea20b64835b57d1e8e28d9852f35b581abe12531044df7eb7943a47303c29",
+        "media/github-cards/6S.svg": "1d56cd429abc5feab9bbf2254cad434cb4e5e61e2e5ca4517ad341167047bf45",
+        "media/github-cards/7C.svg": "7e684abdd50a76b6acff616a7dd3866392fc8daa8a2a616a642fcd024983de76",
+        "media/github-cards/7D.svg": "913153ac472ee5a76f82e57b1aaede4f90a93f443ce80ddc78c202d151fc1708",
+        "media/github-cards/7H.svg": "341b7075cc4cb32bd5e30d426adb1709e02f5a99b547d0de632f90d7c8ce2626",
+        "media/github-cards/7S.svg": "49a910eab9963fa75825eb5dab9613d5e33ae903580a050c32149c67c9883d41",
+        "media/github-cards/8C.svg": "8f5b28dd1c3321e1511f6ecf32c184b3134bf3dceda6fd6e3bb034ad2c0468c8",
+        "media/github-cards/8D.svg": "dbe912366f941332b7b07c032fbbe927e09d616c37245149a26df03bc6ccbed2",
+        "media/github-cards/8H.svg": "b8989945296253cdf3029d892ef05bdca90aa2b2f1fa5fe2b6d018e0d6c20412",
+        "media/github-cards/8S.svg": "0429e775b7efef53153f51f00b2780c96a2f355f0bed0ba8fb520ff697b52b07",
+        "media/github-cards/9C.svg": "75b7b087ca1d94d9e2605cf40fbdf76a1f28961b6786e780d89c2057ada60971",
+        "media/github-cards/9D.svg": "907c8ea6a27bda9ebadebf50ca50fa7103a671366b99966cb61c0ac003ac116c",
+        "media/github-cards/9H.svg": "a37373029883529c1be9aa46d142ced3dd3ab76b5bcb9f50098fb643976aea2c",
+        "media/github-cards/9S.svg": "168238e0988fc7f53e85fabcd11dc2d94f08e49a414202a501a8f10b32e44af2",
+        "media/github-cards/AC.svg": "8ec005af6f67d04144486bd23dc11648813db121a1854c7b99ca120221290ee3",
+        "media/github-cards/AD.svg": "099c44595399d54fcfa8eca216a8a7a5b65a5c11bfabe3d64c1abf24d1ed54b8",
+        "media/github-cards/AH.svg": "de2ecf580d30c30930ae3a7249c61b9215c12d3718cb9d8a3d57b07e83d6be2e",
+        "media/github-cards/AS.svg": "2e107bcfff5a06c66e4cebfca8e432720840974cab0900db1239de48fb832bb0",
+        "media/github-cards/cardBack.svg": "1f6936e52aa1459f0e57b8eb7201c1afa65c4efecff4f119070286ae7b7019e4",
+        "media/github-cards/JC.svg": "bcc2997dce357462ed367d7ffca91ba6d73441b6e49614d17b112658ee9f1434",
+        "media/github-cards/JD.svg": "06da71ee248264bac1f98a370cbe495e0674dbd71aceff933b97ddfa1d5de659",
+        "media/github-cards/JH.svg": "31d34eb3200d21a3ef6f81066a1aec877a91e4da7520e57cfa2cc0d33a4836e3",
+        "media/github-cards/JJ.svg": "e08a03296ce82b38d5cf6c22dc2636014bff00f4706d5c5a1bd37f77b36ba7f6",
+        "media/github-cards/JS.svg": "90588d5da12a36b89988ce5f46cc45cf0f16e39dee18a26a39b9b04f879c81cb",
+        "media/github-cards/KC.svg": "f1d0c8c22a629db51f440e5605f8bd351213a3d35ace516bdba5b395b02064e9",
+        "media/github-cards/KD.svg": "f778c231173f45924941133969c02d0bcd75c777396df351e6d823e7a0a36c08",
+        "media/github-cards/KH.svg": "416b0907601ecd1e692cd32fbe0b4c3d0b035991ca236f5f113b150368d80e45",
+        "media/github-cards/KS.svg": "5902f595c43d78096b9a053bf8f7f7ca24646c1c887b3b6b5b685416907d81e5",
+        "media/github-cards/QC.svg": "6d51fe2e418a7b16c97dc9130de55658ebaac2400fe71bb3e9024e5752500d93",
+        "media/github-cards/QD.svg": "1057fab72f1e62ae4fdbbc5976fd894742053648300f37278db778983f22fdbb",
+        "media/github-cards/QH.svg": "c2731e8410e4e2b11f547c8736011291ef70dad599e1334940735f1dbb9fea20",
+        "media/github-cards/QS.svg": "20fb4a145eb6b834b048c2feeb1589bb0959dd1f5b2b887110c65cebefe5a984",
+        "media/github-cards/TC.svg": "9754f017f022e088975ef3b32cdd087088c77b4b2b77e3dfe2554ca4c7c6d316",
+        "media/github-cards/TD.svg": "47c7cd27aeabaea9d1cbfc491e1151f4c92364c7819b5c5a5e73e1a81fa788c2",
+        "media/github-cards/TH.svg": "15880bbb866f07709b8804d522ec6efddaa03cc5c6d2165e6c14ccf946588072",
+        "media/github-cards/TS.svg": "ec9104cfa7038f6dc315b47c546317eb2555b098ce9941ee3e5058e2da7f177b",
+        "style-f8396cc093f942bd.css": "f8396cc093f942bd1942460e253b6193fe63d7b7d53c194e753d8676218a5364"
+      }
+    },
+    "github-tower": {
+      "version": "1.0.0-4accc5deecb2",
+      "sourceSha256": "4accc5deecb22eddd873ce77dcac262783038a595d555fd76efca9a4d0cd5b00",
+      "priorPointerSha256": "none",
+      "files": {
+        "manifest.json": "201be2571ef5f3721432bce816a9b5b43df94e2ce6e017ef9a46c42a92553cdc",
+        "entry-4dac1752a5308679.js": "4dac1752a53086791e3ba9d7bdbe3e90f3ad78c960550deb6c12c95427251f4e",
+        "style-b4fe70e6e7c0eefa.css": "b4fe70e6e7c0eefa4e3c9e228fabf68389ab84b78ef1e711a047d6985f49ec76"
+      }
+    },
+    "github-diamonds": {
+      "version": "1.0.0-4494c589898b",
+      "sourceSha256": "4494c589898b5b37dc4fd2cd7679487ad52db3e10ea8ef2bd2ad55a65a7a112b",
+      "priorPointerSha256": "none",
+      "files": {
+        "manifest.json": "7987a1109860845a2d50b428566f990c6cab676ba0b0982a8540357882d6789e",
+        "entry-04248231e854665c.js": "04248231e854665c9ba9b1367368add18cf839330b1a0a6a0e01d7f5d9f0886e",
+        "style-80f11d1bf59cf0d8.css": "80f11d1bf59cf0d8760665cc448184c361502b7255e88a9e41611ed2bb272e1b"
+      }
+    },
+    "github-sic-bo": {
+      "version": "1.0.0-948eda7aa5c8",
+      "sourceSha256": "948eda7aa5c828a756dd313b1a92cffada0beede41b1a8cdddf12b99a31bdb81",
+      "priorPointerSha256": "none",
+      "files": {
+        "manifest.json": "44066c6f8eac9c0849c1e29480f769e8e0ca721a827be29f7bbf7878b390b548",
+        "entry-4d2c952ccee43995.js": "4d2c952ccee439956f02ec89cbb7ce495a3879546c7cdbfcdd85b416b4a98c27",
+        "style-80f11d1bf59cf0d8.css": "80f11d1bf59cf0d8760665cc448184c361502b7255e88a9e41611ed2bb272e1b"
+      }
+    }
+  },
+  "sourceFilesBefore": 1583,
+  "unchangedQualifiedSources": 1565,
+  "hostProgramsUnchanged": true,
+  "hostApiVersion": 1,
+  "royalGamesUnchanged": true,
+  "externalModuleFilesPreserved": 303
+}

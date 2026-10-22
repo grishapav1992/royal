@@ -1,4 +1,5 @@
 import { shotZone, type PenaltyHero, type PenaltyRisk, type PenaltyShot } from '../shared/crLeo';
+import { createPitch } from './crLeoPitch';
 
 const clamp = (n: number) => Math.max(0, Math.min(1, n));
 const hermite = (a: number, b: number, start: number, end: number, v: number) => (2*v*v*v-3*v*v+1)*a+(v*v*v-2*v*v+v)*start+(-2*v*v*v+3*v*v)*b+(v*v*v-v*v)*end;
@@ -12,13 +13,12 @@ export function isWallHit(shot?: PenaltyShot, risk?: PenaltyRisk) {
   return kind === 'sharp' ? column >= 1 && column <= 4 : kind === 'extreme' && (column === 2 || column === 3);
 }
 export function shotLayout(w: number, h: number, hero: PenaltyHero, risk: PenaltyRisk) {
-  const near = risk === 'sharp', far = risk === 'extreme', free = near || far, sign = hero === 'cr' ? 1 : -1;
-  const goal = { x: w * .5 + (free ? sign * Math.min(w * (far ? .035 : .07), h * (far ? .05 : .10)) : 0), bottom: h * (far ? .47 : near ? .49 : .55), width: Math.min(w * (far ? .55 : near ? .68 : .72), h * (far ? .54 : near ? .72 : .94)), height: 0 };
-  goal.height = goal.width / 3;
-  const ball = { x: w * .5, y: h * (far ? .85 : near ? .83 : .80) };
+  const near = risk === 'sharp', far = risk === 'extreme', free = near || far;
+  const pitch = createPitch(w, h, hero, risk), { goal, ball } = pitch;
   const crossing = wallCrossing(risk);
-  const wall: FreeKickWall | undefined = free ? { x: ball.x + (goal.x - ball.x) * crossing, bottom: h * (far ? .70 : .66), size: h * (far ? .36 : .34), spacing: Math.min(h * (far ? .10 : .085), w * .09), height: h, count: far ? 3 : 5, crossing, risk } : undefined;
-  return { near, far, free, goal, ball, wall, keeperScale: free ? goal.width / (h * .94) : 1 };
+  const wallZ = pitch.distance - 9.15, wallX = pitch.cameraX * wallZ / pitch.distance, wallGround = pitch.project(wallX, wallZ);
+  const wall: FreeKickWall | undefined = free ? { x: wallGround.x, bottom: wallGround.y, size: pitch.scale(wallZ) * 1.85 / .90, spacing: pitch.scale(wallZ) * .50, height: h, count: far ? 3 : 5, crossing, risk } : undefined;
+  return { near, far, free, goal, ball, wall, pitch };
 }
 export function wallMotion(u: number, height: number, hit = false, crossing = WALL_CROSSING) {
   const impacted = hit && u >= crossing;

@@ -102,10 +102,10 @@ test('real API retries a lost result once, restores collection and bonus, and se
 
 test('real host opens the cabinet with connected chat on desktop and mobile', async ({ page }) => {
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
-  const hostApi = await apiRequest.newContext({ baseURL:'http://127.0.0.1:5216' });
+  const hostApi = await apiRequest.newContext({ baseURL:test.info().project.use.baseURL });
   const auth = await hostApi.post('/api/auth/login', { data:{email:'neopolis-room-' + crypto.randomUUID() + '@example.test',password:'Neopolis-room-review-42!'} });
   expect(auth.ok()).toBe(true); await hostApi.post('/api/auth/character', {data:{skin:0}});
-  const peer = await new Client('http://127.0.0.1:2616', { headers:{Cookie:auth.headers()['set-cookie'].split(';')[0]}, fetchFn:async (url, options) => {
+  const peer = await new Client('http://127.0.0.1:' + (process.env.NEOPOLIS_API_PORT || '2616'), { headers:{Cookie:auth.headers()['set-cookie'].split(';')[0]}, fetchFn:async (url, options) => {
     const response = await hostApi.fetch(String(url), {method:options?.method,headers:Object.fromEntries(new Headers(options?.headers)),data:options?.body as string});
     return new globalThis.Response(await response.body(), {status:response.status(),headers:response.headers()});
   } }).create('lobby');
@@ -116,7 +116,7 @@ test('real host opens the cabinet with connected chat on desktop and mobile', as
     await page.goto('/?lang=en&room=' + peer.roomId);
     await expect(page.locator('#join-dialog')).toBeHidden({timeout:30000});
     await page.waitForFunction(() => (window as any).royalDemo?.getState().online === true);
-    await page.locator('#games-tab').click(); await page.locator('[data-studio=studio-neopolis]').click();
+    await page.locator('#games-tab').click(); await page.locator('[data-cabinet=studio-neopolis]').click();
     await expect(page.locator('#mini-dialog[open] .np')).toBeVisible({timeout:45000});
     await expect(page.locator('#mini-dialog #club-chat-dock')).toBeVisible();
     await expect(page.locator('#mini-dialog #chat-input')).toBeEnabled();
@@ -138,6 +138,14 @@ test('real host opens the cabinet with connected chat on desktop and mobile', as
       await expect(page.locator('.np [data-np=spin]')).toBeInViewport();
       await page.screenshot({path:'test-results/neopolis/review/host-' + width + '-en.png'});
     }
+    await page.locator('#studio-game-list').click();
+    await expect(page.locator('#mini-dialog')).toHaveAttribute('data-game','royal-catalog');
+    const choice = page.locator('[data-platform-game=studio-neopolis]');
+    await expect(choice).toBeVisible();
+    await expect(choice.locator('img')).toHaveAttribute('src','/assets/neopolis/cover-catalog-v2.webp');
+    await choice.click();
+    await expect(page.locator('#mini-dialog .np h1')).toHaveText('Guardians of Neopolis');
+    await expect(page.locator('#mini-dialog #chat-input')).toBeVisible();
     await page.locator('#mini-dialog .mini-top [data-close]').click();
     await expect(page.locator('#mini-dialog')).toBeHidden();
     await expect(page.locator('#club-chat-dock')).toBeVisible();

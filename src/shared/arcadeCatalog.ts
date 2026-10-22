@@ -14,12 +14,11 @@ export const ARCADE_CLASSIC_GAMES = [
 ] as const;
 export const ARCADE_PROVIDER_GAMES = ['casinoapipro', 'luelon'] as const;
 export const ACTIVE_ARCADE_GAMES: readonly string[] = [
-  ...ACTIVE_STUDIO_GAMES, ...ARCADE_CLASSIC_GAMES, ...ARCADE_PROVIDER_GAMES,
+  ...ACTIVE_STUDIO_GAMES, ...ARCADE_CLASSIC_GAMES,
 ];
 
 // Historical game definitions remain available to validate and finish saved rounds.
 export const RETIRED_ARCADE_GAMES: readonly string[] = [
-  ...STUDIO_GAMES.filter(id => !(ACTIVE_STUDIO_GAMES as readonly string[]).includes(id)),
   ...VARIANT_GAMES.filter(id => !isCardGame(id)),
 ];
 const retired = new Set<unknown>(RETIRED_ARCADE_GAMES);
@@ -34,3 +33,9 @@ export const ARCADE_CABINET_POSITIONS: Readonly<Record<string, {x:number;y:numbe
   ...Object.fromEntries(ARCADE_HOUSE_GAMES.map((id,index) => [id, {x:1200+index%5*135, y:430+Math.floor(index/5)*270}])),
   ...Object.fromEntries(ARCADE_GITHUB_GAMES.map((id,index) => [id, {x:1950+index%5*140, y:760+Math.floor(index/5)*250}])),
 };
+
+// A cabinet's seat is independent from the module selected in its catalogue.
+export const STUDIO_CABINET_GAMES = ACTIVE_STUDIO_GAMES;
+export const ROYAL_PLATFORM_GAMES: readonly string[] = [...STUDIO_GAMES, ...ARCADE_CLASSIC_GAMES];
+export const PLATFORM_CABINET_DEFAULTS: Readonly<Record<string,string>> = Object.freeze(Object.fromEntries(ACTIVE_ARCADE_GAMES.map(id=>[id,id])));
+export const isPlatformGame=(id:string):boolean=>id==='casinoapipro'||ROYAL_PLATFORM_GAMES.includes(id);

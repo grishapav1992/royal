@@ -1,3 +1,5 @@
+import { emitImportedOutcome } from './importedMotion/Outcome';
+import { decorateImportedGame } from './ImportedGameThemes';
 import { t as translateText, tr, locale } from '../i18n/index';
 import { emitGameOutcome, observeGameOutcome } from './gameReactions';
 import '../original-games.css';
@@ -65,6 +67,7 @@ export class OriginalGameView {
         <div class="original-board-wrap"><div id="original-board" class="original-board">${this.boardMarkup()}</div><div id="original-paytable" class="original-paytable"></div></div></div>
       <div id="original-result" class="original-result" role="status" aria-live="polite">${this.message}</div><section class="original-history-wrap" aria-label="История этой игры"><span class="original-label">Последние ставки</span><div id="original-history" class="original-history"></div></section>
       <details class="original-rules"><summary>Правила и выплаты</summary><p>${detail.rules}</p><p>Множители показывают полное начисление. Выплата округляется вниз до сотой монеты. Результат и баланс подтверждает сервер.</p><p id="original-rtp"></p></details>`;
+    decorateImportedGame(this.root, this.gameId);
     container.replaceChildren(this.root);
     this.element<HTMLButtonElement>('#original-play').onclick = () => { void this.play(); };
     this.element<HTMLButtonElement>('#original-wallet').onclick = () => window.dispatchEvent(new Event('royal-open-wallet'));
@@ -358,18 +361,20 @@ export class OriginalGameView {
     const session = minesClient.session;
     if (!minesClient.pending && action !== 'start' && (!session || session.state !== 'active')) return;
     const epoch = this.accountEpoch;
+    let completed: {spentUnits:string;returnedUnits:string} | undefined;
     this.working = true; this.message = translateText('Сервер подтверждает ход…'); this.render();
     try {
       const operation = action === 'start' ? { action, amount: this.amount(), mineCount: Number(this.element<HTMLSelectElement>('#original-mine-count').value) }
         : action === 'reveal' ? { action, sessionId: session!.id, cell: cell! } : { action, sessionId: session!.id };
       const result = minesClient.pending ? await minesClient.retry() : await minesClient.act(operation as Omit<MinesOperation, 'id'>);
       if (!this.alive || epoch !== this.accountEpoch || !result.session) return;
+      if (result.session.state !== 'active') completed = {spentUnits:String(Math.round(result.session.amount*100)),returnedUnits:String(Math.round(result.session.payout*100))};
       this.root.dataset.result = result.session.state === 'lost' ? 'loss' : result.session.state === 'cashed_out' ? 'win' : 'idle';
       this.message = result.session.state === 'lost' ? translateText('Попалась мина. Можно начать новую партию.')
         : result.session.state === 'cashed_out' ? tr`Начислено ${coins(result.session.payout)} монет. Партия завершена.`
         : result.session.revealed.length ? tr`Камень открыт. ${multiplierText(result.session.multiplier)}. Можно забрать начисление или продолжить.` : translateText('Партия началась. Выбери первую клетку.');
     } catch (error) { if (this.alive && epoch === this.accountEpoch) this.message = error instanceof Error ? translateText(error.message) : translateText('Не удалось подтвердить ход.'); }
-    finally { if (epoch === this.accountEpoch) { this.working = false; this.render(); } }
+    finally { if (this.alive && epoch === this.accountEpoch) { this.working = false; this.render(); if(completed)emitImportedOutcome(this.root,{gameId:this.gameId,...completed}); } }
   }
   private async showRound(round: GameRound, animate: boolean) {
     if (!this.alive || round.gameId !== this.gameId) return;
@@ -437,7 +442,10 @@ export class OriginalGameView {
       : round.gameId === 'royal-keno' ? tr`Совпадений: ${round.outcome.hits.length}. ` : '';
     this.message = prefix + (payout > 0 ? tr`Начислено ${coins(payout)} монет · ${multiplierText(round.multiplier)}` : tr`Без выплаты. Ставка ${coins(stake)} монет.`);
     this.render();
-    if (animate && presentationLanded && !document.hidden) emitGameOutcome(this.root, round.stakeUnits, round.payoutUnits);
+    if (animate && presentationLanded && !document.hidden) {
+      emitGameOutcome(this.root, round.stakeUnits, round.payoutUnits);
+      emitImportedOutcome(this.root, {gameId:this.gameId,spentUnits:round.stakeUnits,returnedUnits:round.payoutUnits});
+    }
   }
   private drawPlinko() {
     const rows = Number(this.element<HTMLSelectElement>('#original-rows').value), table = getPlinkoMultipliers(rows, this.risk() as PlinkoRisk);

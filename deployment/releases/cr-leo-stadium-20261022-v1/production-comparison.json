@@ -1,0 +1,12 @@
+{
+  "compared": 1574,
+  "different": [],
+  "preservedProductionBackups": [
+    {
+      "path": "server/LobbyRoom.ts.orig",
+      "sha256": "8e5e5d7fbf81d1a470e146e6419a67d4c781f66ddc92d820766b1fc9c9d1619e",
+      "reason": "unrelated server backup, preserved byte for byte; not a build input"
+    }
+  ],
+  "protectedServerRecordExcluded": true
+}

@@ -1,0 +1,38 @@
+{
+  "ok": true,
+  "atUtc": "2026-10-22T17:27:58Z",
+  "release": "chat-reliability-20261022-v1",
+  "sourceCommit": "fd8777464db607c903f8ffaf41d6e9d2ace91ffe",
+  "currentImage": "sha256:fac2d1fa91e1056c1423f21eb4bd880efeb175e9f7ed2ae33943b1bab9aace60",
+  "rollbackImage": "sha256:e2c490525a3cb585fe3ef3645fd7184e52a5da30c885666e3d9cdec24837e947",
+  "retainedHistory": [
+    "/opt/royal-releases/chat-reliability-20261022-v1",
+    "/opt/royal-backups/chat-reliability-20261022-v1"
+  ],
+  "removedEntries": 337,
+  "freeBefore": 721911808,
+  "freeAfter": 20351819776,
+  "freedBytes": 19629907968,
+  "containersUnchanged": true,
+  "configurationUnchanged": true,
+  "externalModulesUnchanged": true,
+  "databaseRestored": false,
+  "volumesDeleted": false,
+  "healthOk": true,
+  "unplannedHistoryPreserved": [
+    "/opt/royal-releases/cr-leo-ball-20261022-v1"
+  ],
+  "sourceFilesVerified": 1516,
+  "rollbackProgramFilesVerified": 2288,
+  "additionalPendingHistoryPreserved": [
+    "/opt/royal-releases/royal-platform-20261022-v1",
+    "/opt/royal-backups/royal-platform-20261022-v1"
+  ],
+  "imageCleanup": {
+    "completed": false,
+    "removedImageTags": 0,
+    "reason": "A concurrent royal-platform-20261022-v1 build acquired both application and module deployment locks. Its new files and images were preserved."
+  },
+  "lastObservedFreeBytes": 20125876224,
+  "publicHealthOk": true
+}

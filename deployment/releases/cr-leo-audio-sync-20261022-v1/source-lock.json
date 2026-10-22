@@ -1,0 +1,63 @@
+{
+  "release": "cr-leo-audio-sync-20261022-v1",
+  "baseCommit": "da49cb928f36adf21bd888b6901ccdec9177df25",
+  "moduleVersion": "1.0.0-0b9732911849",
+  "sourceSha256": "0b9732911849302e0e5ce521befb02023d0b36708e2e75d6d459986250eead7c",
+  "changes": {
+    "src/ui/CrLeoAudio.ts": "9eaa20d9b026be4c79bee149b35bd1a975e7e7d0e3b5250f68a6574236ed0a23",
+    "src/ui/CrLeoScene.ts": "688cf375d9bf61548890b86528592126cb22540b2f204ec53948f5dcb518abd7",
+    "src/ui/crLeoTimeline.ts": "57711a018d74ba9d0e7354d5ba04a10f8cefc91eb1019bf20f42a795e80f8bc1",
+    "docs/cr-vs-leo.md": "bb76c5008dde843930d0b4f129c5af2d50c7131016f4767e44ee485c6283144b",
+    "docs/artwork/cr-leo-audio.json": "15661874d2c5d56f40255815afccf0f8f156e1818a5025eb101bf2bf1977f1b7",
+    "scripts/prepare-cr-leo-audio.py": "6823669c48c28a05a667327de7e43a80a363f3481e772bb0875e1f3e3f6adbac",
+    "public/assets/cr-vs-leo/audio/v1/siuuu.mp3": "bb04818d6538e4e28b6d915b7893bbccbb38d760d34afb092c4677f220e5f474",
+    "public/assets/cr-vs-leo/audio/v1/kick.mp3": "4390e06290de978bbd5a38d87f9d1c0c6952f4f489af0f38b411334908741651"
+  },
+  "buildSources": {
+    "games/cr-vs-leo/entry.ts": "fee36c75c9198d97545a0fd69ff68683511442582d4e8fbcff3f05e662eda932",
+    "src/modules/GameHostContract.ts": "c03d05671e917d4d18c5caac525c3fd895509a9dda41aadd96639039f7584fdc",
+    "src/shared/crLeo.ts": "f0c9eae07611011cd3675eec1ed8a46a00f2f84822d8430a4b4267e6bfe15b38",
+    "src/ui/CrLeoAudio.ts": "9eaa20d9b026be4c79bee149b35bd1a975e7e7d0e3b5250f68a6574236ed0a23",
+    "src/ui/CrLeoScene.ts": "688cf375d9bf61548890b86528592126cb22540b2f204ec53948f5dcb518abd7",
+    "src/ui/CrLeoUI.ts": "d6017aa9fecef71d31ea5abadd1e5d1bde51cb1cc7c930e828d4cff0d96fe548",
+    "src/ui/cr-leo.css": "3c8329801aa497aebdff2da8ef392c9f40d65ac888ac834e25705a6dca2a9131",
+    "src/ui/crLeoAssetManifest.ts": "815b84ca76ea622a41fd0d550b733618e805f9e09d0efba89d0e3f36d0059298",
+    "src/ui/crLeoAssets.ts": "dcd36c0d417807b6780c47a4cf8da6c8e7b2f70f2146d4bf7636c8a87623c41f",
+    "src/ui/crLeoBall.ts": "e4349f388c356c71f4f0a46c528b11ff285c381b57de658e20a8713953ce9c25",
+    "src/ui/crLeoFreeKick.ts": "db3843730faf2c869215f61e2251e43b696416a421c6f2edac3e050863f89924",
+    "src/ui/crLeoGoal.ts": "7812d5b177bbf2affdfc0f9e6f7a11feebd31fba35be105774c793a59e9787b9",
+    "src/ui/crLeoPitch.ts": "e098007eb1418586e3743d152485d7d6e5017636f813231ae8df16e7e07defcd",
+    "src/ui/crLeoSprites.ts": "67013625467f78241d5e0ce9098bc7dd950341b302e3d9fb6317e8addef7e427",
+    "src/ui/crLeoTimeline.ts": "57711a018d74ba9d0e7354d5ba04a10f8cefc91eb1019bf20f42a795e80f8bc1"
+  },
+  "packageFiles": {
+    "entry-518b310cb80356fa.js": "518b310cb80356fa5496abd433e632ecfc3195ba8e322b5d51cb8ae1796c05c7",
+    "media/cr-vs-leo/audio/v1/ankara-messi.mp3": "e2169e3b76e785bca01edb1e9e9e189df670299aa0b4db2101657fdd6e152ed6",
+    "media/cr-vs-leo/audio/v1/goal.mp3": "57b320a5d213701b8204f30f2deb9d9edcb0244e196cac156a2a1525e56b7ff4",
+    "media/cr-vs-leo/audio/v1/kick.mp3": "4390e06290de978bbd5a38d87f9d1c0c6952f4f489af0f38b411334908741651",
+    "media/cr-vs-leo/audio/v1/miss.mp3": "3c10132247d3b3a3b9c5608fcb6fea59a75c00db6a2ad6b9a6af93d866eebef1",
+    "media/cr-vs-leo/audio/v1/siuuu.mp3": "bb04818d6538e4e28b6d915b7893bbccbb38d760d34afb092c4677f220e5f474",
+    "media/cr-vs-leo/audio/v1/stadium.mp3": "b65aa4095f242c0ab582dbd1088199cf5873d3e1fa022943ad59de22b5ccbead",
+    "media/cr-vs-leo/v2/ball-ordem-v-atlas.webp": "203f3599b96d2b0d0aeddac43e2a417a28b44045e00ab02aa7924150cc75b55f",
+    "media/cr-vs-leo/v2/cr-white-thumb.webp": "f74054bb9714f7a1f6e31a22c84c214b399d053efdad65eaceb3cc136392d36c",
+    "media/cr-vs-leo/v2/cr-white.webp": "6f17d912319ab61c745c4e60b784962d0830875f1781c1d7ed54a30d9f5fae0e",
+    "media/cr-vs-leo/v2/keeper-dive.webp": "42d1e309b730eda13c1c44290c4c813ec9e5ac9e45e64204593db15264bbffba",
+    "media/cr-vs-leo/v2/keeper-empty.webp": "9b5291eaffeb17215ae0efd98fe971db0f9d4852c3d5dbd10e1a6383b2f6a10f",
+    "media/cr-vs-leo/v2/keeper-reach.webp": "1149b45f40bff1882c4e79bf582f509433bdc71a45a162ca77ad8aaf6bdb9302",
+    "media/cr-vs-leo/v2/leo-thumb.webp": "fc205e3b36032e68c64e166a710b15bf0bcb685a1b5f7aea2d3ee02c469d953c",
+    "media/cr-vs-leo/v2/leo.webp": "dc352bac0f7c21079ea437ebac94395793ae54a00148505b17e86ce27f35ba92",
+    "media/cr-vs-leo/v2/stadium-free.webp": "91024de3d3cbe29293e6461c23c4a59109c0afc7dfb13731a0e203d5ce98409c",
+    "media/cr-vs-leo/v2/stadium.webp": "40836e046fcbf157e80b6afc6b497c623c695051944e97fd7b10cc77cf408ea3",
+    "media/cr-vs-leo/v2/wall-far.webp": "8676722cdd894272f155c5a8613e5aa052903541230eddae0e612df3fc34535d",
+    "media/cr-vs-leo/v2/wall.webp": "bf9daf9caa361b0ac43fe82bd690019f3c6d709d15990da6dec2f90afd15d46a",
+    "style-cdef2c478c70bf5b.css": "cdef2c478c70bf5b7a7fa3de78643e5e1bd7eca7b65d7fb2a3c5386d1e936f0f",
+    "manifest.json": "2c95ae7c7ad862ac179048ed187459ac7f633c35e4f0e3de7b8a95cd6801ee05"
+  },
+  "helpers": {
+    "deploy.py": "1c302e1b5882fdf09b4991f64e196b2ebe5e1eb58079b3156c66d6f32262c8d4",
+    "snapshot.py": "3cbb66c8bd8d056f969f0db3fafa1e534b0c74ee16fef2339751899f08e4f5a7",
+    "publisher.py": "bc5589c8f96e452841d4fbeb8661783194f29cee5b8b32bb72b18a108c471a7a"
+  },
+  "priorPointerSha256": "6fa3f2cbb6736bbc2c97b3a338fe685e15d0ea970f64cda7d7010fcb708602ff",
+  "sourceCountBefore": 1589
+}

@@ -44,5 +44,10 @@ export const CR_LEO_ASSETS = [
     "key": "wall-far",
     "file": "wall-far.webp",
     "bytes": 1118900
+  },
+  {
+    "key": "ball",
+    "file": "ball-ordem-v-atlas.webp",
+    "bytes": 598728
   }
 ] as const;
