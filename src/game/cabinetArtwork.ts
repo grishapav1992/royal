@@ -8,8 +8,8 @@ type HouseGameId = typeof ARCADE_HOUSE_GAMES[number];
 type StudioGameId = typeof ACTIVE_STUDIO_GAMES[number];
 
 // Full game artwork stays in its module; the hall only loads these small composites.
-export const CABINET_PREVIEWS: Readonly<Record<HouseGameId, string>> = previews.cabinets;
-export const CATALOG_PREVIEWS: Readonly<Record<StudioGameId, string>> = previews.catalog;
+export const CABINET_PREVIEWS: Readonly<Record<HouseGameId, string>> = { ...previews.cabinets, 'studio-neopolis': '/assets/neopolis/cover.svg' };
+export const CATALOG_PREVIEWS: Readonly<Record<StudioGameId, string>> = { ...previews.catalog, 'studio-neopolis': '/assets/neopolis/cover.svg' };
 const textureKey = (url: string) => 'cabinet-art:' + url;
 const previewFor = (id: string): string | undefined =>
   Object.hasOwn(CABINET_PREVIEWS, id) ? CABINET_PREVIEWS[id as HouseGameId] : undefined;

@@ -1,3 +1,4 @@
+import { NEOPOLIS_GAME, validNeopolisSettings, type NeopolisSettings, type NeopolisView } from './neopolis';
 import {DRACONA_GAME,validDraconaSettings,type DraconaSettings,type DraconaView} from './dracona';
 import { PENALTY_GAME, validPenaltyRisk, validPenaltySettings, type PenaltyRisk, type PenaltySettings, type PenaltyView } from './crLeo';
 import { t as translateText } from '../i18n/index';
@@ -81,9 +82,9 @@ export const LEGACY_CARD_RULES:Partial<Record<ExpansionGameId,string>> = {
   'github-rummy':translateText('Три карты. Три одинаковые карты или три последовательные одной масти дают 0 очков; остальные суммируются (туз 1, картинки 10). Пары не уменьшают сумму. Дилеру нужен счёт не выше 20. Play стоит одну Ante. Прежний Ante bonus: 0 очков +9 Ante, 1-5 +3, 6-10 +1. Low Bonus выключен.'),
 };
 export type ExpansionAction =
-  | {id:string;gameId:ExpansionGameId;action:'start';stakeUnits:string;appearance?:AfterLookChoice;settings:({side?:boolean;bet?:'dragon'|'tiger'|'small'|'big'} | VariantSettings | StudioSettings | LuelonSlotSettings | CaramelSettings | ConvoySettings | DraconaSettings | AfterSettings | NitroSettings | PenaltySettings)}
+  | {id:string;gameId:ExpansionGameId;action:'start';stakeUnits:string;appearance?:AfterLookChoice;settings:({side?:boolean;bet?:'dragon'|'tiger'|'small'|'big'} | VariantSettings | StudioSettings | LuelonSlotSettings | CaramelSettings | ConvoySettings | NeopolisSettings | DraconaSettings | AfterSettings | NitroSettings | PenaltySettings)}
   | {id:string;gameId:ExpansionGameId;action:'move';sessionId:string;move:string;picks?:number[];revision?:number;penaltyRisk?:PenaltyRisk};
-export type ExpansionView = {dracona?:DraconaView;penalty?:PenaltyView;afterglow?:AfterView;nitro?:NitroView;convoy?:ConvoyView;caramel?:CaramelView;luelon?:LuelonSlotView;studio?:StudioView;variant?:VariantView;player:string[];dealer:string[];community:string[];actions:{move:string;label:string;cost:number;perPick?:number;minPicks?:number;maxPicks?:number}[];hands?:{cards:string[];score:number;label:string;active:boolean}[];phase:number;ended:boolean;message:string;hint?:number[]};
+export type ExpansionView = {neopolis?:NeopolisView;dracona?:DraconaView;penalty?:PenaltyView;afterglow?:AfterView;nitro?:NitroView;convoy?:ConvoyView;caramel?:CaramelView;luelon?:LuelonSlotView;studio?:StudioView;variant?:VariantView;player:string[];dealer:string[];community:string[];actions:{move:string;label:string;cost:number;perPick?:number;minPicks?:number;maxPicks?:number}[];hands?:{cards:string[];score:number;label:string;active:boolean}[];phase:number;ended:boolean;message:string;hint?:number[]};
 export type ExpansionSession = {id:string;gameId:ExpansionGameId;rulesVersion:1|2;state:'active'|'settled';stakeUnits:string;spentUnits:string;returnedUnits:string;view:ExpansionView;startedAt?:number;serverNow?:number;multiplier?:number;crashAt?:number;dice?:number[];gems?:string[]};
 const uuid=(s:unknown)=>typeof s==='string'&&/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(s);
 export function validExpansionAction(value:unknown):value is ExpansionAction {
@@ -92,6 +93,7 @@ export function validExpansionAction(value:unknown):value is ExpansionAction {
   if(r.action==='start'){
     if(Object.keys(r).sort().join(',')!==(r.gameId===AFTER_GAME&&r.appearance!==undefined?'action,appearance,gameId,id,settings,stakeUnits':'action,gameId,id,settings,stakeUnits')||typeof r.stakeUnits!=='string'||!/^[1-9][0-9]{0,10}$/.test(r.stakeUnits)||!r.settings||typeof r.settings!=='object'||Array.isArray(r.settings))return false;
     if(r.gameId===PENALTY_GAME)return validPenaltySettings(r.settings);
+    if(r.gameId===NEOPOLIS_GAME)return validNeopolisSettings(r.settings);
     if(r.gameId===DRACONA_GAME)return validDraconaSettings(r.settings);
     if(r.gameId===AFTER_GAME)return validAfterSettings(r.settings)&&(r.appearance===undefined||validAfterLookChoice(r.appearance));
     if(isNitroFamily(r.gameId))return validNitroSettings(r.settings);
@@ -107,9 +109,10 @@ export function validExpansionAction(value:unknown):value is ExpansionAction {
     if(r.gameId==='github-sic-bo')return keys==='bet'&&['small','big'].includes(options.bet??'');
     return keys==='';
   }
-  if(r.action!=='move'||!uuid(r.sessionId)||typeof r.move!=='string'||!['dracona-spin','penalty-kick','afterglow-spin','nitro-spin','convoy-spin','caramel-spin','luelon-spin','studio-spin','studio-advance','roll','red','black','unlock','reveal','play','fold','pull','ride','play1','play2','play3','play4','check','war','surrender','raise','stay','set','auto','hold','cashout','exchange','draw','discard','buy-sixth','force','decline','hit','stand','double','split','insurance','no-insurance','switch','keep','free-double','free-split','andar','bahar'].includes(r.move))return false;
+  if(r.action!=='move'||!uuid(r.sessionId)||typeof r.move!=='string'||!['neopolis-spin','dracona-spin','penalty-kick','afterglow-spin','nitro-spin','convoy-spin','caramel-spin','luelon-spin','studio-spin','studio-advance','roll','red','black','unlock','reveal','play','fold','pull','ride','play1','play2','play3','play4','check','war','surrender','raise','stay','set','auto','hold','cashout','exchange','draw','discard','buy-sixth','force','decline','hit','stand','double','split','insurance','no-insurance','switch','keep','free-double','free-split','andar','bahar'].includes(r.move))return false;
   if(r.gameId===PENALTY_GAME)return ['penalty-kick','cashout'].includes(r.move)&&Number.isInteger(r.revision)&&Number(r.revision)>=1&&Number(r.revision)<=4&&(r.penaltyRisk===undefined||r.move==='penalty-kick'&&validPenaltyRisk(r.penaltyRisk))&&Object.keys(r).sort().join(',')===(r.penaltyRisk===undefined?'action,gameId,id,move,revision,sessionId':'action,gameId,id,move,penaltyRisk,revision,sessionId');
   if(r.penaltyRisk!==undefined)return false;
+  if(r.gameId===NEOPOLIS_GAME)return r.move==='neopolis-spin'&&r.picks===undefined&&Number.isSafeInteger(r.revision)&&Number(r.revision)>=1&&Number(r.revision)<=13&&Object.keys(r).sort().join(',')==='action,gameId,id,move,revision,sessionId';
   if(r.gameId===DRACONA_GAME)return r.move==='dracona-spin'&&r.picks===undefined&&Number.isSafeInteger(r.revision)&&Number(r.revision)>=1&&Number(r.revision)<=21&&Object.keys(r).sort().join(',')==='action,gameId,id,move,revision,sessionId';
   if(r.gameId===AFTER_GAME)return r.move==='afterglow-spin'&&r.picks===undefined&&Number.isSafeInteger(r.revision)&&Number(r.revision)>=1&&Number(r.revision)<=21&&Object.keys(r).sort().join(',')==='action,gameId,id,move,revision,sessionId';
   if(isNitroFamily(r.gameId))return r.move==='nitro-spin'&&r.picks===undefined&&Number.isSafeInteger(r.revision)&&Number(r.revision)>=1&&Number(r.revision)<=21&&Object.keys(r).sort().join(',')==='action,gameId,id,move,revision,sessionId';
@@ -146,7 +149,7 @@ export function validExpansionAction(value:unknown):value is ExpansionAction {
     }else return false;
     return Object.keys(r).sort().join(',')===(r.picks===undefined?'action,gameId,id,move,sessionId':'action,gameId,id,move,picks,sessionId');
   }
-  if(['dracona-spin','penalty-kick','afterglow-spin','nitro-spin','convoy-spin','caramel-spin','luelon-spin','studio-spin','studio-advance','roll','reveal','red','black','unlock'].includes(r.move))return false;
+  if(['neopolis-spin','dracona-spin','penalty-kick','afterglow-spin','nitro-spin','convoy-spin','caramel-spin','luelon-spin','studio-spin','studio-advance','roll','reveal','red','black','unlock'].includes(r.move))return false;
   if(r.picks!==undefined&&(!Array.isArray(r.picks)||r.picks.length>5||new Set(r.picks).size!==r.picks.length||r.picks.some(n=>!Number.isInteger(n)||n<0||n>6)))return false;
   return Object.keys(r).sort().join(',')===(r.picks===undefined?'action,gameId,id,move,sessionId':'action,gameId,id,move,picks,sessionId')&&(['set','hold','exchange','draw','discard'].includes(r.move)||r.picks===undefined);
 }
