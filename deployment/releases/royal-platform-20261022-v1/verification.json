@@ -1,0 +1,30 @@
+{
+  "release": "royal-platform-20261022-v1",
+  "sourceCommit": "4b4b092ed20dc2546d6b45cccd79e68ebd525b86",
+  "image": "sha256:12c28c1d43c32e8016fe62a56eb460e2e079da0c15c9f0785fe5c5f43c6aa0e2",
+  "published": true,
+  "publicFilesVerified": 107,
+  "publicCabinetsOpened": 20,
+  "publicJavascriptErrors": [],
+  "localGamesInEachCabinet": 52,
+  "royalGames": 43,
+  "githubGames": 9,
+  "providerLaunchLocallyVerified": "mocked provider session, real shared host on desktop and mobile",
+  "publicBrowserTransport": "Published client with a local room sink; production API writes and WebSockets blocked",
+  "productionAccountsCreated": 0,
+  "productionMessagesSent": 0,
+  "productionStakesPlaced": 0,
+  "externalModuleFilesPreserved": 268,
+  "privateHostContractPreserved": true,
+  "productionSettingsAndMountsPreserved": true,
+  "otherServicesPreserved": 13,
+  "sourceBackupSha256": "e9549ccb9e86840d98ba029459651739133b5b9aed42fc5e79b910bc788314e5",
+  "applicationHealthy": true,
+  "localValidation": {
+    "build": true,
+    "catalogueAndPackageChecks": 9,
+    "moduleBrowserScenarios": 22,
+    "independentPackagesMounted": 112,
+    "realHostScenarios": 3
+  }
+}
