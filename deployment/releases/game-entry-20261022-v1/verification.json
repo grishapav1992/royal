@@ -1,0 +1,785 @@
+{
+  "release": "game-entry-20261022-v1",
+  "sourceCommit": "08f22472b2b90a3ca07c4efeec267e28cd6b384a",
+  "published": {
+    "published": true,
+    "preparedImage": "sha256:ee824879f496afbb01fa197069ffb9f43d814175780f76b89118be1da055b106",
+    "runningImage": "sha256:ee824879f496afbb01fa197069ffb9f43d814175780f76b89118be1da055b106",
+    "containerRestarted": true,
+    "sourceCommit": "08f22472b2b90a3ca07c4efeec267e28cd6b384a",
+    "changedSources": 31,
+    "clientDeltaFiles": 8,
+    "configurationsAndMountsPreserved": true,
+    "gameDataPreserved": true,
+    "backendAndModuleBaselinePreserved": true,
+    "oldAssetsPreserved": true,
+    "independentModules": {
+      "studio-cosmic-escape": {
+        "verified": true,
+        "gameId": "studio-cosmic-escape",
+        "version": "1.0.0-018f7ad0a693",
+        "bytes": 3831532,
+        "files": 8,
+        "beforeSha256": "5bbc04c905badbd50dfd84e96a2e93f609e2c087b3975a34c61d27885761e89d",
+        "hostProgramTouched": false,
+        "databaseTouched": false,
+        "restartRequired": false,
+        "published": true,
+        "operation": "install",
+        "activeSha256": "76b3d4304c65ba4bbd37059f9c5efd0a9988eaf05c52c4e6c0b1f7b2d12e1ac6",
+        "history": "/opt/royal-game-modules-state/history/20261022T071612-03597baf11874d318819ad28906a9d50.json"
+      },
+      "studio-caramel-carnival": {
+        "verified": true,
+        "gameId": "studio-caramel-carnival",
+        "version": "1.0.0-bfa7c9504df2",
+        "bytes": 3144640,
+        "files": 7,
+        "beforeSha256": "none",
+        "hostProgramTouched": false,
+        "databaseTouched": false,
+        "restartRequired": false,
+        "published": true,
+        "operation": "install",
+        "activeSha256": "cb65d3a00fcf92670f014415aa932e4cd7797385555e032dca7bad3837c75a60",
+        "history": "/opt/royal-game-modules-state/history/20261022T071612-548f9555e1964656a572759fbb32fda0.json"
+      },
+      "studio-velvet-reign": {
+        "verified": true,
+        "gameId": "studio-velvet-reign",
+        "version": "1.0.0-4101ac70c123",
+        "bytes": 4263573,
+        "files": 12,
+        "beforeSha256": "9316a570a444ccecffd51dcdf2b2449037a480e1dacd1c0f4333ca29ab5cc9cd",
+        "hostProgramTouched": false,
+        "databaseTouched": false,
+        "restartRequired": false,
+        "published": true,
+        "operation": "install",
+        "activeSha256": "1ab055f2f45b2cd9b77b031973cbe8244ff802b7a2ecc12a968cc117c604780e",
+        "history": "/opt/royal-game-modules-state/history/20261022T071613-6b1781c262e64ff5b2bb48185b32e2d6.json"
+      },
+      "studio-last-convoy": {
+        "verified": true,
+        "gameId": "studio-last-convoy",
+        "version": "1.0.0-6092d386abd6",
+        "bytes": 6303727,
+        "files": 17,
+        "beforeSha256": "a2fa9d8112aca86a9ecf2629aab8712115e2c5713ccc5393f4e0f85177640630",
+        "hostProgramTouched": false,
+        "databaseTouched": false,
+        "restartRequired": false,
+        "published": true,
+        "operation": "install",
+        "activeSha256": "904d8505385ac1f70aae81c5517cbf03f18252cd4e724774dbf3f1a5235876cc",
+        "history": "/opt/royal-game-modules-state/history/20261022T071614-084045f756af4466bbd438d6fbb7d848.json"
+      },
+      "studio-nitro-run": {
+        "verified": true,
+        "gameId": "studio-nitro-run",
+        "version": "1.0.0-febcd79d7d26",
+        "bytes": 2539571,
+        "files": 5,
+        "beforeSha256": "none",
+        "hostProgramTouched": false,
+        "databaseTouched": false,
+        "restartRequired": false,
+        "published": true,
+        "operation": "install",
+        "activeSha256": "8637f5863d76a50dac758fc759ea1163edf5b3c96cecd6a673c34bd7ce0273c1",
+        "history": "/opt/royal-game-modules-state/history/20261022T071614-826d3f4a7fb44b53a7bac6c5c90c2c34.json"
+      },
+      "studio-afterglow": {
+        "verified": true,
+        "gameId": "studio-afterglow",
+        "version": "1.0.2-ef1ba150046e",
+        "bytes": 3197021,
+        "files": 21,
+        "beforeSha256": "da626b5e010d99f1ec6e1ed901a04a8dd15765b12975d7212a576fc55face25a",
+        "hostProgramTouched": false,
+        "databaseTouched": false,
+        "restartRequired": false,
+        "published": true,
+        "operation": "install",
+        "activeSha256": "95e16116585679134a2cc8bdfce66f7b28eb6ea102b2965aa0e161f0ab016fde",
+        "history": "/opt/royal-game-modules-state/history/20261022T071615-08b558f5bfd0405093c8365eb2548a27.json"
+      },
+      "studio-meme-overload": {
+        "verified": true,
+        "gameId": "studio-meme-overload",
+        "version": "1.0.0-8cf051bf2f9d",
+        "bytes": 3497455,
+        "files": 16,
+        "beforeSha256": "none",
+        "hostProgramTouched": false,
+        "databaseTouched": false,
+        "restartRequired": false,
+        "published": true,
+        "operation": "install",
+        "activeSha256": "2b2e2e34cb6dbeef4dfbede801724de6991ebaba7e5da16c3c99d883e870f67a",
+        "history": "/opt/royal-game-modules-state/history/20261022T071616-36b7ee77fcf94435a2f949842ea5915c.json"
+      }
+    },
+    "allPriorModuleVersionsRetained": true,
+    "otherPersistentServicesPreserved": 13
+  },
+  "backup": {
+    "path": "/opt/royal-backups/game-entry-20261022-v1",
+    "sourceSha256": "237b8185aca490ab9e3af4d4ba1fe1091f0dacac7469a48faf1d830f80313c19",
+    "previousImage": "sha256:5d5e535272b525feb85ac0628e8abeecdcce7e8b2c1494f52fbe42c1e7582e01"
+  },
+  "preservation": {
+    "sourceCommit": "08f22472b2b90a3ca07c4efeec267e28cd6b384a",
+    "sourceExact": true,
+    "runtimeExact": true,
+    "preparedRuntimeExact": true,
+    "moduleInventoryExact": true,
+    "configHashesPreserved": true,
+    "hostContractPreserved": true,
+    "realMoneyFlagsPreserved": true,
+    "oldSourceFiles": 1502,
+    "newSourceFiles": 1513,
+    "oldModuleFiles": 172,
+    "newModuleFiles": 268,
+    "complete": true
+  },
+  "local": {
+    "fullBuildPassed": true,
+    "modulesBuilt": 112,
+    "moduleValidationChecks": 7,
+    "assetUnitChecks": 4,
+    "preparationBrowserChecks": 8,
+    "loaderBrowserChecks": 6,
+    "walletAndLifecycleBrowserChecks": 10,
+    "nativeAssetBrowserChecks": 3,
+    "startupBrowserChecks": 2,
+    "rollbackGuards": 12,
+    "realHostDesktopSampledGames": [
+      "studio-cosmic-escape",
+      "studio-caramel-carnival",
+      "studio-velvet-reign",
+      "studio-afterglow",
+      "studio-nitro-run",
+      "royal-dice"
+    ],
+    "realHostMobileGames": [
+      "studio-velvet-reign",
+      "studio-afterglow"
+    ],
+    "chatEnabled": true,
+    "girlhubCriticalBytes": {
+      "before": 1189678,
+      "after": 450566
+    },
+    "girlhubDecodedImageBytes": {
+      "before": 104857600,
+      "after": 18880000
+    },
+    "velvetCriticalBytes": {
+      "before": 2907232,
+      "after": 1830260
+    },
+    "memeStonks": {
+      "before": 1581164,
+      "after": 1296984,
+      "rgbaIdentical": true
+    },
+    "productionWritesDuringProfiling": 0,
+    "timingNote": "Local byte counts are not comparable to production because preview headers differ. Public before/after must use the same origin and a clean browser context. Guest browser capability shim retains actual hall, walking, cabinet window and chat, but does not measure authenticated saved-round requests."
+  },
+  "publicAssets": {
+    "complete": true,
+    "requestCount": 114,
+    "bytes": 34195884,
+    "clientFiles": 8,
+    "packageFiles": 93,
+    "modules": {
+      "studio-cosmic-escape": {
+        "version": "1.0.0-018f7ad0a693",
+        "pointerSha256": "76b3d4304c65ba4bbd37059f9c5efd0a9988eaf05c52c4e6c0b1f7b2d12e1ac6",
+        "manifestSha256": "ebd2eb7ae718c242a7b100b87e28e3c4ddf888147a18678b7506fc84fd175842",
+        "expectedFiles": 9,
+        "verifiedFiles": 9,
+        "bytes": 3832916
+      },
+      "studio-caramel-carnival": {
+        "version": "1.0.0-bfa7c9504df2",
+        "pointerSha256": "cb65d3a00fcf92670f014415aa932e4cd7797385555e032dca7bad3837c75a60",
+        "manifestSha256": "77f176029665d6e18e215abe6aef3823fa29a0a30d19cf40a2b5ef4698af16e2",
+        "expectedFiles": 8,
+        "verifiedFiles": 8,
+        "bytes": 3145846
+      },
+      "studio-velvet-reign": {
+        "version": "1.0.0-4101ac70c123",
+        "pointerSha256": "1ab055f2f45b2cd9b77b031973cbe8244ff802b7a2ecc12a968cc117c604780e",
+        "manifestSha256": "69ca56189018b199aae12c49d573f8d57520884823f5aca53e9ea947070e98e4",
+        "expectedFiles": 13,
+        "verifiedFiles": 13,
+        "bytes": 4265402
+      },
+      "studio-last-convoy": {
+        "version": "1.0.0-6092d386abd6",
+        "pointerSha256": "904d8505385ac1f70aae81c5517cbf03f18252cd4e724774dbf3f1a5235876cc",
+        "manifestSha256": "85b4b637db6d3a3d3946cd18e058f37093f745c24c329dd60244a9cb15b9098a",
+        "expectedFiles": 18,
+        "verifiedFiles": 18,
+        "bytes": 6306088
+      },
+      "studio-afterglow": {
+        "version": "1.0.2-ef1ba150046e",
+        "pointerSha256": "95e16116585679134a2cc8bdfce66f7b28eb6ea102b2965aa0e161f0ab016fde",
+        "manifestSha256": "7a89eb80187b9ba7cfda43a8fc7f5a0e48dbf240578392c497c9f792dcf0ee89",
+        "expectedFiles": 22,
+        "verifiedFiles": 22,
+        "bytes": 3199768
+      },
+      "studio-nitro-run": {
+        "version": "1.0.0-febcd79d7d26",
+        "pointerSha256": "8637f5863d76a50dac758fc759ea1163edf5b3c96cecd6a673c34bd7ce0273c1",
+        "manifestSha256": "67b395771c37a4a3a52423bb9e56180bf11159e46754b7610c15dd2bcacc9b33",
+        "expectedFiles": 6,
+        "verifiedFiles": 6,
+        "bytes": 2540536
+      },
+      "studio-meme-overload": {
+        "version": "1.0.0-8cf051bf2f9d",
+        "pointerSha256": "2b2e2e34cb6dbeef4dfbede801724de6991ebaba7e5da16c3c99d883e870f67a",
+        "manifestSha256": "c721698c779552c7f04149c19ff477189daa64042fc06b82608b3865c5b6734e",
+        "expectedFiles": 17,
+        "verifiedFiles": 17,
+        "bytes": 3499877
+      }
+    },
+    "retainedPointers": [
+      {
+        "gameId": "original-cr-vs-leo",
+        "sha256": "6933306af58375daca0b86f8f6552d41720f9ddff277592321314ce9407a93d9",
+        "unchanged": true
+      },
+      {
+        "gameId": "royal-plinko",
+        "sha256": "78a3d80291bbd45b3bc17109c38f36ff9b9ee8ac0e475f522ac683e4299b0cc2",
+        "unchanged": true
+      },
+      {
+        "gameId": "studio-dracona",
+        "sha256": "09b77b0b5c277b1a486cc05a398c51e0f136f2ed60c7e06318a2b393a3fe8364",
+        "unchanged": true
+      }
+    ],
+    "retainedHost": {
+      "path": "/assets/index-BpF0i3G_.js",
+      "sha256": "4427a98027b4210de623d4a1c24ce14868d2effa2ad0fc916336337d1c8b8359",
+      "bytes": 2520714
+    },
+    "health": {
+      "ok": true
+    },
+    "proofSha256": "0625db39dc4c78aa47436972d065d9d8a3f5a6ec697ef839faf6df31971f7662"
+  },
+  "performance": {
+    "measurementNote": "Same production origin and computer, fresh browser contexts in the recorded game order. Times include actual walking and seating. Browser debugger only changes guest connection status; no account or online room, API writes blocked. Authenticated saved-round latency is not measured. Network conditions vary. Mobile is a 390 by 844 touch profile at DPR 3, not a physical phone; no comparable mobile before run exists.",
+    "comparisons": [
+      {
+        "gameId": "studio-cosmic-escape",
+        "before": {
+          "gameId": "studio-cosmic-escape",
+          "temperature": "cold",
+          "clickToReadyMs": 16865.4,
+          "clickToDialogMs": 3224.5,
+          "dialogToMountedMs": 10626.9,
+          "mountedToReadyMs": 3014,
+          "moduleNetworkBytes": 1496301,
+          "moduleVersion": "1.0.0-c9d080cfba0a",
+          "chatPresent": true,
+          "failure": null
+        },
+        "after": {
+          "gameId": "studio-cosmic-escape",
+          "temperature": "cold",
+          "clickToReadyMs": 9576.9,
+          "clickToDialogMs": 3217.4,
+          "dialogToMountedMs": 3973,
+          "mountedToReadyMs": 2386.5,
+          "moduleNetworkBytes": 1497477,
+          "moduleVersion": "1.0.0-018f7ad0a693",
+          "chatPresent": true,
+          "failure": null
+        },
+        "warmAfter": {
+          "gameId": "studio-cosmic-escape",
+          "temperature": "warm-reopen",
+          "clickToReadyMs": 593.4,
+          "clickToDialogMs": 472.7,
+          "dialogToMountedMs": 120.1,
+          "mountedToReadyMs": 0.6,
+          "moduleNetworkBytes": 285,
+          "moduleVersion": "1.0.0-018f7ad0a693",
+          "chatPresent": true,
+          "failure": null
+        }
+      },
+      {
+        "gameId": "studio-caramel-carnival",
+        "before": {
+          "gameId": "studio-caramel-carnival",
+          "temperature": "cold",
+          "clickToReadyMs": 3177.9,
+          "clickToDialogMs": 1007.6,
+          "dialogToMountedMs": 611.3,
+          "mountedToReadyMs": 1559,
+          "moduleNetworkBytes": 668475,
+          "moduleVersion": "1.0.0-c1f6086c8d55",
+          "chatPresent": true,
+          "failure": null
+        },
+        "after": {
+          "gameId": "studio-caramel-carnival",
+          "temperature": "cold",
+          "clickToReadyMs": 3619,
+          "clickToDialogMs": 1009,
+          "dialogToMountedMs": 1932.1,
+          "mountedToReadyMs": 677.9,
+          "moduleNetworkBytes": 669193,
+          "moduleVersion": "1.0.0-bfa7c9504df2",
+          "chatPresent": true,
+          "failure": null
+        },
+        "warmAfter": {
+          "gameId": "studio-caramel-carnival",
+          "temperature": "warm-reopen",
+          "clickToReadyMs": 708.9,
+          "clickToDialogMs": 466.6,
+          "dialogToMountedMs": 242.1,
+          "mountedToReadyMs": 0.2,
+          "moduleNetworkBytes": 292,
+          "moduleVersion": "1.0.0-bfa7c9504df2",
+          "chatPresent": true,
+          "failure": null
+        }
+      },
+      {
+        "gameId": "studio-velvet-reign",
+        "before": {
+          "gameId": "studio-velvet-reign",
+          "temperature": "cold",
+          "clickToReadyMs": 13111.3,
+          "clickToDialogMs": 1038.7,
+          "dialogToMountedMs": 643.1,
+          "mountedToReadyMs": 11429.5,
+          "moduleNetworkBytes": 3003401,
+          "moduleVersion": "1.0.0-c8960e04eed9",
+          "chatPresent": true,
+          "failure": null
+        },
+        "after": {
+          "gameId": "studio-velvet-reign",
+          "temperature": "cold",
+          "clickToReadyMs": 4823.6,
+          "clickToDialogMs": 1039.1,
+          "dialogToMountedMs": 1839.5,
+          "mountedToReadyMs": 1945,
+          "moduleNetworkBytes": 1927286,
+          "moduleVersion": "1.0.0-4101ac70c123",
+          "chatPresent": true,
+          "failure": null
+        },
+        "warmAfter": {
+          "gameId": "studio-velvet-reign",
+          "temperature": "warm-reopen",
+          "clickToReadyMs": 768.5,
+          "clickToDialogMs": 483.1,
+          "dialogToMountedMs": 284.9,
+          "mountedToReadyMs": 0.5,
+          "moduleNetworkBytes": 292,
+          "moduleVersion": "1.0.0-4101ac70c123",
+          "chatPresent": true,
+          "failure": null
+        }
+      },
+      {
+        "gameId": "royal-dice",
+        "before": {
+          "gameId": "royal-dice",
+          "temperature": "cold",
+          "clickToReadyMs": 4617.1,
+          "clickToDialogMs": 4004.2,
+          "dialogToMountedMs": 612.9,
+          "mountedToReadyMs": 0,
+          "moduleNetworkBytes": 34774,
+          "moduleVersion": "1.0.0-dce5665cc839",
+          "chatPresent": true,
+          "failure": null
+        },
+        "after": {
+          "gameId": "royal-dice",
+          "temperature": "cold",
+          "clickToReadyMs": 4511.4,
+          "clickToDialogMs": 4007.9,
+          "dialogToMountedMs": 503.5,
+          "mountedToReadyMs": 0,
+          "moduleNetworkBytes": 35017,
+          "moduleVersion": "1.0.0-dce5665cc839",
+          "chatPresent": true,
+          "failure": null
+        },
+        "warmAfter": {
+          "gameId": "royal-dice",
+          "temperature": "warm-reopen",
+          "clickToReadyMs": 584.6,
+          "clickToDialogMs": 469.8,
+          "dialogToMountedMs": 114.8,
+          "mountedToReadyMs": 0,
+          "moduleNetworkBytes": 265,
+          "moduleVersion": "1.0.0-dce5665cc839",
+          "chatPresent": true,
+          "failure": null
+        }
+      },
+      {
+        "gameId": "studio-afterglow",
+        "before": {
+          "gameId": "studio-afterglow",
+          "temperature": "cold",
+          "clickToReadyMs": 16117.8,
+          "clickToDialogMs": 3590.3,
+          "dialogToMountedMs": 9256.2,
+          "mountedToReadyMs": 3271.3,
+          "moduleNetworkBytes": 1246028,
+          "moduleVersion": "1.0.2-21c5f5b46130",
+          "chatPresent": true,
+          "failure": null
+        },
+        "after": {
+          "gameId": "studio-afterglow",
+          "temperature": "cold",
+          "clickToReadyMs": 4121.3,
+          "clickToDialogMs": 3589.8,
+          "dialogToMountedMs": 251.6,
+          "mountedToReadyMs": 279.9,
+          "moduleNetworkBytes": 507371,
+          "moduleVersion": "1.0.2-ef1ba150046e",
+          "chatPresent": true,
+          "failure": null
+        },
+        "warmAfter": {
+          "gameId": "studio-afterglow",
+          "temperature": "warm-reopen",
+          "clickToReadyMs": 607,
+          "clickToDialogMs": 470.6,
+          "dialogToMountedMs": 135.9,
+          "mountedToReadyMs": 0.5,
+          "moduleNetworkBytes": 277,
+          "moduleVersion": "1.0.2-ef1ba150046e",
+          "chatPresent": true,
+          "failure": null
+        }
+      },
+      {
+        "gameId": "studio-nitro-run",
+        "before": {
+          "gameId": "studio-nitro-run",
+          "temperature": "cold",
+          "clickToReadyMs": 7322.6,
+          "clickToDialogMs": 3433.6,
+          "dialogToMountedMs": 578.3,
+          "mountedToReadyMs": 3310.7,
+          "moduleNetworkBytes": 967747,
+          "moduleVersion": "1.0.0-32090291a4b3",
+          "chatPresent": true,
+          "failure": null
+        },
+        "after": {
+          "gameId": "studio-nitro-run",
+          "temperature": "cold",
+          "clickToReadyMs": 6454.5,
+          "clickToDialogMs": 3437.4,
+          "dialogToMountedMs": 2878.1,
+          "mountedToReadyMs": 139,
+          "moduleNetworkBytes": 968502,
+          "moduleVersion": "1.0.0-febcd79d7d26",
+          "chatPresent": true,
+          "failure": null
+        },
+        "warmAfter": {
+          "gameId": "studio-nitro-run",
+          "temperature": "warm-reopen",
+          "clickToReadyMs": 583.7,
+          "clickToDialogMs": 470.9,
+          "dialogToMountedMs": 112.5,
+          "mountedToReadyMs": 0.3,
+          "moduleNetworkBytes": 278,
+          "moduleVersion": "1.0.0-febcd79d7d26",
+          "chatPresent": true,
+          "failure": null
+        }
+      }
+    ],
+    "remainingDesktop": [
+      {
+        "gameId": "studio-meme-overload",
+        "temperature": "cold",
+        "clickToReadyMs": 4431,
+        "clickToDialogMs": 4106.7,
+        "dialogToMountedMs": 194.2,
+        "mountedToReadyMs": 130.1,
+        "moduleNetworkBytes": 1728505,
+        "moduleVersion": "1.0.0-8cf051bf2f9d",
+        "chatPresent": true,
+        "failure": null
+      },
+      {
+        "gameId": "studio-meme-overload",
+        "temperature": "warm-reopen",
+        "clickToReadyMs": 598.7,
+        "clickToDialogMs": 470.9,
+        "dialogToMountedMs": 127.6,
+        "mountedToReadyMs": 0.2,
+        "moduleNetworkBytes": 286,
+        "moduleVersion": "1.0.0-8cf051bf2f9d",
+        "chatPresent": true,
+        "failure": null
+      },
+      {
+        "gameId": "studio-last-convoy",
+        "temperature": "cold",
+        "clickToReadyMs": 2990.2,
+        "clickToDialogMs": 2421.7,
+        "dialogToMountedMs": 352,
+        "mountedToReadyMs": 216.5,
+        "moduleNetworkBytes": 879971,
+        "moduleVersion": "1.0.0-6092d386abd6",
+        "chatPresent": true,
+        "failure": null
+      },
+      {
+        "gameId": "studio-last-convoy",
+        "temperature": "warm-reopen",
+        "clickToReadyMs": 1757.7,
+        "clickToDialogMs": 470.7,
+        "dialogToMountedMs": 1286.6,
+        "mountedToReadyMs": 0.4,
+        "moduleNetworkBytes": 472,
+        "moduleVersion": "1.0.0-6092d386abd6",
+        "chatPresent": true,
+        "failure": null
+      }
+    ],
+    "mobile": [
+      {
+        "gameId": "studio-velvet-reign",
+        "temperature": "cold",
+        "clickToReadyMs": 13190.3,
+        "clickToDialogMs": 4272.6,
+        "dialogToMountedMs": 2639.3,
+        "mountedToReadyMs": 6278.4,
+        "moduleNetworkBytes": 1927273,
+        "moduleVersion": "1.0.0-4101ac70c123",
+        "chatPresent": true,
+        "failure": null,
+        "introEntered": true
+      },
+      {
+        "gameId": "studio-velvet-reign",
+        "temperature": "warm-reopen",
+        "clickToReadyMs": 685.1,
+        "clickToDialogMs": 485.2,
+        "dialogToMountedMs": 199.5,
+        "mountedToReadyMs": 0.4,
+        "moduleNetworkBytes": 284,
+        "moduleVersion": "1.0.0-4101ac70c123",
+        "chatPresent": true,
+        "failure": null
+      },
+      {
+        "gameId": "studio-afterglow",
+        "temperature": "cold",
+        "clickToReadyMs": 3935,
+        "clickToDialogMs": 2459.5,
+        "dialogToMountedMs": 899.3,
+        "mountedToReadyMs": 576.2,
+        "moduleNetworkBytes": 507283,
+        "moduleVersion": "1.0.2-ef1ba150046e",
+        "chatPresent": true,
+        "failure": null,
+        "introEntered": true
+      },
+      {
+        "gameId": "studio-afterglow",
+        "temperature": "warm-reopen",
+        "clickToReadyMs": 2353.3,
+        "clickToDialogMs": 470.8,
+        "dialogToMountedMs": 1881.9,
+        "mountedToReadyMs": 0.6,
+        "moduleNetworkBytes": 284,
+        "moduleVersion": "1.0.2-ef1ba150046e",
+        "chatPresent": true,
+        "failure": null
+      }
+    ],
+    "expectedHost": "index-C718g19b.js",
+    "allSevenVersionGuardsPassed": true,
+    "allTrialsPassed": true,
+    "genuineErrors": [],
+    "attemptedApiWrites": 0,
+    "optionalVoiceAbortsOnClose": {
+      "count": 7,
+      "rawEventsPreserved": true,
+      "reason": "GIRLHUB optional voice preloads start after entering the intro. The test closes the game 1.306 seconds after readiness, below the eight second fetch timeout. AfterglowUI.destroy calls AfterglowVoices.destroy, which aborts pending voice requests. Mandatory images and the module are ready."
+    },
+    "optionalGestureAbortsOnClose": {
+      "count": 2,
+      "rawEventsPreserved": true,
+      "reason": "The optional Last Convoy survivor-gesture atlas starts about one millisecond after readiness on each open. The test closes the ready game while this request is pending. ConvoyPortraitAnimation.destroy calls cancelLoad and removes the image src, before its fifteen second timeout. The base portrait and mandatory images are ready."
+    },
+    "remainingLatency": "Mobile HTTP/2 pointer fetches were sent within about one millisecond, then waited 2.60 seconds (Velvet cold) and 1.85 seconds (GIRLHUB warm) for headers on reused connections. This separates the delay from the browser scheduling queue but does not identify the network, proxy or origin as its specific cause.",
+    "interpretation": "GIRLHUB, Velvet and Cosmic improved substantially. Nitro improved modestly. Caramel did not improve in this single network run, and Royal Dice was dominated by walking. Repeat entry is usually faster, with occasional fresh-pointer RTT spikes. Do not describe all first opens as instant.",
+    "publicBrowserValidation": {
+      "desktopOpenings": 16,
+      "mobileOpenings": 4,
+      "nativeGamesCovered": 7,
+      "accountsCreated": false,
+      "stakesPlaced": false,
+      "attemptedOrBlockedApiWrites": 0,
+      "genuineJavaScriptOrResourceErrors": 0,
+      "rawMobileVoiceAborts": 7,
+      "rawConvoyGestureAborts": 2,
+      "specificCloseCleanupCancellations": 9,
+      "allExpectedHostAndVersionGuardsPassed": true,
+      "allGamesRetainChat": true
+    },
+    "voiceCancellationReview": {
+      "classifiedRequests": 7,
+      "rawEvidence": "public-mobile-after.raw.json",
+      "maximumIntroEntryToNextOpenMs": 1306.2000000029802,
+      "voiceTimeoutMs": 8000,
+      "basis": "The test enters the GIRLHUB intro, then closes the game before the next warm opening. Optional voice requests start only after intro entry. The entire interval from the earlier cold result capture to the next opening is 1306.2 ms, below the 8000 ms request timeout. AfterglowUI.destroy calls AfterglowAudio.destroy, whose AfterglowVoices.destroy explicitly aborts all outstanding request controllers. These seven exact voice MP3 paths are classified as intended close cleanup; no image or module failure is suppressed. Original global failure strings did not contain per-request failure timestamps.",
+      "source": [
+        "src/ui/AfterglowUI.ts:250",
+        "src/ui/AfterglowAudio.ts:23",
+        "src/ui/AfterglowVoices.ts:49",
+        "src/ui/AfterglowVoices.ts:60",
+        "src/ui/AfterglowVoices.ts:111"
+      ]
+    },
+    "gestureCancellationReview": {
+      "classifiedRequests": 2,
+      "rawEvidence": "public-remaining-after.raw.json",
+      "timeoutMs": 15000,
+      "mandatoryReadyBeforeOptionalRequest": true,
+      "coldReadyToNextClickMs": 473.8999999910593,
+      "basis": "Both cold and warm games reached mandatory data-asset-state ready. The optional survivor gesture atlas request starts about 1 ms after readiness and remains pending with zero completed response bytes at capture. The test closes immediately afterward; the cold ready-to-next-click interval is about 474 ms, far below the 15 second atlas timeout. LastConvoyUI.destroy calls heroine.destroy, which invokes ConvoyPortraitAnimation.destroy and cancelLoad; cancelLoad removes the pending Image src. The decoded static base portrait remains available while this optional animation loads. Only these two exact atlas aborts are classified; no mandatory image failure is suppressed.",
+      "source": [
+        "src/ui/LastConvoyUI.ts:63",
+        "src/ui/LastConvoyUI.ts:187",
+        "src/ui/ConvoyHeroine.ts:53",
+        "src/ui/ConvoyPortraitAnimation.ts:45",
+        "src/ui/ConvoyPortraitAnimation.ts:110",
+        "src/ui/ConvoyPortraitAnimation.ts:111"
+      ]
+    },
+    "timingDiagnosis": {
+      "samples": [
+        {
+          "gameId": "studio-velvet-reign",
+          "temperature": "cold",
+          "startedFromMarkMs": 36.3,
+          "priority": "High",
+          "protocol": "h2",
+          "connectionReused": true,
+          "requestToTimingBaselineMs": 0.5,
+          "beforeSendMs": 0.2,
+          "waitAfterSendToHeadersMs": 2709.4
+        },
+        {
+          "gameId": "studio-velvet-reign",
+          "temperature": "cold",
+          "startedFromMarkMs": 4273.3,
+          "priority": "High",
+          "protocol": "h2",
+          "connectionReused": true,
+          "requestToTimingBaselineMs": 0.6,
+          "beforeSendMs": 0.3,
+          "waitAfterSendToHeadersMs": 2595.9
+        },
+        {
+          "gameId": "studio-velvet-reign",
+          "temperature": "warm-reopen",
+          "startedFromMarkMs": 488.9,
+          "priority": "High",
+          "protocol": "h2",
+          "connectionReused": true,
+          "requestToTimingBaselineMs": 0.9,
+          "beforeSendMs": 0.2,
+          "waitAfterSendToHeadersMs": 184.3
+        },
+        {
+          "gameId": "studio-afterglow",
+          "temperature": "cold",
+          "startedFromMarkMs": 34.4,
+          "priority": "High",
+          "protocol": "h2",
+          "connectionReused": true,
+          "requestToTimingBaselineMs": 0.7,
+          "beforeSendMs": 0.3,
+          "waitAfterSendToHeadersMs": 404.2
+        },
+        {
+          "gameId": "studio-afterglow",
+          "temperature": "cold",
+          "startedFromMarkMs": 2460.6,
+          "priority": "High",
+          "protocol": "h2",
+          "connectionReused": true,
+          "requestToTimingBaselineMs": 0.6,
+          "beforeSendMs": 0.2,
+          "waitAfterSendToHeadersMs": 695.1
+        },
+        {
+          "gameId": "studio-afterglow",
+          "temperature": "warm-reopen",
+          "startedFromMarkMs": 471.8,
+          "priority": "High",
+          "protocol": "h2",
+          "connectionReused": true,
+          "requestToTimingBaselineMs": 1,
+          "beforeSendMs": 0.5,
+          "waitAfterSendToHeadersMs": 1851.7
+        }
+      ],
+      "conclusion": "Mobile active-pointer delays occur after Chrome sends requests on a reused HTTP/2 connection. Velvet waited about 2709 and 2596 ms for headers with less than 1 ms before sending; GIRLHUB warm waited about 1852 ms with about 1 ms before sending. This excludes a large Chrome scheduling queue for these samples, but cannot separate network transit, proxy buffering and origin processing. Desktop main/extra captures lack send-phase timing and support only total request-to-header delay."
+    },
+    "mobileLayout": [
+      {
+        "gameId": "studio-velvet-reign",
+        "temperature": "cold",
+        "chatWithinViewport": true,
+        "introEntered": true
+      },
+      {
+        "gameId": "studio-velvet-reign",
+        "temperature": "warm-reopen",
+        "chatWithinViewport": true,
+        "introEntered": null
+      },
+      {
+        "gameId": "studio-afterglow",
+        "temperature": "cold",
+        "chatWithinViewport": true,
+        "introEntered": true
+      },
+      {
+        "gameId": "studio-afterglow",
+        "temperature": "warm-reopen",
+        "chatWithinViewport": true,
+        "introEntered": null
+      }
+    ]
+  },
+  "accountsCreated": false,
+  "stakesPlaced": false,
+  "serverDataRestored": false,
+  "proofDirectory": "artifacts/game-entry-20261022/proof",
+  "complete": true
+}

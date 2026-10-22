@@ -1,5 +1,5 @@
 import { chromium } from '@playwright/test';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
 const args = new Map();
@@ -8,11 +8,13 @@ const origin = args.get('--origin') || 'https://stealth-spark-gokmxooi.expressho
 const output = resolve(args.get('--output') || 'artifacts/game-entry-20261022/proof/public-entry-before.json');
 const gameIds = (args.get('--games') || 'studio-cosmic-escape,studio-caramel-carnival,studio-velvet-reign,royal-dice').split(',');
 const mobile = args.get('--mobile') === '1';
+const expectedEntry = args.get('--expected-entry');
+const expectedVersions = args.get('--versions') ? JSON.parse(await readFile(args.get('--versions'), 'utf8')).moduleVersions : {};
 const browser = await chromium.launch({ executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: true,
   args: ['--disable-background-timer-throttling', '--disable-renderer-backgrounding'] });
 const proof = { origin, at: new Date().toISOString(), accountsCreated: false, stakesPlaced: false,
   shim: 'Browser debugger changes only LobbyClient.status to connected after guest auth closes. RoomScene.network remains undefined, account stays null, real host chat and cabinet walk/seat/window stay active. All API writes blocked through CDP Fetch. This does not measure authenticated saved-round checks.',
-  viewport: mobile ? { width: 390, height: 844 } : { width: 1440, height: 1000 },
+  viewport: mobile ? { width: 390, height: 844 } : { width: 1440, height: 1000 }, expectedEntry, expectedVersions,
   blockedWrites: [], errors: [], intentionalCancellations: [], trials: [] };
 try {
   const context = await browser.newContext({ viewport: proof.viewport, deviceScaleFactor: mobile ? 3 : 1,
@@ -32,11 +34,12 @@ try {
   const requests = new Map();
   cdp.on('Network.requestWillBeSent', event => requests.set(event.requestId, { url: event.request.url,
     type: event.type, method: event.request.method, started: event.timestamp, wallTime: event.wallTime,
-    initiator: event.initiator.type, cached: false, encodedBytes: 0 }));
+    initiator: event.initiator.type, initialPriority: event.request.initialPriority, cached: false, encodedBytes: 0 }));
   cdp.on('Network.requestServedFromCache', event => { const request = requests.get(event.requestId); if (request) request.cached = true; });
   cdp.on('Network.responseReceived', event => Object.assign(requests.get(event.requestId) || {}, { status: event.response.status,
     mimeType: event.response.mimeType, fromDiskCache: event.response.fromDiskCache,
-    responseStarted: event.timestamp }));
+    responseStarted: event.timestamp, responseTiming: event.response.timing, protocol: event.response.protocol,
+    connectionId: event.response.connectionId, connectionReused: event.response.connectionReused }));
   cdp.on('Network.loadingFinished', event => Object.assign(requests.get(event.requestId) || {}, { encodedBytes: event.encodedDataLength, finished: event.timestamp }));
   cdp.on('Network.loadingFailed', event => Object.assign(requests.get(event.requestId) || {}, { failed: event.errorText,
     canceled: event.canceled, finished: event.timestamp }));
@@ -65,7 +68,8 @@ try {
     new MutationObserver(inspect).observe(document, { childList: true, subtree: true, attributes: true,
       attributeFilter: ['open', 'data-game-module-id', 'data-asset-state'] });
   });
-  await page.goto(`${origin}/?entry-profile=${Date.now()}`, { waitUntil: 'domcontentloaded', timeout: 60000 });
+  const documentResponse = await page.goto(`${origin}/?entry-profile=${Date.now()}`, { waitUntil: 'domcontentloaded', timeout: 60000 });
+  if (expectedEntry && !(await documentResponse.text()).includes(`/assets/${expectedEntry}`)) throw Error('Host document does not match expected entry');
   await page.waitForFunction(() => document.querySelector('#join-dialog[open] #email')?.getClientRects().length && !document.querySelector('#login-button')?.disabled && !document.querySelector('#loading'), null, { timeout: 120000 });
   proof.hallReadyMs = await page.evaluate(() => performance.now());
   const functionResult = await cdp.send('Runtime.evaluate', { expression: 'window.royalDemo.getNetworkState' });
@@ -95,6 +99,7 @@ try {
     if (!await candidate.isVisible()) await page.locator('#games-tab').click();
     await candidate.scrollIntoViewIfNeeded();
     const pendingAtClick = [...requests.values()].filter(request => !request.finished).map(request => ({ url: new URL(request.url).pathname, started: request.started }));
+    const gameRequestsBeforeMark = [...requests.values()].filter(request => new URL(request.url).pathname.startsWith(`/game-modules/${gameId}/`)).map(request => ({ path: new URL(request.url).pathname, encodedBytes: request.encodedBytes, finished: !!request.finished }));
     const startRequests = new Set(requests.keys());
     const started = Date.now();
     await page.evaluate(({ gameId, temperature }) => { window.__gameTrial = { gameId, temperature, clickMs: performance.now() }; }, { gameId, temperature });
@@ -116,6 +121,7 @@ try {
       chatBounds: document.querySelector('.chat-dock')?.getBoundingClientRect().toJSON(),
       viewportWidth: innerWidth, viewportHeight: innerHeight,
     }));
+    if (expectedVersions[gameId] && result.moduleVersion !== expectedVersions[gameId]) failure = 'Loaded module version does not match reviewed package';
     const newRequests = [...requests].filter(([id]) => !startRequests.has(id)).map(([, row]) => ({ ...row, url: new URL(row.url).pathname,
       startedFromClickMs: row.wallTime * 1000 - started,
       durationMs: row.finished ? (row.finished - row.started) * 1000 : null }));
@@ -126,7 +132,11 @@ try {
       clickToReadyMs: result.assetsReadyMs ? result.assetsReadyMs - result.clickMs : null,
       encodedNetworkBytes: newRequests.reduce((sum, request) => sum + request.encodedBytes, 0),
       moduleNetworkBytes: newRequests.filter(request => request.url.startsWith(`/game-modules/${gameId}/`)).reduce((sum, request) => sum + request.encodedBytes, 0),
+      moduleCumulativeBytes: [...requests.values()].filter(request => new URL(request.url).pathname.startsWith(`/game-modules/${gameId}/`)).reduce((sum, request) => sum + request.encodedBytes, 0),
+      gameRequestsBeforeMark,
       pendingAtClick,
+      expectedModuleVersion: expectedVersions[gameId],
+      moduleVersionMatches: !expectedVersions[gameId] || result.moduleVersion === expectedVersions[gameId],
       resources: newRequests,
     };
     proof.trials.push(row);

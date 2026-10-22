@@ -1,0 +1,210 @@
+{
+  "release": "game-entry-20261022-v1",
+  "sourceCommit": "08f22472b2b90a3ca07c4efeec267e28cd6b384a",
+  "changed": {
+    "docs/game-entry-loading.md": "40ad3ca9ae565122a36150832ef8ab4d53aa832f2eb1d5e6505742405464a593",
+    "docs/startup-loading.md": "2fde69c66cfb24c2c94c7c21d2f9a1148e7ed08e5761070481950420c6ed8fc6",
+    "games/caramel-carnival/package.json": "2d42afc11f62b5c375aa4e4926b3f477580e6bcc7c29927ce95c0e3dbaf6413b",
+    "games/cosmic-escape/package.json": "cab60c965a9460aada98f2d4ff57392af21763c7b8ec31dd9c67bac96d971019",
+    "games/girlhub/package.json": "cfdb5edc411ca07c67f4768260b77c3fd4177056ff105c7470a2232b646bac74",
+    "games/last-convoy/package.json": "53f721181e759314cee48621d90805cec979f690cfab170feefd4f3488e1301c",
+    "games/meme-overload/package.json": "d3548a77bb2b4dfe410f81d21e0e15277958cdc60483c54ff22e3ee811c47176",
+    "games/nitro-run/package.json": "fc92a78623ff9df4c0d12b1fbfd712176585a634071cb0d6508dbab135b687d3",
+    "games/velvet-reign/package.json": "eaceb1bfb0d0137646e4db2d4359d959324c63ff62f0e51d280a498274fe9b25",
+    "public/assets/meme-overload/v2/stonks-66695dba5cfb.webp": "66695dba5cfb1389d1bac23bc2d718eadf02cee80e622a8fa00aed4b7702b842",
+    "public/assets/velvet-rebuild/v3/amira-8ccf12d14391.webp": "8ccf12d14391444cb4607ad25890cd9144eb855ec002be60eb79e00b5cd261f8",
+    "public/assets/velvet-rebuild/v3/celeste-64244495645f.webp": "64244495645f98068c344f0a62cf12d30b629ee6ab6faddceca89e18134a52df",
+    "public/assets/velvet-rebuild/v3/evelyn-bfd25aa2ff76.webp": "bfd25aa2ff76b910d15be5a112f11028539775ada90b4c6cf6ede8988a757f08",
+    "public/assets/velvet-rebuild/v3/mei-a61178df3114.webp": "a61178df3114be3e8e3a1f002725667191db513f099face5dddbbbcd8e619340",
+    "public/assets/velvet-rebuild/v3/viola-2e5782904937.webp": "2e57829049370d3ac1b4740460386487e90b3a393aece9ab15962fdf0a41050f",
+    "scripts/build-game-module.mjs": "2b77ac516b082645420fe791e3643c145dac3cd083c9333957bd69e5fae4447c",
+    "scripts/build-native-slot-images.mjs": "0b380b053b6829ac8a399c40e854ab0e45e0585f363df83bc900073bfa873a95",
+    "src/game/BackgroundImages.ts": "3e9ccdf9d475e74a7bc8399efb5644964b617c7eb557cecf6a763339e5a83319",
+    "src/game/RoomScene.ts": "3d2c0153307edb26022be9cae83e56154d1d47ce02cb194839de84481349d1c0",
+    "src/main.ts": "216a5d054bc58943c3129682966d95dd1b781bd239f77afc17135310dadd1290",
+    "src/modules/GameModuleManifest.ts": "3570f80c6c5c76741c61caa766cc437747a1a58ff10f195e3f21dc22bd0ebd22",
+    "src/modules/GameModulePreparation.ts": "0b80e9894d33b75a9d697c946082d0028c5d7cc9f890996b168a2560e7c02e3e",
+    "src/modules/IndependentGameUI.ts": "81ccfa6e29069b8acf5ce3e8541dd9345f4f20a44088f410f39a90533b2bc4cc",
+    "src/ui/AfterglowAssets.ts": "b7ffc3ed03191f2ffd738a2bbabe1a3a5fc88357954bbbf822cea0c727e9d444",
+    "src/ui/AfterglowUI.ts": "698d4e355c2bc50d2b7522f151c46dab5d184eb6d096ac0a25d7df5eb59d05b1",
+    "src/ui/CaramelCarnivalAssets.ts": "f70864f02a1c8ffe68714d55f382320f9c56a03ad0505b6b1e18dafeaabd7cb1",
+    "src/ui/CosmicEscapeAssets.ts": "d70ff9c4ef88bed7422999f4e314594982338d28f894a03d6faf293452a578e6",
+    "src/ui/VelvetReignAssets.ts": "03e71db3b710cf3fc9cd0eae361a8b64b54b42b1ee6115276103bcbcb6f4f6a6",
+    "src/ui/slotKit/SlotAssets.ts": "8bbd409578830ee7f3f025340003155335af03ce684bcae23bc913acb02052d2",
+    "src/ui/slotKit/nativeSlotImages.ts": "20e93c94b87b767d25d9f41a5d033275e76947eab02f0299032b583800e5da9f",
+    "src/ui/slotKit/nativeSlots.ts": "fc823e2892a7fcc49d32b8fa21bd938498ac1762d4444213f8c624bec21cf6f7"
+  },
+  "delta": {
+    "assets/index-C718g19b.js": "13dfc50c489ce2630444df5dce82ff010b833d1f54685eb39a27ddbf28604a7b",
+    "assets/meme-overload/v2/stonks-66695dba5cfb.webp": "66695dba5cfb1389d1bac23bc2d718eadf02cee80e622a8fa00aed4b7702b842",
+    "assets/velvet-rebuild/v3/amira-8ccf12d14391.webp": "8ccf12d14391444cb4607ad25890cd9144eb855ec002be60eb79e00b5cd261f8",
+    "assets/velvet-rebuild/v3/celeste-64244495645f.webp": "64244495645f98068c344f0a62cf12d30b629ee6ab6faddceca89e18134a52df",
+    "assets/velvet-rebuild/v3/evelyn-bfd25aa2ff76.webp": "bfd25aa2ff76b910d15be5a112f11028539775ada90b4c6cf6ede8988a757f08",
+    "assets/velvet-rebuild/v3/mei-a61178df3114.webp": "a61178df3114be3e8e3a1f002725667191db513f099face5dddbbbcd8e619340",
+    "assets/velvet-rebuild/v3/viola-2e5782904937.webp": "2e57829049370d3ac1b4740460386487e90b3a393aece9ab15962fdf0a41050f",
+    "index.html": "336be08772d8f0fe4d44afa4dcfffdba1b7fa8109857b3fb6bf5463da3348ade"
+  },
+  "modules": {
+    "studio-cosmic-escape": {
+      "version": "1.0.0-018f7ad0a693",
+      "expectedSha256": "5bbc04c905badbd50dfd84e96a2e93f609e2c087b3975a34c61d27885761e89d",
+      "files": {
+        "style-c637879930418ecb.css": "c637879930418ecb5aaa348199e5d363e4bb9fd9d43bc662ba76446066f6434b",
+        "entry-d589975f343d9844.js": "d589975f343d98440ffbf0eccd092b3dae09f38cae327ba22419557433f97109",
+        "manifest.json": "ebd2eb7ae718c242a7b100b87e28e3c4ddf888147a18678b7506fc84fd175842",
+        "media/studio/symbols.webp": "63d92524d8634e72a8a6c32cc973e6baf64498a2ce7a944534628b962de7b406",
+        "media/studio/space-world.webp": "0a9a41dd898f368f43c562c58523bb622b96c778ad927ce9ed8f3aba17512f3d",
+        "media/cosmic-rebuild/load-v2/background.webp": "0296ec45a7307fc69b4a0da58ec46805f9ff2bd6a9dc1b85552e53ce563abe37",
+        "media/cosmic-guardians/v1/symbols-v2.webp": "6e5d58ecb7d3cc3d2e95c57838cd6ef06b5ccecdb35e3a7f26a6e75792e8bce9",
+        "media/cosmic-guardians/v1/alien.webp": "188bd8973f446976b01b9805880b958df5761f1dd545e0c5e7a6418f60a19599",
+        "media/cosmic-guardians/v1/background.webp": "0e185ec675a1bcc7b4fc7bdf43d6bb4c5adc15f3a7141075cf6549471829689c"
+      }
+    },
+    "studio-caramel-carnival": {
+      "version": "1.0.0-bfa7c9504df2",
+      "expectedSha256": "none",
+      "files": {
+        "entry-651791ffbfcf9e3a.js": "651791ffbfcf9e3ad6aca71e41979571496a43b49d924f582c6c78b9540db054",
+        "manifest.json": "77f176029665d6e18e215abe6aef3823fa29a0a30d19cf40a2b5ef4698af16e2",
+        "style-d1112609eb1a652b.css": "d1112609eb1a652b9a55fec0a9bd46babd70d6274da2a0b195ae910f74bac8a8",
+        "media/studio/symbols.webp": "63d92524d8634e72a8a6c32cc973e6baf64498a2ce7a944534628b962de7b406",
+        "media/studio/space-world.webp": "0a9a41dd898f368f43c562c58523bb622b96c778ad927ce9ed8f3aba17512f3d",
+        "media/studio/candy-world.webp": "5aebbe2ba16cb4d40260655c8f5889f49b91c2347a56773b9413de308cf8f5c0",
+        "media/caramel-rebuild/v1/symbols.webp": "6dc3292aa4518e1f6bf08093391f6826eb74656c5d10fbc31914d5499f7f32f6",
+        "media/caramel-rebuild/v1/background.webp": "4bdcfce4cd3decbe1e7850645de7e0ac8edd636a7ff5299269b457c4639e5998"
+      }
+    },
+    "studio-velvet-reign": {
+      "version": "1.0.0-4101ac70c123",
+      "expectedSha256": "9316a570a444ccecffd51dcdf2b2449037a480e1dacd1c0f4333ca29ab5cc9cd",
+      "files": {
+        "entry-f68aba951f137e72.js": "f68aba951f137e72c9edfd9963df23c61cf0bfd0881c36da9e8f52b82cbcef5f",
+        "style-2b76d6af26f091dd.css": "2b76d6af26f091ddfe131565882e17850d81ec627a78765f00bb5ebc60b55613",
+        "manifest.json": "69ca56189018b199aae12c49d573f8d57520884823f5aca53e9ea947070e98e4",
+        "media/studio/symbols.webp": "63d92524d8634e72a8a6c32cc973e6baf64498a2ce7a944534628b962de7b406",
+        "media/studio/space-world.webp": "0a9a41dd898f368f43c562c58523bb622b96c778ad927ce9ed8f3aba17512f3d",
+        "media/cosmic-rebuild/load-v2/background.webp": "0296ec45a7307fc69b4a0da58ec46805f9ff2bd6a9dc1b85552e53ce563abe37",
+        "media/velvet-rebuild/v1/symbols.webp": "83d808f0cd2be7e58f4b8646f9b3e483abdd7e9402587c4225dc34446707990a",
+        "media/velvet-rebuild/v1/background.webp": "ce1d309e155b66910836cf5cded26d4979fa52a8a3c53bb6175caa1101b7d4cc",
+        "media/velvet-rebuild/v3/viola-2e5782904937.webp": "2e57829049370d3ac1b4740460386487e90b3a393aece9ab15962fdf0a41050f",
+        "media/velvet-rebuild/v3/mei-a61178df3114.webp": "a61178df3114be3e8e3a1f002725667191db513f099face5dddbbbcd8e619340",
+        "media/velvet-rebuild/v3/evelyn-bfd25aa2ff76.webp": "bfd25aa2ff76b910d15be5a112f11028539775ada90b4c6cf6ede8988a757f08",
+        "media/velvet-rebuild/v3/amira-8ccf12d14391.webp": "8ccf12d14391444cb4607ad25890cd9144eb855ec002be60eb79e00b5cd261f8",
+        "media/velvet-rebuild/v3/celeste-64244495645f.webp": "64244495645f98068c344f0a62cf12d30b629ee6ab6faddceca89e18134a52df"
+      }
+    },
+    "studio-last-convoy": {
+      "version": "1.0.0-6092d386abd6",
+      "expectedSha256": "a2fa9d8112aca86a9ecf2629aab8712115e2c5713ccc5393f4e0f85177640630",
+      "files": {
+        "entry-e842c15f7075bd69.js": "e842c15f7075bd69c7dd4c223f29e2d438820a6862b6cde579765c387e9d68fa",
+        "style-36a0c3cb293b0a7d.css": "36a0c3cb293b0a7d4212f692e1da7298884ef14b254d07dfba8aa192d374048d",
+        "manifest.json": "85b4b637db6d3a3d3946cd18e058f37093f745c24c329dd60244a9cb15b9098a",
+        "media/studio/symbols.webp": "63d92524d8634e72a8a6c32cc973e6baf64498a2ce7a944534628b962de7b406",
+        "media/last-convoy/v1/symbols.webp": "e299b4685392808f9a8a0ad730ba3750900d6068f619a56df8d7f3c21ddf7a37",
+        "media/last-convoy/v1/heroine.webp": "ca0764d8faa9d3fe7ac55684d519863bd1738a0417a459bd53644c0f6db788c0",
+        "media/last-convoy/v1/background.webp": "7ebf774898b39b08bbc55dad56a38b2bc43accaf7337d3d25576265a93cb0b64",
+        "media/last-convoy/v2/commander.webp": "b92627ec6f890660b5e5989d95f7f5391a96b30e1d4fb8b7155853bce98f9eaa",
+        "media/last-convoy/v2/urban.webp": "a70de414fff04d63e818ee1a323243229bb128d9a4d934526015140a098be7cb",
+        "media/last-convoy/v2/recon.webp": "7a028e4c6dc9b25499ba0a1fb898020b65611971b9c7d7daf7c87d95a11af1ad",
+        "media/last-convoy/v2/pilot.webp": "925c55d74191267861ecfef519b8629d9dbb3813a6af2a8a665f7a847a87fd4c",
+        "media/last-convoy/v2/medic.webp": "b6f3dd981aa6b0494fe3097371cba57e172c385b361fbb6b4e7d5ecf70b3464a",
+        "media/last-convoy/v3/survivor-gesture.webp": "6f2f365da0981923e0bf30f05658751722a6680b90530a9463eae5ed4ed375b3",
+        "media/last-convoy/v3/recon-gesture.webp": "7e6bcaaa49500fcb3f37a36b4fe745686de32c7f910d75820b94674a60ca4012",
+        "media/last-convoy/v3/urban-gesture.webp": "9008153633ad50114d0f400c9812fc9a6c6b94de63e55b5bf05db5d928f9150b",
+        "media/last-convoy/v3/commander-gesture.webp": "b587d8f94742c57c68336dd8f132b18d11b8e242e2687d53e1aceae0dea32096",
+        "media/last-convoy/v3/medic-gesture.webp": "47d39d041f80cc8edc1fa0f484698ff3fb9ca31f923e825a36f97372d259e67c",
+        "media/last-convoy/v3/pilot-gesture.webp": "911f1904e4509a5ea230b95a18d00b549995e5a5da777406b02bd019c52cbfc7"
+      }
+    },
+    "studio-nitro-run": {
+      "version": "1.0.0-febcd79d7d26",
+      "expectedSha256": "none",
+      "files": {
+        "style-fea858485cd4a699.css": "fea858485cd4a699c3a2dfc23b663ced6033df0092dc325bc7ea9adf58ec7962",
+        "entry-6a49803383e162de.js": "6a49803383e162de05d6b418d45cc1ac2c29693e5e75dd8cfe9ae7f10cd55e64",
+        "manifest.json": "67b395771c37a4a3a52423bb9e56180bf11159e46754b7610c15dd2bcacc9b33",
+        "media/studio/symbols.webp": "63d92524d8634e72a8a6c32cc973e6baf64498a2ce7a944534628b962de7b406",
+        "media/nitro-run/v1/symbols.webp": "305fc74526282421f9d98be3925841c57dd72c85e45782f50696b1aeee0486a8",
+        "media/nitro-run/v1/background.webp": "929fd8f685a95ef471ad9c83de55fa0b0e469724abac58c9d8df38fe760c438f"
+      }
+    },
+    "studio-afterglow": {
+      "version": "1.0.2-ef1ba150046e",
+      "expectedSha256": "da626b5e010d99f1ec6e1ed901a04a8dd15765b12975d7212a576fc55face25a",
+      "files": {
+        "style-49950a5319ea1b7e.css": "49950a5319ea1b7ede5dab70aecff4459811eeb61e99b1f5f2f15167c955c884",
+        "entry-0d6375ac2a43b18f.js": "0d6375ac2a43b18fd3d3c2649d615b8ecef024c9f9a7af9910a4c11baa3c32ff",
+        "manifest.json": "7a89eb80187b9ba7cfda43a8fc7f5a0e48dbf240578392c497c9f792dcf0ee89",
+        "media/studio/symbols.webp": "63d92524d8634e72a8a6c32cc973e6baf64498a2ce7a944534628b962de7b406",
+        "media/afterglow/v1/symbols.webp": "eb98a828cd992874300de3f5d0e8b0ef70cbf4374e84b7c4c5510c32168c6e64",
+        "media/afterglow/v1/background-studio-v3.webp": "72c66ad7c649a56cfb0ca1b49154e5bb66d6fda86a00407189141e029eb013aa",
+        "media/afterglow/audio/v1/laugh-2.mp3": "99c3762857337f56dea6114b648ab1f2c10f306a88e3916903d8121634da810f",
+        "media/afterglow/audio/v1/laugh-3.mp3": "e5309e1e51a63dc839dcd9e3f3ae4369fd37f1b8b63580e74cdafb68671675ad",
+        "media/afterglow/audio/v1/unlock.mp3": "d4fc67cd79bbc5e19d87e2759720b4018c433a8510eb37aceba102dc6a57816a",
+        "media/afterglow/audio/v1/laugh-1.mp3": "fff6df47947edc00aa5a21c90e6888dfa991f21696e350b36cf425d4c2a57982",
+        "media/afterglow/audio/v1/laugh-4.mp3": "e959ee4a972d43d754a2e933e363d9865a77eb344abd3615f5828bc6f0beb7b7",
+        "media/afterglow/audio/v2/win-1.mp3": "151c42720eb200187294e1ce25f4f03a06802b8a4b924b35d309a8d07d2e15ad",
+        "media/afterglow/audio/v2/win-2.mp3": "1965cd8c4560edbff8d14662d1e302ab4ec0eac1e9c3adeeabc6842b55ac0085",
+        "media/afterglow/audio/v2/win-3.mp3": "04cb450cffb0cc1ee5e39b6d49647cc725367eb3617725635d5eab436b817179",
+        "media/afterglow/v4/look-0-legendary.webp": "c6aa7af2551b2781e5d3782481e18372f3596519a5c35a18c325c1be5ed5f57a",
+        "media/afterglow/v3/look-3-user.webp": "82e0c7197af5781ff2e0e116d974266806a2680a411392613a7c3fae8d8fe7e2",
+        "media/afterglow/v3/base-3.webp": "673f95c71b608bf378a9fe66ca8e5f7f331decea9341690f96288edd6a55a70b",
+        "media/afterglow/v3/look-2-user.webp": "7e4effff686b458984e813a161925a8c57a62d33adf483d5878615a73c3ebaf1",
+        "media/afterglow/v3/base-2.webp": "8d3d45d58fb1480c410921264700e8039973bc9e901523c4137528b46002c8d0",
+        "media/afterglow/v3/base-1.webp": "e4db61d6b633a4f38d3256dbd9e7f94711e40ee2e2709b3f7ecec57c91a3e542",
+        "media/afterglow/v3/look-1-user.webp": "0f1960fef60f293fda3086c7609efdd883844f4e1a21422de72808788ce8eff0",
+        "media/afterglow/v3/base-0.webp": "3b6a1e232f4b674bd2bf1c1cc369f6c7ff94b564a2398b0368924b39bd9b3246"
+      }
+    },
+    "studio-meme-overload": {
+      "version": "1.0.0-8cf051bf2f9d",
+      "expectedSha256": "none",
+      "files": {
+        "entry-8d0e3a1d81285735.js": "8d0e3a1d812857350b18f636127d03007343ea5f7fe93ac93eebb2b844691244",
+        "manifest.json": "c721698c779552c7f04149c19ff477189daa64042fc06b82608b3865c5b6734e",
+        "style-0bc3f28e003d7c17.css": "0bc3f28e003d7c1785dcc79cd929138547359d37359e06175b4441e555278a0c",
+        "media/studio/symbols.webp": "63d92524d8634e72a8a6c32cc973e6baf64498a2ce7a944534628b962de7b406",
+        "media/meme-overload/v1/doge.jpg": "17168539cd19221ef3c506b37eb615bbc47c05bf6ac437c589f1abfef8976b98",
+        "media/meme-overload/v1/pepe.jpg": "1b1d9a3318cf05933613b299ece3ed9bf0e05ad43cf8b85c205a4a53efc4c07f",
+        "media/meme-overload/v1/desktop.svg": "9a34a214b3c7e06dab69bd06bb896e24b153b3db04c41c2177fafdbad15f282d",
+        "media/meme-overload/v1/grumpy.jpg": "e7f54c07211d4f65acb249a1f64c1fb384f6e3bede8f8de8fb5b5f419e9f46a7",
+        "media/meme-overload/v1/smudge.jpg": "f99d1e9414b2efe958aa5ddca01e88c87ce2fa5d3ed5614f4c4bc11dfd41d518",
+        "media/meme-overload/v1/harold.jpg": "349045f2fc28d1450a122e2d797dd34c276a4dc06ef01e6388cd56b3d9b36da4",
+        "media/meme-overload/v2/stonks-66695dba5cfb.webp": "66695dba5cfb1389d1bac23bc2d718eadf02cee80e622a8fa00aed4b7702b842",
+        "media/meme-overload/audio/v1/bruh.mp3": "a0f3daa795b1f7f6709723364ef80e917b63693ffb7612ef3acb6a0587a8515a",
+        "media/meme-overload/audio/v1/nice.mp3": "2dda70369a29bcb1a68705d114cb5238a55e41f65a48f4abf3aedd4c5fbb5622",
+        "media/meme-overload/audio/v1/wow.mp3": "04cbbfd7fc08bd170b1d1e3e009786090ebcb5c6368329c92a5664db0f7ba440",
+        "media/meme-overload/audio/v1/error.mp3": "2e300b4a0ab5f69a95cd987818252c10b5f33fa74644ac2593ec4f8ecf954c76",
+        "media/meme-overload/audio/v1/bonus.mp3": "3e95f23154ff6bcf04349a33891757fbf9fe5ddc20336d52175d26ca22311204",
+        "media/meme-overload/audio/v1/boom.mp3": "b302941bc7e3d5ef99795356f47e9e1b8cc57d4a37b5b040627ebf250877b6ce"
+      }
+    }
+  },
+  "before": {
+    "moduleFiles": {
+      "/opt/royal-game-modules/original-cr-vs-leo/active.json": "6933306af58375daca0b86f8f6552d41720f9ddff277592321314ce9407a93d9",
+      "/opt/royal-game-modules/royal-plinko/active.json": "78a3d80291bbd45b3bc17109c38f36ff9b9ee8ac0e475f522ac683e4299b0cc2",
+      "/opt/royal-game-modules/studio-afterglow/active.json": "da626b5e010d99f1ec6e1ed901a04a8dd15765b12975d7212a576fc55face25a",
+      "/opt/royal-game-modules/studio-cosmic-escape/active.json": "5bbc04c905badbd50dfd84e96a2e93f609e2c087b3975a34c61d27885761e89d",
+      "/opt/royal-game-modules/studio-dracona/active.json": "09b77b0b5c277b1a486cc05a398c51e0f136f2ed60c7e06318a2b393a3fe8364",
+      "/opt/royal-game-modules/studio-last-convoy/active.json": "a2fa9d8112aca86a9ecf2629aab8712115e2c5713ccc5393f4e0f85177640630",
+      "/opt/royal-game-modules/studio-velvet-reign/active.json": "9316a570a444ccecffd51dcdf2b2449037a480e1dacd1c0f4333ca29ab5cc9cd"
+    },
+    "program": {
+      "dist/assets/index-BpF0i3G_.js": "4427a98027b4210de623d4a1c24ce14868d2effa2ad0fc916336337d1c8b8359"
+    }
+  },
+  "moduleVersions": {
+    "studio-cosmic-escape": "1.0.0-018f7ad0a693",
+    "studio-caramel-carnival": "1.0.0-bfa7c9504df2",
+    "studio-velvet-reign": "1.0.0-4101ac70c123",
+    "studio-last-convoy": "1.0.0-6092d386abd6",
+    "studio-nitro-run": "1.0.0-febcd79d7d26",
+    "studio-afterglow": "1.0.2-ef1ba150046e",
+    "studio-meme-overload": "1.0.0-8cf051bf2f9d"
+  },
+  "helperSha256": "3f01868d8d12b0cff4b2c1dcc8f0ac1ca4508050842752ad4ead34e8841a03b0",
+  "snapshotSha256": "68ff2ec187fd38f39ffc2ad3b8d4c4b5d6515386748d0a6d4f318b8a2a536df3",
+  "publisherSha256": "bc5589c8f96e452841d4fbeb8661783194f29cee5b8b32bb72b18a108c471a7a"
+}
