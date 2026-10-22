@@ -1,0 +1,351 @@
+{
+  "release": "chat-moderation-20261022-v1",
+  "sourceCommit": "6bc234991e3d3afb38af55b48f58bd8f28ceb6e2",
+  "published": {
+    "published": true,
+    "preparedImage": "sha256:e2c490525a3cb585fe3ef3645fd7184e52a5da30c885666e3d9cdec24837e947",
+    "runningImage": "sha256:e2c490525a3cb585fe3ef3645fd7184e52a5da30c885666e3d9cdec24837e947",
+    "containerRestarted": true,
+    "sourceCommit": "6bc234991e3d3afb38af55b48f58bd8f28ceb6e2",
+    "changedSources": 9,
+    "clientDeltaFiles": 3,
+    "configurationsAndMountsPreserved": true,
+    "gameDataPreserved": true,
+    "backendDeltaFiles": 1,
+    "otherBackendProgramsAndModulesPreserved": true,
+    "oldAssetsPreserved": true,
+    "otherPersistentServicesPreserved": 13
+  },
+  "backup": {
+    "path": "/opt/royal-backups/chat-moderation-20261022-v1",
+    "sourceSha256": "0ee7e3864d2afa4d02fc5cc8e0f176737f086d205e9b3ddc2c54d3a11944caa2",
+    "previousImage": "sha256:ee824879f496afbb01fa197069ffb9f43d814175780f76b89118be1da055b106"
+  },
+  "preservation": {
+    "sourceCommit": "6bc234991e3d3afb38af55b48f58bd8f28ceb6e2",
+    "sourceExact": true,
+    "runningProgramExact": true,
+    "preparedProgramExact": true,
+    "moduleFilesUnchanged": true,
+    "moduleHostContractUnchanged": true,
+    "configHashesUnchanged": true,
+    "realMoneyFlagsUnchanged": true,
+    "image": "sha256:e2c490525a3cb585fe3ef3645fd7184e52a5da30c885666e3d9cdec24837e947",
+    "sourceBackupSha256": "0ee7e3864d2afa4d02fc5cc8e0f176737f086d205e9b3ddc2c54d3a11944caa2",
+    "backup": "/opt/royal-backups/chat-moderation-20261022-v1",
+    "oldSourceFiles": 1513,
+    "newSourceFiles": 1516,
+    "externalModuleFiles": 268,
+    "availableBytes": 865308672,
+    "complete": true
+  },
+  "payloadAudit": {
+    "passed": true,
+    "checks": 28,
+    "archiveSha256": "ee600c8a51bda2cdab43ef34c2a4b62f3102367523f25532cc56a513de8b3cd5",
+    "fileCounts": {
+      "source": 9,
+      "client": 3,
+      "backend": 1,
+      "shipping": 16,
+      "archive": 16
+    }
+  },
+  "local": {
+    "fullBuildPassed": true,
+    "modulesBuilt": 112,
+    "finalHostBuildPassed": true,
+    "chatServerChecks": 19,
+    "moderatorChecks": 5,
+    "securityRegressionChecks": 13,
+    "clientLifecycleChecks": 11,
+    "clientBrowserChecks": 10,
+    "realWebsocketPostgresE2EChecks": 2,
+    "recoveryChecks": 16,
+    "packagingChecks": 6,
+    "publicVerifierChecks": 3,
+    "chatEnabledGameWindow": {
+      "desktop": 1440,
+      "mobile": 390,
+      "simulatedKeyboardAppHeight": 500,
+      "game": "royal-dice"
+    },
+    "protocol": {
+      "legacyStringsAccepted": true,
+      "pendingLimit": 3,
+      "activeAccountLimit": 12,
+      "moderationDeadlineMs": 6000,
+      "confirmationDeadlineMs": 20000,
+      "noAutomaticResend": true
+    },
+    "provider": {
+      "name": "codex-sale",
+      "model": "gpt-6-luna",
+      "controlGreetingBeforeMs": 3323,
+      "controlGreetingLowStrictMs": 1776,
+      "singleObservations": true,
+      "completedSuiteVerdicts": 6,
+      "timeoutRequests": 2,
+      "note": "Synthetic upstream probes only. Six completed distinct decisions matched the existing policy. One prompt-injection case timed out twice and was held without publication or sanction; no universal latency guarantee."
+    },
+    "inheritedBackend": {
+      "crypto-reconcile.js": "afe3e44eb292bab518224182be34d6f8d8b3b0ac0dc400aaf7b07e68d315c6da",
+      "payments.js": "561f122c79d236c9b114b2c64915c6becaafd0c9e5531835df0868cdc9610247"
+    },
+    "productionAccountsCreated": false,
+    "productionChatMessagesSent": false,
+    "stakesPlaced": false,
+    "limitations": [
+      "Real local WS/auth/database E2E used an isolated PostgreSQL and development moderation fallback; the external model was separately probed using only synthetic texts.",
+      "Client failure/reconnect/watchdog tests use the real host with a local transport sink and no production writes.",
+      "Outbox is kept in the current page, and does not claim durable storage after closing or reloading the tab."
+    ]
+  },
+  "publicAssets": {
+    "release": "chat-moderation-20261022-v1",
+    "sourceCommit": "6bc234991e3d3afb38af55b48f58bd8f28ceb6e2",
+    "origin": "https://stealth-spark-gokmxooi.expresshost.cloud",
+    "method": "GET",
+    "concurrency": 3,
+    "clientFiles": 3,
+    "retainedPointers": 10,
+    "retainedHostScripts": [
+      "assets/index-C718g19b.js",
+      "assets/index-BpF0i3G_.js",
+      "assets/index-r_coidVD.js"
+    ],
+    "requests": 18,
+    "mediaRequests": 0,
+    "at": "2026-10-22T09:33:36.989Z",
+    "readOnly": true,
+    "accountsCreated": false,
+    "stakesPlaced": false,
+    "writesSent": 0,
+    "requestCount": 18,
+    "bytes": 10255739,
+    "files": [
+      {
+        "path": "/",
+        "kind": "release-client",
+        "sha256": "0138f2e6465bf632605e2f4cd0ad383ce6fe4f25f77fa1a059f69af55faab930",
+        "bytes": 708
+      },
+      {
+        "path": "/assets/index-BpF0i3G_.js",
+        "kind": "retained-host",
+        "sha256": "4427a98027b4210de623d4a1c24ce14868d2effa2ad0fc916336337d1c8b8359",
+        "bytes": 2520714
+      },
+      {
+        "path": "/assets/index-C3VY0wdW.js",
+        "kind": "release-client",
+        "sha256": "64dc983333165208c07d02ab68b01400e174ba976c49b7965426fcfef673e87d",
+        "bytes": 2536068
+      },
+      {
+        "path": "/assets/index-C718g19b.js",
+        "kind": "retained-host",
+        "sha256": "13dfc50c489ce2630444df5dce82ff010b833d1f54685eb39a27ddbf28604a7b",
+        "bytes": 2526165
+      },
+      {
+        "path": "/assets/index-CiQek4Jj.css",
+        "kind": "release-client",
+        "sha256": "f8b74953c0ca264d8004d9cdec3377b1d88455611e27934145eb0f8ba456b709",
+        "bytes": 147404
+      },
+      {
+        "path": "/assets/index-r_coidVD.js",
+        "kind": "retained-host",
+        "sha256": "7be4c6d9b38be446edcb794bf6553ceb583dfdc0f08762a5efc257ad93e61161",
+        "bytes": 2521704
+      },
+      {
+        "path": "/game-modules/original-cr-vs-leo/active.json",
+        "kind": "retained-pointer",
+        "sha256": "6933306af58375daca0b86f8f6552d41720f9ddff277592321314ce9407a93d9",
+        "bytes": 224
+      },
+      {
+        "path": "/game-modules/royal-plinko/active.json",
+        "kind": "retained-pointer",
+        "sha256": "78a3d80291bbd45b3bc17109c38f36ff9b9ee8ac0e475f522ac683e4299b0cc2",
+        "bytes": 212
+      },
+      {
+        "path": "/game-modules/studio-afterglow/active.json",
+        "kind": "retained-pointer",
+        "sha256": "95e16116585679134a2cc8bdfce66f7b28eb6ea102b2965aa0e161f0ab016fde",
+        "bytes": 220
+      },
+      {
+        "path": "/game-modules/studio-caramel-carnival/active.json",
+        "kind": "retained-pointer",
+        "sha256": "cb65d3a00fcf92670f014415aa932e4cd7797385555e032dca7bad3837c75a60",
+        "bytes": 234
+      },
+      {
+        "path": "/game-modules/studio-cosmic-escape/active.json",
+        "kind": "retained-pointer",
+        "sha256": "76b3d4304c65ba4bbd37059f9c5efd0a9988eaf05c52c4e6c0b1f7b2d12e1ac6",
+        "bytes": 228
+      },
+      {
+        "path": "/game-modules/studio-dracona/active.json",
+        "kind": "retained-pointer",
+        "sha256": "09b77b0b5c277b1a486cc05a398c51e0f136f2ed60c7e06318a2b393a3fe8364",
+        "bytes": 216
+      },
+      {
+        "path": "/game-modules/studio-last-convoy/active.json",
+        "kind": "retained-pointer",
+        "sha256": "904d8505385ac1f70aae81c5517cbf03f18252cd4e724774dbf3f1a5235876cc",
+        "bytes": 224
+      },
+      {
+        "path": "/game-modules/studio-meme-overload/active.json",
+        "kind": "retained-pointer",
+        "sha256": "2b2e2e34cb6dbeef4dfbede801724de6991ebaba7e5da16c3c99d883e870f67a",
+        "bytes": 228
+      },
+      {
+        "path": "/game-modules/studio-nitro-run/active.json",
+        "kind": "retained-pointer",
+        "sha256": "8637f5863d76a50dac758fc759ea1163edf5b3c96cecd6a673c34bd7ce0273c1",
+        "bytes": 220
+      },
+      {
+        "path": "/game-modules/studio-velvet-reign/active.json",
+        "kind": "retained-pointer",
+        "sha256": "1ab055f2f45b2cd9b77b031973cbe8244ff802b7a2ecc12a968cc117c604780e",
+        "bytes": 226
+      },
+      {
+        "path": "/index.html",
+        "kind": "release-index",
+        "sha256": "0138f2e6465bf632605e2f4cd0ad383ce6fe4f25f77fa1a059f69af55faab930",
+        "bytes": 708
+      }
+    ],
+    "health": {
+      "ok": true
+    },
+    "failures": [],
+    "complete": true,
+    "durationMs": 7655
+  },
+  "publicBrowser": {
+    "passed": true,
+    "expectedEntry": "index-C3VY0wdW.js",
+    "expectedStyles": "index-CiQek4Jj.css",
+    "transport": "Published host and its actual LobbyClient.join. Browser debugger replaces only the room transport with a local sink. Guest account stays null. All real WebSockets, API writes and external HTTP are blocked. API GETs return a guest stub.",
+    "limitation": "This checks the published client and real host layout. No authenticated server or live moderation request is exercised. Local real WS/PG and moderation coverage are recorded separately.",
+    "accountsCreated": 0,
+    "productionMessages": 0,
+    "trials": [
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "passed": true,
+        "cases": [
+          {
+            "name": "queued message keeps next draft editable",
+            "passed": true
+          },
+          {
+            "name": "explicit rejection retains both texts and only manual retry sends",
+            "passed": true
+          },
+          {
+            "name": "publication replaces the matching pending row once",
+            "passed": true
+          },
+          {
+            "name": "drop and reconnect clear checking and reconcile history without resend",
+            "passed": true
+          },
+          {
+            "name": "explicit cancellation keeps the recoverable text",
+            "passed": true
+          },
+          {
+            "name": "real RoyalDice catalog opening keeps desktop or mobile chat usable",
+            "passed": true
+          },
+          {
+            "name": "20 second deadline is unconfirmed and never retries automatically",
+            "passed": true
+          },
+          {
+            "name": "pending row and next draft fit the real host",
+            "passed": true
+          }
+        ],
+        "apiWritesAttempted": [],
+        "webSocketsAttempted": [],
+        "pageErrors": [],
+        "httpErrors": [],
+        "genuineRequestFailures": [],
+        "chatBounds": {
+          "width": 301,
+          "scrollWidth": 301
+        }
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "passed": true,
+        "cases": [
+          {
+            "name": "queued message keeps next draft editable",
+            "passed": true
+          },
+          {
+            "name": "explicit rejection retains both texts and only manual retry sends",
+            "passed": true
+          },
+          {
+            "name": "publication replaces the matching pending row once",
+            "passed": true
+          },
+          {
+            "name": "drop and reconnect clear checking and reconcile history without resend",
+            "passed": true
+          },
+          {
+            "name": "explicit cancellation keeps the recoverable text",
+            "passed": true
+          },
+          {
+            "name": "real RoyalDice catalog opening keeps desktop or mobile chat usable",
+            "passed": true
+          },
+          {
+            "name": "20 second deadline is unconfirmed and never retries automatically",
+            "passed": true
+          },
+          {
+            "name": "pending row and next draft fit the real host",
+            "passed": true
+          }
+        ],
+        "apiWritesAttempted": [],
+        "webSocketsAttempted": [],
+        "pageErrors": [],
+        "httpErrors": [],
+        "genuineRequestFailures": [],
+        "chatBounds": {
+          "width": 368,
+          "scrollWidth": 368
+        }
+      }
+    ],
+    "expectedCancellations": "Four GETs to https://luelonplay.com/demo-api/v1/games were blocked by the browser test safety route; one optional mobile cat habits request was aborted during game intent. Raw events and the exact classifications are retained in proof/public-browser-raw.json and proof/public-browser.json."
+  },
+  "publicBrowserProofSha256": "6e98b0f0357bb9917cb01cdf47ec4737a7282909f878841afde6dac439fdce94",
+  "complete": true
+}
