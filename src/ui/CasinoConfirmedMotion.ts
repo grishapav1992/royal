@@ -1,3 +1,4 @@
+import { emitImportedOutcome } from './importedMotion/Outcome';
 import { t as translateText, tr } from '../i18n/index';
 import { emitGameOutcome, observeExpansionOutcome, resetGameOutcomes } from './gameReactions';
 import type { ExpansionSession } from '../shared/casinoExpansion';
@@ -65,6 +66,7 @@ export class CasinoConfirmedMotion {
     this.reactedSessions.add(key);
     if (this.reactedSessions.size > 128) this.reactedSessions.delete(this.reactedSessions.values().next().value!);
     emitGameOutcome(this.host, saved.spentUnits, saved.returnedUnits);
+    emitImportedOutcome(this.host,{gameId:this.game,spentUnits:saved.spentUnits,returnedUnits:saved.returnedUnits});
   }
 
   async run(operation: NewExpansionAction, send: () => Promise<unknown>) {

@@ -1,3 +1,4 @@
+import { emitImportedOutcome } from './importedMotion/Outcome';
 import { decorateImportedGame } from './ImportedGameThemes';
 import { t as translateText, tr, locale } from '../i18n/index';
 import { observeGameOutcome, resetGameOutcomes } from './gameReactions';
@@ -70,6 +71,7 @@ export class GithubGames {
     if (!this.alive || token !== this.crapsToken) return;
     if (!completed) resetGameOutcomes(this.root);
     this.crapsBefore = undefined; this.render();
+    if(completed && this.phase === 'done')emitImportedOutcome(this.root,{gameId:this.id,spentUnits:String(Math.round(this.roundStake*100)),returnedUnits:String(Math.round(this.roundPayout*100)),unit:'chips'});
   }
   private card(card: string | null, index?: number): string {
     const name = card ?? 'cardBack';

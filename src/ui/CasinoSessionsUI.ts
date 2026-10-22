@@ -1,3 +1,4 @@
+import { emitImportedOutcome } from './importedMotion/Outcome';
 import { decorateImportedGame } from './ImportedGameThemes';
 import { t as translateText, tr, locale, language } from '../i18n/index';
 import { observeGameOutcome, resetGameOutcomes } from './gameReactions';
@@ -37,6 +38,7 @@ export class CasinoSessionsUI {
   }
   private async act(op: NewCasinoAction) {
     if (this.towerLive) return;
+    let landed = false;
     const c = casinoClients[this.asset], account = c.accountId, asset = this.asset;
     this.localError = '';
     const current = c.sessions.find(value => value.gameId === this.game) ?? (c.last?.gameId === this.game ? c.last : undefined);
@@ -49,11 +51,14 @@ export class CasinoSessionsUI {
         live.stage = 'revealing'; this.render();
         const nodes = op.action === 'pick' ? Array.from(this.host.querySelectorAll<HTMLElement>(`[data-cell="${live.before?.steps ?? 0}:${op.choice}"]`)) : op.action === 'cashout' ? Array.from(this.host.querySelectorAll<HTMLElement>('[data-cashout]')) : Array.from(this.host.querySelectorAll<HTMLElement>('[data-cell^="0:"]'));
         const completed = await this.motion!.run(nodes, op.action === 'start' ? 500 : 800, () => !this.destroyed && this.towerLive === live && c.accountId === account && this.asset === asset && !document.hidden, op.action === 'cashout' ? 'cashout' : 'cell');
+        landed = completed;
         if (!completed) { this.towerReactionFollow = false; resetGameOutcomes(this.host); }
       }
     } catch (e) { if (this.game === 'github-tower') { this.towerReactionFollow = false; resetGameOutcomes(this.host); } if (!this.destroyed && c.accountId === account && this.asset === asset) this.localError = (e as Error).message; }
     if (this.towerLive === live) this.towerLive = undefined;
     this.render();
+    const saved=c.sessions.find(s=>s.gameId===this.game)??(c.last?.gameId===this.game?c.last:undefined);
+    if(landed&&!this.destroyed&&c.accountId===account&&this.asset===asset&&saved&&saved.state!=='active')emitImportedOutcome(this.host,{gameId:this.game,spentUnits:saved.stakeUnits,returnedUnits:saved.state==='cashed_out'?saved.payoutUnits:'0',decimals:asset==='usdt'?6:2,unit:asset==='usdt'?'USDT':'coins'});
   }
   private render() {
     if (this.destroyed) return;
