@@ -3,8 +3,9 @@ import assert from 'node:assert/strict';
 import { ChatModerator } from '../server/moderation';
 
 const previousKey = process.env.CODEX_SALE_API_KEY;
-before(() => { process.env.CODEX_SALE_API_KEY = 'synthetic-moderation-key'; });
-after(() => { if (previousKey === undefined) delete process.env.CODEX_SALE_API_KEY; else process.env.CODEX_SALE_API_KEY = previousKey; });
+const previousProvider = process.env.CHAT_MODERATION_PROVIDER;
+before(() => { process.env.CHAT_MODERATION_PROVIDER = 'codex-sale'; process.env.CODEX_SALE_API_KEY = 'synthetic-moderation-key'; });
+after(() => { if (previousProvider === undefined) delete process.env.CHAT_MODERATION_PROVIDER; else process.env.CHAT_MODERATION_PROVIDER = previousProvider; if (previousKey === undefined) delete process.env.CODEX_SALE_API_KEY; else process.env.CODEX_SALE_API_KEY = previousKey; });
 const result = (value: unknown, status = 'completed') => new Response(JSON.stringify({ status,
  output: [{ type: 'message', role: 'assistant', content: [{ type: 'output_text', text: JSON.stringify(value) }] }] }));
 
