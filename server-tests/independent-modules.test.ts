@@ -40,7 +40,7 @@ test('every defined game has a distinct module package and matching public contr
   assert.equal(isRetiredArcadeGame(cabinet.id), false, cabinet.id);
   assert.equal(isRetiredCardGame(cabinet.id), false, cabinet.id);
  }
- assert.equal(CABINETS.length, 29, 'The visible catalogue includes the new Dracona cabinet');
+ assert.equal(CABINETS.length, 27, 'Twenty platform cabinets and seven card tables remain visible');
  assert.equal(new Set(GAME_MODULES.map(game => game.slug)).size, GAME_MODULES.length);
  for (const game of GAME_MODULES) {
   const config = JSON.parse(await readFile(resolve('games', game.slug, 'package.json'), 'utf8'));

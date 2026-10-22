@@ -1,3 +1,4 @@
+import { decorateImportedGame } from './ImportedGameThemes';
 import { t as translateText, tr, locale } from '../i18n/index';
 import { emitGameOutcome, observeGameOutcome } from './gameReactions';
 import '../original-games.css';
@@ -65,6 +66,7 @@ export class OriginalGameView {
         <div class="original-board-wrap"><div id="original-board" class="original-board">${this.boardMarkup()}</div><div id="original-paytable" class="original-paytable"></div></div></div>
       <div id="original-result" class="original-result" role="status" aria-live="polite">${this.message}</div><section class="original-history-wrap" aria-label="История этой игры"><span class="original-label">Последние ставки</span><div id="original-history" class="original-history"></div></section>
       <details class="original-rules"><summary>Правила и выплаты</summary><p>${detail.rules}</p><p>Множители показывают полное начисление. Выплата округляется вниз до сотой монеты. Результат и баланс подтверждает сервер.</p><p id="original-rtp"></p></details>`;
+    decorateImportedGame(this.root, this.gameId);
     container.replaceChildren(this.root);
     this.element<HTMLButtonElement>('#original-play').onclick = () => { void this.play(); };
     this.element<HTMLButtonElement>('#original-wallet').onclick = () => window.dispatchEvent(new Event('royal-open-wallet'));

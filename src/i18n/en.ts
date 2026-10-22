@@ -4231,5 +4231,22 @@ export const english: Record<string, string> = {
   "Выбрать образ Майи": "Choose Maya's look",
   "\" aria-label=\"Подойти к": "\" aria-label=\"Go to",
   "Охрана закрыла вход за нарушение правил клуба. Осталось {0} мин.": "Security blocked entry for violating club rules. Remaining {0} min.",
-  "Поле 6×5, 20 постоянных линий. От трёх одинаковых символов слева. WILD заменяет обычные символы. На каждой линии оплачивается лучшая комбинация. Выигрышные мемы удаляются, остальные падают, новые загружаются сверху. Каждый выигрыш повышает множитель следующего каскада на один до ×5. Два значка сети, собранные на выигрышных полях, дают одно бесплатное переподключение с полной заменой поля при первом поле без выигрыша. Множитель при переподключении сохраняется. 3/4/5+ папок на конечном поле дают 8/10/12 бесплатных вращений. Вирусный режим начинает каждое вращение с ×2. Три папки в нём добавляют два вращения, максимум 20 за раунд. До 12 показов поля за вращение. Общая выплата ограничена 3000 начальными ставками. Одна начальная ставка и одна итоговая выплата. Только тестовые монеты клуба.": "6×5 board with 20 fixed paylines. Match at least three identical symbols from the left. WILD substitutes for regular symbols. Only the best combination per line pays. Winning memes disappear, the rest fall, and new ones load from above. Each win increases the next cascade multiplier by one up to ×5. Two network icons collected on winning boards grant one free reconnect, fully refreshing the first non-winning board while preserving the multiplier. 3/4/5+ folders on the final board grant 8/10/12 free spins. Viral mode starts each spin at ×2. Three folders add two spins, up to 20 per round. Up to 12 boards per spin. Total payout is capped at 3,000 times the initial bet. One initial bet and one final payout. Club test coins only."
+  "Поле 6×5, 20 постоянных линий. От трёх одинаковых символов слева. WILD заменяет обычные символы. На каждой линии оплачивается лучшая комбинация. Выигрышные мемы удаляются, остальные падают, новые загружаются сверху. Каждый выигрыш повышает множитель следующего каскада на один до ×5. Два значка сети, собранные на выигрышных полях, дают одно бесплатное переподключение с полной заменой поля при первом поле без выигрыша. Множитель при переподключении сохраняется. 3/4/5+ папок на конечном поле дают 8/10/12 бесплатных вращений. Вирусный режим начинает каждое вращение с ×2. Три папки в нём добавляют два вращения, максимум 20 за раунд. До 12 показов поля за вращение. Общая выплата ограничена 3000 начальными ставками. Одна начальная ставка и одна итоговая выплата. Только тестовые монеты клуба.": "6×5 board with 20 fixed paylines. Match at least three identical symbols from the left. WILD substitutes for regular symbols. Only the best combination per line pays. Winning memes disappear, the rest fall, and new ones load from above. Each win increases the next cascade multiplier by one up to ×5. Two network icons collected on winning boards grant one free reconnect, fully refreshing the first non-winning board while preserving the multiplier. 3/4/5+ folders on the final board grant 8/10/12 free spins. Viral mode starts each spin at ×2. Three folders add two spins, up to 20 per round. Up to 12 boards per spin. Total payout is capped at 3,000 times the initial bet. One initial bet and one final payout. Club test coins only.",
+"Все игры в одном автомате": "All games in one cabinet",
+  "Выбирай игру и оставайся за своим автоматом. Чат и сохранённые партии всегда рядом.": "Choose a game and keep your seat. Chat and saved rounds stay with you.",
+  "Каталог игр Рояль": "Royal game catalogue",
+  "Коллекция игр": "Game collection",
+  "Название или тема": "Name or theme",
+  "GitHub-игры": "GitHub games",
+  "Башня": "Tower",
+  "Игра поставщика": "Provider game",
+  "Показано": "Shown",
+  "Загружаем каталог Casino API Pro…": "Loading the Casino API Pro catalogue…",
+  "Войди в онлайн-зал, чтобы открыть игры Casino API Pro.": "Sign in to the online hall to open Casino API Pro games.",
+  "Casino API Pro пока не настроен. Остальные игры доступны.": "Casino API Pro is not configured yet. Other games are available.",
+  "Автоматы Рояль": "Royal cabinets",
+  "20 автоматов Рояль": "20 Royal cabinets",
+  "Игра с обложки открывается сразу. Внутри каждого автомата есть каталог RoyalGames, Casino API Pro и GitHub-игр.": "The cover game opens immediately. Every cabinet includes RoyalGames, Casino API Pro and GitHub games.",
+  "Проверяем подключение игры…": "Checking the game connection…",
+  "Игра больше недоступна. Выбери другую в каталоге.": "This game is no longer available. Choose another from the catalogue."
 };

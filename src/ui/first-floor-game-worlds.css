@@ -1,0 +1,171 @@
+.imported-game[data-visual-theme] {
+  --ig-soft: color-mix(in srgb, var(--ig-accent) 52%, white);
+  --ig-text: #f4f0e9;
+  --ig-ink: #17202b;
+  --dice-accent: var(--ig-accent);
+  --dice-band: var(--ig-secondary);
+  --dice-bg: var(--ig-ground);
+  --dice-panel: var(--ig-panel);
+  --plinko-accent: var(--ig-accent);
+  --plinko-secondary: var(--ig-secondary);
+  --plinko-bg: var(--ig-ground);
+  --plinko-panel: var(--ig-panel);
+  --plinko-ink: var(--ig-text);
+  --plinko-muted: var(--ig-muted);
+  --plinko-line: var(--ig-line);
+  --plinko-ball: #fff0cd;
+  --limbo-accent: var(--ig-accent);
+  --limbo-surface: var(--ig-panel);
+  --limbo-ink: var(--ig-text);
+  --limbo-muted: var(--ig-muted);
+  --limbo-line: var(--ig-line);
+  --fruit-bg: var(--ig-ground);
+  --fruit-panel: var(--ig-panel);
+  --fruit-accent: var(--ig-accent);
+  --fruit-ink: var(--ig-text);
+  --fruit-soft: var(--ig-muted);
+  --fruit-border: var(--ig-line);
+  color: var(--ig-text);
+}
+.imported-game .imported-intro { min-height: 194px; padding: 29px 30px; }
+.imported-game .imported-intro-copy { max-width: 58%; }
+.imported-game .imported-kicker { font-size: 10px; letter-spacing: 1.8px; text-transform: uppercase; }
+.imported-game .imported-title { font-size: clamp(29px, 3.1vw, 40px); font-weight: 500; max-width: 390px; }
+.imported-game .imported-intro p { font-size: 11px; max-width: 285px; }
+.imported-game .imported-edition { letter-spacing: 1.8px; font-size: 7px; }
+.imported-game .imported-scene { color: var(--ig-accent); }
+.imported-game .imported-playfield { position: relative; }
+.imported-game .imported-playfield::after { content: ""; position: absolute; right: 15px; bottom: 10px; width: 115px; height: 110px; background: var(--ig-emblem) center / contain no-repeat; opacity: .075; pointer-events: none; }
+.imported-game :is(.dice-head, .fruits-head, .plinko-head, .limbo-head) { justify-content: flex-end; }
+.imported-game :is(.dice-balance, .fruits-balance, .plinko-balance, .limbo-balance) { display: flex; align-items: baseline; justify-content: space-between; width: 100%; padding: 10px 14px; border: 1px solid var(--ig-line); border-radius: 9px; background: #ffffff04; color: var(--ig-muted); }
+.imported-game :is(.dice-balance, .fruits-balance, .plinko-balance, .limbo-balance) strong { margin: 0; color: var(--ig-soft); font-size: 22px; }
+
+/* A cream railway cabinet, enamel trim and cherry upholstery. */
+.imported-game[data-visual-theme="cherry-express"] { --ig-text: #603b43; --ig-ink: #fff4dc; --ig-soft: #8e3048; --fruit-cell: #fff9ec; border: 2px solid #b63b5466; border-radius: 28px; box-shadow: inset 0 0 0 5px #ffffff65, 0 12px 32px #0002; }
+[data-visual-theme="cherry-express"] .imported-intro { background: linear-gradient(120deg, #fff5e4, #edc7a7); border-radius: 25px 25px 0 0; border-bottom: 5px solid #b63b54; }
+[data-visual-theme="cherry-express"] .imported-title { color: #953a4f; font-family: Georgia, serif; font-style: italic; }
+[data-visual-theme="cherry-express"] .fruits-frame { border: 7px double #bd586a; border-radius: 35px 35px 14px 14px; background: #548c84; padding: 12px; box-shadow: inset 0 0 0 3px #f9e6c7, 0 7px 0 #e0b58b, 0 15px 22px #65402a16; }
+[data-visual-theme="cherry-express"] .fruits-frame::before { content: ""; position: absolute; top: -9px; left: 14%; right: 14%; height: 5px; border-radius: 8px; background: #f8d9b2; box-shadow: 0 2px #b94e62; pointer-events: none; }
+[data-visual-theme="cherry-express"] .fruits-reel { border: 2px solid #d5af86; border-radius: 16px; }
+[data-visual-theme="cherry-express"] .fruits-cell.decorative { background: #eed8bf; }
+[data-visual-theme="cherry-express"] .fruits-console { background: #eddbc2; border: 1px solid #be8d7955; }
+[data-visual-theme="cherry-express"] :is(select, input[type="number"]) { color: #663d46; color-scheme: light; border-color: #bc9290; }
+[data-visual-theme="cherry-express"] .fruits-line-mode { color: #8f4f5b; }
+[data-visual-theme="cherry-express"] .fruits-payout { color: #97394f; }
+
+/* A measuring instrument in a copper alchemy bench. */
+.imported-game[data-visual-theme="alchemist"] { border-radius: 8px; border: 3px double #d4af705f; background: repeating-linear-gradient(0deg, transparent 0 42px, #a3c5a303 42px 43px), var(--ig-ground); }
+[data-visual-theme="alchemist"] .imported-intro { border-radius: 3px 3px 0 0; }
+[data-visual-theme="alchemist"] .imported-kicker { font-family: monospace; }
+[data-visual-theme="alchemist"] .dice-board { background: radial-gradient(ellipse at 50% 30%, #8ed9b71a, transparent 70%), #1a302d; border: 5px double #bc985e; border-radius: 12px; box-shadow: inset 0 0 0 7px #132b28, 0 6px 0 #0e1f1d; }
+[data-visual-theme="alchemist"] .dice-board::before { content: ""; position: absolute; inset: 12px; border: 1px solid #dab47b20; border-radius: 5px; pointer-events: none; background: repeating-linear-gradient(90deg, #e5c68a25 0 1px, transparent 1px 10px) center 6px / 85% 6px no-repeat; }
+[data-visual-theme="alchemist"] .dice-display strong { font-family: Georgia, serif; color: #d6f3c5; text-shadow: 0 0 25px #87e2b030; }
+[data-visual-theme="alchemist"] .dice-track { border-radius: 3px; border: 1px solid #d0b47955; background: #10221d; }
+[data-visual-theme="alchemist"] .dice-facts > span { border-radius: 2px; background: #dfbc7f08; border-color: #dfbc7f2a; }
+[data-visual-theme="alchemist"] .dice-settings { border-style: dashed; }
+
+/* Violet lens glass and an orbital portal. */
+.imported-game[data-visual-theme="andromeda"] { border-radius: 26px 6px 26px 6px; background: radial-gradient(ellipse at 85% 20%, #51368032, transparent 65%), #111126; }
+[data-visual-theme="andromeda"] .imported-intro { border-radius: 25px 5px 0 0; }
+[data-visual-theme="andromeda"] .imported-title { font-family: ui-sans-serif, system-ui, sans-serif; font-weight: 300; letter-spacing: -1.2px; }
+[data-visual-theme="andromeda"] .limbo-board { position: relative; border: 1px solid #a78be94d; border-radius: 24px 5px 24px 5px; background: radial-gradient(ellipse at 53% 40%, #533d6a65, transparent 65%), #12172b; box-shadow: inset 0 0 40px #6b45951a; }
+[data-visual-theme="andromeda"] .limbo-display strong { color: #ddd0ff; font-family: ui-monospace, monospace; text-shadow: 0 0 20px #b7a2ff45; }
+[data-visual-theme="andromeda"] .limbo-scene { stroke: #8a78b8; opacity: .5; }
+[data-visual-theme="andromeda"] .limbo-guide { stroke: #67c9dd; }
+[data-visual-theme="andromeda"] .limbo-gate { stroke: #b7a3ff; }
+[data-visual-theme="andromeda"] .limbo-ticket { border-radius: 15px 3px; border-color: #a890d143; background: #2d254b; }
+[data-visual-theme="andromeda"] .limbo-settings { padding: 10px; background: #b59aff06; border-radius: 8px; }
+
+/* Mossy carved stones surrounding the expedition grid. */
+.imported-game[data-visual-theme="eldorado"] { border-radius: 12px; border: 3px solid #6b806143; box-shadow: inset 0 0 0 4px #0e211c, 0 12px 32px #0002; }
+[data-visual-theme="eldorado"] .imported-intro { border-radius: 8px 8px 0 0; border-bottom: 3px double #bcab7159; }
+[data-visual-theme="eldorado"] .original-board-wrap { border: 5px double #b3a16a80; border-radius: 7px; background: repeating-linear-gradient(0deg, #a7c78a04 0 31px, #0001 31px 33px), #1c372d; }
+[data-visual-theme="eldorado"] .original-controls { border-radius: 5px; }
+[data-visual-theme="eldorado"] .original-mines-grid button:not(.is-gem):not(.is-mine) { border: 2px solid #6c8c6075; border-radius: 5px; background: linear-gradient(145deg, #466749, #2d4937); box-shadow: 0 4px #11291e, inset 0 1px #c8ce8e35; }
+[data-visual-theme="eldorado"] .original-mine-cover { width: 29px; height: 29px; font-size: 0; background: var(--ig-emblem) center / contain no-repeat; opacity: .55; }
+[data-visual-theme="eldorado"] .original-mines-grid .is-gem .original-mine-cover, [data-visual-theme="eldorado"] .original-mines-grid .is-mine .original-mine-cover { opacity: 0; }
+
+/* A blue aquarium, pearl pegs and scalloped pocket windows. */
+.imported-game[data-visual-theme="pearl-reef"] { border-radius: 32px; border-color: #91d8d545; }
+[data-visual-theme="pearl-reef"] .imported-intro { border-radius: 31px 31px 0 0; }
+[data-visual-theme="pearl-reef"] .plinko-frame { max-width: 440px; border: 5px double #9adbd18c; border-radius: 55px 55px 25px 25px; background: radial-gradient(ellipse at top, #39737b55, #092c3d 80%); box-shadow: inset 0 0 0 4px #142f40, 0 7px 20px #0003; }
+[data-visual-theme="pearl-reef"] .plinko-board-outline { stroke-dasharray: 1 9; stroke: #f3c4a4; }
+[data-visual-theme="pearl-reef"] .plinko-pegs circle { fill: #c9eee2; stroke: #6eaaa8; stroke-width: 1; filter: drop-shadow(0 1px 1px #051b2c); }
+[data-visual-theme="pearl-reef"] .plinko-pockets button { border-radius: 12px 12px 4px 4px; background: linear-gradient(#285667, #173949); border-color: #91d6cd6b; }
+[data-visual-theme="pearl-reef"] .plinko-settings { padding: 10px; border: 1px solid #79c8c52e; border-radius: 20px; background: #ffffff03; }
+[data-visual-theme="pearl-reef"] .plinko-result { padding: 12px; border-radius: 14px; background: #ffffff04; }
+
+/* The Keno ticket is a framed astronomical plate. */
+.imported-game[data-visual-theme="star-atlas"] { border-radius: 5px; border: 5px double #cbb47878; }
+[data-visual-theme="star-atlas"] .imported-intro { border-radius: 0; }
+[data-visual-theme="star-atlas"] .imported-title { font-variant: small-caps; letter-spacing: .6px; }
+[data-visual-theme="star-atlas"] .original-board-wrap { border: 1px solid #c6ac688a; border-radius: 3px; background: radial-gradient(circle at center, #7d9acb16, transparent 65%), repeating-linear-gradient(0deg, transparent 0 39px, #9baecc07 39px 40px), repeating-linear-gradient(90deg, transparent 0 39px, #9baecc07 39px 40px), #1b2942; box-shadow: inset 0 0 0 5px #151e30, inset 0 0 0 6px #d6bc6b38; }
+[data-visual-theme="star-atlas"] .original-keno-grid button { background: #18243e; border: 1px solid #8396b13b; border-radius: 50%; box-shadow: inset 0 0 0 3px #1e2d47; font-family: Georgia, serif; color: #bdcce6; }
+[data-visual-theme="star-atlas"] .original-keno-grid .is-selected:not(.is-hit) { color: #1b2740; background: #ddc68d; box-shadow: inset 0 0 0 3px #ead5a0, 0 0 15px #dfc38222; border-color: #f8e1a5; }
+[data-visual-theme="star-atlas"] .original-keno-grid .is-hit { color: transparent; background: #30645c; }
+[data-visual-theme="star-atlas"] .original-controls { border-radius: 3px; }
+
+/* A velvet craps table with brass and a stage-light glow. */
+.imported-game[data-visual-theme="midnight-jazz"] { border-radius: 30px; border-color: #d5ab7366; }
+[data-visual-theme="midnight-jazz"] .imported-intro { border-radius: 29px 29px 0 0; }
+[data-visual-theme="midnight-jazz"] .imported-title { font-style: italic; }
+[data-visual-theme="midnight-jazz"] .github-table { border: 5px double #d7b17b80; border-radius: 100px; min-height: 225px; background: radial-gradient(ellipse at top, #89516938, transparent 75%), #342239; box-shadow: inset 0 0 0 7px #221627, inset 0 0 40px #0003; }
+[data-visual-theme="midnight-jazz"] .github-table-label { color: #e1c096; letter-spacing: 2.8px; }
+[data-visual-theme="midnight-jazz"] .github-dice > span { background: linear-gradient(145deg, #ffe8bd, #d7ac78); color: #553347; border: 2px solid #f8deb4; box-shadow: 0 7px #a06c50, 0 14px 25px #0005; border-radius: 15px; }
+[data-visual-theme="midnight-jazz"] .github-controls { border-radius: 30px; border: 1px solid #d8b17a30; }
+
+/* Closed tower cells become doors in a masonry facade. */
+.imported-game[data-visual-theme="dragon-citadel"] { border-radius: 9px; border: 3px double #b8886b79; }
+[data-visual-theme="dragon-citadel"] .imported-intro { border-radius: 5px 5px 0 0; }
+[data-visual-theme="dragon-citadel"] .casino-board { border: 6px double #be927876; border-radius: 44px 44px 5px 5px; background: repeating-linear-gradient(0deg, transparent 0 45px, #0002 45px 47px), repeating-linear-gradient(90deg, #a5766505 0 63px, #0001 63px 65px), #332a33; }
+[data-visual-theme="dragon-citadel"] .casino-tower { max-width: 390px; gap: 6px; }
+[data-visual-theme="dragon-citadel"] .casino-row > button { position: relative; min-height: 44px; border: 2px solid #9c716b60; border-radius: 14px 14px 3px 3px; background: linear-gradient(90deg, #2b202b, #49333a, #2b202b); box-shadow: inset 0 0 0 3px #211b25, 0 2px #140f19; }
+[data-visual-theme="dragon-citadel"] .casino-row > button:not(.chosen):not(.dragon) { color: transparent; }
+[data-visual-theme="dragon-citadel"] .casino-row > button:not(.chosen):not(.dragon)::before { content: ""; position: absolute; width: 5px; height: 10px; top: 15px; left: calc(50% - 2px); border: 1px solid #d0a486; border-radius: 5px 5px 1px 1px; box-shadow: 0 0 5px #e9b48520; pointer-events: none; }
+[data-visual-theme="dragon-citadel"] .casino-row > button.chosen { background: #d8b277; color: #352631; border-color: #edd8a2; }
+[data-visual-theme="dragon-citadel"] .casino-row > button.dragon { background: #783a50; color: #ffcfcc; border-color: #ce8791; }
+
+/* Distinct, readable gem colours remain tied to the original symbols. */
+.imported-game[data-visual-theme="aurora-vault"] { border-radius: 18px 4px 18px 4px; border: 1px solid #b6ddec6b; background: linear-gradient(125deg, #abdff30b, transparent 30%), #182737; }
+[data-visual-theme="aurora-vault"] .imported-intro { border-radius: 17px 3px 0 0; }
+[data-visual-theme="aurora-vault"] .expansion-board { min-height: 250px; border-radius: 28px 4px; border: 2px solid #aad7e558; background: linear-gradient(115deg, transparent 33%, #abdff509 33% 34%, transparent 34% 70%, #abdff509 70% 71%, transparent 71%), radial-gradient(ellipse at top, #789ec740, transparent 80%), #1c3144; }
+[data-visual-theme="aurora-vault"] .expansion-gems { gap: 13px; }
+[data-visual-theme="aurora-vault"] .expansion-gems > span { --gem-color: #c4e5f0; position: relative; width: 80px; height: 102px; color: transparent; border-radius: 20px 5px; border-color: #c0e4ef32; background: linear-gradient(140deg, #bce7fa12, #3b5e7420); text-shadow: none; }
+[data-visual-theme="aurora-vault"] .expansion-gems > span::before { content: ""; position: absolute; width: 47px; height: 59px; top: 20px; left: calc(50% - 23px); clip-path: polygon(24% 0, 76% 0, 100% 32%, 50% 100%, 0 32%); background: linear-gradient(123deg, transparent 48%, #ffffff70 49% 51%, transparent 52%), linear-gradient(60deg, #ffffff48 30%, transparent 31% 62%, #0003 63%), var(--gem-color); filter: drop-shadow(0 4px 7px #0005); }
+[data-visual-theme="aurora-vault"] .expansion-gems > [data-gem="citrine"] { --gem-color: #eec557; }
+[data-visual-theme="aurora-vault"] .expansion-gems > [data-gem="emerald"] { --gem-color: #62dba1; }
+[data-visual-theme="aurora-vault"] .expansion-gems > [data-gem="sapphire"] { --gem-color: #6aa5f5; }
+[data-visual-theme="aurora-vault"] .expansion-gems > [data-gem="amethyst"] { --gem-color: #b792ef; }
+[data-visual-theme="aurora-vault"] .expansion-gems > [data-gem="amber"] { --gem-color: #ec995e; }
+[data-visual-theme="aurora-vault"] .expansion-gems > [data-gem="diamond"] { --gem-color: #d7f3ff; }
+[data-visual-theme="aurora-vault"] .expansion-gems > [data-gem="unopened"]::before { width: 25px; height: 25px; top: 32px; left: calc(50% - 13px); border: 1px solid #a6d3e4; clip-path: none; transform: rotate(45deg); background: #b4dcf006; }
+
+/* Sandstone dice trays and lapis panels in the scarab chamber. */
+.imported-game[data-visual-theme="scarab-tomb"] { border-radius: 6px; border: 5px double #d1ad6e8c; }
+[data-visual-theme="scarab-tomb"] .imported-intro { border-radius: 0; border-bottom: 4px double #d1ad6e65; }
+[data-visual-theme="scarab-tomb"] .imported-title { font-variant: small-caps; letter-spacing: .2px; }
+[data-visual-theme="scarab-tomb"] .expansion-board { min-height: 245px; border: 4px double #d7b4738f; border-radius: 2px; background: repeating-linear-gradient(90deg, #dbb97c09 0 12px, transparent 12px 24px) center top / 100% 9px no-repeat, repeating-linear-gradient(90deg, #dbb97c09 0 12px, transparent 12px 24px) center bottom / 100% 9px no-repeat, radial-gradient(ellipse at center, #d9b57a0a, transparent 65%), #253640; }
+[data-visual-theme="scarab-tomb"] .expansion-dice > span { width: 85px; height: 85px; background: linear-gradient(145deg, #efdab0, #ba9967); color: #485056; border: 3px solid #dec18d; border-radius: 8px; box-shadow: inset 0 0 0 1px #8c774d, 0 6px #6d624d, 0 13px 25px #0003; }
+[data-visual-theme="scarab-tomb"] .expansion-toolbar { border-radius: 3px; background: #74bac508; border-color: #74bac529; }
+
+@media (max-width: 600px) {
+  .imported-game .imported-intro { min-height: 171px; padding: 22px 18px 25px; }
+  .imported-game .imported-title { font-size: 28px; max-width: 235px; line-height: 1.08; }
+  .imported-game .imported-intro-copy { max-width: 79%; }
+  .imported-game .imported-intro p { font-size: 10px; max-width: 205px; }
+  .imported-game .imported-kicker { font-size: 9px; letter-spacing: 1.2px; }
+  .imported-game .imported-edition { font-size: 6px; bottom: 8px; letter-spacing: .8px; }
+  .imported-game .imported-scene { width: 140%; left: -40%; opacity: .8; }
+  .imported-game :is(.dice-balance, .fruits-balance, .plinko-balance, .limbo-balance) strong { font-size: 19px; }
+  [data-visual-theme="cherry-express"] .fruits-frame { padding: 8px; border-width: 5px; }
+  [data-visual-theme="eldorado"] .original-board-wrap { border-width: 3px; }
+  [data-visual-theme="pearl-reef"] .plinko-frame { border-width: 3px; }
+  [data-visual-theme="star-atlas"] .original-keno-grid button { font-size: 15px; }
+  [data-visual-theme="midnight-jazz"] .github-table { border-radius: 48px; min-height: 210px; }
+  [data-visual-theme="dragon-citadel"] .casino-board { border-width: 4px; padding-inline: 9px; }
+  [data-visual-theme="aurora-vault"] .expansion-gems { gap: 5px; padding-block: 25px; }
+  [data-visual-theme="aurora-vault"] .expansion-gems > span { width: 48px; height: 79px; border-radius: 12px 3px; }
+  [data-visual-theme="aurora-vault"] .expansion-gems > span::before { width: 31px; height: 44px; top: 17px; left: calc(50% - 15px); }
+  [data-visual-theme="aurora-vault"] .expansion-gems > [data-gem="unopened"]::before { width: 20px; height: 20px; top: 28px; left: calc(50% - 10px); }
+  [data-visual-theme="scarab-tomb"] .expansion-dice > span { width: 66px; height: 66px; border-width: 2px; }
+}

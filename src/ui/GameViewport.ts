@@ -115,6 +115,14 @@ export class GameViewport {
       this.reset('off');
       return;
     }
+    if (this.dialog.dataset.game === 'studio-catalog' || this.dialog.dataset.game === 'royal-catalog') {
+      this.reset('flow');
+      return;
+    }
+    if (this.dialog.dataset.game === 'casinoapipro') {
+      this.reset('off');
+      return;
+    }
     if (this.plane.querySelector('.dracona-frame')) {
       this.reset('off');
       return;

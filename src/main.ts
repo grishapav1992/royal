@@ -1,18 +1,17 @@
 import { IndependentGameUI } from './modules/IndependentGameUI';
 import { prepareGameModule } from './modules/GameModulePreparation';
 import { gameModuleContract } from './modules/GameModuleCatalog';
-import { ProviderGameUI } from './modules/ProviderGameUI';
 import { installLanguageSwitcher, t as translateText, tr } from './i18n/index';
 import { GAME_REACTION_EVENT } from './ui/gameReactions';
 import { GameViewport } from './ui/GameViewport';
-import { StudioCatalog } from './ui/StudioCatalog';
+import { RoyalPlatformCatalog, platformGameCabinet, type PlatformChoice } from './ui/RoyalPlatformCatalog';
 import { CardTablesCatalog } from './ui/CardTablesCatalog';
 import { CardDealerStage } from './ui/CardDealerStage';
 import { isCardGame, dealerForGame } from './shared/cardTables';
 import './ui/floor-navigation.css';
 import { isStudioGame } from './shared/studioGames';
 import { isVariantGame } from './shared/casinoVariants';
-import { ARCADE_CLASSIC_GAMES, ARCADE_PROVIDER_GAMES, isRetiredArcadeGame } from './shared/arcadeCatalog';
+import { ROYAL_PLATFORM_GAMES, isPlatformGame, isRetiredArcadeGame } from './shared/arcadeCatalog';
 import { RetiredArcadeRounds, RetiredArcadeRoundGuard, ownsRetiredArcadeRound, type RetiredArcadeRound } from './ui/RetiredArcadeRounds';
 import { isExpansionGame, EXPANSION_NAMES } from './shared/casinoExpansion';
 import { isSessionGame } from './shared/casinoSessions';
@@ -23,9 +22,7 @@ import { UsdtWalletUI } from './ui/UsdtWalletUI';
 import { CryptoWalletUI } from './ui/CryptoWalletUI';
 import { MiraChat } from './ui/MiraChat';
 import { isGithubGame } from './shared/githubGames';
-import { DemoPreview } from './ui/DemoPreview';
 import './demo-preview.css';
-import { prefetchDemoGames } from './game/demoGames';
 import { gameAudio } from './game/GameAudio';
 import Phaser from 'phaser';
 import { RoomScene, CABINETS, type Cabinet } from './game/RoomScene';
@@ -54,13 +51,11 @@ const icons = {
   person: '<circle cx="12" cy="8" r="4"/><path d="M5 21v-2a7 7 0 0 1 14 0v2"/>',
 };
 const icon = (name: keyof typeof icons, cls = '') => `<svg class="icon ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[name]}</svg>`;
-const classicCabinets = ARCADE_CLASSIC_GAMES.flatMap(id => CABINETS.filter(cabinet => cabinet.id === id));
-const providerCabinets = ARCADE_PROVIDER_GAMES.flatMap(id => CABINETS.filter(cabinet => cabinet.id === id));
-const catalogCabinets = [...classicCabinets, ...providerCabinets];
-const hallGameCount = (hall: HallId) => cabinetsInHall(hall).length + (hall === 'tables' ? 3 : 0);
+const catalogCabinets = cabinetsInHall('arcade');
+const hallGameCount = (hall: HallId) => hall === 'arcade' ? ROYAL_PLATFORM_GAMES.length : cabinetsInHall(hall).length + (hall === 'tables' ? 3 : 0);
 const cabinetCards = (cabinets: Cabinet[]) => cabinets.map(cabinet => {
   const index = catalogCabinets.indexOf(cabinet);
-  return tr`<button id="${cabinet.provider ? 'casinoapipro-open' : 'cabinet-' + cabinet.id}" class="cabinet-card" data-cabinet="${cabinet.id}" data-hall="${cabinetHall(cabinet)}" aria-label="Подойти к автомату ${cabinet.name}"><div class="cabinet-art art-${index}" id="art-${index}"></div><div class="cabinet-copy">${cabinet.demo ? translateText('<span class="card-kicker">ДЕМО</span>') : ''}<strong>${cabinet.name}</strong><small>${cabinet.subtitle}</small></div>${icon('arrow', 'card-arrow')}</button>`;
+  return tr`<button id="${'cabinet-' + cabinet.id}" class="cabinet-card" data-cabinet="${cabinet.id}" data-hall="${cabinetHall(cabinet)}" aria-label="Подойти к автомату ${cabinet.name}"><div class="cabinet-art art-${index}" id="art-${index}"></div><div class="cabinet-copy">${cabinet.demo ? translateText('<span class="card-kicker">ДЕМО</span>') : ''}<strong>${cabinet.name}</strong><small>${cabinet.subtitle}</small></div>${icon('arrow', 'card-arrow')}</button>`;
 }).join('');
 const app = document.querySelector<HTMLDivElement>('#app')!;
 app.innerHTML = tr`
@@ -80,10 +75,8 @@ app.innerHTML = tr`
       </section>
       <aside class="sidebar">
         <div class="sidebar-heading"><h2>Во что сыграем?</h2><span>${String(hallGameCount('arcade')).padStart(2, '0')}</span></div>
-        <section id="studio-catalog" aria-label="Новые миры Рояля"></section>
         <section id="card-tables-catalog" aria-label="Карточные столы и крупье" hidden></section>
-        <section class="arcade-catalog-group" data-arcade-catalog aria-label="Игры из GitHub"><h3>Игры из GitHub</h3><p>Классические игры из открытых проектов</p><div class="cabinet-list">${cabinetCards(classicCabinets)}</div></section>
-        <section class="arcade-catalog-group" data-arcade-catalog aria-label="Каталоги игр"><h3>Каталоги игр</h3><p>Casino API Pro и демостенд Luelon</p><div class="cabinet-list">${cabinetCards(providerCabinets)}</div></section>
+        <section class="arcade-catalog-group" data-arcade-catalog aria-label="Автоматы Рояль"><h3>20 автоматов Рояль</h3><p>Игра с обложки открывается сразу. Внутри каждого автомата есть каталог RoyalGames, Casino API Pro и GitHub-игр.</p><div class="cabinet-list">${cabinetCards(catalogCabinets)}</div></section>
         <section data-arcade-catalog><div id="retired-arcade-rounds" hidden></div></section>
         <div class="player-card"><span class="player-portrait" id="player-portrait"></span><div><strong>Это ты</strong><small>Исследователь клуба</small></div><span class="player-dot"></span></div>
       </aside>
@@ -91,7 +84,7 @@ app.innerHTML = tr`
     <footer class="footer room-dock"><nav class="panel-tabs" aria-label="Панели зала"></nav><button id="panel-close" type="button" hidden>Закрыть панель ×</button><span class="dock-hint">WASD · стрелки · Shift: бег</span><button id="room-overview" type="button" aria-pressed="false">Весь этаж</button></footer>
   </main>
   <dialog id="help-dialog" class="help-dialog"><button class="dialog-close icon-button" data-close aria-label="Закрыть">${icon('close')}</button><h2>Как играть</h2><div class="help-steps"><p><span>01</span>WASD или стрелки: идти. Shift: бежать. Нажатие на пол: бежать к точке.</p><p><span>02</span>Нажми на автомат, стол или его карточку, чтобы подойти. Рядом нажми E, чтобы играть.</p><p><span>03</span>Первый этаж: автоматы и казино-игры. Второй этаж: шахматы, бильярд и аэрохоккей. Третий этаж: карточные столы с крупье. Поднимайся по светящимся лестницам или нажимай кнопки этажей наверху. Кнопка «Игры» открывает список текущего этажа.</p></div><button class="primary-button" data-close>Понятно ${icon('game')}</button></dialog>
-  <dialog id="mini-dialog" class="mini-dialog" aria-labelledby="mini-title"><div class="mini-top"><div><span class="eyebrow">ROYAL ORIGINALS / 01</span><h2 id="mini-title">Neon Breaker</h2></div><button class="icon-button" data-close aria-label="Вернуться в зал">${icon('close')}</button></div><div class="mini-stats"><span>ОЧКИ <strong id="score">0000</strong></span><span>РЕКОРД <strong id="best">0000</strong></span><span>ЖИЗНИ <strong id="lives">● ● ●</strong></span></div><div class="mini-stage"><div id="card-dealer-stage" hidden></div><div id="mini-game"></div><div id="mini-message" class="mini-message"><h3 id="mini-message-title">Разбей все блоки</h3><p id="mini-message-copy">Лови мяч платформой. У тебя три жизни.</p><button class="primary-button" id="start-game">Начать игру</button></div></div><div class="demo-footer" hidden><span>Кредиты Luelon · Отдельно от кошелька клуба · Баланс сбрасывается при открытии</span><button type="button" class="text-button" id="retry-demo">Перезагрузить игру</button></div><div class="mini-bottom"><span>Мышь, палец или ← →</span><button class="text-button" data-close>Вернуться в зал <kbd>Esc</kbd></button></div></dialog>
+  <dialog id="mini-dialog" class="mini-dialog" aria-labelledby="mini-title"><div class="mini-top"><div><span class="eyebrow">ROYAL ORIGINALS / 01</span><h2 id="mini-title">Neon Breaker</h2></div><button type="button" id="studio-game-list" hidden>Все игры</button><button class="icon-button" data-close aria-label="Вернуться в зал">${icon('close')}</button></div><div class="mini-stats"><span>ОЧКИ <strong id="score">0000</strong></span><span>РЕКОРД <strong id="best">0000</strong></span><span>ЖИЗНИ <strong id="lives">● ● ●</strong></span></div><div class="mini-stage"><div id="card-dealer-stage" hidden></div><div id="mini-game"></div><div id="mini-message" class="mini-message"><h3 id="mini-message-title">Разбей все блоки</h3><p id="mini-message-copy">Лови мяч платформой. У тебя три жизни.</p><button class="primary-button" id="start-game">Начать игру</button></div></div><div class="demo-footer" hidden><span>Кредиты Luelon · Отдельно от кошелька клуба · Баланс сбрасывается при открытии</span><button type="button" class="text-button" id="retry-demo">Перезагрузить игру</button></div><div class="mini-bottom"><span>Мышь, палец или ← →</span><button class="text-button" data-close>Вернуться в зал <kbd>Esc</kbd></button></div></dialog>
   <dialog id="bar-dialog" class="bar-dialog"><button class="dialog-close icon-button" data-close aria-label="Вернуться в зал">×</button><span class="eyebrow">MIRA’S BAR</span><h2>Сделаем паузу?</h2><p>Угощение за счёт клуба.</p><div class="drink-list">${DRINKS.map(d=>`<button data-drink="${d.id}" style="--drink-color:${d.color}"><span class="drink-glass" aria-hidden="true">▰</span><span><strong>${d.name}</strong><small>${d.description}</small></span><span>↗</span></button>`).join('')}</div></dialog>
   <div id="toast" class="toast" role="status" hidden></div>
 `;
@@ -106,8 +99,6 @@ const barDialog = $<HTMLDialogElement>('#bar-dialog');
 let mini: IndependentGameUI | undefined;
 let cardDealerStage: CardDealerStage | undefined;
 let retiredRoundGuard: RetiredArcadeRoundGuard | undefined;
-let casinoGames: ProviderGameUI | undefined;
-let demoPreview: DemoPreview | undefined;
 let activeGameId = 'breaker';
 const descriptions: Record<string,{goal:string;controls:string}> = { breaker:{goal:translateText('Разбей все блоки'),controls:translateText('Лови мяч платформой. Мышь, палец или стрелки.')}, orbit:{goal:translateText('Защити орбиту'),controls:translateText('Сбей 20 кораблей. Стрельба автоматическая, движение мышью, пальцем или ← →.')}, drift:{goal:translateText('Ночная тысяча'),controls:translateText('Проедь 1000 м, обходи машины и собирай монеты. ← → или касание полосы.')}, pixel:{goal:translateText('Кристаллы ждут'),controls:translateText('Собери 5 кристаллов и найди выход за 75 секунд. Стрелки или касание клетки.')} };
 let best = 0; try { best = Number(localStorage.getItem('royal-breaker-best')) || 0; } catch { /* Storage can be unavailable in private contexts. */ }
@@ -115,18 +106,52 @@ let openVersion = 0;
 let toastTimer: ReturnType<typeof setTimeout>;
 function toast(message: string) { $('#toast').textContent = message; $('#toast').hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => $('#toast').hidden = true, 3400); }
 let openingCabinet = false;
-function prepareCabinet(id: string) {
-  const contract = gameModuleContract(id);
-  if (!contract) return;
-  room.deferDecorations();
-  void prepareGameModule(contract.gameId);
+function prepareCabinet(id:string) {
+  const contract=gameModuleContract(id);
+  if(!contract)return;
+  room.deferDecorations();void prepareGameModule(contract.gameId);
 }
+let platformCabinet: Cabinet | undefined;
+let platformSelection: RoyalPlatformCatalog | undefined;
+let selectedPlatformGame: PlatformChoice | undefined;
+let requestedProvider = false;
+function clearPlatformView() {
+  openVersion++;
+  mini?.destroy(); mini = undefined;
+  platformSelection?.destroy(); platformSelection = undefined;
+  $('#mini-game').replaceChildren();
+}
+function showPlatformCatalog() {
+  if (!platformCabinet) return;
+  const selected = selectedPlatformGame;
+  clearPlatformView(); gameAudio.setGame('');
+  miniDialog.classList.remove('demo-mode', 'card-table-mode');
+  miniDialog.classList.add('wallet-game-mode', 'originals-mode');
+  miniDialog.dataset.game = 'royal-catalog';
+  $('#mini-title').textContent = translateText('Выбери игру');
+  $('.mini-top .eyebrow').textContent = 'ROYAL PLATFORM / 01';
+  $('#studio-game-list').hidden = true;
+  $('.mini-stats').hidden = true; $('.demo-footer').hidden = true;
+  $('#mini-message').hidden = true; $('#card-dealer-stage').hidden = true;
+  $('.mini-bottom>span').textContent = translateText('Общий тестовый кошелёк клуба');
+  $('.mini-bottom .settings-shortcut').hidden = false; $('.mini-bottom kbd').hidden = false;
+  room.setLocked(true);
+  if (!miniDialog.open) miniDialog.showModal();
+  platformSelection = new RoyalPlatformCatalog($('#mini-game'), choice => { void selectPlatformGame(choice); }, selected);
+}
+async function selectPlatformGame(choice: PlatformChoice) {
+  if (!platformCabinet || !miniDialog.open || !isPlatformGame(choice.gameId)) return;
+  prepareCabinet(choice.gameId);
+  await openCabinetGame(platformGameCabinet(choice.gameId, platformCabinet), undefined, true, choice);
+}
+
+$('#studio-game-list').addEventListener('click', showPlatformCatalog);
 async function play(cabinet: Cabinet) {
   if (openingCabinet || document.querySelector('dialog[open]')) return;
   if (!cabinet.playable) { toast(tr`${cabinet.name} пока недоступен.`); return; }
   const physical = CABINETS.find(c => c.id === cabinet.id);
   if (!physical) return;
-  prepareCabinet(cabinet.id);
+  prepareCabinet(cabinet.defaultGameId ?? cabinet.id);
   openingCabinet = true;
   try {
     if (!await room.beginCabinet(physical)) {
@@ -135,26 +160,34 @@ async function play(cabinet: Cabinet) {
     }
     await new Promise(resolve => setTimeout(resolve, room.getState().reducedMotion ? 0 : 420));
     if (room.getState().security || (social && social.client.status !== 'connected')) { room.endCabinet(); return; }
-    await openCabinetGame(cabinet);
+    if (cabinet.defaultGameId) {
+      platformCabinet = cabinet;
+      const choice = {gameId:cabinet.defaultGameId};
+      await openCabinetGame(platformGameCabinet(choice.gameId, cabinet), undefined, false, choice);
+      if (requestedProvider) await selectPlatformGame({gameId:'casinoapipro'});
+    } else await openCabinetGame(cabinet);
   } catch {
     if (miniDialog.open) miniDialog.close();
     else room.endCabinet();
     room.setLocked(Boolean(document.querySelector('dialog[open]')) || Boolean(social && social.client.status !== 'connected'));
     toast(translateText('Не получилось открыть игру. Попробуй ещё раз.'));
-  } finally { openingCabinet = false; }
+  } finally { openingCabinet = false; requestedProvider = false; }
 }
-async function openCabinetGame(cabinet: Cabinet, recovery?: RetiredArcadeRound) {
+async function openCabinetGame(cabinet: Cabinet, recovery?: RetiredArcadeRound, switchPlatform = false, choice?: PlatformChoice) {
+  if (switchPlatform && (!platformCabinet || !miniDialog.open || !isPlatformGame(cabinet.id))) return;
   if (isRetiredArcadeGame(cabinet.id) && (!recovery || recovery.gameId !== cabinet.id || !ownsRetiredArcadeRound(recovery))) return;
   if (!cabinet.playable) { toast(tr`${cabinet.name} пока недоступен.`); return; }
-  if (cabinet.provider) { casinoGames?.open(true); return; }
-  if (miniDialog.open) return;
+  if (miniDialog.open && !switchPlatform) return;
+  if (switchPlatform) clearPlatformView();
+  if (platformCabinet) selectedPlatformGame = choice ?? {gameId:cabinet.id};
+  $('#studio-game-list').hidden = !platformCabinet;
   activeGameId = cabinet.id;gameAudio.effect('cabinet');gameAudio.setGame(cabinet.demo ? 'demo' : cabinet.id);
   miniDialog.classList.toggle('demo-mode', !!cabinet.demo);
   miniDialog.classList.toggle('wallet-game-mode', !!cabinet.wallet);
-  miniDialog.classList.toggle('originals-mode', cabinet.wallet === true || cabinet.github === true);
+  miniDialog.classList.toggle('originals-mode', !!platformCabinet || cabinet.wallet === true || cabinet.github === true);
   miniDialog.classList.toggle('card-table-mode', isCardGame(cabinet.id));
   miniDialog.dataset.game = cabinet.id;
-  $('.mini-stats').hidden = !!(cabinet.demo || cabinet.wallet || cabinet.github);
+  $('.mini-stats').hidden = !!(platformCabinet || cabinet.demo || cabinet.wallet || cabinet.github);
   $('.demo-footer').hidden = !cabinet.demo;
   $('.mini-top .eyebrow').textContent = cabinet.demo ? translateText('LUELON PLAY / ДЕМО') : 'ROYAL ORIGINALS / 01';
   $('.mini-bottom .settings-shortcut').hidden = !!cabinet.demo;
@@ -173,7 +206,7 @@ async function openCabinetGame(cabinet: Cabinet, recovery?: RetiredArcadeRound) 
     $('.mini-bottom>span').textContent=practice?translateText('Отдельные учебные фишки'):translateText('Общий тестовый кошелёк клуба');
     cardDealerStage=new CardDealerStage($('#card-dealer-stage'),cabinet.id,$('#mini-game'),action=>room.setDealerAction(cabinet.id,action));
   } else if (isStudioGame(cabinet.id)) {
-    $('.mini-top .eyebrow').textContent = translateText('НОВЫЕ МИРЫ / ЭТАЖ 1');
+    $('.mini-top .eyebrow').textContent = 'ROYAL PLATFORM / 01';
     $('.mini-bottom>span').textContent = translateText('Общий тестовый кошелёк клуба');
   } else if (isVariantGame(cabinet.id) || isExpansionGame(cabinet.id)) {
     $('.mini-top .eyebrow').textContent = translateText('ЭТАЖ 1 / ТЕСТОВЫЙ КОШЕЛЁК');
@@ -209,6 +242,9 @@ async function openCabinetGame(cabinet: Cabinet, recovery?: RetiredArcadeRound) 
 
   mini = new IndependentGameUI($('#mini-game'), contract.gameId, {
     onStatus,
+    scene: room,
+    onClosed: () => { if (version === openVersion && miniDialog.open) showPlatformCatalog(); },
+    provider: cabinet.id === 'casinoapipro' && platformCabinet ? {embedded:true, gameId:choice?.providerGame?.id, gameName:choice?.providerGame?.name, onCatalogue:showPlatformCatalog} : undefined,
     setTitle: name => { if (miniDialog.open && version === openVersion) $('#mini-title').textContent = name; },
   });
 }
@@ -225,7 +261,6 @@ const room = new RoomScene({
       $<HTMLButtonElement>('#interact').disabled=Boolean(occupant);
       $('#machine-name').textContent += occupant ? translateText(' · играет ') + occupant : '';
     }
-    demoPreview?.updateNear(cabinet);
   },
   onPlay: cabinet => { void play(cabinet); },
   onReady: () => { new ClubMap(room);
@@ -234,15 +269,13 @@ const room = new RoomScene({
       const i=CABINETS.indexOf(c);
       const img = document.createElement('img'); img.src = game.textures.getBase64(`cabinet-${i}`); img.alt = ''; document.querySelector(`#art-${artIndex}`)?.append(img);
     });
-    if (CABINETS.some(cabinet => cabinet.demo)) demoPreview = new DemoPreview();
     new DemoWalletUI(room);
-    casinoGames = new ProviderGameUI(room, playing => { if (!playing) room.endCabinet(); });
     new NileWalletUI(room);
     new UsdtWalletUI(room);
     new CryptoWalletUI(room);
     const portrait = document.createElement('img'); portrait.src = game.textures.getBase64('citizen-0', 'down-6'); portrait.alt = ''; $('#player-portrait').append(portrait);
     if (!offline) social = new SocialUI(room, toast);
-    else { room.onActivity=()=>toast(translateText('Войди в онлайн-зал, чтобы играть вместе и слушать рояль.')); prefetchDemoGames(); }
+    else { room.onActivity=()=>toast(translateText('Войди в онлайн-зал, чтобы играть вместе и слушать рояль.')); }
     new CatUI(room);
     if (offline) {
       const settings=document.createElement('dialog');settings.id='name-dialog';settings.className='join-dialog auth-dialog';settings.setAttribute('aria-labelledby','name-title');
@@ -285,7 +318,15 @@ const game = new Phaser.Game({
 });
 new ResizeObserver(entries=>{const {width,height}=entries[0].contentRect;if(width>0&&height>0)game.scale.resize(Math.floor(width),Math.floor(height));}).observe($('#game'));
 document.querySelectorAll<HTMLButtonElement>('[data-cabinet]').forEach(button => button.addEventListener('click', () => room.approach(button.dataset.cabinet!)));
-new StudioCatalog($('#studio-catalog'), id => room.approach(id), () => room.approachLuelonZone());
+window.addEventListener('royal-open-casinoapipro', () => {
+  if (platformCabinet && miniDialog.open) { void selectPlatformGame({gameId:'casinoapipro'}); return; }
+  if (room.hall !== 'arcade' || document.querySelector('dialog[open]')) return;
+  const state=room.getState();
+  const cabinet=cabinetsInHall('arcade').filter(c=>!room.cabinetOccupant(c.id)).sort((a,b)=>Math.hypot(a.x-state.x,a.y-state.y)-Math.hypot(b.x-state.x,b.y-state.y))[0];
+  if(!cabinet)return;
+  room.setLocked(Boolean(social && social.client.status !== 'connected'));
+  requestedProvider = true; room.approach(cabinet.id);
+});
 new CardTablesCatalog($('#card-tables-catalog'), id => room.approach(id));
 new RetiredArcadeRounds($('#retired-arcade-rounds'), async round => {
   if (openingCabinet || document.querySelector('dialog[open]') || !ownsRetiredArcadeRound(round)) return;
@@ -321,7 +362,6 @@ function updateHall(hall:HallId){
   document.querySelectorAll<HTMLElement>('[data-activity]').forEach(b=>b.hidden=b.dataset.activity==='piano'||activityHall(b.dataset.activity!)!==hall);
   const sharedCards=document.querySelector<HTMLElement>('.shared-cards');if(sharedCards)sharedCards.hidden=hall!=='tables';
   document.querySelectorAll<HTMLElement>('[data-arcade-catalog]').forEach(section => section.hidden = hall !== 'arcade');
-  $('#studio-catalog').hidden=hall!=='arcade';
   $('#card-tables-catalog').hidden=hall!=='github';
   $('#floor-links').innerHTML=hallLinks(hall).map(link=>{
     const target=HALLS[link.target];
@@ -342,6 +382,8 @@ for (const dialog of [miniDialog, helpDialog, barDialog]) {
   dialog.addEventListener('click', event => { if (event.target === dialog) { const bounds = dialog.getBoundingClientRect(); const { clientX: x, clientY: y } = event; if (x < bounds.left || x > bounds.right || y < bounds.top || y > bounds.bottom) dialog.close(); } });
   dialog.addEventListener('close', () => {
     if(dialog===miniDialog){
+      platformSelection?.destroy(); platformSelection = undefined; platformCabinet = undefined; selectedPlatformGame = undefined;
+      $('#studio-game-list').hidden = true;
       retiredRoundGuard?.destroy(); retiredRoundGuard = undefined;
       if(isCardGame(activeGameId))room.setDealerAction(activeGameId,'idle');
       cardDealerStage?.destroy();cardDealerStage=undefined;

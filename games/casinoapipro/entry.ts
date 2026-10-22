@@ -7,7 +7,8 @@ export const progressVersion = 1;
 export const mount: GameModuleV1['mount'] = (host, context) => {
  readGameHost();
  if (!context?.scene) throw Error('Provider game requires room services');
- const game = new CasinoApiProUI(context.scene, context.onPlaying, context.onClosed, false);
+ const game = new CasinoApiProUI(context.scene, context.onPlaying, context.onClosed, false,
+   context.provider?.embedded ? {host, ...context.provider, setTitle:context.setTitle} : undefined);
  game.open(true);
  return game;
 };
