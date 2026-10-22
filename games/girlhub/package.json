@@ -13,5 +13,9 @@
   ],
   "scripts": {
     "build": "node ../../node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && node ../../scripts/build-game-module.mjs"
-  }
+  },
+  "preload": [
+    "afterglow/v1/symbols.webp",
+    "afterglow/v1/background-studio-v3.webp"
+  ]
 }

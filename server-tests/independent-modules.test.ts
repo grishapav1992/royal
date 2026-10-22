@@ -77,6 +77,18 @@ test('module metadata rejects traversal, foreign origins, missing files and malf
  assert.throws(() => moduleRoot('../../outside', game));
 });
 
+test('optional startup hints stay inside the verified image inventory', () => {
+ const game = 'studio-signal-fox', path = moduleRoot(version, game) + 'manifest.json';
+ const image = 'media/signal-fox/board.webp';
+ const good = { ...manifest(game), files: { ...manifest(game).files, [image]: 'e'.repeat(64) } };
+ assert.equal(validModuleManifest(good, path, game), true);
+ assert.equal(validModuleManifest({ ...good, preload: [image] }, path, game), true);
+ for (const preload of [[entry], [style], ['https://example.test/board.webp'], ['/assets/board.webp'],
+  ['media/missing.webp'], [image, image], Array.from({ length: 17 }, () => image), 'all']) {
+  assert.equal(validModuleManifest({ ...good, preload }, path, game), false, JSON.stringify(preload));
+ }
+});
+
 test('all built game packages pass runtime validation and every inventoried byte matches its digest', async () => {
  for (const game of GAME_MODULES) {
   const pointer = JSON.parse(await readFile(resolve('module-dist', game.gameId, 'active.json'), 'utf8'));

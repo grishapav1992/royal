@@ -14,5 +14,9 @@
   ],
   "scripts": {
     "build": "node ../../node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && node ../../scripts/build-game-module.mjs"
-  }
+  },
+  "preload": [
+    "velvet-rebuild/v1/symbols.webp",
+    "velvet-rebuild/v1/background.webp"
+  ]
 }

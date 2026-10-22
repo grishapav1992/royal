@@ -34,7 +34,8 @@ for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844
   const catsGate = new Promise<void>(resolve => { releaseCats = resolve; });
   let heldCats = 0;
   page.on('pageerror', error => errors.push(error.message));
-  page.on('request', request => requests.push(new URL(request.url()).pathname));
+  const origin = new URL(test.info().project.use.baseURL as string).origin;
+  page.on('request', request => { const url = new URL(request.url()); if (url.origin === origin) requests.push(url.pathname); });
   await page.route('**/api/**', route => {
    if (!['GET', 'HEAD'].includes(route.request().method())) writes.push(route.request().url());
    if (new URL(route.request().url()).pathname === '/api/auth/me') return route.fulfill({ json: { account: null } });
@@ -51,7 +52,7 @@ for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844
    await expect(page.locator('#login-step')).toBeVisible();
    await expect(page.locator('#chat-panel')).toBeAttached();
    await expect(page.locator('.workspace')).toHaveClass(/with-chat/);
-   await expect.poll(() => heldCats).toBe(2);
+   expect(heldCats).toBe(0);
    await captureRoom(page);
    const initial = await page.evaluate(() => {
     const room = (window as any).__startupRoom;
@@ -59,9 +60,16 @@ for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844
     const latest = { ...room.getState().cat, hall: 'arcade', x: 740, y: 540, mood: 'scratching', moving: false, surfaceId: '', carriedBy: '' };
     room.catRoutine.snapshot = () => latest;
     room.syncCat(latest);
-    return { catPresent: Boolean(room.catRenderer), connections: room.load.maxParallelDownloads };
+    document.querySelector<HTMLDialogElement>('#join-dialog')!.close();
+    return { catPresent: Boolean(room.catRenderer) };
    });
-   expect(initial).toEqual({ catPresent: false, connections: 2 });
+   expect(initial).toEqual({ catPresent: false });
+   await expect.poll(() => heldCats).toBe(1);
+   const cancelled = page.waitForEvent('requestfailed', request => catPaths.includes(new URL(request.url()).pathname));
+   await page.evaluate(() => (window as any).__startupRoom.deferDecorations(700));
+   await cancelled;
+   await page.waitForTimeout(350);
+   expect(heldCats).toBe(1);
    const initialMedia = requests.filter(path => /\.(?:webp|png|jpe?g|svg)$/.test(path));
    expect(initialMedia.filter(path => path.startsWith('/assets/') && !path.startsWith('/assets/startup-previews/') && !path.startsWith('/assets/cat/optimized/'))).toEqual([]);
    expect(requests).not.toContain('/assets/mira/animation-atlas.png');
@@ -99,7 +107,7 @@ for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844
     expect(portrait).toMatchObject({ width: 209, height: 290, alphaDifferences: 0 });
     expect(portrait.maximumDifference).toBeLessThanOrEqual(1);
    }
-   await page.evaluate(() => document.querySelector<HTMLDialogElement>('#join-dialog')!.close());
+   await page.evaluate(() => { const dialog = document.querySelector<HTMLDialogElement>('#join-dialog')!; if (dialog.open) dialog.close(); });
    await page.locator('#visit-bar').click();
    await expect(page.locator('#bar-dialog')).toBeVisible({ timeout: 20000 });
    await expect.poll(() => requests.filter(path => path === '/assets/mira/animation-atlas.png').length).toBe(1);

@@ -13,5 +13,9 @@
   ],
   "scripts": {
     "build": "node ../../node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && node ../../scripts/build-game-module.mjs"
-  }
+  },
+  "preload": [
+    "nitro-run/v1/symbols.webp",
+    "nitro-run/v1/background.webp"
+  ]
 }

@@ -14,5 +14,10 @@
   ],
   "scripts": {
     "build": "node ../../node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && node ../../scripts/build-game-module.mjs"
-  }
+  },
+  "preload": [
+    "cosmic-guardians/v1/symbols-v2.webp",
+    "cosmic-guardians/v1/alien.webp",
+    "cosmic-guardians/v1/background.webp"
+  ]
 }

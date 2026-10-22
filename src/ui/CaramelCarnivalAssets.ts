@@ -6,7 +6,7 @@ export type CaramelAssetState = SlotAssetState;
 
 export class CaramelCarnivalAssets extends SlotAssets<keyof typeof CARAMEL_ASSETS> {
   constructor(changed: (state: CaramelAssetState) => void,
-    createImage: () => HTMLImageElement = () => new Image(), timeoutMs = 30000) {
+    createImage?: () => HTMLImageElement, timeoutMs = 30000) {
     super(CARAMEL_ASSETS, changed, createImage, timeoutMs);
   }
 }

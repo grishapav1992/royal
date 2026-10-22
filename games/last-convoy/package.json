@@ -13,5 +13,10 @@
   ],
   "scripts": {
     "build": "node ../../node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && node ../../scripts/build-game-module.mjs"
-  }
+  },
+  "preload": [
+    "last-convoy/v1/symbols.webp",
+    "last-convoy/v1/background.webp",
+    "last-convoy/v1/heroine.webp"
+  ]
 }

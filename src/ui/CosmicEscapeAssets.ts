@@ -6,7 +6,7 @@ export type CosmicAssetState = SlotAssetState;
 
 export class CosmicEscapeAssets extends SlotAssets<keyof typeof COSMIC_ESCAPE_ASSETS> {
   constructor(changed: (state: CosmicAssetState) => void,
-    createImage: () => HTMLImageElement = () => new Image(), timeoutMs = 30000) {
+    createImage?: () => HTMLImageElement, timeoutMs = 30000) {
     super(COSMIC_ESCAPE_ASSETS, changed, createImage, timeoutMs);
   }
 }

@@ -1,6 +1,7 @@
 import { t } from '../i18n/index';
 import { installGameHost } from './GameHostRuntime';
-import { GIRLHUB_MODULE, validModulePointer, validModuleManifest, moduleDigest, moduleRoot } from './GameModuleManifest';
+import { GIRLHUB_MODULE } from './GameModuleManifest';
+import { loadGameModule } from './GameModulePreparation';
 import { gameModuleContract, type IndependentGameId } from './GameModuleCatalog';
 import type { GameModuleV1, GameModuleContextV1, GameModuleInstance } from './GameHostContract';
 import type { ActivitiesState, PianoNote } from '../shared/activities';
@@ -26,13 +27,6 @@ export class IndependentGameUI {
  }
  private owns() { return !this.disposed && owners.get(this.host) === this; }
  private clearStyle() { this.style?.remove(); this.style = undefined; }
- private async json(url: string) {
-  const response = await fetch(url, { cache: 'no-store', credentials: 'same-origin', signal: this.controller!.signal });
-  if (!response.ok) throw Error('Game package is unavailable');
-  const bytes = await response.arrayBuffer();
-  if (bytes.byteLength > 65536) throw Error('Game manifest is too large');
-  return { bytes, data: JSON.parse(new TextDecoder().decode(bytes)) as unknown };
- }
  private async stylesheet(url: string) {
   const link = document.createElement('link');
   link.rel = 'stylesheet'; link.href = url; link.dataset.royalGameModule = this.gameId;
@@ -54,12 +48,8 @@ export class IndependentGameUI {
   loading.textContent = t('Загрузка игры…'); this.host.replaceChildren(loading);
   const timeout = setTimeout(() => this.controller?.abort(), 20000);
   try {
-   const pointer = (await this.json(`/game-modules/${this.gameId}/active.json`)).data;
-   if (!validModulePointer(pointer, this.gameId)) throw Error('Invalid game pointer');
-   const manifest = await this.json(pointer.manifest);
-   if (await moduleDigest(manifest.bytes) !== pointer.sha256 || !validModuleManifest(manifest.data, pointer.manifest, this.gameId)) throw Error('Incompatible game package');
+   const { metadata, root } = await loadGameModule(this.gameId, this.controller.signal);
    if (!this.owns()) return;
-   const metadata = manifest.data, root = moduleRoot(metadata.version, this.gameId);
    installGameHost();
    const path = root + metadata.entry + (this.attempt ? `?retry=${this.attempt}` : '');
    const [, module] = await Promise.all([

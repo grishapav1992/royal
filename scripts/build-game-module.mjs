@@ -150,6 +150,10 @@ async function buildGame(slug) {
  const sourceFiles = Object.fromEntries(await Promise.all(inputs.map(async name => [name, sha(await readFile(resolve(root, name)))])));
  const { media, references: mediaReferences, dynamicDirectories } = await referencedMedia(result.outputFiles, sentinel, config.assetRoots, assetFiles);
  const mediaHashes = Object.fromEntries(media.map(([name, bytes]) => ['media/' + name, sha(bytes)]));
+ const preload = config.preload;
+ if (preload !== undefined && (!Array.isArray(preload) || preload.length > 16 || new Set(preload).size !== preload.length
+  || !preload.every(name => typeof name === 'string' && /\.(?:webp|png|jpe?g|avif|gif|svg)$/.test(name)
+   && Object.hasOwn(mediaHashes, 'media/' + name)))) throw Error('Invalid startup image hints: ' + slug);
  const sourceSha256 = sha(JSON.stringify({ config, contract: registered, esbuildVersion, script: sha(buildScript), sourceFiles, media: mediaHashes }));
  const version = config.version + '-' + sourceSha256.slice(0, 12);
  const urlRoot = `/game-modules/${config.gameId}/versions/${version}/`;
@@ -164,7 +168,8 @@ async function buildGame(slug) {
  const files = Object.fromEntries([...outputs.entries()].map(([name, bytes]) => [name, sha(bytes)]).sort(([a], [b]) => a.localeCompare(b)));
  const manifest = { format: 1, gameId: config.gameId, version, apiVersion: config.apiVersion,
   rulesVersion: config.rulesVersion, progressVersion: config.progressVersion, sourceSha256,
-  entry: Object.keys(files).find(name => name.endsWith('.js')), styles: Object.keys(files).filter(name => /^style-/.test(name)), files };
+  entry: Object.keys(files).find(name => name.endsWith('.js')), styles: Object.keys(files).filter(name => /^style-/.test(name)), files,
+  ...(preload ? { preload: preload.map(name => 'media/' + name) } : {}) };
  const totalBytes = [...outputs.values()].reduce((total, bytes) => total + bytes.length, 0);
  if (Object.keys(files).length < 2 || Object.keys(files).length > 256 || manifest.styles.length !== 1 || totalBytes > 64 * 1024 * 1024) throw Error('Module package exceeds publication limits: ' + slug);
  const json = JSON.stringify(manifest, null, 2) + '\n';
@@ -203,6 +208,7 @@ async function buildGame(slug) {
   nativeImplementations: ownNative, serverImplementationIncluded: inputs.some(backendImplementation),
   sharedMathInputs: inputs.filter(name => name.startsWith('server/games/vfair/')),
   assetRoots: config.assetRoots, assetFiles, mediaReferences, dynamicMediaDirectories: dynamicDirectories,
+  startupImages: manifest.preload ?? [],
   bytes: totalBytes, files: Object.keys(files).length }, null, 2) + '\n');
  console.log(JSON.stringify({ gameId: config.gameId, version, directory: destination, files: Object.keys(files).length }));
 }

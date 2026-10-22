@@ -6,7 +6,7 @@ export type VelvetAssetState = SlotAssetState;
 
 export class VelvetReignAssets extends SlotAssets<keyof typeof VELVET_ASSETS> {
   constructor(changed: (state: VelvetAssetState) => void,
-    createImage: () => HTMLImageElement = () => new Image(), timeoutMs = 30000) {
+    createImage?: () => HTMLImageElement, timeoutMs = 30000) {
     super(VELVET_ASSETS, changed, createImage, timeoutMs);
   }
 }

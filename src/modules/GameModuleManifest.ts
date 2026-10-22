@@ -7,6 +7,7 @@ export interface GameModulePointer { format: 1; gameId: IndependentGameId; manif
 export interface GameModuleManifest {
  format: 1; gameId: IndependentGameId; version: string; apiVersion: 1; rulesVersion: number; progressVersion: number;
  sourceSha256: string; entry: string; styles: string[]; files: Record<string, string>;
+ preload?: string[];
 }
 
 function object(value: unknown): value is Record<string, unknown> { return !!value && typeof value === 'object' && !Array.isArray(value); }
@@ -26,6 +27,10 @@ export function validModuleManifest(value: unknown, path: string, expectedGameId
  if (path !== root + 'manifest.json' || typeof value.entry !== 'string' || !/^entry-[a-f0-9]{16}\.js$/.test(value.entry) || !Array.isArray(value.styles) || value.styles.length !== 1 || !value.styles.every(x => typeof x === 'string' && /^style-[a-f0-9]{16}\.css$/.test(x)) || !object(value.files)) return false;
  const files = Object.entries(value.files);
  if (files.length < 2 || files.length > 256 || !files.every(([name, sha]) => /^(?:entry-[a-f0-9]{16}\.js|style-[a-f0-9]{16}\.css|media\/[a-zA-Z0-9_./-]+\.(?:webp|png|jpe?g|avif|gif|svg|mp4|mp3|ogg|wav|m4a|json|woff2?|ttf|otf))$/.test(name) && !name.split('/').some(x => x === '..' || x === '.') && typeof sha === 'string' && digestPattern.test(sha))) return false;
+ const preload = value.preload;
+ if (preload !== undefined && (!Array.isArray(preload) || preload.length > 16 || new Set(preload).size !== preload.length
+  || !preload.every(name => typeof name === 'string' && /^media\/[a-zA-Z0-9_./-]+\.(?:webp|png|jpe?g|avif|gif|svg)$/.test(name)
+   && Object.hasOwn(value.files as object, name)))) return false;
  return Object.hasOwn(value.files, value.entry) && value.styles.every(x => Object.hasOwn(value.files as object, x));
 }
 export async function moduleDigest(bytes: BufferSource): Promise<string> {

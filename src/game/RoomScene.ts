@@ -20,6 +20,7 @@ import { COLORS } from './art';
 import { createDetailedArt } from './materials';
 import { preloadCabinetArtwork } from './cabinetArtwork';
 import catImages from './catImages.json';
+import { BackgroundImages } from './BackgroundImages';
 import { CABINET_SCALE, CABINET_SIZE } from './cabinetArt';
 import { plantTexture, drawHallIdentity } from './interiorArt';
 import { FURNITURE, PLANTS } from '../shared/furniture';
@@ -57,6 +58,8 @@ export class RoomScene extends Phaser.Scene {
   private catRoutine = new CatRoutine();
   private catView = this.catRoutine.snapshot();
   private catRenderer?: CatRenderer;
+  private catArtwork?: BackgroundImages;
+  private decorationResumeAt = 0;
   private catUiAt = 0;
   private approachingCat = false;
   private catApproachAt = 0;
@@ -96,6 +99,7 @@ export class RoomScene extends Phaser.Scene {
   private overview=false;
   onBar: () => void = () => {};
   onActivity: (id:ActivityId) => void = () => {};
+  onApproach: (id: string) => void = () => {};
   onNotice: (text: string) => void = () => {};
   private reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   private nextTextureCleanup = 0;
@@ -111,19 +115,14 @@ export class RoomScene extends Phaser.Scene {
     preloadCabinetArtwork(this);
   }
   private loadCatArtwork() {
-    // The room and sign-in are usable while decorative animation atlases arrive.
-    this.load.maxParallelDownloads = 2;
-    this.load.image(CAT_TEXTURE, catImages.body);
-    this.load.image(CAT_HABITS_TEXTURE, catImages.habits);
-    this.load.image(CAT_CLIMB_TEXTURE, catImages.climb);
-    this.load.image(CAT_SCRATCH_TEXTURE, catImages.scratch);
-    this.load.image(CAT_WALK_TEXTURE, catImages.walk);
-    this.load.once(Phaser.Loader.Events.COMPLETE, () => {
-      if ([CAT_TEXTURE, CAT_HABITS_TEXTURE, CAT_CLIMB_TEXTURE, CAT_SCRATCH_TEXTURE, CAT_WALK_TEXTURE]
-        .every(key => this.textures.exists(key))) this.catRenderer = new CatRenderer(this);
-    });
-    this.load.start();
+    this.catArtwork = new BackgroundImages({ [CAT_TEXTURE]: catImages.body, [CAT_HABITS_TEXTURE]: catImages.habits,
+      [CAT_CLIMB_TEXTURE]: catImages.climb, [CAT_SCRATCH_TEXTURE]: catImages.scratch, [CAT_WALK_TEXTURE]: catImages.walk },
+      (key, image) => { this.textures.addImage(key, image); }, () => { this.catRenderer = new CatRenderer(this); });
+    if (this.decorationResumeAt > performance.now()) this.catArtwork.pause(this.decorationResumeAt - performance.now());
+    this.catArtwork.start();
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.catArtwork?.destroy());
   }
+  deferDecorations(ms = 12000) { this.decorationResumeAt = Math.max(this.decorationResumeAt, performance.now() + ms); this.catArtwork?.pause(ms); }
   create() {
     createDetailedArt(this);
     createCharacters(this);
@@ -316,6 +315,7 @@ export class RoomScene extends Phaser.Scene {
     if (occupant) { this.onNotice(translateText('Это место уже занято: ') + occupant + translateText('. Выбери другую игру.')); return; }
     this.pendingLounge = null;
     const cabinet = cabinetsInHall(this.hall).find(c => c.id === id); if (!cabinet) return;
+    this.onApproach(id);
     this.pendingCabinet = cabinet; this.goTo(cabinetSeat(cabinet).entry);
   }
   approachLuelonZone() {

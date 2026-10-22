@@ -13,7 +13,7 @@ import {AFTER_GAME,AFTER_BETS,AFTER_PAYTABLE,AFTER_NAMES,AFTER_RULES,AFTER_LINES
 import {expansionClient as client} from '../wallet/ExpansionClient';
 import {demoWallet} from '../wallet/WalletClient';
 import {observeExpansionOutcome,resetGameOutcomes} from './gameReactions';
-import {AfterglowAssets,AFTER_ASSETS,type AfterAssetState} from './AfterglowAssets';
+import {AfterglowAssets,AFTER_ASSETS,afterCharacterAsset,type AfterAssetName,type AfterAssetState} from './AfterglowAssets';
 import {AfterglowAudio} from './AfterglowAudio';
 import {AfterglowWinSeries} from './AfterglowVoices';
 import {AfterglowBoard} from './AfterglowBoard';
@@ -29,7 +29,8 @@ const preview=Array.from({length:30},(_,i)=>(i+2*Math.floor(i/6))%6);
 
 /** Presentation consumes confirmed frames. Reopening and retries remain static. */
 export class AfterglowUI {
- private wardrobe=new AfterglowWardrobeClient();private winSeries=new AfterglowWinSeries();private lookGirl=0;private lookFollowup:Dialog='';private wardrobeChanged=()=>{if(this.destroyed)return;this.selected=this.wardrobe.profile?.selectedGirl??0;if(!this.live)this.features(this.session()?.view.afterglow);this.controls();};
+ private artworkKey='';private dialogArtworkVersion=0;
+ private wardrobe=new AfterglowWardrobeClient();private winSeries=new AfterglowWinSeries();private lookGirl=0;private lookFollowup:Dialog='';private wardrobeChanged=()=>{if(this.destroyed)return;this.selected=this.wardrobe.profile?.selectedGirl??0;this.loadArtwork();if(!this.live)this.features(this.session()?.view.afterglow);this.controls();};
  private photoViewer:SlotPhotoViewer;private settings?:SlotSettings;private stageSize?:ResizeObserver;private selected=0;private newlyUnlocked:number[]=[];private afterUnlock:Dialog='';
  private root:HTMLElement;private dialogShell!:SlotDialog;private stakeControls!:SlotStakeControls;private soundControls!:SlotAudioControls;private board:AfterglowBoard;private audio=new AfterglowAudio();private assets:AfterglowAssets;
  private owner=client.accountId;private destroyed=false;private entered=false;private stake='100';private fast=false;private reduced=matchMedia('(prefers-reduced-motion: reduce)');private manualReduced=false;
@@ -47,7 +48,11 @@ export class AfterglowUI {
   this.assets=new AfterglowAssets(state=>this.assetState(state));
   this.board=new AfterglowBoard(this.find('[data-cc-board]'),{phase:value=>{if(this.live)this.root.dataset.phase=value;},stop:col=>{if(this.live)this.audio.stopReel(col);}});
   this.bind();this.settings=new SlotSettings(this.root,this.find('.cc-footer'),this.find('.cc-tools'),()=>{this.stopAuto();this.controls();});this.unsubscribe=bindSlotLifecycle({changed:this.change,visibility:this.visibility,keyboard:this.keyboard,motion:this.reduced,motionChanged:this.motionChanged,audioChanged:()=>this.controls()});
-  this.unsubscribeVoices=this.audio.onVoiceChange(()=>this.voiceControls());this.wardrobe.addEventListener('change',this.wardrobeChanged);this.wardrobe.setAccount(client.accountId);this.sync();this.openDialog('intro');void this.assets.load();
+  this.unsubscribeVoices=this.audio.onVoiceChange(()=>this.voiceControls());this.wardrobe.addEventListener('change',this.wardrobeChanged);this.wardrobe.setAccount(client.accountId);this.sync();this.openDialog('intro');this.loadArtwork();
+ }
+ private loadArtwork(force=false){
+  const profile=this.wardrobe.profile,girl=profile?.selectedGirl??0,look=profile?.selectedLook??0,key=`${girl}:${look}`;
+  if(!force&&key===this.artworkKey)return;this.artworkKey=key;void this.assets.loadCurrent(girl,look);
  }
  private find<T extends HTMLElement=HTMLElement>(selector:string):T{return this.root.querySelector<T>(selector)!;}
  private session(){return this.sessions.session(client.sessions);}
@@ -62,7 +67,7 @@ export class AfterglowUI {
  private assetState(state:AfterAssetState){
   if(this.destroyed)return;
   this.root.dataset.assetState=state.status;
-  if(state.status==='ready'){this.root.style.setProperty('--cc-symbols',`url("${AFTER_ASSETS.symbols}")`);this.root.style.setProperty('--cc-background',`url("${AFTER_ASSETS.background}")`);}
+  if(state.status==='ready'){this.root.style.setProperty('--cc-symbols',`url("${AFTER_ASSETS.symbols}")`);this.root.style.setProperty('--cc-background',`url("${AFTER_ASSETS.background}")`);this.features(this.session()?.view.afterglow);}
   this.find<HTMLProgressElement>('[data-cc-load-progress]').max=state.total;this.find<HTMLProgressElement>('[data-cc-load-progress]').value=state.loaded;
   this.find('[data-cc-load-title]').textContent=state.status==='error'?translateText('НЕ УДАЛОСЬ ЗАГРУЗИТЬ СТУДИЮ'):translateText('ГОТОВИМ СТУДИЮ');
   this.find('[data-cc-load-note]').textContent=state.status==='error'?translateText('Проверь соединение и повтори загрузку. Монеты не списываются.'):tr`Изображения: ${state.loaded} из ${state.total}`;
@@ -95,7 +100,7 @@ export class AfterglowUI {
   this.find<HTMLInputElement>('[data-ag-voices]').onchange=e=>this.audio.setVoiceEnabled((e.target as HTMLInputElement).checked);
   this.find<HTMLInputElement>('[data-ag-voice-volume]').oninput=e=>this.audio.setVoiceLevel(Number((e.target as HTMLInputElement).value)/100);
   this.find<HTMLButtonElement>('[data-ag-voice-preview]').onclick=()=>void this.audio.previewVoice();
-  this.find<HTMLButtonElement>('[data-cc-load-retry]').onclick=()=>void this.assets.load();this.find<HTMLButtonElement>('[data-cc-spin]').onclick=()=>void this.play();
+  this.find<HTMLButtonElement>('[data-cc-load-retry]').onclick=()=>this.loadArtwork(true);this.find<HTMLButtonElement>('[data-cc-spin]').onclick=()=>void this.play();
   this.find<HTMLButtonElement>('[data-ag-photo]').onclick=()=>this.openPhoto(this.selected,this.wardrobe.profile?.selectedLook??0);
   this.find<HTMLButtonElement>('[data-ag-album]').onclick=()=>{this.stopAuto();this.openDialog('album');};
   this.find<HTMLButtonElement>('[data-cc-buy]').onclick=()=>{this.stopAuto();this.openDialog('info');};this.find<HTMLButtonElement>('[data-cc-pause]').onclick=()=>{this.bonusRunning=false;this.playback.cancelScheduled();this.controls();};
@@ -196,7 +201,20 @@ this.find('[data-cc-status]').textContent=client.loading?translateText('Пров
  private async retry(){if(this.destroyed||!this.assets.ready||this.live||client.busy||!client.pending||document.hidden)return;this.stopAuto();this.error='';resetGameOutcomes(this.root);try{await client.retry();await this.wardrobe.refresh();}catch(e){this.error=(e as Error).message;}if(!this.destroyed){this.shown='';this.sync();}}
  private async refresh(){if(this.destroyed||!this.assets.ready||this.live||client.busy||client.loading)return;this.stopAuto();this.error='';resetGameOutcomes(this.root);await client.refresh();await this.wardrobe.refresh();if(!this.destroyed){this.shown='';this.sync();}}
  private ledger(session:Session){return renderSlotLedger('cc',session.spentUnits,session.state==='active'?session.view.afterglow.totalPayoutUnits:session.returnedUnits,session.state==='active');}
- private openDialog(kind:Dialog){this.settings?.close();this.dialog=kind;this.dialogShell.begin(kind==='album'||kind==='unlock'||kind==='style-unlock'?'info':kind);if(!kind)return;const box=this.find('[data-cc-dialog]'),s=this.session(),v=s?.view.afterglow,available=afterAlbumUnlocked(this.wardrobe.profile?.albumUnits??0);
+ private openDialog(kind:Dialog){
+  const version=++this.dialogArtworkVersion;
+  const available=afterAlbumUnlocked(this.wardrobe.profile?.albumUnits??0);
+  const needed:AfterAssetName[]=kind==='album'?AFTER_GALLERY_ORDER.filter(index=>available[index]).map(index=>afterCharacterAsset(index,this.wardrobe.profile?.selectedGirl===index?this.wardrobe.profile.selectedLook:0)):kind==='style-unlock'?[afterCharacterAsset(this.lookGirl,1)]:kind==='unlock'?this.newlyUnlocked.map(index=>afterCharacterAsset(index)):[];
+  if(needed.some(name=>!this.assets.has(name))){
+   this.settings?.close();this.dialog=kind;this.dialogShell.begin('info');
+   const box=this.find('[data-cc-dialog]');box.innerHTML=tr`<h2 id="cc-dialog-title">Загружаем фото</h2><p role="status">Подготавливаем изображения альбома…</p><button type="button" data-cc-action="close">Вернуться в игру</button>`;this.controls();this.dialogShell.focus();
+   void this.assets.ensure(needed).then(ready=>{
+    if(this.destroyed||version!==this.dialogArtworkVersion||this.dialog!==kind)return;
+    if(ready)this.openDialog(kind);
+    else{box.innerHTML=tr`<h2 id="cc-dialog-title">Не удалось загрузить фото</h2><p role="alert">Проверь соединение и повтори попытку.</p><button type="button" data-cc-action="artwork-retry">Повторить загрузку</button><button type="button" data-cc-action="close">Вернуться в игру</button>`;this.dialogShell.focus();}
+   });return;
+  }
+  this.settings?.close();this.dialog=kind;this.dialogShell.begin(kind==='album'||kind==='unlock'||kind==='style-unlock'?'info':kind);if(!kind)return;const box=this.find('[data-cc-dialog]'),s=this.session(),v=s?.view.afterglow;
   if(kind==='intro')box.innerHTML=tr`<small>СВЕТ. КАМЕРА. ТВОЯ КОЛЛЕКЦИЯ.</small><h2 id="cc-dialog-title">GIRL<span>HUB</span></h2><div class="cc-intro-cards"><article><div>${afterSymbol(6)}${afterSymbol(8)}</div><h3>14 ЛИНИЙ И ВСПЫШКИ</h3><p>Выигрышные символы падают каскадом. Вспышки заряжают ячейки до ×4 для следующих комбинаций.</p></article><article><div>${afterSymbol(7)}</div><h3>БОНУСНАЯ ФОТОСЕССИЯ</h3><p>Камеры дают бесплатные вращения. До трёх WILD закрепляются, заряд ячеек сохраняется.</p></article><article><div class="ag-intro-girl">${afterGirl(available[this.selected]?this.selected:0)}</div><h3>ОТКРЫВАЙ ГЕРОИНЬ</h3><p>Героини открываются по общему прогрессу. Второй образ каждой героини открывается за игру с ней. Прогресс пропорционален сумме принятых ставок и не зависит от выигрыша или проигрыша.</p></article></div><button type="button" class="cc-primary" data-cc-action="enter">ВОЙТИ В СТУДИЮ</button><p class="cc-dialog-note">Тестовые монеты клуба · вход без ставки</p>`;
   if(kind==='bonus')box.innerHTML=tr`<small>КАМЕРЫ ГОТОВЫ</small><h2 id="cc-dialog-title">ФОТОСЕССИЯ</h2><div class="cc-bonus-art">${afterSymbol(7)}<strong>${v?.bonus?.remaining??8}<small>БЕСПЛАТНЫХ ВРАЩЕНИЙ</small></strong>${afterSymbol(6)}</div><p>До трёх WILD остаются на местах, заряд ячеек сохраняется. Три камеры добавляют два вращения, максимум 20 всего. Линия из закреплённых WILD оплачивается один раз за спин.</p><button type="button" class="cc-primary" data-cc-action="bonus">НАЧАТЬ ФОТОСЕССИЮ</button><p class="cc-dialog-note">Продолжение бесплатно. Ставка уже принята.</p>`;
   if(kind==='complete'&&s)box.innerHTML=renderSlotResult({style:'cc',eyebrow:translateText('СЪЁМКА ЗАВЕРШЕНА'),title:translateText('ИТОГ ФОТОСЕССИИ'),returned:s.returnedUnits,ledger:this.ledger(s),note:translateText('Выплата зачислена один раз. Прогресс сохранён в альбоме.'),label:translateText('ПРОДОЛЖИТЬ')});
@@ -215,11 +233,12 @@ this.find('[data-cc-status]').textContent=client.loading?translateText('Пров
   this.stopAuto();this.photoViewer.open(afterPhoto(index,look),`${AFTER_GIRLS[index].name} · ${look===1?translateText('Второй образ'):translateText('Основной образ')}`);this.controls();
  }
 
- private closeDialog(){this.dialog='';this.controls();this.dialogShell.hide();}
+ private closeDialog(){this.dialogArtworkVersion++;this.assets.trim();this.dialog='';this.controls();this.dialogShell.hide();}
  private async dialogAction(action:string){
   if(this.destroyed||!this.assets.ready)return;
+  if(action==='artwork-retry'){this.openDialog(this.dialog);return;}
   if(action.startsWith('photo-')){const match=/^photo-([0-3])-([01])$/.exec(action);if(match)this.openPhoto(Number(match[1]),Number(match[2]) as 0|1);return;}
-  if(action.startsWith('girl-')||action.startsWith('look-')){const second=action.startsWith('look-'),index=Number(action.slice(5));if(!Number.isInteger(index)||index<0||index>3)return;try{if(await this.wardrobe.choose(index,second?1:0)){this.features(this.session()?.view.afterglow);this.closeDialog();}}catch(e){this.error=(e as Error).message;await this.wardrobe.refresh();this.openDialog('album');}return;}
+  if(action.startsWith('girl-')||action.startsWith('look-')){const second=action.startsWith('look-'),index=Number(action.slice(5));if(!Number.isInteger(index)||index<0||index>3)return;try{const version=this.dialogArtworkVersion;if(!await this.assets.ensure([afterCharacterAsset(index,second?1:0)]))throw Error(translateText('Не удалось загрузить фото. Повтори попытку.'));if(this.destroyed||version!==this.dialogArtworkVersion)return;if(await this.wardrobe.choose(index,second?1:0)){this.features(this.session()?.view.afterglow);this.closeDialog();}}catch(e){this.error=(e as Error).message;await this.wardrobe.refresh();this.openDialog('album');}return;}
   if(action==='style-use'||action==='style-later'){try{if(action==='style-use'&&!await this.wardrobe.choose(this.lookGirl,1))return;this.closeDialog();const next=this.lookFollowup;this.lookFollowup='';if(next)this.openDialog(next);}catch(e){this.error=(e as Error).message;this.controls();}return;}
 
   if(action==='unlock'){this.closeDialog();const next=this.afterUnlock;this.afterUnlock='';if(next)this.openDialog(next);return;}
@@ -228,5 +247,5 @@ this.find('[data-cc-status]').textContent=client.loading?translateText('Пров
  }
 
  getAudioState(){return this.audio.state();}
- destroy(){if(this.destroyed)return;this.destroyed=true;this.photoViewer.destroy();this.unsubscribeVoices();this.stageSize?.disconnect();this.wardrobe.removeEventListener('change',this.wardrobeChanged);this.wardrobe.destroy();this.cancel();this.assets.destroy();this.board.destroy();this.audio.destroy();this.unsubscribe();this.settings?.destroy();this.dialogShell.destroy();this.stakeControls.destroy();this.soundControls.destroy();this.playback.destroy();this.host.replaceChildren();}
+ destroy(){if(this.destroyed)return;this.destroyed=true;this.dialogArtworkVersion++;this.photoViewer.destroy();this.unsubscribeVoices();this.stageSize?.disconnect();this.wardrobe.removeEventListener('change',this.wardrobeChanged);this.wardrobe.destroy();this.cancel();this.assets.destroy();this.board.destroy();this.audio.destroy();this.unsubscribe();this.settings?.destroy();this.dialogShell.destroy();this.stakeControls.destroy();this.soundControls.destroy();this.playback.destroy();this.host.replaceChildren();}
 }

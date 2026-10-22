@@ -1,4 +1,5 @@
 import { IndependentGameUI } from './modules/IndependentGameUI';
+import { prepareGameModule } from './modules/GameModulePreparation';
 import { gameModuleContract } from './modules/GameModuleCatalog';
 import { ProviderGameUI } from './modules/ProviderGameUI';
 import { installLanguageSwitcher, t as translateText, tr } from './i18n/index';
@@ -114,11 +115,18 @@ let openVersion = 0;
 let toastTimer: ReturnType<typeof setTimeout>;
 function toast(message: string) { $('#toast').textContent = message; $('#toast').hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => $('#toast').hidden = true, 3400); }
 let openingCabinet = false;
+function prepareCabinet(id: string) {
+  const contract = gameModuleContract(id);
+  if (!contract) return;
+  room.deferDecorations();
+  void prepareGameModule(contract.gameId);
+}
 async function play(cabinet: Cabinet) {
   if (openingCabinet || document.querySelector('dialog[open]')) return;
   if (!cabinet.playable) { toast(tr`${cabinet.name} пока недоступен.`); return; }
   const physical = CABINETS.find(c => c.id === cabinet.id);
   if (!physical) return;
+  prepareCabinet(cabinet.id);
   openingCabinet = true;
   try {
     if (!await room.beginCabinet(physical)) {
@@ -254,6 +262,20 @@ const miraChat = new MiraChat(barDialog, {
   playerState: () => room.getDialoguePlayer(),
   onDrink: id => room.orderDrink(id),
 });
+room.onApproach = prepareCabinet;
+let intentTimer: ReturnType<typeof setTimeout>;
+const cabinetIntent = (event: Event) => {
+  clearTimeout(intentTimer);
+  if (document.querySelector('dialog[open]') || !(event.target instanceof Element)) return;
+  const button = event.target.closest<HTMLElement>('[data-cabinet],[data-studio],[data-card-table]');
+  const id = button?.dataset.cabinet ?? button?.dataset.studio ?? button?.dataset.cardTable;
+  if (!id) return;
+  if (event.type === 'pointerover') intentTimer = setTimeout(() => prepareCabinet(id), 120);
+  else prepareCabinet(id);
+};
+document.addEventListener('pointerover', cabinetIntent);
+document.addEventListener('focusin', cabinetIntent);
+document.addEventListener('pointerdown', cabinetIntent);
 const game = new Phaser.Game({
   type: Phaser.AUTO, parent: 'game', width: WORLD.width, height: WORLD.height,
   backgroundColor: '#191d35', pixelArt: false, roundPixels: false,

@@ -18,7 +18,10 @@ generated WebP files and JSON manifest. Ordinary builds need no image encoder.
 Cat atlases use lossless WebP with unchanged dimensions and RGBA values. Generate
 them with `node scripts/build-cat-webp.mjs`. The small profile image is exactly frame
 17 with its original margin. The room starts first, then downloads cat animation
-atlases with at most two requests in parallel. The renderer uses the latest cat
+atlases with one low-priority request while the hall is idle. Authentication and
+game dialogs pause these requests. Choosing a game immediately cancels an unfinished
+decoration request and postpones remaining decoration work. Successfully loaded
+frames remain available when idle work resumes. The renderer uses the latest cat
 state when the atlases are ready. Authentication, chat and movement do not wait for
 these downloads. Mira's dialogue portrait starts loading on the first bar opening.
 

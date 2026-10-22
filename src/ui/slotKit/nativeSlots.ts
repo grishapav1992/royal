@@ -1,3 +1,4 @@
+import {velvetEvelyn,velvetCeleste,velvetMei,velvetViola,velvetAmira,memeStonks} from './nativeSlotImages';
 import { t as translateText } from '../../i18n/index';
 import type {SlotDefinition} from './SlotDefinition';
 
@@ -26,11 +27,11 @@ export const velvetSlot = {
   gameId: 'studio-velvet-reign', title: 'Velvet Reign', protocol: 'luelon',
   assets: {
   symbols: '/assets/velvet-rebuild/v1/symbols.webp',
-  star0: '/assets/velvet-rebuild/v2/evelyn.webp',
-  star1: '/assets/velvet-rebuild/v2/celeste.webp',
-  star2: '/assets/velvet-rebuild/v2/mei.webp',
-  star3: '/assets/velvet-rebuild/v2/viola.webp',
-  star4: '/assets/velvet-rebuild/v2/amira.webp',
+  star0: velvetEvelyn,
+  star1: velvetCeleste,
+  star2: velvetMei,
+  star3: velvetViola,
+  star4: velvetAmira,
   background: '/assets/velvet-rebuild/v1/background.webp',
 },
   audio: {musicStorageKey: 'royal-velvet-music', musicChords: [[196,246.94,293.66,369.99],[220,261.63,329.63,392],[174.61,220,261.63,349.23],[146.83,196,233.08,293.66]],
@@ -57,6 +58,6 @@ export const afterglowSlot={
 
 export const memeSlot={
  gameId:'studio-meme-overload',title:'MEME OVERLOAD',protocol:'nitro',
- assets:{doge:'/assets/meme-overload/v1/doge.jpg',harold:'/assets/meme-overload/v1/harold.jpg',grumpy:'/assets/meme-overload/v1/grumpy.jpg',smudge:'/assets/meme-overload/v1/smudge.jpg',stonks:'/assets/meme-overload/v1/stonks.png',pepe:'/assets/meme-overload/v1/pepe.jpg',background:'/assets/meme-overload/v1/desktop.svg'},
+ assets:{doge:'/assets/meme-overload/v1/doge.jpg',harold:'/assets/meme-overload/v1/harold.jpg',grumpy:'/assets/meme-overload/v1/grumpy.jpg',smudge:'/assets/meme-overload/v1/smudge.jpg',stonks:memeStonks,pepe:'/assets/meme-overload/v1/pepe.jpg',background:'/assets/meme-overload/v1/desktop.svg'},
  audio:{musicStorageKey:'royal-meme-music',musicChords:[[261.63,329.63,392,523.25],[220,261.63,329.63,440],[174.61,220,261.63,349.23],[196,246.94,293.66,392]],melody:[0,2,1,2,0,1,3,2],spinNotes:[523.25,659.26,783.99,1046.5,783.99,659.26],musicIntervalMs:400,spinIntervalMs:95,featureCues:{reconnect:'echo',overclock:'expand',scatter:'tickets'}},
 } as const satisfies SlotDefinition;
