@@ -7,6 +7,7 @@ for (let i = 2; i < process.argv.length; i += 2) args.set(process.argv[i], proce
 const origin = args.get('--origin') || 'https://stealth-spark-gokmxooi.expresshost.cloud';
 const output = resolve(args.get('--output') || 'artifacts/fast-entry-20261022/proof/loading-before.json');
 const profiles = args.get('--profiles')?.split(',') || ['desktop', 'mobile', 'desktop-10mbps', 'mobile-10mbps'];
+const expectedEntry = args.get('--expected-entry');
 const browser = await chromium.launch({
   executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
   headless: true,
@@ -72,7 +73,8 @@ try {
     let failure = null;
     const started = Date.now();
     try {
-      await page.goto(`${origin}/?loading-profile=${Date.now()}`, { waitUntil: 'domcontentloaded', timeout: 60000 });
+      const documentResponse = await page.goto(`${origin}/?loading-profile=${Date.now()}`, { waitUntil: 'domcontentloaded', timeout: 60000 });
+      if (expectedEntry && !(await documentResponse.text()).includes(`/assets/${expectedEntry}`)) throw Error('Production document does not match expected client entry');
       console.log(JSON.stringify({ checkpoint: "dom", profile, elapsedMs: Date.now() - started }));
       await page.waitForFunction(() => document.querySelector('#join-dialog[open] #email')?.getClientRects().length && !document.querySelector('#login-button')?.disabled && !document.querySelector('#loading'), null, { timeout: 120000 });
     } catch (error) { failure = error.message; }
@@ -89,11 +91,15 @@ try {
       loadingPresent: Boolean(document.querySelector('#loading')),
       authOpen: Boolean(document.querySelector('#join-dialog[open]')),
       chatPresent: Boolean(document.querySelector('.chat-dock')),
+      visibleJoinError: document.querySelector('#join-error:not([hidden])')?.textContent || null,
+      loginFormVisible: Boolean(document.querySelector('#join-dialog[open] #email')?.getClientRects().length),
       graphics: window.royalDemo?.getState?.().renderer,
     }));
     const row = {
       profile, origin, at: new Date().toISOString(), elapsedMs: Date.now() - started,
       failure, errors, blockedMutations, ...metrics,
+      expectedEntry,
+      completedBodyBeforeHall: metrics.resources.filter(resource => resource.startMs + resource.durationMs <= metrics.hallReadyMs).reduce((sum, resource) => sum + resource.bodyBytes, 0),
       encodedNetworkBytes: [...requests.values()].reduce((sum, request) => sum + (request.encodedBytes || 0), 0),
       largestRequests: [...requests.values()].sort((a, b) => (b.encodedBytes || 0) - (a.encodedBytes || 0)).slice(0, 30).map(request => ({ ...request, url: new URL(request.url).pathname })),
     };
