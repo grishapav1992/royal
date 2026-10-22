@@ -11,6 +11,8 @@ async function ready(page: Page, lang = 'en') {
   await page.goto(entry + '?lang=' + lang);
   await expect(page.locator('#preview')).toHaveAttribute('data-game-module-id', 'studio-neopolis');
   await expect(page.locator('[data-np=spin]')).toBeEnabled();
+  await expect.poll(() => page.locator('.np img').evaluateAll(images => images.every(image => (image as HTMLImageElement).complete && (image as HTMLImageElement).naturalWidth > 0))).toBe(true);
+  await page.locator('.np img').evaluateAll(images => Promise.all(images.map(image => (image as HTMLImageElement).decode())));
 }
 async function spin(page: Page) {
   const before = await session(page), marker = before?.id + ':' + before?.view.neopolis.revision;

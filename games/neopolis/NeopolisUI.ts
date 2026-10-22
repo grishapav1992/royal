@@ -2,7 +2,7 @@ import { readGameHost } from '../../src/modules/GameHostContract';
 import { NEOPOLIS_GAME, NEOPOLIS_BETS, type NeopolisView } from '../../src/shared/neopolis';
 import { HEROES, initialTeam, readyTeam, PAYTABLE, type Hero, type Team, type Frame } from '../../src/shared/neopolisMath';
 import { neopolisCopy } from './copy';
-import { portrait, skyline, symbolArt } from './art';
+import { noticeArt, portrait, skyline, symbolArt } from './art';
 
 const initialGrid = [0,1,2,3,4, 2,3,4,5,0, 4,5,0,1,2, 1,2,3,4,5];
 const escape = (text: string) => text.replace(/[&<>"']/g, character => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[character]!);
@@ -41,7 +41,7 @@ export class NeopolisUI {
     this.root = doc.createElement('section'); this.root.className = 'np'; this.root.lang = this.services.i18n.language;
     this.root.setAttribute('aria-label', this.title);
     this.root.innerHTML = skyline
-      + '<header class="np-top"><span class="np-brand">ROYAL <b>COMICS</b><small>VOL. 01 / NEOPOLIS</small></span><span class="np-prototype">' + c.prototype + '</span><div class="np-tools"><button data-np="sound" aria-label="' + c.sound + '" aria-pressed="false">♪</button><button data-np="rules" aria-label="' + c.rules + '">?</button></div></header>'
+      + '<header class="np-top"><span class="np-brand">ROYAL <b>ORIGINALS</b><small>NEOPOLIS / CHAPTER 01</small></span><span class="np-prototype">' + c.prototype + '</span><div class="np-tools"><button data-np="sound" aria-label="' + c.sound + '" aria-pressed="false">♪</button><button data-np="rules" aria-label="' + c.rules + '">?</button></div></header>'
       + '<div class="np-title"><span>' + c.subtitle + '</span><h1>' + c.title + '</h1><i></i></div>'
       + '<div class="np-layout"><aside class="np-team"><div class="np-section-label"><span>01</span>' + c.team + '</div><p class="np-team-hint" data-np="team-hint">' + c.choose + '</p>'
       + HEROES.map((hero, index) => '<button class="np-hero" data-hero="' + hero + '" data-active="false" aria-pressed="false"><span class="np-portrait">' + portrait(hero) + '</span><span class="np-hero-copy"><small>0' + (index + 1) + ' / <span data-hero-state></span></small><strong>' + c[hero] + '</strong><b>' + this.power(hero) + '</b><span class="np-hero-detail">' + { granite:c.graniteDetail, impulse:c.impulseDetail, prism:c.prismDetail }[hero] + '</span><span class="np-pips" aria-hidden="true"><i></i><i></i><i></i></span></span></button>').join('')
@@ -123,7 +123,7 @@ export class NeopolisUI {
     if (!this.alive) return;
     if (this.owner !== this.client.accountId) {
       this.owner = this.client.accountId; this.animation.abort(); this.animation = new AbortController();
-      this.busy = false; this.seen = ''; this.selected = 'granite'; this.bet = 100;
+      this.busy = false; this.seen = ''; this.selected = 'granite'; this.bet = 100; delete this.root.dataset.power;
       if (this.dialog.open) this.dialog.close();
       this.draw(initialGrid); this.find('win').textContent = '0';
       this.status(this.copy.collect);
@@ -156,6 +156,7 @@ export class NeopolisUI {
   }
   private async present(frame: Frame, signal: AbortSignal) {
     if (signal.aborted) return;
+    this.root.dataset.power = frame.hero ?? (frame.kind === 'finisher' ? 'team' : '');
     this.draw(frame.grid, frame.emblems, frame.cells, frame.hero ?? frame.kind);
     const label = frame.hero ? this.power(frame.hero) : frame.kind === 'win' ? this.copy.cascade : frame.kind === 'finisher' ? this.copy.finisher : '';
     const banner = this.find('event'); banner.textContent = label; banner.classList.toggle('np-event-visible', !!label);
@@ -187,6 +188,7 @@ export class NeopolisUI {
       }
       if (animation.signal.aborted) return;
       this.draw(spin.result.grid); this.find('event').classList.remove('np-event-visible');
+      delete this.root.dataset.power;
       this.seen = ''; this.busy = false; this.sync();
       const message = view.capped ? this.copy.cap : spin.result.finisher ? this.copy.finisher + ' · ' + this.copy.extra : spin.result.finished ? (view.battle?.won ? this.copy.victory : this.copy.escaped) + '. ' + this.copy.finished : spin.result.triggered ? this.copy.triggered : spin.result.unlocked.length ? this.copy.unlocked + ': ' + spin.result.unlocked.map(hero => this.copy[hero]).join(', ') : view.battle?.shield === 0 && !spin.result.empowered ? this.copy.empowered : this.copy.settled;
       this.status(message);
@@ -194,17 +196,17 @@ export class NeopolisUI {
     } catch (error) {
       if (this.alive && owner === this.client.accountId) this.status(this.client.error || (error instanceof Error ? error.message : this.copy.error));
     } finally {
-      if (this.alive && owner === this.client.accountId) { this.busy = false; this.sync(); }
+      if (this.alive && owner === this.client.accountId) { this.busy = false; delete this.root.dataset.power; this.sync(); }
     }
   }
   private showNotice(title: string, message: string) {
-    this.find('dialog-body').innerHTML = '<span class="np-dialog-kicker">ROYAL COMICS / NEOPOLIS</span><h2>' + escape(title) + '</h2><p>' + escape(message) + '</p><button class="np-notice-continue" data-np="notice-continue">' + this.copy.continue + '</button>';
+    this.find('dialog-body').innerHTML = noticeArt(this.session?.state === 'active') + '<span class="np-dialog-kicker">ROYAL ORIGINALS / NEOPOLIS</span><h2>' + escape(title) + '</h2><p>' + escape(message) + '</p><button class="np-notice-continue" data-np="notice-continue">' + this.copy.continue + '</button>';
     this.find('notice-continue').addEventListener('click', () => this.dialog.close(), { once: true, signal: this.life.signal });
     this.dialog.showModal(); this.controls();
   }
   private showRules() {
     const c = this.copy;
-    this.find('dialog-body').innerHTML = '<span class="np-dialog-kicker">ROYAL COMICS / VOL. 01</span><h2>' + c.rules + '</h2>'
+    this.find('dialog-body').innerHTML = '<span class="np-dialog-kicker">ROYAL ORIGINALS / NEOPOLIS</span><h2>' + c.rules + '</h2>'
       + [c.rulesBase,c.rulesTeam,c.rulesHeroes,c.rulesBoss,c.rulesMoney].map(text => '<p>' + text + '</p>').join('')
       + '<h3>' + c.payouts + '</h3><table><thead><tr><th>' + c.symbol + '</th><th>3</th><th>4</th><th>5</th></tr></thead><tbody>'
       + PAYTABLE.map((pays, index) => '<tr><th>' + c[('symbol' + index) as keyof typeof c] + '</th>' + pays.map(pay => '<td>×' + pay + '</td>').join('') + '</tr>').join('') + '</tbody></table>';

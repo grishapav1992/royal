@@ -1,12 +1,13 @@
 {
   "name": "@royal/neopolis",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "gameId": "studio-neopolis",
   "apiVersion": 1,
   "rulesVersion": 1,
   "progressVersion": 1,
   "entry": "entry.ts",
-  "assetRoots": [],
-  "scripts": { "build": "node ../../node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && node ../../scripts/build-game-module.mjs" }
+  "assetRoots": ["neopolis"],
+  "preload": ["neopolis/city-v2.webp", "neopolis/granite-v2.webp", "neopolis/impulse-v2.webp", "neopolis/prism-v2.webp", "neopolis/null-v2.webp", "neopolis/symbols-v2.webp"],
+  "scripts": { "build:art": "node ../../scripts/build-neopolis-art.mjs", "build": "node ../../node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && node ../../scripts/build-game-module.mjs" }
 }
