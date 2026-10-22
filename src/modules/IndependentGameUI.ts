@@ -61,9 +61,11 @@ export class IndependentGameUI {
    if (!this.owns()) return;
    const metadata = manifest.data, root = moduleRoot(metadata.version, this.gameId);
    installGameHost();
-   await this.stylesheet(root + metadata.styles[0]);
    const path = root + metadata.entry + (this.attempt ? `?retry=${this.attempt}` : '');
-   const module = await import(/* @vite-ignore */ path) as GameModuleV1;
+   const [, module] = await Promise.all([
+    this.stylesheet(root + metadata.styles[0]),
+    import(/* @vite-ignore */ path) as Promise<GameModuleV1>,
+   ]);
    if (!this.owns()) return;
    const contract = gameModuleContract(this.gameId)!;
    if (module.gameId !== this.gameId || module.apiVersion !== contract.apiVersion || module.rulesVersion !== contract.rulesVersion || module.progressVersion !== contract.progressVersion || typeof module.mount !== 'function') throw Error('Incompatible game interface');

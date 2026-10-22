@@ -19,6 +19,7 @@ import Phaser from 'phaser';
 import { COLORS } from './art';
 import { createDetailedArt } from './materials';
 import { preloadCabinetArtwork } from './cabinetArtwork';
+import catImages from './catImages.json';
 import { CABINET_SCALE, CABINET_SIZE } from './cabinetArt';
 import { plantTexture, drawHallIdentity } from './interiorArt';
 import { FURNITURE, PLANTS } from '../shared/furniture';
@@ -108,11 +109,20 @@ export class RoomScene extends Phaser.Scene {
   }
   preload() {
     preloadCabinetArtwork(this);
-    this.load.image(CAT_TEXTURE, '/assets/cat/zverochka-atlas.png');
-    this.load.image(CAT_HABITS_TEXTURE, '/assets/cat/zverochka-habits.png');
-    this.load.image(CAT_CLIMB_TEXTURE, '/assets/cat/zverochka-climb.png');
-    this.load.image(CAT_SCRATCH_TEXTURE, '/assets/cat/zverochka-scratch.png');
-    this.load.image(CAT_WALK_TEXTURE, '/assets/cat/zverochka-walk-v4.png');
+  }
+  private loadCatArtwork() {
+    // The room and sign-in are usable while decorative animation atlases arrive.
+    this.load.maxParallelDownloads = 2;
+    this.load.image(CAT_TEXTURE, catImages.body);
+    this.load.image(CAT_HABITS_TEXTURE, catImages.habits);
+    this.load.image(CAT_CLIMB_TEXTURE, catImages.climb);
+    this.load.image(CAT_SCRATCH_TEXTURE, catImages.scratch);
+    this.load.image(CAT_WALK_TEXTURE, catImages.walk);
+    this.load.once(Phaser.Loader.Events.COMPLETE, () => {
+      if ([CAT_TEXTURE, CAT_HABITS_TEXTURE, CAT_CLIMB_TEXTURE, CAT_SCRATCH_TEXTURE, CAT_WALK_TEXTURE]
+        .every(key => this.textures.exists(key))) this.catRenderer = new CatRenderer(this);
+    });
+    this.load.start();
   }
   create() {
     createDetailedArt(this);
@@ -145,8 +155,8 @@ export class RoomScene extends Phaser.Scene {
     this.game.events.on(Phaser.Core.Events.BLUR, () => { this.input.keyboard?.resetKeys(); this.player.path = []; this.marker.setVisible(false); this.endPrediction(); this.network?.stop(); });
     if (this.reducedMotion) this.tweens.pauseAll();
     this.guard = new SecurityGuard(this);
-    this.catRenderer = new CatRenderer(this);
     this.onReady();
+    this.time.delayedCall(0, () => this.loadCatArtwork());
   }
   private changeHall(hall:HallId){
     if(this.network||this.locked||this.isHuggingCat()||this.switching||hall===this.hall||!inHallDoor(this.player))return;
@@ -516,7 +526,7 @@ export class RoomScene extends Phaser.Scene {
     this.onCat();
   }
   private catPerson(): CatPerson { return {id:'local-player',hall:this.hall,x:this.player.x,y:this.player.y,connected:true,playing:Boolean(this.player.cabinet),cabinet:this.player.cabinet,security:this.securityLocked?'locked':'',seat:this.player.seat,action:this.player.action}; }
-  catPortrait() { return this.textures.getBase64(CAT_TEXTURE,'17'); }
+  catPortrait() { return catImages.portrait; }
   setSecurity(locked: boolean) { this.securityLocked = locked; this.setLocked(locked || Boolean(document.querySelector('dialog[open]'))); }
   setLocked(locked: boolean) {
     locked ||= this.securityLocked;

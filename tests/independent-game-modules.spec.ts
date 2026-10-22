@@ -63,6 +63,68 @@ async function open(page: Page, gameId: string) {
  await expect(page.locator('#primary'), `Module ${gameId} must mount`).toHaveAttribute('data-game-module-version', /\d+\.\d+\.\d+-[a-f0-9]{12}/);
 }
 
+async function parallelModule(page: Page) {
+ await fixture(page);
+ const gameId = 'studio-signal-fox', version = '98.0.0-abcdabcdabcd';
+ const root = `/game-modules/${gameId}/versions/${version}/`;
+ const entry = 'entry-1111111111111111.js', style = 'style-2222222222222222.css';
+ const manifest = JSON.stringify({ format: 1, gameId, version, apiVersion: 1, rulesVersion: 1, progressVersion: 1,
+  sourceSha256: '0'.repeat(64), entry, styles: [style], files: { [entry]: '1'.repeat(64), [style]: '2'.repeat(64) } });
+ const pointer = { format: 1, gameId, manifest: root + 'manifest.json', sha256: createHash('sha256').update(manifest).digest('hex') };
+ const seen: string[] = [], release = {} as Record<'css' | 'js', () => void>;
+ const gates = Object.fromEntries(['css', 'js'].map(kind => [kind, new Promise<void>(resolve => { release[kind as 'css' | 'js'] = resolve; })]));
+ await page.route(`**/game-modules/${gameId}/**`, async route => {
+  const path = new URL(route.request().url()).pathname;
+  if (path.endsWith('/active.json')) return route.fulfill({ json: pointer });
+  if (path.endsWith('/manifest.json')) return route.fulfill({ contentType: 'application/json', body: manifest });
+  const kind = path.endsWith('.css') ? 'css' : 'js';
+  seen.push(kind); await gates[kind];
+  await route.fulfill({ contentType: kind === 'css' ? 'text/css' : 'text/javascript', body: kind === 'css' ? '[data-parallel-game]{color:white}' : `
+   window.__parallelEvaluated = (window.__parallelEvaluated || 0) + 1;
+   export const gameId = '${gameId}', apiVersion = 1, rulesVersion = 1, progressVersion = 1;
+   export function mount(host) {
+    window.__parallelMounted = (window.__parallelMounted || 0) + 1;
+    host.innerHTML = '<div data-parallel-game>Ready</div>';
+    return { destroy() { window.__parallelDestroyed = (window.__parallelDestroyed || 0) + 1; } };
+   }` }).catch(() => undefined);
+ });
+ await page.evaluate(id => (window as any).moduleHarness.open(id), gameId);
+ return { seen, release };
+}
+
+test('parallel module resources overlap and mounting waits for both', async ({ page }) => {
+ const { seen, release } = await parallelModule(page);
+ try {
+  await expect.poll(() => [...seen].sort()).toEqual(['css', 'js']);
+  release.js();
+  await page.waitForFunction(() => (window as any).__parallelEvaluated === 1);
+  await expect(page.locator('[data-parallel-game]')).toHaveCount(0);
+  expect(await page.evaluate(() => (window as any).__parallelMounted || 0)).toBe(0);
+  release.css();
+  await expect(page.locator('[data-parallel-game]')).toBeVisible();
+  expect(await page.evaluate(() => (window as any).__parallelMounted)).toBe(1);
+  await page.evaluate(() => (window as any).moduleHarness.close());
+  expect(await page.evaluate(() => (window as any).__parallelDestroyed)).toBe(1);
+  await expect(page.locator('link[data-royal-game-module]')).toHaveCount(0);
+ } finally { release.css(); release.js(); }
+});
+
+for (const held of ['css', 'js'] as const) test(`parallel module close while ${held} is pending prevents mounting`, async ({ page }) => {
+ const { seen, release } = await parallelModule(page);
+ try {
+  await expect.poll(() => [...seen].sort()).toEqual(['css', 'js']);
+  release[held === 'css' ? 'js' : 'css']();
+  if (held === 'css') await page.waitForFunction(() => (window as any).__parallelEvaluated === 1);
+  else await page.waitForFunction(() => Boolean(document.querySelector<HTMLLinkElement>('link[data-royal-game-module]')?.sheet));
+  await page.evaluate(() => (window as any).moduleHarness.close());
+  release[held]();
+  await page.waitForFunction(() => (window as any).__parallelEvaluated === 1);
+  expect(await page.evaluate(() => (window as any).__parallelMounted || 0)).toBe(0);
+  await expect(page.locator('#primary')).toBeEmpty();
+  await expect(page.locator('link[data-royal-game-module]')).toHaveCount(0);
+ } finally { release.css(); release.js(); }
+});
+
 test('all defined games mount as actual independent packages and dispose their styles', async ({ page }) => {
  test.setTimeout(publicOrigin ? 600000 : 180000);
  const errors: string[] = [], failures: string[] = [], originalAssetRequests: string[] = [];

@@ -1,0 +1,36 @@
+{
+  "release": "fast-entry-20261022-v1",
+  "fullBuildPassed": true,
+  "modulesBuilt": 112,
+  "moduleLifecycleChecks": 7,
+  "uncertainWalletOperationChecks": 6,
+  "parallelResourceChecks": 3,
+  "startupChecks": 2,
+  "losslessCatRGBAEquality": true,
+  "cabinetCompositionPixelEquality": true,
+  "cabinetSourceBytes": 12517458,
+  "cabinetPreviewBytes": 503788,
+  "catalogPreviewBytes": 257364,
+  "catPNGBytes": 7992704,
+  "catLosslessWebPBytes": 5221924,
+  "publicBefore": {
+    "desktopHallMs": 94971,
+    "mobileHallMs": 78621,
+    "desktop10Mbps80msHallMs": 123538,
+    "criticalCompletedBodyBytes": 23416794,
+    "usableLoginFormTimingObserved": false
+  },
+  "localAfter": {
+    "desktopHallMs": 1551,
+    "desktopLoginMs": 1665,
+    "mobile10Mbps80msHallMs": 2808,
+    "mobile10Mbps80msLoginMs": 3033,
+    "criticalCompletedBodyBytes": 1257690
+  },
+  "timingCaveat": "Public baseline and local optimized measurements have different origins; compare public before/after separately after publication. Before login timing recorded the dialog, not usable form.",
+  "accountsCreated": false,
+  "stakesPlaced": false,
+  "browserChecksPassed": 18,
+  "portraitBrowserCompositeMaxChannelDifference": 1,
+  "portraitBrowserAlphaDifferences": 0
+}

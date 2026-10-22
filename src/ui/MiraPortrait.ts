@@ -10,6 +10,7 @@ export class MiraPortrait {
   private atlas = new Image();
   private atlasReady = false;
   private originalReady = false;
+  private requested = false;
   private emotion: MiraEmotion = 'neutral';
   private speakingUntil = 0;
   private reactionUntil = 0;
@@ -27,6 +28,11 @@ export class MiraPortrait {
     caption.append(name, role); this.element.append(this.canvas, caption);
     this.original.onload = () => { this.originalReady = true; this.lastFrame = -1; this.tick(Date.now()); };
     this.atlas.onload = () => { this.atlasReady = true; this.lastFrame = -1; this.tick(Date.now()); };
+  }
+
+  load() {
+    if (this.requested) return;
+    this.requested = true;
     this.original.src = '/assets/mira/portrait-haughty.jpg';
     this.atlas.src = '/assets/mira/animation-atlas.png';
   }

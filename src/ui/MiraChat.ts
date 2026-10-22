@@ -132,7 +132,7 @@ export class MiraChat {
     window.setInterval(() => { if (dialog.open) this.animate(Date.now()); }, 100);
   }
 
-  open() { this.show('talk'); this.animate(Date.now()); if (!this.busy) void this.resume(); }
+  open() { this.mira.load(); this.show('talk'); this.animate(Date.now()); if (!this.busy) void this.resume(); }
 
   private createPlayerPortrait() {
     this.player.className = 'mira-player';

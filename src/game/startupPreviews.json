@@ -1,0 +1,25 @@
+{
+  "cabinets": {
+    "studio-dracona": "/assets/startup-previews/studio-dracona-cabinet.9abbcccad05c.webp",
+    "studio-cosmic-escape": "/assets/startup-previews/studio-cosmic-escape-cabinet.00b933d6e306.webp",
+    "studio-caramel-carnival": "/assets/startup-previews/studio-caramel-carnival-cabinet.ae7be52891b1.webp",
+    "studio-velvet-reign": "/assets/startup-previews/studio-velvet-reign-cabinet.ec9ebdd3b773.webp",
+    "studio-last-convoy": "/assets/startup-previews/studio-last-convoy-cabinet.8f570b07ea9e.webp",
+    "studio-nitro-run": "/assets/startup-previews/studio-nitro-run-cabinet.c4ff5a7c922c.webp",
+    "studio-afterglow": "/assets/startup-previews/studio-afterglow-cabinet.5d6d44525d7c.webp",
+    "studio-meme-overload": "/assets/startup-previews/studio-meme-overload-cabinet.98e6fc87e992.webp",
+    "github-crash": "/assets/startup-previews/github-crash-cabinet.4b6be677786f.webp",
+    "royal-plinko": "/assets/startup-previews/royal-plinko-cabinet.04569d13476e.webp",
+    "original-cr-vs-leo": "/assets/startup-previews/original-cr-vs-leo-cabinet.5307c8755627.webp"
+  },
+  "catalog": {
+    "studio-dracona": "/assets/startup-previews/studio-dracona-catalog.211b06432625.webp",
+    "studio-cosmic-escape": "/assets/startup-previews/studio-cosmic-escape-catalog.ca258c181db6.webp",
+    "studio-caramel-carnival": "/assets/startup-previews/studio-caramel-carnival-catalog.e883a45c829e.webp",
+    "studio-velvet-reign": "/assets/startup-previews/studio-velvet-reign-catalog.bd9f9133de73.webp",
+    "studio-last-convoy": "/assets/startup-previews/studio-last-convoy-catalog.89a64509a865.webp",
+    "studio-nitro-run": "/assets/startup-previews/studio-nitro-run-catalog.684c5581006b.webp",
+    "studio-afterglow": "/assets/startup-previews/studio-afterglow-catalog.583523c1efdb.webp",
+    "studio-meme-overload": "/assets/startup-previews/studio-meme-overload-catalog.e560d82fe70b.webp"
+  }
+}
