@@ -198,8 +198,10 @@ def image_candidates(protected):
     if containers:
         protected |= {c['Image'] for c in json.loads(run(['docker', 'inspect', *containers]))}
     result = []
-    for identity in sorted(ids - protected):
-        row = docker_object('image', identity)
+    candidates = sorted(ids - protected)
+    rows = json.loads(run(['docker', 'image', 'inspect', *candidates])) if candidates else []
+    for row in rows:
+        identity = row['Id']
         tags = row.get('RepoTags') or []
         if tags and all(tag.startswith('royal-game:') for tag in tags):
             result.append({'id': identity, 'tags': sorted(tags), 'created': row['Created']})
@@ -221,7 +223,8 @@ def apply(plan, state):
     verify(plan)
     require(sha(RETENTION / 'policy.json') == plan['oldPolicySha256'], 'Retention policy changed since review')
     require(deletion_candidates(plan['keep']) == plan['entries'], 'History deletion set changed since review')
-    require(image_candidates({plan['currentImage'], plan['rollbackImage']}) == plan['images'], 'Image deletion set changed since review')
+    if not plan.get('skipImageCleanup'):
+        require(image_candidates({plan['currentImage'], plan['rollbackImage']}) == plan['images'], 'Image deletion set changed since review')
     write(state / 'policy-before.json', read(RETENTION / 'policy.json'))
     # Rebind the existing timer before deleting the stale versions it used to protect.
     native_retention().runtime_guard(plan['policy'])
@@ -270,6 +273,7 @@ def main():
     parser.add_argument('--release', required=True)
     parser.add_argument('--state', required=True)
     parser.add_argument('--plan-sha256')
+    parser.add_argument('--skip-image-cleanup', action='store_true')
     args = parser.parse_args()
     require(os.geteuid() == 0, 'Run as the deployment operator')
     require(re.fullmatch('[a-z0-9][a-zA-Z0-9_.-]{0,79}', args.release), 'Invalid release identity')
@@ -287,7 +291,8 @@ def main():
         require(not plan_path.exists(), 'Review plan already exists')
         value = recovery(args.release)
         value.update({'entries': deletion_candidates(value['keep']),
-                      'images': image_candidates({value['currentImage'], value['rollbackImage']}),
+                      'images': [] if args.skip_image_cleanup else image_candidates({value['currentImage'], value['rollbackImage']}),
+                      'skipImageCleanup': args.skip_image_cleanup,
                       'freeBefore': shutil.disk_usage(LIVE).free})
         write(plan_path, value)
         print(json.dumps({'readOnly': True, 'release': args.release, 'keep': value['keep'],
