@@ -104,6 +104,14 @@ def remove_entry(row, keep, roots=ROOTS):
         shutil.rmtree(path)
 
 
+def validate_selection(rows, keep, roots=ROOTS):
+    require(len({row['path'] for row in rows}) == len(rows), 'Duplicate history entry')
+    for row in rows:
+        path = Path(row['path'])
+        require(path.parent in roots and path not in {Path(p) for p in keep}, 'Deletion escaped approved scope')
+        require(tree_identity(path) == row['identity'], 'History entry changed since review: ' + str(path))
+
+
 def configuration():
     return {name: sha(LIVE / name) for name in
             ['.env', 'compose.yaml', 'compose.override.yaml', 'compose.payments.yaml', 'compose.mira.yaml']}
@@ -226,9 +234,10 @@ def verify(plan):
 def apply(plan, state):
     verify(plan)
     require(sha(RETENTION / 'policy.json') == plan['oldPolicySha256'], 'Retention policy changed since review')
-    require(deletion_candidates(plan['keep']) == plan['entries'], 'History deletion set changed since review')
+    validate_selection(plan['entries'], plan['keep'])
     if not plan.get('skipImageCleanup'):
-        require(image_candidates({plan['currentImage'], plan['rollbackImage']}) == plan['images'], 'Image deletion set changed since review')
+        current_images = {row['id']: row for row in image_candidates({plan['currentImage'], plan['rollbackImage']})}
+        require(all(current_images.get(row['id']) == row for row in plan['images']), 'Reviewed image changed since review')
     write(state / 'policy-before.json', read(RETENTION / 'policy.json'))
     # Rebind the existing timer before deleting the stale versions it used to protect.
     native_retention().runtime_guard(plan['policy'])
@@ -257,7 +266,8 @@ def apply(plan, state):
         write(state / 'image-progress.json', {'removedTags': removed_tags, 'dockerRetainedImages': sorted(set(retained_images))})
     verify(plan)
     native_retention().runtime_guard(read(RETENTION / 'policy.json'))
-    require(not deletion_candidates(plan['keep']), 'Obsolete history entries remain')
+    require(all(not Path(row['path']).exists() and not Path(row['path']).is_symlink()
+                for row in plan['entries']), 'Reviewed history entries remain')
     after = shutil.disk_usage(LIVE)
     result = {'ok': True, 'atUtc': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
               'release': plan['release'], 'sourceCommit': plan['sourceCommit'], 'currentImage': plan['currentImage'],
@@ -267,6 +277,8 @@ def apply(plan, state):
               'freeAfter': after.free, 'freedBytes': after.free - plan['freeBefore'],
               'containersUnchanged': True, 'configurationUnchanged': True, 'externalModulesUnchanged': True,
               'databaseRestored': False, 'volumesDeleted': False, 'healthOk': True}
+    result['unplannedHistoryPreserved'] = [str(path) for root in ROOTS for path in root.iterdir()
+                                         if str(path) not in plan['keep'] and not path.name.endswith('.lock')]
     write(state / 'result.json', result)
     return result
 

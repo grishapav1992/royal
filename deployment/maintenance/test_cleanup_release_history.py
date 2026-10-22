@@ -11,6 +11,17 @@ spec.loader.exec_module(cleanup)
 
 
 class HistoryScopeTest(unittest.TestCase):
+    def test_new_unreviewed_release_is_preserved_during_exact_cleanup(self):
+        with tempfile.TemporaryDirectory() as base:
+            root = Path(base)
+            old = root / 'old'; old.mkdir(); (old / 'source').write_text('old')
+            os.utime(old, (time.time() - 3600,) * 2)
+            rows = cleanup.deletion_candidates([], (root,))
+            new = root / 'another-task'; new.mkdir(); (new / 'source').write_text('new work')
+            cleanup.validate_selection(rows, [], (root,))
+            cleanup.remove_entry(rows[0], [], (root,))
+            self.assertEqual((new / 'source').read_text(), 'new work')
+
     def test_service_guard_ignores_mount_order_but_checks_mount_content(self):
         mounts = [{'Source': '/keep-a', 'Destination': '/a', 'RW': False},
                   {'Source': '/keep-b', 'Destination': '/b', 'RW': True}]
