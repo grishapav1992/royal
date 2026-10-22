@@ -38,7 +38,7 @@ function validSession(s:ExpansionSession){if(s?.gameId===NEOPOLIS_GAME)return va
    )&&s.view.neopolis===undefined&&s.view.dracona===undefined&&s.view.afterglow===undefined&&s.view.nitro===undefined&&typeof s.view.message==='string';}
 function validStudioStart(s:ExpansionSession,op:ExpansionAction){
   if(op.action!=='start'||!isStudioGame(op.gameId))return true;
-  if(op.gameId===NEOPOLIS_GAME)return s.rulesVersion===1&&s.stakeUnits===op.stakeUnits&&validNeopolisSettings(op.settings)&&s.view.neopolis?.origin.starter===op.settings.neopolis.hero;
+  if(op.gameId===NEOPOLIS_GAME)return [1,2].includes(s.rulesVersion)&&s.stakeUnits===op.stakeUnits&&validNeopolisSettings(op.settings)&&s.view.neopolis?.origin.starter===op.settings.neopolis.hero;
   if(op.gameId===DRACONA_GAME)return s.rulesVersion===2&&s.stakeUnits===op.stakeUnits&&validDraconaSettings(op.settings);
   if(op.gameId===AFTER_GAME)return s.rulesVersion===2&&s.stakeUnits===op.stakeUnits&&validAfterSettings(op.settings);
   if(isNitroFamily(op.gameId))return s.rulesVersion===2&&s.stakeUnits===op.stakeUnits&&validNitroSettings(op.settings);
@@ -126,7 +126,7 @@ export class ExpansionClient extends EventTarget {
   private message(e:unknown){return e instanceof Error&&isUserMessage(e.message)?translateText(e.message):translateText('Ответ не получен. Нажми «Проверить ход», чтобы подтвердить ту же операцию.');}
   async refresh(){
     if(!this.accountId||this.busy||this.loading)return;const epoch=this.epoch,version=++this.version,account=this.accountId;this.loading=true;
-    try{const response=await fetch('/api/demo-wallet/expansion',{credentials:'same-origin',cache:'no-store',headers:{[WALLET_ACCOUNT_HEADER]:account,[CARAMEL_CLIENT_HEADER]:'1',[VELVET_CLIENT_HEADER]:'1',[CONVOY_CLIENT_HEADER]:'1',[AFTER_CLIENT_HEADER]:'1',[AFTER_PROGRESS_HEADER]:AFTER_PROGRESS_VERSION,[NITRO_CLIENT_HEADER]:'1',[MEME_CLIENT_HEADER]:'1',[NEOPOLIS_HEADER]:'1',[DRACONA_CLIENT_HEADER]:'1',[PENALTY_CLIENT_HEADER]:'1'},signal:AbortSignal.timeout(10000)});const r=await response.json();
+    try{const response=await fetch('/api/demo-wallet/expansion',{credentials:'same-origin',cache:'no-store',headers:{[WALLET_ACCOUNT_HEADER]:account,[CARAMEL_CLIENT_HEADER]:'1',[VELVET_CLIENT_HEADER]:'1',[CONVOY_CLIENT_HEADER]:'1',[AFTER_CLIENT_HEADER]:'1',[AFTER_PROGRESS_HEADER]:AFTER_PROGRESS_VERSION,[NITRO_CLIENT_HEADER]:'1',[MEME_CLIENT_HEADER]:'1',[NEOPOLIS_HEADER]:'2',[DRACONA_CLIENT_HEADER]:'1',[PENALTY_CLIENT_HEADER]:'1'},signal:AbortSignal.timeout(10000)});const r=await response.json();
       if(epoch!==this.epoch||version!==this.version)return;if(!response.ok)throw Error(r.error);if(!this.valid(r))throw Error(translateText('Баланс и партия не подтверждены.'));this.accept(r);this.error='';
     }catch(e){if(epoch===this.epoch&&version===this.version)this.error=this.message(e);}
     finally{if(epoch===this.epoch&&version===this.version){this.loading=false;this.notify();}}
@@ -138,7 +138,7 @@ export class ExpansionClient extends EventTarget {
     if(demoWallet.busy||demoWallet.pending||demoWallet.hasExternalBusy('expansion'))throw Error(translateText('Сначала проверь предыдущую операцию кошелька.'));
     const epoch=this.epoch,account=this.accountId,key=this.key();try{sessionStorage.setItem(key,JSON.stringify(op));}catch{throw Error(translateText('Разреши хранилище браузера для сохранения хода.'));}
     this.pending=op;this.busy=true;this.loading=false;this.version++;this.error='';this.lock();this.notify();
-    try{const response=await fetch('/api/demo-wallet/expansion',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json',[WALLET_ACCOUNT_HEADER]:account,'X-Royal-Card-Rules':'2',[CARAMEL_CLIENT_HEADER]:'1',[VELVET_CLIENT_HEADER]:'1',[CONVOY_CLIENT_HEADER]:'1',[AFTER_CLIENT_HEADER]:'1',[AFTER_PROGRESS_HEADER]:AFTER_PROGRESS_VERSION,[NITRO_CLIENT_HEADER]:'1',[MEME_CLIENT_HEADER]:'1',[NEOPOLIS_HEADER]:'1',[DRACONA_CLIENT_HEADER]:'1',[PENALTY_CLIENT_HEADER]:'1'},body:JSON.stringify(op),signal:AbortSignal.timeout(15000)});const r=await response.json();
+    try{const response=await fetch('/api/demo-wallet/expansion',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json',[WALLET_ACCOUNT_HEADER]:account,'X-Royal-Card-Rules':'2',[CARAMEL_CLIENT_HEADER]:'1',[VELVET_CLIENT_HEADER]:'1',[CONVOY_CLIENT_HEADER]:'1',[AFTER_CLIENT_HEADER]:'1',[AFTER_PROGRESS_HEADER]:AFTER_PROGRESS_VERSION,[NITRO_CLIENT_HEADER]:'1',[MEME_CLIENT_HEADER]:'1',[NEOPOLIS_HEADER]:'2',[DRACONA_CLIENT_HEADER]:'1',[PENALTY_CLIENT_HEADER]:'1'},body:JSON.stringify(op),signal:AbortSignal.timeout(15000)});const r=await response.json();
       if(epoch!==this.epoch)return;if(!response.ok){if([400,403,404,409].includes(response.status)){this.pending=undefined;sessionStorage.removeItem(key);}throw Error(r.error);}
       if(!this.valid(r,op))throw Error(translateText('Ход не подтверждён. Проверь ту же операцию.'));this.accept(r);this.pending=undefined;sessionStorage.removeItem(key);this.version++;
     }catch(e){if(epoch===this.epoch){this.error=this.message(e);throw Error(this.error);}}

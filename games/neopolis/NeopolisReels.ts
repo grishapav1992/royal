@@ -46,7 +46,7 @@ export class NeopolisReels {
   private sequence = 0;
   private destroyed = false;
 
-  constructor(private board: HTMLElement, private options: MotionOptions, private onStop: () => void) {
+  constructor(private board: HTMLElement, private options: MotionOptions, private onStop: (col: number) => void) {
     const doc = board.ownerDocument;
     const previous = Array.from(board.querySelectorAll<HTMLElement>('[role=gridcell]'));
     this.layer = doc.createElement('div');
@@ -113,7 +113,7 @@ export class NeopolisReels {
         reel.track.style.filter = 'blur(' + ((1 - t) * .8) + 'px)';
         if (t === 1) {
           position = 0; reel.stopped = true; reel.viewport.dataset.phase = 'stopped';
-          reel.track.style.filter = ''; this.onStop();
+          reel.track.style.filter = ''; this.onStop(col);
         }
       }
       reel.position = position;

@@ -1,8 +1,8 @@
 {
   "generator": "Built-in ImageGen",
   "export": "Chrome Canvas WebP, quality 0.94; original dimensions except hall thumbnails",
-  "sourceBytes": 19597514,
-  "gameBytes": 3605420,
+  "sourceBytes": 39293257,
+  "gameBytes": 7312152,
   "files": [
     {
       "file": "/assets/neopolis/city-v2.webp",
@@ -66,6 +66,55 @@
       "height": 168,
       "bytes": 23582,
       "sha256": "794d2cb1c3bd637f09ee0f9217f7df40fb481d4fdbebcc3f69bd01242460f52a"
+    },
+    {
+      "file": "/assets/neopolis/vespera-v3.webp",
+      "width": 1024,
+      "height": 1536,
+      "bytes": 362622,
+      "sha256": "d0c56f5578c6916c57d64d7aa9c66dbfa3cc3f58c292e78cc28403655b6ffdfb"
+    },
+    {
+      "file": "/assets/neopolis/aeon-v3.webp",
+      "width": 1024,
+      "height": 1536,
+      "bytes": 563132,
+      "sha256": "8f8bd9ce3af3ed83b753f0c8411256c053f4c3b3f2d9d6e899c89e64f1fc3650"
+    },
+    {
+      "file": "/assets/neopolis/citadel-v3.webp",
+      "width": 1774,
+      "height": 887,
+      "bytes": 568212,
+      "sha256": "504b0ae69957870d862057822e23fb902c35db3cddba72edb6be1f45f0a935d0"
+    },
+    {
+      "file": "/assets/neopolis/observatory-v3.webp",
+      "width": 1774,
+      "height": 887,
+      "bytes": 709752,
+      "sha256": "3acc713c6d2faabd2bc8dc1475333e67cb0ee45b06ffb4a399835ae1f8d710a4"
+    },
+    {
+      "file": "/assets/neopolis/team-night-v3.webp",
+      "width": 1774,
+      "height": 887,
+      "bytes": 498496,
+      "sha256": "3acdaa2872921d4b4b22ba6b24cc2c863c9f023ef729038878408b9e7a723c59"
+    },
+    {
+      "file": "/assets/neopolis/team-eclipse-v3.webp",
+      "width": 1774,
+      "height": 887,
+      "bytes": 514382,
+      "sha256": "6e83a392682833eb83aa6e242269cf87fc7a4ee2ddfa2f082c28970e695e7ac5"
+    },
+    {
+      "file": "/assets/neopolis/team-chrono-v3.webp",
+      "width": 1774,
+      "height": 887,
+      "bytes": 490136,
+      "sha256": "6a3506f93516cb86c2fd0727fd7fb555995b0974b8acc51f0df18b4991d0021a"
     }
   ]
 }

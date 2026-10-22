@@ -1,11 +1,19 @@
-/** Neopolis prototype rules v1. Pure deterministic math shared with replay validation. */
+/** Neopolis campaign rules v2. Deterministic math shared with replay validation. */
 export const COLS = 5, ROWS = 4, SIZE = COLS * ROWS, WILD = 6, SCATTER = 7;
 export const HEROES = ['granite', 'impulse', 'prism'] as const;
 export type Hero = typeof HEROES[number];
 export type Team = { starter: Hero; charges: number[]; complete: boolean };
-export type Battle = { remaining: number; played: number; shield: number; core: number; won: boolean };
+export const BOSSES = [
+  { id: 'null', shield: 3, core: 3, spins: 10 },
+  { id: 'vespera', shield: 4, core: 4, spins: 12 },
+  { id: 'aeon', shield: 5, core: 5, spins: 14 },
+] as const;
+export type BossId = typeof BOSSES[number]['id'];
+export const MAX_ROUND_SPINS = 1 + BOSSES.reduce((sum, boss) => sum + boss.spins + 3, 0);
+// Optional campaign fields keep existing v1 transcripts structurally readable.
+export type Battle = { remaining: number; played: number; shield: number; core: number; won: boolean; boss?: number; defeated?: number };
 export type Win = { line: number; symbol: number; count: number; cells: number[]; points: number };
-export type Frame = { kind: 'deal' | 'win' | 'cascade' | 'hero' | 'finisher'; grid: number[]; emblems: number[]; cells: number[]; wins: Win[]; hero?: Hero; points: number };
+export type Frame = { kind: 'deal' | 'win' | 'cascade' | 'hero' | 'finisher' | 'boss-hit' | 'boss-defeated' | 'boss-arrival'; grid: number[]; emblems: number[]; cells: number[]; wins: Win[]; hero?: Hero; points: number; battle?: Battle | null };
 export type Spin = { frames: Frame[]; grid: number[]; team: Team; battle: Battle | null; activated: Hero[]; unlocked: Hero[]; points: number; free: boolean; triggered: boolean; finished: boolean; finisher: boolean; empowered: boolean };
 export const PAYTABLE = [[5, 15, 40], [6, 20, 50], [8, 25, 70], [10, 35, 100], [12, 50, 150], [15, 75, 250]] as const;
 export const MAX_CASCADES = 8;
@@ -35,16 +43,17 @@ export function evaluateLines(grid: number[], boostedColumn = -1): Win[] {
 }
 
 export function playNeopolisSpin(sourceTeam: Team, sourceBattle: Battle | null, random: () => number): Spin {
-  const team = structuredClone(sourceTeam), battle = sourceBattle ? structuredClone(sourceBattle) : null;
+  const team = structuredClone(sourceTeam);
+  let battle = sourceBattle ? structuredClone(sourceBattle) : null;
   const free = battle !== null;
   if (team.complete || (battle && battle.remaining < 1)) throw Error('Neopolis cycle has ended');
   const empowered = !!battle && battle.shield === 0;
-  if (battle) { battle.remaining--; battle.played++; }
+  if (battle) { battle.boss ??= 0; battle.defeated ??= 0; battle.remaining--; battle.played++; }
   const take = (max: number) => { const value = random(); if (!Number.isFinite(value) || value < 0 || value >= 1) throw Error('Invalid Neopolis entropy'); return Math.floor(value * max); };
   let grid = Array<number>(SIZE).fill(0), emblems = Array<number>(SIZE).fill(-1), boostedColumn = -1, points = 0, triggered = false, finisher = false;
   const frames: Frame[] = [], activated: Hero[] = [], unlocked: Hero[] = [], pending = new Set<Hero>();
   const frame = (kind: Frame['kind'], cells: number[] = [], wins: Win[] = [], hero?: Hero) => {
-    frames.push({ kind, grid: [...grid], emblems: [...emblems], cells, wins, ...(hero ? { hero } : {}), points });
+    frames.push({ kind, grid: [...grid], emblems: [...emblems], cells, wins, ...(hero ? { hero } : {}), points, battle: battle ? structuredClone(battle) : null });
   };
   const spawn = (cell: number) => {
     const weights = [24,22,20,17,14,11, cell % COLS > 0 && cell % COLS < 4 ? 2 : 0, !free && readyTeam(team) ? 7 : 0];
@@ -118,16 +127,30 @@ export function playNeopolisSpin(sourceTeam: Team, sourceBattle: Battle | null, 
   activateHeroes();
   if (battle && activated.length && !battle.won) {
     if (battle.shield > 0) battle.shield--; else battle.core--;
+    frame('boss-hit');
     if (battle.core === 0) {
-      battle.won = true; battle.remaining += 3; finisher = true;
+      const defeated = battle.boss!;
+      battle.defeated = defeated + 1; battle.won = defeated === BOSSES.length - 1;
+      battle.remaining += 3; finisher = true;
+      frame('boss-defeated');
       const cells = Array.from({ length: ROWS }, (_, row) => row * COLS + 2);
       for (const cell of cells) { grid[cell] = WILD; emblems[cell] = -1; }
       boostedColumn = 2; frame('finisher', cells); resolve();
       // Finisher refills can earn an unused hero; it still acts once in this spin.
       activateHeroes();
+      if (!battle.won) {
+        const next = BOSSES[defeated + 1];
+        battle.boss = defeated + 1; battle.shield = next.shield; battle.core = next.core;
+        battle.remaining += next.spins;
+        frame('boss-arrival');
+      }
     }
   }
-  const nextBattle = battle ?? (triggered ? { remaining: 10, played: 0, shield: 3, core: 3, won: false } : null);
+  if (!battle && triggered) {
+    battle = { remaining: BOSSES[0].spins, played: 0, shield: BOSSES[0].shield, core: BOSSES[0].core, won: false, boss: 0, defeated: 0 };
+    frame('boss-arrival');
+  }
+  const nextBattle = battle;
   const finished = !!nextBattle && nextBattle.remaining === 0;
   if (finished) team.complete = true;
   return { frames, grid: [...grid], team, battle: nextBattle, activated, unlocked, points, free, triggered, finished, finisher, empowered };

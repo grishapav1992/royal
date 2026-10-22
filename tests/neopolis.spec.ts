@@ -86,7 +86,7 @@ test('real API retries a lost result once, restores collection and bonus, and se
   expect((await state(page)).revision).toBe(revision);
   expect((await session(page)).id).toBe(battleId);
   while (current.state === 'active') { await closeNotice(page); current = await spin(page); }
-  expect(current.view.neopolis.team.complete).toBe(true); expect(current.view.neopolis.revision).toBeLessThanOrEqual(14);
+  expect(current.view.neopolis.team.complete).toBe(true); expect(current.view.neopolis.revision).toBeLessThanOrEqual(46);
   const finalBalance = await page.evaluate(() => (window as any).neopolisPreview.wallet.wallet.balance);
   expect(finalBalance).toBeCloseTo(balanceBefore + Number(current.returnedUnits) / 100, 2);
   await closeNotice(page); await expect(page.locator('[data-np=bet]')).toBeEnabled();
@@ -238,5 +238,102 @@ test('closing during reel motion cancels presentation and reopening restores the
     expect((await session(page)).id).toBe(confirmed.session.id);
     expect(await page.locator('.np-board [role=gridcell]').evaluateAll(cells => cells.map(cell => Number((cell as HTMLElement).dataset.symbol)))).toEqual(confirmed.session.view.neopolis.history.at(-1).result.grid);
     expect(requests).toBe(1); expect(errors).toEqual([]);
+  } finally { release(); await page.unroute('**/api/demo-wallet/expansion'); }
+});
+
+test('three real campaign bosses change arenas and costumes, survive reload and charge only the entry', async ({ page }) => {
+  test.setTimeout(180000);
+  await ready(page,'ru');
+  const seen = new Set<number>();
+  let current = await session(page), bonusBalance = 0, bonusId = '', moves = 0;
+  for (let campaign = 0; campaign < 3 && !seen.has(2); campaign++) {
+    while (current?.state !== 'active' && moves++ < 90) { await closeNotice(page); current = await spin(page); }
+    expect(current?.state).toBe('active');
+    bonusBalance = await page.evaluate(() => (window as any).neopolisPreview.wallet.wallet.balance); bonusId = current.id;
+    while (current.state === 'active') {
+      const battle = current.view.neopolis.battle, index = battle.boss;
+      if (!seen.has(index)) {
+        seen.add(index); await closeNotice(page);
+        await expect(page.locator('.np')).toHaveAttribute('data-boss',['null','vespera','aeon'][index]);
+        await expect(page.locator('[data-np=shield] i')).toHaveCount(index+3);
+        await expect(page.locator('[data-np=core] i')).toHaveCount(index+3);
+        expect(await page.locator('.np').evaluate(root => (root as HTMLElement).style.getPropertyValue('--np-costumes'))).toContain(['team-night','team-eclipse','team-chrono'][index]);
+        const background = page.locator('.np-city-current');
+        await expect(background).toHaveAttribute('src',new RegExp(['city-v2','citadel-v3','observatory-v3'][index]));
+        await background.evaluate(image => (image as HTMLImageElement).decode());
+        await page.screenshot({path:'test-results/neopolis/review/campaign-' + index + '-ru.png',fullPage:true});
+        await page.setViewportSize({width:390,height:844});
+        expect(await page.locator('.np').evaluate(root => root.scrollWidth <= root.clientWidth+1)).toBe(true);
+        await page.screenshot({path:'test-results/neopolis/review/campaign-' + index + '-mobile-ru.png',fullPage:true});
+        const revision = current.view.neopolis.revision;
+        await page.reload(); await expect(page.locator('[data-np=spin]')).toBeEnabled();
+        expect((await session(page)).id).toBe(bonusId); expect((await state(page)).revision).toBe(revision);
+        expect((await state(page)).battle.boss).toBe(index);
+        await page.setViewportSize({width:1440,height:1000});
+      }
+      await closeNotice(page); current = await spin(page);
+      expect(current.id).toBe(bonusId); expect(current.spentUnits).toBe('10000');
+      if (current.state === 'active') expect(await page.evaluate(() => (window as any).neopolisPreview.wallet.wallet.balance)).toBe(bonusBalance);
+    }
+    const final = await page.evaluate(() => (window as any).neopolisPreview.wallet.wallet.balance);
+    expect(final).toBeCloseTo(bonusBalance+Number(current.returnedUnits)/100,2);
+    await closeNotice(page);
+  }
+  expect([...seen].sort()).toEqual([0,1,2]);
+});
+
+test('original music and confirmed battle sounds honor shared mute, rules, host pause and disposal', async ({ page }) => {
+  const errors: string[] = []; page.on('pageerror',error => errors.push(error.message));
+  await ready(page); await page.emulateMedia({reducedMotion:'no-preference'});
+  await page.locator('[data-hero=granite]').click();
+  await expect.poll(async () => (await state(page)).audio.playing).toBe(true);
+  await expect.poll(async () => (await state(page)).audio.musicRms).toBeGreaterThan(.005);
+  await page.evaluate(() => {
+    (window as any).npFxSeen = false;
+    const timer = setInterval(() => {
+      const canvas = document.querySelector<HTMLCanvasElement>('.np-effects');
+      if (!canvas) { clearInterval(timer); return; }
+      if (canvas.getContext('2d')!.getImageData(0,0,canvas.width,canvas.height).data.some((n,i) => i%4===3 && n>0)) (window as any).npFxSeen = true;
+    },80);
+  });
+  let release!: () => void;
+  const held = new Promise<void>(resolve => { release=resolve; });
+  await page.route('**/api/demo-wallet/expansion',async route => { if (route.request().method()==='POST') await held; await route.continue(); });
+  try {
+    await page.locator('[data-np=spin]').click();
+    await expect(page.locator('.np-reels')).toHaveCount(1);
+    const waiting = (await state(page)).audio.cues;
+    expect(waiting.granite ?? 0).toBe(0); expect(waiting.impulse ?? 0).toBe(0); expect(waiting.prism ?? 0).toBe(0);
+    await page.locator('[data-np=rules]').click();
+    await expect.poll(async () => (await state(page)).audio.playing).toBe(false);
+    await expect.poll(async () => (await state(page)).audio.voices).toBe(0);
+    await page.locator('[data-np=close]').click(); release();
+    await page.waitForFunction(() => !(window as any).neopolisPreview.state().busy);
+    await closeNotice(page);
+    await page.locator('[data-np=fast]').check();
+    for(let i=0;i<5 && !(await state(page)).audio.cues.granite;i++) { await spin(page); await closeNotice(page); }
+    expect((await state(page)).audio.cues.granite).toBeGreaterThan(0);
+    expect(await page.evaluate(() => (window as any).npFxSeen)).toBe(true);
+    await page.locator('[data-np=sound]').click();
+    await expect(page.locator('[data-np=sound]')).toHaveAttribute('aria-pressed','false');
+    await expect.poll(async () => (await state(page)).audio.playing).toBe(false);
+    await expect.poll(async () => (await state(page)).audio.voices).toBe(0);
+    await page.locator('[data-np=sound]').click();
+    await expect.poll(async () => (await state(page)).audio.playing).toBe(true);
+    await page.evaluate(async () => { const {gameAudio} = await import('/src/game/GameAudio.ts'); gameAudio.setVolume(0); });
+    await expect.poll(async () => (await state(page)).audio.playing).toBe(false);
+    await page.evaluate(async () => { const {gameAudio} = await import('/src/game/GameAudio.ts'); gameAudio.setVolume(.35); });
+    await expect.poll(async () => (await state(page)).audio.playing).toBe(true);
+    await page.evaluate(() => (window as any).neopolisPreview.pause());
+    await expect.poll(async () => (await state(page)).audio.playing).toBe(false);
+    await expect.poll(async () => (await state(page)).audio.voices).toBe(0);
+    await page.evaluate(() => (window as any).neopolisPreview.resume());
+    await expect.poll(async () => (await state(page)).audio.playing).toBe(true);
+    await page.evaluate(() => (window as any).neopolisPreview.close());
+    await expect(page.locator('.np-effects')).toHaveCount(0);
+    await page.waitForTimeout(80);
+    await page.evaluate(() => (window as any).neopolisPreview.open());
+    await expect(page.locator('[data-np=spin]')).toBeEnabled();
+    expect((await state(page)).audio.cues).toEqual({}); expect(errors).toEqual([]);
   } finally { release(); await page.unroute('**/api/demo-wallet/expansion'); }
 });

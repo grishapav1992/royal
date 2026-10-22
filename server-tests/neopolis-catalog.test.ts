@@ -10,7 +10,7 @@ import { BAR_APPROACH, HALLS, HALL_DOORS, hallObstacles } from '../src/shared/wo
 import { findPath, walkable } from '../src/game/navigation';
 
 test('Neopolis is an active independent cabinet with its own exact lines and contract', () => {
-  assert.deepEqual(gameModuleContract(NEOPOLIS_GAME), { gameId:NEOPOLIS_GAME, slug:'neopolis', apiVersion:1, rulesVersion:1, progressVersion:1 });
+  assert.deepEqual(gameModuleContract(NEOPOLIS_GAME), { gameId:NEOPOLIS_GAME, slug:'neopolis', apiVersion:1, rulesVersion:2, progressVersion:2 });
   assert((ACTIVE_STUDIO_GAMES as readonly string[]).includes(NEOPOLIS_GAME)); assert(!isRetiredArcadeGame(NEOPOLIS_GAME));
   assert.deepEqual(STUDIO_INFO[NEOPOLIS_GAME].paylines, LINES); assert.equal(STUDIO_MAX[NEOPOLIS_GAME], 3000);
   const cabinet = CABINETS.find(cabinet => cabinet.id === NEOPOLIS_GAME)!;

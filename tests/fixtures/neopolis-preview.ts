@@ -2,6 +2,9 @@ import { IndependentGameUI } from '../../src/modules/IndependentGameUI';
 import { demoWallet } from '../../src/wallet/WalletClient';
 import { expansionClient } from '../../src/wallet/ExpansionClient';
 import { language } from '../../src/i18n/index';
+import { gameAudio } from '../../src/game/GameAudio';
+
+gameAudio.install();
 
 let module: IndependentGameUI;
 const host = document.querySelector<HTMLElement>('#preview')!;
@@ -20,7 +23,7 @@ async function start() {
   }
   demoWallet.setAccount(account.id); await demoWallet.refresh();
   expansionClient.setAccount(account.id); await expansionClient.refresh(); open();
-  (window as any).neopolisPreview = { open, close: () => module.destroy(), state: () => module.getState(), account: account.id, client: expansionClient, wallet: demoWallet };
+  (window as any).neopolisPreview = { open, close: () => module.destroy(), pause: () => module.pause(), resume: () => module.resume(), state: () => module.getState(), account: account.id, client: expansionClient, wallet: demoWallet };
   document.querySelector('#reopen')!.addEventListener('click', open);
 }
 void start().catch(fail);

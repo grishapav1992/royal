@@ -7,7 +7,7 @@ const database = await temporaryDatabase();
 const apiPort = Number(process.env.NEOPOLIS_API_PORT || 2616);
 const webPort = Number(process.env.NEOPOLIS_WEB_PORT || 5216);
 const api = 'http://127.0.0.1:' + apiPort;
-const backend = spawn(process.execPath, ['--import', 'tsx', '--watch', 'server/index.ts'], {
+const backend = spawn(process.execPath, ['--import', 'tsx', ...(process.env.NEOPOLIS_WATCH === '1' ? ['--watch'] : []), 'server/index.ts'], {
   cwd: process.cwd(), env: { ...process.env, ...database.env, PORT: String(apiPort), AUTH_DB_PATH: 'neopolis_preview', PUBLIC_ORIGIN: '' },
   stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true,
 });

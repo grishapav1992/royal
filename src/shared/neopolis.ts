@@ -1,4 +1,5 @@
-import { HEROES, initialTeam, playNeopolisSpin, type Hero, type Team, type Battle, type Spin } from './neopolisMath';
+import { HEROES, MAX_ROUND_SPINS, initialTeam, playNeopolisSpin, type Hero, type Team, type Battle, type Spin } from './neopolisMath';
+import { playNeopolisSpin as playNeopolisSpinV1 } from './neopolisMathV1';
 
 export const NEOPOLIS_GAME = 'studio-neopolis' as const;
 export const NEOPOLIS_HEADER = 'X-Royal-Neopolis-Rules';
@@ -8,7 +9,7 @@ export const NEOPOLIS_MAX_WIN = 3000;
 const MAX_DRAWS = 4096;
 export type NeopolisSettings = { neopolis: { hero: Hero } };
 export type RecordedSpin = { draws: number[]; result: Spin; payoutUnits: string };
-export type NeopolisView = { kind: 'neopolis'; version: 1; revision: number; origin: Team; history: RecordedSpin[]; team: Team; battle: Battle | null; totalPayoutUnits: string; capped: boolean };
+export type NeopolisView = { kind: 'neopolis'; version: 1 | 2; revision: number; origin: Team; history: RecordedSpin[]; team: Team; battle: Battle | null; totalPayoutUnits: string; capped: boolean };
 export type NeopolisResult = { view: NeopolisView; ended: boolean; credit: number; message: string; actions: { move: 'neopolis-spin'; label: string; cost: 0 }[] };
 const record = (value: unknown): value is Record<string, any> => !!value && typeof value === 'object' && !Array.isArray(value);
 const keys = (value: object, expected: string) => Object.keys(value).sort().join(',') === expected.split(',').sort().join(',');
@@ -22,13 +23,14 @@ export function validTeam(value: unknown): value is Team {
 export function validNeopolisSettings(value: unknown): value is NeopolisSettings {
   return record(value) && keys(value, 'neopolis') && record(value.neopolis) && keys(value.neopolis, 'hero') && HEROES.includes(value.neopolis.hero);
 }
-export function emptyNeopolisView(origin: Team): NeopolisView {
-  return { kind: 'neopolis', version: 1, revision: 0, origin: structuredClone(origin), history: [], team: structuredClone(origin), battle: null, totalPayoutUnits: '0', capped: false };
+export function emptyNeopolisView(origin: Team, version: 1 | 2 = 2): NeopolisView {
+  return { kind: 'neopolis', version, revision: 0, origin: structuredClone(origin), history: [], team: structuredClone(origin), battle: null, totalPayoutUnits: '0', capped: false };
 }
 /** Only consumed past random draws enter the transcript. No future spin is generated. */
 export function advanceNeopolis(value: NeopolisView, stake: string, draw: (max: number) => number): NeopolisResult {
   const view = structuredClone(value), draws: number[] = [];
-  const result = playNeopolisSpin(view.team, view.battle, () => {
+  const play = view.version === 1 ? playNeopolisSpinV1 : playNeopolisSpin;
+  const result: Spin = play(view.team, view.battle, () => {
     const n = draw(4294967296);
     if (!integer(n, 0, 4294967295) || draws.length >= MAX_DRAWS) throw Error('Invalid Neopolis entropy');
     draws.push(n); return n / 4294967296;
@@ -49,9 +51,9 @@ export function advanceNeopolis(value: NeopolisView, stake: string, draw: (max: 
 export function validNeopolisView(stake: string, value: unknown): value is NeopolisView {
   try {
     if (!validNeopolisStake(stake) || !record(value) || !keys(value, 'kind,version,revision,origin,history,team,battle,totalPayoutUnits,capped')
-      || value.kind !== 'neopolis' || value.version !== 1 || !validTeam(value.origin) || value.origin.complete || !Array.isArray(value.history)
-      || !integer(value.revision, 1, 14) || value.history.length !== value.revision) return false;
-    let replay = emptyNeopolisView(value.origin);
+      || value.kind !== 'neopolis' || ![1,2].includes(value.version) || !validTeam(value.origin) || value.origin.complete || !Array.isArray(value.history)
+      || !integer(value.revision, 1, value.version === 1 ? 14 : MAX_ROUND_SPINS) || value.history.length !== value.revision) return false;
+    let replay = emptyNeopolisView(value.origin, value.version);
     for (const spin of value.history) {
       if (!record(spin) || !keys(spin, 'draws,result,payoutUnits') || !Array.isArray(spin.draws) || spin.draws.length > MAX_DRAWS
         || !spin.draws.every((n: unknown) => integer(n, 0, 4294967295)) || replay.capped
@@ -70,10 +72,11 @@ export function validNeopolisSettlement(state: string, stake: string, spent: str
   return ended ? state === 'settled' && returned === view.totalPayoutUnits : state === 'active' && returned === '0';
 }
 export function validNeopolisSession(value: unknown): boolean {
-  if (!record(value) || !keys(value, 'id,gameId,rulesVersion,state,stakeUnits,spentUnits,returnedUnits,view') || value.gameId !== NEOPOLIS_GAME || value.rulesVersion !== 1
+  if (!record(value) || !keys(value, 'id,gameId,rulesVersion,state,stakeUnits,spentUnits,returnedUnits,view') || value.gameId !== NEOPOLIS_GAME || ![1,2].includes(value.rulesVersion)
     || typeof value.id !== 'string' || !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(value.id) || !record(value.view)) return false;
   const envelope = value.view;
   return keys(envelope, 'player,dealer,community,actions,phase,ended,message,neopolis')
+    && value.rulesVersion === envelope.neopolis?.version
     && validNeopolisSettlement(value.state, value.stakeUnits, value.spentUnits, value.returnedUnits, envelope.neopolis)
     && [envelope.player, envelope.dealer, envelope.community].every(list => Array.isArray(list) && list.length === 0)
     && envelope.phase === envelope.neopolis.revision + 1 && envelope.ended === (value.state === 'settled')
