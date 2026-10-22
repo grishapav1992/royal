@@ -51,7 +51,7 @@ export function flightPosition(t: number, from: {x:number;y:number}, to: {x:numb
   const u = Math.max(0, Math.min(1, (t - PENALTY_CONTACT) / (PENALTY_RESULT - PENALTY_CONTACT)));
   return { x: from.x + (to.x - from.x) * u + Math.sin(Math.PI * u) * bend, y: from.y + (to.y - from.y) * u - Math.sin(Math.PI * u) * Math.abs(from.y - to.y) * arc, u };
 }
-export type GoalGeometry = { x: number; bottom: number; width: number; height: number };
+export type GoalGeometry = { x: number; bottom: number; width: number; height: number; rear?: { x: number; bottom: number; width: number; height: number } };
 export function shotTarget(shot: PenaltyShot, goal: GoalGeometry) {
   const zone = shotZone(shot), left = goal.x - goal.width / 2, top = goal.bottom - goal.height;
   let x = left + goal.width * zone.x, y = top + goal.height * zone.y;

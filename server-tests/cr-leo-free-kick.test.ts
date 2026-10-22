@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { penaltyZone, type PenaltyShot } from '../src/shared/crLeo';
 import { freeKickFlight, isWallHit, shotLayout, wallContact, wallMotion, wallCrossing, WALL_CROSSING } from '../src/ui/crLeoFreeKick';
 import { shotPose, shotTarget, shotTiming, shotBallRadius, shotBallRotation, PENALTY_CONTACT, strikePlacement, strikeAnchors } from '../src/ui/crLeoTimeline';
-import { goalNetPoint } from '../src/ui/crLeoGoal';
+import { goalNetPoint, NET_SETTLE } from '../src/ui/crLeoGoal';
 import { spriteParts } from '../src/ui/crLeoSprites';
 
 const shot = (zone: number, finish: PenaltyShot['finish'] = 'goal'): PenaltyShot => ({ index:0,goal:finish==='goal',finish,side:penaltyZone(zone).side,risk:'sharp',zone });
@@ -46,7 +46,7 @@ test('distant free kicks use three defenders, a smaller goal, earlier wall plane
   for(const [w,h] of [[320,385],[643,386],[1280,470],[1440,650]])for(const hero of ['cr','leo'] as const)for(let id=0;id<18;id++){
     const layout=shotLayout(w,h,hero,'extreme'),near=shotLayout(w,h,hero,'sharp'),wall=layout.wall!,s={...shot(id),risk:'extreme' as const},to=shotTarget(s,layout.goal),crossing=wall.crossing;
     assert.equal(wall.count,3);assert.equal(crossing,wallCrossing('extreme'));assert(crossing<WALL_CROSSING);
-    assert(layout.goal.bottom>=h*.44&&layout.goal.bottom<near.goal.bottom);assert(layout.goal.width<near.goal.width);assert(wall.bottom>near.wall!.bottom&&wall.bottom<layout.ball.y);
+    assert(layout.goal.bottom>=h*.44&&layout.goal.bottom<near.goal.bottom);assert(layout.goal.width<near.goal.width);assert(Math.abs(wall.bottom-near.wall!.bottom)<1e-8&&wall.bottom<layout.ball.y);
     const start=freeKickFlight(0,layout.ball,to,wall,s),cross=freeKickFlight(crossing,layout.ball,to,wall,s),end=freeKickFlight(1,layout.ball,to,wall,s);
     assert.deepEqual({x:start.x,y:start.y},layout.ball);assert(Math.abs(end.x-to.x)<1e-7&&Math.abs(end.y-to.y)<1e-7);routes.add(cross.route);
     const jumpingTop=wall.bottom-wall.size*.9-h*.045,halfWall=wall.count/2*wall.spacing;
@@ -90,8 +90,8 @@ test('goal mouth and every net seam stay fixed throughout an impact ripple',()=>
 test('net reaction starts after contact, stays local and settles without moving the rigid frame',()=>{
   const goal=shotLayout(1280,470,'cr','safe').goal,base=goalNetPoint(goal,.4,.5),impact={x:.4,y:.5,age:.06};
   assert.notDeepEqual(goalNetPoint(goal,.4,.5,1,impact),base);
-  for(const age of [-1,0,.8,2])assert.deepEqual(goalNetPoint(goal,.4,.5,1,{...impact,age}),base);
-  const moved=goalNetPoint(goal,.4,.5,1,impact);assert(Math.hypot(moved.x-base.x,moved.y-base.y)<goal.width*.02);
+  for(const age of [-1,0,NET_SETTLE,2])assert.deepEqual(goalNetPoint(goal,.4,.5,1,{...impact,age}),base);
+  const moved=goalNetPoint(goal,.4,.5,1,impact);assert(Math.hypot(moved.x-base.x,moved.y-base.y)<goal.width*.06);
 });
 
 test('football stays visible throughout every shot and rebound, including the distant goal on a narrow screen',()=>{

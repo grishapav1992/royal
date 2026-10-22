@@ -20,7 +20,7 @@ test('the ball cannot paint over an opaque boot during contact or follow-through
       for (let i = 0; i < 8; i++) frames[i] = { image: boot, x: 0, y: 0, width: 1, height: 1 };
       for (const risk of ['safe', 'sharp', 'extreme']) for (const t of [1.119, 1.12, 1.13, 1.16, 1.24, 1.26]) {
         const data = render({ hero, risk, t, zone: 7 });
-        const x = canvas.width / 2, y = canvas.height * (risk === 'safe' ? .8 : risk === 'sharp' ? .83 : .85);
+        const origin = JSON.parse(data.ballOrigin), x = origin.x * canvas.width / canvas.clientWidth, y = origin.y * canvas.height / canvas.clientHeight;
         const pixel = [...ctx.getImageData(Math.round(x), Math.round(y), 1, 1).data];
         results.push({ hero, risk, t, layer: data.ballLayer, count: data.ballDraws, pixel });
       }
@@ -91,6 +91,44 @@ test('football has contrasting panels and remains round while spinning', async (
   expect(rotations.reduce((sum, frame) => sum + frame.orange, 0)).toBeGreaterThan(300);
 });
 
+test('the net responds only after ball contact, follows the selected sector and keeps settling after controls unlock', async ({ page }) => {
+  for (const width of [1100,390]) {
+    await page.setViewportSize({width,height:860});
+    const results = await page.evaluate(() => {
+      const api=(window as any).crLeoRendering, rows=[];
+      for(const hero of ['cr','leo'])for(const risk of ['safe','sharp','extreme'])for(const zone of [0,2,5,7,12,17])for(const finish of ['goal','save','post','wide']) {
+        const end=risk==='safe'?1.7:risk==='sharp'?2.12:2.5;
+        api.begin({hero,risk,zone,finish});
+        const before=api.advance(end+api.NET_TRAVEL-.002), contact=api.advance(end+api.NET_TRAVEL+.06);
+        const inside=JSON.parse(contact.ballPosition), geometry=JSON.parse(contact.goalGeometry);
+        const expected=finish==='goal'?api.goalBallPosition(geometry,JSON.parse(contact.netImpact),Number(contact.ballRadius)):null;
+        const late=api.advance(end+api.NET_TRAVEL+.9), settled=api.advance(end+api.NET_TRAVEL+api.NET_SETTLE+.01);
+        const repeated=api.advance(end+api.NET_TRAVEL+api.NET_SETTLE+.02);
+        rows.push({hero,risk,zone,finish,before:before.netMoving,contact:contact.netMoving,late:late.netMoving,settled:settled.netMoving,
+          inside,expected,frame:settled.renderedFrames,repeat:repeated.renderedFrames});
+      }
+      return rows;
+    });
+    for(const r of results) {
+      expect(r.before).toBe('false'); expect(r.contact).toBe(String(r.finish==='goal')); expect(r.late).toBe(String(r.finish==='goal')); expect(r.settled).toBe('false');
+      if(r.expected) { expect(r.inside.x).toBeCloseTo(r.expected.x,5); expect(r.inside.y).toBeCloseTo(r.expected.y,5); expect(r.repeat).toBe(r.frame); }
+    }
+  }
+});
+
+test('the rendered mesh visibly deforms and restores the exact resting threads', async ({ page }) => {
+  const result=await page.evaluate(()=>{
+    const {drawGoalNet,NET_SETTLE}=(window as any).crLeoRendering;
+    const c=document.createElement('canvas');c.width=560;c.height=240;const ctx=c.getContext('2d',{willReadFrequently:true})!;
+    const goal={x:280,bottom:210,width:480,height:160,rear:{x:280,bottom:196,width:435,height:145}};
+    const paint=(age:number)=>{ctx.clearRect(0,0,560,240);drawGoalNet(ctx,goal,{x:.42,y:.5,age});return ctx.getImageData(0,0,560,240).data;};
+    const baseline=paint(0), pulse=paint(.16), recoil=paint(.4), end=paint(NET_SETTLE);
+    let changes=0, second=0, settled=0;for(let i=0;i<baseline.length;i++){if(Math.abs(baseline[i]-pulse[i])>20)changes++;if(Math.abs(pulse[i]-recoil[i])>20)second++;if(baseline[i]!==end[i])settled++;}
+    return{changes,second,settled};
+  });
+  expect(result.changes).toBeGreaterThan(1000);expect(result.second).toBeGreaterThan(1000);expect(result.settled).toBe(0);
+});
+
 test('sub-frame rotation changes the surface smoothly without changing fade opacity', async ({ page }) => {
   const result = await page.evaluate(() => {
     const { drawFootball, render } = (window as any).crLeoRendering;
@@ -116,7 +154,7 @@ test('the built game loads through the shared host and reopens with both heroes 
   const errors: string[] = [], failures: string[] = [], ballRequests: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
   const root = resolve('module-dist');
-  const types: Record<string, string> = { '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.webp': 'image/webp', '.png': 'image/png' };
+  const types: Record<string, string> = { '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.webp': 'image/webp', '.png': 'image/png', '.mp3': 'audio/mpeg' };
   await page.route('**/game-modules/**', async route => {
     const pathname = new URL(route.request().url()).pathname.replace('/game-modules/', '');
     const file = resolve(root, pathname);
@@ -142,6 +180,7 @@ test('the built game loads through the shared host and reopens with both heroes 
       await expect(game.locator('canvas')).toHaveAttribute('data-hero', hero);
       await expect(game.locator('canvas')).toHaveAttribute('data-ball-layer', 'behind-player');
       await expect(game.locator('canvas')).toHaveAttribute('data-ball-draws', '1');
+      await expect(game.locator('canvas')).toHaveAttribute('data-shot-distance', risk === 'safe' ? '11' : risk === 'sharp' ? '20' : '30');
     }
     expect(await page.evaluate(() => (window as any).moduleHarness.snapshot())).toMatchObject({ sharedWallet: true, sharedExpansion: true, locked: false });
     await page.evaluate(() => (window as any).moduleHarness.close());

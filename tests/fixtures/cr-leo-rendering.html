@@ -2,15 +2,16 @@
 <html lang="ru">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CR vs. Leo: проверка мяча</title>
+<title>CR vs. Leo: проверка сцены</title>
 <style>
 body{margin:0;background:#edf0e5;color:#142621;font:15px Arial}header{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:16px}select,button,input{font:inherit}canvas{display:block;width:100%;height:clamp(330px,65vh,560px)}main{max-width:1100px;margin:auto}label{display:flex;align-items:center;gap:8px}#time{width:180px}small{display:block;margin:16px;line-height:1.6}
 @media(max-width:600px){canvas{height:385px}}
 </style>
 <main>
-<header><b>CR vs. Leo</b><select id="hero"><option value="cr">CR</option><option value="leo">Leo</option></select><select id="risk"><option value="safe">Пенальти</option><option value="sharp">Штрафной</option><option value="extreme">Дальний</option></select><button id="play">Удар</button><label>Скорость <select id="speed"><option value="1">1×</option><option value="0.25">0,25×</option></select></label><label>Кадр <input id="time" type="range" min="0" max="3.2" step="0.01" value="0"><output id="elapsed">0.00 s</output></label></header>
+<header><b>CR vs. Leo</b><select id="hero"><option value="cr">CR</option><option value="leo">Leo</option></select><select id="risk"><option value="safe">Пенальти</option><option value="sharp">Штрафной</option><option value="extreme">Дальний</option></select><button id="play">Удар</button><label>Скорость <select id="speed"><option value="1">1×</option><option value="0.25">0,25×</option></select></label><label>Кадр <input id="time" type="range" min="0" max="4.6" step="0.01" value="0"><output id="elapsed">0.00 s</output></label></header>
+<header><button id="sound">Включить звук</button><label>Исход <select id="finish"><option value="goal">Гол</option><option value="save">Сейв</option><option value="post">Штанга</option><option value="wide">Мимо</option></select></label><label>Сектор <select id="zone"></select></label></header>
 <canvas id="scene"></canvas>
-<small>Локальная проверка графики. Ползунок останавливает анимацию для просмотра контакта и проводки ноги. Денежные операции отсутствуют.</small>
+<small>Локальная проверка сцены и звука. Нажми «Включить звук», затем «Удар», чтобы услышать реакцию трибун и фразу игрока. Ползунок позволяет рассмотреть отдельный кадр. Денежные операции отсутствуют.</small>
 </main>
 <script type="module" src="./cr-leo-rendering.ts"></script>
 </html>
