@@ -1,6 +1,6 @@
 # CR vs. Leo: match ball, spin and boot occlusion
 
-Release candidate for 22 October 2026, explicitly requested for production in this chat. Publish only the compatible `original-cr-vs-leo` module, version `1.0.0-5c429e0bd748`, from the qualified eight-file source delta. Keep the host image, backend, wallet, outcomes, other modules and persistent data intact.
+Published on 22 October 2026 after the explicit production request in this chat. Source commit: 2b0298ce355b05f9b5576c447cb0ec4f213d256e. Publish only the compatible `original-cr-vs-leo` module, version `1.0.0-5c429e0bd748`, from the qualified eight-file source delta. Keep the host image, backend, wallet, outcomes, other modules and persistent data intact.
 
 The photographic Ordem V inspired ball uses sixteen registered views, smooth interpolation, mirrored spin and settlement after contact. The boot occludes the ball naturally and meets its near surface. All ten images and 72 prepared frames are included in shared readiness and cache reuse.
 

@@ -1,0 +1,230 @@
+{
+  "published": true,
+  "release": "cr-leo-ball-20261022-v1",
+  "sourceCommit": "2b0298ce355b05f9b5576c447cb0ec4f213d256e",
+  "moduleVersion": "1.0.0-5c429e0bd748",
+  "activeSha256": "cc562c10b3b51159dbdc59cd07fca02250e9c20b9ce0a16137d204795fcf1d6f",
+  "runningImage": "sha256:12c28c1d43c32e8016fe62a56eb460e2e079da0c15c9f0785fe5c5f43c6aa0e2",
+  "preparedImage": "sha256:12c28c1d43c32e8016fe62a56eb460e2e079da0c15c9f0785fe5c5f43c6aa0e2",
+  "sourceFilesBefore": 1525,
+  "sourceFilesAfter": 1528,
+  "changedSources": 8,
+  "backup": {
+    "path": "/opt/royal-backups/cr-leo-ball-20261022-v1",
+    "sourceSha256": "f4eee17547bc4b511aaf7a1a09b67144d86a523fa908ef84e3d08b1c938bc4aa",
+    "priorExternalPointer": true
+  },
+  "containerRestarted": false,
+  "otherModulesPreserved": true,
+  "fullRunningProgramPreserved": true,
+  "immutablePreparedImagePreserved": true,
+  "settingsAndServicesPreserved": true,
+  "dataVolumesPreserved": true,
+  "localValidation": {
+    "moduleVersion": "1.0.0-5c429e0bd748",
+    "typeScript": "passed",
+    "moduleBuild": "passed",
+    "modelGeometryAndLoaderTests": 29,
+    "pixelRenderingAndPackageBrowserTests": 5,
+    "temporaryPostgresWalletTests": 4,
+    "uncertainOperationAcrossModules": "passed",
+    "publisherLinuxTests": 11,
+    "automaticRecoveryTests": 2,
+    "productionHostCandidateLayouts": [
+      1440,
+      390
+    ],
+    "updatedLocalHostCandidateLayouts": [
+      1440,
+      390
+    ],
+    "chatPanel": "Real integration helper with empty guest content; no live connection",
+    "productionAccountsCreated": 0,
+    "productionWagers": 0,
+    "productionMessages": 0,
+    "evidence": "artifacts/cr-leo-ball/proof"
+  },
+  "https": {
+    "verified": true,
+    "gameId": "original-cr-vs-leo",
+    "version": "1.0.0-5c429e0bd748",
+    "activeSha256": "cc562c10b3b51159dbdc59cd07fca02250e9c20b9ce0a16137d204795fcf1d6f",
+    "manifestSha256": "56f990f72611542aaa1d54c0d3dd2c76c5acf19a0b49631da73084681644dc5c",
+    "resources": [
+      {
+        "path": "entry-23b53be08876aa0b.js",
+        "bytes": 48263,
+        "sha256": "23b53be08876aa0b7d1fdb1f7ae65c2f8b1a856c693a177d63fe5f9d6daff061"
+      },
+      {
+        "path": "media/cr-vs-leo/v2/ball-ordem-v-atlas.webp",
+        "bytes": 598728,
+        "sha256": "203f3599b96d2b0d0aeddac43e2a417a28b44045e00ab02aa7924150cc75b55f"
+      },
+      {
+        "path": "media/cr-vs-leo/v2/cr-white-thumb.webp",
+        "bytes": 53458,
+        "sha256": "f74054bb9714f7a1f6e31a22c84c214b399d053efdad65eaceb3cc136392d36c"
+      },
+      {
+        "path": "media/cr-vs-leo/v2/cr-white.webp",
+        "bytes": 867484,
+        "sha256": "6f17d912319ab61c745c4e60b784962d0830875f1781c1d7ed54a30d9f5fae0e"
+      },
+      {
+        "path": "media/cr-vs-leo/v2/keeper-dive.webp",
+        "bytes": 533804,
+        "sha256": "42d1e309b730eda13c1c44290c4c813ec9e5ac9e45e64204593db15264bbffba"
+      },
+      {
+        "path": "media/cr-vs-leo/v2/keeper-empty.webp",
+        "bytes": 582340,
+        "sha256": "9b5291eaffeb17215ae0efd98fe971db0f9d4852c3d5dbd10e1a6383b2f6a10f"
+      },
+      {
+        "path": "media/cr-vs-leo/v2/keeper-reach.webp",
+        "bytes": 530760,
+        "sha256": "1149b45f40bff1882c4e79bf582f509433bdc71a45a162ca77ad8aaf6bdb9302"
+      },
+      {
+        "path": "media/cr-vs-leo/v2/leo-thumb.webp",
+        "bytes": 47642,
+        "sha256": "fc205e3b36032e68c64e166a710b15bf0bcb685a1b5f7aea2d3ee02c469d953c"
+      },
+      {
+        "path": "media/cr-vs-leo/v2/leo.webp",
+        "bytes": 783588,
+        "sha256": "dc352bac0f7c21079ea437ebac94395793ae54a00148505b17e86ce27f35ba92"
+      },
+      {
+        "path": "media/cr-vs-leo/v2/stadium-free.webp",
+        "bytes": 489234,
+        "sha256": "91024de3d3cbe29293e6461c23c4a59109c0afc7dfb13731a0e203d5ce98409c"
+      },
+      {
+        "path": "media/cr-vs-leo/v2/stadium.webp",
+        "bytes": 521850,
+        "sha256": "40836e046fcbf157e80b6afc6b497c623c695051944e97fd7b10cc77cf408ea3"
+      },
+      {
+        "path": "media/cr-vs-leo/v2/wall-far.webp",
+        "bytes": 1118900,
+        "sha256": "8676722cdd894272f155c5a8613e5aa052903541230eddae0e612df3fc34535d"
+      },
+      {
+        "path": "media/cr-vs-leo/v2/wall.webp",
+        "bytes": 1159788,
+        "sha256": "bf9daf9caa361b0ac43fe82bd690019f3c6d709d15990da6dec2f90afd15d46a"
+      },
+      {
+        "path": "style-aaaab50a09f43fc3.css",
+        "bytes": 11340,
+        "sha256": "aaaab50a09f43fc3b5b6f1a77259beaf266a37b02618c1a6dd0bd57e8e289131"
+      }
+    ],
+    "healthOk": true,
+    "requests": 17
+  },
+  "browser": [
+    {
+      "width": 1440,
+      "height": 1000,
+      "version": "1.0.0-5c429e0bd748",
+      "guestChatUsingRealIntegration": true,
+      "liveChatConnection": false,
+      "sixSelections": true,
+      "reopened": true,
+      "dimensions": {
+        "dialog": {
+          "x": 0,
+          "y": 0,
+          "width": 1440,
+          "height": 1000,
+          "top": 0,
+          "right": 1440,
+          "bottom": 1000,
+          "left": 0
+        },
+        "chat": {
+          "x": 1105.8125,
+          "y": 3,
+          "width": 331.1875,
+          "height": 994,
+          "top": 3,
+          "right": 1437,
+          "bottom": 997,
+          "left": 1105.8125
+        },
+        "canvas": {
+          "x": 3,
+          "y": 196,
+          "width": 1103,
+          "height": 480,
+          "top": 196,
+          "right": 1106,
+          "bottom": 676,
+          "left": 3
+        },
+        "chatInside": true,
+        "horizontalOverflow": false,
+        "assets": "10",
+        "frames": "72",
+        "layer": "behind-player",
+        "ballDraws": "1"
+      },
+      "errors": [],
+      "failures": [],
+      "posts": []
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "version": "1.0.0-5c429e0bd748",
+      "guestChatUsingRealIntegration": true,
+      "liveChatConnection": false,
+      "sixSelections": true,
+      "reopened": true,
+      "dimensions": {
+        "dialog": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 844,
+          "top": 0,
+          "right": 390,
+          "bottom": 844,
+          "left": 0
+        },
+        "chat": {
+          "x": 3,
+          "y": 614.75,
+          "width": 384,
+          "height": 226.25,
+          "top": 614.75,
+          "right": 387,
+          "bottom": 841,
+          "left": 3
+        },
+        "canvas": {
+          "x": 3,
+          "y": 58,
+          "width": 384,
+          "height": 385,
+          "top": 58,
+          "right": 387,
+          "bottom": 443,
+          "left": 3
+        },
+        "chatInside": true,
+        "horizontalOverflow": false,
+        "assets": "10",
+        "frames": "72",
+        "layer": "behind-player",
+        "ballDraws": "1"
+      },
+      "errors": [],
+      "failures": [],
+      "posts": []
+    }
+  ]
+}
