@@ -14,18 +14,21 @@ const risk = document.querySelector<HTMLSelectElement>('#risk')!;
 const time = document.querySelector<HTMLInputElement>('#time')!;
 const speed = document.querySelector<HTMLSelectElement>('#speed')!;
 const finishSelect = document.querySelector<HTMLSelectElement>('#finish')!;
+const seriesSelect = document.querySelector<HTMLSelectElement>('#series')!;
 const sound = document.querySelector<HTMLButtonElement>('#sound')!;
 const zoneSelect = document.querySelector<HTMLSelectElement>('#zone')!;
 zoneSelect.innerHTML = Array.from({ length: 18 }, (_, id) => { const z = penaltyZone(id); return `<option value="${id}">${['Верх','Середина','Низ'][z.row]} · ${z.column + 1}</option>`; }).join(''); zoneSelect.value = '7';
 let started = 0, playing = false, soundStarted = false;
-type Frame = { hero: PenaltyHero; risk: PenaltyRisk; t: number; zone?: number; finish?: PenaltyShot['finish']; complete?: boolean };
+type Frame = { hero: PenaltyHero; risk: PenaltyRisk; t: number; zone?: number; finish?: PenaltyShot['finish']; complete?: boolean; goals?: number; banked?: boolean; restored?: boolean; previousRisks?: PenaltyRisk[] };
 function begin(frame: Frame) {
   const finish = frame.finish ?? 'goal', zone = frame.zone ?? 7;
+  const count = frame.complete ? 5 : frame.goals ?? 1;
+  const shots: PenaltyShot[] = Array.from({ length: count }, (_, index) => ({ index, goal: index < count - 1 || finish === 'goal', finish: index < count - 1 ? 'goal' : finish, side: penaltyZone(zone).side, risk: frame.previousRisks?.[index] ?? frame.risk, zone }));
+  shots[count - 1].risk = frame.risk;
   selectedHero = frame.hero;
   scene.select(frame.hero, frame.risk);
-  scene.show({ version: 2, hero: frame.hero, risk: frame.risk, revision: 1,
-    shots: [{ index: 0, goal: finish === 'goal', finish, side: penaltyZone(zone).side, risk: frame.risk, zone }],
-    status: finish === 'goal' ? frame.complete ? 'complete' : 'playing' : 'lost', availableUnits: '0' }, true);
+  scene.show({ version: 2, hero: frame.hero, risk: frame.risk, revision: count + Number(!!frame.banked), shots,
+    status: finish === 'goal' ? frame.complete ? 'complete' : frame.banked ? 'banked' : 'playing' : 'lost', availableUnits: '0' }, !frame.restored, frame.banked);
 }
 function advance(t: number, audible = false) {
   const now = performance.now();
@@ -35,10 +38,12 @@ function advance(t: number, audible = false) {
 }
 function render(frame: Frame) { begin(frame); return advance(frame.t); }
 function controls() {
+  time.max = seriesSelect.value === 'complete' ? '8' : '4.6';
+  if (Number(time.value) > Number(time.max)) time.value = time.max;
   document.querySelector('#elapsed')!.textContent = Number(time.value).toFixed(2) + ' s';
-  render({ hero: hero.value as PenaltyHero, risk: risk.value as PenaltyRisk, t: Number(time.value), finish: finishSelect.value as PenaltyShot['finish'], zone: Number(zoneSelect.value) });
+  render({ hero: hero.value as PenaltyHero, risk: risk.value as PenaltyRisk, t: Number(time.value), finish: finishSelect.value as PenaltyShot['finish'], zone: Number(zoneSelect.value), complete: seriesSelect.value === 'complete' });
 }
-for (const input of [hero, risk, time, speed, finishSelect, zoneSelect]) input.addEventListener('input', () => { playing = false; audio.silence(); if (soundStarted && audio.enabled) void audio.unlock(); controls(); });
+for (const input of [hero, risk, time, speed, finishSelect, zoneSelect, seriesSelect]) input.addEventListener('input', () => { playing = false; audio.silence(); if (soundStarted && audio.enabled) void audio.unlock(); controls(); });
 sound.addEventListener('click', () => {
   if (!soundStarted) { soundStarted = true; if (!audio.enabled) audio.toggle(); else void audio.unlock(); }
   else audio.toggle();
@@ -46,7 +51,7 @@ sound.addEventListener('click', () => {
 });
 document.querySelector('#play')!.addEventListener('click', () => {
   if (soundStarted && audio.enabled) void audio.unlock();
-  begin({ hero: hero.value as PenaltyHero, risk: risk.value as PenaltyRisk, t: 0, finish: finishSelect.value as PenaltyShot['finish'], zone: Number(zoneSelect.value) });
+  begin({ hero: hero.value as PenaltyHero, risk: risk.value as PenaltyRisk, t: 0, finish: finishSelect.value as PenaltyShot['finish'], zone: Number(zoneSelect.value), complete: seriesSelect.value === 'complete' });
   started = performance.now(); playing = true;
 });
 function tick() {

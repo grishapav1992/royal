@@ -1,6 +1,6 @@
 {
   "date": "2026-10-22",
-  "purpose": "CR vs Leo neutral stadium loop, goal and missed-chance reactions, and the two requested signature phrases.",
+  "purpose": "CR vs Leo neutral stadium loop, goal and missed-chance reactions, boot contact and the two requested signature phrases.",
   "tool": "FFmpeg 7.1 via imageio-ffmpeg 0.6.0; no speech synthesis or voice imitation.",
   "recordings": [
     {
@@ -48,17 +48,18 @@
     },
     {
       "key": "cr",
-      "page": "https://www.myinstants.com/en/instant/siuuuuuuuu-75152/",
-      "url": "https://www.myinstants.com/media/sounds/siuuuuuuuu.mp3",
-      "bytes": 30554,
-      "sourceSha256": "842dfae113d22de15663893ee7fe66d43c9830b0cab54fa1e45bf34242feb2fb",
+      "page": "https://www.myinstants.com/en/instant/ronaldo-siuuuu-24695/",
+      "url": "https://www.myinstants.com/media/sounds/ronaldo-siuuuu.mp3",
+      "bytes": 74857,
+      "credit": "Myinstants uploader juan609",
+      "sourceSha256": "667664e435dc593e17a4ba298f222305ff26626bface8572406324a4cb872fc5",
       "file": "public/assets/cr-vs-leo/audio/v1/siuuu.mp3",
-      "sha256": "7461481ada4043e7010588fb58840dc2ee3303d8338d86561622d3156f88b79f",
-      "startSeconds": 0,
-      "durationSeconds": 1.83,
-      "processing": "44.1 kHz stereo, filtered, level matched, attack and release fades",
+      "sha256": "bb04818d6538e4e28b6d915b7893bbccbb38d760d34afb092c4677f220e5f474",
+      "startSeconds": 2,
+      "durationSeconds": 4.617687074829932,
+      "processing": "User-selected option 02 with the first two seconds removed; original timing and pitch, 44.1 kHz stereo, filtered, level matched, short attack and release fades",
       "license": "User-requested short recording excerpt; uploader does not specify a reuse license",
-      "credit": "Myinstants uploader akakasneci"
+      "siuuuCueSeconds": 2.5
     },
     {
       "key": "leo",
@@ -73,6 +74,20 @@
       "processing": "44.1 kHz stereo, filtered, level matched, attack and release fades",
       "license": "User-requested short recording excerpt; uploader does not specify a reuse license",
       "credit": "Myinstants uploader marcel168"
+    },
+    {
+      "key": "kick",
+      "page": "https://mixkit.co/free-sound-effects/soccer/",
+      "url": "https://assets.mixkit.co/active_storage/sfx/2099/2099-preview.mp3",
+      "bytes": 23448,
+      "credit": "Mixkit, Soccer ball kick, item 2099",
+      "license": "Mixkit Sound Effects Free License",
+      "sourceSha256": "8cefbbc5e4efeed614f9c2f7cff26f322910515ca3c25d9796e180227e4bdd86",
+      "file": "public/assets/cr-vs-leo/audio/v1/kick.mp3",
+      "sha256": "4390e06290de978bbd5a38d87f9d1c0c6952f4f489af0f38b411334908741651",
+      "startSeconds": 0.165,
+      "durationSeconds": 1.3889569160997732,
+      "processing": "User-selected option 03, Mixkit Soccer ball kick 2099; 165 ms leading silence removed to align contact, original pitch, filtered and peak matched to 0.70, 2 ms attack and 40 ms release fades"
     }
   ]
 }

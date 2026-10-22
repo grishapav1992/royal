@@ -1,7 +1,7 @@
 import { gameAudio } from '../game/GameAudio';
 import type { PenaltyHero } from '../shared/crLeo';
 
-export const CR_LEO_SOUNDS = ['stadium', 'goal', 'miss', 'siuuu', 'ankara-messi'] as const;
+export const CR_LEO_SOUNDS = ['stadium', 'goal', 'miss', 'siuuu', 'ankara-messi', 'kick'] as const;
 type Clip = typeof CR_LEO_SOUNDS[number];
 type Role = 'ambience' | 'reaction' | 'voice' | 'effect';
 export interface CrLeoAudioPorts {
@@ -102,7 +102,7 @@ export class CrLeoAudio {
     const c = this.context, buffer = this.buffers.get(clip);
     if (!this.allowed() || !c || !this.master || !buffer) return;
     const source = c.createBufferSource(), gain = c.createGain(); source.buffer = buffer; source.loop = loop;
-    const at = c.currentTime + delay; gain.gain.setValueAtTime(0, at); gain.gain.linearRampToValueAtTime(volume, at + (loop ? .6 : .025));
+    const at = c.currentTime + delay; gain.gain.setValueAtTime(0, at); gain.gain.linearRampToValueAtTime(volume, at + (loop ? .6 : clip === 'kick' ? .002 : .025));
     source.connect(gain).connect(this.master); const live = this.attach(source, gain, role);
     source.start(at); this.played[clip] = (this.played[clip] ?? 0) + 1;
     return live;
@@ -122,16 +122,21 @@ export class CrLeoAudio {
   }
   kick() {
     this.stop('voice'); this.stop('reaction');
-    this.tone(170, .16, .5, 50); this.tone(1600, .07, .12, 250, 0, 'triangle');
+    this.clip('kick', 'effect', 1);
     if (this.allowed() && this.crowd && this.context) this.crowd.gain.gain.setTargetAtTime(.42, this.context.currentTime, .25);
   }
-  goal(hero: PenaltyHero) {
+  goal() {
     this.stop('voice'); this.stop('reaction');
-    this.clip('goal', 'reaction', .70); this.clip(hero === 'cr' ? 'siuuu' : 'ankara-messi', 'voice', 1, .22); this.mix();
+    this.clip('goal', 'reaction', .70); this.mix();
+  }
+  celebrate(hero: PenaltyHero) {
+    this.stop('voice');
+    this.clip(hero === 'cr' ? 'siuuu' : 'ankara-messi', 'voice', 1); this.mix();
   }
   event(event: 'kick' | 'goal' | 'post' | 'save' | 'wall' | 'celebrate', hero: PenaltyHero) {
-    if (event === 'kick') this.kick(); else if (event === 'goal') this.goal(hero);
-    else if (event === 'wall') this.wall(); else if (event !== 'celebrate') this.miss(event === 'post');
+    if (event === 'kick') this.kick(); else if (event === 'goal') this.goal();
+    else if (event === 'celebrate') this.celebrate(hero);
+    else if (event === 'wall') this.wall(); else this.miss(event === 'post');
   }
   wall() { this.miss(false); this.tone(95, .18, .28, 35); this.tone(450, .07, .08, 180, 0, 'triangle'); }
   miss(post: boolean) {

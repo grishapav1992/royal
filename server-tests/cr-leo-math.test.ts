@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { PENALTY_RISKS, PENALTY_BETS, penaltyQuote, penaltyPathQuote, penaltyZone, validPenaltySettings, validPenaltyView, type PenaltyRisk, type PenaltyHero } from '../src/shared/crLeo';
 import { validExpansionAction } from '../src/shared/casinoExpansion';
 import { startPenalty, movePenalty } from '../server/games/crLeo';
-import { celebrationPose, flightPosition, keeperPlacement, PENALTY_CONTACT, PENALTY_RESULT, shotPose, shotTarget, strikePlacement, strikeAnchors } from '../src/ui/crLeoTimeline';
+import { celebrationPose, celebrationTime, celebrationDuration, CR_SIUU_AT, CR_JUMP_TAKEOFF, CR_JUMP_LANDING, flightPosition, keeperPlacement, PENALTY_CONTACT, PENALTY_RESULT, shotPose, shotTarget, strikePlacement, strikeAnchors } from '../src/ui/crLeoTimeline';
 import { spriteParts } from '../src/ui/crLeoSprites';
 
 test('each risk has its exact advertised chance and both heroes share the outcome distribution', () => {
@@ -70,6 +70,21 @@ test('atlas extraction keeps a whole diving body that crosses a cell and rejects
   assert(parts.every(Boolean)); assert.equal(parts[2]!.left, 39); assert.equal(parts[2]!.right, 60);
   assert.notEqual(labels[8 * width + 39], parts[1]!.id);
   assert.equal(parts[1]!.area, 65);
+});
+
+test('CR lands on the selected recording cue after five goals while early cashout and Leo keep their choreography', () => {
+  const lead = CR_SIUU_AT - CR_JUMP_LANDING;
+  assert.equal(celebrationPose(0, 'cr', true), 7);
+  assert.equal(celebrationPose(lead + .01, 'cr', true), 8);
+  assert.equal(celebrationPose(lead + CR_JUMP_TAKEOFF + .01, 'cr', true), 10);
+  assert.equal(celebrationPose(CR_SIUU_AT - .001, 'cr', true), 10);
+  assert.equal(celebrationPose(CR_SIUU_AT + .001, 'cr', true), 11);
+  assert(Math.abs(celebrationTime(CR_SIUU_AT, 'cr', true) - CR_JUMP_LANDING) < 1e-9);
+  assert(celebrationDuration('cr', true) > 4.62);
+  assert.equal(celebrationDuration('cr'), 4.3);
+  assert.equal(celebrationPose(.9, 'cr'), 10);
+  assert.equal(celebrationDuration('leo', true), 4.3);
+  for (const t of [0, .6, 1.2, 1.8, 3]) assert.equal(celebrationPose(t, 'leo', true), celebrationPose(t, 'leo'));
 });
 
 test('right and left strike anchors land exactly on the same penalty ball',()=>{for(const hero of ['cr','leo'] as const){const ball={x:640,y:420},size=260,place=strikePlacement(hero,ball,size),toe=strikeAnchors[hero];assert(Math.abs(place.x+(toe.x-.5)*size-ball.x)<1e-9);assert(Math.abs(place.bottom+(.0+toe.y-.94)*size-ball.y)<1e-9);}});

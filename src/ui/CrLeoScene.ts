@@ -4,7 +4,7 @@ import { crLeoAssets } from './crLeoAssets';
 import { drawFootball } from './crLeoBall';
 import { drawPitch } from './crLeoPitch';
 import { penaltyZone, shotZone, type PenaltyHero, type PenaltyRisk, type PenaltyView } from '../shared/crLeo';
-import { celebrationPose, flightPosition, keeperPlacement, PENALTY_CELEBRATION, PENALTY_CONTACT, shotPose, shotTarget, shotTiming, shotBallRadius, shotBallRotation, strikePlacement } from './crLeoTimeline';
+import { celebrationPose, celebrationTime, celebrationDuration, CR_JUMP_TAKEOFF, CR_JUMP_LANDING, flightPosition, keeperPlacement, PENALTY_CONTACT, shotPose, shotTarget, shotTiming, shotBallRadius, shotBallRotation, strikePlacement } from './crLeoTimeline';
 import { freeKickFlight, isWallHit, shotLayout, wallMotion, wallCrossing, type FreeKickWall } from './crLeoFreeKick';
 
 const clamp = (n: number, a = 0, b = 1) => Math.max(a, Math.min(b, n));
@@ -60,7 +60,8 @@ export class CrLeoScene {
     const t = (now - this.started) / 1000;
     const paid = this.view?.status === 'complete', lost = this.view?.status === 'lost';
     const timing = shotTiming(this.view?.risk ?? this.previewRisk, this.view?.shots.at(-1));
-    const duration = this.mode === 'celebrate' ? PENALTY_CELEBRATION : this.mode === 'shot' ? paid ? timing.celebration + PENALTY_CELEBRATION : lost ? timing.result + 2.3 : timing.ready : 0;
+    const celebration = celebrationDuration(this.hero, !!paid);
+    const duration = this.mode === 'celebrate' ? celebration : this.mode === 'shot' ? paid ? timing.celebration + celebration : lost ? timing.result + 2.3 : timing.ready : 0;
     return { busy: t < duration, reveal: this.mode !== 'shot' || t >= timing.result, phase: this.mode === 'shot' && t < timing.result ? 'shooting' : this.view?.status ?? 'idle', t };
   }
   private wall(wall: FreeKickWall, u: number, hit: boolean) {
@@ -97,7 +98,8 @@ export class CrLeoScene {
     const keeperScale = gh * (1.90 / 2.44) / (keeperReference.height * h * .27);
     const keeperReadyY = gb + (.94 - keeperReference.y - keeperReference.height) * h * .27 * keeperScale;
     drawPitch(c, layout.pitch, this.images.get('stadium-free'));
-    const ct = this.mode === 'celebrate' ? t : this.mode === 'restored' ? PENALTY_CELEBRATION : t - timing.celebration;
+    const fullSeries = view?.status === 'complete';
+    const ct = this.mode === 'celebrate' ? t : this.mode === 'restored' ? celebrationDuration(this.hero, fullSeries) : t - timing.celebration;
     const shotTime = playing ? t : 0, flight = playing && shot && t >= PENALTY_CONTACT;
     const geometry = layout.goal, zone = shot ? shotZone(shot, view?.risk) : penaltyZone(13), side = zone.side;
     const netImpact = netActive ? { x: zone.x, y: zone.y, age: netAge } : undefined;
@@ -138,8 +140,9 @@ export class CrLeoScene {
     }
     let pose = this.mode === 'restored' && view?.status === 'lost' ? 14 : playing ? shotPose(t, this.hero, shot, risk) : 0;
     if (celebrating) {
-      pose = celebrationPose(ct, this.hero); hx = goalX; heroSize *= 1.06; footY = h * .94;
-      if (this.hero === 'cr' && ct >= .80 && ct < 1.35) footY -= Math.sin(clamp((ct - .80) / .55) * Math.PI) * h * .07;
+      pose = celebrationPose(ct, this.hero, fullSeries); hx = goalX; heroSize *= 1.06; footY = h * .94;
+      const motion = celebrationTime(ct, this.hero, fullSeries);
+      if (this.hero === 'cr' && motion >= CR_JUMP_TAKEOFF && motion < CR_JUMP_LANDING) footY -= Math.sin(clamp((motion - CR_JUMP_TAKEOFF) / (CR_JUMP_LANDING - CR_JUMP_TAKEOFF)) * Math.PI) * h * .07;
     }
     const progress = (shotTime-PENALTY_CONTACT)/(timing.flightEnd-PENALTY_CONTACT);
     const p = layout.wall && shot ? freeKickFlight(progress,from,target,layout.wall,shot) : flightPosition(shotTime, from, target, zone.row === 2 ? .025 : zone.row === 1 ? .12 : .30, side * gw * (zone.column === 0 || zone.column === 5 ? .025 : .008));
@@ -190,7 +193,7 @@ export class CrLeoScene {
     canvas.dataset.ballLayer = atGoal ? 'behind-goal' : behindWall ? 'behind-wall' : 'behind-player';
     if (playing && t >= PENALTY_CONTACT) this.emit('kick');
     if (playing && t >= timing.result && shot) this.emit(shot.goal ? 'goal' : wallHit ? 'wall' : shot.finish === 'post' ? 'post' : 'save');
-    if (celebrating && this.mode !== 'restored') this.emit('celebrate');
+    if (celebrating && this.mode !== 'restored' && view?.status === 'complete' && view.shots.length === 5 && view.shots.every(s => s.goal)) this.emit('celebrate');
   }
   destroy() { this.alive = false; this.releaseAssets(); this.images.clear(); this.frames.clear(); }
 }
