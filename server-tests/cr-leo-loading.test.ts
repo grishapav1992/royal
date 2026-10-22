@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { CrLeoAssetStore, type CrLeoAsset } from '../src/ui/crLeoAssets';
+import { CR_LEO_ASSETS } from '../src/ui/crLeoAssetManifest';
 
 const specs = ['a','b','c','d','e'].map((key,i) => ({ key, file:key+'.webp', bytes:(i+1)*100 }));
 const asset = (): CrLeoAsset => ({ image: {} as HTMLImageElement });
@@ -41,13 +42,13 @@ test('a failed image blocks the game, retries only unfinished art and preserves 
 });
 
 test('the last image keeps the whole game loading, then every mode and player switch reuses the complete cache',async()=>{
-  const all=Array.from({length:9},(_,i)=>({key:String(i),file:i+'.webp',bytes:100}));
+  const all=Array.from({length:CR_LEO_ASSETS.length},(_,i)=>({key:String(i),file:i+'.webp',bytes:100}));
   const jobs=new Map(all.map(spec=>[spec.key,deferred()])),calls:string[]=[];
   const store=new CrLeoAssetStore(all,spec=>{calls.push(spec.key);return jobs.get(spec.key)!.promise;});
   const pending=store.start();
-  for(let i=0;i<8;i++)jobs.get(String(i))!.resolve(asset());
-  await flush();assert.equal(calls.length,9);assert.equal(store.state().ready,false);assert(store.state().percent<100);
-  jobs.get('8')!.resolve(asset());await pending;assert.equal(store.state().ready,true);assert.equal(store.state().percent,100);
+  for(let i=0;i<all.length-1;i++)jobs.get(String(i))!.resolve(asset());
+  await flush();assert.equal(calls.length,all.length);assert.equal(store.state().ready,false);assert(store.state().percent<100);
+  jobs.get(String(all.length-1))!.resolve(asset());await pending;assert.equal(store.state().ready,true);assert.equal(store.state().percent,100);
   for(let hero=0;hero<2;hero++)for(let risk=0;risk<3;risk++){await store.start();assert.equal(store.state().ready,true);}
-  assert.equal(calls.length,9);
+  assert.equal(calls.length,all.length);
 });

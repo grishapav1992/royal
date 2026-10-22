@@ -1,8 +1,9 @@
 import { drawGoalFrame, drawGoalNet } from './crLeoGoal';
 import { type SpriteFrame } from './crLeoSprites';
 import { crLeoAssets } from './crLeoAssets';
+import { drawFootball } from './crLeoBall';
 import { penaltyZone, shotZone, type PenaltyHero, type PenaltyRisk, type PenaltyView } from '../shared/crLeo';
-import { celebrationPose, flightPosition, keeperPlacement, PENALTY_CELEBRATION, PENALTY_CONTACT, shotPose, shotTarget, shotTiming, shotBallRadius, strikePlacement } from './crLeoTimeline';
+import { celebrationPose, flightPosition, keeperPlacement, PENALTY_CELEBRATION, PENALTY_CONTACT, shotPose, shotTarget, shotTiming, shotBallRadius, shotBallRotation, strikePlacement } from './crLeoTimeline';
 import { freeKickFlight, isWallHit, shotLayout, wallMotion, wallCrossing, type FreeKickWall } from './crLeoFreeKick';
 
 const clamp = (n: number, a = 0, b = 1) => Math.max(a, Math.min(b, n));
@@ -27,7 +28,7 @@ export class CrLeoScene {
     this.ctx = canvas.getContext('2d')!;
     canvas.dataset.renderer = 'canvas2d'; canvas.dataset.assets = '0';
     this.releaseAssets = crLeoAssets.subscribe(() => {
-      for (const name of ['stadium','stadium-free','cr','leo','keeper','keeper-reach','keeper-dive','wall','wall-far']) {
+      for (const name of ['stadium','stadium-free','cr','leo','keeper','keeper-reach','keeper-dive','wall','wall-far','ball']) {
         const asset = crLeoAssets.get(name); if (!asset) continue;
         this.images.set(name, asset.image); if (asset.frames) this.frames.set(name, asset.frames);
       }
@@ -69,11 +70,6 @@ export class CrLeoScene {
     const img = this.images.get(name); if (!img) return;
     const c = this.ctx, sw = img.width / cols, sh = img.height / rows;
     c.save(); c.globalAlpha = alpha; const frame = this.frames.get(name)?.[cell], pivot = grounded && frame ? frame.y + frame.height : .94; if (frame) c.drawImage(frame.image, x - size / 2 + frame.x * size, bottom - size * pivot + frame.y * size, frame.width * size, frame.height * size); else c.drawImage(img, (cell % cols) * sw, Math.floor(cell / cols) * sh, sw, sh, x - size / 2, bottom - size * .94, size, size); c.restore();
-  }
-  private ball(x: number, y: number, radius: number, rotation: number, alpha = 1) {
-    const c = this.ctx; c.save(); c.globalAlpha = alpha; c.translate(x, y); c.rotate(rotation);
-    const g = c.createRadialGradient(-radius * .3, -radius * .4, 1, 0, 0, radius); g.addColorStop(0, '#ffffff'); g.addColorStop(.65, '#eeeeea'); g.addColorStop(1, '#939e9c'); c.fillStyle = g; c.beginPath(); c.arc(0, 0, radius, 0, Math.PI * 2); c.fill();
-    c.fillStyle = '#17242a'; for (let i = 0; i < 5; i++) { const a = i * Math.PI * .4; c.beginPath(); c.moveTo(Math.cos(a) * radius * .65, Math.sin(a) * radius * .65); c.lineTo(Math.cos(a + .45) * radius * .45, Math.sin(a + .45) * radius * .45); c.lineTo(Math.cos(a - .45) * radius * .45, Math.sin(a - .45) * radius * .45); c.fill(); } c.restore();
   }
   paint(now: number) {
     if (!this.alive || !this.ready()) return;
@@ -126,7 +122,7 @@ export class CrLeoScene {
     let heroSize = h * (this.hero === 'cr' ? .59 : .55), footY = h * .93;
     const sign = this.hero === 'cr' ? 1 : -1;
     const run = playing ? clamp((t - .46) / (PENALTY_CONTACT - .46)) : 0;
-    const from = layout.ball, strike = strikePlacement(this.hero, from, heroSize);
+    const from = layout.ball, strike = strikePlacement(this.hero, from, heroSize, shotBallRadius(h, risk));
     let hx = from.x - sign * heroSize * .34; hx += (strike.x - hx) * run; footY += (strike.bottom - footY) * run;
     if (layout.free && playing && !celebrating) {
       const step = clamp((t-PENALTY_CONTACT-.08)/.34), ease = step*step*(3-2*step);
@@ -141,17 +137,22 @@ export class CrLeoScene {
     const p = layout.wall && shot ? freeKickFlight(progress,from,target,layout.wall,shot) : flightPosition(shotTime, from, target, zone.row === 2 ? .025 : zone.row === 1 ? .12 : .30, side * gw * (zone.column === 0 || zone.column === 5 ? .025 : .008));
     const crossing = wallCrossing(risk);
     const r = shotBallRadius(h, risk, p.u, wallHit);
+    const rotation = flight ? shotBallRotation(t, this.hero, risk, timing.result, !!caughtBall) : 0;
     let ballDraws = 0;
     const drawBall = () => { if (!celebrating) {
       ballDraws++;
-      if (!flight) this.ball(from.x, from.y, shotBallRadius(h, risk), 0);
+      if (!flight) {
+        const radius = shotBallRadius(h, risk);
+        c.save(); c.fillStyle = '#102a2380'; c.beginPath(); c.ellipse(from.x, from.y + radius * .88, radius * 1.15, radius * .28, 0, 0, Math.PI * 2); c.fill(); c.restore();
+        drawFootball(c, this.frames.get('ball')!, from.x, from.y, radius, 0);
+      }
       else {
         let bx = p.x, by = p.y, alpha = 1;
         if (t > timing.result && shot?.goal) by = Math.min(gb - r, by + clamp((t - timing.result) / .4) * gh * .3);
         if (t > timing.result && shot?.finish === 'post') { bx -= side * clamp((t - timing.result) / .6) * gw * .23; by += clamp((t - timing.result) / .6) * h * .12; }
         if (t > timing.result && shot?.finish === 'wide' && !wallHit) { bx += side * clamp((t - timing.result) / .6) * gw * .22; if (zone.row === 0) by -= clamp((t - timing.result) / .6) * gh * .25; alpha = 1 - clamp((t - timing.result) / .7); }
         if (caughtBall) { bx = caughtBall.x; by = caughtBall.y; }
-        this.ball(bx, by, r, t * 17, alpha);
+        drawFootball(c, this.frames.get('ball')!, bx, by, r, rotation, alpha);
       }
     } };
     const behindWall = !!layout.wall && !!flight && p.u > crossing && !wallHit;
@@ -161,18 +162,20 @@ export class CrLeoScene {
     if (behindWall && !atGoal) drawBall();
     if (layout.wall) this.wall(layout.wall, playing ? progress : -1, wallHit && !!playing);
     c.fillStyle = '#17271d42'; c.beginPath(); c.ellipse(hx, footY - heroSize * .02, heroSize * .21, heroSize * .045, 0, 0, Math.PI * 2); c.fill();
-    this.sprite(this.hero, pose, hx, footY, heroSize, 4, 4, 1, celebrating && this.hero === 'leo');
+    // The kicker is nearer to the camera than the ball, including the follow-through.
     if (!behindWall && !atGoal) drawBall();
+    this.sprite(this.hero, pose, hx, footY, heroSize, 4, 4, 1, celebrating && this.hero === 'leo');
     const shade = c.createLinearGradient(0, h * .72, 0, h); shade.addColorStop(0, '#071b1500'); shade.addColorStop(1, '#071b1577'); c.fillStyle = shade; c.fillRect(0, h * .72, w, h * .28);
     canvas.dataset.ballDraws = String(ballDraws); canvas.dataset.ballHeld = String(!!caughtBall);
     canvas.dataset.ballRadius = String(flight ? r : shotBallRadius(h,risk));
+    canvas.dataset.ballRotation = rotation.toFixed(4);
     canvas.dataset.goalGeometry = JSON.stringify(geometry); canvas.dataset.netMoving = String(!!netImpact && netImpact.age > 0 && netImpact.age < .8);
     canvas.dataset.hero = this.hero; canvas.dataset.pose = String(pose); canvas.dataset.phase = state.phase; canvas.dataset.reveal = String(state.reveal); canvas.dataset.kickingFoot = this.hero === 'cr' ? 'right' : 'left';
     canvas.dataset.zone = shot && state.reveal ? String(zone.id) : ''; canvas.dataset.keeperPose = keeperName + ':' + keeperFrame;
     canvas.dataset.scene = layout.far ? 'far-free-kick' : layout.near ? 'near-free-kick' : 'penalty'; canvas.dataset.wallCount = String(layout.wall?.count ?? 0);
     canvas.dataset.wallPose = layout.wall ? String(wallMotion(playing?progress:-1,h,wallHit,crossing).row) : '';
     canvas.dataset.route = layout.wall && shot && state.reveal ? freeKickFlight(progress,from,target,layout.wall,shot).route : '';
-    canvas.dataset.ballLayer = behindWall ? 'behind-wall' : 'front';
+    canvas.dataset.ballLayer = atGoal ? 'behind-goal' : behindWall ? 'behind-wall' : 'behind-player';
     if (playing && t >= PENALTY_CONTACT) this.emit('kick');
     if (playing && t >= timing.result && shot) this.emit(shot.goal ? 'goal' : wallHit ? 'wall' : shot.finish === 'post' ? 'post' : 'save');
     if (celebrating && this.mode !== 'restored') this.emit('celebrate');

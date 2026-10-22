@@ -1,0 +1,56 @@
+{
+  "release": "cr-leo-ball-20261022-v1",
+  "baseCommit": "36e53c9b08ab63b505e10c720796b3bf6b3139e6",
+  "moduleVersion": "1.0.0-5f95c90ad433",
+  "sourceSha256": "5f95c90ad433883ace502aa1454c4f9956d2ab56341aaf1e4504064bd6b8efbb",
+  "changes": {
+    "src/ui/CrLeoScene.ts": "e14b539284db38b4f5de22b73e04ce273f5b592174773a867dd8e711bb686ec6",
+    "src/ui/crLeoTimeline.ts": "c943553f0bab3a06be899cf514e979473a156bb30ad03d3a1032b6df90eb1e3f",
+    "src/ui/crLeoAssetManifest.ts": "815b84ca76ea622a41fd0d550b733618e805f9e09d0efba89d0e3f36d0059298",
+    "src/ui/crLeoAssets.ts": "dcd36c0d417807b6780c47a4cf8da6c8e7b2f70f2146d4bf7636c8a87623c41f",
+    "src/ui/crLeoBall.ts": "e4349f388c356c71f4f0a46c528b11ff285c381b57de658e20a8713953ce9c25",
+    "public/assets/cr-vs-leo/v2/ball-ordem-v-atlas.webp": "203f3599b96d2b0d0aeddac43e2a417a28b44045e00ab02aa7924150cc75b55f",
+    "docs/cr-vs-leo.md": "62a8a0d7fcdf6c3059b6b2f389b02c703af3804ba51a88ed4f23848800b05ffe",
+    "docs/artwork/cr-leo-ball-ordem-v.json": "56613e76cb6efebc608f1efb85ad88f0ec067f3e8a946b9938f9b783acd93c8f"
+  },
+  "buildSources": {
+    "games/cr-vs-leo/entry.ts": "fee36c75c9198d97545a0fd69ff68683511442582d4e8fbcff3f05e662eda932",
+    "src/modules/GameHostContract.ts": "b554b9672d551a9d95a1fd27e1483fb9a0ba9b8fed13506c1e17e3f5003259c6",
+    "src/shared/crLeo.ts": "f0c9eae07611011cd3675eec1ed8a46a00f2f84822d8430a4b4267e6bfe15b38",
+    "src/ui/CrLeoAudio.ts": "504d24f6874526b48555a62da7f006239f886f19666654f3fcefab752df92302",
+    "src/ui/CrLeoScene.ts": "e14b539284db38b4f5de22b73e04ce273f5b592174773a867dd8e711bb686ec6",
+    "src/ui/CrLeoUI.ts": "cb63f727b37cb75fca47a28081ef3e12c8393feb6a46531705c07fd8bd95658a",
+    "src/ui/cr-leo.css": "3c8329801aa497aebdff2da8ef392c9f40d65ac888ac834e25705a6dca2a9131",
+    "src/ui/crLeoAssetManifest.ts": "815b84ca76ea622a41fd0d550b733618e805f9e09d0efba89d0e3f36d0059298",
+    "src/ui/crLeoAssets.ts": "dcd36c0d417807b6780c47a4cf8da6c8e7b2f70f2146d4bf7636c8a87623c41f",
+    "src/ui/crLeoBall.ts": "e4349f388c356c71f4f0a46c528b11ff285c381b57de658e20a8713953ce9c25",
+    "src/ui/crLeoFreeKick.ts": "6f51def70a922a09ee12c0a897ffa934498856f9d2899bfc1c561c127aa1102c",
+    "src/ui/crLeoGoal.ts": "d870d8bb47c1f0272fd0393095f1e43162b588ff9ed690d89ab9d995165182a7",
+    "src/ui/crLeoSprites.ts": "67013625467f78241d5e0ce9098bc7dd950341b302e3d9fb6317e8addef7e427",
+    "src/ui/crLeoTimeline.ts": "c943553f0bab3a06be899cf514e979473a156bb30ad03d3a1032b6df90eb1e3f"
+  },
+  "packageFiles": {
+    "entry-0be00cd2e67e454e.js": "0be00cd2e67e454e039407d2c9dffa404b6a38ab435edb0992924c2897fb9535",
+    "media/cr-vs-leo/v2/ball-ordem-v-atlas.webp": "203f3599b96d2b0d0aeddac43e2a417a28b44045e00ab02aa7924150cc75b55f",
+    "media/cr-vs-leo/v2/cr-white-thumb.webp": "f74054bb9714f7a1f6e31a22c84c214b399d053efdad65eaceb3cc136392d36c",
+    "media/cr-vs-leo/v2/cr-white.webp": "6f17d912319ab61c745c4e60b784962d0830875f1781c1d7ed54a30d9f5fae0e",
+    "media/cr-vs-leo/v2/keeper-dive.webp": "42d1e309b730eda13c1c44290c4c813ec9e5ac9e45e64204593db15264bbffba",
+    "media/cr-vs-leo/v2/keeper-empty.webp": "9b5291eaffeb17215ae0efd98fe971db0f9d4852c3d5dbd10e1a6383b2f6a10f",
+    "media/cr-vs-leo/v2/keeper-reach.webp": "1149b45f40bff1882c4e79bf582f509433bdc71a45a162ca77ad8aaf6bdb9302",
+    "media/cr-vs-leo/v2/leo-thumb.webp": "fc205e3b36032e68c64e166a710b15bf0bcb685a1b5f7aea2d3ee02c469d953c",
+    "media/cr-vs-leo/v2/leo.webp": "dc352bac0f7c21079ea437ebac94395793ae54a00148505b17e86ce27f35ba92",
+    "media/cr-vs-leo/v2/stadium-free.webp": "91024de3d3cbe29293e6461c23c4a59109c0afc7dfb13731a0e203d5ce98409c",
+    "media/cr-vs-leo/v2/stadium.webp": "40836e046fcbf157e80b6afc6b497c623c695051944e97fd7b10cc77cf408ea3",
+    "media/cr-vs-leo/v2/wall-far.webp": "8676722cdd894272f155c5a8613e5aa052903541230eddae0e612df3fc34535d",
+    "media/cr-vs-leo/v2/wall.webp": "bf9daf9caa361b0ac43fe82bd690019f3c6d709d15990da6dec2f90afd15d46a",
+    "style-c933f58f5abda6a3.css": "c933f58f5abda6a3e223b6abe2683653cf6d58094311309a77998eb531783611",
+    "manifest.json": "5d240045f5a6fd6c657ec6d68352ce5cc8e88e30802f56b7752690ad45eb7dbd"
+  },
+  "helpers": {
+    "deploy.py": "dd27a90ab1008ee301a2f1631a5cb3edfd9b120feaca81a9ac58187cd1e69cad",
+    "snapshot.py": "68ff2ec187fd38f39ffc2ad3b8d4c4b5d6515386748d0a6d4f318b8a2a536df3",
+    "publisher.py": "bc5589c8f96e452841d4fbeb8661783194f29cee5b8b32bb72b18a108c471a7a"
+  },
+  "priorPointerSha256": "6933306af58375daca0b86f8f6552d41720f9ddff277592321314ce9407a93d9",
+  "sourceCountBefore": 1517
+}

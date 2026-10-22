@@ -16,10 +16,20 @@ export function shotBallRadius(height: number, risk: PenaltyRisk, progress = 0, 
   const scale = blocked && u > crossing ? 1-crossing*.70+(u-crossing)*.20 : 1-u*(risk==='extreme'?.80:risk==='sharp'?.70:.60);
   return Math.max(5.5, height*.015, Math.max(8, height*.028)*scale);
 }
+/** Cosmetic spin starts at contact, mirrors the kicking foot and settles after impact. */
+export function shotBallRotation(t: number, hero: PenaltyHero, risk: PenaltyRisk, result = PENALTY_RESULT, held = false) {
+  const rate = risk === 'safe' ? 13 : risk === 'sharp' ? 15 : 17;
+  const elapsed = Math.max(0, t - PENALTY_CONTACT), duration = Math.max(0, result - PENALTY_CONTACT);
+  const after = Math.max(0, elapsed - duration);
+  const rotation = rate * (Math.min(elapsed, duration) + (held ? 0 : .28 * (1 - Math.exp(-after / .28))));
+  return (hero === 'cr' ? 1 : -1) * rotation;
+}
 export const strikeAnchors = { cr: { x: .79, y: .88 }, leo: { x: .22, y: .87 } } as const;
-export function strikePlacement(hero: PenaltyHero, ball: {x:number;y:number}, size: number) {
+export function strikePlacement(hero: PenaltyHero, ball: {x:number;y:number}, size: number, radius = 0) {
   const toe = strikeAnchors[hero];
-  return { x: ball.x - (toe.x - .5) * size, bottom: ball.y + (.94 - toe.y) * size };
+  const sign = hero === 'cr' ? 1 : -1;
+  // Meet the near surface with the instep instead of putting the toe in the centre.
+  return { x: ball.x - sign * radius * .8 - (toe.x - .5) * size, bottom: ball.y + radius * .6 + (.94 - toe.y) * size };
 }
 export function shotPose(t: number, hero: PenaltyHero, shot?: PenaltyShot, risk?: PenaltyRisk): number {
   const timing = shotTiming(shot?.risk ?? risk, shot);

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { penaltyZone, type PenaltyShot } from '../src/shared/crLeo';
 import { freeKickFlight, isWallHit, shotLayout, wallContact, wallMotion, wallCrossing, WALL_CROSSING } from '../src/ui/crLeoFreeKick';
-import { shotPose, shotTarget, shotTiming, shotBallRadius, strikePlacement, strikeAnchors } from '../src/ui/crLeoTimeline';
+import { shotPose, shotTarget, shotTiming, shotBallRadius, shotBallRotation, PENALTY_CONTACT, strikePlacement, strikeAnchors } from '../src/ui/crLeoTimeline';
 import { goalNetPoint } from '../src/ui/crLeoGoal';
 import { spriteParts } from '../src/ui/crLeoSprites';
 
@@ -100,5 +100,32 @@ test('football stays visible throughout every shot and rebound, including the di
     for(let i=0;i<=100;i++){const radius=shotBallRadius(h,risk,i/100);assert(radius>=5.5&&radius>=h*.015&&radius<=start);assert(radius<=previous+1e-9);previous=radius;}
     const crossing=wallCrossing(risk);assert(shotBallRadius(h,risk,1,true)>shotBallRadius(h,risk,crossing,true));
     assert.equal(shotBallRadius(h,risk,-1),start);assert.equal(shotBallRadius(h,risk,2),shotBallRadius(h,risk,1));
+  }
+});
+
+test('both kicking feet contact the near surface rather than intersecting the centre of the football', () => {
+  for (const hero of ['cr', 'leo'] as const) for (const risk of ['safe', 'sharp', 'extreme'] as const) for (const height of [330, 385, 560]) {
+    const ball = shotLayout(640, height, hero, risk).ball, size = height * (hero === 'cr' ? .59 : .55), radius = shotBallRadius(height, risk);
+    const placement = strikePlacement(hero, ball, size, radius), anchor = strikeAnchors[hero];
+    const toe = { x: placement.x + (anchor.x - .5) * size, y: placement.bottom + (anchor.y - .94) * size };
+    assert(Math.abs(Math.hypot(toe.x - ball.x, toe.y - ball.y) - radius) < 1e-8);
+    assert(toe.y > ball.y);
+    assert(hero === 'cr' ? toe.x < ball.x : toe.x > ball.x);
+  }
+});
+
+test('spin starts continuously at contact, mirrors the foot and stops when the keeper holds the ball', () => {
+  for (const risk of ['safe', 'sharp', 'extreme'] as const) {
+    const timing = shotTiming(risk);
+    assert.equal(shotBallRotation(0, 'cr', risk), 0);
+    assert.equal(shotBallRotation(PENALTY_CONTACT, 'cr', risk), 0);
+    assert(shotBallRotation(PENALTY_CONTACT + .001, 'cr', risk) < .02);
+    for (const t of [1.15, 1.3, timing.result, timing.result + 1]) {
+      assert.equal(shotBallRotation(t, 'cr', risk, timing.result), -shotBallRotation(t, 'leo', risk, timing.result));
+    }
+    const caught = shotBallRotation(timing.result, 'cr', risk, timing.result, true);
+    assert.equal(shotBallRotation(timing.result + 2, 'cr', risk, timing.result, true), caught);
+    const a = shotBallRotation(timing.result + .2, 'cr', risk, timing.result), b = shotBallRotation(timing.result + .4, 'cr', risk, timing.result), c = shotBallRotation(timing.result + .6, 'cr', risk, timing.result);
+    assert(a < b && b < c && c - b < b - a);
   }
 });
