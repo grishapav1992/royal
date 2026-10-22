@@ -6,9 +6,11 @@ import { AmbientGuests } from './ambientGuests';
 import { RoomCat } from './cat';
 import { chatModerator } from './moderation';
 import { chatSpam } from './chatSpam';
+import { chatQueue } from './chatQueue';
 import { guardBumps } from './guardBumps';
 import { blockedByGuard } from '../src/shared/guardCollision';
 import type { SecurityDecision } from '../src/shared/security';
+import type { ChatResult } from '../src/shared/chat';
 import { randomUUID } from 'node:crypto';
 import { accounts, allowedOrigin, cookieToken, type Account } from './accounts';
 type RoomAuth = { account: Account; hash: string };
@@ -24,6 +26,7 @@ import { intoxicatedMovement } from '../src/shared/intoxication';
 import type { DrinkingState } from './intoxicationStore';
 
 type Control = { dx: number; dy: number; at: number; path: Point[]; lastTarget: number; chatRevision: number; inputs: MovementInputs; predicted: boolean; afterMovement?: () => void };
+const CHAT_REQUEST_ID = /^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
 type ProfileRevision = { name: number; skin: number; appearance: number };
 type Access = { active: boolean; banUntil: number; drinking: DrinkingState; revision: number; profileRevision: ProfileRevision; pendingDrink: boolean; pendingEject: boolean };
 const pendingDrinks = new Set<string>();
@@ -47,6 +50,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     return count;
   });
   private securityListener = (accountId: string, decision: SecurityDecision) => {
+    chatQueue.cancel(accountId);
     for (const client of this.clients) if ((client.auth as RoomAuth)?.account.id === accountId) {
       const access = this.access.get(client.sessionId);
       if (access) { access.revision++; if (decision.kind === 'ejecting') access.banUntil = decision.until; }
@@ -61,6 +65,8 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     }
   };
   private controls = new Map<string, Control>();
+  private chatPending = new Map<Control, number>();
+  private chatResults = new Map<Control, Map<string, ChatResult>>();
   private cabinetReactionAt = new Map<string, number>();
   private activityProtocols = new Set<string>();
   private access = new Map<string, Access>();
@@ -77,6 +83,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     for (const client of this.clients) if ((client.auth as RoomAuth)?.hash === hash) {
       const access = this.access.get(client.sessionId);
       if (access) { access.active = false; access.revision++; }
+      this.cancelChat(client);
       const player = this.state.players.get(client.sessionId); if (player) player.connected = false;
       this.releaseCabinet(client.sessionId); this.stop(client.sessionId); client.leave(4001);
     }
@@ -258,38 +265,94 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
         throw error;
       } finally { access.pendingDrink = false; pendingDrinks.delete(accountId); }
     });
-    listen('chat', async (client, value: unknown) => {
+    this.onMessage('chat', async (client, value: unknown) => {
+      const object = value && typeof value === 'object' && !Array.isArray(value) ? value as { id?: unknown; text?: unknown } : undefined;
+      const requestId = object && typeof object.id === 'string' && object.id.length === 36 && CHAT_REQUEST_ID.test(object.id) ? object.id : undefined;
+      if (typeof value !== 'string' && !requestId) { client.send('notice', 'Неверный формат сообщения.'); return; }
       const player = this.state.players.get(client.sessionId), control = this.controls.get(client.sessionId);
-      if (!player || !control || typeof value !== 'string') return;
-      const text = value.replace(/[\u0000-\u001f\u007f]/g, ' ').trim();
-      if (!text || text.length > 300) return;
-      const id = (client.auth as RoomAuth).account.id, chatRevision = control.chatRevision, hallRevision = player.hallRevision;
-      const valid = () => this.currentAction(client, player, control, chatRevision, hallRevision);
-      const active = await accounts.active((client.auth as RoomAuth).hash);
-      if (!active) { this.logoutListener((client.auth as RoomAuth).hash); return; }
-      if (!valid()) return;
-      const spam = chatSpam.check(id,text);
+      const records = control ? this.chatResults.get(control) ?? new Map<string, ChatResult>() : undefined;
+      if (control && records) this.chatResults.set(control, records);
+      const previous = requestId && records?.get(requestId);
+      if (previous) { client.send('chat-result', previous); return; }
+      let accepted = false, finished = false;
+      const result = (status: ChatResult['status'], message?: string) => {
+        if (!requestId) return;
+        const value: ChatResult = { id: requestId, status, ...(message ? { message } : {}) };
+        records?.set(requestId, value);
+        if (records && records.size > 32) for (const [id, item] of records) {
+          if (records.size <= 32) break;
+          if (item.status !== 'queued') records.delete(id);
+        }
+        client.send('chat-result', value);
+      };
+      const finish = (status: Exclude<ChatResult['status'], 'queued'>, message?: string) => {
+        if (finished) return;
+        finished = true; result(status, message);
+        if (message) client.send('notice', message);
+        if (accepted && control) {
+          const remaining = Math.max(0, (this.chatPending.get(control) ?? 1) - 1);
+          if (remaining) this.chatPending.set(control, remaining);
+          else { this.chatPending.delete(control); client.send('chat-check', false); }
+        }
+      };
+      const raw = typeof value === 'string' ? value : object?.text;
+      const text = typeof raw === 'string' ? raw.replace(/[\u0000-\u001f\u007f]/g, ' ').trim() : '';
+      if (!text || text.length > 300) { finish('rejected', 'Сообщение должно содержать от 1 до 300 символов.'); return; }
+      if (!player || !control || !player.connected || player.security || !this.accessAllowed(client)) {
+        finish('cancelled', 'Сообщение не отправлено. Дождись подключения к залу.'); return;
+      }
+      const id = (client.auth as RoomAuth).account.id, chatRevision = control.chatRevision;
+      // Public room chat follows the connection, independent of movement between floors.
+      const current = () => !this.disposed && this.state.players.get(client.sessionId) === player
+        && this.controls.get(client.sessionId) === control && control.chatRevision === chatRevision
+        && player.connected && !player.security && this.accessAllowed(client);
+      const spam = chatSpam.check(id, text);
       if (spam === 'spam') {
-        const decision = await accounts.moderation.record(id);
-        // Persisted sanctions update the account in every room, including after a disconnect.
-        accounts.events.emit('security', id, {...decision, reason:'spam'});
+        control.chatRevision++; chatQueue.cancel(id);
+        finish('rejected', 'Сообщение отклонено за спам.');
+        try {
+          if (!await accounts.active((client.auth as RoomAuth).hash)) { this.logoutListener((client.auth as RoomAuth).hash); return; }
+          const decision = await accounts.moderation.record(id);
+          accounts.events.emit('security', id, { ...decision, reason: 'spam' });
+        } catch { client.send('notice', 'Не удалось подтвердить действие. Попробуй ещё раз.'); }
         return;
       }
-      if (spam === 'slow') { client.send('notice', 'Слишком быстро. Продолжение спама вызовет охранника.'); return; }
-      client.send('chat-check', true);
-      try {
-        const violation = await chatModerator.check(id, text);
-        if (!valid()) return;
-        if (!await accounts.active((client.auth as RoomAuth).hash)) { this.logoutListener((client.auth as RoomAuth).hash); return; }
-        if (!valid()) return;
-        if (violation) {
-          chatSpam.clear(id);
-          const decision = await accounts.moderation.record(id);
-          accounts.events.emit('security', id, {...decision, reason:'insult'});
-        } else this.publish({ id: randomUUID(), senderId: client.sessionId, name: player.name, text, time: Date.now() });
-      } catch (error) {
-        if (valid()) client.send('notice', error instanceof Error ? error.message : 'Сообщение не отправлено.');
-      } finally { if (this.state.players.get(client.sessionId) === player) client.send('chat-check', false); }
+      if (spam === 'slow') { finish('rejected', 'Слишком быстро. Продолжение спама вызовет охранника.'); return; }
+      const queued = chatQueue.enqueue(id, async cancelled => {
+        const valid = () => !cancelled() && current();
+        let checkingProvider = false;
+        try {
+          if (!valid()) { finish('cancelled', 'Проверка сообщения отменена.'); return; }
+          if (!await accounts.active((client.auth as RoomAuth).hash)) { this.logoutListener((client.auth as RoomAuth).hash); return; }
+          if (!valid()) { finish('cancelled', 'Проверка сообщения отменена.'); return; }
+          checkingProvider = true;
+          const violation = await chatModerator.check(id, text);
+          checkingProvider = false;
+          if (!valid()) { finish('cancelled', 'Проверка сообщения отменена.'); return; }
+          if (!await accounts.active((client.auth as RoomAuth).hash)) { this.logoutListener((client.auth as RoomAuth).hash); return; }
+          if (!valid()) { finish('cancelled', 'Проверка сообщения отменена.'); return; }
+          if (violation) {
+            chatSpam.clear(id);
+            control.chatRevision++;
+            finish('rejected', 'Сообщение отклонено за оскорбление другого человека.');
+            chatQueue.cancel(id);
+            const decision = await accounts.moderation.record(id);
+            accounts.events.emit('security', id, { ...decision, reason: 'insult' });
+          } else if (violation === false) {
+            this.publish({ id: randomUUID(), senderId: client.sessionId, name: player.name, text, time: Date.now(), ...(requestId ? { requestId } : {}) });
+            finish('published');
+          } else {
+            finish('rejected', 'Проверка не завершена. Сообщение не отправлено. Попробуй ещё раз.');
+          }
+        } catch (error) {
+          finish('rejected', checkingProvider && error instanceof Error ? error.message : 'Не удалось подтвердить сообщение. Оно не отправлено. Попробуй ещё раз.');
+        } finally { if (!finished) finish('cancelled', 'Проверка сообщения отменена.'); }
+      }, () => finish('cancelled', 'Проверка сообщения отменена.'), control);
+      if (!queued) { finish('rejected', 'Очередь проверки заполнена. Повтори сообщение через несколько секунд.'); return; }
+      accepted = true;
+      this.chatPending.set(control, (this.chatPending.get(control) ?? 0) + 1);
+      result('queued'); client.send('chat-check', true);
+      await queued;
     });
     this.onMessage('history', client => client.send('history', this.history));
   }
@@ -337,6 +400,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     finally { this.joiningAccounts.delete(auth.account.id); }
   }
   onDrop(client: Client) {
+    this.cancelChat(client);
     this.activities.leave(client.sessionId);
     this.stop(client.sessionId);
     const control = this.controls.get(client.sessionId); if (control) control.chatRevision++;
@@ -346,6 +410,8 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     void this.allowReconnection(client, 20).catch(() => {});
   }
   onDispose() {
+    for (const client of this.clients) this.cancelChat(client);
+    this.chatPending.clear(); this.chatResults.clear();
     for (const id of this.state.players.keys()) this.releaseCabinet(id);
     this.disposed = true;
     accounts.events.off('security', this.securityListener); accounts.events.off('logout', this.logoutListener);
@@ -368,6 +434,9 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       if (auth.account.skin === null) { client.leave(4001); return; }
       p.name = auth.account.name; p.skin = auth.account.skin; p.appearance = serializeAppearance(auth.account.appearance);
       p.connected = true;
+      const control = this.controls.get(client.sessionId);
+      client.send('chat-check', Boolean(control && this.chatPending.get(control)));
+      if (control) for (const result of this.chatResults.get(control)?.values() ?? []) if (result.status !== 'queued') client.send('chat-result', result);
     } catch { client.leave(4001); }
   }
   private applyProfile(auth: RoomAuth, access: Access, profile: Account | undefined, captured: ProfileRevision) {
@@ -379,12 +448,19 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     };
   }
   onLeave(client: Client) {
+    this.cancelChat(client);
+    const chatControl = this.controls.get(client.sessionId);
+    if (chatControl) { this.chatPending.delete(chatControl); this.chatResults.delete(chatControl); }
     this.playerAccounts.delete(client.sessionId);
     this.activities.leave(client.sessionId);
     this.releaseCabinet(client.sessionId);
     const p = this.state.players.get(client.sessionId);
     this.state.players.delete(client.sessionId); this.controls.delete(client.sessionId); this.access.delete(client.sessionId);this.activityProtocols.delete(client.sessionId);
     if (p) this.system(p.name+' покидает зал');
+  }
+  private cancelChat(client: Client) {
+    const control = this.controls.get(client.sessionId), account = (client.auth as RoomAuth)?.account.id;
+    if (control && account) chatQueue.cancel(account, control);
   }
   private accessAllowed(client: Client, allowPendingEject = false) {
     const access = this.access.get(client.sessionId);

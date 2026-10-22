@@ -82,5 +82,5 @@ export const DRINKS = [
 export const atBar = (p: { x: number; y: number }) => p.x >= 720 && p.x <= 1005 && p.y >= 482+BAR_OFFSET && p.y <= 590+BAR_OFFSET;
 export type PlayerAction = 'idle' | 'sit' | 'drink';
 export type PlayerView = { security?: string; id: string; hall: HallId; hallRevision: number; name: string; x: number; y: number; skin: number; appearance?: string; facing: 'up' | 'down' | 'left' | 'right'; moving: boolean; connected: boolean; playing: boolean; cabinet?: string; gameReaction?: string; gameReactionUntil?: number; activity?: string; ears?: boolean; seat: string; action: PlayerAction; drink: string; actionUntil: number; soberAt: number; inputSeq: number };
-export type ChatMessage = { id: string; senderId: string; name: string; text: string; time: number; system?: boolean };
+export type ChatMessage = { id: string; senderId: string; name: string; text: string; time: number; system?: boolean; requestId?: string };
 export type NetworkCommands = { cat?: (action: CatAction) => void; inputs: (inputs: MovementInput[]) => void; move: (x: number, y: number) => void; target: (x: number, y: number) => void; stop: () => void; sit: (seat: string) => void; stand: () => void; drink: (drink: string) => void; cabinetPlay?: (id: string) => Promise<boolean>; cabinetLeave?: () => void; cabinetReaction?: (id: string, reaction: GameReaction) => void };

@@ -51,11 +51,13 @@ const INSTRUCTIONS = `Classify public game chat for clear targeted personal abus
 
 export class ChatModerator {
   private pending = new Set<string>();
-  constructor(private request: typeof fetch = fetch) {}
+  constructor(private request: typeof fetch = fetch, private deadlineMs = 6000) {}
   async check(accountId: string, text: string): Promise<boolean> {
     if (this.pending.has(accountId)) throw new Error('Предыдущее сообщение ещё проверяется. Подожди немного.');
     if (this.pending.size >= 12) throw new Error('Проверка чата занята. Повтори сообщение через несколько секунд.');
     this.pending.add(accountId);
+    const controller = new AbortController();
+    let timeout: ReturnType<typeof setTimeout> | undefined;
     try {
       const key = process.env.CODEX_SALE_API_KEY;
       // Local development without a provider still has basic filtering. Production uses the model for context.
@@ -63,23 +65,34 @@ export class ChatModerator {
         if (process.env.NODE_ENV === 'production') throw new Error('Moderation provider is not configured');
         return obviousInsult(text);
       }
-      const response = await this.request('https://codex.sale/v1/responses', {
-        method: 'POST', headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ model: process.env.CODEX_SALE_NPC_MODEL || 'gpt-6-luna', instructions: INSTRUCTIONS,
-          input: [{ role: 'user', content: text }], max_output_tokens: 100, stream: false, store: false }),
-        signal: AbortSignal.timeout(12000),
-      });
-      if (!response.ok) throw new Error('Provider unavailable');
-      const data = await response.json() as { output?: { type?: string; role?: string; content?: { type?: string; text?: string }[] }[] };
-      const output = data.output?.filter(x => x.type === 'message' && x.role === 'assistant')
-        .flatMap(x => x.content ?? []).filter(x => x.type === 'output_text').map(x => x.text ?? '').join('').trim();
-      const verdict = JSON.parse(output ?? '');
-      if (typeof verdict.violation !== 'boolean' || Object.keys(verdict).length !== 1) throw new Error('Invalid verdict');
-      return verdict.violation;
+      const operation = async () => {
+        const response = await this.request('https://codex.sale/v1/responses', {
+          method: 'POST', headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ model: process.env.CODEX_SALE_NPC_MODEL || 'gpt-6-luna', instructions: INSTRUCTIONS,
+            input: [{ role: 'user', content: text }], reasoning: { effort: 'low' }, max_output_tokens: 256,
+            text: { format: { type: 'json_schema', name: 'chat_moderation', strict: true,
+              schema: { type: 'object', properties: { violation: { type: 'boolean' } }, required: ['violation'], additionalProperties: false } } },
+            stream: false, store: false }),
+          signal: controller.signal,
+        });
+        if (!response.ok) throw new Error('Provider unavailable');
+        const body = await response.text();
+        if (body.length > 65536) throw new Error('Moderation response is too large');
+        const data = JSON.parse(body) as { status?: string; output?: { type?: string; role?: string; content?: { type?: string; text?: string }[] }[] };
+        if (data.status !== 'completed') throw new Error('Incomplete verdict');
+        const output = data.output?.filter(x => x.type === 'message' && x.role === 'assistant')
+          .flatMap(x => x.content ?? []).filter(x => x.type === 'output_text').map(x => x.text ?? '').join('').trim();
+        const verdict = JSON.parse(output ?? '');
+        if (!verdict || Array.isArray(verdict) || typeof verdict.violation !== 'boolean' || Object.keys(verdict).length !== 1) throw new Error('Invalid verdict');
+        return verdict.violation;
+      };
+      return await Promise.race([operation(), new Promise<never>((_resolve, reject) => {
+        timeout = setTimeout(() => { controller.abort(); reject(new Error('Moderation timed out')); }, this.deadlineMs);
+      })]);
     } catch (error) {
       // A timeout or malformed response must never count as an offense.
       throw new Error('Не удалось проверить сообщение. Оно не отправлено, предупреждение не начислено. Попробуй ещё раз.');
-    } finally { this.pending.delete(accountId); }
+    } finally { clearTimeout(timeout); controller.abort(); this.pending.delete(accountId); }
   }
 }
 export const chatModerator = new ChatModerator();

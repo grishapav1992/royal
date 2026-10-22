@@ -9,6 +9,7 @@ import type { PlayerView, ChatMessage } from '../shared/world';
 import { mergeActivities, mergePianoNote, type ActivitiesMessage, type ActivitiesState, type PianoNote } from '../shared/activities';
 import { savedSession, rememberSession, forgetSession } from './sessionRecovery';
 import type { CabinetPlayResult } from '../shared/cabinetSeating';
+import type { ChatRequest, ChatResult } from '../shared/chat';
 export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'reconnecting';
 export class LobbyClient {
   private client = new Client(import.meta.env.VITE_SERVER_URL || `${location.origin}${import.meta.env.DEV ? '/multiplayer' : ''}`);
@@ -34,6 +35,7 @@ export class LobbyClient {
     joined: (roomId: string, sessionId: string) => void;
     players: (players: PlayerView[], selfId: string) => void;
     chat: (message: ChatMessage) => void;
+    delivery?: (result: ChatResult) => void;
     history: (messages: ChatMessage[]) => void;
     notice: (message: string) => void;
     activities: (state: ActivitiesState) => void;
@@ -91,6 +93,11 @@ export class LobbyClient {
       onMessage('security', (decision: SecurityDecision) => { if(decision.kind === 'ejecting') banUntil = decision.until; this.events.security(decision); });
       onMessage('ejected', (value: {until: number}) => { banUntil = value.until; this.events.ejected(value.until); });
       onMessage('chat-check', value => this.events.checking(Boolean(value)));
+      onMessage('chat-result', (result: ChatResult) => {
+        if (result && typeof result.id === 'string' && ['queued', 'published', 'rejected', 'cancelled'].includes(result.status)) {
+          this.events.delivery?.({ ...result, message: result.message ? translateText(result.message) : undefined });
+        }
+      });
       onMessage('chat', message => this.events.chat(message as ChatMessage));
       onMessage('history', messages => this.events.history(messages as ChatMessage[]));
       onMessage('notice', message => this.events.notice(translateText(String(message))));
@@ -132,7 +139,7 @@ export class LobbyClient {
         if (state.mira) this.events.mira({ x: state.mira.x, y: state.mira.y, facing: state.mira.facing as MiraView['facing'], action: state.mira.action as MiraView['action'], progress: state.mira.progress });
       });
       room.onDrop(() => { if (current()) this.setStatus('reconnecting'); });
-      room.onReconnect(() => { if (!current()) return; queueMicrotask(() => { if (current()) rememberSession(room, accountId); }); this.events.npcTime(0,0);this.activities=undefined; this.setStatus('connected'); room.send('stop'); room.send('history'); room.send('activities'); });
+      room.onReconnect(() => { if (!current()) return; queueMicrotask(() => { if (current()) rememberSession(room, accountId); }); this.events.checking(false); this.events.npcTime(0,0);this.activities=undefined; this.setStatus('connected'); room.send('stop'); room.send('history'); room.send('activities'); });
       room.onLeave(code => { if (!current()) return; forgetSession(); if(code===4003) this.events.ejected(banUntil || Date.now()+600000); if (this.room === room) { this.room = undefined; this.setStatus('disconnected'); } });
       room.onError((_code, message) => { if (current()) this.events.notice(translateText(message || translateText('Ошибка подключения к залу.'))); });
       if (recovered) { room.send('stop'); room.send('playing', false); }
@@ -148,6 +155,7 @@ export class LobbyClient {
   }
   private setStatus(status: ConnectionStatus) {
     this.status = status;
+    if (status !== 'connected') this.events.checking(false);
     if (status !== 'connected' && this.pendingCabinet) {
       this.releaseCabinetWhenConnected = true;
       const pending = this.pendingCabinet; this.pendingCabinet = undefined;
@@ -174,7 +182,12 @@ export class LobbyClient {
       this.send('cabinet-play', { id, requestId });
     });
   }
-  send(type: string, data?: unknown) { if (this.status === 'connected') this.room?.send(type, type==='inputs'?{revision:this.revision,inputs:data}:type==='target'||type==='move'?{...data as object,revision:this.revision}:data); }
+  send(type: string, data?: unknown): boolean {
+    if (this.status !== 'connected' || !this.room) return false;
+    this.room.send(type, type==='inputs'?{revision:this.revision,inputs:data}:type==='target'||type==='move'?{...data as object,revision:this.revision}:data);
+    return true;
+  }
+  sendChat(request: ChatRequest): boolean { return this.send('chat', request); }
   getState() { return { status: this.status, roomId: this.room?.roomId, selfId: this.room?.sessionId }; }
   leave() {
     this.generation++;

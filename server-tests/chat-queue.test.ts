@@ -38,3 +38,22 @@ test('a failed moderation task does not stall later messages', async () => {
   await next;
   assert.deepEqual(calls, [2]);
 });
+
+test('cancellation releases queued jobs but keeps an in-flight provider lane reserved', async () => {
+  const queue = new ChatQueue(3, 1), hold = gate(), owner = {}, cancelled: number[] = [], calls: number[] = [];
+  const first = queue.enqueue('a', async wasCancelled => { calls.push(1); await hold.promise; assert.equal(wasCancelled(), true); }, () => cancelled.push(1), owner)!;
+  const second = queue.enqueue('a', async () => { calls.push(2); }, () => cancelled.push(2), owner)!;
+  await Promise.resolve(); queue.cancel('a', owner); await second;
+  assert.deepEqual(cancelled, [1, 2]); assert.equal(queue.enqueue('b', async () => {}), undefined);
+  hold.release(); await first; await new Promise(resolve => setImmediate(resolve));
+  assert(queue.enqueue('b', async () => {})); assert.deepEqual(calls, [1]);
+});
+
+test('disconnecting one owner does not cancel another room for the same account', async () => {
+  const queue = new ChatQueue(), hold = gate(), owner = {}, other = {}, calls: number[] = [];
+  const first = queue.enqueue('a', () => hold.promise, undefined, owner)!;
+  const cancelled = queue.enqueue('a', async () => { calls.push(2); }, undefined, owner)!;
+  const retained = queue.enqueue('a', async () => { calls.push(3); }, undefined, other)!;
+  await Promise.resolve(); queue.cancel('a', owner); await cancelled; hold.release(); await Promise.all([first, retained]);
+  assert.deepEqual(calls, [3]);
+});

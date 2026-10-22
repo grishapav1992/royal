@@ -42,7 +42,7 @@ async function fixture(context: TestContext) {
   const room = new TransportRoom(), notices: string[] = [], statuses: { status: string; releases: number }[] = [];
   const releases = () => room.packets.filter(packet => packet.type === 'playing' && packet.value === false);
   const ignore = () => {};
-  const client = new LobbyClient({ guards: ignore, guests: ignore, mira: ignore, security: ignore, ejected: ignore,
+  const client = new LobbyClient({ npcTime: ignore, guards: ignore, guests: ignore, mira: ignore, security: ignore, ejected: ignore,
     checking: ignore, joined: ignore, players: ignore, chat: ignore, history: ignore, activities: ignore, note: ignore,
     notice: message => notices.push(message), status: status => statuses.push({ status, releases: releases().length }) });
   (client as any).client = { joinOrCreate: async () => room, joinById: async () => room };
