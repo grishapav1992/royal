@@ -1,4 +1,7 @@
 const ru = {
+  combination: 'Комбинация', linesPaid: 'Линий: {n}', payout: 'Выплата', roundPayout: 'Выплата за раунд',
+  roundWin: 'Победа!', bigWin: 'Большая победа!', epicWin: 'Грандиозная победа!', netResult: 'Итог сверх ставки', showTotal: 'Показать итог',
+  partialReturn: 'Часть ставки возвращена', evenReturn: 'Ставка возвращена', noPayout: 'Раунд без выплаты', roundNet: 'Итог раунда',
   title: 'Стражи Неополиса', subtitle: 'ГОРОД ЖДЁТ СВОИХ ГЕРОЕВ', prototype: 'Прототип · Демомонеты',
   team: 'Твоя команда', choose: 'Выбери первого героя', starter: 'Первый герой', locked: 'Сигнал связи', active: 'В команде',
   granite: 'Гранит', impulse: 'Импульс', prism: 'Призма',
@@ -32,6 +35,9 @@ const ru = {
   error: 'Ход не подтверждён. Проверь сохранённую операцию.',
 };
 const en: Record<keyof typeof ru, string> = {
+  combination: 'Combination', linesPaid: 'Paylines: {n}', payout: 'Payout', roundPayout: 'Full round payout',
+  roundWin: 'Victory!', bigWin: 'Big victory!', epicWin: 'Epic victory!', netResult: 'Net gain', showTotal: 'Show total',
+  partialReturn: 'Part of the stake returned', evenReturn: 'Stake returned', noPayout: 'Round with no payout', roundNet: 'Round net result',
   title: 'Guardians of Neopolis', subtitle: 'THE CITY NEEDS ITS HEROES', prototype: 'Prototype · Demo coins',
   team: 'Your team', choose: 'Choose your first hero', starter: 'First hero', locked: 'Link signal', active: 'On the team',
   granite: 'Granite', impulse: 'Impulse', prism: 'Prism',

@@ -3,9 +3,11 @@ import { NEOPOLIS_GAME, NEOPOLIS_BETS } from '../../src/shared/neopolis';
 import { BOSSES, HEROES, initialTeam, readyTeam, PAYTABLE, type Hero, type Team, type Battle, type Frame } from '../../src/shared/neopolisMath';
 import { neopolisCopy } from './copy';
 import { SCENES, noticeArt, portrait, skyline, symbolArt } from './art';
-import { dropNeopolisSymbols, NeopolisReels } from './NeopolisReels';
+import { dissolveNeopolisSymbols, dropNeopolisSymbols, NeopolisReels } from './NeopolisReels';
 import { NeopolisEffects } from './NeopolisEffects';
 import { NeopolisAudio } from './NeopolisAudio';
+import { NeopolisFeedback } from './NeopolisFeedback';
+import { waitMotion, type Accent } from './NeopolisMotion';
 
 const initialGrid = [0,1,2,3,4, 2,3,4,5,0, 4,5,0,1,2, 1,2,3,4,5];
 const escape = (text: string) => text.replace(/[&<>"']/g, character => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[character]!);
@@ -23,6 +25,10 @@ export class NeopolisUI {
   private reels?: NeopolisReels;
   private effects: NeopolisEffects;
   private audio: NeopolisAudio;
+  private feedback: NeopolisFeedback;
+  private presentationUnits = 0;
+  private roundBeforeUnits = 0;
+  private winChain = 0;
   private scene = -1;
   private presentationBattle: Battle | null = null;
   private presentationTeam?: Team;
@@ -63,6 +69,9 @@ export class NeopolisUI {
     host.replaceChildren(this.root); this.dialog = this.find<HTMLDialogElement>('dialog');
     this.effects = new NeopolisEffects(this.root.querySelector('.np-layout')!, () => this.motionOptions(this.animation.signal).paused(), () => this.reducedMotion);
     this.audio = new NeopolisAudio(this.services.gameAudio,doc);
+    this.feedback = new NeopolisFeedback(this.root,this.copy,n=>this.number(n),units=>{
+      this.presentationUnits=units; this.find('win').textContent=this.number(units/100);
+    },()=>this.reducedMotion,(kind,cells)=>this.effects.play(kind==='win' ? 'win' : 'celebrate',cells));
     this.setScene(0);
     this.draw(initialGrid);
     const options = { signal: this.life.signal };
@@ -101,7 +110,7 @@ export class NeopolisUI {
     }).join('') + '</div>').join('');
   }
   private get reducedMotion() { return this.host.ownerDocument.defaultView!.matchMedia('(prefers-reduced-motion: reduce)').matches; }
-  private motionOptions(signal: AbortSignal) { return { signal, fast: this.fast, paused: () => this.paused || this.dialog.open || this.host.ownerDocument.hidden }; }
+  private motionOptions(signal: AbortSignal) { return { signal, fast: this.fast, paused: () => this.paused || this.dialog.open || this.host.ownerDocument.hidden, audio:this.audio }; }
   private status(text: string) { this.find('status').textContent = text; }
   private updateTeam() {
     const team = this.team;
@@ -172,6 +181,7 @@ export class NeopolisUI {
       this.owner = this.client.accountId; this.animation.abort(); this.animation = new AbortController();
       this.reels = undefined;
       this.effects.clear(); this.presentationTeam = undefined; this.presentationBattle = null;
+      this.audio.cancelEffects(); this.feedback.clear(); this.feedback.setAmount(0);
       this.busy = false; this.seen = ''; this.selected = 'granite'; this.bet = 100; delete this.root.dataset.power;
       if (this.dialog.open) this.dialog.close();
       this.draw(initialGrid); this.find('win').textContent = '0';
@@ -183,8 +193,8 @@ export class NeopolisUI {
     if (!this.busy && view && this.seen !== marker) {
       this.seen = marker; this.bet = Number(this.session!.stakeUnits) / 100; this.selected = view.team.starter;
       this.draw(view.history.at(-1)!.result.grid);
-      this.find('win').textContent = this.number(Number(view.totalPayoutUnits) / 100);
-      this.find('win-label').textContent = view.battle ? this.copy.total : this.copy.win;
+      this.feedback.setAmount(Number(view.totalPayoutUnits));
+      this.find('win-label').textContent = view.battle ? this.copy.total : this.copy.payout;
       this.find('credit').textContent = this.session!.state === 'active' ? this.copy.held : this.copy.credited;
       this.status(view.capped ? this.copy.cap : this.session!.state === 'active' ? this.copy.saved : this.copy.settled);
     }
@@ -194,16 +204,14 @@ export class NeopolisUI {
     this.services.reactions.observeExpansionOutcome(this.root, NEOPOLIS_GAME, this.session, this.client.accountId, this.busy, !!this.client.pending);
   }
   private async wait(ms: number, signal: AbortSignal) {
-    const reduced = this.host.ownerDocument.defaultView!.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const delay = (duration: number) => new Promise<void>(resolve => {
-      if (signal.aborted) { resolve(); return; }
-      const finish = () => { clearTimeout(timer); signal.removeEventListener('abort', finish); resolve(); };
-      const timer = setTimeout(finish, duration); signal.addEventListener('abort', finish, { once: true });
-    });
-    await delay(reduced ? 0 : this.fast ? ms / 4 : ms);
-    while ((this.paused || this.dialog.open || this.host.ownerDocument.hidden) && !signal.aborted) await delay(100);
+    const duration=this.reducedMotion ? 0 : this.fast ? ms/4 : ms,options=this.motionOptions(signal);
+    if (!duration && !options.paused()) return;
+    await waitMotion(this.root,duration,options);
   }
   private async present(frame: Frame, signal: AbortSignal) {
+    await this.wait(0,signal);
+    if (signal.aborted) return;
+    if (frame.kind==='cascade' && !this.reducedMotion) await dissolveNeopolisSymbols(this.find('board'),frame.cells,this.motionOptions(signal));
     if (signal.aborted) return;
     const beforeShield = this.presentationBattle?.shield;
     if (frame.battle !== undefined) this.presentationBattle = structuredClone(frame.battle);
@@ -213,8 +221,8 @@ export class NeopolisUI {
     this.root.dataset.fx = frame.hero ?? frame.kind;
     this.updateBoss(); this.controls();
     const falling = frame.kind === 'cascade' || frame.hero === 'granite';
-    this.draw(frame.grid, frame.emblems, falling ? [] : frame.cells, frame.hero ?? frame.kind);
-    const label = frame.hero ? this.power(frame.hero) : frame.kind === 'win' ? this.copy.cascade : frame.kind === 'finisher' ? this.copy.finisher : frame.kind === 'boss-hit' && beforeShield && frame.battle?.shield === 0 ? this.copy.empowered : '';
+    this.draw(frame.grid, frame.emblems, falling || frame.kind==='win' ? [] : frame.cells, frame.hero ?? frame.kind);
+    const label = frame.hero ? this.power(frame.hero) : frame.kind === 'finisher' ? this.copy.finisher : frame.kind === 'boss-hit' && beforeShield && frame.battle?.shield === 0 ? this.copy.empowered : '';
     const banner = this.find('event'); banner.textContent = label; banner.classList.toggle('np-event-visible', !!label);
     const card = this.find('ability-card'); card.classList.toggle('np-ability-visible', !!frame.hero);
     if (frame.hero) card.innerHTML = portrait(frame.hero) + '<small>' + this.copy[frame.hero] + '</small><strong>' + this.power(frame.hero) + '</strong>';
@@ -224,18 +232,25 @@ export class NeopolisUI {
       const index = frame.battle?.boss ?? 0;
       chapter.innerHTML = '<small>' + (arrival ? this.copy.newArena : this.copy.bossDefeated) + ' · ' + this.copy.chapter + ' ' + (index + 1) + '/3</small><strong>' + this.copy[BOSSES[index].id] + '</strong><span>' + (arrival ? [this.copy.location0,this.copy.location1,this.copy.location2][index] + ' · ' + this.copy.spinsAward.replace('{n}',String(BOSSES[index].spins)) : this.copy.extra) + '</span>';
     }
+    if (frame.kind==='win') {
+      const recorded=this.view!.history.at(-1)!;
+      const earned=Number(BigInt(this.session!.stakeUnits)*BigInt(frame.points)/40n);
+      const total=this.roundBeforeUnits+Math.min(earned,Number(recorded.payoutUnits));
+      await this.feedback.win(frame,this.presentationUnits,total,this.motionOptions(signal),this.winChain++);
+      return;
+    }
     if (frame.hero) {
       this.status(this.copy[frame.hero] + ' · ' + this.power(frame.hero));
       this.audio.play(frame.hero);
       this.effects.play(frame.hero,frame.cells,frame.hero);
-    } else if (frame.kind === 'win') this.audio.play('win');
-    if (frame.kind === 'win' || frame.kind === 'finisher' || arrival || defeated || frame.kind === 'boss-hit') {
-      this.effects.play(frame.kind === 'boss-hit' && beforeShield && frame.battle?.shield === 0 ? 'shield-break' : frame.kind as 'win' | 'finisher' | 'boss-arrival' | 'boss-defeated' | 'boss-hit',frame.cells);
-      if (frame.kind !== 'win') this.audio.play(frame.kind === 'boss-hit' && beforeShield && frame.battle?.shield === 0 ? 'shield-break' : frame.kind as 'finisher' | 'boss-arrival' | 'boss-defeated' | 'boss-hit');
+    }
+    if (frame.kind === 'finisher' || arrival || defeated || frame.kind === 'boss-hit') {
+      this.effects.play(frame.kind === 'boss-hit' && beforeShield && frame.battle?.shield === 0 ? 'shield-break' : frame.kind as 'finisher' | 'boss-arrival' | 'boss-defeated' | 'boss-hit',frame.cells);
+      this.audio.play(frame.kind === 'boss-hit' && beforeShield && frame.battle?.shield === 0 ? 'shield-break' : frame.kind as 'finisher' | 'boss-arrival' | 'boss-defeated' | 'boss-hit');
     }
     if (falling && !this.reducedMotion) await dropNeopolisSymbols(this.find('board'), frame.cells, this.motionOptions(signal));
     if (signal.aborted) return;
-    await this.wait(arrival ? 1250 : defeated ? 950 : frame.hero || frame.kind === 'finisher' ? 750 : frame.kind === 'win' ? 480 : frame.kind === 'boss-hit' ? 400 : 200, signal);
+    await this.wait(arrival ? 1250 : defeated ? 950 : frame.hero || frame.kind === 'finisher' ? 750 : frame.kind === 'boss-hit' ? 400 : frame.kind==='cascade' ? 60 : 110, signal);
   }
   private async spin() {
     if (!this.alive || this.busy || this.find<HTMLButtonElement>('spin').disabled) return;
@@ -243,21 +258,27 @@ export class NeopolisUI {
     const owner = this.client.accountId, animation = this.animation;
     this.presentationTeam = structuredClone(this.team);
     this.presentationBattle = this.session?.state === 'active' ? structuredClone(this.view?.battle ?? null) : null;
+    this.audio.cancelEffects(); this.feedback.clear(); this.winChain=0;
+    this.feedback.setAmount(this.session?.state==='active' ? Number(this.view?.totalPayoutUnits ?? 0) : 0);
     this.busy = true; this.controls(); this.status(this.copy.waiting);
     this.effects.clear(); this.updateBoss();
     this.find('event').classList.remove('np-event-visible');
     let landing: Frame | undefined;
     const reels = this.reducedMotion ? undefined : new NeopolisReels(this.find('board'), this.motionOptions(animation.signal), col => {
-      this.audio.play('stop');
       if (!landing) return;
       const cells = [0,1,2,3].map(row => row * 5 + col);
       const scatters = cells.filter(cell => landing!.grid[cell] === 7);
-      if (scatters.length) { this.effects.play('scatter',scatters); this.audio.play('scatter'); }
-      for (const cell of cells) if (landing.emblems[cell] >= 0) { this.effects.play('emblem',[cell],HEROES[landing.emblems[cell]]); this.audio.play('emblem'); }
+      if (scatters.length) this.effects.play('scatter',scatters);
+      for (const cell of cells) if (landing.emblems[cell] >= 0) this.effects.play('emblem',[cell],HEROES[landing.emblems[cell]]);
+    },col=>{
+      const sounds:Accent[]=[{cue:'stop',variant:col}],cells=[0,1,2,3].map(row=>row*5+col);
+      if(landing && cells.some(cell=>landing!.grid[cell]===7)) sounds.push({cue:'scatter'});
+      if(landing && cells.some(cell=>landing!.emblems[cell]>=0)) sounds.push({cue:'emblem'});
+      return sounds;
     });
     this.reels = reels;
     try {
-      void this.audio.start().then(() => { if (this.alive && !animation.signal.aborted) this.audio.play('spin'); });
+      void this.audio.start().then(() => { if (this.alive && !animation.signal.aborted && reels && this.reels===reels) this.audio.spinning(true); });
       const before = this.session;
       if (this.client.pending) await this.client.retry();
       else if (before?.state === 'active') await this.client.act({ gameId: NEOPOLIS_GAME, action: 'move', sessionId: before.id, move: 'neopolis-spin', revision: before.view.neopolis!.revision });
@@ -266,6 +287,8 @@ export class NeopolisUI {
       const view = this.view;
       if (!view) throw Error(this.copy.error);
       const spin = view.history.at(-1)!;
+      this.roundBeforeUnits=Number(view.totalPayoutUnits)-Number(spin.payoutUnits);
+      this.feedback.setAmount(this.roundBeforeUnits);
       this.status(this.copy.spinning);
       if (reels) {
         const first = spin.result.frames[0];
@@ -275,6 +298,7 @@ export class NeopolisUI {
           return this.cellMarkup(first.grid[cell], first.emblems[cell]);
         })));
         reels.destroy(); if (this.reels === reels) this.reels = undefined;
+        this.audio.spinning(false);
       }
       for (const frame of spin.result.frames) {
         if (!this.alive || animation.signal.aborted) return;
@@ -284,15 +308,21 @@ export class NeopolisUI {
       this.draw(spin.result.grid); this.find('event').classList.remove('np-event-visible');
       delete this.root.dataset.power; delete this.root.dataset.fx;
       this.find('ability-card').classList.remove('np-ability-visible'); this.find('chapter').classList.remove('np-chapter-visible');
+      if (this.session?.state==='settled') await this.feedback.finish(Number(view.totalPayoutUnits),Number(this.session.stakeUnits),this.motionOptions(animation.signal));
+      if (animation.signal.aborted) return;
       this.seen = ''; this.busy = false; this.sync();
       const message = view.capped ? this.copy.cap : spin.result.finisher ? this.copy.finisher + ' · ' + this.copy.extra : spin.result.finished ? (view.battle?.won ? this.copy.victory : this.copy.escaped) + '. ' + this.copy.finished : spin.result.triggered ? this.copy.triggered : spin.result.unlocked.length ? this.copy.unlocked + ': ' + spin.result.unlocked.map(hero => this.copy[hero]).join(', ') : view.battle?.shield === 0 && !spin.result.empowered ? this.copy.empowered : this.copy.settled;
-      this.status(message);
+      const round=this.feedback.getState().round;
+      const signed=round ? (round.net<0 ? '−' : round.net>0 ? '+' : '')+this.number(Math.abs(round.net)/100) : '';
+      const result=round?.tier==='partial' ? this.copy.partialReturn : round?.tier==='even' ? this.copy.evenReturn : round?.tier==='loss' ? this.copy.noPayout : message;
+      this.status(result+(round ? ' · '+this.copy.roundNet+': '+signed : ''));
       if (spin.result.triggered || spin.result.finished) this.showNotice(spin.result.triggered ? this.copy.bonus : view.battle?.won ? this.copy.victory : this.copy.escaped, spin.result.triggered ? this.copy.remaining + ': 10. ' + this.copy.rulesBoss : this.copy.total + ': ' + this.number(Number(view.totalPayoutUnits) / 100) + ' ' + this.copy.coins + '. ' + this.copy.finished);
     } catch (error) {
       if (this.alive && owner === this.client.accountId) this.status(this.client.error || (error instanceof Error ? error.message : this.copy.error));
     } finally {
       reels?.destroy(); if (this.reels === reels) this.reels = undefined;
       if (this.alive && owner === this.client.accountId) {
+        this.audio.spinning(false);
         this.busy = false; this.presentationTeam = undefined; delete this.root.dataset.power; delete this.root.dataset.fx;
         this.find('ability-card').classList.remove('np-ability-visible'); this.find('chapter').classList.remove('np-chapter-visible');
         this.effects.clear(); this.sync();
@@ -314,12 +344,13 @@ export class NeopolisUI {
   }
   pause() { this.paused = true; this.updatePause(); this.controls(); }
   resume() { this.paused = false; this.updatePause(); this.controls(); }
-  getState() { return { gameId: NEOPOLIS_GAME, language: this.services.i18n.language, ready: !!this.client.accountId, busy: this.busy, selected: this.selected, team: this.team, battle: this.view?.battle ?? null, revision: this.view?.revision ?? 0, stake: this.bet, audio: this.audio.getState() }; }
+  getState() { return { gameId: NEOPOLIS_GAME, language: this.services.i18n.language, ready: !!this.client.accountId, busy: this.busy, selected: this.selected, team: this.team, battle: this.view?.battle ?? null, revision: this.view?.revision ?? 0, stake: this.bet, audio: this.audio.getState(),feedback:this.feedback.getState() }; }
   destroy() {
     if (!this.alive) return;
     this.alive = false; this.animation.abort(); this.life.abort(); this.stopAudio?.();
     this.effects.destroy();
     this.audio.destroy();
+    this.feedback.destroy();
     this.client.removeEventListener('change', this.changed); this.wallet.removeEventListener('change', this.changed);
     if (this.dialog.open) this.dialog.close(); this.root.remove();
   }

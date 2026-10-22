@@ -1,7 +1,9 @@
 import type { GameAudio } from '../../src/game/GameAudio';
 
 export type BattleCue = 'spin' | 'stop' | 'emblem' | 'scatter' | 'granite' | 'impulse' | 'prism'
-  | 'win' | 'finisher' | 'boss-hit' | 'shield-break' | 'boss-arrival' | 'boss-defeated';
+  | 'win' | 'finisher' | 'boss-hit' | 'shield-break' | 'boss-arrival' | 'boss-defeated'
+  | 'clear' | 'land' | 'tally' | 'round-win' | 'round-big' | 'round-epic' | 'round-end' | 'return';
+export type ScheduledAccent = { cue: BattleCue; variant: number; audibleAt: number; at: number; mode: string; cancel: () => void; valid: () => boolean };
 type HostAudio = Pick<GameAudio, 'context' | 'output' | 'unlock' | 'getPreferences' | 'onPreferences'>;
 type Voice = { source: AudioScheduledSourceNode; gain: GainNode; nodes: AudioNode[]; music: boolean };
 const hz = (midi: number) => 440 * 2 ** ((midi - 69) / 12);
@@ -23,6 +25,8 @@ export class NeopolisScore {
   private brass: PeriodicWave;
   private meter: AnalyserNode;
   private sample = new Float32Array(256);
+  private reelLoop?: Voice;
+  private scene = 0;
 
   constructor(readonly context: BaseAudioContext, output: AudioNode) {
     this.music = context.createGain(); this.music.gain.value = .6;
@@ -51,8 +55,9 @@ export class NeopolisScore {
   private voice(source: AudioScheduledSourceNode, nodes: AudioNode[], gain: GainNode, at: number, duration: number, music: boolean) {
     if (this.voices.size >= 76) { source.disconnect(); for (const node of nodes) node.disconnect(); return; }
     const voice = { source, nodes, gain, music }; this.voices.add(voice);
-    source.onended = () => { this.voices.delete(voice); source.disconnect(); for (const node of nodes) node.disconnect(); };
+    source.onended = () => { this.voices.delete(voice); if (this.reelLoop===voice) this.reelLoop=undefined; source.disconnect(); for (const node of nodes) node.disconnect(); };
     source.start(at); source.stop(at + duration + .03);
+    return voice;
   }
 
   private note(midi: number, at: number, duration: number, level: number, instrument: 'string' | 'horn' | 'bell' | 'bass' = 'string', music = true, endMidi = midi) {
@@ -107,13 +112,28 @@ export class NeopolisScore {
     return beat / 2;
   }
 
-  cue(cue: BattleCue, at = this.context.currentTime + .006) {
+  cue(cue: BattleCue, at = this.context.currentTime + .006, variant = 0) {
     const root = 38;
+    const transpose=THEMES[this.scene].root-38;
     if (cue === 'spin') { this.air(at,.32,.085,120,false,650); return; }
-    if (cue === 'stop') { this.air(at,.055,.07,430); this.note(58,at,.08,.045,'bass',false,46); return; }
+    if (cue === 'stop') { this.air(at,.045,.055,430); this.note(50+transpose+[0,3,5,7,10][variant%5],at,.09,.04,'bass',false,43+transpose); return; }
+    if (cue === 'clear') { this.air(at,.15,.045,1600,false,550); return; }
+    if (cue === 'land') { this.air(at,.06,.035,270); this.note(43+transpose+variant%3,at,.1,.028,'bass',false,35+transpose); return; }
+    if (cue === 'tally') { this.note(74+transpose+[0,3,7,10][variant%4],at,.22,.025,'bell',false); return; }
+    if (cue === 'return') { this.note(62,at,.2,.027,'bell',false); return; }
+    if (cue === 'round-end') { [74,77,81].forEach(note=>this.note(note+transpose,at,.48,.045,'bell',false)); return; }
+    if (cue === 'round-win' || cue === 'round-big' || cue === 'round-epic') {
+      const large=cue!=='round-win', epic=cue==='round-epic';
+      this.duck(at,large ? 1.2 : .65);
+      [62,65,69,74].forEach((note,i)=>this.note(note+transpose,at+i*.035,large ? .95 : .5,large ? .06 : .035,'horn',false));
+      [86,89,93].forEach((note,i)=>this.note(note+transpose,at+.08+i*.075,.65,.045,'bell',false));
+      if (large) { this.drum(at,.24,false); this.air(at,.85,.065,4000); }
+      if (epic) [74,77,81].forEach((note,i)=>this.note(note+transpose,at+.3+i*.09,.8,.05,'horn',false));
+      return;
+    }
     if (cue === 'emblem' || cue === 'win' || cue === 'scatter') {
-      const notes = cue === 'scatter' ? [74,81,86] : cue === 'win' ? [74,77,81] : [86];
-      notes.forEach((note,i) => this.note(note,at+i*.06,.45,cue==='win' ? .035 : .06,'bell',false)); return;
+      const notes = cue === 'scatter' ? [74,81,86] : cue === 'win' ? [74+transpose+[0,3,5,7,10][Math.min(variant,4)]] : [86];
+      notes.forEach((note,i) => this.note(note,at+i*.06,.32,cue==='win' ? .035 : .06,'bell',false)); return;
     }
     this.duck(at, cue === 'boss-arrival' ? 1.8 : 1);
     if (cue === 'granite' || cue === 'boss-hit') {
@@ -135,6 +155,27 @@ export class NeopolisScore {
     }
   }
 
+  setScene(stage: number) { this.scene=stage; }
+  schedule(cue: BattleCue, at: number, variant: number) {
+    const before = new Set(this.voices); this.cue(cue,at,variant);
+    const owned = [...this.voices].filter(voice => !before.has(voice));
+    return () => { for (const voice of owned) if (this.voices.has(voice)) this.fade(voice); };
+  }
+  spinning(value: boolean) {
+    if (!value) { if (this.reelLoop) this.fade(this.reelLoop); this.reelLoop=undefined; return; }
+    if (this.reelLoop) return;
+    const c=this.context,source=c.createBufferSource(),filter=c.createBiquadFilter(),gain=c.createGain(),at=c.currentTime;
+    source.buffer=this.noise; source.loop=true; filter.type='lowpass'; filter.frequency.value=420;
+    gain.gain.setValueAtTime(0,at); gain.gain.linearRampToValueAtTime(.022,at+.22);
+    source.connect(filter); filter.connect(gain); gain.connect(this.effects);
+    this.reelLoop=this.voice(source,[filter,gain],gain,at,30,false);
+  }
+  private fade(voice: Voice) {
+    const at=this.context.currentTime;
+    voice.gain.gain.cancelScheduledValues(at); voice.gain.gain.setTargetAtTime(0,at,.008);
+    try { voice.source.stop(at+.04); } catch { /* The source may have ended. */ }
+  }
+  cancelEffects() { for (const voice of this.voices) if (!voice.music) this.fade(voice); this.reelLoop=undefined; }
   private duck(at: number, duration: number) {
     this.music.gain.cancelScheduledValues(at); this.music.gain.setValueAtTime(.2,at);
     this.music.gain.setTargetAtTime(.6,at+duration,.35);
@@ -143,9 +184,9 @@ export class NeopolisScore {
     const at = this.context.currentTime;
     for (const voice of this.voices) {
       if (musicOnly && !voice.music) continue;
-      voice.gain.gain.cancelScheduledValues(at); voice.gain.gain.setTargetAtTime(0,at,.008);
-      try { voice.source.stop(at+.04); } catch { /* The source may have ended. */ }
+      this.fade(voice);
     }
+    if (!musicOnly) this.reelLoop=undefined;
     this.music.gain.cancelScheduledValues(at); this.music.gain.setValueAtTime(.6,at);
     if (!musicOnly) {
       // Flush the convolution tail too, so a pause never leaks a battle sound.
@@ -171,6 +212,9 @@ export class NeopolisAudio {
   private paused = false;
   private dead = false;
   private requested = false;
+  private spinningWanted = false;
+  private epoch = 0;
+  private accents: {cue:BattleCue;variant:number;audibleAt:number;visualAt:number;deltaMs:number;mode:string}[] = [];
   private cues: Partial<Record<BattleCue,number>> = {};
   private recent = new Map<BattleCue,number>();
   private off: () => void;
@@ -198,14 +242,15 @@ export class NeopolisAudio {
     const c = this.host.context, output = this.host.output;
     if (this.requested && c && output && c !== this.context) {
       this.stop(); this.score?.destroy(); this.context?.removeEventListener('statechange',this.stateChange);
-      this.context = c; this.score = new NeopolisScore(c,output); c.addEventListener('statechange',this.stateChange);
+      this.context = c; this.score = new NeopolisScore(c,output); this.score.setScene(this.stage); c.addEventListener('statechange',this.stateChange);
     }
     if (!this.requested || !this.enabled()) { this.stop(); return; }
+    this.score?.spinning(this.spinningWanted);
     if (this.timer || !this.score || !this.context) return;
     this.next = this.context.currentTime + .04;
-    this.timer = setInterval(() => this.schedule(),35); this.schedule();
+    this.timer = setInterval(() => this.scheduleMusic(),35); this.scheduleMusic();
   }
-  private schedule() {
+  private scheduleMusic() {
     if (!this.enabled() || !this.context || !this.score) { this.stop(); return; }
     // Small lookahead prevents stale notes after tab/host pauses, without timer jitter.
     if (this.next < this.context.currentTime) this.next = this.context.currentTime + .02;
@@ -214,6 +259,7 @@ export class NeopolisAudio {
   setScene(stage: number, battle: boolean) {
     if (this.stage === stage && this.battle === battle) return;
     this.stage = stage; this.battle = battle; this.tick = 0;
+    this.score?.setScene(stage);
     this.score?.cancel(true); if (this.context) this.next = this.context.currentTime + .1;
   }
   play(cue: BattleCue) {
@@ -223,8 +269,36 @@ export class NeopolisAudio {
     this.recent.set(cue,now); this.cues[cue]=(this.cues[cue] ?? 0)+1; this.score.cue(cue);
   }
   pause(value: boolean) { this.paused = value; this.sync(); }
-  private stop() { if (this.timer) { clearInterval(this.timer); this.timer=undefined; this.score?.cancel(); } }
-  getState() { return { playing:!!this.timer, stage:this.stage, battle:this.battle, tick:this.tick, context:this.context?.state ?? 'locked', cues:{...this.cues}, ...this.score?.getState() }; }
+  private outputClock() {
+    const c=this.context,now=performance.now();
+    if (!c) return {lead:0,mode:'silent',contextTime:0,performanceTime:now};
+    const stamp=c.getOutputTimestamp?.();
+    if (stamp?.contextTime && stamp.performanceTime) {
+      const lead=stamp.performanceTime+(c.currentTime-stamp.contextTime)*1000-now;
+      if (lead>=0 && lead<1000) return {lead,mode:'output-timestamp',contextTime:stamp.contextTime,performanceTime:stamp.performanceTime};
+    }
+    const lead=((c.baseLatency || 0)+(c.outputLatency || 0))*1000;
+    return {lead,mode:'latency-estimate',contextTime:c.currentTime,performanceTime:now+lead};
+  }
+  get leadMs() { return this.enabled() ? this.outputClock().lead : 0; }
+  schedule(cue: BattleCue, delayMs: number, variant=0): ScheduledAccent | undefined {
+    if (!this.enabled() || !this.context || !this.score) return;
+    const clock=this.outputClock(),target=performance.now()+delayMs;
+    const at=Math.max(this.context.currentTime+.008,clock.contextTime+(target-clock.performanceTime)/1000);
+    const audibleAt=clock.performanceTime+(at-clock.contextTime)*1000,epoch=this.epoch;
+    const stop=this.score.schedule(cue,at,variant); let canceled=false;
+    this.cues[cue]=(this.cues[cue] ?? 0)+1;
+    return {cue,variant,at,audibleAt,mode:clock.mode,cancel:()=>{canceled=true;stop();},valid:()=>!canceled && epoch===this.epoch && this.enabled()};
+  }
+  markVisual(ticket: ScheduledAccent, visualAt: number) {
+    if (!ticket.valid()) return;
+    this.accents.push({cue:ticket.cue,variant:ticket.variant,audibleAt:ticket.audibleAt,visualAt,deltaMs:visualAt-ticket.audibleAt,mode:ticket.mode});
+    if (this.accents.length>64) this.accents.shift();
+  }
+  spinning(value: boolean) { this.spinningWanted=value; this.score?.spinning(value && this.enabled()); }
+  cancelEffects() { this.epoch++; this.spinningWanted=false; this.score?.cancelEffects(); }
+  private stop() { this.epoch++; if (this.timer) { clearInterval(this.timer); this.timer=undefined; } this.score?.cancel(); }
+  getState() { return { playing:!!this.timer, stage:this.stage, battle:this.battle, tick:this.tick, context:this.context?.state ?? 'locked', cues:{...this.cues}, spinning:this.spinningWanted&&this.enabled(),leadMs:this.leadMs,accents:this.accents.map(value=>({...value})), ...this.score?.getState() }; }
   destroy() {
     if (this.dead) return;
     this.dead=true; this.stop(); this.score?.destroy(); this.off();

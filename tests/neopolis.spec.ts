@@ -21,7 +21,12 @@ async function spin(page: Page) {
     const harness = (window as any).neopolisPreview, s = harness.client.sessions.find((value: any) => value.gameId === 'studio-neopolis');
     return s && s.id + ':' + s.view.neopolis.revision !== old && !harness.client.busy && !harness.state().busy && !harness.client.pending;
   }, marker);
-  const result = await session(page); expect(validNeopolisSession(result)).toBe(true); return result;
+  const result = await session(page); expect(validNeopolisSession(result)).toBe(true);
+  const visible=await state(page);
+  expect(visible.feedback.shownUnits).toBe(Number(result.view.neopolis.totalPayoutUnits));
+  if(result.state==='active') expect(visible.feedback.round).toBeNull();
+  else expect(visible.feedback.round).toMatchObject({payout:Number(result.returnedUnits),stake:Number(result.stakeUnits),net:Number(result.returnedUnits)-Number(result.stakeUnits)});
+  return result;
 }
 async function closeNotice(page: Page) { if (await page.locator('[data-np=dialog]').isVisible()) await page.locator('[data-np=close]').click(); }
 
@@ -336,4 +341,98 @@ test('original music and confirmed battle sounds honor shared mute, rules, host 
     await expect(page.locator('[data-np=spin]')).toBeEnabled();
     expect((await state(page)).audio.cues).toEqual({}); expect(errors).toEqual([]);
   } finally { release(); await page.unroute('**/api/demo-wallet/expansion'); }
+});
+
+const feedbackState=(page:Page)=>page.evaluate(()=>(window as any).neopolisFeedbackReview.state());
+async function feedbackReady(page:Page,language='en') {
+  await page.emulateMedia({reducedMotion:'no-preference'});
+  await page.goto('/tests/fixtures/neopolis-feedback.html?lang='+language);
+  await expect(page.locator('[data-review=reels]')).toBeVisible();
+  await page.evaluate(async()=>{const image=new Image();image.src='/assets/neopolis/symbols-v2.webp';await image.decode();});
+  await mkdir('test-results/neopolis/review',{recursive:true});
+}
+
+test('prepared combinations and cascades count exact units, pause and align audible and visual accents',async({page})=>{
+  const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
+  await feedbackReady(page);
+  await page.locator('[data-review=combination]').click();
+  await expect(page.locator('.np-award-visible')).toBeVisible();
+  expect(await page.locator('.np-paying').count()).toBeGreaterThan(2);
+  await expect(page.locator('.np-paylines polyline')).not.toHaveCount(0);
+  await expect.poll(async()=>(await feedbackState(page)).feedback.shownUnits).toBeGreaterThan(1000);
+  await page.locator('[data-review=pause]').click();
+  const held=(await feedbackState(page)).feedback.shownUnits;
+  await page.waitForTimeout(180);
+  expect((await feedbackState(page)).feedback.shownUnits).toBe(held);
+  await expect.poll(async()=>(await feedbackState(page)).audio.voices).toBe(0);
+  await page.screenshot({path:'test-results/neopolis/review/feedback-combination-en.png'});
+  await page.locator('[data-review=pause]').click();
+  await expect.poll(async()=>(await feedbackState(page)).busy).toBe(false);
+  expect((await feedbackState(page)).feedback.shownUnits).toBe(123450);
+  await expect(page.locator('[data-review-amount]')).toHaveText('1,234.5');
+  await page.locator('[data-review=cascade]').click();
+  await expect(page.locator('.np-board')).toHaveAttribute('data-presentation','clear');
+  await expect(page.locator('.np-board')).toHaveAttribute('data-falling','true');
+  expect(await page.locator('.np-board [role=gridcell]').evaluateAll(cells=>cells.some(cell=>(cell as HTMLElement).style.transform.includes('-')))).toBe(true);
+  await page.screenshot({path:'test-results/neopolis/review/feedback-falling-en.png'});
+  await expect.poll(async()=>(await feedbackState(page)).busy).toBe(false);
+  const audio=(await feedbackState(page)).audio,contacts=audio.accents.filter((value:any)=>value.cue==='land');
+  expect(contacts.map((value:any)=>value.variant)).toEqual([0,1,2]);
+  expect(audio.accents.some((value:any)=>value.cue==='clear')).toBe(true);
+  expect(Math.max(...audio.accents.map((value:any)=>Math.abs(value.deltaMs)))).toBeLessThan(65);
+  await expect(page.locator('.np-board [style*=translate]')).toHaveCount(0);
+  // A real DelayNode plus a matching output timestamp models an additional device delay.
+  await page.evaluate(()=>(window as any).neopolisFeedbackReview.setOutputDelay(180));
+  await expect.poll(async()=>(await feedbackState(page)).audio.leadMs).toBeGreaterThan(170);
+  await page.locator('[data-review=reels]').click();
+  await expect.poll(async()=>(await feedbackState(page)).busy).toBe(false);
+  const stops=(await feedbackState(page)).audio.accents.filter((value:any)=>value.cue==='stop');
+  expect(stops.map((value:any)=>value.variant)).toEqual([0,1,2,3,4]);
+  expect(stops.every((value:any)=>value.mode==='output-timestamp')).toBe(true);
+  expect(Math.max(...stops.map((value:any)=>Math.abs(value.deltaMs)))).toBeLessThan(65);
+  expect(errors).toEqual([]);
+});
+
+test('round celebrations use the paid stake, skip without another action and remain quiet on returns',async({page})=>{
+  await feedbackReady(page,'ru');
+  for(const [action,payout] of [['loss',0],['partial',4000],['even',10000]] as const) {
+    await page.locator('[data-review='+action+']').click();
+    await expect.poll(async()=>(await feedbackState(page)).feedback.round?.tier).toBe(action);
+    await expect(page.locator('.np-result')).toBeHidden();
+    expect((await feedbackState(page)).feedback.shownUnits).toBe(payout);
+    expect(Object.keys((await feedbackState(page)).audio.cues).some(cue=>cue.startsWith('round-'))).toBe(false);
+  }
+  for(const [action,payout,title] of [['win',25000,'Победа!'],['big',150000,'Большая победа!'],['epic',300000,'Грандиозная победа!']] as const) {
+    await page.locator('[data-review='+action+']').click();
+    await expect(page.locator('.np-result')).toBeVisible();
+    await expect(page.locator('.np-result h2')).toHaveText(title);
+    await expect(page.locator('.np-result')).toHaveAttribute('data-revealed','true');
+    if(action==='epic') {
+      await page.setViewportSize({width:390,height:844});
+      expect(await page.locator('.np').evaluate(root=>root.scrollWidth<=root.clientWidth+1)).toBe(true);
+      await page.screenshot({path:'test-results/neopolis/review/feedback-epic-mobile-ru.png',fullPage:true});
+    }
+    if(action==='big') await page.screenshot({path:'test-results/neopolis/review/feedback-big-ru.png'});
+    await page.locator('[data-result-skip]').click();
+    await expect.poll(async()=>(await feedbackState(page)).busy).toBe(false);
+    const result=(await feedbackState(page)).feedback;
+    expect(result.round).toEqual({tier:action,payout,stake:10000,net:payout-10000});
+    expect(result.shownUnits).toBe(payout);
+    await expect(page.locator('.np-result')).toBeHidden();
+  }
+  await page.locator('[data-review=epic]').click();
+  await expect(page.locator('.np-result')).toHaveAttribute('data-revealed','true');
+  await page.locator('[data-review=cancel]').click();
+  await expect(page.locator('.np-result')).toBeHidden();
+  const count=(await feedbackState(page)).audio.cues['round-end']??0;
+  await page.waitForTimeout(250);
+  expect((await feedbackState(page)).audio.cues['round-end']??0).toBe(count);
+  await page.emulateMedia({reducedMotion:'reduce'});
+  await page.locator('[data-review=big]').click();
+  await expect.poll(async()=>(await feedbackState(page)).busy).toBe(false);
+  expect((await feedbackState(page)).feedback.shownUnits).toBe(150000);
+  await expect(page.locator('.np-reels')).toHaveCount(0);
+  await page.evaluate(()=>(window as any).neopolisFeedbackReview.destroy());
+  await expect.poll(async()=>(await feedbackState(page)).audio.voices).toBe(0);
+  expect((await feedbackState(page)).audio.playing).toBe(false);
 });

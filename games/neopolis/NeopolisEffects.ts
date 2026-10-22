@@ -1,7 +1,7 @@
 import type { Hero } from '../../src/shared/neopolisMath';
 
 type Point = { x: number; y: number };
-type Effect = Hero | 'win' | 'finisher' | 'boss-hit' | 'boss-defeated' | 'boss-arrival' | 'shield-break' | 'scatter' | 'emblem';
+type Effect = Hero | 'win' | 'celebrate' | 'finisher' | 'boss-hit' | 'boss-defeated' | 'boss-arrival' | 'shield-break' | 'scatter' | 'emblem';
 type Burst = { kind: Effect; from: Point; to: Point; points: Point[]; age: number; color: string; seed: number };
 type Particle = Point & { vx: number; vy: number; life: number; age: number; size: number; color: string };
 
@@ -24,6 +24,7 @@ export class NeopolisEffects {
     this.canvas.className = 'np-effects'; this.canvas.setAttribute('aria-hidden','true');
     stage.append(this.canvas); this.ctx = this.canvas.getContext('2d');
     const resize = () => {
+      if (this.width!==stage.clientWidth || this.height!==stage.clientHeight) this.clear();
       this.width = stage.clientWidth; this.height = stage.clientHeight;
       const scale = Math.min(2, stage.ownerDocument.defaultView!.devicePixelRatio || 1);
       this.canvas.width = Math.max(1, Math.round(this.width * scale));
@@ -46,14 +47,14 @@ export class NeopolisEffects {
     const target = this.point(this.stage.querySelector('.np-villain'),.42);
     const actor = this.point(hero ? this.stage.querySelector('[data-hero="' + hero + '"] .np-portrait') : null);
     const color = kind === 'granite' ? '#ffb957' : kind === 'impulse' ? '#73ecff' : kind === 'prism' ? '#d0a2ff'
-      : kind === 'win' ? '#ffe39c' : kind === 'emblem' ? ({granite:'#ffb957',impulse:'#73ecff',prism:'#d0a2ff'}[hero!])
+      : kind === 'win' || kind==='celebrate' ? '#ffe39c' : kind === 'emblem' ? ({granite:'#ffb957',impulse:'#73ecff',prism:'#d0a2ff'}[hero!])
       : kind === 'finisher' ? '#fff1c0' : '#d7a1ff';
     const boss = ['boss-hit','boss-defeated','shield-break'].includes(kind);
     const to = boss || kind === 'finisher' ? target : kind === 'emblem' ? actor : points[0] ?? field;
     const from = kind === 'emblem' ? points[0] ?? field : hero ? actor : field;
     this.bursts.push({kind,from,to,points,age:0,color,seed:Math.random() * 20});
     if (this.bursts.length > 14) this.bursts.shift();
-    const count = kind === 'boss-defeated' || kind === 'finisher' ? 60 : kind === 'emblem' ? 10 : kind === 'win' ? 18 : 32;
+    const count = kind === 'boss-defeated' || kind === 'finisher' || kind==='celebrate' ? 60 : kind === 'emblem' ? 10 : kind === 'win' ? 14 : 32;
     for (let i = 0; i < count; i++) {
       const angle = Math.random() * Math.PI * 2, speed = 25 + Math.random() * (kind === 'boss-defeated' ? 230 : 125);
       const origin = points.length && !boss && kind !== 'finisher' ? points[i % points.length] : to;
