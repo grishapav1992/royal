@@ -3,6 +3,7 @@ import { NEOPOLIS_GAME, NEOPOLIS_BETS, type NeopolisView } from '../../src/share
 import { HEROES, initialTeam, readyTeam, PAYTABLE, type Hero, type Team, type Frame } from '../../src/shared/neopolisMath';
 import { neopolisCopy } from './copy';
 import { noticeArt, portrait, skyline, symbolArt } from './art';
+import { dropNeopolisSymbols, NeopolisReels } from './NeopolisReels';
 
 const initialGrid = [0,1,2,3,4, 2,3,4,5,0, 4,5,0,1,2, 1,2,3,4,5];
 const escape = (text: string) => text.replace(/[&<>"']/g, character => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[character]!);
@@ -17,6 +18,7 @@ export class NeopolisUI {
   private dialog: HTMLDialogElement;
   private life = new AbortController();
   private animation = new AbortController();
+  private reels?: NeopolisReels;
   private stopAudio?: () => void;
   private owner = this.client.accountId;
   private seen = '';
@@ -74,13 +76,18 @@ export class NeopolisUI {
     this.sync(); void this.client.refresh();
   }
 
+  private cellMarkup(symbol: number, emblem = -1, hit = false, event = '') {
+    const label = this.copy[('symbol' + symbol) as keyof typeof this.copy] + (emblem >= 0 ? ' · ' + this.copy[HEROES[emblem]] : '');
+    return '<div role="gridcell" class="np-cell' + (hit ? ' np-hit' : '') + '" data-symbol="' + symbol + '" data-effect="' + event + '" aria-label="' + label + '">' + symbolArt(symbol) + (emblem >= 0 ? '<span class="np-emblem" data-emblem="' + HEROES[emblem] + '">' + ['◆','ϟ','◈'][emblem] + '</span>' : '') + '</div>';
+  }
   private draw(grid: number[], emblems: number[] = [], cells: number[] = [], event = '') {
     this.find('board').innerHTML = Array.from({ length: 4 }, (_, row) => '<div role="row" class="np-row">' + grid.slice(row * 5, row * 5 + 5).map((symbol, col) => {
-      const index = row * 5 + col, emblem = emblems[index];
-      const label = this.copy[('symbol' + symbol) as keyof typeof this.copy] + (emblem >= 0 ? ' · ' + this.copy[HEROES[emblem]] : '');
-      return '<div role="gridcell" class="np-cell' + (cells.includes(index) ? ' np-hit' : '') + '" data-symbol="' + symbol + '" data-effect="' + event + '" aria-label="' + label + '">' + symbolArt(symbol) + (emblem >= 0 ? '<span class="np-emblem" data-emblem="' + HEROES[emblem] + '">' + ['◆','ϟ','◈'][emblem] + '</span>' : '') + '</div>';
+      const index = row * 5 + col;
+      return this.cellMarkup(symbol, emblems[index], cells.includes(index), event);
     }).join('') + '</div>').join('');
   }
+  private get reducedMotion() { return this.host.ownerDocument.defaultView!.matchMedia('(prefers-reduced-motion: reduce)').matches; }
+  private motionOptions(signal: AbortSignal) { return { signal, fast: this.fast, paused: () => this.paused || this.dialog.open || this.host.ownerDocument.hidden }; }
   private status(text: string) { this.find('status').textContent = text; }
   private updateTeam() {
     const team = this.team;
@@ -123,6 +130,7 @@ export class NeopolisUI {
     if (!this.alive) return;
     if (this.owner !== this.client.accountId) {
       this.owner = this.client.accountId; this.animation.abort(); this.animation = new AbortController();
+      this.reels = undefined;
       this.busy = false; this.seen = ''; this.selected = 'granite'; this.bet = 100; delete this.root.dataset.power;
       if (this.dialog.open) this.dialog.close();
       this.draw(initialGrid); this.find('win').textContent = '0';
@@ -157,13 +165,16 @@ export class NeopolisUI {
   private async present(frame: Frame, signal: AbortSignal) {
     if (signal.aborted) return;
     this.root.dataset.power = frame.hero ?? (frame.kind === 'finisher' ? 'team' : '');
-    this.draw(frame.grid, frame.emblems, frame.cells, frame.hero ?? frame.kind);
+    const falling = frame.kind === 'cascade' || frame.hero === 'granite';
+    this.draw(frame.grid, frame.emblems, falling ? [] : frame.cells, frame.hero ?? frame.kind);
     const label = frame.hero ? this.power(frame.hero) : frame.kind === 'win' ? this.copy.cascade : frame.kind === 'finisher' ? this.copy.finisher : '';
     const banner = this.find('event'); banner.textContent = label; banner.classList.toggle('np-event-visible', !!label);
     if (frame.hero) {
       this.status(this.copy[frame.hero] + ' · ' + this.power(frame.hero));
       this.services.gameAudio.effect(frame.hero === 'granite' ? 'explosion' : 'laser', .35);
     } else if (frame.kind === 'win') this.services.gameAudio.effect('coin', .3);
+    if (falling && !this.reducedMotion) await dropNeopolisSymbols(this.find('board'), frame.cells, this.motionOptions(signal));
+    if (signal.aborted) return;
     await this.wait(frame.hero || frame.kind === 'finisher' ? 750 : frame.kind === 'win' ? 480 : 200, signal);
   }
   private async spin() {
@@ -171,8 +182,12 @@ export class NeopolisUI {
     if (!this.client.pending && this.session?.state !== 'active' && this.balance < this.bet) { this.status(this.copy.lowBalance); return; }
     const owner = this.client.accountId, animation = this.animation;
     this.busy = true; this.controls(); this.status(this.copy.waiting);
+    this.find('event').classList.remove('np-event-visible');
+    const reels = this.reducedMotion ? undefined : new NeopolisReels(this.find('board'), this.motionOptions(animation.signal), () => this.services.gameAudio.effect('cabinet', .09));
+    this.reels = reels;
     try {
       void this.services.gameAudio.unlock();
+      this.services.gameAudio.effect('start', .2);
       const before = this.session;
       if (this.client.pending) await this.client.retry();
       else if (before?.state === 'active') await this.client.act({ gameId: NEOPOLIS_GAME, action: 'move', sessionId: before.id, move: 'neopolis-spin', revision: before.view.neopolis!.revision });
@@ -182,6 +197,14 @@ export class NeopolisUI {
       if (!view) throw Error(this.copy.error);
       const spin = view.history.at(-1)!;
       this.status(this.copy.spinning);
+      if (reels) {
+        const first = spin.result.frames[0];
+        await reels.finish(Array.from({ length: 5 }, (_, col) => Array.from({ length: 4 }, (_, row) => {
+          const cell = row * 5 + col;
+          return this.cellMarkup(first.grid[cell], first.emblems[cell]);
+        })));
+        reels.destroy(); if (this.reels === reels) this.reels = undefined;
+      }
       for (const frame of spin.result.frames) {
         if (!this.alive || animation.signal.aborted) return;
         await this.present(frame, animation.signal);
@@ -196,6 +219,7 @@ export class NeopolisUI {
     } catch (error) {
       if (this.alive && owner === this.client.accountId) this.status(this.client.error || (error instanceof Error ? error.message : this.copy.error));
     } finally {
+      reels?.destroy(); if (this.reels === reels) this.reels = undefined;
       if (this.alive && owner === this.client.accountId) { this.busy = false; delete this.root.dataset.power; this.sync(); }
     }
   }

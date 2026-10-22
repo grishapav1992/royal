@@ -265,3 +265,15 @@
   .np-transmission { min-height: 29px; margin-top: 10px }
   .np-value>strong { font-size: 23px }
 }
+/* The result grid retains its geometry and accessibility contract while five
+   clipped visual strips run above it. No page or host layout is replaced. */
+.np-board { position: relative; isolation: isolate; overflow: hidden }
+.np-board.np-rolling>.np-row { visibility: hidden }
+.np-reels { position: absolute; inset: 2px; z-index: 2; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 2px; pointer-events: none }
+.np-reel { position: relative; overflow: hidden; min-width: 0; min-height: 0; background: #07101c }
+.np-reel:after { content: ''; position: absolute; inset: 0; background: linear-gradient(#02071277, transparent 18% 82%, #02071277); transition: opacity .2s; pointer-events: none }
+.np-reel[data-phase=stopped]:after { opacity: 0 }
+.np-reel-track { display: flex; flex-direction: column; gap: 2px; will-change: transform; width: 100% }
+.np-reel-track>.np-cell { aspect-ratio: auto; flex: 0 0 var(--np-reel-cell-height); height: var(--np-reel-cell-height); width: 100% }
+.np-board[data-falling=true] .np-cell { will-change: transform }
+@media (max-width: 760px) { .np-reels { inset: 1px } }

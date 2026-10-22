@@ -62,6 +62,7 @@ test('real API retries a lost result once, restores collection and bonus, and se
     original = await (await route.fetch()).json(); await route.abort('failed');
   });
   await page.locator('[data-np=spin]').click();
+  await expect(page.locator('.np-reels')).toHaveCount(0);
   await page.waitForFunction(() => !!(window as any).neopolisPreview.client.pending && !(window as any).neopolisPreview.state().busy);
   const pendingId = await page.evaluate(() => (window as any).neopolisPreview.client.pending.id);
   await expect(page.locator('[data-np=spin]')).toHaveText(/Check move/);
@@ -106,6 +107,7 @@ test('real host opens the cabinet with connected chat on desktop and mobile', as
   for (const type of ['chat','activities','piano-note','notice']) peer.onMessage(type, () => {});
   try {
     await ready(page); expect((await page.request.post('/api/auth/character', {data:{skin:0}})).ok()).toBe(true);
+    await page.emulateMedia({reducedMotion:'no-preference'});
     await page.goto('/?lang=en&room=' + peer.roomId);
     await expect(page.locator('#join-dialog')).toBeHidden({timeout:30000});
     await page.waitForFunction(() => (window as any).royalDemo?.getState().online === true);
@@ -115,7 +117,9 @@ test('real host opens the cabinet with connected chat on desktop and mobile', as
     await expect(page.locator('#mini-dialog #chat-input')).toBeEnabled();
     await expect(page.locator('.np [data-np=spin]')).toBeEnabled();
     const first = page.waitForResponse(response => response.url().endsWith('/api/demo-wallet/expansion') && response.request().method() === 'POST');
-    await page.locator('.np [data-np=spin]').click(); expect((await first).ok()).toBe(true);
+    await page.locator('.np [data-np=spin]').click();
+    await expect(page.locator('#mini-dialog .np-reels')).toBeVisible();
+    expect((await first).ok()).toBe(true);
     await page.waitForFunction(() => (window as any).royalDemo.getMiniState()?.busy === false);
     await closeNotice(page);
     for (const [width,height] of [[1440,1000],[390,844]]) {
@@ -134,4 +138,105 @@ test('real host opens the cabinet with connected chat on desktop and mobile', as
     await expect(page.locator('#club-chat-dock')).toBeVisible();
     expect(errors).toEqual([]);
   } finally { await peer.leave(); await hostApi.dispose(); }
+});
+
+test('reels move during the request, pause in rules, brake in order and respect fast mode on mobile', async ({ page }) => {
+  const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
+  await ready(page); await page.emulateMedia({ reducedMotion:'no-preference' });
+  const observe = () => page.evaluate(() => {
+    const board = document.querySelector('.np-board')!;
+    const motion = { stops:[] as number[], duration:0, started:performance.now(), falling:0 };
+    (window as any).npMotion = motion;
+    new MutationObserver(records => {
+      for (const record of records) {
+        const element = record.target as HTMLElement;
+        if (record.attributeName === 'data-phase' && element.dataset.phase === 'stopped') {
+          const col = Array.from(board.querySelectorAll('.np-reel')).indexOf(element);
+          if (col >= 0 && !motion.stops.includes(col)) motion.stops.push(col);
+          if (motion.stops.length === 5) motion.duration = performance.now() - motion.started;
+        }
+        if (record.attributeName === 'data-falling' && element.dataset.falling === 'true') {
+          motion.falling += Array.from(board.querySelectorAll<HTMLElement>('[role=gridcell]')).filter(cell => cell.style.transform.includes('-')).length;
+        }
+      }
+    }).observe(board, {subtree:true,attributes:true,attributeFilter:['data-phase','data-falling']});
+  });
+  let release!: () => void;
+  const held = new Promise<void>(resolve => { release = resolve; });
+  await page.route('**/api/demo-wallet/expansion', async route => {
+    if (route.request().method() === 'POST') await held;
+    await route.continue();
+  });
+  try {
+    await observe();
+    const initial = await page.locator('.np-board [role=gridcell]').evaluateAll(cells => cells.map(cell => (cell as HTMLElement).dataset.symbol));
+    await page.locator('[data-np=spin]').click();
+    await expect(page.locator('.np-reel')).toHaveCount(5);
+    const alignment = await page.locator('.np-board').evaluate(board => {
+      const cell = board.querySelector('[role=gridcell]')!.getBoundingClientRect();
+      const reel = board.querySelector('.np-reel')!.getBoundingClientRect();
+      return Math.max(Math.abs(reel.x - cell.x), Math.abs(reel.y - cell.y), Math.abs(reel.width - cell.width));
+    });
+    expect(alignment).toBeLessThan(.5);
+    await expect(page.locator('.np-board')).toHaveAttribute('aria-busy','true');
+    const track = page.locator('.np-reel-track').first();
+    const position = await track.evaluate(element => element.style.transform);
+    await expect.poll(() => track.evaluate(element => element.style.transform)).not.toBe(position);
+    expect(await page.locator('.np-board [role=gridcell]').evaluateAll(cells => cells.map(cell => (cell as HTMLElement).dataset.symbol))).toEqual(initial);
+    await page.screenshot({path:'test-results/neopolis/review/reels-running-en.png'});
+    await page.locator('[data-np=rules]').click();
+    const paused = await track.evaluate(element => element.style.transform);
+    await page.waitForTimeout(160);
+    expect(await track.evaluate(element => element.style.transform)).toBe(paused);
+    await page.locator('[data-np=close]').click();
+    release();
+    await page.waitForFunction(() => !(window as any).neopolisPreview.state().busy);
+    await expect(page.locator('.np-reels')).toHaveCount(0);
+    const normal = await page.evaluate(() => (window as any).npMotion);
+    expect(normal.stops).toEqual([0,1,2,3,4]);
+    const result = await session(page);
+    expect(await page.locator('.np-board [role=gridcell]').evaluateAll(cells => cells.map(cell => Number((cell as HTMLElement).dataset.symbol)))).toEqual(result.view.neopolis.history.at(-1).result.grid);
+    if (result.view.neopolis.history.at(-1).result.frames.some((frame: any) => frame.kind === 'cascade' || frame.hero === 'granite')) expect(normal.falling).toBeGreaterThan(0);
+    await closeNotice(page);
+
+    await page.setViewportSize({width:390,height:844});
+    await page.locator('[data-np=fast]').check();
+    await observe();
+    await spin(page); await closeNotice(page);
+    const fast = await page.evaluate(() => (window as any).npMotion);
+    expect(fast.stops).toEqual([0,1,2,3,4]);
+    expect(fast.duration).toBeLessThan(normal.duration * .8);
+    expect(await page.locator('.np').evaluate(root => root.scrollWidth <= root.clientWidth + 1)).toBe(true);
+    await expect(page.locator('.np-reels')).toHaveCount(0);
+    await expect(page.locator('.np-board')).not.toHaveAttribute('aria-busy','true');
+    expect(errors).toEqual([]);
+  } finally { release(); await page.unroute('**/api/demo-wallet/expansion'); }
+});
+
+test('closing during reel motion cancels presentation and reopening restores the single server result', async ({ page }) => {
+  await ready(page); await page.emulateMedia({reducedMotion:'no-preference'});
+  const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
+  let release!: () => void, confirmed: any, requests = 0;
+  const held = new Promise<void>(resolve => { release = resolve; });
+  await page.route('**/api/demo-wallet/expansion', async route => {
+    if (route.request().method() !== 'POST') { await route.continue(); return; }
+    requests++;
+    const response = await route.fetch(); confirmed = await response.json();
+    await held; await route.fulfill({response});
+  });
+  try {
+    await page.locator('[data-np=spin]').click();
+    await expect(page.locator('.np-reels')).toHaveCount(1);
+    await expect.poll(() => !!confirmed).toBe(true);
+    await page.evaluate(() => (window as any).neopolisPreview.close());
+    await expect(page.locator('.np')).toHaveCount(0);
+    release();
+    await page.waitForFunction(() => !(window as any).neopolisPreview.client.busy);
+    await page.evaluate(() => (window as any).neopolisPreview.open());
+    await expect(page.locator('[data-np=spin]')).toBeEnabled();
+    await expect(page.locator('.np-reels')).toHaveCount(0);
+    expect((await session(page)).id).toBe(confirmed.session.id);
+    expect(await page.locator('.np-board [role=gridcell]').evaluateAll(cells => cells.map(cell => Number((cell as HTMLElement).dataset.symbol)))).toEqual(confirmed.session.view.neopolis.history.at(-1).result.grid);
+    expect(requests).toBe(1); expect(errors).toEqual([]);
+  } finally { release(); await page.unroute('**/api/demo-wallet/expansion'); }
 });
