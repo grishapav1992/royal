@@ -10,5 +10,13 @@
   "assetRoots": [],
   "scripts": {
     "build": "node ../../node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && node ../../scripts/build-game-module.mjs"
-  }
+  },
+  "assetFiles": [
+    "github-worlds/github-tower/background-v1.webp",
+    "github-worlds/github-tower/character-v1.webp"
+  ],
+  "preload": [
+    "github-worlds/github-tower/background-v1.webp",
+    "github-worlds/github-tower/character-v1.webp"
+  ]
 }

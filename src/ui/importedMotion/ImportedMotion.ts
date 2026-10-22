@@ -5,6 +5,7 @@ import type { GameModuleInstance } from '../../modules/GameHostContract';
 import { ImportedMotionAudio } from './Audio';
 import { IMPORTED_OUTCOME_EVENT, importedOutcomeTier, isImportedMotionGame, type ImportedMotionGame, type ImportedOutcome } from './Outcome';
 import { MOTION_PROFILES } from './Profiles';
+import { WorldScene, type WorldAssets } from './WorldScene';
 import './imported-motion.css';
 
 const actions = '[data-start],[data-fruits-spin],[data-dice-play],[data-limbo-play],#original-play,[data-mine-cell],[data-cell],[data-cashout],[data-action="start"],[data-action="roll"]';
@@ -27,21 +28,23 @@ export class ImportedMotion {
   private alive = true;
   private panel?: HTMLElement;
   private audio: ImportedMotionAudio;
+  private world?: WorldScene;
   private unsubscribe: () => void;
   private token = 0;
-  private preference = () => this.cancel();
+  private preference = () => { this.cancel(); this.world?.setEnabled(!document.hidden && !this.reduced.matches); };
   private owner = demoWallet.accountId;
   private accountChange = () => { if (this.owner !== demoWallet.accountId) { this.owner = demoWallet.accountId; this.cancel(); } };
 
-  constructor(private root: HTMLElement, private content: HTMLElement, private game: ImportedMotionGame) {
+  constructor(private root: HTMLElement, private content: HTMLElement, private game: ImportedMotionGame, assets?: WorldAssets) {
     const profile = MOTION_PROFILES[game];
     root.className = 'imported-motion'; root.dataset.importedMotion = game; root.dataset.motionPhase = 'idle';
     root.style.setProperty('--imp-color', profile.color); root.style.setProperty('--imp-secondary', profile.secondary);
     this.audio = new ImportedMotionAudio(profile);
+    if (assets) { this.world = new WorldScene(root, content, game, assets); this.world.setEnabled(!document.hidden && !this.reduced.matches); }
     this.unsubscribe = gameAudio.onPreferences(value => { if (value.muted || value.volume === 0) this.audio.stop(); });
     content.addEventListener('click', event => this.start(event), { capture: true, signal: this.lifetime.signal });
     root.addEventListener(IMPORTED_OUTCOME_EVENT, event => this.outcome((event as CustomEvent<ImportedOutcome>).detail), { signal: this.lifetime.signal });
-    document.addEventListener('visibilitychange', () => { if (document.hidden) this.cancel(); }, { signal: this.lifetime.signal });
+    document.addEventListener('visibilitychange', this.preference, { signal: this.lifetime.signal });
     content.addEventListener('change', event => { if ((event.target as Element | null)?.matches('[data-asset]')) this.cancel(); }, { signal: this.lifetime.signal });
     demoWallet.addEventListener('change', this.accountChange, { signal: this.lifetime.signal });
     this.reduced.addEventListener('change', this.preference);
@@ -62,7 +65,7 @@ export class ImportedMotion {
       return;
     }
     this.cancel(); this.armed = true; const token = ++this.token;
-    this.root.dataset.motionPhase = 'anticipation';
+    this.phase('anticipation');
     if (!this.reduced.matches) {
       this.animate(button, [{ transform: 'scale(1)' }, { transform: 'scale(.965)', offset: .35 }, { transform: 'scale(1)' }], 190);
       this.audio.contact();
@@ -70,11 +73,12 @@ export class ImportedMotion {
     this.watchdog = window.setTimeout(() => { if (this.token === token) this.cancel(); }, 18000);
   }
   private scan(play: boolean) {
+    this.world?.sync();
     if (play) {
       const phase = this.content.dataset.motionPhase ?? this.content.querySelector<HTMLElement>('[data-phase],[data-keno-presentation],[data-tower-motion],[data-motion]')?.dataset;
       const value = typeof phase === 'string' ? phase : phase?.phase ?? phase?.kenoPresentation ?? phase?.towerMotion ?? phase?.motion;
-      if (value && ['waiting', 'pending', 'rolling', 'accelerating', 'spinning'].includes(value)) this.root.dataset.motionPhase = 'spinning';
-      if (value && ['stopping', 'revealing', 'confirmed', 'drawing'].includes(value)) this.root.dataset.motionPhase = 'revealing';
+      if (value && ['waiting', 'pending', 'rolling', 'accelerating', 'spinning'].includes(value)) this.phase('spinning');
+      if (value && ['stopping', 'revealing', 'confirmed', 'drawing'].includes(value)) this.phase('revealing');
     }
     const next = new Map<string, string>(); let index = 0;
     this.content.querySelectorAll<HTMLElement>(cells).forEach(node => {
@@ -82,13 +86,16 @@ export class ImportedMotion {
       const state = [node.className, node.dataset.revealed ?? '', node.dataset.gem ?? ''].join('/');
       next.set(key, state);
       const prior = this.states.get(key);
-      const revealed = node.matches('.is-gem,.is-mine,.is-drawn,.safe,.trap,.chosen,[data-revealed="true"]');
+      const revealed = node.matches('.is-gem,.is-mine,.is-drawn,.safe,.trap,.chosen,.dragon,[data-revealed="true"]');
       if (!play || !revealed || prior === state || prior === undefined && !node.matches('[data-revealed="true"]')) return;
       if (!this.reduced.matches) {
         this.animate(node, [{ transform: node.hasAttribute('data-mine-cell') ? 'perspective(600px) rotateY(-72deg) scale(.9)' : 'translateY(-4px) scale(.94)', opacity: .6 }, { transform: 'scale(1.045)', opacity: 1, offset: .68 }, { transform: 'scale(1)', opacity: 1 }], node.hasAttribute('data-mine-cell') ? 340 : 220);
-        if (!node.matches('.is-mine,.trap')) this.audio.reveal(Number(node.dataset.confirmedGem ?? node.dataset.confirmedDie ?? index++));
+        const safe = !node.matches('.is-mine,.trap,.dragon');
+        const position = Number(node.dataset.confirmedGem ?? node.dataset.confirmedDie ?? index++);
+        if (safe) this.audio.reveal(position);
+        this.world?.reveal(node, safe, position);
       }
-      this.root.dataset.motionPhase = 'landing';
+      this.phase('landing');
     });
     this.states = next;
   }
@@ -97,10 +104,11 @@ export class ImportedMotion {
     const tier = importedOutcomeTier(result.spentUnits, result.returnedUnits);
     if (!tier) return;
     this.armed = false; clearTimeout(this.watchdog); this.watchdog = 0;
-    this.root.dataset.motionPhase = 'settled'; this.root.dataset.winTier = tier;
+    this.phase('settled'); this.root.dataset.winTier = tier;
     this.root.dataset.returnedUnits = result.returnedUnits;
     const profit = BigInt(result.returnedUnits) - BigInt(result.spentUnits);
     this.root.dataset.profitUnits = profit.toString();
+    this.world?.result(profit > 0n);
     if (tier === 'none' || tier === 'return') { this.audio.stop(); return; }
     const text = labels(), decimals = result.decimals ?? 2, scale = 10n ** BigInt(decimals);
     const money = (units: bigint) => {
@@ -166,6 +174,7 @@ export class ImportedMotion {
   private clearPanel() {
     clearTimeout(this.hideTimer); this.hideTimer = 0; cancelAnimationFrame(this.frame); this.frame = 0;
     this.panel?.remove(); this.panel = undefined; this.audio.stop();
+    this.world?.cancel();
     for (const animation of this.animations) animation.cancel(); this.animations.clear();
   }
   private dismissPanel() {
@@ -180,21 +189,25 @@ export class ImportedMotion {
   }
   private cancel() {
     this.token++; this.armed = false; clearTimeout(this.watchdog); this.watchdog = 0; this.clearPanel();
-    this.root.dataset.motionPhase = 'idle'; delete this.root.dataset.winTier; delete this.root.dataset.profitUnits; delete this.root.dataset.returnedUnits;
+    this.phase('idle'); delete this.root.dataset.winTier; delete this.root.dataset.profitUnits; delete this.root.dataset.returnedUnits;
+  }
+  private phase(value: 'idle' | 'anticipation' | 'spinning' | 'revealing' | 'landing' | 'settled') {
+    if (this.root.dataset.motionPhase !== value) this.root.dataset.motionPhase = value;
+    this.world?.phase(value);
   }
   destroy() {
-    this.alive = false; this.cancel(); this.observer.disconnect(); this.lifetime.abort(); this.unsubscribe();
+    this.alive = false; this.cancel(); this.world?.destroy(); this.observer.disconnect(); this.lifetime.abort(); this.unsubscribe();
     this.reduced.removeEventListener('change', this.preference);
   }
 }
 
 /** Each independent game keeps its view, server rules, wallet and lifecycle. */
-export function mountImportedMotion(host: HTMLElement, game: string, mount: (content: HTMLElement) => Pick<GameModuleInstance, 'destroy'>): GameModuleInstance {
+export function mountImportedMotion(host: HTMLElement, game: string, mount: (content: HTMLElement) => Pick<GameModuleInstance, 'destroy'>, assets?: WorldAssets): GameModuleInstance {
   if (!isImportedMotionGame(game)) return mount(host);
   const root = document.createElement('div'), content = document.createElement('div'); content.className = 'imp-content';
   root.append(content); host.replaceChildren(root);
   let view: Pick<GameModuleInstance, 'destroy'>;
   try { view = mount(content); } catch (error) { root.remove(); throw error; }
-  const motion = new ImportedMotion(root, content, game);
+  const motion = new ImportedMotion(root, content, game, assets);
   return { destroy() { motion.destroy(); view.destroy(); root.remove(); } };
 }

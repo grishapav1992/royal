@@ -7,5 +7,5 @@ export const rulesVersion = 1;
 export const progressVersion = 1;
 export const mount: GameModuleV1['mount'] = host => {
  readGameHost();
- return mountImportedMotion(host, gameId, content => new FruitsSlotUI(content, gameId));
+ return mountImportedMotion(host, gameId, content => new FruitsSlotUI(content, gameId), { background: '/assets/github-worlds/royal-fruits/background-v1.webp', character: '/assets/github-worlds/royal-fruits/character-v1.webp' });
 };

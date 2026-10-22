@@ -10,5 +10,13 @@
   "assetRoots": [],
   "scripts": {
     "build": "node ../../node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && node ../../scripts/build-game-module.mjs"
-  }
+  },
+  "assetFiles": [
+    "github-worlds/royal-fruits/background-v1.webp",
+    "github-worlds/royal-fruits/character-v1.webp"
+  ],
+  "preload": [
+    "github-worlds/royal-fruits/background-v1.webp",
+    "github-worlds/royal-fruits/character-v1.webp"
+  ]
 }

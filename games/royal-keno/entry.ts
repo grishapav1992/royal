@@ -7,5 +7,5 @@ export const rulesVersion = 1;
 export const progressVersion = 1;
 export const mount: GameModuleV1['mount'] = host => {
  readGameHost();
- return mountImportedMotion(host, gameId, content => new OriginalGameView(content, gameId));
+ return mountImportedMotion(host, gameId, content => new OriginalGameView(content, gameId), { background: '/assets/github-worlds/royal-keno/background-v1.webp', character: '/assets/github-worlds/royal-keno/character-v1.webp' });
 };

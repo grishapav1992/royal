@@ -1,0 +1,200 @@
+[
+  {
+    "game": "royal-fruits",
+    "kind": "character",
+    "path": "public/assets/github-worlds/royal-fruits/character-v1.webp",
+    "width": 512,
+    "height": 768,
+    "bytes": 97944,
+    "sha256": "059d9e17ae40e24b0b9c96d1d288caed815a495a03cc6527c5a1b52dd2e9e4c0",
+    "sourceSha256": "0c2cf338ad3cd23d4963604e1b0df9b9195801f0ab6b5bfcab0e54117df03404",
+    "alpha": true
+  },
+  {
+    "game": "royal-fruits",
+    "kind": "background",
+    "path": "public/assets/github-worlds/royal-fruits/background-v1.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 191608,
+    "sha256": "a04a36b64c8178ed12bffd8e8144942ea38282d5a7b95c3d935333ea9f035c43",
+    "sourceSha256": "983fa844332655a7f787426e1c107de85d851eecac970b0148466707efe13d4f",
+    "alpha": false
+  },
+  {
+    "game": "royal-dice",
+    "kind": "character",
+    "path": "public/assets/github-worlds/royal-dice/character-v1.webp",
+    "width": 512,
+    "height": 768,
+    "bytes": 96212,
+    "sha256": "b5e194afb09aa5001377ee1ad139c236d330310197f52016687706e719789157",
+    "sourceSha256": "89e59918d5ca2b751b303e645a1b2276ec5bec299b4eec46644eac9f07494368",
+    "alpha": true
+  },
+  {
+    "game": "royal-dice",
+    "kind": "background",
+    "path": "public/assets/github-worlds/royal-dice/background-v1.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 165720,
+    "sha256": "4314e70783bbbe94e1d1fcaff6aadedabcf16a458fb0e70496d5a4f5e03918de",
+    "sourceSha256": "2acff0cc664211f4c780b3b316a3641503b11cc06d57d7d90385330d7bd31b19",
+    "alpha": false
+  },
+  {
+    "game": "royal-limbo",
+    "kind": "character",
+    "path": "public/assets/github-worlds/royal-limbo/character-v1.webp",
+    "width": 512,
+    "height": 768,
+    "bytes": 90180,
+    "sha256": "caeacd9fd01c561b972f5fe551a3f3dbeb2cd04077580007b85df4bee070368b",
+    "sourceSha256": "e2d439e5c6b509263456d72c86a09b9491d2bbd8d423a624ebaa75903730a0ac",
+    "alpha": true
+  },
+  {
+    "game": "royal-limbo",
+    "kind": "background",
+    "path": "public/assets/github-worlds/royal-limbo/background-v1.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 141978,
+    "sha256": "747f9299dab9383066c4ed75a6a3b08af3f8ffff2ef58e098751ad52a8305fbf",
+    "sourceSha256": "91f160ccd9580a30068f2f761357555428984a2857b7c1e44538845a0c92a5be",
+    "alpha": false
+  },
+  {
+    "game": "royal-mines",
+    "kind": "character",
+    "path": "public/assets/github-worlds/royal-mines/character-v1.webp",
+    "width": 512,
+    "height": 768,
+    "bytes": 83560,
+    "sha256": "6b3552b7018ab6d2fd63ab41be1977786606be50e62b21d05494db79829b536c",
+    "sourceSha256": "f6bdcbdc1286293949dbc9b55774940f2886addcaff778015267b79395cd7cde",
+    "alpha": true
+  },
+  {
+    "game": "royal-mines",
+    "kind": "background",
+    "path": "public/assets/github-worlds/royal-mines/background-v1.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 186318,
+    "sha256": "9e2b80863c4ce1e8d76f704f8a9cec200244654f98d9b03fc84681df4053f4ee",
+    "sourceSha256": "6f67c3c3d7f23f30bbc97a832dc1cb07a1b7d384f44aa141c818b34aeca6005c",
+    "alpha": false
+  },
+  {
+    "game": "royal-keno",
+    "kind": "character",
+    "path": "public/assets/github-worlds/royal-keno/character-v1.webp",
+    "width": 640,
+    "height": 700,
+    "bytes": 136064,
+    "sha256": "9ec3cd4656b6f0a50e4104077a04d23c65f92ecd515ee1ffa28ab4598a420d0b",
+    "sourceSha256": "658ba9b4eb018e1cf5b49dd232fc1d6ef1609983655ddd4c1fc98c70604e5176",
+    "alpha": true
+  },
+  {
+    "game": "royal-keno",
+    "kind": "background",
+    "path": "public/assets/github-worlds/royal-keno/background-v1.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 178448,
+    "sha256": "c596b83f4b3584e23e24337d4bb46d4d3ef52c2618d2163bfb95e31dca840a38",
+    "sourceSha256": "a8b4bc0da276074fbf598fc94d0443f5336fac1529d3f2c7e689b751d8e97f8f",
+    "alpha": false
+  },
+  {
+    "game": "github-craps",
+    "kind": "character",
+    "path": "public/assets/github-worlds/github-craps/character-v1.webp",
+    "width": 512,
+    "height": 768,
+    "bytes": 60506,
+    "sha256": "c0ba0ae9ef9d0cfaecf63006ee02bfbfebdafbe89b60e61a75644f20443c2b51",
+    "sourceSha256": "6cb29767c0388cae246453cef9c413b6dc11d61a694d392e532e21edd09bcb57",
+    "alpha": true
+  },
+  {
+    "game": "github-craps",
+    "kind": "background",
+    "path": "public/assets/github-worlds/github-craps/background-v1.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 80224,
+    "sha256": "87e63130aadf38289fa7142433f0219e1890b371ce37ee0a4062314e5b73bdab",
+    "sourceSha256": "9cd2349abfee62ace874add92854dd8722940943d24f5de1b4ebdc44d5d432b3",
+    "alpha": false
+  },
+  {
+    "game": "github-tower",
+    "kind": "character",
+    "path": "public/assets/github-worlds/github-tower/character-v1.webp",
+    "width": 640,
+    "height": 585,
+    "bytes": 144394,
+    "sha256": "e3f175ab54859b05c7155f7419a714ccfef2939403d354bb8fec4622d421ba96",
+    "sourceSha256": "5d2cd4f03d6fb48517e5e53a2c12a11c5d7da0f1cd5b75d395b6c1e2ba39c247",
+    "alpha": true
+  },
+  {
+    "game": "github-tower",
+    "kind": "background",
+    "path": "public/assets/github-worlds/github-tower/background-v1.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 78476,
+    "sha256": "33dea406adddda0360df2e330048baefd11f4602cd0cdfbefe330d3b53fe305b",
+    "sourceSha256": "802588ec9684aaadc2839ac9d6fef723f918acd3f8194c94e95288954f9eb50e",
+    "alpha": false
+  },
+  {
+    "game": "github-diamonds",
+    "kind": "character",
+    "path": "public/assets/github-worlds/github-diamonds/character-v1.webp",
+    "width": 640,
+    "height": 700,
+    "bytes": 155496,
+    "sha256": "431d49bf1d848a95d374b594881ae4019df62596ab33a83153f3035a65915b0d",
+    "sourceSha256": "037d14db19920b8a9432ac2f86fda8a69ab95d13020a8204db504c5343494742",
+    "alpha": true
+  },
+  {
+    "game": "github-diamonds",
+    "kind": "background",
+    "path": "public/assets/github-worlds/github-diamonds/background-v1.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 156050,
+    "sha256": "b222e1cf97e2ba46df422068cd09752fb117da7c5e1e63366197508873ce7140",
+    "sourceSha256": "07aa7c2f308bab60e715537b2d6345e094cdd1f080373ce5539dd013a012a84a",
+    "alpha": false
+  },
+  {
+    "game": "github-sic-bo",
+    "kind": "character",
+    "path": "public/assets/github-worlds/github-sic-bo/character-v1.webp",
+    "width": 640,
+    "height": 427,
+    "bytes": 103516,
+    "sha256": "4014bfc7188f0d459aa9d96f4bc0b6ea2a0ff40a85013ac3663ac83cdee921b1",
+    "sourceSha256": "747f5b4df09066fa9b5e5ef925b0379e14e256200c0781342c6c2e5af0b6bde0",
+    "alpha": true
+  },
+  {
+    "game": "github-sic-bo",
+    "kind": "background",
+    "path": "public/assets/github-worlds/github-sic-bo/background-v1.webp",
+    "width": 1200,
+    "height": 675,
+    "bytes": 129362,
+    "sha256": "1b2304d90ae68202fe53c92a654177f6a1fc83c094742d70233dfdef60dea852",
+    "sourceSha256": "533603b26f11fbc0c5807410ef8280f2c5736fcb8de78263a8e5fa33cd00bed1",
+    "alpha": false
+  }
+]

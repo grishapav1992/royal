@@ -7,5 +7,5 @@ export const rulesVersion = 1;
 export const progressVersion = 1;
 export const mount: GameModuleV1['mount'] = host => {
  readGameHost();
- return mountImportedMotion(host, gameId, content => new DiceSlotUI(content, gameId));
+ return mountImportedMotion(host, gameId, content => new DiceSlotUI(content, gameId), { background: '/assets/github-worlds/royal-dice/background-v1.webp', character: '/assets/github-worlds/royal-dice/character-v1.webp' });
 };
