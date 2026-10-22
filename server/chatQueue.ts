@@ -57,4 +57,3 @@ export class ChatQueue {
 
 export const chatQueue = new ChatQueue();
 import { CHAT_PENDING_LIMIT } from '../src/shared/chat';
-
