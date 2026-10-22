@@ -67,17 +67,25 @@ test('a saved bonus survives store recreation, rejects stale moves and credits t
     session = (await restored.active('alice')).sessions.find(session => session.gameId === NEOPOLIS_GAME)!;
     let last = move;
     while (session.state === 'active') {
+      const beforeFree = await demoBalanceUnits(f.db, 'alice');
+      const entriesBefore = Number((await f.db.prepare('SELECT COUNT(*) AS n FROM demo_ledger WHERE account_id=?').get('alice'))!.n);
       last = { ...move, id: randomUUID(), revision: session.view.neopolis!.revision };
       session = (await restored.operate('alice', last)).session;
       assert(validNeopolisSession(session));
       assert.equal(session.spentUnits, '10000');
+      const credit = session.state === 'settled' ? Number(session.returnedUnits) : 0;
+      assert.equal(await demoBalanceUnits(f.db, 'alice'), beforeFree + credit, 'Free spins neither debit a stake nor credit an unfinished series');
+      const entriesAfter = Number((await f.db.prepare('SELECT COUNT(*) AS n FROM demo_ledger WHERE account_id=?').get('alice'))!.n);
+      assert.equal(entriesAfter, entriesBefore + (credit > 0 ? 1 : 0), 'Only settlement adds a payout entry');
     }
     returned += Number(session.returnedUnits);
     const balance = await demoBalanceUnits(f.db, 'alice');
     assert.equal(balance, 1000000 - paid + returned);
     assert.equal(await demoReservedUnits(f.db, 'alice'), 0);
+    const entriesBeforeRetry = Number((await f.db.prepare('SELECT COUNT(*) AS n FROM demo_ledger WHERE account_id=?').get('alice'))!.n);
     const draws = f.draws(); await restored.operate('alice', last);
     assert.equal(f.draws(), draws); assert.equal(await demoBalanceUnits(f.db, 'alice'), balance);
+    assert.equal(Number((await f.db.prepare('SELECT COUNT(*) AS n FROM demo_ledger WHERE account_id=?').get('alice'))!.n), entriesBeforeRetry);
     await assert.rejects(restored.operate('alice', { ...last, id: randomUUID() }));
     const fresh = await restored.operate('alice', { ...f.start(), stakeUnits: '20000', settings: { neopolis: { hero: 'prism' } } });
     assert.equal(fresh.session.view.neopolis!.origin.starter, 'prism');

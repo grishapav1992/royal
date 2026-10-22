@@ -1,0 +1,1017 @@
+{
+  "generatedAt": "2026-10-22T21:15:28.398Z",
+  "commit": "4327111246b57a74f66a6c1aaff2f42175e8d1bc",
+  "rulesVersion": 2,
+  "sourceHashes": {
+    "src/shared/neopolisMath.ts": "22c2d4646ea2ac8db021bde42fcb90b38035848041cea217acd1d9eeb2682692",
+    "src/shared/neopolis.ts": "32fb38b8c98d4542e9c6212f4264834bf8431b5d7c9e009bfbad94a195b2236b",
+    "src/shared/draconaMath.ts": "ac67c662d15cb472ed5294a788d068ed4d8f4c492edc71ffe9ea1bf68126dacf"
+  },
+  "configuration": {
+    "roundsPerRun": 10000,
+    "runsPerHero": 10,
+    "seed": 20261023,
+    "playersPerHero": 1000,
+    "playerPaidRounds": 30,
+    "stakeCoins": 100,
+    "initialCoins": 10000,
+    "targetCoins": 19700,
+    "maximumRtp": 1
+  },
+  "method": "Seeded Monte Carlo using the unchanged production spin engine, integer settlement formula and per-round cap. Team progress persists between paid rounds. Every triggered bonus is completed. First paid round of every seed is cross-checked with advanceNeopolis. Paid stakes form the RTP denominator. Seed ranges are descriptive, not confidence intervals or certified theoretical RTP.",
+  "heroes": [
+    {
+      "hero": "granite",
+      "paidRounds": 100000,
+      "totalSpins": 406730,
+      "rtp": 12.58844825,
+      "paidSpinContribution": 1.19931325,
+      "bonusContribution": 11.389135,
+      "seedRtpRange": [
+        12.22319,
+        12.7851975
+      ],
+      "outcomes": {
+        "noPayout": 32177,
+        "partialReturn": 28050,
+        "stakeReturned": 1003,
+        "profit": 38770,
+        "big10x": 7347,
+        "epic25x": 6818
+      },
+      "profitRate": 0.3877,
+      "positivePayoutRate": 0.67823,
+      "bonus": {
+        "triggers": 6845,
+        "triggerRate": 0.06845,
+        "freeSpins": 306730,
+        "positiveFreeSpinRate": 0.8175854986470186,
+        "meanFreeSpins": 44.810810810810814,
+        "fullLength45Rate": 0.9945945945945946,
+        "bossesDefeated": [
+          37,
+          0,
+          0,
+          6808
+        ],
+        "caps": 0,
+        "meanPayoutInStakes": 166.38619430241053
+      },
+      "roundPayoutInStakes": {
+        "median": 0.55,
+        "p90": 5.625,
+        "p99": 202.525,
+        "max": 314.575
+      },
+      "playerCohort": {
+        "players": 1000,
+        "paidRounds": 30,
+        "finishAboveStartRate": 0.993,
+        "reached19700Rate": 0.984,
+        "insufficient": 0,
+        "meanFinalCoins": 37554.635,
+        "finalCoins": {
+          "min": 9130,
+          "p10": 24202.5,
+          "median": 39192.5,
+          "p90": 51475,
+          "max": 77255
+        },
+        "sample": [
+          {
+            "seed": 1094002847,
+            "completedPaidRounds": 30,
+            "history": [
+              {
+                "paidRound": 1,
+                "payoutCoins": 0,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9900
+              },
+              {
+                "paidRound": 2,
+                "payoutCoins": 232.5,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 10032.5
+              },
+              {
+                "paidRound": 3,
+                "payoutCoins": 57.5,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9990
+              },
+              {
+                "paidRound": 4,
+                "payoutCoins": 0,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9890
+              },
+              {
+                "paidRound": 5,
+                "payoutCoins": 160,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9950
+              },
+              {
+                "paidRound": 6,
+                "payoutCoins": 200,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 10050
+              },
+              {
+                "paidRound": 7,
+                "payoutCoins": 0,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9950
+              },
+              {
+                "paidRound": 8,
+                "payoutCoins": 90,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9940
+              },
+              {
+                "paidRound": 9,
+                "payoutCoins": 37.5,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9877.5
+              },
+              {
+                "paidRound": 10,
+                "payoutCoins": 0,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9777.5
+              },
+              {
+                "paidRound": 11,
+                "payoutCoins": 380,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 10057.5
+              },
+              {
+                "paidRound": 12,
+                "payoutCoins": 40,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9997.5
+              },
+              {
+                "paidRound": 13,
+                "payoutCoins": 0,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9897.5
+              },
+              {
+                "paidRound": 14,
+                "payoutCoins": 23270,
+                "freeSpins": 45,
+                "bossesDefeated": 3,
+                "balanceCoins": 33067.5
+              },
+              {
+                "paidRound": 15,
+                "payoutCoins": 72.5,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 33040
+              },
+              {
+                "paidRound": 16,
+                "payoutCoins": 0,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 32940
+              },
+              {
+                "paidRound": 17,
+                "payoutCoins": 0,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 32840
+              },
+              {
+                "paidRound": 18,
+                "payoutCoins": 127.5,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 32867.5
+              },
+              {
+                "paidRound": 19,
+                "payoutCoins": 220,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 32987.5
+              },
+              {
+                "paidRound": 20,
+                "payoutCoins": 37.5,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 32925
+              },
+              {
+                "paidRound": 21,
+                "payoutCoins": 120,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 32945
+              },
+              {
+                "paidRound": 22,
+                "payoutCoins": 0,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 32845
+              },
+              {
+                "paidRound": 23,
+                "payoutCoins": 317.5,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 33062.5
+              },
+              {
+                "paidRound": 24,
+                "payoutCoins": 0,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 32962.5
+              },
+              {
+                "paidRound": 25,
+                "payoutCoins": 322.5,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 33185
+              },
+              {
+                "paidRound": 26,
+                "payoutCoins": 0,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 33085
+              },
+              {
+                "paidRound": 27,
+                "payoutCoins": 16712.5,
+                "freeSpins": 45,
+                "bossesDefeated": 3,
+                "balanceCoins": 49697.5
+              },
+              {
+                "paidRound": 28,
+                "payoutCoins": 0,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 49597.5
+              },
+              {
+                "paidRound": 29,
+                "payoutCoins": 45,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 49542.5
+              },
+              {
+                "paidRound": 30,
+                "payoutCoins": 557.5,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 50000
+              }
+            ]
+          }
+        ]
+      },
+      "seeds": [
+        {
+          "seed": 20261023,
+          "paidRounds": 10000,
+          "rtp": 12.67913
+        },
+        {
+          "seed": 20268942,
+          "paidRounds": 10000,
+          "rtp": 12.7486325
+        },
+        {
+          "seed": 20276861,
+          "paidRounds": 10000,
+          "rtp": 12.6994025
+        },
+        {
+          "seed": 20284780,
+          "paidRounds": 10000,
+          "rtp": 12.64647
+        },
+        {
+          "seed": 20292699,
+          "paidRounds": 10000,
+          "rtp": 12.7851975
+        },
+        {
+          "seed": 20300618,
+          "paidRounds": 10000,
+          "rtp": 12.32307
+        },
+        {
+          "seed": 20308537,
+          "paidRounds": 10000,
+          "rtp": 12.518615
+        },
+        {
+          "seed": 20316456,
+          "paidRounds": 10000,
+          "rtp": 12.61846
+        },
+        {
+          "seed": 20324375,
+          "paidRounds": 10000,
+          "rtp": 12.642315
+        },
+        {
+          "seed": 20332294,
+          "paidRounds": 10000,
+          "rtp": 12.22319
+        }
+      ]
+    },
+    {
+      "hero": "impulse",
+      "paidRounds": 100000,
+      "totalSpins": 405080,
+      "rtp": 12.65058675,
+      "paidSpinContribution": 1.3455045,
+      "bonusContribution": 11.30508225,
+      "seedRtpRange": [
+        12.3016475,
+        12.88166
+      ],
+      "outcomes": {
+        "noPayout": 31217,
+        "partialReturn": 26927,
+        "stakeReturned": 953,
+        "profit": 40903,
+        "big10x": 7584,
+        "epic25x": 6795
+      },
+      "profitRate": 0.40903,
+      "positivePayoutRate": 0.6878299999999999,
+      "bonus": {
+        "triggers": 6820,
+        "triggerRate": 0.0682,
+        "freeSpins": 305080,
+        "positiveFreeSpinRate": 0.8178149993444342,
+        "meanFreeSpins": 44.733137829912025,
+        "fullLength45Rate": 0.992375366568915,
+        "bossesDefeated": [
+          52,
+          0,
+          0,
+          6768
+        ],
+        "caps": 0,
+        "meanPayoutInStakes": 165.7636693548387
+      },
+      "roundPayoutInStakes": {
+        "median": 0.625,
+        "p90": 6.4,
+        "p99": 202.775,
+        "max": 349.3
+      },
+      "playerCohort": {
+        "players": 1000,
+        "paidRounds": 30,
+        "finishAboveStartRate": 0.995,
+        "reached19700Rate": 0.986,
+        "insufficient": 0,
+        "meanFinalCoins": 39016.385,
+        "finalCoins": {
+          "min": 9102.5,
+          "p10": 25200,
+          "median": 40397.5,
+          "p90": 52735,
+          "max": 78067.5
+        },
+        "sample": [
+          {
+            "seed": 1095002850,
+            "completedPaidRounds": 30,
+            "history": [
+              {
+                "paidRound": 1,
+                "payoutCoins": 0,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9900
+              },
+              {
+                "paidRound": 2,
+                "payoutCoins": 270,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 10070
+              },
+              {
+                "paidRound": 3,
+                "payoutCoins": 12.5,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9982.5
+              },
+              {
+                "paidRound": 4,
+                "payoutCoins": 175,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 10057.5
+              },
+              {
+                "paidRound": 5,
+                "payoutCoins": 37.5,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9995
+              },
+              {
+                "paidRound": 6,
+                "payoutCoins": 15,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9910
+              },
+              {
+                "paidRound": 7,
+                "payoutCoins": 295,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 10105
+              },
+              {
+                "paidRound": 8,
+                "payoutCoins": 20,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 10025
+              },
+              {
+                "paidRound": 9,
+                "payoutCoins": 20,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9945
+              },
+              {
+                "paidRound": 10,
+                "payoutCoins": 0,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9845
+              },
+              {
+                "paidRound": 11,
+                "payoutCoins": 50,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9795
+              },
+              {
+                "paidRound": 12,
+                "payoutCoins": 197.5,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9892.5
+              },
+              {
+                "paidRound": 13,
+                "payoutCoins": 0,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9792.5
+              },
+              {
+                "paidRound": 14,
+                "payoutCoins": 0,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9692.5
+              },
+              {
+                "paidRound": 15,
+                "payoutCoins": 0,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9592.5
+              },
+              {
+                "paidRound": 16,
+                "payoutCoins": 20,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9512.5
+              },
+              {
+                "paidRound": 17,
+                "payoutCoins": 65,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9477.5
+              },
+              {
+                "paidRound": 18,
+                "payoutCoins": 282.5,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9660
+              },
+              {
+                "paidRound": 19,
+                "payoutCoins": 25,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9585
+              },
+              {
+                "paidRound": 20,
+                "payoutCoins": 150,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9635
+              },
+              {
+                "paidRound": 21,
+                "payoutCoins": 307.5,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9842.5
+              },
+              {
+                "paidRound": 22,
+                "payoutCoins": 240,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9982.5
+              },
+              {
+                "paidRound": 23,
+                "payoutCoins": 0,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9882.5
+              },
+              {
+                "paidRound": 24,
+                "payoutCoins": 30,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9812.5
+              },
+              {
+                "paidRound": 25,
+                "payoutCoins": 0,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9712.5
+              },
+              {
+                "paidRound": 26,
+                "payoutCoins": 0,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9612.5
+              },
+              {
+                "paidRound": 27,
+                "payoutCoins": 0,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9512.5
+              },
+              {
+                "paidRound": 28,
+                "payoutCoins": 0,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9412.5
+              },
+              {
+                "paidRound": 29,
+                "payoutCoins": 15750,
+                "freeSpins": 45,
+                "bossesDefeated": 3,
+                "balanceCoins": 25062.5
+              },
+              {
+                "paidRound": 30,
+                "payoutCoins": 832.5,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 25795
+              }
+            ]
+          }
+        ]
+      },
+      "seeds": [
+        {
+          "seed": 21261026,
+          "paidRounds": 10000,
+          "rtp": 12.58447
+        },
+        {
+          "seed": 21268945,
+          "paidRounds": 10000,
+          "rtp": 12.8242575
+        },
+        {
+          "seed": 21276864,
+          "paidRounds": 10000,
+          "rtp": 12.3016475
+        },
+        {
+          "seed": 21284783,
+          "paidRounds": 10000,
+          "rtp": 12.6771525
+        },
+        {
+          "seed": 21292702,
+          "paidRounds": 10000,
+          "rtp": 12.88166
+        },
+        {
+          "seed": 21300621,
+          "paidRounds": 10000,
+          "rtp": 12.541445
+        },
+        {
+          "seed": 21308540,
+          "paidRounds": 10000,
+          "rtp": 12.7837025
+        },
+        {
+          "seed": 21316459,
+          "paidRounds": 10000,
+          "rtp": 12.6133375
+        },
+        {
+          "seed": 21324378,
+          "paidRounds": 10000,
+          "rtp": 12.6843725
+        },
+        {
+          "seed": 21332297,
+          "paidRounds": 10000,
+          "rtp": 12.6138225
+        }
+      ]
+    },
+    {
+      "hero": "prism",
+      "paidRounds": 100000,
+      "totalSpins": 407255,
+      "rtp": 12.629312,
+      "paidSpinContribution": 1.209216,
+      "bonusContribution": 11.420096,
+      "seedRtpRange": [
+        12.1518625,
+        13.1764425
+      ],
+      "outcomes": {
+        "noPayout": 31692,
+        "partialReturn": 28554,
+        "stakeReturned": 960,
+        "profit": 38794,
+        "big10x": 7372,
+        "epic25x": 6835
+      },
+      "profitRate": 0.38794,
+      "positivePayoutRate": 0.68308,
+      "bonus": {
+        "triggers": 6859,
+        "triggerRate": 0.06859,
+        "freeSpins": 307255,
+        "positiveFreeSpinRate": 0.8180371352785146,
+        "meanFreeSpins": 44.79588861350051,
+        "fullLength45Rate": 0.9941682461000145,
+        "bossesDefeated": [
+          40,
+          0,
+          0,
+          6819
+        ],
+        "caps": 0,
+        "meanPayoutInStakes": 166.49797346551975
+      },
+      "roundPayoutInStakes": {
+        "median": 0.55,
+        "p90": 5.7,
+        "p99": 203.35,
+        "max": 358.4
+      },
+      "playerCohort": {
+        "players": 1000,
+        "paidRounds": 30,
+        "finishAboveStartRate": 0.994,
+        "reached19700Rate": 0.981,
+        "insufficient": 0,
+        "meanFinalCoins": 38295.5225,
+        "finalCoins": {
+          "min": 8860,
+          "p10": 24447.5,
+          "median": 40172.5,
+          "p90": 51182.5,
+          "max": 73867.5
+        },
+        "sample": [
+          {
+            "seed": 1096002853,
+            "completedPaidRounds": 30,
+            "history": [
+              {
+                "paidRound": 1,
+                "payoutCoins": 220,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 10120
+              },
+              {
+                "paidRound": 2,
+                "payoutCoins": 0,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 10020
+              },
+              {
+                "paidRound": 3,
+                "payoutCoins": 0,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9920
+              },
+              {
+                "paidRound": 4,
+                "payoutCoins": 110,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9930
+              },
+              {
+                "paidRound": 5,
+                "payoutCoins": 112.5,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9942.5
+              },
+              {
+                "paidRound": 6,
+                "payoutCoins": 0,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9842.5
+              },
+              {
+                "paidRound": 7,
+                "payoutCoins": 0,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9742.5
+              },
+              {
+                "paidRound": 8,
+                "payoutCoins": 115,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9757.5
+              },
+              {
+                "paidRound": 9,
+                "payoutCoins": 0,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9657.5
+              },
+              {
+                "paidRound": 10,
+                "payoutCoins": 0,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9557.5
+              },
+              {
+                "paidRound": 11,
+                "payoutCoins": 12.5,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9470
+              },
+              {
+                "paidRound": 12,
+                "payoutCoins": 0,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9370
+              },
+              {
+                "paidRound": 13,
+                "payoutCoins": 812.5,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 10082.5
+              },
+              {
+                "paidRound": 14,
+                "payoutCoins": 170,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 10152.5
+              },
+              {
+                "paidRound": 15,
+                "payoutCoins": 0,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 10052.5
+              },
+              {
+                "paidRound": 16,
+                "payoutCoins": 85,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 10037.5
+              },
+              {
+                "paidRound": 17,
+                "payoutCoins": 0,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 9937.5
+              },
+              {
+                "paidRound": 18,
+                "payoutCoins": 567.5,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 10405
+              },
+              {
+                "paidRound": 19,
+                "payoutCoins": 25,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 10330
+              },
+              {
+                "paidRound": 20,
+                "payoutCoins": 375,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 10605
+              },
+              {
+                "paidRound": 21,
+                "payoutCoins": 25,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 10530
+              },
+              {
+                "paidRound": 22,
+                "payoutCoins": 70,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 10500
+              },
+              {
+                "paidRound": 23,
+                "payoutCoins": 100,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 10500
+              },
+              {
+                "paidRound": 24,
+                "payoutCoins": 0,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 10400
+              },
+              {
+                "paidRound": 25,
+                "payoutCoins": 14387.5,
+                "freeSpins": 45,
+                "bossesDefeated": 3,
+                "balanceCoins": 24687.5
+              },
+              {
+                "paidRound": 26,
+                "payoutCoins": 112.5,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 24700
+              },
+              {
+                "paidRound": 27,
+                "payoutCoins": 0,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 24600
+              },
+              {
+                "paidRound": 28,
+                "payoutCoins": 75,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 24575
+              },
+              {
+                "paidRound": 29,
+                "payoutCoins": 245,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 24720
+              },
+              {
+                "paidRound": 30,
+                "payoutCoins": 0,
+                "freeSpins": 0,
+                "bossesDefeated": 0,
+                "balanceCoins": 24620
+              }
+            ]
+          }
+        ]
+      },
+      "seeds": [
+        {
+          "seed": 22261029,
+          "paidRounds": 10000,
+          "rtp": 12.1518625
+        },
+        {
+          "seed": 22268948,
+          "paidRounds": 10000,
+          "rtp": 12.811045
+        },
+        {
+          "seed": 22276867,
+          "paidRounds": 10000,
+          "rtp": 12.379455
+        },
+        {
+          "seed": 22284786,
+          "paidRounds": 10000,
+          "rtp": 12.7726975
+        },
+        {
+          "seed": 22292705,
+          "paidRounds": 10000,
+          "rtp": 12.2509775
+        },
+        {
+          "seed": 22300624,
+          "paidRounds": 10000,
+          "rtp": 13.1764425
+        },
+        {
+          "seed": 22308543,
+          "paidRounds": 10000,
+          "rtp": 12.6880675
+        },
+        {
+          "seed": 22316462,
+          "paidRounds": 10000,
+          "rtp": 12.685625
+        },
+        {
+          "seed": 22324381,
+          "paidRounds": 10000,
+          "rtp": 12.8677775
+        },
+        {
+          "seed": 22332300,
+          "paidRounds": 10000,
+          "rtp": 12.50917
+        }
+      ]
+    }
+  ],
+  "acceptance": {
+    "payoutBounds": true,
+    "roundBounds": true,
+    "settlementSpotChecks": true,
+    "rtpBelowMaximum": false
+  }
+}
