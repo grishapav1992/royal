@@ -15,7 +15,7 @@ const profile={version:3,revision:0,selectedGirl:0,selectedLook:0,albumUnits:0,p
 const wallet:DemoWallet={balance:1000,entries:[],asset:'USDT_NILE_TEST',balanceUnits:'1000000000',revision:90000,testOnly:true,scale:2};
 const result=(seed:number)=>{let n=seed;return startAfter({afterglow:{mode:'normal'}},'100',0,max=>{n=(Math.imul(n,1664525)+1013904223)>>>0;return n%max;});};
 function session(seed:number,id:string){const r=result(seed);return{gameId:'studio-afterglow',id,rulesVersion:2,stakeUnits:'100',spentUnits:'100',returnedUnits:r.ended?r.view.totalPayoutUnits:'0',state:r.ended?'settled':'active',view:{afterglow:r.view,player:[],dealer:[],community:[],actions:r.actions,phase:r.view.revision+1,ended:r.ended,message:r.message}};}
-const diag=(page:Page)=>page.evaluate(()=>(window as any).royalDemo.getMiniState());
+const diag=(page:Page)=>page.evaluate(()=>(window as any).royalDemo?.getMiniState()??(window as any).moduleHarness.currentState());
 
 test.beforeAll(async()=>{
  test.setTimeout(120000);db=await temporaryDatabase();
@@ -49,12 +49,27 @@ async function open(page:Page,language='ru'){
   await page.locator('#game').focus();await page.keyboard.down('ArrowRight');
   try{await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getState().x),{timeout:15000,intervals:[25]}).toBeGreaterThan(1100);}finally{await page.keyboard.up('ArrowRight');}
  }
+ if((await page.evaluate(()=>(window as any).royalDemo.getState().y))<760){
+  await page.locator('#game').focus();await page.keyboard.down('ArrowDown');
+  try{await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getState().y),{timeout:10000,intervals:[25]}).toBeGreaterThan(760);}finally{await page.keyboard.up('ArrowDown');}
+ }
  await page.locator('#games-tab').click();await page.locator('[data-cabinet="studio-afterglow"]').click();
  await expect(page.locator('#mini-dialog')).toBeVisible({timeout:25000});await page.locator('[data-platform-game="studio-afterglow"]').click();
  await expect(page.locator('[data-afterglow-game]')).toHaveAttribute('data-asset-state','ready',{timeout:30000});
  await page.locator('[data-cc-action=enter]').click();await expect(page.locator('[data-cc-spin]')).toBeEnabled();
  await page.emulateMedia({reducedMotion:'no-preference'});
  await expect(page.locator('[data-afterglow-game]')).toHaveAttribute('data-reduced-motion','false');
+}
+
+async function openModule(page:Page){
+ await page.route('**/api/game-wallet/afterglow-wardrobe',route=>route.fulfill({json:profile}));
+ await page.route('**/api/game-wallet',route=>route.fulfill({json:wallet}));
+ await page.addInitScript(()=>{localStorage.setItem('royal-afterglow-music','0');localStorage.setItem('royal-afterglow-voices','0');});
+ await page.goto(baseURL+'/tests/fixtures/independent-games.html');
+ await page.waitForFunction(()=>!!(window as any).moduleHarness);
+ await page.evaluate(()=>{(window as any).moduleHarness.account('girlhub-lifecycle');(window as any).moduleHarness.open('studio-afterglow');});
+ await expect(page.locator('[data-afterglow-game]')).toHaveAttribute('data-asset-state','ready');
+ await page.locator('[data-cc-action=enter]').click();await expect(page.locator('[data-cc-spin]')).toBeEnabled();
 }
 
 test('confirmed outcomes animate once in the real host with connected desktop and mobile chat',async({page})=>{
@@ -105,7 +120,7 @@ test('mute, reduced motion, hidden page and close cancel owned effects without r
   if(route.request().method()==='POST'){posts++;const s=session(7085,route.request().postDataJSON().id);return route.fulfill({json:{wallet,sessions:[s],session:s,replayed:false}});}
   return route.fulfill({json:{wallet,sessions:[]}});
  });
- await open(page);await page.locator('[data-cc-spin]').click();await expect(page.locator('.ag-result')).toBeVisible();
+ await openModule(page);await page.locator('[data-cc-spin]').click();await expect(page.locator('.ag-result')).toBeVisible();
  await page.locator('[data-cc-sound]').click();expect((await diag(page)).accents.activeSources).toBe(0);
  await page.locator('[data-ag-skip]').click();await expect(page.locator('[data-cc-spin]')).toBeEnabled();
  await page.emulateMedia({reducedMotion:'reduce'});await page.locator('[data-cc-spin]').click();
@@ -118,7 +133,7 @@ test('mute, reduced motion, hidden page and close cancel owned effects without r
  await page.evaluate(()=>{delete (document as any).hidden;document.dispatchEvent(new Event('visibilitychange'));});
  await expect(page.locator('.ag-result')).toBeHidden();expect((await diag(page)).feedback.active).toBe(false);
  await page.locator('[data-cc-spin]').click();await expect(page.locator('.ag-result')).toBeVisible();
- await page.locator('#mini-dialog .mini-top [data-close]').click();await expect(page.locator('[data-afterglow-game]')).toHaveCount(0);
+ await page.evaluate(()=>(window as any).moduleHarness.close());await expect(page.locator('[data-afterglow-game]')).toHaveCount(0);
  expect(posts).toBe(4);
 });
 
