@@ -6,11 +6,35 @@ import os
 import shutil
 import tempfile
 import unittest
+from unittest.mock import Mock
 
 HERE = Path(__file__).resolve().parent
 
 
 class PublicationTests(unittest.TestCase):
+    def test_activation_reuses_game_and_nile_images_and_checks_payment_dependencies(self):
+        with tempfile.TemporaryDirectory(prefix='royal-admin-activation-') as directory:
+            root = Path(directory)
+            (root / 'runtime').mkdir()
+            (root / 'runtime/payments.js').write_text('import pg from "pg";')
+            tree = ast.parse((HERE / 'deploy.py').read_text())
+            functions = ast.Module(body=[n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'build'], type_ignores=[])
+            run = Mock(side_effect=lambda args: 'new-payments' if args[1:3] == ['image', 'inspect'] else 'ok')
+            saved = Mock()
+            env = {'ROOT': root, 'M': {'activationOnly': True, 'paymentImports': ['pg', 'express']},
+                   'OLD': {'containers': {'game': {'image': 'old-game'}, 'payments': {'image': 'old-payments'}, 'nile': {'image': 'old-nile'}}},
+                   'SERVICES': {'game': 'game', 'payments': 'payments', 'nile': 'nile'},
+                   'TAGS': {'payments': 'royal-payments:latest'}, 'NAME': 'test', 'json': json, 'shutil': shutil,
+                   'payload': Mock(), 'guard': Mock(), 'backup': Mock(return_value={}), 'run': run,
+                   'subprocess': Mock(), 'save': saved}
+            exec(compile(functions, str(HERE / 'deploy.py'), 'exec'), env)
+            env['build']()
+            self.assertEqual(saved.call_args.args[1]['images'], {'game': 'old-game', 'payments': 'new-payments', 'nile': 'old-nile'})
+            self.assertEqual([p.name for p in root.glob('build-*')], ['build-payments'])
+            imports_probe = run.call_args_list[-1].args[0]
+            self.assertIn('--network=none', imports_probe)
+            self.assertIn('await import(name)', imports_probe[-1])
+
     def test_owner_configuration_preserves_existing_secrets_domains_and_overrides(self):
         with tempfile.TemporaryDirectory(prefix='royal-admin-release-') as directory:
             root = Path(directory)
