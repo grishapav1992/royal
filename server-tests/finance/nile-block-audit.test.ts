@@ -8,12 +8,36 @@ import { digest, type TronBlock } from '../../server/finance/tron-protocol';
 import { block, playTestConfig } from './helpers/nile-play-fixture';
 import { AUDIT_PAYLOAD_LIMIT, AUDIT_ROW_LIMIT, readBlockAuditPage } from '../../server/finance/block-audit-pages';
 import { PostgresDatabase } from '../../server/database';
+import { customerPool } from './helpers/nile-pool-fixture';
+
+test('full audit preserves pool activation and internal transfer exclusions', async () => {
+    const pool = { ...customerPool, startHeight: 103 };
+    const ledger = new NileTestLedger(':memory:', playTestConfig.source, false, pool);
+    try {
+        await ledger.ready;
+        await ledger.ingest(block(99), true);
+        await ledger.ingest(block(100, '10', pool.addresses[0].address));
+        await ledger.ingest(block(101, '20'));
+        await ledger.ingest(block(102, '100'));
+        await ledger.ingest(block(103, '200', pool.addresses[0].address));
+        const internalFromPool = block(104, '30');
+        internalFromPool.transfers[0].from = pool.addresses[0].address;
+        await ledger.ingest(internalFromPool);
+        const internalToPool = block(105, '40', pool.addresses[0].address);
+        internalToPool.transfers[0].from = playTestConfig.source.addresses[0].address;
+        await ledger.ingest(internalToPool);
+        const audit = await ledger.audit();
+        assert.equal(audit.blocks, 7);
+        assert.equal(audit.credits, 3);
+        assert.equal(audit.balances.reduce((sum, row) => sum + BigInt(row.availableUnits), 0n), 320n);
+    } finally { await ledger.close(); }
+});
 
 test('small block windows cover a large journal without omitted or duplicate heights', async () => {
     const db = new PostgresDatabase(':memory:');
     try {
         await db.exec(`CREATE TABLE blocks(height BIGINT PRIMARY KEY,hash TEXT,parent_hash TEXT,payload_sha256 TEXT,payload TEXT);
-            INSERT INTO blocks SELECT n,'hash','parent','digest',repeat('x',32) FROM generate_series(1,2053) n`);
+            INSERT INTO blocks SELECT n,'hash','parent','digest',repeat('x',32) FROM generate_series(1,16453) n`);
         const heights: number[] = [];
         const sizes: number[] = [];
         while (true) {
@@ -23,8 +47,8 @@ test('small block windows cover a large journal without omitted or duplicate hei
             assert.ok(rows.reduce((bytes, row) => bytes + row.payload_bytes, 0) <= AUDIT_PAYLOAD_LIMIT);
             sizes.push(rows.length); heights.push(...rows.map(row => row.height));
         }
-        assert.deepEqual(sizes, [1024,1024,5]);
-        assert.deepEqual(heights, Array.from({length:2053}, (_,index) => index+1));
+        assert.deepEqual(sizes, [8192,8192,69]);
+        assert.deepEqual(heights, Array.from({length:16453}, (_,index) => index+1));
     } finally { await db.close(); }
 });
 
