@@ -5,23 +5,36 @@ const base='https://stealth-spark-gokmxooi.expresshost.cloud';
 const folder='artifacts/atelier-release/proof';fs.mkdirSync(folder,{recursive:true});
 const manifest=JSON.parse(fs.readFileSync(process.env.ATELIER_PUBLIC_MANIFEST || 'artifacts/atelier-release/payload/install-manifest.json'));
 const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
+async function request(path,options={}){
+  for(let attempt=0;;attempt++){
+    try{
+      const response=await fetch(base+path,{cache:'no-store',...options,signal:AbortSignal.timeout(25000)});
+      const body=Buffer.from(await response.arrayBuffer());
+      if([502,503,504].includes(response.status)&&attempt<2){await new Promise(resolve=>setTimeout(resolve,1000*(attempt+1)));continue;}
+      return {ok:response.ok,status:response.status,body};
+    }catch(error){
+      if(attempt>=2)throw error;
+      await new Promise(resolve=>setTimeout(resolve,1000*(attempt+1)));
+    }
+  }
+}
 const waitUntil=Date.now()+Number(process.env.ATELIER_WAIT_FOR_PUBLISH_MS || 0);
 if(waitUntil>Date.now()){
   for(;;){
-    const r=await fetch(base+'/index.html',{cache:'no-store'});
-    if(r.ok&&sha(Buffer.from(await r.arrayBuffer()))===manifest.delta['index.html'])break;
+    const r=await request('/index.html');
+    if(r.ok&&sha(r.body)===manifest.delta['index.html'])break;
     if(Date.now()>waitUntil)throw Error('The expected combined release has not become public');
     await new Promise(resolve=>setTimeout(resolve,10000));
   }
 }
 const files=Object.entries(manifest.delta);
 for(let i=0;i<files.length;i+=4)await Promise.all(files.slice(i,i+4).map(async([name,digest])=>{
-  const r=await fetch(base+'/'+name,{cache:'no-store'});
-  if(!r.ok||sha(Buffer.from(await r.arrayBuffer()))!==digest)throw Error('Public file differs: '+name);
+  const r=await request('/'+name);
+  if(!r.ok||sha(r.body)!==digest)throw Error('Public file differs: '+name);
 }));
-if(!(await(await fetch(base+'/healthz',{cache:'no-store'})).json()).ok)throw Error('Public health failed');
-if((await fetch(base+'/api/skin-studio')).status!==401)throw Error('Anonymous atelier authorization failed');
-if((await fetch(base+'/api/skin-studio/generations',{method:'POST',headers:{Origin:'https://other.example','Content-Type':'application/json'},body:'{}'})).status!==403)throw Error('Cross-site atelier authorization failed');
+if(!JSON.parse((await request('/healthz')).body.toString()).ok)throw Error('Public health failed');
+if((await request('/api/skin-studio')).status!==401)throw Error('Anonymous atelier authorization failed');
+if((await request('/api/skin-studio/generations',{method:'POST',headers:{Origin:'https://other.example','Content-Type':'application/json'},body:'{}'})).status!==403)throw Error('Cross-site atelier authorization failed');
 const browser=await chromium.launch({channel:'chrome',headless:true});
 const results=[];
 try{
@@ -42,5 +55,5 @@ try{
     results.push({viewport,tailorPresent:true,blinking:true,interaction:true,errors});await page.close();
   }
 }finally{await browser.close();}
-const result={ok:true,release:manifest.release,sourceCommit:manifest.sourceCommit,publicFilesVerified:files.length,health:true,anonymousDenied:true,crossSiteDenied:true,browsers:results,productionAccountsOrMoneyModified:false};
+const result={ok:true,verifiedAt:new Date().toISOString(),release:manifest.release,sourceCommit:manifest.sourceCommit,manifestSha256:sha(Buffer.from(JSON.stringify(manifest))),publicFilesVerified:files.length,health:true,anonymousDenied:true,crossSiteDenied:true,browsers:results,productionAccountsOrMoneyModified:false};
 fs.writeFileSync('deployment/releases/atelier-20261023-v1/public-verification.json',JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));
