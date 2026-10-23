@@ -16,7 +16,7 @@ export class NeopolisUI {
   private services = readGameHost();
   private client = this.services.expansionClient;
   private wallet = this.services.demoWallet;
-  private copy = neopolisCopy(this.services.i18n.language);
+  private get copy() { return neopolisCopy(this.services.i18n.language, this.wallet.wallet?.asset === 'USDT_NILE_TEST'); }
   readonly title = this.copy.title;
   private root: HTMLElement;
   private dialog: HTMLDialogElement;
@@ -133,6 +133,8 @@ export class NeopolisUI {
     this.find<HTMLSelectElement>('bet').disabled = blocked || this.collectionLocked || !!pending;
     this.find<HTMLSelectElement>('bet').value = String(this.bet);
     this.find('balance').textContent = this.number(this.balance);
+    this.root.querySelector('.np-prototype')!.textContent = this.copy.prototype;
+    this.find('balance').parentElement!.querySelector('small')!.textContent = this.copy.coins;
     this.find('lock').textContent = this.collectionLocked ? this.copy.cycleLock : '';
     this.find('mode').textContent = free ? (this.legacy ? this.copy.legacyBattle : this.copy.bonus + ' · ' + this.copy[BOSSES[battle?.boss ?? 0].id]) : this.copy.base;
     this.find('remaining').textContent = free ? this.copy.remaining + ': ' + battle!.remaining : [this.copy.location0,this.copy.location1,this.copy.location2][this.scene];
