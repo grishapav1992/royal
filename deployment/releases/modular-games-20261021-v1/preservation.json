@@ -1,0 +1,18 @@
+{
+  "server": {
+    "files": 269,
+    "changed": []
+  },
+  "shared": {
+    "files": 67,
+    "changed": []
+  },
+  "assets": {
+    "files": 255,
+    "changed": []
+  },
+  "network": {
+    "files": 6,
+    "changed": []
+  }
+}

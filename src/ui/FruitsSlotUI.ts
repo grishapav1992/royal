@@ -9,6 +9,7 @@ import {gameAudio} from '../game/GameAudio';
 import {FruitsReels} from './FruitsReels';
 import {fruitEmblem,fruitSymbol,FRUITS_SYMBOL_NAMES,type FruitsSlotGame} from './FruitsArtwork';
 import './fruits-slot.css';
+import { decorateImportedGame } from './ImportedGameThemes';
 const amount=(units:string|number)=>(Number(units)/100).toLocaleString(locale,{minimumFractionDigits:2,maximumFractionDigits:2});
 const memory=new Map<string,FruitsPresentation[]>();
 // Only validated same-account receipts persist in this page memory, never browser storage.
@@ -29,7 +30,7 @@ export class FruitsSlotUI {
     const live=this.live;if(live&&live.account===accountId&&live.epoch===this.epoch&&live.operationId===p.outcomeId)this.accept(p,live);else if(!live){this.static(p);this.controls();}
   };
   constructor(private host:HTMLElement,readonly game:FruitsSlotGame){
-    this.owner=this.account();this.lines=game==='royal-fruits'?1:3;this.root.className=`fruits-slot ${game}`;this.root.dataset.fruitsSlot=game;this.root.dataset.game=game;this.root.dataset.reducedMotion=String(this.reduced.matches);this.root.setAttribute('aria-label',game==='royal-fruits'?'Royal Fruits':translateText('Фрукты: три линии'));if(game==='royal-fruits')this.root.dataset.library='EZSlotsJS';this.markup();host.replaceChildren(this.root);
+    this.owner=this.account();this.lines=game==='royal-fruits'?1:3;this.root.className=`fruits-slot ${game}`;this.root.dataset.fruitsSlot=game;this.root.dataset.game=game;this.root.dataset.reducedMotion=String(this.reduced.matches);this.root.setAttribute('aria-label',game==='royal-fruits'?'Royal Fruits':translateText('Фрукты: три линии'));if(game==='royal-fruits')this.root.dataset.library='EZSlotsJS';this.markup();decorateImportedGame(this.root,game);host.replaceChildren(this.root);
     this.reels=new FruitsReels(this.find('[data-fruits-board]'),game,{phase:value=>{if(this.live&&this.valid(this.live))this.phase(value);},stop:index=>{if(this.live&&this.valid(this.live))this.audio.stopReel(this.live.token,index);}});
     this.audio=gameAudio.createSlotAudio(game);
     this.find('[data-fruits-spin]').onclick=()=>void this.spin();this.find('[data-fruits-retry]').onclick=()=>void this.retry();this.find('[data-fruits-refresh]').onclick=()=>void this.refresh();

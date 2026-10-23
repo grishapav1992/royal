@@ -1,9 +1,10 @@
 import { t as translateText } from '../i18n/index';
 import type { RoomScene } from '../game/RoomScene';
-import { CLUB_ZONES, LUELON_NEW_ZONE } from '../shared/clubLayout';
+import { CLUB_ZONES, ARCADE_OVERVIEW_SIZE } from '../shared/clubLayout';
 import { HALLS, hallLinks } from '../shared/world';
 import { cabinetsInHall } from '../shared/cabinets';
 import { isCardGame } from '../shared/cardTables';
+import { ARCADE_HOUSE_GAMES } from '../shared/arcadeCatalog';
 import { WORLD, FLOOR } from '../shared/clubGeometry';
 import './club-map.css';
 
@@ -26,7 +27,10 @@ export class ClubMap {
     const timer=window.setInterval(update,200);scene.events.once('shutdown',()=>{clearInterval(timer);this.root.remove();});update();
   }
   private draw(){
-    const state=this.scene.getState(),ctx=this.canvas.getContext('2d')!,sx=this.canvas.width/WORLD.width,sy=this.canvas.height/WORLD.height;
+    const state=this.scene.getState(),size=state.hall==='arcade'?ARCADE_OVERVIEW_SIZE:WORLD;
+    const height=Math.round(this.canvas.width*size.height/size.width);
+    if(this.canvas.height!==height)this.canvas.height=height;
+    const ctx=this.canvas.getContext('2d')!,sx=this.canvas.width/size.width,sy=this.canvas.height/size.height;
     const definition=HALLS[state.hall];this.title.textContent=translateText('Этаж ')+definition.floor+' · '+definition.number;
     ctx.clearRect(0,0,this.canvas.width,this.canvas.height);ctx.save();ctx.scale(sx,sy);
     ctx.fillStyle='#202b33';ctx.fillRect(0,0,WORLD.width,WORLD.height);
@@ -36,15 +40,16 @@ export class ClubMap {
       if(isCardGame(cabinet.id)){
         ctx.fillStyle='#71c9b0';ctx.beginPath();ctx.ellipse(cabinet.x,cabinet.y-47,112,50,0,0,Math.PI*2);ctx.fill();
         ctx.fillStyle='#f2d3a2';ctx.beginPath();ctx.arc(cabinet.x,cabinet.y-103,14,0,Math.PI*2);ctx.fill();
-      }else{ctx.fillStyle=cabinet.id.startsWith('studio-')?'#86d2e5':'#e4ca8c';ctx.fillRect(cabinet.x-28,cabinet.y-35,56,45);}
+      }else{ctx.fillStyle=(ARCADE_HOUSE_GAMES as readonly string[]).includes(cabinet.id)?'#86d2e5':'#e4ca8c';ctx.fillRect(cabinet.x-28,cabinet.y-35,56,45);}
     }
     if(state.hall==='github'){
       ctx.font='bold 64px Arial';ctx.textAlign='center';ctx.fillStyle='#d6e6ed';ctx.fillText(translateText('КАРТОЧНЫЙ САЛОН'),2500,838);
     }
     if(state.hall==='arcade'){
       ctx.font='bold 48px Arial';ctx.textAlign='center';ctx.fillStyle='#d6e6ed';
-      ctx.fillText(translateText('НОВЫЕ ИГРЫ'),LUELON_NEW_ZONE.x+LUELON_NEW_ZONE.w/2,LUELON_NEW_ZONE.y+LUELON_NEW_ZONE.h-18);
-      ctx.fillText('GITHUB',1560,1180);ctx.fillText(translateText('КАТАЛОГИ'),480,710);
+      for(const zone of CLUB_ZONES.arcade.filter(zone=>zone.x>=1100)){
+        ctx.font='bold 34px Arial';ctx.fillText(zone.name,zone.x+zone.w/2,zone.y+zone.h-20);
+      }
     }
     for(const link of hallLinks(state.hall)){ctx.fillStyle='#73d4ca';ctx.fillRect(link.door.entry.x-35,link.door.entry.y-12,70,24);}
     for(const guest of state.guests){ctx.fillStyle='#8da49b';ctx.beginPath();ctx.arc(guest.x,guest.y,10,0,Math.PI*2);ctx.fill();}

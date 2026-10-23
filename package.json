@@ -4,11 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "concurrently -k -n web,server \"vite --host 0.0.0.0\" \"npm run dev:server\"",
-    "build": "tsc --noEmit && vite build && esbuild server/index.ts --bundle --platform=node --packages=external --format=esm --outfile=dist-server/index.js && esbuild scripts/crypto-reconcile.ts --bundle --platform=node --packages=external --format=esm --outfile=dist-server/crypto-reconcile.js && esbuild server/payments/index.ts --bundle --platform=node --packages=external --format=esm --outfile=dist-server/payments.js",
+    "dev": "npm run build:modules && concurrently -k -n web,server \"vite --host 0.0.0.0\" \"npm run dev:server\"",
+    "build": "tsc --noEmit && npm run build:modules && vite build && esbuild server/index.ts --bundle --platform=node --packages=external --format=esm --outfile=dist-server/index.js && esbuild scripts/crypto-reconcile.ts --bundle --platform=node --packages=external --format=esm --outfile=dist-server/crypto-reconcile.js && esbuild server/payments/index.ts --bundle --platform=node --packages=external --format=esm --outfile=dist-server/payments.js",
     "preview": "vite preview --host 0.0.0.0",
     "test": "playwright test",
-    "dev:web": "vite --host 0.0.0.0",
+    "dev:web": "npm run build:modules && vite --host 0.0.0.0",
     "dev:server": "node --env-file-if-exists=.env --import tsx --watch server/index.ts",
     "start": "node --env-file-if-exists=.env dist-server/index.js",
     "check:room": "tsx scripts/check-room.ts",
@@ -24,7 +24,9 @@
     "finance:dev": "node --env-file-if-exists=.env --import tsx server/finance/index.ts",
     "finance:demo": "tsx scripts/finance-demo.ts",
     "build:cards": "node scripts/build-card-engine.mjs",
-    "payments:dev": "node --env-file-if-exists=.env.payments --import tsx server/payments/index.ts"
+    "payments:dev": "node --env-file-if-exists=.env.payments --import tsx server/payments/index.ts",
+    "build:modules": "node scripts/build-game-module.mjs --all",
+    "test:modules": "npm run build:modules && node --import tsx --test server-tests/independent-modules.test.ts server-tests/game-module-assets.test.ts && playwright test --config=playwright.modules.config.ts"
   },
   "dependencies": {
     "@colyseus/core": "^0.18.18",

@@ -5,3 +5,30 @@
 @media(max-width:600px){.luelon-new-catalog{padding:12px;margin-bottom:17px}.luelon-new-heading h3{font-size:20px}.luelon-new-art{height:135px}.luelon-new-copy>strong{font-size:20px}#luelon-zone-shortcut{font-size:10px}}
 
 .luelon-caramel-card{margin-top:12px;background:#462742}.luelon-caramel-art{position:relative;display:block;height:150px;background:linear-gradient(#50354a33,#301c3c88),url('/assets/caramel-rebuild/v1/background.webp') center/cover}.luelon-caramel-art i{display:block;position:absolute;width:126px;height:126px;left:calc(50% - 63px);top:10px;background:url('/assets/caramel-rebuild/v1/symbols.webp') 100% 100%/300% 300%}.luelon-caramel-art>b{position:absolute;right:22px;top:17px;font-size:30px;color:#ffe0a4}.luelon-caramel-card .luelon-new-copy>small{color:#ffd6c6}.luelon-caramel-card .luelon-new-copy>b{color:#ffe4af}
+
+.studio-catalog [hidden]{display:none!important}
+.studio-catalog-tools{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.studio-catalog-tools input,.studio-catalog-tools select{min-width:0;border:1px solid #777797;border-radius:8px;padding:10px;background:#182139;color:#f7f1e4;font:inherit;font-size:13px}
+.studio-catalog-field{display:flex;flex:1 1 140px;flex-direction:column;gap:6px;min-width:0;font-size:12px;font-weight:700;color:#c7c7db}
+.studio-catalog-field:last-child{flex-basis:110px}
+.studio-catalog-tools input,.studio-catalog-tools select{width:100%;min-height:42px}
+.studio-catalog-tools input::placeholder{color:#c7c7db}
+.studio-catalog-card[aria-current=true]{border:2px solid #f5de9a}
+#studio-game-list{flex-shrink:0;margin-left:auto;padding:9px 13px;border:1px solid #ad8c51;border-radius:8px;background:#e6d49b;color:#35374f;font:700 12px system-ui,sans-serif;cursor:pointer}
+#studio-game-list[hidden]{display:none}
+#mini-dialog[data-game=studio-catalog] .studio-catalog{margin:0;border:0;border-radius:0;padding:20px}
+#mini-dialog[data-game=studio-catalog] .studio-catalog-grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+#mini-dialog[data-game=studio-catalog] .studio-catalog-copy strong{font-size:14px}
+#mini-dialog[data-game=studio-catalog] .studio-catalog-copy small{font-size:11px}
+#mini-dialog[data-game=studio-catalog] .studio-catalog-kind{font-size:9px}
+#mini-dialog[data-game=studio-catalog] .studio-catalog-mode{font-size:11px}
+#mini-dialog[data-game=studio-catalog] .studio-catalog>p{font-size:13px}
+@media(max-width:640px){
+  #mini-dialog[data-game=studio-catalog] .studio-catalog{padding:12px}
+  #mini-dialog[data-game=studio-catalog] .studio-catalog-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #mini-dialog[data-game=studio-catalog] .studio-catalog-copy strong{font-size:12px}
+  #mini-dialog[data-game=studio-catalog] .studio-catalog-copy small{font-size:10px}
+  #mini-dialog[data-game=studio-catalog] .studio-catalog-mode{font-size:10px}
+  #mini-dialog #studio-game-list{padding:9px;font-size:11px}
+  #mini-dialog .mini-top>div{min-width:0}
+}

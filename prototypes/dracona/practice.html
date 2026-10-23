@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Практика: картинки</title>
+    <style>
+      body { margin: 0; padding: 32px 20px; background: #f0eee7; color: #22262b; font: 16px/1.6 Arial, sans-serif; }
+      main { max-width: 640px; margin: auto; }
+      h1 { font: 36px Georgia, serif; }
+      .preview { display: grid; place-items: center; min-height: 280px; border-radius: 12px; background: #14241c; }
+      img { width: 220px; height: 250px; object-fit: contain; }
+      code { padding: 2px 5px; background: #deddd5; border-radius: 4px; }
+      li { margin: 10px 0; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Практика: картинки</h1>
+      <p>Это отдельный учебный пример. Здесь можно потренироваться с изображениями герба, книги и зелья.</p>
+      <div class="preview">
+        <!-- Упражнение: замени crest.webp на book.webp и сохрани файл. -->
+        <img src="/assets/book.webp" alt="Герб поместья">
+      </div>
+      <ol>
+        <li>В файле <code>practice.html</code> найди строку <code>&lt;img src="/assets/crest.webp"&gt;</code>.</li>
+        <li>Замени <code>crest.webp</code> на <code>book.webp</code> и сохрани файл. Появится книга.</li>
+        <li>Попробуй <code>potion.webp</code>, чтобы показать зелье.</li>
+        <li>Обнови текст <code>alt</code>: это краткое описание картинки для тех, кто ее не видит.</li>
+      </ol>
+      <p><code>src</code> задает адрес файла. Адрес <code>/assets/book.webp</code> соответствует файлу <code>public/assets/book.webp</code> внутри прототипа.</p>
+    </main>
+  </body>
+</html>

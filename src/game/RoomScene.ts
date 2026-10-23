@@ -2,7 +2,7 @@ import { t as translateText, tr } from '../i18n/index';
 import { cabinetSeat, type GameReaction } from '../shared/cabinetSeating';
 import { drawCabinetStool } from './cabinetStoolArt';
 import { drawClubFloor } from './clubArt';
-import { LUELON_NEW_ZONE } from '../shared/clubLayout';
+import { LUELON_NEW_ZONE, ARCADE_OVERVIEW_SIZE } from '../shared/clubLayout';
 import { CatRoutine, catApproachPoint, canHearCat, type CatAction, type CatView, type CatPerson } from '../shared/cat';
 import { CAT_HOME } from '../shared/catHome';
 import { CatRenderer, CAT_TEXTURE } from './CatRenderer';
@@ -18,6 +18,7 @@ import { gameAudio } from './GameAudio';
 import Phaser from 'phaser';
 import { COLORS } from './art';
 import { createDetailedArt } from './materials';
+import { preloadCabinetArtwork } from './cabinetArtwork';
 import { CABINET_SCALE, CABINET_SIZE } from './cabinetArt';
 import { plantTexture, drawHallIdentity } from './interiorArt';
 import { FURNITURE, PLANTS } from '../shared/furniture';
@@ -106,6 +107,7 @@ export class RoomScene extends Phaser.Scene {
     super('room'); this.onNear = options.onNear; this.onPlay = options.onPlay; this.onReady = options.onReady;
   }
   preload() {
+    preloadCabinetArtwork(this);
     this.load.image(CAT_TEXTURE, '/assets/cat/zverochka-atlas.png');
     this.load.image(CAT_HABITS_TEXTURE, '/assets/cat/zverochka-habits.png');
     this.load.image(CAT_CLIMB_TEXTURE, '/assets/cat/zverochka-climb.png');
@@ -196,17 +198,21 @@ export class RoomScene extends Phaser.Scene {
       if(object.input)object.input.enabled=id===hall;
     }
     this.near=null;this.lastNear='';this.onNear(null);gameAudio.setHall(hall);this.onHall(hall);
+    if(this.player)this.resizeView();
   }
   setOverview(value:boolean){this.overview=value;document.querySelector<HTMLElement>('.room-panel')!.dataset.overview=String(value);this.resizeView();}
   setDealerAction(gameId: string, action: DealerAction) { this.cardTables?.setAction(gameId, action); }
   private resizeView(){
     const width=this.scale.gameSize.width,height=this.scale.gameSize.height;
-    const fit=Math.min(width/(WORLD.width-40),height/(WORLD.height-50));
+    const frame=this.overview&&this.hall==='arcade'?ARCADE_OVERVIEW_SIZE:WORLD;
+    const fit=Math.min(width/(frame.width-40),height/(frame.height-50));
     const zoom=this.overview?fit:Math.max(fit,Phaser.Math.Clamp(Math.min(width/1000,height/760),.8,1.3));
     const viewWidth=width/zoom,viewHeight=height/zoom;
-    this.cameras.main.setSize(width,height).setZoom(zoom).setBounds(
-      Math.min(0,(WORLD.width-viewWidth)/2),Math.min(0,(WORLD.height-viewHeight)/2),
-      Math.max(WORLD.width,viewWidth),Math.max(WORLD.height,viewHeight));
+    const camera=this.cameras.main.setSize(width,height).setZoom(zoom).setBounds(
+      Math.min(0,(frame.width-viewWidth)/2),Math.min(0,(frame.height-viewHeight)/2),
+      Math.max(frame.width,viewWidth),Math.max(frame.height,viewHeight));
+    if(this.overview){camera.stopFollow();camera.centerOn(frame.width/2,frame.height/2);}
+    else if(this.player)camera.startFollow(this.player.sprite,false,1,1);
   }
   private drawRoom() {
     const g = this.add.graphics();
@@ -311,7 +317,7 @@ export class RoomScene extends Phaser.Scene {
       if(overview){overview.setAttribute('aria-pressed','false');overview.textContent=translateText('Весь этаж');}
     }
     this.goTo(LUELON_NEW_ZONE.entrance);
-    this.onNotice(translateText('Новая зона Luelon находится в правом крыле первого этажа. Идём к светящемуся входу.'));
+    this.onNotice(translateText('Идём к нашим игровым автоматам рядом с баром.'));
   }
   approachFloor(target: HallId) {
     if (this.locked || this.isHuggingCat() || this.typing || this.switching) return;

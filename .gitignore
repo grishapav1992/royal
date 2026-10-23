@@ -1,6 +1,8 @@
 node_modules/
 dist/
 dist-server/
+module-dist/
+module-build/
 .env
 .env.*
 !.env.example

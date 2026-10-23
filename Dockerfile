@@ -22,6 +22,7 @@ COPY package*.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/dist-server ./dist-server
+COPY --from=build /app/module-dist ./module-dist
 COPY --from=cards /card-engine ./dist-server/card-engine
 COPY --from=legacy-cards /card-engine-v1 ./dist-server/card-engine-v1
 RUN mkdir -p /app/data && chown node:node /app/data && chmod 700 /app/data

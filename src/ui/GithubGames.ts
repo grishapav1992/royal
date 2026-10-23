@@ -6,7 +6,8 @@ import { blackjackScore, shuffledDeck, dealBaccarat, pokerHand, comparePoker, VI
 import { Game, PlayerBet, DiceRoll, PassLineBet, FieldBet, AnySevenBet } from '../vendor/github/craps/engine';
 import './github-games.css';
 import { emitCardDealer } from './CardDealerStage';
-import { isCardGame } from '../shared/cardTables';
+import { isCardGame, CARD_GAME_NAMES } from '../shared/cardTables';
+import { decorateImportedGame } from './ImportedGameThemes';
 
 const format = (value: number) => value.toLocaleString(locale, { maximumFractionDigits: 2 });
 const SOURCES: Record<GithubGameId, string> = {
@@ -85,7 +86,7 @@ export class GithubGames {
   }
   private render() {
     if (!this.alive) return;
-    const detail = CABINETS.find(c => c.id === this.id)!;
+    const detail = { name: CABINETS.find(c => c.id === this.id)?.name ?? (isCardGame(this.id) ? CARD_GAME_NAMES[this.id] : 'Craps') };
     const shownPhase = this.crapsBefore?.phase ?? this.phase;
     const active = shownPhase === 'active', rolling = !!this.crapsBefore;
     this.root.dataset.motion = rolling ? 'rolling' : 'static';
@@ -108,6 +109,7 @@ export class GithubGames {
       controls = tr`<label class="github-choice">Ставка на<select id="github-choice" ${active ? 'disabled' : ''}><option value="pass" ${this.choice === 'pass' ? 'selected' : ''}>Pass Line</option><option value="field" ${this.choice === 'field' ? 'selected' : ''}>Field</option><option value="seven" ${this.choice === 'seven' ? 'selected' : ''}>Any Seven</option></select></label>` + this.button(active ? 'roll' : 'start', active ? translateText('Бросить ещё') : translateText('Бросить кости'), !active && this.credits < this.bet);
     }
     this.root.innerHTML = tr`<header class="github-header"><div><span>${isCardGame(this.id)?translateText('ЭТАЖ 3'):translateText('ЭТАЖ 1')} · УЧЕБНЫЙ СТОЛ</span><h3>${detail.name}</h3></div><div class="github-balance"><small>Учебные фишки</small><strong>${format(this.crapsBefore?.credits ?? this.credits)}</strong></div></header><div class="github-table">${table}</div><p class="github-result" role="status" aria-live="polite">${rolling ? translateText('Кости вращаются…') : this.message}</p><div class="github-controls"><label>Ставка<select id="github-bet" ${active ? 'disabled' : ''}>${[10, 25, 50, 100].map(value => `<option ${this.bet === value ? 'selected' : ''}>${value}</option>`).join('')}</select></label>${controls}</div><div class="github-history" aria-label="Последние раунды">${(this.crapsBefore?.history ?? this.history).map(line => `<span>${line}</span>`).join('')}</div><details class="github-rules"><summary>Правила игры</summary><p>${RULES[this.id]}</p></details><footer class="github-footer"><p>Бесплатная тренировка. Учебные фишки действуют только за этим столом и сбрасываются при открытии. Их нельзя пополнить, перевести или вывести.</p><a href="https://github.com/${SOURCES[this.id]}" target="_blank" rel="noopener noreferrer">Исходный проект · MIT</a>${this.button('reset', translateText('Начать заново'))}</footer>`;
+    decorateImportedGame(this.root, this.id);
     if(isCardGame(this.id))emitCardDealer(this.root,{gameId:this.id,account:'practice',sessionId:this.phase==='idle'?'':'practice-'+this.roundNumber,phase:this.board.length+this.player.length,cards:JSON.stringify([this.player,this.opponent.map((card,index)=>active&&(this.id==='github-poker'||this.id==='github-blackjack'&&index===1)?'?':card),this.board]),active,busy:false,pending:false,spentUnits:String(Math.round(this.roundStake*100)),returnedUnits:String(Math.round(this.roundPayout*100))});
     if (!isCardGame(this.id)) observeGameOutcome(this.root, { gameId: this.id, account: 'practice', sessionId: this.phase === 'idle' ? '' : 'practice-' + this.roundNumber, active, busy: rolling || document.hidden, pending: false, spentUnits: String(Math.round(this.roundStake * 100)), returnedUnits: String(Math.round(this.roundPayout * 100)) });
     if (rolling) this.root.querySelectorAll<HTMLButtonElement | HTMLSelectElement>('button,select').forEach(control => control.disabled = true);

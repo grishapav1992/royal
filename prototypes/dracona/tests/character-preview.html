@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ru">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Проверка переходов героини</title>
+<style>
+body{margin:0!important;background:#d9e2dc!important;font:14px Arial,sans-serif;color:#142a1c}main{display:grid;grid-template-columns:340px 1fr;gap:30px;max-width:900px;margin:20px auto;padding:20px}.test-stage{height:650px;position:relative;background:repeating-conic-gradient(#b8c9bd 0 25%,#dbe6df 0 50%) 0/32px 32px;border:1px solid #688271}.test-stage .hero{inset:0;width:100%;height:100%;filter:none}.panel button{padding:10px;display:block;margin:12px 0}.panel dl{line-height:1.8}.panel dd{font-weight:bold}.panel output{display:block;background:#fff;padding:15px;min-height:100px;white-space:pre-wrap}.panel h1{font:26px Georgia,serif}@media(max-width:650px){main{grid-template-columns:1fr}.test-stage{height:460px}}
+</style>
+<main><div class="test-stage"><div id="hero" class="hero resting"><img class="hero-layer visible" src="/assets/hero-idle-a.png" alt=""><img class="hero-layer" alt=""></div></div><section class="panel"><h1>Переходы героини</h1><button id="fast">Взмах с немедленной реакцией</button><button id="stance">Сменить стойку</button><button id="interrupt">Взмах во время смены стойки</button><button id="bonus">Бонус без наложения лица (9 секунд)</button><dl><dt>Минимальная суммарная непрозрачность</dt><dd id="minimum">1.000</dd><dt>Кадры с провалом прозрачности</dt><dd id="dips">0</dd><dt>Текущее состояние</dt><dd id="state">idle</dd><dt>Загрузки взмахов с сервера</dt><dd id="requests">0</dd></dl><output id="result">Готово к проверке</output></section></main>
+<script type="module">
+import '../src/style.css';
+import {CharacterDirector} from '../src/character.ts';
+const host=document.querySelector('#hero'), director=new CharacterDirector(host);
+const result=document.querySelector('#result'), buttons=[...document.querySelectorAll('button')];
+let minimum=1,dips=0,blinkFrames=0;
+function sample(){
+  const sum=[...host.querySelectorAll('.hero-layer')].reduce((value,image)=>value+Number(getComputedStyle(image).opacity),0);
+  minimum=Math.min(minimum,sum);if(sum<0.99)dips++;
+  if(Number(getComputedStyle(host.querySelector('.hero-blink')).opacity)>0.01)blinkFrames++;
+  document.querySelector('#minimum').textContent=minimum.toFixed(3);
+  document.querySelector('#dips').textContent=String(dips);
+  document.querySelector('#state').textContent=host.dataset.characterState;
+  document.querySelector('#requests').textContent=String(performance.getEntriesByType('resource').filter(entry=>/\/assets\/hero-cast(?:-b)?\.webp/.test(entry.name)).length);
+  requestAnimationFrame(sample);
+}
+requestAnimationFrame(sample);
+async function run(action){
+  buttons.forEach(button=>button.disabled=true);result.textContent='Проверка выполняется';const started=performance.now(),initialBlinkFrames=blinkFrames;
+  try{await action();result.textContent=JSON.stringify({elapsedMs:Math.round(performance.now()-started),minimumOpacity:minimum,dips,blinkFrames:blinkFrames-initialBlinkFrames,state:host.dataset.characterState},null,2);}catch(error){result.textContent=String(error);}
+  finally{buttons.forEach(button=>button.disabled=false);}
+}
+document.querySelector('#fast').onclick=()=>run(async()=>{void director.cast();await director.react('win');});
+document.querySelector('#stance').onclick=()=>run(()=>director.changeStance());
+document.querySelector('#interrupt').onclick=()=>run(async()=>{void director.changeStance();await new Promise(resolve=>setTimeout(resolve,100));void director.cast();await director.react('neutral');});
+document.querySelector('#bonus').onclick=()=>run(async()=>{
+  await director.react('bonus');
+  let blinkFrames=0, watching=true;
+  function watch(){
+    if(!watching)return;
+    if(Number(getComputedStyle(host.querySelector('.hero-blink')).opacity)>0.01)blinkFrames++;
+    requestAnimationFrame(watch);
+  }
+  watch();
+  await new Promise(resolve=>setTimeout(resolve,9000));
+  watching=false;
+  if(document.hidden)throw new Error('Проверка требует видимой вкладки');
+  if(blinkFrames)throw new Error('Лицо обычной стойки поверх бонуса: '+blinkFrames+' кадров');
+});
+window.addEventListener('pagehide',()=>director.destroy(),{once:true});
+</script>
+</html>

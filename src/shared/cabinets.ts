@@ -1,12 +1,12 @@
 import { t as translateText, language } from '../i18n/index';
-export type Cabinet = { id: string; name: string; subtitle: string; x: number; y: number; color: number; playable: boolean; hall?: 'arcade' | 'tables' | 'github'; demo?: boolean; wallet?: boolean; provider?: boolean; github?: boolean };
+export type Cabinet = { id: string; name: string; subtitle: string; x: number; y: number; color: number; playable: boolean; hall?: 'arcade' | 'tables' | 'github'; demo?: boolean; wallet?: boolean; provider?: boolean; github?: boolean; defaultGameId?: string };
 
 import { BASE_EXPANSION_GAMES, EXPANSION_NAMES } from './casinoExpansion';
 import { STUDIO_GAMES, STUDIO_INFO } from './studioGames';
 import { CARD_GAME_IDS, CARD_GAME_NAMES, isCardGame, isRetiredCardGame, cardTableBounds } from './cardTables';
 import type { Obstacle } from '../game/navigation';
 import { LUELON_NEW_ZONE } from './clubLayout';
-import {ACTIVE_ARCADE_GAMES, ARCADE_CABINET_POSITIONS} from './arcadeCatalog';
+import {ACTIVE_ARCADE_GAMES, ARCADE_CABINET_POSITIONS, PLATFORM_CABINET_DEFAULTS} from './arcadeCatalog';
 const expansionPositions=BASE_EXPANSION_GAMES.map((_,i)=>i===0?[240,600]:i===1?[480,810]:i===10?[240,1180]:i===11?[480,1180]:[1200,1060]);
 // Shared positions keep rendering, collisions and server play status aligned.
 export const CABINETS: Cabinet[] = [
@@ -71,6 +71,11 @@ for (let index = CABINETS.length - 1; index >= 0; index--) {
   if ((cabinet.hall ?? 'arcade') !== 'arcade') continue;
   if (!ACTIVE_ARCADE_GAMES.includes(cabinet.id)) { CABINETS.splice(index, 1); continue; }
   Object.assign(cabinet, ARCADE_CABINET_POSITIONS[cabinet.id]);
+  cabinet.defaultGameId = PLATFORM_CABINET_DEFAULTS[cabinet.id];
+  if (cabinet.id === 'luelon' || cabinet.id === 'casinoapipro') {
+    const game = STUDIO_INFO[cabinet.defaultGameId as keyof typeof STUDIO_INFO];
+    Object.assign(cabinet, {name:game.name, subtitle:game.subtitle, color:game.color, demo:false, provider:false, wallet:true});
+  }
 }
 
 export const cabinetHall = (cabinet: Cabinet): 'arcade' | 'tables' | 'github' => cabinet.hall ?? 'arcade';

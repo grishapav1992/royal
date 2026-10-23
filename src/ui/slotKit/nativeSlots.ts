@@ -33,13 +33,13 @@ export const velvetSlot = {
 } as const satisfies SlotDefinition;
 
 export const convoySlot = {
- gameId:'studio-last-convoy',title:translateText('Последний конвой'),protocol:'convoy',
+ gameId:'studio-last-convoy',title:/* @__PURE__ */translateText('Последний конвой'),protocol:'convoy',
  assets:{symbols:'/assets/last-convoy/v1/symbols.webp',background:'/assets/last-convoy/v1/background.webp',heroine:'/assets/last-convoy/v1/heroine.webp'},
  audio:{musicStorageKey:'royal-convoy-music',musicChords:[[146.83,174.61,220,293.66],[130.81,164.81,196,261.63],[116.54,146.83,174.61,233.08],[110,130.81,164.81,220]],melody:[0,2,1,3,2,0,3,1],spinNotes:[146.83,220,293.66,349.23,293.66,220,174.61,261.63],musicIntervalMs:540,spinIntervalMs:110,featureCues:{barricade:'expand',scatter:'tickets',drop:'drop'}},
 } as const satisfies SlotDefinition;
 
 export const nitroSlot = {
- gameId:'studio-nitro-run',title:translateText('Нитро-заезд'),protocol:'nitro',
+ gameId:'studio-nitro-run',title:/* @__PURE__ */translateText('Нитро-заезд'),protocol:'nitro',
  assets:{symbols:'/assets/nitro-run/v1/symbols.webp',background:'/assets/nitro-run/v1/background.webp'},
  audio:{musicStorageKey:'royal-nitro-music',musicChords:[[110,130.81,164.81,220],[98,123.47,146.83,196],[130.81,164.81,196,261.63],[87.31,110,130.81,174.61]],melody:[0,0,2,1,3,2,1,2],spinNotes:[82.41,110,130.81,164.81,196,220,246.94,293.66],musicIntervalMs:280,spinIntervalMs:105,featureCues:{nitro:'expand',gear:'drop',scatter:'tickets'}},
 } as const satisfies SlotDefinition;

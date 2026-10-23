@@ -10,6 +10,7 @@ import { formatNileUnits } from '../shared/nileWallet';
 import { usdtWallet } from '../wallet/UsdtClient';
 import { cryptoWallet } from '../wallet/CryptoClient';
 import { USDT_BETS } from '../shared/usdtWallet';
+import './royal-coins.css';
 
 const redNumbers = new Set<number>(rouletteRedNumbers);
 const numberColor = (value: number) => value === 0 ? 'green' : redNumbers.has(value) ? 'red' : 'black';
@@ -37,7 +38,8 @@ export class RoyalCoins {
     if (gameId !== this.gameId) return;
     this.showWalletResult(result); this.render();
   };
-  constructor(container: HTMLElement) {
+  constructor(container: HTMLElement, initialGame: LegacyGameId = 'royal-coins') {
+    this.gameId = initialGame;
     this.nile=!demoWallet.pending&&nilePlay.wallet?.state==='assigned'&&BigInt(nilePlay.wallet.balanceUnits)>0n;
     this.usdt=!demoWallet.pending&&!nilePlay.pending&&usdtWallet.wallet?.state==='assigned'&&BigInt(usdtWallet.wallet.balanceUnits)>0n;
     const cash = cryptoWallet.wallet;
@@ -59,6 +61,7 @@ export class RoyalCoins {
       <button id="coins-spin" class="primary-button">Крутить</button><button id="coins-wallet" class="text-button">Пополнить демобаланс</button>
       <p class="coins-rules"></p><p class="coins-rtp"></p><small>Бесплатные демомонеты и тестовый USDT Nile не имеют денежной стоимости. Переводы и вывод USDT недоступны.</small>`;
     container.replaceChildren(this.root);
+    this.element<HTMLSelectElement>('#coins-game').value = this.gameId;
     this.setBets();
     this.element<HTMLButtonElement>('#coins-spin').onclick = () => { void this.spin(); };
     this.element<HTMLButtonElement>('#coins-wallet').onclick = () => window.dispatchEvent(new Event(this.crypto ? 'royal-open-crypto-wallet' : this.usdt ? 'royal-open-usdt-wallet' : this.nile ? 'royal-open-nile-wallet' : 'royal-open-wallet'));
