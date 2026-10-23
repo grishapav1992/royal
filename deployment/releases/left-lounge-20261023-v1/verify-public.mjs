@@ -13,6 +13,7 @@ try{
   const response=await page.goto(origin+'/?offline=1&lounge-check='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});expect(response.ok()).toBe(true);await expect(page.locator('#loading')).toHaveCount(0,{timeout:120000});
   const state=()=>page.evaluate(()=>window.royalDemo.getState());
   await page.locator('#room-overview').click();
+  await page.waitForFunction(()=>{const key=JSON.stringify(window.royalDemo.getState().view),now=performance.now(),last=window.__loungeView;if(!last||last.key!==key){window.__loungeView={key,at:now};return false;}return now-last.at>=150;});
   async function point(x,y){await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));const box=await page.locator('#game canvas').boundingBox();const {view}=await state();await page.mouse.click(box.x+(x-view.x)*view.zoom*box.width/view.width,box.y+(y-view.y)*view.zoom*box.height/view.height);}
   await point(272,442);await expect(page.locator('#bar-dialog')).toBeVisible({timeout:18000});const at=await state();expect(at.x).toBeLessThan(405);expect(at.y).toBeGreaterThanOrEqual(515);await page.locator('#bar-dialog [data-close]').click();
   for(const [id,x] of [['arcade-lounge',320],['arcade-lounge-2',720]]){

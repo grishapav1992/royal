@@ -57,7 +57,10 @@ ids = [line.split('\t')[0] for line in listed if '/' + line.split('\t')[1]
        not in {'/royal-nile-account-views-once', '/royal-nile-reconcile-once'}]
 containers = json.loads(run(['docker', 'inspect', *ids])) if ids else []
 services = {row['Name']: {'id': row['Id'], 'image': row['Image'], 'startedAt': row['State']['StartedAt']}
-            for row in containers}
+            for row in containers
+            if row['HostConfig'].get('RestartPolicy', {}).get('Name', 'no') not in ['', 'no']
+            or ((row['Config'].get('Labels') or {}).get('com.docker.compose.project')
+                and (row['Config'].get('Labels') or {}).get('com.docker.compose.oneoff', '').lower() != 'true')}
 environment = dict(row.split('=', 1) for row in config.get('Env', []) if '=' in row)
 node = "const f=require('fs'),p=require('path'),c=require('crypto'),o={};function walk(d){if(!f.existsSync(d))return;for(const n of f.readdirSync(d).sort()){const x=p.join(d,n),s=f.lstatSync(x);if(s.isSymbolicLink())throw Error('symlink');if(s.isDirectory())walk(x);else if(s.isFile())o[p.relative('/app',x)]=c.createHash('sha256').update(f.readFileSync(x)).digest('hex');}}walk('/app/dist');walk('/app/dist-server');walk('/app/module-dist');for(const n of ['package.json','package-lock.json'])o[n]=c.createHash('sha256').update(f.readFileSync('/app/'+n)).digest('hex');console.log(JSON.stringify(o))"
 prepared = run(['docker', 'image', 'inspect', 'royal-game:latest', '--format', '{{.Id}}'])
