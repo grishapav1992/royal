@@ -21,7 +21,11 @@ def snapshot():
     manifest=json.loads((Path(__file__).parent/'manifest.json').read_text())
     containers={}
     for name in run(['docker','ps','--format','{{.Names}}']).splitlines():
-        row=inspect(name)
+        if name in ['royal-nile-reconcile-once','royal-nile-account-views-once']:continue
+        try:row=inspect(name)
+        except subprocess.CalledProcessError:
+            if name in ['royal-game-1','royal-nile-play','royal-payments-1']:raise
+            continue
         if row['HostConfig']['RestartPolicy']['Name'] not in ['always','unless-stopped']:continue
         containers[name]={'id':row['Id'],'image':row['Image'],'health':row['State'].get('Health',{}).get('Status'),
             'profile':profile(row),'composeFiles':row['Config'].get('Labels',{}).get('com.docker.compose.project.config_files','').split(',')}
