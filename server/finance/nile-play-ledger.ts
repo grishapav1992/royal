@@ -151,7 +151,8 @@ export class NilePlayLedger {
             fail('play_source_config_mismatch', 503);
         await source.ready;
         return source.db.transaction(async () => {
-            const audit = await source.audit(), status = await source.status();
+            // The source heartbeat belongs to the snapshot captured before its full audit.
+            const status = await source.status(), audit = await source.audit();
             now = clock();
             const total = audit.balances.reduce((sum, a) => sum + BigInt(a.availableUnits), 0n).toString();
             const at = Date.parse(reconciliation?.checked_at);

@@ -112,7 +112,9 @@ function freshHeader(header: TronHeader, cursor: number) {
 }
 // Call only with a static, fully audited PostgreSQL snapshot. The original journal stays read-only.
 export async function reconcileNileSnapshot(ledger: NileTestLedger, sources: NileBalanceSource[], signal?: AbortSignal) {
-    const audit = await ledger.audit(), status = await ledger.status(), config = ledger.config;
+    // Check freshness when entering the snapshot, before the complete historical audit.
+    // The repeatable-read snapshot cannot see the creditor's subsequent heartbeats.
+    const status = await ledger.status(), audit = await ledger.audit(), config = ledger.config;
     if (!status.ok || !audit.ok || status.asset !== NILE_TEST_ASSET)
         rejectTron('reconciliation_ledger_not_ready');
     if (sources.length !== 2 || new Set(sources.map(source => source.id)).size !== 2
