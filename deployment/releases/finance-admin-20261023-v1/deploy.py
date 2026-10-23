@@ -90,8 +90,10 @@ def build():
     payload()
     guard()
     backups = backup()
-    results = {}
-    for component, file in [('game', 'index.js'), ('payments', 'payments.js'), ('nile', 'play.js')]:
+    activation = M.get('activationOnly', False)
+    results = {component: OLD['containers'][container]['image'] for component, container in SERVICES.items()} if activation else {}
+    components = [('payments', 'payments.js')] if activation else [('game', 'index.js'), ('payments', 'payments.js'), ('nile', 'play.js')]
+    for component, file in components:
         directory = ROOT / ('build-' + component)
         directory.mkdir(exist_ok=False)
         base = OLD['preparedImage'] if component == 'game' else OLD['containers'][SERVICES[component]]['image']
@@ -107,6 +109,11 @@ def build():
         with (ROOT / (component + '-build.log')).open('w') as log:
             subprocess.run(['docker', 'build', '--network=none', '-t', tag, str(directory)], stdout=log, stderr=subprocess.STDOUT, check=True)
         results[component] = run(['docker', 'image', 'inspect', tag, '--format', '{{.Id}}'])
+        if activation:
+            # Syntax checking alone does not find missing external runtime packages.
+            probe = 'for(const name of ' + json.dumps(M['paymentImports']) + ')await import(name);console.log("runtime imports available")'
+            run(['docker', 'run', '--rm', '--network=none', '--read-only', '--entrypoint', 'node', tag,
+                 '--input-type=module', '-e', probe])
     save('build-result.json', {'images': results, 'backups': backups})
     print(json.dumps({'built': results, 'backupsVerified': True}))
 
@@ -125,11 +132,35 @@ def configure():
     fd = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
     with os.fdopen(fd, 'w') as output:
         output.write('\n'.join(rows) + '\n')
+    try:
+        preflight_environment(temporary)
+    except BaseException:
+        temporary.unlink()
+        raise
     # This server-only temporary file never enters source archives or the release payload.
     os.replace(temporary, envfile)
     atomic(ROOT / 'compose.finance-admin.yaml', LIVE / 'compose.finance-admin.yaml')
     atomic(ROOT / 'compose.admin.yaml', FINANCE / 'deployment/finance/compose.admin.yaml')
     return game_files
+
+
+def preflight_environment(envfile):
+    for component, container in SERVICES.items():
+        extra = 'compose.admin.yaml' if component == 'nile' else 'compose.finance-admin.yaml'
+        files = OLD['containers'][container]['composeFiles'] + [str(ROOT / extra)]
+        args = ['docker', 'compose', '--env-file', str(envfile), *[v for name in files for v in ['-f', name]]]
+        configuration = json.loads(run(args + ['config', '--format', 'json']))
+        service = 'nile-play' if component == 'nile' else component
+        image = json.loads(run(['docker', 'image', 'inspect', OLD['containers'][container]['image']]))[0]
+        values = dict(v.split('=', 1) for v in image['Config']['Env'])
+        for key, value in configuration['services'][service].get('environment', {}).items():
+            if value is None:
+                values.pop(key, None)
+            else:
+                values[key] = str(value)
+        assert values.pop('FINANCE_ADMIN_ACCOUNT_IDS', None) == M['ownerId'], 'Owner configuration missing: ' + component
+        digest = hashlib.sha256(json.dumps(sorted(k + '=' + v for k, v in values.items())).encode()).hexdigest()
+        assert digest == OLD['containers'][container]['stableProfile']['envHash'], 'Compose would change existing environment: ' + component
 
 
 def compose(component, game_files):
@@ -185,7 +216,7 @@ def verify():
                 assert sha(root / path.relative_to(ROOT / folder)) == sha(path)
     programs = json.loads(run(['docker', 'exec', SERVICES['game'], 'node', '-e', PROGRAM]))
     for name, digest in OLD['program'].items():
-        if name != 'dist-server/index.js':
+        if M.get('activationOnly') or name != 'dist-server/index.js':
             assert programs[name] == digest, 'Existing program or asset changed: ' + name
     assert {str(p): sha(p) for p in Path('/opt/royal-game-modules').rglob('*') if p.is_file() and not p.is_symlink()} == OLD['modules']
     assert sha('/opt/royal-game-modules-state/host.json') == OLD['hostContract']

@@ -62,7 +62,7 @@ test('real wallet HTTP negotiates new rules, protects old clients and settles bo
   } finally {await new Promise<void>(resolve=>server.close(()=>resolve()));}
 });
 
-test('current USDT HTTP route forwards Dracona rules through its financial socket and leaves the prototype unpublished',{timeout:45000},async()=>{
+test('current USDT HTTP route negotiates both qualified slots through its financial socket',{timeout:45000},async()=>{
   const login=await accounts.login('nile-slot-http-'+randomUUID()+'@example.test','Rtp-http-test-42!');
   const c=await pvpFixture([login.account.id,randomUUID()]);
   const socket=process.platform==='win32'?'\\\\.\\pipe\\royal-slot-http-'+randomUUID():join(tmpdir(),'royal-slot-'+randomUUID()+'.sock');
@@ -72,7 +72,7 @@ test('current USDT HTTP route forwards Dracona rules through its financial socke
   const address=server.address();assert(address&&typeof address!=='string');
   const url=`http://127.0.0.1:${address.port}/api/game-wallet/expansion`;
   const base={'Cookie':'royal_session='+login.token,'X-Royal-Account-Id':login.account.id,'Content-Type':'application/json','X-Royal-Card-Rules':'2'};
-  const post=(body:unknown,version='2')=>fetch(url,{method:'POST',headers:{...base,[DRACONA_CLIENT_HEADER]:version},body:JSON.stringify(body)});
+  const post=(body:unknown,version='2',neopolisRules='0')=>fetch(url,{method:'POST',headers:{...base,[DRACONA_CLIENT_HEADER]:version,[NEOPOLIS_HEADER]:neopolisRules},body:JSON.stringify(body)});
   try {
     const action={id:randomUUID(),action:'start',gameId:DRACONA_GAME,stakeUnits:'1000',settings:{dracona:{mode:'normal'}}};
     assert.equal((await post(action,'1')).status,409);
@@ -89,5 +89,15 @@ test('current USDT HTTP route forwards Dracona rules through its financial socke
     const repeat=await(await post(last)).json();assert.equal(repeat.replayed,true);assert.equal(repeat.wallet.balanceUnits,reply.wallet.balanceUnits);
     assert.equal((await post({...action,id:randomUUID(),gameId:NEOPOLIS_GAME,settings:{neopolis:{hero:'granite'}}})).status,409);
     assert.equal((await c.ledger.wallet(c.a)as any).balanceUnits,reply.wallet.balanceUnits);await c.ledger.audit();
+    const before=BigInt(reply.wallet.balanceUnits),npStart={...action,id:randomUUID(),gameId:NEOPOLIS_GAME,settings:{neopolis:{hero:'granite'}}};
+    const npResponse=await post(npStart,'2','3');assert.equal(npResponse.status,200);let np=await npResponse.json();assert(validNeopolisSession(np.session));
+    const legacy=await(await fetch(url,{headers:base})).json();assert(!legacy.sessions.some((s:any)=>s.gameId===NEOPOLIS_GAME));
+    let npLast:unknown=npStart;
+    while(np.session.state==='active'){
+      npLast={id:randomUUID(),action:'move',gameId:NEOPOLIS_GAME,sessionId:np.session.id,move:'neopolis-spin',revision:np.session.view.neopolis.revision};
+      np=await(await post(npLast,'2','3')).json();assert(validNeopolisSession(np.session));
+    }
+    assert.equal(np.wallet.balanceUnits,String(before-10000000n+BigInt(np.session.returnedUnits)*10000n));
+    const npReplay=await(await post(npLast,'2','3')).json();assert(npReplay.replayed);assert.deepEqual(npReplay.session,np.session);await c.ledger.audit();
   } finally {await new Promise<void>(resolve=>server.close(()=>resolve()));await new Promise<void>(resolve=>finance.close(()=>resolve()));await c.close();}
 });
