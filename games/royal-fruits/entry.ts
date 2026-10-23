@@ -1,3 +1,4 @@
+import { mountImportedMotion } from '../../src/ui/importedMotion/ImportedMotion';
 import { FruitsSlotUI } from '../../src/ui/FruitsSlotUI';
 import { readGameHost, type GameModuleV1 } from '../../src/modules/GameHostContract';
 export const gameId = 'royal-fruits';
@@ -6,5 +7,5 @@ export const rulesVersion = 1;
 export const progressVersion = 1;
 export const mount: GameModuleV1['mount'] = host => {
  readGameHost();
- return new FruitsSlotUI(host, gameId);
+ return mountImportedMotion(host, gameId, content => new FruitsSlotUI(content, gameId), { background: '/assets/github-worlds/royal-fruits/background-v1.webp', character: '/assets/github-worlds/royal-fruits/character-v1.webp' });
 };

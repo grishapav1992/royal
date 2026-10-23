@@ -1,5 +1,6 @@
 /** Independent client packages supported by this host release. */
 export const STUDIO_GAME_MODULES = [
+ { gameId: 'studio-neopolis', slug: 'neopolis', apiVersion: 1, rulesVersion: 2, progressVersion: 2 },
  { gameId: 'studio-dracona', slug: 'dracona', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },
  { gameId: 'studio-cosmic-escape', slug: 'cosmic-escape', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },
  { gameId: 'studio-caramel-carnival', slug: 'caramel-carnival', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },

@@ -29,7 +29,7 @@ async function loadAsset(spec: AssetSpec, progress: (fraction: number) => void, 
     const frames = name.startsWith('stadium') ? undefined : extractSpriteFrames(image,
       name.startsWith('keeper-') || name.startsWith('wall') ? 2 : 4,
       name.startsWith('keeper') || name.startsWith('wall') ? 2 : 4,
-      name === 'cr' || name.startsWith('wall'),
+      name === 'cr' || name === 'ball' || name.startsWith('wall'),
       name === 'keeper' ? [undefined,undefined,'left','left',undefined,'right','right',undefined] : name === 'keeper-reach' ? ['left','right','high','center'] : name === 'keeper-dive' ? ['left','right','left','right'] : undefined,
       name === 'wall-far' ? 3 : name === 'wall' ? 5 : 1);
     return { image, frames };

@@ -1,0 +1,93 @@
+{
+  "date": "2026-10-22",
+  "purpose": "CR vs Leo neutral stadium loop, goal and missed-chance reactions, boot contact and the two requested signature phrases.",
+  "tool": "FFmpeg 7.1 via imageio-ffmpeg 0.6.0; no speech synthesis or voice imitation.",
+  "recordings": [
+    {
+      "key": "ambient",
+      "page": "https://freesound.org/people/itmightgetloud/sounds/829454/",
+      "url": "https://cdn.freesound.org/previews/829/829454_3625328-hq.mp3",
+      "bytes": 288749,
+      "sourceSha256": "eb3dfa51a3489113644a92129c8ce18c2d029ca315d3d43ad52a17ba13e4d12c",
+      "file": "public/assets/cr-vs-leo/audio/v1/stadium.mp3",
+      "sha256": "b65aa4095f242c0ab582dbd1088199cf5873d3e1fa022943ad59de22b5ccbead",
+      "startSeconds": 8,
+      "durationSeconds": 24.0,
+      "processing": "44.1 kHz stereo, filtered and level matched; one second seam crossfade",
+      "license": "CC0 1.0",
+      "credit": "Philipp Feit / itmightgetloud, Sound Of Sankt Pauli, Freesound",
+      "sourceDownload": "First 1,000,001 bytes of public preview, containing over 42 seconds of audio; excerpt ends at 33 seconds."
+    },
+    {
+      "key": "goal",
+      "page": "https://freesound.org/people/itmightgetloud/sounds/829455/",
+      "url": "https://cdn.freesound.org/previews/829/829455_3625328-hq.mp3",
+      "bytes": 58349,
+      "sourceSha256": "0f5b0bf37d3c41b52fbfbba9400f3db904f94af50d68e385b2537db781fccdb2",
+      "file": "public/assets/cr-vs-leo/audio/v1/goal.mp3",
+      "sha256": "57b320a5d213701b8204f30f2deb9d9edcb0244e196cac156a2a1525e56b7ff4",
+      "startSeconds": 0.8,
+      "durationSeconds": 4.8,
+      "processing": "44.1 kHz stereo, filtered, level matched, attack and release fades",
+      "license": "CC0 1.0",
+      "credit": "Philipp Feit / itmightgetloud, Sound Of Sankt Pauli, Freesound"
+    },
+    {
+      "key": "miss",
+      "page": "https://freesound.org/people/itmightgetloud/sounds/829452/",
+      "url": "https://cdn.freesound.org/previews/829/829452_3625328-hq.mp3",
+      "bytes": 46437,
+      "sourceSha256": "8056be66a39680ed78193d93320fd4627be30a9288039b3f4d42731cec9f60e1",
+      "file": "public/assets/cr-vs-leo/audio/v1/miss.mp3",
+      "sha256": "3c10132247d3b3a3b9c5608fcb6fea59a75c00db6a2ad6b9a6af93d866eebef1",
+      "startSeconds": 0.65,
+      "durationSeconds": 3.8,
+      "processing": "44.1 kHz stereo, filtered, level matched, attack and release fades",
+      "license": "CC0 1.0",
+      "credit": "Philipp Feit / itmightgetloud, Sound Of Sankt Pauli, Freesound"
+    },
+    {
+      "key": "cr",
+      "page": "https://www.myinstants.com/en/instant/ronaldo-siuuuu-24695/",
+      "url": "https://www.myinstants.com/media/sounds/ronaldo-siuuuu.mp3",
+      "bytes": 74857,
+      "credit": "Myinstants uploader juan609",
+      "sourceSha256": "667664e435dc593e17a4ba298f222305ff26626bface8572406324a4cb872fc5",
+      "file": "public/assets/cr-vs-leo/audio/v1/siuuu.mp3",
+      "sha256": "bb04818d6538e4e28b6d915b7893bbccbb38d760d34afb092c4677f220e5f474",
+      "startSeconds": 2,
+      "durationSeconds": 4.617687074829932,
+      "processing": "User-selected option 02 with the first two seconds removed; original timing and pitch, 44.1 kHz stereo, filtered, level matched, short attack and release fades",
+      "license": "User-requested short recording excerpt; uploader does not specify a reuse license",
+      "siuuuCueSeconds": 2.5
+    },
+    {
+      "key": "leo",
+      "page": "https://www.myinstants.com/en/instant/ankara-messi-31289/",
+      "url": "https://www.myinstants.com/media/sounds/vpuxsya-vgi-00_00_03.mp3",
+      "bytes": 46018,
+      "sourceSha256": "f13495a25c2d482e26a4b336fd659153333d37e8d068fb9aa80584501ac0f6ed",
+      "file": "public/assets/cr-vs-leo/audio/v1/ankara-messi.mp3",
+      "sha256": "e2169e3b76e785bca01edb1e9e9e189df670299aa0b4db2101657fdd6e152ed6",
+      "startSeconds": 0,
+      "durationSeconds": 2.8,
+      "processing": "44.1 kHz stereo, filtered, level matched, attack and release fades",
+      "license": "User-requested short recording excerpt; uploader does not specify a reuse license",
+      "credit": "Myinstants uploader marcel168"
+    },
+    {
+      "key": "kick",
+      "page": "https://mixkit.co/free-sound-effects/soccer/",
+      "url": "https://assets.mixkit.co/active_storage/sfx/2099/2099-preview.mp3",
+      "bytes": 23448,
+      "credit": "Mixkit, Soccer ball kick, item 2099",
+      "license": "Mixkit Sound Effects Free License",
+      "sourceSha256": "8cefbbc5e4efeed614f9c2f7cff26f322910515ca3c25d9796e180227e4bdd86",
+      "file": "public/assets/cr-vs-leo/audio/v1/kick.mp3",
+      "sha256": "4390e06290de978bbd5a38d87f9d1c0c6952f4f489af0f38b411334908741651",
+      "startSeconds": 0.165,
+      "durationSeconds": 1.3889569160997732,
+      "processing": "User-selected option 03, Mixkit Soccer ball kick 2099; 165 ms leading silence removed to align contact, original pitch, filtered and peak matched to 0.70, 2 ms attack and 40 ms release fades"
+    }
+  ]
+}

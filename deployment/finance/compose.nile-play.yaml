@@ -53,7 +53,7 @@ services:
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]
     mem_limit: 256m
-    cpus: 0.5
+    cpus: 2
     pids_limit: 32
     stop_grace_period: 15s
     healthcheck:

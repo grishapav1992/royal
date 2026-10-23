@@ -1,3 +1,4 @@
+import { mountImportedMotion } from '../../src/ui/importedMotion/ImportedMotion';
 import { OriginalGameView } from '../../src/ui/OriginalGameView';
 import { readGameHost, type GameModuleV1 } from '../../src/modules/GameHostContract';
 export const gameId = 'royal-keno';
@@ -6,5 +7,5 @@ export const rulesVersion = 1;
 export const progressVersion = 1;
 export const mount: GameModuleV1['mount'] = host => {
  readGameHost();
- return new OriginalGameView(host, gameId);
+ return mountImportedMotion(host, gameId, content => new OriginalGameView(content, gameId), { background: '/assets/github-worlds/royal-keno/background-v1.webp', character: '/assets/github-worlds/royal-keno/character-v1.webp' });
 };

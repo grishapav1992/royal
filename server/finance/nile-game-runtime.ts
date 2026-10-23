@@ -52,6 +52,7 @@ export class NileGameRuntime{
    ||!Array.isArray(c.flags)||c.flags.length!==9||!c.flags.every(flag=>typeof flag==='boolean')||![1,2].includes(c.rules)||!c.query||typeof c.query!=='object'||Array.isArray(c.query))throw new WalletError(400,'Некорректный запрос игрового баланса.');
   if(c.path!=='/expansion/presentation'&&Object.keys(c.query).length)throw new WalletError(400,'Параметры запроса не поддерживаются.');
   if((c.body as any)?.kind==='deposit')throw new WalletError(400,'Пополняй общий баланс тестовым USDT через кошелёк Nile.');
+  if((c.body as any)?.gameId==='studio-neopolis')throw new WalletError(409,'Эта игра пока не опубликована.');
   await this.ready;
   return this.ledger.nativeTransaction(account,async context=>{
    const cents=context.available/10000n;

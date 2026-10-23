@@ -2,6 +2,19 @@
 
 - Never use the em dash character (Unicode U+2014) in generated text.
 
+## GitHub synchronization before work
+
+- Before every new implementation, review or debugging task, run `git status --short --branch`, `git fetch origin`, and `git rev-list --left-right --count HEAD...origin/main`. Use the freshly fetched `origin/main` from `https://github.com/grishapav1992/royal` as the integration baseline. Fetching alone does not update working files.
+- If the current checkout is on `main`, has no local changes and is only behind, update it with `git merge --ff-only origin/main` before starting work.
+- If the checkout has staged, unstaged or untracked changes, or cannot fast-forward, preserve that work. Start independent tasks in a suitable clean managed worktree based on the latest `origin/main`. When continuing an existing task, preserve its commits and deliberately reconcile the relevant local changes with the current main. Never automatically stash, reset, clean, overwrite files or force-push to synchronize.
+- Read the fetched `origin/main:AGENTS.md` when local instructions differ, and apply its current project rules together with applicable local instructions. Do not request confirmation for routine fetching, clean fast-forward updates or creating an isolated worktree within the authorized task.
+- Fetch again before integrating, pushing or publishing, and reconcile changes made by other chats. If fetching fails, report that freshness could not be verified; do not claim that the checkout is current or silently publish from an outdated base.
+
+## Game animation and sound
+
+- Before designing or changing game animation and audio, read `docs/game-feedback.md`. Use its event specification and verification guidance together with the game's existing design and module boundaries. Preserve choices already authorized by the user.
+- Distinguish research findings, game-specific design hypotheses and measured results. Do not present arbitrary timings as scientific thresholds, signal presence as listening quality, or greater play time as proof of enjoyment.
+
 ## New games and module boundaries
 
 - Implement every new game as an independent client module under `games/<slug>/`, with its own entry, package metadata, TypeScript configuration and game-specific assets. Follow `docs/game-modules.md` and register its identity and compatibility contract in `src/modules/GameModuleCatalog.ts`.

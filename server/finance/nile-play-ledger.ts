@@ -139,13 +139,15 @@ export class NilePlayLedger {
         const remaining = BigInt(this.config.initialReserveUnits) - reserved;
         return userId === this.config.houseUserId ? amount : userId === this.config.reserveUserId && remaining > 0n ? (amount < remaining ? amount : remaining) : 0n;
     }
-    async sync(source: NileTestLedger, reconciliation: any, now = Date.now()) {
+    async sync(source: NileTestLedger, reconciliation: any, now?: number) {
+        const clock = now === undefined ? Date.now : () => now!;
         await this.ready;
         if (JSON.stringify(source.config) !== JSON.stringify(this.config.source) || depositPoolDigest(source.pool) !== depositPoolDigest(this.pool))
             fail('play_source_config_mismatch', 503);
         await source.ready;
         return source.db.transaction(async () => {
             const audit = await source.audit(), status = await source.status();
+            now = clock();
             const total = audit.balances.reduce((sum, a) => sum + BigInt(a.availableUnits), 0n).toString();
             const at = Date.parse(reconciliation?.checked_at);
             if ((reconciliation?.poolSha256 ?? null) !== depositPoolDigest(this.pool) || !status.ok || reconciliation?.ok !== true || reconciliation.network !== 'nile' || reconciliation.asset !== 'USDT_NILE_TEST'
@@ -187,7 +189,7 @@ export class NilePlayLedger {
                     }
                     if (seen !== audit.credits) fail('play_source_changed', 503);
                     await this.db.prepare('UPDATE state SET source_at=?,reconciled_at=?,source_credits=?,source_units=?,source_height=?,source_hash=?,last_error=NULL WHERE id=1')
-                        .run(now, at, audit.credits, total, status.cursorHeight, status.cursorHash);
+                        .run(clock(), at, audit.credits, total, status.cursorHeight, status.cursorHash);
                     return seen - importedCount;
                 });
             } catch (error) {

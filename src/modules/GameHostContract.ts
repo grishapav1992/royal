@@ -60,6 +60,7 @@ export interface GameModuleContextV1 {
  readonly onPlaying?: (playing: boolean) => void;
  readonly onClosed?: () => void;
  readonly onMounted?: (instance: GameModuleInstance) => void;
+ readonly provider?: { readonly embedded: boolean; readonly gameId?: string; readonly gameName?: string; readonly onCatalogue: () => void };
  readonly activity?: ActivityHostContext;
  readonly pvp?: {get():PvpSnapshot|undefined;busy():boolean;subscribe(callback:()=>void):()=>void;move(value:PvpCardMove):void};
 }

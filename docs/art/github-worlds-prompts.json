@@ -1,0 +1,131 @@
+{
+  "tool": "built-in image_gen",
+  "jobs": [
+    {
+      "key": "royal-fruits-character",
+      "game": "royal-fruits",
+      "kind": "character",
+      "transparent_background": true,
+      "prompt": "Use case: stylized-concept. Asset type: transparent game character cutout for a layered game header, displayed at 140 to 230px tall. Primary request: an elegant red panda railway conductor and orchard keeper, burgundy fitted coat, brass pocket watch, small basket of glossy cherries, full body standing three-quarter pose, confident friendly expression. Style: premium richly rendered painterly 3D game key art with fine material texture, strong readable silhouette, expressive face where applicable. Color palette: warm cream, berry red, jade green, antique gold. Composition: one isolated subject, entire figure inside frame with generous transparent padding around the silhouette, no horizon or room, no floor plane, alpha transparency. No text, letters, numbers, logo, watermark, UI, dice values or game symbols. No rectangular backdrop. Character must remain readable at small scale. Original design."
+    },
+    {
+      "key": "royal-fruits-background",
+      "game": "royal-fruits",
+      "kind": "background",
+      "transparent_background": false,
+      "prompt": "Use case: stylized-concept. Asset type: wide painted game header environment background, aspect ratio 3:2 or 16:9. Scene: a charming vintage cherry orchard railway station, cream and dusty coral train carriage, jade foliage, baskets of red cherries, warm morning light, art nouveau brass details. Style: premium richly rendered painterly 3D game environment key art, cinematic light and tangible material texture, sophisticated composition. Color palette: warm cream, berry red, jade green, antique gold. Composition: environment detail concentrated at the center and right, left 40 percent quieter and darker for a text overlay; broad composition with depth and clean lighting. No foreground character, no people, no letters, no numbers, no logo, no watermark, no UI, no cards or dice faces. Background only."
+    },
+    {
+      "key": "royal-dice-character",
+      "game": "royal-dice",
+      "kind": "character",
+      "transparent_background": true,
+      "prompt": "Use case: stylized-concept. Asset type: transparent game character cutout for a layered game header, displayed at 140 to 230px tall. Primary request: an original elderly alchemist with expressive grey eyebrows, emerald velvet waistcoat, rolled sleeves, brass goggles, holding a luminous mint potion in a clear round flask, full body standing three-quarter pose, no hat. Style: premium richly rendered painterly 3D game key art with fine material texture, strong readable silhouette, expressive face where applicable. Color palette: deep forest green, mint, aged brass, warm gold. Composition: one isolated subject, entire figure inside frame with generous transparent padding around the silhouette, no horizon or room, no floor plane, alpha transparency. No text, letters, numbers, logo, watermark, UI, dice values or game symbols. No rectangular backdrop. Character must remain readable at small scale. Original design."
+    },
+    {
+      "key": "royal-dice-background",
+      "game": "royal-dice",
+      "kind": "background",
+      "transparent_background": false,
+      "prompt": "Use case: stylized-concept. Asset type: wide painted game header environment background, aspect ratio 3:2 or 16:9. Scene: a richly detailed antique alchemist workshop, verdigris copper apparatus, glowing green glass flasks, brass astrolabe, shelves of botanical glass, emerald haze, warm candlelight. Style: premium richly rendered painterly 3D game environment key art, cinematic light and tangible material texture, sophisticated composition. Color palette: deep forest green, mint, aged brass, warm gold. Composition: environment detail concentrated at the center and right, left 40 percent quieter and darker for a text overlay; broad composition with depth and clean lighting. No foreground character, no people, no letters, no numbers, no logo, no watermark, no UI, no cards or dice faces. Background only."
+    },
+    {
+      "key": "royal-limbo-character",
+      "game": "royal-limbo",
+      "kind": "character",
+      "transparent_background": true,
+      "prompt": "Use case: stylized-concept. Asset type: transparent game character cutout for a layered game header, displayed at 140 to 230px tall. Primary request: an original adult female interstellar pilot, short silver hair, sleek violet and ivory flight suit, reflective cyan visor pushed up, small luminous navigation sphere floating near one hand, full body dynamic floating three-quarter pose. Style: premium richly rendered painterly 3D game key art with fine material texture, strong readable silhouette, expressive face where applicable. Color palette: midnight indigo, electric cyan, soft violet, pearl white. Composition: one isolated subject, entire figure inside frame with generous transparent padding around the silhouette, no horizon or room, no floor plane, alpha transparency. No text, letters, numbers, logo, watermark, UI, dice values or game symbols. No rectangular backdrop. Character must remain readable at small scale. Original design."
+    },
+    {
+      "key": "royal-limbo-background",
+      "game": "royal-limbo",
+      "kind": "background",
+      "transparent_background": false,
+      "prompt": "Use case: stylized-concept. Asset type: wide painted game header environment background, aspect ratio 3:2 or 16:9. Scene: a vast elliptical interstellar portal on a space observatory platform, luminous violet concentric rings, cyan stars and distant nebula, dark deep space, elegant sci-fi architecture. Style: premium richly rendered painterly 3D game environment key art, cinematic light and tangible material texture, sophisticated composition. Color palette: midnight indigo, electric cyan, soft violet, pearl white. Composition: environment detail concentrated at the center and right, left 40 percent quieter and darker for a text overlay; broad composition with depth and clean lighting. No foreground character, no people, no letters, no numbers, no logo, no watermark, no UI, no cards or dice faces. Background only."
+    },
+    {
+      "key": "royal-mines-character",
+      "game": "royal-mines",
+      "kind": "character",
+      "transparent_background": true,
+      "prompt": "Use case: stylized-concept. Asset type: transparent game character cutout for a layered game header, displayed at 140 to 230px tall. Primary request: an original adult female jungle archaeologist in a dark green expedition jacket, amber neck scarf, leather satchel, holding a small jade relic and lantern, full body poised adventurous three-quarter stance. Style: premium richly rendered painterly 3D game key art with fine material texture, strong readable silhouette, expressive face where applicable. Color palette: deep jungle green, jade, weathered stone, amber gold. Composition: one isolated subject, entire figure inside frame with generous transparent padding around the silhouette, no horizon or room, no floor plane, alpha transparency. No text, letters, numbers, logo, watermark, UI, dice values or game symbols. No rectangular backdrop. Character must remain readable at small scale. Original design."
+    },
+    {
+      "key": "royal-mines-background",
+      "game": "royal-mines",
+      "kind": "background",
+      "transparent_background": false,
+      "prompt": "Use case: stylized-concept. Asset type: wide painted game header environment background, aspect ratio 3:2 or 16:9. Scene: an ancient stepped stone temple hidden in dense tropical jungle, mossy carved blocks, jade relics, shafts of warm sunlight, atmospheric forest mist, mysterious peaceful expedition setting. Style: premium richly rendered painterly 3D game environment key art, cinematic light and tangible material texture, sophisticated composition. Color palette: deep jungle green, jade, weathered stone, amber gold. Composition: environment detail concentrated at the center and right, left 40 percent quieter and darker for a text overlay; broad composition with depth and clean lighting. No foreground character, no people, no letters, no numbers, no logo, no watermark, no UI, no cards or dice faces. Background only."
+    },
+    {
+      "key": "royal-keno-character",
+      "game": "royal-keno",
+      "kind": "character",
+      "transparent_background": true,
+      "prompt": "Use case: stylized-concept. Asset type: transparent game character cutout for a layered game header, displayed at 140 to 230px tall. Primary request: an elegant mechanical brass owl astronomer with luminous sapphire glass eyes, detailed engraved copper wings, a small celestial chart under one wing, full body perched on a compact brass armillary pedestal, sophisticated art deco automaton. Style: premium richly rendered painterly 3D game key art with fine material texture, strong readable silhouette, expressive face where applicable. Color palette: navy blue, pale sapphire, polished brass, parchment gold. Composition: one isolated subject, entire figure inside frame with generous transparent padding around the silhouette, no horizon or room, no floor plane, alpha transparency. No text, letters, numbers, logo, watermark, UI, dice values or game symbols. No rectangular backdrop. Character must remain readable at small scale. Original design."
+    },
+    {
+      "key": "royal-keno-background",
+      "game": "royal-keno",
+      "kind": "background",
+      "transparent_background": false,
+      "prompt": "Use case: stylized-concept. Asset type: wide painted game header environment background, aspect ratio 3:2 or 16:9. Scene: an old royal astronomical observatory with a monumental brass armillary sphere, open dome revealing a navy starry sky, constellation charts, fine celestial instruments, luminous blue starlight. Style: premium richly rendered painterly 3D game environment key art, cinematic light and tangible material texture, sophisticated composition. Color palette: navy blue, pale sapphire, polished brass, parchment gold. Composition: environment detail concentrated at the center and right, left 40 percent quieter and darker for a text overlay; broad composition with depth and clean lighting. No foreground character, no people, no letters, no numbers, no logo, no watermark, no UI, no cards or dice faces. Background only."
+    },
+    {
+      "key": "github-craps-character",
+      "game": "github-craps",
+      "kind": "character",
+      "transparent_background": true,
+      "prompt": "Use case: stylized-concept. Asset type: transparent game character cutout for a layered game header, displayed at 140 to 230px tall. Primary request: an elegant anthropomorphic black panther jazz saxophonist, tailored midnight plum suit, burgundy shirt, gleaming brass saxophone held naturally, full body relaxed three-quarter stance, sophisticated adult jazz-club mood. Style: premium richly rendered painterly 3D game key art with fine material texture, strong readable silhouette, expressive face where applicable. Color palette: deep plum, smoky mauve, warm amber, antique brass. Composition: one isolated subject, entire figure inside frame with generous transparent padding around the silhouette, no horizon or room, no floor plane, alpha transparency. No text, letters, numbers, logo, watermark, UI, dice values or game symbols. No rectangular backdrop. Character must remain readable at small scale. Original design."
+    },
+    {
+      "key": "github-craps-background",
+      "game": "github-craps",
+      "kind": "background",
+      "transparent_background": false,
+      "prompt": "Use case: stylized-concept. Asset type: wide painted game header environment background, aspect ratio 3:2 or 16:9. Scene: an intimate art deco jazz club stage, velvet plum curtains, brass saxophone stand, round table silhouettes, warm amber spotlights through soft haze, elegant geometric gold trim. Style: premium richly rendered painterly 3D game environment key art, cinematic light and tangible material texture, sophisticated composition. Color palette: deep plum, smoky mauve, warm amber, antique brass. Composition: environment detail concentrated at the center and right, left 40 percent quieter and darker for a text overlay; broad composition with depth and clean lighting. No foreground character, no people, no letters, no numbers, no logo, no watermark, no UI, no cards or dice faces. Background only."
+    },
+    {
+      "key": "github-tower-character",
+      "game": "github-tower",
+      "kind": "character",
+      "transparent_background": true,
+      "prompt": "Use case: stylized-concept. Asset type: transparent game character cutout for a layered game header, displayed at 140 to 230px tall. Primary request: an original majestic compact crimson dragon with copper scale edges, elegant curled tail, small spread wings, ember amber eyes, expressive noble head, full body three-quarter silhouette, premium fantasy creature concept art. Style: premium richly rendered painterly 3D game key art with fine material texture, strong readable silhouette, expressive face where applicable. Color palette: charcoal burgundy, crimson, ember orange, copper gold. Composition: one isolated subject, entire figure inside frame with generous transparent padding around the silhouette, no horizon or room, no floor plane, alpha transparency. No text, letters, numbers, logo, watermark, UI, dice values or game symbols. No rectangular backdrop. Character must remain readable at small scale. Original design."
+    },
+    {
+      "key": "github-tower-background",
+      "game": "github-tower",
+      "kind": "background",
+      "transparent_background": false,
+      "prompt": "Use case: stylized-concept. Asset type: wide painted game header environment background, aspect ratio 3:2 or 16:9. Scene: a dramatic ancient dragon citadel rising through misty mountain cliffs, narrow glowing windows, distant warm moon, floating ember specks, deep burgundy rock and copper architecture, majestic fantasy atmosphere. Style: premium richly rendered painterly 3D game environment key art, cinematic light and tangible material texture, sophisticated composition. Color palette: charcoal burgundy, crimson, ember orange, copper gold. Composition: environment detail concentrated at the center and right, left 40 percent quieter and darker for a text overlay; broad composition with depth and clean lighting. No foreground character, no people, no letters, no numbers, no logo, no watermark, no UI, no cards or dice faces. Background only."
+    },
+    {
+      "key": "github-diamonds-character",
+      "game": "github-diamonds",
+      "kind": "character",
+      "transparent_background": true,
+      "prompt": "Use case: stylized-concept. Asset type: transparent game character cutout for a layered game header, displayed at 140 to 230px tall. Primary request: an elegant mystical arctic lynx spirit made of faceted ice and translucent fur, luminous turquoise eyes, violet crystal collar, full body graceful seated three-quarter pose, subtle aurora reflections, clearly readable face. Style: premium richly rendered painterly 3D game key art with fine material texture, strong readable silhouette, expressive face where applicable. Color palette: midnight blue, icy turquoise, pale lavender, silver. Composition: one isolated subject, entire figure inside frame with generous transparent padding around the silhouette, no horizon or room, no floor plane, alpha transparency. No text, letters, numbers, logo, watermark, UI, dice values or game symbols. No rectangular backdrop. Character must remain readable at small scale. Original design."
+    },
+    {
+      "key": "github-diamonds-background",
+      "game": "github-diamonds",
+      "kind": "background",
+      "transparent_background": false,
+      "prompt": "Use case: stylized-concept. Asset type: wide painted game header environment background, aspect ratio 3:2 or 16:9. Scene: a luminous polar crystal cavern, large faceted ice and amethyst formations, soft northern lights reflected in polished stone, turquoise and lilac glow, rare diamonds nestled in the rock, premium fantasy atmosphere. Style: premium richly rendered painterly 3D game environment key art, cinematic light and tangible material texture, sophisticated composition. Color palette: midnight blue, icy turquoise, pale lavender, silver. Composition: environment detail concentrated at the center and right, left 40 percent quieter and darker for a text overlay; broad composition with depth and clean lighting. No foreground character, no people, no letters, no numbers, no logo, no watermark, no UI, no cards or dice faces. Background only."
+    },
+    {
+      "key": "github-sic-bo-character",
+      "game": "github-sic-bo",
+      "kind": "character",
+      "transparent_background": true,
+      "prompt": "Use case: stylized-concept. Asset type: transparent game character cutout for a layered game header, displayed at 140 to 230px tall. Primary request: a majestic original Egyptian scarab guardian, sculpted lapis lazuli and turquoise beetle body with articulated gold legs, large symmetrical fan-like engraved golden wings partly open, full body three-quarter view, polished precious stone and metal, no human face. Style: premium richly rendered painterly 3D game key art with fine material texture, strong readable silhouette, expressive face where applicable. Color palette: deep teal, lapis blue, sandstone, burnished gold. Composition: one isolated subject, entire figure inside frame with generous transparent padding around the silhouette, no horizon or room, no floor plane, alpha transparency. No text, letters, numbers, logo, watermark, UI, dice values or game symbols. No rectangular backdrop. Character must remain readable at small scale. Original design."
+    },
+    {
+      "key": "github-sic-bo-background",
+      "game": "github-sic-bo",
+      "kind": "background",
+      "transparent_background": false,
+      "prompt": "Use case: stylized-concept. Asset type: wide painted game header environment background, aspect ratio 3:2 or 16:9. Scene: an ancient Egyptian underground temple, monumental carved sandstone columns, lapis and turquoise inlays, golden scarab relief, warm sunbeam through a ceiling aperture, drifting dust, refined archaeological fantasy. Style: premium richly rendered painterly 3D game environment key art, cinematic light and tangible material texture, sophisticated composition. Color palette: deep teal, lapis blue, sandstone, burnished gold. Composition: environment detail concentrated at the center and right, left 40 percent quieter and darker for a text overlay; broad composition with depth and clean lighting. No foreground character, no people, no letters, no numbers, no logo, no watermark, no UI, no cards or dice faces. Background only."
+    }
+  ]
+}

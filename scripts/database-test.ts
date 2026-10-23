@@ -1,7 +1,7 @@
 import EmbeddedPostgres from 'embedded-postgres';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir, constants } from 'node:os';
-import { join } from 'node:path';
+import { join, resolve, dirname, basename } from 'node:path';
 import { randomBytes } from 'node:crypto';
 import { createServer } from 'node:net';
 import { spawn } from 'node:child_process';
@@ -17,7 +17,12 @@ export async function temporaryDatabase() {
     authMethod: 'scram-sha-256', postgresFlags: ['-h', '127.0.0.1'], onLog: () => {}, onError: () => {} });
   await postgres.initialise(); await postgres.start(); await postgres.createDatabase('royal_test');
   return { env: { NODE_ENV: 'test', DATABASE_URL: '', DATABASE_URL_FILE: '', PGHOST: '127.0.0.1', PGPORT: String(port), PGDATABASE: 'royal_test', PGUSER: 'postgres', PGPASSWORD: password, PGPASSWORD_FILE: '', PGSSLMODE: 'disable', CODEX_SALE_API_KEY: '' },
-    cleanup: async () => { await postgres.stop(); await rm(directory, { recursive: true, force: true, maxRetries:10, retryDelay:100 }); } };
+    cleanup: async () => {
+      await postgres.stop();
+      const target = resolve(directory);
+      if (dirname(target) !== resolve(tmpdir()) || !basename(target).startsWith('royal-pg-')) throw new Error('Unexpected temporary database directory');
+      await rm(target, { recursive: true, force: true, maxRetries: 15, retryDelay: 200 });
+    } };
 }
 
 if (process.argv[1]?.endsWith('database-test.ts')) {

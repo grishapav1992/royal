@@ -1,0 +1,120 @@
+{
+  "generator": "Built-in ImageGen",
+  "export": "Chrome Canvas WebP, quality 0.94; original dimensions except hall thumbnails",
+  "sourceBytes": 39293257,
+  "gameBytes": 7312152,
+  "files": [
+    {
+      "file": "/assets/neopolis/city-v2.webp",
+      "width": 1942,
+      "height": 809,
+      "bytes": 545326,
+      "sha256": "b741579a1aac129c4b4bae3b13aff90f094ab59cf4b3e3a3116796d45e2f5e2c"
+    },
+    {
+      "file": "/assets/neopolis/granite-v2.webp",
+      "width": 1024,
+      "height": 1536,
+      "bytes": 719624,
+      "sha256": "cfe29b6dac9b18d75fd17dc736ef16b48c44ee5888992c00f07b71ef916dfce0"
+    },
+    {
+      "file": "/assets/neopolis/impulse-v2.webp",
+      "width": 1024,
+      "height": 1536,
+      "bytes": 330868,
+      "sha256": "832e13ec840775259cd2fd9f6320c411a265959019cbd0838b441e457e328aa6"
+    },
+    {
+      "file": "/assets/neopolis/prism-v2.webp",
+      "width": 1024,
+      "height": 1536,
+      "bytes": 360482,
+      "sha256": "e75d0d1aa87c42195bf03de956109f12e416df20e76ac84afcc60fffe1044691"
+    },
+    {
+      "file": "/assets/neopolis/null-v2.webp",
+      "width": 1024,
+      "height": 1536,
+      "bytes": 420834,
+      "sha256": "b2975fa847149ba0a8c872e3e1244b7afa604b665704c47d1945d6e1fbadf6f7"
+    },
+    {
+      "file": "/assets/neopolis/symbols-v2.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 428008,
+      "sha256": "cba250836b02bce6facc37388384c1a3ef4a36dbb9d9bbd4de1010c9b44f32e5"
+    },
+    {
+      "file": "/assets/neopolis/cover-v2.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 800278,
+      "sha256": "f01a85fb9a90b93dd46b184982e9469967d33f6541d64141b6f74ebffea75173"
+    },
+    {
+      "file": "/assets/neopolis/cover-catalog-v2.webp",
+      "width": 480,
+      "height": 320,
+      "bytes": 99876,
+      "sha256": "b0e5339d4f79edcf525e760dd5ff49d7933d404c30b6c1b6473171265b80965f"
+    },
+    {
+      "file": "/assets/neopolis/cover-cabinet-v2.webp",
+      "width": 184,
+      "height": 168,
+      "bytes": 23582,
+      "sha256": "794d2cb1c3bd637f09ee0f9217f7df40fb481d4fdbebcc3f69bd01242460f52a"
+    },
+    {
+      "file": "/assets/neopolis/vespera-v3.webp",
+      "width": 1024,
+      "height": 1536,
+      "bytes": 362622,
+      "sha256": "d0c56f5578c6916c57d64d7aa9c66dbfa3cc3f58c292e78cc28403655b6ffdfb"
+    },
+    {
+      "file": "/assets/neopolis/aeon-v3.webp",
+      "width": 1024,
+      "height": 1536,
+      "bytes": 563132,
+      "sha256": "8f8bd9ce3af3ed83b753f0c8411256c053f4c3b3f2d9d6e899c89e64f1fc3650"
+    },
+    {
+      "file": "/assets/neopolis/citadel-v3.webp",
+      "width": 1774,
+      "height": 887,
+      "bytes": 568212,
+      "sha256": "504b0ae69957870d862057822e23fb902c35db3cddba72edb6be1f45f0a935d0"
+    },
+    {
+      "file": "/assets/neopolis/observatory-v3.webp",
+      "width": 1774,
+      "height": 887,
+      "bytes": 709752,
+      "sha256": "3acc713c6d2faabd2bc8dc1475333e67cb0ee45b06ffb4a399835ae1f8d710a4"
+    },
+    {
+      "file": "/assets/neopolis/team-night-v3.webp",
+      "width": 1774,
+      "height": 887,
+      "bytes": 498496,
+      "sha256": "3acdaa2872921d4b4b22ba6b24cc2c863c9f023ef729038878408b9e7a723c59"
+    },
+    {
+      "file": "/assets/neopolis/team-eclipse-v3.webp",
+      "width": 1774,
+      "height": 887,
+      "bytes": 514382,
+      "sha256": "6e83a392682833eb83aa6e242269cf87fc7a4ee2ddfa2f082c28970e695e7ac5"
+    },
+    {
+      "file": "/assets/neopolis/team-chrono-v3.webp",
+      "width": 1774,
+      "height": 887,
+      "bytes": 490136,
+      "sha256": "6a3506f93516cb86c2fd0727fd7fb555995b0974b8acc51f0df18b4991d0021a"
+    }
+  ]
+}

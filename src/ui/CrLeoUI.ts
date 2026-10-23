@@ -28,7 +28,7 @@ export class CrLeoUI {
   private pipsKey = '';
   private epoch = 0;
   private onChange = () => this.sync();
-  private onVisibility = () => { if (document.hidden) this.audio.silence(); };
+  private onVisibility = () => { if (document.hidden) this.audio.silence(); else { this.scene.skipPastSounds(); void this.audio.unlock(); } };
   constructor(host: HTMLElement, preview?: { hero: PenaltyHero; risk: PenaltyRisk }) {
     if (preview) { this.hero = preview.hero; this.risk = preview.risk; }
     this.root.className = 'cr-leo'; this.root.dataset.loading = 'true'; this.root.setAttribute('aria-label', 'CR vs. Leo');
@@ -41,8 +41,12 @@ export class CrLeoUI {
       <footer class="cl-footer"><span>Тестовый USDT Nile · Серия до 5 ударов</span><p role="status" data-status>Выбери своего игрока.</p><button data-sound aria-pressed="true">ЗВУК ON</button></footer><div class="cl-recovery" hidden data-recovery><span>Результат запроса ещё не подтверждён.</span><button data-retry>Проверить ту же операцию</button></div><p class="cl-error" role="alert"></p>
       <dialog class="cl-dialog"><button data-close aria-label="Закрыть правила">×</button><span class="cl-label">CR vs. Leo</span><h2>Пять ударов. Одно решение.</h2><p>Выбери игрока, ставку и риск первого удара. Перед каждым следующим ударом риск можно изменить. Первая кнопка списывает одну ставку и выполняет первый удар. После гола можно забрать всю доступную выплату или рискнуть следующим ударом. Промах теряет ставку и всю незабранную выплату серии. Пятый гол оплачивается автоматически.</p><p>Пенальти: 75% гола. Ближний штрафной со стенкой из пяти игроков: 60%. Дальний штрафной со стенкой из трёх игроков: 45%. CR и Leo имеют одинаковую математику. Сектор ворот выбирается случайно и не меняет шанс гола или выплату. Сила нажатия, скорость реакции и движения игроков не меняют вероятность.</p><p>Коэффициенты на экране приблизительные. Точная сумма выплаты показана на кнопке и рассчитывается по вероятности всей успешной серии, с округлением вниз до 0,01 USDT. Расчётный возврат 99% до округления, одинаковый для любого сочетания рисков и любого выбранного момента остановки после гола.</p><p>Между ударами нет таймера. Закрытие окна сохраняет серию. При потере ответа проверяется тот же запрос, новая ставка не создаётся.</p></dialog>`;
     host.replaceChildren(this.root);
-    this.scene = new CrLeoScene(this.find('canvas'), event => { if (document.hidden) return; if (event === 'kick') this.audio.kick(); else if (event === 'goal') this.audio.goal(); else if (event === 'celebrate') this.audio.celebrate(this.hero); else if (event === 'wall') this.audio.wall(); else this.audio.miss(event === 'post'); });
+    this.scene = new CrLeoScene(this.find('canvas'), event => { if (!document.hidden) this.audio.event(event, this.hero); });
     this.scene.select(this.hero, this.risk);
+    this.root.addEventListener('pointerdown', () => void this.audio.unlock(), { capture: true });
+    this.root.addEventListener('keydown', () => void this.audio.unlock(), { capture: true });
+    const soundButton = this.find('[data-sound]'); soundButton.textContent = 'ЗВУК ' + (this.audio.enabled ? 'ON' : 'OFF'); soundButton.setAttribute('aria-pressed', String(this.audio.enabled));
+    void this.audio.unlock();
     this.find('[data-load-retry]').onclick = () => this.scene.retryAssets();
     this.root.querySelectorAll<HTMLButtonElement>('[data-hero]').forEach(b => b.onclick = () => { if (this.blocked() || this.active()) return; this.hero = b.dataset.hero as PenaltyHero; this.selectionPreview = true; this.scene.select(this.hero, this.risk); this.syncControls(); });
     this.root.querySelectorAll<HTMLButtonElement>('[data-risk]').forEach(b => b.onclick = () => { if (this.blocked()) return; this.risk = b.dataset.risk as PenaltyRisk; this.scene.chooseRisk(this.risk); if (!this.active()) { this.selectionPreview = true; this.scene.select(this.hero, this.risk); } this.syncControls(); });

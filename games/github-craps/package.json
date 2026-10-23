@@ -12,5 +12,13 @@
   ],
   "scripts": {
     "build": "node ../../node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && node ../../scripts/build-game-module.mjs"
-  }
+  },
+  "assetFiles": [
+    "github-worlds/github-craps/background-v1.webp",
+    "github-worlds/github-craps/character-v1.webp"
+  ],
+  "preload": [
+    "github-worlds/github-craps/background-v1.webp",
+    "github-worlds/github-craps/character-v1.webp"
+  ]
 }

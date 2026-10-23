@@ -10,5 +10,13 @@
   "assetRoots": [],
   "scripts": {
     "build": "node ../../node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && node ../../scripts/build-game-module.mjs"
-  }
+  },
+  "assetFiles": [
+    "github-worlds/royal-dice/background-v1.webp",
+    "github-worlds/royal-dice/character-v1.webp"
+  ],
+  "preload": [
+    "github-worlds/royal-dice/background-v1.webp",
+    "github-worlds/royal-dice/character-v1.webp"
+  ]
 }

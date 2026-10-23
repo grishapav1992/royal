@@ -5,6 +5,16 @@ export const PENALTY_CONTACT = 1.12;
 export const PENALTY_RESULT = 1.70;
 export const PENALTY_READY = 2.35;
 export const PENALTY_CELEBRATION = 4.3;
+// The user's trimmed recording reaches its Siuuu at 2.50 seconds.
+export const CR_SIUU_AT = 2.50;
+export const CR_JUMP_TAKEOFF = .80;
+export const CR_JUMP_LANDING = 1.35;
+export function celebrationTime(t: number, hero: PenaltyHero, fullSeries = false) {
+  return t - (hero === 'cr' && fullSeries ? CR_SIUU_AT - CR_JUMP_LANDING : 0);
+}
+export function celebrationDuration(hero: PenaltyHero, fullSeries = false) {
+  return hero === 'cr' && fullSeries ? 4.90 : PENALTY_CELEBRATION;
+}
 export function shotTiming(risk: PenaltyRisk = 'safe', shot?: PenaltyShot) {
   const flightEnd = risk === 'extreme' ? 2.50 : risk === 'sharp' ? 2.12 : PENALTY_RESULT;
   const result = isWallHit(shot, risk) ? PENALTY_CONTACT + (flightEnd - PENALTY_CONTACT) * wallCrossing(risk) : flightEnd;
@@ -16,10 +26,20 @@ export function shotBallRadius(height: number, risk: PenaltyRisk, progress = 0, 
   const scale = blocked && u > crossing ? 1-crossing*.70+(u-crossing)*.20 : 1-u*(risk==='extreme'?.80:risk==='sharp'?.70:.60);
   return Math.max(5.5, height*.015, Math.max(8, height*.028)*scale);
 }
+/** Cosmetic spin starts at contact, mirrors the kicking foot and settles after impact. */
+export function shotBallRotation(t: number, hero: PenaltyHero, risk: PenaltyRisk, result = PENALTY_RESULT, held = false) {
+  const rate = risk === 'safe' ? 13 : risk === 'sharp' ? 15 : 17;
+  const elapsed = Math.max(0, t - PENALTY_CONTACT), duration = Math.max(0, result - PENALTY_CONTACT);
+  const after = Math.max(0, elapsed - duration);
+  const rotation = rate * (Math.min(elapsed, duration) + (held ? 0 : .28 * (1 - Math.exp(-after / .28))));
+  return (hero === 'cr' ? 1 : -1) * rotation;
+}
 export const strikeAnchors = { cr: { x: .79, y: .88 }, leo: { x: .22, y: .87 } } as const;
-export function strikePlacement(hero: PenaltyHero, ball: {x:number;y:number}, size: number) {
+export function strikePlacement(hero: PenaltyHero, ball: {x:number;y:number}, size: number, radius = 0) {
   const toe = strikeAnchors[hero];
-  return { x: ball.x - (toe.x - .5) * size, bottom: ball.y + (.94 - toe.y) * size };
+  const sign = hero === 'cr' ? 1 : -1;
+  // Meet the near surface with the instep instead of putting the toe in the centre.
+  return { x: ball.x - sign * radius * .8 - (toe.x - .5) * size, bottom: ball.y + radius * .6 + (.94 - toe.y) * size };
 }
 export function shotPose(t: number, hero: PenaltyHero, shot?: PenaltyShot, risk?: PenaltyRisk): number {
   const timing = shotTiming(shot?.risk ?? risk, shot);
@@ -33,15 +53,16 @@ export function shotPose(t: number, hero: PenaltyHero, shot?: PenaltyShot, risk?
   if (shot && !shot.goal) return hero === 'cr' ? t < timing.result + .85 ? 12 : t < timing.result + 1.70 ? 13 : 14 : t < timing.result + .85 ? 12 : 13;
   return t < timing.ready ? 7 : 0;
 }
-export function celebrationPose(t: number, hero: PenaltyHero): number {
-  if (hero === 'cr') return t < .45 ? 8 : t < .80 ? 9 : t < 1.35 ? 10 : 11;
+export function celebrationPose(t: number, hero: PenaltyHero, fullSeries = false): number {
+  t = celebrationTime(t, hero, fullSeries);
+  if (hero === 'cr') return t < 0 ? 7 : t < .45 ? 8 : t < CR_JUMP_TAKEOFF ? 9 : t < CR_JUMP_LANDING ? 10 : 11;
   return t < .55 ? 8 : t < 1.10 ? 9 : t < 1.75 ? 10 : 11;
 }
 export function flightPosition(t: number, from: {x:number;y:number}, to: {x:number;y:number}, arc = .20, bend = 0) {
   const u = Math.max(0, Math.min(1, (t - PENALTY_CONTACT) / (PENALTY_RESULT - PENALTY_CONTACT)));
   return { x: from.x + (to.x - from.x) * u + Math.sin(Math.PI * u) * bend, y: from.y + (to.y - from.y) * u - Math.sin(Math.PI * u) * Math.abs(from.y - to.y) * arc, u };
 }
-export type GoalGeometry = { x: number; bottom: number; width: number; height: number };
+export type GoalGeometry = { x: number; bottom: number; width: number; height: number; rear?: { x: number; bottom: number; width: number; height: number } };
 export function shotTarget(shot: PenaltyShot, goal: GoalGeometry) {
   const zone = shotZone(shot), left = goal.x - goal.width / 2, top = goal.bottom - goal.height;
   let x = left + goal.width * zone.x, y = top + goal.height * zone.y;
