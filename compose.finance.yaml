@@ -42,6 +42,7 @@ services:
     security_opt: [no-new-privileges:true]
     mem_limit: 1280m
     cpus: 2
+    cpu_shares: 4096
     pids_limit: 128
     healthcheck:
       test: [CMD-SHELL, "pg_isready -U finance_schema_owner -d royal_finance_sim"]

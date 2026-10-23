@@ -64,6 +64,8 @@ def guard():
         assert now['source' if key=='sourceRows' else key] == OLD[key], 'Production changed: ' + key
     for name, row in OLD['containers'].items():
         assert now['containers'][name]['id'] == row['id'] and now['containers'][name]['image'] == row['image'], name
+        if 'profile' in row:
+            assert now['containers'][name]['profile'] == row['profile'], 'Runtime configuration changed: ' + name
     assert now['containers']['royal-game-1']['health'] == 'healthy'
     health = financial_status()
     require_financial_status(health,M['preexistingNileUnready'])
