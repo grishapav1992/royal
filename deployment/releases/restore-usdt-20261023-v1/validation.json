@@ -1,0 +1,13 @@
+{
+  "financialTypes": "passed",
+  "finalProductionBaselineTests": 30,
+  "additionalAuditRegressionTests": 35,
+  "publicDepositApi": "passed with an existing empty synthetic wallet",
+  "publicViewports": [
+    1440,
+    390
+  ],
+  "newAddressesAllocated": 0,
+  "realTransferMade": false,
+  "sourceCommit": "baab40bb7c2d63bd5b2e9795ed4a99f658ffae15"
+}
