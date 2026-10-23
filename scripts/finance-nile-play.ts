@@ -7,6 +7,7 @@ import { tmpdir } from 'node:os';
 import { NilePlayLedger, NilePlayError, playDigest, validateNilePlayConfig } from '../server/finance/nile-play-ledger';
 import { NileTestLedger } from '../server/finance/nile-test-ledger';
 import { withRestoredDatabase } from './database-archive';
+import { scheduleSourceRefresh } from '../server/finance/source-refresh';
 process.umask(0o077);
 if (process.env.NILE_TEST_MODE !== 'testnet-only' || process.env.NILE_TEST_NETWORK !== 'nile')
     throw new Error('test_scope_required');
@@ -114,6 +115,7 @@ else {
             if (stopping || syncing)
                 return;
             syncing = true;
+            const started = Date.now();
             try {
                 const source = new NileTestLedger(sourceFile, config.source, true, pool);
                 try {
@@ -125,9 +127,11 @@ else {
                     await source.close();
                 }
                 lastSync = Date.now();
+                console.log(JSON.stringify({ service:'nile-source-sync',ok:true,elapsedMs:lastSync-started }));
             }
             catch (e) {
                 const code = e instanceof NilePlayError ? e.code : 'play_sync_failed';
+                console.warn(JSON.stringify({ service:'nile-source-sync',ok:false,code,elapsedMs:Date.now()-started }));
                 await ledger.failure(code);
                 try {
                     await ledger.audit();
@@ -156,9 +160,9 @@ else {
         }
         const server = createNilePlayServer(ledger);
         await new Promise<void>((resolve, reject) => { server.once('error', reject); server.listen(socket, () => { chmodSync(socket, 0o600); resolve(); }); });
-        const timer = setInterval(async () => { void await sync(); }, 30000);
+        const stopRefresh = scheduleSourceRefresh(sync);
         for (const signal of ['SIGTERM', 'SIGINT'])
-            process.once(signal, () => { stopping = true; clearInterval(timer); server.close(async () => { await ledger.close(); process.exit(0); }); });
+            process.once(signal, () => { stopping = true; stopRefresh(); server.close(async () => { await ledger.close(); process.exit(0); }); });
         console.log(JSON.stringify({ service: 'nile-play', network: 'nile', testOnly: true, hasSigningKeys: false, lastSync }));
     }
     else {
