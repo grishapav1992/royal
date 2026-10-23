@@ -1,0 +1,32 @@
+{
+  "published": true,
+  "release": "girlhub-feedback-20261023-v1",
+  "sourceCommit": "c71cd32bbef6f923994392bdb693fff3a635ab4e",
+  "modules": {
+    "studio-afterglow": {
+      "verified": true,
+      "gameId": "studio-afterglow",
+      "version": "1.1.0-082e6682d45a",
+      "bytes": 3214499,
+      "files": 21,
+      "beforeSha256": "95e16116585679134a2cc8bdfce66f7b28eb6ea102b2965aa0e161f0ab016fde",
+      "hostProgramTouched": false,
+      "databaseTouched": false,
+      "restartRequired": false,
+      "published": true,
+      "operation": "install",
+      "activeSha256": "ce9a7aefeff09b9179670e813f72e03efa793854aafc36b1b70dc22de39ff00f",
+      "history": "/opt/royal-game-modules-state/history/20261023T185143-0af45c3ebf58469cb70be95104df5286.json"
+    }
+  },
+  "royalGamesPreserved": true,
+  "backup": "/opt/royal-backups/girlhub-feedback-20261023-v1",
+  "runningImage": "sha256:12c28c1d43c32e8016fe62a56eb460e2e079da0c15c9f0785fe5c5f43c6aa0e2",
+  "preparedImage": "sha256:5fb5cd09f0f91469c3e8e881d7e90b1593ecb20ae0ce8ce688f263e2089a6b66",
+  "containerRestarted": false,
+  "otherModulesPreserved": true,
+  "programsPreserved": true,
+  "settingsPreserved": true,
+  "otherServicesPreserved": true,
+  "databaseTouched": false
+}
