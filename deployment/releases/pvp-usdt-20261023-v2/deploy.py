@@ -159,7 +159,7 @@ def finance():
     while time.monotonic()<deadline:
         current=inspect('royal-nile-play')
         if current['State'].get('Health',{}).get('Status')=='healthy':
-            result=json.loads(run(['docker','exec','royal-nile-play','node','play.js','health']))
+            result=json.loads(run(['docker','exec','-e','UV_THREADPOOL_SIZE=1','royal-nile-play','node','--v8-pool-size=1','play.js','health']))
             if result.get('ready'):
                 save('finance-verification.json',result)
                 print(json.dumps({'financialReady':True,'auditOk':result['ok'],'totalUnits':result['totalUnits'],'houseUnits':result['houseUnits']}),flush=True)
@@ -172,7 +172,7 @@ def game():
     built=json.loads((ROOT/'build-result.json').read_text())
     assert source_inventory()==OLD['source'], 'Later source changes block game publication'
     assert inventory(MODULES)==OLD['moduleFiles'] and sha(HOST)==OLD['moduleHostContract']
-    assert json.loads(run(['docker','exec','royal-nile-play','node','play.js','health']))['ready']
+    assert json.loads(run(['docker','exec','-e','UV_THREADPOOL_SIZE=1','royal-nile-play','node','--v8-pool-size=1','play.js','health']))['ready']
     for name,digest in OLD['configHashes'].items(): assert sha(LIVE/name)==digest
     for name in M['changed']: atomic(ROOT/'source'/name,LIVE/name)
     for source in (ROOT/'external-modules').rglob('*'):

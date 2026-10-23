@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { createHash, randomUUID } from 'node:crypto';
 import { setTimeout as delay } from 'node:timers/promises';
 import { checkGameRtp } from './game-math/rtp-gate.mjs';
+import { moduleFingerprinter, cachedModule } from './module-build-cache.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const sha = value => createHash('sha256').update(value).digest('hex');
@@ -13,14 +14,21 @@ const catalogPath = resolve(root, 'src/modules/GameModuleCatalog.ts');
 const catalogBuild = await build({ entryPoints: [catalogPath], bundle: true, write: false, format: 'esm', platform: 'node', logLevel: 'silent' });
 const { GAME_MODULES } = await import('data:text/javascript;base64,' + Buffer.from(catalogBuild.outputFiles[0].contents).toString('base64'));
 const catalog = new Map(GAME_MODULES.map(game => [game.slug, game]));
+const started = performance.now();
 const args = process.argv.slice(2);
+const force = args.includes('--force');
+if (force) args.splice(args.indexOf('--force'), 1);
 const all = args.length === 1 && args[0] === '--all';
 let selection;
-if (args[0] === '--game' && args.length === 2) selection = args[1];
+if (args[0] === '--games' && args.length > 1) selection = [...new Set(args.slice(1))];
+else if (args[0] === '--game' && args.length === 2) selection = args[1];
 else if (args.length === 1 && !args[0].startsWith('-')) selection = args[0];
 else if (!args.length) selection = dirname(process.cwd()) === resolve(root, 'games') ? basename(process.cwd()) : 'girlhub';
-if (!all && !catalog.has(selection)) throw Error('Choose a registered game package with --game <slug>, or use --all');
-await checkGameRtp(root, GAME_MODULES, (all ? GAME_MODULES : [catalog.get(selection)]).map(game => game.gameId));
+const selected = all ? [...catalog.keys()] : Array.isArray(selection) ? selection : [selection];
+if (selected.some(slug => !catalog.has(slug))) throw Error('Choose registered packages with --game <slug>, --games <slug...>, or --all');
+await checkGameRtp(root, GAME_MODULES, selected.map(slug => catalog.get(slug).gameId));
+const fingerprint = moduleFingerprinter(root, { esbuildVersion, node: process.version, platform: process.platform });
+const report = [];
 
 const bridgeModules = new Map([
  ['src/wallet/ExpansionClient', ['expansionClient']],
@@ -110,6 +118,7 @@ async function referencedMedia(outputs, sentinel, assetRoots, assetFiles) {
 }
 
 async function buildGame(slug) {
+ const gameStarted = performance.now();
  const registered = catalog.get(slug);
  const packageRoot = resolve(root, 'games', slug);
  const config = JSON.parse(await readFile(resolve(packageRoot, 'package.json'), 'utf8'));
@@ -117,6 +126,13 @@ async function buildGame(slug) {
  if (config.entry !== 'entry.ts' || !Array.isArray(config.assetRoots) || new Set(config.assetRoots).size !== config.assetRoots.length || !config.assetRoots.every(name => typeof name === 'string' && /^[a-z0-9-]+$/.test(name))) throw Error('Invalid module entry or asset roots: ' + slug);
  const assetFiles = config.assetFiles ?? [];
  if (!Array.isArray(assetFiles) || new Set(assetFiles).size !== assetFiles.length || !assetFiles.every(name => typeof name === 'string' && /^[a-zA-Z0-9_./-]+$/.test(name) && !name.split('/').some(part => part === '..' || part === '.') && allowedResources.test(name))) throw Error('Invalid module asset files: ' + slug);
+ const cached = force ? null : await cachedModule(root, config, registered, fingerprint);
+ if (cached) {
+  await atomicFile(resolve(root, 'module-dist', config.gameId, 'active.json'), JSON.stringify(cached.pointer, null, 2) + '\n');
+  const result = { gameId: config.gameId, version: cached.proof.version, directory: cached.folder,
+   files: cached.proof.files, reused: true, durationMs: Math.round(performance.now() - gameStarted) };
+  report.push(result); console.log(JSON.stringify(result)); return;
+ }
  const sentinel = '__ROYAL_MODULE_MEDIA_' + sha(config.gameId).slice(0, 16) + '__';
  const result = await build({
   absWorkingDir: root, entryPoints: [resolve(packageRoot, config.entry)],
@@ -211,10 +227,18 @@ async function buildGame(slug) {
   sharedMathInputs: inputs.filter(name => name.startsWith('server/games/vfair/')),
   assetRoots: config.assetRoots, assetFiles, mediaReferences, dynamicMediaDirectories: dynamicDirectories,
   startupImages: manifest.preload ?? [],
-  bytes: totalBytes, files: Object.keys(files).length }, null, 2) + '\n');
- console.log(JSON.stringify({ gameId: config.gameId, version, directory: destination, files: Object.keys(files).length }));
+  bytes: totalBytes, files: Object.keys(files).length,
+  cache: { format: 1, fingerprint: await fingerprint(config, registered, inputs),
+   outputs: Object.fromEntries([...outputs].map(([name, bytes]) => [name, sha(bytes)])) } }, null, 2) + '\n');
+ const resultRow = { gameId: config.gameId, version, directory: destination, files: Object.keys(files).length,
+  reused: false, durationMs: Math.round(performance.now() - gameStarted) };
+ report.push(resultRow); console.log(JSON.stringify(resultRow));
 }
 
-for (const slug of all ? catalog.keys() : [selection]) await buildGame(slug);
+for (const slug of selected) await buildGame(slug);
 await mkdir(resolve(root, 'module-dist'), { recursive: true });
 await atomicFile(resolve(root, 'module-dist/host-contracts.json'), JSON.stringify({ format: 1, games: Object.fromEntries(GAME_MODULES.map(({ gameId, apiVersion, rulesVersion, progressVersion }) => [gameId, { apiVersion, rulesVersion, progressVersion }])) }, null, 2) + '\n');
+const summary = { format: 1, durationMs: Math.round(performance.now() - started),
+ built: report.filter(row => !row.reused).length, reused: report.filter(row => row.reused).length, games: report };
+await atomicFile(resolve(root, 'module-build/build-report.json'), JSON.stringify(summary, null, 2) + '\n');
+console.log(JSON.stringify({ moduleBuild: { built: summary.built, reused: summary.reused, durationMs: summary.durationMs } }));
