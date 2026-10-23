@@ -14,7 +14,7 @@ export async function temporaryDatabase() {
   await new Promise<void>(resolve => server.close(() => resolve()));
   const password = randomBytes(32).toString('hex');
   const postgres = new EmbeddedPostgres({ databaseDir: directory, port, user: 'postgres', password, persistent: true,
-    authMethod: 'scram-sha-256', postgresFlags: ['-h', '127.0.0.1'], onLog: () => {}, onError: () => {} });
+    authMethod: 'scram-sha-256', initdbFlags: ['--encoding=UTF8', '--locale=C'], postgresFlags: ['-h', '127.0.0.1'], onLog: () => {}, onError: () => {} });
   await postgres.initialise(); await postgres.start(); await postgres.createDatabase('royal_test');
   return { env: { NODE_ENV: 'test', DATABASE_URL: '', DATABASE_URL_FILE: '', PGHOST: '127.0.0.1', PGPORT: String(port), PGDATABASE: 'royal_test', PGUSER: 'postgres', PGPASSWORD: password, PGPASSWORD_FILE: '', PGSSLMODE: 'disable', CODEX_SALE_API_KEY: '' },
     cleanup: async () => {

@@ -56,8 +56,9 @@ export function normalizeAppearance(value: unknown): Appearance | null {
   }
   return isAppearance(data) ? data : null;
 }
-export function serializeAppearance(value?: Appearance | null): string {
+export function serializeAppearance(value?: Appearance | import('./skinStudio').GeneratedAppearance | null): string {
   if (!value) return '';
+  if (value.version === 2) return JSON.stringify(value);
   return JSON.stringify({ version: 1, ...Object.fromEntries(APPEARANCE_FIELDS.map(field => [field, value[field]])) });
 }
 export function parseAppearance(value: string): Appearance | null {

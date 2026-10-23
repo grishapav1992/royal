@@ -46,6 +46,10 @@ export class SocialUI {
   private outbox = document.createElement('div');
   private deliveryStatus = document.createElement('p');
   constructor(private scene: RoomScene, private toast: (message: string) => void) {
+    window.addEventListener('royal-skin-loaded', () => {
+      const portrait = document.querySelector<HTMLImageElement>('#player-portrait img');
+      if (portrait) portrait.src = scene.getPortraitFrame('idle', 0);
+    });
     const sidebar = document.querySelector<HTMLElement>('.sidebar')!;
     const catalog = document.createElement('div'); catalog.className = 'catalog-panel'; catalog.id = 'catalog-panel';
     while(sidebar.firstChild) catalog.append(sidebar.firstChild);

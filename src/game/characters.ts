@@ -1,6 +1,8 @@
 import { characterGamePose, drawAvatar, drawSeatedGameArm } from './avatarArt';
 import { appearanceKey, parseAppearance, SKIN_COLORS, CLOTHING_COLORS } from '../shared/appearance';
 import Phaser from 'phaser';
+import { parseGeneratedAppearance } from '../shared/skinStudio';
+import { drawGeneratedSkin, hasSkinSheet, loadSkinSheet } from './generatedSkinArt';
 import { drawMira } from './miraArt';
 
 import type { Facing } from '../shared/movement';
@@ -33,6 +35,28 @@ export function createCharacters(scene: Phaser.Scene) {
 }
 
 export function characterTexture(scene: Phaser.Scene, skin: number, serialized = ''): string {
+  const generated = parseGeneratedAppearance(serialized);
+  if (generated) {
+    const key = `avatar-generated-${generated.skinId}`;
+    if (!scene.textures.exists(key)) {
+      const draw = (ctx: CanvasRenderingContext2D, direction: Facing, frame: number, seated: boolean, sip: number) => {
+        if (!drawGeneratedSkin(ctx, generated.skinId, direction, frame, seated, sip)) {
+          const person = Number.isInteger(skin) && skin >= 0 && skin < palettes.length ? skin : 0;
+          drawFrame(ctx, palettes[person], direction, frame, seated, sip, person);
+        }
+      };
+      createCharacterTexture(scene, key, draw, 0);
+      if (!hasSkinSheet(generated.skinId)) {
+        const load = (attempt: number) => { void loadSkinSheet(generated.skinId).then(() => {
+          if (scene.textures.exists(key)) createCharacterTexture(scene, key, draw, 0);
+        }).catch(() => {
+          if (attempt < 3 && scene.textures.exists(key)) setTimeout(() => load(attempt + 1), (attempt + 1) * 3000);
+        }); };
+        load(0);
+      }
+    }
+    return key;
+  }
   const appearance = parseAppearance(serialized);
   if (!appearance) return `citizen-${skin}`;
   const key = appearanceKey(appearance);
@@ -58,10 +82,12 @@ export function createCharacterPortrait(skin: number, serialized: string, frame:
   canvas.width = W * resolution; canvas.height = H * resolution;
   const context = canvas.getContext('2d')!;
   const appearance = parseAppearance(serialized);
+  const generated = parseGeneratedAppearance(serialized);
   const sipping = frame >= 11 && frame <= 16;
   context.save();
   context.scale(resolution, resolution); context.translate(0, TOP_PADDING);
-  if (appearance) drawAvatar(context, appearance, 'down', sipping ? 6 : frame, false, sipping ? frame - 11 : -1);
+  if (generated && drawGeneratedSkin(context, generated.skinId, 'down', sipping ? 6 : frame, false, sipping ? frame - 11 : -1)) { /* Generated portrait. */ }
+  else if (appearance) drawAvatar(context, appearance, 'down', sipping ? 6 : frame, false, sipping ? frame - 11 : -1);
   else {
     const person = Number.isInteger(skin) && skin >= 0 && skin < palettes.length ? skin : 0;
     drawFrame(context, palettes[person], 'down', sipping ? 6 : frame, false, sipping ? frame - 11 : -1, person);
@@ -81,7 +107,7 @@ export function createCharacterPortrait(skin: number, serialized: string, frame:
 /** Remove abandoned custom atlases after actors have changed textures or left the hall. */
 export function pruneCharacterTextures(scene: Phaser.Scene, active: Set<string>) {
   for (const key of scene.textures.getTextureKeys()) {
-    if (!key.startsWith('avatar-v1-') || active.has(key)) continue;
+    if ((!key.startsWith('avatar-v1-') && !key.startsWith('avatar-generated-')) || active.has(key)) continue;
     for (const direction of DIRECTIONS) for (const action of ['walk', 'idle', 'sit', 'drink', 'sitdrink', 'game', 'win', 'lose']) scene.anims.remove(`${key}-${action}-${direction}`);
     scene.textures.remove(key);
   }
@@ -89,15 +115,18 @@ export function pruneCharacterTextures(scene: Phaser.Scene, active: Set<string>)
 
 function createCharacterTexture(scene: Phaser.Scene, key: string, draw: (ctx: CanvasRenderingContext2D, direction: Facing, frame: number, seated: boolean, sip: number) => void, person: number) {
   // Two rows per direction keep every atlas below common mobile texture limits.
-  const texture = scene.textures.createCanvas(key, W * ATLAS_COLUMNS * CHARACTER_RESOLUTION, H * 8 * CHARACTER_RESOLUTION)!;
+  const texture = scene.textures.exists(key) ? scene.textures.get(key) as Phaser.Textures.CanvasTexture
+    : scene.textures.createCanvas(key, W * ATLAS_COLUMNS * CHARACTER_RESOLUTION, H * 8 * CHARACTER_RESOLUTION)!;
   const ctx = texture.context;
+  ctx.resetTransform(); ctx.clearRect(0, 0, texture.width, texture.height);
   ctx.scale(CHARACTER_RESOLUTION, CHARACTER_RESOLUTION);
+  const animate = (config: Phaser.Types.Animations.Animation) => { if (config.key && !scene.anims.exists(config.key)) scene.anims.create(config); };
   DIRECTIONS.forEach((direction, row) => {
     const addFrame = (index: number, pose = index, seated = false, sip = -1) => {
       const x = index % ATLAS_COLUMNS * W, y = (row * 2 + Math.floor(index / ATLAS_COLUMNS)) * H;
       ctx.save(); ctx.translate(x, y + TOP_PADDING);
       draw(ctx, direction, pose, seated, sip); ctx.restore();
-      texture.add(`${direction}-${index}`, 0, x * CHARACTER_RESOLUTION, y * CHARACTER_RESOLUTION, W * CHARACTER_RESOLUTION, H * CHARACTER_RESOLUTION);
+      if (!texture.has(`${direction}-${index}`)) texture.add(`${direction}-${index}`, 0, x * CHARACTER_RESOLUTION, y * CHARACTER_RESOLUTION, W * CHARACTER_RESOLUTION, H * CHARACTER_RESOLUTION);
     };
     const animationFrames = (start: number, count: number) => Array.from({ length: count }, (_, i) => ({ key, frame: `${direction}-${start + i}` }));
     for (let frame = 0; frame < 10; frame++) addFrame(frame);
@@ -105,21 +134,21 @@ function createCharacterTexture(scene: Phaser.Scene, key: string, draw: (ctx: Ca
       addFrame(10 + special, 6, special === 0 || special >= 7, special === 0 ? -1 : (special - 1) % 6);
     }
     for (const [action, start] of [['drink', 11], ['sitdrink', 17]] as const) {
-      scene.anims.create({ key: `${key}-${action}-${direction}`, frames: animationFrames(start, 6), frameRate: 6, repeat: -1 });
+      animate({ key: `${key}-${action}-${direction}`, frames: animationFrames(start, 6), frameRate: 6, repeat: -1 });
     }
-    scene.anims.create({ key: `${key}-walk-${direction}`, frames: animationFrames(0, 6), frameRate: 12, repeat: -1 });
+    animate({ key: `${key}-walk-${direction}`, frames: animationFrames(0, 6), frameRate: 12, repeat: -1 });
     for (const extra of [23, 24, 25, 26, 27]) addFrame(extra, extra >= 25 ? [8, 7, 9][extra - 25] : extra, extra >= 25);
     const idle = (index: number, duration: number) => ({ key, frame: `${direction}-${index}`, duration });
-    scene.anims.create({ key: `${key}-sit-${direction}`, frames: [
+    animate({ key: `${key}-sit-${direction}`, frames: [
       idle(10, 1800 + person * 163), idle(25, 83), idle(10, 1400), idle(26, 700), idle(27, 500),
     ], frameRate: 12, repeat: -1 });
-    scene.anims.create({ key: `${key}-idle-${direction}`, frames: [
+    animate({ key: `${key}-idle-${direction}`, frames: [
       idle(6, 1400 + person * 137), idle(7, 650), idle(24, 83), idle(8, 83),
       idle(6, 1700 + person * 193), idle(9, 800), idle(23, 350), idle(6, 500), idle(24, 83), idle(6, 750),
     ], frameRate: 12, repeat: -1 });
     for (const [action, start] of [['game', 28], ['win', 34], ['lose', 40]] as const) {
       for (let phase = 0; phase < 6; phase++) addFrame(start + phase, start + phase, true);
-      scene.anims.create({ key: `${key}-${action}-${direction}`, frames: animationFrames(start, 6), frameRate: action === 'game' ? 7 : 6, repeat: -1 });
+      animate({ key: `${key}-${action}-${direction}`, frames: animationFrames(start, 6), frameRate: action === 'game' ? 7 : 6, repeat: -1 });
     }
   });
   texture.refresh();
