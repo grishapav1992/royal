@@ -136,7 +136,7 @@ def payload():
     require(sha(ROOT / 'snapshot.py') == M['snapshotSha256'], 'Snapshot helper changed')
     require(CHANGES and DELTA and 'index.html' in DELTA, 'Incomplete client release')
     require(set(SERVER_DELTA) == {'index.js'}, 'Only the main backend bundle may change')
-    require(all(name == 'index.html' or name.startswith('assets/') for name in DELTA),
+    require(all(name == 'index.html' or name.startswith(('assets/', 'licenses/')) for name in DELTA),
             'Only the client index and client assets may change')
     for name in [*CHANGES, *DELTA]:
         safe_name(name)
