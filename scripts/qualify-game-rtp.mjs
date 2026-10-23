@@ -1,0 +1,24 @@
+import assert from 'node:assert/strict';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { rtpInputs, validateRtpProof } from './game-math/rtp-gate.mjs';
+import { preflight, simulateDracona, simulateNeopolis } from './game-math/rtp-simulation.mjs';
+const root = fileURLToPath(new URL('../', import.meta.url)), args = process.argv.slice(2);
+const index = args.indexOf('--game'), gameId = index < 0 ? undefined : args[index + 1];
+assert(['studio-neopolis','studio-dracona'].includes(gameId), 'Choose --game studio-neopolis or --game studio-dracona');
+const inputs = await rtpInputs(root, gameId), startedAt = new Date().toISOString();
+const serverReplayChecks = preflight(gameId, inputs.policy);
+console.log(JSON.stringify({ gameId, phase: 'server-replay', serverReplayChecks }));
+const sample = (gameId === 'studio-neopolis' ? simulateNeopolis : simulateDracona)(inputs.policy, value => console.log(JSON.stringify(value)));
+assert.deepEqual(await rtpInputs(root, gameId), inputs, 'Sources changed during qualification');
+const proof = { schemaVersion: 1, gameId, rulesVersion: inputs.policy.rulesVersion, progressVersion: inputs.policy.progressVersion,
+  startedAt, completedAt: new Date().toISOString(), sourceHashes: inputs.sourceHashes, policySha256: inputs.policySha256, serverReplayChecks, ...sample };
+const artifact = resolve(root, 'artifacts/rtp-qualification', gameId + '.json');
+await mkdir(dirname(artifact), { recursive: true }); await writeFile(artifact, JSON.stringify(proof,null,2)+'\n');
+validateRtpProof(gameId, inputs, proof);
+if (args.includes('--write-proof')) {
+  const target = resolve(root, inputs.policy.proof); await mkdir(dirname(target), { recursive: true });
+  await writeFile(target, JSON.stringify(proof,null,2)+'\n');
+}
+console.log(JSON.stringify({ gameId, qualified: true, results: proof.results.map(row => ({ choice: row.choice, stakeUnits: row.stakeUnits, paidRounds: row.paidRounds, rtp: row.rtp, interval95: row.interval95 })) }));

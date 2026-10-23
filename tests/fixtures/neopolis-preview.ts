@@ -8,7 +8,8 @@ gameAudio.install();
 
 let module: IndependentGameUI;
 const host = document.querySelector<HTMLElement>('#preview')!;
-const open = () => { module?.destroy(); module = new IndependentGameUI(host, 'studio-neopolis'); };
+const gameId = new URLSearchParams(location.search).get('game') === 'dracona' ? 'studio-dracona' : 'studio-neopolis';
+const open = () => { module?.destroy(); module = new IndependentGameUI(host, gameId); };
 const fail = (error: unknown) => { host.replaceChildren(); const message = document.createElement('p'); message.style.cssText = 'padding:24px;color:#e5a6ad'; message.textContent = error instanceof Error ? error.message : String(error); host.append(message); };
 async function start() {
   document.querySelector('#review-label')!.textContent = language === 'en' ? 'Local review stand · Separate test database' : 'Локальный стенд · отдельная тестовая база';

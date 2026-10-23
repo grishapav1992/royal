@@ -1,4 +1,5 @@
-// Local mathematical screening only. Does not open accounts, debit a wallet or change rules.
+// Screens current checked-out rules. Historical reports retain their original source hashes.
+// Formal qualification is scripts/qualify-game-rtp.mjs, including all choices and stakes.
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
@@ -38,7 +39,7 @@ const sourcePaths = ['src/shared/draconaMath.ts', 'src/shared/dracona.ts', 'serv
 const hashes = Object.fromEntries(await Promise.all(sourcePaths.map(async file =>
   [file, createHash('sha256').update(await readFile(file)).digest('hex')])));
 const report = { generatedAt: new Date().toISOString(), commit: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
-  stakeCoins: 100, mode: 'normal', seeds, sourceHashes: hashes,
+  stakeCoins: 100, mode: 'normal', draconaRulesVersion: 3, seeds, sourceHashes: hashes,
   method: 'Seeded screening of complete paid rounds with all free continuations. Dracona uses the unchanged pure engine and exact server rounding, cross-checked against full server start/move on the first 100 rounds of every seed. Other games use full server start/move and validators on every round. Approximate 95% intervals use sample variance across independent paid rounds. No correction for multiple comparisons; this is screening, not certification. Bonus purchases, alternate modes and strategies are outside scope.',
   results: [] };
 
@@ -65,8 +66,8 @@ for (const seed of seeds) {
     do {
       const result = playSpin({ bet: 100, bonus: free > 0 || issued > 0, runes, bonusIssued: issued,
         random: () => draw(4294967296) / 4294967296 });
-      if (issued > 0) { remaining--; free++; } else paid = result.payout * 100;
-      total += result.payout * 100; remaining += result.bonusAward; issued += result.bonusAward; runes = result.runes;
+      if (issued > 0) { remaining--; free++; } else paid = Math.round(result.payout * 100);
+      total += Math.round(result.payout * 100); remaining += result.bonusAward; issued += result.bonusAward; runes = result.runes;
       assert(free <= 20 && issued <= 20 && total <= Number(stake) * 100000);
     } while (remaining > 0);
     if (round < 100) {

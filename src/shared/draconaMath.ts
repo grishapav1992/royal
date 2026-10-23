@@ -7,6 +7,7 @@ export const MAX_CASCADES = 8;
 export const MAX_TRANSFERS = 3;
 export const MAX_BONUS_SPINS = 20;
 export const MAX_RUNE = 5;
+export const DRACONA_MATH = { version: 2, payNumerator: 497300, payDenominator: 1000000 } as const;
 export type SymbolId = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 export type Grid = SymbolId[];
 export type RandomSource = () => number;
@@ -94,8 +95,11 @@ export function clustersOf(grid: Grid): { symbol: SymbolId; cells: number[] }[] 
 
 export function clusterPayout(symbol: SymbolId, count: number, bet: number, factor: number): number {
   if (count < 5 || symbol >= PORTAL) return 0;
-  const scale = count <= 6 ? 2.5 : count <= 8 ? 5.5 : count <= 11 ? 12 : count <= 15 ? 30 : 80;
-  return Math.round(bet * scale * SYMBOLS[symbol].value * factor);
+  const scaleTenths = count <= 6 ? 25 : count <= 8 ? 55 : count <= 11 ? 120 : count <= 15 ? 300 : 800;
+  const valueTenths = [13,12,11,10,9,8][symbol];
+  const units = BigInt(bet) * 100n * BigInt(scaleTenths) * BigInt(valueTenths) * BigInt(factor) * BigInt(DRACONA_MATH.payNumerator)
+    / (100n * BigInt(DRACONA_MATH.payDenominator));
+  return Number(units) / 100;
 }
 
 export function dropSymbols(grid: Grid, removed: Set<number>, random: RandomSource): { grid: Grid; movements: Movement[] } {
@@ -136,7 +140,7 @@ export function playSpin(options: SpinOptions): SpinResult {
   if (options.runes && (options.runes.length !== SIZE || options.runes.some(v => !Number.isInteger(v) || v < 1 || v > MAX_RUNE))) throw new Error('Некорректные руны');
   const runes = bonus && options.runes ? [...options.runes] : Array(SIZE).fill(1) as number[];
   const steps: Step[] = [{ type: 'initial', grid: [...grid], reserve: [...reserve] }];
-  let payout = 0, transfers = 0, cascades = 0;
+  let payout = 0, payoutUnits = 0, transfers = 0, cascades = 0;
   let crestCount = grid.filter(symbol => symbol === CREST).length;
   let pendingTransfers = grid.filter(symbol => symbol === PORTAL).length;
   if (bonus) pendingTransfers = Math.max(1, pendingTransfers);
@@ -150,8 +154,8 @@ export function playSpin(options: SpinOptions): SpinResult {
         const factor = Math.max(...group.cells.map(cell => runes[cell]));
         return { ...group, factor, payout: clusterPayout(group.symbol, group.cells.length, bet, factor) };
       });
-      const amount = clusters.reduce((sum, c) => sum + c.payout, 0);
-      payout += amount;
+      const amountUnits = clusters.reduce((sum, c) => sum + Math.round(c.payout * 100), 0), amount = amountUnits / 100;
+      payoutUnits += amountUnits; payout = payoutUnits / 100;
       steps.push({ type: 'win', grid: [...grid], clusters, payout: amount, total: payout });
       const removed = new Set(groups.flatMap(group => group.cells));
       const dropped = dropSymbols(grid, removed, random);

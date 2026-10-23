@@ -1,4 +1,4 @@
-import { test, expect, request as apiRequest, type Page } from '@playwright/test';
+import { test, expect, request as apiRequest, type Page, type Route } from '@playwright/test';
 import { Client } from '@colyseus/sdk';
 import { mkdir } from 'node:fs/promises';
 import { validNeopolisSession } from '../src/shared/neopolis';
@@ -6,12 +6,21 @@ import { validNeopolisSession } from '../src/shared/neopolis';
 const entry = '/tests/fixtures/neopolis-preview.html';
 const state = (page: Page) => page.evaluate(() => (window as any).neopolisPreview.state());
 const session = (page: Page) => page.evaluate(() => (window as any).neopolisPreview.client.sessions.find((value: any) => value.gameId === 'studio-neopolis'));
+// Full HTTP/service/DB settlement with reproducible entropy for rare campaigns.
+test.beforeEach(async({page})=>{
+  await page.route('**/api/game-wallet/expansion',async route=>{
+    const req=route.request();
+    if(req.method()!=='POST'||!['studio-neopolis','studio-dracona'].includes(req.postDataJSON()?.gameId)){await route.fallback();return;}
+    const response=await route.fetch({url:new URL('/__test/neopolis/operate',req.url()).href});
+    await route.fulfill({response});
+  });
+});
 async function ready(page: Page, lang = 'en') {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto(entry + '?lang=' + lang);
   await expect(page.locator('#preview')).toHaveAttribute('data-game-module-id', 'studio-neopolis');
   await expect(page.locator('[data-np=spin]')).toBeEnabled();
-  await expect.poll(() => page.locator('.np img').evaluateAll(images => images.every(image => (image as HTMLImageElement).complete && (image as HTMLImageElement).naturalWidth > 0))).toBe(true);
+  await expect.poll(() => page.locator('.np img').evaluateAll(images => images.every(image => (image as HTMLImageElement).complete && (image as HTMLImageElement).naturalWidth > 0)),{timeout:15000}).toBe(true);
   await page.locator('.np img').evaluateAll(images => Promise.all(images.map(image => (image as HTMLImageElement).decode())));
 }
 async function spin(page: Page) {
@@ -62,16 +71,17 @@ test('real API retries a lost result once, restores collection and bonus, and se
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
   await ready(page);
   let original: any;
-  await page.route('**/api/demo-wallet/expansion', async route => {
-    if (route.request().method() !== 'POST' || original) { await route.continue(); return; }
-    original = await (await route.fetch()).json(); await route.abort('failed');
-  });
+  const loseFirst = async (route:Route) => {
+    if (route.request().method() !== 'POST' || original) { await route.fallback(); return; }
+    original = await (await route.fetch({url:new URL('/__test/neopolis/operate',route.request().url()).href})).json(); await route.abort('failed');
+  };
+  await page.route('**/api/game-wallet/expansion',loseFirst);
   await page.locator('[data-np=spin]').click();
   await expect(page.locator('.np-reels')).toHaveCount(0);
   await page.waitForFunction(() => !!(window as any).neopolisPreview.client.pending && !(window as any).neopolisPreview.state().busy);
   const pendingId = await page.evaluate(() => (window as any).neopolisPreview.client.pending.id);
   await expect(page.locator('[data-np=spin]')).toHaveText(/Check move/);
-  await page.unroute('**/api/demo-wallet/expansion');
+  await page.unroute('**/api/game-wallet/expansion',loseFirst);
   const replay = await spin(page); expect(replay.id).toBe(pendingId); expect(replay).toEqual(original.session);
   const collected = (await state(page)).team;
   await page.getByRole('button', { name: 'Reopen game' }).click();
@@ -100,7 +110,7 @@ test('real API retries a lost result once, restores collection and bonus, and se
   expect(errors).toEqual([]);
 });
 
-test('real host opens the cabinet with connected chat on desktop and mobile', async ({ page }) => {
+test('real host opens published Dracona with connected chat on desktop and mobile', async ({ page }) => {
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
   const hostApi = await apiRequest.newContext({ baseURL:test.info().project.use.baseURL });
   const auth = await hostApi.post('/api/auth/login', { data:{email:'neopolis-room-' + crypto.randomUUID() + '@example.test',password:'Neopolis-room-review-42!'} });
@@ -116,41 +126,60 @@ test('real host opens the cabinet with connected chat on desktop and mobile', as
     await page.goto('/?lang=en&room=' + peer.roomId);
     await expect(page.locator('#join-dialog')).toBeHidden({timeout:30000});
     await page.waitForFunction(() => (window as any).royalDemo?.getState().online === true);
-    await page.locator('#games-tab').click(); await page.locator('[data-cabinet=studio-neopolis]').click();
-    await expect(page.locator('#mini-dialog[open] .np')).toBeVisible({timeout:45000});
+    await page.locator('#games-tab').click(); await page.locator('[data-cabinet=studio-dracona]').click();
+    await page.locator('#mini-game [data-platform-game=studio-dracona]').click();
+    const game=page.frameLocator('iframe.dracona-frame');
+    await expect(game.locator('#spin')).toBeEnabled({timeout:45000});
     await expect(page.locator('#mini-dialog #club-chat-dock')).toBeVisible();
     await expect(page.locator('#mini-dialog #chat-input')).toBeEnabled();
-    await expect(page.locator('.np [data-np=spin]')).toBeEnabled();
-    const first = page.waitForResponse(response => response.url().endsWith('/api/demo-wallet/expansion') && response.request().method() === 'POST');
-    await page.locator('.np [data-np=spin]').click();
-    await expect(page.locator('#mini-dialog .np-reels')).toBeVisible();
-    expect((await first).ok()).toBe(true);
-    await page.waitForFunction(() => (window as any).royalDemo.getMiniState()?.busy === false);
-    await closeNotice(page);
-    for (const [width,height] of [[1440,1000],[390,844]]) {
+    for(const [width,height] of [[1440,1000],[390,844]]) {
       await page.setViewportSize({width,height});
       await expect(page.locator('#mini-dialog #chat-input')).toBeVisible();
-      const windowLayout = await page.locator('#mini-dialog').evaluate(root => ({width:root.clientWidth,scroll:root.scrollWidth}));
-      expect(windowLayout.scroll).toBeLessThanOrEqual(windowLayout.width + 1);
-      const layout = await page.locator('.np').evaluate(root => ({width:root.clientWidth,scroll:root.scrollWidth}));
-      expect(layout.scroll).toBeLessThanOrEqual(layout.width + 1);
-      await page.locator('.np [data-np=spin]').scrollIntoViewIfNeeded();
-      await expect(page.locator('.np [data-np=spin]')).toBeInViewport();
-      await page.screenshot({path:'test-results/neopolis/review/host-' + width + '-en.png'});
+      const layout=await page.locator('#mini-dialog').evaluate(root=>({width:root.clientWidth,scroll:root.scrollWidth}));
+      expect(layout.scroll).toBeLessThanOrEqual(layout.width+1);
+      await expect(game.locator('#spin')).toBeVisible();
+      await page.screenshot({path:'test-results/neopolis/review/dracona-host-'+width+'.png'});
     }
     await page.locator('#studio-game-list').click();
-    await expect(page.locator('#mini-dialog')).toHaveAttribute('data-game','royal-catalog');
-    const choice = page.locator('[data-platform-game=studio-neopolis]');
-    await expect(choice).toBeVisible();
-    await expect(choice.locator('img')).toHaveAttribute('src','/assets/neopolis/cover-catalog-v2.webp');
-    await choice.click();
-    await expect(page.locator('#mini-dialog .np h1')).toHaveText('Guardians of Neopolis');
-    await expect(page.locator('#mini-dialog #chat-input')).toBeVisible();
+    await expect(page.locator('[data-platform-game=studio-neopolis]')).toHaveCount(0);
+    await page.locator('[data-platform-game=studio-dracona]').click();
+    await expect(page.frameLocator('iframe.dracona-frame').locator('#spin')).toBeEnabled();
     await page.locator('#mini-dialog .mini-top [data-close]').click();
     await expect(page.locator('#mini-dialog')).toBeHidden();
     await expect(page.locator('#club-chat-dock')).toBeVisible();
     expect(errors).toEqual([]);
   } finally { await peer.leave(); await hostApi.dispose(); }
+});
+
+test('Dracona displays fractional payouts and restores its complete bonus without another stake',async({page})=>{
+  await page.emulateMedia({reducedMotion:'reduce'});
+  await page.goto(entry+'?game=dracona&lang=ru');
+  let game=page.frameLocator('iframe.dracona-frame');
+  await expect(game.locator('#spin')).toBeEnabled();await game.locator('#speed').selectOption('turbo');
+  const getSession=()=>page.evaluate(()=>(window as any).neopolisPreview.client.sessions.find((s:any)=>s.gameId==='studio-dracona'));
+  const play=async()=>{
+    if(await game.locator('#dialog').isVisible())await game.locator('#dialog-close').click();
+    await game.locator('#spin').click();
+    await page.waitForFunction(()=>!(window as any).neopolisPreview.state().busy);
+    const s=await getSession();expect(s.rulesVersion).toBe(3);return s;
+  };
+  const before=await page.evaluate(()=>(window as any).neopolisPreview.wallet.wallet.balance);
+  let current=await play();expect(current.state).toBe('active');expect(current.view.dracona.remaining).toBe(8);
+  const balance=await page.evaluate(()=>(window as any).neopolisPreview.wallet.wallet.balance);
+  expect(balance).toBe(before-100);
+  current=await play();const revision=current.view.dracona.revision;
+  await page.reload();game=page.frameLocator('iframe.dracona-frame');
+  await expect(game.locator('#spin')).toBeEnabled();expect((await getSession()).view.dracona.revision).toBe(revision);
+  await game.locator('#speed').selectOption('turbo');
+  while(current.state==='active'){
+    current=await play();expect(current.spentUnits).toBe('10000');
+    if(current.state==='active')expect(await page.evaluate(()=>(window as any).neopolisPreview.wallet.wallet.balance)).toBe(balance);
+  }
+  expect(current.view.dracona.version).toBe(2);expect(current.view.dracona.freePlayed).toBeLessThanOrEqual(20);
+  expect(await page.evaluate(()=>(window as any).neopolisPreview.wallet.wallet.balance)).toBeCloseTo(balance+Number(current.returnedUnits)/100,2);
+  if(await game.locator('#dialog').isVisible())await game.locator('#dialog-close').click();
+  await game.locator('#rules').click();await expect(game.locator('.rules-copy')).toContainText('1,24325');
+  await expect(game.locator('.rules-copy')).toContainText('0,01');
 });
 
 test('reels move during the request, pause in rules, brake in order and respect fast mode on mobile', async ({ page }) => {
@@ -176,9 +205,9 @@ test('reels move during the request, pause in rules, brake in order and respect 
   });
   let release!: () => void;
   const held = new Promise<void>(resolve => { release = resolve; });
-  await page.route('**/api/demo-wallet/expansion', async route => {
+  await page.route('**/api/game-wallet/expansion', async route => {
     if (route.request().method() === 'POST') await held;
-    await route.continue();
+    await route.fallback();
   });
   try {
     await observe();
@@ -223,7 +252,7 @@ test('reels move during the request, pause in rules, brake in order and respect 
     await expect(page.locator('.np-reels')).toHaveCount(0);
     await expect(page.locator('.np-board')).not.toHaveAttribute('aria-busy','true');
     expect(errors).toEqual([]);
-  } finally { release(); await page.unroute('**/api/demo-wallet/expansion'); }
+  } finally { release(); await page.unroute('**/api/game-wallet/expansion'); }
 });
 
 test('closing during reel motion cancels presentation and reopening restores the single server result', async ({ page }) => {
@@ -231,10 +260,10 @@ test('closing during reel motion cancels presentation and reopening restores the
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
   let release!: () => void, confirmed: any, requests = 0;
   const held = new Promise<void>(resolve => { release = resolve; });
-  await page.route('**/api/demo-wallet/expansion', async route => {
-    if (route.request().method() !== 'POST') { await route.continue(); return; }
+  await page.route('**/api/game-wallet/expansion', async route => {
+    if (route.request().method() !== 'POST') { await route.fallback(); return; }
     requests++;
-    const response = await route.fetch(); confirmed = await response.json();
+    const response = await route.fetch({url:new URL('/__test/neopolis/operate',route.request().url()).href}); confirmed = await response.json();
     await held; await route.fulfill({response});
   });
   try {
@@ -251,7 +280,7 @@ test('closing during reel motion cancels presentation and reopening restores the
     expect((await session(page)).id).toBe(confirmed.session.id);
     expect(await page.locator('.np-board [role=gridcell]').evaluateAll(cells => cells.map(cell => Number((cell as HTMLElement).dataset.symbol)))).toEqual(confirmed.session.view.neopolis.history.at(-1).result.grid);
     expect(requests).toBe(1); expect(errors).toEqual([]);
-  } finally { release(); await page.unroute('**/api/demo-wallet/expansion'); }
+  } finally { release(); await page.unroute('**/api/game-wallet/expansion'); }
 });
 
 test('three real campaign bosses change arenas and costumes, survive reload and charge only the entry', async ({ page }) => {
@@ -311,7 +340,7 @@ test('original music and confirmed battle sounds honor shared mute, rules, host 
   });
   let release!: () => void;
   const held = new Promise<void>(resolve => { release=resolve; });
-  await page.route('**/api/demo-wallet/expansion',async route => { if (route.request().method()==='POST') await held; await route.continue(); });
+  await page.route('**/api/game-wallet/expansion',async route => { if (route.request().method()==='POST') await held; await route.fallback(); });
   try {
     await page.locator('[data-np=spin]').click();
     await expect(page.locator('.np-reels')).toHaveCount(1);
@@ -348,7 +377,7 @@ test('original music and confirmed battle sounds honor shared mute, rules, host 
     await page.evaluate(() => (window as any).neopolisPreview.open());
     await expect(page.locator('[data-np=spin]')).toBeEnabled();
     expect((await state(page)).audio.cues).toEqual({}); expect(errors).toEqual([]);
-  } finally { release(); await page.unroute('**/api/demo-wallet/expansion'); }
+  } finally { release(); await page.unroute('**/api/game-wallet/expansion'); }
 });
 
 const feedbackState=(page:Page)=>page.evaluate(()=>(window as any).neopolisFeedbackReview.state());

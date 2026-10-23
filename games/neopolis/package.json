@@ -1,13 +1,29 @@
 {
   "name": "@royal/neopolis",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "private": true,
   "gameId": "studio-neopolis",
   "apiVersion": 1,
-  "rulesVersion": 2,
-  "progressVersion": 2,
+  "rulesVersion": 3,
+  "progressVersion": 3,
   "entry": "entry.ts",
-  "assetRoots": ["neopolis"],
-  "preload": ["neopolis/city-v2.webp", "neopolis/citadel-v3.webp", "neopolis/observatory-v3.webp", "neopolis/team-night-v3.webp", "neopolis/team-eclipse-v3.webp", "neopolis/team-chrono-v3.webp", "neopolis/null-v2.webp", "neopolis/vespera-v3.webp", "neopolis/aeon-v3.webp", "neopolis/symbols-v2.webp"],
-  "scripts": { "build:art": "node ../../scripts/build-neopolis-art.mjs", "build": "node ../../node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && node ../../scripts/build-game-module.mjs" }
+  "assetRoots": [
+    "neopolis"
+  ],
+  "preload": [
+    "neopolis/city-v2.webp",
+    "neopolis/citadel-v3.webp",
+    "neopolis/observatory-v3.webp",
+    "neopolis/team-night-v3.webp",
+    "neopolis/team-eclipse-v3.webp",
+    "neopolis/team-chrono-v3.webp",
+    "neopolis/null-v2.webp",
+    "neopolis/vespera-v3.webp",
+    "neopolis/aeon-v3.webp",
+    "neopolis/symbols-v2.webp"
+  ],
+  "scripts": {
+    "build:art": "node ../../scripts/build-neopolis-art.mjs",
+    "build": "node ../../node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && node ../../scripts/build-game-module.mjs"
+  }
 }

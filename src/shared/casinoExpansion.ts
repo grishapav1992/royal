@@ -72,8 +72,8 @@ export const EXPANSION_RULES: Record<ExpansionGameId,string> = {
 };
 export const isExpansionGame = (value:unknown): value is ExpansionGameId => (EXPANSION_GAMES as readonly unknown[]).includes(value);
 export const REVISED_CARD_GAMES = ['github-free-bet','github-crazy-four','github-pai-gow','github-holdem-bonus','github-rummy'] as const;
-export const expansionRulesVersion = (game:ExpansionGameId):1|2 => game===NEOPOLIS_GAME||game===DRACONA_GAME||game===AFTER_GAME||isNitroFamily(game)||game===CONVOY_GAME||game===CARAMEL_GAME||isLuelonSlotGame(game)||(REVISED_CARD_GAMES as readonly string[]).includes(game)?2:1;
-export const validExpansionRulesVersion = (game:ExpansionGameId,version:unknown):version is 1|2 => version===1||version===2&&expansionRulesVersion(game)===2;
+export const expansionRulesVersion = (game:ExpansionGameId):1|2|3 => game===NEOPOLIS_GAME||game===DRACONA_GAME?3:game===AFTER_GAME||isNitroFamily(game)||game===CONVOY_GAME||game===CARAMEL_GAME||isLuelonSlotGame(game)||(REVISED_CARD_GAMES as readonly string[]).includes(game)?2:1;
+export const validExpansionRulesVersion = (game:ExpansionGameId,version:unknown):version is 1|2|3 => version===1||version===2&&expansionRulesVersion(game)>=2||version===3&&(game===NEOPOLIS_GAME||game===DRACONA_GAME);
 export const LEGACY_CARD_RULES:Partial<Record<ExpansionGameId,string>> = {
   'github-free-bet':translateText('Одна начальная ставка. Бесплатное удвоение на жёстких 9, 10 или 11; бесплатное разделение пар, кроме карт стоимостью 10. Блэкджек платит 3:2, 22 у дилера возвращает ставки. Бесплатные действия не списывают демомонеты.'),
   'github-crazy-four':translateText('Начало: Ante + Super Bonus. Play стоит одну Ante; с парой тузов или выше доступно 2-3 Ante. Дилеру нужен король или выше. Выплата обязательной Super Bonus зависит от комбинации. Queens Up выключен.'),
@@ -85,7 +85,7 @@ export type ExpansionAction =
   | {id:string;gameId:ExpansionGameId;action:'start';stakeUnits:string;appearance?:AfterLookChoice;settings:({side?:boolean;bet?:'dragon'|'tiger'|'small'|'big'} | VariantSettings | StudioSettings | LuelonSlotSettings | CaramelSettings | ConvoySettings | NeopolisSettings | DraconaSettings | AfterSettings | NitroSettings | PenaltySettings)}
   | {id:string;gameId:ExpansionGameId;action:'move';sessionId:string;move:string;picks?:number[];revision?:number;penaltyRisk?:PenaltyRisk};
 export type ExpansionView = {neopolis?:NeopolisView;dracona?:DraconaView;penalty?:PenaltyView;afterglow?:AfterView;nitro?:NitroView;convoy?:ConvoyView;caramel?:CaramelView;luelon?:LuelonSlotView;studio?:StudioView;variant?:VariantView;player:string[];dealer:string[];community:string[];actions:{move:string;label:string;cost:number;perPick?:number;minPicks?:number;maxPicks?:number}[];hands?:{cards:string[];score:number;label:string;active:boolean}[];phase:number;ended:boolean;message:string;hint?:number[]};
-export type ExpansionSession = {id:string;gameId:ExpansionGameId;rulesVersion:1|2;state:'active'|'settled';stakeUnits:string;spentUnits:string;returnedUnits:string;view:ExpansionView;startedAt?:number;serverNow?:number;multiplier?:number;crashAt?:number;dice?:number[];gems?:string[]};
+export type ExpansionSession = {id:string;gameId:ExpansionGameId;rulesVersion:1|2|3;state:'active'|'settled';stakeUnits:string;spentUnits:string;returnedUnits:string;view:ExpansionView;startedAt?:number;serverNow?:number;multiplier?:number;crashAt?:number;dice?:number[];gems?:string[]};
 const uuid=(s:unknown)=>typeof s==='string'&&/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(s);
 export function validExpansionAction(value:unknown):value is ExpansionAction {
   if(!value||typeof value!=='object'||Array.isArray(value))return false;
