@@ -10,9 +10,9 @@ inspect = lambda name: json.loads(run(['docker', 'inspect', name]))[0]
 with open('/opt/royal-releases/finance-db-resources.lock', 'a+') as resource_lock:
     fcntl.flock(resource_lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
     result = []
-    for name, shares in [('royal-nile-play', 8192), ('royal-finance-sim-finance-db-1', 4096)]:
+    for name, shares, previous in [('royal-nile-play', 65536, 8192), ('royal-finance-sim-finance-db-1', 32768, 4096)]:
         before = inspect(name)
-        assert before['HostConfig']['CpuShares'] == 0
+        assert before['HostConfig']['CpuShares'] in [0, previous]
         assert before['HostConfig']['NanoCpus'] == 2000000000
         run(['docker', 'update', '--cpu-shares', str(shares), name])
         after = inspect(name)
