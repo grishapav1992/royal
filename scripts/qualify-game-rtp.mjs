@@ -4,13 +4,15 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { rtpInputs, validateRtpProof } from './game-math/rtp-gate.mjs';
 import { preflight, simulateDracona, simulateNeopolis } from './game-math/rtp-simulation.mjs';
+import { qualifyCombat } from './game-math/rtp-combat.mjs';
 const root = fileURLToPath(new URL('../', import.meta.url)), args = process.argv.slice(2);
 const index = args.indexOf('--game'), gameId = index < 0 ? undefined : args[index + 1];
-assert(['studio-neopolis','studio-dracona'].includes(gameId), 'Choose --game studio-neopolis or --game studio-dracona');
+assert(['studio-neopolis','studio-dracona','mortal-kombat'].includes(gameId), 'Choose --game studio-neopolis, studio-dracona or mortal-kombat');
 const inputs = await rtpInputs(root, gameId), startedAt = new Date().toISOString();
-const serverReplayChecks = preflight(gameId, inputs.policy);
+const exact = gameId==='mortal-kombat'?qualifyCombat(inputs.policy):undefined;
+const serverReplayChecks = exact?.serverReplayChecks??preflight(gameId, inputs.policy);
 console.log(JSON.stringify({ gameId, phase: 'server-replay', serverReplayChecks }));
-const sample = (gameId === 'studio-neopolis' ? simulateNeopolis : simulateDracona)(inputs.policy, value => console.log(JSON.stringify(value)));
+const sample = exact??(gameId === 'studio-neopolis' ? simulateNeopolis : simulateDracona)(inputs.policy, value => console.log(JSON.stringify(value)));
 assert.deepEqual(await rtpInputs(root, gameId), inputs, 'Sources changed during qualification');
 const proof = { schemaVersion: 1, gameId, rulesVersion: inputs.policy.rulesVersion, progressVersion: inputs.policy.progressVersion,
   startedAt, completedAt: new Date().toISOString(), sourceHashes: inputs.sourceHashes, policySha256: inputs.policySha256, serverReplayChecks, ...sample };

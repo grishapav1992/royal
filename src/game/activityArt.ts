@@ -38,6 +38,15 @@ export function drawActivities(scene:Phaser.Scene,open:(id:ActivityId)=>void,hal
     }
   });
   if(hall==='tables')scene.add.image(ACTIVITIES.chess.bounds.x-1,ACTIVITIES.chess.bounds.y-2,chess).setOrigin(0).setDisplaySize(108,64).setDepth(ACTIVITIES.chess.bounds.y+64);
+  const combat=make('social-mortal-kombat',104,143,c=>{
+    c.fillStyle='#201d29';c.beginPath();c.roundRect(0,0,104,143,8);c.fill();
+    c.fillStyle='#b99b56';c.fillRect(3,4,98,22);c.fillStyle='#140f17';c.font='bold 10px sans-serif';c.fillText('MORTAL KOMBAT',7,19);
+    c.fillStyle='#182a34';c.fillRect(10,33,84,60);c.fillStyle='#77b9c8';c.fillRect(30,46,11,28);c.fillStyle='#cdb59a';c.fillRect(65,46,11,28);
+    c.fillStyle='#6c5c70';c.fillRect(5,101,94,20);
+    for(const x of [27,69]){c.fillStyle='#19111c';c.fillRect(x,97,3,13);c.fillStyle='#d97960';c.beginPath();c.arc(x+1,96,5,0,7);c.fill();}
+    c.fillStyle='#e8cb7d';c.font='8px sans-serif';c.fillText('PVP  /  5%',31,134);
+  });
+  if(hall==='tables')scene.add.image(1408,332,combat).setOrigin(0).setDepth(475);
   if(hall==='github')for(const id of ['durak','transfer-durak','crazy-eights'] as const){
     const b=ACTIVITIES[id].bounds;
     const texture=make('pvp-table-'+id,232,152,c=>{

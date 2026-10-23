@@ -1,0 +1,532 @@
+{
+  "repository": "https://github.com/mgechev/mk.js",
+  "revision": "174149629e9b66f79995eaa204faf15695af43c1",
+  "upstreamLicenseDeclaration": "MIT (readme.md)",
+  "files": [
+    {
+      "path": "public/assets/mortal-kombat/arenas/0/arena.png",
+      "upstream": "game/images/arenas/0/arena.png",
+      "sha256": "1243d361ec4f119282ee9640962a26e0fc19bc5cafad4411b440d55602d0c3de"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/blocking/0.png",
+      "upstream": "game/images/fighters/kano/right/blocking/0.png",
+      "sha256": "69d3f7dc4c562314e03a7c190877dc058af7dcbc87b2e30148dd6b3818bd74dc"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/blocking/1.png",
+      "upstream": "game/images/fighters/kano/right/blocking/1.png",
+      "sha256": "57d13406ef0438dccb109a8a2194a57d33e70523af522aac6018130104cf5445"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/blocking/2.png",
+      "upstream": "game/images/fighters/kano/right/blocking/2.png",
+      "sha256": "79a273f0322365fcfd419be0e244487428737e1faa7ef6db04c98569aa3b3743"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/endure/0.png",
+      "upstream": "game/images/fighters/kano/right/endure/0.png",
+      "sha256": "5a939d07b7f2ec6db1cf7ea5374b25544d04f91e808a14c96efb64133f0b424a"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/endure/1.png",
+      "upstream": "game/images/fighters/kano/right/endure/1.png",
+      "sha256": "23ac22b846a553cf5b8a3fe88c04c52b6968eb37a47a1fafe5edffd4753b5e6b"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/endure/2.png",
+      "upstream": "game/images/fighters/kano/right/endure/2.png",
+      "sha256": "7e2c0bee6879b1360181486e57bf65789fac8c77efa0c7887d1917c9c143df4f"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/fall/0.png",
+      "upstream": "game/images/fighters/kano/right/fall/0.png",
+      "sha256": "0dc9a52c281586dc68abb3a0b07702bfdbc7fc2eca8efbe6020d1c169c54ca18"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/fall/1.png",
+      "upstream": "game/images/fighters/kano/right/fall/1.png",
+      "sha256": "eec807c17e0b69799308944fc175e9b64fcae71ef25dbf87994f1b74bae07ca0"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/fall/2.png",
+      "upstream": "game/images/fighters/kano/right/fall/2.png",
+      "sha256": "bd11e278758efb5851ec9c5e40d0e194ba529c47bac0e17707e47c49af4b50c0"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/fall/3.png",
+      "upstream": "game/images/fighters/kano/right/fall/3.png",
+      "sha256": "cb585b7643153f2e9cd8d275251dc0bab8917c691d53443a9eb4133745685630"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/fall/4.png",
+      "upstream": "game/images/fighters/kano/right/fall/4.png",
+      "sha256": "b6261310940768d79c158c9fa363277fbc4a155ccbba8670c5314de62ac51578"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/fall/5.png",
+      "upstream": "game/images/fighters/kano/right/fall/5.png",
+      "sha256": "4edd452df8e406b75e99b48720a0b8cdb9e46d7f5ee7bec420ed5055d00df777"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/fall/6.png",
+      "upstream": "game/images/fighters/kano/right/fall/6.png",
+      "sha256": "385c934da67516acffdd9f99af00df3c10fe63938e92ba08690c927b80bc2aa0"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/high-kick/0.png",
+      "upstream": "game/images/fighters/kano/right/high-kick/0.png",
+      "sha256": "5b72c43ce10d71a8b1c370c6233531ba945ab370fd23dc845ca21e6f633537bc"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/high-kick/1.png",
+      "upstream": "game/images/fighters/kano/right/high-kick/1.png",
+      "sha256": "dc98645ae60f2b84105daafdf774c6fdeae1f0b82abf65d75e6f5b3456edd2a8"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/high-kick/2.png",
+      "upstream": "game/images/fighters/kano/right/high-kick/2.png",
+      "sha256": "f30a0b66dc54e470efa5439e936460338199e9e997abbd1ca57c73519e19a40e"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/high-kick/3.png",
+      "upstream": "game/images/fighters/kano/right/high-kick/3.png",
+      "sha256": "26267823be93511b138e6ee05e3a4c8bad191d8257f57e2e96b8fc4fc1b4f984"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/high-kick/4.png",
+      "upstream": "game/images/fighters/kano/right/high-kick/4.png",
+      "sha256": "eced8b6f4c2fbcb811409075b743f75224eb4d12d8654201a0554e574afd9f63"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/high-kick/5.png",
+      "upstream": "game/images/fighters/kano/right/high-kick/5.png",
+      "sha256": "e19a858ebf7bf57b04589efbb8799a7039d1640df956e41d7f95e0bf623ed14f"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/high-kick/6.png",
+      "upstream": "game/images/fighters/kano/right/high-kick/6.png",
+      "sha256": "8d983f95fa61f8d3f0fb577d1d8260e62e7f2b7092f022ba60f4ff78146abb5f"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/high-punch/0.png",
+      "upstream": "game/images/fighters/kano/right/high-punch/0.png",
+      "sha256": "0cd5d1c7333ae8463a1791ccc68ecf03fc385e2b64066c36853eae436fa96be6"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/high-punch/1.png",
+      "upstream": "game/images/fighters/kano/right/high-punch/1.png",
+      "sha256": "d46a55b4f099e2459ed0445b617f331b834d8fabd21a4a70111f4f4090b7f128"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/high-punch/2.png",
+      "upstream": "game/images/fighters/kano/right/high-punch/2.png",
+      "sha256": "0e86a7140236084abdb3d3eafeff24cb2e235e0c33c6b3c47e151496fa29f656"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/high-punch/3.png",
+      "upstream": "game/images/fighters/kano/right/high-punch/3.png",
+      "sha256": "64d6ab7bb211b4f117e5fb9c2bc1063ebd269e32d5aaeb3769b37e9bbf139bed"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/high-punch/4.png",
+      "upstream": "game/images/fighters/kano/right/high-punch/4.png",
+      "sha256": "92169c62a45f3fb6baa67434717346c506a5ad96da69681e8543b8a5658b6d62"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/high-punch/5.png",
+      "upstream": "game/images/fighters/kano/right/high-punch/5.png",
+      "sha256": "090b162f2639f0c73382fc905257398c5f844ae850f893d5207d87544de25e2f"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/high-punch/6.png",
+      "upstream": "game/images/fighters/kano/right/high-punch/6.png",
+      "sha256": "ac537fbd2daafac06ccabe7b572c5e6c4121f4c005b98361f745fa0c3f6ff42d"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/high-punch/7.png",
+      "upstream": "game/images/fighters/kano/right/high-punch/7.png",
+      "sha256": "1e124563d6dbff393aa7593d97c94bffb6a0f56c5fe09c38f7de58506ccb6177"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/jumping/0.png",
+      "upstream": "game/images/fighters/kano/right/jumping/0.png",
+      "sha256": "4e95e70b43143a1ae5add5dc7605e453ad45eb0ec473a7e4f23242fbc1ec38d0"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/jumping/1.png",
+      "upstream": "game/images/fighters/kano/right/jumping/1.png",
+      "sha256": "28b10d108a033388db22797bf22b86f332965ad8b2ca450f6947ecbc7f29d60f"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/jumping/2.png",
+      "upstream": "game/images/fighters/kano/right/jumping/2.png",
+      "sha256": "28b10d108a033388db22797bf22b86f332965ad8b2ca450f6947ecbc7f29d60f"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/jumping/3.png",
+      "upstream": "game/images/fighters/kano/right/jumping/3.png",
+      "sha256": "28b10d108a033388db22797bf22b86f332965ad8b2ca450f6947ecbc7f29d60f"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/jumping/4.png",
+      "upstream": "game/images/fighters/kano/right/jumping/4.png",
+      "sha256": "28b10d108a033388db22797bf22b86f332965ad8b2ca450f6947ecbc7f29d60f"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/jumping/5.png",
+      "upstream": "game/images/fighters/kano/right/jumping/5.png",
+      "sha256": "28b10d108a033388db22797bf22b86f332965ad8b2ca450f6947ecbc7f29d60f"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/stand/0.png",
+      "upstream": "game/images/fighters/kano/right/stand/0.png",
+      "sha256": "38891fb83c39598e097743090d400c894f0c6e27c90733a119dc0234c02ce128"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/stand/1.png",
+      "upstream": "game/images/fighters/kano/right/stand/1.png",
+      "sha256": "a88f1b14fb80f704b1508f7cd2a1bd0d050e3bbd9810568c434ba01997212ed4"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/stand/2.png",
+      "upstream": "game/images/fighters/kano/right/stand/2.png",
+      "sha256": "e8117434e2e54631cd250cd79920424684133bd1c5342cb714d6f924c57baf6d"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/stand/3.png",
+      "upstream": "game/images/fighters/kano/right/stand/3.png",
+      "sha256": "c91b87a81b8e2735e86bdbf1f7a23eac62fb9d0489da01b73ab5999bb3f4dfa2"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/stand/4.png",
+      "upstream": "game/images/fighters/kano/right/stand/4.png",
+      "sha256": "2f6e77d5289455baff73e6d7789a30985ce4f009cf500ab5dab1933c642f09e7"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/stand/5.png",
+      "upstream": "game/images/fighters/kano/right/stand/5.png",
+      "sha256": "a9ce549252a6922e90a00b0a1e592103437d5e0ce30de2c07a5bcdd8aa7d8c13"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/stand/6.png",
+      "upstream": "game/images/fighters/kano/right/stand/6.png",
+      "sha256": "47dd25112ec4335395b27c7ffb611c013b0ab39394d6b972ff02fbffe3480240"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/stand/7.png",
+      "upstream": "game/images/fighters/kano/right/stand/7.png",
+      "sha256": "38784f9f880f7b203518a2ae3f0c0ec4a83ab8d27d42cf84cfd4d6b192950aae"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/stand/8.png",
+      "upstream": "game/images/fighters/kano/right/stand/8.png",
+      "sha256": "d839a8e922272d13c646f41793af898d748a023a261d77d2d999c8f45b4aa628"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/walking/0.png",
+      "upstream": "game/images/fighters/kano/right/walking/0.png",
+      "sha256": "4bb35294d82da391c5dbaa05a888b3b3086182ddceaf4f8f442ea4778c47f7e1"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/walking/1.png",
+      "upstream": "game/images/fighters/kano/right/walking/1.png",
+      "sha256": "806dec2299b5e5c02efd08fd0d85cf1cdbaa36f9a17263e1e3eee1a86bef17a2"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/walking/2.png",
+      "upstream": "game/images/fighters/kano/right/walking/2.png",
+      "sha256": "a1617dfaf6e3b8ac03a7403903708babf8b46c83e37092097581dac798835a4f"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/walking/3.png",
+      "upstream": "game/images/fighters/kano/right/walking/3.png",
+      "sha256": "fed5d21e3b84d836dcf4544851dd92945ed38a9adc7517f6e45a9b6d6792694b"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/walking/4.png",
+      "upstream": "game/images/fighters/kano/right/walking/4.png",
+      "sha256": "3d3a93ddb1d0f3b58fd99fadfab2e14a8b8052f124675ff8e6f42a3b4d93c218"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/walking/5.png",
+      "upstream": "game/images/fighters/kano/right/walking/5.png",
+      "sha256": "290b4fa0735d61767ffe4a12c2023c60e605264e386888fb9c3cea5edf33be9a"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/walking/6.png",
+      "upstream": "game/images/fighters/kano/right/walking/6.png",
+      "sha256": "4fe0f349e7196662141e2570d04bcc38ccf58f08da169a4ae92b299942310289"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/walking/7.png",
+      "upstream": "game/images/fighters/kano/right/walking/7.png",
+      "sha256": "15e9bd3516dee4b6838da52b73b0ab6ea0e422d17f031c72520424260978469c"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/kano/right/walking/8.png",
+      "upstream": "game/images/fighters/kano/right/walking/8.png",
+      "sha256": "98be5f971c0942365ce7a1f0694b8db1f04fba6f4e21a2299dc6d03f2fb8e0db"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/blocking/0.png",
+      "upstream": "game/images/fighters/subzero/right/blocking/0.png",
+      "sha256": "acb1b1c0e34e7fdbc6ad89cdec536457949adeec83c474e817cb6c0d86335f71"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/blocking/1.png",
+      "upstream": "game/images/fighters/subzero/right/blocking/1.png",
+      "sha256": "bf0760da51998aa1dd27d221fa9be6cde7f20a5b5a08b572024130cd95d1cfab"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/blocking/2.png",
+      "upstream": "game/images/fighters/subzero/right/blocking/2.png",
+      "sha256": "07f08d1202e4c76ae33982750a7818a7f5d5c919cef765eb65c3588a21730777"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/endure/0.png",
+      "upstream": "game/images/fighters/subzero/right/endure/0.png",
+      "sha256": "ddc8e379c3d524819750aafdb50e83166c5c8fab28e15a01b95b0e78169cd12d"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/endure/1.png",
+      "upstream": "game/images/fighters/subzero/right/endure/1.png",
+      "sha256": "ee5a7a0862e612bb960b48ca5816e1b4c7f3956a65709902c87640c569dd6f4f"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/endure/2.png",
+      "upstream": "game/images/fighters/subzero/right/endure/2.png",
+      "sha256": "fa105b05caba812f3bde477bac0ed310137fdefaa612380cb5ba615afcd23f15"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/fall/0.png",
+      "upstream": "game/images/fighters/subzero/right/fall/0.png",
+      "sha256": "6ba1e2206b4459f5f5cc5829dbd874f1bea64f65f5d518fdd3eaf219a525f694"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/fall/1.png",
+      "upstream": "game/images/fighters/subzero/right/fall/1.png",
+      "sha256": "ae6afa31378d9a30cf33d864142dbc19d55cb704dc5e1a2465f3431a94191121"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/fall/2.png",
+      "upstream": "game/images/fighters/subzero/right/fall/2.png",
+      "sha256": "d24d80d814684c7aa82c0083ccd536377d0d290179ed47516561e6f76844acdd"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/fall/3.png",
+      "upstream": "game/images/fighters/subzero/right/fall/3.png",
+      "sha256": "375300a5ae3fb714041bb563f79cb93fb4a21b2daed48001cf29752c16759bb4"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/fall/4.png",
+      "upstream": "game/images/fighters/subzero/right/fall/4.png",
+      "sha256": "1214c667ca13347772188135d20aa943635f878ce8faf70c771825f240a0d0c2"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/fall/5.png",
+      "upstream": "game/images/fighters/subzero/right/fall/5.png",
+      "sha256": "7c472b02c31b7e5a0cf872f222121947a93d9a35b7f8ef3c092613643dbbf982"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/fall/6.png",
+      "upstream": "game/images/fighters/subzero/right/fall/6.png",
+      "sha256": "4568d6f5178a144e56bbf3e98ce483eee88cfa46f38223dc6e5f285aec8617b2"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/high-kick/0.png",
+      "upstream": "game/images/fighters/subzero/right/high-kick/0.png",
+      "sha256": "2855142a12a4adb535a3d3fc9a2603f17b85b87100678c74706a088f354f9ec7"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/high-kick/1.png",
+      "upstream": "game/images/fighters/subzero/right/high-kick/1.png",
+      "sha256": "f0f6e3e21f64884a72727d330f2939d3728c71bf2ab88b314d6725664b61bc6a"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/high-kick/2.png",
+      "upstream": "game/images/fighters/subzero/right/high-kick/2.png",
+      "sha256": "f089f0e2c8dc12a5d4233f1a82b3939bc0a23524e99e78e67597880cb3be2c68"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/high-kick/3.png",
+      "upstream": "game/images/fighters/subzero/right/high-kick/3.png",
+      "sha256": "d455ca44fc5de120f9668b512866e3d0bc651fb6f9baf7407efe57121f4d5d73"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/high-kick/4.png",
+      "upstream": "game/images/fighters/subzero/right/high-kick/4.png",
+      "sha256": "107ca85ede050eacc09e75c500cbc2c16bae0c05046deb0237c1e9c3adaf33a3"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/high-kick/5.png",
+      "upstream": "game/images/fighters/subzero/right/high-kick/5.png",
+      "sha256": "8dc7a0da187a70ddd5bb15d6834ce5853ecf0d8a03f2d929729258b454eff52c"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/high-kick/6.png",
+      "upstream": "game/images/fighters/subzero/right/high-kick/6.png",
+      "sha256": "763958c836125915d6ce3405d1aa1300efdcf79aca5499be8d0241638dcd9b21"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/high-punch/0.png",
+      "upstream": "game/images/fighters/subzero/right/high-punch/0.png",
+      "sha256": "d62b66b35fafc3dc62234eedffa46f454134cd2e37d63e2dda39da51eef3361c"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/high-punch/1.png",
+      "upstream": "game/images/fighters/subzero/right/high-punch/1.png",
+      "sha256": "42eda277967bba54c1a721a4a59ced3a83d389da83be6064be1399939ede0f9d"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/high-punch/2.png",
+      "upstream": "game/images/fighters/subzero/right/high-punch/2.png",
+      "sha256": "8fd5b888f6864e94e04075c0b1bc10e53b9619368420a11990cc9df0608c40cc"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/high-punch/3.png",
+      "upstream": "game/images/fighters/subzero/right/high-punch/3.png",
+      "sha256": "6070c118263a96125f86fbcd9f8e472143c0e259c3796a2b436ab1c5383aa141"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/high-punch/4.png",
+      "upstream": "game/images/fighters/subzero/right/high-punch/4.png",
+      "sha256": "09469628726a7fcecad4e4e57dd51164ef69f8ddc4feafa60206ebd1609c3127"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/high-punch/5.png",
+      "upstream": "game/images/fighters/subzero/right/high-punch/5.png",
+      "sha256": "bd4bf227fa6ddd0aa760950e549a42344a899a49daf1995357f9ed9828d35fd0"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/high-punch/6.png",
+      "upstream": "game/images/fighters/subzero/right/high-punch/6.png",
+      "sha256": "bfd97757e7650b8e9e34f021feab5504af8621296c656c40e32e71731e6052f2"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/high-punch/7.png",
+      "upstream": "game/images/fighters/subzero/right/high-punch/7.png",
+      "sha256": "6ffa1fe65b0b4dcca36e43b5e905a0cc6929402f66a6cb4c548519f21827eabc"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/jumping/0.png",
+      "upstream": "game/images/fighters/subzero/right/jumping/0.png",
+      "sha256": "c9da5ff3a536297f94f98c6f94658fabe13085698c778da2ede7e830f09d1816"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/jumping/1.png",
+      "upstream": "game/images/fighters/subzero/right/jumping/1.png",
+      "sha256": "0218a6c9beee7a79fc37d1fbdd816d7b183bfec2e0c9fee7f3b7a55d5050748f"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/jumping/2.png",
+      "upstream": "game/images/fighters/subzero/right/jumping/2.png",
+      "sha256": "5740db53af457e4de47c6b937ee4919dbc0d6eb11c3895dfaa016955f4d54acd"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/jumping/3.png",
+      "upstream": "game/images/fighters/subzero/right/jumping/3.png",
+      "sha256": "cbd3dad23c255f78418920d1f2d8bf04a801cab70afd8dd11b4a5905965fef3f"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/jumping/4.png",
+      "upstream": "game/images/fighters/subzero/right/jumping/4.png",
+      "sha256": "c9a6b0011f2baccc4358c7edd1944d469f9a8144ee04ed1759b967a032fe1caa"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/jumping/5.png",
+      "upstream": "game/images/fighters/subzero/right/jumping/5.png",
+      "sha256": "c9a6b0011f2baccc4358c7edd1944d469f9a8144ee04ed1759b967a032fe1caa"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/stand/0.png",
+      "upstream": "game/images/fighters/subzero/right/stand/0.png",
+      "sha256": "1fc57763f3624a8bcc1473ce0993a6ae8ad2283c94d28b79073fbbbc3f11ae4c"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/stand/1.png",
+      "upstream": "game/images/fighters/subzero/right/stand/1.png",
+      "sha256": "5200d9c8e6f0e368b8f9bcd7742cca505f6d8f7cebc0317dea4a5bf50d8c2663"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/stand/2.png",
+      "upstream": "game/images/fighters/subzero/right/stand/2.png",
+      "sha256": "d5a366cca9cbde7130809109f0c07d76cbc47da401a0418d6f3a8e4124eddba3"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/stand/3.png",
+      "upstream": "game/images/fighters/subzero/right/stand/3.png",
+      "sha256": "1e8900b572f0d2e5edcd1064480f6ef1a0ce7addcda52d5f9a2bcb62df7a39ac"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/stand/4.png",
+      "upstream": "game/images/fighters/subzero/right/stand/4.png",
+      "sha256": "fde2522d3298031c08973f27c413938c7ea0a624e1e34f3d4e2eaac3811e0541"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/stand/5.png",
+      "upstream": "game/images/fighters/subzero/right/stand/5.png",
+      "sha256": "a9fb18c9ddc25025a0d6df16c839236d632770e8139bb735f5c29ffb7c17b4ed"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/stand/6.png",
+      "upstream": "game/images/fighters/subzero/right/stand/6.png",
+      "sha256": "3bca5b67ad78f0cad4a5b0ab499a1e0d501372a5d032264bba5a414c8e60eaaf"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/stand/7.png",
+      "upstream": "game/images/fighters/subzero/right/stand/7.png",
+      "sha256": "d096cffd6f0fa35bd4b4a20cba89297a3c77c846053ee37bb39225d108da076b"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/stand/8.png",
+      "upstream": "game/images/fighters/subzero/right/stand/8.png",
+      "sha256": "5d964fe9980dd2c18e429b2648be311e805a11f0fb9247372ed80d29661d351b"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/walking/0.png",
+      "upstream": "game/images/fighters/subzero/right/walking/0.png",
+      "sha256": "bc6c50177dbef7f0474b6893a692ca92006985c629e59a0fa02f51b28fa24350"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/walking/1.png",
+      "upstream": "game/images/fighters/subzero/right/walking/1.png",
+      "sha256": "99b824767202cace81e50bb5d0b0075ecda3ece7ee12811ef565db38dcc24e0f"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/walking/2.png",
+      "upstream": "game/images/fighters/subzero/right/walking/2.png",
+      "sha256": "2f536d144277f7f6feda1c68bccfa9263e9442ddfc56fa0aea3045645b2a7108"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/walking/3.png",
+      "upstream": "game/images/fighters/subzero/right/walking/3.png",
+      "sha256": "0ebde027e93445177f9643d726475786809b097ef3b3982df748b09fc4b7c918"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/walking/4.png",
+      "upstream": "game/images/fighters/subzero/right/walking/4.png",
+      "sha256": "3a189d31f848acab680fff3f181f42c0ae5c96598582b102fab04d17bae6701f"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/walking/5.png",
+      "upstream": "game/images/fighters/subzero/right/walking/5.png",
+      "sha256": "ab123d837881167ad4436fff081b19537a2f1edbb53deccc7e9d16dc2b8afc5b"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/walking/6.png",
+      "upstream": "game/images/fighters/subzero/right/walking/6.png",
+      "sha256": "7f15d2bb1cff23ef0b9b3f32fdd65cf9cf710651d8121be20b55cdc6fcbaffff"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/walking/7.png",
+      "upstream": "game/images/fighters/subzero/right/walking/7.png",
+      "sha256": "88969dd56fca9262e5c9c7c0fae621c3e3d0fdbd2ea2ab17508742f0a530dd7a"
+    },
+    {
+      "path": "public/assets/mortal-kombat/fighters/subzero/right/walking/8.png",
+      "upstream": "game/images/fighters/subzero/right/walking/8.png",
+      "sha256": "d0597d0d5a42070eca105f2709b178516597f47ff20fe9fb060082fddd93d6f4"
+    }
+  ]
+}

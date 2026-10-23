@@ -1,19 +1,21 @@
 import { gameAccountId } from '../../src/shared/nileWallet';
 import { isPvpGame, pvpPayout, validPvpStake, type PvpGameId } from '../../src/shared/pvp';
+export type PvpMoneyGameId = PvpGameId | 'mortal-kombat';
+export const isPvpMoneyGame = (id: unknown): id is PvpMoneyGameId => id === 'mortal-kombat' || isPvpGame(id);
 
 export type PvpOwner = { accountId: string; userId: string };
 export type PvpMoneyEvent = {
-  version: 1; action: 'hold' | 'refund' | 'settle'; matchId: string; gameId: PvpGameId;
+  version: 1; action: 'hold' | 'refund' | 'settle'; matchId: string; gameId: PvpMoneyGameId;
   stakeUnits: string; participants: PvpOwner[]; winnerId: string | null; reason: string; createdAt: number;
 };
-export type PvpMoneyMatch = { gameId: PvpGameId; stakeUnits: string; participants: PvpOwner[]; final?: PvpMoneyEvent };
+export type PvpMoneyMatch = { gameId: PvpMoneyGameId; stakeUnits: string; participants: PvpOwner[]; final?: PvpMoneyEvent };
 export const pvpEventId = (row: PvpMoneyEvent) => `pvp:${row.matchId}:${row.action === 'hold' ? row.participants[0].accountId : 'final'}`;
 const escrow = (id: string, userId: string) => `pvp:${id}:${userId}`;
 const fail = (): never => { throw Error('Invalid PvP ledger event'); };
 export function validPvpMoneyEvent(value: unknown): value is PvpMoneyEvent {
   const row = value as PvpMoneyEvent;
   return !!row && Object.keys(row).sort().join(',') === 'action,createdAt,gameId,matchId,participants,reason,stakeUnits,version,winnerId'
-    && row.version === 1 && gameAccountId(row.matchId) && isPvpGame(row.gameId) && validPvpStake(row.stakeUnits)
+    && row.version === 1 && gameAccountId(row.matchId) && isPvpMoneyGame(row.gameId) && validPvpStake(row.stakeUnits)
     && ['hold', 'refund', 'settle'].includes(row.action) && Number.isSafeInteger(row.createdAt) && row.createdAt > 0
     && ['hold', 'win', 'draw', 'cancel', 'expired', 'server', 'disconnect', 'resign', 'timeout'].includes(row.reason)
     && Array.isArray(row.participants) && row.participants.length >= 1 && row.participants.length <= 2

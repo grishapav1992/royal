@@ -1,7 +1,7 @@
 import type { PostgresDatabase } from '../database';
 
 export const AUDIT_PAYLOAD_LIMIT = 8 * 1024 * 1024;
-export const AUDIT_ROW_LIMIT = 1024;
+export const AUDIT_ROW_LIMIT = 8192;
 
 // Read only metadata for the candidate window, then fetch the payloads within its byte budget.
 // An oversized first block remains visible with a NULL payload so callers can reject it safely.
