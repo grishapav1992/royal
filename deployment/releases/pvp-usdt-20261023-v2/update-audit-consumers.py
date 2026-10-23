@@ -21,9 +21,11 @@ configurations = [('compose.finance.yaml', 'priority-compose-finance.yaml'),
     ('deployment/finance/compose.nile-reconcile.yaml', 'priority-compose-reconcile.yaml'),
     ('deployment/finance/compose.nile-account-views.yaml', 'priority-compose-views.yaml')]
 
-with open('/opt/royal-releases/themed-publish.lock', 'a+') as app, open('/opt/royal-game-modules-state/module.lock', 'a+') as modules:
+# Read-only worker images and financial resource files do not publish game modules.
+# Keep backend publishers excluded while an independent presentation release finishes.
+with open('/opt/royal-releases/themed-publish.lock', 'a+') as app, open('/opt/royal-releases/finance-db-resources.lock', 'a+') as resources:
     fcntl.flock(app, fcntl.LOCK_EX)
-    fcntl.flock(modules, fcntl.LOCK_EX)
+    fcntl.flock(resources, fcntl.LOCK_EX)
     for name, digest in bundles.items(): assert sha(ROOT / name) == digest, name
     old_images = {name: run(['docker', 'image', 'inspect', name + ':local', '--format', '{{.Id}}']) for name in services}
     changes = []
