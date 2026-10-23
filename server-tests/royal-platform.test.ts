@@ -26,7 +26,7 @@ test('the source collections are disjoint, complete and prohibit cross-collectio
   assert.deepEqual([...ROYAL_COLLECTION_GAMES,...ARCADE_GITHUB_GAMES].sort(),[...ROYAL_PLATFORM_GAMES].sort());
   assert.equal(new Set(ROYAL_PLATFORM_GAMES).size,ROYAL_PLATFORM_GAMES.length);
   assert.equal(ARCADE_GITHUB_GAMES.length,9);
-  assert.equal(ROYAL_PLATFORM_GAMES.includes('studio-neopolis'),false);
+  assert.equal(ROYAL_PLATFORM_GAMES.includes('studio-neopolis'),true);
   assert.deepEqual(collectionGames('casinoapipro'),[]);
   for(const source of ['royal','github','casinoapipro'] as const){
     for(const id of collectionGames(source)) {

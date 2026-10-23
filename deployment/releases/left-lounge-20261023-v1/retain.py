@@ -5,6 +5,8 @@ import fcntl
 import hashlib
 import importlib.util
 import json
+import io
+import os
 import shutil
 import tarfile
 import time
@@ -54,7 +56,7 @@ else:
     before = m.read(m.RELEASES / NAME / 'install-manifest.json')['before']
     current = m.read(m.RELEASES / NAME / 'install-manifest.json')['changed']
     retained = set(before['source'].values()) | set(current.values())
-    audits = {}
+    audits = {}; unique = {}; origins = []
     for p in sorted(m.BACKUPS.iterdir()):
         if not p.is_dir() or str(p) in keep:continue
         archives = list(p.glob('source*.tgz')) + list(p.glob('source*.tar.gz'))
@@ -63,15 +65,34 @@ else:
             with tarfile.open(archive) as tar:
                 for entry in tar:
                     if not entry.isfile():continue
-                    data = tar.extractfile(entry).read();count += 1
+                    data = tar.extractfile(entry).read();raw = data;count += 1
                     if hashlib.sha256(data).hexdigest() in retained:continue
                     try:data.decode('utf8');data = data.replace(b'\r\n', b'\n')
                     except UnicodeDecodeError:pass
                     blob = hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()
-                    if blob not in reachable:unknown.append(entry.name)
+                    if blob not in reachable:
+                        digest = hashlib.sha256(raw).hexdigest()
+                        unknown.append(entry.name);unique[digest] = raw
+                        origins.append({'archive':str(archive),'path':entry.name,'sha256':digest,'bytes':len(raw)})
         audits[str(p)] = {'sourceFilesChecked':count, 'unverifiedPaths':unknown}
-        if not archives or unknown:
-            preserve(p.name, 'Historical source could not be fully matched to GitHub or the retained rollback', 'Reconcile the listed unique paths before deleting this archive')
+        if not archives:
+            preserve(p.name, 'No source inventory available for this history entry', 'Its owner verifies all unique material before retirement')
+    if unique:
+        backup = m.BACKUPS / NAME;archive = backup / 'historical-sources.tgz';manifest = backup / 'historical-sources.json'
+        assert not archive.exists() and not manifest.exists(), 'Historical consolidation already exists; review it before another plan'
+        temporary = backup / 'historical-sources.next.tgz'
+        assert shutil.disk_usage(backup).free > 5 * 1024**3 + 2 * sum(map(len,unique.values())), 'Historical preservation would cross the disk reserve'
+        with tarfile.open(temporary, 'w:gz') as tar:
+            for digest,data in sorted(unique.items()):
+                entry = tarfile.TarInfo(digest);entry.size=len(data);entry.mode=0o600;tar.addfile(entry,io.BytesIO(data))
+        with tarfile.open(temporary) as tar:
+            recovered = {entry.name:tar.extractfile(entry).read() for entry in tar}
+        assert recovered==unique, 'Historical source verification failed'
+        sample = state / 'restore-sample.bin';digest=next(iter(unique));sample.write_bytes(recovered[digest]);assert m.sha(sample)==digest;sample.unlink()
+        os.replace(temporary,archive)
+        m.write(manifest,{'origins':origins,'checksums':sorted(unique),'archiveSha256':m.sha(archive),'sampleRestoreVerified':True})
+        for p in [archive,manifest]:value['proofs'].append({'path':str(p),'sha256':m.sha(p)})
+        value['preservedHistoricalSourceFiles']=len(unique)
     value['keep'] = sorted(keep)
     value.update(entries=m.deletion_candidates(value['keep']), images=m.image_candidates({value['currentImage'], value['rollbackImage']} | pending_images), freeBefore=shutil.disk_usage(m.LIVE).free, activeWorkExceptions=exceptions, historicalSourceAudit=audits)
     m.write(plan_path, value)

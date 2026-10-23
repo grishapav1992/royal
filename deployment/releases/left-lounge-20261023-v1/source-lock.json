@@ -1,7 +1,7 @@
 {
   "release": "left-lounge-20261023-v1",
-  "applicationCommit": "1c08ad8931e87b3defba5751f41461e74f98585e",
-  "integrationBase": "272f566d0832323c446aad504b9f696b45071e64",
+  "applicationCommit": "bdf921ad4924e33cf51c7158e539240c48b61fbb",
+  "integrationBase": "73d7874",
   "sourceChanges": {
     "server/guardRoutine.ts": "45a6847fab3d3eec549eab30322fe1efd4133df94009ada923ce0d6f3005ad01",
     "server/state.ts": "ba4992ebece32ae0827ebbd00602ac1976d9cd488bce84f77c7a914f1660e2ee",
@@ -9,7 +9,7 @@
     "src/game/RoomScene.ts": "e27e49a22a71dfa0037a42a1fe2f1103024aeceb35e1e67b9ce13805d902e446",
     "src/game/SecurityGuard.ts": "fba8bb4a6b807fa22667198106034da16b9a2e32e251f66b1abc19cb89a60434",
     "src/game/activityArt.ts": "a561892748ad61e5ea99cdbb91d75f5dc3cfce5110f1d0930a8370f2a28a9cb3",
-    "src/game/clubArt.ts": "f9ffffb0a58d75f131ed6e5658c9a7c71ca8f89ab04d7a8a38e776fd99ea0f2e",
+    "src/game/clubArt.ts": "03d50686862a3260a9e20e61f54bb0e1087a65c887ebfdeffdc7c052348d2ce1",
     "src/shared/activities.ts": "660473634da25a36cfd7336713f1a3091ce8b844fcf7a32553e2d0005b9f1959",
     "src/shared/ambientGuests.ts": "6a30d7b77ae830984256dee833ebf5edb57e1c7cdd63d49f6c3d928a91a670fd",
     "src/shared/catCare.ts": "83f8f64ca8a13f97e3fd20f7eec5d59623a1f0181d0393fa2e855880a201f5c8",
@@ -17,14 +17,20 @@
     "src/shared/furniture.ts": "dbbb212cc84b3c1c5b6bb41b144102e38b974e29a240bca524eedeb8f6f5d5da",
     "src/shared/miraRoutine.ts": "6c4c54350515d5157afa57edb2a29cad149d1becea98b7fccd3473d20e069c47",
     "src/shared/world.ts": "8113862ff5e57596745e3118f85cd86949f3f6d3de8977715fde171909f022fc",
-    "src/ui/ClubMap.ts": "87c63ab6736a8a4ed45d50cb22015c291aae8cc8102c5595e56d29347a8b453e"
+    "src/ui/ClubMap.ts": "87c63ab6736a8a4ed45d50cb22015c291aae8cc8102c5595e56d29347a8b453e",
+    "src/game/catHomeArt.ts": "fd757d782c455abcc19bcc9f00e65e7c98c6d9bb3056287dc8a9fcc4e7d902d2",
+    "src/game/interiorArt.ts": "01660c87e2c9f4bed43353d551c82b94e86f4692564cf06017ef0c37e75233f4",
+    "src/game/roomDetails.ts": "88ba66ad03b75054aec40862a384ea35947dab41d0c67dd1e664823e07b236f3",
+    "src/game/hallWindows.ts": "e1a9d91a34d47596e48eadd19aa82e4e195bb759d2af9bf9d498eeaa9e3a106c"
   },
   "build": "npm run build, published host and backend only; game packages remain pinned to verified production versions",
   "verification": {
     "build": "passed",
     "local_geometry": 7,
     "authenticated_browser": 2,
-    "publisher_guards": 16
+    "publisher_guards": 16,
+    "windows": "Uniform row and spacing visually verified in the real hall on desktop and mobile, with chat enabled.",
+    "rtp": "Unchanged mathematics; build gate passed (2 qualified, 114 legacy not qualified)."
   },
   "expectedAdditionalFootprintGiB": 1.0,
   "freeLocalBeforeGiB": 62.82,

@@ -70,4 +70,11 @@ const en: Record<keyof typeof ru, string> = {
   rulesMoney: 'One stake covers the initial spin and its entire bonus. Continue free spins with the button, without another debit. The full round is credited to the shared wallet at the end. Each spin payout is rounded down to 0.01 demo coin. A 3000× stake round cap ends play. Team collection resets after the bonus. New rounds target 96% RTP. This is a long-term target, not a promise for an individual session. Saved rounds finish under their original rules.',
   error: 'Move not confirmed. Check the saved operation.',
 };
-export const neopolisCopy = (language: string): Record<keyof typeof ru, string> => language === 'en' ? en : ru;
+export const neopolisCopy = (language: string, nile = false): Record<keyof typeof ru, string> => {
+  const copy = language === 'en' ? en : ru;
+  if (!nile) return copy;
+  return { ...copy, prototype: language === 'en' ? 'Test USDT · Nile' : 'Тестовый USDT · Nile', coins: 'USDT',
+    signin: language === 'en' ? 'Sign in to Royal to play with test USDT on Nile.' : 'Войди в Royal для игры на тестовые USDT в сети Nile.',
+    lowBalance: language === 'en' ? 'Not enough test USDT.' : 'Недостаточно тестовых USDT.',
+    rulesMoney: copy.rulesMoney.replace(language === 'en' ? '0.01 demo coin' : '0,01 демомонеты', language === 'en' ? '0.01 USDT' : '0,01 USDT') };
+};

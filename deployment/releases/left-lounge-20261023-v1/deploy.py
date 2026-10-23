@@ -226,7 +226,7 @@ def build():
     context.mkdir(exist_ok=False)
     shutil.copytree(ROOT / 'dist-delta', context / 'dist-delta')
     shutil.copytree(ROOT / 'server-delta', context / 'server-delta')
-    (context / 'Dockerfile').write_text('FROM ' + OLD['preparedImage'] + '\n'
+    (context / 'Dockerfile').write_text('FROM royal-game:before-' + NAME + '-prepared\n'
         'COPY --chown=node:node dist-delta/ /app/dist/\n'
         'COPY --chown=node:node server-delta/index.js /app/dist-server/index.js\n'
         'LABEL org.opencontainers.image.revision="' + M['sourceCommit'] + '"\n')
