@@ -1,5 +1,6 @@
 import { t as translateText } from '../i18n/index';
 import { FLOOR, HALL_WALL } from '../shared/clubGeometry';
+import { HALL_WINDOW_DIVIDERS } from './hallWindows';
 import type Phaser from 'phaser';
 import { CABINETS } from '../shared/cabinets';
 import type { HallId } from '../shared/world';
@@ -44,12 +45,12 @@ export function drawHallIdentity(scene: Phaser.Scene, hall: HallId) {
   const lights=scene.add.graphics().setDepth(.04);
   if(hall==='arcade'){
     art('casino-marquee-compact',331,102,190,116);
-    scene.add.text(1560,113,translateText('КАЗИНО И БАР'),{fontFamily:'Georgia',fontSize:'31px',fontStyle:'bold',letterSpacing:4,color:'#d9e7ef'}).setOrigin(.5).setDepth(3);
-    scene.add.text(1560,151,translateText('НОВЫЕ ИГРЫ · GITHUB · ДЕМОКАТАЛОГИ'),{fontFamily:'Arial',fontSize:'11px',letterSpacing:2,color:'#b2c8d4'}).setOrigin(.5).setDepth(3);
+    scene.add.text(1560,-40,translateText('КАЗИНО И БАР'),{fontFamily:'Georgia',fontSize:'31px',fontStyle:'bold',letterSpacing:4,color:'#d9e7ef'}).setOrigin(.5).setDepth(3);
+    scene.add.text(1560,-5,translateText('НОВЫЕ ИГРЫ · GITHUB · ДЕМОКАТАЛОГИ'),{fontFamily:'Arial',fontSize:'11px',letterSpacing:2,color:'#b2c8d4'}).setOrigin(.5).setDepth(3);
   }else if(hall==='github'){
     art('card-salon-sign',540,170,342,106);
-    scene.add.text(2620,113,translateText('КАРТОЧНЫЙ САЛОН'),{fontFamily:'Georgia',fontSize:'30px',fontStyle:'bold',letterSpacing:3,color:'#e5d5b0'}).setOrigin(.5).setDepth(3);
-    scene.add.text(2620,151,translateText('33 ИГРЫ · 33 КРУПЬЕ · ЭТАЖ 3'),{fontFamily:'Arial',fontSize:'11px',letterSpacing:2,color:'#c2d0c8'}).setOrigin(.5).setDepth(3);
+    scene.add.text(2620,-40,translateText('КАРТОЧНЫЙ САЛОН'),{fontFamily:'Georgia',fontSize:'30px',fontStyle:'bold',letterSpacing:3,color:'#e5d5b0'}).setOrigin(.5).setDepth(3);
+    scene.add.text(2620,-5,translateText('33 ИГРЫ · 33 КРУПЬЕ · ЭТАЖ 3'),{fontFamily:'Arial',fontSize:'11px',letterSpacing:2,color:'#c2d0c8'}).setOrigin(.5).setDepth(3);
   }else{
     art('billiard-sign',540,166,316,98);
     art('billiard-lamp',562,323,156,66,3);
@@ -74,7 +75,7 @@ export function createInteriorArt(scene: Phaser.Scene, resolution: number) {
           rect(c,x,12,13,h-34,'#461b31');
           line(c,x+3,14,x+3,h-28,'#71304a');
         }
-        for(const x of [10,365,665,...Array.from({length:11},(_,i)=>1050+i*300),FLOOR.width-16]){
+        for(const x of [10,365,665,...HALL_WINDOW_DIVIDERS.map(x=>x-FLOOR.x)]){
           rect(c,x,6,12,h-12,'#a67a36');
           rect(c,x+3,9,5,h-22,'#f1d190');
           rect(c,x-4,8,20,5,'#ddb365');rect(c,x-4,h-22,20,15,'#ddb365');
