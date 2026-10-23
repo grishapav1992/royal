@@ -15,7 +15,9 @@ inspect = lambda: json.loads(run(['docker', 'inspect', 'royal-finance-sim-financ
 with open('/opt/royal-releases/finance-db-resources.lock', 'a+') as resource_lock:
     fcntl.flock(resource_lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
     database = inspect()
-    paths = [Path('/opt/royal-finance/compose.finance.yaml'), Path('/opt/royal/compose.finance.yaml')]
+    paths = [Path('/opt/royal-finance/compose.finance.yaml')]
+    application_copy = Path('/opt/royal/compose.finance.yaml')
+    if application_copy.exists(): paths.append(application_copy)
     for path in paths:
         assert sha(path) == '5576ad8154f62815185f3bece5c1ec3de0135f5c02c53be4d01f6c232769e6ae'
     target = ROOT / 'database-cache-compose.yaml'
