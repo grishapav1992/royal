@@ -15,7 +15,7 @@ export type CatSurface = {
 };
 export const CAT_MAX_JUMP_HEIGHT = 170;
 export const CAT_SURFACES: readonly CatSurface[] = [
-  {id:'pillow',hall:CAT_HOME.hall,kind:'pillow',label:'На своей подушке',approach:CAT_HOME.approach,perch:CAT_HOME.pillow,height:69,width:128,depth:205,facing:'down'},
+  {id:'pillow',hall:CAT_HOME.hall,kind:'pillow',label:'На своей подушке',approach:CAT_HOME.approach,perch:CAT_HOME.pillow,height:CAT_HOME.approach.y-CAT_HOME.pillow.y,width:128,depth:205,facing:'down'},
   {id:'bar',hall:CAT_CARE.hall,kind:'bar',label:'На барной стойке',approach:CAT_CARE.bar.approach,perch:CAT_CARE.bar.perch,height:41,width:72,depth:CAT_CARE.bar.depth,facing:'right'},
   ...CABINETS.map((cabinet):CatSurface=>{
     const card=isCardGame(cabinet.id),height=CABINET_SIZE.height*CABINET_SCALE-6;
