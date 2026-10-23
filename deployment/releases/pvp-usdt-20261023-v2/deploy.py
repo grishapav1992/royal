@@ -121,10 +121,10 @@ def build():
                 shutil.copytree(ROOT / directory, context / directory)
             for name in ['package.json','package-lock.json']:
                 shutil.copyfile(ROOT / 'source' / name, context / name)
-            dockerfile = 'FROM '+OLD['preparedImage']+'\nUSER root\nCOPY --chown=node:node package.json package-lock.json /app/\nRUN npm ci --omit=dev && npm cache clean --force\nUSER node\nCOPY --chown=node:node dist-delta/ /app/dist/\nCOPY --chown=node:node server-delta/index.js /app/dist-server/index.js\nCOPY --chown=node:node module-delta/ /app/module-dist/\n'
+            dockerfile = 'FROM royal-game:before-'+NAME+'-prepared\nUSER root\nCOPY --chown=node:node package.json package-lock.json /app/\nRUN npm ci --omit=dev && npm cache clean --force\nUSER node\nCOPY --chown=node:node dist-delta/ /app/dist/\nCOPY --chown=node:node server-delta/index.js /app/dist-server/index.js\nCOPY --chown=node:node module-delta/ /app/module-dist/\n'
         else:
             shutil.copyfile(ROOT / 'play.js', context / 'play.js')
-            dockerfile = 'FROM '+OLD['preparedImage']+' AS engines\nFROM '+M['extra']['nileImage']+'\nCOPY --chown=node:node play.js /app/play.js\nCOPY --from=engines /app/dist-server/card-engine /app/dist-server/card-engine-v1 /app/dist-server/\n'
+            dockerfile = 'FROM royal-game:before-'+NAME+'-prepared AS engines\nFROM royal-nile-play:before-'+NAME+'\nCOPY --chown=node:node play.js /app/play.js\nCOPY --from=engines /app/dist-server/card-engine /app/dist-server/card-engine-v1 /app/dist-server/\n'
         (context / 'Dockerfile').write_text(dockerfile+'LABEL org.opencontainers.image.revision="'+M['sourceCommit']+'"\n')
         with (ROOT / (kind+'-build.log')).open('w') as log:
             subprocess.run(['docker','build','--pull=false','-t',('royal-game:' if kind=='game' else 'royal-nile-play:')+NAME,'.'], cwd=context, check=True, stdout=log, stderr=subprocess.STDOUT)
