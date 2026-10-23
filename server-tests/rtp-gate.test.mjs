@@ -62,3 +62,14 @@ test('expanding the frozen legacy list is rejected',async()=>{
     await rm(target,{recursive:true,force:true,maxRetries:15,retryDelay:200});
   }
 });
+
+test('combat exact qualification covers every stake and decisive or refunded outcome and rejects forged evidence',async()=>{
+  const inputs=await rtpInputs(root,'mortal-kombat');
+  const proof=JSON.parse(await readFile(resolve(root,inputs.policy.proof),'utf8'));
+  assert(validateRtpProof('mortal-kombat',inputs,proof));assert.equal(proof.serverReplayChecks,144);
+  for(const mutate of [
+    row=>{row.results.pop();},row=>{row.results[1]=row.results[0];},row=>{row.results[0].feeUnits='0';},
+    row=>{row.results[0].playerUnits=['0','2000000'];},row=>{row.results[2].returnRatio=.95;},
+    row=>{row.sourceHashes={};},row=>{row.serverReplayChecks=0;}
+  ]){const changed=structuredClone(proof);mutate(changed);assert.throws(()=>validateRtpProof('mortal-kombat',inputs,changed));}
+});
