@@ -8,7 +8,6 @@ import { CATALOG_PREVIEWS } from '../game/cabinetArtwork';
 
 const artwork: Readonly<Record<string, string>> = CATALOG_PREVIEWS;
 const descriptions: Record<string, string> = {
-  'studio-neopolis':translateText('40 линий · Три героя · Битва с Нулём'),
   'studio-dracona':'Каскады · Исчезающий шкаф · Три герба',
   'studio-meme-overload':translateText('Каскады · Разгон ×5 · Вирусный режим'),
   'studio-afterglow':translateText('14 линий · Фотосессия · Альбом героинь'),
