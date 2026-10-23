@@ -7,13 +7,12 @@ import {temporaryDatabase} from '../scripts/database-test';
 import {startAfter} from '../server/games/afterglow';
 import {validAfterSession} from '../src/shared/afterglow';
 import {afterRoundTier} from '../src/ui/AfterglowFeedback';
-import {worldPoint} from './room-ui';
 import type {DemoWallet} from '../src/shared/demoWallet';
 
 let vite:ViteDevServer,backend:ChildProcess,db:Awaited<ReturnType<typeof temporaryDatabase>>,baseURL:string;
 let logs='';const proof='artifacts/girlhub-feedback';
 const profile={version:3,revision:0,selectedGirl:0,selectedLook:0,albumUnits:0,pointsUnits:[0,0,0,0],unlocked:[false,false,false,false],active:false,activeGirl:null};
-const wallet:DemoWallet={balance:1000,entries:[]};
+const wallet:DemoWallet={balance:1000,entries:[],asset:'USDT_NILE_TEST',balanceUnits:'1000000000',revision:90000,testOnly:true,scale:2};
 const result=(seed:number)=>{let n=seed;return startAfter({afterglow:{mode:'normal'}},'100',0,max=>{n=(Math.imul(n,1664525)+1013904223)>>>0;return n%max;});};
 function session(seed:number,id:string){const r=result(seed);return{gameId:'studio-afterglow',id,rulesVersion:2,stakeUnits:'100',spentUnits:'100',returnedUnits:r.ended?r.view.totalPayoutUnits:'0',state:r.ended?'settled':'active',view:{afterglow:r.view,player:[],dealer:[],community:[],actions:r.actions,phase:r.view.revision+1,ended:r.ended,message:r.message}};}
 const diag=(page:Page)=>page.evaluate(()=>(window as any).royalDemo.getMiniState());
@@ -34,8 +33,8 @@ async function open(page:Page,language='ru'){
  await page.emulateMedia({reducedMotion:'reduce'});
  await page.route('https://luelonplay.com/**',route=>route.fulfill({json:{games:[]}}));
  await page.route('**/api/casinoapipro/status',route=>route.fulfill({json:{configured:false,walletConnected:false}}));
- await page.route('**/api/demo-wallet/afterglow-wardrobe',route=>route.fulfill({json:profile}));
- await page.route('**/api/demo-wallet',route=>route.fulfill({json:wallet}));
+ await page.route('**/api/game-wallet/afterglow-wardrobe',route=>route.fulfill({json:profile}));
+ await page.route('**/api/game-wallet',route=>route.fulfill({json:wallet}));
  await page.addInitScript(()=>{localStorage.setItem('royal-language','ru');localStorage.setItem('royal-afterglow-music','0');localStorage.setItem('royal-afterglow-voices','0');});
  await page.goto(baseURL+'/?lang='+language);
  const en=language==='en';
@@ -44,18 +43,14 @@ async function open(page:Page,language='ru'){
  await page.getByRole('button',{name:en?'Continue':'Продолжить',exact:true}).click();
  await page.getByRole('button',{name:en?'Enter the hall':'Войти в зал',exact:true}).click();
  await expect(page.locator('#join-dialog')).toBeHidden();await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getState().online)).toBe(true);
- const {account}=await(await page.request.get(baseURL+'/api/auth/me')).json();
- const deposit=await page.request.post(baseURL+'/api/demo-wallet/operations',{headers:{'X-Royal-Account-Id':account.id},data:{id:crypto.randomUUID(),kind:'deposit',amount:1000}});
- expect(deposit.ok()).toBe(true);Object.assign(wallet,(await deposit.json()).wallet);
+ await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getState().locked)).toBe(false);
  await page.evaluate(async()=>{const {demoWallet}=await import('/src/wallet/WalletClient.ts');await demoWallet.refresh();});
- if(await page.locator('#room-overview').getAttribute('aria-pressed')!=='true')await page.locator('#room-overview').click();
- await page.waitForFunction(()=>{
-  const key=JSON.stringify((window as any).royalDemo.getState().view),now=performance.now(),last=(window as any).__girlhubCamera;
-  if(!last||last.key!==key){(window as any).__girlhubCamera={key,at:now};return false;}return now-last.at>200;
- });
- const aisle=await worldPoint(page,1100,900);await page.mouse.click(aisle.x,aisle.y);
- await expect.poll(()=>page.evaluate(()=>{const s=(window as any).royalDemo.getState();return Math.hypot(s.x-1100,s.y-900);}),{timeout:20000}).toBeLessThan(30);
+ if((await page.evaluate(()=>(window as any).royalDemo.getState().x))<1100){
+  await page.locator('#game').focus();await page.keyboard.down('ArrowRight');
+  try{await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getState().x),{timeout:15000,intervals:[25]}).toBeGreaterThan(1100);}finally{await page.keyboard.up('ArrowRight');}
+ }
  await page.locator('#games-tab').click();await page.locator('[data-cabinet="studio-afterglow"]').click();
+ await expect(page.locator('#mini-dialog')).toBeVisible({timeout:25000});await page.locator('[data-platform-game="studio-afterglow"]').click();
  await expect(page.locator('[data-afterglow-game]')).toHaveAttribute('data-asset-state','ready',{timeout:30000});
  await page.locator('[data-cc-action=enter]').click();await expect(page.locator('[data-cc-spin]')).toBeEnabled();
  await page.emulateMedia({reducedMotion:'no-preference'});
@@ -64,7 +59,7 @@ async function open(page:Page,language='ru'){
 
 test('confirmed outcomes animate once in the real host with connected desktop and mobile chat',async({page})=>{
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));let seed=1,posts=0,saved:ReturnType<typeof session>|undefined;
- await page.route('**/api/demo-wallet/expansion',route=>{
+ await page.route('**/api/game-wallet/expansion',route=>{
   if(route.request().method()==='POST'){posts++;saved=session(seed,route.request().postDataJSON().id);expect(validAfterSession(saved)).toBe(true);return route.fulfill({json:{wallet,sessions:[saved],session:saved,replayed:false}});}
   return route.fulfill({json:{wallet,sessions:saved?[saved]:[]}});
  });
@@ -91,10 +86,13 @@ test('confirmed outcomes animate once in the real host with connected desktop an
  await page.locator('#chat-input').fill('Проверка GirlHUB');await page.locator('#send-chat').click();await expect(page.locator('#chat-log')).toContainText('Проверка GirlHUB');
  // Wallet refresh and reopen consume saved state without a second presentation.
  saved=session(143,crypto.randomUUID());
+ await page.locator('.slot-settings-button').click();
  await page.locator('[data-cc-refresh]').click();await expect(page.locator('.ag-result')).toBeHidden();expect(posts).toBe(5);
  await expect(page.locator('[data-cc-total]')).toHaveAttribute('data-units','1380');
+ await page.locator('.slot-settings-dialog header button').click();
  await page.locator('#mini-dialog .mini-top [data-close]').click();
- await page.locator('[data-cabinet="studio-afterglow"]').click();await expect(game).toHaveAttribute('data-asset-state','ready');await page.locator('[data-cc-action=enter]').click();
+ if(!await page.locator('[data-cabinet="studio-afterglow"]').isVisible())await page.locator('#games-tab').click();
+ await page.locator('[data-cabinet="studio-afterglow"]').click();await page.locator('[data-platform-game="studio-afterglow"]').click();await expect(game).toHaveAttribute('data-asset-state','ready');await page.locator('[data-cc-action=enter]').click();
  expect((await diag(page)).accents.counts).toEqual({});expect(posts).toBe(5);
  seed=5;await page.locator('[data-cc-spin]').click();await expect(page.locator('[data-cc-action=bonus]')).toBeVisible();
  const bonus=await diag(page);expect(bonus.accents.counts.bonus).toBe(1);expect(bonus.accents.counts.win).toBeUndefined();expect(bonus.feedback.outcome).toBeNull();await expect(page.locator('.ag-result')).toBeHidden();expect(posts).toBe(6);
@@ -103,7 +101,7 @@ test('confirmed outcomes animate once in the real host with connected desktop an
 
 test('mute, reduced motion, hidden page and close cancel owned effects without replay',async({page})=>{
  let posts=0;
- await page.route('**/api/demo-wallet/expansion',route=>{
+ await page.route('**/api/game-wallet/expansion',route=>{
   if(route.request().method()==='POST'){posts++;const s=session(7085,route.request().postDataJSON().id);return route.fulfill({json:{wallet,sessions:[s],session:s,replayed:false}});}
   return route.fulfill({json:{wallet,sessions:[]}});
  });
@@ -115,9 +113,10 @@ test('mute, reduced motion, hidden page and close cancel owned effects without r
  expect((await diag(page)).accents.activeSources).toBe(0);await expect(page.locator('.ag-spark')).toHaveCount(0);
  await page.emulateMedia({reducedMotion:'no-preference'});await page.locator('[data-cc-sound]').click();
  await page.locator('[data-cc-spin]').click();await expect(page.locator('.ag-award')).toBeVisible();
- const other=await page.context().newPage();await other.goto('about:blank');await other.bringToFront();
- await expect.poll(()=>page.evaluate(()=>document.hidden)).toBe(true);expect((await diag(page)).accents.activeSources).toBe(0);
- await page.bringToFront();await other.close();await expect(page.locator('.ag-result')).toBeHidden();expect((await diag(page)).feedback.active).toBe(false);
+ await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,get:()=>true});document.dispatchEvent(new Event('visibilitychange'));});
+ expect((await diag(page)).accents.activeSources).toBe(0);
+ await page.evaluate(()=>{delete (document as any).hidden;document.dispatchEvent(new Event('visibilitychange'));});
+ await expect(page.locator('.ag-result')).toBeHidden();expect((await diag(page)).feedback.active).toBe(false);
  await page.locator('[data-cc-spin]').click();await expect(page.locator('.ag-result')).toBeVisible();
  await page.locator('#mini-dialog .mini-top [data-close]').click();await expect(page.locator('[data-afterglow-game]')).toHaveCount(0);
  expect(posts).toBe(4);

@@ -23,7 +23,7 @@ export class AfterglowFeedback {
   this.result=document.createElement('div');this.result.className='ag-result';this.result.hidden=true;
   this.result.innerHTML=tr`<div class="ag-result-rays" aria-hidden="true"></div><div class="ag-result-card"><small>ВЫПЛАТА ЗА РАУНД</small><h3></h3><strong data-ag-result-amount></strong><span data-ag-net></span><button type="button" data-ag-skip>Показать итог</button></div>`;
   this.result.querySelector('button')!.onclick=()=>{this.skip=true;};
-  this.board.append(this.layer);this.root.querySelector('.cc-board-frame')!.append(this.award,this.result);
+  this.board.append(this.layer);this.root.querySelector('.cc-board-frame')!.append(this.award);this.root.append(this.result);
  }
  focusBoard(){
   const stage=this.root.closest<HTMLElement>('.mini-stage');
@@ -92,6 +92,8 @@ export class AfterglowFeedback {
   this.result.querySelector('[data-ag-net]')!.textContent=tr`ИТОГ РАУНДА +${coins(net)}`;
   const amount=this.result.querySelector('[data-ag-result-amount]')!;amount.textContent=coins(0);
   const button=this.result.querySelector<HTMLButtonElement>('button')!;button.hidden=!motion;
+  const frame=this.root.querySelector('.cc-board-frame')!.getBoundingClientRect(),root=this.root.getBoundingClientRect(),scaleX=root.width/this.root.offsetWidth||1,scaleY=root.height/this.root.offsetHeight||1;
+  for(const [name,value]of Object.entries({left:(frame.left-root.left)/scaleX,top:(frame.top-root.top)/scaleY,width:frame.width/scaleX,height:frame.height/scaleY}))this.result.style.setProperty(`--ag-result-${name}`,`${value}px`);
   this.result.hidden=false;
   const duration=motion?(tier==='epic'?1800:tier==='big'?1350:850)*(fast?.65:1):160,hold=motion?(fast?100:250):0;
   const ok=await this.run(tier,duration+hold,()=>{

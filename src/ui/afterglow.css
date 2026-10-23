@@ -10,7 +10,7 @@
 .ag-award{position:absolute;z-index:10;left:50%;bottom:10%;transform:translateX(-50%);pointer-events:none;padding:8px 18px;border:1px solid #ffb44b;border-radius:8px;background:linear-gradient(135deg,#382009f2,#100e0df5);box-shadow:0 6px 22px #0009;text-align:center;white-space:nowrap;animation:ag-award-in .22s ease-out both}
 .ag-award small{display:block;color:#ffe0ae;font-size:clamp(9px,1vw,12px);letter-spacing:1px}
 .ag-award strong{display:block;color:#fff2d4;font-size:clamp(22px,3.2vw,42px);font-variant-numeric:tabular-nums;line-height:1.2;text-shadow:0 2px 12px #f906}
-.ag-result{position:absolute;inset:0;z-index:12;display:grid;place-items:center;overflow:hidden;border-radius:5px;background:#0c09078c;opacity:0}
+.ag-result{position:absolute;inset:auto;left:var(--ag-result-left);top:var(--ag-result-top);width:var(--ag-result-width);height:var(--ag-result-height);z-index:12;display:grid;place-items:center;overflow:hidden;border-radius:5px;background:#0c09078c;opacity:0}
 .ag-result[hidden],.ag-award[hidden]{display:none}
 .ag-result[data-revealed="true"]{opacity:1}
 .ag-result-card{position:relative;z-index:2;display:grid;justify-items:center;gap:6px;width:90%;max-width:430px;padding:22px 12px;border:1px solid #ffa722;border-radius:12px;background:linear-gradient(155deg,#3a2209f5,#14100efc 65%);box-shadow:0 12px 35px #000a,0 0 30px #ff99004d;text-align:center}
