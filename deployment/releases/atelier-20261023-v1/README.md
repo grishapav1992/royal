@@ -2,7 +2,7 @@
 
 The standalone `atelier-20261023-v1` candidate was built but never activated. Its source lock, installer and local validation describe that prepared candidate. Do not publish that older wallet adapter over the combined shared-wallet release.
 
-The atelier is included in `pvp-usdt-20261023-v2`, whose reviewed game source is `439d305626dc6d9d6b846e182606d88855ed38c0`. The combined release retains the small recessed booth, tall hall, layered elderly tailor animation, compact order form and stable generation button. Its purchase adapter uses the common Nile USDT journal. The final production image and verification are recorded in `deployment/SERVER.md` and `public-verification.json` after publication.
+The atelier was published in `neopolis-dracona-20261023-v1`, from source `5d97773ef73d353b51dbd7f1b575dfd243e8fdf6`. That shared release also includes the prepared PvP wallet work and the newer lounge layout. It retains the small recessed booth, tall hall, layered elderly tailor animation, compact order form and stable generation button. Its purchase adapter uses the common Nile USDT journal. `publication.json` records the guarded installer's source, image and preservation checks. `public-verification.json` records the independent public client checks; it does not establish financial service readiness.
 
 This is a cosmetic purchase, not a wagered game: $10 buys three generated options and permanent ownership of exactly one chosen outfit. There is no monetary prize or return. Technical generation failure refunds the reservation. Prompted appearance stays within the selected casino theme.
 
