@@ -6,7 +6,7 @@ export type ClubZone = { name: string; x: number; y: number; w: number; h: numbe
 // Frame the occupied first-floor area without changing the other floors' world bounds.
 export const ARCADE_OVERVIEW_SIZE = {width:2760,height:1380} as const;
 export const LUELON_NEW_ZONE = {
-  name: translateText('НАШИ ИГРЫ'),
+  name: translateText('ROYAL · НАШИ ИГРЫ'),
   x: 1100, y: 245, w: 720, h: 575, color: 0x263653,
   entrance: {x: 1060, y: 580},
   cosmic: {x: 1200, y: 430},
