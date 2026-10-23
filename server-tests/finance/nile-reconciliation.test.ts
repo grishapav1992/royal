@@ -59,6 +59,18 @@ async function setup(amount = '9007199254740993123456789', empty = false) {
         balance: async (address) => address === accounts[0].address ? BigInt(empty ? '0' : amount) : 0n }));
     return { ledger, sources };
 }
+test('a full audit does not age a fresh snapshot heartbeat, while an initially stale source is rejected', async context => {
+    const { ledger, sources } = await setup('7');
+    const start = Date.now(); let elapsed = 0;
+    context.mock.method(Date, 'now', () => start + elapsed);
+    const audit = ledger.audit.bind(ledger);
+    context.mock.method(ledger, 'audit', async () => { const result = await audit(); elapsed += 181000; return result; });
+    try {
+        assert.equal((await reconcileNileSnapshot(ledger, sources)).ok, true);
+        await assert.rejects(reconcileNileSnapshot(ledger, sources), /reconciliation_ledger_not_ready/);
+    } finally { context.mock.restoreAll(); await ledger.close(); }
+});
+
 test('an exact covered aggregate uses a consistent confirmed boundary and preserves the ledger', async () => {
     const { ledger, sources } = await setup();
     try {
