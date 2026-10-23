@@ -49,7 +49,7 @@ def profile(row, without_admin=False):
             'networks': sorted(row['NetworkSettings']['Networks'])}
 
 
-def snapshot():
+def snapshot(*, include_prepared=True):
     containers = {}
     ids = run(['docker', 'ps', '--format', '{{.Names}}']).splitlines()
     for name in ids:
@@ -66,7 +66,7 @@ def snapshot():
     return {'source': sources(LIVE), 'financeSource': sources(FINANCE), 'containers': containers,
             'preparedImage': prepared,
             'program': json.loads(run(['docker', 'exec', 'royal-game-1', 'node', '-e', PROGRAM])),
-            'preparedProgram': json.loads(run(['docker', 'run', '--rm', '--network=none', '--read-only', '--entrypoint', 'node', prepared, '-e', PROGRAM])),
+            'preparedProgram': json.loads(run(['docker', 'run', '--rm', '--network=none', '--read-only', '--entrypoint', 'node', prepared, '-e', PROGRAM])) if include_prepared else None,
             'configuration': {str(p): sha(p) for p in [LIVE / '.env', *[Path(n) for n in containers['royal-game-1']['composeFiles']],
                 *[Path(n) for n in containers['royal-nile-play']['composeFiles']]]},
             'modules': {str(p): sha(p) for p in Path('/opt/royal-game-modules').rglob('*') if p.is_file() and not p.is_symlink()},

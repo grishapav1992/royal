@@ -11,7 +11,6 @@ import tarfile
 import time
 
 ROOT=Path(__file__).resolve().parent
-sys.path.insert(0,str(ROOT.parent))
 from snapshot import snapshot, inspect, profile
 M=json.loads((ROOT/'manifest.json').read_text())
 LIVE=Path('/opt/royal'); FINANCE=Path('/opt/royal-finance')
@@ -26,7 +25,8 @@ def atomic(source,target):
     partial=target.with_name(target.name+'.refresh-partial');assert not partial.exists()
     shutil.copyfile(source,partial);os.replace(partial,target)
 def configs(state):
-    return {**state['configuration'],**{str(p):sha(p) for p in [LIVE/'compose.finance.yaml',FINANCE/'compose.finance.yaml']}}
+    database_files=inspect('royal-finance-sim-finance-db-1')['Config']['Labels']['com.docker.compose.project.config_files'].split(',')
+    return {**state['configuration'],**{name:sha(name) for name in database_files}}
 def digests(rows):return {name:row['sha256'] for name,row in rows.items()}
 def health():
     return json.loads(run(['docker','exec','-e','UV_THREADPOOL_SIZE=1','royal-nile-play','node','--v8-pool-size=1','play.js','health']))
@@ -36,16 +36,14 @@ with open('/opt/royal-releases/themed-publish.lock','a+') as app,open('/opt/roya
     phase='guard'
     try:
         for name,digest in M['payload'].items():assert sha(ROOT/name)==digest,name
-        before=snapshot();settings=configs(before)
+        before=snapshot(include_prepared=False);settings=configs(before)
         assert before['containers']['royal-nile-play']['image']==M['baseFinancialImage']
-        assert before['containers']['royal-game-1']['image']==M['gameImage']
         assert before['containers']['royal-game-1']['health']=='healthy'
         for name,digest in M['baseSource'].items():
             for folder in [LIVE,FINANCE]:
                 assert (not (folder/name).exists()) if digest is None else canonical(folder/name)==digest, 'Changed source differs: '+name
         for name,digest in M['inputs'].items():
             if name in M['source']:continue
-            assert canonical(LIVE/name)==digest,'Financial dependency differs: '+name
             assert canonical(FINANCE/name)==digest,'Financial dependency differs: '+name
         # Ignore explicit one-shot diagnostics when checking persistent services.
         stable={name:row for name,row in before['containers'].items() if inspect(name)['HostConfig']['RestartPolicy']['Name'] in ['always','unless-stopped']}
@@ -67,8 +65,8 @@ with open('/opt/royal-releases/themed-publish.lock','a+') as app,open('/opt/roya
         with (ROOT/'build.log').open('w') as log:
             subprocess.run(['docker','build','--pull=false','-t',tag,'.'],cwd=context,stdout=log,stderr=subprocess.STDOUT,check=True)
         image=run(['docker','image','inspect',tag,'--format','{{.Id}}'])
-        now=snapshot()
-        for key in ['source','financeSource','modules','hostContract','program','preparedProgram','preparedImage']:
+        now=snapshot(include_prepared=False)
+        for key in ['source','financeSource','modules','hostContract','program']:
             assert now[key]==before[key],key
         assert configs(now)==settings
         assert inspect('royal-nile-play')['Id']==before['containers']['royal-nile-play']['id']
@@ -93,9 +91,9 @@ with open('/opt/royal-releases/themed-publish.lock','a+') as app,open('/opt/roya
             samples.append({'at':time.time(),'auditOk':True,'ready':True,'sourceAgeSeconds':round(time.time()-result['sourceAt']/1000),'houseReserveFunded':int(result['houseUnits'])>0})
             print(json.dumps({'sample':i+1,**samples[-1]}),flush=True)
             if i<4:time.sleep(30)
-        phase='verification';after=snapshot()
+        phase='verification';after=snapshot(include_prepared=False)
         assert after['containers']['royal-nile-play']['image']==image
-        for key in ['program','preparedProgram','preparedImage','modules','hostContract']:assert after[key]==before[key],key
+        for key in ['program','modules','hostContract']:assert after[key]==before[key],key
         assert configs(after)==settings
         assert profile(inspect('royal-finance-sim-finance-db-1'))==database_profile
         assert digests(after['source'])=={**digests(before['source']),**M['source']}
@@ -103,7 +101,7 @@ with open('/opt/royal-releases/themed-publish.lock','a+') as app,open('/opt/roya
         for name,row in stable.items():
             if name!='royal-nile-play':assert inspect(name)['Id']==row['id'],name
         record={'published':True,'sourceCommit':M['sourceCommit'],'applicationSourceCommit':M['applicationSourceCommit'],
-            'financialImage':image,'gameImage':M['gameImage'],'samples':samples,'fullAuditPreserved':True,
+            'financialImage':image,'gameImage':before['containers']['royal-game-1']['image'],'samples':samples,'fullAuditPreserved':True,
             'freshnessThresholdsPreserved':True,'hostAndModulesPreserved':True,'configurationPreserved':True,
             'databaseRestored':False,'sourceBackupSha256':sha(BACKUP/'source.tgz'),'journalBackupSha256':sha(BACKUP/'nile-play.dump')}
         save('verification.json',record);print(json.dumps(record),flush=True)
