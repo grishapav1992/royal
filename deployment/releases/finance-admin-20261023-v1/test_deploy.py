@@ -19,7 +19,7 @@ class PublicationTests(unittest.TestCase):
             (root / 'runtime/payments.js').write_text('import pg from "pg";')
             tree = ast.parse((HERE / 'deploy.py').read_text())
             functions = ast.Module(body=[n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'build'], type_ignores=[])
-            run = Mock(side_effect=lambda args: 'new-payments' if args[1:3] == ['image', 'inspect'] else 'ok')
+            run = Mock(side_effect=lambda args: ('old-payments' if args[3] == 'royal-payments:before-test' else 'new-payments') if args[1:3] == ['image', 'inspect'] else 'ok')
             saved = Mock()
             env = {'ROOT': root, 'M': {'activationOnly': True, 'paymentImports': ['pg', 'express']},
                    'OLD': {'containers': {'game': {'image': 'old-game'}, 'payments': {'image': 'old-payments'}, 'nile': {'image': 'old-nile'}}},
