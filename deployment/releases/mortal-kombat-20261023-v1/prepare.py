@@ -46,7 +46,8 @@ for name, old in before['financeSource'].items():
 meta = json.loads((stage / 'artifacts/work/mortal-kombat-duel/financial-meta.json').read_text())
 assert meta['sourceCommit'] == revision, 'Financial source commit differs'
 for name in meta['inputs']:
-    if name.startswith('node_modules/'): continue
+    if 'node_modules' in Path(name).parts: continue
+    assert not Path(name).is_absolute() and '..' not in Path(name).parts, 'Financial input escaped source tree'
     assert (stage / name).is_file(), name
     if before['financeSource'].get(name,{}).get('lf') != canonical(stage / name):
         finance[name] = copy(stage / name, 'finance-source/' + name)
