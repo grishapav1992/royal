@@ -1,4 +1,5 @@
-import { t as translateText, tr, locale } from '../i18n/index';
+import {tr, locale} from '../i18n/index';
+import {afterText as translateText} from './AfterglowText';
 import {AfterglowWardrobeClient} from '../wallet/AfterglowWardrobeClient';
 import {AFTER_LOOK_TARGET_UNITS,AFTER_ALBUM_MAX_UNITS,afterAlbumUnlocked,AFTER_GALLERY_ORDER,AFTER_LOOK_RARITIES} from '../shared/afterglowWardrobe';
 import {SlotSettings} from './slotKit/SlotSettings';
@@ -17,6 +18,7 @@ import {AfterglowAssets,AFTER_ASSETS,afterCharacterAsset,type AfterAssetName,typ
 import {AfterglowAudio} from './AfterglowAudio';
 import {AfterglowWinSeries} from './AfterglowVoices';
 import {AfterglowBoard} from './AfterglowBoard';
+import {AfterglowFeedback} from './AfterglowFeedback';
 import {afterSymbol,afterGirl,afterPhoto} from './AfterglowArtwork';
 import {SlotPhotoViewer} from './slotKit/SlotPhotoViewer';
 import './caramel-carnival.css';
@@ -32,7 +34,7 @@ export class AfterglowUI {
  private artworkKey='';private dialogArtworkVersion=0;
  private wardrobe=new AfterglowWardrobeClient();private winSeries=new AfterglowWinSeries();private lookGirl=0;private lookFollowup:Dialog='';private wardrobeChanged=()=>{if(this.destroyed)return;this.selected=this.wardrobe.profile?.selectedGirl??0;this.loadArtwork();if(!this.live)this.features(this.session()?.view.afterglow);this.controls();};
  private photoViewer:SlotPhotoViewer;private settings?:SlotSettings;private stageSize?:ResizeObserver;private selected=0;private newlyUnlocked:number[]=[];private afterUnlock:Dialog='';
- private root:HTMLElement;private dialogShell!:SlotDialog;private stakeControls!:SlotStakeControls;private soundControls!:SlotAudioControls;private board:AfterglowBoard;private audio=new AfterglowAudio();private assets:AfterglowAssets;
+ private root:HTMLElement;private dialogShell!:SlotDialog;private stakeControls!:SlotStakeControls;private soundControls!:SlotAudioControls;private board:AfterglowBoard;private feedback:AfterglowFeedback;private audio=new AfterglowAudio();private assets:AfterglowAssets;
  private owner=client.accountId;private destroyed=false;private entered=false;private stake='100';private fast=false;private reduced=matchMedia('(prefers-reduced-motion: reduce)');private manualReduced=false;
  private dialog:Dialog='intro';private shown='';private lastWin='0';private error='';private live?:Live;private playback=new SlotPlayback({account:()=>client.accountId,hidden:()=>document.hidden});private sessions=new SlotSessions(afterglowSlot);private autoRemaining=0;private bonusRunning=false;private unsubscribe=()=>{};private unsubscribeVoices=()=>{};
  private change=()=>this.sync();private visibility=()=>{if(document.hidden){this.cancel();this.audio.pause();}this.sync();};private motionChanged=()=>{this.cancel();this.sync();};
@@ -47,6 +49,7 @@ export class AfterglowUI {
   if(stage){const fit=()=>{const r=stage.getBoundingClientRect();for(const[name,value]of Object.entries({top:r.top,left:r.left,width:r.width,height:r.height}))this.root.style.setProperty(`--ag-dialog-${name}`,`${value}px`);};this.stageSize=new ResizeObserver(fit);this.stageSize.observe(stage);fit();}
   this.assets=new AfterglowAssets(state=>this.assetState(state));
   this.board=new AfterglowBoard(this.find('[data-cc-board]'),{phase:value=>{if(this.live)this.root.dataset.phase=value;},stop:col=>{if(this.live)this.audio.stopReel(col);}});
+  this.feedback=new AfterglowFeedback(this.root,this.audio,units=>this.setTotal(units));
   this.bind();this.settings=new SlotSettings(this.root,this.find('.cc-footer'),this.find('.cc-tools'),()=>{this.stopAuto();this.controls();});this.unsubscribe=bindSlotLifecycle({changed:this.change,visibility:this.visibility,keyboard:this.keyboard,motion:this.reduced,motionChanged:this.motionChanged,audioChanged:()=>this.controls()});
   this.unsubscribeVoices=this.audio.onVoiceChange(()=>this.voiceControls());this.wardrobe.addEventListener('change',this.wardrobeChanged);this.wardrobe.setAccount(client.accountId);this.sync();this.openDialog('intro');this.loadArtwork();
  }
@@ -63,7 +66,7 @@ export class AfterglowUI {
  private valid(live:Live){return !this.destroyed&&this.playback.current(live,this.live);}
  private delay(ms:number,live:Live){return this.playback.delay(ms,()=>this.valid(live));}
  private stopAuto(){this.autoRemaining=0;this.bonusRunning=false;this.playback.cancelScheduled();}
- private cancel(){this.playback.cancel();this.stopAuto();this.live=undefined;this.board.cancel();this.audio.stopSpin();this.audio.cancelVoices();this.shown='';this.root.dataset.phase='idle';this.root.dataset.charging='false';resetGameOutcomes(this.root);}
+ private cancel(){this.playback.cancel();this.stopAuto();this.live=undefined;this.feedback.cancel();this.board.cancel();this.audio.pause();this.shown='';this.root.dataset.phase='idle';this.root.dataset.charging='false';resetGameOutcomes(this.root);}
  private assetState(state:AfterAssetState){
   if(this.destroyed)return;
   this.root.dataset.assetState=state.status;
@@ -147,7 +150,7 @@ this.find('[data-cc-status]').textContent=client.loading?translateText('Пров
   const spin=view?.spin,bonus=view?.bonus,active=!!bonus?.remaining,cells=spin?.cellsAfter??afterCells(),pins=spin?.pinsAfter??[];this.factor(Math.max(...cells));this.board.features(cells,pins);this.tickets(spin?.cameras??0,spin?.kind==='free');
   this.find('[data-cc-phase-title]').textContent=active?tr`ФОТОСЕССИЯ · ${bonus!.played} / ${bonus!.awarded}`:translateText('ОСНОВНАЯ ИГРА');this.find('[data-cc-free]').textContent=active?tr`${bonus!.remaining} бесплатных вращений`:translateText('Фотосессия ждёт');this.find('[data-cc-factor-note]').textContent=active?translateText('Заряд ячеек сохраняется до конца фотосессии'):translateText('Вспышки заряжают ячейки до ×4');this.find('[data-ag-pins]').textContent=`${pins.length} / 3 WILD`;
   const profile=this.wardrobe.profile,selected=profile?.selectedGirl??0,look=profile?.selectedLook??0,points=profile?.pointsUnits[selected]??0;
-  this.selected=selected;this.find('[data-ag-portrait]').innerHTML=afterGirl(selected,look,true);this.find('[data-ag-photo]').setAttribute('aria-label',tr`Посмотреть фото: ${AFTER_GIRLS[selected].name}, ${look===1?translateText('второй'):translateText('основной')} образ`);this.find('[data-ag-girl-name]').textContent=AFTER_GIRLS[selected].name;
+  this.selected=selected;const portrait=this.find('[data-ag-portrait]'),portraitKey=`${selected}:${look}`;if(portrait.dataset.look!==portraitKey){portrait.innerHTML=afterGirl(selected,look,true);portrait.dataset.look=portraitKey;}this.find('[data-ag-photo]').setAttribute('aria-label',tr`Посмотреть фото: ${AFTER_GIRLS[selected].name}, ${look===1?translateText('второй'):translateText('основной')} образ`);this.find('[data-ag-girl-name]').textContent=AFTER_GIRLS[selected].name;
   this.find('[data-ag-album-count]').textContent=look===1?translateText('Второй образ'):translateText('Основной образ');this.find('[data-ag-next]').textContent=profile?.unlocked[selected]?tr`Второй образ открыт · ${AFTER_LOOK_RARITIES[selected]}`:translateText('Открывай второй образ');const progress=this.find<HTMLProgressElement>('[data-ag-progress]');progress.max=AFTER_LOOK_TARGET_UNITS[selected];progress.value=points;progress.setAttribute('aria-label',translateText('Прогресс второго образа'));progress.setAttribute('aria-valuetext',profile?.unlocked[selected]?translateText('Образ открыт'):translateText('Образ открывается'));
 
  }
@@ -157,7 +160,7 @@ this.find('[data-cc-status]').textContent=client.loading?translateText('Пров
   if(this.blocked()||!this.entered||this.dialog)return;const previous=this.session(),active=previous?.state==='active',cost=active?0:Number(this.stake)/100;
   if(this.balance()<cost){this.error=translateText('Недостаточно USDT (Nile) для выбранной ставки.');this.stopAuto();this.controls();return;}
   const playedGirl=this.wardrobe.profile?.selectedGirl??0,wasOpen=this.wardrobe.profile?.unlocked[playedGirl]??false,wasAvailable=afterAlbumUnlocked(this.wardrobe.profile?.albumUnits??0);
-  void this.audio.enter();const live:Live={...this.playback.capture(client.accountId!),operationId:'',balance:this.balance(),motion:this.motion(),fast:this.fast,before:previous};this.live=live;this.error='';this.root.dataset.animationToken=live.token;this.find('[data-cc-groups]').replaceChildren();this.board.highlight([]);observeExpansionOutcome(this.root,AFTER_GAME,previous,client.accountId,true,true);
+  this.feedback.cancel();this.feedback.focusBoard();void this.audio.enter();const live:Live={...this.playback.capture(client.accountId!),operationId:'',balance:this.balance(),motion:this.motion(),fast:this.fast,before:previous};this.live=live;this.error='';this.root.dataset.animationToken=live.token;this.find('[data-cc-groups]').replaceChildren();this.board.highlight([]);observeExpansionOutcome(this.root,AFTER_GAME,previous,client.accountId,true,true);
   if(!active&&this.autoRemaining)this.autoRemaining--;
   {this.board.features(active?previous!.view.afterglow.bonus!.cells:afterCells(),active?previous!.view.afterglow.bonus!.pins:[]);this.root.dataset.phase='spinning';this.board.begin(live.token,live.motion,live.fast);void this.audio.begin(live.token);}this.controls();
   try{
@@ -166,7 +169,6 @@ this.find('[data-cc-status]').textContent=client.loading?translateText('Пров
    const promise=client.act(action);live.operationId=client.pending?.id??'';await promise;if(!this.valid(live))return;
    const s=this.session();if(!this.sessions.confirmed(s,previous,live.operationId))throw Error(translateText('Ход не подтверждён. Проверь прежнюю операцию.'));
    await this.present(s,live);if(!this.valid(live))return;
-   if(this.winSeries.accept(s))this.audio.reaction();
    await this.wardrobe.refresh();if(!this.valid(live))return;
    this.live=undefined;this.root.dataset.phase='idle';this.root.dataset.animationToken='';this.shown=this.key(s);if(s.state==='settled')this.lastWin=s.returnedUnits;this.features(s.view.afterglow);this.setTotal(s.view.afterglow.totalPayoutUnits);this.controls();observeExpansionOutcome(this.root,AFTER_GAME,s,client.accountId,false,false);
    const v=s.view.afterglow;let next:Dialog=s.state==='active'&&v.spin.kind==='base'?'bonus':s.state==='settled'&&v.history.some(spin=>spin.kind==='free')?'complete':'';
@@ -176,7 +178,7 @@ this.find('[data-cc-status]').textContent=client.loading?translateText('Пров
    if(next){this.stopAuto();this.openDialog(next);return;}
 
    if(s.state==='active'&&this.bonusRunning||s.state==='settled'&&this.autoRemaining>0)this.schedule();
-  }catch(e){if(this.valid(live)){this.error=(e as Error).message;this.stopAuto();this.live=undefined;this.board.cancel();this.audio.stopSpin();this.audio.cancelVoices();this.shown='';this.sync();}}
+  }catch(e){if(this.valid(live)){this.error=(e as Error).message;this.stopAuto();this.live=undefined;this.feedback.cancel();this.board.cancel();this.audio.pause();this.shown='';this.sync();}}
   finally{if(this.live===live&&!this.valid(live)){this.live=undefined;this.audio.stopSpin();}}
  }
  private async present(s:Session,live:Live){
@@ -184,17 +186,20 @@ this.find('[data-cc-status]').textContent=client.loading?translateText('Пров
   if(!await this.board.settle(live.token,spin.initialGrid)||!this.valid(live))return;this.audio.stopSpin();this.tickets(spin.initialGrid.filter(n=>n===7).length,spin.kind==='free');
   for(const frame of spin.frames){
    if(!this.valid(live))return;this.board.clearOverlay();this.board.show(frame.before);this.board.features(frame.cellsBefore,frame.pinsAfter);this.factor(Math.max(...frame.cellsBefore));this.board.highlight(frame.wins.flatMap(w=>w.positions));
-   if(frame.pinsAfter.length>frame.pinsBefore.length){this.find('[data-ag-pins]').textContent=`${frame.pinsAfter.length} / 3 WILD`;this.audio.pin();}
+   if(frame.pinsAfter.length>frame.pinsBefore.length){if(!await this.feedback.feature('pin',frame.pinsAfter.filter(p=>!frame.pinsBefore.includes(p)),live.motion,live.fast,()=>this.valid(live),()=>{this.find('[data-ag-pins]').textContent=`${frame.pinsAfter.length} / 3 WILD`;}))return;}
    if(!frame.wins.length)break;
-   this.root.dataset.phase='winning';this.find('[data-cc-message]').textContent=tr`КАСКАД ${frame.index+1} · ${frame.wins.length} ЛИНИЙ${frame.flashes.length?tr` · ${frame.flashes.length} ВСПЫШКИ`:''}`;this.find('[data-cc-groups]').innerHTML=frame.wins.map(w=>tr`<span>${afterSymbol(w.symbol)}<b>Л${w.line+1} ×${w.factor}: ${coins(w.payoutUnits)}</b></span>`).join('');total+=Number(frame.payoutUnits);this.setTotal(total);this.audio.cascade(frame.index);
-   if(live.motion&&!await this.delay(live.fast?160:480,live))return;
-   if(frame.flashes.length){this.root.dataset.phase='flash';this.audio.flash();this.board.features(frame.cellsAfter,frame.pinsAfter);this.factor(Math.max(...frame.cellsAfter));if(live.motion&&!await this.delay(live.fast?140:350,live))return;}
+   this.root.dataset.phase='winning';this.find('[data-cc-message]').textContent=tr`КАСКАД ${frame.index+1} · ${frame.wins.length} ЛИНИЙ${frame.flashes.length?tr` · ${frame.flashes.length} ВСПЫШКИ`:''}`;this.find('[data-cc-groups]').innerHTML=frame.wins.map(w=>tr`<span>${afterSymbol(w.symbol)}<b>Л${w.line+1} ×${w.factor}: ${coins(w.payoutUnits)}</b></span>`).join('');const from=total;total+=Number(frame.payoutUnits);
+   if(!await this.feedback.combination(frame,from,total,live.motion,live.fast,()=>this.valid(live)))return;
+   if(frame.flashes.length){this.root.dataset.phase='flash';if(!await this.feedback.feature('charge',frame.flashes,live.motion,live.fast,()=>this.valid(live),()=>{this.board.features(frame.cellsAfter,frame.pinsAfter);this.factor(Math.max(...frame.cellsAfter));for(const p of frame.flashes)this.find(`[data-ag-cell="${p}"]`).classList.add('ag-feature-cell');}))return;}
    if(frame.removed.length){this.root.dataset.phase='bursting';this.board.remove(frame.removed);if(live.motion&&!await this.delay(live.fast?100:220,live))return;this.root.dataset.phase='falling';this.audio.drop();if(live.motion){this.board.gravity(frame,live.fast);if(!await this.delay(live.fast?280:600,live))return;}this.board.clearOverlay();this.board.show(frame.after);this.tickets(frame.after.filter(n=>n===7).length,spin.kind==='free');}
   }
   if(!this.valid(live))return;this.board.clearOverlay();this.board.show(spin.finalGrid);this.board.highlight([]);this.features(v);this.setTotal(v.totalPayoutUnits);
-  if(spin.freeAward){this.root.dataset.phase='tickets';this.find('[data-cc-message]').textContent=spin.kind==='free'?tr`ЕЩЁ ${spin.freeAward} БЕСПЛАТНЫХ ВРАЩЕНИЯ`:tr`${spin.cameras} КАМЕРЫ · ФОТОСЕССИЯ ОТКРЫТА`;this.audio.tickets();if(live.motion&&!await this.delay(live.fast?250:800,live))return;}
+  if(spin.freeAward){this.root.dataset.phase='tickets';this.find('[data-cc-message]').textContent=spin.kind==='free'?tr`ЕЩЁ ${spin.freeAward} БЕСПЛАТНЫХ ВРАЩЕНИЯ`:tr`${spin.cameras} КАМЕРЫ · ФОТОСЕССИЯ ОТКРЫТА`;if(!await this.feedback.feature('bonus',spin.finalGrid.flatMap((symbol,p)=>symbol===7?[p]:[]),live.motion,live.fast,()=>this.valid(live),()=>this.audio.bonusVoice()))return;}
   else this.find('[data-cc-message]').textContent=v.capped?translateText('ДОСТИГНУТ ПРЕДЕЛ ВЫИГРЫША'):spin.frames.at(-1)?.stop==='cascade-limit'?translateText('10 ПОКАЗОВ ПОЛЯ · ВЫИГРЫШ СОХРАНЁН'):spin.frames.at(-1)?.stop==='held-line'?translateText('ЗАКРЕПЛЁННАЯ ЛИНИЯ ОПЛАЧЕНА'):Number(spin.payoutUnits)>0?translateText('ВЫИГРЫШ ПОДТВЕРЖДЁН'):s.state==='active'?translateText('ФОТОСЕССИЯ ПРОДОЛЖАЕТСЯ'):translateText('РАУНД ЗАВЕРШЁН');
-  this.audio.outcome(Number(spin.payoutUnits)>0);if(live.motion)await this.delay(live.fast?100:300,live);
+  if(s.state==='settled'){
+   this.root.dataset.phase='result';const voice=this.winSeries.accept(s);
+   await this.feedback.finish(s.spentUnits,s.returnedUnits,live.motion,live.fast,()=>this.valid(live),()=>{if(voice)this.audio.reaction();});
+  }else if(!spin.freeAward)this.find('[data-cc-message]').textContent=translateText('Фотосессия продолжается. Выплата после завершения раунда.');
  }
 
  private schedule(){this.playback.schedule(this.fast?140:500,()=>{if(!this.dialog&&!this.blocked()&&(this.bonusRunning||this.autoRemaining))void this.request('normal');});}
@@ -246,6 +251,7 @@ this.find('[data-cc-status]').textContent=client.loading?translateText('Пров
   else if(action==='bonus'){this.closeDialog();this.bonusRunning=true;await this.request('normal');}else this.closeDialog();
  }
 
- getAudioState(){return this.audio.state();}
- destroy(){if(this.destroyed)return;this.destroyed=true;this.dialogArtworkVersion++;this.photoViewer.destroy();this.unsubscribeVoices();this.stageSize?.disconnect();this.wardrobe.removeEventListener('change',this.wardrobeChanged);this.wardrobe.destroy();this.cancel();this.assets.destroy();this.board.destroy();this.audio.destroy();this.unsubscribe();this.settings?.destroy();this.dialogShell.destroy();this.stakeControls.destroy();this.soundControls.destroy();this.playback.destroy();this.host.replaceChildren();}
+ getAudioState(){return{...this.audio.state(),feedback:this.feedback.state()};}
+ getState(){return this.getAudioState();}
+ destroy(){if(this.destroyed)return;this.destroyed=true;this.dialogArtworkVersion++;this.photoViewer.destroy();this.unsubscribeVoices();this.stageSize?.disconnect();this.wardrobe.removeEventListener('change',this.wardrobeChanged);this.wardrobe.destroy();this.cancel();this.feedback.destroy();this.assets.destroy();this.board.destroy();this.audio.destroy();this.unsubscribe();this.settings?.destroy();this.dialogShell.destroy();this.stakeControls.destroy();this.soundControls.destroy();this.playback.destroy();this.host.replaceChildren();}
 }
