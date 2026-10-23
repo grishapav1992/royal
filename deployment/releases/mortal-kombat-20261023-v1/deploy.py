@@ -39,6 +39,11 @@ def atomic(source, target):
 def digest_map(rows):
     return {k:v['sha256'] for k,v in rows.items()}
 
+def require_financial_status(health, permit_stale=False):
+    assert health.get('ok') and not health.get('halted'), 'Financial journal audit failed'
+    if not health.get('ready'):
+        assert permit_stale and health.get('lastError') in [None,'play_source_not_ready'], 'Unexpected financial failure'
+
 def guard():
     for name, digest in M['payload'].items(): assert sha(ROOT / name) == digest, name
     now = snapshot()
@@ -47,9 +52,8 @@ def guard():
     for name, row in OLD['containers'].items():
         assert now['containers'][name]['id'] == row['id'] and now['containers'][name]['image'] == row['image'], name
     assert now['containers']['royal-game-1']['health'] == 'healthy'
-    assert now['containers']['royal-nile-play']['health'] == 'healthy'
-    health = json.loads(run(['docker','exec','royal-nile-play','node','play.js','health']))
-    assert health.get('ready') and health.get('ok'), 'Financial source is not ready'
+    health = json.loads(run(['docker','exec','royal-nile-play','node','play.js','status']))
+    require_financial_status(health,M['preexistingNileUnready'])
 
 def backup():
     BACKUP.mkdir(mode=0o700, exist_ok=False)

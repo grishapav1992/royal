@@ -55,5 +55,11 @@ class PublisherTests(unittest.TestCase):
  def test_payload_tampering_blocks_before_server_inspection(self):
   r=self.r;f=r.ROOT/'play.js';f.write_text('tampered');r.M={'payload':{'play.js':self.sha(b'expected')}}
   with self.assertRaises(AssertionError):r.guard()
+ def test_only_preexisting_staleness_allows_financial_repair(self):
+  stale={'ok':True,'halted':None,'lastError':'play_source_not_ready','ready':False}
+  with self.assertRaises(AssertionError):self.r.require_financial_status(stale)
+  self.r.require_financial_status(stale,True)
+  for change in [{'ok':False},{'halted':'corrupted'},{'lastError':'play_journal_corrupted'}]:
+   with self.assertRaises(AssertionError):self.r.require_financial_status({**stale,**change},True)
 
 if __name__=='__main__':unittest.main()

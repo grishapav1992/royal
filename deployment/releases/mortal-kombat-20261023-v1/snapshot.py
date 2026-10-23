@@ -3,6 +3,7 @@ from pathlib import Path
 import hashlib
 import json
 import subprocess
+import fcntl
 
 LIVE = Path('/opt/royal')
 FINANCE = Path('/opt/royal-finance')
@@ -74,4 +75,8 @@ def snapshot():
 
 
 if __name__ == '__main__':
+    locks=[]
+    for name in ['/opt/royal-releases/themed-publish.lock','/opt/royal/.client-presentation-deploy.lock','/opt/royal-game-modules-state/module.lock']:
+        handle=open(name,'a+')
+        fcntl.flock(handle,fcntl.LOCK_EX|fcntl.LOCK_NB);locks.append(handle)
     print(json.dumps(snapshot(), indent=2))
