@@ -120,6 +120,9 @@ def publish():
         for name in M['financeSource']: atomic(ROOT/'finance-source'/name,FINANCE/name)
         run(['docker','tag',images['financial'],'royal-nile-play:local'])
         nile_compose=OLD['containers']['royal-nile-play']['composeFiles']
+        audit=json.loads(run(['docker','compose',*[v for n in nile_compose for v in ['-f',n]],'run','-T','--rm','--no-deps','--entrypoint','node','nile-play','play.js','audit'],cwd=FINANCE))
+        assert audit.get('ok') and audit.get('testOnly'), 'Candidate journal audit failed'
+        save('candidate-audit.json',{'ok':True,'testOnly':True,'image':images['financial']})
         run(['docker','compose',*[v for n in nile_compose for v in ['-f',n]],'up','-d','--no-deps','--no-build','--force-recreate','nile-play'],cwd=FINANCE)
         wait_health('royal-nile-play',180)
         assert profile(inspect('royal-nile-play'))==OLD['containers']['royal-nile-play']['profile'], 'Financial isolation changed'
