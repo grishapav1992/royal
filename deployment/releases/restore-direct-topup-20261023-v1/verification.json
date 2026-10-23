@@ -1,0 +1,47 @@
+{
+  "sourceCommit": "09dbad7d86ec4b5c7d18c16715d1861de65468f3",
+  "productionBaseCommit": "0480b90a210e5485c96b74218218a274ff7a5966",
+  "image": "sha256:78e848093044af442f3471413f7519560b67ae311ff2c67897d34037993ef8be",
+  "backup": {
+    "path": "/opt/royal-backups/restore-direct-topup-20261023-v1/source.tgz",
+    "bytes": 192334692,
+    "sha256": "79d3caf4ada394be095454e2d287a1d863e0e9021950da0cbe2fd775175966b9",
+    "sourceFiles": 1754,
+    "fullRestoreHashCheck": true
+  },
+  "checks": {
+    "rtpGate": true,
+    "typecheck": true,
+    "walletAndHttpTests": 28,
+    "builtHostBrowserTests": 4,
+    "productionBrowserTests": 4,
+    "public": {
+      "at": "2026-10-23T21:44:16.680Z",
+      "sourceCommit": "09dbad7d86ec4b5c7d18c16715d1861de65468f3",
+      "publicOrigin": "https://stealth-spark-gokmxooi.expresshost.cloud",
+      "health": {
+        "ok": true,
+        "service": "royal-arcade"
+      },
+      "clientFiles": 3,
+      "activeModules": 116,
+      "allManifestHashesMatch": true
+    },
+    "testedOutputFiles": 1412,
+    "publishedClientFiles": 3,
+    "publishedSourceFiles": 45,
+    "publishedIndependentPackages": 116
+  },
+  "preserved": [
+    "production configuration",
+    "persistent volumes and player data",
+    "13 other persistent services",
+    "Nile journal and reserves",
+    "old immutable game URLs"
+  ],
+  "knownUnchangedTestFailures": {
+    "suite": "server-tests/casino-expansion.test.ts",
+    "cases": 5,
+    "reason": "The legacy suite attempts to start card games already removed from the catalog. The suite and retirement rules are unchanged by this release."
+  }
+}
