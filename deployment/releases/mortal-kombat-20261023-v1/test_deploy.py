@@ -61,5 +61,13 @@ class PublisherTests(unittest.TestCase):
   self.r.require_financial_status(stale,True)
   for change in [{'ok':False},{'halted':'corrupted'},{'lastError':'play_journal_corrupted'}]:
    with self.assertRaises(AssertionError):self.r.require_financial_status({**stale,**change},True)
+ def test_contract_guard_accepts_only_the_reviewed_existing_transition(self):
+  old={'games':{'studio-dracona':{'apiVersion':1,'rulesVersion':2,'progressVersion':1},'chess':{'apiVersion':1,'rulesVersion':1,'progressVersion':1}}}
+  new={'games':{**old['games'],'studio-dracona':{'apiVersion':1,'rulesVersion':3,'progressVersion':2},'mortal-kombat':{'apiVersion':1,'rulesVersion':2,'progressVersion':1}}}
+  self.r.verify_contracts(old,new)
+  new['games']['chess']['rulesVersion']=2
+  # Keep a distinct previous contract when testing an unexpected upgrade.
+  old['games']['chess']={'apiVersion':1,'rulesVersion':1,'progressVersion':1}
+  with self.assertRaisesRegex(AssertionError,'chess'):self.r.verify_contracts(old,new)
 
 if __name__=='__main__':unittest.main()
