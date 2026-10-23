@@ -17,6 +17,7 @@ services:
       PGPASSWORD_FILE: /run/secrets/royal_database_password
       PGSSLMODE: ${ROYAL_PGSSLMODE:-disable}
       NILE_PLAY_SCHEMA: royal_nile_play
+      FINANCE_ADMIN_ACCOUNT_IDS: ${FINANCE_ADMIN_ACCOUNT_IDS:-}
       NILE_TEST_SCHEMA: royal_nile_deposits
       NILE_TEST_MODE: testnet-only
       NILE_TEST_NETWORK: nile

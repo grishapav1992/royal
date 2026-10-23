@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { seededRandom } from '../src/shared/draconaMath';
-import { BOSSES, MAX_ROUND_SPINS, HEROES, LINES, WILD, SCATTER, evaluateLines, playNeopolisSpin, initialTeam, type Hero } from '../src/shared/neopolisMath';
+import { NEOPOLIS_MATH, BOSSES, MAX_ROUND_SPINS, HEROES, LINES, WILD, SCATTER, evaluateLines, playNeopolisSpin, initialTeam, type Hero } from '../src/shared/neopolisMath';
 import { advanceNeopolis, emptyNeopolisView, NEOPOLIS_GAME, validNeopolisView, validNeopolisSession, validNeopolisSettings } from '../src/shared/neopolis';
 import { startNeopolis, moveNeopolis } from '../server/games/neopolis';
 import { validExpansionAction } from '../src/shared/casinoExpansion';
@@ -12,14 +12,14 @@ test('forty unique fixed lines pay left to right, preserve scatters and apply th
   assert.equal(LINES.length, 40); assert.equal(new Set(LINES.map(line => line.join(','))).size, 40);
   const grid = Array(20).fill(SCATTER); grid[0] = 5; grid[1] = WILD; grid[2] = 5;
   const wins = evaluateLines(grid);
-  assert(wins.length > 0); assert(wins.every(win => win.count === 3 && win.symbol === 5 && win.points === 15));
-  assert(evaluateLines(grid, 1).every(win => win.points === 30));
-  assert(evaluateLines(grid, 3).every(win => win.points === 15));
+  assert(wins.length > 0); assert(wins.every(win => win.count === 3 && win.symbol === 5 && win.points === 15 * NEOPOLIS_MATH.payNumerator));
+  assert(evaluateLines(grid, 1).every(win => win.points === 30 * NEOPOLIS_MATH.payNumerator));
+  assert(evaluateLines(grid, 3).every(win => win.points === 15 * NEOPOLIS_MATH.payNumerator));
   grid[0] = SCATTER; assert.deepEqual(evaluateLines(grid), []);
 });
 
 test('recorded entropy replays team collection, all real powers, shield upgrades and three boss finishers', () => {
-  const draw = rng(42); let previous: { stakeUnits: string; view: ReturnType<typeof startNeopolis>['view'] } | undefined;
+  const draw = rng(95); let previous: { stakeUnits: string; view: ReturnType<typeof startNeopolis>['view'] } | undefined;
   const powers = new Set<Hero>(); let battles = 0, victories = 0;
   for (let spin = 0; spin < 60; spin++) {
     let result = startNeopolis(settings, '10000', previous, draw);
@@ -83,7 +83,7 @@ test('modified frames, charges, payouts, random draws and session envelopes cann
     (v: typeof result.view) => { v.history[0].draws.push(0); },
     (v: typeof result.view) => { v.battle = { remaining: 10, played: 0, shield: 3, core: 3, won: false }; },
   ]) { const value = structuredClone(result.view); mutate(value); assert.equal(validNeopolisView('10000', value), false); }
-  const session = { id: '11111111-1111-4111-8111-111111111111', gameId: NEOPOLIS_GAME, rulesVersion: 2, state: 'settled', stakeUnits: '10000', spentUnits: '10000', returnedUnits: String(result.credit), view: { player: [], dealer: [], community: [], phase: 2, ended: true, actions: [], message: result.message, neopolis: result.view } };
+  const session = { id: '11111111-1111-4111-8111-111111111111', gameId: NEOPOLIS_GAME, rulesVersion: 3, state: 'settled', stakeUnits: '10000', spentUnits: '10000', returnedUnits: String(result.credit), view: { player: [], dealer: [], community: [], phase: 2, ended: true, actions: [], message: result.message, neopolis: result.view } };
   assert(validNeopolisSession(session)); assert.equal(validNeopolisSession({ ...session, returnedUnits: '1' }), false);
   assert.equal(validNeopolisSettings({ neopolis: { hero: 'granite', bonus: true } }), false);
   const action = { id: session.id, gameId: NEOPOLIS_GAME, action: 'start', stakeUnits: '10000', settings };
@@ -163,7 +163,7 @@ test('legacy v1 transcripts replay unchanged and settled collection upgrades int
   const old = advanceNeopolis(emptyNeopolisView(initialTeam('granite'),1),'10000',rng(42));
   assert(old.ended && !old.view.team.complete);
   const next = startNeopolis(settings,'10000',{stakeUnits:'10000',view:old.view},rng(11));
-  assert.equal(next.view.version,2); assert.deepEqual(next.view.origin,old.view.team);
+  assert.equal(next.view.version,3); assert.deepEqual(next.view.origin,old.view.team);
   const tampered = structuredClone(next.view); tampered.history[0].result.battle = {remaining:100,played:0,shield:5,core:5,won:false,boss:2,defeated:2};
   assert(!validNeopolisView('10000',tampered));
 });

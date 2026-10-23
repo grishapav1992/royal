@@ -4,6 +4,8 @@ COPY package.json package-lock.json tsconfig.json tsconfig.finance.json ./
 RUN npm ci
 COPY server/database.ts server/database-migrations.ts ./server/
 COPY server/finance ./server/finance
+COPY server/admin/report.ts server/admin/validation.ts server/admin/nileGamesReport.ts ./server/admin/
+COPY server/crypto/config.ts ./server/crypto/config.ts
 COPY server/games ./server/games
 COPY src/shared ./src/shared
 COPY scripts/finance-*.ts scripts/database-archive.ts ./scripts/

@@ -4,6 +4,7 @@ import { resolve, relative, dirname, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash, randomUUID } from 'node:crypto';
 import { setTimeout as delay } from 'node:timers/promises';
+import { checkGameRtp } from './game-math/rtp-gate.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const sha = value => createHash('sha256').update(value).digest('hex');
@@ -19,6 +20,7 @@ if (args[0] === '--game' && args.length === 2) selection = args[1];
 else if (args.length === 1 && !args[0].startsWith('-')) selection = args[0];
 else if (!args.length) selection = dirname(process.cwd()) === resolve(root, 'games') ? basename(process.cwd()) : 'girlhub';
 if (!all && !catalog.has(selection)) throw Error('Choose a registered game package with --game <slug>, or use --all');
+await checkGameRtp(root, GAME_MODULES, (all ? GAME_MODULES : [catalog.get(selection)]).map(game => game.gameId));
 
 const bridgeModules = new Map([
  ['src/wallet/ExpansionClient', ['expansionClient']],

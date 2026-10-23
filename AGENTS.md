@@ -10,6 +10,14 @@
 - Read the fetched `origin/main:AGENTS.md` when local instructions differ, and apply its current project rules together with applicable local instructions. Do not request confirmation for routine fetching, clean fast-forward updates or creating an isolated worktree within the authorized task.
 - Fetch again before integrating, pushing or publishing, and reconcile changes made by other chats. If fetching fails, report that freshness could not be verified; do not claim that the checkout is current or silently publish from an outdated base.
 
+## Mandatory game mathematics qualification
+
+- Before adding a wagered game or changing probabilities, paytables, free spins, multipliers, collection progress or paid costs, register its RTP policy and qualify the complete paid round, including every bonus continuation, allowed stake and player choice. Preserve accepted rounds under their original rules.
+- Run `npm run check:rtp` and the relevant mathematical, wallet and compatibility tests. `npm run build` and independent module builds enforce current source hashes and qualification evidence. A stale or missing qualification is a release blocker; do not bypass the gate or edit a proof to make a build pass.
+- Regenerate evidence with `npm run qualify:rtp -- --game <game-id> --write-proof` after changing mathematics. Use independent qualification seeds, integer settlement, confidence limits and explicit target/tolerance; distinguish observed estimates from exact analytical RTP.
+- `scripts/game-math/rtp-legacy-baseline.json` freezes existing modules outside this initial gate. It does not qualify them and must not be expanded to admit new games. Register new wagered modules with qualification or explicitly document genuinely non-wagered modules.
+- The legacy baseline also freezes mathematical source hashes. Changing a frozen source requires qualification profiles covering every affected game and mode; unchanged legacy sources are not evidence of acceptable RTP. Do not update the baseline to avoid qualification.
+
 ## Game animation and sound
 
 - Before designing or changing game animation and audio, read `docs/game-feedback.md`. Use its event specification and verification guidance together with the game's existing design and module boundaries. Preserve choices already authorized by the user.

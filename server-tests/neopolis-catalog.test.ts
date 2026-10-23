@@ -9,19 +9,17 @@ import { gameModuleContract } from '../src/modules/GameModuleCatalog';
 import { BAR_APPROACH, HALLS, HALL_DOORS, hallObstacles } from '../src/shared/world';
 import { findPath, walkable } from '../src/game/navigation';
 
-test('Neopolis is an active independent cabinet with its own exact lines and contract', () => {
-  assert.deepEqual(gameModuleContract(NEOPOLIS_GAME), { gameId:NEOPOLIS_GAME, slug:'neopolis', apiVersion:1, rulesVersion:2, progressVersion:2 });
-  assert((ACTIVE_STUDIO_GAMES as readonly string[]).includes(NEOPOLIS_GAME)); assert(!isRetiredArcadeGame(NEOPOLIS_GAME));
+test('Neopolis keeps its qualified independent contract without publishing the prototype in the current hall', () => {
+  assert.deepEqual(gameModuleContract(NEOPOLIS_GAME), { gameId:NEOPOLIS_GAME, slug:'neopolis', apiVersion:1, rulesVersion:3, progressVersion:3 });
+  assert(!(ACTIVE_STUDIO_GAMES as readonly string[]).includes(NEOPOLIS_GAME)); assert(!isRetiredArcadeGame(NEOPOLIS_GAME));
   assert.deepEqual(STUDIO_INFO[NEOPOLIS_GAME].paylines, LINES); assert.equal(STUDIO_MAX[NEOPOLIS_GAME], 3000);
-  const cabinet = CABINETS.find(cabinet => cabinet.id === NEOPOLIS_GAME)!;
-  assert(cabinet?.wallet && cabinet.playable); assert.deepEqual({x:cabinet.x,y:cabinet.y}, ARCADE_CABINET_POSITIONS[NEOPOLIS_GAME]);
-  // Adding this cabinet preserves the positions of all previously active house games.
-  const retained = ['studio-cosmic-escape','studio-caramel-carnival','studio-velvet-reign','studio-last-convoy','studio-nitro-run','studio-afterglow','studio-meme-overload','github-crash','royal-plinko','original-cr-vs-leo','studio-dracona'];
-  retained.forEach((id,index) => assert.deepEqual(ARCADE_CABINET_POSITIONS[id], {x:1200+index%5*135,y:430+Math.floor(index/5)*270}));
+  assert(!CABINETS.some(cabinet=>cabinet.id===NEOPOLIS_GAME));
+  const cabinet = CABINETS.find(cabinet=>cabinet.id==='studio-dracona')!;
+  assert(cabinet?.wallet && cabinet.playable);assert.deepEqual({x:cabinet.x,y:cabinet.y},ARCADE_CABINET_POSITIONS['studio-dracona']);
 });
 
-test('the new cabinet can be reached from the player spawn, stairs and bar', () => {
-  const cabinet = CABINETS.find(cabinet => cabinet.id === NEOPOLIS_GAME)!, target = {x:cabinet.x,y:cabinet.y+43};
+test('the published Dracona cabinet remains reachable from spawn, stairs and bar', () => {
+  const cabinet = CABINETS.find(cabinet => cabinet.id === 'studio-dracona')!, target = {x:cabinet.x,y:cabinet.y+43};
   const obstacles = hallObstacles('arcade');
   assert(walkable(target.x,target.y,obstacles,16));
   for (const source of [HALLS.arcade.spawn,HALL_DOORS.arcade.arrival,BAR_APPROACH]) {

@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "profiles": {
+    "studio-neopolis": {
+      "rulesVersion": 3, "progressVersion": 3, "target": 0.96, "tolerance": 0.01, "maxUpper95": 0.98, "maxHalfWidth95": 0.01,
+      "minPaidRounds": 1000000, "minCycles": 20000, "seeds": [872031, 918273], "qualificationCyclesPerSeed": 10000,
+      "stakes": [1000, 2000, 5000, 10000, 20000, 50000], "choices": ["granite", "impulse", "prism"],
+      "proof": "docs/game-math/qualifications/neopolis-v3.json",
+      "sources": ["src/shared/neopolisMath.ts", "src/shared/neopolisMathV1.ts", "src/shared/neopolisMathV2.ts", "src/shared/neopolis.ts", "server/games/neopolis.ts"]
+    },
+    "studio-dracona": {
+      "rulesVersion": 3, "progressVersion": 2, "target": 0.96, "tolerance": 0.01, "maxUpper95": 0.98, "maxHalfWidth95": 0.01,
+      "minPaidRounds": 5000000, "minCycles": 0, "seeds": [872031, 918273], "qualificationRoundsPerSeed": 2500000,
+      "stakes": [1000, 2000, 5000, 10000, 20000, 50000], "choices": ["normal"],
+      "proof": "docs/game-math/qualifications/dracona-v3.json",
+      "sources": ["src/shared/draconaMath.ts", "src/shared/draconaMathV1.ts", "src/shared/dracona.ts", "server/games/dracona.ts"]
+    }
+  },
+  "nonWagered": {}
+}

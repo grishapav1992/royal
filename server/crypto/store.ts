@@ -10,6 +10,9 @@ import { CryptoError, type CryptoConfig } from './config';
 import { providerId, validIpn, type CryptoProvider } from './nowpayments';
 import type { LedgerChange } from '../payments/outbox';
 import { CryptoDisplayRates } from './displayRates';
+import { adjustmentRequest, requireFinanceAdmin, sameAdjustment } from '../admin/validation';
+import type { FinanceAdjustment } from '../../src/shared/financeAdmin';
+import { immutableLedgerTables } from '../finance/pg-ledger-schema';
 
 const fail = (status: number, message: string): never => { throw new CryptoError(status, message); };
 const json = (row: DatabaseRow) => JSON.parse(String(row.detail));
@@ -48,7 +51,14 @@ export class CryptoStore {
   constructor(readonly db: PostgresDatabase, readonly config: CryptoConfig, readonly provider: CryptoProvider,
     prerequisite: Promise<void> = Promise.resolve(), private now = Date.now, private draw = randomInt,
     private ledgerChanged?: (change: LedgerChange) => Promise<void>) {
-    this.ready = prerequisite.then(() => applySchemaMigration(db, { id: 'crypto-gateway-v1', statements: schema }));
+    this.ready = prerequisite.then(async () => {
+      await applySchemaMigration(db, { id: 'crypto-gateway-v1', statements: schema });
+      await applySchemaMigration(db,{id:'finance-admin-adjustments-v1',statements:[
+        `CREATE TABLE IF NOT EXISTS finance_adjustments(id TEXT PRIMARY KEY,actor_id TEXT NOT NULL,player_id TEXT NOT NULL REFERENCES accounts(id),
+          delta_units BIGINT NOT NULL CHECK(delta_units<>0),reason TEXT NOT NULL,created_at BIGINT NOT NULL)`,
+      ]});
+      await db.transaction(() => immutableLedgerTables(db,['finance_adjustments'],'immutable finance adjustment'));
+    });
     this.displayRates = new CryptoDisplayRates((from, to, value) => provider.estimate(from, to, value), now);
   }
   private enabled(withdrawal = false) {
@@ -408,7 +418,33 @@ export class CryptoStore {
         AND o.kind='withdrawal' AND o.state NOT IN ('finished','refunded'))`).all();
     const deposits = await this.db.prepare(`SELECT o.id FROM crypto_operations o WHERE o.kind='deposit' AND o.credited_units<>
       (SELECT coalesce(sum(l.available_delta),0) FROM crypto_ledger l WHERE l.account_id=o.account_id AND l.operation_id=o.id AND l.entry_key LIKE 'deposit:%')`).all();
-    return { ok: invalid.length + deposits.length === 0, mismatches: invalid.length + deposits.length };
+    const adjustments = await this.db.prepare(`SELECT a.id FROM finance_adjustments a LEFT JOIN crypto_ledger l ON l.entry_key='adjustment:'||a.id
+      WHERE l.id IS NULL OR l.account_id<>a.player_id OR l.operation_id<>a.id OR l.available_delta<>a.delta_units OR l.reserved_delta<>0
+      UNION ALL SELECT l.operation_id FROM crypto_ledger l LEFT JOIN finance_adjustments a ON l.entry_key='adjustment:'||a.id
+      WHERE l.entry_key LIKE 'adjustment:%' AND a.id IS NULL`).all();
+    return { ok: invalid.length + deposits.length + adjustments.length === 0, mismatches: invalid.length + deposits.length + adjustments.length };
+  }
+  async adminAdjust(value: unknown, ids?: Set<string>) {
+    const op=adjustmentRequest(value); requireFinanceAdmin(op.actorId,ids);
+    return this.atomic(async () => {
+      const prior=await this.db.prepare('SELECT * FROM finance_adjustments WHERE id=?').get(op.id);
+      if(prior){
+        const saved:FinanceAdjustment={id:prior.id,actorId:prior.actor_id,playerId:prior.player_id,deltaUnits:String(prior.delta_units),reason:prior.reason,createdAt:Number(prior.created_at)};
+        sameAdjustment(saved,op); return {adjustment:saved,replayed:true};
+      }
+      this.enabled();
+      if(!await this.db.prepare('SELECT 1 FROM accounts WHERE id=?').get(op.playerId)) fail(404,'Платёжный кошелёк игрока ещё не создан.');
+      const delta=BigInt(op.deltaUnits);
+      if(delta>0n){
+        const treasury=units((await this.provider.balance())[CRYPTO_SETTLEMENT]?.amount??'0');
+        const liabilities=BigInt((await this.db.prepare('SELECT coalesce(sum(balance_units+reserved_units),0)::text AS n FROM crypto_wallets').get())!.n);
+        if(treasury<liabilities+delta) fail(409,'Свободного резерва недостаточно для начисления.');
+      }
+      const adjustment:FinanceAdjustment={...op,createdAt:this.now()};
+      await this.post(op.playerId,op.id,'adjustment:'+op.id,delta,0n);
+      await this.db.prepare('INSERT INTO finance_adjustments VALUES(?,?,?,?,?,?)').run(op.id,op.actorId,op.playerId,op.deltaUnits,op.reason,adjustment.createdAt);
+      return {adjustment,replayed:false};
+    });
   }
   async recoverConversion(id: string, conversionId: string) {
     this.enabled(true);

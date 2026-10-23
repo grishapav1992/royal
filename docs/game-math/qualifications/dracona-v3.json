@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 1,
+  "gameId": "studio-dracona",
+  "rulesVersion": 3,
+  "progressVersion": 2,
+  "startedAt": "2026-10-23T17:35:38.601Z",
+  "completedAt": "2026-10-23T17:36:56.564Z",
+  "sourceHashes": {
+    "src/shared/draconaMath.ts": "5735d0173b801e80329ec93f9d0dc049da94068addd042f7de0fb6bf9ca248b4",
+    "src/shared/draconaMathV1.ts": "760b567c64aae4a5190641cad162fd9a6ff9e5764e8bd9d91d06dcb1d707ee21",
+    "src/shared/dracona.ts": "fa6d089b90592693ac3da96fed174f53db6733c37f3ab16e9205cc606396d649",
+    "server/games/dracona.ts": "9d7b86aa2db9dd2ebe0d6a6dc09283a33b868b03a1e5c444f722d90822e9fa95",
+    "scripts/game-math/rtp-simulation.mjs": "b5c74c5d41dc3ec173a7ee7ec0f42ee8842c433e58ac6a12828ed07b68de57b8"
+  },
+  "policySha256": "85540f31dcf6e574e60de864c188a222d8c2b96b40a62b7551975fe4108ed781",
+  "serverReplayChecks": 384,
+  "method": "independent complete paid rounds, with all rune state and free retriggers",
+  "streams": [
+    {
+      "choice": "normal",
+      "seed": 872031,
+      "paidRounds": 2500000
+    },
+    {
+      "choice": "normal",
+      "seed": 918273,
+      "paidRounds": 2500000
+    }
+  ],
+  "results": [
+    {
+      "choice": "normal",
+      "stakeUnits": 1000,
+      "cycles": 0,
+      "freeSpins": 1434358,
+      "bonuses": 165174,
+      "samples": 5000000,
+      "paidRounds": 5000000,
+      "reward": 4788863.18197269,
+      "cost": 5000000,
+      "rewardSquared": 120443111.49251115,
+      "rewardCost": 4788863.18197269,
+      "costSquared": 5000000,
+      "rtp": 0.957772636394538,
+      "interval95": [
+        0.9535532795631003,
+        0.9619919932259757
+      ]
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 2000,
+      "cycles": 0,
+      "freeSpins": 1434358,
+      "bonuses": 165174,
+      "samples": 5000000,
+      "paidRounds": 5000000,
+      "reward": 4789334.52598759,
+      "cost": 5000000,
+      "rewardSquared": 120455428.78374065,
+      "rewardCost": 4789334.52598759,
+      "costSquared": 5000000,
+      "rtp": 0.9578669051975179,
+      "interval95": [
+        0.9536473405222834,
+        0.9620864698727525
+      ]
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 5000,
+      "cycles": 0,
+      "freeSpins": 1434358,
+      "bonuses": 165174,
+      "samples": 5000000,
+      "paidRounds": 5000000,
+      "reward": 4789549.417584648,
+      "cost": 5000000,
+      "rewardSquared": 120461516.17832139,
+      "rewardCost": 4789549.417584648,
+      "costSquared": 5000000,
+      "rtp": 0.9579098835169296,
+      "interval95": [
+        0.9536902154966937,
+        0.9621295515371655
+      ]
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 10000,
+      "cycles": 0,
+      "freeSpins": 1434358,
+      "bonuses": 165174,
+      "samples": 5000000,
+      "paidRounds": 5000000,
+      "reward": 4789614.264791648,
+      "cost": 5000000,
+      "rewardSquared": 120463336.01101889,
+      "rewardCost": 4789614.264791648,
+      "costSquared": 5000000,
+      "rtp": 0.9579228529583296,
+      "interval95": [
+        0.9537031540646688,
+        0.9621425518519904
+      ]
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 20000,
+      "cycles": 0,
+      "freeSpins": 1434358,
+      "bonuses": 165174,
+      "samples": 5000000,
+      "paidRounds": 5000000,
+      "reward": 4789638.437741127,
+      "cost": 5000000,
+      "rewardSquared": 120464077.80082107,
+      "rewardCost": 4789638.437741127,
+      "costSquared": 5000000,
+      "rtp": 0.9579276875482253,
+      "interval95": [
+        0.9537079759913625,
+        0.9621473991050882
+      ]
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 50000,
+      "cycles": 0,
+      "freeSpins": 1434358,
+      "bonuses": 165174,
+      "samples": 5000000,
+      "paidRounds": 5000000,
+      "reward": 4789646.154996115,
+      "cost": 5000000,
+      "rewardSquared": 120464273.35493578,
+      "rewardCost": 4789646.154996115,
+      "costSquared": 5000000,
+      "rtp": 0.957929230999223,
+      "interval95": [
+        0.9537095161509413,
+        0.9621489458475047
+      ]
+    }
+  ]
+}

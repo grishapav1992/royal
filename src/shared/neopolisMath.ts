@@ -1,4 +1,5 @@
-/** Neopolis campaign rules v2. Deterministic math shared with replay validation. */
+/** Neopolis campaign rules v3. Points are millionths of the line stake. */
+export const NEOPOLIS_MATH = { version: 3, symbolWeightScale: 1000, scatterWeight: 1500, payNumerator: 347000, payDenominator: 1000000 } as const;
 export const COLS = 5, ROWS = 4, SIZE = COLS * ROWS, WILD = 6, SCATTER = 7;
 export const HEROES = ['granite', 'impulse', 'prism'] as const;
 export type Hero = typeof HEROES[number];
@@ -15,7 +16,7 @@ export type Battle = { remaining: number; played: number; shield: number; core: 
 export type Win = { line: number; symbol: number; count: number; cells: number[]; points: number };
 export type Frame = { kind: 'deal' | 'win' | 'cascade' | 'hero' | 'finisher' | 'boss-hit' | 'boss-defeated' | 'boss-arrival'; grid: number[]; emblems: number[]; cells: number[]; wins: Win[]; hero?: Hero; points: number; battle?: Battle | null };
 export type Spin = { frames: Frame[]; grid: number[]; team: Team; battle: Battle | null; activated: Hero[]; unlocked: Hero[]; points: number; free: boolean; triggered: boolean; finished: boolean; finisher: boolean; empowered: boolean };
-export const PAYTABLE = [[5, 15, 40], [6, 20, 50], [8, 25, 70], [10, 35, 100], [12, 50, 150], [15, 75, 250]] as const;
+export const PAYTABLE = [[5, 15, 40], [6, 20, 50], [8, 25, 70], [10, 35, 100], [12, 50, 150], [15, 75, 250]].map(row => row.map(value => value * NEOPOLIS_MATH.payNumerator));
 export const MAX_CASCADES = 8;
 const patterns = [[0,0,0,0,0], [0,1,2,1,0], [0,3,2,3,0], [0,0,1,0,0], [0,0,3,0,0], [0,1,1,1,0], [0,3,3,3,0], [0,1,2,3,0], [0,3,2,1,0], [0,2,0,2,0]];
 export const LINES = patterns.flatMap(pattern => Array.from({ length: ROWS }, (_, offset) => pattern.map(row => (row + offset) % ROWS)));
@@ -56,7 +57,8 @@ export function playNeopolisSpin(sourceTeam: Team, sourceBattle: Battle | null, 
     frames.push({ kind, grid: [...grid], emblems: [...emblems], cells, wins, ...(hero ? { hero } : {}), points, battle: battle ? structuredClone(battle) : null });
   };
   const spawn = (cell: number) => {
-    const weights = [24,22,20,17,14,11, cell % COLS > 0 && cell % COLS < 4 ? 2 : 0, !free && readyTeam(team) ? 7 : 0];
+    const weights = [24,22,20,17,14,11, cell % COLS > 0 && cell % COLS < 4 ? 2 : 0].map(weight => weight * NEOPOLIS_MATH.symbolWeightScale);
+    weights.push(!free && readyTeam(team) ? NEOPOLIS_MATH.scatterWeight : 0);
     let stop = take(weights.reduce((sum, weight) => sum + weight, 0));
     let symbol = 0;
     while (stop >= weights[symbol]) { stop -= weights[symbol]; symbol++; }
