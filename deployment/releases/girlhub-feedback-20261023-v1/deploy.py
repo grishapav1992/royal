@@ -79,6 +79,7 @@ def validate():
         require(value['version'] == M['games'][game]['version'] and value['beforeSha256'] == M['games'][game]['priorPointerSha256'], 'Module pointer changed')
         checked[game] = value
     before = snapshot()
+    write('checked-before.json', before)
     unchanged(before)
     for key in ['source', 'moduleFiles']:
         require(before[key] == OLD[key], 'Production baseline changed: ' + key)
@@ -168,7 +169,8 @@ def publish():
 
 if __name__ == '__main__':
     require(len(sys.argv) == 2 and sys.argv[1] in ['check', 'publish'], 'Unknown operation')
-    with (LIVE / '.client-presentation-deploy.lock').open('a') as shared, (STATE / 'module.lock').open('a') as module:
+    with Path('/opt/royal-releases/themed-publish.lock').open('a') as themed, (LIVE / '.client-presentation-deploy.lock').open('a') as shared, (STATE / 'module.lock').open('a') as module:
+        fcntl.flock(themed, fcntl.LOCK_EX | fcntl.LOCK_NB)
         fcntl.flock(shared, fcntl.LOCK_EX | fcntl.LOCK_NB)
         fcntl.flock(module, fcntl.LOCK_EX | fcntl.LOCK_NB)
         print(json.dumps(validate() if sys.argv[1] == 'check' else publish()))

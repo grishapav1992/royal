@@ -23,5 +23,10 @@
     "nativeAssets": 2,
     "pendingOperationRecovery": 1
   },
-  "publisherTests": "Requires Linux fcntl; will run in isolated server staging, not production paths"
+  "publisherTests": {
+    "platform": "Linux server staging, isolated temporary fixtures",
+    "passed": 11,
+    "productionPathsUsed": false,
+    "windowsNote": "The Linux publisher imports fcntl, unavailable in native Windows Python."
+  }
 }
