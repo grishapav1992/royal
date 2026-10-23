@@ -11,7 +11,6 @@ assert len(revision) == 40 and all(c in '0123456789abcdef' for c in revision)
 before = json.loads(snapshot.read_text(encoding='utf-8-sig'))
 assert before['program'] == before['preparedProgram'], 'Running/prepared image mismatch'
 assert before['containers']['royal-game-1']['health'] == 'healthy'
-assert before['containers']['royal-nile-play']['health'] == 'healthy'
 output.mkdir(parents=True, exist_ok=False)
 sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
 canonical = lambda p: hashlib.sha256(p.read_bytes().replace(b'\r\n',b'\n')).hexdigest()

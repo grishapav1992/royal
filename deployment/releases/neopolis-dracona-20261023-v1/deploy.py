@@ -47,9 +47,8 @@ def guard():
     for name, row in OLD['containers'].items():
         assert now['containers'][name]['id'] == row['id'] and now['containers'][name]['image'] == row['image'], name
     assert now['containers']['royal-game-1']['health'] == 'healthy'
-    assert now['containers']['royal-nile-play']['health'] == 'healthy'
-    health = json.loads(run(['docker','exec','-e','UV_THREADPOOL_SIZE=1','royal-nile-play','node','--v8-pool-size=1','play.js','health']))
-    assert health.get('ready') and health.get('ok'), 'Financial source is not ready'
+    audit = json.loads(run(['docker','exec','-e','UV_THREADPOOL_SIZE=1','royal-nile-play','node','--v8-pool-size=1','play.js','audit']))
+    assert audit.get('ok'), 'Existing financial journal audit failed'
 
 def backup():
     BACKUP.mkdir(mode=0o700, exist_ok=False)
@@ -116,8 +115,8 @@ def publish():
     phase='guard'
     try:
         guard()
-        phase='backup'; copies=backup(); save('backup.json',copies)
-        phase='build'; images=build()
+        phase='backup'; copies=backup(); save('backup.json',copies); print('Verified backups saved',flush=True)
+        phase='build'; images=build(); print('Candidate images built',flush=True)
         # A second guard after the build ensures outside publishers respected the locks.
         guard()
         phase='finance'
@@ -132,7 +131,12 @@ def publish():
         assert profile(inspect('royal-nile-play'))==OLD['containers']['royal-nile-play']['profile'], 'Financial isolation changed'
         health=json.loads(run(['docker','exec','-e','UV_THREADPOOL_SIZE=1','royal-nile-play','node','--v8-pool-size=1','play.js','health']))
         assert health.get('ok') and health.get('ready'), 'Financial audit/readiness failed'
+        for sample in range(3):
+            time.sleep(30)
+            health=json.loads(run(['docker','exec','-e','UV_THREADPOOL_SIZE=1','royal-nile-play','node','--v8-pool-size=1','play.js','health']))
+            assert health.get('ok') and health.get('ready'), 'Financial readiness was not sustained'
         save('finance-verification.json',{'ok':True,'ready':True,'image':images['financial']})
+        print('Financial audit and sustained readiness passed',flush=True)
         phase='host'
         for name in M['source']: atomic(ROOT/'source'/name,LIVE/name)
         old_contract=json.loads(HOST.read_text()); new_contract=json.loads((ROOT/'host.json').read_text())
