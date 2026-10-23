@@ -66,7 +66,11 @@ def snapshot():
                 'composeFiles': row['Config'].get('Labels', {}).get('com.docker.compose.project.config_files', '').split(',')})
     game = inspect('royal-game-1')
     prepared = run(['docker', 'image', 'inspect', 'royal-game:latest', '--format', '{{.Id}}'])
+    status = subprocess.run(['docker','exec','royal-nile-play','node','play.js','status'],capture_output=True,text=True)
+    assert status.returncode in [0,1], 'Financial status command failed'
+    health = json.loads(status.stdout)
     return {'source': sources(LIVE), 'financeSource': sources(FINANCE), 'containers': containers,
+            'financialStatus': {key:health.get(key) for key in ['ok','ready','halted','lastError']},
             'preparedImage': prepared,
             'program': json.loads(run(['docker', 'exec', 'royal-game-1', 'node', '-e', PROGRAM])),
             'preparedProgram': json.loads(run(['docker', 'run', '--rm', '--network=none', '--read-only', '--entrypoint', 'node', prepared, '-e', PROGRAM])),
