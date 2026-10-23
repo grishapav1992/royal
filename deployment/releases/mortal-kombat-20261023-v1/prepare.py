@@ -46,7 +46,8 @@ for name, old in before['financeSource'].items():
 meta = json.loads((stage / 'artifacts/work/mortal-kombat-duel/financial-meta.json').read_text())
 assert meta['sourceCommit'] == revision, 'Financial source commit differs'
 for name in meta['inputs']:
-    if name.startswith('node_modules/'): continue
+    if 'node_modules' in Path(name).parts: continue
+    assert not Path(name).is_absolute() and '..' not in Path(name).parts, 'Financial input escaped source tree'
     assert (stage / name).is_file(), name
     if before['financeSource'].get(name,{}).get('lf') != canonical(stage / name):
         finance[name] = copy(stage / name, 'finance-source/' + name)
@@ -88,6 +89,7 @@ for name in ['snapshot.py', 'deploy.py']:
 manifest = {'release':'mortal-kombat-20261023-v1','sourceCommit':revision,'before':{**before,'sourceRows':before['source'],'source':{n:v['sha256'] for n,v in before['source'].items()},'container':{'image':before['containers']['royal-game-1']['image']}},'source':sources,'changed':sources,
             'financeSource':finance,'dist':dist,'modules':modules,'backend':backend,'financial':financial,
             'pointers':pointers,'payload':payload,'packages':packages,'installDependencies':install_dependencies,
-            'walletTransition':wallet_transition,'helperSha256':payload['deploy.py'],'snapshotSha256':payload['snapshot.py']}
+            'walletTransition':wallet_transition,'preexistingNileUnready':before['containers']['royal-nile-play']['health']!='healthy',
+            'helperSha256':payload['deploy.py'],'snapshotSha256':payload['snapshot.py']}
 (output / 'install-manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
 print(json.dumps({'sources':len(sources),'financeSources':len(finance),'dist':len(dist),'modules':len(modules),'pointers':len(pointers)}))
