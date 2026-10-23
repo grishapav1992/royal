@@ -1,3 +1,4 @@
+import { registerGameChatDialog } from './GameChat';
 import { t as translateText } from '../i18n/index';
 import { activityHall, type PlayerView } from '../shared/world';
 import { HOCKEY_PADDLE_RADIUS } from '../shared/hockey';
@@ -22,12 +23,13 @@ export class ActivitiesUI {
  private view?:IndependentGameUI;
  private context?:ActivityHostContext;
  private shell?:HTMLDialogElement;
+ private chatCleanup?:()=>void;
  private events=new AbortController();
  private lastView:ViewState={hockey:{local:null,rendered:[undefined,undefined],puck:undefined,radius:HOCKEY_PADDLE_RADIUS},charge:{charging:false,power:550},frames:0};
  private activity=(id:ActivityId)=>this.open(id);
  constructor(private scene:RoomScene,private send:(value:unknown)=>void){
   this.cards=document.createElement('div');this.cards.className='shared-cards';
-  this.cards.innerHTML=(['hockey','pool','chess','piano'] as const).map(id=>`<button type="button" data-activity="${id}"><span>${id==='piano'?'♫':id==='pool'?'●':id==='chess'?'♞':'◎'}</span><strong>${ACTIVITIES[id].name}</strong><small>${id==='piano'?translateText('Музыка для всех'):translateText('2 игрока · можно наблюдать')}</small></button>`).join('');
+  this.cards.innerHTML=(['hockey','pool','chess','piano','mortal-kombat'] as const).map(id=>`<button type="button" data-activity="${id}"><span>${id==='mortal-kombat'?'⚔':id==='piano'?'♫':id==='pool'?'●':id==='chess'?'♞':'◎'}</span><strong>${ACTIVITIES[id].name}</strong><small>${id==='piano'?translateText('Музыка для всех'):translateText('2 игрока · можно наблюдать')}</small></button>`).join('');
   document.querySelector('.cabinet-list')!.before(this.cards);
   this.cards.querySelectorAll<HTMLButtonElement>('[data-activity]').forEach(button=>button.addEventListener('click',()=>scene.approachActivity(button.dataset.activity as ActivityId),{signal:this.events.signal}));
   this.mute=document.createElement('button');this.mute.id='mute-piano';this.mute.className='invite-button piano-mute';this.mute.type='button';
@@ -67,6 +69,7 @@ export class ActivitiesUI {
   const shell=document.createElement('dialog');shell.id='shared-dialog';shell.className='shared-dialog';shell.dataset.activityShell='';shell.dataset.game=id;
   const close=document.createElement('button');close.type='button';close.dataset.activityLoadingClose='';close.textContent='×';close.setAttribute('aria-label',translateText('Вернуться в зал'));close.onclick=()=>this.close();
   const host=document.createElement('div');host.className='activity-module-content';shell.append(close,host);document.body.append(shell);this.shell=shell;
+  if(id==='mortal-kombat')this.chatCleanup=registerGameChatDialog(shell);
   shell.addEventListener('close',()=>{if(this.shell===shell)this.close();});
   const context:ActivityHostContext={scene:this.scene,send:this.send,state:this.state,players:this.players,self:this.self,pianoAudio:this.audio,shotPower:this.lastView.charge.power,onClose:()=>{if(this.shell===shell)this.close();}};
   this.context=context;this.view=new IndependentGameUI(host,id,{activity:context});
@@ -76,7 +79,7 @@ export class ActivitiesUI {
   const view=this.view,shell=this.shell;if(!view&&!shell)return;
   this.lastView=(view?.getState() as ViewState|undefined)??this.lastView;
   this.lastView={...this.lastView,charge:{...this.lastView.charge,charging:false}};
-  this.view=undefined;this.context=undefined;this.shell=undefined;view?.destroy();shell?.remove();
+  this.view=undefined;this.context=undefined;this.shell=undefined;view?.destroy();this.chatCleanup?.();this.chatCleanup=undefined;shell?.remove();
   gameAudio.setGame('');this.send({type:'leave'});this.scene.setLocked(Boolean(document.querySelector('dialog[open]')));document.querySelector<HTMLElement>('#game')?.focus({preventScroll:true});
  }
  destroy(){this.close();this.audio.stop();this.events.abort();this.cards.remove();this.mute.remove();if(this.scene.onActivity===this.activity)this.scene.onActivity=()=>{};}
