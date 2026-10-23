@@ -10,10 +10,10 @@ const settings = { dracona: { mode: 'normal' as const } };
 
 test('native server preserves the agreed base result and validates its complete presentation', () => {
   const result = startDracona(settings, '10000', random(5));
-  assert.equal(result.credit, 22500); assert.equal(result.ended, true);
-  assert.equal(result.view.history[0].result.payout, 225);
+  assert.equal(result.credit, 11189); assert.equal(result.ended, true);
+  assert.equal(result.view.history[0].result.payout, 111.89);
   assert(validDraconaView('10000', result.view));
-  const session = { id: '11111111-1111-4111-8111-111111111111', gameId: DRACONA_GAME, rulesVersion: 2, state: 'settled', stakeUnits: '10000', spentUnits: '10000', returnedUnits: '22500', view: { player: [], dealer: [], community: [], actions: [], phase: 2, ended: true, message: result.message, dracona: result.view } };
+  const session = { id: '11111111-1111-4111-8111-111111111111', gameId: DRACONA_GAME, rulesVersion: 3, state: 'settled', stakeUnits: '10000', spentUnits: '10000', returnedUnits: '11189', view: { player: [], dealer: [], community: [], actions: [], phase: 2, ended: true, message: result.message, dracona: result.view } };
   assert(validDraconaSession(session));
   assert.equal(validDraconaSession({ ...session, returnedUnits: '22600' }), false);
 });
@@ -31,7 +31,7 @@ test('bonus, retriggers and persistent runes replay exactly until a single final
     }
     assert.equal(result.view.remaining, 0);
     assert(result.view.revision <= 21);
-    assert.equal(result.credit, result.view.history.reduce((sum, spin) => sum + spin.result.payout * 100, 0));
+    assert.equal(result.credit, result.view.history.reduce((sum, spin) => sum + Math.round(spin.result.payout * 100), 0));
     assert(validDraconaView('10000', result.view));
   }
 });

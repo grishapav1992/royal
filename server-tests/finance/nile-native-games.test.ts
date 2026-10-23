@@ -4,9 +4,40 @@ import {randomUUID} from 'node:crypto';
 import {pvpFixture} from './helpers/nile-pvp-fixture';
 import {block} from './helpers/nile-play-fixture';
 import {NileGameRuntime,type NativeCommand} from '../../server/finance/nile-game-runtime';
+import {seededRandom} from '../../src/shared/draconaMath';
+import {validDraconaSession} from '../../src/shared/dracona';
 
 const command=(path:string,body:unknown=null,method:'GET'|'POST'=body===null?'GET':'POST'):NativeCommand=>({path,body,method,flags:Array(9).fill(true),rules:2,query:{}});
+const draconaCommand=(body:unknown=null):NativeCommand=>({...command('/expansion',body),flags:[true,true,true,true,true,true,true,true,2]});
 async function setup(){const c=await pvpFixture();await c.source.ingest(block(102,'1000000000000',c.config.source.addresses.find(a=>a.userId==='reserve')!.address));await c.ledger.sync(c.source,await c.reconciliation());return{...c,games:new NileGameRuntime(c.ledger,()=>0)};}
+
+for(const seed of [1,5])test(`rebalanced Dracona seed ${seed} retains exact cents, recovery and one settlement in the Nile journal`,async()=>{
+ const c=await setup();try{
+  const random=seededRandom(seed);let draws:number=0;
+  let games=new NileGameRuntime(c.ledger,max=>{draws++;return Math.floor(random()*max);});
+  const start={id:randomUUID(),action:'start',gameId:'studio-dracona',stakeUnits:'1000',settings:{dracona:{mode:'normal'}}};
+  await assert.rejects(games.run(c.a,command('/expansion',start)),/Обнови|refresh/);assert.equal(draws,0);
+  const initial=await games.run(c.a,draconaCommand(start))as any;
+  assert(validDraconaSession(initial.session));assert.equal(initial.session.rulesVersion,3);
+  if(seed===5){assert.equal(initial.session.returnedUnits,'1118');assert.equal(initial.wallet.balanceUnits,'201180000');}
+  else {assert.equal(initial.session.state,'active');assert.equal(initial.wallet.balanceUnits,'190000000');}
+  // A new runtime recovers the accepted history, including free spins and runes.
+  games=new NileGameRuntime(c.ledger,max=>{draws++;return Math.floor(random()*max);});
+  let reply=(await games.run(c.a,draconaCommand()))as any;
+  let session=reply.sessions.find((s:any)=>s.id===start.id),last:unknown=start;
+  while(session.state==='active'){
+   last={id:randomUUID(),action:'move',gameId:'studio-dracona',sessionId:session.id,move:'dracona-spin',revision:session.view.dracona.revision};
+   const beforeDraws:number=draws;await assert.rejects(games.run(c.a,command('/expansion',last)),/Обнови|refresh/);assert.equal(draws,beforeDraws);
+   reply=await games.run(c.a,draconaCommand(last));session=reply.session;assert(validDraconaSession(session));
+   if(session.state==='active')assert.equal(reply.wallet.balanceUnits,'190000000');
+  }
+  const expected=200000000n-10000000n+BigInt(session.returnedUnits)*10000n;
+  assert.equal(reply.wallet.balanceUnits,String(expected));assert.equal(reply.wallet.reservedUnits,'0');
+  const beforeDraws=draws,repeat=await games.run(c.a,draconaCommand(last))as any;
+  assert.equal(repeat.replayed,true);assert.equal(repeat.wallet.balanceUnits,String(expected));assert.equal(draws,beforeDraws);
+  assert.deepEqual(repeat.session,session);await c.ledger.audit();
+ }finally{await c.close();}
+});
 test('slots and PvP spend the same Nile journal without importing or minting demo balances',async()=>{
  const c=await setup();try{
   const initial=await c.games.run(c.a,command('/'))as any;assert.equal(initial.balance,200);assert.equal(initial.asset,'USDT_NILE_TEST');
