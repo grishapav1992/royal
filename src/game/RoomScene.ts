@@ -373,11 +373,12 @@ export class RoomScene extends Phaser.Scene {
   }
   pianoNote(note:number){
     if(this.reducedMotion||this.hall!=='arcade')return;
-    const glow=this.add.rectangle(79+(note-60)*5.4,311,4,9,0xc9f56b,.85).setDepth(323);
+    const {x,y}=ACTIVITIES.piano.bounds;
+    const glow=this.add.rectangle(x+9+(note-60)*5.4,y+51,4,9,0xc9f56b,.85).setDepth(y+63);
     this.tweens.add({targets:glow,alpha:0,duration:350,onComplete:()=>{glow.destroy();this.pianoEffects.delete(glow);}});
-    const music=this.add.text(120,272,'♪',{fontFamily:'serif',fontSize:'18px',color:'#d6efac'}).setDepth(350);
+    const music=this.add.text(x+50,y+12,'♪',{fontFamily:'serif',fontSize:'18px',color:'#d6efac'}).setDepth(y+90);
     this.pianoEffects.add(glow);this.pianoEffects.add(music);
-    this.tweens.add({targets:music,y:245,x:130,alpha:0,duration:700,onComplete:()=>{music.destroy();this.pianoEffects.delete(music);}});
+    this.tweens.add({targets:music,y:y-15,x:x+60,alpha:0,duration:700,onComplete:()=>{music.destroy();this.pianoEffects.delete(music);}});
   }
   approachSeat(id: string) {
     if (this.locked || this.isHuggingCat() || this.typing) return;
