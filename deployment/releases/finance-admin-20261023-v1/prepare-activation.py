@@ -31,8 +31,11 @@ assert release['sourceCommit'] == SOURCE and release['scope'] == 'application'
 assert release['files']['dist-server/payments.js'] == sha((STAGE / 'dist-server/payments.js').read_bytes())
 assert 'dist/admin.html' in old['program'], 'Publish the shared-wallet host first'
 required = git('diff', '--name-only', '272f566', '78cb1cc').decode().splitlines()
-required = [n for n in required if n.startswith(('server/', 'src/admin/', 'src/shared/financeAdmin'))
-            or n in ['admin.html', 'vite.config.ts', 'vite.admin.config.ts', 'package.json']]
+# The deployed host and Nile images are reused. Check the shared dashboard
+# contract and every actual payments input, without publishing unrelated host
+# source or package-script changes that may still be waiting in main.
+required = [n for n in required if n.startswith(('server/admin/', 'src/admin/', 'src/shared/financeAdmin'))
+            or n == 'admin.html']
 metadata = json.loads((STAGE / 'dist-server/payments-meta.json').read_text())
 inputs = [n for n in metadata['inputs'] if not n.startswith('node_modules/')]
 for name in sorted(set(required + inputs)):
