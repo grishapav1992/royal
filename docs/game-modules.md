@@ -86,4 +86,4 @@ Casino API Pro accepts an optional embedded provider context. The shared host ow
 
 Existing native artwork, the small startup previews, preparation cache, latest chat implementation, server engines, payout rules and wallet transport are preserved. GitHub decoration is scoped to the current nine GitHub identities; native Plinko keeps its production design. Use the platform browser scenarios with the real host and connected chat on desktop and mobile, and verify package integrity and recovery before publication.
 
-Mortal Kombat uses activity identity and package slug mortal-kombat on floor 2. See games/mortal-kombat/README.md for wager rules, escrow recovery, asset provenance and the current demo-wallet limitation. It requires this compatible host/backend release before the client package can be published.
+Mortal Kombat uses activity identity and package slug mortal-kombat on floor 2. See games/mortal-kombat/README.md for wager rules, escrow recovery, asset provenance, USDT custody integration and server anti-cheat controls (rules contract 2). It requires this compatible host/backend release before the client package can be published.

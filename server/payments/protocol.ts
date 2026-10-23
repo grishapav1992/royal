@@ -2,7 +2,7 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 import { gameAccountId, nileUnits } from '../../src/shared/nileWallet';
 import { amount } from '../crypto/amounts';
 
-export type PaymentEvent = { event_id: string; user_id: string; payment_id: string; kind: 'deposit' | 'reserve' | 'paid' | 'refund';
+export type PaymentEvent = { event_id: string; user_id: string; payment_id: string; kind: 'deposit' | 'reserve' | 'paid' | 'refund' | 'combat-reserve' | 'combat-settle' | 'combat-refund';
   currency: 'USDT'; scale: 6; deposit_amount: string; available_delta_units: string; reserved_delta_units: string; created_at: number };
 export const signedUnits = (value: unknown): value is string => typeof value === 'string' && /^-?(0|[1-9]\d{0,12})$/.test(value)
   && value !== '-0' && BigInt(value) >= -1000000000000n && BigInt(value) <= 1000000000000n;
@@ -15,8 +15,9 @@ export function validPaymentEvent(value: unknown): value is PaymentEvent {
   const available = BigInt(row.available_delta_units), reserved = BigInt(row.reserved_delta_units);
   if (row.kind === 'deposit') return available > 0n && reserved === 0n && row.deposit_amount === amount(available);
   if (row.deposit_amount !== '0') return false;
-  if (row.kind === 'reserve') return available < 0n && reserved === -available;
-  if (row.kind === 'refund') return available > 0n && reserved === -available;
+  if (row.kind === 'combat-settle') return reserved<0n&&(-reserved)%10n===0n&&(available===0n||available===(-reserved)*19n/10n);
+  if (row.kind === 'reserve'||row.kind === 'combat-reserve') return available < 0n && reserved === -available;
+  if (row.kind === 'refund'||row.kind === 'combat-refund') return available > 0n && reserved === -available;
   return row.kind === 'paid' && available === 0n && reserved < 0n;
 }
 export function validateServiceSecret(secret: string) {

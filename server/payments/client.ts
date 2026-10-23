@@ -46,6 +46,7 @@ export class PaymentClient {
     if (local.balanceUnits !== row.balanceUnits || local.reservedUnits !== row.reservedUnits) throw new CryptoError(503, 'Подтвержденный платеж обновляет баланс. Повтори проверку позже.');
     return { ...row, ...local };
   }
+  combat(action:'fund'|'settle'|'cancel',id:string,value:unknown){return this.call('combat/'+action,id,value);}
   currencies() { return this.call('currencies', '00000000-0000-4000-8000-000000000000'); }
   displayRate(currency: unknown) { return this.call('display-rate', '00000000-0000-4000-8000-000000000000', { currency }); }
   deposit(id: string, value: unknown) { return this.call('deposits', id, value); }

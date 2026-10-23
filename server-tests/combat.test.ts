@@ -104,7 +104,7 @@ test('readiness requires both players, matching stake and current match identity
  let funds=0;
  const room=new CombatRoom({escrow:{recoverExpired:async()=>{},fund:async()=>{funds++;},settle:async()=>({winner:'',fee:0,payout:0})} as any,account:id=>id,name:id=>id},()=>{});
  room.join('a');room.join('b');assert.equal(room.join('c'),false);
- const command={type:'combat-ready',match:room.state.id,stake:100};
+ const command={type:'combat-ready',match:room.state.id,stake:room.state.stake};
  room.handle('a',command);await new Promise(resolve=>setTimeout(resolve,0));assert.equal(funds,0);
  room.handle('b',{...command,match:'old'});assert.equal(funds,0);
  room.handle('b',{...command,stake:500});assert.equal(funds,0);
@@ -115,9 +115,9 @@ test('readiness requires both players, matching stake and current match identity
 test('disconnect grace allows a return; two disconnected players refund, and funding cancellation refunds',async context=>{
  let now=1000;context.mock.method(Date,'now',()=>now);
  let settleWinner:string|undefined;
- const dependencies={escrow:{recoverExpired:async()=>{},fund:async()=>{},settle:async(_id:string,winner:string)=>{settleWinner=winner;return{winner,fee:winner?10:0,payout:winner?190:0};}} as any,account:(id:string)=>id,name:(id:string)=>id};
+ const dependencies={escrow:{recoverExpired:async()=>{},fund:async()=>{},settle:async(_id:string,winner:string)=>{settleWinner=winner;return{winner,fee:winner?10:0,payout:winner?190:0};}} as any,account:(id:string)=>id,name:(id:string)=>id,now:()=>now};
  const room=new CombatRoom(dependencies,()=>{});room.join('a');room.join('b');
- const ready={type:'combat-ready',match:room.state.id,stake:100};room.handle('a',ready);room.handle('b',ready);
+ const ready={type:'combat-ready',match:room.state.id,stake:room.state.stake};room.handle('a',ready);room.handle('b',ready);
  await new Promise(resolve=>setTimeout(resolve,0));room.disconnect('a');now+=10000;room.tick(.1);assert.equal(settleWinner,undefined);
  room.reconnect('a');now+=15000;room.tick(.1);assert.equal(settleWinner,undefined);
  room.disconnect('a');room.disconnect('b');now+=20001;room.tick(.1);

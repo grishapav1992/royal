@@ -1,3 +1,4 @@
+import { CryptoCombatEscrow } from '../payments/combatEscrow';
 import { randomInt } from 'node:crypto';
 import { PostgresDatabase, type DatabaseRow } from '../database';
 import { applySchemaMigration } from '../database-migrations';
@@ -42,13 +43,19 @@ const schema = [
 
 export class CryptoStore {
   readonly ready: Promise<void>;
+  readonly combat:CryptoCombatEscrow;
   private treasury?: { units: bigint; until: number };
   private reconciliation?: Promise<void>;
   private displayRates: CryptoDisplayRates;
   constructor(readonly db: PostgresDatabase, readonly config: CryptoConfig, readonly provider: CryptoProvider,
     prerequisite: Promise<void> = Promise.resolve(), private now = Date.now, private draw = randomInt,
     private ledgerChanged?: (change: LedgerChange) => Promise<void>) {
-    this.ready = prerequisite.then(() => applySchemaMigration(db, { id: 'crypto-gateway-v1', statements: schema }));
+    const schemaReady = prerequisite.then(() => applySchemaMigration(db, { id: 'crypto-gateway-v1', statements: schema }));
+    this.combat=new CryptoCombatEscrow(db,schemaReady,{
+      atomic:fn=>this.atomic(fn),wallet:id=>this.walletRow(id),post:(...args)=>this.post(...args),
+      canFund:()=>this.config.enabled&&this.config.combat===true,custody:()=>this.treasury,now:()=>this.now(),
+    });
+    this.ready=this.combat.ready;
     this.displayRates = new CryptoDisplayRates((from, to, value) => provider.estimate(from, to, value), now);
   }
   private enabled(withdrawal = false) {
@@ -67,7 +74,7 @@ export class CryptoStore {
     if (await this.db.prepare('SELECT 1 FROM crypto_ledger WHERE entry_key=?').get(key)) return;
     const row = await this.walletRow(accountId), balance = BigInt(row.balance_units) + available, pending = BigInt(row.reserved_units) + reserved;
     if (balance < 0n) fail(409, 'Недостаточно USDT на доступном балансе.');
-    if (pending < 0n || balance + pending > 1000000000000n) fail(409, 'Операция превышает лимит кошелька.');
+    if (pending < 0n || balance + pending + await this.combat.capacity(accountId) > 1000000000000n) fail(409, 'Операция превышает лимит кошелька.');
     await this.db.prepare('UPDATE crypto_wallets SET balance_units=?,reserved_units=? WHERE account_id=?').run(String(balance), String(pending), accountId);
     const createdAt = this.now();
     await this.db.prepare(`INSERT INTO crypto_ledger(account_id,operation_id,entry_key,available_delta,reserved_delta,counterparty_delta,balance_units,reserved_units,created_at)
@@ -92,15 +99,18 @@ export class CryptoStore {
   }
   async snapshot(accountId: string): Promise<CryptoWallet> {
     if (!this.config.enabled) return { state: 'disabled' };
+    await this.combat.recoverExpired();
     return this.atomic(async () => {
       const row = await this.walletRow(accountId);
       const liabilities = BigInt((await this.db.prepare('SELECT coalesce(sum(balance_units+reserved_units),0)::text AS units FROM crypto_wallets').get())!.units);
       const ready = this.config.games && !!this.treasury && this.treasury.until > this.now();
       const capital = ready && this.treasury!.units > liabilities ? this.treasury!.units - liabilities : 0n;
       const operations = (await this.db.prepare('SELECT * FROM crypto_operations WHERE account_id=? ORDER BY created_at DESC,id DESC LIMIT 50').all(accountId)).map(row => this.view(row));
+      const combatMatches=await this.combat.history(accountId);
       const rounds = (await this.db.prepare('SELECT result FROM crypto_rounds WHERE account_id=? ORDER BY created_at DESC,id DESC LIMIT 50').all(accountId)).map(row => JSON.parse(String(row.result)) as UsdtRound);
       return { state: 'enabled', provider: 'nowpayments', asset: 'USDT', scale: 6, balanceUnits: String(row.balance_units), reservedUnits: String(row.reserved_units),
-        withdrawalsEnabled: this.config.withdrawals, gamesEnabled: this.config.games, ready, maxStakeUnits: { 'royal-coins': String(capital / 11n), 'royal-roulette': String(capital / 35n) }, operations, rounds };
+        withdrawalsEnabled: this.config.withdrawals, gamesEnabled: this.config.games, ready,
+        combatEnabled:this.config.combat===true,combatReady:this.config.combat===true&&!!this.treasury&&this.treasury.until>this.now()&&this.treasury.units>=liabilities, maxStakeUnits: { 'royal-coins': String(capital / 11n), 'royal-roulette': String(capital / 35n) }, operations, rounds, combatMatches };
     });
   }
   async currencies() { this.enabled(); return this.provider.currencies(); }
@@ -354,10 +364,11 @@ export class CryptoStore {
     if (this.reconciliation) return this.reconciliation;
     this.reconciliation = (async () => {
       await this.ready;
-      if (this.config.games) {
+      if (this.config.games || this.config.combat) {
         try { const balances = await this.provider.balance(); this.treasury = { units: units(balances[CRYPTO_SETTLEMENT]?.amount ?? '0'), until: this.now() + 45000 }; }
         catch { this.treasury = undefined; }
       }
+      await this.combat.recoverExpired();
       const pending = await this.db.prepare("SELECT * FROM crypto_operations WHERE state NOT IN ('finished','refunded','rejected','expired','review') ORDER BY updated_at LIMIT 30").all();
       for (const row of pending) {
         try {
@@ -405,10 +416,12 @@ export class CryptoStore {
       (SELECT account_id,sum(available_delta) AS available,sum(reserved_delta) AS reserved FROM crypto_ledger GROUP BY account_id) l USING(account_id)
       WHERE w.balance_units<>coalesce(l.available,0) OR w.reserved_units<>coalesce(l.reserved,0)
       OR w.reserved_units<>(SELECT coalesce(sum(o.amount_units),0) FROM crypto_operations o WHERE o.account_id=w.account_id
-        AND o.kind='withdrawal' AND o.state NOT IN ('finished','refunded'))`).all();
+        AND o.kind='withdrawal' AND o.state NOT IN ('finished','refunded'))
+      + (SELECT coalesce(sum(c.stake_units),0) FROM crypto_combat_seats c WHERE c.account_id=w.account_id)`).all();
     const deposits = await this.db.prepare(`SELECT o.id FROM crypto_operations o WHERE o.kind='deposit' AND o.credited_units<>
       (SELECT coalesce(sum(l.available_delta),0) FROM crypto_ledger l WHERE l.account_id=o.account_id AND l.operation_id=o.id AND l.entry_key LIKE 'deposit:%')`).all();
-    return { ok: invalid.length + deposits.length === 0, mismatches: invalid.length + deposits.length };
+    const combatMismatches=await this.combat.audit();
+    return { ok: invalid.length + deposits.length + combatMismatches === 0, mismatches: invalid.length + deposits.length + combatMismatches };
   }
   async recoverConversion(id: string, conversionId: string) {
     this.enabled(true);

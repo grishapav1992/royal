@@ -1,3 +1,4 @@
+import { validCombatEscrowReceipt, type CombatEscrowReceipt } from './combatEscrow';
 import { t as translateText } from '../i18n/index';
 import { gameAccountId, nileUnits } from './nileWallet';
 import { validUsdtRound, type UsdtRound } from './usdtWallet';
@@ -10,7 +11,7 @@ export type CryptoQuote = { id: string; amountUnits: string; currency: string; a
   estimatedAmount: string; networkFee: string; minimumReceive: string; expiresAt: number };
 export type CryptoWallet = { state: 'disabled' } | { state: 'enabled'; provider: 'nowpayments'; asset: 'USDT'; scale: 6;
   balanceUnits: string; reservedUnits: string; withdrawalsEnabled: boolean; gamesEnabled: boolean;
-  ready: boolean; maxStakeUnits: Record<'royal-coins' | 'royal-roulette', string>;
+  ready: boolean; combatEnabled?:boolean;combatReady?:boolean;combatMatches?:CombatEscrowReceipt[]; maxStakeUnits: Record<'royal-coins' | 'royal-roulette', string>;
   operations: CryptoOperation[]; rounds: UsdtRound[] };
 export const validCurrency = (value: unknown): value is string => typeof value === 'string' && /^[a-z0-9]{2,24}$/.test(value);
 export const validDecimal = (value: unknown): value is string => typeof value === 'string' && /^(0|[1-9]\d{0,12})(\.\d{1,18})?$/.test(value);
@@ -27,6 +28,8 @@ export function validCryptoWallet(value: unknown): value is CryptoWallet {
   return row?.state === 'enabled' && row.provider === 'nowpayments' && row.asset === 'USDT' && row.scale === 6
     && nileUnits(row.balanceUnits) && nileUnits(row.reservedUnits) && typeof row.withdrawalsEnabled === 'boolean'
     && typeof row.gamesEnabled === 'boolean' && typeof row.ready === 'boolean'
+    && (row.combatEnabled===undefined||typeof row.combatEnabled==='boolean')&&(row.combatReady===undefined||typeof row.combatReady==='boolean')
+    && (row.combatMatches===undefined||Array.isArray(row.combatMatches)&&row.combatMatches.length<=50&&row.combatMatches.every(validCombatEscrowReceipt))
     && row.maxStakeUnits && ['royal-coins', 'royal-roulette'].every(id => nileUnits(row.maxStakeUnits[id]))
     && Array.isArray(row.operations) && row.operations.length <= 50 && row.operations.every((op: any) => gameAccountId(op.id)
       && ['deposit', 'withdrawal'].includes(op.kind) && typeof op.state === 'string' && op.state.length <= 64

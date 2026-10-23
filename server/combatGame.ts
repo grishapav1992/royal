@@ -1,6 +1,6 @@
 import { freshCombatState, neutralCombatInput, type CombatState, type Fighter, type CombatInput } from '../src/shared/combat';
 
-const fighter=(x:number):Fighter=>({x,y:0,vy:0,health:100,action:'stand',actionTime:0,cooldown:0,stun:0,input:neutralCombatInput(),inputAt:0});
+const fighter=(x:number):Fighter=>({x,y:0,vy:0,health:100,action:'stand',actionTime:0,cooldown:0,stun:0,input:neutralCombatInput(),inputAt:0,inputSequence:0});
 /** Server simulation accepts buttons only. Health, positions and victory never come from a client. */
 export class CombatGame {
  readonly state:CombatState;
@@ -17,6 +17,7 @@ export class CombatGame {
  }
  tick(dt:number,now:number){
   const s=this.state;
+  if(!Number.isFinite(dt)||dt<=0||!Number.isFinite(now))return;
   if(s.phase==='countdown'){s.countdown=Math.max(0,s.countdown-dt);if(!s.countdown)s.phase='playing';return;}
   if(s.phase!=='playing')return;
   this.accumulator+=Math.min(.1,Math.max(0,dt));
@@ -33,7 +34,7 @@ export class CombatGame {
    if(f.stun){f.action='endure';return;}
    const input=f.input;
    if(input.jump&&!f.y){f.vy=470;f.y=1;}
-   const blocking=input.block&&!f.y;
+   const blocking=input.block&&!f.y&&!f.actionTime;
    if(!blocking&&!f.actionTime)f.x=Math.max(45,Math.min(675,f.x+(Number(input.right)-Number(input.left))*210*dt));
    if(!blocking&&!f.cooldown&&(input.punch||input.kick)){
     const kick=input.kick;f.action=kick?'high-kick':'high-punch';f.actionTime=kick?.5:.32;f.cooldown=kick?.65:.42;
@@ -45,7 +46,7 @@ export class CombatGame {
   for(const {side,damage,reach} of attacks){
    const f=s.fighters[side],target=s.fighters[1-side];
    if(Math.abs(f.x-target.x)>reach||Math.abs(f.y-target.y)>80)continue;
-   const blocked=target.input.block&&!target.y;
+   const blocked=target.action==='blocking'&&!target.y&&!target.stun&&!target.actionTime;
    target.health=Math.max(0,target.health-(blocked?2:damage));
    if(!blocked){target.stun=.18;target.action='endure';target.actionTime=.18;}
    s.hitSeq++;

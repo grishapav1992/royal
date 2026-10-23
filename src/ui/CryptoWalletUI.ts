@@ -233,7 +233,7 @@ export class CryptoWalletUI {
     this.dialog.querySelectorAll<HTMLButtonElement>('form button,#crypto-withdraw-confirm').forEach(button => { button.disabled = this.working || cryptoWallet.busy || !!cryptoWallet.transfer || !!cryptoWallet.pending; });
     this.renderDisplay();
     if (wallet?.state !== 'enabled') { this.payment = undefined; this.clearDeposit(); this.paymentDialog.close(); this.message(cryptoWallet.error || translateText('Криптовалютные платежи еще не подключены. Оплата станет доступна после подключения сервиса.')); return; }
-    this.el('#crypto-wallet-reserved').textContent = translateText('Зарезервировано на вывод: ') + formatNileUnits(wallet.reservedUnits) + ' USDT';
+    this.el('#crypto-wallet-reserved').textContent = translateText('Зарезервировано: ') + formatNileUnits(wallet.reservedUnits) + ' USDT';
     this.el<HTMLElement>('#crypto-withdraw-form').hidden = !wallet.withdrawalsEnabled;
     this.loadCurrencies();
     const updated = this.payment && wallet.operations.find(op => op.kind === 'deposit' && op.id === this.payment!.id);
@@ -251,7 +251,12 @@ export class CryptoWalletUI {
       refresh.type = 'button'; refresh.className = 'text-button'; refresh.textContent = translateText('Проверить'); refresh.disabled = cryptoWallet.busy;
       refresh.onclick = () => { void this.run(() => cryptoWallet.refreshOperation(op.id)); }; li.append(text, refresh); list.append(li);
     }
-    if (!wallet.operations.length) list.textContent = translateText('Операций пока нет.');
+    for(const match of wallet.combatMatches??[]){
+      const li=document.createElement('li');
+      const result=match.state==='active'?translateText('Ставка зарезервирована'):match.state==='settled'?(match.winner===cryptoWallet.accountId?translateText('Победа'):translateText('Поражение')):translateText('Возврат ставки');
+      li.textContent='Mortal Kombat: '+formatNileUnits(match.stakeUnits)+' USDT · '+result+(match.winner===cryptoWallet.accountId?' · '+formatNileUnits(match.payoutUnits)+' USDT':'');list.append(li);
+    }
+    if (!wallet.operations.length&&!wallet.combatMatches?.length) list.textContent = translateText('Операций пока нет.');
     if (cryptoWallet.error) this.message(cryptoWallet.error);
   }
 }

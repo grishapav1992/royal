@@ -1,3 +1,4 @@
+import { CombatUsdtWallet } from './combatWallet';
 import { serializeAppearance } from '../src/shared/appearance';
 import type { CharacterAppearance } from '../src/shared/skinStudio';
 import { Room, type Client, type AuthContext, ServerError } from '@colyseus/core';
@@ -38,7 +39,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
   state = new LobbyState();
   maxClients = ROOM_CAPACITY;
   maxMessagesPerSecond = 80;
-  private activities = new Activities(id => this.state.players.get(id), id => this.stop(id), (type,value,hall) => this.broadcastActivity(type,value,hall), (id,text) => this.clients.find(c=>c.sessionId===id)?.send('notice',text),undefined,{escrow:accounts.wallet.combat,account:id=>this.playerAccounts.get(id),name:id=>this.state.players.get(id)?.name??'Игрок'});
+  private activities = new Activities(id => this.state.players.get(id), id => this.stop(id), (type,value,hall) => this.broadcastActivity(type,value,hall), (id,text) => this.clients.find(c=>c.sessionId===id)?.send('notice',text),undefined,{escrow:new CombatUsdtWallet(accounts.cryptoWallet),account:id=>this.playerAccounts.get(id),name:id=>this.state.players.get(id)?.name??'Игрок'});
   private guards = new Guards(this.state, (id, decision) => {
     if (decision.kind !== 'ejecting') return;
     const client = this.clients.find(c => c.sessionId === id);
