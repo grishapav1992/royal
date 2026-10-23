@@ -15,6 +15,7 @@ sha = lambda p: hashlib.sha256(Path(p).read_bytes()).hexdigest()
 git = lambda *args: subprocess.check_output(['git', *args], cwd=ROOT, text=True).strip()
 old = json.loads((WORK / 'before.json').read_text())
 normalized = json.loads((WORK / 'source-normalized.json').read_text())
+runtime = json.loads((WORK / 'runtime-normalized.json').read_text())
 active = json.loads((WORK / 'active-modules.json').read_text())
 release = json.loads((ROOT / 'module-build/release-manifest.json').read_text())
 assert release['sourceCommit'] == git('rev-parse', 'HEAD')
@@ -46,6 +47,9 @@ for name, digest in release['files'].items():
     if not name.startswith('dist/') or old['program'].get(name) == digest:
         continue
     relative = name.removeprefix('dist/')
+    source = 'public/' + relative
+    if name in runtime and runtime[name]['raw'] == old['program'].get(name) and digest == runtime[name]['lf']:
+        continue
     if relative in ['index.html', 'admin.html'] or relative.startswith('assets/') and Path(relative).suffix in ['.js', '.css']:
         assert relative in ['index.html', 'admin.html'] or name not in old['program'], 'Existing asset URL would change'
         delta[relative] = digest

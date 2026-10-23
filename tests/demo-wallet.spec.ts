@@ -27,13 +27,20 @@ test(`direct top-up and play persist in the real host at ${width}px`,async({page
   await expect(page.locator('#wallet-balance')).toHaveText(/2\s375/);
   expect(externalPages).toEqual([]);
   await page.getByRole('button',{name:'Закрыть кошелёк'}).click();
-  if(width >= 1000) {
-  if(await page.locator('#room-overview').getAttribute('aria-pressed')!=='true') await page.locator('#room-overview').click();
-  const aisle=await worldPoint(page,1100,900);await page.mouse.click(aisle.x,aisle.y);
-  await expect.poll(async()=>{const s=await page.evaluate(()=>(window as any).royalDemo.getState());return Math.hypot(s.x-1100,s.y-900);},{timeout:25000}).toBeLessThan(30);
+  if(width < 1000) {
+    await page.setViewportSize({width:1440,height:1000});
+    await page.reload();
+    await expect(page.locator('#join-dialog')).toBeHidden({timeout:15000});
+    await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getState().online)).toBe(true);
   }
+  if(await page.locator('#room-overview').getAttribute('aria-pressed')!=='true') await page.locator('#room-overview').click();
+  await page.evaluate(()=>{(window as any).__walletCamera=undefined;});
+  await page.waitForFunction(()=>{const key=JSON.stringify((window as any).royalDemo.getState().view),now=performance.now(),last=(window as any).__walletCamera;if(!last||last.key!==key){(window as any).__walletCamera={key,at:now};return false;}return now-last.at>=200;});
+  const aisle=await worldPoint(page,1100,900);await page.mouse.click(aisle.x,aisle.y);
+  await expect.poll(async()=>{const s=await page.evaluate(()=>(window as any).royalDemo.getState());const distance=Math.hypot(s.x-1100,s.y-900);if(distance>=30&&!s.moving){const target=await worldPoint(page,1100,900);await page.mouse.click(target.x,target.y);}return distance;},{timeout:25000,intervals:[500]}).toBeLessThan(30);
   await page.locator('#games-tab').click();await page.locator('[data-cabinet="royal-fruits"]').click();
   await page.locator('[data-platform-game="royal-fruits"]').click();
+  if(width < 1000) await page.setViewportSize({width,height:1000});
   await expect(page.locator('#mini-dialog #club-chat-dock')).toBeVisible();
   await expect(page.locator('[data-fruits-spin]')).toBeEnabled({timeout:15000});
   await page.locator('[data-fruits-stake]').selectOption('10000');
