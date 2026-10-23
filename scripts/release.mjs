@@ -72,7 +72,7 @@ export async function verifyRelease(root, path = defaultManifest) {
 export async function verifyGithub(root) {
   await rm(resolve(root, 'module-build/release-github.json'), { force: true });
   const manifest = await verifyRelease(root);
-  await run(process.env.ROYAL_GIT_BINARY || 'git', ['fetch', 'origin'], root);
+  await run(process.env.ROYAL_GIT_BINARY || 'git', ['fetch', '--no-tags', 'origin', 'main'], root);
   git(root, ['merge-base', '--is-ancestor', manifest.sourceCommit, 'origin/main']);
   await verifyRelease(root);
   const receipt = { format: 1, sourceCommit: manifest.sourceCommit,
@@ -98,7 +98,7 @@ export async function prepareRelease(root, { base, local = false, modules = null
     await rm(resolve(root, 'module-build/release-github.json'), { force: true });
     assertClean(root);
     if (!local) await step('github', async () => {
-      await run(process.env.ROYAL_GIT_BINARY || 'git', ['fetch', 'origin'], root);
+      await run(process.env.ROYAL_GIT_BINARY || 'git', ['fetch', '--no-tags', 'origin', 'main'], root);
       git(root, ['merge-base', '--is-ancestor', 'HEAD', 'origin/main']);
     });
     const plan = releasePlan(root, base);
