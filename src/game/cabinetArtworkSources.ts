@@ -7,7 +7,6 @@ type Artwork = {background: string; focus?: number; layers: readonly Layer[]};
 
 // Reuse each game's own art. The roster also requires artwork for every house cabinet.
 export const CABINET_ARTWORK: Record<HouseGameId, Artwork> = {
-  'studio-neopolis': { background: '/assets/neopolis/cover-v2.webp', layers: [] },
   'studio-dracona': {
     background: '/assets/dracona/manor.webp',
     layers: [{url:'/assets/dracona/hero-idle-a.png',source:[0,0,1024,1536],target:[8,1,30,42]}],

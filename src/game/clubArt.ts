@@ -5,7 +5,7 @@ import { SEATS, type HallId } from '../shared/world';
 import { WORLD, FLOOR } from '../shared/clubGeometry';
 import { CAT_HOME } from '../shared/catHome';
 import { drawCatHome } from './catHomeArt';
-import { ARCADE_HOUSE_GAMES, ARCADE_CABINET_POSITIONS } from '../shared/arcadeCatalog';
+import { ROYAL_CABINET_IDS, ARCADE_CABINET_POSITIONS } from '../shared/arcadeCatalog';
 
 export function drawClubFloor(scene: Phaser.Scene, hall: HallId, onSeat: (id:string)=>void, onNewZone?:()=>void) {
   const g=scene.make.graphics({x:0,y:0},false);
@@ -24,8 +24,9 @@ export function drawClubFloor(scene: Phaser.Scene, hall: HallId, onSeat: (id:str
     g.fillStyle(0xd7b785).fillRect(x-22,670,44,7);
     g.lineStyle(1,0xad9069).lineBetween(x-10,682,x-10,725);
   }
-  g.lineStyle(3,0xc2a06a,.8).strokeCircle(890,840,77);
-  g.lineStyle(1,0xc2a06a,.6).strokeCircle(890,840,65);
+  const crest=hall==='arcade'?{x:1000,y:1030}:{x:890,y:840};
+  g.lineStyle(3,0xc2a06a,.8).strokeCircle(crest.x,crest.y,hall==='arcade'?65:77);
+  g.lineStyle(1,0xc2a06a,.6).strokeCircle(crest.x,crest.y,hall==='arcade'?55:65);
   // The floor image already owns this layer, so bake its fixed decoration once.
   const floor=scene.textures.get('club-floor-'+hall) as Phaser.Textures.CanvasTexture;
   g.setScale(floor.width/FLOOR.width,floor.height/FLOOR.height);
@@ -33,8 +34,8 @@ export function drawClubFloor(scene: Phaser.Scene, hall: HallId, onSeat: (id:str
   Phaser.GameObjects.Graphics.TargetCamera.renderList.length=0;
   floor.refresh();
   g.destroy();
-  scene.add.text(890,825,'R',{fontFamily:'Georgia',fontSize:'52px',color:'#d2b67b'}).setOrigin(.5).setDepth(.04);
-  scene.add.text(890,874,'ROYAL CLUB',{fontFamily:'Arial',fontSize:'11px',letterSpacing:3,color:'#c2aa7b'}).setOrigin(.5).setDepth(.04);
+  scene.add.text(crest.x,crest.y-15,'R',{fontFamily:'Georgia',fontSize:'52px',color:'#d2b67b'}).setOrigin(.5).setDepth(.04);
+  scene.add.text(crest.x,crest.y+34,'ROYAL CLUB',{fontFamily:'Arial',fontSize:'11px',letterSpacing:3,color:'#c2aa7b'}).setOrigin(.5).setDepth(.04);
   for(const lounge of LOUNGES.filter(l=>l.hall===hall)) {
     scene.add.image(lounge.x,lounge.y,'sofa').setOrigin(.5,1).setDisplaySize(198,98).setDepth(lounge.y-20);
     scene.add.image(lounge.x,lounge.y+118,'table').setOrigin(.5,1).setDisplaySize(104,62).setDepth(lounge.y+114);
@@ -70,7 +71,7 @@ export function drawClubFloor(scene: Phaser.Scene, hall: HallId, onSeat: (id:str
 
 function drawLuelonWing(scene:Phaser.Scene,onVisit?:()=>void){
   const zone=LUELON_NEW_ZONE,art=scene.make.graphics({x:0,y:0},false);
-  for(const id of ARCADE_HOUSE_GAMES){
+  for(const id of ROYAL_CABINET_IDS){
     const position=ARCADE_CABINET_POSITIONS[id];
     art.fillStyle(0x71d9e4,.08).fillEllipse(position.x,position.y+18,128,48);
     art.lineStyle(1,0x8ee7e8,.4).strokeEllipse(position.x,position.y+18,118,42);

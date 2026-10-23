@@ -1,4 +1,5 @@
 import { schema, t, type SchemaType } from '@colyseus/schema';
+import { MIRA_HOME } from '../src/shared/miraRoutine';
 export const Player = schema({
   name: t.string().default('Гость'), x: t.number().default(540), y: t.number().default(570),
   skin: t.uint8().default(0), facing: t.string().default('down'), moving: t.boolean().default(false),
@@ -25,7 +26,7 @@ export const Guard = schema({
   routine: t.string().default(''), reply: t.string().default(''),
 }, 'RoyalGuard');
 export type Guard = SchemaType<typeof Guard>;
-export const Mira = schema({ x: t.number().default(866), y: t.number().default(453), facing: t.string().default('down'), action: t.string().default('polish'), progress: t.number().default(0) }, 'RoyalMira');
+export const Mira = schema({ x: t.number().default(MIRA_HOME.x), y: t.number().default(MIRA_HOME.y), facing: t.string().default('down'), action: t.string().default('polish'), progress: t.number().default(0) }, 'RoyalMira');
 export const Cat = schema({
   hall: t.string().default('arcade'), x: t.number().default(2330), y: t.number().default(169),
   facing: t.string().default('down'), mood: t.string().default('sleeping'), moving: t.boolean().default(false),

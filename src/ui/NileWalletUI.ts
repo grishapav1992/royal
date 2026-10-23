@@ -2,6 +2,7 @@ import { t as translateText, tr, locale } from '../i18n/index';
 import type { RoomScene } from '../game/RoomScene';
 import { NILE_WALLET_SCOPE, formatNileUnits, type NileWallet } from '../shared/nileWallet';
 import { nilePlay, nileInviteCode } from '../wallet/NilePlayClient';
+import {demoWallet} from '../wallet/WalletClient';
 import type { NilePlayWallet } from '../shared/nilePlay';
 import '../nile-wallet.css';
 
@@ -19,7 +20,7 @@ export class NileWalletUI {
     document.querySelector('.profile')!.prepend(this.button);
     this.dialog.id = 'nile-wallet-dialog'; this.dialog.className = 'wallet-dialog'; this.dialog.setAttribute('aria-labelledby', 'nile-wallet-title');
     this.dialog.innerHTML = translateText(`<div class="wallet-heading"><div><span class="eyebrow">ТЕСТОВАЯ СЕТЬ NILE</span><h2 id="nile-wallet-title">Тестовый USDT</h2></div><button class="icon-button" id="nile-wallet-close" aria-label="Закрыть тестовый кошелёк">×</button></div>
-      <p id="nile-wallet-description" class="wallet-description">Это бесплатные тестовые токены. Они не имеют денежной стоимости. Ставки, переводы и вывод этого баланса пока недоступны.</p>
+      <p id="nile-wallet-description" class="wallet-description">Общий тестовый баланс USDT для автоматов и поединков 1 на 1. Пополняй его токенами сети Nile. Вывод пока недоступен.</p>
       <button id="nile-wallet-deposit" type="button" class="primary-button" hidden>Получить адрес пополнения</button>
       <form id="nile-wallet-claim" hidden><label for="nile-wallet-code">Код подключения тестового кошелька</label><input id="nile-wallet-code" autocomplete="off" spellcheck="false" maxlength="43" required><button type="submit" class="primary-button">Подключить тестовый кошелёк</button></form>
       <p id="nile-wallet-message" role="status">Загрузка…</p>
@@ -34,7 +35,7 @@ export class NileWalletUI {
     this.dialog.querySelector<HTMLButtonElement>('#nile-wallet-close')!.onclick = () => this.dialog.close();
     this.dialog.addEventListener('close', () => { clearInterval(this.poll); this.version++; scene.setLocked(!!document.querySelector('dialog[open]')); });
     this.dialog.querySelector<HTMLButtonElement>('#nile-wallet-deposit')!.onclick=()=>{void this.refresh(true);};
-    nilePlay.addEventListener('change',()=>{const wallet=nilePlay.wallet;this.button.textContent=wallet?.state==='assigned'&&wallet.ready?formatNileUnits(wallet.balanceUnits)+' USDT · Nile':translateText('Тестовый USDT · Nile');});
+    nilePlay.addEventListener('change',()=>{const wallet=nilePlay.wallet;if(wallet&&this.accountId)demoWallet.acceptNileBalance(this.accountId,wallet);this.button.textContent=wallet?.state==='assigned'&&wallet.ready?formatNileUnits(wallet.balanceUnits)+' USDT · Nile':translateText('Тестовый USDT · Nile');});
     this.dialog.querySelector<HTMLButtonElement>('#nile-wallet-refresh')!.onclick = () => { void this.refresh(); };
     this.dialog.querySelector<HTMLFormElement>('#nile-wallet-claim')!.onsubmit = event => {
       event.preventDefault(); const version=this.version,account=this.accountId,button=this.dialog.querySelector<HTMLButtonElement>('#nile-wallet-claim button')!;
@@ -50,9 +51,11 @@ export class NileWalletUI {
     window.addEventListener('royal-account', event => {
       this.version++; this.accountId = (event as CustomEvent<string | null>).detail; this.wallet = undefined;
       nilePlay.setAccount(this.accountId);
+      demoWallet.setAccount(this.accountId);
       this.button.hidden = !this.accountId; this.clear(); this.dialog.close();
     });
     window.addEventListener('royal-open-nile-wallet',()=>this.show());
+    window.addEventListener('royal-open-wallet',()=>this.show());
     window.addEventListener('focus',()=>{void nilePlay.refresh();});
   }
   private show(){if(!this.accountId)return;this.scene.setLocked(true);if(!this.dialog.open)this.dialog.showModal();clearInterval(this.poll);this.poll=setInterval(()=>{if(!nilePlay.busy)void this.refresh(false,true);},10000);void this.refresh(true);}

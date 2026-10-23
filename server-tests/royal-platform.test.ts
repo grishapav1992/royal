@@ -1,31 +1,51 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { CABINETS, cabinetsInHall } from '../src/shared/cabinets';
-import { ROYAL_PLATFORM_GAMES, ARCADE_GITHUB_GAMES, PLATFORM_CABINET_DEFAULTS, isPlatformGame } from '../src/shared/arcadeCatalog';
+import { ARCADE_GITHUB_GAMES, ARCADE_CABINET_SPECS, ROYAL_COLLECTION_GAMES, ROYAL_PLATFORM_GAMES, collectionGames, isCollectionGame } from '../src/shared/arcadeCatalog';
+import { CLUB_ZONES } from '../src/shared/clubLayout';
+import { cabinetSeat } from '../src/shared/cabinetSeating';
 import { gameModuleContract } from '../src/modules/GameModuleCatalog';
-import { royalGameArtwork } from '../src/ui/RoyalGameArtwork';
 
-test('twenty-one stable physical seats have different default games with matching artwork and supported modules', () => {
+test('fourteen collection seats keep Royal and GitHub separate on the common USDT wallet', () => {
   const cabinets=cabinetsInHall('arcade');
-  assert.equal(cabinets.length,21);
-  assert.equal(new Set(cabinets.map(c=>c.defaultGameId)).size,21);
-  assert.equal(new Set(cabinets.map(c=>royalGameArtwork(c.defaultGameId!))).size,21);
-  assert.deepEqual(cabinets.map(c=>c.id).sort(),Object.keys(PLATFORM_CABINET_DEFAULTS).sort());
-  for(const cabinet of cabinets){
-    assert.equal(cabinet.defaultGameId,PLATFORM_CABINET_DEFAULTS[cabinet.id]);
-    assert.ok(isPlatformGame(cabinet.defaultGameId!));
-    assert.ok(gameModuleContract(cabinet.defaultGameId!));
-    assert.ok(royalGameArtwork(cabinet.defaultGameId!));
-    assert.ok(!cabinet.demo&&!cabinet.provider);
+  assert.equal(cabinets.length,14);
+  assert.equal(new Set(CABINETS.map(c=>c.id)).size,CABINETS.length);
+  for(const [collection,count] of Object.entries({royal:9,github:5,casinoapipro:0,luelon:0})) {
+    assert.equal(cabinets.filter(c=>c.collection===collection).length,count);
   }
-  assert.ok(CABINETS.filter(c=>c.hall==='github').every(c=>!c.defaultGameId));
+  for(const c of cabinets){
+    assert.ok(gameModuleContract(c.defaultGameId??c.id));
+    assert.equal(c.demo,c.collection==='luelon');
+    assert.equal(c.provider,c.collection==='casinoapipro');
+  }
+  assert.equal(new Set(cabinets.map(c=>`${cabinetSeat(c).x},${cabinetSeat(c).y}`)).size,14);
+  assert.ok(CABINETS.filter(c=>c.hall==='github').every(c=>!c.collection&&!c.defaultGameId));
 });
 
-test('the common catalogue contains exactly the RoyalGames collection and nine first-floor GitHub games',()=>{
-  assert.equal(ROYAL_PLATFORM_GAMES.length,53);
-  assert.equal(new Set(ROYAL_PLATFORM_GAMES).size,53);
-  assert.equal(ROYAL_PLATFORM_GAMES.filter(id=>!ARCADE_GITHUB_GAMES.includes(id as any)).length,44);
-  for(const id of ROYAL_PLATFORM_GAMES)assert.ok(gameModuleContract(id));
-  assert.equal(isPlatformGame('casinoapipro'),true);
-  for(const id of ['luelon','variant-double-mines','github-blackjack','hockey'])assert.equal(isPlatformGame(id),false);
+test('the source collections are disjoint, complete and prohibit cross-collection launches',()=>{
+  assert.deepEqual([...ROYAL_COLLECTION_GAMES,...ARCADE_GITHUB_GAMES].sort(),[...ROYAL_PLATFORM_GAMES].sort());
+  assert.equal(new Set(ROYAL_PLATFORM_GAMES).size,ROYAL_PLATFORM_GAMES.length);
+  assert.equal(ARCADE_GITHUB_GAMES.length,9);
+  assert.equal(ROYAL_PLATFORM_GAMES.includes('studio-neopolis'),false);
+  assert.deepEqual(collectionGames('casinoapipro'),[]);
+  for(const source of ['royal','github','casinoapipro'] as const){
+    for(const id of collectionGames(source)) {
+      assert.ok(gameModuleContract(id));assert.ok(isCollectionGame(source,id));
+      for(const other of ['royal','github','casinoapipro'] as const)if(source!==other)assert.equal(isCollectionGame(other,id),false);
+    }
+    for(const id of ['luelon','variant-double-mines','github-blackjack','hockey'])assert.equal(isCollectionGame(source,id),false);
+  }
+});
+
+test('each collection fits its own nonoverlapping carpet, including the seats and entry paths',()=>{
+  const names={royal:'ROYAL · НАШИ ИГРЫ',github:'ИГРЫ С GITHUB',casinoapipro:'CASINO API PRO',luelon:'LUELON · ДЕМОИГРЫ'};
+  for(const [collection,name] of Object.entries(names)){
+    const zone=CLUB_ZONES.arcade.find(z=>z.name===name)!;assert.ok(zone);
+    for(const spec of ARCADE_CABINET_SPECS.filter(c=>c.collection===collection)) {
+      const cabinet=cabinetsInHall('arcade').find(c=>c.id===spec.id)!;
+      const seat=cabinetSeat(cabinet);
+      assert.ok(spec.x-49>zone.x&&spec.x+49<zone.x+zone.w);
+      assert.ok(spec.y-142>zone.y&&seat.entry.y<zone.y+zone.h);
+    }
+  }
 });

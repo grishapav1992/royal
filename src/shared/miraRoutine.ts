@@ -1,16 +1,16 @@
 import type { Facing } from './movement';
-import { BAR_OFFSET } from './furniture';
+import { barPoint } from './furniture';
 
 export type MiraAction = 'walk' | 'polish' | 'wipe' | 'stock' | 'idle' | 'serve' | 'chat';
 export type MiraView = { x: number; y: number; facing: Facing; action: MiraAction; progress: number };
-export const MIRA_HOME = { x: 866, y: 423 + BAR_OFFSET };
+export const MIRA_HOME = barPoint(125,116);
 const jobs: { x: number; y: number; action: MiraAction; duration: number; facing: Facing }[] = [
   { ...MIRA_HOME, action: 'polish', duration: 7, facing: 'down' },
-  { x: 792, y: 423 + BAR_OFFSET, action: 'wipe', duration: 6, facing: 'down' },
-  { x: 936, y: 413 + BAR_OFFSET, action: 'stock', duration: 5, facing: 'up' },
-  { x: 907, y: 423 + BAR_OFFSET, action: 'polish', duration: 8, facing: 'down' },
+  { ...barPoint(51,116), action: 'wipe', duration: 6, facing: 'down' },
+  { ...barPoint(195,106), action: 'stock', duration: 5, facing: 'up' },
+  { ...barPoint(166,116), action: 'polish', duration: 8, facing: 'down' },
   { ...MIRA_HOME, action: 'idle', duration: 4, facing: 'left' },
-  { x: 935, y: 423 + BAR_OFFSET, action: 'wipe', duration: 6, facing: 'down' },
+  { ...barPoint(194,116), action: 'wipe', duration: 6, facing: 'down' },
 ];
 
 /** Dedicated staff lane stays behind the counter, separate from visitor navigation. */

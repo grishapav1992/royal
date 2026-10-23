@@ -5,7 +5,7 @@ import type { GamePlayRequest, GameRound } from './gameCore';
 export const DEMO_BETS = [10, 50, 100, 500] as const;
 export const DEMO_SYMBOLS = ['♛', '◆', '🍒', '🍋', '★'] as const;
 export type WalletEntry = { id: number; kind: 'deposit' | 'bet' | 'win' | 'refund' | 'rollback'; amount: number; balance: number; operationId: string; createdAt: number; source?: string; gameName?: string | null };
-export type DemoWallet = { balance: number; entries: WalletEntry[]; pendingBalance?:string };
+export type DemoWallet = { balance: number; entries: WalletEntry[]; pendingBalance?:string;asset?:'USDT_NILE_TEST';testOnly?:true;scale?:2;balanceUnits?:string;reservedUnits?:string;revision?:number };
 export const validProviderBalance=(value:unknown):value is string=>typeof value==='string'&&/^(0|[1-9][0-9]*)\.[0-9]{2}$/.test(value);
 export function providerCoins(value:string):string {
   if(!validProviderBalance(value))throw new Error('Invalid provider balance');

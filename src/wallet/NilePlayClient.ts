@@ -14,6 +14,9 @@ export class NilePlayClient extends EventTarget {
   private epoch=0;private version=0;
   private key(){return 'royal-nile-round:'+this.accountId;}
   private notify(){this.dispatchEvent(new Event('change'));}
+  acceptWallet(accountId:string,wallet:NilePlayWallet){if(accountId!==this.accountId||!validNilePlayWallet(wallet))return;
+    if(wallet.state==='assigned'&&this.wallet?.state==='assigned'&&(wallet.revision??0)<(this.wallet.revision??0))return;
+    if(JSON.stringify(this.wallet)===JSON.stringify(wallet))return;this.version++;this.wallet=wallet;this.notify();}
   setAccount(id:string|null){
     if(id===this.accountId)return;
     this.epoch++;this.version++;this.accountId=id;this.wallet=undefined;this.pending=undefined;this.busy=false;this.error='';

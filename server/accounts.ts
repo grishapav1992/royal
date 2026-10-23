@@ -8,7 +8,7 @@ import { normalizeAppearance } from '../src/shared/appearance';
 import { normalizeCharacterAppearance, type CharacterAppearance } from '../src/shared/skinStudio';
 import { SkinStudioStore } from './skinStudio';
 import { CodexSkinImages } from './skinImages';
-import { CommonSkinPayments } from './skinPayments';
+import { NileSkinPayments } from './nileSkinPayments';
 import { isPlayerCharacter } from '../src/shared/characters';
 import { PostgresDatabase } from './database';
 import { applyAccountSchemaMigrations } from './game-database-migrations';
@@ -61,7 +61,7 @@ export class AccountStore {
     this.paymentCredits = new PaymentCredits(this.db, schemaReady);
     this.paymentEventSecret = payments.eventSecret;
     this.cryptoWallet = new PaymentClient(payments, this.paymentCredits);
-    this.skinStudio = new SkinStudioStore(this.db, new CommonSkinPayments(this.db, this.wallet.ready), new CodexSkinImages(), () => true,
+    this.skinStudio = new SkinStudioStore(this.db, new NileSkinPayments(), new CodexSkinImages(), () => true,
       (id, appearance) => this.events.emit('appearance', id, appearance), this.wallet.ready);
     this.ready = Promise.all([schemaReady, this.wallet.ready, this.casinoApiProWallet.ready, this.moderation.ready, this.drinking.ready, this.paymentCredits.ready, this.skinStudio.ready]).then(() => {});
     this.events.setMaxListeners(0);

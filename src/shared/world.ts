@@ -1,8 +1,8 @@
 import { t as translateText } from '../i18n/index';
-import { clubObstacles } from './clubLayout';
+import { clubObstacles, LOUNGES } from './clubLayout';
 import type { Obstacle } from '../game/navigation';
 import type { Facing, MovementInput } from './movement';
-import { FURNITURE, furnitureBounds, BAR_SOLID, BAR_OFFSET, PLANTS, plantBounds } from './furniture';
+import { FURNITURE, furnitureBounds, BAR_SOLID, BAR_SERVICE, barPoint, PLANTS, plantBounds } from './furniture';
 import { ACTIVITIES } from './activities';
 import { CABINETS, cabinetsInHall, cabinetBounds } from './cabinets';
 import type { GameReaction } from './cabinetSeating';
@@ -14,10 +14,11 @@ export const ROOM_CAPACITY = 30;
 export const NPC_SPAWNS = [[350,300],[875,610],[365,531],[711,563],[100,350]] as const;
 export type Seat = { hall?: HallId; id: string; kind: 'sofa' | 'bar'; x: number; y: number; entry: { x: number; y: number }; facing: Facing };
 export const SEATS: readonly Seat[] = [
-  ...[790,875,955].map((x,i)=>({id:'bar-'+i,kind:'bar' as const,x,y:548,entry:{x,y:590},facing:'up' as const})),
-  ...(['arcade','tables','github'] as const).map(hall=>({id:hall+'-lounge',hall,kind:'sofa' as const,x:320,y:910,entry:{x:320,y:950},facing:'down' as const})),
+  ...[49,134,214].map((x,i)=>({id:'bar-'+i,hall:'arcade' as const,kind:'bar' as const,...barPoint(x,211),entry:barPoint(x,253),facing:'up' as const})),
+  ...LOUNGES.filter(lounge=>lounge.hall==='arcade').map((lounge,i)=>({id:i===0?'arcade-lounge':'arcade-lounge-'+(i+1),hall:lounge.hall,kind:'sofa' as const,x:lounge.x-30,y:lounge.y+10,entry:{x:lounge.x-30,y:lounge.y+40},facing:'down' as const})),
+  ...(['tables','github'] as const).map(hall=>({id:hall+'-lounge',hall,kind:'sofa' as const,x:320,y:910,entry:{x:320,y:950},facing:'down' as const})),
 ];
-export const BAR_APPROACH = { x: 866, y: 548 + BAR_OFFSET } as const;
+export const BAR_APPROACH = barPoint(125,241);
 export const ROOM_OBSTACLES: Obstacle[] = [
   ...CABINETS.map(cabinetBounds),
   ...Object.entries(FURNITURE).filter(([key])=>key!=='sofa').map(([,item])=>furnitureBounds(item)),
@@ -57,9 +58,9 @@ export const inHallDoor = (p: {x:number;y:number;hall:string}) => {
   return Boolean(hallLinkAt(p));
 };
 export const otherHall = (hall:string): HallId => hall==='arcade'||hall==='github'?'tables':'arcade';
-export const activityHall = (id: string): HallId => id === 'piano' ? 'arcade' : 'tables';
+export const activityHall = (id: string): HallId => id === 'piano' ? 'arcade' : ['durak','transfer-durak','crazy-eights'].includes(id) ? 'github' : 'tables';
 export const hallObstacles = (hall?: string): Obstacle[] => hall === 'arcade' ? ARCADE_OBSTACLES : hall === 'tables' ? TABLE_OBSTACLES : hall === 'github' ? GITHUB_OBSTACLES : ROOM_OBSTACLES;
-const GITHUB_OBSTACLES = [...clubObstacles('github'), ...cabinetsInHall('github').map(cabinetBounds)];
+const GITHUB_OBSTACLES = [...clubObstacles('github'), ...cabinetsInHall('github').map(cabinetBounds), ACTIVITIES.durak.bounds, ACTIVITIES['transfer-durak'].bounds, ACTIVITIES['crazy-eights'].bounds];
 const ARCADE_OBSTACLES = [
   ...clubObstacles('arcade'),
   ...cabinetsInHall('arcade').map(cabinetBounds),
@@ -79,7 +80,7 @@ export const DRINKS = [
   { id: 'whisky', name: translateText('Виски'), description: translateText('Янтарный виски со льдом · крепкий'), color: '#ce884a', strength: .38 },
   { id: 'cocktail', name: translateText('Коктейль «Рояль»'), description: translateText('Цитрус, ром и лёд · средняя крепость'), color: '#cc81b4', strength: .30 },
 ] as const;
-export const atBar = (p: { x: number; y: number }) => p.x >= 720 && p.x <= 1005 && p.y >= 482+BAR_OFFSET && p.y <= 590+BAR_OFFSET;
+export const atBar = (p: { x: number; y: number }) => p.x >= BAR_SERVICE.x && p.x <= BAR_SERVICE.x+BAR_SERVICE.w && p.y >= BAR_SERVICE.y && p.y <= BAR_SERVICE.y+BAR_SERVICE.h;
 export type PlayerAction = 'idle' | 'sit' | 'drink';
 export type PlayerView = { security?: string; id: string; hall: HallId; hallRevision: number; name: string; x: number; y: number; skin: number; appearance?: string; facing: 'up' | 'down' | 'left' | 'right'; moving: boolean; connected: boolean; playing: boolean; cabinet?: string; gameReaction?: string; gameReactionUntil?: number; activity?: string; ears?: boolean; seat: string; action: PlayerAction; drink: string; actionUntil: number; soberAt: number; inputSeq: number };
 export type ChatMessage = { id: string; senderId: string; name: string; text: string; time: number; system?: boolean; requestId?: string };

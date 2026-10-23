@@ -9,6 +9,9 @@ import { nileBase58 } from './nile-address';
 import { COINS_MAX_MULTIPLIER } from '../../src/shared/gameCore';
 import { playRoyalCoins } from '../games/core';
 import { sealNileDepositPool, depositPoolDigest, type NileDepositPool } from './nile-deposit-pool';
+import { applyPvpMoneyEvent, pvpEventId, type PvpMoneyEvent, type PvpMoneyMatch } from './pvp-money';
+import { isPvpGame, validPvpStake } from '../../src/shared/pvp';
+import {nativeMoneyEntries,type NativeMoneyEvent} from './native-game-money';
 export type NilePlayConfig = {
     version: 1;
     source: NileTestConfig;
@@ -85,6 +88,9 @@ export class NilePlayLedger {
         CREATE TABLE IF NOT EXISTS entries(seq BIGINT NOT NULL REFERENCES events(seq), line BIGINT NOT NULL, account TEXT NOT NULL, units TEXT NOT NULL, PRIMARY KEY(seq,line));
         CREATE TABLE IF NOT EXISTS invites(hash TEXT PRIMARY KEY, user_id TEXT NOT NULL, created_at BIGINT NOT NULL, expires_at BIGINT NOT NULL);
         CREATE TABLE IF NOT EXISTS bindings(account_id TEXT PRIMARY KEY, user_id TEXT NOT NULL UNIQUE, invite_hash TEXT NOT NULL UNIQUE REFERENCES invites(hash), created_at BIGINT NOT NULL);`);
+                await this.db.exec(`ALTER TABLE events DROP CONSTRAINT IF EXISTS events_kind_check;
+                  ALTER TABLE events ADD CONSTRAINT events_kind_check CHECK(kind IN ('funding','round','reserve','pvp','native'));
+                  CREATE INDEX IF NOT EXISTS play_pvp_match_seq ON events((payload::jsonb->>'matchId'),seq) WHERE kind='pvp';`);
                 await ledgerTrigger(this.db, 'state', 'sealed_state', 'UPDATE', `
         IF NEW.config IS DISTINCT FROM OLD.config OR NEW.id IS DISTINCT FROM OLD.id OR (OLD.halted IS NOT NULL AND NEW.halted IS DISTINCT FROM OLD.halted)
         THEN RAISE EXCEPTION 'sealed play state'; END IF;`);
@@ -114,7 +120,7 @@ export class NilePlayLedger {
         await this.ready;
         return this.db.transaction(action, { readOnly: !write });
     }
-    private async append(id: string, kind: string, payload: Funding | StoredRound | Reserve, entries: Entry[]) {
+    private async append(id: string, kind: string, payload: Funding | StoredRound | Reserve | PvpMoneyEvent | NativeMoneyEvent, entries: Entry[]) {
         await this.ready;
         const text = JSON.stringify(payload);
         const seq = (await this.db.prepare('INSERT INTO events(seq,id,kind,payload,sha256) SELECT COALESCE(MAX(seq),0)+1,?,?,?,? FROM events RETURNING seq').run(id, kind, text, playDigest(text))).lastInsertRowid;
@@ -133,13 +139,15 @@ export class NilePlayLedger {
         const remaining = BigInt(this.config.initialReserveUnits) - reserved;
         return userId === this.config.houseUserId ? amount : userId === this.config.reserveUserId && remaining > 0n ? (amount < remaining ? amount : remaining) : 0n;
     }
-    async sync(source: NileTestLedger, reconciliation: any, now = Date.now()) {
+    async sync(source: NileTestLedger, reconciliation: any, now?: number) {
+        const clock = now === undefined ? Date.now : () => now!;
         await this.ready;
         if (JSON.stringify(source.config) !== JSON.stringify(this.config.source) || depositPoolDigest(source.pool) !== depositPoolDigest(this.pool))
             fail('play_source_config_mismatch', 503);
         await source.ready;
         return source.db.transaction(async () => {
             const audit = await source.audit(), status = await source.status();
+            now = clock();
             const total = audit.balances.reduce((sum, a) => sum + BigInt(a.availableUnits), 0n).toString();
             const at = Date.parse(reconciliation?.checked_at);
             if ((reconciliation?.poolSha256 ?? null) !== depositPoolDigest(this.pool) || !status.ok || reconciliation?.ok !== true || reconciliation.network !== 'nile' || reconciliation.asset !== 'USDT_NILE_TEST'
@@ -181,7 +189,7 @@ export class NilePlayLedger {
                     }
                     if (seen !== audit.credits) fail('play_source_changed', 503);
                     await this.db.prepare('UPDATE state SET source_at=?,reconciled_at=?,source_credits=?,source_units=?,source_height=?,source_hash=?,last_error=NULL WHERE id=1')
-                        .run(now, at, audit.credits, total, status.cursorHeight, status.cursorHash);
+                        .run(clock(), at, audit.credits, total, status.cursorHeight, status.cursorHash);
                     return seen - importedCount;
                 });
             } catch (error) {
@@ -291,7 +299,10 @@ export class NilePlayLedger {
         const rounds = (await this.db.prepare("SELECT payload FROM events WHERE kind='round' AND (payload::jsonb->>'accountId')=? ORDER BY seq DESC LIMIT 50").all(accountId)).map(e => this.publicRound(JSON.parse(String(e.payload))));
         const allocation = await this.db.prepare('SELECT payload FROM events WHERE id=?').get('reserve:' + userId);
         return { ...NILE_PLAY_SCOPE, state: 'assigned', address: nileBase58(this.addresses.find(a => a.userId === userId)!.address),
-            balanceUnits: (await this.balance('player:' + userId)).toString(), updatedAt: Number(state.source_at ?? 0), ready: await this.isReady(now), maxStakeUnits: max, reserveAllocatedUnits: allocation ? JSON.parse(String(allocation.payload)).units : '0', deposits, rounds };
+            balanceUnits: (await this.balance('player:' + userId)).toString(),
+            reservedUnits: String(BigInt(String((await this.db.prepare("SELECT COALESCE(SUM(units::numeric),0)::text AS units FROM entries WHERE account LIKE 'pvp:%' AND right(account,length(?)+1)=':'||?").get(userId,userId))!.units)) + await this.balance('games-reserved:'+userId)),
+            revision:Number((await this.db.prepare('SELECT COALESCE(MAX(seq),0) AS seq FROM events').get())!.seq),
+            updatedAt: Number(state.source_at ?? 0), ready: await this.isReady(now), maxStakeUnits: max, reserveAllocatedUnits: allocation ? JSON.parse(String(allocation.payload)).units : '0', deposits, rounds };
         }, { readOnly: true });
     }
     private publicRound(row: StoredRound): NileRound { const { id, stakeUnits, payoutUnits, symbols, multiplier, createdAt } = row; return { id, stakeUnits, payoutUnits, symbols, multiplier, createdAt }; }
@@ -334,6 +345,71 @@ export class NilePlayLedger {
         await this.ready;
         return this.db.transaction(() => this.auditRows(), { readOnly: true });
     }
+    async nativeTransaction<T>(accountId:string,action:(context:{userId:string;available:bigint;reserved:bigint;house:bigint;ready:boolean;
+        post:(after:bigint,reserved:bigint,requestHash:string)=>Promise<void>})=>Promise<T>,now=Date.now()):Promise<T>{
+        if(!gameAccountId(accountId))return fail('invalid_play_account',400);
+        return this.transaction(async()=>{
+            const binding=await this.binding(accountId);if(!binding)return fail('play_wallet_unassigned');
+            const userId=String(binding.user_id),available=await this.balance('player:'+userId),reserved=await this.balance('games-reserved:'+userId),house=await this.balance('house');
+            return action({userId,available,reserved,house,ready:await this.isReady(now),post:async(after,afterReserve,requestHash)=>{
+                if(after<0n||afterReserve<0n||house+available-after+reserved-afterReserve<0n)fail('play_reserve_insufficient');
+                const id=randomBytes(16);id[6]=(id[6]&15)|64;id[8]=(id[8]&63)|128;
+                const uuid=id.toString('hex').replace(/^(.{8})(.{4})(.{4})(.{4})(.{12})$/,'$1-$2-$3-$4-$5');
+                const event:NativeMoneyEvent={version:1,id:uuid,accountId,userId,beforeUnits:String(available),afterUnits:String(after),beforeReserveUnits:String(reserved),afterReserveUnits:String(afterReserve),createdAt:now,requestHash};
+                await this.append('native:'+uuid,'native',event,nativeMoneyEntries(event));
+            }});
+        });
+    }
+    private async pvpMatch(matchId: string) {
+        const matches = new Map<string, PvpMoneyMatch>();
+        for (const event of await this.db.prepare("SELECT payload FROM events WHERE kind='pvp' AND (payload::jsonb->>'matchId')=? ORDER BY seq").all(matchId)) {
+            applyPvpMoneyEvent(JSON.parse(String(event.payload)), matches);
+        }
+        return matches;
+    }
+    async pvpHold(accountId: string, value: unknown, now = Date.now()) {
+        const row = value as { matchId: string; gameId: string; stakeUnits: string };
+        if (!gameAccountId(accountId) || !row || Object.keys(row).sort().join(',') !== 'gameId,matchId,stakeUnits'
+            || !gameAccountId(row.matchId) || !isPvpGame(row.gameId) || !validPvpStake(row.stakeUnits)) return fail('invalid_pvp_request',400);
+        const gameId = row.gameId;
+        return this.transaction(async () => {
+            const matches = await this.pvpMatch(row.matchId), match = matches.get(row.matchId);
+            if (match?.participants.some(owner => owner.accountId === accountId)) {
+                if (match.gameId !== gameId || match.stakeUnits !== row.stakeUnits) fail('play_idempotency_conflict');
+                return { wallet: await this.wallet(accountId, now), replayed: true };
+            }
+            if (match?.final || match && (match.gameId !== gameId || match.stakeUnits !== row.stakeUnits || match.participants.length >= 2)) fail('pvp_unavailable');
+            if (!await this.isReady(now)) fail('play_source_not_ready',503);
+            const binding = await this.binding(accountId);
+            if (!binding) return fail('play_wallet_unassigned');
+            const userId = String(binding.user_id);
+            if (await this.balance('player:' + userId) < BigInt(row.stakeUnits)) fail('play_insufficient_balance');
+            const event: PvpMoneyEvent = {version:1,action:'hold',matchId:row.matchId,gameId,stakeUnits:row.stakeUnits,
+                participants:[{accountId,userId}],winnerId:null,reason:'hold',createdAt:now};
+            const entries = applyPvpMoneyEvent(event,matches);
+            await this.append(pvpEventId(event),'pvp',event,entries);
+            return {wallet:await this.wallet(accountId,now),replayed:false};
+        });
+    }
+    /** Only trusted backend adjudication calls this method; it is never a public player endpoint. */
+    async pvpFinish(accountId: string, value: unknown, now = Date.now()) {
+        const row = value as {matchId:string;winnerId:string|null;reason:string};
+        if (!gameAccountId(accountId)||!row||Object.keys(row).sort().join(',')!=='matchId,reason,winnerId'||!gameAccountId(row.matchId)
+            ||row.winnerId!==null&&!gameAccountId(row.winnerId)||!['win','draw','cancel','expired','server','disconnect','resign','timeout'].includes(row.reason)) return fail('invalid_pvp_request',400);
+        return this.transaction(async()=>{
+            const matches=await this.pvpMatch(row.matchId),match=matches.get(row.matchId);
+            if(!match||!match.participants.some(owner=>owner.accountId===accountId)) return fail('pvp_unavailable');
+            if(match.final){
+                if(match.final.winnerId!==row.winnerId||match.final.reason!==row.reason)fail('play_idempotency_conflict');
+                return {wallet:await this.wallet(accountId,now),replayed:true};
+            }
+            const event:PvpMoneyEvent={version:1,action:row.winnerId===null?'refund':'settle',matchId:row.matchId,gameId:match.gameId,
+                stakeUnits:match.stakeUnits,participants:match.participants,winnerId:row.winnerId,reason:row.reason,createdAt:now};
+            let entries:Entry[];try{entries=applyPvpMoneyEvent(event,matches);}catch{return fail('invalid_pvp_result',409);}
+            await this.append(pvpEventId(event),'pvp',event,entries);
+            return {wallet:await this.wallet(accountId,now),replayed:false};
+        });
+    }
     private async auditRows() {
         await this.db.integrityCheck();
         if ((await this.db.prepare('SELECT * FROM state WHERE id=1').get())!.config !== JSON.stringify(this.config)) fail('play_journal_corrupted', 503);
@@ -365,6 +441,7 @@ export class NilePlayLedger {
                 fail('play_journal_corrupted', 503);
         }
         const balances = new Map<string, bigint>();
+        const pvpMatches = new Map<string, PvpMoneyMatch>();
         let total = 0n, reserved = 0n, fundings = 0, rounds = 0, lines = 0, lastSeq = 0;
         while (true) {
             const page = lastSeq === 0 ? await this.db.prepare('SELECT * FROM events ORDER BY seq LIMIT 128').all()
@@ -382,7 +459,7 @@ export class NilePlayLedger {
                 if (Number(event.seq) !== ++lastSeq || event.sha256 !== playDigest(String(event.payload)))
                     fail('play_journal_corrupted', 503);
                 const row = JSON.parse(String(event.payload));
-                let entries: Entry[];
+                let entries: Entry[] = [];
                 if (event.kind === 'funding') {
                     if (Object.keys(row).sort().join(',') !== 'amountUnits,height,logIndex,playerUnits,reserveUnits,txId,userId'
                         || !/^[a-f0-9]{64}$/.test(row.txId) || !Number.isSafeInteger(row.logIndex) || row.logIndex < 0
@@ -404,6 +481,15 @@ export class NilePlayLedger {
                         || bindings.some(b => b.user_id === row.userId && Number(b.created_at) < row.createdAt) || (balances.get('player:' + row.userId) ?? 0n) < BigInt(row.units))
                         fail('play_journal_corrupted', 503);
                     entries = reserveEntries(row);
+                }
+                else if (event.kind === 'pvp') {
+                    if(event.id!==pvpEventId(row)||!row.participants?.every((owner:any)=>bindings.some(b=>b.account_id===owner.accountId&&b.user_id===owner.userId&&Number(b.created_at)<=row.createdAt))) fail('play_journal_corrupted',503);
+                    try{entries=applyPvpMoneyEvent(row,pvpMatches);}catch{fail('play_journal_corrupted',503);}
+                }
+                else if(event.kind==='native'){
+                    if(event.id!=='native:'+row.id||!bindings.some(b=>b.account_id===row.accountId&&b.user_id===row.userId&&Number(b.created_at)<=row.createdAt)
+                        ||(balances.get('player:'+row.userId)??0n)!==BigInt(row.beforeUnits)||(balances.get('games-reserved:'+row.userId)??0n)!==BigInt(row.beforeReserveUnits))fail('play_journal_corrupted',503);
+                    try{entries=nativeMoneyEntries(row);}catch{fail('play_journal_corrupted',503);}
                 }
                 else {
                     const owned = row as StoredRound;
