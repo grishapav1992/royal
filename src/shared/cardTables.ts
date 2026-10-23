@@ -11,8 +11,7 @@ export const CARD_GAMES = CARD_GAME_IDS;
 export type CardGameId = typeof CARD_GAME_IDS[number];
 // Keep historical IDs and dealer identities stable for saved rounds.
 export const ACTIVE_CARD_GAME_IDS = [
-  'variant-blackjack-target', 'variant-triple-poker', 'github-baccarat',
-  'github-dragon-tiger', 'github-andar-bahar', 'variant-duel', 'variant-war',
+  'variant-blackjack-target', 'variant-triple-poker', 'variant-duel', 'variant-war',
 ] as const satisfies readonly CardGameId[];
 export const isRetiredCardGame = (id: unknown): id is CardGameId =>
   (CARD_GAME_IDS as readonly unknown[]).includes(id) && !(ACTIVE_CARD_GAME_IDS as readonly unknown[]).includes(id);

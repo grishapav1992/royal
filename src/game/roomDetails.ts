@@ -59,10 +59,13 @@ export class RoomDetails {
     const art = (key: string, x: number, y: number, w: number, h: number) =>
       s.add.image(x, y, key).setOrigin(0).setDisplaySize(w, h).setDepth(2);
     if (this.hall === 'arcade' || this.hall === 'github') {
-      art('window-city', 132, 74, 110, 90);
-      art('casino-suits', 710, 74, 110, 90);
-      art('casino-chips', 266, 77, 70, 82);
-      art(this.hall === 'github' ? 'casino-chips' : 'casino-sevens', 975, 84, this.hall === 'github' ? 70 : 36, 76);
+      art('window-city', 132, -14, 110, 150);
+      if(this.hall==='github') {
+        art('casino-suits', 710, 24, 110, 90);
+        art('casino-chips', 266, 27, 70, 82);
+      }
+      art('casino-sevens', 975, 25, 36, 76);
+      if(this.hall==='arcade') for(const x of [1095,1995,2895,3795]) art('window-city',x,-14,150,150);
       g.fillStyle(0x1e3039).fillRoundedRect(79, 99, 26, 53, 3);
       g.lineStyle(1, 0xa68e67).strokeRoundedRect(79, 99, 26, 53, 3);
       for (const [y, radius] of [[112, 6], [135, 8]]) {
@@ -86,7 +89,10 @@ export class RoomDetails {
       g.fillStyle(0xc4b580).fillRect(849, 116, 26, 3);
       g.fillStyle(0x806c46).fillRect(854, 140, 16, 3);
     }
-    if(this.hall==='arcade'||this.hall==='github')art('club-sconce', 336, 80, 36, 76);
+    if(this.hall==='arcade') {
+      for(const x of [401,723,1074,1974,2874,3774])art('club-sconce',x,-8,26,76);
+    }
+    else if(this.hall==='github')art('club-sconce', 336, 80, 36, 76);
     else{
       g.fillStyle(0x5a674c).fillRect(348, 110, 4, 32);
       g.fillStyle(0x355b42).fillTriangle(337, 116, 350, 96, 363, 116);

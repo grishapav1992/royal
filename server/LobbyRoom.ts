@@ -1,4 +1,5 @@
-import { serializeAppearance, type Appearance } from '../src/shared/appearance';
+import { serializeAppearance } from '../src/shared/appearance';
+import type { CharacterAppearance } from '../src/shared/skinStudio';
 import { Room, type Client, type AuthContext, ServerError } from '@colyseus/core';
 import { Guards } from './guards';
 import { Bartender } from './bartender';
@@ -18,6 +19,7 @@ import { LobbyState, Player } from './state';
 import { movementFacing, type Facing } from '../src/shared/movement';
 import { MovementInputs } from './movementInputs';
 import { Activities } from './activities';
+import { PvpRoom } from './pvp/room';
 import { cabinetHall, cabinetsInHall, type Cabinet } from '../src/shared/cabinets';
 import { cabinetSeat } from '../src/shared/cabinetSeating';
 import { findPath, walkable, type Point } from '../src/game/navigation';
@@ -38,6 +40,9 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
   maxClients = ROOM_CAPACITY;
   maxMessagesPerSecond = 80;
   private activities = new Activities(id => this.state.players.get(id), id => this.stop(id), (type,value,hall) => this.broadcastActivity(type,value,hall), (id,text) => this.clients.find(c=>c.sessionId===id)?.send('notice',text));
+  private pvp=new PvpRoom({roomId:()=>this.roomId,activities:this.activities,
+    people:()=>[...this.state.players].flatMap(([sessionId,p])=>{const accountId=this.playerAccounts.get(sessionId);return accountId?[{sessionId,accountId,name:p.name,hall:p.hall,x:p.x,y:p.y,connected:p.connected,available:!p.playing&&!p.activity&&!p.seat&&p.action!=='drink'}]:[];}),
+    send:(id,type,value)=>this.clients.find(c=>c.sessionId===id)?.send(type,value)});
   private guards = new Guards(this.state, (id, decision) => {
     if (decision.kind !== 'ejecting') return;
     const client = this.clients.find(c => c.sessionId === id);
@@ -109,7 +114,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       const player = this.state.players.get(client.sessionId); if (player) player.skin = skin;
     }
   };
-  private appearanceListener = (id: string, appearance: Appearance | null) => {
+  private appearanceListener = (id: string, appearance: CharacterAppearance | null) => {
     for (const client of this.clients) if ((client.auth as RoomAuth)?.account.id === id) {
       const access = this.access.get(client.sessionId); if (access) access.profileRevision.appearance++;
       (client.auth as RoomAuth).account.appearance = appearance;
@@ -125,6 +130,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     accounts.events.on('appearance', this.appearanceListener);
     accounts.events.on('drinking', this.drinkingListener);
     this.clock.setInterval(() => { void this.refreshAccess().catch(() => console.error('Room access refresh failed')); }, 60000);
+    this.clock.setInterval(()=>this.pvp.tick(),1000);
     this.setPatchRate(50);
     let hallElapsed=0;
     this.setSimulationInterval(delta => {
@@ -156,6 +162,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       else return apply();
     });
     listen('activity', (client,value:unknown)=>this.activities.handle(client.sessionId,value));
+    listen('pvp',async(client,value:unknown)=>{await this.pvp.command(client.sessionId,value);});
     listen('cat', (client, value: unknown) => {
       const message = this.cat.handle(client.sessionId, value);
       if(this.cat.isHugging(client.sessionId)) {
@@ -407,9 +414,10 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     const p = this.state.players.get(client.sessionId); if (p) p.connected = false;
     if (!p || !this.accessAllowed(client)) return;
     // Refused joins, expired reservations and shutdown must not reject outside the room lifecycle.
-    void this.allowReconnection(client, 20).catch(() => {});
+    void this.allowReconnection(client, this.pvp.locked(client.sessionId)?60:20).catch(() => {});
   }
   onDispose() {
+    this.pvp.stop();
     for (const client of this.clients) this.cancelChat(client);
     this.chatPending.clear(); this.chatResults.clear();
     for (const id of this.state.players.keys()) this.releaseCabinet(id);

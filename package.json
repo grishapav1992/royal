@@ -29,7 +29,10 @@
     "build:cards": "node scripts/build-card-engine.mjs",
     "payments:dev": "node --env-file-if-exists=.env.payments --import tsx server/payments/index.ts",
     "build:modules": "node scripts/build-game-module.mjs --all",
-    "test:modules": "npm run build:modules && node --import tsx --test server-tests/independent-modules.test.ts server-tests/game-module-assets.test.ts && playwright test --config=playwright.modules.config.ts"
+    "test:modules": "npm run build:modules && node --import tsx --test server-tests/independent-modules.test.ts server-tests/game-module-assets.test.ts && playwright test --config=playwright.modules.config.ts",
+    "dev:atelier": "node --import tsx scripts/local-atelier.ts",
+    "test:skins": "node --import tsx scripts/database-test.ts --import tsx --test server-tests/skin-studio.test.ts server-tests/skin-profile.test.ts server-tests/skin-common-wallet.test.ts",
+    "test:skins:ui": "playwright test --config playwright.skins.config.ts"
   },
   "dependencies": {
     "@colyseus/core": "^0.18.18",
@@ -40,7 +43,8 @@
     "express": "^5.2.1",
     "pg": "8.23.1",
     "phaser": "3.90.0",
-    "qrcode-generator": "2.0.4"
+    "qrcode-generator": "2.0.4",
+    "sharp": "^0.35.5"
   },
   "devDependencies": {
     "@noble/hashes": "2.4.0",

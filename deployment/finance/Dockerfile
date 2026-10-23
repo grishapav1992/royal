@@ -2,10 +2,9 @@ FROM node:22-bookworm-slim AS build
 WORKDIR /app
 COPY package.json package-lock.json tsconfig.json tsconfig.finance.json ./
 RUN npm ci
-COPY server/database.ts server/database-migrations.ts ./server/
-COPY server/finance ./server/finance
-COPY server/games ./server/games
+COPY server ./server
 COPY src/shared ./src/shared
+COPY src/i18n ./src/i18n
 COPY scripts/finance-*.ts scripts/database-archive.ts ./scripts/
 COPY server-tests/finance ./server-tests/finance
 RUN npm run build:finance && npx esbuild scripts/finance-migrate.ts scripts/finance-smoke.ts scripts/finance-multi-smoke.ts scripts/finance-tls-smoke.ts scripts/finance-deposits.ts scripts/finance-deposit-smoke.ts --bundle --platform=node --external:pg --external:pg-native --format=esm --outdir=dist-finance-tools

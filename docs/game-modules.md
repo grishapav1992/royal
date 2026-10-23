@@ -1,18 +1,21 @@
 # Independently published games
 
-Every existing game definition has an independent client package. The catalogue contains 111 module identities across the current and historical game families. This is a technical inventory, not a claim that the hall has 111 visible machines:
+Every existing game definition has an independent client package. The catalogue contains 115 module identities across the current and historical game families. This is a technical inventory, not a claim that the hall has 115 visible machines:
 
 | Family | Module identities |
 | --- | ---: |
 | Studio games, including the eight current native slots | 40 |
 | Original Royal games, GitHub practice games, session games and all casino/card variants, including LAST EXIT | 62 |
 | Air hockey, pool, chess and piano | 4 |
+| Durak, transfer Durak and Crazy Eights PvP | 3 |
 | Breaker, Orbit, Drift and Pixel legacy arcade games | 4 |
 | Luelon and Casino API Pro provider adapters | 2 |
 
 Supported identities and host contracts are in `src/modules/GameModuleCatalog.ts`. Each `games/<slug>/` directory contains its entry, package metadata and TypeScript configuration. GIRLHUB keeps slug `girlhub` and identity `studio-afterglow`. LAST EXIT keeps identity `github-crash` and uses slug `last-exit`. CR vs. Leo keeps its production identity `original-cr-vs-leo` in package `cr-vs-leo`; Royal Plinko keeps the current «Завеса ночи» implementation and its assets. The arcade Orbit uses identity `orbit` and slug `arcade-orbit`, distinct from `studio-orbit`.
 
 The hall keeps its existing visible cabinets, card tables, activities and recovery paths. Historical definitions are packaged without changing their retired status. Provider games remain hosted by their providers; Royal independently packages the local catalogue, launch and iframe adapter for each provider. Their remote game engines are already loaded separately.
+
+The single Nile wallet release hides the two provider demos and the three practice tables with separate chips. Their module identities remain available for historical compatibility. New PvP packages use the optional host `pvp` context for snapshots, legal moves and operation transport. The common backend owns their rules, hidden hands, stakes and settlement. See [PvP and the shared Nile wallet](pvp.md).
 
 
 ## Shared services and saved rounds
@@ -80,7 +83,9 @@ The completed local migration passed the full application build, five catalogue/
 
 ## Shared cabinet platform
 
-The first floor has 20 cabinets, each with a fixed default game and matching game artwork. Entering opens that game directly. All games opens the same catalogue in every cabinet: all 40 copied Studio games, LAST EXIT, the native Plinko and CR vs. Leo under RoyalGames, nine current GitHub games and the available Casino API Pro catalogue. Physical cabinet occupancy is independent of the selected game module. Switching keeps the seat, chat and shared wallet services. Closing releases the seat; reentry opens the cabinet default and saved game rounds remain recoverable.
+The first floor has 19 independent physical seats in separate collections: ten Royal cabinets on the house carpet, five GitHub cabinets on their own carpet, three Casino API PRO cabinets on the provider carpet, and one standalone Luelon demo cabinet. Entering a collection cabinet opens only its own catalogue, with search and genre filtering. Every cabinet within a collection has the same game list. Royal contains the locally authored Studio games, LAST EXIT, native Plinko and CR vs. Leo; GitHub retains the nine reworked imported games. Luelon uses its remote demo catalogue and credits separately.
+
+Physical cabinet occupancy is independent of the selected game module. Switching games preserves the seat, connected chat and shared wallet. Closing releases only that physical seat. Reentry opens its collection again, and saved game rounds remain recoverable in every compatible seat. Source checks in the host reject launches from another collection; provider navigation approaches only a free Casino API PRO cabinet. Game definitions remain available when a game no longer has a dedicated cabinet, preserving catalogue names, rules and recovery.
 
 Casino API Pro accepts an optional embedded provider context. The shared host owns its window and navigation, while the provider adapter rechecks configuration, wallet acknowledgement and game availability. The existing launch URL validation and iframe sandbox remain active. Switching cancels provider requests, polling and the iframe without releasing the seat. Standalone provider callbacks remain compatible. The original remote Luelon demo catalogue is outside the platform.
 

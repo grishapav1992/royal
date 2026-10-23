@@ -5,6 +5,7 @@ import { ChatMedia } from './ChatMedia';
 import { prefetchDemoGames } from '../game/demoGames';
 import { AuthUI } from './AuthUI';
 import { ActivitiesUI } from './ActivitiesUI';
+import { PvpUI } from './PvpUI';
 import type { RoomScene } from '../game/RoomScene';
 import { LobbyClient, type ConnectionStatus } from '../network/LobbyClient';
 import { HALLS, type ChatMessage, type PlayerView } from '../shared/world';
@@ -23,6 +24,7 @@ type OutgoingMessage = {
 export class SocialUI {
   readonly client: LobbyClient;
   readonly activities: ActivitiesUI;
+  readonly pvp:PvpUI;
   private security: SecurityUI;
   private checking = false;
   private sanctioned = false;
@@ -46,6 +48,10 @@ export class SocialUI {
   private outbox = document.createElement('div');
   private deliveryStatus = document.createElement('p');
   constructor(private scene: RoomScene, private toast: (message: string) => void) {
+    window.addEventListener('royal-skin-loaded', () => {
+      const portrait = document.querySelector<HTMLImageElement>('#player-portrait img');
+      if (portrait) portrait.src = scene.getPortraitFrame('idle', 0);
+    });
     const sidebar = document.querySelector<HTMLElement>('.sidebar')!;
     const catalog = document.createElement('div'); catalog.className = 'catalog-panel'; catalog.id = 'catalog-panel';
     while(sidebar.firstChild) catalog.append(sidebar.firstChild);
@@ -101,6 +107,7 @@ export class SocialUI {
       checking: value => { this.checking = value; this.chatAvailability(); },
       status: status => this.connectionStatus(status),
       joined: (roomId, selfId) => {
+        this.pvp?.client.setAccount(this.auth.account?.id??null);
         document.querySelectorAll<HTMLDialogElement>('dialog[open]').forEach(dialog => {
           if (dialog !== this.dialog) dialog.close();
         });
@@ -119,6 +126,8 @@ export class SocialUI {
       history: messages => { messages.forEach(message => this.addMessage(message)); },
       notice: message => this.toast(message),
       activities: state => this.activities.update(state),
+      pvp:value=>this.pvp?.client.receive(value),
+      pvpResult:value=>this.pvp?.client.rejected(value),
       note: note => this.activities.receive(note),
     });
     this.activities = new ActivitiesUI(scene, value=>{
@@ -126,6 +135,8 @@ export class SocialUI {
       if (type === 'join' || type === 'leave') this.scene.finishMovement(() => this.client.send('activity',value));
       else this.client.send('activity',value);
     });
+    this.pvp=new PvpUI(scene,this.activities,value=>this.client.send('pvp',value));
+    this.pvp.client.setAccount(this.auth.account?.id??null);
     chat.querySelector('form')!.addEventListener('submit', event => {
       event.preventDefault(); const text = this.input.value.trim();
       if (this.sendChat(text)) { this.input.value = ''; this.input.dispatchEvent(new Event('input', { bubbles: true })); this.input.focus(); }
@@ -143,6 +154,7 @@ export class SocialUI {
     this.scene.setLocked(true);
   }
   private connectionStatus(status: ConnectionStatus) {
+    this.pvp?.client.setConnected(status==='connected');
     if (status !== 'connected') {
       this.checking = false;
       for (const entry of this.outgoing.values()) if (entry.status === 'sending' || entry.status === 'queued') {

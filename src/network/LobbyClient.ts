@@ -10,6 +10,7 @@ import { mergeActivities, mergePianoNote, type ActivitiesMessage, type Activitie
 import { savedSession, rememberSession, forgetSession } from './sessionRecovery';
 import type { CabinetPlayResult } from '../shared/cabinetSeating';
 import type { ChatRequest, ChatResult } from '../shared/chat';
+import type { PvpSnapshot } from '../shared/pvp';
 export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'reconnecting';
 export class LobbyClient {
   private client = new Client(import.meta.env.VITE_SERVER_URL || `${location.origin}${import.meta.env.DEV ? '/multiplayer' : ''}`);
@@ -36,6 +37,8 @@ export class LobbyClient {
     players: (players: PlayerView[], selfId: string) => void;
     chat: (message: ChatMessage) => void;
     delivery?: (result: ChatResult) => void;
+    pvp?:(value:PvpSnapshot)=>void;
+    pvpResult?:(value:{requestId:string;error:string;rejected:boolean})=>void;
     history: (messages: ChatMessage[]) => void;
     notice: (message: string) => void;
     activities: (state: ActivitiesState) => void;
@@ -101,6 +104,8 @@ export class LobbyClient {
       onMessage('chat', message => this.events.chat(message as ChatMessage));
       onMessage('history', messages => this.events.history(messages as ChatMessage[]));
       onMessage('notice', message => this.events.notice(translateText(String(message))));
+      onMessage('pvp',(value:PvpSnapshot)=>this.events.pvp?.(value));
+      onMessage('pvp-result',(value:{requestId:string;error:string;rejected:boolean})=>this.events.pvpResult?.(value));
       onMessage('cabinet-play-result', (result: CabinetPlayResult) => {
         const pending = this.pendingCabinet;
         if (!pending || result.requestId !== pending.requestId || result.id !== pending.id) return;

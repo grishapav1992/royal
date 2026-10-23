@@ -42,7 +42,7 @@ export function paintCabinet(c: CanvasRenderingContext2D, cabinet: Cabinet) {
     panel(5, 3, 74, 87, '#ca9f52', 8);
     panel(8, 6, 68, 78, '#572338', 6);
     panel(11, 9, 62, 15, '#271826', 3);
-    text('ROYAL CASINO', 19, 7, '#ffe2a0');
+    text('CASINO API PRO', 19, 7, '#ffe2a0');
     panel(10, 25, 64, 50, '#171e26', 4);
     line(8, 28, 8, 72, '#f2ca78', 2); line(76, 28, 76, 72, '#f2ca78', 2);
     panel(5, 78, 74, 14, '#a4804f', 3);
@@ -63,7 +63,7 @@ export function paintCabinet(c: CanvasRenderingContext2D, cabinet: Cabinet) {
     panel(15, 3, 54, 10, '#cba568', 2);
     panel(23, 1, 38, 6, '#f0d397', 1);
     panel(13, 13, 58, 12, '#302b32', 2);
-    text(cabinet.demo ? 'ROYAL PLAY' : cabinet.id === 'royal-coins' ? 'ROYAL GAMES' : cabinet.name.toUpperCase(), 22, 6.3, accent);
+    text(cabinet.demo ? 'LUELON DEMO' : cabinet.id === 'royal-coins' ? 'ROYAL GAMES' : cabinet.name.toUpperCase(), 22, 6.3, accent);
     panel(15, 26, 54, 48, '#d0ad72', 3);
     for (const x of [11, 73]) line(x, 28, x, 76, '#f0d598', 2);
     panel(8, 78, 68, 15, '#b78650', 2);

@@ -17,7 +17,7 @@ export class AfterglowWardrobeClient extends EventTarget {
     const account = this.account, epoch = this.epoch, version = ++this.version;
     this.loading = true; this.notify();
     try {
-      const r = await fetch('/api/demo-wallet/afterglow-wardrobe', {credentials: 'same-origin', cache: 'no-store', signal: AbortSignal.timeout(10000), headers: {[WALLET_ACCOUNT_HEADER]: account, [AFTER_PROGRESS_HEADER]: AFTER_PROGRESS_VERSION}});
+      const r = await fetch('/api/game-wallet/afterglow-wardrobe', {credentials: 'same-origin', cache: 'no-store', signal: AbortSignal.timeout(10000), headers: {[WALLET_ACCOUNT_HEADER]: account, [AFTER_PROGRESS_HEADER]: AFTER_PROGRESS_VERSION}});
       const data = await r.json(); if (epoch !== this.epoch || version !== this.version) return;
       if (!r.ok || !validAfterWardrobe(data)) throw Error(r.ok ? translateText('Альбом не подтверждён. Обнови данные игры.') : data.error);
       this.profile = data; this.error = '';
@@ -29,7 +29,7 @@ export class AfterglowWardrobeClient extends EventTarget {
     const account = this.account, epoch = this.epoch; ++this.version;
     this.busy = true; this.error = ''; this.notify();
     try {
-      const r = await fetch('/api/demo-wallet/afterglow-wardrobe', {method: 'POST', credentials: 'same-origin', cache: 'no-store', signal: AbortSignal.timeout(10000), headers: {'Content-Type': 'application/json', [WALLET_ACCOUNT_HEADER]: account, [AFTER_PROGRESS_HEADER]: AFTER_PROGRESS_VERSION}, body: JSON.stringify({girl, look, revision: this.profile.revision})});
+      const r = await fetch('/api/game-wallet/afterglow-wardrobe', {method: 'POST', credentials: 'same-origin', cache: 'no-store', signal: AbortSignal.timeout(10000), headers: {'Content-Type': 'application/json', [WALLET_ACCOUNT_HEADER]: account, [AFTER_PROGRESS_HEADER]: AFTER_PROGRESS_VERSION}, body: JSON.stringify({girl, look, revision: this.profile.revision})});
       const data = await r.json(); if (epoch !== this.epoch) return false;
       if (!r.ok || !validAfterWardrobe(data) || data.selectedGirl !== girl || data.selectedLook !== look) throw Error(r.ok ? translateText('Выбор образа не подтверждён.') : data.error);
       this.profile = data; return true;

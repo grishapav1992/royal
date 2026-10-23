@@ -12,6 +12,17 @@ import { nilePublicKeyAddress } from '../../server/finance/nile-address';
 import { NILE_GENESIS, type TronBlock } from '../../server/finance/tron-protocol';
 import { NILE_ORIGINS } from '../../server/finance/tron-rpc';
 import { playTestConfig, playTestSetup, block } from './helpers/nile-play-fixture';
+
+test('source freshness is recorded after the full source audit finishes', async () => {
+    const c = await playTestSetup(':memory:');
+    try {
+        const audit = c.source.audit.bind(c.source); let finished = 0;
+        c.source.audit = async () => { const result = await audit(); await new Promise(resolve => setTimeout(resolve, 25)); finished = Date.now(); return result; };
+        await c.ledger.sync(c.source, await c.reconciliation());
+        assert.ok(Number((await c.ledger.state()).source_at) >= finished);
+        assert.equal(await c.ledger.isReady(), true);
+    } finally { await c.close(); }
+});
 test('only confirmed deposits fund the player and reserve; importing twice and restarting do not mint tokens', async () => {
     const dir = mkdtempSync(join(tmpdir(), 'royal-play-')), file = join(dir, 'play.sqlite'), c = await playTestSetup(file);
     const owner = randomUUID();
