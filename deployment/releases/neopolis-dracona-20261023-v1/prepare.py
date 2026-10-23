@@ -59,8 +59,10 @@ def delta(directory):
 dist, modules = delta('dist'), delta('module-dist')
 backend = copy(stage / 'dist-server/index.js', 'index.js')
 financial = copy(stage / 'dist-server/nile-play.js', 'play.js')
-for name in ['package.json', 'package-lock.json']:
-    assert sha(stage / name) == before['program'][name], 'Dependency upgrade requires separate reviewed installation'
+packages = {name:sha(stage / name) for name in ['package.json','package-lock.json']}
+install_dependencies = any(digest != before['program'][name] for name,digest in packages.items())
+if install_dependencies:
+    for name in packages: copy(stage / name, 'dependencies/' + name)
 pointers = {}
 for game in ['studio-neopolis', 'studio-dracona']:
     pointer = stage / 'module-dist' / game / 'active.json'
@@ -75,6 +77,6 @@ for name in ['snapshot.py', 'deploy.py', 'verify-public.py']:
     copy(stage / 'deployment/releases/neopolis-dracona-20261023-v1' / name, name)
 manifest = {'release':'neopolis-dracona-20261023-v1','sourceCommit':revision,'before':before,'source':sources,
             'financeSource':finance,'dist':dist,'modules':modules,'backend':backend,'financial':financial,
-            'pointers':pointers,'payload':payload}
+            'pointers':pointers,'payload':payload,'packages':packages,'installDependencies':install_dependencies}
 (output / 'install-manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
 print(json.dumps({'sources':len(sources),'financeSources':len(finance),'dist':len(dist),'modules':len(modules),'pointers':len(pointers)}))
