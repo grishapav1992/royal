@@ -135,7 +135,7 @@ def payload():
     require(sha(ROOT / 'snapshot.py') == M['snapshotSha256'], 'Snapshot helper changed')
     require(CHANGES and DELTA and 'index.html' in DELTA, 'Incomplete client release')
     require(set(SERVER_DELTA) == {'index.js'}, 'Only the main backend bundle may change')
-    require(all(name == 'index.html' or re.fullmatch(r'assets/[a-zA-Z0-9_-]+\.(?:js|css)', name) for name in DELTA),
+    require(all(name in ['index.html', 'admin.html'] or re.fullmatch(r'assets/[a-zA-Z0-9_-]+\.(?:js|css)', name) for name in DELTA),
             'Only the client index and JavaScript or stylesheet bundles may change')
     for name in [*CHANGES, *DELTA]:
         safe_name(name)
@@ -146,7 +146,7 @@ def payload():
         require(DIGEST.fullmatch(digest), 'Invalid source digest')
     for name, digest in DELTA.items():
         require(DIGEST.fullmatch(digest), 'Invalid client digest')
-        require(name == 'index.html' or 'dist/' + name not in OLD['program']
+        require(name in ['index.html', 'admin.html'] or 'dist/' + name not in OLD['program']
                 or digest == OLD['program']['dist/' + name], 'Existing asset URL would change: ' + name)
     require(inventory(ROOT / 'source') == CHANGES, 'Source payload differs')
     require(inventory(ROOT / 'dist-delta') == DELTA, 'Client payload differs')
