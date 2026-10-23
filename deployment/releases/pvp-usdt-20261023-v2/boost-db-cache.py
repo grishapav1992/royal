@@ -25,12 +25,14 @@ with open('/opt/royal-releases/finance-db-resources.lock', 'a+') as resource_loc
     assert expected == target.read_text()
     available = next(int(line.split()[1]) * 1024 for line in Path('/proc/meminfo').read_text().splitlines() if line.startswith('MemAvailable:'))
     assert available >= 1024**3, 'Insufficient memory headroom'
-    assert database['HostConfig']['Memory'] == 512 * 1024**2 and database['HostConfig']['NanoCpus'] == 750000000
+    resources = (database['HostConfig']['Memory'], database['HostConfig']['NanoCpus'])
+    assert resources in [(512 * 1024**2, 750000000), (1280 * 1024**2, 2000000000)]
     for i, path in enumerate(paths): shutil.copyfile(path, ROOT / ('database-cache-before-' + str(i) + '.yaml'))
     run(['docker', 'update', '--memory', '1280m', '--memory-swap', '2560m', '--cpus', '2', 'royal-finance-sim-finance-db-1'])
     updated = inspect()
     assert database['Id'] == updated['Id'] and database['State']['StartedAt'] == updated['State']['StartedAt']
-    assert database['Config'] == updated['Config'] and database['Mounts'] == updated['Mounts']
+    assert database['Config'] == updated['Config']
+    assert sorted(database['Mounts'], key=lambda v: v['Destination']) == sorted(updated['Mounts'], key=lambda v: v['Destination'])
     old_host, new_host = dict(database['HostConfig']), dict(updated['HostConfig'])
     for key in ['Memory', 'MemorySwap', 'NanoCpus']: old_host.pop(key); new_host.pop(key)
     assert old_host == new_host
@@ -41,6 +43,7 @@ with open('/opt/royal-releases/finance-db-resources.lock', 'a+') as resource_loc
         temporary.replace(path)
     result = {'sameContainer': True, 'restarted': False, 'mountsPreserved': True,
         'memoryBytes': updated['HostConfig']['Memory'], 'nanoCpus': updated['HostConfig']['NanoCpus'],
-        'sourceSha256': sha(target), 'availableBytesBefore': available}
+        'sourceSha256': sha(target), 'availableBytesBefore': available,
+        'resumedResourceUpdate': resources[0] == 1280 * 1024**2}
     (ROOT / 'database-cache-verification.json').write_text(json.dumps(result, indent=2) + '\n')
     print(json.dumps(result), flush=True)
