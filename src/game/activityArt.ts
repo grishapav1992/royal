@@ -48,7 +48,7 @@ export function drawActivities(scene:Phaser.Scene,open:(id:ActivityId)=>void,hal
       c.font='11px sans-serif';c.fillText('1 на 1 · USDT',116,78);
       for(const x of [42,157]){c.fillStyle='#342522';c.beginPath();c.roundRect(x,125,38,25,8);c.fill();c.strokeStyle='#b9945f';c.stroke();}
     });
-    scene.add.image(b.x,b.y,texture).setOrigin(0).setDepth(b.y+b.h);
+    scene.add.image(b.x,b.y,texture).setOrigin(0).setDisplaySize(232,152).setDepth(b.y+b.h);
   }
   for(const id of Object.keys(ACTIVITIES) as ActivityId[]){
     if(activityHall(id)!==hall)continue;
