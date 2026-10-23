@@ -6,12 +6,14 @@ import { CryptoError } from '../crypto/config';
 import { PvpStore } from '../pvp/store';
 import {NileGameRuntime} from './nile-game-runtime';
 import {WalletError} from '../demoWallet';
+import {NileCombatEscrow} from './combat-escrow';
 export function createNilePlayServer(ledger: NilePlayLedger) {
     const pvp = new PvpStore(ledger);
     pvp.ready.catch(() => {});
     const games=new NileGameRuntime(ledger);games.ready.catch(()=>{});
+    const combat=new NileCombatEscrow(ledger);combat.ready.catch(()=>{});
     let sweeping = false;
-    const sweep = setInterval(() => { if (!sweeping) { sweeping = true; void pvp.sweep().catch(() => {}).finally(() => { sweeping = false; }); } }, 1000);
+    const sweep = setInterval(() => { if (!sweeping) { sweeping = true; void Promise.allSettled([pvp.sweep(),combat.recoverExpired()]).finally(() => { sweeping = false; }); } }, 1000);
     sweep.unref();
     const attempts = new Map<string, {
         at: number;
@@ -75,6 +77,10 @@ export function createNilePlayServer(ledger: NilePlayLedger) {
             }
             else if(body.action==='skin-purchase')respond(200,await games.skinPurchase(body.accountId,body.value));
             else if(body.action==='native-game')respond(200,await games.run(body.accountId,body.value));
+            // Private Unix socket only. Public player routes never forward these commands.
+            else if(body.action==='combat-fund')respond(200,await combat.fund(body.accountId,body.value));
+            else if(body.action==='combat-settle')respond(200,await combat.settle(body.accountId,body.value));
+            else if(body.action==='combat-cancel')respond(200,await combat.cancel(body.accountId,body.value));
             else if (body.action === 'pvp-command') {
                 const v = body.value;
                 if (!v || Object.keys(v).sort().join(',') !== 'name,request,roomId') throw new NilePlayError('invalid_pvp_request',400);
