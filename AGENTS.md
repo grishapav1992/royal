@@ -41,6 +41,8 @@
 
 ## Production changes and GitHub
 
+- Use `docs/release-process.md` for release preparation. Work from a clean committed checkout, specify the verified production source commit with `release:plan` and `release:prepare`, and reuse the resulting manifest and build outputs. Run `release:verify` before passing those bytes to a guarded installer. Do not reconstruct a mixed source tree or create another full staging copy when the committed checkout is sufficient. Preparation and CI artifacts do not replace production-baseline, compatibility, wallet, layout, backup or post-publication checks.
+
 - Every change published to the production server must also be committed and pushed to `main` in `https://github.com/grishapav1992/royal`. This applies to application releases, independent game modules, hotfixes, and rollbacks.
 - Before publishing, compare the release with the current production source and preserve changes from other chats. If the release is prepared in an ignored `artifacts/` stage or directly on the server, reconcile its actual source, required assets, build configuration, and migrations into the tracked project paths. Do not push an outdated root checkout as the source of that release.
 - Validate the release, commit its corresponding source, and push to `origin/main` before publishing those same sources. Include only changes belonging to the release; preserve unrelated local work. Never force-push over other changes.

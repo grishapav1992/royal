@@ -1,0 +1,120 @@
+{
+  "release": "girlhub-feedback-20261023-v1",
+  "sourceCommit": "c71cd32bbef6f923994392bdb693fff3a635ab4e",
+  "moduleVersion": "1.1.0-082e6682d45a",
+  "manifestSha256": "b9fa1e0b07466aac23faa36e8f6557f64a5d247bd731ba6497a6d96fe5339f68",
+  "sourceFilesBefore": 1613,
+  "sourceFilesAfter": 1616,
+  "sourcePathsChanged": 7,
+  "oldImmutableAndOtherModuleFilesPreserved": 512,
+  "newPackageFiles": 22,
+  "runningImage": "sha256:12c28c1d43c32e8016fe62a56eb460e2e079da0c15c9f0785fe5c5f43c6aa0e2",
+  "preparedImage": "sha256:5fb5cd09f0f91469c3e8e881d7e90b1593ecb20ae0ce8ce688f263e2089a6b66",
+  "hostProgramsPreserved": true,
+  "otherServicesPreserved": true,
+  "settingsPreserved": true,
+  "otherModulesPreserved": true,
+  "containerRestarted": false,
+  "databaseTouched": false,
+  "backup": {
+    "path": "/opt/royal-backups/girlhub-feedback-20261023-v1",
+    "sourceSha256": "285cd01db207a50ea5532f3745d4be9a0a43ac34615c67b6d9154c219b2c42bd",
+    "priorExternalPointers": {
+      "studio-afterglow": true
+    }
+  },
+  "http": {
+    "passed": true,
+    "sourceCommit": "c71cd32bbef6f923994392bdb693fff3a635ab4e",
+    "version": "1.1.0-082e6682d45a",
+    "health": true,
+    "pointerNoStore": true,
+    "immutableFilesVerified": 22,
+    "files": [
+      "entry-fbba583320d35d23.js",
+      "manifest.json",
+      "media/afterglow/audio/v1/laugh-1.mp3",
+      "media/afterglow/audio/v1/laugh-2.mp3",
+      "media/afterglow/audio/v1/laugh-3.mp3",
+      "media/afterglow/audio/v1/laugh-4.mp3",
+      "media/afterglow/audio/v1/unlock.mp3",
+      "media/afterglow/audio/v2/win-1.mp3",
+      "media/afterglow/audio/v2/win-2.mp3",
+      "media/afterglow/audio/v2/win-3.mp3",
+      "media/afterglow/v1/background-studio-v3.webp",
+      "media/afterglow/v1/symbols.webp",
+      "media/afterglow/v3/base-0.webp",
+      "media/afterglow/v3/base-1.webp",
+      "media/afterglow/v3/base-2.webp",
+      "media/afterglow/v3/base-3.webp",
+      "media/afterglow/v3/look-1-user.webp",
+      "media/afterglow/v3/look-2-user.webp",
+      "media/afterglow/v3/look-3-user.webp",
+      "media/afterglow/v4/look-0-legendary.webp",
+      "media/studio/symbols.webp",
+      "style-10111a4d7702ffc0.css"
+    ]
+  },
+  "browser": {
+    "passed": true,
+    "viewportSizes": [
+      [
+        1440,
+        1000
+      ],
+      [
+        390,
+        844
+      ]
+    ],
+    "transport": "Actual published host and chat with local room and wallet fixtures; all production writes and WebSockets blocked",
+    "productionWrites": 0,
+    "accountsCreated": 0,
+    "errors": [],
+    "runs": [
+      {
+        "language": "ru",
+        "outcomes": [
+          {
+            "tier": "win",
+            "returnedUnits": "130"
+          },
+          {
+            "tier": "big",
+            "returnedUnits": "1380"
+          },
+          {
+            "tier": "epic",
+            "returnedUnits": "3555"
+          },
+          {
+            "tier": "partial",
+            "returnedUnits": "29"
+          },
+          {
+            "tier": "loss",
+            "returnedUnits": "0"
+          }
+        ],
+        "fixtureOperations": 6,
+        "chat": true,
+        "reopened": true,
+        "restoredWithoutReplay": true
+      },
+      {
+        "language": "en",
+        "outcomes": [
+          {
+            "tier": "epic",
+            "returnedUnits": "3555"
+          }
+        ],
+        "fixtureOperations": 1,
+        "chat": true,
+        "reopened": true,
+        "restoredWithoutReplay": true
+      }
+    ]
+  },
+  "publisherTestsPassed": 11
+}
