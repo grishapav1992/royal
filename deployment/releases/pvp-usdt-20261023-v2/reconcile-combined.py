@@ -28,6 +28,28 @@ with open('/opt/royal-releases/themed-publish.lock', 'a+') as app, open('/opt/ro
     built = json.loads((ROOT / 'build-result.json').read_text())
     assert r.inspect('royal-nile-play')['Image'] == built['financial']
     assert r.financial_profile(r.inspect('royal-nile-play')) == built['financialProfile']
+    database = r.inspect('royal-finance-sim-finance-db-1')
+    db_config = Path('/opt/royal-finance/compose.finance.yaml')
+    assert r.sha(db_config) == '5576ad8154f62815185f3bece5c1ec3de0135f5c02c53be4d01f6c232769e6ae'
+    expected_config = db_config.read_text().replace('    mem_limit: 512m\n    cpus: 0.75\n', '    mem_limit: 1280m\n    cpus: 2\n', 1)
+    assert expected_config == (ROOT / 'database-cache-compose.yaml').read_text()
+    available = next(int(line.split()[1]) * 1024 for line in Path('/proc/meminfo').read_text().splitlines() if line.startswith('MemAvailable:'))
+    assert available >= 1024**3, 'Insufficient memory headroom for the journal cache'
+    shutil.copyfile(db_config, ROOT / 'database-cache-compose-before.yaml')
+    r.run(['docker', 'update', '--memory', '1280m', '--memory-swap', '2560m', '--cpus', '2', 'royal-finance-sim-finance-db-1'])
+    updated_database = r.inspect('royal-finance-sim-finance-db-1')
+    assert database['Id'] == updated_database['Id'] and database['State']['StartedAt'] == updated_database['State']['StartedAt']
+    assert database['Config'] == updated_database['Config'] and database['Mounts'] == updated_database['Mounts']
+    old_host, new_host = dict(database['HostConfig']), dict(updated_database['HostConfig'])
+    for key in ['Memory', 'MemorySwap', 'NanoCpus']:
+        old_host.pop(key); new_host.pop(key)
+    assert old_host == new_host
+    r.atomic(ROOT / 'database-cache-compose.yaml', db_config)
+    assert r.sha(r.LIVE / 'compose.finance.yaml') == '5576ad8154f62815185f3bece5c1ec3de0135f5c02c53be4d01f6c232769e6ae'
+    r.atomic(ROOT / 'database-cache-compose.yaml', r.LIVE / 'compose.finance.yaml')
+    r.save('database-cache-verification.json', {'sameContainer': True, 'restarted': False, 'mountsPreserved': True,
+        'memoryBytes': updated_database['HostConfig']['Memory'], 'nanoCpus': updated_database['HostConfig']['NanoCpus'],
+        'sourceSha256': r.sha(db_config), 'availableBytesBefore': available})
     temporary = ROOT / 'combined-materialized'
     temporary.mkdir(exist_ok=True)
     for file in temporary.rglob('*'):
