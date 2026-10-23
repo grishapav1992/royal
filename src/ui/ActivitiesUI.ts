@@ -67,7 +67,7 @@ export class ActivitiesUI {
  openWager(id:ActivityId){this.open(id,true);return this.shell;}
  closeWager(){this.close();}
  private open(id:ActivityId,wager=false){
-  if(!wager&&this.pvpOpen?.(id))return;
+  if(id!=='mortal-kombat'&&!wager&&this.pvpOpen?.(id))return;
   if(activityHall(id)!==this.scene.hall)return;
   this.close();this.selected=id;this.scene.setLocked(true);gameAudio.setGame(id);
   const shell=document.createElement('dialog');shell.id='shared-dialog';shell.className='shared-dialog';shell.dataset.activityShell='';shell.dataset.game=id;shell.dataset.wager=String(wager);

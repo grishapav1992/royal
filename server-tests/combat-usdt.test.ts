@@ -29,6 +29,9 @@ test('combat uses the shared Nile journal, reserves both stakes and pays 95% exa
   assert.equal(a.state==='assigned'&&a.reservedUnits,'0');
   assert.equal((await c.ledger.db.prepare("SELECT count(*) AS n FROM events WHERE kind='pvp' AND payload::jsonb->>'matchId'=?").get(m.id))!.n,3);
   const audit=await c.ledger.audit();assert.equal(audit.houseUnits,'1000000');assert.equal(audit.totalUnits,'400000000');
+  const report=await c.ledger.adminReport({mode:'pvp',game:'mortal-kombat'});
+  assert.equal(report.rows.length,2);assert.equal(report.totals.fees,'1000000');
+  assert.equal(report.rows.find(row=>row.playerId===c.a)!.opponentId,c.b);
  }finally{await c.close();}
 });
 test('combat rejects forged actors, participants, stakes, winners and reused identities without altering money',async()=>{
