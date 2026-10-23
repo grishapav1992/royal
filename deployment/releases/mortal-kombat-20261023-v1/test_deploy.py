@@ -9,6 +9,7 @@ import tarfile
 import tempfile
 import types
 import unittest
+from unittest.mock import patch
 
 HERE=Path(__file__).resolve().parent
 TASK=HERE.parents[2]/'artifacts/work/mortal-kombat-duel'
@@ -61,6 +62,15 @@ class PublisherTests(unittest.TestCase):
   self.r.require_financial_status(stale,True)
   for change in [{'ok':False},{'halted':'corrupted'},{'lastError':'play_journal_corrupted'}]:
    with self.assertRaises(AssertionError):self.r.require_financial_status({**stale,**change},True)
+ def test_unready_status_exit_is_parsed_before_readiness_policy(self):
+  result=types.SimpleNamespace(returncode=1,stdout=json.dumps({'ok':True,'ready':False,'lastError':'play_source_not_ready'}))
+  with patch.object(self.r.subprocess,'run',return_value=result):
+   status=self.r.financial_status()
+   self.assertFalse(status['ready']);self.r.require_financial_status(status,True)
+   with self.assertRaises(AssertionError):self.r.require_financial_status(status)
+  result.returncode=137
+  with patch.object(self.r.subprocess,'run',return_value=result):
+   with self.assertRaisesRegex(AssertionError,'command failed'):self.r.financial_status()
  def test_contract_guard_accepts_only_the_reviewed_existing_transition(self):
   old={'games':{'studio-dracona':{'apiVersion':1,'rulesVersion':2,'progressVersion':1},'chess':{'apiVersion':1,'rulesVersion':1,'progressVersion':1}}}
   new={'games':{**old['games'],'studio-dracona':{'apiVersion':1,'rulesVersion':3,'progressVersion':2},'mortal-kombat':{'apiVersion':1,'rulesVersion':2,'progressVersion':1}}}
