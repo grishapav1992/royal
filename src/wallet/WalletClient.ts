@@ -2,8 +2,6 @@ import { isUserMessage, t as translateText, locale } from '../i18n/index';
 import {validProviderBalance,type DemoWallet,type WalletOperation,type WalletResult} from '../shared/demoWallet';
 import type { GameId, GameInput } from '../shared/gameCore';
 import { WALLET_ACCOUNT_HEADER } from '../shared/walletAccount';
-import {nilePlay} from './NilePlayClient';
-import {validNilePlayWallet,type NilePlayWallet} from '../shared/nilePlay';
 
 export type WalletSettlement = { accountId: string; operation: WalletOperation; result: WalletResult };
 
@@ -23,7 +21,7 @@ export class WalletClient extends EventTarget {
   error = '';
   private epoch = 0;
   private readVersion = 0;
-  private key() { return `royal-nile-game-operation:${this.accountId}`; }
+  private key() { return `royal-demo-operation:${this.accountId}`; }
   private notify() { this.dispatchEvent(new Event('change')); }
   setAccount(id: string | null) {
     if (id === this.accountId) return;
@@ -41,7 +39,7 @@ export class WalletClient extends EventTarget {
     if (!this.accountId) return;
     const epoch = this.epoch, version = ++this.readVersion, accountId = this.accountId;
     try {
-      const response = await fetch('/api/game-wallet', { credentials: 'same-origin', headers: { [WALLET_ACCOUNT_HEADER]: accountId }, signal: AbortSignal.timeout(10000) });
+      const response = await fetch('/api/demo-wallet', { credentials: 'same-origin', headers: { [WALLET_ACCOUNT_HEADER]: accountId }, signal: AbortSignal.timeout(10000) });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error);
       if (epoch !== this.epoch || version !== this.readVersion) return;
@@ -73,21 +71,14 @@ export class WalletClient extends EventTarget {
   acceptExternalWallet(accountId: string, wallet: DemoWallet) {
     if (accountId !== this.accountId) return;
     if(wallet.pendingBalance!==undefined&&!validProviderBalance(wallet.pendingBalance))throw new Error(translateText('Не удалось проверить отложенный выигрыш. Обнови кошелёк.'));
-    if(wallet.asset==='USDT_NILE_TEST'&&(wallet.revision??0)<(this.wallet?.revision??0))return;
+    if (wallet.asset === 'USDT_NILE_TEST') throw new Error(translateText('Ответ игрового баланса не подтверждён.'));
     const newest = (value?: DemoWallet) => value?.entries.reduce((id, entry) => Math.max(id, entry.id), 0) ?? 0;
     // Responses can arrive out of order when a player changes cabinets during a request.
     if (newest(wallet) < newest(this.wallet)) return;
     this.readVersion++; this.wallet = wallet; this.notify();
-    const nile=nilePlay.wallet;
-    if(wallet.asset==='USDT_NILE_TEST'&&wallet.balanceUnits&&nile?.state==='assigned')nilePlay.acceptWallet(accountId,{...nile,balanceUnits:wallet.balanceUnits,reservedUnits:wallet.reservedUnits,revision:wallet.revision});
-  }
-  acceptNileBalance(accountId:string,wallet:NilePlayWallet){
-    if(accountId!==this.accountId||!validNilePlayWallet(wallet)||wallet.state!=='assigned'||(wallet.revision??0)<(this.wallet?.revision??0))return;
-    if(this.wallet?.balanceUnits===wallet.balanceUnits&&this.wallet?.reservedUnits===wallet.reservedUnits&&this.wallet?.revision===wallet.revision)return;
-    this.readVersion++;this.wallet={...this.wallet,balance:Number(wallet.balanceUnits)/1000000,entries:this.wallet?.entries??[],asset:'USDT_NILE_TEST',testOnly:true,scale:2,balanceUnits:wallet.balanceUnits,reservedUnits:wallet.reservedUnits,revision:wallet.revision};this.notify();
   }
   private async send(operation: WalletOperation): Promise<WalletResult> {
-    if (!this.accountId) throw new Error(translateText('Войди в аккаунт, чтобы играть на USDT.'));
+    if (!this.accountId) throw new Error(translateText('Войди в аккаунт, чтобы играть на демомонеты.'));
     if (this.busy) throw new Error(translateText('Дождись завершения операции.'));
     if (this.externalBusy) throw new Error(translateText('Сначала проверь предыдущую операцию в другой игре.'));
     // Save before sending, so reloading after an uncertain response preserves the same request ID.
@@ -96,7 +87,7 @@ export class WalletClient extends EventTarget {
     const epoch = this.epoch, storageKey = this.key(), accountId = this.accountId;
     this.pending = operation; this.busy = true; this.error = ''; this.readVersion++; this.notify();
     try {
-      const response = await fetch('/api/game-wallet/operations', {
+      const response = await fetch('/api/demo-wallet/operations', {
         method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', [WALLET_ACCOUNT_HEADER]: accountId },
         body: JSON.stringify(operation), signal: AbortSignal.timeout(15000),
       });

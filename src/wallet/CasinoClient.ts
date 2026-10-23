@@ -19,7 +19,7 @@ export class CasinoClient extends EventTarget {
   pending?: CasinoAction; busy = false; loading = false; error = '';
   private epoch = 0; private version = 0;
   constructor(readonly asset: CasinoAsset) { super(); }
-  private key() { return `royal-nile-casino:${this.asset}:${this.accountId}`; }
+  private key() { return this.asset === 'demo' ? `royal-casino:demo:${this.accountId}` : `royal-nile-casino:${this.asset}:${this.accountId}`; }
   private notify() { this.dispatchEvent(new Event('change')); }
   private lock() {
     if (this.asset === 'demo') demoWallet.setExternalBusy('casino', !!this.pending);
@@ -54,7 +54,7 @@ export class CasinoClient extends EventTarget {
     const epoch = this.epoch, version = ++this.version, account = this.accountId;
     this.loading = true; this.notify();
     try {
-      const response = await fetch(`/api/${this.asset==='demo'?'game':this.asset}-wallet/casino-sessions`, { credentials: 'same-origin', cache: 'no-store', headers: { [WALLET_ACCOUNT_HEADER]: account }, signal: AbortSignal.timeout(10000) });
+      const response = await fetch(`/api/${this.asset}-wallet/casino-sessions`, { credentials: 'same-origin', cache: 'no-store', headers: { [WALLET_ACCOUNT_HEADER]: account }, signal: AbortSignal.timeout(10000) });
       const r = await response.json();
       if (!response.ok) throw new Error(r.error);
       if (!this.valid(r)) throw new Error(translateText('Баланс и партия не подтверждены.'));
@@ -77,7 +77,7 @@ export class CasinoClient extends EventTarget {
     try { sessionStorage.setItem(key, JSON.stringify(op)); } catch { throw new Error(translateText('Разреши хранилище браузера для сохранения хода.')); }
     this.pending = op; this.busy = true; this.loading = false; this.version++; this.error = ''; this.lock(); this.notify();
     try {
-      const response = await fetch(`/api/${this.asset==='demo'?'game':this.asset}-wallet/casino-sessions`, { method: 'POST', credentials: 'same-origin',
+      const response = await fetch(`/api/${this.asset}-wallet/casino-sessions`, { method: 'POST', credentials: 'same-origin',
         headers: { 'Content-Type': 'application/json', [WALLET_ACCOUNT_HEADER]: account }, body: JSON.stringify(op), signal: AbortSignal.timeout(15000) });
       const r = await response.json();
       if (epoch !== this.epoch) return;
