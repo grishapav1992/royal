@@ -49,7 +49,8 @@ class PublicationTests(unittest.TestCase):
             functions = ast.Module(body=[n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name in ['atomic', 'configure']], type_ignores=[])
             owner = '12345678-1234-4123-8123-123456789abc'
             env = {'Path': Path, 'os': os, 'shutil': shutil, 'ROOT': payload, 'LIVE': live, 'FINANCE': finance,
-                   'M': {'ownerId': owner}, 'OLD': {'containers': {'game': {'composeFiles': ['compose.yaml', 'compose.mira.yaml']}}}, 'SERVICES': {'game': 'game'}}
+                   'M': {'ownerId': owner}, 'OLD': {'containers': {'game': {'composeFiles': ['compose.yaml', 'compose.mira.yaml']}}}, 'SERVICES': {'game': 'game'},
+                   'preflight_environment': Mock()}
             exec(compile(functions, str(HERE / 'deploy.py'), 'exec'), env)
             files = env['configure']()
             updated = (live / '.env').read_text()
@@ -58,6 +59,12 @@ class PublicationTests(unittest.TestCase):
                     self.assertIn(line + '\n', updated)
             self.assertIn('FINANCE_ADMIN_ACCOUNT_IDS=' + owner + '\n', updated)
             self.assertEqual(files[:2], ['compose.yaml', 'compose.mira.yaml'])
+            self.assertFalse((payload / 'production-env-private').exists())
+            env['preflight_environment'] = Mock(side_effect=AssertionError('Changed environment'))
+            previous = (live / '.env').read_text()
+            with self.assertRaisesRegex(AssertionError, 'Changed environment'):
+                env['configure']()
+            self.assertEqual((live / '.env').read_text(), previous)
             self.assertFalse((payload / 'production-env-private').exists())
             with self.assertRaises(AssertionError):
                 env['atomic'](payload / 'compose.admin.yaml', root / 'outside.yaml')
