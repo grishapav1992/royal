@@ -5,6 +5,7 @@ import { SEATS, type HallId } from '../shared/world';
 import { WORLD, FLOOR } from '../shared/clubGeometry';
 import { CAT_HOME } from '../shared/catHome';
 import { drawCatHome } from './catHomeArt';
+import { HALL_WINDOWS, HALL_WINDOW_XS } from './hallWindows';
 import { ROYAL_CABINET_IDS, ARCADE_CABINET_POSITIONS } from '../shared/arcadeCatalog';
 
 export function drawClubFloor(scene: Phaser.Scene, hall: HallId, onSeat: (id:string)=>void, onNewZone?:()=>void) {
@@ -58,9 +59,9 @@ export function drawClubFloor(scene: Phaser.Scene, hall: HallId, onSeat: (id:str
     scene.add.zone(seat.x,seat.y-28,64,64).setDepth(seat.y+2).setInteractive({useHandCursor:true}).on('pointerdown',()=>onSeat(seat.id));
   }
   // A quiet row of windows runs around the far side of the enlarged club.
-  for(const x of [1190,1510,1900,2330,2580,3020,3340,3660,3980]) {
+  for(const x of HALL_WINDOW_XS) {
     if (hall === CAT_HOME.hall && x === CAT_HOME.window.x) { drawCatHome(scene); continue; }
-    scene.add.image(x,113,hall==='arcade'?'window-city':'window-garden').setDisplaySize(176,112).setDepth(2);
+    scene.add.image(x,HALL_WINDOWS.top,hall==='arcade'?'window-city':'window-garden').setOrigin(.5,0).setDisplaySize(HALL_WINDOWS.width,HALL_WINDOWS.height).setDepth(2).setName('hall-window-'+hall+'-'+x);
   }
   scene.add.text(WORLD.width-170,1280,hall==='arcade'?translateText('КАЗИНО И БАР · ЭТАЖ 1'):hall==='tables'?translateText('БАЛКОН · ЭТАЖ 2'):translateText('КАРТОЧНЫЙ САЛОН · ЭТАЖ 3'),{fontFamily:'Arial',fontSize:'13px',color:'#b4a58e',letterSpacing:2}).setOrigin(1,.5).setDepth(.04);
   const rail=scene.make.graphics({x:0,y:0},false);
