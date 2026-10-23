@@ -5,6 +5,9 @@ on:
     paths:
       - 'src/shared/**'
       - 'server/games/**'
+      - 'server/combat*.ts'
+      - 'server/finance/pvp-money.ts'
+      - 'server/finance/combat-escrow.ts'
       - 'scripts/game-math/rtp-*'
       - 'scripts/qualify-game-rtp.mjs'
       - 'src/modules/GameModuleCatalog.ts'
@@ -16,6 +19,9 @@ on:
     paths:
       - 'src/shared/**'
       - 'server/games/**'
+      - 'server/combat*.ts'
+      - 'server/finance/pvp-money.ts'
+      - 'server/finance/combat-escrow.ts'
       - 'scripts/game-math/rtp-*'
       - 'scripts/qualify-game-rtp.mjs'
       - 'src/modules/GameModuleCatalog.ts'
@@ -31,7 +37,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        game: [studio-neopolis, studio-dracona]
+        game: [studio-neopolis, studio-dracona, mortal-kombat]
     steps:
       - uses: actions/checkout@v7
         with:

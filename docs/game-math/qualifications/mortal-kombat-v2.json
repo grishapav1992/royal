@@ -1,0 +1,601 @@
+{
+  "schemaVersion": 1,
+  "gameId": "mortal-kombat",
+  "rulesVersion": 2,
+  "progressVersion": 1,
+  "startedAt": "2026-10-23T18:06:06.620Z",
+  "completedAt": "2026-10-23T18:06:06.625Z",
+  "sourceHashes": {
+    "server/finance/pvp-money.ts": "14708dc154295ba2baaadf0b9dbe54a7a225b30267d2358ad2aecb729c6db614",
+    "src/shared/pvp.ts": "5940a05dc30857ee376a8f4969d6015217b8c71f9f2790763021af8971507695",
+    "src/shared/nileWallet.ts": "f46ab635e6b3b59a0c1bb60d39bbf13de046a2ec3b1cc1ee832d4d36ed669b29",
+    "src/shared/combatEscrow.ts": "16bd3c5b7a60e35ab946f98bc4a5acbc85f72e683cf913c27a834da0b03a4f44",
+    "server/finance/combat-escrow.ts": "4ab8f925f86c8055a62920b033946407038fc9340cdd2438d512d893a465e0a7",
+    "server/combatGame.ts": "825bac6da77facf6a81c942282a0605e5eafea8ecda806fc0fb044e905419782",
+    "server/combatRoom.ts": "bd92ac1ca5a6d4ff2eae0a6ef0958abf1b68c20f8b893f58061685f6e2ec3294",
+    "server/combatGuard.ts": "c0225b2b838cc1b828ce1102a2e012da15287258eed319b5722056f34b06cad9",
+    "scripts/game-math/rtp-combat.mjs": "3249c9532e89b70b938efb661fab1e3689098679cb6f382b9462e530888ea0ce"
+  },
+  "policySha256": "244f74b3e0bbd33c832668de46805861a01f545d164fdcb2cafa76e68759c34f",
+  "serverReplayChecks": 144,
+  "method": "exhaustive-pvp-journal",
+  "results": [
+    {
+      "choice": "left-win",
+      "stakeUnits": 1000000,
+      "potUnits": "2000000",
+      "playerUnits": [
+        "1900000",
+        "0"
+      ],
+      "feeUnits": "100000",
+      "returnedUnits": "1900000",
+      "returnRatio": 0.95
+    },
+    {
+      "choice": "right-win",
+      "stakeUnits": 1000000,
+      "potUnits": "2000000",
+      "playerUnits": [
+        "0",
+        "1900000"
+      ],
+      "feeUnits": "100000",
+      "returnedUnits": "1900000",
+      "returnRatio": 0.95
+    },
+    {
+      "choice": "draw",
+      "stakeUnits": 1000000,
+      "potUnits": "2000000",
+      "playerUnits": [
+        "1000000",
+        "1000000"
+      ],
+      "feeUnits": "0",
+      "returnedUnits": "2000000",
+      "returnRatio": 1
+    },
+    {
+      "choice": "cancel",
+      "stakeUnits": 1000000,
+      "potUnits": "2000000",
+      "playerUnits": [
+        "1000000",
+        "1000000"
+      ],
+      "feeUnits": "0",
+      "returnedUnits": "2000000",
+      "returnRatio": 1
+    },
+    {
+      "choice": "disconnect-left",
+      "stakeUnits": 1000000,
+      "potUnits": "2000000",
+      "playerUnits": [
+        "1900000",
+        "0"
+      ],
+      "feeUnits": "100000",
+      "returnedUnits": "1900000",
+      "returnRatio": 0.95
+    },
+    {
+      "choice": "disconnect-right",
+      "stakeUnits": 1000000,
+      "potUnits": "2000000",
+      "playerUnits": [
+        "0",
+        "1900000"
+      ],
+      "feeUnits": "100000",
+      "returnedUnits": "1900000",
+      "returnRatio": 0.95
+    },
+    {
+      "choice": "expired",
+      "stakeUnits": 1000000,
+      "potUnits": "2000000",
+      "playerUnits": [
+        "1000000",
+        "1000000"
+      ],
+      "feeUnits": "0",
+      "returnedUnits": "2000000",
+      "returnRatio": 1
+    },
+    {
+      "choice": "server",
+      "stakeUnits": 1000000,
+      "potUnits": "2000000",
+      "playerUnits": [
+        "1000000",
+        "1000000"
+      ],
+      "feeUnits": "0",
+      "returnedUnits": "2000000",
+      "returnRatio": 1
+    },
+    {
+      "choice": "left-win",
+      "stakeUnits": 2000000,
+      "potUnits": "4000000",
+      "playerUnits": [
+        "3800000",
+        "0"
+      ],
+      "feeUnits": "200000",
+      "returnedUnits": "3800000",
+      "returnRatio": 0.95
+    },
+    {
+      "choice": "right-win",
+      "stakeUnits": 2000000,
+      "potUnits": "4000000",
+      "playerUnits": [
+        "0",
+        "3800000"
+      ],
+      "feeUnits": "200000",
+      "returnedUnits": "3800000",
+      "returnRatio": 0.95
+    },
+    {
+      "choice": "draw",
+      "stakeUnits": 2000000,
+      "potUnits": "4000000",
+      "playerUnits": [
+        "2000000",
+        "2000000"
+      ],
+      "feeUnits": "0",
+      "returnedUnits": "4000000",
+      "returnRatio": 1
+    },
+    {
+      "choice": "cancel",
+      "stakeUnits": 2000000,
+      "potUnits": "4000000",
+      "playerUnits": [
+        "2000000",
+        "2000000"
+      ],
+      "feeUnits": "0",
+      "returnedUnits": "4000000",
+      "returnRatio": 1
+    },
+    {
+      "choice": "disconnect-left",
+      "stakeUnits": 2000000,
+      "potUnits": "4000000",
+      "playerUnits": [
+        "3800000",
+        "0"
+      ],
+      "feeUnits": "200000",
+      "returnedUnits": "3800000",
+      "returnRatio": 0.95
+    },
+    {
+      "choice": "disconnect-right",
+      "stakeUnits": 2000000,
+      "potUnits": "4000000",
+      "playerUnits": [
+        "0",
+        "3800000"
+      ],
+      "feeUnits": "200000",
+      "returnedUnits": "3800000",
+      "returnRatio": 0.95
+    },
+    {
+      "choice": "expired",
+      "stakeUnits": 2000000,
+      "potUnits": "4000000",
+      "playerUnits": [
+        "2000000",
+        "2000000"
+      ],
+      "feeUnits": "0",
+      "returnedUnits": "4000000",
+      "returnRatio": 1
+    },
+    {
+      "choice": "server",
+      "stakeUnits": 2000000,
+      "potUnits": "4000000",
+      "playerUnits": [
+        "2000000",
+        "2000000"
+      ],
+      "feeUnits": "0",
+      "returnedUnits": "4000000",
+      "returnRatio": 1
+    },
+    {
+      "choice": "left-win",
+      "stakeUnits": 5000000,
+      "potUnits": "10000000",
+      "playerUnits": [
+        "9500000",
+        "0"
+      ],
+      "feeUnits": "500000",
+      "returnedUnits": "9500000",
+      "returnRatio": 0.95
+    },
+    {
+      "choice": "right-win",
+      "stakeUnits": 5000000,
+      "potUnits": "10000000",
+      "playerUnits": [
+        "0",
+        "9500000"
+      ],
+      "feeUnits": "500000",
+      "returnedUnits": "9500000",
+      "returnRatio": 0.95
+    },
+    {
+      "choice": "draw",
+      "stakeUnits": 5000000,
+      "potUnits": "10000000",
+      "playerUnits": [
+        "5000000",
+        "5000000"
+      ],
+      "feeUnits": "0",
+      "returnedUnits": "10000000",
+      "returnRatio": 1
+    },
+    {
+      "choice": "cancel",
+      "stakeUnits": 5000000,
+      "potUnits": "10000000",
+      "playerUnits": [
+        "5000000",
+        "5000000"
+      ],
+      "feeUnits": "0",
+      "returnedUnits": "10000000",
+      "returnRatio": 1
+    },
+    {
+      "choice": "disconnect-left",
+      "stakeUnits": 5000000,
+      "potUnits": "10000000",
+      "playerUnits": [
+        "9500000",
+        "0"
+      ],
+      "feeUnits": "500000",
+      "returnedUnits": "9500000",
+      "returnRatio": 0.95
+    },
+    {
+      "choice": "disconnect-right",
+      "stakeUnits": 5000000,
+      "potUnits": "10000000",
+      "playerUnits": [
+        "0",
+        "9500000"
+      ],
+      "feeUnits": "500000",
+      "returnedUnits": "9500000",
+      "returnRatio": 0.95
+    },
+    {
+      "choice": "expired",
+      "stakeUnits": 5000000,
+      "potUnits": "10000000",
+      "playerUnits": [
+        "5000000",
+        "5000000"
+      ],
+      "feeUnits": "0",
+      "returnedUnits": "10000000",
+      "returnRatio": 1
+    },
+    {
+      "choice": "server",
+      "stakeUnits": 5000000,
+      "potUnits": "10000000",
+      "playerUnits": [
+        "5000000",
+        "5000000"
+      ],
+      "feeUnits": "0",
+      "returnedUnits": "10000000",
+      "returnRatio": 1
+    },
+    {
+      "choice": "left-win",
+      "stakeUnits": 10000000,
+      "potUnits": "20000000",
+      "playerUnits": [
+        "19000000",
+        "0"
+      ],
+      "feeUnits": "1000000",
+      "returnedUnits": "19000000",
+      "returnRatio": 0.95
+    },
+    {
+      "choice": "right-win",
+      "stakeUnits": 10000000,
+      "potUnits": "20000000",
+      "playerUnits": [
+        "0",
+        "19000000"
+      ],
+      "feeUnits": "1000000",
+      "returnedUnits": "19000000",
+      "returnRatio": 0.95
+    },
+    {
+      "choice": "draw",
+      "stakeUnits": 10000000,
+      "potUnits": "20000000",
+      "playerUnits": [
+        "10000000",
+        "10000000"
+      ],
+      "feeUnits": "0",
+      "returnedUnits": "20000000",
+      "returnRatio": 1
+    },
+    {
+      "choice": "cancel",
+      "stakeUnits": 10000000,
+      "potUnits": "20000000",
+      "playerUnits": [
+        "10000000",
+        "10000000"
+      ],
+      "feeUnits": "0",
+      "returnedUnits": "20000000",
+      "returnRatio": 1
+    },
+    {
+      "choice": "disconnect-left",
+      "stakeUnits": 10000000,
+      "potUnits": "20000000",
+      "playerUnits": [
+        "19000000",
+        "0"
+      ],
+      "feeUnits": "1000000",
+      "returnedUnits": "19000000",
+      "returnRatio": 0.95
+    },
+    {
+      "choice": "disconnect-right",
+      "stakeUnits": 10000000,
+      "potUnits": "20000000",
+      "playerUnits": [
+        "0",
+        "19000000"
+      ],
+      "feeUnits": "1000000",
+      "returnedUnits": "19000000",
+      "returnRatio": 0.95
+    },
+    {
+      "choice": "expired",
+      "stakeUnits": 10000000,
+      "potUnits": "20000000",
+      "playerUnits": [
+        "10000000",
+        "10000000"
+      ],
+      "feeUnits": "0",
+      "returnedUnits": "20000000",
+      "returnRatio": 1
+    },
+    {
+      "choice": "server",
+      "stakeUnits": 10000000,
+      "potUnits": "20000000",
+      "playerUnits": [
+        "10000000",
+        "10000000"
+      ],
+      "feeUnits": "0",
+      "returnedUnits": "20000000",
+      "returnRatio": 1
+    },
+    {
+      "choice": "left-win",
+      "stakeUnits": 50000000,
+      "potUnits": "100000000",
+      "playerUnits": [
+        "95000000",
+        "0"
+      ],
+      "feeUnits": "5000000",
+      "returnedUnits": "95000000",
+      "returnRatio": 0.95
+    },
+    {
+      "choice": "right-win",
+      "stakeUnits": 50000000,
+      "potUnits": "100000000",
+      "playerUnits": [
+        "0",
+        "95000000"
+      ],
+      "feeUnits": "5000000",
+      "returnedUnits": "95000000",
+      "returnRatio": 0.95
+    },
+    {
+      "choice": "draw",
+      "stakeUnits": 50000000,
+      "potUnits": "100000000",
+      "playerUnits": [
+        "50000000",
+        "50000000"
+      ],
+      "feeUnits": "0",
+      "returnedUnits": "100000000",
+      "returnRatio": 1
+    },
+    {
+      "choice": "cancel",
+      "stakeUnits": 50000000,
+      "potUnits": "100000000",
+      "playerUnits": [
+        "50000000",
+        "50000000"
+      ],
+      "feeUnits": "0",
+      "returnedUnits": "100000000",
+      "returnRatio": 1
+    },
+    {
+      "choice": "disconnect-left",
+      "stakeUnits": 50000000,
+      "potUnits": "100000000",
+      "playerUnits": [
+        "95000000",
+        "0"
+      ],
+      "feeUnits": "5000000",
+      "returnedUnits": "95000000",
+      "returnRatio": 0.95
+    },
+    {
+      "choice": "disconnect-right",
+      "stakeUnits": 50000000,
+      "potUnits": "100000000",
+      "playerUnits": [
+        "0",
+        "95000000"
+      ],
+      "feeUnits": "5000000",
+      "returnedUnits": "95000000",
+      "returnRatio": 0.95
+    },
+    {
+      "choice": "expired",
+      "stakeUnits": 50000000,
+      "potUnits": "100000000",
+      "playerUnits": [
+        "50000000",
+        "50000000"
+      ],
+      "feeUnits": "0",
+      "returnedUnits": "100000000",
+      "returnRatio": 1
+    },
+    {
+      "choice": "server",
+      "stakeUnits": 50000000,
+      "potUnits": "100000000",
+      "playerUnits": [
+        "50000000",
+        "50000000"
+      ],
+      "feeUnits": "0",
+      "returnedUnits": "100000000",
+      "returnRatio": 1
+    },
+    {
+      "choice": "left-win",
+      "stakeUnits": 100000000,
+      "potUnits": "200000000",
+      "playerUnits": [
+        "190000000",
+        "0"
+      ],
+      "feeUnits": "10000000",
+      "returnedUnits": "190000000",
+      "returnRatio": 0.95
+    },
+    {
+      "choice": "right-win",
+      "stakeUnits": 100000000,
+      "potUnits": "200000000",
+      "playerUnits": [
+        "0",
+        "190000000"
+      ],
+      "feeUnits": "10000000",
+      "returnedUnits": "190000000",
+      "returnRatio": 0.95
+    },
+    {
+      "choice": "draw",
+      "stakeUnits": 100000000,
+      "potUnits": "200000000",
+      "playerUnits": [
+        "100000000",
+        "100000000"
+      ],
+      "feeUnits": "0",
+      "returnedUnits": "200000000",
+      "returnRatio": 1
+    },
+    {
+      "choice": "cancel",
+      "stakeUnits": 100000000,
+      "potUnits": "200000000",
+      "playerUnits": [
+        "100000000",
+        "100000000"
+      ],
+      "feeUnits": "0",
+      "returnedUnits": "200000000",
+      "returnRatio": 1
+    },
+    {
+      "choice": "disconnect-left",
+      "stakeUnits": 100000000,
+      "potUnits": "200000000",
+      "playerUnits": [
+        "190000000",
+        "0"
+      ],
+      "feeUnits": "10000000",
+      "returnedUnits": "190000000",
+      "returnRatio": 0.95
+    },
+    {
+      "choice": "disconnect-right",
+      "stakeUnits": 100000000,
+      "potUnits": "200000000",
+      "playerUnits": [
+        "0",
+        "190000000"
+      ],
+      "feeUnits": "10000000",
+      "returnedUnits": "190000000",
+      "returnRatio": 0.95
+    },
+    {
+      "choice": "expired",
+      "stakeUnits": 100000000,
+      "potUnits": "200000000",
+      "playerUnits": [
+        "100000000",
+        "100000000"
+      ],
+      "feeUnits": "0",
+      "returnedUnits": "200000000",
+      "returnRatio": 1
+    },
+    {
+      "choice": "server",
+      "stakeUnits": 100000000,
+      "potUnits": "200000000",
+      "playerUnits": [
+        "100000000",
+        "100000000"
+      ],
+      "feeUnits": "0",
+      "returnedUnits": "200000000",
+      "returnRatio": 1
+    }
+  ],
+  "interpretation": "Exact aggregate pot return: 95% for decisive fights, 100% for refunds. Individual return depends on skill and outcome; no RNG, seed or statistical confidence interval applies."
+}

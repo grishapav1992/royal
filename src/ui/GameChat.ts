@@ -1,5 +1,7 @@
 import './game-chat.css';
-export function registerGameChatDialog(dialog:HTMLDialogElement){window.dispatchEvent(new CustomEvent('royal-game-chat-dialog',{detail:dialog}));}
+
+let registerDialog:((dialog:HTMLDialogElement)=>()=>void)|undefined;
+export const registerGameChatDialog=(dialog:HTMLDialogElement)=>registerDialog?.(dialog)??(()=>{});
 
 /** Keep the connected chat beside the game inside the modal's interactive subtree. */
 export function installGameChat(dock: HTMLElement, dialog: HTMLDialogElement) {
@@ -8,14 +10,13 @@ export function installGameChat(dock: HTMLElement, dialog: HTMLDialogElement) {
   dock.id = 'club-chat-dock';
   const dialogs = [dialog, document.querySelector<HTMLDialogElement>('#casinoapipro-dialog')]
     .filter((value): value is HTMLDialogElement => value !== null);
-  const decorate=(window:HTMLDialogElement)=>{
+  for (const window of dialogs) {
     const game = document.createElement('div');
     game.className = 'game-chat-game';
     while (window.firstChild) game.append(window.firstChild);
     window.append(game);
     window.classList.add('game-chat-layout');
-  };
-  for(const window of dialogs)decorate(window);
+  }
 
   const sync = () => {
     const active = dialogs.find(window => window.isConnected&&window.open);
@@ -39,10 +40,14 @@ export function installGameChat(dock: HTMLElement, dialog: HTMLDialogElement) {
     window.addEventListener('close', sync);
     new MutationObserver(sync).observe(window, { attributes: true, attributeFilter: ['open'] });
   }
-  window.addEventListener('royal-game-chat-dialog',event=>{
-    const dialog=(event as CustomEvent<HTMLDialogElement>).detail;
-    if(dialogs.includes(dialog))return;decorate(dialog);dialogs.push(dialog);
-    dialog.addEventListener('close',sync);new MutationObserver(sync).observe(dialog,{attributes:true,attributeFilter:['open']});sync();
-  });
+  registerDialog = window => {
+    if(dialogs.includes(window))return ()=>{};
+    const game = document.createElement('div');game.className='game-chat-game';
+    while(window.firstChild)game.append(window.firstChild);
+    window.append(game);window.classList.add('game-chat-layout');dialogs.push(window);
+    const observer=new MutationObserver(sync);observer.observe(window,{attributes:true,attributeFilter:['open']});
+    window.addEventListener('close',sync);sync();
+    return ()=>{observer.disconnect();window.removeEventListener('close',sync);const index=dialogs.indexOf(window);if(index>=0)dialogs.splice(index,1);sync();};
+  };
   sync();
 }

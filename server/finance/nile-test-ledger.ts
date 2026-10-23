@@ -80,8 +80,11 @@ function blockShape(block: TronBlock) {
     }
 }
 export function eligibleNileTransfers(config: NileTestConfig, block: TronBlock, pool?: NileDepositPool) {
-    blockShape(block);
     const addresses = new Map([...config.addresses, ...(pool && block.height >= pool.startHeight ? pool.addresses : [])].map(row => [row.address, row.userId]));
+    return eligibleTransfersWithAddresses(config, block, addresses);
+}
+function eligibleTransfersWithAddresses(config: NileTestConfig, block: TronBlock, addresses: ReadonlyMap<string, string>) {
+    blockShape(block);
     return block.height < config.startHeight ? [] : block.transfers.filter(event => event.contract === config.token
         && addresses.has(event.to) && !addresses.has(event.from) && event.from !== zero && event.to !== zero && BigInt(event.amountUnits) > 0n)
         .map(event => ({ ...event, userId: addresses.get(event.to)! }));
@@ -260,6 +263,9 @@ export class NileTestLedger {
                 pg_catalog.min(height) AS first_height,pg_catalog.max(height) AS last_height FROM credits`).get())!;
             let height = this.config.startHeight - 2, parent: string | null = null, credits = 0, blocks = 0;
             let lastHeight: number | undefined;
+            // Reuse the sealed address sets for this snapshot while validating every block.
+            const originalAddresses = new Map(this.config.addresses.map(row => [row.address, row.userId]));
+            const pooledAddresses = new Map([...this.config.addresses, ...(this.pool?.addresses ?? [])].map(row => [row.address, row.userId]));
             while (true) {
                 const rows = await readBlockAuditPage(this.db, lastHeight);
                 if (rows.length === 0)
@@ -288,7 +294,8 @@ export class NileTestLedger {
                 }
                 for (const row of rows) {
                     const payload = String(row.payload), block = JSON.parse(payload) as TronBlock;
-                    const events = eligibleNileTransfers(this.config, block, this.pool);
+                    const events = eligibleTransfersWithAddresses(this.config, block,
+                        this.pool && block.height >= this.pool.startHeight ? pooledAddresses : originalAddresses);
                     if (row.payload_sha256 !== digest(payload) || row.height !== height + 1 || row.height !== block.height
                         || row.hash !== block.hash || row.parent_hash !== block.parentHash || (parent && block.parentHash !== parent))
                         rejectTron('test_ledger_corrupted');

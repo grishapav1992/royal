@@ -37,5 +37,23 @@
   "freeLocalBeforeGiB": 62.82,
   "freeServerBeforeGiB": 14.47,
   "productionBaseCommit": "193bb1e2b0e30ad78a32a25d378a151d5f30d59e",
-  "developmentApplicationCommit": "bdf921ad4924e33cf51c7158e539240c48b61fbb"
+  "developmentApplicationCommit": "bdf921ad4924e33cf51c7158e539240c48b61fbb",
+  "preservedIndependentReleases": [
+    {
+      "release": "girlhub-feedback-20261023-v1",
+      "sourceCommit": "c71cd32bbef6f923994392bdb693fff3a635ab4e",
+      "sourcePaths": {
+        "games/girlhub/package.json": "0dae33b437ba56a9a2c2ff327941be4f9571a6d2ae50aa93c38a67494cd4998d",
+        "games/girlhub/feedback.md": "c09188b77692b99f9562a12652fee7b85cbfd89dcbc5f90b9f8c103210ee7dcb",
+        "src/ui/AfterglowUI.ts": "b403f11301f64b301300043b54cd83e0df7a1cb92bd6a081249b31dd526a23df",
+        "src/ui/AfterglowAudio.ts": "31b555c4883fece6e12ffd8b08e1a6643796c604506893b1e447790684ac1e05",
+        "src/ui/AfterglowFeedback.ts": "5a8d1eec80ba7d59813f5d8021e323bbb592c3d049c7170bcbbb0622f48756c8",
+        "src/ui/AfterglowText.ts": "ade23bcbb7dde7159e19dfe680b23a306eec78f3c661a7e17603c77f6bb12fd8",
+        "src/ui/afterglow.css": "e0cd7c9ffed4d27be9896b6dd2dedd294bfa8d45d60258f8d025bc2863077407"
+      },
+      "moduleVersion": "1.1.0-082e6682d45a",
+      "modulePointersAndFilesVerified": true,
+      "hostProgramUnchanged": true
+    }
+  ]
 }

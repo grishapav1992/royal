@@ -1,12 +1,12 @@
 # Independently published games
 
-Every existing game definition has an independent client package. The catalogue contains 115 module identities across the current and historical game families. This is a technical inventory, not a claim that the hall has 115 visible machines:
+Every existing game definition has an independent client package. The catalogue contains 117 module identities across the current and historical game families. This is a technical inventory, not a claim that the hall has 117 visible machines:
 
 | Family | Module identities |
 | --- | ---: |
-| Studio games, including the eight current native slots | 40 |
+| Studio games, including the eight current native slots | 41 |
 | Original Royal games, GitHub practice games, session games and all casino/card variants, including LAST EXIT | 62 |
-| Air hockey, pool, chess and piano | 4 |
+| Air hockey, pool, chess, piano and Mortal Kombat | 5 |
 | Durak, transfer Durak and Crazy Eights PvP | 3 |
 | Breaker, Orbit, Drift and Pixel legacy arcade games | 4 |
 | Luelon and Casino API Pro provider adapters | 2 |
@@ -90,3 +90,5 @@ Physical cabinet occupancy is independent of the selected game module. Switching
 Casino API Pro accepts an optional embedded provider context. The shared host owns its window and navigation, while the provider adapter rechecks configuration, wallet acknowledgement and game availability. The existing launch URL validation and iframe sandbox remain active. Switching cancels provider requests, polling and the iframe without releasing the seat. Standalone provider callbacks remain compatible. The original remote Luelon demo catalogue is outside the platform.
 
 Existing native artwork, the small startup previews, preparation cache, latest chat implementation, server engines, payout rules and wallet transport are preserved. GitHub decoration is scoped to the current nine GitHub identities; native Plinko keeps its production design. Use the platform browser scenarios with the real host and connected chat on desktop and mobile, and verify package integrity and recovery before publication.
+
+Mortal Kombat uses activity identity and package slug mortal-kombat on floor 2. See games/mortal-kombat/README.md for wager rules, escrow recovery, asset provenance, shared USDT · Nile integration and server anti-cheat controls (rules contract 2). It requires this compatible host/backend release before the client package can be published.

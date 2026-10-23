@@ -1,3 +1,4 @@
+import { CombatRoom, type CombatDependencies } from './combatRoom';
 import { activityHall, type HallId } from '../src/shared/world';
 import { ACTIVITIES, isActivity, type ActivitiesState, type ChessState, type PianoNote, type TableUpdate } from '../src/shared/activities';
 import { TableGame } from './tableGames';
@@ -7,6 +8,9 @@ type Visitor={hall?:string;x:number;y:number;playing:boolean;connected:boolean;a
 export class Activities {
   readonly tables=[new TableGame('hockey'),new TableGame('pool')];
   readonly chess:ChessGame;
+  readonly combat?:CombatRoom;
+  private combatElapsed=0;
+  private combatRevision=0;
   pianist='';
   private notes=new Map<number,number>();
   private noteTimes:number[]=[];
@@ -20,13 +24,15 @@ export class Activities {
   private pianoElapsed=0;
   readonly wagers=new Map<string,string[]>();
   canJoin:(id:string,game:string)=>boolean=()=>true;
-  constructor(private player:(id:string)=>Visitor|undefined,private stop:(id:string)=>void,private broadcast:(type:string,value:unknown,hall:HallId)=>void,private notice:(id:string,text:string)=>void,now:()=>number=()=>performance.now()){
+  constructor(private player:(id:string)=>Visitor|undefined,private stop:(id:string)=>void,private broadcast:(type:string,value:unknown,hall:HallId)=>void,private notice:(id:string,text:string)=>void,now:()=>number=()=>performance.now(),combat?:CombatDependencies){
+    if(combat)this.combat=new CombatRoom(combat,notice);
     this.chess=new ChessGame(undefined,now);this.chessChanges=new ActivityChanges(this.chess.state);this.chessRevision=this.chess.state.revision;
   }
-  snapshot():ActivitiesState{return{tables:this.tables.map(t=>t.state),pianist:this.pianist,notes:[...this.notes.keys()],chess:this.chess.state};}
+  snapshot():ActivitiesState{return{...(this.combat?{combat:this.combat.state}:{}),tables:this.tables.map(t=>t.state),pianist:this.pianist,notes:[...this.notes.keys()],chess:this.chess.state};}
   handle(id:string,value:unknown){
     const p=this.player(id);if(!p?.connected||!value||typeof value!=='object')return;
     const v=value as Record<string,unknown>;
+    if(typeof v.type==='string'&&v.type.startsWith('combat-')){if(p.activity==='mortal-kombat')this.combat?.handle(id,v);return;}
     if(v.type==='ears'&&typeof v.muted==='boolean'){p.ears=v.muted;return;}
     if(v.type==='leave'){this.leave(id);return;}
     if(v.type==='join'&&isActivity(v.id)){
@@ -39,7 +45,7 @@ export class Activities {
       if(v.id==='piano'){
         if(this.pianist){this.notice(id,'За роялем уже играют. Можно послушать и подождать.');return;}
         this.pianist=id;p.x=120;p.y=334;p.seat='piano';p.action='sit';p.facing='up';
-      }else if(!(v.id==='chess'?this.chess.join(id):this.tables.find(t=>t.state.id===v.id)!.join(id))){this.notice(id,'Оба места заняты. Можно наблюдать за партией.');return;}
+      }else if(!(v.id==='mortal-kombat'?this.combat?.join(id):v.id==='chess'?this.chess.join(id):this.tables.find(t=>t.state.id===v.id)!.join(id))){this.notice(id,'Оба места заняты. Можно наблюдать за партией.');return;}
       this.stop(id);p.activity=v.id;p.playing=true;this.changed();return;
     }
     if(v.type==='paddle')this.tables[0].move(id,v.x,v.y);
@@ -64,11 +70,15 @@ export class Activities {
   }
   leave(id:string,force=false){
     if(!force&&[...this.wagers.values()].some(ids=>ids.includes(id)))return;
-    const p=this.player(id);this.tables.forEach(t=>t.leave(id));this.chess.leave(id);
+    const p=this.player(id);this.combat?.leave(id);this.tables.forEach(t=>t.leave(id));this.chess.leave(id);
     if(this.pianist===id){for(const note of this.notes.keys())this.broadcast('piano-note',{note,down:false,player:id},'arcade');this.notes.clear();this.noteTimes=[];this.pianist='';if(p){p.x=120;p.y=340;p.seat='';p.action='idle';}}
     if(p?.activity){p.activity='';p.playing=false;}this.changed();
   }
+  disconnect(id:string){if(this.player(id)?.activity==='mortal-kombat')this.combat?.disconnect(id);else this.leave(id);}
+  reconnect(id:string){this.combat?.reconnect(id);}
   tick(dt:number){
+    this.combat?.tick(dt);this.combatElapsed+=dt;
+    if(this.combat&&this.combatElapsed>=.05){this.combatElapsed=0;if(this.combat.state.phase!=='waiting'&&this.combat.state.phase!=='finished'||this.combat.state.revision!==this.combatRevision)this.sendCombat();}
     const updates:TableUpdate[]=[];
     this.tables.forEach((table,index)=>{
       // Keep the final frame pending even if the game finishes before the next send.
@@ -124,8 +134,10 @@ export class Activities {
     const changes=this.pianoChanges.take({pianist:this.pianist,notes:[...this.notes.keys()]});
     if(Object.keys(changes).length)this.broadcast('activities',{patch:true,...changes},'arcade');
   }
+  private sendCombat(){if(!this.combat)return;this.combatRevision=this.combat.state.revision;this.broadcast('activities',{patch:true,combat:this.combat.state},'tables');}
   private changed(){
     const tables=this.tables.flatMap((_,index)=>{const update=this.tableUpdate(index);return update?[update]:[];});
     this.sendTables(tables);this.sendChess();this.sendPiano();
+    if(this.combat&&this.combat.state.revision!==this.combatRevision)this.sendCombat();
   }
 }
