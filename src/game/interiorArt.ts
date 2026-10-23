@@ -1,5 +1,5 @@
 import { t as translateText } from '../i18n/index';
-import { FLOOR } from '../shared/clubGeometry';
+import { FLOOR, HALL_WALL } from '../shared/clubGeometry';
 import type Phaser from 'phaser';
 import { CABINETS } from '../shared/cabinets';
 import type { HallId } from '../shared/world';
@@ -43,18 +43,11 @@ export function drawHallIdentity(scene: Phaser.Scene, hall: HallId) {
     scene.add.image(x,y,key).setOrigin(.5,1).setDisplaySize(w,h).setDepth(depth);
   const lights=scene.add.graphics().setDepth(.04);
   if(hall==='arcade'){
-    art('casino-marquee',540,170,342,106);
-    art('casino-chandelier',282,251,64,88,3);
-    art('casino-chandelier',712,243,64,88,3);
-    for(const x of [282,712])lights.fillStyle(0xf4ca7e,.045).fillEllipse(x,285,154,90);
+    art('casino-marquee-compact',331,102,190,116);
     scene.add.text(1560,113,translateText('КАЗИНО И БАР'),{fontFamily:'Georgia',fontSize:'31px',fontStyle:'bold',letterSpacing:4,color:'#d9e7ef'}).setOrigin(.5).setDepth(3);
     scene.add.text(1560,151,translateText('НОВЫЕ ИГРЫ · GITHUB · ДЕМОКАТАЛОГИ'),{fontFamily:'Arial',fontSize:'11px',letterSpacing:2,color:'#b2c8d4'}).setOrigin(.5).setDepth(3);
   }else if(hall==='github'){
     art('card-salon-sign',540,170,342,106);
-    for(const x of [1240,2170,3100,4030]){
-      art('casino-chandelier',x,225,62,85,3);
-      lights.fillStyle(0xf4ca7e,.05).fillEllipse(x,250,175,98);
-    }
     scene.add.text(2620,113,translateText('КАРТОЧНЫЙ САЛОН'),{fontFamily:'Georgia',fontSize:'30px',fontStyle:'bold',letterSpacing:3,color:'#e5d5b0'}).setOrigin(.5).setDepth(3);
     scene.add.text(2620,151,translateText('33 ИГРЫ · 33 КРУПЬЕ · ЭТАЖ 3'),{fontFamily:'Arial',fontSize:'11px',letterSpacing:2,color:'#c2d0c8'}).setOrigin(.5).setDepth(3);
   }else{
@@ -72,31 +65,32 @@ export function createInteriorArt(scene: Phaser.Scene, resolution: number) {
     t.context.scale(raster.scaleX,raster.scaleY); t.context.lineJoin = 'round'; t.context.lineCap = 'round'; draw(t.context); t.refresh();
   };
   for (const hall of ['arcade', 'tables', 'github'] as const) {
-    make('club-wall-' + hall, FLOOR.width, 112, c => {
+    make('club-wall-' + hall, FLOOR.width, HALL_WALL.height, c => {
+      const h=HALL_WALL.height;
       const casino = hall !== 'tables';
       if (casino) {
-        rect(c, 0, 0, FLOOR.width, 112, '#2b1323');
+        rect(c, 0, 0, FLOOR.width, h, '#2b1323');
         for(let x=0;x<FLOOR.width;x+=26){
-          rect(c,x,12,13,78,'#461b31');
-          line(c,x+3,14,x+3,85,'#71304a');
+          rect(c,x,12,13,h-34,'#461b31');
+          line(c,x+3,14,x+3,h-28,'#71304a');
         }
-        for(const x of [10,200,654,FLOOR.width-16]){
-          rect(c,x,6,12,94,'#a67a36');
-          rect(c,x+3,9,5,86,'#f1d190');
-          rect(c,x-4,8,20,5,'#ddb365');rect(c,x-4,90,20,5,'#ddb365');
+        for(const x of [10,365,665,...Array.from({length:11},(_,i)=>1050+i*300),FLOOR.width-16]){
+          rect(c,x,6,12,h-12,'#a67a36');
+          rect(c,x+3,9,5,h-22,'#f1d190');
+          rect(c,x-4,8,20,5,'#ddb365');rect(c,x-4,h-22,20,15,'#ddb365');
         }
         rect(c,0,0,FLOOR.width,8,'#d9b767');line(c,0,10,FLOOR.width,10,'#73512f',2);
-        rect(c,0,92,FLOOR.width,20,'#261b25');
-        line(c,0,92,FLOOR.width,92,'#f2cf7e',3);line(c,0,109,FLOOR.width,109,'#ad833f',2);
+        rect(c,0,h-20,FLOOR.width,20,'#261b25');
+        line(c,0,h-20,FLOOR.width,h-20,'#f2cf7e',3);line(c,0,h-3,FLOOR.width,h-3,'#ad833f',2);
       }else{
-        rect(c,0,0,FLOOR.width,112,'#b5a58c');
-        for(let y=12;y<80;y+=17){
+        rect(c,0,0,FLOOR.width,h,'#b5a58c');
+        for(let y=12;y<h-34;y+=17){
           line(c,0,y,FLOOR.width,y,'#9c8c76',.7);
           for(let x=(y%2)*25;x<FLOOR.width;x+=100)line(c,x,y,x,y+17,'#9c8c76',.7);
         }
-        rect(c,0,0,FLOOR.width,9,'#493b2c');rect(c,0,78,FLOOR.width,34,'#4a3d30');
-        for(let x=11;x<FLOOR.width;x+=70){rect(c,x,84,58,21,'#624e38',2);line(c,x+4,87,x+54,87,'#8c7252');}
-        line(c,0,78,FLOOR.width,78,'#8d7251',3);line(c,0,109,FLOOR.width,109,'#342b22',3);
+        rect(c,0,0,FLOOR.width,9,'#493b2c');rect(c,0,h-34,FLOOR.width,34,'#4a3d30');
+        for(let x=11;x<FLOOR.width;x+=70){rect(c,x,h-28,58,21,'#624e38',2);line(c,x+4,h-25,x+54,h-25,'#8c7252');}
+        line(c,0,h-34,FLOOR.width,h-34,'#8d7251',3);line(c,0,h-3,FLOOR.width,h-3,'#342b22',3);
       }
     });
     make('club-floor-' + hall, FLOOR.width, FLOOR.height, c => {
@@ -206,6 +200,14 @@ export function createInteriorArt(scene: Phaser.Scene, resolution: number) {
     for(const x of [27,315]){
       for(let n=0;n<4;n++)line(c,x,80,x+(x<100?1:-1)*n*5,39,'#bb914f',1);
     }
+  });
+  make('casino-marquee-compact',190,116,c=>{
+    rect(c,0,0,190,116,'#d3ab60',8);rect(c,4,4,182,108,'#321827',6);
+    c.strokeStyle='#af854b';c.lineWidth=1;c.strokeRect(8,8,174,100);
+    for(let x=12;x<183;x+=11)for(const y of [4,112])oval(c,x,y,1.5,1.5,'#fff0b3');
+    label(c,'R O Y A L',95,27,10,'#f3dba0');
+    c.font='bold 34px Georgia, serif';c.fillStyle='#f8da8d';c.textAlign='center';c.fillText('CASINO',95,71);
+    label(c,'♠   ♥   ♣   ♦',95,96,12,'#e5ae87');
   });
   make('card-salon-sign',342,106,c=>{
     rect(c,1,1,340,104,'#d0ab68',12);rect(c,6,6,330,94,'#263d44',9);

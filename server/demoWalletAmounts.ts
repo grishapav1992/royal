@@ -2,6 +2,7 @@ import { combatEscrowSchema } from './combatEscrow';
 import type { PostgresDatabase } from './database';
 import { applyDemoMoneySchemaMigrations } from './game-database-migrations';
 import { casinoDemoSchema } from './demoCasino';
+import { applySchemaMigration } from './database-migrations';
 
 export const MAX_DEMO_UNITS = 100_000_000_000;
 export class DemoCapacityError extends Error {}
@@ -11,7 +12,9 @@ export async function demoReservedUnits(db: PostgresDatabase, accountId: string)
   const row = await db.prepare(`SELECT
     COALESCE((SELECT reserved_units FROM demo_mines_sessions WHERE account_id=? AND state='active'),0)
     + COALESCE((SELECT reserved_units FROM demo_flight_sessions WHERE account_id=? AND state='active'),0)
-    + COALESCE((SELECT SUM(reserved_units) FROM demo_casino_sessions WHERE account_id=? AND state='active'),0) + COALESCE((SELECT reserved_units FROM combat_reservations WHERE account_id=?),0) AS units`).get(accountId, accountId, accountId, accountId);
+    + COALESCE((SELECT SUM(reserved_units) FROM demo_casino_sessions WHERE account_id=? AND state='active'),0)
+    + COALESCE((SELECT count(*)*1000 FROM skin_purchases WHERE account_id=? AND state='reserved'),0)
+    + COALESCE((SELECT reserved_units FROM combat_reservations WHERE account_id=?),0) AS units`).get(accountId, accountId, accountId, accountId, accountId);
   return Number(row!.units);
 }
 
@@ -19,7 +22,13 @@ export async function demoReservedUnits(db: PostgresDatabase, accountId: string)
 export async function migrateDemoAmounts(db: PostgresDatabase) {
   await applyDemoMoneySchemaMigrations(db);
   await casinoDemoSchema(db);
+  await applySchemaMigration(db, { id: 'common-skin-purchases-v1', statements: [
+    `CREATE TABLE IF NOT EXISTS skin_purchases(id TEXT PRIMARY KEY,account_id TEXT NOT NULL REFERENCES accounts(id),
+      state TEXT NOT NULL CHECK(state IN ('reserved','captured','refunded')),created_at BIGINT NOT NULL,updated_at BIGINT NOT NULL)`,
+    `CREATE INDEX IF NOT EXISTS skin_purchases_reserved ON skin_purchases(account_id) WHERE state='reserved'`,
+  ] });
   await combatEscrowSchema(db);
+
 }
 
 export async function demoBalanceUnits(db: PostgresDatabase, accountId: string) {

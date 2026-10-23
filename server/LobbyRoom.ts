@@ -1,4 +1,5 @@
-import { serializeAppearance, type Appearance } from '../src/shared/appearance';
+import { serializeAppearance } from '../src/shared/appearance';
+import type { CharacterAppearance } from '../src/shared/skinStudio';
 import { Room, type Client, type AuthContext, ServerError } from '@colyseus/core';
 import { Guards } from './guards';
 import { Bartender } from './bartender';
@@ -109,7 +110,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       const player = this.state.players.get(client.sessionId); if (player) player.skin = skin;
     }
   };
-  private appearanceListener = (id: string, appearance: Appearance | null) => {
+  private appearanceListener = (id: string, appearance: CharacterAppearance | null) => {
     for (const client of this.clients) if ((client.auth as RoomAuth)?.account.id === id) {
       const access = this.access.get(client.sessionId); if (access) access.profileRevision.appearance++;
       (client.auth as RoomAuth).account.appearance = appearance;
