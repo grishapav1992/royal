@@ -36,7 +36,7 @@ export const ACTIVE_ARCADE_GAMES: readonly string[] = ARCADE_CABINET_SPECS.map(c
 export const ROYAL_CABINET_IDS = ARCADE_CABINET_SPECS.filter(c=>c.collection==='royal').map(c=>c.id);
 export const ARCADE_CABINET_POSITIONS: Readonly<Record<string,{x:number;y:number}>> = Object.fromEntries(ARCADE_CABINET_SPECS.map(c=>[c.id,{x:c.x,y:c.y}]));
 export const STUDIO_CABINET_GAMES = ACTIVE_STUDIO_GAMES;
-export const ROYAL_PLATFORM_GAMES: readonly string[] = [...STUDIO_GAMES.filter(id=>id!=='studio-neopolis'), ...ARCADE_CLASSIC_GAMES];
+export const ROYAL_PLATFORM_GAMES: readonly string[] = [...STUDIO_GAMES, ...ARCADE_CLASSIC_GAMES];
 export const ROYAL_COLLECTION_GAMES = ROYAL_PLATFORM_GAMES.filter(id=>!ARCADE_GITHUB_GAMES.includes(id as typeof ARCADE_GITHUB_GAMES[number]));
 export const PLATFORM_CABINET_DEFAULTS: Readonly<Record<string,string>> = Object.freeze(Object.fromEntries(ARCADE_CABINET_SPECS.filter(c=>c.defaultGameId).map(c=>[c.id,c.defaultGameId!])));
 export const isPlatformGame=(id:string):boolean=>ROYAL_PLATFORM_GAMES.includes(id);

@@ -6,10 +6,42 @@ import {block} from './helpers/nile-play-fixture';
 import {NileGameRuntime,type NativeCommand} from '../../server/finance/nile-game-runtime';
 import {seededRandom} from '../../src/shared/draconaMath';
 import {validDraconaSession} from '../../src/shared/dracona';
+import {validNeopolisSession} from '../../src/shared/neopolis';
 
 const command=(path:string,body:unknown=null,method:'GET'|'POST'=body===null?'GET':'POST'):NativeCommand=>({path,body,method,flags:Array(9).fill(true),rules:2,query:{}});
 const draconaCommand=(body:unknown=null):NativeCommand=>({...command('/expansion',body),flags:[true,true,true,true,true,true,true,true,2]});
+const neopolisCommand=(body:unknown=null):NativeCommand=>({...draconaCommand(body),neopolisRules:3});
 async function setup(){const c=await pvpFixture();await c.source.ingest(block(102,'1000000000000',c.config.source.addresses.find(a=>a.userId==='reserve')!.address));await c.ledger.sync(c.source,await c.reconciliation());return{...c,games:new NileGameRuntime(c.ledger,()=>0)};}
+
+test('published Neopolis restores all three bosses and settles its campaign once in the common Nile journal',async()=>{
+ const c=await setup();try{
+  const random=seededRandom(95),draw=(max:number)=>Math.floor(random()*max);
+  let games=new NileGameRuntime(c.ledger,draw),reply:any;
+  const start=()=>({id:randomUUID(),action:'start',gameId:'studio-neopolis',stakeUnits:'1000',settings:{neopolis:{hero:'granite'}}});
+  await assert.rejects(games.run(c.a,command('/expansion',start())),/refresh/);
+  let expected=200000000n;
+  for(let i=0;i<35;i++){
+   const op=start();reply=await games.run(c.a,neopolisCommand(op));assert(validNeopolisSession(reply.session));
+   expected-=10000000n;expected+=BigInt(reply.session.returnedUnits)*10000n;
+   assert.equal(reply.wallet.balanceUnits,String(expected));if(reply.session.state==='active')break;
+  }
+  assert.equal(reply.session.state,'active');const id=reply.session.id,bonusBalance=expected;
+  games=new NileGameRuntime(c.ledger,draw);
+  const hidden=await games.run(c.a,command('/expansion'))as any;assert(!hidden.sessions.some((s:any)=>s.id===id));
+  const restored=await games.run(c.a,neopolisCommand())as any;assert.deepEqual(restored.sessions.find((s:any)=>s.id===id),reply.session);
+  let last:unknown;const seen=new Set<number>();
+  while(reply.session.state==='active'){
+   const view=reply.session.view.neopolis;seen.add(view.battle.boss);
+   last={id:randomUUID(),action:'move',gameId:'studio-neopolis',sessionId:id,move:'neopolis-spin',revision:view.revision};
+   reply=await games.run(c.a,neopolisCommand(last));assert(validNeopolisSession(reply.session));
+   if(reply.session.state==='active')assert.equal(reply.wallet.balanceUnits,String(bonusBalance));
+  }
+  assert.deepEqual([...seen].sort(),[0,1,2]);expected+=BigInt(reply.session.returnedUnits)*10000n;
+  assert.equal(reply.wallet.balanceUnits,String(expected));assert.equal(reply.wallet.reservedUnits,'0');
+  const replay=await games.run(c.a,neopolisCommand(last))as any;assert(replay.replayed);assert.equal(replay.wallet.balanceUnits,String(expected));
+  await c.ledger.audit();
+ }finally{await c.close();}
+});
 
 for(const seed of [1,5])test(`rebalanced Dracona seed ${seed} retains exact cents, recovery and one settlement in the Nile journal`,async()=>{
  const c=await setup();try{
