@@ -1,3 +1,4 @@
+import { CombatUsdtWallet } from './combatWallet';
 import { serializeAppearance } from '../src/shared/appearance';
 import type { CharacterAppearance } from '../src/shared/skinStudio';
 import { Room, type Client, type AuthContext, ServerError } from '@colyseus/core';
@@ -39,7 +40,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
   state = new LobbyState();
   maxClients = ROOM_CAPACITY;
   maxMessagesPerSecond = 80;
-  private activities = new Activities(id => this.state.players.get(id), id => this.stop(id), (type,value,hall) => this.broadcastActivity(type,value,hall), (id,text) => this.clients.find(c=>c.sessionId===id)?.send('notice',text));
+  private activities = new Activities(id => this.state.players.get(id), id => this.stop(id), (type,value,hall) => this.broadcastActivity(type,value,hall), (id,text) => this.clients.find(c=>c.sessionId===id)?.send('notice',text),undefined,{escrow:new CombatUsdtWallet(process.env.NILE_PLAY_SOCKET_FILE??'',id=>accounts.financeAdmin.assertAllowed(id)),account:id=>this.playerAccounts.get(id),name:id=>this.state.players.get(id)?.name??'Игрок'});
   private pvp=new PvpRoom({roomId:()=>this.roomId,activities:this.activities,allowMoney:id=>accounts.financeAdmin.assertAllowed(id),
     people:()=>[...this.state.players].flatMap(([sessionId,p])=>{const accountId=this.playerAccounts.get(sessionId);return accountId?[{sessionId,accountId,name:p.name,hall:p.hall,x:p.x,y:p.y,connected:p.connected,available:!p.playing&&!p.activity&&!p.seat&&p.action!=='drink'}]:[];}),
     send:(id,type,value)=>this.clients.find(c=>c.sessionId===id)?.send(type,value)});
@@ -408,7 +409,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
   }
   onDrop(client: Client) {
     this.cancelChat(client);
-    this.activities.leave(client.sessionId);
+    this.activities.disconnect(client.sessionId);
     this.stop(client.sessionId);
     const control = this.controls.get(client.sessionId); if (control) control.chatRevision++;
     const p = this.state.players.get(client.sessionId); if (p) p.connected = false;
@@ -441,7 +442,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       this.applyProfile(auth, access, profile, profileRevision);
       if (auth.account.skin === null) { client.leave(4001); return; }
       p.name = auth.account.name; p.skin = auth.account.skin; p.appearance = serializeAppearance(auth.account.appearance);
-      p.connected = true;
+      p.connected = true;this.activities.reconnect(client.sessionId);
       const control = this.controls.get(client.sessionId);
       client.send('chat-check', Boolean(control && this.chatPending.get(control)));
       if (control) for (const result of this.chatResults.get(control)?.values() ?? []) if (result.status !== 'queued') client.send('chat-result', result);
@@ -459,8 +460,8 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     this.cancelChat(client);
     const chatControl = this.controls.get(client.sessionId);
     if (chatControl) { this.chatPending.delete(chatControl); this.chatResults.delete(chatControl); }
-    this.playerAccounts.delete(client.sessionId);
     this.activities.leave(client.sessionId);
+    this.playerAccounts.delete(client.sessionId);
     this.releaseCabinet(client.sessionId);
     const p = this.state.players.get(client.sessionId);
     this.state.players.delete(client.sessionId); this.controls.delete(client.sessionId); this.access.delete(client.sessionId);this.activityProtocols.delete(client.sessionId);

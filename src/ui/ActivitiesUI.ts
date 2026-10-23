@@ -23,13 +23,14 @@ export class ActivitiesUI {
  private view?:IndependentGameUI;
  private context?:ActivityHostContext;
  private shell?:HTMLDialogElement;
+ private chatCleanup?:()=>void;
  private events=new AbortController();
  private lastView:ViewState={hockey:{local:null,rendered:[undefined,undefined],puck:undefined,radius:HOCKEY_PADDLE_RADIUS},charge:{charging:false,power:550},frames:0};
  private activity=(id:ActivityId)=>this.open(id);
  pvpOpen?:(id:ActivityId)=>boolean;
  constructor(private scene:RoomScene,private send:(value:unknown)=>void){
   this.cards=document.createElement('div');this.cards.className='shared-cards';
-  this.cards.innerHTML=(Object.keys(ACTIVITIES) as ActivityId[]).map(id=>`<button type="button" data-activity="${id}"><span>${id==='piano'?'♫':id==='pool'?'●':id==='chess'?'♞':'◎'}</span><strong>${ACTIVITIES[id].name}</strong><small>${id==='piano'?translateText('Музыка для всех'):'1 на 1 · USDT'}</small></button>`).join('');
+  this.cards.innerHTML=(Object.keys(ACTIVITIES) as ActivityId[]).map(id=>`<button type="button" data-activity="${id}"><span>${id==='mortal-kombat'?'⚔':id==='piano'?'♫':id==='pool'?'●':id==='chess'?'♞':'◎'}</span><strong>${ACTIVITIES[id].name}</strong><small>${id==='piano'?translateText('Музыка для всех'):'1 на 1 · USDT'}</small></button>`).join('');
   document.querySelector('#card-tables-catalog')!.before(this.cards);
   this.cards.querySelectorAll<HTMLButtonElement>('[data-activity]').forEach(button=>button.addEventListener('click',()=>scene.approachActivity(button.dataset.activity as ActivityId),{signal:this.events.signal}));
   this.mute=document.createElement('button');this.mute.id='mute-piano';this.mute.className='invite-button piano-mute';this.mute.type='button';
@@ -66,22 +67,23 @@ export class ActivitiesUI {
  openWager(id:ActivityId){this.open(id,true);return this.shell;}
  closeWager(){this.close();}
  private open(id:ActivityId,wager=false){
-  if(!wager&&this.pvpOpen?.(id))return;
+  if(id!=='mortal-kombat'&&!wager&&this.pvpOpen?.(id))return;
   if(activityHall(id)!==this.scene.hall)return;
   this.close();this.selected=id;this.scene.setLocked(true);gameAudio.setGame(id);
   const shell=document.createElement('dialog');shell.id='shared-dialog';shell.className='shared-dialog';shell.dataset.activityShell='';shell.dataset.game=id;shell.dataset.wager=String(wager);
   const close=document.createElement('button');close.type='button';close.dataset.activityLoadingClose='';close.textContent='×';close.setAttribute('aria-label',translateText('Вернуться в зал'));close.onclick=()=>this.close();
   const host=document.createElement('div');host.className='activity-module-content';shell.append(close,host);document.body.append(shell);this.shell=shell;
+  this.chatCleanup=registerGameChatDialog(shell);
   shell.addEventListener('close',()=>{if(this.shell===shell)this.close();});
   const context:ActivityHostContext={scene:this.scene,send:this.send,state:this.state,players:this.players,self:this.self,pianoAudio:this.audio,shotPower:this.lastView.charge.power,onClose:()=>{if(this.shell===shell)this.close();}};
   this.context=context;this.view=new IndependentGameUI(host,id,{activity:context});
-  this.view.update(this.state);this.view.updatePlayers(this.players,this.self);registerGameChatDialog(shell);shell.showModal();void this.audio.unlock();
+  this.view.update(this.state);this.view.updatePlayers(this.players,this.self);shell.showModal();void this.audio.unlock();
  }
  private close(){
   const view=this.view,shell=this.shell;if(!view&&!shell)return;
   this.lastView=(view?.getState() as ViewState|undefined)??this.lastView;
   this.lastView={...this.lastView,charge:{...this.lastView.charge,charging:false}};
-  this.view=undefined;this.context=undefined;this.shell=undefined;view?.destroy();shell?.close();shell?.remove();
+  this.view=undefined;this.context=undefined;this.shell=undefined;view?.destroy();this.chatCleanup?.();this.chatCleanup=undefined;shell?.close();shell?.remove();
   gameAudio.setGame('');this.send({type:'leave'});this.scene.setLocked(Boolean(document.querySelector('dialog[open]')));document.querySelector<HTMLElement>('#game')?.focus({preventScroll:true});
  }
  destroy(){this.close();this.audio.stop();this.events.abort();this.cards.remove();this.mute.remove();if(this.scene.onActivity===this.activity)this.scene.onActivity=()=>{};}
