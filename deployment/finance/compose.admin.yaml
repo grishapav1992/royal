@@ -1,0 +1,4 @@
+services:
+  nile-play:
+    environment:
+      FINANCE_ADMIN_ACCOUNT_IDS: ${FINANCE_ADMIN_ACCOUNT_IDS:-}
