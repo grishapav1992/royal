@@ -32,6 +32,7 @@ jobs:
             ${{ runner.os }}-modules-
       - run: npm run test:rtp-gate
       - run: npm run test:release
+      - run: npm run test:work-sync
       - run: npm run release:prepare -- --local --base HEAD^
       - run: node --import tsx --test server-tests/independent-modules.test.ts server-tests/game-module-assets.test.ts
       - run: npm run test:slot-balance
