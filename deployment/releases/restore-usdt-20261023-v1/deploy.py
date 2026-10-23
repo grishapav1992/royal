@@ -47,9 +47,11 @@ if sys.argv[1] == 'baseline':
         for name, digest in M['inputs'].items():
             path = folder / name
             actual = canonical(path) if path.exists() else None
-            assert actual == digest or name in M['source'], 'Unrelated input differs: ' + name
+            expected = M['retainedFinanceInputs'].get(name, digest) if folder == FINANCE else digest
+            assert actual == expected or name in M['source'], 'Unrelated input differs: ' + name
             rows[str(folder)][name] = actual
     before = snapshot()
+    assert run(['docker', 'exec', 'royal-nile-play', 'node', '-p', 'require("pg/package.json").version']) == '8.23.1'
     save('baseline.json', {'source': rows, 'playImage': before['containers']['royal-nile-play']['image'],
         'reconcileImage': run(['docker', 'image', 'inspect', 'royal-nile-reconcile:local', '--format', '{{.Id}}'])})
     print(json.dumps({'baselineVerified': True, 'inputCount': len(M['inputs'])}))
