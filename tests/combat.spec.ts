@@ -25,7 +25,7 @@ test('real host: two players, equal stakes, chat, phone controls, surrender payo
   await login(a,'combat-local-a@example.test');
   const network=await a.evaluate(()=>(window as any).royalDemo.getNetworkState());
   await login(b,'combat-local-b@example.test',network.roomId);
-  for(const p of [a,b]){await p.locator('#floor-links [data-floor-target="tables"]').click();await expect.poll(async()=>(await state(p)).hall,{timeout:30000}).toBe('tables');}
+  for(const p of [a,b]){await p.bringToFront();await p.locator('#floor-links [data-floor-target="tables"]').click();await expect.poll(async()=>(await state(p)).hall,{timeout:30000}).toBe('tables');}
   await a.evaluate(async()=>{
    const {LobbyClient}=await import('/src/network/LobbyClient.ts');
    const original=LobbyClient.prototype.send;

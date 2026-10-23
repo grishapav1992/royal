@@ -239,3 +239,17 @@ test('a committed round survives process restart and cannot be charged again', a
         rmSync(dir, { recursive: true, force: true });
     }
 });
+
+test('source sync checks snapshot freshness before its complete audit and rejects an initially stale heartbeat', async context => {
+    const c = await playTestSetup();
+    const proof = await c.reconciliation();
+    const start = Date.now(); let elapsed = 0;
+    context.mock.method(Date, 'now', () => start + elapsed);
+    const audit = c.source.audit.bind(c.source);
+    context.mock.method(c.source, 'audit', async () => { const result = await audit(); elapsed += 181000; return result; });
+    try {
+        assert.equal(await c.ledger.sync(c.source, proof), 0);
+        assert.equal(await c.ledger.isReady(), true);
+        await assert.rejects(c.ledger.sync(c.source, proof), /play_source_not_ready/);
+    } finally { context.mock.restoreAll(); await c.close(); }
+});

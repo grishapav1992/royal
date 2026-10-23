@@ -1,7 +1,7 @@
 {
   "release": "raise-windows-20261023-v1",
-  "applicationCommit": "7894255b61dc388e6ed43966348ace3c25c3de09",
-  "productionBaseCommit": "5d97773ef73d353b51dbd7f1b575dfd243e8fdf6",
+  "applicationCommit": "bc074c29a6d85783b6b0d524479d04b072a4900f",
+  "productionBaseCommit": "b462e9dadaa140b5be000a83a96dfdd910acd245",
   "sourceChanges": {
     "src/game/catHomeArt.ts": "f643a5192309debe0b1a925848780fb5422586ae8a8e7e011fa975e6765d2ef9",
     "src/game/hallWindows.ts": "18baf193c3f7304e12291a6fbc7bcb269afe9b9a6170febaa6def395ee903633",
@@ -22,6 +22,7 @@
     "normalizedLineEndingOnlyPaths": 4,
     "RTPGate": "2 qualified and 114 unchanged legacy modules",
     "catWindowCases": 4,
-    "authenticatedHostDesktopMobile": 2
+    "authenticatedHostDesktopMobile": 2,
+    "concurrentCardScalePreserved": true
   }
 }

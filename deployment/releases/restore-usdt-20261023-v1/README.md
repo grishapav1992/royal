@@ -1,0 +1,9 @@
+# Restore Nile deposits and wallet freshness
+
+The source heartbeat must be checked when entering a repeatable-read snapshot. Checking it after a long complete historical audit falsely rejects a source whose live creditor is still updating. Both reconciliation and play sync now check that heartbeat first. Complete block and posting audits, independent RPC backing checks and all existing freshness limits remain required. The sequential source scheduler already reviewed in main is included.
+
+Prepare from the committed production application revision 5d97773 plus the reviewed fixes. The current main also contains unpublished combat changes, so it is not the financial bundle source. Merge this release branch into main before publication to preserve its exact source commit without publishing unrelated changes.
+
+Bundle scripts/finance-nile-play.ts and scripts/finance-nile-reconcile.ts with esbuild, externalizing pg and pg-native only. Record every tracked input and output checksum in manifest.json. The guarded installer verifies both source directories, source dependencies, current images and settings under all three publication locks. It backs up source, pins both previous financial images and updates only the play service and the reconciliation image. It preserves the host and its modules, settings, database and existing financial backups. After installation require successful reconciliation, repeated ready wallet checks and the authenticated public deposit flow, then push the deployment record.
+
+The financial source directory retains its separately verified package and lock files. Its dependency list lacks the host-only qrcode-generator, sharp and jsqr additions. Both dependency files are pinned by exact hashes, and the external pg runtime must remain 8.23.1. The repair does not install dependencies or replace those files.
