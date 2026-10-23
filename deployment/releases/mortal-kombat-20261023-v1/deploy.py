@@ -44,6 +44,11 @@ def require_financial_status(health, permit_stale=False):
     if not health.get('ready'):
         assert permit_stale and health.get('lastError') in [None,'play_source_not_ready'], 'Unexpected financial failure'
 
+def financial_status():
+    result = subprocess.run(['docker','exec','royal-nile-play','node','play.js','status'],capture_output=True,text=True)
+    assert result.returncode in [0,1], 'Financial status command failed'
+    return json.loads(result.stdout)
+
 def verify_contracts(old_contract,new_contract):
     for game,contract in old_contract['games'].items():
         # The common Nile host includes the already qualified Dracona v3 transition.
@@ -60,7 +65,7 @@ def guard():
     for name, row in OLD['containers'].items():
         assert now['containers'][name]['id'] == row['id'] and now['containers'][name]['image'] == row['image'], name
     assert now['containers']['royal-game-1']['health'] == 'healthy'
-    health = json.loads(run(['docker','exec','royal-nile-play','node','play.js','status']))
+    health = financial_status()
     require_financial_status(health,M['preexistingNileUnready'])
     verify_contracts(json.loads(HOST.read_text()),json.loads((ROOT/'host.json').read_text()))
 

@@ -1,0 +1,32 @@
+{
+  "nileAtelierTest": {
+    "passed": true,
+    "completedAt": "2026-10-23T17:52:56Z",
+    "command": "node --import tsx scripts/database-test.ts --import tsx --test server-tests/finance/nile-atelier.test.ts",
+    "cases": 1,
+    "assertionsCovered": [
+      "concurrent duplicate reservations debit exactly once",
+      "another account cannot capture the purchase",
+      "duplicate refunds restore the reservation during stale source status",
+      "new reservations are rejected while source status is stale",
+      "duplicate captures settle exactly once",
+      "captured purchases cannot be refunded",
+      "total audited journal value is conserved"
+    ],
+    "log": "artifacts/atelier-release/nile-atelier-test.log"
+  },
+  "rtpGate": {
+    "passed": true,
+    "completedAt": "2026-10-23T18:09:39Z",
+    "verified": 2,
+    "legacyNotQualified": 114,
+    "note": "Legacy entries are frozen source baselines, not RTP qualification. Atelier is a non-wagered cosmetic purchase.",
+    "log": "artifacts/atelier-release/rtp-gate.log"
+  },
+  "providerModelReadOnlyCheck": {
+    "model": "gpt-image-2",
+    "available": true
+  },
+  "productionAccountsOrMoneyModified": false,
+  "paidProductionGenerationPerformed": false
+}
