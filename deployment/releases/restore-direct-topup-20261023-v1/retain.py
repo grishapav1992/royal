@@ -37,7 +37,22 @@ if args.operation == 'apply':
     print(json.dumps(m.apply(value, state)))
 else:
     assert not plan_path.exists()
-    value = m.recovery(NAME)
+    review = m.read(Path(__file__).with_name('periodic-review.json'))
+    ordinary_read = m.read
+    def reviewed_policy_read(path):
+        value = ordinary_read(path)
+        if Path(path) == m.RETENTION / 'policy.json':
+            for name, row in review['changes'].items():
+                assert name in m.native_retention().PERIODIC_NAMES
+                prior = value['periodicContainerFingerprints'].get(name)
+                assert prior in [row['before'], row['after']], 'Unreviewed periodic configuration'
+                value['periodicContainerFingerprints'][name] = row['after']
+        return value
+    m.read = reviewed_policy_read
+    try:
+        value = m.recovery(NAME)
+    finally:
+        m.read = ordinary_read
     pointer_backup = m.BACKUPS / NAME / 'module-pointers.json'
     module_record = m.RELEASES / NAME / 'modules-published.json'
     before_modules = m.read(m.RELEASES / NAME / 'install-manifest.json')['before']['moduleFiles']
