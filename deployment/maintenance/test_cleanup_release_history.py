@@ -12,6 +12,20 @@ spec.loader.exec_module(cleanup)
 
 
 class HistoryScopeTest(unittest.TestCase):
+    def test_prepared_rollback_may_have_a_different_identity_with_identical_programs(self):
+        before = {'preparedImage': 'prepared', 'container': {'image': 'previous-running'},
+                  'preparedProgram': {'index': 'same'}, 'program': {'index': 'same'}}
+        cleanup.validate_rollback_identity({'Image': 'current'}, {'Id': 'prepared'}, before)
+        before['preparedProgram']['index'] = 'different'
+        with self.assertRaisesRegex(RuntimeError, 'missing or ambiguous'):
+            cleanup.validate_rollback_identity({'Image': 'current'}, {'Id': 'prepared'}, before)
+
+    def test_unreviewed_or_current_image_cannot_be_the_rollback(self):
+        before = {'preparedImage': 'prepared', 'preparedProgram': {}, 'program': {}}
+        for identity in ['current', 'unreviewed']:
+            with self.assertRaisesRegex(RuntimeError, 'missing or ambiguous'):
+                cleanup.validate_rollback_identity({'Image': 'current'}, {'Id': identity}, before)
+
     def test_image_references_use_the_existing_stable_container_inventory(self):
         helper = Mock()
         helper.container_rows.return_value = [{'image': 'active'}, {'image': 'another'}, {'image': 'active'}]

@@ -96,7 +96,9 @@ def build():
     for component, file in components:
         directory = ROOT / ('build-' + component)
         directory.mkdir(exist_ok=False)
-        base = OLD['preparedImage'] if component == 'game' else OLD['containers'][SERVICES[component]]['image']
+        expected_base = OLD['preparedImage'] if component == 'game' else OLD['containers'][SERVICES[component]]['image']
+        base = TAGS[component].split(':')[0] + ':before-' + NAME + ('-prepared' if component == 'game' else '')
+        assert run(['docker', 'image', 'inspect', base, '--format', '{{.Id}}']) == expected_base, 'Backup base changed: ' + component
         target = '/app/dist-server/' + file if component != 'nile' else '/app/play.js'
         shutil.copyfile(ROOT / 'runtime' / file, directory / file)
         dockerfile = 'FROM ' + base + '\nCOPY --chown=node:node ' + file + ' ' + target + '\n'
@@ -107,7 +109,7 @@ def build():
         (directory / 'Dockerfile').write_text(dockerfile)
         tag = TAGS[component].split(':')[0] + ':' + NAME
         with (ROOT / (component + '-build.log')).open('w') as log:
-            subprocess.run(['docker', 'build', '--network=none', '-t', tag, str(directory)], stdout=log, stderr=subprocess.STDOUT, check=True)
+            subprocess.run(['docker', 'build', '--pull=false', '--network=none', '-t', tag, str(directory)], stdout=log, stderr=subprocess.STDOUT, check=True)
         results[component] = run(['docker', 'image', 'inspect', tag, '--format', '{{.Id}}'])
         if activation:
             # Syntax checking alone does not find missing external runtime packages.

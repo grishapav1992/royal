@@ -1,13 +1,14 @@
 import type { PostgresDatabase } from '../database';
 
 export const AUDIT_PAYLOAD_LIMIT = 8 * 1024 * 1024;
+export const AUDIT_ROW_LIMIT = 8192;
 
 // Read only metadata for the candidate window, then fetch the payloads within its byte budget.
 // An oversized first block remains visible with a NULL payload so callers can reject it safely.
 export async function readBlockAuditPage(db: PostgresDatabase, after?: number) {
     return db.prepare(`WITH candidates AS MATERIALIZED (
         SELECT height,pg_catalog.octet_length(payload) AS payload_bytes FROM blocks
-        ${after === undefined ? '' : 'WHERE height>?'} ORDER BY height LIMIT 128
+        ${after === undefined ? '' : 'WHERE height>?'} ORDER BY height LIMIT ${AUDIT_ROW_LIMIT}
     ), bounded AS (
         SELECT height,payload_bytes,pg_catalog.sum(payload_bytes) OVER (ORDER BY height) AS total_bytes,
             pg_catalog.row_number() OVER (ORDER BY height) AS ordinal FROM candidates

@@ -25,16 +25,23 @@ def git(*args):
 
 assert git('rev-parse', SOURCE).decode().strip() == SOURCE
 assert git('merge-base', '--is-ancestor', SOURCE, 'origin/main') == b''
+subprocess.check_call(['node', 'scripts/release.mjs', 'verify', '--github'], cwd=STAGE)
+release = json.loads((STAGE / 'module-build/release-manifest.json').read_text())
+assert release['sourceCommit'] == SOURCE and release['scope'] == 'application'
+assert release['files']['dist-server/payments.js'] == sha((STAGE / 'dist-server/payments.js').read_bytes())
 assert 'dist/admin.html' in old['program'], 'Publish the shared-wallet host first'
 required = git('diff', '--name-only', '272f566', '78cb1cc').decode().splitlines()
-required = [n for n in required if n.startswith(('server/', 'src/admin/', 'src/shared/financeAdmin'))
-            or n in ['admin.html', 'vite.config.ts', 'vite.admin.config.ts', 'package.json']]
+# The deployed host and Nile images are reused. Check the shared dashboard
+# contract and every actual payments input, without publishing unrelated host
+# source or package-script changes that may still be waiting in main.
+required = [n for n in required if n.startswith(('server/admin/', 'src/admin/', 'src/shared/financeAdmin'))
+            or n == 'admin.html']
 metadata = json.loads((STAGE / 'dist-server/payments-meta.json').read_text())
 inputs = [n for n in metadata['inputs'] if not n.startswith('node_modules/')]
 for name in sorted(set(required + inputs)):
     committed = git('show', SOURCE + ':' + name)
     staged = (STAGE / name).read_bytes()
-    assert committed == staged, 'Stage differs from committed archive: ' + name
+    assert committed.replace(b'\r\n', b'\n') == staged.replace(b'\r\n', b'\n'), 'Stage differs from committed source: ' + name
     assert old['source'].get(name, {}).get('lf') == sha(staged.replace(b'\r\n', b'\n')), 'Published source differs: ' + name
 
 OUTPUT.mkdir(parents=True)
@@ -47,6 +54,8 @@ def copy(source, relative):
 
 
 copy(STAGE / 'dist-server/payments.js', 'runtime/payments.js')
+copy(STAGE / 'module-build/release-manifest.json', 'source-release.json')
+copy(STAGE / 'module-build/release-github.json', 'release-github.json')
 for name in ['snapshot.py', 'deploy.py']:
     copy(Path(__file__).parent / name, name)
 copy(CHECKOUT / 'compose.finance-admin.yaml', 'compose.finance-admin.yaml')

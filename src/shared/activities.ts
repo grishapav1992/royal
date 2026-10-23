@@ -1,6 +1,8 @@
+import type { CombatState } from './combat';
 import { t as translateText } from '../i18n/index';
-export type ActivityId = 'hockey' | 'pool' | 'piano' | 'chess' | 'durak' | 'transfer-durak' | 'crazy-eights';
+export type ActivityId = 'hockey' | 'pool' | 'piano' | 'chess' | 'mortal-kombat' | 'durak' | 'transfer-durak' | 'crazy-eights';
 export const ACTIVITIES = {
+  'mortal-kombat': { name:'Mortal Kombat', entry:{x:1460,y:510}, bounds:{x:1408,y:372,w:104,h:103} },
   hockey: { name:translateText('Аэрохоккей'), entry:{x:1220,y:510}, bounds:{x:1175,y:382,w:90,h:100} },
   pool: { name:translateText('Бильярд'), entry:{x:562,y:510} },
   piano: { name:translateText('Рояль'), entry:{x:800,y:480}, bounds:{x:750,y:400,w:110,h:60} },
@@ -25,9 +27,9 @@ export type ChessState = {
   ready:string[]; revision:number; sound:string;
   clock:{remainingMs:[number,number];running:'w'|'b'|null};
 };
-export type ActivitiesState = {tables:TableState[];pianist:string;notes:number[];chess:ChessState};
+export type ActivitiesState = {combat?:CombatState;tables:TableState[];pianist:string;notes:number[];chess:ChessState};
 export type TableUpdate = Pick<TableState,'id'> & Partial<Omit<TableState,'id'>>;
-export type ActivitiesUpdate = {patch:true;tables?:TableUpdate[];pianist?:string;notes?:number[];chess?:Partial<ChessState>};
+export type ActivitiesUpdate = {patch:true;combat?:CombatState;tables?:TableUpdate[];pianist?:string;notes?:number[];chess?:Partial<ChessState>};
 export type ActivitiesMessage = ActivitiesState | ActivitiesUpdate;
 
 export function mergeActivities(state:ActivitiesState,message:ActivitiesMessage):ActivitiesState {
@@ -37,6 +39,7 @@ export function mergeActivities(state:ActivitiesState,message:ActivitiesMessage)
       const update=message.tables!.find(value=>value.id===table.id);
       return update?{...table,...update}:table;
     }):state.tables,
+    ...((message.combat??state.combat)?{combat:message.combat??state.combat}:{}),
     pianist:message.pianist??state.pianist,
     notes:message.notes??state.notes,
     chess:message.chess?{...state.chess,...message.chess}:state.chess,

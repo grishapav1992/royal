@@ -326,7 +326,7 @@ def publish():
 
 
 if __name__ == '__main__':
-    require(len(sys.argv) == 2 and sys.argv[1] in ['check', 'build', 'publish', 'rollback'], 'Unexpected operation')
+    require(len(sys.argv) == 2 and sys.argv[1] in ['check', 'build', 'publish', 'release', 'rollback'], 'Unexpected operation')
     require(not STATE.is_symlink() and not HOST.is_symlink(), 'Module state symlink rejected')
     payload()
     lock_path, module_lock_path = LIVE / '.client-presentation-deploy.lock', STATE / 'module.lock'
@@ -343,5 +343,8 @@ if __name__ == '__main__':
         if sys.argv[1] == 'check':
             baseline()
             print(json.dumps({'ready': True, 'sourceFiles': len(CHANGES), 'clientFiles': len(DELTA), 'backendFiles': len(SERVER_DELTA)}))
+        elif sys.argv[1] == 'release':
+            print(json.dumps(build()), flush=True)
+            print(json.dumps(publish()), flush=True)
         else:
             print(json.dumps(globals()[sys.argv[1]]()))

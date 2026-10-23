@@ -6,7 +6,51 @@ import { TronReadStore } from '../../server/finance/tron-store';
 import { performance } from 'node:perf_hooks';
 import { digest, type TronBlock } from '../../server/finance/tron-protocol';
 import { block, playTestConfig } from './helpers/nile-play-fixture';
-import { AUDIT_PAYLOAD_LIMIT, readBlockAuditPage } from '../../server/finance/block-audit-pages';
+import { AUDIT_PAYLOAD_LIMIT, AUDIT_ROW_LIMIT, readBlockAuditPage } from '../../server/finance/block-audit-pages';
+import { PostgresDatabase } from '../../server/database';
+import { customerPool } from './helpers/nile-pool-fixture';
+
+test('full audit preserves pool activation and internal transfer exclusions', async () => {
+    const pool = { ...customerPool, startHeight: 103 };
+    const ledger = new NileTestLedger(':memory:', playTestConfig.source, false, pool);
+    try {
+        await ledger.ready;
+        await ledger.ingest(block(99), true);
+        await ledger.ingest(block(100, '10', pool.addresses[0].address));
+        await ledger.ingest(block(101, '20'));
+        await ledger.ingest(block(102, '100'));
+        await ledger.ingest(block(103, '200', pool.addresses[0].address));
+        const internalFromPool = block(104, '30');
+        internalFromPool.transfers[0].from = pool.addresses[0].address;
+        await ledger.ingest(internalFromPool);
+        const internalToPool = block(105, '40', pool.addresses[0].address);
+        internalToPool.transfers[0].from = playTestConfig.source.addresses[0].address;
+        await ledger.ingest(internalToPool);
+        const audit = await ledger.audit();
+        assert.equal(audit.blocks, 7);
+        assert.equal(audit.credits, 3);
+        assert.equal(audit.balances.reduce((sum, row) => sum + BigInt(row.availableUnits), 0n), 320n);
+    } finally { await ledger.close(); }
+});
+
+test('small block windows cover a large journal without omitted or duplicate heights', async () => {
+    const db = new PostgresDatabase(':memory:');
+    try {
+        await db.exec(`CREATE TABLE blocks(height BIGINT PRIMARY KEY,hash TEXT,parent_hash TEXT,payload_sha256 TEXT,payload TEXT);
+            INSERT INTO blocks SELECT n,'hash','parent','digest',repeat('x',32) FROM generate_series(1,16453) n`);
+        const heights: number[] = [];
+        const sizes: number[] = [];
+        while (true) {
+            const rows = await readBlockAuditPage(db, heights.at(-1));
+            if (!rows.length) break;
+            assert.ok(rows.length <= AUDIT_ROW_LIMIT);
+            assert.ok(rows.reduce((bytes, row) => bytes + row.payload_bytes, 0) <= AUDIT_PAYLOAD_LIMIT);
+            sizes.push(rows.length); heights.push(...rows.map(row => row.height));
+        }
+        assert.deepEqual(sizes, [8192,8192,69]);
+        assert.deepEqual(heights, Array.from({length:16453}, (_,index) => index+1));
+    } finally { await db.close(); }
+});
 
 test('block pages enforce a byte budget and reject an oversized block without returning its payload', async () => {
     const ledger = new NileTestLedger(':memory:', playTestConfig.source);
@@ -233,8 +277,8 @@ test('reader audits all pages with exact typed event equality and rejects rehash
         };
         assert.deepEqual(await store.audit(), { ok: true, blocks: 261, transfers: 260, cursorHeight: 359, schemaVersion: 1, network: 'nile' });
         store.db.prepare = prepare;
-        assert.deepEqual(pages, [128, 128, 5, 0]);
-        context.diagnostic(JSON.stringify({ blocks: 261, blockPayloadBytes: payloadBytes, auditResultBytes: resultBytes, maxPageRows: 128 }));
+        assert.deepEqual(pages, [261, 0]);
+        context.diagnostic(JSON.stringify({ blocks: 261, blockPayloadBytes: payloadBytes, auditResultBytes: resultBytes, maxPageRows: AUDIT_ROW_LIMIT }));
         const original = JSON.parse(String((await store.db.prepare('SELECT payload FROM blocks WHERE height=359').get())!.payload));
         await store.db.exec('DROP TRIGGER protected_blocks_update ON blocks');
         for (const mutation of [
@@ -343,10 +387,10 @@ test('complete history audit bounds each page and preserves exact balances', asy
         assert.equal(audit.blocks, legacyRows.length);
         assert.equal(audit.credits, 1);
         assert.equal(audit.balances.find(row => row.userId === 'player')!.availableUnits, amount);
-        assert.deepEqual(pages.map(page => page.rows), [128, 128, 5, 0]);
+        assert.deepEqual(pages.map(page => page.rows), [261, 0]);
         assert.ok(pages.every(page => page.bytes <= AUDIT_PAYLOAD_LIMIT));
         context.diagnostic(JSON.stringify({ blocks: audit.blocks, blockPayloadBytes: legacyBytes, auditResultBytes: returnedBytes,
-            maxPageRows: 128, maxPagePayloadBytes: Math.max(...pages.map(page => page.bytes)) }));
+            maxPageRows: AUDIT_ROW_LIMIT, maxPagePayloadBytes: Math.max(...pages.map(page => page.bytes)) }));
         ledger.db.prepare = prepare;
     }
     finally {

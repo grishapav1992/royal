@@ -1,29 +1,30 @@
 {
   "release": "left-lounge-20261023-v1",
-  "applicationCommit": "bdf921ad4924e33cf51c7158e539240c48b61fbb",
+  "applicationCommit": "cfb20ac5c5cc1226171c814a077e97236b1cdbd7",
   "integrationBase": "73d7874",
   "sourceChanges": {
     "server/guardRoutine.ts": "45a6847fab3d3eec549eab30322fe1efd4133df94009ada923ce0d6f3005ad01",
     "server/state.ts": "ba4992ebece32ae0827ebbd00602ac1976d9cd488bce84f77c7a914f1660e2ee",
     "src/game/Bar.ts": "0480e105813da99c266796d665f9aee6401ffe75d38cebaa80137a6dd9f1d53d",
-    "src/game/RoomScene.ts": "e27e49a22a71dfa0037a42a1fe2f1103024aeceb35e1e67b9ce13805d902e446",
+    "src/game/RoomScene.ts": "0a31a5c2bb2462f8d40e747a79d384ec3899a53b459a6d63c3be60e3ed38900d",
     "src/game/SecurityGuard.ts": "fba8bb4a6b807fa22667198106034da16b9a2e32e251f66b1abc19cb89a60434",
-    "src/game/activityArt.ts": "a561892748ad61e5ea99cdbb91d75f5dc3cfce5110f1d0930a8370f2a28a9cb3",
-    "src/game/clubArt.ts": "03d50686862a3260a9e20e61f54bb0e1087a65c887ebfdeffdc7c052348d2ce1",
-    "src/shared/activities.ts": "660473634da25a36cfd7336713f1a3091ce8b844fcf7a32553e2d0005b9f1959",
+    "src/game/activityArt.ts": "232b112a844660c7a9422132e6984ce707f1863817b6e0e48cfeff97d0b02093",
+    "src/game/clubArt.ts": "f93a95309b9f8f6d9bef9c114ed8688695aeddd2fdffcb26ec69ead8d172a59a",
+    "src/shared/activities.ts": "dca14da48c9a72099a5571c661d36d7ef3892c1b959c0956b4817ef04dc950b1",
     "src/shared/ambientGuests.ts": "6a30d7b77ae830984256dee833ebf5edb57e1c7cdd63d49f6c3d928a91a670fd",
     "src/shared/catCare.ts": "83f8f64ca8a13f97e3fd20f7eec5d59623a1f0181d0393fa2e855880a201f5c8",
-    "src/shared/clubLayout.ts": "0aeb682c6eb926202d847fce7ca8eb5a148e518941a14e4bf9371ba13540e312",
+    "src/shared/clubLayout.ts": "89487fb903e5001082ff17ea94f33b0d4bd2b62170d0d597b02086e9b8c98393",
     "src/shared/furniture.ts": "dbbb212cc84b3c1c5b6bb41b144102e38b974e29a240bca524eedeb8f6f5d5da",
     "src/shared/miraRoutine.ts": "6c4c54350515d5157afa57edb2a29cad149d1becea98b7fccd3473d20e069c47",
-    "src/shared/world.ts": "8113862ff5e57596745e3118f85cd86949f3f6d3de8977715fde171909f022fc",
-    "src/ui/ClubMap.ts": "87c63ab6736a8a4ed45d50cb22015c291aae8cc8102c5595e56d29347a8b453e",
+    "src/shared/world.ts": "08b9ab06cbeaf7368da9384944a74053a6fe8eb18d4712eec348d065f573338b",
+    "src/ui/ClubMap.ts": "35194a7a99990ddda1bb9ac7971e358db93bca0ec28e1acf61b53922a54c864d",
     "src/game/catHomeArt.ts": "fd757d782c455abcc19bcc9f00e65e7c98c6d9bb3056287dc8a9fcc4e7d902d2",
     "src/game/interiorArt.ts": "01660c87e2c9f4bed43353d551c82b94e86f4692564cf06017ef0c37e75233f4",
     "src/game/roomDetails.ts": "88ba66ad03b75054aec40862a384ea35947dab41d0c67dd1e664823e07b236f3",
-    "src/game/hallWindows.ts": "e1a9d91a34d47596e48eadd19aa82e4e195bb759d2af9bf9d498eeaa9e3a106c"
+    "src/game/hallWindows.ts": "e1a9d91a34d47596e48eadd19aa82e4e195bb759d2af9bf9d498eeaa9e3a106c",
+    "src/shared/clubGeometry.ts": "e70216f7cea75cd5f14f868b777431f1f824ee0347e017c3124d213a243d7290"
   },
-  "build": "npm run build, published host and backend only; game packages remain pinned to verified production versions",
+  "build": "Production source composed from the verified baseline plus the 20 hall paths; TypeScript, complete build and online desktop/mobile room checks passed. Existing immutable modules remain pinned.",
   "verification": {
     "build": "passed",
     "local_geometry": 7,
@@ -34,5 +35,25 @@
   },
   "expectedAdditionalFootprintGiB": 1.0,
   "freeLocalBeforeGiB": 62.82,
-  "freeServerBeforeGiB": 14.47
+  "freeServerBeforeGiB": 14.47,
+  "productionBaseCommit": "193bb1e2b0e30ad78a32a25d378a151d5f30d59e",
+  "developmentApplicationCommit": "bdf921ad4924e33cf51c7158e539240c48b61fbb",
+  "preservedIndependentReleases": [
+    {
+      "release": "girlhub-feedback-20261023-v1",
+      "sourceCommit": "c71cd32bbef6f923994392bdb693fff3a635ab4e",
+      "sourcePaths": {
+        "games/girlhub/package.json": "0dae33b437ba56a9a2c2ff327941be4f9571a6d2ae50aa93c38a67494cd4998d",
+        "games/girlhub/feedback.md": "c09188b77692b99f9562a12652fee7b85cbfd89dcbc5f90b9f8c103210ee7dcb",
+        "src/ui/AfterglowUI.ts": "b403f11301f64b301300043b54cd83e0df7a1cb92bd6a081249b31dd526a23df",
+        "src/ui/AfterglowAudio.ts": "31b555c4883fece6e12ffd8b08e1a6643796c604506893b1e447790684ac1e05",
+        "src/ui/AfterglowFeedback.ts": "5a8d1eec80ba7d59813f5d8021e323bbb592c3d049c7170bcbbb0622f48756c8",
+        "src/ui/AfterglowText.ts": "ade23bcbb7dde7159e19dfe680b23a306eec78f3c661a7e17603c77f6bb12fd8",
+        "src/ui/afterglow.css": "e0cd7c9ffed4d27be9896b6dd2dedd294bfa8d45d60258f8d025bc2863077407"
+      },
+      "moduleVersion": "1.1.0-082e6682d45a",
+      "modulePointersAndFilesVerified": true,
+      "hostProgramUnchanged": true
+    }
+  ]
 }

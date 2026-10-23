@@ -1,0 +1,48 @@
+{
+  "release": "left-lounge-20261023-v1",
+  "sourceCommit": "cfb20ac5c5cc1226171c814a077e97236b1cdbd7",
+  "runningImage": "sha256:961476c5a3f4560255180c6de08a87d7ab8b613362928312dd3195ab5e199afc",
+  "published": true,
+  "sourceFiles": 1617,
+  "sourcePathsChanged": 20,
+  "clientFilesVerifiedByPublicSha256": 2,
+  "healthy": true,
+  "authenticatedDesktopMobileWithChat": "2 passed",
+  "publicDesktopMobile": {
+    "origin": "https://stealth-spark-gokmxooi.expresshost.cloud",
+    "passed": true,
+    "productionWrites": 0,
+    "productionWebSockets": 0,
+    "errors": [],
+    "viewports": [
+      {
+        "width": 1440,
+        "height": 1000,
+        "bar": true,
+        "sofas": 2,
+        "overflow": false
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "bar": true,
+        "sofas": 2,
+        "overflow": false
+      }
+    ]
+  },
+  "publisherGuards": "16 passed",
+  "retentionGuards": "9 maintenance and 3 unfinished-release image checks passed",
+  "mathSourcesChanged": false,
+  "otherServicesPreserved": 13,
+  "moduleFilesPreserved": 535,
+  "backup": "/opt/royal-backups/left-lounge-20261023-v1",
+  "sourceBackupSha256": "2afb581884672143ebc88b0b3d1550f99557d8c5a079be8bf8147b408883a074",
+  "serverFreeAfterPublicationGiB": 11.280689239501953,
+  "rootIntegrationTypecheck": "passed",
+  "cleanup": {
+    "ownedServerStagingAllocatedBytesRemoved": 5865472,
+    "oldApplicationHistoryRetired": false,
+    "activeWorkException": "Native retention policy detected a changed periodic financial image/runtime fingerprint after parallel financial work. Preserve history until the financial release owner verifies and reconciles that policy."
+  }
+}

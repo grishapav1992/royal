@@ -4,6 +4,8 @@
 
 ## GitHub synchronization before work
 
+- Follow `docs/development-workflow.md` on every device. Start each feature from freshly fetched origin/main and update actual working files before editing. Use `npm run work:start -- <feature-name>` in a clean main checkout, or the managed-worktree workflow when preserving concurrent work. Use `npm run work:sync` before continuing a shared feature or finishing it. Keep unfinished features in pushed feature branches so another device can resume them without publishing them to main. After integration, publish only reviewed artifacts from the exact source commit already pushed to main, then push the deployment record. Never use the production source directory as an independent development branch.
+
 - Before every new implementation, review or debugging task, run `git status --short --branch`, `git fetch origin`, and `git rev-list --left-right --count HEAD...origin/main`. Use the freshly fetched `origin/main` from `https://github.com/grishapav1992/royal` as the integration baseline. Fetching alone does not update working files.
 - If the current checkout is on `main`, has no local changes and is only behind, update it with `git merge --ff-only origin/main` before starting work.
 - If the checkout has staged, unstaged or untracked changes, or cannot fast-forward, preserve that work. Start independent tasks in a suitable clean managed worktree based on the latest `origin/main`. When continuing an existing task, preserve its commits and deliberately reconcile the relevant local changes with the current main. Never automatically stash, reset, clean, overwrite files or force-push to synchronize.
@@ -40,6 +42,8 @@
 - Back up source and tag the previous image before publishing. Preserve the existing game_data volume.
 
 ## Production changes and GitHub
+
+- Use `docs/release-process.md` for release preparation. Work from a clean committed checkout, specify the verified production source commit with `release:plan` and `release:prepare`, and reuse the resulting manifest and build outputs. Run `release:verify` before passing those bytes to a guarded installer. Do not reconstruct a mixed source tree or create another full staging copy when the committed checkout is sufficient. Preparation and CI artifacts do not replace production-baseline, compatibility, wallet, layout, backup or post-publication checks.
 
 - Every change published to the production server must also be committed and pushed to `main` in `https://github.com/grishapav1992/royal`. This applies to application releases, independent game modules, hotfixes, and rollbacks.
 - Before publishing, compare the release with the current production source and preserve changes from other chats. If the release is prepared in an ignored `artifacts/` stage or directly on the server, reconcile its actual source, required assets, build configuration, and migrations into the tracked project paths. Do not push an outdated root checkout as the source of that release.
