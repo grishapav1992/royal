@@ -29,14 +29,9 @@ with open('/opt/royal-releases/themed-publish.lock', 'a+') as app, open('/opt/ro
     assert r.inspect('royal-nile-play')['Image'] == built['financial']
     assert r.financial_profile(r.inspect('royal-nile-play')) == built['financialProfile']
     temporary = ROOT / 'combined-materialized'
-    temporary.mkdir(exist_ok=False)
-    for target, source in reuse.items():
-        assert target in candidate['payload'] and not Path(target).is_absolute() and '..' not in Path(target).parts
-        source = Path(source) if Path(source).is_absolute() else ROOT / source
-        assert source.is_file() and not source.is_symlink() and r.sha(source) == candidate['payload'][target], target
-        destination = temporary / target
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(source, destination)
+    temporary.mkdir(exist_ok=True)
+    for file in temporary.rglob('*'):
+        if file.is_file(): assert r.sha(file) == candidate['payload'][file.relative_to(temporary).as_posix()]
     with tarfile.open(ROOT / 'combined-delta.tgz') as archive:
         for member in archive:
             assert member.isfile() and member.name in candidate['payload']
@@ -44,9 +39,25 @@ with open('/opt/royal-releases/themed-publish.lock', 'a+') as app, open('/opt/ro
             data = archive.extractfile(member).read()
             assert hashlib.sha256(data).hexdigest() == candidate['payload'][member.name]
             destination = temporary / member.name
-            assert not destination.exists()
+            if destination.exists():
+                assert r.sha(destination) == candidate['payload'][member.name]
+                continue
             destination.parent.mkdir(parents=True, exist_ok=True)
             destination.write_bytes(data)
+    pending = dict(reuse)
+    while pending:
+        progressed = False
+        for target, source in list(pending.items()):
+            assert target in candidate['payload'] and not Path(target).is_absolute() and '..' not in Path(target).parts
+            choices = [Path(source)] if Path(source).is_absolute() else [temporary / source, ROOT / source]
+            source = next((p for p in choices if p.is_file() and not p.is_symlink() and r.sha(p) == candidate['payload'][target]), None)
+            if source is None: continue
+            destination = temporary / target
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            if source != destination: shutil.copyfile(source, destination)
+            del pending[target]
+            progressed = True
+        assert progressed, 'Unresolved content references: ' + str(list(pending)[:3])
     for file in temporary.rglob('*'):
         if file.is_file(): r.atomic(file, ROOT / file.relative_to(temporary))
     for name, digest in candidate['payload'].items(): assert r.sha(ROOT / name) == digest, name
