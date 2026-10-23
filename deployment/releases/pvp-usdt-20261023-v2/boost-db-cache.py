@@ -10,9 +10,10 @@ ROOT = Path(__file__).resolve().parent
 sha = lambda p: hashlib.sha256(Path(p).read_bytes()).hexdigest()
 run = lambda args: subprocess.check_output(args, text=True).strip()
 inspect = lambda: json.loads(run(['docker', 'inspect', 'royal-finance-sim-finance-db-1']))[0]
-with open('/opt/royal-releases/themed-publish.lock', 'a+') as app, open('/opt/royal-game-modules-state/module.lock', 'a+') as modules:
-    fcntl.flock(app, fcntl.LOCK_EX | fcntl.LOCK_NB)
-    fcntl.flock(modules, fcntl.LOCK_EX | fcntl.LOCK_NB)
+# This operation changes only PostgreSQL resource ceilings and its separate Compose file.
+# Host publishers verify game/Nile profiles and identities; no service is recreated here.
+with open('/opt/royal-releases/finance-db-resources.lock', 'a+') as resource_lock:
+    fcntl.flock(resource_lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
     database = inspect()
     paths = [Path('/opt/royal-finance/compose.finance.yaml'), Path('/opt/royal/compose.finance.yaml')]
     for path in paths:
