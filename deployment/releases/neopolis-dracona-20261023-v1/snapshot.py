@@ -49,7 +49,7 @@ def profile(row, without_admin=False):
             'networks': sorted(row['NetworkSettings']['Networks'])}
 
 
-def snapshot(*, include_prepared=True):
+def snapshot(*, include_program=True, include_prepared=True):
     containers = {}
     ids = run(['docker', 'ps', '--format', '{{.Names}}']).splitlines()
     for name in ids:
@@ -65,7 +65,7 @@ def snapshot(*, include_prepared=True):
     prepared = run(['docker', 'image', 'inspect', 'royal-game:latest', '--format', '{{.Id}}'])
     return {'source': sources(LIVE), 'financeSource': sources(FINANCE), 'containers': containers,
             'preparedImage': prepared,
-            'program': json.loads(run(['docker', 'exec', 'royal-game-1', 'node', '-e', PROGRAM])),
+            'program': json.loads(run(['docker', 'exec', 'royal-game-1', 'node', '-e', PROGRAM])) if include_program else None,
             'preparedProgram': json.loads(run(['docker', 'run', '--rm', '--network=none', '--read-only', '--entrypoint', 'node', prepared, '-e', PROGRAM])) if include_prepared else None,
             'configuration': {str(p): sha(p) for p in [LIVE / '.env', *[Path(n) for n in containers['royal-game-1']['composeFiles']],
                 *[Path(n) for n in containers['royal-nile-play']['composeFiles']]]},
