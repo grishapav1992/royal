@@ -56,14 +56,14 @@ else:
     pending_images, pending_paths = set(pending_images), set(pending_paths)
     for folder in m.RELEASES.iterdir():
         result = folder / 'build-result.json'
-        if not folder.is_dir() or folder.is_symlink() or not result.is_file():
+        manifest = folder / 'install-manifest.json'
+        if not folder.is_dir() or folder.is_symlink() or not (result.is_file() or manifest.is_file()):
             continue
         completed = any((folder / name).is_file() and m.read(folder / name).get('published') is True
                         for name in ['published.json', 'verification.json'])
         if completed:
             continue
-        manifest = folder / 'install-manifest.json'
-        pending_images.update(pending_image_ids(m.read(result), m.read(manifest) if manifest.is_file() else {}))
+        pending_images.update(pending_image_ids(m.read(result) if result.is_file() else {}, m.read(manifest) if manifest.is_file() else {}))
         pending_paths.add(str(folder))
     keep = set(value['keep']);exceptions = {}
     def preserve(name, reason, condition):
