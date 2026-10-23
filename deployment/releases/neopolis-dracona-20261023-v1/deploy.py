@@ -85,7 +85,11 @@ def build():
         if kind == 'game':
             for name in ['dist','module-dist']: shutil.copytree(ROOT/name,context/name)
             shutil.copyfile(ROOT/'index.js',context/'index.js')
-            dockerfile = 'FROM royal-game:before-'+NAME+'-prepared\nCOPY --chown=node:node dist/ /app/dist/\nCOPY --chown=node:node module-dist/ /app/module-dist/\nCOPY --chown=node:node index.js /app/dist-server/index.js\n'
+            dockerfile = 'FROM royal-game:before-'+NAME+'-prepared\n'
+            if M['installDependencies']:
+                shutil.copytree(ROOT/'dependencies',context/'dependencies')
+                dockerfile += 'USER root\nCOPY --chown=node:node dependencies/ /app/\nRUN npm ci --omit=dev && npm cache clean --force\nUSER node\n'
+            dockerfile += 'COPY --chown=node:node dist/ /app/dist/\nCOPY --chown=node:node module-dist/ /app/module-dist/\nCOPY --chown=node:node index.js /app/dist-server/index.js\n'
         else:
             shutil.copyfile(ROOT/'play.js',context/'play.js')
             dockerfile = 'FROM royal-nile-play:before-'+NAME+'\nCOPY --chown=node:node play.js /app/play.js\n'
@@ -155,7 +159,7 @@ def publish():
         assert digest_map(after['source'])=={**digest_map(OLD['source']),**M['source']}
         assert digest_map(after['financeSource'])=={**digest_map(OLD['financeSource']),**M['financeSource']}
         for name,digest in OLD['modules'].items(): assert after['modules'].get(name)==M['pointers'].get(name,digest),name
-        expected={**OLD['program'],**{'dist/'+k:v for k,v in M['dist'].items()},**{'module-dist/'+k:v for k,v in M['modules'].items()},'dist-server/index.js':M['backend']}
+        expected={**OLD['program'],**{'dist/'+k:v for k,v in M['dist'].items()},**{'module-dist/'+k:v for k,v in M['modules'].items()},'dist-server/index.js':M['backend'],**M['packages']}
         assert after['program']==expected and after['preparedProgram']==expected, 'Program bytes differ'
         for name,row in OLD['containers'].items():
             if name not in ['royal-game-1','royal-nile-play']:
