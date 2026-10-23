@@ -56,6 +56,13 @@ class PublisherTests(unittest.TestCase):
  def test_payload_tampering_blocks_before_server_inspection(self):
   r=self.r;f=r.ROOT/'play.js';f.write_text('tampered');r.M={'payload':{'play.js':self.sha(b'expected')}}
   with self.assertRaises(AssertionError):r.guard()
+ def test_hot_resource_update_blocks_before_financial_commands(self):
+  r=self.r;r.M={'payload':{}}
+  keys=['financeSource','configuration','modules','hostContract','preparedImage','program','preparedProgram']
+  r.OLD={**{k:{} for k in keys},'sourceRows':{},'containers':{'royal-game-1':{'id':'same','image':'same','profile':{'cpuShares':0}}}}
+  r.snapshot=lambda:{**{k:{} for k in keys},'source':{},'containers':{'royal-game-1':{'id':'same','image':'same','profile':{'cpuShares':8192},'health':'healthy'}}}
+  with self.assertRaisesRegex(AssertionError,'Runtime configuration changed'):r.guard()
+  self.assertFalse(self.commands)
  def test_only_preexisting_staleness_allows_financial_repair(self):
   stale={'ok':True,'halted':None,'lastError':'play_source_not_ready','ready':False}
   with self.assertRaises(AssertionError):self.r.require_financial_status(stale)
