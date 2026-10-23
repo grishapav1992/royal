@@ -14,10 +14,12 @@ async function enter(page:Page,path:string){
  await page.getByRole('button',{name:'Продолжить',exact:true}).click();await expect(page.locator('#character-step')).toBeVisible();await page.getByRole('button',{name:'Войти в зал',exact:true}).click();
  await expect(page.locator('#join-dialog')).toBeHidden({timeout:20000});await expect.poll(async()=>(await state(page)).online).toBe(true);
  await page.locator('#room-overview').click();await expect(page.locator('#room-overview')).toHaveAttribute('aria-pressed','true');
+ await page.waitForFunction(()=>{const key=JSON.stringify((window as any).royalDemo.getState().view),now=performance.now(),last=(window as any).__loungeView;if(!last||last.key!==key){(window as any).__loungeView={key,at:now};return false;}return now-last.at>=150;});
 }
 for(const mobile of [false,true])test(`relocated bar, both sofas and piano work online with chat on ${mobile?'mobile':'desktop'}`,async({page,roomPath})=>{
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));if(mobile)await page.setViewportSize({width:390,height:844});
  await enter(page,roomPath);
+ await page.screenshot({path:`artifacts/work/left-lounge/proof/hall-${mobile?'mobile':'desktop'}.png`});
  await expect(page.locator('#chat-panel')).toBeVisible();
  await point(page,BAR_POSITION.x+132,BAR_POSITION.y+102);await expect(page.locator('#bar-dialog')).toBeVisible({timeout:18000});
  expect(atBar(await state(page))).toBe(true);
@@ -26,7 +28,7 @@ for(const mobile of [false,true])test(`relocated bar, both sofas and piano work 
  await expect.poll(async()=>(await state(page)).action,{timeout:12000}).toBe('idle');
  for(const seat of SEATS.filter(s=>s.hall==='arcade')){
   await point(page,seat.x,seat.y-28);await expect.poll(async()=>(await state(page)).seat,{timeout:20000}).toBe(seat.id);
-  const s=await state(page);expect(Math.hypot(s.x-seat.x,s.y-seat.y)).toBeLessThan(2);
+  await expect.poll(async()=>{const s=await state(page);return Math.hypot(s.x-seat.x,s.y-seat.y);}).toBeLessThan(2);
   await page.locator('#game').focus();await page.keyboard.down('ArrowDown');await page.waitForTimeout(180);await page.keyboard.up('ArrowDown');await expect.poll(async()=>(await state(page)).seat).toBe('');
  }
  await point(page,ACTIVITIES.piano.bounds.x+55,ACTIVITIES.piano.bounds.y+30);
