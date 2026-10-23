@@ -1,4 +1,3 @@
-import { combatEscrowSchema } from './combatEscrow';
 import type { PostgresDatabase } from './database';
 import { applyDemoMoneySchemaMigrations } from './game-database-migrations';
 import { casinoDemoSchema } from './demoCasino';
@@ -13,8 +12,7 @@ export async function demoReservedUnits(db: PostgresDatabase, accountId: string)
     COALESCE((SELECT reserved_units FROM demo_mines_sessions WHERE account_id=? AND state='active'),0)
     + COALESCE((SELECT reserved_units FROM demo_flight_sessions WHERE account_id=? AND state='active'),0)
     + COALESCE((SELECT SUM(reserved_units) FROM demo_casino_sessions WHERE account_id=? AND state='active'),0)
-    + COALESCE((SELECT count(*)*1000 FROM skin_purchases WHERE account_id=? AND state='reserved'),0)
-    + COALESCE((SELECT reserved_units FROM combat_reservations WHERE account_id=?),0) AS units`).get(accountId, accountId, accountId, accountId, accountId);
+    + COALESCE((SELECT count(*)*1000 FROM skin_purchases WHERE account_id=? AND state='reserved'),0) AS units`).get(accountId, accountId, accountId, accountId);
   return Number(row!.units);
 }
 
@@ -27,8 +25,6 @@ export async function migrateDemoAmounts(db: PostgresDatabase) {
       state TEXT NOT NULL CHECK(state IN ('reserved','captured','refunded')),created_at BIGINT NOT NULL,updated_at BIGINT NOT NULL)`,
     `CREATE INDEX IF NOT EXISTS skin_purchases_reserved ON skin_purchases(account_id) WHERE state='reserved'`,
   ] });
-  await combatEscrowSchema(db);
-
 }
 
 export async function demoBalanceUnits(db: PostgresDatabase, accountId: string) {

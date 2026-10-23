@@ -61,12 +61,12 @@ export class OriginalGameView {
   constructor(container: HTMLElement, private gameId: OriginalGameId) {
     const detail = gameDetails[gameId];
     this.root.className = 'original-game'; this.root.dataset.game = gameId;
-    this.root.innerHTML = tr`<header class="original-header"><div class="original-brand"><span class="original-mark" aria-hidden="true">${detail.mark}</span><div><span class="original-eyebrow">ROYAL ORIGINALS</span><h3>${detail.name}</h3></div></div><div class="original-wallet"><span>Демобаланс</span><strong id="original-balance">…</strong><button type="button" id="original-wallet" aria-label="Пополнить демобаланс">+</button></div></header>
-      <div class="original-layout"><aside class="original-controls"><p class="original-subtitle">${detail.subtitle}</p><label class="original-label" for="original-bet">Ставка, монеты</label><select id="original-bet" data-game-input>${DEMO_BETS.map(value => `<option value="${value}" ${value === 100 ? 'selected' : ''}>${value}</option>`).join('')}</select>
-        ${this.controlsMarkup()}<div id="original-odds" class="original-odds"></div><button type="button" id="original-play" class="original-play">Играть</button><button type="button" id="original-refresh" class="original-secondary" hidden>Восстановить партию</button><p class="original-demo-note">Бесплатные демомонеты</p></aside>
+    this.root.innerHTML = tr`<header class="original-header"><div class="original-brand"><span class="original-mark" aria-hidden="true">${detail.mark}</span><div><span class="original-eyebrow">ROYAL ORIGINALS</span><h3>${detail.name}</h3></div></div><div class="original-wallet"><span>Баланс USDT</span><strong id="original-balance">…</strong><button type="button" id="original-wallet" aria-label="Пополнить баланс USDT">+</button></div></header>
+      <div class="original-layout"><aside class="original-controls"><p class="original-subtitle">${detail.subtitle}</p><label class="original-label" for="original-bet">Ставка, USDT</label><select id="original-bet" data-game-input>${DEMO_BETS.map(value => `<option value="${value}" ${value === 100 ? 'selected' : ''}>${value}</option>`).join('')}</select>
+        ${this.controlsMarkup()}<div id="original-odds" class="original-odds"></div><button type="button" id="original-play" class="original-play">Играть</button><button type="button" id="original-refresh" class="original-secondary" hidden>Восстановить партию</button><p class="original-demo-note">Бесплатные USDT</p></aside>
         <div class="original-board-wrap"><div id="original-board" class="original-board">${this.boardMarkup()}</div><div id="original-paytable" class="original-paytable"></div></div></div>
       <div id="original-result" class="original-result" role="status" aria-live="polite">${this.message}</div><section class="original-history-wrap" aria-label="История этой игры"><span class="original-label">Последние ставки</span><div id="original-history" class="original-history"></div></section>
-      <details class="original-rules"><summary>Правила и выплаты</summary><p>${detail.rules}</p><p>Множители показывают полное начисление. Выплата округляется вниз до сотой монеты. Результат и баланс подтверждает сервер.</p><p id="original-rtp"></p></details>`;
+      <details class="original-rules"><summary>Правила и выплаты</summary><p>${detail.rules}</p><p>Множители показывают полное начисление. Выплата округляется вниз до сотой USDT. Результат и баланс подтверждает сервер.</p><p id="original-rtp"></p></details>`;
     decorateImportedGame(this.root, this.gameId);
     container.replaceChildren(this.root);
     this.element<HTMLButtonElement>('#original-play').onclick = () => { void this.play(); };
@@ -205,7 +205,7 @@ export class OriginalGameView {
     play.textContent = this.working || demoWallet.busy || minesClient.busy ? translateText('Подтверждаем…')
       : this.gameId === 'royal-mines' && minesClient.pending ? translateText('Проверить ход')
       : ownPending ? translateText('Проверить результат')
-      : active ? tr`Забрать ${coins(session.payout)} монет`
+      : active ? tr`Забрать ${coins(session.payout)} USDT`
       : this.gameId === 'royal-mines' ? translateText('Начать партию')
       : this.gameId === 'royal-plinko' ? translateText('Бросить шар') : this.gameId === 'royal-dice' ? translateText('Бросить кубик') : translateText('Играть');
     const retry = !!ownPending || (this.gameId === 'royal-mines' && !!minesClient.pending);
@@ -218,12 +218,12 @@ export class OriginalGameView {
     refresh.disabled = minesClient.loading || minesClient.busy;
     refresh.textContent = minesClient.loading ? translateText('Восстанавливаем…') : translateText('Восстановить партию');
     let message = this.message;
-    if (!demoWallet.accountId) message = translateText('Войди в онлайн-зал, чтобы играть на демомонеты.');
+    if (!demoWallet.accountId) message = translateText('Войди в онлайн-зал, чтобы играть на USDT.');
     else if (this.gameId === 'royal-mines' && minesClient.pending) message = minesClient.error || translateText('Предыдущий ход ожидает подтверждения. Проверь его перед следующим.');
     else if (ownPending) message = demoWallet.error || translateText('Ставка ожидает подтверждения. Нажми «Проверить результат».');
     else if (demoWallet.pending || minesClient.pending) message = translateText('Сначала проверь предыдущую операцию в её игре или кошельке.');
     else if (this.gameId === 'royal-mines' && !minesClient.ready) message = minesClient.error || translateText('Проверяем незавершённую партию…');
-    else if (!locked && !active && demoWallet.wallet && demoWallet.wallet.balance < this.amount()) message = translateText('Недостаточно демомонет. Нажми + у баланса или уменьши ставку.');
+    else if (!locked && !active && demoWallet.wallet && demoWallet.wallet.balance < this.amount()) message = translateText('Недостаточно USDT. Нажми + у баланса или уменьши ставку.');
     else if (!locked && demoWallet.error) message = demoWallet.error;
     else if (!locked && active && !minesClient.error && this.message === translateText('Выбери ставку и начинай.')) message = session.revealed.length
       ? translateText('Партия восстановлена. Открой клетку или забери начисление.')
@@ -240,7 +240,7 @@ export class OriginalGameView {
       if (!this.element<HTMLInputElement>('#original-dice-target').checkValidity()) throw new Error('Invalid threshold');
       const value = diceOdds.calculate({ gameMode: mode, sliderValue });
       rtp = getDiceRtpForStake({ gameMode: mode, sliderValue }, BigInt(this.amount()) * 100n);
-      rtpNote = tr`RTP для ставки ${coins(this.amount())} монет и выбранного порога. Учтено округление выплаты до сотой монеты. `;
+      rtpNote = tr`RTP для ставки ${coins(this.amount())} USDT и выбранного порога. Учтено округление выплаты до сотой USDT. `;
       label = tr`<span>Шанс <strong>${percent(value.winChance)}%</strong></span><span>Начисление <strong>${multiplierText(value.multiplier)}</strong></span>`;
       const track = this.element('.original-dice-track'); track.setAttribute('style', `--dice-threshold:${sliderValue}%;`); track.setAttribute('data-mode', mode);
       this.element<HTMLInputElement>('#original-dice-slider').value = String(sliderValue);
@@ -309,7 +309,7 @@ export class OriginalGameView {
     });
     this.element('#original-mines-gems').textContent = String(session ? session.revealed.filter(cell => !mineCells.includes(cell)).length : 0);
     this.element('#original-mines-multiplier').textContent = multiplierText(session?.multiplier ?? 1);
-    this.element('#original-mines-caption').textContent = active ? translateText('Открой клетку или забери начисление') : session?.state === 'lost' ? translateText('Мина. Партия завершена.') : session?.state === 'cashed_out' ? tr`Начислено ${coins(session.payout)} монет` : translateText('Начни партию, чтобы открыть клетку');
+    this.element('#original-mines-caption').textContent = active ? translateText('Открой клетку или забери начисление') : session?.state === 'lost' ? translateText('Мина. Партия завершена.') : session?.state === 'cashed_out' ? tr`Начислено ${coins(session.payout)} USDT` : translateText('Начни партию, чтобы открыть клетку');
   }
   private renderHistory() {
     const walletEntries = this.kenoVisible?.account === demoWallet.accountId ? this.kenoVisible.entries : demoWallet.wallet?.entries;
@@ -327,7 +327,7 @@ export class OriginalGameView {
       if (item.stake !== undefined && item.payout !== undefined) chip.dataset.result = item.payout >= item.stake ? 'win' : 'loss';
       const stake = document.createElement('span'), payout = document.createElement('strong');
       stake.textContent = item.stake === undefined ? translateText('Ставка вне текущей истории') : tr`Ставка ${coins(item.stake)}`;
-      payout.textContent = item.payout === undefined ? translateText('Партия начата') : tr`${coins(item.payout)} монет`;
+      payout.textContent = item.payout === undefined ? translateText('Партия начата') : tr`${coins(item.payout)} USDT`;
       chip.append(stake, payout); container.append(chip);
     }
     if (!container.childElementCount) container.textContent = translateText('Здесь появятся подтверждённые ставки.');
@@ -371,7 +371,7 @@ export class OriginalGameView {
       if (result.session.state !== 'active') completed = {spentUnits:String(Math.round(result.session.amount*100)),returnedUnits:String(Math.round(result.session.payout*100))};
       this.root.dataset.result = result.session.state === 'lost' ? 'loss' : result.session.state === 'cashed_out' ? 'win' : 'idle';
       this.message = result.session.state === 'lost' ? translateText('Попалась мина. Можно начать новую партию.')
-        : result.session.state === 'cashed_out' ? tr`Начислено ${coins(result.session.payout)} монет. Партия завершена.`
+        : result.session.state === 'cashed_out' ? tr`Начислено ${coins(result.session.payout)} USDT. Партия завершена.`
         : result.session.revealed.length ? tr`Камень открыт. ${multiplierText(result.session.multiplier)}. Можно забрать начисление или продолжить.` : translateText('Партия началась. Выбери первую клетку.');
     } catch (error) { if (this.alive && epoch === this.accountEpoch) this.message = error instanceof Error ? translateText(error.message) : translateText('Не удалось подтвердить ход.'); }
     finally { if (this.alive && epoch === this.accountEpoch) { this.working = false; this.render(); if(completed)emitImportedOutcome(this.root,{gameId:this.gameId,...completed}); } }
@@ -440,7 +440,7 @@ export class OriginalGameView {
     const prefix = round.gameId === 'royal-dice' ? tr`Выпало ${decimal(round.outcome.rolledValue)}. `
       : round.gameId === 'royal-limbo' ? tr`Выпало ${multiplierText(round.outcome.rolledMultiplier)}. `
       : round.gameId === 'royal-keno' ? tr`Совпадений: ${round.outcome.hits.length}. ` : '';
-    this.message = prefix + (payout > 0 ? tr`Начислено ${coins(payout)} монет · ${multiplierText(round.multiplier)}` : tr`Без выплаты. Ставка ${coins(stake)} монет.`);
+    this.message = prefix + (payout > 0 ? tr`Начислено ${coins(payout)} USDT · ${multiplierText(round.multiplier)}` : tr`Без выплаты. Ставка ${coins(stake)} USDT.`);
     this.render();
     if (animate && presentationLanded && !document.hidden) {
       emitGameOutcome(this.root, round.stakeUnits, round.payoutUnits);

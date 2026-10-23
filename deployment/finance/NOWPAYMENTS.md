@@ -95,11 +95,3 @@ node --import tsx scripts/database-test.ts node_modules/@playwright/test/cli.js 
 ```
 
 Официальные форматы: [API NOWPayments](https://documenter.getpostman.com/view/7907941/2s93JusNJt), [описание endpoints](https://nowpayments.zendesk.com/hc/en-us/articles/21345824322717-API-and-endpoint-description), [IPN](https://nowpayments.zendesk.com/hc/en-us/articles/21395546303389-IPN-and-how-to-setup), [тарифы](https://nowpayments.io/pricing). Код не фиксирует рекламную комиссию как гарантированную стоимость.
-
-## Mortal Kombat PvP escrow
-
-Mortal Kombat uses the existing multi-user USDT custody wallet, rather than the legacy single-account mainnet demonstration wallet. Enable NOWPAYMENTS_COMBAT_ENABLED=true only together with the compatible game host, payment service and rules-2 game module. NOWPAYMENTS_GAMES_ENABLED remains false in the separate payment service: the game host simulates combat, and the payment service handles escrow only. No provider credentials are exposed to the game browser.
-
-Only HMAC-authenticated internal combat/fund, combat/settle and combat/cancel calls can alter escrow. Public wallet endpoints expose neither winner selection nor cash settlement. Two stakes reserve atomically from existing balances; the winner receives 95% of the combined pot, with 5% recorded as the casino fee. Draw, cancelled funding and orphan matches refund without a fee. A delayed funding call cannot resurrect a cancelled match. Pending escrow is included in withdrawal availability, payout capacity, signed ledger notifications, reconciliation and the common wallet history.
-
-The existing payment worker recovers expired matches without relying on a connected browser or game process. Configuration disables new stakes by default; terminal settlement and refunds remain available if combat activation is switched off. Local validation uses scripts/local-combat.ts under the isolated database test runner and a synthetic payment provider; it must never run against production data. See docs/combat-anticheat.md for the threat model and validation.

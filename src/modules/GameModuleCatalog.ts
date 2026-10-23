@@ -128,7 +128,12 @@ export const PROVIDER_GAME_MODULES = [
  { gameId: 'casinoapipro', slug: 'casinoapipro', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
 ] as const;
 
-export const GAME_MODULES = [...STUDIO_GAME_MODULES, ...CASINO_GAME_MODULES, ...ACTIVITY_GAME_MODULES, ...ARCADE_GAME_MODULES, ...PROVIDER_GAME_MODULES] as const;
+export const PVP_GAME_MODULES=[
+ {gameId:'durak',slug:'durak',apiVersion:1,rulesVersion:1,progressVersion:1},
+ {gameId:'transfer-durak',slug:'transfer-durak',apiVersion:1,rulesVersion:1,progressVersion:1},
+ {gameId:'crazy-eights',slug:'crazy-eights',apiVersion:1,rulesVersion:1,progressVersion:1},
+] as const;
+export const GAME_MODULES = [...STUDIO_GAME_MODULES, ...CASINO_GAME_MODULES, ...ACTIVITY_GAME_MODULES, ...ARCADE_GAME_MODULES, ...PROVIDER_GAME_MODULES,...PVP_GAME_MODULES] as const;
 
 export type IndependentGameId = typeof GAME_MODULES[number]['gameId'];
 export interface GameModuleContract {

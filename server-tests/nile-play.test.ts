@@ -16,7 +16,7 @@ import { block,playTestConfig } from './finance/helpers/nile-play-fixture';
 import { customerPool } from './finance/helpers/nile-pool-fixture';
 
 test('real Unix socket bridge uses the session owner, claims once and settles an idempotent test wager',async()=>{
-  const directory=await mkdtemp(join(tmpdir(),'nile-play-api-')),socket=join(directory,'play.sock'),context=(await playTestSetup());
+  const directory=await mkdtemp(join(tmpdir(),'nile-play-api-')),socket=process.platform==='win32'?'\\\\.\\pipe\\royal-nile-'+randomUUID():join(directory,'play.sock'),context=(await playTestSetup());
   const financial=createNilePlayServer(context.ledger);await new Promise<void>(resolve=>financial.listen(socket,resolve));
   const app=express();installNilePlay(app,socket);const server=app.listen(0,'127.0.0.1');await new Promise<void>(resolve=>server.once('listening',resolve));
   const endpoint=`http://127.0.0.1:${(server.address() as any).port}/api/nile-play`;
@@ -48,7 +48,7 @@ test('real Unix socket bridge uses the session owner, claims once and settles an
 });
 
 test('automatic deposits allocate distinct addresses using authenticated owners and reject caller-selected funding',async()=>{
-  const directory=await mkdtemp(join(tmpdir(),'nile-deposit-api-')),socket=join(directory,'play.sock');
+  const directory=await mkdtemp(join(tmpdir(),'nile-deposit-api-')),socket=process.platform==='win32'?'\\\\.\\pipe\\royal-nile-'+randomUUID():join(directory,'play.sock');
   const config={...playTestConfig,initialReserveUnits:'0'},source=new NileTestLedger(':memory:',config.source,false,customerPool),ledger=new NilePlayLedger(':memory:',config,false,()=>0,customerPool);
   const reconcile=async ()=>{(await source.success());const audit=(await source.audit());(await ledger.sync(source,{ok:true,checked_at:new Date().toISOString(),network:'nile',asset:'USDT_NILE_TEST',testOnly:true,spendable:false,poolSha256:audit.poolSha256??null,credits:audit.credits,liabilitiesUnits:audit.balances.reduce((s,a)=>s+BigInt(a.availableUnits),0n).toString(),deficitUnits:'0'}));};
   (await source.ingest(block(99),true));(await source.ingest(block(100)));(await reconcile());

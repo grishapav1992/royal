@@ -4,7 +4,7 @@ import type { ActivitiesState } from '../../src/shared/activities';
 import type { ActivityHostContext } from '../../src/modules/ActivityHostContract';
 import type { PlayerView } from '../../src/shared/world';
 import { coins } from '../../src/wallet/WalletClient';
-import { cryptoWallet } from '../../src/wallet/CryptoClient';
+import { nilePlay } from '../../src/wallet/NilePlayClient';
 import { gameAudio } from '../../src/game/GameAudio';
 import { language } from '../../src/i18n/index';
 const en=language==='en';
@@ -37,13 +37,13 @@ export class CombatUI {
    <p class="mk-status" data-status role="status" aria-live="polite"></p>
    <div class="mk-wager"><label>${text('Твоя ставка','Your stake')} <select data-stake aria-label="${text('Ставка на свою победу','Stake on your victory')}">${COMBAT_STAKES.map(stake=>`<option value="${stake}">${stake}</option>`).join('')}</select></label><button data-wallet-refresh type="button">${text('Обновить USDT','Refresh USDT')}</button><button data-ready type="button">${text('Готов: подтвердить ставку','Ready: confirm stake')}</button><button data-rematch type="button" hidden>${text('Новый бой','New fight')}</button></div>
    <div class="mk-controls" aria-label="${text('Управление боем','Fight controls')}">${[['left','←'],['right','→'],['jump','↑'],['punch',text('Удар J','Punch J')],['kick',text('Нога K','Kick K')],['block',text('Блок L','Block L')]].map(([key,label])=>`<button type="button" data-key="${key}" aria-label="${label}">${label}</button>`).join('')}</div>
-   <p class="mk-rules">${text('Равные ставки из кошелька USDT. Старт после готовности обоих. Один бой, 90 секунд. Ничья: полный возврат. Выход после старта: сдача. Обрыв связи: 20 секунд на возврат.','Equal stakes from the USDT wallet. Both players must be ready. One 90-second fight. Draw: full refund. Leaving after the start forfeits the fight. Reconnect within 20 seconds.')}</p>
+   <p class="mk-rules">${text('Равные ставки из общего кошелька USDT · Nile (тестовая сеть). Старт после готовности обоих. Один бой, 90 секунд. Ничья: полный возврат. Выход после старта: сдача. Обрыв связи: 20 секунд на возврат.','Equal stakes from the shared USDT · Nile wallet (test network). Both players must be ready. One 90-second fight. Draw: full refund. Leaving after the start forfeits the fight. Reconnect within 20 seconds.')}</p>
    <footer class="mk-footer">mk.js / Minko Gechev <span>WASD / ← ↑ → · J K L</span></footer>`;
   host.replaceChildren(this.root);
   this.root.querySelector('[data-ready]')!.parentElement!.before(this.root.querySelector('.mk-rules')!);this.canvas=this.root.querySelector('canvas')!;
   const signal=this.events.signal;
   this.root.querySelector('#shared-close')!.addEventListener('click',()=>context.onClose(),{signal});
-  this.root.querySelector('[data-wallet-refresh]')!.addEventListener('click',()=>{void cryptoWallet.refresh();},{signal});
+  this.root.querySelector('[data-wallet-refresh]')!.addEventListener('click',()=>{void nilePlay.refresh();},{signal});
   this.root.querySelector('[data-ready]')!.addEventListener('click',()=>{void gameAudio.unlock();this.send('combat-ready',{stake:this.state.stake});this.canvas.focus();},{signal});
   this.root.querySelector('[data-rematch]')!.addEventListener('click',()=>this.send('combat-rematch'),{signal});
   this.root.querySelector('[data-stake]')!.addEventListener('change',event=>this.send('combat-stake',{stake:Number((event.target as HTMLSelectElement).value)}),{signal});
@@ -64,14 +64,14 @@ export class CombatUI {
   });
   this.loadImage('arenas/0/arena.png');
   for(const character of ['subzero','kano'] as const)for(const [action,total] of Object.entries(counts[character]))for(let i=0;i<total;i++)this.loadImage(`fighters/${character}/right/${action}/${i}.png`);
-  cryptoWallet.addEventListener('change',()=>this.render(),{signal});void cryptoWallet.refresh();
+  nilePlay.addEventListener('change',()=>this.render(),{signal});void nilePlay.refresh();
   this.update(context.state);this.heartbeat=setInterval(()=>this.pushInput(),100);
   context.send({type:'join',id:'mortal-kombat'});this.draw(0);
  }
  private async refreshWallet(attempts=10){
   if(this.walletTimer)clearTimeout(this.walletTimer);
-  await cryptoWallet.refresh();
-  if(!this.disposed&&!cryptoWallet.wallet&&attempts>0)this.walletTimer=setTimeout(()=>{void this.refreshWallet(attempts-1);},500);
+  await nilePlay.refresh();
+  if(!this.disposed&&!nilePlay.wallet&&attempts>0)this.walletTimer=setTimeout(()=>{void this.refreshWallet(attempts-1);},500);
  }
  private send(type:string,extra:Record<string,unknown>={}){this.context.send({type,match:this.state.id,...extra});}
  private pushInput(){if(this.state.phase==='playing'||this.state.phase==='countdown')this.send('combat-input',{seq:++this.inputSequence,input:{...this.input}});}
@@ -90,16 +90,16 @@ export class CombatUI {
  updatePlayers(_players:PlayerView[],self:string){this.self=self;this.render();}
  private render(){
   const s=this.state,side=s.players.indexOf(this.self),ownReady=s.ready.includes(this.self),q=(selector:string)=>this.root.querySelector<HTMLElement>(selector)!;
-  q('[data-pot]').textContent=coins(s.pot||s.stake*2)+' USDT';
-  q('[data-prize]').textContent=coins(s.phase==='finished'?s.payout:s.stake*1.9)+' USDT';
+  q('[data-pot]').textContent=coins(s.pot||s.stake*2)+' USDT · Nile';
+  q('[data-prize]').textContent=coins(s.phase==='finished'?s.payout:s.stake*1.9)+' USDT · Nile';
   for(let i=0;i<2;i++){
    q('[data-name="'+i+'"]').textContent=(s.names[i]??text('Свободное место','Open seat'))+(s.players[i]===this.self?text(' · ты',' · you'):'')+(s.ready.includes(s.players[i])?' ✓':'');
    (q('[data-health="'+i+'"]') as HTMLProgressElement).value=s.fighters[i]?.health??100;
   }
   const stake=q('[data-stake]') as HTMLSelectElement;stake.value=String(s.stake);stake.disabled=s.phase!=='waiting'||side<0;
-  const ready=q('[data-ready]') as HTMLButtonElement;const wallet=cryptoWallet.wallet,available=wallet?.state==='enabled'&&wallet.combatReady===true;
+  const ready=q('[data-ready]') as HTMLButtonElement;const wallet=nilePlay.wallet,available=wallet?.state==='assigned'&&wallet.ready===true;
   ready.disabled=!available||this.assetFailed||![...this.images.values()].every(img=>img.complete&&img.naturalWidth>0)||side<0||s.players.length<2||s.phase!=='waiting'||ownReady;
-  ready.textContent=ownReady?text('Ты готов','You are ready'):text('Готов: поставить ','Ready: stake ')+coins(s.stake)+' USDT';
+  ready.textContent=ownReady?text('Ты готов','You are ready'):text('Готов: поставить ','Ready: stake ')+coins(s.stake)+' USDT · Nile';
   q('[data-rematch]').hidden=s.phase!=='finished'||side<0;
   const status=s.phase==='finished'?(s.winner?text('Победил ','Winner: ')+s.winnerName+text('. Выплата: ','. Payout: ')+coins(s.payout)+text(' · Комиссия: ',' · Fee: ')+coins(s.fee):text('Ничья или отмена. Ставки возвращены.','Draw or cancelled. Stakes refunded.')):s.phase==='waiting'?(s.message||(s.players.length<2?text('Ждём второго игрока','Waiting for the second player'):text('Подтвердите одинаковые ставки и готовность','Confirm equal stakes and readiness'))):s.phase==='funding'?text('Проверяем ставки','Checking stakes'):s.phase==='settling'?text('Подтверждаем выплату','Confirming payout'):text('Снизь здоровье соперника до нуля.','Reduce your opponent’s health to zero.');
   q('[data-status]').textContent=s.phase==='waiting'&&!available?text('Кошелёк USDT пока не готов к ставкам. Проверь баланс.','USDT wallet is not ready for wagers. Check your balance.'):this.assetFailed?text('Не удалось загрузить графику. Переоткрой автомат.','Graphics failed to load. Reopen the cabinet.'):status;

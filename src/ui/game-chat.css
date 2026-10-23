@@ -1,4 +1,4 @@
-:is(#mini-dialog.mini-dialog, #casinoapipro-dialog.capro-dialog, #shared-dialog.shared-dialog[data-game="mortal-kombat"]).game-chat-layout {
+:is(#mini-dialog.mini-dialog, #casinoapipro-dialog.capro-dialog, #pvp-dialog.pvp-dialog, #shared-dialog.shared-dialog).game-chat-layout {
   position: fixed;
   box-sizing: border-box;
   padding: 0;
@@ -12,13 +12,13 @@
   border-radius: 0;
   box-shadow: none;
 }
-:is(#mini-dialog.mini-dialog, #casinoapipro-dialog.capro-dialog, #shared-dialog.shared-dialog[data-game="mortal-kombat"]).game-chat-layout[open] {
+:is(#mini-dialog.mini-dialog, #casinoapipro-dialog.capro-dialog, #pvp-dialog.pvp-dialog, #shared-dialog.shared-dialog).game-chat-layout[open] {
   display: grid;
   grid-template-columns: minmax(0, 1fr) clamp(280px, 23vw, 360px);
   grid-template-rows: minmax(0, 1fr);
   gap: 0;
 }
-:is(#mini-dialog.mini-dialog, #casinoapipro-dialog.capro-dialog, #shared-dialog.shared-dialog[data-game="mortal-kombat"]) .game-chat-game {
+:is(#mini-dialog.mini-dialog, #casinoapipro-dialog.capro-dialog, #pvp-dialog.pvp-dialog, #shared-dialog.shared-dialog) .game-chat-game {
   display: flex;
   flex-direction: column;
   position: relative;
@@ -26,7 +26,7 @@
   min-height: 0;
   overflow: hidden;
 }
-:is(#mini-dialog.mini-dialog, #casinoapipro-dialog.capro-dialog, #shared-dialog.shared-dialog[data-game="mortal-kombat"]) .game-chat-dock {
+:is(#mini-dialog.mini-dialog, #casinoapipro-dialog.capro-dialog, #pvp-dialog.pvp-dialog, #shared-dialog.shared-dialog) .game-chat-dock {
   position: relative;
   inset: auto;
   z-index: 1;
@@ -45,32 +45,32 @@
   box-shadow: none;
   overflow: hidden;
 }
-:is(#mini-dialog.mini-dialog, #casinoapipro-dialog.capro-dialog, #shared-dialog.shared-dialog[data-game="mortal-kombat"]) .game-chat-dock .chat-panel {
+:is(#mini-dialog.mini-dialog, #casinoapipro-dialog.capro-dialog, #pvp-dialog.pvp-dialog, #shared-dialog.shared-dialog) .game-chat-dock .chat-panel {
   height: 100%;
   min-height: 0;
 }
-:is(#mini-dialog.mini-dialog, #casinoapipro-dialog.capro-dialog, #shared-dialog.shared-dialog[data-game="mortal-kombat"]) .game-chat-dock .chat-log {
+:is(#mini-dialog.mini-dialog, #casinoapipro-dialog.capro-dialog, #pvp-dialog.pvp-dialog, #shared-dialog.shared-dialog) .game-chat-dock .chat-log {
   flex: 1;
   min-height: 0;
   height: 0;
   overscroll-behavior: contain;
 }
-:is(#mini-dialog.mini-dialog, #casinoapipro-dialog.capro-dialog, #shared-dialog.shared-dialog[data-game="mortal-kombat"]) .game-chat-dock .chat-heading { display: flex; }
+:is(#mini-dialog.mini-dialog, #casinoapipro-dialog.capro-dialog, #pvp-dialog.pvp-dialog, #shared-dialog.shared-dialog) .game-chat-dock .chat-heading { display: flex; }
 @media (max-width: 640px) and (orientation: portrait) {
-  :is(#mini-dialog.mini-dialog, #casinoapipro-dialog.capro-dialog, #shared-dialog.shared-dialog[data-game="mortal-kombat"]).game-chat-layout[open] {
+  :is(#mini-dialog.mini-dialog, #casinoapipro-dialog.capro-dialog, #pvp-dialog.pvp-dialog, #shared-dialog.shared-dialog).game-chat-layout[open] {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: minmax(0, 1fr) minmax(150px, 27%);
   }
-  :is(#mini-dialog.mini-dialog, #casinoapipro-dialog.capro-dialog, #shared-dialog.shared-dialog[data-game="mortal-kombat"]) .game-chat-dock {
+  :is(#mini-dialog.mini-dialog, #casinoapipro-dialog.capro-dialog, #pvp-dialog.pvp-dialog, #shared-dialog.shared-dialog) .game-chat-dock {
     padding: 8px;
     border-left: 0;
     border-top: 2px solid #ad8c51;
   }
 }
 @media (max-height: 500px) and (orientation: landscape) {
-  :is(#mini-dialog.mini-dialog, #casinoapipro-dialog.capro-dialog, #shared-dialog.shared-dialog[data-game="mortal-kombat"]).game-chat-layout[open] { grid-template-columns: minmax(0, 1fr) 250px; }
-  :is(#mini-dialog.mini-dialog, #casinoapipro-dialog.capro-dialog, #shared-dialog.shared-dialog[data-game="mortal-kombat"]) .game-chat-dock { padding: 8px; }
-  :is(#mini-dialog.mini-dialog, #casinoapipro-dialog.capro-dialog, #shared-dialog.shared-dialog[data-game="mortal-kombat"]) .game-chat-dock .people-list { display: none; }
+  :is(#mini-dialog.mini-dialog, #casinoapipro-dialog.capro-dialog, #pvp-dialog.pvp-dialog, #shared-dialog.shared-dialog).game-chat-layout[open] { grid-template-columns: minmax(0, 1fr) 250px; }
+  :is(#mini-dialog.mini-dialog, #casinoapipro-dialog.capro-dialog, #pvp-dialog.pvp-dialog, #shared-dialog.shared-dialog) .game-chat-dock { padding: 8px; }
+  :is(#mini-dialog.mini-dialog, #casinoapipro-dialog.capro-dialog, #pvp-dialog.pvp-dialog, #shared-dialog.shared-dialog) .game-chat-dock .people-list { display: none; }
 }
 
 #mini-dialog.game-chat-layout .mini-top {

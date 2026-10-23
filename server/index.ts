@@ -1,4 +1,4 @@
-import { installDemoWallet } from './demoWalletRoutes';
+import { installGameWallet } from './gameWalletRoutes';
 import { installGameModuleAssets } from './gameModuleAssets';
 import { installCasinoApiPro } from './casinoApiProRoutes';
 import { installNileWallet } from './nileWalletRoutes';
@@ -33,7 +33,8 @@ const server = defineServer({
       next();
     });
     installAuth(app);
-    installDemoWallet(app);
+    installGameWallet(app);
+    app.use('/api/demo-wallet',(_req,res)=>res.status(410).json({error:'Демобаланс отключён. Обнови страницу для общего баланса USDT.'}));
     installCasinoApiPro(app);
     installNileWallet(app);
     installNilePlay(app);

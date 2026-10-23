@@ -1,4 +1,3 @@
-import { registerGameChatDialog } from './GameChat';
 import { t as translateText } from '../i18n/index';
 import { activityHall, type PlayerView } from '../shared/world';
 import { HOCKEY_PADDLE_RADIUS } from '../shared/hockey';
@@ -8,6 +7,7 @@ import type { RoomScene } from '../game/RoomScene';
 import { PianoAudio } from '../game/PianoAudio';
 import { IndependentGameUI } from '../modules/IndependentGameUI';
 import type { ActivityHostContext } from '../modules/ActivityHostContract';
+import { registerGameChatDialog } from './GameChat';
 
 type ViewState = { hockey: { local: unknown; rendered: unknown[]; puck: unknown; radius: number }; charge: { charging: boolean; power: number }; frames: number };
 
@@ -27,10 +27,11 @@ export class ActivitiesUI {
  private events=new AbortController();
  private lastView:ViewState={hockey:{local:null,rendered:[undefined,undefined],puck:undefined,radius:HOCKEY_PADDLE_RADIUS},charge:{charging:false,power:550},frames:0};
  private activity=(id:ActivityId)=>this.open(id);
+ pvpOpen?:(id:ActivityId)=>boolean;
  constructor(private scene:RoomScene,private send:(value:unknown)=>void){
   this.cards=document.createElement('div');this.cards.className='shared-cards';
-  this.cards.innerHTML=(['hockey','pool','chess','piano','mortal-kombat'] as const).map(id=>`<button type="button" data-activity="${id}"><span>${id==='mortal-kombat'?'⚔':id==='piano'?'♫':id==='pool'?'●':id==='chess'?'♞':'◎'}</span><strong>${ACTIVITIES[id].name}</strong><small>${id==='piano'?translateText('Музыка для всех'):translateText('2 игрока · можно наблюдать')}</small></button>`).join('');
-  document.querySelector('.cabinet-list')!.before(this.cards);
+  this.cards.innerHTML=(Object.keys(ACTIVITIES) as ActivityId[]).map(id=>`<button type="button" data-activity="${id}"><span>${id==='mortal-kombat'?'⚔':id==='piano'?'♫':id==='pool'?'●':id==='chess'?'♞':'◎'}</span><strong>${ACTIVITIES[id].name}</strong><small>${id==='piano'?translateText('Музыка для всех'):'1 на 1 · USDT'}</small></button>`).join('');
+  document.querySelector('#card-tables-catalog')!.before(this.cards);
   this.cards.querySelectorAll<HTMLButtonElement>('[data-activity]').forEach(button=>button.addEventListener('click',()=>scene.approachActivity(button.dataset.activity as ActivityId),{signal:this.events.signal}));
   this.mute=document.createElement('button');this.mute.id='mute-piano';this.mute.className='invite-button piano-mute';this.mute.type='button';
   try{this.audio.mute(localStorage.getItem('royal-piano-muted')==='1');}catch{}
@@ -63,13 +64,16 @@ export class ActivitiesUI {
  getState(){const current=this.view?.getState() as ViewState|undefined;return{...(current??this.lastView),...this.state,selected:this.selected,open:!!this.shell?.open,audio:this.audio.getState()};}
  private toggleMute(){void this.audio.unlock();this.audio.mute(!this.audio.muted);this.updateMute();this.send({type:'ears',muted:this.audio.muted});try{localStorage.setItem('royal-piano-muted',this.audio.muted?'1':'0');}catch{}}
  private updateMute(){this.mute.textContent=this.audio.muted?translateText('Включить рояль'):translateText('Рояль включён');this.mute.setAttribute('aria-pressed',String(this.audio.muted));this.mute.setAttribute('aria-label',this.audio.muted?translateText('Включить рояль'):translateText('Отключить рояль'));}
- private open(id:ActivityId){
+ openWager(id:ActivityId){this.open(id,true);return this.shell;}
+ closeWager(){this.close();}
+ private open(id:ActivityId,wager=false){
+  if(!wager&&this.pvpOpen?.(id))return;
   if(activityHall(id)!==this.scene.hall)return;
   this.close();this.selected=id;this.scene.setLocked(true);gameAudio.setGame(id);
-  const shell=document.createElement('dialog');shell.id='shared-dialog';shell.className='shared-dialog';shell.dataset.activityShell='';shell.dataset.game=id;
+  const shell=document.createElement('dialog');shell.id='shared-dialog';shell.className='shared-dialog';shell.dataset.activityShell='';shell.dataset.game=id;shell.dataset.wager=String(wager);
   const close=document.createElement('button');close.type='button';close.dataset.activityLoadingClose='';close.textContent='×';close.setAttribute('aria-label',translateText('Вернуться в зал'));close.onclick=()=>this.close();
   const host=document.createElement('div');host.className='activity-module-content';shell.append(close,host);document.body.append(shell);this.shell=shell;
-  if(id==='mortal-kombat')this.chatCleanup=registerGameChatDialog(shell);
+  this.chatCleanup=registerGameChatDialog(shell);
   shell.addEventListener('close',()=>{if(this.shell===shell)this.close();});
   const context:ActivityHostContext={scene:this.scene,send:this.send,state:this.state,players:this.players,self:this.self,pianoAudio:this.audio,shotPower:this.lastView.charge.power,onClose:()=>{if(this.shell===shell)this.close();}};
   this.context=context;this.view=new IndependentGameUI(host,id,{activity:context});
@@ -79,7 +83,7 @@ export class ActivitiesUI {
   const view=this.view,shell=this.shell;if(!view&&!shell)return;
   this.lastView=(view?.getState() as ViewState|undefined)??this.lastView;
   this.lastView={...this.lastView,charge:{...this.lastView.charge,charging:false}};
-  this.view=undefined;this.context=undefined;this.shell=undefined;view?.destroy();this.chatCleanup?.();this.chatCleanup=undefined;shell?.remove();
+  this.view=undefined;this.context=undefined;this.shell=undefined;view?.destroy();this.chatCleanup?.();this.chatCleanup=undefined;shell?.close();shell?.remove();
   gameAudio.setGame('');this.send({type:'leave'});this.scene.setLocked(Boolean(document.querySelector('dialog[open]')));document.querySelector<HTMLElement>('#game')?.focus({preventScroll:true});
  }
  destroy(){this.close();this.audio.stop();this.events.abort();this.cards.remove();this.mute.remove();if(this.scene.onActivity===this.activity)this.scene.onActivity=()=>{};}

@@ -19,7 +19,7 @@ export function installGameChat(dock: HTMLElement, dialog: HTMLDialogElement) {
   }
 
   const sync = () => {
-    const active = dialogs.find(window => window.open);
+    const active = dialogs.find(window => window.isConnected&&window.open);
     if (active) {
       if (dock.parentElement !== active) active.append(dock);
       dock.classList.add('game-chat-dock');
@@ -41,6 +41,7 @@ export function installGameChat(dock: HTMLElement, dialog: HTMLDialogElement) {
     new MutationObserver(sync).observe(window, { attributes: true, attributeFilter: ['open'] });
   }
   registerDialog = window => {
+    if(dialogs.includes(window))return ()=>{};
     const game = document.createElement('div');game.className='game-chat-game';
     while(window.firstChild)game.append(window.firstChild);
     window.append(game);window.classList.add('game-chat-layout');dialogs.push(window);

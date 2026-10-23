@@ -47,7 +47,19 @@ export function drawActivities(scene:Phaser.Scene,open:(id:ActivityId)=>void,hal
     c.fillStyle='#e8cb7d';c.font='8px sans-serif';c.fillText('PVP  /  5%',31,134);
   });
   if(hall==='tables')scene.add.image(1408,332,combat).setOrigin(0).setDepth(475);
-  for(const id of ['mortal-kombat','hockey','pool','chess','piano'] as const){
+  if(hall==='github')for(const id of ['durak','transfer-durak','crazy-eights'] as const){
+    const b=ACTIVITIES[id].bounds;
+    const texture=make('pvp-table-'+id,232,152,c=>{
+      c.fillStyle='#49352b';c.beginPath();c.roundRect(0,0,232,120,35);c.fill();
+      c.fillStyle='#275c4b';c.beginPath();c.roundRect(9,8,214,103,29);c.fill();
+      c.strokeStyle='#cbae79';c.lineWidth=2;c.stroke();
+      c.fillStyle='#e8d7ad';c.textAlign='center';c.font='bold 14px sans-serif';c.fillText(ACTIVITIES[id].name,116,55);
+      c.font='11px sans-serif';c.fillText('1 на 1 · USDT',116,78);
+      for(const x of [42,157]){c.fillStyle='#342522';c.beginPath();c.roundRect(x,125,38,25,8);c.fill();c.strokeStyle='#b9945f';c.stroke();}
+    });
+    scene.add.image(b.x,b.y,texture).setOrigin(0).setDepth(b.y+b.h);
+  }
+  for(const id of Object.keys(ACTIVITIES) as ActivityId[]){
     if(activityHall(id)!==hall)continue;
     const bounds=id==='pool'?{x:454,y:344,w:216,h:140}:ACTIVITIES[id].bounds;
     scene.add.zone(bounds.x+bounds.w/2,bounds.y+bounds.h/2,bounds.w,bounds.h).setDepth(bounds.y+bounds.h+2).setInteractive({useHandCursor:true}).on('pointerdown',()=>open(id));

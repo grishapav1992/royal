@@ -40,15 +40,12 @@ export class RoyalCoins {
   };
   constructor(container: HTMLElement, initialGame: LegacyGameId = 'royal-coins') {
     this.gameId = initialGame;
-    this.nile=!demoWallet.pending&&nilePlay.wallet?.state==='assigned'&&BigInt(nilePlay.wallet.balanceUnits)>0n;
-    this.usdt=!demoWallet.pending&&!nilePlay.pending&&usdtWallet.wallet?.state==='assigned'&&BigInt(usdtWallet.wallet.balanceUnits)>0n;
-    const cash = cryptoWallet.wallet;
-    if (!demoWallet.pending && !nilePlay.pending && !usdtWallet.pending && cash?.state === 'enabled' && cash.gamesEnabled && BigInt(cash.balanceUnits) > 0n) { this.crypto = true; this.usdt = true; }
-    if(this.usdt)this.nile=false;
+    // Recover an already submitted legacy Nile spin; all new rounds use the common game wallet.
+    this.nile=!!nilePlay.pending;
     this.root.className = 'royal-coins';
     this.root.innerHTML = tr`<div class="coins-marquee"><span>РОЯЛЬ · ТЕСТОВЫЕ ИГРЫ</span><h3>Royal Coins</h3><p>Твой кошелёк. Твоя удача.</p></div>
       <div class="coins-selectors"><label for="coins-game">Игра<select id="coins-game"><option value="royal-coins">Royal Coins</option><option value="royal-fruits">Royal Fruits</option><option value="royal-roulette">Рулетка</option></select></label>
-      <label for="coins-currency">Баланс для игры<select id="coins-currency"><option value="demo">Демомонеты</option><option value="nile">USDT (Nile)</option><option value="usdt" hidden>USDT · TRON</option><option value="crypto" hidden>USDT · криптокошелек</option></select></label>
+      <label for="coins-currency">Баланс для игры<select id="coins-currency"><option value="demo">USDT · Nile</option></select></label>
       <label for="coins-theme" id="coins-theme-control">Оформление<select id="coins-theme">${COINS_THEMES.map(theme => `<option value="${theme.id}">${theme.name}</option>`).join('')}</select></label></div>
       <div class="coins-reels" role="img" aria-label="Барабаны"><span>♛</span><span>◆</span><span>★</span></div>
       <table class="fruits-paytable" hidden><caption>Три одинаковых на центральной линии</caption><thead><tr><th scope="col">Комбинация</th><th scope="col">Начисление</th></tr></thead><tbody>${FRUITS_PAYTABLE.map(row => tr`<tr><th scope="row" aria-label="Три символа: ${row.label}"><span aria-hidden="true">${fruitSymbols[row.symbol]} ${fruitSymbols[row.symbol]} ${fruitSymbols[row.symbol]}</span></th><td>×${row.multiplier}</td></tr>`).join('')}</tbody></table>
@@ -58,22 +55,13 @@ export class RoyalCoins {
       </div>
       <p id="coins-result" role="status">Выбери ставку и запусти барабаны.</p>
       <div class="coins-controls"><label>Баланс<strong id="coins-balance">…</strong></label><label for="coins-bet">Ставка<select id="coins-bet"></select></label></div>
-      <button id="coins-spin" class="primary-button">Крутить</button><button id="coins-wallet" class="text-button">Пополнить демобаланс</button>
-      <p class="coins-rules"></p><p class="coins-rtp"></p><small>Бесплатные демомонеты и тестовый USDT Nile не имеют денежной стоимости. Переводы и вывод USDT недоступны.</small>`;
+      <button id="coins-spin" class="primary-button">Крутить</button><button id="coins-wallet" class="text-button">Пополнить баланс USDT</button>
+      <p class="coins-rules"></p><p class="coins-rtp"></p><small>Общий тестовый USDT в сети Nile. Пополнение через кошелёк клуба. Вывод недоступен.</small>`;
     container.replaceChildren(this.root);
     this.element<HTMLSelectElement>('#coins-game').value = this.gameId;
     this.setBets();
     this.element<HTMLButtonElement>('#coins-spin').onclick = () => { void this.spin(); };
     this.element<HTMLButtonElement>('#coins-wallet').onclick = () => window.dispatchEvent(new Event(this.crypto ? 'royal-open-crypto-wallet' : this.usdt ? 'royal-open-usdt-wallet' : this.nile ? 'royal-open-nile-wallet' : 'royal-open-wallet'));
-    this.element<HTMLSelectElement>('#coins-currency').onchange = event => {
-      this.nile = (event.target as HTMLSelectElement).value === 'nile';
-      this.crypto = (event.target as HTMLSelectElement).value === 'crypto';
-      this.usdt = this.crypto || (event.target as HTMLSelectElement).value === 'usdt';
-      if (this.nile || (this.usdt && this.gameId === 'royal-fruits')) this.gameId = 'royal-coins';
-      this.setBets(); this.resetResult(); this.render();
-      if (this.nile) void nilePlay.refresh();
-      if (this.usdt) void this.cash.refresh();
-    };
     this.element<HTMLSelectElement>('#coins-game').onchange = event => {
       this.gameId = (event.target as HTMLSelectElement).value as LegacyGameId;
       this.resetResult(); this.render();
@@ -96,7 +84,7 @@ export class RoyalCoins {
     this.element('#coins-bet').innerHTML = this.usdt
       ? USDT_BETS.map(bet => `<option value="${bet}">${formatNileUnits(bet)} USDT</option>`).join('') : this.nile
       ? NILE_BETS.map(bet => `<option value="${bet}">${formatNileUnits(bet)} USDT (Nile)</option>`).join('')
-      : DEMO_BETS.map(bet => tr`<option value="${bet}" ${bet === 100 ? 'selected' : ''}>${bet} монет</option>`).join('');
+      : DEMO_BETS.map(bet => tr`<option value="${bet}" ${bet === 100 ? 'selected' : ''}>${bet} USDT</option>`).join('');
     if (amount) this.element<HTMLSelectElement>('#coins-bet').value = amount;
   }
   private resetResult() {
@@ -139,12 +127,10 @@ export class RoyalCoins {
     rouletteOption.disabled = this.nile; rouletteOption.hidden = this.nile;
     const fruitsOption = game.querySelector<HTMLOptionElement>('[value="royal-fruits"]')!;
     fruitsOption.disabled = this.nile || this.usdt; fruitsOption.hidden = this.nile || this.usdt;
-    const currency = this.element<HTMLSelectElement>('#coins-currency'); currency.value = this.crypto ? 'crypto' : this.usdt ? 'usdt' : this.nile ? 'nile' : 'demo'; currency.disabled = locked;
-    const cryptoOption=currency.querySelector<HTMLOptionElement>('[value="crypto"]')!;cryptoOption.hidden=!(cryptoWallet.wallet?.state==='enabled'&&cryptoWallet.wallet.gamesEnabled)&&!cryptoWallet.pending;cryptoOption.disabled=cryptoOption.hidden;
-    const mainnetOption=currency.querySelector<HTMLOptionElement>('[value="usdt"]')!;mainnetOption.hidden=usdtWallet.wallet?.state!=='assigned'&&!usdtWallet.pending;mainnetOption.disabled=mainnetOption.hidden;
+    const currency = this.element<HTMLSelectElement>('#coins-currency'); currency.value = 'demo'; currency.disabled = true;
     this.element('.coins-marquee span').textContent=this.usdt?translateText('РОЯЛЬ · ИГРЫ НА USDT'):translateText('РОЯЛЬ · ТЕСТОВЫЕ ИГРЫ');
     const heading=this.root.closest('dialog')?.querySelector('.mini-top .eyebrow');if(heading)heading.textContent=this.usdt?translateText('РОЯЛЬ / USDT · TRON'):translateText('РОЯЛЬ / ТЕСТОВЫЕ ИГРЫ');
-    this.element('small').textContent=this.crypto?translateText('Баланс USDT с пополнением и выводом через криптокошелек.'):this.usdt?translateText('Настоящий USDT в сети TRON (TRC-20). Вывод из личного кабинета пока не подключен.'):translateText('Бесплатные демомонеты и тестовый USDT Nile не имеют денежной стоимости. Переводы и вывод USDT недоступны.');
+    this.element('small').textContent=translateText('Общий тестовый USDT в сети Nile. Пополнение через кошелёк клуба. Вывод недоступен.');
     this.element<HTMLSelectElement>('#coins-theme').disabled = locked;
     this.element('#coins-theme-control').hidden = roulette || fruits;
     this.element('.coins-reels').hidden = roulette;
@@ -166,7 +152,7 @@ export class RoyalCoins {
     this.element('.coins-rtp').textContent = tr`Теоретический RTP: ${rtp}%. ${fruits ? translateText('Вероятность выигрыша: 10%. ') : ''}Это средний возврат на большой дистанции, а результат отдельной игры случаен.`;
     if (this.usdt) { this.renderUsdt(); return; }
     if (this.nile) { this.renderNile(); return; }
-    this.element<HTMLButtonElement>('#coins-wallet').textContent = translateText('Пополнить демобаланс');
+    this.element<HTMLButtonElement>('#coins-wallet').textContent = translateText('Пополнить баланс USDT');
     this.element('#coins-balance').textContent = demoWallet.wallet ? coins(demoWallet.wallet.balance) : '…';
     const spin = this.element<HTMLButtonElement>('#coins-spin'), bet = this.element<HTMLSelectElement>('#coins-bet');
     const pendingGame = demoWallet.pending?.kind === 'spin' || (demoWallet.pending?.kind === 'play' && legacyGame(demoWallet.pending.gameId));
@@ -176,7 +162,7 @@ export class RoyalCoins {
     this.element<HTMLButtonElement>('#coins-wallet').disabled = !demoWallet.accountId;
     if (!this.spinning && pendingGame) this.element('#coins-result').textContent = demoWallet.error || translateText('Ставка ожидает подтверждения. Проверь результат перед новой игрой.');
     else if (!this.spinning && !demoWallet.accountId) this.element('#coins-result').textContent = translateText('Войди в онлайн-зал, чтобы пополнить кошелёк и играть.');
-    else if (!this.spinning && !this.hasResult && !demoWallet.pending && demoWallet.wallet && demoWallet.wallet.balance < Number(bet.value)) this.element('#coins-result').textContent = translateText('Для этой ставки не хватает монет. Пополни баланс или выбери меньшую ставку.');
+    else if (!this.spinning && !this.hasResult && !demoWallet.pending && demoWallet.wallet && demoWallet.wallet.balance < Number(bet.value)) this.element('#coins-result').textContent = translateText('Для этой ставки не хватает USDT. Пополни баланс или выбери меньшую ставку.');
   }
   private renderNile() {
     const wallet = nilePlay.wallet, assigned = wallet?.state === 'assigned' ? wallet : undefined, pending = !!nilePlay.pending;
@@ -249,7 +235,7 @@ export class RoyalCoins {
   private showPayout(multiplier: number, bet: number, payout: number, prefix = '') {
     this.hasResult = true;
     emitGameOutcome(this.root, String(Math.round(bet * 100)), String(Math.round(payout * 100)));
-    this.element('#coins-result').textContent = prefix + (multiplier > 1 ? tr`Начислено ${coins(payout)} монет! Ставка ${coins(bet)}.` : multiplier === 1 ? tr`Ставка ${coins(bet)} возвращена.` : tr`Без выигрыша. Списано ${coins(bet)} монет.`);
+    this.element('#coins-result').textContent = prefix + (multiplier > 1 ? tr`Начислено ${coins(payout)} USDT! Ставка ${coins(bet)}.` : multiplier === 1 ? tr`Ставка ${coins(bet)} возвращена.` : tr`Без выигрыша. Списано ${coins(bet)} USDT.`);
   }
   private async spinNile() {
     const stake = nilePlay.pending?.stakeUnits ?? this.element<HTMLSelectElement>('#coins-bet').value;
@@ -262,7 +248,7 @@ export class RoyalCoins {
       this.hasResult = true;
       this.element('#coins-result').textContent = round.multiplier > 1 ? tr`Начислено ${formatNileUnits(round.payoutUnits)} USDT (Nile)! Ставка ${formatNileUnits(round.stakeUnits)}.` : round.multiplier === 1 ? tr`Ставка ${formatNileUnits(round.stakeUnits)} USDT (Nile) возвращена.` : tr`Без выигрыша. Списано ${formatNileUnits(round.stakeUnits)} USDT (Nile).`;
     } catch (e) { if (this.alive) this.element('#coins-result').textContent = (e as Error).message; }
-    finally { this.spinning = false; this.root.classList.remove('spinning'); this.render(); }
+    finally { this.spinning = false; if(!nilePlay.pending){this.nile=false;this.setBets();} this.root.classList.remove('spinning'); this.render(); }
   }
   private async spinUsdt() {
     if (this.gameId === 'royal-fruits') return;

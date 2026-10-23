@@ -57,9 +57,9 @@ export const inHallDoor = (p: {x:number;y:number;hall:string}) => {
   return Boolean(hallLinkAt(p));
 };
 export const otherHall = (hall:string): HallId => hall==='arcade'||hall==='github'?'tables':'arcade';
-export const activityHall = (id: string): HallId => id === 'piano' ? 'arcade' : 'tables';
+export const activityHall = (id: string): HallId => id === 'piano' ? 'arcade' : ['durak','transfer-durak','crazy-eights'].includes(id) ? 'github' : 'tables';
 export const hallObstacles = (hall?: string): Obstacle[] => hall === 'arcade' ? ARCADE_OBSTACLES : hall === 'tables' ? TABLE_OBSTACLES : hall === 'github' ? GITHUB_OBSTACLES : ROOM_OBSTACLES;
-const GITHUB_OBSTACLES = [...clubObstacles('github'), ...cabinetsInHall('github').map(cabinetBounds)];
+const GITHUB_OBSTACLES = [...clubObstacles('github'), ...cabinetsInHall('github').map(cabinetBounds), ACTIVITIES.durak.bounds, ACTIVITIES['transfer-durak'].bounds, ACTIVITIES['crazy-eights'].bounds];
 const ARCADE_OBSTACLES = [
   ...clubObstacles('arcade'),
   ...cabinetsInHall('arcade').map(cabinetBounds),

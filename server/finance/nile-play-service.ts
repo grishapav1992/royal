@@ -1,7 +1,18 @@
 import { createServer } from 'node:http';
 import { NilePlayLedger, NilePlayError } from './nile-play-ledger';
 import { gameAccountId } from '../../src/shared/nileWallet';
+import { PvpStore } from '../pvp/store';
+import {NileGameRuntime} from './nile-game-runtime';
+import {WalletError} from '../demoWallet';
+import {NileCombatEscrow} from './combat-escrow';
 export function createNilePlayServer(ledger: NilePlayLedger) {
+    const pvp = new PvpStore(ledger);
+    pvp.ready.catch(() => {});
+    const games=new NileGameRuntime(ledger);games.ready.catch(()=>{});
+    const combat=new NileCombatEscrow(ledger);combat.ready.catch(()=>{});
+    let sweeping = false;
+    const sweep = setInterval(() => { if (!sweeping) { sweeping = true; void Promise.allSettled([pvp.sweep(),combat.recoverExpired()]).finally(() => { sweeping = false; }); } }, 1000);
+    sweep.unref();
     const attempts = new Map<string, {
         at: number;
         n: number;
@@ -17,7 +28,7 @@ export function createNilePlayServer(ledger: NilePlayLedger) {
             const chunks: Buffer[] = [];
             for await (const chunk of req) {
                 size += chunk.length;
-                if (size > 2048)
+                if (size > 16384)
                     throw new NilePlayError('invalid_play_request', 413);
                 chunks.push(chunk);
             }
@@ -30,6 +41,7 @@ export function createNilePlayServer(ledger: NilePlayLedger) {
             }
             if (!body || Object.keys(body).sort().join(',') !== 'accountId,action,value' || !gameAccountId(body.accountId))
                 throw new NilePlayError('invalid_play_request', 400);
+            if (size > 2048 && body.action !== 'pvp-sync'&&body.action!=='native-game') throw new NilePlayError('invalid_play_request', 413);
             if (body.action === 'wallet') {
                 if (body.value !== null)
                     throw new NilePlayError('invalid_play_request', 400);
@@ -53,14 +65,37 @@ export function createNilePlayServer(ledger: NilePlayLedger) {
                 attempts.set(body.accountId, record);
                 respond(200, await ledger.claim(body.accountId, body.value));
             }
+            else if(body.action==='skin-purchase')respond(200,await games.skinPurchase(body.accountId,body.value));
+            else if(body.action==='native-game')respond(200,await games.run(body.accountId,body.value));
+            // Private Unix socket only. Public player routes never forward these commands.
+            else if(body.action==='combat-fund')respond(200,await combat.fund(body.accountId,body.value));
+            else if(body.action==='combat-settle')respond(200,await combat.settle(body.accountId,body.value));
+            else if(body.action==='combat-cancel')respond(200,await combat.cancel(body.accountId,body.value));
+            else if (body.action === 'pvp-command') {
+                const v = body.value;
+                if (!v || Object.keys(v).sort().join(',') !== 'name,request,roomId') throw new NilePlayError('invalid_pvp_request',400);
+                respond(200, await pvp.command({accountId:body.accountId,name:v.name,roomId:v.roomId},v.request));
+            }
+            else if (body.action === 'pvp-sync') {
+                const v = body.value;
+                if (!v || Object.keys(v).sort().join(',') !== 'people,roomId') throw new NilePlayError('invalid_pvp_request',400);
+                const snapshots = await pvp.syncRoom(v.roomId,v.people);
+                respond(200,{snapshots,matches:await pvp.roomMatches(v.roomId)});
+            }
+            else if (body.action === 'pvp-result') {
+                const v=body.value;
+                if(!v||Object.keys(v).sort().join(',')!=='matchId,reason,roomId,winnerId'||!['win','draw','server'].includes(v.reason))throw new NilePlayError('invalid_pvp_request',400);
+                await pvp.adjudicate(v.roomId,v.matchId,v.winnerId,v.reason);respond(200,{ok:true});
+            }
             else
                 throw new NilePlayError('invalid_play_request', 400);
         }
         catch (e) {
-            respond(e instanceof NilePlayError ? e.status : 503, { code: e instanceof NilePlayError ? e.code : 'play_unavailable' });
+            respond(e instanceof NilePlayError||e instanceof WalletError ? e.status : 503, { code: e instanceof NilePlayError ? e.code : e instanceof WalletError?e.message:'play_unavailable' });
         }
     });
     server.requestTimeout = 10000;
     server.headersTimeout = 10000;
+    server.once('close',()=>clearInterval(sweep));
     return server;
 }

@@ -46,7 +46,6 @@ export function createPaymentApp(store: CryptoStore, requestSecret: string) {
     if (!body || Object.keys(body).join(',') !== 'currency') throw new CryptoError(400, 'Некорректный запрос курса.');
     return store.displayRate((body as { currency: unknown }).currency);
   }, false);
-  for(const action of ['fund','settle','cancel'] as const)handle('post','combat/'+action,(id,body)=>store.combat[action](id,body));
   handle('post', 'deposits', (id, body) => store.deposit(id, body));
   handle('post', 'quotes', (id, body) => store.quote(id, body));
   handle('post', 'withdrawals', (id, body) => store.withdraw(id, body));

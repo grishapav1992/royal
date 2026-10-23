@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 
 export type CryptoConfig = { enabled: boolean; sandbox: boolean; apiKey: string; ipnSecret: string; origin: string;
-  withdrawals: boolean; games: boolean; combat?:boolean; email: string; password: string; twoFactorSecret: string; conversionMarginBps: number };
+  withdrawals: boolean; games: boolean; email: string; password: string; twoFactorSecret: string; conversionMarginBps: number };
 export class CryptoError extends Error { constructor(readonly status: number, message: string) { super(message); } }
 export function cryptoConfig(env: NodeJS.ProcessEnv = process.env): CryptoConfig {
   const secret = (name: string) => env[name + '_FILE'] ? readFileSync(env[name + '_FILE']!, 'utf8').trim() : env[name]?.trim() ?? '';
@@ -11,7 +11,7 @@ export function cryptoConfig(env: NodeJS.ProcessEnv = process.env): CryptoConfig
   };
   const config: CryptoConfig = { enabled: flag('NOWPAYMENTS_ENABLED'), sandbox: flag('NOWPAYMENTS_SANDBOX'),
     apiKey: secret('NOWPAYMENTS_API_KEY'), ipnSecret: secret('NOWPAYMENTS_IPN_SECRET'), origin: env.PUBLIC_ORIGIN ?? '',
-    withdrawals: flag('NOWPAYMENTS_WITHDRAWALS_ENABLED'), games: flag('NOWPAYMENTS_GAMES_ENABLED'), combat: flag('NOWPAYMENTS_COMBAT_ENABLED'),
+    withdrawals: flag('NOWPAYMENTS_WITHDRAWALS_ENABLED'), games: flag('NOWPAYMENTS_GAMES_ENABLED'),
     email: secret('NOWPAYMENTS_EMAIL'), password: secret('NOWPAYMENTS_PASSWORD'), twoFactorSecret: secret('NOWPAYMENTS_2FA_SECRET'),
     conversionMarginBps: Number(env.NOWPAYMENTS_CONVERSION_MARGIN_BPS ?? '100') };
   if (!Number.isInteger(config.conversionMarginBps) || config.conversionMarginBps < 50 || config.conversionMarginBps > 500) throw new Error('Invalid NOWPAYMENTS_CONVERSION_MARGIN_BPS');

@@ -1,4 +1,3 @@
-import { CombatEscrowStore } from './combatEscrow';
 import { randomInt } from 'node:crypto';
 import type { PostgresDatabase } from './database';
 import { DEMO_BETS, type DemoRound, type DemoWallet, type WalletOperation, type WalletResult } from '../src/shared/demoWallet';
@@ -15,7 +14,6 @@ export class WalletError extends Error { constructor(public status: number, mess
 const MAX_BALANCE = MAX_DEMO_UNITS / 100;
 export class DemoWalletStore {
   readonly ready: Promise<void>;
-  readonly combat: CombatEscrowStore;
   readonly mines: DemoMinesStore;
   readonly flight: DemoFlightStore;
   readonly casino: DemoCasinoStore;
@@ -41,12 +39,10 @@ export class DemoWalletStore {
     this.flight = new DemoFlightStore(db, accountId => this.rawSnapshot(accountId), async accountId => await this.mines.reservedUnits(accountId)+await this.casino.reservedUnits(accountId), draw, now, schemaReady);
     this.casino = new DemoCasinoStore(db, accountId=>this.rawSnapshot(accountId),draw,accountId=>this.flight.settleDue(accountId),schemaReady);
     this.expansion = new DemoExpansionStore(db, accountId=>this.rawSnapshot(accountId),this.casino.ready,accountId=>this.flight.settleDue(accountId),draw,now);
-    this.combat = new CombatEscrowStore(db,schemaReady,now);
     this.ready = Promise.all([schemaReady, this.mines.ready, this.flight.ready, this.casino.ready, this.expansion.ready]).then(() => {});
   }
   async snapshot(accountId: string): Promise<DemoWallet> {
     await this.ready;
-    await this.combat.recoverExpired();
     return this.db.transaction(async () => {
       await this.flight.settleDue(accountId);
       await this.expansion.settleDue(accountId);

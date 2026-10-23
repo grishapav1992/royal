@@ -7,14 +7,14 @@ The shared Royal backend owns simulation, identity, account locks, escrow and se
 ## Rules
 
 - The cabinet is on floor 2, next to air hockey. Two distinct authenticated accounts approach the same cabinet in the same lobby.
-- Equal stakes: 1, 2, 5, 10, 50 or 100 USDT from the existing multi-user USDT custody wallet. The cabinet uses the shared cryptoWallet host singleton and existing signed payment-service transport. There is no demo-money fallback.
+- Equal stakes: 1, 2, 5, 10, 50 or 100 USDT from the shared games USDT · Nile wallet (test network). The cabinet uses the common nilePlay host singleton and existing private Nile service socket.
 - Both confirm the same stake and current match. Changing the stake clears readiness.
-- Both stakes reserve in one payment-ledger transaction after both confirmations. The available amounts decrease and reserved USDT increases; withdrawal cannot spend the bank. A three-second countdown follows.
+- Both stakes reserve in one common Nile PvP journal transaction after both confirmations. The available amounts decrease and reserved USDT increases; other games cannot spend the bank. A three-second countdown follows.
 - One 90-second fight, 100 health each. Movement, jumping, punch, kick and block. The server alone decides collisions, damage and the result.
 - Winner receives 95% of the entire pot, including the winner's original stake. The casino fee is 5% of the pot. Two stakes of 100 pay 190, with 10 recorded as commission.
 - Equal health at timeout or simultaneous knockout refunds both stakes without commission.
 - Closing the game after funding is a surrender. Closing while funding cancels with a refund. An interrupted connection has 20 seconds to reconnect. If both disconnect, both stakes return.
-- Escrow and settlement survive response loss and repeated calls. Unknown funding responses keep the same match and block new charges; after 20 seconds the server cancels funding. A durable cancellation tombstone blocks delayed funding requests. The existing payment worker refunds orphan escrow after its 150-second deadline, including after game-server restarts. Reservations protect wallet capacity for payouts.
+- Escrow and settlement survive response loss and repeated calls. Unknown funding responses keep the same match and block new charges; after 20 seconds the server cancels funding. A durable cancellation tombstone blocks delayed funding requests. The existing Nile service refunds orphan escrow after its 150-second deadline, including after game-server restarts. All holds, refunds, payout and commission are replayed by the common financial audit.
 - Reopening finished combat never repeats a debit or payout. A new fight creates a new server match identity and requires both readiness confirmations again.
 
 ## Feedback specification

@@ -32,15 +32,15 @@ test('every defined game has a distinct module package and matching public contr
   ...EXPANSION_GAMES, ...SESSION_GAMES, ...GITHUB_GAME_IDS, ...GAME_CATALOG.map(game => game.id),
   ...Object.keys(ACTIVITIES), 'casinoapipro', 'luelon', 'breaker', 'orbit', 'drift', 'pixel',
  ])].sort();
- assert.equal(required.length, 114);
+ assert.equal(required.length, 117);
  assert.deepEqual(GAME_MODULES.map(game => game.gameId).sort(), required);
  assert.ok(STUDIO_GAMES.every(id => required.includes(id)));
  for (const cabinet of CABINETS) {
-  assert.ok(required.includes(cabinet.id), `Visible cabinet has no independent package: ${cabinet.id}`);
+  assert.ok(required.includes(cabinet.defaultGameId??cabinet.id), `Visible cabinet has no independent package: ${cabinet.id}`);
   assert.equal(isRetiredArcadeGame(cabinet.id), false, cabinet.id);
   assert.equal(isRetiredCardGame(cabinet.id), false, cabinet.id);
  }
- assert.equal(CABINETS.length, 28, 'Twenty-one platform cabinets including Neopolis and seven card tables remain visible');
+ assert.equal(CABINETS.length, 18, 'Fourteen collection cabinets and four dealer tables share the Nile wallet');
  assert.equal(new Set(GAME_MODULES.map(game => game.slug)).size, GAME_MODULES.length);
  for (const game of GAME_MODULES) {
   const config = JSON.parse(await readFile(resolve('games', game.slug, 'package.json'), 'utf8'));

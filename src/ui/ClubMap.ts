@@ -4,7 +4,6 @@ import { CLUB_ZONES, ARCADE_OVERVIEW_SIZE } from '../shared/clubLayout';
 import { HALLS, hallLinks } from '../shared/world';
 import { cabinetsInHall } from '../shared/cabinets';
 import { isCardGame } from '../shared/cardTables';
-import { ARCADE_HOUSE_GAMES } from '../shared/arcadeCatalog';
 import { WORLD, FLOOR } from '../shared/clubGeometry';
 import './club-map.css';
 
@@ -40,7 +39,7 @@ export class ClubMap {
       if(isCardGame(cabinet.id)){
         ctx.fillStyle='#71c9b0';ctx.beginPath();ctx.ellipse(cabinet.x,cabinet.y-47,112,50,0,0,Math.PI*2);ctx.fill();
         ctx.fillStyle='#f2d3a2';ctx.beginPath();ctx.arc(cabinet.x,cabinet.y-103,14,0,Math.PI*2);ctx.fill();
-      }else{ctx.fillStyle=(ARCADE_HOUSE_GAMES as readonly string[]).includes(cabinet.id)?'#86d2e5':'#e4ca8c';ctx.fillRect(cabinet.x-28,cabinet.y-35,56,45);}
+      }else{ctx.fillStyle=({royal:'#86d2e5',github:'#a1d9b8',casinoapipro:'#e4ca8c',luelon:'#cfafe4'} as Record<string,string>)[cabinet.collection??'']??'#e4ca8c';ctx.fillRect(cabinet.x-28,cabinet.y-35,56,45);}
     }
     if(state.hall==='github'){
       ctx.font='bold 64px Arial';ctx.textAlign='center';ctx.fillStyle='#d6e6ed';ctx.fillText(translateText('КАРТОЧНЫЙ САЛОН'),2500,838);

@@ -1,9 +1,16 @@
-import { volcanicPlinkoEnglish } from './volcanicPlinkoEn';
+import {  volcanicPlinkoEnglish } from './volcanicPlinkoEn';
 
 export const english: Record<string, string> = {
-  'Зарезервировано: ': 'Reserved: ',
-  'Ставка зарезервирована': 'Stake reserved',
-  'Возврат ставки': 'Stake refunded',
+  'Выбери игру в каталоге':'Choose a game from the catalogue',
+  'Игры Royal':'Royal games',
+  'Доработанные GitHub-игры':'Enhanced GitHub games',
+  'ROYAL · НАШИ ИГРЫ':'ROYAL · OUR GAMES',
+  '10 автоматов Royal':'10 Royal cabinets',
+  '5 автоматов GitHub':'5 GitHub cabinets',
+  '3 автомата Casino API PRO':'3 Casino API PRO cabinets',
+  'Отдельное демо Luelon':'Separate Luelon demo',
+  'В каждом автомате доступен каталог своей коллекции.':'Each cabinet opens its collection catalogue.',
+
   'Стражи Неополиса':'Guardians of Neopolis',
   '40 линий · Три героя · Битва с Нулём':'40 paylines · Three heroes · Battle with Null',
   'Поле 5×4, 40 линий. Собери команду из трёх героев. Три символа Нуля открывают 10 бесплатных вращений. Разрушь щит и три узла: финальная атака и ещё 3 вращения. Ставка и первый герой фиксируются до конца цикла. Предел выплаты 3000 ставок. Прототип: RTP ещё не определён.':'5×4 grid, 40 paylines. Assemble three heroes. Three Null symbols trigger 10 free spins. Break the shield and three nodes for a team finisher and 3 extra spins. The stake and starter are locked for the collection cycle. Maximum return: 3000× stake. Prototype: RTP has not been determined.',

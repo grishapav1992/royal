@@ -1,82 +1,9 @@
-import { test } from 'node:test';
+import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import { randomUUID } from 'node:crypto';
-import { PostgresDatabase } from '../server/database';
-import { DemoWalletStore } from '../server/demoWallet';
-import { CombatGame } from '../server/combatGame';
-import { CombatRoom } from '../server/combatRoom';
-import { neutralCombatInput } from '../src/shared/combat';
-import { CombatEscrowStore } from '../server/combatEscrow';
+import {CombatGame} from '../server/combatGame';
+import {CombatRoom} from '../server/combatRoom';
+import {neutralCombatInput} from '../src/shared/combat';
 
-async function setup(){
- const db=new PostgresDatabase(':memory:');
- await db.exec("CREATE TABLE accounts(id TEXT PRIMARY KEY); INSERT INTO accounts VALUES ('a'),('b'),('c');");
- const wallet=new DemoWalletStore(db);
- for(const id of ['a','b','c'])await wallet.operate(id,{id:randomUUID(),kind:'deposit',amount:1000});
- return {db,wallet};
-}
-test('equal stakes debit atomically; 95% of the pot pays once and the fee is durable',async()=>{
- const {db,wallet}=await setup();try{
-  const id=randomUUID();
-  await Promise.all([wallet.combat.fund(id,['a','b'],100),wallet.combat.fund(id,['a','b'],100)]);
-  assert.equal((await wallet.snapshot('a')).balance,900);assert.equal((await wallet.snapshot('b')).balance,900);
-  const results=await Promise.all([wallet.combat.settle(id,'a'),wallet.combat.settle(id,'a')]);
-  assert.deepEqual(results,[{winner:'a',fee:10,payout:190},{winner:'a',fee:10,payout:190}]);
-  assert.equal((await wallet.snapshot('a')).balance,1090);assert.equal((await wallet.snapshot('b')).balance,900);
-  assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM combat_reservations').get())!.n,0);
-  assert.equal((await db.prepare("SELECT COUNT(*) AS n FROM demo_ledger WHERE source='mortal-kombat'").get())!.n,3);
- }finally{await db.close();}
-});
-test('insufficient balance rolls back both stakes; self play and tampered stakes are rejected',async()=>{
- const {db,wallet}=await setup();try{
-  await db.prepare('UPDATE demo_wallets SET balance=0 WHERE account_id=?').run('b');
-  await assert.rejects(()=>wallet.combat.fund(randomUUID(),['a','b'],100),/недостаточно/);
-  assert.equal((await wallet.snapshot('a')).balance,1000);
-  assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM combat_matches').get())!.n,0);
-  await assert.rejects(()=>wallet.combat.fund(randomUUID(),['a','a'],100));
-  await assert.rejects(()=>wallet.combat.fund(randomUUID(),['a','b'],100.01));
-  await assert.rejects(()=>wallet.combat.fund(randomUUID(),['a','b'],NaN));
- }finally{await db.close();}
-});
-test('draw and expired orphan matches refund exact stakes after service restart without a fee',async()=>{
- const {db,wallet}=await setup();try{
-  let now=1000;const escrow=new CombatEscrowStore(db,wallet.ready,()=>now);
-  const id=randomUUID();await escrow.fund(id,['a','b'],50);
-  now=122000;const restarted=new CombatEscrowStore(db,wallet.ready,()=>now);
-  await Promise.all([restarted.recoverExpired(),restarted.recoverExpired()]);
-  assert.equal((await wallet.snapshot('a')).balance,1000);assert.equal((await wallet.snapshot('b')).balance,1000);
-  assert.deepEqual(await restarted.settle(id,'a'),{winner:'',fee:0,payout:0});
-  assert.equal((await db.prepare("SELECT COUNT(*) AS n FROM demo_ledger WHERE source='mortal-kombat' AND entry_type='refund'").get())!.n,2);
- }finally{await db.close();}
-});
-test('one account cannot fund concurrent fights in different rooms',async()=>{
- const {db,wallet}=await setup();try{
-  const results=await Promise.allSettled([wallet.combat.fund(randomUUID(),['a','b'],100),wallet.combat.fund(randomUUID(),['a','c'],100)]);
-  assert.equal(results.filter(r=>r.status==='fulfilled').length,1);
-  assert.equal((await wallet.snapshot('a')).balance,900);
- }finally{await db.close();}
-});
-test('payout failure rolls back both balances and reservations, then retries safely',async()=>{
- const {db,wallet}=await setup();try{
-  const id=randomUUID();await wallet.combat.fund(id,['a','b'],100);
-  await db.exec("CREATE FUNCTION reject_combat_win() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.entry_type='win' AND NEW.source='mortal-kombat' THEN RAISE EXCEPTION 'payment failed'; END IF; RETURN NEW; END $$; CREATE TRIGGER combat_fail BEFORE INSERT ON demo_ledger FOR EACH ROW EXECUTE FUNCTION reject_combat_win();");
-  await assert.rejects(()=>wallet.combat.settle(id,'a'),/payment failed/);
-  assert.equal((await wallet.snapshot('a')).balance,900);
-  assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM combat_reservations').get())!.n,2);
-  await db.exec('DROP TRIGGER combat_fail ON demo_ledger');
-  await wallet.combat.settle(id,'a');
-  assert.equal((await wallet.snapshot('a')).balance,1090);
- }finally{await db.close();}
-});
-test('reserved payout capacity protects the winner against other wallet credits',async()=>{
- const {db,wallet}=await setup();try{
-  const max=1000000000;
-  await db.prepare('UPDATE demo_wallets SET balance=? WHERE account_id=?').run(max-100,'a');
-  const id=randomUUID();await wallet.combat.fund(id,['a','b'],100);
-  await assert.rejects(()=>wallet.operate('a',{id:randomUUID(),kind:'deposit',amount:100}));
-  await wallet.combat.settle(id,'a');assert.equal((await wallet.snapshot('a')).balance,max-10);
- }finally{await db.close();}
-});
 test('authoritative combat ignores spectators and invalid input; cooldown limits repeated attacks',()=>{
  const game=new CombatGame('match');game.state.players=['a','b'];game.start();game.tick(3,10000);
  const [a,b]=game.state.fighters;a.x=330;b.x=390;

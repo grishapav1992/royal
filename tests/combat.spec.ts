@@ -2,20 +2,14 @@ import {test,expect,type Page} from '@playwright/test';
 import {selectHall,worldPoint} from './room-ui';
 const activity=(p:Page)=>p.evaluate(()=>(window as any).royalDemo.getActivities());
 const state=(p:Page)=>p.evaluate(()=>(window as any).royalDemo.getState());
-async function login(p:Page,room?:string){
+async function login(p:Page,identity:string,room?:string){
  await p.goto('/'+(room?'?room='+room:''),{waitUntil:'domcontentloaded'});
- await p.getByLabel('Почта',{exact:true}).fill('mk-'+crypto.randomUUID()+'@example.test');
+ await p.getByLabel('Почта',{exact:true}).fill(identity);
  await p.getByLabel('Пароль',{exact:true}).fill('Royal-test-123!');
  await p.getByRole('button',{name:'Продолжить',exact:true}).click();
  await p.getByRole('button',{name:'Войти в зал',exact:true}).click();
  await expect.poll(async()=>(await state(p)).online).toBe(true);
- await p.evaluate(async()=>{
-  const me=await(await fetch('/api/auth/me')).json();
-  const id=me.account?.id??me.id;
-  const response=await fetch('/api/crypto-wallet/deposits',{method:'POST',headers:{'Content-Type':'application/json','X-Royal-Account-Id':id},body:JSON.stringify({id:crypto.randomUUID(),currency:'usdttrc20',amountUnits:'100000000'})});
-  if(!response.ok)throw Error(await response.text());
- });
- await expect.poll(async()=>{try{return await balance(p);}catch{return null;}},{timeout:10000}).toBe('100000000');
+ await expect.poll(async()=>{try{return await balance(p);}catch{return null;}},{timeout:10000}).toBe('200000000');
 }
 async function open(p:Page){
  await p.bringToFront();
@@ -23,15 +17,15 @@ async function open(p:Page){
  const point=await worldPoint(p,1460,425);await p.mouse.click(point.x,point.y);
  await expect(p.locator('[data-combat]')).toBeVisible({timeout:25000});
 }
-async function balance(p:Page){return p.evaluate(async()=>{const me=await(await fetch('/api/auth/me')).json();const response=await fetch('/api/crypto-wallet',{headers:{'X-Royal-Account-Id':me.account?.id??me.id}});const wallet=await response.json();if(!response.ok)throw Error('Balance pending');return wallet.balanceUnits;});}
+async function balance(p:Page){return p.evaluate(async()=>{const me=await(await fetch('/api/auth/me')).json();const response=await fetch('/api/nile-play/wallet',{headers:{'X-Royal-Account-Id':me.account?.id??me.id}});const wallet=await response.json();if(!response.ok)throw Error('Balance pending');return wallet.balanceUnits;});}
 test('real host: two players, equal stakes, chat, phone controls, surrender payout and reopen',async({browser})=>{
  const ca=await browser.newContext(),cb=await browser.newContext();
  const a=await ca.newPage(),b=await cb.newPage();const errors:string[]=[];
  for(const p of [a,b])p.on('pageerror',e=>errors.push(e.message));
  try{
-  await login(a);
+  await login(a,'combat-local-a@example.test');
   const network=await a.evaluate(()=>(window as any).royalDemo.getNetworkState());
-  await login(b,network.roomId);
+  await login(b,'combat-local-b@example.test',network.roomId);
   await selectHall(a,'tables');await selectHall(b,'tables');
   await a.evaluate(async()=>{
    const {LobbyClient}=await import('/src/network/LobbyClient.ts');
@@ -49,7 +43,11 @@ test('real host: two players, equal stakes, chat, phone controls, surrender payo
   expect((await activity(a)).combat.phase).toBe('waiting');
   await b.locator('[data-ready]').click();
   await expect.poll(async()=>(await activity(a)).combat.phase).toBe('playing');
-  await expect.poll(async()=>{try{return await balance(a);}catch{return null;}},{timeout:10000}).toBe('99000000');
+  await expect.poll(async()=>{try{return await balance(a);}catch{return null;}},{timeout:10000}).toBe('199000000');
+  expect(await a.evaluate(async()=>{
+   const me=await(await fetch('/api/auth/me')).json();
+   return (await fetch('/api/nile-play/combat-settle',{method:'POST',headers:{'Content-Type':'application/json','X-Royal-Account-Id':me.account?.id??me.id},body:JSON.stringify({winner:me.account?.id??me.id,payoutUnits:'999999999'})})).status;
+  })).toBe(405);
   await a.evaluate(()=>{
    const s=(window as any).royalDemo.getActivities().combat,send=(window as any).__combatAttack;
    for(const payload of [
@@ -75,7 +73,7 @@ test('real host: two players, equal stakes, chat, phone controls, surrender payo
   await b.locator('#shared-close').click();
   await expect.poll(async()=>(await activity(a)).combat.phase).toBe('finished');
   await expect(a.locator('[data-combat] [data-status]')).toContainText('1,9');
-  await expect.poll(async()=>{try{return await balance(a);}catch{return null;}},{timeout:10000}).toBe('100900000');
+  await expect.poll(async()=>{try{return await balance(a);}catch{return null;}},{timeout:10000}).toBe('200900000');
   await a.locator('#shared-close').click();
   await expect(a.locator('#shared-dialog')).toHaveCount(0);
   await expect(a.locator('#chat-input')).toBeVisible();

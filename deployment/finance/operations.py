@@ -629,7 +629,7 @@ def nile_reconcile():
     args = ['docker', 'compose', '-f', str(ROOT / 'deployment/finance/compose.nile-reconcile.yaml'),
             'run', '--rm', '--no-deps', '--name', 'royal-nile-reconcile-once', 'nile-reconcile']
     try:
-        result = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=130)
+        result = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=300)
         if result.stdout.strip():
             value = json.loads(result.stdout)
         else:

@@ -10,10 +10,10 @@ export class CardTablesCatalog {
     const header=document.createElement('div');header.className='card-tables-heading';
     const title=document.createElement('strong');title.textContent=translateText('За стол к крупье');
     const total=ACTIVE_CARD_GAME_IDS.length;
-    const count=document.createElement('span');count.textContent=String(total)+translateText(' игр');header.append(title,count);
+    const count=document.createElement('span');count.textContent=translateText('Столов: ')+String(total);header.append(title,count);
     const intro=document.createElement('p');intro.textContent=translateText('Карточный этаж · У каждой игры свой крупье');
     const label=document.createElement('label');label.className='card-tables-search';label.textContent=translateText('Найти игру или крупье');
-    const search=document.createElement('input');search.type='search';search.placeholder=translateText('Например: Баккара или Алекс');label.append(search);
+    const search=document.createElement('input');search.type='search';search.placeholder=translateText('Например: 21 или Лука');label.append(search);
     const grid=document.createElement('div');grid.className='card-tables-grid';
     for(const id of ACTIVE_CARD_GAME_IDS) {
       const profile=dealerForGame(id)!;
@@ -31,7 +31,7 @@ export class CardTablesCatalog {
     search.oninput=()=>{
       const query=search.value.trim().toLocaleLowerCase(locale);let visible=0;
       grid.querySelectorAll<HTMLButtonElement>('[data-card-table]').forEach(button=>{button.hidden=!button.textContent!.toLocaleLowerCase(locale).includes(query);if(!button.hidden)visible++;});
-      count.textContent=String(visible)+(visible===total?translateText(' игр'):translateText(' из ')+total);empty.hidden=visible!==0;
+      count.textContent=visible===total?translateText('Столов: ')+String(total):String(visible)+translateText(' из ')+total;empty.hidden=visible!==0;
     };
     this.root.append(header,intro,label,grid,empty);host.append(this.root);
   }
