@@ -110,7 +110,7 @@ test('real API retries a lost result once, restores collection and bonus, and se
   expect(errors).toEqual([]);
 });
 
-test('real host opens published Dracona with connected chat on desktop and mobile', async ({ page }) => {
+test('real host opens both published games with connected chat on desktop and mobile', async ({ page }) => {
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
   const hostApi = await apiRequest.newContext({ baseURL:test.info().project.use.baseURL });
   const auth = await hostApi.post('/api/auth/login', { data:{email:'neopolis-room-' + crypto.randomUUID() + '@example.test',password:'Neopolis-room-review-42!'} });
@@ -141,7 +141,18 @@ test('real host opens published Dracona with connected chat on desktop and mobil
       await page.screenshot({path:'test-results/neopolis/review/dracona-host-'+width+'.png'});
     }
     await page.locator('#studio-game-list').click();
-    await expect(page.locator('[data-platform-game=studio-neopolis]')).toHaveCount(0);
+    await expect(page.locator('[data-platform-game=studio-neopolis]')).toHaveCount(1);
+    await page.locator('[data-platform-game=studio-neopolis]').click();
+    await expect(page.locator('[data-np=spin]')).toBeEnabled();
+    for (const [width,height] of [[1440,1000],[390,844]]) {
+      await page.setViewportSize({width,height});
+      await expect(page.locator('#mini-dialog #chat-input')).toBeVisible();
+      const layout = await page.locator('#mini-dialog').evaluate(root=>({width:root.clientWidth,scroll:root.scrollWidth}));
+      expect(layout.scroll).toBeLessThanOrEqual(layout.width+1);
+      await expect(page.locator('[data-np=spin]')).toBeVisible();
+      await page.screenshot({path:'test-results/neopolis/review/neopolis-host-'+width+'.png'});
+    }
+    await page.locator('#studio-game-list').click();
     await page.locator('[data-platform-game=studio-dracona]').click();
     await expect(page.frameLocator('iframe.dracona-frame').locator('#spin')).toBeEnabled();
     await page.locator('#mini-dialog .mini-top [data-close]').click();

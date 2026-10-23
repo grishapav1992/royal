@@ -90,8 +90,10 @@ def build():
     payload()
     guard()
     backups = backup()
-    results = {}
-    for component, file in [('game', 'index.js'), ('payments', 'payments.js'), ('nile', 'play.js')]:
+    activation = M.get('activationOnly', False)
+    results = {component: OLD['containers'][container]['image'] for component, container in SERVICES.items()} if activation else {}
+    components = [('payments', 'payments.js')] if activation else [('game', 'index.js'), ('payments', 'payments.js'), ('nile', 'play.js')]
+    for component, file in components:
         directory = ROOT / ('build-' + component)
         directory.mkdir(exist_ok=False)
         base = OLD['preparedImage'] if component == 'game' else OLD['containers'][SERVICES[component]]['image']
@@ -107,6 +109,11 @@ def build():
         with (ROOT / (component + '-build.log')).open('w') as log:
             subprocess.run(['docker', 'build', '--network=none', '-t', tag, str(directory)], stdout=log, stderr=subprocess.STDOUT, check=True)
         results[component] = run(['docker', 'image', 'inspect', tag, '--format', '{{.Id}}'])
+        if activation:
+            # Syntax checking alone does not find missing external runtime packages.
+            probe = 'for(const name of ' + json.dumps(M['paymentImports']) + ')await import(name);console.log("runtime imports available")'
+            run(['docker', 'run', '--rm', '--network=none', '--read-only', '--entrypoint', 'node', tag,
+                 '--input-type=module', '-e', probe])
     save('build-result.json', {'images': results, 'backups': backups})
     print(json.dumps({'built': results, 'backupsVerified': True}))
 
@@ -185,7 +192,7 @@ def verify():
                 assert sha(root / path.relative_to(ROOT / folder)) == sha(path)
     programs = json.loads(run(['docker', 'exec', SERVICES['game'], 'node', '-e', PROGRAM]))
     for name, digest in OLD['program'].items():
-        if name != 'dist-server/index.js':
+        if M.get('activationOnly') or name != 'dist-server/index.js':
             assert programs[name] == digest, 'Existing program or asset changed: ' + name
     assert {str(p): sha(p) for p in Path('/opt/royal-game-modules').rglob('*') if p.is_file() and not p.is_symlink()} == OLD['modules']
     assert sha('/opt/royal-game-modules-state/host.json') == OLD['hostContract']

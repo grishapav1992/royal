@@ -32,6 +32,7 @@ export class Dracona {
   private hostServices = readGameHost();
   private client = this.hostServices.expansionClient;
   private wallet = this.hostServices.demoWallet;
+  private get currency() { return this.wallet.wallet?.asset === 'USDT_NILE_TEST' ? 'USDT' : 'тестовых монет'; }
   private document: Document;
   private window: Window;
   private controller = new AbortController();
@@ -244,7 +245,8 @@ export class Dracona {
       this.status(view.remaining ? `Бонус сохранен. Осталось вращений: ${view.remaining}` : 'Последний результат восстановлен');
     }
     if (!this.busy && !view && !this.presented) { this.runes.fill(1); this.draw(initial); this.drawReserve([0, 1, 2, 3]); }
-    if (!this.client.accountId) this.status('Войди в аккаунт Royal для игры на демомонеты');
+    this.root.querySelector('.balance-value small')!.textContent = this.currency;
+    if (!this.client.accountId) this.status('Войди в аккаунт Royal для игры на ' + this.currency);
     else if (this.client.pending && !this.busy) this.status(this.client.pending.gameId === DRACONA_GAME ? 'Проверь сохраненный ход. Повторного списания не будет.' : 'Сначала проверь незавершенный ход в другой игре.');
     this.controls();
   }
@@ -255,7 +257,7 @@ export class Dracona {
     const account = this.client.accountId;
     const before = this.session;
     const wasFree = before?.state === 'active';
-    if (!this.client.pending && !wasFree && this.balance < this.bet) { this.status('Недостаточно демомонет'); return false; }
+    if (!this.client.pending && !wasFree && this.balance < this.bet) { this.status('Недостаточно ' + this.currency); return false; }
     this.spinSpeed = this.speed;
     this.busy = true; this.transfers = 0;
     this.root.dataset.phase = 'waiting'; this.controls();
@@ -354,7 +356,7 @@ export class Dracona {
     }
     if (step.type === 'final') {
       this.find('#win-value').textContent = amount(step.total);
-      this.status(step.bonusAward > 0 ? `${step.crestCount} герба · ${step.bonusAward} бесплатных вращений` : step.total > 0 ? `Выигрыш ${amount(step.total)} тестовых монет` : this.transfers ? 'Обмен завершен. Следующее заклинание впереди.' : 'Магия затихла. Сделай новый взмах.');
+      this.status(step.bonusAward > 0 ? `${step.crestCount} герба · ${step.bonusAward} бесплатных вращений` : step.total > 0 ? `Выигрыш ${amount(step.total)} ${this.currency}` : this.transfers ? 'Обмен завершен. Следующее заклинание впереди.' : 'Магия затихла. Сделай новый взмах.');
     }
   }
 
@@ -385,7 +387,7 @@ export class Dracona {
   private showRules() {
     const legacy = this.session?.view.dracona?.version === 1;
     const prices = [2.5,5.5,12,30,80].map(value => (value * (legacy ? 1 : DRACONA_MATH.payNumerator / DRACONA_MATH.payDenominator)).toLocaleString(locale,{maximumFractionDigits:6}));
-    const rounding = legacy ? 'целой тестовой монеты' : '0,01 тестовой монеты вниз для каждой группы';
+    const rounding = this.currency === 'USDT' ? (legacy ? 'целого USDT' : '0,01 USDT вниз для каждой группы') : legacy ? 'целой тестовой монеты' : '0,01 тестовой монеты вниз для каждой группы';
     this.showDialog('Тайны шкафа', `<div class="rules-copy"><p><b>Автовращения.</b> Выбери серию из 10, 25 или 50 вращений и нажми «Старт». Скорость настраивается отдельно: обычная, быстрая или турбо. Изменение скорости применяется со следующего спина. «Стоп» завершает текущий спин и отменяет оставшиеся. При открытии бонуса, правил, нехватке монет или ошибке серия останавливается.</p><p><b>Каскады.</b> Пять одинаковых символов, соединенных по горизонтали или вертикали, дают выигрыш. Они исчезают, остальные падают, сверху приходят новые. До 8 каскадов за вращение.</p><p><b>Переносы.</b> Символ шкафа дает обмен участка 2 × 2 с четырьмя символами по ту сторону. После обмена поле снова проверяется. До 3 переносов за вращение.</p><p><b>Память поместья.</b> Три герба на одном показе поля открывают 8 бесплатных вращений. Во время бонуса три герба добавляют еще 2, максимум 20 за серию. Ставка фиксируется при входе в бонус. В 45% бонусных вращений резерв зачарован: все четыре его символа одинаковые.</p><p><b>Серебряные руны.</b> В бонусе каждый перенос повышает руны своих клеток на один, от ×2 до ×5. Для группы берется наибольшая руна, множители не перемножаются. После бонуса руны сбрасываются.</p><p><b>Выплаты за группу.</b> 5–6 символов: ${prices[0]} ставки; 7–8: ${prices[1]}; 9–11: ${prices[2]}; 12–15: ${prices[3]}; 16–20: ${prices[4]}. Затем применяется ценность символа: зелье ×1,3, кольцо ×1,2, книга ×1,1, ключ ×1, изумруд ×0,9, перо ×0,8, и руна. Итог округляется до ${rounding}.</p><p>${DRACONA_RULES}</p></div>`);
   }
   getState() { return { gameId: DRACONA_GAME, ready: !!this.client.accountId, busy: this.busy, remaining: this.bonusRemaining, autoplay: this.autoplay.state, audio: this.audio.getState() }; }
