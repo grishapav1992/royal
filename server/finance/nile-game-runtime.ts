@@ -1,5 +1,4 @@
 import {createHash} from 'node:crypto';
-import { CommonSkinPayments } from '../skinPayments';
 import { SKIN_UUID } from '../../src/shared/skinStudio';
 import {DemoWalletStore,WalletError} from '../demoWallet';
 import type {PostgresDatabase} from '../database';
@@ -45,6 +44,7 @@ export class NileGameRuntime{
     if (!context.ready) throw new WalletError(409,'Подтверждение тестового USDT временно недоступно.');
     if (context.available < 10000000n) throw new WalletError(409,'На общем балансе недостаточно USDT. Нужно 10 USDT.');
    }
+   const { CommonSkinPayments } = await import('../skinPayments');
    const result = await new CommonSkinPayments(this.projection,Promise.resolve()).skinPurchase(account,op.id,op.action);
    const available = context.available+(BigInt(await demoBalanceUnits(this.ledger.db,account))-cents)*10000n;
    const reserve = BigInt(await demoReservedUnits(this.ledger.db,account))*10000n;
