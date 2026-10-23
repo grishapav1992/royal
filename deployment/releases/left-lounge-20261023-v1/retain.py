@@ -10,6 +10,7 @@ import os
 import shutil
 import tarfile
 import time
+from retention_pending import pending_image_ids
 
 NAME = 'left-lounge-20261023-v1'
 parser = argparse.ArgumentParser()
@@ -45,10 +46,8 @@ else:
         completed = any((folder / name).is_file() and m.read(folder / name).get('published') is True
                         for name in ['published.json', 'verification.json'])
         if completed:continue
-        built = m.read(result)
-        for key in ['image', 'game', 'financial', 'gameImage', 'financialImage']:
-            value = built.get(key)
-            if isinstance(value, str) and value.startswith('sha256:'):pending_images.add(value)
+        manifest = folder / 'install-manifest.json'
+        pending_images.update(pending_image_ids(m.read(result), m.read(manifest) if manifest.is_file() else {}))
         pending_paths.add(str(folder))
     keep = set(value['keep']);exceptions = {}
     def preserve(name, reason, condition):
