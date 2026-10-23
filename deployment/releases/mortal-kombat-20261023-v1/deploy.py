@@ -44,6 +44,14 @@ def require_financial_status(health, permit_stale=False):
     if not health.get('ready'):
         assert permit_stale and health.get('lastError') in [None,'play_source_not_ready'], 'Unexpected financial failure'
 
+def verify_contracts(old_contract,new_contract):
+    for game,contract in old_contract['games'].items():
+        # The common Nile host includes the already qualified Dracona v3 transition.
+        previous={'apiVersion':1,'rulesVersion':2,'progressVersion':1}
+        expected={'apiVersion':1,'rulesVersion':3,'progressVersion':2} if game=='studio-dracona' and contract==previous else contract
+        assert new_contract['games'].get(game)==expected, game
+    assert new_contract['games']['mortal-kombat']=={'apiVersion':1,'rulesVersion':2,'progressVersion':1}
+
 def guard():
     for name, digest in M['payload'].items(): assert sha(ROOT / name) == digest, name
     now = snapshot()
@@ -54,6 +62,7 @@ def guard():
     assert now['containers']['royal-game-1']['health'] == 'healthy'
     health = json.loads(run(['docker','exec','royal-nile-play','node','play.js','status']))
     require_financial_status(health,M['preexistingNileUnready'])
+    verify_contracts(json.loads(HOST.read_text()),json.loads((ROOT/'host.json').read_text()))
 
 def backup():
     BACKUP.mkdir(mode=0o700, exist_ok=False)
@@ -168,9 +177,7 @@ def publish():
         phase='host'
         for name in M['source']: atomic(ROOT/'source'/name,LIVE/name)
         old_contract=json.loads(HOST.read_text()); new_contract=json.loads((ROOT/'host.json').read_text())
-        for game,contract in old_contract['games'].items():
-            assert new_contract['games'].get(game)==contract, game
-        assert new_contract['games']['mortal-kombat']=={'apiVersion':1,'rulesVersion':2,'progressVersion':1}
+        verify_contracts(old_contract,new_contract)
         for source in (ROOT/'external').rglob('*'):
             if source.is_file() and source.name!='active.json':
                 target=MODULES/source.relative_to(ROOT/'external')
