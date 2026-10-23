@@ -56,6 +56,8 @@ def financial_profile(row):
     host = dict(row['HostConfig'])
     for key in ['NanoCpus', 'Binds']:
         host.pop(key, None)
+    if 'Mounts' in host:
+        host['Mounts'] = sorted(host['Mounts'], key=lambda mount: mount['Target'])
     return {'user': config['User'], 'cwd': config['WorkingDir'], 'cmd': config['Cmd'], 'entrypoint': config['Entrypoint'],
             'environmentHash': hashlib.sha256(json.dumps(sorted(v for v in config['Env'] if v!='FINANCE_ADMIN_ACCOUNT_IDS=')).encode()).hexdigest(),
             'hostHash': hashlib.sha256(json.dumps(host, sort_keys=True).encode()).hexdigest(),
