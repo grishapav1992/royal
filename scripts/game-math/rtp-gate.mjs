@@ -20,7 +20,7 @@ export async function rtpInputs(root, gameId) {
   const registry = JSON.parse(await readFile(resolve(root, 'scripts/game-math/rtp-policy.json'), 'utf8'));
   const policy = registry.profiles[gameId];
   assert(policy, 'No RTP qualification policy for ' + gameId);
-  const sourceHashes = Object.fromEntries(await Promise.all([...policy.sources, 'scripts/game-math/rtp-simulation.mjs'].map(async file =>
+  const sourceHashes = Object.fromEntries(await Promise.all([...policy.sources, policy.qualificationSource ?? 'scripts/game-math/rtp-simulation.mjs'].map(async file =>
     [file, sourceDigest(await readFile(resolve(root, file)))])));
   return { policy, sourceHashes, policySha256: digest(JSON.stringify(policy)) };
 }
@@ -28,9 +28,10 @@ export function validateRtpProof(gameId, inputs, proof) {
   const { policy: p } = inputs;
   assert.equal(proof.schemaVersion, 1); assert.equal(proof.gameId, gameId);
   assert.equal(proof.rulesVersion, p.rulesVersion); assert.equal(proof.progressVersion, p.progressVersion);
-  assert(p.target > 0 && p.target < 1 && p.maxUpper95 < 1 && p.tolerance <= .02);
   assert.equal(proof.policySha256, inputs.policySha256, 'RTP policy changed: rerun qualification');
   assert.deepEqual(proof.sourceHashes, inputs.sourceHashes, 'RTP source changed: rerun qualification');
+  if(p.method==='exhaustive-pvp-journal')return validatePvpProof(gameId,p,proof);
+  assert(p.target > 0 && p.target < 1 && p.maxUpper95 < 1 && p.tolerance <= .02);
   assert.equal(proof.results.length, p.stakes.length * p.choices.length, 'Every stake and choice must be qualified');
   const keys = new Set();
   for (const row of proof.results) {
@@ -52,6 +53,26 @@ export function validateRtpProof(gameId, inputs, proof) {
     assert(proof.streams.some(stream => stream.choice === choice && stream.seed === expected));
   }
   assert(proof.serverReplayChecks >= p.stakes.length * p.choices.length * 64, 'Server replay cross-check is missing');
+  return true;
+}
+function validatePvpProof(gameId,p,proof){
+  assert.equal(gameId,'mortal-kombat');assert.equal(proof.method,p.method);
+  assert.equal(p.target,.95);assert.equal(p.refundReturn,1);assert.equal(p.commissionBasisPoints,500);
+  assert.deepEqual(p.stakes,[1000000,2000000,5000000,10000000,50000000,100000000]);
+  assert.deepEqual(p.choices,['left-win','right-win','draw','cancel','disconnect-left','disconnect-right','expired','server']);
+  assert.equal(proof.results.length,p.stakes.length*p.choices.length);
+  const keys=new Set();
+  for(const row of proof.results){
+    assert(p.stakes.includes(row.stakeUnits)&&p.choices.includes(row.choice));
+    const key=row.choice+':'+row.stakeUnits;assert(!keys.has(key));keys.add(key);
+    const stake=BigInt(row.stakeUnits),pot=stake*2n,decisive=row.choice.includes('win')||row.choice.startsWith('disconnect');
+    const fee=decisive?pot*BigInt(p.commissionBasisPoints)/10000n:0n;
+    const winner=row.choice==='right-win'||row.choice==='disconnect-right'?1:0;
+    assert.equal(row.potUnits,String(pot));assert.equal(row.feeUnits,String(fee));
+    assert.deepEqual(row.playerUnits,decisive?[0,1].map(i=>i===winner?String(pot-fee):'0'):[String(stake),String(stake)]);
+    assert.equal(row.returnedUnits,String(pot-fee));assert.equal(row.returnRatio,decisive?p.target:p.refundReturn);
+  }
+  assert.equal(proof.serverReplayChecks,proof.results.length*3);
   return true;
 }
 export async function checkGameRtp(root, catalog, selected = catalog.map(game => game.gameId)) {
