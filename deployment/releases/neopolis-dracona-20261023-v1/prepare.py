@@ -45,10 +45,11 @@ for name, old in before['financeSource'].items():
 # All financial bundle inputs must be the committed candidate, including bundled dependencies.
 meta = json.loads((stage / 'artifacts/financial-meta.json').read_text())
 for name in meta['inputs']:
-    if name.startswith('node_modules/'): continue
+    if 'node_modules' in Path(name).parts: continue
+    assert not Path(name).is_absolute() and '..' not in Path(name).parts and name.startswith(('server/','src/','scripts/')), name
     assert (stage / name).is_file(), name
-    if name in before['financeSource']:
-        assert name in finance or canonical(stage / name) == before['financeSource'][name]['lf'], name
+    if name not in before['financeSource'] or canonical(stage / name) != before['financeSource'][name]['lf']:
+        finance[name] = copy(stage / name, 'finance-source/' + name)
 
 def delta(directory):
     result = {}
