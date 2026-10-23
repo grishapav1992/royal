@@ -29,5 +29,6 @@ for(const name of ['deploy.py','snapshot.py']){
  await copyFile('deployment/releases/restore-usdt-20261023-v1/'+name,path.join(destination,name));
  payload[name]=sha(await readFile(path.join(destination,name)));
 }
-await writeFile(path.join(destination,'manifest.json'),JSON.stringify({sourceCommit:commit,githubVerified:true,inputs,source,payload},null,2)+'\n');
+const retainedFinanceInputs={'package.json':'1515752916000c636bc20bfaf5dc510bc8afde5f1c0edf5d0ec35fb186950b5e','package-lock.json':'e51fd5ab64f6050b558790cb8ba9b7627f2dd53ad66bf8f4d6a9859425266b4c'};
+await writeFile(path.join(destination,'manifest.json'),JSON.stringify({sourceCommit:commit,githubVerified:true,inputs,retainedFinanceInputs,source,payload},null,2)+'\n');
 console.log(JSON.stringify({sourceCommit:commit,inputs:Object.keys(inputs).length,destination}));
