@@ -1,0 +1,109 @@
+"""Reconcile reviewed artifacts with the independently published lounge and GirlHUB."""
+from pathlib import Path
+import fcntl
+import hashlib
+import importlib.util
+import json
+import shutil
+import subprocess
+import tarfile
+import time
+
+ROOT = Path(__file__).resolve().parent
+spec = importlib.util.spec_from_file_location('release', ROOT / 'deploy.py')
+r = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(r)
+candidate = json.loads((ROOT / 'combined-install-manifest.json').read_text())
+reuse = json.loads((ROOT / 'combined-reuse.json').read_text())
+
+with open('/opt/royal-releases/themed-publish.lock', 'a+') as app, open('/opt/royal-game-modules-state/module.lock', 'a+') as modules:
+    fcntl.flock(app, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    fcntl.flock(modules, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    before = candidate['before']
+    assert r.source_inventory() == before['source'], 'Production source advanced again'
+    assert r.inventory(r.MODULES) == before['moduleFiles'] and r.sha(r.HOST) == before['moduleHostContract']
+    assert r.inspect('royal-game-1')['Image'] == before['container']['image']
+    assert r.inspect('royal-game-1')['State']['Health']['Status'] == 'healthy'
+    for name, digest in before['configHashes'].items(): assert r.sha(r.LIVE / name) == digest
+    built = json.loads((ROOT / 'build-result.json').read_text())
+    assert r.inspect('royal-nile-play')['Image'] == built['financial']
+    assert r.financial_profile(r.inspect('royal-nile-play')) == built['financialProfile']
+    temporary = ROOT / 'combined-materialized'
+    temporary.mkdir(exist_ok=False)
+    for target, source in reuse.items():
+        assert target in candidate['payload'] and not Path(target).is_absolute() and '..' not in Path(target).parts
+        source = Path(source) if Path(source).is_absolute() else ROOT / source
+        assert source.is_file() and not source.is_symlink() and r.sha(source) == candidate['payload'][target], target
+        destination = temporary / target
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source, destination)
+    with tarfile.open(ROOT / 'combined-delta.tgz') as archive:
+        for member in archive:
+            assert member.isfile() and member.name in candidate['payload']
+            assert not Path(member.name).is_absolute() and '..' not in Path(member.name).parts
+            data = archive.extractfile(member).read()
+            assert hashlib.sha256(data).hexdigest() == candidate['payload'][member.name]
+            destination = temporary / member.name
+            assert not destination.exists()
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            destination.write_bytes(data)
+    for file in temporary.rglob('*'):
+        if file.is_file(): r.atomic(file, ROOT / file.relative_to(temporary))
+    for name, digest in candidate['payload'].items(): assert r.sha(ROOT / name) == digest, name
+    r.BACKUP.joinpath('initial').mkdir(exist_ok=False)
+    for name in ['source.tgz', 'index.html', 'host.json']:
+        shutil.copyfile(r.BACKUP / name, r.BACKUP / 'initial' / name)
+    shutil.copytree(r.BACKUP / 'pointers', r.BACKUP / 'initial' / 'pointers')
+    with tarfile.open(r.BACKUP / 'source.tgz', 'w:gz') as archive:
+        for name, digest in before['source'].items():
+            assert r.sha(r.LIVE / name) == digest
+            archive.add(r.LIVE / name, arcname=name, recursive=False)
+    with tarfile.open(r.BACKUP / 'source.tgz') as archive:
+        assert {m.name: hashlib.sha256(archive.extractfile(m).read()).hexdigest() for m in archive} == before['source']
+    r.run(['docker', 'cp', 'royal-game-1:/app/dist/index.html', str(r.BACKUP / 'index.html')])
+    for name in candidate['pointers']:
+        shutil.copyfile(name, r.BACKUP / 'pointers' / Path(name).parent.name / 'active.json')
+    shutil.copyfile(ROOT / 'install-manifest.json', ROOT / 'install-manifest-before-combined.json')
+    r.save('install-manifest.json', candidate)
+    r.M = candidate
+    r.OLD = before
+    r.validate_payload()
+    context = ROOT / 'game-combined-context'
+    context.mkdir(exist_ok=False)
+    for directory in ['dist-delta', 'server-delta', 'module-delta']:
+        shutil.copytree(ROOT / directory, context / directory)
+    for name in candidate['packages']: shutil.copyfile(ROOT / 'source' / name, context / name)
+    (context / 'Dockerfile').write_text(
+        'FROM royal-game:pvp-usdt-20261023-v2\n'
+        'COPY --chown=node:node dist-delta/ /app/dist/\n'
+        'COPY --chown=node:node server-delta/index.js /app/dist-server/index.js\n'
+        'COPY --chown=node:node module-delta/ /app/module-dist/\n'
+        'COPY --chown=node:node package.json package-lock.json /app/\n'
+        'LABEL org.opencontainers.image.revision="' + candidate['sourceCommit'] + '"\n')
+    tag = 'royal-game:pvp-usdt-20261023-v2-combined'
+    with (ROOT / 'game-combined-build.log').open('w') as log:
+        subprocess.run(['docker', 'build', '--pull=false', '-t', tag, '.'], cwd=context, check=True, stdout=log, stderr=subprocess.STDOUT)
+    image = r.run(['docker', 'image', 'inspect', tag, '--format', '{{.Id}}'])
+    built.update(game=image, sourceCommit=candidate['sourceCommit'], sourceBackupSha256=r.sha(r.BACKUP / 'source.tgz'))
+    r.save('build-result.json', built)
+    r.run(['docker', 'tag', before['preparedImage'], 'royal-game:before-pvp-usdt-20261023-v2-combined'])
+    print(json.dumps({'combinedImage': image, 'sourceCommit': candidate['sourceCommit'], 'gameStillUnpublished': True}), flush=True)
+    deadline = time.monotonic() + 600
+    observations = []
+    while time.monotonic() < deadline:
+        state = r.inspect('royal-nile-play')
+        if state['State'].get('Health', {}).get('Status') == 'healthy':
+            health = json.loads(r.run(['docker', 'exec', '-e', 'UV_THREADPOOL_SIZE=1', 'royal-nile-play', 'node', '--v8-pool-size=1', 'play.js', 'health']))
+            if health['ok'] and health['ready']:
+                observations.append({'at': time.time(), **health})
+                if len(observations) >= 3 and observations[-1]['at'] - observations[0]['at'] >= 120:
+                    r.save('finance-verification.json', {'ok': True, 'observations': observations})
+                    break
+            else: observations = []
+        else: observations = []
+        time.sleep(35)
+    else: raise RuntimeError('Financial readiness is not sustained; game remains unpublished')
+    try: r.game()
+    except BaseException:
+        r.rollback()
+        raise
