@@ -22,7 +22,17 @@ try {
       const spin = scope.locator(game==='studio-dracona' ? '#spin' : '[data-np=spin]');
       await spin.waitFor({state:'visible',timeout:45000});
       assert.equal(await spin.isDisabled(), true, 'Anonymous preview must not accept a stake');
-      if(game==='studio-neopolis') assert.equal(await page.locator('.np h1').textContent(),language==='en'?'Guardians of Neopolis':'Стражи Неополиса');
+      let atlasesLoaded = 0;
+      if(game==='studio-neopolis') {
+        assert.equal(await page.locator('.np h1').textContent(),language==='en'?'Guardians of Neopolis':'Стражи Неополиса');
+        atlasesLoaded = await page.locator('.np-symbol,.np-costume').evaluateAll(async elements => {
+          const urls = new Set(elements.flatMap(element => [...getComputedStyle(element).backgroundImage.matchAll(/url\(["']?([^"')]+)["']?\)/g)].map(match=>match[1])));
+          const loaded = await Promise.all([...urls].map(async url=>{const image=new Image();image.src=url;await image.decode();return image.naturalWidth>0;}));
+          if(urls.size<2||loaded.some(value=>!value)) throw Error('Symbol or costume atlas did not load');
+          await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+          return urls.size;
+        });
+      }
       for (const viewport of [{width:1440,height:1000},{width:390,height:844}]) {
         await page.setViewportSize(viewport);
         await page.waitForTimeout(200);
@@ -32,7 +42,7 @@ try {
         assert(images.length>0&&images.every(Boolean),'Game image failed to load');
         assert(await spin.isVisible());
         await page.screenshot({path:folder+'/'+game+'-'+language+'-'+viewport.width+'.png'});
-        results.push({game,language,viewport,imagesLoaded:images.length,anonymousStakeBlocked:true,noHorizontalOverflow:true});
+        results.push({game,language,viewport,imagesLoaded:images.length,atlasesLoaded,anonymousStakeBlocked:true,noHorizontalOverflow:true});
       }
       if(game==='studio-neopolis') {
         await page.locator('[data-np=rules]').click();
