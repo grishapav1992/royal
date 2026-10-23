@@ -48,7 +48,7 @@ def guard():
         assert now['containers'][name]['id'] == row['id'] and now['containers'][name]['image'] == row['image'], name
     assert now['containers']['royal-game-1']['health'] == 'healthy'
     assert now['containers']['royal-nile-play']['health'] == 'healthy'
-    health = json.loads(run(['docker','exec','royal-nile-play','node','play.js','health']))
+    health = json.loads(run(['docker','exec','-e','UV_THREADPOOL_SIZE=1','royal-nile-play','node','--v8-pool-size=1','play.js','health']))
     assert health.get('ready') and health.get('ok'), 'Financial source is not ready'
 
 def backup():
@@ -130,7 +130,7 @@ def publish():
         run(['docker','compose',*[v for n in nile_compose for v in ['-f',n]],'up','-d','--no-deps','--no-build','--force-recreate','nile-play'],cwd=FINANCE)
         wait_health('royal-nile-play',180)
         assert profile(inspect('royal-nile-play'))==OLD['containers']['royal-nile-play']['profile'], 'Financial isolation changed'
-        health=json.loads(run(['docker','exec','royal-nile-play','node','play.js','health']))
+        health=json.loads(run(['docker','exec','-e','UV_THREADPOOL_SIZE=1','royal-nile-play','node','--v8-pool-size=1','play.js','health']))
         assert health.get('ok') and health.get('ready'), 'Financial audit/readiness failed'
         save('finance-verification.json',{'ok':True,'ready':True,'image':images['financial']})
         phase='host'
