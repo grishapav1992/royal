@@ -40,6 +40,9 @@ with open('/opt/royal-releases/themed-publish.lock','a+') as app,open('/opt/roya
         assert before['containers']['royal-nile-play']['image']==M['baseFinancialImage']
         assert before['containers']['royal-game-1']['image']==M['gameImage']
         assert before['containers']['royal-game-1']['health']=='healthy'
+        for name,digest in M['baseSource'].items():
+            for folder in [LIVE,FINANCE]:
+                assert (not (folder/name).exists()) if digest is None else canonical(folder/name)==digest, 'Changed source differs: '+name
         for name,digest in M['inputs'].items():
             if name in M['source']:continue
             assert canonical(LIVE/name)==digest,'Financial dependency differs: '+name
