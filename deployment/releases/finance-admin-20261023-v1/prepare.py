@@ -7,7 +7,9 @@ import subprocess
 import sys
 
 CHECKOUT = Path(__file__).resolve().parents[3]
-STAGE, BEFORE, OUTPUT = map(Path, sys.argv[1:])
+STAGE, BEFORE, OUTPUT = map(Path, sys.argv[1:4])
+OWNER_ID = sys.argv[4]
+assert len(sys.argv) == 5
 assert not OUTPUT.exists()
 OUTPUT.mkdir(parents=True)
 SOURCE = '78cb1ccd53c64c08e2df836f9d14a9eb3926f1be'
@@ -58,7 +60,7 @@ for name in ['snapshot.py', 'deploy.py']:
 copy_file(CHECKOUT / 'compose.finance-admin.yaml', 'compose.finance-admin.yaml')
 copy_file(CHECKOUT / 'deployment/finance/compose.admin.yaml', 'compose.admin.yaml')
 manifest = {'sourceCommit': SOURCE, 'publishedCommit': git('rev-parse', 'HEAD').decode().strip(),
-            'ownerId': 'fb3dae97-8288-4932-86ab-28d40ce45014', 'before': old, 'buildInputs': expected,
+            'ownerId': OWNER_ID, 'before': old, 'buildInputs': expected,
             'payload': {p.relative_to(OUTPUT).as_posix(): sha(p.read_bytes()) for p in OUTPUT.rglob('*') if p.is_file()}}
 (OUTPUT / 'install-manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
 print(json.dumps({'sources': len(changed), 'buildInputs': len(expected), 'files': len(manifest['payload'])}))

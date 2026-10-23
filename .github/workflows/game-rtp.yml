@@ -1,10 +1,13 @@
-name: Game RTP gate
+name: Release build and game RTP gate
 on:
   pull_request:
   push:
     branches: [main]
 permissions:
   contents: read
+concurrency:
+  group: release-build-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 jobs:
   rtp-gate:
     runs-on: ubuntu-latest
@@ -13,12 +16,39 @@ jobs:
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
+          fetch-depth: 0
       - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
       - run: npm ci
-      - run: npm run check:rtp
+      - uses: actions/cache@v6
+        with:
+          path: |
+            module-build/*-proof.json
+            module-dist
+          key: ${{ runner.os }}-modules-${{ hashFiles('package-lock.json', 'scripts/build-game-module.mjs', 'scripts/module-build-cache.mjs') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-modules-
       - run: npm run test:rtp-gate
-      - run: npx tsc --noEmit
+      - run: npm run test:release
+      - run: npm run release:prepare -- --local --base HEAD^
+      - run: node --import tsx --test server-tests/independent-modules.test.ts server-tests/game-module-assets.test.ts
       - run: npm run test:slot-balance
+      - run: node scripts/ci-release-cache.mjs
+      - run: npm run release:verify
+      - uses: actions/upload-artifact@v7
+        with:
+          name: release-${{ github.sha }}
+          retention-days: 3
+          if-no-files-found: error
+          path: |
+            dist
+            dist-server/index.js
+            dist-server/crypto-reconcile.js
+            dist-server/payments.js
+            module-dist
+            module-build/release-manifest.json
+            module-build/release-timings.json
+            module-build/application-report.json
+            module-build/build-report.json
