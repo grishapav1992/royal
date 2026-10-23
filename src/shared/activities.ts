@@ -3,7 +3,7 @@ export type ActivityId = 'hockey' | 'pool' | 'piano' | 'chess';
 export const ACTIVITIES = {
   hockey: { name:translateText('Аэрохоккей'), entry:{x:1220,y:510}, bounds:{x:1175,y:382,w:90,h:100} },
   pool: { name:translateText('Бильярд'), entry:{x:562,y:510} },
-  piano: { name:translateText('Рояль'), entry:{x:120,y:340}, bounds:{x:70,y:260,w:110,h:60} },
+  piano: { name:translateText('Рояль'), entry:{x:800,y:480}, bounds:{x:750,y:400,w:110,h:60} },
   chess: { name:translateText('Шахматы'), entry:{x:1550,y:950}, bounds:{x:1497,y:853,w:104,h:59} },
 } as const;
 export const isActivity = (value: unknown): value is ActivityId => typeof value === 'string' && Object.hasOwn(ACTIVITIES,value);

@@ -8,7 +8,7 @@ import { CAT_HOME } from '../shared/catHome';
 import { CatRenderer, CAT_TEXTURE } from './CatRenderer';
 import { CAT_HABITS_TEXTURE, CAT_CLIMB_TEXTURE, CAT_SCRATCH_TEXTURE, CAT_WALK_TEXTURE } from './CatRenderer';
 import { drawCatCare } from './catCareArt';
-import { FLOOR, BOUNDS } from '../shared/clubGeometry';
+import { FLOOR, BOUNDS, HALL_WALL } from '../shared/clubGeometry';
 import { AmbientGuests, type AmbientGuestView } from '../shared/ambientGuests';
 import type { MiraView } from '../shared/miraRoutine';
 import { SecurityGuard } from './SecurityGuard';
@@ -138,7 +138,7 @@ export class RoomScene extends Phaser.Scene {
     this.marker = this.add.circle(0, 0, 12, COLORS.lime, .08).setStrokeStyle(1.5, COLORS.lime, .8).setVisible(false).setDepth(1);
     this.halo = this.add.ellipse(540, 572, 48, 19, COLORS.lime, .11).setStrokeStyle(1, COLORS.lime, .7);
     this.player = this.actor(540, 570, 0, translateText('Вы'), true);
-    this.cameras.main.setBounds(0,0,WORLD.width,WORLD.height).startFollow(this.player.sprite,false,1,1);
+    this.cameras.main.setBounds(0,HALL_WALL.viewTop,WORLD.width,WORLD.height-HALL_WALL.viewTop).startFollow(this.player.sprite,false,1,1);
     this.scale.on(Phaser.Scale.Events.RESIZE,this.resizeView,this);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN,()=>{this.clickTargets.cancel();this.afterMovement=undefined;this.scale.off(Phaser.Scale.Events.RESIZE,this.resizeView,this);});
     this.resizeView();
@@ -182,7 +182,7 @@ export class RoomScene extends Phaser.Scene {
       this.add.zone(link.door.click.x,link.door.click.y,122,70).setDepth(680).setInteractive({useHandCursor:true}).on('pointerdown',()=>{this.pendingCabinet=null;this.pendingLounge=null;this.goTo(link.door.entry);});
       return;
     }
-    g.setPosition(link.door.entry.x-900,0);
+    g.setPosition(link.door.entry.x-900,HALL_WALL.doorOffset);
     g.fillStyle(0x342f2a).fillRoundedRect(839,79,122,155,6);
     g.fillStyle(0xb38a53).fillRoundedRect(846,88,108,143,4);
     g.fillStyle(0x302637).fillRect(854,97,92,132);
@@ -192,11 +192,11 @@ export class RoomScene extends Phaser.Scene {
     g.fillStyle(0xf5d369).fillRect(850,94,4,133);g.fillRect(946,94,4,133);g.fillRect(850,94,100,4);
     g.fillStyle(0x65b8b2).fillRect(846,227,108,7);
     if(destination.floor!==HALLS[this.hall].floor)for(let y=186;y<=220;y+=7)g.lineStyle(2,0xb7cec0).lineBetween(866,y,934,y);
-    const floor=this.add.graphics().setDepth(1).setPosition(link.door.entry.x-900,0);
+    const floor=this.add.graphics().setDepth(1).setPosition(link.door.entry.x-900,HALL_WALL.doorOffset);
     floor.fillStyle(0x73d4ca,.12).fillTriangle(853,236,947,236,975,303);floor.fillTriangle(853,236,975,303,825,303);
-    this.add.text(link.door.entry.x,68,doorLabel,{fontFamily:'Arial',fontSize:'19px',fontStyle:'bold',color:'#342f2a',backgroundColor:'#f5d369',padding:{x:12,y:6}}).setOrigin(.5).setDepth(226);
-    this.add.text(link.door.entry.x,159,destination.name.replace(translateText(' и '),translateText('\nи ')).replace(translateText(' на '),translateText('\nна ')),{fontFamily:'Arial',fontSize:'13px',fontStyle:'bold',align:'center',color:'#ecf8dc',wordWrap:{width:80}}).setOrigin(.5).setDepth(226);
-    this.add.zone(link.door.entry.x,166,116,158).setDepth(230).setInteractive({useHandCursor:true}).on('pointerdown',()=>{this.pendingCabinet=null;this.pendingLounge=null;this.goTo(link.door.entry);});
+    this.add.text(link.door.entry.x,68+HALL_WALL.doorOffset,doorLabel,{fontFamily:'Arial',fontSize:'19px',fontStyle:'bold',color:'#342f2a',backgroundColor:'#f5d369',padding:{x:12,y:6}}).setOrigin(.5).setDepth(226);
+    this.add.text(link.door.entry.x,159+HALL_WALL.doorOffset,destination.name.replace(translateText(' и '),translateText('\nи ')).replace(translateText(' на '),translateText('\nна ')),{fontFamily:'Arial',fontSize:'13px',fontStyle:'bold',align:'center',color:'#ecf8dc',wordWrap:{width:80}}).setOrigin(.5).setDepth(226);
+    this.add.zone(link.door.entry.x,166+HALL_WALL.doorOffset,116,158).setDepth(230).setInteractive({useHandCursor:true}).on('pointerdown',()=>{this.pendingCabinet=null;this.pendingLounge=null;this.goTo(link.door.entry);});
   }
   private showHall(hall:HallId){
     this.clickTargets.reset();
@@ -214,22 +214,22 @@ export class RoomScene extends Phaser.Scene {
   private resizeView(){
     const width=this.scale.gameSize.width,height=this.scale.gameSize.height;
     const frame=this.overview&&this.hall==='arcade'?ARCADE_OVERVIEW_SIZE:WORLD;
-    const fit=Math.min(width/(frame.width-40),height/(frame.height-50));
+    const fit=Math.min(width/(frame.width-40),height/(frame.height-HALL_WALL.viewTop-50));
     const zoom=this.overview?fit:Math.max(fit,Phaser.Math.Clamp(Math.min(width/1000,height/760),.8,1.3));
     const viewWidth=width/zoom,viewHeight=height/zoom;
     const camera=this.cameras.main.setSize(width,height).setZoom(zoom).setBounds(
-      Math.min(0,(frame.width-viewWidth)/2),Math.min(0,(frame.height-viewHeight)/2),
-      Math.max(frame.width,viewWidth),Math.max(frame.height,viewHeight));
-    if(this.overview){camera.stopFollow();camera.centerOn(frame.width/2,frame.height/2);}
+      Math.min(0,(frame.width-viewWidth)/2),Math.min(HALL_WALL.viewTop,(frame.height+HALL_WALL.viewTop-viewHeight)/2),
+      Math.max(frame.width,viewWidth),Math.max(frame.height-HALL_WALL.viewTop,viewHeight));
+    if(this.overview){camera.stopFollow();camera.centerOn(frame.width/2,(frame.height+HALL_WALL.viewTop)/2);}
     else if(this.player)camera.startFollow(this.player.sprite,false,1,1);
   }
   private drawRoom() {
     const g = this.add.graphics();
     const r = (color: number, x: number, y: number, w: number, h: number, a = 1) => g.fillStyle(color, a).fillRect(x, y, w, h);
     // Night scenery and flat colored paper preserve the cartoon silhouette.
-    r(0x191d35, 0, 0, WORLD.width, WORLD.height);
+    r(0x191d35, 0, HALL_WALL.viewTop, WORLD.width, WORLD.height-HALL_WALL.viewTop);
     for(let n=0;n<31;n++){
-      const x=25+(n*137)%1030,y=9+(n*19)%46;
+      const x=25+(n*137)%1030,y=HALL_WALL.viewTop+9+(n*19)%46;
       r(n%3?0x8990b6:0xf2d69c,x,y,n%3?2:3,2);
     }
     g.fillStyle(0xf8df9e).fillCircle(1008,29,17);
@@ -247,10 +247,10 @@ export class RoomScene extends Phaser.Scene {
     r(0x211e2c,35,58,WORLD.width-70,WORLD.height-108);
     r(0x78523f,39,62,WORLD.width-78,WORLD.height-116);
     this.add.image(FLOOR.x,FLOOR.y,'club-floor-'+this.hall).setOrigin(0).setDisplaySize(FLOOR.width,FLOOR.height).setDepth(.01);
-    this.add.image(55,62,'club-wall-'+this.hall).setOrigin(0).setDisplaySize(FLOOR.width,112);
+    this.add.image(55,HALL_WALL.top,'club-wall-'+this.hall).setOrigin(0).setDisplaySize(FLOOR.width,HALL_WALL.height).setDepth(.02);
     const casino=this.hall==='arcade';
-    r(casino?0x3c1829:0x3a322a,40,62,14,WORLD.height-129);r(casino?0xf1c679:0x948269,49,62,3,WORLD.height-129);
-    r(casino?0x3c1829:0x3a322a,WORLD.width-53,62,15,WORLD.height-129);r(casino?0xf1c679:0x948269,WORLD.width-50,62,3,WORLD.height-129);
+    r(casino?0x3c1829:0x3a322a,40,HALL_WALL.top,14,WORLD.height-67-HALL_WALL.top);r(casino?0xf1c679:0x948269,49,HALL_WALL.top,3,WORLD.height-67-HALL_WALL.top);
+    r(casino?0x3c1829:0x3a322a,WORLD.width-53,HALL_WALL.top,15,WORLD.height-67-HALL_WALL.top);r(casino?0xf1c679:0x948269,WORLD.width-50,HALL_WALL.top,3,WORLD.height-67-HALL_WALL.top);
     r(casino?0x271921:0x332e29,35,1320,WORLD.width-69,17);r(casino?0xd7aa58:0x8f7958,35,1320,WORLD.width-69,3);
     drawHallIdentity(this,this.hall);
     drawClubFloor(this,this.hall,id=>this.approachSeat(id),()=>this.approachLuelonZone());
@@ -358,11 +358,12 @@ export class RoomScene extends Phaser.Scene {
   }
   pianoNote(note:number){
     if(this.reducedMotion||this.hall!=='arcade')return;
-    const glow=this.add.rectangle(79+(note-60)*5.4,311,4,9,0xc9f56b,.85).setDepth(323);
+    const {x,y}=ACTIVITIES.piano.bounds;
+    const glow=this.add.rectangle(x+9+(note-60)*5.4,y+51,4,9,0xc9f56b,.85).setDepth(y+63);
     this.tweens.add({targets:glow,alpha:0,duration:350,onComplete:()=>{glow.destroy();this.pianoEffects.delete(glow);}});
-    const music=this.add.text(120,272,'♪',{fontFamily:'serif',fontSize:'18px',color:'#d6efac'}).setDepth(350);
+    const music=this.add.text(x+50,y+12,'♪',{fontFamily:'serif',fontSize:'18px',color:'#d6efac'}).setDepth(y+90);
     this.pianoEffects.add(glow);this.pianoEffects.add(music);
-    this.tweens.add({targets:music,y:245,x:130,alpha:0,duration:700,onComplete:()=>{music.destroy();this.pianoEffects.delete(music);}});
+    this.tweens.add({targets:music,y:y-15,x:x+60,alpha:0,duration:700,onComplete:()=>{music.destroy();this.pianoEffects.delete(music);}});
   }
   approachSeat(id: string) {
     if (this.locked || this.isHuggingCat() || this.typing) return;

@@ -1,13 +1,13 @@
-import { BAR_OFFSET } from './furniture';
+import { BAR_POSITION, barPoint } from './furniture';
 
 // The cat reaches elevated furniture only through these dedicated approaches.
 export const CAT_CARE = {
   hall: 'arcade',
   bar: {
-    approach: { x: 1038, y: 490 },
-    perch: { x: 965, y: 419 + BAR_OFFSET },
-    mug: { x: 995, y: 421 + BAR_OFFSET },
-    depth: 478 + BAR_OFFSET,
+    approach: barPoint(297,153),
+    perch: barPoint(224,112),
+    mug: barPoint(254,114),
+    depth: BAR_POSITION.y+171,
   },
   food: {
     bowl: { x: 2280, y: 223 },

@@ -18,13 +18,13 @@ export const LUELON_NEW_ZONE = {
 export const LUELON_NEW_ZONE_OBSTACLES: Obstacle[] = [];
 export const CLUB_ZONES: Record<HallId, ClubZone[]> = {
   arcade: [
-    {name:translateText('МУЗЫКАЛЬНЫЙ САЛОН'),x:90,y:270,w:250,h:180,color:0x443042},
-    {name:translateText('БАР МИРЫ'),x:710,y:300,w:330,h:350,color:0x352b38},
+    {name:translateText('БАР МИРЫ'),x:100,y:285,w:350,h:360,color:0x352b38},
+    {name:translateText('МУЗЫКАЛЬНЫЙ САЛОН'),x:620,y:285,w:400,h:360,color:0x443042},
     LUELON_NEW_ZONE,
     {name:translateText('LUELON · ДЕМОИГРЫ'),x:1870,y:245,w:350,h:305,color:0x42334f},
     {name:'CASINO API PRO',x:2240,y:245,w:350,h:305,color:0x2e454b},
     {name:translateText('ИГРЫ С GITHUB'),x:1870,y:580,w:720,h:520,color:0x293d3a},
-    {name:translateText('ГОСТИНАЯ'),x:170,y:780,w:470,h:370,color:0x453141},
+    {name:translateText('ГОСТИНАЯ'),x:150,y:800,w:800,h:370,color:0x453141},
   ],
   tables: [
     {name:translateText('БИЛЬЯРДНЫЙ ЗАЛ'),x:330,y:285,w:440,h:370,color:0x2d4c3f},
@@ -42,7 +42,7 @@ export const CLUB_ZONES: Record<HallId, ClubZone[]> = {
 };
 export type Lounge = { hall: HallId; x: number; y: number; color: number };
 export const LOUNGES: Lounge[] = [
-  {hall:'arcade',x:350,y:900,color:0x895064}, {hall:'arcade',x:770,y:1050,color:0x527a70}, {hall:'arcade',x:770,y:1220,color:0x895064},
+  {hall:'arcade',x:350,y:950,color:0x895064}, {hall:'arcade',x:750,y:950,color:0x895064},
   {hall:'tables',x:350,y:900,color:0x527a70}, {hall:'tables',x:680,y:1010,color:0x527a70}, {hall:'tables',x:1800,y:820,color:0x895064},
   {hall:'github',x:350,y:900,color:0x895064}, {hall:'github',x:670,y:1020,color:0x527a70}, {hall:'github',x:670,y:1190,color:0x527a70},
 ];

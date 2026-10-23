@@ -1,7 +1,7 @@
 import { t as translateText } from '../i18n/index';
 import Phaser from 'phaser';
 import { SEATS } from '../shared/world';
-import { BAR_OFFSET } from '../shared/furniture';
+import { BAR_POSITION } from '../shared/furniture';
 import { CHARACTER_RESOLUTION } from './characters';
 import { drawMira } from './miraArt';
 import { MiraRoutine, type MiraView } from '../shared/miraRoutine';
@@ -16,15 +16,16 @@ export class Bar {
   private work: Phaser.Textures.CanvasTexture;
   private lastDraw = -Infinity;
   constructor(scene: Phaser.Scene, onSeat: (id: string) => void, onOrder: () => void) {
-    scene.add.image(748,307+BAR_OFFSET,'bar-back').setOrigin(0).setDisplaySize(248,99).setDepth(360+BAR_OFFSET);
-    scene.add.text(872,294+BAR_OFFSET,'M I R A ’ S   B A R',{fontFamily:'sans-serif',fontSize:'11px',color:'#f0b2cc',fontStyle:'bold'}).setOrigin(.5).setDepth(361+BAR_OFFSET);
-    this.mira = scene.add.sprite(866,423+BAR_OFFSET,'citizen-6','down-6').setOrigin(.5,1).setScale(2.65/CHARACTER_RESOLUTION).setDepth(424+BAR_OFFSET);
+    const {x,y}=BAR_POSITION;
+    scene.add.image(x+7,y,'bar-back').setOrigin(0).setDisplaySize(248,99).setDepth(y+53);
+    scene.add.text(x+131,y-13,'M I R A ’ S   B A R',{fontFamily:'sans-serif',fontSize:'11px',color:'#f0b2cc',fontStyle:'bold'}).setOrigin(.5).setDepth(y+54);
+    this.mira = scene.add.sprite(x+125,y+116,'citizen-6','down-6').setOrigin(.5,1).setScale(2.65/CHARACTER_RESOLUTION).setDepth(y+117);
     this.mira.play('citizen-6-idle-down');
     this.work = scene.textures.createCanvas('mira-work', 32 * CHARACTER_RESOLUTION, 40 * CHARACTER_RESOLUTION)!;
     this.mira.anims.stop(); this.mira.setTexture('mira-work');
-    scene.add.image(741,401+BAR_OFFSET,'bar-front').setOrigin(0).setDisplaySize(262,72).setDepth(473+BAR_OFFSET);
-    scene.add.text(875,450+BAR_OFFSET,translateText('ЛИМОНАД  ·  КОФЕ  ·  ЯГОДЫ'),{fontFamily:'sans-serif',fontSize:'8px',color:'#fff2d1'}).setOrigin(.5).setDepth(474+BAR_OFFSET);
-    scene.add.zone(873,409+BAR_OFFSET,255,115).setDepth(475+BAR_OFFSET).setInteractive({useHandCursor:true}).on('pointerdown',onOrder);
+    scene.add.image(x,y+94,'bar-front').setOrigin(0).setDisplaySize(262,72).setDepth(y+166);
+    scene.add.text(x+134,y+143,translateText('ЛИМОНАД  ·  КОФЕ  ·  ЯГОДЫ'),{fontFamily:'sans-serif',fontSize:'8px',color:'#fff2d1'}).setOrigin(.5).setDepth(y+167);
+    scene.add.zone(x+132,y+102,255,115).setDepth(y+168).setInteractive({useHandCursor:true}).on('pointerdown',onOrder);
     for (const seat of SEATS.filter(seat=>seat.kind==='bar')) {
       if (seat.kind==='bar') scene.add.image(seat.x-24,seat.y-18,'bar-stool').setOrigin(0).setDisplaySize(48,44).setDepth(seat.y-6);
       scene.add.zone(seat.x,seat.y-22,48,48).setDepth(seat.y+2).setInteractive({useHandCursor:true}).on('pointerdown',()=>onSeat(seat.id));

@@ -1,5 +1,6 @@
 import type Phaser from 'phaser';
 import { CAT_HOME } from '../shared/catHome';
+import { HALL_WINDOWS } from './hallWindows';
 
 const TEXTURE = 'cat-sunny-window';
 
@@ -53,6 +54,6 @@ export function drawCatHome(scene: Phaser.Scene) {
     sunlight.fillPoints([{ x: window.x + offset, y: 178 }, { x: window.x + offset + 57, y: 178 },
       { x: window.x + offset + 129, y: 291 }, { x: window.x + offset + 56, y: 291 }], true);
   }
-  return scene.add.image(window.x, window.y - 59, TEXTURE).setOrigin(.5, 0).setDisplaySize(200, 150)
+  return scene.add.image(window.x, HALL_WINDOWS.top, TEXTURE).setOrigin(.5, 0).setDisplaySize(200, 150)
     .setDepth(3).setName('cat-home-window');
 }
