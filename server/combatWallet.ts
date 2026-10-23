@@ -17,7 +17,7 @@ const messages:Record<string,string>={
 };
 export class CombatUsdtWallet implements CombatEscrow {
  private match?:{id:string;accounts:string[];stake:number};
- constructor(private socket:string){}
+ constructor(private socket:string,private allowMoney?:(id:string)=>Promise<void>){}
  private async call(action:'fund'|'settle'|'cancel',id:string,accounts:string[],stake:number,winner?:string){
   if(!this.socket)throw new CombatWalletError(503,'Общий кошелёк USDT · Nile временно недоступен.');
   const value={id,accounts,stakeUnits:String(stake*1_000_000),...(action==='settle'?{winner:winner??''}:{})};
@@ -30,6 +30,7 @@ export class CombatUsdtWallet implements CombatEscrow {
  }
  async fund(id:string,accounts:string[],stake:number){
   this.match={id,accounts:[...accounts],stake};
+  for(const account of accounts)await this.allowMoney?.(account);
   const result=await this.call('fund',id,accounts,stake);
   if(result.state!=='active')throw new CombatWalletError(409,'Бой уже отменён или завершён.');
  }

@@ -12,12 +12,12 @@ const messages: Record<string,string> = {
   play_idempotency_conflict:'Номер операции уже использован с другой ставкой.',play_rate_limit:'Слишком много запросов. Подожди минуту.',
   invalid_play_request:'Некорректный запрос ставки.',play_source_not_ready:'Подтверждение тестового баланса временно недоступно. Повтори проверку позже.',
 };
-export function playCommand(socketPath:string,accountId:string,action:string,value:unknown):Promise<{status:number;value:any}> {
+export function playCommand(socketPath:string,accountId:string,action:string,value:unknown,maxBytes=131072):Promise<{status:number;value:any}> {
   return new Promise((resolve,reject)=>{
     const body=JSON.stringify({accountId,action,value});
     const req=request({socketPath,path:'/command',method:'POST',headers:{'Content-Type':'application/json','Content-Length':Buffer.byteLength(body)}},res=>{
       const chunks:Buffer[]=[];let size=0;
-      res.on('data',(chunk:Buffer)=>{size+=chunk.length;if(size>131072)req.destroy(new Error('oversized_play_response'));else chunks.push(chunk);});
+      res.on('data',(chunk:Buffer)=>{size+=chunk.length;if(size>maxBytes)req.destroy(new Error('oversized_play_response'));else chunks.push(chunk);});
       res.on('end',()=>{try {resolve({status:res.statusCode??503,value:JSON.parse(Buffer.concat(chunks).toString('utf8'))});}catch(e){reject(e);}});
       res.on('error',reject);
     });

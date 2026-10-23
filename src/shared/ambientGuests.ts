@@ -1,6 +1,6 @@
 import { t as translateText } from '../i18n/index';
 import { CABINETS, cabinetsInHall } from './cabinets';
-import { hallObstacles, type HallId } from './world';
+import { hallObstacles, SEATS, type HallId } from './world';
 import { LOUNGES } from './clubLayout';
 import { findPath, walkable, type Point } from '../game/navigation';
 import { movementFacing, type Facing } from './movement';
@@ -12,7 +12,7 @@ export function guestStops(hall: HallId): Stop[] {
   const games=cabinetsInHall(hall).map(c=>({id:c.id,x:c.x+25,y:c.y+65,mood:'playing' as const,facing:'up' as const}));
   return [
     ...games.slice(0,7),
-    ...(hall==='arcade'?[790,910,980].map((x,i)=>({id:'bar-guest-'+i,x,y:548,mood:'drinking' as const,facing:'up' as const})):[]),
+    ...(hall==='arcade'?SEATS.filter(seat=>seat.kind==='bar').map((seat,i)=>({id:'bar-guest-'+i,x:seat.x,y:seat.y,mood:'drinking' as const,facing:'up' as const})):[]),
     ...games.slice(7),
     ...LOUNGES.filter(l=>l.hall===hall).map((l,i)=>({id:'lounge-guest-'+i,x:l.x+48,y:l.y+4,mood:'resting' as const,facing:'down' as const,seat:'ambient-'+hall+'-'+i})),
     ...(hall==='tables'?[{id:'pool-watch',x:685,y:520,mood:'playing' as const,facing:'left' as const},{id:'hockey-watch',x:1290,y:500,mood:'playing' as const,facing:'left' as const},{id:'library',x:1550,y:950,mood:'resting' as const,facing:'up' as const},{id:'library-reading',x:1710,y:1140,mood:'resting' as const,facing:'left' as const}]:[]),

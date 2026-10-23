@@ -1,0 +1,58 @@
+import { test,expect } from '@playwright/test';
+import { mkdir } from 'node:fs/promises';
+test('owner follows money from summary to a player, adjusts once after a lost response, controls access and exports a filtered page',async({page,context})=>{
+  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
+  await page.goto('/admin.html');
+  await page.getByLabel('Почта',{exact:true}).fill('owner@admin-fixture.test');
+  await page.getByLabel('Пароль',{exact:true}).fill('fixture-admin-password');await page.getByRole('button',{name:'Войти в кабинет'}).click();
+  await expect(page.getByRole('heading',{name:'Финансы казино'})).toBeVisible();
+  await expect(page.locator('.environment')).toHaveText('ТЕСТОВЫЕ СРЕДСТВА');
+  await expect(page.locator('.undated')).toContainText('дата не сохранена');
+  await mkdir('artifacts/finance-admin',{recursive:true});await page.screenshot({path:'artifacts/finance-admin/desktop.png',fullPage:true});
+  await page.locator('nav [data-tab="operations"]').click();
+  await page.getByRole('combobox',{name:'Операция',exact:true}).selectOption('game');await page.getByRole('button',{name:'Применить',exact:true}).click();
+  await expect(page.locator('tbody tr')).toHaveCount(12);
+  const download=page.waitForEvent('download');await page.getByRole('button',{name:'CSV страницы'}).click();expect((await download).suggestedFilename()).toContain('nile');
+  await page.getByRole('button',{name:'Мария Волкова'}).first().click();
+  await expect(page.getByRole('heading',{name:'Мария Волкова'})).toBeVisible();
+  const beforeText=await page.locator('.profile-balance strong').innerText();
+  await page.getByRole('button',{name:'Корректировать баланс',exact:true}).click();
+  await page.getByLabel('Сумма, USDT',{exact:true}).fill('2,125');
+  await page.getByLabel('Причина',{exact:true}).fill('Проверка начисления с потерей ответа');
+  await page.getByLabel('Твой пароль для подтверждения').fill('fixture-admin-password');
+  let once=true;await page.route('**/api/admin/actions',async route=>{
+    if(once){once=false;await route.fetch();await route.abort('failed');}else await route.continue();
+  });
+  await page.getByRole('button',{name:'Подтвердить действие',exact:true}).click();
+  await expect(page.locator('.form-error')).toContainText('же номером');
+  await page.getByLabel('Твой пароль для подтверждения').fill('fixture-admin-password');
+  await page.getByRole('button',{name:'Подтвердить действие',exact:true}).click();
+  await expect(page.locator('#modal')).not.toBeVisible();
+  await expect(page.locator('.profile-balance strong')).not.toHaveText(beforeText);
+  const current=await page.request.get('/api/admin/session');const owner=(await current.json()).account;
+  const response=await page.request.post('/api/admin/report',{headers:{Origin:'http://127.0.0.1:5194','x-royal-admin-account':owner.id},data:{source:'nile',filters:{kind:'adjustment'}}});
+  const report=await response.json();expect(report.totals.count).toBe(1);expect(report.totals.adjustments).toBe('2125000');
+  await page.getByRole('button',{name:'Приостановить денежные операции',exact:true}).click();
+  await page.getByLabel('Причина',{exact:true}).fill('Проверка приостановки платных игр');
+  await page.getByLabel('Твой пароль для подтверждения').fill('fixture-admin-password');
+  await page.getByRole('button',{name:'Подтвердить действие',exact:true}).click();
+  await expect(page.locator('#profile > .badge')).toContainText('приостановлены');
+  await page.getByRole('button',{name:'Закрыть карточку'}).click();
+  await page.locator('nav [data-tab="audit"]').click();await expect(page.locator('tbody')).toContainText('Проверка начисления с потерей ответа');
+  await page.locator('nav [data-tab="players"]').click();await expect(page.locator('tbody')).toContainText('Мария Волкова');
+  await page.getByRole('button',{name:'Сбросить',exact:true}).click();await page.locator('nav [data-tab="overview"]').click();
+  await page.setViewportSize({width:390,height:844});
+  await expect(page.locator('.metrics')).toBeVisible();
+  await page.screenshot({path:'artifacts/finance-admin/mobile.png',fullPage:true});
+  const overflow=await page.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth,elements:[...document.querySelectorAll<HTMLElement>('body *')].map(el=>({tag:el.tagName,id:el.id,cls:el.className,right:el.getBoundingClientRect().right,width:el.getBoundingClientRect().width})).filter(el=>el.right>innerWidth+1).slice(0,20)}));
+  if(overflow.scroll>overflow.width)console.log(JSON.stringify(overflow));
+  expect(overflow.scroll<=overflow.width).toBe(true);
+  await page.getByRole('combobox',{name:'Противник',exact:true}).selectOption('pvp');await page.getByRole('button',{name:'Применить',exact:true}).click();
+  await expect(page.locator('.table-empty')).toContainText('Операций по этим фильтрам нет');
+  expect(errors).toEqual([]);
+});
+
+test('ordinary player cannot access financial APIs',async({request})=>{
+  await request.post('/api/auth/login',{data:{email:'player@admin-fixture.test',password:'fixture-player-password'}});
+  expect((await request.get('/api/admin/session')).status()).toBe(403);
+});

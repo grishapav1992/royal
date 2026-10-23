@@ -28,7 +28,7 @@ export function drawActivities(scene:Phaser.Scene,open:(id:ActivityId)=>void,hal
     c.strokeStyle='#d8cba733';c.beginPath();c.moveTo(18,30);c.bezierCurveTo(21,8,52,10,57,15);c.stroke();
     c.fillStyle='#86694e';c.fillRect(42,76,38,11);c.fillStyle='#342b29';c.fillRect(46,85,4,6);c.fillRect(72,85,4,6);
   });
-  if(hall==='arcade')scene.add.image(65,251,piano).setOrigin(0).setDisplaySize(120,91).setDepth(322);
+  if(hall==='arcade')scene.add.image(ACTIVITIES.piano.bounds.x-5,ACTIVITIES.piano.bounds.y-9,piano).setOrigin(0).setDisplaySize(120,91).setDepth(ACTIVITIES.piano.bounds.y+62);
   const chess=make('social-chess',108,64,c=>{
     c.fillStyle='#433127';c.beginPath();c.roundRect(0,0,108,64,7);c.fill();
     c.fillStyle='#ad855b';c.fillRect(5,4,98,54);

@@ -1,3 +1,5 @@
+import { BAR_APPROACH } from '../src/shared/world';
+import { ACTIVITIES } from '../src/shared/activities';
 import type { Facing } from '../src/shared/movement';
 import type { HallId } from '../src/shared/world';
 
@@ -9,10 +11,10 @@ export const GUARD_STOPS: Record<HallId, GuardStop[]> = {
     { id:'entrance', x:855, y:1250, facing:'right', activity:'watch' },
   ],
   arcade: [
-    { id:'bar', x:828, y:520, facing:'up', activity:'chat' },
+    { id:'bar', x:BAR_APPROACH.x-38, y:BAR_APPROACH.y-35, facing:'up', activity:'chat' },
     { id:'arcades', x:1380, y:455, facing:'up', activity:'inspect' },
     { id:'window', x:980, y:235, facing:'right', activity:'window' },
-    { id:'piano', x:215, y:345, facing:'left', activity:'inspect' },
+    { id:'piano', x:ACTIVITIES.piano.entry.x+95, y:ACTIVITIES.piano.entry.y+5, facing:'left', activity:'inspect' },
     { id:'lounge', x:350, y:955, facing:'left', activity:'watch' },
     { id:'entrance', x:600, y:610, facing:'down', activity:'watch' },
   ],

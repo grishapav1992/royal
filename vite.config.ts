@@ -1,5 +1,7 @@
 import { defineConfig } from 'vite';
+import { resolve } from 'node:path';
 export default defineConfig({
+  build:{rollupOptions:{input:{main:resolve('index.html'),admin:resolve('admin.html')}}},
   server: {
     watch:{ignored:['**/module-dist/**','**/module-build/**']},
     proxy: {

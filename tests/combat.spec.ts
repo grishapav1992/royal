@@ -1,5 +1,5 @@
 import {test,expect,type Page} from '@playwright/test';
-import {selectHall,worldPoint} from './room-ui';
+import {worldPoint} from './room-ui';
 const activity=(p:Page)=>p.evaluate(()=>(window as any).royalDemo.getActivities());
 const state=(p:Page)=>p.evaluate(()=>(window as any).royalDemo.getState());
 async function login(p:Page,identity:string,room?:string){
@@ -7,7 +7,6 @@ async function login(p:Page,identity:string,room?:string){
  await p.getByLabel('Почта',{exact:true}).fill(identity);
  await p.getByLabel('Пароль',{exact:true}).fill('Royal-test-123!');
  await p.getByRole('button',{name:'Продолжить',exact:true}).click();
- await p.getByRole('button',{name:'Войти в зал',exact:true}).click();
  await expect.poll(async()=>(await state(p)).online).toBe(true);
  await expect.poll(async()=>{try{return await balance(p);}catch{return null;}},{timeout:10000}).toBe('200000000');
 }
@@ -26,7 +25,7 @@ test('real host: two players, equal stakes, chat, phone controls, surrender payo
   await login(a,'combat-local-a@example.test');
   const network=await a.evaluate(()=>(window as any).royalDemo.getNetworkState());
   await login(b,'combat-local-b@example.test',network.roomId);
-  await selectHall(a,'tables');await selectHall(b,'tables');
+  for(const p of [a,b]){await p.locator('#floor-links [data-floor-target="tables"]').click();await expect.poll(async()=>(await state(p)).hall,{timeout:30000}).toBe('tables');}
   await a.evaluate(async()=>{
    const {LobbyClient}=await import('/src/network/LobbyClient.ts');
    const original=LobbyClient.prototype.send;

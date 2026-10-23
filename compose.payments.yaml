@@ -25,6 +25,7 @@ services:
       PGSSLMODE: ${ROYAL_PGSSLMODE:-disable}
       PGPOOL_MAX: 4
       PGAPPNAME: royal-payments
+      FINANCE_ADMIN_ACCOUNT_IDS: ${FINANCE_ADMIN_ACCOUNT_IDS:-}
       PAYMENTS_REQUEST_SECRET_FILE: /run/secrets/payments_request_secret
       PAYMENTS_EVENT_SECRET_FILE: /run/secrets/payments_event_secret
       PAYMENTS_GAME_EVENTS_URL: http://game:2567/internal/payments/events

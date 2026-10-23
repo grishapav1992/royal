@@ -6,7 +6,7 @@ import {pvpSeat} from '../../src/shared/pvpSeats';
 import type { Activities } from '../activities';
 
 type Person={sessionId:string;accountId:string;name:string;hall:string;x:number;y:number;connected:boolean;available:boolean};
-type Host={roomId:()=>string;people:()=>Person[];send:(session:string,type:string,value:unknown)=>void;activities:Activities};
+type Host={roomId:()=>string;people:()=>Person[];send:(session:string,type:string,value:unknown)=>void;activities:Activities;allowMoney?:(id:string)=>Promise<void>};
 const messages:Record<string,string>={play_wallet_unassigned:'Нажми «Пополнить USDT», чтобы подключить тестовый кошелёк.',
   play_insufficient_balance:'Недостаточно тестовых USDT для ставки.',play_source_not_ready:'Подтверждение баланса временно недоступно. Повтори то же действие позже.',
   play_idempotency_conflict:'Нельзя изменить отправленную операцию.',pvp_unavailable:'Этот вызов уже недоступен.'};
@@ -41,6 +41,7 @@ export class PvpRoom {
       const person=this.host.people().find(p=>p.sessionId===session&&p.connected);
       if(!person||!validPvpRequest(value))return;
       try{
+        if(value.action==='create'||value.action==='accept')await this.host.allowMoney?.(person.accountId);
         if(value.action==='ready'){
           const match=this.matches.find(c=>c.id===value.challengeId),game=match?.gameId;
           if(!game)throw Error('Обнови список поединков.');
@@ -60,7 +61,7 @@ export class PvpRoom {
         this.matches=snapshot.challenges.filter(c=>['open','arriving','playing'].includes(c.status));
         await this.sync();
         this.host.send(session,'pvp',snapshot);
-      }catch(error){this.host.send(session,'pvp-result',{requestId:value.id,error:error instanceof Error&&/[а-я]/i.test(error.message)?error.message:'Связь с кошельком прервалась. Повтори то же действие.',rejected:error instanceof Error&&/Сначала|Обнови|другая партия/.test(error.message)});}
+      }catch(error){this.host.send(session,'pvp-result',{requestId:value.id,error:error instanceof Error&&/[а-я]/i.test(error.message)?error.message:'Связь с кошельком прервалась. Повтори то же действие.',rejected:error instanceof Error&&((error as any).status===403||/Сначала|Обнови|другая партия/.test(error.message))});}
     };
     const task=async()=>{try{await run();}finally{this.outstanding.delete(session);}};
     this.queue=this.queue.then(task,task);return this.queue;

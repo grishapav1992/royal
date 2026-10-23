@@ -7,6 +7,7 @@
     "dev": "npm run build:modules && concurrently -k -n web,server \"vite --host 0.0.0.0\" \"npm run dev:server\"",
     "build": "tsc --noEmit && npm run build:modules && vite build && esbuild server/index.ts --bundle --platform=node --packages=external --format=esm --outfile=dist-server/index.js && esbuild scripts/crypto-reconcile.ts --bundle --platform=node --packages=external --format=esm --outfile=dist-server/crypto-reconcile.js && esbuild server/payments/index.ts --bundle --platform=node --packages=external --format=esm --outfile=dist-server/payments.js",
     "preview": "vite preview --host 0.0.0.0",
+    "build:admin": "tsc --noEmit && vite build --config vite.admin.config.ts",
     "test": "playwright test",
     "dev:web": "npm run build:modules && vite --host 0.0.0.0",
     "dev:server": "node --env-file-if-exists=.env --import tsx --watch server/index.ts",
