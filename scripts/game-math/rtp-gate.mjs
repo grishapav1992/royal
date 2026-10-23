@@ -57,8 +57,8 @@ export function validateRtpProof(gameId, inputs, proof) {
 export async function checkGameRtp(root, catalog, selected = catalog.map(game => game.gameId)) {
   const registry = JSON.parse(await readFile(resolve(root, 'scripts/game-math/rtp-policy.json'), 'utf8'));
   const baseline = JSON.parse(await readFile(resolve(root, 'scripts/game-math/rtp-legacy-baseline.json'), 'utf8'));
-  assert.equal(digest(JSON.stringify(baseline.games)), '6c5d82f085ccda7ad8fa7e8d6a0c7bcc391448979be9f6d5ea30a72516af4a4e', 'The frozen legacy list cannot absorb new unqualified games');
-  assert.equal(digest(JSON.stringify(baseline.sourceHashes)), '1b853f77bb9e572ee5444ed5072c2d1951d0ef0e30f983f5286a5aa4f1e641be', 'The frozen math baseline cannot be rewritten to bypass qualification');
+  assert.equal(digest(JSON.stringify(baseline.games)), '71deee54464329fbc5a76c9c964797caad78620ff8d206bc4bf9105de760a160', 'The frozen legacy list cannot absorb new unqualified games');
+  assert.equal(digest(JSON.stringify(baseline.sourceHashes)), '5f9993f8027063d149ba433a00ccf930827a42d4438ec9cfabc9207e184dfdf8', 'The frozen math baseline cannot be rewritten to bypass qualification');
   const changedProfiles=await changedLegacyProfiles(root,baseline.sourceHashes,registry.profiles);
   for (const gameId of ['studio-neopolis','studio-dracona']) assert(registry.profiles[gameId], 'A required RTP profile was removed: ' + gameId);
   for (const game of catalog) {

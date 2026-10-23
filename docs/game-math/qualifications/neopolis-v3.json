@@ -3,8 +3,8 @@
   "gameId": "studio-neopolis",
   "rulesVersion": 3,
   "progressVersion": 3,
-  "startedAt": "2026-10-23T17:20:49.769Z",
-  "completedAt": "2026-10-23T17:30:15.881Z",
+  "startedAt": "2026-10-23T17:35:38.617Z",
+  "completedAt": "2026-10-23T17:45:33.726Z",
   "sourceHashes": {
     "src/shared/neopolisMath.ts": "e32db65f28cb4cac308d07154fb56f7816fc630c82a7548e1733ad34e0a91820",
     "src/shared/neopolisMathV1.ts": "84adb49d9303b29bd8a460b30b7e6993d77df343f8dae33025a0646f7ca3bb92",

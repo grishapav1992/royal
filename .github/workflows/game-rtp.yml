@@ -21,3 +21,4 @@ jobs:
       - run: npm run check:rtp
       - run: npm run test:rtp-gate
       - run: npx tsc --noEmit
+      - run: npm run test:slot-balance

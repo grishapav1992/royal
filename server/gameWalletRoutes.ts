@@ -29,8 +29,8 @@ export function installGameWallet(app:Application,socket=process.env.NILE_PLAY_S
   if(req.path==='/afterglow-wardrobe'&&req.get(AFTER_PROGRESS_HEADER)!==AFTER_PROGRESS_VERSION){res.status(409).json({error:'Обнови страницу для нового прогресса GIRLHUB.'});return;}
   const query:Record<string,string>={};
   for(const [key,value]of Object.entries(req.query)){if(typeof value!=='string'){res.status(400).json({error:'Некорректные параметры запроса.'});return;}query[key]=value;}
-  const flags=[CARAMEL_CLIENT_HEADER,VELVET_CLIENT_HEADER,CONVOY_CLIENT_HEADER,NITRO_CLIENT_HEADER,AFTER_CLIENT_HEADER].map(header=>req.get(header)==='1');
-  flags.push(req.get(AFTER_PROGRESS_HEADER)===AFTER_PROGRESS_VERSION,...[MEME_CLIENT_HEADER,PENALTY_CLIENT_HEADER,DRACONA_CLIENT_HEADER].map(header=>req.get(header)==='1'));
+  const flags:(boolean|2)[]=[CARAMEL_CLIENT_HEADER,VELVET_CLIENT_HEADER,CONVOY_CLIENT_HEADER,NITRO_CLIENT_HEADER,AFTER_CLIENT_HEADER].map(header=>req.get(header)==='1');
+  flags.push(req.get(AFTER_PROGRESS_HEADER)===AFTER_PROGRESS_VERSION,...[MEME_CLIENT_HEADER,PENALTY_CLIENT_HEADER].map(header=>req.get(header)==='1'),req.get(DRACONA_CLIENT_HEADER)==='2'?2:req.get(DRACONA_CLIENT_HEADER)==='1');
   try{
    const account=res.locals.accountId;
    const legacy=seeded.has(account)?null:{wardrobe:await accounts.wallet.expansion.wardrobe.snapshot(account),convoy:await accounts.wallet.expansion.convoyProgress(account)};
