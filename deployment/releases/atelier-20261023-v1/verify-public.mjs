@@ -5,6 +5,15 @@ const base='https://stealth-spark-gokmxooi.expresshost.cloud';
 const folder='artifacts/atelier-release/proof';fs.mkdirSync(folder,{recursive:true});
 const manifest=JSON.parse(fs.readFileSync(process.env.ATELIER_PUBLIC_MANIFEST || 'artifacts/atelier-release/payload/install-manifest.json'));
 const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
+const waitUntil=Date.now()+Number(process.env.ATELIER_WAIT_FOR_PUBLISH_MS || 0);
+if(waitUntil>Date.now()){
+  for(;;){
+    const r=await fetch(base+'/index.html',{cache:'no-store'});
+    if(r.ok&&sha(Buffer.from(await r.arrayBuffer()))===manifest.delta['index.html'])break;
+    if(Date.now()>waitUntil)throw Error('The expected combined release has not become public');
+    await new Promise(resolve=>setTimeout(resolve,10000));
+  }
+}
 const files=Object.entries(manifest.delta);
 for(let i=0;i<files.length;i+=4)await Promise.all(files.slice(i,i+4).map(async([name,digest])=>{
   const r=await fetch(base+'/'+name,{cache:'no-store'});
