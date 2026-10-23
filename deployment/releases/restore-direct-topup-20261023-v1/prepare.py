@@ -46,8 +46,8 @@ for name, digest in release['files'].items():
     if not name.startswith('dist/') or old['program'].get(name) == digest:
         continue
     relative = name.removeprefix('dist/')
-    if relative == 'index.html' or relative.startswith('assets/') and Path(relative).suffix in ['.js', '.css']:
-        assert relative == 'index.html' or name not in old['program'], 'Existing asset URL would change'
+    if relative in ['index.html', 'admin.html'] or relative.startswith('assets/') and Path(relative).suffix in ['.js', '.css']:
+        assert relative in ['index.html', 'admin.html'] or name not in old['program'], 'Existing asset URL would change'
         delta[relative] = digest
         copy(ROOT / name, 'dist-delta/' + relative)
     else:
