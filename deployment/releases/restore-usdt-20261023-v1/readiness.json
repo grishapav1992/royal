@@ -1,0 +1,50 @@
+{
+  "ok": true,
+  "samples": [
+    {
+      "at": 1792787167.861185,
+      "auditOk": true,
+      "ready": true,
+      "sourceAgeSeconds": 14,
+      "lastError": null,
+      "reconciliationOk": true,
+      "reconciliationCode": null
+    },
+    {
+      "at": 1792787206.357483,
+      "auditOk": true,
+      "ready": true,
+      "sourceAgeSeconds": 52,
+      "lastError": null,
+      "reconciliationOk": true,
+      "reconciliationCode": null
+    },
+    {
+      "at": 1792787233.570595,
+      "auditOk": true,
+      "ready": true,
+      "sourceAgeSeconds": 12,
+      "lastError": null,
+      "reconciliationOk": true,
+      "reconciliationCode": null
+    },
+    {
+      "at": 1792787254.2027764,
+      "auditOk": true,
+      "ready": true,
+      "sourceAgeSeconds": 33,
+      "lastError": null,
+      "reconciliationOk": true,
+      "reconciliationCode": null
+    },
+    {
+      "at": 1792787273.3877628,
+      "auditOk": true,
+      "ready": true,
+      "sourceAgeSeconds": 52,
+      "lastError": null,
+      "reconciliationOk": true,
+      "reconciliationCode": null
+    }
+  ]
+}
