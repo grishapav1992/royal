@@ -34,7 +34,7 @@ export class FlightClient extends EventTarget {
   private poll?: ReturnType<typeof setTimeout>;
   private lastSettlement = '';
   private notify() { this.dispatchEvent(new Event('change')); }
-  private key() { return `royal-flight-operation:${this.accountId}`; }
+  private key() { return `royal-nile-flight-operation:${this.accountId}`; }
   private lock() { demoWallet.setExternalBusy('flight', this.busy || !!this.pending); }
   private visibility = () => {
     if (!document.hidden) { this.ready = false; this.notify(); void this.refresh(); }
@@ -66,7 +66,7 @@ export class FlightClient extends EventTarget {
     const accountId = this.accountId, epoch = this.epoch, version = ++this.readVersion;
     this.loading = true; this.notify();
     try {
-      const response = await fetch('/api/demo-wallet/flight', {
+      const response = await fetch('/api/game-wallet/flight', {
         credentials: 'same-origin', cache: 'no-store', headers: { [WALLET_ACCOUNT_HEADER]: accountId }, signal: AbortSignal.timeout(10000),
       });
       const result = await response.json() as FlightResult & { error?: string };
@@ -116,7 +116,7 @@ export class FlightClient extends EventTarget {
     this.pending = operation; this.busy = true; this.error = ''; this.lock(); this.notify();
     let refreshAfterConflict = false;
     try {
-      const response = await fetch('/api/demo-wallet/flight', {
+      const response = await fetch('/api/game-wallet/flight', {
         method: 'POST', credentials: 'same-origin',
         headers: { 'Content-Type': 'application/json', [WALLET_ACCOUNT_HEADER]: accountId },
         body: JSON.stringify(operation), signal: AbortSignal.timeout(15000),

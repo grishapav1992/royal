@@ -59,7 +59,7 @@ export class ActivityGameView {
   constructor(private host:HTMLElement,id:ActivityId,private context:ActivityHostContext,factories:ActivityViewFactories={}){
     this.scene=context.scene;this.send=context.send;this.audio=context.pianoAudio;this.state=context.state;this.players=context.players;this.self=context.self;this.selected=id;
     const shell=host.closest<HTMLDialogElement>('dialog[data-activity-shell]');
-    this.dialog=shell??document.createElement('dialog');this.dialog.id='shared-dialog';this.dialog.className='shared-dialog';this.dialog.setAttribute('aria-labelledby','shared-title');
+    this.dialog=shell??document.createElement('dialog');this.dialog.id='shared-dialog';this.dialog.classList.add('shared-dialog');this.dialog.setAttribute('aria-labelledby','shared-title');
     const content=shell?host:this.dialog;
     content.innerHTML=translateText('<div class="shared-top"><div><h2 id="shared-title"></h2></div><button type="button" id="shared-close" aria-label="Вернуться в зал">×</button></div><p id="shared-status" role="status"></p><p id="shared-rules"></p><canvas id="shared-canvas" width="720" height="400" tabindex="0" aria-label="Игровой стол"></canvas><div id="piano-keys" class="piano-keys"></div><div class="shared-actions"><button type="button" id="shared-rematch" class="primary-button" hidden>Реванш</button><label id="shot-power-label" hidden>Сила <input id="shot-power" type="range" min="80" max="850" value="550" aria-label="Сила удара"><output id="shot-power-value">61%</output></label><label id="called-pocket-label" hidden>Луза для 8 <select id="called-pocket" aria-label="Луза для восьмёрки"><option value="-1">Выбрать</option><option value="0">Слева сверху</option><option value="1">Сверху по центру</option><option value="2">Справа сверху</option><option value="3">Слева снизу</option><option value="4">Снизу по центру</option><option value="5">Справа снизу</option></select></label><button type="button" id="pool-shoot" class="primary-button" hidden>Ударить</button></div><p class="shared-hint" id="shared-hint"></p>');
     if(!shell)host.append(this.dialog);gameAudio.addSettingsButton(this.dialog.querySelector<HTMLElement>('.shared-actions')!);
@@ -161,6 +161,12 @@ export class ActivityGameView {
         const own=side===t.turn;this.status.textContent+=own?(t.ballInHand==='kitchen'?translateText(' · Поставь белый шар слева от линии'):translateText(' · Поставь белый шар в свободное место')):translateText(' · Соперник ставит белый шар');
         this.dialog.querySelector('#shared-hint')!.textContent=own?translateText('Нажми на свободное место стола или кнопку «Поставить белый шар». Затем прицелься и ударь.'):translateText('Дождись хода соперника. После фола он сначала ставит белый шар.');
       }else if(t.phase==='playing'&&!t.moving&&t.turn!==side)this.dialog.querySelector('#shared-hint')!.textContent=translateText('Дождись соперника. После забитого своего шара игрок продолжает, после промаха ход переходит другому.');}
+    }
+    if(this.dialog.dataset.wager==='true'){
+      this.rematch.hidden=true;
+      this.dialog.querySelector('#shared-hint')!.textContent=this.selected==='chess'
+        ?'Выбери фигуру, затем подсвеченное поле. Окно можно закрыть и открыть через «Мой поединок». Партия и часы продолжаются.'
+        :'Окно можно закрыть и открыть через «Мой поединок». Партия продолжается. Для новой ставки создай новый вызов после завершения.';
     }
   }
   private note(note:number,down:boolean){

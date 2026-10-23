@@ -1,10 +1,13 @@
 import { t as translateText } from '../i18n/index';
-export type ActivityId = 'hockey' | 'pool' | 'piano' | 'chess';
+export type ActivityId = 'hockey' | 'pool' | 'piano' | 'chess' | 'durak' | 'transfer-durak' | 'crazy-eights';
 export const ACTIVITIES = {
   hockey: { name:translateText('Аэрохоккей'), entry:{x:1220,y:510}, bounds:{x:1175,y:382,w:90,h:100} },
   pool: { name:translateText('Бильярд'), entry:{x:562,y:510} },
   piano: { name:translateText('Рояль'), entry:{x:120,y:340}, bounds:{x:70,y:260,w:110,h:60} },
   chess: { name:translateText('Шахматы'), entry:{x:1550,y:950}, bounds:{x:1497,y:853,w:104,h:59} },
+  durak: {name:'Подкидной дурак',entry:{x:1048,y:405},bounds:{x:1004,y:228,w:232,h:122}},
+  'transfer-durak': {name:'Переводной дурак',entry:{x:1508,y:405},bounds:{x:1464,y:228,w:232,h:122}},
+  'crazy-eights': {name:'Восьмёрки',entry:{x:1968,y:405},bounds:{x:1924,y:228,w:232,h:122}},
 } as const;
 export const isActivity = (value: unknown): value is ActivityId => typeof value === 'string' && Object.hasOwn(ACTIVITIES,value);
 export type Ball = {id:number;x:number;y:number;vx:number;vy:number;active:boolean};

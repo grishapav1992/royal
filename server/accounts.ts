@@ -4,7 +4,11 @@ import { ModerationStore } from './moderation';
 import { IntoxicationStore } from './intoxicationStore';
 import { PaymentClient, paymentClientConfig } from './payments/client';
 import { PaymentCredits } from './payments/credits';
-import { normalizeAppearance, type Appearance } from '../src/shared/appearance';
+import { normalizeAppearance } from '../src/shared/appearance';
+import { normalizeCharacterAppearance, type CharacterAppearance } from '../src/shared/skinStudio';
+import { SkinStudioStore } from './skinStudio';
+import { CodexSkinImages } from './skinImages';
+import { NileSkinPayments } from './nileSkinPayments';
 import { isPlayerCharacter } from '../src/shared/characters';
 import { PostgresDatabase } from './database';
 import { applyAccountSchemaMigrations } from './game-database-migrations';
@@ -12,7 +16,7 @@ import { randomBytes, randomUUID, scrypt, timingSafeEqual, createHash } from 'no
 import { EventEmitter } from 'node:events';
 import { FinanceAdminStore } from './admin/store';
 
-export type Account = { id: string; email: string; name: string; skin: number | null; appearance?: Appearance | null };
+export type Account = { id: string; email: string; name: string; skin: number | null; appearance?: CharacterAppearance | null };
 type StoredAccount = Account & { password: string };
 export class AuthError extends Error { constructor(public status: number, message: string) { super(message); } }
 function gameName(value: unknown) {
@@ -37,6 +41,7 @@ export class AccountStore {
   readonly moderation: ModerationStore;
   readonly drinking: IntoxicationStore;
   readonly cryptoWallet: PaymentClient;
+  readonly skinStudio: SkinStudioStore;
   readonly paymentCredits: PaymentCredits;
   readonly financeAdmin: FinanceAdminStore;
   readonly paymentEventSecret: string;
@@ -59,7 +64,9 @@ export class AccountStore {
     this.paymentEventSecret = payments.eventSecret;
     this.cryptoWallet = new PaymentClient(payments, this.paymentCredits);
     this.financeAdmin = new FinanceAdminStore(this.db,schemaReady);
-    this.ready = Promise.all([schemaReady, this.wallet.ready, this.casinoApiProWallet.ready, this.moderation.ready, this.drinking.ready, this.paymentCredits.ready,this.financeAdmin.ready]).then(() => {});
+    this.skinStudio = new SkinStudioStore(this.db, new NileSkinPayments(), new CodexSkinImages(), () => true,
+      (id, appearance) => this.events.emit('appearance', id, appearance), this.wallet.ready);
+    this.ready = Promise.all([schemaReady, this.wallet.ready, this.casinoApiProWallet.ready, this.moderation.ready, this.drinking.ready, this.paymentCredits.ready, this.skinStudio.ready, this.financeAdmin.ready]).then(() => {});
     this.events.setMaxListeners(0);
   }
   async login(rawEmail: unknown, rawPassword: unknown) {
@@ -96,7 +103,7 @@ export class AccountStore {
     try { await cleanup; this.nextSessionCleanup = now+60000; }
     finally { if (this.sessionCleanup === cleanup) this.sessionCleanup = undefined; }
   }
-  private publicAccount(row: Account): Account { return { id: row.id, email: row.email, name: row.name, skin: row.skin, appearance: normalizeAppearance(row.appearance) }; }
+  private publicAccount(row: Account): Account { return { id: row.id, email: row.email, name: row.name, skin: row.skin, appearance: normalizeCharacterAppearance(row.appearance) }; }
   async currentAccount(id: string): Promise<Account | undefined> {
     await this.ready;
     const row = await this.db.prepare('SELECT id,email,name,skin,appearance FROM accounts WHERE id=?').get(id) as Account | undefined;

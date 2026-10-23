@@ -5,7 +5,7 @@ import { SEATS, type HallId } from '../shared/world';
 import { WORLD, FLOOR } from '../shared/clubGeometry';
 import { CAT_HOME } from '../shared/catHome';
 import { drawCatHome } from './catHomeArt';
-import { ARCADE_HOUSE_GAMES, ARCADE_CABINET_POSITIONS } from '../shared/arcadeCatalog';
+import { ROYAL_CABINET_IDS, ARCADE_CABINET_POSITIONS } from '../shared/arcadeCatalog';
 
 export function drawClubFloor(scene: Phaser.Scene, hall: HallId, onSeat: (id:string)=>void, onNewZone?:()=>void) {
   const g=scene.make.graphics({x:0,y:0},false);
@@ -70,7 +70,7 @@ export function drawClubFloor(scene: Phaser.Scene, hall: HallId, onSeat: (id:str
 
 function drawLuelonWing(scene:Phaser.Scene,onVisit?:()=>void){
   const zone=LUELON_NEW_ZONE,art=scene.make.graphics({x:0,y:0},false);
-  for(const id of ARCADE_HOUSE_GAMES){
+  for(const id of ROYAL_CABINET_IDS){
     const position=ARCADE_CABINET_POSITIONS[id];
     art.fillStyle(0x71d9e4,.08).fillEllipse(position.x,position.y+18,128,48);
     art.lineStyle(1,0x8ee7e8,.4).strokeEllipse(position.x,position.y+18,118,42);

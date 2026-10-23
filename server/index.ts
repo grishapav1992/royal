@@ -1,4 +1,4 @@
-import { installDemoWallet } from './demoWalletRoutes';
+import { installGameWallet } from './gameWalletRoutes';
 import { installGameModuleAssets } from './gameModuleAssets';
 import { installCasinoApiPro } from './casinoApiProRoutes';
 import { installNileWallet } from './nileWalletRoutes';
@@ -7,6 +7,7 @@ import { installUsdtWallet } from './usdtWalletRoutes';
 import { installCryptoWallet } from './cryptoWalletRoutes';
 import { installPaymentCredits } from './payments/credits';
 import { installMira } from './miraRoutes';
+import { installSkinStudio } from './skinStudioRoutes';
 import { defineServer, defineRoom } from '@colyseus/core';
 import { WebSocketTransport } from '@colyseus/ws-transport';
 import express from 'express';
@@ -18,6 +19,7 @@ import { installFinanceAdmin } from './admin/routes';
 
 const port = Number(process.env.PORT || 2567);
 let stopCrypto: (() => void) | undefined;
+let stopSkinStudio: (() => Promise<void>) | undefined;
 const server = defineServer({
   transport: new WebSocketTransport({ maxPayload: 8192, pingInterval: 5000, pingMaxRetries: 3 }),
   beforeListen: async () => { await accounts.ready; },
@@ -33,7 +35,8 @@ const server = defineServer({
     });
     installAuth(app);
     installFinanceAdmin(app);
-    installDemoWallet(app);
+    installGameWallet(app);
+    app.use('/api/demo-wallet',(_req,res)=>res.status(410).json({error:'Демобаланс отключён. Обнови страницу для общего баланса USDT.'}));
     installCasinoApiPro(app);
     installNileWallet(app);
     installNilePlay(app);
@@ -41,6 +44,7 @@ const server = defineServer({
     stopCrypto = installCryptoWallet(app);
       installPaymentCredits(app, accounts.paymentCredits, accounts.paymentEventSecret);
     await installMira(app);
+    stopSkinStudio = await installSkinStudio(app);
     app.get('/healthz', async (_req, res) => {
       try { await accounts.health(); res.json({ ok: true, service: 'royal-arcade' }); }
       catch { res.status(503).json({ ok: false, service: 'royal-arcade' }); }
@@ -50,6 +54,7 @@ const server = defineServer({
     app.get('/', (_req, res) => res.sendFile(resolve('dist/index.html')));
   },
 });
+server.onBeforeShutdown(async () => { await stopSkinStudio?.(); });
 server.onShutdown(async () => { stopCrypto?.(); await accounts.close(); });
 await server.listen(port, '0.0.0.0');
 console.log(`Royal server listening on port ${port}`);

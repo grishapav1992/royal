@@ -39,7 +39,7 @@ export class DemoWalletStore {
     this.flight = new DemoFlightStore(db, accountId => this.rawSnapshot(accountId), async accountId => await this.mines.reservedUnits(accountId)+await this.casino.reservedUnits(accountId), draw, now, schemaReady);
     this.casino = new DemoCasinoStore(db, accountId=>this.rawSnapshot(accountId),draw,accountId=>this.flight.settleDue(accountId),schemaReady);
     this.expansion = new DemoExpansionStore(db, accountId=>this.rawSnapshot(accountId),this.casino.ready,accountId=>this.flight.settleDue(accountId),draw,now);
-    this.ready = Promise.all([schemaReady, this.mines.ready, this.flight.ready,this.casino.ready]).then(() => {});
+    this.ready = Promise.all([schemaReady, this.mines.ready, this.flight.ready, this.casino.ready, this.expansion.ready]).then(() => {});
   }
   async snapshot(accountId: string): Promise<DemoWallet> {
     await this.ready;

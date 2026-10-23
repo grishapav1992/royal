@@ -7,7 +7,7 @@ export type NileRoundRequest = { id: string; stakeUnits: string };
 export type NileRound = NileRoundRequest & { payoutUnits: string; symbols: number[]; multiplier: number; createdAt: number };
 export type NilePlayWallet = typeof NILE_PLAY_SCOPE & ({ state: 'disabled' } | { state: 'unassigned' } | {
   state: 'assigned'; address: string; balanceUnits: string; updatedAt: number; ready: boolean;
-  maxStakeUnits: string; reserveAllocatedUnits: string; deposits: (NileDeposit & { playerUnits: string; reserveUnits: string })[]; rounds: NileRound[];
+  maxStakeUnits: string; reserveAllocatedUnits: string; reservedUnits?: string;revision?:number; deposits: (NileDeposit & { playerUnits: string; reserveUnits: string })[]; rounds: NileRound[];
 });
 export type NilePlayResult = { wallet: NilePlayWallet; round: NileRound; replayed: boolean };
 export function validNileRoundRequest(value: unknown): value is NileRoundRequest {
@@ -20,7 +20,8 @@ export function validNilePlayWallet(value: unknown): value is NilePlayWallet {
   if (!row || Object.entries(NILE_PLAY_SCOPE).some(([key, expected]) => row[key] !== expected)) return false;
   if (row.state === 'disabled' || row.state === 'unassigned') return true;
   return row.state === 'assigned' && /^T[1-9A-HJ-NP-Za-km-z]{33}$/.test(row.address)
-    && nileUnits(row.balanceUnits) && nileUnits(row.maxStakeUnits) && nileUnits(row.reserveAllocatedUnits) && typeof row.ready === 'boolean'
+    && nileUnits(row.balanceUnits) && nileUnits(row.maxStakeUnits) && nileUnits(row.reserveAllocatedUnits) && (row.reservedUnits===undefined||nileUnits(row.reservedUnits)) && typeof row.ready === 'boolean'
+    && (row.revision===undefined||Number.isSafeInteger(row.revision)&&row.revision>=0)
     && Number.isSafeInteger(row.updatedAt) && Array.isArray(row.deposits) && row.deposits.length <= 50
     && row.deposits.every((d: any) => /^[a-f0-9]{64}$/.test(d.txId) && Number.isSafeInteger(d.logIndex) && d.logIndex >= 0
       && Number.isSafeInteger(d.height) && d.height > 0 && nileUnits(d.amountUnits) && nileUnits(d.playerUnits) && nileUnits(d.reserveUnits)
