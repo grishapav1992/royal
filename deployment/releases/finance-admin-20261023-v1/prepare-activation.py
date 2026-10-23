@@ -13,7 +13,8 @@ import sys
 CHECKOUT = Path(__file__).resolve().parents[3]
 STAGE, BEFORE, OUTPUT = map(Path, sys.argv[1:4])
 SOURCE = sys.argv[4]
-assert len(sys.argv) == 5 and not OUTPUT.exists()
+OWNER_ID = sys.argv[5]
+assert len(sys.argv) == 6 and not OUTPUT.exists()
 old = json.loads(BEFORE.read_text(encoding='utf-8-sig'))
 sha = lambda b: hashlib.sha256(b).hexdigest()
 
@@ -51,7 +52,7 @@ for name in ['snapshot.py', 'deploy.py']:
 copy(CHECKOUT / 'compose.finance-admin.yaml', 'compose.finance-admin.yaml')
 copy(CHECKOUT / 'deployment/finance/compose.admin.yaml', 'compose.admin.yaml')
 manifest = {'sourceCommit': SOURCE, 'publishedCommit': git('rev-parse', 'HEAD').decode().strip(),
-            'activationOnly': True, 'ownerId': 'fb3dae97-8288-4932-86ab-28d40ce45014', 'before': old,
+            'activationOnly': True, 'ownerId': OWNER_ID, 'before': old,
             'paymentImports': sorted({i['path'] for o in metadata['outputs'].values() for i in o.get('imports', []) if i.get('external')}),
             'payload': {p.relative_to(OUTPUT).as_posix(): sha(p.read_bytes()) for p in OUTPUT.rglob('*') if p.is_file()}}
 (OUTPUT / 'install-manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
