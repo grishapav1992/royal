@@ -1,6 +1,6 @@
 import { t, language } from '../i18n/index';
-import { ARCADE_GITHUB_GAMES, ROYAL_PLATFORM_GAMES } from '../shared/arcadeCatalog';
-import { CABINETS, type Cabinet } from '../shared/cabinets';
+import { ARCADE_GITHUB_GAMES, collectionGames, type CabinetCollection } from '../shared/arcadeCatalog';
+import { GAME_CABINETS, type Cabinet } from '../shared/cabinets';
 import { isStudioGame, STUDIO_INFO } from '../shared/studioGames';
 import type { CasinoApiProGame, CasinoApiProStatus } from '../shared/casinoApiPro';
 import { demoWallet, coins } from '../wallet/WalletClient';
@@ -14,12 +14,12 @@ type Source = 'royal' | 'casinoapipro' | 'github';
 type Entry = PlatformChoice & {name:string; subtitle:string; kind:string; source:Source; art:string; keywords:string};
 const github = new Set<string>(ARCADE_GITHUB_GAMES);
 export function platformGameCabinet(id: string, seat: Cabinet): Cabinet {
-  if (id === 'casinoapipro') return {...seat, id, name:'Casino API Pro', subtitle:'', demo:false, provider:false, wallet:true, github:false, defaultGameId:undefined};
+  if (id === 'casinoapipro') return {...seat, id, name:'Casino API Pro', subtitle:'', demo:false, provider:false, wallet:true, github:false, defaultGameId:undefined,collection:undefined};
   const studio = isStudioGame(id) ? STUDIO_INFO[id] : undefined;
-  const existing = CABINETS.find(c => c.id === id);
+  const existing = GAME_CABINETS.find(c => c.id === id);
   return {...seat, id, name:studio ? studioCatalogName(studio.id) : existing?.name ?? 'Casino API Pro',
     subtitle:studio?.subtitle ?? existing?.subtitle ?? '', demo:false, provider:false, wallet:!!studio || !!existing?.wallet,
-    github:!studio && id !== 'casinoapipro', defaultGameId:undefined};
+    github:!studio && id !== 'casinoapipro', defaultGameId:undefined,collection:undefined};
 }
 const kindNames: Record<string,string> = {
   all:t('Все жанры'), slot:t('Слоты'), crash:t('Крэш'), flight:t('Полёт'), keno:t('Кено'),
@@ -40,7 +40,7 @@ function localEntry(id: string): Entry {
 export class RoyalPlatformCatalog {
   private lifetime = new AbortController();
   private providerRequest?: AbortController;
-  private entries = ROYAL_PLATFORM_GAMES.map(localEntry);
+  private entries:Entry[] = [];
   private source: Source | 'all' = 'all';
   private providerStatus?: CasinoApiProStatus;
   private providerMessage = t('Загружаем каталог Casino API Pro…');
@@ -51,8 +51,12 @@ export class RoyalPlatformCatalog {
   private updateBalance = () => {
     this.host.querySelector('[data-platform-wallet]')!.textContent = demoWallet.wallet ? `${t('Демобаланс')}: ${coins(demoWallet.wallet.balance)}` : t('Демокошелёк');
   };
-  constructor(private host: HTMLElement, private select: (choice:PlatformChoice)=>void, private selected?:PlatformChoice) {
-    host.innerHTML = `<section class="royal-platform" aria-label="${t('Каталог игр Рояль')}"><header class="rp-heading"><div><span>ROYAL PLATFORM</span><h3>${t('Все игры в одном автомате')}</h3></div><button type="button" data-platform-wallet></button></header><p class="rp-intro">${t('Выбирай игру и оставайся за своим автоматом. Чат и сохранённые партии всегда рядом.')}</p><nav class="rp-sources" aria-label="${t('Коллекция игр')}">${(['all','royal','casinoapipro','github'] as const).map(source=>`<button type="button" data-source="${source}" aria-pressed="${source==='all'}">${source==='all'?t('Все игры'):sourceNames[source]}<span></span></button>`).join('')}</nav><div class="rp-tools"><label>${t('Найти игру')}<input type="search" aria-label="${t('Найти игру')}" placeholder="${t('Название или тема')}"></label><label>${t('Жанр')}<select aria-label="${t('Жанр')}">${Object.entries(kindNames).map(([id,name])=>`<option value="${id}">${name}</option>`).join('')}</select></label></div><p class="rp-count" role="status"></p><div class="rp-provider-status" role="status" hidden><span></span><button type="button" data-provider-retry>${t('Обновить')}</button></div><div class="rp-grid"></div><p class="rp-empty" role="status" hidden>${t('Игры не найдены. Измени поиск или жанр.')}</p></section>`;
+  constructor(private host: HTMLElement, private select: (choice:PlatformChoice)=>void, private collection:CabinetCollection, private selected?:PlatformChoice) {
+    this.entries=collectionGames(collection).filter(id=>id!=='casinoapipro').map(localEntry);
+    this.source=collection;
+    const title={royal:t('Игры Royal'),github:t('Доработанные GitHub-игры'),casinoapipro:'Casino API PRO'}[collection];
+    host.dataset.collection=collection;
+    host.innerHTML = `<section class="royal-platform" aria-label="${t('Каталог игр Рояль')}"><header class="rp-heading"><div><span>ROYAL PLATFORM</span><h3>${title}</h3></div><button type="button" data-platform-wallet></button></header><p class="rp-intro">${t('Выбирай игру и оставайся за своим автоматом. Чат и сохранённые партии всегда рядом.')}</p><nav class="rp-sources" aria-label="${t('Коллекция игр')}">${([collection] as const).map(source=>`<button type="button" data-source="${source}" aria-pressed="${source===this.source}">${sourceNames[source]}<span></span></button>`).join('')}</nav><div class="rp-tools"><label>${t('Найти игру')}<input type="search" aria-label="${t('Найти игру')}" placeholder="${t('Название или тема')}"></label><label>${t('Жанр')}<select aria-label="${t('Жанр')}">${Object.entries(kindNames).map(([id,name])=>`<option value="${id}">${name}</option>`).join('')}</select></label></div><p class="rp-count" role="status"></p><div class="rp-provider-status" role="status" hidden><span></span><button type="button" data-provider-retry>${t('Обновить')}</button></div><div class="rp-grid"></div><p class="rp-empty" role="status" hidden>${t('Игры не найдены. Измени поиск или жанр.')}</p></section>`;
     this.grid=host.querySelector('.rp-grid')!; this.search=host.querySelector('input')!; this.genre=host.querySelector('select')!;
     this.search.oninput=()=>this.render(); this.genre.onchange=()=>this.render();
     host.querySelectorAll<HTMLButtonElement>('[data-source]').forEach(button=>button.onclick=()=>{this.source=button.dataset.source as Source|'all';this.render();});
@@ -63,6 +67,7 @@ export class RoyalPlatformCatalog {
     this.updateBalance();this.render();void this.loadProvider();
   }
   private async loadProvider() {
+    if(this.collection!=='casinoapipro')return;
     this.providerRequest?.abort();const controller = new AbortController();this.providerRequest=controller;
     this.entries=this.entries.filter(entry=>entry.source!=='casinoapipro');this.providerStatus=undefined;
     this.providerMessage=t('Загружаем каталог Casino API Pro…');this.render();
@@ -104,5 +109,5 @@ export class RoyalPlatformCatalog {
       button.append(art,copy);button.onclick=()=>this.select({gameId:entry.gameId,providerGame:entry.providerGame});this.grid.append(button);
     }
   }
-  destroy(){this.disposed=true;this.lifetime.abort();this.providerRequest?.abort();this.host.replaceChildren();}
+  destroy(){this.disposed=true;this.lifetime.abort();this.providerRequest?.abort();this.host.replaceChildren();delete this.host.dataset.collection;}
 }
