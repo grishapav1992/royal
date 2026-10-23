@@ -14,6 +14,7 @@ import { PostgresDatabase } from './database';
 import { applyAccountSchemaMigrations } from './game-database-migrations';
 import { randomBytes, randomUUID, scrypt, timingSafeEqual, createHash } from 'node:crypto';
 import { EventEmitter } from 'node:events';
+import { FinanceAdminStore } from './admin/store';
 
 export type Account = { id: string; email: string; name: string; skin: number | null; appearance?: CharacterAppearance | null };
 type StoredAccount = Account & { password: string };
@@ -42,6 +43,7 @@ export class AccountStore {
   readonly cryptoWallet: PaymentClient;
   readonly skinStudio: SkinStudioStore;
   readonly paymentCredits: PaymentCredits;
+  readonly financeAdmin: FinanceAdminStore;
   readonly paymentEventSecret: string;
   readonly events = new EventEmitter();
   private sessionCleanup?: Promise<void>;
@@ -61,9 +63,10 @@ export class AccountStore {
     this.paymentCredits = new PaymentCredits(this.db, schemaReady);
     this.paymentEventSecret = payments.eventSecret;
     this.cryptoWallet = new PaymentClient(payments, this.paymentCredits);
+    this.financeAdmin = new FinanceAdminStore(this.db,schemaReady);
     this.skinStudio = new SkinStudioStore(this.db, new NileSkinPayments(), new CodexSkinImages(), () => true,
       (id, appearance) => this.events.emit('appearance', id, appearance), this.wallet.ready);
-    this.ready = Promise.all([schemaReady, this.wallet.ready, this.casinoApiProWallet.ready, this.moderation.ready, this.drinking.ready, this.paymentCredits.ready, this.skinStudio.ready]).then(() => {});
+    this.ready = Promise.all([schemaReady, this.wallet.ready, this.casinoApiProWallet.ready, this.moderation.ready, this.drinking.ready, this.paymentCredits.ready, this.skinStudio.ready, this.financeAdmin.ready]).then(() => {});
     this.events.setMaxListeners(0);
   }
   async login(rawEmail: unknown, rawPassword: unknown) {
@@ -114,6 +117,14 @@ export class AccountStore {
     return row ? { account: this.publicAccount(row), hash } : undefined;
   }
   async active(hash: string) { await this.ready; return !!(await this.db.prepare('SELECT hash FROM sessions WHERE hash=? AND expires>?').get(hash, Date.now())); }
+  async verifyPassword(id:string,value:unknown){
+    await this.ready;
+    if(typeof value!=='string'||value.length<8||value.length>128)throw new AuthError(401,'Подтверди действие паролем своего аккаунта.');
+    const row=await this.db.prepare('SELECT password FROM accounts WHERE id=?').get(id);
+    if(!row)throw new AuthError(401,'Аккаунт не найден.');
+    const[salt,expected]=String(row.password).split(':');
+    if(!timingSafeEqual(await derive(value,salt),Buffer.from(expected,'hex')))throw new AuthError(401,'Неверный пароль подтверждения.');
+  }
   async health() { await this.ready; await this.db.prepare('SELECT 1').get(); }
   async select(id: string, skin: unknown, rawName?: unknown, rawAppearance?: unknown) {
     await this.ready;

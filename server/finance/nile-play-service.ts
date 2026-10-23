@@ -1,6 +1,8 @@
 import { createServer } from 'node:http';
 import { NilePlayLedger, NilePlayError } from './nile-play-ledger';
 import { gameAccountId } from '../../src/shared/nileWallet';
+import { requireFinanceAdmin } from '../admin/validation';
+import { CryptoError } from '../crypto/config';
 import { PvpStore } from '../pvp/store';
 import {NileGameRuntime} from './nile-game-runtime';
 import {WalletError} from '../demoWallet';
@@ -39,8 +41,16 @@ export function createNilePlayServer(ledger: NilePlayLedger) {
             }
             if (!body || Object.keys(body).sort().join(',') !== 'accountId,action,value' || !gameAccountId(body.accountId))
                 throw new NilePlayError('invalid_play_request', 400);
-            if (size > 2048 && body.action !== 'pvp-sync'&&body.action!=='native-game') throw new NilePlayError('invalid_play_request', 413);
-            if (body.action === 'wallet') {
+            if (size > 2048 && body.action !== 'pvp-sync'&&body.action!=='native-game'&&!['finance-report','finance-adjust'].includes(body.action)) throw new NilePlayError('invalid_play_request', 413);
+            if(body.action==='finance-report'||body.action==='finance-adjust'){
+                requireFinanceAdmin(body.accountId);
+                if(body.action==='finance-report'){await games.ready;await pvp.ready;respond(200,await ledger.adminReport(body.value));}
+                else{
+                    if(body.value?.actorId!==body.accountId)throw new CryptoError(403,'Неверный автор действия.');
+                    respond(200,await ledger.adminAdjust(body.value));
+                }
+            }
+            else if (body.action === 'wallet') {
                 if (body.value !== null)
                     throw new NilePlayError('invalid_play_request', 400);
                 respond(200, await ledger.wallet(body.accountId));
@@ -85,7 +95,7 @@ export function createNilePlayServer(ledger: NilePlayLedger) {
                 throw new NilePlayError('invalid_play_request', 400);
         }
         catch (e) {
-            respond(e instanceof NilePlayError||e instanceof WalletError ? e.status : 503, { code: e instanceof NilePlayError ? e.code : e instanceof WalletError?e.message:'play_unavailable' });
+            respond(e instanceof NilePlayError||e instanceof WalletError||e instanceof CryptoError ? e.status : 503, e instanceof CryptoError ? {error:e.message} : { code: e instanceof NilePlayError ? e.code : e instanceof WalletError?e.message:'play_unavailable' });
         }
     });
     server.requestTimeout = 10000;

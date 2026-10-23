@@ -12,6 +12,9 @@ import { sealNileDepositPool, depositPoolDigest, type NileDepositPool } from './
 import { applyPvpMoneyEvent, pvpEventId, type PvpMoneyEvent, type PvpMoneyMatch } from './pvp-money';
 import { isPvpGame, validPvpStake } from '../../src/shared/pvp';
 import {nativeMoneyEntries,type NativeMoneyEvent} from './native-game-money';
+import { adjustmentRequest, requireFinanceAdmin, sameAdjustment } from '../admin/validation';
+import { queryFinanceReport, nileReportSql } from '../admin/report';
+import type { FinanceAdjustment } from '../../src/shared/financeAdmin';
 export type NilePlayConfig = {
     version: 1;
     source: NileTestConfig;
@@ -56,6 +59,8 @@ type Reserve = {
     units: string;
     createdAt: number;
 };
+type Adjustment = FinanceAdjustment & {userId:string};
+const adjustmentEntries = (row: Adjustment): Entry[] => [{account:'player:'+row.userId,units:row.deltaUnits},{account:'house',units:(-BigInt(row.deltaUnits)).toString()}];
 const reserveEntries = (row: Reserve): Entry[] => [{ account: 'player:' + row.userId, units: '-' + row.units }, { account: 'house', units: row.units }];
 function fundingEntries(row: Funding): Entry[] {
     return [{ account: 'external', units: '-' + row.amountUnits }, { account: 'player:' + row.userId, units: row.playerUnits }, { account: 'house', units: row.reserveUnits }];
@@ -89,7 +94,7 @@ export class NilePlayLedger {
         CREATE TABLE IF NOT EXISTS invites(hash TEXT PRIMARY KEY, user_id TEXT NOT NULL, created_at BIGINT NOT NULL, expires_at BIGINT NOT NULL);
         CREATE TABLE IF NOT EXISTS bindings(account_id TEXT PRIMARY KEY, user_id TEXT NOT NULL UNIQUE, invite_hash TEXT NOT NULL UNIQUE REFERENCES invites(hash), created_at BIGINT NOT NULL);`);
                 await this.db.exec(`ALTER TABLE events DROP CONSTRAINT IF EXISTS events_kind_check;
-                  ALTER TABLE events ADD CONSTRAINT events_kind_check CHECK(kind IN ('funding','round','reserve','pvp','native'));
+                  ALTER TABLE events ADD CONSTRAINT events_kind_check CHECK(kind IN ('funding','round','reserve','pvp','native','adjustment'));
                   CREATE INDEX IF NOT EXISTS play_pvp_match_seq ON events((payload::jsonb->>'matchId'),seq) WHERE kind='pvp';`);
                 await ledgerTrigger(this.db, 'state', 'sealed_state', 'UPDATE', `
         IF NEW.config IS DISTINCT FROM OLD.config OR NEW.id IS DISTINCT FROM OLD.id OR (OLD.halted IS NOT NULL AND NEW.halted IS DISTINCT FROM OLD.halted)
@@ -120,7 +125,7 @@ export class NilePlayLedger {
         await this.ready;
         return this.db.transaction(action, { readOnly: !write });
     }
-    private async append(id: string, kind: string, payload: Funding | StoredRound | Reserve | PvpMoneyEvent | NativeMoneyEvent, entries: Entry[]) {
+    private async append(id: string, kind: string, payload: Funding | StoredRound | Reserve | PvpMoneyEvent | NativeMoneyEvent | Adjustment, entries: Entry[]) {
         await this.ready;
         const text = JSON.stringify(payload);
         const seq = (await this.db.prepare('INSERT INTO events(seq,id,kind,payload,sha256) SELECT COALESCE(MAX(seq),0)+1,?,?,?,? FROM events RETURNING seq').run(id, kind, text, playDigest(text))).lastInsertRowid;
@@ -410,6 +415,31 @@ export class NilePlayLedger {
             return {wallet:await this.wallet(accountId,now),replayed:false};
         });
     }
+    async adminReport(filters:unknown) {
+        await this.ready;
+        return queryFinanceReport(this.db,nileReportSql(!!this.pool,await this.db.hasTable('demo_ledger')),'nile',filters,async()=>{
+            const state=await this.state(),house=await this.balance('house'),total=-(await this.balance('external'));
+            const held=BigInt((await this.db.prepare("SELECT coalesce(sum(units::numeric),0)::text AS n FROM entries WHERE account LIKE 'pvp:%' OR account LIKE 'games-reserved:%'").get())!.n);
+            return {players:(total-house-held).toString(),reserved:held.toString(),house:house.toString(),treasury:total.toString(),checkedAt:Number(state.reconciled_at)||null,
+              note:await this.isReady()?'Тестовый USDT Nile. Суммы не являются реальными деньгами.':'Сверка Nile устарела или контур остановлен. Показан сохранённый журнал.'};
+        },true,async ids=>{
+            const owned=(await this.bindings()).filter(b=>ids.includes(b.account_id));
+            return Object.fromEntries(await Promise.all(owned.map(async b=>{const w=await this.wallet(b.account_id);return[b.account_id,{available:w.state==='assigned'?w.balanceUnits:'0',reserved:w.state==='assigned'?w.reservedUnits??'0':'0'}];})));
+        });
+    }
+    async adminAdjust(value:unknown,ids?:Set<string>) {
+        const op=adjustmentRequest(value);requireFinanceAdmin(op.actorId,ids);
+        return this.transaction(async()=>{
+            const prior=await this.db.prepare('SELECT payload FROM events WHERE id=?').get('adjustment:'+op.id);
+            if(prior){const row=JSON.parse(prior.payload) as Adjustment;sameAdjustment(row,op);return{adjustment:row,replayed:true};}
+            if(!await this.isReady())fail('play_source_not_ready',503);
+            const binding=await this.binding(op.playerId);if(!binding)fail('play_wallet_unassigned',404);
+            const row:Adjustment={...op,userId:String(binding!.user_id),createdAt:Date.now()},delta=BigInt(op.deltaUnits);
+            if(await this.balance('player:'+row.userId)+delta<0n||await this.balance('house')-delta<0n)fail('play_insufficient_balance');
+            await this.append('adjustment:'+op.id,'adjustment',row,adjustmentEntries(row));
+            return{adjustment:row,replayed:false};
+        });
+    }
     private async auditRows() {
         await this.db.integrityCheck();
         if ((await this.db.prepare('SELECT * FROM state WHERE id=1').get())!.config !== JSON.stringify(this.config)) fail('play_journal_corrupted', 503);
@@ -490,6 +520,13 @@ export class NilePlayLedger {
                     if(event.id!=='native:'+row.id||!bindings.some(b=>b.account_id===row.accountId&&b.user_id===row.userId&&Number(b.created_at)<=row.createdAt)
                         ||(balances.get('player:'+row.userId)??0n)!==BigInt(row.beforeUnits)||(balances.get('games-reserved:'+row.userId)??0n)!==BigInt(row.beforeReserveUnits))fail('play_journal_corrupted',503);
                     try{entries=nativeMoneyEntries(row);}catch{fail('play_journal_corrupted',503);}
+                }
+                else if(event.kind==='adjustment') {
+                    const {createdAt,userId,...request}=row;
+                    try{adjustmentRequest(request);}catch{fail('play_journal_corrupted',503);}
+                    if(!Number.isSafeInteger(createdAt)||createdAt<1||event.id!=='adjustment:'+row.id
+                      ||!bindings.some(b=>b.account_id===row.playerId&&b.user_id===userId&&Number(b.created_at)<=createdAt))fail('play_journal_corrupted',503);
+                    entries=adjustmentEntries(row);
                 }
                 else {
                     const owned = row as StoredRound;

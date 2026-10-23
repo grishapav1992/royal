@@ -3,6 +3,8 @@ import { gameAccountId } from '../../src/shared/nileWallet';
 import { CryptoError } from '../crypto/config';
 import type { CryptoStore } from '../crypto/store';
 import { validateServiceSecret, verifyServiceSignature } from './protocol';
+import { requireFinanceAdmin } from '../admin/validation';
+import { paymentFinanceReport } from '../admin/paymentFinance';
 
 export function createPaymentApp(store: CryptoStore, requestSecret: string) {
   validateServiceSecret(requestSecret);
@@ -29,6 +31,21 @@ export function createPaymentApp(store: CryptoStore, requestSecret: string) {
   app.post('/internal/ipn', async (req, res) => {
     try { await store.receiveIpn(req.body, req.get('x-nowpayments-sig')); res.json({ ok: true }); }
     catch (error) { fail(error, res); }
+  });
+  app.post('/internal/admin/:action',async(req,res)=>{
+    try{
+      if(!req.body||Object.keys(req.body).sort().join(',')!=='actorId,value') throw new CryptoError(400,'Некорректный запрос.');
+      requireFinanceAdmin(req.body.actorId);
+      if(req.params.action==='report') res.json(await paymentFinanceReport(store,req.body.value));
+      else if(req.params.action==='adjust'){
+        if(req.body.value?.actorId!==req.body.actorId) throw new CryptoError(403,'Неверный автор действия.');
+        res.json(await store.adminAdjust(req.body.value));
+      } else if(req.params.action==='refresh'){
+        const v=req.body.value;
+        if(!v||Object.keys(v).sort().join(',')!=='operationId,playerId'||![v.operationId,v.playerId].every(gameAccountId))throw new CryptoError(400,'Некорректная операция.');
+        res.json(await store.refresh(v.playerId,v.operationId));
+      } else throw new CryptoError(404,'Действие не найдено.');
+    }catch(error){fail(error,res);}
   });
   const handle = (method: 'get' | 'post', action: string, fn: (id: string, body: unknown, req: express.Request) => Promise<unknown>, register = true) => {
     app[method]('/internal/users/:user/' + action, async (req, res) => {
