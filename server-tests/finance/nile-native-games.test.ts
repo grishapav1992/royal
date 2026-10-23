@@ -11,7 +11,7 @@ import {validNeopolisSession} from '../../src/shared/neopolis';
 const command=(path:string,body:unknown=null,method:'GET'|'POST'=body===null?'GET':'POST'):NativeCommand=>({path,body,method,flags:Array(9).fill(true),rules:2,query:{}});
 const draconaCommand=(body:unknown=null):NativeCommand=>({...command('/expansion',body),flags:[true,true,true,true,true,true,true,true,2]});
 const neopolisCommand=(body:unknown=null):NativeCommand=>({...draconaCommand(body),neopolisRules:3});
-async function setup(){const c=await pvpFixture();await c.source.ingest(block(102,'1000000000000',c.config.source.addresses.find(a=>a.userId==='reserve')!.address));await c.ledger.sync(c.source,await c.reconciliation());return{...c,games:new NileGameRuntime(c.ledger,()=>0)};}
+async function setup(){const c=await pvpFixture();await c.source.ingest(block(102,'1000000000000',c.config.source.addresses.find(a=>a.userId==='reserve')!.address));await c.ledger.sync(c.source,await c.reconciliation());const games=new NileGameRuntime(c.ledger,()=>0);await games.ready;return{...c,games};}
 
 test('published Neopolis restores all three bosses and settles its campaign once in the common Nile journal',async()=>{
  const c=await setup();try{
