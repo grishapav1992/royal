@@ -49,7 +49,7 @@ export class RoyalPlatformCatalog {
   private search: HTMLInputElement;
   private genre: HTMLSelectElement;
   private updateBalance = () => {
-    this.host.querySelector('[data-platform-wallet]')!.textContent = demoWallet.wallet ? `${coins(demoWallet.wallet.balance)} USDT · Nile` : 'USDT · Nile';
+    this.host.querySelector('[data-platform-wallet]')!.textContent = demoWallet.wallet ? `${coins(demoWallet.wallet.balance)} USDT · Демо` : 'USDT · Демо';
   };
   constructor(private host: HTMLElement, private select: (choice:PlatformChoice)=>void, private collection:CabinetCollection, private selected?:PlatformChoice) {
     this.entries=collectionGames(collection).filter(id=>id!=='casinoapipro').map(localEntry);

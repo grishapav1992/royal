@@ -16,6 +16,7 @@ import { RetiredArcadeRounds, RetiredArcadeRoundGuard, ownsRetiredArcadeRound, t
 import { isExpansionGame, EXPANSION_NAMES } from './shared/casinoExpansion';
 import { isSessionGame } from './shared/casinoSessions';
 import { ClubMap } from './ui/ClubMap';
+import { DemoWalletUI } from './ui/DemoWalletUI';
 import { NileWalletUI } from './ui/NileWalletUI';
 import { MiraChat } from './ui/MiraChat';
 import { isGithubGame } from './shared/githubGames';
@@ -198,23 +199,23 @@ async function openCabinetGame(cabinet: Cabinet, recovery?: RetiredArcadeRound, 
     $('#card-dealer-stage').hidden=false;
     $('.mini-top .eyebrow').textContent=translateText('КАРТОЧНЫЙ САЛОН / ЭТАЖ 3');
     const practice=isGithubGame(cabinet.id)&&!isExpansionGame(cabinet.id)&&!isSessionGame(cabinet.id);
-    $('.mini-bottom>span').textContent=practice?translateText('Отдельные учебные фишки'):translateText('Общий баланс USDT · Nile');
+    $('.mini-bottom>span').textContent=practice?translateText('Отдельные учебные фишки'):translateText('Общий игровой баланс · Демо');
     cardDealerStage=new CardDealerStage($('#card-dealer-stage'),cabinet.id,$('#mini-game'),action=>room.setDealerAction(cabinet.id,action));
   } else if (isStudioGame(cabinet.id)) {
     $('.mini-top .eyebrow').textContent = 'ROYAL PLATFORM / 01';
     $('.mini-bottom>span').textContent = translateText('Общий тестовый кошелёк клуба');
   } else if (isVariantGame(cabinet.id) || isExpansionGame(cabinet.id)) {
     $('.mini-top .eyebrow').textContent = translateText('ЭТАЖ 1 / ТЕСТОВЫЙ КОШЕЛЁК');
-    $('.mini-bottom>span').textContent = translateText('Общий баланс USDT · Nile');
+    $('.mini-bottom>span').textContent = translateText('Общий игровой баланс · Демо');
   } else if (isSessionGame(cabinet.id)) {
     $('.mini-top .eyebrow').textContent = translateText('ЭТАЖ 1 / СТАВКИ');
-    $('.mini-bottom>span').textContent = translateText('Общий баланс USDT · Nile');
+    $('.mini-bottom>span').textContent = translateText('Общий игровой баланс · Демо');
   } else if (cabinet.github && isGithubGame(cabinet.id)) {
     $('.mini-top .eyebrow').textContent = translateText('ЭТАЖ 1 / УЧЕБНЫЕ ИГРЫ');
     $('.mini-bottom>span').textContent = translateText('Бесплатные игры с отдельными учебными фишками');
   } else if (cabinet.wallet) {
-    $('.mini-top .eyebrow').textContent = translateText('РОЯЛЬ / USDT · NILE');
-    $('.mini-bottom>span').textContent = translateText('Общий баланс USDT · Nile');
+    $('.mini-top .eyebrow').textContent = translateText('РОЯЛЬ / ИГРОВОЙ БАЛАНС');
+    $('.mini-bottom>span').textContent = translateText('Общий игровой баланс · Демо');
   } else if (cabinet.demo) {
     $('.mini-bottom>span').textContent = translateText('Звук и управление внутри игры');
   }
@@ -265,6 +266,7 @@ const room = new RoomScene({
       const img = document.createElement('img'); img.src = game.textures.getBase64(`cabinet-${i}`); img.alt = ''; document.querySelector(`#art-${artIndex}`)?.append(img);
     });
     new NileWalletUI(room);
+    new DemoWalletUI(room);
     const portrait = document.createElement('img'); portrait.src = game.textures.getBase64('citizen-0', 'down-6'); portrait.alt = ''; $('#player-portrait').append(portrait);
     if (!offline) social = new SocialUI(room, toast);
     else { room.onActivity=()=>toast(translateText('Войди в онлайн-зал, чтобы играть вместе и слушать рояль.')); }
