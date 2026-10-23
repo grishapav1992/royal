@@ -119,7 +119,9 @@ def build():
         if kind == 'game':
             for directory in ['dist-delta','server-delta','module-delta']:
                 shutil.copytree(ROOT / directory, context / directory)
-            dockerfile = 'FROM '+OLD['preparedImage']+'\nCOPY --chown=node:node dist-delta/ /app/dist/\nCOPY --chown=node:node server-delta/index.js /app/dist-server/index.js\nCOPY --chown=node:node module-delta/ /app/module-dist/\n'
+            for name in ['package.json','package-lock.json']:
+                shutil.copyfile(ROOT / 'source' / name, context / name)
+            dockerfile = 'FROM '+OLD['preparedImage']+'\nUSER root\nCOPY --chown=node:node package.json package-lock.json /app/\nRUN npm ci --omit=dev && npm cache clean --force\nUSER node\nCOPY --chown=node:node dist-delta/ /app/dist/\nCOPY --chown=node:node server-delta/index.js /app/dist-server/index.js\nCOPY --chown=node:node module-delta/ /app/module-dist/\n'
         else:
             shutil.copyfile(ROOT / 'play.js', context / 'play.js')
             dockerfile = 'FROM '+OLD['preparedImage']+' AS engines\nFROM '+M['extra']['nileImage']+'\nCOPY --chown=node:node play.js /app/play.js\nCOPY --from=engines /app/dist-server/card-engine /app/dist-server/card-engine\nCOPY --from=engines /app/dist-server/card-engine-v1 /app/dist-server/card-engine-v1\n'
@@ -193,7 +195,7 @@ def game():
     assert after['configHashes']==OLD['configHashes']
     assert after['source']=={**OLD['source'],**M['changed']}
     assert all(after['moduleFiles'].get(k)==(M['pointers'].get(k) or v) for k,v in OLD['moduleFiles'].items()),'Old module bytes changed'
-    expected={**OLD['program'],**{'dist/'+k:v for k,v in M['dist'].items()},**{'module-dist/'+k:v for k,v in M['modules'].items()},'dist-server/index.js':M['backend']}
+    expected={**OLD['program'],**{'dist/'+k:v for k,v in M['dist'].items()},**{'module-dist/'+k:v for k,v in M['modules'].items()},'dist-server/index.js':M['backend'],**M['packages']}
     assert after['program']==expected and after['preparedProgram']==expected,'Runtime differs'
     for name,row in OLD['services'].items():
         if name not in ['/royal-game-1','/royal-nile-play']: assert after['services'][name]==row,'Other service changed: '+name

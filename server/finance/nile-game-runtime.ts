@@ -1,4 +1,6 @@
 import {createHash} from 'node:crypto';
+import { CommonSkinPayments } from '../skinPayments';
+import { SKIN_UUID } from '../../src/shared/skinStudio';
 import {DemoWalletStore,WalletError} from '../demoWallet';
 import type {PostgresDatabase} from '../database';
 import type {NilePlayLedger} from './nile-play-ledger';
@@ -26,6 +28,29 @@ export class NileGameRuntime{
   // Every call runs under the one financial journal lock. Engine-local account locks are redundant here.
   const db=new Proxy(ledger.db,{get(target,key){if(key==='transaction')return<T>(action:()=>Promise<T>)=>target.transaction(action);const value=Reflect.get(target,key,target);return typeof value==='function'?value.bind(target):value;}})as PostgresDatabase;
   this.projection=db;this.store=new DemoWalletStore(db,draw,undefined,prerequisite);this.ready=Promise.all([this.store.ready,this.store.expansion.ready]).then(()=>{});
+ }
+ async skinPurchase(account: string, value: unknown) {
+  const op = value as { id: string; action: 'reserve'|'capture'|'refund' };
+  if (!op || Object.keys(op).sort().join(',') !== 'action,id' || typeof op.id !== 'string' || !SKIN_UUID.test(op.id) || !['reserve','capture','refund'].includes(op.action)) throw new WalletError(400,'Некорректная покупка образа.');
+  await this.ready;
+  return this.ledger.nativeTransaction(account, async context => {
+   const cents = context.available / 10000n;
+   if (cents > BigInt(MAX_DEMO_UNITS)) throw new WalletError(409,'Баланс превышает лимит интерфейса.');
+   await this.ledger.db.prepare('INSERT INTO accounts(id) VALUES(?) ON CONFLICT DO NOTHING').run(account);
+   const beforeReserve = BigInt(await demoReservedUnits(this.ledger.db,account))*10000n;
+   if (beforeReserve !== context.reserved) throw Error('Native reservation differs from journal');
+   await saveDemoUnits(this.projection,account,Number(cents));
+   const previous = await this.ledger.db.prepare('SELECT state FROM skin_purchases WHERE id=?').get(op.id);
+   if (op.action === 'reserve' && !previous) {
+    if (!context.ready) throw new WalletError(409,'Подтверждение тестового USDT временно недоступно.');
+    if (context.available < 10000000n) throw new WalletError(409,'На общем балансе недостаточно USDT. Нужно 10 USDT.');
+   }
+   const result = await new CommonSkinPayments(this.projection,Promise.resolve()).skinPurchase(account,op.id,op.action);
+   const available = context.available+(BigInt(await demoBalanceUnits(this.ledger.db,account))-cents)*10000n;
+   const reserve = BigInt(await demoReservedUnits(this.ledger.db,account))*10000n;
+   if (available !== context.available || reserve !== context.reserved) await context.post(available,reserve,createHash('sha256').update(JSON.stringify(op)).digest('hex'));
+   return result;
+  });
  }
  private async replay(account:string,id:unknown){
   if(typeof id!=='string')return false;

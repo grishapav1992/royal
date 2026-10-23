@@ -16,18 +16,19 @@ with tarfile.open(proof / 'production-source.tgz') as archive:
 sha = lambda b: hashlib.sha256(b).hexdigest()
 assert all(sha(original[n]) == h for n, h in before['source'].items())
 changed = {}
-for directory in ['src', 'server', 'public', 'scripts', 'docs', 'games']:
-    for path in (stage / directory).rglob('*'):
-        if path.is_file() and not path.is_symlink():
-            name = path.relative_to(stage).as_posix()
-            assert not any(p in ['node_modules', 'data', 'secrets', '.git'] or p.startswith('.env') for p in path.relative_to(stage).parts)
-            data = path.read_bytes()
-            if name in original and original[name].replace(b'\r\n', b'\n') == data.replace(b'\r\n', b'\n'):
-                continue
-            destination = output / 'source' / name
-            destination.parent.mkdir(parents=True, exist_ok=True)
-            destination.write_bytes(data)
-            changed[name] = sha(data)
+paths = [p for directory in ['src', 'server', 'public', 'scripts', 'docs', 'games'] for p in (stage / directory).rglob('*')]
+paths += [stage / name for name in ['Dockerfile','.dockerignore','package.json','package-lock.json','index.html','tsconfig.json','tsconfig.finance.json','vite.config.ts','deployment/SERVER.md']]
+for path in paths:
+    if path.is_file() and not path.is_symlink():
+        name = path.relative_to(stage).as_posix()
+        assert not any(p in ['node_modules', 'data', 'secrets', '.git'] or p.startswith('.env') for p in path.relative_to(stage).parts)
+        data = path.read_bytes()
+        if name in original and original[name].replace(b'\r\n', b'\n') == data.replace(b'\r\n', b'\n'):
+            continue
+        destination = output / 'source' / name
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes(data)
+        changed[name] = sha(data)
 for row in extra['files'].values():
     name = row['source']
     destination = output / 'finance-source' / name
@@ -78,7 +79,8 @@ revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=proof.paren
 manifest = {'release': 'pvp-usdt-20261023-v1', 'sourceCommit': revision, 'before': before, 'extra': extra,
             'changed': changed, 'dist': dist, 'modules': modules,
             'backend': sha((output / 'server-delta/index.js').read_bytes()),
-            'financial': sha((output / 'play.js').read_bytes()), 'pointers': pointers}
+            'financial': sha((output / 'play.js').read_bytes()), 'pointers': pointers,
+            'packages': {name: sha((stage / name).read_bytes()) for name in ['package.json','package-lock.json']}}
 manifest['payload'] = {p.relative_to(output).as_posix(): sha(p.read_bytes()) for p in output.rglob('*') if p.is_file()}
 (output / 'install-manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
 print(json.dumps({'changedSources': len(changed), 'distFiles': len(dist), 'moduleFiles': len(modules), 'externalPointers': len(pointers)}))

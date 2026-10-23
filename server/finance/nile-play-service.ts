@@ -63,6 +63,7 @@ export function createNilePlayServer(ledger: NilePlayLedger) {
                 attempts.set(body.accountId, record);
                 respond(200, await ledger.claim(body.accountId, body.value));
             }
+            else if(body.action==='skin-purchase')respond(200,await games.skinPurchase(body.accountId,body.value));
             else if(body.action==='native-game')respond(200,await games.run(body.accountId,body.value));
             else if (body.action === 'pvp-command') {
                 const v = body.value;

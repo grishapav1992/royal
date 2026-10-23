@@ -300,7 +300,7 @@ export class NilePlayLedger {
         const allocation = await this.db.prepare('SELECT payload FROM events WHERE id=?').get('reserve:' + userId);
         return { ...NILE_PLAY_SCOPE, state: 'assigned', address: nileBase58(this.addresses.find(a => a.userId === userId)!.address),
             balanceUnits: (await this.balance('player:' + userId)).toString(),
-            reservedUnits: String((await this.db.prepare("SELECT COALESCE(SUM(units::numeric),0)::text AS units FROM entries WHERE account LIKE 'pvp:%' AND right(account,length(?)+1)=':'||?").get(userId,userId))!.units),
+            reservedUnits: String(BigInt(String((await this.db.prepare("SELECT COALESCE(SUM(units::numeric),0)::text AS units FROM entries WHERE account LIKE 'pvp:%' AND right(account,length(?)+1)=':'||?").get(userId,userId))!.units)) + await this.balance('games-reserved:'+userId)),
             revision:Number((await this.db.prepare('SELECT COALESCE(MAX(seq),0) AS seq FROM events').get())!.seq),
             updatedAt: Number(state.source_at ?? 0), ready: await this.isReady(now), maxStakeUnits: max, reserveAllocatedUnits: allocation ? JSON.parse(String(allocation.payload)).units : '0', deposits, rounds };
         }, { readOnly: true });

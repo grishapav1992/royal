@@ -393,4 +393,7 @@ $('#fullscreen').addEventListener('click', async () => {
 });
 document.addEventListener('visibilitychange', () => { if (document.hidden && miniDialog.open) { mini?.pause(); } else if (miniDialog.open) { mini?.resume(); } });
 // Read-only diagnostics for browser smoke checks.
-Object.assign(window, { royalDemo: { getState: () => room.getState(), getMiniState: () => mini?.getState() ?? null, getNetworkState: () => social?.client.getState() ?? null, getAudio: () => gameAudio.getState(), getActivities: () => social?.activities.getState() ?? null } });
+if (import.meta.env.DEV && import.meta.env.VITE_LOCAL_ATELIER === '1') {
+  document.querySelector('.header-center')!.textContent = 'Локальное ателье · тестовый баланс';
+}
+Object.assign(window, { royalDemo: { getState: () => room.getState(), getTailor: () => room.getTailorState(), getMiniState: () => mini?.getState() ?? null, getNetworkState: () => social?.client.getState() ?? null, getAudio: () => gameAudio.getState(), getActivities: () => social?.activities.getState() ?? null } });
