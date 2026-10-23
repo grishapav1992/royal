@@ -5,7 +5,7 @@ import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
-import { HEROES, MAX_ROUND_SPINS, initialTeam, playNeopolisSpin } from '../../src/shared/neopolisMath.ts';
+import { HEROES, MAX_ROUND_SPINS, initialTeam, playNeopolisSpin } from '../../src/shared/neopolisMathV2.ts';
 import { NEOPOLIS_MAX_WIN, advanceNeopolis, emptyNeopolisView } from '../../src/shared/neopolis.ts';
 import { seededRandom } from '../../src/shared/draconaMath.ts';
 
@@ -31,7 +31,7 @@ const ratio = (n, d) => d ? n / d : 0;
 
 function playRound(team, random, verify = false) {
   let battle = null, payoutUnits = 0, bonusUnits = 0, paidUnits = 0, spins = 0, winningFree = 0;
-  let replay = verify ? emptyNeopolisView(team) : undefined;
+  let replay = verify ? emptyNeopolisView(team, 2) : undefined;
   do {
     const origin = structuredClone(team), sourceBattle = battle ? structuredClone(battle) : null;
     const draws = [];
@@ -60,7 +60,7 @@ function playRound(team, random, verify = false) {
     defeated: battle?.defeated ?? 0, capped: payoutUnits === stakeUnits * NEOPOLIS_MAX_WIN };
 }
 
-const files = ['src/shared/neopolisMath.ts', 'src/shared/neopolis.ts', 'src/shared/draconaMath.ts'];
+const files = ['src/shared/neopolisMathV2.ts', 'src/shared/neopolis.ts', 'src/shared/draconaMath.ts'];
 const sourceHashes = Object.fromEntries(await Promise.all(files.map(async file =>
   [file, createHash('sha256').update(await readFile(file)).digest('hex')])));
 const report = {

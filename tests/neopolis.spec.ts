@@ -1,4 +1,4 @@
-import { test, expect, request as apiRequest, type Page } from '@playwright/test';
+import { test, expect, request as apiRequest, type Page, type Route } from '@playwright/test';
 import { Client } from '@colyseus/sdk';
 import { mkdir } from 'node:fs/promises';
 import { validNeopolisSession } from '../src/shared/neopolis';
@@ -6,12 +6,21 @@ import { validNeopolisSession } from '../src/shared/neopolis';
 const entry = '/tests/fixtures/neopolis-preview.html';
 const state = (page: Page) => page.evaluate(() => (window as any).neopolisPreview.state());
 const session = (page: Page) => page.evaluate(() => (window as any).neopolisPreview.client.sessions.find((value: any) => value.gameId === 'studio-neopolis'));
+// Full HTTP/service/DB settlement with reproducible entropy for rare campaigns.
+test.beforeEach(async({page})=>{
+  await page.route('**/api/demo-wallet/expansion',async route=>{
+    const req=route.request();
+    if(req.method()!=='POST'||req.postDataJSON()?.gameId!=='studio-neopolis'){await route.fallback();return;}
+    const response=await route.fetch({url:new URL('/__test/neopolis/operate',req.url()).href});
+    await route.fulfill({response});
+  });
+});
 async function ready(page: Page, lang = 'en') {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto(entry + '?lang=' + lang);
   await expect(page.locator('#preview')).toHaveAttribute('data-game-module-id', 'studio-neopolis');
   await expect(page.locator('[data-np=spin]')).toBeEnabled();
-  await expect.poll(() => page.locator('.np img').evaluateAll(images => images.every(image => (image as HTMLImageElement).complete && (image as HTMLImageElement).naturalWidth > 0))).toBe(true);
+  await expect.poll(() => page.locator('.np img').evaluateAll(images => images.every(image => (image as HTMLImageElement).complete && (image as HTMLImageElement).naturalWidth > 0)),{timeout:15000}).toBe(true);
   await page.locator('.np img').evaluateAll(images => Promise.all(images.map(image => (image as HTMLImageElement).decode())));
 }
 async function spin(page: Page) {
@@ -62,16 +71,17 @@ test('real API retries a lost result once, restores collection and bonus, and se
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
   await ready(page);
   let original: any;
-  await page.route('**/api/demo-wallet/expansion', async route => {
-    if (route.request().method() !== 'POST' || original) { await route.continue(); return; }
-    original = await (await route.fetch()).json(); await route.abort('failed');
-  });
+  const loseFirst = async (route:Route) => {
+    if (route.request().method() !== 'POST' || original) { await route.fallback(); return; }
+    original = await (await route.fetch({url:new URL('/__test/neopolis/operate',route.request().url()).href})).json(); await route.abort('failed');
+  };
+  await page.route('**/api/demo-wallet/expansion',loseFirst);
   await page.locator('[data-np=spin]').click();
   await expect(page.locator('.np-reels')).toHaveCount(0);
   await page.waitForFunction(() => !!(window as any).neopolisPreview.client.pending && !(window as any).neopolisPreview.state().busy);
   const pendingId = await page.evaluate(() => (window as any).neopolisPreview.client.pending.id);
   await expect(page.locator('[data-np=spin]')).toHaveText(/Check move/);
-  await page.unroute('**/api/demo-wallet/expansion');
+  await page.unroute('**/api/demo-wallet/expansion',loseFirst);
   const replay = await spin(page); expect(replay.id).toBe(pendingId); expect(replay).toEqual(original.session);
   const collected = (await state(page)).team;
   await page.getByRole('button', { name: 'Reopen game' }).click();
@@ -178,7 +188,7 @@ test('reels move during the request, pause in rules, brake in order and respect 
   const held = new Promise<void>(resolve => { release = resolve; });
   await page.route('**/api/demo-wallet/expansion', async route => {
     if (route.request().method() === 'POST') await held;
-    await route.continue();
+    await route.fallback();
   });
   try {
     await observe();
@@ -232,9 +242,9 @@ test('closing during reel motion cancels presentation and reopening restores the
   let release!: () => void, confirmed: any, requests = 0;
   const held = new Promise<void>(resolve => { release = resolve; });
   await page.route('**/api/demo-wallet/expansion', async route => {
-    if (route.request().method() !== 'POST') { await route.continue(); return; }
+    if (route.request().method() !== 'POST') { await route.fallback(); return; }
     requests++;
-    const response = await route.fetch(); confirmed = await response.json();
+    const response = await route.fetch({url:new URL('/__test/neopolis/operate',route.request().url()).href}); confirmed = await response.json();
     await held; await route.fulfill({response});
   });
   try {
@@ -311,7 +321,7 @@ test('original music and confirmed battle sounds honor shared mute, rules, host 
   });
   let release!: () => void;
   const held = new Promise<void>(resolve => { release=resolve; });
-  await page.route('**/api/demo-wallet/expansion',async route => { if (route.request().method()==='POST') await held; await route.continue(); });
+  await page.route('**/api/demo-wallet/expansion',async route => { if (route.request().method()==='POST') await held; await route.fallback(); });
   try {
     await page.locator('[data-np=spin]').click();
     await expect(page.locator('.np-reels')).toHaveCount(1);

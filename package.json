@@ -5,7 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "npm run build:modules && concurrently -k -n web,server \"vite --host 0.0.0.0\" \"npm run dev:server\"",
-    "build": "tsc --noEmit && npm run build:modules && vite build && esbuild server/index.ts --bundle --platform=node --packages=external --format=esm --outfile=dist-server/index.js && esbuild scripts/crypto-reconcile.ts --bundle --platform=node --packages=external --format=esm --outfile=dist-server/crypto-reconcile.js && esbuild server/payments/index.ts --bundle --platform=node --packages=external --format=esm --outfile=dist-server/payments.js",
+    "build": "npm run check:rtp && tsc --noEmit && npm run build:modules && vite build && esbuild server/index.ts --bundle --platform=node --packages=external --format=esm --outfile=dist-server/index.js && esbuild scripts/crypto-reconcile.ts --bundle --platform=node --packages=external --format=esm --outfile=dist-server/crypto-reconcile.js && esbuild server/payments/index.ts --bundle --platform=node --packages=external --format=esm --outfile=dist-server/payments.js",
+    "check:rtp": "node scripts/check-game-rtp.mjs",
+    "qualify:rtp": "node --import tsx scripts/qualify-game-rtp.mjs",
+    "test:rtp-gate": "node --test server-tests/rtp-gate.test.mjs",
     "preview": "vite preview --host 0.0.0.0",
     "test": "playwright test",
     "dev:web": "npm run build:modules && vite --host 0.0.0.0",

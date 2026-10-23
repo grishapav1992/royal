@@ -1,6 +1,6 @@
 import { readGameHost } from '../../src/modules/GameHostContract';
-import { NEOPOLIS_GAME, NEOPOLIS_BETS } from '../../src/shared/neopolis';
-import { BOSSES, HEROES, initialTeam, readyTeam, PAYTABLE, type Hero, type Team, type Battle, type Frame } from '../../src/shared/neopolisMath';
+import { NEOPOLIS_GAME, NEOPOLIS_BETS, neopolisPointUnits, neopolisPaytable } from '../../src/shared/neopolis';
+import { BOSSES, HEROES, initialTeam, readyTeam, type Hero, type Team, type Battle, type Frame } from '../../src/shared/neopolisMath';
 import { neopolisCopy } from './copy';
 import { SCENES, noticeArt, portrait, skyline, symbolArt } from './art';
 import { dissolveNeopolisSymbols, dropNeopolisSymbols, NeopolisReels } from './NeopolisReels';
@@ -234,7 +234,7 @@ export class NeopolisUI {
     }
     if (frame.kind==='win') {
       const recorded=this.view!.history.at(-1)!;
-      const earned=Number(BigInt(this.session!.stakeUnits)*BigInt(frame.points)/40n);
+      const earned=Number(neopolisPointUnits(this.session!.stakeUnits,frame.points,this.view!.version));
       const total=this.roundBeforeUnits+Math.min(earned,Number(recorded.payoutUnits));
       await this.feedback.win(frame,this.presentationUnits,total,this.motionOptions(signal),this.winChain++);
       return;
@@ -339,7 +339,7 @@ export class NeopolisUI {
     this.find('dialog-body').innerHTML = '<span class="np-dialog-kicker">ROYAL ORIGINALS / NEOPOLIS</span><h2>' + c.rules + '</h2>'
       + [c.rulesBase,c.rulesTeam,c.rulesHeroes,this.legacy ? c.rulesLegacy : c.rulesBoss,c.rulesMoney].map(text => '<p>' + text + '</p>').join('')
       + '<h3>' + c.payouts + '</h3><table><thead><tr><th>' + c.symbol + '</th><th>3</th><th>4</th><th>5</th></tr></thead><tbody>'
-      + PAYTABLE.map((pays, index) => '<tr><th>' + c[('symbol' + index) as keyof typeof c] + '</th>' + pays.map(pay => '<td>×' + pay + '</td>').join('') + '</tr>').join('') + '</tbody></table>';
+      + neopolisPaytable(this.view?.version ?? 3).map((pays, index) => '<tr><th>' + c[('symbol' + index) as keyof typeof c] + '</th>' + pays.map(pay => '<td>×' + this.number(pay) + '</td>').join('') + '</tr>').join('') + '</tbody></table>';
     if (!this.dialog.open) this.dialog.showModal(); this.updatePause(); this.controls();
   }
   pause() { this.paused = true; this.updatePause(); this.controls(); }

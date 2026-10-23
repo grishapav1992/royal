@@ -7,6 +7,8 @@ import { DemoExpansionStore } from '../server/demoExpansion';
 import { demoBalanceUnits, demoReservedUnits } from '../server/demoWalletAmounts';
 import { DRACONA_GAME, validDraconaSession } from '../src/shared/dracona';
 import { seededRandom } from '../src/shared/draconaMath';
+import { playSpin as playSpinV1 } from '../src/shared/draconaMathV1';
+import type { DraconaView } from '../src/shared/dracona';
 
 async function setup(seed = 1) {
   const db = new PostgresDatabase(':memory:');
@@ -26,13 +28,13 @@ test('a paid spin and concurrent retries debit and credit the shared wallet exac
   try {
     const before = await demoBalanceUnits(f.db, 'alice'), action = f.start();
     const replies = await Promise.all(Array.from({ length: 5 }, () => f.store.operate('alice', action)));
-    assert(replies.every(reply => validDraconaSession(reply.session) && reply.session.returnedUnits === '22500'));
-    assert.equal(await demoBalanceUnits(f.db, 'alice'), before - 10000 + 22500);
+    assert(replies.every(reply => validDraconaSession(reply.session) && reply.session.returnedUnits === '11189'));
+    assert.equal(await demoBalanceUnits(f.db, 'alice'), before - 10000 + 11189);
     assert.equal(await demoReservedUnits(f.db, 'alice'), 0);
     const draws = f.draws();
     await f.store.operate('alice', action); assert.equal(f.draws(), draws);
     await assert.rejects(f.store.operate('alice', { ...action, stakeUnits: '20000' }));
-    assert.equal(await demoBalanceUnits(f.db, 'alice'), before + 12500);
+    assert.equal(await demoBalanceUnits(f.db, 'alice'), before + 1189);
   } finally { await f.db.close(); }
 });
 
@@ -73,10 +75,42 @@ test('older clients do not receive or start incompatible Dracona sessions', asyn
     const before = await demoBalanceUnits(f.db, 'alice');
     await assert.rejects(f.store.operate('alice', f.start(), 2, true, true, true, true, true, true, true, true, false));
     assert.equal(await demoBalanceUnits(f.db, 'alice'), before);
-    await f.store.operate('alice', f.start());
+    const action = f.start();
+    const oldOperate = (op: Parameters<typeof f.store.operate>[1]) => f.store.operate('alice',op,2,true,true,true,true,true,true,true,true,true);
+    await assert.rejects(oldOperate(action), /refresh|Обнови/);
+    await f.store.operate('alice', action);
+    await assert.rejects(oldOperate(action), /refresh|Обнови/);
     const legacy = await f.store.active('alice', true, true, true, true, true, true, true, false);
     assert.equal(legacy.sessions.some(session => session.gameId === DRACONA_GAME), false);
   } finally { await f.db.close(); }
+});
+
+test('a saved Dracona v1 bonus retains its old paytable and settles once through an older client', async () => {
+  const f = await setup(1);
+  try {
+    const before = await demoBalanceUnits(f.db,'alice'), action = f.start();
+    const current = (await f.store.operate('alice',action)).session;
+    assert.equal(current.state,'active');
+    const random = seededRandom(1), draws:number[]=[];
+    const result = playSpinV1({bet:100,random:()=>{const draw=Math.floor(random()*4294967296);draws.push(draw);return draw/4294967296;}});
+    const legacy:DraconaView={kind:'dracona',version:1,revision:1,history:[{draws,result}],totalPayoutUnits:String(result.payout*100),remaining:result.bonusAward,bonusAwarded:result.bonusAward,freePlayed:0};
+    const row=await f.db.prepare('SELECT payload FROM demo_casino_sessions WHERE account_id=? AND id=?').get('alice',current.id);
+    const saved=JSON.parse(row!.payload);saved.rulesVersion=2;saved.view.dracona=legacy;
+    await f.db.prepare('UPDATE demo_casino_sessions SET payload=? WHERE account_id=? AND id=?').run(JSON.stringify(saved),'alice',current.id);
+    const restored=new DemoExpansionStore(f.db,async account=>({balance:await demoBalanceUnits(f.db,account)/100,entries:[]}),f.wallet.ready,async()=>{},f.draw);
+    let session=(await restored.active('alice')).sessions.find(s=>s.id===current.id)!;
+    let last:Parameters<typeof restored.operate>[1]=action;
+    while(session.state==='active') {
+      last={id:randomUUID(),action:'move',gameId:DRACONA_GAME,sessionId:session.id,move:'dracona-spin',revision:session.view.dracona!.revision};
+      session=(await restored.operate('alice',last,2,true,true,true,true,true,true,true,true,true)).session;
+      assert.equal(session.rulesVersion,2);assert.equal(session.view.dracona!.version,1);assert(validDraconaSession(session));
+    }
+    assert.equal(await demoBalanceUnits(f.db,'alice'),before-10000+Number(session.returnedUnits));
+    const count=f.draws();await restored.operate('alice',last);assert.equal(f.draws(),count);
+    assert.equal(await demoReservedUnits(f.db,'alice'),0);
+    const fresh=(await restored.operate('alice',f.start())).session;
+    assert.equal(fresh.rulesVersion,3);assert.equal(fresh.view.dracona!.version,2);
+  } finally {await f.db.close();}
 });
 
 test('the largest declared stake persists its complete liability above a 32-bit integer', async () => {

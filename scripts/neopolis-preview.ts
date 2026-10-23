@@ -2,6 +2,7 @@
 import { spawn } from 'node:child_process';
 import { createServer } from 'vite';
 import { temporaryDatabase } from './database-test';
+import { neopolisTestRng } from './neopolis-test-rng';
 
 const database = await temporaryDatabase();
 const apiPort = Number(process.env.NEOPOLIS_API_PORT || 2616);
@@ -15,6 +16,7 @@ let log = '', stopping = false;
 backend.stdout.on('data', bytes => { log = (log + bytes.toString()).slice(-6000); });
 backend.stderr.on('data', bytes => { log = (log + bytes.toString()).slice(-6000); });
 const vite = await createServer({ configFile: false, root: process.cwd(),
+  plugins: process.env.NEOPOLIS_TEST_RNG === '1' ? [neopolisTestRng(api,{...process.env,...database.env})] : [],
   optimizeDeps: { entries: ['tests/fixtures/neopolis-preview.html'] },
   server: { host: '127.0.0.1', port: webPort, strictPort: true,
     watch: { ignored: ['**/module-dist/**','**/module-build/**','**/artifacts/**','**/dist/**','**/dist-server/**'] },
