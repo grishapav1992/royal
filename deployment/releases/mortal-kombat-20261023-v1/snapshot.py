@@ -57,6 +57,8 @@ def snapshot():
         if name in ['royal-nile-reconcile-once', 'royal-nile-account-views-once']:
             continue
         row = inspect(name)
+        if str(row['Config'].get('Labels', {}).get('com.docker.compose.oneoff', '')).lower() == 'true':
+            continue
         containers[name] = {'id': row['Id'], 'image': row['Image'], 'startedAt': row['State']['StartedAt'],
                             'health': row['State'].get('Health', {}).get('Status')}
         if name in ['royal-game-1', 'royal-payments-1', 'royal-nile-play']:
