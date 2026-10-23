@@ -4,6 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "work:sync": "node scripts/sync-work.mjs",
+    "work:start": "node scripts/sync-work.mjs --new",
+    "test:work-sync": "node --test server-tests/work-sync.test.mjs",
     "dev": "npm run build:modules && concurrently -k -n web,server \"vite --host 0.0.0.0\" \"npm run dev:server\"",
     "build": "node scripts/build-application.mjs",
     "release:plan": "node scripts/release.mjs plan",

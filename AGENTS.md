@@ -4,6 +4,8 @@
 
 ## GitHub synchronization before work
 
+- Follow `docs/development-workflow.md` on every device. Start each feature from freshly fetched origin/main and update actual working files before editing. Use `npm run work:start -- <feature-name>` in a clean main checkout, or the managed-worktree workflow when preserving concurrent work. Use `npm run work:sync` before continuing a shared feature or finishing it. Keep unfinished features in pushed feature branches so another device can resume them without publishing them to main. After integration, publish only reviewed artifacts from the exact source commit already pushed to main, then push the deployment record. Never use the production source directory as an independent development branch.
+
 - Before every new implementation, review or debugging task, run `git status --short --branch`, `git fetch origin`, and `git rev-list --left-right --count HEAD...origin/main`. Use the freshly fetched `origin/main` from `https://github.com/grishapav1992/royal` as the integration baseline. Fetching alone does not update working files.
 - If the current checkout is on `main`, has no local changes and is only behind, update it with `git merge --ff-only origin/main` before starting work.
 - If the checkout has staged, unstaged or untracked changes, or cannot fast-forward, preserve that work. Start independent tasks in a suitable clean managed worktree based on the latest `origin/main`. When continuing an existing task, preserve its commits and deliberately reconcile the relevant local changes with the current main. Never automatically stash, reset, clean, overwrite files or force-push to synchronize.

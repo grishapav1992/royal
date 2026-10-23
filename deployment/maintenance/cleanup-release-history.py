@@ -130,7 +130,15 @@ def service_identity(container):
 def persistent_services():
     ids = run(['docker', 'ps', '-q']).split()
     data = json.loads(run(['docker', 'inspect', *ids]))
-    return {c['Name']: service_identity(c) for c in data if c['Name'] not in PERIODIC}
+    return {c['Name']: service_identity(c) for c in data if c['Name'] not in PERIODIC
+            and (c['HostConfig'].get('RestartPolicy', {}).get('Name', 'no') not in ['', 'no']
+                 or ((c['Config'].get('Labels') or {}).get('com.docker.compose.project')
+                     and (c['Config'].get('Labels') or {}).get('com.docker.compose.oneoff', '').lower() != 'true'))}
+
+
+def validate_rollback_identity(current, image, before):
+    require(image['Id'] != current['Image'] and image['Id'] == before['preparedImage']
+            and before['preparedProgram'] == before['program'], 'Rollback image is missing or ambiguous')
 
 
 def healthy():
@@ -175,7 +183,7 @@ def recovery(release):
     require(all((LIVE / name).is_file() and sha(LIVE / name) == digest for name, digest in expected.items()),
             'Live source differs from the published release')
     image = docker_object('image', before['preparedImage'])
-    require(image['Id'] != current['Image'] and image['Id'] == before['container']['image'], 'Rollback image is missing or ambiguous')
+    validate_rollback_identity(current, image, before)
     # Validate every rollback program byte in a transient container without network or mounts.
     node = "const f=require('fs'),p=require('path'),c=require('crypto'),o={};function walk(d){if(!f.existsSync(d))return;for(const n of f.readdirSync(d).sort()){const x=p.join(d,n),s=f.lstatSync(x);if(s.isSymbolicLink())throw Error('symlink');if(s.isDirectory())walk(x);else if(s.isFile())o[p.relative('/app',x)]=c.createHash('sha256').update(f.readFileSync(x)).digest('hex');}}walk('/app/dist');walk('/app/dist-server');walk('/app/module-dist');for(const n of ['package.json','package-lock.json'])o[n]=c.createHash('sha256').update(f.readFileSync('/app/'+n)).digest('hex');console.log(JSON.stringify(o))"
     program = json.loads(run(['docker', 'run', '--rm', '--network=none', '--read-only', '--entrypoint',

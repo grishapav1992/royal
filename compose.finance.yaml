@@ -40,8 +40,9 @@ services:
       - /var/run/postgresql:uid=999,gid=999,mode=0775
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]
-    mem_limit: 512m
-    cpus: 0.75
+    mem_limit: 1280m
+    cpus: 2
+    cpu_shares: 4096
     pids_limit: 128
     healthcheck:
       test: [CMD-SHELL, "pg_isready -U finance_schema_owner -d royal_finance_sim"]
