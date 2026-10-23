@@ -14,6 +14,7 @@ import { resolve } from 'node:path';
 import { LobbyRoom } from './LobbyRoom';
 import { installAuth } from './authRoutes';
 import { accounts } from './accounts';
+import { installFinanceAdmin } from './admin/routes';
 
 const port = Number(process.env.PORT || 2567);
 let stopCrypto: (() => void) | undefined;
@@ -31,6 +32,7 @@ const server = defineServer({
       next();
     });
     installAuth(app);
+    installFinanceAdmin(app);
     installDemoWallet(app);
     installCasinoApiPro(app);
     installNileWallet(app);

@@ -34,8 +34,9 @@ export function installUsdtWallet(app: Application, socket = process.env.USDT_MA
   }
   app.get('/api/usdt-wallet', (_req, res) => { void forward('wallet', null, res); });
   app.get('/api/usdt-wallet/casino-sessions',(_req,res)=>{void forward('casino-wallet',null,res);});
-  app.post('/api/usdt-wallet/casino-sessions',(req,res)=>{
+  app.post('/api/usdt-wallet/casino-sessions',async(req,res)=>{
     if(!validCasinoAction(req.body)){res.status(400).json({error:messages.invalid_usdt_request});return;}
+    if(req.body.action==='start')try{await accounts.financeAdmin.assertAllowed(res.locals.accountId);}catch{res.status(403).json({error:'Денежные операции аккаунта приостановлены администратором.'});return;}
     void forward('casino-play',req.body,res);
   });
   app.post('/api/usdt-wallet/deposit', (req, res) => {

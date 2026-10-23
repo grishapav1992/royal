@@ -1,5 +1,7 @@
 import { defineConfig } from 'vite';
+import { resolve } from 'node:path';
 export default defineConfig({
+  build:{rollupOptions:{input:{main:resolve('index.html'),admin:resolve('admin.html')}}},
   server: {
     proxy: {
       '/api': { target: process.env.ROYAL_DEV_API_URL || 'http://127.0.0.1:2567' },

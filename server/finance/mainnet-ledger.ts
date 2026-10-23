@@ -10,6 +10,9 @@ import { gameAccountId } from '../../src/shared/nileWallet';
 import { casinoActionKey, validCasinoAction, type CasinoAction } from '../../src/shared/casinoSessions';
 import { publicSession, sessionReservation, type SessionState } from '../games/casinoSessions';
 import { casinoStates, casinoReserved, makeCasinoEvent, verifyCasinoEvent, publicCasinoStates, type CasinoEvent } from './mainnet-casino';
+import { adjustmentRequest, requireFinanceAdmin, sameAdjustment } from '../admin/validation';
+import { queryFinanceReport, mainnetReportSql } from '../admin/report';
+import type { FinanceAdjustment } from '../../src/shared/financeAdmin';
 type Entry = {
     account: 'player' | 'house' | 'unallocated' | 'external';
     units: string;
@@ -53,7 +56,7 @@ export class MainnetLedger {
         CREATE TABLE IF NOT EXISTS entries(seq BIGINT NOT NULL REFERENCES events(seq), line BIGINT NOT NULL, account TEXT NOT NULL CHECK(account IN ('player','house','unallocated','external')), units TEXT NOT NULL, PRIMARY KEY(seq,line));`);
             // Preserve the original journal and add one versioned event kind for progressive games.
             await this.db.exec(`ALTER TABLE events DROP CONSTRAINT IF EXISTS events_kind_check;
-              ALTER TABLE events ADD CONSTRAINT events_kind_check CHECK(kind IN ('transfer','round','casino'));
+              ALTER TABLE events ADD CONSTRAINT events_kind_check CHECK(kind IN ('transfer','round','casino','adjustment'));
               CREATE INDEX IF NOT EXISTS mainnet_casino_sessions ON events ((payload::jsonb->'session'->>'id'),seq DESC) WHERE kind='casino';`);
             await ledgerTrigger(this.db, 'state', 'sealed_config', 'UPDATE OF config', "RAISE EXCEPTION 'sealed mainnet config';");
             await ledgerTrigger(this.db, 'state', 'sealed_state', 'DELETE', "RAISE EXCEPTION 'sealed mainnet state';");
@@ -78,7 +81,7 @@ export class MainnetLedger {
         await this.ready;
         return this.db.transaction(action, { readOnly: !write });
     }
-    private async append(id: string, kind: string, row: ChainEvent | StoredRound | CasinoEvent, entries: Entry[]) {
+    private async append(id: string, kind: string, row: ChainEvent | StoredRound | CasinoEvent | FinanceAdjustment, entries: Entry[]) {
         await this.ready;
         const payload = JSON.stringify(row), previous = String((await this.db.prepare('SELECT sha256 FROM events ORDER BY seq DESC LIMIT 1').get())?.sha256 ?? digest(JSON.stringify(this.config)));
         const sha256 = digest(JSON.stringify({ id, kind, payload, previous }));
@@ -245,6 +248,28 @@ export class MainnetLedger {
         await this.ready;
         return this.db.transaction(() => this.auditRows(), { readOnly: true });
     }
+    async adminReport(filters:unknown) {
+        await this.ready;
+        return queryFinanceReport(this.db,mainnetReportSql,'mainnet',filters,async()=>{
+            const b=await this.balances(),state=await this.state(),reserved=await casinoReserved(this.db,this.config.accountId);
+            return{players:b.player.toString(),reserved:reserved.toString(),house:(b.house-reserved).toString(),treasury:(-b.external).toString(),checkedAt:Number(state.reconciled_at)||null,
+              note:await this.isReady()?'Прямой USDT. Резерв включает только свободное покрытие; нераспределённые поступления: '+b.unallocated+' микро-USDT.':'Сверка прямого USDT устарела или контур остановлен.'};
+        },true,async ids=>ids.includes(this.config.accountId)?{[this.config.accountId]:{available:(await this.balances()).player.toString(),reserved:'0'}}:{});
+    }
+    async adminAdjust(value:unknown,ids?:Set<string>) {
+        const op=adjustmentRequest(value);requireFinanceAdmin(op.actorId,ids);
+        if(op.playerId!==this.config.accountId)usdtFail('invalid_usdt_request',400);
+        return this.transaction(async()=>{
+            const prior=await this.db.prepare('SELECT payload FROM events WHERE id=?').get('adjustment:'+op.id);
+            if(prior){const row=JSON.parse(prior.payload) as FinanceAdjustment;sameAdjustment(row,op);return{adjustment:row,replayed:true};}
+            if(!await this.isReady())usdtFail('usdt_not_ready',503);
+            const balances=await this.balances(),delta=BigInt(op.deltaUnits);
+            if(balances.player+delta<0n||balances.house-delta<await casinoReserved(this.db,this.config.accountId))usdtFail('usdt_reserve_insufficient',409);
+            const row:FinanceAdjustment={...op,createdAt:Date.now()};
+            await this.append('adjustment:'+op.id,'adjustment',row,[{account:'player',units:op.deltaUnits},{account:'house',units:(-delta).toString()}]);
+            return{adjustment:row,replayed:false};
+        });
+    }
     private async auditRows() {
         await this.db.integrityCheck();
         const state = (await this.db.prepare('SELECT * FROM state WHERE id=1').get())!;
@@ -305,6 +330,11 @@ export class MainnetLedger {
                 if (kind === 'transfer') {
                     savedTransfers++;
                     entries = eventEntries(row);
+                }
+                else if(kind==='adjustment'){
+                    const{createdAt,...request}=row;try{adjustmentRequest(request);}catch{usdtFail('mainnet_ledger_corrupted',503);}
+                    if(id!=='adjustment:'+row.id||row.playerId!==this.config.accountId||!Number.isSafeInteger(createdAt)||createdAt<1)usdtFail('mainnet_ledger_corrupted',503);
+                    entries=[{account:'player',units:row.deltaUnits},{account:'house',units:(-BigInt(row.deltaUnits)).toString()}];
                 }
                 else if(kind==='casino'){
                     if(id!=='casino:'+this.config.accountId+':'+row.id||!verifyCasinoEvent(row,this.config.accountId,sessions))usdtFail('mainnet_ledger_corrupted',503);

@@ -8,6 +8,7 @@ services:
     restart: unless-stopped
     init: true
     environment:
+      FINANCE_ADMIN_ACCOUNT_IDS: ${FINANCE_ADMIN_ACCOUNT_IDS:-}
       DATABASE_LOCAL_SNAPSHOTS: "false"
       PGHOST: ${ROYAL_PGHOST:-finance-db}
       PGPORT: ${ROYAL_PGPORT:-5432}

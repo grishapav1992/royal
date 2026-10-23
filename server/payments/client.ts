@@ -22,7 +22,7 @@ export class PaymentClient {
   private async call(action: string, userId: string, value?: unknown, ipnSignature?: string) {
     if (!this.config.url) throw new CryptoError(503, 'Криптовалютные платежи еще не подключены.');
     if (userId && !gameAccountId(userId)) throw new CryptoError(400, 'Некорректный игрок.');
-    const path = userId ? '/internal/users/' + userId + '/' + action : '/internal/ipn';
+    const path = userId ? '/internal/users/' + userId + '/' + action : action.startsWith('admin/') ? '/internal/'+action : '/internal/ipn';
     const method = value === undefined ? 'GET' : 'POST', body = value === undefined ? '' : JSON.stringify(value), timestamp = String(Date.now());
     let response: Response, row: any;
     try {
@@ -31,9 +31,9 @@ export class PaymentClient {
         'x-royal-payments-signature': serviceSignature(this.config.requestSecret, 'request', timestamp, method, path, body),
         ...(ipnSignature ? { 'x-nowpayments-sig': ipnSignature } : {}),
       } });
-      const text = await response.text(); if (text.length > 128000) throw new Error('Payment response too large'); row = JSON.parse(text);
+      const text = await response.text(); if (text.length > (action.startsWith('admin/')?1048576:128000)) throw new Error('Payment response too large'); row = JSON.parse(text);
     } catch { throw new CryptoError(503, 'Платежный сервис временно недоступен. Проверь ту же операцию позже.'); }
-    if (!response.ok) throw new CryptoError([400, 401, 404, 409, 429, 503].includes(response.status) ? response.status : 503,
+    if (!response.ok) throw new CryptoError([400, 401, 403, 404, 409, 429, 503].includes(response.status) ? response.status : 503,
       typeof row.error === 'string' && /[а-я]/i.test(row.error) ? row.error : 'Платежный сервис не подтвердил операцию.');
     return row;
   }
@@ -52,6 +52,7 @@ export class PaymentClient {
   quote(id: string, value: unknown) { return this.call('quotes', id, value); }
   withdraw(id: string, value: unknown) { return this.call('withdrawals', id, value); }
   refresh(id: string, operation: string) { return this.call('operations/' + operation + '/refresh', id, {}); }
+  admin(action:'report'|'adjust'|'refresh',actorId:string,value:unknown){ return this.call('admin/'+action,'',{actorId,value}); }
   async receiveIpn(body: unknown, signature: unknown) {
     if (typeof signature !== 'string') throw new CryptoError(401, 'Некорректное уведомление.');
     return this.call('ipn', '', body, signature);
