@@ -64,7 +64,11 @@ install_dependencies = any(digest != before['program'][name] for name,digest in 
 if install_dependencies:
     for name in packages: copy(stage / name, 'dependencies/' + name)
 pointers = {}
-for game in ['studio-neopolis', 'studio-dracona']:
+wallet_transition = before['source'].get('src/wallet/WalletClient.ts', {}).get('lf') != sha(stage / 'src/wallet/WalletClient.ts')
+games = {'studio-neopolis', 'studio-dracona'}
+if wallet_transition:
+    games.update(Path(name).parent.name for name in before['modules'] if name.endswith('/active.json'))
+for game in sorted(games):
     pointer = stage / 'module-dist' / game / 'active.json'
     data = json.loads(pointer.read_text())
     relative = data['manifest'].removeprefix('/game-modules/')
@@ -77,6 +81,7 @@ for name in ['snapshot.py', 'deploy.py', 'verify-public.py']:
     copy(stage / 'deployment/releases/neopolis-dracona-20261023-v1' / name, name)
 manifest = {'release':'neopolis-dracona-20261023-v1','sourceCommit':revision,'before':before,'source':sources,
             'financeSource':finance,'dist':dist,'modules':modules,'backend':backend,'financial':financial,
-            'pointers':pointers,'payload':payload,'packages':packages,'installDependencies':install_dependencies}
+            'pointers':pointers,'payload':payload,'packages':packages,'installDependencies':install_dependencies,
+            'walletTransition':wallet_transition}
 (output / 'install-manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
 print(json.dumps({'sources':len(sources),'financeSources':len(finance),'dist':len(dist),'modules':len(modules),'pointers':len(pointers)}))
