@@ -125,21 +125,32 @@ else:
             preserve(p.name, 'No source inventory available for this history entry', 'Its owner verifies all unique material before retirement')
     if unique:
         backup = m.BACKUPS / NAME;archive = backup / 'historical-sources.tgz';manifest = backup / 'historical-sources.json'
-        assert not archive.exists() and not manifest.exists(), 'Historical consolidation already exists; review it before another plan'
-        temporary = backup / 'historical-sources.next.tgz'
-        assert shutil.disk_usage(backup).free > 5 * 1024**3 + 2 * sum(map(len,unique.values())), 'Historical preservation would cross the disk reserve'
-        with tarfile.open(temporary, 'w:gz') as tar:
-            for digest,data in sorted(unique.items()):
-                entry = tarfile.TarInfo(digest);entry.size=len(data);entry.mode=0o600;tar.addfile(entry,io.BytesIO(data))
-        with tarfile.open(temporary) as tar:
-            recovered = {entry.name:tar.extractfile(entry).read() for entry in tar}
-        assert recovered==unique, 'Historical source verification failed'
-        sample = state / 'restore-sample.bin';digest=next(iter(unique));sample.write_bytes(recovered[digest]);assert m.sha(sample)==digest;sample.unlink()
-        os.replace(temporary,archive)
-        m.write(manifest,{'origins':origins,'checksums':sorted(unique),'archiveSha256':m.sha(archive),'sampleRestoreVerified':True})
+        if archive.exists() or manifest.exists():
+            assert archive.is_file() and manifest.is_file(), 'Incomplete historical preservation requires review'
+            prior = m.read(manifest)
+            assert m.sha(archive) == prior['archiveSha256'], 'Historical archive changed'
+            with tarfile.open(archive) as tar:
+                recovered = {entry.name:tar.extractfile(entry).read() for entry in tar if entry.isfile()}
+            assert set(recovered) == set(prior['checksums'])
+            assert all(hashlib.sha256(data).hexdigest() == digest for digest,data in recovered.items())
+            assert all(recovered.get(digest) == data for digest,data in unique.items()), 'New unique history requires a successor archive'
+        else:
+            temporary = backup / 'historical-sources.next.tgz'
+            assert shutil.disk_usage(backup).free > 5 * 1024**3 + 2 * sum(map(len,unique.values())), 'Historical preservation would cross the disk reserve'
+            with tarfile.open(temporary, 'w:gz') as tar:
+                for digest,data in sorted(unique.items()):
+                    entry = tarfile.TarInfo(digest);entry.size=len(data);entry.mode=0o600;tar.addfile(entry,io.BytesIO(data))
+            with tarfile.open(temporary) as tar:
+                recovered = {entry.name:tar.extractfile(entry).read() for entry in tar}
+            assert recovered==unique, 'Historical source verification failed'
+            os.replace(temporary,archive)
+            m.write(manifest,{'origins':origins,'checksums':sorted(unique),'archiveSha256':m.sha(archive),'sampleRestoreVerified':True})
+        sample = state / 'restore-sample.bin';digest=next(iter(recovered));sample.write_bytes(recovered[digest]);assert m.sha(sample)==digest;sample.unlink()
         for p in [archive,manifest]:value['proofs'].append({'path':str(p),'sha256':m.sha(p)})
-        value['preservedHistoricalSourceFiles']=len(unique)
+        value['preservedHistoricalSourceFiles']=len(recovered)
     value['keep'] = sorted(keep)
-    value.update(entries=m.deletion_candidates(value['keep']), images=m.image_candidates({value['currentImage'], value['rollbackImage']} | pending_images), freeBefore=shutil.disk_usage(m.LIVE).free, activeWorkExceptions=exceptions, historicalSourceAudit=audits)
+    value.update(entries=m.deletion_candidates(value['keep']), images=[], freeBefore=shutil.disk_usage(m.LIVE).free, activeWorkExceptions=exceptions, historicalSourceAudit=audits)
+    value['skipImageCleanup'] = True
+    value['imageCleanupDeferred'] = {'reason':'Docker image inventory timed out after 180 seconds; every image is retained', 'cleanupCondition':'Rerun reviewed image cleanup after Docker image inventory completes successfully'}
     m.write(plan_path, value)
     print(json.dumps({'release':NAME,'planSha256':m.sha(plan_path),'oldEntries':len(value['entries']),'oldImages':len(value['images']),'allocatedBytes':sum(r['allocatedBytes'] for r in value['entries']),'activeWorkExceptions':exceptions,'historicalSourceAudit':audits}))
