@@ -40,7 +40,7 @@ export function installFinanceAdmin(app:Application,store:AccountStore=accounts,
     return result.value;
   };
   app.get('/api/admin/session',handle(async(_req,res)=>({account:res.locals.account,sources:{payments:!!store.cryptoWallet.config.url,nile:!!env.NILE_PLAY_SOCKET_FILE,mainnet:!!env.USDT_MAINNET_SOCKET_FILE},
-    coverage:{house:'Денежные журналы NOWPayments, USDT Nile и прямого USDT.',pvp:'Шахматы, бильярд и хоккей сейчас не проводят денежные ставки. Платных PvP-партий в этих играх нет.'}})));
+    coverage:{house:'Денежные журналы NOWPayments, USDT Nile и прямого USDT.',pvp:'Общий USDT: игры казино, оплаченные действия внутри партий, покупки ателье и PvP. Для PvP видны оба игрока, ставка, выплата и комиссия казино; отменённые ставки и незавершённые партии отмечены отдельно.'}})));
   app.post('/api/admin/report',handle(async(req,res)=>{
     if(!req.body||Object.keys(req.body).some(k=>!['source','filters','playerQuery'].includes(k)))throw new CryptoError(400,'Некорректный отчёт.');
     const filters=financeFilters(req.body.filters??{});
@@ -83,8 +83,8 @@ export function installFinanceAdmin(app:Application,store:AccountStore=accounts,
     res.status(err?.type==='entity.too.large'?413:400).json({error:'Некорректный запрос кабинета.'});
   }) as express.ErrorRequestHandler);
   // This stops new requests. Settlements, provider callbacks and recovery of accepted payments continue.
-  app.use(['/api/crypto-wallet','/api/nile-play','/api/usdt-wallet'],async(req,res,next)=>{
-    if(req.method!=='POST'||!/^\/(deposits|deposit|quotes|withdrawals|rounds|claim)$/.test(req.path.toLowerCase().replace(/\/+$/,''))){next();return;}
+  app.use(['/api/crypto-wallet','/api/nile-play','/api/usdt-wallet','/api/skin-studio'],async(req,res,next)=>{
+    if(req.method!=='POST'||!/^\/(deposits|deposit|quotes|withdrawals|rounds|claim|generations)$/.test(req.path.toLowerCase().replace(/\/+$/,''))){next();return;}
     try{const session=await store.session(cookieToken(req.headers.cookie));if(session)await store.financeAdmin.assertAllowed(session.account.id);next();}catch(err){error(err,res);}
   });
 }

@@ -27,7 +27,7 @@ export function financeFilters(value: unknown): FinanceFilters {
   if (v.game !== undefined) {
     if (typeof v.game !== 'string' || !/^[a-z0-9][a-z0-9-]{0,79}$/.test(v.game)) throw new CryptoError(400, 'Некорректная игра.'); f.game = v.game;
   }
-  for (const [k, values] of Object.entries({ mode:['house','pvp'], kind:['deposit','withdrawal','game','adjustment','capital'], status:['finished','pending','review','failed'] })) {
+  for (const [k, values] of Object.entries({ mode:['house','pvp'], kind:['deposit','withdrawal','game','adjustment','capital','purchase'], status:['finished','pending','review','failed'] })) {
     if (v[k] !== undefined) { if (!values.includes(v[k])) throw new CryptoError(400, 'Некорректный фильтр.'); (f as any)[k] = v[k]; }
   }
   for (const k of ['minUnits','maxUnits'] as const) if (v[k] !== undefined) {

@@ -43,8 +43,10 @@ test('owner follows money from summary to a player, adjusts once after a lost re
   await page.getByRole('button',{name:'Сбросить',exact:true}).click();await page.locator('nav [data-tab="overview"]').click();
   await page.setViewportSize({width:390,height:844});
   await expect(page.locator('.metrics')).toBeVisible();
-  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   await page.screenshot({path:'artifacts/finance-admin/mobile.png',fullPage:true});
+  const overflow=await page.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth,elements:[...document.querySelectorAll<HTMLElement>('body *')].map(el=>({tag:el.tagName,id:el.id,cls:el.className,right:el.getBoundingClientRect().right,width:el.getBoundingClientRect().width})).filter(el=>el.right>innerWidth+1).slice(0,20)}));
+  if(overflow.scroll>overflow.width)console.log(JSON.stringify(overflow));
+  expect(overflow.scroll<=overflow.width).toBe(true);
   await page.getByRole('combobox',{name:'Противник',exact:true}).selectOption('pvp');await page.getByRole('button',{name:'Применить',exact:true}).click();
   await expect(page.locator('.table-empty')).toContainText('Операций по этим фильтрам нет');
   expect(errors).toEqual([]);

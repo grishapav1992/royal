@@ -417,13 +417,14 @@ export class NilePlayLedger {
     }
     async adminReport(filters:unknown) {
         await this.ready;
-        return queryFinanceReport(this.db,nileReportSql(!!this.pool),'nile',filters,async()=>{
+        return queryFinanceReport(this.db,nileReportSql(!!this.pool,await this.db.hasTable('demo_ledger')),'nile',filters,async()=>{
             const state=await this.state(),house=await this.balance('house'),total=-(await this.balance('external'));
-            return {players:(total-house).toString(),reserved:'0',house:house.toString(),treasury:total.toString(),checkedAt:Number(state.reconciled_at)||null,
+            const held=BigInt((await this.db.prepare("SELECT coalesce(sum(units::numeric),0)::text AS n FROM entries WHERE account LIKE 'pvp:%' OR account LIKE 'games-reserved:%'").get())!.n);
+            return {players:(total-house-held).toString(),reserved:held.toString(),house:house.toString(),treasury:total.toString(),checkedAt:Number(state.reconciled_at)||null,
               note:await this.isReady()?'Тестовый USDT Nile. Суммы не являются реальными деньгами.':'Сверка Nile устарела или контур остановлен. Показан сохранённый журнал.'};
         },true,async ids=>{
             const owned=(await this.bindings()).filter(b=>ids.includes(b.account_id));
-            return Object.fromEntries(await Promise.all(owned.map(async b=>[b.account_id,{available:(await this.balance('player:'+b.user_id)).toString(),reserved:'0'}])));
+            return Object.fromEntries(await Promise.all(owned.map(async b=>{const w=await this.wallet(b.account_id);return[b.account_id,{available:w.state==='assigned'?w.balanceUnits:'0',reserved:w.state==='assigned'?w.reservedUnits??'0':'0'}];})));
         });
     }
     async adminAdjust(value:unknown,ids?:Set<string>) {

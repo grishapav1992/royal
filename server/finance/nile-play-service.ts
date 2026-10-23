@@ -44,7 +44,7 @@ export function createNilePlayServer(ledger: NilePlayLedger) {
             if (size > 2048 && body.action !== 'pvp-sync'&&body.action!=='native-game'&&!['finance-report','finance-adjust'].includes(body.action)) throw new NilePlayError('invalid_play_request', 413);
             if(body.action==='finance-report'||body.action==='finance-adjust'){
                 requireFinanceAdmin(body.accountId);
-                if(body.action==='finance-report')respond(200,await ledger.adminReport(body.value));
+                if(body.action==='finance-report'){await games.ready;await pvp.ready;respond(200,await ledger.adminReport(body.value));}
                 else{
                     if(body.value?.actorId!==body.accountId)throw new CryptoError(403,'Неверный автор действия.');
                     respond(200,await ledger.adminAdjust(body.value));

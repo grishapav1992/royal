@@ -33,10 +33,12 @@ export function installGameWallet(app:Application,socket=process.env.NILE_PLAY_S
   flags.push(req.get(AFTER_PROGRESS_HEADER)===AFTER_PROGRESS_VERSION,...[MEME_CLIENT_HEADER,PENALTY_CLIENT_HEADER,DRACONA_CLIENT_HEADER].map(header=>req.get(header)==='1'));
   try{
    const account=res.locals.accountId;
+   const op=req.body;
+   if(req.method==='POST'&&(op?.action==='start'||op?.kind==='play'||op?.kind==='spin'))await accounts.financeAdmin.assertAllowed(account);
    const legacy=seeded.has(account)?null:{wardrobe:await accounts.wallet.expansion.wardrobe.snapshot(account),convoy:await accounts.wallet.expansion.convoyProgress(account)};
    const result=await playCommand(socket,account,'native-game',{path:req.path,method:req.method,body:req.method==='POST'?req.body:null,query,flags,rules:req.get('X-Royal-Card-Rules')==='2'?2:1,legacy});
    if(result.status!==200){const code=String(result.value?.code??'');res.status([400,404,405,409,429].includes(result.status)?result.status:503).json({error:/[а-я]/i.test(code)?code.replace(/демомонет/g,'USDT').replace(/демобаланса/g,'баланса USDT'):code==='play_wallet_unassigned'?'Нажми «Пополнить USDT», чтобы получить адрес.':code==='play_reserve_insufficient'?'Резерва казино недостаточно для этой ставки.':'Ответ не подтверждён. Повтори то же действие.'});return;}
    if(seeded.size>10000)seeded.clear();seeded.add(account);res.json(result.value);
-  }catch{res.status(503).json({error:'Ответ не получен. Повтори проверку той же операции: повторного списания не будет.'});}
+  }catch(error){if(error instanceof Error&&(error as any).status===403)res.status(403).json({error:error.message});else res.status(503).json({error:'Ответ не получен. Повтори проверку той же операции: повторного списания не будет.'});}
  });
 }

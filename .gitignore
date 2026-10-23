@@ -1,6 +1,7 @@
 node_modules
 dist/
 dist-server/
+dist-admin/
 module-dist/
 module-build/
 .env

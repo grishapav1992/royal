@@ -1,6 +1,7 @@
 import type { PostgresDatabase, DatabaseRow } from '../database';
 import type { FinanceBalances, FinanceFilters, FinanceGroup, FinanceOperation, FinanceReport, FinanceSource } from '../../src/shared/financeAdmin';
 import { financeFilters } from './validation';
+import {nativeFinanceSql,pvpFinanceSql} from './nileGamesReport';
 
 // All source SQL is static. Filter values always use parameter bindings.
 export async function queryFinanceReport(db: PostgresDatabase, sql: string, source: FinanceSource, value: unknown,
@@ -10,20 +11,22 @@ export async function queryFinanceReport(db: PostgresDatabase, sql: string, sour
   const add = (sql: string, ...values: unknown[]) => { clauses.push(sql); args.push(...values); };
   if (f.from !== undefined) add('created_at>=?', f.from);
   if (f.to !== undefined) add('created_at<?', f.to);
-  if (f.playerIds) add('(player_id=ANY(?::text[]) OR opponent_id=ANY(?::text[]))', f.playerIds, f.playerIds);
+  if (f.playerIds) add('player_id=ANY(?::text[])', f.playerIds);
   for (const k of ['game','mode','kind','status'] as const) if (f[k]) add(k+'=?', f[k]);
   if (f.minUnits !== undefined) add('amount_units>=?::numeric', f.minUnits);
   if (f.maxUnits !== undefined) add('amount_units<=?::numeric', f.maxUnits);
   const cte = 'WITH operations AS ('+sql+'), filtered AS (SELECT * FROM operations'+(clauses.length?' WHERE '+clauses.join(' AND '):'')+') ';
-  const aggregates = `count(*)::int AS count,
+  const aggregates = `count(*)::int AS count,count(DISTINCT CASE WHEN kind='game' THEN CASE WHEN mode='pvp' THEN round_id ELSE player_id||':'||round_id END END)::int AS rounds,
     coalesce(sum(delta_units) FILTER(WHERE kind='deposit'),0)::text AS deposits,
     coalesce(sum(amount_units) FILTER(WHERE kind='withdrawal' AND status='finished'),0)::text AS withdrawals,
     coalesce(sum(stake_units) FILTER(WHERE kind='game' AND status='finished'),0)::text AS stakes,
     coalesce(sum(payout_units) FILTER(WHERE kind='game' AND status='finished'),0)::text AS payouts,
-    coalesce(sum(stake_units-payout_units) FILTER(WHERE kind='game' AND status='finished' AND mode='house'),0)::text AS ggr,
+    (coalesce(sum(stake_units-payout_units) FILTER(WHERE kind='game' AND status='finished' AND mode='house'),0)+coalesce(sum(fee_units) FILTER(WHERE kind='game' AND status='finished'),0))::text AS ggr,
+    coalesce(sum(fee_units) FILTER(WHERE status='finished'),0)::text AS fees,
+    coalesce(-sum(delta_units) FILTER(WHERE kind='purchase' AND status='finished'),0)::text AS purchases,
     coalesce(sum(delta_units) FILTER(WHERE kind='adjustment'),0)::text AS adjustments`;
-  const group = (r: DatabaseRow): FinanceGroup => ({ id:String(r.id), count:Number(r.count), deposits:String(r.deposits),withdrawals:String(r.withdrawals),
-    stakes:String(r.stakes),payouts:String(r.payouts),ggr:String(r.ggr),adjustments:String(r.adjustments) });
+  const group = (r: DatabaseRow): FinanceGroup => ({ id:String(r.id), count:Number(r.count),rounds:Number(r.rounds), deposits:String(r.deposits),withdrawals:String(r.withdrawals),
+    stakes:String(r.stakes),payouts:String(r.payouts),ggr:String(r.ggr),adjustments:String(r.adjustments),fees:String(r.fees),purchases:String(r.purchases) });
   return db.transaction(async () => {
     const totals = (await db.prepare(cte+'SELECT '+aggregates+", count(*) FILTER(WHERE status IN ('pending','review'))::int AS pending FROM filtered").get(...args))!;
     const undated = (await db.prepare('WITH operations AS ('+sql+') SELECT count(*)::int AS n FROM operations WHERE created_at IS NULL').get())!;
@@ -39,7 +42,7 @@ export async function queryFinanceReport(db: PostgresDatabase, sql: string, sour
       FROM filtered WHERE created_at IS NOT NULL GROUP BY date ORDER BY date DESC LIMIT 60`).all(...args);
     const operation = (r: DatabaseRow): FinanceOperation => ({ id:r.id,playerId:r.player_id,opponentId:r.opponent_id,kind:r.kind,mode:r.mode,game:r.game,
       roundId:r.round_id,status:r.status,providerStatus:r.provider_status,amountUnits:String(r.amount_units),deltaUnits:String(r.delta_units),stakeUnits:String(r.stake_units),
-      payoutUnits:String(r.payout_units),txId:r.tx_id,currency:r.currency,address:r.address,createdAt:r.created_at===null?null:Number(r.created_at),actorId:r.actor_id,reason:r.reason });
+      payoutUnits:String(r.payout_units),feeUnits:String(r.fee_units),txId:r.tx_id,currency:r.currency,address:r.address,createdAt:r.created_at===null?null:Number(r.created_at),actorId:r.actor_id,reason:r.reason });
     return {source,environment:source==='nile'?'test':'real',enabled,generatedAt:Date.now(),balances:await balance(),
       totals:{...group({...totals,id:''}),pending:Number(totals.pending),undated:Number(undated.n)},
       rows:rows.map(operation),players:players.rows,games:games.rows,playerCount:players.count,gameCount:games.count,page:f.page,size:f.size,
@@ -56,13 +59,13 @@ export const paymentReportSql = `
  CASE WHEN kind='deposit' THEN credited_units WHEN state='finished' THEN -amount_units ELSE 0 END::numeric AS delta_units,
  0::numeric AS stake_units,0::numeric AS payout_units,coalesce(detail::jsonb->>'txHash','') AS tx_id,
  coalesce(detail::jsonb->>'currency','') AS currency,coalesce(detail::jsonb->>'address','') AS address,created_at,
- ''::text AS actor_id,''::text AS reason FROM crypto_operations
+ ''::text AS actor_id,''::text AS reason,0::numeric AS fee_units FROM crypto_operations
  UNION ALL SELECT id,account_id,'','game','house',result::jsonb->>'gameId',id,'finished','finished',
  (result::jsonb->>'stakeUnits')::numeric,(result::jsonb->>'payoutUnits')::numeric-(result::jsonb->>'stakeUnits')::numeric,
- (result::jsonb->>'stakeUnits')::numeric,(result::jsonb->>'payoutUnits')::numeric,'','usdttrc20','',created_at,'','' FROM crypto_rounds
- UNION ALL SELECT id,player_id,'','adjustment','','','','finished','finished',abs(delta_units::numeric),delta_units::numeric,0,0,'','usdttrc20','',created_at,actor_id,reason FROM finance_adjustments`;
+ (result::jsonb->>'stakeUnits')::numeric,(result::jsonb->>'payoutUnits')::numeric,'','usdttrc20','',created_at,'','',0 FROM crypto_rounds
+ UNION ALL SELECT id,player_id,'','adjustment','','','','finished','finished',abs(delta_units::numeric),delta_units::numeric,0,0,'','usdttrc20','',created_at,actor_id,reason,0 FROM finance_adjustments`;
 
-export const nileReportSql = (auto: boolean) => `
+export const nileReportSql = (auto: boolean,native=false) => `
  WITH owners AS (SELECT account_id,user_id FROM bindings ${auto?'UNION ALL SELECT account_id,user_id FROM auto_bindings':''})
  SELECT e.id,coalesce(o.account_id,'') AS player_id,''::text AS opponent_id,
  CASE e.kind WHEN 'funding' THEN CASE WHEN (e.payload::jsonb->>'playerUnits')::numeric>0 THEN 'deposit' ELSE 'capital' END
@@ -75,8 +78,9 @@ export const nileReportSql = (auto: boolean) => `
  WHEN 'adjustment' THEN (e.payload::jsonb->>'deltaUnits')::numeric ELSE -(e.payload::jsonb->>'units')::numeric END AS delta_units,
  coalesce((e.payload::jsonb->>'stakeUnits')::numeric,0) AS stake_units,coalesce((e.payload::jsonb->>'payoutUnits')::numeric,0) AS payout_units,
  coalesce(e.payload::jsonb->>'txId','') AS tx_id,'usdt-nile'::text AS currency,''::text AS address,
- (e.payload::jsonb->>'createdAt')::bigint AS created_at,coalesce(e.payload::jsonb->>'actorId','') AS actor_id,coalesce(e.payload::jsonb->>'reason','') AS reason
- FROM events e LEFT JOIN owners o ON o.user_id=e.payload::jsonb->>'userId'`;
+ (e.payload::jsonb->>'createdAt')::bigint AS created_at,coalesce(e.payload::jsonb->>'actorId','') AS actor_id,coalesce(e.payload::jsonb->>'reason','') AS reason,0::numeric AS fee_units
+ FROM events e LEFT JOIN owners o ON o.user_id=e.payload::jsonb->>'userId' WHERE e.kind IN ('funding','round','reserve','adjustment')
+ UNION ALL ${pvpFinanceSql}${native?' UNION ALL '+nativeFinanceSql:''}`;
 
 export const mainnetReportSql = `
  WITH sessions AS (SELECT DISTINCT ON (payload::jsonb->'session'->>'id') * FROM events WHERE kind='casino' ORDER BY payload::jsonb->'session'->>'id',seq DESC),
@@ -97,5 +101,5 @@ export const mainnetReportSql = `
  coalesce((e.payload::jsonb->>'stakeUnits')::numeric,(e.payload::jsonb->'session'->>'stakeUnits')::numeric,0) AS stake_units,
  CASE WHEN e.kind='casino' THEN (SELECT sum((x.payload::jsonb->>'deltaUnits')::numeric) FROM events x WHERE x.kind='casino' AND x.payload::jsonb->'session'->>'id'=e.payload::jsonb->'session'->>'id')+(e.payload::jsonb->'session'->>'stakeUnits')::numeric ELSE coalesce((e.payload::jsonb->>'payoutUnits')::numeric,0) END AS payout_units,
  coalesce(e.payload::jsonb->>'txId','') AS tx_id,'usdttrc20'::text AS currency,coalesce(e.payload::jsonb->>'from','') AS address,
- CASE WHEN e.kind='casino' THEN (SELECT min((x.payload::jsonb->>'createdAt')::bigint) FROM events x WHERE x.kind='casino' AND x.payload::jsonb->'session'->>'id'=e.payload::jsonb->'session'->>'id') ELSE coalesce((e.payload::jsonb->>'createdAt')::bigint,b.timestamp) END AS created_at,coalesce(e.payload::jsonb->>'actorId','') AS actor_id,coalesce(e.payload::jsonb->>'reason','') AS reason
+ CASE WHEN e.kind='casino' THEN (SELECT min((x.payload::jsonb->>'createdAt')::bigint) FROM events x WHERE x.kind='casino' AND x.payload::jsonb->'session'->>'id'=e.payload::jsonb->'session'->>'id') ELSE coalesce((e.payload::jsonb->>'createdAt')::bigint,b.timestamp) END AS created_at,coalesce(e.payload::jsonb->>'actorId','') AS actor_id,coalesce(e.payload::jsonb->>'reason','') AS reason,0::numeric AS fee_units
  FROM items e CROSS JOIN state s LEFT JOIN blocks b ON b.height=(e.payload::jsonb->>'height')::bigint`;

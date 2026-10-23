@@ -19,6 +19,8 @@ import { MainnetLedger } from '../server/finance/mainnet-ledger';
 import { MAINNET_GENESIS,MAINNET_USDT_TOKEN } from '../server/finance/mainnet-config';
 import { nileBase58,nileHex,nilePublicKeyAddress } from '../server/finance/nile-address';
 import { createNilePlayServer } from '../server/finance/nile-play-service';
+import { pvpFixture } from './finance/helpers/nile-pvp-fixture';
+import { NileGameRuntime } from '../server/finance/nile-game-runtime';
 
 const listen=async(app:express.Application)=>{
   const server=app.listen(0,'127.0.0.1');await new Promise<void>(r=>server.once('listening',r));
@@ -137,6 +139,43 @@ test('mainnet reports one logical progressive game, uses actual paid payout and 
     await ledger.adminAdjust(op,new Set([actor]));await ledger.adminAdjust(op,new Set([actor]));assert.equal((await ledger.adminReport({kind:'adjustment'})).totals.count,1);
     const b=await ledger.audit();assert.equal(b.external,-510000000n);assert.equal(b.house+b.player,510000000n);
   }finally{await ledger.close();}
+});
+
+test('Nile reports both PvP participants, escrow, exact 5% fee, cancellations and player attribution',async()=>{
+  const c=await pvpFixture();const matchId=randomUUID();
+  try{
+    const request={matchId,gameId:'chess',stakeUnits:'50000000'};
+    await c.ledger.pvpHold(c.a,request);await c.ledger.pvpHold(c.b,request);
+    let report=await c.ledger.adminReport({mode:'pvp'});assert.equal(report.totals.pending,2);assert.equal(report.balances.reserved,'100000000');
+    assert.equal(report.balances.players,'300000000');assert.equal(report.totals.ggr,'0');
+    await c.ledger.pvpFinish(c.a,{matchId,winnerId:c.a,reason:'win'});
+    report=await c.ledger.adminReport({mode:'pvp'});assert.equal(report.rows.length,2);assert.equal(report.totals.stakes,'100000000');
+    assert.equal(report.totals.payouts,'95000000');assert.equal(report.totals.ggr,'5000000');assert.equal(report.totals.fees,'5000000');
+    assert.equal(report.rows.find(r=>r.playerId===c.a)!.opponentId,c.b);
+    const personal=await c.ledger.adminReport({playerIds:[c.b]});
+    assert.equal(personal.rows.filter(r=>r.mode==='pvp').length,1);assert.equal(personal.totals.fees,'2500000');
+    const cancelled=randomUUID();await c.ledger.pvpHold(c.a,{...request,matchId:cancelled});await c.ledger.pvpFinish(c.a,{matchId:cancelled,winnerId:null,reason:'cancel'});
+    report=await c.ledger.adminReport({mode:'pvp'});assert.equal(report.totals.ggr,'5000000');assert.equal(report.rows.filter(r=>r.status==='failed').length,1);
+    assert.equal((await c.ledger.audit()).houseUnits,'5000000');
+  }finally{await c.close();}
+});
+
+test('all native paid games and atelier purchases are read only from their Nile projection, with full cents conversion',async()=>{
+  const c=await playTestSetup(),player=randomUUID(),runtime=new NileGameRuntime(c.ledger,()=>0);await runtime.ready;
+  await c.ledger.claim(player,await c.ledger.invite('player'));
+  const run=(path:string,body:any)=>runtime.run(player,{path,method:'POST',body,flags:Array(9).fill(true),rules:1,query:{},legacy:null});
+  try{
+    const instant={id:randomUUID(),kind:'play',amount:10,gameId:'royal-coins',rulesVersion:1,input:{}};await run('/operations',instant);await run('/operations',instant);
+    let report=await c.ledger.adminReport({kind:'game'});assert.equal(report.rows.length,1);assert.equal(report.totals.stakes,'10000000');assert.equal(report.totals.payouts,'120000000');
+    const start={id:randomUUID(),action:'start',gameId:'github-tower',stakeUnits:'1000',settings:{difficulty:'easy'}};
+    await run('/casino-sessions',start);report=await c.ledger.adminReport({game:'github-tower'});assert.equal(report.rows[0].status,'pending');
+    await run('/casino-sessions',{id:randomUUID(),action:'pick',gameId:start.gameId,sessionId:start.id,choice:1});
+    await run('/casino-sessions',{id:randomUUID(),action:'cashout',gameId:start.gameId,sessionId:start.id});
+    report=await c.ledger.adminReport({game:'github-tower'});assert.equal(report.rows.length,1);assert.equal(report.totals.stakes,'10000000');assert.equal(report.totals.payouts,'13200000');
+    const purchase=randomUUID();await runtime.skinPurchase(player,{id:purchase,action:'reserve'});await runtime.skinPurchase(player,{id:purchase,action:'capture'});
+    report=await c.ledger.adminReport({kind:'purchase'});assert.equal(report.rows.length,1);assert.equal(report.totals.purchases,'10000000');assert.equal(report.totals.ggr,'0');
+    assert.equal((await c.ledger.audit()).ok,true);
+  }finally{await c.close();}
 });
 
 test('admin API requires owner, current account header, same origin and password; controls and audit are durable',async()=>{
