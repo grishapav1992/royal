@@ -132,11 +132,35 @@ def configure():
     fd = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
     with os.fdopen(fd, 'w') as output:
         output.write('\n'.join(rows) + '\n')
+    try:
+        preflight_environment(temporary)
+    except BaseException:
+        temporary.unlink()
+        raise
     # This server-only temporary file never enters source archives or the release payload.
     os.replace(temporary, envfile)
     atomic(ROOT / 'compose.finance-admin.yaml', LIVE / 'compose.finance-admin.yaml')
     atomic(ROOT / 'compose.admin.yaml', FINANCE / 'deployment/finance/compose.admin.yaml')
     return game_files
+
+
+def preflight_environment(envfile):
+    for component, container in SERVICES.items():
+        extra = 'compose.admin.yaml' if component == 'nile' else 'compose.finance-admin.yaml'
+        files = OLD['containers'][container]['composeFiles'] + [str(ROOT / extra)]
+        args = ['docker', 'compose', '--env-file', str(envfile), *[v for name in files for v in ['-f', name]]]
+        configuration = json.loads(run(args + ['config', '--format', 'json']))
+        service = 'nile-play' if component == 'nile' else component
+        image = json.loads(run(['docker', 'image', 'inspect', OLD['containers'][container]['image']]))[0]
+        values = dict(v.split('=', 1) for v in image['Config']['Env'])
+        for key, value in configuration['services'][service].get('environment', {}).items():
+            if value is None:
+                values.pop(key, None)
+            else:
+                values[key] = str(value)
+        assert values.pop('FINANCE_ADMIN_ACCOUNT_IDS', None) == M['ownerId'], 'Owner configuration missing: ' + component
+        digest = hashlib.sha256(json.dumps(sorted(k + '=' + v for k, v in values.items())).encode()).hexdigest()
+        assert digest == OLD['containers'][container]['stableProfile']['envHash'], 'Compose would change existing environment: ' + component
 
 
 def compose(component, game_files):
