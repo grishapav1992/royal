@@ -1,4 +1,5 @@
-import { t as translateText, tr, locale } from '../i18n/index';
+import {tr, locale} from '../i18n/index';
+import {afterText as translateText} from './AfterglowText';
 import {AfterglowWardrobeClient} from '../wallet/AfterglowWardrobeClient';
 import {AFTER_LOOK_TARGET_UNITS,AFTER_ALBUM_MAX_UNITS,afterAlbumUnlocked,AFTER_GALLERY_ORDER,AFTER_LOOK_RARITIES} from '../shared/afterglowWardrobe';
 import {SlotSettings} from './slotKit/SlotSettings';

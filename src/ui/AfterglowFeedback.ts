@@ -1,4 +1,4 @@
-import {tr, t} from '../i18n/index';
+import {afterTr as tr,afterText as t} from './AfterglowText';
 import type {AfterFrame} from '../shared/afterglow';
 import {slotCoins as coins} from './slotKit/SlotScreens';
 import type {AfterglowAudio, AfterAccent} from './AfterglowAudio';
@@ -21,7 +21,7 @@ export class AfterglowFeedback {
   this.award=document.createElement('div');this.award.className='ag-award';this.award.hidden=true;
   this.award.innerHTML='<small></small><strong></strong>';
   this.result=document.createElement('div');this.result.className='ag-result';this.result.hidden=true;
-  this.result.innerHTML=tr`<div class="ag-result-rays" aria-hidden="true"></div><div class="ag-result-card"><small>ВЫПЛАТА ЗА РАУНД</small><h3></h3><strong data-ag-result-amount></strong><span data-ag-net></span><button type="button" data-ag-skip>Показать итог</button></div>`;
+  this.result.innerHTML=`<div class="ag-result-rays" aria-hidden="true"></div><div class="ag-result-card"><small>${t('ВЫПЛАТА ЗА РАУНД')}</small><h3></h3><strong data-ag-result-amount></strong><span data-ag-net></span><button type="button" data-ag-skip>${t('Показать итог')}</button></div>`;
   this.result.querySelector('button')!.onclick=()=>{this.skip=true;};
   this.board.append(this.layer);this.root.querySelector('.cc-board-frame')!.append(this.award);this.root.append(this.result);
  }

@@ -1,14 +1,6 @@
 import {  volcanicPlinkoEnglish } from './volcanicPlinkoEn';
 
 export const english: Record<string, string> = {
-  'ВЫПЛАТА ЗА РАУНД':'ROUND PAYOUT',
-  'ГРАНДИОЗНЫЙ ВЫИГРЫШ':'EPIC WIN',
-  'Показать итог':'Show total',
-  'ИТОГ РАУНДА +{0}':'ROUND NET +{0}',
-  'СТАВКА ВОЗВРАЩЕНА':'STAKE RETURNED',
-  'ВЫПЛАТА {0} · ИТОГ −{1}':'PAYOUT {0} · NET −{1}',
-  'ВЫПЛАТА {0} · ИТОГ +{1}':'PAYOUT {0} · NET +{1}',
-  'Фотосессия продолжается. Выплата после завершения раунда.':'The photo shoot continues. Payout follows the completed round.',
   'Выбери игру в каталоге':'Choose a game from the catalogue',
   'Игры Royal':'Royal games',
   'Доработанные GitHub-игры':'Enhanced GitHub games',
