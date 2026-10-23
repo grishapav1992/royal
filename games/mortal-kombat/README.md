@@ -19,6 +19,8 @@ The shared Royal backend owns simulation, identity, account locks, escrow and se
 
 ## Feedback specification
 
+Exact PvP qualification covers every stake and decisive/refunded outcome through the common journal replay, with 95% aggregate return on decisive fights and 100% on refunds. This is not a probability estimate for an individual player. See [qualification](../../docs/game-math/qualification.md) and the generated evidence for rules 2. The build gate checks the source hashes; CI reruns the exhaustive qualification.
+
 Timings are game design parameters, not research thresholds. All health and monetary feedback follows server state.
 
 | Event | Condition and significance | Visual and sound | Interruption and verification |
