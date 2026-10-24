@@ -11,7 +11,7 @@ import { isCardGame, dealerForGame } from './shared/cardTables';
 import './ui/floor-navigation.css';
 import { isStudioGame } from './shared/studioGames';
 import { isVariantGame } from './shared/casinoVariants';
-import { ROYAL_PLATFORM_GAMES, isPlatformGame, isRetiredArcadeGame } from './shared/arcadeCatalog';
+import { ROYAL_PLATFORM_GAMES, isCollectionGame, isRetiredArcadeGame } from './shared/arcadeCatalog';
 import { RetiredArcadeRounds, RetiredArcadeRoundGuard, ownsRetiredArcadeRound, type RetiredArcadeRound } from './ui/RetiredArcadeRounds';
 import { isExpansionGame, EXPANSION_NAMES } from './shared/casinoExpansion';
 import { isSessionGame } from './shared/casinoSessions';
@@ -76,7 +76,7 @@ app.innerHTML = tr`
       <aside class="sidebar">
         <div class="sidebar-heading"><h2>Во что сыграем?</h2><span>${String(hallGameCount('arcade')).padStart(2, '0')}</span></div>
         <section id="card-tables-catalog" aria-label="Карточные столы и крупье" hidden></section>
-        <section class="arcade-catalog-group" data-arcade-catalog aria-label="Автоматы Рояль"><h3>20 автоматов Рояль</h3><p>Игра с обложки открывается сразу. Внутри каждого автомата есть каталог RoyalGames, Casino API Pro и GitHub-игр.</p><div class="cabinet-list">${cabinetCards(catalogCabinets)}</div></section>
+        ${(['royal','github','casinoapipro','luelon'] as const).map(collection=>`<section class="arcade-catalog-group" data-arcade-catalog data-cabinet-collection="${collection}" aria-label="${collection}"><h3>${translateText({royal:'10 автоматов Royal',github:'5 автоматов GitHub',casinoapipro:'3 автомата Casino API PRO',luelon:'Отдельное демо Luelon'}[collection])}</h3><p>${translateText(collection==='luelon'?'Каталог демоигр · Кредиты Luelon':'В каждом автомате доступен каталог своей коллекции.')}</p><div class="cabinet-list">${cabinetCards(catalogCabinets.filter(c=>c.collection===collection))}</div></section>`).join('')}
         <section data-arcade-catalog><div id="retired-arcade-rounds" hidden></div></section>
         <div class="player-card"><span class="player-portrait" id="player-portrait"></span><div><strong>Это ты</strong><small>Исследователь клуба</small></div><span class="player-dot"></span></div>
       </aside>
@@ -114,7 +114,6 @@ function prepareCabinet(id:string) {
 let platformCabinet: Cabinet | undefined;
 let platformSelection: RoyalPlatformCatalog | undefined;
 let selectedPlatformGame: PlatformChoice | undefined;
-let requestedProvider = false;
 function clearPlatformView() {
   openVersion++;
   mini?.destroy(); mini = undefined;
@@ -122,7 +121,7 @@ function clearPlatformView() {
   $('#mini-game').replaceChildren();
 }
 function showPlatformCatalog() {
-  if (!platformCabinet) return;
+  if (!platformCabinet?.collection || platformCabinet.collection==='luelon') return;
   const selected = selectedPlatformGame;
   clearPlatformView(); gameAudio.setGame('');
   miniDialog.classList.remove('demo-mode', 'card-table-mode');
@@ -137,10 +136,10 @@ function showPlatformCatalog() {
   $('.mini-bottom .settings-shortcut').hidden = false; $('.mini-bottom kbd').hidden = false;
   room.setLocked(true);
   if (!miniDialog.open) miniDialog.showModal();
-  platformSelection = new RoyalPlatformCatalog($('#mini-game'), choice => { void selectPlatformGame(choice); }, selected);
+  platformSelection = new RoyalPlatformCatalog($('#mini-game'), choice => { void selectPlatformGame(choice); }, platformCabinet.collection, selected);
 }
 async function selectPlatformGame(choice: PlatformChoice) {
-  if (!platformCabinet || !miniDialog.open || !isPlatformGame(choice.gameId)) return;
+  if (!platformCabinet?.collection || platformCabinet.collection==='luelon' || !miniDialog.open || !isCollectionGame(platformCabinet.collection,choice.gameId)) return;
   prepareCabinet(choice.gameId);
   await openCabinetGame(platformGameCabinet(choice.gameId, platformCabinet), undefined, true, choice);
 }
@@ -160,21 +159,20 @@ async function play(cabinet: Cabinet) {
     }
     await new Promise(resolve => setTimeout(resolve, room.getState().reducedMotion ? 0 : 420));
     if (room.getState().security || (social && social.client.status !== 'connected')) { room.endCabinet(); return; }
-    if (cabinet.defaultGameId) {
+    if (cabinet.collection && cabinet.collection!=='luelon') {
       platformCabinet = cabinet;
-      const choice = {gameId:cabinet.defaultGameId};
-      await openCabinetGame(platformGameCabinet(choice.gameId, cabinet), undefined, false, choice);
-      if (requestedProvider) await selectPlatformGame({gameId:'casinoapipro'});
+      selectedPlatformGame = undefined;
+      showPlatformCatalog();
     } else await openCabinetGame(cabinet);
   } catch {
     if (miniDialog.open) miniDialog.close();
     else room.endCabinet();
     room.setLocked(Boolean(document.querySelector('dialog[open]')) || Boolean(social && social.client.status !== 'connected'));
     toast(translateText('Не получилось открыть игру. Попробуй ещё раз.'));
-  } finally { openingCabinet = false; requestedProvider = false; }
+  } finally { openingCabinet = false; }
 }
 async function openCabinetGame(cabinet: Cabinet, recovery?: RetiredArcadeRound, switchPlatform = false, choice?: PlatformChoice) {
-  if (switchPlatform && (!platformCabinet || !miniDialog.open || !isPlatformGame(cabinet.id))) return;
+  if (switchPlatform && (!platformCabinet || !miniDialog.open || !platformCabinet.collection || platformCabinet.collection==='luelon' || !isCollectionGame(platformCabinet.collection,cabinet.id))) return;
   if (isRetiredArcadeGame(cabinet.id) && (!recovery || recovery.gameId !== cabinet.id || !ownsRetiredArcadeRound(recovery))) return;
   if (!cabinet.playable) { toast(tr`${cabinet.name} пока недоступен.`); return; }
   if (miniDialog.open && !switchPlatform) return;
@@ -195,7 +193,7 @@ async function openCabinetGame(cabinet: Cabinet, recovery?: RetiredArcadeRound, 
   try { best = Number(localStorage.getItem('royal-'+activeGameId+'-best')) || 0; } catch { best=0; }
   $('#mini-title').textContent = cabinet.name;
   document.querySelector('.mini-bottom>span')!.textContent = cabinet.id==='pixel'?translateText('Стрелки или касание клетки'):cabinet.id==='drift'?translateText('← → или касание полосы'):translateText('Мышь, палец или ← →');
-  room.setLocked(true); miniDialog.showModal(); $('#mini-message').hidden = false;
+  room.setLocked(true); if (!miniDialog.open) miniDialog.showModal(); $('#mini-message').hidden = false;
   $('#mini-message-title').textContent = translateText('Загружаем автомат…'); $('#mini-message-copy').textContent = ''; $('#start-game').hidden = true;
   const version = ++openVersion;
   if(isCardGame(cabinet.id)){
@@ -316,16 +314,16 @@ const game = new Phaser.Game({
   input: { windowEvents:false },
   scene: [room], audio: { noAudio: true }, banner: false,
 });
-new ResizeObserver(entries=>{const {width,height}=entries[0].contentRect;if(width>0&&height>0)game.scale.resize(Math.floor(width),Math.floor(height));}).observe($('#game'));
+new ResizeObserver(entries=>{const {width,height}=entries[0].contentRect;if(width>0&&height>0)game.scale.setParentSize(Math.floor(width),Math.floor(height));}).observe($('#game'));
 document.querySelectorAll<HTMLButtonElement>('[data-cabinet]').forEach(button => button.addEventListener('click', () => room.approach(button.dataset.cabinet!)));
 window.addEventListener('royal-open-casinoapipro', () => {
-  if (platformCabinet && miniDialog.open) { void selectPlatformGame({gameId:'casinoapipro'}); return; }
+  if (platformCabinet && miniDialog.open) { if(platformCabinet.collection==='casinoapipro')showPlatformCatalog(); return; }
   if (room.hall !== 'arcade' || document.querySelector('dialog[open]')) return;
   const state=room.getState();
-  const cabinet=cabinetsInHall('arcade').filter(c=>!room.cabinetOccupant(c.id)).sort((a,b)=>Math.hypot(a.x-state.x,a.y-state.y)-Math.hypot(b.x-state.x,b.y-state.y))[0];
+  const cabinet=cabinetsInHall('arcade').filter(c=>c.collection==='casinoapipro'&&!room.cabinetOccupant(c.id)).sort((a,b)=>Math.hypot(a.x-state.x,a.y-state.y)-Math.hypot(b.x-state.x,b.y-state.y))[0];
   if(!cabinet)return;
   room.setLocked(Boolean(social && social.client.status !== 'connected'));
-  requestedProvider = true; room.approach(cabinet.id);
+  room.approach(cabinet.id);
 });
 new CardTablesCatalog($('#card-tables-catalog'), id => room.approach(id));
 new RetiredArcadeRounds($('#retired-arcade-rounds'), async round => {
@@ -399,4 +397,7 @@ $('#fullscreen').addEventListener('click', async () => {
 });
 document.addEventListener('visibilitychange', () => { if (document.hidden && miniDialog.open) { mini?.pause(); } else if (miniDialog.open) { mini?.resume(); } });
 // Read-only diagnostics for browser smoke checks.
-Object.assign(window, { royalDemo: { getState: () => room.getState(), getMiniState: () => mini?.getState() ?? null, getNetworkState: () => social?.client.getState() ?? null, getAudio: () => gameAudio.getState(), getActivities: () => social?.activities.getState() ?? null } });
+if (import.meta.env.DEV && import.meta.env.VITE_LOCAL_ATELIER === '1') {
+  document.querySelector('.header-center')!.textContent = 'Локальное ателье · тестовый баланс';
+}
+Object.assign(window, { royalDemo: { getState: () => room.getState(), getTailor: () => room.getTailorState(), getMiniState: () => mini?.getState() ?? null, getNetworkState: () => social?.client.getState() ?? null, getAudio: () => gameAudio.getState(), getActivities: () => social?.activities.getState() ?? null } });

@@ -1,8 +1,9 @@
 import { translateMessage } from '../i18n/index';
 import { isUserMessage, t as translateText, installLanguageSwitcher } from '../i18n/index';
 import { gameAudio } from '../game/GameAudio';
-import { appearanceFromLegacy } from '../shared/appearance';
+import { appearanceFromLegacy, normalizeAppearance } from '../shared/appearance';
 import { CharacterEditor } from './CharacterEditor';
+import { SkinStudioUI } from './SkinStudioUI';
 import type { Account } from '../../server/accounts';
 import type { RoomScene } from '../game/RoomScene';
 
@@ -115,11 +116,14 @@ export class AuthUI {
     this.renameButton.addEventListener('click', () => {
       if (!this.account || this.dialog.open || this.nameDialog.open) return;
       this.nameDialog.querySelector<HTMLInputElement>('#new-game-name')!.value = this.account.name;
-      this.settingsEditor.value = this.account.appearance ?? appearanceFromLegacy(this.account.skin); this.renderSelection();
+      this.settingsEditor.value = normalizeAppearance(this.account.appearance) ?? appearanceFromLegacy(this.account.skin); this.renderSelection();
       this.nameDialog.querySelector<HTMLElement>('#name-error')!.hidden = true;
       scene.setLocked(true); this.nameDialog.showModal(); this.settingsEditor.setActive(true); this.nameDialog.querySelector<HTMLElement>('#sound-enabled')!.focus();
     });
     this.logoutButton.before(this.renameButton);
+    new SkinStudioUI(scene, () => this.account, async () => {
+      const result = await this.api('/me'); this.account = result.account;
+    });
     scene.setLocked(true); this.dialog.showModal();
     this.showConnection();
     void this.perform(async () => { const result = await this.api('/me'); this.account = result.account; await this.continueEntry(); });
@@ -168,7 +172,7 @@ export class AuthUI {
   }
   private showCharacter() {
     if (!this.account) return;
-    this.entryEditor.value = this.account.appearance ?? appearanceFromLegacy(this.account.skin);
+    this.entryEditor.value = normalizeAppearance(this.account.appearance) ?? appearanceFromLegacy(this.account.skin);
     this.entryEditor.setActive(true);
     this.dialog.querySelector('#join-title')!.textContent = translateText('Создай персонажа');
     this.dialog.querySelector<HTMLElement>('#login-step')!.hidden = true;

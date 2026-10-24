@@ -1,5 +1,5 @@
 import { t as translateText, language } from '../i18n/index';
-export type Cabinet = { id: string; name: string; subtitle: string; x: number; y: number; color: number; playable: boolean; hall?: 'arcade' | 'tables' | 'github'; demo?: boolean; wallet?: boolean; provider?: boolean; github?: boolean; defaultGameId?: string };
+export type Cabinet = { id: string; name: string; subtitle: string; x: number; y: number; color: number; playable: boolean; hall?: 'arcade' | 'tables' | 'github'; demo?: boolean; wallet?: boolean; provider?: boolean; github?: boolean; defaultGameId?: string; collection?: CabinetCollection | 'luelon' };
 
 import { PENALTY_GAME } from './crLeo';
 import { BASE_EXPANSION_GAMES, EXPANSION_NAMES } from './casinoExpansion';
@@ -7,7 +7,7 @@ import { STUDIO_GAMES, STUDIO_INFO } from './studioGames';
 import { CARD_GAME_IDS, CARD_GAME_NAMES, isCardGame, isRetiredCardGame, cardTableBounds } from './cardTables';
 import type { Obstacle } from '../game/navigation';
 import { LUELON_NEW_ZONE } from './clubLayout';
-import {ACTIVE_ARCADE_GAMES, ARCADE_CABINET_POSITIONS, PLATFORM_CABINET_DEFAULTS} from './arcadeCatalog';
+import {ARCADE_CABINET_SPECS, type CabinetCollection} from './arcadeCatalog';
 const expansionPositions=BASE_EXPANSION_GAMES.map((_,i)=>i===0?[240,600]:i===1?[480,810]:i===10?[240,1180]:i===11?[480,1180]:[1200,1060]);
 // Shared positions keep rendering, collisions and server play status aligned.
 export const CABINETS: Cabinet[] = [
@@ -68,14 +68,21 @@ for (let index = CABINETS.length - 1; index >= 0; index--) {
   if (isRetiredCardGame(CABINETS[index].id)) CABINETS.splice(index, 1);
 }
 
-// Compact first-floor collection. Other floors retain their original tables and positions.
+// Keep game descriptions available even when their game has no dedicated physical seat.
+export const GAME_CABINETS: readonly Cabinet[] = CABINETS.map(c=>({...c}));
 for (let index = CABINETS.length - 1; index >= 0; index--) {
-  const cabinet = CABINETS[index];
-  if ((cabinet.hall ?? 'arcade') !== 'arcade') continue;
-  if (!ACTIVE_ARCADE_GAMES.includes(cabinet.id)) { CABINETS.splice(index, 1); continue; }
-  Object.assign(cabinet, ARCADE_CABINET_POSITIONS[cabinet.id]);
-  cabinet.defaultGameId = PLATFORM_CABINET_DEFAULTS[cabinet.id];
-
+  if ((CABINETS[index].hall ?? 'arcade') === 'arcade') CABINETS.splice(index, 1);
+}
+const collectionNames = {royal:'Royal',github:'GitHub',casinoapipro:'Casino API PRO',luelon:'Luelon'};
+const collectionCounts = {royal:0,github:0,casinoapipro:0,luelon:0};
+for (const spec of ARCADE_CABINET_SPECS) {
+  const definition=GAME_CABINETS.find(c=>c.id===(spec.defaultGameId??spec.id))!;
+  const number=++collectionCounts[spec.collection];
+  CABINETS.push({...definition,...spec,hall:'arcade',playable:true,
+    name:spec.collection==='luelon'?'Luelon Play':`${collectionNames[spec.collection]} ${String(number).padStart(2,'0')}`,
+    subtitle:spec.collection==='luelon'?translateText('Каталог демоигр · Кредиты Luelon'):translateText('Выбери игру в каталоге'),
+    demo:spec.collection==='luelon',provider:spec.collection==='casinoapipro',
+  });
 }
 
 export const cabinetHall = (cabinet: Cabinet): 'arcade' | 'tables' | 'github' => cabinet.hall ?? 'arcade';

@@ -1,8 +1,8 @@
 import { t as translateText } from '../i18n/index';
-import { clubObstacles } from './clubLayout';
+import { clubObstacles, LOUNGES } from './clubLayout';
 import type { Obstacle } from '../game/navigation';
 import type { Facing, MovementInput } from './movement';
-import { FURNITURE, furnitureBounds, BAR_SOLID, BAR_OFFSET, PLANTS, plantBounds } from './furniture';
+import { FURNITURE, furnitureBounds, BAR_SOLID, BAR_SERVICE, barPoint, PLANTS, plantBounds } from './furniture';
 import { ACTIVITIES } from './activities';
 import { CABINETS, cabinetsInHall, cabinetBounds } from './cabinets';
 import type { GameReaction } from './cabinetSeating';
@@ -14,10 +14,11 @@ export const ROOM_CAPACITY = 30;
 export const NPC_SPAWNS = [[350,300],[875,610],[365,531],[711,563],[100,350]] as const;
 export type Seat = { hall?: HallId; id: string; kind: 'sofa' | 'bar'; x: number; y: number; entry: { x: number; y: number }; facing: Facing };
 export const SEATS: readonly Seat[] = [
-  ...[790,875,955].map((x,i)=>({id:'bar-'+i,kind:'bar' as const,x,y:548,entry:{x,y:590},facing:'up' as const})),
-  ...(['arcade','tables','github'] as const).map(hall=>({id:hall+'-lounge',hall,kind:'sofa' as const,x:320,y:910,entry:{x:320,y:950},facing:'down' as const})),
+  ...[49,134,214].map((x,i)=>({id:'bar-'+i,hall:'arcade' as const,kind:'bar' as const,...barPoint(x,211),entry:barPoint(x,253),facing:'up' as const})),
+  ...LOUNGES.filter(lounge=>lounge.hall==='arcade').map((lounge,i)=>({id:i===0?'arcade-lounge':'arcade-lounge-'+(i+1),hall:lounge.hall,kind:'sofa' as const,x:lounge.x-30,y:lounge.y+10,entry:{x:lounge.x-30,y:lounge.y+40},facing:'down' as const})),
+  ...(['tables','github'] as const).map(hall=>({id:hall+'-lounge',hall,kind:'sofa' as const,x:320,y:910,entry:{x:320,y:950},facing:'down' as const})),
 ];
-export const BAR_APPROACH = { x: 866, y: 548 + BAR_OFFSET } as const;
+export const BAR_APPROACH = barPoint(125,241);
 export const ROOM_OBSTACLES: Obstacle[] = [
   ...CABINETS.map(cabinetBounds),
   ...Object.entries(FURNITURE).filter(([key])=>key!=='sofa').map(([,item])=>furnitureBounds(item)),
@@ -33,12 +34,12 @@ export const HALLS = {
   github: { floor:3, name: translateText('Карточный салон'), number: '03', spawn: { x: 540, y: 590 } },
 } as const;
 export const HALL_DOORS = {
-  arcade: { entry: { x: 900, y: 240 }, arrival: { x: 900, y: 290 }, facing: 'down', click: { x: 900, y: 166 }, left: 860, right: 940, top: 225, bottom: 247 },
+  arcade: { entry: { x: 900, y: 240 }, arrival: { x: 900, y: 290 }, facing: 'down', click: { x: 900, y: 107 }, left: 860, right: 940, top: 225, bottom: 247 },
   tables: { entry: { x: 900, y: 1300 }, arrival: { x: 900, y: 1250 }, facing: 'up', click: { x: 900, y: 1307 }, left: 860, right: 940, top: 1293, bottom: 1310 },
   github: { entry: { x: 900, y: 1300 }, arrival: { x: 900, y: 1250 }, facing: 'up', click: { x: 900, y: 1307 }, left: 860, right: 940, top: 1293, bottom: 1310 },
 } as const;
 export type HallDoor = typeof HALL_DOORS[HallId];
-export const GITHUB_ROOM_DOOR = { entry: { x: 800, y: 240 }, arrival: { x: 800, y: 290 }, facing: 'down', click: { x: 800, y: 166 }, left: 760, right: 840, top: 225, bottom: 247 } as const;
+export const GITHUB_ROOM_DOOR = { entry: { x: 800, y: 240 }, arrival: { x: 800, y: 290 }, facing: 'down', click: { x: 800, y: 107 }, left: 760, right: 840, top: 225, bottom: 247 } as const;
 export type ConnectedHallDoor = HallDoor | typeof GITHUB_ROOM_DOOR;
 export type HallLink = { target: HallId; door: ConnectedHallDoor; arrival: ConnectedHallDoor };
 export function hallLinks(hall: HallId): HallLink[] {
@@ -79,7 +80,7 @@ export const DRINKS = [
   { id: 'whisky', name: translateText('Виски'), description: translateText('Янтарный виски со льдом · крепкий'), color: '#ce884a', strength: .38 },
   { id: 'cocktail', name: translateText('Коктейль «Рояль»'), description: translateText('Цитрус, ром и лёд · средняя крепость'), color: '#cc81b4', strength: .30 },
 ] as const;
-export const atBar = (p: { x: number; y: number }) => p.x >= 720 && p.x <= 1005 && p.y >= 482+BAR_OFFSET && p.y <= 590+BAR_OFFSET;
+export const atBar = (p: { x: number; y: number }) => p.x >= BAR_SERVICE.x && p.x <= BAR_SERVICE.x+BAR_SERVICE.w && p.y >= BAR_SERVICE.y && p.y <= BAR_SERVICE.y+BAR_SERVICE.h;
 export type PlayerAction = 'idle' | 'sit' | 'drink';
 export type PlayerView = { security?: string; id: string; hall: HallId; hallRevision: number; name: string; x: number; y: number; skin: number; appearance?: string; facing: 'up' | 'down' | 'left' | 'right'; moving: boolean; connected: boolean; playing: boolean; cabinet?: string; gameReaction?: string; gameReactionUntil?: number; activity?: string; ears?: boolean; seat: string; action: PlayerAction; drink: string; actionUntil: number; soberAt: number; inputSeq: number };
 export type ChatMessage = { id: string; senderId: string; name: string; text: string; time: number; system?: boolean; requestId?: string };

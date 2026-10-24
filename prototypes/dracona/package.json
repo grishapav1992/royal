@@ -1,0 +1,12 @@
+{
+  "name": "@royal/dracona-prototype",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 4178 --strictPort",
+    "check": "tsc --noEmit -p tsconfig.json",
+    "build": "tsc --noEmit -p tsconfig.json && vite build",
+    "test": "tsx --test tests/*.test.ts"
+  }
+}

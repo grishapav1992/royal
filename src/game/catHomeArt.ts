@@ -1,5 +1,6 @@
 import type Phaser from 'phaser';
 import { CAT_HOME } from '../shared/catHome';
+import { HALL_WINDOWS } from './hallWindows';
 
 const TEXTURE = 'cat-sunny-window';
 
@@ -46,13 +47,13 @@ export function drawCatHome(scene: Phaser.Scene) {
   // Translucent panes cast one continuous, steady patch onto the carpet.
   const sunlight = scene.add.graphics().setDepth(.035).setName('cat-home-sunlight');
   sunlight.fillStyle(0xffe6a3, .12);
-  sunlight.fillPoints([{ x: window.x - 70, y: 174 }, { x: window.x + 70, y: 174 },
+  sunlight.fillPoints([{ x: window.x - 70, y: window.y + 61 }, { x: window.x + 70, y: window.y + 61 },
     { x: window.x + 161, y: 314 }, { x: window.x - 53, y: 314 }], true);
   sunlight.fillStyle(0xffefbf, .09);
   for (const offset of [-60, 12]) {
-    sunlight.fillPoints([{ x: window.x + offset, y: 178 }, { x: window.x + offset + 57, y: 178 },
+    sunlight.fillPoints([{ x: window.x + offset, y: window.y + 65 }, { x: window.x + offset + 57, y: window.y + 65 },
       { x: window.x + offset + 129, y: 291 }, { x: window.x + offset + 56, y: 291 }], true);
   }
-  return scene.add.image(window.x, window.y - 59, TEXTURE).setOrigin(.5, 0).setDisplaySize(200, 150)
+  return scene.add.image(window.x, HALL_WINDOWS.top, TEXTURE).setOrigin(.5, 0).setDisplaySize(200, 150)
     .setDepth(3).setName('cat-home-window');
 }

@@ -13,9 +13,6 @@
 #capro-setup{padding:8px 16px;border-top:1px solid #988164;font-size:11px;line-height:1.5;max-height:160px;overflow:auto;flex-shrink:0}
 #capro-setup p{margin:6px 0}#capro-player{display:block;overflow-wrap:anywhere;user-select:all}
 .capro-dialog .demo-library-card:disabled{opacity:.55}
-#wallet-provider-games{margin:12px 0}
-@media(max-width:600px){.capro-dialog{width:100%;height:100dvh;max-height:100dvh;max-width:100%;border-radius:0}.capro-heading{padding:12px}.capro-heading h2{font-size:18px}.capro-footer{padding:8px 12px;font-size:9px}.capro-toolbar{padding:8px 12px}.capro-toolbar .text-button{font-size:11px}}
-
 .capro-embedded{display:flex;flex-direction:column;width:100%;height:100%;min-width:0;min-height:0;background:#211b30;color:#f4eedf}
 .capro-embedded>.capro-heading,.capro-embedded #capro-catalogue{display:none}
 .capro-embedded .capro-toolbar{justify-content:flex-end;border:0;padding:7px 12px}
@@ -24,3 +21,5 @@
 #mini-dialog[data-game=casinoapipro] .mini-stage{overflow:hidden}
 #mini-dialog[data-game=casinoapipro] .game-viewport-plane{display:contents}
 #mini-dialog[data-game=casinoapipro] #mini-game{height:100%;min-height:0}
+#wallet-provider-games{margin:12px 0}
+@media(max-width:600px){.capro-dialog{width:100%;height:100dvh;max-height:100dvh;max-width:100%;border-radius:0}.capro-heading{padding:12px}.capro-heading h2{font-size:18px}.capro-footer{padding:8px 12px;font-size:9px}.capro-toolbar{padding:8px 12px}.capro-toolbar .text-button{font-size:11px}}

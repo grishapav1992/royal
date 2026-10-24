@@ -4,7 +4,7 @@ import { LobbyRoom } from '../server/LobbyRoom';
 import { Player } from '../server/state';
 import { MovementInputs } from '../server/movementInputs';
 import { findPath, walkable } from '../src/game/navigation';
-import { hallObstacles, PLAYER_SPRINT_SPEED } from '../src/shared/world';
+import { BAR_APPROACH, hallObstacles, PLAYER_SPRINT_SPEED } from '../src/shared/world';
 
 test('fractional keyboard budget preserves a click route without allowing movement beyond elapsed time', context => {
   let now = 1800000000000;
@@ -14,7 +14,7 @@ test('fractional keyboard budget preserves a click route without allowing moveme
   room.state.players.set('a', player);
   const inputs = new MovementInputs(now);
   assert(inputs.accept(player, [{ seq: 1, x: 0, y: 0, ms: 50 }, { seq: 2, x: 0, y: 0, ms: 49.99 }], now));
-  const target = { x: 866, y: 578 };
+  const target = BAR_APPROACH;
   const control = { dx: 0, dy: 0, at: now, path: findPath(player, target, hallObstacles(player.hall)), lastTarget: 0, chatRevision: 0, inputs, predicted: false };
   (room as any).controls.set('a', control);
   const step = () => (room as any).tick(.05);
@@ -36,9 +36,9 @@ test('fractional keyboard budget preserves a click route without allowing moveme
     }
     assert(Math.hypot(player.x - target.x, player.y - target.y) < .1, 'the retained route reaches the bar');
 
-    Object.assign(player, { x: 729, y: 450 });
-    control.path = [{ x: 760, y: 450 }]; now += 50; step();
-    assert.equal(player.x, 729); assert.equal(player.y, 450);
+    Object.assign(player, { x: 148, y: 450 });
+    control.path = [{ x: 180, y: 450 }]; now += 50; step();
+    assert.equal(player.x, 148); assert.equal(player.y, 450);
     assert.equal(control.path.length, 0, 'a full step genuinely blocked by furniture still cancels');
   } finally { room.clock.clear(); }
 });

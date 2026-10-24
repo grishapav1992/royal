@@ -1,5 +1,6 @@
 import { t as translateText } from '../i18n/index';
 import Phaser from 'phaser';
+import { MIRA_HOME } from '../shared/miraRoutine';
 import type { GuardView } from '../shared/security';
 import type { HallId } from '../shared/world';
 import { WORLD } from '../shared/clubGeometry';
@@ -143,7 +144,7 @@ export class SecurityGuard {
     createGuard(scene);
     this.shadow = scene.add.ellipse(585,635,54,17,0x151521,.35);
     this.sprite = scene.add.sprite(585,635,'security-guard','down-6').setOrigin(.5,1).setScale(SCALE / 2);
-    this.reply = scene.add.text(866,337,'',{fontFamily:'Arial',fontSize:'12px',color:'#fff0d9',backgroundColor:'#513045',align:'center',padding:{x:11,y:8},wordWrap:{width:210}}).setOrigin(.5,1).setDepth(1500).setVisible(false);
+    this.reply = scene.add.text(MIRA_HOME.x,MIRA_HOME.y-116,'',{fontFamily:'Arial',fontSize:'12px',color:'#fff0d9',backgroundColor:'#513045',align:'center',padding:{x:11,y:8},wordWrap:{width:210}}).setOrigin(.5,1).setDepth(1500).setVisible(false);
     this.speech = scene.add.text(585,505,'', { fontFamily:'Arial', fontSize:'12px', fontStyle:'bold', color:'#ffe49b', backgroundColor:'#25212c', align:'center', padding:{x:12,y:9}, wordWrap:{width:240} }).setOrigin(.5,1).setVisible(false);
   }
   sync(guards: GuardView[], at=performance.now()) {

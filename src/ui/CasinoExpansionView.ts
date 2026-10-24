@@ -1,4 +1,3 @@
-import { decorateImportedGame } from './ImportedGameThemes';
 import { t as translateText, tr, locale } from '../i18n/index';
 import { resetGameOutcomes } from './gameReactions';
 import {CasinoConfirmedMotion} from './CasinoConfirmedMotion';
@@ -8,6 +7,7 @@ import { expansionClient as client, type NewExpansionAction } from '../wallet/Ex
 import { demoWallet } from '../wallet/WalletClient';
 import { emitExpansionDealer } from './CardDealerStage';
 import './casino-expansion.css';
+import { decorateImportedGame } from './ImportedGameThemes';
 const escape=(s:string)=>translateText(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]!));
 const amount=(units:string|number)=>(Number(units)/100).toLocaleString(locale,{maximumFractionDigits:2})+translateText(' монет');
 export class CasinoExpansionView {
