@@ -8,7 +8,7 @@ const state = (page: Page) => page.evaluate(() => (window as any).neopolisPrevie
 const session = (page: Page) => page.evaluate(() => (window as any).neopolisPreview.client.sessions.find((value: any) => value.gameId === 'studio-neopolis'));
 // Full HTTP/service/DB settlement with reproducible entropy for rare campaigns.
 test.beforeEach(async({page})=>{
-  await page.route('**/api/game-wallet/expansion',async route=>{
+  await page.route('**/api/demo-wallet/expansion',async route=>{
     const req=route.request();
     if(req.method()!=='POST'||!['studio-neopolis','studio-dracona'].includes(req.postDataJSON()?.gameId)){await route.fallback();return;}
     const response=await route.fetch({url:new URL('/__test/neopolis/operate',req.url()).href});
@@ -28,8 +28,10 @@ async function spin(page: Page) {
   await expect(page.locator('[data-np=spin]')).toBeEnabled(); await page.locator('[data-np=spin]').click();
   await page.waitForFunction(old => {
     const harness = (window as any).neopolisPreview, s = harness.client.sessions.find((value: any) => value.gameId === 'studio-neopolis');
-    return s && s.id + ':' + s.view.neopolis.revision !== old && !harness.client.busy && !harness.state().busy && !harness.client.pending;
+    const idle = !harness.client.busy && !harness.state().busy;
+    return idle && (harness.client.error || s && s.id + ':' + s.view.neopolis.revision !== old && !harness.client.pending);
   }, marker);
+  expect(await page.evaluate(() => (window as any).neopolisPreview.client.error)).toBe('');
   const result = await session(page); expect(validNeopolisSession(result)).toBe(true);
   const visible=await state(page);
   expect(visible.feedback.shownUnits).toBe(Number(result.view.neopolis.totalPayoutUnits));
@@ -75,13 +77,13 @@ test('real API retries a lost result once, restores collection and bonus, and se
     if (route.request().method() !== 'POST' || original) { await route.fallback(); return; }
     original = await (await route.fetch({url:new URL('/__test/neopolis/operate',route.request().url()).href})).json(); await route.abort('failed');
   };
-  await page.route('**/api/game-wallet/expansion',loseFirst);
+  await page.route('**/api/demo-wallet/expansion',loseFirst);
   await page.locator('[data-np=spin]').click();
   await expect(page.locator('.np-reels')).toHaveCount(0);
   await page.waitForFunction(() => !!(window as any).neopolisPreview.client.pending && !(window as any).neopolisPreview.state().busy);
   const pendingId = await page.evaluate(() => (window as any).neopolisPreview.client.pending.id);
   await expect(page.locator('[data-np=spin]')).toHaveText(/Check move/);
-  await page.unroute('**/api/game-wallet/expansion',loseFirst);
+  await page.unroute('**/api/demo-wallet/expansion',loseFirst);
   const replay = await spin(page); expect(replay.id).toBe(pendingId); expect(replay).toEqual(original.session);
   const collected = (await state(page)).team;
   await page.getByRole('button', { name: 'Reopen game' }).click();
@@ -216,7 +218,7 @@ test('reels move during the request, pause in rules, brake in order and respect 
   });
   let release!: () => void;
   const held = new Promise<void>(resolve => { release = resolve; });
-  await page.route('**/api/game-wallet/expansion', async route => {
+  await page.route('**/api/demo-wallet/expansion', async route => {
     if (route.request().method() === 'POST') await held;
     await route.fallback();
   });
@@ -263,7 +265,7 @@ test('reels move during the request, pause in rules, brake in order and respect 
     await expect(page.locator('.np-reels')).toHaveCount(0);
     await expect(page.locator('.np-board')).not.toHaveAttribute('aria-busy','true');
     expect(errors).toEqual([]);
-  } finally { release(); await page.unroute('**/api/game-wallet/expansion'); }
+  } finally { release(); await page.unroute('**/api/demo-wallet/expansion'); }
 });
 
 test('closing during reel motion cancels presentation and reopening restores the single server result', async ({ page }) => {
@@ -271,7 +273,7 @@ test('closing during reel motion cancels presentation and reopening restores the
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
   let release!: () => void, confirmed: any, requests = 0;
   const held = new Promise<void>(resolve => { release = resolve; });
-  await page.route('**/api/game-wallet/expansion', async route => {
+  await page.route('**/api/demo-wallet/expansion', async route => {
     if (route.request().method() !== 'POST') { await route.fallback(); return; }
     requests++;
     const response = await route.fetch({url:new URL('/__test/neopolis/operate',route.request().url()).href}); confirmed = await response.json();
@@ -291,7 +293,7 @@ test('closing during reel motion cancels presentation and reopening restores the
     expect((await session(page)).id).toBe(confirmed.session.id);
     expect(await page.locator('.np-board [role=gridcell]').evaluateAll(cells => cells.map(cell => Number((cell as HTMLElement).dataset.symbol)))).toEqual(confirmed.session.view.neopolis.history.at(-1).result.grid);
     expect(requests).toBe(1); expect(errors).toEqual([]);
-  } finally { release(); await page.unroute('**/api/game-wallet/expansion'); }
+  } finally { release(); await page.unroute('**/api/demo-wallet/expansion'); }
 });
 
 test('three real campaign bosses change arenas and costumes, survive reload and charge only the entry', async ({ page }) => {
@@ -351,7 +353,7 @@ test('original music and confirmed battle sounds honor shared mute, rules, host 
   });
   let release!: () => void;
   const held = new Promise<void>(resolve => { release=resolve; });
-  await page.route('**/api/game-wallet/expansion',async route => { if (route.request().method()==='POST') await held; await route.fallback(); });
+  await page.route('**/api/demo-wallet/expansion',async route => { if (route.request().method()==='POST') await held; await route.fallback(); });
   try {
     await page.locator('[data-np=spin]').click();
     await expect(page.locator('.np-reels')).toHaveCount(1);
@@ -388,7 +390,7 @@ test('original music and confirmed battle sounds honor shared mute, rules, host 
     await page.evaluate(() => (window as any).neopolisPreview.open());
     await expect(page.locator('[data-np=spin]')).toBeEnabled();
     expect((await state(page)).audio.cues).toEqual({}); expect(errors).toEqual([]);
-  } finally { release(); await page.unroute('**/api/game-wallet/expansion'); }
+  } finally { release(); await page.unroute('**/api/demo-wallet/expansion'); }
 });
 
 const feedbackState=(page:Page)=>page.evaluate(()=>(window as any).neopolisFeedbackReview.state());
