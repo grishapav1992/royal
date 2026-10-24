@@ -5,11 +5,11 @@ import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import assert from 'node:assert/strict';
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'../../..'),work=resolve(root,'..'),out=resolve(work,'payload');
-const name='royal-floor-one-only-20261024-v1',base='09dbad7d86ec4b5c7d18c16715d1861de65468f3';
+const name='royal-floor-one-only-20261024-v1',base='c68fd25d79245a5404b4182f8c55a2318806883b';
 const git=(...args)=>execFileSync(process.env.ROYAL_GIT_BINARY||'git',args,{cwd:root,encoding:'utf8'}).trim();
 const hash=p=>createHash('sha256').update(readFileSync(p)).digest('hex');
 const json=p=>JSON.parse(readFileSync(p,'utf8'));
-const before=json(resolve(work,'before.json')),normalized=json(resolve(work,'source-normalized.json')),active=json(resolve(work,'active-modules.json'));
+const before=json(resolve(work,'before.json')),normalized=json(resolve(work,'source-normalized.json')),active=json(resolve(work,'active-modules.json')),runtime=json(resolve(work,'runtime-normalized.json'));
 const release=json(resolve(root,'module-build/release-manifest.json'));
 assert.equal(release.sourceCommit,git('rev-parse','HEAD'));assert.equal(release.baseCommit,base);assert(release.build.passed);
 const receipt=json(resolve(root,'module-build/release-github.json'));assert.equal(receipt.sourceCommit,release.sourceCommit);
@@ -24,6 +24,8 @@ for(const [file,digest]of Object.entries(before.source)){
 const delta={};
 for(const [file,digest]of Object.entries(release.files)){
  if(!file.startsWith('dist/')||before.program[file]===digest)continue;
+ // Preserve already published bytes when only historical CRLF line endings differ.
+ if(runtime[file]?.sha256===before.program[file]&&runtime[file]?.lf===digest)continue;
  const sub=file.slice(5);
  if(['index.html','admin.html'].includes(sub)||/^assets\/[a-zA-Z0-9_-]+\.(js|css)$/.test(sub)){
   assert(['index.html','admin.html'].includes(sub)||!(file in before.program),'Immutable client URL would change');delta[sub]=digest;copy(resolve(root,file),'dist-delta/'+sub);
