@@ -1,0 +1,71 @@
+{
+  "ok": true,
+  "checkedAt": "2026-10-24T13:03:00.703227+00:00",
+  "sourceCommit": "83b3e6b71c504a32f2461261b6637cca9092c5b7",
+  "origin": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "indexSha256": "de1e73ba484c4a4e9955a3c844b8b0e7c864a1205bd597db56997e727b2d06a7",
+  "entry": "/assets/main-Wr9RDt76.js",
+  "entrySha256": "fb2c935f97353c55e3c8682a997f26a782f05d3400970e7629e81feb79aeca09",
+  "wallet": "shared freely topped-up virtual USDT, no Nile",
+  "authenticationAndRetirement": [
+    {
+      "path": "/api/demo-wallet",
+      "status": 401
+    },
+    {
+      "path": "/api/game-wallet",
+      "status": 401
+    },
+    {
+      "path": "/api/nile-play/wallet",
+      "status": 410
+    },
+    {
+      "path": "/api/nile-wallet",
+      "status": 410
+    },
+    {
+      "path": "/api/skin-studio",
+      "status": 401
+    }
+  ],
+  "games": [
+    {
+      "game": "hockey",
+      "version": "1.0.0-23d1211c99c7",
+      "files": 2,
+      "manifestSha256": "7f1d6630bd401b15440fdd8a94b6b713fd9c9097b2591cfa945ea3c1c8641a80"
+    },
+    {
+      "game": "pool",
+      "version": "1.0.0-da02b6212f58",
+      "files": 2,
+      "manifestSha256": "369c5dc0b83e39b413d20f7265915c8650656ac9928a4668420bfb1e03a00043"
+    },
+    {
+      "game": "chess",
+      "version": "1.0.0-503ea92857d1",
+      "files": 2,
+      "manifestSha256": "b35175aaca001b7760b568c2f18963a85cfb1d01f8de2b33734b29d396ce6b04"
+    },
+    {
+      "game": "durak",
+      "version": "1.0.0-fe60e7852f80",
+      "files": 2,
+      "manifestSha256": "15c92088ff95dfe694869140ee9b1c3e79972bb3b2b039142925019757d2ab33"
+    },
+    {
+      "game": "transfer-durak",
+      "version": "1.0.0-882a9df59c11",
+      "files": 2,
+      "manifestSha256": "297746fc98a65852b221ba9026b2b89c1c52a13b94b9be4722fbf201546af910"
+    },
+    {
+      "game": "crazy-eights",
+      "version": "1.0.0-e766c65c35a4",
+      "files": 2,
+      "manifestSha256": "db4c75edd3b6ef01529336a66b8176d0816ee25a6ef87eaefd5c262f86556369"
+    }
+  ],
+  "productionWagersPlaced": false
+}
