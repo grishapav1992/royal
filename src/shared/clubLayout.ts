@@ -7,12 +7,12 @@ export type ClubZone = { name: string; x: number; y: number; w: number; h: numbe
 export const ARCADE_OVERVIEW_SIZE = {width:2760,height:1380} as const;
 export const LUELON_NEW_ZONE = {
   name: translateText('ROYAL · НАШИ ИГРЫ'),
-  x: 1100, y: 245, w: 720, h: 575, color: 0x263653,
+  x: 1100, y: 245, w: 720, h: 855, color: 0x263653,
   entrance: {x: 1060, y: 580},
   cosmic: {x: 1200, y: 430},
-  caramel: {x: 1335, y: 430},
-  velvet: {x: 1470, y: 430},
-  convoy: {x: 1605, y: 430},
+  caramel: {x: 1365, y: 430},
+  velvet: {x: 1530, y: 430},
+  convoy: {x: 1695, y: 430},
 } as const;
 // The collection now shares the main hall without a distant gateway.
 export const LUELON_NEW_ZONE_OBSTACLES: Obstacle[] = [];
@@ -21,9 +21,6 @@ export const CLUB_ZONES: Record<HallId, ClubZone[]> = {
     {name:translateText('БАР МИРЫ'),x:100,y:285,w:350,h:360,color:0x352b38},
     {name:translateText('МУЗЫКАЛЬНЫЙ САЛОН'),x:620,y:285,w:400,h:360,color:0x443042},
     LUELON_NEW_ZONE,
-    {name:translateText('LUELON · ДЕМОИГРЫ'),x:1870,y:245,w:350,h:305,color:0x42334f},
-    {name:'CASINO API PRO',x:2240,y:245,w:350,h:305,color:0x2e454b},
-    {name:translateText('ИГРЫ С GITHUB'),x:1870,y:580,w:720,h:520,color:0x293d3a},
     {name:translateText('ГОСТИНАЯ'),x:150,y:800,w:800,h:370,color:0x453141},
   ],
   tables: [
