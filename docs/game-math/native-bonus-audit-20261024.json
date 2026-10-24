@@ -1,0 +1,765 @@
+{
+  "generatedAt": "2026-10-24T11:46:54.803Z",
+  "commit": "42848851bb987c7114d000e71ade389b7c8c3afd",
+  "method": "Independent complete paid rounds including all free continuations. Integer settlement uses unchanged shared decision functions. Optimized entropy loop is cross-checked spin by spin against actual server start/move, including final grid, total credit, bonus state and random sample consumption. Sample-variance normal 95% confidence intervals divide all payout by actual total debit. Screening, not qualification; no multiple-comparison adjustment and rare-tail confidence is approximate.",
+  "rng": "xorshift32 with floor scaling to server draw ranges",
+  "seeds": [
+    28102026,
+    9217431,
+    18254161
+  ],
+  "mode": "normal",
+  "stakeUnits": "10000",
+  "allStakes": [
+    "100",
+    "200",
+    "300",
+    "500",
+    "1000",
+    "2000",
+    "2500",
+    "5000",
+    "10000",
+    "20000",
+    "25000",
+    "50000",
+    "100000"
+  ],
+  "stakeScaling": "All supported stakes are multiples of 100 and every line payment is stake*integer/100, so integer settlement and caps scale exactly with stake. Paired exact server replays below cover every stake.",
+  "sourceHashes": {
+    "src/shared/nitroRun.ts": "621e54ab208ea598573dc79f22be813509a85523309af76d5f3b8da7d038cc08",
+    "src/shared/memeOverload.ts": "3380fce5ee723cea9a07d8b098c933e0465300fcc19fa727ef30ccbf7303244b",
+    "server/games/nitroRun.ts": "9bb335cf87be9306035da1457bec8c1af6e8276f8c8275d940aee6c6681ab2e6",
+    "src/shared/lastConvoy.ts": "f4d1b22f8a67dfda6fadbb4539b85211d8ad6c165657ba394bcd5c258e1f280a",
+    "server/games/lastConvoy.ts": "ac691553c2636edc35f0291ca0c9cd9f21b94565da4572856df1f131f4591e3d",
+    "src/shared/afterglow.ts": "3a20c05490f1fce9fb33244091230f5106c23d9686566e40f0051d124e941256",
+    "server/games/afterglow.ts": "732c928d299e6a6adb501d1682e80ec2ea02e510884812771c757f5173013258",
+    "server/demoExpansion.ts": "ab91cf5f0d590f05132b73b34d347f044b70f852e0bc31f4602d816289c2e420",
+    "server/afterglowProgress.ts": "1605ddaefa120c87da21fd1db9260c645840cbfc1db690c8f58787ccfe7acf2c"
+  },
+  "results": [
+    {
+      "game": "studio-nitro-run",
+      "aliases": [
+        "studio-meme-overload"
+      ],
+      "modes": [
+        {
+          "mode": "normal",
+          "costMultiplier": 1,
+          "paidBonusPurchase": false,
+          "freeContinuationCostUnits": 0
+        }
+      ],
+      "rounds": 3000000,
+      "totalDebitUnits": 30000000000,
+      "totalCreditUnits": 28867475100,
+      "sumSquaredReturn": 26881580.528913163,
+      "baseCreditUnits": 26966867400,
+      "bonusCreditUnits": 1900607700,
+      "bonusRounds": 15782,
+      "freeSpins": 130132,
+      "frames": 5727310,
+      "cappedRounds": 0,
+      "maximumReturn": 201.79,
+      "maximumPins": 0,
+      "rtp": 0.96224917,
+      "interval95": [
+        0.959041588220073,
+        0.965456751779927
+      ],
+      "halfWidth95": 0.0032075817799269474,
+      "baseRtp": 0.89889558,
+      "bonusRtp": 0.06335359,
+      "bonusRate": 0.005260666666666667,
+      "flag": "not_flagged_by_screening",
+      "seeds": [
+        {
+          "seed": 28102026,
+          "rounds": 1000000,
+          "totalDebitUnits": 10000000000,
+          "totalCreditUnits": 9593519900,
+          "sumSquaredReturn": 8891974.468100594,
+          "baseCreditUnits": 8959505100,
+          "bonusCreditUnits": 634014800,
+          "bonusRounds": 5243,
+          "freeSpins": 43222,
+          "frames": 1908562,
+          "cappedRounds": 0,
+          "maximumReturn": 201.79,
+          "maximumPins": 0,
+          "rtp": 0.95935199,
+          "interval95": [
+            0.9538181125884453,
+            0.9648858674115548
+          ],
+          "halfWidth95": 0.005533877411554775,
+          "baseRtp": 0.89595051,
+          "bonusRtp": 0.06340148,
+          "bonusRate": 0.005243,
+          "flag": "not_flagged_by_screening"
+        },
+        {
+          "seed": 9217431,
+          "rounds": 1000000,
+          "totalDebitUnits": 10000000000,
+          "totalCreditUnits": 9666766500,
+          "sumSquaredReturn": 9196495.017498767,
+          "baseCreditUnits": 9010195800,
+          "bonusCreditUnits": 656570700,
+          "bonusRounds": 5361,
+          "freeSpins": 44266,
+          "frames": 1911144,
+          "cappedRounds": 0,
+          "maximumReturn": 154.22,
+          "maximumPins": 0,
+          "rtp": 0.96667665,
+          "interval95": [
+            0.9610428723088442,
+            0.9723104276911558
+          ],
+          "halfWidth95": 0.00563377769115584,
+          "baseRtp": 0.90101958,
+          "bonusRtp": 0.06565707,
+          "bonusRate": 0.005361,
+          "flag": "not_flagged_by_screening"
+        },
+        {
+          "seed": 18254161,
+          "rounds": 1000000,
+          "totalDebitUnits": 10000000000,
+          "totalCreditUnits": 9607188700,
+          "sumSquaredReturn": 8793111.043301502,
+          "baseCreditUnits": 8997166500,
+          "bonusCreditUnits": 610022200,
+          "bonusRounds": 5178,
+          "freeSpins": 42644,
+          "frames": 1907604,
+          "cappedRounds": 0,
+          "maximumReturn": 147.07,
+          "maximumPins": 0,
+          "rtp": 0.96071887,
+          "interval95": [
+            0.9552203317597469,
+            0.9662174082402532
+          ],
+          "halfWidth95": 0.005498538240253121,
+          "baseRtp": 0.89971665,
+          "bonusRtp": 0.06100222,
+          "bonusRate": 0.005178,
+          "flag": "not_flagged_by_screening"
+        }
+      ],
+      "serverCrosschecks": [
+        {
+          "seed": 28102026,
+          "rounds": 1000,
+          "bonusRounds": 4,
+          "freeSpins": 34
+        },
+        {
+          "seed": 9217431,
+          "rounds": 1000,
+          "bonusRounds": 7,
+          "freeSpins": 56
+        },
+        {
+          "seed": 18254161,
+          "rounds": 1000,
+          "bonusRounds": 7,
+          "freeSpins": 56
+        }
+      ],
+      "allStakeServerCrosschecks": [
+        {
+          "stake": "100",
+          "rounds": 15
+        },
+        {
+          "stake": "200",
+          "rounds": 15
+        },
+        {
+          "stake": "300",
+          "rounds": 15
+        },
+        {
+          "stake": "500",
+          "rounds": 15
+        },
+        {
+          "stake": "1000",
+          "rounds": 15
+        },
+        {
+          "stake": "2000",
+          "rounds": 15
+        },
+        {
+          "stake": "2500",
+          "rounds": 15
+        },
+        {
+          "stake": "5000",
+          "rounds": 15
+        },
+        {
+          "stake": "10000",
+          "rounds": 15
+        },
+        {
+          "stake": "20000",
+          "rounds": 15
+        },
+        {
+          "stake": "25000",
+          "rounds": 15
+        },
+        {
+          "stake": "50000",
+          "rounds": 15
+        },
+        {
+          "stake": "100000",
+          "rounds": 15
+        }
+      ],
+      "bonusReturnPerTriggeredRound": 12.04288239766823
+    },
+    {
+      "game": "studio-afterglow",
+      "aliases": [
+        "GIRLHUB"
+      ],
+      "modes": [
+        {
+          "mode": "normal",
+          "costMultiplier": 1,
+          "paidBonusPurchase": false,
+          "freeContinuationCostUnits": 0
+        }
+      ],
+      "rounds": 3000000,
+      "totalDebitUnits": 30000000000,
+      "totalCreditUnits": 28790008500,
+      "sumSquaredReturn": 278721935.3828417,
+      "baseCreditUnits": 12903421900,
+      "bonusCreditUnits": 15886586600,
+      "bonusRounds": 69262,
+      "freeSpins": 605594,
+      "frames": 5637171,
+      "cappedRounds": 0,
+      "maximumReturn": 2114.26,
+      "maximumPins": 3,
+      "rtp": 0.95966695,
+      "interval95": [
+        0.9488137648403555,
+        0.9705201351596445
+      ],
+      "halfWidth95": 0.010853185159644561,
+      "baseRtp": 0.43011406333333335,
+      "bonusRtp": 0.5295528866666667,
+      "bonusRate": 0.023087333333333335,
+      "flag": "not_flagged_by_screening",
+      "seeds": [
+        {
+          "seed": 28102026,
+          "rounds": 1000000,
+          "totalDebitUnits": 10000000000,
+          "totalCreditUnits": 9562686700,
+          "sumSquaredReturn": 85752446.95187743,
+          "baseCreditUnits": 4295396100,
+          "bonusCreditUnits": 5267290600,
+          "bonusRounds": 23202,
+          "freeSpins": 203018,
+          "frames": 1881938,
+          "cappedRounds": 0,
+          "maximumReturn": 992.34,
+          "maximumPins": 3,
+          "rtp": 0.95626867,
+          "interval95": [
+            0.9382155822892826,
+            0.9743217577107175
+          ],
+          "halfWidth95": 0.01805308771071749,
+          "baseRtp": 0.42953961,
+          "bonusRtp": 0.52672906,
+          "bonusRate": 0.023202,
+          "flag": "not_flagged_by_screening"
+        },
+        {
+          "seed": 9217431,
+          "rounds": 1000000,
+          "totalDebitUnits": 10000000000,
+          "totalCreditUnits": 9604139000,
+          "sumSquaredReturn": 94727052.10276863,
+          "baseCreditUnits": 4315688100,
+          "bonusCreditUnits": 5288450900,
+          "bonusRounds": 22889,
+          "freeSpins": 200230,
+          "frames": 1876757,
+          "cappedRounds": 0,
+          "maximumReturn": 1649.49,
+          "maximumPins": 3,
+          "rtp": 0.9604139,
+          "interval95": [
+            0.9414307408417675,
+            0.9793970591582326
+          ],
+          "halfWidth95": 0.018983159158232593,
+          "baseRtp": 0.43156881,
+          "bonusRtp": 0.52884509,
+          "bonusRate": 0.022889,
+          "flag": "not_flagged_by_screening"
+        },
+        {
+          "seed": 18254161,
+          "rounds": 1000000,
+          "totalDebitUnits": 10000000000,
+          "totalCreditUnits": 9623182800,
+          "sumSquaredReturn": 98242436.3283683,
+          "baseCreditUnits": 4292337700,
+          "bonusCreditUnits": 5330845100,
+          "bonusRounds": 23171,
+          "freeSpins": 202346,
+          "frames": 1878476,
+          "cappedRounds": 0,
+          "maximumReturn": 2114.26,
+          "maximumPins": 3,
+          "rtp": 0.96231828,
+          "interval95": [
+            0.9429830536318625,
+            0.9816535063681374
+          ],
+          "halfWidth95": 0.01933522636813746,
+          "baseRtp": 0.42923377,
+          "bonusRtp": 0.53308451,
+          "bonusRate": 0.023171,
+          "flag": "not_flagged_by_screening"
+        }
+      ],
+      "serverCrosschecks": [
+        {
+          "seed": 28102026,
+          "rounds": 1000,
+          "bonusRounds": 22,
+          "freeSpins": 188
+        },
+        {
+          "seed": 9217431,
+          "rounds": 1000,
+          "bonusRounds": 22,
+          "freeSpins": 192
+        },
+        {
+          "seed": 18254161,
+          "rounds": 1000,
+          "bonusRounds": 27,
+          "freeSpins": 256
+        }
+      ],
+      "allStakeServerCrosschecks": [
+        {
+          "stake": "100",
+          "rounds": 15
+        },
+        {
+          "stake": "200",
+          "rounds": 15
+        },
+        {
+          "stake": "300",
+          "rounds": 15
+        },
+        {
+          "stake": "500",
+          "rounds": 15
+        },
+        {
+          "stake": "1000",
+          "rounds": 15
+        },
+        {
+          "stake": "2000",
+          "rounds": 15
+        },
+        {
+          "stake": "2500",
+          "rounds": 15
+        },
+        {
+          "stake": "5000",
+          "rounds": 15
+        },
+        {
+          "stake": "10000",
+          "rounds": 15
+        },
+        {
+          "stake": "20000",
+          "rounds": 15
+        },
+        {
+          "stake": "25000",
+          "rounds": 15
+        },
+        {
+          "stake": "50000",
+          "rounds": 15
+        },
+        {
+          "stake": "100000",
+          "rounds": 15
+        }
+      ],
+      "bonusReturnPerTriggeredRound": 22.936944644971266
+    },
+    {
+      "game": "studio-last-convoy",
+      "aliases": [],
+      "modes": [
+        {
+          "mode": "normal",
+          "costMultiplier": 1,
+          "paidBonusPurchase": false,
+          "freeContinuationCostUnits": 0
+        }
+      ],
+      "rounds": 3000000,
+      "totalDebitUnits": 30000000000,
+      "totalCreditUnits": 28701191600,
+      "sumSquaredReturn": 22531292.93438075,
+      "baseCreditUnits": 24045917400,
+      "bonusCreditUnits": 4655274200,
+      "bonusRounds": 47840,
+      "freeSpins": 492630,
+      "frames": 5388888,
+      "cappedRounds": 0,
+      "maximumReturn": 94.32,
+      "maximumPins": 6,
+      "rtp": 0.9567063866666666,
+      "interval95": [
+        0.9538003060800351,
+        0.9596124672532982
+      ],
+      "halfWidth95": 0.0029060805866316076,
+      "baseRtp": 0.80153058,
+      "bonusRtp": 0.15517580666666667,
+      "bonusRate": 0.015946666666666668,
+      "flag": "not_flagged_by_screening",
+      "seeds": [
+        {
+          "seed": 28102026,
+          "rounds": 1000000,
+          "totalDebitUnits": 10000000000,
+          "totalCreditUnits": 9576539900,
+          "sumSquaredReturn": 7563204.234504438,
+          "baseCreditUnits": 8009934500,
+          "bonusCreditUnits": 1566605400,
+          "bonusRounds": 16037,
+          "freeSpins": 165083,
+          "frames": 1797184,
+          "cappedRounds": 0,
+          "maximumReturn": 82.9,
+          "maximumPins": 6,
+          "rtp": 0.95765399,
+          "interval95": [
+            0.9526011002243189,
+            0.962706879775681
+          ],
+          "halfWidth95": 0.005052889775681082,
+          "baseRtp": 0.80099345,
+          "bonusRtp": 0.15666054,
+          "bonusRate": 0.016037,
+          "flag": "not_flagged_by_screening"
+        },
+        {
+          "seed": 9217431,
+          "rounds": 1000000,
+          "totalDebitUnits": 10000000000,
+          "totalCreditUnits": 9544111400,
+          "sumSquaredReturn": 7435192.267204627,
+          "baseCreditUnits": 8006063000,
+          "bonusCreditUnits": 1538048400,
+          "bonusRounds": 15825,
+          "freeSpins": 162992,
+          "frames": 1793686,
+          "cappedRounds": 0,
+          "maximumReturn": 94.32,
+          "maximumPins": 6,
+          "rtp": 0.95441114,
+          "interval95": [
+            0.9494047696741373,
+            0.9594175103258628
+          ],
+          "halfWidth95": 0.005006370325862746,
+          "baseRtp": 0.8006063,
+          "bonusRtp": 0.15380484,
+          "bonusRate": 0.015825,
+          "flag": "not_flagged_by_screening"
+        },
+        {
+          "seed": 18254161,
+          "rounds": 1000000,
+          "totalDebitUnits": 10000000000,
+          "totalCreditUnits": 9580540300,
+          "sumSquaredReturn": 7532896.432704661,
+          "baseCreditUnits": 8029919900,
+          "bonusCreditUnits": 1550620400,
+          "bonusRounds": 15978,
+          "freeSpins": 164555,
+          "frames": 1798018,
+          "cappedRounds": 0,
+          "maximumReturn": 85.63,
+          "maximumPins": 6,
+          "rtp": 0.95805403,
+          "interval95": [
+            0.95301296657385,
+            0.96309509342615
+          ],
+          "halfWidth95": 0.005041063426149939,
+          "baseRtp": 0.80299199,
+          "bonusRtp": 0.15506204,
+          "bonusRate": 0.015978,
+          "flag": "not_flagged_by_screening"
+        }
+      ],
+      "serverCrosschecks": [
+        {
+          "seed": 28102026,
+          "rounds": 1000,
+          "bonusRounds": 15,
+          "freeSpins": 150
+        },
+        {
+          "seed": 9217431,
+          "rounds": 1000,
+          "bonusRounds": 17,
+          "freeSpins": 176
+        },
+        {
+          "seed": 18254161,
+          "rounds": 1000,
+          "bonusRounds": 23,
+          "freeSpins": 234
+        }
+      ],
+      "allStakeServerCrosschecks": [
+        {
+          "stake": "100",
+          "rounds": 15
+        },
+        {
+          "stake": "200",
+          "rounds": 15
+        },
+        {
+          "stake": "300",
+          "rounds": 15
+        },
+        {
+          "stake": "500",
+          "rounds": 15
+        },
+        {
+          "stake": "1000",
+          "rounds": 15
+        },
+        {
+          "stake": "2000",
+          "rounds": 15
+        },
+        {
+          "stake": "2500",
+          "rounds": 15
+        },
+        {
+          "stake": "5000",
+          "rounds": 15
+        },
+        {
+          "stake": "10000",
+          "rounds": 15
+        },
+        {
+          "stake": "20000",
+          "rounds": 15
+        },
+        {
+          "stake": "25000",
+          "rounds": 15
+        },
+        {
+          "stake": "50000",
+          "rounds": 15
+        },
+        {
+          "stake": "100000",
+          "rounds": 15
+        }
+      ],
+      "bonusReturnPerTriggeredRound": 9.730924331103678
+    }
+  ],
+  "walletChecks": [
+    {
+      "game": "studio-nitro-run",
+      "walletPath": "NileGameRuntime",
+      "seed": 8,
+      "stakeUnits": "100",
+      "freeSpins": 8,
+      "returnedUnits": "1105",
+      "restored": true,
+      "invalidPurchaseRejected": true,
+      "duplicateStartReplayedWithoutDraw": true,
+      "staleRevisionRejected": true,
+      "stakeChangeRejected": true,
+      "duplicateFinalMoveReplayedWithoutDraw": true,
+      "newMoveAfterSettlementRejected": true,
+      "ledgerReconciled": true
+    },
+    {
+      "game": "studio-meme-overload",
+      "walletPath": "NileGameRuntime",
+      "seed": 8,
+      "stakeUnits": "100",
+      "freeSpins": 8,
+      "returnedUnits": "1105",
+      "restored": true,
+      "invalidPurchaseRejected": true,
+      "duplicateStartReplayedWithoutDraw": true,
+      "staleRevisionRejected": true,
+      "stakeChangeRejected": true,
+      "duplicateFinalMoveReplayedWithoutDraw": true,
+      "newMoveAfterSettlementRejected": true,
+      "ledgerReconciled": true
+    },
+    {
+      "game": "studio-afterglow",
+      "walletPath": "NileGameRuntime",
+      "seed": 15,
+      "stakeUnits": "100",
+      "freeSpins": 8,
+      "returnedUnits": "3151",
+      "restored": true,
+      "invalidPurchaseRejected": true,
+      "duplicateStartReplayedWithoutDraw": true,
+      "staleRevisionRejected": true,
+      "stakeChangeRejected": true,
+      "duplicateFinalMoveReplayedWithoutDraw": true,
+      "newMoveAfterSettlementRejected": true,
+      "ledgerReconciled": true
+    },
+    {
+      "game": "studio-last-convoy",
+      "walletPath": "NileGameRuntime",
+      "seed": 29,
+      "stakeUnits": "100",
+      "freeSpins": 10,
+      "returnedUnits": "436",
+      "restored": true,
+      "invalidPurchaseRejected": true,
+      "duplicateStartReplayedWithoutDraw": true,
+      "staleRevisionRejected": true,
+      "stakeChangeRejected": true,
+      "duplicateFinalMoveReplayedWithoutDraw": true,
+      "newMoveAfterSettlementRejected": true,
+      "ledgerReconciled": true
+    }
+  ],
+  "demoWalletChecks": [
+    {
+      "game": "studio-nitro-run",
+      "walletPath": "DemoWalletStore",
+      "seed": 8,
+      "stakeUnits": "100",
+      "freeSpins": 8,
+      "returnedUnits": "1105",
+      "restored": true,
+      "invalidPurchaseRejected": true,
+      "duplicateStartReplayedWithoutDraw": true,
+      "staleRevisionRejected": true,
+      "stakeChangeRejected": true,
+      "duplicateFinalMoveReplayedWithoutDraw": true,
+      "newMoveAfterSettlementRejected": true,
+      "ledgerReconciled": true
+    },
+    {
+      "game": "studio-meme-overload",
+      "walletPath": "DemoWalletStore",
+      "seed": 8,
+      "stakeUnits": "100",
+      "freeSpins": 8,
+      "returnedUnits": "1105",
+      "restored": true,
+      "invalidPurchaseRejected": true,
+      "duplicateStartReplayedWithoutDraw": true,
+      "staleRevisionRejected": true,
+      "stakeChangeRejected": true,
+      "duplicateFinalMoveReplayedWithoutDraw": true,
+      "newMoveAfterSettlementRejected": true,
+      "ledgerReconciled": true
+    },
+    {
+      "game": "studio-afterglow",
+      "walletPath": "DemoWalletStore",
+      "seed": 15,
+      "stakeUnits": "100",
+      "freeSpins": 8,
+      "returnedUnits": "3151",
+      "restored": true,
+      "invalidPurchaseRejected": true,
+      "duplicateStartReplayedWithoutDraw": true,
+      "staleRevisionRejected": true,
+      "stakeChangeRejected": true,
+      "duplicateFinalMoveReplayedWithoutDraw": true,
+      "newMoveAfterSettlementRejected": true,
+      "ledgerReconciled": true
+    },
+    {
+      "game": "studio-last-convoy",
+      "walletPath": "DemoWalletStore",
+      "seed": 29,
+      "stakeUnits": "100",
+      "freeSpins": 10,
+      "returnedUnits": "436",
+      "restored": true,
+      "invalidPurchaseRejected": true,
+      "duplicateStartReplayedWithoutDraw": true,
+      "staleRevisionRejected": true,
+      "stakeChangeRejected": true,
+      "duplicateFinalMoveReplayedWithoutDraw": true,
+      "newMoveAfterSettlementRejected": true,
+      "ledgerReconciled": true
+    }
+  ],
+  "auditScriptSha256": "05dcbea616d4e49594d0f47c52da25e8f4ff8c827a94d319eb6d85993069aed4",
+  "reproduction": {
+    "simulation": "ROYAL_GIT_BINARY=/Library/Developer/CommandLineTools/usr/bin/git node --import tsx scripts/game-math/audit-native-bonuses.mjs --rounds 1000000 --crosscheck 1000",
+    "productionWallet": "ROYAL_GIT_BINARY=/Library/Developer/CommandLineTools/usr/bin/git node --import tsx scripts/database-test.ts --import tsx scripts/game-math/audit-native-bonuses.mjs --demo-wallet-only",
+    "optionalNileWallet": "ROYAL_GIT_BINARY=/Library/Developer/CommandLineTools/usr/bin/git node --import tsx scripts/database-test.ts --import tsx scripts/game-math/audit-native-bonuses.mjs --wallet-only"
+  },
+  "findings": [
+    {
+      "severity": "information",
+      "games": [
+        "studio-nitro-run",
+        "studio-meme-overload",
+        "studio-last-convoy",
+        "studio-afterglow"
+      ],
+      "text": "Only normal mode is accepted. No paid bonus purchase or boost mode exists in these current engines. Every free continuation uses the immutable accepted stake and final accumulated payout is credited once."
+    },
+    {
+      "severity": "information",
+      "games": [
+        "studio-afterglow"
+      ],
+      "text": "About 55 percent of total payout in this sample comes from naturally triggered bonuses. Sticky WILDs and persistent cell multipliers intentionally concentrate payout in free spins; full paid-round expectation remains below 100 percent in this screening."
+    },
+    {
+      "severity": "limitation",
+      "text": "These legacy engines do not have registered formal qualification profiles. This audit is statistical screening with independent paid rounds and approximate normal 95 percent confidence limits, not formal qualification or an exact RTP proof."
+    }
+  ]
+}
