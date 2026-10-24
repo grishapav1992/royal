@@ -44,7 +44,7 @@ export class Activities {
       const activity=ACTIVITIES[v.id];if(Math.hypot(p.x-activity.entry.x,p.y-activity.entry.y)>65){this.notice(id,'Сначала подойди ближе.');return;}
       if(v.id==='piano'){
         if(this.pianist){this.notice(id,'За роялем уже играют. Можно послушать и подождать.');return;}
-        this.pianist=id;p.x=120;p.y=334;p.seat='piano';p.action='sit';p.facing='up';
+        this.pianist=id;p.x=ACTIVITIES.piano.seat.x;p.y=ACTIVITIES.piano.seat.y;p.seat='piano';p.action='sit';p.facing='up';
       }else if(!(v.id==='mortal-kombat'?this.combat?.join(id):v.id==='chess'?this.chess.join(id):this.tables.find(t=>t.state.id===v.id)!.join(id))){this.notice(id,'Оба места заняты. Можно наблюдать за партией.');return;}
       this.stop(id);p.activity=v.id;p.playing=true;this.changed();return;
     }
@@ -71,7 +71,7 @@ export class Activities {
   leave(id:string,force=false){
     if(!force&&[...this.wagers.values()].some(ids=>ids.includes(id)))return;
     const p=this.player(id);this.combat?.leave(id);this.tables.forEach(t=>t.leave(id));this.chess.leave(id);
-    if(this.pianist===id){for(const note of this.notes.keys())this.broadcast('piano-note',{note,down:false,player:id},'arcade');this.notes.clear();this.noteTimes=[];this.pianist='';if(p){p.x=120;p.y=340;p.seat='';p.action='idle';}}
+    if(this.pianist===id){for(const note of this.notes.keys())this.broadcast('piano-note',{note,down:false,player:id},'arcade');this.notes.clear();this.noteTimes=[];this.pianist='';if(p){p.x=ACTIVITIES.piano.entry.x;p.y=ACTIVITIES.piano.entry.y;p.seat='';p.action='idle';}}
     if(p?.activity){p.activity='';p.playing=false;}this.changed();
   }
   disconnect(id:string){if(this.player(id)?.activity==='mortal-kombat')this.combat?.disconnect(id);else this.leave(id);}
