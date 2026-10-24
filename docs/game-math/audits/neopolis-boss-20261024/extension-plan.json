@@ -1,0 +1,18 @@
+{
+  "reason": "One hero in the first independent batch is 0.0487 percentage points above the observed-mean tolerance. Preserve that result and collect one fixed second batch for all heroes, then pool independent cycle moments regardless of the outcome.",
+  "additionalSeeds": [
+    2026102437,
+    2026102453
+  ],
+  "cyclesPerSeedPerHero": 10000,
+  "additionalBatches": 1,
+  "selectionRule": "No seed changes or repeated sampling until a preferred result.",
+  "cancelledGenerator": "mulberry32",
+  "cancellationReason": "Closely related seeds in the same additive 32-bit state generator can reuse overlapping portions of its cycle. Do not pool that extension as independent evidence.",
+  "replacementGenerator": "AES-256-CTR with a distinct SHA-256-derived key for each declared seed, zero IV and a continuous byte stream",
+  "replacementSeeds": [
+    2026102437,
+    2026102453
+  ],
+  "replacementPlannedAt": "2026-10-24T12:11:39.384703+00:00"
+}

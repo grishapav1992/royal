@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-24T12:29:31.195Z",
+  "sourceCommit": "2ee0e1c34cb06b2738b5f59ec6d7215c342f0126",
+  "integratedMain": "45097fc49623ed84ab9d4f65a5c2fcae03b610c1",
+  "gameMathAndUiChanged": false,
+  "productionWrites": false,
+  "tests": {
+    "slotBalance": {
+      "command": "npm run test:slot-balance",
+      "passed": 45,
+      "failed": 0,
+      "recheckedAfterIntegration": true,
+      "completedAt": "2026-10-24T12:28:43.118Z"
+    },
+    "browser": {
+      "command": "npx playwright test --config playwright.neopolis.config.ts",
+      "passed": 10,
+      "failed": 0,
+      "completedAt": "2026-10-24T12:10:34.392Z",
+      "scope": "Temporary local PostgreSQL and virtual coins; actual host with chat, desktop/mobile, RU/EN, recovery, all three bosses, Dracona, presentation events"
+    },
+    "rtpGate": {
+      "command": "npm run check:rtp",
+      "verifiedProfiles": 9,
+      "unchangedLegacyModules": 114
+    },
+    "summary": {
+      "uniquePaidRounds": 15110911,
+      "completeCampaigns": 120000,
+      "freeSpins": 5370025,
+      "allRowsWithinRegisteredBudget": true,
+      "retainedFirstBatchBudgetFailure": true
+    }
+  },
+  "moduleBuilds": [
+    {
+      "gameId": "studio-neopolis",
+      "version": "0.4.0-163734723aa6",
+      "files": 13
+    },
+    {
+      "gameId": "studio-dracona",
+      "version": "1.1.0-8d5a6d5ae018",
+      "files": 29
+    }
+  ],
+  "sourceHashes": {
+    "src/shared/neopolisMath.ts": "e32db65f28cb4cac308d07154fb56f7816fc630c82a7548e1733ad34e0a91820",
+    "src/shared/neopolisMathV1.ts": "84adb49d9303b29bd8a460b30b7e6993d77df343f8dae33025a0646f7ca3bb92",
+    "src/shared/neopolisMathV2.ts": "22c2d4646ea2ac8db021bde42fcb90b38035848041cea217acd1d9eeb2682692",
+    "src/shared/neopolis.ts": "f18d7309bb4be35655239b506dc04ca5cfea81f9e3bf63da31acbdac08b509ce",
+    "server/games/neopolis.ts": "4c2a411cc151474090c496ab78b9d9fc1c293d81e1e8e87e4dd50cefec865119",
+    "scripts/game-math/rtp-simulation.mjs": "b5c74c5d41dc3ec173a7ee7ec0f42ee8842c433e58ac6a12828ed07b68de57b8"
+  },
+  "uiSourceSha256": "411c9cf5e364c7d8ce154fc9d1ac79db46cf99a8525cf233b7977da7a884b6c7",
+  "productionObservation": {
+    "readOnly": true,
+    "hostImage": "sha256:84d643da5eab7e9c368a7861040740df4911d5cd8b8d23dbf22341b805b4dcc5",
+    "moduleVersion": "0.4.0-449b44ba4fb6",
+    "moduleManifestSha256": "3fdb4744a50ebe34d3fd3a0313b1fcf7f6fd2b4065a63370e07a744e3fde6c68"
+  }
+}

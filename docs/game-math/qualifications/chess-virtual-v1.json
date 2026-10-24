@@ -3,17 +3,18 @@
   "gameId": "chess",
   "rulesVersion": 1,
   "progressVersion": 1,
-  "startedAt": "2026-10-24T06:53:40.412Z",
-  "completedAt": "2026-10-24T06:53:41.103Z",
+  "startedAt": "2026-10-24T12:19:59.486Z",
+  "completedAt": "2026-10-24T12:20:00.100Z",
   "sourceHashes": {
     "src/shared/pvp.ts": "d20cd82ca7f1c8cd20d25daa3e420519a42993a8583924e38d9e67d3cd8f31b3",
-    "server/pvp/store.ts": "0767b23fccb351785c885f64728816dcf05a43e41d4f438a5ee76c9b27b928c7",
+    "server/pvp/store.ts": "ddd870a28f9ace119fd9aeb2ecdda22711024124d5700f5f5f2ed8a29ad9390b",
     "server/pvp/cards.ts": "42db70683726228f6ab2217c7ef48b269cf372368950faa9f4555825880f6cf0",
     "server/finance/pvp-money.ts": "14708dc154295ba2baaadf0b9dbe54a7a225b30267d2358ad2aecb729c6db614",
-    "server/pvp/virtual-wallet.ts": "4d9382d1f412ca325f98eac3b4fe6e2053d32628d563a137ac2af4320e04f045",
+    "server/pvp/virtual-wallet.ts": "03cfccc604a2748c7b7e4c461adb56c6dfd0e72265726104fd8a96697570327c",
+    "server/finance/nile-play-error.ts": "20a472d05d7517035771156ccd4c778e699cdf3b0e27d3c693e8d4f39c197e57",
     "scripts/game-math/rtp-virtual-pvp.mjs": "9a63eb3aa5272dfa62d6314a3fa7b2102a91c27261fd837026a9560e98b75403"
   },
-  "policySha256": "3cd2f88e5391d350ece7cdfb5dc35676e93a2aa36fcaa0692cb6b1ebda75d441",
+  "policySha256": "f72afec18027436f505a597d2507e970b31cfc385129857c6f56877f8c2136c4",
   "serverReplayChecks": 119784,
   "method": "exhaustive-virtual-pvp-pot",
   "results": [

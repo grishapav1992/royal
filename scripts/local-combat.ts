@@ -1,22 +1,10 @@
-/** Synthetic Nile fixture for isolated browser verification. Never use with production data. */
-import { randomUUID } from 'node:crypto';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
-import { unlink } from 'node:fs/promises';
-import { pvpFixture } from '../server-tests/finance/helpers/nile-pvp-fixture';
-import { createNilePlayServer } from '../server/finance/nile-play-service';
+/** Disposable common-wallet fixture. No blockchain or production data. */
 if(process.env.NODE_ENV!=='test')throw Error('This fixture requires the isolated database test runner');
-const socket=join(tmpdir(),'royal-combat-'+randomUUID()+'.sock');
-process.env.NILE_PLAY_SOCKET_FILE=socket;
+process.env.NILE_PLAY_SOCKET_FILE='';
 process.env.AUTH_DB_PATH='combat_test_accounts';
 const {accounts}=await import('../server/accounts');
 await accounts.ready;
 const a=await accounts.login('combat-local-a@example.test','Royal-test-123!');
 const b=await accounts.login('combat-local-b@example.test','Royal-test-123!');
 await accounts.select(a.account.id,0,'Анна');await accounts.select(b.account.id,1,'Борис');
-const c=await pvpFixture([a.account.id,b.account.id]);
-const financial=createNilePlayServer(c.ledger);financial.listen(socket);
-await new Promise<void>(resolve=>financial.once('listening',resolve));
-const sync=setInterval(()=>{void(async()=>{await c.source.success();await c.ledger.sync(c.source,await c.reconciliation());})().catch(()=>{});},30000);sync.unref();
-process.once('SIGTERM',()=>{clearInterval(sync);void new Promise<void>(resolve=>financial.close(()=>resolve())).then(()=>c.close()).then(()=>unlink(socket).catch(()=>{}));});
 await import('../server/index');

@@ -1,7 +1,7 @@
 /** Test stand only: seeded entropy through the real transactional wallet service. Never mounted by production. */
 import type { Plugin } from 'vite';
 import { PostgresDatabase, databaseConfig } from '../server/database';
-import { DemoWalletStore } from '../server/demoWallet';
+import { DemoWalletStore, WalletError } from '../server/demoWallet';
 import { DemoExpansionStore } from '../server/demoExpansion';
 import { seededRandom } from '../src/shared/draconaMath';
 
@@ -34,7 +34,7 @@ export function neopolisTestRng(api:string, environment:NodeJS.ProcessEnv, seede
           }
         } else {res.statusCode=405;res.end();return;}
         res.setHeader('Content-Type','application/json');res.end(JSON.stringify(reply));
-      }catch(error){res.statusCode=400;res.end(JSON.stringify({error:error instanceof Error?error.message:'Fixture failed'}));}
+      }catch(error){res.statusCode=error instanceof WalletError?error.status:400;res.end(JSON.stringify({error:error instanceof Error?error.message:'Fixture failed'}));}
     });
     server.httpServer?.once('close',()=>{void db?.close();});
   }};

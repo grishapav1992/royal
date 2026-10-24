@@ -5,6 +5,7 @@ import json
 import shutil
 import subprocess
 import tarfile
+import re
 
 ROOT = Path(__file__).resolve().parents[3]
 WORK = ROOT / 'artifacts/work/pvp-virtual-usdt'
@@ -92,6 +93,9 @@ manifest = {'release': NAME, 'sourceCommit': release['sourceCommit'], 'baseCommi
     'before': old, 'changed': changed, 'delta': delta, 'serverDelta': {'index.js': sha(ROOT / 'dist-server/index.js')},
     'helperSha256': sha(OUT / 'deploy.py'), 'snapshotSha256': sha(OUT / 'snapshot.py'),
     'modulesHelperSha256': sha(OUT / 'modules.py'), 'moduleDelta': module_delta, 'modulePackages': packages}
+bundle=(ROOT/'dist-server/index.js').read_text(encoding='utf-8')
+manifest['externalImports']=sorted(set(re.findall(r'^import\s+(?:[^;\'"]*?\s+from\s+)?[\'"]([^\'"]+)[\'"]',bundle,re.M)))
+assert manifest['externalImports'] and all(not name.startswith(('.', '/')) for name in manifest['externalImports'])
 (OUT / 'install-manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
 with tarfile.open(WORK / 'transport.tgz', 'w:gz') as archive:
     for file in sorted(OUT.rglob('*')):
