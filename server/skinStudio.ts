@@ -27,7 +27,9 @@ export class SkinStudioStore {
       "ALTER TABLE skin_jobs ADD COLUMN IF NOT EXISTS lease_token TEXT NOT NULL DEFAULT ''",
     ] })).then(() => applySchemaMigration(db, { id: 'skin-studio-variants-v3', statements: [
       'ALTER TABLE skin_jobs ADD COLUMN IF NOT EXISTS variant_count INTEGER NOT NULL DEFAULT 3 CHECK(variant_count IN (2,3))',
-    ] }));
+    ] })).then(()=>applySchemaMigration(db,{id:'skin-studio-payment-source-v1',statements:[
+      "ALTER TABLE skin_jobs ADD COLUMN payment_source TEXT NOT NULL DEFAULT 'nile' CHECK(payment_source IN ('nile','virtual-usdt-v1'))",
+    ]}));
   }
   enabled() { return this.paymentEnabled() && this.images.available(); }
   private card(row: DatabaseRow) { return { id: String(row.id), jobId: String(row.job_id), prompt: String(row.prompt), createdAt: Number(row.created_at) }; }
@@ -63,7 +65,7 @@ export class SkinStudioStore {
       if (await this.db.prepare(`SELECT 1 FROM skin_jobs WHERE account_id=? AND state IN ${ACTIVE}`).get(accountId)) fail(409, 'Сначала дождись генерации и выбери один образ.');
       const recent = await this.db.prepare('SELECT count(*) AS n FROM skin_jobs WHERE account_id=? AND created_at>?').get(accountId, this.now() - 3600000);
       if (Number(recent?.n) >= 10) fail(429, 'Доступно до 10 генераций в час. Попробуй позже.');
-      await this.db.prepare("INSERT INTO skin_jobs(id,account_id,theme,prompt,state,created_at,variant_count) VALUES (?,?,?,?,'reserving',?,?)")
+      await this.db.prepare("INSERT INTO skin_jobs(id,account_id,theme,prompt,state,created_at,variant_count,payment_source) VALUES (?,?,?,?,'reserving',?,?,'virtual-usdt-v1')")
         .run(op.id, accountId, SKIN_THEME.id, prompt, this.now(), SKIN_VARIANTS);
     }, { lockKey: 'skin:' + accountId });
     return this.snapshot(accountId);

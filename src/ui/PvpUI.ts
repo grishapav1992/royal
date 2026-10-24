@@ -1,10 +1,10 @@
 import { PvpClient } from '../network/PvpClient';
 import { ACTIVITIES, type ActivityId } from '../shared/activities';
-import { PVP_GAMES, isPvpCardGame, pvpPayout, type PvpChallenge, type PvpGameId, type PvpRequest } from '../shared/pvp';
+import { PVP_GAMES, isPvpCardGame, pvpPayout, validVirtualPvpWallet, validVirtualPvpStake, type PvpChallenge, type PvpGameId, type PvpRequest } from '../shared/pvp';
 import { activityHall, hallLinks, type HallId } from '../shared/world';
 import { formatNileUnits } from '../shared/nileWallet';
 import { usdtUnits } from '../shared/cryptoWallet';
-import { nilePlay } from '../wallet/NilePlayClient';
+import { demoWallet } from '../wallet/WalletClient';
 import { IndependentGameUI } from '../modules/IndependentGameUI';
 import type { RoomScene } from '../game/RoomScene';
 import type { ActivitiesUI } from './ActivitiesUI';
@@ -44,7 +44,7 @@ export class PvpUI {
     this.dialog.append(this.body);document.body.append(this.dialog);this.moduleRoot=this.body.querySelector('[data-card-module]')!;
     registerGameChatDialog(this.dialog);
     this.body.querySelector<HTMLButtonElement>('[data-close]')!.onclick=()=>this.dialog.close();
-    this.body.querySelector<HTMLButtonElement>('[data-wallet]')!.onclick=()=>window.dispatchEvent(new Event('royal-open-nile-wallet'));
+    this.body.querySelector<HTMLButtonElement>('[data-wallet]')!.onclick=()=>{this.dialog.close();window.dispatchEvent(new Event('royal-open-wallet'));};
     this.body.querySelector<HTMLButtonElement>('[data-retry]')!.onclick=()=>this.client.retry();
     this.dialog.addEventListener('close',()=>{this.module?.destroy();this.module=undefined;this.moduleId='';this.scene.setLocked(!!document.querySelector('dialog[open]'));});
     const form=this.body.querySelector<HTMLFormElement>('[data-create]')!;
@@ -65,8 +65,9 @@ export class PvpUI {
   private show(){this.scene.setLocked(true);if(!this.dialog.open)this.dialog.showModal();this.update();}
   private preview(){
     try{const stake=usdtUnits(this.body.querySelector<HTMLInputElement>('[name=stake]')!.value.trim().replace(',','.')),payout=pvpPayout(stake);
+      if(!validVirtualPvpStake(stake))throw Error();
       this.body.querySelector('[data-preview]')!.textContent=`Оба ставят по ${money(stake)}. Банк ${money(payout.potUnits)}. Победителю ${money(payout.payoutUnits)}, казино ${money(payout.feeUnits)}.`;
-    }catch{this.body.querySelector('[data-preview]')!.textContent='Ставка от 1 до 500 USDT, с точностью до 0,01 USDT.';}
+    }catch{this.body.querySelector('[data-preview]')!.textContent='Ставка от 1 до 500 USDT с шагом 0,10 USDT.';}
   }
   private action(action:'accept'|'cancel'|'ready'|'resign',id:string){this.run(()=>this.client.send({id:crypto.randomUUID(),action,challengeId:id}));}
   private update(){
@@ -79,7 +80,7 @@ export class PvpUI {
     this.moduleRoot.hidden=c?.status!=='playing';
     this.button.hidden=!self;
     this.button.textContent=c&&['open','arriving','playing'].includes(c.status)?'Мой поединок':`Поединки${snapshot?.challenges.some(c=>c.status==='open'&&c.creatorId!==self)?' · Есть вызовы':''}`;
-    if(snapshot&&self)nilePlay.acceptWallet(self,snapshot.wallet);
+    if(snapshot&&self&&validVirtualPvpWallet(snapshot.wallet))demoWallet.acceptExternalWallet(self,snapshot.wallet.wallet);
     const wallet=snapshot?.wallet;
     this.body.querySelector('[data-balance]')!.textContent=wallet?.state==='assigned'?money(wallet.balanceUnits):'Кошелёк не подключён';
     this.body.querySelector('[data-reserved]')!.textContent=wallet?.state==='assigned'&&wallet.reservedUnits&&wallet.reservedUnits!=='0'?'В ставках: '+money(wallet.reservedUnits):'';

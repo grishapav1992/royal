@@ -17,7 +17,6 @@ import { isExpansionGame, EXPANSION_NAMES } from './shared/casinoExpansion';
 import { isSessionGame } from './shared/casinoSessions';
 import { ClubMap } from './ui/ClubMap';
 import { DemoWalletUI } from './ui/DemoWalletUI';
-import { NileWalletUI } from './ui/NileWalletUI';
 import { MiraChat } from './ui/MiraChat';
 import { isGithubGame } from './shared/githubGames';
 import './demo-preview.css';
@@ -265,7 +264,6 @@ const room = new RoomScene({
       const i=CABINETS.indexOf(c);
       const img = document.createElement('img'); img.src = game.textures.getBase64(`cabinet-${i}`); img.alt = ''; document.querySelector(`#art-${artIndex}`)?.append(img);
     });
-    new NileWalletUI(room);
     new DemoWalletUI(room);
     const portrait = document.createElement('img'); portrait.src = game.textures.getBase64('citizen-0', 'down-6'); portrait.alt = ''; $('#player-portrait').append(portrait);
     if (!offline) social = new SocialUI(room, toast);

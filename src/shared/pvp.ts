@@ -1,5 +1,18 @@
 import { gameAccountId, nileUnits } from './nileWallet';
 import type { NilePlayWallet } from './nilePlay';
+import type { DemoWallet } from './demoWallet';
+
+export const VIRTUAL_PVP_SCOPE = 'virtual-usdt-v1' as const;
+export type VirtualPvpWallet = { scope: typeof VIRTUAL_PVP_SCOPE; state:'assigned'; ready:true;
+  balanceUnits:string; reservedUnits:string; wallet:DemoWallet };
+export function validVirtualPvpWallet(value: unknown): value is VirtualPvpWallet {
+  const row=value as VirtualPvpWallet;
+  return !!row && row.scope===VIRTUAL_PVP_SCOPE && row.state==='assigned' && row.ready===true
+    && nileUnits(row.balanceUnits) && nileUnits(row.reservedUnits) && !!row.wallet
+    && !row.wallet.asset && Number.isFinite(row.wallet.balance) && row.wallet.balance>=0 && Array.isArray(row.wallet.entries)
+    && BigInt(row.balanceUnits)===BigInt(Math.round(row.wallet.balance*100))*10000n;
+}
+export const validVirtualPvpStake = (value:unknown):value is string => validPvpStake(value) && BigInt(value)%100000n===0n;
 
 export const PVP_GAMES = {
   hockey: 'Аэрохоккей', pool: 'Бильярд', chess: 'Шахматы',
@@ -46,17 +59,18 @@ export type PvpChallenge = {
   createdAt: number; expiresAt: number; ready: string[]; winnerId: string | null;
   reason: string; revision: number; disconnected: { accountId: string; until: number }[];
 };
-export type PvpRequest = { id: string; action: 'create'; gameId: PvpGameId; stakeUnits: string; targetId: string | null }
+export type PvpRequest = ({ id: string; action: 'create'; gameId: PvpGameId; stakeUnits: string; targetId: string | null }
   | { id: string; action: 'accept' | 'cancel' | 'ready' | 'resign'; challengeId: string }
-  | { id: string; action: 'move'; challengeId: string; revision: number; move: PvpCardMove };
+  | { id: string; action: 'move'; challengeId: string; revision: number; move: PvpCardMove }) & { walletScope?:typeof VIRTUAL_PVP_SCOPE };
 export type PvpPerson = { accountId: string; name: string; available: boolean };
 export type PvpSnapshot = { challenges: PvpChallenge[]; active: PvpChallenge | null; cards: PvpCardView | null;
-  people: PvpPerson[]; wallet: NilePlayWallet; now: number; error?: string; requestId?: string };
+  people: PvpPerson[]; wallet: NilePlayWallet | VirtualPvpWallet; now: number; error?: string; requestId?: string };
 export function validPvpRequest(value: unknown): value is PvpRequest {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
   const row = value as PvpRequest;
   if (!gameAccountId(row.id)) return false;
-  const keys = Object.keys(row).sort().join(',');
+  if(row.walletScope!==undefined && row.walletScope!==VIRTUAL_PVP_SCOPE)return false;
+  const keys = Object.keys(row).filter(k=>k!=='walletScope').sort().join(',');
   if (row.action === 'create') return keys === 'action,gameId,id,stakeUnits,targetId' && isPvpGame(row.gameId)
     && validPvpStake(row.stakeUnits) && (row.targetId === null || gameAccountId(row.targetId));
   if (!('challengeId' in row) || !gameAccountId(row.challengeId)) return false;
