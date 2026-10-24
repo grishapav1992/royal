@@ -19,13 +19,14 @@ export class PvpRoom {
   private stopped=false;
   private outstanding=new Map<string,string>();
   private attempts=new Map<string,{at:number;n:number}>();
-  constructor(private host:Host,private socket=process.env.NILE_PLAY_SOCKET_FILE){
+  constructor(private host:Host,private socket:string|((account:string,action:string,value:unknown)=>Promise<{status:number;value:any}>)|undefined=process.env.NILE_PLAY_SOCKET_FILE){
     host.activities.canJoin=(session,game)=>!this.matches.some(c=>c.gameId===game&&['arriving','playing'].includes(c.status))
       ||this.matches.some(c=>c.gameId===game&&c.status==='playing'&&this.host.people().some(p=>p.sessionId===session&&(p.accountId===c.creatorId||p.accountId===c.opponentId)));
   }
   locked(session:string){return [...this.host.activities.wagers.values()].some(ids=>ids.includes(session));}
   private async call(account:string,action:string,value:unknown){
     if(!this.socket)throw Error('Тестовый USDT пока не подключён.');
+    if(typeof this.socket==='function')return this.socket(account,action,value);
     return playCommand(this.socket,account,action,value);
   }
   async command(session:string,value:unknown){

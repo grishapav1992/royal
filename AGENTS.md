@@ -12,6 +12,16 @@
 - Read the fetched `origin/main:AGENTS.md` when local instructions differ, and apply its current project rules together with applicable local instructions. Do not request confirmation for routine fetching, clean fast-forward updates or creating an isolated worktree within the authorized task.
 - Fetch again before integrating, pushing or publishing, and reconcile changes made by other chats. If fetching fails, report that freshness could not be verified; do not claim that the checkout is current or silently publish from an outdated base.
 
+## Local storage: current version only
+
+- The PC keeps one current working checkout. GitHub stores source history and unfinished work in pushed feature or WIP branches. Do not create or retain local project backup ZIP/TAR files, full source staging copies, dependency copies or permanent folders for completed tasks.
+- Before deleting a checkout, preserve its unique current source, required assets and unpublished commits in GitHub and verify the remote commit. Do not treat a local-only commit, branch, recovery ref or successful fetch as proof that GitHub has the work. Preserve active work and files changed since the cleanup inventory.
+- Use the current checkout and normal build directories. A temporary isolated Git worktree is allowed only while actual concurrent work requires it; reuse a suitable clean checkout when possible. After saving its work in GitHub, remove the extra worktree and its task-owned build outputs. Do not leave full release source copies on the PC after a task ends.
+- Use one task-owned temporary directory under artifacts/work/<task-id>/ with owner, purpose and cleanup condition. Aim for at most 2 GiB of temporary data. Delete task-owned release archives, obsolete builds, dependency copies, redundant screenshots, traces, videos and logs after verification, including after failed attempts. Keep only compact final reports when needed. Never use blanket deletion of artifacts or remove another chat's active work without preserving it.
+- Reuse normal build outputs and installed dependencies for the current checkout. Keep only the active local package per game; temporary older packages require a known running session and must be removed when it ends. Keep at least 10 GiB free locally and 5 GiB on the server; measure space before large builds, archives or publication.
+- Never put secrets, .env files, private keys, databases or player data into Git to replace a backup. Keep the current local environment and necessary current runtime data. This PC policy does not remove production rollback protection, financial backups, database backups or persistent server volumes.
+- Report the folders and archive sizes removed, free space before and after, GitHub commits used for preservation, and any active-work exceptions with their cleanup condition. Do not claim physical disk space was reclaimed unless measurements support it.
+
 ## Mandatory game mathematics qualification
 
 - Before adding a wagered game or changing probabilities, paytables, free spins, multipliers, collection progress or paid costs, register its RTP policy and qualify the complete paid round, including every bonus continuation, allowed stake and player choice. Preserve accepted rounds under their original rules.

@@ -1,4 +1,4 @@
-import { validPvpRequest, type PvpRequest, type PvpSnapshot } from '../shared/pvp';
+import { validPvpRequest, validVirtualPvpWallet, VIRTUAL_PVP_SCOPE, type PvpRequest, type PvpSnapshot } from '../shared/pvp';
 import { validNilePlayWallet } from '../shared/nilePlay';
 
 export class PvpClient extends EventTarget {
@@ -8,7 +8,7 @@ export class PvpClient extends EventTarget {
   private receivedAt=performance.now();
   now(){return this.snapshot?this.snapshot.now+performance.now()-this.receivedAt:Date.now();}
   constructor(private transport:(value:PvpRequest)=>boolean){super();}
-  private key(){return 'royal-pvp-request:'+this.accountId;}
+  private key(){return 'royal-pvp-virtual-request:'+this.accountId;}
   private notify(){this.dispatchEvent(new Event('change'));}
   setAccount(id:string|null){
     if(id===this.accountId)return;this.accountId=id;this.snapshot=undefined;this.pending=undefined;this.error='';
@@ -17,9 +17,8 @@ export class PvpClient extends EventTarget {
   }
   setConnected(value:boolean){this.connected=value;if(value&&this.pending)this.transport(this.pending);this.notify();}
   receive(value:PvpSnapshot){
-    if(!this.accountId||!value||!Array.isArray(value.challenges)||!Array.isArray(value.people)||!validNilePlayWallet(value.wallet))return;
+    if(!this.accountId||!value||!Array.isArray(value.challenges)||!Array.isArray(value.people)||!validVirtualPvpWallet(value.wallet))return;
     const previous=this.snapshot;
-    if(previous?.wallet.state==='assigned'&&value.wallet.state==='assigned'&&(previous.wallet.revision??0)>(value.wallet.revision??0))value={...value,wallet:previous.wallet};
     if(previous?.active&&value.active?.id===previous.active.id&&value.active.revision<previous.active.revision)value={...value,active:previous.active,cards:previous.cards};
     this.receivedAt=performance.now();this.snapshot=value;
     if(value.requestId===this.pending?.id){sessionStorage.removeItem(this.key());this.pending=undefined;this.error='';}
@@ -32,6 +31,7 @@ export class PvpClient extends EventTarget {
     this.notify();
   }
   send(op:PvpRequest){
+    op={...op,walletScope:VIRTUAL_PVP_SCOPE};
     if(!this.accountId||!this.connected)throw Error('Войди в онлайн-зал, чтобы играть с соперником.');
     if(this.pending)throw Error('Сначала проверь предыдущее действие.');
     if(!validPvpRequest(op))throw Error('Некорректное действие.');

@@ -31,6 +31,7 @@ export function validateRtpProof(gameId, inputs, proof) {
   assert.equal(proof.policySha256, inputs.policySha256, 'RTP policy changed: rerun qualification');
   assert.deepEqual(proof.sourceHashes, inputs.sourceHashes, 'RTP source changed: rerun qualification');
   if(p.method==='exhaustive-pvp-journal')return validatePvpProof(gameId,p,proof);
+  if(p.method==='exhaustive-virtual-pvp-pot')return validateVirtualPvpProof(gameId,p,proof);
   assert(p.target > 0 && p.target < 1 && p.maxUpper95 < 1 && p.tolerance <= .02);
   assert.equal(proof.results.length, p.stakes.length * p.choices.length, 'Every stake and choice must be qualified');
   const keys = new Set();
@@ -53,6 +54,27 @@ export function validateRtpProof(gameId, inputs, proof) {
     assert(proof.streams.some(stream => stream.choice === choice && stream.seed === expected));
   }
   assert(proof.serverReplayChecks >= p.stakes.length * p.choices.length * 64, 'Server replay cross-check is missing');
+  return true;
+}
+function validateVirtualPvpProof(gameId,p,proof){
+  assert(['hockey','pool','chess','durak','transfer-durak','crazy-eights'].includes(gameId));
+  assert.equal(p.target,.95);assert.equal(p.refundReturn,1);assert.equal(p.commissionBasisPoints,500);
+  assert.deepEqual(p.stakeRange,{min:1000000,max:500000000,step:100000});
+  assert.deepEqual(p.choices,['left-win','right-win','draw','cancel','disconnect-left','disconnect-right','expired','server']);
+  assert.equal(proof.method,p.method);assert.equal(proof.results.length,p.choices.length);
+  let replayChecks=0;
+  for(const [index,choice]of p.choices.entries()){
+    const hash=createHash('sha256');let cases=0,potTotal=0n,feeTotal=0n,returnTotal=0n;
+    for(let stake=p.stakeRange.min;stake<=p.stakeRange.max;stake+=p.stakeRange.step){
+      const pot=BigInt(stake)*2n,decisive=choice.includes('win')||choice.startsWith('disconnect');
+      const fee=decisive?pot*500n/10000n:0n,winner=choice==='right-win'||choice==='disconnect-right'?1:0;
+      const credits=decisive?[0,1].map(i=>i===winner?String(pot-fee):'0'):[String(stake),String(stake)];
+      hash.update(JSON.stringify([stake,credits,String(fee)])+'\n');cases++;potTotal+=pot;feeTotal+=fee;returnTotal+=pot-fee;
+    }
+    assert.deepEqual(proof.results[index],{choice,cases,potUnits:String(potTotal),feeUnits:String(feeTotal),returnedUnits:String(returnTotal),sha256:hash.digest('hex')});
+    replayChecks+=cases*3;
+  }
+  assert.equal(proof.serverReplayChecks,replayChecks);
   return true;
 }
 function validatePvpProof(gameId,p,proof){
