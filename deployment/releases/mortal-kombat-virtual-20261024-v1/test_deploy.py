@@ -96,6 +96,44 @@ class ChatReleaseTests(unittest.TestCase):
         helper.inventory = lambda path: {'source': helper.CHANGES, 'dist-delta': helper.DELTA,
                                          'server-delta': helper.SERVER_DELTA,'metadata':helper.M.get('runtimePackages',{})}[path.name]
 
+    def test_exact_backup_can_be_linked_and_survives_removing_the_original_name(self):
+        h = self.helper
+        self.backups()
+        candidate = h.BACKUP / 'source.tgz'
+        self.assertEqual(h.reusable_source_backup(candidate), candidate)
+        linked = h.BACKUP / 'linked.tgz'
+        h.os.link(candidate, linked, follow_symlinks=False)
+        candidate.unlink()
+        h.verify_tar(linked)
+
+    def test_backup_reuse_rejects_missing_modified_and_symlinked_archives(self):
+        h = self.helper
+        self.assertIsNone(h.reusable_source_backup(h.BACKUP / 'missing.tgz'))
+        self.backups()
+        candidate = h.BACKUP / 'source.tgz'
+        link = h.BACKUP / 'symlink.tgz'
+        link.symlink_to(candidate)
+        self.assertIsNone(h.reusable_source_backup(link))
+        h.OLD['source']['src/ui/SocialUI.ts'] = sha(b'different source')
+        self.assertIsNone(h.reusable_source_backup(candidate))
+
+    def test_wallet_backup_stream_keeps_exact_bytes_and_caps_disk_allocation(self):
+        h = self.helper
+        output = h.LIVE / 'wallet.dump'
+        h.bounded_dump([sys.executable, '-c', 'import sys;sys.stdout.buffer.write(bytes(range(128)))'], output, 128)
+        self.assertEqual(output.read_bytes(), bytes(range(128)))
+        output.unlink()
+        with self.assertRaisesRegex(RuntimeError, 'exceeds reserved capacity'):
+            h.bounded_dump([sys.executable, '-c', 'print("x"*1000000)'], output, 128)
+        self.assertFalse(output.exists())
+
+    def test_wallet_backup_failure_never_leaves_a_valid_looking_dump(self):
+        h = self.helper
+        output = h.LIVE / 'wallet.dump'
+        with self.assertRaisesRegex(RuntimeError, 'backup command failed'):
+            h.bounded_dump([sys.executable, '-c', 'import sys;print("partial");sys.exit(1)'], output, 128)
+        self.assertFalse(output.exists())
+
     def test_overlay_preserves_payment_crypto_dependencies_and_all_bundled_modules(self):
         helper = self.helper
         result = helper.expected_program()
