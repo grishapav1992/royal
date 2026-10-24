@@ -1,0 +1,209 @@
+{
+  "release": "mortal-kombat-virtual-20261024-v1",
+  "checkedAt": "2026-10-24T14:23:24.664773+00:00",
+  "sourceCommit": "ac364b2db6e8c107e296b3763aa63a5569c17406",
+  "productionBase": "83b3e6b71c504a32f2461261b6637cca9092c5b7",
+  "image": "sha256:c27ba8fb026ab5ea5189be1c4ca5cae14a144ec96bceb3b0c4c9452a3734dbbf",
+  "rollbackImage": "sha256:236d63ae4ac4f9801a2ad7a1a5a029b672ba6aa27a8b08378408d13b305f7749",
+  "wallet": {
+    "kind": "shared freely topped-up virtual USDT",
+    "backend": "existing demo-wallet and virtual PvP journal",
+    "nileRequired": false,
+    "sameStakeForBoth": true,
+    "winnerShareOfBank": 0.95,
+    "houseShareOfBank": 0.05,
+    "draw": "full refund"
+  },
+  "sourceChanges": 182,
+  "runtimeFiles": 3466,
+  "modules": {
+    "published": true,
+    "sourceCommit": "ac364b2db6e8c107e296b3763aa63a5569c17406",
+    "packages": [
+      {
+        "verified": true,
+        "gameId": "mortal-kombat",
+        "version": "1.0.0-44900a16e0fd",
+        "bytes": 358347,
+        "files": 107,
+        "beforeSha256": "none",
+        "hostProgramTouched": false,
+        "databaseTouched": false,
+        "restartRequired": false,
+        "published": true,
+        "operation": "install",
+        "activeSha256": "c13354c5cadca79fca1b984c6ffa96fc6c6e200a81bfac46cd8286c49df674db",
+        "history": "/opt/royal-game-modules-state/history/20261024T140351-1bbcfc0c8c2a49c6a7e8136928c6a91e.json"
+      },
+      {
+        "verified": true,
+        "gameId": "hockey",
+        "version": "1.0.0-aaad878aae69",
+        "bytes": 48042,
+        "files": 2,
+        "beforeSha256": "adf1c567eee8f9b7389a35f78f53134837091fc807890b9edfdef1365320df3e",
+        "hostProgramTouched": false,
+        "databaseTouched": false,
+        "restartRequired": false,
+        "published": true,
+        "operation": "install",
+        "activeSha256": "41170597843be9aacf6827d2a79833906b931457e1d36b7cef2eeb0587408d7c",
+        "history": "/opt/royal-game-modules-state/history/20261024T140351-0324f69d65b6473a9a48a7c6e8df4be0.json"
+      },
+      {
+        "verified": true,
+        "gameId": "pool",
+        "version": "1.0.0-d59295b5a027",
+        "bytes": 48040,
+        "files": 2,
+        "beforeSha256": "4f8787dc5d9cc08f78374d27668c884a94d485f4f9813351f94be5e1d48c26a4",
+        "hostProgramTouched": false,
+        "databaseTouched": false,
+        "restartRequired": false,
+        "published": true,
+        "operation": "install",
+        "activeSha256": "a6fd05b34899440116dd6217251cfc7e5d114dfd24cb6e4f8a36b2ee1fab0c2b",
+        "history": "/opt/royal-game-modules-state/history/20261024T140352-efcc4347813f4075ba7fa0bafebb4b68.json"
+      },
+      {
+        "verified": true,
+        "gameId": "chess",
+        "version": "1.0.0-6e6e8ac6b534",
+        "bytes": 45483,
+        "files": 2,
+        "beforeSha256": "149b493471bcea1bcdd04722649df915d136f8218c04c1c8d95036bb72dd964e",
+        "hostProgramTouched": false,
+        "databaseTouched": false,
+        "restartRequired": false,
+        "published": true,
+        "operation": "install",
+        "activeSha256": "164bf2d6b6c2699a091eb08287e6ee895dde5352eb7a553fa4e42959440aa176",
+        "history": "/opt/royal-game-modules-state/history/20261024T140352-988bd6ad93e340558ca5f2790b4e6733.json"
+      }
+    ],
+    "hostContractSha256": "e5458b9fd98b1d778b78e6b18c1ea796732fb18ac706bba61ea3e3404b121574",
+    "oldModuleBytesPreserved": true
+  },
+  "preservation": {
+    "published": true,
+    "preparedImage": "sha256:c27ba8fb026ab5ea5189be1c4ca5cae14a144ec96bceb3b0c4c9452a3734dbbf",
+    "runningImage": "sha256:c27ba8fb026ab5ea5189be1c4ca5cae14a144ec96bceb3b0c4c9452a3734dbbf",
+    "containerRestarted": true,
+    "sourceCommit": "ac364b2db6e8c107e296b3763aa63a5569c17406",
+    "changedSources": 182,
+    "clientDeltaFiles": 110,
+    "configurationsAndMountsPreserved": true,
+    "gameDataPreserved": true,
+    "backendDeltaFiles": 1,
+    "otherBackendProgramsAndModulesPreserved": true,
+    "oldAssetsPreserved": true,
+    "otherPersistentServicesPreserved": 13
+  },
+  "backup": {
+    "source": {
+      "path": "/opt/royal-backups/mortal-kombat-virtual-20261024-v1/source.tgz",
+      "sha256": "12188e799df3fdee82bd4365c188b954bf5e26e4c2a231dc006b41791560ff87",
+      "bytes": 192350513,
+      "sourceFiles": 1767
+    },
+    "gameWallet": {
+      "path": "/opt/royal-backups/mortal-kombat-virtual-20261024-v1/game-wallet.dump",
+      "sha256": "5a3005fe9677d584ef00ca4749001bd4d1e9b637cab4c7857d1ca8649672fd2b",
+      "bytes": 22660798
+    },
+    "databaseRestored": false,
+    "recovery": "Keep accepted balances and journals; the guard requires a compatible forward repair once virtual banks exist."
+  },
+  "tests": {
+    "rtpGate": true,
+    "fullApplicationBuild": true,
+    "releasePrepareAndGithubVerify": true,
+    "combatAndVirtualWallet": 25,
+    "compatibility": 38,
+    "publisherGuards": 26,
+    "runtimeImportsResolved": 16,
+    "candidateRealHostDesktopMobile": true
+  },
+  "publicHttps": {
+    "origin": "https://stealth-spark-gokmxooi.expresshost.cloud",
+    "passed": true,
+    "health": true,
+    "module": "mortal-kombat",
+    "version": "1.0.0-44900a16e0fd",
+    "filesVerified": 107,
+    "hostFilesVerified": 110,
+    "rulesVersion": 2,
+    "pointerCache": "no-store",
+    "productionWrites": 0,
+    "checkedAt": "2026-10-24T14:06:34.890Z"
+  },
+  "publishedClientBrowser": {
+    "passed": true,
+    "independentDisposableDatabaseRunsPassed": 3,
+    "desktop": [
+      1366,
+      900
+    ],
+    "phone": [
+      390,
+      844
+    ],
+    "topupEach": 200,
+    "stakeEach": 1,
+    "winnerPayout": 1.9,
+    "winnerFinalBalance": 200.9,
+    "bothReadyRequired": true,
+    "connectedChat": true,
+    "phoneMovement": true,
+    "forgedHttpPayoutRejected": true,
+    "closeReopenWithoutSecondCharge": true,
+    "javascriptErrors": 0,
+    "initialNavigationTimeoutsBeforeStakes": 2,
+    "verificationReadiness": "Wait for connected network and finite authoritative player coordinates before navigating.",
+    "transport": "Published host and module through a local proxy, with isolated local backend and PostgreSQL.",
+    "productionPlayerWrites": 0,
+    "screenshotsVisuallyReviewed": true
+  },
+  "anticheat": {
+    "authoritativeServerDamageAndOutcomeAndSettlement": true,
+    "strictSchemaAndActorAndMatchBinding": true,
+    "sequenceAndRateAndInputExpiryGuards": true,
+    "forgedWinCommandsRejectedInServerAndCandidateTests": true,
+    "legalInputAutomationDetection": false
+  },
+  "serverCleanup": {
+    "at": 1792851550.8726442,
+    "removed": [
+      "/opt/royal-releases/mortal-kombat-virtual-20261024-v1/runtime-context"
+    ],
+    "allocatedBytesRemoved": 5468160,
+    "freeBefore": 5495894016,
+    "freeAfter": 5501358080,
+    "githubPreservationCommit": "ac364b2db6e8c107e296b3763aa63a5569c17406",
+    "applicationUnchanged": true,
+    "imagesOrVolumesRemoved": false,
+    "sourceAndWalletBackupsPreserved": true,
+    "retainedCurrentRecovery": {
+      "release": "/opt/royal-releases/mortal-kombat-virtual-20261024-v1",
+      "backup": "/opt/royal-backups/mortal-kombat-virtual-20261024-v1",
+      "cleanupCondition": "Retire only after a later verified release and guarded recovery review."
+    }
+  },
+  "earlierOwnedCleanup": {
+    "path": "/opt/royal-releases/mortal-kombat-20261023-v1",
+    "allocatedBytesRemoved": 238120960,
+    "freeBefore": 5325451264,
+    "freeAfter": 5563588608
+  },
+  "failedBuildContextCleanup": {
+    "path": "/opt/royal-releases/mortal-kombat-virtual-20261024-v1/runtime-context",
+    "allocatedBytesRemoved": 5468160,
+    "freeBeforeTransfer": 5531865088
+  },
+  "buildRecovery": {
+    "buildkitStoppedBeforePublication": true,
+    "sameReviewedOverlayBuiltWithLegacyDocker": true,
+    "detachedJobExitCode": 0,
+    "playerDataRestored": false
+  }
+}
