@@ -6,11 +6,11 @@ import { CLUB_ZONES } from '../src/shared/clubLayout';
 import { cabinetSeat } from '../src/shared/cabinetSeating';
 import { gameModuleContract } from '../src/modules/GameModuleCatalog';
 
-test('fourteen collection seats keep Royal and GitHub separate on the common USDT wallet', () => {
+test('twelve collection seats keep Royal and GitHub separate on the common USDT wallet', () => {
   const cabinets=cabinetsInHall('arcade');
-  assert.equal(cabinets.length,14);
+  assert.equal(cabinets.length,12);
   assert.equal(new Set(CABINETS.map(c=>c.id)).size,CABINETS.length);
-  for(const [collection,count] of Object.entries({royal:9,github:5,casinoapipro:0,luelon:0})) {
+  for(const [collection,count] of Object.entries({royal:12,github:0,casinoapipro:0,luelon:0})) {
     assert.equal(cabinets.filter(c=>c.collection===collection).length,count);
   }
   for(const c of cabinets){
@@ -18,14 +18,14 @@ test('fourteen collection seats keep Royal and GitHub separate on the common USD
     assert.equal(c.demo,c.collection==='luelon');
     assert.equal(c.provider,c.collection==='casinoapipro');
   }
-  assert.equal(new Set(cabinets.map(c=>`${cabinetSeat(c).x},${cabinetSeat(c).y}`)).size,14);
+  assert.equal(new Set(cabinets.map(c=>`${cabinetSeat(c).x},${cabinetSeat(c).y}`)).size,12);
   assert.ok(CABINETS.filter(c=>c.hall==='github').every(c=>!c.collection&&!c.defaultGameId));
 });
 
 test('the source collections are disjoint, complete and prohibit cross-collection launches',()=>{
   assert.deepEqual([...ROYAL_COLLECTION_GAMES,...ARCADE_GITHUB_GAMES].sort(),[...ROYAL_PLATFORM_GAMES].sort());
   assert.equal(new Set(ROYAL_PLATFORM_GAMES).size,ROYAL_PLATFORM_GAMES.length);
-  assert.equal(ARCADE_GITHUB_GAMES.length,9);
+  assert.equal(ARCADE_GITHUB_GAMES.length,0);
   assert.equal(ROYAL_PLATFORM_GAMES.includes('studio-neopolis'),true);
   assert.deepEqual(collectionGames('casinoapipro'),[]);
   for(const source of ['royal','github','casinoapipro'] as const){
@@ -38,7 +38,7 @@ test('the source collections are disjoint, complete and prohibit cross-collectio
 });
 
 test('each collection fits its own nonoverlapping carpet, including the seats and entry paths',()=>{
-  const names={royal:'ROYAL · НАШИ ИГРЫ',github:'ИГРЫ С GITHUB',casinoapipro:'CASINO API PRO',luelon:'LUELON · ДЕМОИГРЫ'};
+  const names={royal:'ROYAL · НАШИ ИГРЫ'};
   for(const [collection,name] of Object.entries(names)){
     const zone=CLUB_ZONES.arcade.find(z=>z.name===name)!;assert.ok(zone);
     for(const spec of ARCADE_CABINET_SPECS.filter(c=>c.collection===collection)) {

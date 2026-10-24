@@ -1,0 +1,355 @@
+{
+  "format": 1,
+  "label": "Игры с GitHub",
+  "archivedAt": "2026-10-24",
+  "status": "removed-from-first-floor",
+  "sourceCommit": "920d631b3fb213073e14c43b76b19c709d0640ff",
+  "note": "This is a source-preservation index, not a production game catalogue. Original mathematical files remain at canonical paths so accepted rounds can finish. The archive label does not change authorship or licenses.",
+  "games": [
+    {
+      "id": "royal-fruits",
+      "name": "Royal Fruits",
+      "origin": "github-adaptation"
+    },
+    {
+      "id": "royal-dice",
+      "name": "Royal Dice",
+      "origin": "github-adaptation"
+    },
+    {
+      "id": "royal-limbo",
+      "name": "Royal Limbo",
+      "origin": "github-adaptation"
+    },
+    {
+      "id": "royal-mines",
+      "name": "Royal Mines",
+      "origin": "github-adaptation"
+    },
+    {
+      "id": "royal-keno",
+      "name": "Royal Keno",
+      "origin": "github-adaptation"
+    },
+    {
+      "id": "github-craps",
+      "name": "Craps",
+      "origin": "github-adaptation"
+    },
+    {
+      "id": "github-tower",
+      "name": "Dragon Tower",
+      "origin": "github-adaptation"
+    },
+    {
+      "id": "github-diamonds",
+      "name": "Diamonds",
+      "origin": "github-adaptation"
+    },
+    {
+      "id": "github-sic-bo",
+      "name": "Sic Bo",
+      "origin": "github-adaptation"
+    },
+    {
+      "id": "studio-orbit",
+      "name": "Орбитальный рейс",
+      "origin": "royal-studio"
+    },
+    {
+      "id": "studio-deep-current",
+      "name": "Сокровища глубин",
+      "origin": "royal-studio"
+    },
+    {
+      "id": "studio-ember-vault",
+      "name": "Огненный сейф",
+      "origin": "royal-studio"
+    },
+    {
+      "id": "studio-lumen-grove",
+      "name": "Светящийся лес",
+      "origin": "royal-studio"
+    },
+    {
+      "id": "studio-neon-crown",
+      "name": "Неоновый трон",
+      "origin": "royal-studio"
+    },
+    {
+      "id": "studio-sky-lanterns",
+      "name": "Небесные фонари",
+      "origin": "royal-studio"
+    },
+    {
+      "id": "studio-stormforge-duel",
+      "name": "Кузница стихий",
+      "origin": "royal-studio"
+    },
+    {
+      "id": "studio-copperline-express",
+      "name": "Медный экспресс",
+      "origin": "royal-studio"
+    },
+    {
+      "id": "studio-saffron-cipher",
+      "name": "Золотой шифр",
+      "origin": "royal-studio"
+    },
+    {
+      "id": "studio-prism-atelier",
+      "name": "Мастерская призм",
+      "origin": "royal-studio"
+    },
+    {
+      "id": "studio-midnight-market",
+      "name": "Ночной базар",
+      "origin": "royal-studio"
+    },
+    {
+      "id": "studio-pulse-district",
+      "name": "Пульс мегаполиса",
+      "origin": "royal-studio"
+    },
+    {
+      "id": "studio-rivet-rally",
+      "name": "Механический ралли",
+      "origin": "royal-studio"
+    },
+    {
+      "id": "studio-petal-parlor",
+      "name": "Цветочная гостиная",
+      "origin": "royal-studio"
+    },
+    {
+      "id": "studio-frostline-courier",
+      "name": "Полярная доставка",
+      "origin": "royal-studio"
+    },
+    {
+      "id": "studio-beacon-bay",
+      "name": "Маяк удачи",
+      "origin": "royal-studio"
+    },
+    {
+      "id": "studio-sunbird-trails",
+      "name": "Тропа жар-птицы",
+      "origin": "royal-studio"
+    },
+    {
+      "id": "studio-gale-riders",
+      "name": "На крыльях ветра",
+      "origin": "royal-studio"
+    },
+    {
+      "id": "studio-dune-hopper",
+      "name": "Прыжок через дюны",
+      "origin": "royal-studio"
+    },
+    {
+      "id": "studio-canopy-crossing",
+      "name": "Лесной переход",
+      "origin": "royal-studio"
+    },
+    {
+      "id": "studio-aurora-lift",
+      "name": "Северный подъём",
+      "origin": "royal-studio"
+    },
+    {
+      "id": "studio-tidal-relay",
+      "name": "Морской маршрут",
+      "origin": "royal-studio"
+    },
+    {
+      "id": "studio-mosaic-muse",
+      "name": "Мозаика чисел",
+      "origin": "royal-studio"
+    },
+    {
+      "id": "studio-obsidian-drop",
+      "name": "Обсидиановый шар",
+      "origin": "royal-studio"
+    },
+    {
+      "id": "studio-signal-fox",
+      "name": "Лисий сигнал",
+      "origin": "royal-studio"
+    },
+    {
+      "id": "studio-saffron-spin",
+      "name": "Золотое вращение",
+      "origin": "royal-studio"
+    },
+    {
+      "id": "studio-fossil-trail",
+      "name": "Тропа ископаемых",
+      "origin": "royal-studio"
+    },
+    {
+      "id": "studio-blazing-orchard",
+      "name": "Огненный сад 40",
+      "origin": "royal-studio"
+    },
+    {
+      "id": "studio-jade-koi",
+      "name": "Нефритовый карп",
+      "origin": "royal-studio"
+    },
+    {
+      "id": "studio-moonlit-mint",
+      "name": "Лунный монетный двор",
+      "origin": "royal-studio"
+    },
+    {
+      "id": "studio-starfall-oracle",
+      "name": "Звёздный оракул",
+      "origin": "royal-studio"
+    },
+    {
+      "id": "studio-lucky-spotlight",
+      "name": "Колесо прожекторов",
+      "origin": "royal-studio"
+    },
+    {
+      "id": "variant-dice",
+      "name": "Неоновый коридор",
+      "origin": "royal-variant"
+    },
+    {
+      "id": "variant-plinko",
+      "name": "Плинко: два потока",
+      "origin": "royal-variant"
+    },
+    {
+      "id": "variant-limbo",
+      "name": "Лимбо: два рубежа",
+      "origin": "royal-variant"
+    },
+    {
+      "id": "variant-mines",
+      "name": "Хранилище",
+      "origin": "royal-variant"
+    },
+    {
+      "id": "variant-sic-bo",
+      "name": "Сик Бо: точная сумма",
+      "origin": "royal-variant"
+    },
+    {
+      "id": "variant-diamonds",
+      "name": "Самоцветы: охота",
+      "origin": "royal-variant"
+    },
+    {
+      "id": "variant-keno",
+      "name": "Кено: мини-билет",
+      "origin": "royal-variant"
+    },
+    {
+      "id": "variant-keys",
+      "name": "Лестница: два ключа",
+      "origin": "royal-variant"
+    },
+    {
+      "id": "variant-fruits",
+      "name": "Фрукты: три линии",
+      "origin": "royal-variant"
+    },
+    {
+      "id": "variant-target-plinko",
+      "name": "Плинко: мишень",
+      "origin": "royal-variant"
+    },
+    {
+      "id": "variant-gem-collection",
+      "name": "Самоцветы: коллекция",
+      "origin": "royal-variant"
+    },
+    {
+      "id": "variant-double-mines",
+      "name": "Мины: парный поиск",
+      "origin": "royal-variant"
+    },
+    {
+      "id": "variant-dice-streak",
+      "name": "Кости: серия",
+      "origin": "royal-variant"
+    }
+  ],
+  "sources": {
+    "server/demoCasino.ts": "8cd914d9ca5f78282deae590f1f9f440f3b4fb384e503e9a526bbc2d61f51c9a",
+    "server/demoExpansion.ts": "ab91cf5f0d590f05132b73b34d347f044b70f852e0bc31f4602d816289c2e420",
+    "server/demoMines.ts": "24ec9d93e65e9553acc39e53e5acbc7724e8117aec2a83eff36dfe12985d40e5",
+    "server/games/afterglow.ts": "732c928d299e6a6adb501d1682e80ec2ea02e510884812771c757f5173013258",
+    "server/games/caramelCarnival.ts": "efea2d448a692637819eef014badf72ac2aa1a0621284ba12011ab68ff1886a7",
+    "server/games/cardEngine.ts": "f36f147ee6f76799fdf1ff18e769d583534b01cb4b34528a09be8f2268877891",
+    "server/games/casinoBatchVariants.ts": "4d2127a24c5a95e91550cb39394f1a4abbb2c05ebf455e9492947ec97c454b2c",
+    "server/games/casinoNextVariants.ts": "f989cee4147e107faf7c4e4df216729025fc2baf6e779dde1a64f9b825ce1e43",
+    "server/games/casinoSessions.ts": "ffd0232b3a380a4a781cbdd943559e530cbdac5417740fdcf4f862c3fcf98d1f",
+    "server/games/casinoVariants.ts": "f8950c9dbb0285f2d2462f1257620f95e06514c5b4c09574bc152aaf62c78a50",
+    "server/games/coins.ts": "727e6a62b098f0591525a4dfd646c78568e3a04ff554364f2c157d41cbbba5da",
+    "server/games/core.ts": "246ebe0febf3ad89a8997b1cdac83c28a0e6f175a14d2318403a39d3a27b1146",
+    "server/games/crLeo.ts": "5bc956040fb008f21a3a5bcaa7b9296f3ef9f049ae32b44654bcef06e6b6e7c1",
+    "server/games/dracona.ts": "9d7b86aa2db9dd2ebe0d6a6dc09283a33b868b03a1e5c444f722d90822e9fa95",
+    "server/games/fruits.ts": "3880e46cb2cacd41cf855eb69ef2edda956b39209caf7bb4b73fdca16a8aea05",
+    "server/games/lastConvoy.ts": "ac691553c2636edc35f0291ca0c9cd9f21b94565da4572856df1f131f4591e3d",
+    "server/games/luelonSlots.ts": "be78b2715aa850d3801445edf0f714b89dcb76ed98719e5589fcac71dc7fe3f2",
+    "server/games/neopolis.ts": "4c2a411cc151474090c496ab78b9d9fc1c293d81e1e8e87e4dd50cefec865119",
+    "server/games/nitroRun.ts": "9bb335cf87be9306035da1457bec8c1af6e8276f8c8275d940aee6c6681ab2e6",
+    "server/games/originals.ts": "a40c038406cf6a7ffbb0fa7b92af2937c40a7012626bc2ab06a232d03c152d45",
+    "server/games/roulette.ts": "b8aba50f88ff2c65b54bef35a056b13d5b470d6b9f955f2610559c101e0390ef",
+    "server/games/rush/crash.ts": "18182aa65f5babc4bf693b234aeec8a239646c41d33d4c3126b3abefc7b15a94",
+    "server/games/rush/diamonds.ts": "213895e44a196028767720525c4de2b5beb54f6662d859d4f9d12e8ab08c789a",
+    "server/games/rush/dragontower.ts": "5c7adc3f4bd84c473da9ab583fbff1ebf27c5db8b4bde78b7016d1a673475405",
+    "server/games/rush/hilo.ts": "1d55a974edac435060aebb0c34b222c0763259476c2b9ddcab22ee69bd9d2803",
+    "server/games/studioGames.ts": "e3484145ad3dbebc1ded5df6d808f98b5d79e9ebc2fc58b7f8a413782f7b130c",
+    "server/games/types.ts": "c866ed8a8a19a66f4210caae41e25becf8c6d169871da1934a7b152d0f2aedc0",
+    "server/games/velvetMath.ts": "54a874506c31467b076be9d8b4513014e2faa676ba286111b1c24eb35873e94f",
+    "server/games/velvetReign.ts": "31798d0ddf4cfdf6717fe9e29a4f01cb538e59485c63275b6c2cba4239afe0cc",
+    "server/games/vfair/decimal.ts": "235cf2ea332f2a635b06e86462809821f9e515e5a73de6c944811f2d3b0f60d7",
+    "server/games/vfair/dice/dice-constants.ts": "88219a7c455889904b6ed1c4804737736cf551fa0f83fe382d7835dcd25c44a3",
+    "server/games/vfair/dice/dice-math.ts": "a6e83f4cf71c63ab3cca9751012fe1dbc93a832ea553a4bfbe2c8eaa27d8867e",
+    "server/games/vfair/dice/dice-rtp-bounds.ts": "c4f310051ab1d73b634855897f9d1f14b13452a6bf8b0d2d64e72cbb4d508fc7",
+    "server/games/vfair/game-rtp.ts": "850598f0b5b9c2c8d9a13a4ff151be5d23467804bc457f35665e95b6008f87c7",
+    "server/games/vfair/keno/keno-constants.ts": "75476a6be66e77e6830e2bff964b9f4cacb7a89925c9e20a97ebcb7a4dc8946c",
+    "server/games/vfair/keno/keno-math.ts": "094054bab14de6b4c54b53070804448a39f4bb83f5d4b2eb80cc59bcc6c3fbfa",
+    "server/games/vfair/keno/keno-multipliers.ts": "c76e0a9698539ea0f09f3bfc863ed47351a7ac38270078a0fee8ec579fe240b4",
+    "server/games/vfair/keno/keno-probability.ts": "0f870c04fe76f39b72962ee86a41e63e9ebf7c35edbc82299ba004d98cb4df70",
+    "server/games/vfair/keno/keno-reference-paytables.ts": "caa92b92343afa04889b13ef484f6d1598aac196ffe1f7e2e789dbf77c4f25bc",
+    "server/games/vfair/limbo/limbo-constants.ts": "b5bc95ccd1943068b60bc621354e68a6e53c872d50a34414b52babbd02c3d527",
+    "server/games/vfair/limbo/limbo-math.ts": "71ca6f7b1aeedf1b05804d9ff2c8e72e05fc6242e3d5a5b51b924b08669bdb52",
+    "server/games/vfair/limbo/limbo-provably-fair.ts": "55a864816647740008b4d3bc589e795dac812fcbed1d0d62b415423b37c19676",
+    "server/games/vfair/limbo/limbo-roll.ts": "d3a0eeffcebdf1c4103116acdebd58ac63e8f97f1a9760328b52f5db02baa347",
+    "server/games/vfair/limbo/limbo-rtp-bounds.ts": "67756ce5182e7fb4ecce1ce9ecc60aba34986929309b3c631f6ba43c58e534ee",
+    "server/games/vfair/mines/mines-constants.ts": "168798b8df86084da0848ef2d4589256a1ad5d8f4c0c30c13960fb0ba47d69db",
+    "server/games/vfair/mines/mines-math.ts": "ab647b2f14b6cb49b2ad4045dc84b453326cd74d7f5d182a9d6fca257f812f0b",
+    "server/games/vfair/plinko/plinko-constants.ts": "dca86dc20365d497f6fd6b220f2cc0157e00112b4b2206c03c82959547b67afc",
+    "server/games/vfair/plinko/plinko-math.ts": "9c83981207341b625aca8e5f976da24c2b50bbba3a7e66fd6c330a0584cd15dc",
+    "server/games/vfair/plinko/plinko-multipliers.ts": "4be4d4ccb0dca62ec216edf295d6459075817d5b115e5d28038df2ebaf96f072",
+    "server/games/vfair/provably-fair/provably-fair.ts": "5020ffe0f0037b12ef234c1d81bfdb83e8f1c7d3516b663354d310facc425185",
+    "server/games/wheel.ts": "6e9d4238c3a98b53e913553f92af64766b54b40c83e793516549a649e46d2ab6",
+    "src/shared/casinoBatchVariants.ts": "e09ea94fdb5929596f610ef7462dc80d50bcf4926335c398fca6c031a0496135",
+    "src/shared/casinoExpansion.ts": "3cb811a967201803b5c7fe42a6ee5496415dce324781c28b2a933c3c7659379d",
+    "src/shared/casinoNextVariants.ts": "6f525322bc640eb29ad7bfc025205686f87214b174a08a92d0f800afe636eaa7",
+    "src/shared/casinoSessions.ts": "002e31c3198d885571e78b3fdc714aeed6179cd269f5927de3ad0c23dacbb2dd",
+    "src/shared/casinoVariants.ts": "806e62338241a65561b7170957045ce2fd931a599302d50785c35f6f0f9f1ca5",
+    "src/shared/gameCore.ts": "aa9520b435a5c969d257290e3b06060051db76de45955f99dd68c48f1b5addab",
+    "src/shared/originalGames.ts": "9743f1465b625e64055c8c6c9f268ce8023d61adc7eed187507be7d4163d40c0",
+    "src/shared/studioGames.ts": "5be1d552e408e7a2fe1d1cff923b70bdda059a57847c46db09c96dc2ae63e29a",
+    "src/vendor/github/baccarat/constants.ts": "396c5002ef85a8b2d845e57e94e5072d0f064f96dc773ec66eb960dd3ecc54c5",
+    "src/vendor/github/baccarat/rules.ts": "703f8692bd1e1952107093863f1f0790978842c98cc739741e9923c393866722",
+    "src/vendor/github/baccarat/types.ts": "7b70e60871e27292f57dc5cde163336c90027ac7fab5b68c68f9d67f0743a95c",
+    "src/vendor/github/blackjack/math.ts": "08d65e81ed94d2d08359f5a1d9cea2672becf56195999524230cf1881892df02",
+    "src/vendor/github/blackjack/upstream/21game.js": "cf8327f2ac016ea0de445d289ccd68b5cc24c06f0eee2107c1612251d07a7502",
+    "src/vendor/github/craps/engine.d.ts": "586c6ce6afdc8c75a3be1eb3afa811fb3db960e6b264047606e20fe31a8eac5a",
+    "src/vendor/github/craps/engine.js": "e23cb59ab354b738b5e1b732a0d9975ba80ae1c9ab53f74d1d7e70850cefd9a0",
+    "src/vendor/github/craps/upstream/crapsengine.js": "b3db9d991c490b0635e8ddda002ea90ece6fbea5ad7a788f7f040e3f12211196",
+    "src/vendor/github/dragontower/upstream/dragontower.ts": "5c7adc3f4bd84c473da9ab583fbff1ebf27c5db8b4bde78b7016d1a673475405",
+    "src/vendor/github/hilo/upstream/hilo.ts": "1d55a974edac435060aebb0c34b222c0763259476c2b9ddcab22ee69bd9d2803",
+    "src/vendor/github/poker/engine.d.ts": "f2309d02619b051dccb1276bcd43275c619518396b9c932631234d8aa271ec9c",
+    "src/vendor/github/poker/engine.js": "30cacb5e42d89d1118e6fdd33f42700dd0abe54f88281130d8f397a7aa002191",
+    "src/vendor/github/poker/upstream/PokerEngine.js": "2aff8a21f676d20fa47245fa4b2da804f0e4cf6d4fbbd29566f94fcf5b91a0a4",
+    "src/vendor/github/video-poker/math.ts": "4af8857a0a14958d9a3c20e6b3b19d574bea1d56951dab7b6be106d024444849"
+  }
+}

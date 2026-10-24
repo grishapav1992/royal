@@ -54,6 +54,10 @@ export class DemoWalletStore {
     const entries = (await this.db.prepare('SELECT id,entry_type AS kind,amount_units/100.0 AS amount,balance_units/100.0 AS balance,operation_id AS operationId,created_at AS createdAt,source,game_name AS gameName FROM demo_ledger WHERE account_id=? ORDER BY id DESC LIMIT 50').all(accountId));
     return { balance: await demoBalanceUnits(this.db,accountId) / 100, entries: entries.map(entry => ({ ...entry, amount: Number(entry.amount), balance: Number(entry.balance) })),...(pending?{pendingBalance:providerDecimal(pending)}:{}) } as DemoWallet;
   }
+  async hasAcceptedOperation(accountId: string, id: string) {
+    await this.ready;
+    return !!await this.db.prepare('SELECT 1 FROM demo_operations WHERE account_id=? AND operation_id=?').get(accountId, id);
+  }
   async operate(accountId: string, value: unknown): Promise<WalletResult> {
     await this.ready;
     const op = value as WalletOperation | undefined;
