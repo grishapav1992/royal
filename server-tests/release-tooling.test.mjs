@@ -4,6 +4,7 @@ import { mkdir, writeFile, readFile, rm, mkdtemp, symlink } from 'node:fs/promis
 import { resolve, dirname } from 'node:path';
 import { moduleFingerprinter, cachedModule, digest, inventory, regularPath } from '../scripts/module-build-cache.mjs';
 import { releasePlan, assertClean, git, releaseFiles, verifyRelease, prepareRelease } from '../scripts/release.mjs';
+import { buildServer } from '../scripts/build-application.mjs';
 
 const parent = resolve('artifacts/work/release-tooling-tests');
 await mkdir(parent, { recursive: true });
@@ -126,4 +127,30 @@ test('a concurrent preparation cannot remove another preparation lock or its man
   await f.put('module-build/release-manifest.json', 'other preparation');
   await assert.rejects(prepareRelease(f.root, { base: f.base, local: true }), { code: 'EEXIST' });
   assert.equal(await readFile(resolve(f.root, 'module-build/release-manifest.json'), 'utf8'), 'other preparation');
+});
+
+test('application release includes payment build metadata and rejects missing or changed metadata', async t => {
+  const f = await committedFixture(t);
+  await f.put('server/payments/index.ts', 'import pg from "pg"; import {value} from "./value"; console.log(pg, value);');
+  await f.put('server/payments/value.ts', 'export const value = 7;');
+  git(f.root, ['add', '.']); git(f.root, ['commit', '-qm', 'payment source']);
+  await buildServer(f.root, 'server/payments/index.ts', 'payments.js');
+  const metadataPath = 'dist-server/payments-meta.json';
+  const metadataBytes = await readFile(resolve(f.root, metadataPath), 'utf8'), metadata = JSON.parse(metadataBytes);
+  assert.deepEqual(Object.keys(metadata.inputs).sort(), ['server/payments/index.ts', 'server/payments/value.ts']);
+  assert(metadata.outputs['dist-server/payments.js'].imports.some(row => row.path === 'pg' && row.external));
+  await f.put('dist-server/index.js', 'backend'); await f.put('dist-server/crypto-reconcile.js', 'reconcile');
+  await f.put('dist/admin.html', 'admin'); await f.put('module-dist/host-contracts.json', '{}');
+  const version = '1.0.0-aaaaaaaaaaaa', folder = `module-dist/test-a/versions/${version}`;
+  await f.put(folder + '/manifest.json', '{}'); await f.put(folder + '/entry.js', 'entry');
+  await f.put('module-dist/test-a/active.json', JSON.stringify({manifest: `/game-modules/test-a/versions/${version}/manifest.json`, sha256: digest('{}')}));
+  await f.put('module-build/build-report.json', JSON.stringify({games: [{gameId: 'test-a', version}]}));
+  const manifest = {...releasePlan(f.root, f.base), scope: 'application', modules: null, build: {passed: true}, ...await releaseFiles(f.root)};
+  assert.equal(manifest.files[metadataPath], digest(metadataBytes));
+  await f.put('module-build/release-manifest.json', JSON.stringify(manifest)); await verifyRelease(f.root);
+  await f.put(metadataPath, '{}'); await assert.rejects(verifyRelease(f.root), /output changed/);
+  await rm(resolve(f.root, metadataPath)); await assert.rejects(verifyRelease(f.root), /ENOENT/);
+  await f.put(metadataPath, metadataBytes); await verifyRelease(f.root);
+  const workflow = await readFile(resolve('.github/workflows/game-rtp.yml'), 'utf8');
+  assert(workflow.split(/\r?\n/).some(line => line.trim() === metadataPath));
 });

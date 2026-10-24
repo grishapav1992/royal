@@ -21,6 +21,13 @@ export async function run(command, args, root = projectRoot) {
   });
 }
 
+export async function buildServer(root, input, output) {
+  const result = await build({ absWorkingDir: root, entryPoints: [input], bundle: true,
+    platform: 'node', packages: 'external', format: 'esm', outfile: 'dist-server/' + output,
+    metafile: output === 'payments.js' });
+  if (result.metafile) await saveJson(resolve(root, 'dist-server/payments-meta.json'), result.metafile);
+}
+
 export async function buildApplication({ root = projectRoot, modules = null } = {}) {
   const report = { format: 1, startedAt: new Date().toISOString(), scope: modules ? 'modules' : 'application', steps: [] };
   const started = performance.now();
@@ -42,8 +49,7 @@ export async function buildApplication({ root = projectRoot, modules = null } = 
         ['backend', 'server/index.ts', 'index.js'],
         ['reconciliation', 'scripts/crypto-reconcile.ts', 'crypto-reconcile.js'],
         ['payments', 'server/payments/index.ts', 'payments.js'],
-      ]) await step(name, () => build({ absWorkingDir: root, entryPoints: [input], bundle: true,
-        platform: 'node', packages: 'external', format: 'esm', outfile: 'dist-server/' + output }));
+      ]) await step(name, () => buildServer(root, input, output));
     }
     report.passed = true;
     return report;

@@ -48,6 +48,7 @@ jobs:
             dist-server/index.js
             dist-server/crypto-reconcile.js
             dist-server/payments.js
+            dist-server/payments-meta.json
             module-dist
             module-build/release-manifest.json
             module-build/release-timings.json

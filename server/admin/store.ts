@@ -5,6 +5,10 @@ import { CryptoError } from '../crypto/config';
 import { gameAccountId } from '../../src/shared/nileWallet';
 import type { FinanceReport } from '../../src/shared/financeAdmin';
 
+export class FinanceCommandRejected extends CryptoError {
+  constructor(status:number,message:string,readonly commandId:string){super(status,message);}
+}
+
 export class FinanceAdminStore {
   readonly ready:Promise<void>;
   constructor(readonly db:PostgresDatabase, prerequisite:Promise<void>=Promise.resolve()){
@@ -53,7 +57,7 @@ export class FinanceAdminStore {
     await this.ready;const body=JSON.stringify(op);
     const completed=await this.db.transaction(async()=>{
       const previous=await this.db.prepare('SELECT * FROM finance_admin_commands WHERE id=?').get(op.id);
-      if(previous){if(previous.body!==body)throw new CryptoError(409,'Номер действия уже использован с другими параметрами.');if(previous.state==='rejected')throw new CryptoError(409,'Это действие отклонено. Создай новое действие после исправления причины.');return previous.state==='completed';}
+      if(previous){if(previous.body!==body)throw new CryptoError(409,'Номер действия уже использован с другими параметрами.');if(previous.state==='rejected')throw new FinanceCommandRejected(409,'Это действие отклонено. Создай новое действие после исправления причины.',op.id);return previous.state==='completed';}
       await this.player(op.playerId);
       await this.db.prepare("INSERT INTO finance_admin_commands(id,actor_id,player_id,source,action,body,state,created_at) VALUES(?,?,?,?,?,?,'pending',?)")
         .run(op.id,op.actorId,op.playerId,op.source,op.action,body,Date.now());
@@ -78,11 +82,13 @@ export class FinanceAdminStore {
       },{lockKey:'admin-commands'});
       return{ok:true,result};
     }catch(error){
-      await this.db.transaction(async()=>{
+      const state=await this.db.transaction(async()=>{
         const rejected=error instanceof CryptoError&&error.status<500;
         if(rejected)await this.db.prepare("UPDATE finance_admin_commands SET state='rejected',completed_at=? WHERE id=? AND state='pending'").run(Date.now(),op.id);
         await this.audit(op,rejected?'rejected':'retry');
+        return (await this.db.prepare('SELECT state FROM finance_admin_commands WHERE id=?').get(op.id))?.state;
       },{lockKey:'admin-commands'});
+      if(state==='rejected'&&error instanceof CryptoError)throw new FinanceCommandRejected(error.status,error.message,op.id);
       throw error;
     }
   }

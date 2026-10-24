@@ -6,7 +6,7 @@ import type { Server } from 'node:http';
 import { AccountStore,cookieToken,accounts } from '../server/accounts';
 import { PostgresDatabase } from '../server/database';
 import { CryptoStore } from '../server/crypto/store';
-import { cryptoConfig } from '../server/crypto/config';
+import { cryptoConfig,CryptoError } from '../server/crypto/config';
 import { createPaymentApp } from '../server/payments/app';
 import { PaymentOutbox } from '../server/payments/outbox';
 import { PaymentClient } from '../server/payments/client';
@@ -69,7 +69,7 @@ test('Nile adjustments keep the sealed journal auditable and tests never appear 
     let audit=await c.ledger.audit();assert.equal(audit.totalUnits,'1000000000');assert.equal(audit.houseUnits,'790000000');
     assert.equal((await c.ledger.wallet(player) as any).balanceUnits,'210000000');
     const report=await c.ledger.adminReport({});assert.equal(report.environment,'test');assert.equal(report.totals.adjustments,'10000000');
-    assert.equal(report.totals.deposits,'200000000');assert.equal(report.totals.undated,1);assert.equal(report.wallets[player].available,'210000000');
+    assert.equal(report.totals.deposits,'200000000');assert.equal(report.totals.undated,2);assert.equal(report.wallets[player].available,'210000000');
     const filtered=await c.ledger.adminReport({from:1,kind:'adjustment',playerIds:[player]});assert.equal(filtered.rows.length,1);
     assert.equal((await c.ledger.adminReport({mode:'pvp'})).totals.count,0);
     assert.equal((await c.ledger.adminReport({playerIds:[]})).totals.count,0);
@@ -94,6 +94,26 @@ test('payment report filters across full history, excludes pending payouts from 
     assert.equal(f.totals.count,3);assert.equal(f.totals.deposits,'2700000');
     assert.equal((await paymentFinanceReport(store,{page:2})).rows.length,8);
   }finally{await db.close();}
+});
+
+test('Nile funding reports player and reserve legs once, with independent attribution and filters',async()=>{
+  const c=await playTestSetup(':memory:',()=>0,undefined,'1000000000','300000000'),player=randomUUID();
+  try{
+    await c.ledger.claim(player,await c.ledger.invite('player'));
+    const report=await c.ledger.adminReport({});
+    assert.equal(report.totals.count,3);assert.equal(new Set(report.rows.map(r=>r.id)).size,3);
+    assert.equal(report.totals.deposits,'200000000');assert.equal(report.totals.ggr,'0');
+    const deposits=report.rows.filter(r=>r.kind==='deposit'),capital=report.rows.filter(r=>r.kind==='capital');
+    assert.deepEqual(deposits.map(r=>[r.playerId,r.amountUnits,r.deltaUnits]),[[player,'200000000','200000000']]);
+    assert.deepEqual(capital.map(r=>r.amountUnits).sort(),['300000000','800000000']);
+    assert(capital.every(r=>r.playerId===''&&r.deltaUnits===r.amountUnits));
+    assert.equal(report.rows.reduce((sum,r)=>sum+BigInt(r.amountUnits),0n),1300000000n);
+    assert.equal(report.balances.house,'1100000000');
+    const personal=await c.ledger.adminReport({playerIds:[player]});assert.equal(personal.totals.count,1);assert.equal(personal.totals.deposits,'200000000');
+    const filtered=await c.ledger.adminReport({kind:'capital',minUnits:'500000000'});
+    assert.equal(filtered.totals.count,1);assert.equal(filtered.rows[0].amountUnits,'800000000');assert.equal(filtered.totals.deposits,'0');
+    assert.equal((await c.ledger.audit()).ok,true);
+  }finally{await c.close();}
 });
 
 test('signed admin adjustment crosses payment service and reaches game credit mirror once',async()=>{
@@ -145,8 +165,14 @@ test('Nile reports both PvP participants, escrow, exact 5% fee, cancellations an
   const c=await pvpFixture();const matchId=randomUUID();
   try{
     const request={matchId,gameId:'chess',stakeUnits:'50000000'};
-    await c.ledger.pvpHold(c.a,request);await c.ledger.pvpHold(c.b,request);
+    await c.ledger.pvpHold(c.a,request);
+    assert.equal((await c.ledger.adminReport({mode:'pvp'})).rows[0].opponentId,'');
+    await c.ledger.pvpHold(c.b,request);
     let report=await c.ledger.adminReport({mode:'pvp'});assert.equal(report.totals.pending,2);assert.equal(report.balances.reserved,'100000000');
+    assert.equal(report.rows.find(r=>r.playerId===c.a)!.opponentId,c.b);
+    assert.equal(report.rows.find(r=>r.playerId===c.b)!.opponentId,c.a);
+    const activePersonal=await c.ledger.adminReport({mode:'pvp',playerIds:[c.a]});
+    assert.equal(activePersonal.rows.length,1);assert.equal(activePersonal.rows[0].opponentId,c.b);
     assert.equal(report.balances.players,'300000000');assert.equal(report.totals.ggr,'0');
     await c.ledger.pvpFinish(c.a,{matchId,winnerId:c.a,reason:'win'});
     report=await c.ledger.adminReport({mode:'pvp'});assert.equal(report.rows.length,2);assert.equal(report.totals.stakes,'100000000');
@@ -156,8 +182,30 @@ test('Nile reports both PvP participants, escrow, exact 5% fee, cancellations an
     assert.equal(personal.rows.filter(r=>r.mode==='pvp').length,1);assert.equal(personal.totals.fees,'2500000');
     const cancelled=randomUUID();await c.ledger.pvpHold(c.a,{...request,matchId:cancelled});await c.ledger.pvpFinish(c.a,{matchId:cancelled,winnerId:null,reason:'cancel'});
     report=await c.ledger.adminReport({mode:'pvp'});assert.equal(report.totals.ggr,'5000000');assert.equal(report.rows.filter(r=>r.status==='failed').length,1);
+    assert.equal(report.rows.find(r=>r.roundId===cancelled)!.opponentId,'');
     assert.equal((await c.ledger.audit()).houseUnits,'5000000');
   }finally{await c.close();}
+});
+
+test('admin API identifies only durably rejected commands, keeping password failures and conflicts ambiguous',async()=>{
+  const store=new AccountStore(':memory:');await store.ready;
+  const owner=await store.login('reject-owner@example.test','correct-password'),player=await store.login('reject-player@example.test','correct-password');
+  let attempts=0;store.cryptoWallet.admin=async()=>{attempts++;throw new CryptoError(400,'Недостаточно свободного резерва.');};
+  const app=express();installFinanceAdmin(app,store,{FINANCE_ADMIN_ACCOUNT_IDS:owner.account.id});const server=await listen(app);
+  const op={id:randomUUID(),source:'payments',action:'adjust',playerId:player.account.id,deltaUnits:'1000000',reason:'Проверка отказа резерва',password:'correct-password'};
+  const call=(body:unknown)=>fetch(server.url+'/api/admin/actions',{method:'POST',headers:{Cookie:'royal_session='+owner.token,'Content-Type':'application/json',Origin:'http://localhost:5173','x-royal-admin-account':owner.account.id},body:JSON.stringify(body)});
+  try{
+    let response=await call(op);assert.equal(response.status,400);assert.equal((await response.json()).rejectedCommandId,op.id);
+    response=await call({...op,password:'wrong-password'});assert.equal(response.status,401);assert.equal((await response.json()).rejectedCommandId,undefined);
+    response=await call({...op,deltaUnits:'2000000'});assert.equal(response.status,409);assert.equal((await response.json()).rejectedCommandId,undefined);
+    response=await call(op);assert.equal(response.status,409);assert.equal((await response.json()).rejectedCommandId,op.id);assert.equal(attempts,1);
+    const uncertain={...op,id:randomUUID()};let offline=true;
+    store.cryptoWallet.admin=async()=>{attempts++;if(offline)throw new CryptoError(503,'Ответ финансового сервиса не получен.');return{ok:true};};
+    response=await call(uncertain);assert.equal(response.status,503);assert.equal((await response.json()).rejectedCommandId,undefined);
+    assert.equal((await store.financeAdmin.db.prepare('SELECT state FROM finance_admin_commands WHERE id=?').get(uncertain.id))!.state,'pending');
+    offline=false;response=await call(uncertain);assert.equal(response.status,200);
+    response=await call(uncertain);assert.equal(response.status,200);assert.equal(attempts,3);
+  }finally{await server.close();await store.close();}
 });
 
 test('all native paid games and atelier purchases are read only from their Nile projection, with full cents conversion',async()=>{
