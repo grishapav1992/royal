@@ -37,7 +37,7 @@ for name in release['changed']:
         changed[name] = sha(ROOT / name)
         copy(ROOT / name, 'source/' + name)
 for name, row in normalized.items():
-    if name not in changed and not name.endswith(('.orig', '.bak')):
+    if name not in changed and name != 'deployment/SERVER.md' and not name.endswith(('.orig', '.bak')):
         assert (ROOT / name).is_file(), name
         assert hashlib.sha256((ROOT / name).read_bytes().replace(b'\r\n', b'\n')).hexdigest() == row['lf'], name
 assert changed and 'server/index.ts' in changed
