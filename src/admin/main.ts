@@ -29,7 +29,7 @@ async function api(path:string,body?:unknown){
       headers:{'Content-Type':'application/json',...(account?{'x-royal-admin-account':account.id}:{})},...(body===undefined?{}:{body:JSON.stringify(body)})});
     result=await response.json();
   }catch{throw new Error('Ответ сервера не получен. Проверь соединение и повтори запрос.');}
-  if(!response.ok){const error=new Error(result.error??'Запрос не выполнен.') as Error&{status:number};error.status=response.status;throw error;}return result;
+  if(!response.ok){const error=new Error(result.error??'Запрос не выполнен.') as Error&{status:number;rejectedCommandId?:string};error.status=response.status;error.rejectedCommandId=result.rejectedCommandId;throw error;}return result;
 }
 function notice(message:string,error=false){
   let el=document.querySelector('#notice');if(!el){el=document.createElement('div');el.id='notice';el.setAttribute('role','status');document.body.append(el);}
@@ -175,17 +175,28 @@ function actionModal(data:Record<string,any>){
   const explanation=isAdjust?'Начисление перемещает средства из свободного резерва казино игроку. Списание возвращает средства в резерв. Прежние записи сохраняются.':op.action==='block'?'Новые денежные запросы игрока будут закрыты во всех контурах. Уже принятые платежи и завершение начатых партий продолжат обрабатываться.':op.action==='refresh'?'Сервис сверит платёж и продолжит ранее подтверждённый вывод, если он ожидает обработки. Это может отправить выплату. Действие сохранится в истории.':'Действие и его автор сохранятся в истории.';
   const el=modal(`<span class="eyebrow">ПОДТВЕРЖДЕНИЕ ДЕЙСТВИЯ</span><h2>${h(title)}</h2><p>${h(FINANCE_SOURCES[op.source as FinanceSource])}</p><p class="action-explanation">${h(explanation)}</p><form id="action-form"><label>ID игрока<input name="playerId" value="${h(op.playerId)}" readonly></label>${isAdjust?`<label>Направление<select name="direction" ${existing?'disabled':''}><option value="credit" ${String(op.deltaUnits).startsWith('-')?'':'selected'}>Начислить из резерва казино</option><option value="debit" ${String(op.deltaUnits).startsWith('-')?'selected':''}>Списать в резерв казино</option></select></label><label>Сумма, USDT<input name="amount" inputmode="decimal" placeholder="0,00" required ${existing?'readonly':''} value="${existing?h(money(String(op.deltaUnits).replace('-','')).replaceAll(' ','').replaceAll(' ','')):''}"></label>`:''}<label>Причина<textarea name="reason" required minlength="5" maxlength="500" ${existing?'readonly':''}>${h(op.reason??'')}</textarea></label><label>Твой пароль для подтверждения<input name="password" type="password" autocomplete="current-password" required minlength="8" maxlength="128"></label><p class="form-error" role="alert"></p><button class="primary" type="submit">${existing?'Повторить то же действие':'Подтвердить действие'}</button></form><small class="muted">Номер: ${h(op.id)}</small>`);
   const form=el.querySelector<HTMLFormElement>('#action-form')!;
+  let submitted=existing;
+  const lock=()=>{
+    form.querySelectorAll<HTMLInputElement|HTMLTextAreaElement>('[name="amount"],[name="reason"]').forEach(input=>input.readOnly=true);
+    const direction=form.querySelector<HTMLSelectElement>('[name="direction"]');if(direction)direction.disabled=true;
+    form.querySelector('button')!.textContent='Повторить то же действие';
+  };
   form.onsubmit=async event=>{
     event.preventDefault();const button=form.querySelector<HTMLButtonElement>('button')!,values=new FormData(form);button.disabled=true;
     try{
-      if(!existing){op.reason=String(values.get('reason')).trim();if(isAdjust){const amount=units(String(values.get('amount')));if(BigInt(amount)===0n)throw new Error('Сумма должна быть больше нуля.');op.deltaUnits=(values.get('direction')==='debit'?'-':'')+amount;}}
-      pendingAction=op;localStorage.setItem(actionKey(),JSON.stringify(op));
+      if(!submitted){
+        op.reason=String(values.get('reason')).trim();
+        if(op.reason.length<5||op.reason.length>500||/[\x00-\x1f\x7f]/.test(op.reason))throw new Error('Укажи причину от 5 до 500 символов в одной строке.');
+        if(isAdjust){const amount=units(String(values.get('amount')));if(BigInt(amount)===0n||BigInt(amount)>1000000000000n)throw new Error('Сумма должна быть больше нуля и не превышать 1 000 000 USDT.');op.deltaUnits=(values.get('direction')==='debit'?'-':'')+amount;}
+      }
+      localStorage.setItem(actionKey(),JSON.stringify(op));pendingAction=op;submitted=true;lock();
       const password=String(values.get('password'));(form.elements.namedItem('password') as HTMLInputElement).value='';
       await api('actions',{...op,password});pendingAction=undefined;localStorage.removeItem(actionKey());el.close();notice('Действие выполнено и сохранено в истории.');
       if(profile?.id===op.playerId)void openProfile(op.playerId);void load();
     }catch(error){
-      const status=(error as any).status;
-      if([400,401,403,404,409,429].includes(status)){pendingAction=undefined;localStorage.removeItem(actionKey());}
+      if((error as any).rejectedCommandId===op.id){
+        pendingAction=undefined;localStorage.removeItem(actionKey());el.close();notice((error as Error).message,true);void load();return;
+      }
       form.querySelector('.form-error')!.textContent=(error as Error).message+(pendingAction?' Повтори действие с этим же номером.':'');button.disabled=false;
     }
   };

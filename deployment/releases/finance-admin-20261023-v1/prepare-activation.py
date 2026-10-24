@@ -37,6 +37,7 @@ required = git('diff', '--name-only', '272f566', '78cb1cc').decode().splitlines(
 required = [n for n in required if n.startswith(('server/admin/', 'src/admin/', 'src/shared/financeAdmin'))
             or n == 'admin.html']
 metadata = json.loads((STAGE / 'dist-server/payments-meta.json').read_text())
+assert release['files']['dist-server/payments-meta.json'] == sha((STAGE / 'dist-server/payments-meta.json').read_bytes())
 inputs = [n for n in metadata['inputs'] if not n.startswith('node_modules/')]
 for name in sorted(set(required + inputs)):
     committed = git('show', SOURCE + ':' + name)

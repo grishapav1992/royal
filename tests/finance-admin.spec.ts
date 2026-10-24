@@ -1,14 +1,22 @@
 import { test,expect } from '@playwright/test';
-import { mkdir } from 'node:fs/promises';
-test('owner follows money from summary to a player, adjusts once after a lost response, controls access and exports a filtered page',async({page,context})=>{
+const apiUrl='http://127.0.0.1:2594';
+test.beforeEach(async({page})=>{
+  await page.route('https://fonts.googleapis.com/**',route=>route.fulfill({status:200,contentType:'text/css',body:''}));
+  await page.route('**/api/**',async route=>{
+    const response=await route.fetch({url:route.request().url().replace('http://127.0.0.1:5194',apiUrl)});
+    await route.fulfill({response});
+  });
+});
+test.afterEach(async({page})=>{await page.unrouteAll({behavior:'wait'});});
+test('owner follows money from summary to a player, adjusts once after a lost response, controls access and exports a filtered page',async({page},testInfo)=>{
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
-  await page.goto('/admin.html');
+  await page.goto('/admin.html',{waitUntil:'domcontentloaded'});
   await page.getByLabel('Почта',{exact:true}).fill('owner@admin-fixture.test');
   await page.getByLabel('Пароль',{exact:true}).fill('fixture-admin-password');await page.getByRole('button',{name:'Войти в кабинет'}).click();
   await expect(page.getByRole('heading',{name:'Финансы казино'})).toBeVisible();
   await expect(page.locator('.environment')).toHaveText('ТЕСТОВЫЕ СРЕДСТВА');
   await expect(page.locator('.undated')).toContainText('дата не сохранена');
-  await mkdir('artifacts/finance-admin',{recursive:true});await page.screenshot({path:'artifacts/finance-admin/desktop.png',fullPage:true});
+  await page.screenshot({path:testInfo.outputPath('desktop.png'),fullPage:true});
   await page.locator('nav [data-tab="operations"]').click();
   await page.getByRole('combobox',{name:'Операция',exact:true}).selectOption('game');await page.getByRole('button',{name:'Применить',exact:true}).click();
   await expect(page.locator('tbody tr')).toHaveCount(12);
@@ -20,18 +28,44 @@ test('owner follows money from summary to a player, adjusts once after a lost re
   await page.getByLabel('Сумма, USDT',{exact:true}).fill('2,125');
   await page.getByLabel('Причина',{exact:true}).fill('Проверка начисления с потерей ответа');
   await page.getByLabel('Твой пароль для подтверждения').fill('fixture-admin-password');
-  let once=true;await page.route('**/api/admin/actions',async route=>{
-    if(once){once=false;await route.fetch();await route.abort('failed');}else await route.continue();
+  let once=true;const sent:any[]=[];await page.route('**/api/admin/actions',async route=>{
+    sent.push(route.request().postDataJSON());
+    const response=await route.fetch({url:apiUrl+'/api/admin/actions'});
+    if(once){once=false;await route.abort('failed');}else await route.fulfill({response});
   });
   await page.getByRole('button',{name:'Подтвердить действие',exact:true}).click();
   await expect(page.locator('.form-error')).toContainText('же номером');
+  await expect(page.getByLabel('Сумма, USDT',{exact:true})).toHaveAttribute('readonly','');
+  await expect(page.getByLabel('Причина',{exact:true})).toHaveAttribute('readonly','');
+  await expect(page.getByLabel('Направление')).toBeDisabled();
+  const saved=()=>page.evaluate(()=>Object.entries(localStorage).filter(([key])=>key.startsWith('royal-finance-action:')));
+  const original=await saved();expect(original).toHaveLength(1);
+  // Even a stale editable DOM must not replace the payload of a sent command.
+  await page.getByLabel('Сумма, USDT',{exact:true}).evaluate((input:HTMLInputElement)=>input.value='999');
+  await page.getByLabel('Твой пароль для подтверждения').fill('incorrect-password');
+  await page.getByRole('button',{name:'Повторить то же действие',exact:true}).click();
+  await expect(page.locator('.form-error')).toContainText('Неверный пароль');
+  expect(await saved()).toEqual(original);expect(sent[1].id).toBe(sent[0].id);expect(sent[1].deltaUnits).toBe('2125000');
+  await page.locator('#modal > .close').click();
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.getByRole('button',{name:'Проверить тем же номером',exact:true}).click();
+  await expect(page.getByLabel('Сумма, USDT',{exact:true})).toHaveValue('2,125');
+  await page.getByLabel('Твой пароль для подтверждения').fill('fixture-admin-password');
+  await page.getByRole('button',{name:'Повторить то же действие',exact:true}).click();
+  await expect(page.locator('#modal')).not.toBeVisible();
+  expect(await saved()).toHaveLength(0);expect(sent.slice(0,3).every(op=>op.id===sent[0].id)).toBe(true);
+  await page.getByRole('button',{name:'Мария Волкова'}).first().click();
+  await expect(page.locator('.profile-balance strong')).not.toHaveText(beforeText);
+  const current=await page.request.get(apiUrl+'/api/admin/session');const owner=(await current.json()).account;
+  const response=await page.request.post(apiUrl+'/api/admin/report',{headers:{Origin:'http://127.0.0.1:5194','x-royal-admin-account':owner.id},data:{source:'nile',filters:{kind:'adjustment'}}});
+  const report=await response.json();expect(report.totals.count).toBe(1);expect(report.totals.adjustments).toBe('2125000');
+  await page.getByRole('button',{name:'Корректировать баланс',exact:true}).click();
+  await page.getByLabel('Сумма, USDT',{exact:true}).fill('1000000');
+  await page.getByLabel('Причина',{exact:true}).fill('Проверка подтверждённого отказа резерва');
   await page.getByLabel('Твой пароль для подтверждения').fill('fixture-admin-password');
   await page.getByRole('button',{name:'Подтвердить действие',exact:true}).click();
-  await expect(page.locator('#modal')).not.toBeVisible();
-  await expect(page.locator('.profile-balance strong')).not.toHaveText(beforeText);
-  const current=await page.request.get('/api/admin/session');const owner=(await current.json()).account;
-  const response=await page.request.post('/api/admin/report',{headers:{Origin:'http://127.0.0.1:5194','x-royal-admin-account':owner.id},data:{source:'nile',filters:{kind:'adjustment'}}});
-  const report=await response.json();expect(report.totals.count).toBe(1);expect(report.totals.adjustments).toBe('2125000');
+  await expect(page.locator('#modal')).not.toBeVisible();expect(await saved()).toHaveLength(0);
+  expect(sent[3].id).not.toBe(sent[0].id);
   await page.getByRole('button',{name:'Приостановить денежные операции',exact:true}).click();
   await page.getByLabel('Причина',{exact:true}).fill('Проверка приостановки платных игр');
   await page.getByLabel('Твой пароль для подтверждения').fill('fixture-admin-password');
@@ -43,7 +77,7 @@ test('owner follows money from summary to a player, adjusts once after a lost re
   await page.getByRole('button',{name:'Сбросить',exact:true}).click();await page.locator('nav [data-tab="overview"]').click();
   await page.setViewportSize({width:390,height:844});
   await expect(page.locator('.metrics')).toBeVisible();
-  await page.screenshot({path:'artifacts/finance-admin/mobile.png',fullPage:true});
+  await page.screenshot({path:testInfo.outputPath('mobile.png'),fullPage:true});
   const overflow=await page.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth,elements:[...document.querySelectorAll<HTMLElement>('body *')].map(el=>({tag:el.tagName,id:el.id,cls:el.className,right:el.getBoundingClientRect().right,width:el.getBoundingClientRect().width})).filter(el=>el.right>innerWidth+1).slice(0,20)}));
   if(overflow.scroll>overflow.width)console.log(JSON.stringify(overflow));
   expect(overflow.scroll<=overflow.width).toBe(true);
@@ -53,6 +87,6 @@ test('owner follows money from summary to a player, adjusts once after a lost re
 });
 
 test('ordinary player cannot access financial APIs',async({request})=>{
-  await request.post('/api/auth/login',{data:{email:'player@admin-fixture.test',password:'fixture-player-password'}});
-  expect((await request.get('/api/admin/session')).status()).toBe(403);
+  await request.post(apiUrl+'/api/auth/login',{data:{email:'player@admin-fixture.test',password:'fixture-player-password'}});
+  expect((await request.get(apiUrl+'/api/admin/session')).status()).toBe(403);
 });

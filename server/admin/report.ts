@@ -67,19 +67,26 @@ export const paymentReportSql = `
 
 export const nileReportSql = (auto: boolean,native=false) => `
  WITH owners AS (SELECT account_id,user_id FROM bindings ${auto?'UNION ALL SELECT account_id,user_id FROM auto_bindings':''})
- SELECT e.id,coalesce(o.account_id,'') AS player_id,''::text AS opponent_id,
- CASE e.kind WHEN 'funding' THEN CASE WHEN (e.payload::jsonb->>'playerUnits')::numeric>0 THEN 'deposit' ELSE 'capital' END
+ SELECT CASE WHEN e.kind='funding' THEN e.id||':'||funding.kind ELSE e.id END AS id,
+ CASE WHEN funding.kind='capital' THEN '' ELSE coalesce(o.account_id,'') END AS player_id,''::text AS opponent_id,
+ CASE e.kind WHEN 'funding' THEN funding.kind
  WHEN 'round' THEN 'game' WHEN 'adjustment' THEN 'adjustment' ELSE 'capital' END AS kind,
  CASE WHEN e.kind='round' THEN 'house' ELSE '' END AS mode,CASE WHEN e.kind='round' THEN 'royal-coins' ELSE '' END AS game,
  CASE WHEN e.kind='round' THEN e.payload::jsonb->>'id' ELSE '' END AS round_id,'finished'::text AS status,e.kind AS provider_status,
- CASE e.kind WHEN 'funding' THEN CASE WHEN (e.payload::jsonb->>'playerUnits')::numeric>0 THEN (e.payload::jsonb->>'playerUnits')::numeric ELSE (e.payload::jsonb->>'reserveUnits')::numeric END
+ CASE e.kind WHEN 'funding' THEN funding.amount_units
  WHEN 'round' THEN (e.payload::jsonb->>'stakeUnits')::numeric WHEN 'adjustment' THEN abs((e.payload::jsonb->>'deltaUnits')::numeric) ELSE (e.payload::jsonb->>'units')::numeric END AS amount_units,
- CASE e.kind WHEN 'funding' THEN (e.payload::jsonb->>'playerUnits')::numeric WHEN 'round' THEN (e.payload::jsonb->>'payoutUnits')::numeric-(e.payload::jsonb->>'stakeUnits')::numeric
+ CASE e.kind WHEN 'funding' THEN funding.amount_units WHEN 'round' THEN (e.payload::jsonb->>'payoutUnits')::numeric-(e.payload::jsonb->>'stakeUnits')::numeric
  WHEN 'adjustment' THEN (e.payload::jsonb->>'deltaUnits')::numeric ELSE -(e.payload::jsonb->>'units')::numeric END AS delta_units,
  coalesce((e.payload::jsonb->>'stakeUnits')::numeric,0) AS stake_units,coalesce((e.payload::jsonb->>'payoutUnits')::numeric,0) AS payout_units,
  coalesce(e.payload::jsonb->>'txId','') AS tx_id,'usdt-nile'::text AS currency,''::text AS address,
  (e.payload::jsonb->>'createdAt')::bigint AS created_at,coalesce(e.payload::jsonb->>'actorId','') AS actor_id,coalesce(e.payload::jsonb->>'reason','') AS reason,0::numeric AS fee_units
- FROM events e LEFT JOIN owners o ON o.user_id=e.payload::jsonb->>'userId' WHERE e.kind IN ('funding','round','reserve','adjustment')
+ FROM events e LEFT JOIN owners o ON o.user_id=e.payload::jsonb->>'userId'
+ CROSS JOIN LATERAL (
+   SELECT ''::text AS kind,0::numeric AS amount_units WHERE e.kind<>'funding'
+   UNION ALL SELECT v.kind,v.amount_units FROM (VALUES
+     ('deposit',(e.payload::jsonb->>'playerUnits')::numeric),('capital',(e.payload::jsonb->>'reserveUnits')::numeric)
+   ) v(kind,amount_units) WHERE e.kind='funding' AND v.amount_units>0
+ ) funding WHERE e.kind IN ('funding','round','reserve','adjustment')
  UNION ALL ${pvpFinanceSql}${native?' UNION ALL '+nativeFinanceSql:''}`;
 
 export const mainnetReportSql = `

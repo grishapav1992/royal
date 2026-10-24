@@ -6,6 +6,7 @@ import { playCommand } from '../nilePlayRoutes';
 import { adminIds,financeFilters,requireFinanceAdmin,adjustmentRequest } from './validation';
 import type { FinanceReport,FinanceSource } from '../../src/shared/financeAdmin';
 import { gameAccountId } from '../../src/shared/nileWallet';
+import { FinanceCommandRejected } from './store';
 
 const source=(value:unknown):FinanceSource=>{
   if(!['payments','nile','mainnet'].includes(value as string))throw new CryptoError(400,'Выбери денежный контур.');return value as FinanceSource;
@@ -13,7 +14,8 @@ const source=(value:unknown):FinanceSource=>{
 export function installFinanceAdmin(app:Application,store:AccountStore=accounts,env:NodeJS.ProcessEnv=process.env){
   const ids=adminIds(env),attempts=new Map<string,{at:number;count:number}>();let verifying=0;
   const error=(err:unknown,res:express.Response)=>res.status(err instanceof CryptoError||err instanceof AuthError?err.status:503)
-    .json({error:err instanceof CryptoError||err instanceof AuthError?err.message:'Финансовый сервис временно недоступен. Повтори то же действие позже.'});
+    .json({error:err instanceof CryptoError||err instanceof AuthError?err.message:'Финансовый сервис временно недоступен. Повтори то же действие позже.',
+      ...(err instanceof FinanceCommandRejected?{rejectedCommandId:err.commandId}:{})});
   const handle=(fn:(req:express.Request,res:express.Response)=>Promise<unknown>):RequestHandler=>async(req,res)=>{
     try{res.json(await fn(req,res));}catch(err){error(err,res);}
   };

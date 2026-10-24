@@ -1,6 +1,7 @@
 import {selectHall,worldPoint} from './room-ui';
 import {test,expect,type Page,type Browser,type APIRequestContext} from '@playwright/test';
 import {Client} from '@colyseus/sdk';
+import {ACTIVITIES} from '../src/shared/activities';
 const activities=(p:Page)=>p.evaluate(()=>(window as any).royalDemo.getActivities());
 const game=(p:Page)=>p.evaluate(()=>(window as any).royalDemo.getState());
 const net=(p:Page)=>p.evaluate(()=>(window as any).royalDemo.getNetworkState());
@@ -10,7 +11,8 @@ async function join(page:Page,room:string){
 async function open(page:Page,id:string){
  await selectHall(page,id==='piano'?'arcade':'tables');
  if(id==='piano'){
-  const point=await worldPoint(page,120,290);await page.mouse.click(point.x,point.y);
+  const {x,y,w,h}=ACTIVITIES.piano.bounds;
+  const point=await worldPoint(page,x+w/2,y+h/2);await page.mouse.click(point.x,point.y);
  }else{await page.locator('#games-tab').click();await page.locator(`[data-activity="${id}"]`).click();}
  await expect(page.locator('#shared-dialog')).toBeVisible({timeout:15000});
 }

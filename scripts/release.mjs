@@ -28,7 +28,7 @@ export async function releaseFiles(root, modules = null) {
   const files = {};
   if (!modules) {
     Object.assign(files, Object.fromEntries(Object.entries(await inventory(await regularPath(root, 'dist'))).map(([name, hash]) => ['dist/' + name, hash])));
-    for (const name of ['index.js', 'crypto-reconcile.js', 'payments.js']) {
+    for (const name of ['index.js', 'crypto-reconcile.js', 'payments.js', 'payments-meta.json']) {
       const path = 'dist-server/' + name;
       files[path] = digest(await readFile(await regularPath(root, path)));
     }

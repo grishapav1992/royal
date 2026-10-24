@@ -21,7 +21,10 @@ export const nativeFinanceSql=`
 export const pvpFinanceSql=`
  SELECT 'pvp:'||(h.payload::jsonb->>'matchId')||':'||(h.payload::jsonb->'participants'->0->>'accountId') AS id,
  h.payload::jsonb->'participants'->0->>'accountId' AS player_id,
- coalesce((SELECT v->>'accountId' FROM jsonb_array_elements(fin.payload::jsonb->'participants') v WHERE v->>'accountId'<>h.payload::jsonb->'participants'->0->>'accountId'),'') AS opponent_id,
+ coalesce((SELECT v->>'accountId' FROM jsonb_array_elements(fin.payload::jsonb->'participants') v WHERE v->>'accountId'<>h.payload::jsonb->'participants'->0->>'accountId'),
+   (SELECT other.payload::jsonb->'participants'->0->>'accountId' FROM events other
+    WHERE other.kind='pvp' AND other.payload::jsonb->>'action'='hold' AND other.payload::jsonb->>'matchId'=h.payload::jsonb->>'matchId'
+      AND other.payload::jsonb->'participants'->0->>'accountId'<>h.payload::jsonb->'participants'->0->>'accountId' ORDER BY other.seq LIMIT 1),'') AS opponent_id,
  'game'::text AS kind,'pvp'::text AS mode,h.payload::jsonb->>'gameId' AS game,h.payload::jsonb->>'matchId' AS round_id,
  CASE WHEN fin.id IS NULL THEN 'pending' WHEN fin.payload::jsonb->>'action'='refund' THEN 'failed' ELSE 'finished' END AS status,
  coalesce(fin.payload::jsonb->>'reason','hold') AS provider_status,
