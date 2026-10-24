@@ -7,10 +7,10 @@ import subprocess
 import tarfile
 
 ROOT = Path(__file__).resolve().parents[3]
-WORK = ROOT / 'artifacts/pvp-virtual-release'
+WORK = ROOT / 'artifacts/work/pvp-virtual-usdt'
 OUT = WORK / 'payload'
 NAME = 'pvp-virtual-usdt-20261024-v1'
-BASE = 'c68fd25d79245a5404b4182f8c55a2318806883b'
+BASE = '5045c401063b5f2c792497ae2f4e53bcd34e1a98'
 sha = lambda p: hashlib.sha256(Path(p).read_bytes()).hexdigest()
 git = lambda *args: subprocess.check_output(['git', *args], cwd=ROOT, text=True).strip()
 old = json.loads((WORK / 'before.json').read_text())
