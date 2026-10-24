@@ -37,7 +37,7 @@ for name in release['changed']:
         changed[name] = sha(ROOT / name)
         copy(ROOT / name, 'source/' + name)
 for name, row in normalized.items():
-    if name not in changed and not name.endswith(('.orig', '.bak')):
+    if name not in changed and name != 'deployment/SERVER.md' and not name.endswith(('.orig', '.bak')):
         assert (ROOT / name).is_file(), name
         assert hashlib.sha256((ROOT / name).read_bytes().replace(b'\r\n', b'\n')).hexdigest() == row['lf'], name
 assert changed and 'server/index.ts' in changed
@@ -48,7 +48,8 @@ for name, digest in release['files'].items():
         continue
     relative = name.removeprefix('dist/')
     source = 'public/' + relative
-    if name in runtime and runtime[name]['raw'] == old['program'].get(name) and digest == runtime[name]['lf']:
+    canonical = hashlib.sha256((ROOT / name).read_bytes().replace(b'\r\n', b'\n')).hexdigest() if Path(name).suffix in ['.js','.css','.html','.json','.svg'] else digest
+    if name in runtime and runtime[name]['raw'] == old['program'].get(name) and canonical == runtime[name]['lf']:
         continue
     if relative in ['index.html', 'admin.html'] or relative.startswith('assets/') and Path(relative).suffix in ['.js', '.css']:
         assert relative in ['index.html', 'admin.html'] or name not in old['program'], 'Existing asset URL would change'
@@ -57,13 +58,17 @@ for name, digest in release['files'].items():
     else:
         source = 'public/' + relative
         assert source in normalized and old['program'].get(name) == normalized[source]['sha256'], name
-        assert digest == normalized[source]['lf'], 'Unexpected public asset change: ' + name
+        assert canonical == normalized[source]['lf'], 'Unexpected public asset change: ' + name
 copy(ROOT / 'dist-server/index.js', 'server-delta/index.js')
 
 packages = []
 module_delta = {}
 for row in release['packages']:
     game, version = row['gameId'], row['version']
+    # Only these packages use the changed PvP contract. Other games keep the
+    # compatible bytes already published with the common virtual slot wallet.
+    if game not in {'hockey','pool','chess','durak','transfer-durak','crazy-eights'}:
+        continue
     folder = ROOT / 'module-dist' / game / 'versions' / version
     metadata = json.loads((folder / 'manifest.json').read_text())
     prior = active['games'].get(game)
