@@ -1,7 +1,7 @@
 import { normalizeAppearance, type Appearance } from './appearance';
 
 export const SKIN_PRICE_UNITS = '10000000';
-export const SKIN_VARIANTS = 3;
+export const SKIN_VARIANTS = 2;
 export const SKIN_THEME = { id: 'south-park', name: 'Южный парк', version: 1 } as const;
 export const SKIN_UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 export type GeneratedAppearance = { version: 2; skinId: string; theme: string };
@@ -19,7 +19,7 @@ export const normalizeCharacterAppearance = (value: unknown): CharacterAppearanc
 export const skinAssetUrl = (id: string) => '/api/skin-studio/assets/' + id;
 export type SkinJobState = 'reserving' | 'generating' | 'capturing' | 'ready' | 'selected' | 'refunding' | 'failed';
 export type SkinCard = { id: string; jobId: string; prompt: string; createdAt: number };
-export type SkinJob = { id: string; prompt: string; state: SkinJobState; error: string; selectedId: string | null; createdAt: number; variants: SkinCard[] };
-export type SkinStudioSnapshot = { theme: typeof SKIN_THEME; priceUnits: string; enabled: boolean; job: SkinJob | null; wardrobe: SkinCard[]; equippedId: string | null;
+export type SkinJob = { id: string; prompt: string; state: SkinJobState; error: string; selectedId: string | null; createdAt: number; variantCount: number; variants: SkinCard[] };
+export type SkinStudioSnapshot = { theme: typeof SKIN_THEME; priceUnits: string; variantCount: number; enabled: boolean; job: SkinJob | null; wardrobe: SkinCard[]; equippedId: string | null;
   character: { skin: number; appearance: CharacterAppearance | null } };
 export type SkinPurchase = { id: string; state: 'reserved' | 'captured' | 'refunded'; amountUnits: string };

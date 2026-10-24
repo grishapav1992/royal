@@ -1,20 +1,17 @@
 import type { Account } from '../../server/accounts';
 import type { RoomScene } from '../game/RoomScene';
-import { createCharacterPortrait } from '../game/characters';
-import { loadSkinSheet } from '../game/generatedSkinArt';
-import { skinAssetUrl, type SkinCard, type SkinStudioSnapshot } from '../shared/skinStudio';
-import { serializeAppearance } from '../shared/appearance';
+import { SKIN_VARIANTS, skinAssetUrl, type SkinCard, type SkinStudioSnapshot } from '../shared/skinStudio';
 import { WALLET_ACCOUNT_HEADER } from '../shared/walletAccount';
 import { demoWallet } from '../wallet/WalletClient';
 import { tailorPortrait } from '../game/atelierArt';
 import './skin-studio.css';
 
 const statuses = {
-  reserving: 'Резервируем $10…', generating: 'Рисуем три образа…',
+  reserving: 'Резервируем $10…', generating: 'Рисуем два образа…',
   capturing: 'Подтверждаем оплату…', ready: '',
   selected: '', refunding: 'Возвращаем $10…', failed: '',
 };
-type Pending = { id: string; prompt: string; reference: string };
+type Pending = { id: string; prompt: string };
 export class SkinStudioUI {
   readonly dialog = document.createElement('dialog');
   private button = document.createElement('button');
@@ -40,7 +37,7 @@ export class SkinStudioUI {
     this.scene.onAtelier = () => { void this.open(); };
     this.dialog.id = 'skin-studio-dialog'; this.dialog.className = 'skin-studio'; this.dialog.setAttribute('aria-labelledby', 'skin-studio-title');
     this.dialog.innerHTML = `<div class="skin-studio-heading"><div class="skin-studio-identity"><div class="skin-tailor-portrait"></div><div><h2 id="skin-studio-title">Ателье</h2><span class="eyebrow">Южный парк</span></div></div><button type="button" class="icon-button" aria-label="Закрыть ателье">×</button></div>
-      <form><label for="skin-prompt">Опиши образ</label><div class="skin-prompt-slot"></div><div class="skin-studio-price"><span>3 варианта · 1 навсегда</span><p class="skin-balance" aria-live="polite"></p></div><div class="skin-generate-slot"></div></form>
+      <form><label for="skin-prompt">Опиши новый образ</label><div class="skin-prompt-slot"></div><div class="skin-studio-price"><span class="skin-offer">2 варианта · 1 навсегда</span><p class="skin-balance" aria-live="polite"></p></div><div class="skin-generate-slot"></div></form>
       <div class="skin-status-slot"></div><button type="button" class="text-button skin-refresh" hidden>Проверить статус</button><section class="skin-results" hidden><h3>Выбери один образ</h3><div class="skin-variants-slot"></div><div class="skin-choose-slot"></div></section>
       <section class="skin-wardrobe" hidden><h3>Гардероб</h3><div class="skin-wardrobe-slot"></div></section>`;
     this.dialog.querySelector('.skin-tailor-portrait')!.append(tailorPortrait());
@@ -69,12 +66,8 @@ export class SkinStudioUI {
         const user = this.account(), epoch = this.epoch; if (!user) return;
         if (!this.pending) {
           await this.send('');
-          if (this.data?.equippedId) await loadSkinSheet(this.data.equippedId);
           if (epoch !== this.epoch) throw new Error('Аккаунт изменился.');
-          const character = this.data?.character ?? { skin: user.skin ?? 0, appearance: this.data?.equippedId
-            ? { version: 2 as const, skinId: this.data.equippedId, theme: this.data.theme.id } : user.appearance };
-          const reference = createCharacterPortrait(character.skin, serializeAppearance(character.appearance), 6).toDataURL('image/png');
-          const operation = { id: crypto.randomUUID(), prompt: this.prompt.value.trim(), reference };
+          const operation = { id: crypto.randomUUID(), prompt: this.prompt.value.trim() };
           // Persist before sending so a lost HTTP response cannot charge another generation.
           sessionStorage.setItem(this.key(), JSON.stringify(operation)); this.pending = operation;
         }
@@ -150,12 +143,16 @@ export class SkinStudioUI {
     const job = this.data?.job;
     const active = job && ['reserving', 'generating', 'capturing', 'ready', 'refunding'].includes(job.state);
     const generating = job && ['reserving', 'generating', 'capturing'].includes(job.state);
+    const count = active ? job.variantCount ?? (job.variants.length || SKIN_VARIANTS) : this.data?.variantCount ?? SKIN_VARIANTS;
+    this.dialog.querySelector('.skin-offer')!.textContent = `${count} варианта · 1 навсегда`;
+    this.variants.dataset.variantCount = String(count);
     this.prompt.disabled = this.busy || !!active || !!this.pending;
     this.generate.disabled = this.busy || !!active || (!this.data?.enabled && !this.pending);
     // Background status requests must not change the label or width of an active generation button.
     this.generate.textContent = generating ? 'Создаём образы…' : job?.state === 'refunding' ? statuses.refunding
       : this.pending ? 'Проверить отправленный запрос' : this.busy ? 'Проверяем…' : 'Создать за $10';
-    this.status.textContent = this.message || (job?.error && ['failed', 'refunding'].includes(job.state) ? job.error : job ? statuses[job.state] : this.data && !this.data.enabled ? 'Генерация временно недоступна.' : '');
+    this.status.textContent = this.message || (job?.error && ['failed', 'refunding'].includes(job.state) ? job.error
+      : job?.state === 'generating' && count === 3 ? 'Рисуем три образа…' : job ? statuses[job.state] : this.data && !this.data.enabled ? 'Генерация временно недоступна.' : '');
     this.status.hidden = !this.status.textContent;
     const refresh = this.dialog.querySelector<HTMLButtonElement>('.skin-refresh')!;
     refresh.hidden = !this.failedRequest; refresh.disabled = this.busy;
