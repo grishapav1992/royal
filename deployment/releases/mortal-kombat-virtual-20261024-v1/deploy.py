@@ -211,6 +211,29 @@ def reusable_source_backup(candidate):
     return candidate
 
 
+WALLET_BACKUP_LIMIT = 64 * 1024**2
+DISK_RESERVE = 5 * 1024**3
+BUILD_MARGIN = 64 * 1024**2
+
+
+def bounded_dump(command, path, limit=WALLET_BACKUP_LIMIT):
+    with path.open('xb') as output:
+        process = subprocess.Popen(command, stdout=subprocess.PIPE)
+        try:
+            for block in iter(lambda: process.stdout.read(65536), b''):
+                require(output.tell() + len(block) <= limit, 'Wallet backup exceeds reserved capacity')
+                output.write(block)
+            require(process.wait() == 0, 'Wallet backup command failed')
+        except BaseException:
+            if process.poll() is None:
+                process.kill()
+            process.wait()
+            path.unlink(missing_ok=True)
+            raise
+        finally:
+            process.stdout.close()
+
+
 PROGRAM = "const f=require('fs'),p=require('path'),c=require('crypto'),o={};function walk(d){if(!f.existsSync(d))return;for(const n of f.readdirSync(d).sort()){const x=p.join(d,n),s=f.lstatSync(x);if(s.isSymbolicLink())throw Error('symlink');if(s.isDirectory())walk(x);else if(s.isFile())o[p.relative('/app',x)]=c.createHash('sha256').update(f.readFileSync(x)).digest('hex');}}walk('/app/dist');walk('/app/dist-server');walk('/app/module-dist');for(const n of ['package.json','package-lock.json'])o[n]=c.createHash('sha256').update(f.readFileSync('/app/'+n)).digest('hex');console.log(JSON.stringify(o))"
 
 
@@ -227,13 +250,13 @@ def build():
     delta_bytes = sum((ROOT / 'dist-delta' / name).stat().st_size for name in DELTA)
     backend_bytes = (ROOT / 'server-delta/index.js').stat().st_size
     reusable = reusable_source_backup(Path('/opt/royal-backups/pvp-virtual-usdt-20261024-v1/source.tgz'))
-    require(old['availableBytes'] > 5 * 1024**3 + 300 * 1024**2 + (0 if reusable else source_bytes) + (delta_bytes + backend_bytes) * 4,
+    require(old['availableBytes'] > DISK_RESERVE + WALLET_BACKUP_LIMIT + BUILD_MARGIN
+            + (0 if reusable else source_bytes) + (delta_bytes + backend_bytes) * 4,
             'Insufficient free disk space')
     BACKUP.mkdir(mode=0o700, exist_ok=False)
     command = ['docker','exec','royal-finance-sim-finance-db-1','sh','-c',
         'export PGPASSWORD="$(cat /run/secrets/finance_admin_password)"; exec pg_dump -h 127.0.0.1 -U finance_schema_owner -d royal_finance_sim --format=custom --schema=royal_game']
-    with (BACKUP / 'game-wallet.dump').open('xb') as output:
-        subprocess.run(command,stdout=output,check=True)
+    bounded_dump(command, BACKUP / 'game-wallet.dump')
     os.chmod(BACKUP / 'game-wallet.dump',0o600)
     require((BACKUP / 'game-wallet.dump').stat().st_size>1000,'Game wallet backup is incomplete')
     if reusable:
@@ -244,6 +267,8 @@ def build():
                 require(sha(LIVE / name) == digest, 'Source changed during backup')
                 archive.add(LIVE / name, arcname=name, recursive=False)
     verify_tar(BACKUP / 'source.tgz')
+    require(shutil.disk_usage(LIVE).free > DISK_RESERVE + BUILD_MARGIN + (delta_bytes + backend_bytes) * 4,
+            'Disk reserve changed during backup')
     run(['docker', 'cp', 'royal-game-1:/app/dist/index.html', str(BACKUP / 'index.html')])
     require(sha(BACKUP / 'index.html') == OLD['program']['dist/index.html'], 'Client index backup differs')
     for suffix, ref in [('', OLD['container']['image']), ('-prepared', OLD['preparedImage'])]:
@@ -264,6 +289,7 @@ def build():
         subprocess.run(['docker', 'build', '--pull=false', '-t', 'royal-game:' + NAME, '.'], cwd=context,
                        check=True, stdout=log, stderr=subprocess.STDOUT)
     candidate = image('royal-game:' + NAME)
+    require(shutil.disk_usage(LIVE).free > DISK_RESERVE, 'Disk reserve changed during build')
     program = json.loads(run(['docker', 'run', '--rm', '--network=none', '--read-only', '--entrypoint',
                               'node', candidate, '--v8-pool-size=1', '-e', PROGRAM]))
     expected = expected_program()

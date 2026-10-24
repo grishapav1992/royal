@@ -117,6 +117,23 @@ class ChatReleaseTests(unittest.TestCase):
         h.OLD['source']['src/ui/SocialUI.ts'] = sha(b'different source')
         self.assertIsNone(h.reusable_source_backup(candidate))
 
+    def test_wallet_backup_stream_keeps_exact_bytes_and_caps_disk_allocation(self):
+        h = self.helper
+        output = h.LIVE / 'wallet.dump'
+        h.bounded_dump([sys.executable, '-c', 'import sys;sys.stdout.buffer.write(bytes(range(128)))'], output, 128)
+        self.assertEqual(output.read_bytes(), bytes(range(128)))
+        output.unlink()
+        with self.assertRaisesRegex(RuntimeError, 'exceeds reserved capacity'):
+            h.bounded_dump([sys.executable, '-c', 'print("x"*1000000)'], output, 128)
+        self.assertFalse(output.exists())
+
+    def test_wallet_backup_failure_never_leaves_a_valid_looking_dump(self):
+        h = self.helper
+        output = h.LIVE / 'wallet.dump'
+        with self.assertRaisesRegex(RuntimeError, 'backup command failed'):
+            h.bounded_dump([sys.executable, '-c', 'import sys;print("partial");sys.exit(1)'], output, 128)
+        self.assertFalse(output.exists())
+
     def test_overlay_preserves_payment_crypto_dependencies_and_all_bundled_modules(self):
         helper = self.helper
         result = helper.expected_program()
