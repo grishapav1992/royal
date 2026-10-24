@@ -62,7 +62,13 @@
       "stdinOnly": true,
       "preservesExistingConfig": true,
       "enabledByDefault": false
-    }
+    },
+    "afterIntegration": {
+      "typescript": true,
+      "rtpGate": true,
+      "archive": true
+    },
+    "localFixtureCleanShutdown": true
   },
   "remaining": [
     "Sign in to the separate Sandbox account and supply its API Key and IPN Secret using the local hidden-input helper.",
@@ -70,5 +76,7 @@
     "Reconcile the current production release, publish the exact reviewed source and enable only the test path.",
     "Verify a real Sandbox-created payment and its signed callback or authenticated status refresh, then repeat the game checks on that environment."
   ],
-  "sourceBranch": "feature/nowpayments-sandbox"
+  "sourceBranch": "feature/nowpayments-sandbox",
+  "testedImplementationCommit": "f0a3218806822b0a4696dc817966a35d62d6c7c9",
+  "integrationMain": "42848851bb987c7114d000e71ade389b7c8c3afd"
 }
