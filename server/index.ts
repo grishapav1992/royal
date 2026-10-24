@@ -5,6 +5,7 @@ import { installCasinoApiPro } from './casinoApiProRoutes';
 import { installUsdtWallet } from './usdtWalletRoutes';
 import { installCryptoWallet } from './cryptoWalletRoutes';
 import { installPaymentCredits } from './payments/credits';
+import { installSandboxPayments } from './payments/sandbox-routes';
 import { installMira } from './miraRoutes';
 import { installSkinStudio } from './skinStudioRoutes';
 import { defineServer, defineRoom } from '@colyseus/core';
@@ -18,6 +19,7 @@ import { installFinanceAdmin } from './admin/routes';
 
 const port = Number(process.env.PORT || 2567);
 let stopCrypto: (() => void) | undefined;
+let stopSandbox: (() => void) | undefined;
 let stopSkinStudio: (() => Promise<void>) | undefined;
 const server = defineServer({
   transport: new WebSocketTransport({ maxPayload: 8192, pingInterval: 5000, pingMaxRetries: 3 }),
@@ -36,6 +38,7 @@ const server = defineServer({
     installFinanceAdmin(app);
     installGameWallet(app);
     installDemoWallet(app);
+    stopSandbox = installSandboxPayments(app);
     installCasinoApiPro(app);
     app.use(['/api/nile-wallet','/api/nile-play'],(_req,res)=>res.status(410).json({error:'Используй общий кошелёк виртуальных USDT в клубе.'}));
     installUsdtWallet(app);
@@ -53,6 +56,6 @@ const server = defineServer({
   },
 });
 server.onBeforeShutdown(async () => { await stopSkinStudio?.(); });
-server.onShutdown(async () => { stopCrypto?.(); await accounts.close(); });
+server.onShutdown(async () => { stopCrypto?.(); stopSandbox?.(); await accounts.close(); });
 await server.listen(port, '0.0.0.0');
 console.log(`Royal server listening on port ${port}`);

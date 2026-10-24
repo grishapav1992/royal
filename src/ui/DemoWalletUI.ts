@@ -2,12 +2,14 @@ import { t as translateText, tr, locale } from '../i18n/index';
 import type { RoomScene } from '../game/RoomScene';
 import { demoWallet, coins } from '../wallet/WalletClient';
 import {providerCoins} from '../shared/demoWallet';
+import { NowPaymentsSandboxUI } from './NowPaymentsSandboxUI';
 import '../wallet.css';
 
 export class DemoWalletUI {
   private button = document.createElement('button');
   private dialog = document.createElement('dialog');
   private message = '';
+  private sandbox: NowPaymentsSandboxUI;
   constructor(private scene: RoomScene) {
     this.button.type = 'button'; this.button.id = 'wallet-button'; this.button.className = 'wallet-button'; this.button.hidden = true;
     this.button.onclick = () => this.open();
@@ -23,8 +25,9 @@ export class DemoWalletUI {
       <button id="wallet-refresh" class="text-button">Обновить баланс</button>
       <button id="wallet-provider-games" class="primary-button">Вернуться в зал</button>
       <h3>История операций</h3><ol id="wallet-history"></ol>
-      <p class="wallet-note">Внешние демоигры Luelon используют собственные кредиты и не списывают монеты этого кошелька.</p>`);
+      <p class="wallet-note">Один виртуальный баланс для игр клуба. Сохранённые партии доступны после повторного входа.</p>`);
     document.body.append(this.dialog);
+    this.sandbox = new NowPaymentsSandboxUI(this.dialog);
     this.dialog.querySelector<HTMLButtonElement>('#wallet-close')!.onclick = () => this.dialog.close();
     this.dialog.addEventListener('close', () => scene.setLocked(!!document.querySelector('dialog[open]')));
     this.dialog.querySelector('form')!.onsubmit = event => {
@@ -48,6 +51,7 @@ export class DemoWalletUI {
   private open() {
     if (!demoWallet.accountId) return;
     this.message = ''; this.scene.setLocked(true); this.dialog.showModal(); this.render(); void demoWallet.refresh();
+    this.sandbox.open();
   }
   private async perform(action: () => Promise<unknown>) {
     this.message = '';
@@ -74,7 +78,7 @@ export class DemoWalletUI {
       const label = document.createElement('span');
       const action = { deposit: translateText('Демопополнение'), bet: translateText('ставка'), win: translateText('начисление'), refund: translateText('возврат ставки'), rollback: translateText('отмена операции') }[entry.kind];
       const gameName = (entry.gameName ? translateText(entry.gameName) : '') || (entry.source === 'casinoapipro' ? 'Casino Api Pro' : entry.source === 'royal-roulette' ? translateText('Рулетка') : 'Royal Coins');
-      label.textContent = entry.kind === 'deposit' ? action : `${gameName}: ${action}`;
+      label.textContent = entry.kind === 'deposit' ? entry.source === 'nowpayments-sandbox' ? 'NOWPayments Sandbox' : action : `${gameName}: ${action}`;
       const amount = document.createElement('strong'); amount.textContent = `${entry.amount > 0 ? '+' : ''}${coins(entry.amount)}`;
       const detail = document.createElement('small'); detail.textContent = tr`${new Date(entry.createdAt).toLocaleString(locale)} · Остаток ${coins(entry.balance)}`;
       row.append(label, amount, detail); history.append(row);

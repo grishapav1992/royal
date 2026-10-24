@@ -1,0 +1,74 @@
+{
+  "status": "prepared-awaiting-sandbox-credentials",
+  "verifiedAt": "2026-10-24T10:51:50.999Z",
+  "productionPublished": false,
+  "realPaymentsCreated": 0,
+  "officialSandboxPaymentsCreated": 0,
+  "realProviderEndToEndVerified": false,
+  "providerReadiness": {
+    "api": "https://api-sandbox.nowpayments.io/v1/",
+    "runtime": "Node.js in the existing payment container",
+    "statusEndpoint": 200,
+    "storedKeyMerchantCoinsEndpoint": 403,
+    "independentSandboxCredentialsConfigured": false,
+    "accountPage": "https://account-sandbox.nowpayments.io/sign-in",
+    "providerNotice": "Official Sandbox documentation says it has not been kept in sync with Production since 2025."
+  },
+  "isolation": {
+    "liveProviderConfigurationChanged": false,
+    "liveWalletGuardPreserved": true,
+    "realLedgerFunded": false,
+    "virtualWalletReused": true,
+    "newWalletCreated": false,
+    "withdrawalsAdded": false,
+    "gameMathematicsChanged": false,
+    "productionPlayerDataWritten": false
+  },
+  "checks": {
+    "serverTests": {
+      "passed": 22,
+      "failed": 0
+    },
+    "royalGamesWithAcceptedWagerAndReplay": 12,
+    "fullApplicationBuild": true,
+    "rtpGate": {
+      "passed": true,
+      "verified": 9,
+      "legacyNotQualified": 114
+    },
+    "archive": {
+      "verified": true,
+      "games": 54,
+      "sources": 73
+    },
+    "ui": {
+      "mode": "local-emulator",
+      "successCredit": 1000,
+      "partialCredit": 500,
+      "failedCredit": 0,
+      "balanceBeforeWager": 1500,
+      "bet": 10,
+      "payout": 3.03,
+      "balanceAfterWager": 1493.03,
+      "persistsAfterReload": true,
+      "repeatedRefreshDoesNotRefillBalance": true,
+      "connectedChat": true,
+      "mobileWidth": 390,
+      "mobileHorizontalOverflow": false,
+      "javascriptErrors": 0
+    },
+    "credentialWriter": {
+      "mode": "0600",
+      "stdinOnly": true,
+      "preservesExistingConfig": true,
+      "enabledByDefault": false
+    }
+  },
+  "remaining": [
+    "Sign in to the separate Sandbox account and supply its API Key and IPN Secret using the local hidden-input helper.",
+    "Verify that those separate credentials are accepted by Sandbox.",
+    "Reconcile the current production release, publish the exact reviewed source and enable only the test path.",
+    "Verify a real Sandbox-created payment and its signed callback or authenticated status refresh, then repeat the game checks on that environment."
+  ],
+  "sourceBranch": "feature/nowpayments-sandbox"
+}
