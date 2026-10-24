@@ -1,0 +1,22 @@
+{
+  "sourceCommit": "baab40bb7c2d63bd5b2e9795ed4a99f658ffae15",
+  "changes": {
+    "/royal-nile-reconcile-once": {
+      "before": {
+        "image": "sha256:e83101988eaee0ef4c1c7500d49940c9db313950c7b1aad744520b1db8687b54",
+        "runtimeFingerprint": "a085a3b5521ac0f4ca000a63dba390d9c39e9223bac6346fdac9ded5322cf174"
+      },
+      "after": {
+        "image": "sha256:87c6acaec909e3b23998af875e4d44d07369bd6d742408aa7e913cf7c63119ac",
+        "runtimeFingerprint": "5ed4c3f4c6a9c812697c02b35dbea8f98820306341babc949406099458e6d0e9"
+      },
+      "reviewedCommand": [
+        "node",
+        "reconcile.js"
+      ],
+      "readonlyRoot": true,
+      "writableMounts": []
+    }
+  },
+  "reason": "Reconcile was already published by the preceding verified Nile recovery. Adopt only that exact image and strong configuration for application retention; financial services and data are unchanged."
+}

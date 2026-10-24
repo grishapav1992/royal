@@ -44,7 +44,7 @@ export function renderSlotInfo(options: Heading & {reduced: boolean; bodyHtml: s
 
 export function renderSlotResult(options: Heading & {returned: string; ledger: string; note: string; label: string;}) {
   const {style, returned, ledger, note, label} = options;
-  const prize = style === 'lg' ? tr`<div class="lg-bonus-number">${slotCoins(returned)}<span>USDT (Nile)</span></div>` : tr`<div class="cc-prize">${slotCoins(returned)}<small>USDT · NILE</small></div>`;
+  const prize = style === 'lg' ? tr`<div class="lg-bonus-number">${slotCoins(returned)}<span>USDT · Демо</span></div>` : tr`<div class="cc-prize">${slotCoins(returned)}<small>USDT · NILE</small></div>`;
   return heading(options) + prize + ledger + `<p>${slotEscape(note)}</p>` + button(style, 'complete', label);
 }
 

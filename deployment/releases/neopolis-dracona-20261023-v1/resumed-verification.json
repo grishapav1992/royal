@@ -1,0 +1,312 @@
+{
+  "ok": true,
+  "verifiedAt": "2026-10-24T07:06:55.551Z",
+  "originalPublicationSourceCommit": "5d97773ef73d353b51dbd7f1b575dfd243e8fdf6",
+  "testedCheckoutBaseCommit": "db7f169b88619ce10f9ae8514eae2fa0b36901fa",
+  "localChecks": {
+    "slotMathWalletAndCompatibilityPassed": 45,
+    "rtpGateTestsPassed": 10,
+    "checkRtpPassed": true,
+    "qualifiedSlotProfiles": 2,
+    "otherQualifiedProfiles": 1,
+    "legacyProfilesNotQualified": 114,
+    "qualifiedPaidRounds": {
+      "studio-neopolis": 7669287,
+      "studio-dracona": 5000000
+    },
+    "targetRtp": 0.96
+  },
+  "live": {
+    "verifiedAt": "2026-10-24T07:00:49.774Z",
+    "hostSourceCommit": "5045c401063b5f2c792497ae2f4e53bcd34e1a98",
+    "hostFiles": [
+      "assets/main-DXQnTrZB.js",
+      "index.html"
+    ],
+    "modules": [
+      {
+        "game": "studio-neopolis",
+        "version": "0.4.0-449b44ba4fb6",
+        "rulesVersion": 3,
+        "progressVersion": 3,
+        "manifest": "/game-modules/studio-neopolis/versions/0.4.0-449b44ba4fb6/manifest.json",
+        "filesVerified": 13
+      },
+      {
+        "game": "studio-dracona",
+        "version": "1.1.0-d22db7a2eef5",
+        "rulesVersion": 3,
+        "progressVersion": 2,
+        "manifest": "/game-modules/studio-dracona/versions/1.1.0-d22db7a2eef5/manifest.json",
+        "filesVerified": 29
+      }
+    ],
+    "games": [
+      {
+        "game": "studio-neopolis",
+        "rulesVersion": 3,
+        "viewVersion": 3,
+        "paidRounds": 10,
+        "freeContinuations": 0,
+        "transcriptReplay": true,
+        "lostResponseRecovered": true,
+        "reloadPreservedSession": true,
+        "exactCents": true,
+        "finalReplayDidNotCreditTwice": true
+      },
+      {
+        "game": "studio-dracona",
+        "rulesVersion": 3,
+        "viewVersion": 2,
+        "paidRounds": 10,
+        "freeContinuations": 8,
+        "transcriptReplay": true,
+        "lostResponseRecovered": true,
+        "reloadPreservedSession": true,
+        "exactCents": true,
+        "finalReplayDidNotCreditTwice": true
+      }
+    ],
+    "screens": [
+      {
+        "game": "studio-neopolis",
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "connectedChat": true,
+        "noHorizontalOverflow": true
+      },
+      {
+        "game": "studio-neopolis",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "connectedChat": true,
+        "noHorizontalOverflow": true
+      },
+      {
+        "game": "studio-dracona",
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "connectedChat": true,
+        "noHorizontalOverflow": true
+      },
+      {
+        "game": "studio-dracona",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "connectedChat": true,
+        "noHorizontalOverflow": true
+      }
+    ],
+    "ok": true,
+    "pageErrors": [],
+    "productionScope": {
+      "syntheticAccounts": 2,
+      "isolatedRoom": true,
+      "freeVirtualDeposit": 10000,
+      "blockchainTransfers": 0,
+      "otherPlayerBalancesModified": false
+    }
+  },
+  "guest": {
+    "ok": true,
+    "verifiedAt": "2026-10-24T07:06:55.551Z",
+    "results": [
+      {
+        "game": "studio-neopolis",
+        "language": "ru",
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "imagesLoaded": 2,
+        "atlasesLoaded": 2,
+        "anonymousStakeBlocked": true,
+        "noHorizontalOverflow": true
+      },
+      {
+        "game": "studio-neopolis",
+        "language": "ru",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "imagesLoaded": 2,
+        "atlasesLoaded": 2,
+        "anonymousStakeBlocked": true,
+        "noHorizontalOverflow": true
+      },
+      {
+        "game": "studio-dracona",
+        "language": "ru",
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "imagesLoaded": 28,
+        "atlasesLoaded": 0,
+        "anonymousStakeBlocked": true,
+        "noHorizontalOverflow": true
+      },
+      {
+        "game": "studio-dracona",
+        "language": "ru",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "imagesLoaded": 28,
+        "atlasesLoaded": 0,
+        "anonymousStakeBlocked": true,
+        "noHorizontalOverflow": true
+      },
+      {
+        "game": "studio-neopolis",
+        "language": "en",
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "imagesLoaded": 2,
+        "atlasesLoaded": 2,
+        "anonymousStakeBlocked": true,
+        "noHorizontalOverflow": true
+      },
+      {
+        "game": "studio-neopolis",
+        "language": "en",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "imagesLoaded": 2,
+        "atlasesLoaded": 2,
+        "anonymousStakeBlocked": true,
+        "noHorizontalOverflow": true
+      },
+      {
+        "game": "studio-dracona",
+        "language": "en",
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "imagesLoaded": 28,
+        "atlasesLoaded": 0,
+        "anonymousStakeBlocked": true,
+        "noHorizontalOverflow": true
+      },
+      {
+        "game": "studio-dracona",
+        "language": "en",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "imagesLoaded": 28,
+        "atlasesLoaded": 0,
+        "anonymousStakeBlocked": true,
+        "noHorizontalOverflow": true
+      }
+    ],
+    "productionAccountsOrMoneyModified": false,
+    "chatVerification": "Connected chat and transactional recovery tested on the actual local host with temporary PostgreSQL; public guest preview has no online chat."
+  },
+  "runtime": {
+    "verifiedAt": 1792825437.2043755,
+    "mathSourceHashes": {
+      "src/shared/neopolisMath.ts": "e32db65f28cb4cac308d07154fb56f7816fc630c82a7548e1733ad34e0a91820",
+      "src/shared/neopolisMathV1.ts": "84adb49d9303b29bd8a460b30b7e6993d77df343f8dae33025a0646f7ca3bb92",
+      "src/shared/neopolisMathV2.ts": "22c2d4646ea2ac8db021bde42fcb90b38035848041cea217acd1d9eeb2682692",
+      "src/shared/neopolis.ts": "f18d7309bb4be35655239b506dc04ca5cfea81f9e3bf63da31acbdac08b509ce",
+      "server/games/neopolis.ts": "4c2a411cc151474090c496ab78b9d9fc1c293d81e1e8e87e4dd50cefec865119",
+      "src/shared/draconaMath.ts": "5735d0173b801e80329ec93f9d0dc049da94068addd042f7de0fb6bf9ca248b4",
+      "src/shared/draconaMathV1.ts": "760b567c64aae4a5190641cad162fd9a6ff9e5764e8bd9d91d06dcb1d707ee21",
+      "src/shared/dracona.ts": "fa6d089b90592693ac3da96fed174f53db6733c37f3ab16e9205cc606396d649",
+      "server/games/dracona.ts": "9d7b86aa2db9dd2ebe0d6a6dc09283a33b868b03a1e5c444f722d90822e9fa95"
+    },
+    "containers": {
+      "royal-game-1": {
+        "image": "sha256:84d643da5eab7e9c368a7861040740df4911d5cd8b8d23dbf22341b805b4dcc5",
+        "container": "078ecfe05fbf3497bde58bc3739089361cb56df6c1467fb0bc14ff614c098d04",
+        "sourceCommit": "5045c401063b5f2c792497ae2f4e53bcd34e1a98",
+        "health": "healthy"
+      },
+      "royal-nile-play": {
+        "image": "sha256:d0664eee6f105b040a79f6c87a8f7328728e16354e6bf8d7ae785d1c96c58788",
+        "container": "59a265ce584072b8eba997e5a108dc7bd444c4dfe390eef83574fe6d6fd271ad",
+        "sourceCommit": "baab40bb7c2d63bd5b2e9795ed4a99f658ffae15",
+        "health": "healthy"
+      }
+    },
+    "modules": {
+      "studio-neopolis": {
+        "format": 1,
+        "gameId": "studio-neopolis",
+        "manifest": "/game-modules/studio-neopolis/versions/0.4.0-449b44ba4fb6/manifest.json",
+        "sha256": "3fdb4744a50ebe34d3fd3a0313b1fcf7f6fd2b4065a63370e07a744e3fde6c68"
+      },
+      "studio-dracona": {
+        "format": 1,
+        "gameId": "studio-dracona",
+        "manifest": "/game-modules/studio-dracona/versions/1.1.0-d22db7a2eef5/manifest.json",
+        "sha256": "0c26f68bed9d0e9d9f715537156e33abb4498079debbe22e39df71308e743e54"
+      }
+    },
+    "originalBackupFiles": {
+      "source.tgz": {
+        "exists": true,
+        "bytes": 144985917
+      },
+      "financial-source.tgz": {
+        "exists": true,
+        "bytes": 184949
+      },
+      "nile-play.dump": {
+        "exists": true,
+        "bytes": 85153
+      }
+    },
+    "nile": {
+      "auditOk": true,
+      "ready": true,
+      "sourceAgeSeconds": 46
+    },
+    "qualifiedSourceHashesMatch": true,
+    "writesPerformedByRuntimeProbe": false
+  },
+  "scope": {
+    "productionServerOrConfigurationReinstalledDuringResume": false,
+    "existingPlayerDataRestored": false,
+    "syntheticFreeVirtualWalletsOnly": true,
+    "blockchainTransfers": 0,
+    "productionSmokeIsNotAnRtpEstimate": true,
+    "completeNeopolisCampaignCoveredByLocalTransactionalAndBrowserTests": true
+  },
+  "concurrentReleasesPreserved": [
+    "restore-usdt-20261023-v1",
+    "restore-direct-topup-20261023-v1",
+    "raise-windows-20261023-v2",
+    "royal-floor-one-only-20261024-v1"
+  ],
+  "verificationHarnessNotes": [
+    "Wait for the real host and wallet refresh before interacting.",
+    "API-only rounds require refreshing the browser wallet cache before comparing the next UI balance.",
+    "Cleanup is bounded and proof is saved before closing connections.",
+    "An earlier run was interrupted by the concurrent host publication; the final run uses its reviewed successor hashes."
+  ],
+  "postIntegrationRtpGate": {
+    "registeredProfilesVerified": 9,
+    "legacyProfilesNotQualified": 114,
+    "passed": true,
+    "qualifiedSlotMathSourcesUnchanged": true,
+    "mainBase": "8d915fc1b4875b008b503c020b64c90f66efdc88"
+  }
+}

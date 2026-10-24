@@ -1,8 +1,7 @@
+import { installDemoWallet } from './demoWalletRoutes';
 import { installGameWallet } from './gameWalletRoutes';
 import { installGameModuleAssets } from './gameModuleAssets';
 import { installCasinoApiPro } from './casinoApiProRoutes';
-import { installNileWallet } from './nileWalletRoutes';
-import { installNilePlay } from './nilePlayRoutes';
 import { installUsdtWallet } from './usdtWalletRoutes';
 import { installCryptoWallet } from './cryptoWalletRoutes';
 import { installPaymentCredits } from './payments/credits';
@@ -36,10 +35,9 @@ const server = defineServer({
     installAuth(app);
     installFinanceAdmin(app);
     installGameWallet(app);
-    app.use('/api/demo-wallet',(_req,res)=>res.status(410).json({error:'Демобаланс отключён. Обнови страницу для общего баланса USDT.'}));
+    installDemoWallet(app);
     installCasinoApiPro(app);
-    installNileWallet(app);
-    installNilePlay(app);
+    app.use(['/api/nile-wallet','/api/nile-play'],(_req,res)=>res.status(410).json({error:'Используй общий кошелёк виртуальных USDT в клубе.'}));
     installUsdtWallet(app);
     stopCrypto = installCryptoWallet(app);
       installPaymentCredits(app, accounts.paymentCredits, accounts.paymentEventSecret);

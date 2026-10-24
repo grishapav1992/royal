@@ -11,6 +11,7 @@ import {CARAMEL_CLIENT_HEADER} from '../src/shared/caramelCarnival';
 import express, { type Application, type ErrorRequestHandler, type RequestHandler } from 'express';
 import { accounts, allowedOrigin, cookieToken } from './accounts';
 import { WalletError } from './demoWallet';
+import { isRetiredArcadeGame } from '../src/shared/arcadeCatalog';
 import { WALLET_ACCOUNT_HEADER } from '../src/shared/walletAccount';
 import { createDemoWalletRequestLimit, type DemoWalletRequestLimitOptions } from './demoWalletRequestLimit';
 
@@ -80,14 +81,26 @@ export function installDemoWallet(app: Application, requestLimitOptions?: DemoWa
     }
   });
   app.post('/api/demo-wallet/mines', async (req, res) => {
-    try { res.json(await accounts.wallet.mines.operate(res.locals.accountId, req.body)); }
+    try {
+      if (req.body?.action === 'start' && isRetiredArcadeGame('royal-mines')
+        && !(typeof req.body.id === 'string' && await accounts.wallet.mines.hasAcceptedOperation(res.locals.accountId, req.body.id))) {
+        throw new WalletError(409, 'Эта игра убрана из зала. Сохранённую партию можно завершить. Новая ставка не принята.');
+      }
+      res.json(await accounts.wallet.mines.operate(res.locals.accountId, req.body));
+    }
     catch (error) {
       if (error instanceof WalletError) res.status(error.status).json({ error: error.message });
       else { console.error('Demo Mines operation failed'); res.status(500).json({ error: 'Не удалось подтвердить действие Mines. Повтори тот же запрос.' }); }
     }
   });
   app.post('/api/demo-wallet/operations', async (req, res) => {
-    try { res.json(await accounts.wallet.operate(res.locals.accountId, req.body)); }
+    try {
+      if (req.body?.kind === 'play' && isRetiredArcadeGame(req.body.gameId)
+        && !(typeof req.body.id === 'string' && await accounts.wallet.hasAcceptedOperation(res.locals.accountId, req.body.id))) {
+        throw new WalletError(409, 'Эта игра убрана из зала. Новая ставка не принята.');
+      }
+      res.json(await accounts.wallet.operate(res.locals.accountId, req.body));
+    }
     catch (error) {
       if (error instanceof WalletError) res.status(error.status).json({ error: error.message });
       else { console.error('Demo wallet operation failed'); res.status(500).json({ error: 'Не удалось подтвердить операцию. Повтори запрос.' }); }

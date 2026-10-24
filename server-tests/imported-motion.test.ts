@@ -1,11 +1,11 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { ARCADE_GITHUB_GAMES } from '../src/shared/arcadeCatalog';
+import { ARCHIVED_GITHUB_GAMES } from '../src/shared/arcadeCatalog';
 import { STUDIO_GAMES } from '../src/shared/studioGames';
 import { IMPORTED_MOTION_GAMES, IMPORTED_OUTCOME_EVENT, emitImportedOutcome, importedOutcomeTier } from '../src/ui/importedMotion/Outcome';
 
-test('presentation scope is exactly the current nine GitHub games and excludes RoyalGames', () => {
-  assert.deepEqual([...IMPORTED_MOTION_GAMES].sort(), [...ARCADE_GITHUB_GAMES].sort());
+test('presentation scope is exactly the archived nine GitHub games and excludes RoyalGames', () => {
+  assert.deepEqual([...IMPORTED_MOTION_GAMES].sort(), [...ARCHIVED_GITHUB_GAMES].sort());
   for (const game of [...STUDIO_GAMES, 'royal-plinko', 'github-crash', 'original-cr-vs-leo']) assert(!IMPORTED_MOTION_GAMES.includes(game as any));
 });
 test('partial returns and stake returns never receive win celebrations', () => {

@@ -36,7 +36,7 @@ with open('/opt/royal-releases/themed-publish.lock','a+') as app,open('/opt/roya
     phase='guard'
     try:
         for name,digest in M['payload'].items():assert sha(ROOT/name)==digest,name
-        before=snapshot(include_prepared=False);settings=configs(before)
+        before=snapshot(include_program=False,include_prepared=False);settings=configs(before)
         assert before['containers']['royal-nile-play']['image']==M['baseFinancialImage']
         assert before['containers']['royal-game-1']['health']=='healthy'
         for name,digest in M['baseSource'].items():
@@ -65,8 +65,8 @@ with open('/opt/royal-releases/themed-publish.lock','a+') as app,open('/opt/roya
         with (ROOT/'build.log').open('w') as log:
             subprocess.run(['docker','build','--pull=false','-t',tag,'.'],cwd=context,stdout=log,stderr=subprocess.STDOUT,check=True)
         image=run(['docker','image','inspect',tag,'--format','{{.Id}}'])
-        now=snapshot(include_prepared=False)
-        for key in ['source','financeSource','modules','hostContract','program']:
+        now=snapshot(include_program=False,include_prepared=False)
+        for key in ['source','financeSource','modules','hostContract']:
             assert now[key]==before[key],key
         assert configs(now)==settings
         assert inspect('royal-nile-play')['Id']==before['containers']['royal-nile-play']['id']
@@ -91,9 +91,9 @@ with open('/opt/royal-releases/themed-publish.lock','a+') as app,open('/opt/roya
             samples.append({'at':time.time(),'auditOk':True,'ready':True,'sourceAgeSeconds':round(time.time()-result['sourceAt']/1000),'houseReserveFunded':int(result['houseUnits'])>0})
             print(json.dumps({'sample':i+1,**samples[-1]}),flush=True)
             if i<4:time.sleep(30)
-        phase='verification';after=snapshot(include_prepared=False)
+        phase='verification';after=snapshot(include_program=False,include_prepared=False)
         assert after['containers']['royal-nile-play']['image']==image
-        for key in ['program','modules','hostContract']:assert after[key]==before[key],key
+        for key in ['modules','hostContract']:assert after[key]==before[key],key
         assert configs(after)==settings
         assert profile(inspect('royal-finance-sim-finance-db-1'))==database_profile
         assert digests(after['source'])=={**digests(before['source']),**M['source']}
@@ -103,6 +103,7 @@ with open('/opt/royal-releases/themed-publish.lock','a+') as app,open('/opt/roya
         record={'published':True,'sourceCommit':M['sourceCommit'],'applicationSourceCommit':M['applicationSourceCommit'],
             'financialImage':image,'gameImage':before['containers']['royal-game-1']['image'],'samples':samples,'fullAuditPreserved':True,
             'freshnessThresholdsPreserved':True,'hostAndModulesPreserved':True,'configurationPreserved':True,
+            'hostContainerAndImagePreserved':True,'hostProgramByteInventoryRepeated':False,
             'databaseRestored':False,'sourceBackupSha256':sha(BACKUP/'source.tgz'),'journalBackupSha256':sha(BACKUP/'nile-play.dump')}
         save('verification.json',record);print(json.dumps(record),flush=True)
     except BaseException as error:

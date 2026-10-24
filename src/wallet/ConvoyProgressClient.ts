@@ -18,7 +18,7 @@ export class ConvoyProgressClient extends EventTarget{
     const account=this.account,epoch=this.epoch,request=new AbortController();this.request=request;this.loading=true;this.notify();
     const timeout=setTimeout(()=>request.abort(),10000);
     try{
-      const reply=await fetch('/api/game-wallet/convoy-progress',{credentials:'same-origin',cache:'no-store',headers:{[WALLET_ACCOUNT_HEADER]:account},signal:request.signal});
+      const reply=await fetch('/api/demo-wallet/convoy-progress',{credentials:'same-origin',cache:'no-store',headers:{[WALLET_ACCOUNT_HEADER]:account},signal:request.signal});
       const data:unknown=await reply.json();if(this.disposed||epoch!==this.epoch)return;
       if(!reply.ok||!validConvoyProgress(data))throw new Error('progress');
       this.profile=data;this.error='';

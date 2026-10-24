@@ -2,13 +2,14 @@ import type { DatabaseRow } from '../database';
 import { NilePlayError, type NilePlayLedger } from './nile-play-ledger';
 import { gameAccountId } from '../../src/shared/nileWallet';
 import { COMBAT_USDT_STAKES, type CombatEscrowReceipt } from '../../src/shared/combatEscrow';
+import type { PvpLedger } from '../pvp/store';
 
 const fail = (code: string, status = 409): never => { throw new NilePlayError(code, status); };
 type Request = { id: string; accounts: [string, string]; stakeUnits: string; winner?: string };
 /** Match metadata only. All money stays in the common, audited Nile PvP journal. */
 export class NileCombatEscrow {
  readonly ready: Promise<void>;
- constructor(private ledger: NilePlayLedger, private now = () => Date.now()) {
+ constructor(private ledger: PvpLedger & {hasPvpMatch?:(id:string)=>Promise<boolean>}, private now = () => Date.now()) {
   this.ready = ledger.ready.then(() => ledger.db.transaction(() => ledger.db.exec(`
    CREATE TABLE IF NOT EXISTS combat_matches(
     id TEXT PRIMARY KEY, accounts TEXT NOT NULL, stake_units BIGINT NOT NULL CHECK(stake_units>0),
@@ -42,7 +43,7 @@ export class NileCombatEscrow {
   return this.ledger.db.transaction(async () => {
    const old = await this.existing(v);
    if (old) return old.state === 'active' && Number(old.expires_at) <= this.now() ? this.finish(old,'') : this.receipt(old);
-   if (await this.ledger.db.prepare("SELECT 1 FROM events WHERE kind='pvp' AND payload::jsonb->>'matchId'=?").get(v.id)) fail('play_idempotency_conflict');
+   if (this.ledger.hasPvpMatch ? await this.ledger.hasPvpMatch(v.id) : await this.ledger.db.prepare("SELECT 1 FROM events WHERE kind='pvp' AND payload::jsonb->>'matchId'=?").get(v.id)) fail('play_idempotency_conflict');
    for (const account of v.accounts) if (await this.ledger.db.prepare('SELECT 1 FROM combat_seats WHERE account_id=?').get(account)) fail('combat_already_playing');
    const now = this.now();
    // Both holds and metadata commit together, or neither player is charged.

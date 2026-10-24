@@ -15,7 +15,7 @@ export class MinesClient extends EventTarget {
   private epoch = 0;
   private readVersion = 0;
   private notify() { this.dispatchEvent(new Event('change')); }
-  private key() { return `royal-nile-mines-operation:${this.accountId}`; }
+  private key() { return `royal-mines-operation:${this.accountId}`; }
   setAccount(accountId: string | null) {
     if (accountId === this.accountId) return;
     this.epoch++; this.readVersion++; this.accountId = accountId;
@@ -36,7 +36,7 @@ export class MinesClient extends EventTarget {
     const epoch = this.epoch, version = ++this.readVersion;
     this.loading = true; this.notify();
     try {
-      const response = await fetch('/api/game-wallet/mines', {
+      const response = await fetch('/api/demo-wallet/mines', {
         credentials: 'same-origin', headers: { [WALLET_ACCOUNT_HEADER]: this.accountId },
         signal: AbortSignal.timeout(10000),
       });
@@ -70,7 +70,7 @@ export class MinesClient extends EventTarget {
     this.pending = operation; this.busy = true; this.error = ''; this.readVersion++; this.loading = false; this.notify();
     demoWallet.setExternalBusy('mines', true);
     try {
-      const response = await fetch('/api/game-wallet/mines', {
+      const response = await fetch('/api/demo-wallet/mines', {
         method: 'POST', credentials: 'same-origin',
         headers: { 'Content-Type': 'application/json', [WALLET_ACCOUNT_HEADER]: accountId },
         body: JSON.stringify(operation), signal: AbortSignal.timeout(15000),

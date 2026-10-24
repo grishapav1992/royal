@@ -15,13 +15,13 @@ export class DemoWalletUI {
     this.dialog.id = 'wallet-dialog'; this.dialog.className = 'wallet-dialog';
     this.dialog.setAttribute('aria-labelledby', 'wallet-title');
     this.dialog.innerHTML = translateText(`<div class="wallet-heading"><div><span class="eyebrow">РОЯЛЬ · ДЕМО</span><h2 id="wallet-title">Мой кошелёк</h2></div><button class="icon-button" id="wallet-close" aria-label="Закрыть кошелёк">×</button></div>
-      <p class="wallet-total"><strong id="wallet-balance">…</strong><span>виртуальных монет</span></p>
+      <p class="wallet-total"><strong id="wallet-balance">…</strong><span>виртуальных USDT</span></p>
       <p id="wallet-pending" class="wallet-note" role="status" hidden></p>
-      <p class="wallet-description">Бесплатные демомонеты для Casino Api Pro. Без реальных платежей и вывода.</p>
-      <form id="wallet-deposit"><label for="wallet-amount">Сумма пополнения</label><div class="wallet-deposit-row"><input id="wallet-amount" type="number" inputmode="numeric" min="1" max="100000" step="1" value="1000" required><button class="primary-button" type="submit">Пополнить демобаланс</button></div></form>
+      <p class="wallet-description">Введи сумму и играй в автоматы клуба. Это бесплатные виртуальные USDT без реальных платежей и вывода.</p>
+      <form id="wallet-deposit"><label for="wallet-amount">Сумма пополнения</label><div class="wallet-deposit-row"><input id="wallet-amount" type="number" inputmode="numeric" min="1" max="100000" step="1" value="1000" required><button class="primary-button" type="submit">Пополнить баланс</button></div></form>
       <p id="wallet-message" role="status" hidden></p><button id="wallet-retry" class="primary-button" hidden>Проверить операцию</button>
       <button id="wallet-refresh" class="text-button">Обновить баланс</button>
-      <button id="wallet-provider-games" class="primary-button">Игры Casino Api Pro</button>
+      <button id="wallet-provider-games" class="primary-button">Вернуться в зал</button>
       <h3>История операций</h3><ol id="wallet-history"></ol>
       <p class="wallet-note">Внешние демоигры Luelon используют собственные кредиты и не списывают монеты этого кошелька.</p>`);
     document.body.append(this.dialog);
@@ -35,7 +35,7 @@ export class DemoWalletUI {
       if (demoWallet.pending) void this.perform(() => demoWallet.retry());
     };
     this.dialog.querySelector<HTMLButtonElement>('#wallet-refresh')!.onclick = () => { void demoWallet.refresh(); };
-    this.dialog.querySelector<HTMLButtonElement>('#wallet-provider-games')!.onclick = () => { this.dialog.close(); window.dispatchEvent(new Event('royal-open-casinoapipro')); };
+    this.dialog.querySelector<HTMLButtonElement>('#wallet-provider-games')!.onclick = () => { this.dialog.close();  };
     demoWallet.addEventListener('change', () => this.render());
     window.addEventListener('royal-account', event => {
       demoWallet.setAccount((event as CustomEvent<string | null>).detail);
@@ -56,7 +56,7 @@ export class DemoWalletUI {
   }
   private render() {
     this.button.hidden = !demoWallet.accountId;
-    this.button.textContent = tr`◈ ${demoWallet.wallet ? coins(demoWallet.wallet.balance) : '…'} · Демо`;
+    this.button.textContent = tr`◈ ${demoWallet.wallet ? coins(demoWallet.wallet.balance) : '…'} USDT · Демо`;
     this.button.setAttribute('aria-label', translateText('Открыть демокошелёк'));
     this.dialog.querySelector('#wallet-balance')!.textContent = demoWallet.wallet ? coins(demoWallet.wallet.balance) : '…';
     const pending=this.dialog.querySelector<HTMLElement>('#wallet-pending')!,value=demoWallet.wallet?.pendingBalance;

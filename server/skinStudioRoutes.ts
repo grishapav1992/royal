@@ -32,7 +32,7 @@ export async function installSkinStudio(app: Application, store: SkinStudioStore
   app.get('/api/skin-studio', handle((_req, id) => store.snapshot(id)));
   app.post('/api/skin-studio/generations', handle((req, id) => store.create(id, req.body)));
   app.post('/api/skin-studio/choose', handle((req, id) => {
-    if (!req.body || Object.keys(req.body).sort().join(',') !== 'jobId,skinId' || typeof req.body.jobId !== 'string' || typeof req.body.skinId !== 'string') throw new SkinStudioError(400, 'Выбери один из трёх образов.');
+    if (!req.body || Object.keys(req.body).sort().join(',') !== 'jobId,skinId' || typeof req.body.jobId !== 'string' || typeof req.body.skinId !== 'string') throw new SkinStudioError(400, 'Выбери один из готовых образов.');
     return store.choose(id, req.body.jobId, req.body.skinId);
   }));
   app.post('/api/skin-studio/equip', handle((req, id) => {

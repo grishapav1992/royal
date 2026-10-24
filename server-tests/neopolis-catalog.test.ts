@@ -21,12 +21,12 @@ test('Neopolis identifies the shared Nile currency in both languages and retains
   }
 });
 
-test('Neopolis publishes its qualified independent module in Royal without moving physical cabinets', () => {
+test('Neopolis publishes its qualified independent module in Royal with its own physical cabinet', () => {
   assert.deepEqual(gameModuleContract(NEOPOLIS_GAME), { gameId:NEOPOLIS_GAME, slug:'neopolis', apiVersion:1, rulesVersion:3, progressVersion:3 });
-  assert(!(ACTIVE_STUDIO_GAMES as readonly string[]).includes(NEOPOLIS_GAME)); assert(!isRetiredArcadeGame(NEOPOLIS_GAME));
+  assert((ACTIVE_STUDIO_GAMES as readonly string[]).includes(NEOPOLIS_GAME)); assert(!isRetiredArcadeGame(NEOPOLIS_GAME));
   assert(ROYAL_PLATFORM_GAMES.includes(NEOPOLIS_GAME));
   assert.deepEqual(STUDIO_INFO[NEOPOLIS_GAME].paylines, LINES); assert.equal(STUDIO_MAX[NEOPOLIS_GAME], 3000);
-  assert(!CABINETS.some(cabinet=>cabinet.id===NEOPOLIS_GAME));
+  assert(CABINETS.some(cabinet=>cabinet.id===NEOPOLIS_GAME));
   const cabinet = CABINETS.find(cabinet=>cabinet.id==='studio-dracona')!;
   assert(cabinet?.wallet && cabinet.playable);assert.deepEqual({x:cabinet.x,y:cabinet.y},ARCADE_CABINET_POSITIONS['studio-dracona']);
 });

@@ -1,11 +1,11 @@
-import {ARCADE_GITHUB_GAMES} from '../shared/arcadeCatalog';
+import {ARCHIVED_GITHUB_GAMES} from '../shared/arcadeCatalog';
 import { language } from '../i18n/index';
 import { FIRST_FLOOR_ART, FIRST_FLOOR_GAME_THEMES } from './FirstFloorGameArt';
 import './imported-game-themes.css';
 import './first-floor-game-worlds.css';
 
-// Only the games in the first floor's GitHub collection receive this design.
-export const IMPORTED_GAME_THEMES = Object.fromEntries(Object.entries(FIRST_FLOOR_GAME_THEMES).filter(([id])=>(ARCADE_GITHUB_GAMES as readonly string[]).includes(id))) as Partial<typeof FIRST_FLOOR_GAME_THEMES>;
+// Only the games in the archived GitHub collection receive this design.
+export const IMPORTED_GAME_THEMES = Object.fromEntries(Object.entries(FIRST_FLOOR_GAME_THEMES).filter(([id])=>(ARCHIVED_GITHUB_GAMES as readonly string[]).includes(id))) as Partial<typeof FIRST_FLOOR_GAME_THEMES>;
 const escape = (value: string) => value.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
 const gems: Record<string, readonly [string, string, string]> = {
   '🟡': ['citrine', 'Цитрин', 'Citrine'], '🟢': ['emerald', 'Изумруд', 'Emerald'],

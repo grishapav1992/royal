@@ -1,0 +1,86 @@
+{
+  "type": "result",
+  "ok": true,
+  "samples": [
+    {
+      "at": "2026-10-23T20:33:48.283614+00:00",
+      "gameImage": "sha256:8473ec78964e4c69d022b1bf9708e417bed574160a770e1f4f1c7039d27bbce4",
+      "gameRevision": "5d97773ef73d353b51dbd7f1b575dfd243e8fdf6",
+      "gameHealth": "healthy",
+      "financialImage": "sha256:d0664eee6f105b040a79f6c87a8f7328728e16354e6bf8d7ae785d1c96c58788",
+      "financialRevision": "baab40bb7c2d63bd5b2e9795ed4a99f658ffae15",
+      "financialHealth": "healthy",
+      "ready": true,
+      "auditOk": true,
+      "lastError": null,
+      "sourceAt": 1792787553443,
+      "healthCheckedAt": "2026-10-23T20:33:17.258913617Z"
+    },
+    {
+      "at": "2026-10-23T20:34:23.352759+00:00",
+      "gameImage": "sha256:8473ec78964e4c69d022b1bf9708e417bed574160a770e1f4f1c7039d27bbce4",
+      "gameRevision": "5d97773ef73d353b51dbd7f1b575dfd243e8fdf6",
+      "gameHealth": "healthy",
+      "financialImage": "sha256:d0664eee6f105b040a79f6c87a8f7328728e16354e6bf8d7ae785d1c96c58788",
+      "financialRevision": "baab40bb7c2d63bd5b2e9795ed4a99f658ffae15",
+      "financialHealth": "healthy",
+      "ready": true,
+      "auditOk": true,
+      "lastError": null,
+      "sourceAt": 1792787642879,
+      "healthCheckedAt": "2026-10-23T20:34:21.261567423Z"
+    },
+    {
+      "at": "2026-10-23T20:34:58.758793+00:00",
+      "gameImage": "sha256:8473ec78964e4c69d022b1bf9708e417bed574160a770e1f4f1c7039d27bbce4",
+      "gameRevision": "5d97773ef73d353b51dbd7f1b575dfd243e8fdf6",
+      "gameHealth": "healthy",
+      "financialImage": "sha256:d0664eee6f105b040a79f6c87a8f7328728e16354e6bf8d7ae785d1c96c58788",
+      "financialRevision": "baab40bb7c2d63bd5b2e9795ed4a99f658ffae15",
+      "financialHealth": "healthy",
+      "ready": true,
+      "auditOk": true,
+      "lastError": null,
+      "sourceAt": 1792787690988,
+      "healthCheckedAt": "2026-10-23T20:34:52.469342264Z"
+    }
+  ],
+  "finalHealthHistory": [
+    {
+      "at": "2026-10-23T20:32:43.94266486Z",
+      "ready": true,
+      "auditOk": true,
+      "exitCode": 0,
+      "sourceAt": 1792787553443
+    },
+    {
+      "at": "2026-10-23T20:33:17.258913617Z",
+      "ready": true,
+      "auditOk": true,
+      "exitCode": 0,
+      "sourceAt": 1792787553443
+    },
+    {
+      "at": "2026-10-23T20:33:49.993875425Z",
+      "ready": true,
+      "auditOk": true,
+      "exitCode": 0,
+      "sourceAt": 1792787598198
+    },
+    {
+      "at": "2026-10-23T20:34:21.261567423Z",
+      "ready": true,
+      "auditOk": true,
+      "exitCode": 0,
+      "sourceAt": 1792787642879
+    },
+    {
+      "at": "2026-10-23T20:34:52.469342264Z",
+      "ready": true,
+      "auditOk": true,
+      "exitCode": 0,
+      "sourceAt": 1792787690988
+    }
+  ],
+  "productionAccountsOrMoneyModified": false
+}

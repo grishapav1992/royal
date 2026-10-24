@@ -45,7 +45,7 @@ export class RoyalCoins {
     this.root.className = 'royal-coins';
     this.root.innerHTML = tr`<div class="coins-marquee"><span>РОЯЛЬ · ТЕСТОВЫЕ ИГРЫ</span><h3>Royal Coins</h3><p>Твой кошелёк. Твоя удача.</p></div>
       <div class="coins-selectors"><label for="coins-game">Игра<select id="coins-game"><option value="royal-coins">Royal Coins</option><option value="royal-fruits">Royal Fruits</option><option value="royal-roulette">Рулетка</option></select></label>
-      <label for="coins-currency">Баланс для игры<select id="coins-currency"><option value="demo">USDT · Nile</option></select></label>
+      <label for="coins-currency">Баланс для игры<select id="coins-currency"><option value="demo">USDT · Демо</option></select></label>
       <label for="coins-theme" id="coins-theme-control">Оформление<select id="coins-theme">${COINS_THEMES.map(theme => `<option value="${theme.id}">${theme.name}</option>`).join('')}</select></label></div>
       <div class="coins-reels" role="img" aria-label="Барабаны"><span>♛</span><span>◆</span><span>★</span></div>
       <table class="fruits-paytable" hidden><caption>Три одинаковых на центральной линии</caption><thead><tr><th scope="col">Комбинация</th><th scope="col">Начисление</th></tr></thead><tbody>${FRUITS_PAYTABLE.map(row => tr`<tr><th scope="row" aria-label="Три символа: ${row.label}"><span aria-hidden="true">${fruitSymbols[row.symbol]} ${fruitSymbols[row.symbol]} ${fruitSymbols[row.symbol]}</span></th><td>×${row.multiplier}</td></tr>`).join('')}</tbody></table>
@@ -56,7 +56,7 @@ export class RoyalCoins {
       <p id="coins-result" role="status">Выбери ставку и запусти барабаны.</p>
       <div class="coins-controls"><label>Баланс<strong id="coins-balance">…</strong></label><label for="coins-bet">Ставка<select id="coins-bet"></select></label></div>
       <button id="coins-spin" class="primary-button">Крутить</button><button id="coins-wallet" class="text-button">Пополнить баланс USDT</button>
-      <p class="coins-rules"></p><p class="coins-rtp"></p><small>Общий тестовый USDT в сети Nile. Пополнение через кошелёк клуба. Вывод недоступен.</small>`;
+      <p class="coins-rules"></p><p class="coins-rtp"></p><small>Бесплатные виртуальные USDT. Введи сумму в кошельке клуба и играй. Вывод недоступен.</small>`;
     container.replaceChildren(this.root);
     this.element<HTMLSelectElement>('#coins-game').value = this.gameId;
     this.setBets();
@@ -130,7 +130,7 @@ export class RoyalCoins {
     const currency = this.element<HTMLSelectElement>('#coins-currency'); currency.value = 'demo'; currency.disabled = true;
     this.element('.coins-marquee span').textContent=this.usdt?translateText('РОЯЛЬ · ИГРЫ НА USDT'):translateText('РОЯЛЬ · ТЕСТОВЫЕ ИГРЫ');
     const heading=this.root.closest('dialog')?.querySelector('.mini-top .eyebrow');if(heading)heading.textContent=this.usdt?translateText('РОЯЛЬ / USDT · TRON'):translateText('РОЯЛЬ / ТЕСТОВЫЕ ИГРЫ');
-    this.element('small').textContent=translateText('Общий тестовый USDT в сети Nile. Пополнение через кошелёк клуба. Вывод недоступен.');
+    this.element('small').textContent=translateText('Бесплатные виртуальные USDT. Введи сумму в кошельке клуба и играй. Вывод недоступен.');
     this.element<HTMLSelectElement>('#coins-theme').disabled = locked;
     this.element('#coins-theme-control').hidden = roulette || fruits;
     this.element('.coins-reels').hidden = roulette;

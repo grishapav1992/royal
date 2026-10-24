@@ -1,9 +1,8 @@
 import { randomUUID } from 'node:crypto';
-import sharp from 'sharp';
 import type { PostgresDatabase, DatabaseRow } from './database';
 import { applySchemaMigration } from './database-migrations';
 import { CryptoError } from './crypto/config';
-import { generatedAppearance, normalizeCharacterAppearance, SKIN_THEME, SKIN_UUID, SKIN_PRICE_UNITS, type SkinJob, type SkinStudioSnapshot, type SkinPurchase } from '../src/shared/skinStudio';
+import { generatedAppearance, normalizeCharacterAppearance, SKIN_THEME, SKIN_UUID, SKIN_PRICE_UNITS, SKIN_VARIANTS, type SkinJob, type SkinStudioSnapshot, type SkinPurchase } from '../src/shared/skinStudio';
 import type { SkinImageGenerator } from './skinImages';
 
 export type SkinPayments = { skinPurchase(user: string, id: string, action: 'reserve' | 'capture' | 'refund'): Promise<SkinPurchase> };
@@ -26,7 +25,11 @@ export class SkinStudioStore {
       `CREATE INDEX IF NOT EXISTS skin_jobs_account ON skin_jobs(account_id,created_at DESC)`,
     ] })).then(() => applySchemaMigration(db, { id: 'skin-studio-leases-v2', statements: [
       "ALTER TABLE skin_jobs ADD COLUMN IF NOT EXISTS lease_token TEXT NOT NULL DEFAULT ''",
-    ] }));
+    ] })).then(() => applySchemaMigration(db, { id: 'skin-studio-variants-v3', statements: [
+      'ALTER TABLE skin_jobs ADD COLUMN IF NOT EXISTS variant_count INTEGER NOT NULL DEFAULT 3 CHECK(variant_count IN (2,3))',
+    ] })).then(()=>applySchemaMigration(db,{id:'skin-studio-payment-source-v1',statements:[
+      "ALTER TABLE skin_jobs ADD COLUMN payment_source TEXT NOT NULL DEFAULT 'nile' CHECK(payment_source IN ('nile','virtual-usdt-v1'))",
+    ]}));
   }
   enabled() { return this.paymentEnabled() && this.images.available(); }
   private card(row: DatabaseRow) { return { id: String(row.id), jobId: String(row.job_id), prompt: String(row.prompt), createdAt: Number(row.created_at) }; }
@@ -36,26 +39,22 @@ export class SkinStudioStore {
     let job: SkinJob | null = null;
     if (row) {
       const variants = row.state === 'ready' ? await this.db.prepare('SELECT s.id,s.job_id,j.prompt,j.created_at FROM generated_skins s JOIN skin_jobs j ON j.id=s.job_id WHERE j.id=? ORDER BY variant').all(row.id) : [];
-      job = { id: row.id, prompt: row.prompt, state: row.state, error: row.error, selectedId: row.selected_id, createdAt: Number(row.created_at), variants: variants.map(s => this.card(s)) };
+      job = { id: row.id, prompt: row.prompt, state: row.state, error: row.error, selectedId: row.selected_id, createdAt: Number(row.created_at), variantCount: Number(row.variant_count), variants: variants.map(s => this.card(s)) };
     }
     const wardrobe = await this.db.prepare(`SELECT s.id,s.job_id,j.prompt,j.created_at FROM generated_skins s JOIN skin_jobs j ON j.id=s.job_id
       WHERE j.account_id=? AND j.theme=? AND j.selected_id=s.id AND j.state='selected' ORDER BY j.created_at DESC LIMIT 200`).all(accountId, SKIN_THEME.id);
     const account = await this.db.prepare('SELECT skin,appearance FROM accounts WHERE id=?').get(accountId);
-    return { theme: SKIN_THEME, priceUnits: SKIN_PRICE_UNITS, enabled: this.enabled(), job, wardrobe: wardrobe.map(s => this.card(s)), equippedId: generatedAppearance(account?.appearance)?.skinId ?? null,
+    return { theme: SKIN_THEME, priceUnits: SKIN_PRICE_UNITS, variantCount: SKIN_VARIANTS, enabled: this.enabled(), job, wardrobe: wardrobe.map(s => this.card(s)), equippedId: generatedAppearance(account?.appearance)?.skinId ?? null,
       character: { skin: Number(account?.skin ?? 0), appearance: normalizeCharacterAppearance(account?.appearance) } };
   }
   async create(accountId: string, value: unknown) {
     await this.ready;
-    const op = value as { id: string; prompt: string; reference: string };
-    if (!op || Object.keys(op).sort().join(',') !== 'id,prompt,reference' || typeof op.id !== 'string' || !SKIN_UUID.test(op.id)
+    const op = value as { id: string; prompt: string; reference?: string };
+    // Accept old clients' reference field, but never retain or send their previous character.
+    if (!op || !['id,prompt', 'id,prompt,reference'].includes(Object.keys(op).sort().join(',')) || typeof op.id !== 'string' || !SKIN_UUID.test(op.id)
       || typeof op.prompt !== 'string' || !op.prompt.trim() || Array.from(op.prompt).length > 1000
-      || typeof op.reference !== 'string' || op.reference.length > 1_500_000 || !/^data:image\/png;base64,[A-Za-z0-9+/]+={0,2}$/.test(op.reference)) fail(400, 'Опиши образ, до 1000 символов.');
+      || (op.reference !== undefined && (typeof op.reference !== 'string' || op.reference.length > 1_500_000))) fail(400, 'Опиши образ, до 1000 символов.');
     const prompt = op.prompt.trim();
-    const reference = Buffer.from(op.reference.split(',')[1], 'base64');
-    try {
-      const meta = await sharp(reference, { limitInputPixels: 1_000_000 }).metadata();
-      if (meta.format !== 'png' || !meta.width || !meta.height || meta.width > 1024 || meta.height > 1024) throw new Error('Invalid reference');
-    } catch { fail(400, 'Не удалось прочитать текущего персонажа. Обнови страницу.'); }
     await this.db.transaction(async () => {
       const previous = await this.db.prepare('SELECT * FROM skin_jobs WHERE id=?').get(op.id);
       if (previous) {
@@ -66,14 +65,14 @@ export class SkinStudioStore {
       if (await this.db.prepare(`SELECT 1 FROM skin_jobs WHERE account_id=? AND state IN ${ACTIVE}`).get(accountId)) fail(409, 'Сначала дождись генерации и выбери один образ.');
       const recent = await this.db.prepare('SELECT count(*) AS n FROM skin_jobs WHERE account_id=? AND created_at>?').get(accountId, this.now() - 3600000);
       if (Number(recent?.n) >= 10) fail(429, 'Доступно до 10 генераций в час. Попробуй позже.');
-      await this.db.prepare("INSERT INTO skin_jobs(id,account_id,theme,prompt,reference,state,created_at) VALUES (?,?,?,?,?,'reserving',?)")
-        .run(op.id, accountId, SKIN_THEME.id, prompt, reference, this.now());
+      await this.db.prepare("INSERT INTO skin_jobs(id,account_id,theme,prompt,state,created_at,variant_count,payment_source) VALUES (?,?,?,?,'reserving',?,?,'virtual-usdt-v1')")
+        .run(op.id, accountId, SKIN_THEME.id, prompt, this.now(), SKIN_VARIANTS);
     }, { lockKey: 'skin:' + accountId });
     return this.snapshot(accountId);
   }
   async choose(accountId: string, jobId: string, skinId: string) {
     await this.ready;
-    if (!SKIN_UUID.test(jobId) || !SKIN_UUID.test(skinId)) fail(400, 'Выбери один из трёх образов.');
+    if (!SKIN_UUID.test(jobId) || !SKIN_UUID.test(skinId)) fail(400, 'Выбери один из готовых образов.');
     const equipped = await this.db.transaction(async () => {
       const job = await this.db.prepare('SELECT * FROM skin_jobs WHERE id=? AND account_id=? AND theme=?').get(jobId, accountId, SKIN_THEME.id);
       if (!job || (job.state !== 'ready' && job.state !== 'selected')) fail(409, 'Образы ещё не готовы.');
@@ -137,14 +136,14 @@ export class SkinStudioStore {
         if (!await this.withLease(job, async () => {
           await this.db.prepare("UPDATE skin_jobs SET state='generating' WHERE id=?").run(job.id);
         })) return;
-        const results = await Promise.allSettled([0, 1, 2].map(i => this.images.generate(job.prompt, job.reference, i)));
+        const results = await Promise.allSettled(Array.from({ length: Number(job.variant_count) }, (_, i) => this.images.generate(job.prompt, i, Number(job.variant_count))));
         if (results.some(r => r.status === 'rejected')) {
           console.error('Skin generation failed', job.id, results.filter(r => r.status === 'rejected').map(r => r.reason instanceof Error ? r.reason.message : 'Unknown image error'));
-          if (!await this.toRefund(job, 'Не удалось подготовить все три образа.')) return;
+          if (!await this.toRefund(job, 'Не удалось подготовить все образы.')) return;
           job.state = 'refunding';
         } else {
           if (!await this.withLease(job, async () => {
-            for (let i = 0; i < 3; i++) await this.db.prepare('INSERT INTO generated_skins(id,job_id,variant,image) VALUES (?,?,?,?)')
+            for (let i = 0; i < results.length; i++) await this.db.prepare('INSERT INTO generated_skins(id,job_id,variant,image) VALUES (?,?,?,?)')
               .run(randomUUID(), job.id, i, (results[i] as PromiseFulfilledResult<Buffer>).value);
             await this.db.prepare("UPDATE skin_jobs SET state='capturing',reference=NULL WHERE id=?").run(job.id);
           })) return;

@@ -12,11 +12,11 @@ import './ui/floor-navigation.css';
 import { isStudioGame } from './shared/studioGames';
 import { isVariantGame } from './shared/casinoVariants';
 import { ROYAL_PLATFORM_GAMES, isCollectionGame, isRetiredArcadeGame } from './shared/arcadeCatalog';
-import { RetiredArcadeRounds, RetiredArcadeRoundGuard, ownsRetiredArcadeRound, type RetiredArcadeRound } from './ui/RetiredArcadeRounds';
+import { RetiredArcadeRounds, RetiredArcadeRoundGuard, ownsRetiredArcadeRound, retiredGameName, type RetiredArcadeRound } from './ui/RetiredArcadeRounds';
 import { isExpansionGame, EXPANSION_NAMES } from './shared/casinoExpansion';
 import { isSessionGame } from './shared/casinoSessions';
 import { ClubMap } from './ui/ClubMap';
-import { NileWalletUI } from './ui/NileWalletUI';
+import { DemoWalletUI } from './ui/DemoWalletUI';
 import { MiraChat } from './ui/MiraChat';
 import { isGithubGame } from './shared/githubGames';
 import './demo-preview.css';
@@ -73,7 +73,7 @@ app.innerHTML = tr`
       <aside class="sidebar">
         <div class="sidebar-heading"><h2>Во что сыграем?</h2><span>${String(hallGameCount('arcade')).padStart(2, '0')}</span></div>
         <section id="card-tables-catalog" aria-label="Карточные столы и крупье" hidden></section>
-        ${(['royal','github'] as const).map(collection=>`<section class="arcade-catalog-group" data-arcade-catalog data-cabinet-collection="${collection}" aria-label="${collection}"><h3>${translateText({royal:'Автоматы Royal',github:'Автоматы GitHub'}[collection])}</h3><p>${translateText('В каждом автомате доступен каталог своей коллекции.')}</p><div class="cabinet-list">${cabinetCards(catalogCabinets.filter(c=>c.collection===collection))}</div></section>`).join('')}
+        ${(['royal'] as const).map(collection=>`<section class="arcade-catalog-group" data-arcade-catalog data-cabinet-collection="${collection}" aria-label="${collection}"><h3>${translateText({royal:'Автоматы Royal',github:'Автоматы GitHub'}[collection])}</h3><p>${translateText('В каждом автомате доступен каталог своей коллекции.')}</p><div class="cabinet-list">${cabinetCards(catalogCabinets.filter(c=>c.collection===collection))}</div></section>`).join('')}
         <section data-arcade-catalog><div id="retired-arcade-rounds" hidden></div></section>
         <div class="player-card"><span class="player-portrait" id="player-portrait"></span><div><strong>Это ты</strong><small>Исследователь клуба</small></div><span class="player-dot"></span></div>
       </aside>
@@ -198,23 +198,23 @@ async function openCabinetGame(cabinet: Cabinet, recovery?: RetiredArcadeRound, 
     $('#card-dealer-stage').hidden=false;
     $('.mini-top .eyebrow').textContent=translateText('КАРТОЧНЫЙ САЛОН / ЭТАЖ 3');
     const practice=isGithubGame(cabinet.id)&&!isExpansionGame(cabinet.id)&&!isSessionGame(cabinet.id);
-    $('.mini-bottom>span').textContent=practice?translateText('Отдельные учебные фишки'):translateText('Общий баланс USDT · Nile');
+    $('.mini-bottom>span').textContent=practice?translateText('Отдельные учебные фишки'):translateText('Общий игровой баланс · Демо');
     cardDealerStage=new CardDealerStage($('#card-dealer-stage'),cabinet.id,$('#mini-game'),action=>room.setDealerAction(cabinet.id,action));
   } else if (isStudioGame(cabinet.id)) {
     $('.mini-top .eyebrow').textContent = 'ROYAL PLATFORM / 01';
     $('.mini-bottom>span').textContent = translateText('Общий тестовый кошелёк клуба');
   } else if (isVariantGame(cabinet.id) || isExpansionGame(cabinet.id)) {
     $('.mini-top .eyebrow').textContent = translateText('ЭТАЖ 1 / ТЕСТОВЫЙ КОШЕЛЁК');
-    $('.mini-bottom>span').textContent = translateText('Общий баланс USDT · Nile');
+    $('.mini-bottom>span').textContent = translateText('Общий игровой баланс · Демо');
   } else if (isSessionGame(cabinet.id)) {
     $('.mini-top .eyebrow').textContent = translateText('ЭТАЖ 1 / СТАВКИ');
-    $('.mini-bottom>span').textContent = translateText('Общий баланс USDT · Nile');
+    $('.mini-bottom>span').textContent = translateText('Общий игровой баланс · Демо');
   } else if (cabinet.github && isGithubGame(cabinet.id)) {
     $('.mini-top .eyebrow').textContent = translateText('ЭТАЖ 1 / УЧЕБНЫЕ ИГРЫ');
     $('.mini-bottom>span').textContent = translateText('Бесплатные игры с отдельными учебными фишками');
   } else if (cabinet.wallet) {
-    $('.mini-top .eyebrow').textContent = translateText('РОЯЛЬ / USDT · NILE');
-    $('.mini-bottom>span').textContent = translateText('Общий баланс USDT · Nile');
+    $('.mini-top .eyebrow').textContent = translateText('РОЯЛЬ / ИГРОВОЙ БАЛАНС');
+    $('.mini-bottom>span').textContent = translateText('Общий игровой баланс · Демо');
   } else if (cabinet.demo) {
     $('.mini-bottom>span').textContent = translateText('Звук и управление внутри игры');
   }
@@ -264,7 +264,7 @@ const room = new RoomScene({
       const i=CABINETS.indexOf(c);
       const img = document.createElement('img'); img.src = game.textures.getBase64(`cabinet-${i}`); img.alt = ''; document.querySelector(`#art-${artIndex}`)?.append(img);
     });
-    new NileWalletUI(room);
+    new DemoWalletUI(room);
     const portrait = document.createElement('img'); portrait.src = game.textures.getBase64('citizen-0', 'down-6'); portrait.alt = ''; $('#player-portrait').append(portrait);
     if (!offline) social = new SocialUI(room, toast);
     else { room.onActivity=()=>toast(translateText('Войди в онлайн-зал, чтобы играть вместе и слушать рояль.')); }
@@ -326,7 +326,7 @@ new RetiredArcadeRounds($('#retired-arcade-rounds'), async round => {
   try {
     const state = room.getState();
     if (state.hall !== 'arcade' || state.security || social && social.client.status !== 'connected') return;
-    await openCabinetGame({id:round.gameId, name:EXPANSION_NAMES[round.gameId], subtitle:translateText('Сохранённая партия'), x:state.x, y:state.y, color:0xc8b17a, playable:true, wallet:true, hall:'arcade'}, round);
+    await openCabinetGame({id:round.gameId, name:retiredGameName(round.gameId), subtitle:translateText('Сохранённая партия'), x:state.x, y:state.y, color:0xc8b17a, playable:true, wallet:true, hall:'arcade'}, round);
     if (miniDialog.open) retiredRoundGuard = new RetiredArcadeRoundGuard($('#mini-game'), round, () => miniDialog.close());
   } catch {
     if (miniDialog.open) miniDialog.close();
