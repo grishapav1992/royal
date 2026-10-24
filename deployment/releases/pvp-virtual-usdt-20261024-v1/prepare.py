@@ -65,6 +65,10 @@ packages = []
 module_delta = {}
 for row in release['packages']:
     game, version = row['gameId'], row['version']
+    # Only these packages use the changed PvP contract. Other games keep the
+    # compatible bytes already published with the common virtual slot wallet.
+    if game not in {'hockey','pool','chess','durak','transfer-durak','crazy-eights'}:
+        continue
     folder = ROOT / 'module-dist' / game / 'versions' / version
     metadata = json.loads((folder / 'manifest.json').read_text())
     prior = active['games'].get(game)
