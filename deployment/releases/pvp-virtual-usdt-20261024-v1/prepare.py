@@ -48,7 +48,8 @@ for name, digest in release['files'].items():
         continue
     relative = name.removeprefix('dist/')
     source = 'public/' + relative
-    if name in runtime and runtime[name]['raw'] == old['program'].get(name) and digest == runtime[name]['lf']:
+    canonical = hashlib.sha256((ROOT / name).read_bytes().replace(b'\r\n', b'\n')).hexdigest() if Path(name).suffix in ['.js','.css','.html','.json','.svg'] else digest
+    if name in runtime and runtime[name]['raw'] == old['program'].get(name) and canonical == runtime[name]['lf']:
         continue
     if relative in ['index.html', 'admin.html'] or relative.startswith('assets/') and Path(relative).suffix in ['.js', '.css']:
         assert relative in ['index.html', 'admin.html'] or name not in old['program'], 'Existing asset URL would change'
@@ -57,7 +58,7 @@ for name, digest in release['files'].items():
     else:
         source = 'public/' + relative
         assert source in normalized and old['program'].get(name) == normalized[source]['sha256'], name
-        assert digest == normalized[source]['lf'], 'Unexpected public asset change: ' + name
+        assert canonical == normalized[source]['lf'], 'Unexpected public asset change: ' + name
 copy(ROOT / 'dist-server/index.js', 'server-delta/index.js')
 
 packages = []
