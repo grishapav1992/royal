@@ -1,5 +1,6 @@
 import type { DatabaseRow } from '../database';
-import { NilePlayError, type NilePlayLedger } from './nile-play-ledger';
+import type { NilePlayLedger } from './nile-play-ledger';
+import { NilePlayError } from './nile-play-error';
 import { gameAccountId } from '../../src/shared/nileWallet';
 import { COMBAT_USDT_STAKES, type CombatEscrowReceipt } from '../../src/shared/combatEscrow';
 import type { PvpLedger } from '../pvp/store';

@@ -242,6 +242,10 @@ def build():
         subprocess.run(['docker', 'build', '--pull=false', '-t', 'royal-game:' + NAME, '.'], cwd=context,
                        check=True, stdout=log, stderr=subprocess.STDOUT)
     candidate = image('royal-game:' + NAME)
+    require(M.get('externalImports') and all(isinstance(name,str) and not name.startswith(('.', '/')) for name in M['externalImports']), 'Missing external dependency inventory')
+    resolve = "import{existsSync}from'node:fs';for(const name of JSON.parse(process.argv[1])){const url=import.meta.resolve(name);if(url.startsWith('file:')&&!existsSync(new URL(url)))throw Error('Missing runtime dependency: '+name);}console.log('Runtime dependencies verified');"
+    run(['docker','run','--rm','--network=none','--read-only','--entrypoint','node',candidate,
+        '--input-type=module','-e',resolve,json.dumps(M['externalImports'])])
     program = json.loads(run(['docker', 'run', '--rm', '--network=none', '--read-only', '--entrypoint',
                               'node', candidate, '--v8-pool-size=1', '-e', PROGRAM]))
     expected = expected_program()

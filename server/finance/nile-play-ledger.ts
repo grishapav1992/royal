@@ -22,9 +22,8 @@ export type NilePlayConfig = {
     reserveUserId: string;
     initialReserveUnits: string;
 };
-export class NilePlayError extends Error {
-    constructor(readonly code: string, readonly status = 409) { super(code); }
-}
+import {NilePlayError} from './nile-play-error';
+export {NilePlayError} from './nile-play-error';
 const fail = (code: string, status = 409): never => { throw new NilePlayError(code, status); };
 export const playDigest = (value: string | Buffer) => createHash('sha256').update(value).digest('hex');
 export function validateNilePlayConfig(value: unknown): NilePlayConfig {
