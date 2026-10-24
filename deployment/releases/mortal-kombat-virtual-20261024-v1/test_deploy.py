@@ -94,7 +94,7 @@ class ChatReleaseTests(unittest.TestCase):
         helper.ROOT = Path('/opt/royal-releases/mortal-kombat-virtual-20261024-v1')
         helper.sha = lambda _path: 'd' * 64
         helper.inventory = lambda path: {'source': helper.CHANGES, 'dist-delta': helper.DELTA,
-                                         'server-delta': helper.SERVER_DELTA}[path.name]
+                                         'server-delta': helper.SERVER_DELTA,'metadata':helper.M.get('runtimePackages',{})}[path.name]
 
     def test_overlay_preserves_payment_crypto_dependencies_and_all_bundled_modules(self):
         helper = self.helper
@@ -143,6 +143,15 @@ class ChatReleaseTests(unittest.TestCase):
         module.contracts(old,new)
         new['games']['retained']['rulesVersion']=4
         with self.assertRaises(AssertionError):module.contracts(old,new)
+
+    def test_workflow_metadata_is_copied_exactly_and_cannot_add_a_dependency_lock(self):
+        self.enable_payload_fixture();h=self.helper
+        h.M['runtimePackages']={'package.json':sha(b'new workflow scripts')}
+        h.CHANGES['package.json']=h.M['runtimePackages']['package.json']
+        h.payload()
+        self.assertEqual(h.expected_program()['package.json'],h.M['runtimePackages']['package.json'])
+        h.M['runtimePackages']['package-lock.json']=sha(b'changed dependencies')
+        with self.assertRaisesRegex(RuntimeError,'Unexpected runtime metadata'):h.payload()
 
     def test_payload_refuses_historical_source_changes(self):
         self.enable_payload_fixture()

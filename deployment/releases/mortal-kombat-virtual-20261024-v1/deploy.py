@@ -109,7 +109,7 @@ def baseline():
 
 
 def expected_program():
-    return {**OLD['program'], **{'dist/' + name: digest for name, digest in DELTA.items()},
+    return {**OLD['program'], **M.get('runtimePackages',{}), **{'dist/' + name: digest for name, digest in DELTA.items()},
             **{'dist-server/' + name: digest for name, digest in SERVER_DELTA.items()}}
 
 
@@ -139,7 +139,7 @@ def payload():
             'Only the client index and JavaScript or stylesheet bundles may change')
     for name in [*CHANGES, *DELTA]:
         safe_name(name)
-    require(all(name.startswith(('src/', 'server/', 'scripts/', 'docs/', 'games/', 'public/')) for name in CHANGES),
+    require(all(name=='package.json' or name.startswith(('src/', 'server/', 'scripts/', 'docs/', 'games/', 'public/')) for name in CHANGES),
             'Only application source and related documentation may change')
     require(not any(name.endswith(('.orig', '.bak')) for name in CHANGES), 'Historical source backups may not change')
     for name, digest in CHANGES.items():
@@ -148,6 +148,10 @@ def payload():
         require(DIGEST.fullmatch(digest), 'Invalid client digest')
         require(name in ['index.html','admin.html'] or 'dist/' + name not in OLD['program']
                 or digest == OLD['program']['dist/' + name], 'Existing asset URL would change: ' + name)
+    metadata=M.get('runtimePackages',{})
+    require(set(metadata).issubset({'package.json'}),'Unexpected runtime metadata')
+    if metadata:
+        require(inventory(ROOT/'metadata')==metadata and all(CHANGES.get(n)==v for n,v in metadata.items()),'Runtime metadata payload differs')
     require(inventory(ROOT / 'source') == CHANGES, 'Source payload differs')
     require(inventory(ROOT / 'dist-delta') == DELTA, 'Client payload differs')
     require(DIGEST.fullmatch(SERVER_DELTA['index.js']), 'Invalid backend digest')
@@ -232,11 +236,13 @@ def build():
     context.mkdir(exist_ok=False)
     shutil.copytree(ROOT / 'dist-delta', context / 'dist-delta')
     shutil.copytree(ROOT / 'server-delta', context / 'server-delta')
+    if M.get('runtimePackages'):shutil.copytree(ROOT/'metadata',context/'metadata')
     (context / 'Dockerfile').write_text('FROM royal-game:before-' + NAME + '-prepared\n'
         'COPY --chown=node:node dist-delta/ /app/dist/\n'
         'COPY --chown=node:node server-delta/index.js /app/dist-server/index.js\n'
+        + ('COPY --chown=node:node metadata/package.json /app/package.json\n' if M.get('runtimePackages') else '') +
         'LABEL org.opencontainers.image.revision="' + M['sourceCommit'] + '"\n')
-    (context / '.dockerignore').write_text('**\n!Dockerfile\n!.dockerignore\n!dist-delta\n!dist-delta/**\n!server-delta\n!server-delta/index.js\n')
+    (context / '.dockerignore').write_text('**\n!Dockerfile\n!.dockerignore\n!dist-delta\n!dist-delta/**\n!server-delta\n!server-delta/index.js\n!metadata/\n!metadata/package.json\n')
     baseline()
     with (ROOT / 'build.log').open('w') as log:
         subprocess.run(['docker', 'build', '--pull=false', '-t', 'royal-game:' + NAME, '.'], cwd=context,

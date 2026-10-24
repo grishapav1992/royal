@@ -21,7 +21,15 @@ for root in ['src','server','public','scripts','docs','games']:
   name=p.relative_to(stage).as_posix()
   assert not p.is_symlink() and not any(n in ['node_modules','.git','data','secrets'] or n.startswith('.env') for n in p.relative_to(stage).parts)
   if lf(p)!=before['sourceLF'].get(name):changed[name]=copy(p,'source/'+name)
-for name in ['package.json','package-lock.json','Dockerfile','.dockerignore','index.html','tsconfig.json','tsconfig.finance.json','vite.config.ts']:
+runtime_packages={}
+old_package=stage/'artifacts/work/mortal-kombat-duel/deployment/virtual-production-package.json'
+assert sha(old_package)==before['source']['package.json']
+a=json.loads(old_package.read_text());b=json.loads((stage/'package.json').read_text())
+assert {k:v for k,v in a.items() if k!='scripts'}=={k:v for k,v in b.items() if k!='scripts'},'Runtime dependency metadata changed'
+if lf(stage/'package.json')!=before['sourceLF']['package.json']:
+ changed['package.json']=copy(stage/'package.json','source/package.json')
+ runtime_packages['package.json']=copy(stage/'package.json','metadata/package.json')
+for name in ['package-lock.json','Dockerfile','.dockerignore','index.html','tsconfig.json','tsconfig.finance.json','vite.config.ts']:
  assert lf(stage/name)==before['sourceLF'][name], 'Unreviewed root build/dependency change: '+name
 
 delta={}
@@ -56,6 +64,6 @@ copy(stage/'module-dist/host-contracts.json','host.json')
 helpers=stage/'deployment/releases/mortal-kombat-virtual-20261024-v1'
 for n in ['deploy.py','snapshot.py','modules.py']:copy(helpers/n,n)
 copy(stage/'module-build/release-manifest.json','release-manifest.json')
-m={'release':'mortal-kombat-virtual-20261024-v1','sourceCommit':release['sourceCommit'],'baseCommit':release['baseCommit'],'before':before,'changed':changed,'delta':delta,'serverDelta':{'index.js':sha(out/'server-delta/index.js')},'helperSha256':sha(out/'deploy.py'),'snapshotSha256':sha(out/'snapshot.py'),'modulesHelperSha256':sha(out/'modules.py'),'hostContractSha256':sha(out/'host.json'),'moduleDelta':modules,'modulePackages':packages}
+m={'release':'mortal-kombat-virtual-20261024-v1','sourceCommit':release['sourceCommit'],'baseCommit':release['baseCommit'],'before':before,'changed':changed,'delta':delta,'serverDelta':{'index.js':sha(out/'server-delta/index.js')},'helperSha256':sha(out/'deploy.py'),'snapshotSha256':sha(out/'snapshot.py'),'modulesHelperSha256':sha(out/'modules.py'),'hostContractSha256':sha(out/'host.json'),'moduleDelta':modules,'modulePackages':packages,'runtimePackages':runtime_packages}
 (out/'install-manifest.json').write_text(json.dumps(m,indent=2)+'\n')
 print(json.dumps({'sourceChanges':len(changed),'clientFiles':len(delta),'modulePackages':len(packages),'moduleBytes':sum((out/'modules'/n).stat().st_size for n in modules),'payloadBytes':sum(p.stat().st_size for p in out.rglob('*') if p.is_file())}))
