@@ -40,7 +40,9 @@ assert {k:v for k,v in new_host.items() if k!='games'}=={k:v for k,v in old_host
 assert new_host['games']=={**old_host['games'],'mortal-kombat':{'apiVersion':1,'rulesVersion':2,'progressVersion':1}},'Unexpected host contract transition'
 packages=[];modules={}
 for row in release['packages']:
- game,version=row['gameId'],row['version'];folder=stage/'module-dist'/game/'versions'/version
+ game,version=row['gameId'],row['version']
+ if game not in {'mortal-kombat','hockey','pool','chess','durak','transfer-durak','crazy-eights'}:continue
+ folder=stage/'module-dist'/game/'versions'/version
  # The snapshot contains the exact installed manifest and pointer, without player data.
  prior=before.get('activeModuleMetadata',{}).get(game)
  meta=json.loads((folder/'manifest.json').read_text())
