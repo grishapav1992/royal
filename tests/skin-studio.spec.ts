@@ -5,9 +5,9 @@ import sharp from 'sharp';
 const user = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 const jobId = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
 const ids = ['cccccccc-cccc-4ccc-8ccc-cccccccccccc', 'dddddddd-dddd-4ddd-8ddd-dddddddddddd', 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee'];
-test('three variants, explicit single choice, wardrobe, preview controls and mobile layout', async ({ page }) => {
+test('two variants, explicit single choice, wardrobe, preview controls and mobile layout', async ({ page }) => {
   let chosen = '', state = 'ready';
-  const cards = ids.map(id => ({ id, jobId, prompt: 'Космический пират', createdAt: Date.now() }));
+  const cards = ids.slice(0, 2).map(id => ({ id, jobId, prompt: 'Космический пират', createdAt: Date.now() }));
   await page.route('**/api/skin-studio**', async route => {
     const request = route.request(), url = new URL(request.url());
     if (url.pathname.includes('/assets/')) {
@@ -22,7 +22,7 @@ test('three variants, explicit single choice, wardrobe, preview controls and mob
   });
   await page.goto('/tests/fixtures/skin-studio.html');
   await page.getByRole('button', { name: 'Образы', exact: true }).click();
-  await expect(page.locator('.skin-results .skin-card')).toHaveCount(3);
+  await expect(page.locator('.skin-results .skin-card')).toHaveCount(2);
   await expect(page.getByRole('button', { name: 'Сохранить образ' })).toBeDisabled();
   await page.getByLabel('Поворот: Вариант 2').selectOption('3');
   await page.getByLabel('Поза: Вариант 2').selectOption('3');
@@ -47,14 +47,14 @@ test('lost creation response retries the same operation after reopening and acco
     await route.fulfill({ json: { theme: SKIN_THEME, priceUnits: SKIN_PRICE_UNITS, enabled: true, job: sent.length > 1 ? { id: sent[0].id, prompt: sent[0].prompt, state: 'generating', variants: [], error: '', selectedId: null, createdAt: Date.now() } : null, wardrobe: [], equippedId: null } });
   });
   await page.goto('/tests/fixtures/skin-studio.html'); await page.getByRole('button', { name: 'Образы', exact: true }).click();
-  await page.getByLabel('Опиши образ').fill('Поменяй только куртку на золотую');
+  await page.getByLabel('Опиши новый образ').fill('Поменяй только куртку на золотую');
   await page.getByRole('button', { name: 'Создать за $10', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Проверить отправленный запрос' })).toBeEnabled();
   await page.getByRole('button', { name: 'Закрыть ателье' }).click();
   await page.getByRole('button', { name: 'Образы', exact: true }).click();
   await page.getByRole('button', { name: 'Проверить отправленный запрос' }).click();
   expect(sent).toHaveLength(2); expect(sent[0]).toEqual(sent[1]);
-  await expect(page.locator('#skin-status')).toContainText('Рисуем три образа');
+  await expect(page.locator('#skin-status')).toContainText('Рисуем два образа');
   await page.evaluate(() => (window as any).skinPreview.setAccount(null));
   await expect(page.locator('#skin-studio-dialog')).toBeHidden();
   await expect(page.getByRole('button', { name: 'Образы', exact: true })).toBeHidden();
@@ -73,30 +73,46 @@ test('Phaser replaces the fallback atlas after download and renders distinct tur
   await expect.poll(async () => JSON.stringify(await page.evaluate(() => (window as any).skinPreview.pixels('down-6'))) === JSON.stringify(before)).toBe(false);
   const poses = await page.evaluate(() => ['down-6', 'left-6', 'down-1', 'down-4', 'down-10', 'down-13'].map(frame => JSON.stringify((window as any).skinPreview.pixels(frame))));
   expect(new Set(poses).size).toBe(6);
+  // Even deliberately inconsistent model-drawn step cells cannot turn or resize the head.
+  const heads = await page.evaluate(() => ['down', 'left', 'right', 'up'].map(direction =>
+    Array.from({ length: 6 }, (_, frame) => JSON.stringify((window as any).skinPreview.pixels(`${direction}-${frame}`).slice(0, 96 * 96 * 4)))));
+  for (const direction of heads) expect(new Set(direction).size).toBe(1);
   expect(await page.evaluate(() => (window as any).skinPreview.prune())).toBe(false);
 });
 
-test('clothing-only requests use the current server-equipped character even when another tab changed it', async ({ page }) => {
-  const png = await sharp({ create: { width: 1024, height: 1536, channels: 4, background: '#a23d58' } }).png().toBuffer();
-  let sent: any;
+test('a previously paid three-option order still shows all candidates on desktop and mobile', async ({ page }) => {
   await page.route('**/api/skin-studio**', async route => {
-    if (route.request().url().includes('/assets/')) { await route.fulfill({ contentType: 'image/png', body: png }); return; }
-    if (route.request().method() === 'POST') sent = route.request().postDataJSON();
-    await route.fulfill({ json: { theme: SKIN_THEME, priceUnits: SKIN_PRICE_UNITS, enabled: true, wardrobe: [], equippedId: ids[0],
-      character: { skin: 0, appearance: { version: 2, skinId: ids[0], theme: SKIN_THEME.id } },
-      job: sent ? { id: sent.id, state: 'reserving', variants: [], error: '' } : null } });
+    if (route.request().url().includes('/assets/')) { await route.abort(); return; }
+    await route.fulfill({ json: { theme: SKIN_THEME, priceUnits: SKIN_PRICE_UNITS, variantCount: 2, enabled: true, equippedId: null, wardrobe: [],
+      job: { id: jobId, prompt: 'Старый заказ', variantCount: 3, state: 'ready', error: '', selectedId: null, createdAt: Date.now(),
+        variants: ids.map(id => ({ id, jobId, prompt: 'Старый заказ', createdAt: Date.now() })) } } });
   });
   await page.goto('/tests/fixtures/skin-studio.html');
   await page.getByRole('button', { name: 'Образы', exact: true }).click();
-  await page.getByLabel('Опиши образ').fill('Поменяй только одежду');
+  await expect(page.locator('.skin-results .skin-card')).toHaveCount(3);
+  await expect(page.locator('.skin-offer')).toHaveText('3 варианта · 1 навсегда');
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect.poll(() => page.locator('.skin-results .skin-card-grid').evaluate(el => getComputedStyle(el).gridTemplateColumns.split(' ').length)).toBe(1);
+});
+
+test('new orders send only a fresh brief, even with a generated pirate equipped', async ({ page }) => {
+  let sent: any, artworkRequests = 0;
+  await page.route('**/api/skin-studio**', async route => {
+    if (route.request().url().includes('/assets/')) { artworkRequests++; await route.abort(); return; }
+    if (route.request().method() === 'POST') sent = route.request().postDataJSON();
+    await route.fulfill({ json: { theme: SKIN_THEME, priceUnits: SKIN_PRICE_UNITS, variantCount: 2, enabled: true, wardrobe: [], equippedId: ids[0],
+      character: { skin: 0, appearance: { version: 2, skinId: ids[0], theme: SKIN_THEME.id } },
+      job: sent ? { id: sent.id, state: 'reserving', variantCount: 2, variants: [], error: '' } : null } });
+  });
+  await page.goto('/tests/fixtures/skin-studio.html');
+  await page.getByRole('button', { name: 'Образы', exact: true }).click();
+  await page.getByLabel('Опиши новый образ').fill('Новый взрослый учёный в белом халате');
   await page.getByRole('button', { name: 'Создать за $10', exact: true }).click();
   await expect.poll(() => !!sent).toBe(true);
-  const reference = await page.evaluate(async id => {
-    // @ts-expect-error Vite serves this source import to the test browser.
-    const { createCharacterPortrait } = await import('/src/game/characters.ts');
-    return createCharacterPortrait(0, JSON.stringify({ version: 2, skinId: id, theme: 'south-park' }), 6).toDataURL();
-  }, ids[0]);
-  expect(sent.reference).toBe(reference);
+  expect(Object.keys(sent).sort()).toEqual(['id', 'prompt']);
+  expect(sent.prompt).toBe('Новый взрослый учёный в белом халате');
+  expect(artworkRequests).toBe(0);
+  await expect(page.locator('.skin-offer')).toHaveText('2 варианта · 1 навсегда');
 });
 
 test('the atelier refreshes the same shared wallet as the games after a temporary outage', async ({ page }) => {

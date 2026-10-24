@@ -67,8 +67,8 @@ test('provider failure refunds the shared game balance and a complete generation
     assert.equal((await studio.snapshot('alice')).job?.state, 'failed');
     assert.equal(await f.balance(), 5000); assert.equal(await f.reserved(), 0);
     fail = false; const before = calls; await studio.create('alice', request()); await studio.tick();
-    const result = await studio.snapshot('alice'); assert.equal(result.job?.state, 'ready'); assert.equal(result.job?.variants.length, 3);
-    assert.equal(calls - before, 3); assert.equal(await f.balance(), 4000); assert.equal(await f.reserved(), 0);
+    const result = await studio.snapshot('alice'); assert.equal(result.job?.state, 'ready'); assert.equal(result.job?.variants.length, 2);
+    assert.equal(calls - before, 2); assert.equal(await f.balance(), 4000); assert.equal(await f.reserved(), 0);
     await studio.choose('alice', result.job!.id, result.job!.variants[1].id);
     assert.equal((await studio.snapshot('alice')).wardrobe.length, 1); assert.equal(await f.balance(), 4000);
   } finally { await f.db.close(); }
