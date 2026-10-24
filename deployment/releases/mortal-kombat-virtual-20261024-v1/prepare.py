@@ -32,10 +32,16 @@ if lf(stage/'package.json')!=before['sourceLF']['package.json']:
 for name in ['package-lock.json','Dockerfile','.dockerignore','index.html','tsconfig.json','tsconfig.finance.json','vite.config.ts']:
  assert lf(stage/name)==before['sourceLF'][name], 'Unreviewed root build/dependency change: '+name
 
+runtime=json.loads((stage/'artifacts/work/mortal-kombat-duel/deployment/runtime-canonical.json').read_text())
 delta={}
+retained_canonical={}
 for name,digest in release['files'].items():
  if not name.startswith('dist/') or digest==before['program'].get(name):continue
  n=name.removeprefix('dist/')
+ canonical=runtime.get(name)
+ if canonical and canonical['raw']==before['program'].get(name) and canonical['lf']==digest:
+  retained_canonical[name]=canonical
+  continue
  if n in ['index.html','admin.html'] or n.startswith('assets/') and Path(n).suffix in ['.js','.css'] or n.startswith('assets/mortal-kombat/'):
   assert n in ['index.html','admin.html'] or name not in before['program'], 'Immutable asset collision: '+name
   delta[n]=copy(stage/name,'dist-delta/'+n)
@@ -64,6 +70,6 @@ copy(stage/'module-dist/host-contracts.json','host.json')
 helpers=stage/'deployment/releases/mortal-kombat-virtual-20261024-v1'
 for n in ['deploy.py','snapshot.py','modules.py']:copy(helpers/n,n)
 copy(stage/'module-build/release-manifest.json','release-manifest.json')
-m={'release':'mortal-kombat-virtual-20261024-v1','sourceCommit':release['sourceCommit'],'baseCommit':release['baseCommit'],'before':before,'changed':changed,'delta':delta,'serverDelta':{'index.js':sha(out/'server-delta/index.js')},'helperSha256':sha(out/'deploy.py'),'snapshotSha256':sha(out/'snapshot.py'),'modulesHelperSha256':sha(out/'modules.py'),'hostContractSha256':sha(out/'host.json'),'moduleDelta':modules,'modulePackages':packages,'runtimePackages':runtime_packages}
+m={'release':'mortal-kombat-virtual-20261024-v1','sourceCommit':release['sourceCommit'],'baseCommit':release['baseCommit'],'before':before,'changed':changed,'delta':delta,'serverDelta':{'index.js':sha(out/'server-delta/index.js')},'helperSha256':sha(out/'deploy.py'),'snapshotSha256':sha(out/'snapshot.py'),'modulesHelperSha256':sha(out/'modules.py'),'hostContractSha256':sha(out/'host.json'),'moduleDelta':modules,'modulePackages':packages,'runtimePackages':runtime_packages,'retainedCanonicalRuntime':retained_canonical}
 (out/'install-manifest.json').write_text(json.dumps(m,indent=2)+'\n')
 print(json.dumps({'sourceChanges':len(changed),'clientFiles':len(delta),'modulePackages':len(packages),'moduleBytes':sum((out/'modules'/n).stat().st_size for n in modules),'payloadBytes':sum(p.stat().st_size for p in out.rglob('*') if p.is_file())}))
