@@ -199,6 +199,18 @@ def verify_tar(path):
         require(len(result) == len(members) and result == OLD['source'], 'Source backup differs')
 
 
+def reusable_source_backup(candidate):
+    if not candidate.is_file() or candidate.is_symlink() or candidate.parent.is_symlink():
+        return None
+    if candidate.stat().st_dev != BACKUP.parent.stat().st_dev:
+        return None
+    try:
+        verify_tar(candidate)
+    except (RuntimeError, tarfile.TarError, OSError):
+        return None
+    return candidate
+
+
 PROGRAM = "const f=require('fs'),p=require('path'),c=require('crypto'),o={};function walk(d){if(!f.existsSync(d))return;for(const n of f.readdirSync(d).sort()){const x=p.join(d,n),s=f.lstatSync(x);if(s.isSymbolicLink())throw Error('symlink');if(s.isDirectory())walk(x);else if(s.isFile())o[p.relative('/app',x)]=c.createHash('sha256').update(f.readFileSync(x)).digest('hex');}}walk('/app/dist');walk('/app/dist-server');walk('/app/module-dist');for(const n of ['package.json','package-lock.json'])o[n]=c.createHash('sha256').update(f.readFileSync('/app/'+n)).digest('hex');console.log(JSON.stringify(o))"
 
 
@@ -214,7 +226,8 @@ def build():
     source_bytes = sum((LIVE / name).stat().st_size for name in OLD['source'])
     delta_bytes = sum((ROOT / 'dist-delta' / name).stat().st_size for name in DELTA)
     backend_bytes = (ROOT / 'server-delta/index.js').stat().st_size
-    require(old['availableBytes'] > 5 * 1024**3 + 300 * 1024**2 + source_bytes + (delta_bytes + backend_bytes) * 4,
+    reusable = reusable_source_backup(Path('/opt/royal-backups/pvp-virtual-usdt-20261024-v1/source.tgz'))
+    require(old['availableBytes'] > 5 * 1024**3 + 300 * 1024**2 + (0 if reusable else source_bytes) + (delta_bytes + backend_bytes) * 4,
             'Insufficient free disk space')
     BACKUP.mkdir(mode=0o700, exist_ok=False)
     command = ['docker','exec','royal-finance-sim-finance-db-1','sh','-c',
@@ -223,10 +236,13 @@ def build():
         subprocess.run(command,stdout=output,check=True)
     os.chmod(BACKUP / 'game-wallet.dump',0o600)
     require((BACKUP / 'game-wallet.dump').stat().st_size>1000,'Game wallet backup is incomplete')
-    with tarfile.open(BACKUP / 'source.tgz', 'w:gz') as archive:
-        for name, digest in OLD['source'].items():
-            require(sha(LIVE / name) == digest, 'Source changed during backup')
-            archive.add(LIVE / name, arcname=name, recursive=False)
+    if reusable:
+        os.link(reusable, BACKUP / 'source.tgz', follow_symlinks=False)
+    else:
+        with tarfile.open(BACKUP / 'source.tgz', 'w:gz') as archive:
+            for name, digest in OLD['source'].items():
+                require(sha(LIVE / name) == digest, 'Source changed during backup')
+                archive.add(LIVE / name, arcname=name, recursive=False)
     verify_tar(BACKUP / 'source.tgz')
     run(['docker', 'cp', 'royal-game-1:/app/dist/index.html', str(BACKUP / 'index.html')])
     require(sha(BACKUP / 'index.html') == OLD['program']['dist/index.html'], 'Client index backup differs')
@@ -261,6 +277,7 @@ def build():
             'Baseline image layers changed')
     result = {'image': candidate, 'program': expected, 'sourceCommit': M['sourceCommit'],
               'sourceBackupSha256': sha(BACKUP / 'source.tgz'), 'backup': str(BACKUP),
+              'sourceBackupReusedFrom': str(reusable) if reusable else None,
               'gameWalletBackupSha256':sha(BACKUP / 'game-wallet.dump')}
     write('build-result.json', result)
     return {'built': True, 'image': candidate, 'clientDeltaFiles': len(DELTA), 'backendDeltaFiles': len(SERVER_DELTA),

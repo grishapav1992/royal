@@ -96,6 +96,27 @@ class ChatReleaseTests(unittest.TestCase):
         helper.inventory = lambda path: {'source': helper.CHANGES, 'dist-delta': helper.DELTA,
                                          'server-delta': helper.SERVER_DELTA,'metadata':helper.M.get('runtimePackages',{})}[path.name]
 
+    def test_exact_backup_can_be_linked_and_survives_removing_the_original_name(self):
+        h = self.helper
+        self.backups()
+        candidate = h.BACKUP / 'source.tgz'
+        self.assertEqual(h.reusable_source_backup(candidate), candidate)
+        linked = h.BACKUP / 'linked.tgz'
+        h.os.link(candidate, linked, follow_symlinks=False)
+        candidate.unlink()
+        h.verify_tar(linked)
+
+    def test_backup_reuse_rejects_missing_modified_and_symlinked_archives(self):
+        h = self.helper
+        self.assertIsNone(h.reusable_source_backup(h.BACKUP / 'missing.tgz'))
+        self.backups()
+        candidate = h.BACKUP / 'source.tgz'
+        link = h.BACKUP / 'symlink.tgz'
+        link.symlink_to(candidate)
+        self.assertIsNone(h.reusable_source_backup(link))
+        h.OLD['source']['src/ui/SocialUI.ts'] = sha(b'different source')
+        self.assertIsNone(h.reusable_source_backup(candidate))
+
     def test_overlay_preserves_payment_crypto_dependencies_and_all_bundled_modules(self):
         helper = self.helper
         result = helper.expected_program()
