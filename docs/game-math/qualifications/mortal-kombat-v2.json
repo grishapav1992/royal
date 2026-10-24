@@ -3,8 +3,8 @@
   "gameId": "mortal-kombat",
   "rulesVersion": 2,
   "progressVersion": 1,
-  "startedAt": "2026-10-24T12:20:04.085Z",
-  "completedAt": "2026-10-24T12:20:04.090Z",
+  "startedAt": "2026-10-24T12:20:23.482Z",
+  "completedAt": "2026-10-24T12:20:23.487Z",
   "sourceHashes": {
     "server/finance/pvp-money.ts": "14708dc154295ba2baaadf0b9dbe54a7a225b30267d2358ad2aecb729c6db614",
     "src/shared/pvp.ts": "d20cd82ca7f1c8cd20d25daa3e420519a42993a8583924e38d9e67d3cd8f31b3",
@@ -16,9 +16,10 @@
     "server/combatGuard.ts": "c0225b2b838cc1b828ce1102a2e012da15287258eed319b5722056f34b06cad9",
     "server/pvp/virtual-wallet.ts": "03cfccc604a2748c7b7e4c461adb56c6dfd0e72265726104fd8a96697570327c",
     "server/commonCombatWallet.ts": "a4c54488171ad734558f916a45efb9b14a45d4316d784fbe84f25c568d92ae5f",
+    "server/finance/nile-play-error.ts": "20a472d05d7517035771156ccd4c778e699cdf3b0e27d3c693e8d4f39c197e57",
     "scripts/game-math/rtp-combat.mjs": "3249c9532e89b70b938efb661fab1e3689098679cb6f382b9462e530888ea0ce"
   },
-  "policySha256": "0196dc79b08a1f6212ac126ab286f045cf62dff110079071a6ef5cb7624c8336",
+  "policySha256": "198f8599843cf89632249feee08df28dd0efb6f2279e753b9002e7886a78f93b",
   "serverReplayChecks": 144,
   "method": "exhaustive-pvp-journal",
   "results": [

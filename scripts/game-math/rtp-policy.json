@@ -107,7 +107,8 @@
         "server/combatRoom.ts",
         "server/combatGuard.ts",
         "server/pvp/virtual-wallet.ts",
-        "server/commonCombatWallet.ts"
+        "server/commonCombatWallet.ts",
+        "server/finance/nile-play-error.ts"
       ]
     },
     "hockey": {
