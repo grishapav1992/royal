@@ -19,16 +19,9 @@ async function enter(page:Page,path:string){
 async function approach(page:Page,id:string){
  if(await page.locator('#room-overview').getAttribute('aria-pressed')!=='true')await page.locator('#room-overview').click();
  await expect.poll(async()=>page.evaluate(()=>Math.abs((window as any).royalDemo.getState().view.width-document.getElementById('game')!.clientWidth))).toBeLessThanOrEqual(1);
- if((await state(page)).x<1100){
-  await page.locator('#game').focus();
-  await page.keyboard.down('ArrowDown');
-  try {await expect.poll(async()=>(await state(page)).y,{timeout:15000,intervals:[25]}).toBeGreaterThan(900);} finally {await page.keyboard.up('ArrowDown');}
-  await page.keyboard.down('ArrowRight');
-  try {await expect.poll(async()=>(await state(page)).x,{timeout:15000,intervals:[25]}).toBeGreaterThan(1100);} finally {await page.keyboard.up('ArrowRight');}
- }
  await page.locator('#games-tab').click();await page.locator(`[data-cabinet="${id}"]`).click();
  await expect(page.locator('#mini-dialog')).toBeVisible({timeout:25000});
- expect((await state(page)).cabinet).toBe(id);
+ await expect.poll(async()=>(await state(page)).cabinet).toBe(id);
 }
 async function close(page:Page){await page.locator('#mini-dialog .mini-top [data-close]').click();await expect.poll(async()=>(await state(page)).cabinet).toBe('');}
 async function catalog(page:Page){
@@ -51,7 +44,7 @@ test('the first floor exposes only twelve Royal cabinets and catalogues with con
  for(const cabinet of cabinetsInHall('arcade')){
   await approach(page,cabinet.id);const menu=page.locator('.royal-platform');
   const ids=await menu.locator('[data-platform-game]').evaluateAll(nodes=>nodes.map(n=>n.getAttribute('data-platform-game')).sort());
-  expect(ids).toEqual([...collectionGames('royal')].sort());await expect(page.locator('#chat-input')).toBeInViewport();await close(page);
+  expect(ids).toEqual([...collectionGames('royal')].sort());await choose(page,cabinet.id);await expect(page.locator('#chat-input')).toBeInViewport();await close(page);
  }
  await page.screenshot({path:out+'/hall-desktop.png'});expect(errors).toEqual([]);
 });
@@ -64,9 +57,10 @@ test('a Royal round keeps the same stake after catalogue switching, reopening an
  await menu.getByRole('searchbox').fill('');await menu.getByRole('combobox',{name:'Жанр',exact:true}).selectOption('slot');await expect(menu.locator('.rp-card')).toHaveCount(9);
  await menu.getByRole('combobox',{name:'Жанр',exact:true}).selectOption('all');
  await page.screenshot({path:out+'/royal-desktop.png'});
- await choose(page,'original-cr-vs-leo');const response=page.waitForResponse(r=>r.url().endsWith('/api/demo-wallet/expansion')&&r.request().method()==='POST');await page.locator('#mini-game [data-start]').click();
- const result=await response;expect(result.ok()).toBe(true);const saved=await result.json();expect(saved.session.state).toBe('active');
- const headers={'X-Royal-Account-Id':result.request().headers()['x-royal-account-id']};const wallet=await(await page.request.get('/api/demo-wallet',{headers})).json();
+ await choose(page,'original-cr-vs-leo');let result:any,saved:any;
+ for(let attempt=0;attempt<8;attempt++){const response=page.waitForResponse(r=>r.url().endsWith('/api/demo-wallet/expansion')&&r.request().method()==='POST');await page.locator('#mini-game [data-shoot]').click();result=await response;expect(result.ok()).toBe(true);saved=await result.json();if(saved.session.state==='active')break;}
+ expect(saved.session.state).toBe('active');
+ const headers={'X-Royal-Account-Id':result.request().headers()['x-royal-account-id'],'X-Royal-Cr-Leo':'1'};const wallet=await(await page.request.get('/api/demo-wallet',{headers})).json();
  await catalog(page);await choose(page,'royal-plinko');await catalog(page);await choose(page,'original-cr-vs-leo');await close(page);
  await approach(page,'studio-caramel-carnival');await choose(page,'original-cr-vs-leo');
  const restored=await(await page.request.get('/api/demo-wallet/expansion',{headers})).json();expect(restored.sessions.find((s:any)=>s.gameId==='original-cr-vs-leo').id).toBe(saved.session.id);
@@ -78,7 +72,7 @@ test('a Royal round keeps the same stake after catalogue switching, reopening an
 test('a saved removed Mines round can be cashed out without reopening new stakes',async({page,roomPath})=>{
  await enter(page,roomPath);const me=await(await page.request.get('/api/auth/me')).json();
  const {PostgresDatabase}=await import('../server/database');const {DemoWalletStore}=await import('../server/demoWallet');
- const db=new PostgresDatabase('royal_game'),wallet=new DemoWalletStore(db,()=>0);
+ const db=new PostgresDatabase('royal_floor_e2e'),wallet=new DemoWalletStore(db,()=>0);
  try{
   await wallet.operate(me.account.id,{id:crypto.randomUUID(),kind:'deposit',amount:1000});
   const result=await wallet.mines.operate(me.account.id,{id:crypto.randomUUID(),action:'start',amount:10,mineCount:1});

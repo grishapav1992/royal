@@ -1,4 +1,5 @@
 import { defineConfig } from '@playwright/test';
+process.env.AUTH_DB_PATH='royal_floor_e2e';
 process.env.TEST_BASE_URL='http://127.0.0.1:2697';
 export default defineConfig({
  testDir:'./tests',testMatch:'royal-platform.spec.ts',workers:1,timeout:180000,
