@@ -301,5 +301,12 @@
     "API-only rounds require refreshing the browser wallet cache before comparing the next UI balance.",
     "Cleanup is bounded and proof is saved before closing connections.",
     "An earlier run was interrupted by the concurrent host publication; the final run uses its reviewed successor hashes."
-  ]
+  ],
+  "postIntegrationRtpGate": {
+    "registeredProfilesVerified": 9,
+    "legacyProfilesNotQualified": 114,
+    "passed": true,
+    "qualifiedSlotMathSourcesUnchanged": true,
+    "mainBase": "8d915fc1b4875b008b503c020b64c90f66efdc88"
+  }
 }
