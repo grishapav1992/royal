@@ -35,6 +35,8 @@ test('activity routing isolates halls, supports old pages and sends fresh snapsh
     const dropped={sessionId:'dropped',send(type:string){assert(!['activities','piano-note'].includes(type),'dropped clients must receive no activity packets');}};
     room.clients.push(dropped as any);clear();
     await handlers.get('activity')!(clients[0],{type:'join',id:'piano'});
+    const pianist=room.state.players.get('pianist')!;
+    assert.deepEqual({x:pianist.x,y:pianist.y},ACTIVITIES.piano.seat);
     assert.equal(messages('pianist')[0].value.patch,true);assert.equal(messages('listener')[0].value.pianist,'pianist');
     assert(!('patch' in messages('old-page')[0].value));assert.equal(messages('table-player').length,0);
     clear();await handlers.get('activity')!(clients[0],{type:'note',note:60,down:true});
@@ -50,6 +52,9 @@ test('activity routing isolates halls, supports old pages and sends fresh snapsh
     assert.equal(messages('table-player').length,1);assert(!('patch' in messages('table-player')[0].value));
     assert.equal(messages('table-player')[0].value.tables.length,2);
     assert.equal(messages('listener').length,0);
+    await handlers.get('activity')!(clients[0],{type:'leave'});
+    assert.deepEqual({x:pianist.x,y:pianist.y},ACTIVITIES.piano.entry);
+    assert.equal(pianist.seat,'');assert.equal(pianist.playing,false);
   }finally{
     for(const client of clients)room.onLeave(client);
     room.onDispose();room.clock.clear();await Promise.all(logins.map(login=>accounts.logout(login.token)));
