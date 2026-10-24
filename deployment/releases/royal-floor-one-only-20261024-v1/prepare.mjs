@@ -33,7 +33,10 @@ for(const [file,digest]of Object.entries(release.files)){
 }
 assert('index.html'in delta);copy(resolve(root,'dist-server/index.js'),'server-delta/index.js');
 const moduleDelta={},modulePackages=[];
+const firstFloorGames=new Set(['studio-cosmic-escape','studio-caramel-carnival','studio-velvet-reign','studio-last-convoy','studio-nitro-run','studio-afterglow','studio-meme-overload','studio-dracona','studio-neopolis','github-crash','royal-plinko','original-cr-vs-leo']);
 for(const row of release.packages){
+ // Other floors and archived modules retain their exact existing packages and pointers.
+ if(!firstFloorGames.has(row.gameId))continue;
  const folder=resolve(root,'module-dist',row.gameId,'versions',row.version),metadata=json(resolve(folder,'manifest.json')),prior=active.games[row.gameId];
  if(prior&&JSON.stringify(metadata.files)===JSON.stringify(prior.metadata.files))continue;
  const contract=active.host.games[row.gameId];assert(contract,row.gameId);for(const key of ['apiVersion','rulesVersion','progressVersion'])assert.equal(metadata[key],contract[key],row.gameId+' '+key);
