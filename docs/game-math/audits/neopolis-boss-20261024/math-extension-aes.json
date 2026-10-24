@@ -1,0 +1,752 @@
+{
+  "schemaVersion": 1,
+  "gameId": "studio-neopolis",
+  "rulesVersion": 3,
+  "startedAt": "2026-10-24T12:12:06.831Z",
+  "sourceCommit": "2b2d07e7827e2f43cc5a244f40ecd4a6d07532d2",
+  "sourceHashes": {
+    "src/shared/neopolisMath.ts": "e32db65f28cb4cac308d07154fb56f7816fc630c82a7548e1733ad34e0a91820",
+    "src/shared/neopolisMathV1.ts": "84adb49d9303b29bd8a460b30b7e6993d77df343f8dae33025a0646f7ca3bb92",
+    "src/shared/neopolisMathV2.ts": "22c2d4646ea2ac8db021bde42fcb90b38035848041cea217acd1d9eeb2682692",
+    "src/shared/neopolis.ts": "f18d7309bb4be35655239b506dc04ca5cfea81f9e3bf63da31acbdac08b509ce",
+    "server/games/neopolis.ts": "4c2a411cc151474090c496ab78b9d9fc1c293d81e1e8e87e4dd50cefec865119",
+    "scripts/game-math/rtp-simulation.mjs": "b5c74c5d41dc3ec173a7ee7ec0f42ee8842c433e58ac6a12828ed07b68de57b8"
+  },
+  "policySha256": "22d8756f427a04a7b3827a5f591caad15f9f77f70c739983484ff4a8c9e66c4b",
+  "auditSourceSha256": "8b9f20adc962d78bae7a64889dc59c9b8c90f54dc354c666d17d24354447d00a",
+  "rngSourceSha256": "5735d0173b801e80329ec93f9d0dc049da94068addd042f7de0fb6bf9ca248b4",
+  "configuration": {
+    "cyclesPerSeed": 10000,
+    "seeds": [
+      2026102437,
+      2026102453
+    ],
+    "rng": "aes-ctr",
+    "stakes": [
+      1000,
+      2000,
+      5000,
+      10000,
+      20000,
+      50000
+    ],
+    "heroes": [
+      "granite",
+      "impulse",
+      "prism"
+    ]
+  },
+  "method": "Independent regenerative team cycles. All collection costs and complete bonuses are included. Six stakes share entropy but settle separately in integer cents. Confidence intervals use independent cycle reward/cost residuals. Conditional campaign payouts are not RTP.",
+  "serverReplayChecks": 1152,
+  "maximumFreeSpins": 45,
+  "heroes": [
+    {
+      "hero": "granite",
+      "cycles": 20000,
+      "paidRounds": 2532602,
+      "freeSpins": 894855,
+      "streams": [
+        {
+          "seed": 2026102437,
+          "cycles": 10000,
+          "paidRounds": 1259346
+        },
+        {
+          "seed": 2026102453,
+          "cycles": 10000,
+          "paidRounds": 1273256
+        }
+      ],
+      "results": [
+        {
+          "stakeUnits": 1000,
+          "samples": 20000,
+          "paidRounds": 2532602,
+          "reward": 2427574.6060000053,
+          "cost": 2532602,
+          "rewardSquared": 368281121.2826413,
+          "rewardCost": 443483595.6349995,
+          "costSquared": 588071710,
+          "rtp": 0.9585298463793385,
+          "interval95": [
+            0.9526152613140606,
+            0.9644444314446163
+          ],
+          "paidContribution": 0.5046452470621124,
+          "bonusContribution": 0.45388459931722397,
+          "withinRegisteredBudget": true
+        },
+        {
+          "stakeUnits": 2000,
+          "samples": 20000,
+          "paidRounds": 2532602,
+          "reward": 2428159.1565000145,
+          "cost": 2532602,
+          "rewardSquared": 368467462.5854175,
+          "rewardCost": 443600816.3659985,
+          "costSquared": 588071710,
+          "rtp": 0.9587606566290379,
+          "interval95": [
+            0.9528452064631234,
+            0.9646761067949523
+          ],
+          "paidContribution": 0.5048066569480716,
+          "bonusContribution": 0.4539539996809605,
+          "withinRegisteredBudget": true
+        },
+        {
+          "stakeUnits": 5000,
+          "samples": 20000,
+          "paidRounds": 2532602,
+          "reward": 2428501.6786000016,
+          "cost": 2532602,
+          "rewardSquared": 368576791.8652326,
+          "rewardCost": 443669642.9323994,
+          "costSquared": 588071710,
+          "rtp": 0.9588959017642731,
+          "interval95": [
+            0.9529799522784682,
+            0.964811851250078
+          ],
+          "paidContribution": 0.5049013358593257,
+          "bonusContribution": 0.45399456590494675,
+          "withinRegisteredBudget": true
+        },
+        {
+          "stakeUnits": 10000,
+          "samples": 20000,
+          "paidRounds": 2532602,
+          "reward": 2428631.3829000085,
+          "cost": 2532602,
+          "rewardSquared": 368618263.007131,
+          "rewardCost": 443695787.1440013,
+          "costSquared": 588071710,
+          "rtp": 0.9589471156146953,
+          "interval95": [
+            0.95303098157524,
+            0.9648632496541505
+          ],
+          "paidContribution": 0.5049377049769368,
+          "bonusContribution": 0.4540094106377552,
+          "withinRegisteredBudget": true
+        },
+        {
+          "stakeUnits": 20000,
+          "samples": 20000,
+          "paidRounds": 2532602,
+          "reward": 2428693.426650009,
+          "cost": 2532602,
+          "rewardSquared": 368638109.0772341,
+          "rewardCost": 443708295.47539926,
+          "costSquared": 588071710,
+          "rtp": 0.9589716136408363,
+          "interval95": [
+            0.9530553911598568,
+            0.9648878361218157
+          ],
+          "paidContribution": 0.5049550585524295,
+          "bonusContribution": 0.45401655508840316,
+          "withinRegisteredBudget": true
+        },
+        {
+          "stakeUnits": 50000,
+          "samples": 20000,
+          "paidRounds": 2532602,
+          "reward": 2428700.927840009,
+          "cost": 2532602,
+          "rewardSquared": 368640497.60670525,
+          "rewardCost": 443709793.67001873,
+          "costSquared": 588071710,
+          "rtp": 0.9589745754919284,
+          "interval95": [
+            0.9530583415042123,
+            0.9648908094796446
+          ],
+          "paidContribution": 0.504957088985952,
+          "bonusContribution": 0.4540174865059729,
+          "withinRegisteredBudget": true
+        }
+      ],
+      "bonus": {
+        "triggers": 20000,
+        "triggerRate": 0.007897016586103936,
+        "clearedBossCounts": [
+          147,
+          0,
+          0,
+          19853
+        ],
+        "threeBossClearRate": 0.99265,
+        "spins": {
+          "count": 20000,
+          "min": 10,
+          "median": 45,
+          "p95": 45,
+          "p99": 45,
+          "max": 45,
+          "mean": 44.74275
+        },
+        "positiveFreeSpinRate": 0.8168083097261567,
+        "payoutInStakes": {
+          "count": 20000,
+          "min": 1.3444,
+          "median": 57.8522,
+          "p95": 78.542,
+          "p99": 88.7179,
+          "max": 117.97,
+          "mean": 58.291477190000414
+        },
+        "freePayoutInStakes": {
+          "count": 20000,
+          "min": 1.1103,
+          "median": 57.0195,
+          "p95": 77.6833,
+          "p99": 87.6505,
+          "max": 117.7532,
+          "mean": 57.491257070000216
+        },
+        "caps": 0,
+        "victoryTailSpins": 340913,
+        "victoryTailPayoutInStakes": {
+          "count": 20000,
+          "min": 0,
+          "median": 20.663300000000003,
+          "p95": 33.9623,
+          "p99": 41.127700000000004,
+          "max": 66.1552,
+          "mean": 21.171879124999897
+        },
+        "stages": [
+          {
+            "boss": "null",
+            "entered": 20000,
+            "defeated": 19853,
+            "combatSpins": 139184,
+            "damagingSpins": 119840,
+            "payoutInStakes": 196691.07089999362,
+            "remainingAfterDefeat": {
+              "count": 19853,
+              "min": 15,
+              "median": 18,
+              "p95": 19,
+              "p99": 19,
+              "max": 19,
+              "mean": 18.063315367954466
+            }
+          },
+          {
+            "boss": "vespera",
+            "entered": 19853,
+            "defeated": 19853,
+            "combatSpins": 184124,
+            "damagingSpins": 158824,
+            "payoutInStakes": 241958.69779999592,
+            "remainingAfterDefeat": {
+              "count": 19853,
+              "min": 17,
+              "median": 26,
+              "p95": 28,
+              "p99": 28,
+              "max": 28,
+              "mean": 25.788948773485117
+            }
+          },
+          {
+            "boss": "aeon",
+            "entered": 19853,
+            "defeated": 19853,
+            "combatSpins": 230634,
+            "damagingSpins": 198530,
+            "payoutInStakes": 287737.7901999985,
+            "remainingAfterDefeat": {
+              "count": 19853,
+              "min": 3,
+              "median": 17,
+              "p95": 20,
+              "p99": 21,
+              "max": 21,
+              "mean": 17.171863194479425
+            }
+          }
+        ]
+      }
+    },
+    {
+      "hero": "impulse",
+      "cycles": 20000,
+      "paidRounds": 2540568,
+      "freeSpins": 895515,
+      "streams": [
+        {
+          "seed": 2027102440,
+          "cycles": 10000,
+          "paidRounds": 1273285
+        },
+        {
+          "seed": 2027102456,
+          "cycles": 10000,
+          "paidRounds": 1267283
+        }
+      ],
+      "results": [
+        {
+          "stakeUnits": 1000,
+          "samples": 20000,
+          "paidRounds": 2540568,
+          "reward": 2447291.4469999997,
+          "cost": 2540568,
+          "rewardSquared": 370903679.6376533,
+          "rewardCost": 443662233.1490004,
+          "costSquared": 585199328,
+          "rtp": 0.9632851578859529,
+          "interval95": [
+            0.9573504018898978,
+            0.969219913882008
+          ],
+          "paidContribution": 0.510065702630278,
+          "bonusContribution": 0.4532194552556751,
+          "withinRegisteredBudget": true
+        },
+        {
+          "stakeUnits": 2000,
+          "samples": 20000,
+          "paidRounds": 2540568,
+          "reward": 2447878.8930000053,
+          "cost": 2540568,
+          "rewardSquared": 371090900.5410872,
+          "rewardCost": 443779366.48500204,
+          "costSquared": 585199328,
+          "rtp": 0.9635163841314247,
+          "interval95": [
+            0.9575807731728939,
+            0.9694519950899555
+          ],
+          "paidContribution": 0.5102276323641013,
+          "bonusContribution": 0.4532887517673213,
+          "withinRegisteredBudget": true
+        },
+        {
+          "stakeUnits": 5000,
+          "samples": 20000,
+          "paidRounds": 2540568,
+          "reward": 2448222.343200003,
+          "cost": 2540568,
+          "rewardSquared": 371200335.2199256,
+          "rewardCost": 443847812.6879998,
+          "costSquared": 585199328,
+          "rtp": 0.9636515705149411,
+          "interval95": [
+            0.9577154585678909,
+            0.9695876824619913
+          ],
+          "paidContribution": 0.510322332958614,
+          "bonusContribution": 0.453329237556326,
+          "withinRegisteredBudget": true
+        },
+        {
+          "stakeUnits": 10000,
+          "samples": 20000,
+          "paidRounds": 2540568,
+          "reward": 2448352.4618999907,
+          "cost": 2540568,
+          "rewardSquared": 371241933.79604965,
+          "rewardCost": 443873894.83689797,
+          "costSquared": 585199328,
+          "rtp": 0.9637027868964699,
+          "interval95": [
+            0.9577664929924533,
+            0.9696390808004866
+          ],
+          "paidContribution": 0.5103587583957603,
+          "bonusContribution": 0.4533440285007132,
+          "withinRegisteredBudget": true
+        },
+        {
+          "stakeUnits": 20000,
+          "samples": 20000,
+          "paidRounds": 2540568,
+          "reward": 2448414.7901499993,
+          "cost": 2540568,
+          "rewardSquared": 371261855.394215,
+          "rewardCost": 443886379.60329944,
+          "costSquared": 585199328,
+          "rtp": 0.9637273200914124,
+          "interval95": [
+            0.957790938442935,
+            0.9696637017398898
+          ],
+          "paidContribution": 0.510376157536425,
+          "bonusContribution": 0.4533511625549877,
+          "withinRegisteredBudget": true
+        },
+        {
+          "stakeUnits": 50000,
+          "samples": 20000,
+          "paidRounds": 2540568,
+          "reward": 2448422.317559993,
+          "cost": 2540568,
+          "rewardSquared": 371264244.3557699,
+          "rewardCost": 443887866.5230403,
+          "costSquared": 585199328,
+          "rtp": 0.9637302829760875,
+          "interval95": [
+            0.9577938895669778,
+            0.9696666763851973
+          ],
+          "paidContribution": 0.5103781936559069,
+          "bonusContribution": 0.4533520893201835,
+          "withinRegisteredBudget": true
+        }
+      ],
+      "bonus": {
+        "triggers": 20000,
+        "triggerRate": 0.007872255338176344,
+        "clearedBossCounts": [
+          127,
+          2,
+          0,
+          19871
+        ],
+        "threeBossClearRate": 0.99355,
+        "spins": {
+          "count": 20000,
+          "min": 10,
+          "median": 45,
+          "p95": 45,
+          "p99": 45,
+          "max": 45,
+          "mean": 44.77575
+        },
+        "positiveFreeSpinRate": 0.8167970385755683,
+        "payoutInStakes": {
+          "count": 20000,
+          "min": 1.5177,
+          "median": 57.8958,
+          "p95": 78.1172,
+          "p99": 88.7786,
+          "max": 124.2333,
+          "mean": 58.38253398000017
+        },
+        "freePayoutInStakes": {
+          "count": 20000,
+          "min": 1.4744,
+          "median": 57.0628,
+          "p95": 77.2061,
+          "p99": 87.7464,
+          "max": 123.4873,
+          "mean": 57.5875665900002
+        },
+        "caps": 0,
+        "victoryTailSpins": 340702,
+        "victoryTailPayoutInStakes": {
+          "count": 20000,
+          "min": 0,
+          "median": 20.654899999999994,
+          "p95": 34.1965,
+          "p99": 40.92810000000001,
+          "max": 59.1975,
+          "mean": 21.235302799999968
+        },
+        "stages": [
+          {
+            "boss": "null",
+            "entered": 20000,
+            "defeated": 19873,
+            "combatSpins": 139254,
+            "damagingSpins": 119856,
+            "payoutInStakes": 195503.17989999056,
+            "remainingAfterDefeat": {
+              "count": 19873,
+              "min": 15,
+              "median": 18,
+              "p95": 19,
+              "p99": 19,
+              "max": 19,
+              "mean": 18.05671010919338
+            }
+          },
+          {
+            "boss": "vespera",
+            "entered": 19873,
+            "defeated": 19871,
+            "combatSpins": 184824,
+            "damagingSpins": 158982,
+            "payoutInStakes": 241527.82999999452,
+            "remainingAfterDefeat": {
+              "count": 19871,
+              "min": 18,
+              "median": 26,
+              "p95": 28,
+              "p99": 28,
+              "max": 28,
+              "mean": 25.757334809521414
+            }
+          },
+          {
+            "boss": "aeon",
+            "entered": 19871,
+            "defeated": 19871,
+            "combatSpins": 230735,
+            "damagingSpins": 198710,
+            "payoutInStakes": 290014.26589999796,
+            "remainingAfterDefeat": {
+              "count": 19871,
+              "min": 6,
+              "median": 17,
+              "p95": 20,
+              "p99": 21,
+              "max": 21,
+              "mean": 17.145689698555685
+            }
+          }
+        ]
+      }
+    },
+    {
+      "hero": "prism",
+      "cycles": 20000,
+      "paidRounds": 2512554,
+      "freeSpins": 894835,
+      "streams": [
+        {
+          "seed": 2028102443,
+          "cycles": 10000,
+          "paidRounds": 1246969
+        },
+        {
+          "seed": 2028102459,
+          "cycles": 10000,
+          "paidRounds": 1265585
+        }
+      ],
+      "results": [
+        {
+          "stakeUnits": 1000,
+          "samples": 20000,
+          "paidRounds": 2512554,
+          "reward": 2420869.5179999974,
+          "cost": 2512554,
+          "rewardSquared": 366836123.4902283,
+          "rewardCost": 440767119.37199986,
+          "costSquared": 584537556,
+          "rtp": 0.9635094481551431,
+          "interval95": [
+            0.9574604978326094,
+            0.9695583984776767
+          ],
+          "paidContribution": 0.5045808432375981,
+          "bonusContribution": 0.45892860491754606,
+          "withinRegisteredBudget": true
+        },
+        {
+          "stakeUnits": 2000,
+          "samples": 20000,
+          "paidRounds": 2512554,
+          "reward": 2421450.91950001,
+          "cost": 2512554,
+          "rewardSquared": 367021487.8326302,
+          "rewardCost": 440883594.5320003,
+          "costSquared": 584537556,
+          "rtp": 0.9637408467638945,
+          "interval95": [
+            0.9576910133402466,
+            0.9697906801875423
+          ],
+          "paidContribution": 0.5047424284214389,
+          "bonusContribution": 0.45899841834245153,
+          "withinRegisteredBudget": true
+        },
+        {
+          "stakeUnits": 5000,
+          "samples": 20000,
+          "paidRounds": 2512554,
+          "reward": 2421791.638999999,
+          "cost": 2512554,
+          "rewardSquared": 367130129.26901287,
+          "rewardCost": 440951852.29560167,
+          "costSquared": 584537556,
+          "rtp": 0.9638764536005988,
+          "interval95": [
+            0.9578261031268847,
+            0.969926804074313
+          ],
+          "paidContribution": 0.504837135997873,
+          "bonusContribution": 0.45903931760272615,
+          "withinRegisteredBudget": true
+        },
+        {
+          "stakeUnits": 10000,
+          "samples": 20000,
+          "paidRounds": 2512554,
+          "reward": 2421920.5638000052,
+          "cost": 2512554,
+          "rewardSquared": 367171382.250748,
+          "rewardCost": 440977837.82670164,
+          "costSquared": 584537556,
+          "rtp": 0.9639277658510047,
+          "interval95": [
+            0.9578772279644145,
+            0.9699783037375949
+          ],
+          "paidContribution": 0.5048735343797586,
+          "bonusContribution": 0.459054231471244,
+          "withinRegisteredBudget": true
+        },
+        {
+          "stakeUnits": 20000,
+          "samples": 20000,
+          "paidRounds": 2512554,
+          "reward": 2421982.350600029,
+          "cost": 2512554,
+          "rewardSquared": 367191151.01529187,
+          "rewardCost": 440990285.2726985,
+          "costSquared": 584537556,
+          "rtp": 0.9639523570836801,
+          "interval95": [
+            0.9579017289172622,
+            0.970002985250098
+          ],
+          "paidContribution": 0.5048909281949762,
+          "bonusContribution": 0.45906142888869256,
+          "withinRegisteredBudget": true
+        },
+        {
+          "stakeUnits": 50000,
+          "samples": 20000,
+          "paidRounds": 2512554,
+          "reward": 2421989.806519998,
+          "cost": 2512554,
+          "rewardSquared": 367193514.3677176,
+          "rewardCost": 440991760.2444398,
+          "costSquared": 584537556,
+          "rtp": 0.9639553245502376,
+          "interval95": [
+            0.9579046839810114,
+            0.9700059651194638
+          ],
+          "paidContribution": 0.5048929494052665,
+          "bonusContribution": 0.459062375144972,
+          "withinRegisteredBudget": true
+        }
+      ],
+      "bonus": {
+        "triggers": 20000,
+        "triggerRate": 0.007960027923777957,
+        "clearedBossCounts": [
+          147,
+          1,
+          0,
+          19852
+        ],
+        "threeBossClearRate": 0.9926,
+        "spins": {
+          "count": 20000,
+          "min": 10,
+          "median": 45,
+          "p95": 45,
+          "p99": 45,
+          "max": 45,
+          "mean": 44.74175
+        },
+        "positiveFreeSpinRate": 0.8168578564763336,
+        "payoutInStakes": {
+          "count": 20000,
+          "min": 1.3531,
+          "median": 57.8783,
+          "p95": 78.6982,
+          "p99": 89.0651,
+          "max": 128.5538,
+          "mean": 58.451586580000175
+        },
+        "freePayoutInStakes": {
+          "count": 20000,
+          "min": 1.3011,
+          "median": 57.0976,
+          "p95": 77.9261,
+          "p99": 88.336,
+          "max": 128.3803,
+          "mean": 57.66992727500038
+        },
+        "caps": 0,
+        "victoryTailSpins": 340339,
+        "victoryTailPayoutInStakes": {
+          "count": 20000,
+          "min": 0,
+          "median": 20.654600000000002,
+          "p95": 34.1008,
+          "p99": 41.483399999999996,
+          "max": 68.44510000000001,
+          "mean": 21.198989300000033
+        },
+        "stages": [
+          {
+            "boss": "null",
+            "entered": 20000,
+            "defeated": 19853,
+            "combatSpins": 139272,
+            "damagingSpins": 119833,
+            "payoutInStakes": 197391.7541999911,
+            "remainingAfterDefeat": {
+              "count": 19853,
+              "min": 15,
+              "median": 18,
+              "p95": 19,
+              "p99": 19,
+              "max": 19,
+              "mean": 18.058882788495442
+            }
+          },
+          {
+            "boss": "vespera",
+            "entered": 19853,
+            "defeated": 19852,
+            "combatSpins": 184448,
+            "damagingSpins": 158823,
+            "payoutInStakes": 241955.5523999963,
+            "remainingAfterDefeat": {
+              "count": 19852,
+              "min": 18,
+              "median": 26,
+              "p95": 28,
+              "p99": 28,
+              "max": 28,
+              "mean": 25.768637920612534
+            }
+          },
+          {
+            "boss": "aeon",
+            "entered": 19852,
+            "defeated": 19852,
+            "combatSpins": 230776,
+            "damagingSpins": 198520,
+            "payoutInStakes": 290071.4528999991,
+            "remainingAfterDefeat": {
+              "count": 19852,
+              "min": 6,
+              "median": 17,
+              "p95": 20,
+              "p99": 21,
+              "max": 21,
+              "mean": 17.143814225266976
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "invariants": {
+    "integerSettlement": true,
+    "oneDamagePerSpin": true,
+    "oneAwardPerDefeatedBoss": true,
+    "remainingBudget": true,
+    "finiteCampaign": true,
+    "uniquePowersPerSpin": true,
+    "noScatterRetriggersInFreeSpins": true
+  },
+  "acceptance": {
+    "rtpWithinRegisteredBudget": true
+  },
+  "productionWrites": false,
+  "qualificationProofModified": false,
+  "completedAt": "2026-10-24T12:21:54.650Z"
+}
