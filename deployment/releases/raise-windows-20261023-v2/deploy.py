@@ -237,7 +237,7 @@ def build():
                        check=True, stdout=log, stderr=subprocess.STDOUT)
     candidate = image('royal-game:' + NAME)
     program = json.loads(run(['docker', 'run', '--rm', '--network=none', '--read-only', '--entrypoint',
-                              'node', candidate, '-e', PROGRAM]))
+                              'node', candidate, '--v8-pool-size=1', '-e', PROGRAM]))
     expected = expected_program()
     require(program == expected, 'Candidate runtime differs from the reviewed client and backend deltas')
     parent, child = json.loads(run(['docker', 'image', 'inspect', OLD['preparedImage'], candidate]))

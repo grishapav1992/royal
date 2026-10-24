@@ -1,7 +1,7 @@
 {
   "release": "raise-windows-20261023-v2",
-  "applicationCommit": "1e36c918b573b41c13ef1421464f99e00fec51bd",
-  "productionBaseCommit": "0480b90a210e5485c96b74218218a274ff7a5966",
+  "applicationCommit": "c68fd25d79245a5404b4182f8c55a2318806883b",
+  "productionBaseCommit": "09dbad7d86ec4b5c7d18c16715d1861de65468f3",
   "sourceChanges": {
     "src/game/catHomeArt.ts": "f643a5192309debe0b1a925848780fb5422586ae8a8e7e011fa975e6765d2ef9",
     "src/game/hallWindows.ts": "18baf193c3f7304e12291a6fbc7bcb269afe9b9a6170febaa6def395ee903633",
@@ -23,8 +23,11 @@
     "RTPGate": "2 qualified and 114 unchanged legacy modules",
     "catWindowCases": 4,
     "authenticatedHostDesktopMobile": 2,
-    "concurrentCardScalePreserved": true
+    "concurrentCardScalePreserved": true,
+    "activeIndependentPackagesPreserved": 116,
+    "preparedInventory": "Reuse verified bytes only for the exact immutable image ID, from the published direct-wallet installer"
   },
   "preservedFinanceSourceCommit": "baab40bb7c2d63bd5b2e9795ed4a99f658ffae15",
-  "previousAttempt": "raise-windows-20261023-v1 was stopped before publication to prioritize USDT restoration"
+  "previousAttempt": "raise-windows-20261023-v1 was stopped before publication to prioritize USDT restoration",
+  "preservedDirectWalletSourceCommit": "09dbad7d86ec4b5c7d18c16715d1861de65468f3"
 }

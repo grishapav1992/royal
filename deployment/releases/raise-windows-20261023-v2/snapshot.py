@@ -64,9 +64,18 @@ services = {row['Name']: {'id': row['Id'], 'image': row['Image'], 'startedAt': r
 environment = dict(row.split('=', 1) for row in config.get('Env', []) if '=' in row)
 node = "const f=require('fs'),p=require('path'),c=require('crypto'),o={};function walk(d){if(!f.existsSync(d))return;for(const n of f.readdirSync(d).sort()){const x=p.join(d,n),s=f.lstatSync(x);if(s.isSymbolicLink())throw Error('symlink');if(s.isDirectory())walk(x);else if(s.isFile())o[p.relative('/app',x)]=c.createHash('sha256').update(f.readFileSync(x)).digest('hex');}}walk('/app/dist');walk('/app/dist-server');walk('/app/module-dist');for(const n of ['package.json','package-lock.json'])o[n]=c.createHash('sha256').update(f.readFileSync('/app/'+n)).digest('hex');console.log(JSON.stringify(o))"
 prepared = run(['docker', 'image', 'inspect', 'royal-game:latest', '--format', '{{.Id}}'])
-program = json.loads(run(['docker', 'exec', 'royal-game-1', 'node', '-e', node])) if not RECOVERY else None
-prepared_program = json.loads(run(['docker', 'run', '--rm', '--network=none', '--read-only', '--entrypoint',
-                                  'node', prepared, '-e', node])) if not RECOVERY else None
+program = json.loads(run(['docker', 'exec', 'royal-game-1', 'node', '--v8-pool-size=1', '-e', node])) if not RECOVERY else None
+# Image IDs are immutable. Reuse a verified inventory only for that exact image.
+release = Path(__file__).resolve().parent
+reviewed = json.loads((release / 'install-manifest.json').read_text())['before']
+built_path = release / 'build-result.json'
+built = json.loads(built_path.read_text()) if built_path.is_file() else {}
+if prepared == reviewed['preparedImage']:
+    prepared_program = reviewed['preparedProgram'] if not RECOVERY else None
+elif prepared == built.get('image'):
+    prepared_program = built['program'] if not RECOVERY else None
+else:
+    raise RuntimeError('Prepared image changed outside this reviewed release')
 settings = {name: sha(P / name) for name in ['.env', 'compose.yaml', 'compose.override.yaml', 'compose.payments.yaml', 'compose.mira.yaml']}
 host_keys = ['CpuShares', 'Memory', 'MemoryReservation', 'MemorySwap', 'NanoCpus', 'CpuPeriod', 'CpuQuota',
              'CpusetCpus', 'RestartPolicy', 'PortBindings', 'ReadonlyRootfs', 'NetworkMode', 'CapAdd', 'CapDrop',
