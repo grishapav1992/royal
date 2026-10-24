@@ -1,4 +1,5 @@
-import { CombatUsdtWallet } from './combatWallet';
+import { CommonCombatWallet } from './commonCombatWallet';
+import { virtualPvpCommand } from './pvp/virtual-service';
 import { serializeAppearance } from '../src/shared/appearance';
 import type { CharacterAppearance } from '../src/shared/skinStudio';
 import { Room, type Client, type AuthContext, ServerError } from '@colyseus/core';
@@ -40,10 +41,10 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
   state = new LobbyState();
   maxClients = ROOM_CAPACITY;
   maxMessagesPerSecond = 80;
-  private activities = new Activities(id => this.state.players.get(id), id => this.stop(id), (type,value,hall) => this.broadcastActivity(type,value,hall), (id,text) => this.clients.find(c=>c.sessionId===id)?.send('notice',text),undefined,{escrow:new CombatUsdtWallet(process.env.NILE_PLAY_SOCKET_FILE??'',id=>accounts.financeAdmin.assertAllowed(id)),account:id=>this.playerAccounts.get(id),name:id=>this.state.players.get(id)?.name??'Игрок'});
+  private activities = new Activities(id => this.state.players.get(id), id => this.stop(id), (type,value,hall) => this.broadcastActivity(type,value,hall), (id,text) => this.clients.find(c=>c.sessionId===id)?.send('notice',text),undefined,{escrow:new CommonCombatWallet(accounts.combat,id=>accounts.financeAdmin.assertAllowed(id)),account:id=>this.playerAccounts.get(id),name:id=>this.state.players.get(id)?.name??'Игрок'});
   private pvp=new PvpRoom({roomId:()=>this.roomId,activities:this.activities,allowMoney:id=>accounts.financeAdmin.assertAllowed(id),
     people:()=>[...this.state.players].flatMap(([sessionId,p])=>{const accountId=this.playerAccounts.get(sessionId);return accountId?[{sessionId,accountId,name:p.name,hall:p.hall,x:p.x,y:p.y,connected:p.connected,available:!p.playing&&!p.activity&&!p.seat&&p.action!=='drink'}]:[];}),
-    send:(id,type,value)=>this.clients.find(c=>c.sessionId===id)?.send(type,value)});
+    send:(id,type,value)=>this.clients.find(c=>c.sessionId===id)?.send(type,value)},virtualPvpCommand(accounts.pvp));
   private guards = new Guards(this.state, (id, decision) => {
     if (decision.kind !== 'ejecting') return;
     const client = this.clients.find(c => c.sessionId === id);

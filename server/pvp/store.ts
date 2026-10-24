@@ -5,6 +5,12 @@ import { PVP_ARRIVAL_MS, PVP_INVITE_MS, PVP_MOVE_MS, PVP_RECONNECT_MS, isPvpCard
 import { createCardGame, playCardMove, publicCardGame, type CardState } from './cards';
 import { NilePlayError, type NilePlayLedger } from '../finance/nile-play-ledger';
 
+export type PvpLedger = Pick<NilePlayLedger,'ready'|'db'> & {
+  wallet(accountId:string,now?:number):Promise<PvpSnapshot['wallet']>;
+  pvpHold(accountId:string,value:unknown,now?:number):Promise<unknown>;
+  pvpFinish(accountId:string,value:unknown,now?:number):Promise<unknown>;
+};
+
 export type PvpPresence = { accountId: string; name: string; connected: boolean; available: boolean };
 type Actor = { accountId: string; name: string; roomId: string };
 type StoredMatch = { challenge: PvpChallenge; cards: CardState | null; roomId: string; lastMoveAt: number; roomSeenAt: number };
@@ -20,7 +26,7 @@ const roomValid = (id: unknown): id is string => typeof id === 'string' && /^[a-
 export class PvpStore {
   readonly ready: Promise<void>;
   private rooms = new Map<string, { people: PvpPresence[]; at: number }>();
-  constructor(private ledger: NilePlayLedger) {
+  constructor(private ledger: PvpLedger) {
     this.ready = ledger.ready.then(() => ledger.db.transaction(async () => ledger.db.exec(`
       CREATE TABLE IF NOT EXISTS pvp_matches(id TEXT PRIMARY KEY,room_id TEXT NOT NULL,creator_id TEXT NOT NULL,
         opponent_id TEXT,status TEXT NOT NULL,payload TEXT NOT NULL,updated_at BIGINT NOT NULL);
