@@ -118,7 +118,7 @@ def snapshot():
 
 
 def safe_image(config, state):
-    reference = config['services']['game']['image']
+    reference = config['services']['game'].get('image', config.get('name', 'royal') + '-game')
     require(run(['docker', 'image', 'inspect', reference, '--format', '{{.Id}}']) == state['image'], 'Compose image differs from running image')
     for line in run(['docker', 'diff', 'royal-game-1']).splitlines():
         path = line.split(' ', 1)[-1]
