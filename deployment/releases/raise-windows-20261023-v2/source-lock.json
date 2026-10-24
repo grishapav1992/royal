@@ -18,14 +18,16 @@
   "maximumCatJumpHeight": 170,
   "mathSourcesChanged": false,
   "verification": {
-    "productionSourcePathsChecked": 1753,
+    "productionSourcePathsChecked": 1754,
     "normalizedLineEndingOnlyPaths": 4,
     "RTPGate": "2 qualified and 114 unchanged legacy modules",
     "catWindowCases": 4,
     "authenticatedHostDesktopMobile": 2,
     "concurrentCardScalePreserved": true,
     "activeIndependentPackagesPreserved": 116,
-    "preparedInventory": "Reuse verified bytes only for the exact immutable image ID, from the published direct-wallet installer"
+    "preparedInventory": "Reuse verified bytes only for the exact immutable image ID, from the published direct-wallet installer",
+    "externalModuleFilesPreserved": 1763,
+    "directWalletCasesWithWindows": 4
   },
   "preservedFinanceSourceCommit": "baab40bb7c2d63bd5b2e9795ed4a99f658ffae15",
   "previousAttempt": "raise-windows-20261023-v1 was stopped before publication to prioritize USDT restoration",
