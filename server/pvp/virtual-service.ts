@@ -1,4 +1,4 @@
-import { NilePlayError } from '../finance/nile-play-ledger';
+import { NilePlayError } from '../finance/nile-play-error';
 import { PvpStore } from './store';
 import { VIRTUAL_PVP_SCOPE } from '../../src/shared/pvp';
 

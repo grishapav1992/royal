@@ -1,7 +1,7 @@
 import type { PostgresDatabase } from '../database';
 import { DemoWalletStore } from '../demoWallet';
 import { demoBalanceUnits, demoReservedUnits, saveDemoUnits, recordDemoUnits, MAX_DEMO_UNITS } from '../demoWalletAmounts';
-import { NilePlayError } from '../finance/nile-play-ledger';
+import { NilePlayError } from '../finance/nile-play-error';
 import { isPvpMoneyGame } from '../finance/pvp-money';
 import { gameAccountId } from '../../src/shared/nileWallet';
 import { PVP_GAMES, pvpPayout, validVirtualPvpStake, VIRTUAL_PVP_SCOPE, type PvpGameId, type VirtualPvpWallet } from '../../src/shared/pvp';

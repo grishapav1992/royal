@@ -107,7 +107,8 @@
         "server/combatRoom.ts",
         "server/combatGuard.ts",
         "server/pvp/virtual-wallet.ts",
-        "server/commonCombatWallet.ts"
+        "server/commonCombatWallet.ts",
+        "server/finance/nile-play-error.ts"
       ]
     },
     "hockey": {
@@ -139,7 +140,8 @@
         "server/pvp/store.ts",
         "server/pvp/cards.ts",
         "server/finance/pvp-money.ts",
-        "server/pvp/virtual-wallet.ts"
+        "server/pvp/virtual-wallet.ts",
+        "server/finance/nile-play-error.ts"
       ]
     },
     "pool": {
@@ -171,7 +173,8 @@
         "server/pvp/store.ts",
         "server/pvp/cards.ts",
         "server/finance/pvp-money.ts",
-        "server/pvp/virtual-wallet.ts"
+        "server/pvp/virtual-wallet.ts",
+        "server/finance/nile-play-error.ts"
       ]
     },
     "chess": {
@@ -203,7 +206,8 @@
         "server/pvp/store.ts",
         "server/pvp/cards.ts",
         "server/finance/pvp-money.ts",
-        "server/pvp/virtual-wallet.ts"
+        "server/pvp/virtual-wallet.ts",
+        "server/finance/nile-play-error.ts"
       ]
     },
     "durak": {
@@ -235,7 +239,8 @@
         "server/pvp/store.ts",
         "server/pvp/cards.ts",
         "server/finance/pvp-money.ts",
-        "server/pvp/virtual-wallet.ts"
+        "server/pvp/virtual-wallet.ts",
+        "server/finance/nile-play-error.ts"
       ]
     },
     "transfer-durak": {
@@ -267,7 +272,8 @@
         "server/pvp/store.ts",
         "server/pvp/cards.ts",
         "server/finance/pvp-money.ts",
-        "server/pvp/virtual-wallet.ts"
+        "server/pvp/virtual-wallet.ts",
+        "server/finance/nile-play-error.ts"
       ]
     },
     "crazy-eights": {
@@ -299,7 +305,8 @@
         "server/pvp/store.ts",
         "server/pvp/cards.ts",
         "server/finance/pvp-money.ts",
-        "server/pvp/virtual-wallet.ts"
+        "server/pvp/virtual-wallet.ts",
+        "server/finance/nile-play-error.ts"
       ]
     }
   },
