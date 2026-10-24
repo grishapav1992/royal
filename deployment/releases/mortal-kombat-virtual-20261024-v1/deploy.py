@@ -243,36 +243,56 @@ def backup_guard(built):
     require(sha(BACKUP / 'index.html') == OLD['program']['dist/index.html'], 'Client index backup changed')
 
 
+def retained_backup():
+    require(not (ROOT / 'build-result.json').exists() and not (ROOT / 'published.json').exists(),
+            'Use the verified publish operation for an already built release')
+    require(BACKUP.is_dir() and not BACKUP.is_symlink(), 'Invalid retained backup')
+    verify_tar(BACKUP / 'source.tgz')
+    require(sha(BACKUP / 'index.html') == OLD['program']['dist/index.html'], 'Retained client index differs')
+    dump = BACKUP / 'game-wallet.dump'
+    require(dump.is_file() and not dump.is_symlink() and 1000 < dump.stat().st_size <= WALLET_BACKUP_LIMIT,
+            'Retained wallet backup is incomplete')
+    with dump.open('rb') as source:
+        subprocess.run(['docker', 'exec', '-i', 'royal-finance-sim-finance-db-1', 'pg_restore', '--list'],
+                       stdin=source, stdout=subprocess.DEVNULL, check=True)
+    for suffix, ref in [('', OLD['container']['image']), ('-prepared', OLD['preparedImage'])]:
+        require(image('royal-game:before-' + NAME + suffix) == ref, 'Retained rollback tag differs')
+
+
 def build():
     payload()
     old = baseline()
     source_bytes = sum((LIVE / name).stat().st_size for name in OLD['source'])
     delta_bytes = sum((ROOT / 'dist-delta' / name).stat().st_size for name in DELTA)
     backend_bytes = (ROOT / 'server-delta/index.js').stat().st_size
-    reusable = reusable_source_backup(Path('/opt/royal-backups/pvp-virtual-usdt-20261024-v1/source.tgz'))
+    retained = BACKUP.exists()
+    if retained:
+        retained_backup()
+    reusable = None if retained else reusable_source_backup(Path('/opt/royal-backups/pvp-virtual-usdt-20261024-v1/source.tgz'))
     require(old['availableBytes'] > DISK_RESERVE + WALLET_BACKUP_LIMIT + BUILD_MARGIN
-            + (0 if reusable else source_bytes) + (delta_bytes + backend_bytes) * 4,
+            + (0 if retained or reusable else source_bytes) + (delta_bytes + backend_bytes) * 4,
             'Insufficient free disk space')
-    BACKUP.mkdir(mode=0o700, exist_ok=False)
-    command = ['docker','exec','royal-finance-sim-finance-db-1','sh','-c',
-        'export PGPASSWORD="$(cat /run/secrets/finance_admin_password)"; exec pg_dump -h 127.0.0.1 -U finance_schema_owner -d royal_finance_sim --format=custom --schema=royal_game']
-    bounded_dump(command, BACKUP / 'game-wallet.dump')
-    os.chmod(BACKUP / 'game-wallet.dump',0o600)
-    require((BACKUP / 'game-wallet.dump').stat().st_size>1000,'Game wallet backup is incomplete')
-    if reusable:
-        os.link(reusable, BACKUP / 'source.tgz', follow_symlinks=False)
-    else:
-        with tarfile.open(BACKUP / 'source.tgz', 'w:gz') as archive:
-            for name, digest in OLD['source'].items():
-                require(sha(LIVE / name) == digest, 'Source changed during backup')
-                archive.add(LIVE / name, arcname=name, recursive=False)
-    verify_tar(BACKUP / 'source.tgz')
+    if not retained:
+        BACKUP.mkdir(mode=0o700, exist_ok=False)
+        command = ['docker','exec','royal-finance-sim-finance-db-1','sh','-c',
+            'export PGPASSWORD="$(cat /run/secrets/finance_admin_password)"; exec pg_dump -h 127.0.0.1 -U finance_schema_owner -d royal_finance_sim --format=custom --schema=royal_game']
+        bounded_dump(command, BACKUP / 'game-wallet.dump')
+        os.chmod(BACKUP / 'game-wallet.dump',0o600)
+        require((BACKUP / 'game-wallet.dump').stat().st_size>1000,'Game wallet backup is incomplete')
+        if reusable:
+            os.link(reusable, BACKUP / 'source.tgz', follow_symlinks=False)
+        else:
+            with tarfile.open(BACKUP / 'source.tgz', 'w:gz') as archive:
+                for name, digest in OLD['source'].items():
+                    require(sha(LIVE / name) == digest, 'Source changed during backup')
+                    archive.add(LIVE / name, arcname=name, recursive=False)
+        verify_tar(BACKUP / 'source.tgz')
+        run(['docker', 'cp', 'royal-game-1:/app/dist/index.html', str(BACKUP / 'index.html')])
+        require(sha(BACKUP / 'index.html') == OLD['program']['dist/index.html'], 'Client index backup differs')
+        for suffix, ref in [('', OLD['container']['image']), ('-prepared', OLD['preparedImage'])]:
+            run(['docker', 'tag', ref, 'royal-game:before-' + NAME + suffix])
     require(shutil.disk_usage(LIVE).free > DISK_RESERVE + BUILD_MARGIN + (delta_bytes + backend_bytes) * 4,
             'Disk reserve changed during backup')
-    run(['docker', 'cp', 'royal-game-1:/app/dist/index.html', str(BACKUP / 'index.html')])
-    require(sha(BACKUP / 'index.html') == OLD['program']['dist/index.html'], 'Client index backup differs')
-    for suffix, ref in [('', OLD['container']['image']), ('-prepared', OLD['preparedImage'])]:
-        run(['docker', 'tag', ref, 'royal-game:before-' + NAME + suffix])
     context = ROOT / 'runtime-context'
     context.mkdir(exist_ok=False)
     shutil.copytree(ROOT / 'dist-delta', context / 'dist-delta')
@@ -304,6 +324,7 @@ def build():
     result = {'image': candidate, 'program': expected, 'sourceCommit': M['sourceCommit'],
               'sourceBackupSha256': sha(BACKUP / 'source.tgz'), 'backup': str(BACKUP),
               'sourceBackupReusedFrom': str(reusable) if reusable else None,
+              'retainedBackup': retained,
               'gameWalletBackupSha256':sha(BACKUP / 'game-wallet.dump')}
     write('build-result.json', result)
     return {'built': True, 'image': candidate, 'clientDeltaFiles': len(DELTA), 'backendDeltaFiles': len(SERVER_DELTA),

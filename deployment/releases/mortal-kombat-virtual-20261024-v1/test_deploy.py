@@ -8,6 +8,7 @@ import shutil
 import tarfile
 import tempfile
 import unittest
+from unittest.mock import patch
 import sys
 from types import SimpleNamespace
 
@@ -133,6 +134,24 @@ class ChatReleaseTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, 'backup command failed'):
             h.bounded_dump([sys.executable, '-c', 'import sys;print("partial");sys.exit(1)'], output, 128)
         self.assertFalse(output.exists())
+
+    def test_resume_validates_all_retained_backups_and_rollback_tags(self):
+        h = self.helper
+        self.backups()
+        (h.BACKUP / 'game-wallet.dump').write_bytes(b'x' * 2000)
+        h.image = lambda ref: h.OLD['preparedImage']
+        with patch.object(h.subprocess, 'run') as command:
+            h.retained_backup()
+            self.assertEqual(command.call_args.args[0][-2:], ['pg_restore', '--list'])
+        h.image = lambda ref: 'sha256:wrong'
+        with patch.object(h.subprocess, 'run'), self.assertRaisesRegex(RuntimeError, 'rollback tag differs'):
+            h.retained_backup()
+
+    def test_resume_cannot_rebuild_an_already_published_release(self):
+        h = self.helper
+        (h.ROOT / 'published.json').write_text('{}')
+        with self.assertRaisesRegex(RuntimeError, 'already built release'):
+            h.retained_backup()
 
     def test_overlay_preserves_payment_crypto_dependencies_and_all_bundled_modules(self):
         helper = self.helper
