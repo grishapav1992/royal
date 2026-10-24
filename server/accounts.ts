@@ -9,6 +9,9 @@ import { normalizeCharacterAppearance, type CharacterAppearance } from '../src/s
 import { SkinStudioStore } from './skinStudio';
 import { CodexSkinImages } from './skinImages';
 import { NileSkinPayments } from './nileSkinPayments';
+import { CommonSkinPayments } from './skinPayments';
+import { VirtualPvpLedger } from './pvp/virtual-wallet';
+import { PvpStore } from './pvp/store';
 import { isPlayerCharacter } from '../src/shared/characters';
 import { PostgresDatabase } from './database';
 import { applyAccountSchemaMigrations } from './game-database-migrations';
@@ -37,6 +40,7 @@ export class AccountStore {
   readonly ready: Promise<void>;
   readonly schema: string;
   readonly wallet: DemoWalletStore;
+  readonly pvp: PvpStore;
   readonly casinoApiProWallet: CasinoApiProWallet;
   readonly moderation: ModerationStore;
   readonly drinking: IntoxicationStore;
@@ -48,6 +52,8 @@ export class AccountStore {
   readonly events = new EventEmitter();
   private sessionCleanup?: Promise<void>;
   private nextSessionCleanup = 0;
+  private wagerSweep?:ReturnType<typeof setInterval>;
+  private sweeping?:Promise<unknown>;
   constructor(name = 'royal_game') {
     this.db = new PostgresDatabase(name);
     this.schema = this.db.schema;
@@ -56,6 +62,8 @@ export class AccountStore {
       CREATE TABLE IF NOT EXISTS sessions (hash TEXT PRIMARY KEY, account_id TEXT NOT NULL REFERENCES accounts(id) ON DELETE CASCADE, expires INTEGER NOT NULL);
       CREATE INDEX IF NOT EXISTS sessions_expiry ON sessions(expires);`)).then(() => applyAccountSchemaMigrations(this.db));
     this.wallet = new DemoWalletStore(this.db, undefined, undefined, schemaReady);
+    const virtualWallet=new VirtualPvpLedger(this.db,this.wallet);
+    this.pvp=new PvpStore(virtualWallet);
     this.casinoApiProWallet = new CasinoApiProWallet(this.db, schemaReady);
     this.moderation = new ModerationStore(this.db, schemaReady);
     this.drinking = new IntoxicationStore(this.db, (id, state) => { this.events.emit('drinking', id, state); }, schemaReady);
@@ -64,9 +72,16 @@ export class AccountStore {
     this.paymentEventSecret = payments.eventSecret;
     this.cryptoWallet = new PaymentClient(payments, this.paymentCredits);
     this.financeAdmin = new FinanceAdminStore(this.db,schemaReady);
-    this.skinStudio = new SkinStudioStore(this.db, new NileSkinPayments(), new CodexSkinImages(), () => true,
+    const commonSkins=new CommonSkinPayments(this.db,this.wallet.ready),legacySkins=new NileSkinPayments();
+    this.skinStudio = new SkinStudioStore(this.db, {skinPurchase:async(account,id,action)=>{
+      const job=await this.db.prepare('SELECT payment_source FROM skin_jobs WHERE id=?').get(id);
+      return (job?.payment_source==='nile'?legacySkins:commonSkins).skinPurchase(account,id,action);
+    }}, new CodexSkinImages(), () => true,
       (id, appearance) => this.events.emit('appearance', id, appearance), this.wallet.ready);
-    this.ready = Promise.all([schemaReady, this.wallet.ready, this.casinoApiProWallet.ready, this.moderation.ready, this.drinking.ready, this.paymentCredits.ready, this.skinStudio.ready, this.financeAdmin.ready]).then(() => {});
+    this.ready = Promise.all([schemaReady, this.wallet.ready, this.pvp.ready, this.casinoApiProWallet.ready, this.moderation.ready, this.drinking.ready, this.paymentCredits.ready, this.skinStudio.ready, this.financeAdmin.ready]).then(() => {
+      this.wagerSweep=setInterval(()=>{if(!this.sweeping)this.sweeping=Promise.allSettled([this.pvp.sweep()]).finally(()=>{this.sweeping=undefined;});},1000);
+      this.wagerSweep.unref();
+    });
     this.events.setMaxListeners(0);
   }
   async login(rawEmail: unknown, rawPassword: unknown) {
@@ -152,7 +167,7 @@ export class AccountStore {
     const hash = digest(token); (await this.db.prepare('DELETE FROM sessions WHERE hash=?').run(hash));
     this.events.emit('logout', hash);
   }
-  async close() { await this.ready; await this.db.close(); }
+  async close() { await this.ready; clearInterval(this.wagerSweep);await this.sweeping; await this.db.close(); }
 }
 export const accounts = new AccountStore(process.env.NODE_ENV === 'test' ? process.env.AUTH_DB_PATH || ':memory:' : 'royal_game');
 export function cookieToken(cookie: string | undefined) { return cookie?.split(';').map(part => part.trim()).find(part => part.startsWith('royal_session='))?.slice('royal_session='.length); }

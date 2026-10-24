@@ -2,18 +2,265 @@
   "schemaVersion": 1,
   "profiles": {
     "studio-neopolis": {
-      "rulesVersion": 3, "progressVersion": 3, "target": 0.96, "tolerance": 0.01, "maxUpper95": 0.98, "maxHalfWidth95": 0.01,
-      "minPaidRounds": 1000000, "minCycles": 20000, "seeds": [872031, 918273], "qualificationCyclesPerSeed": 10000,
-      "stakes": [1000, 2000, 5000, 10000, 20000, 50000], "choices": ["granite", "impulse", "prism"],
+      "rulesVersion": 3,
+      "progressVersion": 3,
+      "target": 0.96,
+      "tolerance": 0.01,
+      "maxUpper95": 0.98,
+      "maxHalfWidth95": 0.01,
+      "minPaidRounds": 1000000,
+      "minCycles": 20000,
+      "seeds": [
+        872031,
+        918273
+      ],
+      "qualificationCyclesPerSeed": 10000,
+      "stakes": [
+        1000,
+        2000,
+        5000,
+        10000,
+        20000,
+        50000
+      ],
+      "choices": [
+        "granite",
+        "impulse",
+        "prism"
+      ],
       "proof": "docs/game-math/qualifications/neopolis-v3.json",
-      "sources": ["src/shared/neopolisMath.ts", "src/shared/neopolisMathV1.ts", "src/shared/neopolisMathV2.ts", "src/shared/neopolis.ts", "server/games/neopolis.ts"]
+      "sources": [
+        "src/shared/neopolisMath.ts",
+        "src/shared/neopolisMathV1.ts",
+        "src/shared/neopolisMathV2.ts",
+        "src/shared/neopolis.ts",
+        "server/games/neopolis.ts"
+      ]
     },
     "studio-dracona": {
-      "rulesVersion": 3, "progressVersion": 2, "target": 0.96, "tolerance": 0.01, "maxUpper95": 0.98, "maxHalfWidth95": 0.01,
-      "minPaidRounds": 5000000, "minCycles": 0, "seeds": [872031, 918273], "qualificationRoundsPerSeed": 2500000,
-      "stakes": [1000, 2000, 5000, 10000, 20000, 50000], "choices": ["normal"],
+      "rulesVersion": 3,
+      "progressVersion": 2,
+      "target": 0.96,
+      "tolerance": 0.01,
+      "maxUpper95": 0.98,
+      "maxHalfWidth95": 0.01,
+      "minPaidRounds": 5000000,
+      "minCycles": 0,
+      "seeds": [
+        872031,
+        918273
+      ],
+      "qualificationRoundsPerSeed": 2500000,
+      "stakes": [
+        1000,
+        2000,
+        5000,
+        10000,
+        20000,
+        50000
+      ],
+      "choices": [
+        "normal"
+      ],
       "proof": "docs/game-math/qualifications/dracona-v3.json",
-      "sources": ["src/shared/draconaMath.ts", "src/shared/draconaMathV1.ts", "src/shared/dracona.ts", "server/games/dracona.ts"]
+      "sources": [
+        "src/shared/draconaMath.ts",
+        "src/shared/draconaMathV1.ts",
+        "src/shared/dracona.ts",
+        "server/games/dracona.ts"
+      ]
+    },
+    "hockey": {
+      "method": "exhaustive-virtual-pvp-pot",
+      "rulesVersion": 1,
+      "progressVersion": 1,
+      "target": 0.95,
+      "refundReturn": 1,
+      "commissionBasisPoints": 500,
+      "stakeRange": {
+        "min": 1000000,
+        "max": 500000000,
+        "step": 100000
+      },
+      "choices": [
+        "left-win",
+        "right-win",
+        "draw",
+        "cancel",
+        "disconnect-left",
+        "disconnect-right",
+        "expired",
+        "server"
+      ],
+      "proof": "docs/game-math/qualifications/hockey-virtual-v1.json",
+      "qualificationSource": "scripts/game-math/rtp-virtual-pvp.mjs",
+      "sources": [
+        "src/shared/pvp.ts",
+        "server/pvp/store.ts",
+        "server/pvp/cards.ts",
+        "server/finance/pvp-money.ts",
+        "server/pvp/virtual-wallet.ts"
+      ]
+    },
+    "pool": {
+      "method": "exhaustive-virtual-pvp-pot",
+      "rulesVersion": 1,
+      "progressVersion": 1,
+      "target": 0.95,
+      "refundReturn": 1,
+      "commissionBasisPoints": 500,
+      "stakeRange": {
+        "min": 1000000,
+        "max": 500000000,
+        "step": 100000
+      },
+      "choices": [
+        "left-win",
+        "right-win",
+        "draw",
+        "cancel",
+        "disconnect-left",
+        "disconnect-right",
+        "expired",
+        "server"
+      ],
+      "proof": "docs/game-math/qualifications/pool-virtual-v1.json",
+      "qualificationSource": "scripts/game-math/rtp-virtual-pvp.mjs",
+      "sources": [
+        "src/shared/pvp.ts",
+        "server/pvp/store.ts",
+        "server/pvp/cards.ts",
+        "server/finance/pvp-money.ts",
+        "server/pvp/virtual-wallet.ts"
+      ]
+    },
+    "chess": {
+      "method": "exhaustive-virtual-pvp-pot",
+      "rulesVersion": 1,
+      "progressVersion": 1,
+      "target": 0.95,
+      "refundReturn": 1,
+      "commissionBasisPoints": 500,
+      "stakeRange": {
+        "min": 1000000,
+        "max": 500000000,
+        "step": 100000
+      },
+      "choices": [
+        "left-win",
+        "right-win",
+        "draw",
+        "cancel",
+        "disconnect-left",
+        "disconnect-right",
+        "expired",
+        "server"
+      ],
+      "proof": "docs/game-math/qualifications/chess-virtual-v1.json",
+      "qualificationSource": "scripts/game-math/rtp-virtual-pvp.mjs",
+      "sources": [
+        "src/shared/pvp.ts",
+        "server/pvp/store.ts",
+        "server/pvp/cards.ts",
+        "server/finance/pvp-money.ts",
+        "server/pvp/virtual-wallet.ts"
+      ]
+    },
+    "durak": {
+      "method": "exhaustive-virtual-pvp-pot",
+      "rulesVersion": 1,
+      "progressVersion": 1,
+      "target": 0.95,
+      "refundReturn": 1,
+      "commissionBasisPoints": 500,
+      "stakeRange": {
+        "min": 1000000,
+        "max": 500000000,
+        "step": 100000
+      },
+      "choices": [
+        "left-win",
+        "right-win",
+        "draw",
+        "cancel",
+        "disconnect-left",
+        "disconnect-right",
+        "expired",
+        "server"
+      ],
+      "proof": "docs/game-math/qualifications/durak-virtual-v1.json",
+      "qualificationSource": "scripts/game-math/rtp-virtual-pvp.mjs",
+      "sources": [
+        "src/shared/pvp.ts",
+        "server/pvp/store.ts",
+        "server/pvp/cards.ts",
+        "server/finance/pvp-money.ts",
+        "server/pvp/virtual-wallet.ts"
+      ]
+    },
+    "transfer-durak": {
+      "method": "exhaustive-virtual-pvp-pot",
+      "rulesVersion": 1,
+      "progressVersion": 1,
+      "target": 0.95,
+      "refundReturn": 1,
+      "commissionBasisPoints": 500,
+      "stakeRange": {
+        "min": 1000000,
+        "max": 500000000,
+        "step": 100000
+      },
+      "choices": [
+        "left-win",
+        "right-win",
+        "draw",
+        "cancel",
+        "disconnect-left",
+        "disconnect-right",
+        "expired",
+        "server"
+      ],
+      "proof": "docs/game-math/qualifications/transfer-durak-virtual-v1.json",
+      "qualificationSource": "scripts/game-math/rtp-virtual-pvp.mjs",
+      "sources": [
+        "src/shared/pvp.ts",
+        "server/pvp/store.ts",
+        "server/pvp/cards.ts",
+        "server/finance/pvp-money.ts",
+        "server/pvp/virtual-wallet.ts"
+      ]
+    },
+    "crazy-eights": {
+      "method": "exhaustive-virtual-pvp-pot",
+      "rulesVersion": 1,
+      "progressVersion": 1,
+      "target": 0.95,
+      "refundReturn": 1,
+      "commissionBasisPoints": 500,
+      "stakeRange": {
+        "min": 1000000,
+        "max": 500000000,
+        "step": 100000
+      },
+      "choices": [
+        "left-win",
+        "right-win",
+        "draw",
+        "cancel",
+        "disconnect-left",
+        "disconnect-right",
+        "expired",
+        "server"
+      ],
+      "proof": "docs/game-math/qualifications/crazy-eights-virtual-v1.json",
+      "qualificationSource": "scripts/game-math/rtp-virtual-pvp.mjs",
+      "sources": [
+        "src/shared/pvp.ts",
+        "server/pvp/store.ts",
+        "server/pvp/cards.ts",
+        "server/finance/pvp-money.ts",
+        "server/pvp/virtual-wallet.ts"
+      ]
     }
   },
   "nonWagered": {}

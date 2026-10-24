@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "gameId": "transfer-durak",
+  "rulesVersion": 1,
+  "progressVersion": 1,
+  "startedAt": "2026-10-24T07:04:00.940Z",
+  "completedAt": "2026-10-24T07:04:01.768Z",
+  "sourceHashes": {
+    "src/shared/pvp.ts": "d20cd82ca7f1c8cd20d25daa3e420519a42993a8583924e38d9e67d3cd8f31b3",
+    "server/pvp/store.ts": "0767b23fccb351785c885f64728816dcf05a43e41d4f438a5ee76c9b27b928c7",
+    "server/pvp/cards.ts": "42db70683726228f6ab2217c7ef48b269cf372368950faa9f4555825880f6cf0",
+    "server/finance/pvp-money.ts": "132c386abbcae222ea4a9d258a59d1ac5ff4de022b7e5e1c9c647c6c11f2b6d9",
+    "server/pvp/virtual-wallet.ts": "021a51ef5661b6ab3a3874c616db2b44aacd7b060116184c47e976511f7928bb",
+    "scripts/game-math/rtp-virtual-pvp.mjs": "9a63eb3aa5272dfa62d6314a3fa7b2102a91c27261fd837026a9560e98b75403"
+  },
+  "policySha256": "56efa88980538d7ea3108c53c4c8723667bcb73aba60b68ba4f26ecb957d7360",
+  "serverReplayChecks": 119784,
+  "method": "exhaustive-virtual-pvp-pot",
+  "results": [
+    {
+      "choice": "left-win",
+      "cases": 4991,
+      "potUnits": "2500491000000",
+      "feeUnits": "125024550000",
+      "returnedUnits": "2375466450000",
+      "sha256": "5745ebed24b27c36741550e7dfb6d916032abbe23700f65f86f8411c3ea3fd3d"
+    },
+    {
+      "choice": "right-win",
+      "cases": 4991,
+      "potUnits": "2500491000000",
+      "feeUnits": "125024550000",
+      "returnedUnits": "2375466450000",
+      "sha256": "54973d92abca8e336368c1070d9d80861566a1edfb1520413acb15e498bee2b4"
+    },
+    {
+      "choice": "draw",
+      "cases": 4991,
+      "potUnits": "2500491000000",
+      "feeUnits": "0",
+      "returnedUnits": "2500491000000",
+      "sha256": "e4f223406b919f9174f418e18175845d3c31400c885a8198da286bca781c352c"
+    },
+    {
+      "choice": "cancel",
+      "cases": 4991,
+      "potUnits": "2500491000000",
+      "feeUnits": "0",
+      "returnedUnits": "2500491000000",
+      "sha256": "e4f223406b919f9174f418e18175845d3c31400c885a8198da286bca781c352c"
+    },
+    {
+      "choice": "disconnect-left",
+      "cases": 4991,
+      "potUnits": "2500491000000",
+      "feeUnits": "125024550000",
+      "returnedUnits": "2375466450000",
+      "sha256": "5745ebed24b27c36741550e7dfb6d916032abbe23700f65f86f8411c3ea3fd3d"
+    },
+    {
+      "choice": "disconnect-right",
+      "cases": 4991,
+      "potUnits": "2500491000000",
+      "feeUnits": "125024550000",
+      "returnedUnits": "2375466450000",
+      "sha256": "54973d92abca8e336368c1070d9d80861566a1edfb1520413acb15e498bee2b4"
+    },
+    {
+      "choice": "expired",
+      "cases": 4991,
+      "potUnits": "2500491000000",
+      "feeUnits": "0",
+      "returnedUnits": "2500491000000",
+      "sha256": "e4f223406b919f9174f418e18175845d3c31400c885a8198da286bca781c352c"
+    },
+    {
+      "choice": "server",
+      "cases": 4991,
+      "potUnits": "2500491000000",
+      "feeUnits": "0",
+      "returnedUnits": "2500491000000",
+      "sha256": "e4f223406b919f9174f418e18175845d3c31400c885a8198da286bca781c352c"
+    }
+  ],
+  "interpretation": "Exact aggregate pot return for all 4991 allowed stakes and all eight settlement outcomes: 95% after a decisive result, 100% on refund. Individual return depends on the players. No probabilistic RTP estimate or confidence interval is asserted."
+}

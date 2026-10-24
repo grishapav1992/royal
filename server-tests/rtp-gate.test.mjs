@@ -5,6 +5,15 @@ import { resolve, join, dirname, basename } from 'node:path';
 import { tmpdir } from 'node:os';
 import { rtpInputs, validateRtpProof, checkGameRtp, sourceDigest, changedLegacyProfiles } from '../scripts/game-math/rtp-gate.mjs';
 const root = process.cwd();
+test('virtual PvP qualification covers the complete stake range and rejects missing cases and altered returns',async()=>{
+ for(const id of ['hockey','pool','chess','durak','transfer-durak','crazy-eights']){
+  const inputs=await rtpInputs(root,id),proof=JSON.parse(await readFile(resolve(root,inputs.policy.proof),'utf8'));
+  assert(validateRtpProof(id,inputs,proof));assert.equal(proof.serverReplayChecks,4991*8*3);
+  for(const mutate of [p=>p.results.pop(),p=>p.results[0].cases--,p=>p.results[0].feeUnits='0',p=>p.results[2].sha256=p.results[0].sha256,p=>p.serverReplayChecks--]){
+   const changed=structuredClone(proof);mutate(changed);assert.throws(()=>validateRtpProof(id,inputs,changed));
+  }
+ }
+});
 test('source fingerprints survive Windows and Linux checkouts and detect mathematical edits',()=>{
   assert.equal(sourceDigest(Buffer.from('pay=1;\r\n')),sourceDigest(Buffer.from('pay=1;\n')));
   assert.notEqual(sourceDigest(Buffer.from('pay=2;\n')),sourceDigest(Buffer.from('pay=1;\n')));
