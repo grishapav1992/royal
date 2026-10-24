@@ -1,5 +1,6 @@
 // Independent v3 campaign audit. No production writes or qualification-proof changes.
 import assert from 'node:assert/strict';
+import {createHash,createCipheriv} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import {dirname,resolve} from 'node:path';
@@ -13,9 +14,26 @@ const root=fileURLToPath(new URL('../../',import.meta.url)),args=process.argv.sl
 const option=(name,fallback)=>{const i=args.indexOf('--'+name);return i<0?fallback:args[i+1];};
 const cyclesPerSeed=Number(option('cycles-per-seed','10000'));
 const seeds=option('seeds','2026102401,2026102419').split(',').map(Number);
+const rng=option('rng','mulberry32');
+assert(['mulberry32','aes-ctr'].includes(rng));
 assert(Number.isSafeInteger(cyclesPerSeed)&&cyclesPerSeed>1);
 assert(seeds.length>=2&&new Set(seeds).size===seeds.length&&seeds.every(n=>Number.isSafeInteger(n)&&n>0&&n<2**32-2*1000003));
 const output=resolve(option('output','artifacts/work/neopolis-boss-audit/math.json'));
+// Separate AES keys avoid overlapping phase-shifted streams of a 32-bit generator.
+function aesRandom(seed){
+  const key=createHash('sha256').update('royal-neopolis-audit-v1:'+seed).digest();
+  const cipher=createCipheriv('aes-256-ctr',key,Buffer.alloc(16)),zeros=Buffer.alloc(65536);
+  let bytes=Buffer.alloc(0),cursor=0;
+  return ()=>{
+    if(cursor===bytes.length){bytes=cipher.update(zeros);cursor=0;}
+    const value=bytes.readUInt32LE(cursor);cursor+=4;return value/4294967296;
+  };
+}
+if(rng==='aes-ctr'){
+  const a=aesRandom(seeds[0]),b=aesRandom(seeds[0]),c=aesRandom(seeds[1]);let differs=false;
+  for(let i=0;i<17000;i++){const x=a(),y=b(),z=c();assert(x>=0&&x<1);assert.equal(x,y);differs ||= x!==z;}
+  assert(differs,'Distinct keys must produce distinct streams');
+}
 const inputs=await rtpInputs(root,'studio-neopolis'),policy=inputs.policy;
 assert(seeds.every(seed=>!policy.seeds.includes(seed)),'Use independent audit seeds');
 const scriptPath=fileURLToPath(import.meta.url),scriptHash=sourceDigest(await readFile(scriptPath));
@@ -30,7 +48,7 @@ const serverReplayChecks=preflight('studio-neopolis',policy);
 console.log(JSON.stringify({phase:'server-preflight',serverReplayChecks}));
 const report={schemaVersion:1,gameId:'studio-neopolis',rulesVersion:3,startedAt:new Date().toISOString(),
  sourceCommit:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),sourceHashes:inputs.sourceHashes,
- policySha256:inputs.policySha256,auditSourceSha256:scriptHash,rngSourceSha256:sourceDigest(await readFile(resolve(root,'src/shared/draconaMath.ts'))),configuration:{cyclesPerSeed,seeds,stakes:policy.stakes,heroes:HEROES},
+ policySha256:inputs.policySha256,auditSourceSha256:scriptHash,rngSourceSha256:sourceDigest(await readFile(resolve(root,'src/shared/draconaMath.ts'))),configuration:{cyclesPerSeed,seeds,rng,stakes:policy.stakes,heroes:HEROES},
  method:'Independent regenerative team cycles. All collection costs and complete bonuses are included. Six stakes share entropy but settle separately in integer cents. Confidence intervals use independent cycle reward/cost residuals. Conditional campaign payouts are not RTP.',
  serverReplayChecks,maximumFreeSpins:MAX_ROUND_SPINS-1,heroes:[],
  invariants:{integerSettlement:true,oneDamagePerSpin:true,oneAwardPerDefeatedBoss:true,remainingBudget:true,finiteCampaign:true,uniquePowersPerSpin:true,noScatterRetriggersInFreeSpins:true},
@@ -44,7 +62,7 @@ for(const [heroIndex,hero] of HEROES.entries()){
   const outcomes=[0,0,0,0],streams=[];
   let paidRounds=0,freeSpins=0,caps=0,tailSpins=0,winningFreeSpins=0,cycles=0;
   for(const seed of seeds){
-    const actualSeed=seed+heroIndex*1000003,random=seededRandom(actualSeed);let streamPaid=0;
+    const actualSeed=seed+heroIndex*1000003,random=(rng==='aes-ctr'?aesRandom:seededRandom)(actualSeed);let streamPaid=0;
     for(let cycle=0;cycle<cyclesPerSeed;cycle++){
       let team=initialTeam(hero),cost=0;const rewards=policy.stakes.map(()=>0);
       do{
