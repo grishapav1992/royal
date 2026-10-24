@@ -12,7 +12,7 @@ import './ui/floor-navigation.css';
 import { isStudioGame } from './shared/studioGames';
 import { isVariantGame } from './shared/casinoVariants';
 import { ROYAL_PLATFORM_GAMES, isCollectionGame, isRetiredArcadeGame } from './shared/arcadeCatalog';
-import { RetiredArcadeRounds, RetiredArcadeRoundGuard, ownsRetiredArcadeRound, type RetiredArcadeRound } from './ui/RetiredArcadeRounds';
+import { RetiredArcadeRounds, RetiredArcadeRoundGuard, ownsRetiredArcadeRound, retiredGameName, type RetiredArcadeRound } from './ui/RetiredArcadeRounds';
 import { isExpansionGame, EXPANSION_NAMES } from './shared/casinoExpansion';
 import { isSessionGame } from './shared/casinoSessions';
 import { ClubMap } from './ui/ClubMap';
@@ -74,7 +74,7 @@ app.innerHTML = tr`
       <aside class="sidebar">
         <div class="sidebar-heading"><h2>Во что сыграем?</h2><span>${String(hallGameCount('arcade')).padStart(2, '0')}</span></div>
         <section id="card-tables-catalog" aria-label="Карточные столы и крупье" hidden></section>
-        ${(['royal','github'] as const).map(collection=>`<section class="arcade-catalog-group" data-arcade-catalog data-cabinet-collection="${collection}" aria-label="${collection}"><h3>${translateText({royal:'Автоматы Royal',github:'Автоматы GitHub'}[collection])}</h3><p>${translateText('В каждом автомате доступен каталог своей коллекции.')}</p><div class="cabinet-list">${cabinetCards(catalogCabinets.filter(c=>c.collection===collection))}</div></section>`).join('')}
+        ${(['royal'] as const).map(collection=>`<section class="arcade-catalog-group" data-arcade-catalog data-cabinet-collection="${collection}" aria-label="${collection}"><h3>${translateText({royal:'Автоматы Royal',github:'Автоматы GitHub'}[collection])}</h3><p>${translateText('В каждом автомате доступен каталог своей коллекции.')}</p><div class="cabinet-list">${cabinetCards(catalogCabinets.filter(c=>c.collection===collection))}</div></section>`).join('')}
         <section data-arcade-catalog><div id="retired-arcade-rounds" hidden></div></section>
         <div class="player-card"><span class="player-portrait" id="player-portrait"></span><div><strong>Это ты</strong><small>Исследователь клуба</small></div><span class="player-dot"></span></div>
       </aside>
@@ -328,7 +328,7 @@ new RetiredArcadeRounds($('#retired-arcade-rounds'), async round => {
   try {
     const state = room.getState();
     if (state.hall !== 'arcade' || state.security || social && social.client.status !== 'connected') return;
-    await openCabinetGame({id:round.gameId, name:EXPANSION_NAMES[round.gameId], subtitle:translateText('Сохранённая партия'), x:state.x, y:state.y, color:0xc8b17a, playable:true, wallet:true, hall:'arcade'}, round);
+    await openCabinetGame({id:round.gameId, name:retiredGameName(round.gameId), subtitle:translateText('Сохранённая партия'), x:state.x, y:state.y, color:0xc8b17a, playable:true, wallet:true, hall:'arcade'}, round);
     if (miniDialog.open) retiredRoundGuard = new RetiredArcadeRoundGuard($('#mini-game'), round, () => miniDialog.close());
   } catch {
     if (miniDialog.open) miniDialog.close();

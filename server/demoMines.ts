@@ -72,6 +72,10 @@ export class DemoMinesStore {
       return { wallet: await this.snapshot(accountId), session: row ? this.publicSession(row) : null };
     }, { lockKey: 'account:' + accountId });
   }
+  async hasAcceptedOperation(accountId: string, id: string) {
+    await this.ready;
+    return !!await this.db.prepare('SELECT 1 FROM demo_mines_requests WHERE account_id=? AND id=?').get(accountId, id);
+  }
   async operate(accountId: string, value: unknown): Promise<MinesResult> {
     await this.ready;
     const op = operation(value), requestKey = JSON.stringify(op);
