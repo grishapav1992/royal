@@ -229,23 +229,34 @@ def backup_sources(limit):
         raise
 
 
+def verify_existing_backup():
+    require(not (ROOT / 'build-result.json').exists() and not (ROOT / 'published.json').exists(), 'An existing built release cannot be rebuilt')
+    verify_tar(BACKUP / 'source.tgz')
+    require(sha(BACKUP / 'index.html') == OLD['program']['dist/index.html'], 'Existing client index backup differs')
+    for suffix, ref in [('', OLD['container']['image']), ('-prepared', OLD['preparedImage'])]:
+        require(image('royal-game:before-' + NAME + suffix) == ref, 'Existing rollback image tag differs')
+
+
 def build():
     payload()
     old = baseline()
     delta_bytes = sum((ROOT / 'dist-delta' / name).stat().st_size for name in DELTA)
-    reserve = 5 * 1024**3 + delta_bytes * 4 + 16 * 1024**2
+    reserve = 5 * 1024**3 + delta_bytes * 3 + 16 * 1024**2
     require(old['availableBytes'] > reserve, 'Insufficient free disk space')
-    BACKUP.mkdir(mode=0o700, exist_ok=False)
-    backup_sources(old['availableBytes'] - reserve)
-    verify_tar(BACKUP / 'source.tgz')
-    run(['docker', 'cp', 'royal-game-1:/app/dist/index.html', str(BACKUP / 'index.html')])
-    require(sha(BACKUP / 'index.html') == OLD['program']['dist/index.html'], 'Client index backup differs')
-    for suffix, ref in [('', OLD['container']['image']), ('-prepared', OLD['preparedImage'])]:
-        run(['docker', 'tag', ref, 'royal-game:before-' + NAME + suffix])
+    if BACKUP.exists():
+        verify_existing_backup()
+    else:
+        BACKUP.mkdir(mode=0o700, exist_ok=False)
+        backup_sources(old['availableBytes'] - reserve)
+        verify_tar(BACKUP / 'source.tgz')
+        run(['docker', 'cp', 'royal-game-1:/app/dist/index.html', str(BACKUP / 'index.html')])
+        require(sha(BACKUP / 'index.html') == OLD['program']['dist/index.html'], 'Client index backup differs')
+        for suffix, ref in [('', OLD['container']['image']), ('-prepared', OLD['preparedImage'])]:
+            run(['docker', 'tag', ref, 'royal-game:before-' + NAME + suffix])
     context = ROOT / 'runtime-context'
     context.mkdir(exist_ok=False)
-    shutil.copytree(ROOT / 'dist-delta', context / 'dist-delta')
-    shutil.copytree(ROOT / 'server-delta', context / 'server-delta')
+    shutil.copytree(ROOT / 'dist-delta', context / 'dist-delta', copy_function=os.link)
+    shutil.copytree(ROOT / 'server-delta', context / 'server-delta', copy_function=os.link)
     (context / 'Dockerfile').write_text('FROM royal-game:before-' + NAME + '-prepared\n'
         'COPY --chown=node:node dist-delta/ /app/dist/\n'
         'LABEL org.opencontainers.image.revision="' + M['sourceCommit'] + '"\n')

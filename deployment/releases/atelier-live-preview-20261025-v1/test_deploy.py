@@ -231,6 +231,20 @@ class ChatReleaseTests(unittest.TestCase):
         self.helper.backup_sources(100000)
         self.helper.verify_tar(self.helper.BACKUP / 'source.tgz')
 
+    def test_resume_reuses_only_complete_verified_source_and_rollback_images(self):
+        self.backups()
+        helper = self.helper
+        helper.image = lambda ref: helper.OLD['preparedImage']
+        helper.verify_existing_backup()
+        helper.image = lambda ref: 'changed-image'
+        with self.assertRaisesRegex(RuntimeError, 'Existing rollback image tag differs'):
+            helper.verify_existing_backup()
+
+    def test_resume_refuses_a_built_release(self):
+        self.backups()
+        (self.helper.ROOT / 'build-result.json').write_text('{}')
+        with self.assertRaisesRegex(RuntimeError, 'cannot be rebuilt'):
+            self.helper.verify_existing_backup()
 
 if __name__ == '__main__':
     unittest.main()
