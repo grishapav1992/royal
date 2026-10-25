@@ -34,6 +34,7 @@ export class SkinStudioUI {
   private choose = document.createElement('button');
   private fitting = new SkinFittingRoom();
   private trying = '';
+  private fittingJob = '';
   constructor(private scene: RoomScene, private account: () => Account | null, private accountChanged: () => Promise<void>) {
     this.button.type = 'button'; this.button.className = 'logout-button'; this.button.textContent = 'Образы'; this.button.hidden = true;
     this.button.onclick = () => { void this.open(); }; document.querySelector('.profile')!.append(this.button);
@@ -86,7 +87,7 @@ export class SkinStudioUI {
       this.button.hidden = !id || this.account()?.skin === null;
       if (id === this.accountId) return;
       this.epoch++; this.busy = false; this.accountId = id; this.data = undefined; this.pending = undefined; this.selected = ''; this.prompt.value = '';
-      this.trying = ''; this.fitting.setSkin('', '');
+      this.trying = ''; this.fittingJob = ''; this.fitting.setSkin('', '');
       this.message = ''; this.failedRequest = false; clearTimeout(this.poll); clearTimeout(this.walletPoll); this.dialog.close();
       if (id) try { this.pending = JSON.parse(sessionStorage.getItem(this.key()) || 'null') ?? undefined; } catch { /* No stored request. */ }
     });
@@ -174,6 +175,9 @@ export class SkinStudioUI {
     });
     this.choose.disabled = this.busy || !this.selected;
     const candidates = job?.state === 'ready' ? job.variants : [];
+    if (job?.state === 'ready' && this.fittingJob !== job.id) {
+      this.fittingJob = job.id; this.trying = candidates[0]?.id ?? '';
+    }
     const available = [...candidates, ...(this.data?.wardrobe ?? [])];
     if (!available.some(card => card.id === this.trying)) this.trying = candidates[0]?.id ?? '';
     const candidateIndex = candidates.findIndex(card => card.id === this.trying);

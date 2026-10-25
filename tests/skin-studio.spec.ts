@@ -193,3 +193,28 @@ test('touch taps move the preview and closing stops a held input', async ({ brow
     await expect(page.locator('#skin-studio-dialog')).toBeHidden();
   } finally { await context.close(); }
 });
+
+test('a new ready order replaces the wardrobe preview while polling keeps the chosen candidate', async ({ page }) => {
+  let ready = false;
+  const card = (id: string) => ({ id, jobId, prompt: 'Примерка', createdAt: 1 });
+  await page.route('**/api/skin-studio**', async route => {
+    if (route.request().url().includes('/assets/')) {
+      await route.fulfill({ contentType: 'image/svg+xml', body: '<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1536"><rect x="80" y="60" width="100" height="280" fill="#5577bb"/></svg>' }); return;
+    }
+    await route.fulfill({ json: { theme: SKIN_THEME, priceUnits: SKIN_PRICE_UNITS, variantCount: 2, enabled: true, equippedId: ids[0], wardrobe: [card(ids[0])],
+      job: ready ? { id: 'ffffffff-ffff-4fff-8fff-ffffffffffff', state: 'ready', variantCount: 2, variants: ids.slice(1).map(card) }
+        : { id: jobId, state: 'selected', selectedId: ids[0], variants: [] } } });
+  });
+  await page.goto('/tests/fixtures/skin-studio.html');
+  await page.getByRole('button', { name: 'Образы', exact: true }).click();
+  await page.getByRole('button', { name: 'Примерить', exact: true }).click();
+  await expect(page.locator('.skin-fitting-caption')).toContainText('Образ из гардероба.');
+  ready = true;
+  await page.evaluate(() => (window as any).skinPreview.studio.open());
+  await expect(page.locator('.skin-fitting-caption')).toContainText('Вариант 1. Походи');
+  await expect(page.getByRole('button', { name: 'Сохранить образ' })).toBeDisabled();
+  await page.getByRole('button', { name: 'Примерить вариант 2' }).click();
+  await page.evaluate(() => (window as any).skinPreview.studio.open());
+  await expect(page.locator('.skin-fitting-caption')).toContainText('Вариант 2. Походи');
+  await expect(page.getByRole('button', { name: 'Примерить вариант 2' })).toHaveAttribute('aria-pressed', 'true');
+});
