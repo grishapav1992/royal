@@ -241,7 +241,7 @@ def build():
     payload()
     old = baseline()
     delta_bytes = sum((ROOT / 'dist-delta' / name).stat().st_size for name in DELTA)
-    reserve = 5 * 1024**3 + delta_bytes * 3 + 16 * 1024**2
+    reserve = 5 * 1024**3 + delta_bytes * 3 + 8 * 1024**2
     require(old['availableBytes'] > reserve, 'Insufficient free disk space')
     if BACKUP.exists():
         verify_existing_backup()
@@ -340,6 +340,7 @@ def publish():
         require(after['container']['image'] == built['image'] and after['program'] == built['program'] and after['preparedProgram'] == built['program']
                 and after['preparedImage'] == built['image'], 'Published runtime differs')
         shutil.copytree(ROOT / 'dist-delta', LIVE / 'dist', dirs_exist_ok=True)
+        require(shutil.disk_usage(LIVE).free > 5 * 1024**3, 'Disk reserve consumed by publication')
         write('after.json', after)
         result = {'published': True, 'preparedImage': built['image'], 'runningImage': after['container']['image'],
                   'containerRestarted': True, 'sourceCommit': M['sourceCommit'], 'changedSources': len(CHANGES),
