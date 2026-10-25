@@ -24,14 +24,37 @@ test('two variants, explicit single choice, wardrobe, preview controls and mobil
   await page.getByRole('button', { name: 'Образы', exact: true }).click();
   await expect(page.locator('.skin-results .skin-card')).toHaveCount(2);
   await expect(page.getByRole('button', { name: 'Сохранить образ' })).toBeDisabled();
-  await page.getByLabel('Поворот: Вариант 2').selectOption('3');
-  await page.getByLabel('Поза: Вариант 2').selectOption('3');
-  await page.getByRole('button', { name: 'Выбрать вариант 2' }).click();
-  await expect(page.getByRole('button', { name: 'Выбрать вариант 2' })).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: 'Примерить вариант 2' }).click();
+  await expect(page.getByRole('button', { name: 'Примерить вариант 2' })).toHaveAttribute('aria-pressed', 'true');
+  const floor = page.getByLabel('Площадка для примерки скина');
+  await expect(page.locator('.skin-fitting-caption')).toContainText('Вариант 2. Походи');
+  await floor.focus();
+  await page.keyboard.down('ArrowLeft');
+  await expect(floor).toHaveAttribute('data-facing', 'left');
+  await expect(floor).toHaveAttribute('data-moving', 'true');
+  await page.keyboard.up('ArrowLeft');
+  await expect(floor).toHaveAttribute('data-moving', 'false');
+  await page.getByRole('button', { name: 'Сесть', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Встать', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: 'Встать', exact: true }).click();
   await page.screenshot({ path: 'artifacts/skin-studio/desktop.png' });
   await page.setViewportSize({ width: 390, height: 844 });
   await expect.poll(() => page.locator('#skin-studio-dialog').evaluate(el => el.scrollWidth <= el.clientWidth + 1)).toBe(true);
+  const box = (await floor.boundingBox())!;
+  await floor.click({ position: { x: box.width - 50, y: 230 } });
+  await expect(floor).toHaveAttribute('data-facing', 'right');
+  await expect(floor).toHaveAttribute('data-moving', 'true');
+  await expect(floor).toHaveAttribute('data-moving', 'false', { timeout: 6000 });
   await page.screenshot({ path: 'artifacts/skin-studio/mobile.png' });
+  await floor.focus(); await page.keyboard.down('ArrowUp');
+  await expect(floor).toHaveAttribute('data-moving', 'true');
+  await page.getByRole('button', { name: 'Закрыть ателье' }).click();
+  await page.keyboard.up('ArrowUp');
+  await page.getByRole('button', { name: 'Образы', exact: true }).click();
+  await expect(floor).toHaveAttribute('data-moving', 'false');
+  await page.getByRole('button', { name: 'Идти вперёд' }).focus();
+  await page.keyboard.press('Enter');
+  await expect(floor).toHaveAttribute('data-facing', 'down');
   await page.getByRole('button', { name: 'Сохранить образ' }).click();
   await expect(page.locator('.skin-results')).toBeHidden(); await expect(page.locator('.skin-wardrobe .skin-card')).toHaveCount(1);
   await expect(page.getByRole('button', { name: 'Сейчас надет' })).toBeDisabled();
@@ -138,4 +161,35 @@ test('the atelier refreshes the same shared wallet as the games after a temporar
   await expect.poll(() => page.evaluate(() => !!(window as any).testWallet.error), { timeout: 15000 }).toBe(false);
   expect(walletCalls).toBeGreaterThan(failedCalls);
   await expect(page.locator('.skin-balance')).toContainText('$40.00');
+});
+
+test('touch taps move the preview and closing stops a held input', async ({ browser }) => {
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true });
+  const page = await context.newPage();
+  try {
+    await page.route('**/api/skin-studio**', async route => {
+      if (route.request().url().includes('/assets/')) {
+        await route.fulfill({ contentType: 'image/svg+xml', body: '<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1536"><rect x="80" y="60" width="100" height="280" fill="#bb7755"/></svg>' }); return;
+      }
+      await route.fulfill({ json: { theme: SKIN_THEME, priceUnits: SKIN_PRICE_UNITS, variantCount: 2, enabled: true, equippedId: null, wardrobe: [],
+        job: { id: jobId, state: 'ready', variantCount: 2, variants: ids.slice(0, 2).map(id => ({ id, jobId, prompt: 'Примерка', createdAt: 1 })) } } });
+    });
+    await page.goto('/tests/fixtures/skin-studio.html');
+    await page.getByRole('button', { name: 'Образы', exact: true }).tap();
+    await page.getByRole('button', { name: 'Примерить вариант 1' }).tap();
+    const floor = page.getByLabel('Площадка для примерки скина');
+    await expect(page.locator('.skin-fitting-caption')).toContainText('Походи');
+    await page.getByRole('button', { name: 'Идти вправо', exact: true }).tap();
+    await expect(floor).toHaveAttribute('data-facing', 'right');
+    await expect(floor).toHaveAttribute('data-moving', 'true');
+    await expect(floor).toHaveAttribute('data-moving', 'false');
+    await floor.focus(); await page.keyboard.down('KeyA');
+    await expect(floor).toHaveAttribute('data-moving', 'true');
+    await page.getByRole('button', { name: 'Закрыть ателье' }).tap();
+    await page.keyboard.up('KeyA');
+    await page.getByRole('button', { name: 'Образы', exact: true }).tap();
+    await expect(floor).toHaveAttribute('data-moving', 'false');
+    await page.evaluate(() => (window as any).skinPreview.setAccount(null));
+    await expect(page.locator('#skin-studio-dialog')).toBeHidden();
+  } finally { await context.close(); }
 });

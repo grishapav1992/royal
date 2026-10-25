@@ -51,3 +51,11 @@ Production release history is recorded in `deployment/SERVER.md`. A release upda
 ## Walking correction, 24 October 2026
 
 The event is actual actor movement; facing comes from movement state and remains fixed within each direction's walking loop. The upper body and face use the same standing image in all six phases. Only the two lower cutout pieces swing, with a fixed body position and no walking bounce. Stopping returns to that same standing image. Reduced motion removes idle decoration as before. These are game-specific design choices, not perceptual thresholds. Browser checks compare upper-body pixels across all walking frames in all directions, verify changing feet and cover old and new orders.
+
+## Interactive fitting room, 25 October 2026
+
+New orders offer two designs. Each candidate has a front thumbnail and a try-on button. The same atelier dialog contains a walkable fitting room using `drawGeneratedSkin` and `movementFacing`, exactly as the game renders generated artwork. Click or tap the floor, hold WASD or arrow keys while focused in the room, or hold the directional buttons. The sitting button checks the game's seated pose. Trying a candidate does not equip it, save it or send a movement request. Saving the selected candidate remains the explicit permanent choice. Already paid three-candidate orders retain every promised candidate.
+
+Movement is the only animation event in this preview: the six game walking phases follow actual local movement, stopping returns to the standing cutout, and sitting is explicit. There is no decorative motion or audio. Closing, changing account, losing focus or hiding the page clears input. The animation loop stops when the dialog closes. Resizing preserves the relative horizontal position. Wardrobe skins can also be tried without changing the equipped skin.
+
+Browser coverage checks keyboard and floor movement, touch-sized directional controls, sitting, switching candidates, close/reopen, account changes, explicit selection and mobile overflow. The isolated local atelier initializes the wallet entry before importing the funding helper to avoid its pre-existing ESM import cycle; production wallet behavior is unchanged.
