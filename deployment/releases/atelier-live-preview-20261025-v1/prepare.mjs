@@ -11,6 +11,7 @@ const hash = path => createHash('sha256').update(readFileSync(path)).digest('hex
 const json = path => JSON.parse(readFileSync(path, 'utf8'));
 const before = json(resolve(work, 'before.json')), release = json(resolve(root, 'module-build/release-manifest.json'));
 const receipt = json(resolve(root, 'module-build/release-github.json'));
+const normalized = json(resolve(work, 'source-normalized.json'));
 assert.equal(release.sourceCommit, git('rev-parse', 'HEAD')); assert.equal(release.baseCommit, base); assert(release.build.passed);
 assert.equal(receipt.sourceCommit, release.sourceCommit); assert(!git('status', '--porcelain'));
 assert(!existsSync(out), 'Existing payload must be reviewed'); mkdirSync(out);
@@ -24,7 +25,8 @@ for (const file of release.changed) {
 }
 for (const [file, digest] of Object.entries(before.source)) {
   if (file === 'deployment/SERVER.md' || file.endsWith('.orig') || file.endsWith('.bak') || file in changed) continue;
-  assert(existsSync(resolve(root, file)), file); assert.equal(hash(resolve(root, file)), digest, 'Unrelated production source differs: ' + file);
+  assert(existsSync(resolve(root, file)), file); const actual = hash(resolve(root, file));
+  assert(actual === digest || (normalized[file]?.sha256 === digest && normalized[file]?.lf === actual), 'Unrelated production source differs: ' + file);
 }
 const delta = {};
 for (const [file, digest] of Object.entries(release.files)) {
