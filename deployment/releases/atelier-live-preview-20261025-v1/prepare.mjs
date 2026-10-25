@@ -12,6 +12,7 @@ const json = path => JSON.parse(readFileSync(path, 'utf8'));
 const before = json(resolve(work, 'before.json')), release = json(resolve(root, 'module-build/release-manifest.json'));
 const receipt = json(resolve(root, 'module-build/release-github.json'));
 const normalized = json(resolve(work, 'source-normalized.json'));
+const runtime = json(resolve(work, 'runtime-normalized.json'));
 assert.equal(release.sourceCommit, git('rev-parse', 'HEAD')); assert.equal(release.baseCommit, base); assert(release.build.passed);
 assert.equal(receipt.sourceCommit, release.sourceCommit); assert(!git('status', '--porcelain'));
 assert(!existsSync(out), 'Existing payload must be reviewed'); mkdirSync(out);
@@ -31,6 +32,7 @@ for (const [file, digest] of Object.entries(before.source)) {
 const delta = {};
 for (const [file, digest] of Object.entries(release.files)) {
   if (!file.startsWith('dist/') || before.program[file] === digest) continue;
+  if (runtime[file]?.sha256 === before.program[file] && runtime[file]?.lf === digest) continue;
   const sub = file.slice(5);
   if (['index.html', 'admin.html'].includes(sub) || /^assets\/[a-zA-Z0-9_-]+\.(js|css)$/.test(sub)) {
     assert(['index.html', 'admin.html'].includes(sub) || !(file in before.program), 'Immutable client URL would change');
