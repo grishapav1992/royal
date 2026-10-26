@@ -154,6 +154,10 @@ def payload():
         'src/shared/combat.ts','src/shared/combatEscrow.ts','src/shared/pvp.ts']
     require(all(name not in CHANGES and name in BASE for name in critical), 'Wallet or fight rules may not change in this security release')
     require(OLD['moduleHost']['games']['mortal-kombat'] == {'apiVersion':1,'rulesVersion':2,'progressVersion':1}, 'Rollback requires the same virtual combat contract')
+    require(set(M['preservedBackend']) == {'payments.js','crypto-reconcile.js'}, 'Independent backend retention requires both source graphs')
+    for name, retained in M['preservedBackend'].items():
+        require(retained['runtimeSha256'] == OLD['program']['dist-server/'+name] and retained['sourceInputs'], 'Retained backend bytes changed')
+        require(all(path not in CHANGES and digest == OLD['sourceLF'].get(path) for path,digest in retained['sourceInputs'].items()), 'Retained backend source changed')
     for name, digest in DELTA.items():
         require(DIGEST.fullmatch(digest), 'Invalid client digest')
         require(name in ['index.html','admin.html'] or 'dist/'+name not in OLD['program'] or digest == OLD['program']['dist/'+name], 'Immutable client URL collision')
