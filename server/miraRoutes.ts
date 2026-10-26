@@ -7,7 +7,7 @@ import { MiraMemoryStore } from './miraMemory';
 export function installMira(app: Application) {
   const memory = new MiraMemoryStore(accounts.schema, accounts.ready);
   const service = new MiraService(fetch, memory, Date.now, id => accounts.drinking.read(id), id => accounts.skinStudio.appearanceContext(id));
-  app.use('/api/npc/mira', express.json({ limit: '4kb' }), async (req, res, next) => {
+  app.use('/api/npc/mira', express.json({ limit: '4kb', inflate: false }), async (req, res, next) => {
     res.setHeader('Cache-Control', 'no-store');
     res.locals.miraLanguage = miraLanguage(req.get('Accept-Language'));
     res.setHeader('Content-Language', res.locals.miraLanguage);

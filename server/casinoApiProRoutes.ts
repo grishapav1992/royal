@@ -13,7 +13,7 @@ export function verifyWalletSignature(secret: string, timestamp: unknown, signat
 export function installCasinoApiPro(app: Application, config = casinoApiProConfig(), store: AccountStore = accounts, request: typeof fetch = fetch) {
   const client = config ? new CasinoApiProClient(config,request) : undefined;
   const binding = config ? walletBinding(config) : '';
-  app.use('/api/casinoapipro/wallet', express.raw({type:'application/json',limit:'16kb'}), (req,res,next) => {
+  app.use('/api/casinoapipro/wallet', express.raw({type:'application/json',limit:'16kb',inflate:false}), (req,res,next) => {
     res.setHeader('Cache-Control','no-store');
     if (!config) { res.status(503).json({error_code:'NOT_CONFIGURED'}); return; }
     if (!Buffer.isBuffer(req.body) || !verifyWalletSignature(config.walletSecret,req.get('x-timestamp'),req.get('x-signature'),req.body)) { res.status(401).json({error_code:'INVALID_REQUEST'}); return; }
@@ -29,7 +29,7 @@ export function installCasinoApiPro(app: Application, config = casinoApiProConfi
       }
     });
   }
-  app.use('/api/casinoapipro', express.json({limit:'2kb'}), async (req,res,next) => {
+  app.use('/api/casinoapipro', express.json({limit:'2kb',inflate:false}), async (req,res,next) => {
     res.setHeader('Cache-Control','no-store');
     if (!allowedOrigin(req.get('origin')) || req.get('sec-fetch-site') === 'cross-site') { res.status(403).json({error:'Этот источник запросов не разрешён.'}); return; }
     const account = (await store.session(cookieToken(req.headers.cookie)))?.account;

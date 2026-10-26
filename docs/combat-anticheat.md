@@ -12,6 +12,16 @@ The browser is untrusted. A player may modify local JavaScript, call the console
 - Held inputs expire after 350 ms without a new valid packet. This is a fail-safe setting, not a universal latency threshold. Disconnect immediately clears held controls. The existing 20-second reconnect policy determines forfeiture; packets from a dropped connection are rejected.
 - Guard rejection counters are bounded server-side diagnostics. Invalid input is ignored rather than causing an unproven automatic financial penalty.
 
+## Public fight state
+
+The server projects combat through an explicit public allowlist for initial snapshots, requested snapshots, hall changes and both modern and legacy live updates. Fighter packets contain only position, height, visible action, health and the recipient's own input acknowledgement. The opponent's acknowledgement is zero. Held buttons, input timestamps, velocity, cooldown, recovery and stun timers remain server-side. Older clients retain the acknowledgement needed after reconnect or reopening; the shared host and game rules do not change.
+
+Regression tests exercise both protocols and a spectator on a real authenticated lobby transport. A public snapshot is detached from simulation arrays and fighter objects. Unknown future fighter fields are excluded by default.
+
+## HTTP request decoding
+
+The common application lock pins body-parser 2.4.0 and its required qs 6.16.1. This repairs GHSA-27r3-jxmh-p828, where delayed bytes after a completed compressed body could terminate the process. Active authorization, Mira, USDT and provider JSON/raw parsers additionally reject compressed bodies before decompression. The regression suite sends the original delayed-gzip pattern to the installed parser in a disposable child process, checks application HTTP 415 responses and verifies ordinary login. No attack probe is sent to production.
+
 ## Money boundary
 
 The cabinet uses the existing freely topped-up virtual USDT wallet, as selected by the user on 24 October. The client reads the shared demoWallet host singleton. Authenticated lobby code alone calls the in-process CommonCombatWallet adapter and common virtual PvP ledger. Match metadata stores no separate balance, and no browser endpoint accepts a winner or settlement instruction. Nile is not involved in new fights.
