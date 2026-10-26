@@ -1,5 +1,7 @@
 # Paid character skins
 
+Actual generated artwork receives [short visual descriptions for NPCs](skin-npc-context.md), independently of the player's original request.
+
 The first-floor atelier is recessed in the back wall, left of the upstairs door, with an elderly gangster tailor, mirror and suit rail. The casino wall is now 275 world units tall. Its ceiling extends upwards without changing floor movement coordinates. The counter finishes at the wall base and adds no floor obstacle. Royal Fruits was moved down to clear the shop and its approach. Chandeliers were removed. Click the atelier to walk to it and open the order window; E also opens it when standing near the counter. The profile's `Образы` button provides quick access.
 
 ## Local preview
