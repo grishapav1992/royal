@@ -27,7 +27,7 @@ class FinancialGate:
     _KILL_GRACE = 1.0
 
     def __init__(self, command, cwd, log_path, *, min_free_bytes, disk_paths=(),
-                 drain_timeout=180, lease_timeout=600, heartbeat_timeout=10,
+                 acquire_timeout=900, lease_timeout=600, heartbeat_timeout=10,
                  command_timeout=420, release_exit_timeout=120):
         self.command = self._arguments(command)
         self.cwd, self.log_path = Path(cwd), Path(log_path)
@@ -35,7 +35,7 @@ class FinancialGate:
         if type(min_free_bytes) is not int or min_free_bytes <= 0:
             raise ValueError('Invalid financial gate disk reserve')
         self.min_free_bytes = min_free_bytes
-        for name, value in [('drain_timeout', drain_timeout), ('lease_timeout', lease_timeout),
+        for name, value in [('acquire_timeout', acquire_timeout), ('lease_timeout', lease_timeout),
                             ('heartbeat_timeout', heartbeat_timeout), ('command_timeout', command_timeout),
                             ('release_exit_timeout', release_exit_timeout)]:
             if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) or value <= 0:
@@ -209,12 +209,15 @@ class FinancialGate:
             os.set_blocking(self._process.stdout.fileno(), False)
             os.set_blocking(self._process.stdin.fileno(), False)
             self._selector.register(self._process.stdout, selectors.EVENT_READ, 'gate')
-            deadline = time.monotonic() + self.drain_timeout
+            # Docker startup precedes the helper's independent 180 second SQL drain.
+            deadline = time.monotonic() + self.acquire_timeout
             while not self._quiet:
                 self._health()
                 if time.monotonic() >= deadline:
-                    self._fail('Financial gate drain deadline exceeded')
+                    self._fail('Financial gate acquisition deadline exceeded')
                 self._pump(min(self._POLL, max(0, deadline - time.monotonic())))
+            if time.monotonic() >= deadline:
+                self._fail('Financial gate acquisition deadline exceeded')
             self.confirm()
             return self
         except BaseException:

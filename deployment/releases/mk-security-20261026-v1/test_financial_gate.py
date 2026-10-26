@@ -37,6 +37,8 @@ if mode=='bad-json': print('{',flush=True);time.sleep(60)
 if mode=='long-line': print('x'*8192,flush=True);time.sleep(60)
 if mode=='partial-eof': sys.stdout.write('{"format":');sys.stdout.flush();sys.exit(2)
 if mode=='exit': sys.exit(0)
+if mode=='silent': time.sleep(60)
+if mode=='delayed-start': time.sleep(.3)
 if mode=='waiting':
  while True: print(json.dumps({'format':1,'event':'waiting'}),flush=True);time.sleep(.03)
 emit('quiet')
@@ -100,7 +102,7 @@ class FinancialGateTests(unittest.TestCase):
         self.addCleanup(patcher.stop)
 
     def gate(self, mode='normal', **options):
-        arguments = {'min_free_bytes': 1, 'drain_timeout': 1.5, 'lease_timeout': 5,
+        arguments = {'min_free_bytes': 1, 'acquire_timeout': 1.5, 'lease_timeout': 5,
                      'heartbeat_timeout': .8, 'command_timeout': .8, **options}
         gate = FinancialGate([sys.executable, str(self.child), mode, str(self.marker)],
                              self.root, self.root / 'gate.log', **arguments)
@@ -145,11 +147,51 @@ class FinancialGateTests(unittest.TestCase):
             with self.subTest(mode=mode), self.assertRaises(GateError):
                 self.gate(mode).acquire()
 
-    def test_waiting_cannot_extend_drain_deadline(self):
+    def test_waiting_cannot_extend_acquisition_deadline(self):
         started = time.monotonic()
-        with self.assertRaisesRegex(GateError, 'drain deadline'):
-            self.gate('waiting', drain_timeout=.15).acquire()
+        with self.assertRaisesRegex(GateError, 'acquisition deadline'):
+            self.gate('waiting', acquire_timeout=.15).acquire()
         self.assertLess(time.monotonic() - started, 1)
+
+    def test_delayed_start_can_acquire_only_within_its_explicit_budget(self):
+        short = self.gate('delayed-start', acquire_timeout=.12)
+        with self.assertRaisesRegex(GateError, 'acquisition deadline'):
+            short.acquire()
+        self.assertFalse(short._quiet)
+        self.assertIsNotNone(short._process.returncode)
+        gate = self.gate('delayed-start', acquire_timeout=1, heartbeat_timeout=.2)
+        started = time.monotonic()
+        gate.acquire()
+        self.assertGreater(time.monotonic() - started, .25)
+        self.assertIsNotNone(gate._confirmed_nonce)
+        gate.release()
+        self.assertTrue(gate._released)
+
+    def test_silent_start_is_bounded_and_never_authorizes_commands(self):
+        gate = self.gate('silent', acquire_timeout=.15)
+        started = time.monotonic()
+        with self.assertRaisesRegex(GateError, 'acquisition deadline'):
+            gate.acquire()
+        self.assertLess(time.monotonic() - started, 1)
+        self.assertFalse(gate._quiet)
+        self.assertIsNone(gate._confirmed_nonce)
+        self.assertIsNotNone(gate._process.returncode)
+
+    def test_delayed_start_does_not_consume_or_extend_the_held_lease(self):
+        gate = self.gate('delayed-start', acquire_timeout=2, lease_timeout=.15).acquire()
+        self.assertLess(gate._lease_deadline - time.monotonic(), .16)
+        time.sleep(.18)
+        with self.assertRaisesRegex(GateError, 'hard deadline'):
+            gate.check()
+
+    def test_acquisition_budget_keeps_other_security_deadlines_and_rejects_invalid_values(self):
+        gate = FinancialGate([sys.executable], self.root, self.root/'defaults.log', min_free_bytes=1)
+        self.addCleanup(gate.close)
+        self.assertEqual((gate.acquire_timeout, gate.lease_timeout, gate.heartbeat_timeout,
+                          gate.command_timeout, gate.release_exit_timeout), (900, 600, 10, 420, 120))
+        for value in [0, -1, True, None, float('inf'), float('nan'), '900']:
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                self.gate(acquire_timeout=value)
 
     def test_buffered_heartbeats_after_supervisor_pause_do_not_renew_freshness(self):
         gate = self.gate(heartbeat_timeout=.15).acquire()
