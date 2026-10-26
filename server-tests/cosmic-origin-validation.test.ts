@@ -64,4 +64,3 @@ for(const mode of modes){
 test('unplayed purchases also reject a forged x50 origin before entropy is requested',()=>{
  for(const mode of modes){const view=restore(startLuelonSlotGame(game,settings(mode),'100').luelon);view.bonus!.features.multiplier=50;assert.equal(valid(view),false);let draws=0;assert.throws(()=>moveLuelonSlotGame(view,'100',0,'luelon-spin',undefined,()=>{draws++;return 0;}));assert.equal(draws,0);}
 });
-

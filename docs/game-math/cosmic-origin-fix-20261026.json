@@ -19,7 +19,7 @@
     "src/shared/cosmicEscapeBets.ts": "5e079e858e39cd73070f95f77688c774aee887e025a2f84fbc365c1e9cddd625",
     "server/demoExpansion.ts": "ab91cf5f0d590f05132b73b34d347f044b70f852e0bc31f4602d816289c2e420",
     "server/demoWallet.ts": "6173c565c5860342950e04097d6f57913e49fc9dabe01f4ebb25249fd9568346",
-    "server-tests/cosmic-origin-validation.test.ts": "4a610a2c15a425e1154bb0d149b32091b32ea0ed569a2a205fbeb22b68946e94",
+    "server-tests/cosmic-origin-validation.test.ts": "51017e8a340439766949e4502036c2bc3c50ae1efab8a9e79a736326d3f50929",
     "server-tests/cosmic-origin-wallet.test.ts": "030d6d4adf1e67ab9f015f372e5993589e61aaa3e4991dd088e910c9ae900de6",
     "server-tests/cosmic-engine-audit.test.ts": "697a56c056d170c6b5bb8fb1c1e281b80c24a89116c657a559d027a22d7ad371",
     "server-tests/cosmic-wallet-audit.test.ts": "afe37689813b7190df1260d00180f5c6ef8758df41fe7f4bf1ae026de7c7d631",
