@@ -29,7 +29,13 @@ for (const [file, digest] of Object.entries(before.source)) {
   assert(existsSync(resolve(root, file)), file); const actual = hash(resolve(root, file));
   assert(actual === digest || before.sourceLF[file] === actual, 'Unrelated production source differs: ' + file);
 }
-const sameRuntime = (file, digest) => before.program[file] === digest || (/\.(html|css|js|json|svg|txt|map)$/.test(file) && before.programLF[file] === digest);
+const sameRuntime = (file, digest) => {
+  if (before.program[file] === digest) return true;
+  if (!/\.(html|css|js|json|svg|txt|map|md)$/i.test(file)) return false;
+  if (before.programLF[file] === digest) return true;
+  const publicSource = file.startsWith('dist/') ? 'public/' + file.slice(5) : '';
+  return before.source[publicSource] === before.program[file] && before.sourceLF[publicSource] === digest;
+};
 const delta = {};
 for (const [file, digest] of Object.entries(release.files)) {
   if (!file.startsWith('dist/')) continue;
