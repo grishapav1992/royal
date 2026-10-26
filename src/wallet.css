@@ -26,3 +26,10 @@
 .fruits-paytable td{font-weight:700;font-variant-numeric:tabular-nums}
 .royal-coins[data-game="royal-fruits"] .coins-controls{margin-top:18px}
 @media(max-width:480px){.fruits-paytable th,.fruits-paytable td{padding:6px 10px}.fruits-paytable tbody th{font-size:19px;letter-spacing:3px}}
+#nowpayments-sandbox{margin:20px 0;padding:16px;border:1px solid #8b7658;border-radius:10px;background:#282237}
+#nowpayments-sandbox h3{margin-top:0}
+#nowpayments-sandbox p,#sandbox-history{font-size:12px;line-height:1.55}
+#sandbox-deposit{display:grid;gap:9px}
+#sandbox-deposit input,#sandbox-deposit select{box-sizing:border-box;width:100%;min-height:42px;padding:9px;border:1px solid #978365;border-radius:5px;background:#171426;color:#fff0d6;font:inherit}
+#sandbox-history{padding-left:20px}
+#sandbox-history li{margin:8px 0}
