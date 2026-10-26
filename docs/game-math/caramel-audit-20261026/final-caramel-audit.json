@@ -1,0 +1,445 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-26T09:19:43.741Z",
+  "gameId": "studio-caramel-carnival",
+  "scope": {
+    "rulesVersion": 2,
+    "receiptVersion": 1,
+    "progressVersion": 1,
+    "mathProfileVersion": 1,
+    "stakes": [
+      100,
+      200,
+      300,
+      500,
+      1000,
+      2000,
+      2500,
+      5000,
+      10000,
+      20000,
+      25000,
+      50000,
+      100000
+    ],
+    "modes": [
+      {
+        "id": "normal",
+        "cost": 1
+      },
+      {
+        "id": "festival",
+        "cost": 35,
+        "initialFreeSpins": 10
+      }
+    ]
+  },
+  "conclusion": {
+    "excessExpectedValueDetected": false,
+    "settlementDefectDetected": false,
+    "statement": "В проверенных текущих правилах Caramel Carnival завышенный средний возврат или дефект расчёта кошелька не выявлен. Наблюдаемый возврат составляет около 96% фактически списанной цены. Это статистический вывод и локальная проверка реализации, не доказательство точного полного RTP.",
+    "gameSourceChangedByThisAudit": false,
+    "probabilityOrPriceChangedByThisAudit": false,
+    "productionChangedByThisAudit": false
+  },
+  "interpretation": {
+    "baseStake": 1,
+    "festivalCostInBaseStakes": 35,
+    "festivalObservedMeanGrossInBaseStakes": 33.650561345,
+    "festivalObservedMeanNetInBaseStakes": -1.3494386550000002,
+    "statement": "Накопленная выплата является валовой. Чистый результат игрока равен итоговой выплате минус полная стоимость оплаченного раунда. Рост суммы во время бесплатных продолжений сам по себе не означает прибыль или положительное математическое ожидание."
+  },
+  "formalQualification": {
+    "qualified": false,
+    "registeredPolicy": false,
+    "explicitTargetRtp": null,
+    "explicitTolerance": null,
+    "statement": "Профиля Caramel в RTP policy нет. Наблюдаемые около 96% не заменяют утверждённую цель и квалификацию; полный аналитический RTP не вычислен, диапазон 95.8-96.2% не доказан."
+  },
+  "primaryStatistics": {
+    "pooledWithNativeScreening": false,
+    "independentPaidRounds": 10000000,
+    "method": "Independent count-state full-round simulator with independent random category thresholds and pay scorer; exact initial-frame integrations; exact server replay per mode/stake; fresh fixed seeds. Approximate normal 95% intervals use complete independent paid rounds. No formal target policy exists for Caramel. Not formal RTP qualification.",
+    "seeds": [
+      260102601,
+      260102623,
+      260102647,
+      260102671
+    ],
+    "rows": [
+      {
+        "mode": "normal",
+        "paidRounds": 8000000,
+        "costMultiplier": 1,
+        "rtpEstimate": 0.9600009799999999,
+        "normalApproximation95": [
+          0.9561347258756919,
+          0.9638672341243079
+        ],
+        "empiricalBernstein99Simultaneous": [
+          0.9430400602747705,
+          0.9769618997252293
+        ],
+        "meanGrossInBaseStakes": 0.9600009799999999,
+        "meanNetInBaseStakes": -0.03999902000000011,
+        "profitProbability": 0.1523,
+        "zeroPayoutProbability": 0.69289575,
+        "cappedSamples": 0,
+        "maxObservedPayoutInBaseStakes": 713.92,
+        "freeSpins": 620193,
+        "naturalEntries": 60435,
+        "retriggers": 5281,
+        "cascadeLimits": 5
+      },
+      {
+        "mode": "festival",
+        "paidRounds": 2000000,
+        "costMultiplier": 35,
+        "rtpEstimate": 0.9614446098571429,
+        "normalApproximation95": [
+          0.9596750598775756,
+          0.9632141598367101
+        ],
+        "empiricalBernstein99Simultaneous": [
+          0.9570293984322601,
+          0.9658598212820256
+        ],
+        "meanGrossInBaseStakes": 33.650561345,
+        "meanNetInBaseStakes": -1.3494386550000002,
+        "profitProbability": 0.311527,
+        "zeroPayoutProbability": 0.060068,
+        "cappedSamples": 0,
+        "maxObservedPayoutInBaseStakes": 815.19,
+        "freeSpins": 20517371,
+        "naturalEntries": 0,
+        "retriggers": 172457,
+        "cascadeLimits": 30
+      }
+    ],
+    "statisticalAssumption": "The theorem assumes iid complete-round samples. The reproducible seeded pseudorandom generator models independent uniform draws; this is statistical evidence, not a deterministic proof of exact RTP. All sample sizes and seeds were fixed before the full run.",
+    "concentrationSource": "https://arxiv.org/pdf/0907.3740"
+  },
+  "independentScreening": {
+    "pooledWithPrimary": false,
+    "paidRounds": 1200000,
+    "method": "Independent complete-round sampler with its own count scorer, integer award/cap, gravity and bonus transitions; fixed probability and paytable inputs imported from actual sources. Full receipts and random-consumption crosschecked against actual server. Approximate marginal 95% normal intervals of independent complete paid rounds; observed screening, not formal RTP qualification.",
+    "seeds": [
+      10500193,
+      20800487,
+      31100779
+    ],
+    "rows": [
+      {
+        "mode": "normal",
+        "paidRounds": 900000,
+        "rtpEstimate": 0.9561261111111111,
+        "marginalNormalApproximation95": [
+          0.9448307206101743,
+          0.9674215016120471
+        ],
+        "cappedSamples": 0
+      },
+      {
+        "mode": "festival",
+        "paidRounds": 300000,
+        "rtpEstimate": 0.962752460952381,
+        "marginalNormalApproximation95": [
+          0.9581727741893941,
+          0.9673321477153637
+        ],
+        "cappedSamples": 0
+      }
+    ],
+    "statement": "Отдельная выборка другого симулятора и PRNG. Её наблюдения и интервалы не объединены с основной заранее заданной выборкой."
+  },
+  "implementationChecks": {
+    "primaryScorerComparisons": 24105,
+    "primarySymbolBoundaryChecks": 220,
+    "primaryForcedScenarioStakeCases": 52,
+    "primaryActualServerPaidRoundReplays": 1664,
+    "primaryReplayCoverage": {
+      "paidRounds": 1664,
+      "freeSpins": 8645,
+      "naturalBonuses": 13,
+      "retriggers": 65,
+      "energyEvents": 2821,
+      "cascadeLimits": 0,
+      "multiplierCaps": 65
+    },
+    "primaryInvariantAssertions": 403,
+    "primaryForgedStateCases": 91,
+    "nativeControlledEngineScenarios": 18,
+    "nativeActualFullReceiptReplays": 832,
+    "crosscheckCountsAreNotStatisticalSampleCounts": true,
+    "countsAreNotSummedIntoOneTestTotal": true,
+    "allAllowedStakesScalePointwiseExactly": true,
+    "noRoundingLossAtAllowedStakes": true,
+    "wholeRoundCapInBaseStakes": 5000,
+    "maximumMultiplier": 50,
+    "maximumAwardedFreeSpins": 30,
+    "cascadeLimitPerSpin": 20,
+    "initialMultiplierForgeryRejected": true
+  },
+  "wallet": {
+    "passed": true,
+    "totalScenarioGroups": 59,
+    "modeStakeScenarios": 26,
+    "insufficientFundsScenarios": 26,
+    "additionalScenarios": [
+      {
+        "case": "retrigger-limit",
+        "mode": "normal",
+        "stakeUnits": "100",
+        "awarded": 30,
+        "played": 30,
+        "oneDebitAndFinalCredit": true
+      },
+      {
+        "case": "retrigger-limit",
+        "mode": "festival",
+        "stakeUnits": "100",
+        "awarded": 30,
+        "played": 30,
+        "oneDebitAndFinalCredit": true
+      },
+      {
+        "case": "natural-base-energy-reset",
+        "stakeUnits": "100",
+        "baseMultiplier": 50,
+        "freeOriginMultiplier": 1,
+        "deferredBaseCredit": true
+      },
+      {
+        "case": "natural-base-energy-reset",
+        "stakeUnits": "100000",
+        "baseMultiplier": 50,
+        "freeOriginMultiplier": 1,
+        "deferredBaseCredit": true
+      },
+      {
+        "case": "full-round-cap",
+        "mode": "normal",
+        "stakeUnits": "100000",
+        "freeSpins": 3,
+        "cascadeLimit": 20,
+        "returnedUnits": 500000000,
+        "oneDebitAndFinalCredit": true
+      },
+      {
+        "case": "full-round-cap",
+        "mode": "festival",
+        "stakeUnits": "100000",
+        "freeSpins": 3,
+        "cascadeLimit": 20,
+        "returnedUnits": 500000000,
+        "oneDebitAndFinalCredit": true
+      },
+      {
+        "case": "final-transaction-rollback",
+        "noPartialCreditOrReceipt": true,
+        "retrySameUuid": true,
+        "oneDebitAndFinalCredit": true
+      }
+    ],
+    "isolatedLocalPostgres": true,
+    "actualCommonStore": true,
+    "oneInitialDebitAndOneFinalCredit": true,
+    "noReplayRandomDraws": true,
+    "zeroAvailableBalanceContinuation": true,
+    "databaseReconnectModeStakeCases": [
+      {
+        "mode": "normal",
+        "stakeUnits": 100
+      },
+      {
+        "mode": "festival",
+        "stakeUnits": 100
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": 100000
+      },
+      {
+        "mode": "festival",
+        "stakeUnits": 100000
+      }
+    ],
+    "responseLossTestIsStoreReplySuppression": true,
+    "httpOrBrowserRecoveryVerified": false,
+    "statement": "Проверены реальный общий store и сохранённые данные, включая повтор UUID без повторного списания/случайности, бесплатные продолжения с нулевым доступным балансом, единственное финальное зачисление, перезапуск подключения к БД и атомарный отказ финальной транзакции. HTTP и браузер в этот прогон не входят."
+  },
+  "exactInitialFrame": {
+    "fullRoundExactRtp": false,
+    "scope": "Только первое поле при начальном множителе 1 и достаточном остатке лимита выплаты. Строка free относится к свежему купленному фестивалю или отдельному полю, не к среднему всех бесплатных вращений.",
+    "rows": [
+      {
+        "free": false,
+        "expectedPayoutInBaseStakes": 0.3187373010427898,
+        "winProbability": 0.3039071972402019,
+        "initialTicketThresholdProbability": 0.004064090567810357
+      },
+      {
+        "free": true,
+        "expectedPayoutInBaseStakes": 0.7136150035863246,
+        "winProbability": 0.24273000164307262,
+        "initialTicketThresholdProbability": 0.005506943399536765
+      }
+    ],
+    "sixRationalFractionsIndependentlyMatched": true
+  },
+  "limitations": [
+    "Формальная RTP-квалификация и утверждённые target/tolerance отсутствуют.",
+    "Точный полный RTP с каскадами и всей бонусной серией не вычислен.",
+    "Редкие cap-траектории проверены принудительно; отсутствие cap в случайных выборках не означает невозможность cap.",
+    "Legacy rules 1 в данном индивидуальном аудите не проверялись.",
+    "HTTP, аутентификация, браузерное закрытие и открытие, сетевое восстановление и production fingerprints этим аудитом не проверены.",
+    "Повтор одинаковых траекторий на разных ставках проверяет масштабирование, но не увеличивает независимую статистическую выборку.",
+    "Числа сценариев, assertions и replay частично пересекаются и не складываются в одно число тестов."
+  ],
+  "sourceCommits": {
+    "primaryMathRun": "3430485363532d720110654ecdf19762a3207c78",
+    "walletRun": "03a2f6a5b3fedc5aa20156849dd4dc4efe055181",
+    "statement": "Исторические коммиты записаны при выполнении отдельных частей аудита. Общие Caramel source hashes отчётов совпадают и повторно проверены при подготовке сохранённого набора."
+  },
+  "sourceHashes": {
+    "server/games/caramelCarnival.ts": "efea2d448a692637819eef014badf72ac2aa1a0621284ba12011ab68ff1886a7",
+    "src/shared/caramelCarnival.ts": "17f9e338297ac7fc37fa0f6ac6608e22cdc9ad145ad18f8c6764d72575f725aa",
+    "src/modules/GameModuleCatalog.ts": "7370926fdaa198b032c6ac1c9261d0e5159deb5a37985da1f0bd85f12a7a7a91",
+    "src/ui/CaramelCarnivalUI.ts": "fb3b13ec3995463b1098c82e1457c605747b7319a37d1d7a2d5009a577181e46",
+    "server/demoWallet.ts": "6173c565c5860342950e04097d6f57913e49fc9dabe01f4ebb25249fd9568346",
+    "server/demoExpansion.ts": "ab91cf5f0d590f05132b73b34d347f044b70f852e0bc31f4602d816289c2e420",
+    "server/demoWalletAmounts.ts": "83f136ac575d0c3ca0deaadb6ff709f29308446c017c714862536d2bd56a4df0",
+    "src/wallet/ExpansionClient.ts": "02cf337a2cabc65785a01625006361f294641a8e92bc86696ba01cb1253fd97b",
+    "src/ui/slotKit/SlotScreens.ts": "59140beebcb205fa8e52c3e35f0f2283a0746ebd42b08ef54122598fd986756a",
+    "src/ui/gameReactions.ts": "e77578be2dd82c468c067795b7778154b1d2353be7587dc08de0e62cc6402888",
+    "src/ui/slotKit/SlotAudio.ts": "7f7c3536e0202ebd39dd79bcd36c886882332c6d5e84e4a73831d46e06aefbc0"
+  },
+  "evidence": {
+    "README.md": {
+      "bytes": 5210,
+      "sha256": "43ee42eba1fbcc97d2840fd4dfab74f2354fe6ea5223b6694755b36e27edb5ab"
+    },
+    "final-caramel-audit.md": {
+      "bytes": 11974,
+      "sha256": "2a5bb0d994af303c453b34051feaf2176621dd0b93bab7f8b50483d43fe7231c"
+    },
+    "native-engine-results.json": {
+      "bytes": 2364,
+      "sha256": "94adbabe64f64d39cff21ef5648a466724ee1adcc51522466f023e0d3d24c992"
+    },
+    "native-qualified-review.md": {
+      "bytes": 4050,
+      "sha256": "88b1be8d31789714bb0ed8a30cf766a887aaa3e058d43e0ec588882ded4cfded"
+    },
+    "native-review.md": {
+      "bytes": 5551,
+      "sha256": "dd90c8aa8762a58e99fc65b234681e8b305b3090f29a47dc654f4461ac62e68f"
+    },
+    "native-round-results.json": {
+      "bytes": 8761,
+      "sha256": "cd3068251d085ddf16e11c891b91b1e48e662ca8ebd5c933468d346ca5d2e2bb"
+    },
+    "qualified-caramel-audit.json": {
+      "bytes": 31490,
+      "sha256": "a6240129dc637b4034dd0167309331ea8530c3c8ff88c9a2d11ab53ebdc33bfd"
+    },
+    "qualified-caramel-checks.json": {
+      "bytes": 18647,
+      "sha256": "9e626a561b3d4cf3b0b2bcd9035e47a13c7d16fd32c5949ee7bc332a3e74a12f"
+    },
+    "qualified-caramel-invariants.json": {
+      "bytes": 800,
+      "sha256": "0bfc36343fb0e4115e09cb568e7dc2410b8deba02952ecf74288a189c7984980"
+    },
+    "qualified-caramel-math-review.md": {
+      "bytes": 9866,
+      "sha256": "901d997a4474b6989753fbe1c68d499f747a7b4e23d7a3d64f8262c68172f971"
+    },
+    "ui-ledger-results.json": {
+      "bytes": 6433,
+      "sha256": "4a092975c494384fac06233dfffaf57ce82c76f2190b41d0bdd013bfb01fef07"
+    },
+    "wallet-results.json": {
+      "bytes": 18934,
+      "sha256": "51a93625748f970fc9f6eea52a929787668619f74ecc52db177daebad9200c64"
+    }
+  },
+  "reproducibleCode": [
+    "scripts/game-math/caramel-audit/native-engine-audit.mjs",
+    "scripts/game-math/caramel-audit/native-round-screen.mjs",
+    "scripts/game-math/caramel-audit/qualified-caramel-audit.mjs",
+    "scripts/game-math/caramel-audit/qualified-caramel-invariants.mjs",
+    "scripts/game-math/caramel-audit/wallet-regression.mjs"
+  ],
+  "preservation": "Reviewed audit code and compact historical evidence. Reproduction writes only to the task-owned artifacts output directory; tracked documentation, game source, policy and qualification proofs are not rewritten.",
+  "uiLedger": {
+    "passed": true,
+    "pureFunctionChecks": 8,
+    "method": "Actual pure renderer and amount-reaction functions. No browser, DOM mounting, layout or listening verification.",
+    "browserVerified": false,
+    "domOrLayoutVerified": false,
+    "staticCaramelIntegrationReviewed": true,
+    "evidence": "ui-ledger-results.json",
+    "soundObservation": {
+      "classification": "presentation-ambiguity-only",
+      "settlementDefect": false,
+      "source": [
+        {
+          "path": "src/ui/CaramelCarnivalUI.ts",
+          "line": 157
+        },
+        {
+          "path": "src/ui/CaramelCarnivalUI.ts",
+          "line": 158
+        },
+        {
+          "path": "src/ui/slotKit/SlotAudio.ts",
+          "line": 68
+        }
+      ],
+      "statement": "Звуковой вызов outcome использует только условие spin.payoutUnits > 0: при положительной выплате он выбирает cue win независимо от чистого результата всей оплаченной серии. Сообщение ВЫИГРЫШ ПРИНЯТ выбирается только после более приоритетных веток freeAward/tickets, полного cap и cascade-limit. Таблица и общая amount-reaction считают полный net корректно.",
+      "example": {
+        "spentInCoins": 35,
+        "totalReturnedInCoins": 20,
+        "netInCoins": -15,
+        "sharedAmountReaction": "lose",
+        "positiveIndividualSpinCue": "win"
+      },
+      "listeningMeasured": false,
+      "playerPerceptionMeasured": false,
+      "soundOrUiChanged": false,
+      "messageBranchPriority": [
+        "freeAward/tickets",
+        "whole-round cap",
+        "cascade-limit",
+        "positive individual spin payout",
+        "active/next spin"
+      ],
+      "winAcceptedMessageRequires": {
+        "positiveSpinPayout": true,
+        "noFreeAward": true,
+        "notCapped": true,
+        "notCascadeLimit": true
+      }
+    }
+  },
+  "auditCodeSha256": {
+    "scripts/game-math/caramel-audit/native-engine-audit.mjs": "27fadaa33113ac736dbc2f74c7542794fe33f306208fff5cf93532645050c17a",
+    "scripts/game-math/caramel-audit/native-round-screen.mjs": "79e342e71e95388d067fd5e6f9ddbca4e91fb909aaf2e1aeb89ca325f562fd4a",
+    "scripts/game-math/caramel-audit/qualified-caramel-audit.mjs": "6e37ff752aba264e60681330f89d0ed4b2b2f1c9a275c3292f810211d45403ec",
+    "scripts/game-math/caramel-audit/qualified-caramel-invariants.mjs": "af98c22ab3916855372a7a991a4543739c9335379acada17dc3887f4bb2078bb",
+    "scripts/game-math/caramel-audit/wallet-regression.mjs": "f02cfe7860f927e5ac0493ae1e7a1de2e4e0f0794576de6bed0d7de8c6f389df"
+  },
+  "generatedOutputDirectory": "artifacts/work/caramel-audit-20261026/",
+  "outputRoutingVerification": {
+    "passed": true,
+    "at": "2026-10-26T09:43:59.449Z",
+    "codeFiles": 5,
+    "primary1664ReplayAndExactEvidenceMatched": true,
+    "native832FullReceiptReplaysMatched": true,
+    "wallet59ScenarioSemanticsMatchedOriginal": true,
+    "uiLedgerPureChecks": 8,
+    "coreSampleEvidenceUnchanged": true,
+    "fullStatisticalSamplesRepeated": false
+  }
+}

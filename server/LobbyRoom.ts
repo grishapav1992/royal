@@ -173,7 +173,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       }
       if (message) client.send('notice', message);
     });
-    this.onMessage('activities', client=>client.send('activities',this.activities.snapshot()));
+    this.onMessage('activities', client=>client.send('activities',this.activities.snapshot(client.sessionId)));
     listen('inputs', (client, data: unknown) => {
       const p = this.state.players.get(client.sessionId), c = this.controls.get(client.sessionId);
       if (!p || !c || !p.connected || p.playing) return;
@@ -563,11 +563,12 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       return player?.connected&&player.hall===hall;
     });
     const modern=listeners.filter(client=>type!=='activities'||this.activityProtocols.has(client.sessionId));
-    // Room.broadcast encodes one shared packet for each group of recipients.
-    if(modern.length)this.broadcast(type,value,{except:this.clients.filter(client=>!modern.includes(client))});
+    if(type==='activities'&&(value as {combat?:unknown}).combat){
+      for(const client of modern)client.send(type,{...value as object,combat:this.activities.combatSnapshot(client.sessionId)});
+    }else if(modern.length)this.broadcast(type,value,{except:this.clients.filter(client=>!modern.includes(client))});
     const legacy=type==='activities'?listeners.filter(client=>!this.activityProtocols.has(client.sessionId)):[];
     // Already open pages can keep using full snapshots during a rollout.
-    if(legacy.length)this.broadcast(type,this.activities.snapshot(),{except:this.clients.filter(client=>!legacy.includes(client))});
+    for(const client of legacy)client.send(type,this.activities.snapshot(client.sessionId));
   }
   private enterDoor(id:string){
     const p=this.state.players.get(id),c=this.controls.get(id);
@@ -575,7 +576,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
     this.activities.leave(id);this.releaseCabinet(id);this.stop(id);this.stand(id);
     const link=hallLinkAt(p)!;const hall=link.target,door=link.arrival;
     p.hall=hall;p.hallRevision++;p.x=door.arrival.x;p.y=door.arrival.y;p.facing=door.facing;c.lastTarget=0;
-    this.clients.find(client=>client.sessionId===id)?.send('activities',this.activities.snapshot());
+    this.clients.find(client=>client.sessionId===id)?.send('activities',this.activities.snapshot(id));
     return true;
   }
   private tick(dt: number) {

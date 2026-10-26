@@ -1,0 +1,17 @@
+{
+  "ownedPathsRemoved": [
+    "/opt/royal-releases/pvp-usdt-20261023-v1/game-context",
+    "/opt/royal-releases/pvp-usdt-20261023-v1/package.tgz"
+  ],
+  "logicalBytesRemoved": 517459995,
+  "archiveSha256": "0e4bf1cc48b08a4f1d14d80cc5c057afa8c2b310b63b6839f8db3ab71aac3bcf",
+  "retainedMetadata": [
+    "retained-build-metadata/package-lock.json",
+    "retained-build-metadata/package.json",
+    "retained-build-metadata/Dockerfile"
+  ],
+  "freeBytesBefore": 5561147392,
+  "freeBytesAfter": 6083686400,
+  "sourceCommitSavedInMain": "272f566d0832323c446aad504b9f696b45071e64",
+  "productionBackupsAndImagesPreserved": true
+}

@@ -107,7 +107,8 @@
         "server/combatRoom.ts",
         "server/combatGuard.ts",
         "server/pvp/virtual-wallet.ts",
-        "server/commonCombatWallet.ts"
+        "server/commonCombatWallet.ts",
+        "server/finance/nile-play-error.ts"
       ]
     },
     "hockey": {
@@ -139,7 +140,8 @@
         "server/pvp/store.ts",
         "server/pvp/cards.ts",
         "server/finance/pvp-money.ts",
-        "server/pvp/virtual-wallet.ts"
+        "server/pvp/virtual-wallet.ts",
+        "server/finance/nile-play-error.ts"
       ]
     },
     "pool": {
@@ -171,7 +173,8 @@
         "server/pvp/store.ts",
         "server/pvp/cards.ts",
         "server/finance/pvp-money.ts",
-        "server/pvp/virtual-wallet.ts"
+        "server/pvp/virtual-wallet.ts",
+        "server/finance/nile-play-error.ts"
       ]
     },
     "chess": {
@@ -203,7 +206,8 @@
         "server/pvp/store.ts",
         "server/pvp/cards.ts",
         "server/finance/pvp-money.ts",
-        "server/pvp/virtual-wallet.ts"
+        "server/pvp/virtual-wallet.ts",
+        "server/finance/nile-play-error.ts"
       ]
     },
     "durak": {
@@ -235,7 +239,8 @@
         "server/pvp/store.ts",
         "server/pvp/cards.ts",
         "server/finance/pvp-money.ts",
-        "server/pvp/virtual-wallet.ts"
+        "server/pvp/virtual-wallet.ts",
+        "server/finance/nile-play-error.ts"
       ]
     },
     "transfer-durak": {
@@ -267,7 +272,8 @@
         "server/pvp/store.ts",
         "server/pvp/cards.ts",
         "server/finance/pvp-money.ts",
-        "server/pvp/virtual-wallet.ts"
+        "server/pvp/virtual-wallet.ts",
+        "server/finance/nile-play-error.ts"
       ]
     },
     "crazy-eights": {
@@ -299,7 +305,64 @@
         "server/pvp/store.ts",
         "server/pvp/cards.ts",
         "server/finance/pvp-money.ts",
-        "server/pvp/virtual-wallet.ts"
+        "server/pvp/virtual-wallet.ts",
+        "server/finance/nile-play-error.ts"
+      ]
+    },
+    "studio-cosmic-escape": {
+      "method": "bounded-analytical-cosmic",
+      "rulesVersion": 2,
+      "progressVersion": 1,
+      "mathProfileVersion": 3,
+      "target": 0.96,
+      "tolerance": 0.002,
+      "seeds": [
+        2026102601,
+        2026102607
+      ],
+      "serverReplayRoundsPerSeed": 32,
+      "stakes": [
+        20,
+        40,
+        60,
+        80,
+        100,
+        200,
+        300,
+        400,
+        500,
+        600,
+        800,
+        1000,
+        1500,
+        2000,
+        3000,
+        5000,
+        7500,
+        10000,
+        15000,
+        20000,
+        30000,
+        50000,
+        75000,
+        100000,
+        150000,
+        200000
+      ],
+      "choices": [
+        "normal",
+        "cosmic-chaos",
+        "ufo-invasion",
+        "deep-echo"
+      ],
+      "proof": "docs/game-math/qualifications/cosmic-v3.json",
+      "qualificationSource": "scripts/game-math/rtp-cosmic.mjs",
+      "sources": [
+        "src/shared/luelonSlotsModels.ts",
+        "src/shared/luelonSlots.ts",
+        "src/shared/luelonSlotsLines.ts",
+        "src/shared/cosmicEscapeBets.ts",
+        "server/games/luelonSlots.ts"
       ]
     }
   },

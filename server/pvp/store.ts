@@ -3,7 +3,8 @@ import { gameAccountId } from '../../src/shared/nileWallet';
 import { PVP_ARRIVAL_MS, PVP_INVITE_MS, PVP_MOVE_MS, PVP_RECONNECT_MS, isPvpCardGame, pvpPayout, validPvpRequest,
   type PvpChallenge, type PvpRequest, type PvpSnapshot } from '../../src/shared/pvp';
 import { createCardGame, playCardMove, publicCardGame, type CardState } from './cards';
-import { NilePlayError, type NilePlayLedger } from '../finance/nile-play-ledger';
+import type { NilePlayLedger } from '../finance/nile-play-ledger';
+import {NilePlayError} from '../finance/nile-play-error';
 
 export type PvpLedger = Pick<NilePlayLedger,'ready'|'db'> & {
   wallet(accountId:string,now?:number):Promise<PvpSnapshot['wallet']>;

@@ -8,7 +8,7 @@ export function installAuth(app: Application) {
   let hashing = 0;
   const timer = setInterval(() => { for (const [key, value] of attempts) if (value.until < Date.now()) attempts.delete(key); }, 60000); timer.unref();
   const cookieOptions = { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' as const, path: '/' };
-  app.use('/api/auth', (_req, res, next) => { res.setHeader('Cache-Control','no-store'); next(); }, express.json({ limit: '4kb' }), (req, res, next) => {
+  app.use('/api/auth', (_req, res, next) => { res.setHeader('Cache-Control','no-store'); next(); }, express.json({ limit: '4kb', inflate: false }), (req, res, next) => {
     if (!allowedOrigin(req.get('origin'))) { res.status(403).json({ error: 'Этот источник запросов не разрешён.' }); return; }
     next();
   });

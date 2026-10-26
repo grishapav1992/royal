@@ -1,5 +1,7 @@
 # Paid character skins
 
+Actual generated artwork receives [short visual descriptions for NPCs](skin-npc-context.md), independently of the player's original request.
+
 The first-floor atelier is recessed in the back wall, left of the upstairs door, with an elderly gangster tailor, mirror and suit rail. The casino wall is now 275 world units tall. Its ceiling extends upwards without changing floor movement coordinates. The counter finishes at the wall base and adds no floor obstacle. Royal Fruits was moved down to clear the shop and its approach. Chandeliers were removed. Click the atelier to walk to it and open the order window; E also opens it when standing near the counter. The profile's `Образы` button provides quick access.
 
 ## Local preview
@@ -14,7 +16,9 @@ Every new order creates a complete new character from its text description alone
 
 ## Configuration and theme
 
-Server-only `CODEX_SALE_API_KEY` uses the existing codex.sale account. Optional `CODEX_SALE_SKIN_MODEL` defaults to `gpt-image-2`, verified against the provider's model list on 22 October 2026. Requests use `/v1/images/generations`, one transparent 1024 by 1536 PNG per design, high quality, with two concurrent JSON calls per new job. No provider credentials reach the browser.
+Server-only `CODEX_SALE_API_KEY` uses the existing codex.sale account. Compose and `.env.example` select `gpt-image-2.5-flare` through `CODEX_SALE_SKIN_MODEL`, chosen by the owner after a live three-model comparison on 24 October 2026. Direct Node startup without this variable retains the provider fallback `gpt-image-2`; set the variable explicitly to use Flare. Requests use `/v1/images/generations`, one transparent 1024 by 1536 PNG per design, high quality, with two concurrent JSON calls per new job. No provider credentials reach the browser.
+
+The Flare rollout changes only the model passed to the currently installed provider through the game container environment. It preserves the installed host, provider endpoint, generation count, wallet rules, saved outfits and player data. Other atelier changes in main require their own application release. A single comparison sample took 38.5 seconds through codex.sale; this is an observed request duration, not a latency guarantee or a proof that every animation frame is correct.
 
 The atelier uses the existing shared game wallet. It does not require or enable NOWPayments, deposits, withdrawals, a second balance or a payment microservice. Without image generation credentials it shows unavailable and creates no charge. Provider credentials are configured locally in the ignored `.env.local-atelier` file; they are not printed or committed.
 
@@ -49,3 +53,11 @@ Production release history is recorded in `deployment/SERVER.md`. A release upda
 ## Walking correction, 24 October 2026
 
 The event is actual actor movement; facing comes from movement state and remains fixed within each direction's walking loop. The upper body and face use the same standing image in all six phases. Only the two lower cutout pieces swing, with a fixed body position and no walking bounce. Stopping returns to that same standing image. Reduced motion removes idle decoration as before. These are game-specific design choices, not perceptual thresholds. Browser checks compare upper-body pixels across all walking frames in all directions, verify changing feet and cover old and new orders.
+
+## Interactive fitting room, 25 October 2026
+
+New orders offer two designs. Each candidate has a front thumbnail and a try-on button. The same atelier dialog contains a walkable fitting room using `drawGeneratedSkin` and `movementFacing`, exactly as the game renders generated artwork. Click or tap the floor, hold WASD or arrow keys while focused in the room, or hold the directional buttons. The sitting button checks the game's seated pose. Trying a candidate does not equip it, save it or send a movement request. Saving the selected candidate remains the explicit permanent choice. Already paid three-candidate orders retain every promised candidate.
+
+Movement is the only animation event in this preview: the six game walking phases follow actual local movement, stopping returns to the standing cutout, and sitting is explicit. There is no decorative motion or audio. Closing, changing account, losing focus or hiding the page clears input. The animation loop stops when the dialog closes. Resizing preserves the relative horizontal position. Wardrobe skins can also be tried without changing the equipped skin. When a different order becomes ready, the room automatically switches to its first new candidate; refreshes of that same order preserve the candidate being tried.
+
+Browser coverage checks keyboard and floor movement, touch-sized directional controls, sitting, switching candidates, close/reopen, account changes, explicit selection and mobile overflow. The isolated local atelier initializes the wallet entry before importing the funding helper to avoid its pre-existing ESM import cycle; production wallet behavior is unchanged.

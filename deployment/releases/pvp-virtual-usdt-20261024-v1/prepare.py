@@ -5,6 +5,7 @@ import json
 import shutil
 import subprocess
 import tarfile
+import re
 
 ROOT = Path(__file__).resolve().parents[3]
 WORK = ROOT / 'artifacts/work/pvp-virtual-usdt'
@@ -37,7 +38,7 @@ for name in release['changed']:
         changed[name] = sha(ROOT / name)
         copy(ROOT / name, 'source/' + name)
 for name, row in normalized.items():
-    if name not in changed and not name.endswith(('.orig', '.bak')):
+    if name not in changed and name != 'deployment/SERVER.md' and not name.endswith(('.orig', '.bak')):
         assert (ROOT / name).is_file(), name
         assert hashlib.sha256((ROOT / name).read_bytes().replace(b'\r\n', b'\n')).hexdigest() == row['lf'], name
 assert changed and 'server/index.ts' in changed
@@ -48,7 +49,8 @@ for name, digest in release['files'].items():
         continue
     relative = name.removeprefix('dist/')
     source = 'public/' + relative
-    if name in runtime and runtime[name]['raw'] == old['program'].get(name) and digest == runtime[name]['lf']:
+    canonical = hashlib.sha256((ROOT / name).read_bytes().replace(b'\r\n', b'\n')).hexdigest() if Path(name).suffix in ['.js','.css','.html','.json','.svg'] else digest
+    if name in runtime and runtime[name]['raw'] == old['program'].get(name) and canonical == runtime[name]['lf']:
         continue
     if relative in ['index.html', 'admin.html'] or relative.startswith('assets/') and Path(relative).suffix in ['.js', '.css']:
         assert relative in ['index.html', 'admin.html'] or name not in old['program'], 'Existing asset URL would change'
@@ -57,13 +59,17 @@ for name, digest in release['files'].items():
     else:
         source = 'public/' + relative
         assert source in normalized and old['program'].get(name) == normalized[source]['sha256'], name
-        assert digest == normalized[source]['lf'], 'Unexpected public asset change: ' + name
+        assert canonical == normalized[source]['lf'], 'Unexpected public asset change: ' + name
 copy(ROOT / 'dist-server/index.js', 'server-delta/index.js')
 
 packages = []
 module_delta = {}
 for row in release['packages']:
     game, version = row['gameId'], row['version']
+    # Only these packages use the changed PvP contract. Other games keep the
+    # compatible bytes already published with the common virtual slot wallet.
+    if game not in {'hockey','pool','chess','durak','transfer-durak','crazy-eights'}:
+        continue
     folder = ROOT / 'module-dist' / game / 'versions' / version
     metadata = json.loads((folder / 'manifest.json').read_text())
     prior = active['games'].get(game)
@@ -87,6 +93,9 @@ manifest = {'release': NAME, 'sourceCommit': release['sourceCommit'], 'baseCommi
     'before': old, 'changed': changed, 'delta': delta, 'serverDelta': {'index.js': sha(ROOT / 'dist-server/index.js')},
     'helperSha256': sha(OUT / 'deploy.py'), 'snapshotSha256': sha(OUT / 'snapshot.py'),
     'modulesHelperSha256': sha(OUT / 'modules.py'), 'moduleDelta': module_delta, 'modulePackages': packages}
+bundle=(ROOT/'dist-server/index.js').read_text(encoding='utf-8')
+manifest['externalImports']=sorted(set(re.findall(r'^import\s+(?:[^;\'"]*?\s+from\s+)?[\'"]([^\'"]+)[\'"]',bundle,re.M)))
+assert manifest['externalImports'] and all(not name.startswith(('.', '/')) for name in manifest['externalImports'])
 (OUT / 'install-manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
 with tarfile.open(WORK / 'transport.tgz', 'w:gz') as archive:
     for file in sorted(OUT.rglob('*')):

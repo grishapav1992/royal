@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import { PostgresDatabase } from '../server/database';
 import { AccountStore } from '../server/accounts';
 import { createHash, scryptSync } from 'node:crypto';
+import { PLAYER_CHARACTERS } from '../src/shared/characters';
 
 test('accounts and sessions survive reopening; passwords are hashed and logout revokes access', async () => {
   const dir = mkdtempSync(join(tmpdir(),'royal-auth-')), file = join(dir,'accounts.sqlite');
@@ -86,17 +87,13 @@ test('character profiles and active sessions retain integrity through PostgreSQL
     assert.equal((await store.session(first.token))?.account.name,'Старый профиль');
     assert.equal((await store.session(first.token))?.account.skin,4);
     assert.equal((await store.login('profile@example.test','profile-password')).account.id,first.account.id);
-    for (const skin of [0,1,2,3,4,5,7,8,9,10,11,12,13,14,15,16]) {
+    for (const skin of PLAYER_CHARACTERS.map(character => character.id)) {
       await store.select(first.account.id,skin);
       assert.equal((await store.session(first.token))?.account.skin,skin);
-      if (skin >= 13) {
-        await store.close(); store = new AccountStore(file);
-        assert.equal((await store.session(first.token))?.account.skin,skin);
-      }
     }
-    for (const invalid of [6,17,-1,1.5,'16',null]) await assert.rejects(()=>store.select(first.account.id,invalid));
+    for (const invalid of [6,13,14,15,16,17,-1,1.5,'16',null]) await assert.rejects(()=>store.select(first.account.id,invalid));
     await store.close(); store = new AccountStore(file);
-    assert.equal((await store.session(first.token))?.account.skin,16);
+    assert.equal((await store.session(first.token))?.account.skin,PLAYER_CHARACTERS.at(-1)!.id);
     assert.equal((await store.session(first.token))?.account.name,'Старый профиль');
     const check = new PostgresDatabase(file);
     try { assert.equal(await check.integrityCheck(),true); }

@@ -1,0 +1,100 @@
+{
+  "release": "pvp-virtual-usdt-20261024-v1",
+  "sourceCommit": "83b3e6b71c504a32f2461261b6637cca9092c5b7",
+  "productionBaseCommit": "5045c401063b5f2c792497ae2f4e53bcd34e1a98",
+  "preservedConfigurationCommit": "489fd6d8ec0198170027bb95e1bc8e3fb14dc26b",
+  "publication": {
+    "published": true,
+    "preparedImage": "sha256:236d63ae4ac4f9801a2ad7a1a5a029b672ba6aa27a8b08378408d13b305f7749",
+    "runningImage": "sha256:236d63ae4ac4f9801a2ad7a1a5a029b672ba6aa27a8b08378408d13b305f7749",
+    "containerRestarted": true,
+    "sourceCommit": "83b3e6b71c504a32f2461261b6637cca9092c5b7",
+    "changedSources": 27,
+    "clientDeltaFiles": 3,
+    "configurationsAndMountsPreserved": true,
+    "gameDataPreserved": true,
+    "backendDeltaFiles": 1,
+    "otherBackendProgramsAndModulesPreserved": true,
+    "oldAssetsPreserved": true,
+    "otherPersistentServicesPreserved": 13
+  },
+  "modules": {
+    "published": true,
+    "sourceCommit": "83b3e6b71c504a32f2461261b6637cca9092c5b7",
+    "packages": [
+      {
+        "verified": true,
+        "gameId": "durak",
+        "version": "1.0.0-fe60e7852f80",
+        "bytes": 15158,
+        "files": 2,
+        "beforeSha256": "39b89e5bd19c5d06a905fc49de3e5e7e6986cac09eb7e4f1aab3224550774b43",
+        "hostProgramTouched": false,
+        "databaseTouched": false,
+        "restartRequired": false,
+        "published": true,
+        "operation": "install",
+        "activeSha256": "4009b3e53608142243e999bf494eaf5d14c9b807e88c68c78efdbc765f9cf4d8",
+        "history": "/opt/royal-game-modules-state/history/20261024T125843-d0cd5281fe1b412987766c7b84692524.json"
+      },
+      {
+        "verified": true,
+        "gameId": "transfer-durak",
+        "version": "1.0.0-882a9df59c11",
+        "bytes": 15167,
+        "files": 2,
+        "beforeSha256": "b3f447477b5615a0957ff8d6d4948bfeac8ab2058dc5b9e7648bc8893410e313",
+        "hostProgramTouched": false,
+        "databaseTouched": false,
+        "restartRequired": false,
+        "published": true,
+        "operation": "install",
+        "activeSha256": "c972c8c96ccfdc2275a86717c4ce98fd074c52e634bd235ddf31a357fade09d0",
+        "history": "/opt/royal-game-modules-state/history/20261024T125844-7756985e6d094e8185a6d8a5830e21fe.json"
+      },
+      {
+        "verified": true,
+        "gameId": "crazy-eights",
+        "version": "1.0.0-e766c65c35a4",
+        "bytes": 15165,
+        "files": 2,
+        "beforeSha256": "94186132ba449fb9fad3c283a2469db567ea719980e9fe1c5f2d4bf6883d9b80",
+        "hostProgramTouched": false,
+        "databaseTouched": false,
+        "restartRequired": false,
+        "published": true,
+        "operation": "install",
+        "activeSha256": "6e213a4e4e73e7fea3621bfc8591794bed59016775e6531b3cb499e192c81f5a",
+        "history": "/opt/royal-game-modules-state/history/20261024T125844-93182d5ba2954cd2afe5cbc6a5294b97.json"
+      }
+    ],
+    "databaseTouched": false
+  },
+  "backup": {
+    "path": "/opt/royal-backups/pvp-virtual-usdt-20261024-v1",
+    "sourceSha256": "9a2118c0be346937918946b2e6c931879a4325107e02bfd1a82763dfe7019054",
+    "gameWalletSha256": "8b6d9bac265538e4e54871cf0f8852e7075ad8cb4f46dff75c228e41a7c2c0e7",
+    "databaseRestored": false
+  },
+  "running": {
+    "image": "sha256:236d63ae4ac4f9801a2ad7a1a5a029b672ba6aa27a8b08378408d13b305f7749",
+    "health": "healthy",
+    "startedAt": "2026-10-24T12:55:48.543751684Z",
+    "checkedAtEpoch": 1792846708.5865455
+  },
+  "publicVerification": "public-verification.json",
+  "localEndToEndVerification": "browser-verification.json",
+  "testSummary": "validation.json",
+  "guestBrowser": {
+    "origin": "https://stealth-spark-gokmxooi.expresshost.cloud",
+    "mode": "read-only offline preview, no login or funds",
+    "floorsRendered": [
+      1,
+      2
+    ],
+    "firstFloorSlots": 12,
+    "javascriptErrors": [],
+    "screenshot": "pvp-published-floor.png"
+  },
+  "dataPolicy": "New wagers and atelier purchases use the existing free virtual USDT journal; old Nile journals and accepted liabilities remain with their original ledger. No Nile balances were copied or converted."
+}

@@ -2,11 +2,28 @@ import { SkinStudioUI } from '../../src/ui/SkinStudioUI';
 import type { Account } from '../../server/accounts';
 import type { RoomScene } from '../../src/game/RoomScene';
 import Phaser from 'phaser';
-import { characterTexture, createCharacters, pruneCharacterTextures } from '../../src/game/characters';
+import { characterTexture, createCharacters, createCharacterPortrait, pruneCharacterTextures } from '../../src/game/characters';
+import { hasSkinSheet, loadSkinSheet } from '../../src/game/generatedSkinArt';
 import { SKIN_THEME } from '../../src/shared/skinStudio';
 let account: Account | null = { id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', name: 'Игрок', email: 'skin@example.test', skin: 0, appearance: null };
 const studio = new SkinStudioUI({ setLocked: () => {} } as unknown as RoomScene, () => account, async () => {});
 (window as any).skinPreview = { studio, setAccount(value: Account | null) { account = value; window.dispatchEvent(new Event('royal-account')); },
+  async miraPortrait(id: string) {
+    const [{ RoomScene }, { MiraChat }] = await Promise.all([import('../../src/game/RoomScene'), import('../../src/ui/MiraChat')]);
+    const host = document.createElement('section'); host.className = 'room-panel'; host.style.cssText = 'width:640px;height:800px'; document.body.append(host);
+    const dialog = document.createElement('dialog'); dialog.id = 'bar-dialog'; host.append(dialog);
+    const appearance = JSON.stringify({ version: 2, skinId: id, theme: SKIN_THEME.id });
+    const room = Object.create(RoomScene.prototype) as RoomScene;
+    (room as any).player = { skin: 0, appearance, soberAt: 0, action: 'idle', drink: '', sprite: { texture: { key: 'avatar-generated-' + id } } };
+    (room as any).portraitFrames = new Map();
+    const chat = new MiraChat(dialog, { playerState: () => room.getDialoguePlayer(), portraitFrame: (action, frame) => room.getPortraitFrame(action, frame) });
+    dialog.show(); chat.open();
+    (window as any).skinPreview.portraitLoaded = () => hasSkinSheet(id);
+    (window as any).skinPreview.portraitExpected = () => createCharacterPortrait(0, appearance, 6, 0).toDataURL();
+    (window as any).skinPreview.portraitCached = () => room.getPortraitFrame('idle', 0);
+    void loadSkinSheet(id);
+    return dialog.querySelector<HTMLImageElement>('.mira-player-avatar')!.src;
+  },
   async render(id: string) {
     const host = document.createElement('div'); host.id = 'skin-game-preview'; document.body.append(host);
     const scene = new Phaser.Scene('skin-preview');

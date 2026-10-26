@@ -1,0 +1,230 @@
+{
+  "checkedAt": "2026-10-24T12:06:33.564Z",
+  "scope": "Isolated temporary database and virtual wallet only",
+  "uiSourceSha256": "411c9cf5e364c7d8ce154fc9d1ac79db46cf99a8525cf233b7977da7a884b6c7",
+  "languages": [
+    {
+      "language": "ru",
+      "spinEnabledAtZero": true,
+      "zeroBalanceMessage": "Недостаточно демомонет.",
+      "paidRequests": 0,
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "label": "Звук",
+          "role": "sound"
+        },
+        {
+          "tag": "BUTTON",
+          "label": "Правила игры",
+          "role": "rules"
+        },
+        {
+          "tag": "BUTTON",
+          "label": "Гранит · Удар титана · 3/3",
+          "role": null
+        },
+        {
+          "tag": "BUTTON",
+          "label": "Импульс · Энергоколонна · 0/3",
+          "role": null
+        },
+        {
+          "tag": "BUTTON",
+          "label": "Призма · Сдвиг реальности · 0/3",
+          "role": null
+        },
+        {
+          "tag": "BUTTON",
+          "label": "Показать итог",
+          "role": null
+        },
+        {
+          "tag": "SELECT",
+          "label": "Ставка",
+          "role": "bet"
+        },
+        {
+          "tag": "BUTTON",
+          "label": "Вращать↻",
+          "role": "spin"
+        },
+        {
+          "tag": "INPUT",
+          "label": "",
+          "role": "fast"
+        },
+        {
+          "tag": "BUTTON",
+          "label": "Закрыть",
+          "role": "close"
+        }
+      ],
+      "paytableMismatches": [
+        {
+          "coefficient": 0,
+          "expected": 1.735,
+          "displayed": "×1,74"
+        },
+        {
+          "coefficient": 1,
+          "expected": 5.205,
+          "displayed": "×5,21"
+        },
+        {
+          "coefficient": 3,
+          "expected": 2.082,
+          "displayed": "×2,08"
+        },
+        {
+          "coefficient": 6,
+          "expected": 2.776,
+          "displayed": "×2,78"
+        },
+        {
+          "coefficient": 7,
+          "expected": 8.675,
+          "displayed": "×8,68"
+        },
+        {
+          "coefficient": 10,
+          "expected": 12.145,
+          "displayed": "×12,15"
+        },
+        {
+          "coefficient": 12,
+          "expected": 4.164,
+          "displayed": "×4,16"
+        },
+        {
+          "coefficient": 15,
+          "expected": 5.205,
+          "displayed": "×5,21"
+        },
+        {
+          "coefficient": 16,
+          "expected": 26.025,
+          "displayed": "×26,03"
+        }
+      ],
+      "mobile": {
+        "height": 806,
+        "scrollHeight": 1041,
+        "spinTop": 941.671875,
+        "spinInitiallyWithinGameViewport": false
+      }
+    },
+    {
+      "language": "en",
+      "spinEnabledAtZero": true,
+      "zeroBalanceMessage": "Not enough demo coins.",
+      "paidRequests": 0,
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "label": "Sound",
+          "role": "sound"
+        },
+        {
+          "tag": "BUTTON",
+          "label": "Game rules",
+          "role": "rules"
+        },
+        {
+          "tag": "BUTTON",
+          "label": "Granite · Titan strike · 3/3",
+          "role": null
+        },
+        {
+          "tag": "BUTTON",
+          "label": "Impulse · Energy column · 0/3",
+          "role": null
+        },
+        {
+          "tag": "BUTTON",
+          "label": "Prism · Reality shift · 0/3",
+          "role": null
+        },
+        {
+          "tag": "BUTTON",
+          "label": "Show total",
+          "role": null
+        },
+        {
+          "tag": "SELECT",
+          "label": "Stake",
+          "role": "bet"
+        },
+        {
+          "tag": "BUTTON",
+          "label": "Spin↻",
+          "role": "spin"
+        },
+        {
+          "tag": "INPUT",
+          "label": "",
+          "role": "fast"
+        },
+        {
+          "tag": "BUTTON",
+          "label": "Close",
+          "role": "close"
+        }
+      ],
+      "paytableMismatches": [
+        {
+          "coefficient": 0,
+          "expected": 1.735,
+          "displayed": "×1.74"
+        },
+        {
+          "coefficient": 1,
+          "expected": 5.205,
+          "displayed": "×5.21"
+        },
+        {
+          "coefficient": 3,
+          "expected": 2.082,
+          "displayed": "×2.08"
+        },
+        {
+          "coefficient": 6,
+          "expected": 2.776,
+          "displayed": "×2.78"
+        },
+        {
+          "coefficient": 7,
+          "expected": 8.675,
+          "displayed": "×8.68"
+        },
+        {
+          "coefficient": 10,
+          "expected": 12.145,
+          "displayed": "×12.15"
+        },
+        {
+          "coefficient": 12,
+          "expected": 4.164,
+          "displayed": "×4.16"
+        },
+        {
+          "coefficient": 15,
+          "expected": 5.205,
+          "displayed": "×5.21"
+        },
+        {
+          "coefficient": 16,
+          "expected": 26.025,
+          "displayed": "×26.03"
+        }
+      ],
+      "mobile": {
+        "height": 806,
+        "scrollHeight": 1041,
+        "spinTop": 941.671875,
+        "spinInitiallyWithinGameViewport": false
+      }
+    }
+  ],
+  "observationsComplete": true
+}

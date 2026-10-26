@@ -12,7 +12,7 @@ const messages: Record<string, string> = {
   usdt_session_active:'Сначала заверши текущую партию этой игры.',usdt_session_missing:'Партия не найдена.',invalid_usdt_action:'Этот ход недоступен или партия уже завершена.',
 };
 export function installUsdtWallet(app: Application, socket = process.env.USDT_MAINNET_SOCKET_FILE) {
-  app.use('/api/usdt-wallet', express.json({ limit: '2kb' }), async (req, res, next) => {
+  app.use('/api/usdt-wallet', express.json({ limit: '2kb', inflate: false }), async (req, res, next) => {
     res.setHeader('Cache-Control', 'no-store'); res.setHeader('Vary', 'Cookie');
     if (!allowedOrigin(req.get('origin')) || req.get('sec-fetch-site') === 'cross-site') { res.status(403).json({ error: 'Этот источник запросов не разрешён.' }); return; }
     const account = (await accounts.session(cookieToken(req.headers.cookie)))?.account;

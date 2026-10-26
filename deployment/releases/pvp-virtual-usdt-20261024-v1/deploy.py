@@ -210,28 +210,50 @@ def build():
     source_bytes = sum((LIVE / name).stat().st_size for name in OLD['source'])
     delta_bytes = sum((ROOT / 'dist-delta' / name).stat().st_size for name in DELTA)
     backend_bytes = (ROOT / 'server-delta/index.js').stat().st_size
-    require(old['availableBytes'] > 5 * 1024**3 + 300 * 1024**2 + source_bytes + (delta_bytes + backend_bytes) * 4,
+    retained = BACKUP.exists()
+    if retained:
+        require(not (ROOT / 'build-result.json').exists() and not (ROOT / 'published.json').exists(),
+                'Use the verified publish operation for an already built release')
+        require(BACKUP.is_dir() and not BACKUP.is_symlink(), 'Invalid retained backup')
+        verify_tar(BACKUP / 'source.tgz')
+        require(sha(BACKUP / 'index.html') == OLD['program']['dist/index.html'], 'Retained client index differs')
+        require((BACKUP / 'game-wallet.dump').is_file() and (BACKUP / 'game-wallet.dump').stat().st_size > 1000,
+                'Retained wallet backup is incomplete')
+        with (BACKUP / 'game-wallet.dump').open('rb') as dump:
+            subprocess.run(['docker','exec','-i','royal-finance-sim-finance-db-1','pg_restore','--list'],
+                           stdin=dump,stdout=subprocess.DEVNULL,check=True)
+        for suffix, ref in [('', OLD['container']['image']), ('-prepared', OLD['preparedImage'])]:
+            require(image('royal-game:before-' + NAME + suffix) == ref, 'Retained rollback tag differs')
+    require(old['availableBytes'] > 5 * 1024**3 + 300 * 1024**2 + (0 if retained else source_bytes) + (delta_bytes + backend_bytes) * 4,
             'Insufficient free disk space')
-    BACKUP.mkdir(mode=0o700, exist_ok=False)
-    command = ['docker','exec','royal-finance-sim-finance-db-1','sh','-c',
-        'export PGPASSWORD="$(cat /run/secrets/finance_admin_password)"; exec pg_dump -h 127.0.0.1 -U finance_schema_owner -d royal_finance_sim --format=custom --schema=royal_game']
-    with (BACKUP / 'game-wallet.dump').open('xb') as output:
-        subprocess.run(command,stdout=output,check=True)
-    os.chmod(BACKUP / 'game-wallet.dump',0o600)
-    require((BACKUP / 'game-wallet.dump').stat().st_size>1000,'Game wallet backup is incomplete')
-    with tarfile.open(BACKUP / 'source.tgz', 'w:gz') as archive:
-        for name, digest in OLD['source'].items():
-            require(sha(LIVE / name) == digest, 'Source changed during backup')
-            archive.add(LIVE / name, arcname=name, recursive=False)
-    verify_tar(BACKUP / 'source.tgz')
-    run(['docker', 'cp', 'royal-game-1:/app/dist/index.html', str(BACKUP / 'index.html')])
-    require(sha(BACKUP / 'index.html') == OLD['program']['dist/index.html'], 'Client index backup differs')
-    for suffix, ref in [('', OLD['container']['image']), ('-prepared', OLD['preparedImage'])]:
-        run(['docker', 'tag', ref, 'royal-game:before-' + NAME + suffix])
+    if not retained:
+        BACKUP.mkdir(mode=0o700, exist_ok=False)
+        command = ['docker','exec','royal-finance-sim-finance-db-1','sh','-c',
+            'export PGPASSWORD="$(cat /run/secrets/finance_admin_password)"; exec pg_dump -h 127.0.0.1 -U finance_schema_owner -d royal_finance_sim --format=custom --schema=royal_game']
+        with (BACKUP / 'game-wallet.dump').open('xb') as output:
+            subprocess.run(command,stdout=output,check=True)
+        os.chmod(BACKUP / 'game-wallet.dump',0o600)
+        require((BACKUP / 'game-wallet.dump').stat().st_size>1000,'Game wallet backup is incomplete')
+        with tarfile.open(BACKUP / 'source.tgz', 'w:gz') as archive:
+            for name, digest in OLD['source'].items():
+                require(sha(LIVE / name) == digest, 'Source changed during backup')
+                archive.add(LIVE / name, arcname=name, recursive=False)
+        verify_tar(BACKUP / 'source.tgz')
+        run(['docker', 'cp', 'royal-game-1:/app/dist/index.html', str(BACKUP / 'index.html')])
+        require(sha(BACKUP / 'index.html') == OLD['program']['dist/index.html'], 'Client index backup differs')
+        for suffix, ref in [('', OLD['container']['image']), ('-prepared', OLD['preparedImage'])]:
+            run(['docker', 'tag', ref, 'royal-game:before-' + NAME + suffix])
     context = ROOT / 'runtime-context'
-    context.mkdir(exist_ok=False)
-    shutil.copytree(ROOT / 'dist-delta', context / 'dist-delta')
-    shutil.copytree(ROOT / 'server-delta', context / 'server-delta')
+    if context.exists():
+        require(retained and context.is_dir() and not context.is_symlink(), 'Unexpected existing build context')
+        require(inventory(context / 'dist-delta') == DELTA and inventory(context / 'server-delta') == SERVER_DELTA,
+                'Retained runtime deltas differ')
+        require(set(inventory(context)) == {'.dockerignore','Dockerfile', *['dist-delta/' + n for n in DELTA],
+                                          *['server-delta/' + n for n in SERVER_DELTA]}, 'Unexpected context files')
+    else:
+        context.mkdir(exist_ok=False)
+        shutil.copytree(ROOT / 'dist-delta', context / 'dist-delta')
+        shutil.copytree(ROOT / 'server-delta', context / 'server-delta')
     (context / 'Dockerfile').write_text('FROM royal-game:before-' + NAME + '-prepared\n'
         'COPY --chown=node:node dist-delta/ /app/dist/\n'
         'COPY --chown=node:node server-delta/index.js /app/dist-server/index.js\n'
@@ -242,6 +264,10 @@ def build():
         subprocess.run(['docker', 'build', '--pull=false', '-t', 'royal-game:' + NAME, '.'], cwd=context,
                        check=True, stdout=log, stderr=subprocess.STDOUT)
     candidate = image('royal-game:' + NAME)
+    require(M.get('externalImports') and all(isinstance(name,str) and not name.startswith(('.', '/')) for name in M['externalImports']), 'Missing external dependency inventory')
+    resolve = "import{existsSync}from'node:fs';for(const name of JSON.parse(process.argv[1])){const url=import.meta.resolve(name);if(url.startsWith('file:')&&!existsSync(new URL(url)))throw Error('Missing runtime dependency: '+name);}console.log('Runtime dependencies verified');"
+    run(['docker','run','--rm','--network=none','--read-only','--entrypoint','node',candidate,
+        '--input-type=module','-e',resolve,json.dumps(M['externalImports'])])
     program = json.loads(run(['docker', 'run', '--rm', '--network=none', '--read-only', '--entrypoint',
                               'node', candidate, '--v8-pool-size=1', '-e', PROGRAM]))
     expected = expected_program()

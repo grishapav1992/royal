@@ -5,7 +5,6 @@ import { spawn, type ChildProcess } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 import { parseEnv } from 'node:util';
-import { fundLocalAtelierAccounts } from './local-atelier-credit';
 
 if (process.env.NODE_ENV === 'production') throw new Error('Local atelier must not run in production');
 const directory = resolve('.tmp/atelier-local'); mkdirSync(directory, { recursive: true });
@@ -35,6 +34,9 @@ if (!(await client.query("SELECT 1 FROM pg_database WHERE datname='royal_atelier
 await client.end();
 
 const { PostgresDatabase } = await import('../server/database');
+// Initialize the wallet entry before the local funding helper's shared amounts.
+await import('../server/demoWallet');
+const { fundLocalAtelierAccounts } = await import('./local-atelier-credit');
 const { CryptoStore } = await import('../server/crypto/store');
 const { cryptoConfig, CryptoError } = await import('../server/crypto/config');
 const { PaymentOutbox } = await import('../server/payments/outbox');

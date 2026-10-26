@@ -9,6 +9,7 @@ import { sandboxConfig, SandboxNowPayments } from './payments/sandbox-provider';
 import { normalizeAppearance } from '../src/shared/appearance';
 import { normalizeCharacterAppearance, type CharacterAppearance } from '../src/shared/skinStudio';
 import { SkinStudioStore } from './skinStudio';
+import { CodexSkinDescriptions } from './skinDescriptions';
 import { CodexSkinImages } from './skinImages';
 import { NileSkinPayments } from './nileSkinPayments';
 import { CommonSkinPayments } from './skinPayments';
@@ -85,7 +86,7 @@ export class AccountStore {
       const job=await this.db.prepare('SELECT payment_source FROM skin_jobs WHERE id=?').get(id);
       return (job?.payment_source==='nile'?legacySkins:commonSkins).skinPurchase(account,id,action);
     }}, new CodexSkinImages(), () => true,
-      (id, appearance) => this.events.emit('appearance', id, appearance), this.wallet.ready);
+      (id, appearance) => this.events.emit('appearance', id, appearance), this.wallet.ready, Date.now, new CodexSkinDescriptions());
     this.ready = Promise.all([schemaReady, this.wallet.ready, this.sandboxPayments.ready, this.pvp.ready, this.combat.ready, this.casinoApiProWallet.ready, this.moderation.ready, this.drinking.ready, this.paymentCredits.ready, this.skinStudio.ready, this.financeAdmin.ready]).then(() => {
       this.wagerSweep=setInterval(()=>{if(!this.sweeping)this.sweeping=Promise.allSettled([this.pvp.sweep(),this.combat.recoverExpired()]).finally(()=>{this.sweeping=undefined;});},1000);
       this.wagerSweep.unref();
