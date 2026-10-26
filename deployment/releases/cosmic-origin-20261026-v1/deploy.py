@@ -27,6 +27,9 @@ DELTA = M['delta']
 SERVER_DELTA = M['serverDelta']
 RUNTIME_PACKAGES = M.get('runtimePackages', {})
 DIGEST = re.compile(r'[a-f0-9]{64}')
+WALLET_SOURCES = ['server/database.ts', 'server/combatGame.ts', 'server/combatRoom.ts', 'server/combatGuard.ts',
+                 'server/commonCombatWallet.ts', 'server/pvp/virtual-wallet.ts', 'server/finance/combat-escrow.ts',
+                 'server/finance/pvp-money.ts', 'src/shared/combat.ts', 'src/shared/combatEscrow.ts', 'src/shared/pvp.ts']
 
 
 def require(ok, message):
@@ -171,6 +174,11 @@ def payload():
     require(re.fullmatch(r'[a-f0-9]{40}', M['sourceCommit']), 'Missing reviewed source commit')
     require(sha(ROOT / 'deploy.py') == M['helperSha256'], 'Deployment helper changed')
     require(sha(ROOT / 'snapshot.py') == M['snapshotSha256'], 'Snapshot helper changed')
+    require(sha(ROOT / 'quiesce.cjs') == M['quiesceSha256'], 'Financial gate helper changed')
+    require(all(name in BASE and name not in CHANGES for name in WALLET_SOURCES),
+            'Wallet or fight rules must remain unchanged')
+    require(OLD['moduleHost']['games'].get('mortal-kombat') == {'apiVersion': 1, 'rulesVersion': 2, 'progressVersion': 1},
+            'Rollback requires the same virtual combat contract')
     require(CHANGES and DELTA and 'index.html' in DELTA, 'Incomplete client release')
     require(set(SERVER_DELTA) == {'index.js'}, 'Only the main backend bundle may change')
     require(all(name == 'index.html' or re.fullmatch(r'assets/[a-zA-Z0-9_-]+\.(?:js|css)', name) for name in DELTA),
@@ -353,6 +361,48 @@ def build():
             'otherBackendProgramsAndModulesPreserved': True}
 
 
+def quiet_gate():
+    require(sha(ROOT / 'quiesce.cjs') == M['quiesceSha256'], 'Financial gate helper changed')
+    command = ['docker', 'compose', *[value for name in COMPOSE for value in ['-f', name]],
+               'run', '--rm', '--no-deps', '-T', '--entrypoint', 'node', 'game', '-e', (ROOT / 'quiesce.cjs').read_text()]
+    log = (ROOT / 'financial-gate.log').open('a')
+    process = subprocess.Popen(command, cwd=LIVE, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=log, text=True)
+    try:
+        for line in process.stdout:
+            event = json.loads(line)
+            if event.get('quiet'):
+                require(event.get('financialLockHeld') is True and process.poll() is None, 'Financial gate exited')
+                return process, log
+        raise RuntimeError('Paid matches could not be drained without interrupting players')
+    except BaseException:
+        if process.poll() is None:
+            process.terminate()
+        process.wait()
+        process.stdout.close()
+        log.close()
+        raise
+
+
+def require_gate(gate):
+    require(gate[0].poll() is None, 'Financial gate expired before switching')
+
+
+def release_gate(gate):
+    process, log = gate
+    try:
+        require_gate(gate)
+        process.stdin.write('release\n')
+        process.stdin.flush()
+        process.stdin.close()
+        require(process.wait(timeout=10) == 0, 'Financial gate release failed')
+    finally:
+        if process.poll() is None:
+            process.terminate()
+            process.wait()
+        process.stdout.close()
+        log.close()
+
+
 def rollback():
     payload()
     built = json.loads((ROOT / 'build-result.json').read_text())
@@ -365,18 +415,30 @@ def rollback():
             require(current['container']['health'] != 'healthy', 'Cannot verify files of the healthy game container')
     recovery_guard(current, built)
     backup_guard(built)
-    with tarfile.open(BACKUP / 'source.tgz') as archive:
-        for name in CHANGES:
-            if name in BASE:
-                restored = ROOT / 'restore' / name
-                restored.parent.mkdir(parents=True, exist_ok=True)
-                restored.write_bytes(archive.extractfile(name).read())
-                os.chmod(restored, archive.getmember(name).mode)
-                atomic(restored, LIVE / name)
-            else:
-                (LIVE / name).unlink(missing_ok=True)
-    run(['docker', 'tag', OLD['preparedImage'], 'royal-game:latest'])
-    compose()
+    restart = current['container'] is None or current['container']['image'] != OLD['container']['image']
+    gate = quiet_gate() if restart else None
+    try:
+        with tarfile.open(BACKUP / 'source.tgz') as archive:
+            for name in CHANGES:
+                if gate:
+                    require_gate(gate)
+                if name in BASE:
+                    restored = ROOT / 'restore' / name
+                    restored.parent.mkdir(parents=True, exist_ok=True)
+                    restored.write_bytes(archive.extractfile(name).read())
+                    os.chmod(restored, archive.getmember(name).mode)
+                    atomic(restored, LIVE / name)
+                else:
+                    (LIVE / name).unlink(missing_ok=True)
+        if gate:
+            require_gate(gate)
+        run(['docker', 'tag', OLD['preparedImage'], 'royal-game:latest'])
+        if restart:
+            require_gate(gate)
+            compose()
+    finally:
+        if gate:
+            release_gate(gate)
     healthy()
     atomic(BACKUP / 'index.html', LIVE / 'dist/index.html')
     after = snapshot()
@@ -384,7 +446,7 @@ def rollback():
     require(sources(after) == BASE and after['preparedImage'] == OLD['preparedImage']
             and after['preparedProgram'] == OLD['preparedProgram'], 'Recovered source or prepared image differs')
     require(after['program'] == OLD['program'], 'Recovered running files differ')
-    result = {'restored': True, 'containerRestarted': True, 'databaseTouched': False, 'externalModulesPreserved': True}
+    result = {'restored': True, 'containerRestarted': restart, 'databaseTouched': False, 'externalModulesPreserved': True}
     write('recovered.json', result)
     return result
 
@@ -396,11 +458,18 @@ def publish():
     built = json.loads((ROOT / 'build-result.json').read_text())
     require(built['program'] == expected_program(), 'Reviewed build inventory changed')
     require(image('royal-game:' + NAME) == built['image'], 'Candidate image changed')
+    gate = quiet_gate()
     try:
-        for name in CHANGES:
-            atomic(ROOT / 'source' / name, LIVE / name)
-        run(['docker', 'tag', built['image'], 'royal-game:latest'])
-        compose()
+        try:
+            for name in CHANGES:
+                require_gate(gate)
+                atomic(ROOT / 'source' / name, LIVE / name)
+            require_gate(gate)
+            run(['docker', 'tag', built['image'], 'royal-game:latest'])
+            require_gate(gate)
+            compose()
+        finally:
+            release_gate(gate)
         healthy()
         after = snapshot()
         settings(after)
