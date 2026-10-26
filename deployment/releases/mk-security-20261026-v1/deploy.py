@@ -16,8 +16,8 @@ import uuid
 
 ROOT = Path(__file__).resolve().parent
 LIVE = Path('/opt/royal')
-NAME = 'mk-security-20261026-v1'
-BACKUP = Path('/opt/royal-backups') / NAME
+NAME = 'mk-security-only-20261026-v1' if ROOT.name == 'mk-security-only-20261026-v1' else 'mk-security-20261026-v1'
+BACKUP = Path('/opt/royal-backups/mk-security-20261026-v1')
 STATE = Path('/opt/royal-game-modules-state')
 HOST = STATE / 'host.json'
 COMPOSE = ['compose.yaml', 'compose.override.yaml', 'compose.payments.yaml', 'compose.mira.yaml']
@@ -162,6 +162,7 @@ def lock_transition(before, after):
 
 
 def package_transition(before, after):
+    if before == after: return
     require({k:v for k,v in before.items() if k != 'scripts'} == {k:v for k,v in after.items() if k != 'scripts'}, 'Application dependencies or metadata changed')
     require(set(before['scripts']) == set(after['scripts']), 'Unexpected package script inventory change')
     require({k for k in before['scripts'] if before['scripts'][k] != after['scripts'][k]} == {'test:rtp-gate'}, 'Unreviewed package script changed')
@@ -194,7 +195,7 @@ def verify_helper_source(proof):
     first = raw.split(b'\n',1)[0]
     require(re.fullmatch(rb'tree [0-9a-f]{40}',first), 'Invalid helper source commit')
     tree_id, used = first[5:].decode(), set()
-    for name in [b'deployment',b'releases',NAME.encode()]:
+    for name in [b'deployment',b'releases',b'mk-security-20261026-v1']:
         entries = git_tree(object_bytes('tree',proof['trees'][tree_id],tree_id));used.add(tree_id)
         require(name in entries and entries[name][0] == b'40000', 'Missing helper source directory')
         tree_id = entries[name][1]
@@ -238,14 +239,22 @@ def payload():
     for name, digest in DELTA.items():
         require(DIGEST.fullmatch(digest), 'Invalid client digest')
         require(name in ['index.html','admin.html'] or 'dist/'+name not in OLD['program'] or digest == OLD['program']['dist/'+name], 'Immutable client URL collision')
-    require(M['runtimePackages'] == {name:CHANGES[name] for name in ['package-lock.json','package.json']}, 'Only reviewed package metadata may change')
+    require(M['runtimePackages'] == {name:CHANGES.get(name, OLD['sourceLF'].get(name)) for name in ['package-lock.json','package.json']}, 'Only reviewed package metadata may change')
     require(sha(ROOT/'old-package.json') == OLD['sourceLF']['package.json'], 'Baseline application package differs')
     package_transition(json.loads((ROOT/'old-package.json').read_text()), json.loads((ROOT/'metadata/package.json').read_text()))
     require(inventory(ROOT/'source') == CHANGES and inventory(ROOT/'metadata') == M['runtimePackages'], 'Source or metadata payload differs')
     require(inventory(ROOT/'dist-delta') == DELTA and inventory(ROOT/'server-delta') == SERVER_DELTA, 'Runtime delta differs')
     require(inventory(ROOT/'dependency-delta') == M['dependencyFiles'], 'Dependency payload differs')
     require(inventory(ROOT/'modules') == M['moduleDelta'], 'Module payload differs')
-    require(len(M['modulePackages']) == 2 and {row['gameId'] for row in M['modulePackages']} == {'mortal-kombat','studio-cosmic-escape'}, 'Only the two reviewed clients may be published')
+    scope = M.get('moduleScope', 'joint')
+    require(scope in ['joint', 'combat-only'], 'Unknown module release scope')
+    require(NAME != 'mk-security-only-20261026-v1' or scope == 'combat-only', 'The isolated release requires combat-only scope')
+    games = {'mortal-kombat'} if scope == 'combat-only' else {'mortal-kombat','studio-cosmic-escape'}
+    require(len(M['modulePackages']) == len(games) and {row['gameId'] for row in M['modulePackages']} == games, 'Only the reviewed clients may be published')
+    if scope == 'combat-only':
+        allowed = {'docs/combat-anticheat.md','games/mortal-kombat/CombatUI.ts','package-lock.json','server/LobbyRoom.ts','server/activities.ts','server/authRoutes.ts','server/casinoApiProRoutes.ts','server/miraRoutes.ts','server/usdtWalletRoutes.ts','src/shared/activities.ts','src/shared/combatView.ts'}
+        require(set(CHANGES).issubset(allowed), 'Unrelated source in combat-only release')
+        require(json.loads((ROOT/'old-package.json').read_text()) == json.loads((ROOT/'metadata/package.json').read_text()), 'Combat-only package scripts changed')
     prefixes = [row['gameId']+'/versions/'+row['version']+'/' for row in M['modulePackages']]
     require(all(any(name.startswith(prefix) for prefix in prefixes) for name in M['moduleDelta']), 'Unreviewed module payload path')
     for row in M['modulePackages']:
@@ -367,7 +376,7 @@ def retained_backup():
         subprocess.run(['docker', 'exec', '-i', 'royal-finance-sim-finance-db-1', 'pg_restore', '--list'],
                        stdin=source, stdout=subprocess.DEVNULL, check=True)
     for suffix, ref in [('', OLD['container']['image']), ('-prepared', OLD['preparedImage'])]:
-        require(image('royal-game:before-' + NAME + suffix) == ref, 'Retained rollback tag differs')
+        require(image('royal-game:before-mk-security-20261026-v1' + suffix) == ref, 'Retained rollback tag differs')
 
 
 def bounded_archive(path, limit):
@@ -418,14 +427,14 @@ def build():
         run(['docker','cp','royal-game-1:/app/dist/index.html',str(BACKUP/'index.html')])
         require(sha(BACKUP/'index.html') == OLD['program']['dist/index.html'], 'Client backup differs')
         for suffix, ref in [('',OLD['container']['image']),('-prepared',OLD['preparedImage'])]:
-            run(['docker','tag',ref,'royal-game:before-'+NAME+suffix])
+            run(['docker','tag',ref,'royal-game:before-mk-security-20261026-v1'+suffix])
         retained_backup()
     require(shutil.disk_usage(LIVE).free > DISK_RESERVE + BUILD_MARGIN + runtime_bytes*4, 'Disk reserve changed during backup')
     context = ROOT/'runtime-context'; context.mkdir(exist_ok=False); overlay = context/'overlay'; overlay.mkdir()
     for folder, target in [('dist-delta','dist'),('server-delta','dist-server'),('dependency-delta','node_modules')]:
         shutil.copytree(ROOT/folder, overlay/target, copy_function=os.link)
     for name in M['runtimePackages']: os.link(ROOT/'metadata'/name, overlay/name)
-    (context/'Dockerfile').write_text('FROM royal-game:before-'+NAME+'-prepared\n'
+    (context/'Dockerfile').write_text('FROM royal-game:before-mk-security-20261026-v1-prepared\n'
         'COPY --chown=1000:1000 overlay/ /app/\nLABEL org.opencontainers.image.revision="'+M['sourceCommit']+'"\n')
     (context/'.dockerignore').write_text('**\n!Dockerfile\n!.dockerignore\n!overlay\n!overlay/**\n')
     baseline()
@@ -433,14 +442,14 @@ def build():
         subprocess.run(['docker','build','--pull=false','-t','royal-game:'+NAME,'.'],cwd=context,check=True,stdout=log,stderr=subprocess.STDOUT)
     require(shutil.disk_usage(LIVE).free > DISK_RESERVE, 'Disk reserve changed during build')
     candidate = image('royal-game:'+NAME)
-    program = json.loads(run(['docker','run','--rm','--network=none','--read-only','--entrypoint','node',candidate,'--v8-pool-size=1','-e',PROGRAM]))
+    program = json.loads(run(['docker','run','--rm','--network=none','--read-only','--cpu-shares=65536','--entrypoint','node',candidate,'--v8-pool-size=1','-e',PROGRAM]))
     expected = expected_program(); require(program == expected, 'Candidate files or dependencies differ from the reviewed overlay')
     parent, child = json.loads(run(['docker','image','inspect',OLD['preparedImage'],candidate]))
     require(child['Config'].get('Labels',{}).get('org.opencontainers.image.revision') == M['sourceCommit'], 'Wrong candidate source label')
     for key in ['User','WorkingDir','Env','Entrypoint','Cmd','ExposedPorts','Healthcheck','Volumes']:
         require(parent['Config'].get(key) == child['Config'].get(key), 'Image settings changed: '+key)
     require(child['RootFS']['Layers'][:len(parent['RootFS']['Layers'])] == parent['RootFS']['Layers'], 'Baseline image layers changed')
-    probe = json.loads(run(['docker','run','--rm','--network=none','--read-only','--entrypoint','node',candidate,'-e',(ROOT/'verify-runtime.cjs').read_text()]))
+    probe = json.loads(run(['docker','run','--rm','--network=none','--read-only','--cpu-shares=65536','--entrypoint','node',candidate,'-e',(ROOT/'verify-runtime.cjs').read_text()]))
     require(probe['passed'] and probe['delayedGzip'] == 200 and probe['compressedApplicationBody'] == 415, 'Candidate decoder regression failed')
     result = {'image':candidate,'program':expected,'sourceCommit':M['sourceCommit'],'backup':str(BACKUP),
         'sourceBackupSha256':sha(BACKUP/'source.tgz'),'gameWalletBackupSha256':sha(BACKUP/'game-wallet.dump'),
@@ -468,7 +477,7 @@ def publication_backup(built):
     require(dump.is_file() and not dump.is_symlink() and 1000 < dump.stat().st_size <= WALLET_BACKUP_LIMIT
             and sha(dump) == built['gameWalletBackupSha256'], 'Reviewed wallet backup changed')
     for suffix, ref in [('', OLD['container']['image']), ('-prepared', OLD['preparedImage'])]:
-        require(image('royal-game:before-'+NAME+suffix) == ref, 'Rollback image tag changed before publication')
+        require(image('royal-game:before-mk-security-20261026-v1'+suffix) == ref, 'Rollback image tag changed before publication')
 
 
 def quiet_gate(minimum=None):

@@ -13,6 +13,7 @@ import { accounts, allowedOrigin, cookieToken } from './accounts';
 import { WalletError } from './demoWallet';
 import { isRetiredArcadeGame } from '../src/shared/arcadeCatalog';
 import { WALLET_ACCOUNT_HEADER } from '../src/shared/walletAccount';
+import { RETIRED_PAYMENT_MESSAGE } from '../src/shared/paymentMethods';
 import { createDemoWalletRequestLimit, type DemoWalletRequestLimitOptions } from './demoWalletRequestLimit';
 
 export function installDemoWallet(app: Application, requestLimitOptions?: DemoWalletRequestLimitOptions) {
@@ -95,6 +96,10 @@ export function installDemoWallet(app: Application, requestLimitOptions?: DemoWa
   });
   app.post('/api/demo-wallet/operations', async (req, res) => {
     try {
+      if (req.body?.kind === 'deposit'
+        && !(typeof req.body.id === 'string' && await accounts.wallet.hasAcceptedOperation(res.locals.accountId, req.body.id))) {
+        throw new WalletError(410, RETIRED_PAYMENT_MESSAGE);
+      }
       if (req.body?.kind === 'play' && isRetiredArcadeGame(req.body.gameId)
         && !(typeof req.body.id === 'string' && await accounts.wallet.hasAcceptedOperation(res.locals.accountId, req.body.id))) {
         throw new WalletError(409, 'Эта игра убрана из зала. Новая ставка не принята.');
