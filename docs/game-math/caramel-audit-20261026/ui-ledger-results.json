@@ -1,0 +1,215 @@
+{
+  "generatedAt": "2026-10-26T09:43:55.911Z",
+  "sourceCommit": "65569b08cec8a057bb88740a5a6676dd7d1d6400",
+  "passed": true,
+  "checks": 8,
+  "method": "Actual pure renderer and amount-reaction functions. No browser, DOM mounting, layout or listening verification.",
+  "rows": [
+    {
+      "active": true,
+      "grossUnits": 0,
+      "spentUnits": 3500,
+      "netUnits": -3500,
+      "reaction": "lose",
+      "labels": [
+        "Стоимость",
+        "Накоплено",
+        "Итог"
+      ],
+      "amounts": [
+        "35,00",
+        "0,00",
+        "-35,00"
+      ]
+    },
+    {
+      "active": true,
+      "grossUnits": 2000,
+      "spentUnits": 3500,
+      "netUnits": -1500,
+      "reaction": "lose",
+      "labels": [
+        "Стоимость",
+        "Накоплено",
+        "Итог"
+      ],
+      "amounts": [
+        "35,00",
+        "20,00",
+        "-15,00"
+      ]
+    },
+    {
+      "active": true,
+      "grossUnits": 3500,
+      "spentUnits": 3500,
+      "netUnits": 0,
+      "reaction": "neutral",
+      "labels": [
+        "Стоимость",
+        "Накоплено",
+        "Итог"
+      ],
+      "amounts": [
+        "35,00",
+        "35,00",
+        "0,00"
+      ]
+    },
+    {
+      "active": true,
+      "grossUnits": 5000,
+      "spentUnits": 3500,
+      "netUnits": 1500,
+      "reaction": "win",
+      "labels": [
+        "Стоимость",
+        "Накоплено",
+        "Итог"
+      ],
+      "amounts": [
+        "35,00",
+        "50,00",
+        "15,00"
+      ]
+    },
+    {
+      "active": false,
+      "grossUnits": 0,
+      "spentUnits": 3500,
+      "netUnits": -3500,
+      "reaction": "lose",
+      "labels": [
+        "Стоимость",
+        "Выплата",
+        "Итог"
+      ],
+      "amounts": [
+        "35,00",
+        "0,00",
+        "-35,00"
+      ]
+    },
+    {
+      "active": false,
+      "grossUnits": 2000,
+      "spentUnits": 3500,
+      "netUnits": -1500,
+      "reaction": "lose",
+      "labels": [
+        "Стоимость",
+        "Выплата",
+        "Итог"
+      ],
+      "amounts": [
+        "35,00",
+        "20,00",
+        "-15,00"
+      ]
+    },
+    {
+      "active": false,
+      "grossUnits": 3500,
+      "spentUnits": 3500,
+      "netUnits": 0,
+      "reaction": "neutral",
+      "labels": [
+        "Стоимость",
+        "Выплата",
+        "Итог"
+      ],
+      "amounts": [
+        "35,00",
+        "35,00",
+        "0,00"
+      ]
+    },
+    {
+      "active": false,
+      "grossUnits": 5000,
+      "spentUnits": 3500,
+      "netUnits": 1500,
+      "reaction": "win",
+      "labels": [
+        "Стоимость",
+        "Выплата",
+        "Итог"
+      ],
+      "amounts": [
+        "35,00",
+        "50,00",
+        "15,00"
+      ]
+    }
+  ],
+  "sourceHashes": {
+    "src/ui/CaramelCarnivalUI.ts": "fb3b13ec3995463b1098c82e1457c605747b7319a37d1d7a2d5009a577181e46",
+    "src/ui/slotKit/SlotScreens.ts": "59140beebcb205fa8e52c3e35f0f2283a0746ebd42b08ef54122598fd986756a",
+    "src/ui/gameReactions.ts": "e77578be2dd82c468c067795b7778154b1d2353be7587dc08de0e62cc6402888",
+    "src/ui/slotKit/SlotAudio.ts": "7f7c3536e0202ebd39dd79bcd36c886882332c6d5e84e4a73831d46e06aefbc0"
+  },
+  "integrationReview": {
+    "method": "Статический разбор текущего Caramel adapter плюс выполнение настоящих чистых renderer/reaction функций.",
+    "ledgerSource": {
+      "path": "src/ui/CaramelCarnivalUI.ts",
+      "line": 163
+    },
+    "completedResultSource": {
+      "path": "src/ui/CaramelCarnivalUI.ts",
+      "line": 170
+    },
+    "historySource": {
+      "path": "src/ui/CaramelCarnivalUI.ts",
+      "line": 171
+    },
+    "statement": "Таблица получает actual session.spentUnits и накопленную выплату активного раунда либо final returnedUnits. Итог равен выплате минус полное списание; крупное число результата является валовой выплатой."
+  },
+  "soundObservation": {
+    "classification": "presentation-ambiguity-only",
+    "settlementDefect": false,
+    "source": [
+      {
+        "path": "src/ui/CaramelCarnivalUI.ts",
+        "line": 157
+      },
+      {
+        "path": "src/ui/CaramelCarnivalUI.ts",
+        "line": 158
+      },
+      {
+        "path": "src/ui/slotKit/SlotAudio.ts",
+        "line": 68
+      }
+    ],
+    "statement": "Звуковой вызов outcome использует только условие spin.payoutUnits > 0: при положительной выплате он выбирает cue win независимо от чистого результата всей оплаченной серии. Сообщение ВЫИГРЫШ ПРИНЯТ выбирается только после более приоритетных веток freeAward/tickets, полного cap и cascade-limit. Таблица и общая amount-reaction считают полный net корректно.",
+    "example": {
+      "spentInCoins": 35,
+      "totalReturnedInCoins": 20,
+      "netInCoins": -15,
+      "sharedAmountReaction": "lose",
+      "positiveIndividualSpinCue": "win"
+    },
+    "listeningMeasured": false,
+    "playerPerceptionMeasured": false,
+    "soundOrUiChanged": false,
+    "messageBranchPriority": [
+      "freeAward/tickets",
+      "whole-round cap",
+      "cascade-limit",
+      "positive individual spin payout",
+      "active/next spin"
+    ],
+    "winAcceptedMessageRequires": {
+      "positiveSpinPayout": true,
+      "noFreeAward": true,
+      "notCapped": true,
+      "notCascadeLimit": true
+    }
+  },
+  "limitations": [
+    "Проверены чистые функции и их статическое подключение в Caramel, без монтажа браузерного DOM.",
+    "HTTP, browser layout, close/reopen, сетевое восстановление, реальное прослушивание и эффект на восприятие игрока не проверены.",
+    "Восемь UI-сочетаний не добавлены к 59 группам сценариев БД и не являются RTP-наблюдениями."
+  ],
+  "reproduction": "node --import tsx scripts/database-test.ts --import tsx scripts/game-math/caramel-audit/wallet-regression.mjs"
+}

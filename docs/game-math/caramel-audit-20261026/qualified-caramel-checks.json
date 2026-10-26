@@ -1,0 +1,647 @@
+{
+  "generatedAt": "2026-10-26T09:12:31.266Z",
+  "sourceCommit": "03a2f6a5b3fedc5aa20156849dd4dc4efe055181",
+  "sourceHashes": {
+    "server/games/caramelCarnival.ts": "efea2d448a692637819eef014badf72ac2aa1a0621284ba12011ab68ff1886a7",
+    "src/shared/caramelCarnival.ts": "17f9e338297ac7fc37fa0f6ac6608e22cdc9ad145ad18f8c6764d72575f725aa",
+    "src/modules/GameModuleCatalog.ts": "7370926fdaa198b032c6ac1c9261d0e5159deb5a37985da1f0bd85f12a7a7a91"
+  },
+  "checks": {
+    "scorerChecks": 24105,
+    "symbolChecks": 220
+  },
+  "forcedBranches": {
+    "checks": 52,
+    "results": [
+      {
+        "id": "whole-round-cap",
+        "mode": "festival",
+        "stakeUnits": 100,
+        "creditUnits": 500000,
+        "spins": 1,
+        "capped": true
+      },
+      {
+        "id": "whole-round-cap",
+        "mode": "festival",
+        "stakeUnits": 200,
+        "creditUnits": 1000000,
+        "spins": 1,
+        "capped": true
+      },
+      {
+        "id": "whole-round-cap",
+        "mode": "festival",
+        "stakeUnits": 300,
+        "creditUnits": 1500000,
+        "spins": 1,
+        "capped": true
+      },
+      {
+        "id": "whole-round-cap",
+        "mode": "festival",
+        "stakeUnits": 500,
+        "creditUnits": 2500000,
+        "spins": 1,
+        "capped": true
+      },
+      {
+        "id": "whole-round-cap",
+        "mode": "festival",
+        "stakeUnits": 1000,
+        "creditUnits": 5000000,
+        "spins": 1,
+        "capped": true
+      },
+      {
+        "id": "whole-round-cap",
+        "mode": "festival",
+        "stakeUnits": 2000,
+        "creditUnits": 10000000,
+        "spins": 1,
+        "capped": true
+      },
+      {
+        "id": "whole-round-cap",
+        "mode": "festival",
+        "stakeUnits": 2500,
+        "creditUnits": 12500000,
+        "spins": 1,
+        "capped": true
+      },
+      {
+        "id": "whole-round-cap",
+        "mode": "festival",
+        "stakeUnits": 5000,
+        "creditUnits": 25000000,
+        "spins": 1,
+        "capped": true
+      },
+      {
+        "id": "whole-round-cap",
+        "mode": "festival",
+        "stakeUnits": 10000,
+        "creditUnits": 50000000,
+        "spins": 1,
+        "capped": true
+      },
+      {
+        "id": "whole-round-cap",
+        "mode": "festival",
+        "stakeUnits": 20000,
+        "creditUnits": 100000000,
+        "spins": 1,
+        "capped": true
+      },
+      {
+        "id": "whole-round-cap",
+        "mode": "festival",
+        "stakeUnits": 25000,
+        "creditUnits": 125000000,
+        "spins": 1,
+        "capped": true
+      },
+      {
+        "id": "whole-round-cap",
+        "mode": "festival",
+        "stakeUnits": 50000,
+        "creditUnits": 250000000,
+        "spins": 1,
+        "capped": true
+      },
+      {
+        "id": "whole-round-cap",
+        "mode": "festival",
+        "stakeUnits": 100000,
+        "creditUnits": 500000000,
+        "spins": 1,
+        "capped": true
+      },
+      {
+        "id": "retrigger-ceiling",
+        "mode": "festival",
+        "stakeUnits": 100,
+        "creditUnits": 0,
+        "spins": 30,
+        "capped": false
+      },
+      {
+        "id": "retrigger-ceiling",
+        "mode": "festival",
+        "stakeUnits": 200,
+        "creditUnits": 0,
+        "spins": 30,
+        "capped": false
+      },
+      {
+        "id": "retrigger-ceiling",
+        "mode": "festival",
+        "stakeUnits": 300,
+        "creditUnits": 0,
+        "spins": 30,
+        "capped": false
+      },
+      {
+        "id": "retrigger-ceiling",
+        "mode": "festival",
+        "stakeUnits": 500,
+        "creditUnits": 0,
+        "spins": 30,
+        "capped": false
+      },
+      {
+        "id": "retrigger-ceiling",
+        "mode": "festival",
+        "stakeUnits": 1000,
+        "creditUnits": 0,
+        "spins": 30,
+        "capped": false
+      },
+      {
+        "id": "retrigger-ceiling",
+        "mode": "festival",
+        "stakeUnits": 2000,
+        "creditUnits": 0,
+        "spins": 30,
+        "capped": false
+      },
+      {
+        "id": "retrigger-ceiling",
+        "mode": "festival",
+        "stakeUnits": 2500,
+        "creditUnits": 0,
+        "spins": 30,
+        "capped": false
+      },
+      {
+        "id": "retrigger-ceiling",
+        "mode": "festival",
+        "stakeUnits": 5000,
+        "creditUnits": 0,
+        "spins": 30,
+        "capped": false
+      },
+      {
+        "id": "retrigger-ceiling",
+        "mode": "festival",
+        "stakeUnits": 10000,
+        "creditUnits": 0,
+        "spins": 30,
+        "capped": false
+      },
+      {
+        "id": "retrigger-ceiling",
+        "mode": "festival",
+        "stakeUnits": 20000,
+        "creditUnits": 0,
+        "spins": 30,
+        "capped": false
+      },
+      {
+        "id": "retrigger-ceiling",
+        "mode": "festival",
+        "stakeUnits": 25000,
+        "creditUnits": 0,
+        "spins": 30,
+        "capped": false
+      },
+      {
+        "id": "retrigger-ceiling",
+        "mode": "festival",
+        "stakeUnits": 50000,
+        "creditUnits": 0,
+        "spins": 30,
+        "capped": false
+      },
+      {
+        "id": "retrigger-ceiling",
+        "mode": "festival",
+        "stakeUnits": 100000,
+        "creditUnits": 0,
+        "spins": 30,
+        "capped": false
+      },
+      {
+        "id": "natural-entry-reset-and-final-tickets",
+        "mode": "normal",
+        "stakeUnits": 100,
+        "creditUnits": 825,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "natural-entry-reset-and-final-tickets",
+        "mode": "normal",
+        "stakeUnits": 200,
+        "creditUnits": 1650,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "natural-entry-reset-and-final-tickets",
+        "mode": "normal",
+        "stakeUnits": 300,
+        "creditUnits": 2475,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "natural-entry-reset-and-final-tickets",
+        "mode": "normal",
+        "stakeUnits": 500,
+        "creditUnits": 4125,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "natural-entry-reset-and-final-tickets",
+        "mode": "normal",
+        "stakeUnits": 1000,
+        "creditUnits": 8250,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "natural-entry-reset-and-final-tickets",
+        "mode": "normal",
+        "stakeUnits": 2000,
+        "creditUnits": 16500,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "natural-entry-reset-and-final-tickets",
+        "mode": "normal",
+        "stakeUnits": 2500,
+        "creditUnits": 20625,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "natural-entry-reset-and-final-tickets",
+        "mode": "normal",
+        "stakeUnits": 5000,
+        "creditUnits": 41250,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "natural-entry-reset-and-final-tickets",
+        "mode": "normal",
+        "stakeUnits": 10000,
+        "creditUnits": 82500,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "natural-entry-reset-and-final-tickets",
+        "mode": "normal",
+        "stakeUnits": 20000,
+        "creditUnits": 165000,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "natural-entry-reset-and-final-tickets",
+        "mode": "normal",
+        "stakeUnits": 25000,
+        "creditUnits": 206250,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "natural-entry-reset-and-final-tickets",
+        "mode": "normal",
+        "stakeUnits": 50000,
+        "creditUnits": 412500,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "natural-entry-reset-and-final-tickets",
+        "mode": "normal",
+        "stakeUnits": 100000,
+        "creditUnits": 825000,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "cascade-limit-unscored-refill-tickets",
+        "mode": "normal",
+        "stakeUnits": 100,
+        "creditUnits": 7500,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "cascade-limit-unscored-refill-tickets",
+        "mode": "normal",
+        "stakeUnits": 200,
+        "creditUnits": 15000,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "cascade-limit-unscored-refill-tickets",
+        "mode": "normal",
+        "stakeUnits": 300,
+        "creditUnits": 22500,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "cascade-limit-unscored-refill-tickets",
+        "mode": "normal",
+        "stakeUnits": 500,
+        "creditUnits": 37500,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "cascade-limit-unscored-refill-tickets",
+        "mode": "normal",
+        "stakeUnits": 1000,
+        "creditUnits": 75000,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "cascade-limit-unscored-refill-tickets",
+        "mode": "normal",
+        "stakeUnits": 2000,
+        "creditUnits": 150000,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "cascade-limit-unscored-refill-tickets",
+        "mode": "normal",
+        "stakeUnits": 2500,
+        "creditUnits": 187500,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "cascade-limit-unscored-refill-tickets",
+        "mode": "normal",
+        "stakeUnits": 5000,
+        "creditUnits": 375000,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "cascade-limit-unscored-refill-tickets",
+        "mode": "normal",
+        "stakeUnits": 10000,
+        "creditUnits": 750000,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "cascade-limit-unscored-refill-tickets",
+        "mode": "normal",
+        "stakeUnits": 20000,
+        "creditUnits": 1500000,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "cascade-limit-unscored-refill-tickets",
+        "mode": "normal",
+        "stakeUnits": 25000,
+        "creditUnits": 1875000,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "cascade-limit-unscored-refill-tickets",
+        "mode": "normal",
+        "stakeUnits": 50000,
+        "creditUnits": 3750000,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "cascade-limit-unscored-refill-tickets",
+        "mode": "normal",
+        "stakeUnits": 100000,
+        "creditUnits": 7500000,
+        "spins": 31,
+        "capped": false
+      }
+    ],
+    "note": "Forced trajectories test branch arithmetic and cap behavior, and are not random RTP samples."
+  },
+  "serverReplay": {
+    "coverage": [
+      {
+        "mode": "normal",
+        "stakeUnits": 100,
+        "paidRounds": 64,
+        "sha256": "5c8ba445180620b7ded9e104cdf271da3b0d3db879226b820fe4559194abfb33"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": 200,
+        "paidRounds": 64,
+        "sha256": "5c8ba445180620b7ded9e104cdf271da3b0d3db879226b820fe4559194abfb33"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": 300,
+        "paidRounds": 64,
+        "sha256": "5c8ba445180620b7ded9e104cdf271da3b0d3db879226b820fe4559194abfb33"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": 500,
+        "paidRounds": 64,
+        "sha256": "5c8ba445180620b7ded9e104cdf271da3b0d3db879226b820fe4559194abfb33"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": 1000,
+        "paidRounds": 64,
+        "sha256": "5c8ba445180620b7ded9e104cdf271da3b0d3db879226b820fe4559194abfb33"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": 2000,
+        "paidRounds": 64,
+        "sha256": "5c8ba445180620b7ded9e104cdf271da3b0d3db879226b820fe4559194abfb33"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": 2500,
+        "paidRounds": 64,
+        "sha256": "5c8ba445180620b7ded9e104cdf271da3b0d3db879226b820fe4559194abfb33"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": 5000,
+        "paidRounds": 64,
+        "sha256": "5c8ba445180620b7ded9e104cdf271da3b0d3db879226b820fe4559194abfb33"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": 10000,
+        "paidRounds": 64,
+        "sha256": "5c8ba445180620b7ded9e104cdf271da3b0d3db879226b820fe4559194abfb33"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": 20000,
+        "paidRounds": 64,
+        "sha256": "5c8ba445180620b7ded9e104cdf271da3b0d3db879226b820fe4559194abfb33"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": 25000,
+        "paidRounds": 64,
+        "sha256": "5c8ba445180620b7ded9e104cdf271da3b0d3db879226b820fe4559194abfb33"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": 50000,
+        "paidRounds": 64,
+        "sha256": "5c8ba445180620b7ded9e104cdf271da3b0d3db879226b820fe4559194abfb33"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": 100000,
+        "paidRounds": 64,
+        "sha256": "5c8ba445180620b7ded9e104cdf271da3b0d3db879226b820fe4559194abfb33"
+      },
+      {
+        "mode": "festival",
+        "stakeUnits": 100,
+        "paidRounds": 64,
+        "sha256": "7eae8d0c4acabc9054e150b52741ac50443d2d4778528937f0868836d24a75f3"
+      },
+      {
+        "mode": "festival",
+        "stakeUnits": 200,
+        "paidRounds": 64,
+        "sha256": "7eae8d0c4acabc9054e150b52741ac50443d2d4778528937f0868836d24a75f3"
+      },
+      {
+        "mode": "festival",
+        "stakeUnits": 300,
+        "paidRounds": 64,
+        "sha256": "7eae8d0c4acabc9054e150b52741ac50443d2d4778528937f0868836d24a75f3"
+      },
+      {
+        "mode": "festival",
+        "stakeUnits": 500,
+        "paidRounds": 64,
+        "sha256": "7eae8d0c4acabc9054e150b52741ac50443d2d4778528937f0868836d24a75f3"
+      },
+      {
+        "mode": "festival",
+        "stakeUnits": 1000,
+        "paidRounds": 64,
+        "sha256": "7eae8d0c4acabc9054e150b52741ac50443d2d4778528937f0868836d24a75f3"
+      },
+      {
+        "mode": "festival",
+        "stakeUnits": 2000,
+        "paidRounds": 64,
+        "sha256": "7eae8d0c4acabc9054e150b52741ac50443d2d4778528937f0868836d24a75f3"
+      },
+      {
+        "mode": "festival",
+        "stakeUnits": 2500,
+        "paidRounds": 64,
+        "sha256": "7eae8d0c4acabc9054e150b52741ac50443d2d4778528937f0868836d24a75f3"
+      },
+      {
+        "mode": "festival",
+        "stakeUnits": 5000,
+        "paidRounds": 64,
+        "sha256": "7eae8d0c4acabc9054e150b52741ac50443d2d4778528937f0868836d24a75f3"
+      },
+      {
+        "mode": "festival",
+        "stakeUnits": 10000,
+        "paidRounds": 64,
+        "sha256": "7eae8d0c4acabc9054e150b52741ac50443d2d4778528937f0868836d24a75f3"
+      },
+      {
+        "mode": "festival",
+        "stakeUnits": 20000,
+        "paidRounds": 64,
+        "sha256": "7eae8d0c4acabc9054e150b52741ac50443d2d4778528937f0868836d24a75f3"
+      },
+      {
+        "mode": "festival",
+        "stakeUnits": 25000,
+        "paidRounds": 64,
+        "sha256": "7eae8d0c4acabc9054e150b52741ac50443d2d4778528937f0868836d24a75f3"
+      },
+      {
+        "mode": "festival",
+        "stakeUnits": 50000,
+        "paidRounds": 64,
+        "sha256": "7eae8d0c4acabc9054e150b52741ac50443d2d4778528937f0868836d24a75f3"
+      },
+      {
+        "mode": "festival",
+        "stakeUnits": 100000,
+        "paidRounds": 64,
+        "sha256": "7eae8d0c4acabc9054e150b52741ac50443d2d4778528937f0868836d24a75f3"
+      }
+    ],
+    "totals": {
+      "paidRounds": 1664,
+      "freeSpins": 8645,
+      "naturalBonuses": 13,
+      "retriggers": 65,
+      "energyEvents": 2821,
+      "cascadeLimits": 0,
+      "multiplierCaps": 65
+    },
+    "note": "The same normalized paths across stakes are cross-checks and are not additional independent statistical samples."
+  },
+  "exactInitial": [
+    {
+      "free": false,
+      "before": 1,
+      "initialFramePayoutInStakes": {
+        "numerator": "5380789083675228048509551889719075699419246790987970916196861421507497244628848834849646873289515390609324911326926221609348736428531094892450044949152099878941985383614448271860218201550047021",
+        "denominator": "16881579489037803726242352988160000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "value": 0.3187373010427898
+      },
+      "initialWinProbability": {
+        "numerator": "52535639116811862401341385780787615156681121753593870023769717619005079603239035495042285797031416449647694486085295996376630820004142339075922672990971",
+        "denominator": "172867373967747110156721694598758400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "value": 0.3039071972402019
+      },
+      "initialTicketThresholdProbability": {
+        "numerator": "1892489645541811972672852041084423972107314885882145098724645718456103083199427",
+        "denominator": "465661287307739257812500000000000000000000000000000000000000000000000000000000000",
+        "value": 0.004064090567810357
+      },
+      "note": "Only the initial frame is integrated exactly. Cascade refills enrich final tickets; this initial ticket probability is not the full bonus/retrigger probability."
+    },
+    {
+      "free": true,
+      "before": 1,
+      "initialFramePayoutInStakes": {
+        "numerator": "12046948407612535850219651169821870431466607945717428225138298371261242438199251960013816771771746177446510054824178283478197562027195734683661443156777255417184149",
+        "denominator": "16881579489037803726242352988160000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "value": 0.7136150035863246
+      },
+      "initialWinProbability": {
+        "numerator": "41960097967224904474148615911847742603260641154772583392585275690963294966733833302026679902849926155901227629868287402771",
+        "denominator": "172867373967747110156721694598758400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "value": 0.24273000164307262
+      },
+      "initialTicketThresholdProbability": {
+        "numerator": "2388255999012988125313703613926644605599786034399435244120683803782503",
+        "denominator": "433680868994201773602981120347976684570312500000000000000000000000000000",
+        "value": 0.005506943399536765
+      },
+      "note": "Only the initial frame is integrated exactly. Cascade refills enrich final tickets; this initial ticket probability is not the full bonus/retrigger probability."
+    }
+  ]
+}

@@ -1,0 +1,1108 @@
+{
+  "generatedAt": "2026-10-26T09:04:03.110Z",
+  "sourceCommit": "3430485363532d720110654ecdf19762a3207c78",
+  "sourceHashes": {
+    "server/games/caramelCarnival.ts": "efea2d448a692637819eef014badf72ac2aa1a0621284ba12011ab68ff1886a7",
+    "src/shared/caramelCarnival.ts": "17f9e338297ac7fc37fa0f6ac6608e22cdc9ad145ad18f8c6764d72575f725aa",
+    "src/modules/GameModuleCatalog.ts": "7370926fdaa198b032c6ac1c9261d0e5159deb5a37985da1f0bd85f12a7a7a91"
+  },
+  "method": "Independent count-state full-round simulator with independent random category thresholds and pay scorer; exact initial-frame integrations; exact server replay per mode/stake; fresh fixed seeds. Approximate normal 95% intervals use complete independent paid rounds. No formal target policy exists for Caramel. Not formal RTP qualification.",
+  "inventory": {
+    "gameId": "studio-caramel-carnival",
+    "rulesVersion": 2,
+    "progressVersion": 1,
+    "math": {
+      "version": 1,
+      "ordinaryWeights": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "baseSpinnerPerMillion": 15450,
+      "freeSpinnerPerMillion": 68500,
+      "baseTicketPerMillion": 22000,
+      "freeTicketPerMillion": 12000,
+      "energyWeights": [
+        52,
+        25,
+        18,
+        5
+      ]
+    },
+    "stakes": [
+      100,
+      200,
+      300,
+      500,
+      1000,
+      2000,
+      2500,
+      5000,
+      10000,
+      20000,
+      25000,
+      50000,
+      100000
+    ],
+    "modes": [
+      {
+        "id": "normal",
+        "cost": 1
+      },
+      {
+        "id": "festival",
+        "cost": 35,
+        "initialFreeSpins": 10
+      }
+    ],
+    "paytable": [
+      [
+        19,
+        38,
+        75
+      ],
+      [
+        23,
+        45,
+        94
+      ],
+      [
+        28,
+        56,
+        119
+      ],
+      [
+        35,
+        69,
+        150
+      ],
+      [
+        44,
+        88,
+        200
+      ],
+      [
+        56,
+        113,
+        263
+      ],
+      [
+        75,
+        150,
+        375
+      ]
+    ],
+    "energy": [
+      2,
+      3,
+      5,
+      10
+    ],
+    "maxMultiplier": 50,
+    "roundCapInStakes": 5000,
+    "cascadeLimit": 20,
+    "maxAwardedFreeSpins": 30,
+    "retriggerTicketThreshold": 3,
+    "retriggerAward": 3,
+    "baseTicketThreshold": 4,
+    "ordinaryWinningThresholds": [
+      8,
+      10,
+      12
+    ],
+    "targetRtp": null,
+    "tolerance": null,
+    "targetNote": "The registered RTP policy has no Caramel profile; approximately 96% in previous screening is an observation, not an explicit approved target.",
+    "stakeScaling": "All 13 stake values are multiples of 100. Every group award, the 5000x cap and paid costs scale pointwise exactly, without rounding loss. Identical random paths across stakes do not add independent samples."
+  },
+  "seeds": [
+    260102601,
+    260102623,
+    260102647,
+    260102671
+  ],
+  "normalRoundsPerSeed": 2000000,
+  "festivalRoundsPerSeed": 500000,
+  "checks": {
+    "scorerChecks": 24105,
+    "symbolChecks": 220
+  },
+  "forcedBranches": {
+    "checks": 52,
+    "results": [
+      {
+        "id": "whole-round-cap",
+        "mode": "festival",
+        "stakeUnits": 100,
+        "creditUnits": 500000,
+        "spins": 1,
+        "capped": true
+      },
+      {
+        "id": "whole-round-cap",
+        "mode": "festival",
+        "stakeUnits": 200,
+        "creditUnits": 1000000,
+        "spins": 1,
+        "capped": true
+      },
+      {
+        "id": "whole-round-cap",
+        "mode": "festival",
+        "stakeUnits": 300,
+        "creditUnits": 1500000,
+        "spins": 1,
+        "capped": true
+      },
+      {
+        "id": "whole-round-cap",
+        "mode": "festival",
+        "stakeUnits": 500,
+        "creditUnits": 2500000,
+        "spins": 1,
+        "capped": true
+      },
+      {
+        "id": "whole-round-cap",
+        "mode": "festival",
+        "stakeUnits": 1000,
+        "creditUnits": 5000000,
+        "spins": 1,
+        "capped": true
+      },
+      {
+        "id": "whole-round-cap",
+        "mode": "festival",
+        "stakeUnits": 2000,
+        "creditUnits": 10000000,
+        "spins": 1,
+        "capped": true
+      },
+      {
+        "id": "whole-round-cap",
+        "mode": "festival",
+        "stakeUnits": 2500,
+        "creditUnits": 12500000,
+        "spins": 1,
+        "capped": true
+      },
+      {
+        "id": "whole-round-cap",
+        "mode": "festival",
+        "stakeUnits": 5000,
+        "creditUnits": 25000000,
+        "spins": 1,
+        "capped": true
+      },
+      {
+        "id": "whole-round-cap",
+        "mode": "festival",
+        "stakeUnits": 10000,
+        "creditUnits": 50000000,
+        "spins": 1,
+        "capped": true
+      },
+      {
+        "id": "whole-round-cap",
+        "mode": "festival",
+        "stakeUnits": 20000,
+        "creditUnits": 100000000,
+        "spins": 1,
+        "capped": true
+      },
+      {
+        "id": "whole-round-cap",
+        "mode": "festival",
+        "stakeUnits": 25000,
+        "creditUnits": 125000000,
+        "spins": 1,
+        "capped": true
+      },
+      {
+        "id": "whole-round-cap",
+        "mode": "festival",
+        "stakeUnits": 50000,
+        "creditUnits": 250000000,
+        "spins": 1,
+        "capped": true
+      },
+      {
+        "id": "whole-round-cap",
+        "mode": "festival",
+        "stakeUnits": 100000,
+        "creditUnits": 500000000,
+        "spins": 1,
+        "capped": true
+      },
+      {
+        "id": "retrigger-ceiling",
+        "mode": "festival",
+        "stakeUnits": 100,
+        "creditUnits": 0,
+        "spins": 30,
+        "capped": false
+      },
+      {
+        "id": "retrigger-ceiling",
+        "mode": "festival",
+        "stakeUnits": 200,
+        "creditUnits": 0,
+        "spins": 30,
+        "capped": false
+      },
+      {
+        "id": "retrigger-ceiling",
+        "mode": "festival",
+        "stakeUnits": 300,
+        "creditUnits": 0,
+        "spins": 30,
+        "capped": false
+      },
+      {
+        "id": "retrigger-ceiling",
+        "mode": "festival",
+        "stakeUnits": 500,
+        "creditUnits": 0,
+        "spins": 30,
+        "capped": false
+      },
+      {
+        "id": "retrigger-ceiling",
+        "mode": "festival",
+        "stakeUnits": 1000,
+        "creditUnits": 0,
+        "spins": 30,
+        "capped": false
+      },
+      {
+        "id": "retrigger-ceiling",
+        "mode": "festival",
+        "stakeUnits": 2000,
+        "creditUnits": 0,
+        "spins": 30,
+        "capped": false
+      },
+      {
+        "id": "retrigger-ceiling",
+        "mode": "festival",
+        "stakeUnits": 2500,
+        "creditUnits": 0,
+        "spins": 30,
+        "capped": false
+      },
+      {
+        "id": "retrigger-ceiling",
+        "mode": "festival",
+        "stakeUnits": 5000,
+        "creditUnits": 0,
+        "spins": 30,
+        "capped": false
+      },
+      {
+        "id": "retrigger-ceiling",
+        "mode": "festival",
+        "stakeUnits": 10000,
+        "creditUnits": 0,
+        "spins": 30,
+        "capped": false
+      },
+      {
+        "id": "retrigger-ceiling",
+        "mode": "festival",
+        "stakeUnits": 20000,
+        "creditUnits": 0,
+        "spins": 30,
+        "capped": false
+      },
+      {
+        "id": "retrigger-ceiling",
+        "mode": "festival",
+        "stakeUnits": 25000,
+        "creditUnits": 0,
+        "spins": 30,
+        "capped": false
+      },
+      {
+        "id": "retrigger-ceiling",
+        "mode": "festival",
+        "stakeUnits": 50000,
+        "creditUnits": 0,
+        "spins": 30,
+        "capped": false
+      },
+      {
+        "id": "retrigger-ceiling",
+        "mode": "festival",
+        "stakeUnits": 100000,
+        "creditUnits": 0,
+        "spins": 30,
+        "capped": false
+      },
+      {
+        "id": "natural-entry-reset-and-final-tickets",
+        "mode": "normal",
+        "stakeUnits": 100,
+        "creditUnits": 825,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "natural-entry-reset-and-final-tickets",
+        "mode": "normal",
+        "stakeUnits": 200,
+        "creditUnits": 1650,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "natural-entry-reset-and-final-tickets",
+        "mode": "normal",
+        "stakeUnits": 300,
+        "creditUnits": 2475,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "natural-entry-reset-and-final-tickets",
+        "mode": "normal",
+        "stakeUnits": 500,
+        "creditUnits": 4125,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "natural-entry-reset-and-final-tickets",
+        "mode": "normal",
+        "stakeUnits": 1000,
+        "creditUnits": 8250,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "natural-entry-reset-and-final-tickets",
+        "mode": "normal",
+        "stakeUnits": 2000,
+        "creditUnits": 16500,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "natural-entry-reset-and-final-tickets",
+        "mode": "normal",
+        "stakeUnits": 2500,
+        "creditUnits": 20625,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "natural-entry-reset-and-final-tickets",
+        "mode": "normal",
+        "stakeUnits": 5000,
+        "creditUnits": 41250,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "natural-entry-reset-and-final-tickets",
+        "mode": "normal",
+        "stakeUnits": 10000,
+        "creditUnits": 82500,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "natural-entry-reset-and-final-tickets",
+        "mode": "normal",
+        "stakeUnits": 20000,
+        "creditUnits": 165000,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "natural-entry-reset-and-final-tickets",
+        "mode": "normal",
+        "stakeUnits": 25000,
+        "creditUnits": 206250,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "natural-entry-reset-and-final-tickets",
+        "mode": "normal",
+        "stakeUnits": 50000,
+        "creditUnits": 412500,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "natural-entry-reset-and-final-tickets",
+        "mode": "normal",
+        "stakeUnits": 100000,
+        "creditUnits": 825000,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "cascade-limit-unscored-refill-tickets",
+        "mode": "normal",
+        "stakeUnits": 100,
+        "creditUnits": 7500,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "cascade-limit-unscored-refill-tickets",
+        "mode": "normal",
+        "stakeUnits": 200,
+        "creditUnits": 15000,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "cascade-limit-unscored-refill-tickets",
+        "mode": "normal",
+        "stakeUnits": 300,
+        "creditUnits": 22500,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "cascade-limit-unscored-refill-tickets",
+        "mode": "normal",
+        "stakeUnits": 500,
+        "creditUnits": 37500,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "cascade-limit-unscored-refill-tickets",
+        "mode": "normal",
+        "stakeUnits": 1000,
+        "creditUnits": 75000,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "cascade-limit-unscored-refill-tickets",
+        "mode": "normal",
+        "stakeUnits": 2000,
+        "creditUnits": 150000,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "cascade-limit-unscored-refill-tickets",
+        "mode": "normal",
+        "stakeUnits": 2500,
+        "creditUnits": 187500,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "cascade-limit-unscored-refill-tickets",
+        "mode": "normal",
+        "stakeUnits": 5000,
+        "creditUnits": 375000,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "cascade-limit-unscored-refill-tickets",
+        "mode": "normal",
+        "stakeUnits": 10000,
+        "creditUnits": 750000,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "cascade-limit-unscored-refill-tickets",
+        "mode": "normal",
+        "stakeUnits": 20000,
+        "creditUnits": 1500000,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "cascade-limit-unscored-refill-tickets",
+        "mode": "normal",
+        "stakeUnits": 25000,
+        "creditUnits": 1875000,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "cascade-limit-unscored-refill-tickets",
+        "mode": "normal",
+        "stakeUnits": 50000,
+        "creditUnits": 3750000,
+        "spins": 31,
+        "capped": false
+      },
+      {
+        "id": "cascade-limit-unscored-refill-tickets",
+        "mode": "normal",
+        "stakeUnits": 100000,
+        "creditUnits": 7500000,
+        "spins": 31,
+        "capped": false
+      }
+    ],
+    "note": "Forced trajectories test branch arithmetic and cap behavior, and are not random RTP samples."
+  },
+  "serverReplay": {
+    "coverage": [
+      {
+        "mode": "normal",
+        "stakeUnits": 100,
+        "paidRounds": 64,
+        "sha256": "5c8ba445180620b7ded9e104cdf271da3b0d3db879226b820fe4559194abfb33"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": 200,
+        "paidRounds": 64,
+        "sha256": "5c8ba445180620b7ded9e104cdf271da3b0d3db879226b820fe4559194abfb33"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": 300,
+        "paidRounds": 64,
+        "sha256": "5c8ba445180620b7ded9e104cdf271da3b0d3db879226b820fe4559194abfb33"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": 500,
+        "paidRounds": 64,
+        "sha256": "5c8ba445180620b7ded9e104cdf271da3b0d3db879226b820fe4559194abfb33"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": 1000,
+        "paidRounds": 64,
+        "sha256": "5c8ba445180620b7ded9e104cdf271da3b0d3db879226b820fe4559194abfb33"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": 2000,
+        "paidRounds": 64,
+        "sha256": "5c8ba445180620b7ded9e104cdf271da3b0d3db879226b820fe4559194abfb33"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": 2500,
+        "paidRounds": 64,
+        "sha256": "5c8ba445180620b7ded9e104cdf271da3b0d3db879226b820fe4559194abfb33"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": 5000,
+        "paidRounds": 64,
+        "sha256": "5c8ba445180620b7ded9e104cdf271da3b0d3db879226b820fe4559194abfb33"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": 10000,
+        "paidRounds": 64,
+        "sha256": "5c8ba445180620b7ded9e104cdf271da3b0d3db879226b820fe4559194abfb33"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": 20000,
+        "paidRounds": 64,
+        "sha256": "5c8ba445180620b7ded9e104cdf271da3b0d3db879226b820fe4559194abfb33"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": 25000,
+        "paidRounds": 64,
+        "sha256": "5c8ba445180620b7ded9e104cdf271da3b0d3db879226b820fe4559194abfb33"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": 50000,
+        "paidRounds": 64,
+        "sha256": "5c8ba445180620b7ded9e104cdf271da3b0d3db879226b820fe4559194abfb33"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": 100000,
+        "paidRounds": 64,
+        "sha256": "5c8ba445180620b7ded9e104cdf271da3b0d3db879226b820fe4559194abfb33"
+      },
+      {
+        "mode": "festival",
+        "stakeUnits": 100,
+        "paidRounds": 64,
+        "sha256": "7eae8d0c4acabc9054e150b52741ac50443d2d4778528937f0868836d24a75f3"
+      },
+      {
+        "mode": "festival",
+        "stakeUnits": 200,
+        "paidRounds": 64,
+        "sha256": "7eae8d0c4acabc9054e150b52741ac50443d2d4778528937f0868836d24a75f3"
+      },
+      {
+        "mode": "festival",
+        "stakeUnits": 300,
+        "paidRounds": 64,
+        "sha256": "7eae8d0c4acabc9054e150b52741ac50443d2d4778528937f0868836d24a75f3"
+      },
+      {
+        "mode": "festival",
+        "stakeUnits": 500,
+        "paidRounds": 64,
+        "sha256": "7eae8d0c4acabc9054e150b52741ac50443d2d4778528937f0868836d24a75f3"
+      },
+      {
+        "mode": "festival",
+        "stakeUnits": 1000,
+        "paidRounds": 64,
+        "sha256": "7eae8d0c4acabc9054e150b52741ac50443d2d4778528937f0868836d24a75f3"
+      },
+      {
+        "mode": "festival",
+        "stakeUnits": 2000,
+        "paidRounds": 64,
+        "sha256": "7eae8d0c4acabc9054e150b52741ac50443d2d4778528937f0868836d24a75f3"
+      },
+      {
+        "mode": "festival",
+        "stakeUnits": 2500,
+        "paidRounds": 64,
+        "sha256": "7eae8d0c4acabc9054e150b52741ac50443d2d4778528937f0868836d24a75f3"
+      },
+      {
+        "mode": "festival",
+        "stakeUnits": 5000,
+        "paidRounds": 64,
+        "sha256": "7eae8d0c4acabc9054e150b52741ac50443d2d4778528937f0868836d24a75f3"
+      },
+      {
+        "mode": "festival",
+        "stakeUnits": 10000,
+        "paidRounds": 64,
+        "sha256": "7eae8d0c4acabc9054e150b52741ac50443d2d4778528937f0868836d24a75f3"
+      },
+      {
+        "mode": "festival",
+        "stakeUnits": 20000,
+        "paidRounds": 64,
+        "sha256": "7eae8d0c4acabc9054e150b52741ac50443d2d4778528937f0868836d24a75f3"
+      },
+      {
+        "mode": "festival",
+        "stakeUnits": 25000,
+        "paidRounds": 64,
+        "sha256": "7eae8d0c4acabc9054e150b52741ac50443d2d4778528937f0868836d24a75f3"
+      },
+      {
+        "mode": "festival",
+        "stakeUnits": 50000,
+        "paidRounds": 64,
+        "sha256": "7eae8d0c4acabc9054e150b52741ac50443d2d4778528937f0868836d24a75f3"
+      },
+      {
+        "mode": "festival",
+        "stakeUnits": 100000,
+        "paidRounds": 64,
+        "sha256": "7eae8d0c4acabc9054e150b52741ac50443d2d4778528937f0868836d24a75f3"
+      }
+    ],
+    "totals": {
+      "paidRounds": 1664,
+      "freeSpins": 8645,
+      "naturalBonuses": 13,
+      "retriggers": 65,
+      "energyEvents": 2821,
+      "cascadeLimits": 0,
+      "multiplierCaps": 65
+    },
+    "note": "The same normalized paths across stakes are cross-checks and are not additional independent statistical samples."
+  },
+  "exactInitial": [
+    {
+      "free": false,
+      "before": 1,
+      "initialFramePayoutInStakes": {
+        "numerator": "5380789083675228048509551889719075699419246790987970916196861421507497244628848834849646873289515390609324911326926221609348736428531094892450044949152099878941985383614448271860218201550047021",
+        "denominator": "16881579489037803726242352988160000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "value": 0.3187373010427898
+      },
+      "initialWinProbability": {
+        "numerator": "52535639116811862401341385780787615156681121753593870023769717619005079603239035495042285797031416449647694486085295996376630820004142339075922672990971",
+        "denominator": "172867373967747110156721694598758400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "value": 0.3039071972402019
+      },
+      "initialTicketThresholdProbability": {
+        "numerator": "1892489645541811972672852041084423972107314885882145098724645718456103083199427",
+        "denominator": "465661287307739257812500000000000000000000000000000000000000000000000000000000000",
+        "value": 0.004064090567810357
+      },
+      "note": "Only the initial frame is integrated exactly. Cascade refills enrich final tickets; this initial ticket probability is not the full bonus/retrigger probability."
+    },
+    {
+      "free": true,
+      "before": 1,
+      "initialFramePayoutInStakes": {
+        "numerator": "12046948407612535850219651169821870431466607945717428225138298371261242438199251960013816771771746177446510054824178283478197562027195734683661443156777255417184149",
+        "denominator": "16881579489037803726242352988160000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "value": 0.7136150035863246
+      },
+      "initialWinProbability": {
+        "numerator": "41960097967224904474148615911847742603260641154772583392585275690963294966733833302026679902849926155901227629868287402771",
+        "denominator": "172867373967747110156721694598758400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "value": 0.24273000164307262
+      },
+      "initialTicketThresholdProbability": {
+        "numerator": "2388255999012988125313703613926644605599786034399435244120683803782503",
+        "denominator": "433680868994201773602981120347976684570312500000000000000000000000000000",
+        "value": 0.005506943399536765
+      },
+      "note": "Only the initial frame is integrated exactly. Cascade refills enrich final tickets; this initial ticket probability is not the full bonus/retrigger probability."
+    }
+  ],
+  "concentrationBound": {
+    "method": "Maurer and Pontil 2009, Theorem 4, empirical Bernstein with unbiased sample variance; both tails for both modes, each tail failure probability 0.0025, union bound 0.01.",
+    "source": "https://arxiv.org/pdf/0907.3740",
+    "formula": "radius = sqrt(2 * sampleVariance * log(800) / n) + 7 * payoutRange * log(800) / (3 * (n - 1))",
+    "assumption": "The theorem assumes iid complete-round samples. The reproducible seeded pseudorandom generator models independent uniform draws; this is statistical evidence, not a deterministic proof of exact RTP. All sample sizes and seeds were fixed before the full run."
+  },
+  "results": [
+    {
+      "mode": "normal",
+      "n": 8000000,
+      "sum": 768000784,
+      "sq": 2564010380472,
+      "base": 563600664,
+      "profit": 1218400,
+      "caps": 0,
+      "max": 71392,
+      "freeSpins": 620193,
+      "awarded": 620193,
+      "frames": 13365241,
+      "retriggers": 5281,
+      "energyEvents": 1214297,
+      "multiplierCaps": 3701,
+      "cascadeLimits": 5,
+      "naturalBonuses": 60435,
+      "zero": 5543166,
+      "costMultiplier": 1,
+      "rtp": 0.9600009799999999,
+      "interval95": [
+        0.9561347258756919,
+        0.9638672341243079
+      ],
+      "standardDeviationInStakes": 5.5792949165074175,
+      "meanPayoutInStakes": 0.9600009799999999,
+      "baseRtp": 0.7045008300000001,
+      "bonusRtp": 0.25550015,
+      "profitProbability": 0.1523,
+      "zeroProbability": 0.69289575,
+      "capProbability": 0,
+      "empiricalBernstein99SimultaneousInterval": [
+        0.9430400602747705,
+        0.9769618997252293
+      ],
+      "streams": [
+        {
+          "seed": 260102601,
+          "n": 2000000,
+          "sum": 192731902,
+          "sq": 657245383526,
+          "base": 141089989,
+          "profit": 305297,
+          "caps": 0,
+          "max": 53035,
+          "freeSpins": 155066,
+          "awarded": 155066,
+          "frames": 3342935,
+          "retriggers": 1382,
+          "energyEvents": 303960,
+          "multiplierCaps": 988,
+          "cascadeLimits": 1,
+          "naturalBonuses": 15092,
+          "zero": 1386090,
+          "costMultiplier": 1,
+          "rtp": 0.9636595099999999,
+          "interval95": [
+            0.9558276426453483,
+            0.9714913773546516
+          ],
+          "standardDeviationInStakes": 5.650986240640593,
+          "meanPayoutInStakes": 0.9636595099999999,
+          "baseRtp": 0.705449945,
+          "bonusRtp": 0.25820956500000003,
+          "profitProbability": 0.1526485,
+          "zeroProbability": 0.693045,
+          "capProbability": 0
+        },
+        {
+          "seed": 260102623,
+          "n": 2000000,
+          "sum": 191534696,
+          "sq": 624933364378,
+          "base": 140789923,
+          "profit": 303995,
+          "caps": 0,
+          "max": 46407,
+          "freeSpins": 155365,
+          "awarded": 155365,
+          "frames": 3340378,
+          "retriggers": 1285,
+          "energyEvents": 303358,
+          "multiplierCaps": 864,
+          "cascadeLimits": 1,
+          "naturalBonuses": 15151,
+          "zero": 1386680,
+          "costMultiplier": 1,
+          "rtp": 0.95767348,
+          "interval95": [
+            0.9500408533339357,
+            0.9653061066660642
+          ],
+          "standardDeviationInStakes": 5.507226605958496,
+          "meanPayoutInStakes": 0.95767348,
+          "baseRtp": 0.703949615,
+          "bonusRtp": 0.253723865,
+          "profitProbability": 0.1519975,
+          "zeroProbability": 0.69334,
+          "capProbability": 0
+        },
+        {
+          "seed": 260102647,
+          "n": 2000000,
+          "sum": 191269984,
+          "sq": 635629327264,
+          "base": 140764599,
+          "profit": 304637,
+          "caps": 0,
+          "max": 71392,
+          "freeSpins": 155231,
+          "awarded": 155231,
+          "frames": 3340628,
+          "retriggers": 1327,
+          "energyEvents": 302942,
+          "multiplierCaps": 917,
+          "cascadeLimits": 3,
+          "naturalBonuses": 15125,
+          "zero": 1385362,
+          "costMultiplier": 1,
+          "rtp": 0.95634992,
+          "interval95": [
+            0.9486499786609093,
+            0.9640498613390907
+          ],
+          "standardDeviationInStakes": 5.555796668989453,
+          "meanPayoutInStakes": 0.95634992,
+          "baseRtp": 0.703822995,
+          "bonusRtp": 0.25252692499999996,
+          "profitProbability": 0.1523185,
+          "zeroProbability": 0.692681,
+          "capProbability": 0
+        },
+        {
+          "seed": 260102671,
+          "n": 2000000,
+          "sum": 192464202,
+          "sq": 646202305304,
+          "base": 140956153,
+          "profit": 304471,
+          "caps": 0,
+          "max": 66509,
+          "freeSpins": 154531,
+          "awarded": 154531,
+          "frames": 3341300,
+          "retriggers": 1287,
+          "energyEvents": 304037,
+          "multiplierCaps": 932,
+          "cascadeLimits": 0,
+          "naturalBonuses": 15067,
+          "zero": 1385034,
+          "costMultiplier": 1,
+          "rtp": 0.96232101,
+          "interval95": [
+            0.9545568281255974,
+            0.9700851918744027
+          ],
+          "standardDeviationInStakes": 5.602148626281455,
+          "meanPayoutInStakes": 0.96232101,
+          "baseRtp": 0.704780765,
+          "bonusRtp": 0.257540245,
+          "profitProbability": 0.1522355,
+          "zeroProbability": 0.692517,
+          "capProbability": 0
+        }
+      ]
+    },
+    {
+      "mode": "festival",
+      "n": 2000000,
+      "sum": 6730112269,
+      "sq": 62587327573265,
+      "base": 0,
+      "profit": 623054,
+      "caps": 0,
+      "max": 81519,
+      "freeSpins": 20517371,
+      "awarded": 20517371,
+      "frames": 29427757,
+      "retriggers": 172457,
+      "energyEvents": 5955620,
+      "multiplierCaps": 122538,
+      "cascadeLimits": 30,
+      "naturalBonuses": 0,
+      "zero": 120136,
+      "costMultiplier": 35,
+      "rtp": 0.9614446098571429,
+      "interval95": [
+        0.9596750598775756,
+        0.9632141598367101
+      ],
+      "standardDeviationInStakes": 44.68788536430417,
+      "meanPayoutInStakes": 33.650561345,
+      "baseRtp": 0,
+      "bonusRtp": 0.9614446098571429,
+      "profitProbability": 0.311527,
+      "zeroProbability": 0.060068,
+      "capProbability": 0,
+      "empiricalBernstein99SimultaneousInterval": [
+        0.9570293984322601,
+        0.9658598212820256
+      ],
+      "streams": [
+        {
+          "seed": 260207330,
+          "n": 500000,
+          "sum": 1679713909,
+          "sq": 15585532206533,
+          "base": 0,
+          "profit": 155407,
+          "caps": 0,
+          "max": 72068,
+          "freeSpins": 5129060,
+          "awarded": 5129060,
+          "frames": 7352891,
+          "retriggers": 43020,
+          "energyEvents": 1486418,
+          "multiplierCaps": 30594,
+          "cascadeLimits": 7,
+          "naturalBonuses": 0,
+          "zero": 30059,
+          "costMultiplier": 35,
+          "rtp": 0.9598365194285715,
+          "interval95": [
+            0.956304934679163,
+            0.96336810417798
+          ],
+          "standardDeviationInStakes": 44.59299151146018,
+          "meanPayoutInStakes": 33.59427818,
+          "baseRtp": 0,
+          "bonusRtp": 0.9598365194285715,
+          "profitProbability": 0.310814,
+          "zeroProbability": 0.060118,
+          "capProbability": 0
+        },
+        {
+          "seed": 260207352,
+          "n": 500000,
+          "sum": 1684821791,
+          "sq": 15693241326531,
+          "base": 0,
+          "profit": 156220,
+          "caps": 0,
+          "max": 74480,
+          "freeSpins": 5129393,
+          "awarded": 5129393,
+          "frames": 7359675,
+          "retriggers": 43131,
+          "energyEvents": 1490414,
+          "multiplierCaps": 30733,
+          "cascadeLimits": 7,
+          "naturalBonuses": 0,
+          "zero": 30019,
+          "costMultiplier": 35,
+          "rtp": 0.9627553091428572,
+          "interval95": [
+            0.9592107236968159,
+            0.9662998945888985
+          ],
+          "standardDeviationInStakes": 44.757150096267196,
+          "meanPayoutInStakes": 33.696435820000005,
+          "baseRtp": 0,
+          "bonusRtp": 0.9627553091428572,
+          "profitProbability": 0.31244,
+          "zeroProbability": 0.060038,
+          "capProbability": 0
+        },
+        {
+          "seed": 260207376,
+          "n": 500000,
+          "sum": 1685071349,
+          "sq": 15729420928965,
+          "base": 0,
+          "profit": 155719,
+          "caps": 0,
+          "max": 81519,
+          "freeSpins": 5129375,
+          "awarded": 5129375,
+          "frames": 7358457,
+          "retriggers": 43125,
+          "energyEvents": 1490578,
+          "multiplierCaps": 30843,
+          "cascadeLimits": 6,
+          "naturalBonuses": 0,
+          "zero": 29880,
+          "costMultiplier": 35,
+          "rtp": 0.9628979137142858,
+          "interval95": [
+            0.9593472292867435,
+            0.966448598141828
+          ],
+          "standardDeviationInStakes": 44.83416136729647,
+          "meanPayoutInStakes": 33.70142698,
+          "baseRtp": 0,
+          "bonusRtp": 0.9628979137142858,
+          "profitProbability": 0.311438,
+          "zeroProbability": 0.05976,
+          "capProbability": 0
+        },
+        {
+          "seed": 260207400,
+          "n": 500000,
+          "sum": 1680505220,
+          "sq": 15579133111236,
+          "base": 0,
+          "profit": 155708,
+          "caps": 0,
+          "max": 81411,
+          "freeSpins": 5129543,
+          "awarded": 5129543,
+          "frames": 7356734,
+          "retriggers": 43181,
+          "energyEvents": 1488210,
+          "multiplierCaps": 30368,
+          "cascadeLimits": 10,
+          "naturalBonuses": 0,
+          "zero": 30178,
+          "costMultiplier": 35,
+          "rtp": 0.960288697142857,
+          "interval95": [
+            0.9567591939281239,
+            0.9638182003575901
+          ],
+          "standardDeviationInStakes": 44.566708167097715,
+          "meanPayoutInStakes": 33.6101044,
+          "baseRtp": 0,
+          "bonusRtp": 0.960288697142857,
+          "profitProbability": 0.311416,
+          "zeroProbability": 0.060356,
+          "capProbability": 0
+        }
+      ]
+    }
+  ]
+}
