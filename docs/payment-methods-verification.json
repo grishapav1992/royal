@@ -164,5 +164,10 @@
     "src/i18n/paymentMethodsEn.ts": "871627ddfe9e1fda442b6d391c6570f6ebab59506001da61ecbd2f763b8e9fff",
     "src/shared/paymentMethods.ts": "a5f187bce65ca55e9bf4219ecfccb4e3df8dca8dc306debc6167988a56b993ef",
     "tests/sandbox-topup.ts": "29c472b2c5077477fc23dd589ddb1733acb92002930379b8a1cddca9f2fa3a18"
+  },
+  "afterSync": {
+    "commit": "48ef19221c6d01cf3454a82c1327b5158aaa856d",
+    "unrelatedChanges": "Publication CPU lease helper, its documentation and regression evidence only",
+    "applicationInputsChanged": false
   }
 }
