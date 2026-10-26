@@ -71,6 +71,11 @@ test.beforeAll(async () => {
   await mkdir(out, { recursive: true });
   await writeFile(out + '/owner.json', JSON.stringify({ owner: 'forest-heart-client', purpose: 'Full Royal host browser and audio checks', cleanup: 'After final report and selected screenshot are saved' }));
 });
+test.afterAll(async()=>{
+  // Let the stand delete its owned PostgreSQL before Playwright terminates its process group on Windows.
+  const origin='http://127.0.0.1:'+(process.env.FOREST_WEB_PORT||'5296');
+  await fetch(origin+'/__test/forest-heart/shutdown',{method:'POST',headers:{'X-Royal-Forest-Test':'shutdown'}}).catch(()=>{});
+});
 
 test('real host preserves choice, bonus, exact settlement and connected chat across desktop, mobile and reopen', async ({ page, roomPath }) => {
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));

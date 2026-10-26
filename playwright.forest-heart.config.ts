@@ -6,5 +6,5 @@ export default defineConfig({
   outputDir: 'artifacts/work/forest-heart-client/browser-results',
   // Trace DOM snapshots distort frame/audio timing. Save explicit screenshots and measurements instead.
   use: { baseURL: origin, channel: process.env.CI ? 'chromium' : 'chrome', viewport: { width: 1440, height: 1000 }, actionTimeout: 15000, trace: 'off' },
-  webServer: { command: 'node --import tsx scripts/forest-heart-preview.ts', url: origin + '/', reuseExistingServer: !process.env.CI, timeout: 120000 },
+  webServer: { command: 'node --import tsx scripts/forest-heart-preview.ts', env:{FOREST_TEST_AUTOMATED:'1'}, url: origin + '/', reuseExistingServer: !process.env.CI, timeout: 120000 },
 });

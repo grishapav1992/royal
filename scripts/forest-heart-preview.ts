@@ -1,5 +1,6 @@
 /** Disposable local full-host review. Never imported by the production application. */
 import { spawn } from 'node:child_process';
+import { mkdir, appendFile } from 'node:fs/promises';
 import { createServer, type Plugin } from 'vite';
 import { temporaryDatabase } from './database-test';
 import { PostgresDatabase, databaseConfig } from '../server/database';
@@ -7,6 +8,8 @@ import { DemoWalletStore, WalletError } from '../server/demoWallet';
 import { DemoExpansionStore } from '../server/demoExpansion';
 
 const database = await temporaryDatabase();
+await mkdir('artifacts/work/forest-heart-client',{recursive:true});
+await appendFile('artifacts/work/forest-heart-client/preview-databases.jsonl',JSON.stringify({owner:'forest-heart-client',directory:database.directory,pid:process.pid,cleanup:'On the explicit test shutdown or Ctrl+C'})+'\n');
 const apiPort = Number(process.env.FOREST_API_PORT || 2696), webPort = Number(process.env.FOREST_WEB_PORT || 5296);
 const api = 'http://127.0.0.1:' + apiPort;
 const environment = { ...process.env, ...database.env, PORT: String(apiPort), AUTH_DB_PATH: 'forest_heart_review', PUBLIC_ORIGIN: '' };
@@ -16,6 +19,10 @@ const stores = new Map<string, { store: DemoExpansionStore; program: number[]; d
 const fixture: Plugin = { name: 'forest-heart-isolated-entropy', configureServer(server) {
   server.middlewares.use(async (req, res, next) => {
     const path = new URL(req.url ?? '/', api).pathname;
+    if(path==='/__test/forest-heart/shutdown'){
+      if(process.env.FOREST_TEST_AUTOMATED!=='1'||req.method!=='POST'||req.headers['x-royal-forest-test']!=='shutdown'){res.statusCode=404;res.end();return;}
+      void stop(()=>res.end('stopped')).then(()=>process.exit(0)).catch(error=>{res.statusCode=500;res.end('shutdown failed');console.error(error);process.exit(1);});return;
+    }
     if (!['/__test/forest-heart/operate','/__test/forest-heart/fund'].includes(path)) { next(); return; }
     try {
       if (req.method !== 'POST') { res.statusCode = 405; res.end(); return; }
@@ -60,11 +67,12 @@ const vite = await createServer({ configFile: false, root: process.cwd(), plugin
     proxy: { '/api': api, '/game-modules': api, '/multiplayer': { target: api, ws: true, rewrite: path => path.replace(/^\/multiplayer/, '') } },
   },
 });
-async function stop() {
+async function stop(databaseRemoved?:()=>void) {
   if (stopping) return; stopping = true;
-  await vite.close(); await db?.close(); backend.kill();
+  await db?.close(); backend.kill();
   if (backend.exitCode === null) await new Promise<void>(resolve => { const timer = setTimeout(resolve, 3000); backend.once('exit', () => { clearTimeout(timer); resolve(); }); });
   await database.cleanup();
+  databaseRemoved?.();await vite.close();
 }
 process.once('SIGINT', () => { void stop().then(() => process.exit(0)); });
 process.once('SIGTERM', () => { void stop().then(() => process.exit(0)); });
