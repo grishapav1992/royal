@@ -125,7 +125,7 @@ const root=new URL('../../',import.meta.url);
 export async function forestHeartModelReport(){
   const result=analyzeForestHeart();
   const policy=JSON.parse(await readFile(new URL('scripts/game-math/rtp-policy.json',root),'utf8')).profiles['studio-forest-heart'];
-  assert.equal(policy.releaseStatus,'model-only');assert.equal(policy.target,.96);assert.equal(policy.tolerance,.002);
+  assert(['model-only','server-qualified-client-pending'].includes(policy.releaseStatus));assert.equal(policy.target,.96);assert.equal(policy.tolerance,.002);
   assert.deepEqual(policy.stakes,[...FOREST_HEART_STAKES]);
   assert.deepEqual(policy.choices,['optimal','pass',...Array.from({length:12},(_,i)=>'rotate-'+i)]);
   assert.equal(policy.rulesVersion,R.rulesVersion);assert.equal(policy.progressVersion,R.progressVersion);
