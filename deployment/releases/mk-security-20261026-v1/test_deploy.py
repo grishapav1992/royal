@@ -1,4 +1,5 @@
 import ast
+import base64
 import copy
 import hashlib
 import io
@@ -14,7 +15,7 @@ CODE = Path(__file__).with_name('deploy.py').read_text()
 
 def functions(names, **values):
     tree = ast.parse(CODE)
-    namespace = dict(Path=Path, PurePosixPath=PurePosixPath, hashlib=hashlib, json=json, re=re, tarfile=tarfile, **values)
+    namespace = dict(Path=Path, PurePosixPath=PurePosixPath, base64=base64, hashlib=hashlib, json=json, re=re, tarfile=tarfile, **values)
     for node in tree.body:
         if isinstance(node, ast.FunctionDef) and node.name in names:
             exec(compile(ast.Module(body=[node],type_ignores=[]),'deploy.py','exec'),namespace)
@@ -25,7 +26,7 @@ class SecurityRelease(unittest.TestCase):
     def setUp(self):
         self.directory = tempfile.TemporaryDirectory(); self.addCleanup(self.directory.cleanup)
         self.root = Path(self.directory.name)/'mk-security-20261026-v1'; self.root.mkdir()
-        self.n = functions(['require','sha','inventory','safe_name','lock_transition','package_transition','payload','expected_program','verify_tar','bounded_archive'],
+        self.n = functions(['require','sha','inventory','safe_name','lock_transition','package_transition','git_tree','verify_helper_source','payload','expected_program','verify_tar','bounded_archive'],
             ROOT=self.root, NAME=self.root.name, DIGEST=re.compile(r'[a-f0-9]{64}'))
         self.n['Path'] = lambda value: self.root.parent if value == '/opt/royal-releases' else Path(value)
         old = {'lockfileVersion':3,'packages':{'':{'name':'royal'},'node_modules/body-parser':{'version':'2.3.0'},'node_modules/qs':{'version':'6.16.0'},'node_modules/pg':{'version':'8.23.1'}}}
@@ -44,7 +45,7 @@ class SecurityRelease(unittest.TestCase):
         write('server-delta/index.js','new backend'); (self.root/'dist-delta').mkdir()
         for package,version in [('body-parser','2.4.0'),('qs','6.16.1')]: write('dependency-delta/'+package+'/package.json',json.dumps({'version':version}))
         write('dependency-delta/.package-lock.json',json.dumps(new))
-        helpers={name:write(name,'reviewed '+name) for name in ['deploy.py','snapshot.py','runtime-inventory.cjs','quiesce.cjs','verify-runtime.cjs','modules.py']}
+        helpers={name:write(name,'reviewed '+name) for name in ['deploy.py','snapshot.py','runtime-inventory.cjs','quiesce.cjs','verify-runtime.cjs','modules.py','financial_gate.py']}
         source={name:'a'*64 for name in ['server/combatGame.ts','server/combatRoom.ts','server/combatGuard.ts','server/commonCombatWallet.ts',
             'server/pvp/virtual-wallet.ts','server/finance/combat-escrow.ts','server/finance/pvp-money.ts','src/shared/combat.ts','src/shared/combatEscrow.ts','src/shared/pvp.ts']}
         source['server/payments/index.ts']='a'*64;source['package.json']=old_package_hash
@@ -54,6 +55,20 @@ class SecurityRelease(unittest.TestCase):
         manifest={'release':self.root.name,'sourceCommit':'e'*40,'helpers':helpers,'before':before,
             'changed':self.n['inventory'](self.root/'source'),'delta':{},'serverDelta':self.n['inventory'](self.root/'server-delta'),
             'runtimePackages':{'package-lock.json':lock_hash,'package.json':package_hash},'dependencyFiles':self.n['inventory'](self.root/'dependency-delta')}
+        def git_object(kind,data):return hashlib.sha1((kind+' '+str(len(data))).encode()+b'\0'+data).hexdigest()
+        helper_tree=b''
+        for name in sorted(helpers):
+            oid=git_object('blob',(self.root/name).read_bytes())
+            helper_tree+=b'100644 '+name.encode()+b'\0'+bytes.fromhex(oid)
+        trees={git_object('tree',helper_tree):base64.b64encode(helper_tree).decode()};tree_id=git_object('tree',helper_tree)
+        for name in [self.root.name,'releases','deployment']:
+            data=b'40000 '+name.encode()+b'\0'+bytes.fromhex(tree_id);tree_id=git_object('tree',data)
+            trees[tree_id]=base64.b64encode(data).decode()
+        commit=('tree '+tree_id+'\nauthor Fixture <fixture@example.com> 0 +0000\ncommitter Fixture <fixture@example.com> 0 +0000\n\nfixture\n').encode()
+        helper_commit=git_object('commit',commit)
+        helper_proof={'sourceCommit':helper_commit,'applicationSourceCommit':manifest['sourceCommit'],'originMain':'f'*40,
+            'files':helpers,'commit':base64.b64encode(commit).decode(),'trees':trees}
+        manifest.update(helperSourceCommit=helper_commit,helperProofSha256=write('helpers-source.json',json.dumps(helper_proof)))
         manifest['preservedBackend']={name:{'runtimeSha256':before['program']['dist-server/'+name],'sourceInputs':{'server/payments/index.ts':'a'*64}} for name in ['payments.js','crypto-reconcile.js']}
         packages=[]
         for index,game in enumerate(['mortal-kombat','studio-cosmic-escape']):
@@ -69,6 +84,35 @@ class SecurityRelease(unittest.TestCase):
     def test_changed_retained_backend_input_is_rejected(self):
         self.n['CHANGES']['server/payments/index.ts']='0'*64
         with self.assertRaises(RuntimeError):self.n['payload']()
+
+    def test_helper_update_cannot_change_the_application_source_envelope(self):
+        self.n['M']['helperSourceCommit']='c'*40
+        with self.assertRaisesRegex(RuntimeError,'helper source'):self.n['payload']()
+
+    def test_modified_helper_proof_is_rejected(self):
+        (self.root/'helpers-source.json').write_text('{}')
+        with self.assertRaisesRegex(RuntimeError,'helper provenance'):self.n['payload']()
+
+    def test_ignored_bytecode_is_refused_before_any_source_publication(self):
+        name='scripts/__pycache__/game-module-release.cpython-312.pyc'
+        path=self.root/'source'/name;path.parent.mkdir(parents=True);path.write_bytes(b'generated cache')
+        self.n['CHANGES'][name]=self.n['sha'](path)
+        with self.assertRaisesRegex(RuntimeError,'Generated or unobservable source'):self.n['payload']()
+
+    def test_recomputed_hashes_cannot_mix_another_helper_into_the_pinned_git_commit(self):
+        (self.root/'deploy.py').write_text('unreviewed replacement')
+        self.n['M']['helpers']['deploy.py']=self.n['sha'](self.root/'deploy.py')
+        proof=json.loads((self.root/'helpers-source.json').read_text());proof['files']=self.n['M']['helpers']
+        (self.root/'helpers-source.json').write_text(json.dumps(proof))
+        self.n['M']['helperProofSha256']=self.n['sha'](self.root/'helpers-source.json')
+        with self.assertRaisesRegex(RuntimeError,'pinned Git source'):self.n['payload']()
+
+    def test_recomputed_metadata_cannot_relabel_another_git_commit(self):
+        self.n['M']['helperSourceCommit']='c'*40
+        proof=json.loads((self.root/'helpers-source.json').read_text());proof['sourceCommit']='c'*40
+        (self.root/'helpers-source.json').write_text(json.dumps(proof))
+        self.n['M']['helperProofSha256']=self.n['sha'](self.root/'helpers-source.json')
+        with self.assertRaisesRegex(RuntimeError,'pinned revision'):self.n['payload']()
     def test_retained_backend_hash_is_protected(self):
         self.n['M']['preservedBackend']['payments.js']['runtimeSha256']='0'*64
         with self.assertRaises(RuntimeError):self.n['payload']()
@@ -167,9 +211,96 @@ class SecurityRelease(unittest.TestCase):
         calls=[];built={'program':{},'image':'candidate'};(self.root/'build-result.json').write_text(json.dumps(built))
         n=functions(['require','publish'],ROOT=self.root,NAME=self.root.name,M={},payload=lambda:None,baseline=lambda:None,
             expected_program=lambda:{},image=lambda ref:'candidate',quiet_gate=lambda:(_ for _ in ()).throw(RuntimeError('busy')),
+            publication_backup=lambda value:None,publication_capacity=lambda:None,
             rollback=lambda:calls.append('rollback'),atomic=lambda *args:calls.append('source'))
         with self.assertRaisesRegex(RuntimeError,'busy'):n['publish']()
         self.assertEqual(calls,[])
+
+    def test_disk_loss_after_baseline_never_opens_the_financial_gate(self):
+        calls=[];built={'program':{},'image':'candidate'};(self.root/'build-result.json').write_text(json.dumps(built))
+        def capacity():raise RuntimeError('publication reserve')
+        n=functions(['require','publish'],ROOT=self.root,NAME=self.root.name,M={},payload=lambda:None,baseline=lambda:None,
+            expected_program=lambda:{},image=lambda ref:'candidate',publication_backup=lambda value:None,
+            publication_capacity=capacity,quiet_gate=lambda:calls.append('gate'),rollback=lambda:calls.append('rollback'))
+        with self.assertRaisesRegex(RuntimeError,'publication reserve'):n['publish']()
+        self.assertEqual(calls,[])
+
+    def publication_fixture(self):
+        import types
+        calls=[];built={'program':{},'image':'candidate'};(self.root/'build-result.json').write_text(json.dumps(built))
+        class Gate:
+            def confirm(self):calls.append('confirm')
+            def check(self):pass
+            def run(self,*args,**kwargs):raise RuntimeError('Docker client interrupted')
+            def release(self):calls.append('release')
+            def close(self):calls.append('close')
+        n=functions(['require','publish'],ROOT=self.root,LIVE=self.root,NAME=self.root.name,
+            M={'sourceCommit':'revision'},CHANGES={'code':'a'*64},DELTA={},payload=lambda:None,baseline=lambda:None,
+            expected_program=lambda:{},image=lambda ref:'candidate',publication_backup=lambda value:None,
+            publication_capacity=lambda:None,quiet_gate=lambda:Gate(),rollback=lambda:calls.append('rollback'),
+            atomic=lambda *args:calls.append('source'),reconcile_game=lambda value:calls.append('observe'),
+            write=lambda name,value:calls.append((name,value)),
+            signal=types.SimpleNamespace(SIGTERM=15,SIGHUP=1,SIGINT=2,SIG_IGN=0,signal=lambda *args:None))
+        return n,calls
+
+    def test_interrupted_docker_command_defers_second_compose_even_without_error_attributes(self):
+        n,calls=self.publication_fixture()
+        with self.assertRaisesRegex(RuntimeError,'Docker client interrupted'):n['publish']()
+        self.assertNotIn('rollback',calls)
+        self.assertIn('observe',calls)
+        receipts={x[0]:x[1] for x in calls if isinstance(x,tuple)}
+        self.assertTrue(receipts['publication-failed.json']['daemonOutcomeUnknown'])
+        self.assertTrue(receipts['recovery-required.json']['automaticSecondComposeRefused'])
+
+    def test_disk_loss_while_draining_causes_no_source_mutation_or_recovery_mutation(self):
+        n,calls=self.publication_fixture();attempts=[]
+        def capacity():
+            attempts.append(1)
+            if len(attempts)>1:raise RuntimeError('disk fell while draining')
+        n['publication_capacity']=capacity
+        with self.assertRaisesRegex(RuntimeError,'disk fell while draining'):n['publish']()
+        self.assertNotIn('source',calls);self.assertNotIn('rollback',calls);self.assertIn('close',calls)
+
+    def test_publication_reserve_includes_pending_modules_and_source_replacement(self):
+        import types
+        (self.root/'source/code').write_bytes(b'abc')
+        (self.root/'modules/package').write_bytes(b'payload')
+        n=functions(['require','publication_min_free','publication_capacity'],ROOT=self.root,LIVE=self.root,
+            CHANGES={'code':'a'*64},M={'moduleDelta':{'package':'b'*64}},DISK_RESERVE=500,BUILD_MARGIN=50,
+            shutil=types.SimpleNamespace(disk_usage=lambda path:types.SimpleNamespace(free=577)))
+        self.assertEqual(n['publication_min_free'](),577)
+        with self.assertRaisesRegex(RuntimeError,'publication reserve'):n['publication_capacity']()
+        n['shutil'].disk_usage=lambda path:types.SimpleNamespace(free=578)
+        self.assertEqual(n['publication_capacity'](),577)
+
+    def reconciliation_fixture(self):
+        n=functions(['require','settled_game'],OLD={'container':{'image':'old','host':{'NetworkMode':'royal_default'}}})
+        row={'Id':'one','Name':'/royal-game-1','Image':'old','Config':{'Labels':{'com.docker.compose.project':'royal',
+             'com.docker.compose.service':'game','com.docker.compose.oneoff':'False'}},
+             'State':{'Status':'running','Health':{'Status':'healthy'},'StartedAt':'now'}}
+        return n,row,{'image':'reviewed'}
+
+    def test_ambiguous_replacement_is_refused_before_another_compose(self):
+        n,row,built=self.reconciliation_fixture();temporary=copy.deepcopy(row);temporary['Name']='/one_royal-game-1'
+        with self.assertRaisesRegex(RuntimeError,'duplicate game'):n['settled_game']([row,temporary],built)
+        with self.assertRaisesRegex(RuntimeError,'Temporary replacement'):n['settled_game']([temporary],built)
+
+    def test_unknown_or_restarting_runtime_requires_reconciliation(self):
+        n,row,built=self.reconciliation_fixture();row['Image']='foreign'
+        with self.assertRaisesRegex(RuntimeError,'Unreviewed'):n['settled_game']([row],built)
+        row['Image']='reviewed';row['State']['Status']='restarting'
+        with self.assertRaisesRegex(RuntimeError,'not settled'):n['settled_game']([row],built)
+
+    def test_known_completed_candidate_can_be_repaired_when_unhealthy(self):
+        n,row,built=self.reconciliation_fixture();row['Image']='reviewed';row['State']['Health']['Status']='unhealthy'
+        self.assertEqual(n['settled_game']([row],built)['image'],'reviewed')
+
+    def test_reconciliation_accepts_only_known_healthy_game_and_ignores_gate_oneoff(self):
+        n,row,built=self.reconciliation_fixture();oneoff=copy.deepcopy(row)
+        oneoff['Config']['Labels']['com.docker.compose.oneoff']='True';oneoff['Name']='/royal-game-run-gate'
+        self.assertEqual(n['settled_game']([row,oneoff],built)['id'],'one')
+        row['Image']='reviewed';self.assertEqual(n['settled_game']([row],built)['image'],'reviewed')
+        self.assertIsNone(n['settled_game']([oneoff],built))
 
     def module_recovery_fixture(self):
         old={'/opt/royal-game-modules/mortal-kombat/active.json':'a'*64,'/opt/royal-game-modules/other/old.js':'b'*64}

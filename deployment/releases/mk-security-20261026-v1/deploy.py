@@ -1,5 +1,6 @@
 """Publish HTTP decoder and public combat state security fixes without changing accepted wagers."""
 from pathlib import Path, PurePosixPath
+import base64
 import fcntl
 import hashlib
 import json
@@ -49,9 +50,10 @@ def snapshot(recovery=False):
     return json.loads(run(['python3', str(ROOT / 'snapshot.py'), *(['--recovery'] if recovery else [])]))
 
 
-def compose():
-    return run(['docker', 'compose', *[value for name in COMPOSE for value in ['-f', name]],
-                'up', '-d', '--no-deps', '--force-recreate', '--no-build', 'game'], cwd=LIVE)
+def compose(gate=None):
+    command = ['docker', 'compose', *[value for name in COMPOSE for value in ['-f', name]],
+               'up', '-d', '--no-deps', '--force-recreate', '--no-build', 'game']
+    return gate.run(command, cwd=LIVE) if gate else run(command, cwd=LIVE)
 
 
 def image(ref):
@@ -166,15 +168,64 @@ def package_transition(before, after):
     require(after['scripts']['test:rtp-gate'] == 'node --test server-tests/rtp-gate.test.mjs server-tests/cosmic-rtp-gate.test.mjs', 'Unexpected RTP verification command')
 
 
+def git_tree(data):
+    result, offset = {}, 0
+    while offset < len(data):
+        space, end = data.find(b' ',offset), data.find(b'\0',offset)
+        require(space > offset and end > space and end+21 <= len(data), 'Malformed helper Git tree')
+        mode, name = data[offset:space], data[space+1:end]
+        require(name and b'/' not in name and name not in result, 'Invalid helper Git tree entry')
+        result[name] = (mode, data[end+1:end+21].hex())
+        offset = end+21
+    return result
+
+
+def verify_helper_source(proof):
+    def object_bytes(kind, encoded, expected):
+        require(isinstance(encoded,str) and len(encoded) <= 262144, 'Oversized helper Git object')
+        raw = base64.b64decode(encoded, validate=True)
+        digest = hashlib.sha1((kind+' '+str(len(raw))).encode()+b'\0'+raw).hexdigest()
+        require(digest == expected, 'Helper Git object does not match its pinned revision')
+        return raw
+    require(proof['sourceCommit'] == M['helperSourceCommit'] and proof['applicationSourceCommit'] == M['sourceCommit']
+            and re.fullmatch(r'[0-9a-f]{40}', proof['originMain']) and proof['files'] == M['helpers'],
+            'Deployment helper source does not match this application envelope')
+    raw = object_bytes('commit',proof['commit'],M['helperSourceCommit'])
+    first = raw.split(b'\n',1)[0]
+    require(re.fullmatch(rb'tree [0-9a-f]{40}',first), 'Invalid helper source commit')
+    tree_id, used = first[5:].decode(), set()
+    for name in [b'deployment',b'releases',NAME.encode()]:
+        entries = git_tree(object_bytes('tree',proof['trees'][tree_id],tree_id));used.add(tree_id)
+        require(name in entries and entries[name][0] == b'40000', 'Missing helper source directory')
+        tree_id = entries[name][1]
+    entries = git_tree(object_bytes('tree',proof['trees'][tree_id],tree_id));used.add(tree_id)
+    require(set(proof['trees']) == used, 'Unexpected helper proof objects')
+    for name in M['helpers']:
+        require(name.encode() in entries and entries[name.encode()][0] in {b'100644',b'100755'}, 'Invalid helper source mode')
+        raw = (ROOT/name).read_bytes()
+        digest = hashlib.sha1(('blob '+str(len(raw))).encode()+b'\0'+raw).hexdigest()
+        require(digest == entries[name.encode()][1], 'Helper bytes differ from the pinned Git source')
+
+
 def payload():
     require(ROOT == Path('/opt/royal-releases') / NAME and M['release'] == NAME, 'Unexpected release path')
     require(re.fullmatch(r'[a-f0-9]{40}', M['sourceCommit']), 'Missing reviewed source commit')
-    for name in ['deploy.py','snapshot.py','runtime-inventory.cjs','quiesce.cjs','verify-runtime.cjs','modules.py']:
+    helper_names = ['deploy.py','snapshot.py','runtime-inventory.cjs','quiesce.cjs','verify-runtime.cjs','modules.py','financial_gate.py']
+    require(set(M['helpers']) == set(helper_names), 'Unexpected deployment helper inventory')
+    require(re.fullmatch(r'[0-9a-f]{40}', M['helperSourceCommit'])
+            and sha(ROOT/'helpers-source.json') == M['helperProofSha256'], 'Deployment helper provenance changed')
+    proof = json.loads((ROOT/'helpers-source.json').read_text())
+    verify_helper_source(proof)
+    for name in helper_names:
         require(sha(ROOT/name) == M['helpers'][name], 'Release helper changed: '+name)
     require(CHANGES and set(SERVER_DELTA) == {'index.js'}, 'The reviewed main backend is required')
     require(all(name in ['index.html','admin.html'] or re.fullmatch(r'assets/[a-zA-Z0-9_-]+\.(?:js|css)', name) for name in DELTA), 'Unexpected client change')
     for name in [*CHANGES, *DELTA]: safe_name(name)
     require(all(name in ['package-lock.json','package.json','deployment/SERVER.md'] or name.startswith(('src/','server/','scripts/','docs/','games/')) for name in CHANGES), 'Unexpected source path')
+    for name in CHANGES:
+        require(not any(part.startswith(('._','.env')) or part in
+            {'node_modules','__pycache__','data','secrets','.git','.DS_Store'} for part in PurePosixPath(name).parts)
+            and not name.endswith(('.orig','.bak','.pyc','.pyo')), 'Generated or unobservable source path: '+name)
     critical = ['server/combatGame.ts','server/combatRoom.ts','server/combatGuard.ts','server/commonCombatWallet.ts',
         'server/pvp/virtual-wallet.ts','server/finance/combat-escrow.ts','server/finance/pvp-money.ts',
         'src/shared/combat.ts','src/shared/combatEscrow.ts','src/shared/pvp.ts']
@@ -398,32 +449,81 @@ def build():
     return {'built':True,'image':candidate,'clientDeltaFiles':len(DELTA),'backendDeltaFiles':len(SERVER_DELTA),'runtimeProbe':probe}
 
 
-def quiet_gate():
+def publication_min_free():
+    source_bytes = sum((ROOT/'source'/name).stat().st_size for name in CHANGES)
+    module_bytes = sum((ROOT/'modules'/name).stat().st_size for name in M['moduleDelta'])
+    return DISK_RESERVE + BUILD_MARGIN + 2*source_bytes + 3*module_bytes
+
+
+def publication_capacity():
+    minimum = publication_min_free()
+    require(shutil.disk_usage(LIVE).free > minimum, 'Insufficient publication reserve before source mutation')
+    return minimum
+
+
+def publication_backup(built):
+    require(built['sourceCommit'] == M['sourceCommit'], 'Candidate belongs to another source revision')
+    backup_guard(built)
+    dump = BACKUP/'game-wallet.dump'
+    require(dump.is_file() and not dump.is_symlink() and 1000 < dump.stat().st_size <= WALLET_BACKUP_LIMIT
+            and sha(dump) == built['gameWalletBackupSha256'], 'Reviewed wallet backup changed')
+    for suffix, ref in [('', OLD['container']['image']), ('-prepared', OLD['preparedImage'])]:
+        require(image('royal-game:before-'+NAME+suffix) == ref, 'Rollback image tag changed before publication')
+
+
+def quiet_gate(minimum=None):
+    from financial_gate import FinancialGate
     command = ['docker','compose',*[value for name in COMPOSE for value in ['-f',name]],
         'run','--rm','--no-deps','-T','--entrypoint','node','game','-e',(ROOT/'quiesce.cjs').read_text()]
-    log = (ROOT/'financial-gate.log').open('a')
-    process = subprocess.Popen(command,cwd=LIVE,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=log,text=True)
+    gate = FinancialGate(command, cwd=LIVE, log_path=ROOT/'financial-gate.log',
+                         min_free_bytes=publication_min_free() if minimum is None else minimum,
+                         disk_paths=(LIVE, ROOT, BACKUP))
     try:
-        for line in process.stdout:
-            event = json.loads(line)
-            if event.get('quiet'):
-                require(event.get('financialLockHeld') and process.poll() is None, 'Financial gate exited')
-                return process,log
-        raise RuntimeError('Paid matches could not be drained without interrupting players')
+        gate.acquire()
+        return gate
     except BaseException:
-        if process.poll() is None: process.terminate()
-        process.wait(); log.close(); raise
+        gate.close()
+        raise
 
 
-def release_gate(gate):
-    process, log = gate
-    try:
-        require(process.poll() is None, 'Financial gate expired before switching')
-        process.stdin.write('release\n'); process.stdin.flush(); process.stdin.close()
-        require(process.wait(timeout=10) == 0, 'Financial gate release failed')
-    finally:
-        if process.poll() is None: process.terminate(); process.wait()
-        process.stdout.close(); log.close()
+def settled_game(rows, built):
+    project = OLD['container']['host']['NetworkMode']
+    require(project.endswith('_default'), 'Cannot establish the reviewed Compose project')
+    project = project[:-8]
+    games = []
+    for row in rows:
+        labels = row.get('Config', {}).get('Labels') or {}
+        if labels.get('com.docker.compose.project') != project:
+            continue
+        if labels.get('com.docker.compose.oneoff', '').lower() == 'true':
+            continue
+        require(labels.get('com.docker.compose.service') == 'game', 'Unexpected service in game reconciliation')
+        games.append(row)
+    require(len(games) <= 1, 'Temporary replacement or duplicate game requires reconciliation')
+    if not games:
+        return None
+    row = games[0]
+    require(row['Name'] == '/royal-game-1', 'Temporary replacement game requires reconciliation')
+    require(row['Image'] in {OLD['container']['image'], built['image']}, 'Unreviewed game image during recovery')
+    require(row['State']['Status'] in {'running','created','exited'},
+            'Game lifecycle is not settled; inspect the daemon outcome before recovery')
+    return {'id': row['Id'], 'image': row['Image'], 'startedAt': row['State']['StartedAt'],
+            'status': row['State']['Status'], 'health': row['State'].get('Health', {}).get('Status')}
+
+
+def reconcile_game(built):
+    def inspect():
+        ids = run(['docker','ps','-aq','--filter','label=com.docker.compose.service=game']).split()
+        rows = json.loads(run(['docker','inspect',*ids])) if ids else []
+        return settled_game(rows, built)
+    first = inspect()
+    time.sleep(3)
+    require(inspect() == first, 'Game lifecycle changed during reconciliation')
+    result = {'observationsMatch': True, 'game': first, 'at': time.time(),
+              'daemonRequestCompletionProven': False,
+              'cancelledDockerRequestIsNotAnAtomicRollback': True}
+    write('reconciliation.json', result)
+    return result
 
 
 def rollback():
@@ -431,6 +531,7 @@ def rollback():
     # The before and after wallet sources and contracts are identical; retain the current database.
     built = json.loads((ROOT / 'build-result.json').read_text())
     require(built['program'] == expected_program(), 'Reviewed build inventory changed')
+    reconcile_game(built)
     current = snapshot(recovery=True)
     if current['container'] is not None:
         try:
@@ -441,27 +542,39 @@ def rollback():
     backup_guard(built)
     from modules import rollback_pointers
     rollback_pointers(current)
-    with tarfile.open(BACKUP / 'source.tgz') as archive:
-        for name in CHANGES:
-            if name in BASE:
-                restored = ROOT / 'restore' / name
-                restored.parent.mkdir(parents=True, exist_ok=True)
-                restored.write_bytes(archive.extractfile(name).read())
-                os.chmod(restored, archive.getmember(name).mode)
-                atomic(restored, LIVE / name)
-            else:
-                (LIVE / name).unlink(missing_ok=True)
-    run(['docker', 'tag', OLD['preparedImage'], 'royal-game:latest'])
-    if current['container'] is None or current['container']['image'] != OLD['container']['image']:
-        compose()
-        healthy()
+    restart = current['container'] is None or current['container']['image'] != OLD['container']['image']
+    # Recovery must remain possible when the publication disk reserve was lost.
+    gate = quiet_gate(minimum=BUILD_MARGIN) if restart else None
+    try:
+        if gate: gate.confirm()
+        with tarfile.open(BACKUP / 'source.tgz') as archive:
+            for name in CHANGES:
+                if gate: gate.check()
+                if name in BASE:
+                    restored = ROOT / 'restore' / name
+                    restored.parent.mkdir(parents=True, exist_ok=True)
+                    restored.write_bytes(archive.extractfile(name).read())
+                    os.chmod(restored, archive.getmember(name).mode)
+                    atomic(restored, LIVE / name)
+                else:
+                    (LIVE / name).unlink(missing_ok=True)
+        command = ['docker', 'tag', OLD['preparedImage'], 'royal-game:latest']
+        if gate:
+            gate.run(command)
+            compose(gate)
+            gate.release()
+        else:
+            run(command)
+    finally:
+        if gate: gate.close()
+    if restart: healthy()
     atomic(BACKUP / 'index.html', LIVE / 'dist/index.html')
     after = snapshot()
     settings(after, recovery=True)
     require(sources(after) == BASE and after['preparedImage'] == OLD['preparedImage']
             and after['preparedProgram'] == OLD['preparedProgram'], 'Recovered source or prepared image differs')
     require(after['program'] == OLD['program'], 'Recovered running files differ')
-    result = {'restored': True, 'containerRestarted': True, 'databaseTouched': False, 'externalModulesPreserved': True}
+    result = {'restored': True, 'containerRestarted': restart, 'databaseTouched': False, 'externalModulesPreserved': True}
     write('recovered.json', result)
     return result
 
@@ -472,15 +585,29 @@ def publish():
     built = json.loads((ROOT / 'build-result.json').read_text())
     require(built['program'] == expected_program(), 'Reviewed build inventory changed')
     require(image('royal-game:' + NAME) == built['image'], 'Candidate image changed')
+    publication_backup(built)
+    publication_capacity()
     gate = quiet_gate()
+    critical_command_inflight = False
+    publication_mutated = False
     try:
         try:
+            gate.confirm()
+            publication_capacity()
             for name in CHANGES:
+                gate.check()
+                publication_mutated = True
                 atomic(ROOT / 'source' / name, LIVE / name)
-            run(['docker', 'tag', built['image'], 'royal-game:latest'])
-            compose()
+            publication_mutated = True
+            critical_command_inflight = True
+            gate.run(['docker', 'tag', built['image'], 'royal-game:latest'])
+            critical_command_inflight = False
+            critical_command_inflight = True
+            compose(gate)
+            critical_command_inflight = False
+            gate.release()
         finally:
-            release_gate(gate)
+            gate.close()
         healthy()
         after = snapshot()
         settings(after)
@@ -491,6 +618,7 @@ def publish():
         write('after.json', after)
         result = {'published': True, 'preparedImage': built['image'], 'runningImage': after['container']['image'],
                   'containerRestarted': True, 'sourceCommit': M['sourceCommit'], 'changedSources': len(CHANGES),
+                  'helperSourceCommit': M['helperSourceCommit'],
                   'clientDeltaFiles': len(DELTA), 'configurationsAndMountsPreserved': True,
                   'gameDataPreserved': True, 'backendDeltaFiles': len(SERVER_DELTA),
                   'otherBackendProgramsAndModulesPreserved': True, 'oldAssetsPreserved': True,
@@ -500,8 +628,18 @@ def publish():
     except BaseException as error:
         for number in [signal.SIGTERM, signal.SIGHUP, signal.SIGINT]:
             signal.signal(number, signal.SIG_IGN)
-        write('publication-failed.json', {'errorType': type(error).__name__, 'reason': str(error), 'databaseTouched': False})
-        rollback()
+        unknown = critical_command_inflight or bool(getattr(error, 'daemon_outcome_unknown', False))
+        write('publication-failed.json', {'errorType': type(error).__name__, 'reason': str(error),
+                                        'daemonOutcomeUnknown': unknown, 'mutationStarted': publication_mutated,
+                                        'databaseTouched': False})
+        if unknown:
+            # CLI cancellation does not establish when the daemon stops its operation.
+            write('recovery-required.json', {'sourceCommit': M['sourceCommit'], 'candidate': built['image'],
+                'reason': 'Inspect the cancelled daemon operation and all game containers before explicit rollback',
+                'automaticSecondComposeRefused': True, 'databaseTouched': False})
+            reconcile_game(built)
+            raise
+        if publication_mutated: rollback()
         raise
 
 
@@ -511,7 +649,7 @@ def modules():
 
 
 if __name__ == '__main__':
-    require(len(sys.argv) == 2 and sys.argv[1] in ['check', 'build', 'publish', 'release', 'rollback', 'modules'], 'Unexpected operation')
+    require(len(sys.argv) == 2 and sys.argv[1] in ['check', 'build', 'publish', 'release', 'install', 'rollback', 'modules'], 'Unexpected operation')
     require(not STATE.is_symlink() and not HOST.is_symlink(), 'Module state symlink rejected')
     payload()
     lock_path, module_lock_path = LIVE / '.client-presentation-deploy.lock', STATE / 'module.lock'
@@ -529,8 +667,8 @@ if __name__ == '__main__':
         if sys.argv[1] == 'check':
             baseline()
             print(json.dumps({'ready': True, 'sourceFiles': len(CHANGES), 'clientFiles': len(DELTA), 'backendFiles': len(SERVER_DELTA)}))
-        elif sys.argv[1] == 'release':
-            print(json.dumps(build()), flush=True)
+        elif sys.argv[1] in ['release','install']:
+            if sys.argv[1] == 'release': print(json.dumps(build()), flush=True)
             print(json.dumps(publish()), flush=True)
             print(json.dumps(modules()), flush=True)
         else:

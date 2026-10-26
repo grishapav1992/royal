@@ -1,12 +1,48 @@
 """Prepare the exact committed security overlay without copying the complete project or dependencies."""
 from pathlib import Path
+import argparse
+import base64
 import hashlib
 import json
+import re
 import shutil
 import subprocess
 import sys
 
-stage, before_path, out = map(Path, sys.argv[1:4])
+
+def source_paths(stage, revision):
+    names = subprocess.check_output(['git','ls-tree','-r','-z','--name-only',revision,'--',
+        'src','server','public','scripts','docs','games'],cwd=stage).decode().split('\0')
+    selected = []
+    for name in names:
+        if not name: continue
+        path = Path(name)
+        assert not path.is_absolute() and '..' not in path.parts
+        assert not any(part.startswith(('._','.env')) or part in
+            {'node_modules','__pycache__','data','secrets','.git','.DS_Store'} for part in path.parts), 'Excluded tracked source: '+name
+        assert not name.endswith(('.orig','.bak','.pyc','.pyo')), 'Generated tracked source: '+name
+        assert not any((stage/parent).is_symlink() for parent in path.parents), 'Source directory symlink: '+name
+        assert (stage/path).is_file() and not (stage/path).is_symlink(), 'Invalid tracked source: '+name
+        selected.append(name)
+    return selected
+
+
+def helper_revision(stage, application, requested):
+    assert re.fullmatch(r'[0-9a-f]{40}',requested), 'Full helper commit required'
+    subprocess.run(['git','fetch','origin'],cwd=stage,check=True,stdout=subprocess.DEVNULL,stderr=subprocess.PIPE)
+    for revision in [application,requested]:
+        subprocess.run(['git','merge-base','--is-ancestor',revision,'origin/main'],cwd=stage,check=True,
+                       stdout=subprocess.DEVNULL,stderr=subprocess.PIPE)
+    return subprocess.check_output(['git','rev-parse','origin/main'],cwd=stage,text=True).strip()
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument('stage', type=Path)
+parser.add_argument('before', type=Path)
+parser.add_argument('output', type=Path)
+parser.add_argument('--helpers-commit')
+args = parser.parse_args()
+stage, before_path, out = args.stage, args.before, args.output
 release = json.loads((stage/'module-build/release-manifest.json').read_text())
 before = json.loads(before_path.read_text())
 assert before['program'] == before['preparedProgram'] and before['container']['health'] == 'healthy'
@@ -16,6 +52,8 @@ assert not subprocess.check_output(['git','status','--porcelain'],cwd=stage,text
 sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
 lf = lambda p: hashlib.sha256(p.read_bytes().replace(b'\r\n',b'\n')).hexdigest()
 for name, digest in release['files'].items(): assert sha(stage/name) == digest, name
+helper_commit = args.helpers_commit or release['sourceCommit']
+helper_main = helper_revision(stage,release['sourceCommit'],helper_commit)
 out.mkdir(exist_ok=False, parents=True)
 
 
@@ -27,12 +65,9 @@ def copy(source, name):
 
 
 changed = {}
-for root in ['src','server','public','scripts','docs','games']:
-    for path in (stage/root).rglob('*'):
-        if not path.is_file(): continue
-        name = path.relative_to(stage).as_posix()
-        assert not path.is_symlink() and not any(part in ['node_modules','.git','data','secrets'] or part.startswith('.env') for part in path.relative_to(stage).parts)
-        if lf(path) != before['sourceLF'].get(name): changed[name] = copy(path,'source/'+name)
+for name in source_paths(stage, release['sourceCommit']):
+    path = stage/name
+    if lf(path) != before['sourceLF'].get(name): changed[name] = copy(path,'source/'+name)
 for name in ['package-lock.json','package.json','deployment/SERVER.md']:
     if lf(stage/name) != before['sourceLF'][name]: changed[name] = copy(stage/name,'source/'+name)
 for name in ['Dockerfile','.dockerignore','index.html','tsconfig.json','tsconfig.finance.json','vite.config.ts']:
@@ -122,12 +157,25 @@ for game_id in ['mortal-kombat','studio-cosmic-escape']:
         'beforeSha256':before['moduleFiles'].get('/opt/royal-game-modules/'+game_id+'/active.json','none')})
 helpers = {}
 assert lf(stage/'scripts/game-module-release.py') == before['sourceLF']['scripts/game-module-release.py']
-for name in ['deploy.py','snapshot.py','runtime-inventory.cjs','quiesce.cjs','verify-runtime.cjs','modules.py']:
-    helpers[name] = copy(stage/'deployment/releases/mk-security-20261026-v1'/name,name)
+for name in ['deploy.py','snapshot.py','runtime-inventory.cjs','quiesce.cjs','verify-runtime.cjs','modules.py','financial_gate.py']:
+    data = subprocess.check_output(['git','show',helper_commit+':deployment/releases/mk-security-20261026-v1/'+name],cwd=stage)
+    (out/name).write_bytes(data)
+    helpers[name] = sha(out/name)
+helper_proof = {'sourceCommit':helper_commit,'applicationSourceCommit':release['sourceCommit'],
+                'originMain':helper_main,'files':helpers}
+helper_proof['commit'] = base64.b64encode(subprocess.check_output(['git','cat-file','commit',helper_commit],cwd=stage)).decode()
+helper_proof['trees'] = {}
+for suffix in ['',':deployment',':deployment/releases',':deployment/releases/mk-security-20261026-v1']:
+    revision = helper_commit+suffix if suffix else helper_commit+'^{tree}'
+    identity = subprocess.check_output(['git','rev-parse',revision],cwd=stage,text=True).strip()
+    raw = subprocess.check_output(['git','cat-file','tree',identity],cwd=stage)
+    helper_proof['trees'][identity] = base64.b64encode(raw).decode()
+(out/'helpers-source.json').write_text(json.dumps(helper_proof,indent=2)+'\n')
 copy(stage/'module-build/release-manifest.json','release-manifest.json')
 manifest = {'release':'mk-security-20261026-v1','sourceCommit':release['sourceCommit'],'baseCommit':release['baseCommit'],
     'before':before,'changed':changed,'delta':delta,'serverDelta':backend,'runtimePackages':metadata,'dependencyFiles':dependencies,
     'helpers':helpers,'helperSha256':helpers['deploy.py'],'snapshotSha256':helpers['snapshot.py'],
+    'helperSourceCommit':helper_commit,'helperProofSha256':sha(out/'helpers-source.json'),
     'retainedCanonicalRuntime':retained,'preservedBackend':preserved,'moduleDelta':module_delta,'modulePackages':module_packages,
     'moduleInstallerSha256':before['source']['scripts/game-module-release.py']}
 (out/'install-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
