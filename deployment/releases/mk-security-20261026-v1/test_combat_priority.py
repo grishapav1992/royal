@@ -23,7 +23,7 @@ class CombatPriorityScope(unittest.TestCase):
         self.metadata = self.ns['DOCKER']/self.identity/'config.v2.json'; self.metadata.parent.mkdir()
         self.metadata.write_text(json.dumps(self.game))
         self.group = '/system.slice/docker-' + self.identity + '.scope'
-        self.process(301,'docker-init',self.group,313)
+        self.process(301,'docker-init',self.group,532)
 
     def process(self,pid,name,group,weight):
         p=self.ns['PROC']/str(pid);p.mkdir();(p/'comm').write_text(name);(p/'cgroup').write_text('0::'+group)
@@ -32,7 +32,7 @@ class CombatPriorityScope(unittest.TestCase):
     def test_game_scope_selects_only_the_reviewed_game(self):
         rows=self.select('game')
         self.assertEqual(len(rows),1)
-        self.assertEqual(rows[0]['old'],313)
+        self.assertEqual(rows[0]['old'],532)
         self.assertIn('docker-'+self.identity+'.scope',rows[0]['path'])
 
     def test_services_scope_never_selects_a_financial_container(self):
