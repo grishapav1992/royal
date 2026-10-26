@@ -14,6 +14,8 @@ It describes a game costume, not a real profession, age, character or biography.
 
 The atelier shows the generated phrase below each candidate and in the wardrobe. Description polling preserves the selected variant and keyboard focus; a delayed response cannot restore a discarded candidate after saving. The current price, two-variant offer, accepted legacy three-variant jobs, wallet settlement and game mathematics remain unchanged.
 
+Portrait caches also include artwork readiness. A fallback drawn before a new sheet downloads is replaced when the actual sheet becomes available, including with reduced motion enabled. This changes no animation timing or sound.
+
 The schema migration only adds description, request, retry and lease metadata. Rollback to the previous compatible application leaves those columns and data intact and never restores a wallet or player database.
 
 Run the focused skin-description, skin, Mira and browser tests. Live description probes use already generated sheets, so they create no new image generations or production player operations.

@@ -5,6 +5,24 @@ import sharp from 'sharp';
 const user = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 const jobId = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
 const ids = ['cccccccc-cccc-4ccc-8ccc-cccccccccccc', 'dddddddd-dddd-4ddd-8ddd-dddddddddddd', 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee'];
+test('Mira replaces a cached fallback portrait when the generated sheet loads, including reduced motion', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const png = await sharp({ create: { width: 1024, height: 1536, channels: 4, background: '#63b7cb' } }).png().toBuffer();
+  let release!: () => void; const gate = new Promise<void>(resolve => { release = resolve; });
+  await page.route('**/api/skin-studio/assets/**', async route => { await gate; await route.fulfill({ contentType: 'image/png', body: png }); });
+  await page.route('**/api/npc/mira', route => route.fulfill({ json: { turns: [], choices: [] } }));
+  await page.goto('/tests/fixtures/skin-studio.html');
+  try {
+    const fallback = await page.evaluate(id => (window as any).skinPreview.miraPortrait(id), ids[0]);
+    await expect(page.locator('.mira-player-avatar')).toHaveAttribute('src', fallback);
+    release();
+    await expect.poll(() => page.evaluate(() => (window as any).skinPreview.portraitLoaded())).toBe(true);
+    const expected = await page.evaluate(() => (window as any).skinPreview.portraitExpected());
+    expect(expected).not.toBe(fallback);
+    await expect.poll(() => page.locator('.mira-player-avatar').getAttribute('src')).toBe(expected);
+    expect(await page.evaluate(() => (window as any).skinPreview.portraitCached())).toBe(expected);
+  } finally { release(); }
+});
 test('actual artwork descriptions arrive without losing the tried variant or keyboard focus', async ({ page }) => {
   let described = false, chosen = false;
   await page.route('**/api/skin-studio**', async route => {
