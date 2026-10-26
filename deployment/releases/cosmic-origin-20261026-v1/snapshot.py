@@ -78,7 +78,9 @@ built_path = release / 'build-result.json'
 built = json.loads(built_path.read_text()) if built_path.is_file() else {}
 if reviewed is None:
     assert raw and prepared == raw['Image'], 'A bootstrap snapshot requires identical prepared and running images'
-    prior = json.loads(Path('/opt/royal-releases/atelier-live-preview-20261025-v1/build-result.json').read_text())
+    prior = json.loads(Path('/opt/royal-releases/skin-npc-context-20261026-v1/build-result.json').read_text())
+    assert prior['sourceCommit'] == 'ae17a8df9e894278dedc29f08c052fe68ee09c04', 'Reviewed production source changed'
+    assert prior['image'] == 'sha256:10c749e325df08878f00b488a4c45d128eee627f1af9ba362eb63eb69852c9a7', 'Reviewed production image changed'
     assert prepared == prior['image'], 'Bootstrap inventory requires the previously verified immutable image'
     prepared_program = prior['program'] if not RECOVERY else None
     assert program == prepared_program, 'Running files differ from the verified immutable image inventory'

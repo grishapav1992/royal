@@ -5,6 +5,72 @@ import sharp from 'sharp';
 const user = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 const jobId = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
 const ids = ['cccccccc-cccc-4ccc-8ccc-cccccccccccc', 'dddddddd-dddd-4ddd-8ddd-dddddddddddd', 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee'];
+test('Mira replaces a cached fallback portrait when the generated sheet loads, including reduced motion', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const png = await sharp({ create: { width: 1024, height: 1536, channels: 4, background: '#63b7cb' } }).png().toBuffer();
+  let release!: () => void; const gate = new Promise<void>(resolve => { release = resolve; });
+  await page.route('**/api/skin-studio/assets/**', async route => { await gate; await route.fulfill({ contentType: 'image/png', body: png }); });
+  await page.route('**/api/npc/mira', route => route.fulfill({ json: { turns: [], choices: [] } }));
+  await page.goto('/tests/fixtures/skin-studio.html');
+  try {
+    const fallback = await page.evaluate(id => (window as any).skinPreview.miraPortrait(id), ids[0]);
+    await expect(page.locator('.mira-player-avatar')).toHaveAttribute('src', fallback);
+    release();
+    await expect.poll(() => page.evaluate(() => (window as any).skinPreview.portraitLoaded())).toBe(true);
+    const expected = await page.evaluate(() => (window as any).skinPreview.portraitExpected());
+    expect(expected).not.toBe(fallback);
+    await expect.poll(() => page.locator('.mira-player-avatar').getAttribute('src')).toBe(expected);
+    expect(await page.evaluate(() => (window as any).skinPreview.portraitCached())).toBe(expected);
+  } finally { release(); }
+});
+test('actual artwork descriptions arrive without losing the tried variant or keyboard focus', async ({ page }) => {
+  let described = false, chosen = false;
+  await page.route('**/api/skin-studio**', async route => {
+    if (route.request().url().includes('/assets/')) {
+      await route.fulfill({ contentType: 'image/svg+xml', body: '<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1536"><circle fill="#bc6351" cx="128" cy="90" r="58"/></svg>' }); return;
+    }
+    if (route.request().url().endsWith('/choose')) { expect(route.request().postDataJSON()).toEqual({ jobId, skinId: ids[1] }); chosen = true; }
+    const cards = ids.slice(0, 2).map((id, i) => ({ id, jobId, prompt: 'Сумбурный исходный запрос', createdAt: 1,
+      description: described ? ['Бродяга в рваном плаще', 'Одногий пират с попугаем'][i] : '', descriptionPending: !described }));
+    await route.fulfill({ json: { theme: SKIN_THEME, priceUnits: SKIN_PRICE_UNITS, variantCount: 2, enabled: true, equippedId: chosen ? ids[1] : null,
+      job: { id: jobId, prompt: 'Сумбурный исходный запрос', variantCount: 2, state: chosen ? 'selected' : 'ready', error: '', selectedId: chosen ? ids[1] : null, createdAt: 1, variants: chosen ? [] : cards }, wardrobe: chosen ? [cards[1]] : [] } });
+  });
+  await page.goto('/tests/fixtures/skin-studio.html'); await page.getByRole('button', { name: 'Образы', exact: true }).click();
+  const choice = page.getByRole('button', { name: 'Примерить вариант 2' });
+  await choice.click(); await choice.focus(); described = true;
+  await expect(page.locator('.skin-results .skin-card-description').nth(1)).toHaveText('Одногий пират с попугаем');
+  await expect(choice).toBeFocused(); await expect(choice).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: 'Сохранить образ' }).click();
+  await expect(page.locator('.skin-wardrobe .skin-card-description')).toHaveText('Одногий пират с попугаем');
+});
+test('a late description refresh cannot resurrect candidates after a saved choice', async ({ page }) => {
+  let reads = 0, chosen = false, release!: () => void;
+  const gate = new Promise<void>(resolve => { release = resolve; });
+  const cards = ids.slice(0, 2).map(id => ({ id, jobId, prompt: 'Запрос', createdAt: 1, description: '', descriptionPending: true }));
+  await page.route('**/api/skin-studio**', async route => {
+    const request = route.request();
+    if (request.url().includes('/assets/')) { await route.fulfill({ contentType: 'image/svg+xml', body: '<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1536"/>' }); return; }
+    const old = request.method() === 'GET' && ++reads === 2;
+    if (old) await gate;
+    if (request.url().endsWith('/choose')) chosen = true;
+    const selected = chosen && !old;
+    await route.fulfill({ json: { theme: SKIN_THEME, priceUnits: SKIN_PRICE_UNITS, variantCount: 2, enabled: true, equippedId: selected ? ids[0] : null,
+      job: { id: jobId, prompt: 'Запрос', variantCount: 2, state: selected ? 'selected' : 'ready', error: '', selectedId: selected ? ids[0] : null, createdAt: 1, variants: selected ? [] : cards }, wardrobe: selected ? [{ ...cards[0], descriptionPending: false }] : [] } });
+  });
+  try {
+    await page.goto('/tests/fixtures/skin-studio.html'); await page.getByRole('button', { name: 'Образы', exact: true }).click();
+    await page.getByRole('button', { name: 'Примерить вариант 1' }).click();
+    await expect.poll(() => reads).toBe(2);
+    await page.getByRole('button', { name: 'Сохранить образ' }).click();
+    await expect(page.locator('.skin-results')).toBeHidden();
+    const late = page.waitForResponse(response => new URL(response.url()).pathname === '/api/skin-studio' && response.request().method() === 'GET');
+    release(); await (await late).finished();
+    await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => resolve())));
+    await expect.poll(() => page.locator('.skin-wardrobe .skin-card').count()).toBe(1);
+    await expect(page.locator('.skin-results')).toBeHidden();
+  } finally { release(); }
+});
+
 test('two variants, explicit single choice, wardrobe, preview controls and mobile layout', async ({ page }) => {
   let chosen = '', state = 'ready';
   const cards = ids.slice(0, 2).map(id => ({ id, jobId, prompt: 'Космический пират', createdAt: Date.now() }));

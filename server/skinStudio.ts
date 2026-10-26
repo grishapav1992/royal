@@ -2,19 +2,23 @@ import { randomUUID } from 'node:crypto';
 import type { PostgresDatabase, DatabaseRow } from './database';
 import { applySchemaMigration } from './database-migrations';
 import { CryptoError } from './crypto/config';
-import { generatedAppearance, normalizeCharacterAppearance, SKIN_THEME, SKIN_UUID, SKIN_PRICE_UNITS, SKIN_VARIANTS, type SkinJob, type SkinStudioSnapshot, type SkinPurchase } from '../src/shared/skinStudio';
+import { generatedAppearance, normalizeCharacterAppearance, SKIN_THEME, SKIN_UUID, SKIN_PRICE_UNITS, SKIN_VARIANTS, type SkinPurchase } from '../src/shared/skinStudio';
+import type { SkinDescribedSnapshot, SkinNpcContext } from '../src/shared/skinDescription';
 import type { SkinImageGenerator } from './skinImages';
+import { skinDescription, type SkinDescriptionGenerator } from './skinDescriptions';
 
 export type SkinPayments = { skinPurchase(user: string, id: string, action: 'reserve' | 'capture' | 'refund'): Promise<SkinPurchase> };
 export class SkinStudioError extends Error { constructor(public status: number, message: string) { super(message); } }
 const fail = (status: number, message: string): never => { throw new SkinStudioError(status, message); };
 const ACTIVE = "('reserving','generating','capturing','ready','refunding')";
+const CARD_FIELDS = 's.id,s.job_id,s.description,s.description_requested,s.description_attempts,j.prompt,j.created_at';
 export class SkinStudioStore {
   readonly ready: Promise<void>;
   private running?: Promise<void>;
+  private describing?: Promise<void>;
   constructor(private db: PostgresDatabase, private payments: SkinPayments, private images: SkinImageGenerator,
     private paymentEnabled: () => boolean, private changed: (accountId: string, appearance: unknown) => void,
-    prerequisite: Promise<void> = Promise.resolve(), private now = Date.now) {
+    prerequisite: Promise<void> = Promise.resolve(), private now = Date.now, private descriptions?: SkinDescriptionGenerator) {
     this.ready = prerequisite.then(() => applySchemaMigration(db, { id: 'skin-studio-v1', statements: [
       `CREATE TABLE IF NOT EXISTS skin_jobs(id TEXT PRIMARY KEY,account_id TEXT NOT NULL REFERENCES accounts(id),theme TEXT NOT NULL,
         prompt TEXT NOT NULL,reference BYTEA,state TEXT NOT NULL CHECK(state IN ('reserving','generating','capturing','ready','selected','refunding','failed')),
@@ -29,19 +33,29 @@ export class SkinStudioStore {
       'ALTER TABLE skin_jobs ADD COLUMN IF NOT EXISTS variant_count INTEGER NOT NULL DEFAULT 3 CHECK(variant_count IN (2,3))',
     ] })).then(()=>applySchemaMigration(db,{id:'skin-studio-payment-source-v1',statements:[
       "ALTER TABLE skin_jobs ADD COLUMN payment_source TEXT NOT NULL DEFAULT 'nile' CHECK(payment_source IN ('nile','virtual-usdt-v1'))",
-    ]}));
+    ]})).then(() => applySchemaMigration(db, { id: 'skin-studio-description-v1', statements: [
+      "ALTER TABLE generated_skins ADD COLUMN description TEXT NOT NULL DEFAULT ''",
+      'ALTER TABLE generated_skins ADD COLUMN description_requested BOOLEAN NOT NULL DEFAULT false',
+      'ALTER TABLE generated_skins ADD COLUMN description_lease_until BIGINT NOT NULL DEFAULT 0',
+      "ALTER TABLE generated_skins ADD COLUMN description_lease_token TEXT NOT NULL DEFAULT ''",
+      'ALTER TABLE generated_skins ADD COLUMN description_attempts INTEGER NOT NULL DEFAULT 0',
+      'ALTER TABLE generated_skins ADD COLUMN description_retry_at BIGINT NOT NULL DEFAULT 0',
+      "CREATE INDEX generated_skins_description_pending ON generated_skins(description_retry_at,description_lease_until) WHERE description='' AND description_requested",
+    ] }));
   }
   enabled() { return this.paymentEnabled() && this.images.available(); }
-  private card(row: DatabaseRow) { return { id: String(row.id), jobId: String(row.job_id), prompt: String(row.prompt), createdAt: Number(row.created_at) }; }
-  async snapshot(accountId: string): Promise<SkinStudioSnapshot> {
+  private card(row: DatabaseRow) { return { id: String(row.id), jobId: String(row.job_id), prompt: String(row.prompt), createdAt: Number(row.created_at),
+    description: skinDescription(row.description) ?? '', descriptionPending: !row.description && row.description_requested === true
+      && Number(row.description_attempts) < 3 && Boolean(this.descriptions?.available()) }; }
+  async snapshot(accountId: string): Promise<SkinDescribedSnapshot> {
     await this.ready;
     const row = await this.db.prepare('SELECT * FROM skin_jobs WHERE account_id=? AND theme=? ORDER BY created_at DESC,id DESC LIMIT 1').get(accountId, SKIN_THEME.id);
-    let job: SkinJob | null = null;
+    let job: SkinDescribedSnapshot['job'] = null;
     if (row) {
-      const variants = row.state === 'ready' ? await this.db.prepare('SELECT s.id,s.job_id,j.prompt,j.created_at FROM generated_skins s JOIN skin_jobs j ON j.id=s.job_id WHERE j.id=? ORDER BY variant').all(row.id) : [];
+      const variants = row.state === 'ready' ? await this.db.prepare(`SELECT ${CARD_FIELDS} FROM generated_skins s JOIN skin_jobs j ON j.id=s.job_id WHERE j.id=? ORDER BY variant`).all(row.id) : [];
       job = { id: row.id, prompt: row.prompt, state: row.state, error: row.error, selectedId: row.selected_id, createdAt: Number(row.created_at), variantCount: Number(row.variant_count), variants: variants.map(s => this.card(s)) };
     }
-    const wardrobe = await this.db.prepare(`SELECT s.id,s.job_id,j.prompt,j.created_at FROM generated_skins s JOIN skin_jobs j ON j.id=s.job_id
+    const wardrobe = await this.db.prepare(`SELECT ${CARD_FIELDS} FROM generated_skins s JOIN skin_jobs j ON j.id=s.job_id
       WHERE j.account_id=? AND j.theme=? AND j.selected_id=s.id AND j.state='selected' ORDER BY j.created_at DESC LIMIT 200`).all(accountId, SKIN_THEME.id);
     const account = await this.db.prepare('SELECT skin,appearance FROM accounts WHERE id=?').get(accountId);
     return { theme: SKIN_THEME, priceUnits: SKIN_PRICE_UNITS, variantCount: SKIN_VARIANTS, enabled: this.enabled(), job, wardrobe: wardrobe.map(s => this.card(s)), equippedId: generatedAppearance(account?.appearance)?.skinId ?? null,
@@ -108,13 +122,54 @@ export class SkinStudioStore {
     if (!row || (row.state === 'selected' ? row.selected_id !== skinId : row.account_id !== accountId || row.state !== 'ready')) return null;
     return { image: row.image as Buffer, public: row.state === 'selected' && row.selected_id === skinId };
   }
+  /** Shared NPC observation: only the account's currently equipped and owned saved artwork. */
+  async appearanceContext(accountId: string): Promise<SkinNpcContext | null> {
+    await this.ready;
+    const row = await this.db.prepare(`SELECT a.appearance,s.id,s.description FROM accounts a
+      JOIN generated_skins s ON s.id=a.appearance->>'skinId' JOIN skin_jobs j ON j.id=s.job_id
+      WHERE a.id=? AND j.account_id=a.id AND j.selected_id=s.id AND j.state='selected' AND j.theme=?`).get(accountId, SKIN_THEME.id);
+    if (!row || generatedAppearance(row.appearance)?.skinId !== row.id) return null;
+    const description = skinDescription(row.description);
+    if (description) return { skinId: String(row.id), description };
+    // Old wardrobe entries are analyzed only when an NPC needs the equipped look.
+    await this.db.prepare('UPDATE generated_skins SET description_requested=true WHERE id=? AND description_requested=false').run(row.id);
+    return null;
+  }
+  private async describeOne() {
+    await this.ready;
+    if (!this.descriptions?.available()) return;
+    const now = this.now(), token = randomUUID();
+    const row = await this.db.transaction(async () => {
+      const skin = await this.db.prepare(`SELECT s.id,s.image,s.description_attempts FROM generated_skins s JOIN skin_jobs j ON j.id=s.job_id
+        WHERE s.description='' AND s.description_requested AND s.description_lease_until<=? AND s.description_retry_at<=?
+        AND j.theme=? AND (j.state='ready' OR (j.state='selected' AND j.selected_id=s.id))
+        ORDER BY CASE WHEN EXISTS(SELECT 1 FROM accounts a WHERE a.id=j.account_id AND a.appearance->>'skinId'=s.id) THEN 0
+          WHEN j.state='ready' THEN 1 ELSE 2 END,j.created_at DESC,s.variant LIMIT 1 FOR UPDATE OF s SKIP LOCKED`).get(now, now, SKIN_THEME.id);
+      if (!skin) return;
+      await this.db.prepare('UPDATE generated_skins SET description_lease_until=?,description_lease_token=?,description_attempts=description_attempts+1 WHERE id=?')
+        .run(now + 60000, token, skin.id);
+      return skin;
+    }, { lockKey: 'skin-description-worker' });
+    if (!row) return;
+    try {
+      const description = skinDescription(await this.descriptions.describe(row.image as Buffer));
+      if (!description) throw new Error('Invalid skin description');
+      await this.db.prepare("UPDATE generated_skins SET description=?,description_lease_until=0,description_lease_token='' WHERE id=? AND description='' AND description_lease_token=? AND description_lease_until>?")
+        .run(description, row.id, token, this.now());
+    } catch {
+      const retry = this.now() + Math.min(3600000, 15000 * 2 ** Math.min(Number(row.description_attempts), 8));
+      await this.db.prepare("UPDATE generated_skins SET description_retry_at=?,description_lease_until=0,description_lease_token='' WHERE id=? AND description_lease_token=?")
+        .run(retry, row.id, token);
+      console.error('Skin description will be retried', row.id);
+    }
+  }
   /** One leased job per process. A crashed image request is refunded instead of silently regenerated. */
   tick() {
-    if (this.running) return this.running;
-    this.running = this.work().finally(() => { this.running = undefined; });
-    return this.running;
+    this.running ??= this.work().finally(() => { this.running = undefined; });
+    this.describing ??= this.describeOne().finally(() => { this.describing = undefined; });
+    return Promise.all([this.running, this.describing]).then(() => {});
   }
-  drain() { return this.running ?? Promise.resolve(); }
+  drain() { return Promise.all([this.running, this.describing]).then(() => {}); }
   private async work() {
     await this.ready;
     const job = await this.db.transaction(async () => {
@@ -143,7 +198,7 @@ export class SkinStudioStore {
           job.state = 'refunding';
         } else {
           if (!await this.withLease(job, async () => {
-            for (let i = 0; i < results.length; i++) await this.db.prepare('INSERT INTO generated_skins(id,job_id,variant,image) VALUES (?,?,?,?)')
+            for (let i = 0; i < results.length; i++) await this.db.prepare('INSERT INTO generated_skins(id,job_id,variant,image,description_requested) VALUES (?,?,?,?,true)')
               .run(randomUUID(), job.id, i, (results[i] as PromiseFulfilledResult<Buffer>).value);
             await this.db.prepare("UPDATE skin_jobs SET state='capturing',reference=NULL WHERE id=?").run(job.id);
           })) return;
