@@ -1,0 +1,78 @@
+import type { RoomScene } from '../game/RoomScene';
+import { demoWallet, coins } from '../wallet/WalletClient';
+import '../wallet.css';
+
+export class DemoWalletUI {
+  private button = document.createElement('button');
+  private dialog = document.createElement('dialog');
+  private message = '';
+  constructor(private scene: RoomScene) {
+    this.button.type = 'button'; this.button.id = 'wallet-button'; this.button.className = 'wallet-button'; this.button.hidden = true;
+    this.button.onclick = () => this.open();
+    document.querySelector('.profile')!.prepend(this.button);
+    this.dialog.id = 'wallet-dialog'; this.dialog.className = 'wallet-dialog';
+    this.dialog.setAttribute('aria-labelledby', 'wallet-title');
+    this.dialog.innerHTML = `<div class="wallet-heading"><div><span class="eyebrow">РОЯЛЬ · ДЕМО</span><h2 id="wallet-title">Мой кошелёк</h2></div><button class="icon-button" id="wallet-close" aria-label="Закрыть кошелёк">×</button></div>
+      <p class="wallet-total"><strong id="wallet-balance">…</strong><span>виртуальных монет</span></p>
+      <p class="wallet-description">Бесплатные демомонеты для Casino Api Pro. Без реальных платежей и вывода.</p>
+      <form id="wallet-deposit"><label for="wallet-amount">Сумма пополнения</label><div class="wallet-deposit-row"><input id="wallet-amount" type="number" inputmode="numeric" min="1" max="100000" step="1" value="1000" required><button class="primary-button" type="submit">Пополнить демобаланс</button></div></form>
+      <p id="wallet-message" role="status" hidden></p><button id="wallet-retry" class="primary-button" hidden>Проверить операцию</button>
+      <button id="wallet-refresh" class="text-button">Обновить баланс</button>
+      <button id="wallet-provider-games" class="primary-button">Игры Casino Api Pro</button>
+      <h3>История операций</h3><ol id="wallet-history"></ol>
+      <p class="wallet-note">Внешние демоигры Luelon используют собственные кредиты и не списывают монеты этого кошелька.</p>`;
+    document.body.append(this.dialog);
+    this.dialog.querySelector<HTMLButtonElement>('#wallet-close')!.onclick = () => this.dialog.close();
+    this.dialog.addEventListener('close', () => scene.setLocked(!!document.querySelector('dialog[open]')));
+    this.dialog.querySelector('form')!.onsubmit = event => {
+      event.preventDefault(); const amount = this.dialog.querySelector<HTMLInputElement>('#wallet-amount')!.valueAsNumber;
+      void this.perform(() => demoWallet.operate('deposit', amount));
+    };
+    this.dialog.querySelector<HTMLButtonElement>('#wallet-retry')!.onclick = () => {
+      if (demoWallet.pending) void this.perform(() => demoWallet.retry());
+    };
+    this.dialog.querySelector<HTMLButtonElement>('#wallet-refresh')!.onclick = () => { void demoWallet.refresh(); };
+    this.dialog.querySelector<HTMLButtonElement>('#wallet-provider-games')!.onclick = () => { this.dialog.close(); window.dispatchEvent(new Event('royal-open-casinoapipro')); };
+    demoWallet.addEventListener('change', () => this.render());
+    window.addEventListener('royal-account', event => {
+      demoWallet.setAccount((event as CustomEvent<string | null>).detail);
+      if (!demoWallet.accountId) this.dialog.close();
+    });
+    window.addEventListener('royal-open-wallet', () => this.open());
+    window.addEventListener('focus', () => { void demoWallet.refresh(); });
+    this.render();
+  }
+  private open() {
+    if (!demoWallet.accountId) return;
+    this.message = ''; this.scene.setLocked(true); this.dialog.showModal(); this.render(); void demoWallet.refresh();
+  }
+  private async perform(action: () => Promise<unknown>) {
+    this.message = '';
+    try { await action(); this.message = 'Баланс обновлён.'; } catch (error) { this.message = (error as Error).message; }
+    this.render();
+  }
+  private render() {
+    this.button.hidden = !demoWallet.accountId;
+    this.button.textContent = `◈ ${demoWallet.wallet ? coins(demoWallet.wallet.balance) : '…'} · Демо`;
+    this.button.setAttribute('aria-label', 'Открыть демокошелёк');
+    this.dialog.querySelector('#wallet-balance')!.textContent = demoWallet.wallet ? coins(demoWallet.wallet.balance) : '…';
+    const message = this.dialog.querySelector<HTMLElement>('#wallet-message')!;
+    message.textContent = demoWallet.error || this.message || (demoWallet.pending ? 'Есть неподтверждённая операция. Проверь её перед новой ставкой или пополнением.' : '');
+    message.hidden = !message.textContent;
+    const retry = this.dialog.querySelector<HTMLButtonElement>('#wallet-retry')!;
+    retry.hidden = !demoWallet.pending; retry.disabled = demoWallet.busy;
+    this.dialog.querySelectorAll<HTMLInputElement | HTMLButtonElement>('#wallet-deposit input, #wallet-deposit button').forEach(el => { el.disabled = demoWallet.busy || !!demoWallet.pending; });
+    const history = this.dialog.querySelector('#wallet-history')!; history.replaceChildren();
+    for (const entry of demoWallet.wallet?.entries ?? []) {
+      const row = document.createElement('li'); row.dataset.kind = entry.kind;
+      const label = document.createElement('span');
+      const action = { deposit: 'Демопополнение', bet: 'ставка', win: 'начисление', refund: 'возврат ставки', rollback: 'отмена операции' }[entry.kind];
+      const gameName = entry.gameName || (entry.source === 'casinoapipro' ? 'Casino Api Pro' : entry.source === 'royal-roulette' ? 'Рулетка' : 'Royal Coins');
+      label.textContent = entry.kind === 'deposit' ? action : `${gameName}: ${action}`;
+      const amount = document.createElement('strong'); amount.textContent = `${entry.amount > 0 ? '+' : ''}${coins(entry.amount)}`;
+      const detail = document.createElement('small'); detail.textContent = `${new Date(entry.createdAt).toLocaleString('ru-RU')} · Остаток ${coins(entry.balance)}`;
+      row.append(label, amount, detail); history.append(row);
+    }
+    if (!history.children.length) { const row = document.createElement('li'); row.textContent = 'Пока нет операций.'; history.append(row); }
+  }
+}

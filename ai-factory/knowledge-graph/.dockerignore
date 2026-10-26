@@ -1,6 +1,0 @@
-.venv
-.pip-cache
-.wheel-evidence
-.state
-__pycache__
-test_graphiti_bridge.py

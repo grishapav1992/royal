@@ -1,0 +1,58 @@
+{
+  "name": "royal-arcade-demo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently -k -n web,server \"vite --host 0.0.0.0\" \"npm run dev:server\"",
+    "build": "tsc --noEmit && vite build && esbuild server/index.ts --bundle --platform=node --packages=external --format=esm --outfile=dist-server/index.js && esbuild scripts/crypto-reconcile.ts --bundle --platform=node --packages=external --format=esm --outfile=dist-server/crypto-reconcile.js",
+    "preview": "vite preview --host 0.0.0.0",
+    "test": "playwright test",
+    "dev:web": "vite --host 0.0.0.0",
+    "dev:server": "node --env-file-if-exists=.env --import tsx --watch server/index.ts",
+    "start": "node --env-file-if-exists=.env dist-server/index.js",
+    "check:room": "tsx scripts/check-room.ts",
+    "casinoapipro:prepare": "tsx scripts/casinoapipro-prepare.ts",
+    "casinoapipro:check": "node --env-file-if-exists=.env --import tsx scripts/casinoapipro-check.ts",
+    "test:auth": "node --import tsx scripts/database-test.ts --import tsx --test server-tests/*.test.ts",
+    "test:finance": "node --import tsx scripts/database-test.ts --import tsx --test server-tests/finance/*.test.ts",
+    "test:e2e:pg": "node --import tsx scripts/database-test.ts node_modules/@playwright/test/cli.js test",
+    "database:migrate": "node --import tsx scripts/database-migrate.ts",
+    "check:finance": "tsc --noEmit -p tsconfig.finance.json",
+    "build:finance": "npm run check:finance && esbuild server/finance/index.ts --bundle --platform=node --packages=external --format=esm --outfile=dist-server/finance.js",
+    "finance:migrate": "node --env-file-if-exists=.env --import tsx scripts/finance-migrate.ts",
+    "finance:dev": "node --env-file-if-exists=.env --import tsx server/finance/index.ts",
+    "finance:demo": "tsx scripts/finance-demo.ts",
+    "build:cards": "node scripts/build-card-engine.mjs"
+  },
+  "dependencies": {
+    "@colyseus/core": "^0.18.18",
+    "@colyseus/schema": "^5.0.35",
+    "@colyseus/sdk": "^0.18.4",
+    "@colyseus/ws-transport": "^0.18.4",
+    "chess.js": "^1.4.0",
+    "express": "^5.2.1",
+    "pg": "8.23.1",
+    "phaser": "3.90.0",
+    "qrcode-generator": "2.0.4"
+  },
+  "devDependencies": {
+    "@noble/hashes": "2.4.0",
+    "@playwright/test": "^1.58.2",
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.6.4",
+    "@types/pg": "8.23.1",
+    "concurrently": "^10.0.5",
+    "embedded-postgres": "17.10.0-beta.17",
+    "esbuild": "^0.28.2",
+    "jsqr": "1.4.0",
+    "tsx": "^4.23.15",
+    "typescript": "~5.9.3",
+    "vite": "^7.3.1"
+  },
+  "overrides": {
+    "concurrently": {
+      "shell-quote": "1.11.0"
+    }
+  }
+}

@@ -1,7 +1,0 @@
-services:
-  game:
-    environment:
-      FINANCE_ADMIN_ACCOUNT_IDS: ${FINANCE_ADMIN_ACCOUNT_IDS:-}
-  payments:
-    environment:
-      FINANCE_ADMIN_ACCOUNT_IDS: ${FINANCE_ADMIN_ACCOUNT_IDS:-}

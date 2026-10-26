@@ -1,4 +1,0 @@
-export const MAX_MOVEMENT_INPUT_MS = 50;
-export const MAX_MOVEMENT_BATCH = 20;
-export const MAX_PENDING_MOVEMENT_INPUTS = 240;
-export const MAX_QUEUED_MOVEMENT_MS = 1000;

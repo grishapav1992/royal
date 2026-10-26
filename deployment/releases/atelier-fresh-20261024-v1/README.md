@@ -1,1 +1,0 @@
-Generate new characters from text alone: two designs for $10, keep one. Preserve existing three-design orders. Animate generated walking from one fixed cutout per direction. Publish from the exact production source plus these reviewed changes, retaining all wallets, modules, settings and player data. Use the inherited byte-checked installer, backup and guarded rollback.

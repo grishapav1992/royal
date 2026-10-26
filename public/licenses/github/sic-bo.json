@@ -1,7 +1,0 @@
-{
-  "repo": "BornToBuildGame/ultimate-game-server",
-  "commit": "47d0b309070112b5363452439276958b17e1816b",
-  "license": "MIT",
-  "source": "examples/taixiu/match_handler.go",
-  "adaptation": "Big/Small dice rules retained in server/demoExpansion.ts; Royal cryptographic dice, atomic wallet settlement and persistent history replace the external wallet and in-memory multiplayer round."
-}

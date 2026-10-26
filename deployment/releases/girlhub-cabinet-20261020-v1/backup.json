@@ -1,6 +1,0 @@
-{
-  "directory": "/opt/royal-backups/girlhub-cabinet-20261020-v1",
-  "sourceSHA256": "29c452311a1a23fceb74692125fcc85419393d55c680367b6bec8a9d469d2a15",
-  "previousImage": "sha256:644f6f0b3a367324d624db7c39033411cc124b89d1fc1922c1bd977655b49b8d",
-  "previousPrepared": "sha256:644f6f0b3a367324d624db7c39033411cc124b89d1fc1922c1bd977655b49b8d"
-}

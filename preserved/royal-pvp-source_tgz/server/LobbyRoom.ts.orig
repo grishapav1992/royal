@@ -1,0 +1,248 @@
+import { Bartender } from "./bartender";
+import { Room, type Client, type AuthContext, ServerError } from '@colyseus/core';
+import { Guards } from './guards';
+import { chatModerator } from './moderation';
+import type { SecurityDecision } from '../src/shared/security';
+import { randomUUID } from 'node:crypto';
+import { accounts, allowedOrigin, cookieToken, type Account } from './accounts';
+type RoomAuth = { account: Account; hash: string };
+import { LobbyState, Player } from './state';
+import { movementFacing, type Facing } from '../src/shared/movement';
+import { MovementInputs } from './movementInputs';
+import { Activities } from './activities';
+import { CABINETS } from '../src/shared/cabinets';
+import { findPath, walkable, type Point } from '../src/game/navigation';
+import { PLAYER_SPEED, PLAYER_SPRINT_SPEED, ROOM_CAPACITY, hallObstacles, HALL_DOORS, inHallDoor, otherHall, SEATS, DRINKS, atBar, type ChatMessage } from '../src/shared/world';
+
+type Control = { dx: number; dy: number; at: number; path: Point[]; lastTarget: number; chatTimes: number[]; inputs: MovementInputs; predicted: boolean };
+export class LobbyRoom extends Room<{ state: LobbyState }> {
+  state = new LobbyState();
+  maxClients = ROOM_CAPACITY;
+  maxMessagesPerSecond = 80;
+  private activities = new Activities(id => this.state.players.get(id), id => this.stop(id), (type,value) => this.broadcast(type,value), (id,text) => this.clients.find(c=>c.sessionId===id)?.send('notice',text));
+  private guards = new Guards(this.state, (id, decision) => {
+    if (decision.kind !== 'ejecting') return;
+    const client = this.clients.find(c => c.sessionId === id);
+    client?.send('ejected', { until: decision.until });
+    this.clock.setTimeout(() => client?.leave(4003), 200);
+  });
+  private securityListener = (accountId: string, decision: SecurityDecision) => {
+    for (const client of this.clients) if ((client.auth as RoomAuth)?.account.id === accountId) {
+      const p = this.state.players.get(client.sessionId);
+      if (!p || p.security === 'ejecting') continue;
+      this.activities.leave(client.sessionId); this.stop(client.sessionId); this.stand(client.sessionId); p.playing = false;
+      this.guards.enqueue(client.sessionId, decision);
+      client.send('security', decision);
+      this.publish({ id: randomUUID(), senderId: 'security', name: 'ОХРАНА', time: Date.now(),
+        text: decision.kind === 'warning' ? p.name + ', первое предупреждение за мат. Повтор в течение суток: выход на 10 минут.' : p.name + ', повторное нарушение. Вход закрыт на 10 минут.' });
+    }
+  };
+  private controls = new Map<string, Control>();
+  private bartender = new Bartender(this.state);
+  private history: ChatMessage[] = [];
+  private nextSpawn = 0;
+  private logoutListener = (hash: string) => { for (const client of this.clients) if ((client.auth as RoomAuth)?.hash === hash) client.leave(4001); };
+  private nameListener = (id: string, name: string) => {
+    for (const client of this.clients) if ((client.auth as RoomAuth)?.account.id === id) {
+      (client.auth as RoomAuth).account.name = name;
+      const player = this.state.players.get(client.sessionId); if (player) player.name = name;
+    }
+  };
+  private skinListener = (id: string, skin: number) => {
+    for (const client of this.clients) if ((client.auth as RoomAuth)?.account.id === id) {
+      (client.auth as RoomAuth).account.skin = skin;
+      const player = this.state.players.get(client.sessionId); if (player) player.skin = skin;
+    }
+  };
+  onCreate() {
+    accounts.events.on('security', this.securityListener);
+    accounts.events.on('logout', this.logoutListener);
+    accounts.events.on('name', this.nameListener);
+    accounts.events.on('skin', this.skinListener);
+    this.clock.setInterval(() => { for (const client of this.clients) if (!accounts.active((client.auth as RoomAuth).hash)) client.leave(4001); }, 60000);
+    this.setPatchRate(50);
+    let hallElapsed=0;
+    this.setSimulationInterval(delta => {
+      const dt=Math.min(delta,100)/1000;
+      this.activities.tick(dt);this.guards.tick(dt);this.bartender.tick(dt);hallElapsed+=dt;
+      while(hallElapsed>=.05){this.tick(.05);hallElapsed-=.05;}
+    }, 1000/60);
+    const listen = (type: string, handler: (client: Client, value: any) => void) => this.onMessage(type, (client, value) => {
+      const p = this.state.players.get(client.sessionId);
+      if (p?.security || accounts.moderation.banUntil((client.auth as RoomAuth).account.id)) return;
+      handler(client, value);
+    });
+    listen('activity', (client,value:unknown)=>this.activities.handle(client.sessionId,value));
+    this.onMessage('activities', client=>client.send('activities',this.activities.snapshot()));
+    listen('inputs', (client, data: unknown) => {
+      const p = this.state.players.get(client.sessionId), c = this.controls.get(client.sessionId);
+      if (!p || !c || !p.connected || p.playing) return;
+      const packet=data as {revision?:number;inputs?:unknown};
+      if(!packet||packet.revision!==p.hallRevision)return;
+      if (c.inputs.accept(p, packet.inputs)) {
+        c.predicted = true; c.path = []; c.dx = c.dy = 0; c.at = Date.now();
+        p.inputSeq = c.inputs.sequence;
+        this.enterDoor(client.sessionId);
+      }
+    });
+    listen('move', (client, data: unknown) => {
+      const control = this.controls.get(client.sessionId);
+      if (!control || (data as {revision?:number})?.revision!==this.state.players.get(client.sessionId)?.hallRevision || this.state.players.get(client.sessionId)?.playing || !data || typeof data !== 'object') return;
+      const { x, y } = data as { x?: unknown; y?: unknown };
+      if (typeof x !== 'number' || typeof y !== 'number' || !Number.isFinite(x) || !Number.isFinite(y)) return;
+      if (x || y) this.stand(client.sessionId);
+      control.predicted = false;
+      control.dx = Math.max(-1, Math.min(1, x)); control.dy = Math.max(-1, Math.min(1, y));
+      control.at = Date.now(); control.path = [];
+    });
+    listen('target', (client, data: unknown) => {
+      const p = this.state.players.get(client.sessionId), control = this.controls.get(client.sessionId);
+      if (!p || (data as {revision?:number})?.revision!==p.hallRevision || !control || !data || typeof data !== 'object' || p.playing || Date.now() - control.lastTarget < 150) return;
+      const { x, y } = data as { x?: unknown; y?: unknown };
+      if (typeof x !== 'number' || typeof y !== 'number' || !Number.isFinite(x) || !Number.isFinite(y)) return;
+      this.stand(client.sessionId);
+      control.predicted = false;
+      control.lastTarget = Date.now(); control.dx = control.dy = 0;
+      control.path = findPath(p, { x, y }, hallObstacles(p.hall));
+    });
+    listen('stop', client => this.stop(client.sessionId));
+    listen('playing', (client, value: unknown) => {
+      const p = this.state.players.get(client.sessionId);
+      if (!p || p.hall!=='arcade' || p.activity || typeof value !== 'boolean') return;
+      // Only accept play status beside one of the cabinets.
+      if (value && !CABINETS.some(c => Math.hypot(p.x-c.x,p.y-(c.y+25)) <= 90)) return;
+      p.playing = value; if (value) p.facing = 'up'; this.stop(client.sessionId);
+    });
+    listen('stand', client => this.stand(client.sessionId));
+    listen('sit', (client, id: unknown) => {
+      const p = this.state.players.get(client.sessionId), seat = SEATS.find(s => s.id === id);
+      if (!p || p.hall!=='arcade' || !seat || p.playing || p.action === 'drink') return;
+      if (Math.hypot(p.x-seat.entry.x,p.y-seat.entry.y)>60) return;
+      if ([...this.state.players.values()].some(other => other !== p && other.seat === id)) { client.send('notice','Это место уже занято. Выбери соседнее.'); return; }
+      this.stop(client.sessionId); p.seat = seat.id; p.action = 'sit'; p.x = seat.x; p.y = seat.y; p.facing = seat.facing;
+    });
+    listen('drink', (client, id: unknown) => {
+      const p = this.state.players.get(client.sessionId);
+      if (!p || p.hall!=='arcade' || !atBar(p) || p.playing || p.action === 'drink' || !DRINKS.some(d => d.id === id)) return;
+      this.stop(client.sessionId); p.action = 'drink'; p.drink = id as string; p.actionUntil = Date.now()+3200;
+      if (!p.seat) p.facing = 'down';
+    });
+    listen('chat', (client, value: unknown) => {
+      const player = this.state.players.get(client.sessionId), control = this.controls.get(client.sessionId);
+      if (!player || !control || typeof value !== 'string') return;
+      const text = value.replace(/[\u0000-\u001f\u007f]/g, ' ').trim();
+      if (!text || text.length > 300) return;
+      const now = Date.now(); control.chatTimes = control.chatTimes.filter(time => now - time < 5000);
+      if (control.chatTimes.length >= 4) { client.send('notice', 'Слишком быстро. Подожди несколько секунд.'); return; }
+      control.chatTimes.push(now);
+      client.send('chat-check', true);
+      void chatModerator.check((client.auth as RoomAuth).account.id, text).then(violation => {
+        if (this.state.players.get(client.sessionId) !== player || !player.connected || !accounts.active((client.auth as RoomAuth).hash) || player.security) return;
+        if (violation) {
+          const id = (client.auth as RoomAuth).account.id;
+          accounts.events.emit('security', id, accounts.moderation.record(id));
+        } else this.publish({ id: randomUUID(), senderId: client.sessionId, name: player.name, text, time: Date.now() });
+      }).catch(error => client.send('notice', error instanceof Error ? error.message : 'Сообщение не отправлено.'))
+        .finally(() => client.send('chat-check', false));
+    });
+    this.onMessage('history', client => client.send('history', this.history));
+  }
+  onAuth(_client: Client, _options: unknown, context: AuthContext) {
+    if (!allowedOrigin(context.headers.get('origin') || undefined)) throw new ServerError(403, 'Недопустимый источник подключения.');
+    const auth = accounts.session(cookieToken(context.headers.get('cookie') || undefined));
+    if (!auth) throw new ServerError(401, 'Сначала войди по почте и паролю.');
+    const until = accounts.moderation.banUntil(auth.account.id);
+    if (until) throw new ServerError(403, `Охрана закрыла вход за повторный мат. Осталось ${Math.ceil((until-Date.now())/60000)} мин.`);
+    if (auth.account.skin === null) throw new ServerError(400, 'Сначала выбери персонажа.');
+    return auth;
+  }
+  onJoin(client: Client, _options: unknown, auth: RoomAuth) {
+    const until = accounts.moderation.banUntil(auth.account.id);
+    if (until) throw new ServerError(403, 'Вход временно закрыт охраной.');
+    if (this.clients.some(other => other !== client && (other.auth as RoomAuth)?.account.id === auth.account.id && accounts.active((other.auth as RoomAuth).hash))) throw new ServerError(409, 'Этот аккаунт уже находится в зале. Закрой другую вкладку или подожди 20 секунд.');
+    const p = new Player(); p.name = auth.account.name;
+    const index = this.nextSpawn++;
+    p.x = 420 + index % 8 * 40; p.y = 570 + Math.floor(index % 24 / 8) * 25; p.skin = auth.account.skin!;
+    this.state.players.set(client.sessionId, p);
+    this.controls.set(client.sessionId, { dx: 0, dy: 0, at: 0, path: [], lastTarget: 0, chatTimes: [], inputs: new MovementInputs(), predicted: false });
+    this.system(`${p.name} заходит в зал`);
+  }
+  onDrop(client: Client) {
+    this.activities.leave(client.sessionId);
+    this.stop(client.sessionId);
+    const p = this.state.players.get(client.sessionId); if (p) p.connected = false;
+    if (!p || accounts.moderation.banUntil((client.auth as RoomAuth).account.id) || !accounts.active((client.auth as RoomAuth).hash)) return;
+    // Refused joins, expired reservations and shutdown must not reject outside the room lifecycle.
+    void this.allowReconnection(client, 20).catch(() => {});
+  }
+  onDispose() { accounts.events.off('security', this.securityListener); accounts.events.off('logout', this.logoutListener); accounts.events.off('name', this.nameListener); accounts.events.off('skin', this.skinListener); }
+  onReconnect(client: Client) {
+    if (accounts.moderation.banUntil((client.auth as RoomAuth).account.id)) { client.leave(4003); return; }
+    if (!accounts.active((client.auth as RoomAuth).hash)) { client.leave(4001); return; }
+    const p = this.state.players.get(client.sessionId); if (p) p.connected = true;
+  }
+  onLeave(client: Client) {
+    this.activities.leave(client.sessionId);
+    const p = this.state.players.get(client.sessionId);
+    this.state.players.delete(client.sessionId); this.controls.delete(client.sessionId);
+    if (p) this.system(`${p.name} покидает зал`);
+  }
+  private system(text: string) { this.publish({ id: randomUUID(), senderId: '', name: '', text, time: Date.now(), system: true }); }
+  private publish(message: ChatMessage) { this.history.push(message); if (this.history.length > 60) this.history.shift(); this.broadcast('chat', message); }
+  private stop(id: string) {
+    const c = this.controls.get(id); if (c) { c.dx = c.dy = 0; c.path = []; c.predicted = false; }
+    const p = this.state.players.get(id); if (p) p.moving = false;
+  }
+  private stand(id: string) {
+    const p = this.state.players.get(id); if (!p || p.activity) return;
+    const seat = SEATS.find(s => s.id === p.seat);
+    if (seat) { p.x = seat.entry.x; p.y = seat.entry.y; }
+    p.seat = ''; p.action = 'idle'; p.drink = ''; p.actionUntil = 0;
+  }
+  private enterDoor(id:string){
+    const p=this.state.players.get(id),c=this.controls.get(id);
+    if(!p?.connected||p.security||!c||p.playing||p.seat||p.action==='drink'||!inHallDoor(p))return false;
+    this.activities.leave(id);this.stop(id);this.stand(id);
+    const hall=otherHall(p.hall),door=HALL_DOORS[hall];
+    p.hall=hall;p.hallRevision++;p.x=door.arrival.x;p.y=door.arrival.y;p.facing=door.facing;c.lastTarget=0;
+    return true;
+  }
+  private tick(dt: number) {
+    for (const [id, p] of this.state.players) {
+      if(this.enterDoor(id))continue;
+      const c = this.controls.get(id)!;
+      if (p.action === 'drink' && Date.now() >= p.actionUntil) { p.action = p.seat ? 'sit' : 'idle'; p.drink = ''; p.actionUntil = 0; }
+      if (p.security || !p.connected || p.playing || p.seat || p.action === 'drink') { p.moving = false; continue; }
+      if (c.predicted) { if (Date.now()-c.at > 250) p.moving = false; continue; }
+      let dx = c.dx, dy = c.dy;
+      if (Date.now() - c.at > 450) dx = dy = 0;
+      let remaining = (c.path.length ? PLAYER_SPRINT_SPEED : PLAYER_SPEED) * (c.inputs.sequence ? c.inputs.takeDuration(dt*1000)/1000 : dt);
+      const beforeX = p.x, beforeY = p.y;
+      while (remaining > 0) {
+        const target = c.path[0];
+        if (target) {
+          dx = target.x - p.x; dy = target.y - p.y;
+          if (Math.hypot(dx, dy) < .1) { c.path.shift(); if (!c.path.length) break; continue; }
+        }
+        const length = Math.hypot(dx, dy);
+        if (!length) break;
+        const distance = target ? Math.min(remaining, length) : remaining;
+        const segmentX = p.x, segmentY = p.y;
+        // Small substeps prevent crossing a thin obstacle between ticks.
+        for (let step = 0; step < 3; step++) {
+          const mx = dx / length * distance / 3, my = dy / length * distance / 3;
+          if (walkable(p.x + mx, p.y, hallObstacles(p.hall))) p.x += mx;
+          if (walkable(p.x, p.y + my, hallObstacles(p.hall))) p.y += my;
+        }
+        remaining -= distance;
+        if (!target) break;
+        if (Math.hypot(p.x-segmentX, p.y-segmentY) < .01) { c.path = []; break; }
+        if (Math.hypot(target.x-p.x, target.y-p.y) < .1) c.path.shift();
+        if (!c.path.length) break;
+      }
+      const mx = p.x - beforeX, my = p.y - beforeY;
+      p.moving = Math.hypot(mx, my) > .01;
+      if (p.moving) p.facing = movementFacing(mx, my, p.facing as Facing);
+    }
+  }
+}

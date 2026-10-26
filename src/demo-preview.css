@@ -1,4 +1,0 @@
-.cabinet-card .cabinet-art.game-cover{width:96px;height:64px;flex:0 0 96px;background:#081420;border-radius:5px;overflow:hidden}
-.cabinet-card .cabinet-art.game-cover img{display:block;width:100%;height:100%;object-fit:contain;image-rendering:auto}
-#interaction .interaction-cover{width:108px;height:72px;object-fit:contain;flex-shrink:0;border-radius:5px;background:#081420}
-@media(max-width:480px){.cabinet-card .cabinet-art.game-cover{width:75px;height:50px;flex-basis:75px}#interaction .interaction-cover{width:72px;height:48px}#interaction:has(.interaction-cover:not([hidden])){max-width:calc(100% - 16px);min-width:0;gap:8px;padding:8px}#interaction:has(.interaction-cover:not([hidden])) strong{font-size:12px}#interaction:has(.interaction-cover:not([hidden])) .primary-button{padding:8px}}

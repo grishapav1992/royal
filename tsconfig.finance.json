@@ -1,4 +1,0 @@
-{
-  "extends": "./tsconfig.json",
-  "include": ["server/finance", "scripts/finance-*.ts", "scripts/database-*.ts", "server-tests/finance"]
-}

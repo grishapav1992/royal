@@ -1,0 +1,100 @@
+#bar-dialog.mira-rpg{position:absolute;inset:50% auto auto 50%;transform:translate(-50%,-50%);margin:0;width:min(1000px,calc(100% - 24px));height:min(500px,calc(100% - 24px));max-height:none;padding:0;overflow:hidden;z-index:20;border:3px solid #70523c;border-radius:8px;background:#fff3d8;box-shadow:0 12px 35px #0006;color:#392d25}
+#bar-dialog.mira-rpg[open]{display:grid;grid-template-columns:minmax(160px,22%) minmax(0,1fr) minmax(140px,18%)}
+.mira-rpg .mira-portrait{margin:0;width:100%;height:100%;min-height:0;overflow:hidden;position:relative;background:#ecd6ae;border-right:1px solid #c9a47a}
+.mira-rpg .mira-portrait canvas{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 10%;transform-origin:50% 72%;animation:mira-breathe 4.8s ease-in-out infinite}
+.mira-rpg .mira-portrait figcaption{position:absolute;bottom:0;left:0;right:0;padding:24px 14px 14px;color:#fff8e6;background:linear-gradient(transparent,#4d241bd9);pointer-events:none}
+.mira-rpg .mira-portrait figcaption strong{display:block;font-size:20px;line-height:1.3}.mira-rpg .mira-portrait figcaption small{display:block;font-size:10px;opacity:.86;margin-top:3px}
+.mira-rpg .mira-portrait[data-emotion=concern] canvas{filter:saturate(.87)}
+.mira-rpg .mira-content{padding:20px 22px 14px;min-width:0;min-height:0;display:grid;grid-template-rows:auto minmax(0,1fr) 20px auto;gap:8px;position:relative;background:linear-gradient(135deg,#fff8e8,#fff0d1)}
+.mira-rpg .mira-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin:0}
+.mira-rpg .mira-heading h2{font-size:26px;margin:0 0 4px;letter-spacing:0;line-height:1.2}
+.mira-rpg .mira-heading small{font-size:11px;color:#8e7356}
+.mira-rpg button{font:inherit;cursor:pointer}.mira-rpg button:disabled{opacity:.45;cursor:default}
+.mira-rpg button:focus-visible,.mira-rpg summary:focus-visible{outline:2px solid #9e6747;outline-offset:3px}
+.mira-rpg .mira-leave{background:none;border:0;font-size:12px;color:#826548;padding:4px 0;min-height:30px}
+.mira-rpg .mira-talk{display:grid;grid-template-rows:24px minmax(36px,1fr) 38px 84px auto;gap:8px;min-height:0}
+.mira-rpg .mira-reply-scroll{display:contents}
+.mira-rpg .mira-log{min-height:0;overflow:auto;margin:0;font-size:19px;line-height:1.5;overflow-wrap:anywhere;scrollbar-gutter:stable}
+.mira-rpg .mira-log p{font-size:inherit;line-height:inherit;margin:0;white-space:pre-wrap}
+.mira-rpg .mira-chosen{font-size:11px;color:#92795e;margin:0;overflow:auto;overflow-wrap:anywhere;line-height:1.4;scrollbar-gutter:stable}
+.mira-rpg .mira-choices{display:grid;grid-template-rows:repeat(3,minmax(0,1fr));gap:2px;margin:0;height:84px;overflow:hidden}
+.mira-rpg .mira-choices button{border:0;background:transparent;text-align:left;padding:5px 0;color:#74523b;font-size:14px;line-height:1.3;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mira-rpg .mira-choices button:hover{color:#a43636;text-decoration:underline;text-underline-offset:4px}
+.mira-rpg .mira-answer{display:flex;gap:8px;margin:0}
+.mira-rpg .mira-answer input{flex:1;min-width:0;border:1px solid #bfa382;background:#fffaf0;border-radius:4px;font:inherit;font-size:16px;padding:9px 10px;color:#392d25}
+.mira-rpg .mira-answer input:focus{outline:2px solid #bd9156;outline-offset:1px}
+.mira-rpg .mira-answer button,.mira-rpg .mira-drink-offer button{background:#69343c;color:#fff2d9;border:1px solid #69343c;border-radius:4px;padding:9px 12px;font-size:12px}
+.mira-rpg .mira-drink-offer{display:flex;justify-content:space-between;align-items:center;gap:8px;background:#f2dfb5;border:1px solid #dfc091;border-radius:5px;padding:3px 4px 3px 9px;min-width:0}
+.mira-rpg .mira-drink-offer span{font-size:11px;color:#79563c;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mira-rpg .mira-drink-offer button{padding:6px 13px;min-height:30px;flex-shrink:0}
+.mira-rpg .mira-drink-offer[hidden]{display:flex!important;visibility:hidden;pointer-events:none}
+.mira-rpg .mira-status{font-size:11px;color:#a34433;line-height:18px;margin:0;overflow:auto}
+.mira-rpg .mira-footer{display:flex;gap:18px;align-items:center;border-top:1px solid #dfc8a5;margin:0;padding-top:10px}
+.mira-rpg .mira-footer>button,.mira-rpg .mira-options button{border:0;background:none;padding:0;font-size:11px;color:#8c7154}
+.mira-rpg .mira-footer>button[aria-pressed=true]{color:#69343c;text-decoration:underline;text-underline-offset:4px}
+.mira-rpg .mira-options{margin-left:auto}.mira-rpg .mira-options summary{cursor:pointer;list-style:none;font-size:21px;line-height:14px;color:#8c7154}.mira-rpg .mira-options summary::-webkit-details-marker{display:none}
+.mira-rpg .mira-options-content{position:absolute;right:12px;bottom:42px;width:min(230px,calc(100% - 24px));background:#fff3d8;border:1px solid #bfa382;border-radius:4px;box-shadow:0 4px 16px #0003;padding:12px;z-index:2}
+.mira-rpg .mira-options small{display:block;font-size:11px;line-height:1.5;color:#8c7154;margin-bottom:8px}
+.mira-rpg .mira-menu,.mira-rpg .mira-archive{overflow:auto;min-height:0;scrollbar-gutter:stable}
+.mira-rpg .mira-menu>p{font-size:14px;margin:0 0 6px}.mira-rpg .mira-menu-hint{display:block;color:#8c7154;font-size:10px;line-height:1.5;margin-bottom:12px}
+.mira-rpg .drink-list{margin:0;gap:8px}.mira-rpg .drink-list button{padding:10px;gap:10px}.mira-rpg .drink-list strong{font-size:13px}.mira-rpg .drink-list small{font-size:10px;margin-top:2px}.mira-rpg .drink-list .drink-strength{color:#987550;font-size:9px}.mira-rpg .drink-list .drink-action{color:#69343c;font-size:11px;flex-shrink:0;font-weight:700}
+.mira-rpg .mira-history{overflow-wrap:anywhere;font-size:13px;line-height:1.6}.mira-rpg .mira-history p{margin:0 0 12px}.mira-rpg .mira-history strong{color:#8c3c44}
+.mira-rpg .mira-player{margin:0;padding:22px 14px 18px;min-width:0;min-height:0;display:grid;grid-template-rows:minmax(0,1fr) auto auto;gap:14px;text-align:center;border-left:1px solid #d9bd91;background:radial-gradient(ellipse at 50% 34%,#fff9e8 0,#efd7aa 75%);overflow:hidden}
+.mira-rpg .mira-player-stage{min-height:0;display:flex;justify-content:center;align-items:center;position:relative}
+.mira-rpg .mira-player-halo{position:absolute;left:12%;right:12%;height:12%;bottom:12%;border-radius:50%;background:#97704e2e;filter:blur(3px)}
+.mira-rpg .mira-player-avatar{display:block;width:min(160px,100%);height:auto;max-height:100%;object-fit:contain;image-rendering:pixelated;position:relative;transform-origin:50% 90%;animation:mira-player-breathe 3.8s ease-in-out infinite}
+.mira-rpg .mira-player-avatar:not([src]){visibility:hidden}
+.mira-rpg .mira-player figcaption{min-width:0}.mira-rpg .mira-player figcaption strong{display:block;font-size:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mira-rpg .mira-player figcaption small{display:block;font-size:10px;color:#8e7356;margin-top:5px;min-height:14px}
+.mira-rpg .mira-intoxication{text-align:left;border-top:1px solid #d2b589;padding-top:12px;display:grid;gap:5px}.mira-rpg .mira-intoxication>small:first-child{font-size:9px;color:#92704c;text-transform:uppercase;letter-spacing:.8px}.mira-rpg .mira-player-level{font-size:14px;color:#75533a}.mira-rpg .mira-player-remaining{font-size:10px;color:#8d6d4b;min-height:14px}
+.mira-rpg .mira-intoxication progress{width:100%;height:6px;appearance:none;border:0;border-radius:4px;overflow:hidden;background:#d9c29e;color:#ae5b46}.mira-rpg .mira-intoxication progress::-webkit-progress-bar{background:#d9c29e}.mira-rpg .mira-intoxication progress::-webkit-progress-value{background:linear-gradient(90deg,#b79255,#ad4546);border-radius:4px}.mira-rpg .mira-intoxication progress::-moz-progress-bar{background:#ae5b46}
+.mira-rpg .mira-player-bubbles{display:none;position:absolute;right:5%;top:10%;color:#c08849;font-size:24px;letter-spacing:3px;animation:mira-float 2.6s ease-in-out infinite;pointer-events:none}
+.mira-rpg .mira-player[data-stage="1"] .mira-player-avatar{animation:mira-player-sway 4.4s ease-in-out infinite}.mira-rpg .mira-player[data-stage="2"] .mira-player-avatar{animation:mira-player-sway 2.8s ease-in-out infinite}.mira-rpg .mira-player[data-stage="3"] .mira-player-avatar{animation:mira-player-sway-strong 2s ease-in-out infinite}.mira-rpg .mira-player[data-stage="2"] .mira-player-bubbles,.mira-rpg .mira-player[data-stage="3"] .mira-player-bubbles{display:block}.mira-rpg .mira-player.is-drinking .mira-player-avatar{animation:none}
+.mira-rpg [hidden]{display:none!important}
+@keyframes mira-breathe{0%,100%{transform:scale(1.005) rotate(-.12deg)}50%{transform:scale(1.016) rotate(.12deg)}}
+@keyframes mira-player-breathe{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+@keyframes mira-player-sway{0%,100%{transform:rotate(-2deg) translateX(-1px)}50%{transform:rotate(2deg) translateX(1px)}}
+@keyframes mira-player-sway-strong{0%,100%{transform:rotate(-5deg) translateX(-3px)}50%{transform:rotate(5deg) translateX(3px)}}
+@keyframes mira-float{0%,100%{transform:translateY(0);opacity:.45}50%{transform:translateY(-8px);opacity:1}}
+@media(max-width:700px){
+  #bar-dialog.mira-rpg{height:min(560px,calc(100% - 16px));width:calc(100% - 16px)}
+  #bar-dialog.mira-rpg[open]{grid-template-columns:1fr 1fr;grid-template-rows:100px minmax(0,1fr)}
+  .mira-rpg .mira-portrait{grid-column:1;grid-row:1;border-right:1px solid #c9a47a;border-bottom:1px solid #c9a47a}
+  .mira-rpg .mira-portrait canvas{width:100%;height:100%;object-position:50% 16%;object-fit:cover}
+  .mira-rpg .mira-portrait figcaption{padding:10px 9px 7px;background:linear-gradient(transparent,#4d241be6)}.mira-rpg .mira-portrait figcaption strong{font-size:15px}.mira-rpg .mira-portrait figcaption small{font-size:8px;margin-top:0}
+  .mira-rpg .mira-content{grid-column:1/-1;grid-row:2;padding:10px 12px;gap:6px;grid-template-rows:auto minmax(0,1fr) 18px auto}
+  .mira-rpg .mira-heading h2{font-size:21px}.mira-rpg .mira-heading small{font-size:9px}.mira-rpg .mira-log{font-size:16px;line-height:1.4}
+  .mira-rpg .mira-talk{gap:6px;grid-template-rows:20px minmax(36px,1fr) 34px 66px auto}
+  .mira-rpg .mira-choices{height:66px}.mira-rpg .mira-choices button{font-size:12px;padding:3px 0}.mira-rpg .mira-answer{gap:5px}.mira-rpg .mira-answer input{padding:7px 6px}.mira-rpg .mira-answer button{padding:7px;font-size:11px}
+  .mira-rpg .mira-footer{gap:15px;padding-top:7px}.mira-rpg .mira-footer>button{font-size:10px}.mira-rpg .drink-glass{display:none}.mira-rpg .drink-list button{padding:8px}.mira-rpg .drink-list strong{font-size:12px}.mira-rpg .drink-list small{font-size:9px}
+  .mira-rpg .mira-player{grid-column:2;grid-row:1;grid-template-columns:58px minmax(0,1fr);grid-template-rows:auto auto;padding:8px 9px 6px;gap:5px 7px;text-align:left;border-left:0;border-bottom:1px solid #c9a47a}
+  .mira-rpg .mira-player-stage{grid-column:1;grid-row:1/-1}.mira-rpg .mira-player-avatar{width:58px;max-height:86px}.mira-rpg .mira-player-halo{bottom:0}.mira-rpg .mira-player figcaption strong{font-size:13px}.mira-rpg .mira-player figcaption small{font-size:8px;margin-top:2px;min-height:11px}.mira-rpg .mira-intoxication{border:0;padding:0;gap:3px}.mira-rpg .mira-intoxication>small:first-child{display:none}.mira-rpg .mira-player-level{font-size:11px}.mira-rpg .mira-player-remaining{font-size:8px;min-height:11px}.mira-rpg .mira-intoxication progress{height:4px}.mira-rpg .mira-player-bubbles{font-size:14px;right:0;top:0}
+}
+#bar-dialog.mira-compact{height:calc(100% - 12px);width:calc(100% - 12px)}
+#bar-dialog.mira-compact[open]{grid-template-columns:minmax(78px,19%) minmax(0,1fr) minmax(86px,19%);grid-template-rows:minmax(0,1fr)}
+.mira-compact .mira-content{grid-column:2;grid-row:1;padding:8px 10px;gap:4px;grid-template-rows:auto minmax(0,1fr) 16px auto}.mira-compact .mira-heading h2{font-size:19px;margin:0}.mira-compact .mira-heading small{display:none}.mira-compact .mira-talk{grid-template-rows:minmax(36px,1fr) 32px 28px auto;gap:4px}.mira-compact .mira-chosen{display:none}.mira-compact .mira-log{font-size:15px;line-height:1.35}.mira-compact .mira-choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:1fr;gap:8px;height:28px}.mira-compact .mira-choices button{font-size:11px;padding:3px 0}.mira-compact .mira-answer input{padding:5px 6px}.mira-compact .mira-answer button{padding:5px 8px}.mira-compact .mira-footer{padding-top:5px;gap:12px}.mira-compact .mira-status{line-height:15px}.mira-compact .mira-portrait{grid-column:1;grid-row:1;border-bottom:0}.mira-compact .mira-portrait figcaption{padding:20px 7px 8px}.mira-compact .mira-portrait figcaption strong{font-size:14px}.mira-compact .mira-portrait figcaption small{display:none}.mira-compact .mira-player{grid-column:3;grid-row:1;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto auto;padding:10px 8px;gap:8px;border-bottom:0;border-left:1px solid #d9bd91;text-align:center}.mira-compact .mira-player-stage{grid-column:1;grid-row:1}.mira-compact .mira-player-avatar{width:min(105px,100%);max-height:100%}.mira-compact .mira-player-halo{bottom:8%}.mira-compact .mira-player figcaption strong{font-size:13px}.mira-compact .mira-player figcaption small{font-size:8px;margin-top:2px}.mira-compact .mira-intoxication{border-top:1px solid #d2b589;padding-top:6px;gap:3px}.mira-compact .mira-player-level{font-size:10px}.mira-compact .mira-player-remaining{font-size:8px}.mira-compact .mira-player-bubbles{font-size:15px}
+  #bar-dialog.mira-compact:where(.mira-narrow)[open]{grid-template-columns:1fr 1fr;grid-template-rows:70px minmax(0,1fr)}
+  .mira-compact:where(.mira-narrow) .mira-content{grid-column:1/-1;grid-row:2;padding:6px 9px}.mira-compact:where(.mira-narrow) .mira-portrait{grid-column:1;grid-row:1;border-bottom:1px solid #c9a47a}.mira-compact:where(.mira-narrow) .mira-portrait canvas{object-position:50% 13%}.mira-compact:where(.mira-narrow) .mira-portrait figcaption{padding:10px 7px 5px}.mira-compact:where(.mira-narrow) .mira-player{grid-column:2;grid-row:1;grid-template-columns:42px minmax(0,1fr);grid-template-rows:auto auto;padding:5px 7px;gap:2px 5px;border-left:0;border-bottom:1px solid #c9a47a;text-align:left}.mira-compact:where(.mira-narrow) .mira-player-stage{grid-column:1;grid-row:1/-1}.mira-compact:where(.mira-narrow) .mira-player-avatar{width:42px;max-height:60px}.mira-compact:where(.mira-narrow) .mira-player figcaption strong{font-size:11px}.mira-compact:where(.mira-narrow) .mira-player figcaption small{display:none}.mira-compact:where(.mira-narrow) .mira-intoxication{border:0;padding:0;gap:2px}.mira-compact:where(.mira-narrow) .mira-player-level{font-size:9px}.mira-compact:where(.mira-narrow) .mira-player-remaining{font-size:7px}.mira-compact:where(.mira-narrow) .mira-talk{grid-template-rows:minmax(36px,1fr) 30px 39px auto;gap:3px}.mira-compact:where(.mira-narrow) .mira-choices{grid-template-columns:1fr;grid-template-rows:repeat(3,minmax(0,1fr));gap:0;height:39px}.mira-compact:where(.mira-narrow) .mira-choices button{font-size:10px;padding:0;line-height:1.2}.mira-compact:where(.mira-narrow) .mira-heading h2{font-size:17px}.mira-compact:where(.mira-narrow) .mira-leave{min-height:24px}.mira-compact:where(.mira-narrow) .mira-drink-offer span{font-size:10px}.mira-compact:where(.mira-narrow) .mira-drink-offer button{font-size:10px;padding:4px 9px;min-height:24px}
+.mira-rpg .mira-motion-reduced canvas,.mira-rpg .mira-motion-reduced .mira-player-avatar,.mira-rpg .mira-motion-reduced .mira-player-bubbles{animation:none!important}
+@media(prefers-reduced-motion:reduce){.mira-rpg .mira-portrait canvas,.mira-rpg .mira-player-avatar,.mira-rpg .mira-player-bubbles{animation:none!important}}
+  #bar-dialog.mira-short[open]{grid-template-rows:48px minmax(0,1fr)}
+  .mira-short .mira-content{padding:4px 7px;grid-template-rows:minmax(0,1fr) 12px 18px;gap:3px}
+  .mira-short .mira-heading{position:absolute;right:8px;top:3px;z-index:1}.mira-short .mira-heading>div{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.mira-short .mira-leave{padding:2px 3px;min-height:20px;background:#fff3d8e8;font-size:9px}
+  .mira-short .mira-log{padding-right:28px;font-size:13px;line-height:1.3}.mira-short .mira-talk{grid-template-rows:minmax(36px,1fr) 26px 20px auto;gap:3px}
+  .mira-short .mira-choices{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:1fr;gap:6px;height:20px}.mira-short .mira-choices button{font-size:9px;line-height:1.3}.mira-short .mira-answer input{padding:4px 5px}.mira-short .mira-answer button{padding:4px 7px;font-size:10px}
+  .mira-short .mira-drink-offer{padding:1px 3px 1px 7px}.mira-short .mira-drink-offer span{font-size:9px}.mira-short .mira-drink-offer button{padding:2px 8px;min-height:21px;font-size:9px}
+  .mira-short .mira-status{font-size:9px;line-height:12px}.mira-short .mira-footer{padding-top:2px;gap:13px}.mira-short .mira-footer>button{font-size:9px;line-height:12px}.mira-short .mira-options summary{font-size:18px;line-height:12px}
+  .mira-short .mira-portrait figcaption{padding:5px 6px 3px}.mira-short .mira-portrait figcaption strong{font-size:12px}.mira-short .mira-portrait canvas{object-position:50% 15%}
+  .mira-short .mira-player{grid-template-columns:30px minmax(0,1fr);padding:3px 6px;gap:1px 5px}.mira-short .mira-player-avatar{width:30px;max-height:41px}.mira-short .mira-player figcaption strong{font-size:9px;line-height:11px}.mira-short .mira-player-level{font-size:8px;line-height:10px}.mira-short .mira-player-remaining{font-size:7px;min-height:9px;line-height:9px}.mira-short .mira-intoxication{gap:1px}.mira-short .mira-intoxication progress{height:3px}.mira-short .mira-player-bubbles{display:none!important}
+  #bar-dialog.mira-scroll[open]{grid-template-rows:32px minmax(0,1fr)}
+  .mira-scroll .mira-content{grid-template-rows:minmax(0,1fr) auto 18px}
+  .mira-scroll .mira-status{grid-row:2;max-height:12px}.mira-scroll .mira-status:empty{display:none}
+  .mira-scroll .mira-footer{grid-row:3;padding-right:38px}
+  .mira-scroll .mira-heading{top:auto;bottom:3px;right:7px;z-index:2}
+  .mira-scroll .mira-talk{display:grid;grid-template-rows:minmax(0,1fr) auto;height:100%;overflow:visible}
+  .mira-scroll .mira-reply-scroll{display:block;min-height:0;overflow-y:auto;scrollbar-width:thin;scrollbar-gutter:stable}
+  .mira-scroll .mira-log{height:36px;min-height:36px}.mira-scroll .mira-drink-offer{height:26px;margin-top:3px}.mira-scroll .mira-choices{height:20px;margin-top:3px}
+  .mira-scroll .mira-answer{position:static;background:#fff3d8}
+  .mira-rpg.mira-scroll .mira-drink-offer[hidden]{display:none!important}
+  .mira-scroll .mira-portrait figcaption{padding:2px 6px}.mira-scroll .mira-portrait figcaption strong{font-size:10px}.mira-scroll .mira-player{grid-template-columns:21px minmax(0,1fr);padding:2px 6px}.mira-scroll .mira-player-avatar{width:21px;max-height:27px}.mira-scroll .mira-player figcaption{display:none}.mira-scroll .mira-player-stage{grid-row:1}.mira-scroll .mira-intoxication{grid-column:2;grid-row:1}.mira-scroll .mira-player-level{font-size:8px}.mira-scroll .mira-player-remaining{font-size:6px}
+  #bar-dialog.mira-tiny[open]{grid-template-rows:12px minmax(0,1fr)}
+  .mira-tiny .mira-content{padding:2px 6px;gap:2px;grid-template-rows:minmax(0,1fr) auto 16px}.mira-tiny .mira-talk{gap:2px}.mira-tiny .mira-answer input{padding:2px 5px}.mira-tiny .mira-answer button{padding:2px 7px}.mira-tiny .mira-heading{bottom:2px}
+  .mira-tiny .mira-player-avatar{width:11px;max-height:14px}.mira-tiny .mira-player{grid-template-columns:13px minmax(0,1fr);padding:1px 6px}.mira-tiny .mira-intoxication{grid-template-columns:auto 1fr;gap:1px 4px;align-items:center}.mira-tiny .mira-player-remaining{grid-column:2}.mira-tiny .mira-intoxication progress{display:none}

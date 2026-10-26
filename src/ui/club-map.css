@@ -1,6 +1,0 @@
-.club-map{position:absolute;right:16px;top:16px;width:178px;padding:8px;border:1px solid #b69b65;border-radius:10px;background:#202630e8;color:#e4d3ac;z-index:4;box-shadow:0 6px 20px #0004;font:10px Arial,sans-serif;pointer-events:auto}
-.club-map-header{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:5px}.club-map-header button{padding:3px 7px;border:1px solid #8a795d;border-radius:5px;background:#343b41;color:#f3dcab;font:10px Arial,sans-serif;cursor:pointer}.club-map canvas{display:block;width:100%;height:auto;border-radius:4px;cursor:pointer}.club-map canvas[hidden]{display:none}.club-map canvas:focus-visible{outline:2px solid #f7d26a;outline-offset:3px}
-@media(max-width:600px){.club-map{top:8px;right:8px;width:115px;padding:6px;font-size:9px}.club-map-header button{font-size:9px;padding:2px 4px}}
-.club-map{top:42px}
-.room-panel[data-overview=true] .interaction,.room-panel[data-overview=true] .lounge-controls{display:none}
-@media(max-width:600px){.club-map{top:36px}}

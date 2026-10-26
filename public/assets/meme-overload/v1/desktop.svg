@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760">
-<defs><pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse"><path d="M48 0H0v48" fill="none" stroke="#ffffff" stroke-opacity=".035"/></pattern></defs>
-<path fill="#367c7c" d="M0 0h1200v760H0z"/><path fill="url(#grid)" d="M0 0h1200v760H0z"/>
-<g transform="translate(225 100)"><path fill="#1b4c4c" d="M18 18h760v490H18z"/><path fill="#c6c6c6" stroke="#f6f6f6" stroke-width="5" d="M0 0h760v490H0z"/><path fill="#213a98" d="M8 8h744v44H8z"/><text x="23" y="38" fill="#fff" font-family="Arial,sans-serif" font-size="25" font-weight="bold">meme_overload.exe</text><text x="690" y="37" fill="#fff" font-family="Arial,sans-serif" font-size="27">□ ×</text>
-<text x="40" y="155" fill="#111" font-family="Arial,sans-serif" font-size="65" font-weight="bold">MEME</text><text x="40" y="224" fill="#213a98" font-family="Arial,sans-serif" font-size="65" font-weight="bold">OVERLOAD.exe</text>
-<path fill="#151515" d="M40 260h680v140H40z"/><text x="73" y="320" fill="#d4ff3e" font-family="monospace" font-size="28">SYSTEM OVERCLOCK: ×5</text><text x="73" y="367" fill="#ff60bf" font-family="monospace" font-size="27">MEMES LOADED. VERY WOW.</text><path fill="#d4ff3e" stroke="#fff" stroke-width="3" d="M40 420h680v45H40z"/><text x="270" y="451" fill="#171717" font-family="Arial,sans-serif" font-size="25" font-weight="bold">START.exe</text></g>
-</svg>

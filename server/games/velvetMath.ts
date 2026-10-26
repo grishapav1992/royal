@@ -1,2 +1,0 @@
-/** Original Royal model. Public supplier rules do not reveal event probabilities. */
-export const VELVET_MATH={version:1,freeGemPerMillion:{spotlight:20385,'super-encore':21030},freeWildPerMillion:10000,starWeights:[6500,1800,700,400,300,180,90,25,5],freeOrdinaryWeights:[35,20,15,10,8,5,4,3],entryPerMillion:3500,encorePerThousand:100,baseWildPerMillion:3000,baseOrdinaryWeights:{"normal":[3688,1942,1457,971,777,486,388,291],"booster":[4004,1845,1384,922,738,461,369,277],"hyper":[5008,1536,1152,768,614,384,307,230]}} as const;

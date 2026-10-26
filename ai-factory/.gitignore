@@ -1,7 +1,0 @@
-node_modules/
-data/
-workspaces/
-.env*
-test-results*/
-playwright-report/
-knowledge-graph/.pip-cache/

@@ -1,6 +1,0 @@
-services:
-  game:
-    environment:
-      MIRA_PROVIDER: ${MIRA_PROVIDER:-codex-sale}
-      VENICE_API_KEY: ${VENICE_API_KEY:-}
-      VENICE_NPC_MODEL: ${VENICE_NPC_MODEL:-venice-uncensored-role-play}

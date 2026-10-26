@@ -1,0 +1,49 @@
+import { installDemoWallet } from './demoWalletRoutes';
+import { installCasinoApiPro } from './casinoApiProRoutes';
+import { installNileWallet } from './nileWalletRoutes';
+import { installNilePlay } from './nilePlayRoutes';
+import { installUsdtWallet } from './usdtWalletRoutes';
+import { installCryptoWallet } from './cryptoWalletRoutes';
+import { installMira } from './miraRoutes';
+import { defineServer, defineRoom } from '@colyseus/core';
+import { WebSocketTransport } from '@colyseus/ws-transport';
+import express from 'express';
+import { resolve } from 'node:path';
+import { LobbyRoom } from './LobbyRoom';
+import { installAuth } from './authRoutes';
+import { accounts } from './accounts';
+
+const port = Number(process.env.PORT || 2567);
+let stopCrypto: (() => void) | undefined;
+const server = defineServer({
+  transport: new WebSocketTransport({ maxPayload: 8192, pingInterval: 5000, pingMaxRetries: 3 }),
+  beforeListen: async () => { await accounts.ready; },
+  rooms: { lobby: defineRoom(LobbyRoom) },
+  express: async app => {
+    app.disable('x-powered-by');
+    app.set('trust proxy', 1);
+    app.use((req, res, next) => {
+      if (process.env.NODE_ENV === 'production' && process.env.PUBLIC_ORIGIN && !req.secure && req.path !== '/healthz') {
+        res.redirect(308, process.env.PUBLIC_ORIGIN + req.originalUrl); return;
+      }
+      next();
+    });
+    installAuth(app);
+    installDemoWallet(app);
+    installCasinoApiPro(app);
+    installNileWallet(app);
+    installNilePlay(app);
+    installUsdtWallet(app);
+    stopCrypto = installCryptoWallet(app);
+    await installMira(app);
+    app.get('/healthz', async (_req, res) => {
+      try { await accounts.health(); res.json({ ok: true, service: 'royal-arcade' }); }
+      catch { res.status(503).json({ ok: false, service: 'royal-arcade' }); }
+    });
+    app.use(express.static(resolve('dist'), { maxAge: '1h', setHeaders: (res, path) => { if (path.endsWith('.html')) res.setHeader('Cache-Control', 'no-store'); } }));
+    app.get('/', (_req, res) => res.sendFile(resolve('dist/index.html')));
+  },
+});
+server.onShutdown(async () => { stopCrypto?.(); await accounts.close(); });
+await server.listen(port, '0.0.0.0');
+console.log(`Royal server listening on port ${port}`);

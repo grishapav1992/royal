@@ -1,9 +1,0 @@
-{
-  "junctionPathsRemoved": [
-    "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-usdt\\royal\\artifacts\\pvp-release\\candidate-v2\\node_modules",
-    "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-usdt\\royal\\artifacts\\pvp-release\\candidate-v3\\node_modules",
-    "C:\\Users\\Aorus\\.codex\\worktrees\\pvp-usdt\\royal\\artifacts\\pvp-release\\candidate-v4\\node_modules"
-  ],
-  "targetPreserved": "C:\\Users\\Aorus\\Documents\\Codex\\royal\\node_modules",
-  "targetPackageJsonExists": true
-}
