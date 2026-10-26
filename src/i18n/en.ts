@@ -1,6 +1,8 @@
 import {  volcanicPlinkoEnglish } from './volcanicPlinkoEn';
+import { paymentMethodsEnglish } from './paymentMethodsEn';
 
 export const english: Record<string, string> = {
+  ...paymentMethodsEnglish,
   'Выбери игру в каталоге':'Choose a game from the catalogue',
   'Игры Royal':'Royal games',
   'Доработанные GitHub-игры':'Enhanced GitHub games',

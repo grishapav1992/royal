@@ -1,5 +1,4 @@
 import { test, expect, type Page } from '@playwright/test';
-import { prepareGame } from '../server/games/core';
 import jsQR from 'jsqr';
 
 async function readPaymentQr(page: Page) {
@@ -152,7 +151,7 @@ test('country currency is an estimate, checkout stays in USDT and shows confirme
       currency: request.currency, address: 'T' + 'C'.repeat(33), memo: '', payAmount: '20', txHash: '', createdAt: Date.now() };
     state.operations = [operation]; return route.fulfill({ json: operation });
   });
-  await login(page); await expect(page.locator('#crypto-wallet-button')).toHaveText('Пополнить баланс');
+  await login(page); await expect(page.locator('#crypto-wallet-button')).toHaveText('NOWPayments · Боевой');
   await page.locator('#crypto-wallet-button').click();
   await expect(page.locator('#crypto-display-currency')).toHaveValue('USDT');
   await page.locator('#crypto-display-currency').selectOption('RUB');
@@ -187,25 +186,13 @@ test('unavailable or expired display rates show USDT without blocking the paymen
   await expect(page.locator('#crypto-deposit-equivalent')).toBeHidden();
   await expect(page.getByRole('button', { name: 'Оплатить', exact: true })).toBeEnabled();
 });
-test('crypto game retry after reload keeps the original bet id and one round', async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: 'reduce' }); const state = wallet(); let attempts = 0, id = '';
+test('real payment balance remains separate from Sandbox and does not enable real stakes', async ({ page }) => {
+  const state = wallet();
   await page.route('**/api/crypto-wallet', route => route.fulfill({ json: state }));
-  await page.route('**/api/crypto-wallet/rounds', async route => {
-    const request = route.request().postDataJSON(); attempts++;
-    if (!id) {
-      id = request.id;
-      const round = { ...prepareGame(request.gameId, 1, request.input).play(BigInt(request.stakeUnits), () => 0), id, createdAt: Date.now() };
-      state.rounds = [round]; state.balanceUnits = '31000000';
-    }
-    expect(request.id).toBe(id);
-    if (attempts === 1) await route.abort('failed'); else await route.fulfill({ json: { wallet: state, round: state.rounds[0], replayed: true } });
-  });
-  await login(page); await expect(page.locator('#crypto-wallet-button')).toHaveText('Пополнить баланс');
-  await page.locator('#games-tab').click(); await page.locator('[data-cabinet="royal-coins"]').click();
-  await expect(page.locator('#coins-currency')).toHaveValue('crypto');
-  await page.locator('#coins-spin').click(); await expect(page.locator('#coins-spin')).toHaveText('Проверить результат');
-  await page.reload(); await expect(page.locator('#join-dialog')).toBeHidden({ timeout: 15000 });
-  await page.locator('#games-tab').click(); await page.locator('[data-cabinet="royal-coins"]').click();
-  await page.locator('#coins-spin').click(); await expect(page.locator('#coins-balance')).toHaveText('31 USDT');
-  expect(attempts).toBe(2); expect(state.rounds).toHaveLength(1);
+  await page.route('**/api/crypto-wallet/currencies', route => route.fulfill({ json: { currencies: [] } }));
+  await login(page); await page.locator('#crypto-wallet-button').click();
+  await expect(page.locator('#crypto-wallet-balance')).toHaveText('20');
+  await expect(page.locator('#crypto-wallet-dialog')).toContainText('Ставки на реальные средства пока недоступны');
+  await page.locator('#crypto-wallet-close').click(); await page.locator('#wallet-button').click();
+  await expect(page.locator('#wallet-balance')).toHaveText('0');
 });

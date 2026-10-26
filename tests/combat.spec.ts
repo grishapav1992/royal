@@ -1,3 +1,4 @@
+import {sandboxTopUp} from './sandbox-topup';
 import {test,expect,type Page} from '@playwright/test';
 import {worldPoint,selectHall} from './room-ui';
 const activity=(p:Page)=>p.evaluate(()=>(window as any).royalDemo.getActivities());
@@ -35,9 +36,7 @@ test('real host: two players, equal stakes, chat, phone controls, surrender payo
   await expect.poll(async()=>(await activity(a)).combat.players.length).toBe(2);
   for(const p of[a,b]){
    await p.bringToFront();await expect(p.locator('[data-ready]')).toBeDisabled();
-   await p.locator('[data-wallet-open]').click();await expect(p.locator('#wallet-dialog')).toBeVisible();
-   await p.locator('#wallet-amount').fill('200');await p.locator('#wallet-deposit button').click();
-   await expect.poll(()=>balance(p)).toBe(200);await p.locator('#wallet-close').click();
+   await sandboxTopUp(p,200);
    await expect(p.locator('[data-ready]')).toBeEnabled();
   }
   await expect(a.locator('[data-combat]')).not.toContainText('Nile');

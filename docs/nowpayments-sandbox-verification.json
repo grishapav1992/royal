@@ -1,0 +1,244 @@
+{
+  "status": "official-sandbox-verified-awaiting-production-readiness",
+  "verifiedAt": "2026-10-26T17:27:16.273Z",
+  "productionPublished": false,
+  "realPaymentsCreated": 0,
+  "officialSandboxPaymentsCreated": 7,
+  "realProviderEndToEndVerified": true,
+  "providerReadiness": {
+    "api": "https://api-sandbox.nowpayments.io/v1/",
+    "runtime": "Local isolated Node.js and temporary PostgreSQL",
+    "statusEndpoint": 200,
+    "storedKeyMerchantCoinsEndpoint": 200,
+    "independentSandboxCredentialsConfigured": true,
+    "accountPage": "https://account-sandbox.nowpayments.io/sign-in",
+    "providerNotice": "Official Sandbox documentation says it has not been kept in sync with Production since 2025.",
+    "signedProviderCallbackVerified": true,
+    "callbackTunnelClosed": true
+  },
+  "isolation": {
+    "liveProviderConfigurationChanged": false,
+    "liveWalletGuardPreserved": true,
+    "realLedgerFunded": false,
+    "virtualWalletReused": true,
+    "newWalletCreated": false,
+    "withdrawalsAdded": false,
+    "gameMathematicsChanged": false,
+    "productionPlayerDataWritten": false
+  },
+  "checks": {
+    "serverTests": {
+      "passed": 27,
+      "failed": 0
+    },
+    "royalGamesWithAcceptedWagerAndReplay": 12,
+    "fullApplicationBuild": true,
+    "rtpGate": {
+      "passed": true,
+      "verified": 10,
+      "legacyNotQualified": 114
+    },
+    "archive": {
+      "verified": true,
+      "games": 54,
+      "sources": 73
+    },
+    "ui": {
+      "mode": "local-emulator",
+      "successCredit": 1000,
+      "partialCredit": 500,
+      "failedCredit": 0,
+      "balanceBeforeWager": 1500,
+      "bet": 10,
+      "payout": 3.03,
+      "balanceAfterWager": 1493.03,
+      "persistsAfterReload": true,
+      "repeatedRefreshDoesNotRefillBalance": true,
+      "connectedChat": true,
+      "mobileWidth": 390,
+      "mobileHorizontalOverflow": false,
+      "javascriptErrors": 0
+    },
+    "credentialWriter": {
+      "mode": "0600",
+      "stdinOnly": true,
+      "preservesExistingConfig": true,
+      "enabledByDefault": false
+    },
+    "afterIntegration": {
+      "typescript": true,
+      "rtpGate": true,
+      "archive": true
+    },
+    "localFixtureCleanShutdown": true,
+    "fullApplicationBuildVerifiedAt": "2026-10-26T17:30:41.047Z",
+    "officialProvider": {
+      "startedAt": "2026-10-26T17:26:13.754Z",
+      "completedAt": "2026-10-26T17:27:16.273Z",
+      "scenario": "success",
+      "creditTrigger": "genuine-signed-ipn-with-authenticated-provider-get",
+      "backgroundPollingDisabled": true,
+      "signatureVerified": true,
+      "creditedVirtualAmount": 1000,
+      "creditEntries": 1,
+      "games": [
+        {
+          "gameId": "studio-cosmic-escape",
+          "wager": 10,
+          "accepted": true,
+          "replayChargedAgain": false
+        },
+        {
+          "gameId": "studio-caramel-carnival",
+          "wager": 10,
+          "accepted": true,
+          "replayChargedAgain": false
+        },
+        {
+          "gameId": "studio-velvet-reign",
+          "wager": 10,
+          "accepted": true,
+          "replayChargedAgain": false
+        },
+        {
+          "gameId": "studio-last-convoy",
+          "wager": 10,
+          "accepted": true,
+          "replayChargedAgain": false
+        },
+        {
+          "gameId": "studio-nitro-run",
+          "wager": 10,
+          "accepted": true,
+          "replayChargedAgain": false
+        },
+        {
+          "gameId": "studio-afterglow",
+          "wager": 10,
+          "accepted": true,
+          "replayChargedAgain": false
+        },
+        {
+          "gameId": "studio-meme-overload",
+          "wager": 10,
+          "accepted": true,
+          "replayChargedAgain": false
+        },
+        {
+          "gameId": "studio-dracona",
+          "wager": 10,
+          "accepted": true,
+          "replayChargedAgain": false
+        },
+        {
+          "gameId": "studio-neopolis",
+          "wager": 10,
+          "accepted": true,
+          "replayChargedAgain": false
+        },
+        {
+          "gameId": "github-crash",
+          "wager": 10,
+          "accepted": true,
+          "replayChargedAgain": false
+        },
+        {
+          "gameId": "royal-plinko",
+          "wager": 10,
+          "accepted": true,
+          "replayChargedAgain": false
+        },
+        {
+          "gameId": "original-cr-vs-leo",
+          "wager": 10,
+          "accepted": true,
+          "replayChargedAgain": false
+        }
+      ],
+      "finalVirtualBalance": 911.9,
+      "confirmedStatusRefreshes": 3,
+      "repeatedRefreshChangedBalance": false,
+      "temporaryDatabaseRemoved": true,
+      "realMoney": false
+    },
+    "providerAvailability": {
+      "intermittentConnectTimeoutsObserved": true,
+      "firstSignedRunCompletedFundingAndAllGamesButFinalParallelRefreshTimedOut": true,
+      "finalSignedRunPassedWithThreeSequentialRefreshes": true
+    },
+    "officialPartialProvider": {
+      "verifiedAt": "2026-10-26T17:31:28.327Z",
+      "mode": "official-sandbox-existing-partial-payment",
+      "isolatedDatabase": true,
+      "actualProviderStatusVerified": true,
+      "status": "partially_paid",
+      "creditedAmount": 0,
+      "balance": 0,
+      "newProviderPaymentsCreated": 0,
+      "passed": true
+    },
+    "applicationBuild": {
+      "format": 1,
+      "startedAt": "2026-10-26T17:30:26.303Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 1701
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 5161
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 2197
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 5591
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 55
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 18
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 22
+        }
+      ],
+      "passed": true,
+      "durationMs": 14744
+    }
+  },
+  "remaining": [
+    "Obtain a fresh complete production baseline after Docker inventory and the concurrent project release finish.",
+    "Prepare a selective reviewed release, preserve production configuration, save its exact source to main and publish through a guarded installer.",
+    "Enable the separate Sandbox credentials and verify the wallet UI on the deployed environment."
+  ],
+  "sourceBranch": "feature/nowpayments-sandbox",
+  "integrationMain": "6b4669c1ffd01ed87539f45e777ddb3158e867fa",
+  "verificationScope": "Isolated local PostgreSQL and real Royal HTTP wallet/game routes; production has not been enabled.",
+  "productionReadiness": {
+    "enabled": false,
+    "sourceChanged": false,
+    "environmentChanged": false,
+    "lastObservedSourceCommit": "ae17a8df9e894278dedc29f08c052fe68ee09c04",
+    "lastObservedImage": "sha256:10c749e325df08878f00b488a4c45d128eee627f1af9ba362eb63eb69852c9a7",
+    "fullBaselineVerified": false,
+    "blocker": "Docker inventory requests time out under server load. Another project release is investigating the same condition. No Sandbox publication was attempted.",
+    "availableBytesAtLastCheck": 5651177472
+  },
+  "testedSourceBase": "7d4d418a3ba3bbee5556a1c6bf49874dde5fba2e"
+}
