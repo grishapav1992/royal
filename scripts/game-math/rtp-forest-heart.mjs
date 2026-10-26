@@ -17,7 +17,7 @@ const stakes=[1000,2000,5000,10000,20000,50000];
 const choices=['optimal','pass',...Array.from({length:12},(_,i)=>'rotate-'+i)];
 const cache=new Map();
 export function forestRuntimeEvidence(policy){
-  assert.equal(policy.method,FOREST_QUALIFICATION_METHOD);assert.equal(policy.releaseStatus,FOREST_SERVER_STATUS);
+  assert.equal(policy.method,FOREST_QUALIFICATION_METHOD);assert([FOREST_SERVER_STATUS,'qualified'].includes(policy.releaseStatus));
   assert.equal(policy.target,.96);assert.equal(policy.tolerance,.002);assert.equal(policy.rulesVersion,1);assert.equal(policy.progressVersion,1);
   assert.deepEqual(policy.stakes,stakes);assert.deepEqual(policy.choices,choices);
   assert.deepEqual(policy.seeds,[831749,962381]);assert.equal(policy.serverReplayRoundsPerSeed,64);
@@ -27,7 +27,7 @@ export function forestRuntimeEvidence(policy){
     choice,stakeUnits,rtpFraction:analysis.strategies.find(row=>row.choice===choice).rtp,
     rtp:analysis.strategies.find(row=>row.choice===choice).rtp.decimal,
   })));
-  const evidence={method:FOREST_QUALIFICATION_METHOD,scope:'server-engine-and-primary-common-wallet',clientReady:false,analysis,results};
+  const evidence={method:FOREST_QUALIFICATION_METHOD,scope:'server-engine-and-primary-common-wallet',clientVerification:'separate-browser-report',analysis,results};
   cache.set(key,structuredClone(evidence));return evidence;
 }
 export function validateForestRuntimeProof(gameId,inputs,proof){
@@ -35,7 +35,8 @@ export function validateForestRuntimeProof(gameId,inputs,proof){
   for(const [source,digest]of Object.entries(FOREST_REVIEWED_SOURCES))
     assert.equal(inputs.sourceHashes[source],digest,'Forest Heart source changed: independently review its model and server sampler');
   const expected=forestRuntimeEvidence(inputs.policy);
-  for(const field of ['method','scope','clientReady','analysis','results'])assert.deepEqual(proof[field],expected[field],'Invalid Forest Heart '+field);
+  assert(!('clientReady'in proof),'Client readiness is not certified by mathematical evidence');
+  for(const field of ['method','scope','clientVerification','analysis','results'])assert.deepEqual(proof[field],expected[field],'Invalid Forest Heart '+field);
   const replay=proof.serverReplay,p=inputs.policy;
   assert(replay&&Array.isArray(replay.coverage));assert.deepEqual(replay.seeds,p.seeds);
   assert.deepEqual(replay.entropyCensus,{boards:4096,energyTickets:10000,abilityTickets:32,bonusTickets:64});

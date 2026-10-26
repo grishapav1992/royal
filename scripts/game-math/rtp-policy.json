@@ -3,7 +3,7 @@
   "profiles": {
     "studio-forest-heart": {
       "method": "exact-forest-heart-runtime",
-      "releaseStatus": "server-qualified-client-pending",
+      "releaseStatus": "qualified",
       "rulesVersion": 1,
       "progressVersion": 1,
       "target": 0.96,
@@ -20,9 +20,10 @@
         "server/demoWalletRoutes.ts", "server/gameWalletRoutes.ts", "server/finance/nile-game-runtime.ts",
         "server/pvp/virtual-wallet.ts", "server/database.ts",
         "scripts/game-math/forest-heart-reference.mjs", "scripts/game-math/forest-heart-model.mjs",
-        "scripts/game-math/forest-heart-wallet.ts", "scripts/game-math/forest-heart-evidence.mjs", "scripts/database-test.ts"
+        "scripts/game-math/forest-heart-wallet.ts", "scripts/game-math/forest-heart-evidence.mjs", "scripts/database-test.ts",
+        "src/wallet/ExpansionClient.ts", "games/forest-heart/presentation.ts"
       ],
-      "note": "Exact full-round model with server entropy census, independent seeded start/move replay and real PostgreSQL common-wallet qualification. Client module, host layout, art, animation and audio remain pending; no runnable catalogue entry is allowed yet."
+      "note": "Exact full-round model with server entropy census, independent seeded start/move replay and real PostgreSQL common-wallet qualification. Presentation reads only the confirmed public view. Browser, module, layout and audio checks are recorded separately from mathematical qualification."
     },
     "studio-neopolis": {
       "rulesVersion": 3,

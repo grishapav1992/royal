@@ -3,11 +3,12 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {rtpInputs,validateRtpProof,checkGameRtp} from '../scripts/game-math/rtp-gate.mjs';
 import {forestWalletDigest} from '../scripts/game-math/forest-heart-evidence.mjs';
+import {GAME_MODULES} from '../src/modules/GameModuleCatalog.ts';
 const id='studio-forest-heart',inputs=await rtpInputs(process.cwd(),id);
 const proof=JSON.parse(await readFile(inputs.policy.proof,'utf8'));
 test('server qualification recomputes exact full rounds and verifies every stake, strategy and common-wallet scenario',()=>{
   assert(validateRtpProof(id,inputs,proof));assert.equal(proof.serverReplayChecks,10752);
-  assert.equal(proof.results.length,84);assert.equal(proof.walletEvidence.cases.length,11);assert.equal(proof.clientReady,false);
+  assert.equal(proof.results.length,84);assert.equal(proof.walletEvidence.cases.length,11);assert.equal(proof.clientVerification,'separate-browser-report');
   assert.equal(proof.analysis.optimalRtp.decimal,.95994233480111);
 });
 test('altered RTP, incomplete replay, missing financial cases and forged balanced totals are rejected',()=>{
@@ -30,6 +31,7 @@ test('changed core or server sources cannot be qualified by copying new fingerpr
     const changed=structuredClone(inputs);mutate(changed.policy);assert.throws(()=>validateRtpProof(id,changed,structuredClone(proof)));
   }
 });
-test('an unfinished client remains blocked even when all server and financial checks are qualified',async()=>{
-  await assert.rejects(checkGameRtp(process.cwd(),[{gameId:id,rulesVersion:1,progressVersion:1}],[]),/Unfinished client/);
+test('the client contract must match the qualified rules and progress',async()=>{
+  assert((await checkGameRtp(process.cwd(),GAME_MODULES,[id])).verified>=1);
+  await assert.rejects(checkGameRtp(process.cwd(),GAME_MODULES.map(game=>game.gameId===id?{...game,rulesVersion:2}:game),[id]));
 });

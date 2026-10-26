@@ -1,0 +1,13 @@
+{
+  "name": "@royal/forest-heart",
+  "version": "1.0.0",
+  "private": true,
+  "gameId": "studio-forest-heart",
+  "apiVersion": 1,
+  "rulesVersion": 1,
+  "progressVersion": 1,
+  "entry": "entry.ts",
+  "assetRoots": ["forest-heart"],
+  "preload": ["forest-heart/v1/background.webp", "forest-heart/v1/elf.webp", "forest-heart/v1/elf-spell.webp", "forest-heart/v1/flower.webp"],
+  "scripts": {"build": "node ../../node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && node ../../scripts/build-game-module.mjs"}
+}
