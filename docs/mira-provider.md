@@ -1,5 +1,7 @@
 # Провайдер диалога Миры
 
+Перед каждой репликой Мира получает [краткое описание надетого скина](skin-npc-context.md) по готовой картинке. Исходный запрос игрока и выдуманная биография в этот контекст не передаются.
+
 MiraService поддерживает codex.sale Responses и Venice Chat Completions. По умолчанию MIRA_PROVIDER=codex-sale. Для Venice задайте MIRA_PROVIDER=venice, VENICE_API_KEY и VENICE_NPC_MODEL=venice-uncensored-role-play в серверном .env. Ключи не коммитить. Точный каталог доступен через GET https://api.venice.ai/api/v1/models.
 
 Для Docker добавьте compose.mira.yaml последним к существующему списку Compose-файлов. На production список из метки работающего контейнера дополняется этим файлом, а COMPOSE_FILE в серверном .env сохраняет полный список для последующих запусков. Не заменяйте прежние overlays и .env. Сервис game получает ключ; клиент его не получает. Модерация общего чата продолжает использовать codex.sale.

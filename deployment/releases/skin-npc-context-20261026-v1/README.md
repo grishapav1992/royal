@@ -1,0 +1,11 @@
+# Visual skin context release
+
+The image-only recognizer stores a short description for each actual generated design. Mira receives the currently equipped owned skin's description with the latest utterance. Conversation identity and history remain intact. The atelier displays descriptions as they arrive, preserving the current selection and keyboard focus. There are no new image generations during metadata retry, and no price, wallet, game mathematics, dependency or module changes.
+
+Prepare the exact committed source from the verified production baseline with release:plan, release:prepare and release:verify --github. The package compares every unrelated source and runtime file, allowing only verified CRLF-to-LF equality for unchanged text and retaining production's exact old bytes. External and bundled modules, other backend programs, immutable asset URLs and runtime settings remain unchanged.
+
+The installer holds all three shared publication locks, checks exact source/runtime inventories and configurations, pins previous images, archives every reviewed source file and creates a bounded custom-format royal_game database archive before mutation. The database archive is SHA-256 checked and its table of contents read with pg_restore. Its maximum is 64 MiB. The source archive is streamed within the remaining explicit budget. Both partial archives are removed if their limits are exceeded. The budget retains 5 GiB plus three delta copies and an 8 MiB margin. The temporary image context hard-links the verified payload. Checks repeat before build, after build and after publication.
+
+Only the reviewed client bundles, index and main backend bundle are overlaid. Recovery refuses later source, runtime, module or configuration changes. It restores application files and the pinned image, never a player or wallet database. The skin metadata migration is additive and compatible with the previous application, which ignores the extra defaulted columns. Descriptions and accepted player operations remain intact during recovery.
+
+An interrupted prebuild can reuse only a complete verified source archive, database archive evidence, client index and both matching rollback tags before any build result exists. Do not rebuild a completed candidate or relax a baseline check to force publication.
