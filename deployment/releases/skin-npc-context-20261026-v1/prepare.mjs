@@ -36,7 +36,7 @@ const sameRuntime = (file, digest) => {
   const publicSource = file.startsWith('dist/') ? 'public/' + file.slice(5) : '';
   return before.source[publicSource] === before.program[file] && before.sourceLF[publicSource] === digest;
 };
-const delta = {};
+const delta = {}, retainedPublicRuntime = [];
 for (const [file, digest] of Object.entries(release.files)) {
   if (!file.startsWith('dist/')) continue;
   if (sameRuntime(file, digest)) continue;
@@ -44,7 +44,12 @@ for (const [file, digest] of Object.entries(release.files)) {
   if (sub === 'index.html' || /^assets\/[a-zA-Z0-9_-]+\.(js|css)$/.test(sub)) {
     assert(sub === 'index.html' || !(file in before.program), 'Immutable client URL would change');
     delta[sub] = digest; copy(resolve(root, file), 'dist-delta/' + sub);
-  } else assert.fail('Unrelated static client file changed: ' + file);
+  } else {
+    const source = 'public/' + sub;
+    assert(before.source[source] === digest || before.sourceLF[source] === digest, 'Unrelated static source changed: ' + file);
+    // Unchanged public sources can have older deployed bytes. Preserve that reviewed runtime pin.
+    retainedPublicRuntime.push({ file, retainedSha256: before.program[file] ?? null, localSourceSha256: digest });
+  }
 }
 assert('index.html' in delta);
 const serverDelta = { 'index.js': hash(resolve(root, 'dist-server/index.js')) };
@@ -58,7 +63,7 @@ for (const file of ['package.json', 'package-lock.json']) assert.equal(hash(reso
 const helper = dirname(fileURLToPath(import.meta.url));
 for (const file of ['deploy.py', 'snapshot.py']) copy(resolve(helper, file), file);
 for (const file of ['release-manifest.json', 'release-github.json']) copy(resolve(root, 'module-build', file), file);
-const manifest = { release: name, sourceCommit: release.sourceCommit, baseCommit: base, before, changed, delta, serverDelta,
+const manifest = { release: name, sourceCommit: release.sourceCommit, baseCommit: base, before, changed, delta, serverDelta, retainedPublicRuntime,
   helperSha256: hash(resolve(out, 'deploy.py')), snapshotSha256: hash(resolve(out, 'snapshot.py')) };
 writeFileSync(resolve(out, 'install-manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
 execFileSync('tar', [...(process.platform === 'darwin' ? ['--no-xattrs'] : []), '-czf', resolve(work, 'transport.tgz'), '-C', out, '.'], { env: { ...process.env, COPYFILE_DISABLE: '1' } });
