@@ -1,15 +1,26 @@
 import {readGameHost,type GameModuleV1} from '../../src/modules/GameHostContract';
+import {TempleUI} from './TempleUI';
+import {styles} from './styles';
 import './shell.css';
 export const gameId='studio-flooded-temple';
 export const apiVersion=1;
 export const rulesVersion=1;
 export const progressVersion=1;
-// Stage 2 packaging contract only. Not in the playable catalogue until stage 3.
-// There is deliberately no start command or wallet operation in this scaffold.
-export const mount:GameModuleV1['mount']=host=>{
-  const panel=host.ownerDocument.createElement('p');
-  panel.className='temple-preparing';
-  panel.textContent=readGameHost().i18n.language==='en'?'Flooded Temple. Preparing the expedition.':'Затопленный храм. Подготовка экспедиции.';
-  panel.setAttribute('role','status');host.replaceChildren(panel);
-  return {getState:()=>({gameId,stage:'server-qualified',playable:false}),destroy:()=>panel.remove()};
+export const mount:GameModuleV1['mount']=(host,context)=>{
+  const services=readGameHost(),title=services.i18n.language==='en'?'Flooded Temple':'Затопленный храм';
+  context?.setTitle?.(title);
+  const frame=host.ownerDocument.createElement('iframe');frame.title=title;frame.className='temple-frame';
+  const stage=host.closest<HTMLElement>('.mini-stage')??host;
+  let disposed=false,game:TempleUI|undefined;
+  const fit=()=>{if(!disposed)frame.style.height=Math.max(180,stage.clientHeight)+'px';};
+  const observer=new ResizeObserver(fit);observer.observe(stage);fit();
+  frame.addEventListener('load',()=>{
+    if(disposed||!frame.contentDocument)return;
+    game?.destroy();
+    const doc=frame.contentDocument;doc.documentElement.lang=services.i18n.language;doc.title=title;
+    const style=doc.createElement('style');style.textContent=styles;doc.head.replaceChildren(style);
+    const app=doc.createElement('main');doc.body.replaceChildren(app);game=new TempleUI(app,services);
+  });
+  frame.src='about:blank';host.replaceChildren(frame);
+  return {getState:()=>game?.getState()??{gameId,loading:true},destroy(){disposed=true;observer.disconnect();game?.destroy();frame.remove();}};
 };

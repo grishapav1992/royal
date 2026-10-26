@@ -1,0 +1,64 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {randomUUID} from 'node:crypto';
+import {ExpansionClient} from '../src/wallet/ExpansionClient';
+import {demoWallet} from '../src/wallet/WalletClient';
+import {rebuildTempleView,templeResult,TEMPLE_GAME,TEMPLE_CLIENT_HEADER} from '../src/shared/floodedTemple';
+import type {TempleAction} from '../src/shared/floodedTempleMath';
+import type {ExpansionSession} from '../src/shared/casinoExpansion';
+
+const id=randomUUID();
+function session(history:TempleAction[]=[]):ExpansionSession{
+  const v=rebuildTempleView({layout:0,pattern:0,tier:0,relic:true},{layout:0,tier:0},'1000',history),result=templeResult(v);
+  return {id,gameId:TEMPLE_GAME,rulesVersion:1,state:result.ended?'settled':'active',stakeUnits:'1000',spentUnits:'1000',returnedUnits:result.ended?v.totalPayoutUnits:'0',view:{player:[],dealer:[],community:[],temple:v,actions:result.actions,phase:v.revision+1,ended:result.ended,message:result.message}};
+}
+async function fixture(run:(client:ExpansionClient)=>Promise<void>){
+  const fetchBefore=globalThis.fetch,storageBefore=globalThis.sessionStorage,map=new Map<string,string>();
+  Object.defineProperty(globalThis,'sessionStorage',{configurable:true,value:{getItem:(key:string)=>map.get(key)??null,setItem:(key:string,value:string)=>map.set(key,value),removeItem:(key:string)=>map.delete(key)}});
+  const client=new ExpansionClient();client.accountId='temple-client';
+  try{await run(client);}finally{globalThis.fetch=fetchBefore;Object.defineProperty(globalThis,'sessionStorage',{configurable:true,value:storageBefore});demoWallet.setExternalBusy('expansion',false);}
+}
+const reply=(s:ExpansionSession)=>({wallet:{balance:9990,entries:[]},sessions:[s],session:s,replayed:false});
+test('client negotiates Temple on reads and writes and retries the saved UUID',()=>fixture(async client=>{
+  let calls=0;const requests:string[]=[];
+  globalThis.fetch=(async(_url,init)=>{
+    assert.equal(new Headers(init?.headers).get(TEMPLE_CLIENT_HEADER),'1');
+    if(init?.method!=='POST')return Response.json({wallet:{balance:10000,entries:[]},sessions:[]});
+    const op=JSON.parse(String(init.body));requests.push(op.id);calls++;
+    if(calls===1)throw Error('Lost response');
+    return Response.json({...reply({...session(),id:op.id}),replayed:true});
+  }) as typeof fetch;
+  await client.refresh();assert.equal(client.error,'');
+  await assert.rejects(client.act({action:'start',gameId:TEMPLE_GAME,stakeUnits:'1000',settings:{temple:{mode:'normal'}}}));
+  assert(client.pending);await client.retry();assert.equal(requests[0],requests[1]);assert.equal(client.pending,undefined);assert.equal(client.sessions[0].state,'active');
+}));
+test('client rejects mutated maps, overclaims and altered envelopes',()=>fixture(async client=>{
+  for(const mutate of [
+    (r:any)=>r.session.view.temple.baseMap.edges.pop(),
+    (r:any)=>r.session.view.temple.totalPayoutUnits='100000',
+    (r:any)=>r.session.view.actions[0].cost=1,
+    (r:any)=>r.session.id='not-a-uuid',
+    (r:any)=>r.session.view.neopolis={},
+  ]){
+    const value=reply(session());mutate(value);
+    globalThis.fetch=(async()=>Response.json(value)) as typeof fetch;
+    await client.refresh();assert(client.error);assert.equal(client.sessions.length,0);
+  }
+}));
+test('paid reply requires the same confirmed session in the current sessions list',()=>fixture(async client=>{
+  globalThis.fetch=(async(_url,init)=>{const op=JSON.parse(String(init?.body));return Response.json({...reply({...session(),id:op.id}),sessions:[]});}) as typeof fetch;
+  await assert.rejects(client.act({action:'start',gameId:TEMPLE_GAME,stakeUnits:'1000',settings:{temple:{mode:'normal'}}}));assert(client.pending);assert.equal(client.sessions.length,0);
+}));
+test('move response must contain the requested history action and matching current session',()=>fixture(async client=>{
+  const moved=session([{kind:'step',to:6}]);
+  globalThis.fetch=(async()=>Response.json(reply(moved))) as typeof fetch;
+  await client.act({action:'move',gameId:TEMPLE_GAME,sessionId:id,revision:1,move:'temple-step',picks:[6]});assert.equal(client.sessions[0].view.temple?.revision,2);
+  await assert.rejects(client.act({action:'move',gameId:TEMPLE_GAME,sessionId:id,revision:1,move:'temple-rope',picks:[6]}));assert(client.pending);
+}));
+test('account change ignores an old response and never installs another account round',()=>fixture(async client=>{
+  let release!:(value:Response)=>void;
+  globalThis.fetch=(async()=>new Promise<Response>(resolve=>{release=resolve;})) as typeof fetch;
+  const writing=client.act({action:'move',gameId:TEMPLE_GAME,sessionId:id,revision:1,move:'temple-step',picks:[6]});
+  client.setAccount(null);release(Response.json(reply(session([{kind:'step',to:6}]))));await writing;
+  assert.equal(client.accountId,null);assert.equal(client.sessions.length,0);assert.equal(client.wallet,undefined);assert.equal(client.pending,undefined);
+}));
