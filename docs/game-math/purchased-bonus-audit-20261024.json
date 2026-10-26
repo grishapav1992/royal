@@ -1,0 +1,538 @@
+{
+  "generatedAt": "2026-10-24T11:57:28.652Z",
+  "sourceCommit": "42848851bb987c7114d000e71ade389b7c8c3afd",
+  "sourceHashes": {
+    "server/games/velvetMath.ts": "54a874506c31467b076be9d8b4513014e2faa676ba286111b1c24eb35873e94f",
+    "server/games/velvetReign.ts": "31798d0ddf4cfdf6717fe9e29a4f01cb538e59485c63275b6c2cba4239afe0cc",
+    "src/shared/velvetReign.ts": "8cd399677940ae5fddd67dea255fd83b54faf297cb00b8290ae918b53e26db2f",
+    "server/games/luelonSlots.ts": "be78b2715aa850d3801445edf0f714b89dcb76ed98719e5589fcac71dc7fe3f2",
+    "src/shared/luelonSlots.ts": "1867b3f6e7e3fbc1e00dd6fad2bb094c42e6038f8eba18e0ef7250381f95cdcb",
+    "src/shared/luelonSlotsModels.ts": "b8644fecff250437909ff88950c5ef129c1d534108344f9643b815614d844c74",
+    "src/shared/cosmicEscapeBets.ts": "5e079e858e39cd73070f95f77688c774aee887e025a2f84fbc365c1e9cddd625",
+    "server/games/caramelCarnival.ts": "efea2d448a692637819eef014badf72ac2aa1a0621284ba12011ab68ff1886a7",
+    "src/shared/caramelCarnival.ts": "17f9e338297ac7fc37fa0f6ac6608e22cdc9ad145ad18f8c6764d72575f725aa",
+    "src/shared/velvetReignHistory.ts": "597f90f94bcbecd64fc37a27f730009651ed5c4d6731a1ee54602195e508118c",
+    "src/shared/luelonSlotsLines.ts": "9629a12c51eee2850887a7a4cad31015aabb4be1b395799c4801ee9b016cf557",
+    "scripts/game-math/audit-purchased-bonuses.mjs": "925715fad3dd64caba75099a83cf95fb82a74ecc5faa7617cd9ff4fdc6b5a590"
+  },
+  "stakeUnits": 10000,
+  "seeds": [
+    1741021,
+    3021923,
+    4958077
+  ],
+  "roundsPerSeed": 100000,
+  "method": "Independent optimized full-round samplers, checked with identical random streams against real server start/move and validators. Actual cost multiplier is the denominator. Approximate 95% intervals from independent complete paid rounds, no familywise adjustment. Not formal qualification. Normal modes include all organically triggered free spins. Every purchase completes all continuations. Integer award truncation and whole-round caps are applied.",
+  "results": [
+    {
+      "gameId": "studio-velvet-reign",
+      "mode": "spotlight",
+      "costMultiplier": 100,
+      "serverReplayedRounds": 128,
+      "n": 300000,
+      "sum": 28885794.800000116,
+      "sq": 30121298493.099884,
+      "base": 0,
+      "profit": 56921,
+      "caps": 26,
+      "freeSpins": 3657383,
+      "max": 10000,
+      "rtp": 0.9628598266666706,
+      "interval95": [
+        0.9520570647098089,
+        0.9736625886235322
+      ],
+      "baseRtp": 0,
+      "bonusRtp": 0.9628598266666706,
+      "profitProbability": 0.18973666666666666,
+      "capProbability": 0.00008666666666666667,
+      "streams": [
+        {
+          "seed": 1741021,
+          "n": 100000,
+          "sum": 9608532.300000047,
+          "sq": 9983980108.409966,
+          "base": 0,
+          "profit": 18821,
+          "caps": 7,
+          "freeSpins": 1218804,
+          "max": 10000,
+          "rtp": 0.9608532300000047,
+          "interval95": [
+            0.9421963032987968,
+            0.9795101567012127
+          ],
+          "baseRtp": 0,
+          "bonusRtp": 0.9608532300000047,
+          "profitProbability": 0.18821,
+          "capProbability": 0.00007
+        },
+        {
+          "seed": 3021923,
+          "n": 100000,
+          "sum": 9507769.000000047,
+          "sq": 9513343482.659994,
+          "base": 0,
+          "profit": 18877,
+          "caps": 7,
+          "freeSpins": 1218884,
+          "max": 10000,
+          "rtp": 0.9507769000000046,
+          "interval95": [
+            0.9325906210730598,
+            0.9689631789269494
+          ],
+          "baseRtp": 0,
+          "bonusRtp": 0.9507769000000046,
+          "profitProbability": 0.18877,
+          "capProbability": 0.00007
+        },
+        {
+          "seed": 4958077,
+          "n": 100000,
+          "sum": 9769493.500000024,
+          "sq": 10623974902.02992,
+          "base": 0,
+          "profit": 19223,
+          "caps": 12,
+          "freeSpins": 1219695,
+          "max": 10000,
+          "rtp": 0.9769493500000024,
+          "interval95": [
+            0.9576758202143432,
+            0.9962228797856616
+          ],
+          "baseRtp": 0,
+          "bonusRtp": 0.9769493500000024,
+          "profitProbability": 0.19223,
+          "capProbability": 0.00012
+        }
+      ]
+    },
+    {
+      "gameId": "studio-velvet-reign",
+      "mode": "super-encore",
+      "costMultiplier": 300,
+      "serverReplayedRounds": 128,
+      "n": 300000,
+      "sum": 86468668.00000004,
+      "sq": 133232024808.41754,
+      "base": 0,
+      "profit": 73045,
+      "caps": 150,
+      "freeSpins": 3485033,
+      "max": 10000,
+      "rtp": 0.9607629777777782,
+      "interval95": [
+        0.9535958182251295,
+        0.967930137330427
+      ],
+      "baseRtp": 0,
+      "bonusRtp": 0.9607629777777782,
+      "profitProbability": 0.24348333333333333,
+      "capProbability": 0.0005,
+      "streams": [
+        {
+          "seed": 1741021,
+          "n": 100000,
+          "sum": 28755933.09999997,
+          "sq": 44737202017.089264,
+          "base": 0,
+          "profit": 24293,
+          "caps": 56,
+          "freeSpins": 1161666,
+          "max": 10000,
+          "rtp": 0.9585311033333324,
+          "interval95": [
+            0.946054569620071,
+            0.9710076370465938
+          ],
+          "baseRtp": 0,
+          "bonusRtp": 0.9585311033333324,
+          "profitProbability": 0.24293,
+          "capProbability": 0.00056
+        },
+        {
+          "seed": 3021923,
+          "n": 100000,
+          "sum": 28736212.09999989,
+          "sq": 43286144104.229454,
+          "base": 0,
+          "profit": 24322,
+          "caps": 42,
+          "freeSpins": 1161617,
+          "max": 10000,
+          "rtp": 0.9578737366666631,
+          "interval95": [
+            0.9456459622292982,
+            0.970101511104028
+          ],
+          "baseRtp": 0,
+          "bonusRtp": 0.9578737366666631,
+          "profitProbability": 0.24322,
+          "capProbability": 0.00042
+        },
+        {
+          "seed": 4958077,
+          "n": 100000,
+          "sum": 28976522.80000018,
+          "sq": 45208678687.09881,
+          "base": 0,
+          "profit": 24430,
+          "caps": 52,
+          "freeSpins": 1161750,
+          "max": 10000,
+          "rtp": 0.9658840933333394,
+          "interval95": [
+            0.9533488316345233,
+            0.9784193550321554
+          ],
+          "baseRtp": 0,
+          "bonusRtp": 0.9658840933333394,
+          "profitProbability": 0.2443,
+          "capProbability": 0.00052
+        }
+      ]
+    },
+    {
+      "gameId": "studio-cosmic-escape",
+      "mode": "cosmic-chaos",
+      "costMultiplier": 40,
+      "serverReplayedRounds": 128,
+      "n": 300000,
+      "sum": 11460119.800000096,
+      "sq": 1570590053.1050029,
+      "base": 0,
+      "profit": 83809,
+      "caps": 0,
+      "freeSpins": 3000000,
+      "max": 4053.5,
+      "rtp": 0.9550099833333412,
+      "interval95": [
+        0.9495126271647545,
+        0.960507339501928
+      ],
+      "baseRtp": 0,
+      "bonusRtp": 0.9550099833333412,
+      "profitProbability": 0.27936333333333335,
+      "capProbability": 0,
+      "streams": [
+        {
+          "seed": 1741021,
+          "n": 100000,
+          "sum": 3841872.650000033,
+          "sq": 539979236.0224993,
+          "base": 0,
+          "profit": 28113,
+          "caps": 0,
+          "freeSpins": 1000000,
+          "max": 4053.5,
+          "rtp": 0.9604681625000083,
+          "interval95": [
+            0.9507619154603593,
+            0.9701744095396574
+          ],
+          "baseRtp": 0,
+          "bonusRtp": 0.9604681625000083,
+          "profitProbability": 0.28113,
+          "capProbability": 0
+        },
+        {
+          "seed": 3021923,
+          "n": 100000,
+          "sum": 3806466.450000101,
+          "sq": 517922645.6025061,
+          "base": 0,
+          "profit": 27833,
+          "caps": 0,
+          "freeSpins": 1000000,
+          "max": 2649.9,
+          "rtp": 0.9516166125000252,
+          "interval95": [
+            0.9421527028811502,
+            0.9610805221189003
+          ],
+          "baseRtp": 0,
+          "bonusRtp": 0.9516166125000252,
+          "profitProbability": 0.27833,
+          "capProbability": 0
+        },
+        {
+          "seed": 4958077,
+          "n": 100000,
+          "sum": 3811780.699999962,
+          "sq": 512688171.47999734,
+          "base": 0,
+          "profit": 27863,
+          "caps": 0,
+          "freeSpins": 1000000,
+          "max": 2325.9,
+          "rtp": 0.9529451749999905,
+          "interval95": [
+            0.9435530735650509,
+            0.9623372764349302
+          ],
+          "baseRtp": 0,
+          "bonusRtp": 0.9529451749999905,
+          "profitProbability": 0.27863,
+          "capProbability": 0
+        }
+      ]
+    },
+    {
+      "gameId": "studio-cosmic-escape",
+      "mode": "ufo-invasion",
+      "costMultiplier": 75,
+      "serverReplayedRounds": 128,
+      "n": 300000,
+      "sum": 21572752.20000012,
+      "sq": 5076079498.574976,
+      "base": 0,
+      "profit": 85466,
+      "caps": 0,
+      "freeSpins": 3600000,
+      "max": 7745,
+      "rtp": 0.9587889866666719,
+      "interval95": [
+        0.9536171885874344,
+        0.9639607847459094
+      ],
+      "baseRtp": 0,
+      "bonusRtp": 0.9587889866666719,
+      "profitProbability": 0.2848866666666667,
+      "capProbability": 0,
+      "streams": [
+        {
+          "seed": 1741021,
+          "n": 100000,
+          "sum": 7203336.85000008,
+          "sq": 1719224484.8975012,
+          "base": 0,
+          "profit": 28578,
+          "caps": 0,
+          "freeSpins": 1200000,
+          "max": 7745,
+          "rtp": 0.9604449133333439,
+          "interval95": [
+            0.951390718859894,
+            0.9694991078067937
+          ],
+          "baseRtp": 0,
+          "bonusRtp": 0.9604449133333439,
+          "profitProbability": 0.28578,
+          "capProbability": 0
+        },
+        {
+          "seed": 3021923,
+          "n": 100000,
+          "sum": 7154756.650000049,
+          "sq": 1659885858.2624815,
+          "base": 0,
+          "profit": 28483,
+          "caps": 0,
+          "freeSpins": 1200000,
+          "max": 4063.1,
+          "rtp": 0.9539675533333398,
+          "interval95": [
+            0.9451130496705334,
+            0.9628220569961462
+          ],
+          "baseRtp": 0,
+          "bonusRtp": 0.9539675533333398,
+          "profitProbability": 0.28483,
+          "capProbability": 0
+        },
+        {
+          "seed": 4958077,
+          "n": 100000,
+          "sum": 7214658.69999999,
+          "sq": 1696969155.4149928,
+          "base": 0,
+          "profit": 28405,
+          "caps": 0,
+          "freeSpins": 1200000,
+          "max": 4349.65,
+          "rtp": 0.9619544933333319,
+          "interval95": [
+            0.9529908441203198,
+            0.9709181425463441
+          ],
+          "baseRtp": 0,
+          "bonusRtp": 0.9619544933333319,
+          "profitProbability": 0.28405,
+          "capProbability": 0
+        }
+      ]
+    },
+    {
+      "gameId": "studio-cosmic-escape",
+      "mode": "deep-echo",
+      "costMultiplier": 135,
+      "serverReplayedRounds": 128,
+      "n": 300000,
+      "sum": 38781644.09999991,
+      "sq": 10193407677.384941,
+      "base": 0,
+      "profit": 96909,
+      "caps": 0,
+      "freeSpins": 4500000,
+      "max": 4552.5,
+      "rtp": 0.9575714592592571,
+      "interval95": [
+        0.95408834642171,
+        0.9610545720968042
+      ],
+      "baseRtp": 0,
+      "bonusRtp": 0.9575714592592571,
+      "profitProbability": 0.32303,
+      "capProbability": 0,
+      "streams": [
+        {
+          "seed": 1741021,
+          "n": 100000,
+          "sum": 12920893.249999886,
+          "sq": 3375620437.6774764,
+          "base": 0,
+          "profit": 32213,
+          "caps": 0,
+          "freeSpins": 1500000,
+          "max": 4552.5,
+          "rtp": 0.9571032037036953,
+          "interval95": [
+            0.9511062599454864,
+            0.9631001474619042
+          ],
+          "baseRtp": 0,
+          "bonusRtp": 0.9571032037036953,
+          "profitProbability": 0.32213,
+          "capProbability": 0
+        },
+        {
+          "seed": 3021923,
+          "n": 100000,
+          "sum": 12894821.149999969,
+          "sq": 3377279974.212471,
+          "base": 0,
+          "profit": 32204,
+          "caps": 0,
+          "freeSpins": 1500000,
+          "max": 3687.5,
+          "rtp": 0.9551719370370348,
+          "interval95": [
+            0.9491602657401643,
+            0.9611836083339054
+          ],
+          "baseRtp": 0,
+          "bonusRtp": 0.9551719370370348,
+          "profitProbability": 0.32204,
+          "capProbability": 0
+        },
+        {
+          "seed": 4958077,
+          "n": 100000,
+          "sum": 12965929.700000055,
+          "sq": 3440507265.4949937,
+          "base": 0,
+          "profit": 32492,
+          "caps": 0,
+          "freeSpins": 1500000,
+          "max": 4417.5,
+          "rtp": 0.9604392370370411,
+          "interval95": [
+            0.9543494643395469,
+            0.9665290097345353
+          ],
+          "baseRtp": 0,
+          "bonusRtp": 0.9604392370370411,
+          "profitProbability": 0.32492,
+          "capProbability": 0
+        }
+      ]
+    },
+    {
+      "gameId": "studio-caramel-carnival",
+      "mode": "festival",
+      "costMultiplier": 35,
+      "serverReplayedRounds": 128,
+      "n": 300000,
+      "sum": 10071867.919999687,
+      "sq": 935094815.592602,
+      "base": 0,
+      "profit": 93211,
+      "caps": 0,
+      "freeSpins": 3077508,
+      "max": 648.66,
+      "rtp": 0.9592255161904463,
+      "interval95": [
+        0.9546647522795114,
+        0.9637862801013812
+      ],
+      "baseRtp": 0,
+      "bonusRtp": 0.9592255161904463,
+      "profitProbability": 0.31070333333333333,
+      "capProbability": 0,
+      "streams": [
+        {
+          "seed": 1741021,
+          "n": 100000,
+          "sum": 3363270.8599999435,
+          "sq": 312931146.7161981,
+          "base": 0,
+          "profit": 31038,
+          "caps": 0,
+          "freeSpins": 1025569,
+          "max": 648.66,
+          "rtp": 0.9609345314285552,
+          "interval95": [
+            0.9530185548466983,
+            0.9688505080104122
+          ],
+          "baseRtp": 0,
+          "bonusRtp": 0.9609345314285552,
+          "profitProbability": 0.31038,
+          "capProbability": 0
+        },
+        {
+          "seed": 3021923,
+          "n": 100000,
+          "sum": 3348668.0099998526,
+          "sq": 310661507.558901,
+          "base": 0,
+          "profit": 30928,
+          "caps": 0,
+          "freeSpins": 1026223,
+          "max": 591.01,
+          "rtp": 0.9567622885713863,
+          "interval95": [
+            0.9488718961541611,
+            0.9646526809886116
+          ],
+          "baseRtp": 0,
+          "bonusRtp": 0.9567622885713863,
+          "profitProbability": 0.30928,
+          "capProbability": 0
+        },
+        {
+          "seed": 4958077,
+          "n": 100000,
+          "sum": 3359929.0499998904,
+          "sq": 311502161.317503,
+          "base": 0,
+          "profit": 31245,
+          "caps": 0,
+          "freeSpins": 1025716,
+          "max": 609.95,
+          "rtp": 0.9599797285713971,
+          "interval95": [
+            0.9520876432818105,
+            0.9678718138609839
+          ],
+          "baseRtp": 0,
+          "bonusRtp": 0.9599797285713971,
+          "profitProbability": 0.31245,
+          "capProbability": 0
+        }
+      ]
+    }
+  ]
+}

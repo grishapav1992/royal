@@ -9,6 +9,7 @@ export function validLuelonLineHistory(view:LuelonSlotView):boolean {
   if(rule.feature==='neon'&&(view.history.length!==1||view.bonus!==null||view.history[0].kind!=='base'||view.phase!=='complete'))return false;
   for(let index=0;index<view.history.length;index++){
     const spin=view.history[index],atCap=spin.stopReason==='win-cap',base=index===0&&!mode.bonus,before=spin.featuresBefore,after=spin.featuresAfter;if(spin.kind!==(base?'base':'free-spin')||spin.rows!==info.rows||before.rows!==info.rows||after.rows!==info.rows||!same(before.heights,Array(info.cols).fill(info.rows))||!same(after.heights,Array(info.cols).fill(info.rows))||spin.frames.length>(rule.feature==='cosmic'&&!base?2:1)||base&&!empty(before)||!base&&played>=awarded)return false;
+    if(rule.feature==='cosmic'&&index===0&&mode.bonus&&(!empty({...before,multiplier:1})||before.multiplier!==mode.startMultiplier))return false;
     if(!base)played++;if(!same(before.charges,[])||!same(after.charges,[])||!same(before.held,[])||!same(after.held,[])||before.chosenSymbol!==null||after.chosenSymbol!==null||before.route||after.route)return false;
     let energy=before.multiplier;
     for(let step=0;step<spin.frames.length;step++){

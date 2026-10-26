@@ -1,0 +1,22 @@
+{
+  "generatedAt": "2026-10-25T11:17:21.276Z",
+  "gameId": "studio-cosmic-escape",
+  "issue": "Purchased first free-spin origin is not anchored after history becomes nonempty",
+  "severity": "defence-in-depth validation gap, not a demonstrated client payout exploit",
+  "expectedStartMultiplier": 1,
+  "forgedStartMultiplier": 50,
+  "legitimateInitialTotalPayoutUnits": "6400",
+  "forgedTotalPayoutUnits": "320000",
+  "forgedStateAccepted": true,
+  "forgedContinuationAccepted": true,
+  "clientReachability": "HTTP operations contain action, stake/settings at start or sessionId/revision at move; clients do not send the full saved view. The forged object is injected directly into the local validator, bypassing the trusted server store. This does not show that a player can change a multiplier.",
+  "rootCause": "validLuelonLineHistory anchors purchased initial features only when history is empty. With nonempty purchased history, the first featuresBefore multiplier is not compared with mode.startMultiplier; all subsequent arithmetic can be internally consistent.",
+  "qualificationConstraint": "The affected mathematical validation source is frozen by the RTP gate. A fix requires a reviewed Cosmic policy and full-round qualification with source hashes; the legacy baseline must not be changed to bypass it.",
+  "sourceHashes": {
+    "src/shared/luelonSlots.ts": "1867b3f6e7e3fbc1e00dd6fad2bb094c42e6038f8eba18e0ef7250381f95cdcb",
+    "src/shared/luelonSlotsLines.ts": "9629a12c51eee2850887a7a4cad31015aabb4be1b395799c4801ee9b016cf557",
+    "server/games/luelonSlots.ts": "be78b2715aa850d3801445edf0f714b89dcb76ed98719e5589fcac71dc7fe3f2",
+    "src/shared/casinoExpansion.ts": "3cb811a967201803b5c7fe42a6ee5496415dce324781c28b2a933c3c7659379d",
+    "server/demoExpansion.ts": "ab91cf5f0d590f05132b73b34d347f044b70f852e0bc31f4602d816289c2e420"
+  }
+}

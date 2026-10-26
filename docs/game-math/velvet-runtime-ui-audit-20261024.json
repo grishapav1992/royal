@@ -1,0 +1,25 @@
+{
+  "verifiedAt": "2026-10-24T15:29:46.020950+00:00",
+  "sourceHashes": {
+    "src/ui/VelvetReignUI.ts": "1791d1ab78ff9d016f5e666760f3d403a2a0cb79c5679a223da8102b49fe4099",
+    "src/ui/slotKit/SlotSessions.ts": "f51283d66ea4936932d496d9daee46db703bab1c2e8c55c4445c57955968a5d2",
+    "src/ui/slotKit/SlotScreens.ts": "59140beebcb205fa8e52c3e35f0f2283a0746ebd42b08ef54122598fd986756a",
+    "src/wallet/WalletClient.ts": "46ad8eadad18b13e5cf2ebd594c8895654ef9fe4cb364fec71a0ea99936f2362",
+    "src/wallet/ExpansionClient.ts": "02cf337a2cabc65785a01625006361f294641a8e92bc86696ba01cb1253fd97b"
+  },
+  "activeModule": {
+    "format": 1,
+    "gameId": "studio-velvet-reign",
+    "manifest": "/game-modules/studio-velvet-reign/versions/1.0.0-5a51cd3c3b72/manifest.json",
+    "sha256": "779ce9b8a5759c64bfc3ba0ba45a6e781baa068c6b85c019011c77647f8e1a74"
+  },
+  "hostSourceCommit": "ac364b2db6e8c107e296b3763aa63a5569c17406",
+  "hostImage": "sha256:c27ba8fb026ab5ea5189be1c4ca5cae14a144ec96bceb3b0c4c9452a3734dbbf",
+  "repositoryBaselineMatches": {
+    "src/ui/VelvetReignUI.ts": true,
+    "src/ui/slotKit/SlotSessions.ts": true,
+    "src/ui/slotKit/SlotScreens.ts": true,
+    "src/wallet/WalletClient.ts": true,
+    "src/wallet/ExpansionClient.ts": true
+  }
+}

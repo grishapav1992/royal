@@ -1,0 +1,1174 @@
+{
+  "schemaVersion": 1,
+  "startedAt": "2026-10-24T11:47:38.605Z",
+  "completedAt": "2026-10-24T11:53:21.915Z",
+  "sourceHashes": {
+    "scripts/game-math/audit-qualified-bonuses.mjs": "115bd3774e9ab9a53d6d381236d5dc1bdcebfb60f0f3b5eaae30b19ab57d75fa",
+    "scripts/game-math/rtp-simulation.mjs": "b5c74c5d41dc3ec173a7ee7ec0f42ee8842c433e58ac6a12828ed07b68de57b8",
+    "scripts/game-math/rtp-policy.json": "1367edd290770b0fdc191a686a7b8bb0eda6998670d9d21debb6bdff0bba8cd0",
+    "src/shared/neopolisMath.ts": "e32db65f28cb4cac308d07154fb56f7816fc630c82a7548e1733ad34e0a91820",
+    "src/shared/neopolisMathV1.ts": "84adb49d9303b29bd8a460b30b7e6993d77df343f8dae33025a0646f7ca3bb92",
+    "src/shared/neopolisMathV2.ts": "22c2d4646ea2ac8db021bde42fcb90b38035848041cea217acd1d9eeb2682692",
+    "src/shared/neopolis.ts": "f18d7309bb4be35655239b506dc04ca5cfea81f9e3bf63da31acbdac08b509ce",
+    "server/games/neopolis.ts": "4c2a411cc151474090c496ab78b9d9fc1c293d81e1e8e87e4dd50cefec865119",
+    "src/shared/draconaMath.ts": "5735d0173b801e80329ec93f9d0dc049da94068addd042f7de0fb6bf9ca248b4",
+    "src/shared/draconaMathV1.ts": "760b567c64aae4a5190641cad162fd9a6ff9e5764e8bd9d91d06dcb1d707ee21",
+    "src/shared/dracona.ts": "fa6d089b90592693ac3da96fed174f53db6733c37f3ab16e9205cc606396d649",
+    "server/games/dracona.ts": "9d7b86aa2db9dd2ebe0d6a6dc09283a33b868b03a1e5c444f722d90822e9fa95"
+  },
+  "configuration": {
+    "freshSeeds": [
+      2026102401,
+      2026102407
+    ],
+    "cyclesPerSeed": 2000,
+    "draconaRoundsPerSeed": 500000,
+    "replayBonusesPerConfiguration": 3
+  },
+  "scope": "Current Neopolis rules 3 and Dracona rules 3. All declared stakes and current choices. Complete paid rounds include every free continuation. Neopolis collection persists through complete regenerative cycles. Server replay separately verifies serialization, integer payouts, stale moves and legacy continuation.",
+  "limitations": [
+    "This is fresh-seed screening, not regenerated qualification evidence or exact analytical RTP.",
+    "The normal 95% intervals are pointwise estimates with no correction for multiple comparisons; rare tail events remain a limitation.",
+    "The six stake estimates reuse the same random paths and are correlated.",
+    "Neopolis cycles, rather than dependent paid spins inside a cycle, are the independent statistical units.",
+    "Server replay uses real start/move functions and validators; database wallet idempotency and browser close/reopen are separate integration tests.",
+    "Accepted legacy bonuses keep their original higher-paying rules. Starting a new round selects current rules.",
+    "Neither game exposes a current bonus-buy mode. Dracona exposes normal mode; Neopolis exposes the three starter choices."
+  ],
+  "serverReplay": {
+    "neopolis": [
+      {
+        "hero": "granite",
+        "stakeUnits": 1000,
+        "seed": 2026102501,
+        "paidRounds": 341,
+        "completedBonuses": 3,
+        "serializedFreeContinuations": 135,
+        "staleMovesRejected": 135,
+        "stakeOrStarterChangesRejected": 676
+      },
+      {
+        "hero": "granite",
+        "stakeUnits": 2000,
+        "seed": 2026102501,
+        "paidRounds": 341,
+        "completedBonuses": 3,
+        "serializedFreeContinuations": 135,
+        "staleMovesRejected": 135,
+        "stakeOrStarterChangesRejected": 676
+      },
+      {
+        "hero": "granite",
+        "stakeUnits": 5000,
+        "seed": 2026102501,
+        "paidRounds": 341,
+        "completedBonuses": 3,
+        "serializedFreeContinuations": 135,
+        "staleMovesRejected": 135,
+        "stakeOrStarterChangesRejected": 676
+      },
+      {
+        "hero": "granite",
+        "stakeUnits": 10000,
+        "seed": 2026102501,
+        "paidRounds": 341,
+        "completedBonuses": 3,
+        "serializedFreeContinuations": 135,
+        "staleMovesRejected": 135,
+        "stakeOrStarterChangesRejected": 676
+      },
+      {
+        "hero": "granite",
+        "stakeUnits": 20000,
+        "seed": 2026102501,
+        "paidRounds": 341,
+        "completedBonuses": 3,
+        "serializedFreeContinuations": 135,
+        "staleMovesRejected": 135,
+        "stakeOrStarterChangesRejected": 676
+      },
+      {
+        "hero": "granite",
+        "stakeUnits": 50000,
+        "seed": 2026102501,
+        "paidRounds": 341,
+        "completedBonuses": 3,
+        "serializedFreeContinuations": 135,
+        "staleMovesRejected": 135,
+        "stakeOrStarterChangesRejected": 676
+      },
+      {
+        "hero": "impulse",
+        "stakeUnits": 1000,
+        "seed": 2027102504,
+        "paidRounds": 211,
+        "completedBonuses": 3,
+        "serializedFreeContinuations": 135,
+        "staleMovesRejected": 135,
+        "stakeOrStarterChangesRejected": 416
+      },
+      {
+        "hero": "impulse",
+        "stakeUnits": 2000,
+        "seed": 2027102504,
+        "paidRounds": 211,
+        "completedBonuses": 3,
+        "serializedFreeContinuations": 135,
+        "staleMovesRejected": 135,
+        "stakeOrStarterChangesRejected": 416
+      },
+      {
+        "hero": "impulse",
+        "stakeUnits": 5000,
+        "seed": 2027102504,
+        "paidRounds": 211,
+        "completedBonuses": 3,
+        "serializedFreeContinuations": 135,
+        "staleMovesRejected": 135,
+        "stakeOrStarterChangesRejected": 416
+      },
+      {
+        "hero": "impulse",
+        "stakeUnits": 10000,
+        "seed": 2027102504,
+        "paidRounds": 211,
+        "completedBonuses": 3,
+        "serializedFreeContinuations": 135,
+        "staleMovesRejected": 135,
+        "stakeOrStarterChangesRejected": 416
+      },
+      {
+        "hero": "impulse",
+        "stakeUnits": 20000,
+        "seed": 2027102504,
+        "paidRounds": 211,
+        "completedBonuses": 3,
+        "serializedFreeContinuations": 135,
+        "staleMovesRejected": 135,
+        "stakeOrStarterChangesRejected": 416
+      },
+      {
+        "hero": "impulse",
+        "stakeUnits": 50000,
+        "seed": 2027102504,
+        "paidRounds": 211,
+        "completedBonuses": 3,
+        "serializedFreeContinuations": 135,
+        "staleMovesRejected": 135,
+        "stakeOrStarterChangesRejected": 416
+      },
+      {
+        "hero": "prism",
+        "stakeUnits": 1000,
+        "seed": 2028102507,
+        "paidRounds": 293,
+        "completedBonuses": 3,
+        "serializedFreeContinuations": 135,
+        "staleMovesRejected": 135,
+        "stakeOrStarterChangesRejected": 580
+      },
+      {
+        "hero": "prism",
+        "stakeUnits": 2000,
+        "seed": 2028102507,
+        "paidRounds": 293,
+        "completedBonuses": 3,
+        "serializedFreeContinuations": 135,
+        "staleMovesRejected": 135,
+        "stakeOrStarterChangesRejected": 580
+      },
+      {
+        "hero": "prism",
+        "stakeUnits": 5000,
+        "seed": 2028102507,
+        "paidRounds": 293,
+        "completedBonuses": 3,
+        "serializedFreeContinuations": 135,
+        "staleMovesRejected": 135,
+        "stakeOrStarterChangesRejected": 580
+      },
+      {
+        "hero": "prism",
+        "stakeUnits": 10000,
+        "seed": 2028102507,
+        "paidRounds": 293,
+        "completedBonuses": 3,
+        "serializedFreeContinuations": 135,
+        "staleMovesRejected": 135,
+        "stakeOrStarterChangesRejected": 580
+      },
+      {
+        "hero": "prism",
+        "stakeUnits": 20000,
+        "seed": 2028102507,
+        "paidRounds": 293,
+        "completedBonuses": 3,
+        "serializedFreeContinuations": 135,
+        "staleMovesRejected": 135,
+        "stakeOrStarterChangesRejected": 580
+      },
+      {
+        "hero": "prism",
+        "stakeUnits": 50000,
+        "seed": 2028102507,
+        "paidRounds": 293,
+        "completedBonuses": 3,
+        "serializedFreeContinuations": 135,
+        "staleMovesRejected": 135,
+        "stakeOrStarterChangesRejected": 580
+      }
+    ],
+    "dracona": [
+      {
+        "stakeUnits": 1000,
+        "seed": 2026102601,
+        "paidRounds": 78,
+        "completedBonuses": 3,
+        "serializedFreeContinuations": 26,
+        "retriggers": 1,
+        "staleMovesRejected": 26
+      },
+      {
+        "stakeUnits": 2000,
+        "seed": 2026102601,
+        "paidRounds": 78,
+        "completedBonuses": 3,
+        "serializedFreeContinuations": 26,
+        "retriggers": 1,
+        "staleMovesRejected": 26
+      },
+      {
+        "stakeUnits": 5000,
+        "seed": 2026102601,
+        "paidRounds": 78,
+        "completedBonuses": 3,
+        "serializedFreeContinuations": 26,
+        "retriggers": 1,
+        "staleMovesRejected": 26
+      },
+      {
+        "stakeUnits": 10000,
+        "seed": 2026102601,
+        "paidRounds": 78,
+        "completedBonuses": 3,
+        "serializedFreeContinuations": 26,
+        "retriggers": 1,
+        "staleMovesRejected": 26
+      },
+      {
+        "stakeUnits": 20000,
+        "seed": 2026102601,
+        "paidRounds": 78,
+        "completedBonuses": 3,
+        "serializedFreeContinuations": 26,
+        "retriggers": 1,
+        "staleMovesRejected": 26
+      },
+      {
+        "stakeUnits": 50000,
+        "seed": 2026102601,
+        "paidRounds": 78,
+        "completedBonuses": 3,
+        "serializedFreeContinuations": 26,
+        "retriggers": 1,
+        "staleMovesRejected": 26
+      }
+    ],
+    "legacy": [
+      {
+        "gameId": "studio-neopolis",
+        "oldViewVersion": 1,
+        "stakeUnits": 1000,
+        "hero": "granite",
+        "completedSpins": 14,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 3
+      },
+      {
+        "gameId": "studio-neopolis",
+        "oldViewVersion": 1,
+        "stakeUnits": 1000,
+        "hero": "impulse",
+        "completedSpins": 14,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 3
+      },
+      {
+        "gameId": "studio-neopolis",
+        "oldViewVersion": 1,
+        "stakeUnits": 1000,
+        "hero": "prism",
+        "completedSpins": 14,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 3
+      },
+      {
+        "gameId": "studio-neopolis",
+        "oldViewVersion": 1,
+        "stakeUnits": 2000,
+        "hero": "granite",
+        "completedSpins": 14,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 3
+      },
+      {
+        "gameId": "studio-neopolis",
+        "oldViewVersion": 1,
+        "stakeUnits": 2000,
+        "hero": "impulse",
+        "completedSpins": 14,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 3
+      },
+      {
+        "gameId": "studio-neopolis",
+        "oldViewVersion": 1,
+        "stakeUnits": 2000,
+        "hero": "prism",
+        "completedSpins": 14,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 3
+      },
+      {
+        "gameId": "studio-neopolis",
+        "oldViewVersion": 1,
+        "stakeUnits": 5000,
+        "hero": "granite",
+        "completedSpins": 14,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 3
+      },
+      {
+        "gameId": "studio-neopolis",
+        "oldViewVersion": 1,
+        "stakeUnits": 5000,
+        "hero": "impulse",
+        "completedSpins": 14,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 3
+      },
+      {
+        "gameId": "studio-neopolis",
+        "oldViewVersion": 1,
+        "stakeUnits": 5000,
+        "hero": "prism",
+        "completedSpins": 14,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 3
+      },
+      {
+        "gameId": "studio-neopolis",
+        "oldViewVersion": 1,
+        "stakeUnits": 10000,
+        "hero": "granite",
+        "completedSpins": 14,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 3
+      },
+      {
+        "gameId": "studio-neopolis",
+        "oldViewVersion": 1,
+        "stakeUnits": 10000,
+        "hero": "impulse",
+        "completedSpins": 14,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 3
+      },
+      {
+        "gameId": "studio-neopolis",
+        "oldViewVersion": 1,
+        "stakeUnits": 10000,
+        "hero": "prism",
+        "completedSpins": 14,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 3
+      },
+      {
+        "gameId": "studio-neopolis",
+        "oldViewVersion": 1,
+        "stakeUnits": 20000,
+        "hero": "granite",
+        "completedSpins": 14,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 3
+      },
+      {
+        "gameId": "studio-neopolis",
+        "oldViewVersion": 1,
+        "stakeUnits": 20000,
+        "hero": "impulse",
+        "completedSpins": 14,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 3
+      },
+      {
+        "gameId": "studio-neopolis",
+        "oldViewVersion": 1,
+        "stakeUnits": 20000,
+        "hero": "prism",
+        "completedSpins": 14,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 3
+      },
+      {
+        "gameId": "studio-neopolis",
+        "oldViewVersion": 1,
+        "stakeUnits": 50000,
+        "hero": "granite",
+        "completedSpins": 14,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 3
+      },
+      {
+        "gameId": "studio-neopolis",
+        "oldViewVersion": 1,
+        "stakeUnits": 50000,
+        "hero": "impulse",
+        "completedSpins": 14,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 3
+      },
+      {
+        "gameId": "studio-neopolis",
+        "oldViewVersion": 1,
+        "stakeUnits": 50000,
+        "hero": "prism",
+        "completedSpins": 14,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 3
+      },
+      {
+        "gameId": "studio-neopolis",
+        "oldViewVersion": 2,
+        "stakeUnits": 1000,
+        "hero": "granite",
+        "completedSpins": 46,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 3
+      },
+      {
+        "gameId": "studio-neopolis",
+        "oldViewVersion": 2,
+        "stakeUnits": 1000,
+        "hero": "impulse",
+        "completedSpins": 46,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 3
+      },
+      {
+        "gameId": "studio-neopolis",
+        "oldViewVersion": 2,
+        "stakeUnits": 1000,
+        "hero": "prism",
+        "completedSpins": 46,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 3
+      },
+      {
+        "gameId": "studio-neopolis",
+        "oldViewVersion": 2,
+        "stakeUnits": 2000,
+        "hero": "granite",
+        "completedSpins": 46,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 3
+      },
+      {
+        "gameId": "studio-neopolis",
+        "oldViewVersion": 2,
+        "stakeUnits": 2000,
+        "hero": "impulse",
+        "completedSpins": 46,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 3
+      },
+      {
+        "gameId": "studio-neopolis",
+        "oldViewVersion": 2,
+        "stakeUnits": 2000,
+        "hero": "prism",
+        "completedSpins": 46,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 3
+      },
+      {
+        "gameId": "studio-neopolis",
+        "oldViewVersion": 2,
+        "stakeUnits": 5000,
+        "hero": "granite",
+        "completedSpins": 46,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 3
+      },
+      {
+        "gameId": "studio-neopolis",
+        "oldViewVersion": 2,
+        "stakeUnits": 5000,
+        "hero": "impulse",
+        "completedSpins": 46,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 3
+      },
+      {
+        "gameId": "studio-neopolis",
+        "oldViewVersion": 2,
+        "stakeUnits": 5000,
+        "hero": "prism",
+        "completedSpins": 46,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 3
+      },
+      {
+        "gameId": "studio-neopolis",
+        "oldViewVersion": 2,
+        "stakeUnits": 10000,
+        "hero": "granite",
+        "completedSpins": 46,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 3
+      },
+      {
+        "gameId": "studio-neopolis",
+        "oldViewVersion": 2,
+        "stakeUnits": 10000,
+        "hero": "impulse",
+        "completedSpins": 46,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 3
+      },
+      {
+        "gameId": "studio-neopolis",
+        "oldViewVersion": 2,
+        "stakeUnits": 10000,
+        "hero": "prism",
+        "completedSpins": 46,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 3
+      },
+      {
+        "gameId": "studio-neopolis",
+        "oldViewVersion": 2,
+        "stakeUnits": 20000,
+        "hero": "granite",
+        "completedSpins": 46,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 3
+      },
+      {
+        "gameId": "studio-neopolis",
+        "oldViewVersion": 2,
+        "stakeUnits": 20000,
+        "hero": "impulse",
+        "completedSpins": 46,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 3
+      },
+      {
+        "gameId": "studio-neopolis",
+        "oldViewVersion": 2,
+        "stakeUnits": 20000,
+        "hero": "prism",
+        "completedSpins": 46,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 3
+      },
+      {
+        "gameId": "studio-neopolis",
+        "oldViewVersion": 2,
+        "stakeUnits": 50000,
+        "hero": "granite",
+        "completedSpins": 46,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 3
+      },
+      {
+        "gameId": "studio-neopolis",
+        "oldViewVersion": 2,
+        "stakeUnits": 50000,
+        "hero": "impulse",
+        "completedSpins": 46,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 3
+      },
+      {
+        "gameId": "studio-neopolis",
+        "oldViewVersion": 2,
+        "stakeUnits": 50000,
+        "hero": "prism",
+        "completedSpins": 46,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 3
+      },
+      {
+        "gameId": "studio-dracona",
+        "oldViewVersion": 1,
+        "stakeUnits": 1000,
+        "completedSpins": 9,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 2
+      },
+      {
+        "gameId": "studio-dracona",
+        "oldViewVersion": 1,
+        "stakeUnits": 2000,
+        "completedSpins": 9,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 2
+      },
+      {
+        "gameId": "studio-dracona",
+        "oldViewVersion": 1,
+        "stakeUnits": 5000,
+        "completedSpins": 9,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 2
+      },
+      {
+        "gameId": "studio-dracona",
+        "oldViewVersion": 1,
+        "stakeUnits": 10000,
+        "completedSpins": 9,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 2
+      },
+      {
+        "gameId": "studio-dracona",
+        "oldViewVersion": 1,
+        "stakeUnits": 20000,
+        "completedSpins": 9,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 2
+      },
+      {
+        "gameId": "studio-dracona",
+        "oldViewVersion": 1,
+        "stakeUnits": 50000,
+        "completedSpins": 9,
+        "unchangedOldRules": true,
+        "nextRoundViewVersion": 2
+      }
+    ]
+  },
+  "screens": {
+    "studio-neopolis": {
+      "method": "regenerative team cycles; ratio-of-rewards interval at the independent cycle level",
+      "results": [
+        {
+          "choice": "granite",
+          "stakeUnits": 1000,
+          "cycles": 4000,
+          "freeSpins": 178880,
+          "bosses": 3968,
+          "samples": 4000,
+          "paidRounds": 502413,
+          "reward": 482479.18699999974,
+          "cost": 502413,
+          "rewardSquared": 72051882.8076868,
+          "rewardCost": 86098974.18699966,
+          "costSquared": 113154915,
+          "rtp": 0.9603238510946168,
+          "interval95": [
+            0.9473599844808711,
+            0.9732877177083625
+          ]
+        },
+        {
+          "choice": "granite",
+          "stakeUnits": 2000,
+          "cycles": 4000,
+          "freeSpins": 178880,
+          "bosses": 3968,
+          "samples": 4000,
+          "paidRounds": 502413,
+          "reward": 482595.52699999994,
+          "cost": 502413,
+          "rewardSquared": 72088254.46384856,
+          "rewardCost": 86121652.24200015,
+          "costSquared": 113154915,
+          "rtp": 0.9605554135740914,
+          "interval95": [
+            0.9475896320444749,
+            0.9735211951037078
+          ]
+        },
+        {
+          "choice": "granite",
+          "stakeUnits": 5000,
+          "cycles": 4000,
+          "freeSpins": 178880,
+          "bosses": 3968,
+          "samples": 4000,
+          "paidRounds": 502413,
+          "reward": 482663.7389999993,
+          "cost": 502413,
+          "rewardSquared": 72109624.66238892,
+          "rewardCost": 86134980.78000017,
+          "costSquared": 113154915,
+          "rtp": 0.9606911823539585,
+          "interval95": [
+            0.9477242903934635,
+            0.9736580743144534
+          ]
+        },
+        {
+          "choice": "granite",
+          "stakeUnits": 10000,
+          "cycles": 4000,
+          "freeSpins": 178880,
+          "bosses": 3968,
+          "samples": 4000,
+          "paidRounds": 502413,
+          "reward": 482689.5103999992,
+          "cost": 502413,
+          "rewardSquared": 72117711.50441623,
+          "rewardCost": 86140033.68750009,
+          "costSquared": 113154915,
+          "rtp": 0.960742477603086,
+          "interval95": [
+            0.9477751784391826,
+            0.9737097767669893
+          ]
+        },
+        {
+          "choice": "granite",
+          "stakeUnits": 20000,
+          "cycles": 4000,
+          "freeSpins": 178880,
+          "bosses": 3968,
+          "samples": 4000,
+          "paidRounds": 502413,
+          "reward": 482701.85214999993,
+          "cost": 502413,
+          "rewardSquared": 72121585.92108068,
+          "rewardCost": 86142453.99935006,
+          "costSquared": 113154915,
+          "rtp": 0.9607670425526408,
+          "interval95": [
+            0.9477995480639559,
+            0.9737345370413256
+          ]
+        },
+        {
+          "choice": "granite",
+          "stakeUnits": 50000,
+          "cycles": 4000,
+          "freeSpins": 178880,
+          "bosses": 3968,
+          "samples": 4000,
+          "paidRounds": 502413,
+          "reward": 482703.3409800006,
+          "cost": 502413,
+          "rewardSquared": 72122049.82520157,
+          "rewardCost": 86142741.4367399,
+          "costSquared": 113154915,
+          "rtp": 0.9607700059114724,
+          "interval95": [
+            0.9478024847940372,
+            0.9737375270289077
+          ]
+        },
+        {
+          "choice": "impulse",
+          "stakeUnits": 1000,
+          "cycles": 4000,
+          "freeSpins": 178635,
+          "bosses": 3961,
+          "samples": 4000,
+          "paidRounds": 505512,
+          "reward": 487991.95800000004,
+          "cost": 505512,
+          "rewardSquared": 73916580.11268409,
+          "rewardCost": 88460233.85700019,
+          "costSquared": 117261622,
+          "rtp": 0.9653419859469212,
+          "interval95": [
+            0.9516858427559032,
+            0.9789981291379393
+          ]
+        },
+        {
+          "choice": "impulse",
+          "stakeUnits": 2000,
+          "cycles": 4000,
+          "freeSpins": 178635,
+          "bosses": 3961,
+          "samples": 4000,
+          "paidRounds": 505512,
+          "reward": 488109.01750000165,
+          "cost": 505512,
+          "rewardSquared": 73953897.44493766,
+          "rewardCost": 88483649.43199995,
+          "costSquared": 117261622,
+          "rtp": 0.9655735521609806,
+          "interval95": [
+            0.9519154483897362,
+            0.979231655932225
+          ]
+        },
+        {
+          "choice": "impulse",
+          "stakeUnits": 5000,
+          "cycles": 4000,
+          "freeSpins": 178635,
+          "bosses": 3961,
+          "samples": 4000,
+          "paidRounds": 505512,
+          "reward": 488177.38360000006,
+          "cost": 505512,
+          "rewardSquared": 73975688.56148341,
+          "rewardCost": 88497313.99039976,
+          "costSquared": 117261622,
+          "rtp": 0.9657087934608873,
+          "interval95": [
+            0.9520495374172737,
+            0.979368049504501
+          ]
+        },
+        {
+          "choice": "impulse",
+          "stakeUnits": 10000,
+          "cycles": 4000,
+          "freeSpins": 178635,
+          "bosses": 3961,
+          "samples": 4000,
+          "paidRounds": 505512,
+          "reward": 488203.3238999999,
+          "cost": 505512,
+          "rewardSquared": 73983989.52402766,
+          "rewardCost": 88502534.25740017,
+          "costSquared": 117261622,
+          "rtp": 0.9657601083653798,
+          "interval95": [
+            0.9521004353144731,
+            0.9794197814162866
+          ]
+        },
+        {
+          "choice": "impulse",
+          "stakeUnits": 20000,
+          "cycles": 4000,
+          "freeSpins": 178635,
+          "bosses": 3961,
+          "samples": 4000,
+          "paidRounds": 505512,
+          "reward": 488215.7510500008,
+          "cost": 505512,
+          "rewardSquared": 73987960.62886253,
+          "rewardCost": 88505029.25025004,
+          "costSquared": 117261622,
+          "rtp": 0.965784691659151,
+          "interval95": [
+            0.9521248157803556,
+            0.9794445675379465
+          ]
+        },
+        {
+          "choice": "impulse",
+          "stakeUnits": 50000,
+          "cycles": 4000,
+          "freeSpins": 178635,
+          "bosses": 3961,
+          "samples": 4000,
+          "paidRounds": 505512,
+          "reward": 488217.2440200007,
+          "cost": 505512,
+          "rewardSquared": 73988436.27321887,
+          "rewardCost": 88505326.13580003,
+          "costSquared": 117261622,
+          "rtp": 0.9657876450410686,
+          "interval95": [
+            0.9521277425512837,
+            0.9794475475308535
+          ]
+        },
+        {
+          "choice": "prism",
+          "stakeUnits": 1000,
+          "cycles": 4000,
+          "freeSpins": 178720,
+          "bosses": 3963,
+          "samples": 4000,
+          "paidRounds": 514035,
+          "reward": 489109.6620000003,
+          "cost": 514035,
+          "rewardSquared": 74982940.11066985,
+          "rewardCost": 90871674.58799993,
+          "costSquared": 121163565,
+          "rtp": 0.9515104263328379,
+          "interval95": [
+            0.9384383902913528,
+            0.964582462374323
+          ]
+        },
+        {
+          "choice": "prism",
+          "stakeUnits": 2000,
+          "cycles": 4000,
+          "freeSpins": 178720,
+          "bosses": 3963,
+          "samples": 4000,
+          "paidRounds": 514035,
+          "reward": 489227.74899999984,
+          "cost": 514035,
+          "rewardSquared": 75021006.43251364,
+          "rewardCost": 90895785.28799999,
+          "costSquared": 121163565,
+          "rtp": 0.9517401519351792,
+          "interval95": [
+            0.9386662266139056,
+            0.9648140772564529
+          ]
+        },
+        {
+          "choice": "prism",
+          "stakeUnits": 5000,
+          "cycles": 4000,
+          "freeSpins": 178720,
+          "bosses": 3963,
+          "samples": 4000,
+          "paidRounds": 514035,
+          "reward": 489296.84200000006,
+          "cost": 514035,
+          "rewardSquared": 75043260.21516584,
+          "rewardCost": 90909871.47840004,
+          "costSquared": 121163565,
+          "rtp": 0.95187456496153,
+          "interval95": [
+            0.9387995250047367,
+            0.9649496049183233
+          ]
+        },
+        {
+          "choice": "prism",
+          "stakeUnits": 10000,
+          "cycles": 4000,
+          "freeSpins": 178720,
+          "bosses": 3963,
+          "samples": 4000,
+          "paidRounds": 514035,
+          "reward": 489323.0536,
+          "cost": 514035,
+          "rewardSquared": 75051731.52082051,
+          "rewardCost": 90915246.45529984,
+          "costSquared": 121163565,
+          "rtp": 0.9519255568200609,
+          "interval95": [
+            0.9388501113654265,
+            0.9650010022746952
+          ]
+        },
+        {
+          "choice": "prism",
+          "stakeUnits": 20000,
+          "cycles": 4000,
+          "freeSpins": 178720,
+          "bosses": 3963,
+          "samples": 4000,
+          "paidRounds": 514035,
+          "reward": 489335.5926500004,
+          "cost": 514035,
+          "rewardSquared": 75055782.27922912,
+          "rewardCost": 90917814.87499996,
+          "costSquared": 121163565,
+          "rtp": 0.9519499501979445,
+          "interval95": [
+            0.938874308800722,
+            0.965025591595167
+          ]
+        },
+        {
+          "choice": "prism",
+          "stakeUnits": 50000,
+          "cycles": 4000,
+          "freeSpins": 178720,
+          "bosses": 3963,
+          "samples": 4000,
+          "paidRounds": 514035,
+          "reward": 489337.1161999995,
+          "cost": 514035,
+          "rewardSquared": 75056271.07107516,
+          "rewardCost": 90918122.66468018,
+          "costSquared": 121163565,
+          "rtp": 0.951952914101179,
+          "interval95": [
+            0.9388772462508871,
+            0.9650285819514709
+          ]
+        }
+      ],
+      "streams": [
+        {
+          "choice": "granite",
+          "seed": 2026102401,
+          "paidRounds": 247587,
+          "cycles": 2000
+        },
+        {
+          "choice": "granite",
+          "seed": 2026102407,
+          "paidRounds": 254826,
+          "cycles": 2000
+        },
+        {
+          "choice": "impulse",
+          "seed": 2027102404,
+          "paidRounds": 254186,
+          "cycles": 2000
+        },
+        {
+          "choice": "impulse",
+          "seed": 2027102410,
+          "paidRounds": 251326,
+          "cycles": 2000
+        },
+        {
+          "choice": "prism",
+          "seed": 2028102407,
+          "paidRounds": 250663,
+          "cycles": 2000
+        },
+        {
+          "choice": "prism",
+          "seed": 2028102413,
+          "paidRounds": 263372,
+          "cycles": 2000
+        }
+      ]
+    },
+    "studio-dracona": {
+      "method": "independent complete paid rounds, with all rune state and free retriggers",
+      "streams": [
+        {
+          "choice": "normal",
+          "seed": 2026102401,
+          "paidRounds": 500000
+        },
+        {
+          "choice": "normal",
+          "seed": 2026102407,
+          "paidRounds": 500000
+        }
+      ],
+      "results": [
+        {
+          "choice": "normal",
+          "stakeUnits": 1000,
+          "cycles": 0,
+          "freeSpins": 287278,
+          "bonuses": 33054,
+          "samples": 1000000,
+          "paidRounds": 1000000,
+          "reward": 959118.8919999206,
+          "cost": 1000000,
+          "rewardSquared": 24082143.682497926,
+          "rewardCost": 959118.8919999206,
+          "costSquared": 1000000,
+          "rtp": 0.9591188919999206,
+          "interval95": [
+            0.9496859640584907,
+            0.9685518199413505
+          ]
+        },
+        {
+          "choice": "normal",
+          "stakeUnits": 2000,
+          "cycles": 0,
+          "freeSpins": 287278,
+          "bonuses": 33054,
+          "samples": 1000000,
+          "paidRounds": 1000000,
+          "reward": 959213.4290004211,
+          "cost": 1000000,
+          "rewardSquared": 24084615.045302212,
+          "rewardCost": 959213.4290004211,
+          "costSquared": 1000000,
+          "rtp": 0.9592134290004211,
+          "interval95": [
+            0.9497800347620148,
+            0.9686468232388273
+          ]
+        },
+        {
+          "choice": "normal",
+          "stakeUnits": 5000,
+          "cycles": 0,
+          "freeSpins": 287278,
+          "bonuses": 33054,
+          "samples": 1000000,
+          "paidRounds": 1000000,
+          "reward": 959256.5664002248,
+          "cost": 1000000,
+          "rewardSquared": 24085834.19115114,
+          "rewardCost": 959256.5664002248,
+          "costSquared": 1000000,
+          "rtp": 0.9592565664002248,
+          "interval95": [
+            0.9498229407764329,
+            0.9686901920240167
+          ]
+        },
+        {
+          "choice": "normal",
+          "stakeUnits": 10000,
+          "cycles": 0,
+          "freeSpins": 287278,
+          "bonuses": 33054,
+          "samples": 1000000,
+          "paidRounds": 1000000,
+          "reward": 959269.5620005653,
+          "cost": 1000000,
+          "rewardSquared": 24086199.600920074,
+          "rewardCost": 959269.5620005653,
+          "costSquared": 1000000,
+          "rtp": 0.9592695620005653,
+          "interval95": [
+            0.9498358670516581,
+            0.9687032569494726
+          ]
+        },
+        {
+          "choice": "normal",
+          "stakeUnits": 20000,
+          "cycles": 0,
+          "freeSpins": 287278,
+          "bonuses": 33054,
+          "samples": 1000000,
+          "paidRounds": 1000000,
+          "reward": 959274.4331501726,
+          "cost": 1000000,
+          "rewardSquared": 24086348.86231007,
+          "rewardCost": 959274.4331501726,
+          "costSquared": 1000000,
+          "rtp": 0.9592744331501726,
+          "interval95": [
+            0.9498407097129289,
+            0.9687081565874163
+          ]
+        },
+        {
+          "choice": "normal",
+          "stakeUnits": 50000,
+          "cycles": 0,
+          "freeSpins": 287278,
+          "bonuses": 33054,
+          "samples": 1000000,
+          "paidRounds": 1000000,
+          "reward": 959275.9692997646,
+          "cost": 1000000,
+          "rewardSquared": 24086387.78456278,
+          "rewardCost": 959275.9692997646,
+          "costSquared": 1000000,
+          "rtp": 0.9592759692997646,
+          "interval95": [
+            0.9498422385376336,
+            0.9687097000618955
+          ]
+        }
+      ]
+    }
+  },
+  "screeningResult": {
+    "grossOverreturnDetected": false,
+    "interpretation": "A lower 95% limit above 100% is an investigation signal. Absence of this signal does not qualify the rules or prove RTP below 100%."
+  }
+}
