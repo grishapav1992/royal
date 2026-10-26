@@ -31,18 +31,18 @@ export function installFinanceAdmin(app:Application,store:AccountStore=accounts,
       res.locals.account=session.account;next();
     }catch(err){error(err,res);}
   },express.json({limit:'8kb',inflate:false}));
-  const call=async(which:FinanceSource,action:'report'|'adjust'|'refresh',actorId:string,value:unknown)=>{
+  const call=async(which:FinanceSource,action:'report'|'adjust'|'refresh',actorId:string,value:unknown,acceptedReplay=false)=>{
     if(which==='payments')return store.cryptoWallet.admin(action,actorId,value);
+    if(action!=='report'&&!acceptedReplay)throw new CryptoError(410,'Этот платёжный контур закрыт. Доступен только архив операций.');
     const socket=which==='nile'?env.NILE_PLAY_SOCKET_FILE:env.USDT_MAINNET_SOCKET_FILE;
     if(!socket)throw new CryptoError(503,'Этот денежный контур не подключён.');
-    if(action==='refresh')throw new CryptoError(400,'Проверка платежа доступна для NOWPayments.');
     const result=await playCommand(socket,actorId,'finance-'+action,value,1048576);
     if(result.status!==200)throw new CryptoError([400,403,404,409,429].includes(result.status)?result.status:503,
       typeof result.value?.error==='string'?result.value.error:'Контур не подтвердил действие. Проверь сверку и доступный баланс.');
     return result.value;
   };
   app.get('/api/admin/session',handle(async(_req,res)=>({account:res.locals.account,sources:{payments:!!store.cryptoWallet.config.url,nile:!!env.NILE_PLAY_SOCKET_FILE,mainnet:!!env.USDT_MAINNET_SOCKET_FILE},
-    coverage:{house:'Денежные журналы NOWPayments, USDT Nile и прямого USDT.',pvp:'Общий USDT: игры казино, оплаченные действия внутри партий, покупки ателье и PvP. Для PvP видны оба игрока, ставка, выплата и комиссия казино; отменённые ставки и незавершённые партии отмечены отдельно.'}})));
+    coverage:{house:'NOWPayments. Старые журналы USDT Nile и прямого USDT доступны только для просмотра.',pvp:'Общий USDT: игры казино, оплаченные действия внутри партий, покупки ателье и PvP. Для PvP видны оба игрока, ставка, выплата и комиссия казино; отменённые ставки и незавершённые партии отмечены отдельно.'}})));
   app.post('/api/admin/report',handle(async(req,res)=>{
     if(!req.body||Object.keys(req.body).some(k=>!['source','filters','playerQuery'].includes(k)))throw new CryptoError(400,'Некорректный отчёт.');
     const filters=financeFilters(req.body.filters??{});
@@ -73,8 +73,11 @@ export function installFinanceAdmin(app:Application,store:AccountStore=accounts,
       ...(v.action==='adjust'?{deltaUnits:adjustmentRequest({id:v.id,actorId,playerId:v.playerId,deltaUnits:v.deltaUnits,reason:v.reason.trim()}).deltaUnits}:{}),
       ...(v.action==='refresh'?{operationId:v.operationId}:{})};
     if(v.action==='refresh'&&!gameAccountId(v.operationId))throw new CryptoError(400,'Некорректный номер платежа.');
+    const archivedAction=which!=='payments'&&['adjust','refresh'].includes(v.action);
+    const acceptedReplay=archivedAction&&await store.financeAdmin.hasAcceptedCommand(op.id);
+    if(archivedAction&&!acceptedReplay)throw new CryptoError(410,'Этот платёжный контур закрыт. Новые корректировки недоступны.');
     return store.financeAdmin.command(op,()=>call(which,v.action,actorId,v.action==='adjust'?{id:op.id,actorId,playerId:op.playerId,deltaUnits:op.deltaUnits,reason:op.reason}:
-      {playerId:op.playerId,operationId:op.operationId}));
+      {playerId:op.playerId,operationId:op.operationId},acceptedReplay));
   }));
   app.post('/api/admin/audit',handle(req=>{
     if(!req.body||Object.keys(req.body).some(k=>!['playerId','from','to','page'].includes(k))||req.body.playerId!==undefined&&!gameAccountId(req.body.playerId))throw new CryptoError(400,'Некорректный фильтр истории.');

@@ -29,6 +29,10 @@ export class FinanceAdminStore {
     if((await this.db.prepare('SELECT blocked FROM finance_player_controls WHERE player_id=?').get(playerId))?.blocked)
       throw new CryptoError(403,'Денежные операции аккаунта приостановлены администратором.');
   }
+  async hasAcceptedCommand(id:string){
+    await this.ready;
+    return !!await this.db.prepare('SELECT 1 FROM finance_admin_commands WHERE id=?').get(id);
+  }
   async search(query:string){
     await this.ready;
     if(query.length>254)throw new CryptoError(400,'Слишком длинный поиск.');
