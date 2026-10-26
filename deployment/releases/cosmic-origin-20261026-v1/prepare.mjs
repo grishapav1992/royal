@@ -30,6 +30,9 @@ assert.equal(canonical(oldPackageText),before.sourceLF['package.json'],'Producti
 const oldPackage=JSON.parse(oldPackageText),currentPackage=json(resolve(root,'package.json'));
 assert.deepEqual(Object.fromEntries(Object.entries(currentPackage).filter(([k])=>k!=='scripts')),Object.fromEntries(Object.entries(oldPackage).filter(([k])=>k!=='scripts')),'Dependency metadata change needs its own release');
 const runtimePackages={};if(canonical(readFileSync(resolve(root,'package.json')))!==before.sourceLF['package.json']){changed['package.json']=copy(resolve(root,'package.json'),'source/package.json');runtimePackages['package.json']=copy(resolve(root,'package.json'),'metadata/package.json');}
+const walletSources=['server/database.ts','server/combatGame.ts','server/combatRoom.ts','server/combatGuard.ts','server/commonCombatWallet.ts','server/pvp/virtual-wallet.ts','server/finance/combat-escrow.ts','server/finance/pvp-money.ts','src/shared/combat.ts','src/shared/combatEscrow.ts','src/shared/pvp.ts'];
+for(const file of walletSources)assert(before.source[file]&&!(file in changed),'Wallet/fight source must remain unchanged: '+file);
+assert.deepEqual(before.moduleHost.games['mortal-kombat'],{apiVersion:1,rulesVersion:2,progressVersion:1},'Combat rollback contract must remain compatible');
 for(const file of ['Dockerfile','.dockerignore','package-lock.json','index.html','tsconfig.json','tsconfig.finance.json','vite.config.ts'])assert.equal(canonical(readFileSync(resolve(root,file))),before.sourceLF[file],'Unexpected root build input '+file);
 const delta={},retainedPublicRuntime=[];
 for(const[file,h]of Object.entries(release.files)){
@@ -49,10 +52,10 @@ const host=json(resolve(root,'module-dist/host-contracts.json'));assert.deepEqua
 const row=release.packages.find(p=>p.gameId===game);assert(row);const folder=resolve(root,'module-dist',game,'versions',row.version),meta=json(resolve(folder,'manifest.json'));
 for(const key of ['apiVersion','rulesVersion','progressVersion'])assert.equal(meta[key],host.games[game][key]);
 const moduleDelta={};for(const file of ['manifest.json',...Object.keys(meta.files)]){const relative=game+'/versions/'+row.version+'/'+file;assert.equal(release.files['module-dist/'+relative],sha(resolve(folder,file)));moduleDelta[relative]=copy(resolve(folder,file),'modules/'+relative);}
-const helpers=dirname(fileURLToPath(import.meta.url));for(const file of ['deploy.py','snapshot.py','modules.py'])copy(resolve(helpers,file),file);
+const helpers=dirname(fileURLToPath(import.meta.url));for(const file of ['deploy.py','snapshot.py','modules.py','quiesce.cjs'])copy(resolve(helpers,file),file);
 copy(resolve(root,'module-dist/host-contracts.json'),'host.json');for(const file of ['release-manifest.json','release-github.json'])copy(resolve(root,'module-build',file),file);
 const manifest={release:name,sourceCommit:release.sourceCommit,baseCommit:release.baseCommit,before,changed,delta,serverDelta,runtimePackages,retainedPublicRuntime,
- helperSha256:sha(resolve(out,'deploy.py')),snapshotSha256:sha(resolve(out,'snapshot.py')),modulesHelperSha256:sha(resolve(out,'modules.py')),hostContractSha256:sha(resolve(out,'host.json')),
+ helperSha256:sha(resolve(out,'deploy.py')),snapshotSha256:sha(resolve(out,'snapshot.py')),quiesceSha256:sha(resolve(out,'quiesce.cjs')),modulesHelperSha256:sha(resolve(out,'modules.py')),hostContractSha256:sha(resolve(out,'host.json')),
  moduleDelta,modulePackages:[{gameId:game,version:row.version,beforeSha256:before.moduleFiles['/opt/royal-game-modules/'+game+'/active.json']||before.program['module-dist/'+game+'/active.json']||'none'}]};
 // External pointer absence is distinct from the bundled fallback pointer.
 manifest.modulePackages[0].beforeSha256=before.moduleFiles['/opt/royal-game-modules/'+game+'/active.json']||'none';
