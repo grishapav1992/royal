@@ -16,9 +16,11 @@ if not __debug__:
 def cosmic_source(name):
     return name == 'src/shared/luelonSlotsLines.ts' or name in {
         'scripts/check-game-rtp.mjs', 'scripts/qualify-game-rtp.mjs',
-        'docs/game-math/rtp-policies.md',
+        'scripts/game-math/rtp-cosmic.mjs', 'scripts/game-math/rtp-gate.mjs',
+        'scripts/game-math/rtp-policy.json', 'docs/game-math/rtp-policies.md',
         'docs/game-math/qualifications/cosmic-v3.json',
-    } or name.startswith(('scripts/game-math/', 'docs/game-math/cosmic'))
+    } or name.startswith(('scripts/game-math/cosmic', 'scripts/game-math/audit-cosmic',
+                          'docs/game-math/cosmic'))
 
 
 def dependency_transition(old_lock, new_lock):
@@ -102,7 +104,7 @@ for name in source_paths(stage, release['sourceCommit']):
             changed[name] = copy(path,'source/'+name)
         else:
             assert not name.startswith(('src/', 'server/', 'games/', 'public/')), 'Unrelated runtime source changed: '+name
-for name in ['package-lock.json','package.json','deployment/SERVER.md']:
+for name in ['package-lock.json','package.json']:
     if lf(stage/name) != before['sourceLF'][name]: changed[name] = copy(stage/name,'source/'+name)
 for name in ['Dockerfile','.dockerignore','index.html','tsconfig.json','tsconfig.finance.json','vite.config.ts']:
     assert lf(stage/name) == before['sourceLF'][name], 'Unreviewed root input: '+name

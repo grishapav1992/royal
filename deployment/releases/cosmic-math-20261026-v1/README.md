@@ -8,7 +8,7 @@ The installer retains the existing three publication file locks, three continuou
 
 The publication supervisor and its two bounded priority helpers are included in the same Git object proof as the installer. They temporarily select only Docker, containerd and the exact reviewed current or candidate game container. Each lease has an independent watchdog, a terminal cancellation marker, opened-file identity checks and an 1800 second limit. Financial-service settings are never selected. The supervisor releases its leases after the installer exits; verify remaining weights explicitly. Candidate-only offline containers use explicit CPU shares with a read-only filesystem and no network.
 
-The preparer refuses unrelated runtime source changes. Cosmic qualification tools and evidence accompany the validator. The complete dependency lock must remain unchanged. The decoder package bytes are checked against the running inventory, and dependency replacement is forbidden in this release.
+The preparer refuses unrelated runtime source changes. Cosmic qualification tools and evidence accompany the validator. Other games audit tools and the existing production deployment record are preserved. The complete dependency lock must remain unchanged. The decoder package bytes are checked against the running inventory, and dependency replacement is forbidden in this release.
 
 Only studio-cosmic-escape is an allowed client package. Existing host programs, finance services, configuration, module contracts, previous client URLs and game_data remain protected by the before snapshot. Source and wallet backups and the previous image are retained. Recovery never restores the live database.
 

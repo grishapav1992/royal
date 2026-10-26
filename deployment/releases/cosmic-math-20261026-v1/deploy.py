@@ -158,8 +158,11 @@ def lock_transition(before, after):
 def cosmic_source(name):
     return name == 'src/shared/luelonSlotsLines.ts' or name in {
         'scripts/check-game-rtp.mjs', 'scripts/qualify-game-rtp.mjs',
-        'docs/game-math/rtp-policies.md', 'docs/game-math/qualifications/cosmic-v3.json',
-    } or name.startswith(('scripts/game-math/', 'docs/game-math/cosmic'))
+        'scripts/game-math/rtp-cosmic.mjs', 'scripts/game-math/rtp-gate.mjs',
+        'scripts/game-math/rtp-policy.json', 'docs/game-math/rtp-policies.md',
+        'docs/game-math/qualifications/cosmic-v3.json',
+    } or name.startswith(('scripts/game-math/cosmic', 'scripts/game-math/audit-cosmic',
+                          'docs/game-math/cosmic'))
 
 
 def package_transition(before, after):
@@ -229,12 +232,12 @@ def payload():
     require(CHANGES and set(SERVER_DELTA) == {'index.js'}, 'The reviewed main backend is required')
     require(all(name in ['index.html','admin.html'] or re.fullmatch(r'assets/[a-zA-Z0-9_-]+\.(?:js|css)', name) for name in DELTA), 'Unexpected client change')
     for name in [*CHANGES, *DELTA]: safe_name(name)
-    require(all(name in ['package-lock.json','package.json','deployment/SERVER.md'] or name.startswith(('src/','server/','scripts/','docs/','games/')) for name in CHANGES), 'Unexpected source path')
+    require(all(name in ['package-lock.json','package.json'] or name.startswith(('src/','server/','scripts/','docs/','games/')) for name in CHANGES), 'Unexpected source path')
     for name in CHANGES:
         require(not any(part.startswith(('._','.env')) or part in
             {'node_modules','__pycache__','data','secrets','.git','.DS_Store'} for part in PurePosixPath(name).parts)
             and not name.endswith(('.orig','.bak','.pyc','.pyo')), 'Generated or unobservable source path: '+name)
-    require(all(name in ['package-lock.json', 'package.json', 'deployment/SERVER.md']
+    require(all(name in ['package-lock.json', 'package.json']
                 or cosmic_source(name) for name in CHANGES), 'Unrelated source is outside the Cosmic release')
     require(CHANGES.get('src/shared/luelonSlotsLines.ts', OLD['sourceLF'].get('src/shared/luelonSlotsLines.ts'))
             == 'cc9e2528bae03e8965c154f82aa271b3c9976bb3d817130ba51dedf6e8eb67ee',

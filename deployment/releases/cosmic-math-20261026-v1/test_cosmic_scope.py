@@ -36,7 +36,8 @@ class CosmicScopeTests(unittest.TestCase):
     def test_unrelated_runtime_paths_are_rejected(self):
         for name in ['server/LobbyRoom.ts', 'games/mortal-kombat/src/main.ts',
                      'src/shared/caramelMath.ts', 'public/unrelated.webp',
-                     'games/studio-neopolis/index.ts']:
+                     'games/studio-neopolis/index.ts', 'scripts/game-math/audit-house-instant.mjs',
+                     'scripts/game-math/audit-native-bonuses.mjs', 'deployment/SERVER.md']:
             self.assertFalse(scope(name), name)
 
     def locks(self):
