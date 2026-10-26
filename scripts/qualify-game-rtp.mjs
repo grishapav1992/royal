@@ -7,11 +7,12 @@ import { preflight, simulateDracona, simulateNeopolis } from './game-math/rtp-si
 import { qualifyCombat } from './game-math/rtp-combat.mjs';
 import {qualifyVirtualPvp} from './game-math/rtp-virtual-pvp.mjs';
 import {qualifyCosmic} from './game-math/rtp-cosmic.mjs';
+import {qualifyForestHeart} from './game-math/rtp-forest-heart.mjs';
 const root = fileURLToPath(new URL('../', import.meta.url)), args = process.argv.slice(2);
 const index = args.indexOf('--game'), gameId = index < 0 ? undefined : args[index + 1];
-assert(['studio-neopolis','studio-dracona','studio-cosmic-escape','mortal-kombat','hockey','pool','chess','durak','transfer-durak','crazy-eights'].includes(gameId), 'Choose a registered paid game');
+assert(['studio-forest-heart','studio-neopolis','studio-dracona','studio-cosmic-escape','mortal-kombat','hockey','pool','chess','durak','transfer-durak','crazy-eights'].includes(gameId), 'Choose a registered paid game');
 const inputs = await rtpInputs(root, gameId), startedAt = new Date().toISOString();
-const exact = gameId==='studio-cosmic-escape'?await qualifyCosmic(inputs.policy,value=>console.log(JSON.stringify(value))):gameId==='mortal-kombat'?qualifyCombat(inputs.policy):inputs.policy.method==='exhaustive-virtual-pvp-pot'?qualifyVirtualPvp(gameId,inputs.policy):undefined;
+const exact = gameId==='studio-forest-heart'?await qualifyForestHeart(inputs.policy,value=>console.log(JSON.stringify(value))):gameId==='studio-cosmic-escape'?await qualifyCosmic(inputs.policy,value=>console.log(JSON.stringify(value))):gameId==='mortal-kombat'?qualifyCombat(inputs.policy):inputs.policy.method==='exhaustive-virtual-pvp-pot'?qualifyVirtualPvp(gameId,inputs.policy):undefined;
 const serverReplayChecks = exact?.serverReplayChecks??preflight(gameId, inputs.policy);
 console.log(JSON.stringify({ gameId, phase: 'server-replay', serverReplayChecks }));
 const sample = exact??(gameId === 'studio-neopolis' ? simulateNeopolis : simulateDracona)(inputs.policy, value => console.log(JSON.stringify(value)));

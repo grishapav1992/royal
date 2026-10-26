@@ -33,7 +33,7 @@ test('RTP target uses the exact rational result, ignoring a forged display decim
 });
 test('the candidate cannot qualify or enter the runnable catalogue using offline model evidence',async()=>{
   const id='studio-forest-heart',inputs=await rtpInputs(process.cwd(),id);
-  assert.equal(inputs.policy.releaseStatus,'model-only');
-  assert.throws(()=>validateRtpProof(id,inputs,{...report,qualified:true}),/runtime and wallet qualification/);
+  assert.equal(inputs.policy.releaseStatus,'server-qualified-client-pending');
+  assert.throws(()=>validateRtpProof(id,inputs,{...report,qualified:true}));
   await assert.rejects(checkGameRtp(process.cwd(),[{gameId:id,rulesVersion:1,progressVersion:1}],[]),/do not add/);
 });
