@@ -100,6 +100,15 @@ class SecurityRelease(unittest.TestCase):
         self.n['payload']()
         self.assertEqual([x['gameId'] for x in self.n['M']['modulePackages']], ['mortal-kombat'])
 
+    def test_isolated_directory_verifies_helpers_from_their_original_git_path(self):
+        self.combat_only_fixture()
+        isolated = self.root.with_name('mk-security-only-20261026-v1')
+        self.root.rename(isolated)
+        self.root = isolated
+        self.n['ROOT'], self.n['NAME'] = isolated, isolated.name
+        self.n['M']['release'] = isolated.name
+        self.n['payload']()
+
     def test_combat_only_rejects_other_game_source(self):
         self.combat_only_fixture()
         name = 'src/shared/luelonSlotsLines.ts'

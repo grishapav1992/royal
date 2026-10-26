@@ -195,7 +195,7 @@ def verify_helper_source(proof):
     first = raw.split(b'\n',1)[0]
     require(re.fullmatch(rb'tree [0-9a-f]{40}',first), 'Invalid helper source commit')
     tree_id, used = first[5:].decode(), set()
-    for name in [b'deployment',b'releases',NAME.encode()]:
+    for name in [b'deployment',b'releases',b'mk-security-20261026-v1']:
         entries = git_tree(object_bytes('tree',proof['trees'][tree_id],tree_id));used.add(tree_id)
         require(name in entries and entries[name][0] == b'40000', 'Missing helper source directory')
         tree_id = entries[name][1]
