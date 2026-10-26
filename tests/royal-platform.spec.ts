@@ -1,3 +1,4 @@
+import {sandboxTopUp} from './sandbox-topup';
 import {expect,type Page} from '@playwright/test';
 import {test} from './themed-room';
 import {cabinetsInHall} from '../src/shared/cabinets';
@@ -51,7 +52,7 @@ test('the first floor exposes only twelve Royal cabinets and catalogues with con
 
 test('a Royal round keeps the same stake after catalogue switching, reopening and mobile resizing',async({page,roomPath})=>{
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await enter(page,roomPath);
- await page.getByRole('button',{name:'Открыть демокошелёк'}).click();await page.locator('#wallet-amount').fill('1000');await page.locator('#wallet-deposit button').click();await expect(page.locator('#wallet-balance')).toHaveText(/1\s000/);await page.getByRole('button',{name:'Закрыть кошелёк'}).click();
+ await sandboxTopUp(page,1000);
  await approach(page,'studio-cosmic-escape');let menu=page.locator('.royal-platform');
  await menu.getByRole('searchbox').fill('несуществующая');await expect(menu.locator('.rp-card')).toHaveCount(0);
  await menu.getByRole('searchbox').fill('');await menu.getByRole('combobox',{name:'Жанр',exact:true}).selectOption('slot');await expect(menu.locator('.rp-card')).toHaveCount(9);

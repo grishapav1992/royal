@@ -17,6 +17,7 @@ import { isExpansionGame, EXPANSION_NAMES } from './shared/casinoExpansion';
 import { isSessionGame } from './shared/casinoSessions';
 import { ClubMap } from './ui/ClubMap';
 import { DemoWalletUI } from './ui/DemoWalletUI';
+import { CryptoWalletUI } from './ui/CryptoWalletUI';
 import { MiraChat } from './ui/MiraChat';
 import { isGithubGame } from './shared/githubGames';
 import './demo-preview.css';
@@ -265,6 +266,7 @@ const room = new RoomScene({
       const img = document.createElement('img'); img.src = game.textures.getBase64(`cabinet-${i}`); img.alt = ''; document.querySelector(`#art-${artIndex}`)?.append(img);
     });
     new DemoWalletUI(room);
+    new CryptoWalletUI(room);
     const portrait = document.createElement('img'); portrait.src = game.textures.getBase64('citizen-0', 'down-6'); portrait.alt = ''; $('#player-portrait').append(portrait);
     if (!offline) social = new SocialUI(room, toast);
     else { room.onActivity=()=>toast(translateText('Войди в онлайн-зал, чтобы играть вместе и слушать рояль.')); }

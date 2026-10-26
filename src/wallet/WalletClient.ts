@@ -50,7 +50,7 @@ export class WalletClient extends EventTarget {
     }
     this.notify();
   }
-  async operate(kind: 'deposit' | 'spin', amount: number): Promise<WalletResult> {
+  async operate(kind: 'spin', amount: number): Promise<WalletResult> {
     if (this.pending && (kind !== this.pending.kind || amount !== this.pending.amount)) throw new Error(translateText('Сначала проверь предыдущую операцию в кошельке.'));
     return this.send(this.pending ?? { id: crypto.randomUUID(), kind, amount });
   }

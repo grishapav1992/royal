@@ -81,6 +81,58 @@ class SecurityRelease(unittest.TestCase):
         manifest.update(moduleDelta=self.n['inventory'](self.root/'modules'),modulePackages=packages)
         self.n.update(M=manifest,OLD=before,BASE=source,CHANGES=manifest['changed'],DELTA={},SERVER_DELTA=manifest['serverDelta'])
 
+    def combat_only_fixture(self):
+        import shutil
+        self.n['M']['moduleScope'] = 'combat-only'
+        self.n['M']['modulePackages'] = self.n['M']['modulePackages'][:1]
+        shutil.rmtree(self.root/'modules/studio-cosmic-escape')
+        self.n['M']['moduleDelta'] = self.n['inventory'](self.root/'modules')
+        (self.root/'source/package.json').unlink()
+        del self.n['CHANGES']['package.json']
+        (self.root/'metadata/package.json').write_bytes((self.root/'old-package.json').read_bytes())
+        self.n['M']['runtimePackages']['package.json'] = self.n['sha'](self.root/'metadata/package.json')
+
+    def test_identical_package_scripts_are_allowed(self):
+        self.n['package_transition'](self.old_package, copy.deepcopy(self.old_package))
+
+    def test_combat_only_payload_preserves_scripts_and_excludes_other_modules(self):
+        self.combat_only_fixture()
+        self.n['payload']()
+        self.assertEqual([x['gameId'] for x in self.n['M']['modulePackages']], ['mortal-kombat'])
+
+    def test_combat_only_rejects_other_game_source(self):
+        self.combat_only_fixture()
+        name = 'src/shared/luelonSlotsLines.ts'
+        path = self.root/'source'/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_text('unrelated math')
+        self.n['CHANGES'][name] = self.n['sha'](path)
+        with self.assertRaisesRegex(RuntimeError,'Unrelated source'):
+            self.n['payload']()
+
+    def test_combat_only_rejects_replacing_the_historical_server_record(self):
+        self.combat_only_fixture()
+        path = self.root/'source/deployment/SERVER.md';path.parent.mkdir(parents=True);path.write_text('unrelated release record')
+        self.n['CHANGES']['deployment/SERVER.md'] = self.n['sha'](path)
+        with self.assertRaisesRegex(RuntimeError,'Unrelated source'):
+            self.n['payload']()
+
+    def test_combat_only_rejects_other_module_identity(self):
+        self.combat_only_fixture()
+        self.n['M']['modulePackages'][0]['gameId'] = 'studio-cosmic-escape'
+        with self.assertRaisesRegex(RuntimeError,'Only the reviewed clients'):
+            self.n['payload']()
+
+    def test_combat_only_rejects_legacy_joint_script_change(self):
+        self.n['M']['moduleScope'] = 'combat-only'
+        self.n['M']['modulePackages'] = self.n['M']['modulePackages'][:1]
+        with self.assertRaisesRegex(RuntimeError,'Unrelated source|package scripts'):
+            self.n['payload']()
+
+    def test_joint_scope_cannot_accidentally_become_a_single_package(self):
+        self.combat_only_fixture()
+        del self.n['M']['moduleScope']
+        with self.assertRaisesRegex(RuntimeError,'Only the reviewed clients'):
+            self.n['payload']()
+
     def test_changed_retained_backend_input_is_rejected(self):
         self.n['CHANGES']['server/payments/index.ts']='0'*64
         with self.assertRaises(RuntimeError):self.n['payload']()

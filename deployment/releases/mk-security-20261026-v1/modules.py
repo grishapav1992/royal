@@ -12,7 +12,7 @@ import subprocess
 import uuid
 
 ROOT = Path(__file__).resolve().parent
-NAME = 'mk-security-20261026-v1'
+NAME = 'mk-security-only-20261026-v1' if ROOT.name == 'mk-security-only-20261026-v1' else 'mk-security-20261026-v1'
 EXPECTED_ROOT = Path('/opt/royal-releases') / NAME
 LIVE = Path('/opt/royal')
 STATE = Path('/opt/royal-game-modules-state')
@@ -121,9 +121,13 @@ def load_context():
     require(sha(regular(STATE / 'host.json')) == before['moduleHostContract'], 'Installed host contract changed')
     require(read_json(STATE / 'host.json') == before['moduleHost'], 'Installed host contract content differs')
     rows = manifest.get('modulePackages')
-    require(isinstance(rows, list) and len(rows) == 2 and all(isinstance(row, dict) for row in rows),
-            'Exactly two reviewed module packages are required')
-    require({row.get('gameId') for row in rows} == set(GAMES), 'Unexpected module package identities')
+    require(isinstance(rows, list) and 1 <= len(rows) <= 2 and all(isinstance(row, dict) for row in rows),
+            'One or two reviewed module packages are required')
+    scope = manifest.get('moduleScope', 'joint')
+    require(scope in ['joint','combat-only'], 'Unknown module release scope')
+    require(NAME != 'mk-security-only-20261026-v1' or scope == 'combat-only', 'The isolated release requires combat-only scope')
+    games = {'mortal-kombat'} if scope == 'combat-only' else set(GAMES)
+    require(len(rows) == len(games) and {row.get('gameId') for row in rows} == games, 'Unexpected module package identities')
     rows = sorted(rows, key=lambda row: GAMES.index(row['gameId']))
     for row in rows:
         require(set(row) == {'gameId', 'version', 'beforeSha256'} and isinstance(row['version'], str)
@@ -139,7 +143,7 @@ def load_context():
         require(isinstance(name, str), 'Invalid module payload path')
         path = PurePosixPath(name)
         require(str(path) == name and not path.is_absolute() and all(part not in ['.', '..'] for part in path.parts)
-                and any(name.startswith(prefix) for prefix in prefixes), 'Only two reviewed module versions may be published')
+                and any(name.startswith(prefix) for prefix in prefixes), 'Only reviewed module versions may be published')
         require(isinstance(digest, str) and DIGEST.fullmatch(digest), 'Invalid module digest')
         old = before['moduleFiles'].get(str(MODULES / name))
         require(old is None or old == digest, 'Immutable module URL would change')
@@ -240,7 +244,7 @@ def backup(ctx):
         verify_backup(ctx)
         return
     require(not (BACKUP / RECORD).is_symlink() and not any(path.exists() or path.is_symlink()
-            for path in [BACKUP / HOST_BACKUP, *[pointer_backup(game) for game in GAMES]]),
+            for path in [BACKUP / HOST_BACKUP, *[pointer_backup(row['gameId']) for row in ctx['rows']]]),
             'Incomplete module backup requires review')
     module_guard(ctx, original_pointers=True)
     for row in ctx['rows']:
@@ -272,7 +276,7 @@ def rollback_pointers(current=None):
         require(not (BACKUP / RECORD).is_symlink(), 'Module backup symlink rejected')
         module_guard(ctx, original_pointers=True)
         require(not any(path.exists() or path.is_symlink() for path in
-                        [BACKUP / HOST_BACKUP, *[pointer_backup(game) for game in GAMES]]),
+                        [BACKUP / HOST_BACKUP, *[pointer_backup(row['gameId']) for row in ctx['rows']]]),
                 'Incomplete module backup requires review')
         return {'restored': True, 'pointerCount': 0, 'immutableVersionsRetained': True}
     verify_backup(ctx)
