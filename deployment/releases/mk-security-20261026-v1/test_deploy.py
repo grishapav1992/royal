@@ -137,6 +137,48 @@ class SecurityRelease(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError,'busy'):n['publish']()
         self.assertEqual(calls,[])
 
+    def module_recovery_fixture(self):
+        old={'/opt/royal-game-modules/mortal-kombat/active.json':'a'*64,'/opt/royal-game-modules/other/old.js':'b'*64}
+        relative='mortal-kombat/versions/1.0.0-new/manifest.json'
+        delta={relative:'c'*64,'mortal-kombat/versions/1.0.0-new/entry.js':'d'*64}
+        value={'format':1,'gameId':'mortal-kombat','manifest':'/game-modules/'+relative,'sha256':'c'*64}
+        active=hashlib.sha256((json.dumps(value,indent=2)+'\n').encode()).hexdigest()
+        n=functions(['require','owned_module_state','settings'],OLD={'moduleFiles':old},M={'moduleDelta':delta,'modulePackages':[{'gameId':'mortal-kombat','version':'1.0.0-new'}]})
+        added={'/opt/royal-game-modules/'+name:digest for name,digest in delta.items()}
+        return n,{'moduleFiles':copy.deepcopy(old)},added,active
+    def test_normal_baseline_still_rejects_own_module_change(self):
+        n,state,added,_=self.module_recovery_fixture()
+        extras={'configHashes':{},'moduleHostContract':'host','container':{'mounts':[],'host':{},'runtimeHash':'runtime','composeFiles':[]},'services':{},'realMoneyFlags':{}}
+        n['OLD'].update(copy.deepcopy(extras));state.update(copy.deepcopy(extras));state['moduleFiles'].update(added)
+        with self.assertRaises(RuntimeError):n['settings'](state)
+    def test_recovery_settings_allow_only_the_reviewed_own_module(self):
+        n,state,added,active=self.module_recovery_fixture()
+        extras={'configHashes':{},'moduleHostContract':'host','container':{'mounts':[],'host':{},'runtimeHash':'runtime','composeFiles':[]},'services':{},'realMoneyFlags':{}}
+        n['OLD'].update(copy.deepcopy(extras));state.update(copy.deepcopy(extras));state['moduleFiles'].update(added);state['moduleFiles']['/opt/royal-game-modules/mortal-kombat/active.json']=active
+        n['settings'](state,recovery=True)
+    def test_recovery_accepts_unchanged_modules(self):
+        n,state,_,_=self.module_recovery_fixture();n['owned_module_state'](state)
+    def test_retry_accepts_own_immutable_version_with_old_pointer(self):
+        n,state,added,_=self.module_recovery_fixture();state['moduleFiles'].update(added);n['owned_module_state'](state)
+    def test_recovery_preserves_complete_reviewed_compatible_module(self):
+        n,state,added,active=self.module_recovery_fixture();state['moduleFiles'].update(added);state['moduleFiles']['/opt/royal-game-modules/mortal-kombat/active.json']=active
+        n['owned_module_state'](state)
+    def test_recovery_rejects_other_module_addition(self):
+        n,state,_,_=self.module_recovery_fixture();state['moduleFiles']['/opt/royal-game-modules/other/new.js']='e'*64
+        with self.assertRaises(RuntimeError):n['owned_module_state'](state)
+    def test_recovery_rejects_tampered_own_module(self):
+        n,state,added,_=self.module_recovery_fixture();state['moduleFiles'].update(added);state['moduleFiles'][next(iter(added))]='e'*64
+        with self.assertRaises(RuntimeError):n['owned_module_state'](state)
+    def test_recovery_rejects_later_active_pointer(self):
+        n,state,_,_=self.module_recovery_fixture();state['moduleFiles']['/opt/royal-game-modules/mortal-kombat/active.json']='e'*64
+        with self.assertRaises(RuntimeError):n['owned_module_state'](state)
+    def test_recovery_rejects_incomplete_active_version(self):
+        n,state,_,active=self.module_recovery_fixture();state['moduleFiles']['/opt/royal-game-modules/mortal-kombat/active.json']=active
+        with self.assertRaises(RuntimeError):n['owned_module_state'](state)
+    def test_recovery_rejects_deleted_prior_module(self):
+        n,state,_,_=self.module_recovery_fixture();del state['moduleFiles']['/opt/royal-game-modules/other/old.js']
+        with self.assertRaises(RuntimeError):n['owned_module_state'](state)
+
     def baseline_fixture(self):
         old={'container':{'image':'old','health':'healthy'},'source':{'server.ts':'a'},'program':{'file':'b'},'preparedProgram':{'file':'b'},'preparedImage':'old'}
         current=copy.deepcopy(old)
