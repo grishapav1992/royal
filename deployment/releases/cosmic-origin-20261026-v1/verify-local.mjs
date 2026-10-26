@@ -48,9 +48,12 @@ const packageManifest = JSON.parse(await readFile(resolve(root, packageManifestP
 assert.equal(packageManifest.gameId, game);
 await mkdir(output, {recursive: true});
 const proof = {format: 1, checkedAt: new Date().toISOString(), sourceCommit, releaseManifestSha256: hash(manifestBytes),
+  harnessSha256: hash(await readFile(fileURLToPath(import.meta.url))),
   method: 'Prepared dist and dist-server served by the actual application with actual authenticated HTTP, real Colyseus chat, shared wallet and independent Cosmic module. Fresh temporary local PostgreSQL only. Random outcomes check recovery and accounting, not RTP.',
   preparedIndexSha256: manifest.files['dist/index.html'], preparedBackendSha256: manifest.files['dist-server/index.js'],
-  moduleVersion: packageManifest.version, remoteBrowserRequestsBlocked: 0, localSyntheticAccounts: 7, scenarios: [], passed: false};
+  moduleVersion: packageManifest.version, remoteBrowserRequestsBlocked: 0, localSyntheticAccounts: 0,
+  navigationMethod: 'Ordinary catalog clicks only, at most three approaches within 45 seconds after measured idle movement and guard distance above 45 at the current position. The complete route and server admission reason are not measured. No teleport or direct wallet start.',
+  scenarios: [], admissions: [], passed: false};
 let database, application, pool, browser, observerApi, host, currentPage, serverOutput = '';
 const sleep = ms => new Promise(done => setTimeout(done, ms));
 try {
@@ -83,6 +86,7 @@ try {
   observerApi = await playwrightRequest.newContext({baseURL: origin});
   const observerLogin = await observerApi.post('/api/auth/login', {data: {email: `cosmic-observer-${randomUUID()}@example.test`, password: 'Cosmic-local-verification-123!'}});
   assert(observerLogin.ok());
+  proof.localSyntheticAccounts++;
   assert((await observerApi.post('/api/auth/character', {data: {skin: 0}})).ok());
   host = await new Client(origin, {headers: {Cookie: observerLogin.headers()['set-cookie'].split(';')[0]}}).create('lobby');
   const observedMessages = [];
@@ -123,6 +127,7 @@ try {
       });
       const login = await page.request.post('/api/auth/login', {data: {email: `cosmic-host-${randomUUID()}@example.test`, password: 'Cosmic-local-verification-123!'}});
       assert(login.ok()); const account = (await login.json()).account.id;
+      proof.localSyntheticAccounts++;
       assert((await page.request.post('/api/auth/character', {data: {skin: 0}})).ok());
       const headers = {'X-Royal-Account-Id': account};
       const expansion = async () => {
@@ -143,11 +148,54 @@ try {
       await page.getByRole('button', {name: 'Пополнить баланс', exact: true}).click();
       await expect.poll(async () => (await wallet()).balance).toBe(deposit);
       await page.getByRole('button', {name: 'Закрыть кошелёк'}).click();
+      const admissionState = () => page.evaluate(() => {
+        const state = window.royalDemo.getState(), network = window.royalDemo.getNetworkState();
+        return {at: Date.now(), network, online: state.online, x: state.x, y: state.y,
+          serverX: state.serverX ?? null, serverY: state.serverY ?? null, moving: state.moving,
+          locked: state.locked, switching: state.switching, playing: state.playing, cabinet: state.cabinet, hall: state.hall,
+          seat: state.seat, action: state.action,
+          near: state.near, predicted: state.predicted, pendingInputs: state.pendingInputs, guards: state.guards,
+          openDialogs: [...document.querySelectorAll('dialog[open]')].map(element => element.id)};
+      });
+      const readyToApproach = state => state.online && state.network?.status === 'connected' && state.network?.selfId
+        && Number.isFinite(state.serverX) && Number.isFinite(state.serverY)
+        && !state.locked && !state.switching && !state.playing && !state.cabinet && state.openDialogs.length === 0;
       const open = async () => {
+        const admission = {name, attempts: 0, samples: [], errors};
+        proof.admissions.push(admission);
+        await expect.poll(async () => {
+          const state = await admissionState();
+          admission.samples.push({...state, event: 'readiness'});
+          return Boolean(readyToApproach(state));
+        }).toBe(true);
         if (await page.locator('#room-overview').getAttribute('aria-pressed') !== 'true') await page.locator('#room-overview').click();
-        await page.locator('#games-tab').click();
-        await page.locator(`[data-cabinet="${game}"]`).click();
-        await expect(page.locator('#mini-dialog')).toBeVisible({timeout: 45000});
+        const approach = async () => {
+          await page.locator('#games-tab').click();
+          admission.samples.push({...(await admissionState()), event: 'catalog-click'});
+          await page.locator(`[data-cabinet="${game}"]`).click();
+          admission.attempts++;
+        };
+        await approach();
+        let previous, stoppedAt = 0;
+        await expect.poll(async () => {
+          if (await page.locator('#mini-dialog').isVisible()) return true;
+          const state = await admissionState();
+          admission.samples.push(state);
+          const stopped = previous && Math.hypot(state.x - previous.x, state.y - previous.y) < .2
+            && !state.moving && !state.predicted && state.pendingInputs === 0;
+          stoppedAt = stopped ? stoppedAt || state.at : 0;
+          previous = state;
+          // Retry through the same catalog after measured idle movement and a clear current guard distance.
+          const guardClear = state.guards.every(guard => guard.hall !== state.hall
+            || Math.hypot(guard.x - state.x, guard.y - state.y) > 45);
+          if (admission.attempts < 3 && stoppedAt && state.at - stoppedAt >= 1000
+              && readyToApproach(state) && guardClear) {
+            admission.samples.push({...state, event: 'repeat-stopped-route'});
+            await approach();
+            stoppedAt = 0;
+          }
+          return false;
+        }, {timeout: 45000, intervals: [250]}).toBe(true);
         if (await page.locator('.royal-platform').isVisible()) await page.locator(`[data-platform-game="${game}"]`).click();
         await expect(page.locator('#mini-game')).toHaveAttribute('data-game-module-version', packageManifest.version);
         await expect(page.locator('[data-cosmic-escape]')).toHaveAttribute('data-asset-state', 'ready', {timeout: 60000});
@@ -264,6 +312,11 @@ try {
   assert.equal(proof.scenarios.length, 6); proof.passed = true;
 } catch (error) {
   proof.failure = error.message;
+  if (currentPage && !currentPage.isClosed()) {
+    proof.failureState = await currentPage.evaluate(() => ({state: window.royalDemo?.getState(),
+      network: window.royalDemo?.getNetworkState(), focused: document.activeElement?.id,
+      openDialogs: [...document.querySelectorAll('dialog[open]')].map(element => element.id)})).catch(() => null);
+  }
   if (currentPage && !currentPage.isClosed()) await currentPage.screenshot({path: resolve(output, 'failure.png')}).catch(() => {});
   throw error;
 } finally {
