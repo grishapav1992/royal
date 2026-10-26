@@ -442,14 +442,14 @@ def build():
         subprocess.run(['docker','build','--pull=false','-t','royal-game:'+NAME,'.'],cwd=context,check=True,stdout=log,stderr=subprocess.STDOUT)
     require(shutil.disk_usage(LIVE).free > DISK_RESERVE, 'Disk reserve changed during build')
     candidate = image('royal-game:'+NAME)
-    program = json.loads(run(['docker','run','--rm','--network=none','--read-only','--entrypoint','node',candidate,'--v8-pool-size=1','-e',PROGRAM]))
+    program = json.loads(run(['docker','run','--rm','--network=none','--read-only','--cpu-shares=65536','--entrypoint','node',candidate,'--v8-pool-size=1','-e',PROGRAM]))
     expected = expected_program(); require(program == expected, 'Candidate files or dependencies differ from the reviewed overlay')
     parent, child = json.loads(run(['docker','image','inspect',OLD['preparedImage'],candidate]))
     require(child['Config'].get('Labels',{}).get('org.opencontainers.image.revision') == M['sourceCommit'], 'Wrong candidate source label')
     for key in ['User','WorkingDir','Env','Entrypoint','Cmd','ExposedPorts','Healthcheck','Volumes']:
         require(parent['Config'].get(key) == child['Config'].get(key), 'Image settings changed: '+key)
     require(child['RootFS']['Layers'][:len(parent['RootFS']['Layers'])] == parent['RootFS']['Layers'], 'Baseline image layers changed')
-    probe = json.loads(run(['docker','run','--rm','--network=none','--read-only','--entrypoint','node',candidate,'-e',(ROOT/'verify-runtime.cjs').read_text()]))
+    probe = json.loads(run(['docker','run','--rm','--network=none','--read-only','--cpu-shares=65536','--entrypoint','node',candidate,'-e',(ROOT/'verify-runtime.cjs').read_text()]))
     require(probe['passed'] and probe['delayedGzip'] == 200 and probe['compressedApplicationBody'] == 415, 'Candidate decoder regression failed')
     result = {'image':candidate,'program':expected,'sourceCommit':M['sourceCommit'],'backup':str(BACKUP),
         'sourceBackupSha256':sha(BACKUP/'source.tgz'),'gameWalletBackupSha256':sha(BACKUP/'game-wallet.dump'),
