@@ -37,7 +37,7 @@ def checked_rows(mode):
         game = games[0]
         assert re.fullmatch('[a-f0-9]{64}', game['ID']) and game['Image'] in allowed
         assert manifest['before']['container']['host']['CpuShares'] == 8192
-        processes = [(game['State']['Pid'], 'docker-init', '/system.slice/docker-' + game['ID'] + '.scope', 313)]
+        processes = [(game['State']['Pid'], 'docker-init', '/system.slice/docker-' + game['ID'] + '.scope', 532)]
     else:
         raise ValueError('Unsupported priority scope')
     rows = []
