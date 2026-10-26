@@ -109,7 +109,7 @@ for pointer in Path('/opt/royal-game-modules').glob('*/active.json'):
     row=json.loads(pointer.read_text());path=Path('/opt/royal-game-modules')/row['manifest'].removeprefix('/game-modules/')
     assert sha(path)==row['sha256']
     active[pointer.parent.name]=json.loads(path.read_text())
-print(json.dumps({'at': time.time(), 'source': source, 'sourceLF': {n:hashlib.sha256((P/n).read_bytes().replace(b'\r\n',b'\n')).hexdigest() for n in source}, 'activeModuleMetadata':active, 'configHashes': settings, 'container': container,
+print(json.dumps({'at': time.time(), 'sourceRevision': labels.get('org.opencontainers.image.revision'), 'source': source, 'sourceLF': {n:hashlib.sha256((P/n).read_bytes().replace(b'\r\n',b'\n')).hexdigest() for n in source}, 'activeModuleMetadata':active, 'configHashes': settings, 'container': container,
                   'programLF':program_lf,'dependencyLock':dependency_lock,
                   'preparedImage': prepared, 'program': program, 'preparedProgram': prepared_program, 'services': services,
                   'realMoneyFlags': {key: environment.get(key, 'false') for key in

@@ -33,11 +33,11 @@ for root in ['src','server','public','scripts','docs','games']:
         name = path.relative_to(stage).as_posix()
         assert not path.is_symlink() and not any(part in ['node_modules','.git','data','secrets'] or part.startswith('.env') for part in path.relative_to(stage).parts)
         if lf(path) != before['sourceLF'].get(name): changed[name] = copy(path,'source/'+name)
-for name in ['package-lock.json','deployment/SERVER.md']:
+for name in ['package-lock.json','package.json','deployment/SERVER.md']:
     if lf(stage/name) != before['sourceLF'][name]: changed[name] = copy(stage/name,'source/'+name)
-for name in ['package.json','Dockerfile','.dockerignore','index.html','tsconfig.json','tsconfig.finance.json','vite.config.ts']:
+for name in ['Dockerfile','.dockerignore','index.html','tsconfig.json','tsconfig.finance.json','vite.config.ts']:
     assert lf(stage/name) == before['sourceLF'][name], 'Unreviewed root input: '+name
-metadata = {'package-lock.json':copy(stage/'package-lock.json','metadata/package-lock.json')}
+metadata = {name:copy(stage/name,'metadata/'+name) for name in ['package-lock.json','package.json']}
 assert changed['package-lock.json'] == metadata['package-lock.json']
 old_lock_bytes = subprocess.check_output(['git','show',release['baseCommit']+':package-lock.json'],cwd=stage).replace(b'\r\n',b'\n')
 assert hashlib.sha256(old_lock_bytes).hexdigest() == before['sourceLF']['package-lock.json']
@@ -45,6 +45,15 @@ assert hashlib.sha256(old_lock_bytes).hexdigest() == before['sourceLF']['package
 old_lock = json.loads(old_lock_bytes); new_lock = json.loads((stage/'package-lock.json').read_text())
 assert set(old_lock['packages']) == set(new_lock['packages'])
 assert {name for name in old_lock['packages'] if old_lock['packages'][name] != new_lock['packages'][name]} == {'node_modules/body-parser','node_modules/qs'}
+
+old_package_bytes = subprocess.check_output(['git','show',release['baseCommit']+':package.json'],cwd=stage).replace(b'\r\n',b'\n')
+assert hashlib.sha256(old_package_bytes).hexdigest() == before['sourceLF']['package.json']
+(out/'old-package.json').write_bytes(old_package_bytes)
+old_package = json.loads(old_package_bytes); new_package = json.loads((stage/'package.json').read_text())
+assert {k:v for k,v in old_package.items() if k != 'scripts'} == {k:v for k,v in new_package.items() if k != 'scripts'}
+assert set(old_package['scripts']) == set(new_package['scripts'])
+assert {k for k in old_package['scripts'] if old_package['scripts'][k] != new_package['scripts'][k]} == {'test:rtp-gate'}
+assert new_package['scripts']['test:rtp-gate'] == 'node --test server-tests/rtp-gate.test.mjs server-tests/cosmic-rtp-gate.test.mjs'
 
 dependencies = {}
 for package, version in [('body-parser','2.4.0'),('qs','6.16.1')]:
@@ -99,17 +108,18 @@ for entry, name in [('server/payments/index.ts','payments.js'),('scripts/crypto-
         'sourceInputs':preserved_inputs(stage,before,inputs)}
 host = json.loads((stage/'module-dist/host-contracts.json').read_text())
 assert host == before['moduleHost'], 'Host contracts must remain compatible'
-combat = next(row for row in release['packages'] if row['gameId'] == 'mortal-kombat')
-manifest = json.loads((stage/'module-dist/mortal-kombat/versions'/combat['version']/'manifest.json').read_text())
-assert all(manifest[key] == host['games']['mortal-kombat'][key] for key in ['apiVersion','rulesVersion','progressVersion'])
-module_delta = {}
-folder = stage/'module-dist/mortal-kombat/versions'/combat['version']
-for path in folder.rglob('*'):
-    if path.is_file():
-        name = path.relative_to(stage/'module-dist').as_posix()
-        module_delta[name] = copy(path,'modules/'+name)
-module_packages = [{'gameId':'mortal-kombat','version':combat['version'],
-    'beforeSha256':before['moduleFiles']['/opt/royal-game-modules/mortal-kombat/active.json']}]
+module_delta, module_packages = {}, []
+for game_id in ['mortal-kombat','studio-cosmic-escape']:
+    package = next(row for row in release['packages'] if row['gameId'] == game_id)
+    folder = stage/'module-dist'/game_id/'versions'/package['version']
+    game_manifest = json.loads((folder/'manifest.json').read_text())
+    assert all(game_manifest[key] == host['games'][game_id][key] for key in ['apiVersion','rulesVersion','progressVersion'])
+    for path in folder.rglob('*'):
+        if path.is_file():
+            name = path.relative_to(stage/'module-dist').as_posix()
+            module_delta[name] = copy(path,'modules/'+name)
+    module_packages.append({'gameId':game_id,'version':package['version'],
+        'beforeSha256':before['moduleFiles'].get('/opt/royal-game-modules/'+game_id+'/active.json','none')})
 helpers = {}
 assert lf(stage/'scripts/game-module-release.py') == before['sourceLF']['scripts/game-module-release.py']
 for name in ['deploy.py','snapshot.py','runtime-inventory.cjs','quiesce.cjs','verify-runtime.cjs','modules.py']:

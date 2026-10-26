@@ -25,7 +25,7 @@ class SecurityRelease(unittest.TestCase):
     def setUp(self):
         self.directory = tempfile.TemporaryDirectory(); self.addCleanup(self.directory.cleanup)
         self.root = Path(self.directory.name)/'mk-security-20261026-v1'; self.root.mkdir()
-        self.n = functions(['require','sha','inventory','safe_name','lock_transition','payload','expected_program','verify_tar','bounded_archive'],
+        self.n = functions(['require','sha','inventory','safe_name','lock_transition','package_transition','payload','expected_program','verify_tar','bounded_archive'],
             ROOT=self.root, NAME=self.root.name, DIGEST=re.compile(r'[a-f0-9]{64}'))
         self.n['Path'] = lambda value: self.root.parent if value == '/opt/royal-releases' else Path(value)
         old = {'lockfileVersion':3,'packages':{'':{'name':'royal'},'node_modules/body-parser':{'version':'2.3.0'},'node_modules/qs':{'version':'6.16.0'},'node_modules/pg':{'version':'8.23.1'}}}
@@ -36,21 +36,34 @@ class SecurityRelease(unittest.TestCase):
             return self.n['sha'](path)
         old_hash=write('old-lock.json',json.dumps(old)); lock_hash=write('source/package-lock.json',json.dumps(new))
         write('metadata/package-lock.json',json.dumps(new)); write('source/server/activities.ts','public view')
+        old_package={'name':'royal','scripts':{'test:rtp-gate':'node --test server-tests/rtp-gate.test.mjs'},'dependencies':{'pg':'8'}}
+        new_package=copy.deepcopy(old_package);new_package['scripts']['test:rtp-gate']='node --test server-tests/rtp-gate.test.mjs server-tests/cosmic-rtp-gate.test.mjs'
+        self.old_package,self.new_package=old_package,new_package
+        old_package_hash=write('old-package.json',json.dumps(old_package));package_hash=write('source/package.json',json.dumps(new_package))
+        write('metadata/package.json',json.dumps(new_package))
         write('server-delta/index.js','new backend'); (self.root/'dist-delta').mkdir()
         for package,version in [('body-parser','2.4.0'),('qs','6.16.1')]: write('dependency-delta/'+package+'/package.json',json.dumps({'version':version}))
         write('dependency-delta/.package-lock.json',json.dumps(new))
         helpers={name:write(name,'reviewed '+name) for name in ['deploy.py','snapshot.py','runtime-inventory.cjs','quiesce.cjs','verify-runtime.cjs','modules.py']}
         source={name:'a'*64 for name in ['server/combatGame.ts','server/combatRoom.ts','server/combatGuard.ts','server/commonCombatWallet.ts',
             'server/pvp/virtual-wallet.ts','server/finance/combat-escrow.ts','server/finance/pvp-money.ts','src/shared/combat.ts','src/shared/combatEscrow.ts','src/shared/pvp.ts']}
-        source['server/payments/index.ts']='a'*64
-        before={'source':source,'sourceLF':{'package-lock.json':old_hash,'server/payments/index.ts':'a'*64},'dependencyLock':old,
+        source['server/payments/index.ts']='a'*64;source['package.json']=old_package_hash
+        before={'source':source,'sourceLF':{'package-lock.json':old_hash,'package.json':old_package_hash,'server/payments/index.ts':'a'*64},'dependencyLock':old,
             'program':{'dist-server/payments.js':'f'*64,'dist-server/crypto-reconcile.js':'e'*64,'node_modules/body-parser/package.json':'b'*64,'node_modules/qs/package.json':'c'*64,'node_modules/pg/index.js':'d'*64},
-            'moduleHost':{'games':{'mortal-kombat':{'apiVersion':1,'rulesVersion':2,'progressVersion':1}}}}
+            'moduleFiles':{},'moduleHost':{'games':{game:{'apiVersion':1,'rulesVersion':2,'progressVersion':1} for game in ['mortal-kombat','studio-cosmic-escape']}}}
         manifest={'release':self.root.name,'sourceCommit':'e'*40,'helpers':helpers,'before':before,
             'changed':self.n['inventory'](self.root/'source'),'delta':{},'serverDelta':self.n['inventory'](self.root/'server-delta'),
-            'runtimePackages':{'package-lock.json':lock_hash},'dependencyFiles':self.n['inventory'](self.root/'dependency-delta')}
+            'runtimePackages':{'package-lock.json':lock_hash,'package.json':package_hash},'dependencyFiles':self.n['inventory'](self.root/'dependency-delta')}
         manifest['preservedBackend']={name:{'runtimeSha256':before['program']['dist-server/'+name],'sourceInputs':{'server/payments/index.ts':'a'*64}} for name in ['payments.js','crypto-reconcile.js']}
-        (self.root/'modules').mkdir();manifest.update(moduleDelta={},modulePackages=[{'gameId':'mortal-kombat'}])
+        packages=[]
+        for index,game in enumerate(['mortal-kombat','studio-cosmic-escape']):
+            version='1.0.0-'+str(index+1)*12;prefix='modules/'+game+'/versions/'+version+'/'
+            js='export{};';css='body{}';jh=hashlib.sha256(js.encode()).hexdigest();ch=hashlib.sha256(css.encode()).hexdigest()
+            entry='entry-'+jh[:16]+'.js';style='style-'+ch[:16]+'.css'
+            write(prefix+entry,js);write(prefix+style,css)
+            write(prefix+'manifest.json',json.dumps({'format':1,'gameId':game,'version':version,'apiVersion':1,'rulesVersion':2,'progressVersion':1,'sourceSha256':'f'*64,'entry':entry,'styles':[style],'files':{entry:jh,style:ch}}))
+            packages.append({'gameId':game,'version':version,'beforeSha256':'none'})
+        manifest.update(moduleDelta=self.n['inventory'](self.root/'modules'),modulePackages=packages)
         self.n.update(M=manifest,OLD=before,BASE=source,CHANGES=manifest['changed'],DELTA={},SERVER_DELTA=manifest['serverDelta'])
 
     def test_changed_retained_backend_input_is_rejected(self):
@@ -69,6 +82,27 @@ class SecurityRelease(unittest.TestCase):
         self.assertTrue(n['preserved_inputs'](self.root,baseline,['server/example.ts']))
         p.write_text('changed')
         with self.assertRaises(AssertionError):n['preserved_inputs'](self.root,baseline,['server/example.ts'])
+    def test_only_approved_rtp_script_changes(self):self.n['package_transition'](self.old_package,self.new_package)
+    def test_unreviewed_package_dependency_is_rejected(self):
+        value=copy.deepcopy(self.new_package);value['dependencies']['pg']='9'
+        with self.assertRaises(RuntimeError):self.n['package_transition'](self.old_package,value)
+    def test_unreviewed_package_script_is_rejected(self):
+        value=copy.deepcopy(self.new_package);value['scripts']['postinstall']='unexpected'
+        with self.assertRaises(RuntimeError):self.n['package_transition'](self.old_package,value)
+    def test_unreviewed_third_module_is_rejected(self):
+        (self.root/'modules/other').mkdir();(self.root/'modules/other/extra.js').write_text('extra')
+        self.n['M']['moduleDelta']=self.n['inventory'](self.root/'modules')
+        with self.assertRaises(RuntimeError):self.n['payload']()
+    def test_pointer_baseline_change_is_rejected(self):
+        self.n['M']['modulePackages'][0]['beforeSha256']='0'*64
+        with self.assertRaises(RuntimeError):self.n['payload']()
+    def test_retained_backup_does_not_allocate_a_second_archive(self):
+        n=functions(['require','backup_budget'],DISK_RESERVE=500,BUILD_MARGIN=50,WALLET_BACKUP_LIMIT=2*1024**2)
+        self.assertIsNone(n['backup_budget'](600,10,True))
+        with self.assertRaises(RuntimeError):n['backup_budget'](600,10,False)
+    def test_retained_backup_keeps_the_complete_runtime_reserve(self):
+        n=functions(['require','backup_budget'],DISK_RESERVE=500,BUILD_MARGIN=50,WALLET_BACKUP_LIMIT=2*1024**2)
+        with self.assertRaises(RuntimeError):n['backup_budget'](589,10,True)
     def test_valid_backend_only_payload(self): self.n['payload']()
     def test_only_reviewed_lock_packages_change(self): self.n['lock_transition'](self.old,self.new)
     def test_unrelated_dependency_is_rejected(self):
