@@ -14,7 +14,7 @@ import {LUELON_SLOT_INFO} from '../src/shared/luelonSlotsModels.ts';
 import {COSMIC_ESCAPE_BET_UNITS} from '../src/shared/cosmicEscapeBets.ts';
 
 const game='studio-cosmic-escape',info=LUELON_SLOT_INFO[game],output=process.argv.slice(2).find(arg=>!arg.startsWith('--'))||'docs/game-math/cosmic-client-audit-20261025.json';
-const sourcePaths=['scripts/cosmic-client-audit.mjs','src/ui/CosmicEscapeUI.ts','src/ui/CosmicEscapeBoard.ts','src/ui/slotKit/SlotSessions.ts','src/ui/slotKit/SlotScreens.ts','src/ui/slotKit/SlotPlayback.ts','src/wallet/WalletClient.ts','src/wallet/ExpansionClient.ts','server/games/luelonSlots.ts','src/shared/luelonSlots.ts','src/shared/luelonSlotsModels.ts','src/shared/cosmicEscapeBets.ts','server/demoExpansion.ts','server/demoWallet.ts'];
+const sourcePaths=['scripts/cosmic-client-audit.mjs','src/ui/CosmicEscapeUI.ts','src/ui/CosmicEscapeBoard.ts','src/ui/slotKit/SlotSessions.ts','src/ui/slotKit/SlotScreens.ts','src/ui/slotKit/SlotPlayback.ts','src/wallet/WalletClient.ts','src/wallet/ExpansionClient.ts','server/games/luelonSlots.ts','src/shared/luelonSlots.ts','src/shared/luelonSlotsLines.ts','src/shared/luelonSlotsModels.ts','src/shared/cosmicEscapeBets.ts','server/demoExpansion.ts','server/demoWallet.ts'];
 const sourceHashes=Object.fromEntries(await Promise.all(sourcePaths.map(async p=>[p,createHash('sha256').update(await readFile(p)).digest('hex')])));
 const db=new PostgresDatabase(':memory:'),results=[];
 let draw=()=>0,draws=0,account='',wallet,operations=[],fault=null,faultTriggered=false,server,browser;
@@ -38,7 +38,7 @@ window.audit={wallet:demoWallet,client:expansionClient};demoWallet.setAccount(${
 const units=text=>Math.round(Number(String(text).replace(/^[^\d-]*/,'').replace(/[\s\u00a0\u202f]/g,'').replace(',','.'))*100);
 try{
  await db.exec('CREATE TABLE accounts(id TEXT PRIMARY KEY)');wallet=new DemoWalletStore(db,max=>{draws++;return draw(max);});await wallet.ready;
- server=await createServer({configFile:false,root:process.cwd(),server:{host:'127.0.0.1',port:0},plugins:[{name:'cosmic-accounting-audit',configureServer(vite){vite.middlewares.use(async(req,res,next)=>{
+ server=await createServer({configFile:false,root:process.cwd(),server:{host:'127.0.0.1',port:0,watch:null,hmr:false},plugins:[{name:'cosmic-accounting-audit',configureServer(vite){vite.middlewares.use(async(req,res,next)=>{
   const path=new URL(req.url,'http://local.test').pathname;
   try{
    if(path==='/__cosmic-audit'){res.setHeader('Content-Type','text/html');res.end('<!doctype html><html lang="ru"><meta charset="utf-8"><style>[hidden]{display:none!important}body{margin:0;background:#111;color:white}main{width:min(1200px,100vw)}</style><main></main><script type="module">'+script()+'</script></html>');return;}

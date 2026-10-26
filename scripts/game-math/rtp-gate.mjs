@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
+import { cosmicQualificationEvidence, COSMIC_QUALIFICATION_METHOD, COSMIC_QUALIFICATION_MODEL } from './rtp-cosmic.mjs';
 
 const digest = value => createHash('sha256').update(value).digest('hex');
 // Git checkouts use CRLF on Windows and LF in Linux CI. Hash canonical text.
@@ -32,6 +33,11 @@ export function validateRtpProof(gameId, inputs, proof) {
   assert.deepEqual(proof.sourceHashes, inputs.sourceHashes, 'RTP source changed: rerun qualification');
   if(p.method==='exhaustive-pvp-journal')return validatePvpProof(gameId,p,proof);
   if(p.method==='exhaustive-virtual-pvp-pot')return validateVirtualPvpProof(gameId,p,proof);
+  if(p.method===COSMIC_QUALIFICATION_METHOD){
+    const reviewed=Object.fromEntries(Object.keys(COSMIC_QUALIFICATION_MODEL.reviewedSourceSha256).map(file=>[file,inputs.sourceHashes[file]]));
+    assert.deepEqual(reviewed,COSMIC_QUALIFICATION_MODEL.reviewedSourceSha256,'Cosmic mathematical source changed: independently review the analytical model');
+    return validateCosmicProof(gameId,p,proof);
+  }
   assert(p.target > 0 && p.target < 1 && p.maxUpper95 < 1 && p.tolerance <= .02);
   assert.equal(proof.results.length, p.stakes.length * p.choices.length, 'Every stake and choice must be qualified');
   const keys = new Set();
@@ -54,6 +60,35 @@ export function validateRtpProof(gameId, inputs, proof) {
     assert(proof.streams.some(stream => stream.choice === choice && stream.seed === expected));
   }
   assert(proof.serverReplayChecks >= p.stakes.length * p.choices.length * 64, 'Server replay cross-check is missing');
+  return true;
+}
+function validateCosmicProof(gameId,p,proof){
+  assert.equal(gameId,'studio-cosmic-escape');
+  const expected=cosmicQualificationEvidence(p);
+  assert.equal(proof.method,expected.method);
+  assert.deepEqual(proof.analysis,expected.analysis,'Invalid Cosmic analytical derivation');
+  assert.deepEqual(proof.results,expected.results,'Every Cosmic mode and stake must match the recomputed complete-round bounds');
+  assert.equal(proof.scorerReplayChecks,59049,'Cosmic line scorer cross-check is missing');
+  assert(proof.serverReplay&&Array.isArray(proof.serverReplay.coverage));
+  assert.deepEqual(proof.serverReplay.seeds,p.seeds);
+  assert.equal(proof.serverReplay.coverage.length,p.stakes.length*p.choices.length);
+  const minimum=p.seeds.length*p.serverReplayRoundsPerSeed;
+  let total=0;
+  const keys=new Set();
+  for(const row of proof.serverReplay.coverage){
+    assert(p.choices.includes(row.choice)&&p.stakes.includes(row.stakeUnits));
+    const key=row.choice+':'+row.stakeUnits;assert(!keys.has(key));keys.add(key);
+    assert.equal(row.paidRounds,minimum,'Cosmic server replay coverage is incomplete');
+    assert(Number.isSafeInteger(row.spins)&&row.spins>=row.paidRounds);
+    assert(typeof row.sha256==='string'&&/^[a-f0-9]{64}$/.test(row.sha256));
+    total+=row.paidRounds;
+  }
+  assert.equal(proof.serverReplayChecks,total);
+  assert.equal(proof.serverReplay.serverReplayChecks,total);
+  assert(total>=p.stakes.length*p.choices.length*64);
+  const counters=proof.serverReplay.counters;
+  assert(counters&&counters.echoes>0&&counters.energyEvents>0&&counters.beams>0);
+  for(const spins of [10,12,15])assert(counters.naturalAwards?.[spins]>=p.stakes.length*p.seeds.length,'Cosmic natural bonus branches are incomplete');
   return true;
 }
 function validateVirtualPvpProof(gameId,p,proof){

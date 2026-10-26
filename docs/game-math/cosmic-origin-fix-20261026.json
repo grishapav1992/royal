@@ -1,0 +1,1336 @@
+{
+  "generatedAt": "2026-10-26T04:43:29.120Z",
+  "gameId": "studio-cosmic-escape",
+  "integrationBase": "27264a8cac2744aad98145631e76a291af5cbedf",
+  "change": "Anchor only the first purchased Cosmic history.featuresBefore to the original empty features and mode.startMultiplier. Legal subsequent energy changes are preserved.",
+  "sourceHashes": {
+    "scripts/cosmic-client-audit.mjs": "55e8dd53bdf9003551e7ba34e28b0b3f97880ff22911af4b977baab5ed2abde5",
+    "src/ui/CosmicEscapeUI.ts": "99805b8e60a5cc965c022e3619016d4f8555ca2f0a43b625f389d9ea60aa1177",
+    "src/ui/CosmicEscapeBoard.ts": "7376725a93559e9464dea2dda25eab58ea7a208255fac54318d1ecec6b050155",
+    "src/ui/slotKit/SlotSessions.ts": "f51283d66ea4936932d496d9daee46db703bab1c2e8c55c4445c57955968a5d2",
+    "src/ui/slotKit/SlotScreens.ts": "59140beebcb205fa8e52c3e35f0f2283a0746ebd42b08ef54122598fd986756a",
+    "src/ui/slotKit/SlotPlayback.ts": "b16043b19396cabe7cf67d8864400ccb8f20c5a916565eb6c90ca148cc3d6954",
+    "src/wallet/WalletClient.ts": "46ad8eadad18b13e5cf2ebd594c8895654ef9fe4cb364fec71a0ea99936f2362",
+    "src/wallet/ExpansionClient.ts": "02cf337a2cabc65785a01625006361f294641a8e92bc86696ba01cb1253fd97b",
+    "server/games/luelonSlots.ts": "be78b2715aa850d3801445edf0f714b89dcb76ed98719e5589fcac71dc7fe3f2",
+    "src/shared/luelonSlots.ts": "1867b3f6e7e3fbc1e00dd6fad2bb094c42e6038f8eba18e0ef7250381f95cdcb",
+    "src/shared/luelonSlotsLines.ts": "cc9e2528bae03e8965c154f82aa271b3c9976bb3d817130ba51dedf6e8eb67ee",
+    "src/shared/luelonSlotsModels.ts": "b8644fecff250437909ff88950c5ef129c1d534108344f9643b815614d844c74",
+    "src/shared/cosmicEscapeBets.ts": "5e079e858e39cd73070f95f77688c774aee887e025a2f84fbc365c1e9cddd625",
+    "server/demoExpansion.ts": "ab91cf5f0d590f05132b73b34d347f044b70f852e0bc31f4602d816289c2e420",
+    "server/demoWallet.ts": "6173c565c5860342950e04097d6f57913e49fc9dabe01f4ebb25249fd9568346",
+    "server-tests/cosmic-origin-validation.test.ts": "4a610a2c15a425e1154bb0d149b32091b32ea0ed569a2a205fbeb22b68946e94",
+    "server-tests/cosmic-origin-wallet.test.ts": "030d6d4adf1e67ab9f015f372e5993589e61aaa3e4991dd088e910c9ae900de6",
+    "server-tests/cosmic-engine-audit.test.ts": "697a56c056d170c6b5bb8fb1c1e281b80c24a89116c657a559d027a22d7ad371",
+    "server-tests/cosmic-wallet-audit.test.ts": "afe37689813b7190df1260d00180f5c6ef8758df41fe7f4bf1ae026de7c7d631",
+    "scripts/game-math/rtp-cosmic.mjs": "43f693ba61d1f544cef3ad0979b0a5ddec4b5991ef664e4a5587e3fed767ffc4",
+    "scripts/game-math/rtp-gate.mjs": "f2475bff5863a4b5d9b08f38ae1c9eaf04ee7c4bebdb6ff35beaa5c80f92b469",
+    "scripts/game-math/rtp-policy.json": "2e48b2c91aec3eaca7d5b20645fb27a56ff8378febf1596ed5dbab16e451a767",
+    "scripts/qualify-game-rtp.mjs": "0f1f232b4319d555385b1b79732938f7d698ace9a8ba5a53c7e16319c37b5d52",
+    "server-tests/cosmic-rtp-gate.test.mjs": "992a31184c5385cf53601c4bbda82914c025b2227aab5e818a8f633f3bfba1f1",
+    "server-tests/independent-modules.test.ts": "be57b609f69d46613587dea9bf1d17df649a81b3ca737c4e1ee3c725bfb856d3",
+    ".github/workflows/game-rtp.yml": "4b798be9ce0f4f00e4081080bd6c13e9a6255fc694065738e9e90ff69c6490eb",
+    ".github/workflows/game-rtp-qualification.yml": "68a102590deb1e30048f14f815a3f97feb6d4f02b2517a39438f17c0b6ac5121",
+    "package.json": "1d77a970ee1d2dc662c85bca3c690b19a2bfe49cd38c514eaf786e0a767578a7"
+  },
+  "originRegression": {
+    "beforeEvidence": "cosmic-origin-audit-20261025.json",
+    "after": {
+      "expectedStartMultiplier": 1,
+      "forgedStartMultiplier": 50,
+      "legitimateInitialTotalPayoutUnits": "6400",
+      "forgedTotalPayoutUnits": "320000",
+      "forgedStateAccepted": false,
+      "forgedContinuationAccepted": false
+    }
+  },
+  "checks": {
+    "cosmicRegressionTests": 36,
+    "engineOriginTests": 10,
+    "historicalWalletTests": 6,
+    "historicalRecoveredStates": 18,
+    "originalEngineTests": 14,
+    "originalCosmicWalletTests": 6,
+    "commonCosmicAndVelvetWalletTests": 24,
+    "additionalQualifiedSlotsHttpTests": 2,
+    "focusedStrictTypecheck": true,
+    "rtpGateTests": 16,
+    "modulePackageTests": 7,
+    "rtpProfilesVerified": 10,
+    "fullBuild": {
+      "passed": true,
+      "durationMs": 13747,
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true
+        },
+        {
+          "name": "typecheck",
+          "passed": true
+        },
+        {
+          "name": "modules",
+          "passed": true
+        },
+        {
+          "name": "host",
+          "passed": true
+        },
+        {
+          "name": "backend",
+          "passed": true
+        },
+        {
+          "name": "reconciliation",
+          "passed": true
+        },
+        {
+          "name": "payments",
+          "passed": true
+        }
+      ],
+      "cosmicVersion": "1.0.0-e62dece92c83",
+      "cosmicSourceSha256": "e62dece92c8344f68ae717f895a20b1cd848cd9d8e3fe9705958f466266013fa"
+    }
+  },
+  "browser": {
+    "generatedAt": "2026-10-26T04:41:49.721Z",
+    "method": "Actual CosmicEscapeUI, ExpansionClient and WalletClient make HTTP requests to a local test adapter backed by real DemoWalletStore and isolated PostgreSQL. Constructed natural 3/4/5-portal seeds and purchased modes verify accounting and display, not frequencies or RTP. Two viewport sizes and stakes20/100. Recovery includes actual reload during a partially played bonus and deliberate lost responses after committed start, continuation and final settlement. Reduced motion changes presentation only. No production requests, player data, production auth or full host/chat layout claims.",
+    "passed": 27,
+    "results": [
+      {
+        "case": "natural-3",
+        "mode": "normal",
+        "portalCount": 3,
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "stakeUnits": 20,
+        "costMultiplier": 1,
+        "seed": 75,
+        "awardedFreeSpins": 10,
+        "playedFreeSpins": 10,
+        "initialBalanceUnits": 10000000,
+        "spentUnits": 20,
+        "returnedUnits": 22,
+        "netRoundUnits": 2,
+        "finalBalanceUnits": 10000002,
+        "visibleFinalBalance": "100 000,02",
+        "displayedGrossUnits": 22,
+        "displayedLedgerAmounts": [
+          20,
+          22,
+          2
+        ],
+        "displayedPurchaseCostUnits": null,
+        "activeBonusName": "Звёздный хаос",
+        "midBonusRevision": 2,
+        "midBonusGrossUnits": 22,
+        "lostResponse": null,
+        "replayedRequests": 0,
+        "allContinuationCostsZero": true,
+        "all26StakeOptionsMatch": true,
+        "midBonusRestored": true,
+        "settledReopenNoDebitOrCredit": true,
+        "singleDebitAndFinalCredit": true,
+        "networkSummary": {
+          "requests": 11,
+          "replays": 0,
+          "droppedResponses": 0,
+          "replayRngDraws": []
+        }
+      },
+      {
+        "case": "natural-4",
+        "mode": "normal",
+        "portalCount": 4,
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "stakeUnits": 20,
+        "costMultiplier": 1,
+        "seed": 98,
+        "awardedFreeSpins": 12,
+        "playedFreeSpins": 12,
+        "initialBalanceUnits": 10000000,
+        "spentUnits": 20,
+        "returnedUnits": 1646,
+        "netRoundUnits": 1626,
+        "finalBalanceUnits": 10001626,
+        "visibleFinalBalance": "100 016,26",
+        "displayedGrossUnits": 1646,
+        "displayedLedgerAmounts": [
+          20,
+          1646,
+          1626
+        ],
+        "displayedPurchaseCostUnits": null,
+        "activeBonusName": "Звёздный хаос",
+        "midBonusRevision": 2,
+        "midBonusGrossUnits": 0,
+        "lostResponse": null,
+        "replayedRequests": 0,
+        "allContinuationCostsZero": true,
+        "all26StakeOptionsMatch": true,
+        "midBonusRestored": true,
+        "settledReopenNoDebitOrCredit": true,
+        "singleDebitAndFinalCredit": true,
+        "networkSummary": {
+          "requests": 13,
+          "replays": 0,
+          "droppedResponses": 0,
+          "replayRngDraws": []
+        }
+      },
+      {
+        "case": "natural-5",
+        "mode": "normal",
+        "portalCount": 5,
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "stakeUnits": 20,
+        "costMultiplier": 1,
+        "seed": 1421,
+        "awardedFreeSpins": 15,
+        "playedFreeSpins": 15,
+        "initialBalanceUnits": 10000000,
+        "spentUnits": 20,
+        "returnedUnits": 1049,
+        "netRoundUnits": 1029,
+        "finalBalanceUnits": 10001029,
+        "visibleFinalBalance": "100 010,29",
+        "displayedGrossUnits": 1049,
+        "displayedLedgerAmounts": [
+          20,
+          1049,
+          1029
+        ],
+        "displayedPurchaseCostUnits": null,
+        "activeBonusName": "Звёздный хаос",
+        "midBonusRevision": 2,
+        "midBonusGrossUnits": 10,
+        "lostResponse": null,
+        "replayedRequests": 0,
+        "allContinuationCostsZero": true,
+        "all26StakeOptionsMatch": true,
+        "midBonusRestored": true,
+        "settledReopenNoDebitOrCredit": true,
+        "singleDebitAndFinalCredit": true,
+        "networkSummary": {
+          "requests": 16,
+          "replays": 0,
+          "droppedResponses": 0,
+          "replayRngDraws": []
+        }
+      },
+      {
+        "case": "cosmic-chaos",
+        "mode": "cosmic-chaos",
+        "portalCount": null,
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "stakeUnits": 20,
+        "costMultiplier": 40,
+        "seed": 1,
+        "awardedFreeSpins": 10,
+        "playedFreeSpins": 10,
+        "initialBalanceUnits": 10000000,
+        "spentUnits": 800,
+        "returnedUnits": 2596,
+        "netRoundUnits": 1796,
+        "finalBalanceUnits": 10001796,
+        "visibleFinalBalance": "100 017,96",
+        "displayedGrossUnits": 2596,
+        "displayedLedgerAmounts": [
+          800,
+          2596,
+          1796
+        ],
+        "displayedPurchaseCostUnits": 800,
+        "activeBonusName": "Звёздный хаос",
+        "midBonusRevision": 1,
+        "midBonusGrossUnits": 0,
+        "lostResponse": null,
+        "replayedRequests": 0,
+        "allContinuationCostsZero": true,
+        "all26StakeOptionsMatch": true,
+        "midBonusRestored": true,
+        "settledReopenNoDebitOrCredit": true,
+        "singleDebitAndFinalCredit": true,
+        "networkSummary": {
+          "requests": 11,
+          "replays": 0,
+          "droppedResponses": 0,
+          "replayRngDraws": []
+        }
+      },
+      {
+        "case": "ufo-invasion",
+        "mode": "ufo-invasion",
+        "portalCount": null,
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "stakeUnits": 20,
+        "costMultiplier": 75,
+        "seed": 1,
+        "awardedFreeSpins": 12,
+        "playedFreeSpins": 12,
+        "initialBalanceUnits": 10000000,
+        "spentUnits": 1500,
+        "returnedUnits": 1434,
+        "netRoundUnits": -66,
+        "finalBalanceUnits": 9999934,
+        "visibleFinalBalance": "99 999,34",
+        "displayedGrossUnits": 1434,
+        "displayedLedgerAmounts": [
+          1500,
+          1434,
+          -66
+        ],
+        "displayedPurchaseCostUnits": 1500,
+        "activeBonusName": "Вторжение",
+        "midBonusRevision": 1,
+        "midBonusGrossUnits": 0,
+        "lostResponse": null,
+        "replayedRequests": 0,
+        "allContinuationCostsZero": true,
+        "all26StakeOptionsMatch": true,
+        "midBonusRestored": true,
+        "settledReopenNoDebitOrCredit": true,
+        "singleDebitAndFinalCredit": true,
+        "networkSummary": {
+          "requests": 13,
+          "replays": 0,
+          "droppedResponses": 0,
+          "replayRngDraws": []
+        }
+      },
+      {
+        "case": "deep-echo",
+        "mode": "deep-echo",
+        "portalCount": null,
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "stakeUnits": 20,
+        "costMultiplier": 135,
+        "seed": 1,
+        "awardedFreeSpins": 15,
+        "playedFreeSpins": 15,
+        "initialBalanceUnits": 10000000,
+        "spentUnits": 2700,
+        "returnedUnits": 1072,
+        "netRoundUnits": -1628,
+        "finalBalanceUnits": 9998372,
+        "visibleFinalBalance": "99 983,72",
+        "displayedGrossUnits": 1072,
+        "displayedLedgerAmounts": [
+          2700,
+          1072,
+          -1628
+        ],
+        "displayedPurchaseCostUnits": 2700,
+        "activeBonusName": "Дальнее эхо",
+        "midBonusRevision": 1,
+        "midBonusGrossUnits": 0,
+        "lostResponse": null,
+        "replayedRequests": 0,
+        "allContinuationCostsZero": true,
+        "all26StakeOptionsMatch": true,
+        "midBonusRestored": true,
+        "settledReopenNoDebitOrCredit": true,
+        "singleDebitAndFinalCredit": true,
+        "networkSummary": {
+          "requests": 16,
+          "replays": 0,
+          "droppedResponses": 0,
+          "replayRngDraws": []
+        }
+      },
+      {
+        "case": "natural-3",
+        "mode": "normal",
+        "portalCount": 3,
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "stakeUnits": 100,
+        "costMultiplier": 1,
+        "seed": 75,
+        "awardedFreeSpins": 10,
+        "playedFreeSpins": 10,
+        "initialBalanceUnits": 10000000,
+        "spentUnits": 100,
+        "returnedUnits": 110,
+        "netRoundUnits": 10,
+        "finalBalanceUnits": 10000010,
+        "visibleFinalBalance": "100 000,10",
+        "displayedGrossUnits": 110,
+        "displayedLedgerAmounts": [
+          100,
+          110,
+          10
+        ],
+        "displayedPurchaseCostUnits": null,
+        "activeBonusName": "Звёздный хаос",
+        "midBonusRevision": 2,
+        "midBonusGrossUnits": 110,
+        "lostResponse": null,
+        "replayedRequests": 0,
+        "allContinuationCostsZero": true,
+        "all26StakeOptionsMatch": true,
+        "midBonusRestored": true,
+        "settledReopenNoDebitOrCredit": true,
+        "singleDebitAndFinalCredit": true,
+        "networkSummary": {
+          "requests": 11,
+          "replays": 0,
+          "droppedResponses": 0,
+          "replayRngDraws": []
+        }
+      },
+      {
+        "case": "natural-4",
+        "mode": "normal",
+        "portalCount": 4,
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "stakeUnits": 100,
+        "costMultiplier": 1,
+        "seed": 98,
+        "awardedFreeSpins": 12,
+        "playedFreeSpins": 12,
+        "initialBalanceUnits": 10000000,
+        "spentUnits": 100,
+        "returnedUnits": 8230,
+        "netRoundUnits": 8130,
+        "finalBalanceUnits": 10008130,
+        "visibleFinalBalance": "100 081,30",
+        "displayedGrossUnits": 8230,
+        "displayedLedgerAmounts": [
+          100,
+          8230,
+          8130
+        ],
+        "displayedPurchaseCostUnits": null,
+        "activeBonusName": "Звёздный хаос",
+        "midBonusRevision": 2,
+        "midBonusGrossUnits": 0,
+        "lostResponse": null,
+        "replayedRequests": 0,
+        "allContinuationCostsZero": true,
+        "all26StakeOptionsMatch": true,
+        "midBonusRestored": true,
+        "settledReopenNoDebitOrCredit": true,
+        "singleDebitAndFinalCredit": true,
+        "networkSummary": {
+          "requests": 13,
+          "replays": 0,
+          "droppedResponses": 0,
+          "replayRngDraws": []
+        }
+      },
+      {
+        "case": "natural-5",
+        "mode": "normal",
+        "portalCount": 5,
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "stakeUnits": 100,
+        "costMultiplier": 1,
+        "seed": 1421,
+        "awardedFreeSpins": 15,
+        "playedFreeSpins": 15,
+        "initialBalanceUnits": 10000000,
+        "spentUnits": 100,
+        "returnedUnits": 5245,
+        "netRoundUnits": 5145,
+        "finalBalanceUnits": 10005145,
+        "visibleFinalBalance": "100 051,45",
+        "displayedGrossUnits": 5245,
+        "displayedLedgerAmounts": [
+          100,
+          5245,
+          5145
+        ],
+        "displayedPurchaseCostUnits": null,
+        "activeBonusName": "Звёздный хаос",
+        "midBonusRevision": 2,
+        "midBonusGrossUnits": 50,
+        "lostResponse": null,
+        "replayedRequests": 0,
+        "allContinuationCostsZero": true,
+        "all26StakeOptionsMatch": true,
+        "midBonusRestored": true,
+        "settledReopenNoDebitOrCredit": true,
+        "singleDebitAndFinalCredit": true,
+        "networkSummary": {
+          "requests": 16,
+          "replays": 0,
+          "droppedResponses": 0,
+          "replayRngDraws": []
+        }
+      },
+      {
+        "case": "cosmic-chaos",
+        "mode": "cosmic-chaos",
+        "portalCount": null,
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "stakeUnits": 100,
+        "costMultiplier": 40,
+        "seed": 1,
+        "awardedFreeSpins": 10,
+        "playedFreeSpins": 10,
+        "initialBalanceUnits": 10000000,
+        "spentUnits": 4000,
+        "returnedUnits": 12980,
+        "netRoundUnits": 8980,
+        "finalBalanceUnits": 10008980,
+        "visibleFinalBalance": "100 089,80",
+        "displayedGrossUnits": 12980,
+        "displayedLedgerAmounts": [
+          4000,
+          12980,
+          8980
+        ],
+        "displayedPurchaseCostUnits": 4000,
+        "activeBonusName": "Звёздный хаос",
+        "midBonusRevision": 1,
+        "midBonusGrossUnits": 0,
+        "lostResponse": null,
+        "replayedRequests": 0,
+        "allContinuationCostsZero": true,
+        "all26StakeOptionsMatch": true,
+        "midBonusRestored": true,
+        "settledReopenNoDebitOrCredit": true,
+        "singleDebitAndFinalCredit": true,
+        "networkSummary": {
+          "requests": 11,
+          "replays": 0,
+          "droppedResponses": 0,
+          "replayRngDraws": []
+        }
+      },
+      {
+        "case": "ufo-invasion",
+        "mode": "ufo-invasion",
+        "portalCount": null,
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "stakeUnits": 100,
+        "costMultiplier": 75,
+        "seed": 1,
+        "awardedFreeSpins": 12,
+        "playedFreeSpins": 12,
+        "initialBalanceUnits": 10000000,
+        "spentUnits": 7500,
+        "returnedUnits": 7170,
+        "netRoundUnits": -330,
+        "finalBalanceUnits": 9999670,
+        "visibleFinalBalance": "99 996,70",
+        "displayedGrossUnits": 7170,
+        "displayedLedgerAmounts": [
+          7500,
+          7170,
+          -330
+        ],
+        "displayedPurchaseCostUnits": 7500,
+        "activeBonusName": "Вторжение",
+        "midBonusRevision": 1,
+        "midBonusGrossUnits": 0,
+        "lostResponse": null,
+        "replayedRequests": 0,
+        "allContinuationCostsZero": true,
+        "all26StakeOptionsMatch": true,
+        "midBonusRestored": true,
+        "settledReopenNoDebitOrCredit": true,
+        "singleDebitAndFinalCredit": true,
+        "networkSummary": {
+          "requests": 13,
+          "replays": 0,
+          "droppedResponses": 0,
+          "replayRngDraws": []
+        }
+      },
+      {
+        "case": "deep-echo",
+        "mode": "deep-echo",
+        "portalCount": null,
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "stakeUnits": 100,
+        "costMultiplier": 135,
+        "seed": 1,
+        "awardedFreeSpins": 15,
+        "playedFreeSpins": 15,
+        "initialBalanceUnits": 10000000,
+        "spentUnits": 13500,
+        "returnedUnits": 5360,
+        "netRoundUnits": -8140,
+        "finalBalanceUnits": 9991860,
+        "visibleFinalBalance": "99 918,60",
+        "displayedGrossUnits": 5360,
+        "displayedLedgerAmounts": [
+          13500,
+          5360,
+          -8140
+        ],
+        "displayedPurchaseCostUnits": 13500,
+        "activeBonusName": "Дальнее эхо",
+        "midBonusRevision": 1,
+        "midBonusGrossUnits": 0,
+        "lostResponse": null,
+        "replayedRequests": 0,
+        "allContinuationCostsZero": true,
+        "all26StakeOptionsMatch": true,
+        "midBonusRestored": true,
+        "settledReopenNoDebitOrCredit": true,
+        "singleDebitAndFinalCredit": true,
+        "networkSummary": {
+          "requests": 16,
+          "replays": 0,
+          "droppedResponses": 0,
+          "replayRngDraws": []
+        }
+      },
+      {
+        "case": "natural-3",
+        "mode": "normal",
+        "portalCount": 3,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "stakeUnits": 20,
+        "costMultiplier": 1,
+        "seed": 75,
+        "awardedFreeSpins": 10,
+        "playedFreeSpins": 10,
+        "initialBalanceUnits": 10000000,
+        "spentUnits": 20,
+        "returnedUnits": 22,
+        "netRoundUnits": 2,
+        "finalBalanceUnits": 10000002,
+        "visibleFinalBalance": "100 000,02",
+        "displayedGrossUnits": 22,
+        "displayedLedgerAmounts": [
+          20,
+          22,
+          2
+        ],
+        "displayedPurchaseCostUnits": null,
+        "activeBonusName": "Звёздный хаос",
+        "midBonusRevision": 2,
+        "midBonusGrossUnits": 22,
+        "lostResponse": null,
+        "replayedRequests": 0,
+        "allContinuationCostsZero": true,
+        "all26StakeOptionsMatch": true,
+        "midBonusRestored": true,
+        "settledReopenNoDebitOrCredit": true,
+        "singleDebitAndFinalCredit": true,
+        "networkSummary": {
+          "requests": 11,
+          "replays": 0,
+          "droppedResponses": 0,
+          "replayRngDraws": []
+        }
+      },
+      {
+        "case": "natural-4",
+        "mode": "normal",
+        "portalCount": 4,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "stakeUnits": 20,
+        "costMultiplier": 1,
+        "seed": 98,
+        "awardedFreeSpins": 12,
+        "playedFreeSpins": 12,
+        "initialBalanceUnits": 10000000,
+        "spentUnits": 20,
+        "returnedUnits": 1646,
+        "netRoundUnits": 1626,
+        "finalBalanceUnits": 10001626,
+        "visibleFinalBalance": "100 016,26",
+        "displayedGrossUnits": 1646,
+        "displayedLedgerAmounts": [
+          20,
+          1646,
+          1626
+        ],
+        "displayedPurchaseCostUnits": null,
+        "activeBonusName": "Звёздный хаос",
+        "midBonusRevision": 2,
+        "midBonusGrossUnits": 0,
+        "lostResponse": null,
+        "replayedRequests": 0,
+        "allContinuationCostsZero": true,
+        "all26StakeOptionsMatch": true,
+        "midBonusRestored": true,
+        "settledReopenNoDebitOrCredit": true,
+        "singleDebitAndFinalCredit": true,
+        "networkSummary": {
+          "requests": 13,
+          "replays": 0,
+          "droppedResponses": 0,
+          "replayRngDraws": []
+        }
+      },
+      {
+        "case": "natural-5",
+        "mode": "normal",
+        "portalCount": 5,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "stakeUnits": 20,
+        "costMultiplier": 1,
+        "seed": 1421,
+        "awardedFreeSpins": 15,
+        "playedFreeSpins": 15,
+        "initialBalanceUnits": 10000000,
+        "spentUnits": 20,
+        "returnedUnits": 1049,
+        "netRoundUnits": 1029,
+        "finalBalanceUnits": 10001029,
+        "visibleFinalBalance": "100 010,29",
+        "displayedGrossUnits": 1049,
+        "displayedLedgerAmounts": [
+          20,
+          1049,
+          1029
+        ],
+        "displayedPurchaseCostUnits": null,
+        "activeBonusName": "Звёздный хаос",
+        "midBonusRevision": 2,
+        "midBonusGrossUnits": 10,
+        "lostResponse": null,
+        "replayedRequests": 0,
+        "allContinuationCostsZero": true,
+        "all26StakeOptionsMatch": true,
+        "midBonusRestored": true,
+        "settledReopenNoDebitOrCredit": true,
+        "singleDebitAndFinalCredit": true,
+        "networkSummary": {
+          "requests": 16,
+          "replays": 0,
+          "droppedResponses": 0,
+          "replayRngDraws": []
+        }
+      },
+      {
+        "case": "cosmic-chaos",
+        "mode": "cosmic-chaos",
+        "portalCount": null,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "stakeUnits": 20,
+        "costMultiplier": 40,
+        "seed": 1,
+        "awardedFreeSpins": 10,
+        "playedFreeSpins": 10,
+        "initialBalanceUnits": 10000000,
+        "spentUnits": 800,
+        "returnedUnits": 2596,
+        "netRoundUnits": 1796,
+        "finalBalanceUnits": 10001796,
+        "visibleFinalBalance": "100 017,96",
+        "displayedGrossUnits": 2596,
+        "displayedLedgerAmounts": [
+          800,
+          2596,
+          1796
+        ],
+        "displayedPurchaseCostUnits": 800,
+        "activeBonusName": "Звёздный хаос",
+        "midBonusRevision": 1,
+        "midBonusGrossUnits": 0,
+        "lostResponse": null,
+        "replayedRequests": 0,
+        "allContinuationCostsZero": true,
+        "all26StakeOptionsMatch": true,
+        "midBonusRestored": true,
+        "settledReopenNoDebitOrCredit": true,
+        "singleDebitAndFinalCredit": true,
+        "networkSummary": {
+          "requests": 11,
+          "replays": 0,
+          "droppedResponses": 0,
+          "replayRngDraws": []
+        }
+      },
+      {
+        "case": "ufo-invasion",
+        "mode": "ufo-invasion",
+        "portalCount": null,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "stakeUnits": 20,
+        "costMultiplier": 75,
+        "seed": 1,
+        "awardedFreeSpins": 12,
+        "playedFreeSpins": 12,
+        "initialBalanceUnits": 10000000,
+        "spentUnits": 1500,
+        "returnedUnits": 1434,
+        "netRoundUnits": -66,
+        "finalBalanceUnits": 9999934,
+        "visibleFinalBalance": "99 999,34",
+        "displayedGrossUnits": 1434,
+        "displayedLedgerAmounts": [
+          1500,
+          1434,
+          -66
+        ],
+        "displayedPurchaseCostUnits": 1500,
+        "activeBonusName": "Вторжение",
+        "midBonusRevision": 1,
+        "midBonusGrossUnits": 0,
+        "lostResponse": null,
+        "replayedRequests": 0,
+        "allContinuationCostsZero": true,
+        "all26StakeOptionsMatch": true,
+        "midBonusRestored": true,
+        "settledReopenNoDebitOrCredit": true,
+        "singleDebitAndFinalCredit": true,
+        "networkSummary": {
+          "requests": 13,
+          "replays": 0,
+          "droppedResponses": 0,
+          "replayRngDraws": []
+        }
+      },
+      {
+        "case": "deep-echo",
+        "mode": "deep-echo",
+        "portalCount": null,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "stakeUnits": 20,
+        "costMultiplier": 135,
+        "seed": 1,
+        "awardedFreeSpins": 15,
+        "playedFreeSpins": 15,
+        "initialBalanceUnits": 10000000,
+        "spentUnits": 2700,
+        "returnedUnits": 1072,
+        "netRoundUnits": -1628,
+        "finalBalanceUnits": 9998372,
+        "visibleFinalBalance": "99 983,72",
+        "displayedGrossUnits": 1072,
+        "displayedLedgerAmounts": [
+          2700,
+          1072,
+          -1628
+        ],
+        "displayedPurchaseCostUnits": 2700,
+        "activeBonusName": "Дальнее эхо",
+        "midBonusRevision": 1,
+        "midBonusGrossUnits": 0,
+        "lostResponse": null,
+        "replayedRequests": 0,
+        "allContinuationCostsZero": true,
+        "all26StakeOptionsMatch": true,
+        "midBonusRestored": true,
+        "settledReopenNoDebitOrCredit": true,
+        "singleDebitAndFinalCredit": true,
+        "networkSummary": {
+          "requests": 16,
+          "replays": 0,
+          "droppedResponses": 0,
+          "replayRngDraws": []
+        }
+      },
+      {
+        "case": "natural-3",
+        "mode": "normal",
+        "portalCount": 3,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "stakeUnits": 100,
+        "costMultiplier": 1,
+        "seed": 75,
+        "awardedFreeSpins": 10,
+        "playedFreeSpins": 10,
+        "initialBalanceUnits": 10000000,
+        "spentUnits": 100,
+        "returnedUnits": 110,
+        "netRoundUnits": 10,
+        "finalBalanceUnits": 10000010,
+        "visibleFinalBalance": "100 000,10",
+        "displayedGrossUnits": 110,
+        "displayedLedgerAmounts": [
+          100,
+          110,
+          10
+        ],
+        "displayedPurchaseCostUnits": null,
+        "activeBonusName": "Звёздный хаос",
+        "midBonusRevision": 2,
+        "midBonusGrossUnits": 110,
+        "lostResponse": null,
+        "replayedRequests": 0,
+        "allContinuationCostsZero": true,
+        "all26StakeOptionsMatch": true,
+        "midBonusRestored": true,
+        "settledReopenNoDebitOrCredit": true,
+        "singleDebitAndFinalCredit": true,
+        "networkSummary": {
+          "requests": 11,
+          "replays": 0,
+          "droppedResponses": 0,
+          "replayRngDraws": []
+        }
+      },
+      {
+        "case": "natural-4",
+        "mode": "normal",
+        "portalCount": 4,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "stakeUnits": 100,
+        "costMultiplier": 1,
+        "seed": 98,
+        "awardedFreeSpins": 12,
+        "playedFreeSpins": 12,
+        "initialBalanceUnits": 10000000,
+        "spentUnits": 100,
+        "returnedUnits": 8230,
+        "netRoundUnits": 8130,
+        "finalBalanceUnits": 10008130,
+        "visibleFinalBalance": "100 081,30",
+        "displayedGrossUnits": 8230,
+        "displayedLedgerAmounts": [
+          100,
+          8230,
+          8130
+        ],
+        "displayedPurchaseCostUnits": null,
+        "activeBonusName": "Звёздный хаос",
+        "midBonusRevision": 2,
+        "midBonusGrossUnits": 0,
+        "lostResponse": null,
+        "replayedRequests": 0,
+        "allContinuationCostsZero": true,
+        "all26StakeOptionsMatch": true,
+        "midBonusRestored": true,
+        "settledReopenNoDebitOrCredit": true,
+        "singleDebitAndFinalCredit": true,
+        "networkSummary": {
+          "requests": 13,
+          "replays": 0,
+          "droppedResponses": 0,
+          "replayRngDraws": []
+        }
+      },
+      {
+        "case": "natural-5",
+        "mode": "normal",
+        "portalCount": 5,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "stakeUnits": 100,
+        "costMultiplier": 1,
+        "seed": 1421,
+        "awardedFreeSpins": 15,
+        "playedFreeSpins": 15,
+        "initialBalanceUnits": 10000000,
+        "spentUnits": 100,
+        "returnedUnits": 5245,
+        "netRoundUnits": 5145,
+        "finalBalanceUnits": 10005145,
+        "visibleFinalBalance": "100 051,45",
+        "displayedGrossUnits": 5245,
+        "displayedLedgerAmounts": [
+          100,
+          5245,
+          5145
+        ],
+        "displayedPurchaseCostUnits": null,
+        "activeBonusName": "Звёздный хаос",
+        "midBonusRevision": 2,
+        "midBonusGrossUnits": 50,
+        "lostResponse": null,
+        "replayedRequests": 0,
+        "allContinuationCostsZero": true,
+        "all26StakeOptionsMatch": true,
+        "midBonusRestored": true,
+        "settledReopenNoDebitOrCredit": true,
+        "singleDebitAndFinalCredit": true,
+        "networkSummary": {
+          "requests": 16,
+          "replays": 0,
+          "droppedResponses": 0,
+          "replayRngDraws": []
+        }
+      },
+      {
+        "case": "cosmic-chaos",
+        "mode": "cosmic-chaos",
+        "portalCount": null,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "stakeUnits": 100,
+        "costMultiplier": 40,
+        "seed": 1,
+        "awardedFreeSpins": 10,
+        "playedFreeSpins": 10,
+        "initialBalanceUnits": 10000000,
+        "spentUnits": 4000,
+        "returnedUnits": 12980,
+        "netRoundUnits": 8980,
+        "finalBalanceUnits": 10008980,
+        "visibleFinalBalance": "100 089,80",
+        "displayedGrossUnits": 12980,
+        "displayedLedgerAmounts": [
+          4000,
+          12980,
+          8980
+        ],
+        "displayedPurchaseCostUnits": 4000,
+        "activeBonusName": "Звёздный хаос",
+        "midBonusRevision": 1,
+        "midBonusGrossUnits": 0,
+        "lostResponse": null,
+        "replayedRequests": 0,
+        "allContinuationCostsZero": true,
+        "all26StakeOptionsMatch": true,
+        "midBonusRestored": true,
+        "settledReopenNoDebitOrCredit": true,
+        "singleDebitAndFinalCredit": true,
+        "networkSummary": {
+          "requests": 11,
+          "replays": 0,
+          "droppedResponses": 0,
+          "replayRngDraws": []
+        }
+      },
+      {
+        "case": "ufo-invasion",
+        "mode": "ufo-invasion",
+        "portalCount": null,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "stakeUnits": 100,
+        "costMultiplier": 75,
+        "seed": 1,
+        "awardedFreeSpins": 12,
+        "playedFreeSpins": 12,
+        "initialBalanceUnits": 10000000,
+        "spentUnits": 7500,
+        "returnedUnits": 7170,
+        "netRoundUnits": -330,
+        "finalBalanceUnits": 9999670,
+        "visibleFinalBalance": "99 996,70",
+        "displayedGrossUnits": 7170,
+        "displayedLedgerAmounts": [
+          7500,
+          7170,
+          -330
+        ],
+        "displayedPurchaseCostUnits": 7500,
+        "activeBonusName": "Вторжение",
+        "midBonusRevision": 1,
+        "midBonusGrossUnits": 0,
+        "lostResponse": null,
+        "replayedRequests": 0,
+        "allContinuationCostsZero": true,
+        "all26StakeOptionsMatch": true,
+        "midBonusRestored": true,
+        "settledReopenNoDebitOrCredit": true,
+        "singleDebitAndFinalCredit": true,
+        "networkSummary": {
+          "requests": 13,
+          "replays": 0,
+          "droppedResponses": 0,
+          "replayRngDraws": []
+        }
+      },
+      {
+        "case": "deep-echo",
+        "mode": "deep-echo",
+        "portalCount": null,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "stakeUnits": 100,
+        "costMultiplier": 135,
+        "seed": 1,
+        "awardedFreeSpins": 15,
+        "playedFreeSpins": 15,
+        "initialBalanceUnits": 10000000,
+        "spentUnits": 13500,
+        "returnedUnits": 5360,
+        "netRoundUnits": -8140,
+        "finalBalanceUnits": 9991860,
+        "visibleFinalBalance": "99 918,60",
+        "displayedGrossUnits": 5360,
+        "displayedLedgerAmounts": [
+          13500,
+          5360,
+          -8140
+        ],
+        "displayedPurchaseCostUnits": 13500,
+        "activeBonusName": "Дальнее эхо",
+        "midBonusRevision": 1,
+        "midBonusGrossUnits": 0,
+        "lostResponse": null,
+        "replayedRequests": 0,
+        "allContinuationCostsZero": true,
+        "all26StakeOptionsMatch": true,
+        "midBonusRestored": true,
+        "settledReopenNoDebitOrCredit": true,
+        "singleDebitAndFinalCredit": true,
+        "networkSummary": {
+          "requests": 16,
+          "replays": 0,
+          "droppedResponses": 0,
+          "replayRngDraws": []
+        }
+      },
+      {
+        "case": "cosmic-chaos",
+        "mode": "cosmic-chaos",
+        "portalCount": null,
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "stakeUnits": 20,
+        "costMultiplier": 40,
+        "seed": 1,
+        "awardedFreeSpins": 10,
+        "playedFreeSpins": 10,
+        "initialBalanceUnits": 10000000,
+        "spentUnits": 800,
+        "returnedUnits": 2596,
+        "netRoundUnits": 1796,
+        "finalBalanceUnits": 10001796,
+        "visibleFinalBalance": "100 017,96",
+        "displayedGrossUnits": 2596,
+        "displayedLedgerAmounts": [
+          800,
+          2596,
+          1796
+        ],
+        "displayedPurchaseCostUnits": 800,
+        "activeBonusName": "Звёздный хаос",
+        "midBonusRevision": 1,
+        "midBonusGrossUnits": 0,
+        "lostResponse": "start",
+        "replayedRequests": 1,
+        "allContinuationCostsZero": true,
+        "all26StakeOptionsMatch": true,
+        "midBonusRestored": true,
+        "settledReopenNoDebitOrCredit": true,
+        "singleDebitAndFinalCredit": true,
+        "networkSummary": {
+          "requests": 12,
+          "replays": 1,
+          "droppedResponses": 1,
+          "replayRngDraws": [
+            0
+          ]
+        }
+      },
+      {
+        "case": "natural-3",
+        "mode": "normal",
+        "portalCount": 3,
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "stakeUnits": 20,
+        "costMultiplier": 1,
+        "seed": 75,
+        "awardedFreeSpins": 10,
+        "playedFreeSpins": 10,
+        "initialBalanceUnits": 10000000,
+        "spentUnits": 20,
+        "returnedUnits": 22,
+        "netRoundUnits": 2,
+        "finalBalanceUnits": 10000002,
+        "visibleFinalBalance": "100 000,02",
+        "displayedGrossUnits": 22,
+        "displayedLedgerAmounts": [
+          20,
+          22,
+          2
+        ],
+        "displayedPurchaseCostUnits": null,
+        "activeBonusName": "Звёздный хаос",
+        "midBonusRevision": 2,
+        "midBonusGrossUnits": 22,
+        "lostResponse": "move",
+        "replayedRequests": 1,
+        "allContinuationCostsZero": true,
+        "all26StakeOptionsMatch": true,
+        "midBonusRestored": true,
+        "settledReopenNoDebitOrCredit": true,
+        "singleDebitAndFinalCredit": true,
+        "networkSummary": {
+          "requests": 12,
+          "replays": 1,
+          "droppedResponses": 1,
+          "replayRngDraws": [
+            0
+          ]
+        }
+      },
+      {
+        "case": "deep-echo",
+        "mode": "deep-echo",
+        "portalCount": null,
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "stakeUnits": 20,
+        "costMultiplier": 135,
+        "seed": 1,
+        "awardedFreeSpins": 15,
+        "playedFreeSpins": 15,
+        "initialBalanceUnits": 10000000,
+        "spentUnits": 2700,
+        "returnedUnits": 1072,
+        "netRoundUnits": -1628,
+        "finalBalanceUnits": 9998372,
+        "visibleFinalBalance": "99 983,72",
+        "displayedGrossUnits": 1072,
+        "displayedLedgerAmounts": [
+          2700,
+          1072,
+          -1628
+        ],
+        "displayedPurchaseCostUnits": 2700,
+        "activeBonusName": "Дальнее эхо",
+        "midBonusRevision": 1,
+        "midBonusGrossUnits": 0,
+        "lostResponse": "final",
+        "replayedRequests": 1,
+        "allContinuationCostsZero": true,
+        "all26StakeOptionsMatch": true,
+        "midBonusRestored": true,
+        "settledReopenNoDebitOrCredit": true,
+        "singleDebitAndFinalCredit": true,
+        "networkSummary": {
+          "requests": 17,
+          "replays": 1,
+          "droppedResponses": 1,
+          "replayRngDraws": [
+            0
+          ]
+        }
+      }
+    ]
+  },
+  "limitations": [
+    "No deployment was performed.",
+    "Browser verification uses the real Cosmic UI and wallet clients against a local isolated wallet adapter, not production authentication or the complete host with chat.",
+    "Historical profile metadata is constructed for local regression tests; no production player data was read.",
+    "Replay digest fields are validated for format and coverage by the fast gate; full qualification reruns the real server checks. Analytical RTP bounds are independently recomputed by the gate."
+  ],
+  "browserHarnessRetry": "The first partial browser run was interrupted by Vite watching tsconfig files created by another active task under artifacts. Automatic watching and HMR were disabled in the audit harness; the complete rerun passed27scenarios. Manual reload and response-loss tests remain enabled.",
+  "qualification": {
+    "proof": "qualifications/cosmic-v3.json",
+    "proofSha256": "e041e3adf33cde935bcfac5dba3b938c72addac3878e3eaa7b3993d861ef65cd",
+    "method": "bounded-analytical-cosmic",
+    "sourceHashes": {
+      "src/shared/luelonSlotsModels.ts": "b8644fecff250437909ff88950c5ef129c1d534108344f9643b815614d844c74",
+      "src/shared/luelonSlots.ts": "1867b3f6e7e3fbc1e00dd6fad2bb094c42e6038f8eba18e0ef7250381f95cdcb",
+      "src/shared/luelonSlotsLines.ts": "cc9e2528bae03e8965c154f82aa271b3c9976bb3d817130ba51dedf6e8eb67ee",
+      "src/shared/cosmicEscapeBets.ts": "5e079e858e39cd73070f95f77688c774aee887e025a2f84fbc365c1e9cddd625",
+      "server/games/luelonSlots.ts": "be78b2715aa850d3801445edf0f714b89dcb76ed98719e5589fcac71dc7fe3f2",
+      "scripts/game-math/rtp-cosmic.mjs": "43f693ba61d1f544cef3ad0979b0a5ddec4b5991ef664e4a5587e3fed767ffc4"
+    },
+    "policySha256": "7dd2e7fa2dfb42605ef19a14cb18747669c4ee47841714a9e3ab890abac5e464",
+    "completeModeStakeCombinations": 104,
+    "serverReplayChecks": 6656,
+    "scorerReplayChecks": 59049,
+    "counters": {
+      "echoes": 2574,
+      "energyEvents": 16432,
+      "beams": 18356,
+      "naturalAwards": {
+        "10": 78,
+        "12": 52,
+        "15": 52
+      }
+    },
+    "bounds": [
+      {
+        "mode": "normal",
+        "rtpBounds": [
+          0.959956946582889,
+          0.960017765453377
+        ]
+      },
+      {
+        "mode": "cosmic-chaos",
+        "rtpBounds": [
+          0.9597873344874032,
+          0.9598465213726478
+        ]
+      },
+      {
+        "mode": "ufo-invasion",
+        "rtpBounds": [
+          0.9580529273037427,
+          0.9583317355848724
+        ]
+      },
+      {
+        "mode": "deep-echo",
+        "rtpBounds": [
+          0.9590626539999318,
+          0.9591283814513147
+        ]
+      }
+    ],
+    "interpretation": "Deterministic outward bounds for the complete paid capped round, not a point estimate or statistical confidence interval."
+  }
+}
