@@ -86,15 +86,17 @@ def safe_name(name):
 def owned_module_state(state):
     actual = state['moduleFiles']; previous = OLD['moduleFiles']
     approved = {'/opt/royal-game-modules/'+name:digest for name,digest in M['moduleDelta'].items()}
-    row, = M['modulePackages']
-    relative = row['gameId']+'/versions/'+row['version']+'/manifest.json'
-    pointer = '/opt/royal-game-modules/'+row['gameId']+'/active.json'
-    value = {'format':1,'gameId':row['gameId'],'manifest':'/game-modules/'+relative,'sha256':M['moduleDelta'][relative]}
-    active = hashlib.sha256((json.dumps(value,indent=2)+'\n').encode()).hexdigest()
     expected = {**previous, **{name:digest for name,digest in approved.items() if name in actual}}
-    if actual.get(pointer) != previous.get(pointer):
-        require(actual.get(pointer) == active and all(actual.get(name) == digest for name,digest in approved.items()), 'Incomplete or unrelated active module')
-        expected[pointer] = active
+    for row in M['modulePackages']:
+        prefix = row['gameId']+'/versions/'+row['version']+'/'
+        relative = prefix+'manifest.json'
+        pointer = '/opt/royal-game-modules/'+row['gameId']+'/active.json'
+        value = {'format':1,'gameId':row['gameId'],'manifest':'/game-modules/'+relative,'sha256':M['moduleDelta'][relative]}
+        active = hashlib.sha256((json.dumps(value,indent=2)+'\n').encode()).hexdigest()
+        if actual.get(pointer) != previous.get(pointer):
+            package_files = {'/opt/royal-game-modules/'+name:digest for name,digest in M['moduleDelta'].items() if name.startswith(prefix)}
+            require(actual.get(pointer) == active and package_files and all(actual.get(name) == digest for name,digest in package_files.items()), 'Incomplete or unrelated active module')
+            expected[pointer] = active
     require(actual == expected, 'Unreviewed module change prevents recovery')
 
 
@@ -157,6 +159,13 @@ def lock_transition(before, after):
                 and after['packages']['node_modules/'+package]['version'] == new, 'Unexpected dependency version')
 
 
+def package_transition(before, after):
+    require({k:v for k,v in before.items() if k != 'scripts'} == {k:v for k,v in after.items() if k != 'scripts'}, 'Application dependencies or metadata changed')
+    require(set(before['scripts']) == set(after['scripts']), 'Unexpected package script inventory change')
+    require({k for k in before['scripts'] if before['scripts'][k] != after['scripts'][k]} == {'test:rtp-gate'}, 'Unreviewed package script changed')
+    require(after['scripts']['test:rtp-gate'] == 'node --test server-tests/rtp-gate.test.mjs server-tests/cosmic-rtp-gate.test.mjs', 'Unexpected RTP verification command')
+
+
 def payload():
     require(ROOT == Path('/opt/royal-releases') / NAME and M['release'] == NAME, 'Unexpected release path')
     require(re.fullmatch(r'[a-f0-9]{40}', M['sourceCommit']), 'Missing reviewed source commit')
@@ -165,7 +174,7 @@ def payload():
     require(CHANGES and set(SERVER_DELTA) == {'index.js'}, 'The reviewed main backend is required')
     require(all(name in ['index.html','admin.html'] or re.fullmatch(r'assets/[a-zA-Z0-9_-]+\.(?:js|css)', name) for name in DELTA), 'Unexpected client change')
     for name in [*CHANGES, *DELTA]: safe_name(name)
-    require(all(name in ['package-lock.json','deployment/SERVER.md'] or name.startswith(('src/','server/','scripts/','docs/','games/')) for name in CHANGES), 'Unexpected source path')
+    require(all(name in ['package-lock.json','package.json','deployment/SERVER.md'] or name.startswith(('src/','server/','scripts/','docs/','games/')) for name in CHANGES), 'Unexpected source path')
     critical = ['server/combatGame.ts','server/combatRoom.ts','server/combatGuard.ts','server/commonCombatWallet.ts',
         'server/pvp/virtual-wallet.ts','server/finance/combat-escrow.ts','server/finance/pvp-money.ts',
         'src/shared/combat.ts','src/shared/combatEscrow.ts','src/shared/pvp.ts']
@@ -178,12 +187,22 @@ def payload():
     for name, digest in DELTA.items():
         require(DIGEST.fullmatch(digest), 'Invalid client digest')
         require(name in ['index.html','admin.html'] or 'dist/'+name not in OLD['program'] or digest == OLD['program']['dist/'+name], 'Immutable client URL collision')
-    require(M['runtimePackages'] == {'package-lock.json':CHANGES['package-lock.json']}, 'Only the reviewed lock metadata may change')
+    require(M['runtimePackages'] == {name:CHANGES[name] for name in ['package-lock.json','package.json']}, 'Only reviewed package metadata may change')
+    require(sha(ROOT/'old-package.json') == OLD['sourceLF']['package.json'], 'Baseline application package differs')
+    package_transition(json.loads((ROOT/'old-package.json').read_text()), json.loads((ROOT/'metadata/package.json').read_text()))
     require(inventory(ROOT/'source') == CHANGES and inventory(ROOT/'metadata') == M['runtimePackages'], 'Source or metadata payload differs')
     require(inventory(ROOT/'dist-delta') == DELTA and inventory(ROOT/'server-delta') == SERVER_DELTA, 'Runtime delta differs')
     require(inventory(ROOT/'dependency-delta') == M['dependencyFiles'], 'Dependency payload differs')
     require(inventory(ROOT/'modules') == M['moduleDelta'], 'Module payload differs')
-    require(len(M['modulePackages']) == 1 and M['modulePackages'][0]['gameId'] == 'mortal-kombat', 'Only the combat client may be published')
+    require(len(M['modulePackages']) == 2 and {row['gameId'] for row in M['modulePackages']} == {'mortal-kombat','studio-cosmic-escape'}, 'Only the two reviewed clients may be published')
+    prefixes = [row['gameId']+'/versions/'+row['version']+'/' for row in M['modulePackages']]
+    require(all(any(name.startswith(prefix) for prefix in prefixes) for name in M['moduleDelta']), 'Unreviewed module payload path')
+    for row in M['modulePackages']:
+        require(set(row) == {'gameId','version','beforeSha256'} and re.fullmatch(r'[0-9]+\.[0-9]+\.[0-9]+-[a-f0-9]{12}',row['version']), 'Invalid module release identity')
+        require(OLD['moduleHost']['games'][row['gameId']] == {'apiVersion':1,'rulesVersion':2,'progressVersion':1}, 'Module contract changed')
+        prefix = row['gameId']+'/versions/'+row['version']+'/'
+        require(prefix+'manifest.json' in M['moduleDelta'], 'Missing reviewed game package')
+        require(row['beforeSha256'] == OLD['moduleFiles'].get('/opt/royal-game-modules/'+row['gameId']+'/active.json','none'), 'Pointer baseline changed')
     require(sha(ROOT/'old-lock.json') == OLD['sourceLF']['package-lock.json'], 'Baseline lock metadata differs')
     old_lock = json.loads((ROOT/'old-lock.json').read_text()); new_lock = json.loads((ROOT/'metadata/package-lock.json').read_text())
     lock_transition(old_lock, new_lock)
@@ -318,13 +337,24 @@ def bounded_archive(path, limit):
         raise
 
 
+def backup_budget(available, runtime_bytes, retained):
+    reserve = DISK_RESERVE + BUILD_MARGIN + runtime_bytes*4
+    require(available > reserve, 'Insufficient reserve for the reviewed runtime overlay')
+    if retained: return None
+    limit = available - reserve - WALLET_BACKUP_LIMIT
+    require(limit > 1024**2, 'Insufficient reserve for streamed source backup')
+    return limit
+
+
 def build():
-    payload(); old = baseline()
+    payload()
+    from modules import validate_payload
+    validate_payload()
+    old = baseline()
     runtime_bytes = sum((ROOT/folder/name).stat().st_size for folder, rows in [
         ('dist-delta',DELTA),('server-delta',SERVER_DELTA),('metadata',M['runtimePackages']),('dependency-delta',M['dependencyFiles'])] for name in rows)
-    archive_limit = old['availableBytes'] - DISK_RESERVE - WALLET_BACKUP_LIMIT - BUILD_MARGIN - runtime_bytes*4
     retained = BACKUP.exists()
-    require(archive_limit > 1024**2, 'Insufficient reserve for streamed source backup')
+    archive_limit = backup_budget(old['availableBytes'],runtime_bytes,retained)
     if retained: retained_backup()
     else:
         BACKUP.mkdir(mode=0o700, exist_ok=False)
@@ -409,6 +439,8 @@ def rollback():
             require(current['container']['health'] != 'healthy', 'Cannot verify files of the healthy game container')
     recovery_guard(current, built)
     backup_guard(built)
+    from modules import rollback_pointers
+    rollback_pointers(current)
     with tarfile.open(BACKUP / 'source.tgz') as archive:
         for name in CHANGES:
             if name in BASE:
