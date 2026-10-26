@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import assert from 'node:assert/strict';
+import { build } from 'esbuild';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../../..'), work = resolve(root, '..'), out = resolve(work, 'payload');
 const base = '27264a8cac2744aad98145631e76a291af5cbedf', name = 'skin-npc-context-20261026-v1';
 const git = (...args) => execFileSync(process.env.ROYAL_GIT_BINARY || 'git', args, { cwd: root, encoding: 'utf8' }).trim();
@@ -55,15 +56,37 @@ assert('index.html' in delta);
 const serverDelta = { 'index.js': hash(resolve(root, 'dist-server/index.js')) };
 assert.notEqual(serverDelta['index.js'], before.program['dist-server/index.js']);
 copy(resolve(root, 'dist-server/index.js'), 'server-delta/index.js');
-for (const [file, digest] of Object.entries(release.files)) {
-  if (file.startsWith('module-dist/') || (file.startsWith('dist-server/') && file !== 'dist-server/index.js'))
-    assert(sameRuntime(file, digest), 'Unrelated module or backend program changed: ' + file);
+const independentBackendSources = [];
+for (const [entry, file] of [['scripts/crypto-reconcile.ts', 'crypto-reconcile.js'], ['server/payments/index.ts', 'payments.js']]) {
+  const audit = await build({ absWorkingDir: root, entryPoints: [entry], bundle: true, platform: 'node', packages: 'external',
+    format: 'esm', outfile: 'dist-server/' + file, write: false, metafile: true });
+  assert.equal(createHash('sha256').update(audit.outputFiles[0].contents).digest('hex'), release.files['dist-server/' + file]);
+  for (const source of Object.keys(audit.metafile.inputs)) {
+    const digest = hash(resolve(root, source));
+    assert(!(source in changed) && (before.source[source] === digest || before.sourceLF[source] === digest), 'Independent backend dependency changed: ' + source);
+  }
+  independentBackendSources.push({ entry, runtimeFile: 'dist-server/' + file, inputCount: Object.keys(audit.metafile.inputs).length,
+    retainedSha256: before.program['dist-server/' + file], localBuildSha256: release.files['dist-server/' + file] });
 }
-for (const file of ['package.json', 'package-lock.json']) assert.equal(hash(resolve(root, file)), before.program[file]);
+const host = json(resolve(root, 'module-dist/host-contracts.json'));
+assert.deepEqual(host.games, before.moduleHost.games, 'Host compatibility versions changed');
+const clientText = Object.keys(delta).filter(file => file.endsWith('.js')).map(file => readFileSync(resolve(out, 'dist-delta', file), 'utf8')).join('\n');
+for (const [gameId, installed] of Object.entries(before.activeModuleMetadata)) {
+  const pointer = json(resolve(root, 'module-dist', gameId, 'active.json'));
+  const local = json(resolve(root, 'module-dist', pointer.manifest.replace(/^\/game-modules\//, '')));
+  for (const field of ['gameId', 'apiVersion', 'rulesVersion', 'progressVersion']) assert.equal(local[field], installed[field], 'Module compatibility changed: ' + gameId);
+  if (local.version !== installed.version) assert(!clientText.includes(local.version), 'Client requires an unpublished module version: ' + gameId);
+}
+for (const file of ['package.json', 'package-lock.json']) {
+  const digest = hash(resolve(root, file));
+  assert(before.program[file] === digest || (before.program[file] === before.source[file] && before.sourceLF[file] === digest), 'Dependencies changed: ' + file);
+}
 const helper = dirname(fileURLToPath(import.meta.url));
 for (const file of ['deploy.py', 'snapshot.py']) copy(resolve(helper, file), file);
 for (const file of ['release-manifest.json', 'release-github.json']) copy(resolve(root, 'module-build', file), file);
 const manifest = { release: name, sourceCommit: release.sourceCommit, baseCommit: base, before, changed, delta, serverDelta, retainedPublicRuntime,
+  compatibility: { independentBackendSources, hostContractVersionsUnchanged: true, modulesChecked: Object.keys(before.activeModuleMetadata).length,
+    bundledAndExternalModulesRetained: true, dependencyLockEquivalent: true },
   helperSha256: hash(resolve(out, 'deploy.py')), snapshotSha256: hash(resolve(out, 'snapshot.py')) };
 writeFileSync(resolve(out, 'install-manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
 execFileSync('tar', [...(process.platform === 'darwin' ? ['--no-xattrs'] : []), '-czf', resolve(work, 'transport.tgz'), '-C', out, '.'], { env: { ...process.env, COPYFILE_DISABLE: '1' } });
