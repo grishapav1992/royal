@@ -1,0 +1,56 @@
+{
+  "generatedAt": "2026-10-26T09:01:26.421Z",
+  "gameId": "studio-caramel-carnival",
+  "method": "Controlled entropy through actual server start/move, serialized full-history validation, no database or production writes.",
+  "modes": [
+    {
+      "id": "normal",
+      "costMultiplier": 1
+    },
+    {
+      "id": "festival",
+      "costMultiplier": 35
+    }
+  ],
+  "stakes": [
+    "100",
+    "200",
+    "300",
+    "500",
+    "1000",
+    "2000",
+    "2500",
+    "5000",
+    "10000",
+    "20000",
+    "25000",
+    "50000",
+    "100000"
+  ],
+  "passed": 18,
+  "tests": [
+    "Purchased origin is empty, x1, ten spins, no RNG or credit",
+    "Forged empty purchased origins are rejected before RNG",
+    "Three base tickets do not trigger and four or more award ten",
+    "Natural entry resets base x50 to bonus x1 and retains base payment",
+    "Free energy rises before payout, persists across free spins and resets on a new paid round",
+    "Energy without a winning ordinary group does not charge or pay",
+    "Every energy value is applied and spinner cells disappear with wins",
+    "Free retriggers are 3, capped at thirty awarded spins including final partial grant",
+    "Normal entry plus maximum free retriggers produces exactly thirty one history entries",
+    "Cascade limit pays twenty frames and counts tickets on the final unscored refill",
+    "Whole round cap stops cascade and free spins, pays remaining amount, suppresses ticket retrigger",
+    "Cap allocates a limited frame across simultaneous groups with no negative awards",
+    "Gravity preserves ticket order and uses only emptied cells for refills",
+    "All thirteen stakes scale normal and complete purchased settlement exactly",
+    "Self consistent active and complete x50 origin receipts are rejected",
+    "Forged counts, frame payment, gravity, award, multiplier and revision are rejected",
+    "Normal has no empty receipt and active or settled status must match continuation",
+    "Invalid stakes and settings are refused before RNG"
+  ],
+  "sourceHashes": {
+    "server/games/caramelCarnival.ts": "efea2d448a692637819eef014badf72ac2aa1a0621284ba12011ab68ff1886a7",
+    "src/shared/caramelCarnival.ts": "17f9e338297ac7fc37fa0f6ac6608e22cdc9ad145ad18f8c6764d72575f725aa",
+    "src/ui/CaramelCarnivalUI.ts": "fb3b13ec3995463b1098c82e1457c605747b7319a37d1d7a2d5009a577181e46"
+  }
+}

@@ -4,6 +4,7 @@ import copy
 import hashlib
 import importlib.util
 import json
+import io
 import shutil
 import tarfile
 import tempfile
@@ -28,8 +29,13 @@ class CosmicOriginReleaseTests(unittest.TestCase):
         self.addCleanup(self.temporary.cleanup)
         root = Path(self.temporary.name).resolve()
         shutil.copy2(HERE / 'deploy.py', root / 'deploy.py')
+        shutil.copy2(HERE / 'quiesce.cjs', root / 'quiesce.cjs')
         self.original = {'src/ui/SocialUI.ts': b'old UI', 'server/LobbyRoom.ts': b'old room',
                          'server/LobbyRoom.ts.orig': b'historical source'}
+        self.original.update({name: ('preserved ' + name).encode() for name in [
+            'server/database.ts', 'server/combatGame.ts', 'server/combatRoom.ts', 'server/combatGuard.ts',
+            'server/commonCombatWallet.ts', 'server/pvp/virtual-wallet.ts', 'server/finance/combat-escrow.ts',
+            'server/finance/pvp-money.ts', 'src/shared/combat.ts', 'src/shared/combatEscrow.ts', 'src/shared/pvp.ts']})
         old_image = 'sha256:' + 'a' * 64
         before = {
             'source': {name: sha(value) for name, value in self.original.items()},
@@ -45,6 +51,7 @@ class CosmicOriginReleaseTests(unittest.TestCase):
             'configHashes': {'.env': sha(b'private settings'), 'compose.yaml': sha(b'compose settings')},
             'moduleFiles': {'/opt/royal-game-modules/studio-dracona/active.json': sha(b'retained pointer')},
             'moduleHostContract': sha(b'installed contract'),
+            'moduleHost': {'games': {'mortal-kombat': {'apiVersion': 1, 'rulesVersion': 2, 'progressVersion': 1}}},
             'realMoneyFlags': {'exampleFlag': 'false'},
             'services': {'/royal-game-1': {'id': 'old game'}, '/royal-payments-1': {'id': 'payment service'}},
             'container': {'id': 'old game', 'image': old_image, 'health': 'healthy', 'startedAt': 'old start',
@@ -57,7 +64,7 @@ class CosmicOriginReleaseTests(unittest.TestCase):
                     'changed': {'src/ui/SocialUI.ts': sha(b'new UI'), 'server/chatQueue.ts': sha(b'new queue')},
                     'delta': {'index.html': sha(b'new index'), 'assets/index-new.js': sha(b'new client')},
                     'serverDelta': {'index.js': sha(b'new origin guard backend')},
-                    'helperSha256': 'd' * 64, 'snapshotSha256': 'd' * 64}
+                    'helperSha256': 'd' * 64, 'snapshotSha256': 'd' * 64, 'quiesceSha256': 'd' * 64}
         (root / 'install-manifest.json').write_text(json.dumps(manifest))
         spec = importlib.util.spec_from_file_location('cosmic_origin_release_under_test', root / 'deploy.py')
         self.helper = importlib.util.module_from_spec(spec)
@@ -80,6 +87,7 @@ class CosmicOriginReleaseTests(unittest.TestCase):
         state['container']['id'] = 'new game'
         state['services']['/royal-game-1']['id'] = 'new game'
         state['program'] = copy.deepcopy(self.built['program'])
+        state['preparedProgram'] = copy.deepcopy(self.built['program'])
         return state
 
     def recovery_module_fixture(self, old_pointer=True):
@@ -177,6 +185,142 @@ class CosmicOriginReleaseTests(unittest.TestCase):
         self.helper.CHANGES['server/LobbyRoom.ts.orig'] = sha(b'changed history')
         with self.assertRaisesRegex(RuntimeError, 'Historical source backups'):
             self.helper.payload()
+
+    def test_payload_refuses_changed_wallet_sources_or_combat_contract(self):
+        self.enable_payload_fixture()
+        helper = self.helper
+        for name in helper.WALLET_SOURCES:
+            helper.CHANGES[name] = sha(b'changed accepted wallet rule')
+            with self.assertRaisesRegex(RuntimeError, 'Wallet or fight rules must remain unchanged'):
+                helper.payload()
+            del helper.CHANGES[name]
+        helper.OLD['moduleHost']['games']['mortal-kombat']['rulesVersion'] = 1
+        with self.assertRaisesRegex(RuntimeError, 'same virtual combat contract'):
+            helper.payload()
+
+    def test_payload_refuses_tampered_financial_gate_digest(self):
+        self.enable_payload_fixture()
+        self.helper.sha = lambda path: 'e' * 64 if path.name == 'quiesce.cjs' else 'd' * 64
+        with self.assertRaisesRegex(RuntimeError, 'Financial gate helper changed'):
+            self.helper.payload()
+
+    def test_gate_rechecks_its_real_bytes_before_starting_a_process(self):
+        helper = self.helper
+        helper.M['quiesceSha256'] = helper.sha(helper.ROOT / 'quiesce.cjs')
+        (helper.ROOT / 'quiesce.cjs').write_text('tampered gate')
+        with patch.object(helper.subprocess, 'Popen') as process:
+            with self.assertRaisesRegex(RuntimeError, 'Financial gate helper changed'):
+                helper.quiet_gate()
+        process.assert_not_called()
+
+    def publish_fixture(self):
+        helper = self.helper
+        actions = []
+        (helper.ROOT / 'build-result.json').write_text(json.dumps(self.built))
+        (helper.ROOT / 'dist-delta').mkdir()
+        helper.payload = lambda: None
+        helper.baseline = lambda: copy.deepcopy(helper.OLD)
+        helper.publication_reserve = lambda: 0
+        helper.image = lambda _ref: self.built['image']
+        helper.snapshot = lambda recovery=False: self.published()
+        helper.atomic = lambda *_args: actions.append('source')
+        helper.run = lambda *_args, **_kwargs: actions.append('tag')
+        helper.compose = lambda: actions.append('compose')
+        helper.healthy = lambda: actions.append('healthy')
+        helper.rollback = lambda: actions.append('rollback')
+        gate = (SimpleNamespace(poll=lambda: None), None)
+        helper.quiet_gate = lambda: actions.append('quiet') or gate
+        helper.release_gate = lambda _gate: actions.append('release')
+        return actions, gate
+
+    def test_refused_quiet_gate_cannot_mutate_sources_runtime_or_start_rollback(self):
+        actions, _gate = self.publish_fixture()
+        def refused():
+            raise RuntimeError('Paid matches remain active')
+        self.helper.quiet_gate = refused
+        with self.assertRaisesRegex(RuntimeError, 'Paid matches remain active'):
+            self.helper.publish()
+        self.assertEqual(actions, [])
+        for name, content in self.original.items():
+            self.assertEqual((self.helper.LIVE / name).read_bytes(), content)
+        self.assertFalse((self.helper.ROOT / 'publication-failed.json').exists())
+
+    def test_gate_spans_source_and_compose_and_releases_before_health(self):
+        actions, _gate = self.publish_fixture()
+        with patch.object(self.helper.shutil, 'disk_usage', return_value=SimpleNamespace(free=10 * 1024**3)):
+            result = self.helper.publish()
+        self.assertTrue(result['published'])
+        self.assertEqual(actions, ['quiet', 'source', 'source', 'tag', 'compose', 'release', 'healthy'])
+
+    def test_compose_failure_releases_gate_before_rollback(self):
+        actions, _gate = self.publish_fixture()
+        def failed_compose():
+            actions.append('compose')
+            raise RuntimeError('compose failed')
+        self.helper.compose = failed_compose
+        with patch.object(self.helper.signal, 'signal'):
+            with self.assertRaisesRegex(RuntimeError, 'compose failed'):
+                self.helper.publish()
+        self.assertEqual(actions, ['quiet', 'source', 'source', 'tag', 'compose', 'release', 'rollback'])
+        self.assertFalse((self.helper.ROOT / 'published.json').exists())
+
+    def test_expired_gate_blocks_source_mutation_and_compose(self):
+        actions, gate = self.publish_fixture()
+        gate[0].poll = lambda: 1
+        with patch.object(self.helper.signal, 'signal'):
+            with self.assertRaisesRegex(RuntimeError, 'Financial gate expired'):
+                self.helper.publish()
+        self.assertEqual(actions, ['quiet', 'release', 'rollback'])
+
+    def test_gate_expiry_between_sources_prevents_restart(self):
+        actions, gate = self.publish_fixture()
+        def copied(*_args):
+            actions.append('source')
+            gate[0].poll = lambda: 1
+        self.helper.atomic = copied
+        with patch.object(self.helper.signal, 'signal'):
+            with self.assertRaisesRegex(RuntimeError, 'Financial gate expired'):
+                self.helper.publish()
+        self.assertEqual(actions, ['quiet', 'source', 'release', 'rollback'])
+
+    def test_failed_gate_release_cannot_record_success_or_run_health(self):
+        actions, _gate = self.publish_fixture()
+        def failed_release(_gate):
+            actions.append('release')
+            raise RuntimeError('Financial gate release failed')
+        self.helper.release_gate = failed_release
+        with patch.object(self.helper.signal, 'signal'):
+            with self.assertRaisesRegex(RuntimeError, 'Financial gate release failed'):
+                self.helper.publish()
+        self.assertEqual(actions, ['quiet', 'source', 'source', 'tag', 'compose', 'release', 'rollback'])
+        self.assertFalse((self.helper.ROOT / 'published.json').exists())
+
+    def test_release_gate_refuses_an_expired_process_and_closes_resources(self):
+        helper = self.helper
+        process = SimpleNamespace(poll=lambda: 1, stdin=io.StringIO(), stdout=io.StringIO())
+        log = io.StringIO()
+        with self.assertRaisesRegex(RuntimeError, 'Financial gate expired'):
+            helper.release_gate((process, log))
+        self.assertTrue(process.stdout.closed)
+        self.assertTrue(log.closed)
+
+    def test_release_gate_checks_successful_commit(self):
+        helper = self.helper
+        events = []
+        class Input(io.StringIO):
+            def write(self, value):
+                events.append(value)
+                return super().write(value)
+        code = [None]
+        def waited(timeout=None):
+            self.assertEqual(timeout, 10)
+            code[0] = 0
+            return 0
+        process = SimpleNamespace(poll=lambda: code[0], wait=waited, stdin=Input(), stdout=io.StringIO())
+        log = io.StringIO()
+        helper.release_gate((process, log))
+        self.assertEqual(events, ['release\n'])
+        self.assertTrue(process.stdin.closed and process.stdout.closed and log.closed)
 
     def test_unchanged_or_partially_published_sources_can_recover(self):
         helper = self.helper
@@ -387,13 +531,16 @@ class CosmicOriginReleaseTests(unittest.TestCase):
         helper.run = lambda args, **_kwargs: actions.append(args) or (json.dumps(current['program']) if args[:2] == ['docker', 'exec'] else '')
         helper.compose = lambda: actions.append(['compose-game-only'])
         helper.healthy = lambda: actions.append(['health-read-only'])
+        helper.quiet_gate = lambda: actions.append(['quiet-gate']) or (SimpleNamespace(poll=lambda: None), None)
+        helper.release_gate = lambda _gate: actions.append(['release-gate'])
         result = helper.rollback()
         self.assertFalse(result['databaseTouched'])
         self.assertEqual((helper.LIVE / 'src/ui/SocialUI.ts').read_bytes(), self.original['src/ui/SocialUI.ts'])
         self.assertFalse((helper.LIVE / 'server/chatQueue.ts').exists())
         self.assertEqual((helper.LIVE / 'server/LobbyRoom.ts.orig').read_bytes(), self.original['server/LobbyRoom.ts.orig'])
         self.assertEqual((helper.LIVE / 'dist/index.html').read_bytes(), b'old index')
-        self.assertEqual([action[:2] for action in actions], [['docker', 'exec'], ['docker', 'tag'], ['compose-game-only'], ['health-read-only']])
+        self.assertEqual([action[:2] for action in actions], [['docker', 'exec'], ['quiet-gate'], ['docker', 'tag'],
+                         ['compose-game-only'], ['release-gate'], ['health-read-only']])
 
 
     def test_backup_budget_removes_partial_archive_without_touching_live_sources(self):
