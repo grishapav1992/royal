@@ -22,7 +22,7 @@ def publish():
     assert all(sha(ROOT/'modules'/name)==digest for name,digest in manifest['moduleDelta'].items())
     assert shutil.disk_usage(MODULES).free>5*1024**3+3*sum((ROOT/'modules'/name).stat().st_size for name in manifest['moduleDelta'])
     from deploy import snapshot, settings
-    before=snapshot();settings(before)
+    before=snapshot();settings(before,owned_modules=True)
     built=json.loads((ROOT/'build-result.json').read_text())
     assert before['container']['image']==built['image'] and before['program']==built['program']
     spec=importlib.util.spec_from_file_location('independent_module_installer',LIVE/'scripts/game-module-release.py')

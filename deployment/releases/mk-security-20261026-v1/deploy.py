@@ -83,9 +83,26 @@ def safe_name(name):
             for part in path.parts), 'Unsafe release path')
 
 
-def settings(state, recovery=False):
-    for key in ['configHashes', 'moduleFiles', 'moduleHostContract']:
+def owned_module_state(state):
+    actual = state['moduleFiles']; previous = OLD['moduleFiles']
+    approved = {'/opt/royal-game-modules/'+name:digest for name,digest in M['moduleDelta'].items()}
+    row, = M['modulePackages']
+    relative = row['gameId']+'/versions/'+row['version']+'/manifest.json'
+    pointer = '/opt/royal-game-modules/'+row['gameId']+'/active.json'
+    value = {'format':1,'gameId':row['gameId'],'manifest':'/game-modules/'+relative,'sha256':M['moduleDelta'][relative]}
+    active = hashlib.sha256((json.dumps(value,indent=2)+'\n').encode()).hexdigest()
+    expected = {**previous, **{name:digest for name,digest in approved.items() if name in actual}}
+    if actual.get(pointer) != previous.get(pointer):
+        require(actual.get(pointer) == active and all(actual.get(name) == digest for name,digest in approved.items()), 'Incomplete or unrelated active module')
+        expected[pointer] = active
+    require(actual == expected, 'Unreviewed module change prevents recovery')
+
+
+def settings(state, recovery=False, owned_modules=False):
+    for key in ['configHashes', 'moduleHostContract']:
         require(state[key] == OLD[key], 'Protected production state changed: ' + key)
+    if recovery or owned_modules: owned_module_state(state)
+    else: require(state['moduleFiles'] == OLD['moduleFiles'], 'Protected production state changed: moduleFiles')
     for key in (['mounts', 'host', 'runtimeHash', 'composeFiles'] if state['container'] is not None else []):
         require(state['container'][key] == OLD['container'][key], 'Runtime settings changed: ' + key)
     require({name: row for name, row in state['services'].items() if name != '/royal-game-1'}
@@ -408,7 +425,7 @@ def rollback():
         healthy()
     atomic(BACKUP / 'index.html', LIVE / 'dist/index.html')
     after = snapshot()
-    settings(after)
+    settings(after, recovery=True)
     require(sources(after) == BASE and after['preparedImage'] == OLD['preparedImage']
             and after['preparedProgram'] == OLD['preparedProgram'], 'Recovered source or prepared image differs')
     require(after['program'] == OLD['program'], 'Recovered running files differ')
