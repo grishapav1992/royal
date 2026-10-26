@@ -36,6 +36,7 @@ jobs:
       - run: npm run release:prepare -- --local --base HEAD^
       - run: node --import tsx --test server-tests/independent-modules.test.ts server-tests/game-module-assets.test.ts
       - run: npm run test:slot-balance
+      - run: npm run test:temple
       - run: node --import tsx scripts/database-test.ts --import tsx --test server-tests/cosmic-engine-audit.test.ts server-tests/cosmic-wallet-audit.test.ts server-tests/cosmic-origin-validation.test.ts server-tests/cosmic-origin-wallet.test.ts
       - run: node scripts/ci-release-cache.mjs
       - run: npm run release:verify

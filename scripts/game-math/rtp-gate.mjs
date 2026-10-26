@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
 import { cosmicQualificationEvidence, COSMIC_QUALIFICATION_METHOD, COSMIC_QUALIFICATION_MODEL } from './rtp-cosmic.mjs';
+import {TEMPLE_METHOD,templeEvidence,expectedTempleReplay,expectedTempleStreams} from './rtp-temple.mjs';
 
 const digest = value => createHash('sha256').update(value).digest('hex');
 // Git checkouts use CRLF on Windows and LF in Linux CI. Hash canonical text.
@@ -31,6 +32,7 @@ export function validateRtpProof(gameId, inputs, proof) {
   assert.equal(proof.rulesVersion, p.rulesVersion); assert.equal(proof.progressVersion, p.progressVersion);
   assert.equal(proof.policySha256, inputs.policySha256, 'RTP policy changed: rerun qualification');
   assert.deepEqual(proof.sourceHashes, inputs.sourceHashes, 'RTP source changed: rerun qualification');
+  if(p.method===TEMPLE_METHOD)return validateTempleProof(gameId,p,proof);
   if(p.method==='exhaustive-pvp-journal')return validatePvpProof(gameId,p,proof);
   if(p.method==='exhaustive-virtual-pvp-pot')return validateVirtualPvpProof(gameId,p,proof);
   if(p.method===COSMIC_QUALIFICATION_METHOD){
@@ -60,6 +62,18 @@ export function validateRtpProof(gameId, inputs, proof) {
     assert(proof.streams.some(stream => stream.choice === choice && stream.seed === expected));
   }
   assert(proof.serverReplayChecks >= p.stakes.length * p.choices.length * 64, 'Server replay cross-check is missing');
+  return true;
+}
+function validateTempleProof(gameId,p,proof){
+  assert.equal(gameId,'studio-flooded-temple');
+  const expected=templeEvidence(p);
+  assert.equal(proof.method,expected.method);
+  assert.deepEqual(proof.analysis,expected.analysis,'Invalid Temple exhaustive derivation');
+  assert.deepEqual(proof.results,expected.results,'Every Temple stake and strategy must match the exhaustive model');
+  assert.deepEqual(proof.serverReplay?.coverage,p.stakes.map(expectedTempleReplay),'Temple exhaustive server coverage mismatch');
+  assert.deepEqual(proof.serverReplay?.streams,expectedTempleStreams(p),'Temple independent seed replay mismatch');
+  const checks=proof.serverReplay.coverage.reduce((sum,r)=>sum+r.checks,0)+proof.serverReplay.streams.reduce((sum,r)=>sum+r.paidRounds,0);
+  assert.equal(proof.serverReplayChecks,checks);
   return true;
 }
 function validateCosmicProof(gameId,p,proof){

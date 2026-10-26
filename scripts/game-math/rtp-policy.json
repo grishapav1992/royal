@@ -1,6 +1,32 @@
 {
   "schemaVersion": 1,
   "profiles": {
+    "studio-flooded-temple": {
+      "method": "exhaustive-temple-decisions",
+      "rulesVersion": 1,
+      "progressVersion": 1,
+      "target": 0.96,
+      "minimumReturn": 0.90,
+      "tolerance": 0.000001,
+      "stakes": [1000, 2000, 5000, 10000, 20000, 50000],
+      "choices": ["optimal", "nearest-chest", "highest-first", "random-walk", "stop"],
+      "seeds": [2026102601, 2026102607],
+      "serverReplayRoundsPerSeed": 64,
+      "proof": "docs/game-math/qualifications/flooded-temple-v1.json",
+      "qualificationSource": "scripts/game-math/rtp-temple.mjs",
+      "sources": [
+        "src/shared/floodedTempleData.json",
+        "src/shared/floodedTempleMath.ts",
+        "src/shared/floodedTemple.ts",
+        "server/games/floodedTemple.ts",
+        "scripts/game-math/rtp-temple-model.mjs",
+        "src/shared/casinoExpansion.ts",
+        "server/demoExpansion.ts",
+        "server/demoWalletRoutes.ts",
+        "server/gameWalletRoutes.ts",
+        "server/finance/nile-game-runtime.ts"
+      ]
+    },
     "studio-neopolis": {
       "rulesVersion": 3,
       "progressVersion": 3,

@@ -1,10 +1,10 @@
 # Independently published games
 
-Every existing game definition has an independent client package. The catalogue contains 117 module identities across the current and historical game families. This is a technical inventory, not a claim that the hall has 117 visible machines:
+Every existing game definition has an independent client package. The catalogue contains 118 module identities across the current, staged and historical game families. This is a technical inventory, not a claim that the hall has 118 visible machines:
 
 | Family | Module identities |
 | --- | ---: |
-| Studio games, including the eight current native slots | 41 |
+| Studio games, including the eight current native slots and the staged Flooded Temple contract | 42 |
 | Original Royal games, GitHub practice games, session games and all casino/card variants, including LAST EXIT | 62 |
 | Air hockey, pool, chess, piano and Mortal Kombat | 5 |
 | Durak, transfer Durak and Crazy Eights PvP | 3 |
@@ -17,6 +17,8 @@ The hall keeps its existing visible cabinets, card tables, activities and recove
 
 The single Nile wallet release hides the two provider demos and the three practice tables with separate chips. Their module identities remain available for historical compatibility. New PvP packages use the optional host `pvp` context for snapshots, legal moves and operation transport. The common backend owns their rules, hidden hands, stakes and settlement. See [PvP and the shared Nile wallet](pvp.md).
 
+
+Flooded Temple (`studio-flooded-temple`, `games/flooded-temple/`) currently has qualified rules 1, progress 1 and a packaging scaffold. Its playable interface belongs to stage 3 and it is not in the active Royal catalogue. The backend negotiates `X-Royal-Temple-Rules: 1`; old clients cannot start it or receive its sessions. The compatible host/backend is required before independent client publication. See [rules](flooded-temple.md) and [mathematical qualification](game-math/flooded-temple-v1.md).
 
 ## Shared services and saved rounds
 
