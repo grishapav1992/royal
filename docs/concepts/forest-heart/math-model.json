@@ -1,0 +1,439 @@
+{
+  "schemaVersion": 1,
+  "gameId": "studio-forest-heart",
+  "scope": "mathematical-model-only",
+  "releaseQualified": false,
+  "method": "exact-finite-board-enumeration-and-bonus-state-propagation",
+  "policy": {
+    "target": 0.96,
+    "tolerance": 0.002,
+    "calibrationNumerator": 631,
+    "rules": {
+      "rulesVersion": 1,
+      "progressVersion": 1,
+      "size": 5,
+      "source": 10,
+      "receivers": [
+        4,
+        14,
+        24
+      ],
+      "abilityDenominator": 32,
+      "bonusDenominator": 64,
+      "bonusSpins": 4,
+      "payoutNumerator": 631,
+      "payoutDenominator": 1000,
+      "energy": [
+        {
+          "value": 1,
+          "weight": 9000
+        },
+        {
+          "value": 2,
+          "weight": 800
+        },
+        {
+          "value": 5,
+          "weight": 180
+        },
+        {
+          "value": 20,
+          "weight": 19
+        },
+        {
+          "value": 100,
+          "weight": 1
+        }
+      ],
+      "energyDenominator": 10000
+    },
+    "stakes": [
+      1000,
+      2000,
+      5000,
+      10000,
+      20000,
+      50000
+    ]
+  },
+  "enumeration": {
+    "boards": 4096,
+    "actionsPerAbility": 13,
+    "rotationComparisons": 49152,
+    "heldStates": 243,
+    "bonusComparisons": 131072,
+    "baseHistogram": [
+      1920,
+      526,
+      786,
+      864
+    ],
+    "optimalHistogram": [
+      196,
+      437,
+      1079,
+      2384
+    ],
+    "improvedBoards": 3036,
+    "bonusKernelSha256": "88b20c5a62977fb2eb99e7337d3bf1a91045ec1a3c4f73c54ee6d6f04892a503",
+    "forwardBackwardAgreement": true
+  },
+  "expectedEnergy": {
+    "numerator": "599",
+    "denominator": "500",
+    "decimal": 1.198
+  },
+  "baseExpectedFlowers": {
+    "numerator": "2345",
+    "denominator": "2048",
+    "decimal": 1.14501953125
+  },
+  "optimalAbilityExpectedFlowers": {
+    "numerator": "9747",
+    "denominator": "4096",
+    "decimal": 2.379638671875
+  },
+  "paidBaseExpectedFlowers": {
+    "numerator": "155137",
+    "denominator": "131072",
+    "decimal": 1.1836013793945312
+  },
+  "bonusExpectedFlowers": {
+    "numerator": "97128858934293",
+    "denominator": "17592186044416",
+    "decimal": 5.521136411874352
+  },
+  "bonusStages": [
+    {
+      "spin": 1,
+      "reachableStates": 13,
+      "expectedFlowers": {
+        "numerator": "2345",
+        "denominator": "2048",
+        "decimal": 1.14501953125
+      }
+    },
+    {
+      "spin": 2,
+      "reachableStates": 32,
+      "expectedFlowers": {
+        "numerator": "2795859",
+        "denominator": "2097152",
+        "decimal": 1.3331694602966309
+      }
+    },
+    {
+      "spin": 3,
+      "reachableStates": 32,
+      "expectedFlowers": {
+        "numerator": "12641990683",
+        "denominator": "8589934592",
+        "decimal": 1.4717214138945565
+      }
+    },
+    {
+      "spin": 4,
+      "reachableStates": 32,
+      "expectedFlowers": {
+        "numerator": "27641300222997",
+        "denominator": "17592186044416",
+        "decimal": 1.5712260064331645
+      }
+    }
+  ],
+  "components": {
+    "baseRtp": {
+      "numerator": "58636976753",
+      "denominator": "65536000000",
+      "decimal": 0.8947292595367432
+    },
+    "bonusRtp": {
+      "numerator": "36711697682535790917",
+      "denominator": "562949953421312000000",
+      "decimal": 0.06521307526436677
+    }
+  },
+  "optimalRtp": {
+    "numerator": "540399492663430330693",
+    "denominator": "562949953421312000000",
+    "decimal": 0.95994233480111
+  },
+  "strategies": [
+    {
+      "choice": "optimal",
+      "rtp": {
+        "numerator": "540399492663430330693",
+        "denominator": "562949953421312000000",
+        "decimal": 0.95994233480111
+      }
+    },
+    {
+      "choice": "pass",
+      "rtp": {
+        "numerator": "523980784172107282757",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9307768496784293
+      }
+    },
+    {
+      "choice": "rotate-0",
+      "rtp": {
+        "numerator": "526311935585350302021",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9349178064350211
+      }
+    },
+    {
+      "choice": "rotate-1",
+      "rtp": {
+        "numerator": "527324915029545040197",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9367172193988883
+      }
+    },
+    {
+      "choice": "rotate-2",
+      "rtp": {
+        "numerator": "526311935585350302021",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9349178064350211
+      }
+    },
+    {
+      "choice": "rotate-3",
+      "rtp": {
+        "numerator": "526006743060496759109",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9343756756061636
+      }
+    },
+    {
+      "choice": "rotate-4",
+      "rtp": {
+        "numerator": "526721023437813561669",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9356444924396597
+      }
+    },
+    {
+      "choice": "rotate-5",
+      "rtp": {
+        "numerator": "106183159458011174977",
+        "denominator": "112589990684262400000",
+        "decimal": 0.9430959076618277
+      }
+    },
+    {
+      "choice": "rotate-6",
+      "rtp": {
+        "numerator": "105832512727328380993",
+        "denominator": "112589990684262400000",
+        "decimal": 0.9399815390705191
+      }
+    },
+    {
+      "choice": "rotate-7",
+      "rtp": {
+        "numerator": "526311935585350302021",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9349178064350211
+      }
+    },
+    {
+      "choice": "rotate-8",
+      "rtp": {
+        "numerator": "526006743060496759109",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9343756756061636
+      }
+    },
+    {
+      "choice": "rotate-9",
+      "rtp": {
+        "numerator": "526721023437813561669",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9356444924396597
+      }
+    },
+    {
+      "choice": "rotate-10",
+      "rtp": {
+        "numerator": "526311935585350302021",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9349178064350211
+      }
+    },
+    {
+      "choice": "rotate-11",
+      "rtp": {
+        "numerator": "527324915029545040197",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9367172193988883
+      }
+    }
+  ],
+  "stakeChecks": [
+    {
+      "stakeUnits": 1000,
+      "energy": 1,
+      "payoutPerFlowerUnits": "631"
+    },
+    {
+      "stakeUnits": 1000,
+      "energy": 2,
+      "payoutPerFlowerUnits": "1262"
+    },
+    {
+      "stakeUnits": 1000,
+      "energy": 5,
+      "payoutPerFlowerUnits": "3155"
+    },
+    {
+      "stakeUnits": 1000,
+      "energy": 20,
+      "payoutPerFlowerUnits": "12620"
+    },
+    {
+      "stakeUnits": 1000,
+      "energy": 100,
+      "payoutPerFlowerUnits": "63100"
+    },
+    {
+      "stakeUnits": 2000,
+      "energy": 1,
+      "payoutPerFlowerUnits": "1262"
+    },
+    {
+      "stakeUnits": 2000,
+      "energy": 2,
+      "payoutPerFlowerUnits": "2524"
+    },
+    {
+      "stakeUnits": 2000,
+      "energy": 5,
+      "payoutPerFlowerUnits": "6310"
+    },
+    {
+      "stakeUnits": 2000,
+      "energy": 20,
+      "payoutPerFlowerUnits": "25240"
+    },
+    {
+      "stakeUnits": 2000,
+      "energy": 100,
+      "payoutPerFlowerUnits": "126200"
+    },
+    {
+      "stakeUnits": 5000,
+      "energy": 1,
+      "payoutPerFlowerUnits": "3155"
+    },
+    {
+      "stakeUnits": 5000,
+      "energy": 2,
+      "payoutPerFlowerUnits": "6310"
+    },
+    {
+      "stakeUnits": 5000,
+      "energy": 5,
+      "payoutPerFlowerUnits": "15775"
+    },
+    {
+      "stakeUnits": 5000,
+      "energy": 20,
+      "payoutPerFlowerUnits": "63100"
+    },
+    {
+      "stakeUnits": 5000,
+      "energy": 100,
+      "payoutPerFlowerUnits": "315500"
+    },
+    {
+      "stakeUnits": 10000,
+      "energy": 1,
+      "payoutPerFlowerUnits": "6310"
+    },
+    {
+      "stakeUnits": 10000,
+      "energy": 2,
+      "payoutPerFlowerUnits": "12620"
+    },
+    {
+      "stakeUnits": 10000,
+      "energy": 5,
+      "payoutPerFlowerUnits": "31550"
+    },
+    {
+      "stakeUnits": 10000,
+      "energy": 20,
+      "payoutPerFlowerUnits": "126200"
+    },
+    {
+      "stakeUnits": 10000,
+      "energy": 100,
+      "payoutPerFlowerUnits": "631000"
+    },
+    {
+      "stakeUnits": 20000,
+      "energy": 1,
+      "payoutPerFlowerUnits": "12620"
+    },
+    {
+      "stakeUnits": 20000,
+      "energy": 2,
+      "payoutPerFlowerUnits": "25240"
+    },
+    {
+      "stakeUnits": 20000,
+      "energy": 5,
+      "payoutPerFlowerUnits": "63100"
+    },
+    {
+      "stakeUnits": 20000,
+      "energy": 20,
+      "payoutPerFlowerUnits": "252400"
+    },
+    {
+      "stakeUnits": 20000,
+      "energy": 100,
+      "payoutPerFlowerUnits": "1262000"
+    },
+    {
+      "stakeUnits": 50000,
+      "energy": 1,
+      "payoutPerFlowerUnits": "31550"
+    },
+    {
+      "stakeUnits": 50000,
+      "energy": 2,
+      "payoutPerFlowerUnits": "63100"
+    },
+    {
+      "stakeUnits": 50000,
+      "energy": 5,
+      "payoutPerFlowerUnits": "157750"
+    },
+    {
+      "stakeUnits": 50000,
+      "energy": 20,
+      "payoutPerFlowerUnits": "631000"
+    },
+    {
+      "stakeUnits": 50000,
+      "energy": 100,
+      "payoutPerFlowerUnits": "3155000"
+    }
+  ],
+  "maxReturn": {
+    "numerator": "1893",
+    "denominator": "2",
+    "decimal": 946.5
+  },
+  "interpretation": "Exact expectation of the specified finite candidate model, including the optimal visible action and all four sticky bonus spins. No sampled estimate or confidence interval. Not evidence of server RNG, transport, wallet settlement or runtime compatibility.",
+  "registeredPolicySha256": "010af82f47fde359bd12885777f1448e0f6e3348a399565f3a01d9bd38157135",
+  "sourceHashes": {
+    "src/shared/forestHeartMath.ts": "c3e04efc098aa9d61f0faa70fc9159d8460dcf0816d96ef5b560efd45ab46658",
+    "scripts/game-math/forest-heart-reference.mjs": "307b64ae1ee33b4e89291a945c2827e9ef985d721f8f898005b0a34fe1bede50",
+    "scripts/game-math/forest-heart-model.mjs": "fcfe46dbde9850eabad456ac4b61dea1a205e5e6db16307ec3d77fc5811fd8d6"
+  }
+}

@@ -27,6 +27,7 @@ export async function rtpInputs(root, gameId) {
 }
 export function validateRtpProof(gameId, inputs, proof) {
   const { policy: p } = inputs;
+  assert.notEqual(p.releaseStatus,'model-only','Mathematical model only: runtime and wallet qualification is still required for '+gameId);
   assert.equal(proof.schemaVersion, 1); assert.equal(proof.gameId, gameId);
   assert.equal(proof.rulesVersion, p.rulesVersion); assert.equal(proof.progressVersion, p.progressVersion);
   assert.equal(proof.policySha256, inputs.policySha256, 'RTP policy changed: rerun qualification');
@@ -140,6 +141,8 @@ export async function checkGameRtp(root, catalog, selected = catalog.map(game =>
   const changedProfiles=await changedLegacyProfiles(root,baseline.sourceHashes,registry.profiles);
   for (const gameId of ['studio-neopolis','studio-dracona']) assert(registry.profiles[gameId], 'A required RTP profile was removed: ' + gameId);
   for (const game of catalog) {
+    assert.notEqual(registry.profiles[game.gameId]?.releaseStatus,'model-only',
+      'Mathematical model only: do not add '+game.gameId+' to the runnable catalogue before runtime qualification');
     const exemption = registry.nonWagered[game.gameId];
     assert(registry.profiles[game.gameId] || baseline.games.includes(game.gameId) || typeof exemption === 'string' && exemption.trim().length >= 20,
       'New module has no RTP qualification or documented non-wagered classification: ' + game.gameId);
