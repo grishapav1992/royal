@@ -1,0 +1,294 @@
+{
+  "format": 1,
+  "release": "mk-security-only-20261026-v1",
+  "scope": "Mortal Kombat only",
+  "sourceCommit": "37e5c750f92f9708f92c4c0695e5badcd3bb0366",
+  "baseCommit": "ae17a8df9e894278dedc29f08c052fe68ee09c04",
+  "publisherCommit": "5385b91f49b1f159edc50de0576ad8f6be970049",
+  "controllerCommit": "5c6871c82a24120f3820cedbeecbf4745e13fab6",
+  "checks": {
+    "serverTestsPassed": 30,
+    "publisherTestsPassed": 160,
+    "realHostTwoPlayerBrowserPassed": true,
+    "browserFeatures": [
+      "equal free virtual USDT stakes",
+      "both ready",
+      "forged victory rejected",
+      "phone controls",
+      "connected chat",
+      "95 percent payout",
+      "reopen without duplicate debit"
+    ],
+    "screenshotsInspected": true,
+    "typecheckAndApplicationBuildPassed": true,
+    "rtpGatePassed": true,
+    "nativePayloadPassed": true,
+    "qualifiedGames": 9,
+    "unchangedLegacyGamesNotQualified": 114
+  },
+  "changedSources": [
+    "docs/combat-anticheat.md",
+    "games/mortal-kombat/CombatUI.ts",
+    "server/LobbyRoom.ts",
+    "server/activities.ts",
+    "server/authRoutes.ts",
+    "server/casinoApiProRoutes.ts",
+    "server/miraRoutes.ts",
+    "server/usdtWalletRoutes.ts",
+    "src/shared/activities.ts",
+    "src/shared/combatView.ts",
+    "package-lock.json"
+  ],
+  "hostFilesChanged": 0,
+  "backendFilesChanged": [
+    "index.js"
+  ],
+  "modulePackages": [
+    {
+      "gameId": "mortal-kombat",
+      "version": "1.0.0-4842dcd3532d",
+      "beforeSha256": "c13354c5cadca79fca1b984c6ffa96fc6c6e200a81bfac46cd8286c49df674db"
+    }
+  ],
+  "installManifestSha256": "58f4b78db0376f1e129395abf0dff5f483159a4210ff2c8c79ef7ac4cb5138b9",
+  "canonicalManifestSha256": "6935eb9543f4bff440d93ca2676090546e9306bb81a01f8c8763600c0314c392",
+  "publicationComplete": true,
+  "limitations": [
+    "Legal-input bots and macros are not identified by server authority."
+  ],
+  "sourceAndWalletBackupsRetained": "/opt/royal-backups/mk-security-20261026-v1",
+  "operationalPriorityCommit": "c4819c8e2a85f5d5186733a9aec279ecc3103d1f",
+  "measuredOriginalGameWeight": 532,
+  "applicationImageBuildStarted": true,
+  "candidateImage": "sha256:0e160e43f7f23cc3e78d71179089da0ca4a4840d4381cfe7ff027295f22b1f9c",
+  "lastPhase": "Application, client package, public checks and restoration of live CPU settings all confirmed.",
+  "productionApplication": {
+    "published": true,
+    "preparedImage": "sha256:0e160e43f7f23cc3e78d71179089da0ca4a4840d4381cfe7ff027295f22b1f9c",
+    "runningImage": "sha256:0e160e43f7f23cc3e78d71179089da0ca4a4840d4381cfe7ff027295f22b1f9c",
+    "containerRestarted": true,
+    "sourceCommit": "37e5c750f92f9708f92c4c0695e5badcd3bb0366",
+    "changedSources": 11,
+    "helperSourceCommit": "5385b91f49b1f159edc50de0576ad8f6be970049",
+    "clientDeltaFiles": 0,
+    "configurationsAndMountsPreserved": true,
+    "gameDataPreserved": true,
+    "backendDeltaFiles": 1,
+    "otherBackendProgramsAndModulesPreserved": true,
+    "oldAssetsPreserved": true,
+    "otherPersistentServicesPreserved": 13
+  },
+  "productionAfter": {
+    "sourceRevision": "37e5c750f92f9708f92c4c0695e5badcd3bb0366",
+    "sourceFiles": 1909,
+    "runtimeFiles": 8185,
+    "container": {
+      "id": "521c866f30fdeeabf8cfefef2a48876d728787c67ea67344f5ead776d9bc70de",
+      "image": "sha256:0e160e43f7f23cc3e78d71179089da0ca4a4840d4381cfe7ff027295f22b1f9c",
+      "startedAt": "2026-10-26T20:06:57.828946128Z",
+      "health": "healthy",
+      "cpuWeight": 532
+    },
+    "preparedImage": "sha256:0e160e43f7f23cc3e78d71179089da0ca4a4840d4381cfe7ff027295f22b1f9c",
+    "persistentServices": 14
+  },
+  "candidateProbe": {
+    "passed": true,
+    "node": "v22.23.3",
+    "delayedGzip": 200,
+    "compressedApplicationBody": 415
+  },
+  "preservedBackupDigests": {
+    "sourceBackupSha256": "c581b1ea3feb92688d89a2a16487c3915e009d102f778386089333ac4a4b680c",
+    "gameWalletBackupSha256": "4c78482e7513477467be773bb714446ea64b057400f320c5ed48a0afa905a28b"
+  },
+  "applicationPhaseComplete": true,
+  "modulePhaseComplete": true,
+  "moduleOnlyJobStarted": 1793046414.0824232,
+  "initialModulePhaseStoppedOnCapacityGuard": true,
+  "capacityBeforeRetry": {
+    "at": 1793045680.0143278,
+    "moduleBytes": 372575,
+    "metadataBytes": 13429,
+    "requiredFreeBytes": 5370915708,
+    "files": 108,
+    "disks": {
+      "/opt": {
+        "device": 2049,
+        "total": 45683499008,
+        "used": 40093163520,
+        "free": 5573558272
+      },
+      "/opt/royal": {
+        "device": 2049,
+        "total": 45683499008,
+        "used": 40093163520,
+        "free": 5573558272
+      },
+      "/opt/royal-game-modules": {
+        "device": 2049,
+        "total": 45683499008,
+        "used": 40093163520,
+        "free": 5573558272
+      },
+      "/opt/royal-game-modules-state": {
+        "device": 2049,
+        "total": 45683499008,
+        "used": 40093163520,
+        "free": 5573558272
+      }
+    }
+  },
+  "modulePublication": {
+    "published": true,
+    "sourceCommit": "37e5c750f92f9708f92c4c0695e5badcd3bb0366",
+    "packages": [
+      {
+        "verified": true,
+        "gameId": "mortal-kombat",
+        "version": "1.0.0-4842dcd3532d",
+        "bytes": 358347,
+        "files": 107,
+        "beforeSha256": "c13354c5cadca79fca1b984c6ffa96fc6c6e200a81bfac46cd8286c49df674db",
+        "hostProgramTouched": false,
+        "databaseTouched": false,
+        "restartRequired": false,
+        "published": true,
+        "operation": "install",
+        "activeSha256": "5f52a6ce2a6d56409e74e41072e43daf69318b933908453ac1e1f4b9f418ae5a",
+        "history": "/opt/royal-game-modules-state/history/20261026T203220-bd229ce5e8c544278eedb2bcef13b461.json"
+      }
+    ],
+    "hostContractUnchanged": true,
+    "oldModuleBytesPreserved": true,
+    "hostProgramTouched": false,
+    "databaseTouched": false
+  },
+  "moduleExit": {
+    "code": 0,
+    "finishedAt": 1793046990.1719508
+  },
+  "publicVerification": {
+    "passed": true,
+    "at": "2026-10-26T20:36:29.277Z",
+    "sourceCommit": "37e5c750f92f9708f92c4c0695e5badcd3bb0366",
+    "baseCommit": "ae17a8df9e894278dedc29f08c052fe68ee09c04",
+    "checks": [
+      "health",
+      "anonymous-session",
+      "wallet-authentication",
+      "compressed-body-rejected:/api/auth/login",
+      "compressed-body-rejected:/api/npc/mira",
+      "host-index",
+      "host-delta",
+      "reviewed-exact-packages",
+      "previous-client-urls",
+      "health-after-probes"
+    ],
+    "packages": [
+      {
+        "gameId": "mortal-kombat",
+        "version": "1.0.0-4842dcd3532d",
+        "verifiedFiles": 107,
+        "oldEntryPreserved": true
+      }
+    ],
+    "productionPlayerDataChanged": false
+  },
+  "finalPriorityVerification": {
+    "at": 1793047367.407251,
+    "moduleExit": {
+      "code": 0,
+      "finishedAt": 1793046990.1719508
+    },
+    "modulesPublished": {
+      "published": true,
+      "sourceCommit": "37e5c750f92f9708f92c4c0695e5badcd3bb0366",
+      "packages": [
+        {
+          "verified": true,
+          "gameId": "mortal-kombat",
+          "version": "1.0.0-4842dcd3532d",
+          "bytes": 358347,
+          "files": 107,
+          "beforeSha256": "c13354c5cadca79fca1b984c6ffa96fc6c6e200a81bfac46cd8286c49df674db",
+          "hostProgramTouched": false,
+          "databaseTouched": false,
+          "restartRequired": false,
+          "published": true,
+          "operation": "install",
+          "activeSha256": "5f52a6ce2a6d56409e74e41072e43daf69318b933908453ac1e1f4b9f418ae5a",
+          "history": "/opt/royal-game-modules-state/history/20261026T203220-bd229ce5e8c544278eedb2bcef13b461.json"
+        }
+      ],
+      "hostContractUnchanged": true,
+      "oldModuleBytesPreserved": true,
+      "hostProgramTouched": false,
+      "databaseTouched": false
+    },
+    "restoration": {
+      "priority-game-fc485fe1a22c": {
+        "result.json": {
+          "restored": true,
+          "rows": [
+            {
+              "path": "/sys/fs/cgroup/system.slice/docker-521c866f30fdeeabf8cfefef2a48876d728787c67ea67344f5ead776d9bc70de.scope/cpu.weight",
+              "restored": true,
+              "value": 532,
+              "attempts": 1
+            }
+          ],
+          "at": 1793047367.2602382
+        },
+        "watchdog.json": {
+          "restored": true,
+          "rows": [
+            {
+              "path": "/sys/fs/cgroup/system.slice/docker-521c866f30fdeeabf8cfefef2a48876d728787c67ea67344f5ead776d9bc70de.scope/cpu.weight",
+              "restored": true,
+              "value": 532,
+              "attempts": 1
+            }
+          ],
+          "at": 1793047367.3594348
+        }
+      }
+    },
+    "serviceWeights": {
+      "docker.service": 100,
+      "containerd.service": 100
+    },
+    "gameWeight": 532
+  },
+  "deploymentRecordPending": false,
+  "sourceBackup": {
+    "path": "/opt/royal-backups/mk-security-20261026-v1/source.tgz",
+    "bytes": 192718431,
+    "sha256": "c581b1ea3feb92688d89a2a16487c3915e009d102f778386089333ac4a4b680c"
+  },
+  "walletBackup": {
+    "path": "/opt/royal-backups/mk-security-20261026-v1/game-wallet.dump",
+    "bytes": 25851965,
+    "sha256": "4c78482e7513477467be773bb714446ea64b057400f320c5ed48a0afa905a28b",
+    "restored": false
+  },
+  "deploymentHistory": [
+    "BuildKit stalled before COPY; only its owned client was cancelled and cancellation acknowledged before any application change.",
+    "The identical Dockerfile and reviewed bytes were built with DOCKER_BUILDKIT=0.",
+    "Application publication succeeded; the first module phase stopped on its capacity guard.",
+    "The unchanged capacity guard later confirmed enough space; the existing native modules operation published only Mortal Kombat without another application restart."
+  ],
+  "deploymentComplete": true,
+  "cleanup": {
+    "buildOutputsRemoved": true,
+    "temporaryServerContextRemoved": true,
+    "report": "cleanup.json",
+    "worktreeRemoval": "After this record is verified in GitHub; actual removal is recorded in the local final-report.json."
+  },
+  "healthAfterOriginalCpuSettingsRestored": {
+    "passed": true,
+    "at": "2026-10-26T20:51:05.409Z",
+    "status": 200,
+    "afterOriginalCpuSettingsRestored": true
+  }
+}
