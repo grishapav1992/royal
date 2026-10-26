@@ -1,4 +1,5 @@
 import { CombatRoom, type CombatDependencies } from './combatRoom';
+import { combatView } from '../src/shared/combatView';
 import { activityHall, type HallId } from '../src/shared/world';
 import { ACTIVITIES, isActivity, type ActivitiesState, type ChessState, type PianoNote, type TableUpdate } from '../src/shared/activities';
 import { TableGame } from './tableGames';
@@ -28,7 +29,8 @@ export class Activities {
     if(combat)this.combat=new CombatRoom(combat,notice);
     this.chess=new ChessGame(undefined,now);this.chessChanges=new ActivityChanges(this.chess.state);this.chessRevision=this.chess.state.revision;
   }
-  snapshot():ActivitiesState{return{...(this.combat?{combat:this.combat.state}:{}),tables:this.tables.map(t=>t.state),pianist:this.pianist,notes:[...this.notes.keys()],chess:this.chess.state};}
+  combatSnapshot(viewer?:string){return this.combat?combatView(this.combat.state,viewer):undefined;}
+  snapshot(viewer?:string):ActivitiesState{return{...(this.combat?{combat:this.combatSnapshot(viewer)}:{}),tables:this.tables.map(t=>t.state),pianist:this.pianist,notes:[...this.notes.keys()],chess:this.chess.state};}
   handle(id:string,value:unknown){
     const p=this.player(id);if(!p?.connected||!value||typeof value!=='object')return;
     const v=value as Record<string,unknown>;
@@ -134,7 +136,7 @@ export class Activities {
     const changes=this.pianoChanges.take({pianist:this.pianist,notes:[...this.notes.keys()]});
     if(Object.keys(changes).length)this.broadcast('activities',{patch:true,...changes},'arcade');
   }
-  private sendCombat(){if(!this.combat)return;this.combatRevision=this.combat.state.revision;this.broadcast('activities',{patch:true,combat:this.combat.state},'tables');}
+  private sendCombat(){if(!this.combat)return;this.combatRevision=this.combat.state.revision;this.broadcast('activities',{patch:true,combat:this.combatSnapshot()},'tables');}
   private changed(){
     const tables=this.tables.flatMap((_,index)=>{const update=this.tableUpdate(index);return update?[update]:[];});
     this.sendTables(tables);this.sendChess();this.sendPiano();

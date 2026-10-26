@@ -1,5 +1,6 @@
 import './combat.css';
-import { COMBAT_STAKES, freshCombatState, neutralCombatInput, type CombatState, type CombatInput } from '../../src/shared/combat';
+import { COMBAT_STAKES, freshCombatState, neutralCombatInput, type CombatInput } from '../../src/shared/combat';
+import type { CombatView } from '../../src/shared/combatView';
 import type { ActivitiesState } from '../../src/shared/activities';
 import type { ActivityHostContext } from '../../src/modules/ActivityHostContract';
 import type { PlayerView } from '../../src/shared/world';
@@ -12,7 +13,7 @@ const counts={"kano":{"blocking":3,"endure":3,"fall":7,"high-kick":7,"high-punch
 type Character=keyof typeof counts;
 const imageRoot='/assets/mortal-kombat/';
 export class CombatUI {
- private state:CombatState=freshCombatState();
+ private state:CombatView=freshCombatState();
  private root=document.createElement('section');
  private events=new AbortController();
  private input=neutralCombatInput();

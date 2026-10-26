@@ -1,4 +1,4 @@
-import type { CombatState } from './combat';
+import type { CombatView } from './combatView';
 import { t as translateText } from '../i18n/index';
 export type ActivityId = 'hockey' | 'pool' | 'piano' | 'chess' | 'mortal-kombat' | 'durak' | 'transfer-durak' | 'crazy-eights';
 const pianoBounds = {x:750,y:400,w:110,h:60} as const;
@@ -30,9 +30,9 @@ export type ChessState = {
   ready:string[]; revision:number; sound:string;
   clock:{remainingMs:[number,number];running:'w'|'b'|null};
 };
-export type ActivitiesState = {combat?:CombatState;tables:TableState[];pianist:string;notes:number[];chess:ChessState};
+export type ActivitiesState = {combat?:CombatView;tables:TableState[];pianist:string;notes:number[];chess:ChessState};
 export type TableUpdate = Pick<TableState,'id'> & Partial<Omit<TableState,'id'>>;
-export type ActivitiesUpdate = {patch:true;combat?:CombatState;tables?:TableUpdate[];pianist?:string;notes?:number[];chess?:Partial<ChessState>};
+export type ActivitiesUpdate = {patch:true;combat?:CombatView;tables?:TableUpdate[];pianist?:string;notes?:number[];chess?:Partial<ChessState>};
 export type ActivitiesMessage = ActivitiesState | ActivitiesUpdate;
 
 export function mergeActivities(state:ActivitiesState,message:ActivitiesMessage):ActivitiesState {
