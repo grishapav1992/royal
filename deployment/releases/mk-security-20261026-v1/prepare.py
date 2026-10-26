@@ -41,6 +41,7 @@ parser.add_argument('stage', type=Path)
 parser.add_argument('before', type=Path)
 parser.add_argument('output', type=Path)
 parser.add_argument('--helpers-commit')
+parser.add_argument('--combat-only', action='store_true', help='Publish only Mortal Kombat from its isolated application commit')
 args = parser.parse_args()
 stage, before_path, out = args.stage, args.before, args.output
 release = json.loads((stage/'module-build/release-manifest.json').read_text())
@@ -87,8 +88,11 @@ assert hashlib.sha256(old_package_bytes).hexdigest() == before['sourceLF']['pack
 old_package = json.loads(old_package_bytes); new_package = json.loads((stage/'package.json').read_text())
 assert {k:v for k,v in old_package.items() if k != 'scripts'} == {k:v for k,v in new_package.items() if k != 'scripts'}
 assert set(old_package['scripts']) == set(new_package['scripts'])
-assert {k for k in old_package['scripts'] if old_package['scripts'][k] != new_package['scripts'][k]} == {'test:rtp-gate'}
-assert new_package['scripts']['test:rtp-gate'] == 'node --test server-tests/rtp-gate.test.mjs server-tests/cosmic-rtp-gate.test.mjs'
+if args.combat_only:
+    assert old_package == new_package, 'A combat-only release must preserve all package scripts'
+else:
+    assert {k for k in old_package['scripts'] if old_package['scripts'][k] != new_package['scripts'][k]} == {'test:rtp-gate'}
+    assert new_package['scripts']['test:rtp-gate'] == 'node --test server-tests/rtp-gate.test.mjs server-tests/cosmic-rtp-gate.test.mjs'
 
 dependencies = {}
 for package, version in [('body-parser','2.4.0'),('qs','6.16.1')]:
@@ -144,7 +148,7 @@ for entry, name in [('server/payments/index.ts','payments.js'),('scripts/crypto-
 host = json.loads((stage/'module-dist/host-contracts.json').read_text())
 assert host == before['moduleHost'], 'Host contracts must remain compatible'
 module_delta, module_packages = {}, []
-for game_id in ['mortal-kombat','studio-cosmic-escape']:
+for game_id in (['mortal-kombat'] if args.combat_only else ['mortal-kombat','studio-cosmic-escape']):
     package = next(row for row in release['packages'] if row['gameId'] == game_id)
     folder = stage/'module-dist'/game_id/'versions'/package['version']
     game_manifest = json.loads((folder/'manifest.json').read_text())
@@ -172,12 +176,13 @@ for suffix in ['',':deployment',':deployment/releases',':deployment/releases/mk-
     helper_proof['trees'][identity] = base64.b64encode(raw).decode()
 (out/'helpers-source.json').write_text(json.dumps(helper_proof,indent=2)+'\n')
 copy(stage/'module-build/release-manifest.json','release-manifest.json')
-manifest = {'release':'mk-security-20261026-v1','sourceCommit':release['sourceCommit'],'baseCommit':release['baseCommit'],
+manifest = {'release':('mk-security-only-20261026-v1' if args.combat_only else 'mk-security-20261026-v1'),'sourceCommit':release['sourceCommit'],'baseCommit':release['baseCommit'],
     'before':before,'changed':changed,'delta':delta,'serverDelta':backend,'runtimePackages':metadata,'dependencyFiles':dependencies,
     'helpers':helpers,'helperSha256':helpers['deploy.py'],'snapshotSha256':helpers['snapshot.py'],
     'helperSourceCommit':helper_commit,'helperProofSha256':sha(out/'helpers-source.json'),
     'retainedCanonicalRuntime':retained,'preservedBackend':preserved,'moduleDelta':module_delta,'modulePackages':module_packages,
     'moduleInstallerSha256':before['source']['scripts/game-module-release.py']}
+if args.combat_only: manifest['moduleScope'] = 'combat-only'
 (out/'install-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
 print(json.dumps({'sourceFiles':len(changed),'clientFiles':len(delta),'dependencyFiles':len(dependencies),
     'payloadBytes':sum(path.stat().st_size for path in out.rglob('*') if path.is_file())}))

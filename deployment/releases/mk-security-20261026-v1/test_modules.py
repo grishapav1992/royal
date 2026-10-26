@@ -127,6 +127,35 @@ class CommonModuleReleaseTests(unittest.TestCase):
         self.database.write_bytes(b'Never modify or restore player data')
         self.stable_application = self.application_files()
 
+    def test_isolated_combat_publication_preserves_cosmic_and_other_modules(self):
+        isolated = self.fixture/'mk-security-only-20261026-v1'
+        self.root.rename(isolated)
+        self.root = isolated
+        self.manifest['release'] = isolated.name
+        self.deploy.ROOT, self.deploy.NAME = isolated, isolated.name
+        self.helper = load_python('isolated_combat_modules_under_test', self.root/'modules.py')
+        self.helper.EXPECTED_ROOT = isolated
+        self.helper.LIVE, self.helper.STATE, self.helper.MODULES, self.helper.BACKUP = self.live, self.state, self.modules, self.backup
+        self.assertEqual(self.helper.NAME, isolated.name)
+        self.manifest['moduleScope'] = 'combat-only'
+        self.manifest['modulePackages'] = self.manifest['modulePackages'][:1]
+        self.manifest['moduleDelta'] = {k:v for k,v in self.manifest['moduleDelta'].items() if k.startswith('mortal-kombat/')}
+        del self.manifest['changed']['src/shared/luelonSlotsLines.ts']
+        (self.live/'src/shared/luelonSlotsLines.ts').write_bytes(b'old validator')
+        self.after['source']['src/shared/luelonSlotsLines.ts'] = self.before['source']['src/shared/luelonSlotsLines.ts']
+        shutil.rmtree(self.root/'modules/studio-cosmic-escape')
+        self.save_manifest()
+        save_json(self.root/'after.json', self.after)
+        self.deploy.M = self.manifest
+        self.deploy.CHANGES = self.manifest['changed']
+        self.stable_application = self.application_files()
+        other_before = {k:v for k,v in self.module_files().items() if '/mortal-kombat/' not in k}
+        result = self.helper.publish()
+        self.assertEqual([x['gameId'] for x in result['packages']], ['mortal-kombat'])
+        self.assertEqual({k:v for k,v in self.module_files().items() if '/mortal-kombat/' not in k}, other_before)
+        self.assertEqual((self.modules/'studio-cosmic-escape/active.json').read_bytes(), self.old_pointers['studio-cosmic-escape'])
+        self.assertFalse((self.modules/'studio-cosmic-escape/versions'/self.version).exists())
+
     def tearDown(self):
         self.assertEqual(self.application_files(), self.stable_application)
         self.assertEqual(self.database.read_bytes(), b'Never modify or restore player data')

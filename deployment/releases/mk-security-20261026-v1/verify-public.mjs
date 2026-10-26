@@ -39,7 +39,7 @@ for(const row of manifest.modulePackages){
  }
  packages.push({gameId:row.gameId,version:game.version,verifiedFiles:verified,oldEntryPreserved:!!old});
 }
-checks.push('two-exact-packages','previous-client-urls');
+checks.push('reviewed-exact-packages','previous-client-urls');
 response=await request('/healthz');assert.equal(response.status,200);checks.push('health-after-probes');
 const result={passed:true,at:new Date().toISOString(),sourceCommit:manifest.sourceCommit,baseCommit:manifest.baseCommit,checks,packages,productionPlayerDataChanged:false};
 await writeFile(output,JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));
