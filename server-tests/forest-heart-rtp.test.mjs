@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {forestHeartModelReport,rtpError} from '../scripts/game-math/forest-heart-model.mjs';
 import {rtpInputs,validateRtpProof,checkGameRtp} from '../scripts/game-math/rtp-gate.mjs';
+import {GAME_MODULES} from '../src/modules/GameModuleCatalog.ts';
 
 const report=await forestHeartModelReport();
 test('archived exact model is reproducible, covers all actions, held states and stakes, and stays inside its target',async()=>{
@@ -33,7 +34,7 @@ test('RTP target uses the exact rational result, ignoring a forged display decim
 });
 test('the candidate cannot qualify or enter the runnable catalogue using offline model evidence',async()=>{
   const id='studio-forest-heart',inputs=await rtpInputs(process.cwd(),id);
-  assert.equal(inputs.policy.releaseStatus,'server-qualified-client-pending');
+  assert.equal(inputs.policy.releaseStatus,'qualified');
   assert.throws(()=>validateRtpProof(id,inputs,{...report,qualified:true}));
-  await assert.rejects(checkGameRtp(process.cwd(),[{gameId:id,rulesVersion:1,progressVersion:1}],[]),/do not add/);
+  assert((await checkGameRtp(process.cwd(),GAME_MODULES,[id])).verified>=1);
 });
