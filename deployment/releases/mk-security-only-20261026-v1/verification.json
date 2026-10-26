@@ -279,5 +279,16 @@
     "The unchanged capacity guard later confirmed enough space; the existing native modules operation published only Mortal Kombat without another application restart."
   ],
   "deploymentComplete": true,
-  "cleanupPending": true
+  "cleanup": {
+    "buildOutputsRemoved": true,
+    "temporaryServerContextRemoved": true,
+    "report": "cleanup.json",
+    "worktreeRemoval": "After this record is verified in GitHub; actual removal is recorded in the local final-report.json."
+  },
+  "healthAfterOriginalCpuSettingsRestored": {
+    "passed": true,
+    "at": "2026-10-26T20:51:05.409Z",
+    "status": 200,
+    "afterOriginalCpuSettingsRestored": true
+  }
 }
