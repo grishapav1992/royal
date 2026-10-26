@@ -9,7 +9,7 @@ import {chromium, expect} from '@playwright/test';
 const root = fileURLToPath(new URL('../../../', import.meta.url));
 const options = new Map();
 for (let i = 2; i < process.argv.length; i += 2) {
-  assert(['--manifest', '--before', '--output', '--origin'].includes(process.argv[i]) && process.argv[i + 1], 'Expected --manifest, --before, --output or --origin with a value');
+  assert(['--manifest', '--install-manifest', '--before', '--output', '--origin'].includes(process.argv[i]) && process.argv[i + 1], 'Expected a supported option with a value');
   assert(!options.has(process.argv[i]), 'Duplicate option'); options.set(process.argv[i], process.argv[i + 1]);
 }
 assert(options.has('--before'), 'Pass the reviewed production snapshot with --before');
@@ -18,15 +18,23 @@ assert(new URL(origin).protocol === 'https:', 'Public verification requires HTTP
 const manifestBytes = await readFile(resolve(root, options.get('--manifest') || 'module-build/release-manifest.json'));
 const beforeBytes = await readFile(resolve(root, options.get('--before')));
 const manifest = JSON.parse(manifestBytes), before = JSON.parse(beforeBytes);
+const installBytes = await readFile(resolve(root, options.get('--install-manifest') || 'artifacts/work/cosmic-origin-release/payload/install-manifest.json'));
+const install = JSON.parse(installBytes);
 assert.equal(manifest.format, 1); assert.equal(manifest.scope, 'application'); assert.equal(manifest.build?.passed, true);
 assert.match(manifest.sourceCommit, /^[a-f0-9]{40}$/);
 assert(manifest.files?.['dist/index.html']); assert(before.program && before.moduleFiles);
+assert.equal(manifest.baseCommit, before.sourceRevision);
+assert.equal(install.release, 'cosmic-origin-20261026-v1'); assert.equal(install.sourceCommit, manifest.sourceCommit);
+assert.equal(install.baseCommit, manifest.baseCommit); assert.deepEqual(install.before, before);
+for (const [name, digest] of Object.entries(install.delta)) assert.equal(manifest.files['dist/' + name], digest);
+assert.equal(install.delta['index.html'], manifest.files['dist/index.html']);
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const output = resolve(root, options.get('--output') || 'artifacts/work/cosmic-origin-release/public');
 await mkdir(output, {recursive: true});
 const game = 'studio-cosmic-escape';
 const proof = {format: 1, checkedAt: new Date().toISOString(), origin, sourceCommit: manifest.sourceCommit,
   releaseManifestSha256: hash(manifestBytes), productionBeforeSha256: hash(beforeBytes),
+  installManifestSha256: hash(installBytes), retainedPublicRuntimeFiles: install.retainedPublicRuntime.length,
   accountsCreated: 0, productionStakes: 0, productionMessages: 0, method: 'Anonymous public HTTP GET and browser GET/HEAD only. The actual published host opens Cosmic in offline guest mode. Production writes and all browser WebSockets are blocked before navigation. Connected chat and wallet recovery are covered by verify-local.mjs.',
   http: [], authentication: [], unrelatedPointers: [], oldCosmicManifests: [], browser: [], passed: false};
 async function get(path, status = 200, digest) {
@@ -50,7 +58,10 @@ try {
   const hostFiles = Object.entries(manifest.files).filter(([name]) => name === 'dist/index.html' || name.startsWith('dist/') && /\.(js|css)$/.test(name));
   assert(hostFiles.some(([name]) => name.endsWith('.js')) && hostFiles.some(([name]) => name.endsWith('.css')));
   await concurrent(hostFiles, async ([name, digest]) => {
-    const {response} = await get('/' + name.slice('dist/'.length), 200, digest);
+    const sub = name.slice('dist/'.length), installedDigest = install.delta[sub] || before.program[name];
+    assert(installedDigest, 'Missing expected installed host file ' + name);
+    if (installedDigest !== digest) assert(install.retainedPublicRuntime.some(row => row.file === name && row.retainedSha256 === installedDigest && row.preparedSha256 === digest), 'Unreviewed retained file ' + name);
+    const {response} = await get('/' + sub, 200, installedDigest);
     if (name === 'dist/index.html') assert.match(response.headers.get('cache-control') || '', /no-store/);
   });
   for (const [path, status] of [['/api/auth/me', 200], ['/api/demo-wallet', 401], ['/api/demo-wallet/expansion', 401], ['/api/game-wallet', 401], ['/api/skin-studio', 401], ['/api/nile-wallet', 410]]) {

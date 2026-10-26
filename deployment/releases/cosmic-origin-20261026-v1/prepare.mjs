@@ -31,8 +31,18 @@ const oldPackage=JSON.parse(oldPackageText),currentPackage=json(resolve(root,'pa
 assert.deepEqual(Object.fromEntries(Object.entries(currentPackage).filter(([k])=>k!=='scripts')),Object.fromEntries(Object.entries(oldPackage).filter(([k])=>k!=='scripts')),'Dependency metadata change needs its own release');
 const runtimePackages={};if(canonical(readFileSync(resolve(root,'package.json')))!==before.sourceLF['package.json']){changed['package.json']=copy(resolve(root,'package.json'),'source/package.json');runtimePackages['package.json']=copy(resolve(root,'package.json'),'metadata/package.json');}
 for(const file of ['Dockerfile','.dockerignore','package-lock.json','index.html','tsconfig.json','tsconfig.finance.json','vite.config.ts'])assert.equal(canonical(readFileSync(resolve(root,file))),before.sourceLF[file],'Unexpected root build input '+file);
-const delta={};
-for(const[file,h]of Object.entries(release.files)){if(!file.startsWith('dist/')||before.program[file]===h)continue;const sub=file.slice(5),p=resolve(root,file);if(['index.html','admin.html'].includes(sub)||/^assets\/[a-zA-Z0-9_-]+\.(js|css)$/.test(sub)){assert(['index.html','admin.html'].includes(sub)||!(file in before.program),'Immutable client collision '+file);delta[sub]=copy(p,'dist-delta/'+sub);}else{const source=resolve(root,'public',sub);assert(existsSync(source),'Unexpected client output '+file);assert.equal(canonical(readFileSync(source)),before.sourceLF['public/'+sub],'Unexpected static asset change '+file);}}
+const delta={},retainedPublicRuntime=[];
+for(const[file,h]of Object.entries(release.files)){
+ if(!file.startsWith('dist/')||before.program[file]===h)continue;
+ const sub=file.slice(5),p=resolve(root,file),source=resolve(root,'public',sub);
+ // Preserve deployed public bytes when their public source is unchanged.
+ if(file in before.program&&existsSync(source)&&sha(source)===h&&canonical(readFileSync(source))===before.sourceLF['public/'+sub]){
+  retainedPublicRuntime.push({file,retainedSha256:before.program[file],preparedSha256:h,unchangedPublicSourceSha256:sha(source)});continue;
+ }
+ assert(['index.html','admin.html'].includes(sub)||/^assets\/[a-zA-Z0-9_-]+\.(js|css)$/.test(sub),'Unexpected client output '+file);
+ assert(['index.html','admin.html'].includes(sub)||!(file in before.program),'Immutable client collision '+file);
+ delta[sub]=copy(p,'dist-delta/'+sub);
+}
 assert('index.html'in delta);assert(!('admin.html'in delta),'Administration must remain unchanged');
 const serverDelta={'index.js':copy(resolve(root,'dist-server/index.js'),'server-delta/index.js')};assert.notEqual(serverDelta['index.js'],before.program['dist-server/index.js'],'Missing Cosmic backend update');
 const host=json(resolve(root,'module-dist/host-contracts.json'));assert.deepEqual(host,before.moduleHost,'Host contracts must stay unchanged');
@@ -41,7 +51,7 @@ for(const key of ['apiVersion','rulesVersion','progressVersion'])assert.equal(me
 const moduleDelta={};for(const file of ['manifest.json',...Object.keys(meta.files)]){const relative=game+'/versions/'+row.version+'/'+file;assert.equal(release.files['module-dist/'+relative],sha(resolve(folder,file)));moduleDelta[relative]=copy(resolve(folder,file),'modules/'+relative);}
 const helpers=dirname(fileURLToPath(import.meta.url));for(const file of ['deploy.py','snapshot.py','modules.py'])copy(resolve(helpers,file),file);
 copy(resolve(root,'module-dist/host-contracts.json'),'host.json');for(const file of ['release-manifest.json','release-github.json'])copy(resolve(root,'module-build',file),file);
-const manifest={release:name,sourceCommit:release.sourceCommit,baseCommit:release.baseCommit,before,changed,delta,serverDelta,runtimePackages,
+const manifest={release:name,sourceCommit:release.sourceCommit,baseCommit:release.baseCommit,before,changed,delta,serverDelta,runtimePackages,retainedPublicRuntime,
  helperSha256:sha(resolve(out,'deploy.py')),snapshotSha256:sha(resolve(out,'snapshot.py')),modulesHelperSha256:sha(resolve(out,'modules.py')),hostContractSha256:sha(resolve(out,'host.json')),
  moduleDelta,modulePackages:[{gameId:game,version:row.version,beforeSha256:before.moduleFiles['/opt/royal-game-modules/'+game+'/active.json']||before.program['module-dist/'+game+'/active.json']||'none'}]};
 // External pointer absence is distinct from the bundled fallback pointer.
