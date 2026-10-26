@@ -84,7 +84,10 @@ export class SkinFittingRoom {
   setSkin(id: string, label: string) {
     this.element.hidden = !id;
     if (!id) { this.id = ''; this.loaded = false; this.setActive(false); return; }
-    if (id === this.id) return;
+    if (id === this.id) {
+      if (this.loaded) this.caption.textContent = `${label}. Походи и посмотри со всех сторон.`;
+      return;
+    }
     this.id = id; this.loaded = false; this.stopMotion(); this.stand(); this.facing = 'down';
     this.x = this.width / 2; this.y = 200; this.caption.textContent = `${label}: загружаем…`;
     this.element.querySelectorAll('button').forEach(button => { button.disabled = true; });

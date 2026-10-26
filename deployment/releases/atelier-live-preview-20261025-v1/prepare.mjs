@@ -48,6 +48,6 @@ mkdirSync(resolve(out, 'server-delta'));
 const manifest = { release: name, sourceCommit: release.sourceCommit, baseCommit: base, before, changed, delta, serverDelta: {},
   helperSha256: hash(resolve(out, 'deploy.py')), snapshotSha256: hash(resolve(out, 'snapshot.py')) };
 writeFileSync(resolve(out, 'install-manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
-execFileSync('tar', ['-czf', resolve(work, 'transport.tgz'), '-C', out, '.']);
+execFileSync('tar', [...(process.platform === 'darwin' ? ['--no-xattrs'] : []), '-czf', resolve(work, 'transport.tgz'), '-C', out, '.'], { env: { ...process.env, COPYFILE_DISABLE: '1' } });
 console.log(JSON.stringify({ sourceCommit: release.sourceCommit, sourceFiles: Object.keys(changed).length, clientFiles: Object.keys(delta).length,
   clientBytes: Object.keys(delta).reduce((sum, file) => sum + statSync(resolve(out, 'dist-delta', file)).size, 0), transportBytes: statSync(resolve(work, 'transport.tgz')).size }));
