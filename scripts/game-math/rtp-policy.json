@@ -1,6 +1,20 @@
 {
   "schemaVersion": 1,
   "profiles": {
+    "studio-forest-heart": {
+      "method": "pending-runtime-forest-heart",
+      "releaseStatus": "model-only",
+      "rulesVersion": 1,
+      "progressVersion": 1,
+      "target": 0.96,
+      "tolerance": 0.002,
+      "stakes": [1000, 2000, 5000, 10000, 20000, 50000],
+      "choices": ["optimal", "pass", "rotate-0", "rotate-1", "rotate-2", "rotate-3", "rotate-4", "rotate-5", "rotate-6", "rotate-7", "rotate-8", "rotate-9", "rotate-10", "rotate-11"],
+      "proof": "docs/game-math/qualifications/forest-heart-v1.json",
+      "qualificationSource": "scripts/game-math/forest-heart-model.mjs",
+      "sources": ["src/shared/forestHeartMath.ts", "scripts/game-math/forest-heart-reference.mjs"],
+      "note": "Exact offline model only. Runtime RNG, server start/move, serialized recovery and wallet settlement remain unqualified. Must not enter a runnable catalogue until runtime qualification replaces this draft policy."
+    },
     "studio-neopolis": {
       "rulesVersion": 4,
       "progressVersion": 4,

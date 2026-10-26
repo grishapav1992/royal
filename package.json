@@ -14,6 +14,8 @@
     "release:verify": "node scripts/release.mjs verify",
     "test:release": "node --test server-tests/release-tooling.test.mjs",
     "check:rtp": "node scripts/check-game-rtp.mjs",
+    "analyze:forest-heart": "node --import tsx scripts/game-math/forest-heart-model.mjs",
+    "test:forest-heart-math": "node --import tsx --test server-tests/forest-heart-math.test.ts server-tests/forest-heart-rtp.test.mjs",
     "qualify:rtp": "node --import tsx scripts/qualify-game-rtp.mjs",
     "test:rtp-gate": "node --test server-tests/rtp-gate.test.mjs server-tests/cosmic-rtp-gate.test.mjs",
     "test:slot-balance": "node --import tsx scripts/database-test.ts --import tsx --test server-tests/neopolis-math.test.ts server-tests/neopolis-wallet.test.ts server-tests/neopolis-catalog.test.ts server-tests/dracona-math.test.ts server-tests/dracona-protocol.test.ts server-tests/dracona-wallet.test.ts server-tests/rebalanced-slots-http.test.ts server-tests/finance/nile-native-games.test.ts",

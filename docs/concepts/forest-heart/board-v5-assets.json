@@ -1,0 +1,46 @@
+{
+  "version": 5,
+  "date": "2026-10-28",
+  "tool": "built-in image_gen",
+  "reference": "public/assets/forest-heart/v2/roots.webp",
+  "purpose": "Keep board plates and borders fixed; rotate a transparent root layer only.",
+  "sources": [
+    {
+      "name": "roots",
+      "file": "C:/Users/Aorus/.codex/generated_images/01a1793a-deb2-7031-9934-84f2a877618e/exec-b5243c23-6b4b-4691-8553-9aa1002851d9.png",
+      "transparent": true,
+      "prompt": "Use case: background-extraction, precise-object-edit. Asset type: transparent ROOT-ONLY atlas for an existing Forest Heart game. The supplied image is the exact art/material reference and atlas layout. Recreate ONLY its FOUR central knotted WOODEN ROOT SHAPES on a genuine alpha transparent background in a STRICT 4 COLUMN x 2 ROW sheet, overall 2:1 aspect ratio, all 8 equal square cells with no margins or gutters. REMOVE all square gold frames, ALL wood tile backplates, leaves, flowers, foliage, shadows of square plates, and every straight tile boundary. There must be NO square tile texture remaining behind the roots. Each sprite is just the central curved natural bark-covered root with an irregular organic silhouette, a few thin short root tendrils and small bark knots. Keep the supplied detailed painted brown wood style, not pipes or tubes. Exact ports: column 1 curved S root connecting LEFT midpoint to RIGHT midpoint, no top or bottom exit; column 2 curved L root connecting TOP midpoint to RIGHT midpoint, no other exits; column 3 organic fork connecting TOP, LEFT and RIGHT midpoints, no bottom exit; column 4 organic branching knot connecting all FOUR edge midpoints. Every allowed root exit reaches the EXACT cell edge midpoint with width about 16% of the cell; forbidden edges are fully transparent. Top row: unlit textured wood roots. Bottom row: same four IDENTICAL silhouettes in the same positions, with a thin vivid mint-cyan sap channel embedded along the centre of each root; bark remains clearly visible around it, modest local glow only. Every root stays inside its own cell, no overlapping neighboring sprites, no disconnected fragments. Match camera, scale and centreline locations between rows. No text, no numbers, no labels, no character, no board or UI. Target 2048x1024 or larger at 2:1 aspect. Transparent areas must be real alpha, no painted checkerboard or black backdrop. This asset rotates over a separate stationary square plate, so absolutely NO frames or rectangular backgrounds.",
+      "sha256": "6e65255a2daa65c708f5cc9876df61fcdd339c4b481e61f0cdd5f76df3c25cbe"
+    },
+    {
+      "name": "tile",
+      "file": "C:/Users/Aorus/.codex/generated_images/01a1793a-deb2-7031-9934-84f2a877618e/exec-72521338-ac1f-490d-9e0b-58ad70ddb353.png",
+      "transparent": false,
+      "prompt": "Use case: precise-object-edit. Asset type: one stationary square game tile backplate for Forest Heart. The supplied atlas defines the painted art style, dark walnut wood, antique gold trim and tiny forest plants. Create ONE perfectly front-facing square EMPTY tile plate. Dark matte brown old wood grain and subtle knots in the centre, no central roots, NO ROOT SHAPES or paths, no glow and no symbols. A straight precise antique gold beveled rim only about 2 percent of tile width, four equal straight sides and gently rounded matching corners. A few small dark emerald leaves, tiny violet blossoms and moss tucked into the FOUR corners, limited to the outermost 10 percent so the centre remains calm and empty for root sprites layered above. The outer square must fill the canvas edge to edge, no outside margin or perspective; opposing edges exactly parallel. Match the existing forest game's high quality textured painted realism, no vector or flat gradients. Uniform centre lighting, subdued warm brown, cool forest leaf edges. No character, no crystal, no numbers, no text, no root grid, no whole board, no other tiles. Target one 1024x1024 opaque square tile. The gold rim and corner details will stay FIXED while a separate transparent root turns on top.",
+      "sha256": "283e6c85e6c53c1c3417169be07a49852d0e795c55bca5bbddf3b3df0cc418df"
+    }
+  ],
+  "processing": "Root atlas: split equal cells, crop 12 source pixels from each side to bring all intended ports to the boundary, normalize each to 384x384 and assemble 4x2. Plate: proportional 512x512 resize. WebP encoding with alpha preserved. No pixel repainting outside the image generator.",
+  "assets": [
+    {
+      "path": "public/assets/forest-heart/v4/roots.webp",
+      "sha256": "46c2cf9a554590b10ae3aa2d554125dcf7f03e5f869d51731926bcf7db1e4636",
+      "bytes": 436530,
+      "dimensions": [
+        1536,
+        768
+      ],
+      "alpha": true
+    },
+    {
+      "path": "public/assets/forest-heart/v4/tile.webp",
+      "sha256": "6482a3612b938f0d587412bf42336bbd507dfd16ed05f21d6d45d2f8be919e13",
+      "bytes": 107330,
+      "dimensions": [
+        512,
+        512
+      ],
+      "alpha": false
+    }
+  ]
+}
