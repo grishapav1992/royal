@@ -1332,5 +1332,663 @@
       }
     ],
     "interpretation": "Deterministic outward bounds for the complete paid capped round, not a point estimate or statistical confidence interval."
+  },
+  "cleanup": {
+    "preservedRemoteCommit": "526a1c349f2370c6e3b6ba6e0544afd8237f9ce5",
+    "sourceBranch": "feature/complete-round-audit",
+    "freeKiBBefore": 61290624,
+    "freeKiBAfter": 61292352,
+    "freeKiBAtTaskStart": 62747872,
+    "removedModuleVersions": [
+      {
+        "folder": "module-dist/breaker/versions/1.0.0-6641c013853a",
+        "bytes": 5290,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/casinoapipro/versions/1.0.0-09a0203ee4d4",
+        "bytes": 25063,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/chess/versions/1.0.0-bcbfc159ef5c",
+        "bytes": 44012,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/drift/versions/1.0.0-623ea4249c93",
+        "bytes": 11026,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/github-andar-bahar/versions/1.0.0-532a3395abbf",
+        "bytes": 225948,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/github-baccarat/versions/1.0.0-4694ab5a2b7f",
+        "bytes": 8518306,
+        "fileCount": 57
+      },
+      {
+        "folder": "module-dist/github-blackjack/versions/1.0.0-76b24090a996",
+        "bytes": 8518309,
+        "fileCount": 57
+      },
+      {
+        "folder": "module-dist/github-caribbean/versions/1.0.0-5fdea70e1615",
+        "bytes": 225944,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/github-caribbean-draw/versions/1.0.0-e12988f27d8f",
+        "bytes": 225954,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/github-craps/versions/1.0.0-67d1eeb8c197",
+        "bytes": 8697348,
+        "fileCount": 59
+      },
+      {
+        "folder": "module-dist/github-crash/versions/1.0.0-5297aaa1b763",
+        "bytes": 21939481,
+        "fileCount": 19
+      },
+      {
+        "folder": "module-dist/github-crazy-four/versions/1.0.0-b39c66ec8ebc",
+        "bytes": 225946,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/github-deuces/versions/1.0.0-bd3b2e2fdb9b",
+        "bytes": 225938,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/github-diamonds/versions/1.0.0-b31a89a50649",
+        "bytes": 575647,
+        "fileCount": 5
+      },
+      {
+        "folder": "module-dist/github-dragon-tiger/versions/1.0.0-e7f7d0cd9222",
+        "bytes": 225950,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/github-exposure/versions/1.0.0-d9cbef7a8af0",
+        "bytes": 225942,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/github-flush/versions/1.0.0-8c19569011fd",
+        "bytes": 225936,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/github-four-card/versions/1.0.0-ff69416cacc7",
+        "bytes": 225944,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/github-free-bet/versions/1.0.0-f49a4430b976",
+        "bytes": 225942,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/github-hilo/versions/1.0.0-b6c0f11b6a3a",
+        "bytes": 164676,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/github-holdem-bonus/versions/1.0.0-1bba6b085d14",
+        "bytes": 225950,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/github-let-it-ride/versions/1.0.0-d1ba9da14b69",
+        "bytes": 225948,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/github-mississippi/versions/1.0.0-6d25f618c845",
+        "bytes": 225948,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/github-oasis/versions/1.0.0-6b32df2db499",
+        "bytes": 225936,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/github-pai-gow/versions/1.0.0-1e47511c6138",
+        "bytes": 225940,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/github-poker/versions/1.0.0-c8a4c3822308",
+        "bytes": 8518297,
+        "fileCount": 57
+      },
+      {
+        "folder": "module-dist/github-red-dog/versions/1.0.0-1741ccc09f79",
+        "bytes": 225940,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/github-rummy/versions/1.0.0-cd273525657a",
+        "bytes": 225936,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/github-russian/versions/1.0.0-598061e23d5e",
+        "bytes": 225940,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/github-sic-bo/versions/1.0.0-958d147cb1f3",
+        "bytes": 496959,
+        "fileCount": 5
+      },
+      {
+        "folder": "module-dist/github-spanish/versions/1.0.0-3e45f1a54738",
+        "bytes": 225940,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/github-switch/versions/1.0.0-7056d8809395",
+        "bytes": 225938,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/github-three-card/versions/1.0.0-2b0b5fc4fa7b",
+        "bytes": 225946,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/github-tower/versions/1.0.0-cf9b59a9fdc2",
+        "bytes": 425847,
+        "fileCount": 5
+      },
+      {
+        "folder": "module-dist/github-ultimate/versions/1.0.0-db1125b98d6b",
+        "bytes": 225942,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/github-video-poker/versions/1.0.0-c1f72287d9b2",
+        "bytes": 8518315,
+        "fileCount": 57
+      },
+      {
+        "folder": "module-dist/github-war/versions/1.0.0-04e2ac29c09e",
+        "bytes": 225932,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/hockey/versions/1.0.0-16b02fe8551a",
+        "bytes": 46572,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/luelon/versions/1.0.0-35c539e5e7b9",
+        "bytes": 11152,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/orbit/versions/1.0.0-868d6f984c9f",
+        "bytes": 11026,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/original-cr-vs-leo/versions/1.0.0-0b9732911849",
+        "bytes": 7894339,
+        "fileCount": 21
+      },
+      {
+        "folder": "module-dist/pixel/versions/1.0.0-e8019f43e25f",
+        "bytes": 11026,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/pool/versions/1.0.0-791b54917bd7",
+        "bytes": 46568,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/royal-coins/versions/1.0.0-864c1c51eda1",
+        "bytes": 32265,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/royal-dice/versions/1.0.0-6395f6795edd",
+        "bytes": 484162,
+        "fileCount": 5
+      },
+      {
+        "folder": "module-dist/royal-flight/versions/1.0.0-1a4f20e4aa3c",
+        "bytes": 195666,
+        "fileCount": 4
+      },
+      {
+        "folder": "module-dist/royal-fruits/versions/1.0.0-22e2a98d1750",
+        "bytes": 512172,
+        "fileCount": 5
+      },
+      {
+        "folder": "module-dist/royal-keno/versions/1.0.0-f9c3f43d7ef2",
+        "bytes": 555290,
+        "fileCount": 5
+      },
+      {
+        "folder": "module-dist/royal-limbo/versions/1.0.0-247ecc1b1f65",
+        "bytes": 458063,
+        "fileCount": 5
+      },
+      {
+        "folder": "module-dist/royal-mines/versions/1.0.0-1534042b74ba",
+        "bytes": 510666,
+        "fileCount": 5
+      },
+      {
+        "folder": "module-dist/royal-plinko/versions/1.0.0-7e81cd239c77",
+        "bytes": 2638047,
+        "fileCount": 9
+      },
+      {
+        "folder": "module-dist/royal-roulette/versions/1.0.0-5cb40e4d0c80",
+        "bytes": 32271,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/royal-wheel/versions/1.0.0-33c95cbd0486",
+        "bytes": 195663,
+        "fileCount": 4
+      },
+      {
+        "folder": "module-dist/studio-afterglow/versions/1.0.2-97aa6bbbbba7",
+        "bytes": 3199768,
+        "fileCount": 22
+      },
+      {
+        "folder": "module-dist/studio-aurora-lift/versions/1.0.0-fb4438635ef9",
+        "bytes": 4093145,
+        "fileCount": 9
+      },
+      {
+        "folder": "module-dist/studio-beacon-bay/versions/1.0.0-7eab009c6d6f",
+        "bytes": 2109412,
+        "fileCount": 5
+      },
+      {
+        "folder": "module-dist/studio-blazing-orchard/versions/1.0.0-b036eb2b106b",
+        "bytes": 1632194,
+        "fileCount": 4
+      },
+      {
+        "folder": "module-dist/studio-canopy-crossing/versions/1.0.0-794f65992fa2",
+        "bytes": 4093177,
+        "fileCount": 9
+      },
+      {
+        "folder": "module-dist/studio-caramel-carnival/versions/1.0.0-67ba1e18a031",
+        "bytes": 3147922,
+        "fileCount": 8
+      },
+      {
+        "folder": "module-dist/studio-copperline-express/versions/1.0.0-c8b3b2b84e65",
+        "bytes": 1637224,
+        "fileCount": 4
+      },
+      {
+        "folder": "module-dist/studio-cosmic-escape/versions/1.0.0-08fb832ca2b3",
+        "bytes": 3834992,
+        "fileCount": 9
+      },
+      {
+        "folder": "module-dist/studio-deep-current/versions/1.0.0-c3220b8d4235",
+        "bytes": 1632185,
+        "fileCount": 4
+      },
+      {
+        "folder": "module-dist/studio-dracona/versions/1.0.0-1cac83da33a4",
+        "bytes": 5047856,
+        "fileCount": 30
+      },
+      {
+        "folder": "module-dist/studio-dune-hopper/versions/1.0.0-e16c8a1bf535",
+        "bytes": 4093145,
+        "fileCount": 9
+      },
+      {
+        "folder": "module-dist/studio-ember-vault/versions/1.0.0-867dee82bd18",
+        "bytes": 1638685,
+        "fileCount": 4
+      },
+      {
+        "folder": "module-dist/studio-fossil-trail/versions/1.0.0-309e4bb363e5",
+        "bytes": 4093153,
+        "fileCount": 9
+      },
+      {
+        "folder": "module-dist/studio-frostline-courier/versions/1.0.0-ee202f17fc53",
+        "bytes": 1630708,
+        "fileCount": 4
+      },
+      {
+        "folder": "module-dist/studio-gale-riders/versions/1.0.0-576a9686df16",
+        "bytes": 4093145,
+        "fileCount": 9
+      },
+      {
+        "folder": "module-dist/studio-jade-koi/versions/1.0.0-3d97689f39d7",
+        "bytes": 1637194,
+        "fileCount": 4
+      },
+      {
+        "folder": "module-dist/studio-last-convoy/versions/1.0.0-de50d3ae74ce",
+        "bytes": 6306088,
+        "fileCount": 18
+      },
+      {
+        "folder": "module-dist/studio-lucky-spotlight/versions/1.0.0-5d9d440998bb",
+        "bytes": 1577279,
+        "fileCount": 4
+      },
+      {
+        "folder": "module-dist/studio-lumen-grove/versions/1.0.0-ad304e834500",
+        "bytes": 1622074,
+        "fileCount": 4
+      },
+      {
+        "folder": "module-dist/studio-meme-overload/versions/1.0.0-8e3b174f296c",
+        "bytes": 3499877,
+        "fileCount": 17
+      },
+      {
+        "folder": "module-dist/studio-midnight-market/versions/1.0.0-ea38115d952b",
+        "bytes": 1638697,
+        "fileCount": 4
+      },
+      {
+        "folder": "module-dist/studio-moonlit-mint/versions/1.0.0-e985f7b73ccc",
+        "bytes": 1638688,
+        "fileCount": 4
+      },
+      {
+        "folder": "module-dist/studio-mosaic-muse/versions/1.0.0-6c1b2e41348c",
+        "bytes": 4093145,
+        "fileCount": 9
+      },
+      {
+        "folder": "module-dist/studio-neon-crown/versions/1.0.0-a9e8506e89c2",
+        "bytes": 1587280,
+        "fileCount": 4
+      },
+      {
+        "folder": "module-dist/studio-neopolis/versions/0.3.1-5d568ca094a4",
+        "bytes": 6017040,
+        "fileCount": 14
+      },
+      {
+        "folder": "module-dist/studio-nitro-run/versions/1.0.0-650216e3c5f4",
+        "bytes": 2540536,
+        "fileCount": 6
+      },
+      {
+        "folder": "module-dist/studio-obsidian-drop/versions/1.0.0-603bff8f1e61",
+        "bytes": 1607873,
+        "fileCount": 4
+      },
+      {
+        "folder": "module-dist/studio-orbit/versions/1.0.0-b35a543bd684",
+        "bytes": 4093097,
+        "fileCount": 9
+      },
+      {
+        "folder": "module-dist/studio-petal-parlor/versions/1.0.0-d5fe8494adcf",
+        "bytes": 1641414,
+        "fileCount": 4
+      },
+      {
+        "folder": "module-dist/studio-prism-atelier/versions/1.0.0-4f0fed749ca1",
+        "bytes": 1622080,
+        "fileCount": 4
+      },
+      {
+        "folder": "module-dist/studio-pulse-district/versions/1.0.0-88264acf4309",
+        "bytes": 1637212,
+        "fileCount": 4
+      },
+      {
+        "folder": "module-dist/studio-rivet-rally/versions/1.0.0-20b2ca227b81",
+        "bytes": 1630690,
+        "fileCount": 4
+      },
+      {
+        "folder": "module-dist/studio-saffron-cipher/versions/1.0.0-f9e0268ca4ea",
+        "bytes": 2109428,
+        "fileCount": 5
+      },
+      {
+        "folder": "module-dist/studio-saffron-spin/versions/1.0.0-6dac99b5de20",
+        "bytes": 1577270,
+        "fileCount": 4
+      },
+      {
+        "folder": "module-dist/studio-signal-fox/versions/1.0.0-a27658469676",
+        "bytes": 1687921,
+        "fileCount": 4
+      },
+      {
+        "folder": "module-dist/studio-sky-lanterns/versions/1.0.0-decab62ed63f",
+        "bytes": 1630693,
+        "fileCount": 4
+      },
+      {
+        "folder": "module-dist/studio-starfall-oracle/versions/1.0.0-cfece821f278",
+        "bytes": 2445031,
+        "fileCount": 6
+      },
+      {
+        "folder": "module-dist/studio-stormforge-duel/versions/1.0.0-404c3b4741e4",
+        "bytes": 2109432,
+        "fileCount": 5
+      },
+      {
+        "folder": "module-dist/studio-sunbird-trails/versions/1.0.0-483728044ecc",
+        "bytes": 1641420,
+        "fileCount": 4
+      },
+      {
+        "folder": "module-dist/studio-tidal-relay/versions/1.0.0-fe2bc7abd78c",
+        "bytes": 4093145,
+        "fileCount": 9
+      },
+      {
+        "folder": "module-dist/studio-velvet-reign/versions/1.0.0-7d89f400b924",
+        "bytes": 4267478,
+        "fileCount": 13
+      },
+      {
+        "folder": "module-dist/variant-blackjack-target/versions/1.0.0-c690d37254c3",
+        "bytes": 127031,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/variant-color/versions/1.0.0-654cb1db5590",
+        "bytes": 127689,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/variant-diamonds/versions/1.0.0-ca01e22fb35b",
+        "bytes": 107185,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/variant-dice/versions/1.0.0-1405849b1961",
+        "bytes": 184238,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/variant-dice-streak/versions/1.0.0-cc067ecda556",
+        "bytes": 127021,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/variant-double-mines/versions/1.0.0-5a5564e2b5a9",
+        "bytes": 127023,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/variant-duel/versions/1.0.0-a95f91bdb905",
+        "bytes": 127687,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/variant-fruits/versions/1.0.0-1d11f529574a",
+        "bytes": 184612,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/variant-gem-collection/versions/1.0.0-7b3479a7bb6a",
+        "bytes": 127027,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/variant-keno/versions/1.0.0-d4f43db5e6db",
+        "bytes": 127687,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/variant-keys/versions/1.0.0-5f22c4c104cc",
+        "bytes": 127687,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/variant-limbo/versions/1.0.0-eb6f8d10481b",
+        "bytes": 187934,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/variant-mines/versions/1.0.0-57affd2d8f52",
+        "bytes": 107179,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/variant-plinko/versions/1.0.0-d848e51b7f34",
+        "bytes": 185118,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/variant-sic-bo/versions/1.0.0-adf215e2a5b0",
+        "bytes": 107181,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/variant-target-plinko/versions/1.0.0-405ddb32c7fe",
+        "bytes": 104199,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/variant-triple-poker/versions/1.0.0-67ae832e2719",
+        "bytes": 127023,
+        "fileCount": 3
+      },
+      {
+        "folder": "module-dist/variant-war/versions/1.0.0-580b5e3bee10",
+        "bytes": 127685,
+        "fileCount": 3
+      }
+    ],
+    "removedModuleBytes": 199660203,
+    "retainedOriginalActiveVersions": [
+      "module-dist/piano/versions/1.0.0-1d97fde9372b"
+    ],
+    "removedTaskFolder": "artifacts/work/cosmic-origin-fix",
+    "removedTaskFiles": [
+      {
+        "file": "OWNER.txt",
+        "bytes": 250
+      },
+      {
+        "file": "build-before.json",
+        "bytes": 52431
+      },
+      {
+        "file": "build-final.log",
+        "bytes": 27793
+      },
+      {
+        "file": "build.log",
+        "bytes": 28030
+      },
+      {
+        "file": "client-after.json",
+        "bytes": 137161
+      },
+      {
+        "file": "client-retry.log",
+        "bytes": 4309
+      },
+      {
+        "file": "client.log",
+        "bytes": 40284
+      },
+      {
+        "file": "common-wallet.log",
+        "bytes": 3663
+      },
+      {
+        "file": "modules-retry.log",
+        "bytes": 779
+      },
+      {
+        "file": "modules.log",
+        "bytes": 1610
+      },
+      {
+        "file": "native-terminal-min.json",
+        "bytes": 469897
+      },
+      {
+        "file": "native-terminal-min.mjs",
+        "bytes": 27146
+      },
+      {
+        "file": "origin-after.json",
+        "bytes": 1858
+      },
+      {
+        "file": "origin-validation.log",
+        "bytes": 1177
+      },
+      {
+        "file": "regression.log",
+        "bytes": 3878
+      },
+      {
+        "file": "rtp-gate.log",
+        "bytes": 1910
+      },
+      {
+        "file": "typecheck.log",
+        "bytes": 0
+      },
+      {
+        "file": "wallet.log",
+        "bytes": 1122
+      }
+    ],
+    "removedTaskBytes": 803298,
+    "previousAgentCleanup": {
+      "files": 13,
+      "bytes": 1653942,
+      "freeKiBBefore": 61076484,
+      "freeKiBAfter": 61076436,
+      "includesDuplicateProof": "artifacts/rtp-qualification/studio-cosmic-escape.json"
+    },
+    "activeWorkExceptions": "Other tasks' artifacts and checkouts were not touched. Current dist, dist-server, active module packages and normal dependencies remain.",
+    "spaceInterpretation": "Logical removed bytes are measured. Changes in filesystem free space include concurrent work and are not attributed solely to this cleanup."
   }
 }
