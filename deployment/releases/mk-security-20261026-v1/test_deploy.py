@@ -108,6 +108,13 @@ class SecurityRelease(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError,'Unrelated source'):
             self.n['payload']()
 
+    def test_combat_only_rejects_replacing_the_historical_server_record(self):
+        self.combat_only_fixture()
+        path = self.root/'source/deployment/SERVER.md';path.parent.mkdir(parents=True);path.write_text('unrelated release record')
+        self.n['CHANGES']['deployment/SERVER.md'] = self.n['sha'](path)
+        with self.assertRaisesRegex(RuntimeError,'Unrelated source'):
+            self.n['payload']()
+
     def test_combat_only_rejects_other_module_identity(self):
         self.combat_only_fixture()
         self.n['M']['modulePackages'][0]['gameId'] = 'studio-cosmic-escape'

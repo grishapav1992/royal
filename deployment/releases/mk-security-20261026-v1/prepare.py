@@ -69,7 +69,7 @@ changed = {}
 for name in source_paths(stage, release['sourceCommit']):
     path = stage/name
     if lf(path) != before['sourceLF'].get(name): changed[name] = copy(path,'source/'+name)
-for name in ['package-lock.json','package.json','deployment/SERVER.md']:
+for name in ['package-lock.json','package.json', *([] if args.combat_only else ['deployment/SERVER.md'])]:
     if lf(stage/name) != before['sourceLF'][name]: changed[name] = copy(stage/name,'source/'+name)
 for name in ['Dockerfile','.dockerignore','index.html','tsconfig.json','tsconfig.finance.json','vite.config.ts']:
     assert lf(stage/name) == before['sourceLF'][name], 'Unreviewed root input: '+name
