@@ -37,7 +37,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        game: [studio-neopolis, studio-dracona, mortal-kombat]
+        game: [studio-neopolis, studio-dracona, mortal-kombat, studio-cosmic-escape]
     steps:
       - uses: actions/checkout@v7
         with:

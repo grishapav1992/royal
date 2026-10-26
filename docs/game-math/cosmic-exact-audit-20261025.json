@@ -1,0 +1,2923 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-25T11:20:23.186Z",
+  "gameId": "studio-cosmic-escape",
+  "mathProfileVersion": 3,
+  "targetRtp": 0.96,
+  "tolerance": 0.002,
+  "sourceHashes": {
+    "server/games/luelonSlots.ts": "be78b2715aa850d3801445edf0f714b89dcb76ed98719e5589fcac71dc7fe3f2",
+    "src/shared/luelonSlots.ts": "1867b3f6e7e3fbc1e00dd6fad2bb094c42e6038f8eba18e0ef7250381f95cdcb",
+    "src/shared/luelonSlotsModels.ts": "b8644fecff250437909ff88950c5ef129c1d534108344f9643b815614d844c74",
+    "src/shared/luelonSlotsLines.ts": "9629a12c51eee2850887a7a4cad31015aabb4be1b395799c4801ee9b016cf557",
+    "src/shared/cosmicEscapeBets.ts": "5e079e858e39cd73070f95f77688c774aee887e025a2f84fbc365c1e9cddd625",
+    "scripts/game-math/audit-cosmic-exact.mjs": "34d0a2e9f8449120bd5a9edf3b4b93c789763ac4c2efd6d74b7baac274a4482f"
+  },
+  "method": "Finite enumeration of all 9^5 line strings, exact rational joint base scatter probabilities and beam masks, exact rational 50-state energy chain, linearity across 20 paylines and echo. No Monte Carlo enters the uncapped expectations.",
+  "scorerChecks": {
+    "strings": 59049,
+    "shorterWildPrefixWins": 32,
+    "matchesActualHelper": true
+  },
+  "stakeChecks": {
+    "stakeUnits": [
+      "20",
+      "40",
+      "60",
+      "80",
+      "100",
+      "200",
+      "300",
+      "400",
+      "500",
+      "600",
+      "800",
+      "1000",
+      "1500",
+      "2000",
+      "3000",
+      "5000",
+      "7500",
+      "10000",
+      "15000",
+      "20000",
+      "30000",
+      "50000",
+      "75000",
+      "100000",
+      "150000",
+      "200000"
+    ],
+    "payHundredths": [
+      0,
+      25,
+      30,
+      50,
+      55,
+      80,
+      95,
+      120,
+      160,
+      200,
+      280,
+      320,
+      360,
+      480,
+      640,
+      800,
+      1120,
+      1440,
+      2000,
+      4000
+    ],
+    "multipliers": [
+      1,
+      50
+    ],
+    "integerSettlementForEveryCombination": true,
+    "normalizedOutcomesIdentical": true
+  },
+  "freeFrameMeanAtMultiplier1": {
+    "cosmic-chaos": {
+      "numerator": "10560285957683019843439",
+      "denominator": "9052455425262451171875",
+      "value": 1.1665659162720323
+    },
+    "ufo-invasion": {
+      "numerator": "1171886433746763585814843",
+      "denominator": "724196434020996093750000",
+      "value": 1.6181886276904642
+    },
+    "deep-echo": {
+      "numerator": "95330295845547017902031",
+      "denominator": "72419643402099609375000",
+      "value": 1.31635964176514
+    }
+  },
+  "base": {
+    "entryProbability": {
+      "numerator": "3583",
+      "denominator": "250000",
+      "value": 0.014332
+    },
+    "meanByScatterCount": [
+      {
+        "numerator": "239547041419101863",
+        "denominator": "525218750000000000",
+        "value": 0.4560900413762872
+      },
+      {
+        "numerator": "1098814301720104777",
+        "denominator": "3151312500000000000",
+        "value": 0.3486846517824255
+      },
+      {
+        "numerator": "1254140822168955227",
+        "denominator": "4726968750000000000",
+        "value": 0.2653160806635236
+      },
+      {
+        "numerator": "712083863511479401",
+        "denominator": "3545226562500000000",
+        "value": 0.20085708232123162
+      },
+      {
+        "numerator": "804447508141057751",
+        "denominator": "5317839843750000000",
+        "value": 0.1512733613229282
+      },
+      {
+        "numerator": "1808322689946425327",
+        "denominator": "15953519531250000000",
+        "value": 0.11334945159933237
+      }
+    ],
+    "scatterCountWeights": [
+      {
+        "numerator": "82139",
+        "denominator": "250000",
+        "value": 0.328556
+      },
+      {
+        "numerator": "82139",
+        "denominator": "250000",
+        "value": 0.328556
+      },
+      {
+        "numerator": "82139",
+        "denominator": "250000",
+        "value": 0.328556
+      },
+      {
+        "numerator": "3583",
+        "denominator": "312500",
+        "value": 0.0114656
+      },
+      {
+        "numerator": "10749",
+        "denominator": "5000000",
+        "value": 0.0021498
+      },
+      {
+        "numerator": "3583",
+        "denominator": "5000000",
+        "value": 0.0007166
+      }
+    ],
+    "contribution": {
+      "numerator": "16149252119933201482924013",
+      "denominator": "45581484375000000000000000",
+      "value": 0.3542941249361891
+    },
+    "bonusConditionalMean": {
+      "numerator": "1051656607013486461867387035696813391297393763243011230386999",
+      "denominator": "24883200000000000000000000000000000000000000000000000000000",
+      "value": 42.263720382164934
+    },
+    "bonusContribution": {
+      "numerator": "3768085622929321992870847748901682381018561853699709238476617417",
+      "denominator": "6220800000000000000000000000000000000000000000000000000000000000",
+      "value": 0.6057236405171879
+    },
+    "campaigns": [
+      {
+        "spins": 10,
+        "expectedPayoutInStakes": {
+          "numerator": "116621352346776705580636867488746740764154019834227",
+          "denominator": "3037500000000000000000000000000000000000000000000",
+          "value": 38.39386085490591
+        }
+      },
+      {
+        "spins": 12,
+        "expectedPayoutInStakes": {
+          "numerator": "157388703899706926627811056747751138601215744284009947",
+          "denominator": "3037500000000000000000000000000000000000000000000000",
+          "value": 51.81521116039734
+        }
+      },
+      {
+        "spins": 15,
+        "expectedPayoutInStakes": {
+          "numerator": "93967672921690772733871034390926151912260072281229740313399",
+          "denominator": "1244160000000000000000000000000000000000000000000000000000",
+          "value": 75.52700048361204
+        }
+      }
+    ]
+  },
+  "capBounds": [
+    {
+      "mode": "cosmic-chaos",
+      "spins": 10,
+      "start": 1,
+      "cap": 10000,
+      "method": "Exact single-line moments, convexity bound for correlated paylines, independent fresh boards and echo conditional on the exact capped energy Markov chain, polynomial stop-loss inequality. Every positive floating operation rounds outward.",
+      "bounds": [
+        {
+          "momentOrder": 2,
+          "rawMomentUpper": 27353.255171751018,
+          "capLossUpperInStakes": 0.6838313792937756
+        },
+        {
+          "momentOrder": 3,
+          "rawMomentUpper": 119081942.17200953,
+          "capLossUpperInStakes": 0.17641769210668082
+        },
+        {
+          "momentOrder": 4,
+          "rawMomentUpper": 1284772296882.5554,
+          "capLossUpperInStakes": 0.13550332818683206
+        },
+        {
+          "momentOrder": 5,
+          "rawMomentUpper": 19650542906535704,
+          "capLossUpperInStakes": 0.16097724749034054
+        },
+        {
+          "momentOrder": 6,
+          "rawMomentUpper": 352995923665753740000,
+          "capLossUpperInStakes": 0.2364352412241685
+        },
+        {
+          "momentOrder": 7,
+          "rawMomentUpper": 7.04548725252211e+24,
+          "capLossUpperInStakes": 0.3991464358918377
+        },
+        {
+          "momentOrder": 8,
+          "rawMomentUpper": 1.5454386963680232e+29,
+          "capLossUpperInStakes": 0.758609307004816
+        }
+      ],
+      "bestUpperInStakes": 0.13550332818683206
+    },
+    {
+      "mode": "ufo-invasion",
+      "spins": 12,
+      "start": 1,
+      "cap": 10000,
+      "method": "Exact single-line moments, convexity bound for correlated paylines, independent fresh boards and echo conditional on the exact capped energy Markov chain, polynomial stop-loss inequality. Every positive floating operation rounds outward.",
+      "bounds": [
+        {
+          "momentOrder": 2,
+          "rawMomentUpper": 63755.94526336056,
+          "capLossUpperInStakes": 1.5938986315840142
+        },
+        {
+          "momentOrder": 3,
+          "rawMomentUpper": 293201064.06058973,
+          "capLossUpperInStakes": 0.4343719467564293
+        },
+        {
+          "momentOrder": 4,
+          "rawMomentUpper": 3207570441626.6763,
+          "capLossUpperInStakes": 0.3382984450153136
+        },
+        {
+          "momentOrder": 5,
+          "rawMomentUpper": 50400624652270300,
+          "capLossUpperInStakes": 0.41288191715139844
+        },
+        {
+          "momentOrder": 6,
+          "rawMomentUpper": 950292062446813400000,
+          "capLossUpperInStakes": 0.6365017779377342
+        },
+        {
+          "momentOrder": 7,
+          "rawMomentUpper": 2.0443046217518263e+25,
+          "capLossUpperInStakes": 1.1581553899729977
+        },
+        {
+          "momentOrder": 8,
+          "rawMomentUpper": 4.978587835403525e+29,
+          "capLossUpperInStakes": 2.4438388119529044
+        }
+      ],
+      "bestUpperInStakes": 0.3382984450153136
+    },
+    {
+      "mode": "deep-echo",
+      "spins": 15,
+      "start": 3,
+      "cap": 10000,
+      "method": "Exact single-line moments, convexity bound for correlated paylines, independent fresh boards and echo conditional on the exact capped energy Markov chain, polynomial stop-loss inequality. Every positive floating operation rounds outward.",
+      "bounds": [
+        {
+          "momentOrder": 2,
+          "rawMomentUpper": 131575.02414860117,
+          "capLossUpperInStakes": 3.2893756037150297
+        },
+        {
+          "momentOrder": 3,
+          "rawMomentUpper": 520494402.93074244,
+          "capLossUpperInStakes": 0.7711028191566557
+        },
+        {
+          "momentOrder": 4,
+          "rawMomentUpper": 4859729305880.898,
+          "capLossUpperInStakes": 0.5125495752296261
+        },
+        {
+          "momentOrder": 5,
+          "rawMomentUpper": 69936152784379630,
+          "capLossUpperInStakes": 0.5729169636096381
+        },
+        {
+          "momentOrder": 6,
+          "rawMomentUpper": 1.2481299165106398e+21,
+          "capLossUpperInStakes": 0.8359923673473401
+        },
+        {
+          "momentOrder": 7,
+          "rawMomentUpper": 2.562068221589594e+25,
+          "capLossUpperInStakes": 1.4514828605972505
+        },
+        {
+          "momentOrder": 8,
+          "rawMomentUpper": 5.944084249903639e+29,
+          "capLossUpperInStakes": 2.9177719208111723
+        }
+      ],
+      "bestUpperInStakes": 0.5125495752296261
+    }
+  ],
+  "naturalCapBounds": [
+    {
+      "mode": "cosmic-chaos",
+      "spins": 10,
+      "start": 1,
+      "cap": 9200,
+      "method": "Exact single-line moments, convexity bound for correlated paylines, independent fresh boards and echo conditional on the exact capped energy Markov chain, polynomial stop-loss inequality. Every positive floating operation rounds outward.",
+      "bounds": [
+        {
+          "momentOrder": 2,
+          "rawMomentUpper": 27353.255171751018,
+          "capLossUpperInStakes": 0.7432949774932344
+        },
+        {
+          "momentOrder": 3,
+          "rawMomentUpper": 119081942.17200953,
+          "capLossUpperInStakes": 0.20843300107122026
+        },
+        {
+          "momentOrder": 4,
+          "rawMomentUpper": 1284772296882.5554,
+          "capLossUpperInStakes": 0.17401491763945517
+        },
+        {
+          "momentOrder": 5,
+          "rawMomentUpper": 19650542906535704,
+          "capLossUpperInStakes": 0.22470523368953893
+        },
+        {
+          "momentOrder": 6,
+          "rawMomentUpper": 352995923665753740000,
+          "capLossUpperInStakes": 0.35873444012846595
+        },
+        {
+          "momentOrder": 7,
+          "rawMomentUpper": 7.04548725252211e+24,
+          "capLossUpperInStakes": 0.6582718622046825
+        },
+        {
+          "momentOrder": 8,
+          "rawMomentUpper": 1.5454386963680232e+29,
+          "capLossUpperInStakes": 1.3598887316393804
+        }
+      ],
+      "bestUpperInStakes": 0.17401491763945517
+    },
+    {
+      "mode": "cosmic-chaos",
+      "spins": 12,
+      "start": 1,
+      "cap": 9200,
+      "method": "Exact single-line moments, convexity bound for correlated paylines, independent fresh boards and echo conditional on the exact capped energy Markov chain, polynomial stop-loss inequality. Every positive floating operation rounds outward.",
+      "bounds": [
+        {
+          "momentOrder": 2,
+          "rawMomentUpper": 41139.553240625064,
+          "capLossUpperInStakes": 1.11792264240829
+        },
+        {
+          "momentOrder": 3,
+          "rawMomentUpper": 181839067.30271962,
+          "capLossUpperInStakes": 0.31827884075950374
+        },
+        {
+          "momentOrder": 4,
+          "rawMomentUpper": 1942787882365.7595,
+          "capLossUpperInStakes": 0.26313929258992536
+        },
+        {
+          "momentOrder": 5,
+          "rawMomentUpper": 29643611329771532,
+          "capLossUpperInStakes": 0.3389766197779057
+        },
+        {
+          "momentOrder": 6,
+          "rawMomentUpper": 535433453535596500000,
+          "capLossUpperInStakes": 0.5441377854607161
+        },
+        {
+          "momentOrder": 7,
+          "rawMomentUpper": 1.0822017610862982e+25,
+          "capLossUpperInStakes": 1.0111195195143514
+        },
+        {
+          "momentOrder": 8,
+          "rawMomentUpper": 2.421226706023668e+29,
+          "capLossUpperInStakes": 2.130527028994386
+        }
+      ],
+      "bestUpperInStakes": 0.26313929258992536
+    },
+    {
+      "mode": "cosmic-chaos",
+      "spins": 15,
+      "start": 1,
+      "cap": 9200,
+      "method": "Exact single-line moments, convexity bound for correlated paylines, independent fresh boards and echo conditional on the exact capped energy Markov chain, polynomial stop-loss inequality. Every positive floating operation rounds outward.",
+      "bounds": [
+        {
+          "momentOrder": 2,
+          "rawMomentUpper": 69069.11059585326,
+          "capLossUpperInStakes": 1.8768780053220997
+        },
+        {
+          "momentOrder": 3,
+          "rawMomentUpper": 312478913.2305044,
+          "capLossUpperInStakes": 0.5469420171366388
+        },
+        {
+          "momentOrder": 4,
+          "rawMomentUpper": 3299261728461.364,
+          "capLossUpperInStakes": 0.44686576706416375
+        },
+        {
+          "momentOrder": 5,
+          "rawMomentUpper": 50163186365092290,
+          "capLossUpperInStakes": 0.5736192922705942
+        },
+        {
+          "momentOrder": 6,
+          "rawMomentUpper": 912666395129247400000,
+          "capLossUpperInStakes": 0.9275032552239055
+        },
+        {
+          "momentOrder": 7,
+          "rawMomentUpper": 1.8760597158377745e+25,
+          "capLossUpperInStakes": 1.7528345144753972
+        },
+        {
+          "momentOrder": 8,
+          "rawMomentUpper": 4.307859107418319e+29,
+          "capLossUpperInStakes": 3.7906447350100554
+        }
+      ],
+      "bestUpperInStakes": 0.44686576706416375
+    }
+  ],
+  "modes": [
+    {
+      "id": "normal",
+      "costInStakes": 1,
+      "spins": 0,
+      "startMultiplier": 1,
+      "uncappedExpectedPayoutInStakes": {
+        "numerator": "4779653505104337855602482008317646465608522336911000627194119472739",
+        "denominator": "4978713600000000000000000000000000000000000000000000000000000000000",
+        "value": 0.9600177654533769
+      },
+      "uncappedRtp": {
+        "numerator": "4779653505104337855602482008317646465608522336911000627194119472739",
+        "denominator": "4978713600000000000000000000000000000000000000000000000000000000000",
+        "value": 0.9600177654533769
+      },
+      "uncappedRtpOutward": [
+        0.9600177654533769,
+        0.960017765453377
+      ],
+      "deviationFromTarget": 0.000017765453376950013,
+      "capLossUpperInStakes": 0.002881106299574941,
+      "cappedRtpBound": [
+        0.9571366591538019,
+        0.960017765453377
+      ]
+    },
+    {
+      "id": "cosmic-chaos",
+      "costInStakes": 40,
+      "spins": 10,
+      "startMultiplier": 1,
+      "uncappedExpectedPayoutInStakes": {
+        "numerator": "116621352346776705580636867488746740764154019834227",
+        "denominator": "3037500000000000000000000000000000000000000000000",
+        "value": 38.39386085490591
+      },
+      "uncappedRtp": {
+        "numerator": "116621352346776705580636867488746740764154019834227",
+        "denominator": "121500000000000000000000000000000000000000000000000",
+        "value": 0.9598465213726477
+      },
+      "uncappedRtpOutward": [
+        0.9598465213726477,
+        0.9598465213726478
+      ],
+      "deviationFromTarget": -0.00015347862735226592,
+      "energyMeanBySpin": [
+        {
+          "numerator": "5599",
+          "denominator": "4000",
+          "value": 1.39975
+        },
+        {
+          "numerator": "5757767",
+          "denominator": "3200000",
+          "value": 1.7993021875
+        },
+        {
+          "numerator": "5628558147",
+          "denominator": "2560000000",
+          "value": 2.198655526171875
+        },
+        {
+          "numerator": "212812511739",
+          "denominator": "81920000000",
+          "value": 2.597808981188965
+        },
+        {
+          "numerator": "24549470343813",
+          "denominator": "8192000000000",
+          "value": 2.9967615165787356
+        },
+        {
+          "numerator": "222528280369492021",
+          "denominator": "65536000000000000",
+          "value": 3.3955120905989387
+        },
+        {
+          "numerator": "12432374657718422969",
+          "denominator": "3276800000000000000",
+          "value": 3.7940596489619214
+        },
+        {
+          "numerator": "549506661187224514187",
+          "denominator": "131072000000000000000",
+          "value": 4.192403115747258
+        },
+        {
+          "numerator": "1203382880113843200330243",
+          "denominator": "262144000000000000000000",
+          "value": 4.590541382270215
+        },
+        {
+          "numerator": "83692693970805632193776103",
+          "denominator": "16777216000000000000000000",
+          "value": 4.988473294425346
+        }
+      ],
+      "energyAt50BySpin": [
+        {
+          "numerator": "1",
+          "denominator": "4000",
+          "value": 0.00025
+        },
+        {
+          "numerator": "1603",
+          "denominator": "3200000",
+          "value": 0.0005009375
+        },
+        {
+          "numerator": "1927193",
+          "denominator": "2560000000",
+          "value": 0.000752809765625
+        },
+        {
+          "numerator": "411900127",
+          "denominator": "409600000000",
+          "value": 0.0010056155444335938
+        },
+        {
+          "numerator": "20633317233",
+          "denominator": "16384000000000",
+          "value": 0.0012593577412719726
+        },
+        {
+          "numerator": "99224573880219",
+          "denominator": "65536000000000000",
+          "value": 0.0015140468426547088
+        },
+        {
+          "numerator": "5798970935664911",
+          "denominator": "3276800000000000000",
+          "value": 0.0017697054857375826
+        },
+        {
+          "numerator": "53120145645856571",
+          "denominator": "26214400000000000000",
+          "value": 0.002026372743448508
+        },
+        {
+          "numerator": "74845621390663714399",
+          "denominator": "32768000000000000000000",
+          "value": 0.002284107098103751
+        },
+        {
+          "numerator": "42664259093306305757739",
+          "denominator": "16777216000000000000000000",
+          "value": 0.0025429880078617515
+        }
+      ],
+      "capLossUpperInStakes": 0.13550332818683206,
+      "cappedRtpBound": [
+        0.9564589381679768,
+        0.9598465213726478
+      ]
+    },
+    {
+      "id": "ufo-invasion",
+      "costInStakes": 75,
+      "spins": 12,
+      "startMultiplier": 1,
+      "uncappedExpectedPayoutInStakes": {
+        "numerator": "17465595881034298427371746287503968693837412883634482839",
+        "denominator": "243000000000000000000000000000000000000000000000000000",
+        "value": 71.87488016886543
+      },
+      "uncappedRtp": {
+        "numerator": "17465595881034298427371746287503968693837412883634482839",
+        "denominator": "18225000000000000000000000000000000000000000000000000000",
+        "value": 0.9583317355848724
+      },
+      "uncappedRtpOutward": [
+        0.9583317355848723,
+        0.9583317355848724
+      ],
+      "deviationFromTarget": -0.0016682644151275738,
+      "energyMeanBySpin": [
+        {
+          "numerator": "5599",
+          "denominator": "4000",
+          "value": 1.39975
+        },
+        {
+          "numerator": "5757767",
+          "denominator": "3200000",
+          "value": 1.7993021875
+        },
+        {
+          "numerator": "5628558147",
+          "denominator": "2560000000",
+          "value": 2.198655526171875
+        },
+        {
+          "numerator": "212812511739",
+          "denominator": "81920000000",
+          "value": 2.597808981188965
+        },
+        {
+          "numerator": "24549470343813",
+          "denominator": "8192000000000",
+          "value": 2.9967615165787356
+        },
+        {
+          "numerator": "222528280369492021",
+          "denominator": "65536000000000000",
+          "value": 3.3955120905989387
+        },
+        {
+          "numerator": "12432374657718422969",
+          "denominator": "3276800000000000000",
+          "value": 3.7940596489619214
+        },
+        {
+          "numerator": "549506661187224514187",
+          "denominator": "131072000000000000000",
+          "value": 4.192403115747258
+        },
+        {
+          "numerator": "1203382880113843200330243",
+          "denominator": "262144000000000000000000",
+          "value": 4.590541382270215
+        },
+        {
+          "numerator": "83692693970805632193776103",
+          "denominator": "16777216000000000000000000",
+          "value": 4.988473294425346
+        },
+        {
+          "numerator": "903654012078999922484607671",
+          "denominator": "167772160000000000000000000",
+          "value": 5.386197638982534
+        },
+        {
+          "numerator": "19406920889652592940916394271",
+          "denominator": "3355443200000000000000000000",
+          "value": 5.783713129059253
+        }
+      ],
+      "energyAt50BySpin": [
+        {
+          "numerator": "1",
+          "denominator": "4000",
+          "value": 0.00025
+        },
+        {
+          "numerator": "1603",
+          "denominator": "3200000",
+          "value": 0.0005009375
+        },
+        {
+          "numerator": "1927193",
+          "denominator": "2560000000",
+          "value": 0.000752809765625
+        },
+        {
+          "numerator": "411900127",
+          "denominator": "409600000000",
+          "value": 0.0010056155444335938
+        },
+        {
+          "numerator": "20633317233",
+          "denominator": "16384000000000",
+          "value": 0.0012593577412719726
+        },
+        {
+          "numerator": "99224573880219",
+          "denominator": "65536000000000000",
+          "value": 0.0015140468426547088
+        },
+        {
+          "numerator": "5798970935664911",
+          "denominator": "3276800000000000000",
+          "value": 0.0017697054857375826
+        },
+        {
+          "numerator": "53120145645856571",
+          "denominator": "26214400000000000000",
+          "value": 0.002026372743448508
+        },
+        {
+          "numerator": "74845621390663714399",
+          "denominator": "32768000000000000000000",
+          "value": 0.002284107098103751
+        },
+        {
+          "numerator": "42664259093306305757739",
+          "denominator": "16777216000000000000000000",
+          "value": 0.0025429880078617515
+        },
+        {
+          "numerator": "752455909205390740262111",
+          "denominator": "268435456000000000000000000",
+          "value": 0.002803116698583181
+        },
+        {
+          "numerator": "41132594950870952329959309",
+          "denominator": "13421772800000000000000000000",
+          "value": 0.0030646171384208615
+        }
+      ],
+      "capLossUpperInStakes": 0.3382984450153136,
+      "cappedRtpBound": [
+        0.9538210896513346,
+        0.9583317355848724
+      ]
+    },
+    {
+      "id": "deep-echo",
+      "costInStakes": 135,
+      "spins": 15,
+      "startMultiplier": 3,
+      "uncappedExpectedPayoutInStakes": {
+        "numerator": "161096737553973144250961756382025369538106927303952759714897",
+        "denominator": "1244160000000000000000000000000000000000000000000000000000",
+        "value": 129.4823314959275
+      },
+      "uncappedRtp": {
+        "numerator": "161096737553973144250961756382025369538106927303952759714897",
+        "denominator": "167961600000000000000000000000000000000000000000000000000000",
+        "value": 0.9591283814513147
+      },
+      "uncappedRtpOutward": [
+        0.9591283814513146,
+        0.9591283814513147
+      ],
+      "deviationFromTarget": -0.0008716185486852268,
+      "energyMeanBySpin": [
+        {
+          "numerator": "13597",
+          "denominator": "4000",
+          "value": 3.39925
+        },
+        {
+          "numerator": "12154561",
+          "denominator": "3200000",
+          "value": 3.7983003125
+        },
+        {
+          "numerator": "10744703761",
+          "denominator": "2560000000",
+          "value": 4.197149906640625
+        },
+        {
+          "numerator": "1882438757577",
+          "denominator": "409600000000",
+          "value": 4.595797747990723
+        },
+        {
+          "numerator": "10228209231481",
+          "denominator": "2048000000000",
+          "value": 4.994242788809082
+        },
+        {
+          "numerator": "353401828294558173",
+          "denominator": "65536000000000000",
+          "value": 5.392483952248507
+        },
+        {
+          "numerator": "75897505270189961063",
+          "denominator": "13107200000000000000",
+          "value": 5.790520116439054
+        },
+        {
+          "numerator": "811119424344321851473",
+          "denominator": "131072000000000000000",
+          "value": 6.188350100283217
+        },
+        {
+          "numerator": "3452946428962697294710283",
+          "denominator": "524288000000000000000000",
+          "value": 6.585972650456804
+        },
+        {
+          "numerator": "117161782514612883394580381",
+          "denominator": "16777216000000000000000000",
+          "value": 6.983386428035073
+        },
+        {
+          "numerator": "990606020145087972152990799",
+          "denominator": "134217728000000000000000000",
+          "value": 7.380589992888927
+        },
+        {
+          "numerator": "4175557425631191656793926871",
+          "denominator": "536870912000000000000000000",
+          "value": 7.777581784187242
+        },
+        {
+          "numerator": "35108609277073944609541701826697",
+          "denominator": "4294967296000000000000000000000",
+          "value": 8.174360095773345
+        },
+        {
+          "numerator": "736236683556743508613042945781101",
+          "denominator": "85899345920000000000000000000000",
+          "value": 8.570923045705348
+        },
+        {
+          "numerator": "616226001803759208086191152705523",
+          "denominator": "68719476736000000000000000000000",
+          "value": 8.967268539763742
+        }
+      ],
+      "energyAt50BySpin": [
+        {
+          "numerator": "1",
+          "denominator": "4000",
+          "value": 0.00025
+        },
+        {
+          "numerator": "1603",
+          "denominator": "3200000",
+          "value": 0.0005009375
+        },
+        {
+          "numerator": "1927193",
+          "denominator": "2560000000",
+          "value": 0.000752809765625
+        },
+        {
+          "numerator": "411902719",
+          "denominator": "409600000000",
+          "value": 0.0010056218725585937
+        },
+        {
+          "numerator": "20634059409",
+          "denominator": "16384000000000",
+          "value": 0.0012594030401000976
+        },
+        {
+          "numerator": "99235029666849",
+          "denominator": "65536000000000000",
+          "value": 0.0015142063852973786
+        },
+        {
+          "numerator": "23201100693684419",
+          "denominator": "13107200000000000000",
+          "value": 0.001770103507513765
+        },
+        {
+          "numerator": "132853286336342171",
+          "denominator": "65536000000000000000",
+          "value": 0.0020271802724661585
+        },
+        {
+          "numerator": "1198279444690292793889",
+          "denominator": "524288000000000000000000",
+          "value": 0.0022855366605573513
+        },
+        {
+          "numerator": "42702904087420252158231",
+          "denominator": "16777216000000000000000000",
+          "value": 0.0025452914290082606
+        },
+        {
+          "numerator": "376694286876100656098719",
+          "denominator": "134217728000000000000000000",
+          "value": 0.002806591144771134
+        },
+        {
+          "numerator": "8239955254535491677382893",
+          "denominator": "2684354560000000000000000000",
+          "value": 0.003069622536948134
+        },
+        {
+          "numerator": "14322113431468854031319202581",
+          "denominator": "4294967296000000000000000000000",
+          "value": 0.003334626888732625
+        },
+        {
+          "numerator": "309402160283239582082135772661",
+          "denominator": "85899345920000000000000000000000",
+          "value": 0.0036019152063322206
+        },
+        {
+          "numerator": "2128590225793879356312995573269",
+          "denominator": "549755813888000000000000000000000",
+          "value": 0.0038718830652103484
+        }
+      ],
+      "capLossUpperInStakes": 0.5125495752296261,
+      "cappedRtpBound": [
+        0.9553317179310951,
+        0.9591283814513147
+      ]
+    }
+  ],
+  "serverReplay": {
+    "configurations": [
+      {
+        "mode": "normal",
+        "stakeUnits": "20",
+        "seed": 2026102501,
+        "forcedNaturalScatterCount": 0,
+        "spins": 1,
+        "finalPayoutUnits": "19"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "20",
+        "seed": 2026110420,
+        "forcedNaturalScatterCount": 3,
+        "spins": 11,
+        "finalPayoutUnits": "82"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "20",
+        "seed": 2026118339,
+        "forcedNaturalScatterCount": 4,
+        "spins": 13,
+        "finalPayoutUnits": "354"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "20",
+        "seed": 2026126258,
+        "forcedNaturalScatterCount": 5,
+        "spins": 16,
+        "finalPayoutUnits": "858"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "40",
+        "seed": 2026102501,
+        "forcedNaturalScatterCount": 0,
+        "spins": 1,
+        "finalPayoutUnits": "38"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "40",
+        "seed": 2026110420,
+        "forcedNaturalScatterCount": 3,
+        "spins": 11,
+        "finalPayoutUnits": "164"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "40",
+        "seed": 2026118339,
+        "forcedNaturalScatterCount": 4,
+        "spins": 13,
+        "finalPayoutUnits": "708"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "40",
+        "seed": 2026126258,
+        "forcedNaturalScatterCount": 5,
+        "spins": 16,
+        "finalPayoutUnits": "1716"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "60",
+        "seed": 2026102501,
+        "forcedNaturalScatterCount": 0,
+        "spins": 1,
+        "finalPayoutUnits": "57"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "60",
+        "seed": 2026110420,
+        "forcedNaturalScatterCount": 3,
+        "spins": 11,
+        "finalPayoutUnits": "246"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "60",
+        "seed": 2026118339,
+        "forcedNaturalScatterCount": 4,
+        "spins": 13,
+        "finalPayoutUnits": "1062"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "60",
+        "seed": 2026126258,
+        "forcedNaturalScatterCount": 5,
+        "spins": 16,
+        "finalPayoutUnits": "2574"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "80",
+        "seed": 2026102501,
+        "forcedNaturalScatterCount": 0,
+        "spins": 1,
+        "finalPayoutUnits": "76"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "80",
+        "seed": 2026110420,
+        "forcedNaturalScatterCount": 3,
+        "spins": 11,
+        "finalPayoutUnits": "328"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "80",
+        "seed": 2026118339,
+        "forcedNaturalScatterCount": 4,
+        "spins": 13,
+        "finalPayoutUnits": "1416"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "80",
+        "seed": 2026126258,
+        "forcedNaturalScatterCount": 5,
+        "spins": 16,
+        "finalPayoutUnits": "3432"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "100",
+        "seed": 2026102501,
+        "forcedNaturalScatterCount": 0,
+        "spins": 1,
+        "finalPayoutUnits": "95"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "100",
+        "seed": 2026110420,
+        "forcedNaturalScatterCount": 3,
+        "spins": 11,
+        "finalPayoutUnits": "410"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "100",
+        "seed": 2026118339,
+        "forcedNaturalScatterCount": 4,
+        "spins": 13,
+        "finalPayoutUnits": "1770"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "100",
+        "seed": 2026126258,
+        "forcedNaturalScatterCount": 5,
+        "spins": 16,
+        "finalPayoutUnits": "4290"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "200",
+        "seed": 2026102501,
+        "forcedNaturalScatterCount": 0,
+        "spins": 1,
+        "finalPayoutUnits": "190"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "200",
+        "seed": 2026110420,
+        "forcedNaturalScatterCount": 3,
+        "spins": 11,
+        "finalPayoutUnits": "820"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "200",
+        "seed": 2026118339,
+        "forcedNaturalScatterCount": 4,
+        "spins": 13,
+        "finalPayoutUnits": "3540"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "200",
+        "seed": 2026126258,
+        "forcedNaturalScatterCount": 5,
+        "spins": 16,
+        "finalPayoutUnits": "8580"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "300",
+        "seed": 2026102501,
+        "forcedNaturalScatterCount": 0,
+        "spins": 1,
+        "finalPayoutUnits": "285"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "300",
+        "seed": 2026110420,
+        "forcedNaturalScatterCount": 3,
+        "spins": 11,
+        "finalPayoutUnits": "1230"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "300",
+        "seed": 2026118339,
+        "forcedNaturalScatterCount": 4,
+        "spins": 13,
+        "finalPayoutUnits": "5310"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "300",
+        "seed": 2026126258,
+        "forcedNaturalScatterCount": 5,
+        "spins": 16,
+        "finalPayoutUnits": "12870"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "400",
+        "seed": 2026102501,
+        "forcedNaturalScatterCount": 0,
+        "spins": 1,
+        "finalPayoutUnits": "380"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "400",
+        "seed": 2026110420,
+        "forcedNaturalScatterCount": 3,
+        "spins": 11,
+        "finalPayoutUnits": "1640"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "400",
+        "seed": 2026118339,
+        "forcedNaturalScatterCount": 4,
+        "spins": 13,
+        "finalPayoutUnits": "7080"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "400",
+        "seed": 2026126258,
+        "forcedNaturalScatterCount": 5,
+        "spins": 16,
+        "finalPayoutUnits": "17160"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "500",
+        "seed": 2026102501,
+        "forcedNaturalScatterCount": 0,
+        "spins": 1,
+        "finalPayoutUnits": "475"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "500",
+        "seed": 2026110420,
+        "forcedNaturalScatterCount": 3,
+        "spins": 11,
+        "finalPayoutUnits": "2050"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "500",
+        "seed": 2026118339,
+        "forcedNaturalScatterCount": 4,
+        "spins": 13,
+        "finalPayoutUnits": "8850"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "500",
+        "seed": 2026126258,
+        "forcedNaturalScatterCount": 5,
+        "spins": 16,
+        "finalPayoutUnits": "21450"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "600",
+        "seed": 2026102501,
+        "forcedNaturalScatterCount": 0,
+        "spins": 1,
+        "finalPayoutUnits": "570"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "600",
+        "seed": 2026110420,
+        "forcedNaturalScatterCount": 3,
+        "spins": 11,
+        "finalPayoutUnits": "2460"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "600",
+        "seed": 2026118339,
+        "forcedNaturalScatterCount": 4,
+        "spins": 13,
+        "finalPayoutUnits": "10620"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "600",
+        "seed": 2026126258,
+        "forcedNaturalScatterCount": 5,
+        "spins": 16,
+        "finalPayoutUnits": "25740"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "800",
+        "seed": 2026102501,
+        "forcedNaturalScatterCount": 0,
+        "spins": 1,
+        "finalPayoutUnits": "760"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "800",
+        "seed": 2026110420,
+        "forcedNaturalScatterCount": 3,
+        "spins": 11,
+        "finalPayoutUnits": "3280"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "800",
+        "seed": 2026118339,
+        "forcedNaturalScatterCount": 4,
+        "spins": 13,
+        "finalPayoutUnits": "14160"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "800",
+        "seed": 2026126258,
+        "forcedNaturalScatterCount": 5,
+        "spins": 16,
+        "finalPayoutUnits": "34320"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "1000",
+        "seed": 2026102501,
+        "forcedNaturalScatterCount": 0,
+        "spins": 1,
+        "finalPayoutUnits": "950"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "1000",
+        "seed": 2026110420,
+        "forcedNaturalScatterCount": 3,
+        "spins": 11,
+        "finalPayoutUnits": "4100"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "1000",
+        "seed": 2026118339,
+        "forcedNaturalScatterCount": 4,
+        "spins": 13,
+        "finalPayoutUnits": "17700"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "1000",
+        "seed": 2026126258,
+        "forcedNaturalScatterCount": 5,
+        "spins": 16,
+        "finalPayoutUnits": "42900"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "1500",
+        "seed": 2026102501,
+        "forcedNaturalScatterCount": 0,
+        "spins": 1,
+        "finalPayoutUnits": "1425"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "1500",
+        "seed": 2026110420,
+        "forcedNaturalScatterCount": 3,
+        "spins": 11,
+        "finalPayoutUnits": "6150"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "1500",
+        "seed": 2026118339,
+        "forcedNaturalScatterCount": 4,
+        "spins": 13,
+        "finalPayoutUnits": "26550"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "1500",
+        "seed": 2026126258,
+        "forcedNaturalScatterCount": 5,
+        "spins": 16,
+        "finalPayoutUnits": "64350"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "2000",
+        "seed": 2026102501,
+        "forcedNaturalScatterCount": 0,
+        "spins": 1,
+        "finalPayoutUnits": "1900"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "2000",
+        "seed": 2026110420,
+        "forcedNaturalScatterCount": 3,
+        "spins": 11,
+        "finalPayoutUnits": "8200"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "2000",
+        "seed": 2026118339,
+        "forcedNaturalScatterCount": 4,
+        "spins": 13,
+        "finalPayoutUnits": "35400"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "2000",
+        "seed": 2026126258,
+        "forcedNaturalScatterCount": 5,
+        "spins": 16,
+        "finalPayoutUnits": "85800"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "3000",
+        "seed": 2026102501,
+        "forcedNaturalScatterCount": 0,
+        "spins": 1,
+        "finalPayoutUnits": "2850"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "3000",
+        "seed": 2026110420,
+        "forcedNaturalScatterCount": 3,
+        "spins": 11,
+        "finalPayoutUnits": "12300"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "3000",
+        "seed": 2026118339,
+        "forcedNaturalScatterCount": 4,
+        "spins": 13,
+        "finalPayoutUnits": "53100"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "3000",
+        "seed": 2026126258,
+        "forcedNaturalScatterCount": 5,
+        "spins": 16,
+        "finalPayoutUnits": "128700"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "5000",
+        "seed": 2026102501,
+        "forcedNaturalScatterCount": 0,
+        "spins": 1,
+        "finalPayoutUnits": "4750"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "5000",
+        "seed": 2026110420,
+        "forcedNaturalScatterCount": 3,
+        "spins": 11,
+        "finalPayoutUnits": "20500"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "5000",
+        "seed": 2026118339,
+        "forcedNaturalScatterCount": 4,
+        "spins": 13,
+        "finalPayoutUnits": "88500"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "5000",
+        "seed": 2026126258,
+        "forcedNaturalScatterCount": 5,
+        "spins": 16,
+        "finalPayoutUnits": "214500"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "7500",
+        "seed": 2026102501,
+        "forcedNaturalScatterCount": 0,
+        "spins": 1,
+        "finalPayoutUnits": "7125"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "7500",
+        "seed": 2026110420,
+        "forcedNaturalScatterCount": 3,
+        "spins": 11,
+        "finalPayoutUnits": "30750"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "7500",
+        "seed": 2026118339,
+        "forcedNaturalScatterCount": 4,
+        "spins": 13,
+        "finalPayoutUnits": "132750"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "7500",
+        "seed": 2026126258,
+        "forcedNaturalScatterCount": 5,
+        "spins": 16,
+        "finalPayoutUnits": "321750"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "10000",
+        "seed": 2026102501,
+        "forcedNaturalScatterCount": 0,
+        "spins": 1,
+        "finalPayoutUnits": "9500"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "10000",
+        "seed": 2026110420,
+        "forcedNaturalScatterCount": 3,
+        "spins": 11,
+        "finalPayoutUnits": "41000"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "10000",
+        "seed": 2026118339,
+        "forcedNaturalScatterCount": 4,
+        "spins": 13,
+        "finalPayoutUnits": "177000"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "10000",
+        "seed": 2026126258,
+        "forcedNaturalScatterCount": 5,
+        "spins": 16,
+        "finalPayoutUnits": "429000"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "15000",
+        "seed": 2026102501,
+        "forcedNaturalScatterCount": 0,
+        "spins": 1,
+        "finalPayoutUnits": "14250"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "15000",
+        "seed": 2026110420,
+        "forcedNaturalScatterCount": 3,
+        "spins": 11,
+        "finalPayoutUnits": "61500"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "15000",
+        "seed": 2026118339,
+        "forcedNaturalScatterCount": 4,
+        "spins": 13,
+        "finalPayoutUnits": "265500"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "15000",
+        "seed": 2026126258,
+        "forcedNaturalScatterCount": 5,
+        "spins": 16,
+        "finalPayoutUnits": "643500"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "20000",
+        "seed": 2026102501,
+        "forcedNaturalScatterCount": 0,
+        "spins": 1,
+        "finalPayoutUnits": "19000"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "20000",
+        "seed": 2026110420,
+        "forcedNaturalScatterCount": 3,
+        "spins": 11,
+        "finalPayoutUnits": "82000"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "20000",
+        "seed": 2026118339,
+        "forcedNaturalScatterCount": 4,
+        "spins": 13,
+        "finalPayoutUnits": "354000"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "20000",
+        "seed": 2026126258,
+        "forcedNaturalScatterCount": 5,
+        "spins": 16,
+        "finalPayoutUnits": "858000"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "30000",
+        "seed": 2026102501,
+        "forcedNaturalScatterCount": 0,
+        "spins": 1,
+        "finalPayoutUnits": "28500"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "30000",
+        "seed": 2026110420,
+        "forcedNaturalScatterCount": 3,
+        "spins": 11,
+        "finalPayoutUnits": "123000"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "30000",
+        "seed": 2026118339,
+        "forcedNaturalScatterCount": 4,
+        "spins": 13,
+        "finalPayoutUnits": "531000"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "30000",
+        "seed": 2026126258,
+        "forcedNaturalScatterCount": 5,
+        "spins": 16,
+        "finalPayoutUnits": "1287000"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "50000",
+        "seed": 2026102501,
+        "forcedNaturalScatterCount": 0,
+        "spins": 1,
+        "finalPayoutUnits": "47500"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "50000",
+        "seed": 2026110420,
+        "forcedNaturalScatterCount": 3,
+        "spins": 11,
+        "finalPayoutUnits": "205000"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "50000",
+        "seed": 2026118339,
+        "forcedNaturalScatterCount": 4,
+        "spins": 13,
+        "finalPayoutUnits": "885000"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "50000",
+        "seed": 2026126258,
+        "forcedNaturalScatterCount": 5,
+        "spins": 16,
+        "finalPayoutUnits": "2145000"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "75000",
+        "seed": 2026102501,
+        "forcedNaturalScatterCount": 0,
+        "spins": 1,
+        "finalPayoutUnits": "71250"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "75000",
+        "seed": 2026110420,
+        "forcedNaturalScatterCount": 3,
+        "spins": 11,
+        "finalPayoutUnits": "307500"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "75000",
+        "seed": 2026118339,
+        "forcedNaturalScatterCount": 4,
+        "spins": 13,
+        "finalPayoutUnits": "1327500"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "75000",
+        "seed": 2026126258,
+        "forcedNaturalScatterCount": 5,
+        "spins": 16,
+        "finalPayoutUnits": "3217500"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "100000",
+        "seed": 2026102501,
+        "forcedNaturalScatterCount": 0,
+        "spins": 1,
+        "finalPayoutUnits": "95000"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "100000",
+        "seed": 2026110420,
+        "forcedNaturalScatterCount": 3,
+        "spins": 11,
+        "finalPayoutUnits": "410000"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "100000",
+        "seed": 2026118339,
+        "forcedNaturalScatterCount": 4,
+        "spins": 13,
+        "finalPayoutUnits": "1770000"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "100000",
+        "seed": 2026126258,
+        "forcedNaturalScatterCount": 5,
+        "spins": 16,
+        "finalPayoutUnits": "4290000"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "150000",
+        "seed": 2026102501,
+        "forcedNaturalScatterCount": 0,
+        "spins": 1,
+        "finalPayoutUnits": "142500"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "150000",
+        "seed": 2026110420,
+        "forcedNaturalScatterCount": 3,
+        "spins": 11,
+        "finalPayoutUnits": "615000"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "150000",
+        "seed": 2026118339,
+        "forcedNaturalScatterCount": 4,
+        "spins": 13,
+        "finalPayoutUnits": "2655000"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "150000",
+        "seed": 2026126258,
+        "forcedNaturalScatterCount": 5,
+        "spins": 16,
+        "finalPayoutUnits": "6435000"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "200000",
+        "seed": 2026102501,
+        "forcedNaturalScatterCount": 0,
+        "spins": 1,
+        "finalPayoutUnits": "190000"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "200000",
+        "seed": 2026110420,
+        "forcedNaturalScatterCount": 3,
+        "spins": 11,
+        "finalPayoutUnits": "820000"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "200000",
+        "seed": 2026118339,
+        "forcedNaturalScatterCount": 4,
+        "spins": 13,
+        "finalPayoutUnits": "3540000"
+      },
+      {
+        "mode": "normal",
+        "stakeUnits": "200000",
+        "seed": 2026126258,
+        "forcedNaturalScatterCount": 5,
+        "spins": 16,
+        "finalPayoutUnits": "8580000"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "20",
+        "seed": 2027102504,
+        "spins": 10,
+        "finalPayoutUnits": "527"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "20",
+        "seed": 2027110423,
+        "spins": 10,
+        "finalPayoutUnits": "1522"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "40",
+        "seed": 2027102504,
+        "spins": 10,
+        "finalPayoutUnits": "1054"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "40",
+        "seed": 2027110423,
+        "spins": 10,
+        "finalPayoutUnits": "3044"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "60",
+        "seed": 2027102504,
+        "spins": 10,
+        "finalPayoutUnits": "1581"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "60",
+        "seed": 2027110423,
+        "spins": 10,
+        "finalPayoutUnits": "4566"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "80",
+        "seed": 2027102504,
+        "spins": 10,
+        "finalPayoutUnits": "2108"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "80",
+        "seed": 2027110423,
+        "spins": 10,
+        "finalPayoutUnits": "6088"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "100",
+        "seed": 2027102504,
+        "spins": 10,
+        "finalPayoutUnits": "2635"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "100",
+        "seed": 2027110423,
+        "spins": 10,
+        "finalPayoutUnits": "7610"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "200",
+        "seed": 2027102504,
+        "spins": 10,
+        "finalPayoutUnits": "5270"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "200",
+        "seed": 2027110423,
+        "spins": 10,
+        "finalPayoutUnits": "15220"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "300",
+        "seed": 2027102504,
+        "spins": 10,
+        "finalPayoutUnits": "7905"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "300",
+        "seed": 2027110423,
+        "spins": 10,
+        "finalPayoutUnits": "22830"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "400",
+        "seed": 2027102504,
+        "spins": 10,
+        "finalPayoutUnits": "10540"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "400",
+        "seed": 2027110423,
+        "spins": 10,
+        "finalPayoutUnits": "30440"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "500",
+        "seed": 2027102504,
+        "spins": 10,
+        "finalPayoutUnits": "13175"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "500",
+        "seed": 2027110423,
+        "spins": 10,
+        "finalPayoutUnits": "38050"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "600",
+        "seed": 2027102504,
+        "spins": 10,
+        "finalPayoutUnits": "15810"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "600",
+        "seed": 2027110423,
+        "spins": 10,
+        "finalPayoutUnits": "45660"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "800",
+        "seed": 2027102504,
+        "spins": 10,
+        "finalPayoutUnits": "21080"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "800",
+        "seed": 2027110423,
+        "spins": 10,
+        "finalPayoutUnits": "60880"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "1000",
+        "seed": 2027102504,
+        "spins": 10,
+        "finalPayoutUnits": "26350"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "1000",
+        "seed": 2027110423,
+        "spins": 10,
+        "finalPayoutUnits": "76100"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "1500",
+        "seed": 2027102504,
+        "spins": 10,
+        "finalPayoutUnits": "39525"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "1500",
+        "seed": 2027110423,
+        "spins": 10,
+        "finalPayoutUnits": "114150"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "2000",
+        "seed": 2027102504,
+        "spins": 10,
+        "finalPayoutUnits": "52700"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "2000",
+        "seed": 2027110423,
+        "spins": 10,
+        "finalPayoutUnits": "152200"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "3000",
+        "seed": 2027102504,
+        "spins": 10,
+        "finalPayoutUnits": "79050"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "3000",
+        "seed": 2027110423,
+        "spins": 10,
+        "finalPayoutUnits": "228300"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "5000",
+        "seed": 2027102504,
+        "spins": 10,
+        "finalPayoutUnits": "131750"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "5000",
+        "seed": 2027110423,
+        "spins": 10,
+        "finalPayoutUnits": "380500"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "7500",
+        "seed": 2027102504,
+        "spins": 10,
+        "finalPayoutUnits": "197625"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "7500",
+        "seed": 2027110423,
+        "spins": 10,
+        "finalPayoutUnits": "570750"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "10000",
+        "seed": 2027102504,
+        "spins": 10,
+        "finalPayoutUnits": "263500"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "10000",
+        "seed": 2027110423,
+        "spins": 10,
+        "finalPayoutUnits": "761000"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "15000",
+        "seed": 2027102504,
+        "spins": 10,
+        "finalPayoutUnits": "395250"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "15000",
+        "seed": 2027110423,
+        "spins": 10,
+        "finalPayoutUnits": "1141500"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "20000",
+        "seed": 2027102504,
+        "spins": 10,
+        "finalPayoutUnits": "527000"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "20000",
+        "seed": 2027110423,
+        "spins": 10,
+        "finalPayoutUnits": "1522000"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "30000",
+        "seed": 2027102504,
+        "spins": 10,
+        "finalPayoutUnits": "790500"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "30000",
+        "seed": 2027110423,
+        "spins": 10,
+        "finalPayoutUnits": "2283000"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "50000",
+        "seed": 2027102504,
+        "spins": 10,
+        "finalPayoutUnits": "1317500"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "50000",
+        "seed": 2027110423,
+        "spins": 10,
+        "finalPayoutUnits": "3805000"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "75000",
+        "seed": 2027102504,
+        "spins": 10,
+        "finalPayoutUnits": "1976250"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "75000",
+        "seed": 2027110423,
+        "spins": 10,
+        "finalPayoutUnits": "5707500"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "100000",
+        "seed": 2027102504,
+        "spins": 10,
+        "finalPayoutUnits": "2635000"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "100000",
+        "seed": 2027110423,
+        "spins": 10,
+        "finalPayoutUnits": "7610000"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "150000",
+        "seed": 2027102504,
+        "spins": 10,
+        "finalPayoutUnits": "3952500"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "150000",
+        "seed": 2027110423,
+        "spins": 10,
+        "finalPayoutUnits": "11415000"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "200000",
+        "seed": 2027102504,
+        "spins": 10,
+        "finalPayoutUnits": "5270000"
+      },
+      {
+        "mode": "cosmic-chaos",
+        "stakeUnits": "200000",
+        "seed": 2027110423,
+        "spins": 10,
+        "finalPayoutUnits": "15220000"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "20",
+        "seed": 2028102507,
+        "spins": 12,
+        "finalPayoutUnits": "166"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "20",
+        "seed": 2028110426,
+        "spins": 12,
+        "finalPayoutUnits": "628"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "40",
+        "seed": 2028102507,
+        "spins": 12,
+        "finalPayoutUnits": "332"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "40",
+        "seed": 2028110426,
+        "spins": 12,
+        "finalPayoutUnits": "1256"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "60",
+        "seed": 2028102507,
+        "spins": 12,
+        "finalPayoutUnits": "498"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "60",
+        "seed": 2028110426,
+        "spins": 12,
+        "finalPayoutUnits": "1884"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "80",
+        "seed": 2028102507,
+        "spins": 12,
+        "finalPayoutUnits": "664"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "80",
+        "seed": 2028110426,
+        "spins": 12,
+        "finalPayoutUnits": "2512"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "100",
+        "seed": 2028102507,
+        "spins": 12,
+        "finalPayoutUnits": "830"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "100",
+        "seed": 2028110426,
+        "spins": 12,
+        "finalPayoutUnits": "3140"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "200",
+        "seed": 2028102507,
+        "spins": 12,
+        "finalPayoutUnits": "1660"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "200",
+        "seed": 2028110426,
+        "spins": 12,
+        "finalPayoutUnits": "6280"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "300",
+        "seed": 2028102507,
+        "spins": 12,
+        "finalPayoutUnits": "2490"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "300",
+        "seed": 2028110426,
+        "spins": 12,
+        "finalPayoutUnits": "9420"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "400",
+        "seed": 2028102507,
+        "spins": 12,
+        "finalPayoutUnits": "3320"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "400",
+        "seed": 2028110426,
+        "spins": 12,
+        "finalPayoutUnits": "12560"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "500",
+        "seed": 2028102507,
+        "spins": 12,
+        "finalPayoutUnits": "4150"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "500",
+        "seed": 2028110426,
+        "spins": 12,
+        "finalPayoutUnits": "15700"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "600",
+        "seed": 2028102507,
+        "spins": 12,
+        "finalPayoutUnits": "4980"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "600",
+        "seed": 2028110426,
+        "spins": 12,
+        "finalPayoutUnits": "18840"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "800",
+        "seed": 2028102507,
+        "spins": 12,
+        "finalPayoutUnits": "6640"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "800",
+        "seed": 2028110426,
+        "spins": 12,
+        "finalPayoutUnits": "25120"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "1000",
+        "seed": 2028102507,
+        "spins": 12,
+        "finalPayoutUnits": "8300"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "1000",
+        "seed": 2028110426,
+        "spins": 12,
+        "finalPayoutUnits": "31400"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "1500",
+        "seed": 2028102507,
+        "spins": 12,
+        "finalPayoutUnits": "12450"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "1500",
+        "seed": 2028110426,
+        "spins": 12,
+        "finalPayoutUnits": "47100"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "2000",
+        "seed": 2028102507,
+        "spins": 12,
+        "finalPayoutUnits": "16600"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "2000",
+        "seed": 2028110426,
+        "spins": 12,
+        "finalPayoutUnits": "62800"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "3000",
+        "seed": 2028102507,
+        "spins": 12,
+        "finalPayoutUnits": "24900"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "3000",
+        "seed": 2028110426,
+        "spins": 12,
+        "finalPayoutUnits": "94200"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "5000",
+        "seed": 2028102507,
+        "spins": 12,
+        "finalPayoutUnits": "41500"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "5000",
+        "seed": 2028110426,
+        "spins": 12,
+        "finalPayoutUnits": "157000"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "7500",
+        "seed": 2028102507,
+        "spins": 12,
+        "finalPayoutUnits": "62250"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "7500",
+        "seed": 2028110426,
+        "spins": 12,
+        "finalPayoutUnits": "235500"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "10000",
+        "seed": 2028102507,
+        "spins": 12,
+        "finalPayoutUnits": "83000"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "10000",
+        "seed": 2028110426,
+        "spins": 12,
+        "finalPayoutUnits": "314000"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "15000",
+        "seed": 2028102507,
+        "spins": 12,
+        "finalPayoutUnits": "124500"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "15000",
+        "seed": 2028110426,
+        "spins": 12,
+        "finalPayoutUnits": "471000"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "20000",
+        "seed": 2028102507,
+        "spins": 12,
+        "finalPayoutUnits": "166000"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "20000",
+        "seed": 2028110426,
+        "spins": 12,
+        "finalPayoutUnits": "628000"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "30000",
+        "seed": 2028102507,
+        "spins": 12,
+        "finalPayoutUnits": "249000"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "30000",
+        "seed": 2028110426,
+        "spins": 12,
+        "finalPayoutUnits": "942000"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "50000",
+        "seed": 2028102507,
+        "spins": 12,
+        "finalPayoutUnits": "415000"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "50000",
+        "seed": 2028110426,
+        "spins": 12,
+        "finalPayoutUnits": "1570000"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "75000",
+        "seed": 2028102507,
+        "spins": 12,
+        "finalPayoutUnits": "622500"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "75000",
+        "seed": 2028110426,
+        "spins": 12,
+        "finalPayoutUnits": "2355000"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "100000",
+        "seed": 2028102507,
+        "spins": 12,
+        "finalPayoutUnits": "830000"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "100000",
+        "seed": 2028110426,
+        "spins": 12,
+        "finalPayoutUnits": "3140000"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "150000",
+        "seed": 2028102507,
+        "spins": 12,
+        "finalPayoutUnits": "1245000"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "150000",
+        "seed": 2028110426,
+        "spins": 12,
+        "finalPayoutUnits": "4710000"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "200000",
+        "seed": 2028102507,
+        "spins": 12,
+        "finalPayoutUnits": "1660000"
+      },
+      {
+        "mode": "ufo-invasion",
+        "stakeUnits": "200000",
+        "seed": 2028110426,
+        "spins": 12,
+        "finalPayoutUnits": "6280000"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "20",
+        "seed": 2029102510,
+        "spins": 15,
+        "finalPayoutUnits": "1053"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "20",
+        "seed": 2029110429,
+        "spins": 15,
+        "finalPayoutUnits": "3739"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "40",
+        "seed": 2029102510,
+        "spins": 15,
+        "finalPayoutUnits": "2106"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "40",
+        "seed": 2029110429,
+        "spins": 15,
+        "finalPayoutUnits": "7478"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "60",
+        "seed": 2029102510,
+        "spins": 15,
+        "finalPayoutUnits": "3159"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "60",
+        "seed": 2029110429,
+        "spins": 15,
+        "finalPayoutUnits": "11217"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "80",
+        "seed": 2029102510,
+        "spins": 15,
+        "finalPayoutUnits": "4212"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "80",
+        "seed": 2029110429,
+        "spins": 15,
+        "finalPayoutUnits": "14956"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "100",
+        "seed": 2029102510,
+        "spins": 15,
+        "finalPayoutUnits": "5265"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "100",
+        "seed": 2029110429,
+        "spins": 15,
+        "finalPayoutUnits": "18695"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "200",
+        "seed": 2029102510,
+        "spins": 15,
+        "finalPayoutUnits": "10530"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "200",
+        "seed": 2029110429,
+        "spins": 15,
+        "finalPayoutUnits": "37390"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "300",
+        "seed": 2029102510,
+        "spins": 15,
+        "finalPayoutUnits": "15795"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "300",
+        "seed": 2029110429,
+        "spins": 15,
+        "finalPayoutUnits": "56085"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "400",
+        "seed": 2029102510,
+        "spins": 15,
+        "finalPayoutUnits": "21060"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "400",
+        "seed": 2029110429,
+        "spins": 15,
+        "finalPayoutUnits": "74780"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "500",
+        "seed": 2029102510,
+        "spins": 15,
+        "finalPayoutUnits": "26325"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "500",
+        "seed": 2029110429,
+        "spins": 15,
+        "finalPayoutUnits": "93475"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "600",
+        "seed": 2029102510,
+        "spins": 15,
+        "finalPayoutUnits": "31590"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "600",
+        "seed": 2029110429,
+        "spins": 15,
+        "finalPayoutUnits": "112170"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "800",
+        "seed": 2029102510,
+        "spins": 15,
+        "finalPayoutUnits": "42120"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "800",
+        "seed": 2029110429,
+        "spins": 15,
+        "finalPayoutUnits": "149560"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "1000",
+        "seed": 2029102510,
+        "spins": 15,
+        "finalPayoutUnits": "52650"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "1000",
+        "seed": 2029110429,
+        "spins": 15,
+        "finalPayoutUnits": "186950"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "1500",
+        "seed": 2029102510,
+        "spins": 15,
+        "finalPayoutUnits": "78975"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "1500",
+        "seed": 2029110429,
+        "spins": 15,
+        "finalPayoutUnits": "280425"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "2000",
+        "seed": 2029102510,
+        "spins": 15,
+        "finalPayoutUnits": "105300"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "2000",
+        "seed": 2029110429,
+        "spins": 15,
+        "finalPayoutUnits": "373900"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "3000",
+        "seed": 2029102510,
+        "spins": 15,
+        "finalPayoutUnits": "157950"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "3000",
+        "seed": 2029110429,
+        "spins": 15,
+        "finalPayoutUnits": "560850"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "5000",
+        "seed": 2029102510,
+        "spins": 15,
+        "finalPayoutUnits": "263250"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "5000",
+        "seed": 2029110429,
+        "spins": 15,
+        "finalPayoutUnits": "934750"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "7500",
+        "seed": 2029102510,
+        "spins": 15,
+        "finalPayoutUnits": "394875"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "7500",
+        "seed": 2029110429,
+        "spins": 15,
+        "finalPayoutUnits": "1402125"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "10000",
+        "seed": 2029102510,
+        "spins": 15,
+        "finalPayoutUnits": "526500"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "10000",
+        "seed": 2029110429,
+        "spins": 15,
+        "finalPayoutUnits": "1869500"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "15000",
+        "seed": 2029102510,
+        "spins": 15,
+        "finalPayoutUnits": "789750"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "15000",
+        "seed": 2029110429,
+        "spins": 15,
+        "finalPayoutUnits": "2804250"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "20000",
+        "seed": 2029102510,
+        "spins": 15,
+        "finalPayoutUnits": "1053000"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "20000",
+        "seed": 2029110429,
+        "spins": 15,
+        "finalPayoutUnits": "3739000"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "30000",
+        "seed": 2029102510,
+        "spins": 15,
+        "finalPayoutUnits": "1579500"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "30000",
+        "seed": 2029110429,
+        "spins": 15,
+        "finalPayoutUnits": "5608500"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "50000",
+        "seed": 2029102510,
+        "spins": 15,
+        "finalPayoutUnits": "2632500"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "50000",
+        "seed": 2029110429,
+        "spins": 15,
+        "finalPayoutUnits": "9347500"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "75000",
+        "seed": 2029102510,
+        "spins": 15,
+        "finalPayoutUnits": "3948750"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "75000",
+        "seed": 2029110429,
+        "spins": 15,
+        "finalPayoutUnits": "14021250"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "100000",
+        "seed": 2029102510,
+        "spins": 15,
+        "finalPayoutUnits": "5265000"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "100000",
+        "seed": 2029110429,
+        "spins": 15,
+        "finalPayoutUnits": "18695000"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "150000",
+        "seed": 2029102510,
+        "spins": 15,
+        "finalPayoutUnits": "7897500"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "150000",
+        "seed": 2029110429,
+        "spins": 15,
+        "finalPayoutUnits": "28042500"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "200000",
+        "seed": 2029102510,
+        "spins": 15,
+        "finalPayoutUnits": "10530000"
+      },
+      {
+        "mode": "deep-echo",
+        "stakeUnits": "200000",
+        "seed": 2029110429,
+        "spins": 15,
+        "finalPayoutUnits": "37390000"
+      }
+    ],
+    "counters": {
+      "echoes": 156,
+      "energyEvents": 624,
+      "beams": 910,
+      "naturalAwards": {
+        "10": 26,
+        "12": 26,
+        "15": 26
+      }
+    },
+    "method": "Independent board, energy, beam and echo implementation and prefix scorer compared with real start/move after serializing each saved continuation. All 26 stakes and all 4 modes; natural 3/4/5-scatter branches forced independently of future seed draws."
+  },
+  "cappedCoupling": {
+    "capInStakes": 10000,
+    "proof": "Sample latent independent future boards, beam attempts, energy and echo coins through the declared spin budget even after the actual engine would stop. Every awarded line amount is nonnegative. Sequential per-line capping and termination pay exactly min(latent uncapped complete-round payout, 10000 stakes). Skipping an echo draw or future spins after reaching the cap cannot alter this identity. Base payout is at most 800 stakes, so normal bonus suppression at the cap never occurs on its initial spin.",
+    "uncappedExpectationIsUpperBound": true,
+    "noProfitableExpectation": true
+  },
+  "limitations": [
+    "Uncapped expectation is exact rational arithmetic for the current model. Capped RTP is bounded using a conservative stop-loss moment inequality, rather than computed exactly.",
+    "The conservative lower bounds do not certify 95.8% minimum RTP. All upper bounds are below 100%, which excludes a positive mathematical expectation in these current modes.",
+    "All paylines share board cells. Marginal line enumeration suffices for expectation, but does not give the complete board or round distribution.",
+    "Integer settlement and normalized cap thresholds coincide at every current allowed stake.",
+    "Server replay covers current accepted initial states and free continuations, not adversarially forged persisted state or database wallet atomicity."
+  ]
+}
