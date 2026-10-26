@@ -1,10 +1,9 @@
 import { installDemoWallet } from './demoWalletRoutes';
-import { installGameWallet } from './gameWalletRoutes';
 import { installGameModuleAssets } from './gameModuleAssets';
 import { installCasinoApiPro } from './casinoApiProRoutes';
-import { installUsdtWallet } from './usdtWalletRoutes';
 import { installCryptoWallet } from './cryptoWalletRoutes';
 import { installPaymentCredits } from './payments/credits';
+import { installPaymentMethods } from './payments/methods';
 import { installSandboxPayments } from './payments/sandbox-routes';
 import { installMira } from './miraRoutes';
 import { installSkinStudio } from './skinStudioRoutes';
@@ -34,14 +33,12 @@ const server = defineServer({
       }
       next();
     });
+    installPaymentMethods(app);
     installAuth(app);
     installFinanceAdmin(app);
-    installGameWallet(app);
     installDemoWallet(app);
     stopSandbox = installSandboxPayments(app);
     installCasinoApiPro(app);
-    app.use(['/api/nile-wallet','/api/nile-play'],(_req,res)=>res.status(410).json({error:'Используй общий кошелёк виртуальных USDT в клубе.'}));
-    installUsdtWallet(app);
     stopCrypto = installCryptoWallet(app);
       installPaymentCredits(app, accounts.paymentCredits, accounts.paymentEventSecret);
     await installMira(app);

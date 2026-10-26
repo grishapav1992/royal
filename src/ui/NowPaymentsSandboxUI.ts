@@ -15,7 +15,7 @@ export class NowPaymentsSandboxUI {
   private polling?: ReturnType<typeof setInterval>;
   constructor(private dialog: HTMLDialogElement) {
     this.section.id = 'nowpayments-sandbox'; this.section.hidden = true;
-    this.section.innerHTML = `<h3>NOWPayments Sandbox</h3><p>${t('Тестовое пополнение общего баланса для 12 игр Royal. Реальные деньги не используются, вывод недоступен.')}</p>
+    this.section.innerHTML = `<h3>NOWPayments Sandbox</h3><p>${t('Тестовое пополнение общего баланса для игр Royal, ателье и поединков. Реальные деньги не используются, вывод недоступен.')}</p>
       <form id="sandbox-deposit"><label for="sandbox-amount">${t('Сумма тестового пополнения')}</label><input id="sandbox-amount" type="number" min="1" max="100000" step="1" value="1000" required>
       <label for="sandbox-case">${t('Сценарий платежа')}</label><select id="sandbox-case"><option value="success">${t('Успешный платёж')}</option><option value="partially_paid">${t('Частичная оплата')}</option><option value="failed">${t('Неудачный платёж')}</option></select>
       <button type="submit" class="primary-button">${t('Создать тестовый платёж')}</button></form>
@@ -92,6 +92,8 @@ export class NowPaymentsSandboxUI {
   }
   private render() {
     this.section.hidden = !this.account || !this.snapshot?.enabled;
+    const disabled = this.dialog.querySelector<HTMLElement>('#sandbox-disabled-note');
+    if (disabled) disabled.hidden = !this.account || this.snapshot?.enabled !== false;
     this.section.querySelector('#sandbox-message')!.textContent = this.message;
     this.section.querySelectorAll<HTMLInputElement | HTMLButtonElement | HTMLSelectElement>('input,select,button').forEach(el => { el.disabled = this.busy; });
     const retry = this.section.querySelector<HTMLButtonElement>('#sandbox-retry')!; retry.hidden = !this.pending;

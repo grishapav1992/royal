@@ -25,7 +25,7 @@ export type FinanceReport = {
 };
 export type FinanceAdjustment = { id: string; actorId: string; playerId: string; deltaUnits: string; reason: string; createdAt: number };
 export const FINANCE_SOURCES: Record<FinanceSource, string> = {
-  payments: 'Реальные · NOWPayments', nile: 'Тестовые · USDT Nile', mainnet: 'Реальные · прямой USDT',
+  payments: 'Реальные · NOWPayments', nile: 'Архив · USDT Nile', mainnet: 'Архив · прямой USDT',
 };
 export const FINANCE_KINDS: Record<FinanceKind, string> = {
   deposit: 'Пополнение', withdrawal: 'Вывод', game: 'Игра', adjustment: 'Корректировка', capital: 'Резерв казино',purchase:'Покупка',

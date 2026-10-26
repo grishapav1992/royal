@@ -22,9 +22,10 @@ export class CryptoWalletUI {
   private qrAddress = '';
   constructor(private scene: RoomScene) {
     this.button.id = 'crypto-wallet-button'; this.button.type = 'button'; this.button.className = 'wallet-button'; this.button.hidden = true;
-    this.button.textContent = translateText('Пополнить баланс'); this.button.onclick = () => this.show(); document.querySelector('.profile')!.prepend(this.button);
+    this.button.textContent = translateText('NOWPayments · Боевой'); this.button.onclick = () => this.show(); document.querySelector('.profile')!.prepend(this.button);
     this.dialog.id = 'crypto-wallet-dialog'; this.dialog.className = 'wallet-dialog crypto-wallet'; this.dialog.setAttribute('aria-labelledby', 'crypto-wallet-title');
-    this.dialog.innerHTML = translateText(`<div class="wallet-heading"><div><span class="eyebrow">РОЯЛЬ</span><h2 id="crypto-wallet-title">Пополнить баланс</h2></div><button type="button" class="icon-button" id="crypto-wallet-close" aria-label="Закрыть пополнение баланса">×</button></div>
+    this.dialog.innerHTML = translateText(`<div class="wallet-heading"><div><span class="eyebrow">NOWPAYMENTS</span><h2 id="crypto-wallet-title">Боевой баланс</h2></div><button type="button" class="icon-button" id="crypto-wallet-close" aria-label="Закрыть пополнение баланса">×</button></div>
+      <p class="wallet-description">Реальные средства. Этот баланс хранится отдельно от тестового баланса клуба. Ставки на реальные средства пока недоступны.</p>
       <p id="crypto-wallet-message" role="status" aria-live="polite"></p>
       <section id="crypto-wallet-summary" hidden><p class="wallet-total"><strong id="crypto-wallet-balance"></strong><span id="crypto-wallet-balance-unit">USDT доступно</span></p><p id="crypto-wallet-usdt" hidden></p><p id="crypto-wallet-reserved"></p></section>
       <label>Валюта отображения<select id="crypto-display-currency"><option value="USDT">USDT</option></select></label>
@@ -224,7 +225,7 @@ export class CryptoWalletUI {
   private render() {
     const wallet = cryptoWallet.wallet;
     this.button.hidden = !cryptoWallet.accountId;
-    this.button.textContent = translateText('Пополнить баланс');
+    this.button.textContent = translateText('NOWPayments · Боевой');
     this.el<HTMLElement>('#crypto-wallet-content').hidden = wallet?.state !== 'enabled';
     this.el<HTMLElement>('#crypto-wallet-summary').hidden = wallet?.state !== 'enabled';
     this.el<HTMLFieldSetElement>('#crypto-deposit-fields').disabled = wallet?.state !== 'enabled' || !this.currencies.length || this.working || cryptoWallet.busy || !!cryptoWallet.transfer || !!cryptoWallet.pending;

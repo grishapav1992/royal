@@ -2,6 +2,8 @@ import { spawn } from 'node:child_process';
 import { temporaryDatabase } from './database-test';
 
 const database = await temporaryDatabase();
+// This dedicated runner owns shutdown. A competing dependency hook exits before cleanup completes.
+process.removeAllListeners('SIGINT'); process.removeAllListeners('SIGTERM');
 const child = spawn(process.execPath, ['--import', 'tsx', 'scripts/nowpayments-sandbox-fixture.ts'], {
   stdio: 'inherit', env: { ...process.env, ...database.env, PORT: process.env.ROYAL_SANDBOX_UI_PORT ?? '2579',
     AUTH_DB_PATH: 'royal_sandbox_e2e', PUBLIC_ORIGIN: 'https://sandbox.example.test',

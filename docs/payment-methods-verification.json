@@ -1,0 +1,168 @@
+{
+  "format": 1,
+  "status": "verified-source-awaiting-production-release",
+  "verifiedAt": "2026-10-26T18:36:15.297Z",
+  "sourceBranch": "feature/nowpayments-only",
+  "sourceBase": "cef55eebcf482b88cc95371599fd5856a57d6246",
+  "integrationMain": "e92b46b74b173f4305fa1309ddeca3fcb6677d56",
+  "productionPublished": false,
+  "methods": [
+    "nowpayments",
+    "nowpayments-sandbox"
+  ],
+  "removed": [
+    "direct-free-top-up",
+    "nile-wallet",
+    "nile-play-deposit-and-claim",
+    "direct-tron-usdt",
+    "native-game-deposit"
+  ],
+  "checks": {
+    "server": {
+      "passed": 51,
+      "failed": 0,
+      "includes": "NOWPayments isolation, archived source protection, accepted receipt replay, all 12 Royal, atelier, six PvP, Mortal Kombat and temporary database cleanup"
+    },
+    "browser": {
+      "passed": 13,
+      "failed": 0,
+      "realHost": true,
+      "connectedChat": true,
+      "widths": [
+        1440,
+        390
+      ],
+      "languages": [
+        "ru",
+        "en"
+      ],
+      "lostSandboxCreateResponseRecovered": true,
+      "creditEntriesAfterReplay": 1,
+      "realBalanceNotMixedWithTestBalance": true,
+      "visualScreenshotsInspected": true,
+      "providerResponses": "isolated local emulator; real NOWPayments credentials were not read"
+    },
+    "build": {
+      "format": 1,
+      "startedAt": "2026-10-26T18:26:45.380Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 1294
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 5271
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 2298
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 4809
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 51
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 17
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 19
+        }
+      ],
+      "passed": true,
+      "durationMs": 13758
+    },
+    "rtp": {
+      "passed": true,
+      "verified": 10,
+      "legacyNotQualified": 114
+    },
+    "testServerShutdown": {
+      "checkedAt": "2026-10-26T18:34:39.408Z",
+      "ready": true,
+      "exitCode": 0,
+      "ownedDirectories": [
+        "royal-pg-JVv4lO"
+      ],
+      "removed": true,
+      "signal": "SIGTERM",
+      "processGroup": true
+    }
+  },
+  "preserved": {
+    "existingBalances": true,
+    "acceptedOperations": true,
+    "pendingAdministrativeCommands": true,
+    "legacyFinancialJournals": true,
+    "oldGameMath": true,
+    "hostContractFields": true
+  },
+  "production": {
+    "lastObservedSource": "ae17a8df9e894278dedc29f08c052fe68ee09c04",
+    "lastObservedImage": "sha256:10c749e325df08878f00b488a4c45d128eee627f1af9ba362eb63eb69852c9a7",
+    "availableBytes": 5642510336,
+    "allThreePublishLocks": "held-by-another-release",
+    "sourceChanged": false,
+    "configurationChanged": false,
+    "playerDataWritten": false
+  },
+  "newRealPaymentsCreated": 0,
+  "newOfficialSandboxPaymentsCreated": 0,
+  "remaining": [
+    "Complete the concurrent production release and obtain a fresh complete baseline.",
+    "Prepare and verify a selective release from source already saved to main, then install under the shared publication locks.",
+    "Enable the separate Sandbox configuration and verify the published payment entry points."
+  ],
+  "sourceHashes": {
+    ".env.example": "e9ab7e6c4d3de106f34516a88229fc96af5fbf750475d0b6d980510f1f05140f",
+    "README.md": "c1de77fa31b2b3085e698b2bc1d63da99d5d2d6d5359c11d636a5baaf6a1f8a7",
+    "deployment/finance/README.md": "15f60ea53d466140020fbf116cd5917a202f900b1fd9aef5cd01592405f3f66f",
+    "scripts/database-test.ts": "d451fca994b9d7d5c41dfc5f0fec13a1d34dab117264ae2f70c1c749c7fe08f8",
+    "scripts/nowpayments-sandbox-local.ts": "01588751105177686188c780872d955461a2c70856c224f6b4a8a019ba1f9f16",
+    "server/admin/routes.ts": "0ca35f36009e1741d4e8c161cb94fb13d810710b1b4b843213098c6e5c81debe",
+    "server/admin/store.ts": "7ce3070f3098a584066ed92e6c11cb0f73f35705409d29069f4cbb95d60766fb",
+    "server/demoWalletRoutes.ts": "934f987fd44249faa1c26979d97588c3a5466eb3f01877f23933f5339b4ccf8f",
+    "server/index.ts": "1fb9c30999621864f67dc43807466a96f98379bd0634346413e5905d929a451e",
+    "src/admin/main.ts": "52ed0d95ebb11431f05ab920564641ef2ed9b78286814e4886235d4820ae1b9e",
+    "src/i18n/en.ts": "0afd9b7bb900e7ec67c0dfe35eea1fab058850c1e0ccf7fd9ff9722c393c85bc",
+    "src/main.ts": "18f02f26a1e00886cf79b5f0fc5b0c772d80aaf586cbce97c9a2755a7fb9d68b",
+    "src/nile-wallet.css": "deleted",
+    "src/shared/financeAdmin.ts": "5e3e9d41c4ce82a0ba8c610a89e622ca55fc678eb383332da9f2c565d95ad761",
+    "src/ui/CryptoWalletUI.ts": "4c3783755a1699fcf7e7b6a7287b8cf664ae79841acfa8220b2f47543e506a89",
+    "src/ui/DemoWalletUI.ts": "78e78c25afbbf68124d20f58c1c1f8501a18e96506c5dcb6867e96599799bb16",
+    "src/ui/NileWalletUI.ts": "deleted",
+    "src/ui/NowPaymentsSandboxUI.ts": "b38266c11783e626b009817b6e9613f4fc84cfe477d5bae5943b8b1dbbcc3743",
+    "src/ui/UsdtWalletUI.ts": "deleted",
+    "src/usdt-wallet.css": "deleted",
+    "src/wallet.css": "30c5fb0aa6cbee1cdef1bd5a6e062e91c7b8ea94b69fbaacabc74dbbf7da630a",
+    "src/wallet/WalletClient.ts": "629677fba3015fd8887040b86a88d14cb4f0103e456e06b749fbc1b9f61c05ca",
+    "tests/combat.spec.ts": "01c07d603876fd69ebbe4e637819acaf256557650285f03a6c7ae3bf199a7569",
+    "tests/crypto-wallet.spec.ts": "0d03eb2d4ef414bbf67d5c3cd5e856b41358e13d1954cea2172dd9fdf31bd18b",
+    "tests/demo-wallet.spec.ts": "c9ad93d13c49227e8f0ed636f2d66baf1e38b27bd621068927224a23d6e95db0",
+    "tests/fixtures/volcanic-plinko-preview.ts": "489488eb02ae2962d2ece8a4245c49c34bd0b39e36eb16d2f751ab89bcae3a65",
+    "tests/nile-play.spec.ts": "67d4e0cf456859c96162b8ba2b1493c0ad1a49ee9bf1405226578b7bfc7bd35f",
+    "tests/royal-platform.spec.ts": "dfc3333187c5b247bcbdc3154020d2f3379a6e51cfde2a322822444bbb17b836",
+    "docs/payment-methods.md": "b4115d9618df8e237dc2fb633e55e69dbf3f580d07f14af7934af84f705ae327",
+    "playwright.payments.config.ts": "e54670185f53c523fdd8b6338d94d5c2872e93f0d896ad27daa3e9454dc174f1",
+    "server-tests/database-test-cleanup.test.ts": "ca4510b40f7fa8f4b1ec72881a626b2b786ce77e0ab55f25e99674054e3acdfa",
+    "server-tests/payment-methods.test.ts": "951d1002b1eb6343685a052bd4be2c98359daab819d50cf7a7787cc42d7dd11a",
+    "server/payments/methods.ts": "9a6245876361ea92b9cdfb24f5de98f0c43581754c1f328393db65e58fa7d99b",
+    "src/i18n/paymentMethodsEn.ts": "871627ddfe9e1fda442b6d391c6570f6ebab59506001da61ecbd2f763b8e9fff",
+    "src/shared/paymentMethods.ts": "a5f187bce65ca55e9bf4219ecfccb4e3df8dca8dc306debc6167988a56b993ef",
+    "tests/sandbox-topup.ts": "29c472b2c5077477fc23dd589ddb1733acb92002930379b8a1cddca9f2fa3a18"
+  }
+}

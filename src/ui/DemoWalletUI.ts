@@ -16,24 +16,20 @@ export class DemoWalletUI {
     document.querySelector('.profile')!.prepend(this.button);
     this.dialog.id = 'wallet-dialog'; this.dialog.className = 'wallet-dialog';
     this.dialog.setAttribute('aria-labelledby', 'wallet-title');
-    this.dialog.innerHTML = translateText(`<div class="wallet-heading"><div><span class="eyebrow">РОЯЛЬ · ДЕМО</span><h2 id="wallet-title">Мой кошелёк</h2></div><button class="icon-button" id="wallet-close" aria-label="Закрыть кошелёк">×</button></div>
+    this.dialog.innerHTML = translateText(`<div class="wallet-heading"><div><span class="eyebrow">NOWPAYMENTS SANDBOX</span><h2 id="wallet-title">Тестовый баланс</h2></div><button class="icon-button" id="wallet-close" aria-label="Закрыть кошелёк">×</button></div>
       <p class="wallet-total"><strong id="wallet-balance">…</strong><span>виртуальных USDT</span></p>
       <p id="wallet-pending" class="wallet-note" role="status" hidden></p>
-      <p class="wallet-description">Введи сумму и играй в автоматы клуба. Это бесплатные виртуальные USDT без реальных платежей и вывода.</p>
-      <form id="wallet-deposit"><label for="wallet-amount">Сумма пополнения</label><div class="wallet-deposit-row"><input id="wallet-amount" type="number" inputmode="numeric" min="1" max="100000" step="1" value="1000" required><button class="primary-button" type="submit">Пополнить баланс</button></div></form>
+      <p class="wallet-description">Общий тестовый баланс для игр, ателье и поединков. Пополнение через NOWPayments Sandbox, без перевода реальных денег.</p>
+      <p id="sandbox-disabled-note" class="wallet-note" role="status" hidden>NOWPayments Sandbox пока не подключён.</p>
       <p id="wallet-message" role="status" hidden></p><button id="wallet-retry" class="primary-button" hidden>Проверить операцию</button>
       <button id="wallet-refresh" class="text-button">Обновить баланс</button>
       <button id="wallet-provider-games" class="primary-button">Вернуться в зал</button>
       <h3>История операций</h3><ol id="wallet-history"></ol>
-      <p class="wallet-note">Один виртуальный баланс для игр клуба. Сохранённые партии доступны после повторного входа.</p>`);
+      <p class="wallet-note">Боевой баланс NOWPayments хранится отдельно. Тестовые средства нельзя вывести.</p>`);
     document.body.append(this.dialog);
     this.sandbox = new NowPaymentsSandboxUI(this.dialog);
     this.dialog.querySelector<HTMLButtonElement>('#wallet-close')!.onclick = () => this.dialog.close();
     this.dialog.addEventListener('close', () => scene.setLocked(!!document.querySelector('dialog[open]')));
-    this.dialog.querySelector('form')!.onsubmit = event => {
-      event.preventDefault(); const amount = this.dialog.querySelector<HTMLInputElement>('#wallet-amount')!.valueAsNumber;
-      void this.perform(() => demoWallet.operate('deposit', amount));
-    };
     this.dialog.querySelector<HTMLButtonElement>('#wallet-retry')!.onclick = () => {
       if (demoWallet.pending) void this.perform(() => demoWallet.retry());
     };
@@ -60,8 +56,8 @@ export class DemoWalletUI {
   }
   private render() {
     this.button.hidden = !demoWallet.accountId;
-    this.button.textContent = tr`◈ ${demoWallet.wallet ? coins(demoWallet.wallet.balance) : '…'} USDT · Демо`;
-    this.button.setAttribute('aria-label', translateText('Открыть демокошелёк'));
+    this.button.textContent = tr`◈ ${demoWallet.wallet ? coins(demoWallet.wallet.balance) : '…'} USDT · Sandbox`;
+    this.button.setAttribute('aria-label', translateText('Открыть тестовый баланс NOWPayments Sandbox'));
     this.dialog.querySelector('#wallet-balance')!.textContent = demoWallet.wallet ? coins(demoWallet.wallet.balance) : '…';
     const pending=this.dialog.querySelector<HTMLElement>('#wallet-pending')!,value=demoWallet.wallet?.pendingBalance;
     pending.hidden=!value||value==='0.00';
@@ -71,12 +67,11 @@ export class DemoWalletUI {
     message.hidden = !message.textContent;
     const retry = this.dialog.querySelector<HTMLButtonElement>('#wallet-retry')!;
     retry.hidden = !demoWallet.pending; retry.disabled = demoWallet.busy;
-    this.dialog.querySelectorAll<HTMLInputElement | HTMLButtonElement>('#wallet-deposit input, #wallet-deposit button').forEach(el => { el.disabled = demoWallet.busy || !!demoWallet.pending; });
     const history = this.dialog.querySelector('#wallet-history')!; history.replaceChildren();
     for (const entry of demoWallet.wallet?.entries ?? []) {
       const row = document.createElement('li'); row.dataset.kind = entry.kind;
       const label = document.createElement('span');
-      const action = { deposit: translateText('Демопополнение'), bet: translateText('ставка'), win: translateText('начисление'), refund: translateText('возврат ставки'), rollback: translateText('отмена операции') }[entry.kind];
+      const action = { deposit: translateText('Пополнение'), bet: translateText('ставка'), win: translateText('начисление'), refund: translateText('возврат ставки'), rollback: translateText('отмена операции') }[entry.kind];
       const gameName = (entry.gameName ? translateText(entry.gameName) : '') || (entry.source === 'casinoapipro' ? 'Casino Api Pro' : entry.source === 'royal-roulette' ? translateText('Рулетка') : 'Royal Coins');
       label.textContent = entry.kind === 'deposit' ? entry.source === 'nowpayments-sandbox' ? 'NOWPayments Sandbox' : action : `${gameName}: ${action}`;
       const amount = document.createElement('strong'); amount.textContent = `${entry.amount > 0 ? '+' : ''}${coins(entry.amount)}`;
