@@ -76,9 +76,27 @@ for name, digest in release['files'].items():
         assert source.is_file() and lf(source) == before['sourceLF'].get('public/'+relative), 'Unexpected public byte change: '+name
 (out/'dist-delta').mkdir(exist_ok=True)
 backend = {'index.js':copy(stage/'dist-server/index.js','server-delta/index.js')}
-for name in ['payments.js','crypto-reconcile.js','payments-meta.json']:
-    path = stage/'dist-server'/name
-    if path.exists(): assert sha(path) == before['program'].get('dist-server/'+name), 'Unreviewed backend change: '+name
+def preserved_inputs(stage, baseline, inputs):
+    assert inputs, 'An unchanged backend requires its complete source graph'
+    result = {}
+    for name in inputs:
+        path = Path(name)
+        assert not path.is_absolute() and '..' not in path.parts and name.startswith(('server/','src/','scripts/'))
+        source = stage/path
+        assert source.is_file() and not source.is_symlink()
+        digest = lf(source)
+        assert digest == baseline['sourceLF'].get(name), 'Retained backend input changed: '+name
+        result[name] = digest
+    return result
+
+
+preserved = {}
+for entry, name in [('server/payments/index.ts','payments.js'),('scripts/crypto-reconcile.ts','crypto-reconcile.js')]:
+    # Existing independent programs keep their verified production bytes. Require an unchanged transitive source graph.
+    code = "import{build}from'esbuild';const r=await build({entryPoints:[process.argv[1]],bundle:true,platform:'node',packages:'external',format:'esm',write:false,metafile:true});console.log(JSON.stringify(Object.keys(r.metafile.inputs)))"
+    inputs = json.loads(subprocess.check_output(['node','--input-type=module','-e',code,entry],cwd=stage,text=True))
+    preserved[name] = {'runtimeSha256':before['program']['dist-server/'+name], 'localSha256':sha(stage/'dist-server'/name),
+        'sourceInputs':preserved_inputs(stage,before,inputs)}
 host = json.loads((stage/'module-dist/host-contracts.json').read_text())
 assert host == before['moduleHost'], 'Host contracts must remain compatible'
 combat = next(row for row in release['packages'] if row['gameId'] == 'mortal-kombat')
@@ -100,7 +118,7 @@ copy(stage/'module-build/release-manifest.json','release-manifest.json')
 manifest = {'release':'mk-security-20261026-v1','sourceCommit':release['sourceCommit'],'baseCommit':release['baseCommit'],
     'before':before,'changed':changed,'delta':delta,'serverDelta':backend,'runtimePackages':metadata,'dependencyFiles':dependencies,
     'helpers':helpers,'helperSha256':helpers['deploy.py'],'snapshotSha256':helpers['snapshot.py'],
-    'retainedCanonicalRuntime':retained,'moduleDelta':module_delta,'modulePackages':module_packages,
+    'retainedCanonicalRuntime':retained,'preservedBackend':preserved,'moduleDelta':module_delta,'modulePackages':module_packages,
     'moduleInstallerSha256':before['source']['scripts/game-module-release.py']}
 (out/'install-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
 print(json.dumps({'sourceFiles':len(changed),'clientFiles':len(delta),'dependencyFiles':len(dependencies),

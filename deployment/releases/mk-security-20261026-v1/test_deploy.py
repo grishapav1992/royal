@@ -42,15 +42,33 @@ class SecurityRelease(unittest.TestCase):
         helpers={name:write(name,'reviewed '+name) for name in ['deploy.py','snapshot.py','runtime-inventory.cjs','quiesce.cjs','verify-runtime.cjs','modules.py']}
         source={name:'a'*64 for name in ['server/combatGame.ts','server/combatRoom.ts','server/combatGuard.ts','server/commonCombatWallet.ts',
             'server/pvp/virtual-wallet.ts','server/finance/combat-escrow.ts','server/finance/pvp-money.ts','src/shared/combat.ts','src/shared/combatEscrow.ts','src/shared/pvp.ts']}
-        before={'source':source,'sourceLF':{'package-lock.json':old_hash},'dependencyLock':old,
-            'program':{'node_modules/body-parser/package.json':'b'*64,'node_modules/qs/package.json':'c'*64,'node_modules/pg/index.js':'d'*64},
+        source['server/payments/index.ts']='a'*64
+        before={'source':source,'sourceLF':{'package-lock.json':old_hash,'server/payments/index.ts':'a'*64},'dependencyLock':old,
+            'program':{'dist-server/payments.js':'f'*64,'dist-server/crypto-reconcile.js':'e'*64,'node_modules/body-parser/package.json':'b'*64,'node_modules/qs/package.json':'c'*64,'node_modules/pg/index.js':'d'*64},
             'moduleHost':{'games':{'mortal-kombat':{'apiVersion':1,'rulesVersion':2,'progressVersion':1}}}}
         manifest={'release':self.root.name,'sourceCommit':'e'*40,'helpers':helpers,'before':before,
             'changed':self.n['inventory'](self.root/'source'),'delta':{},'serverDelta':self.n['inventory'](self.root/'server-delta'),
             'runtimePackages':{'package-lock.json':lock_hash},'dependencyFiles':self.n['inventory'](self.root/'dependency-delta')}
+        manifest['preservedBackend']={name:{'runtimeSha256':before['program']['dist-server/'+name],'sourceInputs':{'server/payments/index.ts':'a'*64}} for name in ['payments.js','crypto-reconcile.js']}
         (self.root/'modules').mkdir();manifest.update(moduleDelta={},modulePackages=[{'gameId':'mortal-kombat'}])
         self.n.update(M=manifest,OLD=before,BASE=source,CHANGES=manifest['changed'],DELTA={},SERVER_DELTA=manifest['serverDelta'])
 
+    def test_changed_retained_backend_input_is_rejected(self):
+        self.n['CHANGES']['server/payments/index.ts']='0'*64
+        with self.assertRaises(RuntimeError):self.n['payload']()
+    def test_retained_backend_hash_is_protected(self):
+        self.n['M']['preservedBackend']['payments.js']['runtimeSha256']='0'*64
+        with self.assertRaises(RuntimeError):self.n['payload']()
+    def test_preparer_checks_each_transitive_backend_source(self):
+        tree=ast.parse(Path(__file__).with_name('prepare.py').read_text())
+        n={'Path':Path,'lf':lambda path:hashlib.sha256(path.read_bytes().replace(b'\r\n',b'\n')).hexdigest()}
+        function=next(node for node in tree.body if isinstance(node,ast.FunctionDef) and node.name=='preserved_inputs')
+        exec(compile(ast.Module(body=[function],type_ignores=[]),'prepare.py','exec'),n)
+        p=self.root/'server/example.ts';p.parent.mkdir();p.write_text('source')
+        baseline={'sourceLF':{'server/example.ts':n['lf'](p)}}
+        self.assertTrue(n['preserved_inputs'](self.root,baseline,['server/example.ts']))
+        p.write_text('changed')
+        with self.assertRaises(AssertionError):n['preserved_inputs'](self.root,baseline,['server/example.ts'])
     def test_valid_backend_only_payload(self): self.n['payload']()
     def test_only_reviewed_lock_packages_change(self): self.n['lock_transition'](self.old,self.new)
     def test_unrelated_dependency_is_rejected(self):
