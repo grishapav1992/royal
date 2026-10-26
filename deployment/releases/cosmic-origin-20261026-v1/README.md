@@ -8,6 +8,8 @@ Use the actual production source revision from a fresh guarded `snapshot.py` res
 
 `deploy.py release` holds the existing three deployment locks. It rechecks every protected source/runtime/config/service/module fingerprint, verifies a bounded full source backup and tags the previous image. A constrained image overlay uses the existing image plus the exact host/backend/package-metadata delta. It does not install dependencies, change environment settings, run migrations or restore player data. Disk checks retain at least 5 GiB, accounting for source, backup and runtime delta. Rollback returns only to the exact reviewed compatible application image, preserving the current database.
 
+Before source writes or a backend restart, the hash-pinned `quiesce.cjs` opens a separate Compose one-off database connection with application name `royal/cosmic-release-gate`. Under the existing `royal_game` transaction advisory lock it waits until active combat matches and held virtual PvP wagers are both zero. It releases the lock while waiting for existing matches to finish, then retains it across source replacement and Compose recreation. The drain deadline is 180 seconds; the retained lock lease is 25 seconds, with a database idle-transaction timeout of 30 seconds. The installer rechecks the gate before each source replacement and restart, releases it immediately after Compose and before health checks, and rejects an expired or failed gate. Refusal before the quiet acknowledgement performs no source or runtime mutation. A rollback that actually restarts the application obtains the same gate; restoring the already running baseline does not recreate its container. Wallet, database transaction and combat-rule sources plus the existing 1/2/1 combat contract must remain unchanged. The gate reads state and holds a coordination lock; it never restores or rewrites player data.
+
 `modules.py check` and `modules.py publish` run after successful application installation under the same three locks. They preserve the host contract and every other module, publish only Cosmic through the standard independent-module installer and retain old resource URLs. A failed module phase restores only its own pointer and leaves the fixed backend available. Application rollback after a module publication first requires the guarded Cosmic pointer rollback. Never restore a database dump over later operations.
 
 Before installation run the new engine/wallet/qualification regressions, installer/module-helper tests and `verify-local.mjs` against the exact prepared manifest. The local helper creates only isolated temporary accounts and PostgreSQL data, checks the real host and connected chat on desktop/mobile, restores an active purchase and retries a lost final response. `verify-public.mjs` is read-only: public hashes, authentication boundaries, unrelated module pointers, previous Cosmic URLs and a guest browser with all writes and WebSockets blocked.
@@ -16,6 +18,12 @@ Python helpers can be tested locally with the bundled runtime:
 
 ```sh
 PYTHONDONTWRITEBYTECODE=1 /Users/grigory_pavlenko/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -m unittest discover -s deployment/releases/cosmic-origin-20261026-v1 -p 'test_*.py'
+```
+
+The real financial-lock regression uses only a fresh local test database:
+
+```sh
+node --import tsx scripts/database-test.ts --import tsx --test deployment/releases/cosmic-origin-20261026-v1/wallet-quiesce-gate.test.ts
 ```
 
 Run long server installation in a detached process with a private log. Keep the recovery archive, old image tags, current release and player volumes. After public checks, push the source/image/verification record to `deployment/SERVER.md`, then remove only this task's transport, runtime context, temporary logs and obsolete local packages. Report measured storage changes without attributing concurrent changes to this cleanup.
