@@ -1,0 +1,49 @@
+{
+  "verifiedAt": "2026-10-25T11:15:01.594872+00:00",
+  "method": "Read-only game source hashes, active immutable package integrity and container metadata. No player data, environment values or operations.",
+  "sourceHashes": {
+    "server/games/luelonSlots.ts": "be78b2715aa850d3801445edf0f714b89dcb76ed98719e5589fcac71dc7fe3f2",
+    "src/shared/luelonSlots.ts": "1867b3f6e7e3fbc1e00dd6fad2bb094c42e6038f8eba18e0ef7250381f95cdcb",
+    "src/shared/luelonSlotsModels.ts": "b8644fecff250437909ff88950c5ef129c1d534108344f9643b815614d844c74",
+    "src/shared/luelonSlotsLines.ts": "9629a12c51eee2850887a7a4cad31015aabb4be1b395799c4801ee9b016cf557",
+    "src/shared/cosmicEscapeBets.ts": "5e079e858e39cd73070f95f77688c774aee887e025a2f84fbc365c1e9cddd625",
+    "src/ui/CosmicEscapeUI.ts": "99805b8e60a5cc965c022e3619016d4f8555ca2f0a43b625f389d9ea60aa1177",
+    "src/ui/slotKit/SlotSessions.ts": "f51283d66ea4936932d496d9daee46db703bab1c2e8c55c4445c57955968a5d2",
+    "src/ui/slotKit/SlotScreens.ts": "59140beebcb205fa8e52c3e35f0f2283a0746ebd42b08ef54122598fd986756a",
+    "src/wallet/ExpansionClient.ts": "02cf337a2cabc65785a01625006361f294641a8e92bc86696ba01cb1253fd97b",
+    "server/demoExpansion.ts": "ab91cf5f0d590f05132b73b34d347f044b70f852e0bc31f4602d816289c2e420"
+  },
+  "activeModule": {
+    "format": 1,
+    "gameId": "studio-cosmic-escape",
+    "manifest": "/game-modules/studio-cosmic-escape/versions/1.0.0-14c75f92b7d8/manifest.json",
+    "sha256": "c211bfb2a51dc5b6833e1b84cb38bf63f03213c5f30c8b6d8de50a71f3b97b48"
+  },
+  "moduleVersion": "1.0.0-14c75f92b7d8",
+  "moduleSourceSha256": "14c75f92b7d8b11b096c221870a2469c7cf8493f3115938dd64f8f30e280c0b7",
+  "immutableFilesVerified": {
+    "entry-355118502712c4de.js": "355118502712c4dee2a75b51a8a9fc7c76045c2f22e7109fab7b64b17952a2e6",
+    "media/cosmic-guardians/v1/alien.webp": "188bd8973f446976b01b9805880b958df5761f1dd545e0c5e7a6418f60a19599",
+    "media/cosmic-guardians/v1/background.webp": "0e185ec675a1bcc7b4fc7bdf43d6bb4c5adc15f3a7141075cf6549471829689c",
+    "media/cosmic-guardians/v1/symbols-v2.webp": "6e5d58ecb7d3cc3d2e95c57838cd6ef06b5ccecdb35e3a7f26a6e75792e8bce9",
+    "media/cosmic-rebuild/load-v2/background.webp": "0296ec45a7307fc69b4a0da58ec46805f9ff2bd6a9dc1b85552e53ce563abe37",
+    "media/studio/space-world.webp": "0a9a41dd898f368f43c562c58523bb622b96c778ad927ce9ed8f3aba17512f3d",
+    "media/studio/symbols.webp": "63d92524d8634e72a8a6c32cc973e6baf64498a2ce7a944534628b962de7b406",
+    "style-8f6bcc1235ada2f3.css": "8f6bcc1235ada2f3fe6faec4e2ac9f5130a4353a6166320c08e389c078ac2b3e"
+  },
+  "hostSourceCommit": "ac364b2db6e8c107e296b3763aa63a5569c17406",
+  "hostImage": "sha256:c27ba8fb026ab5ea5189be1c4ca5cae14a144ec96bceb3b0c4c9452a3734dbbf",
+  "health": "healthy",
+  "repositorySourceMatches": {
+    "server/games/luelonSlots.ts": true,
+    "src/shared/luelonSlots.ts": true,
+    "src/shared/luelonSlotsModels.ts": true,
+    "src/shared/luelonSlotsLines.ts": true,
+    "src/shared/cosmicEscapeBets.ts": true,
+    "src/ui/CosmicEscapeUI.ts": true,
+    "src/ui/slotKit/SlotSessions.ts": true,
+    "src/ui/slotKit/SlotScreens.ts": true,
+    "src/wallet/ExpansionClient.ts": true,
+    "server/demoExpansion.ts": true
+  }
+}

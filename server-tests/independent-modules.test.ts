@@ -12,7 +12,7 @@ import { GITHUB_GAME_IDS } from '../src/shared/githubGames';
 import { GAME_CATALOG } from '../src/shared/gameCore';
 import { ACTIVITIES } from '../src/shared/activities';
 import { CABINETS } from '../src/shared/cabinets';
-import { isRetiredArcadeGame } from '../src/shared/arcadeCatalog';
+import { ARCADE_CABINET_SPECS, isRetiredArcadeGame } from '../src/shared/arcadeCatalog';
 import { isRetiredCardGame } from '../src/shared/cardTables';
 import { build } from 'esbuild';
 
@@ -40,7 +40,8 @@ test('every defined game has a distinct module package and matching public contr
   assert.equal(isRetiredArcadeGame(cabinet.id), false, cabinet.id);
   assert.equal(isRetiredCardGame(cabinet.id), false, cabinet.id);
  }
- assert.equal(CABINETS.length, 18, 'Fourteen collection cabinets and four dealer tables share the Nile wallet');
+ assert.equal(CABINETS.length, ARCADE_CABINET_SPECS.length + 4, 'Declared collection cabinets and four dealer tables share the Nile wallet');
+ assert.deepEqual(CABINETS.filter(cabinet => cabinet.collection).map(cabinet => cabinet.id).sort(), ARCADE_CABINET_SPECS.map(cabinet => cabinet.id).sort());
  assert.equal(new Set(GAME_MODULES.map(game => game.slug)).size, GAME_MODULES.length);
  for (const game of GAME_MODULES) {
   const config = JSON.parse(await readFile(resolve('games', game.slug, 'package.json'), 'utf8'));

@@ -1,0 +1,1333 @@
+{
+  "date": "2026-10-24",
+  "scope": "Source mathematics of the three non-slot active house games; common wallet source review. Bonus wallet integration is verified separately by house-bonus-wallet-audit.test.ts.",
+  "activeHouseGames": [
+    "studio-cosmic-escape",
+    "studio-caramel-carnival",
+    "studio-velvet-reign",
+    "studio-last-convoy",
+    "studio-nitro-run",
+    "studio-afterglow",
+    "studio-meme-overload",
+    "studio-dracona",
+    "studio-neopolis",
+    "github-crash",
+    "royal-plinko",
+    "original-cr-vs-leo"
+  ],
+  "plinko": [
+    {
+      "rows": 8,
+      "risk": "easy",
+      "paths": 256,
+      "maximumMultiplier": 5.6,
+      "rtpPercent": 98.984375,
+      "stakes": [
+        {
+          "stakeUnits": "1000",
+          "returnedUnitsAcrossAllPaths": "253400",
+          "spentUnitsAcrossAllPaths": "256000",
+          "rtpPercent": 98.984375
+        },
+        {
+          "stakeUnits": "5000",
+          "returnedUnitsAcrossAllPaths": "1267000",
+          "spentUnitsAcrossAllPaths": "1280000",
+          "rtpPercent": 98.984375
+        },
+        {
+          "stakeUnits": "10000",
+          "returnedUnitsAcrossAllPaths": "2534000",
+          "spentUnitsAcrossAllPaths": "2560000",
+          "rtpPercent": 98.984375
+        },
+        {
+          "stakeUnits": "50000",
+          "returnedUnitsAcrossAllPaths": "12670000",
+          "spentUnitsAcrossAllPaths": "12800000",
+          "rtpPercent": 98.984375
+        }
+      ]
+    },
+    {
+      "rows": 8,
+      "risk": "medium",
+      "paths": 256,
+      "maximumMultiplier": 13,
+      "rtpPercent": 98.90625,
+      "stakes": [
+        {
+          "stakeUnits": "1000",
+          "returnedUnitsAcrossAllPaths": "253200",
+          "spentUnitsAcrossAllPaths": "256000",
+          "rtpPercent": 98.90625
+        },
+        {
+          "stakeUnits": "5000",
+          "returnedUnitsAcrossAllPaths": "1266000",
+          "spentUnitsAcrossAllPaths": "1280000",
+          "rtpPercent": 98.90625
+        },
+        {
+          "stakeUnits": "10000",
+          "returnedUnitsAcrossAllPaths": "2532000",
+          "spentUnitsAcrossAllPaths": "2560000",
+          "rtpPercent": 98.90625
+        },
+        {
+          "stakeUnits": "50000",
+          "returnedUnitsAcrossAllPaths": "12660000",
+          "spentUnitsAcrossAllPaths": "12800000",
+          "rtpPercent": 98.90625
+        }
+      ]
+    },
+    {
+      "rows": 8,
+      "risk": "hard",
+      "paths": 256,
+      "maximumMultiplier": 29,
+      "rtpPercent": 99.0625,
+      "stakes": [
+        {
+          "stakeUnits": "1000",
+          "returnedUnitsAcrossAllPaths": "253600",
+          "spentUnitsAcrossAllPaths": "256000",
+          "rtpPercent": 99.0625
+        },
+        {
+          "stakeUnits": "5000",
+          "returnedUnitsAcrossAllPaths": "1268000",
+          "spentUnitsAcrossAllPaths": "1280000",
+          "rtpPercent": 99.0625
+        },
+        {
+          "stakeUnits": "10000",
+          "returnedUnitsAcrossAllPaths": "2536000",
+          "spentUnitsAcrossAllPaths": "2560000",
+          "rtpPercent": 99.0625
+        },
+        {
+          "stakeUnits": "50000",
+          "returnedUnitsAcrossAllPaths": "12680000",
+          "spentUnitsAcrossAllPaths": "12800000",
+          "rtpPercent": 99.0625
+        }
+      ]
+    },
+    {
+      "rows": 8,
+      "risk": "expert",
+      "paths": 256,
+      "maximumMultiplier": 50,
+      "rtpPercent": 98.984375,
+      "stakes": [
+        {
+          "stakeUnits": "1000",
+          "returnedUnitsAcrossAllPaths": "253400",
+          "spentUnitsAcrossAllPaths": "256000",
+          "rtpPercent": 98.984375
+        },
+        {
+          "stakeUnits": "5000",
+          "returnedUnitsAcrossAllPaths": "1267000",
+          "spentUnitsAcrossAllPaths": "1280000",
+          "rtpPercent": 98.984375
+        },
+        {
+          "stakeUnits": "10000",
+          "returnedUnitsAcrossAllPaths": "2534000",
+          "spentUnitsAcrossAllPaths": "2560000",
+          "rtpPercent": 98.984375
+        },
+        {
+          "stakeUnits": "50000",
+          "returnedUnitsAcrossAllPaths": "12670000",
+          "spentUnitsAcrossAllPaths": "12800000",
+          "rtpPercent": 98.984375
+        }
+      ]
+    },
+    {
+      "rows": 9,
+      "risk": "easy",
+      "paths": 512,
+      "maximumMultiplier": 5.6,
+      "rtpPercent": 98.984375,
+      "stakes": [
+        {
+          "stakeUnits": "1000",
+          "returnedUnitsAcrossAllPaths": "506800",
+          "spentUnitsAcrossAllPaths": "512000",
+          "rtpPercent": 98.984375
+        },
+        {
+          "stakeUnits": "5000",
+          "returnedUnitsAcrossAllPaths": "2534000",
+          "spentUnitsAcrossAllPaths": "2560000",
+          "rtpPercent": 98.984375
+        },
+        {
+          "stakeUnits": "10000",
+          "returnedUnitsAcrossAllPaths": "5068000",
+          "spentUnitsAcrossAllPaths": "5120000",
+          "rtpPercent": 98.984375
+        },
+        {
+          "stakeUnits": "50000",
+          "returnedUnitsAcrossAllPaths": "25340000",
+          "spentUnitsAcrossAllPaths": "25600000",
+          "rtpPercent": 98.984375
+        }
+      ]
+    },
+    {
+      "rows": 9,
+      "risk": "medium",
+      "paths": 512,
+      "maximumMultiplier": 18,
+      "rtpPercent": 99.140625,
+      "stakes": [
+        {
+          "stakeUnits": "1000",
+          "returnedUnitsAcrossAllPaths": "507600",
+          "spentUnitsAcrossAllPaths": "512000",
+          "rtpPercent": 99.140625
+        },
+        {
+          "stakeUnits": "5000",
+          "returnedUnitsAcrossAllPaths": "2538000",
+          "spentUnitsAcrossAllPaths": "2560000",
+          "rtpPercent": 99.140625
+        },
+        {
+          "stakeUnits": "10000",
+          "returnedUnitsAcrossAllPaths": "5076000",
+          "spentUnitsAcrossAllPaths": "5120000",
+          "rtpPercent": 99.140625
+        },
+        {
+          "stakeUnits": "50000",
+          "returnedUnitsAcrossAllPaths": "25380000",
+          "spentUnitsAcrossAllPaths": "25600000",
+          "rtpPercent": 99.140625
+        }
+      ]
+    },
+    {
+      "rows": 9,
+      "risk": "hard",
+      "paths": 512,
+      "maximumMultiplier": 43,
+      "rtpPercent": 99.0625,
+      "stakes": [
+        {
+          "stakeUnits": "1000",
+          "returnedUnitsAcrossAllPaths": "507200",
+          "spentUnitsAcrossAllPaths": "512000",
+          "rtpPercent": 99.0625
+        },
+        {
+          "stakeUnits": "5000",
+          "returnedUnitsAcrossAllPaths": "2536000",
+          "spentUnitsAcrossAllPaths": "2560000",
+          "rtpPercent": 99.0625
+        },
+        {
+          "stakeUnits": "10000",
+          "returnedUnitsAcrossAllPaths": "5072000",
+          "spentUnitsAcrossAllPaths": "5120000",
+          "rtpPercent": 99.0625
+        },
+        {
+          "stakeUnits": "50000",
+          "returnedUnitsAcrossAllPaths": "25360000",
+          "spentUnitsAcrossAllPaths": "25600000",
+          "rtpPercent": 99.0625
+        }
+      ]
+    },
+    {
+      "rows": 9,
+      "risk": "expert",
+      "paths": 512,
+      "maximumMultiplier": 100,
+      "rtpPercent": 99.0625,
+      "stakes": [
+        {
+          "stakeUnits": "1000",
+          "returnedUnitsAcrossAllPaths": "507200",
+          "spentUnitsAcrossAllPaths": "512000",
+          "rtpPercent": 99.0625
+        },
+        {
+          "stakeUnits": "5000",
+          "returnedUnitsAcrossAllPaths": "2536000",
+          "spentUnitsAcrossAllPaths": "2560000",
+          "rtpPercent": 99.0625
+        },
+        {
+          "stakeUnits": "10000",
+          "returnedUnitsAcrossAllPaths": "5072000",
+          "spentUnitsAcrossAllPaths": "5120000",
+          "rtpPercent": 99.0625
+        },
+        {
+          "stakeUnits": "50000",
+          "returnedUnitsAcrossAllPaths": "25360000",
+          "spentUnitsAcrossAllPaths": "25600000",
+          "rtpPercent": 99.0625
+        }
+      ]
+    },
+    {
+      "rows": 10,
+      "risk": "easy",
+      "paths": 1024,
+      "maximumMultiplier": 8.9,
+      "rtpPercent": 99.00390625,
+      "stakes": [
+        {
+          "stakeUnits": "1000",
+          "returnedUnitsAcrossAllPaths": "1013800",
+          "spentUnitsAcrossAllPaths": "1024000",
+          "rtpPercent": 99.00390625
+        },
+        {
+          "stakeUnits": "5000",
+          "returnedUnitsAcrossAllPaths": "5069000",
+          "spentUnitsAcrossAllPaths": "5120000",
+          "rtpPercent": 99.00390625
+        },
+        {
+          "stakeUnits": "10000",
+          "returnedUnitsAcrossAllPaths": "10138000",
+          "spentUnitsAcrossAllPaths": "10240000",
+          "rtpPercent": 99.00390625
+        },
+        {
+          "stakeUnits": "50000",
+          "returnedUnitsAcrossAllPaths": "50690000",
+          "spentUnitsAcrossAllPaths": "51200000",
+          "rtpPercent": 99.00390625
+        }
+      ]
+    },
+    {
+      "rows": 10,
+      "risk": "medium",
+      "paths": 1024,
+      "maximumMultiplier": 22,
+      "rtpPercent": 98.90625,
+      "stakes": [
+        {
+          "stakeUnits": "1000",
+          "returnedUnitsAcrossAllPaths": "1012800",
+          "spentUnitsAcrossAllPaths": "1024000",
+          "rtpPercent": 98.90625
+        },
+        {
+          "stakeUnits": "5000",
+          "returnedUnitsAcrossAllPaths": "5064000",
+          "spentUnitsAcrossAllPaths": "5120000",
+          "rtpPercent": 98.90625
+        },
+        {
+          "stakeUnits": "10000",
+          "returnedUnitsAcrossAllPaths": "10128000",
+          "spentUnitsAcrossAllPaths": "10240000",
+          "rtpPercent": 98.90625
+        },
+        {
+          "stakeUnits": "50000",
+          "returnedUnitsAcrossAllPaths": "50640000",
+          "spentUnitsAcrossAllPaths": "51200000",
+          "rtpPercent": 98.90625
+        }
+      ]
+    },
+    {
+      "rows": 10,
+      "risk": "hard",
+      "paths": 1024,
+      "maximumMultiplier": 76,
+      "rtpPercent": 99.0625,
+      "stakes": [
+        {
+          "stakeUnits": "1000",
+          "returnedUnitsAcrossAllPaths": "1014400",
+          "spentUnitsAcrossAllPaths": "1024000",
+          "rtpPercent": 99.0625
+        },
+        {
+          "stakeUnits": "5000",
+          "returnedUnitsAcrossAllPaths": "5072000",
+          "spentUnitsAcrossAllPaths": "5120000",
+          "rtpPercent": 99.0625
+        },
+        {
+          "stakeUnits": "10000",
+          "returnedUnitsAcrossAllPaths": "10144000",
+          "spentUnitsAcrossAllPaths": "10240000",
+          "rtpPercent": 99.0625
+        },
+        {
+          "stakeUnits": "50000",
+          "returnedUnitsAcrossAllPaths": "50720000",
+          "spentUnitsAcrossAllPaths": "51200000",
+          "rtpPercent": 99.0625
+        }
+      ]
+    },
+    {
+      "rows": 10,
+      "risk": "expert",
+      "paths": 1024,
+      "maximumMultiplier": 201,
+      "rtpPercent": 98.9453125,
+      "stakes": [
+        {
+          "stakeUnits": "1000",
+          "returnedUnitsAcrossAllPaths": "1013200",
+          "spentUnitsAcrossAllPaths": "1024000",
+          "rtpPercent": 98.9453125
+        },
+        {
+          "stakeUnits": "5000",
+          "returnedUnitsAcrossAllPaths": "5066000",
+          "spentUnitsAcrossAllPaths": "5120000",
+          "rtpPercent": 98.9453125
+        },
+        {
+          "stakeUnits": "10000",
+          "returnedUnitsAcrossAllPaths": "10132000",
+          "spentUnitsAcrossAllPaths": "10240000",
+          "rtpPercent": 98.9453125
+        },
+        {
+          "stakeUnits": "50000",
+          "returnedUnitsAcrossAllPaths": "50660000",
+          "spentUnitsAcrossAllPaths": "51200000",
+          "rtpPercent": 98.9453125
+        }
+      ]
+    },
+    {
+      "rows": 11,
+      "risk": "easy",
+      "paths": 2048,
+      "maximumMultiplier": 8.4,
+      "rtpPercent": 99.00390625,
+      "stakes": [
+        {
+          "stakeUnits": "1000",
+          "returnedUnitsAcrossAllPaths": "2027600",
+          "spentUnitsAcrossAllPaths": "2048000",
+          "rtpPercent": 99.00390625
+        },
+        {
+          "stakeUnits": "5000",
+          "returnedUnitsAcrossAllPaths": "10138000",
+          "spentUnitsAcrossAllPaths": "10240000",
+          "rtpPercent": 99.00390625
+        },
+        {
+          "stakeUnits": "10000",
+          "returnedUnitsAcrossAllPaths": "20276000",
+          "spentUnitsAcrossAllPaths": "20480000",
+          "rtpPercent": 99.00390625
+        },
+        {
+          "stakeUnits": "50000",
+          "returnedUnitsAcrossAllPaths": "101380000",
+          "spentUnitsAcrossAllPaths": "102400000",
+          "rtpPercent": 99.00390625
+        }
+      ]
+    },
+    {
+      "rows": 11,
+      "risk": "medium",
+      "paths": 2048,
+      "maximumMultiplier": 24,
+      "rtpPercent": 99.0234375,
+      "stakes": [
+        {
+          "stakeUnits": "1000",
+          "returnedUnitsAcrossAllPaths": "2028000",
+          "spentUnitsAcrossAllPaths": "2048000",
+          "rtpPercent": 99.0234375
+        },
+        {
+          "stakeUnits": "5000",
+          "returnedUnitsAcrossAllPaths": "10140000",
+          "spentUnitsAcrossAllPaths": "10240000",
+          "rtpPercent": 99.0234375
+        },
+        {
+          "stakeUnits": "10000",
+          "returnedUnitsAcrossAllPaths": "20280000",
+          "spentUnitsAcrossAllPaths": "20480000",
+          "rtpPercent": 99.0234375
+        },
+        {
+          "stakeUnits": "50000",
+          "returnedUnitsAcrossAllPaths": "101400000",
+          "spentUnitsAcrossAllPaths": "102400000",
+          "rtpPercent": 99.0234375
+        }
+      ]
+    },
+    {
+      "rows": 11,
+      "risk": "hard",
+      "paths": 2048,
+      "maximumMultiplier": 120,
+      "rtpPercent": 99.16015625,
+      "stakes": [
+        {
+          "stakeUnits": "1000",
+          "returnedUnitsAcrossAllPaths": "2030800",
+          "spentUnitsAcrossAllPaths": "2048000",
+          "rtpPercent": 99.16015625
+        },
+        {
+          "stakeUnits": "5000",
+          "returnedUnitsAcrossAllPaths": "10154000",
+          "spentUnitsAcrossAllPaths": "10240000",
+          "rtpPercent": 99.16015625
+        },
+        {
+          "stakeUnits": "10000",
+          "returnedUnitsAcrossAllPaths": "20308000",
+          "spentUnitsAcrossAllPaths": "20480000",
+          "rtpPercent": 99.16015625
+        },
+        {
+          "stakeUnits": "50000",
+          "returnedUnitsAcrossAllPaths": "101540000",
+          "spentUnitsAcrossAllPaths": "102400000",
+          "rtpPercent": 99.16015625
+        }
+      ]
+    },
+    {
+      "rows": 11,
+      "risk": "expert",
+      "paths": 2048,
+      "maximumMultiplier": 324,
+      "rtpPercent": 98.994140625,
+      "stakes": [
+        {
+          "stakeUnits": "1000",
+          "returnedUnitsAcrossAllPaths": "2027400",
+          "spentUnitsAcrossAllPaths": "2048000",
+          "rtpPercent": 98.994140625
+        },
+        {
+          "stakeUnits": "5000",
+          "returnedUnitsAcrossAllPaths": "10137000",
+          "spentUnitsAcrossAllPaths": "10240000",
+          "rtpPercent": 98.994140625
+        },
+        {
+          "stakeUnits": "10000",
+          "returnedUnitsAcrossAllPaths": "20274000",
+          "spentUnitsAcrossAllPaths": "20480000",
+          "rtpPercent": 98.994140625
+        },
+        {
+          "stakeUnits": "50000",
+          "returnedUnitsAcrossAllPaths": "101370000",
+          "spentUnitsAcrossAllPaths": "102400000",
+          "rtpPercent": 98.994140625
+        }
+      ]
+    },
+    {
+      "rows": 12,
+      "risk": "easy",
+      "paths": 4096,
+      "maximumMultiplier": 10,
+      "rtpPercent": 98.9794921875,
+      "stakes": [
+        {
+          "stakeUnits": "1000",
+          "returnedUnitsAcrossAllPaths": "4054200",
+          "spentUnitsAcrossAllPaths": "4096000",
+          "rtpPercent": 98.9794921875
+        },
+        {
+          "stakeUnits": "5000",
+          "returnedUnitsAcrossAllPaths": "20271000",
+          "spentUnitsAcrossAllPaths": "20480000",
+          "rtpPercent": 98.9794921875
+        },
+        {
+          "stakeUnits": "10000",
+          "returnedUnitsAcrossAllPaths": "40542000",
+          "spentUnitsAcrossAllPaths": "40960000",
+          "rtpPercent": 98.9794921875
+        },
+        {
+          "stakeUnits": "50000",
+          "returnedUnitsAcrossAllPaths": "202710000",
+          "spentUnitsAcrossAllPaths": "204800000",
+          "rtpPercent": 98.9794921875
+        }
+      ]
+    },
+    {
+      "rows": 12,
+      "risk": "medium",
+      "paths": 4096,
+      "maximumMultiplier": 33,
+      "rtpPercent": 98.9892578125,
+      "stakes": [
+        {
+          "stakeUnits": "1000",
+          "returnedUnitsAcrossAllPaths": "4054600",
+          "spentUnitsAcrossAllPaths": "4096000",
+          "rtpPercent": 98.9892578125
+        },
+        {
+          "stakeUnits": "5000",
+          "returnedUnitsAcrossAllPaths": "20273000",
+          "spentUnitsAcrossAllPaths": "20480000",
+          "rtpPercent": 98.9892578125
+        },
+        {
+          "stakeUnits": "10000",
+          "returnedUnitsAcrossAllPaths": "40546000",
+          "spentUnitsAcrossAllPaths": "40960000",
+          "rtpPercent": 98.9892578125
+        },
+        {
+          "stakeUnits": "50000",
+          "returnedUnitsAcrossAllPaths": "202730000",
+          "spentUnitsAcrossAllPaths": "204800000",
+          "rtpPercent": 98.9892578125
+        }
+      ]
+    },
+    {
+      "rows": 12,
+      "risk": "hard",
+      "paths": 4096,
+      "maximumMultiplier": 170,
+      "rtpPercent": 99.1162109375,
+      "stakes": [
+        {
+          "stakeUnits": "1000",
+          "returnedUnitsAcrossAllPaths": "4059800",
+          "spentUnitsAcrossAllPaths": "4096000",
+          "rtpPercent": 99.1162109375
+        },
+        {
+          "stakeUnits": "5000",
+          "returnedUnitsAcrossAllPaths": "20299000",
+          "spentUnitsAcrossAllPaths": "20480000",
+          "rtpPercent": 99.1162109375
+        },
+        {
+          "stakeUnits": "10000",
+          "returnedUnitsAcrossAllPaths": "40598000",
+          "spentUnitsAcrossAllPaths": "40960000",
+          "rtpPercent": 99.1162109375
+        },
+        {
+          "stakeUnits": "50000",
+          "returnedUnitsAcrossAllPaths": "202990000",
+          "spentUnitsAcrossAllPaths": "204800000",
+          "rtpPercent": 99.1162109375
+        }
+      ]
+    },
+    {
+      "rows": 12,
+      "risk": "expert",
+      "paths": 4096,
+      "maximumMultiplier": 619,
+      "rtpPercent": 99.04296875,
+      "stakes": [
+        {
+          "stakeUnits": "1000",
+          "returnedUnitsAcrossAllPaths": "4056800",
+          "spentUnitsAcrossAllPaths": "4096000",
+          "rtpPercent": 99.04296875
+        },
+        {
+          "stakeUnits": "5000",
+          "returnedUnitsAcrossAllPaths": "20284000",
+          "spentUnitsAcrossAllPaths": "20480000",
+          "rtpPercent": 99.04296875
+        },
+        {
+          "stakeUnits": "10000",
+          "returnedUnitsAcrossAllPaths": "40568000",
+          "spentUnitsAcrossAllPaths": "40960000",
+          "rtpPercent": 99.04296875
+        },
+        {
+          "stakeUnits": "50000",
+          "returnedUnitsAcrossAllPaths": "202840000",
+          "spentUnitsAcrossAllPaths": "204800000",
+          "rtpPercent": 99.04296875
+        }
+      ]
+    },
+    {
+      "rows": 13,
+      "risk": "easy",
+      "paths": 8192,
+      "maximumMultiplier": 8.1,
+      "rtpPercent": 98.9990234375,
+      "stakes": [
+        {
+          "stakeUnits": "1000",
+          "returnedUnitsAcrossAllPaths": "8110000",
+          "spentUnitsAcrossAllPaths": "8192000",
+          "rtpPercent": 98.9990234375
+        },
+        {
+          "stakeUnits": "5000",
+          "returnedUnitsAcrossAllPaths": "40550000",
+          "spentUnitsAcrossAllPaths": "40960000",
+          "rtpPercent": 98.9990234375
+        },
+        {
+          "stakeUnits": "10000",
+          "returnedUnitsAcrossAllPaths": "81100000",
+          "spentUnitsAcrossAllPaths": "81920000",
+          "rtpPercent": 98.9990234375
+        },
+        {
+          "stakeUnits": "50000",
+          "returnedUnitsAcrossAllPaths": "405500000",
+          "spentUnitsAcrossAllPaths": "409600000",
+          "rtpPercent": 98.9990234375
+        }
+      ]
+    },
+    {
+      "rows": 13,
+      "risk": "medium",
+      "paths": 8192,
+      "maximumMultiplier": 43,
+      "rtpPercent": 98.994140625,
+      "stakes": [
+        {
+          "stakeUnits": "1000",
+          "returnedUnitsAcrossAllPaths": "8109600",
+          "spentUnitsAcrossAllPaths": "8192000",
+          "rtpPercent": 98.994140625
+        },
+        {
+          "stakeUnits": "5000",
+          "returnedUnitsAcrossAllPaths": "40548000",
+          "spentUnitsAcrossAllPaths": "40960000",
+          "rtpPercent": 98.994140625
+        },
+        {
+          "stakeUnits": "10000",
+          "returnedUnitsAcrossAllPaths": "81096000",
+          "spentUnitsAcrossAllPaths": "81920000",
+          "rtpPercent": 98.994140625
+        },
+        {
+          "stakeUnits": "50000",
+          "returnedUnitsAcrossAllPaths": "405480000",
+          "spentUnitsAcrossAllPaths": "409600000",
+          "rtpPercent": 98.994140625
+        }
+      ]
+    },
+    {
+      "rows": 13,
+      "risk": "hard",
+      "paths": 8192,
+      "maximumMultiplier": 260,
+      "rtpPercent": 99.0869140625,
+      "stakes": [
+        {
+          "stakeUnits": "1000",
+          "returnedUnitsAcrossAllPaths": "8117200",
+          "spentUnitsAcrossAllPaths": "8192000",
+          "rtpPercent": 99.0869140625
+        },
+        {
+          "stakeUnits": "5000",
+          "returnedUnitsAcrossAllPaths": "40586000",
+          "spentUnitsAcrossAllPaths": "40960000",
+          "rtpPercent": 99.0869140625
+        },
+        {
+          "stakeUnits": "10000",
+          "returnedUnitsAcrossAllPaths": "81172000",
+          "spentUnitsAcrossAllPaths": "81920000",
+          "rtpPercent": 99.0869140625
+        },
+        {
+          "stakeUnits": "50000",
+          "returnedUnitsAcrossAllPaths": "405860000",
+          "spentUnitsAcrossAllPaths": "409600000",
+          "rtpPercent": 99.0869140625
+        }
+      ]
+    },
+    {
+      "rows": 13,
+      "risk": "expert",
+      "paths": 8192,
+      "maximumMultiplier": 1000,
+      "rtpPercent": 98.71337890625,
+      "stakes": [
+        {
+          "stakeUnits": "1000",
+          "returnedUnitsAcrossAllPaths": "8086600",
+          "spentUnitsAcrossAllPaths": "8192000",
+          "rtpPercent": 98.71337890625
+        },
+        {
+          "stakeUnits": "5000",
+          "returnedUnitsAcrossAllPaths": "40433000",
+          "spentUnitsAcrossAllPaths": "40960000",
+          "rtpPercent": 98.71337890625
+        },
+        {
+          "stakeUnits": "10000",
+          "returnedUnitsAcrossAllPaths": "80866000",
+          "spentUnitsAcrossAllPaths": "81920000",
+          "rtpPercent": 98.71337890625
+        },
+        {
+          "stakeUnits": "50000",
+          "returnedUnitsAcrossAllPaths": "404330000",
+          "spentUnitsAcrossAllPaths": "409600000",
+          "rtpPercent": 98.71337890625
+        }
+      ]
+    },
+    {
+      "rows": 14,
+      "risk": "easy",
+      "paths": 16384,
+      "maximumMultiplier": 7.1,
+      "rtpPercent": 99.000244140625,
+      "stakes": [
+        {
+          "stakeUnits": "1000",
+          "returnedUnitsAcrossAllPaths": "16220200",
+          "spentUnitsAcrossAllPaths": "16384000",
+          "rtpPercent": 99.000244140625
+        },
+        {
+          "stakeUnits": "5000",
+          "returnedUnitsAcrossAllPaths": "81101000",
+          "spentUnitsAcrossAllPaths": "81920000",
+          "rtpPercent": 99.000244140625
+        },
+        {
+          "stakeUnits": "10000",
+          "returnedUnitsAcrossAllPaths": "162202000",
+          "spentUnitsAcrossAllPaths": "163840000",
+          "rtpPercent": 99.000244140625
+        },
+        {
+          "stakeUnits": "50000",
+          "returnedUnitsAcrossAllPaths": "811010000",
+          "spentUnitsAcrossAllPaths": "819200000",
+          "rtpPercent": 99.000244140625
+        }
+      ]
+    },
+    {
+      "rows": 14,
+      "risk": "medium",
+      "paths": 16384,
+      "maximumMultiplier": 58,
+      "rtpPercent": 98.994140625,
+      "stakes": [
+        {
+          "stakeUnits": "1000",
+          "returnedUnitsAcrossAllPaths": "16219200",
+          "spentUnitsAcrossAllPaths": "16384000",
+          "rtpPercent": 98.994140625
+        },
+        {
+          "stakeUnits": "5000",
+          "returnedUnitsAcrossAllPaths": "81096000",
+          "spentUnitsAcrossAllPaths": "81920000",
+          "rtpPercent": 98.994140625
+        },
+        {
+          "stakeUnits": "10000",
+          "returnedUnitsAcrossAllPaths": "162192000",
+          "spentUnitsAcrossAllPaths": "163840000",
+          "rtpPercent": 98.994140625
+        },
+        {
+          "stakeUnits": "50000",
+          "returnedUnitsAcrossAllPaths": "810960000",
+          "spentUnitsAcrossAllPaths": "819200000",
+          "rtpPercent": 98.994140625
+        }
+      ]
+    },
+    {
+      "rows": 14,
+      "risk": "hard",
+      "paths": 16384,
+      "maximumMultiplier": 420,
+      "rtpPercent": 98.978271484375,
+      "stakes": [
+        {
+          "stakeUnits": "1000",
+          "returnedUnitsAcrossAllPaths": "16216600",
+          "spentUnitsAcrossAllPaths": "16384000",
+          "rtpPercent": 98.978271484375
+        },
+        {
+          "stakeUnits": "5000",
+          "returnedUnitsAcrossAllPaths": "81083000",
+          "spentUnitsAcrossAllPaths": "81920000",
+          "rtpPercent": 98.978271484375
+        },
+        {
+          "stakeUnits": "10000",
+          "returnedUnitsAcrossAllPaths": "162166000",
+          "spentUnitsAcrossAllPaths": "163840000",
+          "rtpPercent": 98.978271484375
+        },
+        {
+          "stakeUnits": "50000",
+          "returnedUnitsAcrossAllPaths": "810830000",
+          "spentUnitsAcrossAllPaths": "819200000",
+          "rtpPercent": 98.978271484375
+        }
+      ]
+    },
+    {
+      "rows": 14,
+      "risk": "expert",
+      "paths": 16384,
+      "maximumMultiplier": 2300,
+      "rtpPercent": 98.162841796875,
+      "stakes": [
+        {
+          "stakeUnits": "1000",
+          "returnedUnitsAcrossAllPaths": "16083000",
+          "spentUnitsAcrossAllPaths": "16384000",
+          "rtpPercent": 98.162841796875
+        },
+        {
+          "stakeUnits": "5000",
+          "returnedUnitsAcrossAllPaths": "80415000",
+          "spentUnitsAcrossAllPaths": "81920000",
+          "rtpPercent": 98.162841796875
+        },
+        {
+          "stakeUnits": "10000",
+          "returnedUnitsAcrossAllPaths": "160830000",
+          "spentUnitsAcrossAllPaths": "163840000",
+          "rtpPercent": 98.162841796875
+        },
+        {
+          "stakeUnits": "50000",
+          "returnedUnitsAcrossAllPaths": "804150000",
+          "spentUnitsAcrossAllPaths": "819200000",
+          "rtpPercent": 98.162841796875
+        }
+      ]
+    },
+    {
+      "rows": 15,
+      "risk": "easy",
+      "paths": 32768,
+      "maximumMultiplier": 15,
+      "rtpPercent": 99.0008544921875,
+      "stakes": [
+        {
+          "stakeUnits": "1000",
+          "returnedUnitsAcrossAllPaths": "32440600",
+          "spentUnitsAcrossAllPaths": "32768000",
+          "rtpPercent": 99.0008544921875
+        },
+        {
+          "stakeUnits": "5000",
+          "returnedUnitsAcrossAllPaths": "162203000",
+          "spentUnitsAcrossAllPaths": "163840000",
+          "rtpPercent": 99.0008544921875
+        },
+        {
+          "stakeUnits": "10000",
+          "returnedUnitsAcrossAllPaths": "324406000",
+          "spentUnitsAcrossAllPaths": "327680000",
+          "rtpPercent": 99.0008544921875
+        },
+        {
+          "stakeUnits": "50000",
+          "returnedUnitsAcrossAllPaths": "1622030000",
+          "spentUnitsAcrossAllPaths": "1638400000",
+          "rtpPercent": 99.0008544921875
+        }
+      ]
+    },
+    {
+      "rows": 15,
+      "risk": "medium",
+      "paths": 32768,
+      "maximumMultiplier": 88,
+      "rtpPercent": 98.9984130859375,
+      "stakes": [
+        {
+          "stakeUnits": "1000",
+          "returnedUnitsAcrossAllPaths": "32439800",
+          "spentUnitsAcrossAllPaths": "32768000",
+          "rtpPercent": 98.9984130859375
+        },
+        {
+          "stakeUnits": "5000",
+          "returnedUnitsAcrossAllPaths": "162199000",
+          "spentUnitsAcrossAllPaths": "163840000",
+          "rtpPercent": 98.9984130859375
+        },
+        {
+          "stakeUnits": "10000",
+          "returnedUnitsAcrossAllPaths": "324398000",
+          "spentUnitsAcrossAllPaths": "327680000",
+          "rtpPercent": 98.9984130859375
+        },
+        {
+          "stakeUnits": "50000",
+          "returnedUnitsAcrossAllPaths": "1621990000",
+          "spentUnitsAcrossAllPaths": "1638400000",
+          "rtpPercent": 98.9984130859375
+        }
+      ]
+    },
+    {
+      "rows": 15,
+      "risk": "hard",
+      "paths": 32768,
+      "maximumMultiplier": 620,
+      "rtpPercent": 99.0264892578125,
+      "stakes": [
+        {
+          "stakeUnits": "1000",
+          "returnedUnitsAcrossAllPaths": "32449000",
+          "spentUnitsAcrossAllPaths": "32768000",
+          "rtpPercent": 99.0264892578125
+        },
+        {
+          "stakeUnits": "5000",
+          "returnedUnitsAcrossAllPaths": "162245000",
+          "spentUnitsAcrossAllPaths": "163840000",
+          "rtpPercent": 99.0264892578125
+        },
+        {
+          "stakeUnits": "10000",
+          "returnedUnitsAcrossAllPaths": "324490000",
+          "spentUnitsAcrossAllPaths": "327680000",
+          "rtpPercent": 99.0264892578125
+        },
+        {
+          "stakeUnits": "50000",
+          "returnedUnitsAcrossAllPaths": "1622450000",
+          "spentUnitsAcrossAllPaths": "1638400000",
+          "rtpPercent": 99.0264892578125
+        }
+      ]
+    },
+    {
+      "rows": 15,
+      "risk": "expert",
+      "paths": 32768,
+      "maximumMultiplier": 5000,
+      "rtpPercent": 99.0087890625,
+      "stakes": [
+        {
+          "stakeUnits": "1000",
+          "returnedUnitsAcrossAllPaths": "32443200",
+          "spentUnitsAcrossAllPaths": "32768000",
+          "rtpPercent": 99.0087890625
+        },
+        {
+          "stakeUnits": "5000",
+          "returnedUnitsAcrossAllPaths": "162216000",
+          "spentUnitsAcrossAllPaths": "163840000",
+          "rtpPercent": 99.0087890625
+        },
+        {
+          "stakeUnits": "10000",
+          "returnedUnitsAcrossAllPaths": "324432000",
+          "spentUnitsAcrossAllPaths": "327680000",
+          "rtpPercent": 99.0087890625
+        },
+        {
+          "stakeUnits": "50000",
+          "returnedUnitsAcrossAllPaths": "1622160000",
+          "spentUnitsAcrossAllPaths": "1638400000",
+          "rtpPercent": 99.0087890625
+        }
+      ]
+    },
+    {
+      "rows": 16,
+      "risk": "easy",
+      "paths": 65536,
+      "maximumMultiplier": 16,
+      "rtpPercent": 98.99871826171875,
+      "stakes": [
+        {
+          "stakeUnits": "1000",
+          "returnedUnitsAcrossAllPaths": "64879800",
+          "spentUnitsAcrossAllPaths": "65536000",
+          "rtpPercent": 98.99871826171875
+        },
+        {
+          "stakeUnits": "5000",
+          "returnedUnitsAcrossAllPaths": "324399000",
+          "spentUnitsAcrossAllPaths": "327680000",
+          "rtpPercent": 98.99871826171875
+        },
+        {
+          "stakeUnits": "10000",
+          "returnedUnitsAcrossAllPaths": "648798000",
+          "spentUnitsAcrossAllPaths": "655360000",
+          "rtpPercent": 98.99871826171875
+        },
+        {
+          "stakeUnits": "50000",
+          "returnedUnitsAcrossAllPaths": "3243990000",
+          "spentUnitsAcrossAllPaths": "3276800000",
+          "rtpPercent": 98.99871826171875
+        }
+      ]
+    },
+    {
+      "rows": 16,
+      "risk": "medium",
+      "paths": 65536,
+      "maximumMultiplier": 110,
+      "rtpPercent": 98.98834228515625,
+      "stakes": [
+        {
+          "stakeUnits": "1000",
+          "returnedUnitsAcrossAllPaths": "64873000",
+          "spentUnitsAcrossAllPaths": "65536000",
+          "rtpPercent": 98.98834228515625
+        },
+        {
+          "stakeUnits": "5000",
+          "returnedUnitsAcrossAllPaths": "324365000",
+          "spentUnitsAcrossAllPaths": "327680000",
+          "rtpPercent": 98.98834228515625
+        },
+        {
+          "stakeUnits": "10000",
+          "returnedUnitsAcrossAllPaths": "648730000",
+          "spentUnitsAcrossAllPaths": "655360000",
+          "rtpPercent": 98.98834228515625
+        },
+        {
+          "stakeUnits": "50000",
+          "returnedUnitsAcrossAllPaths": "3243650000",
+          "spentUnitsAcrossAllPaths": "3276800000",
+          "rtpPercent": 98.98834228515625
+        }
+      ]
+    },
+    {
+      "rows": 16,
+      "risk": "hard",
+      "paths": 65536,
+      "maximumMultiplier": 1000,
+      "rtpPercent": 98.9764404296875,
+      "stakes": [
+        {
+          "stakeUnits": "1000",
+          "returnedUnitsAcrossAllPaths": "64865200",
+          "spentUnitsAcrossAllPaths": "65536000",
+          "rtpPercent": 98.9764404296875
+        },
+        {
+          "stakeUnits": "5000",
+          "returnedUnitsAcrossAllPaths": "324326000",
+          "spentUnitsAcrossAllPaths": "327680000",
+          "rtpPercent": 98.9764404296875
+        },
+        {
+          "stakeUnits": "10000",
+          "returnedUnitsAcrossAllPaths": "648652000",
+          "spentUnitsAcrossAllPaths": "655360000",
+          "rtpPercent": 98.9764404296875
+        },
+        {
+          "stakeUnits": "50000",
+          "returnedUnitsAcrossAllPaths": "3243260000",
+          "spentUnitsAcrossAllPaths": "3276800000",
+          "rtpPercent": 98.9764404296875
+        }
+      ]
+    },
+    {
+      "rows": 16,
+      "risk": "expert",
+      "paths": 65536,
+      "maximumMultiplier": 10000,
+      "rtpPercent": 98.99627685546875,
+      "stakes": [
+        {
+          "stakeUnits": "1000",
+          "returnedUnitsAcrossAllPaths": "64878200",
+          "spentUnitsAcrossAllPaths": "65536000",
+          "rtpPercent": 98.99627685546875
+        },
+        {
+          "stakeUnits": "5000",
+          "returnedUnitsAcrossAllPaths": "324391000",
+          "spentUnitsAcrossAllPaths": "327680000",
+          "rtpPercent": 98.99627685546875
+        },
+        {
+          "stakeUnits": "10000",
+          "returnedUnitsAcrossAllPaths": "648782000",
+          "spentUnitsAcrossAllPaths": "655360000",
+          "rtpPercent": 98.99627685546875
+        },
+        {
+          "stakeUnits": "50000",
+          "returnedUnitsAcrossAllPaths": "3243910000",
+          "spentUnitsAcrossAllPaths": "3276800000",
+          "rtpPercent": 98.99627685546875
+        }
+      ]
+    }
+  ],
+  "penalty": [
+    {
+      "stakeUnits": "1000",
+      "mixedRiskPathsAndStops": 363,
+      "minimumFixedPathRtpPercent": 98.971875,
+      "maximumFixedPathRtpPercent": 99,
+      "optimalAdaptiveExpectedReturnPercent": 99,
+      "method": "Enumerate every ordered risk path of length 1 through 5, then backward induction over stop or any next risk. Misses return zero. Hero and sector are cosmetic."
+    },
+    {
+      "stakeUnits": "5000",
+      "mixedRiskPathsAndStops": 363,
+      "minimumFixedPathRtpPercent": 98.9955,
+      "maximumFixedPathRtpPercent": 99,
+      "optimalAdaptiveExpectedReturnPercent": 99,
+      "method": "Enumerate every ordered risk path of length 1 through 5, then backward induction over stop or any next risk. Misses return zero. Hero and sector are cosmetic."
+    },
+    {
+      "stakeUnits": "10000",
+      "mixedRiskPathsAndStops": 363,
+      "minimumFixedPathRtpPercent": 98.9971875,
+      "maximumFixedPathRtpPercent": 99,
+      "optimalAdaptiveExpectedReturnPercent": 99,
+      "method": "Enumerate every ordered risk path of length 1 through 5, then backward induction over stop or any next risk. Misses return zero. Hero and sector are cosmetic."
+    },
+    {
+      "stakeUnits": "50000",
+      "mixedRiskPathsAndStops": 363,
+      "minimumFixedPathRtpPercent": 98.99955,
+      "maximumFixedPathRtpPercent": 99,
+      "optimalAdaptiveExpectedReturnPercent": 99,
+      "method": "Enumerate every ordered risk path of length 1 through 5, then backward induction over stop or any next risk. Misses return zero. Hero and sector are cosmetic."
+    }
+  ],
+  "lastExit": {
+    "fixedAcceptedMillisecondTargets": 76753,
+    "stakesUnits": [
+      "1000",
+      "5000",
+      "10000",
+      "50000"
+    ],
+    "minimumContinuousModelRtpPercent": 98.02473552461275,
+    "minimumAtMs": 165,
+    "maximumContinuousModelRtpPercent": 99,
+    "maximumAtMs": 0,
+    "capMultiplier": 100,
+    "cap48BitModelRtpPercent": 98.99999999998244,
+    "maximum48BitDiscretizationErrorRtpPercent": 3.552713678800501e-11,
+    "method": "Source formula point=max(1,.99/r); r=0 explicitly loses. The server requires a cashout before the authoritative deadline, floors the multiplier to cents, and floors final stake settlement. All integer accepted milliseconds before the 100x cap are checked. At the cap, n=1 through floor(.0099*2^48) auto-pay 100x. Survival is the only future information exposed, so a stopping rule based on elapsed survival cannot raise the conditional fair-value bound.",
+    "freeSpinsOrPurchases": false
+  },
+  "commonWallet": {
+    "liveClientRoute": "/api/demo-wallet/expansion uses DemoWalletStore.expansion with the shared DemoExpansionStore. Current slot accounting uses virtual demo wallet units. NileGameRuntime is tested as an additional adapter, not identified as the active slot route.",
+    "startCost": "stakeUnits * selected mode cost, debited once in demoExpansion. Velvet normal=1, booster=2, hyper=10, spotlight=100, super-encore=300. Cosmic normal=1, cosmic-chaos=40, ufo-invasion=75, deep-echo=135. Caramel normal=1, festival=35.",
+    "continuations": "Saved stakeUnits and mode are used. Active bonuses report returnedUnits=0; every offered continuation has zero cost; final accumulated payout is credited once.",
+    "replay": "Stored request key must match exactly. Existing operation replays skip drawing and money(). Different operation IDs cannot repeat a settled bonus and stale revisions reject duplicate moves.",
+    "supplementaryNileAdapter": "NileGameRuntime projects micro-USDT to cents with floor(available/10000), then posts available+(afterCents-beforeCents)*10000. The prior fractional remainder survives. Native wallet writes and the journal append share one transaction.",
+    "integrationTest": "server-tests/finance/house-bonus-wallet-audit.test.ts",
+    "integrationCoverage": "16 constructed complete bonus scenarios for 8 active slots on both DemoWalletStore and NileGameRuntime, plus four insufficient-purchase cases per adapter. Neopolis complete campaign and journal recovery are covered by existing nile-native-games.test.ts and neopolis-wallet.test.ts.",
+    "integrationRunSeparately": true
+  },
+  "limitations": [
+    "This is an audit report, not RTP qualification proof. It does not change or extend the legacy qualification baseline.",
+    "Plinko and Penalty results are exact enumerations. Last Exit uses the analytic continuous model with a reported 48-bit discretization bound; it does not enumerate 2^48 entropy values.",
+    "No production balances or player history were read. These checks describe repository sources, not a verified production image.",
+    "Wallet integration tests use deterministic constructed bonus rounds to check accounting; they do not estimate RTP or validate production randomness."
+  ],
+  "plinkoCoverage": {
+    "serverSettings": 36,
+    "paths": 523264,
+    "settlementCases": 2093056,
+    "uiSettings": "12 rows, easy/medium/hard; server also accepts expert and 8 through 16 rows",
+    "freeSpinsOrPurchases": false
+  },
+  "sources": [
+    {
+      "path": "src/shared/arcadeCatalog.ts",
+      "sha256": "d78d9cd803c9c042f4a79e96a092f66208fcf1a57d8038744939987728b8afc5"
+    },
+    {
+      "path": "server/games/originals.ts",
+      "sha256": "a40c038406cf6a7ffbb0fa7b92af2937c40a7012626bc2ab06a232d03c152d45"
+    },
+    {
+      "path": "server/games/vfair/plinko/plinko-multipliers.ts",
+      "sha256": "4be4d4ccb0dca62ec216edf295d6459075817d5b115e5d28038df2ebaf96f072"
+    },
+    {
+      "path": "src/shared/originalGames.ts",
+      "sha256": "9743f1465b625e64055c8c6c9f268ce8023d61adc7eed187507be7d4163d40c0"
+    },
+    {
+      "path": "src/shared/crLeo.ts",
+      "sha256": "f0c9eae07611011cd3675eec1ed8a46a00f2f84822d8430a4b4267e6bfe15b38"
+    },
+    {
+      "path": "server/games/crLeo.ts",
+      "sha256": "5bc956040fb008f21a3a5bcaa7b9296f3ef9f049ae32b44654bcef06e6b6e7c1"
+    },
+    {
+      "path": "server/games/rush/crash.ts",
+      "sha256": "18182aa65f5babc4bf693b234aeec8a239646c41d33d4c3126b3abefc7b15a94"
+    },
+    {
+      "path": "server/demoExpansion.ts",
+      "sha256": "ab91cf5f0d590f05132b73b34d347f044b70f852e0bc31f4602d816289c2e420"
+    },
+    {
+      "path": "server/demoWallet.ts",
+      "sha256": "6173c565c5860342950e04097d6f57913e49fc9dabe01f4ebb25249fd9568346"
+    },
+    {
+      "path": "server/demoWalletRoutes.ts",
+      "sha256": "c7924af1850f0250daf19119b61e74eb7caef93c3c2de0e93f91ce38b784e9f1"
+    },
+    {
+      "path": "src/wallet/ExpansionClient.ts",
+      "sha256": "02cf337a2cabc65785a01625006361f294641a8e92bc86696ba01cb1253fd97b"
+    },
+    {
+      "path": "server/finance/nile-game-runtime.ts",
+      "sha256": "8b6ef8d48953dafa5b5bf4bc8c6a663102606e8820783765f81e8b4479e9de9e"
+    }
+  ]
+}
