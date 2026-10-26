@@ -10,6 +10,23 @@ import subprocess
 import sys
 
 
+def source_paths(stage, revision):
+    names = subprocess.check_output(['git','ls-tree','-r','-z','--name-only',revision,'--',
+        'src','server','public','scripts','docs','games'],cwd=stage).decode().split('\0')
+    selected = []
+    for name in names:
+        if not name: continue
+        path = Path(name)
+        assert not path.is_absolute() and '..' not in path.parts
+        assert not any(part.startswith(('._','.env')) or part in
+            {'node_modules','__pycache__','data','secrets','.git','.DS_Store'} for part in path.parts), 'Excluded tracked source: '+name
+        assert not name.endswith(('.orig','.bak','.pyc','.pyo')), 'Generated tracked source: '+name
+        assert not any((stage/parent).is_symlink() for parent in path.parents), 'Source directory symlink: '+name
+        assert (stage/path).is_file() and not (stage/path).is_symlink(), 'Invalid tracked source: '+name
+        selected.append(name)
+    return selected
+
+
 def helper_revision(stage, application, requested):
     assert re.fullmatch(r'[0-9a-f]{40}',requested), 'Full helper commit required'
     subprocess.run(['git','fetch','origin'],cwd=stage,check=True,stdout=subprocess.DEVNULL,stderr=subprocess.PIPE)
@@ -48,12 +65,9 @@ def copy(source, name):
 
 
 changed = {}
-for root in ['src','server','public','scripts','docs','games']:
-    for path in (stage/root).rglob('*'):
-        if not path.is_file(): continue
-        name = path.relative_to(stage).as_posix()
-        assert not path.is_symlink() and not any(part in ['node_modules','.git','data','secrets'] or part.startswith('.env') for part in path.relative_to(stage).parts)
-        if lf(path) != before['sourceLF'].get(name): changed[name] = copy(path,'source/'+name)
+for name in source_paths(stage, release['sourceCommit']):
+    path = stage/name
+    if lf(path) != before['sourceLF'].get(name): changed[name] = copy(path,'source/'+name)
 for name in ['package-lock.json','package.json','deployment/SERVER.md']:
     if lf(stage/name) != before['sourceLF'][name]: changed[name] = copy(stage/name,'source/'+name)
 for name in ['Dockerfile','.dockerignore','index.html','tsconfig.json','tsconfig.finance.json','vite.config.ts']:

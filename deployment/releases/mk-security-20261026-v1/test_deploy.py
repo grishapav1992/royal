@@ -93,6 +93,12 @@ class SecurityRelease(unittest.TestCase):
         (self.root/'helpers-source.json').write_text('{}')
         with self.assertRaisesRegex(RuntimeError,'helper provenance'):self.n['payload']()
 
+    def test_ignored_bytecode_is_refused_before_any_source_publication(self):
+        name='scripts/__pycache__/game-module-release.cpython-312.pyc'
+        path=self.root/'source'/name;path.parent.mkdir(parents=True);path.write_bytes(b'generated cache')
+        self.n['CHANGES'][name]=self.n['sha'](path)
+        with self.assertRaisesRegex(RuntimeError,'Generated or unobservable source'):self.n['payload']()
+
     def test_recomputed_hashes_cannot_mix_another_helper_into_the_pinned_git_commit(self):
         (self.root/'deploy.py').write_text('unreviewed replacement')
         self.n['M']['helpers']['deploy.py']=self.n['sha'](self.root/'deploy.py')

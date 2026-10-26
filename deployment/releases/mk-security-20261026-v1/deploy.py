@@ -222,6 +222,10 @@ def payload():
     require(all(name in ['index.html','admin.html'] or re.fullmatch(r'assets/[a-zA-Z0-9_-]+\.(?:js|css)', name) for name in DELTA), 'Unexpected client change')
     for name in [*CHANGES, *DELTA]: safe_name(name)
     require(all(name in ['package-lock.json','package.json','deployment/SERVER.md'] or name.startswith(('src/','server/','scripts/','docs/','games/')) for name in CHANGES), 'Unexpected source path')
+    for name in CHANGES:
+        require(not any(part.startswith(('._','.env')) or part in
+            {'node_modules','__pycache__','data','secrets','.git','.DS_Store'} for part in PurePosixPath(name).parts)
+            and not name.endswith(('.orig','.bak','.pyc','.pyo')), 'Generated or unobservable source path: '+name)
     critical = ['server/combatGame.ts','server/combatRoom.ts','server/combatGuard.ts','server/commonCombatWallet.ts',
         'server/pvp/virtual-wallet.ts','server/finance/combat-escrow.ts','server/finance/pvp-money.ts',
         'src/shared/combat.ts','src/shared/combatEscrow.ts','src/shared/pvp.ts']
