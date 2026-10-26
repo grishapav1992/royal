@@ -254,6 +254,9 @@ try {
         finalReplaySameOperation: true, oneDebitAndOneCredit: true, settledReopenNoLedgerChange: true,
         sharedComposerDraftRetained: true, moduleVersion: packageManifest.version, errors});
       console.log(JSON.stringify({name, passed: true, spentUnits: final.spentUnits, returnedUnits: final.returnedUnits}));
+      const selfId = await page.evaluate(() => window.royalDemo.getNetworkState().selfId);
+      await close();
+      await expect.poll(() => host.state.players.get(selfId)?.cabinet).toBe('');
       await context.close();
     }
   }

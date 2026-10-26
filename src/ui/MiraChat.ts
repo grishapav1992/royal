@@ -2,6 +2,8 @@ import { language, isUserMessage, t as translateText, tr } from '../i18n/index';
 import { DRINKS } from '../shared/world';
 import { getIntoxication } from '../shared/intoxication';
 import { MiraPortrait } from './MiraPortrait';
+import { parseGeneratedAppearance } from '../shared/skinStudio';
+import { hasSkinSheet } from '../game/generatedSkinArt';
 
 type Turn = { who: 'Мира' | 'Ты'; message: string };
 type Drink = typeof DRINKS[number];
@@ -179,7 +181,9 @@ export class MiraChat {
     this.playerAction.textContent = drinking ? tr`Пьёшь: ${this.drink(state.drink || this.selectedDrink)?.name || translateText('напиток')}` : pending ? translateText('Ждёшь напиток…') : this.drinkFeedback || translateText('У стойки');
     const action = drinking ? 'drink' : 'idle';
     const frame = drinking ? Math.min(5, Math.floor(Math.max(0, now - this.drinkStarted) / 534)) : this.reducedMotion.matches ? 0 : Math.floor(now / 700) % 4;
-    const portraitKey = `${state.skin}:${state.appearance ?? ''}:${action}:${frame}:${intoxication.stage}`;
+    const generated = parseGeneratedAppearance(state.appearance ?? '');
+    const ready = !generated || hasSkinSheet(generated.skinId);
+    const portraitKey = `${state.skin}:${state.appearance ?? ''}:${action}:${frame}:${intoxication.stage}:${ready}`;
     if (portraitKey !== this.lastPortraitKey && this.options.portraitFrame) {
       try {
         const source = this.options.portraitFrame(action, frame);
