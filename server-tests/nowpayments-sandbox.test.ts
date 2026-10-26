@@ -110,6 +110,31 @@ test('lost create response recovers from verified IPN without creating a replace
   } finally { await f.db.close(); }
 });
 
+test('official Sandbox finished with zero actually_paid credits the verified virtual price once, while partial zero never credits', async () => {
+  const f = await fixture();
+  try {
+    const op = operation(), created = await f.store.create(f.user, op);
+    await f.store.refresh(f.user, op.id);
+    assert.equal(await demoBalanceUnits(f.db, f.user), 0);
+    f.provider.settle(created.paymentId!, 'partially_paid', '0');
+    assert.equal((await f.store.refresh(f.user, op.id)).status, 'partially_paid');
+    await f.store.refresh(f.user, op.id);
+    assert.equal(await demoBalanceUnits(f.db, f.user), 0);
+    const row = f.provider.rows.get(created.paymentId!)!;
+    f.provider.settle(created.paymentId!, 'finished', '0');
+    row.price_amount = 999;
+    await assert.rejects(f.store.refresh(f.user, op.id));
+    assert.equal(await demoBalanceUnits(f.db, f.user), 0);
+    row.price_amount = op.amount;
+    row.pay_amount = '0';
+    await assert.rejects(f.store.refresh(f.user, op.id));
+    row.pay_amount = '0.01';
+    await Promise.all(Array.from({ length: 8 }, () => f.store.refresh(f.user, op.id)));
+    assert.equal(await demoBalanceUnits(f.db, f.user), 100000);
+    assert.equal(Number((await f.db.prepare("SELECT count(*) AS n FROM demo_ledger WHERE source='nowpayments-sandbox'").get())!.n), 1);
+  } finally { await f.db.close(); }
+});
+
 test('capacity defers credit without loss; scientific decimal amounts and reloaded stores settle once', async () => {
   const f = await fixture();
   try {
@@ -169,7 +194,7 @@ test('authenticated Sandbox deposit funds an accepted wager and idempotent repla
         'X-Royal-Afterglow-Rules': '1', 'X-Royal-Afterglow-Progress': '3', 'X-Royal-Meme-Rules': '1', 'X-Royal-Cr-Leo': '1', 'X-Royal-Dracona-Rules': '2', 'X-Royal-Neopolis-Rules': '3' };
       const post = (path: string, body: unknown) => fetch(base + path, { method: 'POST', headers, body: JSON.stringify(body) });
       const op = operation(), deposit = await post('/api/nowpayments-sandbox/deposits', op); assert.equal(deposit.status, 200);
-      const created = await deposit.json(); provider.settle(created.paymentId);
+      const created = await deposit.json(); provider.settle(created.paymentId, 'finished', '0');
       assert.equal((await post('/api/nowpayments-sandbox/deposits/' + op.id + '/refresh', {})).status, 200);
       assert.equal((await accounts.wallet.snapshot(id)).balance, 1000);
       const plinko = game === 'royal-plinko', path = '/api/demo-wallet/' + (plinko ? 'operations' : 'expansion');

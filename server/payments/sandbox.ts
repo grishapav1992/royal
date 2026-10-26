@@ -87,8 +87,12 @@ export class SandboxPaymentStore {
     }
     if (!['finished', 'partially_paid'].includes(payment.payment_status)) return 0;
     const due = decimalUnits(payment.pay_amount), paid = decimalUnits(payment.actually_paid);
-    if (due <= 0n || paid <= 0n) return fail(503, 'Sandbox не подтвердил фактически оплаченную сумму.');
+    if (due <= 0n) return fail(503, 'Sandbox не подтвердил сумму тестового платежа.');
     const promised = BigInt(row.amount) * 100n;
+    // The official Sandbox can finish a simulated payment with actually_paid=0.
+    // Only its authenticated finished status authorizes this virtual credit.
+    if (paid === 0n) return payment.payment_status === 'finished' ? Number(promised) : 0;
+    if (paid <= 0n) return fail(503, 'Sandbox не подтвердил фактически оплаченную сумму.');
     return Number(promised * (paid > due ? due : paid) / due);
   }
   private async apply(payment: Record<string, unknown>, row: DatabaseRow) {
