@@ -80,8 +80,10 @@ built_path = release / 'build-result.json'
 built = json.loads(built_path.read_text()) if built_path.is_file() else {}
 if reviewed is None:
     assert raw and prepared == raw['Image'], 'A bootstrap snapshot requires identical prepared and running images'
-    prior = json.loads(Path('/opt/royal-releases/atelier-live-preview-20261025-v1/build-result.json').read_text())
-    assert prepared == prior['image'], 'Bootstrap inventory requires the previously verified immutable image'
+    candidates = [Path('/opt/royal-releases')/name/'build-result.json' for name in ['atelier-live-preview-20261025-v1','skin-npc-context-20261026-v1']]
+    verified = [json.loads(path.read_text()) for path in candidates if path.is_file()]
+    prior = next((row for row in verified if row['image'] == prepared), None)
+    assert prior is not None, 'Bootstrap inventory requires a previously verified immutable image'
     assert {k:v for k,v in program.items() if not k.startswith('node_modules/')} == prior['program'], 'Running application differs from the prior verified image'
     prepared_program = json.loads(run(['docker','run','--rm','--network=none','--read-only','--entrypoint','node',prepared,'--v8-pool-size=1','-e',node]))
     assert program == prepared_program, 'Running application or dependencies differ from the immutable baseline image'
