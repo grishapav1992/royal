@@ -1,0 +1,107 @@
+"""Prepare the exact committed security overlay without copying the complete project or dependencies."""
+from pathlib import Path
+import hashlib
+import json
+import shutil
+import subprocess
+import sys
+
+stage, before_path, out = map(Path, sys.argv[1:4])
+release = json.loads((stage/'module-build/release-manifest.json').read_text())
+before = json.loads(before_path.read_text())
+assert before['program'] == before['preparedProgram'] and before['container']['health'] == 'healthy'
+assert release['githubVerified'] and release['build']['passed'] and release['scope'] == 'application'
+assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=stage,text=True).strip() == release['sourceCommit']
+assert not subprocess.check_output(['git','status','--porcelain'],cwd=stage,text=True).strip()
+sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
+lf = lambda p: hashlib.sha256(p.read_bytes().replace(b'\r\n',b'\n')).hexdigest()
+for name, digest in release['files'].items(): assert sha(stage/name) == digest, name
+out.mkdir(exist_ok=False, parents=True)
+
+
+def copy(source, name):
+    target = out/name; target.parent.mkdir(parents=True, exist_ok=True)
+    assert source.is_file() and not source.is_symlink()
+    shutil.copyfile(source, target)
+    return sha(target)
+
+
+changed = {}
+for root in ['src','server','public','scripts','docs','games']:
+    for path in (stage/root).rglob('*'):
+        if not path.is_file(): continue
+        name = path.relative_to(stage).as_posix()
+        assert not path.is_symlink() and not any(part in ['node_modules','.git','data','secrets'] or part.startswith('.env') for part in path.relative_to(stage).parts)
+        if lf(path) != before['sourceLF'].get(name): changed[name] = copy(path,'source/'+name)
+for name in ['package-lock.json','deployment/SERVER.md']:
+    if lf(stage/name) != before['sourceLF'][name]: changed[name] = copy(stage/name,'source/'+name)
+for name in ['package.json','Dockerfile','.dockerignore','index.html','tsconfig.json','tsconfig.finance.json','vite.config.ts']:
+    assert lf(stage/name) == before['sourceLF'][name], 'Unreviewed root input: '+name
+metadata = {'package-lock.json':copy(stage/'package-lock.json','metadata/package-lock.json')}
+assert changed['package-lock.json'] == metadata['package-lock.json']
+old_lock_bytes = subprocess.check_output(['git','show',release['baseCommit']+':package-lock.json'],cwd=stage).replace(b'\r\n',b'\n')
+assert hashlib.sha256(old_lock_bytes).hexdigest() == before['sourceLF']['package-lock.json']
+(out/'old-lock.json').write_bytes(old_lock_bytes)
+old_lock = json.loads(old_lock_bytes); new_lock = json.loads((stage/'package-lock.json').read_text())
+assert set(old_lock['packages']) == set(new_lock['packages'])
+assert {name for name in old_lock['packages'] if old_lock['packages'][name] != new_lock['packages'][name]} == {'node_modules/body-parser','node_modules/qs'}
+
+dependencies = {}
+for package, version in [('body-parser','2.4.0'),('qs','6.16.1')]:
+    folder = stage/'node_modules'/package
+    assert json.loads((folder/'package.json').read_text())['version'] == version
+    for path in folder.rglob('*'):
+        assert not path.is_symlink(), 'A dependency payload must contain ordinary package files'
+        if path.is_file():
+            name = path.relative_to(stage/'node_modules').as_posix()
+            dependencies[name] = copy(path,'dependency-delta/'+name)
+cache = json.loads(json.dumps(before['dependencyLock']))
+for package in ['body-parser','qs']: cache['packages']['node_modules/'+package] = new_lock['packages']['node_modules/'+package]
+(out/'dependency-delta/.package-lock.json').write_text(json.dumps(cache,indent=2)+'\n')
+dependencies['.package-lock.json'] = sha(out/'dependency-delta/.package-lock.json')
+old_paths = {name for name in before['program'] if name.startswith(('node_modules/body-parser/','node_modules/qs/'))}
+assert old_paths.issubset({'node_modules/'+name for name in dependencies}), 'Obsolete dependency files need explicit removal review'
+
+delta, retained = {}, {}
+for name, digest in release['files'].items():
+    if not name.startswith('dist/') or digest == before['program'].get(name): continue
+    relative = name.removeprefix('dist/')
+    if digest == before['programLF'].get(name):
+        retained[name] = before['program'][name]; continue
+    if relative in ['index.html','admin.html'] or relative.startswith('assets/') and Path(relative).suffix in ['.js','.css']:
+        assert relative in ['index.html','admin.html'] or name not in before['program'], 'Immutable asset collision: '+name
+        delta[relative] = copy(stage/name,'dist-delta/'+relative)
+    else:
+        source = stage/'public'/relative
+        assert source.is_file() and lf(source) == before['sourceLF'].get('public/'+relative), 'Unexpected public byte change: '+name
+(out/'dist-delta').mkdir(exist_ok=True)
+backend = {'index.js':copy(stage/'dist-server/index.js','server-delta/index.js')}
+for name in ['payments.js','crypto-reconcile.js','payments-meta.json']:
+    path = stage/'dist-server'/name
+    if path.exists(): assert sha(path) == before['program'].get('dist-server/'+name), 'Unreviewed backend change: '+name
+host = json.loads((stage/'module-dist/host-contracts.json').read_text())
+assert host == before['moduleHost'], 'Host contracts must remain compatible'
+combat = next(row for row in release['packages'] if row['gameId'] == 'mortal-kombat')
+manifest = json.loads((stage/'module-dist/mortal-kombat/versions'/combat['version']/'manifest.json').read_text())
+assert all(manifest[key] == host['games']['mortal-kombat'][key] for key in ['apiVersion','rulesVersion','progressVersion'])
+module_delta = {}
+folder = stage/'module-dist/mortal-kombat/versions'/combat['version']
+for path in folder.rglob('*'):
+    if path.is_file():
+        name = path.relative_to(stage/'module-dist').as_posix()
+        module_delta[name] = copy(path,'modules/'+name)
+module_packages = [{'gameId':'mortal-kombat','version':combat['version'],
+    'beforeSha256':before['moduleFiles']['/opt/royal-game-modules/mortal-kombat/active.json']}]
+helpers = {}
+assert lf(stage/'scripts/game-module-release.py') == before['sourceLF']['scripts/game-module-release.py']
+for name in ['deploy.py','snapshot.py','runtime-inventory.cjs','quiesce.cjs','verify-runtime.cjs','modules.py']:
+    helpers[name] = copy(stage/'deployment/releases/mk-security-20261026-v1'/name,name)
+copy(stage/'module-build/release-manifest.json','release-manifest.json')
+manifest = {'release':'mk-security-20261026-v1','sourceCommit':release['sourceCommit'],'baseCommit':release['baseCommit'],
+    'before':before,'changed':changed,'delta':delta,'serverDelta':backend,'runtimePackages':metadata,'dependencyFiles':dependencies,
+    'helpers':helpers,'helperSha256':helpers['deploy.py'],'snapshotSha256':helpers['snapshot.py'],
+    'retainedCanonicalRuntime':retained,'moduleDelta':module_delta,'modulePackages':module_packages,
+    'moduleInstallerSha256':before['source']['scripts/game-module-release.py']}
+(out/'install-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
+print(json.dumps({'sourceFiles':len(changed),'clientFiles':len(delta),'dependencyFiles':len(dependencies),
+    'payloadBytes':sum(path.stat().st_size for path in out.rglob('*') if path.is_file())}))
