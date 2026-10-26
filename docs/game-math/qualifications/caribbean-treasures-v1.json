@@ -3,16 +3,20 @@
   "gameId": "studio-caribbean-treasures",
   "rulesVersion": 1,
   "progressVersion": 1,
-  "startedAt": "2026-10-26T18:56:47.326Z",
-  "completedAt": "2026-10-26T18:57:16.552Z",
+  "startedAt": "2026-10-26T19:48:33.538Z",
+  "completedAt": "2026-10-26T19:49:02.338Z",
   "sourceHashes": {
     "src/shared/caribbeanTreasuresMath.ts": "b86e71675dfd0179da8d8c43c7a62f8da41303d5e6bc59f07b81d4497b64647b",
     "src/shared/caribbeanTreasures.ts": "5590af9897cfb32dbf8fd7d9c0608ad52184051ddee7ca70cd309267a4311aee",
     "server/games/caribbeanTreasures.ts": "bdb0aa8eecef1093f876dd3c467ff1b43d8a7b1606a63a56aa46430964556e99",
+    "src/shared/caribbeanTransport.ts": "a81bcbe488b45fe438ef81c6806e9fefb8efafa3bdf893a664f3901630d742fc",
+    "src/shared/casinoExpansion.ts": "dbb91d9109147b78c032c98715cde856cd7603e2ad5b2fb79327a11bc32b0989",
+    "server/demoExpansion.ts": "f442cbdddd6fbc1ffad3deb2b9e3d69415e17d3375fd7a95800f4373af35d165",
+    "server/finance/nile-game-runtime.ts": "a8242e4db306ba15e1a0945c9bb1ebb83015c63fe51900bcafb072b662be1150",
     "scripts/game-math/rational.mjs": "18e762bcf6b3790f0e191f2f774cbdb1ba94b7f4674c5c7caec8fd3257a85d62",
-    "scripts/game-math/rtp-caribbean.mjs": "f686ddac2990437d41f8fdd9b0dc28fc16324921c5364bdca5bd09ca14b24551"
+    "scripts/game-math/rtp-caribbean.mjs": "ec4920ac2e82e417a51139640696dbc1f072f0910e3e73076a9cc4b5d6042170"
   },
-  "policySha256": "cf2c1679f3278dd76a9584532482ac46aa834cb24fc3119ba8b10c6fb6f93878",
+  "policySha256": "e51bca7fd9cdd2179151add5ead5259c426d00a4be122600bdcd71c3a3b65105",
   "serverReplayChecks": 4096,
   "method": "exact-caribbean-giant-round-v1",
   "analysis": {

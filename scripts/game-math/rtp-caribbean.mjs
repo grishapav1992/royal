@@ -14,6 +14,10 @@ export const CARIBBEAN_REVIEWED_SOURCES = {
   'src/shared/caribbeanTreasuresMath.ts': 'b86e71675dfd0179da8d8c43c7a62f8da41303d5e6bc59f07b81d4497b64647b',
   'src/shared/caribbeanTreasures.ts': '5590af9897cfb32dbf8fd7d9c0608ad52184051ddee7ca70cd309267a4311aee',
   'server/games/caribbeanTreasures.ts': 'bdb0aa8eecef1093f876dd3c467ff1b43d8a7b1606a63a56aa46430964556e99',
+  'src/shared/caribbeanTransport.ts': 'a81bcbe488b45fe438ef81c6806e9fefb8efafa3bdf893a664f3901630d742fc',
+  'src/shared/casinoExpansion.ts': 'dbb91d9109147b78c032c98715cde856cd7603e2ad5b2fb79327a11bc32b0989',
+  'server/demoExpansion.ts': 'f442cbdddd6fbc1ffad3deb2b9e3d69415e17d3375fd7a95800f4373af35d165',
+  'server/finance/nile-game-runtime.ts': 'a8242e4db306ba15e1a0945c9bb1ebb83015c63fe51900bcafb072b662be1150',
 };
 const WEIGHTS = [30,24,18,13,9,6];
 const PAYS = [[2,6,20,60],[4,10,30,100],[6,16,40,150],[8,24,60,200],[10,30,100,400],[16,50,200,1000]];

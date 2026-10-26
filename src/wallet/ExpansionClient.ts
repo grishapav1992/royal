@@ -1,4 +1,6 @@
 import { NEOPOLIS_GAME, NEOPOLIS_HEADER, validNeopolisSession, validNeopolisSettings } from '../shared/neopolis';
+import { CARIBBEAN_GAME } from '../shared/caribbeanTreasures';
+import { validCaribbeanSession, validCaribbeanReply } from '../shared/caribbeanTransport';
 import {DRACONA_GAME,DRACONA_CLIENT_HEADER,validDraconaSession,validDraconaSettings} from '../shared/dracona';
 import { PENALTY_CLIENT_HEADER, PENALTY_GAME, validPenaltySession, validPenaltySettings } from '../shared/crLeo';
 import { isUserMessage, t as translateText } from '../i18n/index';
@@ -19,7 +21,7 @@ import type { DemoWallet } from '../shared/demoWallet';
 import { demoWallet } from './WalletClient';
 export type NewExpansionAction = ExpansionAction extends infer T ? T extends ExpansionAction ? Omit<T,'id'> : never : never;
 type Reply={wallet:DemoWallet;sessions:ExpansionSession[];session?:ExpansionSession;replayed?:boolean};
-function validSession(s:ExpansionSession){if(s?.gameId===NEOPOLIS_GAME)return validNeopolisSession(s);if(s?.gameId===DRACONA_GAME)return validDraconaSession(s);if(s?.gameId===PENALTY_GAME)return validPenaltySession(s);if(s?.gameId===AFTER_GAME)return validAfterSession(s);if(s?.gameId===MEME_GAME)return validMemeSession(s);if(s?.gameId===NITRO_GAME)return validNitroSession(s);return !!s&&isExpansionGame(s.gameId)&&validExpansionRulesVersion(s.gameId,s.rulesVersion)&&['active','settled'].includes(s.state)
+function validSession(s:ExpansionSession){if(s?.gameId===CARIBBEAN_GAME)return validCaribbeanSession(s);if(s?.gameId===NEOPOLIS_GAME)return validNeopolisSession(s);if(s?.gameId===DRACONA_GAME)return validDraconaSession(s);if(s?.gameId===PENALTY_GAME)return validPenaltySession(s);if(s?.gameId===AFTER_GAME)return validAfterSession(s);if(s?.gameId===MEME_GAME)return validMemeSession(s);if(s?.gameId===NITRO_GAME)return validNitroSession(s);return !!s&&isExpansionGame(s.gameId)&&validExpansionRulesVersion(s.gameId,s.rulesVersion)&&['active','settled'].includes(s.state)
   &&typeof s.id==='string'&&/^[a-f0-9-]{36}$/i.test(s.id)&&[s.stakeUnits,s.spentUnits,s.returnedUnits].every(n=>typeof n==='string'&&/^[0-9]{1,15}$/.test(n))
   &&!!s.view&&[s.view.player,s.view.dealer,s.view.community].every(a=>Array.isArray(a)&&a.every(c=>typeof c==='string'))
   &&Array.isArray(s.view.actions)&&s.view.actions.every(a=>typeof a.move==='string'&&typeof a.label==='string'&&Number.isSafeInteger(a.cost)&&a.cost>=0&&[a.perPick,a.minPicks,a.maxPicks].every(n=>n===undefined||Number.isSafeInteger(n)&&n>=0))
@@ -35,7 +37,7 @@ function validSession(s:ExpansionSession){if(s?.gameId===NEOPOLIS_GAME)return va
       &&/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(s.id)&&s.view.studio===undefined
       &&validLuelonSlotSettlement(s.gameId,s.state,s.stakeUnits,s.spentUnits,s.returnedUnits,s.view.luelon)&&validLuelonSlotEnvelope(s.gameId,s.state,s.view)
     :s.view.luelon===undefined&&(isStudioGame(s.gameId)?validStudioSettlement(s.gameId,s.state,s.stakeUnits,s.spentUnits,s.returnedUnits,s.view.studio)&&validStudioEnvelope(s.gameId,s.state,s.view):s.view.studio===undefined)))
-   )&&s.view.neopolis===undefined&&s.view.dracona===undefined&&s.view.afterglow===undefined&&s.view.nitro===undefined&&typeof s.view.message==='string';}
+   )&&s.view.caribbean===undefined&&s.view.neopolis===undefined&&s.view.dracona===undefined&&s.view.afterglow===undefined&&s.view.nitro===undefined&&typeof s.view.message==='string';}
 function validStudioStart(s:ExpansionSession,op:ExpansionAction){
   if(op.action!=='start'||!isStudioGame(op.gameId))return true;
   if(op.gameId===NEOPOLIS_GAME)return [1,2,3].includes(s.rulesVersion)&&s.stakeUnits===op.stakeUnits&&validNeopolisSettings(op.settings)&&s.view.neopolis?.origin.starter===op.settings.neopolis.hero;
@@ -120,7 +122,7 @@ export class ExpansionClient extends EventTarget {
     &&Array.isArray(r.sessions)&&r.sessions.every(s=>this.checkedSession(s))&&new Set(r.sessions.map(s=>s.gameId)).size===r.sessions.length
     &&(!op||!!r.session&&this.checkedSession(r.session)&&r.session.gameId===op.gameId&&r.session.id===(op.action==='start'?op.id:op.sessionId)&&typeof r.replayed==='boolean'
       &&(op.gameId!==PENALTY_GAME||(op.action==='start'?validPenaltySettings(op.settings)&&r.session.stakeUnits===op.stakeUnits&&r.session.view.penalty?.hero===op.settings.penalty.hero&&(r.session.view.penalty?.shots[0].risk??r.session.view.penalty?.risk)===op.settings.penalty.risk:r.session.view.penalty!.revision>op.revision!&&(r.replayed===true||r.session.view.penalty!.revision===op.revision!+1)&&(op.penaltyRisk===undefined||r.session.view.penalty!.shots[op.revision!]?.risk===op.penaltyRisk)))
-      &&validNeopolisReply(r.session,op,r.replayed===true)&&validDraconaReply(r.session,op,r.replayed===true)&&validAfterReply(r.session,op,r.replayed===true)&&validNitroReply(r.session,op,r.replayed===true)&&validConvoyReply(r.session,op,r.replayed===true)&&validLuelonReply(r.session,op,r.replayed===true)&&validCaramelReply(r.session,op,r.replayed===true)
+      &&validCaribbeanReply(r.session,op,r.replayed===true,r.sessions)&&validNeopolisReply(r.session,op,r.replayed===true)&&validDraconaReply(r.session,op,r.replayed===true)&&validAfterReply(r.session,op,r.replayed===true)&&validNitroReply(r.session,op,r.replayed===true)&&validConvoyReply(r.session,op,r.replayed===true)&&validLuelonReply(r.session,op,r.replayed===true)&&validCaramelReply(r.session,op,r.replayed===true)
       &&(!isStudioGame(op.gameId)||validStudioStart(r.session,op)&&r.sessions.some(s=>s.gameId===op.gameId)&&(r.replayed===true||r.sessions.some(s=>s.gameId===op.gameId&&s.id===r.session!.id))&&r.sessions.every(s=>s.id!==r.session!.id||s.gameId!==r.session!.gameId||studioSamePayload(s,r.session))));}
   private accept(r:Reply){this.wallet=r.wallet;this.sessions=r.sessions;demoWallet.acceptExternalWallet(this.accountId!,r.wallet);}
   private message(e:unknown){return e instanceof Error&&isUserMessage(e.message)?translateText(e.message):translateText('Ответ не получен. Нажми «Проверить ход», чтобы подтвердить ту же операцию.');}

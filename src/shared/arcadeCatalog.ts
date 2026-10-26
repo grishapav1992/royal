@@ -1,4 +1,5 @@
 import {PENALTY_GAME} from './crLeo';
+import {CARIBBEAN_GAME} from './caribbeanTreasures';
 import {STUDIO_GAMES, type StudioGameId} from './studioGames';
 import {VARIANT_GAMES} from './casinoVariants';
 import {isCardGame} from './cardTables';
@@ -39,7 +40,7 @@ export const ACTIVE_ARCADE_GAMES: readonly string[] = ARCADE_CABINET_SPECS.map(c
 export const ROYAL_CABINET_IDS = ARCADE_CABINET_SPECS.filter(c=>c.collection==='royal').map(c=>c.id);
 export const ARCADE_CABINET_POSITIONS: Readonly<Record<string,{x:number;y:number}>> = Object.fromEntries(ARCADE_CABINET_SPECS.map(c=>[c.id,{x:c.x,y:c.y}]));
 export const STUDIO_CABINET_GAMES = ACTIVE_STUDIO_GAMES;
-export const ROYAL_PLATFORM_GAMES: readonly string[] = [...ARCADE_HOUSE_GAMES];
+export const ROYAL_PLATFORM_GAMES: readonly string[] = [...ARCADE_HOUSE_GAMES, CARIBBEAN_GAME];
 export const ROYAL_COLLECTION_GAMES = ROYAL_PLATFORM_GAMES;
 export const PLATFORM_CABINET_DEFAULTS: Readonly<Record<string,string>> = Object.freeze(Object.fromEntries(ARCADE_CABINET_SPECS.filter(c=>c.defaultGameId).map(c=>[c.id,c.defaultGameId!])));
 export const isPlatformGame=(id:string):boolean=>ROYAL_PLATFORM_GAMES.includes(id);

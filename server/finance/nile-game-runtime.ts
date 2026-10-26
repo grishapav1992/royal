@@ -64,7 +64,7 @@ export class NileGameRuntime{
    if(!Number.isSafeInteger(op.amount)||op.amount<1)return 0n;return BigInt(op.amount)*100n*BigInt(game.maxMultiplier);
   }
   if(op.action!=='start')return 0n;
-  if(command.path==='/expansion'&&isExpansionGame(op.gameId)&&typeof op.stakeUnits==='string'&&/^\d{1,12}$/.test(op.stakeUnits))return BigInt(op.stakeUnits)*BigInt(Math.max(expansionMax(op.gameId,1),expansionMax(op.gameId,2)));
+  if(command.path==='/expansion'&&isExpansionGame(op.gameId)&&typeof op.stakeUnits==='string'&&/^\d{1,12}$/.test(op.stakeUnits))return BigInt(op.stakeUnits)*BigInt(Math.max(expansionMax(op.gameId,1,op.settings),expansionMax(op.gameId,2,op.settings)));
   if(command.path==='/casino-sessions'&&isSessionGame(op.gameId)&&typeof op.stakeUnits==='string'&&/^\d{1,12}$/.test(op.stakeUnits))return sessionReservation({...op,state:'active'}as SessionState);
   if(command.path==='/flight'&&Number.isSafeInteger(op.amount)&&op.amount>0)return BigInt(op.amount)*100n*BigInt(FLIGHT_MAX_MULTIPLIER);
   if(command.path==='/mines'&&Number.isSafeInteger(op.amount)&&op.amount>0&&Number.isInteger(op.mineCount)&&op.mineCount>=1&&op.mineCount<=24)return exactPayoutUnits(BigInt(op.amount)*100n,minesOdds.getMultiplier(op.mineCount,25-op.mineCount));

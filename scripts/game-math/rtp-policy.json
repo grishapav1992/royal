@@ -42,6 +42,10 @@
         "src/shared/caribbeanTreasuresMath.ts",
         "src/shared/caribbeanTreasures.ts",
         "server/games/caribbeanTreasures.ts",
+        "src/shared/caribbeanTransport.ts",
+        "src/shared/casinoExpansion.ts",
+        "server/demoExpansion.ts",
+        "server/finance/nile-game-runtime.ts",
         "scripts/game-math/rational.mjs"
       ]
     },
