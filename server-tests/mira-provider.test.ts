@@ -9,6 +9,25 @@ afterEach(() => { variables.forEach((name, i) => { if (previous[i] === undefined
 const answer = { reply: 'Джаз? Уже интереснее.', facts: ['Гость любит джаз'], impression: 'Любит джаз', tone: 'interest', choices: ['Расскажи про джаз'], endConversation: false, drinkOffer: null, emotion: 'tease' };
 const completion = (finish = 'stop', content = JSON.stringify(answer)) => new Response(JSON.stringify({ choices: [{ finish_reason: finish, message: { role: 'assistant', content } }] }));
 
+test('Venice receives current appearance with the latest utterance, separate from remembered dialogue', async () => {
+  process.env.MIRA_PROVIDER = 'venice'; process.env.VENICE_API_KEY = 'synthetic-venice-key';
+  let now = 100000, description = 'Бродяга в рваном плаще';
+  const bodies: { messages: { role: string; content: string }[] }[] = [];
+  const service = new MiraService((async (_url, init) => { bodies.push(JSON.parse(String(init?.body))); return completion(); }) as typeof fetch,
+    undefined, () => now, undefined, () => ({ skinId: 'test-look', description }));
+  await service.respond('alice', 'Как выглядит мой костюм?');
+  now += 3000; description = 'Космонавтка в белом скафандре';
+  await service.respond('alice', 'Я переоделся. Что видишь?');
+  const messages = bodies[1].messages;
+  assert.equal(messages.at(-1)?.role, 'user');
+  const packet = JSON.parse(messages.at(-1)!.content);
+  assert.equal(packet.serverObservation.currentAppearance.description, 'Космонавтка в белом скафандре');
+  assert.doesNotMatch(messages.at(-1)!.content, /Бродяга/);
+  assert.equal(packet.playerMessage, 'Я переоделся. Что видишь?');
+  assert.deepEqual(messages.slice(1, -1).map(row => row.role), ['user', 'assistant']);
+  assert.equal((await service.resume('alice')).turns.some(row => row.content.includes('serverObservation')), false);
+});
+
 test('Venice keeps the Mira persona, server context, history and structured game response', async () => {
   process.env.MIRA_PROVIDER = 'venice'; process.env.VENICE_API_KEY = 'synthetic-venice-key'; process.env.CODEX_SALE_API_KEY = 'synthetic-codex-key';
   let now = 100000; const calls: { url: string; options: RequestInit; body: any }[] = [];

@@ -1,6 +1,7 @@
 import type { Account } from '../../server/accounts';
 import type { RoomScene } from '../game/RoomScene';
-import { SKIN_VARIANTS, skinAssetUrl, type SkinCard, type SkinStudioSnapshot } from '../shared/skinStudio';
+import { SKIN_VARIANTS, skinAssetUrl } from '../shared/skinStudio';
+import type { SkinDescriptionCard as SkinCard, SkinDescribedSnapshot as SkinStudioSnapshot } from '../shared/skinDescription';
 import { WALLET_ACCOUNT_HEADER } from '../shared/walletAccount';
 import { demoWallet } from '../wallet/WalletClient';
 import { tailorPortrait } from '../game/atelierArt';
@@ -35,6 +36,7 @@ export class SkinStudioUI {
   private fitting = new SkinFittingRoom();
   private trying = '';
   private fittingJob = '';
+  private requestId = 0;
   constructor(private scene: RoomScene, private account: () => Account | null, private accountChanged: () => Promise<void>) {
     this.button.type = 'button'; this.button.className = 'logout-button'; this.button.textContent = 'Образы'; this.button.hidden = true;
     this.button.onclick = () => { void this.open(); }; document.querySelector('.profile')!.append(this.button);
@@ -100,10 +102,12 @@ export class SkinStudioUI {
   }
   private async send(path: string, body?: unknown) {
     const epoch = this.epoch, id = this.accountId;
+    const requestId = ++this.requestId;
     const response = await fetch('/api/skin-studio' + path, { method: body ? 'POST' : 'GET', credentials: 'same-origin', signal: AbortSignal.timeout(20000),
       headers: { [WALLET_ACCOUNT_HEADER]: id ?? '', ...(body ? { 'Content-Type': 'application/json' } : {}) }, body: body ? JSON.stringify(body) : undefined });
     const result = await response.json();
     if (epoch !== this.epoch) throw new Error('Аккаунт изменился.');
+    if (requestId !== this.requestId) return;
     if (!response.ok) {
       if (path === '/generations' && [400, 401, 403, 409, 413, 429].includes(response.status)) {
         this.pending = undefined; sessionStorage.removeItem(this.key());
@@ -132,8 +136,14 @@ export class SkinStudioUI {
   }
   private schedule() {
     clearTimeout(this.poll);
-    if (this.dialog.open && this.data?.job && ['reserving', 'generating', 'capturing', 'refunding'].includes(this.data.job.state))
-      this.poll = setTimeout(() => { void this.perform(() => this.refresh()); }, 2500);
+    const pendingDescription = [...(this.data?.job?.variants ?? []), ...(this.data?.wardrobe ?? [])].some(card => card.descriptionPending);
+    const generating = this.data?.job && ['reserving', 'generating', 'capturing', 'refunding'].includes(this.data.job.state);
+    if (this.dialog.open && (pendingDescription || generating)) this.poll = setTimeout(() => {
+      if (this.busy) { this.schedule(); return; }
+      if (generating) void this.perform(() => this.refresh());
+      // Caption arrival must preserve the focused selection and never overwrite a later choice response.
+      else void this.refresh().catch(() => this.schedule());
+    }, 2500);
   }
   private async perform(action: () => Promise<void>) {
     if (this.busy) return;
@@ -191,15 +201,22 @@ export class SkinStudioUI {
       this.wardrobe.replaceChildren(...(this.data?.wardrobe ?? []).map((card, i) => this.card(card, i, true)));
     }
     this.wardrobe.querySelectorAll<HTMLButtonElement>('[data-equip-skin]').forEach(b => { b.disabled = this.busy || b.dataset.equipSkin === this.data?.equippedId; });
+    this.dialog.querySelectorAll<HTMLElement>('[data-skin-card]').forEach(article => {
+      const card = available.find(row => row.id === article.dataset.skinCard);
+      const summary = article.querySelector<HTMLElement>('.skin-card-description')!;
+      summary.textContent = card?.description || (article.closest('.skin-wardrobe') ? card?.prompt ?? '' : '');
+      summary.title = summary.textContent; summary.hidden = !summary.textContent;
+    });
   }
   private card(card: SkinCard, index: number, owned: boolean) {
-    const article = document.createElement('article'); article.className = 'skin-card';
+    const article = document.createElement('article'); article.className = 'skin-card'; article.dataset.skinCard = card.id;
     const title = document.createElement('h4'); title.textContent = owned ? `Образ ${index + 1}` : `Вариант ${index + 1}`;
     const preview = document.createElement('div'); preview.className = 'skin-preview';
     const art = document.createElement('div'); art.className = 'skin-preview-art'; art.style.backgroundImage = `url("${skinAssetUrl(card.id)}")`;
     art.setAttribute('role', 'img'); art.setAttribute('aria-label', title.textContent + ', спереди'); preview.append(art);
     const image = new Image(); image.src = skinAssetUrl(card.id); image.onerror = () => { preview.classList.add('skin-image-error'); art.setAttribute('aria-label', 'Изображение недоступно. Обнови ателье.'); };
     const button = document.createElement('button'); button.type = 'button'; button.className = 'skin-select';
+    const description = document.createElement('p'); description.className = 'skin-card-description';
     const tryOn = () => {
       if (owned) this.selected = '';
       this.trying = card.id; this.render();
@@ -209,13 +226,12 @@ export class SkinStudioUI {
     if (owned) {
       button.dataset.equipSkin = card.id; button.textContent = card.id === this.data?.equippedId ? 'Сейчас надет' : 'Надеть';
       button.onclick = () => { void this.perform(async () => { await this.send('/equip', { skinId: card.id }); await this.accountChanged(); }); };
-      const description = document.createElement('p'); description.className = 'skin-card-description'; description.textContent = card.prompt; description.title = card.prompt;
       const fitting = document.createElement('button'); fitting.type = 'button'; fitting.className = 'skin-select'; fitting.textContent = 'Примерить'; fitting.onclick = tryOn;
       article.append(title, preview, description, fitting, button);
     } else {
       button.dataset.selectSkin = card.id; button.textContent = `Примерить вариант ${index + 1}`; button.setAttribute('aria-pressed', 'false');
       button.onclick = () => { this.selected = card.id; tryOn(); };
-      article.append(title, preview, button);
+      article.append(title, preview, description, button);
     }
     return article;
   }
