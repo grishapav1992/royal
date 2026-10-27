@@ -1,0 +1,210 @@
+{
+  "release": "nowpayments-sandbox-20261027-v1",
+  "sourceCommit": "9892f8fc1a78369bce385221466f80a45d426b42",
+  "baseCommit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+  "helperSourceCommit": "9892f8fc1a78369bce385221466f80a45d426b42",
+  "tests": {
+    "serverPassed": 26,
+    "browserPassed": 13,
+    "installerPassed": 46,
+    "quiescencePassed": 39
+  },
+  "rtp": {
+    "qualified": 10,
+    "unchangedLegacyNotQualified": 114
+  },
+  "payload": {
+    "sourceFiles": 30,
+    "sourceFilesRemoved": 4,
+    "clientFiles": 5,
+    "backendFiles": 1,
+    "dependencyFiles": 0,
+    "gamePackages": 0
+  },
+  "preservation": {
+    "independentPrograms": [
+      "payments.js",
+      "crypto-reconcile.js"
+    ],
+    "liveMoneyFlags": {
+      "NOWPAYMENTS_ENABLED": "false",
+      "NOWPAYMENTS_GAMES_ENABLED": "false",
+      "NOWPAYMENTS_WITHDRAWALS_ENABLED": "false"
+    }
+  },
+  "providerPreflight": {
+    "productionNodeStatus": 200,
+    "authenticatedMerchantCoinsStatus": 200
+  },
+  "status": "published-and-verified",
+  "server": {
+    "published": {
+      "published": true,
+      "preparedImage": "sha256:30ec919f8e0e61f8cff414dfda5bc84251b49c3ad5a199463064a542fe133c76",
+      "runningImage": "sha256:30ec919f8e0e61f8cff414dfda5bc84251b49c3ad5a199463064a542fe133c76",
+      "containerRestarted": true,
+      "sourceCommit": "9892f8fc1a78369bce385221466f80a45d426b42",
+      "changedSources": 30,
+      "helperSourceCommit": "9892f8fc1a78369bce385221466f80a45d426b42",
+      "clientDeltaFiles": 5,
+      "onlySandboxConfigurationAdded": true,
+      "mountsPreserved": true,
+      "gameDataPreserved": true,
+      "backendDeltaFiles": 1,
+      "otherBackendProgramsAndModulesPreserved": true,
+      "oldAssetsPreserved": true,
+      "otherPersistentServicesPreserved": 13
+    },
+    "exitCode": 0,
+    "cpuWeights": {
+      "docker": 100,
+      "containerd": 100,
+      "game": 532
+    },
+    "sandboxRuntimeMatchesPrivateFile": true,
+    "sandboxPrivateFileMode": "0o600",
+    "liveMoneyFlags": {
+      "NOWPAYMENTS_ENABLED": "false",
+      "NOWPAYMENTS_GAMES_ENABLED": "false",
+      "NOWPAYMENTS_WITHDRAWALS_ENABLED": "false"
+    },
+    "container": "7387d68f7f8e0ae6b24bc1a2033eca033c21df2b6e1a67d31b8da73bc04735da",
+    "sourceFilesVerified": 1937,
+    "runtimeFilesVerified": 8190,
+    "backup": {
+      "source.tgz": {
+        "path": "/opt/royal-backups/nowpayments-sandbox-20261027-v1/source.tgz",
+        "bytes": 54064,
+        "sha256": "24340e23c9473f0fcc6b2258297aeecc3d3135e23d5bd6b276c2d7f5112c9b9b"
+      },
+      "game-wallet.dump": {
+        "path": "/opt/royal-backups/nowpayments-sandbox-20261027-v1/game-wallet.dump",
+        "bytes": 30763301,
+        "sha256": "6998fe9991dc11148549fcbc6d6bfc5dc0d4dedf7e3dbc16f855f96e7a032ea3"
+      },
+      "index.html": {
+        "path": "/opt/royal-backups/nowpayments-sandbox-20261027-v1/index.html",
+        "bytes": 799,
+        "sha256": "87920f9a950122bdd9aedf00f9f7ed3a84d03eb82458759fa92d74600f02ab72"
+      }
+    },
+    "beforeAvailableBytes": 8326979584,
+    "availableBytes": 8249126912
+  },
+  "public": {
+    "startedAt": "2026-10-27T20:45:14.707Z",
+    "realMoney": false,
+    "checks": [
+      "only-two-payment-methods",
+      "retired-payment-routes-return-410",
+      "real-host-connected-with-chat",
+      "fresh-free-deposit-denied-with-no-credit",
+      "genuine-provider-deposit-credited-100-virtual-units",
+      "three-provider-rechecks-do-not-double-credit",
+      "sandbox-ui-with-chat-at-1440",
+      "sandbox-ui-with-chat-at-390",
+      "virtual-wager-accepted-and-replay-is-idempotent"
+    ],
+    "testPaymentCreated": true,
+    "stage": "complete",
+    "passed": true,
+    "finishedAt": "2026-10-27T20:48:48.568Z",
+    "previousAttempt": {
+      "failedCheck": "test sent an unsupported stake of one virtual unit",
+      "status": 400,
+      "fixedBy": "use the existing supported ten-unit stake",
+      "finishedAt": "2026-10-27T20:46:45.997Z"
+    }
+  },
+  "publicAssets": {
+    "sourceCommit": "9892f8fc1a78369bce385221466f80a45d426b42",
+    "at": "2026-10-27T20:43:39.506Z",
+    "assets": [
+      {
+        "path": "admin.html",
+        "sha256": "87949d922a41fe8c92e604bb61f713acd313c31ebf33369ffbd4903d84b2f364"
+      },
+      {
+        "path": "assets/admin-Bv6Ae6IV.js",
+        "sha256": "7d07872e86e0a47b818cbfe51bbf52c990bde72651c803d18b2dd416bd5ff87b"
+      },
+      {
+        "path": "assets/main-3Z476rI5.css",
+        "sha256": "b463c52f03d5684cbe36468e4c09019e7b7b649004170b6579c4b95e1b907127"
+      },
+      {
+        "path": "assets/main-fK1tQ4SD.js",
+        "sha256": "cf738076df5a2c993aee99c48376fefb7469bf430165b2442af5ea05c527bf23"
+      },
+      {
+        "path": "index.html",
+        "sha256": "31b685393fcc9e63fba5357a4ada278593200d159979ab0e5ea200119e8b61a5"
+      }
+    ],
+    "retired": [
+      {
+        "endpoint": "/api/nile-wallet",
+        "method": "GET",
+        "status": 410
+      },
+      {
+        "endpoint": "/api/nile-wallet",
+        "method": "POST",
+        "status": 410
+      },
+      {
+        "endpoint": "/api/nile-play",
+        "method": "GET",
+        "status": 410
+      },
+      {
+        "endpoint": "/api/nile-play",
+        "method": "POST",
+        "status": 410
+      },
+      {
+        "endpoint": "/api/game-wallet",
+        "method": "GET",
+        "status": 410
+      },
+      {
+        "endpoint": "/api/game-wallet",
+        "method": "POST",
+        "status": 410
+      },
+      {
+        "endpoint": "/api/usdt-wallet",
+        "method": "GET",
+        "status": 410
+      },
+      {
+        "endpoint": "/api/usdt-wallet",
+        "method": "POST",
+        "status": 410
+      }
+    ],
+    "health": 200,
+    "passed": true
+  },
+  "serverCleanup": {
+    "removed": [
+      {
+        "path": "/opt/royal-releases/nowpayments-sandbox-20261027-v1/runtime-context",
+        "bytes": 5035717
+      },
+      {
+        "path": "/opt/royal-releases/nowpayments-sandbox-20261027-v1/transport.tgz",
+        "bytes": 2458710
+      },
+      {
+        "path": "/opt/royal-releases/nowpayments-sandbox-20261027-v1/__pycache__",
+        "bytes": 38289
+      }
+    ],
+    "beforeAvailableBytes": 8037502976,
+    "afterAvailableBytes": 8040042496,
+    "imagesBackupsVolumesAndPrivateConfigurationPreserved": true
+  },
+  "verifiedAt": "2026-10-27T20:56:30.929Z",
+  "productionUserDataIncluded": false
+}
