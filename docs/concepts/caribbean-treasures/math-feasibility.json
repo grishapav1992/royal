@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "modelVersion": "candidate-1",
+  "status": "development-only",
+  "registeredWageredGame": false,
+  "qualified": false,
+  "targetRtp": 0.96,
+  "method": "Exact rational single-spin first moments for independent ordinary cells and one correlated giant-symbol block. All legal positions and cannon expansions are enumerated.",
+  "dimensions": {
+    "columns": 6,
+    "rows": 4
+  },
+  "modes": {
+    "base": [
+      {
+        "lines": 1,
+        "meanPayoutInTotalStakes": {
+          "fraction": "3499989642797437/5000000000000000",
+          "value": 0.6999979285594874
+        }
+      },
+      {
+        "lines": 5,
+        "meanPayoutInTotalStakes": {
+          "fraction": "10937494472277767/15625000000000000",
+          "value": 0.6999996462257772
+        }
+      },
+      {
+        "lines": 10,
+        "meanPayoutInTotalStakes": {
+          "fraction": "4374989236570709/6250000000000000",
+          "value": 0.6999982778513134
+        }
+      },
+      {
+        "lines": 20,
+        "meanPayoutInTotalStakes": {
+          "fraction": "699999602941195349/1000000000000000000",
+          "value": 0.6999996029411953
+        }
+      }
+    ],
+    "raid": [
+      {
+        "lines": 1,
+        "meanPayoutInTotalStakes": {
+          "fraction": "10960546109087357/6250000000000000",
+          "value": 1.753687377453977
+        }
+      },
+      {
+        "lines": 5,
+        "meanPayoutInTotalStakes": {
+          "fraction": "210784251047038643/156250000000000000",
+          "value": 1.3490192067010474
+        }
+      },
+      {
+        "lines": 10,
+        "meanPayoutInTotalStakes": {
+          "fraction": "187491906429101861/156250000000000000",
+          "value": 1.199948201146252
+        }
+      },
+      {
+        "lines": 20,
+        "meanPayoutInTotalStakes": {
+          "fraction": "6104031806893616287/5000000000000000000",
+          "value": 1.2208063613787232
+        }
+      }
+    ],
+    "flagship": [
+      {
+        "lines": 1,
+        "meanPayoutInTotalStakes": {
+          "fraction": "818388883/200000000",
+          "value": 4.091944415
+        }
+      },
+      {
+        "lines": 5,
+        "meanPayoutInTotalStakes": {
+          "fraction": "786928505591/250000000000",
+          "value": 3.147714022364
+        }
+      },
+      {
+        "lines": 10,
+        "meanPayoutInTotalStakes": {
+          "fraction": "17499268643/6250000000",
+          "value": 2.79988298288
+        }
+      },
+      {
+        "lines": 20,
+        "meanPayoutInTotalStakes": {
+          "fraction": "5697107102287/2000000000000",
+          "value": 2.8485535511435
+        }
+      }
+    ]
+  },
+  "conclusions": [
+    "The figures describe individual draft spin modes, not the RTP of a complete paid round.",
+    "A multi-cell block uses one symbol draw. Treating its cells as independent gives a wrong expectation.",
+    "Different line selections can have different expected payouts per total stake and require separate calibration.",
+    "Bonus entry, tactical choice, purchased cost and complete-round settlement are outside this single-spin diagnostic. See the separate complete-round qualification."
+  ],
+  "sourceHashes": {
+    "src/shared/caribbeanTreasuresMath.ts": "b86e71675dfd0179da8d8c43c7a62f8da41303d5e6bc59f07b81d4497b64647b",
+    "scripts/game-math/caribbean-treasures-design.mjs": "d64c3052f78ac516fda6a12176883224c9fb240e6b07f99814f5cc2d214f9a6e",
+    "scripts/game-math/rational.mjs": "18e762bcf6b3790f0e191f2f774cbdb1ba94b7f4674c5c7caec8fd3257a85d62"
+  }
+}

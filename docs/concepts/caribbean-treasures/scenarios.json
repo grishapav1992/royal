@@ -1,0 +1,232 @@
+{
+  "format": 1,
+  "rulesVersion": 1,
+  "purpose": "Selected deterministic trajectories for regression and later presentation work; not an RTP sample",
+  "cases": [
+    {
+      "name": "partial",
+      "seed": 1,
+      "mode": "normal",
+      "tactic": "raid",
+      "expected": {
+        "costUnits": "2000",
+        "payoutUnits": "200",
+        "spins": 1,
+        "hash": "8ae473ddf8957a8d2dc24d094f311ea550113b3f91049fbe60445cb9fd52791c",
+        "tags": [
+          "partial"
+        ]
+      }
+    },
+    {
+      "name": "loss",
+      "seed": 2,
+      "mode": "normal",
+      "tactic": "raid",
+      "expected": {
+        "costUnits": "2000",
+        "payoutUnits": "0",
+        "spins": 1,
+        "hash": "af8abf2f573c39b4755e6fb88a86ca914fdb1e63d882152b616d9048cc38c6a5",
+        "tags": [
+          "loss",
+          "giant2"
+        ]
+      }
+    },
+    {
+      "name": "giant2",
+      "seed": 2,
+      "mode": "normal",
+      "tactic": "raid",
+      "expected": {
+        "costUnits": "2000",
+        "payoutUnits": "0",
+        "spins": 1,
+        "hash": "af8abf2f573c39b4755e6fb88a86ca914fdb1e63d882152b616d9048cc38c6a5",
+        "tags": [
+          "loss",
+          "giant2"
+        ]
+      }
+    },
+    {
+      "name": "positive",
+      "seed": 3,
+      "mode": "normal",
+      "tactic": "raid",
+      "expected": {
+        "costUnits": "2000",
+        "payoutUnits": "2400",
+        "spins": 1,
+        "hash": "0344fbca9d39987621a13dd70b32b6cc3c70dc187a621ab8f45d2c1f48df01c3",
+        "tags": [
+          "positive",
+          "giant3",
+          "edge"
+        ]
+      }
+    },
+    {
+      "name": "giant3",
+      "seed": 3,
+      "mode": "normal",
+      "tactic": "raid",
+      "expected": {
+        "costUnits": "2000",
+        "payoutUnits": "2400",
+        "spins": 1,
+        "hash": "0344fbca9d39987621a13dd70b32b6cc3c70dc187a621ab8f45d2c1f48df01c3",
+        "tags": [
+          "positive",
+          "giant3",
+          "edge"
+        ]
+      }
+    },
+    {
+      "name": "edge",
+      "seed": 3,
+      "mode": "normal",
+      "tactic": "raid",
+      "expected": {
+        "costUnits": "2000",
+        "payoutUnits": "2400",
+        "spins": 1,
+        "hash": "0344fbca9d39987621a13dd70b32b6cc3c70dc187a621ab8f45d2c1f48df01c3",
+        "tags": [
+          "positive",
+          "giant3",
+          "edge"
+        ]
+      }
+    },
+    {
+      "name": "cannon",
+      "seed": 5,
+      "mode": "normal",
+      "tactic": "raid",
+      "expected": {
+        "costUnits": "2000",
+        "payoutUnits": "29200",
+        "spins": 15,
+        "hash": "0a5485c28d01371e0db9cf4f36d2490e170d50c46e8e46e6109d38527247a179",
+        "tags": [
+          "positive",
+          "giant2",
+          "giant3",
+          "cannon",
+          "edge"
+        ]
+      }
+    },
+    {
+      "name": "return",
+      "seed": 31,
+      "mode": "normal",
+      "tactic": "raid",
+      "expected": {
+        "costUnits": "2000",
+        "payoutUnits": "2000",
+        "spins": 1,
+        "hash": "90627ca0a5603f4fa42287f3451366f78017b200131926f558d26f9529d6776e",
+        "tags": [
+          "return"
+        ]
+      }
+    },
+    {
+      "name": "large",
+      "seed": 75,
+      "mode": "normal",
+      "tactic": "raid",
+      "expected": {
+        "costUnits": "2000",
+        "payoutUnits": "69800",
+        "spins": 15,
+        "hash": "561728ce0a0192b03c0afc4e3da4d474cd96a7351ba7255140932218963cc4df",
+        "tags": [
+          "positive",
+          "large",
+          "giant2",
+          "giant3",
+          "cannon",
+          "edge"
+        ]
+      }
+    },
+    {
+      "name": "natural-raid",
+      "seed": 5,
+      "mode": "normal",
+      "tactic": "raid",
+      "expected": {
+        "costUnits": "2000",
+        "payoutUnits": "29200",
+        "spins": 15,
+        "hash": "0a5485c28d01371e0db9cf4f36d2490e170d50c46e8e46e6109d38527247a179",
+        "tags": [
+          "positive",
+          "giant2",
+          "giant3",
+          "cannon",
+          "edge"
+        ]
+      }
+    },
+    {
+      "name": "natural-flagship",
+      "seed": 5,
+      "mode": "normal",
+      "tactic": "flagship",
+      "expected": {
+        "costUnits": "2000",
+        "payoutUnits": "63000",
+        "spins": 7,
+        "hash": "fa4e229fbd5222d69645c228ff2bcdc9063bc07bf076e577f12972c1a747871e",
+        "tags": [
+          "positive",
+          "large",
+          "giant3",
+          "edge"
+        ]
+      }
+    },
+    {
+      "name": "purchase-raid",
+      "seed": 92741,
+      "mode": "buy-raid",
+      "tactic": "raid",
+      "expected": {
+        "costUnits": "35607",
+        "payoutUnits": "45400",
+        "spins": 14,
+        "hash": "2bd8fd3a9ba7c991121087d9b2c36c148747e87fcf7d18a00339fc674d275ed2",
+        "tags": [
+          "positive",
+          "giant2",
+          "giant3",
+          "cannon",
+          "edge"
+        ]
+      }
+    },
+    {
+      "name": "purchase-flagship",
+      "seed": 92741,
+      "mode": "buy-flagship",
+      "tactic": "flagship",
+      "expected": {
+        "costUnits": "35607",
+        "payoutUnits": "21200",
+        "spins": 6,
+        "hash": "421dcb84ceb264c1a367c76674145dbc2bac02eec14d65086e9eacf8dd3142a4",
+        "tags": [
+          "partial",
+          "giant3",
+          "edge"
+        ]
+      }
+    }
+  ]
+}
