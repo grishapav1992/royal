@@ -1,6 +1,7 @@
 /** Independent client packages supported by this host release. */
 export const STUDIO_GAME_MODULES = [
  { gameId: 'studio-flooded-temple', slug: 'flooded-temple', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
+ { gameId: 'studio-caribbean-treasures', slug: 'caribbean-treasures', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
  { gameId: 'studio-neopolis', slug: 'neopolis', apiVersion: 1, rulesVersion: 3, progressVersion: 3 },
  { gameId: 'studio-dracona', slug: 'dracona', apiVersion: 1, rulesVersion: 3, progressVersion: 2 },
  { gameId: 'studio-cosmic-escape', slug: 'cosmic-escape', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },
@@ -40,7 +41,7 @@ export const STUDIO_GAME_MODULES = [
  { gameId: 'studio-lucky-spotlight', slug: 'lucky-spotlight', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
  { gameId: 'studio-last-convoy', slug: 'last-convoy', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },
  { gameId: 'studio-nitro-run', slug: 'nitro-run', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },
- { gameId: 'studio-afterglow', slug: 'girlhub', apiVersion: 1, rulesVersion: 2, progressVersion: 3 },
+ { gameId: 'studio-afterglow', slug: 'girlhub', apiVersion: 1, rulesVersion: 2, progressVersion: 4 },
  { gameId: 'studio-meme-overload', slug: 'meme-overload', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },
 ] as const;
 

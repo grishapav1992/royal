@@ -7,6 +7,7 @@ import {NileGameRuntime,type NativeCommand} from '../../server/finance/nile-game
 import {seededRandom} from '../../src/shared/draconaMath';
 import {validDraconaSession} from '../../src/shared/dracona';
 import {validNeopolisSession} from '../../src/shared/neopolis';
+import {validAfterSession} from '../../src/shared/afterglow';
 
 const command=(path:string,body:unknown=null,method:'GET'|'POST'=body===null?'GET':'POST'):NativeCommand=>({path,body,method,flags:Array(9).fill(true),rules:2,query:{}});
 const draconaCommand=(body:unknown=null):NativeCommand=>({...command('/expansion',body),flags:[true,true,true,true,true,true,true,true,2]});
@@ -146,12 +147,34 @@ test('fractional USDT from a duel survives cents-based slot operations exactly',
 });
 test('old cosmetic progress imports once without importing a balance or resetting earned looks',async()=>{
  const c=await setup();try{
-  const legacy={wardrobe:{version:3 as const,revision:7,selectedGirl:1,selectedLook:1 as const,albumUnits:90000,pointsUnits:[400000,100000,300000,200000],unlocked:[true,true,true,true],active:false,activeGirl:null},convoy:{version:1 as const,completedRounds:250}};
+  const legacy={wardrobe:{version:4 as const,revision:7,selectedGirl:1,selectedLook:1 as const,albumUnits:90000,pointsUnits:[400000,100000,300000,200000],unlocked:[true,true,true,true],active:false,activeGirl:null},convoy:{version:1 as const,completedRounds:250}};
   const profile=await c.games.run(c.a,{...command('/afterglow-wardrobe'),legacy})as any;
   assert.equal(profile.selectedLook,1);assert.equal(profile.selectedGirl,1);assert.equal(profile.revision,7);
   assert.equal((await c.games.run(c.a,command('/convoy-progress'))as any).completedRounds,250);
   await c.games.run(c.a,{...command('/'),legacy:{...legacy,convoy:{version:1,completedRounds:0}}});
   assert.equal((await c.games.run(c.a,command('/convoy-progress'))as any).completedRounds,250);
   assert.equal((await c.ledger.wallet(c.a)as any).balanceUnits,'200000000');await c.ledger.audit();
+ }finally{await c.close();}
+});
+
+test('GirlHUB bonus credits Mia once and unlocks Naomi in the common wallet',async()=>{
+ const c=await setup();try{
+  let seed=5;const draw=(max:number)=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed%max;};
+  const games=new NileGameRuntime(c.ledger,draw);await games.ready;
+  const initial=await games.run(c.a,command('/afterglow-wardrobe'))as any;assert.equal(initial.selectedGirl,1);
+  await c.ledger.db.prepare('INSERT INTO demo_afterglow_stake_album VALUES(?,15900)').run(c.a);
+  let reply=await games.run(c.a,command('/expansion',{id:randomUUID(),action:'start',gameId:'studio-afterglow',stakeUnits:'100',settings:{afterglow:{mode:'normal'}},appearance:{girl:1,look:0,revision:0}}))as any;
+  assert(validAfterSession(reply.session));assert.equal(reply.session.state,'active');assert.equal(reply.wallet.balanceUnits,'199000000');
+  assert.equal((await games.run(c.a,command('/afterglow-wardrobe'))as any).albumUnits,15900);
+  let last:unknown;
+  while(reply.session.state==='active'){
+   last={id:randomUUID(),action:'move',gameId:'studio-afterglow',sessionId:reply.session.id,move:'afterglow-spin',revision:reply.session.view.afterglow.revision};
+   reply=await games.run(c.a,command('/expansion',last))as any;assert(validAfterSession(reply.session));
+  }
+  const balance=reply.wallet.balanceUnits;
+  assert.equal((await games.run(c.a,command('/expansion',last))as any).wallet.balanceUnits,balance);
+  const earned=await games.run(c.a,command('/afterglow-wardrobe'))as any;assert.equal(earned.albumUnits,16000);assert.deepEqual(earned.pointsUnits,[0,100,0,0]);
+  const rare=await games.run(c.a,command('/afterglow-wardrobe',{girl:3,look:0,revision:earned.revision}))as any;assert.equal(rare.selectedGirl,3);
+  await c.ledger.audit();
  }finally{await c.close();}
 });

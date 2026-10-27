@@ -1,0 +1,46 @@
+{
+  "preview": "Stopped; temporary database cleanup completed before the preview process exited",
+  "cleanupStatus": "Blocked by automatic approval review; command rejected with blocked by policy, no further reason supplied. No deletion occurred.",
+  "cleanupCondition": "Remove only the listed obsolete outputs when local approval policy permits. Final images and qualification evidence are already tracked and verified in GitHub.",
+  "activeWorkException": "Current managed checkout, installed dependencies and normal active build outputs retained for stages 4-7 while concurrent work uses the original checkout. Extra checkout cleanup follows final completion and verified GitHub preservation.",
+  "removedBytes": 0,
+  "retainedCleanupCandidates": [
+    {
+      "lastWrite": "2026-10-26T20:04:19.8463516Z",
+      "bytes": 45,
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\caribbean-stage3\\playwright-results"
+    },
+    {
+      "lastWrite": "2026-10-26T20:03:16.5396091Z",
+      "bytes": 331433,
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\caribbean-stage3\\desktop.png"
+    },
+    {
+      "lastWrite": "2026-10-26T20:03:16.7194948Z",
+      "bytes": 109411,
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\caribbean-stage3\\mobile.png"
+    },
+    {
+      "lastWrite": "2026-10-26T19:49:57.0091616Z",
+      "bytes": 30670,
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-caribbean-treasures\\versions\\0.1.0-0b7b08e51454"
+    },
+    {
+      "lastWrite": "2026-10-26T19:59:22.6501891Z",
+      "bytes": 31457,
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-caribbean-treasures\\versions\\0.1.0-1f794c6878a7"
+    },
+    {
+      "lastWrite": "2026-10-26T19:49:02.3401235Z",
+      "bytes": 45380,
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\rtp-qualification\\studio-caribbean-treasures.json"
+    }
+  ],
+  "owner": "caribbean-treasures-stage3",
+  "spaceReclamationClaimed": false,
+  "freeBytesBefore": 308719382528,
+  "sourcePreservedAt": "b15a4f82c98bfafe7839dac6fa5d5cd1c535adce",
+  "freeBytesAfter": 308630183936,
+  "archivesCreated": 0,
+  "retainedCandidateBytes": 548396
+}

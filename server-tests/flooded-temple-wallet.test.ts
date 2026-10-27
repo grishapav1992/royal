@@ -11,7 +11,7 @@ async function fixture(bonus=true){
   const wallet=new DemoWalletStore(db,()=>0);await wallet.operate('alice',{id:randomUUID(),kind:'deposit',amount:10000});await wallet.expansion.ready;
   let draws=0;const values=[0,0,0,98,0,0],draw=(max:number)=>{const n=bonus?values[draws++%6]:(draws++,0);assert(n<max);return n;};
   const create=()=>new DemoExpansionStore(db,async id=>({balance:await demoBalanceUnits(db,id)/100,entries:[]}),wallet.ready,async()=>{},draw);
-  const store=create(),operate=(account:string,op:unknown,s=store,capable=true)=>s.operate(account,op,2,true,true,true,true,true,true,true,true,2,3,capable);
+  const store=create(),operate=(account:string,op:unknown,s=store,capable=true)=>s.operate(account,op,2,true,true,true,true,true,true,true,true,2,3,true,capable);
   const start=()=>({id:randomUUID(),action:'start',gameId:TEMPLE_GAME,stakeUnits:'1000',settings:{temple:{mode:'normal'}}});
   const move=(session:any,room?:number,rope=false)=>({id:randomUUID(),action:'move',gameId:TEMPLE_GAME,sessionId:session.id,revision:session.view.temple.revision,move:room===undefined?'temple-finish':rope?'temple-rope':'temple-step',...(room===undefined?{}:{picks:[room]})});
   return {db,wallet,store,create,operate,start,move,draws:()=>draws};
@@ -27,6 +27,18 @@ test('simultaneous retries of a paid start spend once and do not draw another bo
     assert(rows.length>0);
   }finally{await f.db.close();}
 });
+test('Caribbean and Temple capabilities remain separate after integration',async()=>{
+  const f=await fixture();try{
+    const started=await f.operate('alice',f.start()),before=await demoBalanceUnits(f.db,'alice'),draws=f.draws();
+    const caribbeanOnly=await f.store.active('alice',true,true,true,true,true,true,true,2,3,true,false);
+    assert(!caribbeanOnly.sessions.some(s=>s.gameId===TEMPLE_GAME));
+    const templeOnly=await f.store.active('alice',true,true,true,true,true,true,true,2,3,false,true);
+    assert(templeOnly.sessions.some(s=>s.id===started.session.id));
+    await assert.rejects(f.store.operate('alice',f.start(),2,true,true,true,true,true,true,true,true,2,3,true,false));
+    await assert.rejects(f.store.operate('alice',{id:randomUUID(),action:'start',gameId:'studio-caribbean-treasures',stakeUnits:'100',settings:{caribbean:{lines:1,mode:'normal'}}},2,true,true,true,true,true,true,true,true,2,3,false,true));
+    assert.equal(await demoBalanceUnits(f.db,'alice'),before);assert.equal(f.draws(),draws);
+  }finally{await f.db.close();}
+});
 test('bonus survives a new store, hides from old clients, rejects foreign and stale moves and settles once',async()=>{
   const f=await fixture();try{
     const before=await demoBalanceUnits(f.db,'alice'),op=f.start();let reply=await f.operate('alice',op);
@@ -36,7 +48,7 @@ test('bonus survives a new store, hides from old clients, rejects foreign and st
     assert(!(await f.store.active('alice')).sessions.some(s=>s.gameId===TEMPLE_GAME));
     const first=f.move(reply.session,6);await assert.rejects(f.operate('bob',first));
     const racing=await Promise.allSettled([f.operate('alice',first),f.operate('alice',{...first,id:randomUUID()})]);assert.equal(racing.filter(r=>r.status==='fulfilled').length,1);
-    const restored=f.create(),active=await restored.active('alice',true,true,true,true,true,true,true,2,3,true);
+    const restored=f.create(),active=await restored.active('alice',true,true,true,true,true,true,true,2,3,true,true);
     let session=active.sessions.find(s=>s.id===op.id)!;assert.equal(session.view.temple!.revision,2);
     let last:any=first;
     for(const [to,rope]of [[11,false],[12,true],[13,false],[8,false],[9,false]]as const){last=f.move(session,to,rope);reply=await f.operate('alice',last,restored);session=reply.session;assert(validTempleSession(session));if(session.state==='active')assert.equal(await demoBalanceUnits(f.db,'alice'),before-1000);}

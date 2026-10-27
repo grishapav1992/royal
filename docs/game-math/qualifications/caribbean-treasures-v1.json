@@ -1,0 +1,1513 @@
+{
+  "schemaVersion": 1,
+  "gameId": "studio-caribbean-treasures",
+  "rulesVersion": 1,
+  "progressVersion": 1,
+  "startedAt": "2026-10-27T18:18:14.405Z",
+  "completedAt": "2026-10-27T18:18:42.390Z",
+  "sourceHashes": {
+    "src/shared/caribbeanTreasuresMath.ts": "b86e71675dfd0179da8d8c43c7a62f8da41303d5e6bc59f07b81d4497b64647b",
+    "src/shared/caribbeanTreasures.ts": "5590af9897cfb32dbf8fd7d9c0608ad52184051ddee7ca70cd309267a4311aee",
+    "server/games/caribbeanTreasures.ts": "bdb0aa8eecef1093f876dd3c467ff1b43d8a7b1606a63a56aa46430964556e99",
+    "src/shared/caribbeanTransport.ts": "c4a590c6778048f9ecd37852549762adde064f90dca072316ee215ba8ac89c78",
+    "src/shared/casinoExpansion.ts": "9240c434cd1baa58142b24597f1188f83976f5840138eedbdb1a5e3e27cdb4fb",
+    "server/demoExpansion.ts": "291dd46547687bec289dba0788be474be66161228001022943f6f891af21ea24",
+    "server/finance/nile-game-runtime.ts": "155d22d8807c43c57a428ea01da692eeffc70695b01080a25a5fb22aa917190d",
+    "scripts/game-math/rational.mjs": "18e762bcf6b3790f0e191f2f774cbdb1ba94b7f4674c5c7caec8fd3257a85d62",
+    "scripts/game-math/rtp-caribbean.mjs": "18818182619f46240ca0f5b5876655ad5d01900bbd2f5934379e5f0bc78c2a98"
+  },
+  "policySha256": "e51bca7fd9cdd2179151add5ead5259c426d00a4be122600bdcd71c3a3b65105",
+  "serverReplayChecks": 4096,
+  "method": "exact-caribbean-giant-round-v1",
+  "analysis": {
+    "baseStake": "lineStakeUnits * activeLines",
+    "formula": "Normal: E[base] + P[entry] * E[chosen complete bonus]. Purchase: E[complete bonus] / actual rounded purchase price.",
+    "jointSymbolModel": "Distinct ordinary cells are independent. Every cell of a giant block shares one symbol draw. Only the longest left-starting run pays on each line.",
+    "positions": "Every legal initial square and every uniformly selected containing cannon expansion is enumerated.",
+    "money": "Integer line factors and integer line stakes make line and round payouts exact. Purchase prices round upward once, and are evaluated separately for all stakes.",
+    "choice": "Future bonus draws are independent of the known base field. Both pure tactics are covered; any randomized or state-dependent choice mixes their conditional expectations.",
+    "bounds": "The longest round contains 15 spin fields, each at most 1000 base stakes. No truncating cap or retrigger is present.",
+    "limitations": [
+      "This proves expected return for the reviewed source and declared choices. It does not measure the full payout distribution or player enjoyment.",
+      "Server replay checks mathematical state transitions and integer settlement. Shared-wallet database atomicity and host integration require their own tests."
+    ],
+    "spinMeans": {
+      "1": {
+        "base": {
+          "fraction": "3499989642797437/5000000000000000",
+          "value": 0.6999979285594874
+        },
+        "raid": {
+          "fraction": "10960546109087357/6250000000000000",
+          "value": 1.753687377453977
+        },
+        "flagship": {
+          "fraction": "818388883/200000000",
+          "value": 4.091944415
+        }
+      },
+      "5": {
+        "base": {
+          "fraction": "10937494472277767/15625000000000000",
+          "value": 0.6999996462257772
+        },
+        "raid": {
+          "fraction": "210784251047038643/156250000000000000",
+          "value": 1.3490192067010474
+        },
+        "flagship": {
+          "fraction": "786928505591/250000000000",
+          "value": 3.147714022364
+        }
+      },
+      "10": {
+        "base": {
+          "fraction": "4374989236570709/6250000000000000",
+          "value": 0.6999982778513134
+        },
+        "raid": {
+          "fraction": "187491906429101861/156250000000000000",
+          "value": 1.199948201146252
+        },
+        "flagship": {
+          "fraction": "17499268643/6250000000",
+          "value": 2.79988298288
+        }
+      },
+      "20": {
+        "base": {
+          "fraction": "699999602941195349/1000000000000000000",
+          "value": 0.6999996029411953
+        },
+        "raid": {
+          "fraction": "6104031806893616287/5000000000000000000",
+          "value": 1.2208063613787232
+        },
+        "flagship": {
+          "fraction": "5697107102287/2000000000000",
+          "value": 2.8485535511435
+        }
+      }
+    }
+  },
+  "results": [
+    {
+      "choice": "lines-1-normal-raid",
+      "stakeUnits": 100,
+      "costUnits": "100",
+      "expectedPayoutUnits": {
+        "fraction": "2999922085992280287911/31250000000000000000",
+        "value": 95.99750675175297
+      },
+      "rtp": {
+        "fraction": "2999922085992280287911/3125000000000000000000",
+        "value": 0.9599750675175298
+      },
+      "maximumSpins": 15,
+      "maximumPayoutUnits": "1500000"
+    },
+    {
+      "choice": "lines-1-normal-raid",
+      "stakeUnits": 200,
+      "costUnits": "200",
+      "expectedPayoutUnits": {
+        "fraction": "2999922085992280287911/15625000000000000000",
+        "value": 191.99501350350593
+      },
+      "rtp": {
+        "fraction": "2999922085992280287911/3125000000000000000000",
+        "value": 0.9599750675175298
+      },
+      "maximumSpins": 15,
+      "maximumPayoutUnits": "3000000"
+    },
+    {
+      "choice": "lines-1-normal-raid",
+      "stakeUnits": 500,
+      "costUnits": "500",
+      "expectedPayoutUnits": {
+        "fraction": "2999922085992280287911/6250000000000000000",
+        "value": 479.98753375876487
+      },
+      "rtp": {
+        "fraction": "2999922085992280287911/3125000000000000000000",
+        "value": 0.9599750675175298
+      },
+      "maximumSpins": 15,
+      "maximumPayoutUnits": "7500000"
+    },
+    {
+      "choice": "lines-1-normal-raid",
+      "stakeUnits": 1000,
+      "costUnits": "1000",
+      "expectedPayoutUnits": {
+        "fraction": "2999922085992280287911/3125000000000000000",
+        "value": 959.9750675175297
+      },
+      "rtp": {
+        "fraction": "2999922085992280287911/3125000000000000000000",
+        "value": 0.9599750675175298
+      },
+      "maximumSpins": 15,
+      "maximumPayoutUnits": "15000000"
+    },
+    {
+      "choice": "lines-1-normal-flagship",
+      "stakeUnits": 100,
+      "costUnits": "100",
+      "expectedPayoutUnits": {
+        "fraction": "4799877625110487/50000000000000",
+        "value": 95.99755250220974
+      },
+      "rtp": {
+        "fraction": "4799877625110487/5000000000000000",
+        "value": 0.9599755250220974
+      },
+      "maximumSpins": 7,
+      "maximumPayoutUnits": "700000"
+    },
+    {
+      "choice": "lines-1-normal-flagship",
+      "stakeUnits": 200,
+      "costUnits": "200",
+      "expectedPayoutUnits": {
+        "fraction": "4799877625110487/25000000000000",
+        "value": 191.9951050044195
+      },
+      "rtp": {
+        "fraction": "4799877625110487/5000000000000000",
+        "value": 0.9599755250220974
+      },
+      "maximumSpins": 7,
+      "maximumPayoutUnits": "1400000"
+    },
+    {
+      "choice": "lines-1-normal-flagship",
+      "stakeUnits": 500,
+      "costUnits": "500",
+      "expectedPayoutUnits": {
+        "fraction": "4799877625110487/10000000000000",
+        "value": 479.9877625110487
+      },
+      "rtp": {
+        "fraction": "4799877625110487/5000000000000000",
+        "value": 0.9599755250220974
+      },
+      "maximumSpins": 7,
+      "maximumPayoutUnits": "3500000"
+    },
+    {
+      "choice": "lines-1-normal-flagship",
+      "stakeUnits": 1000,
+      "costUnits": "1000",
+      "expectedPayoutUnits": {
+        "fraction": "4799877625110487/5000000000000",
+        "value": 959.9755250220974
+      },
+      "rtp": {
+        "fraction": "4799877625110487/5000000000000000",
+        "value": 0.9599755250220974
+      },
+      "maximumSpins": 7,
+      "maximumPayoutUnits": "7000000"
+    },
+    {
+      "choice": "lines-1-buy-raid",
+      "stakeUnits": 100,
+      "costUnits": "2558",
+      "expectedPayoutUnits": {
+        "fraction": "76723822763611499/31250000000000",
+        "value": 2455.1623284355683
+      },
+      "rtp": {
+        "fraction": "76723822763611499/79937500000000000",
+        "value": 0.9597976264408007
+      },
+      "maximumSpins": 14,
+      "maximumPayoutUnits": "1400000"
+    },
+    {
+      "choice": "lines-1-buy-raid",
+      "stakeUnits": 200,
+      "costUnits": "5115",
+      "expectedPayoutUnits": {
+        "fraction": "76723822763611499/15625000000000",
+        "value": 4910.3246568711365
+      },
+      "rtp": {
+        "fraction": "2474962024632629/2578125000000000",
+        "value": 0.9599852701605349
+      },
+      "maximumSpins": 14,
+      "maximumPayoutUnits": "2800000"
+    },
+    {
+      "choice": "lines-1-buy-raid",
+      "stakeUnits": 500,
+      "costUnits": "12788",
+      "expectedPayoutUnits": {
+        "fraction": "76723822763611499/6250000000000",
+        "value": 12275.811642177841
+      },
+      "rtp": {
+        "fraction": "76723822763611499/79925000000000000",
+        "value": 0.9599477355472193
+      },
+      "maximumSpins": 14,
+      "maximumPayoutUnits": "7000000"
+    },
+    {
+      "choice": "lines-1-buy-raid",
+      "stakeUnits": 1000,
+      "costUnits": "25575",
+      "expectedPayoutUnits": {
+        "fraction": "76723822763611499/3125000000000",
+        "value": 24551.623284355683
+      },
+      "rtp": {
+        "fraction": "2474962024632629/2578125000000000",
+        "value": 0.9599852701605349
+      },
+      "maximumSpins": 14,
+      "maximumPayoutUnits": "14000000"
+    },
+    {
+      "choice": "lines-1-buy-flagship",
+      "stakeUnits": 100,
+      "costUnits": "2558",
+      "expectedPayoutUnits": {
+        "fraction": "2455166649/1000000",
+        "value": 2455.166649
+      },
+      "rtp": {
+        "fraction": "2455166649/2558000000",
+        "value": 0.9597993154808444
+      },
+      "maximumSpins": 6,
+      "maximumPayoutUnits": "600000"
+    },
+    {
+      "choice": "lines-1-buy-flagship",
+      "stakeUnits": 200,
+      "costUnits": "5115",
+      "expectedPayoutUnits": {
+        "fraction": "2455166649/500000",
+        "value": 4910.333298
+      },
+      "rtp": {
+        "fraction": "818388883/852500000",
+        "value": 0.9599869595307918
+      },
+      "maximumSpins": 6,
+      "maximumPayoutUnits": "1200000"
+    },
+    {
+      "choice": "lines-1-buy-flagship",
+      "stakeUnits": 500,
+      "costUnits": "12788",
+      "expectedPayoutUnits": {
+        "fraction": "2455166649/200000",
+        "value": 12275.833245
+      },
+      "rtp": {
+        "fraction": "2455166649/2557600000",
+        "value": 0.9599494248514232
+      },
+      "maximumSpins": 6,
+      "maximumPayoutUnits": "3000000"
+    },
+    {
+      "choice": "lines-1-buy-flagship",
+      "stakeUnits": 1000,
+      "costUnits": "25575",
+      "expectedPayoutUnits": {
+        "fraction": "2455166649/100000",
+        "value": 24551.66649
+      },
+      "rtp": {
+        "fraction": "818388883/852500000",
+        "value": 0.9599869595307918
+      },
+      "maximumSpins": 6,
+      "maximumPayoutUnits": "6000000"
+    },
+    {
+      "choice": "lines-5-normal-raid",
+      "stakeUnits": 100,
+      "costUnits": "500",
+      "expectedPayoutUnits": {
+        "fraction": "37499532180391786358383/78125000000000000000",
+        "value": 479.9940119090149
+      },
+      "rtp": {
+        "fraction": "37499532180391786358383/39062500000000000000000",
+        "value": 0.9599880238180297
+      },
+      "maximumSpins": 15,
+      "maximumPayoutUnits": "7500000"
+    },
+    {
+      "choice": "lines-5-normal-raid",
+      "stakeUnits": 200,
+      "costUnits": "1000",
+      "expectedPayoutUnits": {
+        "fraction": "37499532180391786358383/39062500000000000000",
+        "value": 959.9880238180298
+      },
+      "rtp": {
+        "fraction": "37499532180391786358383/39062500000000000000000",
+        "value": 0.9599880238180297
+      },
+      "maximumSpins": 15,
+      "maximumPayoutUnits": "15000000"
+    },
+    {
+      "choice": "lines-5-normal-raid",
+      "stakeUnits": 500,
+      "costUnits": "2500",
+      "expectedPayoutUnits": {
+        "fraction": "37499532180391786358383/15625000000000000000",
+        "value": 2399.9700595450745
+      },
+      "rtp": {
+        "fraction": "37499532180391786358383/39062500000000000000000",
+        "value": 0.9599880238180297
+      },
+      "maximumSpins": 15,
+      "maximumPayoutUnits": "37500000"
+    },
+    {
+      "choice": "lines-5-normal-raid",
+      "stakeUnits": 1000,
+      "costUnits": "5000",
+      "expectedPayoutUnits": {
+        "fraction": "37499532180391786358383/7812500000000000000",
+        "value": 4799.940119090149
+      },
+      "rtp": {
+        "fraction": "37499532180391786358383/39062500000000000000000",
+        "value": 0.9599880238180297
+      },
+      "maximumSpins": 15,
+      "maximumPayoutUnits": "75000000"
+    },
+    {
+      "choice": "lines-5-normal-flagship",
+      "stakeUnits": 100,
+      "costUnits": "500",
+      "expectedPayoutUnits": {
+        "fraction": "59999264601059627/125000000000000",
+        "value": 479.994116808477
+      },
+      "rtp": {
+        "fraction": "59999264601059627/62500000000000000",
+        "value": 0.959988233616954
+      },
+      "maximumSpins": 7,
+      "maximumPayoutUnits": "3500000"
+    },
+    {
+      "choice": "lines-5-normal-flagship",
+      "stakeUnits": 200,
+      "costUnits": "1000",
+      "expectedPayoutUnits": {
+        "fraction": "59999264601059627/62500000000000",
+        "value": 959.988233616954
+      },
+      "rtp": {
+        "fraction": "59999264601059627/62500000000000000",
+        "value": 0.959988233616954
+      },
+      "maximumSpins": 7,
+      "maximumPayoutUnits": "7000000"
+    },
+    {
+      "choice": "lines-5-normal-flagship",
+      "stakeUnits": 500,
+      "costUnits": "2500",
+      "expectedPayoutUnits": {
+        "fraction": "59999264601059627/25000000000000",
+        "value": 2399.970584042385
+      },
+      "rtp": {
+        "fraction": "59999264601059627/62500000000000000",
+        "value": 0.959988233616954
+      },
+      "maximumSpins": 7,
+      "maximumPayoutUnits": "17500000"
+    },
+    {
+      "choice": "lines-5-normal-flagship",
+      "stakeUnits": 1000,
+      "costUnits": "5000",
+      "expectedPayoutUnits": {
+        "fraction": "59999264601059627/12500000000000",
+        "value": 4799.94116808477
+      },
+      "rtp": {
+        "fraction": "59999264601059627/62500000000000000",
+        "value": 0.959988233616954
+      },
+      "maximumSpins": 7,
+      "maximumPayoutUnits": "35000000"
+    },
+    {
+      "choice": "lines-5-buy-raid",
+      "stakeUnits": 100,
+      "costUnits": "9837",
+      "expectedPayoutUnits": {
+        "fraction": "1475489757329270501/156250000000000",
+        "value": 9443.134446907332
+      },
+      "rtp": {
+        "fraction": "1475489757329270501/1537031250000000000",
+        "value": 0.9599608058256919
+      },
+      "maximumSpins": 14,
+      "maximumPayoutUnits": "7000000"
+    },
+    {
+      "choice": "lines-5-buy-raid",
+      "stakeUnits": 200,
+      "costUnits": "19674",
+      "expectedPayoutUnits": {
+        "fraction": "1475489757329270501/78125000000000",
+        "value": 18886.268893814664
+      },
+      "rtp": {
+        "fraction": "1475489757329270501/1537031250000000000",
+        "value": 0.9599608058256919
+      },
+      "maximumSpins": 14,
+      "maximumPayoutUnits": "14000000"
+    },
+    {
+      "choice": "lines-5-buy-raid",
+      "stakeUnits": 500,
+      "costUnits": "49184",
+      "expectedPayoutUnits": {
+        "fraction": "1475489757329270501/31250000000000",
+        "value": 47215.67223453666
+      },
+      "rtp": {
+        "fraction": "1475489757329270501/1537000000000000000",
+        "value": 0.9599803235714187
+      },
+      "maximumSpins": 14,
+      "maximumPayoutUnits": "35000000"
+    },
+    {
+      "choice": "lines-5-buy-raid",
+      "stakeUnits": 1000,
+      "costUnits": "98367",
+      "expectedPayoutUnits": {
+        "fraction": "1475489757329270501/15625000000000",
+        "value": 94431.34446907332
+      },
+      "rtp": {
+        "fraction": "1475489757329270501/1536984375000000000",
+        "value": 0.9599900827419086
+      },
+      "maximumSpins": 14,
+      "maximumPayoutUnits": "70000000"
+    },
+    {
+      "choice": "lines-5-buy-flagship",
+      "stakeUnits": 100,
+      "costUnits": "9837",
+      "expectedPayoutUnits": {
+        "fraction": "2360785516773/250000000",
+        "value": 9443.142067092
+      },
+      "rtp": {
+        "fraction": "786928505591/819750000000",
+        "value": 0.9599615804708753
+      },
+      "maximumSpins": 6,
+      "maximumPayoutUnits": "3000000"
+    },
+    {
+      "choice": "lines-5-buy-flagship",
+      "stakeUnits": 200,
+      "costUnits": "19674",
+      "expectedPayoutUnits": {
+        "fraction": "2360785516773/125000000",
+        "value": 18886.284134184
+      },
+      "rtp": {
+        "fraction": "786928505591/819750000000",
+        "value": 0.9599615804708753
+      },
+      "maximumSpins": 6,
+      "maximumPayoutUnits": "6000000"
+    },
+    {
+      "choice": "lines-5-buy-flagship",
+      "stakeUnits": 500,
+      "costUnits": "49184",
+      "expectedPayoutUnits": {
+        "fraction": "2360785516773/50000000",
+        "value": 47215.71033546
+      },
+      "rtp": {
+        "fraction": "2360785516773/2459200000000",
+        "value": 0.959981098232352
+      },
+      "maximumSpins": 6,
+      "maximumPayoutUnits": "15000000"
+    },
+    {
+      "choice": "lines-5-buy-flagship",
+      "stakeUnits": 1000,
+      "costUnits": "98367",
+      "expectedPayoutUnits": {
+        "fraction": "2360785516773/25000000",
+        "value": 94431.42067092
+      },
+      "rtp": {
+        "fraction": "786928505591/819725000000",
+        "value": 0.959990857410717
+      },
+      "maximumSpins": 6,
+      "maximumPayoutUnits": "30000000"
+    },
+    {
+      "choice": "lines-10-normal-raid",
+      "stakeUnits": 100,
+      "costUnits": "1000",
+      "expectedPayoutUnits": {
+        "fraction": "18749684666102831326463/19531250000000000000",
+        "value": 959.983854904465
+      },
+      "rtp": {
+        "fraction": "18749684666102831326463/19531250000000000000000",
+        "value": 0.9599838549044649
+      },
+      "maximumSpins": 15,
+      "maximumPayoutUnits": "15000000"
+    },
+    {
+      "choice": "lines-10-normal-raid",
+      "stakeUnits": 200,
+      "costUnits": "2000",
+      "expectedPayoutUnits": {
+        "fraction": "18749684666102831326463/9765625000000000000",
+        "value": 1919.96770980893
+      },
+      "rtp": {
+        "fraction": "18749684666102831326463/19531250000000000000000",
+        "value": 0.9599838549044649
+      },
+      "maximumSpins": 15,
+      "maximumPayoutUnits": "30000000"
+    },
+    {
+      "choice": "lines-10-normal-raid",
+      "stakeUnits": 500,
+      "costUnits": "5000",
+      "expectedPayoutUnits": {
+        "fraction": "18749684666102831326463/3906250000000000000",
+        "value": 4799.919274522325
+      },
+      "rtp": {
+        "fraction": "18749684666102831326463/19531250000000000000000",
+        "value": 0.9599838549044649
+      },
+      "maximumSpins": 15,
+      "maximumPayoutUnits": "75000000"
+    },
+    {
+      "choice": "lines-10-normal-raid",
+      "stakeUnits": 1000,
+      "costUnits": "10000",
+      "expectedPayoutUnits": {
+        "fraction": "18749684666102831326463/1953125000000000000",
+        "value": 9599.83854904465
+      },
+      "rtp": {
+        "fraction": "18749684666102831326463/19531250000000000000000",
+        "value": 0.9599838549044649
+      },
+      "maximumSpins": 15,
+      "maximumPayoutUnits": "150000000"
+    },
+    {
+      "choice": "lines-10-normal-flagship",
+      "stakeUnits": 100,
+      "costUnits": "1000",
+      "expectedPayoutUnits": {
+        "fraction": "5999901325685117/6250000000000",
+        "value": 959.9842121096187
+      },
+      "rtp": {
+        "fraction": "5999901325685117/6250000000000000",
+        "value": 0.9599842121096187
+      },
+      "maximumSpins": 7,
+      "maximumPayoutUnits": "7000000"
+    },
+    {
+      "choice": "lines-10-normal-flagship",
+      "stakeUnits": 200,
+      "costUnits": "2000",
+      "expectedPayoutUnits": {
+        "fraction": "5999901325685117/3125000000000",
+        "value": 1919.9684242192375
+      },
+      "rtp": {
+        "fraction": "5999901325685117/6250000000000000",
+        "value": 0.9599842121096187
+      },
+      "maximumSpins": 7,
+      "maximumPayoutUnits": "14000000"
+    },
+    {
+      "choice": "lines-10-normal-flagship",
+      "stakeUnits": 500,
+      "costUnits": "5000",
+      "expectedPayoutUnits": {
+        "fraction": "5999901325685117/1250000000000",
+        "value": 4799.921060548094
+      },
+      "rtp": {
+        "fraction": "5999901325685117/6250000000000000",
+        "value": 0.9599842121096187
+      },
+      "maximumSpins": 7,
+      "maximumPayoutUnits": "35000000"
+    },
+    {
+      "choice": "lines-10-normal-flagship",
+      "stakeUnits": 1000,
+      "costUnits": "10000",
+      "expectedPayoutUnits": {
+        "fraction": "5999901325685117/625000000000",
+        "value": 9599.842121096188
+      },
+      "rtp": {
+        "fraction": "5999901325685117/6250000000000000",
+        "value": 0.9599842121096187
+      },
+      "maximumSpins": 7,
+      "maximumPayoutUnits": "70000000"
+    },
+    {
+      "choice": "lines-10-buy-raid",
+      "stakeUnits": 100,
+      "costUnits": "17500",
+      "expectedPayoutUnits": {
+        "fraction": "1312443345003713027/78125000000000",
+        "value": 16799.274816047528
+      },
+      "rtp": {
+        "fraction": "187491906429101861/195312500000000000",
+        "value": 0.9599585609170015
+      },
+      "maximumSpins": 14,
+      "maximumPayoutUnits": "14000000"
+    },
+    {
+      "choice": "lines-10-buy-raid",
+      "stakeUnits": 200,
+      "costUnits": "34999",
+      "expectedPayoutUnits": {
+        "fraction": "1312443345003713027/39062500000000",
+        "value": 33598.549632095055
+      },
+      "rtp": {
+        "fraction": "1312443345003713027/1367148437500000000",
+        "value": 0.9599859890881183
+      },
+      "maximumSpins": 14,
+      "maximumPayoutUnits": "28000000"
+    },
+    {
+      "choice": "lines-10-buy-raid",
+      "stakeUnits": 500,
+      "costUnits": "87497",
+      "expectedPayoutUnits": {
+        "fraction": "1312443345003713027/15625000000000",
+        "value": 83996.37408023763
+      },
+      "rtp": {
+        "fraction": "1312443345003713027/1367140625000000000",
+        "value": 0.959991474910427
+      },
+      "maximumSpins": 14,
+      "maximumPayoutUnits": "70000000"
+    },
+    {
+      "choice": "lines-10-buy-raid",
+      "stakeUnits": 1000,
+      "costUnits": "174993",
+      "expectedPayoutUnits": {
+        "fraction": "1312443345003713027/7812500000000",
+        "value": 167992.74816047525
+      },
+      "rtp": {
+        "fraction": "187491906429101861/195304687500000000",
+        "value": 0.9599969607954333
+      },
+      "maximumSpins": 14,
+      "maximumPayoutUnits": "140000000"
+    },
+    {
+      "choice": "lines-10-buy-flagship",
+      "stakeUnits": 100,
+      "costUnits": "17500",
+      "expectedPayoutUnits": {
+        "fraction": "52497805929/3125000",
+        "value": 16799.29789728
+      },
+      "rtp": {
+        "fraction": "52497805929/54687500000",
+        "value": 0.9599598798445714
+      },
+      "maximumSpins": 6,
+      "maximumPayoutUnits": "6000000"
+    },
+    {
+      "choice": "lines-10-buy-flagship",
+      "stakeUnits": 200,
+      "costUnits": "34999",
+      "expectedPayoutUnits": {
+        "fraction": "52497805929/1562500",
+        "value": 33598.59579456
+      },
+      "rtp": {
+        "fraction": "52497805929/54685937500",
+        "value": 0.959987308053373
+      },
+      "maximumSpins": 6,
+      "maximumPayoutUnits": "12000000"
+    },
+    {
+      "choice": "lines-10-buy-flagship",
+      "stakeUnits": 500,
+      "costUnits": "87497",
+      "expectedPayoutUnits": {
+        "fraction": "52497805929/625000",
+        "value": 83996.4894864
+      },
+      "rtp": {
+        "fraction": "52497805929/54685625000",
+        "value": 0.9599927938832189
+      },
+      "maximumSpins": 6,
+      "maximumPayoutUnits": "30000000"
+    },
+    {
+      "choice": "lines-10-buy-flagship",
+      "stakeUnits": 1000,
+      "costUnits": "174993",
+      "expectedPayoutUnits": {
+        "fraction": "52497805929/312500",
+        "value": 167992.9789728
+      },
+      "rtp": {
+        "fraction": "17499268643/18228437500",
+        "value": 0.9599982797757625
+      },
+      "maximumSpins": 6,
+      "maximumPayoutUnits": "60000000"
+    },
+    {
+      "choice": "lines-20-normal-raid",
+      "stakeUnits": 100,
+      "costUnits": "2000",
+      "expectedPayoutUnits": {
+        "fraction": "599995182569562052301227/312500000000000000000",
+        "value": 1919.9845842225986
+      },
+      "rtp": {
+        "fraction": "599995182569562052301227/625000000000000000000000",
+        "value": 0.9599922921112992
+      },
+      "maximumSpins": 15,
+      "maximumPayoutUnits": "30000000"
+    },
+    {
+      "choice": "lines-20-normal-raid",
+      "stakeUnits": 200,
+      "costUnits": "4000",
+      "expectedPayoutUnits": {
+        "fraction": "599995182569562052301227/156250000000000000000",
+        "value": 3839.9691684451973
+      },
+      "rtp": {
+        "fraction": "599995182569562052301227/625000000000000000000000",
+        "value": 0.9599922921112992
+      },
+      "maximumSpins": 15,
+      "maximumPayoutUnits": "60000000"
+    },
+    {
+      "choice": "lines-20-normal-raid",
+      "stakeUnits": 500,
+      "costUnits": "10000",
+      "expectedPayoutUnits": {
+        "fraction": "599995182569562052301227/62500000000000000000",
+        "value": 9599.922921112993
+      },
+      "rtp": {
+        "fraction": "599995182569562052301227/625000000000000000000000",
+        "value": 0.9599922921112992
+      },
+      "maximumSpins": 15,
+      "maximumPayoutUnits": "150000000"
+    },
+    {
+      "choice": "lines-20-normal-raid",
+      "stakeUnits": 1000,
+      "costUnits": "20000",
+      "expectedPayoutUnits": {
+        "fraction": "599995182569562052301227/31250000000000000000",
+        "value": 19199.845842225986
+      },
+      "rtp": {
+        "fraction": "599995182569562052301227/625000000000000000000000",
+        "value": 0.9599922921112992
+      },
+      "maximumSpins": 15,
+      "maximumPayoutUnits": "300000000"
+    },
+    {
+      "choice": "lines-20-normal-flagship",
+      "stakeUnits": 100,
+      "costUnits": "2000",
+      "expectedPayoutUnits": {
+        "fraction": "959992782661164881/500000000000000",
+        "value": 1919.9855653223299
+      },
+      "rtp": {
+        "fraction": "959992782661164881/1000000000000000000",
+        "value": 0.959992782661165
+      },
+      "maximumSpins": 7,
+      "maximumPayoutUnits": "14000000"
+    },
+    {
+      "choice": "lines-20-normal-flagship",
+      "stakeUnits": 200,
+      "costUnits": "4000",
+      "expectedPayoutUnits": {
+        "fraction": "959992782661164881/250000000000000",
+        "value": 3839.9711306446598
+      },
+      "rtp": {
+        "fraction": "959992782661164881/1000000000000000000",
+        "value": 0.959992782661165
+      },
+      "maximumSpins": 7,
+      "maximumPayoutUnits": "28000000"
+    },
+    {
+      "choice": "lines-20-normal-flagship",
+      "stakeUnits": 500,
+      "costUnits": "10000",
+      "expectedPayoutUnits": {
+        "fraction": "959992782661164881/100000000000000",
+        "value": 9599.927826611649
+      },
+      "rtp": {
+        "fraction": "959992782661164881/1000000000000000000",
+        "value": 0.959992782661165
+      },
+      "maximumSpins": 7,
+      "maximumPayoutUnits": "70000000"
+    },
+    {
+      "choice": "lines-20-normal-flagship",
+      "stakeUnits": 1000,
+      "costUnits": "20000",
+      "expectedPayoutUnits": {
+        "fraction": "959992782661164881/50000000000000",
+        "value": 19199.855653223298
+      },
+      "rtp": {
+        "fraction": "959992782661164881/1000000000000000000",
+        "value": 0.959992782661165
+      },
+      "maximumSpins": 7,
+      "maximumPayoutUnits": "140000000"
+    },
+    {
+      "choice": "lines-20-buy-raid",
+      "stakeUnits": 100,
+      "costUnits": "35607",
+      "expectedPayoutUnits": {
+        "fraction": "42728222648255314009/1250000000000000",
+        "value": 34182.57811860425
+      },
+      "rtp": {
+        "fraction": "42728222648255314009/44508750000000000000",
+        "value": 0.9599960153510336
+      },
+      "maximumSpins": 14,
+      "maximumPayoutUnits": "28000000"
+    },
+    {
+      "choice": "lines-20-buy-raid",
+      "stakeUnits": 200,
+      "costUnits": "71214",
+      "expectedPayoutUnits": {
+        "fraction": "42728222648255314009/625000000000000",
+        "value": 68365.1562372085
+      },
+      "rtp": {
+        "fraction": "42728222648255314009/44508750000000000000",
+        "value": 0.9599960153510336
+      },
+      "maximumSpins": 14,
+      "maximumPayoutUnits": "56000000"
+    },
+    {
+      "choice": "lines-20-buy-raid",
+      "stakeUnits": 500,
+      "costUnits": "178035",
+      "expectedPayoutUnits": {
+        "fraction": "42728222648255314009/250000000000000",
+        "value": 170912.89059302126
+      },
+      "rtp": {
+        "fraction": "42728222648255314009/44508750000000000000",
+        "value": 0.9599960153510336
+      },
+      "maximumSpins": 14,
+      "maximumPayoutUnits": "140000000"
+    },
+    {
+      "choice": "lines-20-buy-raid",
+      "stakeUnits": 1000,
+      "costUnits": "356070",
+      "expectedPayoutUnits": {
+        "fraction": "42728222648255314009/125000000000000",
+        "value": 341825.7811860425
+      },
+      "rtp": {
+        "fraction": "42728222648255314009/44508750000000000000",
+        "value": 0.9599960153510336
+      },
+      "maximumSpins": 14,
+      "maximumPayoutUnits": "280000000"
+    },
+    {
+      "choice": "lines-20-buy-flagship",
+      "stakeUnits": 100,
+      "costUnits": "35607",
+      "expectedPayoutUnits": {
+        "fraction": "17091321306861/500000000",
+        "value": 34182.642613722
+      },
+      "rtp": {
+        "fraction": "5697107102287/5934500000000",
+        "value": 0.959997826655489
+      },
+      "maximumSpins": 6,
+      "maximumPayoutUnits": "12000000"
+    },
+    {
+      "choice": "lines-20-buy-flagship",
+      "stakeUnits": 200,
+      "costUnits": "71214",
+      "expectedPayoutUnits": {
+        "fraction": "17091321306861/250000000",
+        "value": 68365.285227444
+      },
+      "rtp": {
+        "fraction": "5697107102287/5934500000000",
+        "value": 0.959997826655489
+      },
+      "maximumSpins": 6,
+      "maximumPayoutUnits": "24000000"
+    },
+    {
+      "choice": "lines-20-buy-flagship",
+      "stakeUnits": 500,
+      "costUnits": "178035",
+      "expectedPayoutUnits": {
+        "fraction": "17091321306861/100000000",
+        "value": 170913.21306861
+      },
+      "rtp": {
+        "fraction": "5697107102287/5934500000000",
+        "value": 0.959997826655489
+      },
+      "maximumSpins": 6,
+      "maximumPayoutUnits": "60000000"
+    },
+    {
+      "choice": "lines-20-buy-flagship",
+      "stakeUnits": 1000,
+      "costUnits": "356070",
+      "expectedPayoutUnits": {
+        "fraction": "17091321306861/50000000",
+        "value": 341826.42613722
+      },
+      "rtp": {
+        "fraction": "5697107102287/5934500000000",
+        "value": 0.959997826655489
+      },
+      "maximumSpins": 6,
+      "maximumPayoutUnits": "120000000"
+    }
+  ],
+  "serverReplay": {
+    "seeds": [
+      700131,
+      929827
+    ],
+    "coverage": [
+      {
+        "choice": "lines-1-normal-raid",
+        "stakeUnits": 100,
+        "paidRounds": 64,
+        "spins": 106,
+        "sha256": "fd027235919b444c4b092c66240cc5dc3e50c867cb4f823425ae1f45979cc3fa"
+      },
+      {
+        "choice": "lines-1-normal-raid",
+        "stakeUnits": 200,
+        "paidRounds": 64,
+        "spins": 106,
+        "sha256": "c98cae40b3ac97ba046eac266e542f8d45b61deb4a0e606d255d91957e5fcf74"
+      },
+      {
+        "choice": "lines-1-normal-raid",
+        "stakeUnits": 500,
+        "paidRounds": 64,
+        "spins": 106,
+        "sha256": "c35f3774b6986018703e07297adbfc70518a7069cb43db27bedfc2df0e9455dd"
+      },
+      {
+        "choice": "lines-1-normal-raid",
+        "stakeUnits": 1000,
+        "paidRounds": 64,
+        "spins": 106,
+        "sha256": "d9a66c2fc3d28dd1c18661e49f9a96d84aa7e9c110bcff60b6e79582a173ef2e"
+      },
+      {
+        "choice": "lines-1-normal-flagship",
+        "stakeUnits": 100,
+        "paidRounds": 64,
+        "spins": 82,
+        "sha256": "9b18187d59f0a8f48bd4475415cc5347686bbbb0783476bf8e0f1c06322736db"
+      },
+      {
+        "choice": "lines-1-normal-flagship",
+        "stakeUnits": 200,
+        "paidRounds": 64,
+        "spins": 82,
+        "sha256": "491f86c72d8e6a71397a835ce2367a1cbbe5528bb72b682c923f4e0b4ccb100c"
+      },
+      {
+        "choice": "lines-1-normal-flagship",
+        "stakeUnits": 500,
+        "paidRounds": 64,
+        "spins": 82,
+        "sha256": "3580c192b403e0e0f7073140ee4e7ad6b61dac60a30e0e17c41ea33beecab311"
+      },
+      {
+        "choice": "lines-1-normal-flagship",
+        "stakeUnits": 1000,
+        "paidRounds": 64,
+        "spins": 82,
+        "sha256": "566e8a50904b70063dd99fa485576c1447ff90adbeb16f926e46501a6fbd6a2d"
+      },
+      {
+        "choice": "lines-1-buy-raid",
+        "stakeUnits": 100,
+        "paidRounds": 64,
+        "spins": 896,
+        "sha256": "9e9d0a7917bbf8785ad9b0a08df2bfa4faca9fa0eaedca9c7f3db9e84855f88c"
+      },
+      {
+        "choice": "lines-1-buy-raid",
+        "stakeUnits": 200,
+        "paidRounds": 64,
+        "spins": 896,
+        "sha256": "9b3808c7d19d498d3e3d47c65aa57f6ab0f394b90f0689014382c7324db67952"
+      },
+      {
+        "choice": "lines-1-buy-raid",
+        "stakeUnits": 500,
+        "paidRounds": 64,
+        "spins": 896,
+        "sha256": "23d6940c60e72c741c175ffe999f7e4107535051fb0be32bb2a878b70e5d7917"
+      },
+      {
+        "choice": "lines-1-buy-raid",
+        "stakeUnits": 1000,
+        "paidRounds": 64,
+        "spins": 896,
+        "sha256": "3241c7b66a46e1fa3fbd52721bdff670d8b0e03a3833bf72e0d4d3e90ebe3783"
+      },
+      {
+        "choice": "lines-1-buy-flagship",
+        "stakeUnits": 100,
+        "paidRounds": 64,
+        "spins": 384,
+        "sha256": "234b746065f5f08ad7d2c4a8e573910445e4454808a7942e995d4a2b7e1cdf8b"
+      },
+      {
+        "choice": "lines-1-buy-flagship",
+        "stakeUnits": 200,
+        "paidRounds": 64,
+        "spins": 384,
+        "sha256": "11a33dbdfa3994be1351f7fe3d1495ecefdfc06bbbb041d10f647f56701d55dd"
+      },
+      {
+        "choice": "lines-1-buy-flagship",
+        "stakeUnits": 500,
+        "paidRounds": 64,
+        "spins": 384,
+        "sha256": "688be55b878ac489865bc0ad0a53da36a90034cfd593a7f51ef5c0a91bca7d9f"
+      },
+      {
+        "choice": "lines-1-buy-flagship",
+        "stakeUnits": 1000,
+        "paidRounds": 64,
+        "spins": 384,
+        "sha256": "e87e2e15a75f90aae3639a30de9d6b1dd26dc3b1afc59da94264cccd3f491407"
+      },
+      {
+        "choice": "lines-5-normal-raid",
+        "stakeUnits": 100,
+        "paidRounds": 64,
+        "spins": 106,
+        "sha256": "125a17130aec56bd2ccaf552a86b4f25a4d8db1e413f13e2954d9939e2c49f12"
+      },
+      {
+        "choice": "lines-5-normal-raid",
+        "stakeUnits": 200,
+        "paidRounds": 64,
+        "spins": 106,
+        "sha256": "23e6d490a35243fe10b69f8db2e654a68b9e31e5b95d4a240a530a3a9e9d46f6"
+      },
+      {
+        "choice": "lines-5-normal-raid",
+        "stakeUnits": 500,
+        "paidRounds": 64,
+        "spins": 106,
+        "sha256": "a70b798ff8cdded58cb429fd2cdeed754d58369ee5606f735a91bf170dde42d8"
+      },
+      {
+        "choice": "lines-5-normal-raid",
+        "stakeUnits": 1000,
+        "paidRounds": 64,
+        "spins": 106,
+        "sha256": "e3e08fbd1b88e8fe6d9c759ecfd0e121171e1dcb71b8d249fd3ee1dc864214b5"
+      },
+      {
+        "choice": "lines-5-normal-flagship",
+        "stakeUnits": 100,
+        "paidRounds": 64,
+        "spins": 82,
+        "sha256": "df3f32ac9f23c2a22ab4b7a310e505841db6aa380db0aa6ccdbad4b1412f9030"
+      },
+      {
+        "choice": "lines-5-normal-flagship",
+        "stakeUnits": 200,
+        "paidRounds": 64,
+        "spins": 82,
+        "sha256": "d5b646fac013d60523b989458457b63f09e5d42400127a248edd6da2de33a0d6"
+      },
+      {
+        "choice": "lines-5-normal-flagship",
+        "stakeUnits": 500,
+        "paidRounds": 64,
+        "spins": 82,
+        "sha256": "ec54051f5c672b6b7bc1dae300859dcfea517b1ba13522f601a2e4a75aecdfca"
+      },
+      {
+        "choice": "lines-5-normal-flagship",
+        "stakeUnits": 1000,
+        "paidRounds": 64,
+        "spins": 82,
+        "sha256": "0741d04ec2f351352d1eb70c909cc192eab59305584bf4ddff50494613b5d966"
+      },
+      {
+        "choice": "lines-5-buy-raid",
+        "stakeUnits": 100,
+        "paidRounds": 64,
+        "spins": 896,
+        "sha256": "92943e136ccfd5e6b5156ac618eec4fc4381e9507a9f7a8c24d17b27d90e3e54"
+      },
+      {
+        "choice": "lines-5-buy-raid",
+        "stakeUnits": 200,
+        "paidRounds": 64,
+        "spins": 896,
+        "sha256": "315987cb0e1d4b657a27196181a5b34d96a6ae731ca4b6af4da8b644ea73685a"
+      },
+      {
+        "choice": "lines-5-buy-raid",
+        "stakeUnits": 500,
+        "paidRounds": 64,
+        "spins": 896,
+        "sha256": "7833953e98410e17d5c8156be7ddef9b27ed5691fad27a2b684e699666e230e0"
+      },
+      {
+        "choice": "lines-5-buy-raid",
+        "stakeUnits": 1000,
+        "paidRounds": 64,
+        "spins": 896,
+        "sha256": "06114a314eef973d0fbe1f59fc4eefa8818264dcf6976c97a56faf90e6f3417e"
+      },
+      {
+        "choice": "lines-5-buy-flagship",
+        "stakeUnits": 100,
+        "paidRounds": 64,
+        "spins": 384,
+        "sha256": "ed678cb4e594d959782fdffec58fb864ac879abfdf1da7a9868151e8dc5a62a2"
+      },
+      {
+        "choice": "lines-5-buy-flagship",
+        "stakeUnits": 200,
+        "paidRounds": 64,
+        "spins": 384,
+        "sha256": "218d8cc077c93343c5248c1f647484da972eeacef8c22e97a4eb64982a5c7d3d"
+      },
+      {
+        "choice": "lines-5-buy-flagship",
+        "stakeUnits": 500,
+        "paidRounds": 64,
+        "spins": 384,
+        "sha256": "c1cdc378a9adf266c1beec5c5a03661749e59d48760b45573afe33fb19b7b77c"
+      },
+      {
+        "choice": "lines-5-buy-flagship",
+        "stakeUnits": 1000,
+        "paidRounds": 64,
+        "spins": 384,
+        "sha256": "fa21e5844011c02e8f61c40dbd9de907837cd843e801f7ee51623978d231bbfb"
+      },
+      {
+        "choice": "lines-10-normal-raid",
+        "stakeUnits": 100,
+        "paidRounds": 64,
+        "spins": 106,
+        "sha256": "0fbfd7940b967976dd7cb48232b087f94127e522de2092a8a495393c4d71eb9d"
+      },
+      {
+        "choice": "lines-10-normal-raid",
+        "stakeUnits": 200,
+        "paidRounds": 64,
+        "spins": 106,
+        "sha256": "9882480c0aaa7b8225ae011e51f2666f2bb72f50141bf8535a6324773a345f24"
+      },
+      {
+        "choice": "lines-10-normal-raid",
+        "stakeUnits": 500,
+        "paidRounds": 64,
+        "spins": 106,
+        "sha256": "f80b6036f24f8be5f8d93a99be1a099cfec87965b6b16ef70a199a95d0f70084"
+      },
+      {
+        "choice": "lines-10-normal-raid",
+        "stakeUnits": 1000,
+        "paidRounds": 64,
+        "spins": 106,
+        "sha256": "d7a295d75e3eec460c98b85720d59f1e76c3ddf8d94726b0eb0f6b9216908325"
+      },
+      {
+        "choice": "lines-10-normal-flagship",
+        "stakeUnits": 100,
+        "paidRounds": 64,
+        "spins": 82,
+        "sha256": "509b415bef44877184ddea23c51db4f28003c4db74fbe7843d2503af4a18cf6a"
+      },
+      {
+        "choice": "lines-10-normal-flagship",
+        "stakeUnits": 200,
+        "paidRounds": 64,
+        "spins": 82,
+        "sha256": "c291771e1a2eb46a99b972de1e455c799f45aeb43feca4bc85da9dfd006eb2cb"
+      },
+      {
+        "choice": "lines-10-normal-flagship",
+        "stakeUnits": 500,
+        "paidRounds": 64,
+        "spins": 82,
+        "sha256": "73a89fae0651def4fb560eeedeb86ee19ced154d7561fecc78f28cc2d471371d"
+      },
+      {
+        "choice": "lines-10-normal-flagship",
+        "stakeUnits": 1000,
+        "paidRounds": 64,
+        "spins": 82,
+        "sha256": "f8a85c392f7e660889b21feddf3ede51577bc102d766ca070ba4f84c0f9b9e8f"
+      },
+      {
+        "choice": "lines-10-buy-raid",
+        "stakeUnits": 100,
+        "paidRounds": 64,
+        "spins": 896,
+        "sha256": "b9f698bcda2fb0aa238b33f62b56ffbde1d87f404fc02b7108831dc12f01c23a"
+      },
+      {
+        "choice": "lines-10-buy-raid",
+        "stakeUnits": 200,
+        "paidRounds": 64,
+        "spins": 896,
+        "sha256": "a40bbf422726c47d50b5e91b2c244b0b725bf2c2eafc7cb4ce23918dd449261c"
+      },
+      {
+        "choice": "lines-10-buy-raid",
+        "stakeUnits": 500,
+        "paidRounds": 64,
+        "spins": 896,
+        "sha256": "9cbf3ad64e5e268a3d3182336e52ab19b2b63370ee0c3dd75c6cd52aca06d153"
+      },
+      {
+        "choice": "lines-10-buy-raid",
+        "stakeUnits": 1000,
+        "paidRounds": 64,
+        "spins": 896,
+        "sha256": "494979caf5f7266feb9cbba81d1c7e710ed5d1d57706d8cc64955b0182446ab0"
+      },
+      {
+        "choice": "lines-10-buy-flagship",
+        "stakeUnits": 100,
+        "paidRounds": 64,
+        "spins": 384,
+        "sha256": "5e50ea6def674a304c7f882eb4b7d677a8607704cea336146cdcdc1deff5a331"
+      },
+      {
+        "choice": "lines-10-buy-flagship",
+        "stakeUnits": 200,
+        "paidRounds": 64,
+        "spins": 384,
+        "sha256": "be539529373e35898ea9734406690a41e2eaba4c407c733bcfc7b25543ee2c0c"
+      },
+      {
+        "choice": "lines-10-buy-flagship",
+        "stakeUnits": 500,
+        "paidRounds": 64,
+        "spins": 384,
+        "sha256": "affb8b1d96294fb3a269c16b2d30fdb695cfb9c55b970f93c53d552e7035c982"
+      },
+      {
+        "choice": "lines-10-buy-flagship",
+        "stakeUnits": 1000,
+        "paidRounds": 64,
+        "spins": 384,
+        "sha256": "8802034f4b539b894582a1cc495d5f763bd34ca1906dc9461e29b650fda03c73"
+      },
+      {
+        "choice": "lines-20-normal-raid",
+        "stakeUnits": 100,
+        "paidRounds": 64,
+        "spins": 120,
+        "sha256": "709bc844585eb508cfd02e553bcb9ac6b08b02fa40c1004a68066b32536cbe57"
+      },
+      {
+        "choice": "lines-20-normal-raid",
+        "stakeUnits": 200,
+        "paidRounds": 64,
+        "spins": 120,
+        "sha256": "68f97d231e0a401848177439be571f36d6d917e581c145b4ff0b042d32d1bdaf"
+      },
+      {
+        "choice": "lines-20-normal-raid",
+        "stakeUnits": 500,
+        "paidRounds": 64,
+        "spins": 120,
+        "sha256": "ded295da2e376235f688c2d7632abae7003e55a0f2ba8b3eaa71c0d821404c79"
+      },
+      {
+        "choice": "lines-20-normal-raid",
+        "stakeUnits": 1000,
+        "paidRounds": 64,
+        "spins": 120,
+        "sha256": "45ae2c9c479aed5d8eb5d059747d14ca425927d9b1aba90af6fca115f0497def"
+      },
+      {
+        "choice": "lines-20-normal-flagship",
+        "stakeUnits": 100,
+        "paidRounds": 64,
+        "spins": 88,
+        "sha256": "4766ecbf4d44c4a697a3ca1cac877a39a3676f1039378e6e9b9fe4b539215b74"
+      },
+      {
+        "choice": "lines-20-normal-flagship",
+        "stakeUnits": 200,
+        "paidRounds": 64,
+        "spins": 88,
+        "sha256": "61f4143d1f3e25276857a72005a13fdc646c6a11286860536f08709495696122"
+      },
+      {
+        "choice": "lines-20-normal-flagship",
+        "stakeUnits": 500,
+        "paidRounds": 64,
+        "spins": 88,
+        "sha256": "5515015d32e34b723eced96bcd4bb36e7e3b83e21a2a6fbff77354914fc1fd2d"
+      },
+      {
+        "choice": "lines-20-normal-flagship",
+        "stakeUnits": 1000,
+        "paidRounds": 64,
+        "spins": 88,
+        "sha256": "444738148db05137ff1cf3072bfe6243b5a575c782e123124fc3cc6ead1352f1"
+      },
+      {
+        "choice": "lines-20-buy-raid",
+        "stakeUnits": 100,
+        "paidRounds": 64,
+        "spins": 896,
+        "sha256": "19a9a03f52cbe1c199ab4d4c2393d335074da7d18902b51fd7c0c57cc3799a1c"
+      },
+      {
+        "choice": "lines-20-buy-raid",
+        "stakeUnits": 200,
+        "paidRounds": 64,
+        "spins": 896,
+        "sha256": "cf9004c62c77f3185436d74efa34a69d5e0c5c5666021ca9531b9e1472f32954"
+      },
+      {
+        "choice": "lines-20-buy-raid",
+        "stakeUnits": 500,
+        "paidRounds": 64,
+        "spins": 896,
+        "sha256": "eaf501caa062cb2d17ca40576118f67adb3ca7b22fa3c75b52c610a360bfbc38"
+      },
+      {
+        "choice": "lines-20-buy-raid",
+        "stakeUnits": 1000,
+        "paidRounds": 64,
+        "spins": 896,
+        "sha256": "a817985e7f01a415f01dc5e129ac24491347035844665903edc9bf1663e70c63"
+      },
+      {
+        "choice": "lines-20-buy-flagship",
+        "stakeUnits": 100,
+        "paidRounds": 64,
+        "spins": 384,
+        "sha256": "c854947fb2052851116734818f57dbfcbf6cb12dad992f2a28bfe205787ecb6b"
+      },
+      {
+        "choice": "lines-20-buy-flagship",
+        "stakeUnits": 200,
+        "paidRounds": 64,
+        "spins": 384,
+        "sha256": "16bfe17f1313182a4d7ddd13142a0a31dfddff0023b7bbf70f9b27a60f7ba3fa"
+      },
+      {
+        "choice": "lines-20-buy-flagship",
+        "stakeUnits": 500,
+        "paidRounds": 64,
+        "spins": 384,
+        "sha256": "27669f5fab72ece51fae618b9af44933b3f0c2685fa904552b88754681974b16"
+      },
+      {
+        "choice": "lines-20-buy-flagship",
+        "stakeUnits": 1000,
+        "paidRounds": 64,
+        "spins": 384,
+        "sha256": "046cf24f489eb0c8b8f01bedf8abc0dd6aae6d147465a7250723b6e6d4607acf"
+      }
+    ],
+    "cannons": 4848,
+    "naturalEntries": 104
+  }
+}

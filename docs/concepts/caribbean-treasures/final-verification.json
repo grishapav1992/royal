@@ -1,0 +1,108 @@
+{
+  "gameId": "studio-caribbean-treasures",
+  "module": "/game-modules/studio-caribbean-treasures/versions/1.0.0-0317607c1ac7/manifest.json",
+  "contracts": {
+    "api": 1,
+    "rules": 1,
+    "progress": 1
+  },
+  "browser": "Chrome",
+  "viewports": [
+    {
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "e2e": {
+    "stats": {
+      "startTime": "2026-10-27T17:37:53.739Z",
+      "duration": 175642.036,
+      "expected": 7,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "cases": [
+      {
+        "name": "natural bonus, real host/chat, line presets and desktop/mobile layout",
+        "results": [
+          {
+            "status": "passed",
+            "durationMs": 12519
+          }
+        ]
+      },
+      {
+        "name": "an accepted start survives a lost response and reopening without duplicate debit",
+        "results": [
+          {
+            "status": "passed",
+            "durationMs": 12546
+          }
+        ]
+      },
+      {
+        "name": "both purchased tactics show the accepted price and recover after a full reload",
+        "results": [
+          {
+            "status": "passed",
+            "durationMs": 24238
+          }
+        ]
+      },
+      {
+        "name": "switching accounts hides the previous series and restores it only for its owner",
+        "results": [
+          {
+            "status": "passed",
+            "durationMs": 32193
+          }
+        ]
+      },
+      {
+        "name": "confirmed animation, cannon, skip, mute, zero volume and close release owned audio",
+        "results": [
+          {
+            "status": "passed",
+            "durationMs": 30062
+          }
+        ]
+      },
+      {
+        "name": "extreme stakes, rapid double click, mobile purchase and English recovery keep one paid round",
+        "results": [
+          {
+            "status": "passed",
+            "durationMs": 56192
+          }
+        ]
+      },
+      {
+        "name": "original audio renders without clipping and ends in silence",
+        "results": [
+          {
+            "status": "passed",
+            "durationMs": 1019
+          }
+        ]
+      }
+    ]
+  },
+  "checks": {
+    "caribbean": 46,
+    "rtpGate": 20,
+    "moduleIntegrity": 7,
+    "walletAndNativeRegressions": 19,
+    "financeTypecheck": true,
+    "applicationBuild": true
+  },
+  "limitations": [
+    "Physical phone, wired headphone and Bluetooth listening not performed",
+    "Production not changed",
+    "Generic historical UI collection references missing archived fixtures; dedicated Caribbean suite passes"
+  ]
+}

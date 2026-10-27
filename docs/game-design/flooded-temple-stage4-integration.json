@@ -1,0 +1,64 @@
+{
+  "date": "2026-10-27",
+  "mainBaseline": "7c29991e21b8875eeb5e3b3866a2feccd9ac1b5b",
+  "review": "Preserved both game dispatches, contracts, qualification methods and headers. Existing main positional capability remains Caribbean; Temple is appended. Pure game mathematics listed below are byte-identical after canonical newline normalization. The Caribbean exact model, target, tolerance, independent seeds and all choices are unchanged. Three reviewed wrapper hashes reflect this reviewed integration; regenerate both proofs with the normal qualification CLI.",
+  "unchangedGameMathematics": [
+    {
+      "path": "src/shared/caribbeanTreasuresMath.ts",
+      "baseline": "7c29991e21b8875eeb5e3b3866a2feccd9ac1b5b",
+      "sha256": "b86e71675dfd0179da8d8c43c7a62f8da41303d5e6bc59f07b81d4497b64647b"
+    },
+    {
+      "path": "src/shared/caribbeanTreasures.ts",
+      "baseline": "7c29991e21b8875eeb5e3b3866a2feccd9ac1b5b",
+      "sha256": "5590af9897cfb32dbf8fd7d9c0608ad52184051ddee7ca70cd309267a4311aee"
+    },
+    {
+      "path": "server/games/caribbeanTreasures.ts",
+      "baseline": "7c29991e21b8875eeb5e3b3866a2feccd9ac1b5b",
+      "sha256": "bdb0aa8eecef1093f876dd3c467ff1b43d8a7b1606a63a56aa46430964556e99"
+    },
+    {
+      "path": "src/shared/caribbeanTransport.ts",
+      "baseline": "7c29991e21b8875eeb5e3b3866a2feccd9ac1b5b",
+      "sha256": "c4a590c6778048f9ecd37852549762adde064f90dca072316ee215ba8ac89c78"
+    },
+    {
+      "path": "src/shared/floodedTempleData.json",
+      "baseline": "HEAD",
+      "sha256": "0033975e51c12770b84dbe04146ad9f474276e783ee7c2ed2c6179ad3ee437dc"
+    },
+    {
+      "path": "src/shared/floodedTempleMath.ts",
+      "baseline": "HEAD",
+      "sha256": "b05f3bc3c01616fba9455da9ae75ac5cf7c9d559a2b591cdc1d1e37f16f58f9e"
+    },
+    {
+      "path": "src/shared/floodedTemple.ts",
+      "baseline": "HEAD",
+      "sha256": "1c1369bd31afb101871e37b45373fbdaee0db09a631e4e4a242c24b396becb5b"
+    },
+    {
+      "path": "server/games/floodedTemple.ts",
+      "baseline": "HEAD",
+      "sha256": "51652a2ae8207feec1153c1e18522e4ebcd8f86175f2edb8931ae46af981ed04"
+    }
+  ],
+  "reviewedMergedWrappers": [
+    {
+      "path": "src/shared/casinoExpansion.ts",
+      "sha256": "9240c434cd1baa58142b24597f1188f83976f5840138eedbdb1a5e3e27cdb4fb"
+    },
+    {
+      "path": "server/demoExpansion.ts",
+      "sha256": "291dd46547687bec289dba0788be474be66161228001022943f6f891af21ea24"
+    },
+    {
+      "path": "server/finance/nile-game-runtime.ts",
+      "sha256": "155d22d8807c43c57a428ea01da692eeffc70695b01080a25a5fb22aa917190d"
+    }
+  ],
+  "qualificationStatus": "both normal CLI qualifications passed; exact result tables and analyses match the pre-integration proofs",
+  "templeServerReplayChecks": 22452,
+  "caribbeanServerReplayChecks": 4096
+}

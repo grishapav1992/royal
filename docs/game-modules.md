@@ -1,10 +1,10 @@
 # Independently published games
 
-Every existing game definition has an independent client package. The catalogue contains 118 module identities across the current, staged and historical game families. This is a technical inventory, not a claim that the hall has 118 visible machines:
+Every existing game definition has an independent client package. The catalogue contains 119 module identities across the current and historical game families. This is a technical inventory, not a claim that the hall has 119 visible machines:
 
 | Family | Module identities |
 | --- | ---: |
-| Studio games, including the eight current native slots and the staged Flooded Temple contract | 42 |
+| Studio games, including Caribbean Treasures and Flooded Temple | 43 |
 | Original Royal games, GitHub practice games, session games and all casino/card variants, including LAST EXIT | 62 |
 | Air hockey, pool, chess, piano and Mortal Kombat | 5 |
 | Durak, transfer Durak and Crazy Eights PvP | 3 |
@@ -14,6 +14,8 @@ Every existing game definition has an independent client package. The catalogue 
 Supported identities and host contracts are in `src/modules/GameModuleCatalog.ts`. Each `games/<slug>/` directory contains its entry, package metadata and TypeScript configuration. GIRLHUB keeps slug `girlhub` and identity `studio-afterglow`. LAST EXIT keeps identity `github-crash` and uses slug `last-exit`. CR vs. Leo keeps its production identity `original-cr-vs-leo` in package `cr-vs-leo`; Royal Plinko keeps the current «Завеса ночи» implementation and its assets. The arcade Orbit uses identity `orbit` and slug `arcade-orbit`, distinct from `studio-orbit`.
 
 The hall keeps its existing visible cabinets, card tables, activities and recovery paths. Historical definitions are packaged without changing their retired status. Provider games remain hosted by their providers; Royal independently packages the local catalogue, launch and iframe adapter for each provider. Their remote game engines are already loaded separately.
+
+Caribbean Treasures uses identity `studio-caribbean-treasures`, slug `caribbean-treasures` and API/rules/progress contracts 1. It opens through the Royal catalogue at the existing twelve collection seats. Its client has no independent balance store; the common expansion transport and Nile runtime own accepted settings, integer prices, reservations, saved rounds and settlement. Package 1.0 includes its Caribbean art, confirmed animation, original music and effects. The shared transport advertises `X-Royal-Caribbean-Treasures: 1`; older clients receive a compatible filtered session list. See its [final review](concepts/caribbean-treasures/final-review.md).
 
 The single Nile wallet release hides the two provider demos and the three practice tables with separate chips. Their module identities remain available for historical compatibility. New PvP packages use the optional host `pvp` context for snapshots, legal moves and operation transport. The common backend owns their rules, hidden hands, stakes and settlement. See [PvP and the shared Nile wallet](pvp.md).
 

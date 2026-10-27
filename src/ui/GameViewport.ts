@@ -123,7 +123,7 @@ export class GameViewport {
       this.reset('off');
       return;
     }
-    if (this.plane.querySelector('.dracona-frame, .temple-frame')) {
+    if (this.plane.querySelector('.dracona-frame, .temple-frame, .ct-root')) {
       this.reset('off');
       return;
     }
