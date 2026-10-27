@@ -9,7 +9,7 @@ import {DemoExpansionStore} from '../server/demoExpansion';
 
 const apiPort=Number(process.env.TEMPLE_API_PORT||2626),webPort=Number(process.env.TEMPLE_WEB_PORT||5226),api='http://127.0.0.1:'+apiPort;
 const closeGuard=(server:Server)=>new Promise<void>(resolve=>server.listening?server.close(()=>resolve()):resolve());
-const reserve=(port:number)=>new Promise<Server>((resolve,reject)=>{const server=createPortGuard();server.once('error',reject);server.listen(port,'127.0.0.1',()=>resolve(server));});
+const reserve=(port:number)=>new Promise<Server>((resolve,reject)=>{const server=createPortGuard(socket=>socket.destroy());server.once('error',reject);server.listen(port,'127.0.0.1',()=>resolve(server));});
 // Hold the web port during database startup so a second review run cannot adopt our backend.
 const webGuard=await reserve(webPort);
 const apiGuard=await reserve(apiPort).catch(async error=>{await closeGuard(webGuard);throw error;});
