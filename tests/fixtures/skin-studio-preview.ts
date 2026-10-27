@@ -5,6 +5,7 @@ import Phaser from 'phaser';
 import { characterTexture, createCharacters, createCharacterPortrait, pruneCharacterTextures } from '../../src/game/characters';
 import { hasSkinSheet, loadSkinSheet } from '../../src/game/generatedSkinArt';
 import { SKIN_THEME } from '../../src/shared/skinStudio';
+import { createCharacterMotion } from '../../src/game/characterAnimation';
 let account: Account | null = { id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', name: 'Игрок', email: 'skin@example.test', skin: 0, appearance: null };
 const studio = new SkinStudioUI({ setLocked: () => {} } as unknown as RoomScene, () => account, async () => {});
 (window as any).skinPreview = { studio, setAccount(value: Account | null) { account = value; window.dispatchEvent(new Event('royal-account')); },
@@ -44,6 +45,34 @@ const studio = new SkinStudioUI({ setLocked: () => {} } as unknown as RoomScene,
     const scene = (window as any).skinPreview.scene as Phaser.Scene, key = (window as any).skinPreview.key;
     const texture = scene.textures.get(key) as Phaser.Textures.CanvasTexture, f = texture.get(frame);
     return Array.from(texture.context.getImageData(f.cutX, f.cutY, f.cutWidth, f.cutHeight).data);
+  },
+  async motion(id: string) {
+    const preview = (window as any).skinPreview;
+    await preview.render(id);
+    const [{ RoomScene }, { gameAudio }, { CHARACTER_SCALE, characterScaleY }] = await Promise.all([
+      import('../../src/game/RoomScene'), import('../../src/game/GameAudio'), import('../../src/game/characters'),
+    ]);
+    const scene = preview.scene as Phaser.Scene;
+    const sprite = scene.add.sprite(160, 350, preview.key, 'down-6').setOrigin(.5, 1);
+    const actor = { sprite, shadow: scene.add.ellipse(160, 350, 20, 8), blush: scene.add.graphics(),
+      x: 160, y: 350, visualX: 160, visualY: 350, visualAt: 0, phase: 13, motion: createCharacterMotion(),
+      moving: false, facing: 'down', appearance: id ? JSON.stringify({ version: 2, skinId: id, theme: SKIN_THEME.id }) : '',
+      soberAt: 0, seat: '', action: 'idle', cabinet: '', gameReaction: '', gameReactionUntil: 0, visualSeat: '', seatedAt: 0 };
+    let sounds = 0;
+    gameAudio.effect = ((name: string) => { if (name === 'step') sounds++; }) as typeof gameAudio.effect;
+    Object.assign(scene, { player: actor, correction: { x: 0, y: 0 }, reducedMotion: false });
+    preview.advance = (input: { time: number; distance?: number; moving?: boolean; facing?: string; reduced?: boolean; seat?: string; action?: string }) => {
+      actor.x += input.distance ?? 0;
+      if (input.facing) actor.facing = input.facing;
+      if (input.seat !== undefined) actor.seat = input.seat;
+      if (input.action !== undefined) actor.action = input.action;
+      (scene as any).reducedMotion = input.reduced ?? false;
+      (RoomScene.prototype as any).animateActor.call(scene, actor, input.time, input.moving ?? true);
+      return { frame: sprite.frame.name, sounds, x: sprite.x, y: sprite.y,
+        scaleX: sprite.scaleX / CHARACTER_SCALE, scaleY: sprite.scaleY / characterScaleY(actor.appearance),
+        phase: actor.motion.distance, playing: sprite.anims.isPlaying };
+    };
+    preview.motionFrame = () => sprite.frame.name;
   },
   prune() { const scene = (window as any).skinPreview.scene as Phaser.Scene; scene.children.removeAll(true); pruneCharacterTextures(scene, new Set()); return scene.textures.exists((window as any).skinPreview.key); },
 };

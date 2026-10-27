@@ -33,11 +33,12 @@ export class SkinStudioUI {
   private prompt = document.createElement('textarea');
   private generate = document.createElement('button');
   private choose = document.createElement('button');
-  private fitting = new SkinFittingRoom();
+  private fitting: SkinFittingRoom;
   private trying = '';
   private fittingJob = '';
   private requestId = 0;
   constructor(private scene: RoomScene, private account: () => Account | null, private accountChanged: () => Promise<void>) {
+    this.fitting = new SkinFittingRoom(() => this.scene.getReducedMotion?.() ?? window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     this.button.type = 'button'; this.button.className = 'logout-button'; this.button.textContent = 'Образы'; this.button.hidden = true;
     this.button.onclick = () => { void this.open(); }; document.querySelector('.profile')!.append(this.button);
     this.scene.onAtelier = () => { void this.open(); };
