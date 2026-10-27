@@ -492,12 +492,15 @@
     "activeWorkExceptions": [
       {
         "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль",
-        "reason": "Primary checkout contains pre-existing untracked work",
-        "cleanupCondition": "Owner reconciles the existing work with main"
+        "branch": "feature/last-exit-loading",
+        "reason": "Primary checkout is active work owned by another chat",
+        "cleanupCondition": "Owner finishes and preserves its feature in GitHub"
       },
       {
-        "reason": "Other chats may still own managed worktrees",
-        "cleanupCondition": "Respective owners complete and preserve their work in GitHub"
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-publish-20261028/checkout",
+        "branch": "release/neopolis-ui-20261028-v1",
+        "reason": "Active game publication owned by another chat",
+        "cleanupCondition": "Owner verifies its release and removes its worktree"
       }
     ],
     "measurementNote": "Free space readings include concurrent work and do not attribute all changes to this task."
@@ -594,5 +597,10 @@
       }
     ],
     "errors": []
+  },
+  "repository": {
+    "sourceCommit": "0b434f1e2c897d7a4f3f4602a6af8200e5e652ef",
+    "releaseRecordCommit": "099d78b",
+    "verifiedMainCommit": "11e25295e459728e756ec52ec06b262ef44332e1"
   }
 }
