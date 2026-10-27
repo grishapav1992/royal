@@ -1,0 +1,261 @@
+{
+  "release": "neopolis-ui-20261028-v1",
+  "url": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "recordedAt": "2026-10-27T22:01:23.372984+00:00",
+  "applicationSourceCommit": "583ff906ddc4420ec88bb40e01d9607450b6d828",
+  "integrationCommitBeforePublication": "1172be59e8ffb0f76d0fc17bd23945d2009f336c",
+  "productionBase": "0b434f1e2c897d7a4f3f4602a6af8200e5e652ef",
+  "installation": {
+    "hostExitCode": 0,
+    "hostCompletedAt": "2026-10-27T21:40:02.497849+00:00",
+    "image": "sha256:d275ba35b1286dcffeca9dace0ddaa165a974d44d50a4251696e98aa56306e8e",
+    "moduleId": "studio-neopolis",
+    "moduleVersion": "0.4.0-ba3c9e5df896",
+    "apiVersion": 1,
+    "rulesVersion": 3,
+    "progressVersion": 3,
+    "moduleManifestSha256": "f64d70928f589f1431eef56f000eae1e34bed0c6a45908a5d7af1af9f99ae2a3",
+    "activePointerSha256": "7b43bc124543b621d01fbc790751798f5c86c3a4f9065c46e7c1fd93a0113d2a",
+    "packageBytes": 6029732,
+    "transportBytes": 7846094,
+    "transportSha256": "0a3db0e18f1eba4c27964773472298210f5889fc05b2bf24d30eeae585966398"
+  },
+  "behavior": {
+    "responsiveHostWithChat": true,
+    "paidAutoplayCounts": [
+      10,
+      25,
+      50,
+      100
+    ],
+    "acceptedSpinFinishesOnStop": true,
+    "bonusContinuationsDoNotConsumePaidCount": true,
+    "heroSelectionAndMathematicsUnchanged": true
+  },
+  "validation": {
+    "applicationSourceCommit": "583ff906ddc4420ec88bb40e01d9607450b6d828",
+    "integrationCommit": "1172be59e8ffb0f76d0fc17bd23945d2009f336c",
+    "productionBase": "0b434f1e2c897d7a4f3f4602a6af8200e5e652ef",
+    "fullReleasePreparationAndGitHubVerification": true,
+    "qualifiedProfiles": 10,
+    "unchangedLegacyModules": 114,
+    "gameMathWalletCatalogueTests": 16,
+    "pythonInstallerAndFinancialTests": 55,
+    "jsFinancialLeaseTests": 39,
+    "browserScenarios": 5,
+    "realHostScenarios": 1,
+    "realHostSizes": [
+      "1920x1080",
+      "1440x756",
+      "1366x768",
+      "1024x768",
+      "900x900",
+      "390x844",
+      "360x740",
+      "844x390"
+    ],
+    "rulesAndHeroSelectionUnchanged": true,
+    "serverProgramsRetained": 3,
+    "liveSourcePaths": 6,
+    "hostClientFiles": 2,
+    "moduleVersion": "0.4.0-ba3c9e5df896",
+    "launcherSha256": "f4e4bb5897cb8461612890267b12d0a725aab23ddf4073ad862131de2ccc81fd",
+    "initialLaunchBeforeMutation": "The transport did not contain run-release.py. No job or mutation started. The launcher was transferred separately from the same committed source and its SHA-256 matched before the successful retry."
+  },
+  "publicVerification": {
+    "sourceCommit": "583ff906ddc4420ec88bb40e01d9607450b6d828",
+    "startedAt": "2026-10-27T21:45:05.676Z",
+    "checkedFiles": 28,
+    "checkedBytes": 14676728,
+    "productionWagersCreated": false,
+    "depositsCreated": false,
+    "layouts": [
+      {
+        "width": 1440,
+        "height": 1000,
+        "controlsAndChatVisible": true,
+        "fillsHost": true
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "controlsAndChatVisible": true,
+        "fillsHost": true
+      }
+    ],
+    "moduleVersion": "0.4.0-ba3c9e5df896",
+    "oldModuleUrlsPreserved": true,
+    "browserErrors": [],
+    "passed": true,
+    "completedAt": "2026-10-27T21:45:55.719Z"
+  },
+  "serverVerification": {
+    "checkedAt": 1793137467.8037076,
+    "sourceCommit": "583ff906ddc4420ec88bb40e01d9607450b6d828",
+    "image": "sha256:d275ba35b1286dcffeca9dace0ddaa165a974d44d50a4251696e98aa56306e8e",
+    "healthy": true,
+    "moduleVersion": "0.4.0-ba3c9e5df896",
+    "activePointerSha256": "7b43bc124543b621d01fbc790751798f5c86c3a4f9065c46e7c1fd93a0113d2a",
+    "sourcePaths": 6,
+    "backendProgramsUnchanged": {
+      "dist-server/index.js": "4085d330333c72f56554de6225b22c7680c2750abdac45b51fb045f17bda9b88",
+      "dist-server/payments.js": "561f122c79d236c9b114b2c64915c6becaafd0c9e5531835df0868cdc9610247",
+      "dist-server/crypto-reconcile.js": "afe3e44eb292bab518224182be34d6f8d8b3b0ac0dc400aaf7b07e68d315c6da"
+    },
+    "configurationAndMountsPreserved": true,
+    "fiveComposeFilesPreserved": true,
+    "mathAndHeroRulesUnchanged": true,
+    "otherModulesAndOldVersionsPreserved": true,
+    "externalModuleFiles": 2021,
+    "priorityWeightsRestored": {
+      "docker.service": 100,
+      "containerd.service": 100
+    },
+    "sourceBackupBytes": 192844539,
+    "sourceBackupSha256": "7a350b08a8373af115377fcb559db291060bc1e93adafea0a0f011b3d2233e2a",
+    "serverFreeBytes": 7774994432
+  },
+  "serverCleanup": {
+    "at": 1793137954.3308675,
+    "freeBeforeBytes": 7731126272,
+    "freeAfterBytes": 7745142784,
+    "removed": [
+      {
+        "path": "/opt/royal-releases/neopolis-ui-20261028-v1/transport.tgz",
+        "logicalBytes": 7846094
+      },
+      {
+        "path": "/opt/royal-releases/neopolis-ui-20261028-v1/runtime-context",
+        "logicalBytes": 2629909
+      },
+      {
+        "path": "/opt/royal-releases/neopolis-ui-20261028-v1/neopolis-package",
+        "logicalBytes": 6031855
+      },
+      {
+        "path": "/opt/royal-releases/neopolis-ui-20261028-v1/__pycache__",
+        "logicalBytes": 28344
+      },
+      {
+        "path": "/opt/royal-releases/nowpayments-sandbox-20261027-v1/priority-services-818ea04ade9a",
+        "logicalBytes": 1929
+      }
+    ],
+    "retainedForRollback": [
+      "/opt/royal-backups/neopolis-ui-20261028-v1/source.tgz",
+      "royal-game:before-neopolis-ui-20261028-v1",
+      "royal-game:before-neopolis-ui-20261028-v1-prepared",
+      "reviewed source and dist deltas, manifests and guarded installer",
+      "old immutable Neopolis version for open games and rollback"
+    ],
+    "retentionCondition": "Keep rollback artifacts until a later reviewed retention operation proves they are no longer needed; never restore an old player database.",
+    "otherChatsTouched": false
+  },
+  "rollback": {
+    "sourceBackup": "/opt/royal-backups/neopolis-ui-20261028-v1/source.tgz",
+    "sourceBackupBytes": 192844539,
+    "sourceBackupSha256": "7a350b08a8373af115377fcb559db291060bc1e93adafea0a0f011b3d2233e2a",
+    "previousImage": "sha256:d36b1602fbac04e1f964484cb718d68360557821d14219bf9459bf79bae892e9",
+    "previousImageTags": [
+      "royal-game:before-neopolis-ui-20261028-v1",
+      "royal-game:before-neopolis-ui-20261028-v1-prepared"
+    ],
+    "previousModuleVersion": "0.4.0-449b44ba4fb6",
+    "previousPointerSha256": "c8b1c40ebb7ef12a7c22541738b8e97e2088749e441e5fc67777a13774946a69",
+    "condition": "Retain source backup, previous images, immutable modules, reviewed deltas and guarded installer until a later reviewed retention operation. Roll back the module before a compatible host rollback, preserve newer source and pointer, and never restore an old player database."
+  },
+  "localCleanup": {
+    "freeBeforeBytes": 55728812032,
+    "freeAfterBytes": 56190423040,
+    "removed": [
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-publish-20261028/checkout/dist",
+        "logicalBytes": 170549418
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-publish-20261028/checkout/dist-server",
+        "logicalBytes": 4287614
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-publish-20261028/checkout/module-build",
+        "logicalBytes": 971144
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-publish-20261028/checkout/module-dist",
+        "logicalBytes": 200064937
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-publish-20261028/checkout/test-results",
+        "logicalBytes": 19296044
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-publish-20261028/checkout/node_modules",
+        "logicalBytes": 65,
+        "symlinkOnly": true
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-publish-20261028/checkout/deployment/releases/neopolis-ui-20261028-v1/__pycache__",
+        "logicalBytes": 73098
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-publish-20261028/payload",
+        "logicalBytes": 12486158
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-publish-20261028/transport.tgz",
+        "logicalBytes": 7846094
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-publish-20261028/before.json",
+        "logicalBytes": 3312434
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-publish-20261028/release-prepare.log",
+        "logicalBytes": 34183
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-publish-20261028/neopolis-tests.log",
+        "logicalBytes": 901
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-publish-20261028/release-plan.json",
+        "logicalBytes": 1392
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-publish-20261028/public-check.log",
+        "logicalBytes": 500
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-publish-20261028/host-tests.log",
+        "logicalBytes": 363
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-publish-20261028/deployment-state.json",
+        "logicalBytes": 743
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-publish-20261028/verify-public.mjs",
+        "logicalBytes": 8097
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-display-20261027/desktop.png",
+        "logicalBytes": 1997994
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-display-20261027/mobile.png",
+        "logicalBytes": 279450
+      }
+    ],
+    "checkout": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-publish-20261028/checkout",
+    "checkoutLogicalBytesBeforeRemoval": 264562373,
+    "checkoutRemovalCondition": "Remove after this deployment record is pushed to main and the exact remote commit is verified. The retained local compact report records final removal and free space.",
+    "retained": [
+      "owner.json",
+      "verification.json",
+      "public-desktop.png",
+      "public-mobile.png"
+    ],
+    "otherChatsTouched": false,
+    "physicalSpaceNote": "Free-space differences are measured for the shared volume and are not attributed entirely to this cleanup. Logical sizes may count hard links."
+  }
+}
