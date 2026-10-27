@@ -26,23 +26,13 @@ export function drawGeneratedSkin(c: CanvasRenderingContext2D, id: string, facin
   const image = sheets.get(id); if (!image) return false;
   const row = ['down', 'left', 'right', 'up'].indexOf(facing);
   const walking = frame < 6, gaming = frame >= 28, winning = frame >= 34 && frame < 40, losing = frame >= 40;
-  // Generated step cells can change the face, orientation or scale. Animate the
-  // standing cutout itself so existing and new skins keep one stable body anchor.
-  const pose = seated || gaming ? 3 : 0;
+  // Each prepared pose is a complete figure, including its connected arms and legs.
+  const pose = seated || gaming ? 3 : walking ? [0, 1, 1, 0, 2, 2][frame] : 0;
   const phase = frame % 6 / 6 * Math.PI * 2;
   const bounce = winning ? -Math.max(0, Math.sin(phase)) * 1.1 : 0;
   c.save(); c.beginPath(); c.rect(0, -8, 32, 48); c.clip();
   c.translate(16, 39 + bounce); c.rotate((losing ? Math.sin(phase) * .025 : winning ? Math.sin(phase) * .04 : 0));
-  if (walking) {
-    c.drawImage(image, 0, row * 384, 256, 288, -16, -47, 32, 36);
-    const step = [0, 1, .5, 0, -1, -.5][frame];
-    for (const leg of [0, 1]) {
-      c.save(); c.translate(leg * 16 - 8, -11);
-      c.rotate(step * (leg ? -1 : 1) * .08);
-      c.drawImage(image, leg * 128, row * 384 + 288, 128, 96, -8, 0, 16, 12);
-      c.restore();
-    }
-  } else c.drawImage(image, pose * 256, row * 384, 256, 384, -16, -47, 32, 48);
+  c.drawImage(image, pose * 256, row * 384, 256, 384, -16, -47, 32, 48);
   c.restore();
   if (sip >= 0 && facing !== 'up') {
     // A cup follows the existing six-phase drinking cycle; body artwork remains intact.
