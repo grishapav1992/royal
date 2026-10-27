@@ -1,0 +1,27 @@
+{
+  "passed": true,
+  "at": "2026-10-26T20:36:29.277Z",
+  "sourceCommit": "37e5c750f92f9708f92c4c0695e5badcd3bb0366",
+  "baseCommit": "ae17a8df9e894278dedc29f08c052fe68ee09c04",
+  "checks": [
+    "health",
+    "anonymous-session",
+    "wallet-authentication",
+    "compressed-body-rejected:/api/auth/login",
+    "compressed-body-rejected:/api/npc/mira",
+    "host-index",
+    "host-delta",
+    "reviewed-exact-packages",
+    "previous-client-urls",
+    "health-after-probes"
+  ],
+  "packages": [
+    {
+      "gameId": "mortal-kombat",
+      "version": "1.0.0-4842dcd3532d",
+      "verifiedFiles": 107,
+      "oldEntryPreserved": true
+    }
+  ],
+  "productionPlayerDataChanged": false
+}

@@ -1,0 +1,21 @@
+{
+  "checkedAt": "2026-10-26T21:54:28.729Z",
+  "passed": true,
+  "checks": [
+    {
+      "path": "/assets/main-ahFP_1Fs.js",
+      "expected": "a4cd6784d13dc378dc2fde7396a8d7bbb53a1d52e664799eca3a29e843c7b2b0",
+      "status": 200,
+      "actual": "a4cd6784d13dc378dc2fde7396a8d7bbb53a1d52e664799eca3a29e843c7b2b0",
+      "passed": true
+    },
+    {
+      "path": "/game-modules/mortal-kombat/active.json",
+      "expected": "5f52a6ce2a6d56409e74e41072e43daf69318b933908453ac1e1f4b9f418ae5a",
+      "status": 200,
+      "actual": "5f52a6ce2a6d56409e74e41072e43daf69318b933908453ac1e1f4b9f418ae5a",
+      "passed": true
+    }
+  ],
+  "playerOperationsPerformed": false
+}
