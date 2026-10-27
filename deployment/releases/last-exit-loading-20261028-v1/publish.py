@@ -31,10 +31,17 @@ def read(path):
 def command(args):
     return subprocess.check_output(args, cwd=LIVE, text=True).strip()
 
+def persistent_services():
+    ids = command(['docker', 'ps', '--no-trunc', '-q']).splitlines()
+    rows = command(['docker', 'inspect', '--format', '{{.Id}} {{.Name}} {{.HostConfig.RestartPolicy.Name}}', *ids])
+    # Scheduled one-shot readers use no restart policy and have independent lifetimes.
+    return {name.lstrip('/'): identity for identity, name, policy in map(str.split, rows.splitlines())
+            if policy in ['always', 'unless-stopped', 'on-failure']}
+
 def snapshot(source_names):
     container = json.loads(command(['docker', 'inspect', 'royal-game-1']))[0]
-    program = json.loads(command(['docker', 'exec', 'royal-game-1', 'node', '-e',
-        "const fs=require('fs'),c=require('crypto');console.log(JSON.stringify(Object.fromEntries(['dist/index.html','dist-server/index.js','dist-server/payments.js','dist-server/crypto-reconcile.js'].map(n=>[n,c.createHash('sha256').update(fs.readFileSync('/app/'+n)).digest('hex')]))))"]))
+    sums = command(['docker', 'exec', 'royal-game-1', 'sha256sum', '/app/dist/index.html', '/app/dist-server/index.js', '/app/dist-server/payments.js', '/app/dist-server/crypto-reconcile.js'])
+    program = {name.removeprefix('/app/'): digest for digest, name in map(str.split, sums.splitlines())}
     return {'image': container['Image'], 'containerId': container['Id'],
         'startedAt': container['State']['StartedAt'], 'health': container['State']['Health']['Status'],
         'sourceCommit': container['Config']['Labels'].get('org.opencontainers.image.revision'),
@@ -42,7 +49,7 @@ def snapshot(source_names):
         'source': {name: sha(LIVE/name) if (LIVE/name).is_file() else None for name in source_names},
         'program': program, 'hostContractSha256': sha(STATE/'host.json'),
         'modulePointers': {str(p.relative_to(MODULES)): sha(p) for p in sorted(MODULES.glob('*/active.json'))},
-        'services': command(['docker', 'ps', '--no-trunc', '--format', '{{.ID}} {{.Names}} {{.Image}}'])}
+        'services': persistent_services()}
 
 def main():
     require(Path(__file__).resolve() == ROOT/'publish.py', 'Unexpected publication path')
