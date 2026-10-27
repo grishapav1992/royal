@@ -65,9 +65,10 @@ async function wallet(page: Page) {
   });
 }
 async function fit(frame: FrameLocator) {
-  const boxes = await frame.locator('.fh').evaluate(root => ({ width: root.ownerDocument.documentElement.clientWidth, scroll: root.ownerDocument.documentElement.scrollWidth, board: root.querySelector('.fh-board')!.getBoundingClientRect().toJSON() }));
+  const boxes = await frame.locator('.fh').evaluate(root => ({ width: root.ownerDocument.documentElement.clientWidth, scroll: root.ownerDocument.documentElement.scrollWidth, board: root.querySelector('.fh-board')!.getBoundingClientRect().toJSON(), bonusBottom:(root.querySelector('.fh-bonus') as HTMLElement).hidden ? 0 : root.querySelector('.fh-bonus')!.getBoundingClientRect().bottom, controlsTop:root.querySelector('.fh-controls')!.getBoundingClientRect().top }));
   expect(boxes.scroll).toBeLessThanOrEqual(boxes.width + 1); expect(boxes.board.width).toBeGreaterThanOrEqual(180);
   expect(boxes.board.x).toBeGreaterThanOrEqual(0); expect(boxes.board.right).toBeLessThanOrEqual(boxes.width);
+  expect(boxes.bonusBottom).toBeLessThanOrEqual(boxes.controlsTop);
 }
 test.beforeAll(async () => {
   await mkdir(out, { recursive: true });
@@ -206,6 +207,8 @@ test('painted tiles fit a short desktop window and only the accepted root rotate
   expect(frames.some(f=>f.motion==='flow' && f.sap.some(value=>value>0 && value<1))).toBe(true);
   await expect(game(page).locator('[data-fh=spin]')).toBeEnabled();
   expect((await state(page)).view.base.rotation).toBe(2);
+  const bonusFit=await game(page).locator('.fh').evaluate(root=>({bonus:root.querySelector('.fh-bonus')!.getBoundingClientRect().bottom,controls:root.querySelector('.fh-controls')!.getBoundingClientRect().top}));
+  expect(bonusFit.bonus).toBeLessThanOrEqual(bonusFit.controls);
   await page.screenshot({path:out+'/desktop-lit.png'});
   await writeFile(out+'/motion-frames.json',JSON.stringify({frames:frames.length,turnFrames:turn.length,intermediateAngles:turn.map(f=>f.angles[5]),continuousSapFrames:frames.filter(f=>f.sap.some(v=>v>0&&v<1)).length},null,2));
   await page.setViewportSize({width:1110,height:1244}); await fit(game(page));
