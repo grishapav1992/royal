@@ -1,0 +1,131 @@
+{
+  "format": 1,
+  "gameId": "studio-cosmic-escape",
+  "scope": "Expected hashes and module metadata only. No public or server check has been performed by this file creation.",
+  "sourceCommit": "d3e4f9c0ef50a4d1ab63f0862696e288125fd740",
+  "baseCommit": "37e5c750f92f9708f92c4c0695e5badcd3bb0366",
+  "releaseManifestSha256": "e3699ee8981c9c251e663089b5dd07f78575206500b5931a6623394116ccfafe",
+  "provenance": {
+    "ownerCheckout": "artifacts/work/cosmic-origin-release/checkout",
+    "releaseManifest": "artifacts/work/cosmic-origin-release/checkout/module-build/release-manifest.json",
+    "helperCommit": "59e510266213709a94d4e3e22b4cfe440f535d08"
+  },
+  "hostIndexSha256": "4488767f37e116ac00d9a335bde3d05c087f3221808487611c8b568f3017a03f",
+  "backendSha256": "df7bb598c7ba57f86c749f401b3754653b5aaab0802953f96133444c99974359",
+  "guardSource": {
+    "path": "src/shared/luelonSlotsLines.ts",
+    "sha256": "cc9e2528bae03e8965c154f82aa271b3c9976bb3d817130ba51dedf6e8eb67ee"
+  },
+  "cosmic": {
+    "gameId": "studio-cosmic-escape",
+    "version": "1.0.0-e62dece92c83",
+    "activeUrl": "/game-modules/studio-cosmic-escape/active.json",
+    "activePointerRawSha256": "a29c675f42e920c18a587d48310b0be3b1bbcf9a612c81c64cfb92eab4344a91",
+    "pointer": {
+      "format": 1,
+      "gameId": "studio-cosmic-escape",
+      "manifest": "/game-modules/studio-cosmic-escape/versions/1.0.0-e62dece92c83/manifest.json",
+      "sha256": "ef8f70eafa59d5e80541ee6eb18bcd49bd0367537192c0995f3ead32f997b501"
+    },
+    "manifestRawSha256": "ef8f70eafa59d5e80541ee6eb18bcd49bd0367537192c0995f3ead32f997b501",
+    "metadata": {
+      "format": 1,
+      "gameId": "studio-cosmic-escape",
+      "version": "1.0.0-e62dece92c83",
+      "apiVersion": 1,
+      "rulesVersion": 2,
+      "progressVersion": 1,
+      "sourceSha256": "e62dece92c8344f68ae717f895a20b1cd848cd9d8e3fe9705958f466266013fa",
+      "entry": "entry-6bde8940232e56d8.js",
+      "styles": [
+        "style-f9666aaa81dd3872.css"
+      ],
+      "files": {
+        "entry-6bde8940232e56d8.js": "6bde8940232e56d82061c738971b421607ecd37785017270a7ea3352d671ffbb",
+        "media/cosmic-guardians/v1/alien.webp": "188bd8973f446976b01b9805880b958df5761f1dd545e0c5e7a6418f60a19599",
+        "media/cosmic-guardians/v1/background.webp": "0e185ec675a1bcc7b4fc7bdf43d6bb4c5adc15f3a7141075cf6549471829689c",
+        "media/cosmic-guardians/v1/symbols-v2.webp": "6e5d58ecb7d3cc3d2e95c57838cd6ef06b5ccecdb35e3a7f26a6e75792e8bce9",
+        "media/cosmic-rebuild/load-v2/background.webp": "0296ec45a7307fc69b4a0da58ec46805f9ff2bd6a9dc1b85552e53ce563abe37",
+        "media/studio/space-world.webp": "0a9a41dd898f368f43c562c58523bb622b96c778ad927ce9ed8f3aba17512f3d",
+        "media/studio/symbols.webp": "63d92524d8634e72a8a6c32cc973e6baf64498a2ce7a944534628b962de7b406",
+        "style-f9666aaa81dd3872.css": "f9666aaa81dd3872c75bc20e95399ed564f5988a5dd076e5c80f1c6fb8b3fe05"
+      },
+      "preload": [
+        "media/cosmic-guardians/v1/symbols-v2.webp",
+        "media/cosmic-guardians/v1/alien.webp",
+        "media/cosmic-guardians/v1/background.webp"
+      ]
+    },
+    "files": {
+      "/game-modules/studio-cosmic-escape/versions/1.0.0-e62dece92c83/manifest.json": "ef8f70eafa59d5e80541ee6eb18bcd49bd0367537192c0995f3ead32f997b501",
+      "/game-modules/studio-cosmic-escape/versions/1.0.0-e62dece92c83/entry-6bde8940232e56d8.js": "6bde8940232e56d82061c738971b421607ecd37785017270a7ea3352d671ffbb",
+      "/game-modules/studio-cosmic-escape/versions/1.0.0-e62dece92c83/media/cosmic-guardians/v1/alien.webp": "188bd8973f446976b01b9805880b958df5761f1dd545e0c5e7a6418f60a19599",
+      "/game-modules/studio-cosmic-escape/versions/1.0.0-e62dece92c83/media/cosmic-guardians/v1/background.webp": "0e185ec675a1bcc7b4fc7bdf43d6bb4c5adc15f3a7141075cf6549471829689c",
+      "/game-modules/studio-cosmic-escape/versions/1.0.0-e62dece92c83/media/cosmic-guardians/v1/symbols-v2.webp": "6e5d58ecb7d3cc3d2e95c57838cd6ef06b5ccecdb35e3a7f26a6e75792e8bce9",
+      "/game-modules/studio-cosmic-escape/versions/1.0.0-e62dece92c83/media/cosmic-rebuild/load-v2/background.webp": "0296ec45a7307fc69b4a0da58ec46805f9ff2bd6a9dc1b85552e53ce563abe37",
+      "/game-modules/studio-cosmic-escape/versions/1.0.0-e62dece92c83/media/studio/space-world.webp": "0a9a41dd898f368f43c562c58523bb622b96c778ad927ce9ed8f3aba17512f3d",
+      "/game-modules/studio-cosmic-escape/versions/1.0.0-e62dece92c83/media/studio/symbols.webp": "63d92524d8634e72a8a6c32cc973e6baf64498a2ce7a944534628b962de7b406",
+      "/game-modules/studio-cosmic-escape/versions/1.0.0-e62dece92c83/style-f9666aaa81dd3872.css": "f9666aaa81dd3872c75bc20e95399ed564f5988a5dd076e5c80f1c6fb8b3fe05"
+    }
+  },
+  "oldCosmic": {
+    "gameId": "studio-cosmic-escape",
+    "version": "1.0.0-14c75f92b7d8",
+    "activeUrl": "/game-modules/studio-cosmic-escape/active.json",
+    "activePointerRawSha256": "1a1a249e0e30eef6ef384545f34ba670f9c582503a186da0926ca289952a2f2b",
+    "manifestUrl": "/game-modules/studio-cosmic-escape/versions/1.0.0-14c75f92b7d8/manifest.json",
+    "manifestRawSha256": "c211bfb2a51dc5b6833e1b84cb38bf63f03213c5f30c8b6d8de50a71f3b97b48",
+    "metadata": {
+      "format": 1,
+      "gameId": "studio-cosmic-escape",
+      "version": "1.0.0-14c75f92b7d8",
+      "apiVersion": 1,
+      "rulesVersion": 2,
+      "progressVersion": 1,
+      "sourceSha256": "14c75f92b7d8b11b096c221870a2469c7cf8493f3115938dd64f8f30e280c0b7",
+      "entry": "entry-355118502712c4de.js",
+      "styles": [
+        "style-8f6bcc1235ada2f3.css"
+      ],
+      "files": {
+        "entry-355118502712c4de.js": "355118502712c4dee2a75b51a8a9fc7c76045c2f22e7109fab7b64b17952a2e6",
+        "media/cosmic-guardians/v1/alien.webp": "188bd8973f446976b01b9805880b958df5761f1dd545e0c5e7a6418f60a19599",
+        "media/cosmic-guardians/v1/background.webp": "0e185ec675a1bcc7b4fc7bdf43d6bb4c5adc15f3a7141075cf6549471829689c",
+        "media/cosmic-guardians/v1/symbols-v2.webp": "6e5d58ecb7d3cc3d2e95c57838cd6ef06b5ccecdb35e3a7f26a6e75792e8bce9",
+        "media/cosmic-rebuild/load-v2/background.webp": "0296ec45a7307fc69b4a0da58ec46805f9ff2bd6a9dc1b85552e53ce563abe37",
+        "media/studio/space-world.webp": "0a9a41dd898f368f43c562c58523bb622b96c778ad927ce9ed8f3aba17512f3d",
+        "media/studio/symbols.webp": "63d92524d8634e72a8a6c32cc973e6baf64498a2ce7a944534628b962de7b406",
+        "style-8f6bcc1235ada2f3.css": "8f6bcc1235ada2f3fe6faec4e2ac9f5130a4353a6166320c08e389c078ac2b3e"
+      },
+      "preload": [
+        "media/cosmic-guardians/v1/symbols-v2.webp",
+        "media/cosmic-guardians/v1/alien.webp",
+        "media/cosmic-guardians/v1/background.webp"
+      ]
+    },
+    "files": {
+      "/game-modules/studio-cosmic-escape/versions/1.0.0-14c75f92b7d8/manifest.json": "c211bfb2a51dc5b6833e1b84cb38bf63f03213c5f30c8b6d8de50a71f3b97b48",
+      "/game-modules/studio-cosmic-escape/versions/1.0.0-14c75f92b7d8/entry-355118502712c4de.js": "355118502712c4dee2a75b51a8a9fc7c76045c2f22e7109fab7b64b17952a2e6",
+      "/game-modules/studio-cosmic-escape/versions/1.0.0-14c75f92b7d8/media/cosmic-guardians/v1/alien.webp": "188bd8973f446976b01b9805880b958df5761f1dd545e0c5e7a6418f60a19599",
+      "/game-modules/studio-cosmic-escape/versions/1.0.0-14c75f92b7d8/media/cosmic-guardians/v1/background.webp": "0e185ec675a1bcc7b4fc7bdf43d6bb4c5adc15f3a7141075cf6549471829689c",
+      "/game-modules/studio-cosmic-escape/versions/1.0.0-14c75f92b7d8/media/cosmic-guardians/v1/symbols-v2.webp": "6e5d58ecb7d3cc3d2e95c57838cd6ef06b5ccecdb35e3a7f26a6e75792e8bce9",
+      "/game-modules/studio-cosmic-escape/versions/1.0.0-14c75f92b7d8/media/cosmic-rebuild/load-v2/background.webp": "0296ec45a7307fc69b4a0da58ec46805f9ff2bd6a9dc1b85552e53ce563abe37",
+      "/game-modules/studio-cosmic-escape/versions/1.0.0-14c75f92b7d8/media/studio/space-world.webp": "0a9a41dd898f368f43c562c58523bb622b96c778ad927ce9ed8f3aba17512f3d",
+      "/game-modules/studio-cosmic-escape/versions/1.0.0-14c75f92b7d8/media/studio/symbols.webp": "63d92524d8634e72a8a6c32cc973e6baf64498a2ce7a944534628b962de7b406",
+      "/game-modules/studio-cosmic-escape/versions/1.0.0-14c75f92b7d8/style-8f6bcc1235ada2f3.css": "8f6bcc1235ada2f3fe6faec4e2ac9f5130a4353a6166320c08e389c078ac2b3e"
+    }
+  },
+  "helperSourceCommit": "ba9e086597273c7808cf908af54a5e39dc3fbcd7",
+  "helperProofSha256": "f06b016e6dbc5c0f8b7f0bc34f3772e7da6360d75f6628476ec4ab8aa18d780e",
+  "helpers": {
+    "deploy.py": "a320b53eb86f627440fc2b80ef7af7e144d638312a6ccb1eb37ec2e3c93c067f",
+    "snapshot.py": "c1231d7d7514b9d0de70d71858ae249e22b671a72b68cae8511e330c8475846f",
+    "runtime-inventory.cjs": "460dabbe443c173c43bc6acb96f543777b3fa5cabdd5ffec5f203ad188894f6c",
+    "quiesce.cjs": "9a688dc59bb36ba3588fcacd29891055eb6a7eaa0f611a0b89449c8b42d73d51",
+    "verify-runtime.cjs": "6574ae8bd1712f7f8be61834a0c5168b6a1884bb9995f1a6a0d91a9a4101442c",
+    "modules.py": "11ef201be0acc15cee8fff593ac7ec21267dcba14552f267e456b08d53ff71c7",
+    "financial_gate.py": "f3974aba494a446e90299b4e4784046e95a67f22cd62a26e66c17dbb7523a506"
+  },
+  "installManifestSha256": "c554c330dc2a24da8818237d8ed3d87f1a17ceae43cd681681463662dc0b8f1c",
+  "beforeSnapshotSha256": "d89bb876c864d4540cc4d76e5e3337ee2d66b24fa77a171e2b98adcb75beb503"
+}

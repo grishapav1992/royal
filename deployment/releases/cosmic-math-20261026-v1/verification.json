@@ -1,0 +1,272 @@
+{
+  "format": 1,
+  "status": "installed and independently verified",
+  "sourceCommit": "d3e4f9c0ef50a4d1ab63f0862696e288125fd740",
+  "baseCommit": "37e5c750f92f9708f92c4c0695e5badcd3bb0366",
+  "helperSourceCommit": "59e510266213709a94d4e3e22b4cfe440f535d08",
+  "releaseManifestSha256": "e3699ee8981c9c251e663089b5dd07f78575206500b5931a6623394116ccfafe",
+  "installManifestSha256": "c554c330dc2a24da8818237d8ed3d87f1a17ceae43cd681681463662dc0b8f1c",
+  "helperProofSha256": "c1078542837abdb121f86586639d2a1b9a9fa11d43e10934fa972f4829cac3f0",
+  "validation": {
+    "publisherPythonTests": {
+      "passed": 171,
+      "failed": 0
+    },
+    "quiescenceNodeTests": {
+      "passed": 39,
+      "failed": 0
+    },
+    "cpuPrimitiveTests": {
+      "passed": 8,
+      "failed": 0
+    },
+    "cosmicOriginAndWalletTests": {
+      "passed": 16,
+      "failed": 0,
+      "storage": "Fresh temporary local PostgreSQL"
+    },
+    "rtpGate": {
+      "verified": 10,
+      "legacyNotQualified": 114
+    },
+    "cosmicQualification": {
+      "path": "docs/game-math/qualifications/cosmic-v3.json",
+      "sha256": "e041e3adf33cde935bcfac5dba3b938c72addac3878e3eaa7b3993d861ef65cd"
+    },
+    "realHost": {
+      "passed": true,
+      "sourceCommit": "d3e4f9c0ef50a4d1ab63f0862696e288125fd740",
+      "preparedIndexSha256": "4488767f37e116ac00d9a335bde3d05c087f3221808487611c8b568f3017a03f",
+      "preparedBackendSha256": "df7bb598c7ba57f86c749f401b3754653b5aaab0802953f96133444c99974359",
+      "moduleVersion": "1.0.0-e62dece92c83",
+      "scenarios": [
+        {
+          "mode": "cosmic-chaos",
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          }
+        },
+        {
+          "mode": "ufo-invasion",
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          }
+        },
+        {
+          "mode": "deep-echo",
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          }
+        },
+        {
+          "mode": "cosmic-chaos",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          }
+        },
+        {
+          "mode": "ufo-invasion",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          }
+        },
+        {
+          "mode": "deep-echo",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          }
+        }
+      ],
+      "originalEvidenceSha256": "8d09ae92937630dd8bae5b8afbd600b58528e0c9f634057e2112b47b4ae7aa26"
+    }
+  },
+  "productionOperationsDuringLocalTests": false,
+  "verifiedAt": "2026-10-26T22:00:44.946055+00:00",
+  "running": {
+    "format": 1,
+    "passed": true,
+    "checkedAt": "2026-10-26T21:57:41.223273+00:00",
+    "scope": "Read-only running container, installed guard source, compiled backend, source and disk reserve checks",
+    "sourceCommit": "d3e4f9c0ef50a4d1ab63f0862696e288125fd740",
+    "image": "sha256:4df18b223c58d49f6a53f362392a1ef21e1a1b267555bf3d1ff5f6795f3e6189",
+    "containerId": "bffb34836e30b2048b6b279d6f9300f18ddc87ac6e0d49692787d8fe3df04e20",
+    "healthy": true,
+    "helperSourceCommit": "59e510266213709a94d4e3e22b4cfe440f535d08",
+    "helperProofSha256": "c1078542837abdb121f86586639d2a1b9a9fa11d43e10934fa972f4829cac3f0",
+    "installManifestSha256": "c554c330dc2a24da8818237d8ed3d87f1a17ceae43cd681681463662dc0b8f1c",
+    "helperFilesVerified": {
+      "deploy.py": "ca1cbd3270eb6f2619a304e868476fefebc4f8e4773a205bebfecc9225a1d58b",
+      "snapshot.py": "c1231d7d7514b9d0de70d71858ae249e22b671a72b68cae8511e330c8475846f",
+      "runtime-inventory.cjs": "460dabbe443c173c43bc6acb96f543777b3fa5cabdd5ffec5f203ad188894f6c",
+      "quiesce.cjs": "9a688dc59bb36ba3588fcacd29891055eb6a7eaa0f611a0b89449c8b42d73d51",
+      "verify-runtime.cjs": "6574ae8bd1712f7f8be61834a0c5168b6a1884bb9995f1a6a0d91a9a4101442c",
+      "modules.py": "195f1857660b7f43a2d0070a93b52b7ebe5ef0fc06270a20c78a6dd3a2932eaf",
+      "financial_gate.py": "f3974aba494a446e90299b4e4784046e95a67f22cd62a26e66c17dbb7523a506",
+      "cpu-priority-release-v3.py": "833d4207807dc317059bc3031657d9db49df8edd563e7cb4205ecb4adfb6ead8",
+      "publication-priority.py": "374b8482f87ba0593224f3a55753b0a995d26e8d635ef53ca6ff009997d01f3a",
+      "run-publication.py": "0844b4c1d198c78f03d3ad423e079c6906351c7d4231e96ff8ddb824997cd176"
+    },
+    "guardSha256": "cc9e2528bae03e8965c154f82aa271b3c9976bb3d817130ba51dedf6e8eb67ee",
+    "backendSha256": "df7bb598c7ba57f86c749f401b3754653b5aaab0802953f96133444c99974359",
+    "freeBytes": 5929861120,
+    "minimumFreeBytes": 5368709120,
+    "containerStableDuringCheck": true,
+    "mortalActivePointerPreserved": true,
+    "hostContractPreserved": true,
+    "publicationExitedZero": true,
+    "cpuWeightsRestored": {
+      "docker.service": 100,
+      "containerd.service": 100,
+      "docker-bffb34836e30b2048b6b279d6f9300f18ddc87ac6e0d49692787d8fe3df04e20.scope": 532
+    },
+    "playerOperationsPerformed": false
+  },
+  "publication": {
+    "at": 1793051853.9528065,
+    "releaseRoot": "/opt/royal-releases/cosmic-math-20261026-v1",
+    "launch.json": {
+      "startedAt": 1793049921.867073,
+      "supervisorPid": 3659332,
+      "sourceCommit": "d3e4f9c0ef50a4d1ab63f0862696e288125fd740",
+      "helperCommit": "59e510266213709a94d4e3e22b4cfe440f535d08",
+      "builder": "DOCKER_BUILDKIT=0",
+      "sameDockerfileAndPayloadVerified": true,
+      "buildKitCancellationAcknowledged": true,
+      "previousAttempt": "/opt/royal-releases/cosmic-math-20261026-v1/attempt-buildkit-1",
+      "temporaryContextRemovedBytes": 4781677,
+      "freeBeforeContextRemoval": 5950353408,
+      "freeAfterContextRemoval": 5950386176
+    },
+    "release-exit.json": {
+      "code": 0,
+      "finishedAt": 1793051784.6113718,
+      "priorityLeasePids": [
+        3659345,
+        3659353,
+        3694844
+      ],
+      "priorityReleasePending": [],
+      "publisherPid": 3659338,
+      "publisherStillRunning": false
+    },
+    "published.json": {
+      "published": true,
+      "preparedImage": "sha256:4df18b223c58d49f6a53f362392a1ef21e1a1b267555bf3d1ff5f6795f3e6189",
+      "runningImage": "sha256:4df18b223c58d49f6a53f362392a1ef21e1a1b267555bf3d1ff5f6795f3e6189",
+      "containerRestarted": true,
+      "sourceCommit": "d3e4f9c0ef50a4d1ab63f0862696e288125fd740",
+      "changedSources": 19,
+      "helperSourceCommit": "59e510266213709a94d4e3e22b4cfe440f535d08",
+      "clientDeltaFiles": 2,
+      "configurationsAndMountsPreserved": true,
+      "gameDataPreserved": true,
+      "backendDeltaFiles": 1,
+      "otherBackendProgramsAndModulesPreserved": true,
+      "oldAssetsPreserved": true,
+      "otherPersistentServicesPreserved": 13
+    },
+    "modules-published.json": {
+      "published": true,
+      "sourceCommit": "d3e4f9c0ef50a4d1ab63f0862696e288125fd740",
+      "packages": [
+        {
+          "verified": true,
+          "gameId": "studio-cosmic-escape",
+          "version": "1.0.0-e62dece92c83",
+          "bytes": 3833544,
+          "files": 8,
+          "beforeSha256": "1a1a249e0e30eef6ef384545f34ba670f9c582503a186da0926ca289952a2f2b",
+          "hostProgramTouched": false,
+          "databaseTouched": false,
+          "restartRequired": false,
+          "published": true,
+          "operation": "install",
+          "activeSha256": "a29c675f42e920c18a587d48310b0be3b1bbcf9a612c81c64cfb92eab4344a91",
+          "history": "/opt/royal-game-modules-state/history/20261026T215311-3700cc29e8da48a2ae759c95cfc99f72.json"
+        }
+      ],
+      "hostContractUnchanged": true,
+      "oldModuleBytesPreserved": true,
+      "hostProgramTouched": false,
+      "databaseTouched": false
+    },
+    "build-result.json": {
+      "image": "sha256:4df18b223c58d49f6a53f362392a1ef21e1a1b267555bf3d1ff5f6795f3e6189",
+      "sourceCommit": "d3e4f9c0ef50a4d1ab63f0862696e288125fd740",
+      "backup": "/opt/royal-backups/cosmic-math-20261026-v1",
+      "sourceBackupSha256": "f9e90039e767ee0b9debc95929ab0a846d491f6da09c81496a9978a01eb0fd72",
+      "gameWalletBackupSha256": "dfce5f5c7a8d40a3ee51ef5ce01be74a6988b39880c6c4bc377fa273d342fbf0",
+      "runtimeProbe": {
+        "passed": true,
+        "node": "v22.23.3",
+        "delayedGzip": 200,
+        "compressedApplicationBody": 415
+      },
+      "retainedBackup": true,
+      "availableBytes": 5943091200
+    },
+    "buildkit-cancellation.json": {
+      "at": 1793049809.0726244,
+      "buildClientPid": 3647911,
+      "publisherPid": 3635665,
+      "startTicks": "203600964",
+      "reason": "BuildKit did not progress past FROM before COPY, matching the prior recorded server failure",
+      "applicationUnchanged": true,
+      "signal": "SIGINT"
+    },
+    "backupFiles": {
+      "game-wallet.dump": 25851965,
+      "joint-module-host.json": 12586,
+      "joint-module-backup.json": 636,
+      "source.tgz": 8159,
+      "index.html": 799,
+      "joint-studio-cosmic-escape-active.json": 228
+    }
+  },
+  "public": {
+    "file": "public-verification.json",
+    "passed": true,
+    "checks": 22,
+    "extraFile": "host-and-mortal-public.json",
+    "extraChecks": 2,
+    "playerOperationsPerformed": false
+  },
+  "serverCleanup": {
+    "at": 1793051950.9188898,
+    "removed": [
+      {
+        "path": "/opt/royal-releases/cosmic-math-20261026-v1/runtime-context",
+        "logicalBytes": 4781677,
+        "sharedHardLinks": true
+      },
+      {
+        "path": "/opt/royal-releases/cosmic-math-20261026-v1/__pycache__",
+        "logicalBytes": 29853
+      }
+    ],
+    "freeBeforeBytes": 5929627648,
+    "freeAfterBytes": 5929697280,
+    "minimumFreeBytes": 5368709120,
+    "measurementNote": "Observed free space on a shared active filesystem. Shared hard links mean logical removed bytes do not equal reclaimed storage.",
+    "applicationSourceCommit": "d3e4f9c0ef50a4d1ab63f0862696e288125fd740",
+    "helperSourceCommit": "59e510266213709a94d4e3e22b4cfe440f535d08",
+    "retained": [
+      "Current release payload and audit records",
+      "Current image and previous Mortal rollback image",
+      "Source and financial backups",
+      "Persistent player data and volumes"
+    ],
+    "productionSourceOrDatabaseTouched": false
+  },
+  "localCleanup": {
+    "status": "Task-owned artifacts will be removed after the deployment record is verified in GitHub",
+    "taskRoot": "artifacts/work/cosmic-origin-release",
+    "sharedDependencies": "Primary checkout node_modules is shared through a symlink and will be preserved"
+  }
+}
