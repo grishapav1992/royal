@@ -1,14 +1,14 @@
 import {test,expect,request as apiRequest,type Page,type Route} from '@playwright/test';
 import {Client} from '@colyseus/sdk';
 import {mkdir} from 'node:fs/promises';
-const entry='/tests/fixtures/temple-preview.html',review='artifacts/work/flooded-temple-stage3/browser';
+const entry='/tests/fixtures/temple-preview.html',review='artifacts/work/flooded-temple-stage4/browser';
 const game=(p:Page)=>p.frameLocator('.temple-frame');
 const state=(p:Page)=>p.evaluate(()=>(window as any).templePreview.state());
 const session=(p:Page)=>p.evaluate(()=>(window as any).templePreview.client.sessions.find((s:any)=>s.gameId==='studio-flooded-temple'));
 const balance=(p:Page)=>p.evaluate(()=>(window as any).templePreview.wallet.wallet.balance);
 const valid=(p:Page)=>p.evaluate(()=>{const h=(window as any).templePreview;return h.validate(h.client.sessions.find((s:any)=>s.gameId==='studio-flooded-temple'));});
 async function idle(p:Page){await expect.poll(async()=>!!(await state(p))?.busy).toBe(false);}
-async function ready(p:Page,lang='en'){await p.goto(entry+'?lang='+lang);await expect(game(p).locator('.ft')).toBeVisible();await idle(p);await expect.poll(()=>game(p).locator('img').evaluateAll(images=>images.every(i=>(i as HTMLImageElement).complete&&(i as HTMLImageElement).naturalWidth>0))).toBe(true);}
+async function ready(p:Page,lang='en'){await p.emulateMedia({reducedMotion:'reduce'});await p.goto(entry+'?lang='+lang);await expect(game(p).locator('.ft')).toBeVisible();await idle(p);await expect.poll(()=>game(p).locator('img').evaluateAll(images=>images.every(i=>(i as HTMLImageElement).complete&&(i as HTMLImageElement).naturalWidth>0))).toBe(true);}
 async function start(p:Page){await game(p).locator('[data-ft=primary]').click();await expect.poll(async()=>(await state(p)).revision).toBe(1);await idle(p);expect(await valid(p)).toBe(true);}
 async function move(p:Page,to:number,rope=false){const before=(await state(p)).revision;await game(p).locator(`[data-room="${to}"]`).click();if(rope){await expect(game(p).locator('[data-ft=primary]')).toBeDisabled();await game(p).locator('[data-ft=rope]').click();}await game(p).locator('[data-ft=primary]').click();await expect.poll(async()=>(await state(p)).revision).toBe(before+1);await idle(p);expect(await valid(p)).toBe(true);}
 
@@ -74,10 +74,10 @@ test('real Royal host loads Temple with connected chat, keeps the seat and resto
   const peer=await new Client('http://127.0.0.1:'+(process.env.TEMPLE_API_PORT||'2626'),{headers:{Cookie:auth.headers()['set-cookie'].split(';')[0]},fetchFn:async(url,options)=>{const r=await api.fetch(String(url),{method:options?.method,headers:Object.fromEntries(new Headers(options?.headers)),data:options?.body as string});return new globalThis.Response(await r.body(),{status:r.status(),headers:r.headers()});}}).create('lobby');
   for(const type of['chat','activities','piano-note','notice','pvp'])peer.onMessage(type,()=>{});
   try{
-    await ready(page);expect((await page.request.post('/api/auth/character',{data:{skin:0}})).ok()).toBe(true);await page.goto('/?lang=en&room='+peer.roomId);
+    await ready(page);expect((await page.request.post('/api/auth/character',{data:{skin:0}})).ok()).toBe(true);await page.emulateMedia({reducedMotion:'no-preference'});await page.goto('/?lang=en&room='+peer.roomId);
     await expect(page.locator('#join-dialog')).toBeHidden({timeout:30000});await page.waitForFunction(()=>(window as any).royalDemo?.getState().online===true);
     await page.locator('#games-tab').click();await page.locator('[data-cabinet=studio-dracona]').click();await page.locator('[data-platform-game=studio-flooded-temple]').click();
-    await expect(game(page).locator('[data-ft=primary]')).toBeEnabled({timeout:45000});await game(page).locator('[data-ft=primary]').click();await expect(game(page).locator('[data-ft=rope]')).toBeVisible();
+    await expect(game(page).locator('[data-ft=primary]')).toBeEnabled({timeout:45000});await game(page).locator('[data-ft=primary]').click();await expect(game(page).locator('[data-ft=rope]')).toBeVisible();await expect(game(page).locator('.ft')).toHaveAttribute('data-event','idle');
     for(const [width,height]of[[1440,1000],[390,844]]){
       await page.setViewportSize({width,height});await expect(page.locator('#mini-dialog #chat-input')).toBeVisible();await expect(page.locator('#mini-dialog #chat-input')).toBeEnabled();
       const geometry=await page.locator('#mini-dialog').evaluate(root=>({width:root.clientWidth,scroll:root.scrollWidth}));expect(geometry.scroll).toBeLessThanOrEqual(geometry.width+1);

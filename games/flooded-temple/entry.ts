@@ -1,6 +1,7 @@
 import {readGameHost,type GameModuleV1} from '../../src/modules/GameHostContract';
 import {TempleUI} from './TempleUI';
 import {styles} from './styles';
+import {feedbackStyles} from './feedbackStyles';
 import './shell.css';
 export const gameId='studio-flooded-temple';
 export const apiVersion=1;
@@ -11,16 +12,16 @@ export const mount:GameModuleV1['mount']=(host,context)=>{
   context?.setTitle?.(title);
   const frame=host.ownerDocument.createElement('iframe');frame.title=title;frame.className='temple-frame';
   const stage=host.closest<HTMLElement>('.mini-stage')??host;
-  let disposed=false,game:TempleUI|undefined;
+  let disposed=false,paused=false,game:TempleUI|undefined;
   const fit=()=>{if(!disposed)frame.style.height=Math.max(180,stage.clientHeight)+'px';};
   const observer=new ResizeObserver(fit);observer.observe(stage);fit();
   frame.addEventListener('load',()=>{
     if(disposed||!frame.contentDocument)return;
     game?.destroy();
     const doc=frame.contentDocument;doc.documentElement.lang=services.i18n.language;doc.title=title;
-    const style=doc.createElement('style');style.textContent=styles;doc.head.replaceChildren(style);
-    const app=doc.createElement('main');doc.body.replaceChildren(app);game=new TempleUI(app,services);
+    const style=doc.createElement('style');style.textContent=styles+feedbackStyles;doc.head.replaceChildren(style);
+    const app=doc.createElement('main');doc.body.replaceChildren(app);game=new TempleUI(app,services);if(paused)game.pause();
   });
   frame.src='about:blank';host.replaceChildren(frame);
-  return {getState:()=>game?.getState()??{gameId,loading:true},destroy(){disposed=true;observer.disconnect();game?.destroy();frame.remove();}};
+  return {getState:()=>game?.getState()??{gameId,loading:true},pause(){paused=true;game?.pause();},resume(){paused=false;game?.resume();},destroy(){disposed=true;observer.disconnect();game?.destroy();frame.remove();}};
 };

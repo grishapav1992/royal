@@ -1,0 +1,90 @@
+{
+  "sampleRate": 24000,
+  "format": "stereo PCM16",
+  "cues": {
+    "scrape": {
+      "file": "scrape.wav",
+      "duration": 0.32,
+      "accent": 0.018,
+      "peak": 0.14000000059604645,
+      "rms": 0.02723809857670049
+    },
+    "stone": {
+      "file": "stone.wav",
+      "duration": 0.34,
+      "accent": 0.012,
+      "peak": 0.30000001192092896,
+      "rms": 0.04995398650311322
+    },
+    "step": {
+      "file": "step.wav",
+      "duration": 0.22,
+      "accent": 0.009,
+      "peak": 0.14000000059604645,
+      "rms": 0.020905460456847658
+    },
+    "chest": {
+      "file": "chest.wav",
+      "duration": 0.58,
+      "accent": 0.012,
+      "peak": 0.23999999463558197,
+      "rms": 0.03286559459270921
+    },
+    "lever": {
+      "file": "lever.wav",
+      "duration": 0.64,
+      "accent": 0.012,
+      "peak": 0.2199999988079071,
+      "rms": 0.03612947224854031
+    },
+    "rope": {
+      "file": "rope.wav",
+      "duration": 0.65,
+      "accent": 0.16,
+      "peak": 0.20000000298023224,
+      "rms": 0.029960923979147285
+    },
+    "relic": {
+      "file": "relic.wav",
+      "duration": 1.35,
+      "accent": 0.018,
+      "peak": 0.25999999046325684,
+      "rms": 0.053234988379674
+    },
+    "neutral": {
+      "file": "neutral.wav",
+      "duration": 0.32,
+      "accent": 0.012,
+      "peak": 0.07000000029802322,
+      "rms": 0.015169905633703686
+    },
+    "return": {
+      "file": "return.wav",
+      "duration": 0.6,
+      "accent": 0.012,
+      "peak": 0.14000000059604645,
+      "rms": 0.03496407672706139
+    },
+    "win": {
+      "file": "win.wav",
+      "duration": 0.95,
+      "accent": 0.012,
+      "peak": 0.27000001072883606,
+      "rms": 0.05354807143453253
+    },
+    "big": {
+      "file": "big.wav",
+      "duration": 1.8,
+      "accent": 0.012,
+      "peak": 0.30000001192092896,
+      "rms": 0.060082698446528617
+    },
+    "ambience": {
+      "file": "ambience.wav",
+      "duration": 8,
+      "accent": 0,
+      "peak": 0.03999999910593033,
+      "rms": 0.007905749308561206
+    }
+  }
+}
