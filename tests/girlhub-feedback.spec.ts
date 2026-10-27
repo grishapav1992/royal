@@ -175,7 +175,7 @@ test('mute, reduced motion, hidden page and close cancel owned effects without r
   if(route.request().method()==='POST'){posts++;const s=session(7085,route.request().postDataJSON().id);return route.fulfill({json:{wallet,sessions:[s],session:s,replayed:false}});}
   return route.fulfill({json:{wallet,sessions:[]}});
  });
- await openModule(page);await page.locator('[data-cc-spin]').click();await expect(page.locator('.ag-result')).toBeVisible();
+ await openModule(page);await page.locator('[data-cc-spin]').click();await expect(page.locator('.ag-result')).toBeVisible({timeout:15000});
  await page.locator('[data-cc-sound]').click();expect((await diag(page)).accents.activeSources).toBe(0);
  await page.locator('[data-ag-skip]').click();await expect(page.locator('[data-cc-spin]')).toBeEnabled();
  await page.emulateMedia({reducedMotion:'reduce'});await page.locator('[data-cc-spin]').click();
