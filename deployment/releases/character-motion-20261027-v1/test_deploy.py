@@ -20,7 +20,7 @@ class ChatReleaseTests(unittest.TestCase):
         root = Path(self.temporary.name).resolve()
         shutil.copy2(HERE / 'deploy.py', root / 'deploy.py')
         for name in ['runtime-inventory.cjs','quiesce.cjs','financial_gate.py']: shutil.copy2(HERE/name, root/name)
-        self.original = {'src/game/generatedSkinArt.ts': b'old UI', 'server/LobbyRoom.ts': b'old room',
+        self.original = {'src/game/RoomScene.ts': b'old UI', 'server/LobbyRoom.ts': b'old room',
                          'server/LobbyRoom.ts.orig': b'historical source'}
         old_image = 'sha256:' + 'a' * 64
         before = {
@@ -45,7 +45,7 @@ class ChatReleaseTests(unittest.TestCase):
         }
         before['preparedProgram'] = copy.deepcopy(before['program'])
         manifest = {'release': 'character-motion-20261027-v1', 'sourceCommit': 'c' * 40, 'before': before,
-                    'changed': {'src/game/generatedSkinArt.ts': sha(b'new UI'), 'src/game/characterAnimation.ts': sha(b'new queue')},
+                    'changed': {'src/game/RoomScene.ts': sha(b'new UI'), 'src/game/characterAnimation.ts': sha(b'new queue')},
                     'delta': {'index.html': sha(b'new index'), 'assets/index-new.js': sha(b'new client')},
                     'serverDelta': {},
                     'helperSha256': 'd' * 64, 'snapshotSha256': 'd' * 64,
@@ -113,6 +113,19 @@ class ChatReleaseTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, 'Only the client index'):
             self.helper.payload()
 
+    def test_payload_accepts_all_five_reviewed_second_stage_paths(self):
+        self.enable_payload_fixture()
+        self.helper.CHANGES.update({name: sha(b'reviewed stage two source') for name in [
+            'src/game/RoomScene.ts', 'src/game/characterAnimation.ts', 'src/ui/SkinFittingRoom.ts',
+            'src/ui/SkinStudioUI.ts', 'docs/skin-studio.md']})
+        self.helper.payload()
+
+    def test_payload_refuses_changes_to_the_existing_whole_pose_renderer(self):
+        self.enable_payload_fixture()
+        self.helper.CHANGES['src/game/generatedSkinArt.ts'] = sha(b'unreviewed renderer')
+        with self.assertRaisesRegex(RuntimeError, 'Unreviewed animation source'):
+            self.helper.payload()
+
     def test_payload_refuses_historical_source_changes(self):
         self.enable_payload_fixture()
         self.helper.CHANGES['server/LobbyRoom.ts.orig'] = sha(b'changed history')
@@ -123,7 +136,7 @@ class ChatReleaseTests(unittest.TestCase):
         helper = self.helper
         helper.recovery_guard(copy.deepcopy(helper.OLD), self.built)
         partial = self.published()
-        partial['source']['src/game/generatedSkinArt.ts'] = helper.BASE['src/game/generatedSkinArt.ts']
+        partial['source']['src/game/RoomScene.ts'] = helper.BASE['src/game/RoomScene.ts']
         helper.recovery_guard(partial, self.built)
 
     def test_missing_failed_game_container_can_recover(self):
@@ -200,7 +213,7 @@ class ChatReleaseTests(unittest.TestCase):
         helper = self.helper
         self.backups()
         current = self.published()
-        changed_bytes = {'src/game/generatedSkinArt.ts': b'new UI', 'src/game/characterAnimation.ts': b'new queue'}
+        changed_bytes = {'src/game/RoomScene.ts': b'new UI', 'src/game/characterAnimation.ts': b'new queue'}
         for name, value in changed_bytes.items():
             target = helper.LIVE / name
             target.parent.mkdir(parents=True, exist_ok=True)
@@ -220,7 +233,7 @@ class ChatReleaseTests(unittest.TestCase):
         helper.healthy = lambda: actions.append(['health-read-only'])
         result = helper.rollback()
         self.assertFalse(result['databaseTouched'])
-        self.assertEqual((helper.LIVE / 'src/game/generatedSkinArt.ts').read_bytes(), self.original['src/game/generatedSkinArt.ts'])
+        self.assertEqual((helper.LIVE / 'src/game/RoomScene.ts').read_bytes(), self.original['src/game/RoomScene.ts'])
         self.assertFalse((helper.LIVE / 'src/game/characterAnimation.ts').exists())
         self.assertEqual((helper.LIVE / 'server/LobbyRoom.ts.orig').read_bytes(), self.original['server/LobbyRoom.ts.orig'])
         self.assertEqual((helper.LIVE / 'dist/index.html').read_bytes(), b'old index')
@@ -263,7 +276,7 @@ class ChatReleaseTests(unittest.TestCase):
         helper.publication_capacity=lambda:None
         helper.image=lambda ref:self.built['image']
         (helper.ROOT/'build-result.json').write_text(json.dumps(self.built))
-        for name, value in {'src/game/generatedSkinArt.ts':b'new UI','src/game/characterAnimation.ts':b'new queue'}.items():
+        for name, value in {'src/game/RoomScene.ts':b'new UI','src/game/characterAnimation.ts':b'new queue'}.items():
             p=helper.ROOT/'source'/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(value)
         for name, value in {'index.html':b'new index','assets/index-new.js':b'new client'}.items():
             p=helper.ROOT/'dist-delta'/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(value)
