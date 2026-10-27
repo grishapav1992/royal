@@ -1,0 +1,4 @@
+services:
+  game:
+    env_file:
+      - ./.env.nowpayments-sandbox
