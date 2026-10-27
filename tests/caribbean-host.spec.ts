@@ -31,7 +31,15 @@ async function open(page:Page){
  if(await page.locator('#room-overview').getAttribute('aria-pressed')!=='true')await page.locator('#room-overview').click();
  await expect.poll(async()=>page.evaluate(()=>Math.abs((window as any).royalDemo.getState().view.width-document.getElementById('game')!.clientWidth))).toBeLessThanOrEqual(1);
  await page.locator('#games-tab').click();await page.locator('[data-cabinet="studio-cosmic-escape"]').click();
- await expect(page.locator('#mini-dialog')).toBeVisible({timeout:25000});
+ // Hall interactions can briefly own movement; reissue the free approach through its real control.
+ try{await expect.poll(async()=>{
+  if(await page.locator('#mini-dialog').isVisible())return true;
+  const cabinet=page.locator('[data-cabinet="studio-cosmic-escape"]');
+  try{if(!await cabinet.isVisible())await page.locator('#games-tab').click({timeout:500});if(!await page.locator('#mini-dialog').isVisible())await cabinet.click({timeout:500});}catch(error){if(!(error instanceof Error&&error.name==='TimeoutError'))throw error;}
+  return page.locator('#mini-dialog').isVisible();
+ },{timeout:30000,intervals:[1000,3000]}).toBe(true);}catch(error){
+  const {writeFile}=await import('node:fs/promises');await writeFile(out+'/hall-failure.json',JSON.stringify(await page.evaluate(()=>({state:(window as any).royalDemo.getState(),dialogs:[...document.querySelectorAll('dialog')].map(d=>({id:d.id,open:d.open,hidden:d.hidden,display:getComputedStyle(d).display,html:d.outerHTML.slice(0,200)}))})),null,2));throw error;
+ }
  await page.locator(`[data-platform-game="${game}"]`).click();
  await expect(page.locator('#mini-game')).toHaveAttribute('data-game-module-id',game,{timeout:25000});
  await expect(page.locator('.ct-root')).toBeVisible();
@@ -167,7 +175,10 @@ test('extreme stakes, rapid double click, mobile purchase and English recovery k
  if(started.view.caribbean.phase==='choice'){await action(page,'[data-ct-action=choose-flagship]');await finish(page);}
  expect((await wallet(page)).entries.filter((e:any)=>e.kind==='bet').length-before.entries.filter((e:any)=>e.kind==='bet').length).toBe(1);
  await page.setViewportSize({width:390,height:844});await page.locator('[data-ct-action=buy]').click();const bought=await action(page,'[data-ct-modal=buy-flagship]');expect(bought.view.caribbean.settings.lines).toBe(20);expect(bought.stakeUnits).toBe('1000');
- await page.goto(roomPath+'&lang=en');await expect.poll(async()=>(await state(page)).online).toBe(true);await open(page);await expect(page.locator('.ct-heading h2')).toHaveText('Caribbean Treasures');
+ await page.goto(roomPath+'&lang=en');
+ // A full navigation can reach the hall before its previous presence lease expires.
+ await expect.poll(async()=>{if((await state(page)).online)return true;const retry=page.locator('#retry-entry');if(await retry.isVisible()&&await retry.isEnabled())await retry.click();return false;},{timeout:35000,intervals:[1000,5000]}).toBe(true);
+ await open(page);await expect(page.locator('.ct-heading h2')).toHaveText('Caribbean Treasures');
  expect((await session(page)).id).toBe(bought.id);await finish(page);await expect(page.locator('.ct-status')).toContainText(/round|Round/);
 });
 
