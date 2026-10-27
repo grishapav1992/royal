@@ -1,0 +1,817 @@
+{
+  "release": "skin-walk-seams-20261027-v1",
+  "sourceCommit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+  "baseCommit": "d3e4f9c0ef50a4d1ab63f0862696e288125fd740",
+  "tests": {
+    "browser": 15,
+    "installer": 25,
+    "financialLease": 27,
+    "quiescence": 39,
+    "failed": 0,
+    "applicationBuild": true,
+    "rtpGate": true,
+    "typecheck": true
+  },
+  "regressionBefore": "Hand movement relative to the head was 0; the regression failed before the fix",
+  "realSkins": {
+    "sourceCommit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+    "builtClient": true,
+    "builtBackendSha256": "df7bb598c7ba57f86c749f401b3754653b5aaab0802953f96133444c99974359",
+    "realLocalTransport": true,
+    "newImageGenerations": 0,
+    "results": [
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "artwork": "order-1-variant-1.png",
+        "walks": [
+          {
+            "direction": "up",
+            "frames": [
+              "up-0",
+              "up-1",
+              "up-2",
+              "up-3"
+            ],
+            "animations": [
+              "avatar-generated-37613123-5b82-44ab-a406-2235c00490d0-walk-up"
+            ],
+            "facings": [
+              "up"
+            ],
+            "textures": [
+              "avatar-generated-37613123-5b82-44ab-a406-2235c00490d0"
+            ]
+          },
+          {
+            "direction": "down",
+            "frames": [
+              "down-0",
+              "down-1",
+              "down-2",
+              "down-3",
+              "down-4",
+              "down-5"
+            ],
+            "animations": [
+              "avatar-generated-37613123-5b82-44ab-a406-2235c00490d0-walk-down"
+            ],
+            "facings": [
+              "down"
+            ],
+            "textures": [
+              "avatar-generated-37613123-5b82-44ab-a406-2235c00490d0"
+            ]
+          },
+          {
+            "direction": "left",
+            "frames": [
+              "left-1",
+              "left-2",
+              "left-3",
+              "left-4",
+              "left-5",
+              "left-0"
+            ],
+            "animations": [
+              "avatar-generated-37613123-5b82-44ab-a406-2235c00490d0-walk-left"
+            ],
+            "facings": [
+              "left"
+            ],
+            "textures": [
+              "avatar-generated-37613123-5b82-44ab-a406-2235c00490d0"
+            ]
+          },
+          {
+            "direction": "right",
+            "frames": [
+              "right-0",
+              "right-1",
+              "right-2",
+              "right-3",
+              "right-4",
+              "right-5"
+            ],
+            "animations": [
+              "avatar-generated-37613123-5b82-44ab-a406-2235c00490d0-walk-right"
+            ],
+            "facings": [
+              "right"
+            ],
+            "textures": [
+              "avatar-generated-37613123-5b82-44ab-a406-2235c00490d0"
+            ]
+          }
+        ],
+        "fittingMoved": true,
+        "sitting": true,
+        "chatConnected": true
+      },
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "artwork": "order-2-variant-1.png",
+        "walks": [
+          {
+            "direction": "up",
+            "frames": [
+              "up-4",
+              "up-5",
+              "up-0",
+              "up-1",
+              "up-2"
+            ],
+            "animations": [
+              "avatar-generated-ae79ae27-348a-49a8-8623-aa7c67bcf440-walk-up"
+            ],
+            "facings": [
+              "up"
+            ],
+            "textures": [
+              "avatar-generated-ae79ae27-348a-49a8-8623-aa7c67bcf440"
+            ]
+          },
+          {
+            "direction": "down",
+            "frames": [
+              "down-0",
+              "down-1",
+              "down-2",
+              "down-3",
+              "down-4",
+              "down-5"
+            ],
+            "animations": [
+              "avatar-generated-ae79ae27-348a-49a8-8623-aa7c67bcf440-walk-down"
+            ],
+            "facings": [
+              "down"
+            ],
+            "textures": [
+              "avatar-generated-ae79ae27-348a-49a8-8623-aa7c67bcf440"
+            ]
+          },
+          {
+            "direction": "left",
+            "frames": [
+              "left-1",
+              "left-2",
+              "left-3",
+              "left-4",
+              "left-5",
+              "left-0"
+            ],
+            "animations": [
+              "avatar-generated-ae79ae27-348a-49a8-8623-aa7c67bcf440-walk-left"
+            ],
+            "facings": [
+              "left"
+            ],
+            "textures": [
+              "avatar-generated-ae79ae27-348a-49a8-8623-aa7c67bcf440"
+            ]
+          },
+          {
+            "direction": "right",
+            "frames": [
+              "right-1",
+              "right-2",
+              "right-3",
+              "right-4",
+              "right-5",
+              "right-0"
+            ],
+            "animations": [
+              "avatar-generated-ae79ae27-348a-49a8-8623-aa7c67bcf440-walk-right"
+            ],
+            "facings": [
+              "right"
+            ],
+            "textures": [
+              "avatar-generated-ae79ae27-348a-49a8-8623-aa7c67bcf440"
+            ]
+          }
+        ],
+        "fittingMoved": true,
+        "sitting": true,
+        "chatConnected": true
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "artwork": "order-1-variant-1.png",
+        "walks": [
+          {
+            "direction": "up",
+            "frames": [
+              "up-4",
+              "up-5",
+              "up-0",
+              "up-1",
+              "up-2"
+            ],
+            "animations": [
+              "avatar-generated-37613123-5b82-44ab-a406-2235c00490d0-walk-up"
+            ],
+            "facings": [
+              "up"
+            ],
+            "textures": [
+              "avatar-generated-37613123-5b82-44ab-a406-2235c00490d0"
+            ]
+          },
+          {
+            "direction": "down",
+            "frames": [
+              "down-0",
+              "down-1",
+              "down-2",
+              "down-3",
+              "down-4",
+              "down-5"
+            ],
+            "animations": [
+              "avatar-generated-37613123-5b82-44ab-a406-2235c00490d0-walk-down"
+            ],
+            "facings": [
+              "down"
+            ],
+            "textures": [
+              "avatar-generated-37613123-5b82-44ab-a406-2235c00490d0"
+            ]
+          },
+          {
+            "direction": "left",
+            "frames": [
+              "left-1",
+              "left-2",
+              "left-3",
+              "left-4",
+              "left-5",
+              "left-0"
+            ],
+            "animations": [
+              "avatar-generated-37613123-5b82-44ab-a406-2235c00490d0-walk-left"
+            ],
+            "facings": [
+              "left"
+            ],
+            "textures": [
+              "avatar-generated-37613123-5b82-44ab-a406-2235c00490d0"
+            ]
+          },
+          {
+            "direction": "right",
+            "frames": [
+              "right-1",
+              "right-2",
+              "right-3",
+              "right-4",
+              "right-5",
+              "right-0"
+            ],
+            "animations": [
+              "avatar-generated-37613123-5b82-44ab-a406-2235c00490d0-walk-right"
+            ],
+            "facings": [
+              "right"
+            ],
+            "textures": [
+              "avatar-generated-37613123-5b82-44ab-a406-2235c00490d0"
+            ]
+          }
+        ],
+        "fittingMoved": true,
+        "sitting": true,
+        "chatConnected": true
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "artwork": "order-2-variant-1.png",
+        "walks": [
+          {
+            "direction": "up",
+            "frames": [
+              "up-4",
+              "up-5",
+              "up-0",
+              "up-1",
+              "up-2"
+            ],
+            "animations": [
+              "avatar-generated-ae79ae27-348a-49a8-8623-aa7c67bcf440-walk-up"
+            ],
+            "facings": [
+              "up"
+            ],
+            "textures": [
+              "avatar-generated-ae79ae27-348a-49a8-8623-aa7c67bcf440"
+            ]
+          },
+          {
+            "direction": "down",
+            "frames": [
+              "down-1",
+              "down-2",
+              "down-3",
+              "down-4",
+              "down-5",
+              "down-0"
+            ],
+            "animations": [
+              "avatar-generated-ae79ae27-348a-49a8-8623-aa7c67bcf440-walk-down"
+            ],
+            "facings": [
+              "down"
+            ],
+            "textures": [
+              "avatar-generated-ae79ae27-348a-49a8-8623-aa7c67bcf440"
+            ]
+          },
+          {
+            "direction": "left",
+            "frames": [
+              "left-1",
+              "left-2",
+              "left-3",
+              "left-4",
+              "left-5",
+              "left-0"
+            ],
+            "animations": [
+              "avatar-generated-ae79ae27-348a-49a8-8623-aa7c67bcf440-walk-left"
+            ],
+            "facings": [
+              "left"
+            ],
+            "textures": [
+              "avatar-generated-ae79ae27-348a-49a8-8623-aa7c67bcf440"
+            ]
+          },
+          {
+            "direction": "right",
+            "frames": [
+              "right-1",
+              "right-2",
+              "right-3",
+              "right-4",
+              "right-5",
+              "right-0"
+            ],
+            "animations": [
+              "avatar-generated-ae79ae27-348a-49a8-8623-aa7c67bcf440-walk-right"
+            ],
+            "facings": [
+              "right"
+            ],
+            "textures": [
+              "avatar-generated-ae79ae27-348a-49a8-8623-aa7c67bcf440"
+            ]
+          }
+        ],
+        "fittingMoved": true,
+        "sitting": true,
+        "chatConnected": true
+      }
+    ],
+    "errors": [],
+    "nativeCharacter": {
+      "direction": "right",
+      "frames": [
+        "right-5",
+        "right-0",
+        "right-1",
+        "right-2",
+        "right-3",
+        "right-4"
+      ],
+      "animations": [
+        "citizen-0-walk-right"
+      ],
+      "facings": [
+        "right"
+      ],
+      "textures": [
+        "citizen-0"
+      ]
+    },
+    "reloadPreserved": true,
+    "verifiedClientFiles": [
+      {
+        "file": "assets/main-BrE4kl8V.js",
+        "sha256": "731d97a3ac9ec238a69bac470b56bd838b03fd7bafd074d949ee0737b4f2445c"
+      },
+      {
+        "file": "index.html",
+        "sha256": "87920f9a950122bdd9aedf00f9f7ed3a84d03eb82458759fa92d74600f02ab72"
+      }
+    ]
+  },
+  "compatibility": {
+    "independentBackendSources": [
+      {
+        "entry": "server/index.ts",
+        "runtimeFile": "dist-server/index.js",
+        "inputCount": 196,
+        "retainedSha256": "df7bb598c7ba57f86c749f401b3754653b5aaab0802953f96133444c99974359",
+        "localBuildSha256": "df7bb598c7ba57f86c749f401b3754653b5aaab0802953f96133444c99974359"
+      },
+      {
+        "entry": "scripts/crypto-reconcile.ts",
+        "runtimeFile": "dist-server/crypto-reconcile.js",
+        "inputCount": 50,
+        "retainedSha256": "afe3e44eb292bab518224182be34d6f8d8b3b0ac0dc400aaf7b07e68d315c6da",
+        "localBuildSha256": "2596668c6eeac63dbc245a6cd17e5723f503373f081e3717cf79d2c6435f7a7e"
+      },
+      {
+        "entry": "server/payments/index.ts",
+        "runtimeFile": "dist-server/payments.js",
+        "inputCount": 55,
+        "retainedSha256": "561f122c79d236c9b114b2c64915c6becaafd0c9e5531835df0868cdc9610247",
+        "localBuildSha256": "d5ad1c9361d55bdd0a5aee5a7869d29082f2fc4e25151c15b6bd1959d111a161"
+      }
+    ],
+    "hostContractVersionsUnchanged": true,
+    "modulesChecked": 117,
+    "bundledAndExternalModulesRetained": true,
+    "dependencyLockEquivalent": true
+  },
+  "retainedSource": [
+    {
+      "file": "docs/game-math/qualification.md",
+      "retainedSha256": "d75f83bfc3c80022bf5b021f6f9d5e90aaa8429d3bd64ac63ba21ad57d4e9b5d",
+      "localSha256": "9a33f4d0d5e1cd6a89e38a01344433d6544b7d5614e80fcc4b46a2d49f257046"
+    }
+  ],
+  "client": {
+    "assets/main-BrE4kl8V.js": "731d97a3ac9ec238a69bac470b56bd838b03fd7bafd074d949ee0737b4f2445c",
+    "index.html": "87920f9a950122bdd9aedf00f9f7ed3a84d03eb82458759fa92d74600f02ab72"
+  },
+  "archiveSha256": "a0dd76bee7be8a3df85595b516455588d3c2fe88ecd4215695124696aa4443b1",
+  "newImageGenerations": 0,
+  "publication": {
+    "completed": true,
+    "publication": {
+      "published": true,
+      "preparedImage": "sha256:b3864a582c06d242cb43a7aa08526f77927bf777bcb9b45e7d18a0372157573e",
+      "runningImage": "sha256:b3864a582c06d242cb43a7aa08526f77927bf777bcb9b45e7d18a0372157573e",
+      "containerRestarted": true,
+      "sourceCommit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+      "changedSources": 5,
+      "clientDeltaFiles": 2,
+      "configurationsAndMountsPreserved": true,
+      "gameDataPreserved": true,
+      "backendDeltaFiles": 0,
+      "otherBackendProgramsAndModulesPreserved": true,
+      "oldAssetsPreserved": true,
+      "otherPersistentServicesPreserved": 13
+    },
+    "sourceCommit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+    "image": "sha256:b3864a582c06d242cb43a7aa08526f77927bf777bcb9b45e7d18a0372157573e",
+    "health": "healthy",
+    "sourceFiles": 1924,
+    "runtimeFiles": 8187,
+    "moduleContracts": 117,
+    "backendProgramsPreserved": {
+      "dist-server/card-engine": "73444032de29085af28719f00afe4683dcb00118695e3401e05e0e52de641a64",
+      "dist-server/card-engine-v1": "c408bb0929442f0ae724e2723a971d70919fa6db25e1c903a991e6cf24dd3f41",
+      "dist-server/crypto-reconcile.js": "afe3e44eb292bab518224182be34d6f8d8b3b0ac0dc400aaf7b07e68d315c6da",
+      "dist-server/index.js": "df7bb598c7ba57f86c749f401b3754653b5aaab0802953f96133444c99974359",
+      "dist-server/payments.js": "561f122c79d236c9b114b2c64915c6becaafd0c9e5531835df0868cdc9610247"
+    },
+    "dependenciesPreserved": true,
+    "configurationHashesPreserved": true,
+    "moduleFilesPreserved": true,
+    "financialLeaseUsed": true,
+    "databaseRestored": false,
+    "backup": {
+      "path": "/opt/royal-backups/skin-walk-seams-20261027-v1",
+      "sourceArchiveBytes": 192824100,
+      "sourceArchiveSha256": "fde372ba94969f017b5d7420ad5dbb8d077ad37763e50ff535cb4f95a158ff34",
+      "previousImage": "sha256:4df18b223c58d49f6a53f362392a1ef21e1a1b267555bf3d1ff5f6795f3e6189"
+    },
+    "startedAt": "2026-10-27T18:02:11.602451+00:00",
+    "completedAt": "2026-10-27T18:27:17.557763+00:00",
+    "durationSeconds": 1505.955312,
+    "freeBeforeSnapshotBytes": 8545390592,
+    "freeAfterPublicationBytes": 8332931072,
+    "freeNowBytes": 8326946816
+  },
+  "publicVerification": {
+    "ok": true,
+    "sourceCommit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+    "verifiedAt": "2026-10-27T18:24:55.096Z",
+    "verified": [
+      {
+        "file": "assets/main-BrE4kl8V.js",
+        "sha256": "731d97a3ac9ec238a69bac470b56bd838b03fd7bafd074d949ee0737b4f2445c"
+      },
+      {
+        "file": "index.html",
+        "sha256": "87920f9a950122bdd9aedf00f9f7ed3a84d03eb82458759fa92d74600f02ab72"
+      }
+    ],
+    "health": true,
+    "anonymousDenied": true,
+    "crossSiteDenied": true,
+    "browsers": [
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "nativeWalking": true,
+        "tailorInteraction": true,
+        "errors": []
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "nativeWalking": true,
+        "tailorInteraction": true,
+        "errors": []
+      }
+    ],
+    "productionAccountsOrMoneyModified": false
+  },
+  "testDataCleanup": {
+    "removedFolder": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/skin-walk-seams-20261027/checkout.nosync/.tmp/atelier-local",
+    "logicalBytes": 71258348,
+    "allocatedBytes": 72364032,
+    "freeBeforeBytes": 59825831936,
+    "freeAfterBytes": 59898929152,
+    "syntheticOnly": true,
+    "sessionEnded": true
+  },
+  "environmentRecovery": {
+    "emptyTypeFolders": {
+      "removedEmptyFolders": [
+        "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/node_modules/@types/body-parser 2",
+        "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/node_modules/@types/connect 2",
+        "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/node_modules/@types/estree 2",
+        "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/node_modules/@types/express 2",
+        "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/node_modules/@types/express-serve-static-core 2",
+        "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/node_modules/@types/http-errors 2",
+        "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/node_modules/@types/node 2",
+        "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/node_modules/@types/pg 2",
+        "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/node_modules/@types/qs 2",
+        "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/node_modules/@types/range-parser 2",
+        "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/node_modules/@types/send 2",
+        "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/node_modules/@types/serve-static 2",
+        "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/node_modules/@types/ws 2"
+      ],
+      "filesRemoved": 0,
+      "dependenciesPreserved": true,
+      "freeBeforeBytes": 59602046976,
+      "freeAfterBytes": 59602010112
+    },
+    "gitReferences": {
+      "invalidNamesOnly": true,
+      "validReferencesUnchanged": true,
+      "recoverableMetadata": [
+        {
+          "original": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/.git/refs/heads/feature/nowpayments-sandbox 2",
+          "preserved": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/.git/codex-invalid-refs/skin-walk-seams-20261027/heads/feature/nowpayments-sandbox 2",
+          "commit": "96dc3a65f2337025f8e1ff8b0f2bfadf468b9cd5",
+          "preservedInRemote": "origin/main",
+          "invalidDuplicateRemovedAfterRecovery": true
+        },
+        {
+          "original": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/.git/refs/heads/feature/security-publisher-lease-20261026 2",
+          "preserved": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/.git/codex-invalid-refs/skin-walk-seams-20261027/heads/feature/security-publisher-lease-20261026 2",
+          "commit": "ffce72070da1a1175903e31672e3d29859be008e",
+          "preservedInRemote": "origin/main",
+          "invalidDuplicateRemovedAfterRecovery": true
+        },
+        {
+          "original": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/.git/refs/heads/main 2",
+          "preserved": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/.git/codex-invalid-refs/skin-walk-seams-20261027/heads/main 2",
+          "commit": "ffce72070da1a1175903e31672e3d29859be008e",
+          "preservedInRemote": "origin/main",
+          "invalidDuplicateRemovedAfterRecovery": true
+        },
+        {
+          "original": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/.git/refs/remotes/origin/feature/nowpayments-sandbox 2",
+          "preserved": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/.git/codex-invalid-refs/skin-walk-seams-20261027/remotes/origin/feature/nowpayments-sandbox 2",
+          "commit": "96dc3a65f2337025f8e1ff8b0f2bfadf468b9cd5",
+          "preservedInRemote": "origin/main",
+          "invalidDuplicateRemovedAfterRecovery": true
+        },
+        {
+          "original": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/.git/refs/remotes/origin/main 2",
+          "preserved": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/.git/codex-invalid-refs/skin-walk-seams-20261027/remotes/origin/main 2",
+          "commit": "ffce72070da1a1175903e31672e3d29859be008e",
+          "preservedInRemote": "origin/main",
+          "invalidDuplicateRemovedAfterRecovery": true
+        }
+      ],
+      "duplicateReferencesRemovedAfterRemoteRecovery": 5,
+      "removedEmptyQuarantineFolders": [
+        "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/.git/codex-invalid-refs/skin-walk-seams-20261027/remotes/origin/feature",
+        "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/.git/codex-invalid-refs/skin-walk-seams-20261027/remotes/origin",
+        "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/.git/codex-invalid-refs/skin-walk-seams-20261027/heads/feature",
+        "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/.git/codex-invalid-refs/skin-walk-seams-20261027/remotes",
+        "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/.git/codex-invalid-refs/skin-walk-seams-20261027/heads",
+        "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/.git/codex-invalid-refs/skin-walk-seams-20261027"
+      ]
+    },
+    "duplicateSources": {
+      "preservedFiles": [
+        {
+          "original": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/skin-walk-seams-20261027/checkout/deployment/releases/skin-walk-seams-20261027-v1/README 2.md",
+          "preserved": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/skin-walk-seams-20261027/sync-duplicates/deployment/releases/skin-walk-seams-20261027-v1/README 2.md",
+          "bytes": 1510,
+          "sha256": "c9e71bfdf2d473d07815ecd9ea43e1f2b09e48823449d48d3eb590327d32cfc8",
+          "gitSource": {
+            "commit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+            "path": "deployment/releases/skin-walk-seams-20261027-v1/README.md"
+          },
+          "removedAfterGitHubPreservation": true
+        },
+        {
+          "original": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/skin-walk-seams-20261027/checkout/deployment/releases/skin-walk-seams-20261027-v1/deploy 2.py",
+          "preserved": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/skin-walk-seams-20261027/sync-duplicates/deployment/releases/skin-walk-seams-20261027-v1/deploy 2.py",
+          "bytes": 25883,
+          "sha256": "832e5dbda669667e54785d58d246a3e2266803482838bcd307d274fce80d6b12",
+          "gitSource": {
+            "commit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+            "path": "deployment/releases/skin-walk-seams-20261027-v1/deploy.py"
+          },
+          "removedAfterGitHubPreservation": true
+        },
+        {
+          "original": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/skin-walk-seams-20261027/checkout/deployment/releases/skin-walk-seams-20261027-v1/financial_gate 2.py",
+          "preserved": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/skin-walk-seams-20261027/sync-duplicates/deployment/releases/skin-walk-seams-20261027-v1/financial_gate 2.py",
+          "bytes": 17912,
+          "sha256": "f3974aba494a446e90299b4e4784046e95a67f22cd62a26e66c17dbb7523a506",
+          "gitSource": {
+            "commit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+            "path": "deployment/releases/skin-walk-seams-20261027-v1/financial_gate.py"
+          },
+          "removedAfterGitHubPreservation": true
+        },
+        {
+          "original": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/skin-walk-seams-20261027/checkout/deployment/releases/skin-walk-seams-20261027-v1/prepare 2.mjs",
+          "preserved": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/skin-walk-seams-20261027/sync-duplicates/deployment/releases/skin-walk-seams-20261027-v1/prepare 2.mjs",
+          "bytes": 7887,
+          "sha256": "d443ad9ea1d119f2956d7fd0f42281eb4b206b54e1e076a72c6b9413c8fdb324",
+          "gitSource": {
+            "commit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+            "path": "deployment/releases/skin-walk-seams-20261027-v1/prepare.mjs"
+          },
+          "removedAfterGitHubPreservation": true
+        },
+        {
+          "original": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/skin-walk-seams-20261027/checkout/deployment/releases/skin-walk-seams-20261027-v1/quiesce 2.cjs",
+          "preserved": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/skin-walk-seams-20261027/sync-duplicates/deployment/releases/skin-walk-seams-20261027-v1/quiesce 2.cjs",
+          "bytes": 10364,
+          "sha256": "9a688dc59bb36ba3588fcacd29891055eb6a7eaa0f611a0b89449c8b42d73d51",
+          "gitSource": {
+            "commit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+            "path": "deployment/releases/skin-walk-seams-20261027-v1/quiesce.cjs"
+          },
+          "removedAfterGitHubPreservation": true
+        },
+        {
+          "original": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/skin-walk-seams-20261027/checkout/deployment/releases/skin-walk-seams-20261027-v1/runtime-inventory 2.cjs",
+          "preserved": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/skin-walk-seams-20261027/sync-duplicates/deployment/releases/skin-walk-seams-20261027-v1/runtime-inventory 2.cjs",
+          "bytes": 1312,
+          "sha256": "460dabbe443c173c43bc6acb96f543777b3fa5cabdd5ffec5f203ad188894f6c",
+          "gitSource": {
+            "commit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+            "path": "deployment/releases/skin-walk-seams-20261027-v1/runtime-inventory.cjs"
+          },
+          "removedAfterGitHubPreservation": true
+        },
+        {
+          "original": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/skin-walk-seams-20261027/checkout/deployment/releases/skin-walk-seams-20261027-v1/snapshot 2.py",
+          "preserved": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/skin-walk-seams-20261027/sync-duplicates/deployment/releases/skin-walk-seams-20261027-v1/snapshot 2.py",
+          "bytes": 7553,
+          "sha256": "137fad5c9406bf70597d6b1518a9046ec64c577a7f844ac14f03c511abdc6058",
+          "gitSource": {
+            "commit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+            "path": "deployment/releases/skin-walk-seams-20261027-v1/snapshot.py"
+          },
+          "removedAfterGitHubPreservation": true
+        },
+        {
+          "original": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/skin-walk-seams-20261027/checkout/deployment/releases/skin-walk-seams-20261027-v1/test-quiesce 2.mjs",
+          "preserved": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/skin-walk-seams-20261027/sync-duplicates/deployment/releases/skin-walk-seams-20261027-v1/test-quiesce 2.mjs",
+          "bytes": 17660,
+          "sha256": "eadca45a3432349dd6b285bb304169f9eea1bbc6907682b0ce74176669ff1f67",
+          "gitSource": {
+            "commit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+            "path": "deployment/releases/skin-walk-seams-20261027-v1/test-quiesce.mjs"
+          },
+          "removedAfterGitHubPreservation": true
+        },
+        {
+          "original": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/skin-walk-seams-20261027/checkout/deployment/releases/skin-walk-seams-20261027-v1/test_deploy 2.py",
+          "preserved": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/skin-walk-seams-20261027/sync-duplicates/deployment/releases/skin-walk-seams-20261027-v1/test_deploy 2.py",
+          "bytes": 17665,
+          "sha256": "9291b700b73cda5720c0dedbd0b87bf9d31ae2dc3ab2ffba9b6ec0c69f1965c8",
+          "gitSource": {
+            "commit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+            "path": "deployment/releases/skin-walk-seams-20261027-v1/test_deploy.py"
+          },
+          "removedAfterGitHubPreservation": true
+        },
+        {
+          "original": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/skin-walk-seams-20261027/checkout/deployment/releases/skin-walk-seams-20261027-v1/test_financial_gate 2.py",
+          "preserved": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/skin-walk-seams-20261027/sync-duplicates/deployment/releases/skin-walk-seams-20261027-v1/test_financial_gate 2.py",
+          "bytes": 16785,
+          "sha256": "2a5f440615e975ff0797e9a48464855dd2a71be1cc4a0fa497042062856d9a65",
+          "gitSource": {
+            "commit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+            "path": "deployment/releases/skin-walk-seams-20261027-v1/test_financial_gate.py"
+          },
+          "removedAfterGitHubPreservation": true
+        },
+        {
+          "original": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/skin-walk-seams-20261027/checkout/src/nile-wallet 2.css",
+          "preserved": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/skin-walk-seams-20261027/sync-duplicates/src/nile-wallet 2.css",
+          "bytes": 1679,
+          "sha256": "ed8084212127308f98feda457d14404c20f294ee0ee299f7723d5ef66f34705a",
+          "gitSource": {
+            "commit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+            "path": "src/nile-wallet.css"
+          },
+          "removedAfterGitHubPreservation": true
+        },
+        {
+          "original": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/skin-walk-seams-20261027/checkout/src/ui/NileWalletUI 2.ts",
+          "preserved": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/skin-walk-seams-20261027/sync-duplicates/src/ui/NileWalletUI 2.ts",
+          "bytes": 13866,
+          "sha256": "d5da65fc2cc3560defae7189cf703236c757ba63aeb670470ee9a153c25260e6",
+          "gitSource": {
+            "commit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+            "path": "src/ui/NileWalletUI.ts"
+          },
+          "removedAfterGitHubPreservation": true
+        },
+        {
+          "original": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/skin-walk-seams-20261027/checkout/src/ui/UsdtWalletUI 2.ts",
+          "preserved": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/skin-walk-seams-20261027/sync-duplicates/src/ui/UsdtWalletUI 2.ts",
+          "bytes": 7590,
+          "sha256": "2837b5d2fa71525d1f02662ba9937a066a8ea893e691868809b5aa3c370128ca",
+          "gitSource": {
+            "commit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+            "path": "src/ui/UsdtWalletUI.ts"
+          },
+          "removedAfterGitHubPreservation": true
+        },
+        {
+          "original": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/skin-walk-seams-20261027/checkout/src/usdt-wallet 2.css",
+          "preserved": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/skin-walk-seams-20261027/sync-duplicates/src/usdt-wallet 2.css",
+          "bytes": 984,
+          "sha256": "b899b927152f9d0567b580260aa706fab220d197c2ea1a001b264c6f97a90772",
+          "gitSource": {
+            "commit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+            "path": "src/usdt-wallet.css"
+          },
+          "removedAfterGitHubPreservation": true
+        }
+      ],
+      "removedFiles": 14,
+      "removedLogicalBytes": 148650,
+      "uniqueSourceDeleted": false
+    }
+  },
+  "serverCleanup": {
+    "removedFolder": "/opt/royal-releases/skin-walk-seams-20261027-v1/runtime-context",
+    "removedFiles": 4,
+    "removedArchive": "/opt/royal-releases/skin-walk-seams-20261027-v1/transport.tgz",
+    "removedArchiveBytes": 1870941,
+    "removedCacheFolder": "/opt/royal-releases/skin-walk-seams-20261027-v1/__pycache__",
+    "removedCacheBytes": 28348,
+    "exclusiveAllocatedBytes": 24576,
+    "sharedPayloadBytesPreserved": 2573252,
+    "freeBeforeBytes": 8326918144,
+    "freeAfterBytes": 8328847360,
+    "sourceCommit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+    "sourceBackupAndImagesPreserved": true,
+    "runtimeAndVolumesTouched": false
+  },
+  "visualProof": {
+    "file": "walking-comparison.png",
+    "reviewed": true,
+    "realGameAndFittingScreenshotsReviewed": true
+  },
+  "preservation": {
+    "repository": "https://github.com/grishapav1992/royal",
+    "sourceCommit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+    "inMainBeforePublication": true
+  }
+}
