@@ -64,6 +64,18 @@ test('Neopolis uses the real host area, keeps controls and chat visible, and res
       await expect(page.locator('[data-np=spin]')).toBeInViewport();
       await expect(page.locator('[data-np=bet]')).toBeInViewport();
       await expect(page.locator('#mini-dialog #chat-input')).toBeInViewport();
+      if (width === 390) {
+        await page.locator('.np-board').scrollIntoViewIfNeeded();
+        const effects = await page.locator('.np-effects').evaluate(canvas => {
+          const scene = canvas.parentElement!, scroll = scene.parentElement!;
+          const bounds = canvas.getBoundingClientRect(), sceneBounds = scene.getBoundingClientRect();
+          return { moved: scroll.scrollTop > 0, offset: Math.abs(bounds.top - sceneBounds.top),
+            height: Math.abs(bounds.height - sceneBounds.height), coversScene: scene.clientHeight > scroll.clientHeight };
+        });
+        expect(effects.moved).toBe(true); expect(effects.offset).toBeLessThan(1);
+        expect(effects.height).toBeLessThan(1); expect(effects.coversScene).toBe(true);
+        await expect(page.locator('[data-np=spin]')).toBeInViewport();
+      }
       await page.screenshot({ path: out + '/' + width + 'x' + height + '.png' });
     }
     await page.setViewportSize({ width: 1440, height: 1000 });
