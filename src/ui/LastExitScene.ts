@@ -1,11 +1,12 @@
 import type {RacePhase} from './lastExitModel';
 import {RouteTransition,routeProfiles} from './lastExitRoute';
+import {LastExitAssets,type LastExitAssetState} from './LastExitAssets';
 import {clamp,ease,mix,stuntFrame,nextStunt,crashMotion,ramGeometry,helicopterMotion,cargoMotion,cargoTiming} from './lastExitStunts';
 
 /** All scenery and stunts are composed from photographic sprites on a 2D canvas. */
 export class LastExitScene {
  private ctx:CanvasRenderingContext2D;
- private images=new Map<string,HTMLImageElement>();
+ private assets=new LastExitAssets();
  private observer:ResizeObserver;
  private asphalt=document.createElement('canvas');
  private route=new RouteTransition();
@@ -18,12 +19,12 @@ export class LastExitScene {
  constructor(private canvas:HTMLCanvasElement,private chooseStunt=nextStunt){
   const ctx=canvas.getContext('2d');if(!ctx)throw new Error('Canvas 2D unavailable');this.ctx=ctx;
   this.asphalt.width=512;this.asphalt.height=512;const tex=this.asphalt.getContext('2d')!,pixels=tex.createImageData(512,512);let seed=173;for(let i=0;i<pixels.data.length;i+=4){seed=(Math.imul(seed,1664525)+1013904223)>>>0;const n=((seed>>>24)-128)*.12;pixels.data[i]=139+n;pixels.data[i+1]=135+n;pixels.data[i+2]=124+n;pixels.data[i+3]=255;}tex.putImageData(pixels,0,0);
-  const files:Record<string,string>={highway:'v1/highway.webp',coupe:'v1/coupe.webp',patrol:'v1/patrol.webp',explosion:'v1/explosion.webp',helicopter:'v2d/helicopter.png',props:'v2d/props.png',side:'v2d/coupe-side.png',yaw:'v2d/coupe-yaw.png',depthRoll:'v2d/coupe-depth-roll.png',plane:'v2d/cargo-plane.png',ram:'v2d/patrol-ram.png',routeProps:'v2d/route-props.png',...Object.fromEntries(routeProfiles.map(p=>['route-'+p.key,'v2d/route-'+p.key+'.png']))};
-  for(const [name,file]of Object.entries(files)){const img=new Image();img.onload=()=>{if(this.alive)this.canvas.dataset.assets=String([...this.images.values()].filter(i=>i.complete&&i.naturalWidth).length);};img.src='/assets/last-exit/'+file;this.images.set(name,img);}
   this.observer=new ResizeObserver(()=>this.resize());this.observer.observe(canvas);this.resize();
  }
+ get ready(){return this.assets.ready;}
+ load(changed:(state:LastExitAssetState)=>void){return this.assets.load(state=>{this.canvas.dataset.assets=String(state.loaded);changed(state);});}
  private resize(){const r=this.canvas.getBoundingClientRect();this.w=Math.max(1,r.width);this.h=Math.max(1,r.height);const dpr=Math.min(1.5,devicePixelRatio||1);this.canvas.width=Math.round(this.w*dpr);this.canvas.height=Math.round(this.h*dpr);this.ctx.setTransform(dpr,0,0,dpr,0,0);}
- private loaded(name:string){const i=this.images.get(name);return i?.complete&&i.naturalWidth?i:undefined;}
+ private loaded(name:string){return this.assets.get(name);}
  private sprite(name:string,x:number,y:number,w:number,angle=0,alpha=1){const i=this.loaded(name);if(!i)return;const h=w*i.naturalHeight/i.naturalWidth,c=this.ctx;c.save();c.translate(x,y);c.rotate(angle);c.globalAlpha=alpha;c.drawImage(i,-w/2,-h/2,w,h);c.restore();}
  private shadow(x:number,y:number,w:number,alpha=.35){const c=this.ctx;c.save();c.globalAlpha=alpha;const g=c.createRadialGradient(x,y,0,x,y,w*.55);g.addColorStop(0,'#17180f');g.addColorStop(1,'#17180f00');c.fillStyle=g;c.translate(x,y);c.scale(1,.22);c.fillRect(-w*.6,-w*.6,w*1.2,w*1.2);c.restore();}
  private road(horizon:number,drift:number,weights:number[]){
@@ -116,7 +117,7 @@ export class LastExitScene {
  }
  private debris(x:number,y:number,width:number,age:number){const c=this.ctx,t=Math.max(0,age-.72);for(let i=0;i<21;i++){const dir=i%2?1:-1,s=(i*73%17)/17,life=Math.min(t,1.8),px=x+dir*width*(.12+life*(.25+s*.6)),py=y+width*.22-life*width*(.5+s*.7)+life*life*width*.55;c.save();c.translate(px,py);c.rotate(life*(i%3+2)*dir);c.globalAlpha=Math.max(.22,1-t*.12);if(i<4){const r=width*.044;c.fillStyle='#1c1d1c';c.beginPath();c.ellipse(0,0,r,r*.75,0,0,Math.PI*2);c.fill();c.strokeStyle='#8c8b7f';c.lineWidth=r*.25;c.stroke();}else if(i<8){const img=this.loaded('coupe');if(img)c.drawImage(img,img.naturalWidth*.25,img.naturalHeight*.5,img.naturalWidth*.16,img.naturalHeight*.11,-width*.07,-width*.04,width*.14,width*.08);}else{c.fillStyle=i%3?'#adb7b099':'#f4c77f';c.fillRect(0,0,width*.015,width*.007);}c.restore();}}
  paint(now:number,phase:RacePhase,value:number,quiet:boolean,runId=''){
-  if(!this.alive)return;
+  if(!this.alive||!this.assets.ready)return;
   const dt=this.last?Math.max(0,Math.min(.05,(now-this.last)/1000)):0;this.last=now;
   if(phase!==this.phase||runId!==this.run){this.phase=phase;this.run=runId;this.age=0;if(phase==='crashed')this.crashClock=this.clock;}else this.age+=dt;
   const f=stuntFrame(phase,this.age,quiet,this.chooseStunt(runId,phase,value)),motion=crashMotion(this.age,quiet),c=this.ctx,w=this.w,h=this.h;
@@ -181,5 +182,5 @@ export class LastExitScene {
  locationIndex(){return this.route.inspect().index;}
  presentationSeconds(){return this.age;}
  inspect(){return {route:this.route.inspect(),cargo:this.cargo??null,ram:this.ram??null,extraction:this.extraction??null,roadVelocity:this.roadVelocity,roadClock:this.roadClock,renderer:'canvas2d',phase:this.phase,age:this.age,frames:this.frames,...this.shot};}
- destroy(){this.alive=false;this.observer.disconnect();for(const img of this.images.values())img.onload=null;this.images.clear();}
+ destroy(){this.alive=false;this.observer.disconnect();this.assets.destroy();}
 }
