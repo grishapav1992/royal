@@ -4,6 +4,8 @@ import { ModerationStore } from './moderation';
 import { IntoxicationStore } from './intoxicationStore';
 import { PaymentClient, paymentClientConfig } from './payments/client';
 import { PaymentCredits } from './payments/credits';
+import { SandboxPaymentStore } from './payments/sandbox';
+import { sandboxConfig, SandboxNowPayments } from './payments/sandbox-provider';
 import { normalizeAppearance } from '../src/shared/appearance';
 import { normalizeCharacterAppearance, type CharacterAppearance } from '../src/shared/skinStudio';
 import { SkinStudioStore } from './skinStudio';
@@ -50,6 +52,7 @@ export class AccountStore {
   readonly cryptoWallet: PaymentClient;
   readonly skinStudio: SkinStudioStore;
   readonly paymentCredits: PaymentCredits;
+  readonly sandboxPayments: SandboxPaymentStore;
   readonly financeAdmin: FinanceAdminStore;
   readonly paymentEventSecret: string;
   readonly events = new EventEmitter();
@@ -65,6 +68,8 @@ export class AccountStore {
       CREATE TABLE IF NOT EXISTS sessions (hash TEXT PRIMARY KEY, account_id TEXT NOT NULL REFERENCES accounts(id) ON DELETE CASCADE, expires INTEGER NOT NULL);
       CREATE INDEX IF NOT EXISTS sessions_expiry ON sessions(expires);`)).then(() => applyAccountSchemaMigrations(this.db));
     this.wallet = new DemoWalletStore(this.db, undefined, undefined, schemaReady);
+    const sandbox = sandboxConfig();
+    this.sandboxPayments = new SandboxPaymentStore(this.db, sandbox, new SandboxNowPayments(sandbox), this.wallet.ready);
     const virtualWallet=new VirtualPvpLedger(this.db,this.wallet);
     this.pvp=new PvpStore(virtualWallet);
     this.combat=new NileCombatEscrow(virtualWallet);
@@ -82,7 +87,7 @@ export class AccountStore {
       return (job?.payment_source==='nile'?legacySkins:commonSkins).skinPurchase(account,id,action);
     }}, new CodexSkinImages(), () => true,
       (id, appearance) => this.events.emit('appearance', id, appearance), this.wallet.ready, Date.now, new CodexSkinDescriptions());
-    this.ready = Promise.all([schemaReady, this.wallet.ready, this.pvp.ready, this.combat.ready, this.casinoApiProWallet.ready, this.moderation.ready, this.drinking.ready, this.paymentCredits.ready, this.skinStudio.ready, this.financeAdmin.ready]).then(() => {
+    this.ready = Promise.all([schemaReady, this.wallet.ready, this.sandboxPayments.ready, this.pvp.ready, this.combat.ready, this.casinoApiProWallet.ready, this.moderation.ready, this.drinking.ready, this.paymentCredits.ready, this.skinStudio.ready, this.financeAdmin.ready]).then(() => {
       this.wagerSweep=setInterval(()=>{if(!this.sweeping)this.sweeping=Promise.allSettled([this.pvp.sweep(),this.combat.recoverExpired()]).finally(()=>{this.sweeping=undefined;});},1000);
       this.wagerSweep.unref();
     });
