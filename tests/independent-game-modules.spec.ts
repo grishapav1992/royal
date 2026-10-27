@@ -171,6 +171,19 @@ test('LAST EXIT numbers advance at wall-clock speed between polls and reopening 
  });
  for (let i = 1; i < samples.length; i++) expect(Math.abs((samples[i].time - samples[i - 1].time) - (samples[i].at - samples[i - 1].at))).toBeLessThan(25);
  await expect(page.locator('[data-speed]')).toHaveText(/\d+\.\d/);
+ let release!: () => void, waiting = false;
+ const interruption = new Promise<void>(resolve => { release = resolve; });
+ await page.route('**/api/*-wallet/expansion', async route => {
+  if (route.request().method() === 'GET') { waiting = true; await interruption; }
+  await route.fallback();
+ });
+ try {
+  await expect.poll(() => waiting).toBe(true); await page.waitForTimeout(1800);
+  const frozen = await page.locator('.last-exit').evaluate(el => ({ display: Number((el as HTMLElement).dataset.displayServerNow), confirmed: Number((el as HTMLElement).dataset.confirmedServerNow) }));
+  expect(frozen.display).toBe(frozen.confirmed); release();
+  await expect.poll(async () => Number(await page.locator('.last-exit').getAttribute('data-confirmed-server-now'))).toBeGreaterThan(frozen.confirmed);
+  expect(await page.locator('.last-exit').evaluate(el => Number((el as HTMLElement).dataset.confirmedServerNow) - Number((el as HTMLElement).dataset.displayServerNow))).toBeLessThanOrEqual(701);
+ } finally { release(); }
  const id = await page.locator('.last-exit').getAttribute('data-session-id');
  await page.evaluate(() => (window as any).moduleHarness.close()); await open(page, 'github-crash');
  await expect(page.locator('.last-exit')).toHaveAttribute('data-session-id', id!);

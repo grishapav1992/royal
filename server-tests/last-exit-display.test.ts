@@ -29,12 +29,12 @@ test('buffered countdown retains two seconds and starts without a catch-up wave'
  }
  assert.equal(raceDisplay(s,anchor,2800).phase,'racing');
 });
-test('connection loss freezes at confirmation, and recovery resumes without a jump',()=>{
+test('connection loss freezes at confirmation, and recovery discards accumulated lag',()=>{
  const s=session(),anchor=raceAnchor(s,undefined,0);
  assert.equal(raceDisplay(s,anchor,10000).time,s.serverNow);
  const recovered={...s,serverNow:25000,multiplier:Math.exp(.9)},next=raceAnchor(recovered,anchor,10000);
- assert.equal(raceDisplay(recovered,next,10000).time,s.serverNow);
- assert.equal(raceDisplay(recovered,next,10100).time,s.serverNow!+100);
+ assert.equal(raceDisplay(recovered,next,10000).time,recovered.serverNow!-RACE_DISPLAY_BUFFER_MS);
+ assert.equal(raceDisplay(recovered,next,10100).time,recovered.serverNow!-RACE_DISPLAY_BUFFER_MS+100);
  assert.equal(raceDisplay(recovered,next,1000000).time,recovered.serverNow);
 });
 test('settlement interrupts the buffer immediately and a new round gets its own clock',()=>{

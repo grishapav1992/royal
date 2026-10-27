@@ -26,7 +26,10 @@ export function raceDisplay(s:ExpansionSession|undefined,a:RaceAnchor|undefined,
 export function raceAnchor(s:ExpansionSession,previous:RaceAnchor|undefined,now:number):RaceAnchor{
  if(previous?.id===s.id){
   if(s.serverNow!<=previous.to)return previous;
-  return {id:s.id,from:raceDisplay(s,previous,now).time,to:s.serverNow!,at:Math.max(previous.at,now)};
+  const visible=raceDisplay(s,previous,now).time;
+  // Reconnect to fresh confirmed time after an outage instead of retaining stale quotes.
+  const from=s.serverNow!-visible>RACE_DISPLAY_BUFFER_MS*2?s.serverNow!-RACE_DISPLAY_BUFFER_MS:visible;
+  return {id:s.id,from,to:s.serverNow!,at:Math.max(previous.at,now)};
  }
  // A new countdown starts at its confirmed instant; reserve the buffer before ticking.
  const countdown=s.serverNow!<s.startedAt!;
