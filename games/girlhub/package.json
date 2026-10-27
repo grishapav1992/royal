@@ -1,11 +1,11 @@
 {
   "name": "@royal/girlhub",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
   "gameId": "studio-afterglow",
   "apiVersion": 1,
   "rulesVersion": 2,
-  "progressVersion": 3,
+  "progressVersion": 4,
   "entry": "entry.ts",
   "assetRoots": [
     "studio",

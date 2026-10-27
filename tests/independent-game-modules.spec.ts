@@ -172,7 +172,7 @@ test('the published external GIRLHUB package retains host API 1 compatibility', 
   const pointer = await response.json();
   return { pointer, manifest: await (await fetch(pointer.manifest)).json() };
  });
- expect(metadata.manifest).toMatchObject({ gameId: 'studio-afterglow', apiVersion: 1, rulesVersion: 2, progressVersion: 3 });
+ expect(metadata.manifest).toMatchObject({ gameId: 'studio-afterglow', apiVersion: 1, rulesVersion: 2, progressVersion: 4 });
  await open(page, 'studio-afterglow');
  await expect(page.locator('#primary')).toHaveAttribute('data-game-module-version', metadata.manifest.version);
  await expect(page.locator('#primary [data-afterglow-game]')).toHaveAttribute('data-asset-state', 'ready', { timeout: 45000 });
@@ -244,12 +244,12 @@ for (const game of ['studio-signal-fox', 'studio-nitro-run', 'studio-afterglow',
  test.setTimeout(publicOrigin ? 90000 : 60000);
  await fixture(page);
  const sent: unknown[] = [];
- if (game === 'studio-afterglow') await page.route('**/api/game-wallet/afterglow-wardrobe', route => route.fulfill({ json: {
-  version: 3, revision: 0, selectedGirl: 0, selectedLook: 0, albumUnits: 0,
+ if (game === 'studio-afterglow') await page.route('**/api/demo-wallet/afterglow-wardrobe', route => route.fulfill({ json: {
+  version: 4, revision: 0, selectedGirl: 1, selectedLook: 0, albumUnits: 0,
   pointsUnits: [0, 0, 0, 0], unlocked: [false, false, false, false], active: false, activeGirl: null,
  } }));
- await page.route('**/api/game-wallet', route => route.fulfill({ json: { balance: 1000, entries: [] } }));
- await page.route('**/api/game-wallet/expansion', async route => {
+ await page.route('**/api/*-wallet', route => route.fulfill({ json: { balance: 1000, entries: [] } }));
+ await page.route('**/api/*-wallet/expansion', async route => {
   if (route.request().method() === 'GET') return route.fulfill({ json: { wallet: { balance: 1000, entries: [] }, sessions: [] } });
   sent.push(route.request().postDataJSON());
   await route.abort('failed');

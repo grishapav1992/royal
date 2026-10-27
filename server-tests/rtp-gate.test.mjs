@@ -32,7 +32,7 @@ function proofFor(id, inputs, mean = inputs.policy.target) {
     streams: p.choices.flatMap((choice,index) => p.seeds.map(seed => ({choice,seed:id==='studio-neopolis'?seed+index*1000003:seed}))),
     serverReplayChecks: p.stakes.length*p.choices.length*64 };
 }
-for(const id of ['studio-neopolis','studio-dracona']) {
+for(const id of ['studio-neopolis','studio-dracona','studio-afterglow']) {
   test(id+' accepts complete, precise evidence for every declared stake and choice',async()=>{
     const inputs=await rtpInputs(root,id); assert(validateRtpProof(id,inputs,proofFor(id,inputs)));
   });

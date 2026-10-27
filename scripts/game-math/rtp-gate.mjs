@@ -4,6 +4,7 @@ import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
 import { cosmicQualificationEvidence, COSMIC_QUALIFICATION_METHOD, COSMIC_QUALIFICATION_MODEL } from './rtp-cosmic.mjs';
 import {FOREST_QUALIFICATION_METHOD,FOREST_SERVER_STATUS,validateForestRuntimeProof} from './rtp-forest-heart.mjs';
+import { caribbeanQualificationEvidence, CARIBBEAN_QUALIFICATION_METHOD, CARIBBEAN_REVIEWED_SOURCES } from './rtp-caribbean.mjs';
 
 const digest = value => createHash('sha256').update(value).digest('hex');
 // Git checkouts use CRLF on Windows and LF in Linux CI. Hash canonical text.
@@ -34,6 +35,12 @@ export function validateRtpProof(gameId, inputs, proof) {
   assert.equal(proof.policySha256, inputs.policySha256, 'RTP policy changed: rerun qualification');
   assert.deepEqual(proof.sourceHashes, inputs.sourceHashes, 'RTP source changed: rerun qualification');
   if(p.method===FOREST_QUALIFICATION_METHOD)return validateForestRuntimeProof(gameId,inputs,proof);
+  if(p.method===CARIBBEAN_QUALIFICATION_METHOD) {
+    assert.equal(gameId,'studio-caribbean-treasures');
+    assert.deepEqual(Object.fromEntries(Object.keys(CARIBBEAN_REVIEWED_SOURCES).map(file=>[file,inputs.sourceHashes[file]])),CARIBBEAN_REVIEWED_SOURCES,
+      'Caribbean mathematical source changed: review the complete-round model');
+    return validateCaribbeanProof(p,proof);
+  }
   if(p.method==='exhaustive-pvp-journal')return validatePvpProof(gameId,p,proof);
   if(p.method==='exhaustive-virtual-pvp-pot')return validateVirtualPvpProof(gameId,p,proof);
   if(p.method===COSMIC_QUALIFICATION_METHOD){
@@ -63,6 +70,30 @@ export function validateRtpProof(gameId, inputs, proof) {
     assert(proof.streams.some(stream => stream.choice === choice && stream.seed === expected));
   }
   assert(proof.serverReplayChecks >= p.stakes.length * p.choices.length * 64, 'Server replay cross-check is missing');
+  return true;
+}
+function validateCaribbeanProof(p,proof){
+  const expected=caribbeanQualificationEvidence(p);
+  assert.equal(proof.method,expected.method);
+  assert.deepEqual(proof.analysis,expected.analysis,'Invalid Caribbean analytical derivation');
+  assert.deepEqual(proof.results,expected.results,'Every Caribbean line selection, mode and stake must match the exact complete-round expectation');
+  assert(proof.serverReplay&&Array.isArray(proof.serverReplay.coverage));
+  assert.deepEqual(proof.serverReplay.seeds,p.seeds);
+  assert.equal(proof.serverReplay.coverage.length,p.choices.length*p.stakes.length);
+  let total=0;const seen=new Set();
+  for(const row of proof.serverReplay.coverage){
+    assert(p.choices.includes(row.choice)&&p.stakes.includes(row.stakeUnits));
+    const key=row.choice+':'+row.stakeUnits;assert(!seen.has(key));seen.add(key);
+    assert.equal(row.paidRounds,p.seeds.length*p.serverReplayRoundsPerSeed);
+    const result=expected.results.find(result=>result.choice===row.choice&&result.stakeUnits===row.stakeUnits);
+    assert(Number.isSafeInteger(row.spins)&&row.spins>=row.paidRounds&&row.spins<=row.paidRounds*result.maximumSpins);
+    if(row.choice.includes('-buy-'))assert.equal(row.spins,row.paidRounds*result.maximumSpins);
+    assert(typeof row.sha256==='string'&&/^[a-f0-9]{64}$/.test(row.sha256));
+    total+=row.paidRounds;
+  }
+  assert.equal(proof.serverReplayChecks,total);
+  assert(Number.isSafeInteger(proof.serverReplay.cannons)&&proof.serverReplay.cannons>0);
+  assert(Number.isSafeInteger(proof.serverReplay.naturalEntries)&&proof.serverReplay.naturalEntries>=p.seeds.length*4*p.stakes.length*2);
   return true;
 }
 function validateCosmicProof(gameId,p,proof){

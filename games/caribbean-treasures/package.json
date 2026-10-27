@@ -1,0 +1,15 @@
+{
+  "name": "@royal/caribbean-treasures",
+  "version": "1.0.0",
+  "private": true,
+  "gameId": "studio-caribbean-treasures",
+  "apiVersion": 1,
+  "rulesVersion": 1,
+  "progressVersion": 1,
+  "entry": "entry.ts",
+  "assetRoots": ["caribbean-treasures"],
+  "preload": ["caribbean-treasures/harbor.webp","caribbean-treasures/captain.webp"],
+  "scripts": {
+    "build": "node ../../node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && node ../../scripts/build-game-module.mjs"
+  }
+}

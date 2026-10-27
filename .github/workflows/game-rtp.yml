@@ -33,6 +33,7 @@ jobs:
       - run: npm run test:rtp-gate
       - run: npm run test:forest-heart-math
       - run: npm run test:forest-heart-server
+      - run: npm run test:caribbean
       - run: npm run test:release
       - run: npm run test:work-sync
       - run: npm run release:prepare -- --local --base HEAD^

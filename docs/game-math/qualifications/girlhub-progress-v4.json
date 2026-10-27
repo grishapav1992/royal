@@ -1,0 +1,295 @@
+{
+  "schemaVersion": 1,
+  "gameId": "studio-afterglow",
+  "rulesVersion": 2,
+  "progressVersion": 4,
+  "startedAt": "2026-10-27T17:34:04.598Z",
+  "completedAt": "2026-10-27T17:36:59.725Z",
+  "sourceHashes": {
+    "src/shared/afterglow.ts": "3a20c05490f1fce9fb33244091230f5106c23d9686566e40f0051d124e941256",
+    "src/shared/nitroRun.ts": "621e54ab208ea598573dc79f22be813509a85523309af76d5f3b8da7d038cc08",
+    "src/shared/draconaMath.ts": "5735d0173b801e80329ec93f9d0dc049da94068addd042f7de0fb6bf9ca248b4",
+    "server/games/afterglow.ts": "732c928d299e6a6adb501d1682e80ec2ea02e510884812771c757f5173013258",
+    "src/shared/afterglowWardrobe.ts": "a70b0f4c6c8ca76c7906ea6d9c2062f57cc5e5dc8c13ffc6546667e261ad8e61",
+    "server/afterglowWardrobe.ts": "7238862c96022cf56ed4730449e0eb1b48ff224b7982017b141b15f568911fad",
+    "server/afterglowProgress.ts": "1605ddaefa120c87da21fd1db9260c645840cbfc1db690c8f58787ccfe7acf2c",
+    "scripts/game-math/rtp-afterglow.mjs": "ee746dc39e86dbf7834c114f8fbcc25e12749985da319fb2e448b91d98d06494"
+  },
+  "policySha256": "74a1a0d004e59048667e398e1cf3ac6360a962a95911ae44ec1a965297d37d5a",
+  "serverReplayChecks": 1664,
+  "method": "independent complete paid rounds; exact integer scaling for every allowed stake",
+  "streams": [
+    {
+      "choice": "normal",
+      "seed": 250127,
+      "paidRounds": 5000000
+    },
+    {
+      "choice": "normal",
+      "seed": 7183291,
+      "paidRounds": 5000000
+    }
+  ],
+  "results": [
+    {
+      "choice": "normal",
+      "stakeUnits": 100,
+      "cycles": 0,
+      "samples": 10000000,
+      "paidRounds": 10000000,
+      "cost": 10000000,
+      "reward": 9662123.450146582,
+      "rewardSquared": 974079869.6417079,
+      "rewardCost": 9662123.450146582,
+      "costSquared": 10000000,
+      "rtp": 0.9662123450146582,
+      "interval95": [
+        0.9601245196927409,
+        0.9723001703365756
+      ],
+      "freeSpins": 2020242,
+      "bonuses": 231122,
+      "capped": 0
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 200,
+      "cycles": 0,
+      "samples": 10000000,
+      "paidRounds": 10000000,
+      "cost": 10000000,
+      "reward": 9662123.450146582,
+      "rewardSquared": 974079869.6417079,
+      "rewardCost": 9662123.450146582,
+      "costSquared": 10000000,
+      "rtp": 0.9662123450146582,
+      "interval95": [
+        0.9601245196927409,
+        0.9723001703365756
+      ],
+      "freeSpins": 2020242,
+      "bonuses": 231122,
+      "capped": 0
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 300,
+      "cycles": 0,
+      "samples": 10000000,
+      "paidRounds": 10000000,
+      "cost": 10000000,
+      "reward": 9662123.450146582,
+      "rewardSquared": 974079869.6417079,
+      "rewardCost": 9662123.450146582,
+      "costSquared": 10000000,
+      "rtp": 0.9662123450146582,
+      "interval95": [
+        0.9601245196927409,
+        0.9723001703365756
+      ],
+      "freeSpins": 2020242,
+      "bonuses": 231122,
+      "capped": 0
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 500,
+      "cycles": 0,
+      "samples": 10000000,
+      "paidRounds": 10000000,
+      "cost": 10000000,
+      "reward": 9662123.450146582,
+      "rewardSquared": 974079869.6417079,
+      "rewardCost": 9662123.450146582,
+      "costSquared": 10000000,
+      "rtp": 0.9662123450146582,
+      "interval95": [
+        0.9601245196927409,
+        0.9723001703365756
+      ],
+      "freeSpins": 2020242,
+      "bonuses": 231122,
+      "capped": 0
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 1000,
+      "cycles": 0,
+      "samples": 10000000,
+      "paidRounds": 10000000,
+      "cost": 10000000,
+      "reward": 9662123.450146582,
+      "rewardSquared": 974079869.6417079,
+      "rewardCost": 9662123.450146582,
+      "costSquared": 10000000,
+      "rtp": 0.9662123450146582,
+      "interval95": [
+        0.9601245196927409,
+        0.9723001703365756
+      ],
+      "freeSpins": 2020242,
+      "bonuses": 231122,
+      "capped": 0
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 2000,
+      "cycles": 0,
+      "samples": 10000000,
+      "paidRounds": 10000000,
+      "cost": 10000000,
+      "reward": 9662123.450146582,
+      "rewardSquared": 974079869.6417079,
+      "rewardCost": 9662123.450146582,
+      "costSquared": 10000000,
+      "rtp": 0.9662123450146582,
+      "interval95": [
+        0.9601245196927409,
+        0.9723001703365756
+      ],
+      "freeSpins": 2020242,
+      "bonuses": 231122,
+      "capped": 0
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 2500,
+      "cycles": 0,
+      "samples": 10000000,
+      "paidRounds": 10000000,
+      "cost": 10000000,
+      "reward": 9662123.450146582,
+      "rewardSquared": 974079869.6417079,
+      "rewardCost": 9662123.450146582,
+      "costSquared": 10000000,
+      "rtp": 0.9662123450146582,
+      "interval95": [
+        0.9601245196927409,
+        0.9723001703365756
+      ],
+      "freeSpins": 2020242,
+      "bonuses": 231122,
+      "capped": 0
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 5000,
+      "cycles": 0,
+      "samples": 10000000,
+      "paidRounds": 10000000,
+      "cost": 10000000,
+      "reward": 9662123.450146582,
+      "rewardSquared": 974079869.6417079,
+      "rewardCost": 9662123.450146582,
+      "costSquared": 10000000,
+      "rtp": 0.9662123450146582,
+      "interval95": [
+        0.9601245196927409,
+        0.9723001703365756
+      ],
+      "freeSpins": 2020242,
+      "bonuses": 231122,
+      "capped": 0
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 10000,
+      "cycles": 0,
+      "samples": 10000000,
+      "paidRounds": 10000000,
+      "cost": 10000000,
+      "reward": 9662123.450146582,
+      "rewardSquared": 974079869.6417079,
+      "rewardCost": 9662123.450146582,
+      "costSquared": 10000000,
+      "rtp": 0.9662123450146582,
+      "interval95": [
+        0.9601245196927409,
+        0.9723001703365756
+      ],
+      "freeSpins": 2020242,
+      "bonuses": 231122,
+      "capped": 0
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 20000,
+      "cycles": 0,
+      "samples": 10000000,
+      "paidRounds": 10000000,
+      "cost": 10000000,
+      "reward": 9662123.450146582,
+      "rewardSquared": 974079869.6417079,
+      "rewardCost": 9662123.450146582,
+      "costSquared": 10000000,
+      "rtp": 0.9662123450146582,
+      "interval95": [
+        0.9601245196927409,
+        0.9723001703365756
+      ],
+      "freeSpins": 2020242,
+      "bonuses": 231122,
+      "capped": 0
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 25000,
+      "cycles": 0,
+      "samples": 10000000,
+      "paidRounds": 10000000,
+      "cost": 10000000,
+      "reward": 9662123.450146582,
+      "rewardSquared": 974079869.6417079,
+      "rewardCost": 9662123.450146582,
+      "costSquared": 10000000,
+      "rtp": 0.9662123450146582,
+      "interval95": [
+        0.9601245196927409,
+        0.9723001703365756
+      ],
+      "freeSpins": 2020242,
+      "bonuses": 231122,
+      "capped": 0
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 50000,
+      "cycles": 0,
+      "samples": 10000000,
+      "paidRounds": 10000000,
+      "cost": 10000000,
+      "reward": 9662123.450146582,
+      "rewardSquared": 974079869.6417079,
+      "rewardCost": 9662123.450146582,
+      "costSquared": 10000000,
+      "rtp": 0.9662123450146582,
+      "interval95": [
+        0.9601245196927409,
+        0.9723001703365756
+      ],
+      "freeSpins": 2020242,
+      "bonuses": 231122,
+      "capped": 0
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 100000,
+      "cycles": 0,
+      "samples": 10000000,
+      "paidRounds": 10000000,
+      "cost": 10000000,
+      "reward": 9662123.450146582,
+      "rewardSquared": 974079869.6417079,
+      "rewardCost": 9662123.450146582,
+      "costSquared": 10000000,
+      "rtp": 0.9662123450146582,
+      "interval95": [
+        0.9601245196927409,
+        0.9723001703365756
+      ],
+      "freeSpins": 2020242,
+      "bonuses": 231122,
+      "capped": 0
+    }
+  ]
+}

@@ -55,7 +55,7 @@ const fixture: Plugin = { name: 'forest-heart-isolated-entropy', configureServer
           scenario === 'loss' ? [4095, 0, 1, 1] : scenario === 'partial' ? [0, 0, 1, 1] : [132, 0, 1, 1];
         fixture.program.splice(0, fixture.program.length, ...program);
       }
-      const reply = await fixture.store.operate(account, op, 2, true, true, true, true, true, true, true, true, 2, 3, req.headers['x-royal-forest-heart-rules'] === '1');
+      const reply = await fixture.store.operate(account, op, 2, true, true, true, true, true, true, true, true, 2, 3, req.headers['x-royal-caribbean-rules'] === '1', req.headers['x-royal-forest-heart-rules'] === '1');
       res.setHeader('Content-Type', 'application/json'); res.setHeader('X-Forest-Test-Draws', String(fixture.draws)); res.end(JSON.stringify(reply));
     } catch (error) { res.statusCode = error instanceof WalletError ? error.status : 400; res.end(JSON.stringify({ error: error instanceof Error ? error.message : 'Fixture failed' })); }
   });

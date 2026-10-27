@@ -35,8 +35,8 @@ async function fixture(){
   let wallet=new DemoWalletStore(db,draw);await wallet.ready;
   const depositId=randomUUID();await wallet.operate(a,{id:depositId,kind:'deposit',amount:10000});
   await wallet.operate(b,{id:randomUUID(),kind:'deposit',amount:200});
-  const operate=(account:string,op:unknown,cap=true)=>wallet.expansion.operate(account,op,2,true,true,true,true,true,true,true,true,2,3,cap);
-  const active=(account:string,cap=true)=>wallet.expansion.active(account,true,true,true,true,true,true,true,2,3,cap);
+  const operate=(account:string,op:unknown,cap=true)=>wallet.expansion.operate(account,op,2,true,true,true,true,true,true,true,true,2,3,true,cap);
+  const active=(account:string,cap=true)=>wallet.expansion.active(account,true,true,true,true,true,true,true,2,3,true,cap);
   const start=(stake='1000')=>({id:randomUUID(),action:'start' as const,gameId:FOREST_HEART_GAME,stakeUnits:stake,settings:{forestHeart:{mode:'normal' as const}}});
   const move=(s:any,name:string)=>({id:randomUUID(),action:'move' as const,gameId:FOREST_HEART_GAME,sessionId:s.id,move:name,revision:s.view.forestHeart.revision});
   const set=(values:number[],defaultValue=1)=>{program=[...values];fallback=defaultValue;};

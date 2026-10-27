@@ -1,0 +1,388 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Payout distribution characterization, not RTP qualification",
+  "seeds": [
+    487103,
+    582997
+  ],
+  "roundsPerSeed": 10000,
+  "results": [
+    {
+      "lines": 1,
+      "mode": "normal",
+      "tactic": "raid",
+      "lineStakeUnits": 100,
+      "paidRounds": 20000,
+      "costUnits": 100,
+      "streams": [
+        587106,
+        683000
+      ],
+      "observedRtp": 0.885099999999995,
+      "approximateMeanInterval95": [
+        0.8063909162427025,
+        0.9638090837572875
+      ],
+      "payoutProbability": 0.08305,
+      "profitProbability": 0.08305,
+      "breakEvenProbability": 0,
+      "observedStandardDeviationInPaidStakes": 5.6791558026287206,
+      "maximumObservedInPaidStakes": 212,
+      "bonusEntries": 219
+    },
+    {
+      "lines": 1,
+      "mode": "normal",
+      "tactic": "flagship",
+      "lineStakeUnits": 100,
+      "paidRounds": 20000,
+      "costUnits": 100,
+      "streams": [
+        3587123,
+        3683017
+      ],
+      "observedRtp": 0.990100000000002,
+      "approximateMeanInterval95": [
+        0.9000150070903251,
+        1.0801849929096787
+      ],
+      "payoutProbability": 0.08735,
+      "profitProbability": 0.08735,
+      "breakEvenProbability": 0,
+      "observedStandardDeviationInPaidStakes": 6.499970343834137,
+      "maximumObservedInPaidStakes": 240,
+      "bonusEntries": 200
+    },
+    {
+      "lines": 1,
+      "mode": "buy",
+      "tactic": "raid",
+      "lineStakeUnits": 100,
+      "paidRounds": 20000,
+      "costUnits": 2558,
+      "streams": [
+        2587109,
+        2683003
+      ],
+      "observedRtp": 0.9626817826426891,
+      "approximateMeanInterval95": [
+        0.9458177969789544,
+        0.9795457683064238
+      ],
+      "payoutProbability": 0.92275,
+      "profitProbability": 0.31855,
+      "breakEvenProbability": 0,
+      "observedStandardDeviationInPaidStakes": 1.2167998592509701,
+      "maximumObservedInPaidStakes": 40.73494917904613,
+      "bonusEntries": 20000
+    },
+    {
+      "lines": 1,
+      "mode": "buy",
+      "tactic": "flagship",
+      "lineStakeUnits": 100,
+      "paidRounds": 20000,
+      "costUnits": 2558,
+      "streams": [
+        5587126,
+        5683020
+      ],
+      "observedRtp": 0.9528850664581702,
+      "approximateMeanInterval95": [
+        0.9366880216739513,
+        0.9690821112423891
+      ],
+      "payoutProbability": 0.9092,
+      "profitProbability": 0.315,
+      "breakEvenProbability": 0,
+      "observedStandardDeviationInPaidStakes": 1.1686775716432027,
+      "maximumObservedInPaidStakes": 16.497263487099296,
+      "bonusEntries": 20000
+    },
+    {
+      "lines": 5,
+      "mode": "normal",
+      "tactic": "raid",
+      "lineStakeUnits": 100,
+      "paidRounds": 20000,
+      "costUnits": 500,
+      "streams": [
+        987118,
+        1083012
+      ],
+      "observedRtp": 0.9699600000000002,
+      "approximateMeanInterval95": [
+        0.9161163558209368,
+        1.0238036441790637
+      ],
+      "payoutProbability": 0.2829,
+      "profitProbability": 0.1682,
+      "breakEvenProbability": 0,
+      "observedStandardDeviationInPaidStakes": 3.885021012531768,
+      "maximumObservedInPaidStakes": 200.4,
+      "bonusEntries": 262
+    },
+    {
+      "lines": 5,
+      "mode": "normal",
+      "tactic": "flagship",
+      "lineStakeUnits": 100,
+      "paidRounds": 20000,
+      "costUnits": 500,
+      "streams": [
+        3987135,
+        4083029
+      ],
+      "observedRtp": 0.9850800000000014,
+      "approximateMeanInterval95": [
+        0.9332316662021969,
+        1.036928333797806
+      ],
+      "payoutProbability": 0.28375,
+      "profitProbability": 0.16715,
+      "breakEvenProbability": 0,
+      "observedStandardDeviationInPaidStakes": 3.7410518797603323,
+      "maximumObservedInPaidStakes": 78.4,
+      "bonusEntries": 276
+    },
+    {
+      "lines": 5,
+      "mode": "buy",
+      "tactic": "raid",
+      "lineStakeUnits": 100,
+      "paidRounds": 20000,
+      "costUnits": 9837,
+      "streams": [
+        2987121,
+        3083015
+      ],
+      "observedRtp": 0.9536139066788624,
+      "approximateMeanInterval95": [
+        0.9441477482712124,
+        0.9630800650865123
+      ],
+      "payoutProbability": 0.9981,
+      "profitProbability": 0.37655,
+      "breakEvenProbability": 0,
+      "observedStandardDeviationInPaidStakes": 0.6830188573301346,
+      "maximumObservedInPaidStakes": 11.466910643488868,
+      "bonusEntries": 20000
+    },
+    {
+      "lines": 5,
+      "mode": "buy",
+      "tactic": "flagship",
+      "lineStakeUnits": 100,
+      "paidRounds": 20000,
+      "costUnits": 9837,
+      "streams": [
+        5987138,
+        6083032
+      ],
+      "observedRtp": 0.9664084578631718,
+      "approximateMeanInterval95": [
+        0.9565262805497642,
+        0.9762906351765793
+      ],
+      "payoutProbability": 0.9849,
+      "profitProbability": 0.38485,
+      "breakEvenProbability": 0,
+      "observedStandardDeviationInPaidStakes": 0.7130361827753429,
+      "maximumObservedInPaidStakes": 11.405916437938396,
+      "bonusEntries": 20000
+    },
+    {
+      "lines": 10,
+      "mode": "normal",
+      "tactic": "raid",
+      "lineStakeUnits": 100,
+      "paidRounds": 20000,
+      "costUnits": 1000,
+      "streams": [
+        1487133,
+        1583027
+      ],
+      "observedRtp": 0.9261000000000013,
+      "approximateMeanInterval95": [
+        0.8831275475891077,
+        0.9690724524108948
+      ],
+      "payoutProbability": 0.41595,
+      "profitProbability": 0.14775,
+      "breakEvenProbability": 0.02535,
+      "observedStandardDeviationInPaidStakes": 3.1006237248937767,
+      "maximumObservedInPaidStakes": 106.6,
+      "bonusEntries": 295
+    },
+    {
+      "lines": 10,
+      "mode": "normal",
+      "tactic": "flagship",
+      "lineStakeUnits": 100,
+      "paidRounds": 20000,
+      "costUnits": 1000,
+      "streams": [
+        4487150,
+        4583044
+      ],
+      "observedRtp": 0.9500899999999988,
+      "approximateMeanInterval95": [
+        0.9074513537931636,
+        0.992728646206834
+      ],
+      "payoutProbability": 0.42065,
+      "profitProbability": 0.15215,
+      "breakEvenProbability": 0.02425,
+      "observedStandardDeviationInPaidStakes": 3.076538354435434,
+      "maximumObservedInPaidStakes": 52.4,
+      "bonusEntries": 300
+    },
+    {
+      "lines": 10,
+      "mode": "buy",
+      "tactic": "raid",
+      "lineStakeUnits": 100,
+      "paidRounds": 20000,
+      "costUnits": 17500,
+      "streams": [
+        3487136,
+        3583030
+      ],
+      "observedRtp": 0.9562331428571401,
+      "approximateMeanInterval95": [
+        0.9479869874315625,
+        0.9644792982827177
+      ],
+      "payoutProbability": 0.99995,
+      "profitProbability": 0.39375,
+      "breakEvenProbability": 0,
+      "observedStandardDeviationInPaidStakes": 0.5949910632800186,
+      "maximumObservedInPaidStakes": 7.554285714285714,
+      "bonusEntries": 20000
+    },
+    {
+      "lines": 10,
+      "mode": "buy",
+      "tactic": "flagship",
+      "lineStakeUnits": 100,
+      "paidRounds": 20000,
+      "costUnits": 17500,
+      "streams": [
+        6487153,
+        6583047
+      ],
+      "observedRtp": 0.9582868571428552,
+      "approximateMeanInterval95": [
+        0.9496814003975407,
+        0.9668923138881698
+      ],
+      "payoutProbability": 0.994,
+      "profitProbability": 0.40055,
+      "breakEvenProbability": 0,
+      "observedStandardDeviationInPaidStakes": 0.6209160020223882,
+      "maximumObservedInPaidStakes": 9.211428571428572,
+      "bonusEntries": 20000
+    },
+    {
+      "lines": 20,
+      "mode": "normal",
+      "tactic": "raid",
+      "lineStakeUnits": 100,
+      "paidRounds": 20000,
+      "costUnits": 2000,
+      "streams": [
+        2487163,
+        2583057
+      ],
+      "observedRtp": 0.9536900000000025,
+      "approximateMeanInterval95": [
+        0.9121107505734117,
+        0.9952692494265932
+      ],
+      "payoutProbability": 0.54075,
+      "profitProbability": 0.1652,
+      "breakEvenProbability": 0.015,
+      "observedStandardDeviationInPaidStakes": 3.000098900631553,
+      "maximumObservedInPaidStakes": 58.7,
+      "bonusEntries": 313
+    },
+    {
+      "lines": 20,
+      "mode": "normal",
+      "tactic": "flagship",
+      "lineStakeUnits": 100,
+      "paidRounds": 20000,
+      "costUnits": 2000,
+      "streams": [
+        5487180,
+        5583074
+      ],
+      "observedRtp": 0.9570749999999997,
+      "approximateMeanInterval95": [
+        0.9152460825806812,
+        0.9989039174193182
+      ],
+      "payoutProbability": 0.53855,
+      "profitProbability": 0.16265,
+      "breakEvenProbability": 0.01765,
+      "observedStandardDeviationInPaidStakes": 3.0181133833563516,
+      "maximumObservedInPaidStakes": 60,
+      "bonusEntries": 283
+    },
+    {
+      "lines": 20,
+      "mode": "buy",
+      "tactic": "raid",
+      "lineStakeUnits": 100,
+      "paidRounds": 20000,
+      "costUnits": 35607,
+      "streams": [
+        4487166,
+        4583060
+      ],
+      "observedRtp": 0.9608054596006416,
+      "approximateMeanInterval95": [
+        0.9532214774907368,
+        0.9683894417105463
+      ],
+      "payoutProbability": 1,
+      "profitProbability": 0.399,
+      "breakEvenProbability": 0,
+      "observedStandardDeviationInPaidStakes": 0.547212773297052,
+      "maximumObservedInPaidStakes": 7.195214424130087,
+      "bonusEntries": 20000
+    },
+    {
+      "lines": 20,
+      "mode": "buy",
+      "tactic": "flagship",
+      "lineStakeUnits": 100,
+      "paidRounds": 20000,
+      "costUnits": 35607,
+      "streams": [
+        7487183,
+        7583077
+      ],
+      "observedRtp": 0.9581638441879399,
+      "approximateMeanInterval95": [
+        0.9502240937159878,
+        0.9661035946598919
+      ],
+      "payoutProbability": 0.99725,
+      "profitProbability": 0.405,
+      "breakEvenProbability": 0,
+      "observedStandardDeviationInPaidStakes": 0.5728827958822819,
+      "maximumObservedInPaidStakes": 6.217878507035134,
+      "bonusEntries": 20000
+    }
+  ],
+  "limitations": [
+    "Statistics cover the declared 1-coin line stake. Exact qualification separately covers every permitted stake and mode.",
+    "Intervals use a normal approximation to the sampled mean. Rare tails and the complete variance are not certified by this sample.",
+    "No users, wallet accounts or real wagers are involved. Greater play time and payout frequency are not evidence of enjoyment."
+  ],
+  "sourceHashes": {
+    "src/shared/caribbeanTreasuresMath.ts": "b86e71675dfd0179da8d8c43c7a62f8da41303d5e6bc59f07b81d4497b64647b",
+    "scripts/game-math/caribbean-treasures-characterize.mjs": "baac2c4e1069f239eeb9547ae47fd9047f17332a5fbfd039a4264675435d7576"
+  }
+}
