@@ -1,4 +1,4 @@
-"""Bounded CPU leases for this isolated Cosmic publication; no financial services."""
+"""Bounded CPU leases for this isolated payment publication; no financial services."""
 from pathlib import Path
 import json
 import hashlib
@@ -27,7 +27,7 @@ def checked_rows(mode):
     elif mode == 'game':
         manifest = json.loads((ROOT / 'install-manifest.json').read_text())
         assert manifest['release'] == ROOT.name
-        assert {row['gameId'] for row in manifest['modulePackages']} == {'studio-cosmic-escape'}
+        assert manifest['modulePackages'] == [] and manifest['moduleDelta'] == {}
         assert re.fullmatch('[a-f0-9]{40}', manifest['sourceCommit'])
         proof_bytes = (ROOT/'helpers-source.json').read_bytes()
         assert hashlib.sha256(proof_bytes).hexdigest() == manifest['helperProofSha256']

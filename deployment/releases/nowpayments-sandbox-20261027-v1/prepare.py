@@ -71,6 +71,7 @@ args = parser.parse_args()
 stage, before_path, out = args.stage, args.before, args.output
 release = json.loads((stage/'module-build/release-manifest.json').read_text())
 before = json.loads(before_path.read_text())
+assert release['baseCommit'] == before['sourceRevision'], 'Verified production source must be the release base'
 assert before['program'] == before['preparedProgram'] and before['container']['health'] == 'healthy'
 assert release['githubVerified'] and release['build']['passed'] and release['scope'] == 'application'
 assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=stage,text=True).strip() == release['sourceCommit']
