@@ -30,3 +30,34 @@
 .ct-modal{width:min(100%,570px);max-height:100%;overflow:auto;background:#14333b;border:1px solid #dfb86c;border-radius:10px;padding:20px;box-shadow:0 12px 40px #0009;color:#edf0d9;font:14px system-ui,sans-serif}
 .ct-modal h3{font:25px Georgia,serif;color:#f2d89b;margin:0 0 12px}.ct-modal p{line-height:1.5;font-size:13px}.ct-modal button{display:block;width:100%;margin-top:10px;text-align:center}.ct-modal table{width:100%;border-collapse:collapse;font-size:12px}.ct-modal th,.ct-modal td{padding:6px 4px;border-bottom:1px solid #74918455;text-align:right}.ct-modal th:first-child{text-align:left}.ct-modal ol{padding-left:18px}.ct-modal li{padding:5px 0;font-size:12px}.ct-modal .ct-buy-price{font:32px Georgia,serif;color:#f3d58e;margin:8px 0}
 @media(max-width:650px){.ct-root{padding:8px;gap:7px}.ct-controls{grid-template-columns:minmax(60px,1fr) minmax(90px,1fr) minmax(90px,1fr)}.ct-controls>[data-ct-action=lines]{grid-column:3}.ct-controls>[data-ct-action=buy]{grid-column:1}.ct-controls>.ct-play{grid-column:2/4}.ct-heading h2{font-size:19px}.ct-ledger span{font-size:9px}.ct-ledger strong{font-size:12px}.ct-status{font-size:10px}.ct-map{font-size:9px}.ct-modal{padding:13px}.ct-modal h3{font-size:21px}}
+
+/* Finished Caribbean art. Media exports are inventoried into this game's package. */
+.ct-root{container-name:caribbean;container-type:inline-size;background:#0a2c38 url('/assets/caribbean-treasures/harbor.webp') center/cover no-repeat;isolation:isolate;text-shadow:0 1px 2px #00121c}
+.ct-root:before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(180deg,#05243077,#041c28a6 65%,#041922ed)}
+.ct-heading{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:10px;padding:4px 7px 8px;border-bottom:1px solid #f3ce8b66}
+.ct-avatar{width:50px;height:53px;object-fit:cover;object-position:50% 16%;border-radius:50% 50% 35% 35%;background:#233c3c;border:2px solid #dfb675;box-shadow:0 3px 12px #0008}
+.ct-heading h2{font-weight:700;color:#ffdf93;text-shadow:0 2px 0 #603f1b,0 4px 12px #00131a;font-size:clamp(18px,2.2vw,32px)}
+.ct-root button,.ct-root select{box-shadow:inset 0 1px #ffe1aa33,0 2px 5px #0005;background:linear-gradient(#244f57,#0c2b36);color:#fff0c7;border-color:#c8a36a;touch-action:manipulation}
+.ct-header-tools button[aria-pressed=false]{color:#aaa;box-shadow:none;background:#132b33}
+.ct-stage{position:relative;min-height:130px}.ct-board-wrap{position:relative;padding:8px 6px}
+.ct-board{border-width:6px;border-color:#c99a50;outline:2px solid #543619;border-radius:11px;background:radial-gradient(ellipse at 50% 20%,#164551,#082635 80%);box-shadow:0 0 0 4px #42351d,0 0 0 6px #d0a263,0 12px 32px #00131caa}
+.ct-cell{border-color:#ddbd773b;background:linear-gradient(135deg,#ffffff03,#00000009);padding:5px}
+.ct-cell>svg{filter:drop-shadow(1px 4px 2px #0007);height:74%;max-width:85%;width:85%}.ct-cell span{font-weight:600;color:#ffdf9a;font-size:clamp(8px,1.1cqw,12px)}
+.ct-giant{background:radial-gradient(ellipse,#25606b,#103741 75%);border:3px solid #ffe2a1;box-shadow:inset 0 0 30px #e4bb6638;gap:3px;padding:7px}
+.ct-giant>svg{filter:drop-shadow(3px 6px 4px #001b26a8);height:75%;width:80%}.ct-giant>strong{font-weight:700;color:#ffdf98}.ct-paths rect{stroke-width:2;stroke:#ffe19a;filter:drop-shadow(0 0 3px #f8b847)}
+.ct-captain{display:none;position:absolute;right:-8px;bottom:18px;width:220px;height:95%;pointer-events:none}.ct-captain img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:bottom;filter:drop-shadow(2px 6px 7px #041c37b3)}.ct-captain-win{opacity:0}
+.ct-map{align-self:center;padding:5px 18px;border:1px solid #bd9d60;border-radius:15px;background:#102e39ed;color:#ffe4aa;min-width:170px;letter-spacing:.14em}
+.ct-ledger,.ct-controls{position:relative;border:1px solid #caa36377;background:linear-gradient(#17323aeb,#071e2bef);border-radius:9px;padding:9px;box-shadow:0 4px 12px #00192166}
+.ct-controls .ct-play{background:linear-gradient(#bc4a32,#84251f);border:2px solid #f2cb7c;color:#fff1bf;text-shadow:0 1px 2px #3b1113;box-shadow:inset 0 0 0 2px #842c21,0 3px 9px #00131c99}
+.ct-choice{padding:9px;border:1px solid #e0bf73;border-radius:8px;background:#102d37f2}.ct-choice button{background:linear-gradient(#573b2a,#292d30)}
+.ct-status{padding:0 3px;color:#f5e8ca}.ct-root[data-outcome=partial] .ct-status{color:#e6d3ba}.ct-root[data-outcome=win] .ct-status,.ct-root[data-outcome=bigwin] .ct-status{color:#fff0aa;font-weight:700}
+.ct-waiting{position:absolute;inset:0;z-index:4;display:grid;place-items:center;background:#052532a8;font:600 14px system-ui,sans-serif;color:#ffe7ae;backdrop-filter:blur(2px)}
+.ct-skip{align-self:center;min-height:28px!important;font:11px system-ui,sans-serif!important;padding:4px 15px!important}
+.ct-root[data-ct-phase=reels] .ct-cell:not(.ct-landed)>svg{animation:ct-roll .22s linear infinite;filter:blur(2px);opacity:.55}
+.ct-root[data-ct-phase=giant] .ct-giant{animation:ct-reveal .28s ease-out}.ct-root[data-ct-phase=cannon] .ct-giant{animation:ct-cannon .32s ease-out}.ct-root[data-ct-phase=wins] .ct-paths rect{animation:ct-gold .24s ease-out}
+.ct-root[data-ct-phase=outcome][data-outcome=bigwin] .ct-board,.ct-root[data-ct-phase=outcome][data-outcome=win] .ct-board{box-shadow:0 0 0 4px #614a23,0 0 0 6px #f4d78b,0 0 36px #e4be6777}
+.ct-root[data-ct-phase=outcome]:is([data-outcome=bigwin],[data-outcome=win]) .ct-captain>img:first-child{opacity:0}.ct-root[data-ct-phase=outcome]:is([data-outcome=bigwin],[data-outcome=win]) .ct-captain-win{opacity:1}
+@keyframes ct-roll{from{transform:translateY(-12%)}to{transform:translateY(12%)}}@keyframes ct-reveal{from{transform:scale(.88);opacity:.4}to{transform:scale(1);opacity:1}}@keyframes ct-cannon{from{box-shadow:inset 0 0 60px #eec567bb}to{box-shadow:inset 0 0 30px #e4bb6638}}@keyframes ct-gold{from{stroke-width:5}to{stroke-width:2}}
+@container caribbean (min-width:850px){.ct-board-wrap{margin-right:215px}.ct-captain{display:block}}
+@media(max-width:650px){.ct-heading{grid-template-columns:33px minmax(0,1fr) auto;gap:5px;padding:0 0 5px}.ct-avatar{width:32px;height:42px}.ct-header-tools{gap:3px}.ct-header-tools button{width:27px;min-height:30px;font-size:16px}.ct-heading small{font-size:7px;letter-spacing:.12em}.ct-heading h2{font-size:17px}.ct-board{border-width:4px}.ct-board-wrap{padding:7px}.ct-ledger,.ct-controls{padding:6px}.ct-controls{gap:5px}.ct-map{padding:3px 12px}.ct-stage{min-height:120px}.ct-cell{padding:3px}.ct-cell span{font-size:8px}.ct-status{font-size:10px}}
+@media(prefers-reduced-motion:reduce){.ct-root *{animation:none!important;transition:none!important}}

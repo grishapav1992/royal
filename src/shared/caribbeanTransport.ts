@@ -5,6 +5,7 @@ import {
 import type { ExpansionSession, ExpansionView, ExpansionAction } from './casinoExpansion';
 
 export type CaribbeanTransportSettings = { caribbean: CaribbeanSettings };
+export const CARIBBEAN_CLIENT_HEADER='X-Royal-Caribbean-Treasures';
 export const CARIBBEAN_MOVES = ['caribbean-spin','caribbean-choose-raid','caribbean-choose-flagship'] as const;
 export function validCaribbeanTransportSettings(value: unknown): value is CaribbeanTransportSettings {
   return !!value && typeof value === 'object' && !Array.isArray(value)

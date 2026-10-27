@@ -7,7 +7,7 @@ import { NileGameRuntime, type NativeCommand } from '../../server/finance/nile-g
 import { CARIBBEAN_GAME } from '../../src/shared/caribbeanTreasures';
 import { validCaribbeanSession } from '../../src/shared/caribbeanTransport';
 const command = (body:unknown = null):NativeCommand => ({
-  path:'/expansion',body,method:body === null ? 'GET' : 'POST',flags:Array(9).fill(true),rules:2,query:{},
+  path:'/expansion',caribbeanRules:1,body,method:body === null ? 'GET' : 'POST',flags:Array(9).fill(true),rules:2,query:{},
 });
 for (const mode of ['normal','buy-raid','buy-flagship'] as const)
   test('Caribbean ' + mode + ' uses the common Nile journal, reserves the accepted configuration and settles once',async () => {
@@ -19,6 +19,7 @@ for (const mode of ['normal','buy-raid','buy-flagship'] as const)
       const op = {id:randomUUID(),action:'start',gameId:CARIBBEAN_GAME,stakeUnits:'100',
         settings:{caribbean:{lines:1,mode}}};
       const before = BigInt((await c.ledger.wallet(c.a) as any).balanceUnits);
+      await assert.rejects(games.run(c.a,{...command(op),caribbeanRules:0}));assert.equal(draws,0);
       let reply:any = await games.run(c.a,command(op));
       assert(validCaribbeanSession(reply.session));
       const spent = BigInt(reply.session.spentUnits) * 10000n;
@@ -29,6 +30,7 @@ for (const mode of ['normal','buy-raid','buy-flagship'] as const)
       const retry:any = await games.run(c.a,command(op));
       assert(retry.replayed); assert.equal(draws,startDraws);
       assert.equal(retry.wallet.balanceUnits,reply.wallet.balanceUnits);
+      const older:any=await games.run(c.a,{...command(),caribbeanRules:0});assert.equal(older.sessions.some((s:any)=>s.gameId===CARIBBEAN_GAME),false);
       games = new NileGameRuntime(c.ledger,() => { draws++; return 0; });
       const recovered:any = await games.run(c.a,command());
       assert.deepEqual(recovered.sessions.find((session:any) => session.id === op.id),reply.session);

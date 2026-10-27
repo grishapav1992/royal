@@ -37,6 +37,19 @@ async function complete(f:Awaited<ReturnType<typeof fixture>>,session:ExpansionS
   }
   return {session,last};
 }
+
+test('older clients cannot receive or operate Caribbean sessions and do not change its money',async()=>{
+ const f=await fixture(true);
+ try{
+  const start=await f.store.operate('alice',f.start()),draws=f.draws(),balance=await demoBalanceUnits(f.db,'alice');
+  const legacy=await f.store.active('alice',true,true,true,true,true,true,true,2,3,false);
+  assert.equal(legacy.sessions.some(s=>s.gameId===CARIBBEAN_GAME),false);
+  assert.equal((await f.store.active('alice')).sessions.find(s=>s.gameId===CARIBBEAN_GAME)!.id,start.session.id);
+  await assert.rejects(f.store.operate('alice',f.start(),2,true,true,true,true,true,true,true,true,2,3,false));
+  await assert.rejects(f.store.operate('alice',{id:randomUUID(),gameId:CARIBBEAN_GAME,action:'move',sessionId:start.session.id,move:'caribbean-choose-raid',revision:1},2,true,true,true,true,true,true,true,true,2,3,false));
+  assert.equal(f.draws(),draws);assert.equal(await demoBalanceUnits(f.db,'alice'),balance);
+ }finally{await f.db.close();}
+});
 test('every line, line stake and paid mode uses the qualified price, integer credit and exact reserve',async () => {
   const f = await fixture();
   try {

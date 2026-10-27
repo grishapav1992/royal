@@ -1,11 +1,14 @@
-const paths = [
-  '<path d="M12 23l25-9 26 9 25-9v63l-25 9-26-9-25 9z"/><path d="M37 14v63m26-54v63M22 43l9 12m-9 0l9-12m15 8l9 5 16-17"/>',
-  '<circle cx="50" cy="50" r="35"/><circle cx="50" cy="50" r="27"/><path d="M50 20v9m30 21h-9M50 80v-9M20 50h9M62 34L53 59 38 67l9-26z"/>',
-  '<path d="M12 34h59l13 10-8 13H48L35 85H19l10-34H12z"/><path d="M22 34v-9h42v9M47 57l-5 12H31M73 44h13"/>',
-  '<path d="M76 12c1 32-15 47-39 54L25 54C54 43 64 28 76 12z"/><path d="M19 49l25 25M30 61L15 81m-6-6l12 12"/>',
-  '<path d="M28 18h44l19 27-41 42L9 45z"/><path d="M9 45h82M28 18l-6 27 28 42 28-42-6-27M28 18l22 27 22-27"/>',
-  '<path d="M31 78c2-20-10-27-10-41 0-17 16-27 31-23 12 3 19 13 17 25-2 8-8 10-12 13l6 26z"/><path d="M59 20c20-1 26 11 18 25l-14-9M31 61L18 91l26-17m1-47h1M27 51l25-5"/>',
-];
-export function caribbeanIcon(symbol: number) {
-  return '<svg viewBox="0 0 100 100" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">' + (paths[symbol] ?? paths[0]) + '</svg>';
+let serial=0;
+/** Editable masters share the same silhouette at 1x1, 2x2 and 3x3. */
+export function caribbeanIcon(symbol:number){
+ const id='ct-art-'+serial++,gold=`url(#${id}-g)`,silver=`url(#${id}-s)`;
+ const shapes=[
+  `<path d="M12 21l25-5 26 9 24-9-3 65-22 7-26-9-25 7z" fill="#c89554" stroke="#66421e"/><path d="M17 25l20-5 24 9 20-7-2 54-18 7-24-9-21 7z" fill="#f2d29a"/><path d="M37 20v54m24-45v54" stroke="#a57b43"/><path d="M24 51q9-15 21 3t24-10" fill="none" stroke="#946e3e" stroke-dasharray="3 4"/><path d="M28 39l9 9m-9 0l9-9" stroke="#b83427" stroke-width="4"/><circle cx="69" cy="43" r="5" fill="${gold}"/>`,
+  `<path d="M44 16V8h12v8" fill="${gold}" stroke="#65431c"/><circle cx="50" cy="53" r="37" fill="${gold}" stroke="#65431c" stroke-width="3"/><circle cx="50" cy="53" r="29" fill="#123845" stroke="#f4d27e" stroke-width="2"/><path d="M50 25v9m0 38v9M22 53h9m38 0h9M30 33l6 6m28 28l6 6M30 73l6-6m28-28l6-6" stroke="#d4bc7e" stroke-width="2"/><path d="M63 30L53 57 36 76 47 49z" fill="#e7d8ae"/><path d="M63 30L53 57 47 49z" fill="#d34132"/><circle cx="50" cy="53" r="4" fill="${gold}"/>`,
+  `<path d="M17 40h49l15-9 8 8-16 15-31 3-8 26-16-4 10-26-12-2z" fill="#6b3821" stroke="#342820" stroke-width="3"/><path d="M14 31h58l16-9 7 9-18 14H14z" fill="${silver}" stroke="#35434b" stroke-width="3"/><path d="M24 32h43M38 52q16 23 24 0" fill="none" stroke="${gold}" stroke-width="4"/><path d="M25 57l-5 13m10-10l-5 13" stroke="#a26836" stroke-width="2"/>`,
+  `<path d="M77 10C88 45 62 63 36 69L26 55C57 45 66 29 77 10z" fill="${silver}" stroke="#405263" stroke-width="2"/><path d="M76 15Q71 48 35 61" fill="none" stroke="#f8ffff" stroke-width="2"/><path d="M21 53l25 23-7 7-25-23z" fill="${gold}" stroke="#69461d"/><path d="M29 70L16 88 7 82 22 63" fill="#623e28" stroke="#d5a64c" stroke-width="3"/><path d="M15 81L6 92" stroke="#ce4831" stroke-width="6"/>`,
+  `<path d="M27 17h46l20 28-43 44L7 45z" fill="${gold}" stroke="#6f461e" stroke-width="4"/><path d="M29 22h42l16 23-37 38L13 45z" fill="#e24565"/><path d="M29 22l-8 23 29 38 29-38-8-23-21 23z" fill="#b91b40"/><path d="M13 45h74L50 83 21 45h29L29 22h42L50 45h29" fill="none" stroke="#ff8e9f" stroke-width="2"/><path d="M24 27l8-4m40 7l6 9" stroke="#ffe8d0" stroke-width="4"/>`,
+  `<path d="M39 57L17 95 45 80 52 51" fill="#147bb0" stroke="#103c59" stroke-width="2"/><path d="M44 23q24-9 25 16l-9 34q-12 12-29 0-8-20 0-33z" fill="#d9342b" stroke="#8e261e" stroke-width="2"/><path d="M38 44Q10 53 24 77l24-15" fill="#d9aa35"/><path d="M35 51Q16 67 26 82l25-21" fill="#217a9b"/><path d="M38 59l-7 23 21-19" fill="#2467aa"/><circle cx="53" cy="31" r="17" fill="#ef5240"/><path d="M54 25q21-7 26 7l-14 13-8-11z" fill="#f0e2ba"/><path d="M66 27q24 0 16 20l-14-9z" fill="#343e46"/><circle cx="58" cy="27" r="3" fill="#171d23"/><circle cx="59" cy="26" r="1" fill="#fff"/><path d="M40 76l-6 8m21-7l-2 7M28 85h32" stroke="${gold}" stroke-width="4"/>`,
+ ];
+ return `<svg viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="${id}-g" x2="80%" y2="100%"><stop stop-color="#fff0a4"/><stop offset=".35" stop-color="#edbc53"/><stop offset=".65" stop-color="#9a6029"/><stop offset="1" stop-color="#edc47a"/></linearGradient><linearGradient id="${id}-s" x2="60%" y2="100%"><stop stop-color="#f6f2d9"/><stop offset=".5" stop-color="#a0bac3"/><stop offset="1" stop-color="#456474"/></linearGradient></defs><g stroke-linejoin="round" stroke-linecap="round">${shapes[symbol]??shapes[0]}</g></svg>`;
 }

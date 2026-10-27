@@ -109,11 +109,11 @@ export class DemoExpansionStore {
     await this.money(account,s,s.id,0,s.crashPoint===100?Number(s.stakeUnits)*100:0);
   }
   async settleDue(account:string){await this.ready;await this.db.transaction(()=>this.crashDue(account,this.now()),{lockKey:'account:'+account});}
-  private async sessions(account:string,caramelClient=true,velvetClient=true,convoyClient=true,nitroClient=true,afterClient=true,memeClient=true,penaltyClient=true,draconaClient:boolean|2=2,neopolisClient:boolean|2|3=3){
+  private async sessions(account:string,caramelClient=true,velvetClient=true,convoyClient=true,nitroClient=true,afterClient=true,memeClient=true,penaltyClient=true,draconaClient:boolean|2=2,neopolisClient:boolean|2|3=3,caribbeanClient=true){
     const rows=await this.db.prepare(`SELECT DISTINCT ON(game_id) payload FROM demo_casino_sessions WHERE account_id=? AND game_id IN (${placeholders}) ORDER BY game_id,(payload::jsonb->>'createdAt')::bigint DESC,id DESC`).all(account,...EXPANSION_GAMES);
-    return rows.map(row=>this.public(JSON.parse(row.payload))).filter(s=>caramelClient||s.gameId!==CARAMEL_GAME||s.rulesVersion!==2).filter(s=>velvetClient||s.gameId!==VELVET_GAME||s.rulesVersion!==2).filter(s=>convoyClient||s.gameId!==CONVOY_GAME).filter(s=>nitroClient||s.gameId!==NITRO_GAME).filter(s=>afterClient||s.gameId!==AFTER_GAME).filter(s=>memeClient||s.gameId!==MEME_GAME).filter(s=>penaltyClient||s.gameId!==PENALTY_GAME).filter(s=>s.gameId!==DRACONA_GAME||supportsDracona(draconaClient,s.rulesVersion)).filter(s=>s.gameId!==NEOPOLIS_GAME||supportsNeopolis(neopolisClient,s.rulesVersion));
+    return rows.map(row=>this.public(JSON.parse(row.payload))).filter(s=>caramelClient||s.gameId!==CARAMEL_GAME||s.rulesVersion!==2).filter(s=>velvetClient||s.gameId!==VELVET_GAME||s.rulesVersion!==2).filter(s=>convoyClient||s.gameId!==CONVOY_GAME).filter(s=>nitroClient||s.gameId!==NITRO_GAME).filter(s=>afterClient||s.gameId!==AFTER_GAME).filter(s=>memeClient||s.gameId!==MEME_GAME).filter(s=>penaltyClient||s.gameId!==PENALTY_GAME).filter(s=>s.gameId!==DRACONA_GAME||supportsDracona(draconaClient,s.rulesVersion)).filter(s=>s.gameId!==NEOPOLIS_GAME||supportsNeopolis(neopolisClient,s.rulesVersion)).filter(s=>caribbeanClient||s.gameId!==CARIBBEAN_GAME);
   }
-  async active(account:string,caramelClient=true,velvetClient=true,convoyClient=true,nitroClient=true,afterClient=true,memeClient=true,penaltyClient=true,draconaClient:boolean|2=2,neopolisClient:boolean|2|3=3){await this.ready;return this.db.transaction(async()=>{await this.settleOther(account);await this.crashDue(account,this.now());return {wallet:await this.snapshot(account),sessions:await this.sessions(account,caramelClient,velvetClient,convoyClient,nitroClient,afterClient,memeClient,penaltyClient,draconaClient,neopolisClient)};},{lockKey:'account:'+account});}
+  async active(account:string,caramelClient=true,velvetClient=true,convoyClient=true,nitroClient=true,afterClient=true,memeClient=true,penaltyClient=true,draconaClient:boolean|2=2,neopolisClient:boolean|2|3=3,caribbeanClient=true){await this.ready;return this.db.transaction(async()=>{await this.settleOther(account);await this.crashDue(account,this.now());return {wallet:await this.snapshot(account),sessions:await this.sessions(account,caramelClient,velvetClient,convoyClient,nitroClient,afterClient,memeClient,penaltyClient,draconaClient,neopolisClient,caribbeanClient)};},{lockKey:'account:'+account});}
   async presentation(account:string,sessionId:unknown,phase:unknown,step:unknown):Promise<StudioSlotPresentation> {
     await this.ready;
     if(typeof sessionId!=='string'||!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(sessionId)||!Number.isSafeInteger(phase)||Number(phase)<1||Number(phase)>3||!Number.isSafeInteger(step)||Number(step)<0||Number(step)>2)throw new WalletError(400,'Некорректный запрос показа игры.');
@@ -191,9 +191,10 @@ export class DemoExpansionStore {
   private applyLuelon(s:ExpansionState,result:LuelonSlotResult){
     s.engine=undefined;s.state=result.ended?'settled':'active';s.view={...emptyView(),luelon:result.luelon,ended:result.ended,message:result.message,phase:result.luelon.revision+1,actions:result.actions};return {debit:0,credit:result.credit};
   }
-  async operate(account:string,value:unknown,clientRules:1|2=2,caramelClient=true,velvetClient=true,convoyClient=true,nitroClient=true,afterClient=true,afterProgressClient=true,memeClient=true,penaltyClient=true,draconaClient:boolean|2=2,neopolisClient:boolean|2|3=3){
+  async operate(account:string,value:unknown,clientRules:1|2=2,caramelClient=true,velvetClient=true,convoyClient=true,nitroClient=true,afterClient=true,afterProgressClient=true,memeClient=true,penaltyClient=true,draconaClient:boolean|2=2,neopolisClient:boolean|2|3=3,caribbeanClient=true){
     await this.ready;if(!validExpansionAction(value))throw new WalletError(400,'Некорректное действие казино.');
     const op=structuredClone(value),key=JSON.stringify(op);
+    if(op.gameId===CARIBBEAN_GAME&&!caribbeanClient)throw new WalletError(409,'Обнови страницу для игры «Карибские сокровища». Ставка не списана.');
     if(op.gameId===PENALTY_GAME&&!penaltyClient)throw new WalletError(409,'Обнови страницу для игры CR vs. Leo. Ставка не списана.');
     if(op.gameId===NEOPOLIS_GAME&&!neopolisClient)throw new WalletError(409,'Neopolis: refresh the game');
     if(op.gameId===DRACONA_GAME&&!draconaClient)throw new WalletError(409,'Обнови страницу для игры Дракона.');
@@ -215,7 +216,7 @@ export class DemoExpansionStore {
         const session=this.public(JSON.parse(row!.payload));
         if(session.gameId===NEOPOLIS_GAME&&!supportsNeopolis(neopolisClient,session.rulesVersion))throw new WalletError(409,'Neopolis: refresh for the three-boss campaign');
         if(session.gameId===DRACONA_GAME&&!supportsDracona(draconaClient,session.rulesVersion))throw new WalletError(409,'Dracona: refresh for the current rules');
-        return {wallet:await this.snapshot(account),session,sessions:await this.sessions(account,caramelClient,velvetClient,convoyClient,nitroClient,afterClient,memeClient,penaltyClient,draconaClient,neopolisClient),replayed:true};
+        return {wallet:await this.snapshot(account),session,sessions:await this.sessions(account,caramelClient,velvetClient,convoyClient,nitroClient,afterClient,memeClient,penaltyClient,draconaClient,neopolisClient,caribbeanClient),replayed:true};
       }
       if(op.gameId===AFTER_GAME&&op.action==='start'&&!afterProgressClient)throw new WalletError(409,'Обнови страницу: прогресс GIRLHUB теперь зависит от суммы ставки. Ставка не списана.');
       if(op.action==='start'&&isRetiredArcadeGame(op.gameId))throw new WalletError(409,'Эта игра убрана из зала. Сохранённую партию можно завершить. Новая ставка не принята.');
@@ -282,7 +283,7 @@ export class DemoExpansionStore {
         if(s.state!=='active'){
           if(s.gameId==='github-crash'&&op.move==='cashout'){
             await this.db.prepare('INSERT INTO demo_casino_requests VALUES(?,?,?,?,?)').run(account,op.id,key,s.id,at);
-            return {wallet:await this.snapshot(account),session:this.public(s),sessions:await this.sessions(account,caramelClient,velvetClient,convoyClient,nitroClient,afterClient,memeClient,penaltyClient,draconaClient,neopolisClient),replayed:false};
+            return {wallet:await this.snapshot(account),session:this.public(s),sessions:await this.sessions(account,caramelClient,velvetClient,convoyClient,nitroClient,afterClient,memeClient,penaltyClient,draconaClient,neopolisClient,caribbeanClient),replayed:false};
           }
           throw new WalletError(409,'Эта партия уже завершена.');
         }
@@ -351,7 +352,7 @@ export class DemoExpansionStore {
       if(op.gameId===AFTER_GAME&&op.action==='start')await this.wardrobe.beginRound(account,s.id);
       await this.money(account,s,op.id,debit,credit,op.action==='move'&&op.move==='pull'?'refund':'win');
       await this.db.prepare('INSERT INTO demo_casino_requests VALUES(?,?,?,?,?)').run(account,op.id,key,s.id,this.now());
-      return {wallet:await this.snapshot(account),session:this.public(s),sessions:await this.sessions(account,caramelClient,velvetClient,convoyClient,nitroClient,afterClient,memeClient,penaltyClient,draconaClient,neopolisClient),replayed:false};
+      return {wallet:await this.snapshot(account),session:this.public(s),sessions:await this.sessions(account,caramelClient,velvetClient,convoyClient,nitroClient,afterClient,memeClient,penaltyClient,draconaClient,neopolisClient,caribbeanClient),replayed:false};
     },{lockKey:'account:'+account});
   }
 }
