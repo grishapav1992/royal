@@ -38,7 +38,7 @@ Candidates are private to the owner. The chosen immutable PNG is public for rend
 
 Worker updates are fenced by a unique lease token and expiry checked under the job's row lock. A late image response cannot restore a refunded job. Replaying a completed choice returns the saved result without re-equipping an old outfit. Each job stores its promised variant count. Existing jobs retain three candidates; new jobs use two. No existing wardrobe artwork is regenerated or overwritten. The open atelier refreshes the ordinary game wallet. Its generation label stays constant during background polling.
 
-Each sheet has four direction rows (front, left, right, back) and four pose columns (standing, left step, right step, sitting). The renderer uses the standing cutout of the requested direction for all walking frames, animating its lower legs around fixed hips. It never alternates independently generated walking figures, preventing changes of face, orientation, scale and body anchor between steps, including for existing skins. Sitting uses the sitting column, with a cup overlay for drinking and body motion for reactions. Head, arm and expression animation is not independently rigged in this first version. Failed artwork downloads retain the base character and retry three times.
+Each sheet has four direction rows (front, left, right, back) and four pose columns (standing, left step, right step, sitting). The renderer cycles whole standing, left-step and right-step figures from the requested direction. The complete drawn arms and legs move together, with no artificial cuts through the body or joints. The normalized cells share the same scale and foot baseline. Sitting uses the sitting column, with a cup overlay for drinking and body motion for reactions. Head, arm and expression animation is not independently rigged in this first version. Failed artwork downloads retain the base character and retry three times.
 
 ## Validation and release
 
@@ -50,9 +50,9 @@ Run `npm run test:skins` for server regressions and `npm run test:skins:ui` for 
 
 Production release history is recorded in `deployment/SERVER.md`. A release updates the common host/backend while preserving the existing payment service and its configuration, compare against fresh production sources, preserve parallel work and production environment/volumes, and follow AGENTS.md and deployment/SERVER.md for main synchronization, backup, image tagging and deployment recording.
 
-## Walking correction, 24 October 2026
+## Walking correction, 27 October 2026
 
-The event is actual actor movement; facing comes from movement state and remains fixed within each direction's walking loop. The upper body and face use the same standing image in all six phases. Only the two lower cutout pieces swing, with a fixed body position and no walking bounce. Stopping returns to that same standing image. Reduced motion removes idle decoration as before. These are game-specific design choices, not perceptual thresholds. Browser checks compare upper-body pixels across all walking frames in all directions, verify changing feet and cover old and new orders.
+The event is actual actor movement; facing comes from movement state and remains fixed within each direction's walking loop. Whole prepared poses provide the arm and leg movements. The six phases use standing, left step, left step, standing, right step and right step at the shared game rate of 12 frames per second. Stopping returns to the standing pose. The fitting room uses the same phases, renderer and cadence. The earlier lower-leg rotation introduced detached joints and froze the arms, and has been removed for both new and saved skins. No wardrobe image is regenerated. Sitting, drinking and game reactions retain their existing complete poses. Browser regressions check that hands move relative to the head, feet alternate, and the connected figure stays intact in every direction and phase. These are game-specific presentation choices, not perceptual thresholds.
 
 ## Interactive fitting room, 25 October 2026
 

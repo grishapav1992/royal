@@ -4,6 +4,7 @@ import Phaser from 'phaser';
 import { parseGeneratedAppearance } from '../shared/skinStudio';
 import { drawGeneratedSkin, hasSkinSheet, loadSkinSheet } from './generatedSkinArt';
 import { drawMira } from './miraArt';
+import { CHARACTER_WALK_FRAMES, CHARACTER_WALK_FRAME_RATE } from './characterAnimation';
 
 import type { Facing } from '../shared/movement';
 export type { Facing } from '../shared/movement';
@@ -136,7 +137,7 @@ function createCharacterTexture(scene: Phaser.Scene, key: string, draw: (ctx: Ca
     for (const [action, start] of [['drink', 11], ['sitdrink', 17]] as const) {
       animate({ key: `${key}-${action}-${direction}`, frames: animationFrames(start, 6), frameRate: 6, repeat: -1 });
     }
-    animate({ key: `${key}-walk-${direction}`, frames: animationFrames(0, 6), frameRate: 12, repeat: -1 });
+    animate({ key: `${key}-walk-${direction}`, frames: animationFrames(0, CHARACTER_WALK_FRAMES), frameRate: CHARACTER_WALK_FRAME_RATE, repeat: -1 });
     for (const extra of [23, 24, 25, 26, 27]) addFrame(extra, extra >= 25 ? [8, 7, 9][extra - 25] : extra, extra >= 25);
     const idle = (index: number, duration: number) => ({ key, frame: `${direction}-${index}`, duration });
     animate({ key: `${key}-sit-${direction}`, frames: [
