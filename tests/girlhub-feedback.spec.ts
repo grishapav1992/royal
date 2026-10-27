@@ -4,15 +4,16 @@ import {spawn,type ChildProcess} from 'node:child_process';
 import {createServer as netServer} from 'node:net';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {temporaryDatabase} from '../scripts/database-test';
+import {PostgresDatabase,databaseConfig} from '../server/database';
 import {startAfter} from '../server/games/afterglow';
 import {validAfterSession} from '../src/shared/afterglow';
 import {afterRoundTier} from '../src/ui/AfterglowFeedback';
 import type {DemoWallet} from '../src/shared/demoWallet';
 
 let vite:ViteDevServer,backend:ChildProcess,db:Awaited<ReturnType<typeof temporaryDatabase>>,baseURL:string;
-let logs='';const proof='artifacts/girlhub-feedback';
-const profile={version:3,revision:0,selectedGirl:0,selectedLook:0,albumUnits:0,pointsUnits:[0,0,0,0],unlocked:[false,false,false,false],active:false,activeGirl:null};
-const wallet:DemoWallet={balance:1000,entries:[],asset:'USDT_NILE_TEST',balanceUnits:'1000000000',revision:90000,testOnly:true,scale:2};
+let logs='';const proof='artifacts/work/girlhub-unlock-order/feedback';
+const profile={version:4,revision:0,selectedGirl:1,selectedLook:0,albumUnits:0,pointsUnits:[0,0,0,0],unlocked:[false,false,false,false],active:false,activeGirl:null};
+const wallet:DemoWallet={balance:1000,entries:[]};
 const result=(seed:number)=>{let n=seed;return startAfter({afterglow:{mode:'normal'}},'100',0,max=>{n=(Math.imul(n,1664525)+1013904223)>>>0;return n%max;});};
 function session(seed:number,id:string){const r=result(seed);return{gameId:'studio-afterglow',id,rulesVersion:2,stakeUnits:'100',spentUnits:'100',returnedUnits:r.ended?r.view.totalPayoutUnits:'0',state:r.ended?'settled':'active',view:{afterglow:r.view,player:[],dealer:[],community:[],actions:r.actions,phase:r.view.revision+1,ended:r.ended,message:r.message}};}
 const diag=(page:Page)=>page.evaluate(()=>(window as any).royalDemo?.getMiniState()??(window as any).moduleHarness.currentState());
@@ -20,27 +21,38 @@ const diag=(page:Page)=>page.evaluate(()=>(window as any).royalDemo?.getMiniStat
 test.beforeAll(async()=>{
  test.setTimeout(120000);db=await temporaryDatabase();
  const socket=netServer();await new Promise<void>(yes=>socket.listen(0,'127.0.0.1',yes));const port=(socket.address() as {port:number}).port;await new Promise<void>(yes=>socket.close(()=>yes()));
- backend=spawn(process.execPath,['--import','tsx','server/index.ts'],{env:{...process.env,...db.env,PORT:String(port)},stdio:['ignore','pipe','pipe']});
+ backend=spawn(process.execPath,['--import','tsx','server/index.ts'],{env:{...process.env,...db.env,AUTH_DB_PATH:'girlhub_feedback_fixture',PORT:String(port)},stdio:['ignore','pipe','pipe']});
  backend.stdout?.on('data',b=>{logs=(logs+b.toString()).slice(-8000);});backend.stderr?.on('data',b=>{logs=(logs+b.toString()).slice(-8000);});
  const target=`http://127.0.0.1:${port}`;
  await expect.poll(async()=>{try{return(await fetch(target+'/healthz')).ok;}catch{return false;}},{timeout:60000,message:'Isolated backend startup: '+logs}).toBe(true);
  vite=await createServer({configFile:false,root:process.cwd(),cacheDir:'node_modules/.vite-girlhub-feedback',optimizeDeps:{entries:['index.html','tests/fixtures/independent-games.html']},server:{host:'127.0.0.1',port:0,proxy:{'/api':target,'/game-modules':target,'/multiplayer':{target,ws:true,rewrite:path=>path.replace(/^\/multiplayer/,'')}}}});
- await vite.listen();const address=vite.httpServer!.address() as {port:number};baseURL=`http://127.0.0.1:${address.port}`;await mkdir(proof,{recursive:true});
+ await vite.listen();const address=vite.httpServer!.address() as {port:number};baseURL=`http://127.0.0.1:${address.port}`;await mkdir(proof,{recursive:true});await writeFile(proof+'/../owner.json',JSON.stringify({owner:'girlhub-unlock-order',purpose:'GirlHUB verification',cleanup:'Remove temporary media after verification; retain compact reports only'},null,2));
 });
 test.afterAll(async()=>{await vite?.close();if(backend&&backend.exitCode===null){backend.kill();await new Promise<void>(yes=>backend.once('exit',()=>yes()));}await db?.cleanup();});
+test.afterEach(async({page})=>{
+ if(await page.locator('#mini-dialog[open] .mini-top [data-close]').count()){
+  await page.locator('#mini-dialog .mini-top [data-close]').click();
+  await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo?.getState().playing??false)).toBe(false);
+ }
+});
 
 async function open(page:Page,language='ru'){
  await page.emulateMedia({reducedMotion:'reduce'});
  await page.route('https://luelonplay.com/**',route=>route.fulfill({json:{games:[]}}));
  await page.route('**/api/casinoapipro/status',route=>route.fulfill({json:{configured:false,walletConnected:false}}));
- await page.route('**/api/game-wallet/afterglow-wardrobe',route=>route.fulfill({json:profile}));
- await page.route('**/api/game-wallet',route=>route.fulfill({json:wallet}));
+ await page.route('**/api/demo-wallet/afterglow-wardrobe',route=>route.fulfill({json:profile}));
+ await page.route('**/api/demo-wallet',route=>route.fulfill({json:wallet}));
+ await page.route(/\/api\/demo-wallet\/(mines|flight|casino-sessions)$/,route=>route.fulfill({json:{wallet,sessions:[],session:null,serverNow:Date.now()}}));
  await page.addInitScript(()=>{localStorage.setItem('royal-language','ru');localStorage.setItem('royal-afterglow-music','0');localStorage.setItem('royal-afterglow-voices','0');});
  await page.goto(baseURL+'/?lang='+language);
  const en=language==='en';
- await page.getByLabel(en?'Email':'Почта',{exact:true}).fill(`girlhub-${crypto.randomUUID()}@example.test`);
+ const email=`girlhub-${crypto.randomUUID()}@example.test`;
+ await page.getByLabel(en?'Email':'Почта',{exact:true}).fill(email);
  await page.getByLabel(en?'Password':'Пароль',{exact:true}).fill('Girlhub-isolated-check-123!');
  await page.getByRole('button',{name:en?'Continue':'Продолжить',exact:true}).click();
+ // The real PvP websocket also publishes this shared test balance.
+ const fixtureDb=new PostgresDatabase('girlhub_feedback_fixture',{existingSchema:true,config:databaseConfig({...process.env,...db.env})});
+ try{const account=await fixtureDb.prepare('SELECT id FROM accounts WHERE email=?').get(email);expect(account).toBeDefined();await fixtureDb.prepare('INSERT INTO demo_wallets(account_id,balance,fraction_units) VALUES(?,1000,0) ON CONFLICT(account_id) DO UPDATE SET balance=1000,fraction_units=0').run(account!.id);}finally{await fixtureDb.close();}
  await page.getByRole('button',{name:en?'Enter the hall':'Войти в зал',exact:true}).click();
  await expect(page.locator('#join-dialog')).toBeHidden();await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getState().online)).toBe(true);
  await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getState().locked)).toBe(false);
@@ -62,8 +74,8 @@ async function open(page:Page,language='ru'){
 }
 
 async function openModule(page:Page){
- await page.route('**/api/game-wallet/afterglow-wardrobe',route=>route.fulfill({json:profile}));
- await page.route('**/api/game-wallet',route=>route.fulfill({json:wallet}));
+ await page.route('**/api/demo-wallet/afterglow-wardrobe',route=>route.fulfill({json:profile}));
+ await page.route('**/api/demo-wallet',route=>route.fulfill({json:wallet}));
  await page.addInitScript(()=>{localStorage.setItem('royal-afterglow-music','0');localStorage.setItem('royal-afterglow-voices','0');});
  await page.goto(baseURL+'/tests/fixtures/independent-games.html');
  await page.waitForFunction(()=>!!(window as any).moduleHarness);
@@ -72,9 +84,52 @@ async function openModule(page:Page){
  await page.locator('[data-cc-action=enter]').click();await expect(page.locator('[data-cc-spin]')).toBeEnabled();
 }
 
+test('album unlocks common, rare, epic and legendary in the real host with chat',async({page})=>{
+ const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
+ await page.route('**/api/demo-wallet/expansion',route=>route.fulfill({json:{wallet,sessions:[]}}));
+ await open(page);
+ const current={...profile,pointsUnits:[...profile.pointsUnits],unlocked:[...profile.unlocked]};
+ const choices:number[]=[];
+ await page.unroute('**/api/demo-wallet/afterglow-wardrobe');
+ await page.route('**/api/demo-wallet/afterglow-wardrobe',route=>{
+  expect(route.request().headers()['x-royal-afterglow-progress']).toBe('4');
+  if(route.request().method()==='POST'){
+   const value=route.request().postDataJSON();choices.push(value.girl);
+   current.selectedGirl=value.girl;current.selectedLook=value.look;current.revision++;
+  }
+  return route.fulfill({json:current});
+ });
+ for(const [units,openGirls]of [[0,[1]],[16000,[1,3]],[44000,[1,3,2]],[89999,[1,3,2]],[90000,[1,3,2,0]]] as const){
+  current.albumUnits=units;
+  await page.locator('.slot-settings-button').click();
+  await Promise.all([page.waitForResponse(response=>response.url().endsWith('/afterglow-wardrobe')&&response.request().method()==='GET'),page.locator('[data-cc-refresh]').click()]);
+  await page.locator('.slot-settings-dialog header button').click();
+  if(units===44000)await page.setViewportSize({width:390,height:844});
+  await page.locator('[data-ag-album]').click();
+  await expect(page.getByRole('heading',{name:'АЛЬБОМ ГЕРОИНЬ'})).toBeVisible();
+  expect(await page.locator('.ag-gallery-card').evaluateAll(cards=>cards.map(card=>card.getAttribute('data-girl')))).toEqual(['1','3','2','0']);
+  for(const girl of [1,3,2,0]){
+   const button=page.locator(`[data-cc-action="girl-${girl}"]`);
+   if((openGirls as readonly number[]).includes(girl))await expect(button).toBeEnabled();else await expect(button).toBeDisabled();
+  }
+  await expect(page.locator('#chat-input')).toBeInViewport();
+  await expect(page.locator('.ag-gallery')).toContainText('Легендарный');
+  const next=openGirls[openGirls.length-1];
+  await page.locator(`[data-cc-action="girl-${next}"]`).click();
+  await expect(page.locator(`[data-ag-portrait] [data-girl="${next}"]`)).toHaveCount(1);
+  if(units===0||units===90000)await page.screenshot({path:`${proof}/unlock-${units===0?'desktop':'mobile'}.png`,animations:'disabled'});
+ }
+ expect(choices).toEqual([1,3,2,2,0]);expect(errors).toEqual([]);
+ await page.locator('#mini-dialog .mini-top [data-close]').click();
+ if(!await page.locator('[data-cabinet="studio-afterglow"]').isVisible())await page.locator('#games-tab').click();
+ await page.locator('[data-cabinet="studio-afterglow"]').click();await page.locator('[data-platform-game="studio-afterglow"]').click();
+ await expect(page.locator('[data-ag-portrait] [data-girl="0"]')).toHaveCount(1);
+ await writeFile(`${proof}/unlock-order.json`,JSON.stringify({choices,errors,finalSelection:current.selectedGirl,viewports:['1440x1000','390x844']},null,2));
+});
+
 test('confirmed outcomes animate once in the real host with connected desktop and mobile chat',async({page})=>{
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));let seed=1,posts=0,saved:ReturnType<typeof session>|undefined;
- await page.route('**/api/game-wallet/expansion',route=>{
+ await page.route('**/api/demo-wallet/expansion',route=>{
   if(route.request().method()==='POST'){posts++;saved=session(seed,route.request().postDataJSON().id);expect(validAfterSession(saved)).toBe(true);return route.fulfill({json:{wallet,sessions:[saved],session:saved,replayed:false}});}
   return route.fulfill({json:{wallet,sessions:saved?[saved]:[]}});
  });
@@ -116,7 +171,7 @@ test('confirmed outcomes animate once in the real host with connected desktop an
 
 test('mute, reduced motion, hidden page and close cancel owned effects without replay',async({page})=>{
  let posts=0;
- await page.route('**/api/game-wallet/expansion',route=>{
+ await page.route('**/api/demo-wallet/expansion',route=>{
   if(route.request().method()==='POST'){posts++;const s=session(7085,route.request().postDataJSON().id);return route.fulfill({json:{wallet,sessions:[s],session:s,replayed:false}});}
   return route.fulfill({json:{wallet,sessions:[]}});
  });

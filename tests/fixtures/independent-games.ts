@@ -87,7 +87,7 @@ const harness = {
    sharedUsdt: runtime.usdtWallet === usdtWallet, sharedCrypto: runtime.cryptoWallet === cryptoWallet, title, lockedScene: locked,
    sharedDemoGames: runtime.demoGames === demoGames,
    pending: structuredClone(expansionClient.pending), balance: demoWallet.wallet?.balance,
-   storage: expansionClient.accountId ? sessionStorage.getItem('royal-nile-expansion:' + expansionClient.accountId) : null,
+   storage: expansionClient.accountId ? sessionStorage.getItem('royal-nile-expansion:' + expansionClient.accountId) ?? sessionStorage.getItem('royal-expansion:' + expansionClient.accountId) : null,
    locked: demoWallet.externalBusy };
  },
 };

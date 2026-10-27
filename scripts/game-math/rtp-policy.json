@@ -1,6 +1,31 @@
 {
   "schemaVersion": 1,
   "profiles": {
+    "studio-afterglow": {
+      "rulesVersion": 2,
+      "progressVersion": 4,
+      "target": 0.96,
+      "tolerance": 0.01,
+      "maxUpper95": 0.98,
+      "maxHalfWidth95": 0.01,
+      "minPaidRounds": 10000000,
+      "minCycles": 0,
+      "seeds": [250127, 7183291],
+      "qualificationRoundsPerSeed": 5000000,
+      "stakes": [100, 200, 300, 500, 1000, 2000, 2500, 5000, 10000, 20000, 25000, 50000, 100000],
+      "choices": ["normal"],
+      "proof": "docs/game-math/qualifications/girlhub-progress-v4.json",
+      "qualificationSource": "scripts/game-math/rtp-afterglow.mjs",
+      "sources": [
+        "src/shared/afterglow.ts",
+        "src/shared/nitroRun.ts",
+        "src/shared/draconaMath.ts",
+        "server/games/afterglow.ts",
+        "src/shared/afterglowWardrobe.ts",
+        "server/afterglowWardrobe.ts",
+        "server/afterglowProgress.ts"
+      ]
+    },
     "studio-neopolis": {
       "rulesVersion": 3,
       "progressVersion": 3,

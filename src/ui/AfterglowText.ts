@@ -2,6 +2,7 @@ import {language,t,tr} from '../i18n/index';
 
 // The installed host can predate this independent package's result vocabulary.
 const english:Record<string,string>={
+ 'Героини открываются по очереди: Мия (обычная), Наоми (редкая), Ева (эпическая), Алиса (легендарная). Следующая героиня открывается по общему прогрессу только после предыдущих.':'Heroines unlock in order: Mia (common), Naomi (rare), Eva (epic), Alice (legendary). The next heroine unlocks through album progress only after the earlier heroines.',
  'ВЫПЛАТА ЗА РАУНД':'ROUND PAYOUT',
  'ГРАНДИОЗНЫЙ ВЫИГРЫШ':'EPIC WIN',
  'Показать итог':'Show total',

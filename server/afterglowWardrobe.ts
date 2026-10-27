@@ -2,7 +2,7 @@ import type {PostgresDatabase} from './database';
 import {WalletError} from './demoWallet';
 import {applySchemaMigration} from './database-migrations';
 import {migrateAfterglowProgress, creditAfterglowProgress} from './afterglowProgress';
-import {AFTER_LOOK_TARGET_UNITS, afterAlbumUnlocked, validAfterLookChoice, validAfterWardrobe, type AfterWardrobe} from '../src/shared/afterglowWardrobe';
+import {AFTER_LOOK_TARGET_UNITS, AFTER_STARTER_GIRL, afterAlbumUnlocked, validAfterLookChoice, validAfterWardrobe, type AfterWardrobe} from '../src/shared/afterglowWardrobe';
 
 /** Cosmetic progress is committed inside the existing account transaction. */
 export class AfterglowWardrobeStore {
@@ -40,9 +40,13 @@ export class AfterglowWardrobeStore {
     const active = await this.db.prepare("SELECT s.id,g.girl FROM demo_casino_sessions s LEFT JOIN demo_afterglow_round_girls g ON g.account_id=s.account_id AND g.session_id=s.id WHERE s.account_id=? AND s.game_id='studio-afterglow' AND s.state='active' LIMIT 1").get(account);
     const pointsUnits = [0, 0, 0, 0], unlocked = [false, false, false, false];
     for (const p of progress) {const i=Number(p.girl);pointsUnits[i]=Number(p.points_units);unlocked[i]=pointsUnits[i]===AFTER_LOOK_TARGET_UNITS[i];}
-    const result: AfterWardrobe = {version: 3, revision: Number(row?.revision ?? 0),
-      selectedGirl: Number(row?.selected_girl ?? 0), selectedLook: Number(row?.selected_look ?? 0) as 0 | 1,
-      albumUnits: Number(album?.points_units ?? 0), pointsUnits, unlocked, active: !!active, activeGirl: active?.girl == null ? null : Number(active.girl)};
+    const albumUnits = Number(album?.points_units ?? 0), available = afterAlbumUnlocked(albumUnits);
+    const activeGirl = active?.girl == null ? null : Number(active.girl);
+    const savedGirl = Number(row?.selected_girl ?? AFTER_STARTER_GIRL);
+    const selectedGirl = activeGirl ?? (available[savedGirl] ? savedGirl : AFTER_STARTER_GIRL);
+    const selectedLook = selectedGirl === savedGirl ? Number(row?.selected_look ?? 0) as 0 | 1 : 0;
+    const result: AfterWardrobe = {version: 4, revision: Number(row?.revision ?? 0),
+      selectedGirl, selectedLook, albumUnits, pointsUnits, unlocked, active: !!active, activeGirl};
     if (!validAfterWardrobe(result)) throw Error('Invalid Afterglow wardrobe');
     return result;
   }
@@ -55,7 +59,10 @@ export class AfterglowWardrobeStore {
     if (!validAfterLookChoice(value)) throw new WalletError(400, 'Некорректный выбор образа.');
     return this.db.transaction(async () => {
       const current = await this.read(account);
-      if (current.selectedGirl === value.girl && current.selectedLook === value.look) return current;
+      if (current.selectedGirl === value.girl && current.selectedLook === value.look) {
+        const saved = await this.db.prepare('SELECT selected_girl,selected_look FROM demo_afterglow_wardrobe WHERE account_id=?').get(account);
+        if (!saved || Number(saved.selected_girl) === value.girl && Number(saved.selected_look) === value.look) return current;
+      }
       if (current.active) throw new WalletError(409, 'Заверши фотосессию, чтобы сменить героиню или образ.');
       if (value.revision !== current.revision) throw new WalletError(409, 'Образ уже изменился. Обнови альбом.');
       if (!afterAlbumUnlocked(current.albumUnits)[value.girl]) throw new WalletError(409, 'Эта героиня ещё не открыта.');
