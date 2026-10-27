@@ -4,10 +4,12 @@ import { mkdir, writeFile } from 'node:fs/promises';
 // @ts-expect-error Independent JavaScript graph oracle has no production scorer dependency.
 import { referenceBoard, referenceFlow } from '../scripts/game-math/forest-heart-reference.mjs';
 
-const out = 'artifacts/work/forest-heart-client';
+const out = process.env.FOREST_ARTIFACT_DIR || 'artifacts/work/forest-heart-client';
 const id = 'studio-forest-heart';
 const game = (page: Page) => page.frameLocator('.forest-heart-frame');
 const state = (page: Page) => page.evaluate(() => (window as any).royalDemo.getMiniState());
+// RoomScene is constructed asynchronously during a full page reload.
+const online = (page: Page) => page.evaluate(() => { try { return !!(window as any).royalDemo?.getState().online; } catch { return false; } });
 async function enter(page: Page, roomPath: string, lang = 'ru') {
   await page.goto(roomPath + '&lang=' + lang);
   await page.getByLabel(lang === 'en' ? 'Email' : 'Почта', { exact: true }).fill(`forest-${crypto.randomUUID()}@example.test`);
@@ -16,7 +18,7 @@ async function enter(page: Page, roomPath: string, lang = 'ru') {
   await expect(page.locator('#character-step')).toBeVisible();
   await page.locator('#join-button').click();
   await expect(page.locator('#join-dialog')).toBeHidden({ timeout: 20000 });
-  await expect.poll(() => page.evaluate(() => (window as any).royalDemo.getState().online)).toBe(true);
+  await expect.poll(() => online(page)).toBe(true);
   expect(await page.evaluate(async () => {
     const me = await (await fetch('/api/auth/me')).json();
     const response = await fetch('/__test/forest-heart/fund',{method:'POST',headers:{'Content-Type':'application/json','X-Royal-Account-Id':me.account.id},body:JSON.stringify({id:crypto.randomUUID(),kind:'deposit',amount:10000})});
@@ -71,11 +73,6 @@ test.beforeAll(async () => {
   await mkdir(out, { recursive: true });
   await writeFile(out + '/owner.json', JSON.stringify({ owner: 'forest-heart-client', purpose: 'Full Royal host browser and audio checks', cleanup: 'After final report and selected screenshot are saved' }));
 });
-test.afterAll(async()=>{
-  // Let the stand delete its owned PostgreSQL before Playwright terminates its process group on Windows.
-  const origin='http://127.0.0.1:'+(process.env.FOREST_WEB_PORT||'5296');
-  await fetch(origin+'/__test/forest-heart/shutdown',{method:'POST',headers:{'X-Royal-Forest-Test':'shutdown'}}).catch(()=>{});
-});
 
 test('real host preserves choice, bonus, exact settlement and connected chat across desktop, mobile and reopen', async ({ page, roomPath }) => {
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
@@ -97,7 +94,7 @@ test('real host preserves choice, bonus, exact settlement and connected chat acr
   await expect(page.locator('#mini-dialog')).toBeVisible({ timeout: 25000 }); await choose(page);
   expect((await state(page)).view).toEqual(current.view); expect((await wallet(page)).balance).toBe(9990);
   await page.reload();await expect(page.locator('#join-dialog')).toBeHidden({timeout:20000});
-  await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getState().online)).toBe(true);
+  await expect.poll(()=>online(page)).toBe(true);
   await page.locator('#games-tab').click();await page.locator('[data-cabinet="studio-cosmic-escape"]').click();
   await expect(page.locator('#mini-dialog')).toBeVisible({timeout:25000});await choose(page);
   expect((await state(page)).view).toEqual(current.view);expect((await wallet(page)).balance).toBe(9990);
@@ -115,7 +112,7 @@ test('a lost accepted response retries the same UUID once, with no repeated char
   await game(page).locator('[data-fh=spin]').click(); await expect(game(page).locator('[data-fh=retry]')).toBeVisible();
   expect((await wallet(page)).balance).toBe(9996.31);
   await page.reload();await expect(page.locator('#join-dialog')).toBeHidden({timeout:20000});
-  await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getState().online)).toBe(true);
+  await expect.poll(()=>online(page)).toBe(true);
   await page.locator('#games-tab').click();await page.locator('[data-cabinet="studio-cosmic-escape"]').click();
   await expect(page.locator('#mini-dialog')).toBeVisible({timeout:25000});await choose(page);
   await expect(game(page).locator('[data-fh=retry]')).toBeVisible();
@@ -177,6 +174,47 @@ test('English rules, zero return and a narrow mobile viewport stay readable',asy
   await game(page).locator('[data-fh=spin]').click();await expect(game(page).locator('.fh')).toHaveAttribute('data-outcome','loss');
   await expect(game(page).locator('[data-fh=total]')).toHaveText('0');expect((await wallet(page)).balance).toBe(9990);
   expect((await state(page)).audio.played.win).toBeUndefined();expect((await state(page)).audio.played.big).toBeUndefined();
+});
+
+test('painted tiles fit a short desktop window and only the accepted root rotates while sap flows continuously', async ({page,roomPath}) => {
+  await page.setViewportSize({width:1280,height:720});
+  await routeScenario(page,'choice-bonus'); await enter(page,roomPath); await fit(game(page));
+  const bounds=await game(page).locator('.fh').evaluate(root=>{
+    const height=root.ownerDocument.documentElement.clientHeight;
+    return {height, boxes:['.fh-title','.fh-board','[data-fh=spin]'].map(s=>root.querySelector(s)!.getBoundingClientRect().toJSON())};
+  });
+  for (const box of bounds.boxes) {expect(box.y).toBeGreaterThanOrEqual(0);expect(box.bottom).toBeLessThanOrEqual(bounds.height+1);}
+  await page.screenshot({path:out+'/desktop-720.png'});
+  await act(page);
+  const before=await game(page).locator('[data-cell]').evaluateAll(cells=>cells.map(c=>(c as HTMLElement).style.getPropertyValue('--turn')));
+  await game(page).locator('[data-cell="5"]').click();
+  await expect(game(page).locator('.fh')).toHaveAttribute('data-motion','turn');
+  const frames=await game(page).locator('.fh').evaluate(async root=>{
+    const frames:{motion:string;angles:number[];sap:number[]}[]=[];
+    const start=performance.now();
+    while(performance.now()-start<3000){
+      const cells=Array.from(root.querySelectorAll<HTMLElement>('[data-cell]'));
+      frames.push({motion:(root as HTMLElement).dataset.motion||'',angles:cells.map(c=>parseFloat(c.style.getPropertyValue('--turn'))),sap:cells.map(c=>Number(c.style.getPropertyValue('--sap')))});
+      if(frames.some(f=>f.motion==='flow') && !(root as HTMLElement).dataset.motion) break;
+      await new Promise<void>(resolve=>requestAnimationFrame(()=>resolve()));
+    }
+    return frames;
+  });
+  const turn=frames.filter(f=>f.motion==='turn');
+  expect(turn.some(f=>f.angles[5]>0 && f.angles[5]<90)).toBe(true);
+  for(const frame of frames) for(let cell=0;cell<25;cell++) if(cell!==5) expect(frame.angles[cell]).toBe(parseFloat(before[cell]));
+  expect(frames.some(f=>f.motion==='flow' && f.sap.some(value=>value>0 && value<1))).toBe(true);
+  await expect(game(page).locator('[data-fh=spin]')).toBeEnabled();
+  expect((await state(page)).view.base.rotation).toBe(2);
+  await page.screenshot({path:out+'/desktop-lit.png'});
+  await writeFile(out+'/motion-frames.json',JSON.stringify({frames:frames.length,turnFrames:turn.length,intermediateAngles:turn.map(f=>f.angles[5]),continuousSapFrames:frames.filter(f=>f.sap.some(v=>v>0&&v<1)).length},null,2));
+  await page.setViewportSize({width:1110,height:1244}); await fit(game(page));
+  const centres=await game(page).locator('.fh').evaluate(root=>{
+    const board=root.querySelector('.fh-board')!.getBoundingClientRect(), character=root.querySelector('.fh-character')!.getBoundingClientRect();
+    return {board:board.y+board.height/2,character:character.y+character.height/2};
+  });
+  expect(Math.abs(centres.board-centres.character)).toBeLessThan(100);
+  await page.screenshot({path:out+'/desktop-tall.png'});
 });
 
 test('the original score renders finite unclipped audio and releases its owned voices',async({page})=>{

@@ -102,10 +102,10 @@ export class ForestAudio {
     this.timer = setTimeout(() => { this.timer = undefined; this.startMusic(); }, 520);
   }
   /** Estimated wall-clock arrival of a future sample, not measured acoustic output. */
-  accent(cue: ForestCue, variant = 0) {
+  accent(cue: ForestCue, variant = 0, delayMs = 0) {
     const now = performance.now(), c = this.context;
-    if (!this.enabled() || !this.score || !c) return { audibleAt: now, mode: 'silent', latencyMs: 0 };
-    const at = c.currentTime + .035;
+    if (!this.enabled() || !this.score || !c) return { audibleAt: now + delayMs, mode: 'silent', latencyMs: 0 };
+    const at = c.currentTime + .035 + delayMs / 1000;
     let audibleAt: number, mode: string;
     const stamp = c.getOutputTimestamp?.();
     if (typeof stamp?.performanceTime === 'number' && typeof stamp.contextTime === 'number' && stamp.performanceTime > 0 && Math.abs(stamp.performanceTime - now) < 1500) {

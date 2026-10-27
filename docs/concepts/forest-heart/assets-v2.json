@@ -1,0 +1,84 @@
+{
+  "version": 2,
+  "created": "2026-10-27",
+  "reference": "docs/concepts/forest-heart/approved-concept-v1.png",
+  "generator": "built-in image_gen",
+  "assets": [
+    {
+      "name": "roots",
+      "source": "C:/Users/Aorus/.codex/generated_images/01a1793a-deb2-7031-9934-84f2a877618e/exec-09af7dcc-7c93-4273-82fa-2848a2676032.png",
+      "transparent": false,
+      "prompt": "Use case: stylized-concept. Production sprite atlas for the supplied Forest Heart slot reference. Create a STRICT 4 COLUMN x 2 ROW atlas filling a 2048 x 1024 landscape canvas, eight equal square 512x512 tiles, NO GAPS OR MARGINS between cells. Direct flat top-down view, no perspective. Every square has the same dark rich brown carved wood backing, thin antique gold rounded inset edge, moss in corners and tiny violet forest blossoms, matching the reference game's tiles exactly in material and painted realism. On each square a thick GNARLED ORGANIC WOODEN ROOT with raised textured bark, irregular knots, tapered little tendrils. Absolutely NOT smooth pipes, wire, metal tubing, vector outlines or an abstract diagram. It is ancient living wood. CRITICAL TOPOLOGY AND LAYOUT: top row column 1 has one winding S-curved root connecting LEFT EDGE MIDPOINT to RIGHT EDGE MIDPOINT, no other exits; top row column 2 has one curved root connecting TOP EDGE MIDPOINT to RIGHT EDGE MIDPOINT, no other exits; top row column 3 has an asymmetric forked root connecting TOP, LEFT and RIGHT EDGE MIDPOINTS, no bottom exit; top row column 4 has an asymmetric branching knot connecting TOP, RIGHT, BOTTOM and LEFT EDGE MIDPOINTS. Roots MUST reach their exact edge midpoints so adjacent sprites connect. Use natural uneven organic curves inside each tile, not perfect T or + shapes. TOP ROW IS UNLIT ROOTS, warm gray-brown bark with subtle depth. BOTTOM ROW repeats THE EXACT SAME FOUR TILE SHAPES and camera/framing in THE SAME COLUMN ORDER, but each root has a brilliant thin MINT-CYAN LIVING SAP CHANNEL embedded along the centre of its bark, with delicate emissive light softly illuminating nearby wood. Preserve all wood texture in lit row, not glowing whole square. No text, no labels, no numbers, no characters, no board frame around the atlas. This is an aligned game texture sheet, never a screenshot or mockup.",
+      "sourceSha256": "aa81c460b81ce2ee7e221308df9ddd08346cdb5738e081fd7fbf552e58c2f772",
+      "sourceDimensions": [
+        1774,
+        887
+      ],
+      "path": "public/assets/forest-heart/v2/roots.webp",
+      "sha256": "1f805a172e9554e9cd6c972f9cc15d9a99cbb9a08e17f6ae527b2a1ec5a19ce9",
+      "bytes": 420444,
+      "dimensions": [
+        1536,
+        768
+      ],
+      "alpha": false
+    },
+    {
+      "name": "frame",
+      "source": "C:/Users/Aorus/.codex/generated_images/01a1793a-deb2-7031-9934-84f2a877618e/exec-96d351d3-40cf-4552-bbde-d48fb3034a39.png",
+      "transparent": true,
+      "prompt": "Use case: background-extraction. Production standalone SQUARE ornamental board border for the supplied approved Forest Heart slot reference. Recreate its luxurious chunky ancient rootwood frame as a separate asset: knotted sculpted dark brown tree roots woven around all FOUR sides, antique gold inner rim, asymmetrical emerald leaves, moss and several small purple five-petal forest flowers. Straight front view, square outer silhouette fitting a 1024x1024 canvas. Border thickness about 14 percent of canvas; centre is a large PERFECTLY SQUARE EMPTY transparent hole from x=160 to 864, y=160 to 864. Genuine alpha transparency everywhere outside the organic border and inside the empty square. All four corners equally well finished, bottom border as thick as top. Root branches should feel hand-painted and tactile as in the reference, not a geometric metal frame or repeated striped texture. No tiles, no roots crossing the empty centre, no grid, no lettering, no title, no character, no crystals, no receiver flowers. It must work as a nine-slice game UI frame, with clear straight inner opening and organic outer silhouette. Rich detailed fantasy game art, cool moonlit leaf edges and warm gold carving.",
+      "sourceSha256": "a2aedfe68aeaeffaa688132e96f65503b8e82c55c39c3b605d073b56b82e5409",
+      "sourceDimensions": [
+        1254,
+        1254
+      ],
+      "path": "public/assets/forest-heart/v2/frame.webp",
+      "sha256": "6f3e2b40c31cf8b5a7c9be7a3553d71aeebf53c8c5c5b5aaeb1cc769400ffefb",
+      "bytes": 320496,
+      "dimensions": [
+        1024,
+        1024
+      ],
+      "alpha": true
+    },
+    {
+      "name": "title",
+      "source": "C:/Users/Aorus/.codex/generated_images/01a1793a-deb2-7031-9934-84f2a877618e/exec-e8eab539-1c44-4e8b-a3a9-46f63dd5e206.png",
+      "transparent": true,
+      "prompt": "Use case: text-in-image. Create a production game title logo for the attached approved Forest Heart slot concept. Exact Cyrillic title text: СЕРДЦЕ ЛЕСА. ONE LINE, perfectly readable with correct Cyrillic letters, elegant large three dimensional antique GOLD SERIF letters with warm beveled highlights and deep sculpted shadows, arranged over a narrow ancient twisted wood vine plaque, emerald leaves and a few violet five-petal flowers. Rich painterly realistic fantasy casino game interface matching the reference. Wide 3:1 composition, title fills almost all width, small graceful vine ornaments above and below. True alpha transparent background outside the letters and botanical ornament. No other words, no second title, no game board, no character, no scenery, no fake checkerboard background. A finished luxury fantasy title asset, front view.",
+      "sourceSha256": "58500443e2b295a2fdabbb06b7b02b03533cc1a87b2524c04846637509638b44",
+      "sourceDimensions": [
+        2172,
+        724
+      ],
+      "path": "public/assets/forest-heart/v2/title.webp",
+      "sha256": "0c990049844c3d1158acef91feb8431126d5e88947ba7138679931cb20b645ae",
+      "bytes": 258258,
+      "dimensions": [
+        1400,
+        467
+      ],
+      "alpha": true
+    },
+    {
+      "name": "crystal",
+      "source": "C:/Users/Aorus/.codex/generated_images/01a1793a-deb2-7031-9934-84f2a877618e/exec-96154b2d-6d7e-42bc-a5bb-20cf21268fc4.png",
+      "transparent": true,
+      "prompt": "Use case: stylized-concept. Create one production game source-crystal asset from the attached Forest Heart approved reference. A large tall FACETED MINT EMERALD crystal, luminous transparent aqua green interior, crisp gemstone faces, held by a beautiful curved gnarled rootwood cradle with small gold filigree and emerald leaves at the bottom. Clear elegant silhouette like the source jewel on the left of the reference game field, polished painterly realistic fantasy game art. Isolated front view, vertical 2:3 composition. Object fills canvas. True alpha transparent background, delicate restrained light aura only, no opaque scenery, no text, no UI, no board, no characters, no extra separate gemstones.",
+      "sourceSha256": "3e108c1fb68b73a3485145acde438db1be2008aed12205736ce137502f51ca54",
+      "sourceDimensions": [
+        1024,
+        1536
+      ],
+      "path": "public/assets/forest-heart/v2/crystal.webp",
+      "sha256": "4b0bf9707207611030f16aa9ce2bb05b928956f3247445498776c843debce5b4",
+      "bytes": 84452,
+      "dimensions": [
+        384,
+        576
+      ],
+      "alpha": true
+    }
+  ]
+}

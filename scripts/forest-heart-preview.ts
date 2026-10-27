@@ -8,8 +8,9 @@ import { DemoWalletStore, WalletError } from '../server/demoWallet';
 import { DemoExpansionStore } from '../server/demoExpansion';
 
 const database = await temporaryDatabase();
-await mkdir('artifacts/work/forest-heart-client',{recursive:true});
-await appendFile('artifacts/work/forest-heart-client/preview-databases.jsonl',JSON.stringify({owner:'forest-heart-client',directory:database.directory,pid:process.pid,cleanup:'On the explicit test shutdown or Ctrl+C'})+'\n');
+const reviewArtifacts = process.env.FOREST_ARTIFACT_DIR || 'artifacts/work/forest-heart-client';
+await mkdir(reviewArtifacts,{recursive:true});
+await appendFile(reviewArtifacts+'/preview-databases.jsonl',JSON.stringify({owner:'forest-heart-client',directory:database.directory,pid:process.pid,cleanup:'On the explicit test shutdown or Ctrl+C'})+'\n');
 const apiPort = Number(process.env.FOREST_API_PORT || 2696), webPort = Number(process.env.FOREST_WEB_PORT || 5296);
 const api = 'http://127.0.0.1:' + apiPort;
 const environment = { ...process.env, ...database.env, PORT: String(apiPort), AUTH_DB_PATH: 'forest_heart_review', PUBLIC_ORIGIN: '' };
