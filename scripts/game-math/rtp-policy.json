@@ -10,10 +10,29 @@
       "maxHalfWidth95": 0.01,
       "minPaidRounds": 10000000,
       "minCycles": 0,
-      "seeds": [250127, 7183291],
+      "seeds": [
+        250127,
+        7183291
+      ],
       "qualificationRoundsPerSeed": 5000000,
-      "stakes": [100, 200, 300, 500, 1000, 2000, 2500, 5000, 10000, 20000, 25000, 50000, 100000],
-      "choices": ["normal"],
+      "stakes": [
+        100,
+        200,
+        300,
+        500,
+        1000,
+        2000,
+        2500,
+        5000,
+        10000,
+        20000,
+        25000,
+        50000,
+        100000
+      ],
+      "choices": [
+        "normal"
+      ],
       "proof": "docs/game-math/qualifications/girlhub-progress-v4.json",
       "qualificationSource": "scripts/game-math/rtp-afterglow.mjs",
       "sources": [
@@ -24,6 +43,54 @@
         "src/shared/afterglowWardrobe.ts",
         "server/afterglowWardrobe.ts",
         "server/afterglowProgress.ts"
+      ]
+    },
+    "studio-caribbean-treasures": {
+      "rulesVersion": 1,
+      "progressVersion": 1,
+      "method": "exact-caribbean-giant-round-v1",
+      "target": 0.96,
+      "tolerance": 0.0005,
+      "stakes": [
+        100,
+        200,
+        500,
+        1000
+      ],
+      "choices": [
+        "lines-1-normal-raid",
+        "lines-1-normal-flagship",
+        "lines-1-buy-raid",
+        "lines-1-buy-flagship",
+        "lines-5-normal-raid",
+        "lines-5-normal-flagship",
+        "lines-5-buy-raid",
+        "lines-5-buy-flagship",
+        "lines-10-normal-raid",
+        "lines-10-normal-flagship",
+        "lines-10-buy-raid",
+        "lines-10-buy-flagship",
+        "lines-20-normal-raid",
+        "lines-20-normal-flagship",
+        "lines-20-buy-raid",
+        "lines-20-buy-flagship"
+      ],
+      "seeds": [
+        700131,
+        929827
+      ],
+      "serverReplayRoundsPerSeed": 32,
+      "proof": "docs/game-math/qualifications/caribbean-treasures-v1.json",
+      "qualificationSource": "scripts/game-math/rtp-caribbean.mjs",
+      "sources": [
+        "src/shared/caribbeanTreasuresMath.ts",
+        "src/shared/caribbeanTreasures.ts",
+        "server/games/caribbeanTreasures.ts",
+        "src/shared/caribbeanTransport.ts",
+        "src/shared/casinoExpansion.ts",
+        "server/demoExpansion.ts",
+        "server/finance/nile-game-runtime.ts",
+        "scripts/game-math/rational.mjs"
       ]
     },
     "studio-neopolis": {

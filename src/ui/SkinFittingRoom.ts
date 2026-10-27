@@ -1,4 +1,5 @@
 import { drawGeneratedSkin, loadSkinSheet } from '../game/generatedSkinArt';
+import { CHARACTER_WALK_FRAMES, CHARACTER_WALK_FRAME_RATE } from '../game/characterAnimation';
 import { movementFacing, type Facing } from '../shared/movement';
 
 const directions: Record<string, [number, number]> = {
@@ -151,7 +152,7 @@ export class SkinFittingRoom {
     if (this.loaded) {
       c.fillStyle = '#59443530'; c.beginPath(); c.ellipse(this.x, this.y, 26, 7, 0, 0, Math.PI * 2); c.fill();
       c.save(); c.translate(this.x - 16 * 2.5, this.y - 40 * 2.5); c.scale(2.5, 2.5);
-      drawGeneratedSkin(c, this.id, this.facing, moving ? Math.floor(this.elapsed * 10) % 6 : 6, this.seated); c.restore();
+      drawGeneratedSkin(c, this.id, this.facing, moving ? Math.floor(this.elapsed * CHARACTER_WALK_FRAME_RATE) % CHARACTER_WALK_FRAMES : 6, this.seated); c.restore();
     }
     this.canvas.dataset.facing = this.facing; this.canvas.dataset.moving = String(moving);
     this.frame = requestAnimationFrame(next => this.draw(next));
