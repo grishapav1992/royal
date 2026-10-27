@@ -69,6 +69,84 @@ test('Russian and English modules fit desktop and phone, with localized rules an
   expect(errors).toEqual([]);
 });
 
+test('autoplay runs exactly ten paid starts and keeps every accepted operation unique', async ({ page }) => {
+  await ready(page, 'ru'); await page.locator('[data-np=fast]').check();
+  const operations: any[] = [];
+  page.on('request', req => { if (req.method() === 'POST' && req.url().endsWith('/api/demo-wallet/expansion')) operations.push(req.postDataJSON()); });
+  await page.locator('[data-np=auto]').click();
+  await expect(page.locator('[data-np=bet]')).toBeDisabled();
+  await expect(page.locator('[data-np=auto-count]')).toBeDisabled();
+  await expect.poll(async () => { const s = await state(page); return !s.autoplay.running && !s.busy; }, { timeout: 120000 }).toBe(true);
+  expect(operations.filter(op => op.action === 'start')).toHaveLength(10);
+  expect(new Set(operations.map(op => op.id)).size).toBe(operations.length);
+  expect((await session(page)).state).toBe('settled');
+  await expect(page.locator('[data-np=auto]')).toHaveText('Авто');
+});
+
+test('autoplay stop finishes an accepted spin and a lost response requires manual recovery', async ({ page }) => {
+  await ready(page); await page.locator('[data-np=fast]').check();
+  let release!: () => void, accepted: any, calls = 0;
+  const gate = new Promise<void>(resolve => { release = resolve; });
+  const hold = async (route: Route) => {
+    if (route.request().method() !== 'POST') { await route.fallback(); return; }
+    calls++; const response = await route.fetch({ url: new URL('/__test/neopolis/operate', route.request().url()).href });
+    accepted = await response.json(); await gate; await route.fulfill({ response });
+  };
+  await page.route('**/api/demo-wallet/expansion', hold);
+  await page.locator('[data-np=auto]').click(); await expect.poll(() => !!accepted).toBe(true);
+  await expect(page.locator('[data-np=auto]')).toBeEnabled();
+  await page.locator('[data-np=auto]').click(); release();
+  await expect.poll(async () => (await state(page)).busy).toBe(false);
+  await page.waitForTimeout(900); expect(calls).toBe(1);
+  expect((await session(page)).id).toBe(accepted.session.id);
+  await page.unroute('**/api/demo-wallet/expansion', hold);
+  let lost = false;
+  const lose = async (route: Route) => {
+    if (route.request().method() !== 'POST' || lost) { await route.fallback(); return; }
+    lost = true; calls++;
+    const response = await route.fetch({ url: new URL('/__test/neopolis/operate', route.request().url()).href });
+    accepted = await response.json(); await route.abort('failed');
+  };
+  await page.route('**/api/demo-wallet/expansion', lose);
+  await page.locator('[data-np=auto]').click();
+  await expect.poll(async () => { const s = await state(page); return !s.autoplay.running && !s.busy; }).toBe(true);
+  await expect(page.locator('[data-np=spin]')).toContainText('Check move');
+  await expect(page.locator('[data-np=auto]')).toBeDisabled();
+  await page.waitForTimeout(900); expect(calls).toBe(2);
+  const pending = await page.evaluate(() => (window as any).neopolisPreview.client.pending.id);
+  await page.unroute('**/api/demo-wallet/expansion', lose);
+  const restored = await spin(page); expect(restored.id).toBe(pending); expect(restored).toEqual(accepted.session);
+  const wallet = await page.evaluate(() => (window as any).neopolisPreview.wallet.wallet);
+  expect(wallet.entries.filter((e: any) => e.operationId === pending && e.kind === 'bet')).toHaveLength(1);
+});
+
+test('autoplay bonus continuations keep the paid budget and pause never restarts the series', async ({ page }) => {
+  await ready(page); await page.locator('[data-np=fast]').check();
+  await page.locator('[data-np=auto-count]').selectOption('50');
+  const operations: any[] = [];
+  page.on('request', req => { if (req.method() === 'POST' && req.url().endsWith('/api/demo-wallet/expansion')) operations.push(req.postDataJSON()); });
+  await page.locator('[data-np=auto]').click();
+  await expect.poll(() => operations.some(op => op.action === 'move'), { timeout: 120000 }).toBe(true);
+  expect((await state(page)).autoplay.remaining).toBe(50 - operations.filter(op => op.action === 'start').length);
+  await expect(page.locator('[data-np=dialog]')).not.toBeVisible();
+  await page.evaluate(() => (window as any).neopolisPreview.pause());
+  expect((await state(page)).autoplay.running).toBe(false);
+  await page.evaluate(() => (window as any).neopolisPreview.resume());
+  await expect.poll(async () => (await state(page)).busy).toBe(false);
+  const count = operations.length; await page.waitForTimeout(900); expect(operations).toHaveLength(count);
+  await page.getByRole('button', { name: 'Reopen game' }).click();
+  await expect(page.locator('[data-np=spin]')).toBeEnabled();
+  expect((await state(page)).autoplay.running).toBe(false);
+  expect((await session(page)).state).toBe('active');
+  await page.locator('[data-np=auto]').click();
+  await expect.poll(async () => (await state(page)).autoplay.running).toBe(true);
+  await page.locator('[data-np=rules]').click();
+  expect((await state(page)).autoplay.running).toBe(false);
+  await page.locator('[data-np=close]').click();
+  await expect.poll(async () => (await state(page)).busy).toBe(false);
+  const afterRules = operations.length; await page.waitForTimeout(900); expect(operations).toHaveLength(afterRules);
+});
+
 test('real API retries a lost result once, restores collection and bonus, and settles the free series', async ({ page }) => {
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
   await ready(page);
