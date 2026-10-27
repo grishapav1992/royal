@@ -1,81 +1,119 @@
 {
-  "maximumDeviationMs": 22.33133333929436,
+  "maximumDeviationMs": 17.569666665174736,
   "accents": [
     {
       "cue": "stop",
-      "deviationMs": -1.3513333333321498
+      "deviationMs": -5.289000000000669,
+      "preparationMs": 2.399999998509884,
+      "visualMs": 1.1000000014901161
     },
     {
       "cue": "stop",
-      "deviationMs": -14.557999994040074
+      "deviationMs": -17.12166666964731,
+      "preparationMs": 0.7000000029802322,
+      "visualMs": 0.8999999985098839
     },
     {
       "cue": "stop",
-      "deviationMs": 10.687333337804375
+      "deviationMs": -10.866333337802644,
+      "preparationMs": 1.1000000014901161,
+      "visualMs": 0.8999999985098839
     },
     {
       "cue": "stop",
-      "deviationMs": -15.638666672626641
+      "deviationMs": -11.744333331842427,
+      "preparationMs": 0.6000000014901161,
+      "visualMs": 0.7999999970197678
     },
     {
       "cue": "stop",
-      "deviationMs": 11.854000001489112
+      "deviationMs": -8.987000002980494,
+      "preparationMs": 0.6000000014901161,
+      "visualMs": 0.8999999985098839
     },
     {
       "cue": "stop",
-      "deviationMs": -4.634333333333416
+      "deviationMs": -17.0736666711382,
+      "preparationMs": 0.6000000014901161,
+      "visualMs": 1
     },
     {
       "cue": "giant",
-      "deviationMs": 22.33133333929436
+      "deviationMs": -13.885000000000218,
+      "preparationMs": 3.100000001490116,
+      "visualMs": 1.3999999985098839
     },
     {
       "cue": "line",
-      "deviationMs": 1.1329999999979918
+      "deviationMs": -14.62933332886314,
+      "preparationMs": 0.8000000044703484,
+      "visualMs": 1.3000000044703484
     },
     {
       "cue": "bonus",
-      "deviationMs": -3.2530000014903635
+      "deviationMs": -15.749999994039172,
+      "preparationMs": 7,
+      "visualMs": 1
     },
     {
       "cue": "bonus",
-      "deviationMs": 1.6666666726268886
+      "deviationMs": -0.046666669646583614,
+      "preparationMs": 1,
+      "visualMs": 0.7999999970197678
     },
     {
       "cue": "stop",
-      "deviationMs": -6.033333331841277
+      "deviationMs": -12.768999995529157,
+      "preparationMs": 0.5999999940395355,
+      "visualMs": 0.6000000014901161
     },
     {
       "cue": "stop",
-      "deviationMs": 10.531333328865003
+      "deviationMs": -14.62066666517785,
+      "preparationMs": 0.6999999955296516,
+      "visualMs": 0.6999999955296516
     },
     {
       "cue": "stop",
-      "deviationMs": -16.9226666666691
+      "deviationMs": 8.034666669647777,
+      "preparationMs": 0.7000000029802322,
+      "visualMs": 0.6000000014901161
     },
     {
       "cue": "stop",
-      "deviationMs": 3.3900000029825605
+      "deviationMs": -17.569666665174736,
+      "preparationMs": 1.2999999970197678,
+      "visualMs": 0.8999999985098839
     },
     {
       "cue": "stop",
-      "deviationMs": -6.427333333336719
+      "deviationMs": -16.60566667113926,
+      "preparationMs": 0.6000000014901161,
+      "visualMs": 0.6999999955296516
     },
     {
       "cue": "stop",
-      "deviationMs": -12.036000000000058
+      "deviationMs": -7.741666669648112,
+      "preparationMs": 0.7999999970197678,
+      "visualMs": 0.8999999985098839
     },
     {
       "cue": "giant",
-      "deviationMs": -13.91533332736799
+      "deviationMs": -13.36400000149115,
+      "preparationMs": 1,
+      "visualMs": 0.8999999985098839
     },
     {
       "cue": "cannon",
-      "deviationMs": 0.9786666651743872
+      "deviationMs": -13.016000002980945,
+      "preparationMs": 1,
+      "visualMs": 4.5
     },
     {
       "cue": "line",
-      "deviationMs": 1.56400000148642
+      "deviationMs": -14.920333333333474,
+      "preparationMs": 0.7999999970197678,
+      "visualMs": 1.1000000014901161
     }
   ]
 }
