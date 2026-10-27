@@ -228,4 +228,3 @@ async function start(){
   }catch(error){login((error as any).status===401?'':(error as Error).message);}
 }
 void start();
-import '../i18n/paymentMethodsEn';
