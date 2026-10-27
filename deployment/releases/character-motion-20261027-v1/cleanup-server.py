@@ -4,6 +4,8 @@ import hashlib
 import json
 import os
 import shutil
+import sys
+import re
 
 root = Path('/opt/royal-releases/character-motion-20261027-v1')
 locks = []
@@ -14,7 +16,7 @@ for name in ['/opt/royal-releases/themed-publish.lock', '/opt/royal/.client-pres
 manifest = json.loads((root / 'install-manifest.json').read_text())
 published = json.loads((root / 'published.json').read_text())
 assert published['published'] is True
-assert published['sourceCommit'] == manifest['sourceCommit'] == manifest['sourceCommit']
+assert published['sourceCommit'] == manifest['sourceCommit']
 assert json.loads((root / 'exit.json').read_text())['exitCode'] == 0
 context = root / 'runtime-context'
 assert context.is_dir() and not context.is_symlink()
@@ -39,7 +41,8 @@ for path in context.rglob('*'):
 assert actual == expected
 archive = root / 'transport.tgz'
 assert archive.is_file() and not archive.is_symlink()
-assert hashlib.sha256(archive.read_bytes()).hexdigest() == 'a0dd76bee7be8a3df85595b516455588d3c2fe88ecd4215695124696aa4443b1'
+assert len(sys.argv) == 2 and re.fullmatch(r'[a-f0-9]{64}', sys.argv[1])
+assert hashlib.sha256(archive.read_bytes()).hexdigest() == sys.argv[1]
 archive_bytes = archive.stat().st_size
 cache = root / '__pycache__'
 cache_files = list(cache.iterdir()) if cache.exists() else []

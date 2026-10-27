@@ -221,7 +221,7 @@ class FinancialGateTests(unittest.TestCase):
     def test_command_timeout_kills_only_its_owned_group_and_marks_docker_unknown(self):
         gate = self.gate().acquire()
         unrelated = subprocess.Popen([sys.executable, '-c', 'import time;time.sleep(60)'], start_new_session=True)
-        self.addCleanup(lambda: (unrelated.terminate(), unrelated.wait(timeout=2)))
+        self.addCleanup(lambda: (unrelated.kill(), unrelated.wait(timeout=5)))
         with self.assertRaises(GateError) as caught:
             gate.run(self.command('hang', self.descendant), timeout=.25)
         self.assertTrue(caught.exception.daemon_outcome_unknown)
