@@ -30,6 +30,7 @@ import { FURNITURE, PLANTS } from '../shared/furniture';
 import { createCharacters, createCharacterPortrait, characterTexture, characterScaleY, pruneCharacterTextures, CHARACTER_SCALE, type Facing } from './characters';
 import { parseGeneratedAppearance } from '../shared/skinStudio';
 import { hasSkinSheet } from './generatedSkinArt';
+import { advanceCharacterMotion, characterRestScale, createCharacterMotion, type CharacterMotion } from './characterAnimation';
 import { Bar } from './Bar';
 import { drawActivities } from './activityArt';
 import { ACTIVITIES, type ActivityId } from '../shared/activities';
@@ -47,7 +48,7 @@ import { findPath, walkable, WORLD, type Point, type Obstacle } from './navigati
 
 import { CABINETS, cabinetsInHall, type Cabinet } from '../shared/cabinets';
 export { CABINETS, type Cabinet };
-type Actor = { hall: HallId; sprite: Phaser.GameObjects.Sprite; shadow: Phaser.GameObjects.Ellipse; blush: Phaser.GameObjects.Graphics; label?: Phaser.GameObjects.Text; x: number; y: number; path: Point[]; phase: number; nextMove: number; facing: Facing; skin: number; appearance: string; soberAt: number; moving: boolean; lastStep: number; strideDistance: number; visualAt: number; visualX: number; visualY: number; seat: string; action: PlayerAction; drink: string; actionUntil: number; cabinet: string; gameReaction: string; gameReactionUntil: number; visualSeat: string; seatedAt: number };
+type Actor = { hall: HallId; sprite: Phaser.GameObjects.Sprite; shadow: Phaser.GameObjects.Ellipse; blush: Phaser.GameObjects.Graphics; label?: Phaser.GameObjects.Text; x: number; y: number; path: Point[]; phase: number; nextMove: number; facing: Facing; skin: number; appearance: string; soberAt: number; moving: boolean; lastStep: number; motion: CharacterMotion; visualAt: number; visualX: number; visualY: number; seat: string; action: PlayerAction; drink: string; actionUntil: number; cabinet: string; gameReaction: string; gameReactionUntil: number; visualSeat: string; seatedAt: number };
 export class RoomScene extends Phaser.Scene {
   player!: Actor;
   hall: HallId = 'arcade';
@@ -302,7 +303,7 @@ export class RoomScene extends Phaser.Scene {
     const label = name ? this.add.text(x, y - 83, name, { fontFamily: 'Arial, sans-serif', fontSize: '11px', color: '#342f2a', backgroundColor: isPlayer ? '#f5d369' : '#fff4d9', padding: { x: 8, y: 4 } }).setOrigin(.5) : undefined;
     let soberAt = 0;
     if (isPlayer) try { soberAt = Math.min(Date.now() + MAX_SOBER_TIME_MS, Number(localStorage.getItem('royal-offline-sober-at')) || 0); } catch { /* The demo can run without browser storage. */ }
-    return { hall:this.hall, x, y, sprite, shadow, blush, label, path: [], phase: (x * 7 + y * 11 + skin * 17 + Array.from(name ?? '').reduce((hash, char) => (hash * 31 + char.charCodeAt(0)) % 997, 0)) % 100, nextMove: 0, facing: 'down', skin, appearance, soberAt, moving: false, lastStep: 0, strideDistance: 0, visualAt: 0, visualX: x, visualY: y, seat: '', action: 'idle', drink: '', actionUntil: 0, cabinet: '', gameReaction: '', gameReactionUntil: 0, visualSeat: '', seatedAt: 0 };
+    return { hall:this.hall, x, y, sprite, shadow, blush, label, path: [], phase: (x * 7 + y * 11 + skin * 17 + Array.from(name ?? '').reduce((hash, char) => (hash * 31 + char.charCodeAt(0)) % 997, 0)) % 100, nextMove: 0, facing: 'down', skin, appearance, soberAt, moving: false, lastStep: 0, motion: createCharacterMotion(), visualAt: 0, visualX: x, visualY: y, seat: '', action: 'idle', drink: '', actionUntil: 0, cabinet: '', gameReaction: '', gameReactionUntil: 0, visualSeat: '', seatedAt: 0 };
   }
   goTo(point: Point) {
     this.approachingCat = false;
@@ -676,7 +677,8 @@ export class RoomScene extends Phaser.Scene {
     if (this.prediction.active) this.afterMovement = action;
     else { this.afterMovement = undefined; action(); }
   }
-  getState() { const c=this.cameras.main;return { cat: this.catView, world:{...WORLD,bounds:BOUNDS},guests:this.guestViews.filter(v=>v.hall===this.hall).map(v=>({...v})), playing:this.networkSelf?.playing??Boolean(this.player.cabinet), cabinet:this.player.cabinet, gameReaction:this.player.gameReactionUntil>Date.now()?this.player.gameReaction:'', gameReactionUntil:this.player.gameReactionUntil, stools:[...this.cabinetStools.keys()], mira:this.bar?.getState(), guards:this.guard?.getState(), security:this.networkSelf?.security, hall:this.hall,switching:this.switching, view:{width:c.width,height:c.height,zoom:c.zoom,x:c.worldView.x,y:c.worldView.y,overview:this.overview}, x: this.player.x, y: this.player.y, moving: this.player.moving, seat: this.player.seat, action: this.player.action, drink: this.player.drink, actionUntil: this.player.actionUntil, soberAt: this.player.soberAt, intoxication: getIntoxication(this.player.soberAt), near: this.near?.id ?? null, locked: this.locked, online: !!this.network, npcTiming:this.npcTimeline.getState(), guestRenderPositions:[...this.guests].map(([id,actor])=>({id,x:actor.x,y:actor.y,spriteX:actor.sprite.x,spriteY:actor.sprite.y,moving:actor.moving})), predicted: this.prediction.active, pendingInputs: this.prediction.pendingCount, serverX: this.networkSelf?.x, serverY: this.networkSelf?.y, renderX: this.player.sprite.x, renderY: this.player.sprite.y, skin: this.player.skin, appearance: this.player.appearance, texture: this.player.sprite.texture.key, remotes: this.remotePlayers.size, remotePositions: [...this.remotePlayers].map(([id, { actor }]) => ({ id, skin: actor.skin, appearance: actor.appearance, texture: actor.sprite.texture.key, x: actor.x, y: actor.y, seat: actor.seat, cabinet: actor.cabinet, gameReaction:actor.gameReactionUntil>Date.now()?actor.gameReaction:'', gameReactionUntil:actor.gameReactionUntil, action: actor.action, soberAt: actor.soberAt, angle: actor.sprite.angle, frame: actor.sprite.frame.name })), facing: this.player.facing, animation: this.player.sprite.anims.currentAnim?.key, frame: this.player.sprite.frame.name, reducedMotion: this.reducedMotion }; }
+  getReducedMotion() { return this.reducedMotion; }
+  getState() { const c=this.cameras.main;return { cat: this.catView, world:{...WORLD,bounds:BOUNDS},guests:this.guestViews.filter(v=>v.hall===this.hall).map(v=>({...v})), playing:this.networkSelf?.playing??Boolean(this.player.cabinet), cabinet:this.player.cabinet, gameReaction:this.player.gameReactionUntil>Date.now()?this.player.gameReaction:'', gameReactionUntil:this.player.gameReactionUntil, stools:[...this.cabinetStools.keys()], mira:this.bar?.getState(), guards:this.guard?.getState(), security:this.networkSelf?.security, hall:this.hall,switching:this.switching, view:{width:c.width,height:c.height,zoom:c.zoom,x:c.worldView.x,y:c.worldView.y,overview:this.overview}, x: this.player.x, y: this.player.y, moving: this.player.moving, seat: this.player.seat, action: this.player.action, drink: this.player.drink, actionUntil: this.player.actionUntil, soberAt: this.player.soberAt, intoxication: getIntoxication(this.player.soberAt), near: this.near?.id ?? null, locked: this.locked, online: !!this.network, npcTiming:this.npcTimeline.getState(), guestRenderPositions:[...this.guests].map(([id,actor])=>({id,x:actor.x,y:actor.y,spriteX:actor.sprite.x,spriteY:actor.sprite.y,moving:actor.moving})), predicted: this.prediction.active, pendingInputs: this.prediction.pendingCount, serverX: this.networkSelf?.x, serverY: this.networkSelf?.y, renderX: this.player.sprite.x, renderY: this.player.sprite.y, renderScaleX: this.player.sprite.scaleX, renderScaleY: this.player.sprite.scaleY, skin: this.player.skin, appearance: this.player.appearance, texture: this.player.sprite.texture.key, remotes: this.remotePlayers.size, remotePositions: [...this.remotePlayers].map(([id, { actor }]) => ({ id, skin: actor.skin, appearance: actor.appearance, texture: actor.sprite.texture.key, x: actor.x, y: actor.y, seat: actor.seat, cabinet: actor.cabinet, gameReaction:actor.gameReactionUntil>Date.now()?actor.gameReaction:'', gameReactionUntil:actor.gameReactionUntil, action: actor.action, soberAt: actor.soberAt, angle: actor.sprite.angle, frame: actor.sprite.frame.name })), facing: this.player.facing, animation: this.player.sprite.anims.currentAnim?.key, frame: this.player.sprite.frame.name, reducedMotion: this.reducedMotion }; }
   update(time: number, delta: number) {
     if (!this.player) return;
     const npcRenderAt=this.npcTimeline.renderTime(performance.now(),this.guestsAt||this.npcSimulationAt||undefined)??performance.now()-300;
@@ -821,51 +823,53 @@ export class RoomScene extends Phaser.Scene {
   }
   private animateActor(actor: Actor, time: number, moving: boolean) {
     actor.sprite.setAngle(0); actor.label?.setVisible(true); actor.shadow.setScale(1);
-    const wasMoving = actor.moving;
     actor.moving = moving;
     const gameReaction = actor.gameReactionUntil > Date.now() ? actor.gameReaction : '';
     const gameMode = actor.cabinet ? gameReaction === 'win' ? 'win' : gameReaction === 'lose' ? 'lose' : 'game' : '';
     const mode = gameMode || (actor.action==='drink' ? (actor.seat?'sitdrink':'drink') : actor.seat ? 'sit' : moving ? 'walk' : 'idle');
     const key = `${actor.sprite.texture.key}-${mode}-${actor.facing}`;
-    const distance = Math.hypot(actor.x - actor.visualX, actor.y - actor.visualY);
+    const x = actor.x + (actor === this.player ? this.correction.x : 0), y = actor.y + (actor === this.player ? this.correction.y : 0);
+    const distance = Math.hypot(x - actor.visualX, y - actor.visualY);
     const elapsed = time - actor.visualAt;
     const travel = distance < 24 && elapsed > 0 && elapsed < 150 ? distance : 0;
+    const motion = advanceCharacterMotion(actor.motion, { mode: mode === 'walk' ? 'walk' : mode === 'idle' || mode === 'sit' ? 'rest' : 'action', distance: travel, time, normalSpeed: PLAYER_SPEED });
+    const rest = characterRestScale(actor.motion, time, actor.phase, this.reducedMotion);
+    actor.sprite.setScale(CHARACTER_SCALE * rest.x, characterScaleY(actor.appearance) * rest.y);
     const anim = actor.sprite.anims;
-    if (this.reducedMotion && !moving) {
+    if (mode === 'walk') {
+      if (anim.currentAnim?.key !== key) actor.sprite.play({ key });
+      anim.pause(); anim.timeScale = 1;
+      if (motion.frame === 6) actor.sprite.setFrame(`${actor.facing}-6`);
+      else anim.setCurrentFrame(anim.currentAnim!.frames[motion.frame]);
+    } else if (this.reducedMotion && !moving) {
       anim.stop(); actor.sprite.setFrame(`${actor.facing}-${gameMode === 'win' ? 36 : gameMode === 'lose' ? 42 : gameMode ? 30 : actor.action==='drink'?(actor.seat?19:13):actor.seat?10:6}`);
     } else {
-      // A turn swaps the paper view while preserving the current step in the cycle.
       const changed = anim.currentAnim?.key !== key || !anim.isPlaying;
       if (changed) {
-        const walkingBefore = anim.currentAnim?.key.includes('-walk-') && mode === 'walk';
-        const startFrame = walkingBefore ? Math.max(0, (anim.currentFrame?.index ?? 1) - 1) : 0;
-        actor.sprite.play({key, startFrame, delay: mode === 'idle' ? actor.phase * 13 : 0});
+        actor.sprite.play({key, delay: mode === 'idle' ? actor.phase * 13 : 0});
+        if (mode === 'idle') actor.sprite.setFrame(`${actor.facing}-6`);
       }
-      const speed = elapsed > 0 ? travel / elapsed * 1000 : PLAYER_SPEED;
-      anim.timeScale = mode === 'walk' ? Phaser.Math.Clamp(speed / PLAYER_SPEED, .3, PLAYER_SPRINT_SPEED / PLAYER_SPEED) : 1;
+      anim.timeScale = 1;
     }
-    actor.visualX = actor.x; actor.visualY = actor.y; actor.visualAt = time;
-    if (!wasMoving || !moving) actor.strideDistance = 0;
-    else actor.strideDistance += travel;
-    const x = actor.x + (actor === this.player ? this.correction.x : 0), y = actor.y + (actor === this.player ? this.correction.y : 0);
+    actor.visualX = x; actor.visualY = y; actor.visualAt = time;
     if (actor.visualSeat !== actor.seat) { actor.visualSeat = actor.seat; actor.seatedAt = time; }
     const sitting = actor.cabinet && !this.reducedMotion ? Math.max(0, 1 - (time - actor.seatedAt) / 360) : 0;
     actor.sprite.setPosition(x, y - Math.sin(sitting * Math.PI) * 5).setDepth(y);
     const drunk = getIntoxication(actor.soberAt);
     const sway = this.reducedMotion ? 0 : Math.sin(time / (moving ? 190 : 650) + actor.phase) * drunk.level * (moving ? 7 : 3);
     actor.sprite.setAngle(sway);
-    actor.blush.clear().setPosition(x, y).setDepth(y + .1).setAngle(sway).setVisible(drunk.stage > 0 && actor.facing !== 'up');
+    actor.blush.clear().setPosition(x, y).setScale(rest.x, rest.y).setDepth(y + .1).setAngle(sway).setVisible(drunk.stage > 0 && actor.facing !== 'up');
     if (drunk.stage && actor.facing !== 'up') {
       actor.blush.fillStyle(0xd34140, .12 + drunk.stage * .1);
       for (const cheek of actor.facing === 'down' ? [-9, 9] : actor.facing === 'left' ? [-5] : [5]) actor.blush.fillEllipse(cheek, -38, 8, 4);
     }
-    actor.shadow.setPosition(x, y - 1).setDepth(y - 1).setScale(moving && !this.reducedMotion && /-[1245]$/.test(String(actor.sprite.frame.name)) ? .94 : 1);
+    const shadowScale = mode === 'walk' && !this.reducedMotion && /-[1245]$/.test(String(actor.sprite.frame.name)) ? .94 : 1;
+    actor.shadow.setPosition(x, y - 1).setDepth(y - 1).setScale(shadowScale * rest.x, shadowScale);
     actor.label?.setPosition(x, y - (actor.seat?72:83)).setDepth(y + 1);
-    if (moving && actor.strideDistance >= 38) {
-      actor.strideDistance %= 38;
+    if (motion.landing) {
       actor.lastStep = time;gameAudio.effect('step',Math.max(.08,1-Math.hypot(actor.x-this.player.x,actor.y-this.player.y)/650));
       if(this.reducedMotion)return;
-      const foot = this.add.ellipse(actor.x + (Math.floor(time / 230) % 2 ? -6 : 6), actor.y - 2, 6, 3, 0xb8c5b0, .13).setDepth(2);
+      const foot = this.add.ellipse(x + motion.landing * 6, y - 2, 6, 3, 0xb8c5b0, .13).setDepth(2);
       this.tweens.add({ targets: foot, alpha: 0, scaleX: 1.6, duration: 480, onComplete: () => foot.destroy() });
     }
   }
