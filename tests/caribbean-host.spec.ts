@@ -1,7 +1,7 @@
 import {test as base,expect,type Page} from '@playwright/test';
 import {Client} from '@colyseus/sdk';
 
-const game='studio-caribbean-treasures',out='artifacts/work/caribbean-final';
+const game='studio-caribbean-treasures',out='artifacts/work/caribbean-reference-polish';
 const test=base.extend<{roomPath:string}>({roomPath:async({request},use)=>{
  const response=await request.post('/api/auth/login',{data:{email:`ct-room-${crypto.randomUUID()}@example.test`,password:'Royal-test-123!'}});
  expect(response.ok()).toBe(true);
@@ -67,16 +67,23 @@ async function finish(page:Page){
  expect(s.state).toBe('settled');return s;
 }
 async function layout(page:Page,name:string){
+ await page.screenshot({path:out+'/'+name+'.png'});
  await expect(page.locator('[data-ct-action=play]')).toBeInViewport();await expect(page.locator('#chat-input')).toBeInViewport();
  await expect.poll(async()=>page.locator('.ct-root').evaluate(e=>Math.abs(e.getBoundingClientRect().height-e.closest('.mini-stage')!.getBoundingClientRect().height))).toBeLessThan(2);
  expect(await page.locator('.ct-root').evaluate(e=>e.scrollWidth<=e.clientWidth+1)).toBe(true);
- const boxes=await page.locator('.ct-board,.ct-giant').evaluateAll(nodes=>nodes.map(n=>{const b=n.getBoundingClientRect();return{x:b.x,y:b.y,right:b.right,bottom:b.bottom,width:b.width,height:b.height};}));
+ await expect.poll(async()=>page.locator('.ct-symbol').evaluateAll(nodes=>nodes.every(n=>(n as HTMLImageElement).complete&&(n as HTMLImageElement).naturalWidth>=720))).toBe(true);
+ const spin=await page.locator('.ct-play').boundingBox();expect(Math.abs(spin!.width-spin!.height)).toBeLessThan(1);
+ const boxes=await page.locator('.ct-board,.ct-giant:not([hidden])').evaluateAll(nodes=>nodes.map(n=>{const b=n.getBoundingClientRect();return{x:b.x,y:b.y,right:b.right,bottom:b.bottom,width:b.width,height:b.height};}));
  if(boxes.length===2){expect(boxes[1].x).toBeGreaterThanOrEqual(boxes[0].x-1);expect(boxes[1].right).toBeLessThanOrEqual(boxes[0].right+1);expect(boxes[1].bottom).toBeLessThanOrEqual(boxes[0].bottom+1);expect(boxes[1].width).toBeGreaterThan(30);}
  await page.screenshot({path:out+'/'+name+'.png'});
 }
 
 test('natural bonus, real host/chat, line presets and desktop/mobile layout',async({page,roomPath})=>{
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await enter(page,roomPath);await topup(page);await open(page);
+ await layout(page,'reference-ready-desktop');
+ await page.locator('[data-ct-action=lines-down]').click();await expect(page.locator('[data-ct-lines]')).toHaveValue('10');
+ await page.locator('[data-ct-action=lines-up]').click();await expect(page.locator('[data-ct-lines]')).toHaveValue('20');await expect(page.locator('[data-ct-action=lines-up]')).toBeDisabled();
+ await page.locator('[data-ct-action=stake-up]').click();await expect(page.locator('[data-ct-stake]')).toHaveValue('200');await page.locator('[data-ct-action=stake-down]').click();await expect(page.locator('[data-ct-stake]')).toHaveValue('100');await expect(page.locator('[data-ct-action=stake-down]')).toBeDisabled();
  await page.locator('[data-ct-lines]').selectOption('5');await page.locator('[data-ct-stake]').selectOption('200');
  await expect(page.locator('[data-ct-action=play]')).toContainText('10');
  await page.locator('[data-ct-action=info]').click();await expect(page.locator('.ct-modal')).toBeVisible();
@@ -140,13 +147,16 @@ test('switching accounts hides the previous series and restores it only for its 
 
 test('confirmed animation, cannon, skip, mute, zero volume and close release owned audio',async({page,roomPath})=>{
  await enter(page,roomPath);await topup(page);await page.emulateMedia({reducedMotion:'no-preference'});await open(page);
- await page.evaluate(()=>{const c=(globalThis as any)[Symbol.for('royal.game-host.v1')].gameAudio.context;if(!c)throw Error('Shared context missing');const active=(window as any).__ctSources=new Set();const create=c.createOscillator.bind(c);c.createOscillator=()=>{const node=create();active.add(node);node.addEventListener('ended',()=>active.delete(node));return node;};});
+ await page.evaluate(()=>{const c=(globalThis as any)[Symbol.for('royal.game-host.v1')].gameAudio.context;if(!c)throw Error('Shared context missing');const active=(window as any).__ctSources=new Set();for(const name of ['createOscillator','createBufferSource']){const create=c[name].bind(c);c[name]=()=>{const node=create();active.add(node);node.addEventListener('ended',()=>active.delete(node));return node;};}});
  await page.locator('[data-ct-lines]').selectOption('1');await page.request.post('/__test/caribbean/force-bonus');await action(page,'[data-ct-action=play]');
  await action(page,'[data-ct-action=choose-raid]');await page.request.post('/__test/caribbean/force-cannon');await action(page,'[data-ct-action=play]');
  const playback=await page.evaluate(()=>(window as any).royalDemo.getMiniState());expect(playback.audio.counts.cannon).toBe(1);expect(playback.accents.filter((a:any)=>a.cue==='stop')).toHaveLength(12);
  const maximumDeviationMs=Math.max(...playback.accents.map((a:any)=>Math.abs(a.deviationMs)));
  const {writeFile}=await import('node:fs/promises');await writeFile(out+'/playback-measurements.json',JSON.stringify({maximumDeviationMs,accents:playback.accents},null,2));expect(maximumDeviationMs).toBeLessThanOrEqual(50);
+ await page.locator('[data-ct-action=music]').click();await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().audio.music)).toBe(false);
+ await page.locator('[data-ct-action=music]').click();await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().audio.music)).toBe(true);
  await page.locator('[data-ct-action=play]').click();await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().visualPhase)).toBe('reels');
+ await expect(page.locator('.ct-strip:not([hidden])')).not.toHaveCount(0);await page.screenshot({path:out+'/reels.png'});
  await page.locator('[data-ct-action=skip]').click();await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().presenting)).toBe(false);
  const saved=await session(page);expect(await page.locator('.ct-cell').evaluateAll(nodes=>nodes.map(n=>Number((n as HTMLElement).dataset.symbol)))).toEqual(saved.view.caribbean.spins.at(-1).frame.grid);
  await page.evaluate(()=>{const audio=(globalThis as any)[Symbol.for('royal.game-host.v1')].gameAudio;audio.setVolume(0);audio.setMuted(false);});
@@ -159,6 +169,9 @@ test('confirmed animation, cannon, skip, mute, zero volume and close release own
  await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,value:true});document.dispatchEvent(new Event('visibilitychange'));});
  await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().presenting)).toBe(false);
  await page.evaluate(()=>{delete(document as any).hidden;document.dispatchEvent(new Event('visibilitychange'));});
+ await page.locator('[data-ct-action=play]').click();await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().visualPhase)).toBe('reels');
+ await page.emulateMedia({reducedMotion:'reduce'});await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().presenting)).toBe(false);await expect(page.locator('.ct-root')).toHaveAttribute('data-motion','reduced');
+ const reduced=await session(page);expect(await page.locator('.ct-cell').evaluateAll(nodes=>nodes.map(n=>Number((n as HTMLElement).dataset.symbol)))).toEqual(reduced.view.caribbean.spins.at(-1).frame.grid);
  await close(page);await expect.poll(async()=>page.evaluate(()=>(window as any).__ctSources.size),{timeout:4000}).toBe(0);
  await open(page);expect(await page.evaluate(()=>(window as any).royalDemo.getMiniState().audio.counts)).toEqual({});
  await page.screenshot({path:out+'/desktop-final.png'});
@@ -182,14 +195,15 @@ test('extreme stakes, rapid double click, mobile purchase and English recovery k
  expect((await session(page)).id).toBe(bought.id);await finish(page);await expect(page.locator('.ct-status')).toContainText(/round|Round/);
 });
 
-test('original audio renders without clipping and ends in silence',async({page})=>{
+test('original maritime music and Foley render without clipping and end in silence',async({page})=>{
  await page.goto('/tests/fixtures/caribbean-audio.html');
  const rendered=await page.evaluate(async()=>{
-  const offline=new OfflineAudioContext(1,44100*9,44100);let clock=0;const output=offline.createGain();output.connect(offline.destination);
+  const offline=new OfflineAudioContext(1,44100*19,44100);let clock=0;const output=offline.createGain();output.connect(offline.destination);
   const context=new Proxy(offline,{get(target,key){if(key==='state')return'running';if(key==='currentTime')return clock;if(key==='getOutputTimestamp')return()=>({contextTime:0,performanceTime:0});const v=Reflect.get(target,key,target);return typeof v==='function'?v.bind(target):v;}});
   const prefs={muted:false,volume:1};(globalThis as any)[Symbol.for('royal.game-host.v1')]={apiVersion:1,gameAudio:{context,output,getPreferences:()=>prefs,onPreferences:()=>()=>{},unlock:async()=>{}}};
-  const path='/games/caribbean-treasures/CaribbeanAudio.ts';const {CaribbeanAudio}=await import(/* @vite-ignore */path);const audio=new CaribbeanAudio();audio.setMusic(false);await audio.enter();
-  const events:[number,string,number?][]=[[0,'click'],...[0,1,2,3,4,5].map(i=>[.3+i*.12,'stop',i] as [number,string,number]),[1.3,'giant'],[2,'cannon'],[2.7,'line'],[3.2,'bonus'],[4,'partial'],[4.5,'return'],[5.2,'win'],[6.4,'bigwin']];
+  const path='/games/caribbean-treasures/CaribbeanAudio.ts';const {CaribbeanAudio}=await import(/* @vite-ignore */path);const audio=new CaribbeanAudio();audio.setMusic(true);await audio.enter(false);
+  for(let tick=0;tick<48;tick++)audio.scoreStep(tick,.06+tick*.26);
+  const events:[number,string,number?][]=[[1,'click'],...[0,1,2,3,4,5].map(i=>[2+i*.15,'stop',i] as [number,string,number]),[4,'giant'],[5,'cannon'],[6,'line'],[7,'bonus'],[10,'partial'],[11,'return'],[13,'win'],[16,'bigwin']];
   for(const [time,cue,variant] of events){clock=time;audio.cue(cue,variant);}
   const buffer=await offline.startRendering(),samples=buffer.getChannelData(0);let peak=0,step=0,sum=0,tail=0;
   const bytes=new Uint8Array(44+samples.length*2),view=new DataView(bytes.buffer),word=(at:number,text:string)=>{for(let i=0;i<text.length;i++)bytes[at+i]=text.charCodeAt(i);};
@@ -198,7 +212,7 @@ test('original audio renders without clipping and ends in silence',async({page})
   let encoded='';for(let i=0;i<bytes.length;i+=8192)encoded+=String.fromCharCode(...bytes.subarray(i,i+8192));
   return{peak,rms:Math.sqrt(sum/samples.length),maxSampleStep:step,tail,wav:btoa(encoded)};
  });
- expect(rendered.peak).toBeGreaterThan(.001);expect(rendered.peak).toBeLessThan(.9);expect(rendered.maxSampleStep).toBeLessThan(.05);expect(rendered.tail).toBeLessThan(.0001);
  const {writeFile}=await import('node:fs/promises');await writeFile(out+'/sound-preview.wav',Buffer.from(rendered.wav,'base64'));
  await writeFile(out+'/audio-measurements.json',JSON.stringify({...rendered,wav:undefined},null,2));
+ expect(rendered.peak).toBeGreaterThan(.001);expect(rendered.peak).toBeLessThan(.9);expect(rendered.maxSampleStep).toBeLessThan(.05);expect(rendered.tail).toBeLessThan(.0001);
 });

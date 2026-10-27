@@ -1,0 +1,367 @@
+{
+  "date": "2026-10-27",
+  "owner": "caribbean-reference-polish",
+  "preservationCommit": "2ddf1988be8a95944bcfd6b56ecf6f75c9c449b4",
+  "preservationRef": "refs/heads/codex/caribbean-reference-polish",
+  "remoteCommitVerified": true,
+  "taskStartFreeBytes": 300362534912,
+  "freeAtInventoryBytes": 299930271744,
+  "removedPackageFolders": [],
+  "removedPackageLogicalBytes": 0,
+  "removedTemporaryArtifactFiles": 0,
+  "archivesCreated": 0,
+  "archivesRemoved": 0,
+  "temporaryDatabases": [
+    {
+      "path": "C:/Users/Aorus/AppData/Local/Temp/royal-pg-bAStX3",
+      "presentAfterStop": false
+    },
+    {
+      "path": "C:/Users/Aorus/AppData/Local/Temp/royal-pg-Syqv3O",
+      "presentAfterStop": false
+    },
+    {
+      "path": "C:/Users/Aorus/AppData/Local/Temp/royal-pg-B2oD9c",
+      "presentAfterStop": false
+    }
+  ],
+  "standStopped": true,
+  "cleanupBlock": {
+    "action": "Remove inactive local game-package version directories after validating their workspace boundary, unchanged inventory and active pointers",
+    "reason": "Automatic approval review rejected the command: blocked by policy",
+    "attemptExecuted": false
+  },
+  "retainedObsoletePackages": [
+    {
+      "folder": "module-dist/github-andar-bahar/versions/1.0.0-0d08a69e741e",
+      "bytes": 226399
+    },
+    {
+      "folder": "module-dist/github-andar-bahar/versions/1.0.0-3cc18fedf68c",
+      "bytes": 226399
+    },
+    {
+      "folder": "module-dist/github-baccarat/versions/1.0.0-5bd9caaa8fcc",
+      "bytes": 8534336
+    },
+    {
+      "folder": "module-dist/github-baccarat/versions/1.0.0-c39cf8c656df",
+      "bytes": 8534336
+    },
+    {
+      "folder": "module-dist/github-blackjack/versions/1.0.0-3b21260dec63",
+      "bytes": 8534339
+    },
+    {
+      "folder": "module-dist/github-blackjack/versions/1.0.0-991aa86a213c",
+      "bytes": 8534339
+    },
+    {
+      "folder": "module-dist/github-caribbean/versions/1.0.0-8e2383f03fb3",
+      "bytes": 226395
+    },
+    {
+      "folder": "module-dist/github-caribbean/versions/1.0.0-b1f1030ce13f",
+      "bytes": 226395
+    },
+    {
+      "folder": "module-dist/github-caribbean-draw/versions/1.0.0-af24708054b6",
+      "bytes": 226405
+    },
+    {
+      "folder": "module-dist/github-caribbean-draw/versions/1.0.0-d5581df35e3b",
+      "bytes": 226405
+    },
+    {
+      "folder": "module-dist/github-craps/versions/1.0.0-39d23c45e2fb",
+      "bytes": 8713378
+    },
+    {
+      "folder": "module-dist/github-craps/versions/1.0.0-f62f35469590",
+      "bytes": 8713378
+    },
+    {
+      "folder": "module-dist/github-crazy-four/versions/1.0.0-0cbda20cff7a",
+      "bytes": 226397
+    },
+    {
+      "folder": "module-dist/github-crazy-four/versions/1.0.0-dca9b7e4b407",
+      "bytes": 226397
+    },
+    {
+      "folder": "module-dist/github-deuces/versions/1.0.0-7f917dd777ff",
+      "bytes": 226389
+    },
+    {
+      "folder": "module-dist/github-deuces/versions/1.0.0-e549c595a94d",
+      "bytes": 226389
+    },
+    {
+      "folder": "module-dist/github-diamonds/versions/1.0.0-0c61733b92e1",
+      "bytes": 576096
+    },
+    {
+      "folder": "module-dist/github-diamonds/versions/1.0.0-faf785f13152",
+      "bytes": 576096
+    },
+    {
+      "folder": "module-dist/github-dragon-tiger/versions/1.0.0-70d1c072bdc7",
+      "bytes": 226401
+    },
+    {
+      "folder": "module-dist/github-dragon-tiger/versions/1.0.0-c0fb79825161",
+      "bytes": 226401
+    },
+    {
+      "folder": "module-dist/github-exposure/versions/1.0.0-2fc6a74606cf",
+      "bytes": 226393
+    },
+    {
+      "folder": "module-dist/github-exposure/versions/1.0.0-e05da5cf2941",
+      "bytes": 226393
+    },
+    {
+      "folder": "module-dist/github-flush/versions/1.0.0-0a54d06c28ce",
+      "bytes": 226387
+    },
+    {
+      "folder": "module-dist/github-flush/versions/1.0.0-af72a5e93a01",
+      "bytes": 226387
+    },
+    {
+      "folder": "module-dist/github-four-card/versions/1.0.0-03d145420592",
+      "bytes": 226395
+    },
+    {
+      "folder": "module-dist/github-four-card/versions/1.0.0-c2d56ceda557",
+      "bytes": 226395
+    },
+    {
+      "folder": "module-dist/github-free-bet/versions/1.0.0-a5d5ddfe603d",
+      "bytes": 226393
+    },
+    {
+      "folder": "module-dist/github-free-bet/versions/1.0.0-d28f1469bfac",
+      "bytes": 226393
+    },
+    {
+      "folder": "module-dist/github-holdem-bonus/versions/1.0.0-10d9d305b0b9",
+      "bytes": 226401
+    },
+    {
+      "folder": "module-dist/github-holdem-bonus/versions/1.0.0-3cf432569b16",
+      "bytes": 226401
+    },
+    {
+      "folder": "module-dist/github-let-it-ride/versions/1.0.0-0998d11a34e2",
+      "bytes": 226399
+    },
+    {
+      "folder": "module-dist/github-let-it-ride/versions/1.0.0-3ea41e0dd886",
+      "bytes": 226399
+    },
+    {
+      "folder": "module-dist/github-mississippi/versions/1.0.0-17fe8fa6b4b6",
+      "bytes": 226399
+    },
+    {
+      "folder": "module-dist/github-mississippi/versions/1.0.0-927782425fdb",
+      "bytes": 226399
+    },
+    {
+      "folder": "module-dist/github-oasis/versions/1.0.0-04c730a9fec0",
+      "bytes": 226387
+    },
+    {
+      "folder": "module-dist/github-oasis/versions/1.0.0-428a9d669317",
+      "bytes": 226387
+    },
+    {
+      "folder": "module-dist/github-pai-gow/versions/1.0.0-43efb7cc33e9",
+      "bytes": 226391
+    },
+    {
+      "folder": "module-dist/github-pai-gow/versions/1.0.0-f53139027328",
+      "bytes": 226391
+    },
+    {
+      "folder": "module-dist/github-poker/versions/1.0.0-1ddec03bfd41",
+      "bytes": 8534327
+    },
+    {
+      "folder": "module-dist/github-poker/versions/1.0.0-48180a8e25ed",
+      "bytes": 8534327
+    },
+    {
+      "folder": "module-dist/github-red-dog/versions/1.0.0-0111ddde2b09",
+      "bytes": 226391
+    },
+    {
+      "folder": "module-dist/github-red-dog/versions/1.0.0-1055f7c7f6f2",
+      "bytes": 226391
+    },
+    {
+      "folder": "module-dist/github-rummy/versions/1.0.0-7d98c8ef61d9",
+      "bytes": 226387
+    },
+    {
+      "folder": "module-dist/github-rummy/versions/1.0.0-b6cf781f42ca",
+      "bytes": 226387
+    },
+    {
+      "folder": "module-dist/github-russian/versions/1.0.0-4964af39350c",
+      "bytes": 226391
+    },
+    {
+      "folder": "module-dist/github-russian/versions/1.0.0-6352d7ce6984",
+      "bytes": 226391
+    },
+    {
+      "folder": "module-dist/github-sic-bo/versions/1.0.0-59c3376bc161",
+      "bytes": 497408
+    },
+    {
+      "folder": "module-dist/github-sic-bo/versions/1.0.0-f1a9c2447747",
+      "bytes": 497408
+    },
+    {
+      "folder": "module-dist/github-spanish/versions/1.0.0-65e3a27a3be0",
+      "bytes": 226391
+    },
+    {
+      "folder": "module-dist/github-spanish/versions/1.0.0-bf04c6ae5a92",
+      "bytes": 226391
+    },
+    {
+      "folder": "module-dist/github-switch/versions/1.0.0-bc32bb27ea93",
+      "bytes": 226389
+    },
+    {
+      "folder": "module-dist/github-switch/versions/1.0.0-bf786dfe83c7",
+      "bytes": 226389
+    },
+    {
+      "folder": "module-dist/github-three-card/versions/1.0.0-4e5a113602d9",
+      "bytes": 226397
+    },
+    {
+      "folder": "module-dist/github-three-card/versions/1.0.0-c2de47a45790",
+      "bytes": 226397
+    },
+    {
+      "folder": "module-dist/github-ultimate/versions/1.0.0-0966273ba68c",
+      "bytes": 226393
+    },
+    {
+      "folder": "module-dist/github-ultimate/versions/1.0.0-41f77d76cf70",
+      "bytes": 226393
+    },
+    {
+      "folder": "module-dist/github-video-poker/versions/1.0.0-c1e4bc22f5e7",
+      "bytes": 8534345
+    },
+    {
+      "folder": "module-dist/github-video-poker/versions/1.0.0-f69177cf847e",
+      "bytes": 8534345
+    },
+    {
+      "folder": "module-dist/github-war/versions/1.0.0-7ab63fc6b3ac",
+      "bytes": 226383
+    },
+    {
+      "folder": "module-dist/github-war/versions/1.0.0-e36954c63124",
+      "bytes": 226383
+    },
+    {
+      "folder": "module-dist/studio-afterglow/versions/1.1.0-e85c0ab3fe97",
+      "bytes": 3217013
+    },
+    {
+      "folder": "module-dist/studio-caribbean-treasures/versions/0.1.0-0b7b08e51454",
+      "bytes": 30670
+    },
+    {
+      "folder": "module-dist/studio-caribbean-treasures/versions/0.1.0-1f794c6878a7",
+      "bytes": 31457
+    },
+    {
+      "folder": "module-dist/studio-caribbean-treasures/versions/0.1.0-de10a45fd62a",
+      "bytes": 31647
+    },
+    {
+      "folder": "module-dist/studio-caribbean-treasures/versions/1.0.0-0134f049cdbf",
+      "bytes": 888854
+    },
+    {
+      "folder": "module-dist/studio-caribbean-treasures/versions/1.0.0-0317607c1ac7",
+      "bytes": 889748
+    },
+    {
+      "folder": "module-dist/studio-caribbean-treasures/versions/1.0.0-1f50dbd55dd0",
+      "bytes": 889746
+    },
+    {
+      "folder": "module-dist/studio-caribbean-treasures/versions/1.0.0-25af22835f64",
+      "bytes": 887600
+    },
+    {
+      "folder": "module-dist/studio-caribbean-treasures/versions/1.0.0-2952e3145a56",
+      "bytes": 889109
+    },
+    {
+      "folder": "module-dist/studio-caribbean-treasures/versions/1.0.0-c7dbbc132606",
+      "bytes": 887377
+    },
+    {
+      "folder": "module-dist/studio-caribbean-treasures/versions/1.0.0-d19be4e35877",
+      "bytes": 889105
+    },
+    {
+      "folder": "module-dist/studio-caribbean-treasures/versions/1.0.0-ef014cd85f32",
+      "bytes": 887984
+    },
+    {
+      "folder": "module-dist/studio-caribbean-treasures/versions/1.1.0-17c2bb53535a",
+      "bytes": 2032196
+    },
+    {
+      "folder": "module-dist/studio-caribbean-treasures/versions/1.1.0-625371ecb124",
+      "bytes": 2032444
+    },
+    {
+      "folder": "module-dist/studio-caribbean-treasures/versions/1.1.0-8b037ff8c450",
+      "bytes": 2032462
+    },
+    {
+      "folder": "module-dist/studio-caribbean-treasures/versions/1.1.0-cf33a55b234a",
+      "bytes": 2032079
+    },
+    {
+      "folder": "module-dist/studio-caribbean-treasures/versions/1.1.0-e1098fd39b2d",
+      "bytes": 2032192
+    },
+    {
+      "folder": "module-dist/studio-caribbean-treasures/versions/1.1.0-ed00aa549206",
+      "bytes": 2032297
+    }
+  ],
+  "retainedObsoletePackageCount": 78,
+  "retainedObsoleteLogicalBytes": 120876544,
+  "retainedTaskArtifacts": {
+    "folder": "artifacts/work/caribbean-reference-polish",
+    "bytes": 7653579,
+    "purpose": "Verification material, duplicated final media and cleanup inventory retained because filesystem cleanup was rejected",
+    "cleanupCondition": "Remove duplicated temporary verification files when cleanup is permitted; current final media and compact reports are saved under docs/concepts/caribbean-treasures"
+  },
+  "checkoutException": {
+    "folder": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal",
+    "reason": "This chat owns the primary managed checkout; the app previously refused archival of its primary checkout. Concurrent work in the original project was preserved.",
+    "cleanupCondition": "Archive the extra checkout through the app when it is no longer primary, after verifying all new source commits in GitHub."
+  },
+  "generatedImageException": {
+    "folder": "C:/Users/Aorus/.codex/generated_images/01a1793f-6c92-7992-85f5-379a1491ef5d",
+    "reason": "The image generation tool requires its original outputs to stay in place unless the user explicitly asks to remove them. Production source masters are also saved in GitHub."
+  },
+  "notes": "No physical disk-space reclamation is claimed. Free-space readings include concurrent activity on the drive.",
+  "finalFreeBytes": 303711252480
+}

@@ -1,108 +1,180 @@
 {
-  "gameId": "studio-caribbean-treasures",
-  "module": "/game-modules/studio-caribbean-treasures/versions/1.0.0-0317607c1ac7/manifest.json",
-  "contracts": {
-    "api": 1,
-    "rules": 1,
-    "progress": 1
+  "format": 1,
+  "date": "2026-10-27",
+  "sourceCommit": "2ddf1988be8a95944bcfd6b56ecf6f75c9c449b4",
+  "baseline": "d898e987a36cca22672a1b84c52bbebe949d8548",
+  "package": "1.1.0-6e0466e824fd",
+  "apiVersion": 1,
+  "rulesVersion": 1,
+  "progressVersion": 1,
+  "mathChanged": false,
+  "productionChanged": false,
+  "runtimeMediaBytes": 1969902,
+  "rtpGate": {
+    "verified": 12,
+    "legacyNotQualified": 114
   },
-  "browser": "Chrome",
-  "viewports": [
-    {
-      "width": 1440,
-      "height": 1000
-    },
-    {
-      "width": 390,
-      "height": 844
+  "checks": {
+    "caribbean": 46,
+    "rtpGate": 23,
+    "nativeWalletRegressions": 11,
+    "moduleIntegrity": 7,
+    "verifiedModulePackages": 118,
+    "gameTypecheck": true,
+    "financeTypecheck": true,
+    "applicationBuild": {
+      "format": 1,
+      "startedAt": "2026-10-27T18:40:44.204Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 2220
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 8285
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 4126
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 6965
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 73
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 24
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 32
+        }
+      ],
+      "passed": true,
+      "durationMs": 21726
     }
-  ],
-  "e2e": {
-    "stats": {
-      "startTime": "2026-10-27T17:37:53.739Z",
-      "duration": 175642.036,
-      "expected": 7,
-      "skipped": 0,
-      "unexpected": 0,
-      "flaky": 0
-    },
-    "cases": [
+  },
+  "browser": {
+    "startTime": "2026-10-27T18:42:17.247Z",
+    "duration": 156378.525,
+    "expected": 7,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0,
+    "viewports": [
+      "1440x1000",
+      "390x844"
+    ],
+    "tests": [
       {
         "name": "natural bonus, real host/chat, line presets and desktop/mobile layout",
+        "status": "expected",
         "results": [
           {
             "status": "passed",
-            "durationMs": 12519
+            "retry": 0,
+            "durationMs": 13295
           }
         ]
       },
       {
         "name": "an accepted start survives a lost response and reopening without duplicate debit",
+        "status": "expected",
         "results": [
           {
             "status": "passed",
-            "durationMs": 12546
+            "retry": 0,
+            "durationMs": 10156
           }
         ]
       },
       {
         "name": "both purchased tactics show the accepted price and recover after a full reload",
+        "status": "expected",
         "results": [
           {
             "status": "passed",
-            "durationMs": 24238
+            "retry": 0,
+            "durationMs": 23527
           }
         ]
       },
       {
         "name": "switching accounts hides the previous series and restores it only for its owner",
+        "status": "expected",
         "results": [
           {
             "status": "passed",
-            "durationMs": 32193
+            "retry": 0,
+            "durationMs": 35403
           }
         ]
       },
       {
         "name": "confirmed animation, cannon, skip, mute, zero volume and close release owned audio",
+        "status": "expected",
         "results": [
           {
             "status": "passed",
-            "durationMs": 30062
+            "retry": 0,
+            "durationMs": 22621
           }
         ]
       },
       {
         "name": "extreme stakes, rapid double click, mobile purchase and English recovery keep one paid round",
+        "status": "expected",
         "results": [
           {
             "status": "passed",
-            "durationMs": 56192
+            "retry": 0,
+            "durationMs": 48476
           }
         ]
       },
       {
-        "name": "original audio renders without clipping and ends in silence",
+        "name": "original maritime music and Foley render without clipping and end in silence",
+        "status": "expected",
         "results": [
           {
             "status": "passed",
-            "durationMs": 1019
+            "retry": 0,
+            "durationMs": 1509
           }
         ]
       }
     ]
   },
-  "checks": {
-    "caribbean": 46,
-    "rtpGate": 20,
-    "moduleIntegrity": 7,
-    "walletAndNativeRegressions": 19,
-    "financeTypecheck": true,
-    "applicationBuild": true
+  "synchronization": {
+    "targetMs": 50,
+    "maximumDeviationMs": 17.569666665174736,
+    "maxPreparationMs": 7,
+    "maxVisualMs": 4.5
   },
-  "limitations": [
-    "Physical phone, wired headphone and Bluetooth listening not performed",
-    "Production not changed",
-    "Generic historical UI collection references missing archived fixtures; dedicated Caribbean suite passes"
+  "audio": {
+    "peak": 0.09745718538761139,
+    "rms": 0.007357180738473592,
+    "maxSampleStep": 0.02916521392762661,
+    "tail": 0,
+    "durationSeconds": 19,
+    "sampleRate": 44100
+  },
+  "limits": [
+    "No physical phone speaker, wired headphone or Bluetooth listening assessment",
+    "No participant preference study",
+    "The historical repository-wide UI suite is outside this targeted run"
   ]
 }
