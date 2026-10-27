@@ -1,0 +1,7 @@
+# Generated skin walking repair
+
+The client renders the complete prepared walking poses, restoring drawn arm and leg movements without artificial cuts through joints. The fitting room shares the game cadence. Existing and new outfits use the same renderer without regenerating artwork. This release changes only the five reviewed animation source/documentation paths and the generated host index and client bundle. All backend programs, modules, dependencies, wallets and accepted round rules are retained.
+
+Prepare one committed application artifact from the verified production source and verify GitHub before passing those exact bytes to this installer. Preparation audits unchanged backend source graphs, all unrelated production sources, dependencies and module contracts. Candidate and running inventories include the installed dependencies. Existing asset URLs are retained.
+
+The installer acquires all three publication locks, checks exact source, module, service, mount and configuration fingerprints, archives the reviewed source and pins both previous image references. It retains at least 5 GiB free. A financial lease drains accepted funded duels and holds the existing PostgreSQL locks during image switching. Heartbeats and confirmation protect each critical operation. An uncertain daemon result stops automatic retries and records the need for explicit reconciliation. Recovery checks later changes and never restores a player database. Financial backups and persistent volumes remain intact.
