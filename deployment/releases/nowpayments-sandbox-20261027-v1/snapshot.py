@@ -80,8 +80,11 @@ built_path = release / 'build-result.json'
 built = json.loads(built_path.read_text()) if built_path.is_file() else {}
 if reviewed is None:
     assert raw and prepared == raw['Image'], 'A bootstrap snapshot requires identical prepared and running images'
-    prior = json.loads(Path('/opt/royal-releases/cosmic-math-20261026-v1/build-result.json').read_text())
-    assert prepared == prior['image'], 'Bootstrap inventory requires the verified current production image'
+    candidates = [Path('/opt/royal-releases')/name/'build-result.json' for name in
+                  ['cosmic-math-20261026-v1', 'skin-walk-seams-20261027-v1']]
+    prior = next((json.loads(path.read_text()) for path in candidates
+                  if path.is_file() and json.loads(path.read_text())['image'] == prepared), None)
+    assert prior is not None, 'Bootstrap inventory requires the verified current production image'
     prepared_program = prior['program']
     assert program == prepared_program, 'Running files differ from the verified immutable image'
 elif prepared == reviewed['preparedImage']:
