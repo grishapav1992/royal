@@ -1,0 +1,87 @@
+{
+  "date": "2026-10-27",
+  "preservedRemoteCommit": "43021249a4daca001a8c7621ba025aad714de640",
+  "remoteVerifiedWith": "git ls-remote",
+  "packageInventory": [
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.0.0-b78c4bed0bc8",
+      "bytes": 1231037.0,
+      "removed": false
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.1.0-19fd67923905",
+      "bytes": 2313002.0,
+      "removed": false
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.1.0-17ed65250255",
+      "bytes": 2312985.0,
+      "removed": false
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.1.0-e00a1ecca259",
+      "bytes": 2313053.0,
+      "removed": false
+    }
+  ],
+  "freeBeforeBytes": 303923281920,
+  "archivesCreated": 0,
+  "archivesRemoved": 0,
+  "activeVersion": "1.1.0-b7e41fe97631",
+  "status": "incomplete-automatic-approval-review-blocked-deletion",
+  "blockedAction": "Remove obsolete task-owned Forest Heart package directories after verifying remote source preservation",
+  "rejectionReason": "blocked by policy; no additional reason supplied",
+  "deletedByCleanupBytes": 0,
+  "retainedObsoletePackageBytes": 8170077.0,
+  "taskArtifacts": {
+    "path": "artifacts/work/forest-heart-visual-v2",
+    "bytes": 6675390.0,
+    "condition": "Remove generated captures, logs and helper scripts when cleanup is permitted; compact final reports and selected images are saved in GitHub"
+  },
+  "automatedDatabaseCleanup": [
+    {
+      "path": "C:\\Users\\Aorus\\AppData\\Local\\Temp\\royal-pg-QrfghK",
+      "exists": false,
+      "bytesBeforeRemoval": null,
+      "cleanup": "Owned stand finalizer on test completion"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\AppData\\Local\\Temp\\royal-pg-eYZVdy",
+      "exists": false,
+      "bytesBeforeRemoval": null,
+      "cleanup": "Owned stand finalizer on test completion"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\AppData\\Local\\Temp\\royal-pg-GIDH5e",
+      "exists": false,
+      "bytesBeforeRemoval": null,
+      "cleanup": "Owned stand finalizer on test completion"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\AppData\\Local\\Temp\\royal-pg-WWhWN9",
+      "exists": false,
+      "bytesBeforeRemoval": null,
+      "cleanup": "Owned stand finalizer on test completion"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\AppData\\Local\\Temp\\royal-pg-JA4SZ3",
+      "exists": false,
+      "bytesBeforeRemoval": null,
+      "cleanup": "Owned stand finalizer on test completion"
+    }
+  ],
+  "activeExceptions": [
+    {
+      "path": "artifacts/work/forest-heart-client",
+      "reason": "User manual preview on 5296, API 2696, session 54196; accepted synthetic sessions preserved",
+      "cleanup": "On user finishing the preview, stop its owned process with Ctrl+C to remove its PostgreSQL, then remove its generated artifacts"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal",
+      "reason": "Current managed development checkout and running user review; original root has unrelated active work",
+      "cleanup": "Retain while review continues; unique source has been verified in GitHub"
+    }
+  ],
+  "freeAfterBytes": 300097990656,
+  "physicalReclaimClaimed": false
+}
