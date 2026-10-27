@@ -1,0 +1,290 @@
+{
+  "date": "2026-10-27",
+  "sourcePreservedInGitHub": "4de2f4a8cfcee51edef9e36062f2e6eb6c3f93cc",
+  "branch": "codex/flooded-temple",
+  "remoteCommitVerified": true,
+  "previewStopped": true,
+  "cleanupStatus": "blocked by automatic approval review",
+  "targets": [
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-stage4",
+      "files": 28,
+      "bytes": 8501578.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\github-andar-bahar\\versions\\1.0.0-a50bacd9eb3a",
+      "files": 3,
+      "bytes": 230113.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\github-baccarat\\versions\\1.0.0-e30814cb281f",
+      "files": 57,
+      "bytes": 8538085.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\github-blackjack\\versions\\1.0.0-7539d0281c26",
+      "files": 57,
+      "bytes": 8538088.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\github-caribbean\\versions\\1.0.0-efa382a1112c",
+      "files": 3,
+      "bytes": 230109.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\github-caribbean-draw\\versions\\1.0.0-24446456c3ee",
+      "files": 3,
+      "bytes": 230119.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\github-craps\\versions\\1.0.0-ad0c121140df",
+      "files": 59,
+      "bytes": 8717127.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\github-crazy-four\\versions\\1.0.0-3731d4cfae40",
+      "files": 3,
+      "bytes": 230111.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\github-deuces\\versions\\1.0.0-2572ba122970",
+      "files": 3,
+      "bytes": 230103.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\github-diamonds\\versions\\1.0.0-fc1fd6bd3269",
+      "files": 5,
+      "bytes": 579814.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\github-dragon-tiger\\versions\\1.0.0-07683eff043c",
+      "files": 3,
+      "bytes": 230115.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\github-exposure\\versions\\1.0.0-42dea79d14f2",
+      "files": 3,
+      "bytes": 230107.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\github-flush\\versions\\1.0.0-2100287772c1",
+      "files": 3,
+      "bytes": 230101.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\github-four-card\\versions\\1.0.0-b5fbfce183d7",
+      "files": 3,
+      "bytes": 230109.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\github-free-bet\\versions\\1.0.0-0bbdb71c5ae7",
+      "files": 3,
+      "bytes": 230107.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\github-hilo\\versions\\1.0.0-ef3314b96723",
+      "files": 3,
+      "bytes": 164239.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\github-holdem-bonus\\versions\\1.0.0-7c67a663c79d",
+      "files": 3,
+      "bytes": 230115.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\github-let-it-ride\\versions\\1.0.0-3391e96feb83",
+      "files": 3,
+      "bytes": 230113.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\github-mississippi\\versions\\1.0.0-b2f9ab1256a6",
+      "files": 3,
+      "bytes": 230113.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\github-oasis\\versions\\1.0.0-b354151cd6ba",
+      "files": 3,
+      "bytes": 230101.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\github-pai-gow\\versions\\1.0.0-dae03407b35a",
+      "files": 3,
+      "bytes": 230105.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\github-poker\\versions\\1.0.0-23dd9980ed0b",
+      "files": 57,
+      "bytes": 8538076.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\github-red-dog\\versions\\1.0.0-183ddbb1646c",
+      "files": 3,
+      "bytes": 230105.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\github-rummy\\versions\\1.0.0-a098d623dff5",
+      "files": 3,
+      "bytes": 230101.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\github-russian\\versions\\1.0.0-e9ef8942ed2f",
+      "files": 3,
+      "bytes": 230105.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\github-sic-bo\\versions\\1.0.0-e57843d8ab25",
+      "files": 5,
+      "bytes": 501126.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\github-spanish\\versions\\1.0.0-efca9f11caaf",
+      "files": 3,
+      "bytes": 230105.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\github-switch\\versions\\1.0.0-3b393604d26e",
+      "files": 3,
+      "bytes": 230103.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\github-three-card\\versions\\1.0.0-649913d63f7c",
+      "files": 3,
+      "bytes": 230111.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\github-tower\\versions\\1.0.0-748150a545db",
+      "files": 5,
+      "bytes": 425410.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\github-ultimate\\versions\\1.0.0-2852a4f442f0",
+      "files": 3,
+      "bytes": 230107.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\github-video-poker\\versions\\1.0.0-a419be763631",
+      "files": 57,
+      "bytes": 8538094.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\github-war\\versions\\1.0.0-1114979fb7ff",
+      "files": 3,
+      "bytes": 230097.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\royal-dice\\versions\\1.0.0-03d6676ebd69",
+      "files": 5,
+      "bytes": 483919.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\royal-fruits\\versions\\1.0.0-158aa25b920a",
+      "files": 5,
+      "bytes": 511888.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\royal-keno\\versions\\1.0.0-05b64167cfc8",
+      "files": 5,
+      "bytes": 554890.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\royal-limbo\\versions\\1.0.0-0d38d6215414",
+      "files": 5,
+      "bytes": 457763.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\royal-mines\\versions\\1.0.0-ff8d7b8c1c0c",
+      "files": 5,
+      "bytes": 510266.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-afterglow\\versions\\1.1.0-e85c0ab3fe97",
+      "files": 22,
+      "bytes": 3217013.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.2.0-36b2035786ce",
+      "files": 5,
+      "bytes": 809971.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.3.0-08e4c895c5ed",
+      "files": 17,
+      "bytes": 2356978.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.3.0-095389df1cf5",
+      "files": 17,
+      "bytes": 2356821.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.3.0-36afed5fafab",
+      "files": 17,
+      "bytes": 2355065.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.3.0-8343c94bb1e0",
+      "files": 17,
+      "bytes": 2354693.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.3.0-930597e645a0",
+      "files": 17,
+      "bytes": 2354832.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.3.0-9c6b7717268b",
+      "files": 17,
+      "bytes": 2354831.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.3.0-a967307155dd",
+      "files": 17,
+      "bytes": 2355919.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.3.0-b38c468d64b0",
+      "files": 17,
+      "bytes": 2355218.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.3.0-b47401ebcb72",
+      "files": 17,
+      "bytes": 2356701.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-signal-fox\\versions\\1.0.0-45cce10caa3b",
+      "files": 4,
+      "bytes": 1687678.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\variant-dice\\versions\\1.0.0-e381ffa9d7d5",
+      "files": 3,
+      "bytes": 183995.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\variant-fruits\\versions\\1.0.0-192de30fee91",
+      "files": 3,
+      "bytes": 184324.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\variant-limbo\\versions\\1.0.0-499a8de7e51c",
+      "files": 3,
+      "bytes": 187634.0
+    }
+  ],
+  "targetBytes": 88324511.0,
+  "removedFolders": 0,
+  "removedBytes": 0,
+  "removedArchives": 0,
+  "removedArchiveBytes": 0,
+  "freeBeforeAttemptBytes": 302782967808,
+  "freeAfterAttemptBytes": 302985973760,
+  "physicalSpaceReclaimedClaimed": false,
+  "retainedTemplePackage": "0.3.0-4c27de833e69",
+  "activeModulePackagesRetained": 119,
+  "exceptions": [
+    "Previously blocked stage 1 and stage 3 targets excluded; no retry or bypass.",
+    "Active feature worktree and shared dependencies retained for stage 5. Remove after the complete feature is saved to GitHub and concurrent work has ended."
+  ],
+  "cleanupReason": "blocked by policy; no detailed reason returned"
+}
