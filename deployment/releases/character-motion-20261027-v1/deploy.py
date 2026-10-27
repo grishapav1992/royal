@@ -145,7 +145,7 @@ def payload():
     require(all(name.startswith(('src/', 'server/', 'scripts/', 'docs/')) for name in CHANGES),
             'Only application source and related documentation may change')
     require(not any(name.endswith(('.orig', '.bak')) for name in CHANGES), 'Historical source backups may not change')
-    require(set(CHANGES).issubset({'src/game/generatedSkinArt.ts', 'src/game/characterAnimation.ts', 'src/game/characters.ts', 'src/ui/SkinFittingRoom.ts', 'docs/skin-studio.md'}), 'Unreviewed animation source')
+    require(set(CHANGES).issubset({'src/game/RoomScene.ts', 'src/game/characterAnimation.ts', 'src/ui/SkinFittingRoom.ts', 'src/ui/SkinStudioUI.ts', 'docs/skin-studio.md'}), 'Unreviewed animation source')
     for name, digest in CHANGES.items():
         require(DIGEST.fullmatch(digest), 'Invalid source digest')
     for name, digest in DELTA.items():
