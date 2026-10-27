@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "scenarios": [
+    "first-path-error-does-not-block-second",
+    "opened-file-identity-guard",
+    "foreign-value-retained",
+    "symlink-rejected",
+    "dead-parent-watchdog-restores-and-cancels",
+    "release-between-ready-and-activate-remains-terminal",
+    "expired-lease-never-activates",
+    "cross-process-lock-orders-activation-before-terminal-restore"
+  ],
+  "sourceSha256": "833d4207807dc317059bc3031657d9db49df8edd563e7cb4205ecb4adfb6ead8"
+}

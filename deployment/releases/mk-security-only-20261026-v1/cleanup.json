@@ -1,0 +1,737 @@
+{
+  "format": 1,
+  "release": "mk-security-only-20261026-v1",
+  "sourcePreservation": {
+    "applicationMainCommit": "37e5c750f92f9708f92c4c0695e5badcd3bb0366",
+    "deploymentRecordMainCommit": "1c155f640c909ea936fdf1e2b05c35d4298f0fad",
+    "historicalSourceArchiveCommit": "f3945d47b95cc9b4a8c9c95f1bdb27960f1e243e"
+  },
+  "localBuildOutputs": {
+    "removed": [
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/checkout/node_modules",
+        "logicalBytes": 422464065,
+        "allocatedBytesBeforeUnlink": 447315968
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/checkout/dist",
+        "logicalBytes": 170490314,
+        "allocatedBytesBeforeUnlink": 192602112
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/checkout/dist-server",
+        "logicalBytes": 4280616,
+        "allocatedBytesBeforeUnlink": 4288512
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/checkout/module-dist",
+        "logicalBytes": 260341433,
+        "allocatedBytesBeforeUnlink": 263696384
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/checkout/module-build",
+        "logicalBytes": 971039,
+        "allocatedBytesBeforeUnlink": 1228800
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/checkout/artifacts",
+        "logicalBytes": 472423,
+        "allocatedBytesBeforeUnlink": 479232
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/payload-final",
+        "logicalBytes": 15618828,
+        "allocatedBytesBeforeUnlink": 16023552
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/payload-repaired",
+        "logicalBytes": 15664226,
+        "allocatedBytesBeforeUnlink": 16072704
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/payload-source-fixed",
+        "logicalBytes": 15644159,
+        "allocatedBytesBeforeUnlink": 16056320
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/payload-startup-fixed",
+        "logicalBytes": 15644362,
+        "allocatedBytesBeforeUnlink": 16056320
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/payload-mk-only",
+        "logicalBytes": 7232278,
+        "allocatedBytesBeforeUnlink": 7544832
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/mk-only-payload.tgz",
+        "logicalBytes": 2039834,
+        "allocatedBytesBeforeUnlink": 2043904
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/publisher-update-v2.tgz",
+        "logicalBytes": 1041952,
+        "allocatedBytesBeforeUnlink": 1044480
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/publisher-update-v3.tgz",
+        "logicalBytes": 1042026,
+        "allocatedBytesBeforeUnlink": 1044480
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/publisher-update.tgz",
+        "logicalBytes": 1041924,
+        "allocatedBytesBeforeUnlink": 1044480
+      }
+    ],
+    "logicalBytes": 933989479,
+    "freeBeforeBytes": 57530478592,
+    "freeAfterBytes": 58556268544,
+    "preservedMainCommit": "1c155f640c909ea936fdf1e2b05c35d4298f0fad",
+    "remoteMainVerified": true,
+    "otherCheckoutTouched": false,
+    "at": 1793048032.2386198,
+    "worktreeRemovalPending": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/checkout",
+    "measuredFreeIncreaseBytes": 1025789952
+  },
+  "localScratch": {
+    "removed": [
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/__pycache__",
+        "logicalBytes": 7890,
+        "sha256": null
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/atelier-browser.log",
+        "logicalBytes": 1427,
+        "sha256": "1a67433344bfb49dab51c4b32e99201c3a87c049cdbda09f27e3db1fb7200468"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/atelier-integration-tests.log",
+        "logicalBytes": 5273,
+        "sha256": "2a73ce35a094925e687dc19d36f3a670cc16ebaecefea9f6373c7e5db6019cfc"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/baseline-reconciliation.json",
+        "logicalBytes": 703,
+        "sha256": "f56b4cedb7ed01a68e933a1790eb8359fb14cf62372a3145a2e0c770f058d27b"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/before-atelier.json",
+        "logicalBytes": 3280787,
+        "sha256": "1bfe6ecfaced23a5bc2d16a65a3b1c577dc5852285929888914cef160211b5c2"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/before-refreshed.json",
+        "logicalBytes": 3280850,
+        "sha256": "405151a687a7e663acc5dc18bbe2b38d447409f1911835d6c8fc144a19aba712"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/cleanup-completed-transports.py",
+        "logicalBytes": 5989,
+        "sha256": "05105760adea8625202009940bc3874e56212bc57e614c81439b516ea4cb3adf"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/cleanup-steps.json",
+        "logicalBytes": 1438,
+        "sha256": "36f195f59f60f665d686dde85040092755ea23f494cd994f1a6bd1669498619c"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/combat-publication-priority.py.saved",
+        "logicalBytes": 4705,
+        "sha256": "aeb7332faca1568d623ebf1e9b93b150b9e97937051c4cebdb6a5ecc59604b56"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/common-mk-browser.log",
+        "logicalBytes": 1427,
+        "sha256": "fc43975c9f5dbf574694a397458d59ea61b956bff2dff4a98b731b7e09932692"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/common-publisher-core.log",
+        "logicalBytes": 146,
+        "sha256": "e6e875da0c3a0a3b21c5d1a836704c5ddc5fd64b6de45c0c8d102d4e6b6f71a0"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/common-publisher-modules.log",
+        "logicalBytes": 8045,
+        "sha256": "06f88ac812cfe8fd7aab7527c6800d76140c083b672cc0b1ad57cdc34f0cf24d"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/common-server-tests.log",
+        "logicalBytes": 7135,
+        "sha256": "c61074ff5a2ae7d8800c53072e3b50f5207fe93a655bfb35318e45c280471564"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/completed-transports-review.json",
+        "logicalBytes": 5238,
+        "sha256": "8df39e5e0f0bddd57faffa9774a8360f02b8e1b6f99380bbf909052f689b3e09"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/continuation-state.json",
+        "logicalBytes": 5243,
+        "sha256": "7e7eb48a9e4b8ec5469dc3fe71f90690a112797474894996eb1254fd3c33b6d1"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/cosmic-host-verification.json",
+        "logicalBytes": 179037,
+        "sha256": "8d09ae92937630dd8bae5b8afbd600b58528e0c9f634057e2112b47b4ae7aa26"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/cpu-priority-explicit-restoration.json",
+        "logicalBytes": 356,
+        "sha256": "6467f952fab30db661144d57fb5c0e62a6907756d609964e026b07abfed784bf"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/cpu-priority-probe-2-result.json",
+        "logicalBytes": 1081,
+        "sha256": "1a4c17699a74518d1b3b02d6f4106a9773e096a474a36a1894b750fe2c69bf3d"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/cpu-priority-probe-2.py",
+        "logicalBytes": 4272,
+        "sha256": "7f6089adbc4a8aa27ab79e84687a19cad24a9488302e8eb4e448a71ed263efe5"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/cpu-priority-probe-result.json",
+        "logicalBytes": 1009,
+        "sha256": "d73789fe626c12edd07bd8c350688e47ceddffa1f8b9d0306949bf329ef25d33"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/cpu-priority-probe.py",
+        "logicalBytes": 4204,
+        "sha256": "81fce38c65ab76f0018c5ffda4ff6fc6f3fdee518cbdb68824c7bb30b2ca3589"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/cpu-priority-release-v2.py",
+        "logicalBytes": 4739,
+        "sha256": "6d4234fbdce21cfa149156266df9046ae16ce49e6b1360b4e15a686444be4fe4"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/cpu-priority-release-v3.py",
+        "logicalBytes": 5549,
+        "sha256": "07cd77790980c1d5e87df7801518942ba3af6edda935b03635e405015e436523"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/cpu-priority-release-v3.py.saved",
+        "logicalBytes": 5549,
+        "sha256": "07cd77790980c1d5e87df7801518942ba3af6edda935b03635e405015e436523"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/cpu-priority-release.py",
+        "logicalBytes": 3472,
+        "sha256": "acab7144629abadaa9bec4d63d3602b497851ad49a4f40320cac0a407ad45289"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/cpu-priority-v2-test-results.json",
+        "logicalBytes": 214,
+        "sha256": "240bc2e4d1f62760a39e158fc512df57c1829e2dfdfb752f6152be51e5b5e3b9"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/cpu-priority-v3-job.json",
+        "logicalBytes": 158,
+        "sha256": "34db0ff30f7cc779e3c92aac6763353afa8bd7586c2a03f6fbede2919c3faa7a"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/cpu-priority-v3-test-results.json",
+        "logicalBytes": 475,
+        "sha256": "8b551339ac0673dda7eaf0bb1b459c89b444729009096874d5bc0eb821cc462a"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/current-check-latency.json",
+        "logicalBytes": 517,
+        "sha256": "5da64259877f7dba1eb3660e6bfac895a043b075fd9305fd2e15196b6b864a97"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/current-release-status.json",
+        "logicalBytes": 599,
+        "sha256": "0e2513e31df62d19b02bcf8af8e890e8c305391dc72de5e917e42b3cdeda1978"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/dependency-tree.txt",
+        "logicalBytes": 15369,
+        "sha256": "c08e2434d62414dd65272a88b793fbd82a9db7ab94e661d5e65881c51c01c586"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/docker-image-inspect-v29.1.3.go",
+        "logicalBytes": 5968,
+        "sha256": "abd87e648602a4b87e0cf9d54afe391cc8877a677ab382f9b21208d745a4e373"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/failed-payload-cleanup.json",
+        "logicalBytes": 228,
+        "sha256": "ba5fed0d120f9b4097e84b3be9cd61a5ac98544173e763f9e3f7be5d4ee96025"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/historical-local-cleanup.json",
+        "logicalBytes": 466,
+        "sha256": "110a7a7ac5b631428105a8cd585bed7539cbf6419f94e841b25cdb03ce760dc2"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/historical-source-final-safety.json",
+        "logicalBytes": 121,
+        "sha256": "579bba111b3df05b40d19ba27daa9f2b123e1b673fbaf5ea57e1cf8eec7a4db5"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/historical-source-github.json",
+        "logicalBytes": 296,
+        "sha256": "e1925cd652d48f82fc05e35337738bf5f1d8285782ed2c1dd280854f059ae161"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/install-publisher-v2.py",
+        "logicalBytes": 6589,
+        "sha256": "e80540c4f883d152b448c7507dbc48229f1a6246ceac839c048734e4e63d0ada"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/install-publisher-v3.py",
+        "logicalBytes": 6413,
+        "sha256": "9e395e897710cbeac21cf14ec3e675c3af684c80dfef3a1e3104a2c0ef1136a7"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/install-publisher.py",
+        "logicalBytes": 5462,
+        "sha256": "b80e050cb117e288caaf0a708ca32fd62dd611c118dd3b080818a0e4a140738a"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/integration-rtp.log",
+        "logicalBytes": 113,
+        "sha256": "bbef222593a2355aec7d90c70634c338d43e9a10c76a03a4ef8875db69cbbd79"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/integration-tests.log",
+        "logicalBytes": 5278,
+        "sha256": "09c77375109431dbd3d97efbd6d820147b4211a37a99a8c1222badcdb704110d"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/latest-status-after-interruption.txt",
+        "logicalBytes": 1871,
+        "sha256": "ec78261957929dc303937cf8ea6b109a1135768f7ec8f15f8f6be9d3ff1d2013"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/mk-only-active-priorities.json",
+        "logicalBytes": 902,
+        "sha256": "11da755e432454ef876aa60160bbebd3ebadb4d26a50d2264292b8e7a8726637"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/mk-only-application-build.log",
+        "logicalBytes": 34072,
+        "sha256": "32b09ee2bf7b81612b3a4b25a3ab1ade90b07217a1ed124e5ad0bbbbf40fef42"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/mk-only-baseline-reconciliation.json",
+        "logicalBytes": 840,
+        "sha256": "eec8618e4099e1238b935e638f279328fbe226751e88f7a61cab2243fd21f461"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/mk-only-before.json",
+        "logicalBytes": 3280850,
+        "sha256": "a1326bcb199b5d26a570cde5f5c8ff730f92f571a26a570ceafe9acb1e9e833c"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/mk-only-browser-tests.log",
+        "logicalBytes": 1427,
+        "sha256": "8c61597639749bdc1096912b8ec00a44d6bfc37842b24f747f1ddba3fdda36b4"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/mk-only-buildkit-cancellation.json",
+        "logicalBytes": 202,
+        "sha256": "ecd963dda566e462e49ae5c9e9c472ce724655c3e930601779e6d8633d0fb18b"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/mk-only-envelope-verification.json",
+        "logicalBytes": 948,
+        "sha256": "3508f88512a3f47d793ad3d604c568e09e67370132258d58997ee4adc75304ce"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/mk-only-job-controller.json",
+        "logicalBytes": 220,
+        "sha256": "24daa02bf312430c3a67a334ddf7dacf234d6127d570fe40a8980ba05a8439ba"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/mk-only-job.json",
+        "logicalBytes": 279,
+        "sha256": "342c9ee2ab4cc3c39d866c983b38940bc713746e23de8e56cf9e41e66cbd2c41"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/mk-only-legacy-job.json",
+        "logicalBytes": 829,
+        "sha256": "84d5c67f561b0cff4afc08f39b6b73219e00f2a8cbbcd2cb2c05f7807ae6bab0"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/mk-only-local-cleanup-plan.json",
+        "logicalBytes": 3959,
+        "sha256": "b4c7bc76a63fcbac8a5239ae779b13868157c3aeee53eba07fc0d2d7d1638096"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/mk-only-manual-game-priority.json",
+        "logicalBytes": 214,
+        "sha256": "ff8e6b0f6a30c4cb1dd934550d45c5fa1d3c55a25d8bd08621a0f0e73f0cf9aa"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/mk-only-module-capacity.json",
+        "logicalBytes": 538,
+        "sha256": "bc4cd3db42a7c2ed2fc08fe55dd07cca08240ed6abf2e7161ae4eacf3a532286"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/mk-only-module-game-priority.json",
+        "logicalBytes": 194,
+        "sha256": "4f8d5d792a7257638e05546a3bc431940929745d869b1b6c2d9edf3b3f9c0836"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/mk-only-module-status.json",
+        "logicalBytes": 223,
+        "sha256": "85efec36f40428acf503b61f0d8189c39bf6cb04d12906afa08171dea609ac2c"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/mk-only-original-game-weight.json",
+        "logicalBytes": 158,
+        "sha256": "1b4c29bfcda0a43a0505ab34cf08e518f2d5de3e7ff56efedc0860ef62a69e50"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/mk-only-partial-stage-cleanup.json",
+        "logicalBytes": 389,
+        "sha256": "1311fae5770c74b5775b5f0f8b7aa2ffc490bd24cef457bed3454561a29b01af"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/mk-only-priority-diagnosis.json",
+        "logicalBytes": 819,
+        "sha256": "34cc5485c179596aa4d240bfc56b9d1672a76669dda5fba95d736afe4f8d8fae"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/mk-only-public-before.json",
+        "logicalBytes": 752,
+        "sha256": "6b7ad86c625ef96defec259beeb5913c5f360fbfa723a9818bd2a022a65ba636"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/mk-only-public-progress.json",
+        "logicalBytes": 474,
+        "sha256": "1434472895bc082f763bde67573367ca7564af275681d2a404e4df8f0dbf3135"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/mk-only-publisher-tests.log",
+        "logicalBytes": 261,
+        "sha256": "7bc801c818e65ab6ee23f84ecdf2e89904b6e602f6797bf458637dd0eca28e4d"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/mk-only-release-locks-latest.json",
+        "logicalBytes": 1353,
+        "sha256": "c2cb4e1deb24cc35c817b1658b779438f478e8232552aa37e0f64214a932b3f7"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/mk-only-release-locks.json",
+        "logicalBytes": 671,
+        "sha256": "5c1b280df287f0213fc93772e27382cabefcf3104a92b4152c4121fa39bb8247"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/mk-only-release-plan.log",
+        "logicalBytes": 1508,
+        "sha256": "025f2b0345b5a6ec61a080ac4a00c289d964842c5f429868b4be7fdc807ec1fc"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/mk-only-server-result.json",
+        "logicalBytes": 6615,
+        "sha256": "33edd317e7af7550695999789e0ff3623a24f02412e903905e17a3ec9ee1acb4"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/mk-only-server-tests.log",
+        "logicalBytes": 3371,
+        "sha256": "625a96d2ff263a46d32665e5159c04bb11dc0844d366af337379c062129dbbec"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/mk-only-service-metadata.json",
+        "logicalBytes": 7019,
+        "sha256": "88f19083d30db92f96985acada145cc01cb615335e952a5464b4f01e9c9648a5"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/mk-only-superseded-payload-cleanup.json",
+        "logicalBytes": 330,
+        "sha256": "19f1119446d632ed0911dbb7428a6309140df9654a29171611bc2b702ff1eb5b"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/mk-only-verification-draft.json",
+        "logicalBytes": 4972,
+        "sha256": "3aed7cccb5bb8ae3efe9989b9c07eae799c9e6ce4b02050b9c962039859564e3"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/observe-install-v3.py",
+        "logicalBytes": 1623,
+        "sha256": "35faa285aff6df74639e622f680203caf404a1944e5273821594e9758424a9c2"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/observe-install.py",
+        "logicalBytes": 1619,
+        "sha256": "7549a6375e6228ace3bbe45935647438f24f2b342bc5990f44624c03c67cf3f1"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/observe-mk-module.py",
+        "logicalBytes": 1706,
+        "sha256": "4a649037ef1c3985d28231b9407f3a7ec3a99f40a98144bb4e66722d8a336c56"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/observe-mk-only-detailed.py",
+        "logicalBytes": 1834,
+        "sha256": "6a1dbca33589bb1b5886892ce7174ef83577c4286180f6718a6051a49451f46c"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/observe-mk-only.py",
+        "logicalBytes": 1628,
+        "sha256": "b2b6ffe8bd89682a603b4397d4fdceef05f9ec51fa144003a7fa2a01a2e84cc3"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/obsolete-payload-cleanup.json",
+        "logicalBytes": 1050,
+        "sha256": "1ee3ad7a0bf401591b4dba4f5975a42f91cf4e08c4f949692d863fe30081b55b"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/pointer-compatibility.json",
+        "logicalBytes": 126,
+        "sha256": "1846d83ba191bc71fc86a8ec913a3d2f53892604999aee755667a5867f6c940f"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/pre-helper-readiness-build.json",
+        "logicalBytes": 228859,
+        "sha256": "e1c11e977b5494ab9424125a8bbbaf890702b8b84a6ee0136a19861cc4f7a487"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/preflight.json",
+        "logicalBytes": 1402,
+        "sha256": "17649614be11e0bd9d62088a71f1e031c29e3b954a58ab1b423b91ccf51d298b"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/prepare-mk-only.py",
+        "logicalBytes": 12460,
+        "sha256": "40c17f1ee910da725b628a9e7981055e3663a201eb0dadcfde661c983aca73dc"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/prepare-publisher-v2.py",
+        "logicalBytes": 12000,
+        "sha256": "dc98ef75d343ed77337482ac2f2b9314cefb8ddd47735fc56ecd8c4ca91fa9a7"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/prepare-publisher-v3.py",
+        "logicalBytes": 12000,
+        "sha256": "dc98ef75d343ed77337482ac2f2b9314cefb8ddd47735fc56ecd8c4ca91fa9a7"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/prepare-publisher.py",
+        "logicalBytes": 11335,
+        "sha256": "2344389398ccf291e7e343021d47d56f98756cdf7b24f625468c2f11e3f68047"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/probe-install.py",
+        "logicalBytes": 882,
+        "sha256": "5d7950768118a49d27ec1e077636d1739bd3203a5d8aa64193023efebb63faff"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/public-current-status.json",
+        "logicalBytes": 357,
+        "sha256": "7eaea17b43829cb7f089c996cbf81a8be9c6496624edf1f4e084a40879400b56"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/publisher-envelope-verification.json",
+        "logicalBytes": 1228,
+        "sha256": "73e6881822e5ebdf3cfe6c0dfdd95632a31c2e88fd58683914374e71f78559cb"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/publisher-h3-bridge.log",
+        "logicalBytes": 693,
+        "sha256": "f5c0fa29a297e75c12122db643a7e7035dcc572e578cd524f243c33b3d2e8a6f"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/publisher-h3-js.log",
+        "logicalBytes": 3239,
+        "sha256": "78a7449cd3a83ae1110dca305b940d7db18b083e1dd71372a5342751469f7d8a"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/publisher-h3-python.log",
+        "logicalBytes": 246,
+        "sha256": "7771477f1ad96730eddbd3807fd0130569b42078b9adbf0b075f0fbcdd649d47"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/publisher-h3-test-results.json",
+        "logicalBytes": 719,
+        "sha256": "5c351491a8af128e1fecc1441490dd171be4a5303924fec341dfce3f4b061875"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/publisher-transfer-v2.json",
+        "logicalBytes": 1320,
+        "sha256": "21163f53792552f2f70f4495c5b06827a287024cb37fe657da3907730764f5f3"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/publisher-transfer-v3.json",
+        "logicalBytes": 1149,
+        "sha256": "804e1a521c4f0b86e9cd6d0af250ab04d2e2482a3c87487bbc187688f3416e28"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/publisher-transfer.json",
+        "logicalBytes": 1085,
+        "sha256": "ac9fb784d021f10fad994a10ad88dd171fbdf1eb31ef8501e41d9eea9bce42c3"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/publisher-update-v3-result.json",
+        "logicalBytes": 844,
+        "sha256": "63f611cc42b7fd31967b52ec65f5305379c1d0c7af67282c919711e21e37ebf7"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/reachable-main-objects.txt",
+        "logicalBytes": 493143,
+        "sha256": "c798fe0170d8324517c3268fac4495e4a3cfe4a6b47b672cd10ffe60776595b3"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/refresh-baseline-owned.py",
+        "logicalBytes": 2073,
+        "sha256": "ece649c2c813cc6872363b31f14ef4bfaa6cba49b91afc361af91de1f2d5aeb6"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/refresh-baseline.py",
+        "logicalBytes": 1753,
+        "sha256": "be071eeb00c4c26f176c2993dbe6a9ad2b933ac0217f675da801d67d870d3526"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/release-plan.log",
+        "logicalBytes": 4660,
+        "sha256": "90cbd90ebf117a4a98276217d9a01b56ead5b93eb9ad66c93a75988161f0482c"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/release-prepare.log",
+        "logicalBytes": 33853,
+        "sha256": "bd44816353d2d44d0584a8e41ee42d39b248ec90951317deb85ef5fd2b4da4af"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/release-v3-exit-and-restoration.json",
+        "logicalBytes": 1494,
+        "sha256": "daef923d423cc487f36a464481134aff8adb6df94620794f23ffde850d59c220"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/release-v3-job.json",
+        "logicalBytes": 198,
+        "sha256": "d311017d1dff640b8c18865f277d814f343a5e6564449059077742cc26e76056"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/review-completed-transports.py",
+        "logicalBytes": 3476,
+        "sha256": "43e1a743de0c553c87a3a3a090da1c252ffa379e4a8459c5f12434d70812b6fe"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/run-mk-only-job.py",
+        "logicalBytes": 3258,
+        "sha256": "ea1d6534fc543dba342d3f53412d06021faf266694508900d887e103f31e2d90"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/server-cleanup.json",
+        "logicalBytes": 1988,
+        "sha256": "438dacb59629292d3086166647b1880c29161da837cb9255c5396c5c84f4e417"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/server-collect-result.py",
+        "logicalBytes": 1181,
+        "sha256": "85f3831f6207e736d6cec71e01834ed1e241bea8d63f53ef11c1c7816b151f4a"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/server-status.py",
+        "logicalBytes": 1178,
+        "sha256": "2a41bad5285a2b084c7e7f23e3aa1ef1b2232b23aeca3c455d3659cc7123d6d5"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/source-fixed-envelope-verification.json",
+        "logicalBytes": 714,
+        "sha256": "b906e7ffeee088ce3c0b85c24e9346b8dca29c3af82d83db9244486819eaa09f"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/ssh-control.log",
+        "logicalBytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/start-install-v2.py",
+        "logicalBytes": 1525,
+        "sha256": "ba587f2d64da0de967929c5a2b6b69e20b479c364b51a67ec8a603e2c59c879b"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/start-install-v3.py",
+        "logicalBytes": 2013,
+        "sha256": "fd15566fd4f3ddb3909e6980cc636389927b27545fca16b8587e1b748bcb7b4c"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/start-install.py",
+        "logicalBytes": 1375,
+        "sha256": "a73ee88a53e438d7951d560e8743673a3416ab7fd4f6b2c4482a6e6d4020e9ed"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/start-mk-only.py",
+        "logicalBytes": 4587,
+        "sha256": "fd77ba9d08ff733335deeb4104f1af2aa7e06fd0fed7444fe8ac7d6f81a2ebcb"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/start-release.py",
+        "logicalBytes": 1537,
+        "sha256": "e0ce4983affebfc5c493f0bce679347d64b0ed7ad9bede652283e23b8bd8fa53"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/startup-fixed-envelope-verification.json",
+        "logicalBytes": 623,
+        "sha256": "1f09a6f1ca2c798963533b1668cbbcab640e77d16427617322cf2f4f31feb043"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/test-cpu-priority-v3.py",
+        "logicalBytes": 4324,
+        "sha256": "470abe05ef356c39a625a9470e2496804c596fb27e5529403e6b9b6dbd8f6f57"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/verification-draft.json",
+        "logicalBytes": 7149,
+        "sha256": "caa7146d02d7f7f166ee205416a6b625409948c5708f91f1a004bfdaee8b36d3"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/verify-mk-only-public.mjs",
+        "logicalBytes": 3509,
+        "sha256": "74116956cefb1925ac9409825a90573c2d1f0bab0c092f91221bb855cd13de39"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/verify-public.mjs",
+        "logicalBytes": 2936,
+        "sha256": "71a75c2fe5c791832f47857666ca77b508934cd7dfebc5c0d522f2bdf9cd1f72"
+      }
+    ],
+    "logicalBytes": 11108041,
+    "freeBeforeBytes": 58544160768,
+    "freeAfterBytes": 58550771712,
+    "at": 1793048218.983765,
+    "sourcePreservation": {
+      "main": "1c155f640c909ea936fdf1e2b05c35d4298f0fad",
+      "historicalSourceArchive": "f3945d47b95cc9b4a8c9c95f1bdb27960f1e243e"
+    },
+    "otherTaskDirectoriesTouched": false,
+    "measuredFreeIncreaseBytes": 6610944
+  },
+  "serverRuntimeContext": {
+    "at": 1793047726.9962378,
+    "removed": [
+      {
+        "path": "/opt/royal-releases/mk-security-only-20261026-v1/runtime-context",
+        "logicalBytes": 2747992,
+        "allocatedBytesBeforeUnlink": 2912256,
+        "hardLinksSharedWithRetainedPayload": true
+      }
+    ],
+    "freeBeforeBytes": 5568479232,
+    "freeAfterBytes": 5568557056,
+    "sourceCommit": "37e5c750f92f9708f92c4c0695e5badcd3bb0366",
+    "retained": [
+      "/opt/royal-backups/mk-security-20261026-v1",
+      "/opt/royal-backups/mk-security-only-20261026-v1",
+      "/opt/royal-releases/mk-security-only-20261026-v1"
+    ],
+    "sharedActiveWorkExceptions": [
+      "/opt/royal-releases/mk-security-20261026-v1 and its separately retained candidate belong to the earlier shared release; leave them until its owner finishes verification"
+    ],
+    "applicationOrDataTouched": false,
+    "measuredFreeIncreaseBytes": 77824
+  },
+  "localWorktree": {
+    "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/mk-security-fix-20261026/checkout",
+    "condition": "Remove this clean task-owned worktree after this cleanup record is pushed and its remote commit is verified. The actual removal and disk measurements are recorded in the compact local final-report.json.",
+    "otherCheckoutTouched": false
+  },
+  "measurementLimit": "Free-space deltas are measured observations; concurrent filesystem activity and shared hardlinks prevent attributing every byte to this cleanup.",
+  "retained": "Current production release, immutable module versions, source and financial backups, rollback image, primary checkout, and the explicitly listed active shared server release."
+}
