@@ -37,7 +37,7 @@ export class CaribbeanUI {
   private stopped = 6;
   private boardSignature='';
   private tally?:string;
-  private accents:{cue:string;deviationMs:number}[]=[];
+  private accents:{cue:string;deviationMs:number;preparationMs:number;visualMs:number}[]=[];
   private motionPreference=window.matchMedia('(prefers-reduced-motion: reduce)');
   private get reduced(){return this.motionPreference.matches;}
   private get english() { return this.services.i18n.language === 'en'; }
@@ -242,12 +242,12 @@ export class CaribbeanUI {
   });}
   private async accent(cue:CaribbeanCue,signal:AbortSignal,visual:()=>void,variant=0){
     if(signal.aborted||document.hidden||this.paused)return;
-    const expected=this.audio.cue(cue,variant);
+    const preparing=performance.now(),expected=this.audio.cue(cue,variant),preparationMs=performance.now()-preparing;
     // Reserve a frame for painting instead of requesting the next frame after audio is audible.
     await this.wait(expected-performance.now()-24,signal);if(signal.aborted)return;
     await new Promise<void>(resolve=>{
       const done=()=>{cancelAnimationFrame(frame);signal.removeEventListener('abort',done);resolve();};
-      const frame=requestAnimationFrame(()=>{if(!signal.aborted){visual();this.accents.push({cue,deviationMs:performance.now()-expected});if(this.accents.length>80)this.accents.shift();}done();});
+      const frame=requestAnimationFrame(()=>{if(!signal.aborted){const painting=performance.now();visual();this.accents.push({cue,deviationMs:performance.now()-expected,preparationMs,visualMs:performance.now()-painting});if(this.accents.length>80)this.accents.shift();}done();});
       signal.addEventListener('abort',done,{once:true});
     });
   }

@@ -60,7 +60,13 @@ export class CaribbeanAudio{
  private pluck(midi:number,at:number,level:number,music=false){
   const c=this.host.context;if(!c||!this.enabled())return;const key='string:'+c.sampleRate+':'+midi;let buffer=this.buffers.get(key);
   if(!buffer){buffer=c.createBuffer(1,Math.ceil(c.sampleRate*1.2),c.sampleRate);const samples=buffer.getChannelData(0),f=hz(midi);
-   for(let i=0;i<samples.length;i++){const t=i/c.sampleRate;let v=0;for(let h=1;h<=8;h++)v+=Math.sin(2*Math.PI*f*h*t)*Math.exp(-t*(2.8+h*.9))/h**1.5;samples[i]=v*.5;}
+   // Decaying complex rotation avoids hundreds of thousands of sin/exp calls
+   // while preparing a cold timbre immediately before a synchronized accent.
+   for(let h=1;h<=8;h++){
+    const angle=2*Math.PI*f*h/c.sampleRate,decay=Math.exp(-(2.8+h*.9)/c.sampleRate),real=decay*Math.cos(angle),imaginary=decay*Math.sin(angle);
+    let x=.5/h**1.5,y=0;
+    for(let i=0;i<samples.length;i++){samples[i]+=y;const nextX=x*real-y*imaginary;y=x*imaginary+y*real;x=nextX;}
+   }
    if(this.buffers.size>48)this.buffers.delete(this.buffers.keys().next().value!);this.buffers.set(key,buffer);
   }
   const source=c.createBufferSource();source.buffer=buffer;this.source(source,at,1.15,level,4200,music,.004);
