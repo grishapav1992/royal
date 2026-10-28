@@ -56,3 +56,38 @@
 .ct-sparks{position:absolute;inset:0;z-index:5;overflow:hidden;pointer-events:none}
 .ct-root[data-ct-captain-motion=reduced] .ct-portrait-layer{transition:none!important}
 .ct-balance-value{display:flex;align-items:center;gap:5px}.ct-root .ct-wallet{flex:0 0 auto;min-width:24px;min-height:24px;padding:0 5px;font:700 15px system-ui,sans-serif}
+
+/* Fit the complete source portrait and wordmark to the actual game pane. */
+.ct-title{min-width:0;max-width:100%;overflow-wrap:anywhere}
+.ct-captain{height:100%;width:min(32cqw,66.666cqh)}
+.ct-captain img{object-fit:contain;object-position:center bottom}
+.ct-captain .ct-captain-body{inset:8px 12px;width:auto;height:auto}
+@container caribbean (min-width:850px){
+ .ct-stage{container-type:size}
+ .ct-board-wrap{margin-right:calc(min(32cqw,66.666cqh) + 8px)}
+ .ct-map{margin-right:calc(min(32cqw,66.666cqh) + 8px)}
+}
+@media(min-width:850px) and (max-height:800px){
+ .ct-root{padding:8px 12px 6px;gap:6px}
+ .ct-title{padding:6px 22px 8px}.ct-title small{font-size:8px}.ct-heading h2{font-size:clamp(18px,2.6cqw,28px)}
+ .ct-avatar{width:42px;height:50px}.ct-ledger{padding:6px 10px}.ct-ledger span{font-size:9px}.ct-ledger strong{font-size:18px}
+ .ct-controls{grid-template-columns:minmax(0,1fr) 104px minmax(0,1fr);gap:6px 16px;padding-top:2px;padding-bottom:2px}
+ .ct-controls .ct-play{width:100px;height:100px;border-width:4px}.ct-play .ct-spin-icon{font-size:40px;line-height:34px}
+ .ct-status{font-size:10px;min-height:13px}
+}
+/* A narrow landscape pane cannot share its width with a 250px chat column. */
+@media(max-width:640px){
+ #mini-dialog.game-chat-layout[data-game="studio-caribbean-treasures"][open]{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) minmax(150px,27%)}
+ #mini-dialog.game-chat-layout[data-game="studio-caribbean-treasures"] .game-chat-dock{padding:8px;border-left:0;border-top:2px solid #ad8c51}
+}
+@media(max-width:640px) and (max-height:540px){
+ #mini-dialog.game-chat-layout[data-game="studio-caribbean-treasures"][open]{display:block;overflow-y:auto;overflow-x:hidden}
+ #mini-dialog.game-chat-layout[data-game="studio-caribbean-treasures"] .game-chat-game{overflow:visible}
+ #mini-dialog.game-chat-layout[data-game="studio-caribbean-treasures"] .mini-stage{flex:none;overflow:visible}
+ #mini-dialog.game-chat-layout[data-game="studio-caribbean-treasures"] #mini-game{height:auto}
+ #mini-dialog.game-chat-layout[data-game="studio-caribbean-treasures"] .game-chat-dock{height:180px}
+ .ct-root{height:auto;min-height:0;overflow:visible}
+ .ct-stage{flex:none}
+ .ct-board-wrap{flex:none;block-size:calc((100cqw - 34px)*2/3 + 34px)}
+ .ct-backdrop{position:fixed}
+}

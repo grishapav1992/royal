@@ -1,4 +1,4 @@
-# Caribbean Treasures 1.3.1
+# Caribbean Treasures 1.3.2
 
 Independent client package for `studio-caribbean-treasures`. Host API 1, server rules 1 and progress contract 1. The common module loader mounts `entry.ts`; the host supplies the expansion client, wallet, account, money formatting and language.
 
@@ -11,6 +11,8 @@ The presentation follows the approved Caribbean reference: six dimensional illus
 Client support is advertised through `X-Royal-Caribbean-Treasures: 1` on the common transport. Older clients receive a filtered session list and cannot change this game's rounds. Server rules and progress remain version 1. First publication needs the compatible host/backend and finance runtime; later game packages can update independently.
 
 The captain now has eight aligned poses: idle, blink, focus, cannon surprise, bonus gesture, calm loss/partial return, positive result and delighted laugh. Double-buffered pose transitions, a separate gesture layer, slow breathing and one idle timer support both the desktop figure and mobile portrait. Reactions use newly confirmed events and full paid-round outcomes. Reduced motion retains a meaningful static pose; hiding, pausing, opening a modal, account changes and closing release the character's owned work. See [character-motion.md](character-motion.md) and the [six final ImageGen prompts](assets/character-prompts.md).
+
+The complete captain source image fits within the stage instead of filling and cropping a fixed portrait column. Its width and the field's reserved space follow the available stage width and height. The title can wrap inside its grid cell. Short desktop windows use a more compact header and controls. Narrow landscape windows stack the connected chat below the game; exceptionally short panes use a readable vertical flow where both controls and chat remain reachable. These rules are scoped to this module and unload with it.
 
 Columns land with a short settle, the continuous giant rises within its exact block, and cannon growth uses the confirmed before/after bounds with a local recoil. One paid prefix route is traced outside the giant, the integer tally uses a smooth frame-based easing, and positive complete rounds add bounded gold particles. Skip immediately preserves confirmed money and clears owned decoration.
 
