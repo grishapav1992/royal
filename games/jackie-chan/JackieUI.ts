@@ -119,7 +119,7 @@ export class JackieUI {
   private async send(move:'fight'|'cashout'){
     if(this.blocked()||!this.scene.loading.ready||!client.accountId||document.hidden||this.find<HTMLDialogElement>('[data-dialog]').open)return;
     const account=client.accountId,epoch=this.epoch,s=this.session(),v=s?.view.jackie,active=s?.state==='active';
-    if(matchMedia('(max-width:640px) and (orientation:portrait)').matches)this.root.closest<HTMLElement>('.mini-stage')?.scrollTo({top:0,behavior:'instant'});
+    this.find('.jc-stage').scrollIntoView({block:'nearest',inline:'nearest',behavior:'instant'});
     this.error='';this.action=move;this.preview=false;this.unlocks=[];this.find('[data-unlock]').hidden=true;void this.audio.unlock();this.renderKey='';this.render();
     try{
       if(active&&v)await client.act({gameId:JACKIE_GAME,action:'move',sessionId:s.id,revision:v.combat.revision,move:move==='fight'?'jackie-fight':'cashout',...(move==='fight'?{penaltyRisk:this.risk}:{})});

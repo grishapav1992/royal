@@ -1,6 +1,6 @@
 import { gameAudio } from '../../src/game/GameAudio';
 
-import { contactAt, resultAt } from './JackieChoreography';
+import { contactAt, chairReleaseAt, resultAt } from './JackieChoreography';
 export { contactAt, resultAt } from './JackieChoreography';
 export class JackieAudio {
   enabled = true;
@@ -39,7 +39,7 @@ export class JackieAudio {
     this.cancel();
     if (!this.allowed()) return performance.now();
     const at = gameAudio.context!.currentTime + .06;
-    this.wood(at+.44);this.wood(at+.76);
+    this.wood(at+.5);this.wood(at+.84);this.wood(at+chairReleaseAt());
     for (let i = 0; i < count; i++) {
       this.tone(at + contactAt(i) - .14, 680, .12, .018, 'triangle');
       this.tone(at + contactAt(i), success || i < count - 1 ? 145 : 95, .12, .13);

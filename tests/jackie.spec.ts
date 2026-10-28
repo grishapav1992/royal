@@ -51,6 +51,25 @@ test('real host, chat, risk groups, gallery and account progress work on desktop
   await game.locator('[data-wardrobe]').click();await expect(game.locator('[data-dialog]')).toBeVisible();await page.screenshot({path:out+'/wardrobe-mobile.png'});await game.locator('[data-close]').click();expect(errors).toEqual([]);
   await writeFile(out+'/browser-summary.json',JSON.stringify({errors,viewports:[1440,390,320],realHost:true,connectedGuestChat:false,connectedAuthenticatedChat:true,realTemporaryPostgres:true,actualWalletRequests:true,realWagers:false},null,2));
 });
+test('preview brings the entire furniture contact into a laptop viewport and reopens without a new stake',async({page})=>{
+  await page.setViewportSize({width:1280,height:720});await page.emulateMedia({reducedMotion:'no-preference'});await outcome('win');
+  const email='jackie-preview-'+crypto.randomUUID()+'@example.test';
+  const login=await page.request.post(baseURL+'/api/auth/login',{data:{email,password:'Jackie-isolated-check-123!'}});expect(login.ok()).toBe(true);const account=await seed(email);
+  await page.route('**/__jackie/setup',route=>route.fulfill({json:{account:{id:account}}}));
+  await page.goto(baseURL+'/tests/fixtures/jackie-play.html');
+  const game=page.locator('.jackie');await expect(game).toHaveAttribute('data-loading','false');
+  const version=await page.locator('#preview').getAttribute('data-game-module-version');
+  let posts=0;page.on('request',r=>{if(r.method()==='POST'&&r.url().endsWith('/api/demo-wallet/expansion'))posts++;});
+  const operation=act(page);
+  await page.waitForFunction(()=>document.querySelector('canvas')?.dataset.phase==='chair-strike',undefined,{polling:'raf',timeout:10000});
+  const scene=await game.locator('canvas').evaluate(el=>{const r=el.getBoundingClientRect();return{top:r.top,bottom:r.bottom,height:innerHeight,held:(el as HTMLElement).dataset.heldFurniture,phase:(el as HTMLElement).dataset.phase};});
+  expect(scene.top).toBeGreaterThanOrEqual(0);expect(scene.bottom).toBeLessThanOrEqual(scene.height);expect(scene.held).toBe('chair');
+  await page.screenshot({path:out+'/furniture-live-preview.png'});const accepted=await operation;expect(accepted.view.jackie.combat.shots).toHaveLength(1);
+  await page.locator('#reopen').click();await expect(game).toHaveAttribute('data-loading','false');await expect(game.locator('[data-cashout]')).toBeVisible();expect(posts).toBe(1);
+  await expect(page.locator('#preview')).toHaveAttribute('data-game-module-version',version!);await expect(page.locator('#preview-version')).toContainText('Актуальная сборка');
+  await writeFile(out+'/preview-continuity.json',JSON.stringify({viewport:[1280,720],version,scene,postOperations:posts,reopenPreservedAcceptedShot:true},null,2));
+});
+
 test('lost response recovers the same operation; reopening loads saved state without another stake',async({page})=>{
   await outcome('win');
   const email='jackie-recovery-'+crypto.randomUUID()+'@example.test';

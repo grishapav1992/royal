@@ -1,7 +1,7 @@
 import { JACKIE_COSTUMES, JACKIE_LOCATIONS, JACKIE_RISKS, type JackieCostume, type JackieLocation, type JackieView } from '../../src/shared/jackieChan';
 import type { PenaltyRisk } from '../../src/shared/crLeo';
 import { JackieAudio } from './JackieAudio';
-import { choreography, contactAt, resultAt, ease, type Furniture } from './JackieChoreography';
+import { choreography, contactAt, chairReleaseAt, resultAt, fighterX, ease, type Furniture } from './JackieChoreography';
 import { extractSpriteFrames } from '../../src/ui/crLeoSprites';
 
 export const JACKIE_SCENE_ASSETS = [...JACKIE_COSTUMES.flatMap(c => [`/assets/jackie-chan/${c.id}.webp`, `/assets/jackie-chan/${c.id}-furniture.webp`]), '/assets/jackie-chan/foes.webp', '/assets/jackie-chan/props.webp', ...JACKIE_LOCATIONS.map(c => `/assets/jackie-chan/${c.id}.webp`)];
@@ -66,7 +66,7 @@ export class JackieScene {
     const background=this.images.get(`/assets/jackie-chan/${this.location}.webp`)!;
     const scale=Math.max(w/background.naturalWidth,h/background.naturalHeight);c.drawImage(background,(w-background.naturalWidth*scale)/2,(h-background.naturalHeight*scale)/2,background.naturalWidth*scale,background.naturalHeight*scale);
     const shade=c.createLinearGradient(0,0,0,h);shade.addColorStop(0,'#18130c55');shade.addColorStop(.45,'#18130c00');shade.addColorStop(1,'#140e0855');c.fillStyle=shade;c.fillRect(0,0,w,h);
-    const count=JACKIE_RISKS[this.risk].opponents,combat=this.view?.combat,won=combat?.shots.at(-1)?.goal??false,ground=h*.91,heroH=Math.min(h*.58,w*.45);
+    const count=JACKIE_RISKS[this.risk].opponents,combat=this.view?.combat,won=combat?.shots.at(-1)?.goal??false,ground=h*.91,heroH=Math.min(h*.58,w*.40);
     const complete=combat?.status==='complete',fighting=!!combat&&!state.reveal;
     const wideVictory=!!complete&&state.reveal&&w>600;
     const heroX=w*(state.x+(wideVictory?.14*ease(state.victory/.12):0)),heroY=ground-h*state.lift+(complete&&state.reveal?h*.04:0);
@@ -82,19 +82,20 @@ export class JackieScene {
     const props=prepare(this.images.get('/assets/jackie-chan/props.webp')!);
     const floor:Furniture[]=[];
     // Each linked action already contains its own item. Never paint a second item at the grip.
-    if(!combat||state.phase==='approach'&&state.fighter===0){draw(props,0,w*.42,ground,heroH*.48,0,true);floor.push('chair');}
-    if(count>=2&&state.furniture!=='table'&&state.fighter<1&&!state.reveal){draw(props,2,w*.49,ground,heroH*.33,0,true);floor.push('table');}
-    if(count>=3&&state.furniture!=='stool'&&state.fighter<2&&!state.reveal){draw(props,1,w*.60,ground,heroH*.28,0,true);floor.push('stool');}
-    if(combat&&state.reveal&&won)draw(props,0,w*.77,ground,heroH*.40,.65,true);
-    if(combat&&!won&&state.phase==='lost')draw(props,3,w*.47,ground,heroH*.16,0,true);
+    if(count>=3&&state.furniture!=='stool'){draw(props,1,w*fighterX(2)+heroH*.2,ground,heroH*.28,0,true);floor.push('stool');}
+    if(count>=2&&state.furniture!=='table'){draw(props,2,w*fighterX(1)+heroH*.14,ground,heroH*.34,0,true);floor.push('table');}
+    if(state.furniture!=='chair'){
+      const released=!!combat&&state.elapsed>=chairReleaseAt();
+      draw(props,0,w*(fighterX(0)-(released?.08:0))+heroH*.36,ground,heroH*.55,0,true);floor.push('chair');
+    }
     const foe=prepare(this.images.get('/assets/jackie-chan/foes.webp')!);
     const reach=(i:number)=>heroH*(i===0?.57:i===1?.68:.64);
     for(let i=count-1;i>=0;i--){
       const local=state.elapsed-contactAt(i),defeated=!!combat&&(won||i<count-1)&&(state.reveal||local>=.13),engaged=fighting&&i===state.fighter;
-      const initial=w*(.65+i*.11),target=w*(.34+i*.075)+reach(i),approach=engaged?ease((local+.55)/.42):0;
+      const initial=w*(.64+i*.1),target=w* fighterX(i)+reach(i),approach=engaged?ease((local+.4)/.32):0;
       let x=initial+(target-initial)*approach,y=ground-h*.012*i,pose=0,angle=0;
       if(defeated){pose=local<.36&&state.busy?3:6;x=target+(initial-target)*ease((local-.13)/.46);if(local<.36&&state.busy)y-=Math.sin(ease((local-.13)/.23)*Math.PI)*h*.025;}
-      else if(engaged)pose=local<-.25?1:local<.15?7:won?2:1;
+      else if(engaged)pose=local<-.25?0:local<.15?7:won||i<count-1?2:1;
       else if(combat&&!won&&state.reveal)pose=7;
       if(engaged&&local>=0&&local<.13&&(won||i<count-1)){pose=2;x+=Math.sin(local/.13*Math.PI)*w*.012;}
       if(wideVictory)x+=(w*(.22+i*.13)-x)*ease(state.victory/.2);
