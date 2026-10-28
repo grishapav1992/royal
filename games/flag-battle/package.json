@@ -1,12 +1,16 @@
 {
   "name": "@royal/flag-battle",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "gameId": "flag-battle",
   "apiVersion": 1,
   "rulesVersion": 1,
   "progressVersion": 1,
   "entry": "entry.ts",
-  "assetRoots": ["flag-battle"],
-  "scripts": {"build": "node ../../node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && node ../../scripts/build-game-module.mjs"}
+  "assetRoots": [
+    "flag-battle"
+  ],
+  "scripts": {
+    "build": "node ../../node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && node ../../scripts/build-game-module.mjs"
+  }
 }

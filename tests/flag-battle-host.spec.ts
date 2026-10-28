@@ -45,7 +45,7 @@ test('real host: countries, paid round, skips, reopen, mobile chat and reduced m
   await expect(page.locator('#mini-dialog #club-chat-dock')).toBeVisible();
   await expect(page.locator('#chat-input')).toBeInViewport();
   await expect(page.locator('[data-fb="play"]')).toBeInViewport();
-  await page.screenshot({path:out+'/desktop.png'});
+  await page.screenshot({path:out+'/physics-desktop.png'});
   await page.locator('[data-country="JP"]').click();await page.locator('#fb-stake').selectOption('200');
   const response=page.waitForResponse(r=>r.url().endsWith('/api/demo-wallet/expansion')&&r.request().method()==='POST');
   await page.locator('[data-fb="play"]').click();const reply=await response;const payload=await reply.json();expect(reply.ok(),JSON.stringify(payload)).toBe(true);const accepted=payload.session;
@@ -59,7 +59,7 @@ test('real host: countries, paid round, skips, reopen, mobile chat and reduced m
   await expect(page.locator('#chat-input')).toBeInViewport();
   await page.locator('[data-fb="play"]').scrollIntoViewIfNeeded();await expect(page.locator('[data-fb="play"]')).toBeInViewport();
   expect(await page.locator('.fb-root').evaluate(e=>e.scrollWidth<=e.clientWidth+1)).toBe(true);
-  await page.screenshot({path:out+'/mobile.png'});
+  await page.screenshot({path:out+'/physics-mobile.png'});
   await page.emulateMedia({reducedMotion:'reduce'});
   await page.locator('[data-fb="play"]').click();
   await expect.poll(async()=>(await wallet(page)).entries.filter((e:any)=>e.kind==='bet').length).toBe(2);
@@ -72,7 +72,12 @@ test('real host: countries, paid round, skips, reopen, mobile chat and reduced m
   await expect(page.locator('[data-fb="count"]')).toHaveText('1');
   const saved=await page.request.get('/api/demo-wallet/expansion',{headers:{'X-Royal-Flag-Battle':'1'}});
   const settled=(await saved.json()).sessions.find((s:any)=>s.gameId==='flag-battle');
-  expect((await mini(page)).returnedUnits).toBe(settled.returnedUnits);
+  const state=await mini(page);
+  expect(state.returnedUnits).toBe(settled.returnedUnits);
+  expect(state.physics.physicsVersion).toBe(2);
+  expect(state.physics.order).toEqual(settled.view.flags.order.slice(0,11));
+  expect(state.physics.winner).toBe(settled.view.flags.order[11]);
+  expect(state.physics.bodies.filter((b:any)=>!b.escaped)).toHaveLength(1);
   expect((await wallet(page)).entries.filter((e:any)=>e.kind==='bet')).toHaveLength(3);
   expect(errors).toEqual([]);
 });

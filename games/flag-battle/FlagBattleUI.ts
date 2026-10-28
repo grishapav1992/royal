@@ -91,8 +91,8 @@ export class FlagBattleUI {
   }
   private moment() {
     const done = !!this.view && !this.running;
-    this.put('caption', done ? text('БИТВА ЗАВЕРШЕНА', 'BATTLE COMPLETE') : this.running ? this.eliminated >= 10 ? text('ФИНАЛЬНАЯ ДВОЙКА', 'FINAL TWO') : text('В ИГРЕ', 'IN THE ARENA') : text('ЗА КОГО ТЫ?', 'WHO IS YOUR PICK?'));
-    this.put('headline', done ? name(this.view!.order[11]) : this.running ? String(12 - this.eliminated) + ' ' + text('флагов', 'flags') : text('Весь мир на арене', 'The world in one arena'));
+    this.put('caption', done ? text('БИТВА ЗАВЕРШЕНА', 'BATTLE COMPLETE') : this.running ? this.eliminated === 11 ? text('ПОСЛЕДНИЙ ФЛАГ', 'LAST FLAG STANDING') : this.eliminated >= 10 ? text('ФИНАЛЬНАЯ ДВОЙКА', 'FINAL TWO') : text('В ИГРЕ', 'IN THE ARENA') : text('ЗА КОГО ТЫ?', 'WHO IS YOUR PICK?'));
+    this.put('headline', done ? name(this.view!.order[11]) : this.running ? String(12 - this.eliminated) + ' ' + text(this.eliminated === 11 ? 'флаг' : this.eliminated >= 8 ? 'флага' : 'флагов', this.eliminated === 11 ? 'flag' : 'flags') : text('Весь мир на арене', 'The world in one arena'));
     this.put('detail', done ? this.returned !== '0' ? text('Твоя страна победила! Выплата ', 'Your country won! Return ') + money(this.returned) + ' USDT' : text('Выплата 0,00 USDT · Ставка ', 'Return 0.00 USDT · Stake ') + money(this.spent) : this.running ? name(this.selected) + ' · ' + text('твой выбор', 'your pick') : text('12 стран. Последний забирает победу.', '12 countries. Last flag standing wins.'));
     this.root.dataset.won = String(done && this.returned !== '0');
   }
@@ -125,6 +125,6 @@ export class FlagBattleUI {
   }
   pause() { this.finish(false); }
   resume() {}
-  getState() { return { gameId: FLAG_GAME, sessionId: this.seen, presenting: this.running, country: this.selected, eliminated: this.eliminated, returnedUnits: this.returned }; }
+  getState() { return { gameId: FLAG_GAME, sessionId: this.seen, presenting: this.running, country: this.selected, eliminated: this.eliminated, returnedUnits: this.returned, physics: this.arena.getState() }; }
   destroy() { this.lifetime.abort(); cancelAnimationFrame(this.frame); this.find<HTMLDialogElement>('dialog').close(); this.root.remove(); }
 }
