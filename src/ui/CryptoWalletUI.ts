@@ -6,6 +6,7 @@ import { formatNileUnits } from '../shared/nileWallet';
 import { paymentQr } from '../wallet/paymentQr';
 import { DISPLAY_FIAT_CURRENCIES, fiatEquivalent, validDisplayCurrency, validDisplayRate, type CryptoDisplayRate } from '../shared/cryptoDisplay';
 import '../crypto-wallet.css';
+import { TelegramStarsUI } from './TelegramStarsUI';
 
 const states: Record<string, string> = { creating: translateText('Подготовка'), waiting: translateText('Ожидает перевода'), confirming: translateText('Подтверждается в сети'),
   confirmed: translateText('Обменивается'), sending: translateText('Отправляется'), finished: translateText('Завершено'), partially_paid: translateText('Получена неполная сумма'),
@@ -13,6 +14,7 @@ const states: Record<string, string> = { creating: translateText('Подгото
   queued: translateText('Вывод принят'), preparing: translateText('Подготовка вывода'), conversion_sending: translateText('Обмен'), converting: translateText('Обмен'), converted: translateText('Обмен завершен'),
   payout_preparing: translateText('Подготовка выплаты'), payout_sending: translateText('Отправка выплаты'), verifying: translateText('Подтверждение выплаты'), processing: translateText('Обрабатывается') };
 export class CryptoWalletUI {
+  private stars: TelegramStarsUI;
   private button = document.createElement('button'); private dialog = document.createElement('dialog');
   private paymentDialog = document.createElement('dialog'); private payment?: CryptoOperation;
   private displayCurrency = 'USDT'; private displayRate?: CryptoDisplayRate; private rateRevision = 0; private rateLoading = false; private rateError = '';
@@ -22,9 +24,9 @@ export class CryptoWalletUI {
   private qrAddress = '';
   constructor(private scene: RoomScene) {
     this.button.id = 'crypto-wallet-button'; this.button.type = 'button'; this.button.className = 'wallet-button'; this.button.hidden = true;
-    this.button.textContent = translateText('NOWPayments · Боевой'); this.button.onclick = () => this.show(); document.querySelector('.profile')!.prepend(this.button);
+    this.button.textContent = translateText('Денежный баланс'); this.button.onclick = () => this.show(); document.querySelector('.profile')!.prepend(this.button);
     this.dialog.id = 'crypto-wallet-dialog'; this.dialog.className = 'wallet-dialog crypto-wallet'; this.dialog.setAttribute('aria-labelledby', 'crypto-wallet-title');
-    this.dialog.innerHTML = translateText(`<div class="wallet-heading"><div><span class="eyebrow">NOWPAYMENTS</span><h2 id="crypto-wallet-title">Боевой баланс</h2></div><button type="button" class="icon-button" id="crypto-wallet-close" aria-label="Закрыть пополнение баланса">×</button></div>
+    this.dialog.innerHTML = translateText(`<div class="wallet-heading"><div><span class="eyebrow">РОЯЛЬ · ПОПОЛНЕНИЕ</span><h2 id="crypto-wallet-title">Денежный баланс</h2></div><button type="button" class="icon-button" id="crypto-wallet-close" aria-label="Закрыть пополнение баланса">×</button></div>
       <p class="wallet-description">Реальные средства. Этот баланс хранится отдельно от тестового баланса клуба. Ставки на реальные средства пока недоступны.</p>
       <p id="crypto-wallet-message" role="status" aria-live="polite"></p>
       <section id="crypto-wallet-summary" hidden><p class="wallet-total"><strong id="crypto-wallet-balance"></strong><span id="crypto-wallet-balance-unit">USDT доступно</span></p><p id="crypto-wallet-usdt" hidden></p><p id="crypto-wallet-reserved"></p></section>
@@ -57,6 +59,8 @@ export class CryptoWalletUI {
     const returnButton = document.createElement('button'); returnButton.type = 'button'; returnButton.className = 'text-button'; returnButton.textContent = translateText('Вернуться к балансу');
     returnButton.onclick = () => this.paymentDialog.close(); this.paymentDialog.append(returnButton);
     document.body.append(this.dialog, this.paymentDialog);
+    this.stars = new TelegramStarsUI(this.dialog);
+    this.dialog.addEventListener('close', () => this.stars.close());
     this.el<HTMLButtonElement>('#crypto-payment-close').onclick = () => this.paymentDialog.close();
     this.el<HTMLButtonElement>('#crypto-payment-refresh').onclick = () => { void cryptoWallet.refresh(); };
     this.el<HTMLButtonElement>('#crypto-deposit-continue').onclick = () => this.showPayment();
@@ -128,6 +132,7 @@ export class CryptoWalletUI {
   private show() {
     if (!cryptoWallet.accountId) return;
     this.scene.setLocked(true); if (!this.dialog.open) this.dialog.showModal();
+    this.stars.open();
     clearInterval(this.poll); this.poll = setInterval(() => {
       void cryptoWallet.refresh();
       if (this.displayRate && !validDisplayRate(this.displayRate) && !this.rateLoading) void this.loadDisplayRate();
@@ -225,7 +230,7 @@ export class CryptoWalletUI {
   private render() {
     const wallet = cryptoWallet.wallet;
     this.button.hidden = !cryptoWallet.accountId;
-    this.button.textContent = translateText('NOWPayments · Боевой');
+    this.button.textContent = translateText('Денежный баланс');
     this.el<HTMLElement>('#crypto-wallet-content').hidden = wallet?.state !== 'enabled';
     this.el<HTMLElement>('#crypto-wallet-summary').hidden = wallet?.state !== 'enabled';
     this.el<HTMLFieldSetElement>('#crypto-deposit-fields').disabled = wallet?.state !== 'enabled' || !this.currencies.length || this.working || cryptoWallet.busy || !!cryptoWallet.transfer || !!cryptoWallet.pending;

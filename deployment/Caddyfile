@@ -1,4 +1,9 @@
 {$SITE_DOMAIN} {
     encode zstd gzip
-    reverse_proxy game:2567
+    handle /api/telegram-stars/webhook {
+        reverse_proxy payments:2570
+    }
+    handle {
+        reverse_proxy game:2567
+    }
 }

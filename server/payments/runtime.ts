@@ -5,6 +5,8 @@ import { cryptoConfig } from '../crypto/config';
 import { NowPayments } from '../crypto/nowpayments';
 import { PaymentOutbox } from './outbox';
 import { validateServiceSecret } from './protocol';
+import { telegramStarsConfig, TelegramBot } from './telegram-provider';
+import { TelegramStarsStore } from './telegram-stars';
 
 export function createPaymentRuntime(env: NodeJS.ProcessEnv = process.env) {
   const secret = (name: string) => env[name + '_FILE'] ? readFileSync(env[name + '_FILE']!, 'utf8').trim() : env[name] ?? '';
@@ -18,5 +20,7 @@ export function createPaymentRuntime(env: NodeJS.ProcessEnv = process.env) {
   const ready = db.exec('CREATE TABLE IF NOT EXISTS accounts(id TEXT PRIMARY KEY)');
   const outbox = new PaymentOutbox(db, destination, eventSecret, ready);
   const store = new CryptoStore(db, config, new NowPayments(config), outbox.ready, undefined, undefined, change => outbox.record(change));
-  return { db, store, outbox, requestSecret };
+  const starsConfig = telegramStarsConfig(env);
+  const stars = new TelegramStarsStore(store, starsConfig, new TelegramBot(starsConfig));
+  return { db, store, outbox, requestSecret, stars };
 }
