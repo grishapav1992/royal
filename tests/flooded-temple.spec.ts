@@ -1,7 +1,7 @@
 import {test,expect,request as apiRequest,type Page,type Route} from '@playwright/test';
 import {Client} from '@colyseus/sdk';
 import {mkdir} from 'node:fs/promises';
-const entry='/tests/fixtures/temple-preview.html',review='artifacts/work/flooded-temple-polish/browser';
+const entry='/tests/fixtures/temple-preview.html',review='artifacts/work/flooded-temple-animation/browser';
 const game=(p:Page)=>p.frameLocator('.temple-frame');
 const state=(p:Page)=>p.evaluate(()=>(window as any).templePreview.state());
 const session=(p:Page)=>p.evaluate(()=>(window as any).templePreview.client.sessions.find((s:any)=>s.gameId==='studio-flooded-temple'));
@@ -75,9 +75,10 @@ test('real Royal host loads Temple with connected chat, keeps the seat and resto
   for(const type of['chat','activities','piano-note','notice','pvp'])peer.onMessage(type,()=>{});
   try{
     await ready(page);expect((await page.request.post('/api/auth/character',{data:{skin:0}})).ok()).toBe(true);await page.emulateMedia({reducedMotion:'no-preference'});await page.goto('/?lang=en&room='+peer.roomId);
-    await expect(page.locator('#join-dialog')).toBeHidden({timeout:30000});await page.waitForFunction(()=>(window as any).royalDemo?.getState().online===true);
+    // The diagnostic bridge is installed before Phaser has created its player.
+    await expect(page.locator('#join-dialog')).toBeHidden({timeout:30000});await page.waitForFunction(()=>{try{return (window as any).royalDemo?.getState().online===true;}catch{return false;}});
     await page.locator('#games-tab').click();await page.locator('[data-cabinet=studio-dracona]').click();await page.locator('[data-platform-game=studio-flooded-temple]').click();
-    await expect(game(page).locator('[data-ft=primary]')).toBeEnabled({timeout:45000});await game(page).locator('[data-ft=primary]').click();await expect(game(page).locator('[data-ft=rope]')).toBeVisible();await expect(game(page).locator('.ft')).toHaveAttribute('data-event','idle');
+    await expect(game(page).locator('[data-ft=primary]')).toBeEnabled({timeout:45000});await game(page).locator('[data-ft=primary]').click();await expect(game(page).locator('[data-ft=rope]')).toBeVisible({timeout:15000});await expect(game(page).locator('.ft')).toHaveAttribute('data-event','idle',{timeout:15000});
     for(const [width,height]of[[1440,1000],[390,844]]){
       await page.setViewportSize({width,height});await expect(page.locator('#mini-dialog #chat-input')).toBeVisible();await expect(page.locator('#mini-dialog #chat-input')).toBeEnabled();
       const geometry=await page.locator('#mini-dialog').evaluate(root=>({width:root.clientWidth,scroll:root.scrollWidth}));expect(geometry.scroll).toBeLessThanOrEqual(geometry.width+1);

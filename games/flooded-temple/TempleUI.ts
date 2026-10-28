@@ -9,6 +9,7 @@ import {TempleTimeline} from './TempleTimeline';
 import {TempleEffects} from './TempleEffects';
 import {templePlan,templeOutcome,type TempleBeat} from './presentation';
 import {templeMusic} from './audioCredits';
+import {TempleCharacter} from './TempleCharacter';
 
 /** Presentation reads confirmed views and uses the host's serialized operation client. */
 export class TempleUI {
@@ -29,6 +30,7 @@ export class TempleUI {
   private audio:TempleAudio;
   private timeline:TempleTimeline;
   private effects:TempleEffects;
+  private character:TempleCharacter;
   private beat?:TempleBeat;
   private frozenView?:TempleView;
   private media:MediaQueryList;
@@ -51,8 +53,8 @@ export class TempleUI {
     this.dialog=doc.createElement('dialog');this.dialog.className='ft-dialog';this.dialog.setAttribute('aria-labelledby','ft-dialog-title');
     host.replaceChildren(this.root,this.dialog);
     services.gameAudio.install();this.media=doc.defaultView!.matchMedia('(prefers-reduced-motion: reduce)');
-    this.audio=new TempleAudio(services.gameAudio,doc);this.effects=new TempleEffects(this.root,units=>this.money(units));
-    this.timeline=new TempleTimeline(this.audio,beat=>{this.beat=beat;if(!beat)this.effects.clear();this.rendered='';if(!this.disposed)this.render();},(beat,offset)=>this.effects.tick(beat,offset));
+    this.audio=new TempleAudio(services.gameAudio,doc);this.effects=new TempleEffects(this.root,units=>this.money(units));this.character=new TempleCharacter(doc,this.en);
+    this.timeline=new TempleTimeline(this.audio,beat=>{this.beat=beat;if(!beat)this.effects.clear();this.rendered='';if(!this.disposed)this.render();},(beat,offset)=>{this.effects.tick(beat,offset);this.character.tick(beat,offset);});
     this.unsubscribePreferences=services.gameAudio.onPreferences(()=>{this.rendered='';if(!this.disposed)this.render();});
     doc.addEventListener('visibilitychange',this.visibility);if(doc!==document)document.addEventListener('visibilitychange',this.visibility);
     this.media.addEventListener('change',this.motionChanged);this.visibility();
@@ -117,9 +119,10 @@ export class TempleUI {
       <div class="ft-play"><div class="ft-board-area"><div class="ft-board-head"><strong class="ft-map-label">${active?this.text('Реликвия найдена','Relic discovered'):v?this.text('Карта исследована','Map explored'):this.text('Забытое святилище','The forgotten sanctuary')}</strong>${v?.bonusMap?`<div class="ft-tabs" role="group" aria-label="${this.text('Карта','Map')}"><button type="button" data-ft="base" aria-pressed="${!bonus}">${this.text('Храм','Temple')}</button><button type="button" data-ft="bonus" aria-pressed="${bonus}">${this.text('Экспедиция','Expedition')}</button></div>`:''}</div>
       ${v?.bonusState&&bonus?`<div class="ft-bonus-tools"><div class="ft-step-count"><strong>${v.bonusState.left}</strong><span>${this.text('ХОДОВ','MOVES')}</span><span class="ft-step-dots" aria-hidden="true">${Array.from({length:6},(_,i)=>`<i class="${i>=v.bonusState!.left?'spent':''}"></i>`).join('')}</span></div><button type="button" data-ft="rope" class="ft-rope" aria-pressed="${this.rope}" ${disabled||pending||!active||!v.bonusState.ropeAvailable?'disabled':''}>${prop('rope')}${v.bonusState.ropeAvailable?this.rope?this.text('Верёвка выбрана','Rope selected'):this.text('Использовать верёвку','Use rope'):this.text('Верёвка использована','Rope used')}</button></div>`:''}
       <div class="ft-cabinet">${boardMarkup(v,bonus,this.selected,this.rope,disabled||pending,this.en,this.beat)}</div><div class="ft-legend"><span>${art.gate}${this.text('Ворота','Gate')}</span><span>${art.lever}${this.text('Рычаг','Lever')}</span><span>${art.gap}${this.text('Провал','Gap')}</span><span>${art.check}${this.text('Собрано','Collected')}</span></div><p class="ft-room-detail">${escape(detail)}</p></div>
-      <aside class="ft-character" aria-label="${this.text('Исследовательница храма','Temple explorer')}"><img src="/assets/flooded-temple/explorer.webp" alt="${this.text('Исследовательница с фонарём, лицом к игроку','Explorer with a lantern, facing the player')}" draggable="false"><span class="ft-lantern-light" aria-hidden="true"></span><div class="ft-character-caption">${this.text('У каждого сокровища есть путь','Every treasure has a path')}<small>${this.text('НАЙДИ СВОЙ','FIND YOURS')}</small></div></aside></div>
+      <div data-ft-character-slot></div></div>
       <section class="ft-console" aria-label="${this.text('Управление экспедицией','Expedition controls')}"><div class="ft-money"><div><span class="ft-label">${this.text('Общий баланс','Shared balance')}</span><strong data-ft-value="balance">${balance}</strong><small>${escape(this.asset)}</small></div><div><span class="ft-label">${this.text('Ставка раунда','Round stake')}</span><strong>${this.money(session?.stakeUnits??this.stake)}</strong><small>${escape(this.asset)}</small></div></div><div class="ft-bet-block"><label class="ft-stake"><span class="ft-label">${this.text('Ставка','Stake')}</span><select data-ft="stake" ${disabled||active||!!this.client.pending?'disabled':''}>${TEMPLE_DATA.stakes.map(n=>`<option value="${n}" ${this.stake===String(n)?'selected':''}>${this.money(String(n))}</option>`).join('')}</select></label><div class="ft-collected-total"><span class="ft-label">${active?this.text('Собрано','Collected'):this.text('Выплата','Payout')}</span><strong data-ft-value="payout">${this.money(total)}</strong><small>${escape(this.asset)}</small></div></div><div class="ft-action"><button type="button" class="ft-primary" data-ft="primary" ${disabled||!active&&!pending&&!affordable||active&&bonus&&!canMove&&!pending?'disabled':''}>${pending?art.step:active?art.step:art.compass}<span>${label}</span></button>${active?`<button type="button" class="ft-finish" data-ft="finish" ${disabled||pending?'disabled':''}>${this.text('Закончить и забрать собранное','Finish and collect')}</button>`:''}</div><div class="ft-status" data-error="${status.error}" data-settled="${!!v&&!active}" role="status" aria-live="polite"><p>${escape(status.message)}</p></div></section><footer class="ft-bottom"><span>${this.text('5 × 4 КОМНАТЫ','5 × 4 ROOMS')}</span><span>${this.text('6 ХОДОВ · 1 ВЕРЁВКА','6 MOVES · 1 ROPE')}</span><span>${this.text('МАКСИМАЛЬНАЯ ВЫПЛАТА 230×','MAXIMUM PAYOUT 230×')}</span></footer>`;
-    this.feedbackUI();this.effects.decorate(this.beat,this.media.matches,this.timeline.offset);
+    this.root.querySelector('[data-ft-character-slot]')!.replaceWith(this.character.element);
+    this.feedbackUI();this.effects.decorate(this.beat,this.media.matches,this.timeline.offset);this.syncCharacter();
     if(focusKey&&!this.dialog.open)this.root.querySelector<HTMLElement>(focusKey)?.focus({preventScroll:true});
   }
   private status(){
@@ -186,6 +189,7 @@ export class TempleUI {
   }
   private show(title:string,body:string){
     this.timeline.pause('dialog');this.root.dataset.paused='true';
+    this.syncCharacter();
     this.returnFocus=this.host.ownerDocument.activeElement as HTMLElement;
     this.dialog.innerHTML=`<button type="button" class="ft-dialog-close" data-ft="close" aria-label="${this.text('Закрыть','Close')}">×</button><h2 id="ft-dialog-title">${title}</h2>${body}`;
     this.dialog.showModal();
@@ -254,6 +258,7 @@ export class TempleUI {
     }
     this.show(this.text('Журнал экспедиции','Expedition journal'),`<p>${this.text('Подтверждённая сумма за весь раунд: ','Confirmed whole-round total: ')}<strong>${this.money(v.totalPayoutUnits)}</strong></p><ul class="ft-log-list">${items.join('')}</ul>`);
   }
-  getState(){const s=this.session,v=this.view;return {gameId:TEMPLE_GAME,stage:'feedback',playable:true,phase:v?.phase??'ready',sessionId:s?.id??null,revision:v?.revision??null,tab:this.tab,selected:this.selected,ropeSelected:this.rope,moves:v?.bonusState?.left??null,totalPayoutUnits:v?.totalPayoutUnits??'0',busy:this.blocked,pending:this.client.pending?.gameId===TEMPLE_GAME,disposed:this.disposed,feedback:{...this.timeline.getState(),shownUnits:this.beat?.frame.totalUnits??v?.totalPayoutUnits??'0',effects:this.effects.getState(),reducedMotion:this.media.matches}};}
-  destroy(){if(this.disposed)return;this.disposed=true;this.timeline.destroy();this.effects.clear();this.unsubscribePreferences();this.media.removeEventListener('change',this.motionChanged);this.host.ownerDocument.removeEventListener('visibilitychange',this.visibility);if(this.host.ownerDocument!==document)document.removeEventListener('visibilitychange',this.visibility);this.services.expansionClient.removeEventListener('change',this.changed);this.services.demoWallet.removeEventListener('change',this.changed);this.root.removeEventListener('click',this.click);this.root.removeEventListener('keydown',this.key);this.root.removeEventListener('change',this.changedStake);this.dialog.removeEventListener('click',this.click);this.dialog.close();this.host.replaceChildren();}
+  private syncCharacter(){this.character.update({beat:this.beat,key:this.owner+':'+this.marker,offset:this.timeline.offset,waiting:this.sending||this.client.pending?.gameId===TEMPLE_GAME,rope:this.rope,selected:this.selected!==null,reduced:this.media.matches,paused:this.timeline.paused,connected:this.connected});}
+  getState(){const s=this.session,v=this.view;return {gameId:TEMPLE_GAME,stage:'feedback',playable:true,phase:v?.phase??'ready',sessionId:s?.id??null,revision:v?.revision??null,tab:this.tab,selected:this.selected,ropeSelected:this.rope,moves:v?.bonusState?.left??null,totalPayoutUnits:v?.totalPayoutUnits??'0',busy:this.blocked,pending:this.client.pending?.gameId===TEMPLE_GAME,disposed:this.disposed,feedback:{...this.timeline.getState(),shownUnits:this.beat?.frame.totalUnits??v?.totalPayoutUnits??'0',effects:this.effects.getState(),character:this.character.getState(),reducedMotion:this.media.matches}};}
+  destroy(){if(this.disposed)return;this.disposed=true;this.timeline.destroy();this.effects.clear();this.character.destroy();this.unsubscribePreferences();this.media.removeEventListener('change',this.motionChanged);this.host.ownerDocument.removeEventListener('visibilitychange',this.visibility);if(this.host.ownerDocument!==document)document.removeEventListener('visibilitychange',this.visibility);this.services.expansionClient.removeEventListener('change',this.changed);this.services.demoWallet.removeEventListener('change',this.changed);this.root.removeEventListener('click',this.click);this.root.removeEventListener('keydown',this.key);this.root.removeEventListener('change',this.changedStake);this.dialog.removeEventListener('click',this.click);this.dialog.close();this.host.replaceChildren();}
 }

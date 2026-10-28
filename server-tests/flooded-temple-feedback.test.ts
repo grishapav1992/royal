@@ -6,6 +6,7 @@ import {templeAllBaseCases,templeEdgeKey} from '../src/shared/floodedTempleMath'
 import {templePlan,templeOutcome} from '../games/flooded-temple/presentation';
 import {readTempleClock,contextTimeForAccent} from '../games/flooded-temple/audioClock';
 import {renderCue,metrics,wav,rate} from '../scripts/design/temple-audio.mjs';
+import {templeReaction} from '../games/flooded-temple/character';
 
 test('every base presentation follows only confirmed passages and reaches the exact collected amount',()=>{
   for(const base of templeAllBaseCases()){
@@ -34,6 +35,22 @@ test('outcome hierarchy uses the full original stake and reduced motion has no t
   for(const [payout,kind]of[['0','loss'],['999','partial'],['1000','return'],['1001','win'],['4999','win'],['5000','big']])assert.equal(templeOutcome('1000',payout),kind);
   const view=rebuildTempleView({layout:0,pattern:0,tier:0,relic:true},{layout:0,tier:0},'1000');
   const reduced=templePlan('reduced',view,undefined,true);assert.equal(reduced.beats.length,1);assert.equal(reduced.beats[0].kind,'summary');assert.equal(reduced.final.mode,'bonus');assert.deepEqual(reduced.final.visited,[5]);
+});
+
+test('character reactions never celebrate a partial return, waiting, recovery or a route choice',()=>{
+  const view=rebuildTempleView({layout:0,pattern:0,tier:0,relic:true},{layout:0,tier:0},'1000');
+  for(const beat of templePlan('poses',view,undefined).beats){
+    const reaction=templeReaction(beat);
+    assert.notEqual(reaction.pose,'celebrate');
+    if(beat.kind==='relic')assert.equal(reaction.pose,'discover');
+    if(beat.kind==='gate')assert.equal(reaction.pose,'brace');
+  }
+  const summary=templePlan('reduced',view,undefined,true).beats[0];
+  for(const outcome of ['loss','partial','return','win','big'] as const){const reaction=templeReaction({...summary,kind:'outcome',outcome});assert.equal(reaction.pose,outcome==='win'||outcome==='big'?'celebrate':outcome==='return'?'idle':'reflect');}
+  assert.equal(templeReaction(undefined,true).pose,'observe');
+  assert.equal(templeReaction(undefined,false,true).clip,'prepare-rope');
+  assert.equal(templeReaction(undefined,false,false,true).pose,'observe');
+  assert.equal(templeReaction(undefined).pose,'idle');
 });
 test('audio mapping uses the output timestamp once and subtracts estimated latency only in fallback',()=>{
   const context={state:'running',currentTime:10,outputLatency:.1,baseLatency:.02,getOutputTimestamp:()=>({contextTime:9.86,performanceTime:1000})}as AudioContext;

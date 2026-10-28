@@ -27,7 +27,9 @@ export class TempleTimeline{
   private tick=()=>{
     const plan=this.plan;if(!plan||this.pauses.size)return;
     const now=performance.now();this.elapsed=Math.max(0,now-this.startAt);
-    for(const beat of plan.beats){const target=this.startAt+beat.at+(beat.cueAtMs??0);if(beat.cue&&!this.cues.has(beat.id)&&target-now<=Math.max(320,this.audio.lead())&&target>=now-30){this.cues.add(beat.id);this.audio.schedule(beat.cue,target);}}
+    // Schedule before the asset's leading Foley plus device latency, with a frame-stall margin.
+    const horizon=Math.max(480,this.audio.lead()+180);
+    for(const beat of plan.beats){const target=this.startAt+beat.at+(beat.cueAtMs??0);if(beat.cue&&!this.cues.has(beat.id)&&target-now<=horizon&&target>=now-30){this.cues.add(beat.id);this.audio.schedule(beat.cue,target);}}
     let next=0;for(let i=0;i<plan.beats.length;i++)if(plan.beats[i].at<=this.elapsed)next=i;
     if(next!==this.index){this.index=next;this.observed.add(next);const beat=plan.beats[next];this.audio.duck(['gate','relic','outcome'].includes(beat.kind));this.show(beat);}
     this.tickView(plan.beats[this.index],Math.max(0,this.elapsed-plan.beats[this.index].at));

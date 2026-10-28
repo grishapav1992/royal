@@ -7,6 +7,7 @@ export const feedbackStyles=String.raw`
 .ft-room[data-feedback=collect]{background:radial-gradient(ellipse,#88673355,#224547)}
 .ft-room[data-feedback=relic]{background:radial-gradient(ellipse,#64e3d455,#16353f)}
 .ft-award{position:absolute;left:0;right:0;top:22%;z-index:6;text-align:center;font:bold clamp(14px,2vw,24px) Georgia,serif;color:#fff1b5;text-shadow:0 2px 4px #001119;pointer-events:none}
+.ft-stone-dust{position:absolute;left:50%;top:35%;width:7px;height:7px;border-radius:50%;background:#b5b596;filter:blur(2px);pointer-events:none;z-index:4}
 .ft-gate{transform-box:fill-box}
 .ft-chest-lid{transform-box:fill-box;transform-origin:50% 90%}
 .ft[data-waiting=true] .ft-room-art,.ft[data-waiting=true] .ft-mult,.ft[data-waiting=true] .ft-collected,.ft[data-waiting=true] .ft-position,.ft[data-waiting=true] .ft-map-lines{visibility:hidden}

@@ -1,0 +1,664 @@
+{
+  "date": "2026-10-28",
+  "gameId": "studio-flooded-temple",
+  "moduleVersion": "0.5.0-b9aceb3eec57",
+  "sourceSha256": "b9aceb3eec575cc0f93c79dd1a8a401e1ab8cc635baf6963ca1397d8f24bc781",
+  "pointer": {
+    "format": 1,
+    "gameId": "studio-flooded-temple",
+    "manifest": "/game-modules/studio-flooded-temple/versions/0.5.0-b9aceb3eec57/manifest.json",
+    "sha256": "4d1e2d4248d7bfd5e71b91cb12ceab095f3b2e4507398955e05ffdd7b63d79aa"
+  },
+  "manifestBytesVerified": true,
+  "payloadFiles": 33,
+  "payloadBytes": 19165762,
+  "contracts": {
+    "api": 1,
+    "rules": 1,
+    "progress": 1
+  },
+  "mathematics": "No probability, paytable, stake, progress or settlement changes. Main synchronization changed shared protocol wrappers and required normal Temple and Caribbean requalification.",
+  "tests": {
+    "temple": {
+      "passed": 30
+    },
+    "browser": {
+      "passed": 24,
+      "package": "0.5.0-4d86e1400cd6"
+    },
+    "finalLayout": {
+      "package": "0.5.0-b9aceb3eec57",
+      "ruEnSizes": [
+        [
+          1440,
+          1000
+        ],
+        [
+          1000,
+          760
+        ],
+        [
+          390,
+          844
+        ],
+        [
+          360,
+          740
+        ]
+      ],
+      "realHostWithChat": true,
+      "portraitOpaqueOnPhone": true
+    },
+    "rtpGate": {
+      "passed": 27
+    },
+    "sharedWalletCompatibility": {
+      "passed": 14,
+      "games": [
+        "Temple (in 30 focused tests)",
+        "Neopolis",
+        "Caribbean"
+      ]
+    },
+    "moduleContracts": {
+      "passed": 7
+    },
+    "rtp": {
+      "verified": 13,
+      "legacyNotQualified": 114
+    },
+    "applicationBuild": {
+      "passed": true,
+      "durationMs": 23419,
+      "package": "0.5.0-4d86e1400cd6",
+      "note": "Subsequent changes only adjust portrait CSS containment and phone opacity. Final module typecheck/build, layout and real-host checks repeated."
+    }
+  },
+  "clocks": {
+    "baseline": {
+      "frames": [
+        {
+          "kind": "card",
+          "planned": 1767.9336666667598,
+          "shown": 1768.1000000000931,
+          "skewMs": 0.16633333333334122,
+          "rendered": true
+        },
+        {
+          "kind": "card",
+          "planned": 1867.9336666667598,
+          "shown": 1871.5,
+          "skewMs": 3.566333333240209,
+          "rendered": true
+        },
+        {
+          "kind": "card",
+          "planned": 1967.9336666667598,
+          "shown": 1969,
+          "skewMs": 1.066333333240209,
+          "rendered": true
+        },
+        {
+          "kind": "card",
+          "planned": 2067.9336666667596,
+          "shown": 2073,
+          "skewMs": 5.066333333240436,
+          "rendered": true
+        },
+        {
+          "kind": "arrive",
+          "planned": 2317.9336666667596,
+          "shown": 2338.5,
+          "skewMs": 20.566333333240436,
+          "rendered": true
+        },
+        {
+          "kind": "gate",
+          "planned": 2640.9336666667596,
+          "shown": 2642.600000000093,
+          "skewMs": 1.6663333333335686,
+          "rendered": true
+        },
+        {
+          "kind": "arrive",
+          "planned": 3347.9336666667596,
+          "shown": 3362.1999999999534,
+          "skewMs": 14.26633333319387,
+          "rendered": true
+        },
+        {
+          "kind": "arrive",
+          "planned": 3637.9336666667596,
+          "shown": null,
+          "skewMs": null,
+          "rendered": false
+        },
+        {
+          "kind": "arrive",
+          "planned": 3927.9336666667596,
+          "shown": 3940.899999999907,
+          "skewMs": 12.966333333147304,
+          "rendered": true
+        },
+        {
+          "kind": "relic",
+          "planned": 4155.93366666676,
+          "shown": 4156.199999999953,
+          "skewMs": 0.2663333331938702,
+          "rendered": true
+        }
+      ],
+      "maxRenderedSkewMs": 20.566333333240436,
+      "skippedPhases": [
+        "arrive"
+      ],
+      "audioAnchors": [
+        {
+          "cue": "scrape",
+          "targetPerformanceTime": 1631.607999999907,
+          "startContextTime": 0.4236999999999535,
+          "method": "output-timestamp",
+          "latencyMs": 53.708,
+          "state": "scheduled"
+        },
+        {
+          "cue": "stone",
+          "targetPerformanceTime": 1767.9336666667598,
+          "startContextTime": 0.5680606666667133,
+          "method": "output-timestamp",
+          "latencyMs": 52.90633333333331,
+          "state": "scheduled"
+        },
+        {
+          "cue": "stone",
+          "targetPerformanceTime": 1867.9336666667598,
+          "startContextTime": 0.6680606666667133,
+          "method": "output-timestamp",
+          "latencyMs": 52.90633333333331,
+          "state": "scheduled"
+        },
+        {
+          "cue": "stone",
+          "targetPerformanceTime": 1967.9336666667598,
+          "startContextTime": 0.7680906666668529,
+          "method": "output-timestamp",
+          "latencyMs": 53.44300000000002,
+          "state": "scheduled"
+        },
+        {
+          "cue": "stone",
+          "targetPerformanceTime": 2067.9336666667596,
+          "startContextTime": 0.868060666666713,
+          "method": "output-timestamp",
+          "latencyMs": 52.239666666666686,
+          "state": "scheduled"
+        },
+        {
+          "cue": "step",
+          "targetPerformanceTime": 2317.9336666667596,
+          "startContextTime": 1.118050666666713,
+          "method": "output-timestamp",
+          "latencyMs": 52.91633333333334,
+          "state": "scheduled"
+        },
+        {
+          "cue": "lever",
+          "targetPerformanceTime": 2640.9336666667596,
+          "startContextTime": 1.4330376666667595,
+          "method": "output-timestamp",
+          "latencyMs": 52.72933333333341,
+          "state": "scheduled"
+        },
+        {
+          "cue": "step",
+          "targetPerformanceTime": 3347.9336666667596,
+          "startContextTime": 2.148048666666853,
+          "method": "output-timestamp",
+          "latencyMs": 52.1516666666666,
+          "state": "scheduled"
+        },
+        {
+          "cue": "step",
+          "targetPerformanceTime": 3637.9336666667596,
+          "startContextTime": 2.438058666666806,
+          "method": "output-timestamp",
+          "latencyMs": 53.008333333333546,
+          "state": "scheduled"
+        },
+        {
+          "cue": "step",
+          "targetPerformanceTime": 3927.9336666667596,
+          "startContextTime": 2.7280456666668056,
+          "method": "output-timestamp",
+          "latencyMs": 53.68800000000063,
+          "state": "scheduled"
+        },
+        {
+          "cue": "relic",
+          "targetPerformanceTime": 4155.93366666676,
+          "startContextTime": 2.9280796666666666,
+          "method": "output-timestamp",
+          "latencyMs": 51.420666666666115,
+          "state": "scheduled"
+        }
+      ]
+    },
+    "simulated-latency": {
+      "frames": [
+        {
+          "kind": "card",
+          "planned": 1847.7999999998137,
+          "shown": 1851,
+          "skewMs": 3.2000000001862645,
+          "rendered": true
+        },
+        {
+          "kind": "card",
+          "planned": 1947.7999999998137,
+          "shown": 1948.1999999999534,
+          "skewMs": 0.4000000001396984,
+          "rendered": true
+        },
+        {
+          "kind": "card",
+          "planned": 2047.7999999998137,
+          "shown": 2067.1999999999534,
+          "skewMs": 19.4000000001397,
+          "rendered": true
+        },
+        {
+          "kind": "card",
+          "planned": 2147.7999999998137,
+          "shown": 2149.2999999998137,
+          "skewMs": 1.5,
+          "rendered": true
+        },
+        {
+          "kind": "arrive",
+          "planned": 2397.7999999998137,
+          "shown": 2399.6999999999534,
+          "skewMs": 1.9000000001396984,
+          "rendered": true
+        },
+        {
+          "kind": "gate",
+          "planned": 2720.7999999998137,
+          "shown": 2725.6999999999534,
+          "skewMs": 4.900000000139698,
+          "rendered": true
+        },
+        {
+          "kind": "arrive",
+          "planned": 3427.7999999998137,
+          "shown": 3430.899999999907,
+          "skewMs": 3.1000000000931323,
+          "rendered": true
+        },
+        {
+          "kind": "arrive",
+          "planned": 3717.7999999998137,
+          "shown": 3733.2999999998137,
+          "skewMs": 15.5,
+          "rendered": true
+        },
+        {
+          "kind": "arrive",
+          "planned": 4007.7999999998137,
+          "shown": 4027.5999999998603,
+          "skewMs": 19.800000000046566,
+          "rendered": true
+        },
+        {
+          "kind": "relic",
+          "planned": 4235.799999999814,
+          "shown": 4240,
+          "skewMs": 4.2000000001862645,
+          "rendered": true
+        }
+      ],
+      "maxRenderedSkewMs": 19.800000000046566,
+      "skippedPhases": [],
+      "audioAnchors": [
+        {
+          "cue": "scrape",
+          "targetPerformanceTime": 1739.3999999999069,
+          "startContextTime": 0.48056666666657355,
+          "method": "latency-estimate",
+          "latencyMs": 199.99999999999997,
+          "state": "scheduled"
+        },
+        {
+          "cue": "stone",
+          "targetPerformanceTime": 1847.7999999998137,
+          "startContextTime": 0.587766666666527,
+          "method": "latency-estimate",
+          "latencyMs": 199.99999999999997,
+          "state": "scheduled"
+        },
+        {
+          "cue": "stone",
+          "targetPerformanceTime": 1947.7999999998137,
+          "startContextTime": 0.6902333333332402,
+          "method": "latency-estimate",
+          "latencyMs": 199.99999999999997,
+          "state": "scheduled"
+        },
+        {
+          "cue": "stone",
+          "targetPerformanceTime": 2047.7999999998137,
+          "startContextTime": 0.7976333333331471,
+          "method": "latency-estimate",
+          "latencyMs": 199.99999999999997,
+          "state": "scheduled"
+        },
+        {
+          "cue": "stone",
+          "targetPerformanceTime": 2147.7999999998137,
+          "startContextTime": 0.8945000000000001,
+          "method": "latency-estimate",
+          "latencyMs": 199.99999999999997,
+          "state": "scheduled"
+        },
+        {
+          "cue": "step",
+          "targetPerformanceTime": 2397.7999999998137,
+          "startContextTime": 1.14486666666662,
+          "method": "latency-estimate",
+          "latencyMs": 199.99999999999997,
+          "state": "scheduled"
+        },
+        {
+          "cue": "lever",
+          "targetPerformanceTime": 2720.7999999998137,
+          "startContextTime": 1.4549333333331937,
+          "method": "latency-estimate",
+          "latencyMs": 199.99999999999997,
+          "state": "scheduled"
+        },
+        {
+          "cue": "step",
+          "targetPerformanceTime": 3427.7999999998137,
+          "startContextTime": 2.176899999999907,
+          "method": "latency-estimate",
+          "latencyMs": 199.99999999999997,
+          "state": "scheduled"
+        },
+        {
+          "cue": "step",
+          "targetPerformanceTime": 3717.7999999998137,
+          "startContextTime": 2.4656666666666665,
+          "method": "latency-estimate",
+          "latencyMs": 199.99999999999997,
+          "state": "scheduled"
+        },
+        {
+          "cue": "step",
+          "targetPerformanceTime": 4007.7999999998137,
+          "startContextTime": 2.7582999999998132,
+          "method": "latency-estimate",
+          "latencyMs": 199.99999999999997,
+          "state": "scheduled"
+        },
+        {
+          "cue": "relic",
+          "targetPerformanceTime": 4235.799999999814,
+          "startContextTime": 2.9532999999998135,
+          "method": "latency-estimate",
+          "latencyMs": 199.99999999999997,
+          "state": "scheduled"
+        }
+      ]
+    },
+    "cpu-4x": {
+      "frames": [
+        {
+          "kind": "card",
+          "planned": 1698.51366666662,
+          "shown": 1698.8999999999069,
+          "skewMs": 0.3863333332867569,
+          "rendered": true
+        },
+        {
+          "kind": "card",
+          "planned": 1798.51366666662,
+          "shown": 1841.3999999999069,
+          "skewMs": 42.88633333328676,
+          "rendered": true
+        },
+        {
+          "kind": "card",
+          "planned": 1898.51366666662,
+          "shown": 1925.8999999999069,
+          "skewMs": 27.386333333286757,
+          "rendered": true
+        },
+        {
+          "kind": "card",
+          "planned": 1998.51366666662,
+          "shown": 2026.2999999998137,
+          "skewMs": 27.786333333193625,
+          "rendered": true
+        },
+        {
+          "kind": "arrive",
+          "planned": 2248.5136666666203,
+          "shown": 2298.5,
+          "skewMs": 49.98633333337966,
+          "rendered": true
+        },
+        {
+          "kind": "gate",
+          "planned": 2571.5136666666203,
+          "shown": 2592.1999999999534,
+          "skewMs": 20.686333333333096,
+          "rendered": true
+        },
+        {
+          "kind": "arrive",
+          "planned": 3278.5136666666203,
+          "shown": 3296.2999999998137,
+          "skewMs": 17.786333333193397,
+          "rendered": true
+        },
+        {
+          "kind": "arrive",
+          "planned": 3568.5136666666203,
+          "shown": 3577.6999999999534,
+          "skewMs": 9.186333333333096,
+          "rendered": true
+        },
+        {
+          "kind": "arrive",
+          "planned": 3858.5136666666203,
+          "shown": 3874.2999999998137,
+          "skewMs": 15.786333333193397,
+          "rendered": true
+        },
+        {
+          "kind": "relic",
+          "planned": 4086.5136666666203,
+          "shown": 4090.2999999998137,
+          "skewMs": 3.7863333331933973,
+          "rendered": true
+        }
+      ],
+      "maxRenderedSkewMs": 49.98633333337966,
+      "skippedPhases": [],
+      "audioAnchors": [
+        {
+          "cue": "scrape",
+          "targetPerformanceTime": 1543.6746666664803,
+          "startContextTime": 0.5217666666665269,
+          "method": "output-timestamp",
+          "latencyMs": 52.374666666666656,
+          "state": "scheduled"
+        },
+        {
+          "cue": "stone",
+          "targetPerformanceTime": 1698.51366666662,
+          "startContextTime": 0.6844816666667133,
+          "method": "output-timestamp",
+          "latencyMs": 53.63200000000001,
+          "state": "scheduled"
+        },
+        {
+          "cue": "stone",
+          "targetPerformanceTime": 1798.51366666662,
+          "startContextTime": 0.7844816666667132,
+          "method": "output-timestamp",
+          "latencyMs": 53.63200000000001,
+          "state": "scheduled"
+        },
+        {
+          "cue": "stone",
+          "targetPerformanceTime": 1898.51366666662,
+          "startContextTime": 0.8846176666667598,
+          "method": "output-timestamp",
+          "latencyMs": 51.79600000000001,
+          "state": "scheduled"
+        },
+        {
+          "cue": "stone",
+          "targetPerformanceTime": 1998.51366666662,
+          "startContextTime": 0.9846456666666666,
+          "method": "output-timestamp",
+          "latencyMs": 52.3346666666667,
+          "state": "scheduled"
+        },
+        {
+          "cue": "step",
+          "targetPerformanceTime": 2248.5136666666203,
+          "startContextTime": 1.2344696666666204,
+          "method": "output-timestamp",
+          "latencyMs": 52.37733333333339,
+          "state": "scheduled"
+        },
+        {
+          "cue": "lever",
+          "targetPerformanceTime": 2571.5136666666203,
+          "startContextTime": 1.5495996666666205,
+          "method": "output-timestamp",
+          "latencyMs": 53.41399999999985,
+          "state": "scheduled"
+        },
+        {
+          "cue": "step",
+          "targetPerformanceTime": 3278.5136666666203,
+          "startContextTime": 2.264508666666807,
+          "method": "output-timestamp",
+          "latencyMs": 51.70499999999989,
+          "state": "scheduled"
+        },
+        {
+          "cue": "step",
+          "targetPerformanceTime": 3568.5136666666203,
+          "startContextTime": 2.5546426666666666,
+          "method": "output-timestamp",
+          "latencyMs": 53.004333333333435,
+          "state": "scheduled"
+        },
+        {
+          "cue": "step",
+          "targetPerformanceTime": 3858.5136666666203,
+          "startContextTime": 2.844643666666667,
+          "method": "output-timestamp",
+          "latencyMs": 53.003333333333735,
+          "state": "scheduled"
+        },
+        {
+          "cue": "relic",
+          "targetPerformanceTime": 4086.5136666666203,
+          "startContextTime": 3.044494666666713,
+          "method": "output-timestamp",
+          "latencyMs": 52.45233333333354,
+          "state": "scheduled"
+        }
+      ]
+    }
+  },
+  "stall": {
+    "mainThreadMs": 200,
+    "scheduledRope": [
+      {
+        "cue": "rope",
+        "targetPerformanceTime": 6852.777333333194,
+        "startContextTime": 5.548492333333334,
+        "method": "output-timestamp",
+        "latencyMs": 52.685000000000315,
+        "state": "scheduled"
+      }
+    ],
+    "payoutUnits": "250"
+  },
+  "capture": {
+    "errors": [],
+    "video": "docs/assets/flooded-temple/animation-preview.mp4",
+    "seconds": 24.583333333333332,
+    "frames": 590,
+    "audio": false,
+    "package": "0.5.0-8dba2a2b4dee",
+    "scenes": [
+      {
+        "name": "discovery",
+        "event": "relic",
+        "pose": "discover",
+        "revision": 1,
+        "payoutUnits": "0"
+      },
+      {
+        "name": "rope",
+        "event": "rope",
+        "pose": "brace",
+        "revision": 4,
+        "payoutUnits": "250"
+      },
+      {
+        "name": "reflection",
+        "event": "outcome",
+        "pose": "reflect",
+        "revision": 5,
+        "payoutUnits": "250"
+      },
+      {
+        "name": "success",
+        "event": "outcome",
+        "pose": "celebrate",
+        "revision": 1,
+        "payoutUnits": "35000"
+      }
+    ],
+    "note": "Real prepared demo rounds; visual capture with intentional pauses, not timing evidence. Final package only removes inherited phone portrait fading."
+  },
+  "lifecycle": {
+    "persistentCanvas": true,
+    "ownedFrameCallbacksMax": 1,
+    "poses": 6,
+    "idleVariants": 3,
+    "contextLossFallback": true,
+    "contextRestoration": true,
+    "pauseAndDialogFreeze": true,
+    "closeReleasesTextures": true,
+    "accountChangeClearsPose": true,
+    "quietRecovery": true,
+    "reducedMotionStatic": true
+  },
+  "preview": {
+    "url": "http://127.0.0.1:5226/tests/fixtures/temple-preview.html?lang=ru&version=0.5.0",
+    "terminalSession": 7918,
+    "frontendPid": 1624,
+    "backendPid": 12480,
+    "temporaryDatabase": true,
+    "cleanup": "Stop owned preview with Ctrl+C after user review"
+  },
+  "limitations": [
+    "One 90 ms arrival phase in the baseline run had no separate rendered frame; next confirmed state remained correct.",
+    "Frame-to-browser-output-clock measurements do not establish physical speaker or Bluetooth latency.",
+    "No audience preference, fatigue or enjoyment study performed.",
+    "Illustrated poses and a small 2D mesh, without skeletal 3D or facial motion capture."
+  ],
+  "sources": {
+    "prompts": "docs/assets/flooded-temple/character-animation-prompts.json",
+    "art": "public/assets/flooded-temple/character",
+    "spriteBytes": 642950
+  }
+}
