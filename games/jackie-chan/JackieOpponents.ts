@@ -2,7 +2,7 @@ import type { JackieLocation } from '../../src/shared/jackieChan';
 
 export const OPPONENTS = {
   street: { asset:'/assets/jackie-chan/foes.webp', scale:1, attack:1, guard:7, ru:'Уличный боец', en:'Street fighter' },
-  agile: { asset:'/assets/jackie-chan/foe-agile.webp', scale:.92, attack:5, guard:4, ru:'Уличная бойчиха', en:'Agile fighter' },
+  agile: { asset:'/assets/jackie-chan/foe-agile.webp', scale:.92, attack:5, guard:4, ru:'Ловкий боец', en:'Agile fighter' },
   bruiser: { asset:'/assets/jackie-chan/foe-bruiser.webp', scale:1.08, attack:1, guard:7, ru:'Портовый громила', en:'Dockside bruiser' },
   enforcer: { asset:'/assets/jackie-chan/foe-enforcer.webp', scale:1.02, attack:1, guard:7, ru:'Телохранитель', en:'Bodyguard' },
   master: { asset:'/assets/jackie-chan/foe-master.webp', scale:.91, attack:5, guard:7, ru:'Мастер кунг-фу', en:'Kung fu master' },
