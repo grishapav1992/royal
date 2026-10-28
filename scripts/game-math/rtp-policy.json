@@ -94,19 +94,19 @@
       ]
     },
     "studio-neopolis": {
-      "rulesVersion": 3,
-      "progressVersion": 3,
+      "rulesVersion": 4,
+      "progressVersion": 4,
       "target": 0.96,
       "tolerance": 0.01,
       "maxUpper95": 0.98,
       "maxHalfWidth95": 0.01,
-      "minPaidRounds": 1000000,
-      "minCycles": 20000,
+      "minPaidRounds": 3000000,
+      "minCycles": 60000,
       "seeds": [
-        872031,
-        918273
+        27803111,
+        91273407
       ],
-      "qualificationCyclesPerSeed": 10000,
+      "qualificationCyclesPerSeed": 30000,
       "stakes": [
         1000,
         2000,
@@ -120,14 +120,45 @@
         "impulse",
         "prism"
       ],
-      "proof": "docs/game-math/qualifications/neopolis-v3.json",
+      "proof": "docs/game-math/qualifications/neopolis-v4.json",
       "sources": [
         "src/shared/neopolisMath.ts",
         "src/shared/neopolisMathV1.ts",
         "src/shared/neopolisMathV2.ts",
         "src/shared/neopolis.ts",
-        "server/games/neopolis.ts"
-      ]
+        "server/games/neopolis.ts",
+        "src/shared/neopolisMathV3.ts",
+        "src/shared/neopolisStakePayouts.ts",
+        "src/shared/draconaMath.ts",
+        "scripts/game-math/calibrate-neopolis-stakes.mjs",
+        "docs/game-math/neopolis-v4-calibration.json"
+      ],
+      "method": "neopolis-variable-stake-conditional-v4",
+      "qualificationSource": "scripts/game-math/rtp-neopolis-v4.mjs",
+      "conditionalTarget": 0.96,
+      "conditionalTolerance": 0.01,
+      "conditionalMaxUpper95": 0.98,
+      "conditionalMaxHalfWidth95": 0.01,
+      "stakePolicies": [
+        "fixed",
+        "raise-when-ready",
+        "lower-when-ready",
+        "alternate-extremes",
+        "cycle-stakes"
+      ],
+      "conditionalSeeds": [
+        41971091,
+        83027131
+      ],
+      "conditionalRoundsPerSeed": 500000,
+      "conditionalReadyRoundsPerSeed": 4000000,
+      "calibrationSeeds": [
+        302710111,
+        610829303
+      ],
+      "confidenceZ": 2.241402727604947,
+      "qualificationLooks": 2,
+      "samplingPlan": "Retain the complete first 10000 cycles per seed and extend each stream to exactly 30000 cycles once. Use a two-sided 97.5% normal interval for each of the at most two looks. Do not stop early or discard any seed or prefix. Keep the failed first-look evidence. No further sample extension is authorized by this plan."
     },
     "studio-dracona": {
       "rulesVersion": 3,

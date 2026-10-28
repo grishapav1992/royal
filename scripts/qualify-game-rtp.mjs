@@ -4,6 +4,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { rtpInputs, validateRtpProof } from './game-math/rtp-gate.mjs';
 import { preflight, simulateDracona, simulateNeopolis } from './game-math/rtp-simulation.mjs';
+import { qualifyNeopolisV4 } from './game-math/rtp-neopolis-v4.mjs';
 import { qualifyCombat } from './game-math/rtp-combat.mjs';
 import {qualifyVirtualPvp} from './game-math/rtp-virtual-pvp.mjs';
 import {qualifyCosmic} from './game-math/rtp-cosmic.mjs';
@@ -13,7 +14,7 @@ const root = fileURLToPath(new URL('../', import.meta.url)), args = process.argv
 const index = args.indexOf('--game'), gameId = index < 0 ? undefined : args[index + 1];
 assert(['studio-afterglow','studio-caribbean-treasures','studio-neopolis','studio-dracona','studio-cosmic-escape','mortal-kombat','hockey','pool','chess','durak','transfer-durak','crazy-eights'].includes(gameId), 'Choose a registered paid game');
 const inputs = await rtpInputs(root, gameId), startedAt = new Date().toISOString();
-const exact = gameId==='studio-caribbean-treasures'?await qualifyCaribbean(inputs.policy,value=>console.log(JSON.stringify(value))):gameId==='studio-cosmic-escape'?await qualifyCosmic(inputs.policy,value=>console.log(JSON.stringify(value))):gameId==='mortal-kombat'?qualifyCombat(inputs.policy):inputs.policy.method==='exhaustive-virtual-pvp-pot'?qualifyVirtualPvp(gameId,inputs.policy):undefined;
+const exact = gameId==='studio-neopolis'&&inputs.policy.method==='neopolis-variable-stake-conditional-v4'?qualifyNeopolisV4(inputs.policy,value=>console.log(JSON.stringify(value))):gameId==='studio-caribbean-treasures'?await qualifyCaribbean(inputs.policy,value=>console.log(JSON.stringify(value))):gameId==='studio-cosmic-escape'?await qualifyCosmic(inputs.policy,value=>console.log(JSON.stringify(value))):gameId==='mortal-kombat'?qualifyCombat(inputs.policy):inputs.policy.method==='exhaustive-virtual-pvp-pot'?qualifyVirtualPvp(gameId,inputs.policy):undefined;
 const serverReplayChecks = exact?.serverReplayChecks??(gameId==='studio-afterglow'?preflightAfterglow(inputs.policy):preflight(gameId, inputs.policy));
 console.log(JSON.stringify({ gameId, phase: 'server-replay', serverReplayChecks }));
 const sample = exact??(gameId==='studio-afterglow'?simulateAfterglow:gameId === 'studio-neopolis' ? simulateNeopolis : simulateDracona)(inputs.policy, value => console.log(JSON.stringify(value)));
