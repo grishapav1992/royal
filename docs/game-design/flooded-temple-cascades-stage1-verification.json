@@ -1,0 +1,75 @@
+{
+  "date": "2026-10-28",
+  "gameId": "studio-flooded-temple",
+  "stage": 1,
+  "status": "complete-design-only",
+  "integrationBaseline": "a1741cebd6d56b2f030d346951167b9b4d2c31a5",
+  "integrationCommit": "4796efcad0c2d16d8913be330569782acddd2809",
+  "mergeResolution": "Keep Flooded Temple slot classification and use current shared catalogue art lookup, preserving the Caribbean cover from origin/main",
+  "runtime": {
+    "templePackage": "0.7.1",
+    "rules": 1,
+    "progress": 1,
+    "templeEngineChanged": false,
+    "templeUiChanged": false,
+    "walletChanged": false,
+    "activeRtpPolicyChanged": false,
+    "newRulesEnabled": false,
+    "productionDeployed": false
+  },
+  "design": {
+    "reference": "original Gonzo Quest",
+    "plannedRules": 2,
+    "plannedProgress": 2,
+    "qualificationStatus": "not-implemented-not-qualified",
+    "targetRtp": 0.96
+  },
+  "checks": {
+    "specification": {
+      "arithmeticExamples": 6,
+      "passed": 6,
+      "stakesDivisibleBy20": true,
+      "statusFlagsChecked": true
+    },
+    "typecheck": {
+      "command": "npx tsc --noEmit",
+      "passed": true
+    },
+    "rtpGate": {
+      "command": "npm run check:rtp",
+      "passed": true,
+      "verified": 13,
+      "legacyNotQualified": 114,
+      "qualifiesNewCascadeRules": false
+    },
+    "integrationChecks": {
+      "command": "node --import tsx --test server-tests/neopolis-catalog.test.ts server-tests/caribbean-assets.test.ts",
+      "passed": 6,
+      "total": 6,
+      "durationMs": 6004.0127
+    },
+    "whitespace": {
+      "passed": true
+    },
+    "newGameplayOrBrowserTestsRun": false
+  },
+  "sourceCaveats": [
+    "Official NetEnt product page and original operator rules consulted",
+    "NetEnt-authored game sheet available in search index on external mirror; direct PDF fetch timed out",
+    "Different operator bonus wording documented; selected per-line bonus semantics explicit",
+    "No proprietary mathematical model or source RTP claimed for the new Royal rules"
+  ],
+  "storage": {
+    "firstMeasuredFreeBytes": 292814962688,
+    "freeAfterBytes": 294536380416,
+    "temporaryTaskDirectoriesCreated": 0,
+    "sourceCopiesCreated": 0,
+    "archivesCreated": 0,
+    "foldersRemoved": [],
+    "archivesRemoved": 0,
+    "removedBytes": 0,
+    "physicalReclaimedClaim": false,
+    "previousDeniedScopesRetried": false,
+    "activeExceptions": "Existing preview session 7918, current package and previously recorded user-tab/cleanup exceptions remain under their existing cleanup conditions"
+  }
+}
