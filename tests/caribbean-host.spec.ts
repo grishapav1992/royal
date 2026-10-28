@@ -1,7 +1,7 @@
 import {test as base,expect,type Page} from '@playwright/test';
 import {Client} from '@colyseus/sdk';
 
-const game='studio-caribbean-treasures',out='artifacts/work/caribbean-recorded-audio';
+const game='studio-caribbean-treasures',out='artifacts/work/caribbean-character-motion';
 const test=base.extend<{roomPath:string}>({roomPath:async({request},use)=>{
  const response=await request.post('/api/auth/login',{data:{email:`ct-room-${crypto.randomUUID()}@example.test`,password:'Royal-test-123!'}});
  expect(response.ok()).toBe(true);
@@ -44,6 +44,7 @@ async function open(page:Page){
  await expect(page.locator('#mini-game')).toHaveAttribute('data-game-module-id',game,{timeout:25000});
  await expect(page.locator('.ct-root')).toBeVisible();
  await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState()?.audio?.ready),{timeout:20000}).toBe(true);
+ await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState()?.captain?.ready),{timeout:20000}).toBe(true);
  await expect(page.locator('#mini-dialog #club-chat-dock')).toBeVisible();
  await expect(page.locator('#chat-input')).toBeInViewport();
 }
@@ -59,7 +60,7 @@ async function action(page:Page,selector:string){
  await page.locator(selector).click();const r=await reply;expect(r.ok()).toBe(true);const body=await r.json();
  await expect(page.locator('[data-ct-action=retry]')).toBeHidden();
  await expect.poll(async()=>page.locator('.ct-status').textContent()).not.toContain('Подтверждаем');
- await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState()?.presenting)).toBe(false);
+ await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState()?.presenting),{timeout:10000}).toBe(false);
  return body.session;
 }
 async function finish(page:Page){
@@ -153,6 +154,9 @@ test('confirmed animation, cannon, skip, mute, zero volume and close release own
  await page.locator('[data-ct-lines]').selectOption('1');await page.request.post('/__test/caribbean/force-bonus');await action(page,'[data-ct-action=play]');
  await action(page,'[data-ct-action=choose-raid]');await page.request.post('/__test/caribbean/force-cannon');await action(page,'[data-ct-action=play]');
  const playback=await page.evaluate(()=>(window as any).royalDemo.getMiniState());expect(playback.audio.counts.cannon).toBe(1);expect(playback.accents.filter((a:any)=>a.cue==='stop')).toHaveLength(12);
+ expect(playback.captain.history.filter((e:any)=>e.cue==='cannon')).toHaveLength(1);
+ expect(playback.captain.history.find((e:any)=>e.cue==='cannon').pose).toBe('surprise');
+ expect(new Set(playback.captain.history.filter((e:any)=>e.cue==='stop').map((e:any)=>e.variant)).size).toBe(6);
  const maximumDeviationMs=Math.max(...playback.accents.map((a:any)=>Math.abs(a.deviationMs)));
  const {writeFile}=await import('node:fs/promises');await writeFile(out+'/playback-measurements.json',JSON.stringify({maximumDeviationMs,accents:playback.accents},null,2));expect(maximumDeviationMs).toBeLessThanOrEqual(50);
  await page.locator('[data-ct-action=music]').click();await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().audio.music)).toBe(false);
@@ -170,12 +174,14 @@ test('confirmed animation, cannon, skip, mute, zero volume and close release own
  await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().visualPhase)).toBe('reels');
  await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,value:true});document.dispatchEvent(new Event('visibilitychange'));});
  await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().presenting)).toBe(false);
+ const hidden=await page.evaluate(()=>(window as any).royalDemo.getMiniState());expect(hidden.captain.timers).toBe(0);expect(hidden.captain.animations).toBe(0);expect(hidden.visuals).toEqual({animations:0,particles:0});
  await page.evaluate(()=>{delete(document as any).hidden;document.dispatchEvent(new Event('visibilitychange'));});
  await page.locator('[data-ct-action=play]').click();await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().visualPhase)).toBe('reels');
  await page.emulateMedia({reducedMotion:'reduce'});await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().presenting)).toBe(false);await expect(page.locator('.ct-root')).toHaveAttribute('data-motion','reduced');
  const reduced=await session(page);expect(await page.locator('.ct-cell').evaluateAll(nodes=>nodes.map(n=>Number((n as HTMLElement).dataset.symbol)))).toEqual(reduced.view.caribbean.spins.at(-1).frame.grid);
  await close(page);await expect.poll(async()=>page.evaluate(()=>(window as any).__ctSources.size),{timeout:4000}).toBe(0);
  await open(page);expect(await page.evaluate(()=>(window as any).royalDemo.getMiniState().audio.counts)).toEqual({});
+ expect(await page.evaluate(()=>(window as any).royalDemo.getMiniState().captain.history)).toEqual([]);
  await page.screenshot({path:out+'/desktop-final.png'});
 });
 
@@ -242,4 +248,70 @@ test('sample loading can fail and retry, and late decode after close cannot rest
   for(let i=0;i<200&&decoding===0;i++)await new Promise(r=>setTimeout(r,10));if(!decoding)throw Error('Decode did not start');a.destroy();await enter;await new Promise(r=>setTimeout(r,250));return a.state();
  });
  expect(closed.activeSources).toBe(0);expect(closed.ownedGraphs).toBe(0);expect(closed.music).toBe(false);expect(closed.counts).toEqual({});expect(closed.loadedClips).toBe(0);
+});
+
+test('captain blinks and looks at the field, deduplicates reactions and releases her timer',async({page})=>{
+ await page.goto('/tests/fixtures/caribbean-audio.html');await page.clock.install();
+ await page.evaluate(async()=>{
+  const root=document.createElement('section');root.className='ct-root';
+  root.innerHTML='<span class="ct-portrait-gesture"><img class="ct-portrait-layer"><img class="ct-portrait-layer"></span><span class="ct-captain-caption" hidden></span>';
+  document.body.append(root);const path='/games/caribbean-treasures/CaribbeanCaptain.ts';
+  const {CaribbeanCaptain}=await import(/* @vite-ignore */path);(window as any).__ctCaptain=new CaribbeanCaptain(root);
+ });
+ const captain=()=>page.evaluate(()=>(window as any).__ctCaptain.state());
+ await expect.poll(async()=>(await captain()).ready,{timeout:20000}).toBe(true);
+ await page.evaluate(()=>(window as any).__ctCaptain.context(true,false,false));
+ await page.clock.runFor(5200);expect((await captain()).pose).toBe('blink');
+ await page.clock.runFor(125);expect((await captain()).pose).toBe('idle');
+ await page.clock.runFor(5850);expect((await captain()).pose).toBe('blink');
+ await page.clock.runFor(125+6500);expect((await captain()).pose).toBe('focus');
+ await page.clock.runFor(1400);expect((await captain()).pose).toBe('idle');expect((await captain()).timers).toBe(1);
+ await page.evaluate(()=>{const c=(window as any).__ctCaptain;c.begin();c.react('partial','round:1:partial');c.react('partial','round:1:partial');c.finish();});
+ expect((await captain()).history).toHaveLength(1);expect((await captain()).pose).toBe('soft');await expect(page.locator('.ct-captain-caption')).toHaveText('Вернулась часть ставки.');
+ await page.evaluate(()=>(window as any).__ctCaptain.context(true,true,true));
+ expect((await captain()).animations).toBe(0);await expect(page.locator('.ct-captain-caption')).toHaveText('Part of the cost returned.');
+ await page.clock.runFor(1200);expect((await captain()).pose).toBe('idle');expect((await captain()).timers).toBe(0);
+ await page.evaluate(()=>{const c=(window as any).__ctCaptain;c.context(true,false,false);c.begin();c.react('bigwin','round:2:bigwin');c.finish();});
+ expect((await captain()).pose).toBe('laugh');await page.clock.runFor(1300);expect((await captain()).pose).toBe('win');
+ await page.evaluate(()=>(window as any).__ctCaptain.context(false,false,false));
+ await page.clock.runFor(30000);expect((await captain()).pose).toBe('idle');expect((await captain()).timers).toBe(0);expect((await captain()).animations).toBe(0);
+ await page.evaluate(()=>{const c=(window as any).__ctCaptain;c.context(true,false,false);c.destroy();c.react('win','after-close');});
+ await page.clock.runFor(30000);expect((await captain()).history).toEqual([]);expect((await captain()).timers).toBe(0);expect((await captain()).animations).toBe(0);
+});
+
+test('saved complete rounds give distinct captain reactions in the real host',async({browser,roomPath})=>{
+ test.setTimeout(180000);const context=await browser.newContext({viewport:{width:1440,height:1000},recordVideo:{dir:out+'/video',size:{width:1440,height:1000}}});
+ const page=await context.newPage(),videoStartWall=Date.now(),cuts:{name:string;start:number;duration:number}[]=[],results:any[]=[];
+ const mini=()=>page.evaluate(()=>(window as any).royalDemo.getMiniState());
+ const cut=(name:string,from:any,to:any,tail=1.1)=>cuts.push({name,start:Math.max(0,(from.wallTimeMs-videoStartWall)/1000-.15),duration:(to.wallTimeMs-from.wallTimeMs)/1000+tail+.15});
+ try{
+  await enter(page,roomPath);await topup(page);await page.emulateMedia({reducedMotion:'no-preference'});await open(page);
+  for(const [name,cue,pose] of [['partial','partial','soft'],['loss','loss','soft'],['return','return','idle'],['positive','win','win']] as const){
+   const forced=await page.request.post('/__test/caribbean/force-scenario',{data:{name}});expect(forced.ok()).toBe(true);
+   const done=await action(page,'[data-ct-action=play]'),view=await mini(),history=view.captain.history;
+   expect(done.state).toBe('settled');expect(history.at(-1).cue).toBe(cue);expect(view.captain.pose).toBe(pose);
+   expect(await page.locator('[data-ct-payout]').textContent()).not.toBe('...');
+   const result=history.at(-1),giant=history.findLast((e:any)=>e.cue==='giant'&&e.key.startsWith(done.id));
+   cut(name,giant??result,result);results.push({name,costUnits:done.spentUnits,payoutUnits:done.returnedUnits,captain:history.filter((e:any)=>e.key.startsWith(done.id))});
+   await page.screenshot({path:out+'/reaction-'+name+'.png'});await page.waitForTimeout(1200);
+  }
+  await page.request.post('/__test/caribbean/force-scenario',{data:{name:'natural-flagship'}});
+  const natural=await action(page,'[data-ct-action=play]');expect(natural.view.caribbean.phase).toBe('choice');
+  let history=(await mini()).captain.history;const bonus=history.at(-1);expect(bonus.cue).toBe('bonus');cut('bonus',bonus,bonus);await page.screenshot({path:out+'/reaction-bonus.png'});await page.waitForTimeout(1200);
+  await action(page,'[data-ct-action=choose-flagship]');const done=await finish(page);history=(await mini()).captain.history;
+  const grand=history.at(-1);expect(grand.cue).toBe('bigwin');expect((await mini()).captain.pose).toBe('laugh');cut('bigwin',grand,grand,1.6);
+  results.push({name:'natural-flagship',costUnits:done.spentUnits,payoutUnits:done.returnedUnits,captain:history.filter((e:any)=>e.key.startsWith(done.id))});
+  await page.screenshot({path:out+'/reaction-bigwin.png'});await page.waitForTimeout(1800);
+  await page.locator('[data-ct-action=lines]').click();await page.locator('[data-ct-lines]').selectOption('1');
+  await page.locator('[data-ct-action=buy]').click();await action(page,'[data-ct-modal=buy-raid]');
+  await page.request.post('/__test/caribbean/force-cannon');const cannon=await action(page,'[data-ct-action=play]');history=(await mini()).captain.history;
+  const shot=history.findLast((e:any)=>e.cue==='cannon');expect(shot.pose).toBe('surprise');cut('cannon',shot,shot,1.3);
+  results.push({name:'cannon',roundId:cannon.id,captain:history.filter((e:any)=>e.key.startsWith(cannon.id))});
+  await page.emulateMedia({reducedMotion:'reduce'});await finish(page);
+  await page.setViewportSize({width:390,height:844});await page.emulateMedia({reducedMotion:'no-preference'});await layout(page,'motion-mobile');
+  await close(page);
+ }finally{
+  const video=page.video();await context.close();const {writeFile}=await import('node:fs/promises');
+  await writeFile(out+'/character-measurements.json',JSON.stringify({video:await video?.path(),videoStartWall,cuts,results},null,2));
+ }
 });
