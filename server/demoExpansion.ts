@@ -43,12 +43,12 @@ import { STUDIO_MAX, isStudioGame, isStudioPresentationGame, isStudioJourneyPres
 import { startStudioGame, moveStudioGame, currentStudioSlotPresentation, StudioMoveError, type StudioResult } from './games/studioGames';
 
 export type ExpansionState = ExpansionSession & {createdAt:number;engine?:unknown;settings:Extract<ExpansionAction,{action:'start'}>['settings'];crashPoint?:number;mathProfileVersion?:CosmicMathProfileVersion};
-const supportsNeopolis=(client:boolean|2|3,rules:number)=>rules<=(typeof client==='number'?client:client?1:0);
+const supportsNeopolis=(client:boolean|2|3|4,rules:number)=>rules<=(typeof client==='number'?client:client?1:0);
 const supportsDracona=(client:boolean|2,rules:number)=>client===2||client===true&&rules===2;
-const cardRulesVersion=(version:1|2|3):1|2=>{if(version===3)throw Error('Not a card rules version');return version;};
+const cardRulesVersion=(version:1|2|3|4):1|2=>{if(version!==1&&version!==2)throw Error('Not a card rules version');return version;};
 const CARDS:Partial<Record<ExpansionGameId,string>> = {'github-three-card':'three-card','github-caribbean':'caribbean','github-let-it-ride':'let-it-ride','github-ultimate':'ultimate','github-war':'war','github-red-dog':'red-dog','github-pai-gow':'pai-gow','github-dragon-tiger':'dragon-tiger','github-deuces':'deuces','github-mississippi':'mississippi','github-four-card':'four-card','github-crazy-four':'crazy-four','github-flush':'flush','github-holdem-bonus':'holdem-bonus','github-oasis':'oasis','github-russian':'russian','github-caribbean-draw':'caribbean-draw','github-spanish':'spanish','github-exposure':'exposure','github-switch':'switch','github-free-bet':'free-bet','github-rummy':'rummy','github-andar-bahar':'andar-bahar'};
 export const EXPANSION_MAX:Record<ExpansionGameId,number> = {[FOREST_HEART_GAME]:FOREST_HEART_RESERVE_MULTIPLIER,[CARIBBEAN_GAME]:300000,...STUDIO_MAX,...VARIANT_MAX,[PENALTY_GAME]:PENALTY_MAX,'github-diamonds':30,'github-crash':100,'github-three-card':55,'github-caribbean':205,'github-let-it-ride':3003,'github-ultimate':570,'github-war':3,'github-red-dog':24,'github-pai-gow':2,'github-dragon-tiger':2,'github-deuces':800,'github-sic-bo':2,'github-mississippi':5010,'github-four-card':40,'github-crazy-four':300,'github-flush':10,'github-holdem-bonus':1010,'github-oasis':205,'github-russian':205,'github-caribbean-draw':105,'github-spanish':64,'github-exposure':64,'github-switch':10,'github-free-bet':16,'github-rummy':20,'github-andar-bahar':2};
-export const expansionMax = (game:ExpansionGameId,version:1|2|3,settings?:unknown) => game===CARIBBEAN_GAME?caribbeanMaximumFactor(settings): game===NEOPOLIS_GAME?NEOPOLIS_MAX_WIN:game===DRACONA_GAME?DRACONA_MAX_WIN:game===AFTER_GAME?AFTER_MAX_WIN:isNitroFamily(game)?NITRO_MAX_WIN:game===CONVOY_GAME?CONVOY_MAX_WIN:version===2&&game===CARAMEL_GAME?CARAMEL_MAX_WIN:version===2&&isLuelonSlotGame(game)?luelonSlotMax(game):version===2&&game==='github-holdem-bonus'?10:version===2&&game==='github-rummy'?13:EXPANSION_MAX[game];
+export const expansionMax = (game:ExpansionGameId,version:1|2|3|4,settings?:unknown) => game===CARIBBEAN_GAME?caribbeanMaximumFactor(settings): game===NEOPOLIS_GAME?NEOPOLIS_MAX_WIN:game===DRACONA_GAME?DRACONA_MAX_WIN:game===AFTER_GAME?AFTER_MAX_WIN:isNitroFamily(game)?NITRO_MAX_WIN:game===CONVOY_GAME?CONVOY_MAX_WIN:version===2&&game===CARAMEL_GAME?CARAMEL_MAX_WIN:version===2&&isLuelonSlotGame(game)?luelonSlotMax(game):version===2&&game==='github-holdem-bonus'?10:version===2&&game==='github-rummy'?13:EXPANSION_MAX[game];
 export function expansionInitialCost(game:ExpansionGameId,side=false){return ['github-crazy-four','github-switch'].includes(game)?2:game==='github-let-it-ride'?3:game==='github-ultimate'?2+Number(side):game==='github-three-card'?1+Number(side):1;}
 const emptyView=():ExpansionView=>({player:[],dealer:[],community:[],actions:[],phase:1,ended:false,message:''});
 const placeholders=EXPANSION_GAMES.map(()=>'?').join(',');
@@ -112,11 +112,11 @@ export class DemoExpansionStore {
     await this.money(account,s,s.id,0,s.crashPoint===100?Number(s.stakeUnits)*100:0);
   }
   async settleDue(account:string){await this.ready;await this.db.transaction(()=>this.crashDue(account,this.now()),{lockKey:'account:'+account});}
-  private async sessions(account:string,caramelClient=true,velvetClient=true,convoyClient=true,nitroClient=true,afterClient=true,memeClient=true,penaltyClient=true,draconaClient:boolean|2=2,neopolisClient:boolean|2|3=3,caribbeanClient=true,forestHeartClient=false){
+  private async sessions(account:string,caramelClient=true,velvetClient=true,convoyClient=true,nitroClient=true,afterClient=true,memeClient=true,penaltyClient=true,draconaClient:boolean|2=2,neopolisClient:boolean|2|3|4=4,caribbeanClient=true,forestHeartClient=false){
     const rows=await this.db.prepare(`SELECT DISTINCT ON(game_id) payload FROM demo_casino_sessions WHERE account_id=? AND game_id IN (${placeholders}) ORDER BY game_id,(payload::jsonb->>'createdAt')::bigint DESC,id DESC`).all(account,...EXPANSION_GAMES);
     return rows.map(row=>this.public(JSON.parse(row.payload))).filter(s=>caramelClient||s.gameId!==CARAMEL_GAME||s.rulesVersion!==2).filter(s=>velvetClient||s.gameId!==VELVET_GAME||s.rulesVersion!==2).filter(s=>convoyClient||s.gameId!==CONVOY_GAME).filter(s=>nitroClient||s.gameId!==NITRO_GAME).filter(s=>afterClient||s.gameId!==AFTER_GAME).filter(s=>memeClient||s.gameId!==MEME_GAME).filter(s=>penaltyClient||s.gameId!==PENALTY_GAME).filter(s=>s.gameId!==DRACONA_GAME||supportsDracona(draconaClient,s.rulesVersion)).filter(s=>s.gameId!==NEOPOLIS_GAME||supportsNeopolis(neopolisClient,s.rulesVersion)).filter(s=>caribbeanClient||s.gameId!==CARIBBEAN_GAME).filter(s=>forestHeartClient||s.gameId!==FOREST_HEART_GAME);
   }
-  async active(account:string,caramelClient=true,velvetClient=true,convoyClient=true,nitroClient=true,afterClient=true,memeClient=true,penaltyClient=true,draconaClient:boolean|2=2,neopolisClient:boolean|2|3=3,caribbeanClient=true,forestHeartClient=false){await this.ready;return this.db.transaction(async()=>{await this.settleOther(account);await this.crashDue(account,this.now());return {wallet:await this.snapshot(account),sessions:await this.sessions(account,caramelClient,velvetClient,convoyClient,nitroClient,afterClient,memeClient,penaltyClient,draconaClient,neopolisClient,caribbeanClient,forestHeartClient)};},{lockKey:'account:'+account});}
+  async active(account:string,caramelClient=true,velvetClient=true,convoyClient=true,nitroClient=true,afterClient=true,memeClient=true,penaltyClient=true,draconaClient:boolean|2=2,neopolisClient:boolean|2|3|4=4,caribbeanClient=true,forestHeartClient=false){await this.ready;return this.db.transaction(async()=>{await this.settleOther(account);await this.crashDue(account,this.now());return {wallet:await this.snapshot(account),sessions:await this.sessions(account,caramelClient,velvetClient,convoyClient,nitroClient,afterClient,memeClient,penaltyClient,draconaClient,neopolisClient,caribbeanClient,forestHeartClient)};},{lockKey:'account:'+account});}
   async presentation(account:string,sessionId:unknown,phase:unknown,step:unknown):Promise<StudioSlotPresentation> {
     await this.ready;
     if(typeof sessionId!=='string'||!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(sessionId)||!Number.isSafeInteger(phase)||Number(phase)<1||Number(phase)>3||!Number.isSafeInteger(step)||Number(step)<0||Number(step)>2)throw new WalletError(400,'Некорректный запрос показа игры.');
@@ -199,7 +199,7 @@ export class DemoExpansionStore {
   private applyLuelon(s:ExpansionState,result:LuelonSlotResult){
     s.engine=undefined;s.state=result.ended?'settled':'active';s.view={...emptyView(),luelon:result.luelon,ended:result.ended,message:result.message,phase:result.luelon.revision+1,actions:result.actions};return {debit:0,credit:result.credit};
   }
-  async operate(account:string,value:unknown,clientRules:1|2=2,caramelClient=true,velvetClient=true,convoyClient=true,nitroClient=true,afterClient=true,afterProgressClient=true,memeClient=true,penaltyClient=true,draconaClient:boolean|2=2,neopolisClient:boolean|2|3=3,caribbeanClient=true,forestHeartClient=false){
+  async operate(account:string,value:unknown,clientRules:1|2=2,caramelClient=true,velvetClient=true,convoyClient=true,nitroClient=true,afterClient=true,afterProgressClient=true,memeClient=true,penaltyClient=true,draconaClient:boolean|2=2,neopolisClient:boolean|2|3|4=4,caribbeanClient=true,forestHeartClient=false){
     await this.ready;if(!validExpansionAction(value))throw new WalletError(400,'Некорректное действие казино.');
     const op=structuredClone(value),key=JSON.stringify(op);
     if(op.gameId===CARIBBEAN_GAME&&!caribbeanClient)throw new WalletError(409,'Обнови страницу для игры «Карибские сокровища». Ставка не списана.');
@@ -223,7 +223,7 @@ export class DemoExpansionStore {
         if(old.request_key!==key)throw new WalletError(409,'Нельзя изменить отправленный ход.');
         const row=await this.db.prepare('SELECT payload FROM demo_casino_sessions WHERE account_id=? AND id=?').get(account,old.session_id);
         const session=this.public(JSON.parse(row!.payload));
-        if(session.gameId===NEOPOLIS_GAME&&!supportsNeopolis(neopolisClient,session.rulesVersion))throw new WalletError(409,'Neopolis: refresh for the three-boss campaign');
+        if(session.gameId===NEOPOLIS_GAME&&!supportsNeopolis(neopolisClient,session.rulesVersion))throw new WalletError(409,'Neopolis: refresh for variable stakes');
         if(session.gameId===DRACONA_GAME&&!supportsDracona(draconaClient,session.rulesVersion))throw new WalletError(409,'Dracona: refresh for the current rules');
         return {wallet:await this.snapshot(account),session,sessions:await this.sessions(account,caramelClient,velvetClient,convoyClient,nitroClient,afterClient,memeClient,penaltyClient,draconaClient,neopolisClient,caribbeanClient,forestHeartClient),replayed:true};
       }
@@ -235,7 +235,7 @@ export class DemoExpansionStore {
       let s:ExpansionState,debit=0,credit=0;
       if(op.action==='start'){
         if(op.gameId===DRACONA_GAME&&draconaClient!==2)throw new WalletError(409,'Dracona: refresh for calibrated rules');
-        if(op.gameId===NEOPOLIS_GAME&&neopolisClient!==3)throw new WalletError(409,'Neopolis: refresh for the three-boss campaign');
+        if(op.gameId===NEOPOLIS_GAME&&neopolisClient!==4)throw new WalletError(409,'Neopolis: refresh for variable stakes');
         if(op.gameId===CARAMEL_GAME&&(!caramelClient||!validCaramelSettings(op.settings)))throw new WalletError(409,'Обнови страницу: доступна новая версия Caramel Carnival. Ставка не списана.');
         if(isLuelonSlotGame(op.gameId)&&!validLuelonSlotSettings(op.gameId,op.settings))throw new WalletError(409,'Обнови страницу: доступна новая версия слота. Ставка не списана.');
         if(expansionRulesVersion(op.gameId)>=2&&clientRules!==2)throw new WalletError(409,'Обнови страницу: правила этой игры исправлены. Ставка не списана.');

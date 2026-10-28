@@ -1,7 +1,7 @@
 import {test as base,expect,type Page} from '@playwright/test';
 import {Client} from '@colyseus/sdk';
 
-const game='studio-caribbean-treasures',out='artifacts/work/caribbean-reference-polish';
+const game='studio-caribbean-treasures',out='artifacts/work/caribbean-recorded-audio';
 const test=base.extend<{roomPath:string}>({roomPath:async({request},use)=>{
  const response=await request.post('/api/auth/login',{data:{email:`ct-room-${crypto.randomUUID()}@example.test`,password:'Royal-test-123!'}});
  expect(response.ok()).toBe(true);
@@ -43,6 +43,7 @@ async function open(page:Page){
  await page.locator(`[data-platform-game="${game}"]`).click();
  await expect(page.locator('#mini-game')).toHaveAttribute('data-game-module-id',game,{timeout:25000});
  await expect(page.locator('.ct-root')).toBeVisible();
+ await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState()?.audio?.ready),{timeout:20000}).toBe(true);
  await expect(page.locator('#mini-dialog #club-chat-dock')).toBeVisible();
  await expect(page.locator('#chat-input')).toBeInViewport();
 }
@@ -87,6 +88,7 @@ test('natural bonus, real host/chat, line presets and desktop/mobile layout',asy
  await page.locator('[data-ct-lines]').selectOption('5');await page.locator('[data-ct-stake]').selectOption('200');
  await expect(page.locator('[data-ct-action=play]')).toContainText('10');
  await page.locator('[data-ct-action=info]').click();await expect(page.locator('.ct-modal')).toBeVisible();
+ await expect(page.locator('.ct-audio-credits')).toContainText('Matthew Pablo');await expect(page.locator('.ct-audio-credits')).toContainText('CC BY 3.0');
  await page.locator('.ct-modal').press('Escape');await expect(page.locator('.ct-backdrop')).toBeHidden();await expect(page.locator('#mini-dialog')).toBeVisible();
  await page.locator('[data-ct-action=lines]').click();await expect(page.locator('.ct-paths polyline')).toHaveCount(5);
  const before=await wallet(page);await page.request.post('/__test/caribbean/force-bonus');const started=await action(page,'[data-ct-action=play]');
@@ -195,24 +197,49 @@ test('extreme stakes, rapid double click, mobile purchase and English recovery k
  expect((await session(page)).id).toBe(bought.id);await finish(page);await expect(page.locator('.ct-status')).toContainText(/round|Round/);
 });
 
-test('original maritime music and Foley render without clipping and end in silence',async({page})=>{
+test('recorded orchestral music and Foley render without clipping and end in silence',async({page})=>{
  await page.goto('/tests/fixtures/caribbean-audio.html');
  const rendered=await page.evaluate(async()=>{
   const offline=new OfflineAudioContext(1,44100*19,44100);let clock=0;const output=offline.createGain();output.connect(offline.destination);
   const context=new Proxy(offline,{get(target,key){if(key==='state')return'running';if(key==='currentTime')return clock;if(key==='getOutputTimestamp')return()=>({contextTime:0,performanceTime:0});const v=Reflect.get(target,key,target);return typeof v==='function'?v.bind(target):v;}});
   const prefs={muted:false,volume:1};(globalThis as any)[Symbol.for('royal.game-host.v1')]={apiVersion:1,gameAudio:{context,output,getPreferences:()=>prefs,onPreferences:()=>()=>{},unlock:async()=>{}}};
-  const path='/games/caribbean-treasures/CaribbeanAudio.ts';const {CaribbeanAudio}=await import(/* @vite-ignore */path);const audio=new CaribbeanAudio();audio.setMusic(true);await audio.enter(false);
-  for(let tick=0;tick<48;tick++)audio.scoreStep(tick,.06+tick*.26);
+  const path='/games/caribbean-treasures/CaribbeanAudio.ts';const {CaribbeanAudio}=await import(/* @vite-ignore */path);const audio=new CaribbeanAudio();audio.setMusic(true);await audio.enter();
   const events:[number,string,number?][]=[[1,'click'],...[0,1,2,3,4,5].map(i=>[2+i*.15,'stop',i] as [number,string,number]),[4,'giant'],[5,'cannon'],[6,'line'],[7,'bonus'],[10,'partial'],[11,'return'],[13,'win'],[16,'bigwin']];
   for(const [time,cue,variant] of events){clock=time;audio.cue(cue,variant);}
+  clock=14;audio.setMusic(false);
   const buffer=await offline.startRendering(),samples=buffer.getChannelData(0);let peak=0,step=0,sum=0,tail=0;
   const bytes=new Uint8Array(44+samples.length*2),view=new DataView(bytes.buffer),word=(at:number,text:string)=>{for(let i=0;i<text.length;i++)bytes[at+i]=text.charCodeAt(i);};
   word(0,'RIFF');view.setUint32(4,bytes.length-8,true);word(8,'WAVE');word(12,'fmt ');view.setUint32(16,16,true);view.setUint16(20,1,true);view.setUint16(22,1,true);view.setUint32(24,44100,true);view.setUint32(28,88200,true);view.setUint16(32,2,true);view.setUint16(34,16,true);word(36,'data');view.setUint32(40,samples.length*2,true);
   for(let i=0;i<samples.length;i++){peak=Math.max(peak,Math.abs(samples[i]));sum+=samples[i]*samples[i];if(i)step=Math.max(step,Math.abs(samples[i]-samples[i-1]));if(i>samples.length-4410)tail=Math.max(tail,Math.abs(samples[i]));view.setInt16(44+i*2,Math.round(Math.max(-1,Math.min(1,samples[i]))*32767),true);}
   let encoded='';for(let i=0;i<bytes.length;i+=8192)encoded+=String.fromCharCode(...bytes.subarray(i,i+8192));
-  return{peak,rms:Math.sqrt(sum/samples.length),maxSampleStep:step,tail,wav:btoa(encoded)};
+  return{peak,rms:Math.sqrt(sum/samples.length),maxSampleStep:step,tail,samples:audio.state().samples,ready:audio.state().ready,wav:btoa(encoded)};
  });
  const {writeFile}=await import('node:fs/promises');await writeFile(out+'/sound-preview.wav',Buffer.from(rendered.wav,'base64'));
  await writeFile(out+'/audio-measurements.json',JSON.stringify({...rendered,wav:undefined},null,2));
- expect(rendered.peak).toBeGreaterThan(.001);expect(rendered.peak).toBeLessThan(.9);expect(rendered.maxSampleStep).toBeLessThan(.05);expect(rendered.tail).toBeLessThan(.0001);
+ expect(rendered.ready).toBe(true);expect(rendered.samples.music).toBe(1);expect(rendered.samples.cannon).toBe(1);
+ // Two reel stops use each take; the neutral partial-return cue adds one wood settling sound.
+ expect(rendered.samples['stop-a']).toBe(3);for(const id of ['stop-b','stop-c'])expect(rendered.samples[id]).toBe(2);
+ expect(rendered.peak).toBeGreaterThan(.001);expect(rendered.peak).toBeLessThan(.9);expect(rendered.tail).toBeLessThan(.0001);
+});
+
+test('sample loading can fail and retry, and late decode after close cannot restart audio',async({page})=>{
+ await page.goto('/tests/fixtures/caribbean-audio.html');
+ await page.route('**/caribbean-treasures/audio/manifest.json',r=>r.fulfill({status:503,body:'unavailable'}));
+ const failed=await page.evaluate(async()=>{
+  const c=new OfflineAudioContext(1,44100,44100),out=c.createGain();out.connect(c.destination);
+  const ctx=new Proxy(c,{get(target,key){if(key==='state')return'running';const v=Reflect.get(target,key,target);return typeof v==='function'?v.bind(target):v;}});
+  (globalThis as any)[Symbol.for('royal.game-host.v1')]={apiVersion:1,gameAudio:{context:ctx,output:out,getPreferences:()=>({muted:false,volume:1}),onPreferences:()=>()=>{},unlock:async()=>{}}};
+  const path='/games/caribbean-treasures/CaribbeanAudio.ts';const {CaribbeanAudio}=await import(/* @vite-ignore */path);const a=(window as any).__ctAudio=new CaribbeanAudio();await a.enter();a.cue('bigwin');return a.state();
+ });
+ expect(failed.ready).toBe(false);expect(failed.loadError).not.toBe('');expect(failed.counts).toEqual({});expect(failed.activeSources).toBe(0);
+ await page.unroute('**/caribbean-treasures/audio/manifest.json');
+ expect(await page.evaluate(async()=>{const a=(window as any).__ctAudio;await a.enter();const ready=a.state().ready;a.destroy();return ready;})).toBe(true);
+ const closed=await page.evaluate(async()=>{
+  let decoding=0;const c=new OfflineAudioContext(1,44100,44100),out=c.createGain();out.connect(c.destination);
+  const ctx=new Proxy(c,{get(target,key){if(key==='state')return'running';if(key==='decodeAudioData')return async(bytes:ArrayBuffer)=>{decoding++;await new Promise(r=>setTimeout(r,200));return target.decodeAudioData(bytes);};const v=Reflect.get(target,key,target);return typeof v==='function'?v.bind(target):v;}});
+  (globalThis as any)[Symbol.for('royal.game-host.v1')].gameAudio={context:ctx,output:out,getPreferences:()=>({muted:false,volume:1}),onPreferences:()=>()=>{},unlock:async()=>{}};
+  const path='/games/caribbean-treasures/CaribbeanAudio.ts';const {CaribbeanAudio}=await import(/* @vite-ignore */path);const a=new CaribbeanAudio(),enter=a.enter();
+  for(let i=0;i<200&&decoding===0;i++)await new Promise(r=>setTimeout(r,10));if(!decoding)throw Error('Decode did not start');a.destroy();await enter;await new Promise(r=>setTimeout(r,250));return a.state();
+ });
+ expect(closed.activeSources).toBe(0);expect(closed.ownedGraphs).toBe(0);expect(closed.music).toBe(false);expect(closed.counts).toEqual({});expect(closed.loadedClips).toBe(0);
 });

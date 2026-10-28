@@ -69,6 +69,30 @@ test('Russian and English modules fit desktop and phone, with localized rules an
   expect(errors).toEqual([]);
 });
 
+test('stake changes between paid spins keep the team and hero, and restored play uses the new stake', async ({ page }) => {
+  await ready(page, 'ru');
+  await page.locator('[data-hero=prism]').click();
+  await page.locator('[data-np=bet]').selectOption('10');
+  const first = await spin(page);
+  expect(first.state).toBe('settled');
+  await expect(page.locator('[data-np=bet]')).toBeEnabled();
+  await expect(page.locator('[data-hero=granite]')).toBeDisabled();
+  await expect(page.locator('[data-np=lock]')).toContainText('Ставку можно менять');
+  await page.locator('[data-np=bet]').selectOption('500');
+  const raised = await spin(page);
+  expect(raised.stakeUnits).toBe('50000');
+  expect(raised.view.neopolis.origin).toEqual(first.view.neopolis.team);
+  expect(raised.view.neopolis.origin.starter).toBe('prism');
+  await page.evaluate(() => (window as any).neopolisPreview.close());
+  await page.evaluate(() => (window as any).neopolisPreview.open());
+  await expect(page.locator('[data-np=bet]')).toHaveValue('500');
+  await expect(page.locator('[data-np=bet]')).toBeEnabled();
+  await page.locator('[data-np=bet]').selectOption('20');
+  const lowered = await spin(page);
+  expect(lowered.stakeUnits).toBe('2000');
+  expect(lowered.view.neopolis.origin).toEqual(raised.view.neopolis.team);
+});
+
 test('autoplay runs exactly ten paid starts and keeps every accepted operation unique', async ({ page }) => {
   await ready(page, 'ru'); await page.locator('[data-np=fast]').check();
   const operations: any[] = [];
@@ -166,20 +190,30 @@ test('real API retries a lost result once, restores collection and bonus, and se
   const collected = (await state(page)).team;
   await page.getByRole('button', { name: 'Reopen game' }).click();
   await expect(page.locator('[data-np=spin]')).toBeEnabled(); expect((await state(page)).team).toEqual(collected);
-  await expect(page.locator('[data-np=bet]')).toBeDisabled();
+  await expect(page.locator('[data-np=bet]')).toBeEnabled();
+  await page.locator('[data-np=bet]').selectOption('20');
   let current = await session(page);
   for (let attempt = 0; current.state !== 'active' && attempt < 75; attempt++) current = await spin(page);
   expect(current.state).toBe('active'); expect(current.view.neopolis.battle.remaining).toBe(10);
+  await expect(page.locator('[data-np=bet]')).toBeDisabled();
+  await expect(page.locator('[data-np=bet]')).toHaveValue('20');
+  await page.locator('[data-np=bet]').evaluate((select: HTMLSelectElement) => { select.value = '500'; select.dispatchEvent(new Event('change', { bubbles: true })); });
+  await expect(page.locator('[data-np=bet]')).toHaveValue('20');
+  await closeNotice(page);
+  await page.locator('[data-np=rules]').click(); await expect(page.locator('.np-dialog h3')).toContainText('current bonus');
+  await closeNotice(page);
   await page.screenshot({ path: 'test-results/neopolis/review/bonus-start-en.png', fullPage: true });
   await closeNotice(page);
   const battleId = current.id;
   const balanceBefore = await page.evaluate(() => (window as any).neopolisPreview.wallet.wallet.balance);
-  current = await spin(page); expect(current.id).toBe(battleId); expect(current.spentUnits).toBe('10000');
+  current = await spin(page); expect(current.id).toBe(battleId); expect(current.spentUnits).toBe('2000');
   expect(await page.evaluate(() => (window as any).neopolisPreview.wallet.wallet.balance)).toBe(balanceBefore);
   const revision = current.view.neopolis.revision;
   await page.reload(); await expect(page.locator('[data-np=spin]')).toBeEnabled();
   expect((await state(page)).revision).toBe(revision);
   expect((await session(page)).id).toBe(battleId);
+  await expect(page.locator('[data-np=bet]')).toBeDisabled();
+  await expect(page.locator('[data-np=bet]')).toHaveValue('20');
   while (current.state === 'active') { await closeNotice(page); current = await spin(page); }
   expect(current.view.neopolis.team.complete).toBe(true); expect(current.view.neopolis.revision).toBeLessThanOrEqual(46);
   const finalBalance = await page.evaluate(() => (window as any).neopolisPreview.wallet.wallet.balance);
@@ -263,7 +297,7 @@ test('Dracona displays fractional payouts and restores its complete bonus withou
   await expect(game.locator('#spin')).toBeEnabled();expect((await getSession()).view.dracona.revision).toBe(revision);
   await game.locator('#speed').selectOption('turbo');
   while(current.state==='active'){
-    current=await play();expect(current.spentUnits).toBe('10000');
+    current=await play();expect(current.spentUnits).toBe('2000');
     if(current.state==='active')expect(await page.evaluate(()=>(window as any).neopolisPreview.wallet.wallet.balance)).toBe(balance);
   }
   expect(current.view.dracona.version).toBe(2);expect(current.view.dracona.freePlayed).toBeLessThanOrEqual(20);
@@ -405,7 +439,7 @@ test('three real campaign bosses change arenas and costumes, survive reload and 
         await page.setViewportSize({width:1440,height:1000});
       }
       await closeNotice(page); current = await spin(page);
-      expect(current.id).toBe(bonusId); expect(current.spentUnits).toBe('10000');
+      expect(current.id).toBe(bonusId); expect(current.spentUnits).toBe('2000');
       if (current.state === 'active') expect(await page.evaluate(() => (window as any).neopolisPreview.wallet.wallet.balance)).toBe(bonusBalance);
     }
     const final = await page.evaluate(() => (window as any).neopolisPreview.wallet.wallet.balance);

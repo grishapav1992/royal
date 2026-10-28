@@ -1,0 +1,839 @@
+{
+  "release": "neopolis-variable-stake-20261028-v1",
+  "verifiedAt": "2026-10-28T12:21:43.475299+00:00",
+  "published": true,
+  "url": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "applicationSource": "9acf3686965fedc0c81efaaa6f740e30d4fef175",
+  "baseProductionSource": "583ff906ddc4420ec88bb40e01d9607450b6d828",
+  "featureSource": "0309246e159053eccc77def226379e2c9ebb3330",
+  "github": {
+    "sourcePresentInMainBeforePublication": true,
+    "mainBeforePublication": "9a075a38",
+    "verifiedReleaseManifest": true,
+    "metadataRepairSource": "1ff5d2a533b02b0df53f9122dbfb3eaa191c409d"
+  },
+  "behavior": {
+    "stakesBetweenPaidSpins": [
+      10,
+      20,
+      50,
+      100,
+      200,
+      500
+    ],
+    "teamPreserved": true,
+    "starterSelectionUnchanged": true,
+    "starterRemainsLockedForCollectionCycle": true,
+    "bonusStakeAndPayoutScaleFixedByAcceptedPaidRound": true,
+    "stakeDisabledDuringAnimationBonusPendingOrAutoplay": true,
+    "autoplayAndResponsiveLayoutRetained": true
+  },
+  "module": {
+    "gameId": "studio-neopolis",
+    "version": "0.5.0-d06ece4da7b2",
+    "manifestSha256": "5d88d733e4bda590a366b4e8dd6c2676e4963d2f08b9a9d2ace1b8a7cf5aa92a",
+    "contract": {
+      "apiVersion": 1,
+      "rulesVersion": 4,
+      "progressVersion": 4
+    }
+  },
+  "images": {
+    "game": "sha256:6e58848fd2d38de5c569a7ad3cce9cbdd8f247c1566614378c0d3e21e37e0528",
+    "finance": "sha256:2b1914f82575d6e09dda80f44c508565ed90b7e961d5c575c18a1a5e0b311246"
+  },
+  "validation": {
+    "featureCommit": "0309246e159053eccc77def226379e2c9ebb3330",
+    "qualified": true,
+    "rtpProfiles": 12,
+    "legacyFrozenModules": 114,
+    "serverReplayCases": 18432,
+    "conditionalPaidRounds": 69000000,
+    "regenerativeCycles": 180000,
+    "regenerativePaidRounds": 22797392,
+    "mathAndCatalogueTests": 15,
+    "walletAndFinancialTests": 58,
+    "adjacentCompatibilityTests": 26,
+    "rtpGateTests": 19,
+    "browserScenarios": 7,
+    "actualHostScenarios": 1,
+    "hostSizes": [
+      "1920x1080",
+      "1440x756",
+      "1366x768",
+      "1024x768",
+      "900x900",
+      "390x844",
+      "360x740",
+      "844x390"
+    ],
+    "publisherGuardTests": 10,
+    "financialLeaseTests": 27,
+    "quiescenceTests": 39,
+    "fullBuild": true,
+    "legacyRulesUnchanged": [
+      1,
+      2,
+      3
+    ],
+    "heroSelectionPreserved": true,
+    "sharedCaribbeanExactEvidenceUnchanged": true,
+    "productionCompositionBuild": true,
+    "productionCompositionRtpProfiles": 10,
+    "productionCompositionTests": 32,
+    "productionCompositionGateTests": 12,
+    "compiledHostScenario": true,
+    "compiledHostStakeChangedAndRestored": true,
+    "exactFinancialCompositionTests": {
+      "passed": 26,
+      "failed": 0,
+      "retainedExistingInputs": 13
+    }
+  },
+  "qualification": {
+    "method": "neopolis-variable-stake-conditional-v4",
+    "proof": "docs/game-math/qualifications/neopolis-v4.json",
+    "proofSha256": "d29ff309028d544f449642d71399e546c85c89c64b7573ef2392f94a9ce0552d",
+    "completedAt": "2026-10-28T10:30:13.176Z",
+    "fixedCases": 18,
+    "conditionalCases": 288,
+    "adaptiveCases": 72,
+    "analysis": "Independent conditional rounds cover every public team state and every allowed stake. Complete regenerative cycles separately check fixed and adaptive stakes, all bonus continuations, exact integer settlement and the round cap. Different stakes and policies share entropy; their evidence must not be pooled. The interval95 fields use two-sided 97.5% normal intervals for a conservative two-look plan. Intervals are per case, not a simultaneous proof or exact analytical RTP.",
+    "firstLookFailedEvidenceRetained": true,
+    "oneFixedExtensionDeclaredBeforeFinalRunAfterFailedFirstLook": true,
+    "noBudgetRelaxation": true,
+    "newPayoutsOnlyForRules4": true,
+    "rollbackMustRetainV4CompletionSupportInHostAndFinance": true,
+    "acceptedRules123Preserved": true
+  },
+  "installation": {
+    "guarded": true,
+    "publicationLocks": 3,
+    "sourceDelta": {
+      "docs/game-math/neopolis-v4-calibration.json": "6fdf20b0b55df211e6a2d2d0b08511433b66d9cd83ec9fd830dd27bf4cc92b8f",
+      "docs/game-math/neopolis-v4-variable-stakes.md": "63dd551347a06a55a9e01c032dca95eb046757108d2ff7d914457eb3c48c6b6f",
+      "docs/game-math/neopolis-variable-stake-v3-audit-20261028.json": "ea27b2baac5dac27dafc6beb595c42af74592bb01bbab864aae8887d9a1196ae",
+      "docs/game-math/qualification.md": "e4d993e970cc202066adc03c8b8d06edfe638917f85085243ff3f86bcab158e5",
+      "docs/game-math/qualifications/neopolis-v4-first-look-failed.json": "7b167d2bb492ccb66a6ff37f57d4315dfe4103267744566de7aaa73b76211012",
+      "docs/game-math/qualifications/neopolis-v4.json": "d29ff309028d544f449642d71399e546c85c89c64b7573ef2392f94a9ce0552d",
+      "games/neopolis/NeopolisUI.ts": "f4814b9e89a485d7eeb39c17317d20c981fee4ec02ac5c4a8532c1c8366f7948",
+      "games/neopolis/README.md": "0ad29ca751645683fadd58c9f45844445e0fe8e838d69234df172ad2263abaa7",
+      "games/neopolis/copy.ts": "35628773152015d9bad9b5f802c347c4f36406e6531ffb28d9bcb8166e657ca0",
+      "games/neopolis/entry.ts": "f9be4377bfadcec80afe230a25814e72dbdc2c99f673c7aa63debc27e70ac39b",
+      "games/neopolis/package.json": "e65cadbd69b25ddbeeb02e82c625c941666a6f2387cebc45c85ac89ce4b20087",
+      "scripts/game-math/calibrate-neopolis-stakes.mjs": "cb3e10486bd01383cb449b90e65efd90836196122ae70a12f09075ee95b21024",
+      "scripts/game-math/neopolis-variable-stake-audit.mjs": "e010b71ccc1caedfd200c9300f5767fcabab96b3f85126b5ae45129c86785a0d",
+      "scripts/game-math/rtp-gate.mjs": "fa67289e7928e214fd8ffc6d08967e2fcffa83b97ac2d4a429b01e2e4b37094b",
+      "scripts/game-math/rtp-neopolis-v4.mjs": "7193ef28126d87448bf42cc0bf6b2c6cb5655d77e20dda53b6543564ef5af388",
+      "scripts/game-math/rtp-policy.json": "d129617ff717b3eac78c5fab25f15bd77432c49f95f54db01398ab287fa77e0f",
+      "scripts/neopolis-preview.ts": "4238f607e8185484172c54ff03a27192f53e309eec8d7d0d547737330803706d",
+      "scripts/qualify-game-rtp.mjs": "27eb36c4e1e3265e98e4713da784b27e77d750618ef0cbc6c69fdb6c5e8c21ba",
+      "server/demoExpansion.ts": "6b154c0175abac62d7926190e052b94e36b450330c7b68cd1c15a32c507396ca",
+      "server/demoWalletRoutes.ts": "99d416e11446583297fb2477f1419a4da4eefa44ba785af2c1f1ac190006af03",
+      "server/finance/nile-game-runtime.ts": "ee3cbdb4c2531b4c7f1627c7bd7aeabfc6520289fdf69fef1c1fb51775e65513",
+      "server/gameWalletRoutes.ts": "4769f46e8f1766bb94484e4eca23454bc62c802031b9fa6acfe94f2bda8f4e80",
+      "server/games/neopolis.ts": "d8e3a0ac628636293f3317ac61de6ce83054c8b41985fcc8886e78c71e5dfad3",
+      "src/modules/GameModuleCatalog.ts": "fba3542e1341faaf462b6ac67149889145c16235e914af884fe9ae96a5f2fe06",
+      "src/shared/casinoExpansion.ts": "95767224829b868de0f401c0fc759e0876678894ae9e8cdf3cdedb7bcaa7dc28",
+      "src/shared/neopolis.ts": "e686a82b272bbfc15f9bd88193f095233490564fbbe8f594893cac101c57c6d1",
+      "src/shared/neopolisMath.ts": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
+      "src/shared/neopolisMathV3.ts": "e32db65f28cb4cac308d07154fb56f7816fc630c82a7548e1733ad34e0a91820",
+      "src/shared/neopolisStakePayouts.ts": "8a5b1ce043a5e3341148412c422561aa38c9de04e2fdb01989bb0c384157ecae",
+      "src/wallet/ExpansionClient.ts": "ed8661d23334e16643ab8bb2c268aaeffcbd34a658077ec9a83be904b821589f"
+    },
+    "financialSourceDelta": {
+      "server/finance/nile-game-runtime.ts": "ee3cbdb4c2531b4c7f1627c7bd7aeabfc6520289fdf69fef1c1fb51775e65513",
+      "server/demoExpansion.ts": "6b154c0175abac62d7926190e052b94e36b450330c7b68cd1c15a32c507396ca",
+      "src/shared/casinoExpansion.ts": "95767224829b868de0f401c0fc759e0876678894ae9e8cdf3cdedb7bcaa7dc28",
+      "src/shared/neopolis.ts": "e686a82b272bbfc15f9bd88193f095233490564fbbe8f594893cac101c57c6d1",
+      "server/games/neopolis.ts": "d8e3a0ac628636293f3317ac61de6ce83054c8b41985fcc8886e78c71e5dfad3",
+      "src/shared/neopolisMath.ts": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
+      "src/shared/neopolisMathV3.ts": "e32db65f28cb4cac308d07154fb56f7816fc630c82a7548e1733ad34e0a91820",
+      "src/shared/neopolisStakePayouts.ts": "8a5b1ce043a5e3341148412c422561aa38c9de04e2fdb01989bb0c384157ecae"
+    },
+    "retainedFinancialInputs": {
+      "server/finance/nile-play-ledger.ts": {
+        "commit": "0d44d0ff293d9c69d840da4fba03a8d5546c9654",
+        "sha256": "917cc17f4e9dd93704701b44ba04ac76c727243d67ff5767ac28ab5fab63b9b8"
+      },
+      "server/finance/nile-play-service.ts": {
+        "commit": "78cb1ccd53c64c08e2df836f9d14a9eb3926f1be",
+        "sha256": "08077aeedb3df7068661efc9f28dd10c41ac81d48d13492cef71de9ed8998ee6"
+      },
+      "server/demoWallet.ts": {
+        "commit": "763dab49ac862757daee232e4d1290de31124bf4",
+        "sha256": "4e5f4bf3b57e049413ecc7bd5f4e42cb7ff1ffd6009f225cef5490400a538980"
+      },
+      "server/pvp/store.ts": {
+        "commit": "c4414e69fdbf115fc05c8c2ada11478769573ddd",
+        "sha256": "23deed253a3bcbcfdaf5493bbb8d3208331ba22664e09e70bf97559e9cc46852"
+      },
+      "server/demoWalletAmounts.ts": {
+        "commit": "763dab49ac862757daee232e4d1290de31124bf4",
+        "sha256": "7c4bd3aa01d007d7cd3cae614aeda123df5000ee12603c7c1c8a332f4fed7e01"
+      },
+      "src/shared/skinStudio.ts": {
+        "commit": "763dab49ac862757daee232e4d1290de31124bf4",
+        "sha256": "b60220a94b33e5618d42d3f2dc37496adeeeabbe21939652362bf84601d13a19"
+      },
+      "src/shared/pvp.ts": {
+        "commit": "c4414e69fdbf115fc05c8c2ada11478769573ddd",
+        "sha256": "5940a05dc30857ee376a8f4969d6015217b8c71f9f2790763021af8971507695"
+      },
+      "server/admin/report.ts": {
+        "commit": "78cb1ccd53c64c08e2df836f9d14a9eb3926f1be",
+        "sha256": "305ef583527e580ab810e126a5515e22bdd9c630dbfdf959819ae19762309ff5"
+      },
+      "server/finance/pvp-money.ts": {
+        "commit": "c4414e69fdbf115fc05c8c2ada11478769573ddd",
+        "sha256": "132c386abbcae222ea4a9d258a59d1ac5ff4de022b7e5e1c9c647c6c11f2b6d9"
+      },
+      "server/demoMines.ts": {
+        "commit": "5745dbe90332ff2234ab8d6402347ed2228a0e1d",
+        "sha256": "fc222d7f79b495a0d35542a27a8309f26ce02a5acb6948a1dfe179a391f5d7b6"
+      },
+      "src/shared/arcadeCatalog.ts": {
+        "commit": "b8c2afa1c88e5ef0498ca35f67a6bc5b8c4f84e8",
+        "sha256": "197cbd788e120f0f8b24d4fecdd5ce0f2a0de18d45ed1e1c8f29009f7ab13ea6"
+      },
+      "server/admin/nileGamesReport.ts": {
+        "commit": "78cb1ccd53c64c08e2df836f9d14a9eb3926f1be",
+        "sha256": "b5d2542905f40339e25835b4ec158b61fef7efd55fd236541fa0e2f088944c56"
+      },
+      "src/shared/luelonSlotsLines.ts": {
+        "commit": "6ea6b2a20276d03561b16bc6290ce832c8ffc3cb",
+        "sha256": "9629a12c51eee2850887a7a4cad31015aabb4be1b395799c4801ee9b016cf557"
+      }
+    },
+    "walletAuditPassed": true,
+    "financialHealth": {
+      "ok": true,
+      "ready": true,
+      "testOnly": true,
+      "at": 1793188953.58405
+    },
+    "configurationPreserved": true,
+    "playerDatabaseRestored": false,
+    "oldModulesRetained": true,
+    "otherServicesRetained": true,
+    "applicationRuntimeBeforeFiles": 8192,
+    "applicationRuntimeAfterFiles": 8207,
+    "applicationSourceBeforeFiles": 1939,
+    "applicationSourceAfterFiles": 1949,
+    "financialSourceBeforeFiles": 197,
+    "financialSourceAfterFiles": 199,
+    "externalModuleBeforeFiles": 2078,
+    "externalModuleAfterFiles": 2092,
+    "firstAttempt": {
+      "reason": "one-off job ended during inspect",
+      "sourceCommit": "18bae45d2699f40dcf419c493f39f86ae3486255",
+      "exit": {
+        "sourceCommit": "18bae45d2699f40dcf419c493f39f86ae3486255",
+        "exitCode": 1,
+        "endedAt": "2026-10-28T11:35:56.326792+00:00"
+      },
+      "beforeMutation": true,
+      "protectedGameAndFinanceContainersUnchanged": true,
+      "manifestSha256": "7ba885d67c7594d48c113a1b3366c907415b835c451cf59957f391a0b19d2fe8"
+    },
+    "installerExitCode": 0,
+    "installerEndedAt": "2026-10-28T12:10:06.226915+00:00"
+  },
+  "backups": {
+    "serverFolder": "/opt/royal-backups/neopolis-variable-stake-20261028-v1",
+    "files": {
+      "source.tgz": {
+        "bytes": 192862637,
+        "sha256": "cecb40884d3a33d5ef3a3acc08e04c977e6ecf3b886bf424c8cfde52848a9797"
+      },
+      "financial-source.tgz": {
+        "bytes": 504791,
+        "sha256": "4b082534b0bc9142886c8f6c8fc3d662aef13660be4dbef5c866513cacd3cd8d"
+      },
+      "nile-play.dump": {
+        "bytes": 94003,
+        "sha256": "be1ef53aa63fa4ce58d711cc2efb1f7f3e8e2aeb5059b281c92d51573da13104",
+        "archiveEntries": 178
+      }
+    },
+    "oldGameImage": "sha256:d275ba35b1286dcffeca9dace0ddaa165a974d44d50a4251696e98aa56306e8e",
+    "oldFinanceImage": "sha256:d0664eee6f105b040a79f6c87a8f7328728e16354e6bf8d7ae785d1c96c58788",
+    "preservedPersistentData": true
+  },
+  "publicVerification": {
+    "at": "2026-10-28T12:13:25.087Z",
+    "origin": "https://stealth-spark-gokmxooi.expresshost.cloud",
+    "sourceCommit": "9acf3686965fedc0c81efaaa6f740e30d4fef175",
+    "health": {
+      "ok": true,
+      "service": "royal-arcade"
+    },
+    "walletUnauthenticatedStatus": 401,
+    "retiredWalletStatus": 410,
+    "indexSha256": "ba7aac723fe0c60e457c55350479f3a6d96e1b409d3fe453c361fe739620ed64",
+    "active": {
+      "format": 1,
+      "gameId": "studio-neopolis",
+      "manifest": "/game-modules/studio-neopolis/versions/0.5.0-d06ece4da7b2/manifest.json",
+      "sha256": "5d88d733e4bda590a366b4e8dd6c2676e4963d2f08b9a9d2ace1b8a7cf5aa92a"
+    },
+    "checkedFiles": [
+      {
+        "path": "/assets/main-BhnhDBsX.js",
+        "sha256": "e90328a4c59497742235f252dcbdae9c1252dde4da5e67ddb7597f759711e486",
+        "kind": "host",
+        "bytes": 2633748,
+        "status": 200
+      },
+      {
+        "path": "/game-modules/studio-neopolis/versions/0.4.0-ba3c9e5df896/entry-aa56b661bb6fa440.js",
+        "sha256": "aa56b661bb6fa4403667cd49edff3bbc543861abfb5fca1c5159dda3811c43ed",
+        "kind": "previous-neopolis",
+        "bytes": 87416,
+        "status": 200
+      },
+      {
+        "path": "/game-modules/studio-neopolis/versions/0.4.0-ba3c9e5df896/manifest.json",
+        "sha256": "f64d70928f589f1431eef56f000eae1e34bed0c6a45908a5d7af1af9f99ae2a3",
+        "kind": "previous-neopolis",
+        "bytes": 2123,
+        "status": 200
+      },
+      {
+        "path": "/game-modules/studio-neopolis/versions/0.4.0-ba3c9e5df896/media/neopolis/aeon-v3.webp",
+        "sha256": "8f8bd9ce3af3ed83b753f0c8411256c053f4c3b3f2d9d6e899c89e64f1fc3650",
+        "kind": "previous-neopolis",
+        "bytes": 563132,
+        "status": 200
+      },
+      {
+        "path": "/game-modules/studio-neopolis/versions/0.4.0-ba3c9e5df896/media/neopolis/citadel-v3.webp",
+        "sha256": "504b0ae69957870d862057822e23fb902c35db3cddba72edb6be1f45f0a935d0",
+        "kind": "previous-neopolis",
+        "bytes": 568212,
+        "status": 200
+      },
+      {
+        "path": "/game-modules/studio-neopolis/versions/0.4.0-ba3c9e5df896/media/neopolis/city-v2.webp",
+        "sha256": "b741579a1aac129c4b4bae3b13aff90f094ab59cf4b3e3a3116796d45e2f5e2c",
+        "kind": "previous-neopolis",
+        "bytes": 545326,
+        "status": 200
+      },
+      {
+        "path": "/game-modules/studio-neopolis/versions/0.4.0-ba3c9e5df896/media/neopolis/cover-v2.webp",
+        "sha256": "f01a85fb9a90b93dd46b184982e9469967d33f6541d64141b6f74ebffea75173",
+        "kind": "previous-neopolis",
+        "bytes": 800278,
+        "status": 200
+      },
+      {
+        "path": "/game-modules/studio-neopolis/versions/0.4.0-ba3c9e5df896/media/neopolis/null-v2.webp",
+        "sha256": "b2975fa847149ba0a8c872e3e1244b7afa604b665704c47d1945d6e1fbadf6f7",
+        "kind": "previous-neopolis",
+        "bytes": 420834,
+        "status": 200
+      },
+      {
+        "path": "/game-modules/studio-neopolis/versions/0.4.0-ba3c9e5df896/media/neopolis/observatory-v3.webp",
+        "sha256": "3acc713c6d2faabd2bc8dc1475333e67cb0ee45b06ffb4a399835ae1f8d710a4",
+        "kind": "previous-neopolis",
+        "bytes": 709752,
+        "status": 200
+      },
+      {
+        "path": "/game-modules/studio-neopolis/versions/0.4.0-ba3c9e5df896/media/neopolis/symbols-v2.webp",
+        "sha256": "cba250836b02bce6facc37388384c1a3ef4a36dbb9d9bbd4de1010c9b44f32e5",
+        "kind": "previous-neopolis",
+        "bytes": 428008,
+        "status": 200
+      },
+      {
+        "path": "/game-modules/studio-neopolis/versions/0.4.0-ba3c9e5df896/media/neopolis/team-chrono-v3.webp",
+        "sha256": "6a3506f93516cb86c2fd0727fd7fb555995b0974b8acc51f0df18b4991d0021a",
+        "kind": "previous-neopolis",
+        "bytes": 490136,
+        "status": 200
+      },
+      {
+        "path": "/game-modules/studio-neopolis/versions/0.4.0-ba3c9e5df896/media/neopolis/team-eclipse-v3.webp",
+        "sha256": "6e83a392682833eb83aa6e242269cf87fc7a4ee2ddfa2f082c28970e695e7ac5",
+        "kind": "previous-neopolis",
+        "bytes": 514382,
+        "status": 200
+      },
+      {
+        "path": "/game-modules/studio-neopolis/versions/0.4.0-ba3c9e5df896/media/neopolis/team-night-v3.webp",
+        "sha256": "3acdaa2872921d4b4b22ba6b24cc2c863c9f023ef729038878408b9e7a723c59",
+        "kind": "previous-neopolis",
+        "bytes": 498496,
+        "status": 200
+      },
+      {
+        "path": "/game-modules/studio-neopolis/versions/0.4.0-ba3c9e5df896/media/neopolis/vespera-v3.webp",
+        "sha256": "d0c56f5578c6916c57d64d7aa9c66dbfa3cc3f58c292e78cc28403655b6ffdfb",
+        "kind": "previous-neopolis",
+        "bytes": 362622,
+        "status": 200
+      },
+      {
+        "path": "/game-modules/studio-neopolis/versions/0.4.0-ba3c9e5df896/style-6b44c76dc34f04e9.css",
+        "sha256": "6b44c76dc34f04e99e8626282b249471d965f2a5caf7623db17a842949fd17a2",
+        "kind": "previous-neopolis",
+        "bytes": 41138,
+        "status": 200
+      },
+      {
+        "path": "/game-modules/studio-neopolis/versions/0.5.0-d06ece4da7b2/entry-72e4a4d9c35f0fd0.js",
+        "sha256": "72e4a4d9c35f0fd065aec99a81655fcef60dcf93ca835b601ffb06fc5164bb83",
+        "kind": "new-neopolis",
+        "bytes": 91516,
+        "status": 200
+      },
+      {
+        "path": "/game-modules/studio-neopolis/versions/0.5.0-d06ece4da7b2/manifest.json",
+        "sha256": "5d88d733e4bda590a366b4e8dd6c2676e4963d2f08b9a9d2ace1b8a7cf5aa92a",
+        "kind": "new-neopolis",
+        "bytes": 2123,
+        "status": 200
+      },
+      {
+        "path": "/game-modules/studio-neopolis/versions/0.5.0-d06ece4da7b2/media/neopolis/aeon-v3.webp",
+        "sha256": "8f8bd9ce3af3ed83b753f0c8411256c053f4c3b3f2d9d6e899c89e64f1fc3650",
+        "kind": "new-neopolis",
+        "bytes": 563132,
+        "status": 200
+      },
+      {
+        "path": "/game-modules/studio-neopolis/versions/0.5.0-d06ece4da7b2/media/neopolis/citadel-v3.webp",
+        "sha256": "504b0ae69957870d862057822e23fb902c35db3cddba72edb6be1f45f0a935d0",
+        "kind": "new-neopolis",
+        "bytes": 568212,
+        "status": 200
+      },
+      {
+        "path": "/game-modules/studio-neopolis/versions/0.5.0-d06ece4da7b2/media/neopolis/city-v2.webp",
+        "sha256": "b741579a1aac129c4b4bae3b13aff90f094ab59cf4b3e3a3116796d45e2f5e2c",
+        "kind": "new-neopolis",
+        "bytes": 545326,
+        "status": 200
+      },
+      {
+        "path": "/game-modules/studio-neopolis/versions/0.5.0-d06ece4da7b2/media/neopolis/cover-v2.webp",
+        "sha256": "f01a85fb9a90b93dd46b184982e9469967d33f6541d64141b6f74ebffea75173",
+        "kind": "new-neopolis",
+        "bytes": 800278,
+        "status": 200
+      },
+      {
+        "path": "/game-modules/studio-neopolis/versions/0.5.0-d06ece4da7b2/media/neopolis/null-v2.webp",
+        "sha256": "b2975fa847149ba0a8c872e3e1244b7afa604b665704c47d1945d6e1fbadf6f7",
+        "kind": "new-neopolis",
+        "bytes": 420834,
+        "status": 200
+      },
+      {
+        "path": "/game-modules/studio-neopolis/versions/0.5.0-d06ece4da7b2/media/neopolis/observatory-v3.webp",
+        "sha256": "3acc713c6d2faabd2bc8dc1475333e67cb0ee45b06ffb4a399835ae1f8d710a4",
+        "kind": "new-neopolis",
+        "bytes": 709752,
+        "status": 200
+      },
+      {
+        "path": "/game-modules/studio-neopolis/versions/0.5.0-d06ece4da7b2/media/neopolis/symbols-v2.webp",
+        "sha256": "cba250836b02bce6facc37388384c1a3ef4a36dbb9d9bbd4de1010c9b44f32e5",
+        "kind": "new-neopolis",
+        "bytes": 428008,
+        "status": 200
+      },
+      {
+        "path": "/game-modules/studio-neopolis/versions/0.5.0-d06ece4da7b2/media/neopolis/team-chrono-v3.webp",
+        "sha256": "6a3506f93516cb86c2fd0727fd7fb555995b0974b8acc51f0df18b4991d0021a",
+        "kind": "new-neopolis",
+        "bytes": 490136,
+        "status": 200
+      },
+      {
+        "path": "/game-modules/studio-neopolis/versions/0.5.0-d06ece4da7b2/media/neopolis/team-eclipse-v3.webp",
+        "sha256": "6e83a392682833eb83aa6e242269cf87fc7a4ee2ddfa2f082c28970e695e7ac5",
+        "kind": "new-neopolis",
+        "bytes": 514382,
+        "status": 200
+      },
+      {
+        "path": "/game-modules/studio-neopolis/versions/0.5.0-d06ece4da7b2/media/neopolis/team-night-v3.webp",
+        "sha256": "3acdaa2872921d4b4b22ba6b24cc2c863c9f023ef729038878408b9e7a723c59",
+        "kind": "new-neopolis",
+        "bytes": 498496,
+        "status": 200
+      },
+      {
+        "path": "/game-modules/studio-neopolis/versions/0.5.0-d06ece4da7b2/media/neopolis/vespera-v3.webp",
+        "sha256": "d0c56f5578c6916c57d64d7aa9c66dbfa3cc3f58c292e78cc28403655b6ffdfb",
+        "kind": "new-neopolis",
+        "bytes": 362622,
+        "status": 200
+      },
+      {
+        "path": "/game-modules/studio-neopolis/versions/0.5.0-d06ece4da7b2/style-c196ff0080492e60.css",
+        "sha256": "c196ff0080492e6099e4c6f9eb869cb504a330cf109be8c393094a4405167834",
+        "kind": "new-neopolis",
+        "bytes": 41138,
+        "status": 200
+      }
+    ],
+    "passed": true
+  },
+  "moduleDirectoryRepair": {
+    "repairSourceCommit": "1ff5d2a533b02b0df53f9122dbfb3eaa191c409d",
+    "scriptSha256": "6701d23d63b415f8bd7323f915adfa6eff61c2c14092397659299ce89af1e5c2",
+    "applicationSourceCommit": "9acf3686965fedc0c81efaaa6f740e30d4fef175",
+    "changedDirectories": [
+      {
+        "path": "/opt/royal-game-modules/studio-neopolis/versions/0.5.0-d06ece4da7b2",
+        "before": "0o700",
+        "after": "0o755"
+      },
+      {
+        "path": "/opt/royal-game-modules/studio-neopolis/versions/0.5.0-d06ece4da7b2/media",
+        "before": "0o700",
+        "after": "0o755"
+      },
+      {
+        "path": "/opt/royal-game-modules/studio-neopolis/versions/0.5.0-d06ece4da7b2/media/neopolis",
+        "before": "0o700",
+        "after": "0o755"
+      }
+    ],
+    "verifiedFiles": 14,
+    "activePointerUnchanged": true,
+    "resourceBytesUnchanged": true,
+    "databaseTouched": false
+  },
+  "priorityRestoration": {
+    "folder": "/opt/royal-releases/nowpayments-sandbox-20261027-v1/priority-services-6205fcdfee5d",
+    "result": {
+      "restored": true,
+      "rows": [
+        {
+          "path": "/sys/fs/cgroup/system.slice/docker.service/cpu.weight",
+          "restored": true,
+          "value": 100,
+          "attempts": 1
+        },
+        {
+          "path": "/sys/fs/cgroup/system.slice/containerd.service/cpu.weight",
+          "restored": true,
+          "value": 100,
+          "attempts": 1
+        }
+      ],
+      "at": 1793189592.6188238
+    },
+    "independentWeights": {
+      "docker": "100",
+      "containerd": "100"
+    },
+    "financialPrioritiesUnchanged": true
+  },
+  "postRestorationHealth": {
+    "royal-game-1": {
+      "image": "sha256:6e58848fd2d38de5c569a7ad3cce9cbdd8f247c1566614378c0d3e21e37e0528",
+      "healthy": true,
+      "source": "9acf3686965fedc0c81efaaa6f740e30d4fef175",
+      "recentChecks": [
+        {
+          "exit": 0,
+          "end": "2026-10-28T12:16:41.118479797Z"
+        },
+        {
+          "exit": 0,
+          "end": "2026-10-28T12:17:14.080776849Z"
+        },
+        {
+          "exit": 0,
+          "end": "2026-10-28T12:17:45.279275515Z"
+        },
+        {
+          "exit": 0,
+          "end": "2026-10-28T12:18:18.000840348Z"
+        },
+        {
+          "exit": 0,
+          "end": "2026-10-28T12:18:48.925394796Z"
+        }
+      ]
+    },
+    "royal-nile-play": {
+      "image": "sha256:2b1914f82575d6e09dda80f44c508565ed90b7e961d5c575c18a1a5e0b311246",
+      "healthy": true,
+      "source": "9acf3686965fedc0c81efaaa6f740e30d4fef175",
+      "recentChecks": [
+        {
+          "exit": 0,
+          "end": "2026-10-28T12:16:40.49026541Z"
+        },
+        {
+          "exit": 0,
+          "end": "2026-10-28T12:17:15.001254639Z"
+        },
+        {
+          "exit": 0,
+          "end": "2026-10-28T12:17:48.22579992Z"
+        },
+        {
+          "exit": 0,
+          "end": "2026-10-28T12:18:23.084730492Z"
+        },
+        {
+          "exit": 0,
+          "end": "2026-10-28T12:19:00.293551122Z"
+        }
+      ]
+    },
+    "financialAudit": {
+      "ok": true,
+      "ready": true,
+      "testOnly": true,
+      "observedAt": "2026-10-28T12:21:00.020054+00:00"
+    }
+  },
+  "screenshots": {
+    "kind": "Exact compiled production client, local isolated wallet and connected host chat",
+    "desktop": "artifacts/work/neopolis-variable-stake-20261028/review-desktop.png",
+    "mobile": "artifacts/work/neopolis-variable-stake-20261028/review-mobile.png"
+  },
+  "cleanup": {
+    "earlierOutputRefresh": {
+      "reason": "Finished feature tests, regenerating exact production-composition outputs",
+      "sourcePreservedInGitHub": "0309246e159053eccc77def226379e2c9ebb3330",
+      "removed": [
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-variable-stake-20261028/checkout/dist",
+          "logicalBytes": 175458795
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-variable-stake-20261028/checkout/dist-server",
+          "logicalBytes": 4319948
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-variable-stake-20261028/checkout/module-dist",
+          "logicalBytes": 205089480
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-variable-stake-20261028/checkout/module-build",
+          "logicalBytes": 741671
+        }
+      ],
+      "freeBeforeBytes": 56822112256,
+      "freeAfterBytes": 57249779712
+    },
+    "failedPrepare": {
+      "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-variable-stake-20261028/payload",
+      "logicalBytes": 782124,
+      "reason": "incomplete pre-publication payload rejected by static asset guard"
+    },
+    "prepublication": [
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-variable-stake-20261028/checkout/dist-server/finance-test",
+        "logicalBytes": 5749023
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-variable-stake-20261028/checkout/dist-server/finance-assets",
+        "logicalBytes": 2820
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-variable-stake-20261028/payload",
+        "logicalBytes": 19393951
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-variable-stake-20261028/payload",
+        "logicalBytes": 22963828,
+        "reason": "preflight attempt ended before mutation; rebuild manifest for tested snapshot helper"
+      }
+    ],
+    "server": {
+      "removed": [
+        {
+          "path": "/opt/royal-releases/neopolis-variable-stake-20261028-v1/game-context",
+          "logicalBytes": 10775600
+        },
+        {
+          "path": "/opt/royal-releases/neopolis-variable-stake-20261028-v1/finance-context",
+          "logicalBytes": 1779335
+        },
+        {
+          "path": "/opt/royal-releases/neopolis-variable-stake-20261028-v1/neopolis-package",
+          "logicalBytes": 6035955
+        },
+        {
+          "path": "/opt/royal-releases/neopolis-variable-stake-20261028-v1/module-dist",
+          "logicalBytes": 6048759
+        },
+        {
+          "path": "/opt/royal-releases/neopolis-variable-stake-20261028-v1/transport.tgz",
+          "logicalBytes": 14540835
+        },
+        {
+          "path": "/opt/royal-releases/nowpayments-sandbox-20261027-v1/priority-services-6205fcdfee5d",
+          "logicalBytes": 1857
+        }
+      ],
+      "freeBeforeBytes": 7149813760,
+      "freeAfterBytes": 7178412032,
+      "sizesAreLogicalAndMayCountHardlinksMoreThanOnce": true,
+      "freeSpaceIsObservedNotAttributed": true,
+      "sourcePreservedInGitHub": "9acf3686965fedc0c81efaaa6f740e30d4fef175",
+      "preserved": [
+        "source and finance source deltas",
+        "verified prior source archives and private journal backup",
+        "previous and running images",
+        "player data and immutable modules",
+        "compact fingerprints and publication records"
+      ],
+      "health": {
+        "royal-game-1": {
+          "image": "sha256:6e58848fd2d38de5c569a7ad3cce9cbdd8f247c1566614378c0d3e21e37e0528",
+          "healthy": true,
+          "source": "9acf3686965fedc0c81efaaa6f740e30d4fef175",
+          "recentChecks": [
+            {
+              "exit": 0,
+              "end": "2026-10-28T12:16:41.118479797Z"
+            },
+            {
+              "exit": 0,
+              "end": "2026-10-28T12:17:14.080776849Z"
+            },
+            {
+              "exit": 0,
+              "end": "2026-10-28T12:17:45.279275515Z"
+            },
+            {
+              "exit": 0,
+              "end": "2026-10-28T12:18:18.000840348Z"
+            },
+            {
+              "exit": 0,
+              "end": "2026-10-28T12:18:48.925394796Z"
+            }
+          ]
+        },
+        "royal-nile-play": {
+          "image": "sha256:2b1914f82575d6e09dda80f44c508565ed90b7e961d5c575c18a1a5e0b311246",
+          "healthy": true,
+          "source": "9acf3686965fedc0c81efaaa6f740e30d4fef175",
+          "recentChecks": [
+            {
+              "exit": 0,
+              "end": "2026-10-28T12:16:40.49026541Z"
+            },
+            {
+              "exit": 0,
+              "end": "2026-10-28T12:17:15.001254639Z"
+            },
+            {
+              "exit": 0,
+              "end": "2026-10-28T12:17:48.22579992Z"
+            },
+            {
+              "exit": 0,
+              "end": "2026-10-28T12:18:23.084730492Z"
+            },
+            {
+              "exit": 0,
+              "end": "2026-10-28T12:19:00.293551122Z"
+            }
+          ]
+        },
+        "financialAudit": {
+          "ok": true,
+          "ready": true,
+          "testOnly": true,
+          "observedAt": "2026-10-28T12:21:00.020054+00:00"
+        }
+      }
+    },
+    "local": {
+      "removed": [
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-variable-stake-20261028/checkout/dist",
+          "logicalBytes": 170554335
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-variable-stake-20261028/checkout/dist-server",
+          "logicalBytes": 4297746
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-variable-stake-20261028/checkout/module-dist",
+          "logicalBytes": 200103087
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-variable-stake-20261028/checkout/module-build",
+          "logicalBytes": 979924
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-variable-stake-20261028/checkout/test-results",
+          "logicalBytes": 10877543
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-variable-stake-20261028/payload",
+          "logicalBytes": 22964346
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-variable-stake-20261028/transport.tgz",
+          "logicalBytes": 14540835
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-variable-stake-20261028/production.patch",
+          "logicalBytes": 701961
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-variable-stake-20261028/before-full.json",
+          "logicalBytes": 3050004
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-variable-stake-20261028/before.json",
+          "logicalBytes": 3325274
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-variable-stake-20261028/host-before.json",
+          "logicalBytes": 12586
+        }
+      ],
+      "freeBeforeBytes": 57057480704,
+      "freeAfterBytes": 57550426112,
+      "freeSpaceIsObservedNotAttributed": true,
+      "sourcePreservedInGitHub": [
+        "0309246e159053eccc77def226379e2c9ebb3330",
+        "9acf3686965fedc0c81efaaa6f740e30d4fef175",
+        "1ff5d2a533b02b0df53f9122dbfb3eaa191c409d"
+      ],
+      "exception": {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-variable-stake-20261028/checkout",
+        "condition": "Remove after the final deployment record is pushed and its exact remote commit verified."
+      }
+    },
+    "worktreeException": {
+      "condition": "Remove the isolated checkout after this deployment record is pushed and its remote commit verified. The root checkout belongs to concurrent work and stays untouched."
+    }
+  },
+  "archiveSourceReadinessObservation": {
+    "observedDuringPublicationLoad": true,
+    "sourceSyncDurationsMs": [
+      141201,
+      135507,
+      153841,
+      162443,
+      158864,
+      113408,
+      92590
+    ],
+    "observedCode": "play_source_not_ready",
+    "causeAttributionNotProven": true,
+    "settingsUnchanged": true,
+    "recoveredHealthyChecks": 5,
+    "financialAuditReadyAt": "2026-10-28T12:21:00.020054+00:00",
+    "publicVirtualWalletRetained": true
+  }
+}

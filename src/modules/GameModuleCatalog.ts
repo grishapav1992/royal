@@ -2,7 +2,7 @@
 export const STUDIO_GAME_MODULES = [
  { gameId: 'studio-forest-heart', slug: 'forest-heart', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
  { gameId: 'studio-caribbean-treasures', slug: 'caribbean-treasures', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
- { gameId: 'studio-neopolis', slug: 'neopolis', apiVersion: 1, rulesVersion: 3, progressVersion: 3 },
+ { gameId: 'studio-neopolis', slug: 'neopolis', apiVersion: 1, rulesVersion: 4, progressVersion: 4 },
  { gameId: 'studio-dracona', slug: 'dracona', apiVersion: 1, rulesVersion: 3, progressVersion: 2 },
  { gameId: 'studio-cosmic-escape', slug: 'cosmic-escape', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },
  { gameId: 'studio-caramel-carnival', slug: 'caramel-carnival', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },

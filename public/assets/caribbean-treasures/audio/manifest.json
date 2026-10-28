@@ -1,0 +1,138 @@
+{
+  "format": 1,
+  "sampleRate": 44100,
+  "files": {
+    "music": {
+      "file": "music.m4a",
+      "bytes": 2800682,
+      "sha256": "3c69efd0fbb210cc3ab84fdb6d6ad35d7d43ce9db1e19daacdeca4f85151ecc2",
+      "durationSeconds": 136.02249433106576,
+      "peak": 0.7168909311294556,
+      "rms": 0.12708418429173915,
+      "edgePeak": 0.006255027838051319,
+      "boundaryPeak": 0.000976742128841579,
+      "accentOffsetSeconds": 0.01183673469387755
+    },
+    "stop-a": {
+      "file": "stop-a.m4a",
+      "bytes": 5371,
+      "sha256": "a927cfdaa9bd7ff12fbf53ca3f44bd8eda460e17c11da4b6d359a575da6d4523",
+      "durationSeconds": 0.3512018140589569,
+      "peak": 0.6484593749046326,
+      "rms": 0.05215604004550193,
+      "edgePeak": 0,
+      "boundaryPeak": 0,
+      "accentOffsetSeconds": 0.03290249433106576
+    },
+    "stop-b": {
+      "file": "stop-b.m4a",
+      "bytes": 5244,
+      "sha256": "0e6cec6a7d808a101a5d267b5e6486a21e65a081314d4faadbfca94c558eaed1",
+      "durationSeconds": 0.3512018140589569,
+      "peak": 0.6539608836174011,
+      "rms": 0.05267642164695539,
+      "edgePeak": 0,
+      "boundaryPeak": 0,
+      "accentOffsetSeconds": 0.03290249433106576
+    },
+    "stop-c": {
+      "file": "stop-c.m4a",
+      "bytes": 5138,
+      "sha256": "7ea48dce9ffad9bc54480618c6dfa141a60275974b81e69adb3ccb9ef6f96447",
+      "durationSeconds": 0.3512018140589569,
+      "peak": 0.6484531760215759,
+      "rms": 0.05172612006769483,
+      "edgePeak": 0,
+      "boundaryPeak": 0,
+      "accentOffsetSeconds": 0.03290249433106576
+    },
+    "click": {
+      "file": "click.m4a",
+      "bytes": 6488,
+      "sha256": "7495a2a1bb1099e6e1b80d88a62320d5dfdefef44f301d009d390bcbdc0bce96",
+      "durationSeconds": 0.301859410430839,
+      "peak": 0.5131357908248901,
+      "rms": 0.026250714238170526,
+      "edgePeak": 9.633521758090069e-10,
+      "boundaryPeak": 3.687562061260863e-11,
+      "accentOffsetSeconds": 0.11936507936507937
+    },
+    "latch": {
+      "file": "latch.m4a",
+      "bytes": 7631,
+      "sha256": "9a0f85c35c3e898c421c564b7dc412174e76b3d3fcec0a3dde4315bcf4de5669",
+      "durationSeconds": 0.3250793650793651,
+      "peak": 0.6954082250595093,
+      "rms": 0.04952064704688616,
+      "edgePeak": 0,
+      "boundaryPeak": 0,
+      "accentOffsetSeconds": 0.05863945578231292
+    },
+    "creak": {
+      "file": "creak.m4a",
+      "bytes": 7381,
+      "sha256": "80fb1a9748a770ec3f50cd7d72bbb2202a54760d005393f85fe9597f73cb8ea2",
+      "durationSeconds": 0.3947392290249433,
+      "peak": 0.7200285196304321,
+      "rms": 0.13318707353085227,
+      "edgePeak": 0,
+      "boundaryPeak": 0,
+      "accentOffsetSeconds": 0.081859410430839
+    },
+    "coins": {
+      "file": "coins.m4a",
+      "bytes": 17673,
+      "sha256": "cee0353b8ea7d685095f8a618d19d20cee03338038b021aa2d9d12682df6f286",
+      "durationSeconds": 0.8591383219954648,
+      "peak": 0.629279613494873,
+      "rms": 0.02250018938320075,
+      "edgePeak": 6.658441159546058e-11,
+      "boundaryPeak": 5.470217161185342e-12,
+      "accentOffsetSeconds": 0.1247392290249433
+    },
+    "coins-small": {
+      "file": "coins-small.m4a",
+      "bytes": 9133,
+      "sha256": "da9e812276e0c922bc2dfc08bc794d44a93b856a3dcf9e60dee88a99fcf0fbe4",
+      "durationSeconds": 0.34829931972789113,
+      "peak": 0.7322666049003601,
+      "rms": 0.05502086458544857,
+      "edgePeak": 5.9116058714892006e-9,
+      "boundaryPeak": 4.982917412021948e-10,
+      "accentOffsetSeconds": 0.04634920634920635
+    },
+    "cannon": {
+      "file": "cannon.m4a",
+      "bytes": 42320,
+      "sha256": "f1ed95873f33d4d5291f139118cf1904d8b7353e6c8c469a0e334d6fa8e938d0",
+      "durationSeconds": 2.461315192743764,
+      "peak": 0.7050251364707947,
+      "rms": 0.07370035794054271,
+      "edgePeak": 0.000001660102725509205,
+      "boundaryPeak": 1.1063929328258837e-8,
+      "accentOffsetSeconds": 0.03739229024943311
+    },
+    "thud": {
+      "file": "thud.m4a",
+      "bytes": 5005,
+      "sha256": "0801b1d00d376ebabb4192ddab71d47ab3f6b420fcf4f43fe6c0fcaef82d0909",
+      "durationSeconds": 0.374421768707483,
+      "peak": 0.7203401923179626,
+      "rms": 0.07390299818708622,
+      "edgePeak": 7.030474535874021e-10,
+      "boundaryPeak": 1.5257989316452836e-10,
+      "accentOffsetSeconds": 0.03290249433106576
+    },
+    "metal": {
+      "file": "metal.m4a",
+      "bytes": 5375,
+      "sha256": "a62f902b346c27467820440642d76a907d15282a637a75b6e3a1f6e1226bc9ec",
+      "durationSeconds": 0.32798185941043084,
+      "peak": 0.6736444234848022,
+      "rms": 0.07647270036548677,
+      "edgePeak": 0,
+      "boundaryPeak": 0,
+      "accentOffsetSeconds": 0.03303854875283447
+    }
+  }
+}

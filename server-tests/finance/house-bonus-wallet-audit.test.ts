@@ -36,7 +36,7 @@ scenarios.push(
  {gameId:'studio-afterglow',mode:'normal',stake:'100',cost:1,view:'afterglow',settings:{afterglow:{mode:'normal'}},start:draw=>startAfter({afterglow:{mode:'normal'}},'100',0,draw)},
  {gameId:'studio-dracona',mode:'normal',stake:'1000',cost:1,view:'dracona',settings:{dracona:{mode:'normal'}},start:draw=>startDracona({dracona:{mode:'normal'}},'1000',draw)},
 );
-const command=(body:unknown=null):NativeCommand=>({path:'/expansion',body,method:body===null?'GET':'POST',query:{},flags:[true,true,true,true,true,true,true,true,2],rules:2,neopolisRules:3});
+const command=(body:unknown=null):NativeCommand=>({path:'/expansion',body,method:body===null?'GET':'POST',query:{},flags:[true,true,true,true,true,true,true,true,2],rules:2,neopolisRules:4});
 const seededDraw=(seed:number)=>{const random=seededRandom(seed);return (max:number)=>Math.floor(random()*max);};
 function bonusSeed(spec:Scenario) {
  // Construct coverage with real engine outcomes; this search does not estimate their frequency.
