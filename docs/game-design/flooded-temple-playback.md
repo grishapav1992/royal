@@ -36,3 +36,5 @@ The scenarios use the disposable local preview database and demo funds. No produ
 [Desktop controls with chat](../assets/flooded-temple/playback-desktop.webp), [phone controls with chat](../assets/flooded-temple/playback-mobile.webp).
 
 Temporary files belong only to `artifacts/work/flooded-temple-controls/`. Previously denied cleanup targets remain excluded. The existing preview session 7918 stays available for user review; stopping it with Ctrl+C releases its temporary database. The active managed checkout remains in use while another chat works in the primary checkout.
+
+Fresh main `d76746b1a5d22a4b5b15c2f2934aea7c052568b5` was merged without conflicts. Its three incoming commits update Caribbean character presentation and reports. Temple sources, mathematics and the tested immutable package bytes did not change. The combined application build passed again in 56,827 ms, followed by all seven module checks. [Storage inventory and result](flooded-temple-playback-storage.json) records only this iteration's three owned cleanup candidates, excluding every previously denied path.
