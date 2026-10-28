@@ -18,7 +18,7 @@ export const BASE_EXPANSION_GAMES = ['github-diamonds','github-crash','github-th
 export const EXPANSION_GAMES = [...BASE_EXPANSION_GAMES,...VARIANT_GAMES,...STUDIO_GAMES,PENALTY_GAME,CARIBBEAN_GAME,JACKIE_GAME] as const;
 export type ExpansionGameId = typeof EXPANSION_GAMES[number];
 export const EXPANSION_NAMES: Record<ExpansionGameId,string> = {
-  [JACKIE_GAME]:translateText('Пять дублей'),
+  [JACKIE_GAME]:translateText('Гонконгский воин'),
   [CARIBBEAN_GAME]:'Карибские сокровища',
   [PENALTY_GAME]:'CR vs. Leo',
   ...Object.fromEntries(STUDIO_GAMES.map(id=>[id,STUDIO_INFO[id].name])) as Record<typeof STUDIO_GAMES[number],string>,

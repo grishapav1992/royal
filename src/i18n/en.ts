@@ -1,7 +1,7 @@
 import {  volcanicPlinkoEnglish } from './volcanicPlinkoEn';
 
 export const english: Record<string, string> = {
-  'Пять дублей':'Five Takes',
+  'Гонконгский воин':'Hong Kong Warrior',
   'Кунг-фу кино · Коллекция костюмов':'Kung fu cinema · Costume collection',
   'Выбери игру в каталоге':'Choose a game from the catalogue',
   'Игры Royal':'Royal games',
