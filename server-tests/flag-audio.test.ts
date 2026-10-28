@@ -6,9 +6,9 @@ import { planFlagPhysics } from '../games/flag-battle/FlagPhysics';
 import { FLAG_COUNTRIES } from '../src/shared/flagBattle';
 class Param { value=0;setValueAtTime(){return this;}linearRampToValueAtTime(){return this;}exponentialRampToValueAtTime(){return this;} }
 class AudioNodeStub {
-  gain=new Param();pan=new Param();frequency=new Param();threshold=new Param();knee=new Param();ratio=new Param();attack=new Param();release=new Param();
-  onended:(()=>void)|null=null; stopped=false;disconnected=false;at=0;type='sine';buffer:unknown;
-  connect(node:AudioNodeStub){return node;}disconnect(){this.disconnected=true;}start(at:number){this.at=at;}stop(at?:number){if(at===undefined)this.stopped=true;}
+  gain=new Param();pan=new Param();frequency=new Param();Q=new Param();threshold=new Param();knee=new Param();ratio=new Param();attack=new Param();release=new Param();
+  onended:(()=>void)|null=null; stopped=false;disconnected=false;at=0;endAt=0;loop=false;type='sine';buffer:unknown;
+  connect(node:AudioNodeStub){return node;}disconnect(){this.disconnected=true;}start(at:number){this.at=at;}stop(at?:number){if(at===undefined)this.stopped=true;else this.endAt=at;}
 }
 function fixture(){
   let allowed=true,now=1000,listener=()=>{},unsubscribed=false;
@@ -30,10 +30,22 @@ test('sound timeline follows every physical exit and limits the density of impac
   assert(events.some(e=>e.cue==='collision'));assert(events.some(e=>e.cue==='wall'));assert.equal(events.filter(e=>e.cue==='final-two').length,1);
   assert.equal(events.at(-1)!.cue,'lose');assert(!events.some(e=>e.cue==='win'));
   const impacts=events.filter(e=>e.cue==='wall'||e.cue==='collision');
-  assert.equal(new Set(impacts.map(e=>Math.floor(e.at/.095))).size,impacts.length);
-  assert(impacts.every(e=>exits.every(exit=>Math.abs(e.at-exit.at)>=.09)));
+  assert.equal(new Set(impacts.map(e=>Math.floor(e.at/.18))).size,impacts.length);
+  assert(impacts.every(e=>exits.every(exit=>Math.abs(e.at-exit.at)>=.12)));
+  for(let i=1;i<impacts.length;i++)assert(impacts[i].at-impacts[i-1].at>=.16-1e-9);
+  const finalTwo=events.find(e=>e.cue==='final-two')!;
+  assert(impacts.every(e=>Math.abs(e.at-finalTwo.at)>=.15));
   for(let i=1;i<events.length;i++)assert(events[i].at>=events[i-1].at);
   assert.equal(flagSoundTimeline(plan,labels,selected,true,20).at(-1)!.cue,'win');
+});
+test('effects use short non-looping simultaneous layers without a melody sequence',async()=>{
+  const cues:FlagSoundEvent['cue'][]=['select','start','collision','wall','eliminate','final-two','win','lose'];
+  for(const cue of cues){
+    const f=fixture();await f.audio.unlock();f.audio.playAt(event(cue,0),1.01);
+    assert(f.sources.length>0&&f.sources.length<=2,cue);
+    assert(f.sources.every(s=>!s.loop&&s.at===1.01&&s.endAt>s.at&&s.endAt-s.at<=.31),cue);
+    f.audio.destroy();
+  }
 });
 test('lookahead uses the host output timestamp to align the audible impact with the visual frame',async()=>{
   const f=fixture();await f.audio.unlock();f.audio.begin('a',[event('wall',.1)]);f.audio.advance(0,1000);

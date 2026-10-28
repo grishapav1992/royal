@@ -12,12 +12,12 @@ The existing expansion transaction debits once and credits the full outcome atom
 
 | Event | Condition and meaning | Visual and sound | Interruption and verification |
 | --- | --- | --- | --- |
-| Selection | Unpaid choice | Gold outline and country name; silent | Keyboard buttons with pressed state; locked while submitting/presenting |
-| Accepted round | Validated session for the submitted operation | Arena starts with all twelve countries; silent | Uncertain response offers retry of the same ID; no speculative outcome |
-| Elimination | Next country in the saved order reaches the opening | Flight through the opening, survivor count and elimination list; short host audio tap | No rapid flashes; hidden tab skips to saved result without queued sound |
+| Selection | Unpaid choice | Gold outline and country name; soft pop | Keyboard buttons with pressed state; locked while submitting/presenting |
+| Accepted round | Validated session for the submitted operation | Arena starts with all twelve countries; short upward puff | Uncertain response offers retry of the same ID; no speculative outcome |
+| Elimination | Next country in the saved order reaches the opening | Flight through the opening, survivor count and elimination list; short airy cue | No rapid flashes; hidden tab skips to saved result without queued sound |
 | Final two | Ten confirmed presentation eliminations | Two larger readable flags; no additional reward implication | Reduced motion presents the saved final result directly |
-| Victory | Saved winning flag remains | Winner name and full return; host win cue only for a positive net result | Restoring a saved session is silent and has no repeated celebration |
-| Loss | Selected country is not last | Winner name and zero return; neutral host tap | No win celebration for losses |
+| Victory | Saved winning flag remains | Winner name and full return; rounded result accent only for a positive net result | Restoring a saved session is silent and has no repeated celebration |
+| Loss | Selected country is not last | Winner name and zero return; neutral low tap | No win celebration for losses |
 
 Round duration and motion are design hypotheses, not research thresholds. Pause/visibility, account change and destroy cancel animation and pending cues. Shared host audio preferences govern every cue. Russian and English labels use the host language. Tests cover the real host with chat on desktop/mobile, server settlement, retries, ownership and capability negotiation. Technical checks do not establish listening quality or player enjoyment.
 
@@ -41,21 +41,21 @@ Event update: elimination is shown and sounded only when the whole body clears t
 
 Physics verification covers elastic head-on and glancing contacts, coincident centers, separating bodies, separated initial placement, a closed rim, deterministic replay, 30/60/144 fps, bounded complete rounds and continuous motion through the opening. A 32-seed diagnostic completed every round; its largest per-step active-body movement was 0.01123 arena radii at a 1/240 second step. These measurements test the implementation and do not establish player preference.
 
-## Sound design 1.2
+## Sound design 1.3
 
-All sounds use the existing host audio context, output, mute and volume. These are original synthesized effects, with no additional audio context or downloaded recordings. No music bed is added. Contact timbres are quiet and short; elimination and result cues take priority. A rolling lookahead schedules cues against the visible physics playhead and the host output timestamp, using reported output latency when available. The engineering synchronization target is within 40 ms on the tested local output; this is not a perceptual threshold or a claim about untested Bluetooth devices.
+All sounds use the existing host audio context, output, mute and volume. These are original synthesized effects, with no additional audio context or downloaded recordings. The user requested pleasant effects without music. Version 1.3 replaces note sequences and bright ringing with rounded, low sliding pops and filtered air. There is no music bed, melody, arpeggio or looping source. This warmer, sparser palette is a design hypothesis awaiting the user's listening assessment. Contact cues have at least 160 ms between onsets; elimination and final-two cues take priority. A rolling lookahead schedules cues against the visible physics playhead and the host output timestamp, using reported output latency when available. The 40 ms engineering synchronization target is not a perceptual threshold or a claim about untested Bluetooth devices.
 
 | Event | Meaning and confirmation | Sound and sync point | Interruption and comfort |
 | --- | --- | --- | --- |
-| Selection | Unpaid country or stake choice | Short, soft pluck after a user gesture | No delayed replay after unlock, account change or close |
-| Accepted start | New validated server round starts presentation | Two rising notes at the first arena frame | No start cue while awaiting the server; restored rounds stay silent |
-| Flag contact | Approaching bodies exchange impulse | Rounded wooden tick, energy-dependent level, horizontal stereo position | Weak contacts ignored; strongest contact per short interval; no idle-preview audio |
-| Ring contact | Body reflects from the rim or a moving end cap | Short higher glass-like tap at physical impact | Same density and voice limits as body contacts; no continuous wall chatter |
-| Elimination | Body fully clears the opening | Brief airy outward sweep with a soft falling note | Suppresses nearby impact cues; one event per actual exit; selected country has a lower, distinct note |
-| Final two | Tenth exit leaves two flags | One restrained two-note signal | Not a payout or win signal; never repeated by restore |
-| Positive paid result | Selected country wins and its confirmed return is shown | Short major arpeggio | Only for a positive net paid-round result; skip, hide, mute and close cancel queued notes |
+| Selection | Unpaid country or stake choice | Small rounded pop after a user gesture | No delayed replay after unlock, account change or close |
+| Accepted start | New validated server round starts presentation | One low upward puff at the first arena frame | No start cue while awaiting the server; restored rounds stay silent |
+| Flag contact | Approaching bodies exchange impulse | Quiet rubber-like knock, energy-dependent level, horizontal stereo position | Weak contacts ignored; strongest spaced contacts retained; no idle-preview audio |
+| Ring contact | Body reflects from the rim or a moving end cap | Short muted wooden tap at physical impact | Same density and voice limits as body contacts; no continuous wall chatter |
+| Elimination | Body fully clears the opening | Brief low-pass airy outward sweep with a soft falling pop | Suppresses nearby impact cues; one event per actual exit; selected country has a lower pop |
+| Final two | Tenth exit leaves two flags | One soft hollow accent | Not a payout or win signal; never repeated by restore |
+| Positive paid result | Selected country wins and its confirmed return is shown | One rounded pop with a short airy tail, no sequence of notes | Only for a positive net paid-round result; skip, hide, mute and close cancel queued sources |
 | Zero return | Another country wins and zero return is shown | Neutral low tap | No victory figure or celebratory loss sound |
 
 Reduced-motion fresh rounds use a brief result cue only. Restoring saved rounds is silent. Mute, zero volume, hidden tabs, pause, account changes and destroy stop owned voices and discard future cues; enabling sound resumes from the current visual time and does not replay the past. Offline rendering tests can verify signal, envelopes and headroom, but listening quality requires human assessment and is not inferred from RMS alone.
 
-Sound verification on 29 October 2026: six timeline/lifecycle tests and seven physics/rendering tests passed. All eight cues were rendered in Chrome's OfflineAudioContext using the same synthesis code; individual peaks ranged from 0.0627 to 0.1363 full scale, all final 100 ms tails were silent and no voices remained after rendering. The real host with desktop/mobile chat produced all eleven elimination cues, the final-two signal and exactly one appropriate result cue; skip and close/reopen remained silent. Tests also covered lost-response recovery, late audio unlock, output-timestamp mapping, mute/unmute with discarded past cues, duplicate result IDs, destruction and the sixteen-voice cap. These are technical signal and lifecycle checks. Physical speaker/headphone/Bluetooth synchronization and subjective listening quality have not been assessed; the 40 ms engineering target is not an acoustically measured claim.
+Version 1.3 verification on 29 October 2026: 28 tests passed, covering audio timeline/lifecycle, physics, paid mathematics/wallet recovery, package compatibility and three Chrome browser scenarios. Eight isolated cues rendered through the production synthesizer with absolute peaks from 0.0392 to 0.0855 full scale, silent final 100 ms tails and zero remaining voices. This is a per-cue signal check, not a claim about total host mix loudness or pleasantness. Contact onset spacing, short non-looping simultaneous layers, output-timestamp mapping, late unlock, mute/unmute, skip and destruction passed. The desktop/mobile host with connected chat produced eleven elimination cues, one final-two cue and exactly one appropriate result cue; saved-round restore stayed silent and lost-response retry debited once. Physical speaker/headphone/Bluetooth synchronization and subjective listening quality have not been assessed; the 40 ms engineering target is not an acoustically measured claim.

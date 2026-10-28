@@ -7,15 +7,15 @@ test('every synthesized cue renders with signal, clean tails and headroom in a r
   const result=await page.evaluate(async()=>{
     const path='/games/flag-battle/FlagAudio.ts',{FlagAudio}=await import(/* @vite-ignore */path);
     const cues=['select','start','collision','wall','eliminate','final-two','win','lose'];
-    const clips:Float32Array[][]=[],metrics:{cue:string;peak:number;rms:number;tail:number;voices:number}[]=[];
+    const clips:Float32Array[][]=[],metrics:{cue:string;peak:number;rms:number;tail:number;maxStep:number;voices:number}[]=[];
     for(const cue of cues){
       const context=new OfflineAudioContext(2,48000,48000);
       const audio=new FlagAudio({context:()=>context,output:()=>context.destination,allowed:()=>true,unlock:async()=>{},subscribe:()=>()=>{},now:()=>0});
       await audio.unlock();audio.playAt({cue,at:0,strength:.8,pan:.35,variant:2},.08);
-      const buffer=await context.startRendering();let peak=0,sum=0,tail=0;
+      const buffer=await context.startRendering();let peak=0,sum=0,tail=0,maxStep=0;
       const channels=[buffer.getChannelData(0),buffer.getChannelData(1)];
-      for(const data of channels)for(let i=0;i<data.length;i++){peak=Math.max(peak,Math.abs(data[i]));sum+=data[i]*data[i];if(i>43200)tail=Math.max(tail,Math.abs(data[i]));}
-      metrics.push({cue,peak,rms:Math.sqrt(sum/96000),tail,voices:audio.state().voices});clips.push(channels.map(c=>new Float32Array(c)));audio.destroy();
+      for(const data of channels)for(let i=0;i<data.length;i++){peak=Math.max(peak,Math.abs(data[i]));sum+=data[i]*data[i];if(i)maxStep=Math.max(maxStep,Math.abs(data[i]-data[i-1]));if(i>43200)tail=Math.max(tail,Math.abs(data[i]));}
+      metrics.push({cue,peak,rms:Math.sqrt(sum/96000),tail,maxStep,voices:audio.state().voices});clips.push(channels.map(c=>new Float32Array(c)));audio.destroy();
     }
     const frames=clips.length*48000,bytes=new Uint8Array(44+frames*4),view=new DataView(bytes.buffer);
     const label=(at:number,s:string)=>{for(let i=0;i<s.length;i++)view.setUint8(at+i,s.charCodeAt(i));};
@@ -25,7 +25,7 @@ test('every synthesized cue renders with signal, clean tails and headroom in a r
     let binary='';for(let i=0;i<bytes.length;i+=16384)binary+=String.fromCharCode(...bytes.subarray(i,i+16384));
     return {metrics,wav:btoa(binary)};
   });
-  for(const m of result.metrics){expect(m.peak,m.cue).toBeGreaterThan(.001);expect(m.peak,m.cue).toBeLessThan(.85);expect(m.rms,m.cue).toBeGreaterThan(.0001);expect(m.tail,m.cue).toBeLessThan(.0001);expect(m.voices,m.cue).toBe(0);}
+  for(const m of result.metrics){expect(m.peak,m.cue).toBeGreaterThan(.001);expect(m.peak,m.cue).toBeLessThan(.18);expect(m.rms,m.cue).toBeGreaterThan(.0001);expect(m.tail,m.cue).toBeLessThan(.0001);expect(m.maxStep,m.cue).toBeLessThan(.02);expect(m.voices,m.cue).toBe(0);}
   await writeFile(out+'/sound-preview.wav',Buffer.from(result.wav,'base64'));
   await writeFile(out+'/audio-render-metrics.json',JSON.stringify(result.metrics,null,2)+'\n');
 });

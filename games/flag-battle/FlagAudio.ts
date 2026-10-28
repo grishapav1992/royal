@@ -47,7 +47,7 @@ export class FlagAudio {
     this.limiter = c.createDynamicsCompressor(); this.limiter.threshold.value = -12; this.limiter.knee.value = 8;
     this.limiter.ratio.value = 4; this.limiter.attack.value = .003; this.limiter.release.value = .1;
     this.master.connect(this.limiter).connect(output);
-    this.noise = c.createBuffer(1, Math.ceil(c.sampleRate * .2), c.sampleRate);
+    this.noise = c.createBuffer(1, Math.ceil(c.sampleRate * .32), c.sampleRate);
     const data = this.noise.getChannelData(0); let seed = 81231;
     for (let i = 0; i < data.length; i++) { seed ^= seed << 13; seed ^= seed >>> 17; seed ^= seed << 5; data[i] = ((seed >>> 0) / 2147483648 - 1) * .65; }
     c.addEventListener('statechange', this.contextChanged);
@@ -107,36 +107,36 @@ export class FlagAudio {
     source.onended = () => { this.voices.delete(voice); source.disconnect(); for (const node of nodes) node.disconnect(); };
     source.start(at); source.stop(at + duration + .02);
   }
-  private tone(frequency: number, end: number, duration: number, level: number, at: number, pan = 0, type: OscillatorType = 'sine') {
+  private pop(frequency: number, end: number, duration: number, level: number, at: number, pan = 0) {
     const c = this.context; if (!this.allowed() || !c || !this.master || this.voices.size >= 16) return;
     const source = c.createOscillator(), gain = c.createGain(), position = c.createStereoPanner();
-    source.type = type; source.frequency.setValueAtTime(frequency, at); source.frequency.exponentialRampToValueAtTime(Math.max(30, end), at + duration);
-    gain.gain.setValueAtTime(.00001, at); gain.gain.linearRampToValueAtTime(level, at + .005); gain.gain.exponentialRampToValueAtTime(.00001, at + duration);
+    source.type = 'sine'; source.frequency.setValueAtTime(frequency, at); source.frequency.exponentialRampToValueAtTime(Math.max(30, end), at + duration);
+    gain.gain.setValueAtTime(.00001, at); gain.gain.linearRampToValueAtTime(level, at + .007); gain.gain.exponentialRampToValueAtTime(.00001, at + duration);
     position.pan.value = pan; source.connect(gain).connect(position).connect(this.master);
     this.attach(source, [gain, position], at, duration);
   }
-  private air(at: number, pan: number, strength: number) {
+  private air(at: number, pan: number, level: number, duration = .17, frequency = 1100) {
     const c = this.context; if (!this.allowed() || !c || !this.master || !this.noise || this.voices.size >= 16) return;
     const source = c.createBufferSource(), filter = c.createBiquadFilter(), gain = c.createGain(), position = c.createStereoPanner();
-    source.buffer = this.noise; filter.type = 'lowpass'; filter.frequency.setValueAtTime(1900, at); filter.frequency.exponentialRampToValueAtTime(380, at + .16);
-    gain.gain.setValueAtTime(.00001, at); gain.gain.linearRampToValueAtTime(.2 * strength, at + .018); gain.gain.exponentialRampToValueAtTime(.00001, at + .16);
-    position.pan.setValueAtTime(pan * .6, at); position.pan.linearRampToValueAtTime(pan, at + .16);
-    source.connect(filter).connect(gain).connect(position).connect(this.master); this.attach(source, [filter, gain, position], at, .16);
+    source.buffer = this.noise; filter.type = 'lowpass'; filter.Q.value = .5;
+    filter.frequency.setValueAtTime(frequency, at); filter.frequency.exponentialRampToValueAtTime(260, at + duration);
+    gain.gain.setValueAtTime(.00001, at); gain.gain.linearRampToValueAtTime(level, at + Math.min(.022, duration * .2)); gain.gain.exponentialRampToValueAtTime(.00001, at + duration);
+    position.pan.setValueAtTime(pan * .6, at); position.pan.linearRampToValueAtTime(pan, at + duration);
+    source.connect(filter).connect(gain).connect(position).connect(this.master); this.attach(source, [filter, gain, position], at, duration);
   }
   playAt(e: FlagSoundEvent, at: number) {
     if (!this.allowed()) return;
     this.scheduled[e.cue] = (this.scheduled[e.cue] ?? 0) + 1;
     const s = e.strength;
     switch (e.cue) {
-      case 'select': this.tone(640, 580, .065, .075, at); break;
-      case 'start': this.tone(262, 392, .18, .12, at); this.tone(523, 523, .22, .07, at + .07); break;
-      case 'collision': this.tone(210 + e.variant * 23, 130 + e.variant * 12, .055, .11 * s, at, e.pan, 'triangle'); break;
-      case 'wall': this.tone(760 + e.variant * 47, 680 + e.variant * 37, .085, .075 * s, at, e.pan); break;
-      case 'eliminate': this.air(at, e.pan, s); this.tone(e.variant < 0 ? 330 : 620 + e.variant * 18, e.variant < 0 ? 165 : 390, .19, .11 * s, at, e.pan); break;
-      case 'final-two': this.tone(392, 392, .15, .09, at, -.12); this.tone(494, 494, .21, .085, at + .16, .12); break;
-      case 'win':
-        for (const [i, f] of [523.25, 659.25, 783.99, 1046.5].entries()) { this.tone(f, f, .34, .115, at + i * .095, (i - 1.5) * .12); this.tone(f * 2, f * 2, .14, .022, at + i * .095); } break;
-      case 'lose': this.tone(155, 98, .16, .11, at); this.tone(310, 196, .1, .035, at); break;
+      case 'select': this.pop(360, 180, .065, .06, at); break;
+      case 'start': this.pop(150, 280, .13, .075, at); this.air(at, 0, .12, .14, 950); break;
+      case 'collision': this.pop(185 + e.variant * 13, 95 + e.variant * 7, .06, .065 * s, at, e.pan); break;
+      case 'wall': this.pop(310 + e.variant * 17, 145 + e.variant * 9, .05, .052 * s, at, e.pan); break;
+      case 'eliminate': this.air(at, e.pan, .15 * s); this.pop(e.variant < 0 ? 190 : 330 + e.variant * 6, e.variant < 0 ? 92 : 150, .105, .065 * s, at, e.pan); break;
+      case 'final-two': this.pop(290, 170, .12, .075, at); this.air(at, 0, .085, .10, 750); break;
+      case 'win': this.pop(430, 185, .17, .095, at); this.air(at, 0, .20, .28, 1500); break;
+      case 'lose': this.pop(145, 90, .09, .055, at); break;
     }
   }
   private stopVoices() {
