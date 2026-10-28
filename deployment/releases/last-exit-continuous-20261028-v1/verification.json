@@ -299,7 +299,37 @@
       "activeVersion": "1.0.0-c419e76e9b50"
     },
     "local": {
-      "status": "Temporary files retained until this compact record is pushed to GitHub"
+      "status": "completed",
+      "removed": [
+        {
+          "path": "artifacts/work/last-exit-continuous-20261028",
+          "bytes": 1210123
+        },
+        {
+          "path": "module-dist/github-crash/versions/1.0.0-d22e01dc1c93",
+          "bytes": 21945740
+        },
+        {
+          "path": "module-dist/github-crash/versions/1.0.0-be31b6d8e2dc",
+          "bytes": 21944565
+        },
+        {
+          "path": "/var/folders/jf/j4h8s0g91q9fgs6xm6lbhlk80000gp/T/royal-pg-UVSm0G",
+          "bytes": 48073132
+        }
+      ],
+      "logicalBytesRemoved": 93173560,
+      "freeBytesBefore": 58100477952,
+      "freeBytesAfter": 58172289024,
+      "preservationCommits": [
+        "8e9ee3fb49b6b631d63864adec66d9c36ff1f63e",
+        "0596643c174a092a5fc4432a19ebba0b2d237ad5"
+      ],
+      "remoteCommitVerified": true,
+      "archivesCreated": 0,
+      "activeWorkExceptions": [],
+      "retained": "One current Last EXIT local package, normal build outputs, installed dependencies and this compact report. Server rollback versions and backup retained. Other chats were untouched.",
+      "measurementNote": "Logical sizes and observed free-space measurements; concurrent filesystem writes can affect the difference."
     }
   },
   "rollbackTags": [
