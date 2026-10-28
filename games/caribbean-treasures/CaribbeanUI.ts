@@ -11,9 +11,12 @@ import { SlotDialog, slotOwnsKeyboard, type SlotDialogKind } from '../../src/ui/
 import { caribbeanIcon } from './icons';
 import {CaribbeanAudio,type CaribbeanCue} from './CaribbeanAudio';
 import {caribbeanOutcome,caribbeanBeforeReveal} from './presentation';
+import {CaribbeanCaptain} from './CaribbeanCaptain';
+import {CaribbeanMotion} from './CaribbeanMotion';
 
 const escape = (value: string) => value.replace(/[&<>"']/g, character => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]!));
 const namesEn = ['Map','Compass','Pistol','Cutlass','Ruby','Parrot'];
+const portraitLayers='<span class="ct-portrait-gesture" data-pose="idle"><img class="ct-portrait-layer ct-current" src="/assets/caribbean-treasures/captain.webp" alt=""><img class="ct-portrait-layer" src="/assets/caribbean-treasures/captain.webp" alt=""></span>';
 export class CaribbeanUI {
   private services = readGameHost();
   private client = this.services.expansionClient;
@@ -37,6 +40,8 @@ export class CaribbeanUI {
   private stopped = 6;
   private boardSignature='';
   private tally?:string;
+  private captain:CaribbeanCaptain;
+  private visuals:CaribbeanMotion;
   private accents:{cue:string;deviationMs:number;preparationMs:number;visualMs:number}[]=[];
   private motionPreference=window.matchMedia('(prefers-reduced-motion: reduce)');
   private get reduced(){return this.motionPreference.matches;}
@@ -56,13 +61,14 @@ export class CaribbeanUI {
     this.root = document.createElement('section');
     this.root.className = 'ct-root';
     this.root.setAttribute('aria-label',this.title);
-    this.root.innerHTML = '<header class="ct-heading"><span class="ct-avatar"><img src="/assets/caribbean-treasures/captain.webp" alt=""></span><div class="ct-title"><small>ROYAL · CARIBBEAN</small><h2></h2></div><div class="ct-header-tools"><button type="button" data-ct-action="sound">♪</button><button type="button" data-ct-action="music">♫</button><button type="button" data-ct-action="info">?</button><button type="button" data-ct-action="history">≡</button></div></header>'
-      + '<div class="ct-stage"><div class="ct-board-wrap"><div class="ct-board" role="img"></div><div class="ct-waiting" hidden></div></div><aside class="ct-captain" aria-hidden="true"><img src="/assets/caribbean-treasures/captain.webp" alt=""><img class="ct-captain-win" src="/assets/caribbean-treasures/captain-win.webp" alt=""></aside><div class="ct-map" role="status"></div></div>'
+    this.root.innerHTML = '<header class="ct-heading"><span class="ct-avatar" aria-hidden="true"><span class="ct-avatar-body">'+portraitLayers+'</span></span><div class="ct-title"><small>ROYAL · CARIBBEAN</small><h2></h2></div><div class="ct-header-tools"><button type="button" data-ct-action="sound">♪</button><button type="button" data-ct-action="music">♫</button><button type="button" data-ct-action="info">?</button><button type="button" data-ct-action="history">≡</button></div></header>'
+      + '<div class="ct-stage"><div class="ct-board-wrap"><div class="ct-board" role="img"></div><div class="ct-waiting" hidden></div></div><aside class="ct-captain" aria-hidden="true"><span class="ct-captain-body">'+portraitLayers+'</span><span class="ct-captain-caption" hidden></span></aside><div class="ct-map" role="status"></div></div>'
       + '<div class="ct-ledger"><div><span data-ct-label="balance"></span><strong data-ct-balance></strong></div><div><span data-ct-label="cost"></span><strong data-ct-cost></strong></div><div><span data-ct-label="payout"></span><strong data-ct-payout></strong></div><div><span data-ct-label="net"></span><strong data-ct-net></strong></div></div>'
       + '<div class="ct-controls"><div class="ct-lines-control"><label for="ct-lines-input" data-ct-label="lines"></label><span class="ct-stepper"><button type="button" data-ct-action="lines-down">−</button><select id="ct-lines-input" data-ct-lines></select><button type="button" data-ct-action="lines-up">+</button></span></div><div class="ct-stake-control"><label for="ct-stake-input" data-ct-label="stake"></label><span class="ct-stepper"><button type="button" data-ct-action="stake-down">−</button><select id="ct-stake-input" data-ct-stake></select><button type="button" data-ct-action="stake-up">+</button></span></div><button type="button" data-ct-action="lines"></button><button type="button" data-ct-action="buy"></button><button type="button" class="ct-play" data-ct-action="play"><span class="ct-spin-icon" aria-hidden="true">↻</span><b></b><small></small></button></div>'
       + '<div class="ct-status" role="status" aria-live="polite"></div><div class="ct-choice" hidden></div><button type="button" class="ct-retry" data-ct-action="retry" hidden></button><button type="button" class="ct-skip" data-ct-action="skip" hidden></button>'
       + '<div class="ct-backdrop" hidden><section class="ct-modal" role="dialog" aria-modal="true"></section></div>';
     host.replaceChildren(this.root);
+    this.captain=new CaribbeanCaptain(this.root);this.visuals=new CaribbeanMotion(this.root,()=>this.reduced);
     this.root.querySelector('h2')!.textContent = this.title;
     this.element<HTMLSelectElement>('[data-ct-lines]').innerHTML = CARIBBEAN_LINE_COUNTS.map(lines => '<option>' + lines + '</option>').join('');
     this.element<HTMLSelectElement>('[data-ct-stake]').innerHTML = CARIBBEAN_LINE_STAKES.map(stake => '<option value="' + stake + '">' + this.money(stake) + '</option>').join('');
@@ -107,7 +113,7 @@ export class CaribbeanUI {
     this.client.addEventListener('change',this.update,{signal:this.lifetime.signal});
     this.services.demoWallet.addEventListener('change',this.update,{signal:this.lifetime.signal});
     window.addEventListener('royal-account',this.update,{signal:this.lifetime.signal});
-    document.addEventListener('visibilitychange',()=>{if(document.hidden)this.stopPresentation();},{signal:this.lifetime.signal});
+    document.addEventListener('visibilitychange',()=>{if(document.hidden)this.stopPresentation();else this.render();},{signal:this.lifetime.signal});
     this.motionPreference.addEventListener('change',()=>{if(this.reduced)this.stopPresentation();else this.render();},{signal:this.lifetime.signal});
     this.unsubscribeAudio=this.services.gameAudio.onPreferences(()=>this.render());
     this.update(); void this.client.refresh();
@@ -116,7 +122,7 @@ export class CaribbeanUI {
   private update = () => {
     if (this.disposed) return;
     if (this.account !== this.client.accountId) {
-      this.stopPresentation();this.account = this.client.accountId; this.sessionKey = ''; this.lines = 20; this.lineStake = '100'; this.closeDialog();
+      this.stopPresentation();this.captain.reset(true);this.account = this.client.accountId; this.sessionKey = ''; this.lines = 20; this.lineStake = '100'; this.closeDialog();
     }
     const session = this.session, view = this.view, key = session && view ? session.id + ':' + view.revision : '';
     if (view && key !== this.sessionKey) {
@@ -130,6 +136,7 @@ export class CaribbeanUI {
     const view = this.presenting ? this.displayed : this.view, frame = view?.spins.at(-1)?.frame;
     this.root.dataset.ctPhase=this.visualPhase;this.root.dataset.motion=this.reduced?'reduced':'full';
     this.root.dataset.outcome=view?.phase==='complete'?caribbeanOutcome(view):'';
+    this.captain?.context(!this.paused&&!document.hidden&&!this.dialogKind,this.reduced,this.english);
     this.root.setAttribute('aria-busy',String(this.presenting||this.client.busy));
     const sound=this.element<HTMLButtonElement>('[data-ct-action=sound]'),music=this.element<HTMLButtonElement>('[data-ct-action=music]');
     const muted=this.services.gameAudio.getPreferences().muted;sound.setAttribute('aria-label',this.text(muted?'Включить звук':'Выключить звук',muted?'Enable sound':'Mute sound'));sound.setAttribute('aria-pressed',String(!muted));
@@ -206,9 +213,10 @@ export class CaribbeanUI {
       giant.style.cssText=`left:${block.x/6*100}%;top:${block.y/4*100}%;width:${block.size/6*100}%;height:${block.size/4*100}%`;
       giant.querySelector('strong')!.textContent=this.symbolName(block.symbol);giant.querySelector('small')!.textContent=block.size+'×'+block.size+(frame?.cannon?this.text(' · ЗАЛП',' · CANNON'):'');
     }
-    const paths=board.querySelector<SVGElement>('.ct-paths')!,pathKey=JSON.stringify([[...paid],block,this.showLines,this.lines]);
+    const paths=board.querySelector<SVGElement>('.ct-paths')!,pathKey=JSON.stringify([[...paid],block,this.showLines,this.lines,frame?.wins[0]?.line]);
     if(paths.dataset.paths!==pathKey){paths.dataset.paths=pathKey;paths.innerHTML=[...paid].filter(position=>!insideBlock(position)).map(position=>'<rect x="'+(position%6*100+4)+'" y="'+(Math.floor(position/6)*100+4)+'" width="92" height="92" rx="6"/>').join('')
-      +(this.showLines?CARIBBEAN_LINES.slice(0,this.lines).map(line=>'<polyline points="'+line.map((row,column)=>(column*100+50)+','+(row*100+50)).join(' ')+'"/>').join(''):'');}
+      +(this.showLines?CARIBBEAN_LINES.slice(0,this.lines).map(line=>'<polyline points="'+line.map((row,column)=>(column*100+50)+','+(row*100+50)).join(' ')+'"/>').join(''):'')
+      +(frame?.wins.length?'<defs><mask id="ct-paid-route"><rect width="600" height="400" fill="white"/>'+(block?'<rect x="'+block.x*100+'" y="'+block.y*100+'" width="'+block.size*100+'" height="'+block.size*100+'" fill="black"/>':'')+'</mask></defs><path class="ct-win-route" mask="url(#ct-paid-route)" pathLength="1" d="M '+frame.wins[0].positions.map(position=>(position%6*100+50)+','+(Math.floor(position/6)*100+50)).join(' L ')+'"/>':'');}
     updateStops();
   }
   private async start(mode: CaribbeanStartMode) {
@@ -232,7 +240,7 @@ export class CaribbeanUI {
       {loss:'Round complete without a payout.',partial:'Partial return. The payout is below the round cost.',return:'The round cost has been returned.',win:'Positive round result.',bigwin:'Large positive round result.'}[kind]);
   }
   private stopPresentation(){
-    this.root?.getAnimations({subtree:true}).forEach(animation=>animation.cancel());
+    this.visuals?.cancel();this.captain?.reset();
     this.motion.abort();this.tally=undefined;this.presenting=false;this.displayed=undefined;this.visualPhase='idle';this.stopped=6;this.audio.pause();
     if(this.root&&!this.disposed)this.render();
   }
@@ -247,21 +255,22 @@ export class CaribbeanUI {
     await this.wait(expected-performance.now()-24,signal);if(signal.aborted)return;
     await new Promise<void>(resolve=>{
       const done=()=>{cancelAnimationFrame(frame);signal.removeEventListener('abort',done);resolve();};
-      const frame=requestAnimationFrame(()=>{if(!signal.aborted){const painting=performance.now();visual();this.accents.push({cue,deviationMs:performance.now()-expected,preparationMs,visualMs:performance.now()-painting});if(this.accents.length>80)this.accents.shift();}done();});
+      const frame=requestAnimationFrame(()=>{if(!signal.aborted){const painting=performance.now();visual();this.captain.react(cue,this.sessionKey+':'+cue+':'+variant,variant);if(cue==='stop')this.visuals.land(variant);else if(cue==='giant')this.visuals.giant();else if(cue==='win'||cue==='bigwin')this.visuals.outcome(cue==='bigwin');this.accents.push({cue,deviationMs:performance.now()-expected,preparationMs,visualMs:performance.now()-painting});if(this.accents.length>80)this.accents.shift();}done();});
       signal.addEventListener('abort',done,{once:true});
     });
   }
   private async perform(action:()=>Promise<unknown>){
     const previous=this.view,priorKey=this.sessionKey,account=this.client.accountId;
     this.motion.abort();const motion=this.motion=new AbortController(),signal=motion.signal;
+    this.visuals.cancel();this.captain.begin();
     this.displayed=previous;this.presenting=true;this.visualPhase='waiting';this.render();void this.audio.enter();
     try{
       await action();
       if(signal.aborted||this.disposed||account!==this.client.accountId||document.hidden||this.paused)return;
       const confirmed=this.view;if(!confirmed||this.sessionKey===priorKey)return;
-      if(this.reduced){this.displayed=confirmed;this.visualPhase='outcome';this.render();this.audio.cue(confirmed.phase==='complete'?caribbeanOutcome(confirmed):confirmed.phase==='choice'?'bonus':'click');return;}
       const previousInRound=this.session?.id===priorKey.split(':')[0]?previous:undefined;
       const hasSpin=confirmed.spins.length>(previousInRound?.spins.length??0);
+      if(this.reduced){this.displayed=confirmed;this.visualPhase='outcome';this.render();const cue=confirmed.phase==='complete'?caribbeanOutcome(confirmed):confirmed.phase==='choice'||!hasSpin?'bonus':'click';this.audio.cue(cue);this.captain.react(cue,this.sessionKey+':'+cue+':0');return;}
       if(hasSpin){
         this.displayed=caribbeanBeforeReveal(confirmed,previousInRound);this.stopped=0;this.visualPhase='reels';
         // The continuous giant is revealed only after every underlying column lands.
@@ -271,20 +280,19 @@ export class CaribbeanUI {
           await this.wait(100,signal);await this.accent('stop',signal,()=>{this.stopped=column+1;this.render();},column);
         }
         if(signal.aborted)return;
-        if(beforeBlock){this.displayed.spins.at(-1)!.frame.block=beforeBlock;this.visualPhase='giant';await this.accent('giant',signal,()=>this.render());await this.wait(280,signal);}
+        await this.wait(140,signal);if(signal.aborted)return;
+        if(beforeBlock){this.displayed.spins.at(-1)!.frame.block=beforeBlock;this.visualPhase='giant';await this.accent('giant',signal,()=>this.render());await this.wait(340,signal);}
         if(signal.aborted)return;
         if(confirmed.spins.at(-1)?.frame.cannon){this.visualPhase='cannon';await this.accent('cannon',signal,()=>{
           const old=this.root.querySelector('.ct-giant')?.getBoundingClientRect();
           this.displayed=structuredClone(confirmed);this.displayed.totalPayoutUnits=previousInRound?.totalPayoutUnits??'0';this.displayed.spins.at(-1)!.frame.wins=[];this.render();
-          const giant=this.root.querySelector<HTMLElement>('.ct-giant'),next=giant?.getBoundingClientRect();
-          if(giant&&old&&next)giant.animate([{transformOrigin:'0 0',transform:`translate(${old.x-next.x}px,${old.y-next.y}px) scale(${old.width/next.width},${old.height/next.height})`},{transformOrigin:'0 0',transform:'none'}],{duration:320,easing:'ease-out'});
-        });await this.wait(320,signal);}
+          this.visuals.cannon(old);
+        });await this.wait(380,signal);}
         if(signal.aborted)return;
         this.displayed=confirmed;this.visualPhase='wins';
         this.tally=previousInRound?.totalPayoutUnits??'0';
         if(confirmed.spins.at(-1)?.frame.wins.length)await this.accent('line',signal,()=>this.render());else this.render();
-        const from=BigInt(this.tally),to=BigInt(confirmed.totalPayoutUnits);
-        for(let step=1;step<=8&&!signal.aborted;step++){await this.wait(35,signal);if(signal.aborted)break;this.tally=String(from+(to-from)*BigInt(step)/8n);this.element('[data-ct-payout]').textContent=this.money(this.tally);}
+        await this.visuals.tally(this.tally,confirmed.totalPayoutUnits,420,signal,units=>{this.tally=units;this.element('[data-ct-payout]').textContent=this.money(units);});
         this.tally=undefined;
       }
       if(signal.aborted)return;
@@ -294,7 +302,7 @@ export class CaribbeanUI {
       else this.render();
       await this.wait(confirmed.phase==='complete'&&caribbeanOutcome(confirmed)==='bigwin'?700:180,signal);
     }finally{
-      if(this.motion===motion&&!this.disposed){this.tally=undefined;this.presenting=false;this.displayed=undefined;this.visualPhase='idle';this.stopped=6;this.render();}
+      if(this.motion===motion&&!this.disposed){this.tally=undefined;this.presenting=false;this.displayed=undefined;this.visualPhase='idle';this.stopped=6;this.captain.finish();this.render();}
     }
   }
   pause(){this.paused=true;this.stopPresentation();}
@@ -337,10 +345,10 @@ export class CaribbeanUI {
   getState() {
     return {gameId:CARIBBEAN_GAME,phase:this.view?.phase ?? 'ready',sessionId:this.session?.id ?? null,
       revision:this.view?.revision ?? 0,lines:this.lines,lineStakeUnits:this.lineStake,pendingId:this.client.pending?.id ?? null,
-      presenting:this.presenting,visualPhase:this.visualPhase,audio:this.audio.state(),accents:[...this.accents]};
+      presenting:this.presenting,visualPhase:this.visualPhase,audio:this.audio.state(),captain:this.captain.state(),visuals:this.visuals.state(),accents:[...this.accents]};
   }
   destroy() {
     if (this.disposed) return;
-    this.stopPresentation();this.disposed = true;this.audio.destroy();this.unsubscribeAudio(); this.lifetime.abort(); this.dialog.destroy(); this.root.remove();
+    this.stopPresentation();this.disposed = true;this.captain.destroy();this.visuals.cancel();this.audio.destroy();this.unsubscribeAudio(); this.lifetime.abort(); this.dialog.destroy(); this.root.remove();
   }
 }
