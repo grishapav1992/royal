@@ -1,4 +1,16 @@
-# Forest Heart client 1.6
+# Forest Heart client 1.7
+
+## Interface presentation 1.7
+
+The accepted field, current action guidance and financial controls now occupy separate rows. Source and receiver ports, board masks, carried roots and all 1.6 character reactions are unchanged. The frame fitting uses its actual rounded pixel thickness, with a thinner mobile frame, instead of reserving a fixed percentage that could underuse a narrow viewport. The approved elf remains beside the field on desktop and has a larger portrait in the mobile instruction panel. The real host and connected chat remain intact.
+
+The monetary panel shows returned amount and net result with equal type size. Zero, partial and break-even returns use neutral return text; negative net results remain explicit. Pending contributions show a separate collected label and no final net before settlement. A visible next-action hint distinguishes automatic field reveal, the offered free clockwise turn, free continuation and a new paid series. Cost remains visible on the paid button; no automatic paid action is added.
+
+Receiver values and the source-energy explanation use the existing integer forestHeartFlowerPayout helper with the accepted series stake and the displayed confirmed pulse energy. They describe one reached flower in that pulse, not another wallet credit. Changing the next stake cannot relabel a previous field. This imports an existing qualified pure function without changing its rules or any protected source.
+
+A separate settings button opens music and reduced-motion controls directly. Rules start with three illustrated code-native steps; full rules, energy probabilities, RTP and recovery remain in an expandable section. The sticky dialog header keeps its close button reachable. Settings and rules tabs support keyboard navigation; source energy has a dismissible explanation. Important mobile values and paid cost are enlarged, and primary utility controls have at least 44 by 44 CSS pixel targets. These are design choices, not a declaration of complete accessibility conformance or a user study.
+
+Verify financial signs and neutral partial returns, accepted flower amounts after changing the next stake, 1280 by 720 desktop and 390/320 pixel phones with chat, direct settings access, keyboard tabs, all offered choices, bonus continuations, restore and uncertain-operation recovery. No probability, price, payout, wallet, rules contract, qualification proof or sound source changes belong to this update.
 
 ## Character presentation 1.6
 

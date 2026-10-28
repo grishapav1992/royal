@@ -80,13 +80,13 @@ test('real host preserves choice, bonus, exact settlement and connected chat acr
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
   await page.emulateMedia({ reducedMotion: 'reduce' }); await routeScenario(page, 'choice-bonus'); await enter(page, roomPath);
   await expect(page.locator('#chat-input')).toBeInViewport(); await page.screenshot({ path: out + '/desktop.png' }); await fit(game(page));
-  const initial = await act(page); expect(initial.view.stage).toBe('choice');
+  const initial = await act(page); expect(initial.view.stage).toBe('choice');await expect(game(page).locator('[data-fh=next]')).toContainText('со знаком ↻');
   await expect(game(page).locator('[data-cell]:enabled')).toHaveCount(12);
   const balance = await wallet(page); expect(balance.balance).toBe(9990);
   await page.locator('#studio-game-list').click(); await choose(page);
   expect((await state(page)).sessionId).toBe(initial.sessionId); expect((await state(page)).presentations).toBe(0);
   await expect(game(page).locator('[data-cell]:enabled')).toHaveCount(12);
-  let current = await act(page, '[data-cell="5"]'); expect(current.view.stage).toBe('bonus'); expect((await wallet(page)).balance).toBe(9990);
+  let current = await act(page, '[data-cell="5"]'); expect(current.view.stage).toBe('bonus');await expect(game(page).locator('[data-fh=next]')).toContainText('бесплатно'); expect((await wallet(page)).balance).toBe(9990);
   await page.setViewportSize({ width: 390, height: 844 }); await expect(page.locator('#chat-input')).toBeInViewport(); await fit(game(page));
   await expect(game(page).locator('[data-fh=spin]')).toBeInViewport();
   await page.screenshot({ path: out + '/mobile.png' });
@@ -143,7 +143,7 @@ test('motion and shared audio respect result tiers, mute, pause, rules, skip, an
   expect((await state(page)).audio.activeVoices).toBe(0);
   await game(page).locator('[data-fh=rules]').click(); await expect(game(page).locator('dialog')).toBeVisible();
   expect((await state(page)).audio.activeVoices).toBe(0);
-  await game(page).locator('[data-fh=music]').uncheck(); await game(page).locator('[data-fh=motion]').check();
+  await game(page).locator('[data-fh-tab=settings]').click(); await game(page).locator('[data-fh=music]').uncheck(); await game(page).locator('[data-fh=motion]').check();
   await game(page).locator('[data-fh=close]').click(); expect((await state(page)).reduced).toBe(true);
   await game(page).locator('[data-fh=sound]').click(); await act(page); current = await state(page);
   expect(current.audio.activeVoices).toBe(0); expect(current.audio.played.win).toBe(1);
@@ -177,7 +177,7 @@ test('a malformed payout reply keeps the same pending operation until a valid re
 test('English rules, zero return and a narrow mobile viewport stay readable',async({page,roomPath})=>{
   await page.emulateMedia({reducedMotion:'reduce'});await routeScenario(page,'loss');await enter(page,roomPath,'en');
   await expect(game(page).locator('h1')).toHaveText('Forest Heart');await game(page).locator('[data-fh=rules]').click();
-  await expect(game(page).locator('dialog')).toContainText('95.9942%');expect(await game(page).locator('.fh').innerText()).not.toMatch(/[А-Яа-яЁё]/);
+  await game(page).locator('.fh-full-rules summary').click();await expect(game(page).locator('dialog')).toContainText('95.9942%');expect(await game(page).locator('.fh').innerText()).not.toMatch(/[А-Яа-яЁё]/);
   await game(page).locator('[data-fh=close]').click();await page.setViewportSize({width:320,height:780});await fit(game(page));
   await game(page).locator('[data-fh=spin]').click();await expect(game(page).locator('.fh')).toHaveAttribute('data-outcome','loss');
   await expect(game(page).locator('[data-fh=total]')).toHaveText('0');expect((await wallet(page)).balance).toBe(9990);
@@ -319,7 +319,7 @@ test('the elf blinks and renders local movement, stops for rules, and reacts onl
     await page.unroute('**/api/demo-wallet/expansion');await routeScenario(page,scenario);await act(page);
     expect((await state(page)).character.events.some((e:any)=>e.pose==='win'||e.pose==='big')).toBe(false);
   }
-  await game(page).locator('[data-fh=rules]').click();await game(page).locator('[data-fh=motion]').check();await game(page).locator('[data-fh=close]').click();
+  await game(page).locator('[data-fh=settings]').click();await game(page).locator('[data-fh=motion]').check();await game(page).locator('[data-fh=close]').click();
   const reduced=(await state(page)).character;expect(reduced.reduced).toBe(true);expect(reduced.running).toBe(false);
   await page.waitForTimeout(300);expect((await state(page)).character.frames).toBe(reduced.frames);
   await writeFile(out+'/character-lifecycle.json',JSON.stringify({idle:initial,paused:stopped,reopened:current.character,reduced},null,2));
@@ -412,4 +412,45 @@ test('the original score renders finite unclipped audio and releases its owned v
   expect(rendered.peak).toBeGreaterThan(.01);expect(rendered.peak).toBeLessThan(.95);expect(rendered.active).toBe(0);
   const wav=Buffer.alloc(44+rendered.pcm.length*2);wav.write('RIFF');wav.writeUInt32LE(wav.length-8,4);wav.write('WAVEfmt ',8);wav.writeUInt32LE(16,16);wav.writeUInt16LE(1,20);wav.writeUInt16LE(1,22);wav.writeUInt32LE(rendered.rate,24);wav.writeUInt32LE(rendered.rate*2,28);wav.writeUInt16LE(2,32);wav.writeUInt16LE(16,34);wav.write('data',36);wav.writeUInt32LE(rendered.pcm.length*2,40);rendered.pcm.forEach((v,i)=>wav.writeInt16LE(v,44+i*2));
   await writeFile(out+'/audio-preview.wav',wav);await writeFile(out+'/audio-measurement.json',JSON.stringify({sampleRate:rendered.rate,seconds:12,peak:rendered.peak,rms:rendered.rms,ownedVoicesAfterDestroy:rendered.active,scope:'Digital offline rendering only; no physical device or human listening assessment'},null,2));
+});
+
+test('readable outcomes, accepted flower values and separate settings fit desktop and phones with chat',async({page,roomPath})=>{
+  await page.emulateMedia({reducedMotion:'reduce'});await routeScenario(page,'partial');await enter(page,roomPath);
+  await expect(game(page).locator('[data-fh=next]')).toContainText('Пробуди поле');
+  await expect(game(page).locator('[data-fh=spin]')).toContainText('Стоимость 10 USDT');
+  await act(page);await expect(game(page).locator('[data-fh=total]')).toHaveText('6,31');await expect(game(page).locator('[data-fh=net]')).toHaveText('-3,69');
+  await expect(game(page).locator('.fh-flower-value')).toHaveText(['6,31','6,31','6,31']);
+  await game(page).locator('[data-fh=higher]').click();
+  await expect(game(page).locator('[data-fh=next]')).toContainText('Ставка поля: 10 USDT');
+  await expect(game(page).locator('.fh-flower-value')).toHaveText(['6,31','6,31','6,31']);
+  await game(page).locator('[data-fh=energy]').click();await expect(game(page).locator('#fh-energy-note')).toBeVisible();
+  await expect(game(page).locator('[data-fh=flower-value-note]')).toContainText('6,31 USDT');
+  await game(page).locator('#fh-energy-note button').click();
+  const metrics=[];
+  for(const viewport of [{width:1280,height:720},{width:390,height:844},{width:320,height:780}]){
+    await page.setViewportSize(viewport);await fit(game(page));await expect(page.locator('#chat-input')).toBeInViewport();
+    const sizes=await game(page).locator('.fh').evaluate(root=>{
+      const selectors=['[data-fh=lower]','[data-fh=higher]','[data-fh=rules]','[data-fh=settings]','[data-fh=energy]','.fh-fast'];
+      const controls=selectors.map(selector=>{const e=root.querySelector(selector)!,r=e.getBoundingClientRect();return{selector,width:r.width,height:r.height};});
+      const fonts=['[data-fh=net]','[data-fh=next]','.fh-spin small'].map(selector=>({selector,size:parseFloat(getComputedStyle(root.querySelector(selector)!).fontSize)}));
+      const board=root.querySelector('.fh-board')!.getBoundingClientRect();
+      const result=root.querySelector('[data-fh=total]')!,net=root.querySelector('[data-fh=net]')!;
+      return{width:root.clientWidth,height:root.clientHeight,board:board.toJSON(),controls,fonts,returnColor:getComputedStyle(result).color,netFont:parseFloat(getComputedStyle(net).fontSize),returnFont:parseFloat(getComputedStyle(result).fontSize),textFits:[result,net,root.querySelector('[data-fh=balance]')!].every(e=>e.scrollWidth<=e.clientWidth+1)};
+    });
+    for(const control of sizes.controls){expect(control.width).toBeGreaterThanOrEqual(44);expect(control.height).toBeGreaterThanOrEqual(44);}
+    for(const font of sizes.fonts)expect(font.size).toBeGreaterThanOrEqual(12);
+    expect(sizes.netFont).toBe(sizes.returnFont);expect(sizes.returnColor).toBe('rgb(242, 232, 211)');expect(sizes.textFits).toBe(true);
+    if(viewport.width===1280)expect(sizes.board.width).toBeGreaterThanOrEqual(330);
+    metrics.push({viewport,...sizes});await page.screenshot({path:out+`/ux-v7-${viewport.width}.png`});
+  }
+  await game(page).locator('[data-fh=settings]').click();
+  await expect(game(page).locator('[data-panel=settings]')).toBeVisible();await expect(game(page).locator('[data-fh=motion]')).toBeInViewport();
+  await page.screenshot({path:out+'/ux-v7-settings.png'});
+  await game(page).locator('[data-fh-tab=rules]').click();await expect(game(page).locator('.fh-steps li')).toHaveCount(3);
+  await expect(game(page).locator('[data-panel=settings]')).toBeHidden();
+  await page.screenshot({path:out+'/ux-v7-rules.png'});
+  await game(page).locator('[data-fh=close]').click();expect((await wallet(page)).balance).toBe(9996.31);
+  await page.locator('#studio-game-list').click();await choose(page);
+  expect((await state(page)).presentations).toBe(0);await expect(game(page).locator('[data-fh=net]')).toHaveText('-3,69');
+  await writeFile(out+'/ux-v7-metrics.json',JSON.stringify(metrics,null,2));
 });
