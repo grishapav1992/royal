@@ -197,11 +197,12 @@ test('painted tiles fit a short desktop window and only the accepted root rotate
   await game(page).locator('[data-cell="5"]').click();
   await expect(game(page).locator('.fh')).toHaveAttribute('data-motion','turn');
   const frames=await game(page).locator('.fh').evaluate(async root=>{
-    const frames:{motion:string;angles:number[];sap:number[]}[]=[];
+    const frames:{motion:string;angles:number[];sap:number[];total:number}[]=[];
     const start=performance.now();
     while(performance.now()-start<3000){
       const cells=Array.from(root.querySelectorAll<HTMLElement>('[data-cell]'));
-      frames.push({motion:(root as HTMLElement).dataset.motion||'',angles:cells.map(c=>parseFloat(c.style.getPropertyValue('--turn'))),sap:cells.map(c=>Number(c.style.getPropertyValue('--sap')))});
+      const total=Number(root.querySelector('[data-fh=total]')!.textContent!.replace(/\s/g,'').replace(',','.'));
+      frames.push({motion:(root as HTMLElement).dataset.motion||'',angles:cells.map(c=>parseFloat(c.style.getPropertyValue('--turn'))),sap:cells.map(c=>Number(c.style.getPropertyValue('--sap'))),total:Math.round(total*100)});
       if(frames.some(f=>f.motion==='flow') && !(root as HTMLElement).dataset.motion) break;
       await new Promise<void>(resolve=>requestAnimationFrame(()=>resolve()));
     }
@@ -211,18 +212,19 @@ test('painted tiles fit a short desktop window and only the accepted root rotate
   expect(turn.some(f=>f.angles[5]>0 && f.angles[5]<90)).toBe(true);
   for(const frame of frames) for(let cell=0;cell<25;cell++) if(cell!==5) expect(frame.angles[cell]).toBe(parseFloat(before[cell]));
   expect(frames.some(f=>f.motion==='flow' && f.sap.some(value=>value>0 && value<1))).toBe(true);
+  expect(frames.some(f=>f.motion==='count'&&f.total>631&&f.total<1262)).toBe(true);
   await expect(game(page).locator('[data-fh=spin]')).toBeEnabled();
   expect((await state(page)).view.base.rotation).toBe(2);
   const bonusFit=await game(page).locator('.fh').evaluate(root=>({bonus:root.querySelector('.fh-bonus')!.getBoundingClientRect().bottom,controls:root.querySelector('.fh-controls')!.getBoundingClientRect().top}));
   expect(bonusFit.bonus).toBeLessThanOrEqual(bonusFit.controls);
   await page.screenshot({path:out+'/desktop-lit.png'});
-  await writeFile(out+'/motion-frames.json',JSON.stringify({frames:frames.length,turnFrames:turn.length,intermediateAngles:turn.map(f=>f.angles[5]),continuousSapFrames:frames.filter(f=>f.sap.some(v=>v>0&&v<1)).length},null,2));
+  await writeFile(out+'/motion-frames.json',JSON.stringify({frames:frames.length,turnFrames:turn.length,intermediateAngles:turn.map(f=>f.angles[5]),continuousSapFrames:frames.filter(f=>f.sap.some(v=>v>0&&v<1)).length,intermediateCounterFrames:frames.filter(f=>f.motion==='count'&&f.total>631&&f.total<1262).length},null,2));
   await page.setViewportSize({width:1110,height:1244}); await fit(game(page));
-  const centres=await game(page).locator('.fh').evaluate(root=>{
+  const poster=await game(page).locator('.fh').evaluate(root=>{
     const board=root.querySelector('.fh-board')!.getBoundingClientRect(), character=root.querySelector('.fh-character')!.getBoundingClientRect();
-    return {board:board.y+board.height/2,character:character.y+character.height/2};
+    return {mode:(root as HTMLElement).dataset.layout,boardTop:board.top,boardWidth:board.width,characterBottom:character.bottom};
   });
-  expect(Math.abs(centres.board-centres.character)).toBeLessThan(100);
+  expect(poster.mode).toBe('poster');expect(poster.boardWidth).toBeGreaterThan(400);expect(poster.characterBottom).toBeLessThanOrEqual(poster.boardTop);
   await page.screenshot({path:out+'/desktop-tall.png'});
 });
 

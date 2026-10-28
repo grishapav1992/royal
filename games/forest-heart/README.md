@@ -1,4 +1,4 @@
-# Forest Heart client 1.2
+# Forest Heart client 1.3
 
 Independent client for `studio-forest-heart`, using Royal host API 1, rules 1 and progress 1. The common expansion transport and wallet own operations, sessions and money. This package only presents accepted public states. Mathematical rules: [rules-v1.md](../../docs/concepts/forest-heart/rules-v1.md).
 
@@ -24,3 +24,7 @@ Version 1.1 replaces the contour pipes with a painted wood atlas, an alpha root 
 Version 1.2 gives events different materials, attacks and rhythms. Music uses a 76 BPM audio-clock schedule with a short look-ahead; delayed callbacks skip elapsed time instead of replaying old notes. Effects gently duck the music, including its room send. Turning music off only cancels music voices, preserving an accepted event's effect. All sample buffers and short stereo room responses are synthesized by the module, with a deterministic audio-only seed and no external recordings. The shared Royal context and preferences remain the only audio authority. [Audio design and comparison](../../docs/concepts/forest-heart/audio-v3-design.md) distinguish digital measurements from listening judgements.
 
 RU/EN copy is local to the module. All controls are keyboard accessible. The choice is deliberate and has no timeout. There is no automatic paid spinning. Final verification and asset provenance are recorded under docs/concepts/forest-heart/.
+
+Version 1.3 keeps the same art direction while fitting three layouts to the measured iframe. Wide windows give the character a separate column; tall windows use a character banner and a larger field; phones put a small portrait inside the instruction panel. The title, source, receiver rail, status/bonus panel and financial controls have separate fixed areas. A low-height variant reduces secondary text, preserving the primary controls. A gesture inside the game can start the music without placing a stake.
+
+Additional presentation choices: the accepted tile rises at most 4 px during its existing 90-degree turn and settles at the wooden accent; the field arrives outward from the source row. Only newly collected flowers emit five quiet particles over 650 ms. Restored flowers do not. After the confirmed flow, an integer display counter moves from the previous total in this same series, or zero for a new series, to the confirmed total over 420 ms (180 ms fast). A final positive cadence is scheduled to coincide with counter completion; partial returns remain quiet. Skip, pause, account change, close and reduced motion immediately show the confirmed total. The counter only displays public accepted amounts and never calculates or changes a payout. These timings are artistic hypotheses.
