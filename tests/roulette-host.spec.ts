@@ -1,6 +1,6 @@
 import {test as base,expect,type Page} from '@playwright/test';
 import {Client} from '@colyseus/sdk';
-const out='artifacts/work/roulette-visual';
+const out='artifacts/work/roulette-motion';
 const test=base.extend<{roomPath:string}>({roomPath:async({request},use)=>{
  const r=await request.post('/api/auth/login',{data:{email:`roulette-room-${crypto.randomUUID()}@example.test`,password:'Roulette-test-123!'}});expect(r.ok()).toBe(true);
  const cookie=r.headers()['set-cookie'].split(';')[0];await request.post('/api/auth/character',{data:{skin:0}});
@@ -75,12 +75,13 @@ test('roulette uses real wallet settlement, responsive host chat, history, and c
  await close(page);expect(errors).toEqual([]);
 });
 test('a lost accepted response survives close and reopening and retries the exact same wallet UUID',async({page,roomPath})=>{
- await enter(page,roomPath);await open(page);let original:any,accepted:any;
+ await enter(page,roomPath);await open(page);await page.emulateMedia({reducedMotion:'no-preference'});let original:any,accepted:any;
  await page.route('**/api/demo-wallet/operations',async route=>{
   original=route.request().postDataJSON();const response=await route.fetch();expect(response.ok()).toBe(true);accepted=await response.json();await route.abort('failed');
  },{times:1});
  await page.locator('[data-rr-bet="odd"]').click();await page.locator('[data-rr-spin]').click();
  await expect(page.locator('[data-rr-spin]')).toHaveAccessibleName('Проверить результат');
+ expect((await motion(page)).scheduledFrames).toBe(0);expect((await motion(page)).effects).toBe(0);
  await close(page);await open(page);await expect(page.locator('[data-rr-spin]')).toHaveAccessibleName('Проверить результат');
  await expect(page.locator('[data-rr-bet="odd"]')).toHaveAttribute('aria-pressed','true');
  const response=page.waitForResponse(r=>r.url().endsWith('/api/demo-wallet/operations')&&r.request().method()==='POST');
@@ -105,4 +106,54 @@ test('closing during an accepted request shows its result on reopening without a
   expect(posts).toBe(1);expect(await page.evaluate(()=>(window as any).__rouletteRecoveryReactions)).toBe(0);
   await close(page);
  }finally{release();}
+});
+
+const motion=(page:Page)=>page.evaluate(()=>(window as any).royalDemo.getMiniState().motion);
+const numberOrder=[0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
+function angularError(value:number){const a=((value%360)+360)%360;return Math.min(a,360-a);}
+
+test('wheel and ball share a continuous confirmed landing and release their frames',async({browser,roomPath})=>{
+ const context=await browser.newContext({viewport:{width:1280,height:720},recordVideo:{dir:out+'/video',size:{width:1280,height:720}}});
+ const page=await context.newPage(),video=page.video();let report:any;
+ try{
+  await enter(page,roomPath);await open(page);await page.emulateMedia({reducedMotion:'no-preference'});
+  await page.getByRole('button',{name:'50 USDT',exact:true}).click();expect((await motion(page)).effects).toBeGreaterThan(0);
+  const reply=page.waitForResponse(r=>r.url().endsWith('/api/demo-wallet/operations')&&r.request().method()==='POST');
+  await page.locator('[data-rr-spin]').click();const receipt=await(await reply).json();
+  await expect(page.locator('.rr-root')).toHaveAttribute('data-motion-phase','coast');const coast=await motion(page);
+  expect(coast.pose.wheelVelocity).toBeGreaterThan(0);expect(coast.pose.ballVelocity).toBeLessThan(0);await expect(page.locator('[data-rr-number]')).toHaveText('?');
+  await expect.poll(async()=>(await motion(page)).phase,{intervals:[30,50,80]}).toBe('drop');const drop=await motion(page);
+  await expect.poll(async()=>(await motion(page)).phase,{intervals:[30,50,80]}).toBe('pocket');const pocket=await motion(page);
+  const index=numberOrder.indexOf(receipt.gameRound.outcome.number);expect(angularError(pocket.pose.ball-pocket.pose.wheel-index*360/37)).toBeLessThanOrEqual(2.21);
+  await expect(page.locator('.rr-root')).toHaveAttribute('data-busy','false');await expect(page.locator('[data-rr-number]')).toHaveText(String(receipt.gameRound.outcome.number));
+  await expect.poll(async()=>(await motion(page)).effects).toBe(0);const end=await motion(page);
+  expect(end.active).toBe(false);expect(end.scheduledFrames).toBe(0);expect(end.frames).toBeGreaterThan(10);expect(end.pose.radius).toBe(148);
+  expect(angularError(end.pose.wheel+index*360/37)).toBeLessThan(.000001);expect(angularError(end.pose.ball)).toBeLessThan(.000001);
+  report={coast,drop,pocket,end,number:receipt.gameRound.outcome.number,stakeUnits:receipt.gameRound.stakeUnits,payoutUnits:receipt.gameRound.payoutUnits};
+  await page.screenshot({path:out+'/motion-result.png'});await page.waitForTimeout(650);
+ }finally{
+  await context.close();const {writeFile}=await import('node:fs/promises');await writeFile(out+'/motion-measurements.json',JSON.stringify({...report,video:await video?.path()},null,2));
+ }
+});
+
+test('reduced motion, hidden pages and closing interrupt a spin without another wager or late reaction',async({page,roomPath})=>{
+ await enter(page,roomPath);await open(page);await page.emulateMedia({reducedMotion:'no-preference'});
+ await page.evaluate(()=>{(window as any).__motionReactions=0;window.addEventListener('royal-game-reaction',()=>{(window as any).__motionReactions++;});});
+ let posts=0;page.on('request',r=>{if(r.url().endsWith('/api/demo-wallet/operations')&&r.method()==='POST')posts++;});
+ const start=async()=>{const response=page.waitForResponse(r=>r.url().endsWith('/api/demo-wallet/operations')&&r.request().method()==='POST');await page.locator('[data-rr-spin]').click();const receipt=await(await response).json();await expect(page.locator('.rr-root')).toHaveAttribute('data-motion-phase','coast');return receipt;};
+ const first=await start();await page.emulateMedia({reducedMotion:'reduce'});
+ await expect(page.locator('.rr-root')).toHaveAttribute('data-busy','false');await expect(page.locator('[data-rr-number]')).toHaveText(String(first.gameRound.outcome.number));
+ expect((await motion(page)).scheduledFrames).toBe(0);expect((await motion(page)).effects).toBe(0);expect(posts).toBe(1);
+ expect(angularError((await motion(page)).pose.wheel+numberOrder.indexOf(first.gameRound.outcome.number)*360/37)).toBeLessThan(.000001);
+ await page.emulateMedia({reducedMotion:'no-preference'});const frames=(await motion(page)).frames;await page.waitForTimeout(150);expect((await motion(page)).frames).toBe(frames);
+ const second=await start();
+ await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,value:true});document.dispatchEvent(new Event('visibilitychange'));});
+ await expect(page.locator('.rr-root')).toHaveAttribute('data-busy','false');await expect(page.locator('[data-rr-number]')).toHaveText(String(second.gameRound.outcome.number));
+ expect((await motion(page)).scheduledFrames).toBe(0);expect((await motion(page)).effects).toBe(0);
+ await page.evaluate(()=>{Reflect.deleteProperty(document,'hidden');document.dispatchEvent(new Event('visibilitychange'));});
+ const hiddenFrames=(await motion(page)).frames;await page.waitForTimeout(150);expect((await motion(page)).frames).toBe(hiddenFrames);
+ await start();await page.evaluate(()=>{(window as any).__oldRouletteRoot=document.querySelector('.rr-root');});await close(page);
+ expect(await page.evaluate(()=>(window as any).__oldRouletteRoot.getAnimations({subtree:true}).filter((a:Animation)=>a.playState==='running').length)).toBe(0);
+ await open(page);expect((await motion(page)).frames).toBe(0);await expect(page.locator('[data-rr-number]')).toHaveText('?');
+ expect(posts).toBe(3);expect(await page.evaluate(()=>(window as any).__motionReactions)).toBe(0);await close(page);
 });
