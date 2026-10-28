@@ -73,6 +73,27 @@ def reusable_program(image, cached_image, mounts, changes):
         and not any(overlaps_program(line[2:]) for line in changes)
 
 
+def inspected_rows(requested, result, expected):
+    rows = json.loads(result.stdout)
+    require(isinstance(rows, list) and all(isinstance(row, dict) and row.get('Id') in requested for row in rows), 'Invalid Docker inspection')
+    actual = {row['Id'] for row in rows}
+    require(expected <= actual, 'A protected persistent service disappeared')
+    require(result.returncode == 0 or bool(set(requested)-actual), 'Docker inspection failed')
+    return rows
+
+
+def inspect_services():
+    ids = run(['docker', 'ps', '--no-trunc', '-q']).split()
+    require(ids, 'No running services')
+    expected = set()
+    path = ROOT/'install-manifest.json'
+    if path.is_file():
+        expected = {row['id'] for name, row in read(path)['before']['services'].items() if name != '/royal-payments-1'}
+    result = subprocess.run(['docker', 'inspect', *ids], text=True, capture_output=True, timeout=180)
+    # Scheduled one-shot readers may finish after listing. Persistent identities remain mandatory.
+    return inspected_rows(ids, result, expected)
+
+
 def program(name, row, node):
     candidates = []
     path = ROOT/'install-manifest.json'
@@ -121,7 +142,7 @@ def inventory(directory):
 
 
 def snapshot():
-    rows = json.loads(run(['docker', 'inspect', *run(['docker', 'ps', '-q']).split()]))
+    rows = inspect_services()
     services = {}
     containers = {}
     payment = None
@@ -245,6 +266,21 @@ def backup_payments():
             process.wait(timeout=10)
 
 
+def verify_source_backup(old, changed):
+    require(not (BACKUP/'payments.dump').exists() and not (ROOT/'recovery-required.json').exists(), 'A financial installation requires explicit state reconciliation')
+    expected = {name: old['source'][name] for name in [*changed, CADDY] if name in old['source']}
+    require(inventory(BACKUP/'source') == expected, 'Retained source backup differs')
+    require(sha(BACKUP/'provider.env') == old['settings'][str(PROVIDER)], 'Retained private settings backup differs')
+    archived = {}
+    with tarfile.open(BACKUP/'source.tgz', 'r:gz') as archive:
+        for member in archive.getmembers():
+            require(member.isdir() or member.isfile(), 'Source archive contains a link or special file')
+            if member.isfile():
+                require(member.name.startswith('source/'), 'Unexpected source archive path')
+                archived[member.name[len('source/'):]] = digest(archive.extractfile(member).read())
+    require(archived == expected, 'Retained source archive differs')
+
+
 def release(private):
     manifest = read(ROOT/'install-manifest.json')
     old = manifest['before']
@@ -275,41 +311,65 @@ def release(private):
     candidate_caddy = (ROOT/'Caddyfile').read_text()
     require(candidate_caddy.count(BLOCK) == 1 and candidate_caddy.replace(BLOCK, '') == (LIVE/CADDY).read_text(), 'Caddy changes exceed the Stars route')
     capacity()
-    require(not BACKUP.exists() and not (ROOT/'published.json').exists(), 'Release already started; reconcile before retry')
-    BACKUP.mkdir(mode=0o700)
-    for name in [*manifest['changed'], CADDY]:
-        path = LIVE/name
-        if path.is_file():
-            saved = BACKUP/'source'/name
-            saved.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(path, saved)
-    shutil.copy2(PROVIDER, BACKUP/'provider.env')
-    (BACKUP/'provider.env').chmod(0o600)
-    with tarfile.open(BACKUP/'source.tgz', 'w:gz') as output:
-        output.add(BACKUP/'source', arcname='source')
+    require(not (ROOT/'published.json').exists(), 'Release already published')
     old_image = old['services']['/royal-payments-1']['image']
-    run(['docker', 'tag', old_image, 'royal-payments:before-'+NAME])
+    retained = BACKUP.exists()
+    if retained:
+        verify_source_backup(old, manifest['changed'])
+        require(run(['docker', 'image', 'inspect', 'royal-payments:before-'+NAME, '--format', '{{.Id}}']) == old_image, 'Retained rollback image differs')
+    else:
+        BACKUP.mkdir(mode=0o700)
+        for name in [*manifest['changed'], CADDY]:
+            path = LIVE/name
+            if path.is_file():
+                saved = BACKUP/'source'/name
+                saved.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(path, saved)
+        shutil.copy2(PROVIDER, BACKUP/'provider.env')
+        (BACKUP/'provider.env').chmod(0o600)
+        with tarfile.open(BACKUP/'source.tgz', 'w:gz') as output:
+            output.add(BACKUP/'source', arcname='source')
+        run(['docker', 'tag', old_image, 'royal-payments:before-'+NAME])
     require(old['prepared'] == old_image, 'Prepared payment image differs from the running base')
     context = ROOT/'runtime-context'
-    context.mkdir()
+    context.mkdir(exist_ok=True)
     shutil.copy2(binary, context/'payments.js')
     if updates:
-        shutil.copytree(ROOT/'dependencies'/'node_modules', context/'node_modules')
+        shutil.copytree(ROOT/'dependencies'/'node_modules', context/'node_modules', dirs_exist_ok=True)
         # Retain all unrelated installed metadata; replace only records pinned by the committed lock.
         script = "const fs=require('fs');const p=JSON.parse(fs.readFileSync('/app/node_modules/.package-lock.json'));const v=JSON.parse(process.argv[1]);Object.assign(p.packages,v);process.stdout.write(JSON.stringify(p,null,2)+'\\n');"
         records = {name: package_lock['packages'][name] for name in updates}
         metadata = run(['docker', 'exec', 'royal-payments-1', 'node', '-e', script, json.dumps(records)]) + '\n'
         (context/'node_modules'/'.package-lock.json').write_text(metadata)
-    (context/'Dockerfile').write_text('FROM royal-payments:before-'+NAME+'\nCOPY --chown=1000:1000 payments.js /app/dist-server/payments.js\n'
-        + ('COPY --chown=1000:1000 node_modules/ /app/node_modules/\n' if updates else '')
-        + 'LABEL org.opencontainers.image.revision="'+manifest['sourceCommit']+'"\n')
-    run(['docker', 'build', '--pull=false', '-t', 'royal-payments:'+NAME, str(context)])
-    built = run(['docker', 'image', 'inspect', 'royal-payments:'+NAME, '--format', '{{.Id}}'])
-    node = (ROOT/'runtime-inventory.cjs').read_text()
     expected_program = {**old['programs']['royal-payments-1'], **manifest['dependencyFiles'], 'dist-server/payments.js': sha(binary)}
     if updates:
         expected_program['node_modules/.package-lock.json'] = sha(context/'node_modules'/'.package-lock.json')
-    actual = json.loads(run(['docker', 'run', '--rm', '--network=none', '--read-only', '--entrypoint', 'node', built, '-e', node]))
+    expected_context = {'payments.js': sha(binary), **manifest['dependencyFiles']}
+    if updates:
+        expected_context['node_modules/.package-lock.json'] = expected_program['node_modules/.package-lock.json']
+    require({name: value for name, value in inventory(context).items() if name != 'Dockerfile'} == expected_context, 'Unreviewed files in the retained build context')
+    cached = read(ROOT/'build-runtime.json') if (ROOT/'build-runtime.json').is_file() else None
+    reuse = cached and cached['program'] == expected_program
+    if reuse:
+        run(['docker', 'tag', cached['image'], 'royal-payments:prepared-'+NAME])
+        dockerfile = 'FROM royal-payments:prepared-'+NAME+'\n'
+    else:
+        dockerfile = 'FROM royal-payments:before-'+NAME+'\nCOPY --chown=1000:1000 payments.js /app/dist-server/payments.js\n'
+        dockerfile += 'COPY --chown=1000:1000 node_modules/ /app/node_modules/\n' if updates else ''
+    (context/'Dockerfile').write_text(dockerfile+'LABEL org.opencontainers.image.revision="'+manifest['sourceCommit']+'"\n')
+    run(['docker', 'build', '--pull=false', '-t', 'royal-payments:'+NAME, str(context)])
+    built = run(['docker', 'image', 'inspect', 'royal-payments:'+NAME, '--format', '{{.Id}}'])
+    candidate_image = json.loads(run(['docker', 'image', 'inspect', built]))[0]
+    require(candidate_image['Config'].get('Labels', {}).get('org.opencontainers.image.revision') == manifest['sourceCommit'], 'Candidate source label differs')
+    node = (ROOT/'runtime-inventory.cjs').read_text()
+    if reuse:
+        images = json.loads(run(['docker', 'image', 'inspect', cached['image'], built]))
+        require(images[0]['RootFS'] == images[1]['RootFS'], 'Reused candidate filesystem layers differ')
+        for key in ['User', 'WorkingDir', 'Env', 'Entrypoint', 'Cmd', 'ExposedPorts', 'Healthcheck', 'Volumes']:
+            require(images[0]['Config'].get(key) == images[1]['Config'].get(key), 'Reused candidate image configuration differs')
+        actual = cached['program']
+    else:
+        actual = json.loads(run(['docker', 'run', '--rm', '--network=none', '--read-only', '--entrypoint', 'node', built, '-e', node]))
     require(actual == expected_program, 'Candidate changes exceed payments.js')
     save(ROOT/'build-runtime.json', {'image': built, 'program': actual})
     require(snapshot() == old, 'Production changed during image preparation')
@@ -357,6 +417,7 @@ def release(private):
             'published': True, 'changedSources': sorted(manifest['changed']), 'gameAndOtherServicesPreserved': True,
             'runtimeFilesVerified': {name: len(files) for name, files in after['programs'].items()},
             'dependencyUpdates': {name: manifest['dependencies'][name] for name in updates},
+            'retainedSourceBackupVerified': retained, 'candidateFilesystemReused': bool(reuse),
             'sourceBackupBytes': (BACKUP/'source.tgz').stat().st_size, 'sourceBackupSha256': sha(BACKUP/'source.tgz'),
             'paymentBackupBytes': (BACKUP/'payments.dump').stat().st_size, 'paymentBackupSha256': sha(BACKUP/'payments.dump'),
             'freeBytesAfter': shutil.disk_usage(LIVE).free, 'at': time.time()}
