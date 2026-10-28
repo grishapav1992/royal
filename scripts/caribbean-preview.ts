@@ -1,7 +1,7 @@
 /** Local host verification only. Own temporary PostgreSQL, real shared wallet store, no .env. */
 import { spawn } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
-import { mkdir,writeFile } from 'node:fs/promises';
+import { mkdir,writeFile,readFile } from 'node:fs/promises';
 import { createServer,type Plugin } from 'vite';
 import { temporaryDatabase } from './database-test';
 import { PostgresDatabase,databaseConfig } from '../server/database';
@@ -19,6 +19,8 @@ const backend = spawn(process.execPath,['--import','tsx','server/index.ts'],{
 });
 let log = '', stopping = false, db:PostgresDatabase|undefined, wallet:DemoWalletStore;
 const force = new Set<string>();
+const scenarioSeeds=new Map<string,number>(JSON.parse(await readFile(new URL('../docs/concepts/caribbean-treasures/scenarios.json',import.meta.url),'utf8')).cases.map((c:{name:string;seed:number})=>[c.name,c.seed]));
+const scenarioDraws=new Map<string,(maximum:number)=>number>();
 backend.stdout.on('data',bytes => { log = (log + bytes.toString()).slice(-5000); });
 backend.stderr.on('data',bytes => { log = (log + bytes.toString()).slice(-5000); });
 const plugin:Plugin = {name:'caribbean-local-common-wallet',configureServer(server) {
@@ -47,6 +49,9 @@ const plugin:Plugin = {name:'caribbean-local-common-wallet',configureServer(serv
         reply = await wallet.operate(account,{id:randomUUID(),kind:'deposit',amount});
       } else if (['/__test/caribbean/force-bonus','/__test/caribbean/force-cannon'].includes(path) && req.method === 'POST') {
         force.add(account); reply = {ready:true};
+      } else if(path==='/__test/caribbean/force-scenario'&&req.method==='POST'){
+        const seed=scenarioSeeds.get(operation?.name);if(seed===undefined)throw Error('Unknown saved presentation scenario');
+        let state=seed>>>0;scenarioDraws.set(account,maximum=>{state^=state<<13;state^=state>>>17;state^=state<<5;return(state>>>0)%maximum;});reply={ready:true};
       } else if (fixture) { throw new WalletError(404,'Unknown fixture action'); }
       else if (req.method === 'GET') reply = path.endsWith('/expansion') ? await wallet.expansion.active(account,true,true,true,true,true,true,true,2,3,req.headers[CARIBBEAN_CLIENT_HEADER.toLowerCase()]==='1') : await wallet.snapshot(account);
       else if (req.method === 'POST' && path.endsWith('/expansion')) {
@@ -54,8 +59,9 @@ const plugin:Plugin = {name:'caribbean-local-common-wallet',configureServer(serv
         let store = wallet.expansion;
         if (force.has(account)) {
           force.delete(account); store = new DemoExpansionStore(db,id => wallet.snapshot(id),wallet.ready,async () => {},() => 0);
-        }
+        }else if(scenarioDraws.has(account))store=new DemoExpansionStore(db,id=>wallet.snapshot(id),wallet.ready,async()=>{},scenarioDraws.get(account)!);
         reply = await store.operate(account,operation,2,true,true,true,true,true,true,true,true,2,3,req.headers[CARIBBEAN_CLIENT_HEADER.toLowerCase()]==='1');
+        if((reply as {session?:{state:string}}).session?.state==='settled')scenarioDraws.delete(account);
       } else throw new WalletError(405,'Unsupported local method');
       res.setHeader('Content-Type','application/json'); res.end(JSON.stringify(reply));
     } catch (error) {
@@ -91,9 +97,9 @@ try {
   }
   if (!ready) throw Error('Local backend did not start: ' + log);
   await vite.listen();
-  await mkdir('artifacts/work/caribbean-recorded-audio',{recursive:true});
-  await writeFile('artifacts/work/caribbean-recorded-audio/owner.json',JSON.stringify({
-    owner:'caribbean-recorded-audio',purpose:'Recorded music and Foley verification in the real Royal host with chat using disposable accounts and a temporary database',
+  await mkdir('artifacts/work/caribbean-character-motion',{recursive:true});
+  await writeFile('artifacts/work/caribbean-character-motion/owner.json',JSON.stringify({
+    owner:'caribbean-character-motion',purpose:'Captain reactions and field motion in the real Royal host and chat using qualified saved scenarios, disposable accounts and a temporary database',
     cleanupCondition:'Stop the local stand; retain only final desktop/mobile images and verification summary',
     webPort,apiPort,pid:process.pid,backendPid:backend.pid,temporaryDatabase:database.directory,
   },null,2) + '\n');

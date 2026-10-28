@@ -1,14 +1,33 @@
 {
   "name": "@royal/caribbean-treasures",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "private": true,
   "gameId": "studio-caribbean-treasures",
   "apiVersion": 1,
   "rulesVersion": 1,
   "progressVersion": 1,
   "entry": "entry.ts",
-  "assetRoots": ["caribbean-treasures"],
-  "preload": ["caribbean-treasures/harbor.webp","caribbean-treasures/captain.webp","caribbean-treasures/captain-win.webp","caribbean-treasures/frame.webp","caribbean-treasures/symbol-map.webp","caribbean-treasures/symbol-compass.webp","caribbean-treasures/symbol-pistol.webp","caribbean-treasures/symbol-cutlass.webp","caribbean-treasures/symbol-ruby.webp","caribbean-treasures/symbol-parrot.webp"],
+  "assetRoots": [
+    "caribbean-treasures"
+  ],
+  "preload": [
+    "caribbean-treasures/harbor.webp",
+    "caribbean-treasures/captain.webp",
+    "caribbean-treasures/captain-win.webp",
+    "caribbean-treasures/frame.webp",
+    "caribbean-treasures/symbol-map.webp",
+    "caribbean-treasures/symbol-compass.webp",
+    "caribbean-treasures/symbol-pistol.webp",
+    "caribbean-treasures/symbol-cutlass.webp",
+    "caribbean-treasures/symbol-ruby.webp",
+    "caribbean-treasures/symbol-parrot.webp",
+    "caribbean-treasures/captain-blink.webp",
+    "caribbean-treasures/captain-focus.webp",
+    "caribbean-treasures/captain-surprise.webp",
+    "caribbean-treasures/captain-bonus.webp",
+    "caribbean-treasures/captain-soft.webp",
+    "caribbean-treasures/captain-laugh.webp"
+  ],
   "scripts": {
     "build": "node ../../node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && node ../../scripts/build-game-module.mjs"
   }
