@@ -22,7 +22,7 @@ function proofFor(id, inputs, mean = inputs.policy.target) {
   const p = inputs.policy, cycles = p.minCycles || p.minPaidRounds;
   const cost = p.minCycles ? p.minPaidRounds / cycles : 1, reward = mean * cost, variance = 1;
   const results = p.choices.flatMap(choice => p.stakes.map(stakeUnits => {
-    const half = 1.96 * Math.sqrt(cycles * variance / (cycles - 1)) / (Math.sqrt(cycles) * cost);
+    const half = (p.confidenceZ ?? 1.96) * Math.sqrt(cycles * variance / (cycles - 1)) / (Math.sqrt(cycles) * cost);
     return { choice, stakeUnits, cycles: p.minCycles, samples: cycles, paidRounds: cycles * cost, cost: cycles * cost,
       reward: reward * cycles, rewardSquared: (reward * reward + variance) * cycles,
       rewardCost: reward * cost * cycles, costSquared: cost * cost * cycles, rtp: mean, interval95: [mean-half,mean+half] };
@@ -34,7 +34,7 @@ function proofFor(id, inputs, mean = inputs.policy.target) {
   if (p.method==='neopolis-variable-stake-conditional-v4') {
     proof.method=p.method; proof.serverReplayChecks*=16;
     const stateMoment=(count,cost=1)=>{
-      const reward=mean*cost,half=1.96/Math.sqrt(count-1)/cost;
+      const reward=mean*cost,half=(p.confidenceZ??1.96)/Math.sqrt(count-1)/cost;
       return {samples:count,paidRounds:count*cost,reward:reward*count,cost:cost*count,rewardSquared:(reward*reward+1)*count,
         rewardCost:reward*cost*count,costSquared:cost*cost*count,rtp:mean,interval95:[mean-half,mean+half]};
     };

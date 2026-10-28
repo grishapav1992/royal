@@ -47,6 +47,7 @@ export function validateRtpProof(gameId, inputs, proof) {
     return validateCosmicProof(gameId,p,proof);
   }
   assert(p.target > 0 && p.target < 1 && p.maxUpper95 < 1 && p.tolerance <= .02);
+  assert(Number.isFinite(p.confidenceZ ?? 1.96) && (p.confidenceZ ?? 1.96)>=1.96, 'Confidence intervals cannot be weakened');
   assert.equal(proof.results.length, p.stakes.length * p.choices.length, 'Every stake and choice must be qualified');
   const keys = new Set();
   for (const row of proof.results) {
@@ -57,7 +58,7 @@ export function validateRtpProof(gameId, inputs, proof) {
     assert.equal(row.cost, row.paidRounds);
     const mean = row.reward / row.cost;
     const residual = Math.max(0, row.rewardSquared - 2 * mean * row.rewardCost + mean * mean * row.costSquared);
-    const half = 1.96 * Math.sqrt(row.samples * residual / (row.samples - 1)) / row.cost;
+    const half = (p.confidenceZ ?? 1.96) * Math.sqrt(row.samples * residual / (row.samples - 1)) / row.cost;
     assert(Math.abs(row.rtp - mean) < 1e-10 && Math.abs(row.interval95[0] - mean + half) < 1e-9 && Math.abs(row.interval95[1] - mean - half) < 1e-9, 'Invalid statistical evidence');
     assert(half > 0 && half <= p.maxHalfWidth95, 'RTP estimate is too imprecise');
     assert(Math.abs(mean - p.target) <= p.tolerance && mean + half <= p.maxUpper95, 'RTP is outside the approved budget: ' + key);
@@ -74,6 +75,8 @@ export function validateRtpProof(gameId, inputs, proof) {
 function validateNeopolisVariableStakeProof(p, proof) {
   assert.equal(proof.method, p.method);
   assert.equal(p.rulesVersion, 4); assert.equal(p.progressVersion, 4);
+  assert.equal(p.confidenceZ,2.241402727604947); assert.equal(p.qualificationLooks,2);
+  assert.equal(p.qualificationCyclesPerSeed,30000); assert(p.minCycles>=60000);
   assert.deepEqual(p.choices, ['granite','impulse','prism']);
   assert.deepEqual(p.stakes, [1000,2000,5000,10000,20000,50000]);
   assert.deepEqual(p.stakePolicies, ['fixed','raise-when-ready','lower-when-ready','alternate-extremes','cycle-stakes']);
@@ -87,7 +90,7 @@ function validateNeopolisVariableStakeProof(p, proof) {
     assert(row.samples > 1 && row.cost > 0 && row.paidRounds >= row.samples);
     const mean = row.reward / row.cost;
     const residual = Math.max(0, row.rewardSquared - 2 * mean * row.rewardCost + mean * mean * row.costSquared);
-    const half = 1.96 * Math.sqrt(row.samples * residual / (row.samples - 1)) / row.cost;
+    const half = (p.confidenceZ ?? 1.96) * Math.sqrt(row.samples * residual / (row.samples - 1)) / row.cost;
     assert(Math.abs(row.rtp-mean)<1e-10 && Math.abs(row.interval95[0]-mean+half)<1e-9 && Math.abs(row.interval95[1]-mean-half)<1e-9, 'Invalid variable-stake statistical evidence');
     assert(half>0 && half<=p.conditionalMaxHalfWidth95, 'Conditional estimate is too imprecise');
     assert(Math.abs(mean-p.conditionalTarget)<=p.conditionalTolerance && mean+half<=p.conditionalMaxUpper95, 'Conditional or variable-stake RTP is outside the approved budget');

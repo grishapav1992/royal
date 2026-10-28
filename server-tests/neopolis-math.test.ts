@@ -205,3 +205,11 @@ test('the paid-round origin fixes payout scale through all free continuations', 
   }
   assert(checked);
 });
+
+test('accepted v3 rounds retain the exact mathematical source qualified for that version', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const { createHash } = await import('node:crypto');
+  const proof = JSON.parse(await readFile('docs/game-math/qualifications/neopolis-v3.json', 'utf8'));
+  const frozen = (await readFile('src/shared/neopolisMathV3.ts', 'utf8')).replace(/\r\n/g, '\n');
+  assert.equal(createHash('sha256').update(frozen).digest('hex'), proof.sourceHashes['src/shared/neopolisMath.ts']);
+});

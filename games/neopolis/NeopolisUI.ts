@@ -403,7 +403,7 @@ export class NeopolisUI {
     const c = this.copy;
     this.find('dialog-body').innerHTML = '<span class="np-dialog-kicker">ROYAL ORIGINALS / NEOPOLIS</span><h2>' + c.rules + '</h2>'
       + [c.rulesBase,c.rulesTeam,c.rulesHeroes,this.legacy ? c.rulesLegacy : c.rulesBoss,c.rulesMoney,c.autoHelp].map(text => '<p>' + text + '</p>').join('')
-      + '<h3>' + c.payouts + '</h3><table><thead><tr><th>' + c.symbol + '</th><th>3</th><th>4</th><th>5</th></tr></thead><tbody>'
+      + '<h3>' + (this.stakeLocked ? c.bonusPayouts : c.payouts) + '</h3><table><thead><tr><th>' + c.symbol + '</th><th>3</th><th>4</th><th>5</th></tr></thead><tbody>'
       + neopolisPaytable(this.session?.state === 'active' ? this.view!.version : 4, this.session?.state === 'active' ? this.view!.origin : this.team).map((pays, index) => '<tr><th>' + c[('symbol' + index) as keyof typeof c] + '</th>' + pays.map(pay => '<td>×' + this.number(pay) + '</td>').join('') + '</tr>').join('') + '</tbody></table>';
     if (!this.dialog.open) this.dialog.showModal(); this.updatePause(); this.controls();
   }
