@@ -64,6 +64,16 @@ test('real host: countries, paid round, skips, reopen, mobile chat and reduced m
   await page.locator('[data-fb="play"]').click();
   await expect.poll(async()=>(await wallet(page)).entries.filter((e:any)=>e.kind==='bet').length).toBe(2);
   await expect.poll(async()=>(await mini(page))?.presenting).toBe(false);
+  await page.emulateMedia({reducedMotion:'no-preference'});
+  await page.locator('[data-fb="play"]').click();
+  await expect.poll(async()=>(await mini(page))?.presenting).toBe(true);
+  await expect.poll(async()=>(await mini(page))?.presenting,{timeout:30000}).toBe(false);
+  await expect.poll(async()=>(await mini(page))?.eliminated).toBe(11);
+  await expect(page.locator('[data-fb="count"]')).toHaveText('1');
+  const saved=await page.request.get('/api/demo-wallet/expansion',{headers:{'X-Royal-Flag-Battle':'1'}});
+  const settled=(await saved.json()).sessions.find((s:any)=>s.gameId==='flag-battle');
+  expect((await mini(page)).returnedUnits).toBe(settled.returnedUnits);
+  expect((await wallet(page)).entries.filter((e:any)=>e.kind==='bet')).toHaveLength(3);
   expect(errors).toEqual([]);
 });
 test('lost response retries the same paid request after close and reopen',async({page,roomPath})=>{
