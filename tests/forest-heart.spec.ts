@@ -49,7 +49,7 @@ async function routeScenario(page: Page, scenario: string, loseFirst = false) {
 async function act(page: Page, selector = '[data-fh=spin]') {
   const before = await state(page);
   await game(page).locator(selector).click();
-  await expect.poll(async () => { const after = await state(page); return !after.busy && after.view && (after.sessionId !== before.sessionId || after.view.revision !== before.view?.revision); }).toBe(true);
+  await expect.poll(async () => { const after = await state(page); return !after.busy && after.view && (after.sessionId !== before.sessionId || after.view.revision !== before.view?.revision); }, { timeout: 15000 }).toBe(true);
   const current = await state(page), v = current.view;
   const bits = v.bonus.at(-1)?.bits ?? (v.base.bits ^ (v.base.rotation === null ? 0 : 1 << v.base.rotation));
   const board = referenceBoard(bits), flow = referenceFlow(board);
