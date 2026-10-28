@@ -31,7 +31,14 @@ async function act(page:Page,selector='[data-fight]'){
 }
 test('real host, chat, risk groups, gallery and account progress work on desktop and mobile',async({page})=>{
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await outcome('win');await enter(page);await page.emulateMedia({reducedMotion:'no-preference'});
-  const game=page.locator('.jackie');await game.locator('[data-risk="extreme"]').click();await expect(game.locator('canvas')).toHaveAttribute('data-opponents','3');
+  const game=page.locator('.jackie');
+  await game.locator('[data-wardrobe]').click();const concealed=game.locator('.jc-costume[data-open="false"]');await expect(concealed).toHaveCount(3);
+  const cards=await concealed.evaluateAll(cards=>cards.map(card=>{const image=card.querySelector('.jc-costume-image')!,bar=card.querySelector('progress')!;return{text:card.textContent,background:getComputedStyle(image).backgroundImage,filter:getComputedStyle(image).filter,value:bar.value,max:bar.max};}));
+  expect(new Set(cards.map(c=>c.background)).size).toBe(1);for(const card of cards){expect(card.background).toContain('/master.webp');expect(card.filter).toContain('brightness(0)');expect(card.text).toContain('Скрытый костюм');expect(card.text).not.toMatch(/USDT|1983|1985|1986|Проект|Полицейская|Доспехи|\d+\s*\/\s*\d+/);expect(card.max).toBe(1);expect(card.value).toBe(0);}
+  await page.screenshot({path:out+'/wardrobe-concealed-desktop.png'});
+  await page.setViewportSize({width:320,height:740});await expect.poll(()=>game.locator('[data-dialog]').evaluate(el=>el.scrollWidth-el.clientWidth)).toBeLessThanOrEqual(1);await page.screenshot({path:out+'/wardrobe-concealed-mobile.png'});
+  await page.setViewportSize({width:1440,height:1000});await game.locator('[data-close]').click();await expect(game.locator('[data-collection-label]')).toHaveText('Прогресс коллекции костюмов');
+  await game.locator('[data-risk="extreme"]').click();await expect(game.locator('canvas')).toHaveAttribute('data-opponents','3');
   const initialFoes=(await game.locator('canvas').getAttribute('data-foes'))!.split(',');expect(initialFoes).toHaveLength(3);expect(new Set(initialFoes).size).toBe(3);await page.screenshot({path:out+'/desktop.png'});
   expect(initialFoes).toContain('master');await expect(game.locator('[data-risk="extreme"] b')).toHaveText('Сложный');
   const first=await act(page);expect(first.view.jackie.combat.shots).toHaveLength(1);await expect(game.locator('[data-cashout]')).toContainText('22,00');await expect(game.locator('[data-location]')).toBeDisabled();
