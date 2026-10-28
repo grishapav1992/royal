@@ -65,7 +65,7 @@ async function open(page: Page, gameId: string) {
  await expect(page.locator('#primary'), `Module ${gameId} must mount`).toHaveAttribute('data-game-module-version', /\d+\.\d+\.\d+-[a-f0-9]{12}/);
 }
 
-async function lastExitWallet(page: Page, active = false) {
+async function lastExitWallet(page: Page, active = false, replyDelay = 0) {
  let current: ExpansionSession | undefined;
  const sent: unknown[] = [];
  const snapshot = () => {
@@ -73,8 +73,12 @@ async function lastExitWallet(page: Page, active = false) {
   return { wallet: { balance: current ? 990 : 1000, entries: [] }, sessions: current ? [current] : [] };
  };
  await page.route('**/api/*-wallet', route => route.fulfill({ json: { balance: 1000, entries: [] } }));
- await page.route('**/api/*-wallet/expansion', route => {
-  if (route.request().method() === 'GET') return route.fulfill({ json: snapshot() });
+ await page.route('**/api/*-wallet/expansion', async route => {
+  if (route.request().method() === 'GET') {
+   const json = structuredClone(snapshot());
+   if (active && current && replyDelay) await new Promise(resolve => setTimeout(resolve, replyDelay));
+   return route.fulfill({ json });
+  }
   const op = route.request().postDataJSON(); sent.push(op);
   current = { id: op.id, gameId: 'github-crash', rulesVersion: 1, state: active ? 'active' : 'settled', stakeUnits: op.stakeUnits, spentUnits: op.stakeUnits, returnedUnits: '0',
    startedAt: Date.now() - 5000, serverNow: Date.now(), multiplier: 1, ...(active ? {} : { crashAt: 1 }),
@@ -117,8 +121,34 @@ test('LAST EXIT waits for downloads and decoding, then shows the complete first 
   await expect(page.locator('canvas')).toHaveAttribute('data-cinematic', 'depth-rollover');
   await expect(page.locator('canvas')).toHaveAttribute('data-cinematic', 'explosion');
   await expect(page.locator('[data-result]')).toHaveText('ВЫПЛАТА 0,00');
+  await expect(page.locator('[data-value]')).toHaveText('1.00×');
+  await expect(page.locator('[data-value-fine]')).toBeHidden();
   expect(errors).toEqual([]);
  } finally { release(); }
+});
+
+test('LAST EXIT keeps the visible digits moving through slow replies with the chase enabled', async ({ page }) => {
+ await fixture(page); await page.emulateMedia({ reducedMotion: 'no-preference' });
+ await lastExitWallet(page, true, 1100);
+ await open(page, 'github-crash'); await expect(page.locator('[data-start]')).toBeEnabled(); await page.locator('[data-start]').click();
+ await expect(page.locator('.last-exit')).toHaveAttribute('data-motion-phase', 'racing');
+ await expect(page.locator('[data-value]')).toHaveText(/^\d+\.\d{3}×$/);
+ const samples = await page.evaluate(async () => {
+  const root = document.querySelector<HTMLElement>('.last-exit')!, samples: { at: number; time: number; digits: string }[] = [];
+  const start = performance.now();
+  await new Promise<void>(resolve => { const sample = () => {
+   const at = performance.now(); samples.push({ at, time: Number(root.dataset.displayServerNow), digits: root.querySelector('[data-value]')!.textContent! });
+   if (at - start >= 4500) resolve(); else requestAnimationFrame(sample);
+  }; requestAnimationFrame(sample); });
+  return samples;
+ });
+ let longestHold = 0, changedAt = samples[0].at;
+ for (let i = 1; i < samples.length; i++) {
+  if (samples[i].digits !== samples[i - 1].digits) changedAt = samples[i].at;
+  longestHold = Math.max(longestHold, samples[i].at - changedAt);
+  expect(Math.abs((samples[i].time - samples[i - 1].time) - (samples[i].at - samples[i - 1].at))).toBeLessThan(45);
+ }
+ expect(longestHold).toBeLessThan(100);
 });
 
 test('LAST EXIT keeps starts blocked after an asset error and retries the missing image', async ({ page }) => {
@@ -178,11 +208,15 @@ test('LAST EXIT numbers advance at wall-clock speed between polls and reopening 
   await route.fallback();
  });
  try {
-  await expect.poll(() => waiting).toBe(true); await page.waitForTimeout(1800);
+  await expect.poll(() => waiting).toBe(true);
+  await expect(page.locator('.last-exit')).toHaveAttribute('data-connection-state', 'delayed', { timeout: 5000 });
   const frozen = await page.locator('.last-exit').evaluate(el => ({ display: Number((el as HTMLElement).dataset.displayServerNow), confirmed: Number((el as HTMLElement).dataset.confirmedServerNow) }));
-  expect(frozen.display).toBe(frozen.confirmed); release();
+  await page.waitForTimeout(200);
+  expect(Number(await page.locator('.last-exit').getAttribute('data-display-server-now'))).toBe(frozen.display);
+  await expect(page.locator('[data-status]')).toHaveText('Связь задерживается. Проверь результат.'); release();
   await expect.poll(async () => Number(await page.locator('.last-exit').getAttribute('data-confirmed-server-now'))).toBeGreaterThan(frozen.confirmed);
-  expect(await page.locator('.last-exit').evaluate(el => Number((el as HTMLElement).dataset.confirmedServerNow) - Number((el as HTMLElement).dataset.displayServerNow))).toBeLessThanOrEqual(701);
+  await expect(page.locator('.last-exit')).toHaveAttribute('data-connection-state', 'current');
+  expect(Number(await page.locator('.last-exit').getAttribute('data-display-server-now'))).toBeGreaterThanOrEqual(frozen.display);
  } finally { release(); }
  const id = await page.locator('.last-exit').getAttribute('data-session-id');
  await page.evaluate(() => (window as any).moduleHarness.close()); await open(page, 'github-crash');

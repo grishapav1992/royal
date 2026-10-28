@@ -7,3 +7,5 @@
 .le-mult{left:auto;right:30px;top:24%;transform:none;width:215px;text-align:right}.le-mult>strong{font-size:76px}.le-mult>span{font-size:8px;letter-spacing:2px}.le-mult>p{font-size:10px;line-height:1.5;max-width:195px;margin-left:auto}.le-mult>b{font-size:18px}.le-stage{background:#9aafb5}.le-film-grain{opacity:.08}
 @container(max-width:700px){.le-mult{right:20px;top:26%;width:145px}.le-mult>strong{font-size:54px}.le-mult>p{font-size:9px}.le-mult>span{font-size:7px;letter-spacing:1px}}
 @container(max-width:380px){.le-mult{right:16px;top:29%;width:120px}.le-mult>strong{font-size:44px}.le-mult>p{font-size:8px}.le-mult>b{font-size:15px;padding:5px 9px}}
+
+.le-mult>strong{letter-spacing:0}.le-mult>strong .le-fine{font-size:.55em;margin-left:1px}.le-mult [data-value-unit]{font-size:.7em;margin-left:3px}
