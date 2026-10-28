@@ -54,3 +54,23 @@ test('opening moves continuously and contacts do not teleport a flag toward the 
     for(const b of w.bodies)if(b.escapedAt===null)assert(Math.hypot(b.x-positions[b.id].x,b.y-positions[b.id].y)<.05);
   }
 });
+
+test('restored completed rounds draw only the winner, without a frozen departing flag',async()=>{
+  const {FlagArena}=await import('../games/flag-battle/FlagArena');
+  const {FLAG_COUNTRIES}=await import('../src/shared/flagBattle');
+  const imageDescriptor=Object.getOwnPropertyDescriptor(globalThis,'Image'),ratioDescriptor=Object.getOwnPropertyDescriptor(globalThis,'devicePixelRatio');
+  Object.defineProperty(globalThis,'Image',{configurable:true,value:class{src='';complete=true;naturalWidth=90;}});
+  Object.defineProperty(globalThis,'devicePixelRatio',{configurable:true,value:1});
+  try{
+    let draws=0;
+    const context=new Proxy({createRadialGradient:()=>({addColorStop(){}}),drawImage:()=>{draws++;}},{get:(target,key)=>Reflect.get(target,key)??(()=>{})});
+    const canvas={width:0,height:0,getContext:()=>context,getBoundingClientRect:()=>({width:600,height:600})};
+    const arena=new FlagArena(canvas as unknown as HTMLCanvasElement);
+    arena.reset({version:1,country:'RU',order:FLAG_COUNTRIES.map(c=>c.id),seed:1528496907});
+    arena.finish();arena.tick(100,false,'RU',true);assert.equal(draws,1);
+    assert.equal(arena.count(),11);
+  }finally{
+    if(imageDescriptor)Object.defineProperty(globalThis,'Image',imageDescriptor);else Reflect.deleteProperty(globalThis,'Image');
+    if(ratioDescriptor)Object.defineProperty(globalThis,'devicePixelRatio',ratioDescriptor);else Reflect.deleteProperty(globalThis,'devicePixelRatio');
+  }
+});

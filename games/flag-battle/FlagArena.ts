@@ -80,7 +80,7 @@ export class FlagArena {
     for (const b of this.world.bodies) {
       const tail = this.world.finished ? this.celebration * .7 * (this.plan?.duration ?? FLAG_ROUND_SECONDS) / FLAG_ROUND_SECONDS : 0;
       const age = b.escapedAt === null ? 0 : this.world.time - b.escapedAt + tail;
-      if (b.escapedAt !== null && age > .75) continue;
+      if (b.escapedAt !== null && (age > .75 || this.finished)) continue;
       let x = b.previousX + (b.x - b.previousX) * alpha, y = b.previousY + (b.y - b.previousY) * alpha;
       if (b.escapedAt !== null) { x += b.vx * tail; y += b.vy * tail + .325 * tail * tail; }
       let size = FLAG_BODY_RADIUS;
