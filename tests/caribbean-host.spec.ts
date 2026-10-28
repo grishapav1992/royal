@@ -83,6 +83,37 @@ async function layout(page:Page,name:string){
  await page.screenshot({path:out+'/'+name+'.png'});
 }
 
+test('header controls paint above overlapping pirate art and every tool remains usable',async({page,roomPath})=>{
+ await enter(page,roomPath);await topup(page);await open(page);
+ const tools=page.locator('.ct-header-tools button'),regions:Buffer[]=[];
+ await page.locator('.ct-root').evaluate((e:HTMLElement)=>{e.style.overflow='clip';});
+ const capture=async(index:number)=>{const b=(await tools.nth(index).boundingBox())!;return page.screenshot({clip:{x:b.x+6,y:b.y+6,width:b.width-12,height:b.height-12}});};
+ for(let i=0;i<4;i++)regions.push(await capture(i));
+ // Reproduce the reported overhang without changing production geometry or game state.
+ await page.evaluate(()=>{
+  const pirate=document.querySelector<HTMLElement>('.ct-captain')!,img=pirate.querySelector<HTMLImageElement>('.ct-current')!,panel=document.querySelector('.ct-header-tools')!.getBoundingClientRect(),b=img.getBoundingClientRect();
+  const scale=Math.min(img.clientWidth/img.naturalWidth,img.clientHeight/img.naturalHeight),w=img.naturalWidth*scale,h=img.naturalHeight*scale;
+  const faceX=b.x+(img.clientWidth-w)/2+w*.6,faceY=b.y+img.clientHeight-h+h*.15;
+  pirate.style.transform=`translate(${panel.x+panel.width/2-faceX}px,${panel.y+panel.height/2-faceY}px)`;
+ });
+ await page.screenshot({path:out+'/header-overlap.png'});
+ for(let i=0;i<4;i++)expect((await capture(i)).equals(regions[i]),'Pirate pixels cannot replace the opaque interior of toolbar button '+i).toBe(true);
+ await page.locator('.ct-captain').evaluate((e:HTMLElement)=>{e.style.removeProperty('transform');});await page.locator('.ct-root').evaluate((e:HTMLElement)=>{e.style.removeProperty('overflow');});
+ for(const [width,height] of [[1440,1000],[1280,720],[390,844]]){
+  await page.setViewportSize({width,height});await expect(tools).toHaveCount(4);
+  for(let i=0;i<4;i++)await expect(tools.nth(i)).toBeInViewport();
+  await page.locator('[data-ct-action=music]').click();await expect(page.locator('[data-ct-action=music]')).toHaveAttribute('aria-pressed','false');await page.locator('[data-ct-action=music]').click();
+  await page.locator('[data-ct-action=sound]').click();await expect(page.locator('[data-ct-action=sound]')).toHaveAttribute('aria-pressed','false');await page.locator('[data-ct-action=sound]').click();
+  for(const action of ['info','history']){
+   await page.locator(`[data-ct-action=${action}]`).click();await expect(page.locator('.ct-modal')).toBeVisible();
+   expect(await page.locator('.ct-header-tools').evaluate(e=>{const b=e.getBoundingClientRect();return !!document.elementFromPoint(b.x+b.width/2,b.y+b.height/2)?.closest('.ct-backdrop');})).toBe(true);
+   await page.locator('.ct-modal').press('Escape');await expect(page.locator('.ct-backdrop')).toBeHidden();
+  }
+  await page.screenshot({path:out+`/header-${width}x${height}.png`});
+ }
+ expect((await wallet(page)).entries.filter((e:any)=>e.kind==='bet')).toEqual([]);
+});
+
 test('catalogue pirate captain cover stays sharp on desktop and mobile and reopens the same round',async({page,roomPath})=>{
  await enter(page,roomPath);await topup(page);await openCatalog(page);
  const card=page.locator(`[data-platform-game="${game}"]`),art=card.locator('.rp-art img');

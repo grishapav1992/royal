@@ -1,4 +1,6 @@
-Текущее исправление компоновки 1.3.2: [полный портрет и адаптация окна](framing-review.md), [проверки](framing-verification.json).
+Текущее исправление 1.3.3: [кнопки над персонажем](header-controls-review.md), [проверки](header-controls-verification.json).
+
+Исправление компоновки 1.3.2: [полный портрет и адаптация окна](framing-review.md), [проверки](framing-verification.json).
 
 # Карибские сокровища 1.3.1: анимации и работа с балансом
 
