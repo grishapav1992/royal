@@ -15,7 +15,7 @@ const publicResources = new Map<string, Promise<{ bytes: Buffer; type: string; c
 const mime: Record<string, string> = { '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.svg': 'image/svg+xml', '.webp': 'image/webp', '.png': 'image/png', '.jpg': 'image/jpeg', '.mp3': 'audio/mpeg', '.woff2': 'font/woff2' };
 
 test.beforeAll(async () => {
- server = await createServer({ configFile: false, root: process.cwd(), optimizeDeps: { entries: ['tests/fixtures/independent-games.html'] }, server: { host: '127.0.0.1', port: 0 }, plugins: [{
+ server = await createServer({ configFile: false, root: process.cwd(), optimizeDeps: { entries: ['tests/fixtures/independent-games.html'] }, server: { host: '127.0.0.1', port: 0, watch: { ignored: ['**/artifacts/**', '**/test-results/**'] } }, plugins: [{
   name: 'independent-games-fixture', configureServer(vite) {
    vite.middlewares.use('/game-modules', async (request, response) => {
     try {
@@ -88,6 +88,91 @@ async function lastExitWallet(page: Page, active = false, replyDelay = 0) {
  await page.evaluate(() => (window as any).moduleHarness.account('last-exit-loading-test'));
  return sent;
 }
+
+async function controlledLastExit(page: Page) {
+ let current: ExpansionSession | undefined, offset = 0;
+ let held: { entered: boolean; wait: Promise<void>; release: () => void } | undefined;
+ const sent: unknown[] = [], account = 'last-exit-resume-test';
+ const snapshot = () => {
+  if (current?.state === 'active') { current.serverNow = Date.now() + offset; current.multiplier = Math.exp(.06 * (current.serverNow - current.startedAt!) / 1000); }
+  return { wallet: { balance: current ? 990 + Number(current.returnedUnits) / 100 : 1000, entries: [] }, sessions: current ? [current] : [] };
+ };
+ await page.route('**/api/*-wallet', route => route.fulfill({ json: { balance: 1000, entries: [] } }));
+ await page.route('**/api/*-wallet/expansion', async route => {
+  if (route.request().method() === 'GET') {
+   const json = structuredClone(snapshot());
+   if (held && !held.entered) { held.entered = true; await held.wait; }
+   return route.fulfill({ json });
+  }
+  const op = route.request().postDataJSON(); sent.push(op);
+  current = { id: op.id, gameId: 'github-crash', rulesVersion: 1, state: 'active', stakeUnits: '1000', spentUnits: '1000', returnedUnits: '0', startedAt: Date.now() + offset - 5000, serverNow: Date.now() + offset, multiplier: Math.exp(.3),
+   view: { player: [], dealer: [], community: [], actions: [{ move: 'cashout', label: 'Exit', cost: 0 }], phase: 1, ended: false, message: '' } };
+  return route.fulfill({ json: { ...snapshot(), session: current, replayed: false } });
+ });
+ await page.evaluate(id => (window as any).moduleHarness.account(id), account);
+ return { account, sent, advance(ms: number) { offset += ms; },
+  holdNextRead() { let release!: () => void; const wait = new Promise<void>(resolve => { release = resolve; }); held = { entered: false, wait, release }; return held; },
+  finish(loss = false) { if (!current) throw Error('No run'); current.state = 'settled'; current.multiplier = loss ? 0 : 1.5; current.returnedUnits = loss ? '0' : '1500'; if (loss) current.crashAt = 1.15; current.view.ended = true; current.view.actions = []; return current.id; },
+ };
+}
+const lastExitAudio = (page: Page) => page.locator('.last-exit').evaluate(el => JSON.parse((el as HTMLElement).dataset.audio || '{}'));
+
+test('LAST EXIT resumes from a fresh snapshot after an older read and cached reopening', async ({ page }) => {
+ await fixture(page); const control = await controlledLastExit(page); await open(page, 'github-crash');
+ await expect(page.locator('[data-start]')).toBeEnabled(); await page.locator('[data-start]').click();
+ await expect(page.locator('.last-exit')).toHaveAttribute('data-motion-phase', 'racing');
+ const oldRead = control.holdNextRead();
+ try {
+  await expect.poll(() => oldRead.entered).toBe(true);
+  await page.evaluate(() => { Object.defineProperty(document, 'hidden', { configurable: true, get: () => true }); document.dispatchEvent(new Event('visibilitychange')); });
+  control.advance(8000);
+  await page.evaluate(() => { Object.defineProperty(document, 'hidden', { configurable: true, get: () => false }); document.dispatchEvent(new Event('visibilitychange')); });
+  await expect(page.locator('.last-exit')).not.toHaveAttribute('data-connection-state', 'current'); oldRead.release();
+  await expect(page.locator('.last-exit')).toHaveAttribute('data-connection-state', 'current');
+  const lag = () => page.locator('.last-exit').evaluate(el => Math.abs(Number((el as HTMLElement).dataset.confirmedServerNow) - Number((el as HTMLElement).dataset.displayServerNow)));
+  await expect.poll(lag).toBeLessThan(500);
+  await page.evaluate(() => (window as any).moduleHarness.close()); control.advance(8000); await open(page, 'github-crash');
+  await expect(page.locator('.last-exit')).toHaveAttribute('data-connection-state', 'current'); await expect.poll(lag).toBeLessThan(500);
+  await page.waitForTimeout(750); expect(await lag()).toBeLessThan(500); expect(control.sent).toHaveLength(1);
+ } finally { oldRead.release(); }
+});
+
+test('LAST EXIT restores active audio through the shared context and respects mute', async ({ page }) => {
+ await fixture(page); const control = await controlledLastExit(page); await open(page, 'github-crash');
+ await expect(page.locator('[data-start]')).toBeEnabled(); await page.locator('[data-start]').click();
+ await expect.poll(async () => (await lastExitAudio(page)).sources).toBeGreaterThan(0);
+ await page.evaluate(() => (window as any).moduleHarness.close()); await open(page, 'github-crash');
+ await expect.poll(async () => (await lastExitAudio(page)).sources).toBeGreaterThan(0);
+ expect((await lastExitAudio(page)).cues).not.toContain('launch');
+ await page.evaluate(() => ((window as any)[Symbol.for('royal.game-host.v1')]).gameAudio.setMuted(true));
+ await page.evaluate(() => (window as any).moduleHarness.close()); await open(page, 'github-crash');
+ await expect.poll(async () => (await lastExitAudio(page)).context).toBe('running'); expect((await lastExitAudio(page)).sources).toBe(0);
+ await page.evaluate(() => ((window as any)[Symbol.for('royal.game-host.v1')]).gameAudio.setMuted(false));
+ await expect.poll(async () => (await lastExitAudio(page)).sources).toBeGreaterThan(0);
+ await page.evaluate(() => ((window as any)[Symbol.for('royal.game-host.v1')]).gameAudio.setVolume(0));
+ await expect.poll(async () => (await lastExitAudio(page)).rms).toBeLessThan(.00001);
+ expect(control.sent).toHaveLength(1);
+});
+
+test('LAST EXIT restores seen endings across reopening and reload, while unseen results still animate', async ({ page }) => {
+ await fixture(page); await page.emulateMedia({ reducedMotion: 'no-preference' }); const control = await controlledLastExit(page);
+ await open(page, 'github-crash');
+ for (const loss of [false, true]) {
+  await expect(page.locator('[data-start]')).toBeEnabled(); await page.locator('[data-start]').click(); await expect(page.locator('.last-exit')).toHaveAttribute('data-motion-phase', 'racing'); const id = control.finish(loss);
+  await expect(page.locator('canvas')).toHaveAttribute('data-cinematic', loss ? 'intercept' : 'helicopter-approach');
+  await page.evaluate(() => (window as any).moduleHarness.close());
+  if (!loss) await page.evaluate(account => { const key = 'royal-last-exit-history:' + account; const history = JSON.parse(localStorage.getItem(key)!); for (const row of history) delete row.presented; localStorage.setItem(key, JSON.stringify(history)); }, control.account);
+  await open(page, 'github-crash'); await expect(page.locator('canvas')).toHaveAttribute('data-restored', 'true');
+  await expect(page.locator('canvas')).toHaveAttribute('data-cinematic', loss ? 'explosion' : 'extracted');
+  expect((await lastExitAudio(page)).cues || []).toEqual([]);
+  await page.reload(); await page.waitForFunction(() => !!(window as any).moduleHarness);
+  await page.evaluate(account => (window as any).moduleHarness.account(account), control.account); await open(page, 'github-crash');
+  await expect(page.locator('canvas')).toHaveAttribute('data-restored', 'true'); await expect(page.locator('.last-exit')).toHaveAttribute('data-session-id', id);
+ }
+ await page.locator('[data-start]').click(); await expect(page.locator('.last-exit')).toHaveAttribute('data-motion-phase', 'racing'); await page.evaluate(() => (window as any).moduleHarness.close()); control.finish(); await open(page, 'github-crash');
+ await expect(page.locator('canvas')).toHaveAttribute('data-cinematic', 'helicopter-approach'); await expect(page.locator('canvas')).toHaveAttribute('data-restored', 'false');
+ expect(control.sent).toHaveLength(3);
+});
 
 test('LAST EXIT waits for downloads and decoding, then shows the complete first loss', async ({ page }) => {
  await page.addInitScript(() => {

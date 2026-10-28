@@ -46,3 +46,9 @@ test('settlement interrupts projection immediately and a new round gets its own 
  const next={...s,id:'new-round',serverNow:30000,startedAt:32000,multiplier:1};
  assert.equal(raceAnchor(next,anchor,20).from,30000);
 });
+test('explicit resume sync replaces a stale cached clock once, then preserves frame speed',()=>{
+ const cached=session(),old=raceAnchor(cached,undefined,10000),fresh={...cached,serverNow:23100,multiplier:Math.exp(.06*13.1)};
+ const resumed=raceAnchor(fresh,old,10100,true);assert.equal(raceDisplay(fresh,resumed,10100).time,23100);
+ const next={...fresh,serverNow:23450,multiplier:Math.exp(.06*13.45)},a=raceAnchor(next,resumed,10450);
+ assert.equal(raceDisplay(next,a,10450).time,23450);assert.equal(raceDisplay(next,a,10500).time,23500);
+});

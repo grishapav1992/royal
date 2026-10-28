@@ -1,0 +1,326 @@
+{
+  "release": "last-exit-resume-20261028-v1",
+  "sourceCommit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
+  "baseCommit": "583ff906ddc4420ec88bb40e01d9607450b6d828",
+  "version": "1.0.0-eb5c1aac3bd3",
+  "checks": {
+    "unitAndPresentation": 32,
+    "isolatedPostgresWalletAcceptance": 6,
+    "hostContract": 6,
+    "genericPublisher": 11,
+    "persistentServiceGuards": 2,
+    "localPackagedBrowser": 8,
+    "typecheck": true,
+    "rtpGate": {
+      "qualifiedProfiles": 12,
+      "unchangedLegacy": 114
+    },
+    "githubReleaseVerification": true,
+    "packageIntegrityFiles": 18,
+    "publicPackagedBrowser": 8,
+    "publicPackagedBrowserDurationSeconds": 54.2
+  },
+  "realHost": {
+    "passed": true,
+    "story": "Real hall and connected chat, temporary transactional wallet, eight-second tab absence, fresh resume, restored sound, cashout and settled reopen",
+    "rows": [
+      {
+        "width": 1440,
+        "height": 1000,
+        "chatVisible": true,
+        "overflow": false,
+        "clockLagMs": -187.699951171875,
+        "audioSources": 10
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "chatVisible": true,
+        "overflow": false,
+        "clockLagMs": -86.800048828125,
+        "audioSources": 9
+      }
+    ],
+    "resumeLagMs": -49.699951171875,
+    "restoredAudioSources": 9,
+    "settledEndingRestored": true,
+    "walletAndReopen": true,
+    "errors": []
+  },
+  "changes": {
+    "freshResumeAfterOlderRead": true,
+    "seenEndingsRestored": true,
+    "unseenEndingsRetained": true,
+    "activeAudioRestored": true,
+    "globalMuteAndZeroVolumeRespected": true,
+    "serverMathChanged": false,
+    "walletSourceChanged": false
+  },
+  "productionPublished": true,
+  "apiVersion": 1,
+  "rulesVersion": 1,
+  "progressVersion": 1,
+  "pointerSha256": "fd89a552b07cda3b557752b061b196e6d12df75ed3fc0e7d0726a6c68cb89082",
+  "manifestSha256": "b32aaabfec2ec6269bd7b09b0f6a9314a2ccdf77ca182593798fa23ef9e4f3cd",
+  "files": 18,
+  "bytes": 21945219,
+  "publicResources": {
+    "passed": true,
+    "checkedAt": "2026-10-28T09:46:52.228Z",
+    "version": "1.0.0-eb5c1aac3bd3",
+    "checks": 23,
+    "rows": [
+      {
+        "path": "/game-modules/github-crash/active.json",
+        "status": 200,
+        "bytes": 212,
+        "sha256": "fd89a552b07cda3b557752b061b196e6d12df75ed3fc0e7d0726a6c68cb89082",
+        "cache": "no-store"
+      },
+      {
+        "path": "/healthz",
+        "status": 200,
+        "bytes": 36,
+        "sha256": "7482326171995296103a4f794befc2c7831df741969bdbe936bdb637195e4dfc",
+        "cache": null
+      },
+      {
+        "path": "/game-modules/github-crash/versions/1.0.0-eb5c1aac3bd3/manifest.json",
+        "status": 200,
+        "bytes": 2313,
+        "sha256": "b32aaabfec2ec6269bd7b09b0f6a9314a2ccdf77ca182593798fa23ef9e4f3cd",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/github-crash/versions/1.0.0-eb5c1aac3bd3/entry-4c189a5744786322.js",
+        "status": 200,
+        "bytes": 62201,
+        "sha256": "4c189a5744786322c2f04f2620d791f7f9454d702402900ed6faf04638981040",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/github-crash/versions/1.0.0-eb5c1aac3bd3/media/last-exit/v1/explosion.webp",
+        "status": 200,
+        "bytes": 514396,
+        "sha256": "42f4c2c85f68b79527800c3f502760a25e2804e955e36b9524067f7d2b3ace86",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/github-crash/versions/1.0.0-eb5c1aac3bd3/media/last-exit/v1/coupe.webp",
+        "status": 200,
+        "bytes": 276734,
+        "sha256": "adccd9133d1fce002eb2dd63259fde91fa9948b3d1b03b3fb81929fd44f3ce0d",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/github-crash/versions/1.0.0-eb5c1aac3bd3/media/last-exit/v1/highway.webp",
+        "status": 200,
+        "bytes": 360404,
+        "sha256": "d23d0774b6b6ea9083d32f168ba73a09824c7c29b3c1cf519e0d9c8470da0991",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/github-crash/versions/1.0.0-eb5c1aac3bd3/media/last-exit/v1/patrol.webp",
+        "status": 200,
+        "bytes": 237490,
+        "sha256": "2a35d38cdc3bb12336358811e5a2cbe7c8559b89866756185b490d473636a675",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/github-crash/versions/1.0.0-eb5c1aac3bd3/media/last-exit/v2d/coupe-depth-roll.png",
+        "status": 200,
+        "bytes": 1096120,
+        "sha256": "3b1be7e4297f430910a3284ab22695606565c21cc55e7d9eab15e34079ba342d",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/github-crash/versions/1.0.0-eb5c1aac3bd3/media/last-exit/v2d/cargo-plane.png",
+        "status": 200,
+        "bytes": 1619839,
+        "sha256": "3104990812135e1c9e034af9e92f6a211316b4be5633f52368c40e199003430b",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/github-crash/versions/1.0.0-eb5c1aac3bd3/media/last-exit/v2d/coupe-side.png",
+        "status": 200,
+        "bytes": 1257608,
+        "sha256": "471d0fc79632555707de8e116c720294749ef62095a407bb5e150c1e5f557fbe",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/github-crash/versions/1.0.0-eb5c1aac3bd3/media/last-exit/v2d/helicopter.png",
+        "status": 200,
+        "bytes": 1630758,
+        "sha256": "e31e02af5a7b2cf0bb0fc187f2244cea2593f76f70a6edc35f92649594a6d5ab",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/github-crash/versions/1.0.0-eb5c1aac3bd3/media/last-exit/v2d/patrol-ram.png",
+        "status": 200,
+        "bytes": 941870,
+        "sha256": "452c5c49fa7e085c13e20670c0dea604bca8644608807d94534e5788be338b20",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/github-crash/versions/1.0.0-eb5c1aac3bd3/media/last-exit/v2d/coupe-yaw.png",
+        "status": 200,
+        "bytes": 945836,
+        "sha256": "b2916c832d144b050df897f3ba9c30034295be17cb98fda5e9f9b0d32abffd89",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/github-crash/versions/1.0.0-eb5c1aac3bd3/media/last-exit/v2d/route-highway.png",
+        "status": 200,
+        "bytes": 2689618,
+        "sha256": "4cf1a1da3fb13aa787febe8dec787acd5b25c76c8d99200e952f97f9d4847840",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/github-crash/versions/1.0.0-eb5c1aac3bd3/media/last-exit/v2d/props.png",
+        "status": 200,
+        "bytes": 989493,
+        "sha256": "7c56e71723bdec4d5d08159afb862c1b8a9863020c7f305a87c5ac6712a9bfed",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/github-crash/versions/1.0.0-eb5c1aac3bd3/media/last-exit/v2d/route-industrial.png",
+        "status": 200,
+        "bytes": 2470517,
+        "sha256": "7d964f28a6bcc8f9f92c01962525753244446fe6d43e203ec53f77b085ff5652",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/github-crash/versions/1.0.0-eb5c1aac3bd3/media/last-exit/v2d/route-last-exit.png",
+        "status": 200,
+        "bytes": 2620939,
+        "sha256": "62646cbfaf9c0b1675cf83d6487e4491cfcbebb6d087d1977fefad4c26ce17dd",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/github-crash/versions/1.0.0-eb5c1aac3bd3/media/last-exit/v2d/route-interchange.png",
+        "status": 200,
+        "bytes": 2437635,
+        "sha256": "73eae0b9ee3f49d10a0e58f2a9e3898966b429fec08e27997c28af9cb5376fe5",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/github-crash/versions/1.0.0-eb5c1aac3bd3/style-d8beb99b419cc3ca.css",
+        "status": 200,
+        "bytes": 10545,
+        "sha256": "d8beb99b419cc3cac56310911490097d7629363667d64f9ce16816d559684113",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/github-crash/versions/1.0.0-eb5c1aac3bd3/media/last-exit/v2d/route-props.png",
+        "status": 200,
+        "bytes": 1783216,
+        "sha256": "babad83afc79f10e7f7dd6c3d0e67ca82249e4be3edf8bbcbcd7b7917690ee78",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/github-crash/versions/1.0.0-c419e76e9b50/manifest.json",
+        "status": 200,
+        "bytes": 2313,
+        "sha256": "1cb73767a03ee981637545d18aae2d8808a1eb561309166d69ece3fa3939a649",
+        "cache": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/github-crash/versions/1.0.0-c419e76e9b50/entry-d1a6972839bac0d0.js",
+        "status": 200,
+        "bytes": 60496,
+        "sha256": "d1a6972839bac0d0d25cb73e6e8c96829e9cc8c13cede3be606fab11a8b68b3e",
+        "cache": "public, max-age=31536000, immutable"
+      }
+    ]
+  },
+  "backup": {
+    "archive": "/opt/royal-backups/last-exit-resume-20261028-v1/source.tgz",
+    "bytes": 21092605,
+    "sha256": "288fa69d511ee2a5b234ff8dc8643b2d5f7e1dca4b55a5481485b91d7a4416f7",
+    "priorImage": "sha256:d275ba35b1286dcffeca9dace0ddaa165a974d44d50a4251696e98aa56306e8e",
+    "oldVersion": "1.0.0-c419e76e9b50"
+  },
+  "rollbackTags": [
+    "royal-game:before-last-exit-resume-20261028-v1",
+    "royal-game:before-last-exit-resume-20261028-v1-prepared"
+  ],
+  "server": {
+    "image": "sha256:d275ba35b1286dcffeca9dace0ddaa165a974d44d50a4251696e98aa56306e8e",
+    "containerId": "42f538cef738395ad814d3369d98db2b2ca7723a26d3a02e8e60d7da16e61f06",
+    "startedAt": "2026-10-27T21:37:55.706617255Z",
+    "health": "healthy",
+    "programHashes": {
+      "dist/index.html": "34d9d81e07c93e57fb0d58b48c19bfa2e3afac2f2a529482a3c7b6a4b1295e26",
+      "dist-server/index.js": "4085d330333c72f56554de6225b22c7680c2750abdac45b51fb045f17bda9b88",
+      "dist-server/payments.js": "561f122c79d236c9b114b2c64915c6becaafd0c9e5531835df0868cdc9610247",
+      "dist-server/crypto-reconcile.js": "afe3e44eb292bab518224182be34d6f8d8b3b0ac0dc400aaf7b07e68d315c6da"
+    },
+    "hostContractSha256": "e5458b9fd98b1d778b78e6b18c1ea796732fb18ac706bba61ea3e3404b121574",
+    "persistentServices": 14,
+    "hostRestarted": false,
+    "databaseTouched": false,
+    "otherModulePointersPreserved": true
+  },
+  "compatibility": {
+    "sharedAudioAndHostContractSourceUnchangedSinceProduction": true,
+    "historyMigration": "Legacy entries are treated as previously presented. New entries are marked only after the first decoded scene frame. The fallback is bounded and account scoped."
+  },
+  "limitations": [
+    "Desktop Chrome at 1440x1000 and 390x844; no physical phone or speaker listening.",
+    "Public browser cases use downloaded production module bytes with isolated fixture operations; no production accounts, wagers or payments were created.",
+    "Passing the source gate does not newly qualify the legacy Last EXIT generator. Server mathematics were unchanged."
+  ],
+  "cleanup": {
+    "server": {
+      "passed": true,
+      "removed": [
+        {
+          "path": "/opt/royal-releases/last-exit-resume-20261028-v1/package",
+          "bytes": 21947532
+        },
+        {
+          "path": "/opt/royal-releases/last-exit-resume-20261028-v1/__pycache__",
+          "bytes": 34615
+        }
+      ],
+      "freeBytesBefore": 7427833856,
+      "freeBytesAfter": 7449878528,
+      "backupRetained": {
+        "archive": "/opt/royal-backups/last-exit-resume-20261028-v1/source.tgz",
+        "bytes": 21092605,
+        "sha256": "288fa69d511ee2a5b234ff8dc8643b2d5f7e1dca4b55a5481485b91d7a4416f7",
+        "priorImage": "sha256:d275ba35b1286dcffeca9dace0ddaa165a974d44d50a4251696e98aa56306e8e",
+        "oldVersion": "1.0.0-c419e76e9b50"
+      },
+      "rollbackTagsRetained": true,
+      "serverSnapshotUnchanged": true,
+      "activeVersion": "1.0.0-eb5c1aac3bd3"
+    },
+    "local": {
+      "status": "completed",
+      "removed": [
+        {
+          "path": "artifacts/work/last-exit-resume-20261028",
+          "bytes": 1228877
+        },
+        {
+          "path": "module-dist/github-crash/versions/1.0.0-c419e76e9b50",
+          "bytes": 21945827
+        }
+      ],
+      "logicalBytesRemoved": 23174704,
+      "freeBytesBefore": 58680463360,
+      "freeBytesAfter": 58703609856,
+      "preservationCommits": [
+        "8e9ee3fb49b6b631d63864adec66d9c36ff1f63e",
+        "2cf391c368ee75b15959e8359e422ffc19bcab3d"
+      ],
+      "remoteCommitVerified": true,
+      "archivesCreated": 0,
+      "temporaryDatabasesRemaining": 0,
+      "activeWorkExceptions": [],
+      "retained": "One current local Last EXIT package, normal build outputs, installed dependencies and this compact report. Server backups and immutable rollback versions retained. Other task folders untouched.",
+      "measurementNote": "Logical file sizes and observed filesystem free space; unrelated background writes can affect the difference."
+    }
+  }
+}
