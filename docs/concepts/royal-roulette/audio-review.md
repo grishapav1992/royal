@@ -10,7 +10,7 @@ These timbres and levels are game-specific design hypotheses for a calm, repeata
 
 ## Verification
 
-The full application build and all 118 independent packages passed. The RTP gate verified all 13 registered profiles. The 33 targeted mathematics, wallet, motion and audio tests passed, together with seven package/asset boundary tests and eight browser scenarios. The final roulette package is `1.4.0-3151e630901e`.
+The full application build and all 118 independent packages passed. The RTP gate verified all 13 registered profiles. The 33 targeted mathematics, wallet, motion and audio tests passed, together with seven package/asset boundary tests and eight browser scenarios. The final roulette package is `1.4.0-2535bfde3cdd`.
 
 The audio tests cover deterministic finite PCM at 8, 44.1, 48 and 96 kHz, bounded peaks, shaped one-shot endpoints and a loop seam no larger than the texture's ordinary sample steps. Every pocket's contact cue coincides with a zero-hop point of the existing trajectory. Clock tests cover valid output timestamps, incomplete/stale timestamp fallback, latency estimates and explicitly reported unavoidable late peaks.
 

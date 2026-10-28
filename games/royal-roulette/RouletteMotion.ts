@@ -100,24 +100,24 @@ export class RouletteMotion {
   reset(){this.cancel();this.pose=resting();this.pocket=undefined;this.frames=0;this.paint();}
   pause(){this.paused=true;this.cancel();}
   resume(){this.paused=false;}
-  private effect(el:Element|null,frames:Keyframe[],duration:number,delay=0) {
+  private effect(el:Element|null,frames:Keyframe[],duration:number,delay=0,clock=performance.now()) {
     if(!el||!this.moving())return;
     this.byElement.get(el)?.cancel();
     // Segment easing preserves the explicit accent offsets on the shared clock.
-    const a=el.animate(frames.map(frame=>({...frame,easing:'cubic-bezier(.2,.75,.25,1)'})),{duration,delay,easing:'linear'});this.effects.add(a);this.byElement.set(el,a);
+    const a=el.animate(frames.map(frame=>({...frame,easing:'cubic-bezier(.2,.75,.25,1)'})),{duration,delay,easing:'linear'});a.startTime=clock;this.effects.add(a);this.byElement.set(el,a);
     void a.finished.catch(()=>{}).finally(()=>{this.effects.delete(a);if(this.byElement.get(el)===a)this.byElement.delete(el);});
   }
   select(button:HTMLElement) {
     const now=performance.now(),peak=this.sound?.select(button.hasAttribute('data-rr-amount')?'chip':'bet',now+137.5)??now+137.5,delay=Math.max(0,peak-now-137.5);
-    this.effect(button,[{scale:'.92'},{scale:'1.065',offset:.55},{scale:'1'}],250,delay);
-    this.effect(this.root.querySelector('.rr-selection'),[{opacity:.55,translate:'0 3px'},{opacity:1,translate:'0 0'}],220,delay);
+    this.effect(button,[{scale:'.92'},{scale:'1.065',offset:.55},{scale:'1'}],250,delay,now);
+    this.effect(this.root.querySelector('.rr-selection'),[{opacity:.55,translate:'0 3px'},{opacity:1,translate:'0 0'}],220,delay,now);
   }
   reveal(multiplier=0) {
     const now=performance.now(),target=now+(this.moving()?252:30),peak=this.sound?.result(multiplier,target)??target,delay=Math.max(0,peak-now-252);
-    this.effect(this.root.querySelector('.rr-result-orb'),[{opacity:0,scale:'.7',rotate:'-12deg'},{opacity:1,scale:'1.08',rotate:'2deg',offset:.7},{opacity:1,scale:'1',rotate:'0deg'}],360,delay);
-    this.effect(this.root.querySelector('.rr-center'),[{boxShadow:'0 0 0 0 #e5c88955'},{boxShadow:'0 0 0 7px #e5c88900'}],460,delay);
-    this.effect(this.root.querySelector('.rr-landed>span'),[{scale:'.85'},{scale:'1.13',offset:.55},{scale:'1'}],330,delay);
-    this.effect(this.root.querySelector('.rr-return'),[{opacity:.35,translate:'0 4px'},{opacity:1,translate:'0 0'}],300,delay);
+    this.effect(this.root.querySelector('.rr-result-orb'),[{opacity:0,scale:'.7',rotate:'-12deg'},{opacity:1,scale:'1.08',rotate:'2deg',offset:.7},{opacity:1,scale:'1',rotate:'0deg'}],360,delay,now);
+    this.effect(this.root.querySelector('.rr-center'),[{boxShadow:'0 0 0 0 #e5c88955'},{boxShadow:'0 0 0 7px #e5c88900'}],460,delay,now);
+    this.effect(this.root.querySelector('.rr-landed>span'),[{scale:'.85'},{scale:'1.13',offset:.55},{scale:'1'}],330,delay,now);
+    this.effect(this.root.querySelector('.rr-return'),[{opacity:.35,translate:'0 4px'},{opacity:1,translate:'0 0'}],300,delay,now);
   }
   history(value:number,color:string,animate:boolean) {
     const history=this.root.querySelector<HTMLElement>('.rr-history')!;
