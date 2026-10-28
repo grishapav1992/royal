@@ -1,0 +1,95 @@
+{
+  "date": "2026-10-28",
+  "timezone": "Europe/Moscow",
+  "status": "local candidate for visual review",
+  "sourceCommit": "3fd1ffa9532a13155df96c546e3e71466bf550dd",
+  "githubBranch": "codex/jackie-chan",
+  "githubVerifiedCommit": "3fd1ffa9532a13155df96c546e3e71466bf550dd",
+  "integrationBaseline": "d76746b1a5d22a4b5b15c2f2934aea7c052568b5",
+  "module": {
+    "version": "1.0.0-ec356cfffdf3",
+    "files": 12,
+    "bytes": 4343356,
+    "allFileHashesVerified": true,
+    "hostSingletonsExternalized": true,
+    "serverImplementationIncluded": false
+  },
+  "checks": {
+    "typescript": true,
+    "rtpGate": {
+      "verifiedProfiles": 13,
+      "newGameServerCases": 17388,
+      "analyticalRiskPathsPerStake": 363,
+      "stakes": 4,
+      "minRtp": 0.98971875,
+      "maxRtp": 0.99
+    },
+    "walletAndNileTests": 20,
+    "crLeoModelTests": 39,
+    "rtpGateTests": 19,
+    "hostContractAndBundleTests": 2,
+    "browserTests": 2,
+    "viewports": [
+      1440,
+      390,
+      320
+    ],
+    "realHost": true,
+    "authenticatedChat": true,
+    "temporaryPostgres": true,
+    "lostResponseRecovery": true,
+    "closeReopen": true,
+    "randomLocalPreviewSmoke": true,
+    "previewReloadPreservedSeries": true,
+    "pageErrors": []
+  },
+  "preview": {
+    "url": "http://127.0.0.1:5236/tests/fixtures/jackie-play.html",
+    "temporaryFunds": true,
+    "productionChanged": false
+  },
+  "limitations": [
+    "Physical phones, Bluetooth and subjective listening were not tested.",
+    "First enemy atlas is reused for the group.",
+    "Draft pull request creation was rejected by the GitHub integration with HTTP 403; the source branch is pushed and verified."
+  ],
+  "storage": {
+    "cleanupAttempt": "Rejected before execution by automatic command review: blocked by policy; no detailed reason supplied.",
+    "removedFiles": [],
+    "removedArchives": [],
+    "removedBytes": 0,
+    "freeBeforeCleanupBytes": null,
+    "freeAfterCleanupBytes": null,
+    "currentVolumeFreeBytes": 294029156352,
+    "physicalSpaceReclamationClaimed": false,
+    "taskTemporaryBytes": 3311677,
+    "retainedModuleVersions": [
+      {
+        "version": "1.0.0-3bf86b9fe8db",
+        "bytes": 4341589,
+        "active": false
+      },
+      {
+        "version": "1.0.0-9f573a9b242d",
+        "bytes": 4343217,
+        "active": false
+      },
+      {
+        "version": "1.0.0-d673ffbf826c",
+        "bytes": 4343169,
+        "active": false
+      },
+      {
+        "version": "1.0.0-ec356cfffdf3",
+        "bytes": 4343356,
+        "active": true
+      },
+      {
+        "version": "1.0.0-f6b20c59d0f3",
+        "bytes": 4342518,
+        "active": false
+      }
+    ],
+    "activeWorkException": "Managed worktree, current module, temporary database and preview cache remain for active user review. Stop the preview and archive the extra checkout after source is verified on GitHub and review ends. Original dirty checkout and other chats are preserved."
+  }
+}
