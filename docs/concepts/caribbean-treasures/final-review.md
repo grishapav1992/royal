@@ -1,4 +1,6 @@
-Текущее исправление 1.3.3: [кнопки над персонажем](header-controls-review.md), [проверки](header-controls-verification.json).
+Текущее обновление 1.4.0: [десять новых пираток и выбор героини](crew-review.md), [проверки](crew-verification.json).
+
+Исправление 1.3.3: [кнопки над персонажем](header-controls-review.md), [проверки](header-controls-verification.json).
 
 Исправление компоновки 1.3.2: [полный портрет и адаптация окна](framing-review.md), [проверки](framing-verification.json).
 
