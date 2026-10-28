@@ -2,13 +2,13 @@
   "date": "2026-10-28",
   "owner": "Flooded Temple character framing chat",
   "purpose": "Remove owned browser outputs and the intermediate mirrored 0.7.1 package after GitHub preservation",
-  "state": "inventoried-awaiting-remote-preservation",
+  "state": "blocked-by-policy",
   "activePackage": "0.7.1-af8d1ba9080d",
   "initialFreeBytes": 299467735040,
-  "freeBeforeBytes": 300068503552,
-  "freeAfterBytes": null,
-  "preservationCommit": null,
-  "githubVerified": false,
+  "freeBeforeBytes": 299599564800,
+  "freeAfterBytes": 300025778176,
+  "preservationCommit": "aaca6ba5fce12b4110409eb48b686782f534d78f",
+  "githubVerified": true,
   "targets": [
     {
       "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-framing",
@@ -54,5 +54,6 @@
       "cleanupCondition": "Do not retry prior denied scopes"
     }
   ],
-  "previousDeniedScopesRetried": false
+  "previousDeniedScopesRetried": false,
+  "rejection": "Automatic approval review rejected the native PowerShell cleanup before execution: blocked by policy. No detailed reason supplied. No files removed, no retry and no prior denied scope targeted."
 }
