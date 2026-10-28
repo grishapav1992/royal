@@ -2,11 +2,11 @@
   "date": "2026-10-28",
   "owner": "Flooded Temple character animation chat",
   "purpose": "Remove owned temporary verification and inactive 0.5.0 builds after remote source verification",
-  "state": "planned",
+  "state": "blocked-by-policy",
   "activePackage": "0.5.0-b9aceb3eec57",
   "initialFreeBytes": 305244794880,
-  "preservationCommit": null,
-  "githubVerified": false,
+  "preservationCommit": "1713f0df317409efd8b9985af512d7a04c205a0b",
+  "githubVerified": true,
   "targets": [
     {
       "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-animation",
@@ -35,7 +35,7 @@
         {
           "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-animation\\clock-simulated-latency.json",
           "bytes": 8681,
-          "lastWriteUtc": "2026-10-28T16:28:35.9278120Z"
+          "lastWriteUtc": "2026-10-28T16:28:35.927812Z"
         },
         {
           "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-animation\\discovery-portrait.png",
@@ -191,12 +191,12 @@
         {
           "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-4d86e1400cd6\\media\\flooded-temple\\audio\\relic.wav",
           "bytes": 403244,
-          "lastWriteUtc": "2026-10-28T16:27:33.7168780Z"
+          "lastWriteUtc": "2026-10-28T16:27:33.716878Z"
         },
         {
           "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-4d86e1400cd6\\media\\flooded-temple\\audio\\return.wav",
           "bytes": 115244,
-          "lastWriteUtc": "2026-10-28T16:27:33.7189630Z"
+          "lastWriteUtc": "2026-10-28T16:27:33.718963Z"
         },
         {
           "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-4d86e1400cd6\\media\\flooded-temple\\audio\\rope.wav",
@@ -503,7 +503,7 @@
         {
           "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\media\\flooded-temple\\rooms.webp",
           "bytes": 489702,
-          "lastWriteUtc": "2026-10-28T16:35:22.2140930Z"
+          "lastWriteUtc": "2026-10-28T16:35:22.214093Z"
         },
         {
           "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\media\\flooded-temple\\temple.webp",
@@ -583,7 +583,7 @@
         {
           "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\media\\flooded-temple\\character\\celebrate.webp",
           "bytes": 115832,
-          "lastWriteUtc": "2026-10-28T16:35:22.2054940Z"
+          "lastWriteUtc": "2026-10-28T16:35:22.205494Z"
         },
         {
           "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\media\\flooded-temple\\character\\discover.webp",
@@ -643,7 +643,7 @@
         {
           "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\media\\flooded-temple\\props\\rope.webp",
           "bytes": 45930,
-          "lastWriteUtc": "2026-10-28T16:35:22.2140930Z"
+          "lastWriteUtc": "2026-10-28T16:35:22.214093Z"
         }
       ]
     },
@@ -829,8 +829,8 @@
   "removedFiles": 0,
   "removedBytes": 0,
   "removedArchiveBytes": 0,
-  "freeBeforeBytes": null,
-  "freeAfterBytes": null,
+  "freeBeforeBytes": 303773790208,
+  "freeAfterBytes": 303773560832,
   "physicalReclaimedClaim": false,
   "exceptions": [
     "Owned local preview remains active for user review, stop terminal session 7918 with Ctrl+C afterwards.",
@@ -839,5 +839,6 @@
     "Prior user-loaded 0.4.0-ebe9fb2d7616 can remain pinned in the existing in-app window until it is reloaded.",
     "Built-in image generation originals remain at the tool-owned generated_images path, as instructed by that tool."
   ],
-  "cleanupCondition": "Source and required assets pushed to feature branch with exact remote commit verified. No active builds or captures remain."
+  "cleanupCondition": "Source and required assets pushed to feature branch with exact remote commit verified. No active builds or captures remain.",
+  "rejection": "Automatic approval review rejected the removal command before execution: blocked by policy. No detailed reason. Do not retry these five targets or bypass the denial."
 }

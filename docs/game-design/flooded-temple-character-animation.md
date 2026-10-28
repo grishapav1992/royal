@@ -53,3 +53,7 @@ Final artwork lives in `public/assets/flooded-temple/character/`; the six files 
 The local preview uses a separate disposable PostgreSQL and demo coins. It remains available at `http://127.0.0.1:5226/tests/fixtures/temple-preview.html?lang=ru&version=0.5.0`, terminal session 7918, frontend PID 1624 and backend PID 12480. Stop the owned wrapper with Ctrl+C after user review so it cleans up its database. The managed checkout remains active for this feature while another chat has work in the primary checkout. No deployment was made.
 
 Only this iteration's temporary captures/helpers and obsolete 0.5.0 package builds are cleanup candidates. Earlier denied paths are excluded and must not be retried. See the [storage inventory and result](flooded-temple-character-storage.json) for preservation commit, exact removed sizes, free-space measurements and active exceptions.
+
+Source and required assets were pushed to `codex/flooded-temple` at `1713f0df317409efd8b9985af512d7a04c205a0b`; the exact remote SHA was checked with `ls-remote`. `work:sync` confirmed main baseline `05f28d08c99182a886e8e7e72e6bf97eb7916587` with no missing main commits.
+
+Cleanup of five owned targets, 93,242,310 bytes, was rejected before execution by automatic approval review: `blocked by policy`, without a detailed reason. Removed folders, files, archives and bytes are all zero. No physical space reclamation is claimed. These five targets were not retried and join the earlier excluded denial scopes; resolving this storage exception requires a policy change outside this task.
