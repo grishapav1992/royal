@@ -257,6 +257,35 @@ test('fitting room uses the live game walking cadence', async ({ page }) => {
   for (const cycle of cycles) expect(Math.abs(cycle - 6 / fps * 1000)).toBeLessThan(35);
 });
 
+for (const generated of [false, true]) test(`live ${generated ? 'generated' : 'native'} character stops stale walking, preserves turns and breathes with planted feet`, async ({ page }) => {
+  const png = await sharp({ create: { width: 1024, height: 1536, channels: 4, background: '#6752a3' } }).png().toBuffer();
+  await page.route('**/api/skin-studio/assets/**', route => route.fulfill({ contentType: 'image/png', body: png }));
+  await page.goto('/tests/fixtures/skin-studio.html');
+  await page.evaluate(id => (window as any).skinPreview.motion(id), generated ? ids[0] : '');
+  const advance = (input: Record<string, unknown>) => page.evaluate(input => (window as any).skinPreview.advance(input), input);
+  const first = await advance({ time: 16, distance: 20 });
+  expect(first.frame).toBe('down-1'); expect(first.sounds).toBe(0); expect(first.playing).toBe(false);
+  const turn = await advance({ time: 32, distance: 19, facing: 'right' });
+  expect(turn.frame).toBe('right-3'); expect(turn.sounds).toBe(1); expect(turn.phase).toBe(39);
+  const stale = await advance({ time: 200 });
+  expect(stale.frame).toBe('right-6'); expect(stale.sounds).toBe(1);
+  await page.waitForTimeout(300);
+  expect(await page.evaluate(() => (window as any).skinPreview.motionFrame())).toBe('right-6');
+  await advance({ time: 500 });
+  const resumed = await advance({ time: 516, distance: 2 });
+  expect(resumed.frame).toBe('right-0'); expect(resumed.sounds).toBe(1);
+  const stopped = await advance({ time: 532, moving: false });
+  expect(stopped.frame).toBe('right-6'); expect(stopped.scaleY).toBe(1);
+  const rest = await advance({ time: 1532, moving: false });
+  expect(Math.abs(rest.scaleY - 1)).toBeGreaterThan(.001); expect(rest.y).toBe(stopped.y); expect(rest.x).toBe(stopped.x);
+  const reduced = await advance({ time: 1732, moving: false, reduced: true });
+  expect(reduced.scaleX).toBe(1); expect(reduced.scaleY).toBe(1); expect(reduced.frame).toBe('right-6');
+  const sitting = await advance({ time: 2032, moving: false, seat: 'fixture' });
+  expect(sitting.frame).toMatch(/^right-1[0-2]$/);
+  const drink = await advance({ time: 2132, moving: false, seat: '', action: 'drink' });
+  expect(drink.scaleX).toBe(1); expect(drink.scaleY).toBe(1); expect(drink.frame).toMatch(/^right-1[1-6]$/);
+});
+
 test('a previously paid three-option order still shows all candidates on desktop and mobile', async ({ page }) => {
   await page.route('**/api/skin-studio**', async route => {
     if (route.request().url().includes('/assets/')) { await route.abort(); return; }

@@ -1,14 +1,14 @@
-# Caribbean Treasures 1.0
+# Caribbean Treasures 1.1
 
 Independent client package for `studio-caribbean-treasures`. Host API 1, server rules 1 and progress contract 1. The common module loader mounts `entry.ts`; the host supplies the expansion client, wallet, account, money formatting and language.
 
 The package renders confirmed 6×4 fields, continuous giant blocks, winning cells and selected paylines. It exposes 1/5/10/20 active lines, four per-line stakes, natural tactic selection, both purchased series, rules, round history and pending-operation recovery. Settings lock during accepted rounds. Outcomes, costs, entropy, persistence, house coverage and final credit belong to the common backend.
 
-The finished presentation includes the approved Caribbean harbor, an adult pirate captain with idle and celebration poses, six editable colored symbols, brass framing, confirmed reel stops, giant reveal, exact cannon growth and paid-round outcome classification. Original maritime music and effects use the host AudioContext, output, mute and volume. The music toggle is separate. Skip, hide, pause, close and account changes cancel owned presentation. Recovery and operation retries do not replay a reward. No automatic paid spins are implemented.
+The presentation follows the approved Caribbean reference: six dimensional illustrated symbols, a wood, rope and brass frame, a prominent adult pirate captain, a wooden title plaque and a central red and gold spin button. Decorative strips lead into confirmed reel stops, continuous giant reveal, exact cannon growth and an integer round tally. Original 6/8 plucked strings, bass, flute and percussion accompany wooden stops, metallic accents and a low cannon. All sound uses the host AudioContext, output, mute and volume. The music toggle is separate. Skip, hide, pause, close, account changes and reduced-motion changes cancel owned presentation. Recovery and operation retries do not replay a reward. No automatic paid spins are implemented.
 
 Client support is advertised through `X-Royal-Caribbean-Treasures: 1` on the common transport. Older clients receive a filtered session list and cannot change this game's rounds. Server rules and progress remain version 1. First publication needs the compatible host/backend and finance runtime; later game packages can update independently.
 
-Raster source PNGs and ImageGen prompts are in `assets/`. Reproducible WebP runtime exports use the repository's declared `public/assets/caribbean-treasures/` media root and are bundled into this game's immutable package. Six symbol masters remain in `icons.ts`. Event design, cancellation and synchronization are specified in [feedback.md](feedback.md).
+Raster source PNGs and ImageGen prompts are in `assets/`. Reproducible WebP runtime exports use the repository's declared `public/assets/caribbean-treasures/` media root and are bundled into this game's immutable package. `icons.ts` maps the six unchanged symbol IDs to those exports. Ten runtime images total 1,969,902 bytes, within the 3 MiB presentation budget. Event design, cancellation and synchronization are specified in [feedback.md](feedback.md) and the reference upgrade in [reference-polish.md](reference-polish.md).
 
 Build with `npm run build` or `node scripts/build-game-module.mjs --game caribbean-treasures`. Run `npm run test:caribbean` for full-round, transport and wallet coverage.
 

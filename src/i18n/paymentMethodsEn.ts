@@ -1,3 +1,5 @@
+import { english } from './en';
+
 export const paymentMethodsEnglish: Record<string, string> = {
   'виртуальных USDT': 'virtual USDT',
   'NOWPayments · Боевой': 'NOWPayments · Live',
@@ -31,3 +33,5 @@ export const paymentMethodsEnglish: Record<string, string> = {
   'Зачислено': 'Credited',
   'Этот способ оплаты удалён. Используй NOWPayments или NOWPayments Sandbox.': 'This payment method was removed. Use NOWPayments or NOWPayments Sandbox.',
 };
+
+Object.assign(english, paymentMethodsEnglish);

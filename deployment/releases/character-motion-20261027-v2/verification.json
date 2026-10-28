@@ -1,0 +1,606 @@
+{
+  "release": "character-motion-20261027-v2",
+  "sourceCommit": "0b434f1e2c897d7a4f3f4602a6af8200e5e652ef",
+  "baseCommit": "9892f8fc1a78369bce385221466f80a45d426b42",
+  "tests": {
+    "browser": 15,
+    "motion": 4,
+    "installer": 28,
+    "financialGate": 27,
+    "quiescence": 39,
+    "failed": 0,
+    "applicationBuild": true,
+    "rtpGate": true,
+    "typecheck": true
+  },
+  "local": {
+    "sourceCommit": "0b434f1e2c897d7a4f3f4602a6af8200e5e652ef",
+    "builtClient": true,
+    "builtBackendSha256": "4085d330333c72f56554de6225b22c7680c2750abdac45b51fb045f17bda9b88",
+    "realLocalTransport": true,
+    "newImageGenerations": 0,
+    "results": [
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "artwork": "order-1-variant-1.png",
+        "walks": [
+          {
+            "facing": "up",
+            "frames": [
+              "up-0",
+              "up-1",
+              "up-2",
+              "up-3",
+              "up-4",
+              "up-5"
+            ]
+          },
+          {
+            "facing": "down",
+            "frames": [
+              "down-0",
+              "down-1",
+              "down-2",
+              "down-3",
+              "down-4",
+              "down-5"
+            ]
+          },
+          {
+            "facing": "left",
+            "frames": [
+              "left-0",
+              "left-1",
+              "left-2",
+              "left-3",
+              "left-4",
+              "left-5"
+            ]
+          },
+          {
+            "facing": "right",
+            "frames": [
+              "right-0",
+              "right-1",
+              "right-2",
+              "right-3",
+              "right-4",
+              "right-5"
+            ]
+          }
+        ],
+        "rest": {
+          "scaleSpan": 0.007381244689889432,
+          "footYSpan": 0
+        },
+        "fittingMoved": true,
+        "sitting": true,
+        "chatConnected": true,
+        "reloadPreserved": true,
+        "native": {
+          "scaleSpan": 0.008333039724925051,
+          "footYSpan": 0
+        }
+      },
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "artwork": "order-2-variant-1.png",
+        "walks": [
+          {
+            "facing": "up",
+            "frames": [
+              "up-0",
+              "up-1",
+              "up-2",
+              "up-3",
+              "up-4",
+              "up-5"
+            ]
+          },
+          {
+            "facing": "down",
+            "frames": [
+              "down-0",
+              "down-1",
+              "down-2",
+              "down-3",
+              "down-4",
+              "down-5"
+            ]
+          },
+          {
+            "facing": "left",
+            "frames": [
+              "left-0",
+              "left-1",
+              "left-2",
+              "left-3",
+              "left-4",
+              "left-5"
+            ]
+          },
+          {
+            "facing": "right",
+            "frames": [
+              "right-0",
+              "right-1",
+              "right-2",
+              "right-3",
+              "right-4",
+              "right-5"
+            ]
+          }
+        ],
+        "rest": {
+          "scaleSpan": 0.0048586474606432395,
+          "footYSpan": 0
+        },
+        "fittingMoved": true,
+        "sitting": true,
+        "chatConnected": true,
+        "reloadPreserved": true,
+        "native": {
+          "scaleSpan": 0.008333039724925051,
+          "footYSpan": 0
+        }
+      },
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "reduced": {
+          "reduced": true,
+          "scaleA": 0.6,
+          "scaleB": 0.6
+        }
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "artwork": "order-1-variant-1.png",
+        "walks": [
+          {
+            "facing": "up",
+            "frames": [
+              "up-0",
+              "up-1",
+              "up-2",
+              "up-3",
+              "up-4",
+              "up-5"
+            ]
+          },
+          {
+            "facing": "down",
+            "frames": [
+              "down-0",
+              "down-1",
+              "down-2",
+              "down-3",
+              "down-4",
+              "down-5"
+            ]
+          },
+          {
+            "facing": "left",
+            "frames": [
+              "left-0",
+              "left-1",
+              "left-2",
+              "left-3",
+              "left-4",
+              "left-5"
+            ]
+          },
+          {
+            "facing": "right",
+            "frames": [
+              "right-0",
+              "right-1",
+              "right-2",
+              "right-3",
+              "right-4",
+              "right-5"
+            ]
+          }
+        ],
+        "rest": {
+          "scaleSpan": 0.004839791251836201,
+          "footYSpan": 0
+        },
+        "fittingMoved": true,
+        "sitting": true,
+        "chatConnected": true,
+        "reloadPreserved": true,
+        "native": {
+          "scaleSpan": 0.008196625526215917,
+          "footYSpan": 0
+        }
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "artwork": "order-2-variant-1.png",
+        "walks": [
+          {
+            "facing": "up",
+            "frames": [
+              "up-0",
+              "up-1",
+              "up-2",
+              "up-3",
+              "up-4",
+              "up-5"
+            ]
+          },
+          {
+            "facing": "down",
+            "frames": [
+              "down-0",
+              "down-1",
+              "down-2",
+              "down-3",
+              "down-4",
+              "down-5"
+            ]
+          },
+          {
+            "facing": "left",
+            "frames": [
+              "left-0",
+              "left-1",
+              "left-2",
+              "left-3",
+              "left-4",
+              "left-5"
+            ]
+          },
+          {
+            "facing": "right",
+            "frames": [
+              "right-0",
+              "right-1",
+              "right-2",
+              "right-3",
+              "right-4",
+              "right-5"
+            ]
+          }
+        ],
+        "rest": {
+          "scaleSpan": 0.008472100951081085,
+          "footYSpan": 0
+        },
+        "fittingMoved": true,
+        "sitting": true,
+        "chatConnected": true,
+        "reloadPreserved": true,
+        "native": {
+          "scaleSpan": 0.008196625526215917,
+          "footYSpan": 0
+        }
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "reduced": {
+          "reduced": true,
+          "scaleA": 0.6,
+          "scaleB": 0.6
+        }
+      }
+    ],
+    "errors": []
+  },
+  "compatibility": {
+    "independentBackendSources": [
+      {
+        "entry": "server/index.ts",
+        "runtimeFile": "dist-server/index.js",
+        "inputCount": 201,
+        "retainedSha256": "4085d330333c72f56554de6225b22c7680c2750abdac45b51fb045f17bda9b88",
+        "localBuildSha256": "4085d330333c72f56554de6225b22c7680c2750abdac45b51fb045f17bda9b88"
+      },
+      {
+        "entry": "scripts/crypto-reconcile.ts",
+        "runtimeFile": "dist-server/crypto-reconcile.js",
+        "inputCount": 50,
+        "retainedSha256": "afe3e44eb292bab518224182be34d6f8d8b3b0ac0dc400aaf7b07e68d315c6da",
+        "localBuildSha256": "2596668c6eeac63dbc245a6cd17e5723f503373f081e3717cf79d2c6435f7a7e"
+      },
+      {
+        "entry": "server/payments/index.ts",
+        "runtimeFile": "dist-server/payments.js",
+        "inputCount": 55,
+        "retainedSha256": "561f122c79d236c9b114b2c64915c6becaafd0c9e5531835df0868cdc9610247",
+        "localBuildSha256": "d5ad1c9361d55bdd0a5aee5a7869d29082f2fc4e25151c15b6bd1959d111a161"
+      }
+    ],
+    "hostContractVersionsUnchanged": true,
+    "modulesChecked": 117,
+    "bundledAndExternalModulesRetained": true,
+    "dependencyLockEquivalent": true
+  },
+  "sourcePaths": [
+    "docs/skin-studio.md",
+    "src/game/RoomScene.ts",
+    "src/game/characterAnimation.ts",
+    "src/ui/SkinFittingRoom.ts",
+    "src/ui/SkinStudioUI.ts"
+  ],
+  "delta": {
+    "assets/main-C86oObvm.js": "ab2e32731f7bee5bcbc7b0cbac3b1672ba35b442ba780e33e23354eaf0209447",
+    "index.html": "7b3c38bdea53fd77c51ffbd5563f2a96d014809e893250a1aafff6a4f25e1708"
+  },
+  "baseline": {
+    "image": "sha256:30ec919f8e0e61f8cff414dfda5bc84251b49c3ad5a199463064a542fe133c76",
+    "sourceFiles": 1937,
+    "programFiles": 8190,
+    "protectedConfigurationFiles": [
+      ".env",
+      "compose.yaml",
+      "compose.override.yaml",
+      "compose.payments.yaml",
+      "compose.mira.yaml",
+      ".env.nowpayments-sandbox",
+      "compose.nowpayments-sandbox.yaml"
+    ],
+    "availableBytes": 8249135104
+  },
+  "attempts": [
+    {
+      "sourceCommit": "83ba24719bf54ce53f035aa167067b4bad064d9f",
+      "helperSha256": "dd295aa2ebb082e9c05b256bf8aa3a9318abe8585e8fd7b9dd1e07670147c84e",
+      "archiveSha256": "589b1d48fc34b682389ad3e2f713320c496e8c2a92f7ccda59f03496ff69c68c",
+      "delta": {
+        "assets/main-lOyq0DKK.js": "a7ed162d5dd8e5b0c7a45e3b9a6d21c55f43941d2186980dca13055574b0841a",
+        "index.html": "3db95467bd3f67551c7ce285b54a584ded60b582780de77666e97e87b74b681e"
+      },
+      "changed": {
+        "docs/skin-studio.md": "05801c7b07fb1cf705671ab56e0c098332c4090f48613540ea16cbcb9ecf1fae",
+        "src/game/RoomScene.ts": "c0090aeeb0a9bf38cbefa4d0ea568ca78fffeff55f35ed07f91d72bf62678a7f",
+        "src/game/characterAnimation.ts": "49df70ede6b275b544e43c7858b4a4e92b36b5c06231c3ad001b1c949a25f758",
+        "src/ui/SkinFittingRoom.ts": "58fac5c92ba998cc6f31b3ae6b3f32c53c0ae8b61b6f415c1bc0589effe6932e",
+        "src/ui/SkinStudioUI.ts": "677ad10e512b0cac4c6ea159ef4ef8a8482f4d3bb28d3da807e854c49488f4e5"
+      },
+      "reason": "Installer scope rejected RoomScene and SkinStudioUI before acquiring deployment locks or changing production",
+      "productionChanged": false
+    },
+    {
+      "release": "character-motion-20261027-v1",
+      "sourceCommit": "b081fd25af1fc509fc3f8ee60af0c2c11b52fc84",
+      "archiveSha256": "f7c46bc0dc8cddad6a829b2796ee5c475b4e40ff4697777cdb7948cd004921f6",
+      "reason": "Another release owned all three publication locks; refused before baseline or production changes",
+      "productionChanged": false
+    }
+  ],
+  "storage": {
+    "testRuntimeV1": {
+      "folder": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/character-animation-stage2-20261027/checkout.nosync/.tmp/atelier-local",
+      "syntheticTestDataOnly": true,
+      "bytes": 71241975,
+      "freeBefore": 56335159296,
+      "freeAfter": 56409313280
+    },
+    "testRuntimeV2": {
+      "folder": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/character-animation-stage2-20261027/checkout.nosync/.tmp/atelier-local",
+      "syntheticTestDataOnly": true,
+      "bytes": 71275728,
+      "freeBefore": 53429993472,
+      "freeAfter": 53502857216
+    },
+    "serverCleanup": [
+      {
+        "files": [
+          "/opt/royal-releases/character-motion-20261027-v2/bootstrap.json",
+          "/opt/royal-releases/character-motion-20261027-v2/bootstrap-run.py",
+          "/opt/royal-releases/character-motion-20261027-v2/bootstrap-job.json",
+          "/opt/royal-releases/character-motion-20261027-v2/bootstrap-exit.json",
+          "/opt/royal-releases/character-motion-20261027-v2/bootstrap.log",
+          "/opt/royal-releases/character-motion-20261027-v2/__pycache__/deploy.cpython-312.pyc"
+        ],
+        "bytes": 3355835,
+        "rollbackManifestAndBackupRetained": true
+      },
+      {
+        "removedFolder": "/opt/royal-releases/character-motion-20261027-v2/runtime-context",
+        "removedFiles": 4,
+        "removedArchive": "/opt/royal-releases/character-motion-20261027-v2/transport.tgz",
+        "removedArchiveBytes": 1902794,
+        "removedCacheFolder": "/opt/royal-releases/character-motion-20261027-v2/__pycache__",
+        "removedCacheBytes": 28349,
+        "exclusiveAllocatedBytes": 24576,
+        "sharedPayloadBytesPreserved": 2629582,
+        "freeBeforeBytes": 8006225920,
+        "freeAfterBytes": 8008187904,
+        "sourceCommit": "0b434f1e2c897d7a4f3f4602a6af8200e5e652ef",
+        "sourceBackupAndImagesPreserved": true,
+        "runtimeAndVolumesTouched": false
+      }
+    ],
+    "failedRelease": {
+      "removedFolder": "/opt/royal-releases/character-motion-20261027-v1",
+      "logicalBytes": 8273048,
+      "archiveBytes": 1884362,
+      "sourceCommit": "b081fd25af1fc509fc3f8ee60af0c2c11b52fc84",
+      "productionChanged": false,
+      "reason": "Scope rejection, then concurrent publication lock. Both attempts ended before mutations.",
+      "freeBefore": 8248016896,
+      "freeAfter": 8256397312
+    },
+    "localBuilds": {
+      "freeBefore": 54383218688,
+      "removed": [
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/character-animation-stage2-20261027/checkout.nosync/dist",
+          "bytes": 170549370
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/character-animation-stage2-20261027/checkout.nosync/dist-server",
+          "bytes": 4287614
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/character-animation-stage2-20261027/checkout.nosync/module-dist",
+          "bytes": 200052571
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/character-animation-stage2-20261027/checkout.nosync/module-build",
+          "bytes": 972934
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/character-animation-stage2-20261027/checkout.nosync/test-results",
+          "bytes": 45
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/character-animation-stage2-20261027/checkout.nosync/.tmp",
+          "bytes": 19555973
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/character-animation-stage2-20261027/checkout.nosync/artifacts",
+          "bytes": 114758
+        }
+      ],
+      "freeAfter": 54816665600
+    },
+    "removedLocalTransportArchives": [
+      {
+        "attempt": "v1-scope",
+        "bytes": 1884366
+      },
+      {
+        "attempt": "v1-lock",
+        "bytes": 1884362
+      }
+    ],
+    "retainedTaskCheckout": {
+      "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/character-animation-stage2-20261027/checkout.nosync",
+      "cleanupCondition": "Remove after the release record is pushed and its exact remote commit is verified"
+    },
+    "activeWorkExceptions": [
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль",
+        "branch": "feature/last-exit-loading",
+        "reason": "Primary checkout is active work owned by another chat",
+        "cleanupCondition": "Owner finishes and preserves its feature in GitHub"
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/neopolis-publish-20261028/checkout",
+        "branch": "release/neopolis-ui-20261028-v1",
+        "reason": "Active game publication owned by another chat",
+        "cleanupCondition": "Owner verifies its release and removes its worktree"
+      }
+    ],
+    "measurementNote": "Free space readings include concurrent work and do not attribute all changes to this task."
+  },
+  "server": {
+    "sourceCommit": "0b434f1e2c897d7a4f3f4602a6af8200e5e652ef",
+    "baseCommit": "9892f8fc1a78369bce385221466f80a45d426b42",
+    "image": "sha256:d36b1602fbac04e1f964484cb718d68360557821d14219bf9459bf79bae892e9",
+    "health": "healthy",
+    "publication": {
+      "published": true,
+      "preparedImage": "sha256:d36b1602fbac04e1f964484cb718d68360557821d14219bf9459bf79bae892e9",
+      "runningImage": "sha256:d36b1602fbac04e1f964484cb718d68360557821d14219bf9459bf79bae892e9",
+      "containerRestarted": true,
+      "sourceCommit": "0b434f1e2c897d7a4f3f4602a6af8200e5e652ef",
+      "changedSources": 5,
+      "clientDeltaFiles": 2,
+      "configurationsAndMountsPreserved": true,
+      "gameDataPreserved": true,
+      "backendDeltaFiles": 0,
+      "otherBackendProgramsAndModulesPreserved": true,
+      "oldAssetsPreserved": true,
+      "otherPersistentServicesPreserved": 13
+    },
+    "completion": {
+      "sourceCommit": "0b434f1e2c897d7a4f3f4602a6af8200e5e652ef",
+      "exitCode": 0,
+      "endedAt": "2026-10-27T21:11:21.277405+00:00"
+    },
+    "sourceFiles": 1937,
+    "runtimeFiles": 8191,
+    "backendFiles": {
+      "dist-server/card-engine": "73444032de29085af28719f00afe4683dcb00118695e3401e05e0e52de641a64",
+      "dist-server/card-engine-v1": "c408bb0929442f0ae724e2723a971d70919fa6db25e1c903a991e6cf24dd3f41",
+      "dist-server/crypto-reconcile.js": "afe3e44eb292bab518224182be34d6f8d8b3b0ac0dc400aaf7b07e68d315c6da",
+      "dist-server/index.js": "4085d330333c72f56554de6225b22c7680c2750abdac45b51fb045f17bda9b88",
+      "dist-server/payments.js": "561f122c79d236c9b114b2c64915c6becaafd0c9e5531835df0868cdc9610247"
+    },
+    "configurationFilesPreserved": [
+      ".env",
+      "compose.yaml",
+      "compose.override.yaml",
+      "compose.payments.yaml",
+      "compose.mira.yaml",
+      ".env.nowpayments-sandbox",
+      "compose.nowpayments-sandbox.yaml"
+    ],
+    "moduleContracts": 117,
+    "otherPersistentServicesPreserved": 13,
+    "sourceBackup": {
+      "path": "/opt/royal-backups/character-motion-20261027-v2/source.tgz",
+      "bytes": 192843722,
+      "sha256": "df30c8bed24ab3c6b5b76d787958fb3ed350a1878a6782da1023f1d631c0dccb",
+      "validatedByGuardedInstaller": true
+    },
+    "freeBefore": 8249135104,
+    "freeAfter": 8009441280
+  },
+  "public": {
+    "sourceCommit": "0b434f1e2c897d7a4f3f4602a6af8200e5e652ef",
+    "checkedAt": "2026-10-27T21:09:37.086Z",
+    "files": [
+      {
+        "file": "assets/main-C86oObvm.js",
+        "sha256": "ab2e32731f7bee5bcbc7b0cbac3b1672ba35b442ba780e33e23354eaf0209447"
+      },
+      {
+        "file": "index.html",
+        "sha256": "7b3c38bdea53fd77c51ffbd5563f2a96d014809e893250a1aafff6a4f25e1708"
+      }
+    ],
+    "viewports": [
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "idle": {
+          "scaleSpan": 0.005564182994433398,
+          "footYSpan": 0
+        },
+        "walked": true
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "idle": {
+          "scaleSpan": 0.00523470869547038,
+          "footYSpan": 0
+        },
+        "walked": true
+      }
+    ],
+    "errors": []
+  },
+  "repository": {
+    "sourceCommit": "0b434f1e2c897d7a4f3f4602a6af8200e5e652ef",
+    "releaseRecordCommit": "099d78b",
+    "verifiedMainCommit": "11e25295e459728e756ec52ec06b262ef44332e1"
+  }
+}

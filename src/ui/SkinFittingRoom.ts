@@ -1,5 +1,6 @@
 import { drawGeneratedSkin, loadSkinSheet } from '../game/generatedSkinArt';
-import { CHARACTER_WALK_FRAMES, CHARACTER_WALK_FRAME_RATE } from '../game/characterAnimation';
+import { advanceCharacterMotion, characterRestScale, createCharacterMotion } from '../game/characterAnimation';
+import { PLAYER_SPEED } from '../shared/world';
 import { movementFacing, type Facing } from '../shared/movement';
 
 const directions: Record<string, [number, number]> = {
@@ -21,14 +22,14 @@ export class SkinFittingRoom {
   private active = false;
   private frame = 0;
   private previous = 0;
-  private elapsed = 0;
+  private motion = createCharacterMotion();
   private width = 640;
   private x = 320;
   private y = 200;
   private facing: Facing = 'down';
   private seated = false;
 
-  constructor() {
+  constructor(private reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     this.element.className = 'skin-fitting-room'; this.element.hidden = true;
     const heading = document.createElement('h3'); heading.textContent = 'Примерочная';
     this.caption.className = 'skin-fitting-caption'; this.caption.setAttribute('role', 'status');
@@ -89,7 +90,7 @@ export class SkinFittingRoom {
       if (this.loaded) this.caption.textContent = `${label}. Походи и посмотри со всех сторон.`;
       return;
     }
-    this.id = id; this.loaded = false; this.stopMotion(); this.stand(); this.facing = 'down';
+    this.id = id; this.loaded = false; this.stopMotion(); this.motion = createCharacterMotion(); this.stand(); this.facing = 'down';
     this.x = this.width / 2; this.y = 200; this.caption.textContent = `${label}: загружаем…`;
     this.element.querySelectorAll('button').forEach(button => { button.disabled = true; });
     void loadSkinSheet(id).then(() => {
@@ -103,7 +104,7 @@ export class SkinFittingRoom {
 
   setActive(active: boolean) {
     if (active === this.active) return;
-    this.active = active; this.stopMotion(); this.previous = 0;
+    this.active = active; this.stopMotion(); this.previous = 0; this.motion = createCharacterMotion();
     cancelAnimationFrame(this.frame);
     if (active) this.frame = requestAnimationFrame(time => this.draw(time));
     else if (!this.loaded) this.id = '';
@@ -134,13 +135,14 @@ export class SkinFittingRoom {
     }
     const distance = Math.hypot(dx, dy), beforeX = this.x, beforeY = this.y;
     if (distance && this.loaded && !document.hidden) {
-      const step = Math.min(140 * dt, this.target ? distance : Infinity);
+      const step = Math.min(PLAYER_SPEED * dt, this.target ? distance : Infinity);
       this.x += dx / distance * step; this.y += dy / distance * step;
       this.facing = movementFacing(dx, dy, this.facing);
     }
     this.x = Math.max(40, Math.min(this.width - 40, this.x)); this.y = Math.max(125, Math.min(255, this.y));
-    const moving = Math.hypot(this.x - beforeX, this.y - beforeY) > .01;
-    this.elapsed = moving ? this.elapsed + dt : 0;
+    const travel = Math.hypot(this.x - beforeX, this.y - beforeY), moving = travel > .01;
+    const motion = advanceCharacterMotion(this.motion, { mode: moving ? 'walk' : 'rest', distance: travel, time, normalSpeed: PLAYER_SPEED });
+    const rest = characterRestScale(this.motion, time, 0, this.reducedMotion());
     const c = this.canvas.getContext('2d')!; c.setTransform(dpr, 0, 0, dpr, 0, 0);
     c.fillStyle = '#d6c4aa'; c.fillRect(0, 0, this.width, height);
     c.fillStyle = '#f4e7d2'; c.fillRect(0, 0, this.width, 60);
@@ -150,9 +152,9 @@ export class SkinFittingRoom {
     for (let x = -height; x < this.width + height; x += 80) { c.beginPath(); c.moveTo(x, 64); c.lineTo(x + 140, height); c.stroke(); }
     if (this.target) { c.strokeStyle = '#477d7c'; c.lineWidth = 2; c.beginPath(); c.ellipse(...this.target, 9, 4, 0, 0, Math.PI * 2); c.stroke(); }
     if (this.loaded) {
-      c.fillStyle = '#59443530'; c.beginPath(); c.ellipse(this.x, this.y, 26, 7, 0, 0, Math.PI * 2); c.fill();
-      c.save(); c.translate(this.x - 16 * 2.5, this.y - 40 * 2.5); c.scale(2.5, 2.5);
-      drawGeneratedSkin(c, this.id, this.facing, moving ? Math.floor(this.elapsed * CHARACTER_WALK_FRAME_RATE) % CHARACTER_WALK_FRAMES : 6, this.seated); c.restore();
+      c.fillStyle = '#59443530'; c.beginPath(); c.ellipse(this.x, this.y, 26 * rest.x, 7, 0, 0, Math.PI * 2); c.fill();
+      c.save(); c.translate(this.x, this.y); c.scale(2.5 * rest.x, 2.5 * rest.y); c.translate(-16, -40);
+      drawGeneratedSkin(c, this.id, this.facing, motion.frame, this.seated); c.restore();
     }
     this.canvas.dataset.facing = this.facing; this.canvas.dataset.moving = String(moving);
     this.frame = requestAnimationFrame(next => this.draw(next));
