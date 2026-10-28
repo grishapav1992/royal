@@ -1,0 +1,285 @@
+{
+  "date": "2026-10-28",
+  "implementationCommit": "4c086ea85c950ba560634c98197a99019c00c031",
+  "mergedCommit": "81194d5fd173bc07ce1bf7ac9b93508bbf0b5c49",
+  "integrationBaseline": "d76746b1a5d22a4b5b15c2f2934aea7c052568b5",
+  "module": {
+    "version": "1.5.0-e8e961722e67",
+    "sourceSha256": "e8e961722e6742adffff7dbbdc4470c0ab803e7a24df5bbe1edd7f0e9481e7cb",
+    "apiVersion": 1,
+    "rulesVersion": 1,
+    "progressVersion": 1
+  },
+  "problem": {
+    "rotation": "The opaque root atlas included the tile plate and gold rim, and the active cell allowed overflow plus lift.",
+    "arrival": "New roots only moved 8 px with opacity starting at 0.5; current manual preview had reduced=false and fast=false."
+  },
+  "solution": {
+    "rotation": "Stationary plate and gold border, a separate transparent root atlas, clipped root-only rotation; no cell lift.",
+    "arrival": "140 ms exit plus 620 ms source-row-staggered arrival, full-cell travel and zero-to-full opacity; fast 60 ms plus 280 ms; minimum requested duration independent of audio timestamp estimate.",
+    "held": "Previous accepted held roots remain visible and still during a free continuation.",
+    "mathematics": "Unchanged rules, stakes, probabilities, scoring, payout and shared wallet; no new request from animation."
+  },
+  "checks": {
+    "browserScenarios": 14,
+    "allPassed": true,
+    "focusedBrowserScenarios": 4,
+    "artworkAndPortTests": 3,
+    "fullBuildBeforeMainSync": "passed",
+    "fullBuildAfterMainSync": "passed",
+    "mainSyncImpact": "Only independent Caribbean client, its assets, reports and tests changed; Forest Heart and shared financial/mathematical sources were unchanged.",
+    "rtp": {
+      "verified": 13,
+      "legacyNotQualified": 114
+    },
+    "viewports": [
+      [
+        1280,
+        720
+      ],
+      [
+        1440,
+        1000
+      ],
+      [
+        1110,
+        1244
+      ],
+      [
+        390,
+        844
+      ],
+      [
+        320,
+        780
+      ]
+    ],
+    "languages": [
+      "ru",
+      "en"
+    ],
+    "skipPauseRestoreRetryReducedMotionAndWalletRecovery": "passed"
+  },
+  "arrivalMeasurements": [
+    {
+      "mode": "normal",
+      "frameCount": 64,
+      "revealFrames": 40,
+      "minOpacity": 0,
+      "maxTravelPx": 62.7,
+      "cellHeight": 57,
+      "plateTransformStable": true
+    },
+    {
+      "mode": "muted",
+      "frameCount": 57,
+      "revealFrames": 33,
+      "minOpacity": 7.80353e-8,
+      "maxTravelPx": 62.7,
+      "cellHeight": 57,
+      "plateTransformStable": true
+    },
+    {
+      "mode": "fast",
+      "frameCount": 43,
+      "revealFrames": 16,
+      "minOpacity": 0,
+      "maxTravelPx": 62.7,
+      "cellHeight": 57,
+      "plateTransformStable": true
+    }
+  ],
+  "heldMeasurement": {
+    "cells": [
+      3,
+      13,
+      23
+    ],
+    "frames": 47,
+    "remainedVisibleAndFixed": true
+  },
+  "turnMeasurement": {
+    "frames": 361,
+    "turnFrames": 57,
+    "intermediateAngles": [
+      2.324152117045812,
+      3.493244107637973,
+      4.597571525796903,
+      6.179976395985516,
+      8.368772825466127,
+      9.743545444801876,
+      11.460884260114808,
+      12.864857362938729,
+      14.34850811122596,
+      16.008893698799007,
+      17.56989589022832,
+      19.11711055648228,
+      21.051049992080177,
+      23.197600691871923,
+      25.062689397506546,
+      26.96678905361022,
+      29.16537906057825,
+      32.94640397387981,
+      34.91895470629096,
+      36.860498633299464,
+      38.7912647293781,
+      40.55790668994072,
+      42.35572224322294,
+      44.08220450830954,
+      45.78485271361246,
+      47.76152820818066,
+      49.45929577865318,
+      51.42441847989086,
+      53.797189359636505,
+      55.562372714192506,
+      57.26397673713872,
+      59.18804591282432,
+      61.13384919418064,
+      62.956523039558064,
+      64.9529818221557,
+      67.08386822190576,
+      69.32954201989287,
+      70.85547955715963,
+      72.70771824479962,
+      74.06368449369651,
+      75.47494614522518,
+      77.00210741776347,
+      78.4118455803059,
+      79.62444855537069,
+      80.95751872826726,
+      82.25921934310036,
+      83.47515717952386,
+      84.60109973117886,
+      85.56316779170625,
+      86.60748992492267,
+      87.32295250078941,
+      88.08073580028193,
+      88.61253197578199,
+      89.11798619956015,
+      89.50061951364603,
+      89.78023817814362,
+      89.96646464984039
+    ],
+    "continuousSapFrames": 118,
+    "intermediateCounterFrames": 47
+  },
+  "alphaPorts": [
+    {
+      "row": 0,
+      "col": 0,
+      "ports": [
+        0,
+        0.9924754901960823,
+        0,
+        0.982254901960785
+      ]
+    },
+    {
+      "row": 0,
+      "col": 1,
+      "ports": [
+        0.9813235294117634,
+        0.9879411764705885,
+        0,
+        0
+      ]
+    },
+    {
+      "row": 0,
+      "col": 2,
+      "ports": [
+        0.9872794117647062,
+        0.9898284313725508,
+        0,
+        0.9850245098039222
+      ]
+    },
+    {
+      "row": 0,
+      "col": 3,
+      "ports": [
+        0.9880637254901963,
+        0.9865931372549024,
+        0.9849509803921569,
+        0.9895588235294135
+      ]
+    },
+    {
+      "row": 1,
+      "col": 0,
+      "ports": [
+        0,
+        0.9909558823529443,
+        0,
+        0.9820343137254911
+      ]
+    },
+    {
+      "row": 1,
+      "col": 1,
+      "ports": [
+        0.9825980392156852,
+        0.9870343137254898,
+        0,
+        0
+      ]
+    },
+    {
+      "row": 1,
+      "col": 2,
+      "ports": [
+        0.9879411764705885,
+        0.9900490196078449,
+        0,
+        0.9818137254901966
+      ]
+    },
+    {
+      "row": 1,
+      "col": 3,
+      "ports": [
+        0.988235294117648,
+        0.9854901960784324,
+        0.9845098039215692,
+        0.9881127450980391
+      ]
+    }
+  ],
+  "audioVisualTiming": {
+    "maxFrameSkewMs": 39.32966666629363,
+    "scope": "Estimated Web Audio output and browser callbacks, not physical acoustic latency or human preference."
+  },
+  "manualPreview": {
+    "url": "http://localhost:5296/?room=1JgHPUvro",
+    "hostWithChat": true,
+    "syntheticBalanceBefore": 10023.1,
+    "syntheticBalanceAfter": 10023.1,
+    "lastSeriesPayout": 6.31,
+    "newWagerPlacedByAgent": false,
+    "recoveredSavedSeries": true,
+    "notes": "127.0.0.1 preview returned an authentication error. Re-login and a separate localhost view restored the same account and balance. API probes with a fresh synthetic session were successful; no authentication code was changed.",
+    "production": false
+  },
+  "screenshots": [
+    {
+      "file": "board-v5-desktop.webp",
+      "bytes": 172866,
+      "sha256": "5d1c23ba0e9b68e1cf950bfbd65796e1c516667c99e90285c66ef8cc10bdae05"
+    },
+    {
+      "file": "board-v5-mobile.webp",
+      "bytes": 68640,
+      "sha256": "1a749eb8a13ba3750f49c61a97fbb49dbdca0be0e7e5c55821a2bc5121e835dc"
+    },
+    {
+      "file": "board-v5-local-preview.webp",
+      "bytes": 165774,
+      "sha256": "b2a1976cd59a90a62e4838443113bd96c6763684e575b454646b6c0dafa3eb29"
+    },
+    {
+      "file": "board-v5-frames.webp",
+      "bytes": 141080,
+      "sha256": "3893cf59dc6fe7a5f0fd95564f9e90c88183b54b65a9f11fe205746e053d7166"
+    }
+  ]
+}
