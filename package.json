@@ -43,7 +43,7 @@
     "dev:atelier": "node --import tsx scripts/local-atelier.ts",
     "test:skins": "node --import tsx scripts/database-test.ts --import tsx --test server-tests/skin-studio.test.ts server-tests/skin-profile.test.ts server-tests/skin-common-wallet.test.ts",
     "test:skins:ui": "playwright test --config playwright.skins.config.ts",
-    "test:roulette": "node --import tsx scripts/database-test.ts --import tsx --test --test-concurrency=1 server-tests/game-core.test.ts server-tests/game-wallet.test.ts server-tests/wallet-account.test.ts server-tests/roulette-catalog.test.ts server-tests/roulette-motion.test.ts server-tests/roulette-rtp-gate.test.mjs",
+    "test:roulette": "node --import tsx scripts/database-test.ts --import tsx --test --test-concurrency=1 server-tests/game-core.test.ts server-tests/game-wallet.test.ts server-tests/wallet-account.test.ts server-tests/roulette-catalog.test.ts server-tests/roulette-motion.test.ts server-tests/roulette-audio.test.ts server-tests/roulette-rtp-gate.test.mjs",
     "test:roulette:ui": "playwright test --config playwright.roulette.config.ts"
   },
   "dependencies": {

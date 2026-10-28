@@ -1,3 +1,4 @@
+import type {RouletteSound} from './RouletteSound';
 import {landingPlan,landingPose,launchPose,normalizeAngle,SPIN_TIMING,type LandingPlan,type SpinPose} from './SpinTimeline';
 
 const resting=():SpinPose=>({wheel:0,wheelVelocity:0,ball:0,ballVelocity:0,radius:148,hop:0,phase:'idle'});
@@ -27,7 +28,7 @@ export class RouletteMotion {
   private disposed=false;
   private interrupted=false;
   private pocket?:number;
-  constructor(private root:HTMLElement) {
+  constructor(private root:HTMLElement,private sound?:RouletteSound) {
     const el=<T extends SVGElement>(q:string)=>root.querySelector<T>(q)!;
     this.rotor=el('.rr-rotor');this.spindle=el('.rr-spindle');this.orbit=el('.rr-ball-orbit');this.carrier=el('.rr-ball-carrier');
     this.ball=el('.rr-ball');this.shadow=el('.rr-ball-shadow');this.trails=Array.from(root.querySelectorAll<SVGCircleElement>('.rr-ball-trails circle'));
@@ -39,8 +40,9 @@ export class RouletteMotion {
   private moving() {return this.allowed()&&!this.reduced.matches;}
   begin() {
     this.cancel();this.interrupted=!this.allowed();this.frames=0;this.pocket=undefined;
+    const start=this.allowed()?(this.sound?.begin(this.moving())??performance.now()):performance.now();
     if(!this.moving())return;
-    this.active=true;this.began=performance.now();this.base={...this.pose};this.plan=undefined;
+    this.active=true;this.began=start;this.base={...this.pose};this.plan=undefined;
     this.pose.phase='launch';this.paint();this.frame=requestAnimationFrame(this.tick);
   }
   land(pocket:number):Promise<boolean> {
@@ -55,13 +57,13 @@ export class RouletteMotion {
     if(!this.moving()){this.cancel();return;}
     if(this.request&&!this.plan){
       const at=Math.max(this.request.ready,this.began+SPIN_TIMING.launch);
-      if(now>=at){this.landingAt=at;this.plan=landingPlan(launchPose(this.base,at-this.began),this.request.pocket);}
+      if(now>=at){this.landingAt=at;this.plan=landingPlan(launchPose(this.base,at-this.began),this.request.pocket);this.sound?.plan(this.plan,at);}
     }
     this.pose=this.plan?landingPose(this.plan,now-this.landingAt):launchPose(this.base,now-this.began);
-    this.frames++;this.paint();
+    this.sound?.frame(this.pose);this.frames++;this.paint();
     if(this.plan&&now-this.landingAt>=SPIN_TIMING.landing){
       const request=this.request;this.active=false;this.request=undefined;this.plan=undefined;
-      this.pocket=request?.pocket;this.normalize();request?.resolve(true);return;
+      this.pocket=request?.pocket;this.sound?.finish();this.normalize();request?.resolve(true);return;
     }
     this.frame=requestAnimationFrame(this.tick);
   };
@@ -83,7 +85,7 @@ export class RouletteMotion {
     });
   }
   snap(pocket:number) {
-    this.stopFrame();this.pocket=pocket;
+    this.stopFrame();this.sound?.finish();this.pocket=pocket;
     this.pose={...resting(),wheel:normalizeAngle(-pocket*360/37)};this.paint();
   }
   private stopFrame() {
@@ -91,28 +93,31 @@ export class RouletteMotion {
     const request=this.request;this.request=undefined;request?.resolve(false);
   }
   cancel() {
-    this.interrupted=true;this.stopFrame();
+    this.interrupted=true;this.stopFrame();this.sound?.cancel();
     for(const effect of this.effects)effect.cancel();this.effects.clear();this.byElement.clear();
     this.pose={...this.pose,wheelVelocity:0,ballVelocity:0,hop:0,phase:'quiet'};this.paint();
   }
   reset(){this.cancel();this.pose=resting();this.pocket=undefined;this.frames=0;this.paint();}
   pause(){this.paused=true;this.cancel();}
   resume(){this.paused=false;}
-  private effect(el:Element|null,frames:Keyframe[],duration:number) {
+  private effect(el:Element|null,frames:Keyframe[],duration:number,delay=0) {
     if(!el||!this.moving())return;
     this.byElement.get(el)?.cancel();
-    const a=el.animate(frames,{duration,easing:'cubic-bezier(.2,.75,.25,1)'});this.effects.add(a);this.byElement.set(el,a);
+    // Segment easing preserves the explicit accent offsets on the shared clock.
+    const a=el.animate(frames.map(frame=>({...frame,easing:'cubic-bezier(.2,.75,.25,1)'})),{duration,delay,easing:'linear'});this.effects.add(a);this.byElement.set(el,a);
     void a.finished.catch(()=>{}).finally(()=>{this.effects.delete(a);if(this.byElement.get(el)===a)this.byElement.delete(el);});
   }
   select(button:HTMLElement) {
-    this.effect(button,[{scale:'.92'},{scale:'1.065',offset:.55},{scale:'1'}],250);
-    this.effect(this.root.querySelector('.rr-selection'),[{opacity:.55,translate:'0 3px'},{opacity:1,translate:'0 0'}],220);
+    const now=performance.now(),peak=this.sound?.select(button.hasAttribute('data-rr-amount')?'chip':'bet',now+137.5)??now+137.5,delay=Math.max(0,peak-now-137.5);
+    this.effect(button,[{scale:'.92'},{scale:'1.065',offset:.55},{scale:'1'}],250,delay);
+    this.effect(this.root.querySelector('.rr-selection'),[{opacity:.55,translate:'0 3px'},{opacity:1,translate:'0 0'}],220,delay);
   }
-  reveal() {
-    this.effect(this.root.querySelector('.rr-result-orb'),[{opacity:0,scale:'.7',rotate:'-12deg'},{opacity:1,scale:'1.08',rotate:'2deg',offset:.7},{opacity:1,scale:'1',rotate:'0deg'}],360);
-    this.effect(this.root.querySelector('.rr-center'),[{boxShadow:'0 0 0 0 #e5c88955'},{boxShadow:'0 0 0 7px #e5c88900'}],460);
-    this.effect(this.root.querySelector('.rr-landed>span'),[{scale:'.85'},{scale:'1.13',offset:.55},{scale:'1'}],330);
-    this.effect(this.root.querySelector('.rr-return'),[{opacity:.35,translate:'0 4px'},{opacity:1,translate:'0 0'}],300);
+  reveal(multiplier=0) {
+    const now=performance.now(),target=now+(this.moving()?252:30),peak=this.sound?.result(multiplier,target)??target,delay=Math.max(0,peak-now-252);
+    this.effect(this.root.querySelector('.rr-result-orb'),[{opacity:0,scale:'.7',rotate:'-12deg'},{opacity:1,scale:'1.08',rotate:'2deg',offset:.7},{opacity:1,scale:'1',rotate:'0deg'}],360,delay);
+    this.effect(this.root.querySelector('.rr-center'),[{boxShadow:'0 0 0 0 #e5c88955'},{boxShadow:'0 0 0 7px #e5c88900'}],460,delay);
+    this.effect(this.root.querySelector('.rr-landed>span'),[{scale:'.85'},{scale:'1.13',offset:.55},{scale:'1'}],330,delay);
+    this.effect(this.root.querySelector('.rr-return'),[{opacity:.35,translate:'0 4px'},{opacity:1,translate:'0 0'}],300,delay);
   }
   history(value:number,color:string,animate:boolean) {
     const history=this.root.querySelector<HTMLElement>('.rr-history')!;
