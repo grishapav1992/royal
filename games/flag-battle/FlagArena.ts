@@ -1,3 +1,4 @@
+import { flagSoundTimeline } from './FlagSoundTimeline';
 import { FLAG_COUNTRIES, type FlagCountry, type FlagView } from '../../src/shared/flagBattle';
 import { FLAG_BODY_RADIUS, FlagPhysics, planFlagPhysics, type FlagPhysicsPlan } from './FlagPhysics';
 
@@ -24,6 +25,7 @@ export class FlagArena {
     this.labels = FLAG_COUNTRIES.map(c => c.id);
     if (view && this.plan) for (const [i, body] of this.plan.order.entries()) this.labels[body] = view.order[i];
   }
+  soundTimeline(selected: FlagCountry, won: boolean) { return this.plan ? flagSoundTimeline(this.plan, this.labels, selected, won, FLAG_ROUND_SECONDS) : []; }
   count() { return this.world.exits.length; }
   finish() {
     if (this.plan) this.world.restore(this.plan);
@@ -47,7 +49,7 @@ export class FlagArena {
       if (this.celebration === 1) this.finished = true;
     }
     this.paint(selected);
-    return { eliminated: this.count(), finished: this.finished };
+    return { eliminated: this.count(), finished: this.finished, playhead: this.plan ? this.world.time / this.plan.duration * FLAG_ROUND_SECONDS + this.celebration * .7 : 0 };
   }
   private paint(selected: FlagCountry) {
     const rect = this.canvas.getBoundingClientRect(), dpr = Math.min(devicePixelRatio || 1, 2);

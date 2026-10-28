@@ -52,9 +52,11 @@ test('real host: countries, paid round, skips, reopen, mobile chat and reduced m
   await expect.poll(async()=>(await mini(page))?.presenting).toBe(true);
   await expect(page.locator('[data-country="RU"]')).toBeDisabled();
   await page.locator('[data-fb="skip"]').click();await expect.poll(async()=>(await mini(page))?.presenting).toBe(false);
+  expect((await mini(page)).audio.voices).toBe(0);expect((await mini(page)).audio.timeline).toBe(false);
   const before=await wallet(page);expect(before.entries.filter((e:any)=>e.kind==='bet')).toHaveLength(1);
   await close(page);await open(page);expect((await mini(page)).sessionId).toBe(accepted.id);
   expect((await mini(page)).presenting).toBe(false);expect((await wallet(page)).entries).toEqual(before.entries);
+  expect((await mini(page)).audio.scheduled).toEqual({});
   await page.setViewportSize({width:390,height:844});
   await expect(page.locator('#chat-input')).toBeInViewport();
   await page.locator('[data-fb="play"]').scrollIntoViewIfNeeded();await expect(page.locator('[data-fb="play"]')).toBeInViewport();
@@ -64,6 +66,7 @@ test('real host: countries, paid round, skips, reopen, mobile chat and reduced m
   await page.locator('[data-fb="play"]').click();
   await expect.poll(async()=>(await wallet(page)).entries.filter((e:any)=>e.kind==='bet').length).toBe(2);
   await expect.poll(async()=>(await mini(page))?.presenting).toBe(false);
+  const priorSound=(await mini(page)).audio.scheduled;
   await page.emulateMedia({reducedMotion:'no-preference'});
   await page.locator('[data-fb="play"]').click();
   await expect.poll(async()=>(await mini(page))?.presenting).toBe(true);
@@ -75,6 +78,10 @@ test('real host: countries, paid round, skips, reopen, mobile chat and reduced m
   const state=await mini(page);
   expect(state.returnedUnits).toBe(settled.returnedUnits);
   expect(state.physics.physicsVersion).toBe(2);
+  expect(state.audio.scheduled.eliminate).toBe(11);expect(state.audio.scheduled['final-two']).toBe(1);
+  expect((state.audio.scheduled.win??0)+(state.audio.scheduled.lose??0)-(priorSound.win??0)-(priorSound.lose??0)).toBe(1);
+  expect(state.audio.maxVoices).toBeLessThanOrEqual(16);
+  await expect.poll(async()=>(await mini(page)).audio.voices).toBe(0);
   expect(state.physics.order).toEqual(settled.view.flags.order.slice(0,11));
   expect(state.physics.winner).toBe(settled.view.flags.order[11]);
   expect(state.physics.bodies.filter((b:any)=>!b.escaped)).toHaveLength(1);

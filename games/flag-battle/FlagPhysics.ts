@@ -8,24 +8,26 @@ export interface FlagBody {
   id: number; x: number; y: number; vx: number; vy: number;
   previousX: number; previousY: number; escapedAt: number | null;
 }
+export interface FlagContact { kind: 'collision' | 'wall'; time: number; strength: number; x: number }
 export interface FlagExit { id: number; time: number; x: number; y: number; gap: number; halfGap: number }
-export interface FlagPhysicsPlan { seed: number; duration: number; halfGap: number; order: number[]; exits: FlagExit[]; terminal: FlagBody[] }
+export interface FlagPhysicsPlan { seed: number; duration: number; halfGap: number; contacts: FlagContact[]; order: number[]; exits: FlagExit[]; terminal: FlagBody[] }
 export const angleDistance = (a: number, b: number) => Math.atan2(Math.sin(a - b), Math.cos(a - b));
 function seeded(seed: number) {
   let state = (seed ^ 0x9e3779b9) >>> 0 || 1;
   return () => { state ^= state << 13; state ^= state >>> 17; state ^= state << 5; return (state >>> 0) / 4294967296; };
 }
 /** Equal masses: correct penetration and exchange only the approaching normal impulse. */
-export function resolveFlagPair(a: FlagBody, b: FlagBody) {
+export function resolveFlagPair(a: FlagBody, b: FlagBody): number {
   let dx = b.x - a.x, dy = b.y - a.y, distance = Math.hypot(dx, dy);
   const diameter = FLAG_BODY_RADIUS * 2;
-  if (distance >= diameter || a.escapedAt !== null || b.escapedAt !== null) return;
+  if (distance >= diameter || a.escapedAt !== null || b.escapedAt !== null) return 0;
   if (distance < 1e-10) { dx = 1; dy = 0; distance = 0; }
   const nx = distance ? dx / distance : dx, ny = distance ? dy / distance : dy;
   const correction = (diameter - distance + 1e-8) / 2;
   a.x -= nx * correction; a.y -= ny * correction; b.x += nx * correction; b.y += ny * correction;
   const approaching = (a.vx - b.vx) * nx + (a.vy - b.vy) * ny;
   if (approaching > 0) { a.vx -= approaching * nx; a.vy -= approaching * ny; b.vx += approaching * nx; b.vy += approaching * ny; }
+  return Math.max(0, approaching);
 }
 
 export class FlagPhysics {
@@ -35,7 +37,7 @@ export class FlagPhysics {
   private accumulator = 0;
   private opening = 0;
   private openingVelocity = 0;
-  constructor(readonly seed: number, readonly preview = false) {
+  constructor(readonly seed: number, readonly preview = false, private contact?: (event: FlagContact) => void) {
     const random = seeded(seed);
     this.bodies = [];
     for (let id = 0; id < 12; id++) {
@@ -81,7 +83,10 @@ export class FlagPhysics {
     }
     // Revisit the wall after pair corrections, so a cluster cannot push through the rim.
     for (let pass = 0; pass < 4; pass++) {
-      for (let i = 0; i < this.bodies.length; i++) for (let j = i + 1; j < this.bodies.length; j++) resolveFlagPair(this.bodies[i], this.bodies[j]);
+      for (let i = 0; i < this.bodies.length; i++) for (let j = i + 1; j < this.bodies.length; j++) {
+        const a = this.bodies[i], b = this.bodies[j], impulse = resolveFlagPair(a, b);
+        if (impulse > .18) this.contact?.({ kind: 'collision', time: this.time, strength: impulse, x: (a.x + b.x) / 2 });
+      }
       for (const b of this.bodies) if (b.escapedAt === null) this.wall(b);
     }
     for (const b of this.bodies) {
@@ -98,7 +103,7 @@ export class FlagPhysics {
     if (distance > limit && (half === 0 || Math.abs(angleDistance(angle, this.gap)) >= half)) {
       const nx = b.x / distance, ny = b.y / distance, speed = b.vx * nx + b.vy * ny;
       b.x = nx * limit; b.y = ny * limit;
-      if (speed > 0) { b.vx -= 2 * speed * nx; b.vy -= 2 * speed * ny; }
+      if (speed > 0) { b.vx -= 2 * speed * nx; b.vy -= 2 * speed * ny; if (speed > .18) this.contact?.({ kind: 'wall', time: this.time, strength: speed, x: b.x }); }
     }
     if (half > 0 && half < Math.PI) {
       const omega = .58 + .16 * .21 * Math.cos(this.time * .21);
@@ -111,7 +116,7 @@ export class FlagPhysics {
         const wallX = -py * endpointOmega, wallY = px * endpointOmega;
         const dot = (b.vx - wallX) * nx + (b.vy - wallY) * ny;
         b.x = px + nx * (r + 1e-8); b.y = py + ny * (r + 1e-8);
-        if (dot < 0) { b.vx -= 2 * dot * nx; b.vy -= 2 * dot * ny; }
+        if (dot < 0) { b.vx -= 2 * dot * nx; b.vy -= 2 * dot * ny; if (dot < -.18) this.contact?.({ kind: 'wall', time: this.time, strength: -dot, x: b.x }); }
       }
     }
   }
@@ -124,9 +129,10 @@ export class FlagPhysics {
 
 /** Replay anonymous trajectories, then label them using the saved server order. */
 export function planFlagPhysics(seed: number): FlagPhysicsPlan {
-  const world = new FlagPhysics(seed);
+  const contacts: FlagContact[] = [];
+  const world = new FlagPhysics(seed, false, event => contacts.push(event));
   while (!world.finished && world.time < 90) world.step();
   if (!world.finished) throw Error('Flag physics did not finish within its bounded presentation');
   const winner = world.bodies.find(b => b.escapedAt === null)!;
-  return { seed, duration: world.time, halfGap: world.halfGap, order: [...world.exits.map(e => e.id), winner.id], exits: world.exits.map(e => ({ ...e })), terminal: world.bodies.map(b => ({ ...b })) };
+  return { seed, duration: world.time, halfGap: world.halfGap, contacts, order: [...world.exits.map(e => e.id), winner.id], exits: world.exits.map(e => ({ ...e })), terminal: world.bodies.map(b => ({ ...b })) };
 }

@@ -40,3 +40,22 @@ The solver first simulates twelve anonymous bodies using the saved visual seed. 
 Event update: elimination is shown and sounded only when the whole body clears the rim. Opening changes are continuous; the moving end caps exchange impulse with contacting bodies. Hidden tabs, reduced motion, skip and restore still present the accepted result directly and silently. Timings and accelerations remain engineering choices for this game.
 
 Physics verification covers elastic head-on and glancing contacts, coincident centers, separating bodies, separated initial placement, a closed rim, deterministic replay, 30/60/144 fps, bounded complete rounds and continuous motion through the opening. A 32-seed diagnostic completed every round; its largest per-step active-body movement was 0.01123 arena radii at a 1/240 second step. These measurements test the implementation and do not establish player preference.
+
+## Sound design 1.2
+
+All sounds use the existing host audio context, output, mute and volume. These are original synthesized effects, with no additional audio context or downloaded recordings. No music bed is added. Contact timbres are quiet and short; elimination and result cues take priority. A rolling lookahead schedules cues against the visible physics playhead and the host output timestamp, using reported output latency when available. The engineering synchronization target is within 40 ms on the tested local output; this is not a perceptual threshold or a claim about untested Bluetooth devices.
+
+| Event | Meaning and confirmation | Sound and sync point | Interruption and comfort |
+| --- | --- | --- | --- |
+| Selection | Unpaid country or stake choice | Short, soft pluck after a user gesture | No delayed replay after unlock, account change or close |
+| Accepted start | New validated server round starts presentation | Two rising notes at the first arena frame | No start cue while awaiting the server; restored rounds stay silent |
+| Flag contact | Approaching bodies exchange impulse | Rounded wooden tick, energy-dependent level, horizontal stereo position | Weak contacts ignored; strongest contact per short interval; no idle-preview audio |
+| Ring contact | Body reflects from the rim or a moving end cap | Short higher glass-like tap at physical impact | Same density and voice limits as body contacts; no continuous wall chatter |
+| Elimination | Body fully clears the opening | Brief airy outward sweep with a soft falling note | Suppresses nearby impact cues; one event per actual exit; selected country has a lower, distinct note |
+| Final two | Tenth exit leaves two flags | One restrained two-note signal | Not a payout or win signal; never repeated by restore |
+| Positive paid result | Selected country wins and its confirmed return is shown | Short major arpeggio | Only for a positive net paid-round result; skip, hide, mute and close cancel queued notes |
+| Zero return | Another country wins and zero return is shown | Neutral low tap | No victory figure or celebratory loss sound |
+
+Reduced-motion fresh rounds use a brief result cue only. Restoring saved rounds is silent. Mute, zero volume, hidden tabs, pause, account changes and destroy stop owned voices and discard future cues; enabling sound resumes from the current visual time and does not replay the past. Offline rendering tests can verify signal, envelopes and headroom, but listening quality requires human assessment and is not inferred from RMS alone.
+
+Sound verification on 29 October 2026: six timeline/lifecycle tests and seven physics/rendering tests passed. All eight cues were rendered in Chrome's OfflineAudioContext using the same synthesis code; individual peaks ranged from 0.0627 to 0.1363 full scale, all final 100 ms tails were silent and no voices remained after rendering. The real host with desktop/mobile chat produced all eleven elimination cues, the final-two signal and exactly one appropriate result cue; skip and close/reopen remained silent. Tests also covered lost-response recovery, late audio unlock, output-timestamp mapping, mute/unmute with discarded past cues, duplicate result IDs, destruction and the sixteen-voice cap. These are technical signal and lifecycle checks. Physical speaker/headphone/Bluetooth synchronization and subjective listening quality have not been assessed; the 40 ms engineering target is not an acoustically measured claim.

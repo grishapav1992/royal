@@ -1,7 +1,7 @@
 import { FLAG_GAME, FLAG_BETS, FLAG_COUNTRIES, flagPayout, type FlagCountry, type FlagView } from '../../src/shared/flagBattle';
 import { expansionClient as client } from '../../src/wallet/ExpansionClient';
 import { demoWallet } from '../../src/wallet/WalletClient';
-import { gameAudio } from '../../src/game/GameAudio';
+import { FlagAudio } from './FlagAudio';
 import { language } from '../../src/i18n/index';
 import { FlagArena, flagAsset } from './FlagArena';
 
@@ -12,6 +12,7 @@ const money = (v: string) => (Number(v) / 100).toLocaleString(en ? 'en-US' : 'ru
 export class FlagBattleUI {
   private root = document.createElement('section');
   private arena: FlagArena;
+  private audio = new FlagAudio();
   private lifetime = new AbortController();
   private motion = matchMedia('(prefers-reduced-motion: reduce)');
   private owner = client.accountId;
@@ -36,40 +37,47 @@ export class FlagBattleUI {
     host.replaceChildren(this.root);
     this.arena = new FlagArena(this.find('canvas'));
     const signal = this.lifetime.signal;
+    this.root.addEventListener('pointerdown', () => { void this.audio.unlock(); }, { signal });
     this.root.addEventListener('click', e => {
       const button = (e.target as HTMLElement).closest<HTMLButtonElement>('button');
       if (!button) return;
-      if (button.dataset.country && !this.blocked()) { this.selected = button.dataset.country as FlagCountry; this.render(); }
+      if (button.dataset.country && !this.blocked()) { this.selected = button.dataset.country as FlagCountry; this.selectionSound(); this.render(); }
       if (button.dataset.fb === 'play') void this.send(false);
       if (button.dataset.fb === 'retry') void this.send(true);
       if (button.dataset.fb === 'skip') this.finish(false);
       if (button.dataset.fb === 'rules') this.find<HTMLDialogElement>('dialog').showModal();
       if (button.dataset.fb === 'close-rules') this.find<HTMLDialogElement>('dialog').close();
     }, { signal });
-    this.find<HTMLSelectElement>('select').addEventListener('change', e => { this.stake = (e.target as HTMLSelectElement).value; this.render(); }, { signal });
+    this.find<HTMLSelectElement>('select').addEventListener('change', e => { this.stake = (e.target as HTMLSelectElement).value; this.selectionSound(); this.render(); }, { signal });
     client.addEventListener('change', () => this.sync(), { signal });
     demoWallet.addEventListener('change', () => this.render(), { signal });
-    document.addEventListener('visibilitychange', () => { if (document.hidden) this.finish(false); }, { signal });
+    document.addEventListener('visibilitychange', () => { if (document.hidden) { this.audio.silence(); this.finish(false); } }, { signal });
     this.motion.addEventListener('change', () => { if (this.motion.matches) this.finish(false); }, { signal });
     this.sync(); this.frame = requestAnimationFrame(t => this.tick(t));
     void client.refresh();
+  }
+  private selectionSound() {
+    const account = this.owner;
+    void this.audio.unlock().then(() => { if (this.owner === account && !this.lifetime.signal.aborted && !this.blocked() && !document.hidden) this.audio.cue('select'); });
   }
   private find<T extends Element = HTMLElement>(selector: string): T { return this.root.querySelector<T>(selector)!; }
   private put(id: string, value: string) { this.find(`[data-fb="${id}"]`).textContent = value; }
   private blocked() { return this.running || this.submitting || client.busy || client.loading || !!client.pending || demoWallet.busy || !!demoWallet.pending || demoWallet.hasExternalBusy('expansion'); }
   private sync() {
     if (this.owner !== client.accountId) {
-      this.owner = client.accountId; this.running = false; this.fresh = false; this.seen = ''; this.view = undefined;
+      this.audio.silence(); this.owner = client.accountId; this.running = false; this.fresh = false; this.seen = ''; this.view = undefined;
       this.submitting = false; this.error = ''; this.selected = 'RU'; this.stake = '100'; this.arena.reset();
     }
     const session = client.sessions.find(s => s.gameId === FLAG_GAME);
     if (session && session.id !== this.seen && !client.pending) {
       this.seen = session.id; this.view = session.view.flags; this.returned = session.returnedUnits; this.spent = session.stakeUnits;
       this.arena.reset(this.view); this.eliminated = 0; this.put('count', '12'); this.find('[data-fb="ticker"]').replaceChildren();
-      this.running = this.fresh && !this.motion.matches && !document.hidden;
+      const fresh = this.fresh;
+      this.running = fresh && !this.motion.matches && !document.hidden;
       this.selected = this.view!.country; this.stake = session.stakeUnits;
       this.fresh = false;
-      if (!this.running) this.arena.finish();
+      if (this.running) this.audio.begin(this.seen, this.arena.soundTimeline(this.view!.country, this.returned !== '0'));
+      else { this.arena.finish(); this.audio.silence(); if (fresh && !document.hidden) this.audio.instantResult(this.seen, this.returned !== '0'); }
     }
     this.render();
   }
@@ -97,18 +105,19 @@ export class FlagBattleUI {
     this.root.dataset.won = String(done && this.returned !== '0');
   }
   private finish(sound: boolean) {
+    if (!sound) this.audio.silence();
     if (!this.running) return;
     this.running = false; this.arena.finish(); this.render();
-    if (sound && !document.hidden) gameAudio.effect(this.returned !== '0' ? 'win' : 'block', .4);
+    if (sound) this.audio.complete();
   }
   private tick(now: number) {
     const state = this.arena.tick(now, this.running, this.view?.country ?? this.selected, !this.motion.matches);
+    if (this.running) this.audio.advance(state.playhead, now);
     if (state.eliminated !== this.eliminated) {
       this.eliminated = state.eliminated;
       this.put('count', String(12 - this.eliminated));
       this.find('[data-fb="ticker"]').innerHTML = (this.view?.order.slice(0, this.eliminated) ?? []).map(id => `<span title="${name(id)}"><img src="${flagAsset(id)}" alt="${name(id)}"><i>×</i></span>`).join('');
       this.moment();
-      if (this.running && !document.hidden) gameAudio.effect('block', .18);
     }
     if (state.finished) this.finish(true);
     this.frame = requestAnimationFrame(t => this.tick(t));
@@ -116,15 +125,15 @@ export class FlagBattleUI {
   private async send(retry: boolean) {
     if (this.submitting || this.running || client.busy || !client.accountId || document.hidden || !retry && this.blocked()) return;
     const account = this.owner;
-    this.error = ''; this.submitting = true; this.fresh = true; void gameAudio.unlock(); this.render();
+    this.error = ''; this.submitting = true; this.fresh = true; void this.audio.unlock(); this.render();
     try {
       if (retry) await client.retry();
       else await client.act({ gameId: FLAG_GAME, action: 'start', stakeUnits: this.stake, settings: { flags: { country: this.selected } } });
     } catch (e) { if (this.owner === account) { this.error = (e as Error).message; this.fresh = false; } }
     finally { if (!this.lifetime.signal.aborted && this.owner === account) { this.submitting = false; this.sync(); } }
   }
-  pause() { this.finish(false); }
+  pause() { this.audio.silence(); this.finish(false); }
   resume() {}
-  getState() { return { gameId: FLAG_GAME, sessionId: this.seen, presenting: this.running, country: this.selected, eliminated: this.eliminated, returnedUnits: this.returned, physics: this.arena.getState() }; }
-  destroy() { this.lifetime.abort(); cancelAnimationFrame(this.frame); this.find<HTMLDialogElement>('dialog').close(); this.root.remove(); }
+  getState() { return { gameId: FLAG_GAME, sessionId: this.seen, presenting: this.running, country: this.selected, eliminated: this.eliminated, returnedUnits: this.returned, physics: this.arena.getState(), audio: this.audio.state() }; }
+  destroy() { this.audio.destroy(); this.lifetime.abort(); cancelAnimationFrame(this.frame); this.find<HTMLDialogElement>('dialog').close(); this.root.remove(); }
 }
