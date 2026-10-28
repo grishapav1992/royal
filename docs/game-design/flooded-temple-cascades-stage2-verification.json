@@ -354,8 +354,8 @@
   "storage": {
     "owner": "Temple cascade stage 2 chat",
     "initialFreeBytes": 294747426816,
-    "freeBeforeBytes": 290350804992,
-    "freeAfterBytes": null,
+    "freeBeforeBytes": 293538775040,
+    "freeAfterBytes": 288643694592,
     "sourceCopiesCreated": 0,
     "archivesCreated": 0,
     "archivesRemoved": 0,
@@ -371,9 +371,9 @@
     ],
     "removedBytes": 0,
     "physicalReclaimedClaim": false,
-    "preservationCommit": null,
-    "githubVerified": false,
-    "state": "inventoried-awaiting-remote-preservation",
+    "preservationCommit": "effd2716acd4c802ad640ca9c56a647096b20c95",
+    "githubVerified": true,
+    "state": "blocked-by-policy",
     "previousDeniedScopesRetried": false,
     "activeExceptions": [
       {
@@ -391,6 +391,8 @@
         "reason": "Not owned by this stage; no deletion attempted",
         "cleanupCondition": "Their own recorded ownership and active-session conditions apply"
       }
-    ]
+    ],
+    "cleanupAttemptDate": "2026-10-29",
+    "rejection": "Automatic approval review rejected removal of the single owned temporary directory before execution: blocked by policy. No detailed reason supplied. No files removed and no retry attempted."
   }
 }
