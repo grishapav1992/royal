@@ -7,6 +7,7 @@ import json
 import os
 from pathlib import Path
 import shutil
+import signal
 import subprocess
 import sys
 import tarfile
@@ -114,6 +115,10 @@ def snapshot():
         'dependencies': versions, 'prepared': run(['docker', 'image', 'inspect', 'royal-payments:latest', '--format', '{{.Id}}']),
         'compose': payment['Config']['Labels']['com.docker.compose.project.config_files'].split(','),
         'paymentRuntime': {key: payment[key] for key in ['Mounts', 'HostConfig']},
+        'paymentEnvironmentHash': digest(json.dumps({key: value for key, value in env.items()
+            if not key.startswith('TELEGRAM_')}, sort_keys=True).encode()),
+        'paymentProcessHash': digest(json.dumps({key: payment['Config'].get(key) for key in
+            ['User', 'WorkingDir', 'Entrypoint', 'Cmd', 'ExposedPorts', 'Healthcheck', 'Volumes']}, sort_keys=True).encode()),
         'moduleFiles': inventory(Path('/opt/royal-game-modules')),
         'hostContract': sha(Path('/opt/royal-game-modules-state/host.json'))}
 
@@ -296,7 +301,7 @@ def release(private):
                 {n: v for n, v in old['services'].items() if n != '/royal-payments-1'}, 'Another persistent service changed')
         require(after['source'] == {**old['source'], **manifest['changed'], CADDY: sha(ROOT/'Caddyfile')}, 'Unrelated source changed')
         require(after['settings'] == {**old['settings'], str(PROVIDER): sha(PROVIDER)}, 'Protected settings changed')
-        for key in ['moduleFiles', 'hostContract', 'paymentRuntime', 'compose']:
+        for key in ['moduleFiles', 'hostContract', 'paymentRuntime', 'paymentEnvironmentHash', 'paymentProcessHash', 'compose']:
             require(after[key] == old[key], 'Protected state changed: '+key)
         require(after['dependencies'] == {**old['dependencies'], **{name: manifest['dependencies'][name] for name in updates}}, 'Unrelated dependency versions changed')
         require(after['services']['/royal-payments-1']['image'] == built, 'Running payment image differs')
@@ -319,6 +324,10 @@ def release(private):
 
 
 if __name__ == '__main__':
+    def interrupted(number, _frame):
+        raise InterruptedError('Payment publication interrupted: '+str(number))
+    for number in [signal.SIGTERM, signal.SIGINT, signal.SIGHUP]:
+        signal.signal(number, interrupted)
     require(sys.argv[1:] in [['snapshot'], ['snapshot-unlocked'], ['backup-payments'], ['release']], 'Unexpected operation')
     if sys.argv[1] == 'snapshot-unlocked':
         print(json.dumps(snapshot()))
