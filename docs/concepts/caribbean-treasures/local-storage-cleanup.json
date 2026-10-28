@@ -1463,5 +1463,81 @@
       }
     ],
     "freeSpaceNote": "Measurements include other processes. Cleanup was rejected before execution and no physical space reclamation is claimed"
+  },
+  "crewUnlocksUpdate": {
+    "date": "2026-10-29",
+    "owner": "caribbean-crew-unlocks",
+    "preservationCommit": "28516a9faef3c276e3ea6674146df2f8b17779a6",
+    "preservationRefs": [
+      "refs/heads/main",
+      "refs/heads/codex/caribbean-crew-unlocks"
+    ],
+    "remoteCommitVerified": true,
+    "freeBeforeBuildBytes": 294723399680,
+    "freeBeforeRejectedCleanupBytes": 290031497216,
+    "freeAfterRejectedCleanupBytes": 292208340992,
+    "removedFolders": [],
+    "removedFiles": [],
+    "removedArchives": [],
+    "removedLogicalBytes": 0,
+    "physicalReclamationClaimed": false,
+    "cleanupBlock": {
+      "action": "Remove only inventoried temporary test files and three superseded 1.5.0 packages, preserving current package, active API watcher, logs and original database",
+      "reason": "Automatic approval review rejected the command: blocked by policy",
+      "attemptExecuted": false
+    },
+    "retainedTaskArtifacts": [
+      {
+        "folder": "artifacts/work/caribbean-crew-unlocks",
+        "removableBytes": 15392407.0,
+        "cleanupCondition": "Remove duplicate screenshots, traces, test outputs, candidate/restart diagnostics and one-off verification scripts when cleanup is permitted; final compact proof is saved in GitHub"
+      },
+      {
+        "folder": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-caribbean-treasures\\versions\\1.5.0-5bd2334f6da9",
+        "bytes": 14855509.0,
+        "cleanupCondition": "Remove superseded task package when cleanup is permitted"
+      },
+      {
+        "folder": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-caribbean-treasures\\versions\\1.5.0-a93bff0576dd",
+        "bytes": 14855509.0,
+        "cleanupCondition": "Remove superseded task package when cleanup is permitted"
+      },
+      {
+        "folder": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-caribbean-treasures\\versions\\1.5.0-b917a79139a8",
+        "bytes": 14855410.0,
+        "cleanupCondition": "Remove superseded task package when cleanup is permitted"
+      }
+    ],
+    "retainedLogicalBytes": 59958835.0,
+    "activeExceptions": [
+      {
+        "folder": "C:/Users/Aorus/.codex/worktrees/new-slot/royal",
+        "reason": "Existing user-requested local preview continues alongside concurrent primary-checkout work",
+        "cleanupCondition": "Preserve while preview is requested"
+      },
+      {
+        "folder": "artifacts/work/caribbean-crew-unlocks",
+        "files": [
+          "owner.json",
+          "api-watch.mjs",
+          "runtime-api.json",
+          "active-api.log",
+          "api-watch.log"
+        ],
+        "reason": "Current common API watcher and its owned child remain active for the preserved preview",
+        "cleanupCondition": "Stop watcher and backend when the original preview ends; keep their current owner record and log while running"
+      },
+      {
+        "folder": "C:/Users/Aorus/AppData/Local/Temp/royal-pg-C70xv3",
+        "reason": "Original active local database, authentication, wallet and accepted rounds",
+        "cleanupCondition": "Preserve until the user-requested preview ends"
+      },
+      {
+        "folder": "module-dist/studio-caribbean-treasures/versions/1.4.0-2c6b41ca2da3",
+        "reason": "An existing user window may still own the previous immutable package",
+        "cleanupCondition": "Remove only after that game window is closed and no running session needs it"
+      }
+    ],
+    "freeSpaceNote": "Measurements include other processes. Cleanup was rejected before execution and no physical reclamation is claimed"
   }
 }
