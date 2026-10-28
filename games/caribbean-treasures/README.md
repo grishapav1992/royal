@@ -1,6 +1,10 @@
-# Caribbean Treasures 1.3.1
+# Caribbean Treasures 1.4.0
 
 Independent client package for `studio-caribbean-treasures`. Host API 1, server rules 1 and progress contract 1. The common module loader mounts `entry.ts`; the host supplies the expansion client, wallet, account, money formatting and language.
+
+The portrait in the header opens a free pirate selector. Ten additional adult captains join the original Isabella: Amara, Mei, Priya, Yasmin, Zahara, Catalina, Moana, Freya, Rowena and Ines. Each has an individual face, hair, costume and eight reaction frames. Selection is a local cosmetic preference scoped to the signed-in account; it does not start an operation or change a paid round. A new look is committed only after all eight images decode. Failed, cancelled or obsolete loads keep the current identity. Close/reopen restores the selected captain without replaying rewards.
+
+Crew masters and prompts are in `assets/crew/`. Run `node scripts/export-caribbean-crew.mjs` from the repository root to export 80 transparent reaction images and 11 small gallery previews, or add `--check` to verify exact exported bytes. An eight-pixel atlas inset excludes neighboring frame edges. Only the chosen reaction set loads; the original 16-image startup list remains bounded. The additional crew has a separate 12 MiB runtime media budget. Music and recorded effects are unchanged.
 
 The package renders confirmed 6×4 fields, continuous giant blocks, winning cells and selected paylines. It exposes 1/5/10/20 active lines, four per-line stakes, natural tactic selection, both purchased series, rules, round history and pending-operation recovery. Settings lock during accepted rounds. Outcomes, costs, entropy, persistence, house coverage and final credit belong to the common backend.
 
@@ -11,6 +15,10 @@ The presentation follows the approved Caribbean reference: six dimensional illus
 Client support is advertised through `X-Royal-Caribbean-Treasures: 1` on the common transport. Older clients receive a filtered session list and cannot change this game's rounds. Server rules and progress remain version 1. First publication needs the compatible host/backend and finance runtime; later game packages can update independently.
 
 The captain now has eight aligned poses: idle, blink, focus, cannon surprise, bonus gesture, calm loss/partial return, positive result and delighted laugh. Double-buffered pose transitions, a separate gesture layer, slow breathing and one idle timer support both the desktop figure and mobile portrait. Reactions use newly confirmed events and full paid-round outcomes. Reduced motion retains a meaningful static pose; hiding, pausing, opening a modal, account changes and closing release the character's owned work. See [character-motion.md](character-motion.md) and the [six final ImageGen prompts](assets/character-prompts.md).
+
+The complete captain source image fits within the stage instead of filling and cropping a fixed portrait column. Its width and the field's reserved space follow the available stage width and height. The title can wrap inside its grid cell. Short desktop windows use a more compact header and controls. Narrow landscape windows stack the connected chat below the game; exceptionally short panes use a readable vertical flow where both controls and chat remain reachable. These rules are scoped to this module and unload with it.
+
+The header owns a higher stacking layer than the isolated stage, so portrait gestures and field effects cannot cover its four tools. The modal remains above the header. A real-host pixel regression deliberately moves pirate art into the toolbar and verifies unchanged button interiors, then checks sound, music, rules and history on desktop, laptop and mobile.
 
 Columns land with a short settle, the continuous giant rises within its exact block, and cannon growth uses the confirmed before/after bounds with a local recoil. One paid prefix route is traced outside the giant, the integer tally uses a smooth frame-based easing, and positive complete rounds add bounded gold particles. Skip immediately preserves confirmed money and clears owned decoration.
 

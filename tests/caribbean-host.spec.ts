@@ -1,7 +1,7 @@
 import {test as base,expect,type Page} from '@playwright/test';
 import {Client} from '@colyseus/sdk';
 
-const game='studio-caribbean-treasures',out='artifacts/work/caribbean-empty-balance';
+const game='studio-caribbean-treasures',out=process.env.CARIBBEAN_ARTIFACTS_DIR||'artifacts/work/caribbean-empty-balance';
 const test=base.extend<{roomPath:string}>({roomPath:async({request},use)=>{
  const response=await request.post('/api/auth/login',{data:{email:`ct-room-${crypto.randomUUID()}@example.test`,password:'Royal-test-123!'}});
  expect(response.ok()).toBe(true);
@@ -27,7 +27,7 @@ async function enter(page:Page,path:string,email=`ct-player-${crypto.randomUUID(
  await expect.poll(async()=>(await state(page)).online).toBe(true);
  return email;
 }
-async function open(page:Page){
+async function openCatalog(page:Page){
  if(await page.locator('#room-overview').getAttribute('aria-pressed')!=='true')await page.locator('#room-overview').click();
  await expect.poll(async()=>page.evaluate(()=>Math.abs((window as any).royalDemo.getState().view.width-document.getElementById('game')!.clientWidth))).toBeLessThanOrEqual(1);
  await page.locator('#games-tab').click();await page.locator('[data-cabinet="studio-cosmic-escape"]').click();
@@ -40,6 +40,9 @@ async function open(page:Page){
  },{timeout:30000,intervals:[1000,3000]}).toBe(true);}catch(error){
   const {writeFile}=await import('node:fs/promises');await writeFile(out+'/hall-failure.json',JSON.stringify(await page.evaluate(()=>({state:(window as any).royalDemo.getState(),dialogs:[...document.querySelectorAll('dialog')].map(d=>({id:d.id,open:d.open,hidden:d.hidden,display:getComputedStyle(d).display,html:d.outerHTML.slice(0,200)}))})),null,2));throw error;
  }
+}
+async function open(page:Page){
+ await openCatalog(page);
  await page.locator(`[data-platform-game="${game}"]`).click();
  await expect(page.locator('#mini-game')).toHaveAttribute('data-game-module-id',game,{timeout:25000});
  await expect(page.locator('.ct-root')).toBeVisible();
@@ -79,6 +82,146 @@ async function layout(page:Page,name:string){
  if(boxes.length===2){expect(boxes[1].x).toBeGreaterThanOrEqual(boxes[0].x-1);expect(boxes[1].right).toBeLessThanOrEqual(boxes[0].right+1);expect(boxes[1].bottom).toBeLessThanOrEqual(boxes[0].bottom+1);expect(boxes[1].width).toBeGreaterThan(30);}
  await page.screenshot({path:out+'/'+name+'.png'});
 }
+
+test('pirate crew selection is free, keeps the round and restores the chosen captain',async({page,roomPath})=>{
+ test.setTimeout(180000);await enter(page,roomPath);await topup(page);await open(page);
+ const mini=()=>page.evaluate(()=>(window as any).royalDemo.getMiniState());
+ const before=await wallet(page),initial=await mini(),crew=['amara','mei','priya','yasmin','zahara','catalina','moana','freya','rowan','ines'];
+ for(const id of crew){
+  await page.locator('[data-ct-action=crew]').click();await expect(page.locator('.ct-crew-card')).toHaveCount(11);
+  if(id==='amara'){await expect.poll(async()=>page.locator('.ct-crew-card img').evaluateAll(images=>images.every(image=>(image as HTMLImageElement).complete&&(image as HTMLImageElement).naturalWidth>0))).toBe(true);await page.screenshot({path:out+'/crew-gallery-desktop.png'});}
+  await page.locator(`[data-crew-id=${id}]`).click();await expect(page.locator('.ct-backdrop')).toBeHidden({timeout:20000});
+  await expect.poll(async()=>({character:(await mini()).captain.character,loaded:(await mini()).captain.loadedPoses})).toEqual({character:id,loaded:8});
+  await expect(page.locator('.ct-captain .ct-current')).toHaveAttribute('src',new RegExp('/crew/'+id+'-idle\\.webp$'));
+  await expect(page.locator('[data-ct-action=crew]')).toHaveAccessibleName(/Выбрать пиратку/);
+ }
+ expect((await wallet(page)).entries).toEqual(before.entries);expect((await mini()).sessionId).toBe(initial.sessionId);
+ await close(page);await open(page);expect((await mini()).captain.character).toBe('ines');expect((await mini()).captain.history).toEqual([]);
+ // A saved optional image can fail after reopening; the original captain remains playable.
+ await close(page);await page.route('**/crew/ines-focus.webp',route=>route.abort());await page.reload();
+ await expect.poll(async()=>(await state(page)).online).toBe(true);await open(page);expect((await mini()).captain.character).toBe('isabella');
+ await page.unroute('**/crew/ines-focus.webp');await page.locator('[data-ct-action=crew]').click();await page.locator('[data-crew-id=ines]').click();await expect(page.locator('.ct-backdrop')).toBeHidden();
+ await page.request.post('/__test/caribbean/force-scenario',{data:{name:'partial'}});
+ const paid=await action(page,'[data-ct-action=play]'),snapshot=await mini();expect(snapshot.captain.character).toBe('ines');expect(snapshot.captain.history.at(-1).pose).toBe('soft');
+ await page.screenshot({path:out+'/crew-ines-desktop.png'});
+ await page.setViewportSize({width:390,height:844});await page.locator('[data-ct-action=crew]').click();
+ await expect(page.locator('.ct-crew-modal')).toBeInViewport();await expect(page.locator('#chat-input')).toBeInViewport();
+ await page.screenshot({path:out+'/crew-gallery-mobile.png'});
+ await page.locator('[data-crew-id=ines]').scrollIntoViewIfNeeded();await expect(page.locator('.ct-crew-close')).toBeInViewport();
+ await page.locator('.ct-crew-close').click();await expect(page.locator('[data-ct-action=crew]')).toBeFocused();await page.locator('[data-ct-action=crew]').click();
+ await page.locator('[data-crew-id=amara]').click();await expect(page.locator('.ct-backdrop')).toBeHidden();
+ expect((await mini()).captain.character).toBe('amara');expect((await session(page)).id).toBe(paid.id);
+ expect((await wallet(page)).entries.filter((e:any)=>e.kind==='bet')).toHaveLength(1);
+ await page.screenshot({path:out+'/crew-amara-mobile.png'});
+ await close(page);await open(page);expect((await mini()).captain.character).toBe('amara');
+});
+
+test('crew loading failure, cancellation and every captain reaction retain a consistent identity',async({page})=>{
+ await page.goto('/tests/fixtures/caribbean-audio.html');
+ await page.evaluate(async()=>{
+  const root=document.createElement('section');root.innerHTML='<span class="ct-portrait-gesture"><img class="ct-portrait-layer"><img class="ct-portrait-layer"></span><span class="ct-captain-caption" hidden></span>';document.body.append(root);
+  const path='/games/caribbean-treasures/CaribbeanCaptain.ts';const {CaribbeanCaptain}=await import(/* @vite-ignore */path);(window as any).__crewCaptain=new CaribbeanCaptain(root);
+ });
+ const captain=()=>page.evaluate(()=>(window as any).__crewCaptain.state());
+ await expect.poll(async()=>(await captain()).ready).toBe(true);
+ await page.route('**/crew/mei-surprise.webp',route=>route.abort());
+ expect(await page.evaluate(()=>(window as any).__crewCaptain.select('mei'))).toBe(false);expect((await captain()).character).toBe('isabella');expect((await captain()).loading).toBe(false);
+ await page.unroute('**/crew/mei-surprise.webp');
+ const results=await page.evaluate(async()=>{
+  const c=(window as any).__crewCaptain,results=[];
+  for(const id of ['amara','mei','priya','yasmin','zahara','catalina','moana','freya','rowan','ines']){
+   if(!await c.select(id))throw Error('Captain did not decode: '+id);c.context(true,true,false);
+   const poses=[];
+   for(const [cue,expected] of [['cannon','surprise'],['bonus','bonus'],['partial','soft'],['loss','soft'],['win','win'],['bigwin','laugh']]){
+    c.react(cue,id+cue);const current=document.querySelector<HTMLImageElement>('.ct-current')!;
+    poses.push({cue,expected,pose:c.state().pose,src:current.src});
+   }
+   c.context(false,true,false);results.push({id,poses,state:c.state()});
+  }
+  return results;
+ });
+ for(const result of results){for(const reaction of result.poses){expect(reaction.pose).toBe(reaction.expected);expect(reaction.src).toContain('/crew/'+result.id+'-'+reaction.expected+'.webp');}expect(result.state.timers).toBe(0);expect(result.state.animations).toBe(0);}
+ expect(await page.evaluate(async()=>{const c=(window as any).__crewCaptain,pending=c.select('amara');c.cancelSelection();return pending;})).toBe(false);expect((await captain()).character).toBe('ines');
+ expect(await page.evaluate(async()=>{const c=(window as any).__crewCaptain,pending=c.select('mei');c.destroy();return pending;})).toBe(false);expect((await captain()).timers).toBe(0);
+ const {writeFile}=await import('node:fs/promises');await writeFile(out+'/crew-reactions.json',JSON.stringify(results,null,2));
+});
+
+test('header controls paint above overlapping pirate art and every tool remains usable',async({page,roomPath})=>{
+ await enter(page,roomPath);await topup(page);await open(page);
+ const tools=page.locator('.ct-header-tools button'),regions:Buffer[]=[];
+ await page.locator('.ct-root').evaluate((e:HTMLElement)=>{e.style.overflow='clip';});
+ const capture=async(index:number)=>{const b=(await tools.nth(index).boundingBox())!;return page.screenshot({animations:'disabled',clip:{x:b.x+6,y:b.y+6,width:b.width-12,height:b.height-12}});};
+ const {writeFile}=await import('node:fs/promises');
+ for(let i=0;i<4;i++){const region=await capture(i);regions.push(region);await writeFile(out+'/toolbar-before-'+i+'.png',region);}
+ // Reproduce the reported overhang without changing production geometry or game state.
+ await page.evaluate(()=>{
+  const pirate=document.querySelector<HTMLElement>('.ct-captain')!,img=pirate.querySelector<HTMLImageElement>('.ct-current')!,panel=document.querySelector('.ct-header-tools')!.getBoundingClientRect(),b=img.getBoundingClientRect();
+  const scale=Math.min(img.clientWidth/img.naturalWidth,img.clientHeight/img.naturalHeight),w=img.naturalWidth*scale,h=img.naturalHeight*scale;
+  const faceX=b.x+(img.clientWidth-w)/2+w*.6,faceY=b.y+img.clientHeight-h+h*.15;
+  pirate.style.transform=`translate(${panel.x+panel.width/2-faceX}px,${panel.y+panel.height/2-faceY}px)`;
+ });
+ await page.screenshot({path:out+'/header-overlap.png',animations:'disabled'});
+ for(let i=0;i<4;i++){const region=await capture(i);await writeFile(out+'/toolbar-after-'+i+'.png',region);expect(region.equals(regions[i]),'Pirate pixels cannot replace the opaque interior of toolbar button '+i).toBe(true);}
+ await page.locator('.ct-captain').evaluate((e:HTMLElement)=>{e.style.removeProperty('transform');});await page.locator('.ct-root').evaluate((e:HTMLElement)=>{e.style.removeProperty('overflow');});
+ for(const [width,height] of [[1440,1000],[1280,720],[390,844]]){
+  await page.setViewportSize({width,height});await expect(tools).toHaveCount(4);
+  for(let i=0;i<4;i++)await expect(tools.nth(i)).toBeInViewport();
+  await page.locator('[data-ct-action=music]').click();await expect(page.locator('[data-ct-action=music]')).toHaveAttribute('aria-pressed','false');await page.locator('[data-ct-action=music]').click();
+  await page.locator('[data-ct-action=sound]').click();await expect(page.locator('[data-ct-action=sound]')).toHaveAttribute('aria-pressed','false');await page.locator('[data-ct-action=sound]').click();
+  for(const action of ['info','history']){
+   await page.locator(`[data-ct-action=${action}]`).click();await expect(page.locator('.ct-modal')).toBeVisible();
+   expect(await page.locator('.ct-header-tools').evaluate(e=>{const b=e.getBoundingClientRect();return !!document.elementFromPoint(b.x+b.width/2,b.y+b.height/2)?.closest('.ct-backdrop');})).toBe(true);
+   await page.locator('.ct-modal').press('Escape');await expect(page.locator('.ct-backdrop')).toBeHidden();
+  }
+  await page.screenshot({path:out+`/header-${width}x${height}.png`});
+ }
+ expect((await wallet(page)).entries.filter((e:any)=>e.kind==='bet')).toEqual([]);
+});
+
+test('catalogue pirate captain cover stays sharp on desktop and mobile and reopens the same round',async({page,roomPath})=>{
+ await enter(page,roomPath);await topup(page);await openCatalog(page);
+ const card=page.locator(`[data-platform-game="${game}"]`),art=card.locator('.rp-art img');
+ await card.scrollIntoViewIfNeeded();
+ await expect(art).toHaveAttribute('src',/\/assets\/royal-catalog\/studio-caribbean-treasures\.[a-f0-9]{12}\.webp$/);
+ await expect.poll(async()=>art.evaluate((img:HTMLImageElement)=>img.complete&&img.naturalWidth===512&&img.naturalHeight===320)).toBe(true);
+ await page.screenshot({path:out+'/catalog-desktop.png'});
+ await page.setViewportSize({width:390,height:844});await page.getByRole('searchbox',{name:'Найти игру',exact:true}).fill('Карибские');
+ await expect(page.locator('.rp-card')).toHaveCount(1);await card.scrollIntoViewIfNeeded();await expect(art).toBeInViewport();await expect(page.locator('#chat-input')).toBeInViewport();
+ await page.screenshot({path:out+'/catalog-mobile.png'});await card.click();
+ await expect(page.locator('.ct-root')).toBeVisible();await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState()?.captain?.ready)).toBe(true);
+ await expect(page.locator('[data-ct-lines]')).toBeEnabled();await page.locator('[data-ct-lines]').selectOption('1');await page.request.post('/__test/caribbean/force-bonus');const accepted=await action(page,'[data-ct-action=play]');
+ await action(page,'[data-ct-action=choose-flagship]');const before=await wallet(page);
+ await page.locator('#studio-game-list').click();await expect(art).toHaveAttribute('src',/studio-caribbean-treasures\.[a-f0-9]{12}\.webp$/);await card.scrollIntoViewIfNeeded();await card.click();
+ await expect(page.locator('.ct-root')).toBeVisible();expect((await session(page)).id).toBe(accepted.id);expect((await wallet(page)).balance).toBe(before.balance);
+ await finish(page);expect((await wallet(page)).entries.filter((e:any)=>e.operationId===accepted.id&&e.kind==='bet')).toHaveLength(1);
+});
+
+test('responsive framing keeps the title and full captain artwork inside the host',async({page,roomPath})=>{
+ test.setTimeout(120000);await enter(page,roomPath);await topup(page);await open(page);
+ const measurements:any[]=[];
+ for(const [width,height] of [[1440,1000],[1280,720],[1024,768],[900,650],[800,600],[640,480],[500,760],[390,844],[342,700],[844,390],[342,245]]){
+  await page.setViewportSize({width,height});
+  await expect.poll(async()=>page.evaluate(()=>{const d=document.querySelector<HTMLElement>('#mini-dialog')!,s=d.querySelector<HTMLElement>('.mini-stage')!;return d.dataset.gameViewportReady===d.dataset.game+'|'+s.clientWidth+'x'+s.clientHeight+'|off';})).toBe(true);
+  const measured=await page.evaluate(()=>{
+   const root=document.querySelector<HTMLElement>('.ct-root')!,title=root.querySelector<HTMLElement>('.ct-title')!,heading=title.querySelector('h2')!,captain=root.querySelector<HTMLElement>('.ct-captain')!,image=captain.querySelector<HTMLImageElement>('.ct-current')!;
+   const box=(e:Element)=>{const b=e.getBoundingClientRect();return{x:b.x,y:b.y,width:b.width,height:b.height,right:b.right,bottom:b.bottom};};
+   const text=document.createRange();text.selectNodeContents(heading);const b=text.getBoundingClientRect();
+   const visible=getComputedStyle(captain).display!=='none',style=getComputedStyle(image),scale=style.objectFit==='contain'?Math.min(image.clientWidth/image.naturalWidth,image.clientHeight/image.naturalHeight):Math.max(image.clientWidth/image.naturalWidth,image.clientHeight/image.naturalHeight);
+   return{root:box(root),rootOverflowX:root.scrollWidth-root.clientWidth,pageOverflowX:document.documentElement.scrollWidth-innerWidth,title:box(title),titleText:{x:b.x,right:b.right,y:b.y,bottom:b.bottom},captain:visible?{box:box(captain),objectFit:style.objectFit,clippedX:Math.max(0,image.naturalWidth*scale-image.clientWidth),clippedY:Math.max(0,image.naturalHeight*scale-image.clientHeight)}:null,stage:box(root.querySelector('.ct-stage')!),play:box(root.querySelector('[data-ct-action=play]')!),chat:box(document.querySelector('#chat-input')!)};
+  });
+  measurements.push({width,height,...measured});await page.screenshot({path:out+`/framing-${width}x${height}.png`});
+  if(width<=640&&height<=540){
+   await page.locator('[data-ct-action=play]').scrollIntoViewIfNeeded();await expect(page.locator('[data-ct-action=play]')).toBeInViewport();
+   await page.locator('#chat-input').scrollIntoViewIfNeeded();await expect(page.locator('#chat-input')).toBeInViewport();
+   await page.locator('.ct-heading h2').scrollIntoViewIfNeeded();
+  }
+ }
+ const {writeFile}=await import('node:fs/promises');await writeFile(out+'/framing-measurements.json',JSON.stringify(measurements,null,2));
+ expect(measurements.filter(m=>m.captain&&(m.captain.clippedX>1||m.captain.clippedY>1)), 'All source portrait pixels must fit, without cover cropping').toEqual([]);
+ expect(measurements.filter(m=>m.pageOverflowX>1||m.rootOverflowX>1||m.titleText.x<m.root.x-1||m.titleText.right>m.root.right+1), 'Text and controls cannot spill horizontally').toEqual([]);
+ await page.setViewportSize({width:1280,height:720});await page.request.post('/__test/caribbean/force-bonus');await action(page,'[data-ct-action=play]');
+ await layout(page,'framing-bonus-1280x720');await action(page,'[data-ct-action=choose-flagship]');await finish(page);
+});
 
 test('empty balance explains disabled spins, live funding unlocks an exact-cost single line and free spins need no balance',async({page,roomPath})=>{
  await enter(page,roomPath);await open(page);await page.locator('[data-ct-lines]').selectOption('1');await page.locator('[data-ct-stake]').selectOption('1000');
