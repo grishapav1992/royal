@@ -137,7 +137,7 @@ export class ForestHeartUI {
       button.style.setProperty('--sprite-x', art.column * 100 / 3 + '%');
       button.style.setProperty('--turn', art.angle + 'deg');
       button.style.setProperty('--reveal', '1');
-      button.style.setProperty('--lift', '0px');
+      button.style.setProperty('--exit', '0');
       const entry = ((arrival?.entry ?? 3) - art.angle / 90 + 4) % 4;
       button.style.setProperty('--entry-x', [50, 100, 50, 0][entry] + '%');
       button.style.setProperty('--entry-y', [0, 50, 100, 50][entry] + '%');
@@ -170,6 +170,7 @@ export class ForestHeartUI {
     this.audio.bonus = stage === 'bonus'; this.controls();
   }
   private controls() {
+    this.root.setAttribute('aria-busy', String(this.busy || this.client.busy || this.client.loading));
     const blocked = this.blocked(), stage = this.view?.stage, active = stage === 'choice' || stage === 'bonus';
     if (active && this.shown) this.stake = Number(this.shown.stakeUnits);
     const balance = this.wallet.accountId === this.owner ? this.wallet.wallet?.balance ?? this.client.wallet?.balance : undefined;
@@ -234,7 +235,7 @@ export class ForestHeartUI {
   private async accent(cue: ForestCue, apply: () => void, variant = 0, duration = 0, frame?: (progress: number) => void) {
     if (this.motion.signal.aborted || this.paused || this.doc.hidden) return;
     const scheduled = this.audio.accent(cue, variant, duration);
-    const wait = Math.max(0, scheduled.audibleAt - performance.now());
+    const wait = Math.max(duration, scheduled.audibleAt - performance.now());
     await this.clock(wait, elapsed => frame?.(this.reduced || !wait ? 1 : Math.min(1, elapsed / wait)));
     if (this.motion.signal.aborted || this.paused || this.doc.hidden) return;
     apply(); this.timing.push({ cue, mode: scheduled.mode, latencyMs: scheduled.latencyMs, skewMs: performance.now() - scheduled.audibleAt });
@@ -247,23 +248,35 @@ export class ForestHeartUI {
     const before = turn ? forestScene(previous) : undefined;
     const changed = before ? scene.board.findIndex((mask, cell) => mask !== before.board[cell]) : -1;
     const cells = Array.from(this.root.querySelectorAll<HTMLButtonElement>('[data-cell]'));
+    const priorScene = previous?.stage === 'bonus' ? forestScene(previous) : undefined;
+    const carried = new Set(priorScene?.lockedCells.filter(cell => priorScene.board[cell] === scene.board[cell]) ?? []);
+    this.controls();
+    if (!turn && !this.reduced) {
+      this.root.dataset.motion = 'clear';
+      const clearDuration = this.fast ? 60 : 140;
+      await this.clock(clearDuration, elapsed => cells.forEach((cell, index) => {
+        if (!carried.has(index)) cell.style.setProperty('--exit', String(easeRoot(elapsed / clearDuration)));
+      }));
+      if (signal.aborted) return;
+    }
     this.paint(false); this.root.classList.add(turn ? 'fh-casting' : 'fh-revealing'); this.controls();
+    if (!turn && !this.reduced) cells.forEach((cell, index) => { if (!carried.has(index)) cell.style.setProperty('--reveal', '0'); });
     const counterFrom=previous&&this.view!.revision>1?forestScene(previous).totalUnits:0;
     this.find('total').textContent=this.number(counterFrom);this.find('net').textContent='USDT';
     const previousFlowers = turn ? forestScene(previous).paidMask : 0;
     if (turn) for (let i = 0; i < 3; i++) if (previousFlowers & (1 << i)) this.root.querySelector(`[data-flower="${i}"]`)?.classList.add('fh-bloom');
-    const landing = this.reduced ? 0 : this.fast ? 190 : 460;
+    const landing = this.reduced ? 0 : turn ? this.fast ? 190 : 460 : this.fast ? 280 : 620;
     this.root.dataset.motion = changed >= 0 ? 'turn' : turn ? 'pass' : 'reveal';
     if (changed >= 0) cells[changed].classList.add('fh-turning');
     await this.accent(turn ? 'turn' : 'land', () => {
-      this.root.classList.remove('fh-revealing'); cells.forEach(cell => {cell.classList.remove('fh-turning');cell.style.setProperty('--lift','0px');});
+      this.root.classList.remove('fh-revealing'); cells.forEach(cell => cell.classList.remove('fh-turning'));
     }, 0, landing, progress => {
       if (changed >= 0 && before) {
         const start = rootArtwork(before.board[changed]).angle, end = rootArtwork(scene.board[changed]).angle;
         cells[changed].style.setProperty('--turn', start + (end - start) * easeRoot(progress) + 'deg');
-        cells[changed].style.setProperty('--lift',this.reduced?'0px':Math.sin(progress*Math.PI)*4+'px');
       } else if (!turn) cells.forEach((cell, index) => {
-        const delay = (index % 5 + Math.abs(Math.floor(index / 5)-2)) * .018;
+        if (carried.has(index)) return;
+        const delay = (index % 5 + Math.abs(Math.floor(index / 5)-2)) * .055;
         const p = Math.max(0, Math.min(1, (progress - delay) / (1 - delay)));
         cell.style.setProperty('--reveal', String(easeRoot(p)));
       });

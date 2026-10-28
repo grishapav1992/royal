@@ -1,4 +1,12 @@
-# Forest Heart client 1.4
+# Forest Heart client 1.5
+
+## Board presentation 1.5
+
+The square wood plate, gold rim and corner foliage stay fixed in each cell. A separate alpha root atlas rotates inside that cell's clipped viewport; the frame never lifts, scales, rotates or spills over a neighbor. Root orientation and all original ports remain owned by RootArtwork and the accepted public board.
+
+For a fresh accepted field, old unlocked roots leave downward over 140 ms, then new roots arrive from above with a short tilt and a source-row stagger over 620 ms. Fast mode uses 60 ms and 280 ms. The stable cell plates remain visible throughout. A carried held root in a bonus continuation stays in place. The landing uses the existing wood accent, followed by the unchanged confirmed network flow. While waiting for the API, a quiet button/board indicator acknowledges the request without changing the previous board or disclosing an outcome.
+
+These durations and shapes are artistic hypotheses. Animation length is preserved without sound. Skip, pause, hidden, close, account change and reduced motion show the accepted board immediately without another operation. Restore and retry do not replay a new field. Verify actual computed transforms and opacity in recorded browser frames, fixed cell bounds and plates throughout a turn, mute and fast mode, carried roots, original graph ports and unchanged settlement in the real host with chat. No mathematics or wallet rule changes belong to this correction.
 
 Independent client for `studio-forest-heart`, using Royal host API 1, rules 1 and progress 1. The common expansion transport and wallet own operations, sessions and money. This package only presents accepted public states. Mathematical rules: [rules-v1.md](../../docs/concepts/forest-heart/rules-v1.md).
 

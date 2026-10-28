@@ -198,18 +198,20 @@ test('painted tiles fit a short desktop window and only the accepted root rotate
   await game(page).locator('[data-cell="5"]').click();
   await expect(game(page).locator('.fh')).toHaveAttribute('data-motion','turn');
   const frames=await game(page).locator('.fh').evaluate(async root=>{
-    const frames:{motion:string;angles:number[];sap:number[];total:number}[]=[];
+    const frames:{motion:string;angles:number[];sap:number[];total:number;cell:{x:number;y:number;width:number;height:number;overflow:string;transform:string;plate:string}}[]=[];
     const start=performance.now();
     while(performance.now()-start<5000){
       const cells=Array.from(root.querySelectorAll<HTMLElement>('[data-cell]'));
       const total=Number(root.querySelector('[data-fh=total]')!.textContent!.replace(/\s/g,'').replace(',','.'));
-      frames.push({motion:(root as HTMLElement).dataset.motion||'',angles:cells.map(c=>parseFloat(c.style.getPropertyValue('--turn'))),sap:cells.map(c=>Number(c.style.getPropertyValue('--sap'))),total:Math.round(total*100)});
+      const cell=cells[5],box=cell.getBoundingClientRect(),css=getComputedStyle(cell);
+      frames.push({motion:(root as HTMLElement).dataset.motion||'',angles:cells.map(c=>parseFloat(c.style.getPropertyValue('--turn'))),sap:cells.map(c=>Number(c.style.getPropertyValue('--sap'))),total:Math.round(total*100),cell:{x:box.x,y:box.y,width:box.width,height:box.height,overflow:css.overflow,transform:css.transform,plate:css.backgroundImage}});
       if(frames.some(f=>f.motion==='flow') && !(root as HTMLElement).dataset.motion) break;
       await new Promise<void>(resolve=>requestAnimationFrame(()=>resolve()));
     }
     return frames;
   });
   const turn=frames.filter(f=>f.motion==='turn');
+  for(const frame of turn){expect(frame.cell).toEqual(turn[0].cell);expect(frame.cell.overflow).toBe('hidden');expect(frame.cell.transform).toBe('none');expect(frame.cell.plate).toContain('v4/tile.webp');}
   expect(turn.some(f=>f.angles[5]>0 && f.angles[5]<90)).toBe(true);
   for(const frame of frames) for(let cell=0;cell<25;cell++) if(cell!==5) expect(frame.angles[cell]).toBe(parseFloat(before[cell]));
   expect(frames.some(f=>f.motion==='flow' && f.sap.some(value=>value>0 && value<1))).toBe(true);
@@ -227,6 +229,64 @@ test('painted tiles fit a short desktop window and only the accepted root rotate
   });
   expect(poster.mode).toBe('poster');expect(poster.boardWidth).toBeGreaterThan(400);expect(poster.characterBottom).toBeLessThanOrEqual(poster.boardTop);
   await page.screenshot({path:out+'/desktop-tall.png'});
+});
+
+test('accepted fields visibly leave and arrive with fixed plates in normal, muted and fast modes', async({page,roomPath})=>{
+  await page.setViewportSize({width:1280,height:720});await routeScenario(page,'loss');await enter(page,roomPath);
+  const records=[];
+  for(const mode of ['normal','muted','fast']){
+    if(mode==='muted')await game(page).locator('[data-fh=sound]').click();
+    if(mode==='fast')await game(page).locator('[data-fh=fast]').check();
+    const recording=game(page).locator('.fh').evaluate(async root=>{
+      const frames:{motion:string;opacity:number;y:number;reveal:number;exit:number;plateTransform:string;box:{x:number;y:number;width:number;height:number}}[]=[];
+      const tile=root.querySelector<HTMLElement>('[data-cell="10"] .fh-tile')!,cell=tile.parentElement!,start=performance.now();
+      while(performance.now()-start<5000){
+        const css=getComputedStyle(tile),box=cell.getBoundingClientRect(),transform=new DOMMatrixReadOnly(css.transform);
+        frames.push({motion:(root as HTMLElement).dataset.motion||'',opacity:Number(css.opacity),y:transform.m42,reveal:Number(cell.style.getPropertyValue('--reveal')),exit:Number(cell.style.getPropertyValue('--exit')),plateTransform:getComputedStyle(cell).transform,box:{x:box.x,y:box.y,width:box.width,height:box.height}});
+        if(frames.some(f=>f.motion==='reveal')&&(root as HTMLElement).dataset.motion==='flow')break;
+        await new Promise<void>(resolve=>requestAnimationFrame(()=>resolve()));
+      }
+      return frames;
+    });
+    await game(page).locator('[data-fh=spin]').click();
+    if(mode==='normal'){
+      await expect(game(page).locator('.fh')).toHaveAttribute('data-motion','reveal');
+      for(let index=0;index<6;index++)await game(page).locator('.fh-board-frame').screenshot({path:out+`/reveal-${index}.png`});
+    }
+    const frames=await recording;
+    const reveal=frames.filter(f=>f.motion==='reveal');
+    expect(frames.some(f=>f.motion==='clear'&&f.exit>0&&f.opacity<.9)).toBe(true);
+    expect(reveal.some(f=>f.opacity<.15)).toBe(true);
+    expect(reveal.some(f=>f.opacity>.15&&f.opacity<.85&&Math.abs(f.y)>f.box.height*.2)).toBe(true);
+    expect(reveal.length).toBeGreaterThan(5);
+    for(const frame of frames){expect(frame.plateTransform).toBe('none');expect(frame.box).toEqual(frames[0].box);}
+    await expect(game(page).locator('[data-fh=spin]')).toBeEnabled();expect((await state(page)).scene.board).toEqual(referenceBoard(4095));
+    if(mode!=='normal')expect((await state(page)).audio.activeVoices).toBe(0);
+    records.push({mode,frameCount:frames.length,revealFrames:reveal.length,minOpacity:Math.min(...reveal.map(f=>f.opacity)),maxTravelPx:Math.max(...reveal.map(f=>Math.abs(f.y))),cellHeight:frames[0].box.height,frames});
+  }
+  expect((await wallet(page)).balance).toBe(9970);
+  await writeFile(out+'/field-arrival.json',JSON.stringify(records,null,2));
+  await page.screenshot({path:out+'/board-fixed.png'});
+});
+
+test('a held root stays visible and fixed while the next bonus field is assembled', async({page,roomPath})=>{
+  await routeScenario(page,'maximum');await enter(page,roomPath);await game(page).locator('[data-fh=fast]').check();
+  await act(page);await act(page);const previous=await state(page),held:number[]=previous.scene.lockedCells;expect(held.length).toBeGreaterThan(0);
+  const recording=game(page).locator('.fh').evaluate(async(root,held)=>{
+    const frames:{motion:string;cells:{cell:number;reveal:number;exit:number;opacity:number;angle:string}[]}[]=[],start=performance.now();
+    while(performance.now()-start<5000){
+      frames.push({motion:(root as HTMLElement).dataset.motion||'',cells:held.map((index:number)=>{const cell=root.querySelector<HTMLElement>(`[data-cell="${index}"]`)!;return{cell:index,reveal:Number(cell.style.getPropertyValue('--reveal')),exit:Number(cell.style.getPropertyValue('--exit')),opacity:Number(getComputedStyle(cell.querySelector('.fh-tile')!).opacity),angle:cell.style.getPropertyValue('--turn')};})});
+      if(frames.some(f=>f.motion==='reveal')&&(root as HTMLElement).dataset.motion==='flow')break;
+      await new Promise<void>(resolve=>requestAnimationFrame(()=>resolve()));
+    }
+    return frames;
+  },held);
+  await game(page).locator('[data-fh=spin]').click();const frames=await recording;
+  expect(frames.some(f=>f.motion==='clear')).toBe(true);expect(frames.some(f=>f.motion==='reveal')).toBe(true);
+  for(const frame of frames)for(const cell of frame.cells){expect(cell.reveal).toBe(1);expect(cell.exit).toBe(0);expect(cell.opacity).toBe(1);expect(cell.angle).toBe(frames[0].cells.find(c=>c.cell===cell.cell)!.angle);}
+  await expect(game(page).locator('[data-fh=spin]')).toBeEnabled();let current=await state(page);while(current.view.stage!=='settled')current=await act(page);
+  expect(current.scene.totalUnits).toBe(946500);expect((await wallet(page)).balance).toBe(19455);
+  await writeFile(out+'/held-field.json',JSON.stringify({held,frames},null,2));
 });
 
 test('the elf blinks and renders local movement, stops for rules, and reacts only to fresh positive results', async ({page,roomPath}) => {
