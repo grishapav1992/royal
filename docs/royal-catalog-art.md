@@ -1,6 +1,8 @@
 # RoyalGames catalogue artwork
 
-The shared platform catalogue uses 43 character or subject compositions from the games' existing artwork. The catalogue renderer reads `src/ui/royalCatalogArtwork.json` through `RoyalCatalogArtwork.ts`. GitHub and Casino API Pro retain their existing artwork sources.
+The shared platform catalogue reads catalogue-specific character and subject images from `src/ui/royalCatalogArtwork.json` through `RoyalCatalogArtwork.ts`. Historical game entries remain registered. GitHub and Casino API Pro retain their existing artwork sources.
+
+Caribbean Treasures uses a separate wide cover featuring its established adult pirate captain against the Caribbean harbor. It was created with built-in ImageGen from the approved captain and harbor references. The master and exact prompt are `games/caribbean-treasures/assets/catalog-cover.png` and `games/caribbean-treasures/assets/catalog-cover-prompt.md`. Export only this cover with `node scripts/export-caribbean-catalog-cover.mjs`; add `--check` to verify its content hash, registered URL and download budgets. The shared catalogue delegates Caribbean to the same art registry as other games instead of forcing its empty harbor background. The game module and its startup art are unchanged.
 
 Native games use their own aliens, singers, survivors, GIRLHUB portraits, memes, Dracona, Vespera and football players. Caramel Carnival, Nitro Run and LAST EXIT feature their existing sweets and vehicles. Other Studio games frame the character already present in their world illustration and reuse their own game symbols.
 

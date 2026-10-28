@@ -1307,5 +1307,46 @@
       }
     ],
     "freeSpaceNote": "Disk measurements include other processes. Cleanup was rejected before execution; no physical space reclamation is claimed."
+  },
+  "catalogCaptainUpdate": {
+    "date": "2026-10-28",
+    "owner": "caribbean-catalog-captain",
+    "preservationCommit": "152fde070e377df6ff961f34274b75842afc6642",
+    "preservationRefs": [
+      "refs/heads/main",
+      "refs/heads/codex/caribbean-catalog-captain"
+    ],
+    "remoteCommitVerified": true,
+    "freeBeforeBuildBytes": 300204789760,
+    "freeBeforeRejectedCleanupBytes": 298811793408,
+    "freeAfterRejectedCleanupBytes": 297097203712,
+    "removedFolders": [],
+    "removedFiles": [],
+    "removedArchives": [],
+    "removedLogicalBytes": 0,
+    "physicalReclamationClaimed": false,
+    "cleanupBlock": {
+      "action": "Remove only the exact task-owned temporary catalogue screenshots, build log and report script after GitHub verification",
+      "reason": "Automatic approval review rejected the command: blocked by policy",
+      "attemptExecuted": false
+    },
+    "retainedTaskArtifacts": {
+      "folder": "artifacts/work/caribbean-catalog-captain",
+      "bytesAtCleanupAttempt": 864116,
+      "cleanupCondition": "Remove duplicated screenshots, browser report, build log and temporary report helper when cleanup is permitted; final selected art, prompt, proof images and compact report are verified in GitHub."
+    },
+    "activeExceptions": [
+      {
+        "folder": "C:/Users/Aorus/.codex/worktrees/new-slot/royal",
+        "reason": "Primary checkout and the existing user-requested local preview remain active.",
+        "cleanupCondition": "Retain while the local preview is requested."
+      },
+      {
+        "file": "C:/Users/Aorus/.codex/generated_images/01a1793f-6c92-7992-85f5-379a1491ef5d/exec-3a6a8d3d-c535-497b-ab95-05de679ca8d1.png",
+        "reason": "The built-in ImageGen tool requires keeping its original output; the project master and optimized export are saved in GitHub.",
+        "cleanupCondition": "Keep the original unless the user explicitly requests its removal."
+      }
+    ],
+    "freeSpaceNote": "Measurements include other processes. Cleanup was rejected before execution and no physical space reclamation is claimed."
   }
 }
