@@ -145,7 +145,11 @@ test('an accepted start survives a lost response and reopening without duplicate
  await close(page);await open(page);await expect(page.locator('[data-ct-action=retry]')).toBeVisible();
  await action(page,'[data-ct-action=retry]');expect((await session(page)).id).toBe(committed.id);
  expect((await wallet(page)).balance).toBe(before.balance);
- await action(page,'[data-ct-action=choose-raid]');await finish(page);
+ await action(page,'[data-ct-action=choose-raid]');
+ // A lost free-spin reply changes no balance: a successful retry must also clear its old message.
+ lost=false;await page.locator('[data-ct-action=play]').click();await expect(page.locator('[data-ct-action=retry]')).toBeVisible();await expect(page.locator('[data-ct-action=retry]')).toBeEnabled();
+ await action(page,'[data-ct-action=retry]');await expect(page.locator('.ct-status')).not.toContainText('Ответ не получен');
+ await finish(page);
  expect((await wallet(page)).entries.filter((e:any)=>e.operationId===committed.id&&e.kind==='bet')).toHaveLength(1);
 });
 
@@ -315,7 +319,7 @@ test('saved complete rounds give distinct captain reactions in the real host',as
   for(const [name,cue,pose] of [['partial','partial','soft'],['loss','loss','soft'],['return','return','idle'],['positive','win','win']] as const){
    const forced=await page.request.post('/__test/caribbean/force-scenario',{data:{name}});expect(forced.ok()).toBe(true);
    const done=await action(page,'[data-ct-action=play]'),view=await mini(),history=view.captain.history;
-   expect(done.state).toBe('settled');expect(history.at(-1).cue).toBe(cue);expect(view.captain.pose).toBe(pose);
+   expect(done.state).toBe('settled');expect(history.at(-1).cue).toBe(cue);expect(history.at(-1).pose).toBe(pose);
    expect(await page.locator('[data-ct-payout]').textContent()).not.toBe('...');
    const result=history.at(-1),giant=history.findLast((e:any)=>e.cue==='giant'&&e.key.startsWith(done.id));
    cut(name,giant??result,result);results.push({name,costUnits:done.spentUnits,payoutUnits:done.returnedUnits,captain:history.filter((e:any)=>e.key.startsWith(done.id))});
@@ -325,7 +329,7 @@ test('saved complete rounds give distinct captain reactions in the real host',as
   const natural=await action(page,'[data-ct-action=play]');expect(natural.view.caribbean.phase).toBe('choice');
   let history=(await mini()).captain.history;const bonus=history.at(-1);expect(bonus.cue).toBe('bonus');cut('bonus',bonus,bonus);await page.screenshot({path:out+'/reaction-bonus.png'});await page.waitForTimeout(1200);
   await action(page,'[data-ct-action=choose-flagship]');const done=await finish(page);history=(await mini()).captain.history;
-  const grand=history.at(-1);expect(grand.cue).toBe('bigwin');expect((await mini()).captain.pose).toBe('laugh');cut('bigwin',grand,grand,1.6);
+  const grand=history.at(-1);expect(grand.cue).toBe('bigwin');expect(grand.pose).toBe('laugh');cut('bigwin',grand,grand,1.6);
   results.push({name:'natural-flagship',costUnits:done.spentUnits,payoutUnits:done.returnedUnits,captain:history.filter((e:any)=>e.key.startsWith(done.id))});
   await page.screenshot({path:out+'/reaction-bigwin.png'});await page.waitForTimeout(1800);
   await page.locator('[data-ct-action=lines]').click();await page.locator('[data-ct-lines]').selectOption('1');

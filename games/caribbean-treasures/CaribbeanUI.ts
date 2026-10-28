@@ -238,7 +238,7 @@ export class CaribbeanUI {
     this.actionError='';
     const settings: CaribbeanSettings = {lines:this.lines,mode};
     try { await this.perform(()=>this.client.act({gameId:CARIBBEAN_GAME,action:'start',stakeUnits:this.lineStake,settings:{caribbean:settings}})); }
-    catch(error) {this.actionError=error instanceof Error?error.message:this.client.error;}
+    catch(error) {this.actionError=this.client.pending?'':error instanceof Error?error.message:this.client.error;}
     finally { this.update(); }
   }
   private async move(move: string) {
@@ -247,7 +247,7 @@ export class CaribbeanUI {
     if (!session.view.actions.some(action => action.move === move && action.cost === 0)) return;
     this.actionError='';
     try { await this.perform(()=>this.client.act({gameId:CARIBBEAN_GAME,action:'move',sessionId:session.id,move,revision:view.revision})); }
-    catch(error) {this.actionError=error instanceof Error?error.message:this.client.error;}
+    catch(error) {this.actionError=this.client.pending?'':error instanceof Error?error.message:this.client.error;}
     finally { this.update(); }
   }
   private outcomeLabel(view:CaribbeanView){
