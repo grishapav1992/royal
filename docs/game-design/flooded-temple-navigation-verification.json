@@ -1,0 +1,126 @@
+{
+  "date": "2026-10-28",
+  "gameId": "studio-flooded-temple",
+  "version": "0.7.0-bc6bd4bcff7e",
+  "sourceSha256": "bc6bd4bcff7ea0c270450da01a5cb83d17521bced7a7404ebfa0e7f3bb454b78",
+  "manifestSha256": "81634359ac9cbc53ded42ac996c0064775741b7ca53b80ec602d7b4bb454b858",
+  "payloadFiles": 33,
+  "payloadBytes": 19187117,
+  "packageFiles": 33,
+  "packageBytes": 19187117,
+  "payloadHashesVerified": true,
+  "contracts": {
+    "hostApi": 1,
+    "rules": 1,
+    "progress": 1
+  },
+  "mathematics": {
+    "changed": false,
+    "proofChanged": false,
+    "automaticMovement": false,
+    "automaticForkChoice": false,
+    "earlyFinishPreserved": true,
+    "qualifiedRules": 1,
+    "authoredBonusLayouts": 8,
+    "uniqueFirstPassage": 6,
+    "firstPassageFork": 2,
+    "inventoryIsPlayerFrequency": false
+  },
+  "checks": {
+    "templeProfile": {
+      "passed": 32,
+      "scope": "Before final initial-loading render fix; mathematical, wallet, HTTP, client, feedback and all-layout navigation checks"
+    },
+    "initialBrowserRun": {
+      "version": "0.7.0-9ae45174ae94",
+      "passed": 34,
+      "total": 35,
+      "failure": "Initial action rendered enabled while snapshot refresh was still loading; no request sent"
+    },
+    "finalBrowserRun": {
+      "version": "0.7.0-bc6bd4bcff7e",
+      "passed": 7,
+      "total": 7,
+      "scenarios": [
+        "unique passage and unreachable-room inspection",
+        "fork cards, revisit disclosure, keyboard focus and base-map inspection",
+        "rope preparation sends no operation; crossing sends one",
+        "reopen preserves the round and never automatically moves",
+        "delayed initial snapshot disables action, then first click sends exactly one start",
+        "RU/EN responsive layout and keyboard",
+        "real Royal host with connected chat on desktop and mobile, same bonus restored"
+      ]
+    },
+    "fullFinalBrowserSuiteRerun": false,
+    "independentModules": {
+      "passed": 7,
+      "total": 7,
+      "allBuiltPayloadHashesVerified": true
+    },
+    "rtp": {
+      "verified": 13,
+      "legacyNotQualified": 114,
+      "templeProofRemainedValid": true
+    },
+    "applicationBuild": {
+      "format": 1,
+      "startedAt": "2026-10-28T17:49:26.926Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 4304
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 12188
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 10804
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 12379
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 77
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 45
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 45
+        }
+      ],
+      "passed": true,
+      "durationMs": 39842
+    }
+  },
+  "evidence": {
+    "single": "../assets/flooded-temple/navigation-single.webp",
+    "fork": "../assets/flooded-temple/navigation-fork.webp",
+    "hostDesktop": "../assets/flooded-temple/navigation-host-desktop.webp",
+    "hostMobile": "../assets/flooded-temple/navigation-host-mobile.webp",
+    "inAppReady": "../assets/flooded-temple/navigation-preview.jpg"
+  },
+  "preview": {
+    "url": "http://127.0.0.1:5226/tests/fixtures/temple-preview.html?lang=ru&version=0.7.0",
+    "database": "disposable local demo",
+    "inApp": "New visible tab, reloaded final package, ready state verified, no gameplay action; previous ambient tab not found by tool",
+    "ownedSession": 7918,
+    "frontendPid": 1624,
+    "backendPid": 12480
+  },
+  "productionDeployed": false
+}

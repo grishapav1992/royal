@@ -7,6 +7,7 @@ import {templePlan,templeOutcome} from '../games/flooded-temple/presentation';
 import {readTempleClock,contextTimeForAccent} from '../games/flooded-temple/audioClock';
 import {renderCue,metrics,wav,rate} from '../scripts/design/temple-audio.mjs';
 import {templeReaction} from '../games/flooded-temple/character';
+import {templeRouteChoices,templeSelectedRoom} from '../games/flooded-temple/navigation';
 
 test('every base presentation follows only confirmed passages and reaches the exact collected amount',()=>{
   for(const base of templeAllBaseCases()){
@@ -46,6 +47,18 @@ test('quick presentation preserves the exact full round and only condenses confi
     else assert.equal(quick.beats[0].cue,'relic');
     assert.equal(templePlan('both',view,undefined,true,true).duration,180);
   }
+});
+
+test('passage guidance preselects only a unique legal destination and preserves every fork choice',()=>{
+  let forced=0,forks=0;
+  for(let layout=0;layout<8;layout++){
+    const view=rebuildTempleView({layout:0,pattern:0,tier:0,relic:true},{layout,tier:0},'1000'),choices=templeRouteChoices(view);
+    if(choices.length===1){forced++;assert.equal(templeSelectedRoom(view,null),choices[0].to);}else{forks++;assert.equal(templeSelectedRoom(view,null),null);}
+    for(const choice of choices)assert.equal(templeSelectedRoom(view,choice.to),choice.to);
+    assert.equal(view.history.length,0);assert.equal(view.bonusState!.left,6);
+  }
+  assert.equal(forced,6);assert.equal(forks,2);
+  const settled=rebuildTempleView({layout:0,pattern:0,tier:0,relic:true},{layout:0,tier:0},'1000',[{kind:'finish'}]);assert.deepEqual(templeRouteChoices(settled),[]);assert.equal(templeSelectedRoom(settled,6),null);
 });
 
 test('character reactions never celebrate a partial return, waiting, recovery or a route choice',()=>{

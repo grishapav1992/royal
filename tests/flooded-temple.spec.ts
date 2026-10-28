@@ -1,7 +1,7 @@
 import {test,expect,request as apiRequest,type Page,type Route} from '@playwright/test';
 import {Client} from '@colyseus/sdk';
 import {mkdir} from 'node:fs/promises';
-const entry='/tests/fixtures/temple-preview.html',review='artifacts/work/flooded-temple-controls/browser';
+const entry='/tests/fixtures/temple-preview.html',review='artifacts/work/flooded-temple-navigation/browser';
 const game=(p:Page)=>p.frameLocator('.temple-frame');
 const state=(p:Page)=>p.evaluate(()=>(window as any).templePreview.state());
 const session=(p:Page)=>p.evaluate(()=>(window as any).templePreview.client.sessions.find((s:any)=>s.gameId==='studio-flooded-temple'));
@@ -10,7 +10,7 @@ const valid=(p:Page)=>p.evaluate(()=>{const h=(window as any).templePreview;retu
 async function idle(p:Page){await expect.poll(async()=>!!(await state(p))?.busy).toBe(false);}
 async function ready(p:Page,lang='en'){await p.emulateMedia({reducedMotion:'reduce'});await p.goto(entry+'?lang='+lang);await expect(game(p).locator('.ft')).toBeVisible();await idle(p);await expect.poll(()=>game(p).locator('img').evaluateAll(images=>images.every(i=>(i as HTMLImageElement).complete&&(i as HTMLImageElement).naturalWidth>0))).toBe(true);}
 async function start(p:Page){await game(p).locator('[data-ft=primary]').click();await expect.poll(async()=>(await state(p)).revision).toBe(1);await idle(p);expect(await valid(p)).toBe(true);}
-async function move(p:Page,to:number,rope=false){const before=(await state(p)).revision;await game(p).locator(`[data-room="${to}"]`).click();if(rope){await expect(game(p).locator('[data-ft=primary]')).toBeDisabled();await game(p).locator('[data-ft=rope]').click();}await game(p).locator('[data-ft=primary]').click();await expect.poll(async()=>(await state(p)).revision).toBe(before+1);await idle(p);expect(await valid(p)).toBe(true);}
+async function move(p:Page,to:number,rope=false){const before=(await state(p)).revision;await game(p).locator(`[data-room="${to}"]`).click();if(rope){await expect(game(p).locator('[data-ft=primary]')).toHaveText(/Prepare rope/);await game(p).locator('[data-ft=rope]').click();}await game(p).locator('[data-ft=primary]').click();await expect.poll(async()=>(await state(p)).revision).toBe(before+1);await idle(p);expect(await valid(p)).toBe(true);}
 
 test('Russian and English maps, rules, keyboard and controls fit desktop and phone',async({page})=>{
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await mkdir(review,{recursive:true});

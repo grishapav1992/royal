@@ -5,6 +5,7 @@ import {feedbackStyles} from './feedbackStyles';
 import {referenceStyles} from './referenceStyles';
 import {characterStyles} from './characterStyles';
 import {playbackStyles} from './playbackStyles';
+import {navigationStyles} from './navigationStyles';
 import './shell.css';
 export const gameId='studio-flooded-temple';
 export const apiVersion=1;
@@ -22,7 +23,7 @@ export const mount:GameModuleV1['mount']=(host,context)=>{
     if(disposed||!frame.contentDocument)return;
     game?.destroy();
     const doc=frame.contentDocument;doc.documentElement.lang=services.i18n.language;doc.title=title;
-    const style=doc.createElement('style');style.textContent=styles+feedbackStyles+referenceStyles+characterStyles+playbackStyles;doc.head.replaceChildren(style);
+    const style=doc.createElement('style');style.textContent=styles+feedbackStyles+referenceStyles+characterStyles+playbackStyles+navigationStyles;doc.head.replaceChildren(style);
     const app=doc.createElement('main');doc.body.replaceChildren(app);game=new TempleUI(app,services);if(paused)game.pause();
   });
   frame.src='about:blank';host.replaceChildren(frame);

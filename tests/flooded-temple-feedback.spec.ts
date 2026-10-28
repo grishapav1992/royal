@@ -17,7 +17,7 @@ test('confirmed base events animate in order and audio accents use the shared ou
   expect(feedback.frames.filter((f:any)=>f.kind==='card').length).toBe(4);expect(Math.max(...feedback.frames.map((f:any)=>f.skewMs))).toBeLessThan(100);
   expect(feedback.audio.activeSources).toBeLessThanOrEqual(3);expect(result.moves).toBe(6);expect(result.totalPayoutUnits).toBe('0');
   await game(page).locator('[data-ft=log]').click();await expect(game(page).locator('dialog')).toContainText('Lever opens gate');await game(page).locator('[data-ft=close]').click();
-  await mkdir('artifacts/work/flooded-temple-controls',{recursive:true});await writeFile('artifacts/work/flooded-temple-controls/clock-baseline.json',JSON.stringify(feedback,null,2));expect(errors).toEqual([]);
+  await mkdir('artifacts/work/flooded-temple-navigation',{recursive:true});await writeFile('artifacts/work/flooded-temple-navigation/clock-baseline.json',JSON.stringify(feedback,null,2));expect(errors).toEqual([]);
 });
 test('pause freezes the visual clock, cancels voices, resumes without replay and skip never makes a move',async({page})=>{
   await ready(page);await sound(page);await spin(page);await expect.poll(async()=>(await state(page)).feedback.active).toBe(true);
@@ -40,7 +40,7 @@ test('mute, zero volume and a reduced motion change cancel pending audio and nev
 });
 test('rope, treasure and sixth-step settlement are presented once and reopening stays quiet',async({page})=>{
   await ready(page,true);await sound(page);await spin(page);await idle(page);await page.emulateMedia({reducedMotion:'no-preference'});
-  await move(page,6);await move(page,11);await move(page,12,true);let result=await state(page);await writeFile('artifacts/work/flooded-temple-controls/rope-clock.json',JSON.stringify(result.feedback,null,2));expect(result.feedback.audio.played.rope).toBe(1);expect(result.totalPayoutUnits).toBe('250');
+  await move(page,6);await move(page,11);await move(page,12,true);let result=await state(page);await writeFile('artifacts/work/flooded-temple-navigation/rope-clock.json',JSON.stringify(result.feedback,null,2));expect(result.feedback.audio.played.rope).toBe(1);expect(result.totalPayoutUnits).toBe('250');
   for(const to of[13,8,9])await move(page,to);
   result=await state(page);expect(result.totalPayoutUnits).toBe('1750');expect(result.feedback.audio.played.win).toBe(1);expect(result.feedback.audio.played.big??0).toBe(0);await expect(game(page).locator('[data-ft-value=payout]')).toHaveText('17.50');
   const balance=await page.evaluate(()=>(window as any).templePreview.wallet.wallet.balance);await page.locator('#reopen').click();await expect(game(page).locator('.ft')).toBeVisible();await idle(page);result=await state(page);expect(result.feedback.audio.played).toEqual({});expect(result.totalPayoutUnits).toBe('1750');expect(await page.evaluate(()=>(window as any).templePreview.wallet.wallet.balance)).toBe(balance);
@@ -60,7 +60,7 @@ test('latency fallback schedules against simulated device delay without doubling
   await ready(page);await sound(page);
   await page.evaluate(()=>{const context=(window as any).templePreview.audio.context;Object.defineProperty(context,'getOutputTimestamp',{configurable:true,value:undefined});Object.defineProperty(context,'outputLatency',{configurable:true,value:.18});Object.defineProperty(context,'baseLatency',{configurable:true,value:.02});});
   await spin(page);await idle(page);const result=(await state(page)).feedback;expect(result.audio.clock.method).toBe('latency-estimate');expect(result.audio.clock.latencyMs).toBeCloseTo(200,3);expect(result.audio.anchors.some((a:any)=>a.state==='scheduled')).toBe(true);expect(Math.max(...result.frames.map((f:any)=>f.skewMs))).toBeLessThan(100);
-  await writeFile('artifacts/work/flooded-temple-controls/clock-simulated-latency.json',JSON.stringify(result,null,2));
+  await writeFile('artifacts/work/flooded-temple-navigation/clock-simulated-latency.json',JSON.stringify(result,null,2));
 });
 test('partial returns stay neutral and a later large paid round gets its own full-stake result',async({page})=>{
   let fixture='partial';await page.route('**/api/*-wallet/expansion',async route=>{if(route.request().method()==='POST')await route.continue({headers:{...route.request().headers(),'x-temple-test-case':fixture}});else await route.continue();});
@@ -78,7 +78,7 @@ test('hidden-page simulation freezes playback and an account change during an ef
 });
 test('CPU throttling keeps final state exact and does not accumulate a reward queue',async({page})=>{
   await ready(page);await sound(page);const cdp=await page.context().newCDPSession(page);await cdp.send('Emulation.setCPUThrottlingRate',{rate:4});
-  try{await spin(page);await idle(page);const feedback=(await state(page)).feedback;expect(feedback.audio.activeSources).toBeLessThanOrEqual(3);expect(feedback.audio.played.relic??0).toBeLessThanOrEqual(1);expect((await state(page)).totalPayoutUnits).toBe('0');await writeFile('artifacts/work/flooded-temple-controls/clock-cpu-4x.json',JSON.stringify(feedback,null,2));}
+  try{await spin(page);await idle(page);const feedback=(await state(page)).feedback;expect(feedback.audio.activeSources).toBeLessThanOrEqual(3);expect(feedback.audio.played.relic??0).toBeLessThanOrEqual(1);expect((await state(page)).totalPayoutUnits).toBe('0');await writeFile('artifacts/work/flooded-temple-navigation/clock-cpu-4x.json',JSON.stringify(feedback,null,2));}
   finally{await cdp.send('Emulation.setCPUThrottlingRate',{rate:1});await cdp.detach();}
 });
 test('an old in-flight response cannot lock or animate a restored account',async({page})=>{
@@ -159,7 +159,7 @@ test('rope Foley is scheduled before a 200 ms main-thread stall and is never rep
   await game(page).locator('.ft').evaluate(root=>{const observer=new MutationObserver(()=>{if((root as HTMLElement).dataset.event!=='rope')return;observer.disconnect();setTimeout(()=>{const until=performance.now()+200;while(performance.now()<until){/* Deliberate device-load simulation. */}},300);});observer.observe(root,{attributes:true,attributeFilter:['data-event']});});
   await move(page,12,true);const feedback=(await state(page)).feedback;
   expect(feedback.audio.played.rope).toBe(1);expect(feedback.audio.anchors.filter((a:any)=>a.cue==='rope').map((a:any)=>a.state)).toEqual(['scheduled']);expect((await state(page)).totalPayoutUnits).toBe('250');
-  await writeFile('artifacts/work/flooded-temple-controls/rope-stall.json',JSON.stringify(feedback,null,2));
+  await writeFile('artifacts/work/flooded-temple-navigation/rope-stall.json',JSON.stringify(feedback,null,2));
 });
 
 test('quiet idle has distinct gestures without reward poses or new network operations',async({page})=>{
