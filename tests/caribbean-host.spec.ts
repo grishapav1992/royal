@@ -1,7 +1,7 @@
 import {test as base,expect,type Page} from '@playwright/test';
 import {Client} from '@colyseus/sdk';
 
-const game='studio-caribbean-treasures',out='artifacts/work/caribbean-character-motion';
+const game='studio-caribbean-treasures',out='artifacts/work/caribbean-empty-balance';
 const test=base.extend<{roomPath:string}>({roomPath:async({request},use)=>{
  const response=await request.post('/api/auth/login',{data:{email:`ct-room-${crypto.randomUUID()}@example.test`,password:'Royal-test-123!'}});
  expect(response.ok()).toBe(true);
@@ -79,6 +79,32 @@ async function layout(page:Page,name:string){
  if(boxes.length===2){expect(boxes[1].x).toBeGreaterThanOrEqual(boxes[0].x-1);expect(boxes[1].right).toBeLessThanOrEqual(boxes[0].right+1);expect(boxes[1].bottom).toBeLessThanOrEqual(boxes[0].bottom+1);expect(boxes[1].width).toBeGreaterThan(30);}
  await page.screenshot({path:out+'/'+name+'.png'});
 }
+
+test('empty balance explains disabled spins, live funding unlocks an exact-cost single line and free spins need no balance',async({page,roomPath})=>{
+ await enter(page,roomPath);await open(page);await page.locator('[data-ct-lines]').selectOption('1');await page.locator('[data-ct-stake]').selectOption('1000');
+ await expect(page.locator('[data-ct-balance]')).toHaveText('0');await expect(page.locator('[data-ct-action=play]')).toBeDisabled();await expect(page.locator('[data-ct-action=buy]')).toBeDisabled();
+ await expect(page.locator('.ct-status')).toContainText('Недостаточно средств: нужно 10 USDT.');
+ expect((await wallet(page)).entries.filter((e:any)=>e.kind==='bet')).toEqual([]);
+ await layout(page,'empty-balance-desktop');await page.setViewportSize({width:390,height:844});await layout(page,'empty-balance-mobile');await page.setViewportSize({width:1440,height:1000});
+ await page.getByRole('button',{name:'Открыть тестовый кошелёк',exact:true}).click();await expect(page.locator('#wallet-dialog')).toBeVisible();await page.getByRole('button',{name:'Закрыть кошелёк',exact:true}).click();
+ const funded=await page.request.post('/__test/caribbean/topup',{data:{amount:1}});expect(funded.ok()).toBe(true);
+ // A real shared-wallet refresh must update this already mounted game without reopening.
+ await page.evaluate(async()=>{const path='/src/wallet/WalletClient.ts';await(await import(/* @vite-ignore */path)).demoWallet.refresh();});
+ await expect(page.locator('[data-ct-balance]')).toHaveText('1');await expect(page.locator('[data-ct-action=play]')).toBeDisabled();
+ await page.locator('[data-ct-stake]').selectOption('100');await expect(page.locator('[data-ct-action=play]')).toBeEnabled();
+ await page.request.post('/__test/caribbean/force-bonus');const paid=await action(page,'[data-ct-action=play]');expect(paid.spentUnits).toBe('100');
+ await expect(page.locator('[data-ct-balance]')).toHaveText('0');await expect(page.locator('[data-ct-action=choose-flagship]')).toBeEnabled();
+ await action(page,'[data-ct-action=choose-flagship]');await expect(page.locator('[data-ct-action=play]')).toBeEnabled();await finish(page);
+ expect((await wallet(page)).entries.filter((e:any)=>e.kind==='bet')).toHaveLength(1);
+ await topup(page);
+ let rejected=false;await page.route('**/api/demo-wallet/expansion',async route=>{
+  if(route.request().method()==='POST'&&!rejected){rejected=true;await route.fulfill({status:409,json:{error:'Недостаточно демомонет для начальных ставок.'}});}else await route.continue();
+ });
+ const refreshed=page.waitForResponse(r=>r.url().endsWith('/api/demo-wallet/expansion')&&r.request().method()==='GET');await page.locator('[data-ct-action=play]').click();await refreshed;
+ await expect(page.locator('.ct-status')).toHaveText('Недостаточно демомонет для начальных ставок.');
+ await expect(page.locator('[data-ct-action=retry]')).toBeHidden();expect((await wallet(page)).entries.filter((e:any)=>e.kind==='bet')).toHaveLength(1);
+ await page.locator('[data-ct-stake]').selectOption('200');await expect(page.locator('.ct-status')).not.toContainText('Недостаточно');
+});
 
 test('natural bonus, real host/chat, line presets and desktop/mobile layout',async({page,roomPath})=>{
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await enter(page,roomPath);await topup(page);await open(page);
