@@ -53,9 +53,10 @@ async function fixture(cryptoEnabled = true) {
       return method(...args);
     };
   } }) as unknown as CryptoProvider;
-  const wallet = new CryptoStore(db, { ...cryptoConfig({}), enabled: cryptoEnabled, withdrawals: cryptoEnabled }, provider,
-    outbox.ready, undefined, undefined, event => outbox.record(event), true);
   const config = configured(), calls: { method: string; body: Record<string, any> }[] = [];
+  const wallet = new CryptoStore(db, { ...cryptoConfig({}), enabled: cryptoEnabled, withdrawals: cryptoEnabled }, provider,
+    outbox.ready, undefined, undefined, event => outbox.record(event),
+    id => !config.trialAccountIds || config.trialAccountIds.includes(id));
   let now = Date.now();
   const stars = new TelegramStarsStore(wallet, config, { call: async (method, body) => { calls.push({ method, body }); return true; } }, () => now);
   await stars.ready;
@@ -119,6 +120,7 @@ test('owner trial accepts exactly one 100-Star checkout, restricts accounts, and
     f.config.trialAccountIds = [f.account];
     assert.equal((await f.client.stars(f.account)).maxStars, 100);
     assert.equal((await f.client.stars(f.other)).enabled, false);
+    assert.equal((await f.client.snapshot(f.other)).state, 'disabled');
     await assert.rejects(() => f.client.stars(f.other, { id: randomUUID(), stars: 100, termsAccepted: true }));
     await assert.rejects(() => f.create(101));
     const orders = await Promise.all([f.create(), f.create()]);
