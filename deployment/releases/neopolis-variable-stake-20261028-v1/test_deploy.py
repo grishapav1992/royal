@@ -3,6 +3,7 @@ import importlib.util
 import json
 from pathlib import Path
 import shutil
+import subprocess
 import sys
 import tempfile
 import types
@@ -52,5 +53,21 @@ class DeploymentGuards(unittest.TestCase):
     def test_disk_reserve_is_never_lowered(self):
         with patch.object(self.helper.shutil,'disk_usage',return_value=types.SimpleNamespace(free=5*1024**3)):
             with self.assertRaises(AssertionError):self.helper.capacity()
+
+class SnapshotRaces(unittest.TestCase):
+    def setUp(self):
+        spec=importlib.util.spec_from_file_location('neopolis_snapshot',HERE/'snapshot.py');self.helper=importlib.util.module_from_spec(spec);spec.loader.exec_module(self.helper)
+    def test_finished_unknown_job_does_not_hide_persistent_services(self):
+        missing=subprocess.CalledProcessError(1,['docker','inspect','oneoff'],stderr='Error: No such object: oneoff')
+        with patch.object(self.helper,'run',return_value='royal-game-1\noneoff'),patch.object(self.helper,'inspect',side_effect=[{'Id':'retained'},missing]):
+            self.assertEqual(self.helper.container_rows({'royal-game-1'}),{'royal-game-1':{'Id':'retained'}})
+    def test_missing_protected_service_is_rejected(self):
+        missing=subprocess.CalledProcessError(1,['docker','inspect','royal-game-1'],stderr='Error: No such object: royal-game-1')
+        with patch.object(self.helper,'run',return_value='royal-game-1'),patch.object(self.helper,'inspect',side_effect=missing):
+            with self.assertRaises(subprocess.CalledProcessError):self.helper.container_rows({'royal-game-1'})
+    def test_daemon_or_permission_error_is_rejected(self):
+        denied=subprocess.CalledProcessError(1,['docker','inspect','oneoff'],stderr='permission denied')
+        with patch.object(self.helper,'run',return_value='oneoff'),patch.object(self.helper,'inspect',side_effect=denied):
+            with self.assertRaises(subprocess.CalledProcessError):self.helper.container_rows({'royal-game-1'})
 
 if __name__=='__main__':unittest.main()

@@ -38,7 +38,18 @@ def sources(root):
 
 
 def inspect(name):
-    return json.loads(run(['docker', 'inspect', name]))[0]
+    return json.loads(subprocess.check_output(['docker', 'inspect', name], text=True, stderr=subprocess.PIPE))[0]
+
+
+def container_rows(protected=()):
+    rows = {}
+    for name in run(['docker', 'ps', '--format', '{{.Names}}']).splitlines():
+        try:
+            rows[name] = inspect(name)
+        except subprocess.CalledProcessError as error:
+            if name in protected or error.returncode != 1 or 'No such object:' not in (error.stderr or ''):
+                raise
+    return rows
 
 
 def profile(row, without_admin=False):
@@ -54,9 +65,9 @@ def profile(row, without_admin=False):
 
 def snapshot(*, include_program=True, include_prepared=True):
     containers = {}
-    ids = run(['docker', 'ps', '--format', '{{.Names}}']).splitlines()
-    for name in ids:
-        row = inspect(name)
+    manifest = ROOT/'install-manifest.json'
+    protected = json.loads(manifest.read_text())['before']['containers'] if manifest.exists() else ()
+    for name, row in container_rows(protected).items():
         labels = row['Config'].get('Labels') or {}
         if row['HostConfig'].get('RestartPolicy',{}).get('Name','no') in ['','no'] and (labels.get('com.docker.compose.oneoff','').lower()=='true' or not labels.get('com.docker.compose.project')):
             continue
