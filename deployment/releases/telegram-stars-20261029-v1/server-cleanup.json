@@ -1,0 +1,20 @@
+{
+  "at": 1793227932.8751152,
+  "sourceCommit": "3e428397544ec9a18d2bb64e51cfce2f4293a627",
+  "removed": [
+    {
+      "path": "/opt/royal-releases/telegram-stars-20261029-v1/runtime-context",
+      "logicalBytes": 1659453
+    },
+    {
+      "path": "/opt/royal-releases/telegram-stars-20261029-v1/dependencies",
+      "logicalBytes": 484828
+    }
+  ],
+  "logicalBytesRemoved": 2144281,
+  "archiveBytesRemoved": 0,
+  "freeBytesBefore": 7048855552,
+  "freeBytesAfter": 7051284480,
+  "physicalSpaceAttribution": "Concurrent filesystem activity prevents exclusive attribution",
+  "retained": "Private financial/source backups, previous image, manifests, bot probe and current owner invoice state"
+}
