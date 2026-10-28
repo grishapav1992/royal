@@ -1,7 +1,7 @@
 /** Cut an actual native-host recording, without changing frames or injecting outcomes. */
 import {readFile} from 'node:fs/promises';
 import {spawnSync} from 'node:child_process';
-const folder='artifacts/work/caribbean-character-motion';
+const folder=process.argv[3]||'artifacts/work/caribbean-character-motion';
 const report=JSON.parse(await readFile(folder+'/character-measurements.json','utf8'));
 const cuts=report.cuts.map(c=>({...c}));
 for(const name of ['positive','bonus']){

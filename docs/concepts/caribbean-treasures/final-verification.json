@@ -1,9 +1,9 @@
 {
   "format": 1,
   "date": "2026-10-28",
-  "sourceCommit": "86d55597039ec6d88635d0108fc090b8e96a28f3",
-  "baseline": "05f28d08c99182a886e8e7e72e6bf97eb7916587",
-  "package": "1.3.0-01e376cc5ceb",
+  "sourceCommit": "e6b1bfd3162ea7a5340edbf24377c197306bf0f2",
+  "baseline": "d76746b1a5d22a4b5b15c2f2934aea7c052568b5",
+  "package": "1.3.1-ab7f323d092e",
   "apiVersion": 1,
   "rulesVersion": 1,
   "progressVersion": 1,
@@ -33,53 +33,53 @@
     "financeTypecheck": true,
     "applicationBuild": {
       "format": 1,
-      "startedAt": "2026-10-28T16:35:02.786Z",
+      "startedAt": "2026-10-28T17:40:13.373Z",
       "scope": "application",
       "steps": [
         {
           "name": "rtp",
           "passed": true,
-          "durationMs": 3529
+          "durationMs": 2450
         },
         {
           "name": "typecheck",
           "passed": true,
-          "durationMs": 17426
+          "durationMs": 9754
         },
         {
           "name": "modules",
           "passed": true,
-          "durationMs": 21793
+          "durationMs": 5064
         },
         {
           "name": "host",
           "passed": true,
-          "durationMs": 12363
+          "durationMs": 7692
         },
         {
           "name": "backend",
           "passed": true,
-          "durationMs": 87
+          "durationMs": 92
         },
         {
           "name": "reconciliation",
           "passed": true,
-          "durationMs": 27
+          "durationMs": 30
         },
         {
           "name": "payments",
           "passed": true,
-          "durationMs": 29
+          "durationMs": 36
         }
       ],
       "passed": true,
-      "durationMs": 55255
+      "durationMs": 25117
     }
   },
   "browser": {
-    "startTime": "2026-10-28T16:51:46.814Z",
-    "duration": 257475.75,
-    "expected": 10,
+    "startTime": "2026-10-28T17:41:14.552Z",
+    "duration": 332074.771,
+    "expected": 11,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0,
@@ -89,13 +89,24 @@
     ],
     "tests": [
       {
+        "name": "empty balance explains disabled spins, live funding unlocks an exact-cost single line and free spins need no balance",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 12419
+          }
+        ]
+      },
+      {
         "name": "natural bonus, real host/chat, line presets and desktop/mobile layout",
         "status": "expected",
         "results": [
           {
             "status": "passed",
             "retry": 0,
-            "durationMs": 14777
+            "durationMs": 28281
           }
         ]
       },
@@ -106,7 +117,7 @@
           {
             "status": "passed",
             "retry": 0,
-            "durationMs": 15214
+            "durationMs": 21079
           }
         ]
       },
@@ -117,7 +128,7 @@
           {
             "status": "passed",
             "retry": 0,
-            "durationMs": 30719
+            "durationMs": 45824
           }
         ]
       },
@@ -128,7 +139,7 @@
           {
             "status": "passed",
             "retry": 0,
-            "durationMs": 37565
+            "durationMs": 48690
           }
         ]
       },
@@ -139,7 +150,7 @@
           {
             "status": "passed",
             "retry": 0,
-            "durationMs": 30151
+            "durationMs": 35145
           }
         ]
       },
@@ -150,7 +161,7 @@
           {
             "status": "passed",
             "retry": 0,
-            "durationMs": 51235
+            "durationMs": 54572
           }
         ]
       },
@@ -161,7 +172,7 @@
           {
             "status": "passed",
             "retry": 0,
-            "durationMs": 686
+            "durationMs": 741
           }
         ]
       },
@@ -172,7 +183,7 @@
           {
             "status": "passed",
             "retry": 0,
-            "durationMs": 787
+            "durationMs": 825
           }
         ]
       },
@@ -183,7 +194,7 @@
           {
             "status": "passed",
             "retry": 0,
-            "durationMs": 677
+            "durationMs": 715
           }
         ]
       },
@@ -194,7 +205,7 @@
           {
             "status": "passed",
             "retry": 0,
-            "durationMs": 74296
+            "durationMs": 81638
           }
         ]
       }
@@ -202,9 +213,9 @@
   },
   "synchronization": {
     "targetMs": 50,
-    "maximumDeviationMs": 17.13982766458321,
-    "maxPreparationMs": 0.6000000000931323,
-    "maxVisualMs": 4.800000000279397
+    "maximumDeviationMs": 14.38116099810577,
+    "maxPreparationMs": 1.1000000005587935,
+    "maxVisualMs": 7.199999999254942
   },
   "character": {
     "poses": 8,
@@ -231,13 +242,13 @@
       "path": "animation-preview.mp4",
       "silent": true,
       "recordedFrom": "Real Royal host with connected chat",
-      "bytes": 5605977,
-      "sha256": "dcb3622d824e687a506577d9b8bbda1eca7ca790ee4de32f3fb043e58d651a54"
+      "bytes": 6370525,
+      "sha256": "eb2985b41fcaebad6f04ef69aec3428b1f594bfe937f7c2805bbad534a2fb485"
     }
   },
   "audio": {
     "peak": 0.31254756450653076,
-    "rms": 0.025705984728786484,
+    "rms": 0.02570598472865571,
     "maxSampleStep": 0.17697072331793606,
     "tail": 0,
     "samples": {
@@ -258,10 +269,27 @@
     "durationSeconds": 19,
     "sampleRate": 44100
   },
-  "preparationIssueResolved": "Playwright video runtime was initially absent; installed its managed ffmpeg binary, then all 10 final browser checks passed without retries",
   "limits": [
     "No physical phone or Bluetooth assessment",
     "No participant preference or fatigue study",
     "Repository-wide historical UI suite is outside this targeted run"
+  ],
+  "balanceRegression": {
+    "emptyBalanceExplained": true,
+    "paidStartBlockedWithoutFunds": true,
+    "sharedWalletButton": true,
+    "liveWalletFunding": true,
+    "exactCostSingleLineDebitUnits": "100",
+    "paidDebits": 1,
+    "zeroBalanceBonusContinuations": true,
+    "rejectionSurvivesRefresh": true,
+    "lostPaidAndFreeReplyRecovered": true,
+    "localUserDemoCredit": 1000,
+    "manualUserSpinAfterReload": false,
+    "manualUserLoginDeferredByUser": true,
+    "productionFundingChanged": false
+  },
+  "preparationIssuesResolved": [
+    "A late end-of-sequence screenshot could miss a finished laugh pose; native assertions now inspect the actual recorded pose at cue onset. Pose timing and the 50 ms scheduling target are unchanged."
   ]
 }

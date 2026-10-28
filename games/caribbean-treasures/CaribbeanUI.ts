@@ -40,6 +40,8 @@ export class CaribbeanUI {
   private stopped = 6;
   private boardSignature='';
   private tally?:string;
+  private actionError='';
+  private lastBalance?:number;
   private captain:CaribbeanCaptain;
   private visuals:CaribbeanMotion;
   private accents:{cue:string;deviationMs:number;preparationMs:number;visualMs:number}[]=[];
@@ -53,6 +55,10 @@ export class CaribbeanUI {
   private get session() { return this.client.sessions.find(session => session.gameId === CARIBBEAN_GAME); }
   private get view() { return this.session?.view.caribbean; }
   private get active() { return this.session?.state === 'active'; }
+  private get wallet() { return this.services.demoWallet.accountId===this.client.accountId ? this.services.demoWallet.wallet ?? this.client.wallet : undefined; }
+  private canAfford(mode:CaribbeanStartMode) {
+    return !!this.wallet && Math.round(this.wallet.balance*100)>=Number(caribbeanInitialCost({lines:this.lines,mode},this.lineStake));
+  }
   private get blocked() {
     return this.presenting || this.paused || !this.client.accountId || !this.client.wallet || this.client.busy || this.client.loading || !!this.client.pending
       || this.services.demoWallet.busy || !!this.services.demoWallet.pending || this.services.demoWallet.hasExternalBusy('expansion');
@@ -63,7 +69,7 @@ export class CaribbeanUI {
     this.root.setAttribute('aria-label',this.title);
     this.root.innerHTML = '<header class="ct-heading"><span class="ct-avatar" aria-hidden="true"><span class="ct-avatar-body">'+portraitLayers+'</span></span><div class="ct-title"><small>ROYAL · CARIBBEAN</small><h2></h2></div><div class="ct-header-tools"><button type="button" data-ct-action="sound">♪</button><button type="button" data-ct-action="music">♫</button><button type="button" data-ct-action="info">?</button><button type="button" data-ct-action="history">≡</button></div></header>'
       + '<div class="ct-stage"><div class="ct-board-wrap"><div class="ct-board" role="img"></div><div class="ct-waiting" hidden></div></div><aside class="ct-captain" aria-hidden="true"><span class="ct-captain-body">'+portraitLayers+'</span><span class="ct-captain-caption" hidden></span></aside><div class="ct-map" role="status"></div></div>'
-      + '<div class="ct-ledger"><div><span data-ct-label="balance"></span><strong data-ct-balance></strong></div><div><span data-ct-label="cost"></span><strong data-ct-cost></strong></div><div><span data-ct-label="payout"></span><strong data-ct-payout></strong></div><div><span data-ct-label="net"></span><strong data-ct-net></strong></div></div>'
+      + '<div class="ct-ledger"><div><span data-ct-label="balance"></span><div class="ct-balance-value"><strong data-ct-balance></strong><button type="button" class="ct-wallet" data-ct-action="wallet">+</button></div></div><div><span data-ct-label="cost"></span><strong data-ct-cost></strong></div><div><span data-ct-label="payout"></span><strong data-ct-payout></strong></div><div><span data-ct-label="net"></span><strong data-ct-net></strong></div></div>'
       + '<div class="ct-controls"><div class="ct-lines-control"><label for="ct-lines-input" data-ct-label="lines"></label><span class="ct-stepper"><button type="button" data-ct-action="lines-down">−</button><select id="ct-lines-input" data-ct-lines></select><button type="button" data-ct-action="lines-up">+</button></span></div><div class="ct-stake-control"><label for="ct-stake-input" data-ct-label="stake"></label><span class="ct-stepper"><button type="button" data-ct-action="stake-down">−</button><select id="ct-stake-input" data-ct-stake></select><button type="button" data-ct-action="stake-up">+</button></span></div><button type="button" data-ct-action="lines"></button><button type="button" data-ct-action="buy"></button><button type="button" class="ct-play" data-ct-action="play"><span class="ct-spin-icon" aria-hidden="true">↻</span><b></b><small></small></button></div>'
       + '<div class="ct-status" role="status" aria-live="polite"></div><div class="ct-choice" hidden></div><button type="button" class="ct-retry" data-ct-action="retry" hidden></button><button type="button" class="ct-skip" data-ct-action="skip" hidden></button>'
       + '<div class="ct-backdrop" hidden><section class="ct-modal" role="dialog" aria-modal="true"></section></div>';
@@ -81,12 +87,14 @@ export class CaribbeanUI {
       if (!button || button.disabled) return;
       const action = button.dataset.ctAction;
       if (action === 'info' || action === 'history') this.openDialog(action);
+      else if (action === 'wallet') window.dispatchEvent(new Event('royal-open-wallet'));
       else if (action === 'skip') this.stopPresentation();
       else if (action === 'sound') { const p=this.services.gameAudio.getPreferences();this.services.gameAudio.setMuted(!p.muted);void this.audio.enter(); }
       else if (action === 'music') {this.audio.setMusic(!this.audio.musicEnabled());void this.audio.enter();this.render();}
       else if (action === 'lines') { this.showLines = !this.showLines; this.render(); }
       else if (action?.startsWith('lines-') || action?.startsWith('stake-')) {
         if(this.blocked || this.active || this.dialogKind)return;
+        this.actionError='';
         const direction=action.endsWith('up')?1:-1;
         if(action.startsWith('lines-'))this.lines=CARIBBEAN_LINE_COUNTS[Math.max(0,Math.min(3,CARIBBEAN_LINE_COUNTS.indexOf(this.lines)+direction))];
         else this.lineStake=CARIBBEAN_LINE_STAKES[Math.max(0,Math.min(3,CARIBBEAN_LINE_STAKES.findIndex(stake=>stake===this.lineStake)+direction))];
@@ -102,6 +110,7 @@ export class CaribbeanUI {
     this.root.addEventListener('change',event => {
       if (this.blocked || this.active || this.dialogKind) { this.render(); return; }
       const target = event.target;
+      this.actionError='';
       if (target instanceof HTMLSelectElement && target.matches('[data-ct-lines]')) {
         const lines = Number(target.value); if (validCaribbeanLineCount(lines)) this.lines = lines;
       } else if (target instanceof HTMLSelectElement && target.matches('[data-ct-stake]') && validCaribbeanStake(target.value)) this.lineStake = target.value;
@@ -122,8 +131,9 @@ export class CaribbeanUI {
   private update = () => {
     if (this.disposed) return;
     if (this.account !== this.client.accountId) {
-      this.stopPresentation();this.captain.reset(true);this.account = this.client.accountId; this.sessionKey = ''; this.lines = 20; this.lineStake = '100'; this.closeDialog();
+      this.stopPresentation();this.captain.reset(true);this.account = this.client.accountId; this.sessionKey = ''; this.lines = 20; this.lineStake = '100';this.actionError='';this.lastBalance=undefined; this.closeDialog();
     }
+    if(this.wallet?.balance!==this.lastBalance){this.actionError='';this.lastBalance=this.wallet?.balance;}
     const session = this.session, view = this.view, key = session && view ? session.id + ':' + view.revision : '';
     if (view && key !== this.sessionKey) {
       this.lines = view.settings.lines; this.lineStake = view.lineStakeUnits; this.sessionKey = key;
@@ -157,7 +167,9 @@ export class CaribbeanUI {
       cost:this.active ? this.text('Цена принятого раунда','Accepted round cost') : this.text('Ставка за вращение','Spin cost'),payout:this.active ? this.text('Накоплено в раунде','Round total') : this.text('Выплата раунда','Round payout'),
       net:this.text('Чистый итог раунда','Net round result'),lines:this.text('Линии','Lines'),stake:this.text('На линию · USDT','Per line · USDT'),
     })) this.element('[data-ct-label="' + key + '"]').textContent = label;
-    this.element('[data-ct-balance]').textContent = this.client.wallet ? this.services.walletCoins(this.client.wallet.balance) : '...';
+    this.element('[data-ct-balance]').textContent = this.wallet ? this.services.walletCoins(this.wallet.balance) : '...';
+    const walletButton=this.element<HTMLButtonElement>('[data-ct-action=wallet]');walletButton.disabled=!this.client.accountId;
+    walletButton.setAttribute('aria-label',this.text('Открыть тестовый кошелёк','Open test wallet'));
     this.element('[data-ct-cost]').textContent = this.view && this.active ? this.money(this.view.costUnits) : this.money(caribbeanInitialCost({lines:this.lines,mode:'normal'},this.lineStake));
     this.element('[data-ct-payout]').textContent = this.money(this.tally ?? view?.totalPayoutUnits ?? '0');
     const net = view && !this.active ? BigInt(view.totalPayoutUnits) - BigInt(view.costUnits) : null;
@@ -168,18 +180,19 @@ export class CaribbeanUI {
     this.element('[data-ct-action=lines]').textContent = this.text('Показать линии','Show lines');
     this.element('[data-ct-action=lines]').setAttribute('aria-pressed',String(this.showLines));
     const buy = this.element<HTMLButtonElement>('[data-ct-action=buy]');
-    buy.textContent = this.text('Купить бонус','Buy bonus'); buy.disabled = this.blocked || !!this.active || !!this.dialogKind;
+    buy.textContent = this.text('Купить бонус','Buy bonus'); buy.disabled = this.blocked || !!this.active || !!this.dialogKind || !this.canAfford('buy-raid');
     const play = this.element<HTMLButtonElement>('[data-ct-action=play]');
     play.querySelector('b')!.textContent = view?.phase === 'choice' ? this.text('Тактика','Tactic') : this.active ? this.text('Бесплатно','Free spin') : this.text('Вращать','Spin');
     play.querySelector('small')!.textContent=view?.phase === 'choice' ? this.text('Выбери ниже','Choose below') : this.active ? this.text('Осталось ','Remaining ') + (view?.remaining ?? 0) : this.money(caribbeanInitialCost({lines:this.lines,mode:'normal'},this.lineStake))+' USDT';
-    play.disabled = this.blocked || !!this.dialogKind || view?.phase === 'choice';
+    play.disabled = this.blocked || !!this.dialogKind || view?.phase === 'choice' || !this.active&&!this.canAfford('normal');
     const retry = this.element<HTMLButtonElement>('[data-ct-action=retry]');
     retry.hidden = !this.client.pending; retry.disabled = this.client.busy;
     retry.textContent = this.text('Проверить тот же ход','Check the same operation');
-    this.element('.ct-status').textContent = this.client.error || (!this.client.accountId ? this.text('Войди в зал, чтобы играть.','Sign in to play.')
+    this.element('.ct-status').textContent = this.client.error || this.actionError || (!this.client.accountId ? this.text('Войди в зал, чтобы играть.','Sign in to play.')
       : this.client.busy ? this.text('Подтверждаем ход...','Confirming...')
       : this.services.demoWallet.pending ? this.text('Проверь предыдущую операцию общего кошелька.','Check the previous shared wallet operation.')
       : this.presenting && this.visualPhase!=='outcome' ? this.text('Показываем подтверждённый результат...','Revealing the confirmed result...')
+      : !this.active && this.wallet && !this.canAfford('normal') ? this.text('Недостаточно средств: нужно ','Not enough funds: need ')+this.money(caribbeanInitialCost({lines:this.lines,mode:'normal'},this.lineStake))+' USDT. '+this.text('Уменьши ставку или открой кошелёк кнопкой + у баланса.','Lower your stake or open the wallet with + beside the balance.')
       : view?.phase==='complete' ? this.outcomeLabel(view)
       : this.active ? this.text('Продолжение бесплатно. Выплата начисляется в конце раунда.','Free continuation. The complete round is credited at the end.')
       : this.text('Гигантский символ занимает несколько клеток. Выплаты считаются по активным линиям.','A giant symbol fills several cells. Active lines determine the payouts.'));
@@ -221,17 +234,20 @@ export class CaribbeanUI {
   }
   private async start(mode: CaribbeanStartMode) {
     if (this.disposed || this.blocked || this.active || this.dialogKind) return;
+    if(!this.canAfford(mode)){this.actionError=this.text('Недостаточно средств: нужно ','Not enough funds: need ')+this.money(caribbeanInitialCost({lines:this.lines,mode},this.lineStake))+' USDT.';this.render();return;}
+    this.actionError='';
     const settings: CaribbeanSettings = {lines:this.lines,mode};
     try { await this.perform(()=>this.client.act({gameId:CARIBBEAN_GAME,action:'start',stakeUnits:this.lineStake,settings:{caribbean:settings}})); }
-    catch { /* The shared client retains errors and uncertain operation identity. */ }
+    catch(error) {this.actionError=this.client.pending?'':error instanceof Error?error.message:this.client.error;}
     finally { this.update(); }
   }
   private async move(move: string) {
     const session = this.session, view = this.view;
     if (this.disposed || this.blocked || !session || !view || session.state !== 'active' || this.dialogKind) return;
     if (!session.view.actions.some(action => action.move === move && action.cost === 0)) return;
+    this.actionError='';
     try { await this.perform(()=>this.client.act({gameId:CARIBBEAN_GAME,action:'move',sessionId:session.id,move,revision:view.revision})); }
-    catch { /* Status and retry use the shared transport. */ }
+    catch(error) {this.actionError=this.client.pending?'':error instanceof Error?error.message:this.client.error;}
     finally { this.update(); }
   }
   private outcomeLabel(view:CaribbeanView){
