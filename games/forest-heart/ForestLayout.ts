@@ -15,7 +15,7 @@ export class ForestLayout {
   private fit(){
     const width=this.root.clientWidth,height=this.root.clientHeight;
     const mode=width<=620?'mobile':height>width*1.08?'poster':'wide',mobile=mode==='mobile';
-    this.root.dataset.layout=mode;this.root.dataset.compact=String(height<560);
+    this.root.dataset.layout=mode;this.root.dataset.compact=String(height<560);this.root.dataset.short=String(height<490);
     const parent=mobile?this.status:this.world;
     if(this.portrait.parentElement!==parent)parent.prepend(this.portrait);
     const css=this.root.ownerDocument.defaultView!.getComputedStyle(this.world);
