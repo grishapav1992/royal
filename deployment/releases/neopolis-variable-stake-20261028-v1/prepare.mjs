@@ -31,6 +31,8 @@ for (const [file, digest] of Object.entries(release.files)) {
   assert.equal(sha(resolve(root, file)), digest);
   if (file.startsWith('dist/')) {
     const sub = file.slice(5); if (before.program[file] === digest) continue;
+    const publicSource = before.source['public/' + sub];
+    if (publicSource && [publicSource.sha256, publicSource.lf].includes(digest)) continue;
     if (sub === 'index.html' || /^assets\/[a-zA-Z0-9_-]+\.(js|css)$/.test(sub)) {
       assert(sub === 'index.html' || !(file in before.program), 'Immutable host asset differs'); dist[sub] = copy(resolve(root, file), 'dist/' + sub);
     } else {
