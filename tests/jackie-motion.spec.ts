@@ -41,6 +41,8 @@ test('five distinct opponents rotate through the series and every rendered pose 
     },{contact:[contactAt(0),contactAt(1),contactAt(2)],end:[resultAt(1),resultAt(2),resultAt(3)]});
     for(const row of rows){
       const ids=row.foes.split(',');expect(ids).toHaveLength(row.count);expect(new Set(ids).size).toBe(row.count);ids.forEach((id:string)=>seen.add(id));
+      const allowed=row.count===1?['street','agile']:row.count===2?['agile','bruiser','enforcer']:['bruiser','enforcer','master'];
+      expect(ids.every((id:string)=>allowed.includes(id))).toBe(true);expect(ids.includes('master')).toBe(row.count===3);
       for(const frame of JSON.parse(row.foeFrames)){expect(frame.left).toBeGreaterThanOrEqual(0);expect(frame.right).toBeLessThanOrEqual(row.width+.01);expect(frame.top).toBeGreaterThanOrEqual(0);expect(frame.bottom).toBeLessThanOrEqual(row.height);expect(frame.pose).toBeGreaterThanOrEqual(0);expect(frame.pose).toBeLessThan(8);}
     }
     frames+=rows.length;

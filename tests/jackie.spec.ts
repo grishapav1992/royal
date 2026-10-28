@@ -33,9 +33,13 @@ test('real host, chat, risk groups, gallery and account progress work on desktop
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await outcome('win');await enter(page);await page.emulateMedia({reducedMotion:'no-preference'});
   const game=page.locator('.jackie');await game.locator('[data-risk="extreme"]').click();await expect(game.locator('canvas')).toHaveAttribute('data-opponents','3');
   const initialFoes=(await game.locator('canvas').getAttribute('data-foes'))!.split(',');expect(initialFoes).toHaveLength(3);expect(new Set(initialFoes).size).toBe(3);await page.screenshot({path:out+'/desktop.png'});
+  expect(initialFoes).toContain('master');await expect(game.locator('[data-risk="extreme"] b')).toHaveText('Сложный');
   const first=await act(page);expect(first.view.jackie.combat.shots).toHaveLength(1);await expect(game.locator('[data-cashout]')).toContainText('22,00');await expect(game.locator('[data-location]')).toBeDisabled();
-  await game.locator('[data-risk="sharp"]').click();const second=await act(page);expect(second.view.jackie.combat.shots.map((s:any)=>s.risk)).toEqual(['extreme','sharp']);
-  const nextFoes=(await game.locator('canvas').getAttribute('data-foes'))!.split(',');expect(nextFoes).toHaveLength(2);expect(new Set(nextFoes).size).toBe(2);expect(nextFoes).not.toEqual(initialFoes.slice(0,2));
+  await game.locator('[data-risk="sharp"]').click();await expect(game.locator('[data-lineup]')).toBeVisible();
+  const plannedFoes=(await game.getAttribute('data-next-foes'))!.split(',');expect(plannedFoes).toHaveLength(2);expect(plannedFoes).not.toContain('master');
+  await expect(game.locator('canvas')).toHaveAttribute('data-foes',initialFoes.join(','));
+  const second=await act(page);expect(second.view.jackie.combat.shots.map((s:any)=>s.risk)).toEqual(['extreme','sharp']);
+  const nextFoes=(await game.locator('canvas').getAttribute('data-foes'))!.split(',');expect(nextFoes).toEqual(plannedFoes);expect(new Set(nextFoes).size).toBe(2);
   await act(page);await act(page);
   let posts=0;page.on('request',request=>{if(request.method()==='POST'&&request.url().endsWith('/api/demo-wallet/expansion'))posts++;});
   const finalOperation=act(page);
