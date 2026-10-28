@@ -16,23 +16,23 @@ export function templePlan(key:string,view:TempleView,previous:TempleView|undefi
   const add=(kind:TempleBeat['kind'],duration:number,extra:Partial<Omit<TempleBeat,'kind'|'duration'|'id'|'at'|'frame'>>={})=>{beats.push({id:beats.length,at:time,duration,kind,frame:structuredClone(frame),...extra});time+=duration;};
   const outcome=templeOutcome(view.stakeUnits,view.totalPayoutUnits);
   if(reduced){frame=final;const last=view.history.at(-1);add('summary',180,{outcome:view.phase==='complete'?outcome:undefined,cue:view.phase==='complete'?outcomeCue(outcome):previous?(last?.kind==='rope'?'rope':BigInt(view.totalPayoutUnits)>BigInt(previous.totalPayoutUnits)?'chest':'step'):'relic'});return {key,beats,duration:time,final,reduced};}
-  const travel=(to:number)=>{const from=frame.at;add('travel',170,{from,room:to});frame.at=to;frame.route.push(to);add('arrive',35,{room:to,cue:'step'});};
-  const collect=(room:number,award:string)=>{const from=frame.totalUnits;frame.totalUnits=String(BigInt(from)+BigInt(award));add('collect',260,{room,cue:'chest',counterFrom:from,awardUnits:award});};
-  const gate=(room:number,edge:string)=>{add('lever',100,{room,edge});frame.opened.push(edge);add('gate',300,{room,edge,cue:'lever'});};
+  const travel=(to:number)=>{const from=frame.at;add('travel',180,{from,room:to});frame.at=to;frame.route.push(to);add('arrive',55,{room:to,cue:'step'});};
+  const collect=(room:number,award:string)=>{const from=frame.totalUnits;frame.totalUnits=String(BigInt(from)+BigInt(award));add('collect',420,{room,cue:'chest',counterFrom:from,awardUnits:award});};
+  const gate=(room:number,edge:string)=>{add('lever',140,{room,edge});frame.opened.push(edge);add('gate',420,{room,edge,cue:'lever'});};
   if(!previous){
-    for(let row=0;row<4;row++){frame.revealed=row+1;add('card',65,{room:row,cue:'stone',cueAtMs:55});}
+    for(let row=0;row<4;row++){frame.revealed=row+1;add('card',100,{room:row,cue:'stone',cueAtMs:72});}
     for(const event of view.baseResult.events){
       for(const to of event.path.slice(1))travel(to);
       if(!frame.visited.includes(event.room))frame.visited.push(event.room);
       if(BigInt(event.awardUnits)>0n)collect(event.room,event.awardUnits);
       if(event.openedGate)gate(event.room,event.openedGate);
-      if(event.relic)add('relic',600,{room:event.room,cue:'relic'});
+      if(event.relic)add('relic',1000,{room:event.room,cue:'relic'});
     }
-    if(view.bonusMap){frame=structuredClone(final);add('expedition',320);}
+    if(view.bonusMap){frame=structuredClone(final);add('expedition',420);}
   }else{
     const action=view.history[previous.history.length];
     if(action&&'to'in action){
-      if(action.kind==='rope'){frame.bridge=view.bonusState!.bridge;frame.ropeAvailable=false;add('rope',300,{room:action.to,edge:frame.bridge!,cue:'rope',cueAtMs:240});}
+      if(action.kind==='rope'){frame.bridge=view.bonusState!.bridge;frame.ropeAvailable=false;add('rope',520,{room:action.to,edge:frame.bridge!,cue:'rope',cueAtMs:330});}
       travel(action.to);frame.left=view.bonusState!.left;frame.visited=[...view.bonusState!.visited];
       const award=String(BigInt(view.totalPayoutUnits)-BigInt(previous.totalPayoutUnits));
       if(BigInt(award)>0n)collect(action.to,award);
@@ -40,7 +40,7 @@ export function templePlan(key:string,view:TempleView,previous:TempleView|undefi
     }
   }
   frame=structuredClone(final);
-  if(view.phase==='complete')add('outcome',{loss:250,partial:350,return:450,win:700,big:1400}[outcome],{cue:outcomeCue(outcome),outcome});
+  if(view.phase==='complete')add('outcome',{loss:250,partial:350,return:450,win:1100,big:1900}[outcome],{cue:outcomeCue(outcome),outcome});
   if(!beats.length)add('summary',100);
   return {key,beats,duration:time,final,reduced};
 }

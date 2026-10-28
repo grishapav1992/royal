@@ -17,7 +17,7 @@ test('confirmed base events animate in order and audio accents use the shared ou
   expect(feedback.frames.filter((f:any)=>f.kind==='card').length).toBe(4);expect(Math.max(...feedback.frames.map((f:any)=>f.skewMs))).toBeLessThan(100);
   expect(feedback.audio.activeSources).toBeLessThanOrEqual(3);expect(result.moves).toBe(6);expect(result.totalPayoutUnits).toBe('0');
   await game(page).locator('[data-ft=log]').click();await expect(game(page).locator('dialog')).toContainText('Lever opens gate');await game(page).locator('[data-ft=close]').click();
-  await mkdir('artifacts/work/flooded-temple-stage4',{recursive:true});await writeFile('artifacts/work/flooded-temple-stage4/clock-baseline.json',JSON.stringify(feedback,null,2));expect(errors).toEqual([]);
+  await mkdir('artifacts/work/flooded-temple-polish',{recursive:true});await writeFile('artifacts/work/flooded-temple-polish/clock-baseline.json',JSON.stringify(feedback,null,2));expect(errors).toEqual([]);
 });
 test('pause freezes the visual clock, cancels voices, resumes without replay and skip never makes a move',async({page})=>{
   await ready(page);await sound(page);await spin(page);await expect.poll(async()=>(await state(page)).feedback.active).toBe(true);
@@ -60,7 +60,7 @@ test('latency fallback schedules against simulated device delay without doubling
   await ready(page);await sound(page);
   await page.evaluate(()=>{const context=(window as any).templePreview.audio.context;Object.defineProperty(context,'getOutputTimestamp',{configurable:true,value:undefined});Object.defineProperty(context,'outputLatency',{configurable:true,value:.18});Object.defineProperty(context,'baseLatency',{configurable:true,value:.02});});
   await spin(page);await idle(page);const result=(await state(page)).feedback;expect(result.audio.clock.method).toBe('latency-estimate');expect(result.audio.clock.latencyMs).toBeCloseTo(200,3);expect(result.audio.anchors.some((a:any)=>a.state==='scheduled')).toBe(true);expect(Math.max(...result.frames.map((f:any)=>f.skewMs))).toBeLessThan(100);
-  await writeFile('artifacts/work/flooded-temple-stage4/clock-simulated-latency.json',JSON.stringify(result,null,2));
+  await writeFile('artifacts/work/flooded-temple-polish/clock-simulated-latency.json',JSON.stringify(result,null,2));
 });
 test('partial returns stay neutral and a later large paid round gets its own full-stake result',async({page})=>{
   let fixture='partial';await page.route('**/api/*-wallet/expansion',async route=>{if(route.request().method()==='POST')await route.continue({headers:{...route.request().headers(),'x-temple-test-case':fixture}});else await route.continue();});
@@ -78,7 +78,7 @@ test('hidden-page simulation freezes playback and an account change during an ef
 });
 test('CPU throttling keeps final state exact and does not accumulate a reward queue',async({page})=>{
   await ready(page);await sound(page);const cdp=await page.context().newCDPSession(page);await cdp.send('Emulation.setCPUThrottlingRate',{rate:4});
-  try{await spin(page);await idle(page);const feedback=(await state(page)).feedback;expect(feedback.audio.activeSources).toBeLessThanOrEqual(3);expect(feedback.audio.played.relic??0).toBeLessThanOrEqual(1);expect((await state(page)).totalPayoutUnits).toBe('0');await writeFile('artifacts/work/flooded-temple-stage4/clock-cpu-4x.json',JSON.stringify(feedback,null,2));}
+  try{await spin(page);await idle(page);const feedback=(await state(page)).feedback;expect(feedback.audio.activeSources).toBeLessThanOrEqual(3);expect(feedback.audio.played.relic??0).toBeLessThanOrEqual(1);expect((await state(page)).totalPayoutUnits).toBe('0');await writeFile('artifacts/work/flooded-temple-polish/clock-cpu-4x.json',JSON.stringify(feedback,null,2));}
   finally{await cdp.send('Emulation.setCPUThrottlingRate',{rate:1});await cdp.detach();}
 });
 test('an old in-flight response cannot lock or animate a restored account',async({page})=>{
@@ -89,4 +89,20 @@ test('an old in-flight response cannot lock or animate a restored account',async
   await page.evaluate(async()=>{const h=(window as any).templePreview;h.wallet.setAccount(h.account);await h.wallet.refresh();await h.client.refresh();});
   release();await expect(game(page).locator('[data-ft=primary]')).toHaveText(/Check move/);await expect.poll(async()=>(await state(page)).busy).toBe(false);await page.unroute('**/api/*-wallet/expansion',delay);
   await game(page).locator('[data-ft=primary]').click();await idle(page);expect((await state(page)).feedback.audio.played.relic??0).toBe(0);expect((await state(page)).revision).toBe(1);expect((await state(page)).moves).toBe(6);
+});
+
+test('painted chest states remain exact and skipping a paused collection releases its particles',async({page})=>{
+  await ready(page,true);await sound(page);await spin(page);await idle(page);await page.emulateMedia({reducedMotion:'no-preference'});
+  await move(page,6);await move(page,11);
+  const requests:string[]=[];page.on('request',r=>{if(r.method()==='POST'&&r.url().endsWith('/expansion'))requests.push(r.postData()!);});
+  await game(page).locator('[data-room="12"]').click();await game(page).locator('[data-ft=rope]').click();await game(page).locator('[data-ft=primary]').click();
+  await expect.poll(async()=>(await state(page)).feedback.event,{timeout:4000}).toBe('collect');await page.evaluate(()=>(window as any).templePreview.pause());
+  const collection=await state(page);expect(collection.feedback.effects.decorations).toBeLessThanOrEqual(8);expect(collection.feedback.effects.decorations).toBeGreaterThan(0);
+  await expect(game(page).locator('[data-room="12"] .ft-prop-open')).toHaveJSProperty('complete',true);
+  const frozen=collection.feedback.offsetMs;await page.waitForTimeout(100);expect((await state(page)).feedback.offsetMs).toBe(frozen);
+  await game(page).locator('[data-ft=primary]').click();await idle(page);const final=await state(page);
+  expect(requests).toHaveLength(1);expect(final.totalPayoutUnits).toBe('250');expect(final.feedback.effects.decorations).toBe(0);expect(final.feedback.effects.animations).toBe(0);
+  await expect(game(page).locator('[data-room="12"] .ft-room-art')).toHaveAttribute('data-open','true');await expect(game(page).locator('[data-room="12"] .ft-prop-open')).toHaveCSS('opacity','1');
+  expect(await game(page).locator('img').evaluateAll(images=>images.every(i=>(i as HTMLImageElement).complete&&(i as HTMLImageElement).naturalWidth>0))).toBe(true);
+  await page.evaluate(()=>(window as any).templePreview.resume());
 });

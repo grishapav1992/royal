@@ -3,7 +3,7 @@ import {mkdir,writeFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 export const rate=24000;
-const specs={scrape:[.32,.018],stone:[.34,.012],step:[.22,.009],chest:[.58,.012],lever:[.64,.012],rope:[.65,.16],relic:[1.35,.018],neutral:[.32,.012],return:[.6,.012],win:[.95,.012],big:[1.8,.012],ambience:[8,0]};
+const specs={scrape:[.48,.025],stone:[.48,.018],step:[.34,.012],chest:[.82,.025],lever:[.92,.018],rope:[.88,.27],relic:[1.95,.03],neutral:[.38,.018],return:[.68,.018],win:[1.5,.025],big:[2.65,.03],ambience:[8,0]};
 export function synthesize(name){
   const [duration,accent]=specs[name],size=Math.ceil(duration*rate),channels=[new Float32Array(size),new Float32Array(size)];
   let seed=0x7f4a7c15+Object.keys(specs).indexOf(name)*613;
@@ -18,23 +18,35 @@ export function synthesize(name){
     let low=0;const alpha=1-Math.exp(-2*Math.PI*cutoff/rate);
     for(let i=0;i<length*rate;i++){const t=i/rate;low+=alpha*(random()-low);const envelope=Math.min(1,t/attack)*Math.exp(-t/decay)*Math.min(1,(length-t)/.025);add(low*level*envelope,Math.floor(start*rate)+i,pan);}
   };
-  if(name==='scrape'){noise(0,.3,.22,650,.17,0,.018);noise(.02,.2,.06,1900,.1);}
-  if(name==='stone'){noise(0,.31,.32,430,.1);tone(83,0,.32,.14,.09,0,46);noise(.012,.17,.055,2100,.06);}
-  if(name==='step'){noise(0,.16,.13,1700,.043,-.12);tone(114,0,.17,.065,.045,0,72);tone(690,.024,.14,.025,.035,.18,480);}
-  if(name==='chest'){for(const [hz,level,pan]of[[810,.065,-.2],[1411,.055,.2],[2029,.024,-.3],[3270,.013,.25]])tone(hz,0,.46,level,.14,pan);noise(0,.08,.08,2500,.025);}
-  if(name==='lever'){for(let i=0;i<5;i++){noise(i*.067,.16,.13-i*.014,1150-i*140,.035,i%2?.2:-.2);tone(290+i*37,i*.067,.2,.033,.04);}tone(93,.035,.48,.055,.18,0,62);}
-  if(name==='rope'){noise(0,.17,.12,1750,.3,-.25,.055);tone(245,.148,.4,.09,.1,.15,124);noise(.15,.11,.15,900,.032,.15);}
-  if(name==='relic'){for(const [i,hz]of[146.83,220,293.66,440].entries())tone(hz,i*.13,1.05,.053,.35,i%2?.25:-.25);tone(880,.38,.7,.019,.22);}
-  if(name==='neutral'){tone(86,0,.26,.052,.07,0,72);noise(0,.13,.025,500,.04);}
-  if(name==='return'){tone(196,0,.53,.065,.16);tone(392,.006,.42,.016,.11);}
-  if(name==='win'){for(const [i,hz]of[196,246.94,293.66].entries())tone(hz,i*.095,.68,.068,.22,(i-1)*.18);tone(587.33,.2,.5,.022,.16);}
-  if(name==='big'){for(const [i,hz]of[196,293.66,392,493.88,587.33].entries())tone(hz,i*.11,1.12,.063,.32,(i-2)*.11);for(const hz of[146.83,196,246.94])tone(hz,.44,1.2,.027,.38);}
+  const pluck=(hz,start,length,level,pan=0)=>{
+    for(const [ratio,gain,tail]of[[1,1,.32],[2.01,.32,.19],[3.98,.11,.11],[7.1,.035,.06]])tone(hz*ratio,start,length,level*gain,tail,pan);
+    noise(start,.045,level*.25,2100,.012,pan);
+  };
+  const metal=(hz,start,length,level,pan=0)=>{for(const [ratio,gain]of[[1,1],[2.76,.32],[5.4,.13],[8.93,.04]])tone(hz*ratio,start,length,level*gain,.11/Math.sqrt(ratio),pan);};
+  const air=(hz,start,length,level,pan=0)=>{
+    let phase=0;for(let i=0;i<length*rate;i++){const t=i/rate;phase+=2*Math.PI*hz/rate*(1+.002*Math.sin(t*32));const envelope=Math.min(1,t/.075,(length-t)/.25)*Math.exp(-t/.6);add((Math.sin(phase)+.17*Math.sin(phase*2)+random()*.09)*level*envelope,Math.floor(start*rate)+i,pan);}
+  };
+  if(name==='scrape'){noise(0,.45,.29,440,.27,0,.025);for(let i=0;i<7;i++)noise(.025+i*.039,.085,.045,1400-i*85,.025,i%2?.16:-.16);tone(61,.02,.4,.055,.15,0,43);}
+  if(name==='stone'){noise(0,.44,.35,320,.14);tone(76,0,.43,.17,.12,0,40);tone(143,.008,.3,.045,.07);for(const start of[.018,.062,.121])noise(start,.14,.055,1900,.025);}
+  if(name==='step'){noise(0,.22,.19,1200,.055,-.12);tone(102,0,.22,.075,.05,0,65);noise(.022,.13,.052,3900,.035,.2);for(const [start,hz,pan]of[[.042,810,.25],[.074,1130,-.15],[.099,620,.1]])tone(hz,start,.19,.013,.035,pan,hz*.55);}
+  if(name==='chest'){
+    noise(0,.09,.11,2200,.025);metal(520,.008,.48,.036,-.1);
+    for(let i=0;i<9;i++){const at=.065+i*.021;tone(175+i*19,at,.16,.015,.035,Math.sin(i)*.18,130+i*13);noise(at,.055,.025,750,.02);}
+    for(const [start,hz,pan]of[[.13,1420,-.25],[.19,1860,.2],[.25,1190,-.1]])metal(hz,start,.42,.011,pan);
+  }
+  if(name==='lever'){for(let i=0;i<8;i++){const at=i*.061;noise(at,.14,.13-i*.01,980,.025,i%2?.2:-.2);metal(320+(i%3)*81,at,.19,.028,i%2?-.2:.2);}tone(79,.018,.75,.063,.24,0,47);noise(.02,.71,.055,240,.3,0,.018);}
+  if(name==='rope'){noise(0,.29,.13,2200,.35,-.28,.08);for(let i=0;i<5;i++)noise(.035+i*.037,.07,.028,3100,.022);tone(220,.258,.57,.10,.14,.15,91);noise(.27,.17,.16,760,.045,.15);noise(.36,.24,.025,1450,.08,-.1);}
+  if(name==='relic'){metal(440,.008,.7,.026);for(const [i,hz]of[146.83,220,293.66,329.63,440].entries()){pluck(hz,.03+i*.19,1.12,.048,(i-2)*.16);air(hz*2,.1+i*.19,1.05,.012,(2-i)*.1);}tone(73.415,.03,1.65,.023,.55);}
+  if(name==='neutral'){tone(77,0,.33,.052,.085,0,60);noise(0,.19,.035,430,.06);}
+  if(name==='return'){pluck(196,.008,.62,.052);tone(98,.008,.58,.018,.2);}
+  if(name==='win'){for(const [i,hz]of[196,261.63,329.63,392].entries()){pluck(hz,.012+i*.13,1.05,.058,(i-1.5)*.14);air(hz,.06+i*.13,.95,.011);}metal(784,.39,.7,.012,.2);tone(98,.01,1.18,.026,.35);}
+  if(name==='big'){for(const [i,hz]of[130.81,196,261.63,329.63,392,523.25].entries()){pluck(hz,.015+i*.16,1.55,.052,(i-2.5)*.13);air(hz,.08+i*.16,1.5,.013,(2.5-i)*.09);}for(const hz of[65.405,130.81,196])tone(hz,.03,2.35,.026,.65);noise(.015,.42,.055,300,.13);metal(1046.5,.81,1.15,.014,.25);}
   if(name==='ambience'){
-    let low=0;for(let i=0;i<size;i++){low+=.026*(random()-low);const t=i/rate,envelope=Math.min(1,t/.16,(duration-t)/.16);add(low*.19*envelope*(.85+.15*Math.sin(2*Math.PI*t/8)),i,Math.sin(t*.9)*.2);}
-    for(let i=0;i<11;i++){const start=.38+i*.67,hz=620+(i*113)%470;tone(hz,start,.32,.014,.065,Math.sin(i)*.7,hz*.62);tone(hz*.55,start+.095,.4,.005,.1,-Math.sin(i)*.7);}
+    let low=0,slow=0;for(let i=0;i<size;i++){const value=random();low+=.07*(value-low);slow+=.004*(value-slow);const t=i/rate,envelope=Math.min(1,t/.12,(duration-t)/.12);add((low*.11+slow*.19)*envelope*(.72+.13*Math.sin(2*Math.PI*t/8)+.12*Math.sin(t*2.7)),i,Math.sin(t*.7)*.3);}
+    for(const [i,start]of[.34,1.19,1.52,2.78,3.96,4.23,5.75,6.61,7.1].entries()){const hz=590+(i*157)%590,pan=Math.sin(i*1.7)*.75;tone(hz,start,.39,.008,.065,pan,hz*.58);tone(hz*.51,start+.082,.45,.003,.1,-pan);}
   }
   // Short stereo reflections, bounded and owned by the file rather than a global reverb tail.
-  if(name!=='ambience')for(const channel of channels){for(let i=size-1;i>=0;i--){const delay=Math.floor(rate*.067);if(i>=delay)channel[i]+=channel[i-delay]*.17;}}
+  if(name!=='ambience'){const dry=channels.map(c=>c.slice());for(let c=0;c<2;c++)for(const [delay,level]of[[.061,.13],[.113,.075],[.181,.038]])for(let i=Math.floor(rate*delay);i<size;i++)channels[c][i]+=dry[1-c][i-Math.floor(rate*delay)]*level;}
   for(const channel of channels)for(let i=0;i<size;i++)channel[i]*=Math.min(1,i/(rate*.002),(size-1-i)/(rate*.035));
   const target={scrape:.14,stone:.3,step:.14,chest:.24,lever:.22,rope:.2,relic:.26,neutral:.07,return:.14,win:.27,big:.3,ambience:.04}[name];
   const peak=metrics(channels).peak;for(const data of channels)for(let i=0;i<data.length;i++)data[i]*=target/peak;
@@ -49,11 +61,11 @@ export async function writePack(root=process.cwd()){
   const folder=resolve(root,'public/assets/flooded-temple/audio');await mkdir(folder,{recursive:true});const manifest={sampleRate:rate,format:'stereo PCM16',cues:{}};
   for(const name of Object.keys(specs)){const audio=synthesize(name);await writeFile(resolve(folder,name+'.wav'),wav(audio.channels));manifest.cues[name]={file:name+'.wav',duration:audio.duration,accent:audio.accent,...metrics(audio.channels)};}
   await writeFile(resolve(root,'games/flooded-temple/sounds.json'),JSON.stringify(manifest,null,2)+'\n');
-  const demo=[new Float32Array(rate*12),new Float32Array(rate*12)];
-  for(const [name,start,level]of[['ambience',0,.8],['stone',.4,.8],['step',1.1,1],['chest',1.7,1],['lever',2.5,1],['rope',3.5,1],['relic',4.35,1],['neutral',6,1],['return',6.65,1],['win',7.55,1],['big',9,1]]){
+  const demo=[new Float32Array(rate*16),new Float32Array(rate*16)];
+  for(const [name,start,level]of[['ambience',0,.8],['stone',.4,.8],['step',1.2,1],['chest',1.9,1],['lever',3,1],['rope',4.2,1],['relic',5.5,1],['neutral',8,1],['return',8.8,1],['win',9.9,1],['big',12,1]]){
     const audio=synthesize(name);for(let c=0;c<2;c++)for(let i=0;i<audio.channels[c].length;i++){const at=Math.floor(start*rate)+i;if(at<demo[c].length)demo[c][at]+=audio.channels[c][i]*level;}
   }
-  await writeFile(resolve(root,'docs/assets/flooded-temple/stage4-sound-preview.wav'),wav(demo));
+  await writeFile(resolve(root,'docs/assets/flooded-temple/reference-sound-preview.wav'),wav(demo));
   return manifest;
 }
 if(process.argv[1]&&pathToFileURL(resolve(process.argv[1])).href===import.meta.url){const result=await writePack();console.log(JSON.stringify(result));}

@@ -41,7 +41,7 @@ export class TempleAudio{
   private contextChanged=()=>{if(this.context?.state!=='running')this.cancel();else this.ambience();};
   // The context belongs to the host window. Use its performance origin, not the iframe's.
   clock(){return readTempleClock(this.host.context,performance.now());}
-  lead(){return Math.min(1100,Math.max(220,this.clock().latencyMs+200));}
+  lead(){const latency=this.clock().latencyMs;return Math.min(1100,Math.max(220,latency+200,Math.max(...Object.values(manifest.cues).map(c=>c.accent))*1000+latency+60));}
   schedule(cue:TempleCue,targetPerformanceTime:number):TempleAudioAnchor{
     const now=performance.now(),clock=readTempleClock(this.host.context,now),c=this.context;
     let start=c?contextTimeForAccent(clock,targetPerformanceTime,manifest.cues[cue].accent):NaN;

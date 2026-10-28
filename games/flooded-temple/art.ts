@@ -9,7 +9,8 @@ export const art={
  check:svg('<path d="M15 33L27 45L50 19" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>'),
  gate:svg('<path d="M13 52V13H51V52M22 14V52M32 14V52M42 14V52M13 27H51M13 43H51" stroke="currentColor" stroke-width="4"/>'),
  gap:svg('<path d="M10 10L24 20L18 31L26 41L17 55M53 9L39 20L45 31L37 41L46 55" stroke="currentColor" stroke-width="4"/>'),
- explorer:svg('<circle cx="32" cy="16" r="7" fill="currentColor"/><path d="M32 27V42M20 39L32 29L44 39M24 56L32 42L40 56" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>'),
+ explorer:svg('<circle cx="32" cy="32" r="27" stroke="currentColor" stroke-width="2"/><path d="M32 5V14M32 50V59M5 32H14M50 32H59" stroke="currentColor" stroke-width="3"/><path d="M44 16L36 36L20 48L28 28Z" fill="currentColor"/><path d="M44 16L32 32L28 28Z" fill="#fff4c4"/>'),
 };
+export const prop=(name:string,variant='')=>`<img class="ft-prop ${variant}" src="/assets/flooded-temple/props/${name}.webp" alt="" draggable="false">`;
 export const escape=(value:string)=>value.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]!));
 export const roomName=(room:number)=>'ABCDE'[room%5]+(1+Math.floor(room/5));

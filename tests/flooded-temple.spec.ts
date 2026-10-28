@@ -1,7 +1,7 @@
 import {test,expect,request as apiRequest,type Page,type Route} from '@playwright/test';
 import {Client} from '@colyseus/sdk';
 import {mkdir} from 'node:fs/promises';
-const entry='/tests/fixtures/temple-preview.html',review='artifacts/work/flooded-temple-stage4/browser';
+const entry='/tests/fixtures/temple-preview.html',review='artifacts/work/flooded-temple-polish/browser';
 const game=(p:Page)=>p.frameLocator('.temple-frame');
 const state=(p:Page)=>p.evaluate(()=>(window as any).templePreview.state());
 const session=(p:Page)=>p.evaluate(()=>(window as any).templePreview.client.sessions.find((s:any)=>s.gameId==='studio-flooded-temple'));

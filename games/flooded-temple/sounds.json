@@ -4,87 +4,87 @@
   "cues": {
     "scrape": {
       "file": "scrape.wav",
-      "duration": 0.32,
-      "accent": 0.018,
+      "duration": 0.48,
+      "accent": 0.025,
       "peak": 0.14000000059604645,
-      "rms": 0.02723809857670049
+      "rms": 0.026990123215427073
     },
     "stone": {
       "file": "stone.wav",
-      "duration": 0.34,
-      "accent": 0.012,
+      "duration": 0.48,
+      "accent": 0.018,
       "peak": 0.30000001192092896,
-      "rms": 0.04995398650311322
+      "rms": 0.05695959219114573
     },
     "step": {
       "file": "step.wav",
-      "duration": 0.22,
-      "accent": 0.009,
+      "duration": 0.34,
+      "accent": 0.012,
       "peak": 0.14000000059604645,
-      "rms": 0.020905460456847658
+      "rms": 0.019848763922218075
     },
     "chest": {
       "file": "chest.wav",
-      "duration": 0.58,
-      "accent": 0.012,
+      "duration": 0.82,
+      "accent": 0.025,
       "peak": 0.23999999463558197,
-      "rms": 0.03286559459270921
+      "rms": 0.028472019275596422
     },
     "lever": {
       "file": "lever.wav",
-      "duration": 0.64,
-      "accent": 0.012,
+      "duration": 0.92,
+      "accent": 0.018,
       "peak": 0.2199999988079071,
-      "rms": 0.03612947224854031
+      "rms": 0.04145953893933129
     },
     "rope": {
       "file": "rope.wav",
-      "duration": 0.65,
-      "accent": 0.16,
+      "duration": 0.88,
+      "accent": 0.27,
       "peak": 0.20000000298023224,
-      "rms": 0.029960923979147285
+      "rms": 0.03182316654835548
     },
     "relic": {
       "file": "relic.wav",
-      "duration": 1.35,
-      "accent": 0.018,
+      "duration": 1.95,
+      "accent": 0.03,
       "peak": 0.25999999046325684,
-      "rms": 0.053234988379674
+      "rms": 0.05515176742692447
     },
     "neutral": {
       "file": "neutral.wav",
-      "duration": 0.32,
-      "accent": 0.012,
+      "duration": 0.38,
+      "accent": 0.018,
       "peak": 0.07000000029802322,
-      "rms": 0.015169905633703686
+      "rms": 0.014751477127265327
     },
     "return": {
       "file": "return.wav",
-      "duration": 0.6,
-      "accent": 0.012,
+      "duration": 0.68,
+      "accent": 0.018,
       "peak": 0.14000000059604645,
-      "rms": 0.03496407672706139
+      "rms": 0.03954671868258532
     },
     "win": {
       "file": "win.wav",
-      "duration": 0.95,
-      "accent": 0.012,
+      "duration": 1.5,
+      "accent": 0.025,
       "peak": 0.27000001072883606,
-      "rms": 0.05354807143453253
+      "rms": 0.05654230910640324
     },
     "big": {
       "file": "big.wav",
-      "duration": 1.8,
-      "accent": 0.012,
+      "duration": 2.65,
+      "accent": 0.03,
       "peak": 0.30000001192092896,
-      "rms": 0.060082698446528617
+      "rms": 0.06321823652941179
     },
     "ambience": {
       "file": "ambience.wav",
       "duration": 8,
       "accent": 0,
       "peak": 0.03999999910593033,
-      "rms": 0.007905749308561206
+      "rms": 0.006823001736756844
     }
   }
 }
