@@ -4,6 +4,7 @@ import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
 import { cosmicQualificationEvidence, COSMIC_QUALIFICATION_METHOD, COSMIC_QUALIFICATION_MODEL } from './rtp-cosmic.mjs';
 import { caribbeanQualificationEvidence, CARIBBEAN_QUALIFICATION_METHOD, CARIBBEAN_REVIEWED_SOURCES } from './rtp-caribbean.mjs';
+import { JACKIE_METHOD, jackieEvidence } from './rtp-jackie.mjs';
 
 const digest = value => createHash('sha256').update(value).digest('hex');
 // Git checkouts use CRLF on Windows and LF in Linux CI. Hash canonical text.
@@ -33,6 +34,14 @@ export function validateRtpProof(gameId, inputs, proof) {
   if (gameId==='studio-neopolis' && p.rulesVersion>=4) assert.equal(p.method,'neopolis-variable-stake-conditional-v4','Variable stakes require conditional qualification');
   assert.equal(proof.policySha256, inputs.policySha256, 'RTP policy changed: rerun qualification');
   assert.deepEqual(proof.sourceHashes, inputs.sourceHashes, 'RTP source changed: rerun qualification');
+  if (p.method===JACKIE_METHOD) {
+    assert.equal(gameId,'original-jackie-chan');
+    const expected=jackieEvidence(p);
+    assert.equal(proof.method,expected.method);assert.deepEqual(proof.analysis,expected.analysis);assert.deepEqual(proof.results,expected.results);
+    assert.deepEqual(proof.serverReplay.seeds,p.seeds);assert.equal(new Set(p.seeds).size,2);
+    assert.equal(proof.serverReplayChecks,17388);assert.match(proof.serverReplay.sha256,/^[a-f0-9]{64}$/);
+    return true;
+  }
   if(p.method===CARIBBEAN_QUALIFICATION_METHOD) {
     assert.equal(gameId,'studio-caribbean-treasures');
     assert.deepEqual(Object.fromEntries(Object.keys(CARIBBEAN_REVIEWED_SOURCES).map(file=>[file,inputs.sourceHashes[file]])),CARIBBEAN_REVIEWED_SOURCES,

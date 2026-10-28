@@ -1,3 +1,4 @@
+import {JACKIE_GAME} from './jackieChan';
 import {PENALTY_GAME} from './crLeo';
 import {CARIBBEAN_GAME} from './caribbeanTreasures';
 import {STUDIO_GAMES, type StudioGameId} from './studioGames';
@@ -26,7 +27,7 @@ const retired = new Set<unknown>(RETIRED_ARCADE_GAMES);
 export const isRetiredArcadeGame = (id: unknown): boolean => retired.has(id);
 
 // LAST EXIT keeps the historical Crash ID, but belongs with the house games.
-export const ARCADE_HOUSE_GAMES = [...ACTIVE_STUDIO_GAMES, 'github-crash', 'royal-plinko', PENALTY_GAME] as const;
+export const ARCADE_HOUSE_GAMES = [...ACTIVE_STUDIO_GAMES, 'github-crash', 'royal-plinko', PENALTY_GAME, JACKIE_GAME] as const;
 export const ARCADE_GITHUB_GAMES: readonly string[] = [];
 
 export type CabinetCollection = 'royal' | 'github' | 'casinoapipro';

@@ -55,6 +55,7 @@ export const CABINET_ARTWORK: Record<HouseGameId, Artwork> = {
     background: '/assets/arcane-plinko/world.png',
     layers: [{url:'/assets/arcane-plinko/hero.png',source:[80,0,900,1050],target:[7,0,39,44]}],
   },
+  'original-jackie-chan': { background:'/assets/jackie-chan/restaurant.webp', layers:[{url:'/assets/jackie-chan/master.webp',source:[0,0,384,512],target:[9,1,31,43]}] },
   'original-cr-vs-leo': {
     background: '/assets/cr-vs-leo/v2/stadium.webp',
     layers: [

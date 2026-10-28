@@ -487,6 +487,40 @@
         "src/shared/cosmicEscapeBets.ts",
         "server/games/luelonSlots.ts"
       ]
+    },
+    "original-jackie-chan": {
+      "method": "exact-jackie-series-v1",
+      "rulesVersion": 1,
+      "progressVersion": 1,
+      "target": 0.99,
+      "tolerance": 0.0003,
+      "stakes": [
+        1000,
+        5000,
+        10000,
+        50000
+      ],
+      "choices": [
+        "safe",
+        "sharp",
+        "extreme"
+      ],
+      "seeds": [
+        27102801,
+        27102807
+      ],
+      "proof": "docs/game-math/qualifications/jackie-chan-v1.json",
+      "qualificationSource": "scripts/game-math/rtp-jackie.mjs",
+      "sources": [
+        "src/shared/jackieChan.ts",
+        "server/games/jackieChan.ts",
+        "server/jackieCollection.ts",
+        "src/shared/crLeo.ts",
+        "server/games/crLeo.ts",
+        "src/shared/casinoExpansion.ts",
+        "server/demoExpansion.ts",
+        "server/finance/nile-game-runtime.ts"
+      ]
     }
   },
   "nonWagered": {}

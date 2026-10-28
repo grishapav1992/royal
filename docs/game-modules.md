@@ -1,17 +1,17 @@
 # Independently published games
 
-Every existing game definition has an independent client package. The catalogue contains 118 module identities across the current and historical game families. This is a technical inventory, not a claim that the hall has 118 visible machines:
+Every existing game definition has an independent client package. The catalogue contains 119 module identities across the current and historical game families. This is a technical inventory, not a claim that the hall has 119 visible machines:
 
 | Family | Module identities |
 | --- | ---: |
 | Studio games, including Caribbean Treasures | 42 |
-| Original Royal games, GitHub practice games, session games and all casino/card variants, including LAST EXIT | 62 |
+| Original Royal games, GitHub practice games, session games and all casino/card variants, including LAST EXIT | 63 |
 | Air hockey, pool, chess, piano and Mortal Kombat | 5 |
 | Durak, transfer Durak and Crazy Eights PvP | 3 |
 | Breaker, Orbit, Drift and Pixel legacy arcade games | 4 |
 | Luelon and Casino API Pro provider adapters | 2 |
 
-Supported identities and host contracts are in `src/modules/GameModuleCatalog.ts`. Each `games/<slug>/` directory contains its entry, package metadata and TypeScript configuration. GIRLHUB keeps slug `girlhub` and identity `studio-afterglow`. LAST EXIT keeps identity `github-crash` and uses slug `last-exit`. CR vs. Leo keeps its production identity `original-cr-vs-leo` in package `cr-vs-leo`; Royal Plinko keeps the current «Завеса ночи» implementation and its assets. The arcade Orbit uses identity `orbit` and slug `arcade-orbit`, distinct from `studio-orbit`.
+Supported identities and host contracts are in `src/modules/GameModuleCatalog.ts`. Each `games/<slug>/` directory contains its entry, package metadata and TypeScript configuration. GIRLHUB keeps slug `girlhub` and identity `studio-afterglow`. LAST EXIT keeps identity `github-crash` and uses slug `last-exit`. CR vs. Leo keeps its production identity `original-cr-vs-leo` in package `cr-vs-leo`; Royal Plinko keeps the current «Завеса ночи» implementation and its assets. Jackie Chan: Five Takes uses identity `original-jackie-chan`, slug `jackie-chan` and contracts 1, with the shared CR vs. Leo engine and a separate cosmetic collection. The arcade Orbit uses identity `orbit` and slug `arcade-orbit`, distinct from `studio-orbit`.
 
 The hall keeps its existing visible cabinets, card tables, activities and recovery paths. Historical definitions are packaged without changing their retired status. Provider games remain hosted by their providers; Royal independently packages the local catalogue, launch and iframe adapter for each provider. Their remote game engines are already loaded separately.
 

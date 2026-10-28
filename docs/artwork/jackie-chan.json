@@ -1,0 +1,74 @@
+{
+  "tool": "built-in image_gen",
+  "style": "Illustrated animation cels inspired by classic Hong Kong kung fu films",
+  "assets": [
+    {
+      "asset": "public/assets/jackie-chan/master.webp",
+      "bytes": 381124,
+      "sha256": "bff8aa02ed7ab1a91e8c09a40abd3fee3872581bfe79958598bc0ebf45e92640",
+      "prompt": "Use case: stylized-concept\nAsset type: transparent 2D fighting-game character animation atlas, 4 columns by 2 rows, eight separate full-body poses.\nPrimary request: recognizable young adult Jackie Chan from his classic 1970s/1980s Hong Kong kung fu comedies. Hand inked animation cels, painterly fabric, crisp outlines, warm cream highlights, authentic retro movie poster character design, adult athletic proportions, expressive friendly face, dark shaggy short hair. Outfit inspired by Drunken Master: ivory wrap-front kung fu shirt, dark charcoal loose trousers, black cloth shoes, maroon sash. All poses face right, camera at side in a mild three-quarter view. Same face, body and clothes in every cell.\nEight poses in strict reading order: 1 relaxed ready fighting guard, 2 low duck with bent knees, 3 chambered right fist windup, 4 right straight punch extending toward right, 5 spectacular horizontal side kick toward right, 6 crouched evasive step, 7 comic hurt reaction shaking one hand with pained smile, 8 triumphant open-palmed salute.\nComposition: exact 4x2 uniform grid, each character contained within own cell, full body and hands/feet visible, generous transparent gutters, feet align close to bottom of each cell, consistent human height across standing poses; poses 2 and 6 naturally crouched; no ground plane or shadows.\nConstraints: true transparent alpha background, no grid lines, no text, no numbering, no lettering, no extra objects, no clones within cells, no blood. Game sprites, polished illustrated art, no 3D rendering, no photographic style.",
+      "sourceGeneration": "exec-9f4fa2d2-acd6-4c48-a936-9769282aabe4.png"
+    },
+    {
+      "asset": "public/assets/jackie-chan/sailor.webp",
+      "bytes": 326262,
+      "sha256": "c9870972cb6dd48f83da3833e93ae6d4dc64e0ad3b0c7b6696c2872ed2343740",
+      "prompt": "Use case: identity-preserve. Edit target: supplied transparent Jackie Chan 4x2 eight-pose sprite atlas. Change ONLY the clothing to a drawn costume inspired by Project A (1983), dark navy sailor uniform, square white sailor collar with navy trim, loose navy trousers, black shoes, no hat. Keep EXACTLY the same recognizable young Jackie Chan face, hair, body proportions, hand-drawn animation-cel style, all eight poses, cell positions, full-body framing, canvas dimensions, side direction, hand/foot locations and transparent background. Each of the eight figures must wear the new costume. Preserve truly transparent alpha around the figures, no background, no shadows, no new elements, no lettering. Do not add a weapon or change the poses.",
+      "sourceGeneration": "exec-624967b8-5530-42b8-87e4-f742750882c8.png"
+    },
+    {
+      "asset": "public/assets/jackie-chan/police.webp",
+      "bytes": 398684,
+      "sha256": "ac6adc4b306c53838bf7307756a3102924aa10df43b2d01c60a2a54efd5651cf",
+      "prompt": "Use case: identity-preserve. Edit target: supplied transparent Jackie Chan 4x2 eight-pose sprite atlas. Change ONLY the clothing to a drawn costume inspired by Police Story (1985), light tan casual jacket over a white T-shirt, blue straight-leg jeans, white sneakers. Keep EXACTLY the same recognizable young Jackie Chan face, hair, body proportions, hand-drawn animation-cel style, all eight poses, cell positions, full-body framing, canvas dimensions, side direction, hand/foot locations and transparent background. Each of the eight figures must wear the new costume. Preserve truly transparent alpha around the figures, no background, no shadows, no new elements, no lettering. Do not add a weapon or change the poses.",
+      "sourceGeneration": "exec-9652d24f-2191-40a7-8c49-900f30b3e728.png"
+    },
+    {
+      "asset": "public/assets/jackie-chan/hawk.webp",
+      "bytes": 398970,
+      "sha256": "70484e65788d9210936cf0f1ccfe78134c82bde08f845b8952fcde2dae65c6ff",
+      "prompt": "Use case: identity-preserve. Edit target: supplied transparent Jackie Chan 4x2 eight-pose sprite atlas. Change ONLY the clothing to a drawn costume inspired by Armour of God (1986), dusty olive/tan safari adventurer waistcoat over cream T-shirt, brown belted trousers, sturdy brown shoes. Keep EXACTLY the same recognizable young Jackie Chan face, hair, body proportions, hand-drawn animation-cel style, all eight poses, cell positions, full-body framing, canvas dimensions, side direction, hand/foot locations and transparent background. Each of the eight figures must wear the new costume. Preserve truly transparent alpha around the figures, no background, no shadows, no new elements, no lettering. Do not add a weapon or change the poses.",
+      "sourceGeneration": "exec-557143eb-a8a5-465a-b3d2-e326fac52f59.png"
+    },
+    {
+      "asset": "public/assets/jackie-chan/foes.webp",
+      "bytes": 396288,
+      "sha256": "938d7f6f57a3a6263ea188d8dc57521cceaeb73b146f66b161dc0dd5560fcf0a",
+      "prompt": "Use case: stylized-concept. Asset type: transparent 4 columns by 2 rows fighting-game animation sprite atlas, eight full-body poses of ONE fictional adult Hong Kong stunt fighter, short slick black hair, sturdy adult proportions, dark burgundy rolled-sleeve shirt, charcoal trousers, black shoes. NOT Jackie Chan, a distinct stocky henchman. All figures face LEFT. Style: detailed hand inked and gouache painted 1980s Hong Kong martial-arts comic, warm ivory edge light, crisp dark outlines, expressive animation cels, painterly fabric.\nStrict 4x2 equal-cell layout, all limbs fully inside each cell with ample transparent gutters, consistent standing height, feet near bottom of each cell.\nReading order: 1 ready guard facing left; 2 straight punch extending left; 3 recoiling backward after comic punch; 4 backward falling pose with torso leaning right; 5 crouching duck; 6 side kick extending left; 7 sitting on floor rubbing head, funny defeat; 8 blocking face with crossed forearms.\nNo weapons, blood, extra characters within cells, lettering, grid, shadows or ground. True transparent background.",
+      "sourceGeneration": "exec-e5334e65-2ff1-469a-9410-60769817accc.png"
+    },
+    {
+      "asset": "public/assets/jackie-chan/restaurant.webp",
+      "bytes": 519018,
+      "sha256": "aa4e78827432a34fea5774b7f874063de55d3c20c0897c2570501214e089293a",
+      "prompt": "Use case: stylized-concept. Asset type: ONE complete widescreen 16:9 hand drawn side-view fighting-game environment. Primary request: warm 1980s Hong Kong dim sum restaurant interior, red lanterns, dark lattice windows, cream plaster walls, ornate wood details; chairs and tables pushed to edges; broad empty wooden fighting floor across lower half; late afternoon light. Camera at a mild elevated side view, small amount of floor perspective, eye level vanishing point. Style: hand inked and gouache painted animation background for classic Jackie Chan kung fu movie-inspired game, intricate cinematic detail, warm parchment grain, crisp dark linework, authentic vintage Hong Kong. Rich depth while leaving center 70% completely open for moving fighters. Ground under fighters at 85% of image height. Strong composition framing the action, calm detailed backdrop. No people, characters, text, logos, UI, border, panels or collage. ONE scene fills the whole 16:9 landscape image.",
+      "sourceGeneration": "exec-25eb1d3f-92ec-4a6b-a164-a6d6117b7347.png"
+    },
+    {
+      "asset": "public/assets/jackie-chan/harbor.webp",
+      "bytes": 491722,
+      "sha256": "90cad03cf703ee4b0329c2c1f0eb8eedc9a5de42e11f5a9066c556fb151cfa0c",
+      "prompt": "Use case: stylized-concept. Asset type: ONE complete widescreen 16:9 hand drawn side-view fighting-game environment. Primary request: old Hong Kong harbor warehouse at sunset, tall timber beams, coiled ropes and cargo crates at left and right edges, open view of teal water and moored junks behind; broad empty plank fighting floor across lower half. Camera at a mild elevated side view, small amount of floor perspective, eye level vanishing point. Style: hand inked and gouache painted animation background for classic Jackie Chan kung fu movie-inspired game, intricate cinematic detail, warm parchment grain, crisp dark linework, authentic vintage Hong Kong. Rich depth while leaving center 70% completely open for moving fighters. Ground under fighters at 85% of image height. Strong composition framing the action, calm detailed backdrop. No people, characters, text, logos, UI, border, panels or collage. ONE scene fills the whole 16:9 landscape image.",
+      "sourceGeneration": "exec-9c1e03a1-65b8-451c-918e-14067f4c4f70.png"
+    },
+    {
+      "asset": "public/assets/jackie-chan/market.webp",
+      "bytes": 564842,
+      "sha256": "e021f8c41a7efc5403613090a8d3a77105b25f1abb35b80a4319680ab83c6685",
+      "prompt": "Use case: stylized-concept. Asset type: ONE complete widescreen 16:9 hand drawn side-view fighting-game environment. Primary request: old Hong Kong market street at blue hour, weathered shopfronts and hanging red lanterns, canvas awnings, teal evening shadows and amber lights; broad empty stone pavement across lower half. Camera at a mild elevated side view, small amount of floor perspective, eye level vanishing point. Style: hand inked and gouache painted animation background for classic Jackie Chan kung fu movie-inspired game, intricate cinematic detail, warm parchment grain, crisp dark linework, authentic vintage Hong Kong. Rich depth while leaving center 70% completely open for moving fighters. Ground under fighters at 85% of image height. Strong composition framing the action, calm detailed backdrop. No people, characters, text, logos, UI, border, panels or collage. ONE scene fills the whole 16:9 landscape image.",
+      "sourceGeneration": "exec-ebb4cdac-abc3-4b4e-b3e0-2e9bc6e8ff57.png"
+    },
+    {
+      "asset": "public/assets/jackie-chan/cover.webp",
+      "bytes": 273866,
+      "sha256": "bb3032df4f98654275f6aba9538ed51ba0c36b50b2f6930a35b149ba5ff4794f",
+      "prompt": "Use case: compositing. Asset type: square cover art for an illustrated Jackie Chan kung fu game in a Royal game catalogue. Reference image 1: identity and hand drawn style for the young adult Jackie Chan, cream kung fu shirt with maroon sash. Reference image 2: atmospheric painted tea house setting. Create a polished vintage Hong Kong martial-arts film poster illustration with recognizable friendly young Jackie Chan in a dynamic half-body fighting pose in the foreground, expressive face, hand raised, flowing cream sleeve, with warm red lanterns, lattice wood and amber restaurant light behind. Detailed hand inked and gouache animated-movie aesthetic matching both references. Cinematic warm parchment palette, teal shadows, burgundy and gold accents, crisp silhouette readable at thumbnail size. Square composition, Jackie dominates center-right, generous atmospheric top space. NO text, letters, logos, borders, watermark, photorealism or 3D. No other characters."
+    },
+    {
+      "asset": "public/assets/jackie-chan/props.webp",
+      "bytes": 535994,
+      "sha256": "29e80c7c05e432a8cb92c5fef5917e0ae7d7742e2dcfe118f4c2db1903026054",
+      "prompt": "Use case: stylized-concept. Asset type: transparent prop sprite atlas for a hand drawn classic Hong Kong kung fu comedy game. Exact 4 columns by 2 rows, eight clearly separated full objects, one object per cell. Ground level side view with slight perspective, consistent richly detailed hand inked and gouache animation-cel style, warm vintage amber highlights, dark crisp outlines. Reading order: 1 simple sturdy wooden restaurant chair with four legs and backrest, 2 small round wooden kung fu stool, 3 low rectangular wooden tea table, 4 a few comic broken wooden chair pieces lying flat, 5 square vintage wooden shipping crate, 6 wooden barrel, 7 low two-wheeled wooden produce handcart, 8 woven bamboo fruit basket. All objects fully inside cells with generous transparent margins, bottoms on same baseline in each row. No people, letters, labels, shadows, background, borders, cell numbers or grid. True transparent alpha background."
+    }
+  ]
+}
