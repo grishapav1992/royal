@@ -131,6 +131,12 @@ test('motion and shared audio respect result tiers, mute, pause, rules, skip, an
   await writeFile(out + '/timing.json', JSON.stringify(current.timing, null, 2));
   expect(current.audio.played.land).toBe(1); expect(current.audio.played.flow).toBe(1); expect(current.audio.played.win).toBe(1);
   expect(current.timing.every((t: any) => t.skewMs < 80)).toBe(true);
+  const cuesBeforeSilence=current.audio.played;
+  await page.evaluate(async()=>{const path='/src/game/GameAudio.ts';const {gameAudio}=await import(path);gameAudio.setVolume(0);});
+  expect((await state(page)).audio.activeVoices).toBe(0);
+  await page.evaluate(async()=>{const path='/src/game/GameAudio.ts';const {gameAudio}=await import(path);gameAudio.setVolume(.35);});
+  await expect.poll(async()=>((await state(page)).audio.musicVoices??0)>0).toBe(true);
+  expect((await state(page)).audio.played).toEqual(cuesBeforeSilence);
   await game(page).locator('[data-fh=spin]').click(); await expect(game(page).locator('[data-fh=skip]')).toBeVisible();
   await game(page).locator('[data-fh=skip]').click(); await expect(game(page).locator('[data-fh=spin]')).toBeEnabled();
   expect((await state(page)).audio.activeVoices).toBe(0);
