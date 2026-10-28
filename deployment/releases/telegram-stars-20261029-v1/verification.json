@@ -1,0 +1,127 @@
+{
+  "release": "telegram-stars-20261029-v1",
+  "sourceCommit": "3e428397544ec9a18d2bb64e51cfce2f4293a627",
+  "image": "sha256:5bbda74bd98ed622bec1911ebcd8b00df303a09145887d099e41b1252c8d4f0e",
+  "published": true,
+  "changedSources": [
+    "server/crypto/store.ts",
+    "server/payments/app.ts",
+    "server/payments/index.ts",
+    "server/payments/runtime.ts",
+    "server/payments/telegram-provider.ts",
+    "server/payments/telegram-stars.ts",
+    "src/shared/cryptoWallet.ts"
+  ],
+  "gameAndOtherServicesPreserved": true,
+  "runtimeFilesVerified": {
+    "royal-game-1": 8207,
+    "royal-payments-1": 4749
+  },
+  "dependencyUpdates": {
+    "node_modules/body-parser": "2.4.0",
+    "node_modules/qs": "6.16.1"
+  },
+  "retainedSourceBackupVerified": true,
+  "candidateFilesystemReused": true,
+  "sourceBackupBytes": 13648,
+  "sourceBackupSha256": "f3019a1e8b2cfccbb0149d9f6cebadaaf22afbe3cea7bdd47df6ad2fff2f2754",
+  "paymentBackupBytes": 21336,
+  "paymentBackupSha256": "75f4e66778616a4a2f1295e2d47c394d85470c776b9ebec5ba97fe6ca6c8490b",
+  "freeBytesAfter": 7049555968,
+  "at": 1793227733.6311944,
+  "productionGameSource": "9acf3686965fedc0c81efaaa6f740e30d4fef175",
+  "persistentServices": 14,
+  "publicChecks": {
+    "at": "2026-10-28T22:49:49.737Z",
+    "origin": "https://stealth-spark-gokmxooi.expresshost.cloud",
+    "checks": [
+      {
+        "name": "health",
+        "path": "/healthz",
+        "status": 200,
+        "contentType": "application/json; charset=utf-8",
+        "passed": true
+      },
+      {
+        "name": "terms",
+        "path": "/api/telegram-stars/terms",
+        "status": 200,
+        "contentType": "text/plain; charset=utf-8",
+        "passed": true
+      },
+      {
+        "name": "unsignedWebhook",
+        "path": "/api/telegram-stars/webhook",
+        "status": 401,
+        "contentType": "application/json; charset=utf-8",
+        "passed": true
+      },
+      {
+        "name": "team",
+        "path": "/team",
+        "status": 308,
+        "contentType": null,
+        "passed": true
+      },
+      {
+        "name": "home",
+        "path": "/",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "passed": true
+      }
+    ],
+    "passed": true
+  },
+  "validation": {
+    "serverTestsPassed": 44,
+    "browserTestsPassed": 15,
+    "installerTestsPassed": 7,
+    "canonicalReleasePrepared": true,
+    "githubVerified": true,
+    "qualifiedRtpProfiles": 12,
+    "unchangedLegacyGamesNotQualified": 114
+  },
+  "bot": {
+    "username": "royal_originals_bot",
+    "webhookConfigured": true,
+    "pendingUpdatesAtSetup": 0
+  },
+  "trial": {
+    "audience": "one pre-authorized owner account",
+    "stars": 100,
+    "creditUnits": "1000000",
+    "currency": "USDT",
+    "scale": 6,
+    "maximumAcceptedPayments": 1,
+    "status": "waiting",
+    "invoiceCreated": true,
+    "userPaymentNotConfirmed": true,
+    "gamesEnabled": false,
+    "withdrawalsEnabled": false,
+    "cryptoDepositsEnabled": false,
+    "hostPaymentFormPublished": false,
+    "lastVerifiedAt": "2026-10-28T22:52:03.542Z",
+    "creditDeltaUnits": "0"
+  },
+  "preflightStops": [
+    {
+      "reason": "Docker mount list order was unstable",
+      "financialMutation": false
+    },
+    {
+      "reason": "Scheduled one-shot container exited during inspection",
+      "financialMutation": false
+    },
+    {
+      "reason": "Image preparation exceeded 180 seconds; identical preparation was subsequently completed before retry",
+      "financialMutation": false
+    }
+  ],
+  "backup": {
+    "serverDirectory": "/opt/royal-backups/telegram-stars-20261029-v1",
+    "databaseRestored": false,
+    "previousImageTag": "royal-payments:before-telegram-stars-20261029-v1"
+  },
+  "serverFreeBytesBefore": 7074459648
+}

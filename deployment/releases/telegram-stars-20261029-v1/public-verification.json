@@ -1,0 +1,42 @@
+{
+  "at": "2026-10-28T22:49:49.737Z",
+  "origin": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "checks": [
+    {
+      "name": "health",
+      "path": "/healthz",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "passed": true
+    },
+    {
+      "name": "terms",
+      "path": "/api/telegram-stars/terms",
+      "status": 200,
+      "contentType": "text/plain; charset=utf-8",
+      "passed": true
+    },
+    {
+      "name": "unsignedWebhook",
+      "path": "/api/telegram-stars/webhook",
+      "status": 401,
+      "contentType": "application/json; charset=utf-8",
+      "passed": true
+    },
+    {
+      "name": "team",
+      "path": "/team",
+      "status": 308,
+      "contentType": null,
+      "passed": true
+    },
+    {
+      "name": "home",
+      "path": "/",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "passed": true
+    }
+  ],
+  "passed": true
+}
