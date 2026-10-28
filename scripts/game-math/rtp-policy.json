@@ -487,6 +487,78 @@
         "src/shared/cosmicEscapeBets.ts",
         "server/games/luelonSlots.ts"
       ]
+    },
+    "royal-roulette": {
+      "rulesVersion": 1,
+      "progressVersion": 1,
+      "method": "exhaustive-european-roulette-v1",
+      "target": 0.972972972972973,
+      "tolerance": 1e-12,
+      "stakes": [
+        1000,
+        5000,
+        10000,
+        50000
+      ],
+      "choices": [
+        "red",
+        "black",
+        "even",
+        "odd",
+        "number-0",
+        "number-1",
+        "number-2",
+        "number-3",
+        "number-4",
+        "number-5",
+        "number-6",
+        "number-7",
+        "number-8",
+        "number-9",
+        "number-10",
+        "number-11",
+        "number-12",
+        "number-13",
+        "number-14",
+        "number-15",
+        "number-16",
+        "number-17",
+        "number-18",
+        "number-19",
+        "number-20",
+        "number-21",
+        "number-22",
+        "number-23",
+        "number-24",
+        "number-25",
+        "number-26",
+        "number-27",
+        "number-28",
+        "number-29",
+        "number-30",
+        "number-31",
+        "number-32",
+        "number-33",
+        "number-34",
+        "number-35",
+        "number-36"
+      ],
+      "seeds": [
+        19103729,
+        83049281
+      ],
+      "serverReplayRoundsPerSeed": 64,
+      "proof": "docs/game-math/qualifications/royal-roulette-v1.json",
+      "qualificationSource": "scripts/game-math/rtp-roulette.mjs",
+      "sources": [
+        "server/games/roulette.ts",
+        "server/games/core.ts",
+        "server/games/types.ts",
+        "src/shared/gameCore.ts",
+        "src/shared/originalGames.ts",
+        "src/shared/demoWallet.ts",
+        "server/demoWallet.ts"
+      ]
     }
   },
   "nonWagered": {
