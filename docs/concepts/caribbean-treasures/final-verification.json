@@ -1,76 +1,84 @@
 {
   "format": 1,
-  "date": "2026-10-27",
-  "sourceCommit": "2ddf1988be8a95944bcfd6b56ecf6f75c9c449b4",
-  "baseline": "d898e987a36cca22672a1b84c52bbebe949d8548",
-  "package": "1.1.0-6e0466e824fd",
+  "date": "2026-10-28",
+  "sourceCommit": "9877671f6aac4efd680ec86f528d43d8644a03e8",
+  "baseline": "57cac4b61b189c8e037849e111e6c9608d329fd4",
+  "package": "1.2.0-2bb4a565e4ca",
   "apiVersion": 1,
   "rulesVersion": 1,
   "progressVersion": 1,
   "mathChanged": false,
   "productionChanged": false,
-  "runtimeMediaBytes": 1969902,
-  "rtpGate": {
-    "verified": 12,
-    "legacyNotQualified": 114
+  "runtimeImagesBytes": 1969902,
+  "runtimeAudioClipsBytes": 2917441,
+  "recordedAudio": {
+    "music": "Blackmoor Tides, instrumental loop",
+    "author": "Matthew Pablo",
+    "license": "CC-BY-3.0",
+    "effectAuthors": [
+      "Kenney",
+      "Thimras"
+    ],
+    "effectLicense": "CC0-1.0",
+    "decodedClips": 12,
+    "musicDurationSeconds": 136.02249433106576,
+    "oscillators": 0
   },
   "checks": {
-    "caribbean": 46,
-    "rtpGate": 23,
-    "nativeWalletRegressions": 11,
+    "caribbean": 47,
     "moduleIntegrity": 7,
     "verifiedModulePackages": 118,
     "gameTypecheck": true,
     "financeTypecheck": true,
     "applicationBuild": {
       "format": 1,
-      "startedAt": "2026-10-27T18:40:44.204Z",
+      "startedAt": "2026-10-28T04:40:11.483Z",
       "scope": "application",
       "steps": [
         {
           "name": "rtp",
           "passed": true,
-          "durationMs": 2220
+          "durationMs": 2455
         },
         {
           "name": "typecheck",
           "passed": true,
-          "durationMs": 8285
+          "durationMs": 14584
         },
         {
           "name": "modules",
           "passed": true,
-          "durationMs": 4126
+          "durationMs": 53048
         },
         {
           "name": "host",
           "passed": true,
-          "durationMs": 6965
+          "durationMs": 11592
         },
         {
           "name": "backend",
           "passed": true,
-          "durationMs": 73
+          "durationMs": 80
         },
         {
           "name": "reconciliation",
           "passed": true,
-          "durationMs": 24
+          "durationMs": 47
         },
         {
           "name": "payments",
           "passed": true,
-          "durationMs": 32
+          "durationMs": 30
         }
       ],
       "passed": true,
-      "durationMs": 21726
+      "durationMs": 81837
     }
   },
   "browser": {
-    "startTime": "2026-10-27T18:42:17.247Z",
-    "duration": 156378.525,
-    "expected": 7,
+    "startTime": "2026-10-28T04:49:40.592Z",
+    "duration": 208977.556,
+    "expected": 8,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0,
@@ -86,7 +94,7 @@
           {
             "status": "passed",
             "retry": 0,
-            "durationMs": 13295
+            "durationMs": 15795
           }
         ]
       },
@@ -97,7 +105,7 @@
           {
             "status": "passed",
             "retry": 0,
-            "durationMs": 10156
+            "durationMs": 19100
           }
         ]
       },
@@ -108,7 +116,7 @@
           {
             "status": "passed",
             "retry": 0,
-            "durationMs": 23527
+            "durationMs": 50208
           }
         ]
       },
@@ -119,7 +127,7 @@
           {
             "status": "passed",
             "retry": 0,
-            "durationMs": 35403
+            "durationMs": 40662
           }
         ]
       },
@@ -130,7 +138,7 @@
           {
             "status": "passed",
             "retry": 0,
-            "durationMs": 22621
+            "durationMs": 27873
           }
         ]
       },
@@ -141,18 +149,29 @@
           {
             "status": "passed",
             "retry": 0,
-            "durationMs": 48476
+            "durationMs": 52130
           }
         ]
       },
       {
-        "name": "original maritime music and Foley render without clipping and end in silence",
+        "name": "recorded orchestral music and Foley render without clipping and end in silence",
         "status": "expected",
         "results": [
           {
             "status": "passed",
             "retry": 0,
-            "durationMs": 1509
+            "durationMs": 654
+          }
+        ]
+      },
+      {
+        "name": "sample loading can fail and retry, and late decode after close cannot restart audio",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 803
           }
         ]
       }
@@ -160,21 +179,36 @@
   },
   "synchronization": {
     "targetMs": 50,
-    "maximumDeviationMs": 17.569666665174736,
-    "maxPreparationMs": 7,
-    "maxVisualMs": 4.5
+    "maximumDeviationMs": 18.528873015875433,
+    "maxPreparationMs": 0.7999999970197678,
+    "maxVisualMs": 6.299999997019768
   },
   "audio": {
-    "peak": 0.09745718538761139,
-    "rms": 0.007357180738473592,
-    "maxSampleStep": 0.02916521392762661,
+    "peak": 0.31254756450653076,
+    "rms": 0.025705984728675718,
+    "maxSampleStep": 0.17697072331793606,
     "tail": 0,
+    "samples": {
+      "music": 1,
+      "click": 1,
+      "stop-a": 3,
+      "metal": 6,
+      "stop-b": 2,
+      "stop-c": 2,
+      "thud": 1,
+      "creak": 4,
+      "latch": 3,
+      "cannon": 1,
+      "coins-small": 3,
+      "coins": 2
+    },
+    "ready": true,
     "durationSeconds": 19,
     "sampleRate": 44100
   },
   "limits": [
     "No physical phone speaker, wired headphone or Bluetooth listening assessment",
-    "No participant preference study",
-    "The historical repository-wide UI suite is outside this targeted run"
+    "Musical preference is for the user to assess using the provided recorded preview",
+    "Repository-wide historical UI suite is outside this targeted run"
   ]
 }
