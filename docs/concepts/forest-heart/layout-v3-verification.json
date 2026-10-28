@@ -1,0 +1,271 @@
+{
+  "date": "2026-10-28",
+  "sourceCommit": "27b80d9ab460b9f10abbe15a983e23a33f2a0d1b",
+  "integrationBaseline": "57cac4b61b189c8e037849e111e6c9608d329fd4",
+  "audioCommit": "efb4837",
+  "moduleVersion": "1.3.0-e8a10dd72de2",
+  "moduleSourceSha256": "e8a10dd72de2a0d44c1c7838a3b772c3d6f480fc27693d2660f014e23dbfe25c",
+  "contracts": {
+    "api": 1,
+    "rules": 1,
+    "progress": 1
+  },
+  "scope": "Client layout, presentation animation and original audio only; mathematics, wallet and accepted-round rules unchanged",
+  "checks": {
+    "moduleBuild": "passed",
+    "fullBuild": "passed",
+    "typecheck": "passed",
+    "rtp": {
+      "verified": 13,
+      "legacyNotQualified": 114
+    },
+    "fullHostBrowserScenarios": 10,
+    "result": "passed",
+    "viewports": [
+      {
+        "width": 1440,
+        "height": 1000
+      },
+      {
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "width": 1110,
+        "height": 1244
+      },
+      {
+        "width": 390,
+        "height": 844
+      },
+      {
+        "width": 320,
+        "height": 780
+      }
+    ],
+    "languages": [
+      "ru",
+      "en"
+    ],
+    "syntheticTestsOnly": true
+  },
+  "motion": {
+    "frames": 209,
+    "turnFrames": 28,
+    "intermediateAngles": [
+      22.671637651018678,
+      26.082892782438748,
+      28.465717759682153,
+      31.7815372884325,
+      36.71186473378148,
+      40.021281190732296,
+      42.98126202867715,
+      45.849291300330265,
+      49.13687878787493,
+      52.18289029539688,
+      59.271487057067354,
+      61.93338769603131,
+      66.93372650559418,
+      69.68771081563492,
+      72.08315296815937,
+      74.97290493375166,
+      80.90155066998129,
+      82.349404470014,
+      84.07782338384283,
+      85.00511311605094,
+      85.95180573560663,
+      86.93737963069765,
+      88.17612087592661,
+      88.77697972717478,
+      89.18575178572618,
+      89.56239081228199,
+      89.79935310397714,
+      89.96824729646914
+    ],
+    "continuousSapFrames": 90,
+    "intermediateCounterFrames": 32
+  },
+  "timing": {
+    "measurement": "Web Audio estimated output and frame callback, not physical acoustic latency",
+    "maxFrameSkewMs": 69.66700000000128,
+    "records": [
+      {
+        "cue": "land",
+        "mode": "output-timestamp",
+        "latencyMs": 543.5499999970198,
+        "skewMs": 16.75
+      },
+      {
+        "cue": "flow",
+        "mode": "output-timestamp",
+        "latencyMs": 83.11699999105986,
+        "skewMs": 0.48300000297967927
+      },
+      {
+        "cue": "flower",
+        "mode": "output-timestamp",
+        "latencyMs": 75.88100000893974,
+        "skewMs": 32.618999991060264
+      },
+      {
+        "cue": "flower",
+        "mode": "output-timestamp",
+        "latencyMs": 79.32499999701758,
+        "skewMs": 30.675000002982415
+      },
+      {
+        "cue": "flower",
+        "mode": "output-timestamp",
+        "latencyMs": 78.65033332737221,
+        "skewMs": 6.949666666667326
+      },
+      {
+        "cue": "win",
+        "mode": "output-timestamp",
+        "latencyMs": 503.6329999970185,
+        "skewMs": 69.66700000000128
+      },
+      {
+        "cue": "land",
+        "mode": "silent",
+        "latencyMs": 0,
+        "skewMs": 0.09999999403953552
+      },
+      {
+        "cue": "flow",
+        "mode": "silent",
+        "latencyMs": 0,
+        "skewMs": 0
+      },
+      {
+        "cue": "flower",
+        "mode": "silent",
+        "latencyMs": 0,
+        "skewMs": 0
+      },
+      {
+        "cue": "flower",
+        "mode": "silent",
+        "latencyMs": 0,
+        "skewMs": 0
+      },
+      {
+        "cue": "flower",
+        "mode": "silent",
+        "latencyMs": 0,
+        "skewMs": 0
+      },
+      {
+        "cue": "win",
+        "mode": "silent",
+        "latencyMs": 0,
+        "skewMs": 0.09999999403953552
+      }
+    ]
+  },
+  "audio": {
+    "originalBefore": {
+      "peak": 0.10155293345451355,
+      "rms": 0.0070682928626226
+    },
+    "originalAfter": {
+      "peak": 0.1444391906261444,
+      "rms": 0.014901962621857636
+    },
+    "comparisonBefore": {
+      "peak": 0.502858715674265,
+      "rms": 0.03499999999999919
+    },
+    "comparisonAfter": {
+      "peak": 0.33924200457327863,
+      "rms": 0.03499999999999824
+    },
+    "targetRms": 0.035,
+    "music": {
+      "peak": 0.10639132186770439,
+      "rms": 0.018325219539472377
+    },
+    "stereoDifference": 0.006230250791003467,
+    "cues": [
+      {
+        "cue": "land",
+        "peak": 0.0877567008137703,
+        "rms": 0.00418152792913917
+      },
+      {
+        "cue": "turn",
+        "peak": 0.047686249017715454,
+        "rms": 0.003358331270115011
+      },
+      {
+        "cue": "flow",
+        "peak": 0.07137072831392288,
+        "rms": 0.009493623354480967
+      },
+      {
+        "cue": "flower",
+        "peak": 0.056312307715415955,
+        "rms": 0.005762316977912603
+      },
+      {
+        "cue": "choice",
+        "peak": 0.05491822212934494,
+        "rms": 0.009120397520237777
+      },
+      {
+        "cue": "bonus",
+        "peak": 0.10396267473697662,
+        "rms": 0.019375886975944615
+      },
+      {
+        "cue": "win",
+        "peak": 0.1444391906261444,
+        "rms": 0.015204158915718784
+      },
+      {
+        "cue": "big",
+        "peak": 0.1345660239458084,
+        "rms": 0.034751641127181605
+      }
+    ],
+    "pairCorrelation": {
+      "woodTurn": 0.016381308620055882,
+      "choiceBonus": 0.003577643521671771,
+      "winBig": -0.00810846366654631
+    },
+    "voicesBeforeDestroy": 0,
+    "voicesAfterDestroy": 0,
+    "scope": "Digital waveform checks and RMS-matched comparison, not a human listening study or physical loudness measurement."
+  },
+  "manualPreview": {
+    "url": "http://127.0.0.1:5296/?room=QUL7X2iQv",
+    "hostWithChat": true,
+    "production": false,
+    "syntheticBalance": 10000,
+    "screenshot": "layout-v3-local-preview.webp",
+    "humanListeningAssessment": false,
+    "artisticApproval": "pending user assessment"
+  },
+  "screenshots": [
+    {
+      "file": "layout-v3-desktop.webp",
+      "bytes": 176878,
+      "sha256": "a4c312047f9b566b93f8ff3a07626c9b3448e30e60be14478c5a70f93d330f43"
+    },
+    {
+      "file": "layout-v3-mobile.webp",
+      "bytes": 68634,
+      "sha256": "21d267cab509e925d3977d3bf1d59a1ea4ca5eea4c29bd4e987a5df2a2b851c9"
+    },
+    {
+      "file": "layout-v3-poster.webp",
+      "bytes": 248334,
+      "sha256": "7582d3ed1ababce3d3f7ee81b5211ba63f932ef7ccc74ac03023991ad6e502d1"
+    },
+    {
+      "file": "layout-v3-local-preview.webp",
+      "bytes": 167112,
+      "sha256": "58babc3413dd6bc1ef2144d0ebba6b4f14583f3c91d9bbf8d6756e7e10dbc93c"
+    }
+  ]
+}
