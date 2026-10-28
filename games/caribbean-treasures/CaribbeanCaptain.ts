@@ -1,6 +1,6 @@
 import type {CaribbeanCue} from './CaribbeanAudio';
-export const CAPTAIN_POSES={idle:'captain',win:'captain-win',blink:'captain-blink',focus:'captain-focus',surprise:'captain-surprise',bonus:'captain-bonus',soft:'captain-soft',laugh:'captain-laugh'} as const;
-export type CaptainPose=keyof typeof CAPTAIN_POSES;
+import {CAPTAIN_POSES,DEFAULT_CAPTAIN,crewMember,crewPortrait,type CaptainPose,type CrewId} from './CaribbeanCrew';
+export {CAPTAIN_POSES,type CaptainPose} from './CaribbeanCrew';
 type Beat={pose:CaptainPose;ms:number};
 const phrases:Partial<Record<CaribbeanCue,[string,string]>>={giant:['Вот это размер!','That is a mighty symbol!'],cannon:['Залп!','Cannon fire!'],bonus:['Выбираем курс.','Choose our course.'],loss:['Раунд завершён.','Round complete.'],partial:['Вернулась часть ставки.','Part of the cost returned.'],return:['Стоимость вернулась.','The cost returned.'],win:['Раунд с плюсом!','A positive round!'],bigwin:['Крупная добыча!','A grand haul!']};
 /** Owns character poses, one sequence timer and gesture animations for desktop and mobile. */
@@ -9,15 +9,31 @@ export class CaribbeanCaptain{
  private timer?:ReturnType<typeof setTimeout>;private holding=false;private sequence:Beat[]=[];private idleStep=0;private variation=0;
  private pose:CaptainPose='idle';private reaction='idle';private slot=0;private animations=new Set<Animation>();
  private loaded=new Set<CaptainPose>();private preloads:HTMLImageElement[]=[];private seen=new Set<string>();
+ private character:CrewId=DEFAULT_CAPTAIN;private selection=0;private loading=false;
  private history:{cue:string;pose:CaptainPose;variant:number;key:string;wallTimeMs:number}[]=[];
  private mounts:HTMLElement[];private caption:HTMLElement;
  constructor(private root:HTMLElement){
   this.mounts=Array.from(root.querySelectorAll<HTMLElement>('.ct-portrait-gesture'));this.caption=root.querySelector('.ct-captain-caption')!;
-  for(const [pose,file] of Object.entries(CAPTAIN_POSES)){
-   const image=new Image();image.src='/assets/caribbean-treasures/'+file+'.webp';image.decoding='async';this.preloads.push(image);
-   void image.decode().then(()=>{if(!this.dead){this.loaded.add(pose as CaptainPose);if(this.loaded.size===8)this.scheduleIdle();}}).catch(()=>{});
-  }
+  void this.select(DEFAULT_CAPTAIN);
  }
+ async select(id:string):Promise<boolean>{
+  if(this.dead||!crewMember(id))return false;
+  const ticket=++this.selection;
+  if(id===this.character&&this.loaded.size===8){this.loading=false;return true;}
+  this.loading=true;
+  const poses=Object.keys(CAPTAIN_POSES) as CaptainPose[];
+  const images=poses.map(pose=>{const image=new Image();image.decoding='async';image.src=crewPortrait(id as CrewId,pose);return image;});
+  try{await Promise.all(images.map(image=>image.decode()));}catch{if(ticket===this.selection)this.loading=false;return false;}
+  if(this.dead||ticket!==this.selection)return false;
+  this.reset(true);this.character=id as CrewId;this.preloads=images;this.loaded=new Set(poses);this.loading=false;
+  this.root.dataset.ctCaptain=this.character;
+  for(const mount of this.mounts){
+   mount.dataset.pose='';
+   mount.querySelectorAll<HTMLImageElement>('.ct-portrait-layer').forEach(image=>{image.src=crewPortrait(this.character);});
+  }
+  this.show('idle');this.scheduleIdle();return true;
+ }
+ cancelSelection(){this.selection++;this.loading=false;}
  context(visible:boolean,reduced:boolean,english:boolean){
   if(this.dead)return;const changed=this.active!==visible||this.reduced!==reduced;this.english=english;this.active=visible;this.reduced=reduced;
   this.root.dataset.ctCaptainActive=String(visible&&!reduced);
@@ -35,7 +51,7 @@ export class CaribbeanCaptain{
   const previous=this.pose;this.pose=next;this.slot=1-this.slot;
   for(const mount of this.mounts){
    const images=mount.querySelectorAll<HTMLImageElement>('.ct-portrait-layer');
-   images[this.slot].src='/assets/caribbean-treasures/'+CAPTAIN_POSES[next]+'.webp';
+   images[this.slot].src=crewPortrait(this.character,next);
    images.forEach((image,index)=>image.classList.toggle('ct-current',index===this.slot));
    mount.dataset.pose=next;mount.classList.toggle('ct-blinking',previous==='blink'||next==='blink');
   }
@@ -85,6 +101,6 @@ export class CaribbeanCaptain{
  private clearTimer(){clearTimeout(this.timer);this.timer=undefined;}
  private clearMotion(){for(const animation of this.animations)animation.cancel();this.animations.clear();}
  reset(clearHistory=false){this.clearTimer();this.clearMotion();this.holding=false;this.sequence=[];this.busy=false;this.reaction='idle';this.show('idle');this.say('');if(clearHistory){this.history=[];this.seen.clear();this.variation=0;this.idleStep=0;}}
- state(){return{pose:this.pose,reaction:this.reaction,ready:this.loaded.size===8,loadedPoses:this.loaded.size,active:this.active,timers:this.timer?1:0,animations:[...this.animations].filter(a=>a.playState==='running'||a.pending).length,busy:this.busy,history:[...this.history]};}
- destroy(){this.dead=true;this.active=false;this.reset(true);this.root.dataset.ctCaptainActive='false';this.preloads=[];}
+ state(){return{character:this.character,loading:this.loading,pose:this.pose,reaction:this.reaction,ready:this.loaded.size===8,loadedPoses:this.loaded.size,active:this.active,timers:this.timer?1:0,animations:[...this.animations].filter(a=>a.playState==='running'||a.pending).length,busy:this.busy,history:[...this.history]};}
+ destroy(){this.dead=true;this.selection++;this.loading=false;this.active=false;this.reset(true);this.root.dataset.ctCaptainActive='false';this.preloads=[];}
 }

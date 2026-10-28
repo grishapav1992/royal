@@ -2,6 +2,19 @@
 
 User request: improve the game animation and give the established adult pirate captain varied movement and event reactions. Preserve the approved character identity, costume, harbor, host/chat layout and recorded soundtrack. No rule, probability, stake, cost or payout change.
 
+## Additional crew in 1.4.0
+
+The user requested ten beautiful, sensual adult pirate women with diverse ethnic appearances and individual visual identities. Ten new captains are selectable alongside the original. Every captain uses her own complete eight-state sheet with the same event cards below. The free selector is a cosmetic preference, available through the header portrait and saved per account in browser storage. It never sends a wager or modifies accepted round state. The original soundtrack and outcome classification stay in place.
+
+| Event | Character / presentation | Interruption and verification |
+| --- | --- | --- |
+| Open crew gallery | Static previews, localized names, selected indicator, no reward cue | Common modal focus trap; pause character timers; Escape restores focus |
+| Choose a captain | Decode all eight states, then switch both desktop figure and header portrait together | Keep current identity on failure; cancellation, account switch or destruction invalidate pending selection |
+| Reopen / account change | Restore only that account's saved valid captain, fall back to Isabella | No charge, no reaction replay; reject unknown saved identifiers |
+| Reduced movement | Static meaningful expressions of the selected captain | No hover scale, blink or gesture animation |
+
+Different faces, skin tones, hair textures, silhouettes, accessories and costume palettes are art direction, not claims about player preferences. Source prompts explicitly describe adults ages 28 to 36. Asset decode/alpha/hashes, all reaction paths, loading failure, cancellation, storage recovery, actual host with chat on desktop/mobile and unchanged wallet entries are technical checks. Subjective appeal has not been measured with players.
+
 ## Event cards
 
 | Event | Captain | Field | Cancellation / meaning |

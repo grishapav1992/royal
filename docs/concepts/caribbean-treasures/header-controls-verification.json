@@ -1,0 +1,113 @@
+{
+  "format": 1,
+  "date": "2026-10-28",
+  "sourceCommit": "8cf3fd5a8d1c9799928ca722624bb5e52fbaa739",
+  "baseline": "d2588ccc449de1e6cb3dac567413b0b5f413e728",
+  "gamePackage": "1.3.3-54b6b0c0cc94",
+  "scope": "Header and stage stacking",
+  "mathChanged": false,
+  "walletChanged": false,
+  "artChanged": false,
+  "audioChanged": false,
+  "productionChanged": false,
+  "checks": {
+    "baselineRegression": {
+      "startTime": "2026-10-28T18:49:42.756Z",
+      "duration": 11753.484,
+      "expected": 0,
+      "skipped": 0,
+      "unexpected": 1,
+      "flaky": 0
+    },
+    "applicationBuild": {
+      "format": 1,
+      "startedAt": "2026-10-28T18:51:51.123Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 2364
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 8131
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 4892
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 6635
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 79
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 25
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 38
+        }
+      ],
+      "passed": true,
+      "durationMs": 22164
+    },
+    "assetAndModuleTestsPassed": 9,
+    "modulePackages": 118,
+    "browser": {
+      "startTime": "2026-10-28T18:53:35.879Z",
+      "duration": 58125.551999999996,
+      "expected": 3,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "pixelRegionsUnchanged": 4,
+    "toolbarViewports": [
+      "1440x1000",
+      "1280x720",
+      "390x844"
+    ],
+    "tools": [
+      "music",
+      "sound",
+      "rules",
+      "history"
+    ],
+    "modalAboveToolbar": true,
+    "toolbarInteractionsWagers": 0,
+    "framingViewports": [
+      "1440x1000",
+      "1280x720",
+      "1024x768",
+      "900x650",
+      "800x600",
+      "640x480",
+      "500x760",
+      "390x844",
+      "342x700",
+      "844x390",
+      "342x245"
+    ],
+    "chatEnabled": true,
+    "playbackMaximumDeviationMs": 29.23154421880463,
+    "playbackProjectTargetMs": 50
+  },
+  "activation": "Close the local game window and reopen Caribbean Treasures from the catalogue",
+  "limits": [
+    "Disposable accounts in the actual local host",
+    "Forced pirate translation is test-only; screenshot shows normal layout",
+    "Audio timing is browser scheduling relative to estimated output, not a physical speaker measurement"
+  ]
+}
