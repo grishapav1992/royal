@@ -28,7 +28,7 @@ test('real wallet HTTP negotiates new rules, protects old clients and settles bo
     const base={'Cookie':'royal_session='+login.token,'X-Royal-Account-Id':login.account.id,'Content-Type':'application/json','X-Royal-Card-Rules':'2'};
     for(const game of [NEOPOLIS_GAME,DRACONA_GAME]) {
       const neopolis=game===NEOPOLIS_GAME, header=neopolis?NEOPOLIS_HEADER:DRACONA_CLIENT_HEADER;
-      const current=neopolis?'3':'2', old=neopolis?'2':'1', random=seededRandom(neopolis?95:1);
+      const current=neopolis?'4':'2', old=neopolis?'3':'1', random=seededRandom(neopolis?95:1);
       Reflect.set(accounts.wallet.expansion,'draw',(max:number)=>Math.floor(random()*max));
       const post=(body:unknown,version=current)=>fetch(url,{method:'POST',headers:{...base,[header]:version},body:JSON.stringify(body)});
       const start=()=>({id:randomUUID(),action:'start',gameId:game,stakeUnits:'10000',settings:neopolis?{neopolis:{hero:'granite'}}:{dracona:{mode:'normal'}}});
@@ -38,7 +38,7 @@ test('real wallet HTTP negotiates new rules, protects old clients and settles bo
       let reply:any;
       for(let i=0;i<35;i++) {
         const op=start(),response=await post(op);assert.equal(response.status,200);reply=await response.json();
-        assert.equal(reply.session.rulesVersion,3);assert((neopolis?validNeopolisSession:validDraconaSession)(reply.session));
+        assert.equal(reply.session.rulesVersion,neopolis?4:3);assert((neopolis?validNeopolisSession:validDraconaSession)(reply.session));
         assert.equal((await post(op,old)).status,409,'Old clients cannot replay a new-rules receipt');
         if(reply.session.state==='active')break;
       }
@@ -90,14 +90,16 @@ test('current USDT HTTP route negotiates both qualified slots through its financ
     assert.equal((await post({...action,id:randomUUID(),gameId:NEOPOLIS_GAME,settings:{neopolis:{hero:'granite'}}})).status,409);
     assert.equal((await c.ledger.wallet(c.a)as any).balanceUnits,reply.wallet.balanceUnits);await c.ledger.audit();
     const before=BigInt(reply.wallet.balanceUnits),npStart={...action,id:randomUUID(),gameId:NEOPOLIS_GAME,settings:{neopolis:{hero:'granite'}}};
-    const npResponse=await post(npStart,'2','3');assert.equal(npResponse.status,200);let np=await npResponse.json();assert(validNeopolisSession(np.session));
+    assert.equal((await post(npStart,'2','3')).status,409);
+    assert.equal((await c.ledger.wallet(c.a) as any).balanceUnits,String(before));
+    const npResponse=await post(npStart,'2','4');assert.equal(npResponse.status,200);let np=await npResponse.json();assert(validNeopolisSession(np.session));
     const legacy=await(await fetch(url,{headers:base})).json();assert(!legacy.sessions.some((s:any)=>s.gameId===NEOPOLIS_GAME));
     let npLast:unknown=npStart;
     while(np.session.state==='active'){
       npLast={id:randomUUID(),action:'move',gameId:NEOPOLIS_GAME,sessionId:np.session.id,move:'neopolis-spin',revision:np.session.view.neopolis.revision};
-      np=await(await post(npLast,'2','3')).json();assert(validNeopolisSession(np.session));
+      np=await(await post(npLast,'2','4')).json();assert(validNeopolisSession(np.session));
     }
     assert.equal(np.wallet.balanceUnits,String(before-10000000n+BigInt(np.session.returnedUnits)*10000n));
-    const npReplay=await(await post(npLast,'2','3')).json();assert(npReplay.replayed);assert.deepEqual(npReplay.session,np.session);await c.ledger.audit();
+    const npReplay=await(await post(npLast,'2','4')).json();assert(npReplay.replayed);assert.deepEqual(npReplay.session,np.session);await c.ledger.audit();
   } finally {await new Promise<void>(resolve=>server.close(()=>resolve()));await new Promise<void>(resolve=>finance.close(()=>resolve()));await c.close();}
 });

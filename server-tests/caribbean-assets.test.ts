@@ -10,5 +10,18 @@ test('Caribbean runtime media decodes, preserves prop alpha and fits the referen
   if(name!=='harbor'){assert(info.hasAlpha);const alpha=(await sharp(path).stats()).channels[3];assert.equal(alpha.min,0);assert(alpha.max>240);}
  }
  assert(total<3*1024*1024);
- const pkg=JSON.parse(await readFile('games/caribbean-treasures/package.json','utf8'));assert.deepEqual(pkg.assetRoots,['caribbean-treasures']);assert.equal(pkg.version,'1.1.0');assert.equal(pkg.preload.length,10);
+ const pkg=JSON.parse(await readFile('games/caribbean-treasures/package.json','utf8'));assert.deepEqual(pkg.assetRoots,['caribbean-treasures']);assert.equal(pkg.version,'1.2.0');assert.equal(pkg.preload.length,10);
+});
+test('recorded audio exports preserve licensed provenance, inventory and bounded signal edges',async()=>{
+ const {createHash}=await import('node:crypto');
+ const root='public/assets/caribbean-treasures/audio/',manifest=JSON.parse(await readFile(root+'manifest.json','utf8'));
+ assert.equal(Object.keys(manifest.files).length,12);let bytes=0;
+ for(const [id,clip] of Object.entries<any>(manifest.files)){
+  assert.equal(clip.file,id+'.m4a');const data=await readFile(root+clip.file);bytes+=data.length;
+  assert.equal(clip.sha256,createHash('sha256').update(data).digest('hex'));assert.equal(clip.bytes,data.length);
+  assert(clip.peak<.95&&clip.peak>.01);assert(clip.boundaryPeak<.005);assert(clip.accentOffsetSeconds>=0&&clip.accentOffsetSeconds<clip.durationSeconds);
+ }
+ assert(bytes<6*1024*1024);assert(manifest.files.music.durationSeconds>120);
+ const credits=JSON.parse(await readFile(root+'credits.json','utf8'));assert.equal(credits.music.author,'Matthew Pablo');assert.equal(credits.music.license,'CC-BY-3.0');assert.equal(credits.effects.length,2);
+ const source=await readFile('games/caribbean-treasures/CaribbeanAudio.ts','utf8');assert(!source.includes('createOscillator'));assert(!source.includes('new AudioContext'));
 });

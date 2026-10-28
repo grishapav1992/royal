@@ -1,5 +1,5 @@
-/** Neopolis campaign rules v3. Points are millionths of the line stake. */
-export const NEOPOLIS_MATH = { version: 3, symbolWeightScale: 1000, scatterWeight: 1500, payNumerator: 347000, payDenominator: 1000000 } as const;
+/** Neopolis campaign rules v4. Points are millionths of the line stake. */
+export const NEOPOLIS_MATH = { version: 4, symbolWeightScale: 1000, scatterWeight: 1500, payNumerator: 347000, payDenominator: 1000000 } as const;
 export const COLS = 5, ROWS = 4, SIZE = COLS * ROWS, WILD = 6, SCATTER = 7;
 export const HEROES = ['granite', 'impulse', 'prism'] as const;
 export type Hero = typeof HEROES[number];
@@ -23,18 +23,20 @@ export const LINES = patterns.flatMap(pattern => Array.from({ length: ROWS }, (_
 export const readyTeam = (team: Team) => team.charges.every(charge => charge === 3);
 export function initialTeam(starter: Hero): Team { return { starter, charges: HEROES.map(hero => hero === starter ? 3 : 0), complete: false }; }
 
+const LINE_CELLS = LINES.map(rows => rows.map((row, col) => row * COLS + col));
 export function evaluateLines(grid: number[], boostedColumn = -1): Win[] {
   const wins: Win[] = [];
-  for (const [line, rows] of LINES.entries()) {
-    const cells = rows.map((row, col) => row * COLS + col);
+  for (let line = 0; line < LINE_CELLS.length; line++) {
+    const cells = LINE_CELLS[line];
     // Only the highest paying interpretation of a Wild line is awarded.
     let best: Win | undefined;
-    for (let symbol = 0; symbol < PAYTABLE.length; symbol++) {
+    const first = grid[cells[0]], from = first < WILD ? first : 0, until = first < WILD ? first + 1 : first === WILD ? PAYTABLE.length : 0;
+    for (let symbol = from; symbol < until; symbol++) {
       let count = 0;
       while (count < COLS && (grid[cells[count]] === symbol || grid[cells[count]] === WILD)) count++;
       if (count < 3) continue;
       const matched = cells.slice(0, count);
-      const factor = matched.some(cell => cell % COLS === boostedColumn && grid[cell] === WILD) ? 2 : 1;
+      const factor = boostedColumn >= 0 && boostedColumn < count && grid[cells[boostedColumn]] === WILD ? 2 : 1;
       const points = PAYTABLE[symbol][count - 3] * factor;
       if (!best || points > best.points) best = { line, symbol, count, cells: matched, points };
     }
@@ -43,9 +45,14 @@ export function evaluateLines(grid: number[], boostedColumn = -1): Win[] {
   return wins;
 }
 
-export function playNeopolisSpin(sourceTeam: Team, sourceBattle: Battle | null, random: () => number): Spin {
-  const team = structuredClone(sourceTeam);
-  let battle = sourceBattle ? structuredClone(sourceBattle) : null;
+const SPAWN_MODES = [false, true].map(scatter => [false, true].map(center => {
+  const weights = [24,22,20,17,14,11, center ? 2 : 0].map(weight => weight * NEOPOLIS_MATH.symbolWeightScale);
+  weights.push(scatter ? NEOPOLIS_MATH.scatterWeight : 0);
+  return { weights, total: weights.reduce((sum, weight) => sum + weight, 0) };
+}));
+export function playNeopolisSpin(sourceTeam: Team, sourceBattle: Battle | null, random: () => number, captureFrames = true): Spin {
+  const team: Team = { ...sourceTeam, charges: [...sourceTeam.charges] };
+  let battle = sourceBattle ? { ...sourceBattle } : null;
   const free = battle !== null;
   if (team.complete || (battle && battle.remaining < 1)) throw Error('Neopolis cycle has ended');
   const empowered = !!battle && battle.shield === 0;
@@ -54,12 +61,12 @@ export function playNeopolisSpin(sourceTeam: Team, sourceBattle: Battle | null, 
   let grid = Array<number>(SIZE).fill(0), emblems = Array<number>(SIZE).fill(-1), boostedColumn = -1, points = 0, triggered = false, finisher = false;
   const frames: Frame[] = [], activated: Hero[] = [], unlocked: Hero[] = [], pending = new Set<Hero>();
   const frame = (kind: Frame['kind'], cells: number[] = [], wins: Win[] = [], hero?: Hero) => {
+    if (!captureFrames) return;
     frames.push({ kind, grid: [...grid], emblems: [...emblems], cells, wins, ...(hero ? { hero } : {}), points, battle: battle ? structuredClone(battle) : null });
   };
   const spawn = (cell: number) => {
-    const weights = [24,22,20,17,14,11, cell % COLS > 0 && cell % COLS < 4 ? 2 : 0].map(weight => weight * NEOPOLIS_MATH.symbolWeightScale);
-    weights.push(!free && readyTeam(team) ? NEOPOLIS_MATH.scatterWeight : 0);
-    let stop = take(weights.reduce((sum, weight) => sum + weight, 0));
+    const { weights, total } = SPAWN_MODES[!free && readyTeam(team) ? 1 : 0][cell % COLS > 0 && cell % COLS < 4 ? 1 : 0];
+    let stop = take(total);
     let symbol = 0;
     while (stop >= weights[symbol]) { stop -= weights[symbol]; symbol++; }
     grid[cell] = symbol;

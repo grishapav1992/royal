@@ -22,7 +22,7 @@ test('Neopolis identifies the shared Nile currency in both languages and retains
 });
 
 test('Neopolis publishes its qualified independent module in Royal with its own physical cabinet', () => {
-  assert.deepEqual(gameModuleContract(NEOPOLIS_GAME), { gameId:NEOPOLIS_GAME, slug:'neopolis', apiVersion:1, rulesVersion:3, progressVersion:3 });
+  assert.deepEqual(gameModuleContract(NEOPOLIS_GAME), { gameId:NEOPOLIS_GAME, slug:'neopolis', apiVersion:1, rulesVersion:4, progressVersion:4 });
   assert((ACTIVE_STUDIO_GAMES as readonly string[]).includes(NEOPOLIS_GAME)); assert(!isRetiredArcadeGame(NEOPOLIS_GAME));
   assert(ROYAL_PLATFORM_GAMES.includes(NEOPOLIS_GAME));
   assert.deepEqual(STUDIO_INFO[NEOPOLIS_GAME].paylines, LINES); assert.equal(STUDIO_MAX[NEOPOLIS_GAME], 3000);

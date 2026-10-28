@@ -326,6 +326,7 @@ export class CaribbeanUI {
         + '<button type="button" data-ct-modal="buy-raid">' + this.text('Рейд · 14 вращений','Raid · 14 spins') + '</button>'
         + '<button type="button" data-ct-modal="buy-flagship">' + this.text('Флагман · 6 вращений','Flagship · 6 spins') + '</button>';
     }
+    if(kind==='info')body+='<p class="ct-audio-credits">'+this.text('Музыка: ','Music: ')+'<a href="https://opengameart.org/content/blackmoor-tides-epic-pirate-battle-theme" target="_blank" rel="noopener noreferrer">Blackmoor Tides</a> · <a href="https://www.matthewpablo.com" target="_blank" rel="noopener noreferrer">Matthew Pablo</a> · <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noopener noreferrer">CC BY 3.0</a>. '+this.text('Инструментальная петля, нормализация и короткие затухания. Звуковые эффекты: Kenney и Thimras, CC0.','Instrumental loop, normalization and short fades. Sound effects: Kenney and Thimras, CC0.')+'</p>';
     panel.innerHTML = body + '<button type="button" class="ct-modal-close" data-ct-modal="close">' + this.text('Закрыть','Close') + '</button>';
     panel.setAttribute('aria-label',this.text('Информация об игре','Game information'));
     this.dialog.begin(kind); this.render(); this.dialog.focus();

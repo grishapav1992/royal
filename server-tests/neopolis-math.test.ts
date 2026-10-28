@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { seededRandom } from '../src/shared/draconaMath';
 import { NEOPOLIS_MATH, BOSSES, MAX_ROUND_SPINS, HEROES, LINES, WILD, SCATTER, evaluateLines, playNeopolisSpin, initialTeam, type Hero } from '../src/shared/neopolisMath';
-import { advanceNeopolis, emptyNeopolisView, NEOPOLIS_GAME, validNeopolisView, validNeopolisSession, validNeopolisSettings } from '../src/shared/neopolis';
+import { advanceNeopolis, emptyNeopolisView, NEOPOLIS_GAME, NEOPOLIS_BETS, neopolisPointUnits, validNeopolisView, validNeopolisSession, validNeopolisSettings } from '../src/shared/neopolis';
 import { startNeopolis, moveNeopolis } from '../server/games/neopolis';
 import { validExpansionAction } from '../src/shared/casinoExpansion';
 const settings = { neopolis: { hero: 'granite' as const } };
@@ -62,11 +62,15 @@ test('an unfinished battle ends after the last free spin and preserves its line 
   assert(spin.points > 0); assert.equal(spin.finisher, false);
 });
 
-test('changing stake or first hero during collection fails, then becomes possible after the cycle', () => {
+test('every allowed stake preserves the collected team while the first hero stays locked', () => {
   const first = startNeopolis(settings, '10000', undefined, rng(42));
   assert(first.ended && !first.view.team.complete);
   const previous = { stakeUnits: '10000', view: first.view };
-  assert.throws(() => startNeopolis(settings, '20000', previous));
+  for (const bet of NEOPOLIS_BETS) {
+    const next = startNeopolis(settings, String(bet * 100), previous, rng(43));
+    assert.deepEqual(next.view.origin, first.view.team);
+    assert.equal(next.view.version, 4); assert(validNeopolisView(String(bet * 100), next.view));
+  }
   assert.throws(() => startNeopolis({ neopolis: { hero: 'prism' } }, '10000', previous));
   assert.equal(startNeopolis(settings, '10000', previous, rng(43)).view.origin.starter, 'granite');
 });
@@ -83,7 +87,7 @@ test('modified frames, charges, payouts, random draws and session envelopes cann
     (v: typeof result.view) => { v.history[0].draws.push(0); },
     (v: typeof result.view) => { v.battle = { remaining: 10, played: 0, shield: 3, core: 3, won: false }; },
   ]) { const value = structuredClone(result.view); mutate(value); assert.equal(validNeopolisView('10000', value), false); }
-  const session = { id: '11111111-1111-4111-8111-111111111111', gameId: NEOPOLIS_GAME, rulesVersion: 3, state: 'settled', stakeUnits: '10000', spentUnits: '10000', returnedUnits: String(result.credit), view: { player: [], dealer: [], community: [], phase: 2, ended: true, actions: [], message: result.message, neopolis: result.view } };
+  const session = { id: '11111111-1111-4111-8111-111111111111', gameId: NEOPOLIS_GAME, rulesVersion: 4, state: 'settled', stakeUnits: '10000', spentUnits: '10000', returnedUnits: String(result.credit), view: { player: [], dealer: [], community: [], phase: 2, ended: true, actions: [], message: result.message, neopolis: result.view } };
   assert(validNeopolisSession(session)); assert.equal(validNeopolisSession({ ...session, returnedUnits: '1' }), false);
   assert.equal(validNeopolisSettings({ neopolis: { hero: 'granite', bonus: true } }), false);
   const action = { id: session.id, gameId: NEOPOLIS_GAME, action: 'start', stakeUnits: '10000', settings };
@@ -163,7 +167,49 @@ test('legacy v1 transcripts replay unchanged and settled collection upgrades int
   const old = advanceNeopolis(emptyNeopolisView(initialTeam('granite'),1),'10000',rng(42));
   assert(old.ended && !old.view.team.complete);
   const next = startNeopolis(settings,'10000',{stakeUnits:'10000',view:old.view},rng(11));
-  assert.equal(next.view.version,3); assert.deepEqual(next.view.origin,old.view.team);
+  assert.equal(next.view.version,4); assert.deepEqual(next.view.origin,old.view.team);
   const tampered = structuredClone(next.view); tampered.history[0].result.battle = {remaining:100,played:0,shield:5,core:5,won:false,boss:2,defeated:2};
   assert(!validNeopolisView('10000',tampered));
+});
+
+
+test('v4 sampling and presentation preserve every v3 symbol, ability, boss and entropy result', async () => {
+  const { playNeopolisSpin: playV3 } = await import('../src/shared/neopolisMathV3');
+  for (const hero of HEROES) {
+    const oldRandom = seededRandom(81051), currentRandom = seededRandom(81051), fastRandom = seededRandom(81051);
+    let team = initialTeam(hero), battle: ReturnType<typeof playNeopolisSpin>['battle'] = null;
+    for (let i = 0; i < 1500; i++) {
+      if (team.complete) team = initialTeam(hero);
+      const old = playV3(team, battle, oldRandom), next = playNeopolisSpin(team, battle, currentRandom), fast = playNeopolisSpin(team, battle, fastRandom, false);
+      assert.deepEqual(next, old); assert.deepEqual({ ...fast, frames: next.frames }, next);
+      team = next.team; battle = next.battle?.remaining ? next.battle : null;
+    }
+  }
+});
+
+test('the paid-round origin fixes payout scale through all free continuations', () => {
+  const draw = rng(95); let previous: { stakeUnits: string; view: ReturnType<typeof startNeopolis>['view'] } | undefined, checked = false;
+  for (let i = 0; i < 40 && !checked; i++) {
+    const stake = i % 2 ? '50000' : '1000';
+    let result = startNeopolis(settings, stake, previous, draw);
+    const origin = structuredClone(result.view.origin); let expected = 0n;
+    for (;;) {
+      const spin = result.view.history.at(-1)!;
+      expected += neopolisPointUnits(stake, spin.result.points, 4, origin);
+      expected = expected > BigInt(stake) * 3000n ? BigInt(stake) * 3000n : expected;
+      assert.equal(result.view.totalPayoutUnits, String(expected)); assert.deepEqual(result.view.origin, origin);
+      if (result.ended) break;
+      checked = true; result = moveNeopolis(result.view, stake, result.view.revision, draw);
+    }
+    previous = { stakeUnits: stake, view: result.view };
+  }
+  assert(checked);
+});
+
+test('accepted v3 rounds retain the exact mathematical source qualified for that version', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const { createHash } = await import('node:crypto');
+  const proof = JSON.parse(await readFile('docs/game-math/qualifications/neopolis-v3.json', 'utf8'));
+  const frozen = (await readFile('src/shared/neopolisMathV3.ts', 'utf8')).replace(/\r\n/g, '\n');
+  assert.equal(createHash('sha256').update(frozen).digest('hex'), proof.sourceHashes['src/shared/neopolisMath.ts']);
 });

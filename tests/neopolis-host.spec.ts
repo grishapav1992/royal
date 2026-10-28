@@ -34,11 +34,14 @@ test('Neopolis uses the real host area, keeps controls and chat visible, and res
     await page.getByRole('button', { name: 'Продолжить', exact: true }).click();
     await expect(page.locator('#character-step')).toBeVisible();
     await page.getByRole('button', { name: 'Войти в зал', exact: true }).click();
-    await expect(page.locator('#join-dialog')).toBeHidden();
-    await expect.poll(() => page.evaluate(() => (window as any).royalDemo.getState().online)).toBe(true);
+    await expect(page.locator('#join-dialog')).toBeHidden({timeout:30000});
+    await expect.poll(() => page.evaluate(() => { try { return (window as any).royalDemo?.getState().online ?? false; } catch { return false; } }), {timeout:30000}).toBe(true);
     const deposit = await page.request.post('/api/demo-wallet/operations', { data: { id: crypto.randomUUID(), kind: 'deposit', amount: 10000 } });
     expect(deposit.ok()).toBe(true);
-    await page.evaluate(async () => { const path = '/src/wallet/WalletClient.ts'; await (await import(/* @vite-ignore */ path)).demoWallet.refresh(); });
+    if (process.env.NEOPOLIS_REVIEW_DIST === '1') {
+      await page.reload(); await expect(page.locator('#join-dialog')).toBeHidden({timeout:30000});
+      await expect.poll(() => page.evaluate(() => { try { return (window as any).royalDemo?.getState().online ?? false; } catch { return false; } }), {timeout:30000}).toBe(true);
+    } else await page.evaluate(async () => { const path = '/src/wallet/WalletClient.ts'; await (await import(/* @vite-ignore */ path)).demoWallet.refresh(); });
     await open(page);
     await page.locator('[data-hero=prism]').click();
     await expect(page.locator('[data-hero=prism]')).toHaveAttribute('aria-pressed', 'true');
@@ -83,12 +86,28 @@ test('Neopolis uses the real host area, keeps controls and chat visible, and res
     await page.locator('[data-np=spin]').click(); const accepted = await response; expect(accepted.ok()).toBe(true);
     const saved = (await accepted.json()).session;
     await expect(page.locator('[data-np=spin]')).toBeEnabled();
+    await expect(page.locator('[data-np=bet]')).toBeEnabled();
+    await expect(page.locator('[data-hero=granite]')).toBeDisabled();
+    await page.locator('[data-np=bet]').selectOption('20');
+    const changedResponse = page.waitForResponse(reply => reply.url().endsWith('/api/demo-wallet/expansion') && reply.request().method() === 'POST');
+    await page.locator('[data-np=spin]').click();
+    const changed = (await (await changedResponse).json()).session;
+    expect(changed.stakeUnits).toBe('2000');
+    expect(changed.view.neopolis.origin).toEqual(saved.view.neopolis.team);
+    await expect(page.locator('[data-np=spin]')).toBeEnabled();
+    await expect(page.locator('[data-np=bet]')).toBeEnabled();
+    for (const [width,height] of [[1440,1000],[390,844]]) {
+      await page.setViewportSize({width,height});
+      await expect(page.locator('[data-np=bet]')).toHaveValue('20');
+      await expect(page.locator('#chat-input')).toBeInViewport();
+      await page.screenshot({path:out+'/stake-20-'+width+'.png'});
+    }
     const before = await (await page.request.get('/api/demo-wallet')).json();
     await page.locator('#mini-dialog .mini-top [data-close]').click();
     await expect(page.locator('#mini-dialog')).toBeHidden();
     await open(page);
     const restored = (await (await page.request.get('/api/demo-wallet/expansion')).json()).sessions.find((s: any) => s.gameId === 'studio-neopolis');
-    expect(restored.id).toBe(saved.id); expect(restored.stakeUnits).toBe(saved.stakeUnits);
+    expect(restored.id).toBe(changed.id); expect(restored.stakeUnits).toBe(changed.stakeUnits);
     expect((await (await page.request.get('/api/demo-wallet')).json()).balance).toBe(before.balance);
     await expect(page.locator('[data-hero=prism]')).toHaveAttribute('aria-pressed', 'true');
     await expect(page.locator('#chat-input')).toBeInViewport();

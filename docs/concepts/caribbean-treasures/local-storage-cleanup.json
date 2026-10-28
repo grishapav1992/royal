@@ -1,37 +1,55 @@
 {
-  "date": "2026-10-27",
-  "owner": "caribbean-reference-polish",
-  "preservationCommit": "2ddf1988be8a95944bcfd6b56ecf6f75c9c449b4",
-  "preservationRef": "refs/heads/codex/caribbean-reference-polish",
+  "date": "2026-10-28",
+  "owner": "caribbean-recorded-audio",
+  "preservationCommit": "c828aad51d0a6f36e651a896b80dc10dba6a7656",
+  "preservationRef": "refs/heads/codex/caribbean-recorded-audio",
   "remoteCommitVerified": true,
-  "taskStartFreeBytes": 300362534912,
-  "freeAtInventoryBytes": 299930271744,
-  "removedPackageFolders": [],
-  "removedPackageLogicalBytes": 0,
-  "removedTemporaryArtifactFiles": 0,
-  "archivesCreated": 0,
-  "archivesRemoved": 0,
-  "temporaryDatabases": [
-    {
-      "path": "C:/Users/Aorus/AppData/Local/Temp/royal-pg-bAStX3",
-      "presentAfterStop": false
-    },
-    {
-      "path": "C:/Users/Aorus/AppData/Local/Temp/royal-pg-Syqv3O",
-      "presentAfterStop": false
-    },
-    {
-      "path": "C:/Users/Aorus/AppData/Local/Temp/royal-pg-B2oD9c",
-      "presentAfterStop": false
-    }
-  ],
-  "standStopped": true,
+  "taskStartFreeBytes": 300897689600,
+  "freeBeforeStopBytes": 304189444096,
+  "removedFiles": [],
+  "removedArchives": [],
+  "removedLogicalBytes": 0,
   "cleanupBlock": {
-    "action": "Remove inactive local game-package version directories after validating their workspace boundary, unchanged inventory and active pointers",
+    "action": "Delete only task-owned downloaded ZIP archives, duplicated source WAV/OGG, copied review screenshots, duplicated preview WAV and build log after GitHub verification",
     "reason": "Automatic approval review rejected the command: blocked by policy",
     "attemptExecuted": false
   },
-  "retainedObsoletePackages": [
+  "retainedTaskArtifacts": {
+    "folder": "artifacts/work/caribbean-recorded-audio",
+    "bytes": 91838086,
+    "inventoriedAudioFiles": [
+      {
+        "file": "blackmoor.zip",
+        "bytes": 57333122
+      },
+      {
+        "file": "cannon.ogg",
+        "bytes": 181628
+      },
+      {
+        "file": "casino.zip",
+        "bytes": 876839
+      },
+      {
+        "file": "impact.zip",
+        "bytes": 800850
+      },
+      {
+        "file": "music.wav",
+        "bytes": 23990578
+      },
+      {
+        "file": "rpg.zip",
+        "bytes": 964837
+      },
+      {
+        "file": "sound-preview.wav",
+        "bytes": 1675844
+      }
+    ],
+    "cleanupCondition": "Remove inventoried redundant downloads and temporary review media when cleanup is permitted; required source masters and final media are verified in GitHub."
+  },
+  "retainedInactivePackages": [
     {
       "folder": "module-dist/github-andar-bahar/versions/1.0.0-0d08a69e741e",
       "bytes": 226399
@@ -79,6 +97,10 @@
     {
       "folder": "module-dist/github-craps/versions/1.0.0-f62f35469590",
       "bytes": 8713378
+    },
+    {
+      "folder": "module-dist/github-crash/versions/1.0.0-b6043afca36d",
+      "bytes": 21939385
     },
     {
       "folder": "module-dist/github-crazy-four/versions/1.0.0-0cbda20cff7a",
@@ -329,6 +351,10 @@
       "bytes": 2032444
     },
     {
+      "folder": "module-dist/studio-caribbean-treasures/versions/1.1.0-6e0466e824fd",
+      "bytes": 2032636
+    },
+    {
       "folder": "module-dist/studio-caribbean-treasures/versions/1.1.0-8b037ff8c450",
       "bytes": 2032462
     },
@@ -343,25 +369,27 @@
     {
       "folder": "module-dist/studio-caribbean-treasures/versions/1.1.0-ed00aa549206",
       "bytes": 2032297
+    },
+    {
+      "folder": "module-dist/studio-neopolis/versions/0.4.0-163734723aa6",
+      "bytes": 6019489
     }
   ],
-  "retainedObsoletePackageCount": 78,
-  "retainedObsoleteLogicalBytes": 120876544,
-  "retainedTaskArtifacts": {
-    "folder": "artifacts/work/caribbean-reference-polish",
-    "bytes": 7653579,
-    "purpose": "Verification material, duplicated final media and cleanup inventory retained because filesystem cleanup was rejected",
-    "cleanupCondition": "Remove duplicated temporary verification files when cleanup is permitted; current final media and compact reports are saved under docs/concepts/caribbean-treasures"
+  "retainedInactivePackageCount": 81,
+  "retainedInactiveLogicalBytes": 150868054,
+  "inactivePackageException": "Automatic approval review previously rejected local package-cache pruning; no alternate deletion mechanism was used.",
+  "temporaryDatabase": {
+    "folder": "C:\\Users\\Aorus\\AppData\\Local\\Temp\\royal-pg-sXTyXe",
+    "bytesBeforeStop": 68648927,
+    "presentAfterStop": false,
+    "removedBy": "Normal test-stand shutdown"
   },
+  "standStopped": true,
   "checkoutException": {
     "folder": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal",
-    "reason": "This chat owns the primary managed checkout; the app previously refused archival of its primary checkout. Concurrent work in the original project was preserved.",
-    "cleanupCondition": "Archive the extra checkout through the app when it is no longer primary, after verifying all new source commits in GitHub."
+    "reason": "Primary managed checkout; prior app archival returned that the primary checkout cannot be removed. Concurrent work in the original project is preserved.",
+    "cleanupCondition": "Archive through the app when it is no longer primary and all new source commits have been verified in GitHub."
   },
-  "generatedImageException": {
-    "folder": "C:/Users/Aorus/.codex/generated_images/01a1793f-6c92-7992-85f5-379a1491ef5d",
-    "reason": "The image generation tool requires its original outputs to stay in place unless the user explicitly asks to remove them. Production source masters are also saved in GitHub."
-  },
-  "notes": "No physical disk-space reclamation is claimed. Free-space readings include concurrent activity on the drive.",
-  "finalFreeBytes": 303711252480
+  "notes": "No physical disk-space reclamation is claimed. Free-space snapshots include other activity on this drive. No release source copies or new backup archives were created; the four ZIPs are downloaded source libraries retained after the rejected cleanup.",
+  "finalFreeBytes": 306518581248
 }
