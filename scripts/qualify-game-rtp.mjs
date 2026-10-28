@@ -1,3 +1,5 @@
+import {readFile} from 'node:fs/promises';
+import {CASCADE_METHOD,qualifyTempleCascade} from './game-math/rtp-temple-cascade.mjs';
 import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
@@ -14,15 +16,20 @@ import {preflightAfterglow,simulateAfterglow} from './game-math/rtp-afterglow.mj
 const root = fileURLToPath(new URL('../', import.meta.url)), args = process.argv.slice(2);
 const index = args.indexOf('--game'), gameId = index < 0 ? undefined : args[index + 1];
 assert(['studio-flooded-temple','studio-afterglow','studio-caribbean-treasures','studio-neopolis','studio-dracona','studio-cosmic-escape','mortal-kombat','hockey','pool','chess','durak','transfer-durak','crazy-eights'].includes(gameId), 'Choose a registered paid game');
-const inputs = await rtpInputs(root, gameId), startedAt = new Date().toISOString();
-const exact = gameId==='studio-flooded-temple'?await qualifyTemple(inputs.policy,value=>console.log(JSON.stringify(value))):gameId==='studio-neopolis'&&inputs.policy.method==='neopolis-variable-stake-conditional-v4'?qualifyNeopolisV4(inputs.policy,value=>console.log(JSON.stringify(value))):gameId==='studio-caribbean-treasures'?await qualifyCaribbean(inputs.policy,value=>console.log(JSON.stringify(value))):gameId==='studio-cosmic-escape'?await qualifyCosmic(inputs.policy,value=>console.log(JSON.stringify(value))):gameId==='mortal-kombat'?qualifyCombat(inputs.policy):inputs.policy.method==='exhaustive-virtual-pvp-pot'?qualifyVirtualPvp(gameId,inputs.policy):undefined;
+const registry=JSON.parse(await readFile(resolve(root,'scripts/game-math/rtp-policy.json'),'utf8'));
+const rulesIndex=args.indexOf('--rules');
+const versions=rulesIndex>=0?[Number(args[rulesIndex+1])]:[registry.profiles[gameId].rulesVersion,...Object.keys(registry.versionProfiles?.[gameId]??{}).map(Number)];
+for(const rulesVersion of versions){
+const inputs = await rtpInputs(root, gameId,rulesVersion), startedAt = new Date().toISOString();
+const exact = gameId==='studio-flooded-temple'?(inputs.policy.method===CASCADE_METHOD?await qualifyTempleCascade(inputs.policy,value=>console.log(JSON.stringify(value))):await qualifyTemple(inputs.policy,value=>console.log(JSON.stringify(value)))):gameId==='studio-neopolis'&&inputs.policy.method==='neopolis-variable-stake-conditional-v4'?qualifyNeopolisV4(inputs.policy,value=>console.log(JSON.stringify(value))):gameId==='studio-caribbean-treasures'?await qualifyCaribbean(inputs.policy,value=>console.log(JSON.stringify(value))):gameId==='studio-cosmic-escape'?await qualifyCosmic(inputs.policy,value=>console.log(JSON.stringify(value))):gameId==='mortal-kombat'?qualifyCombat(inputs.policy):inputs.policy.method==='exhaustive-virtual-pvp-pot'?qualifyVirtualPvp(gameId,inputs.policy):undefined;
 const serverReplayChecks = exact?.serverReplayChecks??(gameId==='studio-afterglow'?preflightAfterglow(inputs.policy):preflight(gameId, inputs.policy));
 console.log(JSON.stringify({ gameId, phase: 'server-replay', serverReplayChecks }));
 const sample = exact??(gameId==='studio-afterglow'?simulateAfterglow:gameId === 'studio-neopolis' ? simulateNeopolis : simulateDracona)(inputs.policy, value => console.log(JSON.stringify(value)));
-assert.deepEqual(await rtpInputs(root, gameId), inputs, 'Sources changed during qualification');
+assert.deepEqual(await rtpInputs(root, gameId,rulesVersion), inputs, 'Sources changed during qualification');
 const proof = { schemaVersion: 1, gameId, rulesVersion: inputs.policy.rulesVersion, progressVersion: inputs.policy.progressVersion,
   startedAt, completedAt: new Date().toISOString(), sourceHashes: inputs.sourceHashes, policySha256: inputs.policySha256, serverReplayChecks, ...sample };
-const artifact = resolve(root, 'artifacts/rtp-qualification', gameId + '.json');
+const artifactIndex=args.indexOf('--artifact-dir');
+const artifact = resolve(root,artifactIndex<0?'artifacts/rtp-qualification':args[artifactIndex+1], (rulesVersion===registry.profiles[gameId].rulesVersion?gameId:gameId+'-rules-'+rulesVersion)+'.json');
 await mkdir(dirname(artifact), { recursive: true }); await writeFile(artifact, JSON.stringify(proof,null,2)+'\n');
 validateRtpProof(gameId, inputs, proof);
 if (args.includes('--write-proof')) {
@@ -30,3 +37,5 @@ if (args.includes('--write-proof')) {
   await writeFile(target, JSON.stringify(proof,null,2)+'\n');
 }
 console.log(JSON.stringify({ gameId, qualified: true, results: proof.results.map(row => ({ choice: row.choice, stakeUnits: row.stakeUnits, paidRounds: row.paidRounds, rtp: row.rtp, interval95: row.interval95,rtpBounds:row.rtpBounds })) }));
+
+}

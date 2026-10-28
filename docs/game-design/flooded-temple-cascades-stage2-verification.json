@@ -1,0 +1,396 @@
+{
+  "date": "2026-10-28",
+  "gameId": "studio-flooded-temple",
+  "stage": 2,
+  "status": "engine-mathematics-server-complete",
+  "rulesVersion": 2,
+  "progressVersion": 2,
+  "activeClient": {
+    "version": "0.7.1-af8d1ba9080d",
+    "rules": 1,
+    "progress": 1,
+    "hostApi": 1,
+    "defaultTempleHeader": "1",
+    "newRendererImplemented": false,
+    "previewRestarted": false,
+    "previewSession": 7918
+  },
+  "protocol": {
+    "explicitCascadeHeader": "X-Royal-Temple-Rules: 2",
+    "settings": {
+      "temple": {
+        "mode": "cascades"
+      }
+    },
+    "continuation": "temple-cascade",
+    "maximumFallsPerTransportOperation": 16,
+    "mathematicalFallLimit": false,
+    "oneDebitOneFinalCredit": true,
+    "legacyRules1Preserved": true,
+    "productionDeployed": false
+  },
+  "qualification": {
+    "method": "temple-cascade-independent-monte-carlo-v2",
+    "targetRtp": 0.96,
+    "estimatedRtp": 0.95998765125,
+    "interval95": [
+      0.9593424097640131,
+      0.9606328927359868
+    ],
+    "distinctPaidRounds": 400000000,
+    "allSixStakesShareExactlyHomogeneousPaths": true,
+    "exactAnalyticalRtp": false,
+    "streams": [
+      {
+        "seed": 2026102801,
+        "paidRounds": 200000000,
+        "reward": 191944611.5,
+        "rewardSquared": 8852207518.5,
+        "rtp": 0.9597230575,
+        "interval95": [
+          0.9588106572953594,
+          0.9606354577046405
+        ],
+        "falls": 297427729,
+        "freeSpins": 12103862,
+        "bonusRounds": 1001174,
+        "capped": 4242,
+        "positive": 62420756,
+        "aboveStake": 25583661,
+        "maxFalls": 155
+      },
+      {
+        "seed": 2026102807,
+        "paidRounds": 200000000,
+        "reward": 192050449,
+        "rewardSquared": 8856555200.875,
+        "rtp": 0.960252245,
+        "interval95": [
+          0.959339626695888,
+          0.9611648633041119
+        ],
+        "falls": 297511704,
+        "freeSpins": 12154757,
+        "bonusRounds": 1004599,
+        "capped": 4180,
+        "positive": 62430665,
+        "aboveStake": 25593249,
+        "maxFalls": 188
+      }
+    ],
+    "serverReplay": {
+      "coverage": [
+        {
+          "stakeUnits": 1000,
+          "paidRounds": 128,
+          "forcedBonusRounds": 2,
+          "forcedCapRounds": 2,
+          "falls": 199,
+          "freeSpins": 20,
+          "sha256": "350159576831726baac349c7ae57b9ea86450bf56b9d9f4655773f374f6e13d4"
+        },
+        {
+          "stakeUnits": 2000,
+          "paidRounds": 128,
+          "forcedBonusRounds": 2,
+          "forcedCapRounds": 2,
+          "falls": 219,
+          "freeSpins": 30,
+          "sha256": "f7ae5d4389540be4d82515a26fa2cbcfb5d2008ac7f17a603b300beae76da051"
+        },
+        {
+          "stakeUnits": 5000,
+          "paidRounds": 128,
+          "forcedBonusRounds": 2,
+          "forcedCapRounds": 2,
+          "falls": 206,
+          "freeSpins": 20,
+          "sha256": "8440d69ceba3d18921cc0c5ac2187f31bbe3be23e6d49fde25e9ee362445ce9b"
+        },
+        {
+          "stakeUnits": 10000,
+          "paidRounds": 128,
+          "forcedBonusRounds": 2,
+          "forcedCapRounds": 2,
+          "falls": 211,
+          "freeSpins": 20,
+          "sha256": "1f6fae85287e26bfb285a0fe08f7eb46e61958b172056014201dc6434ab31609"
+        },
+        {
+          "stakeUnits": 20000,
+          "paidRounds": 128,
+          "forcedBonusRounds": 2,
+          "forcedCapRounds": 2,
+          "falls": 226,
+          "freeSpins": 20,
+          "sha256": "7e08c97a46ee6dd008740dce98018f7fcf1d10fe4262128e1bd9c2c5910ffe0e"
+        },
+        {
+          "stakeUnits": 50000,
+          "paidRounds": 128,
+          "forcedBonusRounds": 2,
+          "forcedCapRounds": 2,
+          "falls": 213,
+          "freeSpins": 20,
+          "sha256": "3c694bfe5cdb64b3e0f08d6738f29490f621d64300490ba805f90b421189cdf9"
+        }
+      ]
+    },
+    "serverReplayChecks": 768,
+    "startedAt": "2026-10-28T20:40:21.751Z",
+    "completedAt": "2026-10-28T20:45:21.76Z",
+    "sourceHashes": {
+      "src/shared/floodedTempleCascadeData.json": "5aa05b4cca0476f48d84e70402204ec9029949a8da3c8d2c7a95b6a5456fc07a",
+      "src/shared/floodedTempleCascadeMath.ts": "c798712865f7a016fc09e3b2c5962f826a6a7b7bc02eac4f721e4abb7e51957e",
+      "src/shared/floodedTempleCascade.ts": "018ca50c596551323f27cc3bcc29f54057c4612b96331553ccc5b99ee9bfefa6",
+      "server/games/floodedTempleCascade.ts": "8d7814d13dd390a72b9e64650e0da025bedc484e2c53f010c8966b8d5b7abe94",
+      "scripts/game-math/rtp-temple-cascade-model.mjs": "b08395ab6ca615fa81190d84371d9941b9c51705c68540bfdf2d7ba4da22e399",
+      "src/shared/casinoExpansion.ts": "710274443de88364d33358d94fa878a437367f738740fdd283cc392d49b08954",
+      "server/demoExpansion.ts": "6af19c21b9ea1eb859d6eb07a75fda202d576b7974310cb845421cbfe6517773",
+      "server/demoWalletRoutes.ts": "5c6535d836ca52d5848879f43e0cadefa1d1571533a4374a93e2c21b4b3c7874",
+      "server/gameWalletRoutes.ts": "0bfc9b5d04b880a9d61d694f449f15046f30b475f907a6acda8b1b9991e381ca",
+      "server/finance/nile-game-runtime.ts": "9df319c26821ee52e5a465e3610d0864b16b09c8e51de7b30221a5d990ae3cef",
+      "src/wallet/ExpansionClient.ts": "51c16117f2ed42501dd8a456d6e0735be8c0e25f84942436ef1c0147c959dea7",
+      "scripts/game-math/rtp-temple-cascade-worker.mjs": "fe4f9c82b9c14b00f0b3035351efa42ea27cc56e935aae5699e4d99ef8780899",
+      "scripts/game-math/rtp-temple-cascade.mjs": "03c60d9badf327f29666b5f6c582f3603229942ef5be5769b19521a1c06b44c2"
+    },
+    "proof": "../game-math/qualifications/flooded-temple-v2.json",
+    "proofSha256": "2903633fa2bbaa603134ebff22c648f55c1d9913f711b37dfcc45689b4a34895"
+  },
+  "calibration": {
+    "weights": {
+      "wild": 373,
+      "bonus": 900
+    },
+    "seed": 19840117,
+    "paidRounds": 100000000,
+    "reward": 96022973,
+    "rewardSquared": 4437680145.125,
+    "rtp": 0.96022973,
+    "interval95": [
+      0.9589376935883511,
+      0.9615217664116489
+    ],
+    "falls": 148738934,
+    "freeSpins": 6075796,
+    "bonusRounds": 501923,
+    "capped": 2135,
+    "positive": 31206497,
+    "aboveStake": 12789095,
+    "maxFalls": 165
+  },
+  "additionalDescriptiveStatistics": {
+    "purpose": "Additional descriptive statistics, not calibration or RTP qualification",
+    "seed": 12648430,
+    "paidRounds": 1000000,
+    "outcomes": {
+      "zero": 688098,
+      "partial": 147560,
+      "stakeReturned": 36670,
+      "aboveStake": 127672
+    },
+    "meanBaseReturn": 0.80614725,
+    "meanBonusReturn": 0.14177375,
+    "fallCountHistogram": {
+      "1": 688049,
+      "2": 238383,
+      "3": 53841,
+      "4": 11649,
+      "5": 2381,
+      "6": 493,
+      "7": 119,
+      "8": 24,
+      "9": 8,
+      "10": 1,
+      "11": 1,
+      "12": 68,
+      "13": 234,
+      "14": 481,
+      "15": 711,
+      "16": 788,
+      "17": 629,
+      "18": 511,
+      "19": 351,
+      "20": 228,
+      "21": 122,
+      "22": 63,
+      "23": 27,
+      "24": 20,
+      "25": 20,
+      "26": 30,
+      "27": 59,
+      "28": 55,
+      "29": 75,
+      "30": 85,
+      "31": 71,
+      "32": 75,
+      "33": 61,
+      "34": 33,
+      "35": 44,
+      "36": 24,
+      "37": 25,
+      "38": 12,
+      "39": 6,
+      "40": 6,
+      "41": 4,
+      "42": 6,
+      "43": 14,
+      "44": 11,
+      "45": 8,
+      "46": 9,
+      "47": 9,
+      "48": 4,
+      "49": 5,
+      "50": 5,
+      "51": 5,
+      "52": 5,
+      "53": 2,
+      "54": 9,
+      "56": 4,
+      "57": 4,
+      "58": 3,
+      "59": 3,
+      "60": 5,
+      "61": 4,
+      "62": 1,
+      "63": 2,
+      "64": 2,
+      "66": 2,
+      "67": 1,
+      "71": 3,
+      "72": 1,
+      "74": 1,
+      "80": 1,
+      "90": 1,
+      "91": 1,
+      "103": 1,
+      "133": 1
+    }
+  },
+  "checks": {
+    "temple": {
+      "passed": 47,
+      "total": 47,
+      "durationMs": 18690.0297
+    },
+    "rtpGateUnit": {
+      "passed": 29,
+      "total": 29
+    },
+    "caribbeanAndCascadeWalletIntegration": {
+      "passed": 12,
+      "total": 12,
+      "note": "Three cascade cases also belong to the Temple profile"
+    },
+    "independentModules": {
+      "passed": 7,
+      "total": 7,
+      "allBuiltPayloadHashesVerified": true
+    },
+    "rtpGate": {
+      "verified": 14,
+      "legacyNotQualified": 114
+    },
+    "applicationBuild": {
+      "format": 1,
+      "startedAt": "2026-10-28T20:47:56.246Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 2618
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 14396
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 29456
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 8398
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 91
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 31
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 31
+        }
+      ],
+      "passed": true,
+      "durationMs": 55022
+    },
+    "oldTempleQualification": {
+      "checks": 22452,
+      "resultsAndAnalysisUnchanged": true
+    },
+    "caribbeanQualification": {
+      "checks": 4096,
+      "resultsAndAnalysisUnchanged": true,
+      "reviewedSharedFiles": [
+        "src/shared/casinoExpansion.ts",
+        "server/demoExpansion.ts",
+        "server/finance/nile-game-runtime.ts"
+      ]
+    },
+    "legacyBaselineChanged": false,
+    "newUiOrAnimationClaims": false
+  },
+  "storage": {
+    "owner": "Temple cascade stage 2 chat",
+    "initialFreeBytes": 294747426816,
+    "freeBeforeBytes": 290350804992,
+    "freeAfterBytes": null,
+    "sourceCopiesCreated": 0,
+    "archivesCreated": 0,
+    "archivesRemoved": 0,
+    "targets": [
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\temple-cascades-stage2",
+        "files": 8,
+        "bytes": 112182,
+        "inventorySha256": "b793f83b8c3fb20efe08f71ed1029476faa9f5a0b6d379bc53e26f5037da0beb",
+        "removedFiles": 0,
+        "removedBytes": 0
+      }
+    ],
+    "removedBytes": 0,
+    "physicalReclaimedClaim": false,
+    "preservationCommit": null,
+    "githubVerified": false,
+    "state": "inventoried-awaiting-remote-preservation",
+    "previousDeniedScopesRetried": false,
+    "activeExceptions": [
+      {
+        "path": "current managed worktree and preview session 7918",
+        "reason": "Ongoing multi-stage Temple feature, active user preview, concurrent primary checkout work",
+        "cleanupCondition": "Feature and preview review completed, source saved and concurrent work reconciled"
+      },
+      {
+        "path": "module-dist/studio-flooded-temple/versions/0.7.1-af8d1ba9080d",
+        "reason": "Current unchanged user-facing package",
+        "cleanupCondition": "Replaced after new renderer is ready and no session needs this package"
+      },
+      {
+        "path": "other games and previous denied cleanup scopes",
+        "reason": "Not owned by this stage; no deletion attempted",
+        "cleanupCondition": "Their own recorded ownership and active-session conditions apply"
+      }
+    ]
+  }
+}
