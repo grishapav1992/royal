@@ -1394,5 +1394,74 @@
       }
     ],
     "freeSpaceNote": "Measurements include other processes. Cleanup was rejected before execution; no physical reclamation is claimed"
+  },
+  "pirateCrewUpdate": {
+    "date": "2026-10-28",
+    "owner": "caribbean-pirate-crew",
+    "preservationCommit": "6637116af2a2eb0ba82d841099d081db1c50eeef",
+    "preservationRefs": [
+      "refs/heads/main",
+      "refs/heads/codex/caribbean-pirate-crew"
+    ],
+    "remoteCommitVerified": true,
+    "freeBeforeBuildBytes": 299134611456,
+    "freeBeforeRejectedCleanupBytes": 298180399104,
+    "freeAfterRejectedCleanupBytes": 298180292608,
+    "removedFolders": [],
+    "removedFiles": [],
+    "removedArchives": [],
+    "removedLogicalBytes": 0,
+    "physicalReclamationClaimed": false,
+    "cleanupBlock": {
+      "action": "Remove only this task temporary directory and three superseded 1.4.0 packages, after exact path and owner checks, preserving the current package and user preview",
+      "reason": "Automatic approval review rejected the command: blocked by policy",
+      "attemptExecuted": false
+    },
+    "retainedTaskArtifacts": [
+      {
+        "folder": "artifacts/work/caribbean-pirate-crew",
+        "bytes": 22700368,
+        "cleanupCondition": "Remove duplicate screenshots, discarded variants, logs and reports when permitted; selected masters, prompts and compact proof are verified in GitHub"
+      },
+      {
+        "folder": "module-dist/studio-caribbean-treasures/versions/1.4.0-d9f52c7d68c0",
+        "bytes": 15370914,
+        "cleanupCondition": "Remove superseded task package when cleanup is permitted"
+      },
+      {
+        "folder": "module-dist/studio-caribbean-treasures/versions/1.4.0-0a5138a35a7e",
+        "bytes": 15070570,
+        "cleanupCondition": "Remove superseded task package when cleanup is permitted"
+      },
+      {
+        "folder": "module-dist/studio-caribbean-treasures/versions/1.4.0-0741188c410c",
+        "bytes": 14993243,
+        "cleanupCondition": "Remove superseded task package when cleanup is permitted"
+      }
+    ],
+    "retainedLogicalBytes": 68135095,
+    "activeExceptions": [
+      {
+        "folder": "C:/Users/Aorus/.codex/worktrees/new-slot/royal",
+        "reason": "The user-requested local preview remains active alongside concurrent work in the primary checkout",
+        "cleanupCondition": "Retain while the preview is requested"
+      },
+      {
+        "folder": "C:/Users/Aorus/AppData/Local/Temp/royal-pg-C70xv3",
+        "reason": "Active preview database",
+        "cleanupCondition": "Preserve until the preview ends"
+      },
+      {
+        "folder": "module-dist/studio-caribbean-treasures/versions/1.3.3-54b6b0c0cc94",
+        "reason": "An already open user game window may still use the previous immutable package",
+        "cleanupCondition": "Remove after that window is closed and no running session requires it"
+      },
+      {
+        "folder": "C:/Users/Aorus/.codex/generated_images/01a1793f-6c92-7992-85f5-379a1491ef5d",
+        "reason": "Built-in ImageGen requires retaining original outputs; all ten selected project masters and exact prompts are saved in GitHub",
+        "cleanupCondition": "Keep tool originals unless the user explicitly requests removal"
+      }
+    ],
+    "freeSpaceNote": "Measurements include other processes. Cleanup was rejected before execution and no physical space reclamation is claimed"
   }
 }

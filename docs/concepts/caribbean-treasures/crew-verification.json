@@ -1,0 +1,134 @@
+{
+  "format": 1,
+  "date": "2026-10-28",
+  "sourceCommit": "6437cbdc76b113c9c31e4de14ad7b69d6e7b009a",
+  "baseline": "0fa105418d367c9ec67ec95e1b8e8bbed4cb5ebf",
+  "gamePackage": "1.4.0-2c6b41ca2da3",
+  "scope": "Ten additional adult captains, free cosmetic selector and account-scoped local preference",
+  "newCaptains": 10,
+  "availableCaptains": 11,
+  "statesPerCaptain": 8,
+  "newFrames": 80,
+  "galleryPreviews": 11,
+  "runtimeCrewBytes": 8490768,
+  "runtimeCrewBudgetBytes": 12582912,
+  "startupImages": 16,
+  "sourceGenerator": "Built-in ImageGen",
+  "prompts": "games/caribbean-treasures/assets/crew/prompts.json",
+  "mathChanged": false,
+  "walletChanged": false,
+  "audioChanged": false,
+  "productionChanged": false,
+  "checks": {
+    "applicationBuild": {
+      "format": 1,
+      "startedAt": "2026-10-28T19:25:34.668Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 2309
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 8310
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 4589
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 6907
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 78
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 29
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 28
+        }
+      ],
+      "passed": true,
+      "durationMs": 22251
+    },
+    "gameMathWalletTests": 48,
+    "finalAssetsAndModuleTests": 10,
+    "modulePackages": 118,
+    "exactExportCheck": true,
+    "browser": {
+      "startTime": "2026-10-28T19:33:10.966Z",
+      "duration": 105431.748,
+      "expected": 6,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "toolbarStability": {
+      "startTime": "2026-10-28T19:31:10.909Z",
+      "duration": 50968.168,
+      "expected": 3,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "earlierPixelComparisonFailure": {
+      "stats": {
+        "startTime": "2026-10-28T19:27:15.724Z",
+        "duration": 102772.55,
+        "expected": 5,
+        "skipped": 0,
+        "unexpected": 1,
+        "flaky": 0
+      },
+      "finding": "One toolbar button pixel snapshot differed while buttons remained visible; exact comparison retained and screenshot animations disabled",
+      "disposition": "Three isolated repetitions and the complete final six-scenario run pass without retries"
+    },
+    "crewReactions": 60.0,
+    "failureKeepsCurrentIdentity": true,
+    "failedSavedLookFallsBackToOriginal": true,
+    "cancelledOrDestroyedLoadCannotApply": true,
+    "selectionSendsNoWagers": true,
+    "closeAndReopenKeepsCaptain": true,
+    "closeAndReopenDoesNotReplayRewards": true,
+    "acceptedRoundPreserved": true,
+    "modalCloseVisibleAfterMobileScroll": true,
+    "focusReturnsToPortrait": true,
+    "toolbarPixelRegionsUnchanged": 4,
+    "framingViewports": [
+      "1440x1000",
+      "1280x720",
+      "1024x768",
+      "900x650",
+      "800x600",
+      "640x480",
+      "500x760",
+      "390x844",
+      "342x700",
+      "844x390",
+      "342x245"
+    ],
+    "chatEnabled": true,
+    "playbackMaximumDeviationMs": 37.751544217688206,
+    "playbackProjectTargetMs": 50
+  },
+  "activation": "Close the local game window, reopen Caribbean Treasures from the catalogue, then click the portrait at the top left",
+  "limits": [
+    "Actual local host with disposable accounts; no production publication",
+    "Mobile layout uses a Chrome viewport, not a physical phone",
+    "Player preference and subjective visual appeal have not been measured",
+    "Audio timing uses browser scheduling relative to estimated output; physical speaker latency was not measured"
+  ]
+}

@@ -1,6 +1,10 @@
-# Caribbean Treasures 1.3.3
+# Caribbean Treasures 1.4.0
 
 Independent client package for `studio-caribbean-treasures`. Host API 1, server rules 1 and progress contract 1. The common module loader mounts `entry.ts`; the host supplies the expansion client, wallet, account, money formatting and language.
+
+The portrait in the header opens a free pirate selector. Ten additional adult captains join the original Isabella: Amara, Mei, Priya, Yasmin, Zahara, Catalina, Moana, Freya, Rowena and Ines. Each has an individual face, hair, costume and eight reaction frames. Selection is a local cosmetic preference scoped to the signed-in account; it does not start an operation or change a paid round. A new look is committed only after all eight images decode. Failed, cancelled or obsolete loads keep the current identity. Close/reopen restores the selected captain without replaying rewards.
+
+Crew masters and prompts are in `assets/crew/`. Run `node scripts/export-caribbean-crew.mjs` from the repository root to export 80 transparent reaction images and 11 small gallery previews, or add `--check` to verify exact exported bytes. An eight-pixel atlas inset excludes neighboring frame edges. Only the chosen reaction set loads; the original 16-image startup list remains bounded. The additional crew has a separate 12 MiB runtime media budget. Music and recorded effects are unchanged.
 
 The package renders confirmed 6×4 fields, continuous giant blocks, winning cells and selected paylines. It exposes 1/5/10/20 active lines, four per-line stakes, natural tactic selection, both purchased series, rules, round history and pending-operation recovery. Settings lock during accepted rounds. Outcomes, costs, entropy, persistence, house coverage and final credit belong to the common backend.
 
