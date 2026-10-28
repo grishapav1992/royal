@@ -1,0 +1,50 @@
+{
+  "format": 1,
+  "checked": "2026-10-28",
+  "music": {
+    "title": "Blackmoor Tides",
+    "author": "Matthew Pablo",
+    "website": "https://www.matthewpablo.com",
+    "source": "https://opengameart.org/content/blackmoor-tides-epic-pirate-battle-theme",
+    "download": "https://opengameart.org/sites/default/files/Blackmoor%20Tides%20Collection.zip",
+    "selectedFile": "Epic Pirate Battle Theme/Blackmoor Tides Loop (No Chants).wav",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "changes": "Instrumental loop; lossless FLAC source transcode; two-pass loudness normalization, 30 ms music edge fades, stereo AAC export; runtime music ducking. Composition and duration preserved."
+  },
+  "effects": [
+    {
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sources": [
+        "https://kenney.nl/assets/impact-sounds",
+        "https://kenney.nl/assets/rpg-audio"
+      ],
+      "mapping": {
+        "stop-a": "Impact Sounds/Audio/impactWood_medium_000.ogg",
+        "stop-b": "Impact Sounds/Audio/impactWood_medium_001.ogg",
+        "stop-c": "Impact Sounds/Audio/impactWood_medium_002.ogg",
+        "thud": "Impact Sounds/Audio/impactWood_heavy_000.ogg",
+        "metal": "Impact Sounds/Audio/impactMetal_medium_003.ogg",
+        "click": "RPG Audio/Audio/metalClick.ogg",
+        "latch": "RPG Audio/Audio/metalLatch.ogg",
+        "creak": "RPG Audio/Audio/creak3.ogg",
+        "coins": "RPG Audio/Audio/handleCoins.ogg",
+        "coins-small": "RPG Audio/Audio/handleCoins2.ogg"
+      }
+    },
+    {
+      "author": "Thimras",
+      "title": "Cannon hit wall",
+      "source": "https://opengameart.org/content/cannon-hit-wall",
+      "download": "https://opengameart.org/sites/default/files/cannon_hit_wall_0.ogg",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "mapping": {
+        "cannon": "cannon_hit_wall_0.ogg"
+      }
+    }
+  ],
+  "effectChanges": "Leading silence removed, short edits, measured peak gain, 4 ms attack and 35 ms release fades, 30 ms codec guard silence on both ends, and stereo AAC export."
+}
