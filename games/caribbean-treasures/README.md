@@ -1,4 +1,4 @@
-# Caribbean Treasures 1.2
+# Caribbean Treasures 1.3
 
 Independent client package for `studio-caribbean-treasures`. Host API 1, server rules 1 and progress contract 1. The common module loader mounts `entry.ts`; the host supplies the expansion client, wallet, account, money formatting and language.
 
@@ -8,10 +8,14 @@ The presentation follows the approved Caribbean reference: six dimensional illus
 
 Client support is advertised through `X-Royal-Caribbean-Treasures: 1` on the common transport. Older clients receive a filtered session list and cannot change this game's rounds. Server rules and progress remain version 1. First publication needs the compatible host/backend and finance runtime; later game packages can update independently.
 
-Raster source PNGs and ImageGen prompts are in `assets/`. Reproducible WebP runtime exports use the repository's declared `public/assets/caribbean-treasures/` media root and are bundled into this game's immutable package. `icons.ts` maps the six unchanged symbol IDs to those exports. Ten runtime images total 1,969,902 bytes, within the 3 MiB presentation budget. Event design, cancellation and synchronization are specified in [feedback.md](feedback.md) and the reference upgrade in [reference-polish.md](reference-polish.md).
+The captain now has eight aligned poses: idle, blink, focus, cannon surprise, bonus gesture, calm loss/partial return, positive result and delighted laugh. Double-buffered pose transitions, a separate gesture layer, slow breathing and one idle timer support both the desktop figure and mobile portrait. Reactions use newly confirmed events and full paid-round outcomes. Reduced motion retains a meaningful static pose; hiding, pausing, opening a modal, account changes and closing release the character's owned work. See [character-motion.md](character-motion.md) and the [six final ImageGen prompts](assets/character-prompts.md).
+
+Columns land with a short settle, the continuous giant rises within its exact block, and cannon growth uses the confirmed before/after bounds with a local recoil. One paid prefix route is traced outside the giant, the integer tally uses a smooth frame-based easing, and positive complete rounds add bounded gold particles. Skip immediately preserves confirmed money and clears owned decoration.
+
+Raster source PNGs and ImageGen prompts are in `assets/`. Reproducible WebP runtime exports use the repository's declared `public/assets/caribbean-treasures/` media root and are bundled into this game's immutable package. `icons.ts` maps the six unchanged symbol IDs to those exports. Sixteen runtime images fit the 5 MiB presentation budget. Event design, cancellation and synchronization are specified in [feedback.md](feedback.md) and the reference upgrade in [reference-polish.md](reference-polish.md).
 
 Build with `npm run build` or `node scripts/build-game-module.mjs --game caribbean-treasures`. Run `npm run test:caribbean` for full-round, transport and wallet coverage.
 
-For real-host browser checks, start `node --import tsx scripts/caribbean-preview.ts`, then run `npx playwright test --config playwright.caribbean.config.ts`. The loopback-only stand creates its own temporary PostgreSQL and disposable accounts. It uses the actual host, module loader, shared wallet store and live chat. Test-only top-up and forced bonus controls exist in that local stand only. Stop with POST `http://127.0.0.1:5234/__test/caribbean/stop`; this closes its backend and temporary database.
+For real-host browser checks, start `node --import tsx scripts/caribbean-preview.ts`, then run `npx playwright test --config playwright.caribbean.config.ts`. The loopback-only stand creates its own temporary PostgreSQL and disposable accounts. It uses the actual host, module loader, shared wallet store and live chat. Test-only top-up, forced bonus and seeded saved-scenario controls exist in that local stand only. Saved scenarios drive actual backend rounds, not injected UI results. Stop with POST `http://127.0.0.1:5234/__test/caribbean/stop`; this closes its backend and temporary database.
 
 See [the staged development plan](../../docs/concepts/caribbean-treasures/development-plan.md) and [final review](../../docs/concepts/caribbean-treasures/final-review.md). Automated signal and scheduling checks do not establish listening comfort on physical devices.
