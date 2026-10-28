@@ -336,3 +336,15 @@
   .rr-table-heading h3 { font-size:19px; }
 }
 @container(max-width:360px) { .rr-result-copy>span { font-size:6px; } }
+
+.rr-ball-orbit { transform-origin:200px 200px; }
+.rr-ball { transform-origin:200px 52px; }
+.rr-ball-trails { pointer-events:none; }
+.rr-wheel::after { content:""; position:absolute; inset:1%; border-radius:50%; pointer-events:none; border:1px solid #ffe6a7; box-shadow:0 0 17px #e5c27b22,inset 0 0 12px #efd49e11; opacity:0; transition:opacity .3s; }
+.rr-root:is([data-motion-phase="launch"],[data-motion-phase="orbit"],[data-motion-phase="coast"]) .rr-wheel::after { opacity:.48; }
+.rr-root[data-motion-phase="drop"] .rr-wheel::after { opacity:.24; }
+.rr-root[data-motion-phase="quiet"] .rr-spin-glyph { animation:none; }
+.rr-root[data-motion-phase="quiet"][data-busy="true"] .rr-ball { opacity:.55; }
+@media(prefers-reduced-motion:reduce) { .rr-wheel::after { display:none; } }
+.rr-spindle { transform-origin:200px 200px; }
+.rr-root[data-motion-phase="quiet"] .rr-wheel::after { transition:none; opacity:0; }

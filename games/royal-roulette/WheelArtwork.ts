@@ -30,14 +30,17 @@ export function rouletteWheelSvg(numbers: readonly number[], color: (n: number) 
       <circle cx="200" cy="200" r="80" fill="url(#rr-wood)" stroke="#a4783f" stroke-opacity=".65"/>
       <circle cx="200" cy="200" r="75" fill="none" stroke="#d4ac69" stroke-opacity=".3"/>
     </g>
-    <g filter="url(#rr-hub-shadow)">
+    <g class="rr-spindle" filter="url(#rr-hub-shadow)">
       ${[45,135,225,315].map(a=>`<path d="M195 198 L193 143 Q200 130 207 143 L205 198 Z" fill="url(#rr-gold)" stroke="#ae8b50" stroke-width=".8" transform="rotate(${a} 200 200)"/>`).join('')}
       <circle cx="200" cy="200" r="25" fill="url(#rr-hub)" stroke="#eacb87" stroke-width="1.5"/>
       <circle cx="200" cy="200" r="17" fill="url(#rr-gold)" stroke="#7b552b"/>
       <circle cx="200" cy="200" r="7" fill="url(#rr-pearl)"/>
     </g>
+    <g class="rr-ball-trails"><circle r="2.7" fill="#fff1cd" opacity="0"/><circle r="2" fill="#fff1cd" opacity="0"/><circle r="1.2" fill="#fff1cd" opacity="0"/></g>
+    <g class="rr-ball-orbit"><g class="rr-ball-carrier">
+      <circle class="rr-ball-shadow" cx="201" cy="54" r="5.8" fill="#000" opacity=".46"/>
+      <circle class="rr-ball" cx="200" cy="52" r="5" fill="url(#rr-pearl)"/>
+    </g></g>
     <path d="M187 14 Q200 6 213 14 L200 33 Z" fill="url(#rr-gold)" stroke="#fff1be" stroke-width=".8"/>
-    <circle class="rr-ball-shadow" cx="201" cy="55" r="5.8" fill="#000" opacity=".5"/>
-    <circle class="rr-ball" cx="200" cy="53" r="5" fill="url(#rr-pearl)"/>
   </svg>`;
 }
