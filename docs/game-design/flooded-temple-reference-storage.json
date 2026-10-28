@@ -1,0 +1,238 @@
+{
+  "date": "2026-10-28",
+  "sourcePreservedInGitHub": "790801ce14427cef6b31dcf0e7503234c68b45de",
+  "branch": "codex/flooded-temple",
+  "remoteVerified": true,
+  "cleanupStatus": "blocked by automatic approval review",
+  "targets": [
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-polish\\audio-downloads",
+      "directory": true,
+      "files": 16,
+      "bytes": 15964615.0,
+      "latestWriteTicks": 6.392875926062335E+17,
+      "archiveBytes": null
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-polish\\browser",
+      "directory": true,
+      "files": 12,
+      "bytes": 13493974.0,
+      "latestWriteTicks": 6.39287605646818E+17,
+      "archiveBytes": null
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-polish\\audio-generation.log",
+      "directory": false,
+      "files": 1,
+      "bytes": 1451.0,
+      "latestWriteTicks": 6.392875934100238E+17,
+      "archiveBytes": null
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-polish\\build.log",
+      "directory": false,
+      "files": 1,
+      "bytes": 29635.0,
+      "latestWriteTicks": 6.392876057463567E+17,
+      "archiveBytes": null
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-polish\\capture-play.mjs",
+      "directory": false,
+      "files": 1,
+      "bytes": 1285.0,
+      "latestWriteTicks": 6.392876022275745E+17,
+      "archiveBytes": null
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-polish\\cleanup-inventory.ps1",
+      "directory": false,
+      "files": 1,
+      "bytes": 3965.0,
+      "latestWriteTicks": 6.392876086874865E+17,
+      "archiveBytes": null
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-polish\\clock-baseline.json",
+      "directory": false,
+      "files": 1,
+      "bytes": 5209.0,
+      "latestWriteTicks": 6.392876039225047E+17,
+      "archiveBytes": null
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-polish\\clock-cpu-4x.json",
+      "directory": false,
+      "files": 1,
+      "bytes": 5214.0,
+      "latestWriteTicks": 6.392876044885318E+17,
+      "archiveBytes": null
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-polish\\clock-simulated-latency.json",
+      "directory": false,
+      "files": 1,
+      "bytes": 5254.0,
+      "latestWriteTicks": 6.392876042702012E+17,
+      "archiveBytes": null
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-polish\\layout-final.log",
+      "directory": false,
+      "files": 1,
+      "bytes": 666.0,
+      "latestWriteTicks": 6.392875985301743E+17,
+      "archiveBytes": null
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-polish\\layout.log",
+      "directory": false,
+      "files": 1,
+      "bytes": 4007.0,
+      "latestWriteTicks": 6.392872432185519E+17,
+      "archiveBytes": null
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-polish\\test-modules.log",
+      "directory": false,
+      "files": 1,
+      "bytes": 667.0,
+      "latestWriteTicks": 6.392875999856192E+17,
+      "archiveBytes": null
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-polish\\test-rtp.log",
+      "directory": false,
+      "files": 1,
+      "bytes": 3038.0,
+      "latestWriteTicks": 6.392875999760531E+17,
+      "archiveBytes": null
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-polish\\test-temple.log",
+      "directory": false,
+      "files": 1,
+      "bytes": 3481.0,
+      "latestWriteTicks": 6.392875951492032E+17,
+      "archiveBytes": null
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-polish\\test-ui.log",
+      "directory": false,
+      "files": 1,
+      "bytes": 3117.0,
+      "latestWriteTicks": 6.39287605209396E+17,
+      "archiveBytes": null
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\github-crash\\versions\\1.0.0-b6043afca36d",
+      "directory": true,
+      "files": 19,
+      "bytes": 21939385.0,
+      "latestWriteTicks": 6.392864493625157E+17,
+      "archiveBytes": null
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-caribbean-treasures\\versions\\1.0.0-ff58dc010753",
+      "directory": true,
+      "files": 6,
+      "bytes": 889748.0,
+      "latestWriteTicks": 6.392872229022698E+17,
+      "archiveBytes": null
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.3.0-4c27de833e69",
+      "directory": true,
+      "files": 17,
+      "bytes": 2357065.0,
+      "latestWriteTicks": 6.392872105026426E+17,
+      "archiveBytes": null
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.4.0-1701a920b848",
+      "directory": true,
+      "files": 26,
+      "bytes": 3577797.0,
+      "latestWriteTicks": 6.392872397411016E+17,
+      "archiveBytes": null
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.4.0-654204c18e17",
+      "directory": true,
+      "files": 26,
+      "bytes": 3577927.0,
+      "latestWriteTicks": 6.392872403787566E+17,
+      "archiveBytes": null
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.4.0-68e9a6f11170",
+      "directory": true,
+      "files": 26,
+      "bytes": 3578197.0,
+      "latestWriteTicks": 6.392872429355302E+17,
+      "archiveBytes": null
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.4.0-837205d0599c",
+      "directory": true,
+      "files": 27,
+      "bytes": 18682748.0,
+      "latestWriteTicks": 6.392875943044046E+17,
+      "archiveBytes": null
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.4.0-8762c58d437b",
+      "directory": true,
+      "files": 29,
+      "bytes": 18758096.0,
+      "latestWriteTicks": 6.392875996905137E+17,
+      "archiveBytes": null
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.4.0-96391db86e12",
+      "directory": true,
+      "files": 27,
+      "bytes": 18683007.0,
+      "latestWriteTicks": 6.392875978592104E+17,
+      "archiveBytes": null
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.4.0-9ab4bc7f8840",
+      "directory": true,
+      "files": 26,
+      "bytes": 3578085.0,
+      "latestWriteTicks": 6.392872416181175E+17,
+      "archiveBytes": null
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-neopolis\\versions\\0.4.0-163734723aa6",
+      "directory": true,
+      "files": 14,
+      "bytes": 6019489.0,
+      "latestWriteTicks": 6.392864493275049E+17,
+      "archiveBytes": null
+    }
+  ],
+  "targetBytes": 131167122.0,
+  "removedFolders": 0,
+  "removedFiles": 0,
+  "removedBytes": 0,
+  "removedArchiveBytes": 0,
+  "freeBeforeAttemptBytes": 306518523904,
+  "freeAfterAttemptBytes": 306518437888,
+  "physicalSpaceReclaimedClaimed": false,
+  "retainedTemplePackage": "0.4.0-ebe9fb2d7616",
+  "activePreview": {
+    "url": "http://127.0.0.1:5226/tests/fixtures/temple-preview.html?lang=ru&version=0.4.0",
+    "session": 5269,
+    "database": "Disposable test PostgreSQL; cleanup is owned by the preview wrapper on Ctrl+C.",
+    "ownedNodePid": 28908
+  },
+  "exceptions": [
+    "Previously blocked stage 1, stage 3 and stage 4 targets excluded. No retry or bypass.",
+    "The current worktree, shared dependency junction, active module packages, preview server and OWNER.md remain for user review and continued feature work. Stop the owned preview and remove the extra worktree only after the complete feature is preserved and concurrent work ends."
+  ],
+  "cleanupReason": "blocked by policy; no detailed reason returned",
+  "previewStopped": false
+}
