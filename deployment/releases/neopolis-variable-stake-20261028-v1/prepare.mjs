@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import assert from 'node:assert/strict';
-import { build } from 'esbuild';
+import { buildFinancial } from './financial-build.mjs';
 const helper = dirname(fileURLToPath(import.meta.url)), root = resolve(helper, '../../..'), work = resolve(root, '..'), out = resolve(work, 'payload');
 const json = path => JSON.parse(readFileSync(path, 'utf8')), sha = path => createHash('sha256').update(readFileSync(path)).digest('hex');
 const scope = json(resolve(helper, 'scope.json')), before = json(resolve(work, 'before-full.json'));
@@ -59,23 +59,21 @@ for (const file of ['manifest.json', ...Object.keys(metadata.files)]) {
 }
 modules[scope.changedGame + '/active.json'] = copy(pointerPath, 'module-dist/' + scope.changedGame + '/active.json');
 copy(resolve(root, 'module-dist/host-contracts.json'), 'host.json');
-const financial = await build({ absWorkingDir: root, entryPoints: ['scripts/finance-nile-play.ts'], bundle: true, platform: 'node', external: ['pg', 'pg-native'], format: 'esm', outfile: 'dist-server/nile-play.js', write: false, metafile: true });
+const financial = await buildFinancial({ before });
 writeFileSync(resolve(out, 'play.js'), financial.outputFiles[0].contents); payload['play.js'] = sha(resolve(out, 'play.js'));
-const financialInputs = {};
-for (const file of Object.keys(financial.metafile.inputs)) {
-  if (file.includes('node_modules/')) continue;
+const financialInputs = financial.financialInputs;
+for (const [file, digest] of Object.entries(financialInputs)) {
   assert(!file.startsWith('/') && !file.split('/').includes('..'));
-  const digest = sha(resolve(root, file)); financialInputs[file] = digest;
   if (before.financeSource[file]?.lf !== digest && before.financeSource[file]?.sha256 !== digest) {
     assert(allowed.has(file), 'Unrelated financial input differs: ' + file); financeSource[file] = copy(resolve(root, file), 'finance-source/' + file);
   }
 }
 assert.equal(before.containers['royal-nile-play'].profile.host.ReadonlyRootfs, true);
-for (const file of ['deploy.py', 'snapshot.py', 'financial_gate.py', 'quiesce.cjs', 'runtime-inventory.cjs', 'run-release.py', 'scope.json']) copy(resolve(helper, file), file);
+for (const file of ['deploy.py', 'snapshot.py', 'financial_gate.py', 'quiesce.cjs', 'runtime-inventory.cjs', 'run-release.py', 'scope.json', 'financial-baseline.json']) copy(resolve(helper, file), file);
 copy(resolve(root, 'scripts/game-module-release.py'), 'game-module-release.py');
 assert.equal(sha(resolve(root, 'scripts/game-module-release.py')), before.source['scripts/game-module-release.py'].sha256);
 for (const file of ['release-manifest.json', 'release-github.json']) copy(resolve(root, 'module-build', file), file);
-const manifest = { release: scope.release, sourceCommit: release.sourceCommit, baseCommit: scope.base, before, source, financeSource, financialInputs, dist, modules, backend,
+const manifest = { release: scope.release, sourceCommit: release.sourceCommit, baseCommit: scope.base, before, source, financeSource, financialInputs, retainedFinancialOrigins: financial.retainedOrigins, dist, modules, backend,
   financial: payload['play.js'], payload, hostContract: payload['host.json'], helperSha256: payload['deploy.py'],
   modulePackage: { gameId: scope.changedGame, version: metadata.version, manifestSha256: pointer.sha256, beforeSha256: before.modules['/opt/royal-game-modules/' + scope.changedGame + '/active.json'] },
   compatibility: { onlyNeopolisContractChanges: true, acceptedRules: [1,2,3,4], unchangedDependencyManifests: true, retainedOtherModules: true, retainedOtherBackendPrograms: ['dist-server/payments.js','dist-server/crypto-reconcile.js'] } };
