@@ -2,11 +2,11 @@
   "date": "2026-10-28",
   "owner": "Flooded Temple playback controls chat",
   "purpose": "Remove owned browser outputs and obsolete 0.6.0 packages after remote source verification",
-  "state": "planned",
+  "state": "blocked-by-policy",
   "activePackage": "0.6.0-66fb58b41116",
   "initialFreeBytes": 303253741568,
-  "preservationCommit": null,
-  "githubVerified": false,
+  "preservationCommit": "806c3cb3ea3bceef059655b3b7552a4f04b526db",
+  "githubVerified": true,
   "targets": [
     {
       "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-controls",
@@ -80,7 +80,7 @@
         {
           "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-controls\\browser\\host-390.png",
           "bytes": 324312,
-          "lastWriteUtc": "2026-10-28T17:13:15.9276700Z"
+          "lastWriteUtc": "2026-10-28T17:13:15.92767Z"
         },
         {
           "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-controls\\browser\\ru-1000.png",
@@ -100,7 +100,7 @@
         {
           "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-controls\\browser\\ru-390.png",
           "bytes": 554713,
-          "lastWriteUtc": "2026-10-28T17:12:23.5835190Z"
+          "lastWriteUtc": "2026-10-28T17:12:23.583519Z"
         }
       ]
     },
@@ -317,7 +317,7 @@
         {
           "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.6.0-9e8bda480f19\\media\\flooded-temple\\temple.webp",
           "bytes": 503930,
-          "lastWriteUtc": "2026-10-28T17:05:16.7330940Z"
+          "lastWriteUtc": "2026-10-28T17:05:16.733094Z"
         },
         {
           "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.6.0-9e8bda480f19\\media\\flooded-temple\\audio\\ambience.wav",
@@ -327,7 +327,7 @@
         {
           "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.6.0-9e8bda480f19\\media\\flooded-temple\\audio\\big.wav",
           "bytes": 422448,
-          "lastWriteUtc": "2026-10-28T17:05:16.6979820Z"
+          "lastWriteUtc": "2026-10-28T17:05:16.697982Z"
         },
         {
           "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.6.0-9e8bda480f19\\media\\flooded-temple\\audio\\chest.wav",
@@ -337,7 +337,7 @@
         {
           "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.6.0-9e8bda480f19\\media\\flooded-temple\\audio\\lever.wav",
           "bytes": 220844,
-          "lastWriteUtc": "2026-10-28T17:05:16.7025240Z"
+          "lastWriteUtc": "2026-10-28T17:05:16.702524Z"
         },
         {
           "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.6.0-9e8bda480f19\\media\\flooded-temple\\audio\\music.mp3",
@@ -462,8 +462,8 @@
   "removedFiles": 0,
   "removedBytes": 0,
   "removedArchiveBytes": 0,
-  "freeBeforeBytes": null,
-  "freeAfterBytes": null,
+  "freeBeforeBytes": 297929850880,
+  "freeAfterBytes": 294052859904,
   "physicalReclaimedClaim": false,
   "exceptions": [
     "Owned preview session 7918 remains active for user review; stop with Ctrl+C when finished.",
@@ -471,5 +471,6 @@
     "Previously denied stage 1, stage 3, stage 4, reference and 0.5.0 animation cleanup paths are excluded and must not be retried.",
     "The user in-app window may still have package 0.5.0-b9aceb3eec57 pinned until reload."
   ],
-  "cleanupCondition": "Exact feature source pushed and remote SHA verified; no active tests or builds use the candidates."
+  "cleanupCondition": "Exact feature source pushed and remote SHA verified; no active tests or builds use the candidates.",
+  "rejection": "Automatic approval review rejected the removal command before execution: blocked by policy. No detailed reason. Do not retry these three targets or use another deletion mechanism."
 }
