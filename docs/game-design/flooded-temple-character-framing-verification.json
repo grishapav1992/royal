@@ -1,0 +1,427 @@
+{
+  "date": "2026-10-28",
+  "gameId": "studio-flooded-temple",
+  "version": "0.7.1-af8d1ba9080d",
+  "sourceSha256": "af8d1ba9080d683521a51c1602f7247dcdc725ec0014b1a0e5bb63ed03cb8739",
+  "manifestSha256": "53594c3e8598c8be18b7cfcda75bf1b47297c26b0f07a1eb184ba9ddd016e955",
+  "payloadFiles": 33,
+  "payloadBytes": 19187468,
+  "payloadHashesVerified": true,
+  "contracts": {
+    "hostApi": 1,
+    "rules": 1,
+    "progress": 1
+  },
+  "scope": {
+    "characterColumn": "left, separate from board for viewport width above 520px",
+    "originalPoses": 6,
+    "negativeMarginsRemoved": true,
+    "imagesMirrored": false,
+    "mobile": "Existing compact portrait above board",
+    "animationTimingsChanged": false,
+    "audioChanged": false,
+    "mathChanged": false,
+    "walletChanged": false,
+    "rulesProofChanged": false,
+    "productionDeployed": false
+  },
+  "checks": {
+    "finalBrowser": {
+      "passed": 6,
+      "total": 6,
+      "package": "0.7.1-af8d1ba9080d",
+      "scenarios": [
+        "persistent explorer, confirmed gate/relic reactions, pause and disposal",
+        "paid outcome distinctions and reduced motion",
+        "WebGL loss, image fallback, restoration and account change",
+        "18 responsive base/bonus scenes",
+        "RU/EN maps, keyboard and responsive controls",
+        "real Royal host with chat, tall/tablet/phone viewports and close/reopen"
+      ]
+    },
+    "independentModules": {
+      "passed": 7,
+      "total": 7
+    },
+    "rtp": {
+      "verified": 13,
+      "legacyNotQualified": 114,
+      "templeQualificationUnchanged": true
+    },
+    "applicationBuild": {
+      "format": 1,
+      "startedAt": "2026-10-28T18:11:42.363Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 2717
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 8114
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 4810
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 7356
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 76
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 29
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 30
+        }
+      ],
+      "passed": true,
+      "durationMs": 23132
+    }
+  },
+  "geometry": {
+    "scenes": 18,
+    "maxExplorerBoardOverlapPixelsSquared": 0,
+    "minRoomSidePixels": 55.5,
+    "minDesktopSeparationPixels": 12,
+    "viewports": [
+      {
+        "width": 1440,
+        "height": 1000
+      },
+      {
+        "width": 1000,
+        "height": 760
+      },
+      {
+        "width": 1000,
+        "height": 1100
+      },
+      {
+        "width": 768,
+        "height": 1024
+      },
+      {
+        "width": 760,
+        "height": 1000
+      },
+      {
+        "width": 600,
+        "height": 900
+      },
+      {
+        "width": 521,
+        "height": 900
+      },
+      {
+        "width": 390,
+        "height": 844
+      },
+      {
+        "width": 360,
+        "height": 740
+      }
+    ],
+    "records": [
+      {
+        "mode": "base",
+        "width": 1440,
+        "height": 1000,
+        "overlapPixelsSquared": 0,
+        "roomWidth": 128.5,
+        "roomHeight": 128.296875,
+        "characterLeft": 43.1875,
+        "characterRight": 485.0625,
+        "characterBottom": 747,
+        "boardLeft": 613.6875,
+        "boardTop": 117.40625,
+        "consoleTop": 756,
+        "horizontalOverflow": 0
+      },
+      {
+        "mode": "base",
+        "width": 1000,
+        "height": 760,
+        "overlapPixelsSquared": 0,
+        "roomWidth": 74,
+        "roomHeight": 73.796875,
+        "characterLeft": 30,
+        "characterRight": 336.65625,
+        "characterBottom": 520,
+        "boardLeft": 458.328125,
+        "boardTop": 108.40625,
+        "consoleTop": 529,
+        "horizontalOverflow": 0
+      },
+      {
+        "mode": "base",
+        "width": 1000,
+        "height": 1100,
+        "overlapPixelsSquared": 0,
+        "roomWidth": 114.65625,
+        "roomHeight": 114.46875,
+        "characterLeft": 30,
+        "characterRight": 336.65625,
+        "characterBottom": 847,
+        "boardLeft": 356.65625,
+        "boardTop": 195.0625,
+        "consoleTop": 856,
+        "horizontalOverflow": 0
+      },
+      {
+        "mode": "base",
+        "width": 768,
+        "height": 1024,
+        "overlapPixelsSquared": 0,
+        "roomWidth": 86.203125,
+        "roomHeight": 86,
+        "characterLeft": 23.03125,
+        "characterRight": 258.546875,
+        "characterBottom": 771,
+        "boardLeft": 273.90625,
+        "boardTop": 213.96875,
+        "consoleTop": 780,
+        "horizontalOverflow": 0
+      },
+      {
+        "mode": "base",
+        "width": 760,
+        "height": 1000,
+        "overlapPixelsSquared": 0,
+        "roomWidth": 85.21875,
+        "roomHeight": 85.03125,
+        "characterLeft": 22.796875,
+        "characterRight": 255.859375,
+        "characterBottom": 553.125,
+        "boardLeft": 271.046875,
+        "boardTop": 107,
+        "consoleTop": 562.125,
+        "horizontalOverflow": 0
+      },
+      {
+        "mode": "base",
+        "width": 600,
+        "height": 900,
+        "overlapPixelsSquared": 0,
+        "roomWidth": 65.59375,
+        "roomHeight": 65.390625,
+        "characterLeft": 18,
+        "characterRight": 202,
+        "characterBottom": 474.59375,
+        "boardLeft": 214,
+        "boardTop": 107,
+        "consoleTop": 483.59375,
+        "horizontalOverflow": 0
+      },
+      {
+        "mode": "base",
+        "width": 521,
+        "height": 900,
+        "overlapPixelsSquared": 0,
+        "roomWidth": 55.6875,
+        "roomHeight": 55.5,
+        "characterLeft": 15.625,
+        "characterRight": 174.875,
+        "characterBottom": 435,
+        "boardLeft": 186.875,
+        "boardTop": 107,
+        "consoleTop": 444,
+        "horizontalOverflow": 0
+      },
+      {
+        "mode": "base",
+        "width": 390,
+        "height": 844,
+        "overlapPixelsSquared": 0,
+        "roomWidth": 67.71875,
+        "roomHeight": 67.625,
+        "characterLeft": 12.6875,
+        "characterRight": 69.6875,
+        "characterBottom": 112,
+        "boardLeft": 11.6875,
+        "boardTop": 152,
+        "consoleTop": 527.5,
+        "horizontalOverflow": 0
+      },
+      {
+        "mode": "base",
+        "width": 360,
+        "height": 740,
+        "overlapPixelsSquared": 0,
+        "roomWidth": 62.078125,
+        "roomHeight": 61.96875,
+        "characterLeft": 11.796875,
+        "characterRight": 68.796875,
+        "characterBottom": 112,
+        "boardLeft": 10.796875,
+        "boardTop": 152,
+        "consoleTop": 504.921875,
+        "horizontalOverflow": 0
+      },
+      {
+        "mode": "bonus",
+        "width": 1440,
+        "height": 1000,
+        "overlapPixelsSquared": 0,
+        "roomWidth": 93.5,
+        "roomHeight": 93.296875,
+        "characterLeft": 43.1875,
+        "characterRight": 485.0625,
+        "characterBottom": 629,
+        "boardLeft": 701.1875,
+        "boardTop": 133.40625,
+        "consoleTop": 638,
+        "horizontalOverflow": 0
+      },
+      {
+        "mode": "bonus",
+        "width": 1000,
+        "height": 760,
+        "overlapPixelsSquared": 0,
+        "roomWidth": 70.1875,
+        "roomHeight": 69.984375,
+        "characterLeft": 30,
+        "characterRight": 336.65625,
+        "characterBottom": 523,
+        "boardLeft": 470.203125,
+        "boardTop": 122.515625,
+        "consoleTop": 532,
+        "horizontalOverflow": 0
+      },
+      {
+        "mode": "bonus",
+        "width": 1000,
+        "height": 1100,
+        "overlapPixelsSquared": 0,
+        "roomWidth": 114.65625,
+        "roomHeight": 114.46875,
+        "characterLeft": 30,
+        "characterRight": 336.65625,
+        "characterBottom": 729,
+        "boardLeft": 356.65625,
+        "boardTop": 141.0625,
+        "consoleTop": 738,
+        "horizontalOverflow": 0
+      },
+      {
+        "mode": "bonus",
+        "width": 768,
+        "height": 1024,
+        "overlapPixelsSquared": 0,
+        "roomWidth": 86.203125,
+        "roomHeight": 86,
+        "characterLeft": 23.03125,
+        "characterRight": 258.546875,
+        "characterBottom": 653,
+        "boardLeft": 273.90625,
+        "boardTop": 159.96875,
+        "consoleTop": 662,
+        "horizontalOverflow": 0
+      },
+      {
+        "mode": "bonus",
+        "width": 760,
+        "height": 1000,
+        "overlapPixelsSquared": 0,
+        "roomWidth": 85.21875,
+        "roomHeight": 85.03125,
+        "characterLeft": 22.796875,
+        "characterRight": 255.859375,
+        "characterBottom": 601.125,
+        "boardLeft": 271.046875,
+        "boardTop": 155,
+        "consoleTop": 610.125,
+        "horizontalOverflow": 0
+      },
+      {
+        "mode": "bonus",
+        "width": 600,
+        "height": 900,
+        "overlapPixelsSquared": 0,
+        "roomWidth": 65.59375,
+        "roomHeight": 65.390625,
+        "characterLeft": 18,
+        "characterRight": 202,
+        "characterBottom": 522.59375,
+        "boardLeft": 214,
+        "boardTop": 155,
+        "consoleTop": 531.59375,
+        "horizontalOverflow": 0
+      },
+      {
+        "mode": "bonus",
+        "width": 521,
+        "height": 900,
+        "overlapPixelsSquared": 0,
+        "roomWidth": 55.6875,
+        "roomHeight": 55.5,
+        "characterLeft": 15.625,
+        "characterRight": 174.875,
+        "characterBottom": 483,
+        "boardLeft": 186.875,
+        "boardTop": 155,
+        "consoleTop": 492,
+        "horizontalOverflow": 0
+      },
+      {
+        "mode": "bonus",
+        "width": 390,
+        "height": 844,
+        "overlapPixelsSquared": 0,
+        "roomWidth": 67.71875,
+        "roomHeight": 67.625,
+        "characterLeft": 12.6875,
+        "characterRight": 69.6875,
+        "characterBottom": 112,
+        "boardLeft": 11.6875,
+        "boardTop": 203,
+        "consoleTop": 578.5,
+        "horizontalOverflow": 0
+      },
+      {
+        "mode": "bonus",
+        "width": 360,
+        "height": 740,
+        "overlapPixelsSquared": 0,
+        "roomWidth": 62.078125,
+        "roomHeight": 61.96875,
+        "characterLeft": 11.796875,
+        "characterRight": 68.796875,
+        "characterBottom": 112,
+        "boardLeft": 10.796875,
+        "boardTop": 203,
+        "consoleTop": 555.921875,
+        "horizontalOverflow": 0
+      }
+    ]
+  },
+  "evidence": {
+    "scene": "../assets/flooded-temple/character-framing.webp",
+    "realHost": "../assets/flooded-temple/character-framing-host.webp"
+  },
+  "story": {
+    "skill": "verification",
+    "flow": "Confirmed demo Temple operation -> shared ExpansionClient -> existing feedback timeline -> visible character next to board in Royal host with connected chat",
+    "environment": "Existing preview port 5226 / backend 2626, disposable PostgreSQL, synthetic demo coins, no .env loaded",
+    "browserToolLimitation": "Listed existing in-app tab, but document access failed: browser.user is unavailable. No actions in that tab; independent repository Playwright contexts supplied evidence."
+  },
+  "preview": {
+    "url": "http://127.0.0.1:5226/tests/fixtures/temple-preview.html?lang=ru&version=0.7.1",
+    "session": 7918,
+    "requiresReload": true
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-28",
+  "owner": "Flooded Temple character framing chat",
+  "purpose": "Remove owned browser outputs and the intermediate mirrored 0.7.1 package after GitHub preservation",
+  "state": "inventoried-awaiting-remote-preservation",
+  "activePackage": "0.7.1-af8d1ba9080d",
+  "initialFreeBytes": 299467735040,
+  "freeBeforeBytes": 300068503552,
+  "freeAfterBytes": null,
+  "preservationCommit": null,
+  "githubVerified": false,
+  "targets": [
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-framing",
+      "files": 16,
+      "bytes": 12281022,
+      "inventorySha256": "e2e85da8c5107b1a1437b95d8de02c1526a67451f2de073aac670e9e227473d3",
+      "removedFiles": 0,
+      "removedBytes": 0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.7.1-c6dd7d9c2e85",
+      "files": 34,
+      "bytes": 19191554,
+      "inventorySha256": "4dc9fbbdc5a0ec78799d28656ecc778de6eb32203d5e04e57999efdb9aaa9be1",
+      "removedFiles": 0,
+      "removedBytes": 0
+    }
+  ],
+  "totalTargetBytes": 31472576,
+  "archivesCreated": 0,
+  "archivesRemoved": 0,
+  "removedBytes": 0,
+  "physicalReclaimedClaim": false,
+  "activeExceptions": [
+    {
+      "reason": "Ongoing Temple feature, preview session 7918 and concurrent work in primary checkout",
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal",
+      "cleanupCondition": "Feature review, preview and concurrent work finished and source preserved on GitHub"
+    },
+    {
+      "reason": "Current active local preview package",
+      "path": "module-dist/studio-flooded-temple/versions/0.7.1-af8d1ba9080d",
+      "cleanupCondition": "Replaced after review and no running session needs it"
+    },
+    {
+      "reason": "Existing in-app tab listed at version 0.7.0; browser tool could not access it",
+      "path": "module-dist/studio-flooded-temple/versions/0.7.0-bc6bd4bcff7e",
+      "cleanupCondition": "Known user tab reloaded or closed; any later cleanup subject to current authorization"
+    },
+    {
+      "reason": "Excluded from this attempt; existing reports retained",
+      "path": "Earlier denied task scopes",
+      "cleanupCondition": "Do not retry prior denied scopes"
+    }
+  ],
+  "previousDeniedScopesRetried": false
+}
