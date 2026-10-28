@@ -3,6 +3,7 @@ import { DEMO_BETS, type WalletResult } from '../../src/shared/demoWallet';
 import { rouletteRedNumbers, type RouletteInput, type RouletteRound } from '../../src/shared/gameCore';
 import type { WalletSettlement } from '../../src/wallet/WalletClient';
 import { rouletteWheelSvg } from './WheelArtwork';
+import { RouletteSound } from './RouletteSound';
 import { RouletteMotion } from './RouletteMotion';
 import './roulette.css';
 
@@ -22,6 +23,7 @@ export class RoyalRoulette {
   private input: RouletteInput = {bet:'red'};
   private amount: number = 10;
   private motion: RouletteMotion;
+  private sound: RouletteSound;
   private last?: RouletteRound;
   private history: number[] = [];
   private shown = new Set<string>();
@@ -45,7 +47,8 @@ export class RoyalRoulette {
       <footer class="rr-footer"><div class="rr-selection"><span class="rr-selection-mark" aria-hidden="true">◆</span><div><small>${this.text('Ваша ставка','Your bet')}</small><strong data-rr-selection></strong></div></div><div class="rr-stake-picker"><span>${this.text('Сумма ставки, USDT','Stake, USDT')}</span><div class="rr-chips" role="group" aria-label="${this.text('Сумма ставки','Stake amount')}">${DEMO_BETS.map(amount=>`<button type="button" data-rr-amount="${amount}" aria-label="${amount} USDT"><span>${amount}</span></button>`).join('')}</div></div><button type="button" class="rr-spin" data-rr-spin><span class="rr-spin-glyph" aria-hidden="true">↻</span><span data-rr-spin-copy></span><span class="rr-spin-arrow" aria-hidden="true">›</span></button><div class="rr-status" role="status" aria-live="polite"></div><div class="rr-return"><span>${this.text('Выплата','Return')} <strong data-rr-payout>0</strong><small>USDT</small></span><span>${this.text('Итог раунда','Round net')} <strong data-rr-net>0</strong><small>USDT</small></span></div></footer>`;
 
     container.replaceChildren(this.root);
-    this.motion = new RouletteMotion(this.root);
+    this.sound = new RouletteSound(this.host.gameAudio);
+    this.motion = new RouletteMotion(this.root,this.sound);
     for (const button of Array.from(this.root.querySelectorAll<HTMLButtonElement>('[data-rr-bet]'))) {
       button.addEventListener('click',()=>{
         if (this.locked()) return;
@@ -152,10 +155,10 @@ export class RoyalRoulette {
     this.motion.history(n,color(n),observed);
     this.status=round.multiplier>0?`${this.text('Выпало','Result')} ${n}. ${this.text('Выплата','Return')}: ${this.money(round.payoutUnits)} USDT.`:`${this.text('Выпало','Result')} ${n}. ${this.text('Ставка проиграла.','Your bet lost.')}`;
     this.render();
-    if(observed&&!this.paused&&!document.hidden){this.motion.reveal();this.host.reactions.emitGameOutcome(this.root,round.stakeUnits,round.payoutUnits);}
+    if(observed&&!this.paused&&!document.hidden){this.motion.reveal(round.multiplier);this.host.reactions.emitGameOutcome(this.root,round.stakeUnits,round.payoutUnits);}
   }
   pause(){this.paused=true;this.motion.pause();}
   resume(){this.paused=false;this.motion.resume();}
-  getState(){return{gameId:'royal-roulette',busy:this.busy,input:this.input,amount:this.amount,result:this.last??null,history:[...this.history],motion:this.motion.state()};}
-  destroy(){if(!this.alive)return;this.alive=false;this.motion.destroy();this.lifetime.abort();this.root.remove();}
+  getState(){return{gameId:'royal-roulette',busy:this.busy,input:this.input,amount:this.amount,result:this.last??null,history:[...this.history],motion:this.motion.state(),sound:this.sound.state()};}
+  destroy(){if(!this.alive)return;this.alive=false;this.motion.destroy();this.sound.destroy();this.lifetime.abort();this.root.remove();}
 }

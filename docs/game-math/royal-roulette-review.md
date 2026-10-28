@@ -22,7 +22,7 @@ The independent expected table sums to 36 stake units over 37 equally probable n
 
 The account-ownership suite had an obsolete expectation that direct HTTP deposits remained enabled, including a call to a removed client method. That subcase now checks the existing 410 rejection, unchanged balances and preservation of an independent saved Nile request. No funding or payment implementation was changed.
 
-The UI uses the host's shared wallet and saved operation UUID. It validates the confirmed game receipt before showing its number or amounts. Close, pause, hidden-page and account changes cancel owned presentation work. The viewport adaptation leaves the host chat visible; the mobile field scrolls while the stake and confirmation controls stay visible. No new audio graph is created. Technical event checks do not establish subjective audio quality or enjoyment.
+The UI uses the host's shared wallet and saved operation UUID. It validates the confirmed game receipt before showing its number or amounts. Close, pause, hidden-page and account changes cancel owned presentation work. The viewport adaptation leaves the host chat visible; the mobile field scrolls while the stake and confirmation controls stay visible. Audio revision 1.4 adds an owned graph connected to the host context and output, with no changes to the qualified mathematical sources. Technical event checks do not establish subjective audio quality or enjoyment.
 
 ## Publication
 
