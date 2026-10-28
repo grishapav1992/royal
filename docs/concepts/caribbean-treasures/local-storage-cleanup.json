@@ -1201,5 +1201,58 @@
     "physicalReclamationClaimed": false,
     "freeAfterRejectedCleanupBytes": 303331323904,
     "freeSpaceNote": "Measurements include other processes; no physical reclaimed-space claim is made. No manual files or archives were removed because approval review rejected cleanup before execution."
+  },
+  "emptyBalanceUpdate": {
+    "date": "2026-10-28",
+    "owner": "caribbean-empty-balance",
+    "preservationCommit": "ec73543db1eed0b28179ce32743109c3239e4098",
+    "preservationRefs": [
+      "refs/heads/main",
+      "refs/heads/codex/caribbean-empty-balance"
+    ],
+    "remoteCommitVerified": true,
+    "freeBeforeFirstBuildBytes": 298143285248,
+    "freeBeforeRejectedCleanupBytes": 299595214848,
+    "freeAfterRejectedCleanupBytes": 298410708992,
+    "removedFolders": [],
+    "removedFiles": [],
+    "removedArchives": [],
+    "removedLogicalBytes": 0,
+    "physicalReclamationClaimed": false,
+    "cleanupBlock": {
+      "action": "Remove only the verified task artifacts folder and superseded 1.3.1-dd3cbac12b15 package after final sources and media were saved in GitHub",
+      "reason": "Automatic approval review rejected the command: blocked by policy",
+      "attemptExecuted": false
+    },
+    "retained": [
+      {
+        "folder": "artifacts/work/caribbean-empty-balance",
+        "bytes": 38275733,
+        "cleanupCondition": "Remove redundant browser results, screenshots, raw videos, WAV and temporary reporting script when cleanup is permitted; final media and reports are verified in GitHub."
+      },
+      {
+        "folder": "module-dist/studio-caribbean-treasures/versions/1.3.1-dd3cbac12b15",
+        "bytes": 6309262,
+        "cleanupCondition": "Remove the superseded package when cleanup is permitted; current pointer is 1.3.1-ab7f323d092e and its source predecessor is preserved in GitHub."
+      }
+    ],
+    "activeExceptions": [
+      {
+        "folder": "artifacts/work/caribbean-character-motion",
+        "reason": "The user-requested local preview remains running on ports 5234 and 2634.",
+        "cleanupCondition": "After the user finishes, stop through POST /__test/caribbean/stop and remove redundant artifacts when permitted."
+      },
+      {
+        "folder": "C:/Users/Aorus/AppData/Local/Temp/royal-pg-C70xv3",
+        "reason": "Current local preview runtime data, including the user demo balance. Preserve while the preview is requested.",
+        "cleanupCondition": "The local stand cleans this directory during its normal shutdown."
+      },
+      {
+        "folder": "C:/Users/Aorus/.codex/worktrees/new-slot/royal",
+        "reason": "Primary attached checkout running the local preview; concurrent checkout is untouched.",
+        "cleanupCondition": "Keep current checkout while serving the user preview."
+      }
+    ],
+    "freeSpaceNote": "Measurements include other processes; rejection occurred before cleanup execution and no physical space reclamation is claimed."
   }
 }
