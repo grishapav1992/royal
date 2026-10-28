@@ -12,6 +12,7 @@ import { caribbeanIcon } from './icons';
 import {CaribbeanAudio,type CaribbeanCue} from './CaribbeanAudio';
 import {caribbeanOutcome,caribbeanBeforeReveal} from './presentation';
 import {CaribbeanCaptain} from './CaribbeanCaptain';
+import {CARIBBEAN_CREW,DEFAULT_CAPTAIN,crewMember,crewThumbnail,savedCaptain,saveCaptain,type CrewId} from './CaribbeanCrew';
 import {CaribbeanMotion} from './CaribbeanMotion';
 
 const escape = (value: string) => value.replace(/[&<>"']/g, character => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]!));
@@ -24,6 +25,9 @@ export class CaribbeanUI {
   private root: HTMLElement;
   private dialog: SlotDialog;
   private dialogKind: SlotDialogKind = '';
+  private crewDialog=false;
+  private choosingCaptain=false;
+  private crewRequest=0;
   private disposed = false;
   private lines: CaribbeanLineCount = 20;
   private lineStake = '100';
@@ -67,7 +71,7 @@ export class CaribbeanUI {
     this.root = document.createElement('section');
     this.root.className = 'ct-root';
     this.root.setAttribute('aria-label',this.title);
-    this.root.innerHTML = '<header class="ct-heading"><span class="ct-avatar" aria-hidden="true"><span class="ct-avatar-body">'+portraitLayers+'</span></span><div class="ct-title"><small>ROYAL · CARIBBEAN</small><h2></h2></div><div class="ct-header-tools"><button type="button" data-ct-action="sound">♪</button><button type="button" data-ct-action="music">♫</button><button type="button" data-ct-action="info">?</button><button type="button" data-ct-action="history">≡</button></div></header>'
+    this.root.innerHTML = '<header class="ct-heading"><button type="button" class="ct-avatar" data-ct-action="crew"><span class="ct-avatar-body" aria-hidden="true">'+portraitLayers+'</span><span class="ct-crew-badge" aria-hidden="true">⇄</span></button><div class="ct-title"><small>ROYAL · CARIBBEAN</small><h2></h2></div><div class="ct-header-tools"><button type="button" data-ct-action="sound">♪</button><button type="button" data-ct-action="music">♫</button><button type="button" data-ct-action="info">?</button><button type="button" data-ct-action="history">≡</button></div></header>'
       + '<div class="ct-stage"><div class="ct-board-wrap"><div class="ct-board" role="img"></div><div class="ct-waiting" hidden></div></div><aside class="ct-captain" aria-hidden="true"><span class="ct-captain-body">'+portraitLayers+'</span><span class="ct-captain-caption" hidden></span></aside><div class="ct-map" role="status"></div></div>'
       + '<div class="ct-ledger"><div><span data-ct-label="balance"></span><div class="ct-balance-value"><strong data-ct-balance></strong><button type="button" class="ct-wallet" data-ct-action="wallet">+</button></div></div><div><span data-ct-label="cost"></span><strong data-ct-cost></strong></div><div><span data-ct-label="payout"></span><strong data-ct-payout></strong></div><div><span data-ct-label="net"></span><strong data-ct-net></strong></div></div>'
       + '<div class="ct-controls"><div class="ct-lines-control"><label for="ct-lines-input" data-ct-label="lines"></label><span class="ct-stepper"><button type="button" data-ct-action="lines-down">−</button><select id="ct-lines-input" data-ct-lines></select><button type="button" data-ct-action="lines-up">+</button></span></div><div class="ct-stake-control"><label for="ct-stake-input" data-ct-label="stake"></label><span class="ct-stepper"><button type="button" data-ct-action="stake-down">−</button><select id="ct-stake-input" data-ct-stake></select><button type="button" data-ct-action="stake-up">+</button></span></div><button type="button" data-ct-action="lines"></button><button type="button" data-ct-action="buy"></button><button type="button" class="ct-play" data-ct-action="play"><span class="ct-spin-icon" aria-hidden="true">↻</span><b></b><small></small></button></div>'
@@ -79,7 +83,7 @@ export class CaribbeanUI {
     this.element<HTMLSelectElement>('[data-ct-lines]').innerHTML = CARIBBEAN_LINE_COUNTS.map(lines => '<option>' + lines + '</option>').join('');
     this.element<HTMLSelectElement>('[data-ct-stake]').innerHTML = CARIBBEAN_LINE_STAKES.map(stake => '<option value="' + stake + '">' + this.money(stake) + '</option>').join('');
     this.dialog = new SlotDialog(this.element('.ct-modal'),this.element('.ct-backdrop'),'data-ct-modal',
-      action => { this.closeDialog(); if (action === 'buy-raid' || action === 'buy-flagship') void this.start(action); },
+      action => { if(action.startsWith('crew-')){void this.chooseCaptain(action.slice(5));return;}this.closeDialog(); if (action === 'buy-raid' || action === 'buy-flagship') void this.start(action); },
       () => this.closeDialog());
     this.root.addEventListener('click',event => {
       if (!(event.target instanceof Element)) return;
@@ -87,6 +91,7 @@ export class CaribbeanUI {
       if (!button || button.disabled) return;
       const action = button.dataset.ctAction;
       if (action === 'info' || action === 'history') this.openDialog(action);
+      else if (action === 'crew') {if(!this.blocked)this.openDialog('crew');}
       else if (action === 'wallet') window.dispatchEvent(new Event('royal-open-wallet'));
       else if (action === 'skip') this.stopPresentation();
       else if (action === 'sound') { const p=this.services.gameAudio.getPreferences();this.services.gameAudio.setMuted(!p.muted);void this.audio.enter(); }
@@ -132,6 +137,12 @@ export class CaribbeanUI {
     if (this.disposed) return;
     if (this.account !== this.client.accountId) {
       this.stopPresentation();this.captain.reset(true);this.account = this.client.accountId; this.sessionKey = ''; this.lines = 20; this.lineStake = '100';this.actionError='';this.lastBalance=undefined; this.closeDialog();
+      const account=this.account,request=this.crewRequest;
+      void this.captain.select(savedCaptain(account)).then(async selected=>{
+        if(this.disposed||account!==this.account||request!==this.crewRequest)return;
+        if(!selected)await this.captain.select(DEFAULT_CAPTAIN);
+        if(!this.disposed&&account===this.account&&request===this.crewRequest)this.render();
+      });
     }
     if(this.wallet?.balance!==this.lastBalance){this.actionError='';this.lastBalance=this.wallet?.balance;}
     const session = this.session, view = this.view, key = session && view ? session.id + ':' + view.revision : '';
@@ -147,6 +158,10 @@ export class CaribbeanUI {
     this.root.dataset.ctPhase=this.visualPhase;this.root.dataset.motion=this.reduced?'reduced':'full';
     this.root.dataset.outcome=view?.phase==='complete'?caribbeanOutcome(view):'';
     this.captain?.context(!this.paused&&!document.hidden&&!this.dialogKind,this.reduced,this.english);
+    const crewButton=this.element<HTMLButtonElement>('[data-ct-action=crew]'),member=crewMember(this.captain.state().character)!;
+    crewButton.disabled=this.blocked;
+    crewButton.setAttribute('aria-label',this.text('Выбрать пиратку. Сейчас: ','Choose a pirate. Current: ')+(this.english?member.en:member.ru));
+    crewButton.title=this.text('Выбрать пиратку','Choose a pirate');
     this.root.setAttribute('aria-busy',String(this.presenting||this.client.busy));
     const sound=this.element<HTMLButtonElement>('[data-ct-action=sound]'),music=this.element<HTMLButtonElement>('[data-ct-action=music]');
     const muted=this.services.gameAudio.getPreferences().muted;sound.setAttribute('aria-label',this.text(muted?'Включить звук':'Выключить звук',muted?'Enable sound':'Mute sound'));sound.setAttribute('aria-pressed',String(!muted));
@@ -323,13 +338,19 @@ export class CaribbeanUI {
   }
   pause(){this.paused=true;this.stopPresentation();}
   resume(){this.paused=false;this.render();}
-  private openDialog(kind: 'info' | 'history' | 'buy') {
+  private openDialog(kind: 'info' | 'history' | 'buy' | 'crew') {
     if (this.disposed) return;
     if(this.presenting)this.stopPresentation();
-    this.dialogKind = kind;
+    this.crewDialog=kind==='crew';this.dialogKind = kind==='crew'?'info':kind;
     const panel = this.element('.ct-modal'), view = this.view;
+    panel.classList.toggle('ct-crew-modal',this.crewDialog);
     let body: string;
-    if (kind === 'info') {
+    if(kind==='crew'){
+      const selected=this.captain.state().character;
+      body='<div class="ct-crew-heading"><h3>'+this.text('Выбери свою пиратку','Choose your pirate')+'</h3><button type="button" class="ct-crew-close" data-ct-modal="close" aria-label="'+this.text('Закрыть выбор пиратки','Close pirate selection')+'">×</button></div><p class="ct-crew-note">'+this.text('У каждой свой характер и стиль. Все образы доступны бесплатно.','Each has her own character and style. Every look is available for free.')+'</p><div class="ct-crew-grid">'+CARIBBEAN_CREW.map(member=>
+        '<button type="button" class="ct-crew-card" data-crew-id="'+member.id+'" data-ct-modal="crew-'+member.id+'" aria-pressed="'+String(selected===member.id)+'" style="--crew-accent:'+member.accent+'"><span class="ct-crew-image"><img src="'+crewThumbnail(member.id)+'" alt="" loading="lazy" decoding="async"></span><strong>'+escape(this.english?member.en:member.ru)+'</strong><small>'+escape(this.english?member.titleEn:member.titleRu)+'</small><span class="ct-crew-selected">'+this.text('Выбрана','Selected')+'</span></button>'
+      ).join('')+'</div><p class="ct-crew-status" role="status" aria-live="polite"></p>';
+    }else if (kind === 'info') {
       body = '<h3>' + this.text('Правила и выплаты','Rules and payouts') + '</h3><p>' + this.text('6 барабанов, 4 ряда. От 3 одинаковых подряд слева направо. На одной линии оплачивается самая длинная цепочка.','6 reels, 4 rows. Match 3 or more identical symbols from the left. Only the longest run pays on each line.') + '</p>'
         + '<table><thead><tr><th>' + this.text('Символ','Symbol') + '</th><th>3</th><th>4</th><th>5</th><th>6</th></tr></thead><tbody>' + CARIBBEAN_SYMBOLS.map(symbol => '<tr><th>' + this.symbolName(symbol.id) + '</th>' + symbol.pays.map(pay => '<td>×' + pay + '</td>').join('') + '</tr>').join('') + '</tbody></table>'
         + '<p>' + this.text('Коэффициенты относятся к ставке одной линии. Блок 2×2 может увеличиться залпом до 3×3. Расчёт выполняется по итоговому полю.','Multipliers use the stake per line. A cannon can grow a 2×2 block into 3×3. The final field determines payouts.') + '</p>'
@@ -352,11 +373,27 @@ export class CaribbeanUI {
     }
     if(kind==='info')body+='<p class="ct-audio-credits">'+this.text('Музыка: ','Music: ')+'<a href="https://opengameart.org/content/blackmoor-tides-epic-pirate-battle-theme" target="_blank" rel="noopener noreferrer">Blackmoor Tides</a> · <a href="https://www.matthewpablo.com" target="_blank" rel="noopener noreferrer">Matthew Pablo</a> · <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noopener noreferrer">CC BY 3.0</a>. '+this.text('Инструментальная петля, нормализация и короткие затухания. Звуковые эффекты: Kenney и Thimras, CC0.','Instrumental loop, normalization and short fades. Sound effects: Kenney and Thimras, CC0.')+'</p>';
     panel.innerHTML = body + '<button type="button" class="ct-modal-close" data-ct-modal="close">' + this.text('Закрыть','Close') + '</button>';
-    panel.setAttribute('aria-label',this.text('Информация об игре','Game information'));
-    this.dialog.begin(kind); this.render(); this.dialog.focus();
+    panel.setAttribute('aria-label',this.crewDialog?this.text('Выбор пиратки','Pirate selection'):this.text('Информация об игре','Game information'));
+    this.dialog.begin(this.dialogKind); this.render(); this.dialog.focus();
+  }
+  private async chooseCaptain(id:string){
+    if(!this.crewDialog||this.choosingCaptain||!crewMember(id))return;
+    this.choosingCaptain=true;const request=++this.crewRequest,account=this.account,panel=this.element('.ct-modal');
+    panel.querySelectorAll<HTMLButtonElement>('[data-crew-id]').forEach(button=>{button.disabled=true;});
+    this.element('.ct-crew-status').textContent=this.text('Готовим образ...','Preparing the look...');
+    const selected=await this.captain.select(id);
+    if(this.disposed||account!==this.account||request!==this.crewRequest)return;
+    this.choosingCaptain=false;
+    if(selected){saveCaptain(account,id as CrewId);this.closeDialog();}
+    else if(this.crewDialog){
+      panel.querySelectorAll<HTMLButtonElement>('[data-crew-id]').forEach(button=>{button.disabled=false;});
+      this.element('.ct-crew-status').textContent=this.text('Не удалось загрузить образ. Попробуй ещё раз.','The look could not load. Please try again.');
+    }
+    this.render();
   }
   private closeDialog() {
-    this.dialogKind = ''; this.dialog?.hide(); if (!this.disposed && this.root) this.render();
+    if(this.choosingCaptain){this.crewRequest++;this.choosingCaptain=false;this.captain.cancelSelection();}
+    this.crewDialog=false;this.dialogKind = ''; this.dialog?.hide(); if (!this.disposed && this.root) this.render();
   }
   getState() {
     return {gameId:CARIBBEAN_GAME,phase:this.view?.phase ?? 'ready',sessionId:this.session?.id ?? null,
