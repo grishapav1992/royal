@@ -200,7 +200,7 @@ def release(private):
     receipt = read(ROOT/'release-github.json')
     release_manifest = read(ROOT/'release-manifest.json')
     for name, value in manifest['helpers'].items():
-        require(name in ['install.py', 'runtime-inventory.cjs', 'quiesce.cjs', 'financial_gate.py'] and sha(ROOT/name) == value, 'Installer helper changed')
+        require(name in ['install.py', 'probe.py', 'runtime-inventory.cjs', 'quiesce.cjs', 'financial_gate.py'] and sha(ROOT/name) == value, 'Installer helper changed')
     require(manifest['sourceCommit'] == receipt['sourceCommit'] == release_manifest['sourceCommit'], 'Source identity differs')
     require(release_manifest['build']['passed'] and release_manifest['githubVerified'], 'Unverified release')
     require(set(manifest['changed']) <= SCOPE, 'Unrelated source delta')

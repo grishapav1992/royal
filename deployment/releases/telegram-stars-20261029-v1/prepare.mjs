@@ -79,6 +79,7 @@ export async function prepare(root, beforeFile, output) {
   const helpers = resolve(root, 'deployment/releases/nowpayments-sandbox-20261027-v1');
   const files = {
     'install.py': resolve(root, 'deployment/releases/telegram-stars-20261029-v1/install.py'),
+    'probe.py': resolve(root, 'deployment/releases/telegram-stars-20261029-v1/probe.py'),
     ...Object.fromEntries(['financial_gate.py', 'quiesce.cjs', 'runtime-inventory.cjs'].map(name => [name, resolve(helpers, name)])),
     'release-manifest.json': resolve(root, 'module-build/release-manifest.json'),
     'release-github.json': resolve(root, 'module-build/release-github.json'),
@@ -86,7 +87,7 @@ export async function prepare(root, beforeFile, output) {
   for (const [name, path] of Object.entries(files)) await copyFile(path, resolve(output, name));
   const manifest = { format: 1, release: 'telegram-stars-20261029-v1', sourceCommit: release.sourceCommit,
     before, inputs, changed, dependencies: locked, dependencyUpdates, dependencyFiles, lockHash: hash(lockBytes),
-    helpers: Object.fromEntries(await Promise.all(['install.py', 'financial_gate.py', 'quiesce.cjs', 'runtime-inventory.cjs']
+    helpers: Object.fromEntries(await Promise.all(['install.py', 'probe.py', 'financial_gate.py', 'quiesce.cjs', 'runtime-inventory.cjs']
       .map(async name => [name, hash(await readFile(resolve(output, name)))]))) };
   await writeFile(resolve(output, 'install-manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
   return { sourceCommit: release.sourceCommit, changedSources: Object.keys(changed), dependencies: Object.keys(locked).length };
