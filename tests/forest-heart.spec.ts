@@ -90,6 +90,9 @@ test('real host preserves choice, bonus, exact settlement and connected chat acr
   await page.setViewportSize({ width: 390, height: 844 }); await expect(page.locator('#chat-input')).toBeInViewport(); await fit(game(page));
   await expect(game(page).locator('[data-fh=spin]')).toBeInViewport();
   await page.screenshot({ path: out + '/mobile.png' });
+  await page.setViewportSize({width:320,height:780});await fit(game(page));
+  const bonusWidth=await game(page).locator('.fh-bonus').evaluate(e=>({width:e.clientWidth,scroll:e.scrollWidth}));expect(bonusWidth.scroll).toBeLessThanOrEqual(bonusWidth.width+1);
+  await page.setViewportSize({width:390,height:844});
   await page.locator('#mini-dialog .mini-top [data-close]').click();
   await expect(page.locator('#mini-dialog')).toBeHidden();
   await page.setViewportSize({width:1440,height:1000}); await page.locator('#games-tab').click(); await page.locator('[data-cabinet="studio-cosmic-escape"]').click();
@@ -446,7 +449,7 @@ test('readable outcomes, accepted flower values and separate settings fit deskto
   await game(page).locator('[data-fh=settings]').click();
   await expect(game(page).locator('[data-panel=settings]')).toBeVisible();await expect(game(page).locator('[data-fh=motion]')).toBeInViewport();
   await page.screenshot({path:out+'/ux-v7-settings.png'});
-  await game(page).locator('[data-fh-tab=rules]').click();await expect(game(page).locator('.fh-steps li')).toHaveCount(3);
+  await game(page).locator('[data-fh-tab=settings]').press('ArrowLeft');await expect(game(page).locator('.fh-steps li')).toHaveCount(3);
   await expect(game(page).locator('[data-panel=settings]')).toBeHidden();
   await page.screenshot({path:out+'/ux-v7-rules.png'});
   await game(page).locator('[data-fh=close]').click();expect((await wallet(page)).balance).toBe(9996.31);
