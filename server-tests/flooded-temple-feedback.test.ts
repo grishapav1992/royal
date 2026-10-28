@@ -5,7 +5,7 @@ import {rebuildTempleView} from '../src/shared/floodedTemple';
 import {templeAllBaseCases,templeEdgeKey} from '../src/shared/floodedTempleMath';
 import {templePlan,templeOutcome} from '../games/flooded-temple/presentation';
 import {readTempleClock,contextTimeForAccent} from '../games/flooded-temple/audioClock';
-import {synthesize,metrics,wav,rate} from '../scripts/design/temple-audio.mjs';
+import {renderCue,metrics,wav,rate} from '../scripts/design/temple-audio.mjs';
 
 test('every base presentation follows only confirmed passages and reaches the exact collected amount',()=>{
   for(const base of templeAllBaseCases()){
@@ -43,18 +43,18 @@ test('audio mapping uses the output timestamp once and subtracts estimated laten
   assert.equal(readTempleClock({...context,getOutputTimestamp:()=>{throw Error('Unavailable device clock');}}as AudioContext,1000).method,'latency-estimate');
   assert.equal(readTempleClock({...context,getOutputTimestamp:()=>({contextTime:9,performanceTime:1})}as AudioContext,1000).method,'latency-estimate');
 });
-test('authored WAV files match reproducible source, have headroom and soft boundaries',()=>{
+test('recorded WAV mixes match their licensed reproducible sources, have headroom and soft boundaries',()=>{
   const manifest=JSON.parse(readFileSync('games/flooded-temple/sounds.json','utf8'));
   for(const [name,spec]of Object.entries<any>(manifest.cues)){
-    const source=synthesize(name),data=readFileSync('public/assets/flooded-temple/audio/'+spec.file),stats=metrics(source.channels);
+    const source=renderCue(name),data=readFileSync('public/assets/flooded-temple/audio/'+spec.file),stats=metrics(source.channels);
     assert(data.equals(wav(source.channels)));assert.equal(data.readUInt32LE(24),rate);assert(stats.peak<.31&&stats.rms>.001);assert(spec.accent<spec.duration);
     for(const channel of source.channels){assert(Math.abs(channel[0])<.0001);assert(Math.abs(channel.at(-1)!)<.003);for(const value of channel)assert(Number.isFinite(value));}
   }
-  const neutral=metrics(synthesize('neutral').channels),win=metrics(synthesize('win').channels),big=metrics(synthesize('big').channels);assert(neutral.rms<win.rms);assert(big.peak<win.peak*1.2);
+  const neutral=metrics(renderCue('neutral').channels),win=metrics(renderCue('win').channels),big=metrics(renderCue('big').channels);assert(neutral.rms<win.rms);assert(big.peak<win.peak*1.2);
 });
 test('representative dense round mixes keep headroom at full shared volume',()=>{
   const manifest=JSON.parse(readFileSync('games/flooded-temple/sounds.json','utf8'));
-  const pack=new Map(Object.keys(manifest.cues).map(name=>[name,synthesize(name)]));
+  const pack=new Map(Object.keys(manifest.cues).map(name=>[name,renderCue(name)]));
   for(const base of templeAllBaseCases().filter(c=>c.tier===3&&c.pattern===0)){
     const view=rebuildTempleView(base,base.relic?{layout:0,tier:0}:null,'1000'),plan=templePlan('mix',view,undefined),mix=[new Float32Array(Math.ceil((plan.duration/1000+3)*rate)),new Float32Array(Math.ceil((plan.duration/1000+3)*rate))];
     for(const beat of plan.beats){if(!beat.cue)continue;const audio=pack.get(beat.cue)!,offset=Math.floor((.22+(beat.at+(beat.cueAtMs??0))/1000-audio.accent)*rate);for(let c=0;c<2;c++)for(let i=0;i<audio.channels[c].length;i++){const at=offset+i;if(at>=0&&at<mix[c].length)mix[c][at]+=audio.channels[c][i]*.9;}}

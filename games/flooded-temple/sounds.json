@@ -1,90 +1,91 @@
 {
-  "sampleRate": 24000,
+  "sampleRate": 48000,
   "format": "stereo PCM16",
+  "source": "Licensed recordings; see assets/audio-source/sources.json",
   "cues": {
     "scrape": {
       "file": "scrape.wav",
-      "duration": 0.48,
-      "accent": 0.025,
+      "duration": 0.65,
+      "accent": 0.02,
       "peak": 0.14000000059604645,
-      "rms": 0.026990123215427073
+      "rms": 0.033264903093282
     },
     "stone": {
       "file": "stone.wav",
-      "duration": 0.48,
-      "accent": 0.018,
-      "peak": 0.30000001192092896,
-      "rms": 0.05695959219114573
+      "duration": 0.55,
+      "accent": 0.012,
+      "peak": 0.25,
+      "rms": 0.05790075076840936
     },
     "step": {
       "file": "step.wav",
-      "duration": 0.34,
+      "duration": 0.4,
       "accent": 0.012,
       "peak": 0.14000000059604645,
-      "rms": 0.019848763922218075
+      "rms": 0.014355821477716352
     },
     "chest": {
       "file": "chest.wav",
-      "duration": 0.82,
+      "duration": 1.1,
       "accent": 0.025,
       "peak": 0.23999999463558197,
-      "rms": 0.028472019275596422
+      "rms": 0.02421705538726667
     },
     "lever": {
       "file": "lever.wav",
-      "duration": 0.92,
-      "accent": 0.018,
+      "duration": 1.15,
+      "accent": 0.02,
       "peak": 0.2199999988079071,
-      "rms": 0.04145953893933129
+      "rms": 0.030130030663883887
     },
     "rope": {
       "file": "rope.wav",
-      "duration": 0.88,
+      "duration": 1,
       "accent": 0.27,
       "peak": 0.20000000298023224,
-      "rms": 0.03182316654835548
+      "rms": 0.01094840139392859
     },
     "relic": {
       "file": "relic.wav",
-      "duration": 1.95,
-      "accent": 0.03,
+      "duration": 2.1,
+      "accent": 0.04,
       "peak": 0.25999999046325684,
-      "rms": 0.05515176742692447
+      "rms": 0.02123277277396241
     },
     "neutral": {
       "file": "neutral.wav",
-      "duration": 0.38,
-      "accent": 0.018,
-      "peak": 0.07000000029802322,
-      "rms": 0.014751477127265327
+      "duration": 0.35,
+      "accent": 0.015,
+      "peak": 0.06499999761581421,
+      "rms": 0.009568446310282704
     },
     "return": {
       "file": "return.wav",
-      "duration": 0.68,
-      "accent": 0.018,
-      "peak": 0.14000000059604645,
-      "rms": 0.03954671868258532
+      "duration": 0.6,
+      "accent": 0.015,
+      "peak": 0.12999999523162842,
+      "rms": 0.008494647949700734
     },
     "win": {
       "file": "win.wav",
-      "duration": 1.5,
+      "duration": 1.25,
       "accent": 0.025,
       "peak": 0.27000001072883606,
-      "rms": 0.05654230910640324
+      "rms": 0.028308159394176895
     },
     "big": {
       "file": "big.wav",
-      "duration": 2.65,
+      "duration": 2.2,
       "accent": 0.03,
       "peak": 0.30000001192092896,
-      "rms": 0.06321823652941179
+      "rms": 0.027334681176371157
     },
     "ambience": {
       "file": "ambience.wav",
       "duration": 8,
       "accent": 0,
       "peak": 0.03999999910593033,
-      "rms": 0.006823001736756844
+      "rms": 0.007087139004609954
     }
   }
 }

@@ -8,6 +8,7 @@ import {TempleAudio} from './TempleAudio';
 import {TempleTimeline} from './TempleTimeline';
 import {TempleEffects} from './TempleEffects';
 import {templePlan,templeOutcome,type TempleBeat} from './presentation';
+import {templeMusic} from './audioCredits';
 
 /** Presentation reads confirmed views and uses the host's serialized operation client. */
 export class TempleUI {
@@ -173,7 +174,7 @@ export class TempleUI {
   private async send(operation:()=>Promise<unknown>,recovery=false){
     const epoch=++this.operationEpoch,owner=this.owner,before=this.view?structuredClone(this.view):undefined,beforeId=this.session?.id,beforeMarker=this.marker;
     this.frozenView=before;this.sending=true;this.localError='';this.render();
-    this.audio.cancel();this.audio.ambience();
+    this.audio.cancelEffects();this.audio.ambience();
     void this.audio.gesture().then(()=>{if(this.sending&&!this.disposed&&epoch===this.operationEpoch&&owner===this.owner)this.audio.oneShot('scrape');});
     let accepted=false;
     try{await operation();accepted=!this.client.pending&&!this.client.error;}catch(error){if(!this.disposed&&epoch===this.operationEpoch)this.localError=error instanceof Error?error.message:this.text('Не удалось подтвердить ход.','The move could not be confirmed.');}
@@ -201,6 +202,7 @@ export class TempleUI {
       <h3>Исследуй храм</h3><p>Одна ставка открывает карту 5 × 4. Исследовательница автоматически проходит по открытым коридорам, один раз собирает доступные сундуки и включает доступные рычаги. Стены останавливают путь. Каждый рычаг открывает связанные ворота. Найденная реликвия запускает одну бесплатную экспедицию после исследования храма.</p>
       <h3>Выбирай маршрут экспедиции</h3><p>На новой карте видны все сокровища. У тебя 6 ходов и одна верёвка. Выбери соседнюю подсвеченную комнату, затем подтверди переход. Каждый переход стоит один ход. Перед пересечением провала выбери «Использовать верёвку». Мост остаётся доступным в обе стороны, каждый переход по нему стоит один ход. Рычаг включается при входе в комнату.</p><p>Возвращение в комнату расходует ход и не оплачивает сундук повторно. Шестой ход сначала собирает награду, затем завершает экспедицию. «Закончить и забрать собранное» сохраняет все полученные награды. Закрытие и повторное открытие сохраняют тот же раунд без новой ставки.</p>
       <h3>Ставка, выплата и возврат</h3><p>Все множители применяются к исходной ставке. Общий кошелёк списывает её один раз и начисляет выплату один раз после окончания всего раунда. «Собрано» включает храм и экспедицию, но ещё не означает начисление в кошелёк. Чистый итог равен выплате за вычетом ставки.</p><table><tbody><tr><td>Возврат при оптимальном маршруте</td><td>96%</td></tr><tr><td>Возврат при допустимых стратегиях</td><td>90-96%</td></tr><tr><td>Наибольшая выплата за весь раунд</td><td>230×</td></tr><tr><td>Повтор бонуса / платные дополнительные ходы</td><td>Нет</td></tr></tbody></table><p>RTP рассчитан точно для правил 1 на длинной дистанции и не обещает результат отдельной сессии. Выбор маршрута влияет на ожидаемый возврат. Ставка заблокирована до завершения раунда и подтверждения неопределённой операции.</p>`);
+    this.dialog.insertAdjacentHTML('beforeend',`<h3>${this.text('Музыка и звук','Music and sound')}</h3><p><a href="${templeMusic.source}" target="_blank" rel="noopener noreferrer">${templeMusic.title}</a> by Scott Buckley - released under <a href="${templeMusic.license}" target="_blank" rel="noopener noreferrer">CC-BY 4.0</a>. <a href="${templeMusic.website}" target="_blank" rel="noopener noreferrer">www.scottbuckley.com.au</a></p><p>${this.text('Звуковые эффекты:','Sound effects:')} Kenney, Joseph SARDIN, DenisChardonnet, JaggedStone, bonebrah (CC0). ${this.text('Монтаж и сведение для игры.','Edited and mixed for this game.')}</p>`);
   }
   private visibility=()=>{if(this.host.ownerDocument.hidden||document.hidden)this.timeline.pause('visibility');else this.timeline.resume('visibility');this.rendered='';this.render();};
   private motionChanged=()=>{this.timeline.complete();this.rendered='';this.render();};

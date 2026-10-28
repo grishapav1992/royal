@@ -96,13 +96,26 @@ test('painted chest states remain exact and skipping a paused collection release
   await move(page,6);await move(page,11);
   const requests:string[]=[];page.on('request',r=>{if(r.method()==='POST'&&r.url().endsWith('/expansion'))requests.push(r.postData()!);});
   await game(page).locator('[data-room="12"]').click();await game(page).locator('[data-ft=rope]').click();await game(page).locator('[data-ft=primary]').click();
-  await expect.poll(async()=>(await state(page)).feedback.event,{timeout:4000}).toBe('collect');await page.evaluate(()=>(window as any).templePreview.pause());
+  await expect.poll(async()=>(await state(page)).feedback.event,{timeout:4000,intervals:[25]}).toBe('collect');await page.evaluate(()=>(window as any).templePreview.pause());
   const collection=await state(page);expect(collection.feedback.effects.decorations).toBeLessThanOrEqual(8);expect(collection.feedback.effects.decorations).toBeGreaterThan(0);
   await expect(game(page).locator('[data-room="12"] .ft-prop-open')).toHaveJSProperty('complete',true);
   const frozen=collection.feedback.offsetMs;await page.waitForTimeout(100);expect((await state(page)).feedback.offsetMs).toBe(frozen);
-  await game(page).locator('[data-ft=primary]').click();await idle(page);const final=await state(page);
+  await game(page).locator('[data-ft=primary]').click();await expect.poll(async()=>(await state(page)).feedback.active).toBe(false);const final=await state(page);
   expect(requests).toHaveLength(1);expect(final.totalPayoutUnits).toBe('250');expect(final.feedback.effects.decorations).toBe(0);expect(final.feedback.effects.animations).toBe(0);
   await expect(game(page).locator('[data-room="12"] .ft-room-art')).toHaveAttribute('data-open','true');await expect(game(page).locator('[data-room="12"] .ft-prop-open')).toHaveCSS('opacity','1');
   expect(await game(page).locator('img').evaluateAll(images=>images.every(i=>(i as HTMLImageElement).complete&&(i as HTMLImageElement).naturalWidth>0))).toBe(true);
-  await page.evaluate(()=>(window as any).templePreview.resume());
+  await page.evaluate(()=>(window as any).templePreview.resume());await idle(page);
+});
+
+test('the cinematic score keeps its position across moves and obeys shared mute, pause and disposal',async({page})=>{
+  await ready(page,true);await sound(page);await expect.poll(async()=>(await state(page)).feedback.audio.music.readyState).toBeGreaterThanOrEqual(2);
+  await expect.poll(async()=>(await state(page)).feedback.audio.music.playing).toBe(true);
+  const initial=(await state(page)).feedback.audio.music.positionSeconds;await spin(page);await idle(page);await move(page,6);
+  expect((await state(page)).feedback.audio.music.positionSeconds).toBeGreaterThan(initial);
+  await game(page).locator('[data-ft=rules]').click();await expect(game(page).locator('dialog a').filter({hasText:'Memories Of Stone'})).toHaveAttribute('href','https://www.scottbuckley.com.au/library/memories-of-stone/');await game(page).locator('[data-ft=close]').click();
+  await page.evaluate(()=>(window as any).templePreview.audio.setMuted(true));await expect.poll(async()=>(await state(page)).feedback.audio.music.playing).toBe(false);
+  const paused=(await state(page)).feedback.audio.music.positionSeconds;await page.waitForTimeout(180);expect((await state(page)).feedback.audio.music.positionSeconds).toBeCloseTo(paused,1);
+  await game(page).locator('[data-ft=sound]').click();await expect.poll(async()=>(await state(page)).feedback.audio.music.positionSeconds).toBeGreaterThan(paused);
+  await page.evaluate(()=>(window as any).templePreview.pause());expect((await state(page)).feedback.audio.music.playing).toBe(false);await page.evaluate(()=>(window as any).templePreview.resume());await expect.poll(async()=>(await state(page)).feedback.audio.music.playing).toBe(true);
+  await page.evaluate(()=>(window as any).templePreview.close());const closed=await page.evaluate(()=>(window as any).templePreview.closedState());expect(closed.feedback.audio.music.disposed).toBe(true);expect(closed.feedback.audio.music.playing).toBe(false);
 });

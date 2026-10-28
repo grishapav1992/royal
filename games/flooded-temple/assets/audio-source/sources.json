@@ -1,0 +1,138 @@
+{
+  "retrieved": "2026-10-28",
+  "effects": [
+    {
+      "file": "stone.wav",
+      "input": "stone-door.ogg",
+      "inputSha256": "97e05a01ba45c324094f0f51a5094dc23fbb6f915db6c39154d9cac34939149c",
+      "author": "bonebrah",
+      "page": "https://opengameart.org/content/stone-door",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "adaptation": "Selected opening excerpt, leading silence trimmed, decoded to stereo PCM16 at 48000 Hz; game mix rendered separately."
+    },
+    {
+      "file": "step.wav",
+      "input": "footstep_concrete_000.ogg",
+      "inputSha256": "d7267e183067757c92c169de2a379abea592cfca6b39bb2e8feea15221ad79fe",
+      "author": "Kenney",
+      "page": "https://kenney.nl/assets/impact-sounds",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "adaptation": "Selected opening excerpt, leading silence trimmed, decoded to stereo PCM16 at 48000 Hz; game mix rendered separately."
+    },
+    {
+      "file": "bell.wav",
+      "input": "impactBell_heavy_000.ogg",
+      "inputSha256": "94b8bb5f2d43ab65e4bcc32b28562416e9bc2c51d9fd4be1e333660ee52f977f",
+      "author": "Kenney",
+      "page": "https://kenney.nl/assets/impact-sounds",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "adaptation": "Selected opening excerpt, leading silence trimmed, decoded to stereo PCM16 at 48000 Hz; game mix rendered separately."
+    },
+    {
+      "file": "metal.wav",
+      "input": "impactMetal_medium_000.ogg",
+      "inputSha256": "a96f879fec0864a8938e0c745b6996a6c5679c16a234ce31a01cc995e8401003",
+      "author": "Kenney",
+      "page": "https://kenney.nl/assets/impact-sounds",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "adaptation": "Selected opening excerpt, leading silence trimmed, decoded to stereo PCM16 at 48000 Hz; game mix rendered separately."
+    },
+    {
+      "file": "wood.wav",
+      "input": "creak1.ogg",
+      "inputSha256": "8a346186fd297254248cab8e8117060a52a5cf2a84f603153a762108550ea95e",
+      "author": "Kenney",
+      "page": "https://kenney.nl/assets/rpg-audio",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "adaptation": "Selected opening excerpt, leading silence trimmed, decoded to stereo PCM16 at 48000 Hz; game mix rendered separately."
+    },
+    {
+      "file": "coins.wav",
+      "input": "handleCoins.ogg",
+      "inputSha256": "8a91f969e932df709df80ee124d86a51389eed9b67f22e5e716bc2bbf60d8dab",
+      "author": "Kenney",
+      "page": "https://kenney.nl/assets/rpg-audio",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "adaptation": "Selected opening excerpt, leading silence trimmed, decoded to stereo PCM16 at 48000 Hz; game mix rendered separately."
+    },
+    {
+      "file": "latch.wav",
+      "input": "metalLatch.ogg",
+      "inputSha256": "ba9ba60b172b3ebc131a940f25793cd2e207aca7af73dc80d637277f060f1708",
+      "author": "Kenney",
+      "page": "https://kenney.nl/assets/rpg-audio",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "adaptation": "Selected opening excerpt, leading silence trimmed, decoded to stereo PCM16 at 48000 Hz; game mix rendered separately."
+    },
+    {
+      "file": "rope.wav",
+      "input": "rope.ogg",
+      "inputSha256": "808f6c76acecabea5263eccdd1bb3f029c7e1d6f35a346988dd64bcb22e5562d",
+      "author": "Joseph SARDIN",
+      "page": "https://bigsoundbank.com/rope-s0554.html",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "adaptation": "Selected opening excerpt, leading silence trimmed, decoded to stereo PCM16 at 48000 Hz; game mix rendered separately."
+    },
+    {
+      "file": "chain.wav",
+      "input": "chain.ogg",
+      "inputSha256": "ca5e234329ca2ddd5b0b07a6e17f2aae62ab7ee57c92d573c3f5759402d8d9bb",
+      "author": "DenisChardonnet",
+      "page": "https://bigsoundbank.com/medium-chain-1-s0360.html",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "adaptation": "Selected opening excerpt, leading silence trimmed, decoded to stereo PCM16 at 48000 Hz; game mix rendered separately."
+    },
+    {
+      "file": "chimes.wav",
+      "input": "chimes.ogg",
+      "inputSha256": "df397a819f03f1b48e504f10a9df10ebff5f572042f837fd702d1462a56bde30",
+      "author": "Joseph SARDIN",
+      "page": "https://bigsoundbank.com/chimes-dream-1-s2079.html",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "adaptation": "Selected opening excerpt, leading silence trimmed, decoded to stereo PCM16 at 48000 Hz; game mix rendered separately."
+    },
+    {
+      "file": "splash.wav",
+      "input": "splash.ogg",
+      "inputSha256": "b52f14e8650eecb1c0446e38bf1dc12c7dc79da51a88daa2870d5bfc0b25af10",
+      "author": "Joseph SARDIN",
+      "page": "https://bigsoundbank.com/splash-small-6-s1534.html",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "adaptation": "Selected opening excerpt, leading silence trimmed, decoded to stereo PCM16 at 48000 Hz; game mix rendered separately."
+    },
+    {
+      "file": "ambience.wav",
+      "input": "dungeon.ogg",
+      "inputSha256": "df491823e4877371c34dbda4e9321cd83a4a14fa7573cee0ebca1ae423b70e6e",
+      "author": "JaggedStone",
+      "page": "https://opengameart.org/content/loopable-dungeon-ambience",
+      "license": "CC0-1.0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "adaptation": "Selected opening excerpt, leading silence trimmed, decoded to stereo PCM16 at 48000 Hz; game mix rendered separately."
+    }
+  ],
+  "music": {
+    "file": "public/assets/flooded-temple/audio/music.mp3",
+    "title": "Memories Of Stone",
+    "author": "Scott Buckley",
+    "page": "https://www.scottbuckley.com.au/library/memories-of-stone/",
+    "download": "https://www.scottbuckley.com.au/library/wp-content/uploads/2026/02/MemoriesOfStone.mp3",
+    "license": "CC-BY-4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sha256": "1ad908e4c0e0c2a311300f6b69f2587f9161e15990ee01f18e00992f25d1b252",
+    "bytes": 13217159,
+    "adaptation": "Unchanged full MP3 master; streamed inside the game through Royal output. No standalone music preview redistributed."
+  },
+  "kenneyDownload": "Original public packs returned HTTP 403. Selected original OGG files and included Kenney licenses retrieved from the CC0 mirror https://github.com/GeorgeQLe/assets-sfx-combat ."
+}
