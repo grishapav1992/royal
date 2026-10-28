@@ -1,8 +1,10 @@
-# Caribbean Treasures 1.3
+# Caribbean Treasures 1.3.1
 
 Independent client package for `studio-caribbean-treasures`. Host API 1, server rules 1 and progress contract 1. The common module loader mounts `entry.ts`; the host supplies the expansion client, wallet, account, money formatting and language.
 
 The package renders confirmed 6×4 fields, continuous giant blocks, winning cells and selected paylines. It exposes 1/5/10/20 active lines, four per-line stakes, natural tactic selection, both purchased series, rules, round history and pending-operation recovery. Settings lock during accepted rounds. Outcomes, costs, entropy, persistence, house coverage and final credit belong to the common backend.
+
+Paid starts are unavailable when the latest shared wallet balance cannot cover their existing accepted price. A persistent status explains the required amount; the + button beside the balance opens the common test wallet. Shared-wallet funding updates an already mounted game. Free continuations remain available at zero balance, and a definitive server rejection remains visible after the shared client's automatic refresh. No price or settlement rule is changed.
 
 The presentation follows the approved Caribbean reference: six dimensional illustrated symbols, a wood, rope and brass frame, a prominent adult pirate captain, a wooden title plaque and a central red and gold spin button. Decorative strips lead into confirmed reel stops, continuous giant reveal, exact cannon growth and an integer round tally. The produced instrumental loop of Blackmoor Tides by Matthew Pablo accompanies recorded wood, metal, coins, chest mechanisms and cannon effects. Source and license credits are in the in-game rules and assets/audio-credits.md. The old procedural score and oscillators have been removed. All sound uses the host AudioContext, output, mute and volume. The music toggle is separate. Skip, hide, pause, close, account changes and reduced-motion changes cancel owned presentation. Recovery and operation retries do not replay a reward. No automatic paid spins are implemented.
 
@@ -17,5 +19,7 @@ Raster source PNGs and ImageGen prompts are in `assets/`. Reproducible WebP runt
 Build with `npm run build` or `node scripts/build-game-module.mjs --game caribbean-treasures`. Run `npm run test:caribbean` for full-round, transport and wallet coverage.
 
 For real-host browser checks, start `node --import tsx scripts/caribbean-preview.ts`, then run `npx playwright test --config playwright.caribbean.config.ts`. The loopback-only stand creates its own temporary PostgreSQL and disposable accounts. It uses the actual host, module loader, shared wallet store and live chat. Test-only top-up, forced bonus and seeded saved-scenario controls exist in that local stand only. Saved scenarios drive actual backend rounds, not injected UI results. Stop with POST `http://127.0.0.1:5234/__test/caribbean/stop`; this closes its backend and temporary database.
+
+The local stand starts new accounts with zero funds. For free local test credit, sign in first and open `http://127.0.0.1:5234/scripts/caribbean-fund-local.html`, then use its explicit 1000-demo-credit button. This development page calls only the stand's existing authenticated fixture route and is excluded from production builds. It does not enable production deposits or change the shared wallet implementation.
 
 See [the staged development plan](../../docs/concepts/caribbean-treasures/development-plan.md) and [final review](../../docs/concepts/caribbean-treasures/final-review.md). Automated signal and scheduling checks do not establish listening comfort on physical devices.
