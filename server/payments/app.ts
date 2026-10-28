@@ -19,6 +19,20 @@ export function createPaymentApp(store: CryptoStore, requestSecret: string, star
   });
   const fail = (error: unknown, res: express.Response) => res.status(error instanceof CryptoError ? error.status : 503)
     .json({ error: error instanceof CryptoError ? error.message : 'Платежный сервис не подтвердил операцию.' });
+  app.get('/api/telegram-stars/terms', (_req, res) => {
+    if (!stars?.config.trialAccountIds) { res.sendStatus(404); return; }
+    res.type('text/plain').send([
+      'Рояль: условия контрольного платежа Telegram Stars',
+      'Версия 1, 29 октября 2026 года.',
+      'Проверка доступна только владельцу проекта на заранее указанном аккаунте сайта.',
+      'Один платёж: 100 Telegram Stars. После подтверждения Telegram на внутренний баланс зачисляется 1 USDT (1 000 000 расчётных единиц).',
+      'Это внутренний учёт в USDT. Автоматического обмена Stars на криптовалюту нет. Ставки на этот баланс и вывод криптовалюты в этой проверке отключены.',
+      'Списание реальных Stars происходит только после вашего подтверждения в Telegram. Создание счёта ничего не списывает.',
+      'Если ответ потерян, проверьте тот же счёт и баланс. Повторять оплату не нужно.',
+      'Вопросы, сверка и возврат согласуются в текущем рабочем чате настройки интеграции. Возврат производится в Stars на исходный Telegram-аккаунт после проверки и сверки внутреннего зачисления.',
+      'Поддержка Telegram не обслуживает покупки в этом боте. Общедоступный приём платежей ещё не открыт.',
+    ].join('\n\n'));
+  });
   app.post('/api/telegram-stars/webhook', (req, res, next) => {
     if (!stars || !validTelegramSecret(req.get('x-telegram-bot-api-secret-token'), stars.config.webhookSecret)) {
       res.status(401).json({ ok: false }); return;

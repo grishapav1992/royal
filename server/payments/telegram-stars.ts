@@ -21,6 +21,14 @@ export class TelegramStarsStore {
     ] }));
   }
   private get botId() { return this.config.token.split(':')[0]; }
+  private available(accountId: string) {
+    return this.config.enabled && (!this.config.trialAccountIds || this.config.trialAccountIds.includes(accountId));
+  }
+  private async trialLimit(accountId: string, orderId: string) {
+    if (!this.config.trialAccountIds) return;
+    const previous = await this.wallet.db.prepare("SELECT id FROM telegram_stars_orders WHERE account_id=? AND id<>? AND state IN ('checkout','paid','refunded') LIMIT 1").get(accountId, orderId);
+    if (previous) fail(409, 'Контрольный платёж уже принят. Доступен один платёж 100 Stars.');
+  }
   private view(row: DatabaseRow) {
     return { id: row.id, stars: Number(row.stars), amountUnits: String(row.amount_units), status: row.state,
       createdAt: Number(row.created_at), expiresAt: Number(row.expires_at),
@@ -29,7 +37,8 @@ export class TelegramStarsStore {
   async snapshot(accountId: string) {
     await this.ready;
     const rows = await this.wallet.db.prepare('SELECT * FROM telegram_stars_orders WHERE account_id=? AND bot_id=? ORDER BY created_at DESC,id DESC LIMIT 20').all(accountId, this.botId);
-    return { enabled: this.config.enabled, unitsPerStar: this.config.unitsPerStar,
+    return { enabled: this.available(accountId), unitsPerStar: this.config.unitsPerStar,
+      minStars: 100, maxStars: this.config.trialAccountIds ? 100 : 10000,
       termsUrl: this.config.termsUrl, operations: rows.map(row => this.view(row)) };
   }
   async create(accountId: string, value: unknown) {
@@ -45,7 +54,9 @@ export class TelegramStarsStore {
         if (old.account_id !== accountId || Number(old.stars) !== op.stars || old.bot_id !== this.botId) fail(409, 'Нельзя изменить сохранённый платёж Stars.');
         return this.view(old);
       }
-      if (!this.config.enabled) fail(503, 'Оплата Telegram Stars пока не подключена.');
+      if (!this.available(accountId)) fail(503, 'Оплата Telegram Stars пока не подключена для этого аккаунта.');
+      if (this.config.trialAccountIds && op.stars !== 100) fail(400, 'Для проверки доступен только платёж 100 Stars.');
+      await this.trialLimit(accountId, op.id);
       const recent = await this.wallet.db.prepare('SELECT count(*) AS n FROM telegram_stars_orders WHERE account_id=? AND created_at>?').get(accountId, this.now() - 60000);
       if (Number(recent?.n) >= 5) fail(429, 'Подожди минуту перед новым платежом Stars.');
       await this.wallet.db.prepare('INSERT INTO accounts(id) VALUES (?) ON CONFLICT DO NOTHING').run(accountId);
@@ -64,6 +75,8 @@ export class TelegramStarsStore {
   private async start(chatId: number, id: string) {
     const row = await this.wallet.db.transaction(async () => {
       const row = await this.order(id);
+      if (!this.available(String(row.account_id))) fail(503, 'Приём новых платежей Stars закрыт.');
+      await this.trialLimit(String(row.account_id), String(row.id));
       if (row.state !== 'waiting' || Number(row.expires_at) <= this.now()) fail(409, 'Этот счёт уже оплачен, проверяется или истёк. Проверь баланс на сайте.');
       if (row.telegram_user_id && Number(row.telegram_user_id) !== chatId) fail(409, 'Этот счёт открыт другим пользователем Telegram.');
       await this.wallet.db.prepare('UPDATE telegram_stars_orders SET telegram_user_id=?,updated_at=? WHERE id=?').run(chatId, this.now(), id);
@@ -81,10 +94,12 @@ export class TelegramStarsStore {
     try {
       await this.wallet.db.transaction(async () => {
         const row = await this.order(query.invoice_payload);
-        if (!this.config.enabled || !userId(query.from?.id) || row.telegram_user_id == null
+        if (!this.available(String(row.account_id)) || this.config.trialAccountIds && Number(row.stars) !== 100
+          || !userId(query.from?.id) || row.telegram_user_id == null
           || Number(row.telegram_user_id) !== query.from.id || query.currency !== 'XTR' || query.total_amount !== Number(row.stars)
           || Number(row.expires_at) <= this.now() || !['waiting', 'checkout'].includes(row.state)
           || row.checkout_id && row.checkout_id !== query.id) fail(409, 'Счёт не может быть оплачен. Проверь пополнение на сайте.');
+        await this.trialLimit(String(row.account_id), String(row.id));
         if (row.state === 'waiting') {
           const ownPending = BigInt((await this.wallet.db.prepare("SELECT coalesce(sum(amount_units),0)::text AS n FROM telegram_stars_orders WHERE account_id=? AND state='checkout'").get(row.account_id))!.n);
           const balance = await this.wallet.db.prepare('SELECT balance_units,reserved_units FROM crypto_wallets WHERE account_id=?').get(row.account_id);

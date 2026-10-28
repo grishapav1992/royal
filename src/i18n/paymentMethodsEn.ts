@@ -58,4 +58,8 @@ Object.assign(paymentMethodsEnglish, {
   "Платёж Stars уже использован.": "This Stars payment has already been used."
 });
 Object.assign(paymentMethodsEnglish, { 'Баланс хранится в USDT.': 'Your balance is held in USDT.' });
+Object.assign(paymentMethodsEnglish, {
+  'Оплатить можно из кошелька в Telegram, другого криптокошелька или с биржи, если они поддерживают выбранную монету и сеть.':
+    'Pay from a wallet in Telegram, another crypto wallet or an exchange that supports the selected asset and network.',
+});
 Object.assign(english, paymentMethodsEnglish);

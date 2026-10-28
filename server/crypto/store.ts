@@ -50,7 +50,8 @@ export class CryptoStore {
   private displayRates: CryptoDisplayRates;
   constructor(readonly db: PostgresDatabase, readonly config: CryptoConfig, readonly provider: CryptoProvider,
     prerequisite: Promise<void> = Promise.resolve(), private now = Date.now, private draw = randomInt,
-    private ledgerChanged?: (change: LedgerChange) => Promise<void>, readonly externalCreditsEnabled = false) {
+    private ledgerChanged?: (change: LedgerChange) => Promise<void>,
+    readonly externalCreditsEnabled: boolean | ((accountId: string) => boolean) = false) {
     this.ready = prerequisite.then(async () => {
       await applySchemaMigration(db, { id: 'crypto-gateway-v1', statements: schema });
       await applySchemaMigration(db,{id:'finance-admin-adjustments-v1',statements:[
@@ -128,7 +129,8 @@ export class CryptoStore {
     return this.view(row!);
   }
   async snapshot(accountId: string): Promise<CryptoWallet> {
-    if (!this.config.enabled && !this.externalCreditsEnabled) return { state: 'disabled' };
+    const external = typeof this.externalCreditsEnabled === 'function' ? this.externalCreditsEnabled(accountId) : this.externalCreditsEnabled;
+    if (!this.config.enabled && !external) return { state: 'disabled' };
     return this.atomic(async () => {
       const row = await this.walletRow(accountId);
       const liabilities = BigInt((await this.db.prepare('SELECT coalesce(sum(balance_units+reserved_units),0)::text AS units FROM crypto_wallets').get())!.units);

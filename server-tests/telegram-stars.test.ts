@@ -36,6 +36,10 @@ async function fixture(cryptoEnabled = true) {
   let providerCalls = 0;
   const providerMethods = { balance: async () => ({ usdttrc20: { amount: reserve } }),
     currencies: async () => [{ code: 'usdttrc20', name: 'USDT', network: 'trx', memo: false }],
+    minimum: async () => '0.001', estimate: async (_from: string, _to: string, value: string) => value,
+    createPayment: async (id: string, currency: string, value: string) => ({ payment_id: '101', order_id: id,
+      pay_currency: currency, price_currency: 'usdttrc20', price_amount: value, pay_amount: value,
+      pay_address: 'T' + 'A'.repeat(33), payment_status: 'waiting' }),
     validateAddress: async () => {}, fee: async () => '0.01',
     createPayout: async (id: string, currency: string, address: string, memo: string, amount: string) => {
       payouts++; payoutData = { id: '301', batch_withdrawal_id: '401', unique_external_id: id, currency, address, extra_id: memo,
@@ -80,10 +84,73 @@ test('Stars configuration fails closed and Telegram API failures never expose th
   assert.equal(telegramStarsConfig({}).enabled, false); assert.equal(telegramStarsConfig({}).unitsPerStar, '10000');
   assert.throws(() => telegramStarsConfig({ TELEGRAM_STARS_ENABLED: 'true' }));
   assert.throws(() => telegramStarsConfig({ TELEGRAM_STARS_USDT_UNITS_PER_STAR: '0.013' }));
+  assert.throws(() => telegramStarsConfig({ TELEGRAM_STARS_TRIAL: 'true' }));
+  assert.throws(() => telegramStarsConfig({ TELEGRAM_STARS_TRIAL_ACCOUNT_IDS: randomUUID() }));
   const config = configured(); assert(validTelegramSecret(config.webhookSecret, config.webhookSecret));
   assert(!validTelegramSecret('x', config.webhookSecret)); assert(!validTelegramSecret('', ''));
   const bot = new TelegramBot(config, async () => { throw new Error(config.token); });
   await assert.rejects(() => bot.call('sendInvoice', {}), error => error instanceof Error && !error.message.includes(config.token));
+});
+test('NOWPayments and Stars add to the same account balance and mirror, with no second wallet per provider', async () => {
+  const f = await fixture();
+  try {
+    const request = { id: randomUUID(), currency: 'usdttrc20', amountUnits: '5000000' };
+    await f.client.deposit(f.account, request);
+    const order = await f.create(); await f.start(order.id); await f.checkout(order);
+    const settled = { payment_id: '101', order_id: request.id, pay_currency: 'usdttrc20', price_currency: 'usdttrc20',
+      price_amount: '5', pay_amount: '5', pay_address: 'T' + 'A'.repeat(33), payment_status: 'finished',
+      outcome_currency: 'usdttrc20', outcome_amount: '5' };
+    await Promise.all([f.wallet.applyPayment(settled), f.pay(order)]);
+    await Promise.all([f.wallet.applyPayment(settled), f.pay(order)]); await f.outbox.flush();
+    const wallet = await f.client.snapshot(f.account);
+    assert.equal((wallet as any).balanceUnits, '6000000');
+    assert.equal((wallet as any).operations.length, 2);
+    assert.equal((await f.credits.snapshot(f.account)).balanceUnits, '6000000');
+    assert.equal((await f.credits.snapshot(f.other)).balanceUnits, '0');
+    assert.equal((await f.db.prepare('SELECT count(*)::int AS n FROM crypto_wallets WHERE account_id=?').get(f.account))!.n, 1);
+    assert.equal((await f.db.prepare('SELECT count(*)::int AS n FROM crypto_ledger').get())!.n, 2);
+    assert.equal((await f.gameDb.prepare('SELECT count(*)::int AS n FROM payment_credit_events').get())!.n, 2);
+    assert.equal((await f.wallet.audit()).ok, true);
+  } finally { await f.close(); }
+});
+test('owner trial accepts exactly one 100-Star checkout, restricts accounts, and preserves receipt retries', async () => {
+  const f = await fixture(false);
+  try {
+    f.config.trialAccountIds = [f.account];
+    assert.equal((await f.client.stars(f.account)).maxStars, 100);
+    assert.equal((await f.client.stars(f.other)).enabled, false);
+    await assert.rejects(() => f.client.stars(f.other, { id: randomUUID(), stars: 100, termsAccepted: true }));
+    await assert.rejects(() => f.create(101));
+    const orders = await Promise.all([f.create(), f.create()]);
+    await Promise.all(orders.map(order => f.start(order.id)));
+    await Promise.all(orders.map(order => f.checkout(order)));
+    const accepted = f.calls.filter(call => call.method === 'answerPreCheckoutQuery' && call.body.ok);
+    assert.equal(accepted.length, 1);
+    const order = orders.find(order => 'checkout-' + order.id === accepted[0].body.pre_checkout_query_id)!;
+    await f.checkout(order); assert.equal(f.calls.at(-1)?.body.ok, true);
+    f.config.enabled = false;
+    await f.pay(order); await f.pay(order); await f.outbox.flush();
+    assert.equal((await f.client.snapshot(f.account) as any).balanceUnits, '1000000');
+    assert.equal((await f.db.prepare('SELECT count(*)::int AS n FROM crypto_ledger').get())!.n, 1);
+    f.config.enabled = true;
+    await assert.rejects(() => f.create(), /уже принят/);
+    assert.equal(f.providerCalls(), 0);
+  } finally { await f.close(); }
+});
+test('trial terms are public without exposing account IDs, while webhooks still require a secret', async () => {
+  const f = await fixture(false);
+  try {
+    f.config.trialAccountIds = [f.account];
+    const server = await listen(createPaymentApp(f.wallet, requestSecret, f.stars));
+    try {
+      const response = await fetch(server.url + '/api/telegram-stars/terms');
+      assert.equal(response.status, 200);
+      assert.match(response.headers.get('content-type')!, /text\/plain/);
+      const terms = await response.text();
+      assert.match(terms, /100 Telegram Stars/); assert.match(terms, /1 USDT/);
+      assert(!terms.includes(f.account)); assert(!terms.includes(f.config.token));
+    } finally { await server.close(); }
+  } finally { await f.close(); }
 });
 test('invoice creation and checkout never credit; payer, currency, amount and second checkout are checked', async () => {
   const f = await fixture();

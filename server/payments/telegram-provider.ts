@@ -1,16 +1,23 @@
 import { readFileSync } from 'node:fs';
 import { timingSafeEqual } from 'node:crypto';
 import { CryptoError } from '../crypto/config';
+import { gameAccountId } from '../../src/shared/nileWallet';
 
 export type TelegramStarsConfig = { enabled: boolean; token: string; username: string; webhookSecret: string;
-  unitsPerStar: string; termsUrl: string; supportUrl: string };
+  unitsPerStar: string; termsUrl: string; supportUrl: string; trialAccountIds?: readonly string[] };
 export function telegramStarsConfig(env: NodeJS.ProcessEnv = process.env): TelegramStarsConfig {
   const secret = (name: string) => env[name + '_FILE'] ? readFileSync(env[name + '_FILE']!, 'utf8').trim() : env[name] ?? '';
-  const config = { enabled: env.TELEGRAM_STARS_ENABLED === 'true', token: secret('TELEGRAM_BOT_TOKEN'),
+  const trial = env.TELEGRAM_STARS_TRIAL === 'true';
+  const trialAccountIds = (env.TELEGRAM_STARS_TRIAL_ACCOUNT_IDS ?? '').split(',').filter(Boolean);
+  if (trial && (!trialAccountIds.length || !trialAccountIds.every(gameAccountId))) throw new Error('Configure trial account IDs');
+  if (!trial && trialAccountIds.length) throw new Error('Trial account IDs require trial mode');
+  const config: TelegramStarsConfig = { enabled: env.TELEGRAM_STARS_ENABLED === 'true', token: secret('TELEGRAM_BOT_TOKEN'),
     username: env.TELEGRAM_BOT_USERNAME ?? '', webhookSecret: secret('TELEGRAM_WEBHOOK_SECRET'),
     unitsPerStar: env.TELEGRAM_STARS_USDT_UNITS_PER_STAR ?? '10000',
-    termsUrl: env.TELEGRAM_STARS_TERMS_URL ?? '', supportUrl: env.TELEGRAM_STARS_SUPPORT_URL ?? '' };
+    termsUrl: env.TELEGRAM_STARS_TERMS_URL ?? '', supportUrl: env.TELEGRAM_STARS_SUPPORT_URL ?? '',
+    ...(trial ? { trialAccountIds } : {}) };
   if (!/^[1-9]\d{0,6}$/.test(config.unitsPerStar)) throw new Error('Invalid USDT micro-units per Star');
+  if (trial && config.unitsPerStar !== '10000') throw new Error('Trial rate must be 100 Stars for 1 USDT');
   // Keep credentials when closing new sales: pending payments still need their callbacks.
   if (config.enabled || config.token || config.webhookSecret) {
     if (!/^\d+:[A-Za-z0-9_-]{20,}$/.test(config.token) || !/^[A-Za-z][A-Za-z0-9_]{1,28}bot$/i.test(config.username)

@@ -33,6 +33,7 @@ export class CryptoWalletUI {
       <label>Валюта отображения<select id="crypto-display-currency"><option value="USDT">USDT</option></select></label>
       <p id="crypto-display-rate-note" class="wallet-note" role="status"></p><button type="button" id="crypto-display-rate-refresh" class="text-button" hidden>Обновить курс</button>
       <form id="crypto-deposit-form"><p class="wallet-note">Выбери сумму, монету и сеть. Нажми «Оплатить», чтобы открыть реквизиты и QR-код поверх игры.</p>
+      <p class="wallet-note">Оплатить можно из кошелька в Telegram, другого криптокошелька или с биржи, если они поддерживают выбранную монету и сеть.</p>
       <fieldset id="crypto-deposit-fields" disabled><label>Сумма пополнения в USDT<input id="crypto-deposit-amount" inputmode="decimal" autocomplete="off" required value="20"></label>
       <p id="crypto-deposit-equivalent" class="wallet-note" hidden></p>
       <label>Валюта и сеть оплаты<select id="crypto-deposit-currency" required><option value="">Доступны после подключения сервиса</option></select></label><button type="submit" class="primary-button">Оплатить</button></fieldset>

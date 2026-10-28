@@ -5,7 +5,7 @@ import { gameAccountId, formatNileUnits } from '../shared/nileWallet';
 import { cryptoWallet } from '../wallet/CryptoClient';
 
 type Order = { id: string; stars: number; amountUnits: string; status: string; botUrl: string; expiresAt: number };
-type Snapshot = { enabled: boolean; unitsPerStar: string; termsUrl: string; operations: Order[] };
+type Snapshot = { enabled: boolean; unitsPerStar: string; termsUrl: string; minStars?: number; maxStars?: number; operations: Order[] };
 export class TelegramStarsUI {
   private section = document.createElement('section');
   private snapshot?: Snapshot; private account: string | null = null; private revision = 0; private busy = false;
@@ -58,6 +58,8 @@ export class TelegramStarsUI {
       if (value.enabled && (!/^[1-9]\d{0,6}$/.test(value.unitsPerStar) || !/^https:\/\//.test(value.termsUrl))) throw new Error();
       if (!Array.isArray(value.operations)) throw new Error();
       this.snapshot = value; this.section.hidden = !value.enabled && !value.operations.length;
+      const input = this.el<HTMLInputElement>('#stars-amount');
+      input.min = String(value.minStars ?? 100); input.max = String(value.maxStars ?? 10000);
       this.el<HTMLFormElement>('#stars-form').hidden = !value.enabled && !this.pending;
       this.el<HTMLAnchorElement>('#stars-terms-link').href = value.termsUrl || '#';
       this.rate(); this.el('#stars-history').replaceChildren();

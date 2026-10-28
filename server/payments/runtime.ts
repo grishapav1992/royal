@@ -21,7 +21,8 @@ export function createPaymentRuntime(env: NodeJS.ProcessEnv = process.env) {
   const ready = db.exec('CREATE TABLE IF NOT EXISTS accounts(id TEXT PRIMARY KEY)');
   const outbox = new PaymentOutbox(db, destination, eventSecret, ready);
   const store = new CryptoStore(db, config, new NowPayments(config), outbox.ready, undefined, undefined,
-    change => outbox.record(change), !!starsConfig.token);
+    change => outbox.record(change), starsConfig.token
+      ? id => !starsConfig.trialAccountIds || starsConfig.trialAccountIds.includes(id) : false);
   const stars = new TelegramStarsStore(store, starsConfig, new TelegramBot(starsConfig));
   return { db, store, outbox, requestSecret, stars };
 }
