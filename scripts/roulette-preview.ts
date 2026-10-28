@@ -24,7 +24,7 @@ const plugin:Plugin={name:'roulette-local-fixture-funds',configureServer(vite){
   }catch(error){res.statusCode=error instanceof WalletError?error.status:500;res.end(JSON.stringify({error:error instanceof Error?error.message:'Fixture failed'}));}
  });
 }};
-const vite=await createServer({configFile:false,root:process.cwd(),cacheDir:'artifacts/work/roulette/vite-cache',plugins:[plugin],optimizeDeps:{entries:['index.html']},server:{host:'127.0.0.1',port:webPort,strictPort:true,watch:{ignored:['**/module-dist/**','**/module-build/**','**/artifacts/**','**/dist/**','**/dist-server/**']},proxy:{'/api':api,'/game-modules':api,'/multiplayer':{target:api,ws:true,rewrite:p=>p.replace(/^\/multiplayer/,'')}}}});
+const vite=await createServer({configFile:false,root:process.cwd(),cacheDir:'artifacts/work/roulette-visual/vite-cache',plugins:[plugin],optimizeDeps:{entries:['index.html']},server:{host:'127.0.0.1',port:webPort,strictPort:true,watch:{ignored:['**/module-dist/**','**/module-build/**','**/artifacts/**','**/dist/**','**/dist-server/**']},proxy:{'/api':api,'/game-modules':api,'/multiplayer':{target:api,ws:true,rewrite:p=>p.replace(/^\/multiplayer/,'')}}}});
 async function stop(){
  if(stopping)return;stopping=true;await vite.close();await db?.close();backend.kill();
  if(backend.exitCode===null)await new Promise<void>(resolve=>{const timer=setTimeout(resolve,3000);backend.once('exit',()=>{clearTimeout(timer);resolve();});});

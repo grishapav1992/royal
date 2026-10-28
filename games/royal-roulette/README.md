@@ -17,9 +17,19 @@ Durations are implementation choices for this interface, not scientific threshol
 | Event and meaning | Condition and scale | Presentation and synchronization | Sound | Interruption and verification |
 | --- | --- | --- | --- | --- |
 | Bet awaiting confirmation | A host operation is pending | Lock accepted choice and stake. Show confirmation text, never an invented result. | No new audio | Retry uses the same saved UUID. Check lost responses and reopen. |
-| Wheel settling | A validated server receipt arrived | A 1.8 second deceleration lands the confirmed numbered pocket under the pointer. The ball and the result have one fixed reference at the top. | Shared hall ambience only | Reduced motion skips rotation. Pause, hide or close cancels the animation; settlement remains in the host wallet. |
+| Wheel settling | A validated server receipt arrived | A 1.8 second deceleration lands the confirmed numbered pocket under the pointer. The ivory ball and pointer mark the confirmed pocket at the top; its number appears in the result badge below. | Shared hall ambience only | Reduced motion skips rotation. Pause, hide or close cancels the animation; settlement remains in the host wallet. |
 | Losing round | Return is zero | Show landed number, credited return 0 and negative net. Highlight the numbered table cell. | Existing host reaction only | No reward celebration. Suppress reactions while hidden or paused. |
 | Positive round | Return exceeds the accepted stake | Reveal the number, exact credited return and positive net together after the wheel stops. A straight hit uses the same clear result treatment. | Existing host reaction only | Emit at most once per observed operation. Recovered background settlement is displayed without a new reaction. |
 | Recovery or account change | Saved pending request, replayed receipt or a different account | Restore accepted settings before retry. Clear old account results. Keep results and rules readable without sound in RU and EN. | No recovery cue | Destroy aborts listeners and cancels owned animation. Reopen uses the shared wallet instance. |
 
 The layout fills the existing game stage and scrolls its field independently. The stake, spin and status footer stays visible while the host keeps the club chat. Validate desktop and phone sizes in the actual hall, including close, reopen, changed accounts, uncertain replies and immutable package loading. Technical browser checks do not establish subjective sound quality or enjoyment.
+
+## Visual system 1.2
+
+The table uses emerald felt, warm brass and polished wood tones. The wheel is scalable SVG artwork with a bevelled outer rim, separate numbered pockets, a recessed bowl, metal spindle and pearl ball. Its existing pocket order and confirmed landing angle are retained. The last result has its own coloured badge below the wheel, rather than replacing its physical centre.
+
+Stake chips expose exactly the existing four common-wallet amounts. Selected chips and bets have a visible pressed state; the accepted controls lock during a request and restoration. Return and round net remain separate. The desktop field uses the classic three-row number arrangement; the phone uses six number columns, a full-height zero and an independently scrollable field. Stake chips, the confirmation action and club chat stay visible. No additional sounds, payout rules or stake progressions were introduced.
+
+The spinning action icon is decorative waiting feedback and is disabled by reduced-motion preferences. The existing confirmed-wheel deceleration still lasts 1.8 seconds; the result appears after that presentation finishes. Visual quality is assessed from real-host screenshots, separately from mathematical qualification.
+
+Short desktop viewports use a height-aware compact layout so the entire wheel and number field remain visible alongside chat. The visual browser check covers 1440 by 1000, 1280 by 720 and 390 by 844 viewports, including scrolling the phone field to number 36.
