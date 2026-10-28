@@ -1,13 +1,32 @@
 {
   "name": "@royal/forest-heart",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "private": true,
   "gameId": "studio-forest-heart",
   "apiVersion": 1,
   "rulesVersion": 1,
   "progressVersion": 1,
   "entry": "entry.ts",
-  "assetRoots": ["forest-heart"],
-  "preload": ["forest-heart/v1/background.webp", "forest-heart/v1/elf.webp", "forest-heart/v1/elf-spell.webp", "forest-heart/v1/flower.webp", "forest-heart/v2/roots.webp", "forest-heart/v2/frame.webp", "forest-heart/v2/title.webp", "forest-heart/v2/crystal.webp"],
-  "scripts": {"build": "node ../../node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && node ../../scripts/build-game-module.mjs"}
+  "assetRoots": [
+    "forest-heart"
+  ],
+  "preload": [
+    "forest-heart/v1/background.webp",
+    "forest-heart/v1/flower.webp",
+    "forest-heart/v2/roots.webp",
+    "forest-heart/v2/frame.webp",
+    "forest-heart/v2/title.webp",
+    "forest-heart/v2/crystal.webp",
+    "forest-heart/v3/elf-idle.webp",
+    "forest-heart/v3/elf-blink.webp",
+    "forest-heart/v3/elf-choice.webp",
+    "forest-heart/v3/elf-channel.webp",
+    "forest-heart/v3/elf-flower.webp",
+    "forest-heart/v3/elf-bonus.webp",
+    "forest-heart/v3/elf-win.webp",
+    "forest-heart/v3/elf-big.webp"
+  ],
+  "scripts": {
+    "build": "node ../../node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && node ../../scripts/build-game-module.mjs"
+  }
 }

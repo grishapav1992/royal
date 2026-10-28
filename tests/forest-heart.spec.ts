@@ -34,6 +34,7 @@ async function choose(page: Page) {
   await expect(page.locator('#mini-game')).toHaveAttribute('data-game-module-id', id, { timeout: 25000 });
   await expect(game(page).locator('[data-fh=spin]:visible,[data-fh=pass]:visible,[data-fh=retry]:visible').first()).toBeEnabled();
   await expect.poll(() => game(page).locator('.fh-elf').evaluateAll(images => images.every(i => (i as HTMLImageElement).complete && (i as HTMLImageElement).naturalWidth > 0))).toBe(true);
+  await expect.poll(async () => (await state(page)).character.ready).toBe(true);
 }
 async function routeScenario(page: Page, scenario: string, loseFirst = false) {
   let lost = false;
@@ -199,7 +200,7 @@ test('painted tiles fit a short desktop window and only the accepted root rotate
   const frames=await game(page).locator('.fh').evaluate(async root=>{
     const frames:{motion:string;angles:number[];sap:number[];total:number}[]=[];
     const start=performance.now();
-    while(performance.now()-start<3000){
+    while(performance.now()-start<5000){
       const cells=Array.from(root.querySelectorAll<HTMLElement>('[data-cell]'));
       const total=Number(root.querySelector('[data-fh=total]')!.textContent!.replace(/\s/g,'').replace(',','.'));
       frames.push({motion:(root as HTMLElement).dataset.motion||'',angles:cells.map(c=>parseFloat(c.style.getPropertyValue('--turn'))),sap:cells.map(c=>Number(c.style.getPropertyValue('--sap'))),total:Math.round(total*100)});
@@ -226,6 +227,66 @@ test('painted tiles fit a short desktop window and only the accepted root rotate
   });
   expect(poster.mode).toBe('poster');expect(poster.boardWidth).toBeGreaterThan(400);expect(poster.characterBottom).toBeLessThanOrEqual(poster.boardTop);
   await page.screenshot({path:out+'/desktop-tall.png'});
+});
+
+test('the elf blinks and renders local movement, stops for rules, and reacts only to fresh positive results', async ({page,roomPath}) => {
+  await routeScenario(page,'win'); await enter(page,roomPath);
+  const initial=(await state(page)).character;
+  expect(initial.renderer).toBe('webgl');expect(initial.events).toEqual([]);
+  const canvas=game(page).locator('.fh-character');
+  const idle=await canvas.screenshot();
+  await expect.poll(async()=>(await state(page)).character.blink,{timeout:12000,intervals:[30]}).toBeGreaterThan(.4);
+  const blink=await canvas.screenshot();expect(blink.equals(idle)).toBe(false);
+  await writeFile(out+'/elf-blink.png',blink);
+  await game(page).locator('[data-fh=rules]').click();
+  const stopped=(await state(page)).character;expect(stopped.running).toBe(false);expect(stopped.blink).toBe(0);
+  await page.waitForTimeout(300);
+  expect((await state(page)).character.frames).toBe(stopped.frames);
+  await game(page).locator('[data-fh=close]').click();
+  await game(page).locator('.fh-character-canvas').evaluate(canvas=>{
+    const gl=(canvas as HTMLCanvasElement).getContext('webgl')!,extension=gl.getExtension('WEBGL_lose_context');
+    if(!extension)throw Error('Context loss testing is unavailable');extension.loseContext();setTimeout(()=>extension.restoreContext(),600);
+  });
+  await expect.poll(async()=>(await state(page)).character.renderer,{intervals:[30]}).toBe('image');
+  await expect.poll(async()=>(await state(page)).character.renderer,{intervals:[50]}).toBe('webgl');
+  await act(page);let current=await state(page);
+  expect(current.character.events.map((e:any)=>e.pose)).toEqual(['channel','flower','flower','flower','win']);
+  expect(current.character.pose).toBe('win');
+  await page.screenshot({path:out+'/elf-win.png'});
+  await page.locator('#studio-game-list').click();await choose(page);
+  current=await state(page);expect(current.character.pose).toBe('idle');expect(current.character.events).toEqual([]);expect(current.presentations).toBe(0);
+  for(const scenario of ['loss','partial']){
+    await page.unroute('**/api/demo-wallet/expansion');await routeScenario(page,scenario);await act(page);
+    expect((await state(page)).character.events.some((e:any)=>e.pose==='win'||e.pose==='big')).toBe(false);
+  }
+  await game(page).locator('[data-fh=rules]').click();await game(page).locator('[data-fh=motion]').check();await game(page).locator('[data-fh=close]').click();
+  const reduced=(await state(page)).character;expect(reduced.reduced).toBe(true);expect(reduced.running).toBe(false);
+  await page.waitForTimeout(300);expect((await state(page)).character.frames).toBe(reduced.frames);
+  await writeFile(out+'/character-lifecycle.json',JSON.stringify({idle:initial,paused:stopped,reopened:current.character,reduced},null,2));
+});
+
+test('the elf shows choice, flower, bonus and large final reactions in the real host with chat', async ({page,roomPath}) => {
+  await routeScenario(page,'choice-bonus');await enter(page,roomPath);
+  await act(page);let current=await state(page);
+  expect(current.character.events.map((e:any)=>e.pose)).toEqual(['channel','flower','choice']);
+  await page.screenshot({path:out+'/elf-choice.png'});
+  await game(page).locator('[data-cell="5"]').click();
+  await expect(game(page).locator('.fh-character')).toHaveAttribute('data-pose','flower');
+  await expect.poll(async()=>(await state(page)).character.transition,{intervals:[30]}).toBe(1);
+  await page.screenshot({path:out+'/elf-flower.png'});
+  await expect(game(page).locator('[data-fh=spin]')).toBeEnabled();current=await state(page);
+  expect(current.view.stage).toBe('bonus');expect(current.character.pose).toBe('bonus');
+  expect(current.character.events.some((e:any)=>e.pose==='win'||e.pose==='big')).toBe(false);
+  await page.screenshot({path:out+'/elf-bonus.png'});
+  await page.setViewportSize({width:390,height:844});await fit(game(page));await expect(page.locator('#chat-input')).toBeInViewport();
+  await page.screenshot({path:out+'/elf-mobile.png'});
+  await game(page).locator('[data-fh=fast]').check();
+  while(current.view.stage!=='settled')current=await act(page);
+  await page.unroute('**/api/demo-wallet/expansion');await routeScenario(page,'maximum');
+  current=await act(page);while(current.view.stage!=='settled')current=await act(page);
+  expect(current.character.events.at(-1).pose).toBe('big');expect(current.scene.totalUnits).toBe(946500);
+  await page.setViewportSize({width:1440,height:1000});await page.screenshot({path:out+'/elf-big.png'});
+  await writeFile(out+'/character-events.json',JSON.stringify(current.character,null,2));
 });
 
 test('the original score renders finite unclipped audio and releases its owned voices',async({page})=>{

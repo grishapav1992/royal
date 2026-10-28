@@ -1,4 +1,4 @@
-# Forest Heart client 1.3
+# Forest Heart client 1.4
 
 Independent client for `studio-forest-heart`, using Royal host API 1, rules 1 and progress 1. The common expansion transport and wallet own operations, sessions and money. This package only presents accepted public states. Mathematical rules: [rules-v1.md](../../docs/concepts/forest-heart/rules-v1.md).
 
@@ -28,3 +28,19 @@ RU/EN copy is local to the module. All controls are keyboard accessible. The cho
 Version 1.3 keeps the same art direction while fitting three layouts to the measured iframe. Wide windows give the character a separate column; tall windows use a character banner and a larger field; phones put a small portrait inside the instruction panel. The title, source, receiver rail, status/bonus panel and financial controls have separate fixed areas. A low-height variant reduces secondary text, preserving the primary controls. A gesture inside the game can start the music without placing a stake.
 
 Additional presentation choices: the accepted tile rises at most 4 px during its existing 90-degree turn and settles at the wooden accent; the field arrives outward from the source row. Only newly collected flowers emit five quiet particles over 650 ms. Restored flowers do not. After the confirmed flow, an integer display counter moves from the previous total in this same series, or zero for a new series, to the confirmed total over 420 ms (180 ms fast). A final positive cadence is scheduled to coincide with counter completion; partial returns remain quiet. Skip, pause, account change, close and reduced motion immediately show the confirmed total. The counter only displays public accepted amounts and never calculates or changes a payout. These timings are artistic hypotheses.
+
+## Character presentation 1.4
+
+Eight registered alpha assets replace the two-pose portrait: idle, one closed-eye blink, choice, channel, flower, bonus, positive final and large positive final. Their [prompts and provenance](../../docs/concepts/forest-heart/character-v4-assets.json) record the built-in image generator and individual corrections to remove fragments from the first atlases. The approved adult character identity and costume remain the reference. This is a mesh-deformed illustrated character with pose transitions, not a full skeletal or 3D rig.
+
+| Trigger | Character preparation, accent and completion | Interruption and meaning |
+| --- | --- | --- |
+| Visible idle | Anchored eyes and body, separate weighted hair, cloth and subtle torso deformation; occasional eye-region blink | No whole-image rocking. Active-time clock freezes during pause. Idle movement does not imply an outcome |
+| Confirmed choice | A 320 ms transition toward the board and a pointing hand | Stable choice pose has no timeout; history restores it without a reaction event |
+| Confirmed flow accent | Open palm directs mint energy toward the network, held through the flow | Shares the existing estimated audible flow accent; no new sound or entropy |
+| Newly collected flower | Gentle smile and a blossom in the free hand, 950 ms reaction window | One 520 ms acknowledgement after the flower group, 180 ms fast, before the next major reaction; never a wallet-credit celebration |
+| Confirmed bonus entry | Both hands raise the crystal, four quiet leaves and a rune ring, 1650 ms reaction window | Bonus entry only. Final payout classification is unchanged |
+| Confirmed positive complete series | Hand over chest and a warm smile, 1800 ms reaction window | Starts at the existing final cadence and counter completion; zero, partial and break-even never trigger it |
+| Confirmed large complete series | Raised palm and brighter smile with restrained golden accents, 2400 ms reaction window | Same existing 10x threshold relative to the complete original paid stake |
+
+Reaction windows do not lock controls or start requests. A new request clears a previous reaction; skip, pause, account change and close clear transient reactions immediately. Resume and replay show the accepted state without replaying result reactions. Reduced motion renders static poses without deformation, transitions, particles or blinking. The local renderer owns one WebGL canvas, eight textures, a 24 by 32 mesh and its animation frame. It targets at most 30 draws per second, with a framebuffer fitted to the displayed portrait and capped at 640 by 768 and device pixel ratio 1.5. These are implementation choices, not measured device performance claims. Resize, context loss and restoration have an image fallback; destroy releases owned GPU objects, observer and animation callbacks. No game RNG, wallet, transport or mathematics is called by the character renderer.

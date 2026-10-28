@@ -1,0 +1,190 @@
+{
+  "tool": "built-in image_gen",
+  "date": "2026-10-28",
+  "reference": "public/assets/forest-heart/v1/elf.webp",
+  "processing": "Idle pair: equal atlas cell extraction. Six event poses: individually corrected with built-in image_gen to remove neighboring fragments and restore clean silhouettes. Proportional normalization to 512x768, alpha-preserving registration into 640x768 canvases, WebP encoding.",
+  "promptSets": [
+    {
+      "source": "C:/Users/Aorus/.codex/generated_images/01a1793a-deb2-7031-9934-84f2a877618e/exec-694bbb24-0ca7-4047-8fe1-ca530ba5ba44.png",
+      "poses": [
+        "idle",
+        "blink"
+      ],
+      "prompt": "Use case: identity-preserve. Asset type: Forest Heart game character animation sprite sheet, exactly TWO equal portrait cells side by side, no gutters, canvas aspect ratio 4:3. Input image 1 is the identity, costume, body proportions, face, camera and framing reference and edit target. Make a high quality pair of almost identical idle animation frames of this SAME clearly adult silver-haired fantasy elf woman, emerald and gold leaf corset, purple draped skirt, same jewelry, pointed ears, same crystal held at her left hip. Both frames show the exact reference pose and framing from crown to mid thigh, with relaxed right arm down. LEFT cell: calm alert idle, green eyes fully open, relaxed lips. RIGHT cell: EXACT COPY OF LEFT cell, ONLY eyelids gently CLOSED for one natural blink, no head movement, absolutely no change of mouth, hands, clothes, hair, scale or lighting. Crucial registration: both characters centered identically within their respective cells, same crown height, eye line, shoulders, waist, hem; exact equal cell dimensions, no overlap across cell border. Match the detailed realistic painted fantasy game art of the supplied image. Leave comfortable transparent margin around hair and hands. Genuine alpha transparency everywhere behind character; no black, gray or checkerboard painted background. Keep the supplied face and costume faithfully. No new props, no additional characters, no scenery, no lettering, no borders, no watermark. The two frames must overlay cleanly for blinking. Target full sheet 1600x1200 or larger at the same 4:3 aspect.",
+      "sourceSha256": "791bc7166a7bb136c0b54f26576ac244dfdb087ebf15a1a20f5414b6f2ea5736"
+    },
+    {
+      "source": "C:/Users/Aorus/.codex/generated_images/01a1793a-deb2-7031-9934-84f2a877618e/exec-d234e381-82e9-49e2-9539-aadea8fad7b8.png",
+      "poses": [
+        "choice",
+        "channel",
+        "flower"
+      ],
+      "prompt": "Use case: identity-preserve. Asset type: THREE-FRAME character pose atlas for Forest Heart game. Input image 1 is the same adult elf woman to preserve, including her exact face, long silver hair with lavender rimlight, green eyes, pointed ears, purple skirt, emerald leaf corset, gold leaf filigree and jewelry. Create ONE transparent sprite sheet with exactly THREE equal portrait cells side by side, NO gutters or borders, overall aspect ratio 2:1, target 2400x1200. Each cell is a full portrait from crown to mid thigh. Same camera, scale, body position and lighting as input. Common registration in every cell: crown at y=2% of cell, eyes at y=16%, neck at y=25%, waist at y=55%, hip at y=70%; face center x=45% within its cell, torso center x=50%. Her head and hips should remain nearly stationary across poses. Keep left hand holding the same emerald crystal near her left hip (screen right) in ALL poses. LEFT FRAME, CHOICE: turn eyes and chin slightly toward screen left where the board sits, extend her free right arm down-left in a graceful inviting gesture, index and middle finger subtly indicate a choice, attentive neutral expression, no reward. MIDDLE FRAME, CHANNEL ENERGY: right forearm lifts toward screen left with palm forward, focused green-eyed look at the board, slim mint energy ribbon softly curls around her open palm, no big flash, powerful controlled magic. RIGHT FRAME, FLOWER: her right hand cups a small luminous gold forest blossom at chest level toward screen left, soft pleased smile and gaze toward the blossom; this is a small intermediate acknowledgement. Distinct hand silhouettes, anatomically correct hands with five fingers, no extra limbs, no staff, no text, no coins, no scenery. Rich realistic painted high-end fantasy game character art matching input, same identity, same costume and coverage, genuine clean alpha transparency behind every figure. All three figures must stay inside their own equal cell with safe margin around hands and hair; do not overlap cells. This is a production sprite sheet, not a UI mockup. No labels, no watermark.",
+      "sourceSha256": "ded326aec1b8fdf7179a8e0a7323e1c2ce4c8485d5b7411053bdf518f57de74b"
+    },
+    {
+      "source": "C:/Users/Aorus/.codex/generated_images/01a1793a-deb2-7031-9934-84f2a877618e/exec-d9815475-fd31-40de-acd8-be5cad0d9794.png",
+      "poses": [
+        "bonus",
+        "win",
+        "big"
+      ],
+      "prompt": "Use case: identity-preserve. Asset type: THREE-FRAME reaction sprite atlas for the Forest Heart game. Input image is the exact adult elf character identity and costume reference. Preserve her face, silver hair, green eyes, pointed ears, emerald/gold leaf corset, violet drapery, floral hair ornament and crystal. ONE transparent sheet, exactly THREE equal portrait cells side by side, overall aspect 2:1, target 2400x1200. No gutters, no labels. In each cell show head to mid thigh at identical scale, crown y=2%, eyes y=16%, neck y=25%, waist y=55%, same shoulder height, head center x=45% of cell. Keep torso and hips stationary to make crossfades stable. Every arm and hair edge must have a clear transparent margin INSIDE its own cell. LEFT FRAME, BONUS INVOCATION: serious delighted concentration, she raises the emerald crystal from hip to the center of her chest using both hands, looking toward its light; a delicate circle of four small mint leaves floats around the crystal, no coins, no money symbolism. MIDDLE FRAME, POSITIVE COMPLETE SERIES: warm confident closed-mouth smile, her free right hand resting softly over upper chest, left hand still cradles crystal at hip, glance toward the player, a restrained thankful acknowledgement. RIGHT FRAME, LARGE POSITIVE COMPLETE SERIES: joyful but elegant smile, her free right hand raised beside her face with open palm toward the player in a celebratory greeting, left hand still holds crystal at hip, slight upward gaze; subtle golden flecks near raised palm, no huge flare. Three visibly different hand poses and expressions, same face and clothes. Rich realistic fantasy game illustration matching input. No extra limbs, no anatomy distortion, no staff, no extra characters, no text, no border, no background, no watermark. Genuine alpha transparent outside each figure and between hair strands. Production character sheet, no UI.",
+      "sourceSha256": "57535a5a60f25c59881c05abd5c71a6c6594fd0df3972092e36c529ad5e48283"
+    }
+  ],
+  "assets": [
+    {
+      "pose": "idle",
+      "path": "public/assets/forest-heart/v3/elf-idle.webp",
+      "bytes": 147326,
+      "sha256": "180c90f9c6850bada1ce9a6a346dea4dcf4881f4325b394240f0d3defedb601b",
+      "dimensions": [
+        640,
+        768
+      ],
+      "registrationOffset": [
+        77,
+        0
+      ]
+    },
+    {
+      "pose": "blink",
+      "path": "public/assets/forest-heart/v3/elf-blink.webp",
+      "bytes": 156102,
+      "sha256": "3cdf82c0ac64ed8e0a736373d20b27d14595150c321deeee9aa88d02625afa4f",
+      "dimensions": [
+        640,
+        768
+      ],
+      "registrationOffset": [
+        108,
+        -5
+      ]
+    },
+    {
+      "pose": "choice",
+      "path": "public/assets/forest-heart/v3/elf-choice.webp",
+      "bytes": 173726,
+      "sha256": "ef0266937f395956464027c1a8bdd8776ddd46f58f50cb71fa728dd248b1c754",
+      "dimensions": [
+        640,
+        768
+      ],
+      "registrationOffset": [
+        66,
+        0
+      ]
+    },
+    {
+      "pose": "channel",
+      "path": "public/assets/forest-heart/v3/elf-channel.webp",
+      "bytes": 175404,
+      "sha256": "13e5a57ea08e28f4836febbcee14d43f9de48051b241c64f76d6496320f5a02c",
+      "dimensions": [
+        640,
+        768
+      ],
+      "registrationOffset": [
+        79,
+        0
+      ]
+    },
+    {
+      "pose": "flower",
+      "path": "public/assets/forest-heart/v3/elf-flower.webp",
+      "bytes": 161458,
+      "sha256": "19b979424e6805494d5d8ce54868a3bdce9962da3f21127bba5e296a292b007f",
+      "dimensions": [
+        640,
+        768
+      ],
+      "registrationOffset": [
+        91,
+        0
+      ]
+    },
+    {
+      "pose": "bonus",
+      "path": "public/assets/forest-heart/v3/elf-bonus.webp",
+      "bytes": 184438,
+      "sha256": "1f7b6895647674ecd579409b0ddb03f0e24b7e06d8b178db73717f07f4aa18cc",
+      "dimensions": [
+        640,
+        768
+      ],
+      "registrationOffset": [
+        80,
+        0
+      ]
+    },
+    {
+      "pose": "win",
+      "path": "public/assets/forest-heart/v3/elf-win.webp",
+      "bytes": 165894,
+      "sha256": "f0a6137cf5869244221f654f86a0a2c2e9931d10873a64c69a51c0456c97df64",
+      "dimensions": [
+        640,
+        768
+      ],
+      "registrationOffset": [
+        91,
+        0
+      ]
+    },
+    {
+      "pose": "big",
+      "path": "public/assets/forest-heart/v3/elf-big.webp",
+      "bytes": 202306,
+      "sha256": "18be015c682ade2f54f9856a1d1bc6dab4496014c373ce059646d333d6eddb5d",
+      "dimensions": [
+        640,
+        768
+      ],
+      "registrationOffset": [
+        94,
+        0
+      ]
+    }
+  ],
+  "corrections": [
+    {
+      "pose": "choice",
+      "source": "C:/Users/Aorus/.codex/generated_images/01a1793a-deb2-7031-9934-84f2a877618e/exec-376c86b2-5473-4438-bc38-0c17d1fb4e22.png",
+      "sourceSha256": "7365147106b7f76ec7ef1962dcfd772fd3188f5b51700c69c4d5bd017024ca6b",
+      "prompt": "Use case: background-extraction and identity-preserve. Edit the provided Forest Heart elf sprite into ONE complete clean transparent cutout, not an atlas. Preserve the exact central adult silver-haired elf woman's face, attentive expression and gaze toward screen left, emerald and gold corset, purple drapery, jewelry and crystal at her left hip. Her free right arm extends gracefully down-left to indicate the game board. Restore the missing cropped right hair edge and trailing dress so the silhouette ends naturally. Every fingertip and all hair must fit inside the frame. One portrait from crown to mid thigh, 2:3 aspect, face centered at x=50%, eyes around y=16%, crown y=2%. Leave at least 8% fully transparent margin at both sides. Remove all matte contamination and any disconnected fragments. Genuine clean alpha transparency, absolutely no scene, no opaque or colored backdrop, no checkerboard, no other figures, no text, no watermark. Keep the costume and identity unchanged."
+    },
+    {
+      "pose": "channel",
+      "source": "C:/Users/Aorus/.codex/generated_images/01a1793a-deb2-7031-9934-84f2a877618e/exec-6e2eede6-0a76-4508-b06c-5b3cce06fd2a.png",
+      "sourceSha256": "9dc08d5b7340880b5a7e741a318ea24a9bf1a4a4a03e470c69337a6d0b8cec20",
+      "prompt": "Use case: background-extraction, identity-preserve. Clean the supplied game sprite into ONE isolated adult elf woman. Keep her exact identity, face, focused expression, costume, pose and emerald crystal at hip. Keep her right open palm toward screen left and a fine mint magic ribbon. Remove ALL unrelated hair, sleeve or figure fragments along the far LEFT edge that came from a neighboring atlas cell. Remove all harsh magenta/red/blue matte flecks, keep a clean natural transparent silhouette. Restore the whole hair silhouette smoothly at the right if cropped. Same head-to-mid-thigh framing. One character centered on a 2:3 portrait canvas with fully transparent 8% side margins and 2% above crown, no background or color haze behind the body. Straight camera and similar head position. Do not paint a rectangle or checkerboard. No new props, no other figures or fragments, no labels, no watermark. Produce a genuine RGBA transparent cutout with clean anti-aliased edges."
+    },
+    {
+      "pose": "flower",
+      "source": "C:/Users/Aorus/.codex/generated_images/01a1793a-deb2-7031-9934-84f2a877618e/exec-ae59f6aa-f760-43a4-9cc0-fedd7ef67e75.png",
+      "sourceSha256": "3610179cd5018aa8237ea413922f9d279b7bc379955a298e6fd7467e8b24ad67",
+      "prompt": "Use case: background-extraction and identity-preserve. Clean the supplied cropped game sprite into ONE isolated transparent character. Keep the exact central adult silver-haired elf, her green eyes looking at the small golden blossom in her right hand at chest height, her soft smile, the emerald crystal in her left hand at hip, the exact purple and gold costume and pose. Remove ALL stray fragments from other characters along the far left edge, including the detached silver hair and purple fabric. Restore the central woman's full natural hair silhouette at right. Remove magenta/red/blue matte contamination. One central character only, head to mid thigh, same scale as reference. Portrait canvas 2:3, crown at y=2%, eyes around y=16%, face centered horizontally, leave 8% fully transparent side margins. Genuine clean alpha behind the subject and between hair strands, no colored background haze, no checkerboard, no text, no new props, no extra characters or body fragments, no watermark. Keep main identity and costume unchanged."
+    },
+    {
+      "pose": "bonus",
+      "source": "C:/Users/Aorus/.codex/generated_images/01a1793a-deb2-7031-9934-84f2a877618e/exec-4f260575-e893-4f90-bc00-049a2376b32c.png",
+      "sourceSha256": "60d0e3d4329dae93c487c209ac1fb8f7f30ee38832312a3e1e9cdfdb5a865374",
+      "prompt": "Use case: background-extraction and identity-preserve. Clean this exact central adult silver-haired Forest Heart elf into ONE complete isolated RGBA portrait. Preserve the downward focused gaze at the emerald crystal, both hands holding it near chest, four little mint leaves, same face, hair ornaments, emerald/gold corset and flowing purple costume. Restore any cut hair and drapery at edges. Remove detached neighboring fragments and all magenta/red/blue matte contamination. Keep head to mid thigh framing on a 2:3 portrait canvas, eyes near y=16%, crown y=2%, face centered at x=50%, same camera and scale. Fully transparent margin at both sides, no colored fog or background, no checkerboard, no text, no new props, no other figures or body parts, no watermark. Clean anti-aliased natural silhouette with transparent gaps between hair strands. This is one game animation pose, not a sheet."
+    },
+    {
+      "pose": "win",
+      "source": "C:/Users/Aorus/.codex/generated_images/01a1793a-deb2-7031-9934-84f2a877618e/exec-f787315a-df36-4e7c-bc4c-8be61c740c70.png",
+      "sourceSha256": "27eeb44f2e2a4ad1afa15df8e74695a3b90eaa284fad51c3c442b4c7ae02ab03",
+      "prompt": "Use case: background-extraction and identity-preserve. Edit target: the supplied Forest Heart character sprite. Clean this into ONE isolated transparent game character portrait. Keep the CENTRAL adult silver-haired elf woman EXACTLY, same face, same gentle smile, same hand over her chest, same crystal at hip, identical costume and lighting and camera. REMOVE every stray fragment of OTHER figures at the extreme left and right edges, including the partial silver hair at left, yellow light/hand at upper right, purple fragments at far right. The ONLY retained subject is the central woman; no detached pieces anywhere. Remove all magenta/red/blue matte contamination at transparent edges. Preserve the existing main figure pixels as much as possible; restore a smooth natural hair silhouette where needed. Place the central woman from crown to mid thigh inside a portrait canvas at 2:3 aspect ratio with at least 8% fully transparent margin on both sides, her face centered horizontally around 50%, crown y=2%, eyes y=16%, waist y=55%. Genuine clean alpha transparency behind and between hair. No background, no painted checkerboard, no new objects, no text or watermark. This is a single sprite, never a contact sheet."
+    },
+    {
+      "pose": "big",
+      "source": "C:/Users/Aorus/.codex/generated_images/01a1793a-deb2-7031-9934-84f2a877618e/exec-0bf4ece5-ac06-46cc-ab45-c1a8dab8b70c.png",
+      "sourceSha256": "16fa3def56f9218ff2be0dd6c5acb577ba1eacc871e5a58dd0ed819a050cf3d6",
+      "prompt": "Use case: background-extraction and identity-preserve. Edit the supplied adult Forest Heart elf into one complete isolated transparent game portrait. Keep her exact face, joyful elegant smile, silver hair, green eyes, raised right palm beside her head facing the player, emerald crystal at left hip, same emerald/gold corset and violet drapery. Preserve a few subtle golden flecks beside her greeting hand. Restore natural silhouette and missing sleeve or fabric along the cut left edge. Remove all detached fragments and magenta/red/blue matte contamination. One figure on a 2:3 portrait canvas from crown to mid thigh, eyes near y=16%, crown y=2%, face centered at x=50%. Both hands and hair must fit fully inside the canvas with transparent side margins. Genuine clean alpha cutout, transparent between hair strands; absolutely no opaque or colored backdrop, no checkerboard, no other figures or body parts, no text, no watermark. Preserve identity, pose and costume."
+    }
+  ],
+  "referenceSha256": "8961b07c13a996df9ada58a09cbb64ea42ee8cd1f80b558353517389f736f5ca"
+}
