@@ -15,7 +15,9 @@ export const CARIBBEAN_REVIEWED_SOURCES = {
   'src/shared/caribbeanTreasures.ts': '5590af9897cfb32dbf8fd7d9c0608ad52184051ddee7ca70cd309267a4311aee',
   'server/games/caribbeanTreasures.ts': 'bdb0aa8eecef1093f876dd3c467ff1b43d8a7b1606a63a56aa46430964556e99',
   'src/shared/caribbeanTransport.ts': 'c4a590c6778048f9ecd37852549762adde064f90dca072316ee215ba8ac89c78',
-  'src/shared/casinoExpansion.ts': '8e0fc90acc460ebe16810b81e532485f3f4ccbb7e07a3ec6939a3db1d4a0c59a',
+  // Reviewed 2026-10-28: only the public title of the kung fu game changed.
+  // The complete-round model, choices, settlement and all Caribbean rules are identical.
+  'src/shared/casinoExpansion.ts': '88173773f0ff57c6464a17e16ed1b7a42df57af392d7e3c6dc7dbe2c9357a210',
   'server/demoExpansion.ts': '3f35ffef0a677e9aa5050409b35ec26025fcef920648cd6c213fa13e46fb2e7d',
   'server/finance/nile-game-runtime.ts': '584c3256cf6b69432131c1ffe8e0445efad468ad418ae6bd66bc10357ca40cd0',
 };
