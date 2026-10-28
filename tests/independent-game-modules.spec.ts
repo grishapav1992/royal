@@ -4,6 +4,7 @@ import { createServer, type ViteDevServer } from 'vite';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { resolve, sep, extname } from 'node:path';
+import type { ExpansionSession } from '../src/shared/casinoExpansion';
 
 let server: ViteDevServer;
 let baseURL: string;
@@ -63,6 +64,131 @@ async function open(page: Page, gameId: string) {
  await page.evaluate(id => (window as any).moduleHarness.open(id), gameId);
  await expect(page.locator('#primary'), `Module ${gameId} must mount`).toHaveAttribute('data-game-module-version', /\d+\.\d+\.\d+-[a-f0-9]{12}/);
 }
+
+async function lastExitWallet(page: Page, active = false) {
+ let current: ExpansionSession | undefined;
+ const sent: unknown[] = [];
+ const snapshot = () => {
+  if (active && current) { current.serverNow = Date.now(); current.multiplier = Math.exp(.06 * (current.serverNow - current.startedAt!) / 1000); }
+  return { wallet: { balance: current ? 990 : 1000, entries: [] }, sessions: current ? [current] : [] };
+ };
+ await page.route('**/api/*-wallet', route => route.fulfill({ json: { balance: 1000, entries: [] } }));
+ await page.route('**/api/*-wallet/expansion', route => {
+  if (route.request().method() === 'GET') return route.fulfill({ json: snapshot() });
+  const op = route.request().postDataJSON(); sent.push(op);
+  current = { id: op.id, gameId: 'github-crash', rulesVersion: 1, state: active ? 'active' : 'settled', stakeUnits: op.stakeUnits, spentUnits: op.stakeUnits, returnedUnits: '0',
+   startedAt: Date.now() - 5000, serverNow: Date.now(), multiplier: 1, ...(active ? {} : { crashAt: 1 }),
+   view: { player: [], dealer: [], community: [], actions: active ? [{ move: 'cashout', label: 'Exit', cost: 0 }] : [], phase: 1, ended: !active, message: '' } };
+  return route.fulfill({ json: { ...snapshot(), session: current, replayed: false } });
+ });
+ await page.evaluate(() => (window as any).moduleHarness.account('last-exit-loading-test'));
+ return sent;
+}
+
+test('LAST EXIT waits for downloads and decoding, then shows the complete first loss', async ({ page }) => {
+ await page.addInitScript(() => {
+  const decode = HTMLImageElement.prototype.decode;
+  HTMLImageElement.prototype.decode = async function () {
+   await decode.call(this);
+   if (this.src.endsWith('/coupe-depth-roll.png')) await new Promise<void>(resolve => { (window as any).releaseLastExitDecode = resolve; });
+  };
+ });
+ await fixture(page); await page.emulateMedia({ reducedMotion: 'no-preference' });
+ const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
+ const sent = await lastExitWallet(page);
+ let release!: () => void;
+ const download = new Promise<void>(resolve => { release = resolve; });
+ await page.route('**/media/last-exit/v2d/coupe-yaw.png', async route => { await download; await route.continue(); });
+ try {
+  await open(page, 'github-crash');
+  await expect(page.locator('[data-loading]')).toBeVisible();
+  await expect(page.locator('[data-loading-count]')).toHaveText('14 / 16');
+  await expect(page.locator('[data-start]')).toBeDisabled();
+  expect(await page.locator('canvas').getAttribute('data-frames')).toBeNull();
+  await page.locator('[data-start]').dispatchEvent('click'); expect(sent).toHaveLength(0);
+  release(); await expect(page.locator('[data-loading-count]')).toHaveText('15 / 16');
+  await expect(page.locator('[data-start]')).toBeDisabled();
+  await page.evaluate(() => (window as any).releaseLastExitDecode());
+  await expect(page.locator('.last-exit')).toHaveAttribute('data-asset-state', 'ready');
+  await expect(page.locator('[data-loading]')).toBeHidden();
+  await expect(page.locator('[data-start]')).toBeEnabled();
+  await page.locator('[data-start]').click(); expect(sent).toHaveLength(1);
+  await expect(page.locator('canvas')).toHaveAttribute('data-cinematic', 'intercept');
+  await expect(page.locator('canvas')).toHaveAttribute('data-cinematic', 'depth-rollover');
+  await expect(page.locator('canvas')).toHaveAttribute('data-cinematic', 'explosion');
+  await expect(page.locator('[data-result]')).toHaveText('ВЫПЛАТА 0,00');
+  expect(errors).toEqual([]);
+ } finally { release(); }
+});
+
+test('LAST EXIT keeps starts blocked after an asset error and retries the missing image', async ({ page }) => {
+ await fixture(page); const sent = await lastExitWallet(page);
+ let fail = true;
+ await page.route('**/media/last-exit/v1/explosion.webp', route => fail ? route.abort('failed') : route.continue());
+ await open(page, 'github-crash');
+ await expect(page.locator('.last-exit')).toHaveAttribute('data-asset-state', 'error');
+ await expect(page.locator('[data-start]')).toBeDisabled();
+ await expect(page.locator('[data-loading-retry]')).toBeVisible();
+ await page.locator('[data-start]').dispatchEvent('click'); expect(sent).toHaveLength(0);
+ fail = false; await page.locator('[data-loading-retry]').click();
+ await expect(page.locator('.last-exit')).toHaveAttribute('data-asset-state', 'ready');
+ await expect(page.locator('canvas')).toHaveAttribute('data-assets', '16');
+ await expect(page.locator('[data-start]')).toBeEnabled();
+});
+
+test('LAST EXIT closing during decoding cannot revive the disposed scene', async ({ page }) => {
+ await page.addInitScript(() => {
+  const decode = HTMLImageElement.prototype.decode;
+  HTMLImageElement.prototype.decode = async function () {
+   await decode.call(this);
+   if (this.src.endsWith('/coupe-depth-roll.png') && !(window as any).lastExitReleased)
+    await new Promise<void>(resolve => { (window as any).releaseLastExitDecode = resolve; });
+  };
+ });
+ await fixture(page); await lastExitWallet(page);
+ const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
+ await open(page, 'github-crash'); await expect(page.locator('[data-loading-count]')).toHaveText('15 / 16');
+ await page.evaluate(() => (window as any).moduleHarness.close());
+ await page.evaluate(() => { (window as any).lastExitReleased = true; (window as any).releaseLastExitDecode(); });
+ await expect(page.locator('.last-exit')).toHaveCount(0);
+ await open(page, 'github-crash');
+ await expect(page.locator('.last-exit')).toHaveAttribute('data-asset-state', 'ready');
+ await expect(page.locator('[data-start]')).toBeEnabled(); expect(errors).toEqual([]);
+});
+
+test('LAST EXIT numbers advance at wall-clock speed between polls and reopening preserves the run', async ({ page }) => {
+ await fixture(page); const sent = await lastExitWallet(page, true);
+ await open(page, 'github-crash'); await expect(page.locator('[data-start]')).toBeEnabled(); await page.locator('[data-start]').click();
+ await expect(page.locator('.last-exit')).toHaveAttribute('data-motion-phase', 'racing');
+ const samples = await page.evaluate(async () => {
+  const root = document.querySelector<HTMLElement>('.last-exit')!, samples: { at: number; time: number }[] = [];
+  const start = performance.now();
+  await new Promise<void>(resolve => { const sample = () => {
+   const at = performance.now(); samples.push({ at, time: Number(root.dataset.displayServerNow) });
+   if (at - start >= 1800) resolve(); else requestAnimationFrame(sample);
+  }; requestAnimationFrame(sample); });
+  return samples;
+ });
+ for (let i = 1; i < samples.length; i++) expect(Math.abs((samples[i].time - samples[i - 1].time) - (samples[i].at - samples[i - 1].at))).toBeLessThan(25);
+ await expect(page.locator('[data-speed]')).toHaveText(/\d+\.\d/);
+ let release!: () => void, waiting = false;
+ const interruption = new Promise<void>(resolve => { release = resolve; });
+ await page.route('**/api/*-wallet/expansion', async route => {
+  if (route.request().method() === 'GET') { waiting = true; await interruption; }
+  await route.fallback();
+ });
+ try {
+  await expect.poll(() => waiting).toBe(true); await page.waitForTimeout(1800);
+  const frozen = await page.locator('.last-exit').evaluate(el => ({ display: Number((el as HTMLElement).dataset.displayServerNow), confirmed: Number((el as HTMLElement).dataset.confirmedServerNow) }));
+  expect(frozen.display).toBe(frozen.confirmed); release();
+  await expect.poll(async () => Number(await page.locator('.last-exit').getAttribute('data-confirmed-server-now'))).toBeGreaterThan(frozen.confirmed);
+  expect(await page.locator('.last-exit').evaluate(el => Number((el as HTMLElement).dataset.confirmedServerNow) - Number((el as HTMLElement).dataset.displayServerNow))).toBeLessThanOrEqual(701);
+ } finally { release(); }
+ const id = await page.locator('.last-exit').getAttribute('data-session-id');
+ await page.evaluate(() => (window as any).moduleHarness.close()); await open(page, 'github-crash');
+ await expect(page.locator('.last-exit')).toHaveAttribute('data-session-id', id!);
+ await expect(page.locator('[data-cashout]')).toBeEnabled(); expect(sent).toHaveLength(1);
+});
 
 async function parallelModule(page: Page) {
  await fixture(page);

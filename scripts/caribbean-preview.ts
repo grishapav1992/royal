@@ -91,9 +91,9 @@ try {
   }
   if (!ready) throw Error('Local backend did not start: ' + log);
   await vite.listen();
-  await mkdir('artifacts/work/caribbean-final',{recursive:true});
-  await writeFile('artifacts/work/caribbean-final/owner.json',JSON.stringify({
-    owner:'caribbean-treasures-final',purpose:'Real Royal host and chat verification using disposable accounts and a temporary database',
+  await mkdir('artifacts/work/caribbean-reference-polish',{recursive:true});
+  await writeFile('artifacts/work/caribbean-reference-polish/owner.json',JSON.stringify({
+    owner:'caribbean-reference-polish',purpose:'Reference art, animation and audio verification in the real Royal host with chat using disposable accounts and a temporary database',
     cleanupCondition:'Stop the local stand; retain only final desktop/mobile images and verification summary',
     webPort,apiPort,pid:process.pid,backendPid:backend.pid,temporaryDatabase:database.directory,
   },null,2) + '\n');

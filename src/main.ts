@@ -1,3 +1,4 @@
+import './i18n/paymentMethodsEn';
 import { IndependentGameUI } from './modules/IndependentGameUI';
 import { prepareGameModule } from './modules/GameModulePreparation';
 import { gameModuleContract } from './modules/GameModuleCatalog';
