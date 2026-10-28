@@ -3,9 +3,9 @@ import {JackieAudio} from '../../games/jackie-chan/JackieAudio';
 import {JACKIE_RISKS,type JackieCostume,type JackieLocation,type JackieView} from '../../src/shared/jackieChan';
 import {penaltyPathQuote,type PenaltyRisk} from '../../src/shared/crLeo';
 const canvas=document.querySelector('canvas')!,audio=new JackieAudio();audio.enabled=false;const scene=new JackieScene(canvas,audio);
-type Config={costume?:JackieCostume;location?:JackieLocation;risk?:PenaltyRisk;status?:'playing'|'complete'|'lost';time?:number};
+type Config={costume?:JackieCostume;location?:JackieLocation;risk?:PenaltyRisk;status?:'playing'|'complete'|'lost';time?:number;fight?:number};
 function view(config:Config):JackieView{
-  const risk=config.risk??'safe',status=config.status??'playing',count=status==='complete'?5:1;
+  const risk=config.risk??'safe',status=config.status??'playing',count=(config.fight??(status==='complete'?4:0))+1;
   const shots=Array.from({length:count},(_,index)=>({index,goal:status!=='lost',finish:status==='lost'?'save' as const:'goal' as const,side:-1 as const,risk,zone:0}));
   return{version:1,costume:config.costume??'master',location:config.location??'restaurant',collectionUnits:90000,combat:{version:2,hero:'cr',risk,revision:count,status,shots,availableUnits:status==='lost'?'0':penaltyPathQuote('1000',shots.map(s=>s.risk))}};
 }

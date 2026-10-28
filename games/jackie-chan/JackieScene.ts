@@ -3,8 +3,10 @@ import type { PenaltyRisk } from '../../src/shared/crLeo';
 import { JackieAudio } from './JackieAudio';
 import { choreography, contactAt, chairReleaseAt, resultAt, fighterX, ease, type Furniture } from './JackieChoreography';
 import { extractSpriteFrames } from '../../src/ui/crLeoSprites';
+import { language } from '../../src/i18n/index';
+import { OPPONENTS, opponentLineup } from './JackieOpponents';
 
-export const JACKIE_SCENE_ASSETS = [...JACKIE_COSTUMES.flatMap(c => [`/assets/jackie-chan/${c.id}.webp`, `/assets/jackie-chan/${c.id}-furniture.webp`]), '/assets/jackie-chan/foes.webp', '/assets/jackie-chan/props.webp', ...JACKIE_LOCATIONS.map(c => `/assets/jackie-chan/${c.id}.webp`)];
+export const JACKIE_SCENE_ASSETS = [...JACKIE_COSTUMES.flatMap(c => [`/assets/jackie-chan/${c.id}.webp`, `/assets/jackie-chan/${c.id}-furniture.webp`]), ...Object.values(OPPONENTS).map(foe=>foe.asset), '/assets/jackie-chan/props.webp', ...JACKIE_LOCATIONS.map(c => `/assets/jackie-chan/${c.id}.webp`)];
 const cache = new Map<string, Promise<HTMLImageElement>>();
 function load(url:string) {
   let request=cache.get(url);
@@ -88,18 +90,25 @@ export class JackieScene {
       const released=!!combat&&state.elapsed>=chairReleaseAt();
       draw(props,0,w*(fighterX(0)-(released?.08:0))+heroH*.36,ground,heroH*.55,0,true);floor.push('chair');
     }
-    const foe=prepare(this.images.get('/assets/jackie-chan/foes.webp')!);
+    const lineup=opponentLineup(this.location,Math.max(0,(combat?.shots.length??1)-1),count);
+    const foeFrames:Array<{id:string;pose:number;left:number;right:number;top:number;bottom:number}>=[];
     const reach=(i:number)=>heroH*(i===0?.57:i===1?.68:.64);
     for(let i=count-1;i>=0;i--){
+      const opponent=lineup[i];
       const local=state.elapsed-contactAt(i),defeated=!!combat&&(won||i<count-1)&&(state.reveal||local>=.13),engaged=fighting&&i===state.fighter;
       const initial=w*(.64+i*.1),target=w* fighterX(i)+reach(i),approach=engaged?ease((local+.4)/.32):0;
-      let x=initial+(target-initial)*approach,y=ground-h*.012*i,pose=0,angle=0;
-      if(defeated){pose=local<.36&&state.busy?3:6;x=target+(initial-target)*ease((local-.13)/.46);if(local<.36&&state.busy)y-=Math.sin(ease((local-.13)/.23)*Math.PI)*h*.025;}
-      else if(engaged)pose=local<-.25?0:local<.15?7:won||i<count-1?2:1;
+      const backY=ground-h*.075*i;
+      let x=initial+(target-initial)*approach,y=backY+(ground-backY)*approach,pose=0,angle=0;
+      if(defeated){const retreat=ease((local-.13)/.46);pose=local<.36&&state.busy?3:6;x=target+(initial-target)*retreat;y=ground+(backY-ground)*retreat;if(local<.36&&state.busy)y-=Math.sin(ease((local-.13)/.23)*Math.PI)*h*.025;}
+      else if(engaged)pose=local<-.34?0:local<-.06?opponent.attack:local<.15?opponent.guard:won||i<count-1?2:opponent.attack;
       else if(combat&&!won&&state.reveal)pose=7;
       if(engaged&&local>=0&&local<.13&&(won||i<count-1)){pose=2;x+=Math.sin(local/.13*Math.PI)*w*.012;}
       if(wideVictory)x+=(w*(.22+i*.13)-x)*ease(state.victory/.2);
-      draw(foe,pose,x,y,heroH*(.94-i*.03),angle);
+      const foe=prepare(this.images.get(opponent.asset)!),height=heroH*(.94-i*.03)*opponent.scale;
+      const frame=foe.frames[pose],k=height/foe.height,left=frame.anchor*k,right=(frame.image.width-frame.anchor)*k;
+      x=Math.max(6+left,Math.min(w-6-right,x));
+      draw(foe,pose,x,y,height,angle);
+      foeFrames.push({id:opponent.id,pose,left:x-left,right:x+right,top:y-frame.image.height*k,bottom:y});
     }
     const sheet=prepare(this.images.get(`/assets/jackie-chan/${this.costume}${state.atlas==='furniture'?'-furniture':''}.webp`)!,state.atlas==='furniture');
     draw(sheet,state.pose,heroX,heroY,heroH,state.angle);
@@ -112,7 +121,8 @@ export class JackieScene {
       const t=state.elapsed-resultAt(count),fade=Math.min(1,t/.25,(2.65-t)/.4);c.save();c.globalAlpha=Math.max(0,fade)*.8;
       for(let i=0;i<18;i++){const x=w*(.08+(i*.173)% .84)+Math.sin(t*1.8+i)*9,y=h*((.04+i*.037+t*.17)% .76);c.save();c.translate(x,y);c.rotate(t+i*.7);c.fillStyle=i%3===0?'#aa3e2e':'#e8bb6b';c.fillRect(-2,-3,4,6);c.restore();}c.restore();
     }
-    Object.assign(this.canvas.dataset,{opponents:String(count),pose:String(state.pose),atlas:state.atlas,phase:state.phase,heldFurniture:state.furniture??'',floorFurniture:floor.join(','),reveal:String(state.reveal),celebrating:String(state.celebrating),sceneCostume:this.costume,sceneLocation:this.location});
+    Object.assign(this.canvas.dataset,{opponents:String(count),foes:lineup.map(foe=>foe.id).join(','),foeFrames:JSON.stringify(foeFrames),pose:String(state.pose),atlas:state.atlas,phase:state.phase,heldFurniture:state.furniture??'',floorFurniture:floor.join(','),reveal:String(state.reveal),celebrating:String(state.celebrating),sceneCostume:this.costume,sceneLocation:this.location});
+    this.canvas.setAttribute('aria-label',(language==='en'?'Illustrated kung fu fight scene. Opponents: ':'Рисованная сцена кунг-фу. Противники: ')+lineup.map(foe=>language==='en'?foe.en:foe.ru).join(', '));
   }
   destroy(){this.dead=true;this.resize.disconnect();this.images.clear();this.audio.cancel();}
 }

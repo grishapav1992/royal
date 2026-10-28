@@ -121,6 +121,58 @@
       "sha256": "f26be0ea36fd0c42602927ff334070df1118fde0b9454df7293c804908dc359a",
       "sourceGeneration": "exec-271af253-2e7b-40c6-9d64-51ef65189963.png",
       "prompt": "Use case: identity-preserve. Edit target: image 1, Jackie Chan eight-action transparent furniture and victory animation atlas. Reference image 2 supplies ONLY the costume. Change ONLY Jackie's clothing in ALL EIGHT cells to olive safari waistcoat over cream T-shirt, brown belted trousers, brown sturdy shoes. Keep the exact canvas dimensions, 4x2 cell grid, all eight poses, hand and foot positions, recognizable young Jackie face, hair, body shape, original hand drawn animation style, wooden chair/table/stool designs and their precise positions. Preserve hand grips on chairs, hands planted on the table and foot on the stool. Preserve two furniture-free celebration poses (raised fist and bow) in cells 7 and 8. Keep genuine transparent alpha, no background, shadows, letters, effects or grid lines. No pose, furniture, face or framing changes."
+    },
+    {
+      "asset": "public/assets/jackie-chan/foe-agile.webp",
+      "bytes": 361484,
+      "width": 1774,
+      "height": 887,
+      "hasAlpha": true,
+      "columns": 4,
+      "rows": 2,
+      "frames": 8,
+      "sha256": "3bb3057e45f9169857d32b05045916242b6af2d5af2149744c9777cf3f7355ff",
+      "sourceGeneration": "exec-f40b4c53-7f82-4968-a679-f1e64ac5aaf3.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: transparent 2D fighting-game sprite atlas, exact FOUR columns by TWO rows, eight full-body animation poses of ONE fictional adult opponent.\nReference image supplies ONLY the hand-inked and gouache animation-cel style, eight pose meanings, left-facing direction and mild three-quarter side-view camera. Create a clearly DIFFERENT character identity and silhouette, not a recolor of that man.\nCanvas: landscape 2048x1024, eight equal cells. Each complete actor must fit fully inside its OWN cell with generous genuinely transparent gutters. One coherent figure per cell; same recognizable fictional face, body shape, hair and clothing in every cell. The actor faces LEFT toward the protagonist.\nExact reading order: 1 upright ready guard; 2 leftward straight punch; 3 recoiling backwards to the right from a comic hit; 4 falling backwards with feet to the left and head to the right, still fully inside cell; 5 crouching low to duck; 6 side kick extending toward LEFT; 7 sitting on floor rubbing head, funny defeated expression; 8 blocking face with crossed forearms.\nStyle: detailed hand-drawn 1980s Hong Kong kung fu film comic, warm ivory rim light, crisp dark ink lines, painterly fabric, same game style as reference. Camera and full-body scale consistent, planted foot near bottom of each cell, crouching and sitting naturally lower.\nConstraints: true transparent alpha outside actor. No background, floor, ground plane, shadows, furniture, weapons, effects, text, labels, numbers, grid, borders, logos, blood or extra characters. Not photorealistic or 3D.\nCharacter: athletic adult Hong Kong woman in her early thirties, lean agile build, tan skin, a distinct narrow face with sharp cheekbones, dark hair in a short high ponytail with a burgundy tie. Teal-blue short-sleeved work jacket worn open over an ivory crewneck shirt, charcoal high-waisted loose kung fu trousers, plain white flat training shoes. Practical fully covered period-appropriate clothing, no cleavage, no bare midriff. Narrow shoulders and compact nimble stance, clearly different from the bulky male reference."
+    },
+    {
+      "asset": "public/assets/jackie-chan/foe-bruiser.webp",
+      "bytes": 424766,
+      "width": 1774,
+      "height": 887,
+      "hasAlpha": true,
+      "columns": 4,
+      "rows": 2,
+      "frames": 8,
+      "sha256": "ba1f9d67a7d5a4bd36c2cc15b3f1908187dc0e13a9be16643abf0869fb7b0546",
+      "sourceGeneration": "exec-4ae2221e-159c-4ed9-b528-305c9f329703.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: transparent 2D fighting-game sprite atlas, exact FOUR columns by TWO rows, eight full-body animation poses of ONE fictional adult opponent.\nReference image supplies ONLY the hand-inked and gouache animation-cel style, eight pose meanings, left-facing direction and mild three-quarter side-view camera. Create a clearly DIFFERENT character identity and silhouette, not a recolor of that man.\nCanvas: landscape 2048x1024, eight equal cells. Each complete actor must fit fully inside its OWN cell with generous genuinely transparent gutters. One coherent figure per cell; same recognizable fictional face, body shape, hair and clothing in every cell. The actor faces LEFT toward the protagonist.\nExact reading order: 1 upright ready guard; 2 leftward straight punch; 3 recoiling backwards to the right from a comic hit; 4 falling backwards with feet to the left and head to the right, still fully inside cell; 5 crouching low to duck; 6 side kick extending toward LEFT; 7 sitting on floor rubbing head, funny defeated expression; 8 blocking face with crossed forearms.\nStyle: detailed hand-drawn 1980s Hong Kong kung fu film comic, warm ivory rim light, crisp dark ink lines, painterly fabric, same game style as reference. Camera and full-body scale consistent, planted foot near bottom of each cell, crouching and sitting naturally lower.\nConstraints: true transparent alpha outside actor. No background, floor, ground plane, shadows, furniture, weapons, effects, text, labels, numbers, grid, borders, logos, blood or extra characters. Not photorealistic or 3D.\nCharacter: fictional adult Hong Kong dockworker in his forties, very broad heavy stocky build, bald shaved head, thick dark eyebrows, wide square jaw, small dark moustache, strong forearms. Ochre-yellow rolled-sleeve work shirt, charcoal suspenders, dark indigo work trousers, heavy brown leather work boots. Broad barrel chest and thick neck. Clearly much wider and heavier than the male reference, the same head and bald identity in all eight cells."
+    },
+    {
+      "asset": "public/assets/jackie-chan/foe-enforcer.webp",
+      "bytes": 348102,
+      "width": 1774,
+      "height": 887,
+      "hasAlpha": true,
+      "columns": 4,
+      "rows": 2,
+      "frames": 8,
+      "sha256": "bc564411f472d8e264d92d9d93e0f1bffa1b2d298ee6bc0b395c5a684cbba262",
+      "sourceGeneration": "exec-0887e88a-b6b2-4634-b970-f997be113472.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: transparent 2D fighting-game sprite atlas, exact FOUR columns by TWO rows, eight full-body animation poses of ONE fictional adult opponent.\nReference image supplies ONLY the hand-inked and gouache animation-cel style, eight pose meanings, left-facing direction and mild three-quarter side-view camera. Create a clearly DIFFERENT character identity and silhouette, not a recolor of that man.\nCanvas: landscape 2048x1024, eight equal cells. Each complete actor must fit fully inside its OWN cell with generous genuinely transparent gutters. One coherent figure per cell; same recognizable fictional face, body shape, hair and clothing in every cell. The actor faces LEFT toward the protagonist.\nExact reading order: 1 upright ready guard; 2 leftward straight punch; 3 recoiling backwards to the right from a comic hit; 4 falling backwards with feet to the left and head to the right, still fully inside cell; 5 crouching low to duck; 6 side kick extending toward LEFT; 7 sitting on floor rubbing head, funny defeated expression; 8 blocking face with crossed forearms.\nStyle: detailed hand-drawn 1980s Hong Kong kung fu film comic, warm ivory rim light, crisp dark ink lines, painterly fabric, same game style as reference. Camera and full-body scale consistent, planted foot near bottom of each cell, crouching and sitting naturally lower.\nConstraints: true transparent alpha outside actor. No background, floor, ground plane, shadows, furniture, weapons, effects, text, labels, numbers, grid, borders, logos, blood or extra characters. Not photorealistic or 3D.\nCharacter: fictional adult Hong Kong underworld bodyguard in his forties, tall lean angular build, long angular face and prominent nose, short neatly combed salt-and-pepper hair, clean-shaven. Dark slate/navy suit jacket over an open-collar white shirt, dark suit trousers, polished black shoes, narrow burgundy waist sash visible under jacket. No tie, sunglasses or weapons. Upright precise guard with long limbs. Clearly a different sophisticated older face and silhouette from the reference."
+    },
+    {
+      "asset": "public/assets/jackie-chan/foe-master.webp",
+      "bytes": 422424,
+      "width": 1774,
+      "height": 887,
+      "hasAlpha": true,
+      "columns": 4,
+      "rows": 2,
+      "frames": 8,
+      "sha256": "17ad59ab0f2dd25f0454601ad3337a6927040792c546028c0957f545b5678f0d",
+      "sourceGeneration": "exec-7daac9e2-d403-4acb-b04e-0a2e652ebf19.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: transparent 2D fighting-game sprite atlas, exact FOUR columns by TWO rows, eight full-body animation poses of ONE fictional adult opponent.\nReference image supplies ONLY the hand-inked and gouache animation-cel style, eight pose meanings, left-facing direction and mild three-quarter side-view camera. Create a clearly DIFFERENT character identity and silhouette, not a recolor of that man.\nCanvas: landscape 2048x1024, eight equal cells. Each complete actor must fit fully inside its OWN cell with generous genuinely transparent gutters. One coherent figure per cell; same recognizable fictional face, body shape, hair and clothing in every cell. The actor faces LEFT toward the protagonist.\nExact reading order: 1 upright ready guard; 2 leftward straight punch; 3 recoiling backwards to the right from a comic hit; 4 falling backwards with feet to the left and head to the right, still fully inside cell; 5 crouching low to duck; 6 side kick extending toward LEFT; 7 sitting on floor rubbing head, funny defeated expression; 8 blocking face with crossed forearms.\nStyle: detailed hand-drawn 1980s Hong Kong kung fu film comic, warm ivory rim light, crisp dark ink lines, painterly fabric, same game style as reference. Camera and full-body scale consistent, planted foot near bottom of each cell, crouching and sitting naturally lower.\nConstraints: true transparent alpha outside actor. No background, floor, ground plane, shadows, furniture, weapons, effects, text, labels, numbers, grid, borders, logos, blood or extra characters. Not photorealistic or 3D.\nCharacter: fictional elderly adult Hong Kong kung fu master in his late sixties, short lean wiry build, weathered narrow face, long white eyebrows, white hair pulled into a small topknot, short white pointed beard. Muted sage-green traditional kung fu tunic with cloth frog closures and an ochre sash, dark brown loose trousers, flat black cloth shoes with pale soles. Compact poised fighting stance and expressive comic reactions. Keep his age, white facial hair and traditional costume clearly consistent in every cell."
     }
   ]
 }

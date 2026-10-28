@@ -27,6 +27,30 @@ test('victory has fist and bow poses, while restored results and losses remain s
     const lost=await page.evaluate(config=>(window as any).jackieMotion.render(config),{risk,status:'lost',time:resultAt(count)+.6});expect(lost.phase).toBe('lost');expect(lost.celebrating).toBe('false');
   }
 });
+test('five distinct opponents rotate through the series and every rendered pose stays in the stage',async({page})=>{
+  const seen=new Set<string>();let frames=0;
+  for(const width of [1000,360]){
+    await page.setViewportSize({width,height:800});
+    const rows=await page.evaluate(({contact,end})=>{
+      const rows=[];
+      for(const location of ['restaurant','harbor','market'])for(let fight=0;fight<5;fight++)for(const[risk,count]of [['safe',1],['sharp',2],['extreme',3]]as const)for(const status of ['playing','lost']){
+        const times=[0,...contact.slice(0,count).flatMap(t=>[t-.2,t,t+.2,t+.45]),end[count-1]+.1];
+        for(const time of times){const frame=(window as any).jackieMotion.render({location,fight,risk,status,time});rows.push({location,fight,risk,count,status,time,width:document.querySelector('canvas')!.clientWidth,height:document.querySelector('canvas')!.clientHeight,...frame});}
+      }
+      return rows;
+    },{contact:[contactAt(0),contactAt(1),contactAt(2)],end:[resultAt(1),resultAt(2),resultAt(3)]});
+    for(const row of rows){
+      const ids=row.foes.split(',');expect(ids).toHaveLength(row.count);expect(new Set(ids).size).toBe(row.count);ids.forEach((id:string)=>seen.add(id));
+      for(const frame of JSON.parse(row.foeFrames)){expect(frame.left).toBeGreaterThanOrEqual(0);expect(frame.right).toBeLessThanOrEqual(row.width+.01);expect(frame.top).toBeGreaterThanOrEqual(0);expect(frame.bottom).toBeLessThanOrEqual(row.height);expect(frame.pose).toBeGreaterThanOrEqual(0);expect(frame.pose).toBeLessThan(8);}
+    }
+    frames+=rows.length;
+  }
+  expect([...seen].sort()).toEqual(['agile','bruiser','enforcer','master','street']);
+  const restored=await page.evaluate(()=>{const h=(window as any).jackieMotion,config={location:'harbor',fight:3,risk:'extreme',status:'lost'};return{played:h.render({...config,time:5}).foes,reopened:h.restore(config).foes};});expect(restored.played).toBe(restored.reopened);
+  await page.setViewportSize({width:1000,height:700});
+  for(const[location,fight,label]of [['restaurant',0,'restaurant'],['harbor',0,'harbor'],['market',1,'market']]as const){await page.evaluate(config=>(window as any).jackieMotion.render(config),{location,fight,risk:'extreme',time:0});await page.locator('canvas').screenshot({path:out+'/opponents-'+label+'.png'});}
+  await writeFile(out+'/opponents-summary.json',JSON.stringify({frames,viewports:[1000,360],identities:[...seen].sort(),reopenPreservedLineup:true,allPosesInStage:true},null,2));
+});
 test('furniture survives pickup, strike, return and group transition on wins and losses',async({page})=>{
   let frames=0;
   for(const width of [1000,360]){
