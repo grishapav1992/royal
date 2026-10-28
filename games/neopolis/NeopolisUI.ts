@@ -52,6 +52,7 @@ export class NeopolisUI {
   private get team(): Team { return this.busy && this.presentationTeam ? this.presentationTeam : this.view && !this.view.team.complete ? this.view.team : initialTeam(this.selected); }
   private get battle() { return this.busy ? this.presentationBattle : this.view?.battle ?? null; }
   private get legacy() { return this.view?.version === 1 && !!this.view.battle; }
+  private get stakeLocked() { return this.session?.state === 'active'; }
   private get collectionLocked() { return !!this.view && !this.view.team.complete; }
   private get balance() { return this.wallet.accountId === this.client.accountId ? (this.wallet.wallet?.balance ?? this.client.wallet?.balance ?? 0) : 0; }
   private number(n: number) { return n.toLocaleString(this.services.i18n.locale, { maximumFractionDigits: 2 }); }
@@ -81,7 +82,7 @@ export class NeopolisUI {
     this.draw(initialGrid);
     const options = { signal: this.life.signal };
     this.find('spin').addEventListener('click', () => { void this.spin(); }, options);
-    this.find<HTMLSelectElement>('bet').addEventListener('change', event => { if (!this.collectionLocked && !this.busy && !this.autoRunning) this.bet = Number((event.target as HTMLSelectElement).value); this.controls(); }, options);
+    this.find<HTMLSelectElement>('bet').addEventListener('change', event => { if (!this.stakeLocked && !this.blocked && !this.autoRunning && !this.client.pending) this.bet = Number((event.target as HTMLSelectElement).value); this.controls(); }, options);
     this.find<HTMLInputElement>('fast').addEventListener('change', event => { this.fast = (event.target as HTMLInputElement).checked; }, options);
     this.root.querySelectorAll<HTMLButtonElement>('[data-hero]').forEach(button => button.addEventListener('click', () => {
       if (this.collectionLocked || this.busy || this.autoRunning || this.client.pending) return;
@@ -145,7 +146,7 @@ export class NeopolisUI {
     const blocked = this.blocked;
     this.find<HTMLButtonElement>('spin').disabled = blocked || this.autoRunning;
     this.find('spin').querySelector('span')!.textContent = this.busy ? this.copy.waiting : pending?.gameId === NEOPOLIS_GAME ? this.copy.retry : free ? this.copy.freeSpin : this.copy.spin;
-    this.find<HTMLSelectElement>('bet').disabled = blocked || this.collectionLocked || this.autoRunning || !!pending;
+    this.find<HTMLSelectElement>('bet').disabled = blocked || this.stakeLocked || this.autoRunning || !!pending;
     this.find<HTMLSelectElement>('auto-count').disabled = blocked || this.autoRunning || !!pending;
     const auto = this.find<HTMLButtonElement>('auto');
     auto.disabled = !this.autoRunning && (blocked || !!pending || !!this.client.error);
@@ -156,7 +157,7 @@ export class NeopolisUI {
     this.find('balance').textContent = this.number(this.balance);
     this.root.querySelector('.np-prototype')!.textContent = this.copy.prototype;
     this.find('balance').parentElement!.querySelector('small')!.textContent = this.copy.coins;
-    this.find('lock').textContent = this.collectionLocked ? this.copy.cycleLock : '';
+    this.find('lock').textContent = this.stakeLocked ? this.copy.bonusStakeLock : this.collectionLocked ? this.copy.cycleLock : '';
     this.find('mode').textContent = free ? (this.legacy ? this.copy.legacyBattle : this.copy.bonus + ' · ' + this.copy[BOSSES[battle?.boss ?? 0].id]) : this.copy.base;
     this.find('remaining').textContent = free ? this.copy.remaining + ': ' + battle!.remaining : [this.copy.location0,this.copy.location1,this.copy.location2][this.scene];
     this.root.dataset.battle = String(free);
@@ -291,7 +292,7 @@ export class NeopolisUI {
     }
     if (frame.kind==='win') {
       const recorded=this.view!.history.at(-1)!;
-      const earned=Number(neopolisPointUnits(this.session!.stakeUnits,frame.points,this.view!.version));
+      const earned=Number(neopolisPointUnits(this.session!.stakeUnits,frame.points,this.view!.version,this.view!.origin));
       const total=this.roundBeforeUnits+Math.min(earned,Number(recorded.payoutUnits));
       await this.feedback.win(frame,this.presentationUnits,total,this.motionOptions(signal),this.winChain++);
       return;
@@ -403,7 +404,7 @@ export class NeopolisUI {
     this.find('dialog-body').innerHTML = '<span class="np-dialog-kicker">ROYAL ORIGINALS / NEOPOLIS</span><h2>' + c.rules + '</h2>'
       + [c.rulesBase,c.rulesTeam,c.rulesHeroes,this.legacy ? c.rulesLegacy : c.rulesBoss,c.rulesMoney,c.autoHelp].map(text => '<p>' + text + '</p>').join('')
       + '<h3>' + c.payouts + '</h3><table><thead><tr><th>' + c.symbol + '</th><th>3</th><th>4</th><th>5</th></tr></thead><tbody>'
-      + neopolisPaytable(this.view?.version ?? 3).map((pays, index) => '<tr><th>' + c[('symbol' + index) as keyof typeof c] + '</th>' + pays.map(pay => '<td>×' + this.number(pay) + '</td>').join('') + '</tr>').join('') + '</tbody></table>';
+      + neopolisPaytable(this.session?.state === 'active' ? this.view!.version : 4, this.session?.state === 'active' ? this.view!.origin : this.team).map((pays, index) => '<tr><th>' + c[('symbol' + index) as keyof typeof c] + '</th>' + pays.map(pay => '<td>×' + this.number(pay) + '</td>').join('') + '</tr>').join('') + '</tbody></table>';
     if (!this.dialog.open) this.dialog.showModal(); this.updatePause(); this.controls();
   }
   pause() { this.paused = true; this.updatePause(); this.controls(); }

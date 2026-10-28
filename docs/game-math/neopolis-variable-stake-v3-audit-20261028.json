@@ -1,0 +1,438 @@
+{
+  "kind": "candidate-diagnostic-not-qualification",
+  "rulesVersion": 3,
+  "startedAt": "2026-10-28T09:38:08.130Z",
+  "completedAt": "2026-10-28T09:40:41.278Z",
+  "sourceHashes": {
+    "src/shared/neopolisMath.ts": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
+    "src/shared/neopolisMathV3.ts": "e32db65f28cb4cac308d07154fb56f7816fc630c82a7548e1733ad34e0a91820",
+    "scripts/game-math/neopolis-variable-stake-audit.mjs": "e010b71ccc1caedfd200c9300f5767fcabab96b3f85126b5ae45129c86785a0d"
+  },
+  "cyclesPerSeed": 10000,
+  "seeds": [
+    11032791,
+    76320817
+  ],
+  "stakes": [
+    1000,
+    2000,
+    5000,
+    10000,
+    20000,
+    50000
+  ],
+  "target": 0.96,
+  "maxUpper95": 0.98,
+  "method": "Independent regenerative team cycles with all paid collection costs and complete bonus continuations. Integer units, per-spin rounding and per-round cap. Candidate policies ignore only the current cross-round stake lock; hero choice, progress, payouts and entropy are unchanged. Different policies share entropy and must not be pooled.",
+  "rows": [
+    {
+      "hero": "granite",
+      "choice": "fixed-1000",
+      "cycles": 20000,
+      "paidRounds": 2544718,
+      "freeSpins": 894365,
+      "rewardUnits": 2432469700,
+      "costUnits": 2544718000,
+      "rewardSquared": 370760771271132,
+      "rewardCost": 448669578015000,
+      "costSquared": 598582294000000,
+      "rtp": 0.9558896899381385,
+      "interval95": [
+        0.9499262453028118,
+        0.9618531345734652
+      ]
+    },
+    {
+      "hero": "granite",
+      "choice": "fixed-2000",
+      "cycles": 20000,
+      "paidRounds": 2544718,
+      "freeSpins": 894365,
+      "rewardUnits": 4866112106,
+      "costUnits": 5089436000,
+      "rewardSquared": 1483795677137774,
+      "rewardCost": 1795154611714000,
+      "costSquared": 2394329176000000,
+      "rtp": 0.9561201095759924,
+      "interval95": [
+        0.9501557995947243,
+        0.9620844195572604
+      ]
+    },
+    {
+      "hero": "granite",
+      "choice": "fixed-5000",
+      "cycles": 20000,
+      "paidRounds": 2544718,
+      "freeSpins": 894365,
+      "rewardUnits": 12166998335,
+      "costUnits": 12723590000,
+      "rewardSquared": 9276480232813464,
+      "rewardCost": 11221461079480000,
+      "costSquared": 14964557350000000,
+      "rtp": 0.9562551398622559,
+      "interval95": [
+        0.9502903232798248,
+        0.9622199564446869
+      ]
+    },
+    {
+      "hero": "granite",
+      "choice": "fixed-10000",
+      "cycles": 20000,
+      "paidRounds": 2544718,
+      "freeSpins": 894365,
+      "rewardUnits": 24335296682,
+      "costUnits": 25447180000,
+      "rewardSquared": 37110103904156190,
+      "rewardCost": 44888496664120000,
+      "costSquared": 59858229400000000,
+      "rtp": 0.9563062265445523,
+      "interval95": [
+        0.9503412247379055,
+        0.9622712283511992
+      ]
+    },
+    {
+      "hero": "granite",
+      "choice": "fixed-20000",
+      "cycles": 20000,
+      "paidRounds": 2544718,
+      "freeSpins": 894365,
+      "rewardUnits": 48671839278,
+      "costUnits": 50894360000,
+      "rewardSquared": 148448434838196200,
+      "rewardCost": 179559070292320000,
+      "costSquared": 239432917600000000,
+      "rtp": 0.9563307069388435,
+      "interval95": [
+        0.9503656161672855,
+        0.9622957977104014
+      ]
+    },
+    {
+      "hero": "granite",
+      "choice": "fixed-50000",
+      "cycles": 20000,
+      "paidRounds": 2544718,
+      "freeSpins": 894365,
+      "rewardUnits": 121679972511,
+      "costUnits": 127235900000,
+      "rewardSquared": 927808700441134700,
+      "rewardCost": 1122247958381610600,
+      "costSquared": 1496455735000000000,
+      "rtp": 0.9563336488443906,
+      "interval95": [
+        0.9503685463158601,
+        0.9622987513729212
+      ]
+    },
+    {
+      "hero": "granite",
+      "choice": "raise-when-ready",
+      "cycles": 20000,
+      "paidRounds": 2544718,
+      "freeSpins": 894365,
+      "rewardUnits": 116884020196,
+      "costUnits": 116502303000,
+      "rewardSquared": 871139899935154300,
+      "rewardCost": 1028920612840827400,
+      "costSquared": 1363508379780625000,
+      "rtp": 1.0032764776847374,
+      "interval95": [
+        0.9961581791756775,
+        1.0103947761937973
+      ]
+    },
+    {
+      "hero": "granite",
+      "choice": "lower-when-ready",
+      "cycles": 20000,
+      "paidRounds": 2544718,
+      "freeSpins": 894365,
+      "rewardUnits": 7228422015,
+      "costUnits": 13278315000,
+      "rewardSquared": 3385339070921651,
+      "rewardCost": 5303471479283000,
+      "costSquared": 10234495945000000,
+      "rtp": 0.5443779587244315,
+      "interval95": [
+        0.5406316202444209,
+        0.5481242972044421
+      ]
+    },
+    {
+      "hero": "impulse",
+      "choice": "fixed-1000",
+      "cycles": 20000,
+      "paidRounds": 2541324,
+      "freeSpins": 894785,
+      "rewardUnits": 2446883039,
+      "costUnits": 2541324000,
+      "rewardSquared": 371748111501863,
+      "rewardCost": 444581202005000,
+      "costSquared": 585713950000000,
+      "rtp": 0.9628378904067328,
+      "interval95": [
+        0.956932808218227,
+        0.9687429725952387
+      ]
+    },
+    {
+      "hero": "impulse",
+      "choice": "fixed-2000",
+      "cycles": 20000,
+      "paidRounds": 2541324,
+      "freeSpins": 894785,
+      "rewardUnits": 4894939292,
+      "costUnits": 5082648000,
+      "rewardSquared": 1487740845762700,
+      "rewardCost": 1778792491300000,
+      "costSquared": 2342855800000000,
+      "rtp": 0.9630687177235173,
+      "interval95": [
+        0.9571627777424212,
+        0.9689746577046134
+      ]
+    },
+    {
+      "hero": "impulse",
+      "choice": "fixed-5000",
+      "cycles": 20000,
+      "paidRounds": 2541324,
+      "freeSpins": 894785,
+      "rewardUnits": 12239068165,
+      "costUnits": 12706620000,
+      "rewardSquared": 9301124867628988,
+      "rewardCost": 11119168271265000,
+      "costSquared": 14642848750000000,
+      "rtp": 0.9632040751198981,
+      "interval95": [
+        0.957297634262538,
+        0.9691105159772583
+      ]
+    },
+    {
+      "hero": "impulse",
+      "choice": "fixed-10000",
+      "cycles": 20000,
+      "paidRounds": 2541324,
+      "freeSpins": 894785,
+      "rewardUnits": 24479436944,
+      "costUnits": 25413240000,
+      "rewardSquared": 37208661934358300,
+      "rewardCost": 44479280432950000,
+      "costSquared": 58571395000000000,
+      "rtp": 0.9632552537181406,
+      "interval95": [
+        0.9573486307577195,
+        0.9691618766785617
+      ]
+    },
+    {
+      "hero": "impulse",
+      "choice": "fixed-20000",
+      "cycles": 20000,
+      "paidRounds": 2541324,
+      "freeSpins": 894785,
+      "rewardUnits": 48960120269,
+      "costUnits": 50826480000,
+      "rewardSquared": 148842623207811000,
+      "rewardCost": 177922114870020000,
+      "costSquared": 234285580000000000,
+      "rtp": 0.9632797759947177,
+      "interval95": [
+        0.957373065116493,
+        0.9691864868729424
+      ]
+    },
+    {
+      "hero": "impulse",
+      "choice": "fixed-50000",
+      "cycles": 20000,
+      "paidRounds": 2541324,
+      "freeSpins": 894785,
+      "rewardUnits": 122400675828,
+      "costUnits": 127066200000,
+      "rewardSquared": 930272368295521000,
+      "rewardCost": 1112016932955202400,
+      "costSquared": 1464284875000000000,
+      "rtp": 0.9632827284360436,
+      "interval95": [
+        0.957376005902605,
+        0.9691894509694822
+      ]
+    },
+    {
+      "hero": "impulse",
+      "choice": "raise-when-ready",
+      "cycles": 20000,
+      "paidRounds": 2541324,
+      "freeSpins": 894785,
+      "rewardUnits": 116851574814,
+      "costUnits": 116377193000,
+      "rewardSquared": 864372799475851500,
+      "rewardCost": 1014615869470789100,
+      "costSquared": 1333249258210626800,
+      "rtp": 1.0040762438221036,
+      "interval95": [
+        0.9971114227271641,
+        1.0110410649170432
+      ]
+    },
+    {
+      "hero": "impulse",
+      "choice": "lower-when-ready",
+      "cycles": 20000,
+      "paidRounds": 2541324,
+      "freeSpins": 894785,
+      "rewardUnits": 7995984053,
+      "costUnits": 13230331000,
+      "rewardSquared": 4047391421625759,
+      "rewardCost": 5852013028564000,
+      "costSquared": 10120036685000000,
+      "rtp": 0.6043676498343088,
+      "interval95": [
+        0.6005320606100185,
+        0.6082032390585991
+      ]
+    },
+    {
+      "hero": "prism",
+      "choice": "fixed-1000",
+      "cycles": 20000,
+      "paidRounds": 2510704,
+      "freeSpins": 894820,
+      "rewardUnits": 2417979044,
+      "costUnits": 2510704000,
+      "rewardSquared": 365575302963320,
+      "rewardCost": 438923074752000,
+      "costSquared": 581451034000000,
+      "rtp": 0.9630681450302385,
+      "interval95": [
+        0.9570490479569865,
+        0.9690872421034905
+      ]
+    },
+    {
+      "hero": "prism",
+      "choice": "fixed-2000",
+      "cycles": 20000,
+      "paidRounds": 2510704,
+      "freeSpins": 894820,
+      "rewardUnits": 4837120204,
+      "costUnits": 5021408000,
+      "rewardSquared": 1463040148134656,
+      "rewardCost": 1756156273590000,
+      "costSquared": 2325804136000000,
+      "rtp": 0.9632995773297052,
+      "interval95": [
+        0.957279603284118,
+        0.9693195513752924
+      ]
+    },
+    {
+      "hero": "prism",
+      "choice": "fixed-5000",
+      "cycles": 20000,
+      "paidRounds": 2510704,
+      "freeSpins": 894820,
+      "rewardUnits": 12094501670,
+      "costUnits": 12553520000,
+      "rewardSquared": 9146705846681424,
+      "rewardCost": 10977674342075000,
+      "costSquared": 14536275850000000,
+      "rtp": 0.9634350899190028,
+      "interval95": [
+        0.9574146007642412,
+        0.9694555790737645
+      ]
+    },
+    {
+      "hero": "prism",
+      "choice": "fixed-10000",
+      "cycles": 20000,
+      "paidRounds": 2510704,
+      "freeSpins": 894820,
+      "rewardUnits": 24190291697,
+      "costUnits": 25107040000,
+      "rewardSquared": 36590930927417300,
+      "rewardCost": 43913281799810000,
+      "costSquared": 58145103400000000,
+      "rtp": 0.9634864044905334,
+      "interval95": [
+        0.9574657279446477,
+        0.969507081036419
+      ]
+    },
+    {
+      "hero": "prism",
+      "choice": "fixed-20000",
+      "cycles": 20000,
+      "paidRounds": 2510704,
+      "freeSpins": 894820,
+      "rewardUnits": 48381817513,
+      "costUnits": 50214080000,
+      "rewardSquared": 146371589733902050,
+      "rewardCost": 175658072706380000,
+      "costSquared": 232580413600000000,
+      "rtp": 0.9635109816410059,
+      "interval95": [
+        0.9574902143899142,
+        0.9695317488920976
+      ]
+    },
+    {
+      "hero": "prism",
+      "choice": "fixed-50000",
+      "cycles": 20000,
+      "paidRounds": 2510704,
+      "freeSpins": 894820,
+      "rewardUnits": 120954916080,
+      "costUnits": 125535200000,
+      "rewardSquared": 914828331636412300,
+      "rewardCost": 1097866637755904000,
+      "costSquared": 1453627585000000000,
+      "rtp": 0.9635139473231412,
+      "interval95": [
+        0.957493168057114,
+        0.9695347265891684
+      ]
+    },
+    {
+      "hero": "prism",
+      "choice": "raise-when-ready",
+      "cycles": 20000,
+      "paidRounds": 2510704,
+      "freeSpins": 894820,
+      "rewardUnits": 116168977232,
+      "costUnits": 114902151000,
+      "rewardSquared": 858923108671606300,
+      "rewardCost": 1006535630376506000,
+      "costSquared": 1324737452908634600,
+      "rtp": 1.0110252612416282,
+      "interval95": [
+        1.003833021498338,
+        1.0182175009849184
+      ]
+    },
+    {
+      "hero": "prism",
+      "choice": "lower-when-ready",
+      "cycles": 20000,
+      "paidRounds": 2510704,
+      "freeSpins": 894820,
+      "rewardUnits": 7203917892,
+      "costUnits": 13143753000,
+      "rewardSquared": 3402839420623832,
+      "rewardCost": 5208773792333000,
+      "costSquared": 9981020927000000,
+      "rtp": 0.5480868281684843,
+      "interval95": [
+        0.5441656631120969,
+        0.5520079932248717
+      ]
+    }
+  ],
+  "candidateWithinBudget": false
+}

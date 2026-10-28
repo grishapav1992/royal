@@ -69,6 +69,30 @@ test('Russian and English modules fit desktop and phone, with localized rules an
   expect(errors).toEqual([]);
 });
 
+test('stake changes between paid spins keep the team and hero, and restored play uses the new stake', async ({ page }) => {
+  await ready(page, 'ru');
+  await page.locator('[data-hero=prism]').click();
+  await page.locator('[data-np=bet]').selectOption('10');
+  const first = await spin(page);
+  expect(first.state).toBe('settled');
+  await expect(page.locator('[data-np=bet]')).toBeEnabled();
+  await expect(page.locator('[data-hero=granite]')).toBeDisabled();
+  await expect(page.locator('[data-np=lock]')).toContainText('Ставку можно менять');
+  await page.locator('[data-np=bet]').selectOption('500');
+  const raised = await spin(page);
+  expect(raised.stakeUnits).toBe('50000');
+  expect(raised.view.neopolis.origin).toEqual(first.view.neopolis.team);
+  expect(raised.view.neopolis.origin.starter).toBe('prism');
+  await page.evaluate(() => (window as any).neopolisPreview.close());
+  await page.evaluate(() => (window as any).neopolisPreview.open());
+  await expect(page.locator('[data-np=bet]')).toHaveValue('500');
+  await expect(page.locator('[data-np=bet]')).toBeEnabled();
+  await page.locator('[data-np=bet]').selectOption('20');
+  const lowered = await spin(page);
+  expect(lowered.stakeUnits).toBe('2000');
+  expect(lowered.view.neopolis.origin).toEqual(raised.view.neopolis.team);
+});
+
 test('autoplay runs exactly ten paid starts and keeps every accepted operation unique', async ({ page }) => {
   await ready(page, 'ru'); await page.locator('[data-np=fast]').check();
   const operations: any[] = [];
