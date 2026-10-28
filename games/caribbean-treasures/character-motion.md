@@ -1,5 +1,19 @@
 # Caribbean Treasures character and motion direction
 
+## Account collection in 1.5.0
+
+The new collection supersedes 1.4.0 free selection and browser-local persistence. The original captain is owned initially. All other captains unlock for 100 free profile points; only authenticated server-owned captains can become the persisted selection. Five lessons and two Moscow-day puzzles supply fixed, non-wagered rewards. No rule, bonus progress, outcome, cost or payout is affected. The common account database owns this progress; public art itself is not a DRM boundary.
+
+| Event | Meaning and presentation | Cancellation / verification |
+| --- | --- | --- |
+| Wrong educational answer | Plain text invites another solution; no reward sound or points | No wager, no penalty, no profile credit |
+| Confirmed new completion | Announce the exact 20 or 50 profile points from the server receipt; short existing UI click | Duplicate claim, restore and lost-response refresh do not replay reward feedback |
+| Confirmed new captain unlock | Owned card restores its color and receives a bounded 400 ms warm edge accent | Only a new server receipt animates; reduced motion suppresses the accent |
+| Select owned captain | Load the complete eight-state identity, persist through the common account API, close gallery | Failed confirmation restores or refreshes authoritative selection; account change and close invalidate stale callbacks |
+| Background profile restore meets a spin | Keep the currently visible identity through the confirmed paid presentation | Cancel pending art change at begin, defer restore until presentation finishes |
+
+The 400 ms accent and point amounts are product choices, not scientific thresholds. Free task rewards are profile points, distinct from USDT and paid-round celebrations. Technical checks cover wrong answers, semantic and request deduplication, concurrent unlocks, Moscow midnight, all ten permanent ownerships, account isolation, wallet invariance, accepted bonus recovery and actual host/chat desktop/mobile layout.
+
 User request: improve the game animation and give the established adult pirate captain varied movement and event reactions. Preserve the approved character identity, costume, harbor, host/chat layout and recorded soundtrack. No rule, probability, stake, cost or payout change.
 
 ## Additional crew in 1.4.0

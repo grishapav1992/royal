@@ -97,9 +97,3 @@ export function crewPortrait(id:CrewId,pose:CaptainPose='idle'){
  return '/assets/caribbean-treasures/'+(id===DEFAULT_CAPTAIN?CAPTAIN_POSES[pose]:'crew/'+id+'-'+pose)+'.webp';
 }
 export function crewThumbnail(id:CrewId){return '/assets/caribbean-treasures/crew/'+id+'-thumb.webp';}
-export function savedCaptain(account:string|null):CrewId{
- try{const id=account&&localStorage.getItem('royal.caribbean.captain:'+account);return id&&crewMember(id)?id as CrewId:DEFAULT_CAPTAIN;}catch{return DEFAULT_CAPTAIN;}
-}
-export function saveCaptain(account:string|null,id:CrewId){
- if(!account)return;try{localStorage.setItem('royal.caribbean.captain:'+account,id);}catch{/* Cosmetic preference remains usable when browser storage is unavailable. */}
-}
