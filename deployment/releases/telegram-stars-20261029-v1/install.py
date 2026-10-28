@@ -25,6 +25,8 @@ SCOPE = {'server/crypto/store.ts', 'server/payments/app.ts', 'server/payments/in
 CADDY = 'deployment/Caddyfile'
 PROVIDER = Path('/opt/royal-payment-secrets/provider.env')
 BLOCK = '    handle /api/telegram-stars/* {\n        reverse_proxy payments:2570\n    }\n'
+PROGRAM_ROOTS = ['/app/dist', '/app/dist-server', '/app/module-dist', '/app/node_modules',
+                 '/app/package.json', '/app/package-lock.json']
 
 
 def require(value, message):
@@ -53,6 +55,43 @@ def read(path):
 def save(path, value):
     path.write_text(json.dumps(value, indent=2) + '\n')
     path.chmod(0o600)
+
+
+def container_configuration(row):
+    # Docker can return mount points in different orders for the same container.
+    return {'config': row['Config'], 'host': row['HostConfig'],
+            'mounts': sorted(row['Mounts'], key=lambda item: item['Destination'])}
+
+
+def overlaps_program(path):
+    return any(path == root or path.startswith(root+'/') or root.startswith(path.rstrip('/')+'/')
+               for root in PROGRAM_ROOTS)
+
+
+def reusable_program(image, cached_image, mounts, changes):
+    return image == cached_image and not any(overlaps_program(row['Destination']) for row in mounts) \
+        and not any(overlaps_program(line[2:]) for line in changes)
+
+
+def program(name, row, node):
+    candidates = []
+    path = ROOT/'install-manifest.json'
+    if path.is_file():
+        before = read(path)['before']
+        candidates.append((before['services']['/'+name]['image'], before['programs'][name]))
+    path = ROOT/'build-runtime.json'
+    if name == 'royal-payments-1' and path.is_file():
+        built = read(path)
+        candidates.append((built['image'], built['program']))
+    for image, contents in candidates:
+        if row['Image'] != image:
+            continue
+        changes = run(['docker', 'diff', name]).splitlines()
+        if reusable_program(row['Image'], image, row['Mounts'], changes):
+            # A previously hashed immutable image plus a clean overlay gives identical bytes.
+            require(contents and all(len(value) == 64 for value in contents.values()), 'Incomplete image inventory')
+            return contents
+    return json.loads(run(['docker', 'exec', name, 'node', '-e', node]))
 
 
 @contextlib.contextmanager
@@ -84,15 +123,17 @@ def inventory(directory):
 def snapshot():
     rows = json.loads(run(['docker', 'inspect', *run(['docker', 'ps', '-q']).split()]))
     services = {}
+    containers = {}
     payment = None
     for row in rows:
+        containers[row['Name'].lstrip('/')] = row
         if row['HostConfig']['RestartPolicy']['Name'] in ['always', 'unless-stopped', 'on-failure']:
             services[row['Name']] = {'id': row['Id'], 'image': row['Image'], 'startedAt': row['State']['StartedAt'],
-                'configuration': digest(json.dumps({'config': row['Config'], 'host': row['HostConfig'],
-                    'mounts': row['Mounts']}, sort_keys=True).encode())}
+                'configuration': digest(json.dumps(container_configuration(row), sort_keys=True).encode())}
         if row['Name'] == '/royal-payments-1':
             payment = row
     require(payment is not None and payment['State'].get('Health', {}).get('Status') == 'healthy', 'Payment service unhealthy')
+    require(containers.get('royal-game-1', {}).get('State', {}).get('Health', {}).get('Status') == 'healthy', 'Game host unhealthy')
     env = dict(item.split('=', 1) for item in payment['Config']['Env'])
     require(all(env.get(key, 'false') == 'false' for key in
         ['NOWPAYMENTS_ENABLED', 'NOWPAYMENTS_GAMES_ENABLED', 'NOWPAYMENTS_WITHDRAWALS_ENABLED']), 'Real-money activation is outside this probe')
@@ -106,15 +147,20 @@ def snapshot():
     settings = {str(p): sha(p) for p in [PROVIDER, *[LIVE/name for name in
         ['.env', 'compose.yaml', 'compose.override.yaml', 'compose.payments.yaml', 'compose.mira.yaml',
          'compose.nowpayments-sandbox.yaml', 'deployment/SERVER.md']]] if p.is_file()}
+    for mount in payment['Mounts']:
+        if mount['Destination'].startswith('/run/secrets/'):
+            path = Path(mount['Source'])
+            require(path.is_file(), 'Payment secret mount changed type')
+            settings[str(path)] = sha(path)
     node = (ROOT/'runtime-inventory.cjs').read_text()
-    programs = {name: json.loads(run(['docker', 'exec', name, 'node', '-e', node]))
+    programs = {name: program(name, containers[name], node)
                 for name in ['royal-game-1', 'royal-payments-1']}
     versions = json.loads(run(['docker', 'exec', 'royal-payments-1', 'node', '-e',
         "const f=require('fs');console.log(JSON.stringify(Object.fromEntries(Object.entries(JSON.parse(f.readFileSync('node_modules/.package-lock.json')).packages).map(([k,v])=>[k,v.version]))))"]))
     return {'source': source, 'sourceLF': canonical, 'settings': settings, 'services': services, 'programs': programs,
         'dependencies': versions, 'prepared': run(['docker', 'image', 'inspect', 'royal-payments:latest', '--format', '{{.Id}}']),
         'compose': payment['Config']['Labels']['com.docker.compose.project.config_files'].split(','),
-        'paymentRuntime': {key: payment[key] for key in ['Mounts', 'HostConfig']},
+        'paymentRuntime': {'Mounts': container_configuration(payment)['mounts'], 'HostConfig': payment['HostConfig']},
         'paymentEnvironmentHash': digest(json.dumps({key: value for key, value in env.items()
             if not key.startswith('TELEGRAM_')}, sort_keys=True).encode()),
         'paymentProcessHash': digest(json.dumps({key: payment['Config'].get(key) for key in
@@ -263,8 +309,9 @@ def release(private):
     expected_program = {**old['programs']['royal-payments-1'], **manifest['dependencyFiles'], 'dist-server/payments.js': sha(binary)}
     if updates:
         expected_program['node_modules/.package-lock.json'] = sha(context/'node_modules'/'.package-lock.json')
-    actual = json.loads(run(['docker', 'run', '--rm', '--network=none', '--entrypoint', 'node', built, '-e', node]))
+    actual = json.loads(run(['docker', 'run', '--rm', '--network=none', '--read-only', '--entrypoint', 'node', built, '-e', node]))
     require(actual == expected_program, 'Candidate changes exceed payments.js')
+    save(ROOT/'build-runtime.json', {'image': built, 'program': actual})
     require(snapshot() == old, 'Production changed during image preparation')
     capacity()
     spec = importlib.util.spec_from_file_location('financial_gate', ROOT/'financial_gate.py')
