@@ -1,0 +1,146 @@
+{
+  "format": 1,
+  "date": "2026-10-29",
+  "sourceCommit": "75b24710289f78797ca91a8000712d4705118cac",
+  "baseline": "a1741cebd6d56b2f030d346951167b9b4d2c31a5",
+  "gamePackage": "1.5.0-b6716c556288",
+  "contracts": {
+    "host": 1,
+    "rules": 1,
+    "progress": 1,
+    "collection": 1
+  },
+  "scope": "Genuinely non-wagered account-backed cosmetic crew collection",
+  "policy": "docs/concepts/caribbean-treasures/collection-policy.md",
+  "economy": {
+    "initialCaptain": "isabella",
+    "additionalCaptains": 10,
+    "unlockCost": 100,
+    "oneTimeLessons": 5,
+    "lessonReward": 20,
+    "dailyChallenges": 2,
+    "dailyReward": 50,
+    "resetTimezone": "Europe/Moscow",
+    "resetTime": "00:00",
+    "monetaryConversion": false
+  },
+  "paidMathChanged": false,
+  "walletChanged": false,
+  "paidRoundProgressChanged": false,
+  "audioAssetsChanged": false,
+  "productionChanged": false,
+  "checks": {
+    "applicationBuild": {
+      "format": 1,
+      "startedAt": "2026-10-28T20:49:06.148Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 3556
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 11943
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 6703
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 8401
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 112
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 28
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 31
+        }
+      ],
+      "passed": true,
+      "durationMs": 30774
+    },
+    "qualifiedProfiles": 12,
+    "legacyProfilesUnchanged": 114,
+    "gameMathWalletCompatibilityPassed": 48,
+    "accountAndCollectionPassed": 11,
+    "resourceAndModuleIntegrityPassed": 10,
+    "modulePackages": 118,
+    "browser": {
+      "startTime": "2026-10-28T20:59:45.068Z",
+      "duration": 180680.962,
+      "expected": 8,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "newCaptainReactionCases": 60.0,
+    "profileSurvivesBrowserStorageClearing": true,
+    "allTenUnlocksAndMoscowReset": true,
+    "duplicateAndConcurrentClaimsBounded": true,
+    "lockedSelectionAndForgedCostsRejected": true,
+    "accountAndOriginGuarded": true,
+    "walletUnaffectedByCollection": true,
+    "acceptedBonusSurvivesLostUnlockResponse": true,
+    "apiOutageLeavesSlotPlayable": true,
+    "newSourcesCreated": 50,
+    "ownedAudioSourcesAfterClose": 0,
+    "hostAudioOutsideModuleMeasurement": true,
+    "maximumAudioDeviationMs": 18.456160995496248,
+    "projectAudioTargetMs": 50,
+    "viewports": [
+      "1440x1000",
+      "1280x720",
+      "1024x768",
+      "900x650",
+      "800x600",
+      "640x480",
+      "500x760",
+      "390x844",
+      "342x700",
+      "844x390",
+      "342x245"
+    ],
+    "chatVisible": true
+  },
+  "localRuntime": {
+    "candidateVerified": true,
+    "originalDatabasePreserved": true,
+    "accountWalletJournalSnapshotUnchanged": true,
+    "previewKeptRunning": true
+  },
+  "broaderHistoricalSuite": {
+    "passed": 15,
+    "failed": 6,
+    "includesParentFailure": true,
+    "baselineSourceComparisonVerified": true,
+    "findings": [
+      "Tracked tests import server/accountEvents.ts and server/accountLeases.ts which are absent in the baseline",
+      "Baseline AccountStore.events is EventEmitter while historical tests expect events.connect",
+      "An unchanged legacy direct-deposit test expects a pending operation, but baseline /api/demo-wallet/operations rejects new deposits with 410"
+    ],
+    "modifiedToBypassFailures": false
+  },
+  "limits": [
+    "No production publication; common backend must precede independent client publication",
+    "Mobile display tested with Chrome viewport, not a physical phone",
+    "Full historical repository test suite is not claimed green",
+    "Audio timing is browser scheduling relative to estimated output, not physical speaker latency",
+    "Public character art is not a DRM boundary"
+  ],
+  "activation": "Open http://127.0.0.1:5234/ to reconnect after the local API update, open Caribbean Treasures, then the portrait and free challenges"
+}

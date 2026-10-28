@@ -12,7 +12,9 @@ import { caribbeanIcon } from './icons';
 import {CaribbeanAudio,type CaribbeanCue} from './CaribbeanAudio';
 import {caribbeanOutcome,caribbeanBeforeReveal} from './presentation';
 import {CaribbeanCaptain} from './CaribbeanCaptain';
-import {CARIBBEAN_CREW,DEFAULT_CAPTAIN,crewMember,crewThumbnail,savedCaptain,saveCaptain,type CrewId} from './CaribbeanCrew';
+import {CARIBBEAN_CREW,DEFAULT_CAPTAIN,crewMember,crewThumbnail,type CrewId} from './CaribbeanCrew';
+import {crewCollection,crewErrors} from './CaribbeanCollection';
+import type {CrewCollection,CrewRequest} from '../../src/shared/caribbeanCrew';
 import {CaribbeanMotion} from './CaribbeanMotion';
 
 const escape = (value: string) => value.replace(/[&<>"']/g, character => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]!));
@@ -28,6 +30,17 @@ export class CaribbeanUI {
   private crewDialog=false;
   private choosingCaptain=false;
   private crewRequest=0;
+  private crewProfile?:CrewCollection;
+  private crewAbort=new AbortController();
+  private crewLoad=0;
+  private crewLoading=false;
+  private crewBusy=false;
+  private crewTab:'crew'|'tasks'='crew';
+  private crewMessage='';
+  private crewSuccess=false;
+  private crewPendingCaptain?:CrewId;
+  private crewNewlyUnlocked='';
+  private crewFeedback='';
   private disposed = false;
   private lines: CaribbeanLineCount = 20;
   private lineStake = '100';
@@ -83,7 +96,14 @@ export class CaribbeanUI {
     this.element<HTMLSelectElement>('[data-ct-lines]').innerHTML = CARIBBEAN_LINE_COUNTS.map(lines => '<option>' + lines + '</option>').join('');
     this.element<HTMLSelectElement>('[data-ct-stake]').innerHTML = CARIBBEAN_LINE_STAKES.map(stake => '<option value="' + stake + '">' + this.money(stake) + '</option>').join('');
     this.dialog = new SlotDialog(this.element('.ct-modal'),this.element('.ct-backdrop'),'data-ct-modal',
-      action => { if(action.startsWith('crew-')){void this.chooseCaptain(action.slice(5));return;}this.closeDialog(); if (action === 'buy-raid' || action === 'buy-flagship') void this.start(action); },
+      action => {
+        if(action==='crew-tab'||action==='tasks-tab'){this.crewTab=action==='crew-tab'?'crew':'tasks';this.renderCrewDialog();this.dialog.focus();return;}
+        if(action==='crew-refresh'){this.crewMessage='';void this.loadCrew();return;}
+        if(action.startsWith('crew-')){void this.chooseCaptain(action.slice(5));return;}
+        if(action.startsWith('unlock-')){void this.crewAction({id:crypto.randomUUID(),action:'unlock',characterId:action.slice(7)});return;}
+        if(action.startsWith('answer:')){const [,challengeId,answer]=action.split(':');if(this.crewProfile)void this.crewAction({id:crypto.randomUUID(),action:'answer',challengeId,answer,day:this.crewProfile.day});return;}
+        this.closeDialog(); if (action === 'buy-raid' || action === 'buy-flagship') void this.start(action);
+      },
       () => this.closeDialog());
     this.root.addEventListener('click',event => {
       if (!(event.target instanceof Element)) return;
@@ -91,7 +111,7 @@ export class CaribbeanUI {
       if (!button || button.disabled) return;
       const action = button.dataset.ctAction;
       if (action === 'info' || action === 'history') this.openDialog(action);
-      else if (action === 'crew') {if(!this.blocked)this.openDialog('crew');}
+      else if (action === 'crew') {if(!this.blocked){this.openDialog('crew');void this.loadCrew();}}
       else if (action === 'wallet') window.dispatchEvent(new Event('royal-open-wallet'));
       else if (action === 'skip') this.stopPresentation();
       else if (action === 'sound') { const p=this.services.gameAudio.getPreferences();this.services.gameAudio.setMuted(!p.muted);void this.audio.enter(); }
@@ -137,12 +157,9 @@ export class CaribbeanUI {
     if (this.disposed) return;
     if (this.account !== this.client.accountId) {
       this.stopPresentation();this.captain.reset(true);this.account = this.client.accountId; this.sessionKey = ''; this.lines = 20; this.lineStake = '100';this.actionError='';this.lastBalance=undefined; this.closeDialog();
-      const account=this.account,request=this.crewRequest;
-      void this.captain.select(savedCaptain(account)).then(async selected=>{
-        if(this.disposed||account!==this.account||request!==this.crewRequest)return;
-        if(!selected)await this.captain.select(DEFAULT_CAPTAIN);
-        if(!this.disposed&&account===this.account&&request===this.crewRequest)this.render();
-      });
+      this.crewAbort.abort();this.crewAbort=new AbortController();this.crewLoad++;this.crewProfile=undefined;this.crewMessage='';this.crewBusy=false;this.crewPendingCaptain=undefined;
+      void this.captain.select(DEFAULT_CAPTAIN).then(()=>{if(!this.disposed)this.render();});
+      void this.loadCrew();
     }
     if(this.wallet?.balance!==this.lastBalance){this.actionError='';this.lastBalance=this.wallet?.balance;}
     const session = this.session, view = this.view, key = session && view ? session.id + ':' + view.revision : '';
@@ -158,6 +175,7 @@ export class CaribbeanUI {
     this.root.dataset.ctPhase=this.visualPhase;this.root.dataset.motion=this.reduced?'reduced':'full';
     this.root.dataset.outcome=view?.phase==='complete'?caribbeanOutcome(view):'';
     this.captain?.context(!this.paused&&!document.hidden&&!this.dialogKind,this.reduced,this.english);
+    this.restoreCrewCaptain();
     const crewButton=this.element<HTMLButtonElement>('[data-ct-action=crew]'),member=crewMember(this.captain.state().character)!;
     crewButton.disabled=this.blocked;
     crewButton.setAttribute('aria-label',this.text('Выбрать пиратку. Сейчас: ','Choose a pirate. Current: ')+(this.english?member.en:member.ru));
@@ -346,10 +364,8 @@ export class CaribbeanUI {
     panel.classList.toggle('ct-crew-modal',this.crewDialog);
     let body: string;
     if(kind==='crew'){
-      const selected=this.captain.state().character;
-      body='<div class="ct-crew-heading"><h3>'+this.text('Выбери свою пиратку','Choose your pirate')+'</h3><button type="button" class="ct-crew-close" data-ct-modal="close" aria-label="'+this.text('Закрыть выбор пиратки','Close pirate selection')+'">×</button></div><p class="ct-crew-note">'+this.text('У каждой свой характер и стиль. Все образы доступны бесплатно.','Each has her own character and style. Every look is available for free.')+'</p><div class="ct-crew-grid">'+CARIBBEAN_CREW.map(member=>
-        '<button type="button" class="ct-crew-card" data-crew-id="'+member.id+'" data-ct-modal="crew-'+member.id+'" aria-pressed="'+String(selected===member.id)+'" style="--crew-accent:'+member.accent+'"><span class="ct-crew-image"><img src="'+crewThumbnail(member.id)+'" alt="" loading="lazy" decoding="async"></span><strong>'+escape(this.english?member.en:member.ru)+'</strong><small>'+escape(this.english?member.titleEn:member.titleRu)+'</small><span class="ct-crew-selected">'+this.text('Выбрана','Selected')+'</span></button>'
-      ).join('')+'</div><p class="ct-crew-status" role="status" aria-live="polite"></p>';
+      this.crewMessage='';this.crewSuccess=false;
+      body=this.crewBody();
     }else if (kind === 'info') {
       body = '<h3>' + this.text('Правила и выплаты','Rules and payouts') + '</h3><p>' + this.text('6 барабанов, 4 ряда. От 3 одинаковых подряд слева направо. На одной линии оплачивается самая длинная цепочка.','6 reels, 4 rows. Match 3 or more identical symbols from the left. Only the longest run pays on each line.') + '</p>'
         + '<table><thead><tr><th>' + this.text('Символ','Symbol') + '</th><th>3</th><th>4</th><th>5</th><th>6</th></tr></thead><tbody>' + CARIBBEAN_SYMBOLS.map(symbol => '<tr><th>' + this.symbolName(symbol.id) + '</th>' + symbol.pays.map(pay => '<td>×' + pay + '</td>').join('') + '</tr>').join('') + '</tbody></table>'
@@ -376,18 +392,93 @@ export class CaribbeanUI {
     panel.setAttribute('aria-label',this.crewDialog?this.text('Выбор пиратки','Pirate selection'):this.text('Информация об игре','Game information'));
     this.dialog.begin(this.dialogKind); this.render(); this.dialog.focus();
   }
+  private crewError(error:unknown){
+    const code=error instanceof Error?error.message:'';return crewErrors[code]?.[this.english?1:0]??this.text('Не удалось подтвердить изменение коллекции. Обнови её состояние.','The collection change could not be confirmed. Refresh its status.');
+  }
+  private crewBody(){
+    const profile=this.crewProfile,busy=this.crewBusy||this.choosingCaptain,word=(v:{ru:string;en:string})=>escape(this.english?v.en:v.ru);
+    let body='<div class="ct-crew-heading"><h3>'+this.text('Собрать команду','Gather the crew')+'</h3><button type="button" class="ct-crew-refresh" data-ct-modal="crew-refresh" aria-label="'+this.text('Обновить коллекцию','Refresh collection')+'"'+(busy||this.crewLoading?' disabled':'')+'>↻</button><button type="button" class="ct-crew-close" data-ct-modal="close" aria-label="'+this.text('Закрыть выбор пиратки','Close pirate selection')+'">×</button></div>';
+    body+='<div class="ct-crew-summary"><strong data-ct-crew-tokens>'+this.text('Жетоны команды: ','Crew tokens: ')+(profile?.tokens??'...')+'</strong><span>'+this.text('Открытие героини: 100 жетонов','Unlock a captain: 100 tokens')+'</span></div><p class="ct-crew-note">'+this.text('Жетоны дают бесплатные задания. Их можно потратить на открытие любой пиратки.','Free challenges award tokens. Spend them to unlock any pirate.')+'</p>';
+    body+='<div class="ct-crew-tabs"><button type="button" data-ct-modal="crew-tab" aria-pressed="'+String(this.crewTab==='crew')+'">'+this.text('Команда','Crew')+'</button><button type="button" data-ct-modal="tasks-tab" aria-pressed="'+String(this.crewTab==='tasks')+'">'+this.text('Бесплатные задания','Free challenges')+'</button></div>';
+    if(!profile)body+='<p>'+this.text(this.crewLoading?'Загружаем коллекцию...':'Коллекция пока недоступна.',this.crewLoading?'Loading collection...':'The collection is unavailable right now.')+'</p>';
+    else if(this.crewTab==='crew')body+='<div class="ct-crew-grid">'+CARIBBEAN_CREW.map(member=>{
+      const owned=profile.owned.includes(member.id),selected=profile.selected===member.id,canUnlock=profile.tokens>=profile.unlockCost;
+      const action=owned?'crew-'+member.id:canUnlock?'unlock-'+member.id:'tasks-tab';
+      const label=owned?this.text(selected?'Выбрана':'Выбрать',selected?'Selected':'Select'):this.text(canUnlock?'Открыть · 100':'Жетоны: '+profile.tokens+' / 100',canUnlock?'Unlock · 100':'Tokens: '+profile.tokens+' / 100');
+      return '<button type="button" class="ct-crew-card'+(this.crewNewlyUnlocked===member.id?' ct-crew-unlocked':'')+'" data-crew-id="'+member.id+'" data-owned="'+String(owned)+'" data-ct-modal="'+action+'" aria-pressed="'+String(selected)+'"'+(busy?' disabled':'')+' style="--crew-accent:'+member.accent+'"><span class="ct-crew-image"><img src="'+crewThumbnail(member.id)+'" alt="" loading="lazy" decoding="async"></span><strong>'+escape(this.english?member.en:member.ru)+'</strong><small>'+escape(this.english?member.titleEn:member.titleRu)+'</small><span class="ct-crew-selected">'+this.text(owned?'Открыта':'Закрыта',owned?'Unlocked':'Locked')+'</span><span class="ct-crew-card-action">'+label+'</span>'+(!owned?'<progress max="100" value="'+Math.min(profile.tokens,100)+'" aria-label="'+this.text('Прогресс открытия','Unlock progress')+'"></progress>':'')+'</button>';
+    }).join('')+'</div>';
+    else{
+      body+='<p class="ct-crew-note">'+this.text('Учебные задания выполняются один раз. Два задания дня обновляются в 00:00 по Москве. Все задания бесплатны, вращения не требуются.','Lessons can be completed once. Two daily challenges reset at midnight Moscow time. All challenges are free and require no spins.')+'</p><div class="ct-crew-challenges">';
+      for(const challenge of profile.challenges){
+        body+='<section class="ct-crew-challenge" tabindex="-1" data-challenge-id="'+escape(challenge.id)+'" data-completed="'+String(challenge.completed)+'"><h4>'+word(challenge.title)+' <small>+'+challenge.reward+' '+this.text('жетонов','tokens')+'</small></h4>';
+        if(challenge.completed)body+='<p class="ct-crew-done">'+this.text('Выполнено, награда получена','Complete, reward received')+'</p>';
+        else body+='<p>'+word(challenge.question)+'</p><div class="ct-crew-answers">'+challenge.options.map(option=>'<button type="button" data-ct-modal="answer:'+escape(challenge.id)+':'+escape(option.id)+'"'+(busy?' disabled':'')+'>'+word(option.text)+'</button>').join('')+'</div>';
+        if(this.crewFeedback===challenge.id&&this.crewMessage)body+='<p class="ct-crew-feedback" role="status" data-positive="'+String(this.crewSuccess)+'">'+escape(this.crewMessage)+'</p>';
+        body+='</section>';
+      }
+      body+='</div>';
+    }
+    body+='<p class="ct-crew-status" role="status" aria-live="polite" data-positive="'+String(this.crewSuccess)+'">'+escape(this.crewTab==='tasks'&&this.crewFeedback?'':this.crewMessage)+'</p>';
+    return body;
+  }
+  private renderCrewDialog(){
+    if(!this.crewDialog||this.disposed)return;
+    const panel=this.element('.ct-modal'),top=panel.scrollTop,active=document.activeElement instanceof HTMLElement?document.activeElement:undefined,focus=active?.dataset.ctModal,challenge=active?.closest<HTMLElement>('[data-challenge-id]')?.dataset.challengeId;
+    panel.innerHTML=this.crewBody()+'<button type="button" class="ct-modal-close" data-ct-modal="close">'+this.text('Закрыть','Close')+'</button>';panel.scrollTop=top;
+    const target=Array.from(panel.querySelectorAll<HTMLButtonElement>('[data-ct-modal]')).find(button=>button.dataset.ctModal===focus&&!button.disabled);
+    if(target)target.focus({preventScroll:true});else if(!panel.contains(document.activeElement)){
+      const next=Array.from(panel.querySelectorAll<HTMLElement>('[data-challenge-id]')).find(section=>section.dataset.challengeId===challenge)??panel.querySelector<HTMLElement>('.ct-crew-close');next?.focus({preventScroll:true});
+    }
+    this.crewNewlyUnlocked='';
+  }
+  private async loadCrew(){
+    if(!this.account||this.disposed||this.crewBusy)return;
+    const account=this.account,load=++this.crewLoad;this.crewLoading=true;this.renderCrewDialog();
+    try{
+      const profile=await crewCollection(account,this.crewAbort.signal);
+      if(this.disposed||account!==this.account||load!==this.crewLoad)return;
+      this.crewProfile=profile;this.crewPendingCaptain=profile.selected;
+    }catch(error){if(!this.disposed&&account===this.account&&load===this.crewLoad){this.crewMessage=this.crewError(error);this.crewSuccess=false;}}
+    finally{if(!this.disposed&&account===this.account&&load===this.crewLoad){this.crewLoading=false;this.renderCrewDialog();this.render();}}
+  }
+  private restoreCrewCaptain(){
+    const desired=this.crewPendingCaptain;
+    if(!desired||this.presenting||this.choosingCaptain||this.captain.state().loading)return;
+    this.crewPendingCaptain=undefined;const account=this.account,request=this.crewRequest;
+    void this.captain.select(desired).then(async selected=>{
+      if(this.disposed||account!==this.account||request!==this.crewRequest)return;
+      if(!selected&&this.presenting){this.crewPendingCaptain=desired;return;}
+      if(!selected)await this.captain.select(DEFAULT_CAPTAIN);
+      if(!this.disposed&&account===this.account&&request===this.crewRequest)this.render();
+    });
+  }
+  private async crewAction(request:CrewRequest){
+    if(!this.account||!this.crewProfile||this.crewBusy||this.choosingCaptain)return;
+    const account=this.account;this.crewLoad++;this.crewLoading=false;this.crewBusy=true;this.crewMessage='';this.crewSuccess=false;this.crewFeedback=request.action==='answer'?request.challengeId:'';this.renderCrewDialog();
+    try{
+      const profile=await crewCollection(account,this.crewAbort.signal,request);
+      if(this.disposed||account!==this.account)return;
+      this.crewProfile=profile;this.crewSuccess=true;
+      if(profile.receipt?.unlocked){this.crewNewlyUnlocked=profile.receipt.unlocked;this.crewMessage=this.text('Героиня открыта навсегда. Теперь её можно выбрать.','The captain is permanently unlocked. You can now select her.');}
+      else if(profile.receipt?.reward)this.crewMessage=this.text('Задание выполнено: +','Challenge complete: +')+profile.receipt.reward+' '+this.text('жетонов команды.','crew tokens.');
+      else this.crewMessage=this.text('Коллекция обновлена.','Collection updated.');
+      this.audio.cue('click');
+    }catch(error){if(!this.disposed&&account===this.account)this.crewMessage=this.crewError(error);}
+    finally{if(!this.disposed&&account===this.account){this.crewBusy=false;this.renderCrewDialog();this.render();}}
+  }
   private async chooseCaptain(id:string){
-    if(!this.crewDialog||this.choosingCaptain||!crewMember(id))return;
-    this.choosingCaptain=true;const request=++this.crewRequest,account=this.account,panel=this.element('.ct-modal');
+    if(!this.crewDialog||this.choosingCaptain||this.crewBusy||!crewMember(id)||!this.crewProfile?.owned.includes(id as CrewId)||!this.account)return;
+    this.choosingCaptain=true;this.crewLoad++;this.crewLoading=false;this.crewPendingCaptain=undefined;const request=++this.crewRequest,account=this.account,previous=this.crewProfile.selected,panel=this.element('.ct-modal');
     panel.querySelectorAll<HTMLButtonElement>('[data-crew-id]').forEach(button=>{button.disabled=true;});
     this.element('.ct-crew-status').textContent=this.text('Готовим образ...','Preparing the look...');
     const selected=await this.captain.select(id);
     if(this.disposed||account!==this.account||request!==this.crewRequest)return;
-    this.choosingCaptain=false;
-    if(selected){saveCaptain(account,id as CrewId);this.closeDialog();}
+    if(selected){
+      try{this.crewProfile=await crewCollection(account,this.crewAbort.signal,{id:crypto.randomUUID(),action:'select',characterId:id});if(this.disposed||account!==this.account||request!==this.crewRequest)return;this.choosingCaptain=false;this.closeDialog();}
+      catch(error){if(this.disposed||account!==this.account||request!==this.crewRequest)return;this.choosingCaptain=false;this.crewMessage=this.crewError(error);this.crewSuccess=false;await this.captain.select(previous);await this.loadCrew();}
+    }
     else if(this.crewDialog){
-      panel.querySelectorAll<HTMLButtonElement>('[data-crew-id]').forEach(button=>{button.disabled=false;});
-      this.element('.ct-crew-status').textContent=this.text('Не удалось загрузить образ. Попробуй ещё раз.','The look could not load. Please try again.');
+      this.choosingCaptain=false;this.crewMessage=this.text('Не удалось загрузить образ. Попробуй ещё раз.','The look could not load. Please try again.');this.renderCrewDialog();
     }
     this.render();
   }
@@ -398,10 +489,10 @@ export class CaribbeanUI {
   getState() {
     return {gameId:CARIBBEAN_GAME,phase:this.view?.phase ?? 'ready',sessionId:this.session?.id ?? null,
       revision:this.view?.revision ?? 0,lines:this.lines,lineStakeUnits:this.lineStake,pendingId:this.client.pending?.id ?? null,
-      presenting:this.presenting,visualPhase:this.visualPhase,audio:this.audio.state(),captain:this.captain.state(),visuals:this.visuals.state(),accents:[...this.accents]};
+      presenting:this.presenting,visualPhase:this.visualPhase,audio:this.audio.state(),captain:this.captain.state(),collection:this.crewProfile?{tokens:this.crewProfile.tokens,owned:[...this.crewProfile.owned],selected:this.crewProfile.selected,day:this.crewProfile.day,revision:this.crewProfile.revision}:null,visuals:this.visuals.state(),accents:[...this.accents]};
   }
   destroy() {
     if (this.disposed) return;
-    this.stopPresentation();this.disposed = true;this.captain.destroy();this.visuals.cancel();this.audio.destroy();this.unsubscribeAudio(); this.lifetime.abort(); this.dialog.destroy(); this.root.remove();
+    this.stopPresentation();this.disposed = true;this.crewAbort.abort();this.captain.destroy();this.visuals.cancel();this.audio.destroy();this.unsubscribeAudio(); this.lifetime.abort(); this.dialog.destroy(); this.root.remove();
   }
 }
