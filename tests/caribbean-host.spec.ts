@@ -88,6 +88,7 @@ test('natural bonus, real host/chat, line presets and desktop/mobile layout',asy
  await page.locator('[data-ct-lines]').selectOption('5');await page.locator('[data-ct-stake]').selectOption('200');
  await expect(page.locator('[data-ct-action=play]')).toContainText('10');
  await page.locator('[data-ct-action=info]').click();await expect(page.locator('.ct-modal')).toBeVisible();
+ await expect(page.locator('.ct-audio-credits')).toContainText('Matthew Pablo');await expect(page.locator('.ct-audio-credits')).toContainText('CC BY 3.0');
  await page.locator('.ct-modal').press('Escape');await expect(page.locator('.ct-backdrop')).toBeHidden();await expect(page.locator('#mini-dialog')).toBeVisible();
  await page.locator('[data-ct-action=lines]').click();await expect(page.locator('.ct-paths polyline')).toHaveCount(5);
  const before=await wallet(page);await page.request.post('/__test/caribbean/force-bonus');const started=await action(page,'[data-ct-action=play]');
@@ -215,7 +216,9 @@ test('recorded orchestral music and Foley render without clipping and end in sil
  });
  const {writeFile}=await import('node:fs/promises');await writeFile(out+'/sound-preview.wav',Buffer.from(rendered.wav,'base64'));
  await writeFile(out+'/audio-measurements.json',JSON.stringify({...rendered,wav:undefined},null,2));
- expect(rendered.ready).toBe(true);expect(rendered.samples.music).toBe(1);expect(rendered.samples.cannon).toBe(1);for(const id of ['stop-a','stop-b','stop-c'])expect(rendered.samples[id]).toBe(2);
+ expect(rendered.ready).toBe(true);expect(rendered.samples.music).toBe(1);expect(rendered.samples.cannon).toBe(1);
+ // Two reel stops use each take; the neutral partial-return cue adds one wood settling sound.
+ expect(rendered.samples['stop-a']).toBe(3);for(const id of ['stop-b','stop-c'])expect(rendered.samples[id]).toBe(2);
  expect(rendered.peak).toBeGreaterThan(.001);expect(rendered.peak).toBeLessThan(.9);expect(rendered.tail).toBeLessThan(.0001);
 });
 
