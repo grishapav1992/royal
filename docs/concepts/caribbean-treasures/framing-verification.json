@@ -1,0 +1,268 @@
+{
+  "format": 1,
+  "date": "2026-10-28",
+  "sourceCommit": "dcc7a072b83e498542f2b7ad079638d890b582ea",
+  "baseline": "e1364159e9ea293b954b6a03b5563388917e2a89",
+  "package": "1.3.2-734dfee8cfc0",
+  "apiVersion": 1,
+  "rulesVersion": 1,
+  "progressVersion": 1,
+  "mathChanged": false,
+  "productionChanged": false,
+  "rasterAssetsChanged": false,
+  "audioChanged": false,
+  "checks": {
+    "caribbean": 47,
+    "moduleIntegrity": 7,
+    "verifiedModulePackages": 118,
+    "gameTypecheck": true,
+    "applicationBuild": {
+      "format": 1,
+      "startedAt": "2026-10-28T18:17:19.735Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 2353
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 18604
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 27645
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 10923
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 81
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 33
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 55
+        }
+      ],
+      "passed": true,
+      "durationMs": 59695
+    }
+  },
+  "browser": {
+    "startTime": "2026-10-28T18:19:05.429Z",
+    "duration": 76793.361,
+    "expected": 5,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0,
+    "selection": "responsive framing|empty balance explains|natural bonus, real|confirmed animation|captain blinks",
+    "tests": [
+      {
+        "name": "responsive framing keeps the title and full captain artwork inside the host",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 13110
+          }
+        ]
+      },
+      {
+        "name": "empty balance explains disabled spins, live funding unlocks an exact-cost single line and free spins need no balance",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 12887
+          }
+        ]
+      },
+      {
+        "name": "natural bonus, real host/chat, line presets and desktop/mobile layout",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 19693
+          }
+        ]
+      },
+      {
+        "name": "confirmed animation, cannon, skip, mute, zero volume and close release owned audio",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 28949
+          }
+        ]
+      },
+      {
+        "name": "captain blinks and looks at the field, deduplicates reactions and releases her timer",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 711
+          }
+        ]
+      }
+    ]
+  },
+  "previousObservedClipping": [
+    {
+      "viewport": "1440x1000",
+      "portraitClippedWidthPixels": 148.33333333333331
+    },
+    {
+      "viewport": "1280x720",
+      "portraitClippedHeightPixels": 84.5
+    },
+    {
+      "viewport": "342x245",
+      "gameWidthPixels": 86,
+      "horizontalOverflowPixels": 98
+    }
+  ],
+  "current": [
+    {
+      "viewport": "1440x1000",
+      "gameWidthPixels": 1102.8125,
+      "pageHorizontalOverflowPixels": 0,
+      "gameHorizontalOverflowPixels": 0,
+      "titleWithinGame": true,
+      "portrait": {
+        "clippedWidthPixels": 0,
+        "clippedHeightPixels": 0
+      },
+      "verticalFlow": false
+    },
+    {
+      "viewport": "1280x720",
+      "gameWidthPixels": 979.609375,
+      "pageHorizontalOverflowPixels": 0,
+      "gameHorizontalOverflowPixels": 0,
+      "titleWithinGame": true,
+      "portrait": {
+        "clippedWidthPixels": 0,
+        "clippedHeightPixels": 0
+      },
+      "verticalFlow": false
+    },
+    {
+      "viewport": "1024x768",
+      "gameWidthPixels": 738,
+      "pageHorizontalOverflowPixels": 0,
+      "gameHorizontalOverflowPixels": 0,
+      "titleWithinGame": true,
+      "portrait": null,
+      "verticalFlow": false
+    },
+    {
+      "viewport": "900x650",
+      "gameWidthPixels": 614,
+      "pageHorizontalOverflowPixels": 0,
+      "gameHorizontalOverflowPixels": 0,
+      "titleWithinGame": true,
+      "portrait": null,
+      "verticalFlow": false
+    },
+    {
+      "viewport": "800x600",
+      "gameWidthPixels": 514,
+      "pageHorizontalOverflowPixels": 0,
+      "gameHorizontalOverflowPixels": 0,
+      "titleWithinGame": true,
+      "portrait": null,
+      "verticalFlow": false
+    },
+    {
+      "viewport": "640x480",
+      "gameWidthPixels": 634,
+      "pageHorizontalOverflowPixels": 0,
+      "gameHorizontalOverflowPixels": 0,
+      "titleWithinGame": true,
+      "portrait": null,
+      "verticalFlow": true
+    },
+    {
+      "viewport": "500x760",
+      "gameWidthPixels": 494,
+      "pageHorizontalOverflowPixels": 0,
+      "gameHorizontalOverflowPixels": 0,
+      "titleWithinGame": true,
+      "portrait": null,
+      "verticalFlow": false
+    },
+    {
+      "viewport": "390x844",
+      "gameWidthPixels": 384,
+      "pageHorizontalOverflowPixels": 0,
+      "gameHorizontalOverflowPixels": 0,
+      "titleWithinGame": true,
+      "portrait": null,
+      "verticalFlow": false
+    },
+    {
+      "viewport": "342x700",
+      "gameWidthPixels": 336,
+      "pageHorizontalOverflowPixels": 0,
+      "gameHorizontalOverflowPixels": 0,
+      "titleWithinGame": true,
+      "portrait": null,
+      "verticalFlow": false
+    },
+    {
+      "viewport": "844x390",
+      "gameWidthPixels": 588,
+      "pageHorizontalOverflowPixels": 0,
+      "gameHorizontalOverflowPixels": 0,
+      "titleWithinGame": true,
+      "portrait": null,
+      "verticalFlow": false
+    },
+    {
+      "viewport": "342x245",
+      "gameWidthPixels": 336,
+      "pageHorizontalOverflowPixels": 0,
+      "gameHorizontalOverflowPixels": 0,
+      "titleWithinGame": true,
+      "portrait": null,
+      "verticalFlow": true
+    }
+  ],
+  "shortFlowControlsAndChatReachable": true,
+  "bonusChoiceAt1280x720": true,
+  "acceptedBonusCompleted": true,
+  "synchronization": {
+    "targetMs": 50,
+    "maximumDeviationMs": 15.15749432994744,
+    "maxVisualMs": 4.799999998882413
+  },
+  "currentLocalPreview": true,
+  "activation": "Close and reopen only the game; the common loader checks active.json on every opening",
+  "limits": [
+    "User supplied a cropped image, not confirmed full viewport dimensions",
+    "The existing user tab was unavailable to browser control; verification used disposable accounts in the actual local host with chat",
+    "Extremely short narrow panes intentionally use vertical scrolling",
+    "Previous complete 1.3.1 browser run is retained separately; this change uses five targeted scenarios"
+  ]
+}

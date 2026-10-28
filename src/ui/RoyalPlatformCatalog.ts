@@ -33,7 +33,7 @@ function localEntry(id: string): Entry {
   const studio = isStudioGame(id) ? STUDIO_INFO[id] : undefined;
   const theme = github.has(id) && Object.hasOwn(FIRST_FLOOR_GAME_THEMES,id) ? FIRST_FLOOR_ART[FIRST_FLOOR_GAME_THEMES[id as keyof typeof FIRST_FLOOR_GAME_THEMES]] : undefined;
   return {gameId:id, name:game.name, subtitle:theme?.title[language === 'en' ? 1 : 0] ?? game.subtitle,
-    kind:id===CARIBBEAN_GAME?'slot':studio?.kind ?? (id==='studio-flooded-temple'?'slot':classicKinds[id]), source:github.has(id) ? 'github' : 'royal', art:id===CARIBBEAN_GAME?'/assets/caribbean-treasures/harbor.webp':royalCatalogArtwork(id),
+    kind:id===CARIBBEAN_GAME?'slot':studio?.kind ?? (id==='studio-flooded-temple'?'slot':classicKinds[id]), source:github.has(id) ? 'github' : 'royal', art:royalCatalogArtwork(id),
     keywords:`${studio?.sourceReferenceId ?? ''} ${theme?.title.join(' ') ?? ''}`};
 }
 
