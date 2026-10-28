@@ -33,9 +33,13 @@ test('paid spins preserve account-owned team progress and concurrent UUID retrie
     assert.equal(await demoBalanceUnits(f.db, 'alice'), before - 10000 + Number(first.returnedUnits));
     assert.equal(await demoReservedUnits(f.db, 'alice'), 0);
     await assert.rejects(f.store.operate('alice', { ...action, stakeUnits: '20000' }));
-    await assert.rejects(f.store.operate('alice', { ...f.start(), stakeUnits: '20000' }));
-    const restored = f.createStore(), next = await restored.operate('alice', f.start());
-    assert.deepEqual(next.session.view.neopolis!.origin, first.view.neopolis!.team);
+    const raised = await f.store.operate('alice', { ...f.start(), stakeUnits: '20000' });
+    assert.equal(raised.session.stakeUnits, '20000'); assert(validNeopolisSession(raised.session));
+    assert.deepEqual(raised.session.view.neopolis!.origin, first.view.neopolis!.team);
+    assert.equal(await demoBalanceUnits(f.db, 'alice'), before - 10000 + Number(first.returnedUnits) - 20000 + Number(raised.session.returnedUnits));
+    const restored = f.createStore(), next = await restored.operate('alice', { ...f.start(), stakeUnits: '1000' });
+    assert.equal(next.session.stakeUnits, '1000');
+    assert.deepEqual(next.session.view.neopolis!.origin, raised.session.view.neopolis!.team);
     const bob = await restored.operate('bob', f.start()).catch(() => null);
     assert.equal(bob, null);
     const legacy = await restored.active('alice', true, true, true, true, true, true, true, true, false);
@@ -93,9 +97,9 @@ test('a saved bonus survives store recreation, rejects stale moves and credits t
   } finally { await f.db.close(); }
 });
 
-for (const version of [1,2] as const) test(`a persisted v${version} bonus completes unchanged while older clients cannot start new rounds`, async () => {
+for (const version of [1,2,3] as const) test(`a persisted v${version} bonus completes unchanged while older clients cannot start new rounds`, async () => {
   const f = await setup();
-  const oldOperate = (op: Parameters<typeof f.store.operate>[1]) => f.store.operate('alice',op,2,true,true,true,true,true,true,true,true,2,version===1?true:2);
+  const oldOperate = (op: Parameters<typeof f.store.operate>[1]) => f.store.operate('alice',op,2,true,true,true,true,true,true,true,true,2,version===1?true:version);
   try {
     const balance = await demoBalanceUnits(f.db,'alice');
     await assert.rejects(oldOperate(f.start()), /refresh/);
@@ -113,7 +117,7 @@ for (const version of [1,2] as const) test(`a persisted v${version} bonus comple
     const stored = JSON.parse(row!.payload); stored.rulesVersion=version; stored.view.neopolis=legacy.view;
     await f.db.prepare('UPDATE demo_casino_sessions SET payload=? WHERE account_id=? AND id=?').run(JSON.stringify(stored),'alice',current.id);
     const restored = f.createStore();
-    current = (await restored.active('alice',true,true,true,true,true,true,true,2,version===1?true:2)).sessions.find(session=>session.gameId===NEOPOLIS_GAME)!;
+    current = (await restored.active('alice',true,true,true,true,true,true,true,2,version===1?true:version)).sessions.find(session=>session.gameId===NEOPOLIS_GAME)!;
     assert.equal(current.rulesVersion,version); assert(validNeopolisSession(current));
     let last;
     while(current.state==='active') {
@@ -128,7 +132,7 @@ for (const version of [1,2] as const) test(`a persisted v${version} bonus comple
     assert.equal(await demoBalanceUnits(f.db,'alice'),finalBalance); assert.equal(f.draws(),draws);
     assert.equal(await demoReservedUnits(f.db,'alice'),0);
     const newStart=f.start(), fresh=await restored.operate('alice',newStart);
-    assert.equal(fresh.session.rulesVersion,3); assert.equal(fresh.session.view.neopolis!.version,3);
+    assert.equal(fresh.session.rulesVersion,4); assert.equal(fresh.session.view.neopolis!.version,4);
     const afterNew=await demoBalanceUnits(f.db,'alice');
     await assert.rejects(oldOperate(newStart),/refresh/);
     assert.equal(await demoBalanceUnits(f.db,'alice'),afterNew);

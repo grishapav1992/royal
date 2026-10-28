@@ -1,0 +1,48 @@
+{
+  "release": "neopolis-variable-stake-20261028-v1",
+  "base": "583ff906ddc4420ec88bb40e01d9607450b6d828",
+  "allowedSource": [
+    "games/neopolis/NeopolisUI.ts",
+    "games/neopolis/copy.ts",
+    "games/neopolis/entry.ts",
+    "games/neopolis/package.json",
+    "games/neopolis/README.md",
+    "src/shared/neopolis.ts",
+    "src/shared/neopolisMath.ts",
+    "src/shared/neopolisMathV3.ts",
+    "src/shared/neopolisStakePayouts.ts",
+    "src/shared/casinoExpansion.ts",
+    "src/modules/GameModuleCatalog.ts",
+    "src/wallet/ExpansionClient.ts",
+    "server/games/neopolis.ts",
+    "server/demoExpansion.ts",
+    "server/demoWalletRoutes.ts",
+    "server/gameWalletRoutes.ts",
+    "server/finance/nile-game-runtime.ts",
+    "scripts/qualify-game-rtp.mjs",
+    "scripts/game-math/rtp-policy.json",
+    "scripts/game-math/rtp-gate.mjs",
+    "scripts/game-math/rtp-neopolis-v4.mjs",
+    "scripts/game-math/calibrate-neopolis-stakes.mjs",
+    "scripts/game-math/neopolis-variable-stake-audit.mjs",
+    "docs/game-math/qualification.md",
+    "docs/game-math/neopolis-v4-variable-stakes.md",
+    "docs/game-math/neopolis-v4-calibration.json",
+    "docs/game-math/neopolis-variable-stake-v3-audit-20261028.json",
+    "docs/game-math/qualifications/neopolis-v4-first-look-failed.json",
+    "docs/game-math/qualifications/neopolis-v4.json",
+    "scripts/neopolis-preview.ts"
+  ],
+  "changedGame": "studio-neopolis",
+  "contract": {
+    "apiVersion": 1,
+    "rulesVersion": 4,
+    "progressVersion": 4
+  },
+  "backendFiles": [
+    "index.js"
+  ],
+  "financialFiles": [
+    "play.js"
+  ]
+}

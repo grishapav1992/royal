@@ -1,0 +1,1125 @@
+{
+  "rulesVersion": 4,
+  "target": 0.96,
+  "scale": 1000000000,
+  "startedAt": "2026-10-28T09:34:15.477Z",
+  "completedAt": "2026-10-28T09:48:44.033Z",
+  "seeds": [
+    302710111,
+    610829303
+  ],
+  "roundsPerSeed": 500000,
+  "readyRoundsPerSeed": 4000000,
+  "sourceHashes": {
+    "src/shared/neopolisMath.ts": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
+    "src/shared/draconaMath.ts": "5735d0173b801e80329ec93f9d0dc049da94068addd042f7de0fb6bf9ca248b4",
+    "scripts/game-math/calibrate-neopolis-stakes.mjs": "cb3e10486bd01383cb449b90e65efd90836196122ae70a12f09075ee95b21024"
+  },
+  "method": "Calibration only. Independent complete paid rounds from every public team state, including all free continuations and the 3000x cap. Conditional payout scales equalize the estimated return before integer rounding. Independent qualification seeds and actual integer settlement are required before release.",
+  "rows": [
+    {
+      "hero": "granite",
+      "state": 0,
+      "charges": [
+        3,
+        0,
+        0
+      ],
+      "samples": 1000000,
+      "freeSpins": 0,
+      "rawReward": 323269.39002488524,
+      "rawRewardSquared": 361538.54150593345,
+      "rawMean": 0.32326939002488525,
+      "rawInterval95": [
+        0.3222756957332764,
+        0.3242630843164941
+      ],
+      "scaleNumerator": 2969659453,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999999532859,
+      "maximumRawReturn": 10.730975,
+      "histogramSha256": "ba7dbc8a2304e85e02705c78533480b957e0df889b0c970cec4427e00c0a4001"
+    },
+    {
+      "hero": "granite",
+      "state": 1,
+      "charges": [
+        3,
+        0,
+        1
+      ],
+      "samples": 1000000,
+      "freeSpins": 180,
+      "rawReward": 329828.0196748929,
+      "rawRewardSquared": 388531.947320699,
+      "rawMean": 0.3298280196748929,
+      "rawInterval95": [
+        0.32879135622978567,
+        0.3308646831200001
+      ],
+      "scaleNumerator": 2910607779,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999997982208,
+      "maximumRawReturn": 76.7564,
+      "histogramSha256": "fab6611b651938a49e4a1b351047479a5eae2a906a44de17233452b9b41ef6ef"
+    },
+    {
+      "hero": "granite",
+      "state": 2,
+      "charges": [
+        3,
+        0,
+        2
+      ],
+      "samples": 1000000,
+      "freeSpins": 540,
+      "rawReward": 367134.1111249173,
+      "rawRewardSquared": 487045.63237727684,
+      "rawMean": 0.3671341111249173,
+      "rawInterval95": [
+        0.3659708242448527,
+        0.36829739800498185
+      ],
+      "scaleNumerator": 2614848282,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999997388046,
+      "maximumRawReturn": 80.31315,
+      "histogramSha256": "f48f6662c0122a4413ad46e32abb95917dcadab6e99145f116cf7cd27116a58c"
+    },
+    {
+      "hero": "granite",
+      "state": 3,
+      "charges": [
+        3,
+        0,
+        3
+      ],
+      "samples": 1000000,
+      "freeSpins": 495,
+      "rawReward": 367843.71744990296,
+      "rawRewardSquared": 481546.7241023013,
+      "rawMean": 0.36784371744990296,
+      "rawInterval95": [
+        0.36669041429408306,
+        0.36899702060572287
+      ],
+      "scaleNumerator": 2609803985,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.959999999658223,
+      "maximumRawReturn": 76.782425,
+      "histogramSha256": "189a6829e682f7315da3569a2c14497cc98c704971bb32b5fe03b66978ca62c5"
+    },
+    {
+      "hero": "granite",
+      "state": 4,
+      "charges": [
+        3,
+        1,
+        0
+      ],
+      "samples": 1000000,
+      "freeSpins": 45,
+      "rawReward": 351964.2687498998,
+      "rawRewardSquared": 449934.5485534678,
+      "rawMean": 0.35196426874989983,
+      "rawInterval95": [
+        0.35084508295760475,
+        0.3530834545421949
+      ],
+      "scaleNumerator": 2727549598,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.959999999739426,
+      "maximumRawReturn": 60.81175,
+      "histogramSha256": "012c762298f6de9fe36a3c71c3b515382aa459707ca808aa218ce0f58487bc29"
+    },
+    {
+      "hero": "granite",
+      "state": 5,
+      "charges": [
+        3,
+        1,
+        1
+      ],
+      "samples": 1000000,
+      "freeSpins": 675,
+      "rawReward": 360114.40522490663,
+      "rawRewardSquared": 513903.2382126007,
+      "rawMean": 0.3601144052249066,
+      "rawInterval95": [
+        0.35889948781771375,
+        0.3613293226320995
+      ],
+      "scaleNumerator": 2665819489,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999997184493,
+      "maximumRawReturn": 77.57185,
+      "histogramSha256": "e7f3bcca4fd1edc1ba83bf647b368812e57dc19f6d88e8095bef9ce212f25692"
+    },
+    {
+      "hero": "granite",
+      "state": 6,
+      "charges": [
+        3,
+        1,
+        2
+      ],
+      "samples": 1000000,
+      "freeSpins": 2385,
+      "rawReward": 401812.1546999456,
+      "rawRewardSquared": 740568.5278815798,
+      "rawMean": 0.4018121546999456,
+      "rawInterval95": [
+        0.4003206010109361,
+        0.4033037083889551
+      ],
+      "scaleNumerator": 2389176108,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999999132405,
+      "maximumRawReturn": 95.3209,
+      "histogramSha256": "d6e85fdc12705f38b82b426e6fef99fc2220a284325b11271ac11188c3275f56"
+    },
+    {
+      "hero": "granite",
+      "state": 7,
+      "charges": [
+        3,
+        1,
+        3
+      ],
+      "samples": 1000000,
+      "freeSpins": 5995,
+      "rawReward": 405811.38174995495,
+      "rawRewardSquared": 1014131.2497129311,
+      "rawMean": 0.40581138174995496,
+      "rawInterval95": [
+        0.40400493658618297,
+        0.40761782691372694
+      ],
+      "scaleNumerator": 2365631037,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999998356561,
+      "maximumRawReturn": 92.657675,
+      "histogramSha256": "4248968c392aabbf20aeae1f55a0e0eb2ddf5aa86e3084b8787fbd3333630b14"
+    },
+    {
+      "hero": "granite",
+      "state": 8,
+      "charges": [
+        3,
+        2,
+        0
+      ],
+      "samples": 1000000,
+      "freeSpins": 225,
+      "rawReward": 506642.2079999742,
+      "rawRewardSquared": 868488.7099344805,
+      "rawMean": 0.5066422079999742,
+      "rawInterval95": [
+        0.5051091384044034,
+        0.5081752775955449
+      ],
+      "scaleNumerator": 1894828312,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999997725929,
+      "maximumRawReturn": 59.35435,
+      "histogramSha256": "78e592cc44596092ffc9501b91dd163330341482584de1036dc8bf575e648b15"
+    },
+    {
+      "hero": "granite",
+      "state": 9,
+      "charges": [
+        3,
+        2,
+        1
+      ],
+      "samples": 1000000,
+      "freeSpins": 3240,
+      "rawReward": 519114.307549978,
+      "rawRewardSquared": 1148783.394200887,
+      "rawMean": 0.519114307549978,
+      "rawInterval95": [
+        0.5172763911789992,
+        0.5209522239209569
+      ],
+      "scaleNumerator": 1849303681,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999998119821,
+      "maximumRawReturn": 91.66005,
+      "histogramSha256": "2b25e7c9b892d03e8ccfa51d17a53b42b7ecdc92357d3a24c5a4933f05f499a8"
+    },
+    {
+      "hero": "granite",
+      "state": 10,
+      "charges": [
+        3,
+        2,
+        2
+      ],
+      "samples": 1000000,
+      "freeSpins": 16310,
+      "rawReward": 579018.2795252044,
+      "rawRewardSquared": 2261416.6385390526,
+      "rawMean": 0.5790182795252045,
+      "rawInterval95": [
+        0.5762980732070272,
+        0.5817384858433817
+      ],
+      "scaleNumerator": 1657978744,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999998399001,
+      "maximumRawReturn": 101.3934,
+      "histogramSha256": "cfc3762da13dd8abdd9b89f5a03e118635da278839d26d37499fbd326c42a835"
+    },
+    {
+      "hero": "granite",
+      "state": 11,
+      "charges": [
+        3,
+        2,
+        3
+      ],
+      "samples": 1000000,
+      "freeSpins": 35215,
+      "rawReward": 598671.2838253027,
+      "rawRewardSquared": 3827626.419492948,
+      "rawMean": 0.5986712838253028,
+      "rawInterval95": [
+        0.5950206173829303,
+        0.6023219502676752
+      ],
+      "scaleNumerator": 1603551107,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999999066892,
+      "maximumRawReturn": 110.6236,
+      "histogramSha256": "236d3fee21a0cf6d8d8ea9e835811eba128424b348f024ae3e6e2b45855067a5"
+    },
+    {
+      "hero": "granite",
+      "state": 12,
+      "charges": [
+        3,
+        3,
+        0
+      ],
+      "samples": 1000000,
+      "freeSpins": 630,
+      "rawReward": 507655.1270249661,
+      "rawRewardSquared": 903635.770199164,
+      "rawMean": 0.5076551270249661,
+      "rawInterval95": [
+        0.506079888440272,
+        0.5092303656096602
+      ],
+      "scaleNumerator": 1891047581,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999999428748,
+      "maximumRawReturn": 78.777675,
+      "histogramSha256": "d0eeb7c5291eb8c26e309ad696063ceac71557f311ac2d7f585471bba38b50de"
+    },
+    {
+      "hero": "granite",
+      "state": 13,
+      "charges": [
+        3,
+        3,
+        1
+      ],
+      "samples": 1000000,
+      "freeSpins": 5400,
+      "rawReward": 522695.6424999808,
+      "rawRewardSquared": 1308643.5449869034,
+      "rawMean": 0.5226956424999808,
+      "rawInterval95": [
+        0.5207012196105801,
+        0.5246900653893815
+      ],
+      "scaleNumerator": 1836632873,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999995893563,
+      "maximumRawReturn": 102.026675,
+      "histogramSha256": "d1f37b916b043914cf0504bc9193ea09db7766eb3e45109dc9d5627a34926a95"
+    },
+    {
+      "hero": "granite",
+      "state": 14,
+      "charges": [
+        3,
+        3,
+        2
+      ],
+      "samples": 1000000,
+      "freeSpins": 29875,
+      "rawReward": 596104.7590502594,
+      "rawRewardSquared": 3509993.8235744867,
+      "rawMean": 0.5961047590502594,
+      "rawInterval95": [
+        0.5926235341433467,
+        0.5995859839571721
+      ],
+      "scaleNumerator": 1610455184,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.959999999419143,
+      "maximumRawReturn": 131.00985,
+      "histogramSha256": "75b3f2e966c1500aea8570874507e2c6d0567005ae4a233db46ce86a8a4dffc9"
+    },
+    {
+      "hero": "granite",
+      "state": 15,
+      "charges": [
+        3,
+        3,
+        3
+      ],
+      "samples": 8000000,
+      "freeSpins": 3080870,
+      "rawReward": 8048907.769902095,
+      "rawRewardSquared": 250637265.31441852,
+      "rawMean": 1.006113471237762,
+      "rawInterval95": [
+        1.0022979222149773,
+        1.0099290202605467
+      ],
+      "scaleNumerator": 954166729,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999998505439,
+      "maximumRawReturn": 124.0178,
+      "histogramSha256": "e121f03cc49f8e90878deb09923896e601378be93416f61255defd0ad5df4a42"
+    },
+    {
+      "hero": "impulse",
+      "state": 0,
+      "charges": [
+        0,
+        3,
+        0
+      ],
+      "samples": 1000000,
+      "freeSpins": 0,
+      "rawReward": 461081.95814992074,
+      "rawRewardSquared": 747428.7280080883,
+      "rawMean": 0.46108195814992076,
+      "rawInterval95": [
+        0.459648565927035,
+        0.4625153503728065
+      ],
+      "scaleNumerator": 2082059345,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999997771061,
+      "maximumRawReturn": 17.95725,
+      "histogramSha256": "880d4f8801fd2d125d557801d59dbce72e4fbce6db2da443cbc79fb102a8da46"
+    },
+    {
+      "hero": "impulse",
+      "state": 1,
+      "charges": [
+        0,
+        3,
+        1
+      ],
+      "samples": 1000000,
+      "freeSpins": 0,
+      "rawReward": 469184.62502496125,
+      "rawRewardSquared": 764198.1534805407,
+      "rawMean": 0.4691846250249613,
+      "rawInterval95": [
+        0.46773891477519214,
+        0.4706303352747304
+      ],
+      "scaleNumerator": 2046102853,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999998473876,
+      "maximumRawReturn": 19.34525,
+      "histogramSha256": "03e8666bb8bf0dc41b7bd4fc710859d58efef0cdbcff41eef4d65759e32892df"
+    },
+    {
+      "hero": "impulse",
+      "state": 2,
+      "charges": [
+        0,
+        3,
+        2
+      ],
+      "samples": 1000000,
+      "freeSpins": 360,
+      "rawReward": 514786.5669249855,
+      "rawRewardSquared": 903649.8247892084,
+      "rawMean": 0.5147865669249855,
+      "rawInterval95": [
+        0.5132202273680673,
+        0.5163529064819037
+      ],
+      "scaleNumerator": 1864850525,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999995930343,
+      "maximumRawReturn": 81.2327,
+      "histogramSha256": "86fdf01c03db3ad036f283bdcdab4ca7b2be2cf3ce7898e9e6c8031cf907c2a8"
+    },
+    {
+      "hero": "impulse",
+      "state": 3,
+      "charges": [
+        0,
+        3,
+        3
+      ],
+      "samples": 1000000,
+      "freeSpins": 640,
+      "rawReward": 515419.7811999648,
+      "rawRewardSquared": 925833.6268280403,
+      "rawMean": 0.5154197811999648,
+      "rawInterval95": [
+        0.5138272564907048,
+        0.5170123059092248
+      ],
+      "scaleNumerator": 1862559480,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.959999999653587,
+      "maximumRawReturn": 83.3841,
+      "histogramSha256": "35f672918a737b89e4e92be1644d560f4db9f04c8bc7efd183229971dc9031ea"
+    },
+    {
+      "hero": "impulse",
+      "state": 4,
+      "charges": [
+        1,
+        3,
+        0
+      ],
+      "samples": 1000000,
+      "freeSpins": 90,
+      "rawReward": 469467.9852249617,
+      "rawRewardSquared": 776316.0767095953,
+      "rawMean": 0.4694679852249617,
+      "rawInterval95": [
+        0.46800661305838226,
+        0.4709293573915411
+      ],
+      "scaleNumerator": 2044867872,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999999191727,
+      "maximumRawReturn": 62.694225,
+      "histogramSha256": "825e45cc188c59471c1b7b4ba849021e0abaa073dde8f1e5d8d503db5bed7441"
+    },
+    {
+      "hero": "impulse",
+      "state": 5,
+      "charges": [
+        1,
+        3,
+        1
+      ],
+      "samples": 1000000,
+      "freeSpins": 675,
+      "rawReward": 477883.37717497506,
+      "rawRewardSquared": 848245.7299947869,
+      "rawMean": 0.47788337717497503,
+      "rawInterval95": [
+        0.47634022867387477,
+        0.4794265256760753
+      ],
+      "scaleNumerator": 2008858323,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999996613479,
+      "maximumRawReturn": 91.269675,
+      "histogramSha256": "c3a014de902d3dffa30be379a2a27f015bbf2134526c4c207f5705c2d24e2065"
+    },
+    {
+      "hero": "impulse",
+      "state": 6,
+      "charges": [
+        1,
+        3,
+        2
+      ],
+      "samples": 1000000,
+      "freeSpins": 2530,
+      "rawReward": 525250.1263749957,
+      "rawRewardSquared": 1093536.7262716691,
+      "rawMean": 0.5252501263749957,
+      "rawInterval95": [
+        0.5234778161147338,
+        0.5270224366352576
+      ],
+      "scaleNumerator": 1827700654,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999994891718,
+      "maximumRawReturn": 95.017275,
+      "histogramSha256": "2799ae46e8f34be83ce85023b45e22ed17fd3fffeedd0b308cc8945302a76b9f"
+    },
+    {
+      "hero": "impulse",
+      "state": 7,
+      "charges": [
+        1,
+        3,
+        3
+      ],
+      "samples": 1000000,
+      "freeSpins": 4770,
+      "rawReward": 528191.2289749776,
+      "rawRewardSquared": 1306728.9043949028,
+      "rawMean": 0.5281912289749776,
+      "rawInterval95": [
+        0.5262042259079996,
+        0.5301782320419556
+      ],
+      "scaleNumerator": 1817523554,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999996782709,
+      "maximumRawReturn": 115.976075,
+      "histogramSha256": "cefcbd1308207ecc2102ba636ec691948cc6139f067fa38fc6baa340815ce1db"
+    },
+    {
+      "hero": "impulse",
+      "state": 8,
+      "charges": [
+        2,
+        3,
+        0
+      ],
+      "samples": 1000000,
+      "freeSpins": 270,
+      "rawReward": 506500.7187499536,
+      "rawRewardSquared": 874898.1979517116,
+      "rawMean": 0.5065007187499536,
+      "rawInterval95": [
+        0.5049594608909046,
+        0.5080419766090026
+      ],
+      "scaleNumerator": 1895357626,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999998572935,
+      "maximumRawReturn": 74.093175,
+      "histogramSha256": "0ba756b771e2e5965fee387292fdc5cf9817c1f4854119a7858b152960e2945f"
+    },
+    {
+      "hero": "impulse",
+      "state": 9,
+      "charges": [
+        2,
+        3,
+        1
+      ],
+      "samples": 1000000,
+      "freeSpins": 2350,
+      "rawReward": 519245.9159749737,
+      "rawRewardSquared": 1094823.9374642265,
+      "rawMean": 0.5192459159749737,
+      "rawInterval95": [
+        0.5174654326842507,
+        0.5210263992656967
+      ],
+      "scaleNumerator": 1848834955,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999996955723,
+      "maximumRawReturn": 88.337525,
+      "histogramSha256": "c212d643aa7c12986f94cbd813a7d937ced1d52dc97686bd053a9b4ae849b67c"
+    },
+    {
+      "hero": "impulse",
+      "state": 10,
+      "charges": [
+        2,
+        3,
+        2
+      ],
+      "samples": 1000000,
+      "freeSpins": 11910,
+      "rawReward": 576276.7713252216,
+      "rawRewardSquared": 1934289.0710434173,
+      "rawMean": 0.5762767713252216,
+      "rawInterval95": [
+        0.5737958450432618,
+        0.5787576976071814
+      ],
+      "scaleNumerator": 1665866208,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999998056608,
+      "maximumRawReturn": 86.7153,
+      "histogramSha256": "e7650889f0fadc27a29bbff3ef54ff6223004d1e8a54d5b036e15239baf44742"
+    },
+    {
+      "hero": "impulse",
+      "state": 11,
+      "charges": [
+        2,
+        3,
+        3
+      ],
+      "samples": 1000000,
+      "freeSpins": 28185,
+      "rawReward": 593032.3603252606,
+      "rawRewardSquared": 3324328.124411676,
+      "rawMean": 0.5930323603252605,
+      "rawInterval95": [
+        0.5896530544642987,
+        0.5964116661862223
+      ],
+      "scaleNumerator": 1618798676,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999997192628,
+      "maximumRawReturn": 106.5637,
+      "histogramSha256": "9e9c6f304f3441b7da03f5caf3b84e245897aa25d34726cdfbf557be10101fc9"
+    },
+    {
+      "hero": "impulse",
+      "state": 12,
+      "charges": [
+        3,
+        3,
+        0
+      ],
+      "samples": 1000000,
+      "freeSpins": 855,
+      "rawReward": 507358.0256249732,
+      "rawRewardSquared": 917210.8450669195,
+      "rawMean": 0.5073580256249732,
+      "rawInterval95": [
+        0.5057659561731117,
+        0.5089500950768348
+      ],
+      "scaleNumerator": 1892154950,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999996085719,
+      "maximumRawReturn": 77.216175,
+      "histogramSha256": "2dd2c98bfbcaac53221df6dc274b7bbb41f2fb34b60e17c2aad9f27860bf6944"
+    },
+    {
+      "hero": "impulse",
+      "state": 13,
+      "charges": [
+        3,
+        3,
+        1
+      ],
+      "samples": 1000000,
+      "freeSpins": 6040,
+      "rawReward": 522124.36772500083,
+      "rawRewardSquared": 1376898.558442465,
+      "rawMean": 0.5221243677250008,
+      "rawInterval95": [
+        0.5200647016458659,
+        0.5241840338041357
+      ],
+      "scaleNumerator": 1838642398,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999995281275,
+      "maximumRawReturn": 119.255225,
+      "histogramSha256": "98760df2a1ba111ad317c0d52a56146b6fde9fc52d1db084e6f11a2f27fbc7ba"
+    },
+    {
+      "hero": "impulse",
+      "state": 14,
+      "charges": [
+        3,
+        3,
+        2
+      ],
+      "samples": 1000000,
+      "freeSpins": 29670,
+      "rawReward": 595146.4318002516,
+      "rawRewardSquared": 3453076.31979895,
+      "rawMean": 0.5951464318002516,
+      "rawInterval95": [
+        0.5916961190667643,
+        0.5985967445337389
+      ],
+      "scaleNumerator": 1613048400,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999995806953,
+      "maximumRawReturn": 98.695475,
+      "histogramSha256": "181263a22f49f448b4a5518535303cbdd6168fe12bc3d0710bc357e0241337cc"
+    },
+    {
+      "hero": "impulse",
+      "state": 15,
+      "charges": [
+        3,
+        3,
+        3
+      ],
+      "samples": 8000000,
+      "freeSpins": 3075010,
+      "rawReward": 8049305.935051661,
+      "rawRewardSquared": 250870912.06200683,
+      "rawMean": 1.0061632418814577,
+      "rawInterval95": [
+        1.0023458617720231,
+        1.0099806219908922
+      ],
+      "scaleNumerator": 954119530,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999994440376,
+      "maximumRawReturn": 126.36005,
+      "histogramSha256": "f8f31a77ede42892bba9a98520422606c77d1cf23a70da7e375a26168d161b4d"
+    },
+    {
+      "hero": "prism",
+      "state": 0,
+      "charges": [
+        0,
+        0,
+        3
+      ],
+      "samples": 1000000,
+      "freeSpins": 0,
+      "rawReward": 328989.83249988704,
+      "rawRewardSquared": 371613.2378668476,
+      "rawMean": 0.32898983249988706,
+      "rawInterval95": [
+        0.3279839510448836,
+        0.3299957139548905
+      ],
+      "scaleNumerator": 2918023310,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999999879966,
+      "maximumRawReturn": 11.9715,
+      "histogramSha256": "6f3c069b6a27d4a129932d269345271a06bb01ad335a0b0cd167cc03819576fa"
+    },
+    {
+      "hero": "prism",
+      "state": 1,
+      "charges": [
+        0,
+        1,
+        3
+      ],
+      "samples": 1000000,
+      "freeSpins": 45,
+      "rawReward": 357453.0713749081,
+      "rawRewardSquared": 458353.1816715225,
+      "rawMean": 0.3574530713749081,
+      "rawInterval95": [
+        0.3563261466857085,
+        0.35857999606410773
+      ],
+      "scaleNumerator": 2685667229,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999996972358,
+      "maximumRawReturn": 51.277925,
+      "histogramSha256": "4d36dc995c1ac5a246cd5f833a2a580d51ec20d1e56ae1dca31f5557d0582e33"
+    },
+    {
+      "hero": "prism",
+      "state": 2,
+      "charges": [
+        0,
+        2,
+        3
+      ],
+      "samples": 1000000,
+      "freeSpins": 450,
+      "rawReward": 514959.6244999645,
+      "rawRewardSquared": 909618.5968267919,
+      "rawMean": 0.5149596244999646,
+      "rawInterval95": [
+        0.5133861999956782,
+        0.5165330490042509
+      ],
+      "scaleNumerator": 1864223823,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999998760347,
+      "maximumRawReturn": 74.27535,
+      "histogramSha256": "c4290b74d5516347a65d9c8019a03825b6409a3fc2bb26c70bbfb69e9b7ed33a"
+    },
+    {
+      "hero": "prism",
+      "state": 3,
+      "charges": [
+        0,
+        3,
+        3
+      ],
+      "samples": 1000000,
+      "freeSpins": 675,
+      "rawReward": 515809.4101499546,
+      "rawRewardSquared": 922068.3338463128,
+      "rawMean": 0.5158094101499546,
+      "rawInterval95": [
+        0.5142219194754329,
+        0.5173969008244763
+      ],
+      "scaleNumerator": 1861152551,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999995304762,
+      "maximumRawReturn": 89.89035,
+      "histogramSha256": "88fa8e6fb664db9e086119217d80677ccf61a57958bd02be1fb13fdd0fec5719"
+    },
+    {
+      "hero": "prism",
+      "state": 4,
+      "charges": [
+        1,
+        0,
+        3
+      ],
+      "samples": 1000000,
+      "freeSpins": 90,
+      "rawReward": 334864.52514987957,
+      "rawRewardSquared": 387577.30857075576,
+      "rawMean": 0.3348645251498796,
+      "rawInterval95": [
+        0.3338358643159963,
+        0.33589318598376283
+      ],
+      "scaleNumerator": 2866830995,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999998259773,
+      "maximumRawReturn": 51.607575,
+      "histogramSha256": "bf1783239e5be1de315370cc03e0d8d6b85770d666913e40f965c199cae87a4c"
+    },
+    {
+      "hero": "prism",
+      "state": 5,
+      "charges": [
+        1,
+        1,
+        3
+      ],
+      "samples": 1000000,
+      "freeSpins": 450,
+      "rawReward": 364743.62812493363,
+      "rawRewardSquared": 512930.09101898037,
+      "rawMean": 0.3647436281249336,
+      "rawInterval95": [
+        0.363535573802628,
+        0.3659516824472392
+      ],
+      "scaleNumerator": 2631985663,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999998956019,
+      "maximumRawReturn": 84.520525,
+      "histogramSha256": "85ab749de3406e8e95c6dc0849004d5f76771a71b401e40b9083ecfdd1d626ce"
+    },
+    {
+      "hero": "prism",
+      "state": 6,
+      "charges": [
+        1,
+        2,
+        3
+      ],
+      "samples": 1000000,
+      "freeSpins": 2115,
+      "rawReward": 526740.5173999917,
+      "rawRewardSquared": 1076490.8090741418,
+      "rawMean": 0.5267405173999917,
+      "rawInterval95": [
+        0.5249884966142292,
+        0.5284925381857543
+      ],
+      "scaleNumerator": 1822529249,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999995948937,
+      "maximumRawReturn": 82.750825,
+      "histogramSha256": "121439dfe9af9b5414f8f5c8b2f56843ea96305a4dd829769be2c544e5ab7e92"
+    },
+    {
+      "hero": "prism",
+      "state": 7,
+      "charges": [
+        1,
+        3,
+        3
+      ],
+      "samples": 1000000,
+      "freeSpins": 4275,
+      "rawReward": 527011.1166749813,
+      "rawRewardSquared": 1242963.6906686688,
+      "rawMean": 0.5270111166749814,
+      "rawInterval95": [
+        0.5250854987784948,
+        0.528936734571468
+      ],
+      "scaleNumerator": 1821593453,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999997934002,
+      "maximumRawReturn": 90.68845,
+      "histogramSha256": "bc5c5486f3705ed22f4718f9be4790a55165d2c1773bcf16afb350b9fb237b6d"
+    },
+    {
+      "hero": "prism",
+      "state": 8,
+      "charges": [
+        2,
+        0,
+        3
+      ],
+      "samples": 1000000,
+      "freeSpins": 405,
+      "rawReward": 366748.36857492744,
+      "rawRewardSquared": 478635.77609704953,
+      "rawMean": 0.36674836857492743,
+      "rawInterval95": [
+        0.365598578790831,
+        0.36789815835902384
+      ],
+      "scaleNumerator": 2617598556,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999999972735,
+      "maximumRawReturn": 87.574125,
+      "histogramSha256": "1feb8c72a05a0ab73881d0feb4b75a1099b95bbfc02dc9d35650bb594e4100b5"
+    },
+    {
+      "hero": "prism",
+      "state": 9,
+      "charges": [
+        2,
+        1,
+        3
+      ],
+      "samples": 1000000,
+      "freeSpins": 2610,
+      "rawReward": 402291.7520749365,
+      "rawRewardSquared": 741410.4659148963,
+      "rawMean": 0.4022917520749365,
+      "rawInterval95": [
+        0.4007996108953044,
+        0.4037838932545686
+      ],
+      "scaleNumerator": 2386327820,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999997331151,
+      "maximumRawReturn": 91.425825,
+      "histogramSha256": "89490638806ac0cab870d66e2bb32c9b39cbe0b3a776fdd485b7fa4f683bb003"
+    },
+    {
+      "hero": "prism",
+      "state": 10,
+      "charges": [
+        2,
+        2,
+        3
+      ],
+      "samples": 1000000,
+      "freeSpins": 14490,
+      "rawReward": 577044.2225501692,
+      "rawRewardSquared": 2173271.4392248504,
+      "rawMean": 0.5770442225501692,
+      "rawInterval95": [
+        0.5743853373459922,
+        0.5797031077543462
+      ],
+      "scaleNumerator": 1663650657,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999999633613,
+      "maximumRawReturn": 108.428825,
+      "histogramSha256": "56931834b45f05346dc69710c9fe61ed55177e03963a4a87c2ada0fec3d50f3a"
+    },
+    {
+      "hero": "prism",
+      "state": 11,
+      "charges": [
+        2,
+        3,
+        3
+      ],
+      "samples": 1000000,
+      "freeSpins": 27740,
+      "rawReward": 590627.0083752397,
+      "rawRewardSquared": 3233125.384402883,
+      "rawMean": 0.5906270083752396,
+      "rawInterval95": [
+        0.5872983028006091,
+        0.5939557139498701
+      ],
+      "scaleNumerator": 1625391298,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.959999999776498,
+      "maximumRawReturn": 110.111775,
+      "histogramSha256": "0fab48b6bbffaa3df794af109c493e6d95da8995ceae2a7a33ce36633b8303c5"
+    },
+    {
+      "hero": "prism",
+      "state": 12,
+      "charges": [
+        3,
+        0,
+        3
+      ],
+      "samples": 1000000,
+      "freeSpins": 640,
+      "rawReward": 367635.90782491525,
+      "rawRewardSquared": 492598.5116536315,
+      "rawMean": 0.36763590782491523,
+      "rawInterval95": [
+        0.36646409217879594,
+        0.3688077234710345
+      ],
+      "scaleNumerator": 2611279201,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999996441753,
+      "maximumRawReturn": 84.971625,
+      "histogramSha256": "8cd14adda05bced03e3ea5a2df7e05f2328031584e60480c1337a547eb54a5b9"
+    },
+    {
+      "hero": "prism",
+      "state": 13,
+      "charges": [
+        3,
+        1,
+        3
+      ],
+      "samples": 1000000,
+      "freeSpins": 6265,
+      "rawReward": 406416.73192494444,
+      "rawRewardSquared": 1068890.3981571854,
+      "rawMean": 0.40641673192494443,
+      "rawInterval95": [
+        0.40455347718239665,
+        0.4082799866674922
+      ],
+      "scaleNumerator": 2362107473,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999996322813,
+      "maximumRawReturn": 95.537775,
+      "histogramSha256": "c8af61de3d4caa2feffdfe98523bc8a5ea05750d07308606f9d6e8add8942e7e"
+    },
+    {
+      "hero": "prism",
+      "state": 14,
+      "charges": [
+        3,
+        2,
+        3
+      ],
+      "samples": 1000000,
+      "freeSpins": 31290,
+      "rawReward": 593808.590650275,
+      "rawRewardSquared": 3594705.454670729,
+      "rawMean": 0.593808590650275,
+      "rawInterval95": [
+        0.5902794474725137,
+        0.5973377338280363
+      ],
+      "scaleNumerator": 1616682572,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999996077371,
+      "maximumRawReturn": 108.48955,
+      "histogramSha256": "4ca63d496ec0af1b4677322d4c7914c297825fdb13df610ac398bfa164c2951e"
+    },
+    {
+      "hero": "prism",
+      "state": 15,
+      "charges": [
+        3,
+        3,
+        3
+      ],
+      "samples": 8000000,
+      "freeSpins": 3075820,
+      "rawReward": 8046529.891676577,
+      "rawRewardSquared": 250487603.91076064,
+      "rawMean": 1.0058162364595722,
+      "rawInterval95": [
+        1.0020018271887328,
+        1.0096306457304116
+      ],
+      "scaleNumerator": 954448700,
+      "scaleDenominator": 1000000000,
+      "calibratedUnroundedReturn": 0.9599999993245588,
+      "maximumRawReturn": 124.0178,
+      "histogramSha256": "3d791c1fec3f9fc3584090ad7c3fe2275e3661d29367a13cc6f80260fc61caaa"
+    }
+  ]
+}

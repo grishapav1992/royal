@@ -10,7 +10,7 @@ import {validNeopolisSession} from '../../src/shared/neopolis';
 
 const command=(path:string,body:unknown=null,method:'GET'|'POST'=body===null?'GET':'POST'):NativeCommand=>({path,body,method,flags:Array(9).fill(true),rules:2,query:{}});
 const draconaCommand=(body:unknown=null):NativeCommand=>({...command('/expansion',body),flags:[true,true,true,true,true,true,true,true,2]});
-const neopolisCommand=(body:unknown=null):NativeCommand=>({...draconaCommand(body),neopolisRules:3});
+const neopolisCommand=(body:unknown=null):NativeCommand=>({...draconaCommand(body),neopolisRules:4});
 async function setup(){const c=await pvpFixture();await c.source.ingest(block(102,'1000000000000',c.config.source.addresses.find(a=>a.userId==='reserve')!.address));await c.ledger.sync(c.source,await c.reconciliation());const games=new NileGameRuntime(c.ledger,()=>0);await games.ready;return{...c,games};}
 
 test('published Neopolis restores all three bosses and settles its campaign once in the common Nile journal',async()=>{
@@ -19,13 +19,15 @@ test('published Neopolis restores all three bosses and settles its campaign once
   let games=new NileGameRuntime(c.ledger,draw),reply:any;
   const start=()=>({id:randomUUID(),action:'start',gameId:'studio-neopolis',stakeUnits:'1000',settings:{neopolis:{hero:'granite'}}});
   await assert.rejects(games.run(c.a,command('/expansion',start())),/refresh/);
-  let expected=200000000n;
+  let expected=200000000n,previous:any;
   for(let i=0;i<35;i++){
-   const op=start();reply=await games.run(c.a,neopolisCommand(op));assert(validNeopolisSession(reply.session));
-   expected-=10000000n;expected+=BigInt(reply.session.returnedUnits)*10000n;
+   const op={...start(),stakeUnits:i%2?'2000':'1000'};reply=await games.run(c.a,neopolisCommand(op));assert(validNeopolisSession(reply.session));
+   if(previous&&!previous.view.neopolis.team.complete)assert.deepEqual(reply.session.view.neopolis.origin,previous.view.neopolis.team);
+   assert.equal(reply.session.stakeUnits,op.stakeUnits);previous=reply.session;
+   expected-=BigInt(op.stakeUnits)*10000n;expected+=BigInt(reply.session.returnedUnits)*10000n;
    assert.equal(reply.wallet.balanceUnits,String(expected));if(reply.session.state==='active')break;
   }
-  assert.equal(reply.session.state,'active');const id=reply.session.id,bonusBalance=expected;
+  assert.equal(reply.session.state,'active');const id=reply.session.id,bonusBalance=expected,acceptedStake=reply.session.stakeUnits;
   games=new NileGameRuntime(c.ledger,draw);
   const hidden=await games.run(c.a,command('/expansion'))as any;assert(!hidden.sessions.some((s:any)=>s.id===id));
   const restored=await games.run(c.a,neopolisCommand())as any;assert.deepEqual(restored.sessions.find((s:any)=>s.id===id),reply.session);
@@ -33,7 +35,9 @@ test('published Neopolis restores all three bosses and settles its campaign once
   while(reply.session.state==='active'){
    const view=reply.session.view.neopolis;seen.add(view.battle.boss);
    last={id:randomUUID(),action:'move',gameId:'studio-neopolis',sessionId:id,move:'neopolis-spin',revision:view.revision};
+   await assert.rejects(games.run(c.a,neopolisCommand({...last as object,stakeUnits:'50000'})));
    reply=await games.run(c.a,neopolisCommand(last));assert(validNeopolisSession(reply.session));
+   assert.equal(reply.session.stakeUnits,acceptedStake);
    if(reply.session.state==='active')assert.equal(reply.wallet.balanceUnits,String(bonusBalance));
   }
   assert.deepEqual([...seen].sort(),[0,1,2]);expected+=BigInt(reply.session.returnedUnits)*10000n;
