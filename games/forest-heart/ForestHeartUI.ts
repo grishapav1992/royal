@@ -57,7 +57,7 @@ export class ForestHeartUI {
         <aside class="fh-flowers">${[0, 1, 2].map(i => `<div class="fh-flower" data-flower="${i}">${petals()}<small>${c.flower} ${i + 1}</small><span></span><div class="fh-petals" aria-hidden="true">${Array.from({length:5},(_,n)=>`<i style="--particle:${n}"></i>`).join('')}</div></div>`).join('')}</aside></div>
         <div class="fh-status-band"><div class="fh-story"><span class="fh-story-gem" aria-hidden="true">✧</span><p data-fh="status" role="status" aria-live="polite">${c.ready}</p></div>
         <div class="fh-bonus" hidden><span>${this.services.i18n.language === 'en'?'FREE PULSES':'БЕСПЛАТНЫЕ ИМПУЛЬСЫ'}</span><div>${[0, 1, 2, 3].map(i => `<i data-bud="${i}">${i+1}</i>`).join('')}</div><strong data-fh="remaining"></strong></div></div>
-      </section><aside class="fh-character" aria-hidden="true"><div class="fh-aura"></div><div class="fh-runes"><i></i><i></i><i></i><i></i></div><div class="fh-character-caption"><span>✧</span>${this.services.i18n.language === 'en' ? 'Keeper of the ancient light' : 'Хранительница древнего света'}</div></aside></div>
+      </section><aside class="fh-character" aria-hidden="true"><div class="fh-aura"></div><div class="fh-runes"><i></i><i></i><i></i><i></i></div><div class="fh-character-energy"><i></i><i></i><i></i><i></i></div><div class="fh-character-caption"><span>✧</span>${this.services.i18n.language === 'en' ? 'Keeper of the ancient light' : 'Хранительница древнего света'}</div></aside></div>
       <footer class="fh-controls"><div class="fh-money"><span>${c.balance}</span><strong data-fh="balance">…</strong><small>USDT · ${this.services.i18n.language === 'en' ? 'Virtual' : 'Виртуальные'}</small></div><div class="fh-bet"><span>${c.stake}</span><div><button data-fh="lower" aria-label="${c.lower}">−</button><strong data-fh="stake">10</strong><button data-fh="higher" aria-label="${c.higher}">+</button></div><small>USDT</small></div><div class="fh-total"><span data-fh="total-label">${c.total}</span><strong data-fh="total">0</strong><small data-fh="net">USDT</small></div><div class="fh-action"><div class="fh-primary"><button class="fh-spin" data-fh="spin">${c.spin}</button><button class="fh-pass" data-fh="pass" hidden>${c.pass}</button><button class="fh-retry" data-fh="retry" hidden>${c.retry}</button><button class="fh-refresh" data-fh="refresh" hidden>${c.refresh}</button></div><label class="fh-fast"><input data-fh="fast" type="checkbox">${this.services.i18n.language === 'en' ? 'Fast' : 'Быстро'}</label></div></footer>
       <div class="fh-footnote"><span>5 × 5 · ${c.energy} · ${this.services.i18n.language === 'en' ? 'LIVING ROOTS' : 'ЖИВЫЕ КОРНИ'}</span><span data-fh="credit-note"></span></div>
       <button class="fh-skip" data-fh="skip" hidden>${c.confirm}</button>
@@ -196,7 +196,7 @@ export class ForestHeartUI {
     const retry = move === 'retry';
     if (retry ? this.client.pending?.gameId !== FOREST_HEART_GAME || this.client.busy : this.blocked()) return;
     const owner = this.owner, prior = this.shown ? structuredClone(this.shown) : undefined;
-    this.character.rest('idle', true);
+    this.character.reset();
     this.busy = true; this.status = this.c.waiting; this.root.classList.add('fh-awaiting'); this.controls();
     void this.audio.unlock();
     try {
@@ -251,6 +251,7 @@ export class ForestHeartUI {
     const priorScene = previous?.stage === 'bonus' ? forestScene(previous) : undefined;
     const carried = new Set(priorScene?.lockedCells.filter(cell => priorScene.board[cell] === scene.board[cell]) ?? []);
     this.controls();
+    if (!turn) this.character.react('awaken', this.fast ? 620 : 1000);
     if (!turn && !this.reduced) {
       this.root.dataset.motion = 'clear';
       const clearDuration = this.fast ? 60 : 140;
@@ -312,7 +313,7 @@ export class ForestHeartUI {
     const count=(progress:number)=>{this.find('total').textContent=this.number(counterFrom+Math.floor((scene.totalUnits-counterFrom)*easeRoot(progress)));};
     const tier=this.shown?.state==='settled'?forestRoundTier(Number(this.shown.returnedUnits),Number(this.shown.spentUnits)):undefined;
     this.root.dataset.motion='count';
-    if(tier==='win'||tier==='big')await this.accent(tier,()=>{this.root.dataset.celebrate=tier;this.character.react(tier,tier==='big'?2400:1800);},0,countDuration,count);
+    if(tier==='win'||tier==='big')await this.accent(tier,()=>{this.root.dataset.celebrate=tier;this.character.react(tier,tier==='big'?3200:2600);},0,countDuration,count);
     else await this.clock(countDuration,elapsed=>count(countDuration?elapsed/countDuration:1));
     await this.clock(this.reduced ? 0 : 240, () => {});delete this.root.dataset.pulse;delete this.root.dataset.motion;
     this.root.querySelectorAll('.fh-flower-arriving').forEach(flower=>flower.classList.remove('fh-flower-arriving'));

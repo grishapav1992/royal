@@ -1,4 +1,19 @@
-# Forest Heart client 1.5
+# Forest Heart client 1.6
+
+## Character presentation 1.6
+
+The existing approved adult character and eight registered raster assets are retained. This is a weighted illustrated mesh, not a skeletal or 3D character. Every accepted fresh field now starts an `awaken` reaction before clearing and revealing its roots. She first prepares, then reaches toward the board with a raised shoulder, a head acknowledgement and mint light. The existing audible flow accent changes that gesture into channeling. A request waiting for acceptance does not disclose a result. Restored sessions, retries and reopening never start a fresh-field reaction.
+
+| Event | Preparation, accent and completion | Meaning and interruption |
+| --- | --- | --- |
+| Accepted field | 1000 ms reach curve, 620 ms in fast mode, overlapping the unchanged clear/reveal clock | Begins after acceptance; no extra operation or control delay. Flow takes over from the current deformation |
+| Connected flower group | One continuous hand/head acknowledgement through the group | Multiple flowers extend its hold instead of restarting the gesture. It is a contribution, not a final wallet celebration |
+| Positive complete paid round | 2600 ms chest/shoulder lift and nod with warm light; 3200 ms for the existing large-result tier | Begins at the existing final cadence and counter completion. Partial, break-even and zero results never use these reactions |
+| Next action or return to rest | 640 ms settling transition from the visible weighted pose and deformation | Does not lock controls. New events can interrupt it without snapping to a previous source image |
+
+Pose transitions use 420 ms quintic interpolation, carrying all current visible pose weights into an interrupted transition. Local arm, upper-body, head, hair and fabric weights keep the feet anchored. Gesture curves also start at the current deformation. The renderer targets up to 60 draws per second during reactions and pose transitions, and 30 during idle; this is an implementation target, not a measured device claim. Uniform branches sample only contributing pose textures. The image fallback uses the same continuous pose weights. No new raster asset, music or sound is added.
+
+Skip, rules, hidden tabs, close and account change clear transient gestures and light. Reduced motion uses a static accepted pose, without gesture deformation or dynamic light. The same host, shared audio preferences, wallet, mathematics, payout thresholds and accepted game history remain authoritative. Browser verification samples actual rendered state through normal, muted and fast results and preserves exact settled amounts. Timing and intensity are game-specific artistic hypotheses; user approval and physical device performance remain separate from automated correctness.
 
 ## Board presentation 1.5
 

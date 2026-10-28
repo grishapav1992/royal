@@ -310,7 +310,7 @@ test('the elf blinks and renders local movement, stops for rules, and reacts onl
   await expect.poll(async()=>(await state(page)).character.renderer,{intervals:[30]}).toBe('image');
   await expect.poll(async()=>(await state(page)).character.renderer,{intervals:[50]}).toBe('webgl');
   await act(page);let current=await state(page);
-  expect(current.character.events.map((e:any)=>e.pose)).toEqual(['channel','flower','flower','flower','win']);
+  expect(current.character.events.map((e:any)=>e.reaction)).toEqual(['awaken','channel','flower','flower','flower','win']);
   expect(current.character.pose).toBe('win');
   await page.screenshot({path:out+'/elf-win.png'});
   await page.locator('#studio-game-list').click();await choose(page);
@@ -328,7 +328,7 @@ test('the elf blinks and renders local movement, stops for rules, and reacts onl
 test('the elf shows choice, flower, bonus and large final reactions in the real host with chat', async ({page,roomPath}) => {
   await routeScenario(page,'choice-bonus');await enter(page,roomPath);
   await act(page);let current=await state(page);
-  expect(current.character.events.map((e:any)=>e.pose)).toEqual(['channel','flower','choice']);
+  expect(current.character.events.map((e:any)=>e.reaction)).toEqual(['awaken','channel','flower','choice']);
   await page.screenshot({path:out+'/elf-choice.png'});
   await game(page).locator('[data-cell="5"]').click();
   await expect(game(page).locator('.fh-character')).toHaveAttribute('data-pose','flower');
@@ -347,6 +347,53 @@ test('the elf shows choice, flower, bonus and large final reactions in the real 
   expect(current.character.events.at(-1).pose).toBe('big');expect(current.scene.totalUnits).toBe(946500);
   await page.setViewportSize({width:1440,height:1000});await page.screenshot({path:out+'/elf-big.png'});
   await writeFile(out+'/character-events.json',JSON.stringify(current.character,null,2));
+});
+
+test('the elf anticipates the field and keeps pose weights and gestures continuous through muted and fast wins', async ({page,roomPath}) => {
+  await routeScenario(page,'win');await enter(page,roomPath);
+  const records=[];
+  for(const mode of ['normal','muted','fast']){
+    if(mode==='muted')await game(page).locator('[data-fh=sound]').click();
+    if(mode==='fast')await game(page).locator('[data-fh=fast]').check();
+    await game(page).locator('[data-fh=spin]').click();
+    const frames=await game(page).locator('.fh').evaluate(async root=>{
+      const frames:{at:number;motion:string;pose:string;reaction:string|null;weights:number[];gesture:number[];draws:number;light:number}[]=[];
+      const start=performance.now();let winAt=0;
+      while(performance.now()-start<12000){
+        const character=(root.ownerDocument.defaultView!.parent as any).royalDemo.getMiniState().character;
+        const at=performance.now();
+        frames.push({at,motion:(root as HTMLElement).dataset.motion||'',pose:character.pose,reaction:character.reaction,weights:character.weights,gesture:character.gesture,draws:character.frames,light:Number(getComputedStyle(root.querySelector('.fh-character-energy')!).opacity)});
+        if(character.reaction==='win'&&!winAt)winAt=at;
+        if(winAt&&at-winAt>1600)break;
+        await new Promise<void>(resolve=>requestAnimationFrame(()=>resolve()));
+      }
+      return frames;
+    });
+    expect(frames.some(f=>['clear','reveal'].includes(f.motion)&&f.reaction==='awaken')).toBe(true);
+    expect(frames.some(f=>f.reaction==='awaken'&&f.gesture[0]>.5)).toBe(true);
+    expect(frames.some(f=>f.reaction==='win'&&f.gesture[1]>.85)).toBe(true);
+    expect(frames.some(f=>f.reaction==='win'&&f.light>.8)).toBe(true);
+    let maxWeightStep=0,maxGestureStep=0;
+    for(let i=0;i<frames.length;i++){
+      const frame=frames[i];expect(frame.weights.reduce((a,b)=>a+b,0)).toBeCloseTo(1,6);
+      expect(frame.weights.every(w=>Number.isFinite(w)&&w>=0&&w<=1)).toBe(true);
+      if(i&&frame.at-frames[i-1].at<40){
+        maxWeightStep=Math.max(maxWeightStep,...frame.weights.map((w,j)=>Math.abs(w-frames[i-1].weights[j])));
+        maxGestureStep=Math.max(maxGestureStep,...frame.gesture.map((w,j)=>Math.abs(w-frames[i-1].gesture[j])));
+      }
+    }
+    expect(maxWeightStep).toBeLessThan(.2);expect(maxGestureStep).toBeLessThan(.4);
+    const current=await state(page);expect(current.scene.totalUnits).toBe(1893);expect(current.view.stage).toBe('settled');
+    const events=current.character.events;expect(events.filter((e:any)=>e.reaction==='awaken')).toHaveLength(records.length+1);
+    records.push({mode,maxWeightStep,maxGestureStep,frames});
+    if(mode==='normal')await page.screenshot({path:out+'/elf-v6-win.png'});
+  }
+  await page.setViewportSize({width:390,height:844});await fit(game(page));await expect(page.locator('#chat-input')).toBeInViewport();
+  await page.screenshot({path:out+'/elf-v6-mobile.png'});
+  await game(page).locator('[data-fh=rules]').click();const paused=(await state(page)).character;
+  expect(paused.gesture).toEqual([0,0,0,0]);expect(paused.reaction).toBeNull();
+  await game(page).locator('[data-fh=close]').click();
+  await writeFile(out+'/character-v6-frames.json',JSON.stringify(records,null,2));
 });
 
 test('the original score renders finite unclipped audio and releases its owned voices',async({page})=>{
