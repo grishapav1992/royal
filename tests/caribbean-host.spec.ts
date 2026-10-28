@@ -1,7 +1,7 @@
 import {test as base,expect,type Page} from '@playwright/test';
 import {Client} from '@colyseus/sdk';
 
-const game='studio-caribbean-treasures',out='artifacts/work/caribbean-empty-balance';
+const game='studio-caribbean-treasures',out=process.env.CARIBBEAN_ARTIFACTS_DIR||'artifacts/work/caribbean-empty-balance';
 const test=base.extend<{roomPath:string}>({roomPath:async({request},use)=>{
  const response=await request.post('/api/auth/login',{data:{email:`ct-room-${crypto.randomUUID()}@example.test`,password:'Royal-test-123!'}});
  expect(response.ok()).toBe(true);
@@ -79,6 +79,33 @@ async function layout(page:Page,name:string){
  if(boxes.length===2){expect(boxes[1].x).toBeGreaterThanOrEqual(boxes[0].x-1);expect(boxes[1].right).toBeLessThanOrEqual(boxes[0].right+1);expect(boxes[1].bottom).toBeLessThanOrEqual(boxes[0].bottom+1);expect(boxes[1].width).toBeGreaterThan(30);}
  await page.screenshot({path:out+'/'+name+'.png'});
 }
+
+test('responsive framing keeps the title and full captain artwork inside the host',async({page,roomPath})=>{
+ test.setTimeout(120000);await enter(page,roomPath);await topup(page);await open(page);
+ const measurements:any[]=[];
+ for(const [width,height] of [[1440,1000],[1280,720],[1024,768],[900,650],[800,600],[640,480],[500,760],[390,844],[342,700],[844,390],[342,245]]){
+  await page.setViewportSize({width,height});
+  await expect.poll(async()=>page.evaluate(()=>{const d=document.querySelector<HTMLElement>('#mini-dialog')!,s=d.querySelector<HTMLElement>('.mini-stage')!;return d.dataset.gameViewportReady===d.dataset.game+'|'+s.clientWidth+'x'+s.clientHeight+'|off';})).toBe(true);
+  const measured=await page.evaluate(()=>{
+   const root=document.querySelector<HTMLElement>('.ct-root')!,title=root.querySelector<HTMLElement>('.ct-title')!,heading=title.querySelector('h2')!,captain=root.querySelector<HTMLElement>('.ct-captain')!,image=captain.querySelector<HTMLImageElement>('.ct-current')!;
+   const box=(e:Element)=>{const b=e.getBoundingClientRect();return{x:b.x,y:b.y,width:b.width,height:b.height,right:b.right,bottom:b.bottom};};
+   const text=document.createRange();text.selectNodeContents(heading);const b=text.getBoundingClientRect();
+   const visible=getComputedStyle(captain).display!=='none',style=getComputedStyle(image),scale=style.objectFit==='contain'?Math.min(image.clientWidth/image.naturalWidth,image.clientHeight/image.naturalHeight):Math.max(image.clientWidth/image.naturalWidth,image.clientHeight/image.naturalHeight);
+   return{root:box(root),rootOverflowX:root.scrollWidth-root.clientWidth,pageOverflowX:document.documentElement.scrollWidth-innerWidth,title:box(title),titleText:{x:b.x,right:b.right,y:b.y,bottom:b.bottom},captain:visible?{box:box(captain),objectFit:style.objectFit,clippedX:Math.max(0,image.naturalWidth*scale-image.clientWidth),clippedY:Math.max(0,image.naturalHeight*scale-image.clientHeight)}:null,stage:box(root.querySelector('.ct-stage')!),play:box(root.querySelector('[data-ct-action=play]')!),chat:box(document.querySelector('#chat-input')!)};
+  });
+  measurements.push({width,height,...measured});await page.screenshot({path:out+`/framing-${width}x${height}.png`});
+  if(width<=640&&height<=540){
+   await page.locator('[data-ct-action=play]').scrollIntoViewIfNeeded();await expect(page.locator('[data-ct-action=play]')).toBeInViewport();
+   await page.locator('#chat-input').scrollIntoViewIfNeeded();await expect(page.locator('#chat-input')).toBeInViewport();
+   await page.locator('.ct-heading h2').scrollIntoViewIfNeeded();
+  }
+ }
+ const {writeFile}=await import('node:fs/promises');await writeFile(out+'/framing-measurements.json',JSON.stringify(measurements,null,2));
+ expect(measurements.filter(m=>m.captain&&(m.captain.clippedX>1||m.captain.clippedY>1)), 'All source portrait pixels must fit, without cover cropping').toEqual([]);
+ expect(measurements.filter(m=>m.pageOverflowX>1||m.rootOverflowX>1||m.titleText.x<m.root.x-1||m.titleText.right>m.root.right+1), 'Text and controls cannot spill horizontally').toEqual([]);
+ await page.setViewportSize({width:1280,height:720});await page.request.post('/__test/caribbean/force-bonus');await action(page,'[data-ct-action=play]');
+ await layout(page,'framing-bonus-1280x720');await action(page,'[data-ct-action=choose-flagship]');await finish(page);
+});
 
 test('empty balance explains disabled spins, live funding unlocks an exact-cost single line and free spins need no balance',async({page,roomPath})=>{
  await enter(page,roomPath);await open(page);await page.locator('[data-ct-lines]').selectOption('1');await page.locator('[data-ct-stake]').selectOption('1000');
