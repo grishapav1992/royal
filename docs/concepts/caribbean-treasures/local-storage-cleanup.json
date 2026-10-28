@@ -1348,5 +1348,51 @@
       }
     ],
     "freeSpaceNote": "Measurements include other processes. Cleanup was rejected before execution and no physical space reclamation is claimed."
+  },
+  "headerControlsUpdate": {
+    "date": "2026-10-28",
+    "owner": "caribbean-header-controls",
+    "preservationCommit": "46f27e1ae3179331a436cfa12946e08389fe6184",
+    "preservationRefs": [
+      "refs/heads/main",
+      "refs/heads/codex/caribbean-header-controls"
+    ],
+    "remoteCommitVerified": true,
+    "freeBeforeBuildBytes": 299242049536,
+    "freeBeforeRejectedCleanupBytes": 299137511424,
+    "freeAfterRejectedCleanupBytes": 299135414272,
+    "removedFolders": [],
+    "removedFiles": [],
+    "removedArchives": [],
+    "removedLogicalBytes": 0,
+    "physicalReclamationClaimed": false,
+    "cleanupBlock": {
+      "action": "Remove only artifacts/work/caribbean-header-controls after exact path and owner validation and GitHub preservation verification",
+      "reason": "Automatic approval review rejected the command: blocked by policy",
+      "attemptExecuted": false
+    },
+    "retainedTaskArtifacts": {
+      "folder": "artifacts/work/caribbean-header-controls",
+      "bytesAtCleanupAttempt": 13612828.0,
+      "cleanupCondition": "Remove duplicated browser screenshots, reports and build log when cleanup is permitted; compact proof and final screenshot are verified in GitHub"
+    },
+    "activeExceptions": [
+      {
+        "folder": "C:/Users/Aorus/.codex/worktrees/new-slot/royal",
+        "reason": "Existing local preview and primary checkout concurrent work remain active",
+        "cleanupCondition": "Preserve while requested preview is running"
+      },
+      {
+        "folder": "module-dist/studio-caribbean-treasures/versions",
+        "reason": "New 1.3.3 package is current; an already opened user window may still use the previous immutable package",
+        "cleanupCondition": "Remove obsolete packages only after the old game window is closed and no running session requires them"
+      },
+      {
+        "folder": "C:/Users/Aorus/AppData/Local/Temp/royal-pg-C70xv3",
+        "reason": "Database for the active user-requested local preview",
+        "cleanupCondition": "Preserve until that preview ends"
+      }
+    ],
+    "freeSpaceNote": "Measurements include other processes. Cleanup was rejected before execution; no physical reclamation is claimed"
   }
 }
