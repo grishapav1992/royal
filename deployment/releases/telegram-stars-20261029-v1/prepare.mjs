@@ -1,4 +1,4 @@
-import { readFile, mkdir, writeFile, copyFile } from 'node:fs/promises';
+import { readFile, mkdir, writeFile, copyFile, readdir, lstat } from 'node:fs/promises';
 import { resolve, dirname, posix } from 'node:path';
 import { createHash } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
@@ -52,7 +52,28 @@ export async function prepare(root, beforeFile, output) {
     }
   }
   const locked = dependencies(JSON.parse(await readFile(resolve(root, 'package-lock.json'))), metadata);
-  for (const [name, version] of Object.entries(locked)) if (before.dependencies[name] !== version) throw Error('Installed payment dependency differs: ' + name);
+  const dependencyUpdates = Object.entries(locked).filter(([name, version]) => before.dependencies[name] !== version).map(([name]) => name);
+  if (dependencyUpdates.some(name => !['node_modules/body-parser', 'node_modules/qs'].includes(name))) throw Error('Unreviewed payment dependency update');
+  const dependencyFiles = {};
+  async function copyDependency(name) {
+    const source = resolve(root, name), stat = await lstat(source);
+    if (stat.isSymbolicLink()) throw Error('Dependency symlink rejected');
+    if (stat.isDirectory()) for (const child of await readdir(source)) await copyDependency(name + '/' + child);
+    else if (stat.isFile()) {
+      const bytes = await readFile(source);
+      dependencyFiles[name] = hash(bytes);
+      await mkdir(dirname(resolve(output, 'dependencies', name)), { recursive: true });
+      await writeFile(resolve(output, 'dependencies', name), bytes);
+    } else throw Error('Unexpected dependency file type');
+  }
+  for (const name of dependencyUpdates) {
+    await copyDependency(name);
+    for (const old of Object.keys(before.programs['royal-payments-1']).filter(path => path.startsWith(name + '/'))) {
+      if (!(old in dependencyFiles)) throw Error('Dependency update would retain an obsolete file: ' + old);
+    }
+  }
+  const lockBytes = await readFile(resolve(root, 'package-lock.json'));
+  await writeFile(resolve(output, 'package-lock.json'), lockBytes);
   await copyFile(resolve(root, 'dist-server/payments.js'), resolve(output, 'payments.js'));
   await copyFile(resolve(root, 'deployment/Caddyfile'), resolve(output, 'Caddyfile'));
   const helpers = resolve(root, 'deployment/releases/nowpayments-sandbox-20261027-v1');
@@ -64,7 +85,7 @@ export async function prepare(root, beforeFile, output) {
   };
   for (const [name, path] of Object.entries(files)) await copyFile(path, resolve(output, name));
   const manifest = { format: 1, release: 'telegram-stars-20261029-v1', sourceCommit: release.sourceCommit,
-    before, inputs, changed, dependencies: locked,
+    before, inputs, changed, dependencies: locked, dependencyUpdates, dependencyFiles, lockHash: hash(lockBytes),
     helpers: Object.fromEntries(await Promise.all(['install.py', 'financial_gate.py', 'quiesce.cjs', 'runtime-inventory.cjs']
       .map(async name => [name, hash(await readFile(resolve(output, name)))]))) };
   await writeFile(resolve(output, 'install-manifest.json'), JSON.stringify(manifest, null, 2) + '\n');

@@ -83,7 +83,8 @@ export class TelegramStarsStore {
       return row;
     }, { lockKey: 'crypto-ledger' });
     await this.bot.call('sendMessage', { chat_id: chatId, text: 'Счёт для аккаунта ' + String(row.account_id).slice(0, 8)
-      + '. Не пересылай ссылку. Условия: ' + row.terms_url + '. Помощь с оплатой: /paysupport' });
+      + '. Не пересылай ссылку. Перед оплатой прочитай условия: ' + row.terms_url
+      + '. Подтверждая оплату, ты принимаешь эти условия. Помощь с оплатой: /paysupport' });
     await this.bot.call('sendInvoice', { chat_id: chatId, title: 'Пополнение баланса Рояль',
       description: amount(BigInt(row.amount_units)) + ' USDT на баланс аккаунта ' + String(row.account_id).slice(0, 8),
       payload: row.id, provider_token: '', currency: 'XTR', prices: [{ label: 'Пополнение', amount: Number(row.stars) }],

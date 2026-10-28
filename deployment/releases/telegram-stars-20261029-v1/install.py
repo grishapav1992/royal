@@ -211,7 +211,16 @@ def release(private):
     binary = ROOT/'payments.js'
     require(sha(binary) == release_manifest['files']['dist-server/payments.js'], 'Payment bundle changed')
     require(snapshot() == old, 'Production changed since review')
-    require(all(old['dependencies'].get(name) == version for name, version in manifest['dependencies'].items()), 'Payment dependencies differ')
+    updates = manifest['dependencyUpdates']
+    require(set(updates) <= {'node_modules/body-parser', 'node_modules/qs'}, 'Unreviewed dependency update')
+    require([name for name, version in manifest['dependencies'].items() if old['dependencies'].get(name) != version] == updates, 'Dependency update scope differs')
+    require(sha(ROOT/'package-lock.json') == manifest['lockHash'], 'Committed dependency lock differs')
+    package_lock = read(ROOT/'package-lock.json')
+    for name, value in manifest['dependencyFiles'].items():
+        require(any(name.startswith(folder+'/') for folder in updates)
+            and '..' not in Path(name).parts and sha(ROOT/'dependencies'/name) == value, 'Dependency payload changed')
+    for folder in updates:
+        require(all(name in manifest['dependencyFiles'] for name in old['programs']['royal-payments-1'] if name.startswith(folder+'/')), 'Obsolete dependency files require a separate reviewed release')
     candidate_caddy = (ROOT/'Caddyfile').read_text()
     require(candidate_caddy.count(BLOCK) == 1 and candidate_caddy.replace(BLOCK, '') == (LIVE/CADDY).read_text(), 'Caddy changes exceed the Stars route')
     capacity()
@@ -233,12 +242,22 @@ def release(private):
     context = ROOT/'runtime-context'
     context.mkdir()
     shutil.copy2(binary, context/'payments.js')
+    if updates:
+        shutil.copytree(ROOT/'dependencies'/'node_modules', context/'node_modules')
+        # Retain all unrelated installed metadata; replace only records pinned by the committed lock.
+        script = "const fs=require('fs');const p=JSON.parse(fs.readFileSync('/app/node_modules/.package-lock.json'));const v=JSON.parse(process.argv[1]);Object.assign(p.packages,v);process.stdout.write(JSON.stringify(p,null,2)+'\\n');"
+        records = {name: package_lock['packages'][name] for name in updates}
+        metadata = run(['docker', 'exec', 'royal-payments-1', 'node', '-e', script, json.dumps(records)]) + '\n'
+        (context/'node_modules'/'.package-lock.json').write_text(metadata)
     (context/'Dockerfile').write_text('FROM royal-payments:before-'+NAME+'\nCOPY --chown=1000:1000 payments.js /app/dist-server/payments.js\n'
-        'LABEL org.opencontainers.image.revision="'+manifest['sourceCommit']+'"\n')
+        + ('COPY --chown=1000:1000 node_modules/ /app/node_modules/\n' if updates else '')
+        + 'LABEL org.opencontainers.image.revision="'+manifest['sourceCommit']+'"\n')
     run(['docker', 'build', '--pull=false', '-t', 'royal-payments:'+NAME, str(context)])
     built = run(['docker', 'image', 'inspect', 'royal-payments:'+NAME, '--format', '{{.Id}}'])
     node = (ROOT/'runtime-inventory.cjs').read_text()
-    expected_program = {**old['programs']['royal-payments-1'], 'dist-server/payments.js': sha(binary)}
+    expected_program = {**old['programs']['royal-payments-1'], **manifest['dependencyFiles'], 'dist-server/payments.js': sha(binary)}
+    if updates:
+        expected_program['node_modules/.package-lock.json'] = sha(context/'node_modules'/'.package-lock.json')
     actual = json.loads(run(['docker', 'run', '--rm', '--network=none', '--entrypoint', 'node', built, '-e', node]))
     require(actual == expected_program, 'Candidate changes exceed payments.js')
     require(snapshot() == old, 'Production changed during image preparation')
@@ -277,13 +296,15 @@ def release(private):
                 {n: v for n, v in old['services'].items() if n != '/royal-payments-1'}, 'Another persistent service changed')
         require(after['source'] == {**old['source'], **manifest['changed'], CADDY: sha(ROOT/'Caddyfile')}, 'Unrelated source changed')
         require(after['settings'] == {**old['settings'], str(PROVIDER): sha(PROVIDER)}, 'Protected settings changed')
-        for key in ['moduleFiles', 'hostContract', 'paymentRuntime', 'compose', 'dependencies']:
+        for key in ['moduleFiles', 'hostContract', 'paymentRuntime', 'compose']:
             require(after[key] == old[key], 'Protected state changed: '+key)
+        require(after['dependencies'] == {**old['dependencies'], **{name: manifest['dependencies'][name] for name in updates}}, 'Unrelated dependency versions changed')
         require(after['services']['/royal-payments-1']['image'] == built, 'Running payment image differs')
         gate.release()
         result = {'release': NAME, 'sourceCommit': manifest['sourceCommit'], 'image': built,
             'published': True, 'changedSources': sorted(manifest['changed']), 'gameAndOtherServicesPreserved': True,
             'runtimeFilesVerified': {name: len(files) for name, files in after['programs'].items()},
+            'dependencyUpdates': {name: manifest['dependencies'][name] for name in updates},
             'sourceBackupBytes': (BACKUP/'source.tgz').stat().st_size, 'sourceBackupSha256': sha(BACKUP/'source.tgz'),
             'paymentBackupBytes': (BACKUP/'payments.dump').stat().st_size, 'paymentBackupSha256': sha(BACKUP/'payments.dump'),
             'freeBytesAfter': shutil.disk_usage(LIVE).free, 'at': time.time()}
