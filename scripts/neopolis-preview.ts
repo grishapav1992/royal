@@ -1,5 +1,7 @@
 /** Local review stand. Always starts its own temporary PostgreSQL, never reads .env. */
 import { spawn } from 'node:child_process';
+import { createReadStream, statSync } from 'node:fs';
+import { resolve, extname } from 'node:path';
 import { createServer } from 'vite';
 import { temporaryDatabase } from './database-test';
 import { neopolisTestRng } from './neopolis-test-rng';
@@ -17,11 +19,28 @@ backend.stdout.on('data', bytes => { log = (log + bytes.toString()).slice(-6000)
 backend.stderr.on('data', bytes => { log = (log + bytes.toString()).slice(-6000); });
 const vite = await createServer({ configFile: false, root: process.cwd(),
   // Disposable preview coins only. The deployed host continues to use its Nile journal.
-  plugins: [neopolisTestRng(api,{...process.env,...database.env},process.env.NEOPOLIS_TEST_RNG === '1')],
+  plugins: [neopolisTestRng(api,{...process.env,...database.env},process.env.NEOPOLIS_TEST_RNG === '1'), {
+    name: 'review-committed-client-bytes', configureServer(server) {
+      if (process.env.NEOPOLIS_REVIEW_DIST !== '1') return;
+      const directory = resolve('dist');
+      server.middlewares.use((request, response, next) => {
+        const pathname = new URL(request.url || '/', 'http://127.0.0.1').pathname;
+        const file = resolve(directory, '.' + (pathname === '/' ? '/index.html' : pathname));
+        if (!file.startsWith(directory + '/')) { next(); return; }
+        try { if (!statSync(file).isFile()) { next(); return; } } catch { next(); return; }
+        const mime: Record<string,string> = { '.html':'text/html', '.js':'text/javascript', '.css':'text/css', '.json':'application/json', '.png':'image/png', '.webp':'image/webp', '.svg':'image/svg+xml', '.woff2':'font/woff2' };
+        response.setHeader('Content-Type', mime[extname(file)] || 'application/octet-stream');
+        response.setHeader('Cache-Control', 'no-store'); createReadStream(file).pipe(response);
+      });
+    },
+  }],
   optimizeDeps: { entries: ['tests/fixtures/neopolis-preview.html'] },
   server: { host: '127.0.0.1', port: webPort, strictPort: true,
     watch: { ignored: ['**/module-dist/**','**/module-build/**','**/artifacts/**','**/dist/**','**/dist-server/**'] },
-    proxy: { '/api': api, '/game-modules': api, '/multiplayer': { target:api, ws:true, rewrite:path => path.replace(/^\/multiplayer/, '') } },
+    proxy: { '/api': api, '/game-modules': api, '/multiplayer': { target:api, ws:true, rewrite:path => path.replace(/^\/multiplayer/, '') },
+      ...(process.env.NEOPOLIS_REVIEW_DIST === '1' ? { '/matchmake': api,
+        '^/[A-Za-z0-9_-]+/[A-Za-z0-9_-]+(?:[?]|$)': { target: api, ws: true } } : {}),
+    },
   },
 });
 async function stop() {

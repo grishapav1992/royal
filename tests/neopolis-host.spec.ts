@@ -34,11 +34,14 @@ test('Neopolis uses the real host area, keeps controls and chat visible, and res
     await page.getByRole('button', { name: 'Продолжить', exact: true }).click();
     await expect(page.locator('#character-step')).toBeVisible();
     await page.getByRole('button', { name: 'Войти в зал', exact: true }).click();
-    await expect(page.locator('#join-dialog')).toBeHidden();
-    await expect.poll(() => page.evaluate(() => (window as any).royalDemo.getState().online)).toBe(true);
+    await expect(page.locator('#join-dialog')).toBeHidden({timeout:30000});
+    await expect.poll(() => page.evaluate(() => { try { return (window as any).royalDemo?.getState().online ?? false; } catch { return false; } }), {timeout:30000}).toBe(true);
     const deposit = await page.request.post('/api/demo-wallet/operations', { data: { id: crypto.randomUUID(), kind: 'deposit', amount: 10000 } });
     expect(deposit.ok()).toBe(true);
-    await page.evaluate(async () => { const path = '/src/wallet/WalletClient.ts'; await (await import(/* @vite-ignore */ path)).demoWallet.refresh(); });
+    if (process.env.NEOPOLIS_REVIEW_DIST === '1') {
+      await page.reload(); await expect(page.locator('#join-dialog')).toBeHidden({timeout:30000});
+      await expect.poll(() => page.evaluate(() => { try { return (window as any).royalDemo?.getState().online ?? false; } catch { return false; } }), {timeout:30000}).toBe(true);
+    } else await page.evaluate(async () => { const path = '/src/wallet/WalletClient.ts'; await (await import(/* @vite-ignore */ path)).demoWallet.refresh(); });
     await open(page);
     await page.locator('[data-hero=prism]').click();
     await expect(page.locator('[data-hero=prism]')).toHaveAttribute('aria-pressed', 'true');
@@ -92,6 +95,13 @@ test('Neopolis uses the real host area, keeps controls and chat visible, and res
     expect(changed.stakeUnits).toBe('2000');
     expect(changed.view.neopolis.origin).toEqual(saved.view.neopolis.team);
     await expect(page.locator('[data-np=spin]')).toBeEnabled();
+    await expect(page.locator('[data-np=bet]')).toBeEnabled();
+    for (const [width,height] of [[1440,1000],[390,844]]) {
+      await page.setViewportSize({width,height});
+      await expect(page.locator('[data-np=bet]')).toHaveValue('20');
+      await expect(page.locator('#chat-input')).toBeInViewport();
+      await page.screenshot({path:out+'/stake-20-'+width+'.png'});
+    }
     const before = await (await page.request.get('/api/demo-wallet')).json();
     await page.locator('#mini-dialog .mini-top [data-close]').click();
     await expect(page.locator('#mini-dialog')).toBeHidden();

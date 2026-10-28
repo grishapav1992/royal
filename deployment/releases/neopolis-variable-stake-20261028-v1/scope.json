@@ -30,7 +30,8 @@
     "docs/game-math/neopolis-v4-calibration.json",
     "docs/game-math/neopolis-variable-stake-v3-audit-20261028.json",
     "docs/game-math/qualifications/neopolis-v4-first-look-failed.json",
-    "docs/game-math/qualifications/neopolis-v4.json"
+    "docs/game-math/qualifications/neopolis-v4.json",
+    "scripts/neopolis-preview.ts"
   ],
   "changedGame": "studio-neopolis",
   "contract": {
