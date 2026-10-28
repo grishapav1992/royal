@@ -57,6 +57,11 @@
 .ct-root[data-ct-captain-motion=reduced] .ct-portrait-layer{transition:none!important}
 .ct-balance-value{display:flex;align-items:center;gap:5px}.ct-root .ct-wallet{flex:0 0 auto;min-width:24px;min-height:24px;padding:0 5px;font:700 15px system-ui,sans-serif}
 
+/* Keep navigation above every character/effect layer, and below the modal (15). */
+.ct-heading{position:relative;z-index:10;isolation:isolate}
+.ct-header-tools{position:relative;z-index:1}
+.ct-stage{z-index:0;isolation:isolate}
+
 /* Fit the complete source portrait and wordmark to the actual game pane. */
 .ct-title{min-width:0;max-width:100%;overflow-wrap:anywhere}
 .ct-captain{height:100%;width:min(32cqw,66.666cqh)}
