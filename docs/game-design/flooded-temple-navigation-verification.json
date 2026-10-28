@@ -29,7 +29,8 @@
   "checks": {
     "templeProfile": {
       "passed": 32,
-      "scope": "Before final initial-loading render fix; mathematical, wallet, HTTP, client, feedback and all-layout navigation checks"
+      "scope": "Final source after initial-loading fix and merge of current origin/main; mathematical, wallet, HTTP, client, feedback and all-layout navigation checks",
+      "durationMs": 19058.6646
     },
     "initialBrowserRun": {
       "version": "0.7.0-9ae45174ae94",
@@ -63,6 +64,50 @@
       "templeProofRemainedValid": true
     },
     "applicationBuild": {
+      "format": 1,
+      "startedAt": "2026-10-28T18:00:03.518Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 2647
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 8774
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 4758
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 7235
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 80
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 27
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 30
+        }
+      ],
+      "passed": true,
+      "durationMs": 23551
+    },
+    "preSyncApplicationBuild": {
       "format": 1,
       "startedAt": "2026-10-28T17:49:26.926Z",
       "scope": "application",
@@ -122,5 +167,7 @@
     "frontendPid": 1624,
     "backendPid": 12480
   },
-  "productionDeployed": false
+  "productionDeployed": false,
+  "integrationBaseline": "e1364159e9ea293b954b6a03b5563388917e2a89",
+  "integratedSourceCommit": "42d50463172151005124f0448e0de0e48fc459ab"
 }

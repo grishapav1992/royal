@@ -2,13 +2,13 @@
   "date": "2026-10-28",
   "owner": "Flooded Temple passage guidance chat",
   "purpose": "Remove owned browser outputs and inactive 0.7.0 packages after exact GitHub source preservation",
-  "state": "inventoried-awaiting-remote-preservation",
+  "state": "blocked-by-policy",
   "activePackage": "0.7.0-bc6bd4bcff7e",
   "firstMeasuredFreeBytes": 297035366400,
-  "freeBeforeBytes": 299420860416,
-  "freeAfterBytes": null,
-  "preservationCommit": null,
-  "githubVerified": false,
+  "freeBeforeBytes": 299469049856,
+  "freeAfterBytes": 299467919360,
+  "preservationCommit": "42d50463172151005124f0448e0de0e48fc459ab",
+  "githubVerified": true,
   "targets": [
     {
       "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-navigation",
@@ -73,5 +73,6 @@
       "reason": "Automatic review denied earlier attempts; old ambient tab could not be found by tool"
     }
   ],
-  "previousDeniedScopesRetried": false
+  "previousDeniedScopesRetried": false,
+  "rejection": "Automatic approval review rejected the native PowerShell removal before execution: blocked by policy. No detailed reason supplied. No files removed and no retry performed."
 }
