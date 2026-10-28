@@ -27,7 +27,7 @@ async function enter(page:Page,path:string,email=`ct-player-${crypto.randomUUID(
  await expect.poll(async()=>(await state(page)).online).toBe(true);
  return email;
 }
-async function open(page:Page){
+async function openCatalog(page:Page){
  if(await page.locator('#room-overview').getAttribute('aria-pressed')!=='true')await page.locator('#room-overview').click();
  await expect.poll(async()=>page.evaluate(()=>Math.abs((window as any).royalDemo.getState().view.width-document.getElementById('game')!.clientWidth))).toBeLessThanOrEqual(1);
  await page.locator('#games-tab').click();await page.locator('[data-cabinet="studio-cosmic-escape"]').click();
@@ -40,6 +40,9 @@ async function open(page:Page){
  },{timeout:30000,intervals:[1000,3000]}).toBe(true);}catch(error){
   const {writeFile}=await import('node:fs/promises');await writeFile(out+'/hall-failure.json',JSON.stringify(await page.evaluate(()=>({state:(window as any).royalDemo.getState(),dialogs:[...document.querySelectorAll('dialog')].map(d=>({id:d.id,open:d.open,hidden:d.hidden,display:getComputedStyle(d).display,html:d.outerHTML.slice(0,200)}))})),null,2));throw error;
  }
+}
+async function open(page:Page){
+ await openCatalog(page);
  await page.locator(`[data-platform-game="${game}"]`).click();
  await expect(page.locator('#mini-game')).toHaveAttribute('data-game-module-id',game,{timeout:25000});
  await expect(page.locator('.ct-root')).toBeVisible();
@@ -79,6 +82,24 @@ async function layout(page:Page,name:string){
  if(boxes.length===2){expect(boxes[1].x).toBeGreaterThanOrEqual(boxes[0].x-1);expect(boxes[1].right).toBeLessThanOrEqual(boxes[0].right+1);expect(boxes[1].bottom).toBeLessThanOrEqual(boxes[0].bottom+1);expect(boxes[1].width).toBeGreaterThan(30);}
  await page.screenshot({path:out+'/'+name+'.png'});
 }
+
+test('catalogue pirate captain cover stays sharp on desktop and mobile and reopens the same round',async({page,roomPath})=>{
+ await enter(page,roomPath);await topup(page);await openCatalog(page);
+ const card=page.locator(`[data-platform-game="${game}"]`),art=card.locator('.rp-art img');
+ await card.scrollIntoViewIfNeeded();
+ await expect(art).toHaveAttribute('src',/\/assets\/royal-catalog\/studio-caribbean-treasures\.[a-f0-9]{12}\.webp$/);
+ await expect.poll(async()=>art.evaluate((img:HTMLImageElement)=>img.complete&&img.naturalWidth===512&&img.naturalHeight===320)).toBe(true);
+ await page.screenshot({path:out+'/catalog-desktop.png'});
+ await page.setViewportSize({width:390,height:844});await page.getByRole('searchbox',{name:'Найти игру',exact:true}).fill('Карибские');
+ await expect(page.locator('.rp-card')).toHaveCount(1);await card.scrollIntoViewIfNeeded();await expect(art).toBeInViewport();await expect(page.locator('#chat-input')).toBeInViewport();
+ await page.screenshot({path:out+'/catalog-mobile.png'});await card.click();
+ await expect(page.locator('.ct-root')).toBeVisible();await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState()?.captain?.ready)).toBe(true);
+ await expect(page.locator('[data-ct-lines]')).toBeEnabled();await page.locator('[data-ct-lines]').selectOption('1');await page.request.post('/__test/caribbean/force-bonus');const accepted=await action(page,'[data-ct-action=play]');
+ await action(page,'[data-ct-action=choose-flagship]');const before=await wallet(page);
+ await page.locator('#studio-game-list').click();await expect(art).toHaveAttribute('src',/studio-caribbean-treasures\.[a-f0-9]{12}\.webp$/);await card.scrollIntoViewIfNeeded();await card.click();
+ await expect(page.locator('.ct-root')).toBeVisible();expect((await session(page)).id).toBe(accepted.id);expect((await wallet(page)).balance).toBe(before.balance);
+ await finish(page);expect((await wallet(page)).entries.filter((e:any)=>e.operationId===accepted.id&&e.kind==='bet')).toHaveLength(1);
+});
 
 test('responsive framing keeps the title and full captain artwork inside the host',async({page,roomPath})=>{
  test.setTimeout(120000);await enter(page,roomPath);await topup(page);await open(page);
