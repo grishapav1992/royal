@@ -1,6 +1,7 @@
 import copy
 import importlib.util
 import json
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -53,6 +54,17 @@ class DeploymentGuards(unittest.TestCase):
     def test_disk_reserve_is_never_lowered(self):
         with patch.object(self.helper.shutil,'disk_usage',return_value=types.SimpleNamespace(free=5*1024**3)):
             with self.assertRaises(AssertionError):self.helper.capacity()
+    def test_public_module_directories_are_readable_and_private_umask_is_restored(self):
+        previous=os.umask(0o077)
+        try:
+            target=self.root/'public-module'
+            def install(args):target.mkdir(mode=0o755);(target/'media').mkdir();return {'published':True}
+            self.assertTrue(self.helper.install_public_module(types.SimpleNamespace(run=install),None)['published'])
+            self.assertEqual(target.stat().st_mode&0o777,0o755);self.assertEqual((target/'media').stat().st_mode&0o777,0o755)
+            current=os.umask(0o077);self.assertEqual(current,0o077)
+            with self.assertRaises(RuntimeError):self.helper.install_public_module(types.SimpleNamespace(run=lambda args:(_ for _ in ()).throw(RuntimeError('failed'))),None)
+            current=os.umask(0o077);self.assertEqual(current,0o077)
+        finally:os.umask(previous)
 
 class SnapshotRaces(unittest.TestCase):
     def setUp(self):
