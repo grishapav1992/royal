@@ -21,7 +21,7 @@ export class TempleTimeline{
   get offset(){return this.beat?Math.max(0,this.elapsed-this.beat.at):0;}
   start(plan:TemplePlan){
     if(this.seen.has(plan.key))return false;this.seen.add(plan.key);if(this.seen.size>100)this.seen.delete(this.seen.values().next().value!);
-    this.cancel(true);this.audio.ambience();this.plan=plan;this.startAt=performance.now()+this.audio.lead();this.elapsed=0;this.index=0;this.cues.clear();this.accents.clear();this.observed.clear();this.observed.add(0);this.show(plan.beats[0]);
+    this.cancel(true);this.audio.ambience();this.plan=plan;this.startAt=performance.now()+this.audio.lead();this.elapsed=0;this.index=0;this.cues.clear();this.accents.clear();this.observed.clear();this.observed.add(0);this.audio.duck(plan.beats[0].kind==='summary'&&['relic','win','big'].includes(plan.beats[0].cue??''));this.show(plan.beats[0]);
     if(this.pauses.size)this.pausedAt=performance.now();else this.handle=requestAnimationFrame(this.tick);return true;
   }
   private tick=()=>{
@@ -41,6 +41,6 @@ export class TempleTimeline{
   resume(reason:string){if(!this.pauses.delete(reason)||this.pauses.size)return;this.audio.setAllowed(true);if(this.plan){this.startAt+=performance.now()-this.pausedAt;this.handle=requestAnimationFrame(this.tick);}}
   complete(skipped=true){if(!this.plan)return;cancelAnimationFrame(this.handle);this.plan=undefined;this.index=-1;if(skipped)this.audio.cancelEffects();this.audio.duck(false);if(!this.pauses.size)this.audio.ambience();this.show(undefined);}
   cancel(keepBeds=false){cancelAnimationFrame(this.handle);this.plan=undefined;this.index=-1;if(keepBeds)this.audio.cancelEffects();else this.audio.cancel();}
-  getState(){return {active:this.active,paused:this.pauses.size>0,reasons:[...this.pauses],key:this.plan?.key??null,event:this.beat?.kind??null,offsetMs:this.offset,reduced:this.reduced,frames:this.diagnostics.slice(-24),audio:this.audio.getState()};}
+  getState(){return {active:this.active,paused:this.pauses.size>0,reasons:[...this.pauses],key:this.plan?.key??null,event:this.beat?.kind??null,offsetMs:this.offset,reduced:this.reduced,quick:this.plan?.quick??false,frames:this.diagnostics.slice(-24),audio:this.audio.getState()};}
   destroy(){this.cancel();this.pauses.clear();this.audio.destroy();}
 }

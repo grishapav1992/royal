@@ -37,6 +37,17 @@ test('outcome hierarchy uses the full original stake and reduced motion has no t
   const reduced=templePlan('reduced',view,undefined,true);assert.equal(reduced.beats.length,1);assert.equal(reduced.beats[0].kind,'summary');assert.equal(reduced.final.mode,'bonus');assert.deepEqual(reduced.final.visited,[5]);
 });
 
+test('quick presentation preserves the exact full round and only condenses confirmed feedback',()=>{
+  for(const base of templeAllBaseCases()){
+    const view=rebuildTempleView(base,base.relic?{layout:0,tier:0}:null,'1000');
+    const normal=templePlan('normal',view,undefined),quick=templePlan('quick',view,undefined,false,true);
+    assert.deepEqual(quick.final,normal.final);assert.equal(quick.beats.length,1);assert.equal(quick.beats[0].kind,'summary');assert.equal(quick.quick,true);assert.equal(quick.reduced,false);assert(quick.duration<=800);
+    if(view.phase==='complete')assert.equal(quick.beats[0].outcome,templeOutcome(view.stakeUnits,view.totalPayoutUnits));
+    else assert.equal(quick.beats[0].cue,'relic');
+    assert.equal(templePlan('both',view,undefined,true,true).duration,180);
+  }
+});
+
 test('character reactions never celebrate a partial return, waiting, recovery or a route choice',()=>{
   const view=rebuildTempleView({layout:0,pattern:0,tier:0,relic:true},{layout:0,tier:0},'1000');
   for(const beat of templePlan('poses',view,undefined).beats){

@@ -10,6 +10,8 @@ import {TempleEffects} from './TempleEffects';
 import {templePlan,templeOutcome,type TempleBeat} from './presentation';
 import {templeMusic} from './audioCredits';
 import {TempleCharacter} from './TempleCharacter';
+const AUTO_COUNTS=[10,25,50,100] as const;
+type AutoNote=''|'complete'|'stopped'|'funds'|'error'|'paused'|'account';
 
 /** Presentation reads confirmed views and uses the host's serialized operation client. */
 export class TempleUI {
@@ -22,6 +24,14 @@ export class TempleUI {
   private rope=false;
   private tab:'base'|'bonus'='base';
   private stake='1000';
+  private fast=false;
+  private autoCount=10;
+  private autoRunning=false;
+  private autoRemaining=0;
+  private autoInFlight=false;
+  private autoTimer=0;
+  private autoEpoch=0;
+  private autoNote:AutoNote='';
   private sending=false;
   private operationEpoch=0;
   private disposed=false;
@@ -49,12 +59,13 @@ export class TempleUI {
   constructor(private host:HTMLElement,private services:GameHostV1){
     this.en=services.i18n.language==='en';
     const doc=host.ownerDocument;this.root=doc.createElement('section');this.root.className='ft';
+    try{this.fast=doc.defaultView!.localStorage.getItem('royal:temple:fast')==='1';const count=Number(doc.defaultView!.localStorage.getItem('royal:temple:auto-count'));if(AUTO_COUNTS.some(n=>n===count))this.autoCount=count;}catch{/* Playback preferences are optional. */}
     this.root.setAttribute('aria-label',this.text('Затопленный храм','Flooded Temple'));
     this.dialog=doc.createElement('dialog');this.dialog.className='ft-dialog';this.dialog.setAttribute('aria-labelledby','ft-dialog-title');
     host.replaceChildren(this.root,this.dialog);
     services.gameAudio.install();this.media=doc.defaultView!.matchMedia('(prefers-reduced-motion: reduce)');
     this.audio=new TempleAudio(services.gameAudio,doc);this.effects=new TempleEffects(this.root,units=>this.money(units));this.character=new TempleCharacter(doc,this.en);
-    this.timeline=new TempleTimeline(this.audio,beat=>{this.beat=beat;if(!beat)this.effects.clear();this.rendered='';if(!this.disposed)this.render();},(beat,offset)=>{this.effects.tick(beat,offset);this.character.tick(beat,offset);});
+    this.timeline=new TempleTimeline(this.audio,beat=>{this.beat=beat;if(!beat)this.effects.clear();this.rendered='';if(!this.disposed){this.render();this.pumpAuto();}},(beat,offset)=>{this.effects.tick(beat,offset);this.character.tick(beat,offset);});
     this.unsubscribePreferences=services.gameAudio.onPreferences(()=>{this.rendered='';if(!this.disposed)this.render();});
     doc.addEventListener('visibilitychange',this.visibility);if(doc!==document)document.addEventListener('visibilitychange',this.visibility);
     this.media.addEventListener('change',this.motionChanged);this.visibility();
@@ -65,6 +76,7 @@ export class TempleUI {
       if(this.disposed)return;const key=this.returnFocus?.dataset.ft;
       this.timeline.resume('dialog');this.rendered='';this.render();
       const target=this.returnFocus?.isConnected?this.returnFocus:key?this.root.querySelector<HTMLElement>(`[data-ft="${key}"]`):null;target?.focus();
+      this.pumpAuto();
     });
     services.expansionClient.addEventListener('change',this.changed);services.demoWallet.addEventListener('change',this.changed);
     this.sync();void services.expansionClient.refresh();
@@ -83,22 +95,23 @@ export class TempleUI {
   private get asset(){return this.wallet.wallet?.asset==='USDT_NILE_TEST'?'USDT':this.text('демомонеты','demo coins');}
   private sync(){
     if(this.disposed)return;
-    if(this.owner!==this.client.accountId){this.operationEpoch++;this.sending=false;this.timeline.cancel();this.beat=undefined;this.frozenView=undefined;this.owner=this.client.accountId;this.marker='';this.selected=null;this.rope=false;this.tab='base';this.localError='';this.dialog.close();}
+    if(this.owner!==this.client.accountId){this.stopAuto('account',false);this.operationEpoch++;this.sending=false;this.timeline.cancel();this.beat=undefined;this.frozenView=undefined;this.owner=this.client.accountId;this.marker='';this.selected=null;this.rope=false;this.tab='base';this.localError='';this.dialog.close();}
     const session=this.session,marker=session?session.id+':'+session.view.temple?.revision:'';
     if(marker!==this.marker){if(this.timeline.active&&marker!==this.feedbackMarker){this.timeline.cancel();this.beat=undefined;}this.marker=marker;this.selected=null;this.rope=false;
       const v=session?.view.temple;if(v){this.stake=session!.stakeUnits;this.tab=v.bonusMap?'bonus':'base';}
     }
     const pending=this.client.pending;if(pending?.gameId===TEMPLE_GAME&&pending.action==='start')this.stake=pending.stakeUnits;
     this.audio.setAccountActive(this.connected);
-    this.render();
+    this.pumpAuto();this.render();
   }
   private changedStake=(event:Event)=>{
     const select=event.target as HTMLSelectElement;
-    if(select.matches('[data-ft=stake]')&&!this.blocked&&!this.client.pending&&this.session?.state!=='active'&&TEMPLE_DATA.stakes.some(n=>String(n)===select.value)){this.stake=select.value;this.render();}
+    if(select.matches('[data-ft=auto-count]')&&!this.autoRunning&&!this.blocked&&!this.client.pending&&AUTO_COUNTS.some(n=>String(n)===select.value)){this.autoCount=Number(select.value);this.savePlayback();this.render();return;}
+    if(select.matches('[data-ft=stake]')&&!this.autoRunning&&!this.blocked&&!this.client.pending&&this.session?.state!=='active'&&TEMPLE_DATA.stakes.some(n=>String(n)===select.value)){this.stake=select.value;this.render();}
   };
   private render(){
     if(this.disposed)return;
-    const signature=JSON.stringify([this.owner,this.session,this.client.pending,this.client.busy,this.client.loading,this.client.error,this.wallet.accountId,this.wallet.wallet?.balance,this.wallet.wallet?.asset,this.wallet.busy,this.wallet.pending,this.wallet.hasExternalBusy('expansion'),this.selected,this.rope,this.tab,this.stake,this.sending,this.localError,this.beat?.id,this.timeline.active,this.services.gameAudio.getPreferences(),this.media.matches]);
+    const signature=JSON.stringify([this.owner,this.session,this.client.pending,this.client.busy,this.client.loading,this.client.error,this.wallet.accountId,this.wallet.wallet?.balance,this.wallet.wallet?.asset,this.wallet.busy,this.wallet.pending,this.wallet.hasExternalBusy('expansion'),this.selected,this.rope,this.tab,this.stake,this.sending,this.localError,this.beat?.id,this.timeline.active,this.services.gameAudio.getPreferences(),this.media.matches,this.fast,this.autoRunning,this.autoRemaining,this.autoCount,this.autoNote]);
     if(signature===this.rendered)return;this.rendered=signature;
     const doc=this.host.ownerDocument,focused=doc.activeElement as HTMLElement|null;
     const focusKey=focused&&this.root.contains(focused)?focused.dataset.ft?`[data-ft="${focused.dataset.ft}"]`:focused.dataset.room?`[data-room="${focused.dataset.room}"]`:null:null;
@@ -122,6 +135,8 @@ export class TempleUI {
       <div data-ft-character-slot></div></div>
       <section class="ft-console" aria-label="${this.text('Управление экспедицией','Expedition controls')}"><div class="ft-money"><div><span class="ft-label">${this.text('Общий баланс','Shared balance')}</span><strong data-ft-value="balance">${balance}</strong><small>${escape(this.asset)}</small></div><div><span class="ft-label">${this.text('Ставка раунда','Round stake')}</span><strong>${this.money(session?.stakeUnits??this.stake)}</strong><small>${escape(this.asset)}</small></div></div><div class="ft-bet-block"><label class="ft-stake"><span class="ft-label">${this.text('Ставка','Stake')}</span><select data-ft="stake" ${disabled||active||!!this.client.pending?'disabled':''}>${TEMPLE_DATA.stakes.map(n=>`<option value="${n}" ${this.stake===String(n)?'selected':''}>${this.money(String(n))}</option>`).join('')}</select></label><div class="ft-collected-total"><span class="ft-label">${active?this.text('Собрано','Collected'):this.text('Выплата','Payout')}</span><strong data-ft-value="payout">${this.money(total)}</strong><small>${escape(this.asset)}</small></div></div><div class="ft-action"><button type="button" class="ft-primary" data-ft="primary" ${disabled||!active&&!pending&&!affordable||active&&bonus&&!canMove&&!pending?'disabled':''}>${pending?art.step:active?art.step:art.compass}<span>${label}</span></button>${active?`<button type="button" class="ft-finish" data-ft="finish" ${disabled||pending?'disabled':''}>${this.text('Закончить и забрать собранное','Finish and collect')}</button>`:''}</div><div class="ft-status" data-error="${status.error}" data-settled="${!!v&&!active}" role="status" aria-live="polite"><p>${escape(status.message)}</p></div></section><footer class="ft-bottom"><span>${this.text('5 × 4 КОМНАТЫ','5 × 4 ROOMS')}</span><span>${this.text('6 ХОДОВ · 1 ВЕРЁВКА','6 MOVES · 1 ROPE')}</span><span>${this.text('МАКСИМАЛЬНАЯ ВЫПЛАТА 230×','MAXIMUM PAYOUT 230×')}</span></footer>`;
     this.root.querySelector('[data-ft-character-slot]')!.replaceWith(this.character.element);
+    this.root.querySelector('.ft-status')!.insertAdjacentHTML('beforebegin',this.playbackMarkup());
+    if(this.autoRunning){this.root.querySelector<HTMLSelectElement>('[data-ft=stake]')!.disabled=true;if(!this.beat&&!active)this.root.querySelector<HTMLButtonElement>('[data-ft=primary]')!.disabled=true;}
     this.feedbackUI();this.effects.decorate(this.beat,this.media.matches,this.timeline.offset);this.syncCharacter();
     if(focusKey&&!this.dialog.open)this.root.querySelector<HTMLElement>(focusKey)?.focus({preventScroll:true});
   }
@@ -149,7 +164,9 @@ export class TempleUI {
       case 'sound':void this.audio.gesture();this.services.gameAudio.setMuted(!this.services.gameAudio.getPreferences().muted);break;
       case 'log':this.showLog();break;
       case 'close':this.dialog.close();break;
-      case 'refresh':this.localError='';void this.client.refresh();break;
+      case 'refresh':this.stopAuto('stopped');this.localError='';void this.client.refresh();break;
+      case 'fast':this.fast=!this.fast;this.savePlayback();if(this.fast)this.timeline.complete();this.render();break;
+      case 'auto':if(this.autoRunning)this.stopAuto('stopped');else this.startAuto();break;
       case 'base':this.tab='base';this.selected=null;this.render();break;
       case 'bonus':this.tab='bonus';this.selected=null;this.render();break;
       case 'rope':if(!this.blocked&&!this.client.pending&&this.session?.state==='active'&&this.view?.bonusState?.ropeAvailable){this.rope=!this.rope;this.render();}break;
@@ -168,7 +185,49 @@ export class TempleUI {
       if(!action||action.kind==='rope'&&!this.rope)return;
       await this.move(action.kind==='rope'?'temple-rope':'temple-step',this.selected!);return;
     }
-    await this.send(()=>this.client.act({action:'start',gameId:TEMPLE_GAME,stakeUnits:this.stake,settings:{temple:{mode:'normal'}}}));
+    if(this.autoRunning)return;
+    this.autoNote='';await this.startRound();
+  }
+  private startRound(){return this.send(()=>this.client.act({action:'start',gameId:TEMPLE_GAME,stakeUnits:this.stake,settings:{temple:{mode:'normal'}}}));}
+  private savePlayback(){try{const storage=this.host.ownerDocument.defaultView!.localStorage;storage.setItem('royal:temple:fast',this.fast?'1':'0');storage.setItem('royal:temple:auto-count',String(this.autoCount));}catch{/* The controls also work without local storage. */}}
+  private playbackMarkup(){
+    const locked=this.blocked||!this.connected||!!this.client.pending||!!this.client.error||!!this.localError||this.session?.state==='active';
+    const note=this.autoRunning?(this.session?.state==='active'&&!this.timeline.active?this.text('Выбери маршрут · осталось ','Choose your route · remaining '):this.text('Осталось спинов: ','Spins remaining: '))+this.autoRemaining:this.autoNote==='complete'?this.text('Автосерия завершена','Autoplay complete'):this.autoNote==='stopped'?this.text('Автосерия остановлена','Autoplay stopped'):this.autoNote==='funds'?this.text('Авто остановлено: недостаточно средств','Autoplay stopped: insufficient balance'):this.autoNote==='error'?this.text('Авто остановлено: проверь ход','Autoplay stopped: check the move'):this.autoNote==='paused'?this.text('Авто остановлено при паузе','Autoplay stopped on pause'):this.autoNote==='account'?this.text('Авто остановлено при смене аккаунта','Autoplay stopped on account change'):this.text('Авто ждёт твой маршрут в экспедиции','Autoplay waits for your expedition route');
+    return `<div class="ft-playback" aria-label="${this.text('Скорость и автоспины','Speed and autoplay')}"><button type="button" data-ft="fast" aria-pressed="${this.fast}">${this.text('⚡ Быстро','⚡ Quick')}</button><label class="ft-auto-count"><span>${this.text('Спинов','Spins')}</span><select data-ft="auto-count" aria-label="${this.text('Количество автоспинов','Autoplay spin count')}" ${this.autoRunning||this.blocked||!!this.client.pending?'disabled':''}>${AUTO_COUNTS.map(n=>`<option value="${n}" ${this.autoCount===n?'selected':''}>${n}</option>`).join('')}</select></label><button type="button" data-ft="auto" aria-pressed="${this.autoRunning}" ${!this.autoRunning&&locked?'disabled':''}>${this.autoRunning?this.text('Стоп · ','Stop · ')+this.autoRemaining:this.text('Авто','Auto')}</button><small class="ft-auto-note" data-ft="auto-note">${note}</small></div>`;
+  }
+  private clearAutoTimer(){this.host.ownerDocument.defaultView!.clearTimeout(this.autoTimer);this.autoTimer=0;}
+  private stopAuto(note:AutoNote,notify=true){
+    const wasRunning=this.autoRunning;this.clearAutoTimer();this.autoEpoch++;this.autoRunning=false;this.autoRemaining=0;this.autoInFlight=false;
+    if(wasRunning){this.autoNote=note;if(notify&&!this.disposed)this.render();}
+  }
+  private startAuto(){
+    if(this.disposed||this.blocked||!this.connected||this.client.pending||this.client.error||this.localError||this.session?.state==='active'||this.autoRunning)return;
+    this.autoRunning=true;this.autoRemaining=this.autoCount;this.autoNote='';this.autoEpoch++;void this.audio.gesture();this.render();this.pumpAuto();
+  }
+  private pumpAuto(){
+    if(!this.autoRunning||this.disposed)return;
+    if(!this.connected){this.stopAuto('account');return;}
+    if(this.host.ownerDocument.hidden||document.hidden){this.stopAuto('paused');return;}
+    if(this.autoInFlight||this.sending)return;
+    if(this.client.pending||this.client.error||this.localError||this.wallet.pending){this.stopAuto('error');return;}
+    if(this.timeline.active||this.timeline.paused||this.dialog.open||this.client.busy||this.client.loading||this.wallet.busy||this.wallet.hasExternalBusy('expansion'))return;
+    if(this.session?.state==='active')return;
+    if(this.autoRemaining<=0){this.stopAuto('complete');return;}
+    if(this.wallet.wallet!.balance<Number(this.stake)/100){this.stopAuto('funds');return;}
+    if(this.autoTimer)return;
+    const epoch=this.autoEpoch;
+    this.autoTimer=this.host.ownerDocument.defaultView!.setTimeout(()=>{this.autoTimer=0;void this.nextAuto(epoch);},this.fast?220:600);
+  }
+  private async nextAuto(epoch:number){
+    if(epoch!==this.autoEpoch||!this.autoRunning||this.disposed)return;
+    if(this.blocked||this.dialog.open||!this.connected||this.client.pending||this.client.error||this.localError||this.session?.state==='active'||this.host.ownerDocument.hidden||document.hidden){this.pumpAuto();return;}
+    if(this.wallet.wallet!.balance<Number(this.stake)/100){this.stopAuto('funds');return;}
+    this.autoInFlight=true;
+    const before=this.session?.id,accepted=await this.startRound();
+    if(epoch!==this.autoEpoch||!this.autoRunning||this.disposed)return;
+    this.autoInFlight=false;
+    if(!accepted||this.session?.id===before){this.stopAuto('error');return;}
+    this.autoRemaining--;this.render();this.pumpAuto();
   }
   private async move(move:'temple-step'|'temple-rope'|'temple-finish',to?:number){
     const session=this.session;if(this.blocked||this.client.pending||session?.state!=='active'||!session.view.temple)return;
@@ -183,12 +242,13 @@ export class TempleUI {
     try{await operation();accepted=!this.client.pending&&!this.client.error;}catch(error){if(!this.disposed&&epoch===this.operationEpoch)this.localError=error instanceof Error?error.message:this.text('Не удалось подтвердить ход.','The move could not be confirmed.');}
     finally{
       if(epoch===this.operationEpoch){this.sending=false;this.frozenView=undefined;
-        if(!this.disposed){const v=this.view,s=this.session;if(accepted&&!recovery&&owner===this.owner&&s&&v&&this.marker!==beforeMarker&&!this.host.ownerDocument.hidden&&!document.hidden){this.feedbackMarker=this.marker;this.timeline.start(templePlan(this.owner+':'+this.marker,v,s.id===beforeId?before:undefined,this.media.matches));}this.sync();}
+        if(!this.disposed){const v=this.view,s=this.session;if(accepted&&!recovery&&owner===this.owner&&s&&v&&this.marker!==beforeMarker&&!this.host.ownerDocument.hidden&&!document.hidden){this.feedbackMarker=this.marker;this.timeline.start(templePlan(this.owner+':'+this.marker,v,s.id===beforeId?before:undefined,this.media.matches,this.fast));}this.sync();}
       }
     }
+    return accepted&&!this.disposed&&epoch===this.operationEpoch&&owner===this.owner&&this.marker!==beforeMarker;
   }
   private show(title:string,body:string){
-    this.timeline.pause('dialog');this.root.dataset.paused='true';
+    this.clearAutoTimer();this.timeline.pause('dialog');this.root.dataset.paused='true';
     this.syncCharacter();
     this.returnFocus=this.host.ownerDocument.activeElement as HTMLElement;
     this.dialog.innerHTML=`<button type="button" class="ft-dialog-close" data-ft="close" aria-label="${this.text('Закрыть','Close')}">×</button><h2 id="ft-dialog-title">${title}</h2>${body}`;
@@ -207,10 +267,11 @@ export class TempleUI {
       <h3>Выбирай маршрут экспедиции</h3><p>На новой карте видны все сокровища. У тебя 6 ходов и одна верёвка. Выбери соседнюю подсвеченную комнату, затем подтверди переход. Каждый переход стоит один ход. Перед пересечением провала выбери «Использовать верёвку». Мост остаётся доступным в обе стороны, каждый переход по нему стоит один ход. Рычаг включается при входе в комнату.</p><p>Возвращение в комнату расходует ход и не оплачивает сундук повторно. Шестой ход сначала собирает награду, затем завершает экспедицию. «Закончить и забрать собранное» сохраняет все полученные награды. Закрытие и повторное открытие сохраняют тот же раунд без новой ставки.</p>
       <h3>Ставка, выплата и возврат</h3><p>Все множители применяются к исходной ставке. Общий кошелёк списывает её один раз и начисляет выплату один раз после окончания всего раунда. «Собрано» включает храм и экспедицию, но ещё не означает начисление в кошелёк. Чистый итог равен выплате за вычетом ставки.</p><table><tbody><tr><td>Возврат при оптимальном маршруте</td><td>96%</td></tr><tr><td>Возврат при допустимых стратегиях</td><td>90-96%</td></tr><tr><td>Наибольшая выплата за весь раунд</td><td>230×</td></tr><tr><td>Повтор бонуса / платные дополнительные ходы</td><td>Нет</td></tr></tbody></table><p>RTP рассчитан точно для правил 1 на длинной дистанции и не обещает результат отдельной сессии. Выбор маршрута влияет на ожидаемый возврат. Ставка заблокирована до завершения раунда и подтверждения неопределённой операции.</p>`);
     this.dialog.insertAdjacentHTML('beforeend',`<h3>${this.text('Музыка и звук','Music and sound')}</h3><p><a href="${templeMusic.source}" target="_blank" rel="noopener noreferrer">${templeMusic.title}</a> by Scott Buckley - released under <a href="${templeMusic.license}" target="_blank" rel="noopener noreferrer">CC-BY 4.0</a>. <a href="${templeMusic.website}" target="_blank" rel="noopener noreferrer">www.scottbuckley.com.au</a></p><p>${this.text('Звуковые эффекты:','Sound effects:')} Kenney, Joseph SARDIN, DenisChardonnet, JaggedStone, bonebrah (CC0). ${this.text('Монтаж и сведение для игры.','Edited and mixed for this game.')}</p>`);
+    this.dialog.insertAdjacentHTML('beforeend',`<h3>${this.text('Быстрая игра и автоспины','Quick play and autoplay')}</h3><p>${this.text('«Быстро» сокращает анимации и сразу показывает подтверждённую карту. Авто запускает выбранные 10, 25, 50 или 100 платных раундов по текущей ставке, по одному после завершения предыдущего. Ставка на время серии заблокирована. Бесплатная экспедиция не уменьшает счётчик: выбери маршрут сам, после её завершения серия продолжится. «Стоп» отменяет следующие запуски, принятый ход сохраняется. Неизвестный ответ, нехватка средств, скрытая вкладка, пауза, смена аккаунта и закрытие останавливают серию. После возвращения авто само не включается.','Quick shortens the animation and immediately shows the confirmed map. Auto starts the chosen 10, 25, 50 or 100 paid rounds at the current stake, one after the previous round ends. The stake stays locked during the series. The free expedition does not use the counter: choose its route yourself, then the series continues. Stop cancels future starts and preserves the accepted move. An unknown reply, insufficient funds, hidden tab, pause, account change or closing stops the series. Returning never restarts autoplay automatically.')}</p>`);
   }
-  private visibility=()=>{if(this.host.ownerDocument.hidden||document.hidden)this.timeline.pause('visibility');else this.timeline.resume('visibility');this.rendered='';this.render();};
+  private visibility=()=>{if(this.host.ownerDocument.hidden||document.hidden){this.stopAuto('paused',false);this.timeline.pause('visibility');}else this.timeline.resume('visibility');this.rendered='';this.render();};
   private motionChanged=()=>{this.timeline.complete();this.rendered='';this.render();};
-  pause(){this.timeline.pause('host');this.rendered='';this.render();}
+  pause(){this.stopAuto('paused',false);this.timeline.pause('host');this.rendered='';this.render();}
   resume(){this.timeline.resume('host');this.rendered='';this.render();}
   private eventText(beat:TempleBeat){
     const room=beat.room===undefined?'':roomName(beat.room);
@@ -259,6 +320,6 @@ export class TempleUI {
     this.show(this.text('Журнал экспедиции','Expedition journal'),`<p>${this.text('Подтверждённая сумма за весь раунд: ','Confirmed whole-round total: ')}<strong>${this.money(v.totalPayoutUnits)}</strong></p><ul class="ft-log-list">${items.join('')}</ul>`);
   }
   private syncCharacter(){this.character.update({beat:this.beat,key:this.owner+':'+this.marker,offset:this.timeline.offset,waiting:this.sending||this.client.pending?.gameId===TEMPLE_GAME,rope:this.rope,selected:this.selected!==null,reduced:this.media.matches,paused:this.timeline.paused,connected:this.connected});}
-  getState(){const s=this.session,v=this.view;return {gameId:TEMPLE_GAME,stage:'feedback',playable:true,phase:v?.phase??'ready',sessionId:s?.id??null,revision:v?.revision??null,tab:this.tab,selected:this.selected,ropeSelected:this.rope,moves:v?.bonusState?.left??null,totalPayoutUnits:v?.totalPayoutUnits??'0',busy:this.blocked,pending:this.client.pending?.gameId===TEMPLE_GAME,disposed:this.disposed,feedback:{...this.timeline.getState(),shownUnits:this.beat?.frame.totalUnits??v?.totalPayoutUnits??'0',effects:this.effects.getState(),character:this.character.getState(),reducedMotion:this.media.matches}};}
-  destroy(){if(this.disposed)return;this.disposed=true;this.timeline.destroy();this.effects.clear();this.character.destroy();this.unsubscribePreferences();this.media.removeEventListener('change',this.motionChanged);this.host.ownerDocument.removeEventListener('visibilitychange',this.visibility);if(this.host.ownerDocument!==document)document.removeEventListener('visibilitychange',this.visibility);this.services.expansionClient.removeEventListener('change',this.changed);this.services.demoWallet.removeEventListener('change',this.changed);this.root.removeEventListener('click',this.click);this.root.removeEventListener('keydown',this.key);this.root.removeEventListener('change',this.changedStake);this.dialog.removeEventListener('click',this.click);this.dialog.close();this.host.replaceChildren();}
+  getState(){const s=this.session,v=this.view;return {gameId:TEMPLE_GAME,stage:'feedback',playable:true,phase:v?.phase??'ready',sessionId:s?.id??null,revision:v?.revision??null,tab:this.tab,selected:this.selected,ropeSelected:this.rope,moves:v?.bonusState?.left??null,totalPayoutUnits:v?.totalPayoutUnits??'0',busy:this.blocked,pending:this.client.pending?.gameId===TEMPLE_GAME,disposed:this.disposed,fast:this.fast,autoplay:{running:this.autoRunning,remaining:this.autoRemaining,count:this.autoCount,waitingForRoute:this.autoRunning&&s?.state==='active'&&!this.timeline.active,timerPending:!!this.autoTimer,note:this.autoNote},feedback:{...this.timeline.getState(),shownUnits:this.beat?.frame.totalUnits??v?.totalPayoutUnits??'0',effects:this.effects.getState(),character:this.character.getState(),reducedMotion:this.media.matches}};}
+  destroy(){if(this.disposed)return;this.disposed=true;this.stopAuto('stopped',false);this.timeline.destroy();this.effects.clear();this.character.destroy();this.unsubscribePreferences();this.media.removeEventListener('change',this.motionChanged);this.host.ownerDocument.removeEventListener('visibilitychange',this.visibility);if(this.host.ownerDocument!==document)document.removeEventListener('visibilitychange',this.visibility);this.services.expansionClient.removeEventListener('change',this.changed);this.services.demoWallet.removeEventListener('change',this.changed);this.root.removeEventListener('click',this.click);this.root.removeEventListener('keydown',this.key);this.root.removeEventListener('change',this.changedStake);this.dialog.removeEventListener('click',this.click);this.dialog.close();this.host.replaceChildren();}
 }

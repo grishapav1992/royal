@@ -3,19 +3,24 @@ import type {TempleCue} from './TempleAudio';
 export type TempleOutcome='loss'|'partial'|'return'|'win'|'big';
 export type TempleVisual={mode:'base'|'bonus';at:number;visited:number[];opened:string[];bridge:string|null;route:number[];left:number|null;ropeAvailable:boolean;totalUnits:string;revealed:number};
 export type TempleBeat={id:number;at:number;duration:number;kind:'card'|'travel'|'arrive'|'collect'|'lever'|'gate'|'rope'|'relic'|'expedition'|'outcome'|'summary';frame:TempleVisual;cue?:TempleCue;cueAtMs?:number;room?:number;edge?:string;from?:number;counterFrom?:string;awardUnits?:string;outcome?:TempleOutcome};
-export type TemplePlan={key:string;beats:TempleBeat[];duration:number;final:TempleVisual;reduced:boolean};
+export type TemplePlan={key:string;beats:TempleBeat[];duration:number;final:TempleVisual;reduced:boolean;quick:boolean};
 export const templeOutcome=(stake:string,payout:string):TempleOutcome=>BigInt(payout)===0n?'loss':BigInt(payout)<BigInt(stake)?'partial':BigInt(payout)===BigInt(stake)?'return':BigInt(payout)>=BigInt(stake)*5n?'big':'win';
 const outcomeCue=(kind:TempleOutcome):TempleCue=>kind==='loss'||kind==='partial'?'neutral':kind;
 export function confirmedTempleFrame(view:TempleView):TempleVisual{
   const s=view.bonusState;
   return s?{mode:'bonus',at:s.at,visited:[...s.visited],opened:[...s.opened],bridge:s.bridge,route:[5,...view.history.flatMap(a=>'to'in a?[a.to]:[])],left:s.left,ropeAvailable:s.ropeAvailable,totalUnits:view.totalPayoutUnits,revealed:4}:{mode:'base',at:view.baseResult.events.at(-1)?.room??5,visited:[...view.baseResult.visited],opened:[...view.baseResult.opened],bridge:null,route:view.baseResult.events.flatMap(e=>e.path),left:null,ropeAvailable:false,totalUnits:view.totalPayoutUnits,revealed:4};
 }
-export function templePlan(key:string,view:TempleView,previous:TempleView|undefined,reduced=false):TemplePlan{
+export function templePlan(key:string,view:TempleView,previous:TempleView|undefined,reduced=false,quick=false):TemplePlan{
   const final=confirmedTempleFrame(view),beats:TempleBeat[]=[];let time=0;
   let frame:TempleVisual=previous?confirmedTempleFrame(previous):{mode:'base',at:5,visited:[],opened:[],bridge:null,route:[5],left:null,ropeAvailable:false,totalUnits:'0',revealed:0};
   const add=(kind:TempleBeat['kind'],duration:number,extra:Partial<Omit<TempleBeat,'kind'|'duration'|'id'|'at'|'frame'>>={})=>{beats.push({id:beats.length,at:time,duration,kind,frame:structuredClone(frame),...extra});time+=duration;};
   const outcome=templeOutcome(view.stakeUnits,view.totalPayoutUnits);
-  if(reduced){frame=final;const last=view.history.at(-1);add('summary',180,{outcome:view.phase==='complete'?outcome:undefined,cue:view.phase==='complete'?outcomeCue(outcome):previous?(last?.kind==='rope'?'rope':BigInt(view.totalPayoutUnits)>BigInt(previous.totalPayoutUnits)?'chest':'step'):'relic'});return {key,beats,duration:time,final,reduced};}
+  if(reduced||quick){
+    frame=final;const last=view.history.at(-1),complete=view.phase==='complete';
+    const cue=complete?outcomeCue(outcome):previous?(last?.kind==='rope'?'rope':BigInt(view.totalPayoutUnits)>BigInt(previous.totalPayoutUnits)?'chest':'step'):'relic';
+    const duration=reduced?180:complete?{loss:250,partial:280,return:300,win:500,big:800}[outcome]:cue==='relic'?450:350;
+    add('summary',duration,{outcome:complete?outcome:undefined,cue});return {key,beats,duration:time,final,reduced,quick};
+  }
   const travel=(to:number)=>{const from=frame.at;add('travel',200,{from,room:to});frame.at=to;frame.route.push(to);add('arrive',90,{room:to,cue:'step',cueAtMs:22});};
   const collect=(room:number,award:string)=>{const from=frame.totalUnits;frame.totalUnits=String(BigInt(from)+BigInt(award));add('collect',560,{room,cue:'chest',cueAtMs:120,counterFrom:from,awardUnits:award});};
   const gate=(room:number,edge:string)=>{add('lever',180,{room,edge});frame.opened.push(edge);add('gate',560,{room,edge,cue:'lever',cueAtMs:75});};
@@ -42,5 +47,5 @@ export function templePlan(key:string,view:TempleView,previous:TempleView|undefi
   frame=structuredClone(final);
   if(view.phase==='complete')add('outcome',{loss:600,partial:650,return:700,win:1500,big:2400}[outcome],{cue:outcomeCue(outcome),outcome});
   if(!beats.length)add('summary',100);
-  return {key,beats,duration:time,final,reduced};
+  return {key,beats,duration:time,final,reduced,quick};
 }

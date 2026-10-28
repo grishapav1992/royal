@@ -17,6 +17,9 @@ export function templeReaction(beat:TempleBeat|undefined,waiting=false,rope=fals
       if(beat.outcome==='big')return make('triumph','celebrate',1);
       if(beat.outcome==='win')return make('success','celebrate',.55);
       if(beat.outcome==='loss'||beat.outcome==='partial')return make('reflect','reflect',.25);
+      if(!beat.outcome&&beat.cue==='relic')return make('relic','discover',.65,-.25);
+      if(!beat.outcome&&beat.cue==='rope')return make('rope','brace',.65,-.8);
+      if(!beat.outcome&&beat.cue==='chest')return make('treasure','discover',.4,-.4);
       return make('settle','idle',.15);
   }
   if(waiting)return make('waiting','observe',.1,-.7);
