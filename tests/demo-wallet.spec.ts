@@ -28,7 +28,7 @@ for (const width of [1440, 390]) test('cash and Sandbox wallets remain available
   await page.locator('#wallet-close').click();
   await page.screenshot({ path: info.outputPath('choices-' + width + '.png') });
   await page.locator('#crypto-wallet-button').click();
-  await expect(page.locator('#crypto-wallet-title')).toHaveText('Боевой баланс');
+  await expect(page.locator('#crypto-wallet-title')).toHaveText('Денежный баланс');
   await expect(page.locator('#crypto-wallet-dialog')).toContainText('отдельно от тестового');
   await page.screenshot({ path: info.outputPath('live-' + width + '.png') });
   expect(errors).toEqual([]);

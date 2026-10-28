@@ -62,7 +62,7 @@ export function createPaymentApp(store: CryptoStore, requestSecret: string, star
       try {
         const id = String(req.params.user);
         if (!gameAccountId(id)) throw new CryptoError(400, 'Некорректный игрок.');
-        if (register && store.config.enabled) await store.db.prepare('INSERT INTO accounts(id) VALUES (?) ON CONFLICT DO NOTHING').run(id);
+        if (register && (store.config.enabled || store.externalCreditsEnabled)) await store.db.prepare('INSERT INTO accounts(id) VALUES (?) ON CONFLICT DO NOTHING').run(id);
         res.json(await fn(id, req.body, req));
       } catch (error) { fail(error, res); }
     });

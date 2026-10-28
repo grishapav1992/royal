@@ -2,11 +2,11 @@ import { test, expect } from '@playwright/test';
 
 for (const width of [1440, 390]) test(`Stars checkout shows the fixed USDT amount and restores the same invoice at ${width}px`, async ({ page }) => {
   await page.setViewportSize({ width, height: 900 });
-  const orders: any[] = []; let creates = 0;
+  const orders: any[] = []; let creates = 0, cryptoRequests = 0;
   await page.route('**/api/crypto-wallet', route => route.fulfill({ json: { state: 'enabled', provider: 'nowpayments', asset: 'USDT', scale: 6,
-    balanceUnits: '0', reservedUnits: '0', withdrawalsEnabled: true, gamesEnabled: false, ready: false,
+    balanceUnits: '0', reservedUnits: '0', cryptoDepositsEnabled: false, withdrawalsEnabled: false, gamesEnabled: false, ready: false,
     maxStakeUnits: { 'royal-coins': '0', 'royal-roulette': '0' }, operations: [], rounds: [] } }));
-  await page.route('**/api/crypto-wallet/currencies', route => route.fulfill({ json: { currencies: [] } }));
+  await page.route('**/api/crypto-wallet/currencies', route => { cryptoRequests++; return route.fulfill({ status: 503, json: { error: 'Crypto provider must stay disabled' } }); });
   await page.route('**/api/crypto-wallet/stars', route => {
     if (route.request().method() === 'POST') {
       const value = route.request().postDataJSON(); creates++;
@@ -26,6 +26,11 @@ for (const width of [1440, 390]) test(`Stars checkout shows the fixed USDT amoun
   await expect(page.locator('#join-dialog')).toBeHidden({ timeout: 15000 });
   await page.locator('#crypto-wallet-button').click();
   await expect(page.locator('#telegram-stars')).toBeVisible();
+  await expect(page.locator('#crypto-deposit-form')).toBeHidden();
+  await expect(page.locator('#crypto-deposit-qr-placeholder')).toBeHidden();
+  await expect(page.locator('#crypto-withdraw-form')).toBeHidden();
+  await expect(page.locator('#crypto-display-currency')).toBeDisabled();
+  await expect(page.locator('#crypto-wallet-message')).toBeEmpty();
   await page.locator('#stars-amount').fill('500');
   await expect(page.locator('#stars-rate')).toHaveText('500 Stars: 5 USDT на баланс');
   await page.locator('#stars-terms').check(); await page.locator('#stars-create').click();
@@ -37,4 +42,5 @@ for (const width of [1440, 390]) test(`Stars checkout shows the fixed USDT amoun
   await page.locator('#crypto-wallet-close').click(); await page.locator('#crypto-wallet-button').click();
   await expect(page.locator('#stars-history a')).toHaveAttribute('href', orders[0].botUrl);
   expect(creates).toBe(1);
+  expect(cryptoRequests).toBe(0);
 });

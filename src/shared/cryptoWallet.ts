@@ -10,6 +10,7 @@ export type CryptoQuote = { id: string; amountUnits: string; currency: string; a
   estimatedAmount: string; networkFee: string; minimumReceive: string; expiresAt: number };
 export type CryptoWallet = { state: 'disabled' } | { state: 'enabled'; provider: 'nowpayments'; asset: 'USDT'; scale: 6;
   balanceUnits: string; reservedUnits: string; withdrawalsEnabled: boolean; gamesEnabled: boolean;
+  cryptoDepositsEnabled?: boolean;
   ready: boolean; maxStakeUnits: Record<'royal-coins' | 'royal-roulette', string>;
   operations: CryptoOperation[]; rounds: UsdtRound[] };
 export const validCurrency = (value: unknown): value is string => typeof value === 'string' && /^[a-z0-9]{2,24}$/.test(value);
@@ -26,6 +27,7 @@ export function validCryptoWallet(value: unknown): value is CryptoWallet {
   if (row?.state === 'disabled') return true;
   return row?.state === 'enabled' && row.provider === 'nowpayments' && row.asset === 'USDT' && row.scale === 6
     && nileUnits(row.balanceUnits) && nileUnits(row.reservedUnits) && typeof row.withdrawalsEnabled === 'boolean'
+    && (row.cryptoDepositsEnabled === undefined || typeof row.cryptoDepositsEnabled === 'boolean')
     && typeof row.gamesEnabled === 'boolean' && typeof row.ready === 'boolean'
     && row.maxStakeUnits && ['royal-coins', 'royal-roulette'].every(id => nileUnits(row.maxStakeUnits[id]))
     && Array.isArray(row.operations) && row.operations.length <= 50 && row.operations.every((op: any) => gameAccountId(op.id)

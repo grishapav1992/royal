@@ -50,7 +50,7 @@ export class CryptoStore {
   private displayRates: CryptoDisplayRates;
   constructor(readonly db: PostgresDatabase, readonly config: CryptoConfig, readonly provider: CryptoProvider,
     prerequisite: Promise<void> = Promise.resolve(), private now = Date.now, private draw = randomInt,
-    private ledgerChanged?: (change: LedgerChange) => Promise<void>) {
+    private ledgerChanged?: (change: LedgerChange) => Promise<void>, readonly externalCreditsEnabled = false) {
     this.ready = prerequisite.then(async () => {
       await applySchemaMigration(db, { id: 'crypto-gateway-v1', statements: schema });
       await applySchemaMigration(db,{id:'finance-admin-adjustments-v1',statements:[
@@ -87,11 +87,6 @@ export class CryptoStore {
     await this.db.prepare(`INSERT INTO crypto_ledger(account_id,operation_id,entry_key,available_delta,reserved_delta,counterparty_delta,balance_units,reserved_units,created_at)
       VALUES (?,?,?,?,?,?,?,?,?)`).run(accountId, id, key, String(available), String(reserved), String(-available - reserved), String(balance), String(pending), createdAt);
     await this.ledgerChanged?.({ accountId, operationId: id, entryKey: key, available, reserved, createdAt });
-  }
-  async starsReserveAvailable(required: bigint) {
-    const treasury = units((await this.provider.balance())[CRYPTO_SETTLEMENT]?.amount ?? '0');
-    const liabilities = BigInt((await this.db.prepare('SELECT coalesce(sum(balance_units+reserved_units),0)::text AS n FROM crypto_wallets').get())!.n);
-    return treasury >= liabilities + required;
   }
   async creditStarsDeposit(accountId: string, id: string, value: string, chargeId: string, stars: number) {
     const credited = money(value), key = JSON.stringify([accountId, 'telegram-stars', value, chargeId, stars]);
@@ -133,7 +128,7 @@ export class CryptoStore {
     return this.view(row!);
   }
   async snapshot(accountId: string): Promise<CryptoWallet> {
-    if (!this.config.enabled) return { state: 'disabled' };
+    if (!this.config.enabled && !this.externalCreditsEnabled) return { state: 'disabled' };
     return this.atomic(async () => {
       const row = await this.walletRow(accountId);
       const liabilities = BigInt((await this.db.prepare('SELECT coalesce(sum(balance_units+reserved_units),0)::text AS units FROM crypto_wallets').get())!.units);
@@ -142,8 +137,9 @@ export class CryptoStore {
       const operations = (await this.db.prepare('SELECT * FROM crypto_operations WHERE account_id=? ORDER BY created_at DESC,id DESC LIMIT 50').all(accountId)).map(row => this.view(row));
       const rounds = (await this.db.prepare('SELECT result FROM crypto_rounds WHERE account_id=? ORDER BY created_at DESC,id DESC LIMIT 50').all(accountId)).map(row => JSON.parse(String(row.result)) as UsdtRound);
       return { state: 'enabled', provider: 'nowpayments', asset: 'USDT', scale: 6, balanceUnits: String(row.balance_units), reservedUnits: String(row.reserved_units),
-        withdrawalsEnabled: this.config.withdrawals && !await this.db.prepare('SELECT 1 FROM crypto_wallet_holds WHERE account_id=?').get(accountId),
-        gamesEnabled: this.config.games, ready, maxStakeUnits: { 'royal-coins': String(capital / 11n), 'royal-roulette': String(capital / 35n) }, operations, rounds };
+        cryptoDepositsEnabled: this.config.enabled,
+        withdrawalsEnabled: this.config.enabled && this.config.withdrawals && !await this.db.prepare('SELECT 1 FROM crypto_wallet_holds WHERE account_id=?').get(accountId),
+        gamesEnabled: this.config.enabled && this.config.games, ready, maxStakeUnits: { 'royal-coins': String(capital / 11n), 'royal-roulette': String(capital / 35n) }, operations, rounds };
     });
   }
   async currencies() { this.enabled(); return this.provider.currencies(); }

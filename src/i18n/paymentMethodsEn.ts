@@ -57,4 +57,5 @@ Object.assign(paymentMethodsEnglish, {
   "Вывод приостановлен: требуется сверка возврата Stars. Обратись в поддержку.": "Withdrawals are paused while a Stars refund is reviewed. Contact support.",
   "Платёж Stars уже использован.": "This Stars payment has already been used."
 });
+Object.assign(paymentMethodsEnglish, { 'Баланс хранится в USDT.': 'Your balance is held in USDT.' });
 Object.assign(english, paymentMethodsEnglish);

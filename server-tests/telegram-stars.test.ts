@@ -23,7 +23,7 @@ async function listen(app: express.Express) {
   return { url: 'http://127.0.0.1:' + (server.address() as { port: number }).port,
     close: () => { server.closeAllConnections(); return new Promise<void>(resolve => server.close(() => resolve())); } };
 }
-async function fixture() {
+async function fixture(cryptoEnabled = true) {
   const db = new PostgresDatabase(':memory:'), gameDb = new PostgresDatabase(':memory:');
   const account = randomUUID(), other = randomUUID();
   for (const database of [db, gameDb]) {
@@ -33,16 +33,24 @@ async function fixture() {
   const credits = new PaymentCredits(gameDb), game = express(); installPaymentCredits(game, credits, eventSecret);
   const gameServer = await listen(game), outbox = new PaymentOutbox(db, gameServer.url + '/internal/payments/events', eventSecret);
   let reserve = '1000', payouts = 0, payoutData: any;
-  const provider = { balance: async () => ({ usdttrc20: { amount: reserve } }),
+  let providerCalls = 0;
+  const providerMethods = { balance: async () => ({ usdttrc20: { amount: reserve } }),
     currencies: async () => [{ code: 'usdttrc20', name: 'USDT', network: 'trx', memo: false }],
     validateAddress: async () => {}, fee: async () => '0.01',
     createPayout: async (id: string, currency: string, address: string, memo: string, amount: string) => {
       payouts++; payoutData = { id: '301', batch_withdrawal_id: '401', unique_external_id: id, currency, address, extra_id: memo,
         amount, status: 'finished', hash: 'fixture-payout' };
       return { id: '401', withdrawals: [payoutData] };
-    }, payout: async () => payoutData, verify: async () => {} } as unknown as CryptoProvider;
-  const wallet = new CryptoStore(db, { ...cryptoConfig({}), enabled: true, withdrawals: true }, provider,
-    outbox.ready, undefined, undefined, event => outbox.record(event));
+    }, payout: async () => payoutData, verify: async () => {} };
+  const provider = new Proxy(providerMethods, { get(target, key) {
+    const method = Reflect.get(target, key);
+    return typeof method !== 'function' ? method : (...args: unknown[]) => {
+      providerCalls++; if (!cryptoEnabled) throw new Error('Stars must not call the disabled crypto provider');
+      return method(...args);
+    };
+  } }) as unknown as CryptoProvider;
+  const wallet = new CryptoStore(db, { ...cryptoConfig({}), enabled: cryptoEnabled, withdrawals: cryptoEnabled }, provider,
+    outbox.ready, undefined, undefined, event => outbox.record(event), true);
   const config = configured(), calls: { method: string; body: Record<string, any> }[] = [];
   let now = Date.now();
   const stars = new TelegramStarsStore(wallet, config, { call: async (method, body) => { calls.push({ method, body }); return true; } }, () => now);
@@ -65,7 +73,7 @@ async function fixture() {
   const pay = (order: any, extra: object = {}) => update(message(42, { successful_payment: receipt(order, extra) }));
   const refund = (order: any) => update(message(42, { refunded_payment: receipt(order) }));
   return { account, other, db, gameDb, credits, wallet, stars, config, outbox, client, calls, update, message, create, start, query, checkout, pay, refund,
-    reserve: (value: string) => { reserve = value; }, later: () => { now += 3600000; }, payouts: () => payouts,
+    reserve: (value: string) => { reserve = value; }, later: () => { now += 3600000; }, payouts: () => payouts, providerCalls: () => providerCalls,
     close: async () => { await paymentServer.close(); await gameServer.close(); await db.close(); await gameDb.close(); } };
 }
 test('Stars configuration fails closed and Telegram API failures never expose the token', async () => {
@@ -139,6 +147,26 @@ test('Stars credit can use the existing crypto withdrawal without converting or 
     assert(!f.calls.some(call => /refund|withdraw|transfer/i.test(call.method)));
   } finally { await f.close(); }
 });
+test('Stars credits and wallet reads work without any crypto-provider configuration or calls', async () => {
+  const f = await fixture(false);
+  try {
+    const newcomer = randomUUID(); await f.gameDb.prepare('INSERT INTO accounts(id) VALUES (?)').run(newcomer);
+    assert.equal((await f.client.snapshot(newcomer) as any).state, 'enabled');
+    assert.equal((await f.client.stars(f.account)).enabled, true);
+    const order = await f.create(); await f.start(order.id); await f.checkout(order);
+    assert.equal(f.calls.at(-1)?.body.ok, true); await f.pay(order); await f.pay(order); await f.outbox.flush();
+    const wallet = await f.client.snapshot(f.account);
+    assert.equal(wallet.state, 'enabled'); assert.equal((wallet as any).balanceUnits, '1000000');
+    assert.equal((wallet as any).cryptoDepositsEnabled, false); assert.equal((wallet as any).withdrawalsEnabled, false);
+    assert.equal((wallet as any).gamesEnabled, false);
+    await assert.rejects(() => f.client.deposit(f.account, { id: randomUUID(), amountUnits: '1000000', currency: 'usdttrc20' }));
+    await assert.rejects(() => f.client.quote(f.account, { id: randomUUID(), amountUnits: '1000000', currency: 'usdttrc20', address: 'T' + 'A'.repeat(33), memo: '' }));
+    f.config.enabled = false; await f.pay(order); await f.outbox.flush();
+    assert.equal((await f.client.snapshot(f.account) as any).balanceUnits, '1000000');
+    assert.equal((await f.client.stars(f.account)).enabled, false);
+    assert.equal(f.providerCalls(), 0); assert.equal((await f.wallet.audit()).ok, true);
+  } finally { await f.close(); }
+});
 test('refunds arriving before settlement prevent credit; paid refunds block quotes and pending payouts', async () => {
   const f = await fixture();
   try {
@@ -156,15 +184,18 @@ test('refunds arriving before settlement prevent credit; paid refunds block quot
     assert.equal((await f.wallet.audit()).ok, true);
   } finally { await f.close(); }
 });
-test('reserve includes other accepted checkouts; expired or unfunded invoices are rejected', async () => {
+test('checkout accounts for pending amounts at the wallet cap and rejects expired invoices', async () => {
   const f = await fixture();
   try {
     f.reserve('1');
+    await f.wallet.creditStarsDeposit(f.account, randomUUID(), '999999000000', 'historical-stars-credit', 10000);
     const first = await f.create(), second = await f.create();
     await f.start(first.id); await f.checkout(first); assert.equal(f.calls.at(-1)?.body.ok, true);
     await f.start(second.id); await f.checkout(second); assert.equal(f.calls.at(-1)?.body.ok, false);
-    f.reserve('100'); f.later(); await f.checkout(second); assert.equal(f.calls.at(-1)?.body.ok, false);
-    assert.equal((await f.wallet.snapshot(f.account) as any).balanceUnits, '0');
+    await f.checkout(first); assert.equal(f.calls.at(-1)?.body.ok, true);
+    await f.pay(first); assert.equal((await f.wallet.snapshot(f.account) as any).balanceUnits, '1000000000000');
+    f.later(); await f.checkout(second); assert.equal(f.calls.at(-1)?.body.ok, false);
+    assert.equal(f.providerCalls(), 0);
     await f.update(f.message(42, { text: '/paysupport' })); assert.match(f.calls.at(-1)?.body.text, /https:\/\/royal.example\/support/);
   } finally { await f.close(); }
 });
