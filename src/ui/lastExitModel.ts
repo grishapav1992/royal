@@ -24,8 +24,8 @@ export function raceDisplay(s:ExpansionSession|undefined,a:RaceAnchor|undefined,
 }
 
 /** Replies renew freshness without stopping, accelerating or rewinding the visible clock. */
-export function raceAnchor(s:ExpansionSession,previous:RaceAnchor|undefined,now:number):RaceAnchor{
- if(previous?.id===s.id){
+export function raceAnchor(s:ExpansionSession,previous:RaceAnchor|undefined,now:number,resync=false):RaceAnchor{
+ if(!resync&&previous?.id===s.id){
   if(s.serverNow!<=previous.to)return previous;
   const display=raceDisplay(s,previous,now);
   // A recovered connection may skip stale time; ordinary replies never change the pace.

@@ -116,10 +116,12 @@ export class LastExitScene {
   draw(index,1);
  }
  private debris(x:number,y:number,width:number,age:number){const c=this.ctx,t=Math.max(0,age-.72);for(let i=0;i<21;i++){const dir=i%2?1:-1,s=(i*73%17)/17,life=Math.min(t,1.8),px=x+dir*width*(.12+life*(.25+s*.6)),py=y+width*.22-life*width*(.5+s*.7)+life*life*width*.55;c.save();c.translate(px,py);c.rotate(life*(i%3+2)*dir);c.globalAlpha=Math.max(.22,1-t*.12);if(i<4){const r=width*.044;c.fillStyle='#1c1d1c';c.beginPath();c.ellipse(0,0,r,r*.75,0,0,Math.PI*2);c.fill();c.strokeStyle='#8c8b7f';c.lineWidth=r*.25;c.stroke();}else if(i<8){const img=this.loaded('coupe');if(img)c.drawImage(img,img.naturalWidth*.25,img.naturalHeight*.5,img.naturalWidth*.16,img.naturalHeight*.11,-width*.07,-width*.04,width*.14,width*.08);}else{c.fillStyle=i%3?'#adb7b099':'#f4c77f';c.fillRect(0,0,width*.015,width*.007);}c.restore();}}
- paint(now:number,phase:RacePhase,value:number,quiet:boolean,runId=''){
+ paint(now:number,phase:RacePhase,value:number,quiet:boolean,runId='',restored=false){
   if(!this.alive||!this.assets.ready)return;
   const dt=this.last?Math.max(0,Math.min(.05,(now-this.last)/1000)):0;this.last=now;
   if(phase!==this.phase||runId!==this.run){this.phase=phase;this.run=runId;this.age=0;if(phase==='crashed')this.crashClock=this.clock;}else this.age+=dt;
+  // The longest ending is complete at cargoTiming.exit. Restored results keep its final pose.
+  if(restored&&(phase==='crashed'||phase==='escaped'))this.age=Math.max(this.age,cargoTiming.exit);
   const f=stuntFrame(phase,this.age,quiet,this.chooseStunt(runId,phase,value)),motion=crashMotion(this.age,quiet),c=this.ctx,w=this.w,h=this.h;
   if(!quiet)this.clock+=dt*f.travel*(.85+Math.min(.4,Math.log(Math.max(1,value))*.08));
   const target=quiet?0:f.travel*(phase==='racing'?2.65+.5*ease(this.age/4):2.85);
@@ -177,7 +179,7 @@ export class LastExitScene {
   }
   if(crash&&f.explosion){const p=ease((f.age-3.48)/.3),size=Math.min(carW*2.2,430)*( .45+p*.55);this.sprite('explosion',carX,crashGround-size*.28,size,0,Math.max(.52,1-(f.age-3.8)*.1));if(!quiet&&f.age<3.69){c.fillStyle=`rgba(255,221,160,${(1-(f.age-3.48)/.21)*.28})`;c.fillRect(0,0,w,h);}}
   const vignette=c.createRadialGradient(w*.5,h*.55,w*.18,w*.5,h*.55,w*.75);vignette.addColorStop(0,'#19201900');vignette.addColorStop(1,'#19201966');c.fillStyle=vignette;c.fillRect(0,0,w,h);c.restore();
-  this.frames++;this.shot={carX,carY,carWidth:carW,helicopterY:heliY,cables:f.cables,lift:f.lift,label:f.label,variant:f.variant};Object.assign(this.canvas.dataset,{renderer:'canvas2d',phase,variant:f.variant,cinematic:f.label,frames:String(this.frames),location:route.key,locationIndex:String(route.index),locationBlend:route.progress.toFixed(3)});
+  this.frames++;this.shot={carX,carY,carWidth:carW,helicopterY:heliY,cables:f.cables,lift:f.lift,label:f.label,variant:f.variant};Object.assign(this.canvas.dataset,{renderer:'canvas2d',phase,variant:f.variant,cinematic:f.label,restored:String(restored),frames:String(this.frames),location:route.key,locationIndex:String(route.index),locationBlend:route.progress.toFixed(3)});
  }
  locationIndex(){return this.route.inspect().index;}
  presentationSeconds(){return this.age;}
