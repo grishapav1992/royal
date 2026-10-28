@@ -4,6 +4,7 @@ from pathlib import Path
 import tempfile
 import unittest
 import uuid
+import copy
 
 spec = importlib.util.spec_from_file_location('stars_install', Path(__file__).with_name('install.py'))
 module = importlib.util.module_from_spec(spec)
@@ -52,6 +53,30 @@ class PrivateConfiguration(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, 'file secrets'):
             module.environment(self.value)
         self.assertEqual(module.PROVIDER.read_text(), 'TELEGRAM_BOT_TOKEN_FILE=/run/secrets/existing\n')
+
+
+class Fingerprint(unittest.TestCase):
+    def test_mount_order_does_not_hide_changes_to_mounts_or_environment(self):
+        row = {'Config': {'Env': ['KEEP=1']}, 'HostConfig': {'ReadonlyRootfs': True},
+               'Mounts': [{'Destination': '/app/data', 'Source': '/private/data', 'RW': True},
+                          {'Destination': '/run/secrets/key', 'Source': '/private/key', 'RW': False}]}
+        reordered = copy.deepcopy(row)
+        reordered['Mounts'].reverse()
+        self.assertEqual(module.container_configuration(row), module.container_configuration(reordered))
+        reordered['Mounts'][0]['RW'] = True
+        self.assertNotEqual(module.container_configuration(row), module.container_configuration(reordered))
+        changed = copy.deepcopy(row)
+        changed['Config']['Env'] = ['KEEP=2']
+        self.assertNotEqual(module.container_configuration(row), module.container_configuration(changed))
+
+    def test_image_inventory_reuse_requires_identical_image_clean_overlay_and_no_shadowing_mount(self):
+        mounts = [{'Destination': '/app/data'}, {'Destination': '/app/game-modules'}]
+        self.assertTrue(module.reusable_program('sha256:known', 'sha256:known', mounts, ['C /tmp']))
+        self.assertFalse(module.reusable_program('sha256:other', 'sha256:known', mounts, []))
+        for changed in ['/app/dist/index.html', '/app/node_modules/pg/index.js', '/app', '/app/package.json']:
+            self.assertFalse(module.reusable_program('sha256:known', 'sha256:known', mounts, ['C '+changed]))
+        for destination in ['/app', '/app/dist', '/app/dist-server/payments.js', '/app/node_modules/pg']:
+            self.assertFalse(module.reusable_program('sha256:known', 'sha256:known', [{'Destination': destination}], []))
 
 
 if __name__ == '__main__':
