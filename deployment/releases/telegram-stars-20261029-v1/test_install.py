@@ -5,6 +5,10 @@ import tempfile
 import unittest
 import uuid
 import copy
+import json
+import shutil
+import tarfile
+from types import SimpleNamespace
 
 spec = importlib.util.spec_from_file_location('stars_install', Path(__file__).with_name('install.py'))
 module = importlib.util.module_from_spec(spec)
@@ -77,6 +81,56 @@ class Fingerprint(unittest.TestCase):
             self.assertFalse(module.reusable_program('sha256:known', 'sha256:known', mounts, ['C '+changed]))
         for destination in ['/app', '/app/dist', '/app/dist-server/payments.js', '/app/node_modules/pg']:
             self.assertFalse(module.reusable_program('sha256:known', 'sha256:known', [{'Destination': destination}], []))
+
+    def test_finished_one_shot_container_cannot_hide_a_missing_persistent_service(self):
+        result = SimpleNamespace(returncode=1, stdout=json.dumps([{'Id': 'permanent'}]))
+        self.assertEqual(module.inspected_rows(['permanent', 'one-shot'], result, {'permanent'}), [{'Id': 'permanent'}])
+        with self.assertRaisesRegex(RuntimeError, 'persistent'):
+            module.inspected_rows(['permanent', 'one-shot'], SimpleNamespace(returncode=1, stdout='[]'), {'permanent'})
+        with self.assertRaisesRegex(RuntimeError, 'inspection failed'):
+            module.inspected_rows(['permanent'], result, {'permanent'})
+
+
+class RetainedPreparation(unittest.TestCase):
+    def test_backup_reuse_rejects_changed_source_archive_settings_and_any_financial_attempt(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            saved = module.BACKUP, module.ROOT, module.PROVIDER
+            try:
+                module.ROOT = Path(temporary)/'release'
+                module.ROOT.mkdir()
+                module.BACKUP = Path(temporary)/'backup'
+                module.PROVIDER = Path(temporary)/'provider.env'
+                source = module.BACKUP/'source'
+                for name in ['server/payments/app.ts', module.CADDY]:
+                    path = source/name
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    path.write_text('saved '+name)
+                (module.BACKUP/'provider.env').write_text('private fixture settings')
+                old = {'source': module.inventory(source), 'settings': {str(module.PROVIDER): module.sha(module.BACKUP/'provider.env')}}
+                def archive():
+                    with tarfile.open(module.BACKUP/'source.tgz', 'w:gz') as output:
+                        output.add(source, arcname='source')
+                archive()
+                changed = {'server/payments/app.ts': 'new hash'}
+                module.verify_source_backup(old, changed)
+                (source/'server/payments/app.ts').write_text('changed')
+                with self.assertRaisesRegex(RuntimeError, 'source backup'):
+                    module.verify_source_backup(old, changed)
+                (source/'server/payments/app.ts').write_text('saved server/payments/app.ts')
+                (module.BACKUP/'provider.env').write_text('different')
+                with self.assertRaisesRegex(RuntimeError, 'settings backup'):
+                    module.verify_source_backup(old, changed)
+                (module.BACKUP/'provider.env').write_text('private fixture settings')
+                (module.BACKUP/'payments.dump').write_text('')
+                with self.assertRaisesRegex(RuntimeError, 'state reconciliation'):
+                    module.verify_source_backup(old, changed)
+                (module.BACKUP/'payments.dump').unlink()
+                with tarfile.open(module.BACKUP/'source.tgz', 'w:gz') as output:
+                    pass
+                with self.assertRaisesRegex(RuntimeError, 'archive differs'):
+                    module.verify_source_backup(old, changed)
+            finally:
+                module.BACKUP, module.ROOT, module.PROVIDER = saved
 
 
 if __name__ == '__main__':
