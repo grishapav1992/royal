@@ -2,7 +2,7 @@
   "date": "2026-10-28",
   "sourceCommit": "4c086ea85c950ba560634c98197a99019c00c031",
   "verifiedMergedCommit": "81194d5fd173bc07ce1bf7ac9b93508bbf0b5c49",
-  "preservedRemoteCommit": "pending report push",
+  "preservedRemoteCommit": "350d80f213edc69578b786e2a6e8ee70895f9f72",
   "freeBeforeTaskBytes": 302762356736,
   "freeBeforeCleanupBytes": 299420631040,
   "packageInventory": [
@@ -127,7 +127,7 @@
     {
       "path": "artifacts/work/forest-heart-board-v5",
       "reason": "Task-owned generated verification captures and logs",
-      "cleanup": "Remove derived files after final reports and source are verified in GitHub"
+      "cleanup": "Retain derived files pending permitted cleanup; final source and compact final reports are verified in GitHub"
     },
     {
       "path": "artifacts/work/forest-heart-elf-v4",
@@ -141,5 +141,12 @@
     }
   ],
   "priorBlockedCleanup": "Earlier explicit temporary-file and old-package deletions were rejected by automatic review; these older targets are not retried here",
-  "status": "final-report-preservation-in-progress"
+  "status": "incomplete-automatic-approval-review-blocked-temporary-file-cleanup",
+  "remoteVerification": "git ls-remote confirmed source, final assets and reports on codex/forest-heart-visual at 350d80f213edc69578b786e2a6e8ee70895f9f72",
+  "blockedAction": "Delete the explicitly enumerated task-owned captures, temporary audio copies, measurements and logs under artifacts/work/forest-heart-board-v5 after preserving final reports in GitHub",
+  "rejectionReason": "blocked by policy; no additional reason supplied; command rejected before execution",
+  "freeAfterCleanupBytes": 299455651840,
+  "retainedTemporaryArtifactsBytes": 21459744,
+  "retainedObsoletePackageBytes": 31963990,
+  "measurementNote": "No folders, files or archives were removed. Free-space observations include concurrent work, so no physical reclaimed space is claimed. Obsolete package deletion was not retried after the rejection."
 }

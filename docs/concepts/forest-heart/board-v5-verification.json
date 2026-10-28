@@ -2,7 +2,7 @@
   "date": "2026-10-28",
   "implementationCommit": "4c086ea85c950ba560634c98197a99019c00c031",
   "mergedCommit": "81194d5fd173bc07ce1bf7ac9b93508bbf0b5c49",
-  "integrationBaseline": "d76746b1a5d22a4b5b15c2f2934aea7c052568b5",
+  "integrationBaseline": "e1364159e9ea293b954b6a03b5563388917e2a89",
   "module": {
     "version": "1.5.0-e8e961722e67",
     "sourceSha256": "e8e961722e6742adffff7dbbdc4470c0ab803e7a24df5bbe1edd7f0e9481e7cb",
@@ -58,7 +58,8 @@
       "ru",
       "en"
     ],
-    "skipPauseRestoreRetryReducedMotionAndWalletRecovery": "passed"
+    "skipPauseRestoreRetryReducedMotionAndWalletRecovery": "passed",
+    "laterMainSync": "Only further independent Caribbean client, tests, preview helper and report changes; no Forest Heart or common host/financial/math source changed. Forest Heart build reused the same e8e961722e67 package and check:rtp passed on 350d80f."
   },
   "arrivalMeasurements": [
     {
@@ -281,5 +282,7 @@
       "bytes": 141080,
       "sha256": "3893cf59dc6fe7a5f0fd95564f9e90c88183b54b65a9f11fe205746e053d7166"
     }
-  ]
+  ],
+  "fullApplicationBuildCommit": "81194d5fd173bc07ce1bf7ac9b93508bbf0b5c49",
+  "latestIntegrationCommit": "350d80f213edc69578b786e2a6e8ee70895f9f72"
 }
