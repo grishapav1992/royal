@@ -487,6 +487,53 @@
         "src/shared/cosmicEscapeBets.ts",
         "server/games/luelonSlots.ts"
       ]
+    },
+    "flag-battle": {
+      "rulesVersion": 1,
+      "progressVersion": 1,
+      "method": "uniform-flag-battle-v1",
+      "target": 0.96,
+      "tolerance": 0.01,
+      "maxUpper95": 0.98,
+      "maxHalfWidth95": 0.004,
+      "minPaidRounds": 4000000,
+      "minCycles": 0,
+      "seeds": [
+        74117,
+        910493
+      ],
+      "qualificationRoundsPerSeed": 2000000,
+      "stakes": [
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "choices": [
+        "RU",
+        "BR",
+        "US",
+        "JP",
+        "FR",
+        "DE",
+        "GB",
+        "AR",
+        "CN",
+        "IN",
+        "TR",
+        "CA"
+      ],
+      "proof": "docs/game-math/qualifications/flag-battle-v1.json",
+      "qualificationSource": "scripts/game-math/rtp-flag-battle.mjs",
+      "sources": [
+        "src/shared/flagBattle.ts",
+        "server/games/flagBattle.ts",
+        "src/shared/casinoExpansion.ts",
+        "server/demoExpansion.ts",
+        "server/finance/nile-game-runtime.ts"
+      ]
     }
   },
   "nonWagered": {

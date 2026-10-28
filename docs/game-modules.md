@@ -1,11 +1,11 @@
 # Independently published games
 
-Every existing game definition has an independent client package. The catalogue contains 118 module identities across the current and historical game families. This is a technical inventory, not a claim that the hall has 118 visible machines:
+Every existing game definition has an independent client package. The catalogue contains 119 module identities across the current and historical game families. This is a technical inventory, not a claim that the hall has 118 visible machines:
 
 | Family | Module identities |
 | --- | ---: |
 | Studio games, including Caribbean Treasures | 42 |
-| Original Royal games, GitHub practice games, session games and all casino/card variants, including LAST EXIT | 62 |
+| Original Royal games, GitHub practice games, session games and all casino/card variants, including LAST EXIT | 63 |
 | Air hockey, pool, chess, piano and Mortal Kombat | 5 |
 | Durak, transfer Durak and Crazy Eights PvP | 3 |
 | Breaker, Orbit, Drift and Pixel legacy arcade games | 4 |
@@ -94,3 +94,5 @@ Casino API Pro accepts an optional embedded provider context. The shared host ow
 Existing native artwork, the small startup previews, preparation cache, latest chat implementation, server engines, payout rules and wallet transport are preserved. GitHub decoration is scoped to the current nine GitHub identities; native Plinko keeps its production design. Use the platform browser scenarios with the real host and connected chat on desktop and mobile, and verify package integrity and recovery before publication.
 
 Mortal Kombat uses activity identity and package slug mortal-kombat on floor 2. See games/mortal-kombat/README.md for wager rules, escrow recovery, asset provenance, shared USDT · Nile integration and server anti-cheat controls (rules contract 2). It requires this compatible host/backend release before the client package can be published.
+
+Flag Battle (`flag-battle`, API/rules/progress 1) is an independent wagered client module in the existing Royal catalogue without adding seats. Twelve equal countries compete; a complete paid round has analytical RTP 96%. See [its rules and feedback specification](concepts/flag-battle.md).
