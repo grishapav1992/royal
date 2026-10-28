@@ -68,7 +68,7 @@ export class CaribbeanCaptain{
   for(const mount of this.mounts){const animation=mount.animate(frames,{duration:kind==='stop'?260:kind==='cannon'?520:900,easing:'cubic-bezier(.2,.7,.25,1)'});this.animations.add(animation);void animation.finished.catch(()=>{}).finally(()=>this.animations.delete(animation));}
  }
  begin(){
-  if(this.dead)return;this.clearTimer();this.clearMotion();this.sequence=[];this.holding=false;this.busy=true;this.reaction='focus';this.show('focus');this.say('');
+  if(this.dead)return;if(this.loading)this.cancelSelection();this.clearTimer();this.clearMotion();this.sequence=[];this.holding=false;this.busy=true;this.reaction='focus';this.show('focus');this.say('');
  }
  finish(){this.busy=false;if(!this.holding){this.reaction='idle';this.show('idle');this.say('');this.scheduleIdle();}}
  react(cue:CaribbeanCue,key:string,variant=0){
