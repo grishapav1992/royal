@@ -1,6 +1,6 @@
 import {test as base,expect,type Page} from '@playwright/test';
 import {Client} from '@colyseus/sdk';
-const out='artifacts/work/roulette';
+const out='artifacts/work/roulette-visual';
 const test=base.extend<{roomPath:string}>({roomPath:async({request},use)=>{
  const r=await request.post('/api/auth/login',{data:{email:`roulette-room-${crypto.randomUUID()}@example.test`,password:'Roulette-test-123!'}});expect(r.ok()).toBe(true);
  const cookie=r.headers()['set-cookie'].split(';')[0];await request.post('/api/auth/character',{data:{skin:0}});
@@ -43,6 +43,9 @@ async function layout(page:Page,name:string){
  await expect(page.locator('[data-rr-spin]')).toBeInViewport();await expect(page.locator('#chat-input')).toBeInViewport();
  expect(await page.locator('.rr-root').evaluate(e=>e.scrollWidth<=e.clientWidth+1)).toBe(true);
  expect(await page.locator('.rr-footer').evaluate(e=>{const b=e.getBoundingClientRect(),p=e.closest('#mini-game')!.getBoundingClientRect();return b.bottom<=p.bottom+1&&b.top>=p.top;})).toBe(true);
+ if(await page.locator('.rr-root').evaluate(e=>e.clientWidth)>650){
+  for(const selector of ['.rr-wheel','.rr-numbers'])expect(await page.locator(selector).evaluate(e=>{const box=e.getBoundingClientRect(),area=e.closest('.rr-content')!.getBoundingClientRect();return box.top>=area.top-1&&box.bottom<=area.bottom+1;})).toBe(true);
+ }
  await page.screenshot({path:out+'/'+name+'.png'});
 }
 async function play(page:Page){
@@ -55,12 +58,14 @@ test('roulette uses real wallet settlement, responsive host chat, history, and c
  const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));await enter(page,roomPath);await open(page);await layout(page,'desktop');
  await expect(page.locator('[data-rr-bet]')).toHaveCount(41);
  await page.locator('[data-rr-value="0"]').click();await expect(page.locator('[data-rr-selection]')).toContainText('Число 0 · ×36');
- await page.locator('[data-rr-stake]').selectOption('50');const result=await play(page);
+ await page.getByRole('button',{name:'50 USDT',exact:true}).click();const result=await play(page);
  expect(result.gameRound.stakeUnits).toBe('5000');expect(result.gameRound.input).toEqual({bet:'number',number:0});
  const n=result.gameRound.outcome.number;expect(result.gameRound.payoutUnits).toBe(n===0?'180000':'0');
  await expect(page.locator('.rr-history span')).toHaveText(String(n));
+ await page.setViewportSize({width:1280,height:720});await layout(page,'laptop');
  await page.setViewportSize({width:390,height:844});await layout(page,'mobile');
- await page.locator('[data-rr-bet="even"]').click();await page.locator('[data-rr-stake]').selectOption('10');await play(page);
+ await page.locator('[data-rr-bet="even"]').click();await page.getByRole('button',{name:'10 USDT',exact:true}).click();await play(page);
+ await page.locator('[data-rr-value="36"]').click();await expect(page.locator('[data-rr-selection]')).toContainText('Число 36 · ×36');await layout(page,'mobile-number-field');await play(page);
  await page.emulateMedia({reducedMotion:'no-preference'});await page.locator('[data-rr-bet="black"]').click();await play(page);
  await page.evaluate(async()=>{const path='/src/wallet/WalletClient.ts';const {demoWallet}=await import(/* @vite-ignore */path);(window as any).__rouletteAccount=demoWallet.accountId;demoWallet.setAccount(null);});
  await expect(page.locator('[data-rr-number]')).toHaveText('?');await expect(page.locator('.rr-landed')).toHaveCount(0);await expect(page.locator('[data-rr-net]')).toHaveText('0');
@@ -75,8 +80,8 @@ test('a lost accepted response survives close and reopening and retries the exac
   original=route.request().postDataJSON();const response=await route.fetch();expect(response.ok()).toBe(true);accepted=await response.json();await route.abort('failed');
  },{times:1});
  await page.locator('[data-rr-bet="odd"]').click();await page.locator('[data-rr-spin]').click();
- await expect(page.locator('[data-rr-spin]')).toHaveText('Проверить результат');
- await close(page);await open(page);await expect(page.locator('[data-rr-spin]')).toHaveText('Проверить результат');
+ await expect(page.locator('[data-rr-spin]')).toHaveAccessibleName('Проверить результат');
+ await close(page);await open(page);await expect(page.locator('[data-rr-spin]')).toHaveAccessibleName('Проверить результат');
  await expect(page.locator('[data-rr-bet="odd"]')).toHaveAttribute('aria-pressed','true');
  const response=page.waitForResponse(r=>r.url().endsWith('/api/demo-wallet/operations')&&r.request().method()==='POST');
  await page.locator('[data-rr-spin]').click();const r=await response;expect(r.request().postDataJSON()).toEqual(original);
