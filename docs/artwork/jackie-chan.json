@@ -69,6 +69,58 @@
       "bytes": 535994,
       "sha256": "29e80c7c05e432a8cb92c5fef5917e0ae7d7742e2dcfe118f4c2db1903026054",
       "prompt": "Use case: stylized-concept. Asset type: transparent prop sprite atlas for a hand drawn classic Hong Kong kung fu comedy game. Exact 4 columns by 2 rows, eight clearly separated full objects, one object per cell. Ground level side view with slight perspective, consistent richly detailed hand inked and gouache animation-cel style, warm vintage amber highlights, dark crisp outlines. Reading order: 1 simple sturdy wooden restaurant chair with four legs and backrest, 2 small round wooden kung fu stool, 3 low rectangular wooden tea table, 4 a few comic broken wooden chair pieces lying flat, 5 square vintage wooden shipping crate, 6 wooden barrel, 7 low two-wheeled wooden produce handcart, 8 woven bamboo fruit basket. All objects fully inside cells with generous transparent margins, bottoms on same baseline in each row. No people, letters, labels, shadows, background, borders, cell numbers or grid. True transparent alpha background."
+    },
+    {
+      "asset": "public/assets/jackie-chan/master-furniture.webp",
+      "bytes": 473700,
+      "width": 1774,
+      "height": 887,
+      "hasAlpha": true,
+      "columns": 4,
+      "rows": 2,
+      "frames": 8,
+      "sha256": "6f7a4b3cc5d5982bd07e88d91f7921cc6cf860c4ea5338f52de7cf3648fec14d",
+      "sourceGeneration": "exec-a8a9e8e3-751c-4e94-b085-e6f209f17cfc.png",
+      "prompt": "Use case: identity-preserve\nAsset type: NEW transparent eight-pose 2D game animation atlas, exact 4 columns and 2 rows of equal cells, total canvas 2048x1024, each cell 512x512.\nReferences: image 1 supplies the recognizable young adult Jackie Chan identity, ivory kung fu shirt, maroon sash, charcoal trousers, black shoes and detailed hand-inked/gouache animation-cel style. Image 2 supplies the wooden furniture designs. Replace ALL old poses with these eight NEW full-body actions. Same young Jackie face, hair, body and costume in every cell.\nReading order:\n1: bends down facing right, BOTH hands actually gripping the backrest of a wooden restaurant chair standing on the floor in front of him.\n2: stands holding that chair in BOTH hands at chest level, its legs point toward the right, elbows bent.\n3: blocks an incoming attack with the held chair in front of his torso, both hands firmly wrapped around the wooden frame.\n4: swings/thrusts the chair toward the RIGHT with arms extended, visible physical two-hand grip and a strong twisted martial-arts stance.\n5: vault kick toward RIGHT with both hands planted on a low wooden tea TABLE, body leaning over the table, one leg extended right; complete table included and grounded.\n6: acrobatic side kick toward RIGHT while one foot stands firmly on a ROUND WOODEN STOOL; complete stool included and grounded.\n7: victory stance, feet planted, right fist raised overhead, broad joyful Jackie grin, left hand on hip; NO furniture.\n8: respectful kung fu bow/salute, both hands together at chest, friendly relieved smile; NO furniture.\nComposition: all eight actors and their furniture are fully within their OWN cell with generous transparent gutters. Jackie's BODY centered about 40% across each cell, furniture toward the right. Consistent human scale, visible shoes and full furniture. No overlap between neighboring cells, no frame lines. Real hand-to-furniture contact is essential; each pose is ONE coherent character+furniture silhouette, not floating props.\nConstraints: true transparent alpha everywhere outside actor and furniture, no background, gradients, shadows, ground plane, letters, numbers, text, opponent or effects. Retain hand-drawn retro Hong Kong kung fu movie illustration, not 3D or photography."
+    },
+    {
+      "asset": "public/assets/jackie-chan/sailor-furniture.webp",
+      "bytes": 390070,
+      "width": 1774,
+      "height": 887,
+      "hasAlpha": true,
+      "columns": 4,
+      "rows": 2,
+      "frames": 8,
+      "sha256": "2c10a657b6aacbd44eaa97946984899dcee271461f30b699e2431eb545017d6e",
+      "sourceGeneration": "exec-8a6256c3-8bc7-4005-a7b8-8f36fb02c5c8.png",
+      "prompt": "Use case: identity-preserve. Edit target: image 1, Jackie Chan eight-action transparent furniture and victory animation atlas. Reference image 2 supplies ONLY the costume. Change ONLY Jackie's clothing in ALL EIGHT cells to navy sailor uniform with white square sailor collar and navy trim, navy trousers, black shoes. Keep the exact canvas dimensions, 4x2 cell grid, all eight poses, hand and foot positions, recognizable young Jackie face, hair, body shape, original hand drawn animation style, wooden chair/table/stool designs and their precise positions. Preserve hand grips on chairs, hands planted on the table and foot on the stool. Preserve two furniture-free celebration poses (raised fist and bow) in cells 7 and 8. Keep genuine transparent alpha, no background, shadows, letters, effects or grid lines. No pose, furniture, face or framing changes."
+    },
+    {
+      "asset": "public/assets/jackie-chan/police-furniture.webp",
+      "bytes": 450814,
+      "width": 1774,
+      "height": 887,
+      "hasAlpha": true,
+      "columns": 4,
+      "rows": 2,
+      "frames": 8,
+      "sha256": "257c337bceb08d2f37a5369f6f27c6d1ccdf9617b0152361d0784e9139a5dd78",
+      "sourceGeneration": "exec-b759f0f9-c090-48e5-a9f7-c1d18875029a.png",
+      "prompt": "Use case: identity-preserve. Edit target: image 1, Jackie Chan eight-action transparent furniture and victory animation atlas. Reference image 2 supplies ONLY the costume. Change ONLY Jackie's clothing in ALL EIGHT cells to light tan casual jacket over white T-shirt, blue jeans, white sneakers. Keep the exact canvas dimensions, 4x2 cell grid, all eight poses, hand and foot positions, recognizable young Jackie face, hair, body shape, original hand drawn animation style, wooden chair/table/stool designs and their precise positions. Preserve hand grips on chairs, hands planted on the table and foot on the stool. Preserve two furniture-free celebration poses (raised fist and bow) in cells 7 and 8. Keep genuine transparent alpha, no background, shadows, letters, effects or grid lines. No pose, furniture, face or framing changes."
+    },
+    {
+      "asset": "public/assets/jackie-chan/hawk-furniture.webp",
+      "bytes": 454704,
+      "width": 1774,
+      "height": 887,
+      "hasAlpha": true,
+      "columns": 4,
+      "rows": 2,
+      "frames": 8,
+      "sha256": "f26be0ea36fd0c42602927ff334070df1118fde0b9454df7293c804908dc359a",
+      "sourceGeneration": "exec-271af253-2e7b-40c6-9d64-51ef65189963.png",
+      "prompt": "Use case: identity-preserve. Edit target: image 1, Jackie Chan eight-action transparent furniture and victory animation atlas. Reference image 2 supplies ONLY the costume. Change ONLY Jackie's clothing in ALL EIGHT cells to olive safari waistcoat over cream T-shirt, brown belted trousers, brown sturdy shoes. Keep the exact canvas dimensions, 4x2 cell grid, all eight poses, hand and foot positions, recognizable young Jackie face, hair, body shape, original hand drawn animation style, wooden chair/table/stool designs and their precise positions. Preserve hand grips on chairs, hands planted on the table and foot on the stool. Preserve two furniture-free celebration poses (raised fist and bow) in cells 7 and 8. Keep genuine transparent alpha, no background, shadows, letters, effects or grid lines. No pose, furniture, face or framing changes."
     }
   ]
 }

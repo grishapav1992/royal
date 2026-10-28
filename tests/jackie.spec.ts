@@ -27,13 +27,22 @@ async function enter(page:Page,lang='ru'){
   await page.locator('#games-tab').click();await page.locator('[data-cabinet="studio-afterglow"]').click();await expect(page.locator('#mini-dialog')).toBeVisible({timeout:30000});await page.locator('[data-platform-game="original-jackie-chan"]').click();await expect(page.locator('.jackie')).toHaveAttribute('data-loading','false',{timeout:30000});await expect(page.locator('#mini-dialog #chat-input')).toBeEnabled();
 }
 async function act(page:Page,selector='[data-fight]'){
-  const reply=page.waitForResponse(r=>r.url().endsWith('/api/demo-wallet/expansion')&&r.request().method()==='POST');await page.locator('.jackie '+selector).click();const r=await reply;expect(r.ok()).toBe(true);const body=await r.json();await expect(page.locator('.jackie [data-fight]')).toBeEnabled();return body.session;
+  const reply=page.waitForResponse(r=>r.url().endsWith('/api/demo-wallet/expansion')&&r.request().method()==='POST');await page.locator('.jackie '+selector).click();const r=await reply;expect(r.ok()).toBe(true);const body=await r.json();await expect(page.locator('.jackie [data-fight]')).toBeEnabled({timeout:10000});return body.session;
 }
 test('real host, chat, risk groups, gallery and account progress work on desktop and mobile',async({page})=>{
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await outcome('win');await enter(page);await page.emulateMedia({reducedMotion:'no-preference'});
   const game=page.locator('.jackie');await game.locator('[data-risk="extreme"]').click();await expect(game.locator('canvas')).toHaveAttribute('data-opponents','3');await page.screenshot({path:out+'/desktop.png'});
   const first=await act(page);expect(first.view.jackie.combat.shots).toHaveLength(1);await expect(game.locator('[data-cashout]')).toContainText('22,00');await expect(game.locator('[data-location]')).toBeDisabled();
-  await game.locator('[data-risk="sharp"]').click();const second=await act(page);expect(second.view.jackie.combat.shots.map((s:any)=>s.risk)).toEqual(['extreme','sharp']);await act(page,'[data-cashout]');
+  await game.locator('[data-risk="sharp"]').click();const second=await act(page);expect(second.view.jackie.combat.shots.map((s:any)=>s.risk)).toEqual(['extreme','sharp']);
+  await act(page);await act(page);
+  let posts=0;page.on('request',request=>{if(request.method()==='POST'&&request.url().endsWith('/api/demo-wallet/expansion'))posts++;});
+  const finalOperation=act(page);
+  await expect(game).toHaveAttribute('data-result-kind','complete');await expect(game.locator('[data-result-title]')).toHaveText('ПОБЕДА!');await expect(game.locator('[data-result-caption]')).toContainText('5 БОЁВ');await expect(game.locator('.jc-takes .won')).toHaveCount(5);
+  await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getMiniState()?.phase)).toBe('victory-fist');
+  await page.screenshot({path:out+'/victory-desktop.png'});await game.locator('[data-skip-victory]').click();const completed=await finalOperation;expect(completed.view.jackie.combat.status).toBe('complete');expect(posts).toBe(1);await expect(game.locator('[data-skip-victory]')).toBeHidden();
+  expect(await page.evaluate(()=>(window as any).royalDemo.getMiniState()?.audio.active)).toBe(0);
+  for(const [width,height]of [[390,844],[320,740]]){await page.setViewportSize({width,height});await page.locator('.jc-stage').scrollIntoViewIfNeeded();await expect(game.locator('[data-result-title]')).toBeInViewport();await expect(game.locator('canvas')).toHaveAttribute('data-celebrating','false');await page.screenshot({path:out+'/victory-'+width+'.png'});}
+  await page.setViewportSize({width:1440,height:1000});
   await page.emulateMedia({reducedMotion:'reduce'});await game.locator('[data-stake]').selectOption('50000');await outcome('lose');await act(page);await act(page);await expect(game.locator('[data-count]')).toHaveText('4/4');
   await game.locator('[data-wardrobe]').click();await expect(game.locator('[data-costume="hawk"]')).toBeEnabled();await game.locator('[data-costume="sailor"]').click();await game.locator('[data-location]').selectOption('harbor');await page.screenshot({path:out+'/sailor-harbor.png'});
   for(const [width,height] of [[1440,1000],[390,844],[320,740]]){
