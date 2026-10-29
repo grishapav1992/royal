@@ -86,6 +86,13 @@ class DeploymentGuards(unittest.TestCase):
     def test_disk_reserve_is_never_lowered(self):
         with patch.object(self.helper.shutil,'disk_usage',return_value=types.SimpleNamespace(free=5*1024**3)):
             with self.assertRaises(AssertionError):self.helper.capacity()
+    def test_financial_probe_uses_offline_readonly_base_before_building(self):
+        with patch.object(self.helper,'run') as run:
+            self.helper.probe_finance('existing-base',mounted=True)
+            args=run.call_args.args[0]
+            self.assertIn('--network=none',args);self.assertIn('--read-only',args)
+            self.assertIn('type=bind,source='+str(self.helper.ROOT/'play.js')+',target=/app/play.js,readonly',args)
+            self.assertIn('existing-base',args);self.assertIn('test_scope_required',args[-1])
     def test_composite_backup_covers_changed_and_added_current_files(self):
         self.helper.M['backupBase']={'source':copy.deepcopy(self.old['source'])}
         self.helper.OLD['source']['src/shared/jackieChan.ts']={'sha256':'changed','lf':'changed'}

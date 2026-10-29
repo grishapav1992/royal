@@ -26,6 +26,7 @@ export function projectedReader(before,kind='application'){
    origin={source:override.source,liveSha256:override.liveSha256??null};
   }else if(file.startsWith('server-tests/')||file.startsWith('tests/fixtures/')||file==='scripts/database-test.ts'){
    if(file.startsWith('server-tests/')&&!file.includes('jackie')){bytes=blob(meta.production,file);origin={testOnly:true,commit:meta.production};}
+   else if(file.includes('jackie')){bytes=blob(meta.testCommit,file);origin={testOnly:true,commit:meta.testCommit};}
    else{bytes=canonical(fs.readFileSync(path.resolve(root,file)));origin={testOnly:true};}
   }
   else if(kind==='finance'){
@@ -54,8 +55,9 @@ export function sourcePlugin(reader){
  }};
 }
 export async function buildProgram(before,kind='application',entryPoints){
- const reader=projectedReader(before,kind),result=await build({absWorkingDir:root,entryPoints:entryPoints??[kind==='finance'?'scripts/finance-nile-play.ts':'server/index.ts'],bundle:true,platform:'node',packages:'external',format:'esm',write:false,metafile:true,plugins:[sourcePlugin(reader)]});
- return{...result,inputs:reader.inputs,contents:reader.contents,origins:reader.origins};
+ const reader=projectedReader(before,kind),result=await build({absWorkingDir:root,entryPoints:entryPoints??[kind==='finance'?'scripts/finance-nile-play.ts':'server/index.ts'],bundle:true,platform:'node',...(kind==='finance'?{external:['pg','pg-native']}:{packages:'external'}),format:'esm',write:false,metafile:true,plugins:[sourcePlugin(reader)]});
+ const dependencyInputs={};for(const file of Object.keys(result.metafile.inputs))if(file.includes('node_modules/'))dependencyInputs[file]=digest(fs.readFileSync(path.resolve(root,file)));
+ return{...result,inputs:reader.inputs,contents:reader.contents,origins:reader.origins,dependencyInputs};
 }
 export function viteProjection(before){
  const reader=projectedReader(before);
