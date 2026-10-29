@@ -17,7 +17,7 @@ function fixture() {
   return {session,operation};
 }
 test('the catalogue adds a loadable slot without adding physical seats or retiring legacy games',() => {
-  assert.equal(cabinetsInHall('arcade').length,12);
+  assert.equal(cabinetsInHall('arcade').length,13); // Includes the independently added Hong Kong Warrior seat.
   assert.equal(cabinetsInHall('arcade').some(cabinet => cabinet.id === CARIBBEAN_GAME),false);
   assert(collectionGames('royal').includes(CARIBBEAN_GAME));
   assert(GAME_CABINETS.some(cabinet => cabinet.id === CARIBBEAN_GAME && cabinet.wallet));
