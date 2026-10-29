@@ -27,11 +27,56 @@ async function enter(page:Page,lang='ru'){
   await expect(page.locator('#join-dialog')).toBeHidden();await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo?.getState().online)).toBe(true);await page.evaluate(async()=>{const p='/src/wallet/WalletClient.ts';await(await import(/* @vite-ignore */p)).demoWallet.refresh();});
   await page.locator('#game').focus();await page.keyboard.down('ArrowRight');try{await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getState().x),{timeout:15000,intervals:[50]}).toBeGreaterThan(1100);}finally{await page.keyboard.up('ArrowRight');}
   await page.locator('#game').focus();await page.keyboard.down('ArrowDown');try{await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getState().y),{timeout:15000,intervals:[50]}).toBeGreaterThan(760);}finally{await page.keyboard.up('ArrowDown');}
-  await page.locator('#games-tab').click();await page.locator('[data-cabinet="studio-afterglow"]').click();await expect(page.locator('#mini-dialog')).toBeVisible({timeout:30000});await page.locator('[data-platform-game="original-jackie-chan"]').click();await expect(page.locator('.jackie')).toHaveAttribute('data-loading','false',{timeout:30000});await expect(page.locator('#mini-dialog #chat-input')).toBeEnabled();
+  await page.locator('#games-tab').click();
+  let cabinet='studio-afterglow';
+  await expect.poll(async()=>{if(await page.locator('#mini-dialog').isVisible())return true;cabinet=await page.evaluate(preferred=>{const occupied=new Set((window as any).royalDemo.getState().remotePositions.map((player:any)=>player.cabinet));return [preferred,'studio-nitro-run','studio-last-convoy','studio-meme-overload','studio-velvet-reign','studio-caramel-carnival','studio-cosmic-escape'].find(id=>!occupied.has(id))??preferred;},cabinet);try{await page.locator(`[data-cabinet="${cabinet}"]`).click({timeout:1000});}catch{}return page.locator('#mini-dialog').isVisible();},{timeout:30000,intervals:[1000,2500]}).toBe(true);
+  await page.locator('[data-platform-game="original-jackie-chan"]').click();await expect(page.locator('.jackie')).toHaveAttribute('data-loading','false',{timeout:30000});await expect(page.locator('#mini-dialog #chat-input')).toBeEnabled();
 }
 async function act(page:Page,selector='[data-fight]'){
   const reply=page.waitForResponse(r=>r.url().endsWith('/api/demo-wallet/expansion')&&r.request().method()==='POST');await page.locator('.jackie '+selector).click();const r=await reply;expect(r.ok()).toBe(true);const body=await r.json();await expect(page.locator('.jackie [data-fight]')).toBeEnabled({timeout:15000});return body.session;
 }
+test('location themes, independent switches and shared audio lifecycle work in the real host',async({page})=>{
+  test.setTimeout(180000);const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
+  await page.addInitScript(()=>{const original=AudioContext.prototype.createMediaElementSource;(window as any).musicElements=[];AudioContext.prototype.createMediaElementSource=function(audio){if(audio.src.includes('/jackie-chan/audio/'))(window as any).musicElements.push(audio);return original.call(this,audio);};});
+  await enter(page);const game=page.locator('.jackie'),state=()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().audio.music);let posts=0;
+  page.on('request',request=>{if(request.method()==='POST'&&request.url().endsWith('/api/demo-wallet/expansion'))posts++;});
+  await expect.poll(async()=>(await state()).playing,{timeout:15000}).toBe(true);
+  const themes=[];
+  for(const [location,title]of [['restaurant','Shenyang'],['harbor','Hot Pursuit'],['market','Eighties Action']]){
+    await game.locator('[data-location]').selectOption(location);await expect.poll(async()=>(await state()).title).toBe(title);
+    await expect.poll(async()=>(await state()).playing,{timeout:10000}).toBe(true);await expect.poll(async()=>(await state()).active).toBe(1);themes.push(await state());
+  }
+  for(const location of ['restaurant','market','harbor','market','restaurant'])await game.locator('[data-location]').selectOption(location);
+  await expect.poll(async()=>(await state()).playing).toBe(true);await expect.poll(async()=>(await state()).active).toBe(1);expect((await state()).title).toBe('Shenyang');
+  await page.route('**/jackie-chan/audio/harbor.mp3',route=>route.abort('failed'));await game.locator('[data-location]').selectOption('harbor');await expect.poll(async()=>(await state()).error).not.toBe('');
+  await page.unroute('**/jackie-chan/audio/harbor.mp3');await game.locator('[data-speed]').click();await expect.poll(async()=>(await state()).playing).toBe(true);await game.locator('[data-speed]').click();
+  await game.locator('[data-sound]').click();await expect(game.locator('[data-sound]')).toHaveAttribute('aria-pressed','false');expect((await state()).playing).toBe(true);
+  await game.locator('[data-music]').click();await expect(game.locator('[data-music]')).toHaveAttribute('aria-pressed','false');await expect.poll(async()=>(await state()).active).toBe(0);
+  await game.locator('[data-location]').selectOption('harbor');expect((await state()).enabled).toBe(false);expect((await state()).active).toBe(0);
+  await game.locator('[data-music]').click();await expect.poll(async()=>(await state()).playing).toBe(true);expect((await state()).title).toBe('Hot Pursuit');
+  await game.locator('[data-sound]').click();await expect(game.locator('[data-sound]')).toHaveAttribute('aria-pressed','true');
+  const master=async(command:'mute'|'unmute'|'zero'|'volume'|'suspend'|'resume')=>page.evaluate(async command=>{const path='/src/game/GameAudio.ts',audio=(await import(/* @vite-ignore */path)).gameAudio;if(command==='mute'||command==='unmute')audio.setMuted(command==='mute');else if(command==='zero'||command==='volume')audio.setVolume(command==='zero'?0:.35);else await audio.context[command]();},command);
+  for(const [pause,resume]of [['mute','unmute'],['zero','volume'],['suspend','resume']]as const){
+    const before=await state();await master(pause);await expect.poll(async()=>(await state()).active).toBe(0);await master(resume);await expect.poll(async()=>(await state()).playing).toBe(true);expect((await state()).positionSeconds).toBeGreaterThanOrEqual(before.positionSeconds);
+  }
+  await page.evaluate(()=>{Object.defineProperty(document,'hidden',{value:true,configurable:true});document.dispatchEvent(new Event('visibilitychange'));});
+  await expect.poll(async()=>(await state()).active).toBe(0);
+  await page.evaluate(()=>{Object.defineProperty(document,'hidden',{value:false,configurable:true});document.dispatchEvent(new Event('visibilitychange'));});
+  await expect.poll(async()=>(await state()).playing).toBe(true);
+  await game.locator('[data-rules]').click();await expect(game.locator('.jc-music-credits a')).toHaveCount(3);await expect(game.locator('[data-dialog]')).toContainText('Kevin MacLeod');await expect(game.locator('[data-dialog] a[href="https://creativecommons.org/licenses/by/4.0/"]')).toBeVisible();await game.locator('[data-close]').click();
+  await page.setViewportSize({width:390,height:844});for(const selector of ['[data-music]','[data-sound]']){await game.locator(selector).scrollIntoViewIfNeeded();await expect(game.locator(selector)).toBeInViewport();expect((await game.locator(selector).boundingBox())!.height).toBeGreaterThanOrEqual(44);}
+  await expect(page.locator('#mini-dialog #chat-input')).toBeInViewport();await page.screenshot({path:out+'/music-mobile.png'});expect(posts).toBe(0);
+  await outcome('win');const operation=act(page);await expect.poll(async()=>(await state()).ducked).toBe(true);await expect.poll(async()=>(await state()).playing).toBe(true);await operation;await expect.poll(async()=>(await state()).ducked).toBe(false);expect(posts).toBe(1);
+  await page.emulateMedia({reducedMotion:'reduce'});await act(page,'[data-cashout]');
+  await game.locator('[data-music]').click();await game.locator('[data-sound]').click();await page.locator('#studio-game-list').click();await expect(game).toHaveCount(0);
+  expect(await page.evaluate(()=>(window as any).musicElements.every((audio:HTMLAudioElement)=>audio.paused&&!audio.getAttribute('src')))).toBe(true);
+  await page.locator('[data-platform-game="original-jackie-chan"]').click();await expect(game).toHaveAttribute('data-loading','false');
+  await expect(game.locator('[data-music]')).toHaveAttribute('aria-pressed','false');await expect(game.locator('[data-sound]')).toHaveAttribute('aria-pressed','false');expect((await state()).active).toBe(0);expect(posts).toBe(2);
+  await game.locator('[data-music]').click();await expect.poll(async()=>(await state()).playing).toBe(true);await expect.poll(async()=>(await state()).active).toBe(1);
+  expect(errors).toEqual([]);await writeFile(out+'/music-acceptance.json',JSON.stringify({themes,independentSwitches:true,preferencesSurviveReopen:true,sharedMuteAndVolume:true,contextAndVisibilityRecovery:true,closeDisposesAllMedia:true,duckingDuringFight:true,settingsPosts:0,realTemporaryPostgres:true,connectedChat:true,errors},null,2));
+  await page.locator('#mini-dialog .mini-top [data-close]').click({timeout:5000});await expect(page.locator('#mini-dialog')).toBeHidden();
+});
+
 test('game follows the real available stage, keeps actions visible and uses readable location options',async({page})=>{
   test.setTimeout(180000);await enter(page);const game=page.locator('.jackie'),rows=[];let paidPosts=0;
   page.on('request',r=>{if(r.method()==='POST'&&r.url().endsWith('/api/demo-wallet/expansion'))paidPosts++;});
@@ -49,6 +94,7 @@ test('game follows the real available stage, keeps actions visible and uses read
     if([1920,1366,390,844].includes(width))await page.screenshot({path:out+'/responsive-'+width+'x'+height+'.png'});
   }
   expect(paidPosts).toBe(0);await writeFile(out+'/responsive-layout.json',JSON.stringify(rows,null,2));
+  await page.locator('#mini-dialog .mini-top [data-close]').click({timeout:5000});await expect(page.locator('#mini-dialog')).toBeHidden();
 });
 test('real host, chat, risk groups, gallery and account progress work on desktop and mobile',async({page})=>{
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await outcome('win');await enter(page);await page.emulateMedia({reducedMotion:'no-preference'});

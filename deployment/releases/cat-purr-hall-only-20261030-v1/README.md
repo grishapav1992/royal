@@ -1,0 +1,7 @@
+# Cat purring in the hall only
+
+Publish only RoomScene.ts and CatRenderer.ts and the generated host client bundles from an exact committed checkout saved in GitHub main. Use the normal release plan, preparation and GitHub verification against production host ee9319121f33bf14f45bacae448d21d62a17df9e. Audit every local host compiler input against the actual production source, allowing only the two reviewed changes. Preserve newer independent packages and all backend, wallet, dependency and configuration bytes.
+
+The installer is adapted from character-motion-20261027-v2. It retains its three shared locks, financial lease, immutable derivative image checks, five GiB reserve, runtime inventories, rollback guards and settings checks. The scope is restricted to the two cat audio files. Back up exactly the overwritten source files and old index; pin both prior image tags. The earlier complete production source backup remains preserved. This scoped backup restores every overwritten input without duplicating the complete media tree. No database restore or migration is permitted.
+
+The snapshot recognizes the verified Jackie v2 image inventory and tolerates only a disappearing transient Docker job. A missing persistent service still aborts. Do not publish other games or new static media from main. Check public health, exact client hashes, unchanged module pointers and cat audio behavior on desktop and mobile-sized guest hosts. Record the commit, image, backup and verification in SERVER.md and push the record before declaring completion.
