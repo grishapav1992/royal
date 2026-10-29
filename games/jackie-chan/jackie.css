@@ -23,3 +23,5 @@
 @container(max-width:600px){.jackie[data-result-kind=complete] .jc-stage{min-height:320px}.jackie[data-result-kind=complete] .jc-header{padding:10px 14px}.jackie[data-result-kind=complete] .jc-brand>span{display:none}.jackie[data-result-kind=complete] .jc-brand>strong{font-size:26px}}
 .jc-result[data-kind=complete]{left:22px;transform:none;width:300px;min-width:0}
 @container(max-width:600px){.jc-result[data-kind=complete]{left:50%;transform:translateX(-50%);width:calc(100% - 32px)}}
+.jc-result[data-kind=cashout]{top:8px;transform:translateX(-50%);padding:7px 20px}.jc-result[data-kind=cashout]>strong{margin:4px 0}.jc-result-next:empty{display:none!important}.jackie[data-result-kind=cashout] .jc-scene-tag,.jackie[data-result-kind=cashout] .jc-risk-tag{visibility:hidden}
+@container(max-width:600px){.jackie[data-result-kind=cashout] .jc-stage{min-height:280px}}

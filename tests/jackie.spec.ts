@@ -58,6 +58,12 @@ test('real host, chat, risk groups, gallery and account progress work on desktop
   expect(await page.evaluate(()=>(window as any).royalDemo.getMiniState()?.audio.active)).toBe(0);
   for(const [width,height]of [[390,844],[320,740]]){await page.setViewportSize({width,height});await page.locator('.jc-stage').scrollIntoViewIfNeeded();await expect(game.locator('[data-result-title]')).toBeInViewport();await expect(game.locator('canvas')).toHaveAttribute('data-celebrating','false');await page.screenshot({path:out+'/victory-'+width+'.png'});}
   await page.setViewportSize({width:1440,height:1000});
+  await act(page);await act(page,'[data-cashout]');await expect(game).toHaveAttribute('data-result-kind','cashout');
+  for(const [width,height]of [[1440,1000],[390,844],[320,740]]){
+    await page.setViewportSize({width,height});await game.locator('.jc-stage').scrollIntoViewIfNeeded();await expect(page.locator('#mini-dialog #chat-input')).toBeEnabled();
+    await expect.poll(async()=>game.locator('.jc-stage').evaluate(stage=>{const canvas=stage.querySelector('canvas')!,hero=JSON.parse(canvas.dataset.heroFrame!),result=stage.querySelector('[data-result]')!.getBoundingClientRect();return canvas.getBoundingClientRect().top+hero.top-result.bottom;})).toBeGreaterThanOrEqual(6);
+  }
+  await page.setViewportSize({width:1440,height:1000});
   await page.emulateMedia({reducedMotion:'reduce'});await game.locator('[data-stake]').selectOption('50000');await outcome('lose');for(let i=0;i<9;i++)await act(page);await expect(game.locator('[data-count]')).toHaveText('8/8');
   await game.locator('[data-wardrobe]').click();await expect(game.locator('.jc-costume[data-open="true"]')).toHaveCount(8);
   for(const [id,film]of [['rush','Час пик'],['whoami','Кто я?'],['tuxedo','Смокинг'],['mentor','Карате-пацан']])await expect(game.locator(`[data-costume="${id}"] strong`)).toHaveText(film);
@@ -77,6 +83,7 @@ test('preview brings a varied fight contact into a laptop viewport and reopens w
   await page.route('**/__jackie/setup',route=>route.fulfill({json:{account:{id:account}}}));
   await page.goto(baseURL+'/tests/fixtures/jackie-play.html');
   const game=page.locator('.jackie');await expect(game).toHaveAttribute('data-loading','false');
+  await game.locator('[data-risk="extreme"]').click();
   const version=await page.locator('#preview').getAttribute('data-game-module-version');
   let posts=0;page.on('request',r=>{if(r.method()==='POST'&&r.url().endsWith('/api/demo-wallet/expansion'))posts++;});
   const operation=act(page);
@@ -87,6 +94,17 @@ test('preview brings a varied fight contact into a laptop viewport and reopens w
   await page.locator('#reopen').click();await expect(game).toHaveAttribute('data-loading','false');await expect(game.locator('[data-cashout]')).toBeVisible();await expect(game.locator('canvas')).toHaveAttribute('data-sequence',scene.sequence!);expect(posts).toBe(1);
   await expect(page.locator('#preview')).toHaveAttribute('data-game-module-version',version!);await expect(page.locator('#preview-version')).toContainText('Актуальная сборка');
   await writeFile(out+'/preview-continuity.json',JSON.stringify({viewport:[1280,720],version,scene,postOperations:posts,reopenPreservedAcceptedShot:true},null,2));
+  await act(page,'[data-cashout]');await expect(game).toHaveAttribute('data-result-kind','cashout');
+  const layouts=[];
+  for(const width of [1000,601,600,580,440,390,320]){
+    await page.setViewportSize({width,height:900});await game.locator('.jc-stage').scrollIntoViewIfNeeded();
+    await expect.poll(async()=>game.locator('.jc-stage').evaluate(stage=>{
+      const canvas=stage.querySelector('canvas')!,hero=JSON.parse(canvas.dataset.heroFrame!),result=stage.querySelector('[data-result]')!.getBoundingClientRect();return canvas.getBoundingClientRect().top+hero.top-result.bottom;
+    })).toBeGreaterThanOrEqual(6);
+    layouts.push(await game.locator('.jc-stage').evaluate(stage=>{const canvas=stage.querySelector('canvas')!,hero=JSON.parse(canvas.dataset.heroFrame!),result=stage.querySelector('[data-result]')!.getBoundingClientRect();return{width:innerWidth,sceneWidth:stage.clientWidth,resultBottom:result.bottom,heroTop:canvas.getBoundingClientRect().top+hero.top};}));
+    if(width===580||width===320)await page.screenshot({path:out+'/cashout-raised-'+width+'.png'});
+  }
+  await writeFile(out+'/cashout-layout.json',JSON.stringify(layouts,null,2));
 });
 
 test('lost response recovers the same operation; reopening loads saved state without another stake',async({page})=>{
