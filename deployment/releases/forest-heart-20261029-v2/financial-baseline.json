@@ -49,6 +49,10 @@
     "server/finance/nile-play-service.ts": {
       "commit": "78cb1ccd53c64c08e2df836f9d14a9eb3926f1be",
       "sha256": "08077aeedb3df7068661efc9f28dd10c41ac81d48d13492cef71de9ed8998ee6"
+    },
+    "src/i18n/en.ts": {
+      "commit": "9acf3686965fedc0c81efaaa6f740e30d4fef175",
+      "sha256": "b6ba026c8b72fb124efce3f69fa7af5338a48ae44149930cb6383b9d6161f47b"
     }
   }
 }
