@@ -3,17 +3,20 @@
   "gameId": "flag-battle",
   "rulesVersion": 2,
   "progressVersion": 1,
-  "startedAt": "2026-10-29T05:28:11.665Z",
-  "completedAt": "2026-10-29T05:28:17.871Z",
+  "startedAt": "2026-10-29T15:46:54.931Z",
+  "completedAt": "2026-10-29T15:46:58.460Z",
   "sourceHashes": {
     "src/shared/flagBattle.ts": "e156fd61e71243759c27d9a9d3fed8a0ab1555e9938f6a2b7ac854c344d16e6f",
     "server/games/flagBattle.ts": "48adde5247fa57348efecb91f05dec1eb9203e544c3f42407e5ebbcff52c9068",
     "src/shared/casinoExpansion.ts": "b12c62592673ae8a458c381ca122bab1a29d529f978eb886c28774564c053eae",
     "server/demoExpansion.ts": "6d940a4e5bb4d4e02fa9bddadbba66378a185d2396c1553449ae711188b19925",
     "server/finance/nile-game-runtime.ts": "c04d2391d39a660b90e1ee0506ecdc39427cb106397caa92c4d63c88b25477bc",
+    "deployment/releases/flag-battle-20261029-v1/source-transform.mjs": "12ad655422284cdffabdfe1ce3227b3e9a9aac7c41df0e678b46f4ef52e6287c",
+    "deployment/releases/flag-battle-20261029-v1/financial-build.mjs": "de0af06bf0024cade2f939023e60bb2f12f0fbad0a343068ab4cb48f301c2d31",
+    "deployment/releases/flag-battle-20261029-v1/financial-baseline.json": "11f15f7024cbe2fd77fbe26792257245dd0448760144dcb8dc1d83363906f6d4",
     "scripts/game-math/rtp-flag-battle.mjs": "80d4fe8301c8697ceec90a50dfa6ca2520f533c55edf8ad48dd58862d801f6af"
   },
-  "policySha256": "f62891ae2476ea37922d6e3b20669c6cb955fd79ca91f4e42f11c4d10aa7f179",
+  "policySha256": "32cd1dfcd0e36240ac614bd2466392f1d2aad9a9e3443304ea6bc0cbf8e1539d",
   "serverReplayChecks": 304128,
   "method": "uniform-flag-battle-v2",
   "streams": [
