@@ -52,9 +52,10 @@ test('real host, chat, risk groups, gallery and account progress work on desktop
   await act(page);await act(page);
   let posts=0;page.on('request',request=>{if(request.method()==='POST'&&request.url().endsWith('/api/demo-wallet/expansion'))posts++;});
   const finalOperation=act(page);
+  await page.waitForFunction(()=>(window as any).royalDemo.getMiniState()?.phase==='victory-fist',undefined,{polling:'raf',timeout:15000});
+  await page.screenshot({path:out+'/victory-desktop.png'});
   await expect(game).toHaveAttribute('data-result-kind','complete',{timeout:15000});await expect(game.locator('[data-result-title]')).toHaveText('ПОБЕДА!');await expect(game.locator('[data-result-caption]')).toContainText('5 БОЁВ');await expect(game.locator('.jc-takes .won')).toHaveCount(5);
-  await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getMiniState()?.phase)).toBe('victory-fist');
-  await page.screenshot({path:out+'/victory-desktop.png'});await game.locator('[data-skip-victory]').click();const completed=await finalOperation;expect(completed.view.jackie.combat.status).toBe('complete');expect(posts).toBe(1);await expect(game.locator('[data-skip-victory]')).toBeHidden();
+  await game.locator('[data-skip-victory]').click();const completed=await finalOperation;expect(completed.view.jackie.combat.status).toBe('complete');expect(posts).toBe(1);await expect(game.locator('[data-skip-victory]')).toBeHidden();
   expect(await page.evaluate(()=>(window as any).royalDemo.getMiniState()?.audio.active)).toBe(0);
   for(const [width,height]of [[390,844],[320,740]]){await page.setViewportSize({width,height});await page.locator('.jc-stage').scrollIntoViewIfNeeded();await expect(game.locator('[data-result-title]')).toBeInViewport();await expect(game.locator('canvas')).toHaveAttribute('data-celebrating','false');await page.screenshot({path:out+'/victory-'+width+'.png'});}
   await page.setViewportSize({width:1440,height:1000});
