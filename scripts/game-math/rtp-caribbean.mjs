@@ -10,6 +10,10 @@ import { startCaribbean, moveCaribbean } from '../../server/games/caribbeanTreas
 
 export const CARIBBEAN_QUALIFICATION_METHOD = 'exact-caribbean-giant-round-v1';
 // Freeze the reviewed implementation. Changing a source requires reviewing this model.
+// Forest Heart integration adds an independent game branch and trailing capability flag.
+// The 2026-10-28 merge also retains main Neopolis v4 capability parsing and Last Exit guards.
+// Caribbean settings, costs, entropy, settlement and its existing flag position are preserved.
+// Requalify the complete Caribbean replay after reviewing these shared-file additions.
 export const CARIBBEAN_REVIEWED_SOURCES = {
   'src/shared/caribbeanTreasuresMath.ts': 'b86e71675dfd0179da8d8c43c7a62f8da41303d5e6bc59f07b81d4497b64647b',
   'src/shared/caribbeanTreasures.ts': '5590af9897cfb32dbf8fd7d9c0608ad52184051ddee7ca70cd309267a4311aee',

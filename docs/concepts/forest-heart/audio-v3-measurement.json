@@ -1,0 +1,74 @@
+{
+  "originalBefore": {
+    "peak": 0.10155294090509415,
+    "rms": 0.007068292863203269
+  },
+  "originalAfter": {
+    "peak": 0.1444391906261444,
+    "rms": 0.01490196261517373
+  },
+  "comparisonBefore": {
+    "peak": 0.5028587525259252,
+    "rms": 0.03499999999999945
+  },
+  "comparisonAfter": {
+    "peak": 0.33924200472543725,
+    "rms": 0.03499999999999798
+  },
+  "targetRms": 0.035,
+  "music": {
+    "peak": 0.10639132559299469,
+    "rms": 0.01832521954057209
+  },
+  "stereoDifference": 0.0062302507899065175,
+  "cues": [
+    {
+      "cue": "land",
+      "peak": 0.0877567008137703,
+      "rms": 0.00418152792913917
+    },
+    {
+      "cue": "turn",
+      "peak": 0.047686249017715454,
+      "rms": 0.003358331270115011
+    },
+    {
+      "cue": "flow",
+      "peak": 0.07137072831392288,
+      "rms": 0.009493623354480967
+    },
+    {
+      "cue": "flower",
+      "peak": 0.056312307715415955,
+      "rms": 0.005762316977912603
+    },
+    {
+      "cue": "choice",
+      "peak": 0.05491822212934494,
+      "rms": 0.00912039752126854
+    },
+    {
+      "cue": "bonus",
+      "peak": 0.10396265983581543,
+      "rms": 0.019375886962380042
+    },
+    {
+      "cue": "win",
+      "peak": 0.1444391906261444,
+      "rms": 0.01520415890130037
+    },
+    {
+      "cue": "big",
+      "peak": 0.1345660239458084,
+      "rms": 0.03475164111433575
+    }
+  ],
+  "pairCorrelation": {
+    "woodTurn": 0.016381308620055882,
+    "choiceBonus": 0.003577643981143783,
+    "winBig": -0.008108463211227249
+  },
+  "voicesBeforeDestroy": 0,
+  "voicesAfterDestroy": 0,
+  "scope": "Digital waveform checks and RMS-matched comparison, not a human listening study or physical loudness measurement."
+}

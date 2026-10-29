@@ -4,7 +4,7 @@ Every existing game definition has an independent client package. The catalogue 
 
 | Family | Module identities |
 | --- | ---: |
-| Studio games, including Caribbean Treasures and Flooded Temple | 43 |
+| Studio games, including Forest Heart, Caribbean Treasures and Flooded Temple | 44 |
 | Original Royal games, GitHub practice games, session games and all casino/card variants, including LAST EXIT | 62 |
 | Air hockey, pool, chess, piano and Mortal Kombat | 5 |
 | Durak, transfer Durak and Crazy Eights PvP | 3 |
@@ -29,6 +29,8 @@ Flooded Temple has a staged redesign approved on 28 October 2026: [original Gonz
 Stage 2 introduced a separately [qualified cascade engine and backend](game-math/flooded-temple-v2.md), gated by explicit `X-Royal-Temple-Rules: 2`. Its rules/progress 2/2 policy was checked alongside the former rules 1 module policy. `ExpansionClient(2)` supports both versions; the host singleton stayed at 1 during stage 2, before the new renderer was ready. Shared wallet settlement, recovery and the financial journal cover both versions.
 
 Stage 3 now promotes the current Flooded Temple package to 0.8.0 and its rules/progress contract to 2/2. The host singleton advertises Temple rules 2. New rounds use the 5 by 3 cascade renderer, 20 paylines, automatic free spins, quick play and finite autoplay. Active accepted v1 expeditions finish in their original renderer before the next paid cascade start. The v2 RTP profile is primary; v1 remains qualified as historical rules 1. A compatible host/backend release is required before publishing the module. See [stage 3 verification](game-design/flooded-temple-cascades-stage3.md). The preceding 0.7.1 paragraphs describe the preserved legacy interface and the stage 1/2 rollout state.
+
+Forest Heart has package `games/forest-heart/`, identity `studio-forest-heart`, host API 1, rules 1 and progress 1. It is a new Royal catalogue choice in the existing twelve physical seats. The common expansion client negotiates its rules header, validates its confirmed root history and keeps the original pending-operation UUID across recovery. The module owns its iframe, forest art, flow animation and original procedural music, using the common audio context and wallet. See [Forest Heart verification](concepts/forest-heart/verification.md).
 
 The hall supplies host API 1 with the existing wallet, serialized operation transport, audio, reactions, language services and shared Phaser runtime. Common layout and control styles remain part of the hall design system; packages include their game-specific styles. The Mines, Flight, demo/USDT casino, Nile, USDT and crypto clients remain live host singletons. The Luelon catalogue selection and preview watcher namespace is also shared. Modules import these services through the build bridge and never construct another wallet. Server rules, account locks, payout validation, persistent sessions and balances remain in the common backend. This change adds no game servers or microservices.
 

@@ -4,6 +4,7 @@ import previews from '../game/startupPreviews.json';
 import { STUDIO_ART } from './StudioArtwork';
 
 const covers: Record<string, string> = {
+  'studio-forest-heart':'/assets/forest-heart/v1/catalog.webp',
   'royal-roulette':'/assets/royal-roulette/cover.svg',
   'studio-neopolis':'/assets/neopolis/cover-cabinet-v2.webp',
   'studio-cosmic-escape':'/assets/cosmic-guardians/v1/background.webp',

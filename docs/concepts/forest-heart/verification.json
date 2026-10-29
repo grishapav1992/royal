@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-26",
+  "browser": "Chrome on Windows",
+  "viewports": [
+    {
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "width": 390,
+      "height": 844
+    },
+    {
+      "width": 320,
+      "height": 780
+    }
+  ],
+  "browserScenarios": 7,
+  "mathTests": 9,
+  "rtpGateTests": 20,
+  "walletAndCompatibilityTests": 37,
+  "moduleTests": 7,
+  "platformTests": 3,
+  "runtimePaidRounds": 10752,
+  "exactOptimalRtp": 0.95994233480111,
+  "mathChanged": false,
+  "audio": {
+    "sampleRate": 22050,
+    "seconds": 12,
+    "peak": 0.10200496017932892,
+    "rms": 0.011586618473289024,
+    "ownedVoicesAfterDestroy": 0,
+    "scope": "Digital offline rendering only; no physical device or human listening assessment"
+  },
+  "timing": {
+    "clockModes": [
+      "output-timestamp"
+    ],
+    "audibleCues": 6,
+    "maximumEstimatedFrameSkewMs": 9.795333334450333,
+    "maximumEstimatedOutputLeadMs": 91.38100000037412,
+    "engineeringGoalMs": 80,
+    "scope": "Estimated sample output vs DOM callback, no physical acoustic measurement; DOM tracing disabled to avoid distorting timing"
+  },
+  "productionPublished": false
+}

@@ -15,6 +15,7 @@ import {MEME_CLIENT_HEADER} from '../src/shared/memeOverload';
 import {PENALTY_CLIENT_HEADER} from '../src/shared/crLeo';
 import {DRACONA_CLIENT_HEADER} from '../src/shared/dracona';
 import {NEOPOLIS_HEADER} from '../src/shared/neopolis';
+import {FOREST_HEART_CLIENT_HEADER} from '../src/shared/forestHeart';
 
 export function installGameWallet(app:Application,socket=process.env.NILE_PLAY_SOCKET_FILE){
  const seeded=new Set<string>();
@@ -40,7 +41,7 @@ export function installGameWallet(app:Application,socket=process.env.NILE_PLAY_S
    if(req.method==='POST'&&(op?.action==='start'||op?.kind==='play'||op?.kind==='spin'))await accounts.financeAdmin.assertAllowed(account);
    const legacy=seeded.has(account)?null:{wardrobe:await accounts.wallet.expansion.wardrobe.snapshot(account),convoy:await accounts.wallet.expansion.convoyProgress(account)};
    const neopolisRules=({'1':1,'2':2,'3':3,'4':4} as const)[req.get(NEOPOLIS_HEADER) as '1'|'2'|'3'|'4']??0;
-   const result=await playCommand(socket,account,'native-game',{path:req.path,method:req.method,body:req.method==='POST'?req.body:null,query,flags,rules:req.get('X-Royal-Card-Rules')==='2'?2:1,neopolisRules,templeRules:req.get(TEMPLE_CLIENT_HEADER)==='2'?2:req.get(TEMPLE_CLIENT_HEADER)==='1'?1:0,caribbeanRules:req.get(CARIBBEAN_CLIENT_HEADER)==='1'?1:0,legacy});
+   const result=await playCommand(socket,account,'native-game',{path:req.path,method:req.method,body:req.method==='POST'?req.body:null,query,flags,rules:req.get('X-Royal-Card-Rules')==='2'?2:1,neopolisRules,forestHeartRules:req.get(FOREST_HEART_CLIENT_HEADER)==='1'?1:0,templeRules:req.get(TEMPLE_CLIENT_HEADER)==='2'?2:req.get(TEMPLE_CLIENT_HEADER)==='1'?1:0,caribbeanRules:req.get(CARIBBEAN_CLIENT_HEADER)==='1'?1:0,legacy});
    if(result.status!==200){const code=String(result.value?.code??'');res.status([400,404,405,409,429].includes(result.status)?result.status:503).json({error:/[а-я]/i.test(code)?code.replace(/демомонет/g,'USDT').replace(/демобаланса/g,'баланса USDT'):code==='play_wallet_unassigned'?'Нажми «Пополнить USDT», чтобы получить адрес.':code==='play_reserve_insufficient'?'Резерва казино недостаточно для этой ставки.':'Ответ не подтверждён. Повтори то же действие.'});return;}
    if(seeded.size>10000)seeded.clear();seeded.add(account);res.json(result.value);
   }catch(error){if(error instanceof Error&&(error as any).status===403)res.status(403).json({error:error.message});else res.status(503).json({error:'Ответ не получен. Повтори проверку той же операции: повторного списания не будет.'});}
