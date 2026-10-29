@@ -57,7 +57,7 @@ test('opening moves continuously and contacts do not teleport a flag toward the 
 
 test('restored completed rounds draw only the winner, without a frozen departing flag',async()=>{
   const {FlagArena}=await import('../games/flag-battle/FlagArena');
-  const {FLAG_COUNTRIES}=await import('../src/shared/flagBattle');
+  const {flagCountries,FLAG_MODES}=await import('../src/shared/flagBattle');
   const imageDescriptor=Object.getOwnPropertyDescriptor(globalThis,'Image'),ratioDescriptor=Object.getOwnPropertyDescriptor(globalThis,'devicePixelRatio');
   Object.defineProperty(globalThis,'Image',{configurable:true,value:class{src='';complete=true;naturalWidth=90;}});
   Object.defineProperty(globalThis,'devicePixelRatio',{configurable:true,value:1});
@@ -66,11 +66,34 @@ test('restored completed rounds draw only the winner, without a frozen departing
     const context=new Proxy({createRadialGradient:()=>({addColorStop(){}}),drawImage:()=>{draws++;}},{get:(target,key)=>Reflect.get(target,key)??(()=>{})});
     const canvas={width:0,height:0,getContext:()=>context,getBoundingClientRect:()=>({width:600,height:600})};
     const arena=new FlagArena(canvas as unknown as HTMLCanvasElement);
-    arena.reset({version:1,country:'RU',order:FLAG_COUNTRIES.map(c=>c.id),seed:1528496907});
+    arena.reset({version:1,country:'RU',order:flagCountries().map(c=>c.id),seed:1528496907});
     arena.finish();arena.tick(100,false,'RU',true);assert.equal(draws,1);
     assert.equal(arena.count(),11);
+    for(const mode of FLAG_MODES){
+      arena.reset({version:2,mode:mode.id,country:'RU',order:flagCountries(mode.id).map(c=>c.id),seed:0});
+      arena.tick(0,true,'RU',true);
+      let state;
+      for(let frame=1;frame<=mode.seconds*30;frame++)state=arena.tick(frame*1000/60,true,'RU',true);
+      assert(Math.abs(state!.playhead-mode.seconds/2)<.02,mode.id+' must use its own round duration for the audio clock');
+      for(let frame=mode.seconds*30+1;frame<=(mode.seconds+1)*60;frame++)state=arena.tick(frame*1000/60,true,'RU',true);
+      assert.equal(state!.finished,true);assert.equal(state!.eliminated,mode.count-1);
+      assert(Math.abs(state!.playhead-mode.seconds-.7)<.02);
+    }
   }finally{
     if(imageDescriptor)Object.defineProperty(globalThis,'Image',imageDescriptor);else Reflect.deleteProperty(globalThis,'Image');
     if(ratioDescriptor)Object.defineProperty(globalThis,'devicePixelRatio',ratioDescriptor);else Reflect.deleteProperty(globalThis,'devicePixelRatio');
+  }
+});
+
+test('larger modes place all bodies apart and deterministically clear N-1 real exits',()=>{
+  for(const count of [24,48])for(const seed of [0,93]){
+    const preview=new FlagPhysics(seed,true,undefined,count);assert.equal(preview.bodies.length,count);
+    for(let i=0;i<count;i++)for(let j=i+1;j<count;j++)assert(Math.hypot(preview.bodies[i].x-preview.bodies[j].x,preview.bodies[i].y-preview.bodies[j].y)>=preview.radius*2);
+    preview.advance(2);assert.equal(preview.exits.length,0);
+    const plan=planFlagPhysics(seed,count),replay=new FlagPhysics(seed,false,undefined,count);
+    assert.equal(plan.order.length,count);assert.equal(new Set(plan.order).size,count);assert.equal(plan.exits.length,count-1);assert(plan.duration<90);
+    while(!replay.finished)replay.advance(1/60);assert.deepEqual(replay.exits,plan.exits);
+    for(const e of plan.exits){assert(Math.hypot(e.x,e.y)>1+replay.radius);assert(Math.abs(angleDistance(Math.atan2(e.y,e.x),e.gap))<e.halfGap+.03);}
+    assert.equal(replay.bodies.filter(b=>b.escapedAt===null).length,1);
   }
 });

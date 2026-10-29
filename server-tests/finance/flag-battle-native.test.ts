@@ -4,7 +4,7 @@ import { randomUUID } from 'node:crypto';
 import { pvpFixture } from './helpers/nile-pvp-fixture';
 import { block } from './helpers/nile-play-fixture';
 import { NileGameRuntime, type NativeCommand } from '../../server/finance/nile-game-runtime';
-import { FLAG_GAME, validFlagSession } from '../../src/shared/flagBattle';
+import { FLAG_GAME, FLAG_MODES, flagPayout, validFlagSession } from '../../src/shared/flagBattle';
 const command=(body:unknown=null):NativeCommand=>({path:'/expansion',flagRules:1,body,method:body===null?'GET':'POST',flags:Array(9).fill(true),rules:2,query:{}});
 test('Flag Battle uses the Nile journal with exact integer settlement, capability filtering and replay after restart',async()=>{
   const c=await pvpFixture();
@@ -25,6 +25,15 @@ test('Flag Battle uses the Nile journal with exact integer settlement, capabilit
     await assert.rejects(runtime.run(c.a,command({...op,settings:{flags:{country:'JP'}}})));
     const lost:any=await runtime.run(c.a,command({...op,id:randomUUID(),settings:{flags:{country:'JP'}}}));
     assert(validFlagSession(lost.session));assert.equal(lost.session.returnedUnits,'0');assert.equal(lost.wallet.balanceUnits,String(before+9520000n));
+    for (const mode of FLAG_MODES) {
+      const next={...op,id:randomUUID(),settings:{flags:{country:'RU',mode:mode.id}}};
+      await assert.rejects(runtime.run(c.a,command(next)));
+      const accepted:any=await runtime.run(c.a,{...command(next),flagRules:2});
+      assert(validFlagSession(accepted.session));assert.equal(accepted.session.returnedUnits,flagPayout('100',mode.id));
+      const repeat:any=await create().run(c.a,{...command(next),flagRules:2});assert(repeat.replayed);assert.deepEqual(repeat.session,accepted.session);
+      assert.equal(repeat.wallet.balanceUnits,accepted.wallet.balanceUnits);assert.equal(repeat.wallet.reservedUnits,'0');
+      const legacy:any=await runtime.run(c.a,command());assert(!legacy.sessions.some((s:any)=>s.gameId===FLAG_GAME));
+    }
     await c.ledger.audit();
   }finally{await c.close();}
 });

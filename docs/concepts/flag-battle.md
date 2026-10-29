@@ -1,8 +1,27 @@
 # Флажочки: Flag Battle
 
-Independent module `flag-battle`, host API/rules/progress 1. Twelve countries compete in a circular arena with a rotating opening. A player chooses one country before paying. All countries have identical odds. No live opponents or viewer votes are implied.
+Independent module `flag-battle`, host API 1, rules 2, progress 1. Twelve, twenty-four or forty-eight countries compete in a circular arena with a rotating opening. A player chooses a mode and country before paying. All countries within the chosen mode have identical odds. No live opponents or viewer votes are implied.
 
-## Complete paid round
+## Modes 2.0 specification
+
+New starts choose Classic (12), Expanded (24) or World (48) before payment. Every flag in the chosen fixed roster is equally likely to win. Total return includes the stake: 11.52x, 23.04x or 46.08x respectively. Each mode has exact analytical RTP 24/25, with the existing six integer-cent stakes. No extra paid action, bonus, continuation or progress is introduced. Rules-1 sessions and requests without a mode retain the original twelve-country roster and settlement. Explicit mode starts use immutable rules/view 2, and require capability 2; capability 1 clients only see rules-1 sessions. Qualification must cover legacy starts and all country/mode/stake choices before building.
+
+| Event | Confirmation and presentation | Audio and interruption | Verification |
+| --- | --- | --- | --- |
+| Mode selection | Unpaid buttons show roster size, 1/N odds, total multiplier and quote before the bet; preview resets to that roster | Existing soft selection pop; no music | Locked during submission, unresolved request and presentation; selected country preserved if present, otherwise RU |
+| Accepted start | Server-saved mode and complete order determine roster and outcome | Existing one-shot start, spaced physical contacts and actual-exit effects | Country, mode, stake and reply must match; old requests replay with original rules |
+| Larger battle | Body radius scales to roster; 24/48 bodies start separated and exit physically through the opening; selected body outlined | Same density cap as Classic, no louder or denser wall chatter | Complete deterministic trajectory, readable desktop/mobile host with chat, no clipping or overlap at placement |
+| Final two and result | Final two follows exit N-2; result after N-1 exits, one winner remains | One final-two cue and one appropriate paid result accent; zero return stays neutral | Skip, restore, reduced motion, mute, hide and close retain their existing cancellation behavior |
+
+Larger rounds target 24 and 30 seconds, with a scrollable flag picker so bet controls remain reachable. These are design choices, not research thresholds. Physical timing and sound pleasantness still require device/listening assessment. The math qualification, wallet/retry compatibility and real host layout checks are release gates.
+
+Modes 2.0 verification, 29 October 2026: all 576 legacy/mode/country/stake profiles qualified with 16,000,000 independent-model observations per choice, exact integer settlement and 304,128 cross-checks through the production permutation. Observed estimates ranged from 95.651424% to 96.339456%; each exact analytical expectation remains 96%. The target, tolerance, confidence level and maximum confidence half-width were preserved; samples were increased for the higher variance of larger rosters. Country comparisons use common winner streams, with independent seed streams and separately seeded modes.
+
+Verification passed 16 sound/physics tests, five mathematics/common-wallet/native-journal tests, thirteen Caribbean compatibility/wallet tests, twenty-four RTP gate tests, seven package integrity/host-boundary tests and four Chrome scenarios. A final repeat covered the container layout at 669 by 804 with chat and mobile at 390 by 844. A full natural World round produced 47 actual exits, 47 elimination cues, one final-two cue, one appropriate result cue and a single remaining country matching the saved server winner. Mode/stake locks, search, country fallback, saved mode, legacy round restoration and lost-response replay were checked. The shared physics/audio clock now uses each mode's own duration.
+
+The game and all thirty affected existing client packages were rebuilt; source hashes and bytes of all 119 active packages passed integrity checks. Host TypeScript, JS/CSS, backend, reconciliation and payments compilation passed. The monolithic build was stopped while reading unrelated untracked resource duplicates containing ` 2`; those source files were preserved untouched. Host compilation was completed without automatic public copying, then all 699 tracked or task-reviewed public files were copied from this checkout to the ordinary build directory. This is local verification, not a production release or a successful unmodified monolithic build. The existing seven demo wallets were retained and their complete balance rows matched before and after the local stand restart. No production publication was performed.
+
+## Complete paid round (legacy rules 1)
 
 Allowed common-wallet cent stakes: 100, 200, 500, 1000, 2000, 5000. A server-side uniform Fisher-Yates permutation fixes the elimination order. Its last entry wins with probability 1/12 for every country. Return is floor(stake * 288 / 25) for a winning choice, zero otherwise. For these stakes the division is exact, giving exact analytical RTP (1/12) * (288/25) = 24/25 = 96%. The 11.52 multiplier includes the stake. No boosts, cashout, extra paid actions, bonuses or persistent progress exist.
 

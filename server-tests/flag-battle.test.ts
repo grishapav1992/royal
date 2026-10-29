@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { startFlagBattle } from '../server/games/flagBattle';
-import { FLAG_BETS, FLAG_COUNTRIES, FLAG_GAME, flagPayout, validFlagSession, validFlagView } from '../src/shared/flagBattle';
+import { FLAG_BETS, FLAG_MODES, flagCountries, flagModeInfo, FLAG_GAME, flagPayout, validFlagSession, validFlagView } from '../src/shared/flagBattle';
 import { validExpansionAction } from '../src/shared/casinoExpansion';
 import { PostgresDatabase } from '../server/database';
 import { DemoWalletStore } from '../server/demoWallet';
@@ -11,15 +11,16 @@ import { demoBalanceUnits, demoReservedUnits } from '../server/demoWalletAmounts
 
 const operation = (country = 'RU', stakeUnits = '100') => ({id:randomUUID(),gameId:FLAG_GAME,action:'start',stakeUnits,settings:{flags:{country}}});
 test('every country and allowed stake has exact 96% RTP, with all possible winners replayed',()=>{
-  for(const c of FLAG_COUNTRIES)for(const stake of FLAG_BETS){
+  for(const mode of [undefined,...FLAG_MODES.map(m=>m.id)])for(const c of flagCountries(mode))for(const stake of FLAG_BETS){
+    const roster=flagCountries(mode),count=roster.length;
     let total=0n;
-    for(let winner=0;winner<12;winner++){
+    for(let winner=0;winner<count;winner++){
       let first=true;
-      const view=startFlagBattle({flags:{country:c.id}},stake,max=>{if(first){first=false;return winner;}return max-1;});
-      assert(validFlagView(view));assert.equal(view.order[11],FLAG_COUNTRIES[winner].id);
-      total+=view.order[11]===c.id?BigInt(flagPayout(stake)):0n;
+      const view=startFlagBattle({flags:mode===undefined?{country:c.id}:{country:c.id,mode}},stake,max=>{if(first){first=false;return winner;}return max-1;});
+      assert(validFlagView(view));assert.equal(view.order.at(-1),roster[winner].id);
+      total+=view.order.at(-1)===c.id?BigInt(flagPayout(stake,mode)):0n;
     }
-    assert.equal(total*100n,BigInt(stake)*12n*96n);
+    assert.equal(total*100n,BigInt(stake)*BigInt(count)*96n);
   }
 });
 test('rejects invalid stakes, countries, extra input, paid moves and malformed randomness',()=>{
@@ -28,6 +29,7 @@ test('rejects invalid stakes, countries, extra input, paid moves and malformed r
     else assert.equal(validExpansionAction(input),false);
   }
   for(const n of [-1,12,.5,NaN,Infinity])assert.throws(()=>startFlagBattle({flags:{country:'RU'}},'100',()=>n));
+  for(const settings of [{flags:{country:'ES'}},{flags:{country:'KE',mode:'expanded'}},{flags:{country:'RU',mode:'bad'}},{flags:{country:'RU',mode:'world',boost:2}}])assert.throws(()=>startFlagBattle(settings as any,'100'));
   const v=startFlagBattle({flags:{country:'RU'}},'100',()=>0);
   assert(!validFlagView({...v,order:Array(12).fill('RU')}));
 });
@@ -55,5 +57,30 @@ test('common wallet settles once, recovers across store restart, rejects mutatio
     await assert.rejects(store.operate('alice',operation(),2,true,true,true,true,true,true,true,true,2,4,true,false));
     const loss=await store.operate('alice',operation('JP','500'));assert(validFlagSession(loss.session));assert.equal(loss.session.returnedUnits,'0');
     assert.equal(await demoBalanceUnits(db,'alice'),before-100+1152-500);
+  }finally{await db.close();}
+});
+
+test('mode settlement, ownership and capability 1 restore preserve immutable legacy rounds',async()=>{
+  const db=new PostgresDatabase(':memory:');await db.exec("CREATE TABLE accounts(id TEXT PRIMARY KEY); INSERT INTO accounts VALUES('alice'),('bob')");
+  const wallet=new DemoWalletStore(db),create=()=>new DemoExpansionStore(db,id=>wallet.snapshot(id),wallet.ready,async()=>{},()=>0);
+  const act=(store:DemoExpansionStore,op:unknown,cap:boolean|2=2)=>store.operate('alice',op,2,true,true,true,true,true,true,true,true,2,4,true,cap);
+  const active=(store:DemoExpansionStore,cap:boolean|2=2)=>store.active('alice',true,true,true,true,true,true,true,2,4,true,cap);
+  try{
+    await wallet.operate('alice',{id:randomUUID(),kind:'deposit',amount:1000});const store=create();
+    const old=await act(store,operation());assert.equal(old.session.rulesVersion,1);const original=structuredClone(old.session);
+    for(const mode of FLAG_MODES){
+      const op={...operation(),settings:{flags:{country:'RU',mode:mode.id}}},before=await demoBalanceUnits(db,'alice');
+      await assert.rejects(act(store,op,true));assert.equal(await demoBalanceUnits(db,'alice'),before);
+      const replies=await Promise.all(Array.from({length:3},()=>act(store,op)));assert.equal(replies.filter(r=>!r.replayed).length,1);
+      const session=replies[0].session;assert(validFlagSession(session));assert.equal(session.rulesVersion,2);assert.equal(session.view.flags!.order.length,mode.count);
+      assert.equal(session.returnedUnits,flagPayout('100',mode.id));assert.equal(await demoBalanceUnits(db,'alice'),before-100+Number(flagPayout('100',mode.id)));
+      assert.equal(await demoReservedUnits(db,'alice'),0);assert.deepEqual((await act(create(),op)).session,session);
+      assert.deepEqual((await active(create())).sessions.find(s=>s.gameId===FLAG_GAME),session);assert(!(await active(store,true)).sessions.some(s=>s.gameId===FLAG_GAME));
+      await assert.rejects(act(store,{...op,settings:{flags:{country:'RU',mode:mode.id==='world'?'classic':'world'}}}));
+      assert(!validFlagSession({...session,rulesVersion:1}));assert(!validFlagSession({...session,returnedUnits:'1152'} )||mode.id==='classic');
+      const loss=await act(store,{...op,id:randomUUID(),settings:{flags:{country:flagCountries(mode.id).at(-1)!.id,mode:mode.id}}});assert.equal(loss.session.returnedUnits,'0');
+    }
+    assert.deepEqual((await act(create(),{...operation(),id:original.id})).session,original);
+    assert.equal((await create().active('bob')).sessions.length,0);
   }finally{await db.close();}
 });

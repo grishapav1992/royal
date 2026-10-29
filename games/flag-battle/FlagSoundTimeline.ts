@@ -6,7 +6,7 @@ export function flagSoundTimeline(plan: FlagPhysicsPlan, labels: FlagCountry[], 
   const scale = seconds / plan.duration;
   const exits: FlagSoundEvent[] = plan.exits.map((e, i) => ({ cue: 'eliminate', at: e.time * scale,
     strength: labels[e.id] === selected ? 1 : .65, pan: Math.max(-.8, Math.min(.8, e.x * .7)), variant: labels[e.id] === selected ? -1 : i }));
-  const finalTwoAt = exits[9].at + .11;
+  const finalTwoAt = exits[exits.length - 2].at + .11;
   const buckets = new Map<number, typeof plan.contacts[number]>();
   for (const e of plan.contacts) {
     const at = e.time * scale;

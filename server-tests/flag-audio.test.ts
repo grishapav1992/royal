@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { FlagAudio, type FlagAudioPorts } from '../games/flag-battle/FlagAudio';
 import { flagSoundTimeline, type FlagSoundEvent } from '../games/flag-battle/FlagSoundTimeline';
 import { planFlagPhysics } from '../games/flag-battle/FlagPhysics';
-import { FLAG_COUNTRIES } from '../src/shared/flagBattle';
+import { flagCountries } from '../src/shared/flagBattle';
 class Param { value=0;setValueAtTime(){return this;}linearRampToValueAtTime(){return this;}exponentialRampToValueAtTime(){return this;} }
 class AudioNodeStub {
   gain=new Param();pan=new Param();frequency=new Param();Q=new Param();threshold=new Param();knee=new Param();ratio=new Param();attack=new Param();release=new Param();
@@ -24,7 +24,7 @@ function fixture(){
 const event=(cue:FlagSoundEvent['cue'],at:number):FlagSoundEvent=>({cue,at,strength:1,pan:0,variant:0});
 
 test('sound timeline follows every physical exit and limits the density of impacts',()=>{
-  const plan=planFlagPhysics(93),labels=FLAG_COUNTRIES.map(c=>c.id),selected=labels[plan.order[3]];
+  const plan=planFlagPhysics(93),labels=flagCountries().map(c=>c.id),selected=labels[plan.order[3]];
   const events=flagSoundTimeline(plan,labels,selected,false,20),exits=events.filter(e=>e.cue==='eliminate');
   assert.equal(exits.length,11);assert.equal(exits.filter(e=>e.variant===-1).length,1);
   assert(events.some(e=>e.cue==='collision'));assert(events.some(e=>e.cue==='wall'));assert.equal(events.filter(e=>e.cue==='final-two').length,1);
@@ -74,4 +74,15 @@ test('skip, repeated result IDs and destroy cannot replay a prize cue or leave o
 test('repeated contacts have a fixed voice cap and use only the provided host context',async()=>{
   const f=fixture();await f.audio.unlock();for(let i=0;i<100;i++)f.audio.cue('collision');
   assert.equal(f.audio.state().voices,16);assert.equal(f.audio.state().maxVoices,16);f.audio.destroy();assert(f.sources.every(s=>s.stopped));
+});
+
+test('larger modes keep every actual exit and signal final two after exit N-2',()=>{
+  for(const mode of ['expanded','world'] as const){
+    const labels=flagCountries(mode).map(c=>c.id),plan=planFlagPhysics(93,labels.length),events=flagSoundTimeline(plan,labels,'RU',true,30);
+    const exits=events.filter(e=>e.cue==='eliminate');assert.equal(exits.length,labels.length-1);
+    assert.equal(events.filter(e=>e.cue==='final-two').length,1);
+    assert(Math.abs(events.find(e=>e.cue==='final-two')!.at-exits[labels.length-3].at-.11)<1e-9);
+    const impacts=events.filter(e=>e.cue==='collision'||e.cue==='wall');
+    for(let i=1;i<impacts.length;i++)assert(impacts[i].at-impacts[i-1].at>=.16-1e-9);
+  }
 });

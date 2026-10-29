@@ -44,7 +44,7 @@ export const EXPANSION_NAMES: Record<ExpansionGameId,string> = {
 // Casino variants share the same server-owned wallet sessions.
 export const EXPANSION_RULES: Record<ExpansionGameId,string> = {
   [CARIBBEAN_GAME]:'6×4 · Гигантские символы · 1/5/10/20 линий · Две бесплатные серии',
-  [FLAG_GAME]:translateText('12 стран с равными шансами. Последний флаг побеждает. Выплата 11,52× включает ставку. RTP 96%. Без дополнительных ставок и бонусов.'),
+  [FLAG_GAME]:translateText('12, 24 или 48 стран с равными шансами. Последний флаг побеждает. Выплаты 11,52×, 23,04× или 46,08× включают ставку. RTP 96%. Без дополнительных ставок и бонусов.'),
   [PENALTY_GAME]:'Одна ставка на серию до пяти ударов. После гола можно забрать выплату или продолжить. Промах теряет всю незабранную выплату. Пятый гол оплачивается автоматически. Пенальти: 75% гола. Ближний штрафной: 60%. Дальний штрафной: 45%. Тип выбирается перед каждым ударом. CR и Leo имеют одинаковую математику. Расчётный возврат 99% до округления.',
   ...STUDIO_RULES,
   [MEME_GAME]:MEME_RULES,[AFTER_GAME]:AFTER_RULES,[NITRO_GAME]:NITRO_RULES,
@@ -79,7 +79,7 @@ export const EXPANSION_RULES: Record<ExpansionGameId,string> = {
 };
 export const isExpansionGame = (value:unknown): value is ExpansionGameId => (EXPANSION_GAMES as readonly unknown[]).includes(value);
 export const REVISED_CARD_GAMES = ['github-free-bet','github-crazy-four','github-pai-gow','github-holdem-bonus','github-rummy'] as const;
-export const expansionRulesVersion = (game:ExpansionGameId):1|2|3|4 => game===NEOPOLIS_GAME?4:game===DRACONA_GAME?3:game===AFTER_GAME||isNitroFamily(game)||game===CONVOY_GAME||game===CARAMEL_GAME||isLuelonSlotGame(game)||(REVISED_CARD_GAMES as readonly string[]).includes(game)?2:1;
+export const expansionRulesVersion = (game:ExpansionGameId):1|2|3|4 => game===NEOPOLIS_GAME?4:game===DRACONA_GAME?3:game===FLAG_GAME||game===AFTER_GAME||isNitroFamily(game)||game===CONVOY_GAME||game===CARAMEL_GAME||isLuelonSlotGame(game)||(REVISED_CARD_GAMES as readonly string[]).includes(game)?2:1;
 export const validExpansionRulesVersion = (game:ExpansionGameId,version:unknown):version is 1|2|3|4 => version===1||version===2&&expansionRulesVersion(game)>=2||version===3&&(game===NEOPOLIS_GAME||game===DRACONA_GAME)||version===4&&game===NEOPOLIS_GAME;
 export const LEGACY_CARD_RULES:Partial<Record<ExpansionGameId,string>> = {
   'github-free-bet':translateText('Одна начальная ставка. Бесплатное удвоение на жёстких 9, 10 или 11; бесплатное разделение пар, кроме карт стоимостью 10. Блэкджек платит 3:2, 22 у дилера возвращает ставки. Бесплатные действия не списывают демомонеты.'),

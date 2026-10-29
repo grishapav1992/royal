@@ -17,9 +17,9 @@ function seeded(seed: number) {
   return () => { state ^= state << 13; state ^= state >>> 17; state ^= state << 5; return (state >>> 0) / 4294967296; };
 }
 /** Equal masses: correct penetration and exchange only the approaching normal impulse. */
-export function resolveFlagPair(a: FlagBody, b: FlagBody): number {
+export function resolveFlagPair(a: FlagBody, b: FlagBody, radius = FLAG_BODY_RADIUS): number {
   let dx = b.x - a.x, dy = b.y - a.y, distance = Math.hypot(dx, dy);
-  const diameter = FLAG_BODY_RADIUS * 2;
+  const diameter = radius * 2;
   if (distance >= diameter || a.escapedAt !== null || b.escapedAt !== null) return 0;
   if (distance < 1e-10) { dx = 1; dy = 0; distance = 0; }
   const nx = distance ? dx / distance : dx, ny = distance ? dy / distance : dy;
@@ -32,33 +32,36 @@ export function resolveFlagPair(a: FlagBody, b: FlagBody): number {
 
 export class FlagPhysics {
   readonly bodies: FlagBody[];
+  readonly radius: number;
   readonly exits: FlagExit[] = [];
   time = 0;
   private accumulator = 0;
   private opening = 0;
   private openingVelocity = 0;
-  constructor(readonly seed: number, readonly preview = false, private contact?: (event: FlagContact) => void) {
+  constructor(readonly seed: number, readonly preview = false, private contact?: (event: FlagContact) => void, readonly count = 12) {
+    if (![12, 24, 48].includes(count)) throw Error('Invalid flag body count');
+    this.radius = FLAG_BODY_RADIUS * Math.pow(12 / count, .25);
     const random = seeded(seed);
     this.bodies = [];
-    for (let id = 0; id < 12; id++) {
+    for (let id = 0; id < this.count; id++) {
       let x = 0, y = 0, found = false;
       for (let attempt = 0; attempt < 1000; attempt++) {
         const a = random() * TAU, r = Math.sqrt(random()) * .73;
         x = Math.cos(a) * r; y = Math.sin(a) * r;
-        if (this.bodies.every(b => Math.hypot(x - b.x, y - b.y) > FLAG_BODY_RADIUS * 2 + .025)) { found = true; break; }
+        if (this.bodies.every(b => Math.hypot(x - b.x, y - b.y) > this.radius * 2 + .025)) { found = true; break; }
       }
       if (!found) throw Error('Flag physics could not place separated bodies');
       const angle = random() * TAU, speed = .85 + random() * .35;
       this.bodies.push({ id, x, y, previousX: x, previousY: y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, escapedAt: null });
     }
   }
-  get finished() { return this.exits.length === 11; }
+  get finished() { return this.exits.length === this.count - 1; }
   get interpolation() { return this.accumulator / FLAG_PHYSICS_STEP; }
   get gap() { return Math.PI / 3 + this.time * .58 + Math.sin(this.time * .21) * .16; }
   get halfGap() { return this.opening; }
   private updateOpening() {
     const quiet = this.time - (this.exits.at(-1)?.time ?? 1.3);
-    const normal = Math.min(1.15, .3 + this.time * .002 + Math.max(0, quiet - 4) * .07 + (this.exits.length >= 9 ? .13 : 0));
+    const normal = Math.min(1.15, .3 + this.time * .002 + Math.max(0, quiet - 4) * .07 + (this.exits.length >= this.count - 3 ? .13 : 0));
     const desired = this.preview || this.time < 1.3 ? 0 : Math.min(Math.PI, Math.max(normal, (this.time - 65) * .3));
     const change = Math.max(-.18 * FLAG_PHYSICS_STEP, Math.min(.3 * FLAG_PHYSICS_STEP, desired - this.opening));
     this.opening += change; this.openingVelocity = change / FLAG_PHYSICS_STEP;
@@ -82,23 +85,24 @@ export class FlagPhysics {
       b.x += b.vx * FLAG_PHYSICS_STEP; b.y += b.vy * FLAG_PHYSICS_STEP;
     }
     // Revisit the wall after pair corrections, so a cluster cannot push through the rim.
+    const active = this.bodies.filter(b => b.escapedAt === null);
     for (let pass = 0; pass < 4; pass++) {
-      for (let i = 0; i < this.bodies.length; i++) for (let j = i + 1; j < this.bodies.length; j++) {
-        const a = this.bodies[i], b = this.bodies[j], impulse = resolveFlagPair(a, b);
+      for (let i = 0; i < active.length; i++) for (let j = i + 1; j < active.length; j++) {
+        const a = active[i], b = active[j], impulse = resolveFlagPair(a, b, this.radius);
         if (impulse > .18) this.contact?.({ kind: 'collision', time: this.time, strength: impulse, x: (a.x + b.x) / 2 });
       }
-      for (const b of this.bodies) if (b.escapedAt === null) this.wall(b);
+      for (const b of active) this.wall(b);
     }
     for (const b of this.bodies) {
       if (this.finished) break;
-      if (b.escapedAt === null && Math.hypot(b.x, b.y) > FLAG_WALL_RADIUS + FLAG_BODY_RADIUS + POST_RADIUS) {
+      if (b.escapedAt === null && Math.hypot(b.x, b.y) > FLAG_WALL_RADIUS + this.radius + POST_RADIUS) {
         b.escapedAt = this.time;
         this.exits.push({ id: b.id, time: this.time, x: b.x, y: b.y, gap: this.gap, halfGap: this.halfGap });
       }
     }
   }
   private wall(b: FlagBody) {
-    const distance = Math.hypot(b.x, b.y), limit = FLAG_WALL_RADIUS - FLAG_BODY_RADIUS - POST_RADIUS;
+    const distance = Math.hypot(b.x, b.y), limit = FLAG_WALL_RADIUS - this.radius - POST_RADIUS;
     const angle = Math.atan2(b.y, b.x), half = this.halfGap;
     if (distance > limit && (half === 0 || Math.abs(angleDistance(angle, this.gap)) >= half)) {
       const nx = b.x / distance, ny = b.y / distance, speed = b.vx * nx + b.vy * ny;
@@ -109,7 +113,7 @@ export class FlagPhysics {
       const omega = .58 + .16 * .21 * Math.cos(this.time * .21);
       for (const side of [-1, 1]) {
         const a = this.gap + side * half, px = Math.cos(a), py = Math.sin(a);
-        const dx = b.x - px, dy = b.y - py, d = Math.hypot(dx, dy), r = FLAG_BODY_RADIUS + POST_RADIUS;
+        const dx = b.x - px, dy = b.y - py, d = Math.hypot(dx, dy), r = this.radius + POST_RADIUS;
         if (d >= r) continue;
         const nx = d > 1e-10 ? dx / d : -px, ny = d > 1e-10 ? dy / d : -py;
         const endpointOmega = omega + side * this.openingVelocity;
@@ -128,9 +132,9 @@ export class FlagPhysics {
 }
 
 /** Replay anonymous trajectories, then label them using the saved server order. */
-export function planFlagPhysics(seed: number): FlagPhysicsPlan {
+export function planFlagPhysics(seed: number, count = 12): FlagPhysicsPlan {
   const contacts: FlagContact[] = [];
-  const world = new FlagPhysics(seed, false, event => contacts.push(event));
+  const world = new FlagPhysics(seed, false, event => contacts.push(event), count);
   while (!world.finished && world.time < 90) world.step();
   if (!world.finished) throw Error('Flag physics did not finish within its bounded presentation');
   const winner = world.bodies.find(b => b.escapedAt === null)!;

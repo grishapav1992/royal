@@ -1,6 +1,6 @@
 import { flagSoundTimeline } from './FlagSoundTimeline';
-import { FLAG_COUNTRIES, type FlagCountry, type FlagView } from '../../src/shared/flagBattle';
-import { FLAG_BODY_RADIUS, FlagPhysics, planFlagPhysics, type FlagPhysicsPlan } from './FlagPhysics';
+import { FLAG_COUNTRIES, flagCountries, flagModeInfo, flagViewMode, type FlagMode, type FlagCountry, type FlagView } from '../../src/shared/flagBattle';
+import { FlagPhysics, planFlagPhysics, type FlagPhysicsPlan } from './FlagPhysics';
 
 export const FLAG_ROUND_SECONDS = 20;
 export const flagAsset = (id: string) => '/assets/flag-battle/flags/' + id.toLowerCase() + '.svg';
@@ -9,7 +9,9 @@ export class FlagArena {
   private images = new Map<string, HTMLImageElement>();
   private world = new FlagPhysics(93, true);
   private plan?: FlagPhysicsPlan;
-  private labels: FlagCountry[] = FLAG_COUNTRIES.map(c => c.id);
+  private labels: FlagCountry[] = flagCountries().map(c => c.id);
+  private mode: FlagMode = 'classic';
+  private seconds: number = FLAG_ROUND_SECONDS;
   private last?: number;
   private celebration = 0;
   private finished = false;
@@ -18,22 +20,24 @@ export class FlagArena {
       const image = new Image(); image.src = flagAsset(country.id); this.images.set(country.id, image);
     }
   }
-  reset(view?: FlagView) {
+  reset(view?: FlagView, mode: FlagMode = 'classic') {
+    this.mode = view ? flagViewMode(view) : mode; this.seconds = flagModeInfo(this.mode).seconds;
+    const count = flagModeInfo(this.mode).count;
     this.last = undefined; this.celebration = 0; this.finished = false;
-    this.plan = view ? planFlagPhysics(view.seed) : undefined;
-    this.world = new FlagPhysics(view?.seed ?? 93, !view);
-    this.labels = FLAG_COUNTRIES.map(c => c.id);
+    this.plan = view ? planFlagPhysics(view.seed, count) : undefined;
+    this.world = new FlagPhysics(view?.seed ?? 93, !view, undefined, count);
+    this.labels = flagCountries(this.mode).map(c => c.id);
     if (view && this.plan) for (const [i, body] of this.plan.order.entries()) this.labels[body] = view.order[i];
   }
-  soundTimeline(selected: FlagCountry, won: boolean) { return this.plan ? flagSoundTimeline(this.plan, this.labels, selected, won, FLAG_ROUND_SECONDS) : []; }
+  soundTimeline(selected: FlagCountry, won: boolean) { return this.plan ? flagSoundTimeline(this.plan, this.labels, selected, won, this.seconds) : []; }
   count() { return this.world.exits.length; }
   finish() {
     if (this.plan) this.world.restore(this.plan);
     this.finished = true; this.celebration = 1;
   }
   getState() {
-    return { physicsVersion: 2, simulatedTime: this.world.time, eliminated: this.count(),
-      order: this.world.exits.map(e => this.labels[e.id]), winner: this.plan ? this.labels[this.plan.order[11]] : undefined,
+    return { physicsVersion: 3, count: this.world.count, radius: this.world.radius, simulatedTime: this.world.time, eliminated: this.count(),
+      order: this.world.exits.map(e => this.labels[e.id]), winner: this.plan ? this.labels[this.plan.order.at(-1)!] : undefined,
       gap: this.world.gap, halfGap: this.world.halfGap,
       bodies: this.world.bodies.map(b => ({ country: this.labels[b.id], x: b.x, y: b.y, escaped: b.escapedAt !== null })) };
   }
@@ -41,7 +45,7 @@ export class FlagArena {
     const dt = this.last === undefined ? 0 : Math.max(0, Math.min(.1, (now - this.last) / 1000));
     this.last = now;
     if (motion && !this.finished) {
-      if (running && this.plan) this.world.advance(dt * this.plan.duration / FLAG_ROUND_SECONDS);
+      if (running && this.plan) this.world.advance(dt * this.plan.duration / this.seconds);
       else if (!this.plan) this.world.advance(dt);
     }
     if (this.world.finished && !this.finished) {
@@ -49,7 +53,7 @@ export class FlagArena {
       if (this.celebration === 1) this.finished = true;
     }
     this.paint(selected);
-    return { eliminated: this.count(), finished: this.finished, playhead: this.plan ? this.world.time / this.plan.duration * FLAG_ROUND_SECONDS + this.celebration * .7 : 0 };
+    return { eliminated: this.count(), finished: this.finished, playhead: this.plan ? this.world.time / this.plan.duration * this.seconds + this.celebration * .7 : 0 };
   }
   private paint(selected: FlagCountry) {
     const rect = this.canvas.getBoundingClientRect(), dpr = Math.min(devicePixelRatio || 1, 2);
@@ -80,12 +84,12 @@ export class FlagArena {
     const alpha = this.world.finished ? 1 : this.world.interpolation;
     const p = smooth(this.celebration);
     for (const b of this.world.bodies) {
-      const tail = this.world.finished ? this.celebration * .7 * (this.plan?.duration ?? FLAG_ROUND_SECONDS) / FLAG_ROUND_SECONDS : 0;
+      const tail = this.world.finished ? this.celebration * .7 * (this.plan?.duration ?? FLAG_ROUND_SECONDS) / this.seconds : 0;
       const age = b.escapedAt === null ? 0 : this.world.time - b.escapedAt + tail;
       if (b.escapedAt !== null && (age > .75 || this.finished)) continue;
       let x = b.previousX + (b.x - b.previousX) * alpha, y = b.previousY + (b.y - b.previousY) * alpha;
       if (b.escapedAt !== null) { x += b.vx * tail; y += b.vy * tail + .325 * tail * tail; }
-      let size = FLAG_BODY_RADIUS;
+      let size = this.world.radius;
       if (b.escapedAt === null && this.world.finished) { x *= 1 - p; y *= 1 - p; size += (.24 - size) * p; }
       c.globalAlpha = b.escapedAt === null ? 1 : Math.max(0, 1 - age / .75);
       this.flag(c, this.labels[b.id], cx + x * r, cy + y * r, size * r, this.labels[b.id] === selected);
