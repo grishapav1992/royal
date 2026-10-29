@@ -6,7 +6,7 @@ import { execFileSync } from 'node:child_process';
 import assert from 'node:assert/strict';
 import {build} from 'esbuild';
 import { buildFinancial } from './financial-build.mjs';
-const helper = dirname(fileURLToPath(import.meta.url)), root = resolve(helper, '../../..'), work = resolve(root, 'artifacts/work/caribbean-publish-20261029'), out = resolve(work, 'payload-release-v2');
+const helper = dirname(fileURLToPath(import.meta.url)), root = resolve(helper, '../../..'), work = resolve(root, 'artifacts/work/caribbean-publish-20261029'), out = resolve(work, 'payload-release-final');
 const json = path => JSON.parse(readFileSync(path, 'utf8')), sha = path => createHash('sha256').update(readFileSync(path)).digest('hex');
 const canonicalSha=path=>{const bytes=readFileSync(path);return createHash('sha256').update(/\.(?:[cm]?[jt]sx?|json|css|html|svg|md|txt|ya?ml|py|sh|toml)$/.test(path)?bytes.toString('utf8').replace(/\r\n/g,'\n'):bytes).digest('hex');};
 const scope = json(resolve(helper, 'scope.json')), before = json(resolve(work, 'before-full-v2.json'));
@@ -95,5 +95,5 @@ const manifest = { release: scope.release, sourceCommit: release.sourceCommit, b
   compatibility: { onlyCaribbeanContractAdded: true, acceptedRules: [1], unchangedDependencyManifests: true, retainedOtherModules: true, retainedOtherBackendPrograms: ['dist-server/payments.js','dist-server/crypto-reconcile.js'] } };
 function checkInventory(folder,prefix=''){for(const entry of readdirSync(folder,{withFileTypes:true})){assert(!entry.isSymbolicLink(),'Payload symlink rejected');const name=prefix+entry.name;if(entry.isDirectory())checkInventory(resolve(folder,entry.name),name+'/');else assert(entry.isFile()&&Object.hasOwn(payload,name),'Uninventoried partial payload: '+name);}}
 checkInventory(out);writeFileSync(resolve(out, 'install-manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
-execFileSync('tar', [...(process.platform === 'darwin' ? ['--no-xattrs'] : []), '-czf', resolve(work, 'transport-v2.tgz'), '-C', out, '.'], { env: { ...process.env, COPYFILE_DISABLE: '1' } });
-console.log(JSON.stringify({ sourceCommit: release.sourceCommit, changedSources: Object.keys(source).length, financeSources: Object.keys(financeSource).length, clientFiles: Object.keys(dist).length, moduleFiles: Object.keys(modules).length, transportBytes: statSync(resolve(work, 'transport-v2.tgz')).size }));
+execFileSync('tar', [...(process.platform === 'darwin' ? ['--no-xattrs'] : []), '-czf', resolve(work, 'transport-final.tgz'), '-C', out, '.'], { env: { ...process.env, COPYFILE_DISABLE: '1' } });
+console.log(JSON.stringify({ sourceCommit: release.sourceCommit, changedSources: Object.keys(source).length, financeSources: Object.keys(financeSource).length, clientFiles: Object.keys(dist).length, moduleFiles: Object.keys(modules).length, transportBytes: statSync(resolve(work, 'transport-final.tgz')).size }));
