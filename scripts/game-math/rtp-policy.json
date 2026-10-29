@@ -797,7 +797,10 @@
         "server/games/flagBattle.ts",
         "src/shared/casinoExpansion.ts",
         "server/demoExpansion.ts",
-        "server/finance/nile-game-runtime.ts"
+        "server/finance/nile-game-runtime.ts",
+        "deployment/releases/flag-battle-20261029-v1/source-transform.mjs",
+        "deployment/releases/flag-battle-20261029-v1/financial-build.mjs",
+        "deployment/releases/flag-battle-20261029-v1/financial-baseline.json"
       ],
       "serverReplayRunsPerWinner": 16
     }

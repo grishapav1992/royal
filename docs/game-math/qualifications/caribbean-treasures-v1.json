@@ -3,8 +3,8 @@
   "gameId": "studio-caribbean-treasures",
   "rulesVersion": 1,
   "progressVersion": 1,
-  "startedAt": "2026-10-29T15:31:50.719Z",
-  "completedAt": "2026-10-29T15:32:15.167Z",
+  "startedAt": "2026-10-29T15:59:42.257Z",
+  "completedAt": "2026-10-29T16:00:10.416Z",
   "sourceHashes": {
     "src/shared/caribbeanTreasuresMath.ts": "b86e71675dfd0179da8d8c43c7a62f8da41303d5e6bc59f07b81d4497b64647b",
     "src/shared/caribbeanTreasures.ts": "5590af9897cfb32dbf8fd7d9c0608ad52184051ddee7ca70cd309267a4311aee",
@@ -14,7 +14,7 @@
     "server/demoExpansion.ts": "716552be62c06ca7f49e7986ff8433520aa121da7422d11673901060a083b830",
     "server/finance/nile-game-runtime.ts": "86169ea4ad4fe16329ce90c59480ce2c994986b32bc710b76204d3cf81f50a14",
     "scripts/game-math/rational.mjs": "18e762bcf6b3790f0e191f2f774cbdb1ba94b7f4674c5c7caec8fd3257a85d62",
-    "scripts/game-math/rtp-caribbean.mjs": "abc534f186850e9ec87ed5f889611f2c9f1288c4da8c092a2925ac6717f07fa0"
+    "scripts/game-math/rtp-caribbean.mjs": "38311ec000d3f81d2c5cbf049d611184feb108afab8ee5c20c2916fedc3237f4"
   },
   "policySha256": "e51bca7fd9cdd2179151add5ead5259c426d00a4be122600bdcd71c3a3b65105",
   "serverReplayChecks": 4096,
