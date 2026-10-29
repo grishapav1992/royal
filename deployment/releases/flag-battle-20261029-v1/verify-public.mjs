@@ -5,7 +5,7 @@ const [manifestPath,reportPath]=process.argv.slice(2);
 assert(manifestPath&&reportPath);
 const m=JSON.parse(readFileSync(manifestPath));
 const origin='https://stealth-spark-gokmxooi.expresshost.cloud';
-const urls=new Map();
+const urls=new Map([['/',m.dist['index.html']]]);
 for(const [file,hash] of Object.entries(m.dist))urls.set('/'+file,hash);
 for(const [file,hash] of Object.entries(m.modules))urls.set('/game-modules/'+file,hash);
 for(const [file,hash] of Object.entries(m.before.modules))if(file.endsWith('/active.json'))urls.set(file.replace('/opt/royal-game-modules/','/game-modules/'),hash);
@@ -19,7 +19,7 @@ await Promise.all(Array.from({length:4},async()=>{
   assert.equal(hash,expected,path);checks.push({path,sha256:hash});
  }
 }));
-for(const [path,status] of [['/healthz',200],['/api/game-wallet',401],['/api/game-wallet/expansion',401],['/api/demo-wallet',410]]){
+for(const [path,status] of [['/healthz',200],['/api/demo-wallet',401],['/api/demo-wallet/expansion',401],['/api/game-wallet',410],['/api/nile-play/wallet',410]]){
  const response=await fetch(origin+path,{headers:{'X-Royal-Flag-Battle':'2'},signal:AbortSignal.timeout(30000)});
  assert.equal(response.status,status,path);checks.push({path,status});await response.body?.cancel();
 }
