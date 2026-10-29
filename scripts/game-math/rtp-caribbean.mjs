@@ -14,15 +14,16 @@ export const CARIBBEAN_QUALIFICATION_METHOD = 'exact-caribbean-giant-round-v1';
 // The 2026-10-28 merge also retains main Neopolis v4 capability parsing and Last Exit guards.
 // Reviewed 2026-10-29 after reconciliation: Caribbean settings, costs, entropy, settlement
 // and its existing flag position are preserved; Jackie collection completion is game-scoped.
+// Flag Battle adds its own branch and capability after Forest Heart; existing round rules are unchanged.
 // Requalify the complete Caribbean replay after reviewing these shared-file additions.
 export const CARIBBEAN_REVIEWED_SOURCES = {
   'src/shared/caribbeanTreasuresMath.ts': 'b86e71675dfd0179da8d8c43c7a62f8da41303d5e6bc59f07b81d4497b64647b',
   'src/shared/caribbeanTreasures.ts': '5590af9897cfb32dbf8fd7d9c0608ad52184051ddee7ca70cd309267a4311aee',
   'server/games/caribbeanTreasures.ts': 'bdb0aa8eecef1093f876dd3c467ff1b43d8a7b1606a63a56aa46430964556e99',
   'src/shared/caribbeanTransport.ts': 'c4a590c6778048f9ecd37852549762adde064f90dca072316ee215ba8ac89c78',
-  'src/shared/casinoExpansion.ts': 'ce246f9b2210a04fc66958baf59d727d54bba8ce989e463fd48bdce88194b598',
-  'server/demoExpansion.ts': 'efe2e163d4b9894e5066bb5059db65663b9bf8a0e8c09b29188f24f469ae07d4',
-  'server/finance/nile-game-runtime.ts': '99c5ba83ec6c7a8e3fe0b578587d5f78d05cd4424b46eb40db04b0e11542939c',
+  'src/shared/casinoExpansion.ts': '4c4d2a2ad539e9e7b162c9ea63ed9aca6373fa4f2dd2b8f4d8e836c2c655393c',
+  'server/demoExpansion.ts': '735df438e093196e95bd80845997e8aa00aa4f6b2a9f5ab8b12609216a4f1f31',
+  'server/finance/nile-game-runtime.ts': '14c98c4c76b962ae398174fe3377e701075c6d378dc176a70b0bb78f8f413c72',
 };
 const WEIGHTS = [30,24,18,13,9,6];
 const PAYS = [[2,6,20,60],[4,10,30,100],[6,16,40,150],[8,24,60,200],[10,30,100,400],[16,50,200,1000]];

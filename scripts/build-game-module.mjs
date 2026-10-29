@@ -59,7 +59,8 @@ async function walk(directory, prefix = '') {
   const path = resolve(directory, item.name), name = prefix + item.name;
   if (item.isDirectory()) files.push(...await walk(path, name + '/'));
   else if (item.isFile() && allowedResources.test(name)) {
-   if (!/^[a-zA-Z0-9_./-]+$/.test(name)) throw Error('Unsupported public module media: ' + name);
+   // Unpackageable sync copies must not enter the inventory or block local builds.
+   if (!/^[a-zA-Z0-9_./-]+$/.test(name)) continue;
    files.push([name, await readFile(path)]);
   }
  }

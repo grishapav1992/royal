@@ -18,7 +18,7 @@ async function setup(){
   const db=new PostgresDatabase(':memory:');await db.exec("CREATE TABLE accounts(id TEXT PRIMARY KEY); INSERT INTO accounts VALUES('alice'),('bob')");
   const wallet=new DemoWalletStore(db,()=>0);await wallet.operate('alice',{id:randomUUID(),kind:'deposit',amount:10000});
   let success=true,draws=0;const store=new DemoExpansionStore(db,async id=>({balance:await demoBalanceUnits(db,id)/100,entries:[]}),wallet.ready,async()=>{},max=>{if(max===100){draws++;return success?0:99;}return 0;});await store.ready;
-  const act=(account:string,value:unknown)=>store.operate(account,value,2,true,true,true,true,true,true,true,true,2,4,true,false,2);
+  const act=(account:string,value:unknown)=>store.operate(account,value,2,true,true,true,true,true,true,true,true,2,4,true,false,false,2);
   return{db,wallet,store,act,draws:()=>draws,success:(v:boolean)=>success=v};
 }
 test('all cosmetic choices preserve the exact original CR vs Leo outcome, cost and payout at every step',()=>{
@@ -83,7 +83,7 @@ test('expanding the collection preserves old progress and round credits while ea
 
 test('legacy clients can finish their original series while new collection sessions stay filtered and reject stale moves',async()=>{
   const f=await setup();try{
-    const legacy=(value:unknown)=>f.store.operate('alice',value,2,true,true,true,true,true,true,true,true,2,4,true,false,true);
+    const legacy=(value:unknown)=>f.store.operate('alice',value,2,true,true,true,true,true,true,true,true,2,4,true,false,false,true);
     await f.db.prepare('INSERT INTO demo_jackie_collection(account_id,units) VALUES(?,?)').run('alice',90000);
     const old=start('hawk'),accepted=await legacy(old);assert.equal(accepted.session.view.jackie!.version,1);
     await f.db.prepare('UPDATE demo_jackie_collection SET units=? WHERE account_id=?').run(140000,'alice');
@@ -91,7 +91,7 @@ test('legacy clients can finish their original series while new collection sessi
     const settled=await legacy(cashout);assert(validJackieSession(settled.session));assert.equal(settled.session.view.jackie!.version,1);assert.equal(settled.session.view.jackie!.collectionUnits,90000);assert.equal(await f.store.jackieCollection.read('alice'),140000);
     assert.deepEqual((await legacy(cashout)).session,settled.session);
     const modern=start('rush'),current=await f.act('alice',modern);assert.equal(current.session.view.jackie!.version,2);
-    const list=await f.store.active('alice',true,true,true,true,true,true,true,2,4,true,false,true);assert(!list.sessions.some(s=>s.id===modern.id));
+    const list=await f.store.active('alice',true,true,true,true,true,true,true,2,4,true,false,false,true);assert(!list.sessions.some(s=>s.id===modern.id));
     const next={...cashout,id:randomUUID(),sessionId:modern.id};await assert.rejects(legacy(next),/Обнови/);assert.equal(f.draws(),2);
     assert.equal((await f.act('alice',next)).session.view.jackie!.costume,'rush');
     await assert.rejects(legacy(modern),/Обнови/);await assert.rejects(legacy(start('mentor')),/Выбери/);
