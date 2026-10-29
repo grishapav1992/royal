@@ -1,0 +1,66 @@
+{
+  "format": 1,
+  "purpose": "Retain all reviewed current Nile input origins while adding the independently qualified Caribbean graph; arcade catalogue now includes Caribbean.",
+  "files": {
+    "src/shared/pvp.ts": {
+      "commit": "c4414e69fdbf115fc05c8c2ada11478769573ddd",
+      "sha256": "5940a05dc30857ee376a8f4969d6015217b8c71f9f2790763021af8971507695"
+    },
+    "server/finance/pvp-money.ts": {
+      "commit": "c4414e69fdbf115fc05c8c2ada11478769573ddd",
+      "sha256": "132c386abbcae222ea4a9d258a59d1ac5ff4de022b7e5e1c9c647c6c11f2b6d9"
+    },
+    "server/admin/nileGamesReport.ts": {
+      "commit": "78cb1ccd53c64c08e2df836f9d14a9eb3926f1be",
+      "sha256": "b5d2542905f40339e25835b4ec158b61fef7efd55fd236541fa0e2f088944c56"
+    },
+    "server/admin/report.ts": {
+      "commit": "78cb1ccd53c64c08e2df836f9d14a9eb3926f1be",
+      "sha256": "305ef583527e580ab810e126a5515e22bdd9c630dbfdf959819ae19762309ff5"
+    },
+    "server/finance/nile-play-ledger.ts": {
+      "commit": "0d44d0ff293d9c69d840da4fba03a8d5546c9654",
+      "sha256": "917cc17f4e9dd93704701b44ba04ac76c727243d67ff5767ac28ab5fab63b9b8"
+    },
+    "server/pvp/store.ts": {
+      "commit": "c4414e69fdbf115fc05c8c2ada11478769573ddd",
+      "sha256": "23deed253a3bcbcfdaf5493bbb8d3208331ba22664e09e70bf97559e9cc46852"
+    },
+    "src/shared/skinStudio.ts": {
+      "commit": "763dab49ac862757daee232e4d1290de31124bf4",
+      "sha256": "b60220a94b33e5618d42d3f2dc37496adeeeabbe21939652362bf84601d13a19"
+    },
+    "server/demoWalletAmounts.ts": {
+      "commit": "763dab49ac862757daee232e4d1290de31124bf4",
+      "sha256": "7c4bd3aa01d007d7cd3cae614aeda123df5000ee12603c7c1c8a332f4fed7e01"
+    },
+    "server/demoMines.ts": {
+      "commit": "5745dbe90332ff2234ab8d6402347ed2228a0e1d",
+      "sha256": "fc222d7f79b495a0d35542a27a8309f26ce02a5acb6948a1dfe179a391f5d7b6"
+    },
+    "src/shared/luelonSlotsLines.ts": {
+      "commit": "6ea6b2a20276d03561b16bc6290ce832c8ffc3cb",
+      "sha256": "9629a12c51eee2850887a7a4cad31015aabb4be1b395799c4801ee9b016cf557"
+    },
+    "server/demoWallet.ts": {
+      "commit": "763dab49ac862757daee232e4d1290de31124bf4",
+      "sha256": "4e5f4bf3b57e049413ecc7bd5f4e42cb7ff1ffd6009f225cef5490400a538980"
+    },
+    "server/finance/nile-play-service.ts": {
+      "commit": "78cb1ccd53c64c08e2df836f9d14a9eb3926f1be",
+      "sha256": "08077aeedb3df7068661efc9f28dd10c41ac81d48d13492cef71de9ed8998ee6"
+    },
+    "src/i18n/en.ts": {
+      "commit": "9acf3686965fedc0c81efaaa6f740e30d4fef175",
+      "sha256": "b6ba026c8b72fb124efce3f69fa7af5338a48ae44149930cb6383b9d6161f47b"
+    }
+  },
+  "catalog": {
+    "commit": "47e9e7bf3429df1f4ebc5a6d3b4146e4a6c31f9d",
+    "path": "deployment/releases/forest-heart-20261029-v2/financial-arcadeCatalog.ts",
+    "sha256": "1c97c2a8d9988c12d48144c9fe946dcab097fee681e4d64fa45652a289692ccc",
+    "flagAddition": true,
+    "oldSha256": "22c57baaabca82124b5cdbe4276dbbc20ed0fea16e227d2258659491281d208d",
+    "projectedSource": "deployment/releases/caribbean-treasures-20261029-v2/financial-arcadeCatalog.ts"
+  }
+}

@@ -3,8 +3,8 @@
   "gameId": "studio-caribbean-treasures",
   "rulesVersion": 1,
   "progressVersion": 1,
-  "startedAt": "2026-10-29T15:29:05.724Z",
-  "completedAt": "2026-10-29T15:29:31.679Z",
+  "startedAt": "2026-10-29T16:23:04.271Z",
+  "completedAt": "2026-10-29T16:23:32.498Z",
   "sourceHashes": {
     "src/shared/caribbeanTreasuresMath.ts": "b86e71675dfd0179da8d8c43c7a62f8da41303d5e6bc59f07b81d4497b64647b",
     "src/shared/caribbeanTreasures.ts": "5590af9897cfb32dbf8fd7d9c0608ad52184051ddee7ca70cd309267a4311aee",
@@ -14,9 +14,12 @@
     "server/demoExpansion.ts": "735df438e093196e95bd80845997e8aa00aa4f6b2a9f5ab8b12609216a4f1f31",
     "server/finance/nile-game-runtime.ts": "14c98c4c76b962ae398174fe3377e701075c6d378dc176a70b0bb78f8f413c72",
     "scripts/game-math/rational.mjs": "18e762bcf6b3790f0e191f2f774cbdb1ba94b7f4674c5c7caec8fd3257a85d62",
+    "deployment/releases/caribbean-treasures-20261029-v2/financial-build.mjs": "f2cdaef59904fd119addf58884f9142a166dbee4b8ac0d82b086e616e8889c63",
+    "deployment/releases/caribbean-treasures-20261029-v2/financial-baseline.json": "832011c8b7062bef1bd55e63a6e5497cb3b37321819ea1d9ec873f4c1bab6292",
+    "deployment/releases/caribbean-treasures-20261029-v2/financial-arcadeCatalog.ts": "1c97c2a8d9988c12d48144c9fe946dcab097fee681e4d64fa45652a289692ccc",
     "scripts/game-math/rtp-caribbean.mjs": "e8bbf42ea5fecd81919cff0dc4c7c63f4ee2a554cabf9a455e5173eb0d49d59a"
   },
-  "policySha256": "e51bca7fd9cdd2179151add5ead5259c426d00a4be122600bdcd71c3a3b65105",
+  "policySha256": "4e986e05112dc7d027560c21c680aa1f93a74ade8b26d06866d90181bf43f358",
   "serverReplayChecks": 4096,
   "method": "exact-caribbean-giant-round-v1",
   "analysis": {

@@ -58,7 +58,10 @@
         "scripts/game-math/forest-heart-evidence.mjs",
         "scripts/database-test.ts",
         "src/wallet/ExpansionClient.ts",
-        "games/forest-heart/presentation.ts"
+        "games/forest-heart/presentation.ts",
+        "deployment/releases/caribbean-treasures-20261029-v2/financial-build.mjs",
+        "deployment/releases/caribbean-treasures-20261029-v2/financial-baseline.json",
+        "deployment/releases/caribbean-treasures-20261029-v2/financial-arcadeCatalog.ts"
       ],
       "note": "Exact full-round model with server entropy census, independent seeded start/move replay and real PostgreSQL common-wallet qualification. Presentation reads only the confirmed public view. Browser, module, layout and audio checks are recorded separately from mathematical qualification."
     },
@@ -151,7 +154,10 @@
         "src/shared/casinoExpansion.ts",
         "server/demoExpansion.ts",
         "server/finance/nile-game-runtime.ts",
-        "scripts/game-math/rational.mjs"
+        "scripts/game-math/rational.mjs",
+        "deployment/releases/caribbean-treasures-20261029-v2/financial-build.mjs",
+        "deployment/releases/caribbean-treasures-20261029-v2/financial-baseline.json",
+        "deployment/releases/caribbean-treasures-20261029-v2/financial-arcadeCatalog.ts"
       ]
     },
     "studio-neopolis": {
@@ -783,7 +789,13 @@
         "server/games/flagBattle.ts",
         "src/shared/casinoExpansion.ts",
         "server/demoExpansion.ts",
-        "server/finance/nile-game-runtime.ts"
+        "server/finance/nile-game-runtime.ts",
+        "deployment/releases/flag-battle-20261029-v1/source-transform.mjs",
+        "deployment/releases/flag-battle-20261029-v1/financial-build.mjs",
+        "deployment/releases/flag-battle-20261029-v1/financial-baseline.json",
+        "deployment/releases/caribbean-treasures-20261029-v2/financial-build.mjs",
+        "deployment/releases/caribbean-treasures-20261029-v2/financial-baseline.json",
+        "deployment/releases/caribbean-treasures-20261029-v2/financial-arcadeCatalog.ts"
       ],
       "serverReplayRunsPerWinner": 16
     }
