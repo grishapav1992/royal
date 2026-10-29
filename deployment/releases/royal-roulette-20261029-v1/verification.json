@@ -1,0 +1,974 @@
+{
+  "release": "royal-roulette-20261029-v1",
+  "date": "2026-10-29",
+  "sourceCommit": "29851103da0f9bbf997d3933d9be005ec7d5d6bf",
+  "productionBase": "9acf3686965fedc0c81efaaa6f740e30d4fef175",
+  "moduleVersion": "1.4.0-2535bfde3cdd",
+  "localChecks": {
+    "sourceCommit": "29851103da0f9bbf997d3933d9be005ec7d5d6bf",
+    "baseCommit": "9acf3686965fedc0c81efaaa6f740e30d4fef175",
+    "githubVerified": true,
+    "moduleVersion": "1.4.0-2535bfde3cdd",
+    "applicationBuild": {
+      "format": 1,
+      "startedAt": "2026-10-29T05:04:30.033Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 1355
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 6059
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 4823
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 7196
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 92
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 19
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 24
+        }
+      ],
+      "passed": true,
+      "durationMs": 19568
+    },
+    "targetedTests": 33,
+    "installerTests": 25,
+    "packageBoundaryTests": 7,
+    "hostBrowserScenarios": 8,
+    "builtHostBrowserScenarios": 1,
+    "rtpProfilesVerified": 11,
+    "unrelatedProductionFeaturesOmitted": true,
+    "productionAccountsCreatedByVerification": 0,
+    "productionWagersByVerification": 0
+  },
+  "server": {
+    "sourceCommit": "29851103da0f9bbf997d3933d9be005ec7d5d6bf",
+    "baseCommit": "9acf3686965fedc0c81efaaa6f740e30d4fef175",
+    "exit": {
+      "sourceCommit": "29851103da0f9bbf997d3933d9be005ec7d5d6bf",
+      "exitCode": 0,
+      "endedAt": "2026-10-29T05:44:53.549114+00:00"
+    },
+    "buildImage": "sha256:18ce6d1b199c9225bc399b8f1ea7060123b591675b2d45552f3cd8d24083c842",
+    "published": {
+      "published": true,
+      "preparedImage": "sha256:18ce6d1b199c9225bc399b8f1ea7060123b591675b2d45552f3cd8d24083c842",
+      "runningImage": "sha256:18ce6d1b199c9225bc399b8f1ea7060123b591675b2d45552f3cd8d24083c842",
+      "containerRestarted": true,
+      "sourceCommit": "29851103da0f9bbf997d3933d9be005ec7d5d6bf",
+      "changedSources": 30,
+      "clientDeltaFiles": 3,
+      "configurationsAndMountsPreserved": true,
+      "gameDataPreserved": true,
+      "backendDeltaFiles": 1,
+      "otherBackendProgramsAndModulesPreserved": true,
+      "oldAssetsPreserved": true,
+      "otherPersistentServicesPreserved": 13
+    },
+    "module": {
+      "verified": true,
+      "gameId": "royal-roulette",
+      "version": "1.4.0-2535bfde3cdd",
+      "bytes": 64555,
+      "files": 2,
+      "beforeSha256": "90825aa48d66bff1c2738489d414249e17cf0c1988dd236b1622eddae73d0523",
+      "hostProgramTouched": false,
+      "databaseTouched": false,
+      "restartRequired": false,
+      "published": true,
+      "operation": "install",
+      "activeSha256": "89cda20da23d7faf770da982300920af19b8861035f43ce5baacdd7c5fc64fba",
+      "history": "/opt/royal-game-modules-state/history/20261029T054159-5500b2d81bd74614944d0634f6af8cf8.json"
+    },
+    "backup": {
+      "path": "/opt/royal-backups/royal-roulette-20261029-v1/source.tgz",
+      "bytes": 192928686,
+      "sha256": "dc2bcc176cfbe7c741fa7ab45acb57392518d10fb8c6e9204f47394b09eebbb2"
+    },
+    "current": {
+      "image": "sha256:18ce6d1b199c9225bc399b8f1ea7060123b591675b2d45552f3cd8d24083c842",
+      "source": "29851103da0f9bbf997d3933d9be005ec7d5d6bf",
+      "health": "healthy",
+      "otherServicesUnchanged": true,
+      "otherServices": 13
+    },
+    "cleanup": {
+      "removed": [
+        {
+          "path": "/opt/royal-releases/royal-roulette-20261029-v1/runtime-context",
+          "logicalBytes": 4740602
+        },
+        {
+          "path": "/opt/royal-releases/royal-roulette-20261029-v1/transport.tgz",
+          "logicalBytes": 2519233
+        },
+        {
+          "path": "/tmp/snapshot.py",
+          "logicalBytes": 7899
+        },
+        {
+          "path": "/tmp/royal-roulette-20261029-v1/snapshot.py",
+          "logicalBytes": 7899
+        },
+        {
+          "path": "/tmp/runtime-inventory.cjs",
+          "logicalBytes": 1312
+        },
+        {
+          "path": "/tmp/royal-roulette-20261029-v1/runtime-inventory.cjs",
+          "logicalBytes": 1312
+        }
+      ],
+      "availableBeforeBytes": 6687453184,
+      "availableAfterBytes": 6690033664,
+      "observedAvailableChangeBytes": 2580480,
+      "productionBackupAndPreviousImagesRetained": true,
+      "databaseRestored": false
+    }
+  },
+  "publicVerification": {
+    "at": "2026-10-29T05:42:41.141Z",
+    "base": "https://stealth-spark-gokmxooi.expresshost.cloud",
+    "sourceCommit": "29851103da0f9bbf997d3933d9be005ec7d5d6bf",
+    "healthy": true,
+    "module": "1.4.0-2535bfde3cdd",
+    "checks": 125,
+    "unchangedOtherModulePointers": 116,
+    "anonymousWalletStatus": 401,
+    "rows": [
+      {
+        "path": "/assets/main-BNRgC-0Y.js",
+        "status": 200,
+        "sha256": "4437635db0a260d115c8dbca67e64ec6cd67f6b30540c110ec7358ff324ac06a",
+        "cacheControl": "public, max-age=3600"
+      },
+      {
+        "path": "/assets/royal-roulette/cover.svg",
+        "status": 200,
+        "sha256": "26b4dd9a45ca2531bc44ee7ff17282f944e7296a113d0b9bef19d5e60232c9c2",
+        "cacheControl": "public, max-age=3600"
+      },
+      {
+        "path": "/",
+        "status": 200,
+        "sha256": "93a02234a805d48e97e8e662bb8bae0e3987b49f17719f5067f481220d22cf04",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/healthz",
+        "status": 200,
+        "sha256": "7482326171995296103a4f794befc2c7831df741969bdbe936bdb637195e4dfc",
+        "cacheControl": null
+      },
+      {
+        "path": "/game-modules/royal-roulette/active.json",
+        "status": 200,
+        "sha256": "89cda20da23d7faf770da982300920af19b8861035f43ce5baacdd7c5fc64fba",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/royal-roulette/versions/1.4.0-2535bfde3cdd/manifest.json",
+        "status": 200,
+        "sha256": "157b55935ffb6977fde9339e753233576f57d8402edb53d99a7939dc739850b0",
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/royal-roulette/versions/1.4.0-2535bfde3cdd/entry-14a53127956dbf4e.js",
+        "status": 200,
+        "sha256": "14a53127956dbf4ed83aa6c0c2f736e6851be5c8af3912e007e07cec76bf3aab",
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/royal-roulette/versions/1.4.0-2535bfde3cdd/style-7d72eaf9924370f3.css",
+        "status": 200,
+        "sha256": "7d72eaf9924370f3c9b5959d5be28e87f7261d97e1085ce25550131b21065d7d",
+        "cacheControl": "public, max-age=31536000, immutable"
+      },
+      {
+        "path": "/game-modules/breaker/active.json",
+        "status": 200,
+        "sha256": "da3dd3d62280c0ef1b76b1266e1ba582f1c85825c328d8f9dac362cea5e261b4",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/casinoapipro/active.json",
+        "status": 200,
+        "sha256": "a8ed752020f79076205eded16e4757cd12f6c96ee6f2e8ad37566cf0165d5d99",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/chess/active.json",
+        "status": 200,
+        "sha256": "164bf2d6b6c2699a091eb08287e6ee895dde5352eb7a553fa4e42959440aa176",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/durak/active.json",
+        "status": 200,
+        "sha256": "4009b3e53608142243e999bf494eaf5d14c9b807e88c68c78efdbc765f9cf4d8",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/github-baccarat/active.json",
+        "status": 200,
+        "sha256": "ca536506ce09e5281d4bd866c38e5d3c85f7832ab6d2ae337280707d78ac9f9e",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/drift/active.json",
+        "status": 200,
+        "sha256": "80ae84b219ae4c334a6f2f5cdc7a9d6ced80d5758f8fe4aeecec99255c5e8d68",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/github-blackjack/active.json",
+        "status": 200,
+        "sha256": "de7f031a3d62036bb6953d2c0e89ca7229623dbda23228144868bd29acdcc496",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/github-caribbean/active.json",
+        "status": 200,
+        "sha256": "d14e2bd21b291d1757c94c7d1a4a5b820af99e612d02e4e4be0b322ef5682343",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/github-caribbean-draw/active.json",
+        "status": 200,
+        "sha256": "5008bd0793263db7856d82de92ab9941673b15053f18107a05ca98c2a9898342",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/github-andar-bahar/active.json",
+        "status": 200,
+        "sha256": "9cc87d44126976a38d2356284d151999773bf208ee886d983daf41d446c81b38",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/crazy-eights/active.json",
+        "status": 200,
+        "sha256": "6e213a4e4e73e7fea3621bfc8591794bed59016775e6531b3cb499e192c81f5a",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/github-crash/active.json",
+        "status": 200,
+        "sha256": "fd89a552b07cda3b557752b061b196e6d12df75ed3fc0e7d0726a6c68cb89082",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/github-craps/active.json",
+        "status": 200,
+        "sha256": "e3160994bf9433b150a86659290fbe7191928a693b47c4e054505d91f3314c43",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/github-crazy-four/active.json",
+        "status": 200,
+        "sha256": "b65122760e437a99df3c5ecc225d5ec93263cd03fb795c202c140277fc34476e",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/github-deuces/active.json",
+        "status": 200,
+        "sha256": "98a1f5f5e6c554f7d98d5ee5b5d8d3ea145e8b544e4394f67f1fb955d16cd80b",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/github-dragon-tiger/active.json",
+        "status": 200,
+        "sha256": "6928cc9f0a357e8b07f9b179a0cd2c2bbc045ac6e685ed893747058631e732c5",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/github-diamonds/active.json",
+        "status": 200,
+        "sha256": "4b0f84058be557c7fb3e3bc7cabccfd9c3f3a1f2782f64794d47d0d0d81a6dd0",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/github-exposure/active.json",
+        "status": 200,
+        "sha256": "a8e412cf552fb83a67dfa5127b8bcc75017606ddc0424efa1dbabeb58f4576a9",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/github-flush/active.json",
+        "status": 200,
+        "sha256": "63f8868a8816881f22214e327124082e6a69c96e62fddbe64d7fd9b48240ecbf",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/github-free-bet/active.json",
+        "status": 200,
+        "sha256": "3b963098fa7368f66b051f1cceb493b2a1458cc393c0e0cfb34d8b520e5ca5e6",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/github-holdem-bonus/active.json",
+        "status": 200,
+        "sha256": "eb767045f62914e0eb9d028dc328f34e1966fc0f67feeb81823c8d3edd82f77f",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/github-four-card/active.json",
+        "status": 200,
+        "sha256": "65b6c789e843a85d0f13bfcba52ae07ed3ba40a4003cd1726875341d3558c281",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/github-let-it-ride/active.json",
+        "status": 200,
+        "sha256": "9d9754605ce59a30258dc167f35ab046a6469f66541ccc48568d620016c6f6c0",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/github-mississippi/active.json",
+        "status": 200,
+        "sha256": "25f7a68962df97e501279796d7841be38b5396258c9f7156f09966c6fee6aae3",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/github-poker/active.json",
+        "status": 200,
+        "sha256": "210b0d689b095cefb43c68e1a2b15a7ed4181b73ac13ddc7fb7131a65e215008",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/github-hilo/active.json",
+        "status": 200,
+        "sha256": "52f3ad89dea63e24610aee2fc6f7035b69651eccccd989a4c713fe75205fd502",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/github-pai-gow/active.json",
+        "status": 200,
+        "sha256": "ce170754f621ef7afaf54f682a4e3a414c3f5cbe7de023ebeeb75784e758f487",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/github-red-dog/active.json",
+        "status": 200,
+        "sha256": "40d17e261492ec6141c7014964e8bb7716fe5f402dd75fcc30ede9b847e64af2",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/github-oasis/active.json",
+        "status": 200,
+        "sha256": "7aa1049d8aa64af386a307fa428dbd830ade50d94dfe0210ec55b4b856849070",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/github-rummy/active.json",
+        "status": 200,
+        "sha256": "6f0c21e4f425fbfb38f5c8bf7d426b8036a379a441a206e016915b2b880e7ae5",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/github-russian/active.json",
+        "status": 200,
+        "sha256": "aa7f3c9fb7595042c34ded34a4e7c1a2bb0a4ab35a03d8a3b77239c1f6c6f8e5",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/github-three-card/active.json",
+        "status": 200,
+        "sha256": "a124793fd28dee1cfee720c451bb02d12c1ab0e0ec3c22ebfb65071c966aa464",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/github-switch/active.json",
+        "status": 200,
+        "sha256": "01d63662d31640ee3d7a02893eac9dfa1dcc35e6f7a5248f52c1b51e605be118",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/github-ultimate/active.json",
+        "status": 200,
+        "sha256": "c8a21422fac1708e4a0b72b1d183c2e3bb436183dc2cd6231b91a1c6c3fb2053",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/github-tower/active.json",
+        "status": 200,
+        "sha256": "35357193383a1fd48c12f7116374c8d13e625fc6a3ecb26bc727fc7c7e25595e",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/github-video-poker/active.json",
+        "status": 200,
+        "sha256": "440f096a81fb6853b02daf22147498a683c84957b56986252cfac45a88aea7f4",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/github-sic-bo/active.json",
+        "status": 200,
+        "sha256": "e55b657cf4bc5d77f4744103844850c92b550b1d27f415ced5ae5d9894256c87",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/github-spanish/active.json",
+        "status": 200,
+        "sha256": "d5e58c0b408fc135c207c3bde8c81f34164ad864650b9f6fac68e11df355570d",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/github-war/active.json",
+        "status": 200,
+        "sha256": "e9cac3137c2ed5fba9569fab392d271db889dea5a707641d8e5a69632f689745",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/mortal-kombat/active.json",
+        "status": 200,
+        "sha256": "5f52a6ce2a6d56409e74e41072e43daf69318b933908453ac1e1f4b9f418ae5a",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/luelon/active.json",
+        "status": 200,
+        "sha256": "8ee429242a558d0fee767ede59c747e7000db481f4bd4be8c1fd0597fd002b8e",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/hockey/active.json",
+        "status": 200,
+        "sha256": "41170597843be9aacf6827d2a79833906b931457e1d36b7cef2eeb0587408d7c",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/orbit/active.json",
+        "status": 200,
+        "sha256": "93d3ff26b5fd89cf6161719ab2e3e826965f74b5db88e9359048de8237f75462",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/original-cr-vs-leo/active.json",
+        "status": 200,
+        "sha256": "175412f23fb1bb6089b0fe1b5332a10eb14d31577dfb256074348cc9ba574386",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/pixel/active.json",
+        "status": 200,
+        "sha256": "a28031c3c64865005f9ea0e01c75c14c0ce2ea21a59ef5797b29ea92b55a04b9",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/piano/active.json",
+        "status": 200,
+        "sha256": "ee8f48b1dbdeb3adcb49b4ed7ca59bfbb9c6762ebf1f22b9ea766a08dd7d0e69",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/royal-dice/active.json",
+        "status": 200,
+        "sha256": "cf80efa31ca31798f15e4485cf38d5038a93e757da8f5f983dcb32c8249b2b5b",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/royal-coins/active.json",
+        "status": 200,
+        "sha256": "4d185006de924ddb6d4d68f5c9132f2f42fc6cce1220a5e95d0646d667fb78ce",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/pool/active.json",
+        "status": 200,
+        "sha256": "a6fd05b34899440116dd6217251cfc7e5d114dfd24cb6e4f8a36b2ee1fab0c2b",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/royal-keno/active.json",
+        "status": 200,
+        "sha256": "3169bb1365937ee45fe25e4640779790449525caca2543d6137e43a463d66bd0",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/royal-flight/active.json",
+        "status": 200,
+        "sha256": "db41d3f2cee5b8ae6925ae2654536ff93b8f8e2013a41aa5b170b3b3ac634048",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/royal-fruits/active.json",
+        "status": 200,
+        "sha256": "fd4c31517b66284a19dc4a08409f5d7e5ec934381db6ade238042619f71384f1",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/royal-limbo/active.json",
+        "status": 200,
+        "sha256": "c985309a14fe78d7f04c61fb42c04a620e24168c1fbe4ce5b60082751a9897bf",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/royal-plinko/active.json",
+        "status": 200,
+        "sha256": "52b8163fbb54f56e93742401e34c5ef90b07bb45425d3e4dae161f09584db943",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/royal-wheel/active.json",
+        "status": 200,
+        "sha256": "cb01bc94046103f225e68f8ca46c05e975ad2f765c860ea28ffa465b9a5e77fa",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-afterglow/active.json",
+        "status": 200,
+        "sha256": "e45be7351d002f160bac26917a432add3480b966dadffcb3e5418a9174dd1c2c",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/royal-mines/active.json",
+        "status": 200,
+        "sha256": "18d88fd0b202e3da854d49cf01ab9d2f24ff03cf9a28a34c1f96bb2265e98cf3",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-beacon-bay/active.json",
+        "status": 200,
+        "sha256": "04567108af5cb6143ecccabba714eac0a1dec2789b700e8725a8da8b2d5c2f38",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-canopy-crossing/active.json",
+        "status": 200,
+        "sha256": "91c6c35b2144f2ca81914944f4c75bbb19346a5cecfabce862d8dcd504fc77e2",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-aurora-lift/active.json",
+        "status": 200,
+        "sha256": "923a9b58cbe9dd3a15c1ff90aec78e9835fb32458c65dae2f10e06977bf9d264",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-blazing-orchard/active.json",
+        "status": 200,
+        "sha256": "bcdaa9bc8adc56e909332e0ac7dd0a2f6ac8485d55eebfde2e08ee452039a505",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-copperline-express/active.json",
+        "status": 200,
+        "sha256": "30a5d4f762ed8d64018c1e221daf7365a289f647de6cb76c04fd88bbdd1a1250",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-cosmic-escape/active.json",
+        "status": 200,
+        "sha256": "a29c675f42e920c18a587d48310b0be3b1bbcf9a612c81c64cfb92eab4344a91",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-deep-current/active.json",
+        "status": 200,
+        "sha256": "20756a8a11a051612c85b91e779f08f9cd5f2a514514ee4b6122eb4ff10a183b",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-dune-hopper/active.json",
+        "status": 200,
+        "sha256": "6edb3abbbcbf6692de68bdea8894df97abeed53a0a8dc1419b604178d76656fb",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-dracona/active.json",
+        "status": 200,
+        "sha256": "0aed9628aec84376cf4a2f96e1e9074a9abb13b591d5c4b54e07b53165771251",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-frostline-courier/active.json",
+        "status": 200,
+        "sha256": "de91ab3b7ac902043b11161dd94160ec9887678c165284101e6bd89c3c950d6f",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-ember-vault/active.json",
+        "status": 200,
+        "sha256": "38ef9ec995898714ac9b632e1af7cd0f44e1b866b115c82ce228f8a722260e32",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-gale-riders/active.json",
+        "status": 200,
+        "sha256": "5e37e1641a339bb116f4a0d5ac7875cb9c57754b05d65cf092166f6855f159e7",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-caramel-carnival/active.json",
+        "status": 200,
+        "sha256": "526da8b23405608f8e9872b4970ce84996101e2848717fd075f4d6e54d2e6769",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-fossil-trail/active.json",
+        "status": 200,
+        "sha256": "f23818016b1e555b9c1a5c2e0af0635aaa607d26c24285bfdab0bea1e1f5950e",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-jade-koi/active.json",
+        "status": 200,
+        "sha256": "30697685f89bf8c495215dbe175ddcf07cbcb3101e57a2deb5f0bc7707675fca",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-lucky-spotlight/active.json",
+        "status": 200,
+        "sha256": "fd7a5767931b7d3c86a35faa5f5826f127bd4683e33372cccefb971c2ca2fc6c",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-last-convoy/active.json",
+        "status": 200,
+        "sha256": "094559f5dc14da7298cb9ca03adbd739bc506d05744c209c5a73b67cd5b6b972",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-meme-overload/active.json",
+        "status": 200,
+        "sha256": "90e14ecde93b13514faf2bf5b0cb50ab6a1bb31d0803d6f93c90887892a53a36",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-lumen-grove/active.json",
+        "status": 200,
+        "sha256": "b5d832221f3ee97915bac0280f08e604d3e1eae049139caaa8c24bd14a4e0b74",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-midnight-market/active.json",
+        "status": 200,
+        "sha256": "f17672457734ed742e044cc68dc2e0d2b87cb06cce926460c4cf5f1ca942b7c0",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-moonlit-mint/active.json",
+        "status": 200,
+        "sha256": "fdd6e14e936075552067c3f14cdd9c9e75111c2d4313e04673dd6afd1bcd0dc3",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-mosaic-muse/active.json",
+        "status": 200,
+        "sha256": "c12bc30e6d245082f7fcee130ba75b54ba8227ed5edd54dd01c9da949ee3f89c",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-nitro-run/active.json",
+        "status": 200,
+        "sha256": "924a533a4335d5df47017b853a4563cea24432858f67a70579a3a900453195d2",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-obsidian-drop/active.json",
+        "status": 200,
+        "sha256": "abb4903b996bf53eedde5008fc03520fc15f03384ef704d53ed4482b73eda5b3",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-neopolis/active.json",
+        "status": 200,
+        "sha256": "5f8a8317e0a63977c4ad6e47515a35cd886b517a8a1cae262ea54a9a58a334ea",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-petal-parlor/active.json",
+        "status": 200,
+        "sha256": "5b9d61c68a0c0b539ce20c003462ea81b84887556621a4c5ddc4633a2328cd84",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-prism-atelier/active.json",
+        "status": 200,
+        "sha256": "c714aa53e95952da45249c797b7b600f156685b5d0e729143b28ca63f5b80c22",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-rivet-rally/active.json",
+        "status": 200,
+        "sha256": "ee52d5e31c71c04448039e28ba323451592e330977bd5b9645ca5ec8dfadee61",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-orbit/active.json",
+        "status": 200,
+        "sha256": "1d18f3acda784f38dba6641b5b09caa524b946b7935a035928e89e1a8a082511",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-saffron-spin/active.json",
+        "status": 200,
+        "sha256": "a15484ff27f222a2bac8ceb3651794b0616fb8feb79820fd7af35543b32109bc",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-saffron-cipher/active.json",
+        "status": 200,
+        "sha256": "8c87d642fd409dfc34ae8848fe515dc4c10e17622638dd5e885331612f34c3e3",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-pulse-district/active.json",
+        "status": 200,
+        "sha256": "8676316ad70426e94d61cea06150e625186ddf508a0606050413f4e3fcef9d04",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-signal-fox/active.json",
+        "status": 200,
+        "sha256": "4e3823fdf7ea48dd303495a37691ddf12625f91a624c11487840486713cb5d34",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-sky-lanterns/active.json",
+        "status": 200,
+        "sha256": "c8eb4a3b54510ed1e24bb67ff751467e50a0bedcacd374d4554ac894f18761fa",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-starfall-oracle/active.json",
+        "status": 200,
+        "sha256": "2561186f0476870c3e1a9248e3c037907ab0d86843865622b0d7406db7cfcf29",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-sunbird-trails/active.json",
+        "status": 200,
+        "sha256": "c30e26f06441945227acc1dd0cf806763f60e9d5bc04fa6183f671580c103725",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-stormforge-duel/active.json",
+        "status": 200,
+        "sha256": "ee1c3f845bdb31d1b7bffdf71826b6df0382715fca3e4888a99a665d8c0aebd2",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-tidal-relay/active.json",
+        "status": 200,
+        "sha256": "1d97e1f015885921bda6c50acd07a42e04c83eecc6b6307bce688f16332cbe05",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/transfer-durak/active.json",
+        "status": 200,
+        "sha256": "c972c8c96ccfdc2275a86717c4ce98fd074c52e634bd235ddf31a357fade09d0",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-velvet-reign/active.json",
+        "status": 200,
+        "sha256": "1a44f5a9a00bb54699d3aee22c4276368e9a5b2e8ddab7684fb41850f6e299c2",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/variant-color/active.json",
+        "status": 200,
+        "sha256": "a73b9686b935060f852214fd4d81e3f8cf833ff23c6a6709dfc7c27386e6a9c3",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/variant-blackjack-target/active.json",
+        "status": 200,
+        "sha256": "dc542b31ea214d92614c30063bb4e2f31733c3e14d1d02af42ba781d354f8660",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/variant-dice-streak/active.json",
+        "status": 200,
+        "sha256": "a07795b3f1334d923803c16576ba92138366bc80b976aa826587f0f6f4df240a",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/variant-diamonds/active.json",
+        "status": 200,
+        "sha256": "68adaf924a54bd55d990be959b6d1e0464dd6daa9e4b0066bcaedc6ceeb1d511",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/variant-dice/active.json",
+        "status": 200,
+        "sha256": "044b142dfb966bdf0efc828c392bb5b706fb6d0681045107dee424d731a2a4c4",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/variant-fruits/active.json",
+        "status": 200,
+        "sha256": "c58bb175e828f241c65cb1e24474dd23aaa6b1f6faa5e503e627fabb46e710a7",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/variant-duel/active.json",
+        "status": 200,
+        "sha256": "3751bedd23935429166ae3078c250e4531160f4c3140355107038f48de740f32",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/variant-double-mines/active.json",
+        "status": 200,
+        "sha256": "6725bc50b818a6022a1d6a560305f9f07d70148b6abda40eb8536f1329aa8a2b",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/variant-gem-collection/active.json",
+        "status": 200,
+        "sha256": "389705aaa9f90c971e04abd8e3b0ec1ca336eaaf368bd235067939675d591adb",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/variant-keno/active.json",
+        "status": 200,
+        "sha256": "5155de2550a6a6bd6f8ccfa933e8d14455a50ecad8b19aa595d233e904b19034",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/variant-keys/active.json",
+        "status": 200,
+        "sha256": "0f30898d5edc162bb1264182a83a6288a9e8118a703214091fef58c17773b737",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/variant-mines/active.json",
+        "status": 200,
+        "sha256": "533e529e886bcaa379f189b2158f7589323d1c217a87b0aff30dabc2b65607e1",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/variant-limbo/active.json",
+        "status": 200,
+        "sha256": "1125f0c486d22c75355bafddd5ceebb691dbc1e4fb641336c981bc01c94692e1",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/variant-plinko/active.json",
+        "status": 200,
+        "sha256": "8c7d9870aa53bc6bd79e40bc451a56103033f584b2f1a29c226fe236493a8b79",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/variant-sic-bo/active.json",
+        "status": 200,
+        "sha256": "597eb8479c675a4f948db28e78d7996052c10243e93ae715d18b73f81f7580ba",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/variant-target-plinko/active.json",
+        "status": 200,
+        "sha256": "a050ead2e19af19d176a277f3ea6ee66716d7570c133a821191063f6a33b8a44",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/variant-war/active.json",
+        "status": 200,
+        "sha256": "2c4e9e9a89acc02ee51a9a33466632ea78a0732d94702e1ceb25fc156b550f99",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/variant-triple-poker/active.json",
+        "status": 200,
+        "sha256": "88dd0f6f4aba4872803a103ad3f784eda46b51006010b2e01feaaf1d603f8f73",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/game-modules/studio-neon-crown/active.json",
+        "status": 200,
+        "sha256": "e9c59aefc378b0a4c206aafa5c2f6cdcdb822b03c00fd4b4792599b53c309206",
+        "cacheControl": "no-store"
+      },
+      {
+        "path": "/assets/main-BDpluWz2.js",
+        "status": 200,
+        "sha256": "6658fa54ab65cfc743a3efbfdb5abd206c74a141e922f5909890db9644870a91",
+        "cacheControl": "public, max-age=3600"
+      }
+    ],
+    "productionAccountsCreated": 0,
+    "productionWagers": 0
+  },
+  "browserVerification": {
+    "at": "2026-10-29T05:42:45.470Z",
+    "views": [
+      {
+        "name": "desktop",
+        "width": 1214,
+        "height": 1000,
+        "scrollWidth": 1214,
+        "chatVisible": false
+      },
+      {
+        "name": "mobile",
+        "width": 368,
+        "height": 844,
+        "scrollWidth": 368,
+        "chatVisible": false
+      }
+    ],
+    "errors": [],
+    "posts": [],
+    "guestOnly": true,
+    "productionAccountsCreated": 0,
+    "productionWagers": 0,
+    "sharedContext": true,
+    "scheduled": {
+      "chip": 1
+    }
+  },
+  "reviewedClientFiles": {
+    "assets/main-BNRgC-0Y.js": "4437635db0a260d115c8dbca67e64ec6cd67f6b30540c110ec7358ff324ac06a",
+    "assets/royal-roulette/cover.svg": "26b4dd9a45ca2531bc44ee7ff17282f944e7296a113d0b9bef19d5e60232c9c2",
+    "index.html": "93a02234a805d48e97e8e662bb8bae0e3987b49f17719f5067f481220d22cf04"
+  },
+  "reviewedBackendFiles": {
+    "index.js": "75fa099b0165bad28abc9292b4573141962d5e92e6f531c375574b65b88dd6eb"
+  },
+  "reviewedModuleFiles": {
+    "manifest.json": "157b55935ffb6977fde9339e753233576f57d8402edb53d99a7939dc739850b0",
+    "entry-14a53127956dbf4e.js": "14a53127956dbf4ed83aa6c0c2f736e6851be5c8af3912e007e07cec76bf3aab",
+    "style-7d72eaf9924370f3.css": "7d72eaf9924370f3c9b5959d5be28e87f7261d97e1085ce25550131b21065d7d"
+  },
+  "mathematics": {
+    "changed": false,
+    "exactRtp": "36/37",
+    "allSelectableBets": 41,
+    "allowedStakes": [
+      10,
+      50,
+      100,
+      500
+    ],
+    "rulesVersion": 1
+  },
+  "notes": [
+    "The production composition preserves the prior application and omits unrelated unpublished main features.",
+    "The public browser used the offline guest hall. Connected host chat, wallet settlement and recovery were tested locally with the prepared release bytes.",
+    "The release client passed with server-equivalent HTTP/WebSocket routing. An additional standalone-fixture retry could not start because macOS shared memory IDs were exhausted; another chat's active Flag Battle test database was preserved.",
+    "Local task files are removed only after this deployment record and its source are verified in GitHub."
+  ]
+}
