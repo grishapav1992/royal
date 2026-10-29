@@ -21,7 +21,9 @@ async function enter(page:Page,path:string){
  if(await page.locator('#character-step').isVisible())await page.getByRole('button',{name:'Войти в зал',exact:true}).click();
  await expect(page.locator('#join-dialog')).toBeHidden({timeout:25000});await expect.poll(async()=>(await state(page)).online).toBe(true);
  const r=await page.request.post('/__test/roulette/fund');expect(r.ok()).toBe(true);
- await page.evaluate(async()=>{const path='/src/wallet/WalletClient.ts';await(await import(/* @vite-ignore */path)).demoWallet.refresh();});
+ if(process.env.ROYAL_ROULETTE_BUILT==='1'){
+  await page.reload();await expect.poll(async()=>(await state(page)).online,{timeout:30000}).toBe(true);
+ }else await page.evaluate(async()=>{const path='/src/wallet/WalletClient.ts';await(await import(/* @vite-ignore */path)).demoWallet.refresh();});
 }
 async function open(page:Page){
  if(await page.locator('#room-overview').getAttribute('aria-pressed')!=='true')await page.locator('#room-overview').click();
@@ -256,3 +258,15 @@ test('audio close and blocked unlock discard future sources without closing the 
  expect(await page.evaluate(()=>(window as any).__rrRunning.state().graphOwners)).toBe(0);expect(await page.evaluate(()=>(window as any).__rrListeners())).toBe(0);
  expect(await page.evaluate(()=>(window as any).__rrShared.state)).toBe('running');await page.evaluate(()=>(window as any).__rrShared.close());
 });
+
+ test('verified release client and backend keep roulette, wallet recovery, sound and chat usable',async({page,roomPath})=>{
+ test.skip(process.env.ROYAL_ROULETTE_BUILT!=='1','Requires the prepared immutable release outputs');
+ const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
+ await enter(page,roomPath);await open(page);await page.emulateMedia({reducedMotion:'no-preference'});
+ await page.evaluate(()=>{const host=(globalThis as any)[Symbol.for('royal.game-host.v1')];host.gameAudio.setMuted(false);host.gameAudio.setVolume(.35);});
+ await page.locator('[data-rr-amount="50"]').click();await expect.poll(async()=>(await sound(page)).scheduled.chip??0).toBe(1);
+ const receipt=await play(page);expect(receipt.gameRound.stakeUnits).toBe('5000');await layout(page,'release-desktop');
+ expect((await sound(page)).sharedContext).toBe(true);await expect.poll(async()=>(await sound(page)).activeSources).toBe(0);
+ await page.setViewportSize({width:390,height:844});await layout(page,'release-mobile');await close(page);await open(page);
+ await expect(page.locator('[data-rr-spin]')).toBeEnabled();expect((await sound(page)).scheduled).toEqual({});await close(page);expect(errors).toEqual([]);
+ });

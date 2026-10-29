@@ -1,3 +1,5 @@
+import {readFileSync,existsSync,statSync,createReadStream} from 'node:fs';
+import {resolve,extname} from 'node:path';
 /** Local verification uses disposable accounts and PostgreSQL, with the real host wallet routes. */
 import {spawn} from 'node:child_process';
 import {randomUUID} from 'node:crypto';
@@ -7,12 +9,19 @@ import {PostgresDatabase,databaseConfig} from '../server/database';
 import {DemoWalletStore,WalletError} from '../server/demoWallet';
 
 const database=await temporaryDatabase();
+const built=process.env.ROYAL_ROULETTE_BUILT==='1';
 const apiPort=2784,webPort=5384,api=`http://127.0.0.1:${apiPort}`;
 const environment={...process.env,...database.env,PORT:String(apiPort),AUTH_DB_PATH:'roulette_host_test',PUBLIC_ORIGIN:''};
-const backend=spawn(process.execPath,['--import','tsx','server/index.ts'],{cwd:process.cwd(),env:environment,stdio:['ignore','pipe','pipe']});
+const backend=spawn(process.execPath,built?['dist-server/index.js']:['--import','tsx','server/index.ts'],{cwd:process.cwd(),env:environment,stdio:['ignore','pipe','pipe']});
 let log='',stopping=false,db:PostgresDatabase|undefined,wallet:DemoWalletStore;
 backend.stdout.on('data',bytes=>{log=(log+bytes).slice(-5000);});backend.stderr.on('data',bytes=>{log=(log+bytes).slice(-5000);});
 const plugin:Plugin={name:'roulette-local-fixture-funds',configureServer(vite){
+ if(built)vite.middlewares.use((req,res,next)=>{
+  const url=new URL(req.url||'/', 'http://localhost'),base=resolve('dist'),file=resolve(base,url.pathname==='/'?'index.html':'.'+decodeURIComponent(url.pathname));
+  if(!file.startsWith(base+'/')||!existsSync(file)||!statSync(file).isFile()){next();return;}
+  const mime:Record<string,string>={'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.json':'application/json','.webp':'image/webp','.png':'image/png'};
+  res.setHeader('Content-Type',mime[extname(file)]||'application/octet-stream');createReadStream(file).pipe(res);
+ });
  vite.middlewares.use(async(req,res,next)=>{
   if(req.url!=='/__test/roulette/fund'||req.method!=='POST'){next();return;}
   try{

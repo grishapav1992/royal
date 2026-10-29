@@ -1,0 +1,42 @@
+{
+  "release": "royal-roulette-20261029-v1",
+  "base": "9acf3686965fedc0c81efaaa6f740e30d4fef175",
+  "allowedSource": [
+    "docs/concepts/royal-roulette/audio-review.md",
+    "docs/concepts/royal-roulette/audio-spec.md",
+    "docs/concepts/royal-roulette/motion-review.md",
+    "docs/concepts/royal-roulette/motion-spec.md",
+    "docs/concepts/royal-roulette/visual-review.md",
+    "docs/game-math/qualifications/royal-roulette-v1.json",
+    "docs/game-math/royal-roulette-review.md",
+    "games/royal-roulette/README.md",
+    "games/royal-roulette/RouletteAudioBank.ts",
+    "games/royal-roulette/RouletteMotion.ts",
+    "games/royal-roulette/RouletteSound.ts",
+    "games/royal-roulette/RouletteSoundTimeline.ts",
+    "games/royal-roulette/RoyalRoulette.ts",
+    "games/royal-roulette/SpinTimeline.ts",
+    "games/royal-roulette/WheelArtwork.ts",
+    "games/royal-roulette/entry.ts",
+    "games/royal-roulette/package.json",
+    "games/royal-roulette/roulette.css",
+    "public/assets/royal-roulette/cover.svg",
+    "scripts/game-math/rtp-gate.mjs",
+    "scripts/game-math/rtp-policy.json",
+    "scripts/game-math/rtp-roulette.mjs",
+    "scripts/qualify-game-rtp.mjs",
+    "scripts/roulette-preview.ts",
+    "src/i18n/en.ts",
+    "src/shared/arcadeCatalog.ts",
+    "src/shared/cabinets.ts",
+    "src/ui/GameViewport.ts",
+    "src/ui/RoyalGameArtwork.ts",
+    "src/ui/RoyalPlatformCatalog.ts"
+  ],
+  "changedGame": "royal-roulette",
+  "contract": {
+    "apiVersion": 1,
+    "rulesVersion": 1,
+    "progressVersion": 1
+  }
+}
