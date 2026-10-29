@@ -570,7 +570,15 @@
         }
       }
     ],
-    "frozenLegacyBaselineUnchanged": true
+    "frozenLegacyBaselineUnchanged": true,
+    "postAcceptanceSync": {
+      "commit": "9487eeac4b9f728de3025b4811af4892933ad5d6",
+      "gameplayClientAndServerUnchanged": true,
+      "change": "Main added reviewed release inputs to Flag qualification scope and removed stale Caribbean model comments. Normal Caribbean and Flag qualification was rerun; results unchanged.",
+      "gateVerifiedProfiles": 17,
+      "rtpRegressionPassed": 33,
+      "packageReverified": true
+    }
   },
   "limits": [
     "Synthetic accounts and isolated PostgreSQL, no real player funds or external transfers.",
@@ -596,9 +604,10 @@
     "preservationCommit": "116a893ab7b9cd61eb9db4c9f2af92fbb2e326e6",
     "remoteCommitVerified": true,
     "removedFiles": 0,
-    "retainedFiles": 43,
-    "retainedBytes": 689124727,
+    "retainedFiles": 47,
+    "retainedBytes": 689221980,
     "freeBytesAfterRejectedCleanup": 299174596608,
-    "cleanupCondition": "Retained because automatic review rejected cleanup; no retry without a changed authorization or policy condition."
+    "cleanupCondition": "Retained because automatic review rejected cleanup; no retry without a changed authorization or policy condition.",
+    "freeBytesAtCompletion": 299079184384
   }
 }
