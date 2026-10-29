@@ -1,0 +1,976 @@
+{
+  "format": 1,
+  "date": "2026-10-29",
+  "stage": "Final acceptance, step 3: visual review",
+  "status": {
+    "software": "passed",
+    "visualInspection": "passed for recorded Windows Chrome viewports",
+    "physicalDevices": "unverified",
+    "physicalListeningFromStep2": "pending"
+  },
+  "sourceCommit": "250747efe7b829bca6e7536a125a9ec5e1f4125c",
+  "integrationBaseline": "3975d78197c639e89a1f555f0ffdcf23dd56d50b",
+  "productionChanged": false,
+  "mathematicsChanged": false,
+  "contract": [
+    1,
+    2,
+    2
+  ],
+  "module": {
+    "gameId": "studio-flooded-temple",
+    "version": "0.9.3-4a6b3fba5115",
+    "sourceSha256": "4a6b3fba511544df2572913202ac72e3c01153e4b41eacb698deb8097238f149",
+    "manifestSha256": "abfdb74b2482ef809224b72dc1fbef99fd9ed857a1bcb64a0217678b7a81f0ab",
+    "files": 41,
+    "allImmutableFilesVerified": true,
+    "sourceProofVerified": true,
+    "unchangedMediaFiles": 39
+  },
+  "fixes": {
+    "baselineStakeRescaling": {
+      "acceptedStakeUnits": "1000",
+      "acceptedPayoutUnits": "250",
+      "balance": 9992.5,
+      "payoutBefore": "2.50",
+      "payoutAfter": "5.00",
+      "statusAfter": "Payout 2.50. Round net -17.50."
+    },
+    "acceptedStake": {
+      "values": [
+        {
+          "selected": "50000",
+          "payout": "2.50",
+          "net": "-7.50"
+        },
+        {
+          "selected": "2000",
+          "payout": "2.50",
+          "net": "-7.50"
+        },
+        {
+          "selected": "1000",
+          "payout": "2.50",
+          "net": "-7.50"
+        }
+      ],
+      "nextPaidStakeUnits": "2000",
+      "nextPayoutUnits": "500",
+      "balanceMatched": true
+    },
+    "persistentOutcomeLabels": [
+      "loss",
+      "partial",
+      "return",
+      "win",
+      "big",
+      "500x limit"
+    ],
+    "phoneNetBelowPayout": true,
+    "skip": {
+      "paidStarts": 1,
+      "continuations": 1,
+      "falls": 31,
+      "freeSpins": 20,
+      "payoutUnits": "30250",
+      "noNewCueAfterSkip": true,
+      "wholeServerViewMatchesOrdinary": true,
+      "viewSha256": "e8ceca4026b7e8ad5492533790dcb23861ac0a1c7a35bf50d76a28f69d9f705d",
+      "ordinaryElapsedMs": 27000,
+      "ordinaryPhaseCounts": {
+        "drop": 31,
+        "evaluate": 31,
+        "break": 10,
+        "bonus": 1,
+        "base-return": 1,
+        "outcome": 1
+      }
+    }
+  },
+  "checks": {
+    "browser": {
+      "passed": 7,
+      "focusedCapLayoutRerunPassed": 1,
+      "initialScrollProbeDetached": true,
+      "scrollProbeMadeSynchronous": true
+    },
+    "temple": {
+      "passed": 56
+    },
+    "rtpGate": {
+      "passed": 33
+    },
+    "independentModulesAndAssets": {
+      "passed": 7,
+      "identities": 121
+    },
+    "rtp": {
+      "verifiedProfiles": 17,
+      "legacyNotQualified": 114
+    },
+    "build": {
+      "format": 1,
+      "startedAt": "2026-10-29T17:08:08.030Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 3567
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 8812
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 10982
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 8353
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 75
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 35
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 35
+        }
+      ],
+      "passed": true,
+      "durationMs": 31858
+    },
+    "outcomes": [
+      {
+        "lang": "ru",
+        "kind": "loss",
+        "payoutUnits": "0"
+      },
+      {
+        "lang": "ru",
+        "kind": "partial",
+        "payoutUnits": "250"
+      },
+      {
+        "lang": "ru",
+        "kind": "return",
+        "payoutUnits": "1000"
+      },
+      {
+        "lang": "ru",
+        "kind": "win",
+        "payoutUnits": "2250"
+      },
+      {
+        "lang": "ru",
+        "kind": "big",
+        "payoutUnits": "500000"
+      },
+      {
+        "lang": "ru",
+        "stake": "1000",
+        "payoutUnits": "500000",
+        "width": 360,
+        "scroll": 360,
+        "resultWidth": 161,
+        "resultScroll": 161,
+        "netFont": 12
+      },
+      {
+        "lang": "ru",
+        "stake": "2000",
+        "payoutUnits": "1000000",
+        "width": 360,
+        "scroll": 360,
+        "resultWidth": 161,
+        "resultScroll": 161,
+        "netFont": 12
+      },
+      {
+        "lang": "ru",
+        "stake": "5000",
+        "payoutUnits": "2500000",
+        "width": 360,
+        "scroll": 360,
+        "resultWidth": 161,
+        "resultScroll": 161,
+        "netFont": 12
+      },
+      {
+        "lang": "ru",
+        "stake": "10000",
+        "payoutUnits": "5000000",
+        "width": 360,
+        "scroll": 360,
+        "resultWidth": 161,
+        "resultScroll": 161,
+        "netFont": 12
+      },
+      {
+        "lang": "ru",
+        "stake": "20000",
+        "payoutUnits": "10000000",
+        "width": 360,
+        "scroll": 360,
+        "resultWidth": 161,
+        "resultScroll": 161,
+        "netFont": 12
+      },
+      {
+        "lang": "ru",
+        "stake": "50000",
+        "payoutUnits": "25000000",
+        "width": 360,
+        "scroll": 360,
+        "resultWidth": 161,
+        "resultScroll": 161,
+        "netFont": 12
+      },
+      {
+        "lang": "en",
+        "kind": "loss",
+        "payoutUnits": "0"
+      },
+      {
+        "lang": "en",
+        "kind": "partial",
+        "payoutUnits": "250"
+      },
+      {
+        "lang": "en",
+        "kind": "return",
+        "payoutUnits": "1000"
+      },
+      {
+        "lang": "en",
+        "kind": "win",
+        "payoutUnits": "2250"
+      },
+      {
+        "lang": "en",
+        "kind": "big",
+        "payoutUnits": "500000"
+      },
+      {
+        "lang": "en",
+        "stake": "1000",
+        "payoutUnits": "500000",
+        "width": 360,
+        "scroll": 360,
+        "resultWidth": 161,
+        "resultScroll": 161,
+        "netFont": 12
+      },
+      {
+        "lang": "en",
+        "stake": "2000",
+        "payoutUnits": "1000000",
+        "width": 360,
+        "scroll": 360,
+        "resultWidth": 161,
+        "resultScroll": 161,
+        "netFont": 12
+      },
+      {
+        "lang": "en",
+        "stake": "5000",
+        "payoutUnits": "2500000",
+        "width": 360,
+        "scroll": 360,
+        "resultWidth": 161,
+        "resultScroll": 161,
+        "netFont": 12
+      },
+      {
+        "lang": "en",
+        "stake": "10000",
+        "payoutUnits": "5000000",
+        "width": 360,
+        "scroll": 360,
+        "resultWidth": 161,
+        "resultScroll": 161,
+        "netFont": 12
+      },
+      {
+        "lang": "en",
+        "stake": "20000",
+        "payoutUnits": "10000000",
+        "width": 360,
+        "scroll": 360,
+        "resultWidth": 161,
+        "resultScroll": 161,
+        "netFont": 12
+      },
+      {
+        "lang": "en",
+        "stake": "50000",
+        "payoutUnits": "25000000",
+        "width": 360,
+        "scroll": 360,
+        "resultWidth": 161,
+        "resultScroll": 161,
+        "netFont": 12
+      }
+    ],
+    "hostRU": {
+      "geometry": [
+        {
+          "width": 1103,
+          "height": 1000,
+          "scroll": 1103,
+          "board": {
+            "x": 393.390625,
+            "y": 175.859375,
+            "width": 676.53125,
+            "height": 422.71875,
+            "top": 175.859375,
+            "right": 1069.921875,
+            "bottom": 598.578125,
+            "left": 393.390625
+          },
+          "girl": {
+            "x": 33.078125,
+            "y": 80,
+            "width": 338.265625,
+            "height": 591.453125,
+            "top": 80,
+            "right": 371.34375,
+            "bottom": 671.453125,
+            "left": 33.078125
+          },
+          "portrait": {
+            "x": 39.078125,
+            "y": 86,
+            "width": 326.265625,
+            "height": 579.453125,
+            "top": 86,
+            "right": 365.34375,
+            "bottom": 665.453125,
+            "left": 39.078125
+          },
+          "console": {
+            "x": 33.078125,
+            "y": 685.453125,
+            "width": 1036.84375,
+            "height": 193.546875,
+            "top": 685.453125,
+            "right": 1069.921875,
+            "bottom": 879,
+            "left": 33.078125
+          },
+          "statusFont": 12,
+          "netFont": 13
+        },
+        {
+          "width": 714,
+          "height": 760,
+          "scroll": 714,
+          "board": {
+            "x": 254.640625,
+            "y": 150,
+            "width": 437.953125,
+            "height": 275.5625,
+            "top": 150,
+            "right": 692.59375,
+            "bottom": 425.5625,
+            "left": 254.640625
+          },
+          "girl": {
+            "x": 21.40625,
+            "y": 77,
+            "width": 218.96875,
+            "height": 405.5625,
+            "top": 77,
+            "right": 240.375,
+            "bottom": 482.5625,
+            "left": 21.40625
+          },
+          "portrait": {
+            "x": 27.40625,
+            "y": 83,
+            "width": 206.96875,
+            "height": 393.5625,
+            "top": 83,
+            "right": 234.375,
+            "bottom": 476.5625,
+            "left": 27.40625
+          },
+          "console": {
+            "x": 21.40625,
+            "y": 496.5625,
+            "width": 671.1875,
+            "height": 262.546875,
+            "top": 496.5625,
+            "right": 692.59375,
+            "bottom": 759.109375,
+            "left": 21.40625
+          },
+          "statusFont": 12,
+          "netFont": 13
+        },
+        {
+          "width": 482,
+          "height": 1024,
+          "scroll": 482,
+          "board": {
+            "x": 14.453125,
+            "y": 182,
+            "width": 453.09375,
+            "height": 282.25,
+            "top": 182,
+            "right": 467.546875,
+            "bottom": 464.25,
+            "left": 14.453125
+          },
+          "girl": {
+            "x": 15.453125,
+            "y": 62,
+            "width": 57,
+            "height": 52,
+            "top": 62,
+            "right": 72.453125,
+            "bottom": 114,
+            "left": 15.453125
+          },
+          "portrait": {
+            "x": -20.546875,
+            "y": 63,
+            "width": 130,
+            "height": 195,
+            "top": 63,
+            "right": 109.453125,
+            "bottom": 258,
+            "left": -20.546875
+          },
+          "console": {
+            "x": 14.453125,
+            "y": 525.25,
+            "width": 453.09375,
+            "height": 300.578125,
+            "top": 525.25,
+            "right": 467.546875,
+            "bottom": 825.828125,
+            "left": 14.453125
+          },
+          "statusFont": 12,
+          "netFont": 12
+        },
+        {
+          "width": 384,
+          "height": 844,
+          "scroll": 384,
+          "board": {
+            "x": 11.515625,
+            "y": 182,
+            "width": 360.96875,
+            "height": 226.96875,
+            "top": 182,
+            "right": 372.484375,
+            "bottom": 408.96875,
+            "left": 11.515625
+          },
+          "girl": {
+            "x": 12.515625,
+            "y": 62,
+            "width": 57,
+            "height": 52,
+            "top": 62,
+            "right": 69.515625,
+            "bottom": 114,
+            "left": 12.515625
+          },
+          "portrait": {
+            "x": -23.484375,
+            "y": 63,
+            "width": 130,
+            "height": 195,
+            "top": 63,
+            "right": 106.515625,
+            "bottom": 258,
+            "left": -23.484375
+          },
+          "console": {
+            "x": 11.515625,
+            "y": 469.96875,
+            "width": 360.96875,
+            "height": 300.578125,
+            "top": 469.96875,
+            "right": 372.484375,
+            "bottom": 770.546875,
+            "left": 11.515625
+          },
+          "statusFont": 12,
+          "netFont": 12
+        },
+        {
+          "width": 354,
+          "height": 740,
+          "scroll": 354,
+          "board": {
+            "x": 10.609375,
+            "y": 182,
+            "width": 332.78125,
+            "height": 210.0625,
+            "top": 182,
+            "right": 343.390625,
+            "bottom": 392.0625,
+            "left": 10.609375
+          },
+          "girl": {
+            "x": 11.609375,
+            "y": 62,
+            "width": 57,
+            "height": 52,
+            "top": 62,
+            "right": 68.609375,
+            "bottom": 114,
+            "left": 11.609375
+          },
+          "portrait": {
+            "x": -24.390625,
+            "y": 63,
+            "width": 130,
+            "height": 195,
+            "top": 63,
+            "right": 105.609375,
+            "bottom": 258,
+            "left": -24.390625
+          },
+          "console": {
+            "x": 10.609375,
+            "y": 453.0625,
+            "width": 332.78125,
+            "height": 350.578125,
+            "top": 453.0625,
+            "right": 343.390625,
+            "bottom": 803.640625,
+            "left": 10.609375
+          },
+          "statusFont": 12,
+          "netFont": 12
+        },
+        {
+          "width": 588,
+          "height": 390,
+          "scroll": 588,
+          "board": {
+            "x": 209.875,
+            "y": -67,
+            "width": 360.5,
+            "height": 229.09375,
+            "top": -67,
+            "right": 570.375,
+            "bottom": 162.09375,
+            "left": 209.875
+          },
+          "girl": {
+            "x": 17.625,
+            "y": -140,
+            "width": 180.25,
+            "height": 359.09375,
+            "top": -140,
+            "right": 197.875,
+            "bottom": 219.09375,
+            "left": 17.625
+          },
+          "portrait": {
+            "x": 23.625,
+            "y": -134,
+            "width": 168.25,
+            "height": 347.09375,
+            "top": -134,
+            "right": 191.875,
+            "bottom": 213.09375,
+            "left": 23.625
+          },
+          "console": {
+            "x": 17.625,
+            "y": 233.09375,
+            "width": 552.75,
+            "height": 262.546875,
+            "top": 233.09375,
+            "right": 570.375,
+            "bottom": 495.640625,
+            "left": 17.625
+          },
+          "statusFont": 12,
+          "netFont": 13
+        }
+      ],
+      "chatConnected": true,
+      "chatMessagesSent": 0,
+      "partialReturnExplicit": true
+    },
+    "hostEN": {
+      "geometry": [
+        {
+          "width": 1103,
+          "height": 1000,
+          "scroll": 1103,
+          "board": {
+            "x": 393.390625,
+            "y": 175.859375,
+            "width": 676.53125,
+            "height": 422.71875,
+            "top": 175.859375,
+            "right": 1069.921875,
+            "bottom": 598.578125,
+            "left": 393.390625
+          },
+          "girl": {
+            "x": 33.078125,
+            "y": 80,
+            "width": 338.265625,
+            "height": 591.453125,
+            "top": 80,
+            "right": 371.34375,
+            "bottom": 671.453125,
+            "left": 33.078125
+          },
+          "portrait": {
+            "x": 39.078125,
+            "y": 86,
+            "width": 326.265625,
+            "height": 579.453125,
+            "top": 86,
+            "right": 365.34375,
+            "bottom": 665.453125,
+            "left": 39.078125
+          },
+          "console": {
+            "x": 33.078125,
+            "y": 685.453125,
+            "width": 1036.84375,
+            "height": 193.546875,
+            "top": 685.453125,
+            "right": 1069.921875,
+            "bottom": 879,
+            "left": 33.078125
+          },
+          "statusFont": 12,
+          "netFont": 13
+        },
+        {
+          "width": 714,
+          "height": 760,
+          "scroll": 714,
+          "board": {
+            "x": 254.640625,
+            "y": 150,
+            "width": 437.953125,
+            "height": 275.5625,
+            "top": 150,
+            "right": 692.59375,
+            "bottom": 425.5625,
+            "left": 254.640625
+          },
+          "girl": {
+            "x": 21.40625,
+            "y": 77,
+            "width": 218.96875,
+            "height": 405.5625,
+            "top": 77,
+            "right": 240.375,
+            "bottom": 482.5625,
+            "left": 21.40625
+          },
+          "portrait": {
+            "x": 27.40625,
+            "y": 83,
+            "width": 206.96875,
+            "height": 393.5625,
+            "top": 83,
+            "right": 234.375,
+            "bottom": 476.5625,
+            "left": 27.40625
+          },
+          "console": {
+            "x": 21.40625,
+            "y": 496.5625,
+            "width": 671.1875,
+            "height": 262.546875,
+            "top": 496.5625,
+            "right": 692.59375,
+            "bottom": 759.109375,
+            "left": 21.40625
+          },
+          "statusFont": 12,
+          "netFont": 13
+        },
+        {
+          "width": 482,
+          "height": 1024,
+          "scroll": 482,
+          "board": {
+            "x": 14.453125,
+            "y": 182,
+            "width": 453.09375,
+            "height": 282.25,
+            "top": 182,
+            "right": 467.546875,
+            "bottom": 464.25,
+            "left": 14.453125
+          },
+          "girl": {
+            "x": 15.453125,
+            "y": 62,
+            "width": 57,
+            "height": 52,
+            "top": 62,
+            "right": 72.453125,
+            "bottom": 114,
+            "left": 15.453125
+          },
+          "portrait": {
+            "x": -20.546875,
+            "y": 63,
+            "width": 130,
+            "height": 195,
+            "top": 63,
+            "right": 109.453125,
+            "bottom": 258,
+            "left": -20.546875
+          },
+          "console": {
+            "x": 14.453125,
+            "y": 525.25,
+            "width": 453.09375,
+            "height": 300.578125,
+            "top": 525.25,
+            "right": 467.546875,
+            "bottom": 825.828125,
+            "left": 14.453125
+          },
+          "statusFont": 12,
+          "netFont": 12
+        },
+        {
+          "width": 384,
+          "height": 844,
+          "scroll": 384,
+          "board": {
+            "x": 11.515625,
+            "y": 182,
+            "width": 360.96875,
+            "height": 226.96875,
+            "top": 182,
+            "right": 372.484375,
+            "bottom": 408.96875,
+            "left": 11.515625
+          },
+          "girl": {
+            "x": 12.515625,
+            "y": 62,
+            "width": 57,
+            "height": 52,
+            "top": 62,
+            "right": 69.515625,
+            "bottom": 114,
+            "left": 12.515625
+          },
+          "portrait": {
+            "x": -23.484375,
+            "y": 63,
+            "width": 130,
+            "height": 195,
+            "top": 63,
+            "right": 106.515625,
+            "bottom": 258,
+            "left": -23.484375
+          },
+          "console": {
+            "x": 11.515625,
+            "y": 469.96875,
+            "width": 360.96875,
+            "height": 300.578125,
+            "top": 469.96875,
+            "right": 372.484375,
+            "bottom": 770.546875,
+            "left": 11.515625
+          },
+          "statusFont": 12,
+          "netFont": 12
+        },
+        {
+          "width": 354,
+          "height": 740,
+          "scroll": 354,
+          "board": {
+            "x": 10.609375,
+            "y": 48,
+            "width": 332.78125,
+            "height": 210.0625,
+            "top": 48,
+            "right": 343.390625,
+            "bottom": 258.0625,
+            "left": 10.609375
+          },
+          "girl": {
+            "x": 11.609375,
+            "y": -72,
+            "width": 57,
+            "height": 52,
+            "top": -72,
+            "right": 68.609375,
+            "bottom": -20,
+            "left": 11.609375
+          },
+          "portrait": {
+            "x": -24.390625,
+            "y": -71,
+            "width": 130,
+            "height": 195,
+            "top": -71,
+            "right": 105.609375,
+            "bottom": 124,
+            "left": -24.390625
+          },
+          "console": {
+            "x": 10.609375,
+            "y": 319.0625,
+            "width": 332.78125,
+            "height": 300.578125,
+            "top": 319.0625,
+            "right": 343.390625,
+            "bottom": 619.640625,
+            "left": 10.609375
+          },
+          "statusFont": 12,
+          "netFont": 12
+        },
+        {
+          "width": 588,
+          "height": 390,
+          "scroll": 588,
+          "board": {
+            "x": 209.875,
+            "y": -43,
+            "width": 360.5,
+            "height": 229.09375,
+            "top": -43,
+            "right": 570.375,
+            "bottom": 186.09375,
+            "left": 209.875
+          },
+          "girl": {
+            "x": 17.625,
+            "y": -116,
+            "width": 180.25,
+            "height": 359.09375,
+            "top": -116,
+            "right": 197.875,
+            "bottom": 243.09375,
+            "left": 17.625
+          },
+          "portrait": {
+            "x": 23.625,
+            "y": -110,
+            "width": 168.25,
+            "height": 347.09375,
+            "top": -110,
+            "right": 191.875,
+            "bottom": 237.09375,
+            "left": 23.625
+          },
+          "console": {
+            "x": 17.625,
+            "y": 257.09375,
+            "width": 552.75,
+            "height": 262.546875,
+            "top": 257.09375,
+            "right": 570.375,
+            "bottom": 519.640625,
+            "left": 17.625
+          },
+          "statusFont": 12,
+          "netFont": 13
+        }
+      ],
+      "chatConnected": true,
+      "chatMessagesSent": 0,
+      "partialReturnExplicit": true
+    },
+    "manualStand": {
+      "rows": [
+        {
+          "choice": "blank",
+          "payoutUnits": "0",
+          "label": "БЕЗ ВЫПЛАТЫ · 0,00"
+        },
+        {
+          "choice": "partial",
+          "payoutUnits": "250",
+          "label": "ЧАСТИЧНЫЙ ВОЗВРАТ · 2,50"
+        },
+        {
+          "choice": "return",
+          "payoutUnits": "1000",
+          "label": "СТАВКА ВОЗВРАЩЕНА · 10,00"
+        },
+        {
+          "choice": "win",
+          "payoutUnits": "2250",
+          "label": "ВЫИГРЫШ · 22,50"
+        },
+        {
+          "choice": "bonus",
+          "payoutUnits": "30250",
+          "label": "КРУПНЫЙ ВЫИГРЫШ · 302,50"
+        },
+        {
+          "choice": "cap",
+          "payoutUnits": "500000",
+          "label": "ПРЕДЕЛ 500× · 5 000,00"
+        }
+      ],
+      "module": "http://localhost:5233/game-modules/studio-flooded-temple/versions/0.9.3-4a6b3fba5115/manifest.json",
+      "syntheticFundsOnly": true,
+      "physicalListening": false
+    }
+  },
+  "screenshots": [
+    {
+      "path": "docs/assets/flooded-temple/visual-acceptance-1440.webp",
+      "bytes": 200622,
+      "sha256": "4921bdb477874cd4604c338009bbd0aec39f32f5d67ae098d05dfc984e02f521"
+    },
+    {
+      "path": "docs/assets/flooded-temple/visual-acceptance-390.webp",
+      "bytes": 57682,
+      "sha256": "643e5bf2409bc1428c104201d114f9d7d5e5987739d3a61d7e8db0ec5d2c76f8"
+    },
+    {
+      "path": "docs/assets/flooded-temple/visual-acceptance-phone-top.webp",
+      "bytes": 65572,
+      "sha256": "fcf5538b0b67d944571e13e2857c398749c2628f7d3db3afe9426a0808980838"
+    }
+  ],
+  "limits": [
+    "Viewport emulation uses Windows Chrome, not physical Android, iOS or Safari.",
+    "Existing phase durations, heroine animations, music and sound recordings are unchanged; this step does not certify listening quality or enjoyment.",
+    "Development server logged the existing public cat-asset import warning and one WebSocket ECONNABORTED between host scenarios. Connected chat and accessible input passed in both scenarios."
+  ],
+  "storage": {
+    "scope": "artifacts/work/temple-visual-acceptance",
+    "initialFreeBytes": 298622820352,
+    "cleanupStatus": "pending GitHub preservation",
+    "previousDeniedScopesUntouched": true,
+    "activeExceptions": [
+      "Current worktree and package support the remaining staged feature and release preparation.",
+      "Manual listening stand 37167 remains active while physical review is pending.",
+      "Previously loaded packages and earlier denied cleanup scopes are preserved."
+    ]
+  }
+}
