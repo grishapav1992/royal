@@ -1,5 +1,6 @@
 /** Independent client packages supported by this host release. */
 export const STUDIO_GAME_MODULES = [
+ { gameId: 'studio-forest-heart', slug: 'forest-heart', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
  { gameId: 'studio-caribbean-treasures', slug: 'caribbean-treasures', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
  { gameId: 'studio-neopolis', slug: 'neopolis', apiVersion: 1, rulesVersion: 4, progressVersion: 4 },
  { gameId: 'studio-dracona', slug: 'dracona', apiVersion: 1, rulesVersion: 3, progressVersion: 2 },
@@ -45,6 +46,7 @@ export const STUDIO_GAME_MODULES = [
 ] as const;
 
 export const CASINO_GAME_MODULES = [
+ { gameId: 'flag-battle', slug: 'flag-battle', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },
  { gameId: 'original-cr-vs-leo', slug: 'cr-vs-leo', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
  { gameId: 'github-crash', slug: 'last-exit', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
  { gameId: 'royal-wheel', slug: 'royal-wheel', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },

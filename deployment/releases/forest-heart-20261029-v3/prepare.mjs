@@ -1,0 +1,88 @@
+import { readFileSync, writeFileSync, mkdirSync, copyFileSync, existsSync, statSync } from 'node:fs';
+import { resolve, dirname, relative, isAbsolute } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
+import assert from 'node:assert/strict';
+const helper = dirname(fileURLToPath(import.meta.url)), root = resolve(helper, '../../..'), work = resolve(root, 'artifacts/work/forest-heart-ux-v7'), out = resolve(work, 'release-v3/payload-reviewed');
+const json = path => JSON.parse(readFileSync(path, 'utf8').replace(/^\uFEFF/, '')), sha = path => createHash('sha256').update(readFileSync(path)).digest('hex');
+const scope = json(resolve(helper, 'scope.json')), before = json(resolve(work, 'production-v3.json'));
+const git = (...args) => execFileSync(process.env.ROYAL_GIT_BINARY || 'git', args, { cwd: root, encoding: 'utf8' }).trim();
+const release = json(resolve(root, 'module-build/release-manifest.json')), receipt = json(resolve(root, 'module-build/release-github.json'));
+assert.equal(release.sourceCommit, git('rev-parse', 'HEAD')); assert.equal(release.baseCommit, scope.base); assert(release.build.passed);
+assert.equal(receipt.sourceCommit, release.sourceCommit); assert.equal(git('status', '--porcelain'), '');
+assert.deepEqual(before.program, before.preparedProgram); assert.equal(before.containers['royal-game-1'].image, before.preparedImage);
+assert.equal(before.containers['royal-game-1'].health, 'healthy'); assert(before.freeBytes > 5 * 1024 ** 3);
+assert(!existsSync(out)); mkdirSync(out, {recursive:true});
+const payload = {}, source = {}, financeSource = {}, dist = {}, modules = {}, backend = {};
+function canonical(file) {
+  const raw=readFileSync(file);
+  if(raw.includes(0))return raw;
+  try { return Buffer.from(new TextDecoder('utf-8',{fatal:true}).decode(raw).replace(/\r\n/g,'\n')); }
+  catch { return raw; }
+}
+function sourceSha(file) { return createHash('sha256').update(canonical(file)).digest('hex'); }
+function copy(from, to, normalized=false) { const target = resolve(out, to), sub=relative(out,target); assert(sub && !sub.startsWith('..') && !isAbsolute(sub)); mkdirSync(dirname(target), { recursive: true }); if(normalized)writeFileSync(target,canonical(from));else copyFileSync(from, target); payload[to] = sha(target); return payload[to]; }
+const allowed = new Set(scope.allowedSource);
+for (const file of release.changed.filter(file => allowed.has(file))) {
+  const digest = sourceSha(resolve(root, file));
+  if (before.source[file]?.lf !== digest && before.source[file]?.sha256 !== digest) source[file] = copy(resolve(root, file), 'source/' + file,true);
+}
+for (const [file, old] of Object.entries(before.source)) {
+  if (file === 'deployment/SERVER.md' || file.endsWith('.orig') || file.endsWith('.bak') || file in source) continue;
+  assert(existsSync(resolve(root, file)), 'Missing production source: ' + file);
+  assert([old.sha256, old.lf].includes(sourceSha(resolve(root, file))), 'Unrelated source differs: ' + file);
+}
+for (const [file, digest] of Object.entries(release.files)) {
+  assert.equal(sha(resolve(root, file)), digest);
+  if (file.startsWith('dist/')) {
+    const sub = file.slice(5); if (before.program[file] === digest) continue;
+    // The finance administration UI is outside this release. Its existing entry and assets stay in the parent image.
+    if(sub==='admin.html'||/^assets\/admin-[a-zA-Z0-9_-]+\.(js|css)$/.test(sub))continue;
+    const publicSource = before.source['public/' + sub];
+    if (publicSource && [publicSource.sha256, publicSource.lf].includes(digest)) continue;
+    if (publicSource && [publicSource.sha256,publicSource.lf].includes(sourceSha(resolve(root,file))))continue;
+    if (sub === 'index.html' || /^assets\/[a-zA-Z0-9_-]+\.(js|css)$/.test(sub)) {
+      assert(sub === 'index.html' || !(file in before.program), 'Immutable host asset differs'); dist[sub] = copy(resolve(root, file), 'dist/' + sub);
+    } else if (sub.startsWith('assets/forest-heart/')) { dist[sub] = copy(resolve(root, file), 'dist/' + sub);
+    } else {
+      const old = before.source['public/' + sub]; assert(old && [old.sha256, old.lf].includes(digest), 'Unrelated public asset differs: ' + file);
+    }
+  }
+}
+assert('index.html' in dist);
+backend['index.js'] = copy(resolve(root, 'dist-server/index.js'), 'backend/index.js');
+const oldPackage=JSON.parse(execFileSync('git',['show',scope.base+':package.json'],{cwd:root,encoding:'utf8'}));
+const currentPackage=json(resolve(root,'package.json'));
+for(const key of ['dependencies','devDependencies','overrides','engines','type']) assert.deepEqual(currentPackage[key],oldPackage[key], 'Dependency configuration differs: '+key);
+assert.equal(sourceSha(resolve(root,'package-lock.json')),before.program['package-lock.json']);
+const host = json(resolve(root, 'module-dist/host-contracts.json'));
+const oldHost = before.moduleHost;
+for (const [id, contract] of Object.entries(oldHost.games)) assert.deepEqual(host.games[id], contract, 'Unrelated contract differs: ' + id);
+assert(!oldHost.games[scope.changedGame]); assert.deepEqual(host.games[scope.changedGame], scope.contract);
+assert.deepEqual(Object.keys(host.games).sort(), [...Object.keys(oldHost.games),scope.changedGame].sort());
+modules['host-contracts.json'] = copy(resolve(root, 'module-dist/host-contracts.json'), 'module-dist/host-contracts.json');
+const pointerPath = resolve(root, 'module-dist', scope.changedGame, 'active.json'), pointer = json(pointerPath);
+const manifestPath = resolve(root, 'module-dist', pointer.manifest.replace(/^\/game-modules\//, '')), metadata = json(manifestPath);
+assert.equal(sha(manifestPath), pointer.sha256);
+for (const field of ['apiVersion', 'rulesVersion', 'progressVersion']) assert.equal(metadata[field], scope.contract[field]);
+for (const file of ['manifest.json', ...Object.keys(metadata.files)]) {
+  const from = resolve(dirname(manifestPath), file); if (file !== 'manifest.json') assert.equal(sha(from), metadata.files[file]);
+  const name = pointer.manifest.replace(/^\/game-modules\//, '').replace(/manifest\.json$/, '') + file;
+  modules[name] = copy(from, 'module-dist/' + name); copy(from, 'forest-heart-package/' + file);
+}
+modules[scope.changedGame + '/active.json'] = copy(pointerPath, 'module-dist/' + scope.changedGame + '/active.json');
+copy(resolve(root, 'module-dist/host-contracts.json'), 'host.json');
+const financialInputs = {};
+assert.equal(before.containers['royal-nile-play'].profile.host.ReadonlyRootfs, true);
+for (const file of ['deploy.py', 'snapshot.py', 'financial_gate.py', 'quiesce.cjs', 'runtime-inventory.cjs', 'run-release.py', 'scope.json']) copy(resolve(helper, file), file);
+copy(resolve(root, 'scripts/game-module-release.py'), 'game-module-release.py');
+assert.equal(createHash('sha256').update(readFileSync(resolve(root,'scripts/game-module-release.py'),'utf8').replace(/\r\n/g,'\n')).digest('hex'), before.source['scripts/game-module-release.py'].lf);
+for (const file of ['release-manifest.json', 'release-github.json']) copy(resolve(root, 'module-build', file), file);
+const manifest = { release: scope.release, sourceCommit: release.sourceCommit, baseCommit: scope.base, before, source, financeSource, financialInputs, financialServiceRetained: true, dist, modules, backend,
+  financial: before.financialProgram['play.js'], payload, hostContract: payload['host.json'], helperSha256: payload['deploy.py'],
+  modulePackage: { gameId: scope.changedGame, version: metadata.version, manifestSha256: pointer.sha256, beforeSha256: before.modules['/opt/royal-game-modules/' + scope.changedGame + '/active.json'] || 'none' },
+  compatibility: { onlyForestHeartAdded: true, forestHeartRules: [1], neopolisAcceptedRules: [1,2,3,4], unchangedDependencyManifests: true, retainedOtherModules: true, retainedOtherBackendPrograms: ['dist-server/payments.js','dist-server/crypto-reconcile.js'] } };
+writeFileSync(resolve(out, 'install-manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
+execFileSync('tar', [...(process.platform === 'darwin' ? ['--no-xattrs'] : []), '-czf', resolve(work, 'release-v3/transport.tgz'), '-C', out, '.'], { env: { ...process.env, COPYFILE_DISABLE: '1' } });
+console.log(JSON.stringify({ sourceCommit: release.sourceCommit, changedSources: Object.keys(source).length, financeSources: Object.keys(financeSource).length, clientFiles: Object.keys(dist).length, moduleFiles: Object.keys(modules).length, transportBytes: statSync(resolve(work, 'release-v2/transport.tgz')).size }));

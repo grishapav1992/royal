@@ -127,8 +127,8 @@ export class GameViewport {
       this.reset('off');
       return;
     }
-    const nativeSlot = this.plane.querySelector('#mini-game > .cc-game, #mini-game > .ce-game, #mini-game > .volcanic-plinko, #mini-game > .np');
-    if (nativeSlot && (nativeSlot.classList.contains('np') || this.stage.clientWidth >= 740 && this.stage.clientHeight >= 580)) {
+    const nativeSlot = this.plane.querySelector('#mini-game > .cc-game, #mini-game > .ce-game, #mini-game > .volcanic-plinko, #mini-game > .np, #mini-game > .fb-root');
+    if (nativeSlot && (nativeSlot.classList.contains('np') || nativeSlot.classList.contains('fb-root') || this.stage.clientWidth >= 740 && this.stage.clientHeight >= 580)) {
       this.mode('layout');
       this.plane.style.removeProperty('width');
       this.plane.style.removeProperty('transform');

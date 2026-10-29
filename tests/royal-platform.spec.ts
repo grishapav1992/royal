@@ -55,7 +55,7 @@ test('a Royal round keeps the same stake after catalogue switching, reopening an
  await sandboxTopUp(page,1000);
  await approach(page,'studio-cosmic-escape');let menu=page.locator('.royal-platform');
  await menu.getByRole('searchbox').fill('несуществующая');await expect(menu.locator('.rp-card')).toHaveCount(0);
- await menu.getByRole('searchbox').fill('');await menu.getByRole('combobox',{name:'Жанр',exact:true}).selectOption('slot');await expect(menu.locator('.rp-card')).toHaveCount(9);
+ await menu.getByRole('searchbox').fill('');await menu.getByRole('combobox',{name:'Жанр',exact:true}).selectOption('slot');await expect(menu.locator('.rp-card')).toHaveCount(10);
  await menu.getByRole('combobox',{name:'Жанр',exact:true}).selectOption('all');
  await page.screenshot({path:out+'/royal-desktop.png'});
  await choose(page,'original-cr-vs-leo');let result:any,saved:any;

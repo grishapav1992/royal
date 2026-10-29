@@ -9,6 +9,16 @@ on:
       - 'server/finance/pvp-money.ts'
       - 'server/finance/combat-escrow.ts'
       - 'scripts/game-math/rtp-*'
+      - 'scripts/game-math/forest-heart-*'
+      - 'server/demoExpansion.ts'
+      - 'server/demoWallet*.ts'
+      - 'server/gameWalletRoutes.ts'
+      - 'server/finance/nile-game-runtime.ts'
+      - 'server/pvp/virtual-wallet.ts'
+      - 'server/database.ts'
+      - 'src/wallet/ExpansionClient.ts'
+      - 'games/forest-heart/presentation.ts'
+      - 'scripts/database-test.ts'
       - 'scripts/qualify-game-rtp.mjs'
       - 'src/modules/GameModuleCatalog.ts'
       - 'games/*/package.json'
@@ -23,6 +33,16 @@ on:
       - 'server/finance/pvp-money.ts'
       - 'server/finance/combat-escrow.ts'
       - 'scripts/game-math/rtp-*'
+      - 'scripts/game-math/forest-heart-*'
+      - 'server/demoExpansion.ts'
+      - 'server/demoWallet*.ts'
+      - 'server/gameWalletRoutes.ts'
+      - 'server/finance/nile-game-runtime.ts'
+      - 'server/pvp/virtual-wallet.ts'
+      - 'server/database.ts'
+      - 'src/wallet/ExpansionClient.ts'
+      - 'games/forest-heart/presentation.ts'
+      - 'scripts/database-test.ts'
       - 'scripts/qualify-game-rtp.mjs'
       - 'src/modules/GameModuleCatalog.ts'
       - 'games/*/package.json'
@@ -37,7 +57,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        game: [studio-neopolis, studio-dracona, mortal-kombat, studio-cosmic-escape]
+        game: [studio-neopolis, studio-dracona, mortal-kombat, studio-cosmic-escape, studio-forest-heart]
     steps:
       - uses: actions/checkout@v7
         with:

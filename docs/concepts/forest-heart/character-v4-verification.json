@@ -1,0 +1,463 @@
+{
+  "date": "2026-10-28",
+  "sourceCommit": "6e86aa7cd53c2160de08e7a3badc74e8a67a2d9f",
+  "mergeCommit": "f1f5602",
+  "integrationBaseline": "05f28d08c99182a886e8e7e72e6bf97eb7916587",
+  "module": {
+    "version": "1.4.0-367f4795c8d2",
+    "sourceSha256": "367f4795c8d2f75f9283b871dc16cb620ea189af9d05d2d96d2e97f7b0c3b135",
+    "apiVersion": 1,
+    "rulesVersion": 1,
+    "progressVersion": 1
+  },
+  "scope": "Illustrated character poses, weighted mesh idle motion, eye-region blinking and confirmed-event reactions. Forest Heart game mathematics and payouts unchanged.",
+  "checks": {
+    "fullApplicationBuild": "passed",
+    "typecheck": "passed",
+    "fullHostBrowserScenarios": 12,
+    "serverMathWalletAndCompatibilityTests": 42,
+    "moduleAndArtworkTests": 9,
+    "rtpGateTests": 23,
+    "allPassed": true,
+    "rtp": {
+      "verified": 13,
+      "legacyNotQualified": 114
+    },
+    "qualificationAfterSharedMerge": {
+      "forestHeartPaidRounds": 10752,
+      "forestHeartPostgresWalletCases": 11,
+      "caribbeanPaidRounds": 4096,
+      "policyAndPaytablesUnchanged": true
+    }
+  },
+  "character": {
+    "assets": [
+      {
+        "pose": "idle",
+        "path": "public/assets/forest-heart/v3/elf-idle.webp",
+        "sha256": "180c90f9c6850bada1ce9a6a346dea4dcf4881f4325b394240f0d3defedb601b",
+        "bytes": 147326
+      },
+      {
+        "pose": "blink",
+        "path": "public/assets/forest-heart/v3/elf-blink.webp",
+        "sha256": "3cdf82c0ac64ed8e0a736373d20b27d14595150c321deeee9aa88d02625afa4f",
+        "bytes": 156102
+      },
+      {
+        "pose": "choice",
+        "path": "public/assets/forest-heart/v3/elf-choice.webp",
+        "sha256": "ef0266937f395956464027c1a8bdd8776ddd46f58f50cb71fa728dd248b1c754",
+        "bytes": 173726
+      },
+      {
+        "pose": "channel",
+        "path": "public/assets/forest-heart/v3/elf-channel.webp",
+        "sha256": "13e5a57ea08e28f4836febbcee14d43f9de48051b241c64f76d6496320f5a02c",
+        "bytes": 175404
+      },
+      {
+        "pose": "flower",
+        "path": "public/assets/forest-heart/v3/elf-flower.webp",
+        "sha256": "19b979424e6805494d5d8ce54868a3bdce9962da3f21127bba5e296a292b007f",
+        "bytes": 161458
+      },
+      {
+        "pose": "bonus",
+        "path": "public/assets/forest-heart/v3/elf-bonus.webp",
+        "sha256": "1f7b6895647674ecd579409b0ddb03f0e24b7e06d8b178db73717f07f4aa18cc",
+        "bytes": 184438
+      },
+      {
+        "pose": "win",
+        "path": "public/assets/forest-heart/v3/elf-win.webp",
+        "sha256": "f0a6137cf5869244221f654f86a0a2c2e9931d10873a64c69a51c0456c97df64",
+        "bytes": 165894
+      },
+      {
+        "pose": "big",
+        "path": "public/assets/forest-heart/v3/elf-big.webp",
+        "sha256": "18be015c682ade2f54f9856a1d1bc6dab4496014c373ce059646d333d6eddb5d",
+        "bytes": 202306
+      }
+    ],
+    "assetBytes": 1366654,
+    "lifecycle": {
+      "idle": {
+        "ready": true,
+        "renderer": "webgl",
+        "pose": "idle",
+        "resting": "idle",
+        "paused": false,
+        "reduced": false,
+        "running": true,
+        "elapsedMs": 191,
+        "frames": 5,
+        "renderSize": [
+          446,
+          535
+        ],
+        "blinks": 0,
+        "blink": 0,
+        "transition": 1,
+        "events": []
+      },
+      "paused": {
+        "ready": true,
+        "renderer": "webgl",
+        "pose": "idle",
+        "resting": "idle",
+        "paused": true,
+        "reduced": false,
+        "running": false,
+        "elapsedMs": 5219.499999999999,
+        "frames": 140,
+        "renderSize": [
+          446,
+          535
+        ],
+        "blinks": 1,
+        "blink": 0,
+        "transition": 1,
+        "events": []
+      },
+      "reopened": {
+        "ready": true,
+        "renderer": "webgl",
+        "pose": "idle",
+        "resting": "idle",
+        "paused": false,
+        "reduced": false,
+        "running": true,
+        "elapsedMs": 80,
+        "frames": 3,
+        "renderSize": [
+          446,
+          535
+        ],
+        "blinks": 0,
+        "blink": 0,
+        "transition": 1,
+        "events": []
+      },
+      "reduced": {
+        "ready": true,
+        "renderer": "webgl",
+        "pose": "idle",
+        "resting": "idle",
+        "paused": false,
+        "reduced": true,
+        "running": false,
+        "elapsedMs": 5740.5,
+        "frames": 163,
+        "renderSize": [
+          446,
+          535
+        ],
+        "blinks": 1,
+        "blink": 0,
+        "transition": 1,
+        "events": [
+          {
+            "pose": "channel",
+            "atMs": 996.7
+          },
+          {
+            "pose": "channel",
+            "atMs": 3204.8
+          },
+          {
+            "pose": "flower",
+            "atMs": 4072.9000000000005
+          }
+        ]
+      }
+    },
+    "confirmedSequence": {
+      "ready": true,
+      "renderer": "webgl",
+      "pose": "big",
+      "resting": "idle",
+      "paused": false,
+      "reduced": false,
+      "running": true,
+      "elapsedMs": 31527.4,
+      "frames": 858,
+      "renderSize": [
+        150,
+        180
+      ],
+      "blinks": 4,
+      "blink": 0,
+      "transition": 0.965625,
+      "events": [
+        {
+          "pose": "flower",
+          "atMs": 13670.3
+        },
+        {
+          "pose": "channel",
+          "atMs": 15989.8
+        },
+        {
+          "pose": "flower",
+          "atMs": 16573.1
+        },
+        {
+          "pose": "flower",
+          "atMs": 16677.7
+        },
+        {
+          "pose": "flower",
+          "atMs": 16767.9
+        },
+        {
+          "pose": "channel",
+          "atMs": 18552.2
+        },
+        {
+          "pose": "flower",
+          "atMs": 19135.6
+        },
+        {
+          "pose": "flower",
+          "atMs": 19212
+        },
+        {
+          "pose": "flower",
+          "atMs": 19302.2
+        },
+        {
+          "pose": "win",
+          "atMs": 19753.5
+        },
+        {
+          "pose": "channel",
+          "atMs": 20913.3
+        },
+        {
+          "pose": "flower",
+          "atMs": 21489.5
+        },
+        {
+          "pose": "flower",
+          "atMs": 21579.7
+        },
+        {
+          "pose": "flower",
+          "atMs": 21684
+        },
+        {
+          "pose": "bonus",
+          "atMs": 21954.9
+        },
+        {
+          "pose": "channel",
+          "atMs": 23059.2
+        },
+        {
+          "pose": "flower",
+          "atMs": 23642.3
+        },
+        {
+          "pose": "flower",
+          "atMs": 23732.6
+        },
+        {
+          "pose": "flower",
+          "atMs": 23815.9
+        },
+        {
+          "pose": "channel",
+          "atMs": 25315.8
+        },
+        {
+          "pose": "flower",
+          "atMs": 25885.3
+        },
+        {
+          "pose": "flower",
+          "atMs": 25982.5
+        },
+        {
+          "pose": "flower",
+          "atMs": 26072.8
+        },
+        {
+          "pose": "channel",
+          "atMs": 27586.5
+        },
+        {
+          "pose": "flower",
+          "atMs": 28190.7
+        },
+        {
+          "pose": "flower",
+          "atMs": 28274.1
+        },
+        {
+          "pose": "flower",
+          "atMs": 28343.4
+        },
+        {
+          "pose": "channel",
+          "atMs": 29968.6
+        },
+        {
+          "pose": "flower",
+          "atMs": 30565.7
+        },
+        {
+          "pose": "flower",
+          "atMs": 30642
+        },
+        {
+          "pose": "flower",
+          "atMs": 30746.2
+        },
+        {
+          "pose": "big",
+          "atMs": 31218.4
+        }
+      ]
+    },
+    "contextLossFallbackAndRestoration": "passed in real host",
+    "partialAndZeroReturnDoNotCelebrate": "passed",
+    "restoredHistoryDoesNotReplayReactions": "passed",
+    "reducedMotionAndPauseStopAnimationFrames": "passed",
+    "devices": "Desktop browser and emulated phone only; physical mobile GPU and battery performance not measured",
+    "implementation": "24x32 weighted WebGL mesh with registered raster pose transitions, not a skeletal character rig"
+  },
+  "motion": {
+    "frames": 165,
+    "turnFrames": 14,
+    "intermediateAngles": [
+      48.76680301000442,
+      53.54859887486857,
+      57.788123607446465,
+      62.314318903348735,
+      66.37529324128327,
+      69.58901432127341,
+      74.25079073199119,
+      78.70464721446099,
+      81.45273763171294,
+      83.72952533173586,
+      86.22861631471113,
+      87.27150456731924,
+      88.8851751981818,
+      89.95196295061459
+    ],
+    "continuousSapFrames": 43,
+    "intermediateCounterFrames": 32
+  },
+  "audioVisualTiming": {
+    "maxObservedFrameSkewMs": 17.85400000000118,
+    "scope": "Estimated Web Audio output and animation callback, not physical acoustic latency",
+    "records": [
+      {
+        "cue": "land",
+        "mode": "output-timestamp",
+        "latencyMs": 544.2356666667583,
+        "skewMs": 8.164333333148534
+      },
+      {
+        "cue": "flow",
+        "mode": "output-timestamp",
+        "latencyMs": 81.05400000018562,
+        "skewMs": 2.6460000000006403
+      },
+      {
+        "cue": "flower",
+        "mode": "output-timestamp",
+        "latencyMs": 82.15499999981512,
+        "skewMs": 14.144999999998618
+      },
+      {
+        "cue": "flower",
+        "mode": "output-timestamp",
+        "latencyMs": 84.44866666685448,
+        "skewMs": 6.351333333424918
+      },
+      {
+        "cue": "flower",
+        "mode": "output-timestamp",
+        "latencyMs": 84.34333333333416,
+        "skewMs": 1.656666666665842
+      },
+      {
+        "cue": "win",
+        "mode": "output-timestamp",
+        "latencyMs": 496.6459999999988,
+        "skewMs": 17.85400000000118
+      },
+      {
+        "cue": "land",
+        "mode": "silent",
+        "latencyMs": 0,
+        "skewMs": 0.10000000009313226
+      },
+      {
+        "cue": "flow",
+        "mode": "silent",
+        "latencyMs": 0,
+        "skewMs": 0
+      },
+      {
+        "cue": "flower",
+        "mode": "silent",
+        "latencyMs": 0,
+        "skewMs": 0
+      },
+      {
+        "cue": "flower",
+        "mode": "silent",
+        "latencyMs": 0,
+        "skewMs": 0.09999999962747097
+      },
+      {
+        "cue": "flower",
+        "mode": "silent",
+        "latencyMs": 0,
+        "skewMs": 0
+      },
+      {
+        "cue": "win",
+        "mode": "silent",
+        "latencyMs": 0,
+        "skewMs": 0.10000000009313226
+      }
+    ]
+  },
+  "manualPreview": {
+    "url": "http://127.0.0.1:5296/?room=gomQQN4Qu",
+    "renderer": "webgl",
+    "pose": "idle",
+    "hostWithChat": true,
+    "syntheticBalance": 10000,
+    "production": false,
+    "session": 59998
+  },
+  "artisticApproval": "Pending user review; technical passing is separate",
+  "screenshots": [
+    {
+      "file": "character-v4-win.webp",
+      "bytes": 296190,
+      "sha256": "2c29b4da43d5da5ac5f8d180eea251dd3da47b6ac28f891562d93e457e7d32f0"
+    },
+    {
+      "file": "character-v4-mobile.webp",
+      "bytes": 71200,
+      "sha256": "e4bf477a52e0782d43869e42ceb6973e3380abe0b0b71265548e25bac7c5a63a"
+    },
+    {
+      "file": "character-v4-local-preview.webp",
+      "bytes": 168992,
+      "sha256": "10e3d79e5e9940da55ae40f08e257c7c806d4daf0319f8d276e461f343f3b6a6"
+    },
+    {
+      "file": "character-v4-poses.webp",
+      "bytes": 101520,
+      "sha256": "d3a7e7fd69463418c81e67f36d3dbf0b6e5d9e1d0aee9205a609b3ede84754ba"
+    }
+  ]
+}

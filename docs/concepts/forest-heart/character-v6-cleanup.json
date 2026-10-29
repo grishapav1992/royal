@@ -1,0 +1,33 @@
+{
+  "owner": "forest-heart-character-v6",
+  "sourceCommit": "c85060f7660532e9152d5cf579c970a414fc3096",
+  "verifiedRemoteCommit": "190897e4035fce71988a9689df287bcf7b6c27cc",
+  "taskRoot": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\artifacts\\work\\forest-heart-character-v6",
+  "temporaryBytes": 24049492.0,
+  "temporaryFileCount": 42,
+  "freeBeforeTaskBytes": 298271244288,
+  "freeBeforeCleanupBytes": 294744272896,
+  "cleanupStatus": "rejected by automatic approval review before execution",
+  "removedFolders": [],
+  "removedLogicalBytes": 0,
+  "archivesCreated": 0,
+  "archivesRemoved": 0,
+  "activeExceptions": [
+    "Existing manual preview session 59998 and its v4-owned database remain until user finishes; close with Ctrl+C",
+    "Managed checkout remains active for user review and concurrent original-root work",
+    "Older task cleanup rejections are recorded in their existing reports and are not retried"
+  ],
+  "rejectionReason": "blocked by policy; no additional explanation supplied",
+  "freeAfterCleanupBytes": 294744297472,
+  "physicalReclaimClaimed": false,
+  "disposableDatabases": [
+    {
+      "directory": "royal-pg-NnIsDQ",
+      "existsAfterTeardown": false
+    },
+    {
+      "directory": "royal-pg-2rUnJM",
+      "existsAfterTeardown": false
+    }
+  ]
+}

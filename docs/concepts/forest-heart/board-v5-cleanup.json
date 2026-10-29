@@ -1,0 +1,152 @@
+{
+  "date": "2026-10-28",
+  "sourceCommit": "4c086ea85c950ba560634c98197a99019c00c031",
+  "verifiedMergedCommit": "81194d5fd173bc07ce1bf7ac9b93508bbf0b5c49",
+  "preservedRemoteCommit": "350d80f213edc69578b786e2a6e8ee70895f9f72",
+  "freeBeforeTaskBytes": 302762356736,
+  "freeBeforeCleanupBytes": 299420631040,
+  "packageInventory": [
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.0.0-b78c4bed0bc8",
+      "bytes": 1231037,
+      "active": false,
+      "createdByTask": false,
+      "removed": false
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.1.0-17ed65250255",
+      "bytes": 2312985,
+      "active": false,
+      "createdByTask": false,
+      "removed": false
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.1.0-19fd67923905",
+      "bytes": 2313002,
+      "active": false,
+      "createdByTask": false,
+      "removed": false
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.1.0-b7e41fe97631",
+      "bytes": 2313053,
+      "active": false,
+      "createdByTask": false,
+      "removed": false
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.1.0-e00a1ecca259",
+      "bytes": 2313053,
+      "active": false,
+      "createdByTask": false,
+      "removed": false
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.2.0-75cb0b1ce4e0",
+      "bytes": 2318638,
+      "active": false,
+      "createdByTask": false,
+      "removed": false
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.3.0-053c18b03bcd",
+      "bytes": 2327254,
+      "active": false,
+      "createdByTask": false,
+      "removed": false
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.3.0-10815b108385",
+      "bytes": 2327255,
+      "active": false,
+      "createdByTask": false,
+      "removed": false
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.3.0-e8a10dd72de2",
+      "bytes": 2327392,
+      "active": false,
+      "createdByTask": false,
+      "removed": false
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.4.0-03da3cc1a2fc",
+      "bytes": 3042430,
+      "active": false,
+      "createdByTask": false,
+      "removed": false
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.4.0-1a1329c4942c",
+      "bytes": 3042337,
+      "active": false,
+      "createdByTask": false,
+      "removed": false
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.4.0-367f4795c8d2",
+      "bytes": 2994220,
+      "active": false,
+      "createdByTask": false,
+      "removed": false
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.5.0-96c6d1be604b",
+      "bytes": 3101334,
+      "active": false,
+      "createdByTask": true,
+      "removed": false
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.5.0-e8e961722e67",
+      "bytes": 3118610,
+      "active": true,
+      "createdByTask": true,
+      "removed": false
+    }
+  ],
+  "archivesCreated": 0,
+  "archivesRemoved": 0,
+  "removedFolders": [],
+  "removedFiles": [],
+  "deletedLogicalBytes": 0,
+  "physicalReclaimClaimed": false,
+  "automatedDatabaseCleanup": [
+    {
+      "path": "C:\\Users\\Aorus\\AppData\\Local\\Temp\\royal-pg-0jJXiy",
+      "exists": false,
+      "cleanup": "Owned automated stand finalizer after test completion"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\AppData\\Local\\Temp\\royal-pg-3gpnRK",
+      "exists": false,
+      "cleanup": "Owned automated stand finalizer after test completion"
+    }
+  ],
+  "activeExceptions": [
+    {
+      "path": "artifacts/work/forest-heart-board-v5",
+      "reason": "Task-owned generated verification captures and logs",
+      "cleanup": "Retain derived files pending permitted cleanup; final source and compact final reports are verified in GitHub"
+    },
+    {
+      "path": "artifacts/work/forest-heart-elf-v4",
+      "reason": "Previously started manual review session 59998 with synthetic database FtUWBB; now viewed at localhost:5296",
+      "cleanup": "Stop the owned preview with Ctrl+C only after user review ends, then remove its metadata when permitted"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal",
+      "reason": "Active managed review checkout; original root has other concurrent work",
+      "cleanup": "Retain while current local review and concurrent work continue"
+    }
+  ],
+  "priorBlockedCleanup": "Earlier explicit temporary-file and old-package deletions were rejected by automatic review; these older targets are not retried here",
+  "status": "incomplete-automatic-approval-review-blocked-temporary-file-cleanup",
+  "remoteVerification": "git ls-remote confirmed source, final assets and reports on codex/forest-heart-visual at 350d80f213edc69578b786e2a6e8ee70895f9f72",
+  "blockedAction": "Delete the explicitly enumerated task-owned captures, temporary audio copies, measurements and logs under artifacts/work/forest-heart-board-v5 after preserving final reports in GitHub",
+  "rejectionReason": "blocked by policy; no additional reason supplied; command rejected before execution",
+  "freeAfterCleanupBytes": 299455651840,
+  "retainedTemporaryArtifactsBytes": 21459744,
+  "retainedObsoletePackageBytes": 31963990,
+  "measurementNote": "No folders, files or archives were removed. Free-space observations include concurrent work, so no physical reclaimed space is claimed. Obsolete package deletion was not retried after the rejection."
+}

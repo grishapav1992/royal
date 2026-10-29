@@ -1,4 +1,6 @@
+import { FLAG_GAME, validFlagSettings, type FlagSettings, type FlagView } from './flagBattle';
 import { NEOPOLIS_GAME, validNeopolisSettings, type NeopolisSettings, type NeopolisView } from './neopolis';
+import {FOREST_HEART_GAME,validForestHeartSettings,validForestHeartMove,type ForestHeartSettings,type ForestHeartView} from './forestHeart';
 import { CARIBBEAN_GAME, type CaribbeanView } from './caribbeanTreasures';
 import { CARIBBEAN_MOVES, validCaribbeanTransportSettings, type CaribbeanTransportSettings } from './caribbeanTransport';
 import {DRACONA_GAME,validDraconaSettings,type DraconaSettings,type DraconaView} from './dracona';
@@ -14,9 +16,11 @@ import {isLuelonSlotGame,validLuelonSlotSettings,type LuelonSlotSettings,type Lu
 import { VARIANT_GAMES, VARIANT_NAMES, VARIANT_RULES, isVariantGame, validVariantSettings, type VariantSettings, type VariantView } from './casinoVariants';
 import { STUDIO_GAMES, STUDIO_INFO, STUDIO_RULES, isStudioGame, validStudioSettings, type StudioSettings, type StudioView } from './studioGames';
 export const BASE_EXPANSION_GAMES = ['github-diamonds','github-crash','github-three-card','github-caribbean','github-let-it-ride','github-ultimate','github-war','github-red-dog','github-pai-gow','github-dragon-tiger','github-deuces','github-sic-bo','github-mississippi','github-four-card','github-crazy-four','github-flush','github-holdem-bonus','github-oasis','github-russian','github-caribbean-draw','github-spanish','github-exposure','github-switch','github-free-bet','github-rummy','github-andar-bahar'] as const;
-export const EXPANSION_GAMES = [...BASE_EXPANSION_GAMES,...VARIANT_GAMES,...STUDIO_GAMES,PENALTY_GAME,CARIBBEAN_GAME] as const;
+export const EXPANSION_GAMES = [...BASE_EXPANSION_GAMES,...VARIANT_GAMES,...STUDIO_GAMES,PENALTY_GAME,FOREST_HEART_GAME,CARIBBEAN_GAME,FLAG_GAME] as const;
 export type ExpansionGameId = typeof EXPANSION_GAMES[number];
 export const EXPANSION_NAMES: Record<ExpansionGameId,string> = {
+  [FLAG_GAME]:translateText('Флажочки'),
+  [FOREST_HEART_GAME]:translateText('Сердце леса'),
   [CARIBBEAN_GAME]:'Карибские сокровища',
   [PENALTY_GAME]:'CR vs. Leo',
   ...Object.fromEntries(STUDIO_GAMES.map(id=>[id,STUDIO_INFO[id].name])) as Record<typeof STUDIO_GAMES[number],string>,
@@ -41,6 +45,8 @@ export const EXPANSION_NAMES: Record<ExpansionGameId,string> = {
 };
 // Casino variants share the same server-owned wallet sessions.
 export const EXPANSION_RULES: Record<ExpansionGameId,string> = {
+  [FOREST_HEART_GAME]:translateText('Поле 5×5, один источник и три цветка. Цветок оплачивается один раз за вращение. Руна разрешает один поворот корня или пропуск без новой ставки. Бонус содержит четыре бесплатных импульса с закреплением крайних корней. Одна начальная ставка и одно итоговое начисление.'),
+    [FLAG_GAME]:translateText('12, 24 или 48 стран с равными шансами. Последний флаг побеждает. Выплаты 11,52×, 23,04× или 46,08× включают ставку. RTP 96%. Без дополнительных ставок и бонусов.'),
   [CARIBBEAN_GAME]:'6×4 · Гигантские символы · 1/5/10/20 линий · Две бесплатные серии',
   [PENALTY_GAME]:'Одна ставка на серию до пяти ударов. После гола можно забрать выплату или продолжить. Промах теряет всю незабранную выплату. Пятый гол оплачивается автоматически. Пенальти: 75% гола. Ближний штрафной: 60%. Дальний штрафной: 45%. Тип выбирается перед каждым ударом. CR и Leo имеют одинаковую математику. Расчётный возврат 99% до округления.',
   ...STUDIO_RULES,
@@ -76,7 +82,7 @@ export const EXPANSION_RULES: Record<ExpansionGameId,string> = {
 };
 export const isExpansionGame = (value:unknown): value is ExpansionGameId => (EXPANSION_GAMES as readonly unknown[]).includes(value);
 export const REVISED_CARD_GAMES = ['github-free-bet','github-crazy-four','github-pai-gow','github-holdem-bonus','github-rummy'] as const;
-export const expansionRulesVersion = (game:ExpansionGameId):1|2|3|4 => game===NEOPOLIS_GAME?4:game===DRACONA_GAME?3:game===AFTER_GAME||isNitroFamily(game)||game===CONVOY_GAME||game===CARAMEL_GAME||isLuelonSlotGame(game)||(REVISED_CARD_GAMES as readonly string[]).includes(game)?2:1;
+export const expansionRulesVersion = (game:ExpansionGameId):1|2|3|4 => game===NEOPOLIS_GAME?4:game===DRACONA_GAME?3:game===FLAG_GAME||game===AFTER_GAME||isNitroFamily(game)||game===CONVOY_GAME||game===CARAMEL_GAME||isLuelonSlotGame(game)||(REVISED_CARD_GAMES as readonly string[]).includes(game)?2:1;
 export const validExpansionRulesVersion = (game:ExpansionGameId,version:unknown):version is 1|2|3|4 => version===1||version===2&&expansionRulesVersion(game)>=2||version===3&&(game===NEOPOLIS_GAME||game===DRACONA_GAME)||version===4&&game===NEOPOLIS_GAME;
 export const LEGACY_CARD_RULES:Partial<Record<ExpansionGameId,string>> = {
   'github-free-bet':translateText('Одна начальная ставка. Бесплатное удвоение на жёстких 9, 10 или 11; бесплатное разделение пар, кроме карт стоимостью 10. Блэкджек платит 3:2, 22 у дилера возвращает ставки. Бесплатные действия не списывают демомонеты.'),
@@ -86,9 +92,9 @@ export const LEGACY_CARD_RULES:Partial<Record<ExpansionGameId,string>> = {
   'github-rummy':translateText('Три карты. Три одинаковые карты или три последовательные одной масти дают 0 очков; остальные суммируются (туз 1, картинки 10). Пары не уменьшают сумму. Дилеру нужен счёт не выше 20. Play стоит одну Ante. Прежний Ante bonus: 0 очков +9 Ante, 1-5 +3, 6-10 +1. Low Bonus выключен.'),
 };
 export type ExpansionAction =
-  | {id:string;gameId:ExpansionGameId;action:'start';stakeUnits:string;appearance?:AfterLookChoice;settings:({side?:boolean;bet?:'dragon'|'tiger'|'small'|'big'} | VariantSettings | StudioSettings | LuelonSlotSettings | CaramelSettings | ConvoySettings | NeopolisSettings | DraconaSettings | AfterSettings | NitroSettings | PenaltySettings | CaribbeanTransportSettings)}
+  | {id:string;gameId:ExpansionGameId;action:'start';stakeUnits:string;appearance?:AfterLookChoice;settings:({side?:boolean;bet?:'dragon'|'tiger'|'small'|'big'} | VariantSettings | StudioSettings | LuelonSlotSettings | CaramelSettings | ConvoySettings | NeopolisSettings | DraconaSettings | AfterSettings | NitroSettings | PenaltySettings | FlagSettings | ForestHeartSettings | CaribbeanTransportSettings)}
   | {id:string;gameId:ExpansionGameId;action:'move';sessionId:string;move:string;picks?:number[];revision?:number;penaltyRisk?:PenaltyRisk};
-export type ExpansionView = {caribbean?:CaribbeanView;neopolis?:NeopolisView;dracona?:DraconaView;penalty?:PenaltyView;afterglow?:AfterView;nitro?:NitroView;convoy?:ConvoyView;caramel?:CaramelView;luelon?:LuelonSlotView;studio?:StudioView;variant?:VariantView;player:string[];dealer:string[];community:string[];actions:{move:string;label:string;cost:number;perPick?:number;minPicks?:number;maxPicks?:number}[];hands?:{cards:string[];score:number;label:string;active:boolean}[];phase:number;ended:boolean;message:string;hint?:number[]};
+export type ExpansionView = {flags?:FlagView;forestHeart?:ForestHeartView;caribbean?:CaribbeanView;neopolis?:NeopolisView;dracona?:DraconaView;penalty?:PenaltyView;afterglow?:AfterView;nitro?:NitroView;convoy?:ConvoyView;caramel?:CaramelView;luelon?:LuelonSlotView;studio?:StudioView;variant?:VariantView;player:string[];dealer:string[];community:string[];actions:{move:string;label:string;cost:number;perPick?:number;minPicks?:number;maxPicks?:number}[];hands?:{cards:string[];score:number;label:string;active:boolean}[];phase:number;ended:boolean;message:string;hint?:number[]};
 export type ExpansionSession = {id:string;gameId:ExpansionGameId;rulesVersion:1|2|3|4;state:'active'|'settled';stakeUnits:string;spentUnits:string;returnedUnits:string;view:ExpansionView;startedAt?:number;serverNow?:number;multiplier?:number;crashAt?:number;dice?:number[];gems?:string[]};
 const uuid=(s:unknown)=>typeof s==='string'&&/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(s);
 export function validExpansionAction(value:unknown):value is ExpansionAction {
@@ -96,6 +102,8 @@ export function validExpansionAction(value:unknown):value is ExpansionAction {
   const r=value as ExpansionAction;if(!uuid(r.id)||!isExpansionGame(r.gameId))return false;
   if(r.action==='start'){
     if(Object.keys(r).sort().join(',')!==(r.gameId===AFTER_GAME&&r.appearance!==undefined?'action,appearance,gameId,id,settings,stakeUnits':'action,gameId,id,settings,stakeUnits')||typeof r.stakeUnits!=='string'||!/^[1-9][0-9]{0,10}$/.test(r.stakeUnits)||!r.settings||typeof r.settings!=='object'||Array.isArray(r.settings))return false;
+    if(r.gameId===FLAG_GAME)return validFlagSettings(r.settings);
+    if(r.gameId===FOREST_HEART_GAME)return validForestHeartSettings(r.settings);
     if(r.gameId===CARIBBEAN_GAME)return validCaribbeanTransportSettings(r.settings);
     if(r.gameId===PENALTY_GAME)return validPenaltySettings(r.settings);
     if(r.gameId===NEOPOLIS_GAME)return validNeopolisSettings(r.settings);
@@ -114,6 +122,10 @@ export function validExpansionAction(value:unknown):value is ExpansionAction {
     if(r.gameId==='github-sic-bo')return keys==='bet'&&['small','big'].includes(options.bet??'');
     return keys==='';
   }
+  if(r.gameId===FLAG_GAME)return false;
+  if(r.gameId===FOREST_HEART_GAME)return r.action==='move'&&uuid(r.sessionId)&&validForestHeartMove(r.move)&&
+    Number.isSafeInteger(r.revision)&&Number(r.revision)>=1&&Number(r.revision)<=5&&
+    Object.keys(r).sort().join(',')==='action,gameId,id,move,revision,sessionId';
   if(r.gameId===CARIBBEAN_GAME)return r.action==='move'&&uuid(r.sessionId)
     &&(CARIBBEAN_MOVES as readonly string[]).includes(r.move)&&Number.isSafeInteger(r.revision)
     &&Number(r.revision)>=1&&Number(r.revision)<=15

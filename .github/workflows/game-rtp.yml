@@ -31,10 +31,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-modules-
       - run: npm run test:rtp-gate
+      - run: npm run test:forest-heart-math
+      - run: npm run test:forest-heart-server
       - run: npm run test:release
       - run: npm run test:work-sync
       - run: npm run release:prepare -- --local --base HEAD^
       - run: node --import tsx --test server-tests/independent-modules.test.ts server-tests/game-module-assets.test.ts
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:forest-heart-ui
       - run: npm run test:slot-balance
       - run: node --import tsx scripts/database-test.ts --import tsx --test server-tests/cosmic-engine-audit.test.ts server-tests/cosmic-wallet-audit.test.ts server-tests/cosmic-origin-validation.test.ts server-tests/cosmic-origin-wallet.test.ts
       - run: node scripts/ci-release-cache.mjs

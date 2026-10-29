@@ -14,7 +14,7 @@ import {FLIGHT_MAX_MULTIPLIER} from '../../src/shared/flightGame';
 import {validAfterWardrobe,type AfterWardrobe} from '../../src/shared/afterglowWardrobe';
 import {validConvoyProgress,type ConvoyProgress} from '../../src/shared/convoyWardrobe';
 
-export type NativeCommand={path:string;method:'GET'|'POST';body:unknown;flags:(boolean|2)[];rules:1|2;query:Record<string,string>;neopolisRules?:0|1|2|3|4;caribbeanRules?:0|1;legacy?:{wardrobe:AfterWardrobe;convoy:ConvoyProgress}|null};
+export type NativeCommand={path:string;method:'GET'|'POST';body:unknown;flags:(boolean|2)[];rules:1|2;query:Record<string,string>;neopolisRules?:0|1|2|3|4;forestHeartRules?:0|1;caribbeanRules?:0|1;flagRules?:0|1|2;legacy?:{wardrobe:AfterWardrobe;convoy:ConvoyProgress}|null};
 const fail=(message:string):never=>{throw new WalletError(409,message);};
 /** Existing engines keep a cents projection inside the financial transaction. Only the Nile journal owns money. */
 export class NileGameRuntime{
@@ -72,10 +72,10 @@ export class NileGameRuntime{
  }
  async run(account:string,value:unknown):Promise<unknown>{
   const c=value as NativeCommand;
-  if(!c||!['body,flags,method,path,query,rules','body,flags,legacy,method,path,query,rules'].includes(Object.keys(c).filter(key=>key!=='neopolisRules'&&key!=='caribbeanRules').sort().join(','))||!['GET','POST'].includes(c.method)
+  if(!c||!['body,flags,method,path,query,rules','body,flags,legacy,method,path,query,rules'].includes(Object.keys(c).filter(key=>key!=='neopolisRules'&&key!=='caribbeanRules'&&key!=='forestHeartRules'&&key!=='flagRules').sort().join(','))||!['GET','POST'].includes(c.method)
    ||!['/','/operations','/mines','/flight','/casino-sessions','/expansion','/expansion/presentation','/convoy-progress','/afterglow-wardrobe'].includes(c.path)
    ||!Array.isArray(c.flags)||c.flags.length!==9||!c.flags.every((flag,index)=>typeof flag==='boolean'||index===8&&flag===2)||![1,2].includes(c.rules)||!c.query||typeof c.query!=='object'||Array.isArray(c.query)
-   ||c.neopolisRules!==undefined&&![0,1,2,3,4].includes(c.neopolisRules)||c.caribbeanRules!==undefined&&![0,1].includes(c.caribbeanRules))throw new WalletError(400,'Некорректный запрос игрового баланса.');
+   ||c.neopolisRules!==undefined&&![0,1,2,3,4].includes(c.neopolisRules)||c.forestHeartRules!==undefined&&![0,1].includes(c.forestHeartRules)||c.flagRules!==undefined&&![0,1,2].includes(c.flagRules)||c.caribbeanRules!==undefined&&![0,1].includes(c.caribbeanRules))throw new WalletError(400,'Некорректный запрос игрового баланса.');
   if(c.path!=='/expansion/presentation'&&Object.keys(c.query).length)throw new WalletError(400,'Параметры запроса не поддерживаются.');
   if((c.body as any)?.kind==='deposit')throw new WalletError(400,'Пополняй общий баланс тестовым USDT через кошелёк Nile.');
   await this.ready;
@@ -108,7 +108,7 @@ export class NileGameRuntime{
      case '/mines':result=await this.store.mines.active(account);break;
      case '/flight':result=await this.store.flight.snapshot(account);break;
      case '/casino-sessions':result=await this.store.casino.active(account);break;
-     case '/expansion':result=await this.store.expansion.active(account,flags[0],flags[1],flags[2],flags[3],flags[4],flags[6],flags[7],dracona,neopolis,c.caribbeanRules===1);break;
+     case '/expansion':result=await this.store.expansion.active(account,flags[0],flags[1],flags[2],flags[3],flags[4],flags[6],flags[7],dracona,neopolis,c.caribbeanRules===1,c.forestHeartRules===1,c.flagRules===2?2:c.flagRules===1);break;
      case '/expansion/presentation':result=await this.store.expansion.presentation(account,c.query.sessionId,Number(c.query.phase),Number(c.query.step));break;
      case '/convoy-progress':result=await this.store.expansion.convoyProgress(account);break;
      case '/afterglow-wardrobe':result=await this.store.expansion.wardrobe.snapshot(account);break;
@@ -119,7 +119,7 @@ export class NileGameRuntime{
     case '/mines':result=await this.store.mines.operate(account,c.body);break;
     case '/flight':result=await this.store.flight.operate(account,c.body);break;
     case '/casino-sessions':result=await this.store.casino.operate(account,c.body);break;
-    case '/expansion':result=await this.store.expansion.operate(account,c.body,c.rules,flags[0],flags[1],flags[2],flags[3],flags[4],flags[5],flags[6],flags[7],dracona,neopolis,c.caribbeanRules===1);break;
+    case '/expansion':result=await this.store.expansion.operate(account,c.body,c.rules,flags[0],flags[1],flags[2],flags[3],flags[4],flags[5],flags[6],flags[7],dracona,neopolis,c.caribbeanRules===1,c.forestHeartRules===1,c.flagRules===2?2:c.flagRules===1);break;
     case '/afterglow-wardrobe':result=await this.store.expansion.wardrobe.choose(account,c.body);break;
     default:throw new WalletError(405,'Действие не поддерживается.');
    }
