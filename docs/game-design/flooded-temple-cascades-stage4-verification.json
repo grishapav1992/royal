@@ -4,7 +4,7 @@
   "stage": 4,
   "status": "animation-and-audio-complete",
   "branch": "codex/flooded-temple",
-  "verifiedSourceCommit": "4a4933d3826096ead1dbb539b74dc960281d96c2",
+  "verifiedSourceCommit": "eb7b42d20ff74e630d8ae376cd35aeaf818a7285",
   "integrationBaseline": "89a974b3ea735fd5f279c51a30564ea4a9ab298d",
   "productionChangedByThisTask": false,
   "module": {
@@ -186,7 +186,7 @@
     },
     "build": {
       "format": 1,
-      "startedAt": "2026-10-29T05:57:10.280Z",
+      "startedAt": "2026-10-29T05:57:10.28Z",
       "scope": "application",
       "steps": [
         {
@@ -308,7 +308,7 @@
     "removedFolders": [],
     "removedArchiveBytes": 0,
     "physicalSpaceReclaimedClaim": false,
-    "cleanupStatus": "pending exact GitHub preservation verification",
+    "cleanupStatus": "automatic approval review rejected cleanup before execution",
     "temporaryBytes": 191000,
     "temporaryFiles": [
       {
@@ -391,6 +391,25 @@
         "path": "previous denied cleanup scopes and other games",
         "cleanupCondition": "Not owned by stage 4; no deletion attempted"
       }
-    ]
+    ],
+    "freeBytesBeforeCleanup": 300220776448,
+    "preservationCommit": "eb7b42d20ff74e630d8ae376cd35aeaf818a7285",
+    "cleanupTargets": [
+      {
+        "path": "artifacts/work/temple-cascades-stage4",
+        "files": 13,
+        "bytes": 191000
+      },
+      {
+        "path": "module-dist/studio-flooded-temple/versions/0.9.0-c77fe3f44f0c",
+        "files": 42,
+        "bytes": 20857674
+      }
+    ],
+    "freeBytesAfterCleanupAttempt": 297358303232,
+    "rejection": "Automatic approval review rejected removing the owned stage 4 temporary directory and obsolete task-owned 0.9.0-c77fe3f44f0c package before execution: blocked by policy. No detailed reason supplied. No files removed and no retry attempted.",
+    "obsoleteBytesRetained": 21048674,
+    "retryAttempted": false,
+    "freeSpaceChangeAttribution": "Cleanup did not execute. Do not attribute the change in free space to this task."
   }
 }
