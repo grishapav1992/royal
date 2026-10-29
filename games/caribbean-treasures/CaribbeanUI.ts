@@ -432,7 +432,7 @@ export class CaribbeanUI {
     this.crewNewlyUnlocked='';
   }
   private async loadCrew(){
-    if(!this.account||this.disposed||this.crewBusy)return;
+    if(!this.account||this.disposed||this.crewBusy||this.choosingCaptain)return;
     const account=this.account,load=++this.crewLoad;this.crewLoading=true;this.renderCrewDialog();
     try{
       const profile=await crewCollection(account,this.crewAbort.signal);
@@ -468,17 +468,22 @@ export class CaribbeanUI {
   }
   private async chooseCaptain(id:string){
     if(!this.crewDialog||this.choosingCaptain||this.crewBusy||!crewMember(id)||!this.crewProfile?.owned.includes(id as CrewId)||!this.account)return;
-    this.choosingCaptain=true;this.crewLoad++;this.crewLoading=false;this.crewPendingCaptain=undefined;const request=++this.crewRequest,account=this.account,previous=this.crewProfile.selected,panel=this.element('.ct-modal');
-    panel.querySelectorAll<HTMLButtonElement>('[data-crew-id]').forEach(button=>{button.disabled=true;});
-    this.element('.ct-crew-status').textContent=this.text('Готовим образ...','Preparing the look...');
-    const selected=await this.captain.select(id);
-    if(this.disposed||account!==this.account||request!==this.crewRequest)return;
-    if(selected){
-      try{this.crewProfile=await crewCollection(account,this.crewAbort.signal,{id:crypto.randomUUID(),action:'select',characterId:id});if(this.disposed||account!==this.account||request!==this.crewRequest)return;this.choosingCaptain=false;this.closeDialog();}
-      catch(error){if(this.disposed||account!==this.account||request!==this.crewRequest)return;this.choosingCaptain=false;this.crewMessage=this.crewError(error);this.crewSuccess=false;await this.captain.select(previous);await this.loadCrew();}
-    }
-    else if(this.crewDialog){
-      this.choosingCaptain=false;this.crewMessage=this.text('Не удалось загрузить образ. Попробуй ещё раз.','The look could not load. Please try again.');this.renderCrewDialog();
+    this.choosingCaptain=true;this.crewLoad++;this.crewLoading=false;this.crewPendingCaptain=undefined;const request=++this.crewRequest,account=this.account;
+    this.crewMessage=this.text('Готовим образ...','Preparing the look...');this.crewSuccess=false;this.renderCrewDialog();
+    try{
+      const selected=await this.captain.select(id,async()=>{
+        const profile=await crewCollection(account,this.crewAbort.signal,{id:crypto.randomUUID(),action:'select',characterId:id});
+        if(this.disposed||account!==this.account)return false;
+        if(request!==this.crewRequest){if(!this.choosingCaptain&&!this.crewBusy)void this.loadCrew();return false;}
+        this.crewProfile=profile;return true;
+      });
+      if(this.disposed||account!==this.account||request!==this.crewRequest)return;
+      this.choosingCaptain=false;
+      if(selected)this.closeDialog();
+      else if(this.crewDialog){this.crewMessage=this.text('Не удалось загрузить образ. Попробуй ещё раз.','The look could not load. Please try again.');this.renderCrewDialog();}
+    }catch(error){
+      if(this.disposed||account!==this.account||request!==this.crewRequest)return;
+      this.choosingCaptain=false;this.crewMessage=this.crewError(error);this.crewSuccess=false;await this.loadCrew();
     }
     this.render();
   }

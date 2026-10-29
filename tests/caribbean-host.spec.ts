@@ -7,7 +7,7 @@ const test=base.extend<{roomPath:string}>({roomPath:async({request},use)=>{
  expect(response.ok()).toBe(true);
  const cookie=response.headers()['set-cookie'].split(';')[0];
  await request.post('/api/auth/character',{data:{skin:0}});
- const client=new Client('http://127.0.0.1:2634',{headers:{Cookie:cookie},fetchFn:async(url,options)=>{
+ const client=new Client('http://127.0.0.1:'+(process.env.CARIBBEAN_API_PORT||'2634'),{headers:{Cookie:cookie},fetchFn:async(url,options)=>{
   const reply=await request.fetch(String(url),{method:options?.method,headers:Object.fromEntries(new Headers(options?.headers)),data:options?.body as string});
   return new Response(await reply.body(),{status:reply.status(),headers:reply.headers()});
  }});
@@ -132,6 +132,51 @@ test('collection outage keeps the slot playable and recovers without resetting t
  await page.request.post('/__test/caribbean/force-scenario',{data:{name:'partial'}});const paid=await action(page,'[data-ct-action=play]');expect(paid.state).toBe('settled');
  await page.unroute('**/api/caribbean-crew');await page.locator('[data-ct-action=crew]').click();await expect(page.locator('[data-crew-id=isabella]')).toHaveAttribute('data-owned','true');expect((await crewState(page)).tokens).toBe(0);
  expect((await wallet(page)).entries.filter((entry:any)=>entry.kind==='bet')).toHaveLength(1);
+});
+
+test('closing a captain selection before a failed confirmation keeps the saved identity during a spin',async({page,roomPath})=>{
+ await enter(page,roomPath);await topup(page);await open(page);
+ await page.locator('[data-ct-action=crew]').click();await crewLessons(page);await page.locator('[data-ct-modal=crew-tab]').click();
+ await page.locator('[data-crew-id=amara]').click();await expect(page.locator('[data-crew-id=amara]')).toHaveAttribute('data-owned','true');
+ let release!:()=>void;const held=new Promise<void>(resolve=>{release=resolve;});let requested=false;
+ await page.route('**/api/caribbean-crew',async route=>{
+  if(route.request().method()==='POST'&&route.request().postDataJSON()?.action==='select'){requested=true;await held;await route.fulfill({status:503,json:{error:'collection-unavailable'}});}
+  else await route.continue();
+ });
+ try{
+  await page.locator('[data-crew-id=amara]').click();await expect.poll(()=>requested).toBe(true);
+  await page.locator('.ct-crew-close').click();await page.request.post('/__test/caribbean/force-scenario',{data:{name:'partial'}});
+  const round=await action(page,'[data-ct-action=play]');expect(round.state).toBe('settled');release();
+  await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().captain.character)).toBe('isabella');
+  expect((await crewState(page)).selected).toBe('isabella');
+  const me=(await(await page.request.get('/api/auth/me')).json()).account;
+  const saved=await page.request.get('/api/caribbean-crew',{headers:{'X-Royal-Account-Id':me.id}});expect((await saved.json()).selected).toBe('isabella');
+  expect((await wallet(page)).entries.filter((entry:any)=>entry.kind==='bet')).toHaveLength(1);
+ }finally{release();}
+});
+
+test('a late accepted captain selection waits until paid presentation ends',async({page,roomPath})=>{
+ await enter(page,roomPath);await topup(page);await open(page);
+ await page.locator('[data-ct-action=crew]').click();await crewLessons(page);await page.locator('[data-ct-modal=crew-tab]').click();
+ await page.locator('[data-crew-id=amara]').click();await expect(page.locator('[data-crew-id=amara]')).toHaveAttribute('data-owned','true');
+ let release!:()=>void;const held=new Promise<void>(resolve=>{release=resolve;});let accepted=false;
+ await page.route('**/api/caribbean-crew',async route=>{
+  if(route.request().method()==='POST'&&route.request().postDataJSON()?.action==='select'){const response=await route.fetch();accepted=true;await held;await route.fulfill({response});}
+  else await route.continue();
+ });
+ try{
+  await page.locator('[data-crew-id=amara]').click();await expect.poll(()=>accepted).toBe(true);
+  await expect(page.locator('[data-ct-modal=crew-refresh]')).toBeDisabled();
+  await page.locator('.ct-crew-close').click();await page.emulateMedia({reducedMotion:'no-preference'});
+  await page.request.post('/__test/caribbean/force-scenario',{data:{name:'partial'}});await page.locator('[data-ct-action=play]').click();
+  await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().visualPhase)).toBe('reels');release();
+  await expect.poll(async()=>(await crewState(page)).selected).toBe('amara');
+  expect(await page.evaluate(()=>(window as any).royalDemo.getMiniState().captain.character)).toBe('isabella');
+  await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().presenting)).toBe(false);
+  await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().captain.character)).toBe('amara');
+  await close(page);await open(page);await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().captain.character)).toBe('amara');
+  expect((await wallet(page)).entries.filter((entry:any)=>entry.kind==='bet')).toHaveLength(1);
+ }finally{release();}
 });
 
 test('crew loading failure, cancellation and every captain reaction retain a consistent identity',async({page})=>{

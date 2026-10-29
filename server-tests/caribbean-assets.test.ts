@@ -11,7 +11,7 @@ test('Caribbean runtime media decodes, preserves prop alpha and fits the referen
   if(name!=='harbor'){assert(info.hasAlpha);const alpha=(await sharp(path).stats()).channels[3];assert.equal(alpha.min,0);assert(alpha.max>240);}
  }
  assert(total<5*1024*1024);
- const pkg=JSON.parse(await readFile('games/caribbean-treasures/package.json','utf8'));assert.deepEqual(pkg.assetRoots,['caribbean-treasures']);assert.equal(pkg.version,'1.5.0');assert.equal(pkg.preload.length,16);
+ const pkg=JSON.parse(await readFile('games/caribbean-treasures/package.json','utf8'));assert.deepEqual(pkg.assetRoots,['caribbean-treasures']);assert.equal(pkg.version,'1.5.1');assert.equal(pkg.preload.length,16);
 });
 test('ten additional pirate captains have eight complete transparent states and bounded lazy media',async()=>{
  const {createHash}=await import('node:crypto');
