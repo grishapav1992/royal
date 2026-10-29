@@ -3,6 +3,7 @@ import {fightSound,type FightSound} from './JackieFightSounds';
 
 import { contactAt, chairReleaseAt, resultAt, impacts } from './JackieChoreography';
 import {FIGHT_PLANS,type FightPlan} from './JackieFightPlans';
+import {JackieMusic} from './JackieMusic';
 export { contactAt, resultAt } from './JackieChoreography';
 export class JackieAudio {
   enabled = true;
@@ -14,12 +15,15 @@ export class JackieAudio {
   private needsResume=false;
   private preferred=true;
   private context?:AudioContext;
+  readonly music=new JackieMusic(document,()=>{const p=gameAudio.getPreferences();return !this.disposed&&!p.muted&&p.volume>0;});
   private onContextState=()=>{if(this.context?.state!=='running'){this.needsResume=true;this.cancel();}else this.resumeIfNeeded();};
   private unsubscribe = gameAudio.onPreferences(p => {
     const available=!p.muted&&p.volume>0,changed=available&&!this.preferred;this.preferred=available;
     if(!available){this.needsResume=true;this.cancel();}
     else if(changed&&this.enabled)void this.unlock();
+    this.music.sync();
   });
+  constructor(){try{this.enabled=localStorage.getItem('royal-kungfu-sound')!=='0';}catch{}}
   onResume(listener:()=>void){this.resumeListener=listener;return()=>{if(this.resumeListener===listener)this.resumeListener=undefined;};}
   private watchContext(){
     if(this.context===gameAudio.context)return;
@@ -27,7 +31,8 @@ export class JackieAudio {
     this.context?.addEventListener('statechange',this.onContextState);
   }
   private resumeIfNeeded(){if(this.needsResume&&this.allowed()){this.needsResume=false;this.resumeListener?.();}}
-  async unlock() { if (!this.disposed && this.enabled){await gameAudio.unlock();if(this.disposed)return;this.watchContext();this.resumeIfNeeded();} }
+  prime(){if(gameAudio.context?.state==='running')void this.unlock();}
+  async unlock() { if (!this.disposed && (this.enabled||this.music.enabled)){await gameAudio.unlock();if(this.disposed)return;this.watchContext();if(gameAudio.context&&gameAudio.output){this.music.attach(gameAudio.context,gameAudio.output);this.music.gesture();}this.resumeIfNeeded();} }
   private allowed() { const p = gameAudio.getPreferences(); return !this.disposed && this.enabled && !p.muted && p.volume > 0 && !document.hidden && gameAudio.context?.state === 'running' && !!gameAudio.output; }
   private tone(at: number, frequency: number, duration: number, level: number, type: OscillatorType = 'sine') {
     if (!this.allowed()) return;
@@ -83,8 +88,8 @@ export class JackieAudio {
     [392,494,587].forEach((f,i) => this.tone(at + i * .08, f, .2, .035, 'triangle'));
   }
   result(success:boolean,paid:boolean){this.cancel();if(paid){this.cashout();return;}if(this.allowed())this.tone(gameAudio.context!.currentTime+.02,success?330:100,.12,.028,'triangle');}
-  toggle() { this.enabled = !this.enabled; if (!this.enabled){this.needsResume=true;this.cancel();}else void this.unlock(); }
+  toggle() { this.enabled = !this.enabled;try{localStorage.setItem('royal-kungfu-sound',this.enabled?'1':'0');}catch{} if (!this.enabled){this.needsResume=true;this.cancel();}else void this.unlock(); }
   cancel() { for (const source of this.sources) { try { source.stop(); } catch {} } this.sources.clear(); }
-  state() { return { active: this.sources.size, enabled: this.enabled, style:'arcade-brawler' }; }
-  destroy() { this.disposed = true; this.cancel(); this.resumeListener=undefined;this.context?.removeEventListener('statechange',this.onContextState);this.buffers.clear(); this.unsubscribe(); }
+  state() { return { active: this.sources.size, enabled: this.enabled, style:'arcade-brawler',music:this.music.getState() }; }
+  destroy() { this.disposed = true; this.cancel();this.music.destroy(); this.resumeListener=undefined;this.context?.removeEventListener('statechange',this.onContextState);this.buffers.clear(); this.unsubscribe(); }
 }

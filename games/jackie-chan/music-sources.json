@@ -1,0 +1,44 @@
+[
+  {
+    "location": "restaurant",
+    "title": "Shenyang",
+    "author": "Kevin MacLeod",
+    "isrc": "USUAN1600066",
+    "source": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1600066",
+    "download": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Shenyang.mp3",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "changes": "Level normalization and MP3 128 kbit/s encoding; full track, looped in game.",
+    "originalSha256": "1cf2e0f57f820d82e9066ba4dca076735aedd512bc1909fdaa2e0065bd866786",
+    "file": "restaurant.mp3",
+    "sha256": "0c9831e6a8fd15cb78d077e40412fc7939e6992d003c668655bcffcfd843751a",
+    "bytes": 2424206
+  },
+  {
+    "location": "harbor",
+    "title": "Hot Pursuit",
+    "author": "Kevin MacLeod",
+    "isrc": "USUAN1700084",
+    "source": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1700084",
+    "download": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Hot%20Pursuit.mp3",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "changes": "Level normalization and MP3 128 kbit/s encoding; full track, looped in game.",
+    "originalSha256": "0cbd748d447d43dd881e7dc519bbd702010dfe0fa9d4d6460be8f314e608f6f3",
+    "file": "harbor.mp3",
+    "sha256": "95fece7bf2c28cffa45183ae20ffe55727c236f62c916784e8b3599388326d69",
+    "bytes": 2708836
+  },
+  {
+    "location": "market",
+    "title": "Eighties Action",
+    "author": "Kevin MacLeod",
+    "isrc": "USUAN1100243",
+    "source": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100243",
+    "download": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Eighties%20Action.mp3",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "changes": "Level normalization and MP3 128 kbit/s encoding; full track, looped in game.",
+    "originalSha256": "ae418a7f7e1b4ed77b0b3edb9ae416b34936777fd262e4c30cfe7483a8da45dd",
+    "file": "market.mp3",
+    "sha256": "ef0a91279aa986857531cf19b78e1928decde21ae768f7dc25ead62a3499c494",
+    "bytes": 2736421
+  }
+]
