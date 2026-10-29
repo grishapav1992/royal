@@ -12,11 +12,11 @@ async function login(page: Page, path: string) {
   await expect.poll(() => page.evaluate(() => (window as any).royalDemo.getState().online)).toBe(true);
 }
 
-for (const width of [1440, 390]) test('only live NOWPayments and Sandbox appear at ' + width + 'px', async ({ page, roomPath }, info) => {
+for (const width of [1440, 390]) test('cash and Sandbox wallets remain available with Stars disabled at ' + width + 'px', async ({ page, roomPath }, info) => {
   await page.setViewportSize({ width, height: 844 });
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
   await login(page, roomPath);
-  await expect(page.locator('#crypto-wallet-button')).toHaveText('NOWPayments · Боевой');
+  await expect(page.locator('#crypto-wallet-button')).toHaveText('Денежный баланс');
   await expect(page.locator('#wallet-button')).toContainText('Sandbox');
   await expect(page.locator('#nile-wallet-button, #usdt-wallet-button')).toHaveCount(0);
   await page.locator('#wallet-button').click();
@@ -28,7 +28,7 @@ for (const width of [1440, 390]) test('only live NOWPayments and Sandbox appear 
   await page.locator('#wallet-close').click();
   await page.screenshot({ path: info.outputPath('choices-' + width + '.png') });
   await page.locator('#crypto-wallet-button').click();
-  await expect(page.locator('#crypto-wallet-title')).toHaveText('Боевой баланс');
+  await expect(page.locator('#crypto-wallet-title')).toHaveText('Денежный баланс');
   await expect(page.locator('#crypto-wallet-dialog')).toContainText('отдельно от тестового');
   await page.screenshot({ path: info.outputPath('live-' + width + '.png') });
   expect(errors).toEqual([]);
@@ -78,7 +78,7 @@ test('both payment modes remain clear after switching to English', async ({ page
   await login(page, roomPath);
   await page.getByRole('combobox', { name: 'Язык', exact: true }).selectOption('en');
   await expect(page.locator('#join-dialog')).toBeHidden({ timeout: 15000 });
-  await expect(page.locator('#crypto-wallet-button')).toHaveText('NOWPayments · Live');
+  await expect(page.locator('#crypto-wallet-button')).toHaveText('Cash balance');
   await page.locator('#wallet-button').click();
   await expect(page.locator('#wallet-title')).toHaveText('Test balance');
   await expect(page.locator('#nowpayments-sandbox')).toBeVisible();

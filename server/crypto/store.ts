@@ -50,7 +50,8 @@ export class CryptoStore {
   private displayRates: CryptoDisplayRates;
   constructor(readonly db: PostgresDatabase, readonly config: CryptoConfig, readonly provider: CryptoProvider,
     prerequisite: Promise<void> = Promise.resolve(), private now = Date.now, private draw = randomInt,
-    private ledgerChanged?: (change: LedgerChange) => Promise<void>) {
+    private ledgerChanged?: (change: LedgerChange) => Promise<void>,
+    readonly externalCreditsEnabled: boolean | ((accountId: string) => boolean) = false) {
     this.ready = prerequisite.then(async () => {
       await applySchemaMigration(db, { id: 'crypto-gateway-v1', statements: schema });
       await applySchemaMigration(db,{id:'finance-admin-adjustments-v1',statements:[
@@ -58,6 +59,10 @@ export class CryptoStore {
           delta_units BIGINT NOT NULL CHECK(delta_units<>0),reason TEXT NOT NULL,created_at BIGINT NOT NULL)`,
       ]});
       await db.transaction(() => immutableLedgerTables(db,['finance_adjustments'],'immutable finance adjustment'));
+      await applySchemaMigration(db, { id: 'payment-wallet-holds-v1', statements: [
+        `CREATE TABLE crypto_wallet_holds(account_id TEXT NOT NULL REFERENCES accounts(id),operation_id TEXT PRIMARY KEY,
+          reason TEXT NOT NULL,created_at BIGINT NOT NULL)`,
+      ] });
     });
     this.displayRates = new CryptoDisplayRates((from, to, value) => provider.estimate(from, to, value), now);
   }
@@ -84,6 +89,29 @@ export class CryptoStore {
       VALUES (?,?,?,?,?,?,?,?,?)`).run(accountId, id, key, String(available), String(reserved), String(-available - reserved), String(balance), String(pending), createdAt);
     await this.ledgerChanged?.({ accountId, operationId: id, entryKey: key, available, reserved, createdAt });
   }
+  async creditStarsDeposit(accountId: string, id: string, value: string, chargeId: string, stars: number) {
+    const credited = money(value), key = JSON.stringify([accountId, 'telegram-stars', value, chargeId, stars]);
+    return this.atomic(async () => {
+      const existing = await this.row(id);
+      if (existing) { if (existing.request_key !== key) fail(409, 'Платёж Stars уже использован.'); return; }
+      await this.post(accountId, id, 'deposit:telegram-stars:' + chargeId, credited, 0n);
+      await this.db.prepare(`INSERT INTO crypto_operations(id,account_id,kind,request_key,state,amount_units,credited_units,detail,created_at,updated_at)
+        VALUES (?,?,'deposit',?,'finished',?,?,?,?,?)`).run(id, accountId, key, value, value,
+        JSON.stringify({ currency: 'xtr', payAmount: String(stars), provider: 'telegram-stars' }), this.now(), this.now());
+    });
+  }
+  async holdStarsRefund(accountId: string, id: string) {
+    return this.atomic(async () => {
+      await this.db.prepare(`INSERT INTO crypto_wallet_holds(account_id,operation_id,reason,created_at)
+        VALUES (?,?,'telegram-stars-refund',?) ON CONFLICT DO NOTHING`).run(accountId, id, this.now());
+      await this.db.prepare("UPDATE crypto_operations SET state='review',updated_at=? WHERE id=? AND account_id=?")
+        .run(this.now(), id, accountId);
+    });
+  }
+  private async withdrawable(accountId: string) {
+    if (await this.db.prepare('SELECT 1 FROM crypto_wallet_holds WHERE account_id=?').get(accountId))
+      fail(409, 'Вывод приостановлен: требуется сверка возврата Stars. Обратись в поддержку.');
+  }
   private async limit(accountId: string) {
     const row = await this.db.prepare('SELECT count(*) AS n FROM (SELECT 1 FROM crypto_operations WHERE account_id=? AND created_at>? LIMIT 20) recent').get(accountId, this.now() - 60000);
     if (Number(row?.n) >= 20) fail(429, 'Слишком много операций. Подожди минуту.');
@@ -101,7 +129,8 @@ export class CryptoStore {
     return this.view(row!);
   }
   async snapshot(accountId: string): Promise<CryptoWallet> {
-    if (!this.config.enabled) return { state: 'disabled' };
+    const external = typeof this.externalCreditsEnabled === 'function' ? this.externalCreditsEnabled(accountId) : this.externalCreditsEnabled;
+    if (!this.config.enabled && !external) return { state: 'disabled' };
     return this.atomic(async () => {
       const row = await this.walletRow(accountId);
       const liabilities = BigInt((await this.db.prepare('SELECT coalesce(sum(balance_units+reserved_units),0)::text AS units FROM crypto_wallets').get())!.units);
@@ -110,7 +139,9 @@ export class CryptoStore {
       const operations = (await this.db.prepare('SELECT * FROM crypto_operations WHERE account_id=? ORDER BY created_at DESC,id DESC LIMIT 50').all(accountId)).map(row => this.view(row));
       const rounds = (await this.db.prepare('SELECT result FROM crypto_rounds WHERE account_id=? ORDER BY created_at DESC,id DESC LIMIT 50').all(accountId)).map(row => JSON.parse(String(row.result)) as UsdtRound);
       return { state: 'enabled', provider: 'nowpayments', asset: 'USDT', scale: 6, balanceUnits: String(row.balance_units), reservedUnits: String(row.reserved_units),
-        withdrawalsEnabled: this.config.withdrawals, gamesEnabled: this.config.games, ready, maxStakeUnits: { 'royal-coins': String(capital / 11n), 'royal-roulette': String(capital / 35n) }, operations, rounds };
+        cryptoDepositsEnabled: this.config.enabled,
+        withdrawalsEnabled: this.config.enabled && this.config.withdrawals && !await this.db.prepare('SELECT 1 FROM crypto_wallet_holds WHERE account_id=?').get(accountId),
+        gamesEnabled: this.config.enabled && this.config.games, ready, maxStakeUnits: { 'royal-coins': String(capital / 11n), 'royal-roulette': String(capital / 35n) }, operations, rounds };
     });
   }
   async currencies() { this.enabled(); return this.provider.currencies(); }
@@ -193,6 +224,7 @@ export class CryptoStore {
       estimatedAmount: gross, networkFee: fee, minimumReceive: amount(lower, 18), expiresAt: this.now() + 120000 };
     await this.atomic(async () => {
       const recent = await this.db.prepare('SELECT count(*) AS n FROM crypto_quotes WHERE account_id=? AND created_at>?').get(accountId, this.now() - 60000);
+      await this.withdrawable(accountId);
       if (Number(recent?.n) >= 20) fail(429, 'Слишком много расчетов. Подожди минуту.');
       const row = await this.walletRow(accountId);
       if (BigInt(row.balance_units) < requested) fail(409, 'Недостаточно USDT на доступном балансе.');
@@ -211,6 +243,7 @@ export class CryptoStore {
       const key = JSON.stringify([accountId, 'withdrawal', request.quoteId]);
       const existing = await this.row(request.id);
       if (existing) { if (existing.request_key !== key) fail(409, 'Нельзя изменить отправленный вывод.'); return; }
+      await this.withdrawable(accountId);
       const saved = await this.db.prepare('SELECT * FROM crypto_quotes WHERE id=? AND account_id=?').get(request.quoteId, accountId);
       if (!saved || Number(saved.expires_at) <= this.now()) fail(409, 'Расчет устарел. Получи новый курс.');
       // A confirmed quote can create only one withdrawal, even with another browser request id.
@@ -225,7 +258,9 @@ export class CryptoStore {
     return this.operation(accountId, request.id);
   }
   private async claim(id: string, expected: string, next: string) {
-    return this.atomic(async () => (await this.db.prepare('UPDATE crypto_operations SET state=?,updated_at=? WHERE id=? AND state=?').run(next, this.now(), id, expected)).changes === 1);
+    return this.atomic(async () => (await this.db.prepare(`UPDATE crypto_operations SET state=?,updated_at=? WHERE id=? AND state=?
+      AND NOT EXISTS (SELECT 1 FROM crypto_wallet_holds h WHERE h.account_id=crypto_operations.account_id)`)
+      .run(next, this.now(), id, expected)).changes === 1);
   }
   private async update(id: string, state: string, detail?: Record<string, any>) {
     await this.atomic(async () => {
@@ -246,7 +281,15 @@ export class CryptoStore {
   }
   async advance(id: string) {
     this.enabled(true);
-    let row = await this.atomic(() => this.row(id));
+    let row = await this.atomic(async () => {
+      const row = await this.row(id);
+      if (row?.kind === 'withdrawal' && !['finished', 'refunded'].includes(row.state)
+        && await this.db.prepare('SELECT 1 FROM crypto_wallet_holds WHERE account_id=?').get(row.account_id)) {
+        await this.db.prepare("UPDATE crypto_operations SET state='review',updated_at=? WHERE id=?").run(this.now(), id);
+        return undefined;
+      }
+      return row;
+    });
     if (!row || row.kind !== 'withdrawal' || ['finished', 'refunded', 'review'].includes(row.state)) return;
     const detail = json(row);
     if (row.state === 'queued' && await this.claim(id, 'queued', 'preparing')) {
