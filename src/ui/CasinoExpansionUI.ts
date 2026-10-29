@@ -5,7 +5,7 @@ import type { ExpansionGameId } from '../shared/casinoExpansion';
 export class CasinoExpansionUI {
  private game: { destroy(): void };
  constructor(host: HTMLElement, gameId: ExpansionGameId) {
-  this.game = (gameId === 'github-crash' || gameId === 'original-cr-vs-leo') ? new IndependentGameUI(host, gameId) : new CasinoExpansionView(host, gameId);
+  this.game = (gameId === 'flag-battle' || gameId === 'github-crash' || gameId === 'original-cr-vs-leo') ? new IndependentGameUI(host, gameId) : new CasinoExpansionView(host, gameId);
  }
  destroy() { this.game.destroy(); }
 }

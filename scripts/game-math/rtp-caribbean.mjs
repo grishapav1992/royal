@@ -19,9 +19,9 @@ export const CARIBBEAN_REVIEWED_SOURCES = {
   'src/shared/caribbeanTreasures.ts': '5590af9897cfb32dbf8fd7d9c0608ad52184051ddee7ca70cd309267a4311aee',
   'server/games/caribbeanTreasures.ts': 'bdb0aa8eecef1093f876dd3c467ff1b43d8a7b1606a63a56aa46430964556e99',
   'src/shared/caribbeanTransport.ts': 'c4a590c6778048f9ecd37852549762adde064f90dca072316ee215ba8ac89c78',
-  'src/shared/casinoExpansion.ts': '4e523f8d89bcfdd7648dedab02ce43e92a530d34bb5fbae0a617e44d0cd54b3d',
-  'server/demoExpansion.ts': '5d2b4e8b61737bf2f3b520688cd792202f6a9bc3d8c190127ae07a927fec4adb',
-  'server/finance/nile-game-runtime.ts': 'eaec5f42ae7848cd0803568210bfad6a52c54eee3a784b7dcb06be83b72b8a14',
+  'src/shared/casinoExpansion.ts': '5f30c013042d0f80f346e4d5813f95e929c2f3b530690099a05bb68ac108499f',
+  'server/demoExpansion.ts': '716552be62c06ca7f49e7986ff8433520aa121da7422d11673901060a083b830',
+  'server/finance/nile-game-runtime.ts': '86169ea4ad4fe16329ce90c59480ce2c994986b32bc710b76204d3cf81f50a14',
 };
 const WEIGHTS = [30,24,18,13,9,6];
 const PAYS = [[2,6,20,60],[4,10,30,100],[6,16,40,150],[8,24,60,200],[10,30,100,400],[16,50,200,1000]];

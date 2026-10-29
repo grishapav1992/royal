@@ -49,7 +49,7 @@ export function moduleFingerprinter(root, toolchain) {
     const rows = {};
     for (const item of (await readdir(path, { withFileTypes: true })).sort((a, b) => a.name.localeCompare(b.name))) {
       if (item.isSymbolicLink()) throw Error('Module media symlink rejected: ' + name + '/' + item.name);
-      if (item.isDirectory() || media.test(item.name)) rows[item.name] = await resources(name + '/' + item.name);
+      if (item.isDirectory() || media.test(item.name) && /^[a-zA-Z0-9_.-]+$/.test(item.name)) rows[item.name] = await resources(name + '/' + item.name);
     }
     return rows;
   });

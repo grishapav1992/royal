@@ -18,7 +18,7 @@ async function fixture(){
   let count=0,queue:number[]=[],random=cascadeRandom(713029);
   const draw=(max:number)=>{count++;const value=queue.length?queue.shift()!:random(max);assert(value<max);return value;};
   const create=()=>new DemoExpansionStore(db,async id=>({balance:await demoBalanceUnits(db,id)/100,entries:[]}),wallet.ready,async()=>{},draw);
-  const run=(s:DemoExpansionStore,op:unknown,cap:boolean|2=2,account='a')=>s.operate(account,op,2,true,true,true,true,true,true,true,true,2,4,true,false,cap);
+  const run=(s:DemoExpansionStore,op:unknown,cap:boolean|2=2,account='a')=>s.operate(account,op,2,true,true,true,true,true,true,true,true,2,4,true,false,2,cap);
   const bonus=()=>{queue=[];for(let c=0;c<5;c++)for(let r=2;r>=0;r--){const symbol=c<3?8:(c*3+r)%7;queue.push(CASCADE_DATA.baseReels[c].slice(0,symbol).reduce((a,b)=>a+b,0));}};
   return {db,wallet,create,run,bonus,count:()=>count,set:(values:number[])=>{queue=values.slice();}};
 }
@@ -29,8 +29,8 @@ test('v2 bonus restores across stores, hides from legacy readers, retries once a
     const replies=await Promise.all(Array.from({length:4},()=>f.run(store,op)));let s=replies[0].session;
     assert(replies.every(r=>validCascadeSession(r.session)));assert.equal(s.state,'active');assert.equal(await demoBalanceUnits(f.db,'a'),before-1000);assert(await demoReservedUnits(f.db,'a')>0);
     const draws=f.count();await f.run(store,op);assert.equal(f.count(),draws);
-    const restored=f.create();assert(!(await restored.active('a',true,true,true,true,true,true,true,2,4,true,false,true)).sessions.some(s=>s.id===op.id));
-    s=(await restored.active('a',true,true,true,true,true,true,true,2,4,true,false,2)).sessions.find(s=>s.id===op.id)!;assert(validCascadeSession(s));
+    const restored=f.create();assert(!(await restored.active('a',true,true,true,true,true,true,true,2,4,true,false,2,true)).sessions.some(s=>s.id===op.id));
+    s=(await restored.active('a',true,true,true,true,true,true,true,2,4,true,false,2,2)).sessions.find(s=>s.id===op.id)!;assert(validCascadeSession(s));
     await assert.rejects(f.run(restored,start()));await assert.rejects(f.run(restored,next(s),true));await assert.rejects(f.run(restored,next(s),2,'b'));assert.equal(f.count(),draws);
     const first=next(s),racing=await Promise.allSettled([f.run(restored,first),f.run(restored,{...first,id:randomUUID()})]);assert.equal(racing.filter(r=>r.status==='fulfilled').length,1);
     s=(racing.find(r=>r.status==='fulfilled') as PromiseFulfilledResult<any>).value.session;
@@ -56,14 +56,14 @@ test('a v2-capable reader finishes an accepted v1 expedition and a financial fai
   const f=await fixture();try{
     const store=f.create();f.set([0,0,0,98,0,0]);
     const legacy=await f.run(store,{...start(),settings:{temple:{mode:'normal'}}},true);
-    const visible=await store.active('a',true,true,true,true,true,true,true,2,4,true,false,2);assert(visible.sessions.some(s=>s.id===legacy.session.id&&s.rulesVersion===1));
+    const visible=await store.active('a',true,true,true,true,true,true,true,2,4,true,false,2,2);assert(visible.sessions.some(s=>s.id===legacy.session.id&&s.rulesVersion===1));
     await f.run(store,{id:randomUUID(),action:'move',gameId:'studio-flooded-temple',sessionId:legacy.session.id,revision:1,move:'temple-finish'});
     f.bonus();let s=(await f.run(store,start())).session;
     while(s.state==='active'){
       const op=next(s),before=await demoBalanceUnits(f.db,'a');
       await f.db.exec("CREATE OR REPLACE FUNCTION reject_cascade_fn() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.kind='win' THEN RAISE EXCEPTION 'cascade final credit failure'; END IF; RETURN NEW; END $$;CREATE TRIGGER reject_cascade BEFORE INSERT ON demo_ledger FOR EACH ROW EXECUTE FUNCTION reject_cascade_fn()");
       try{s=(await f.run(store,op)).session;await f.db.exec('DROP TRIGGER reject_cascade ON demo_ledger');}
-      catch(error){assert.match(String(error),/cascade final credit failure/);assert.equal(await demoBalanceUnits(f.db,'a'),before);const active=await store.active('a',true,true,true,true,true,true,true,2,4,true,false,2);assert.equal(active.sessions.find(x=>x.id===s.id)!.view.templeCascade!.revision,s.view.templeCascade!.revision);await f.db.exec('DROP TRIGGER reject_cascade ON demo_ledger');s=(await f.run(store,op)).session;assert((await f.run(store,op)).replayed);while(s.state==='active')s=(await f.run(store,next(s))).session;break;}
+      catch(error){assert.match(String(error),/cascade final credit failure/);assert.equal(await demoBalanceUnits(f.db,'a'),before);const active=await store.active('a',true,true,true,true,true,true,true,2,4,true,false,2,2);assert.equal(active.sessions.find(x=>x.id===s.id)!.view.templeCascade!.revision,s.view.templeCascade!.revision);await f.db.exec('DROP TRIGGER reject_cascade ON demo_ledger');s=(await f.run(store,op)).session;assert((await f.run(store,op)).replayed);while(s.state==='active')s=(await f.run(store,next(s))).session;break;}
     }
     assert.equal(s.state,'settled');assert.equal(await demoReservedUnits(f.db,'a'),0);
   }finally{await f.db.close();}

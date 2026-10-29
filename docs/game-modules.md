@@ -1,11 +1,11 @@
 # Independently published games
 
-Every existing game definition has an independent client package. The catalogue contains 120 module identities across the current and historical game families. This is a technical inventory, not a claim that the hall has 119 visible machines:
+Every existing game definition has an independent client package. The catalogue contains 121 module identities across the current and historical game families. This is a technical inventory, not a claim that the hall has 121 visible machines:
 
 | Family | Module identities |
 | --- | ---: |
 | Studio games, including Forest Heart, Caribbean Treasures and Flooded Temple | 44 |
-| Original Royal games, GitHub practice games, session games and all casino/card variants, including LAST EXIT | 62 |
+| Original Royal games, GitHub practice games, session games and all casino/card variants, including LAST EXIT and Flag Battle | 63 |
 | Air hockey, pool, chess, piano and Mortal Kombat | 5 |
 | Durak, transfer Durak and Crazy Eights PvP | 3 |
 | Breaker, Orbit, Drift and Pixel legacy arcade games | 4 |
@@ -106,3 +106,7 @@ Existing native artwork, the small startup previews, preparation cache, latest c
 Mortal Kombat uses activity identity and package slug mortal-kombat on floor 2. See games/mortal-kombat/README.md for wager rules, escrow recovery, asset provenance, shared USDT · Nile integration and server anti-cheat controls (rules contract 2). It requires this compatible host/backend release before the client package can be published.
 
 Flooded Temple stage 4 uses package 0.9.0 with the same 1/2/2 contract. Its common-clock presentation adds stable stone falls, union fractures, exact counters, recorded material Foley and single-silhouette explorer reactions. Recovery stays quiet and all financial transitions remain in the host/backend. See [stage 4 verification](game-design/flooded-temple-cascades-stage4.md).
+
+Flag Battle (`flag-battle`, API 1, rules 2, progress 1) is an independent wagered client module in the existing Royal catalogue without adding seats. Players choose 12, 24 or 48 equal countries; every complete paid round has analytical RTP 96%. Rules-1 sessions remain readable and settle under their original twelve-country rules. Capability 2 is required for explicit mode starts and rules-2 session transport. This contract requires a compatible host/backend update before independent package publication. See [its rules and feedback specification](concepts/flag-battle.md).
+
+Module media inventory excludes noncanonical filenames (for example, synchronization copies containing spaces) before hashing or reading their contents. Such names cannot occur in a validated module resource path. Symlink, traversal, declared-root and immutable-byte validation remain enforced. This preserves unrelated local copies while preventing them from blocking a build.

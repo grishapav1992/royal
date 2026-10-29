@@ -1,0 +1,1470 @@
+{
+  "schemaVersion": 1,
+  "gameId": "flag-battle",
+  "rulesVersion": 1,
+  "progressVersion": 1,
+  "startedAt": "2026-10-28T21:55:37.205Z",
+  "completedAt": "2026-10-28T21:55:38.037Z",
+  "sourceHashes": {
+    "src/shared/flagBattle.ts": "e24b8ecb49d54d711c8b2b6e4f736115ed212d1b10b65432c5391d57720b93ab",
+    "server/games/flagBattle.ts": "fd2e10a7679cb586e30dacb8beff06b3b955f24e560996596aaf389395a3d2ed",
+    "src/shared/casinoExpansion.ts": "191f89ba121c093c5e8ffad414f850d58fc210c3ccc0b9bf84cefc89662d6a41",
+    "server/demoExpansion.ts": "91a55508fe977ca65f5f760fbbcd0bee80bea2f3f620aadbea41ff4b2e341224",
+    "server/finance/nile-game-runtime.ts": "807ddd2b8e4efc4cb579e8facef87752fe7e9d48f75cee2116785ed6054745a6",
+    "scripts/game-math/rtp-flag-battle.mjs": "c2258ef5e7c76a22d08b62c55ba5a6e07830f7b0802ff26f0f67fc8db1669b05"
+  },
+  "policySha256": "5aca2e7f4e80e7607b400d67abdeaf35cf759f1fe55e7a80d1130520aba3ab13",
+  "serverReplayChecks": 55296,
+  "method": "uniform-flag-battle-v1",
+  "streams": [
+    {
+      "choice": "RU",
+      "seed": 74117,
+      "paidRounds": 2000000,
+      "wins": 167316
+    },
+    {
+      "choice": "RU",
+      "seed": 910493,
+      "paidRounds": 2000000,
+      "wins": 166333
+    },
+    {
+      "choice": "BR",
+      "seed": 74117,
+      "paidRounds": 2000000,
+      "wins": 166149
+    },
+    {
+      "choice": "BR",
+      "seed": 910493,
+      "paidRounds": 2000000,
+      "wins": 166426
+    },
+    {
+      "choice": "US",
+      "seed": 74117,
+      "paidRounds": 2000000,
+      "wins": 166591
+    },
+    {
+      "choice": "US",
+      "seed": 910493,
+      "paidRounds": 2000000,
+      "wins": 166023
+    },
+    {
+      "choice": "JP",
+      "seed": 74117,
+      "paidRounds": 2000000,
+      "wins": 167745
+    },
+    {
+      "choice": "JP",
+      "seed": 910493,
+      "paidRounds": 2000000,
+      "wins": 166584
+    },
+    {
+      "choice": "FR",
+      "seed": 74117,
+      "paidRounds": 2000000,
+      "wins": 166317
+    },
+    {
+      "choice": "FR",
+      "seed": 910493,
+      "paidRounds": 2000000,
+      "wins": 167284
+    },
+    {
+      "choice": "DE",
+      "seed": 74117,
+      "paidRounds": 2000000,
+      "wins": 166148
+    },
+    {
+      "choice": "DE",
+      "seed": 910493,
+      "paidRounds": 2000000,
+      "wins": 167342
+    },
+    {
+      "choice": "GB",
+      "seed": 74117,
+      "paidRounds": 2000000,
+      "wins": 166314
+    },
+    {
+      "choice": "GB",
+      "seed": 910493,
+      "paidRounds": 2000000,
+      "wins": 166608
+    },
+    {
+      "choice": "AR",
+      "seed": 74117,
+      "paidRounds": 2000000,
+      "wins": 165992
+    },
+    {
+      "choice": "AR",
+      "seed": 910493,
+      "paidRounds": 2000000,
+      "wins": 166214
+    },
+    {
+      "choice": "CN",
+      "seed": 74117,
+      "paidRounds": 2000000,
+      "wins": 166786
+    },
+    {
+      "choice": "CN",
+      "seed": 910493,
+      "paidRounds": 2000000,
+      "wins": 166657
+    },
+    {
+      "choice": "IN",
+      "seed": 74117,
+      "paidRounds": 2000000,
+      "wins": 166698
+    },
+    {
+      "choice": "IN",
+      "seed": 910493,
+      "paidRounds": 2000000,
+      "wins": 167046
+    },
+    {
+      "choice": "TR",
+      "seed": 74117,
+      "paidRounds": 2000000,
+      "wins": 166563
+    },
+    {
+      "choice": "TR",
+      "seed": 910493,
+      "paidRounds": 2000000,
+      "wins": 166913
+    },
+    {
+      "choice": "CA",
+      "seed": 74117,
+      "paidRounds": 2000000,
+      "wins": 167381
+    },
+    {
+      "choice": "CA",
+      "seed": 910493,
+      "paidRounds": 2000000,
+      "wins": 166570
+    }
+  ],
+  "results": [
+    {
+      "choice": "RU",
+      "stakeUnits": 100,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3843636.48,
+      "rewardSquared": 44278692.2496,
+      "rewardCost": 3843636.48,
+      "costSquared": 4000000,
+      "rtp": 0.96090912,
+      "interval95": [
+        0.9577874962841584,
+        0.9640307437158415
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "RU",
+      "stakeUnits": 200,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3843636.48,
+      "rewardSquared": 44278692.2496,
+      "rewardCost": 3843636.48,
+      "costSquared": 4000000,
+      "rtp": 0.96090912,
+      "interval95": [
+        0.9577874962841584,
+        0.9640307437158415
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "RU",
+      "stakeUnits": 500,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3843636.48,
+      "rewardSquared": 44278692.2496,
+      "rewardCost": 3843636.48,
+      "costSquared": 4000000,
+      "rtp": 0.96090912,
+      "interval95": [
+        0.9577874962841584,
+        0.9640307437158415
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "RU",
+      "stakeUnits": 1000,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3843636.48,
+      "rewardSquared": 44278692.2496,
+      "rewardCost": 3843636.48,
+      "costSquared": 4000000,
+      "rtp": 0.96090912,
+      "interval95": [
+        0.9577874962841584,
+        0.9640307437158415
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "RU",
+      "stakeUnits": 2000,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3843636.48,
+      "rewardSquared": 44278692.2496,
+      "rewardCost": 3843636.48,
+      "costSquared": 4000000,
+      "rtp": 0.96090912,
+      "interval95": [
+        0.9577874962841584,
+        0.9640307437158415
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "RU",
+      "stakeUnits": 5000,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3843636.48,
+      "rewardSquared": 44278692.2496,
+      "rewardCost": 3843636.48,
+      "costSquared": 4000000,
+      "rtp": 0.96090912,
+      "interval95": [
+        0.9577874962841584,
+        0.9640307437158415
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "BR",
+      "stakeUnits": 100,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3831264,
+      "rewardSquared": 44136161.28,
+      "rewardCost": 3831264,
+      "costSquared": 4000000,
+      "rtp": 0.957816,
+      "interval95": [
+        0.9546989480662855,
+        0.9609330519337145
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "BR",
+      "stakeUnits": 200,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3831264,
+      "rewardSquared": 44136161.28,
+      "rewardCost": 3831264,
+      "costSquared": 4000000,
+      "rtp": 0.957816,
+      "interval95": [
+        0.9546989480662855,
+        0.9609330519337145
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "BR",
+      "stakeUnits": 500,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3831264,
+      "rewardSquared": 44136161.28,
+      "rewardCost": 3831264,
+      "costSquared": 4000000,
+      "rtp": 0.957816,
+      "interval95": [
+        0.9546989480662855,
+        0.9609330519337145
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "BR",
+      "stakeUnits": 1000,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3831264,
+      "rewardSquared": 44136161.28,
+      "rewardCost": 3831264,
+      "costSquared": 4000000,
+      "rtp": 0.957816,
+      "interval95": [
+        0.9546989480662855,
+        0.9609330519337145
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "BR",
+      "stakeUnits": 2000,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3831264,
+      "rewardSquared": 44136161.28,
+      "rewardCost": 3831264,
+      "costSquared": 4000000,
+      "rtp": 0.957816,
+      "interval95": [
+        0.9546989480662855,
+        0.9609330519337145
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "BR",
+      "stakeUnits": 5000,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3831264,
+      "rewardSquared": 44136161.28,
+      "rewardCost": 3831264,
+      "costSquared": 4000000,
+      "rtp": 0.957816,
+      "interval95": [
+        0.9546989480662855,
+        0.9609330519337145
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "US",
+      "stakeUnits": 100,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3831713.28,
+      "rewardSquared": 44141336.985599995,
+      "rewardCost": 3831713.28,
+      "costSquared": 4000000,
+      "rtp": 0.9579283199999999,
+      "interval95": [
+        0.9548111018829555,
+        0.9610455381170444
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "US",
+      "stakeUnits": 200,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3831713.28,
+      "rewardSquared": 44141336.985599995,
+      "rewardCost": 3831713.28,
+      "costSquared": 4000000,
+      "rtp": 0.9579283199999999,
+      "interval95": [
+        0.9548111018829555,
+        0.9610455381170444
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "US",
+      "stakeUnits": 500,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3831713.28,
+      "rewardSquared": 44141336.985599995,
+      "rewardCost": 3831713.28,
+      "costSquared": 4000000,
+      "rtp": 0.9579283199999999,
+      "interval95": [
+        0.9548111018829555,
+        0.9610455381170444
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "US",
+      "stakeUnits": 1000,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3831713.28,
+      "rewardSquared": 44141336.985599995,
+      "rewardCost": 3831713.28,
+      "costSquared": 4000000,
+      "rtp": 0.9579283199999999,
+      "interval95": [
+        0.9548111018829555,
+        0.9610455381170444
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "US",
+      "stakeUnits": 2000,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3831713.28,
+      "rewardSquared": 44141336.985599995,
+      "rewardCost": 3831713.28,
+      "costSquared": 4000000,
+      "rtp": 0.9579283199999999,
+      "interval95": [
+        0.9548111018829555,
+        0.9610455381170444
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "US",
+      "stakeUnits": 5000,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3831713.28,
+      "rewardSquared": 44141336.985599995,
+      "rewardCost": 3831713.28,
+      "costSquared": 4000000,
+      "rtp": 0.9579283199999999,
+      "interval95": [
+        0.9548111018829555,
+        0.9610455381170444
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "JP",
+      "stakeUnits": 100,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3851470.08,
+      "rewardSquared": 44368935.3216,
+      "rewardCost": 3851470.08,
+      "costSquared": 4000000,
+      "rtp": 0.96286752,
+      "interval95": [
+        0.9597430066524225,
+        0.9659920333475774
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "JP",
+      "stakeUnits": 200,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3851470.08,
+      "rewardSquared": 44368935.3216,
+      "rewardCost": 3851470.08,
+      "costSquared": 4000000,
+      "rtp": 0.96286752,
+      "interval95": [
+        0.9597430066524225,
+        0.9659920333475774
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "JP",
+      "stakeUnits": 500,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3851470.08,
+      "rewardSquared": 44368935.3216,
+      "rewardCost": 3851470.08,
+      "costSquared": 4000000,
+      "rtp": 0.96286752,
+      "interval95": [
+        0.9597430066524225,
+        0.9659920333475774
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "JP",
+      "stakeUnits": 1000,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3851470.08,
+      "rewardSquared": 44368935.3216,
+      "rewardCost": 3851470.08,
+      "costSquared": 4000000,
+      "rtp": 0.96286752,
+      "interval95": [
+        0.9597430066524225,
+        0.9659920333475774
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "JP",
+      "stakeUnits": 2000,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3851470.08,
+      "rewardSquared": 44368935.3216,
+      "rewardCost": 3851470.08,
+      "costSquared": 4000000,
+      "rtp": 0.96286752,
+      "interval95": [
+        0.9597430066524225,
+        0.9659920333475774
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "JP",
+      "stakeUnits": 5000,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3851470.08,
+      "rewardSquared": 44368935.3216,
+      "rewardCost": 3851470.08,
+      "costSquared": 4000000,
+      "rtp": 0.96286752,
+      "interval95": [
+        0.9597430066524225,
+        0.9659920333475774
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "FR",
+      "stakeUnits": 100,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3843083.52,
+      "rewardSquared": 44272322.1504,
+      "rewardCost": 3843083.52,
+      "costSquared": 4000000,
+      "rtp": 0.96077088,
+      "interval95": [
+        0.9576494604038305,
+        0.9638922995961695
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "FR",
+      "stakeUnits": 200,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3843083.52,
+      "rewardSquared": 44272322.1504,
+      "rewardCost": 3843083.52,
+      "costSquared": 4000000,
+      "rtp": 0.96077088,
+      "interval95": [
+        0.9576494604038305,
+        0.9638922995961695
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "FR",
+      "stakeUnits": 500,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3843083.52,
+      "rewardSquared": 44272322.1504,
+      "rewardCost": 3843083.52,
+      "costSquared": 4000000,
+      "rtp": 0.96077088,
+      "interval95": [
+        0.9576494604038305,
+        0.9638922995961695
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "FR",
+      "stakeUnits": 1000,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3843083.52,
+      "rewardSquared": 44272322.1504,
+      "rewardCost": 3843083.52,
+      "costSquared": 4000000,
+      "rtp": 0.96077088,
+      "interval95": [
+        0.9576494604038305,
+        0.9638922995961695
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "FR",
+      "stakeUnits": 2000,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3843083.52,
+      "rewardSquared": 44272322.1504,
+      "rewardCost": 3843083.52,
+      "costSquared": 4000000,
+      "rtp": 0.96077088,
+      "interval95": [
+        0.9576494604038305,
+        0.9638922995961695
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "FR",
+      "stakeUnits": 5000,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3843083.52,
+      "rewardSquared": 44272322.1504,
+      "rewardCost": 3843083.52,
+      "costSquared": 4000000,
+      "rtp": 0.96077088,
+      "interval95": [
+        0.9576494604038305,
+        0.9638922995961695
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "DE",
+      "stakeUnits": 100,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3841804.8,
+      "rewardSquared": 44257591.296,
+      "rewardCost": 3841804.8,
+      "costSquared": 4000000,
+      "rtp": 0.9604512,
+      "interval95": [
+        0.9573302525042278,
+        0.9635721474957721
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "DE",
+      "stakeUnits": 200,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3841804.8,
+      "rewardSquared": 44257591.296,
+      "rewardCost": 3841804.8,
+      "costSquared": 4000000,
+      "rtp": 0.9604512,
+      "interval95": [
+        0.9573302525042278,
+        0.9635721474957721
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "DE",
+      "stakeUnits": 500,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3841804.8,
+      "rewardSquared": 44257591.296,
+      "rewardCost": 3841804.8,
+      "costSquared": 4000000,
+      "rtp": 0.9604512,
+      "interval95": [
+        0.9573302525042278,
+        0.9635721474957721
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "DE",
+      "stakeUnits": 1000,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3841804.8,
+      "rewardSquared": 44257591.296,
+      "rewardCost": 3841804.8,
+      "costSquared": 4000000,
+      "rtp": 0.9604512,
+      "interval95": [
+        0.9573302525042278,
+        0.9635721474957721
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "DE",
+      "stakeUnits": 2000,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3841804.8,
+      "rewardSquared": 44257591.296,
+      "rewardCost": 3841804.8,
+      "costSquared": 4000000,
+      "rtp": 0.9604512,
+      "interval95": [
+        0.9573302525042278,
+        0.9635721474957721
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "DE",
+      "stakeUnits": 5000,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3841804.8,
+      "rewardSquared": 44257591.296,
+      "rewardCost": 3841804.8,
+      "costSquared": 4000000,
+      "rtp": 0.9604512,
+      "interval95": [
+        0.9573302525042278,
+        0.9635721474957721
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "GB",
+      "stakeUnits": 100,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3835261.44,
+      "rewardSquared": 44182211.7888,
+      "rewardCost": 3835261.44,
+      "costSquared": 4000000,
+      "rtp": 0.95881536,
+      "interval95": [
+        0.9556968299083941,
+        0.9619338900916059
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "GB",
+      "stakeUnits": 200,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3835261.44,
+      "rewardSquared": 44182211.7888,
+      "rewardCost": 3835261.44,
+      "costSquared": 4000000,
+      "rtp": 0.95881536,
+      "interval95": [
+        0.9556968299083941,
+        0.9619338900916059
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "GB",
+      "stakeUnits": 500,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3835261.44,
+      "rewardSquared": 44182211.7888,
+      "rewardCost": 3835261.44,
+      "costSquared": 4000000,
+      "rtp": 0.95881536,
+      "interval95": [
+        0.9556968299083941,
+        0.9619338900916059
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "GB",
+      "stakeUnits": 1000,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3835261.44,
+      "rewardSquared": 44182211.7888,
+      "rewardCost": 3835261.44,
+      "costSquared": 4000000,
+      "rtp": 0.95881536,
+      "interval95": [
+        0.9556968299083941,
+        0.9619338900916059
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "GB",
+      "stakeUnits": 2000,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3835261.44,
+      "rewardSquared": 44182211.7888,
+      "rewardCost": 3835261.44,
+      "costSquared": 4000000,
+      "rtp": 0.95881536,
+      "interval95": [
+        0.9556968299083941,
+        0.9619338900916059
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "GB",
+      "stakeUnits": 5000,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3835261.44,
+      "rewardSquared": 44182211.7888,
+      "rewardCost": 3835261.44,
+      "costSquared": 4000000,
+      "rtp": 0.95881536,
+      "interval95": [
+        0.9556968299083941,
+        0.9619338900916059
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "AR",
+      "stakeUnits": 100,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3827013.1199999996,
+      "rewardSquared": 44087191.1424,
+      "rewardCost": 3827013.1199999996,
+      "costSquared": 4000000,
+      "rtp": 0.9567532799999999,
+      "interval95": [
+        0.9536378010474361,
+        0.9598687589525637
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "AR",
+      "stakeUnits": 200,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3827013.1199999996,
+      "rewardSquared": 44087191.1424,
+      "rewardCost": 3827013.1199999996,
+      "costSquared": 4000000,
+      "rtp": 0.9567532799999999,
+      "interval95": [
+        0.9536378010474361,
+        0.9598687589525637
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "AR",
+      "stakeUnits": 500,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3827013.1199999996,
+      "rewardSquared": 44087191.1424,
+      "rewardCost": 3827013.1199999996,
+      "costSquared": 4000000,
+      "rtp": 0.9567532799999999,
+      "interval95": [
+        0.9536378010474361,
+        0.9598687589525637
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "AR",
+      "stakeUnits": 1000,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3827013.1199999996,
+      "rewardSquared": 44087191.1424,
+      "rewardCost": 3827013.1199999996,
+      "costSquared": 4000000,
+      "rtp": 0.9567532799999999,
+      "interval95": [
+        0.9536378010474361,
+        0.9598687589525637
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "AR",
+      "stakeUnits": 2000,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3827013.1199999996,
+      "rewardSquared": 44087191.1424,
+      "rewardCost": 3827013.1199999996,
+      "costSquared": 4000000,
+      "rtp": 0.9567532799999999,
+      "interval95": [
+        0.9536378010474361,
+        0.9598687589525637
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "AR",
+      "stakeUnits": 5000,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3827013.1199999996,
+      "rewardSquared": 44087191.1424,
+      "rewardCost": 3827013.1199999996,
+      "costSquared": 4000000,
+      "rtp": 0.9567532799999999,
+      "interval95": [
+        0.9536378010474361,
+        0.9598687589525637
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "CN",
+      "stakeUnits": 100,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3841263.36,
+      "rewardSquared": 44251353.907199994,
+      "rewardCost": 3841263.36,
+      "costSquared": 4000000,
+      "rtp": 0.9603158399999999,
+      "interval95": [
+        0.9571950924335941,
+        0.9634365875664057
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "CN",
+      "stakeUnits": 200,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3841263.36,
+      "rewardSquared": 44251353.907199994,
+      "rewardCost": 3841263.36,
+      "costSquared": 4000000,
+      "rtp": 0.9603158399999999,
+      "interval95": [
+        0.9571950924335941,
+        0.9634365875664057
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "CN",
+      "stakeUnits": 500,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3841263.36,
+      "rewardSquared": 44251353.907199994,
+      "rewardCost": 3841263.36,
+      "costSquared": 4000000,
+      "rtp": 0.9603158399999999,
+      "interval95": [
+        0.9571950924335941,
+        0.9634365875664057
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "CN",
+      "stakeUnits": 1000,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3841263.36,
+      "rewardSquared": 44251353.907199994,
+      "rewardCost": 3841263.36,
+      "costSquared": 4000000,
+      "rtp": 0.9603158399999999,
+      "interval95": [
+        0.9571950924335941,
+        0.9634365875664057
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "CN",
+      "stakeUnits": 2000,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3841263.36,
+      "rewardSquared": 44251353.907199994,
+      "rewardCost": 3841263.36,
+      "costSquared": 4000000,
+      "rtp": 0.9603158399999999,
+      "interval95": [
+        0.9571950924335941,
+        0.9634365875664057
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "CN",
+      "stakeUnits": 5000,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3841263.36,
+      "rewardSquared": 44251353.907199994,
+      "rewardCost": 3841263.36,
+      "costSquared": 4000000,
+      "rtp": 0.9603158399999999,
+      "interval95": [
+        0.9571950924335941,
+        0.9634365875664057
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "IN",
+      "stakeUnits": 100,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3844730.88,
+      "rewardSquared": 44291299.7376,
+      "rewardCost": 3844730.88,
+      "costSquared": 4000000,
+      "rtp": 0.9611827199999999,
+      "interval95": [
+        0.9580606923539827,
+        0.9643047476460171
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "IN",
+      "stakeUnits": 200,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3844730.88,
+      "rewardSquared": 44291299.7376,
+      "rewardCost": 3844730.88,
+      "costSquared": 4000000,
+      "rtp": 0.9611827199999999,
+      "interval95": [
+        0.9580606923539827,
+        0.9643047476460171
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "IN",
+      "stakeUnits": 500,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3844730.88,
+      "rewardSquared": 44291299.7376,
+      "rewardCost": 3844730.88,
+      "costSquared": 4000000,
+      "rtp": 0.9611827199999999,
+      "interval95": [
+        0.9580606923539827,
+        0.9643047476460171
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "IN",
+      "stakeUnits": 1000,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3844730.88,
+      "rewardSquared": 44291299.7376,
+      "rewardCost": 3844730.88,
+      "costSquared": 4000000,
+      "rtp": 0.9611827199999999,
+      "interval95": [
+        0.9580606923539827,
+        0.9643047476460171
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "IN",
+      "stakeUnits": 2000,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3844730.88,
+      "rewardSquared": 44291299.7376,
+      "rewardCost": 3844730.88,
+      "costSquared": 4000000,
+      "rtp": 0.9611827199999999,
+      "interval95": [
+        0.9580606923539827,
+        0.9643047476460171
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "IN",
+      "stakeUnits": 5000,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3844730.88,
+      "rewardSquared": 44291299.7376,
+      "rewardCost": 3844730.88,
+      "costSquared": 4000000,
+      "rtp": 0.9611827199999999,
+      "interval95": [
+        0.9580606923539827,
+        0.9643047476460171
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "TR",
+      "stakeUnits": 100,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3841643.52,
+      "rewardSquared": 44255733.3504,
+      "rewardCost": 3841643.52,
+      "costSquared": 4000000,
+      "rtp": 0.96041088,
+      "interval95": [
+        0.9572899920557271,
+        0.9635317679442729
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "TR",
+      "stakeUnits": 200,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3841643.52,
+      "rewardSquared": 44255733.3504,
+      "rewardCost": 3841643.52,
+      "costSquared": 4000000,
+      "rtp": 0.96041088,
+      "interval95": [
+        0.9572899920557271,
+        0.9635317679442729
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "TR",
+      "stakeUnits": 500,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3841643.52,
+      "rewardSquared": 44255733.3504,
+      "rewardCost": 3841643.52,
+      "costSquared": 4000000,
+      "rtp": 0.96041088,
+      "interval95": [
+        0.9572899920557271,
+        0.9635317679442729
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "TR",
+      "stakeUnits": 1000,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3841643.52,
+      "rewardSquared": 44255733.3504,
+      "rewardCost": 3841643.52,
+      "costSquared": 4000000,
+      "rtp": 0.96041088,
+      "interval95": [
+        0.9572899920557271,
+        0.9635317679442729
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "TR",
+      "stakeUnits": 2000,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3841643.52,
+      "rewardSquared": 44255733.3504,
+      "rewardCost": 3841643.52,
+      "costSquared": 4000000,
+      "rtp": 0.96041088,
+      "interval95": [
+        0.9572899920557271,
+        0.9635317679442729
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "TR",
+      "stakeUnits": 5000,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3841643.52,
+      "rewardSquared": 44255733.3504,
+      "rewardCost": 3841643.52,
+      "costSquared": 4000000,
+      "rtp": 0.96041088,
+      "interval95": [
+        0.9572899920557271,
+        0.9635317679442729
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "CA",
+      "stakeUnits": 100,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3847115.52,
+      "rewardSquared": 44318770.7904,
+      "rewardCost": 3847115.52,
+      "costSquared": 4000000,
+      "rtp": 0.96177888,
+      "interval95": [
+        0.9586559724720681,
+        0.9649017875279319
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "CA",
+      "stakeUnits": 200,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3847115.52,
+      "rewardSquared": 44318770.7904,
+      "rewardCost": 3847115.52,
+      "costSquared": 4000000,
+      "rtp": 0.96177888,
+      "interval95": [
+        0.9586559724720681,
+        0.9649017875279319
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "CA",
+      "stakeUnits": 500,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3847115.52,
+      "rewardSquared": 44318770.7904,
+      "rewardCost": 3847115.52,
+      "costSquared": 4000000,
+      "rtp": 0.96177888,
+      "interval95": [
+        0.9586559724720681,
+        0.9649017875279319
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "CA",
+      "stakeUnits": 1000,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3847115.52,
+      "rewardSquared": 44318770.7904,
+      "rewardCost": 3847115.52,
+      "costSquared": 4000000,
+      "rtp": 0.96177888,
+      "interval95": [
+        0.9586559724720681,
+        0.9649017875279319
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "CA",
+      "stakeUnits": 2000,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3847115.52,
+      "rewardSquared": 44318770.7904,
+      "rewardCost": 3847115.52,
+      "costSquared": 4000000,
+      "rtp": 0.96177888,
+      "interval95": [
+        0.9586559724720681,
+        0.9649017875279319
+      ],
+      "analyticalRtp": 0.96
+    },
+    {
+      "choice": "CA",
+      "stakeUnits": 5000,
+      "samples": 4000000,
+      "paidRounds": 4000000,
+      "cycles": 0,
+      "cost": 4000000,
+      "reward": 3847115.52,
+      "rewardSquared": 44318770.7904,
+      "rewardCost": 3847115.52,
+      "costSquared": 4000000,
+      "rtp": 0.96177888,
+      "interval95": [
+        0.9586559724720681,
+        0.9649017875279319
+      ],
+      "analyticalRtp": 0.96
+    }
+  ],
+  "analysis": {
+    "exactRtp": "24/25",
+    "probability": "1/12",
+    "returnMultiplier": "288/25",
+    "settlement": "Integer cents; all six stakes divide exactly. No bonus, continuation, cashout or adaptive choice exists.",
+    "interpretation": "Analytical expectation is exact. interval95 describes the independent seeded sampling estimate, not an uncertainty in the analytical result."
+  }
+}

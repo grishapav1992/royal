@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, mkdirSync, copyFileSync, existsSync, statSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, copyFileSync, existsSync, statSync, lstatSync, readdirSync } from 'node:fs';
 import { resolve, dirname, relative, isAbsolute } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
@@ -16,9 +16,9 @@ assert.equal(release.sourceCommit, git('rev-parse', 'HEAD')); assert.equal(relea
 assert.equal(receipt.sourceCommit, release.sourceCommit); assert.equal(git('status', '--porcelain'), '');
 assert.deepEqual(before.program, before.preparedProgram); assert.equal(before.containers['royal-game-1'].image, before.preparedImage);
 assert.equal(before.containers['royal-game-1'].health, 'healthy'); assert(before.freeBytes > 5 * 1024 ** 3);
-assert(!existsSync(out)); mkdirSync(out);
+if(existsSync(out)){assert(lstatSync(out).isDirectory()&&!lstatSync(out).isSymbolicLink());assert(!existsSync(resolve(out,'install-manifest.json')),'A complete payload must not be reconstructed');}else mkdirSync(out);
 const payload = {}, source = {}, financeSource = {}, dist = {}, modules = {}, backend = {};
-function copy(from, to) { const target = resolve(out, to),sub=relative(out,target); assert(sub&&!sub.startsWith('..')&&!isAbsolute(sub)); mkdirSync(dirname(target), { recursive: true }); copyFileSync(from, target); payload[to] = sha(target); return payload[to]; }
+function copy(from, to) { const target = resolve(out, to),sub=relative(out,target); assert(sub&&!sub.startsWith('..')&&!isAbsolute(sub)); mkdirSync(dirname(target), { recursive: true });if(existsSync(target)){assert(!lstatSync(target).isSymbolicLink()&&lstatSync(target).isFile());assert.equal(sha(target),sha(from),'An incomplete payload contains different bytes: '+to);}else copyFileSync(from, target); payload[to] = sha(target); return payload[to]; }
 const allowed = new Set(scope.allowedSource);
 for (const file of release.changed.filter(file => allowed.has(file))) {
   const digest = sha(resolve(root, file));
@@ -84,13 +84,14 @@ for (const [file, digest] of Object.entries(financialInputs)) {
 assert.equal(before.containers['royal-nile-play'].profile.host.ReadonlyRootfs, true);
 for (const file of ['deploy.py', 'snapshot.py', 'financial_gate.py', 'quiesce.cjs', 'runtime-inventory.cjs', 'run-release.py', 'scope.json', 'financial-baseline.json']) copy(resolve(helper, file), file);
 copy(resolve(root, 'scripts/game-module-release.py'), 'game-module-release.py');
-assert.equal(sha(resolve(root, 'scripts/game-module-release.py')), before.source['scripts/game-module-release.py'].sha256);
+assert.equal(canonicalSha(resolve(root, 'scripts/game-module-release.py')), before.source['scripts/game-module-release.py'].lf);
 for (const file of ['release-manifest.json', 'release-github.json']) copy(resolve(root, 'module-build', file), file);
 const manifest = { release: scope.release, sourceCommit: release.sourceCommit, baseCommit: scope.base, before, source, financeSource, financialInputs, retainedFinancialOrigins: financial.retainedOrigins, dist, modules, backend,
   financial: payload['play.js'], payload, hostContract: payload['host.json'], helperSha256: payload['deploy.py'],
   retainedSource,backendInputs,
   modulePackage: { gameId: scope.changedGame, version: metadata.version, manifestSha256: pointer.sha256, beforeSha256: before.modules['/opt/royal-game-modules/' + scope.changedGame + '/active.json']??'none' },
   compatibility: { onlyCaribbeanContractAdded: true, acceptedRules: [1], unchangedDependencyManifests: true, retainedOtherModules: true, retainedOtherBackendPrograms: ['dist-server/payments.js','dist-server/crypto-reconcile.js'] } };
-writeFileSync(resolve(out, 'install-manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
+function checkInventory(folder,prefix=''){for(const entry of readdirSync(folder,{withFileTypes:true})){assert(!entry.isSymbolicLink(),'Payload symlink rejected');const name=prefix+entry.name;if(entry.isDirectory())checkInventory(resolve(folder,entry.name),name+'/');else assert(entry.isFile()&&Object.hasOwn(payload,name),'Uninventoried partial payload: '+name);}}
+checkInventory(out);writeFileSync(resolve(out, 'install-manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
 execFileSync('tar', [...(process.platform === 'darwin' ? ['--no-xattrs'] : []), '-czf', resolve(work, 'transport.tgz'), '-C', out, '.'], { env: { ...process.env, COPYFILE_DISABLE: '1' } });
 console.log(JSON.stringify({ sourceCommit: release.sourceCommit, changedSources: Object.keys(source).length, financeSources: Object.keys(financeSource).length, clientFiles: Object.keys(dist).length, moduleFiles: Object.keys(modules).length, transportBytes: statSync(resolve(work, 'transport.tgz')).size }));
