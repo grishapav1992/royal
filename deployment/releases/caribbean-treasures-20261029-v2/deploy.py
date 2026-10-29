@@ -188,6 +188,11 @@ def wait_finance_ready(seconds=300):
     save('financial-readiness.json',{'attempts':attempts,'consecutiveReady':len(samples)})
     raise RuntimeError('Financial service did not sustain readiness')
 
+def publish_module(publisher,args):
+    previous=os.umask(0o022)
+    try:return publisher.run(args)
+    finally:os.umask(previous)
+
 def publish():
     payload();built=json.loads((ROOT/'build-result.json').read_text());stable(snapshot())
     phase='finance'
@@ -210,7 +215,7 @@ def publish():
         atomic(ROOT/'host.json',STATE/'host.json')
         spec=importlib.util.spec_from_file_location('reviewed_module_publisher',ROOT/'game-module-release.py');module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
         args=argparse.Namespace(operation='install',package=str(ROOT/'caribbean-package'),version=None,game='studio-caribbean-treasures',expected_sha=M['modulePackage']['beforeSha256'],root='/opt/royal-game-modules',state=str(STATE),app_lock=str(LIVE/'.client-presentation-deploy.lock'))
-        published=module.run(args);assert published['published'];save('module-published.json',published)
+        published=publish_module(module,args);assert published['published'];save('module-published.json',published)
         after=snapshot();stable(after,finance=True,host=True,module=True)
         for directory in ['dist','backend','module-dist']:
             target=LIVE/('dist-server' if directory=='backend' else directory);shutil.copytree(ROOT/directory,target,dirs_exist_ok=True)

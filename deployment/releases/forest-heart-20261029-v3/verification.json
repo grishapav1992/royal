@@ -1,0 +1,250 @@
+{
+  "sourceCommit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+  "scope": "Forest Heart only",
+  "checks": {
+    "qualifiedProfiles": 13,
+    "unchangedLegacyBaseline": 114,
+    "independentServerRounds": 10752,
+    "commonWalletCases": 11,
+    "mathTests": 9,
+    "serverProtocolHttpWalletTests": 8,
+    "browserRunNote": "Earlier full game suite passed 16 scenarios on the same reviewed game source. Final retained Flag baseline passed two fresh full-host scenarios covering desktop, phones, bonus, choice, settlement and close/reopen. An earlier run was interrupted by checkout synchronization and was discarded; a subsequent intermittent host-entry timing failure was resolved in the test harness by waiting for the existing cabinet interaction, without changing game behavior.",
+    "composedNileStakeChoiceCombinations": 84,
+    "existingNileRegressionScenarios": 10,
+    "installerGuardTests": 11,
+    "buildPassed": true,
+    "githubReceiptPassed": true,
+    "freshBaselineDesktopMobileFlowAndReopenScenarios": 2,
+    "retainedFinanceTests": 12,
+    "retainedFinanceStakeChoiceCombinations": 84,
+    "paymentCompatibilityTests": 28,
+    "previousFullBrowserScenariosPassed": 16
+  },
+  "productionStatus": "Verified production publication",
+  "cleanup": {
+    "removedFolders": [],
+    "removedArchiveBytes": 0,
+    "rejection": "Automatic approval rejected deletion of the failed task-owned partial payload: blocked by policy. Folder retained; no deletion retried.",
+    "activeLocalReview": "Previous localhost:5296 session is offline; no active review is claimed.",
+    "localFreeBeforeBytes": 302977175552,
+    "localFreeLatestBytes": 292357971968,
+    "diskSpaceReclaimed": false,
+    "taskTemporaryBytes": 317488935,
+    "retainedCheckoutReason": "Concurrent publication and automatic review rejection of deletion inside this task checkout. Do not remove the checkout to bypass that rejection.",
+    "rejections": [
+      {
+        "operation": "Delete failed task-owned partial release payload",
+        "reason": "blocked by policy",
+        "retried": false
+      },
+      {
+        "operation": "Delete obsolete browser-results, v2-browser, v3-browser and v3-browser-final folders",
+        "reason": "blocked by policy",
+        "filesDeleted": false,
+        "retried": false
+      }
+    ],
+    "server": {
+      "archivesRemoved": [
+        {
+          "path": "/opt/royal-releases/forest-heart-20261029-v1.transport.tgz",
+          "bytes": 26635716,
+          "sha256": "17bc91e5fc9a8de02c6b33dae74e88b73d350433c81ad0186c2b053c3e1ec628"
+        },
+        {
+          "path": "/opt/royal-releases/forest-heart-20261029-v2.transport.tgz",
+          "bytes": 26638041,
+          "sha256": "2ef86a944f237df148fed6d3af2cc547cfd3a834c0ee3b1ed27d67a55a8837af"
+        },
+        {
+          "path": "/opt/royal-releases/forest-heart-20261029-v3.transport.tgz",
+          "bytes": 26303278,
+          "sha256": "c18b4d340aed591d0f72f63a80251f16f8d014df4086c99c36c355255f901980"
+        }
+      ],
+      "contextsRemoved": [
+        {
+          "path": "/opt/royal-releases/forest-heart-20261029-v2/game-context",
+          "logicalBytes": 12130875,
+          "files": 43
+        },
+        {
+          "path": "/opt/royal-releases/forest-heart-20261029-v2/finance-context",
+          "logicalBytes": 1799531,
+          "files": 2
+        },
+        {
+          "path": "/opt/royal-releases/forest-heart-20261029-v3/game-context",
+          "logicalBytes": 12146775,
+          "files": 43
+        }
+      ],
+      "logicalBytesRemoved": 105654216,
+      "freeBeforeBytes": 5954355200,
+      "freeAfterBytes": 6035910656,
+      "backupsAndImagesRetained": true,
+      "privateConfigurationAndDataRetained": true,
+      "note": "Concurrent server activity means the free-space difference is not attributed entirely to this cleanup."
+    },
+    "sourcePreservationCommits": [
+      "ea52a277f4d161bc6d8491151489ef4a397d711b",
+      "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f"
+    ]
+  },
+  "baseCommit": "23f5111455d280315f2d5cf2de443cf025e3f01e",
+  "release": "forest-heart-20261029-v3",
+  "qualifiedFinancialBundleSha256": "1493cd840ea028746c113609a4f27af428abbfb8e16652ec4dbe8a24f60de99a",
+  "preservationCommits": [
+    "ea52a277f4d161bc6d8491151489ef4a397d711b",
+    "47e9e7bf3429df1f4ebc5a6d3b4146e4a6c31f9d"
+  ],
+  "financialServiceRetained": true,
+  "financialVerification": {
+    "runningImage": "sha256:ca21bf93449102ccd1b5b40da73fab7239d4a9673c9403c62adfd74e3e2e447c",
+    "runningSha256": "1493cd840ea028746c113609a4f27af428abbfb8e16652ec4dbe8a24f60de99a",
+    "localSha256": "a6755f237330e5af9810a29121e8aebc229c3518783f135ff32b34be6fe163d5",
+    "inputs": 131,
+    "allInputBytesIdentical": true,
+    "onlyBuildMachinePathsInCommentsAndInitializationLabelsDiffer": true
+  },
+  "failedAttempts": [
+    {
+      "release": "forest-heart-20261029-v1",
+      "phase": "locks",
+      "applicationMutation": false
+    },
+    {
+      "release": "forest-heart-20261029-v2",
+      "phase": "finance readiness",
+      "hostOrModuleInstalled": false,
+      "subsequentFlagReleaseRetainedForestHandler": true
+    }
+  ],
+  "financialRuntimeRetained": true,
+  "published": true,
+  "images": {
+    "game": "sha256:aa35e07b628eb7de8ee66403305bffd8b91f51cfeb4c15a4b0d5b0acd53c0b16",
+    "finance": "sha256:ca21bf93449102ccd1b5b40da73fab7239d4a9673c9403c62adfd74e3e2e447c"
+  },
+  "module": {
+    "verified": true,
+    "gameId": "studio-forest-heart",
+    "version": "1.7.0-f59a3572e207",
+    "bytes": 3131828,
+    "files": 17,
+    "beforeSha256": "none",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "activeSha256": "3631a26ae0773b219e3d644b7350c262d46b8cd726f0ae7824f36a331f6d23f9",
+    "history": "/opt/royal-game-modules-state/history/20261029T161635-e105a772d79742dead0fa69c4b6ceb64.json"
+  },
+  "endedAt": "2026-10-29T16:20:11.220446+00:00",
+  "publicVerification": {
+    "verified": true,
+    "sourceCommit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+    "moduleVersion": "1.7.0-f59a3572e207",
+    "at": "2026-10-29T16:21:40.197Z",
+    "healthStatus": 200,
+    "indexSha256": "b03c3fd8a16edf3c32d2de4e2cfbac29b19a78dc35ee8d5c68efc79da6d4af37",
+    "moduleManifestSha256": "938ac26854d61bd0580072fadc05c0554ad39253f17d2c5aee82f8db2e5d509c",
+    "pointerNoStore": true,
+    "hashedHttpFiles": 156,
+    "walletStatuses": [
+      {
+        "path": "/api/demo-wallet",
+        "status": 401
+      },
+      {
+        "path": "/api/demo-wallet/expansion",
+        "status": 401
+      },
+      {
+        "path": "/api/game-wallet",
+        "status": 410
+      },
+      {
+        "path": "/api/nile-play/wallet",
+        "status": 410
+      }
+    ],
+    "unchangedAdministrationAndOldPointers": true,
+    "productionAccountsCreated": false,
+    "productionWagersPlaced": false
+  },
+  "backups": {
+    "directory": "/opt/royal-backups/forest-heart-20261029-v3",
+    "files": {
+      "source.tgz": {
+        "bytes": 193146443,
+        "sha256": "518520016060b439e0eec106a2a3b78e5162f47661d1f2d95f962cf8a47f39ae"
+      },
+      "financial-source.tgz": {
+        "bytes": 515773,
+        "sha256": "60f236e5371615270fe79085ead0a58249eefe7cc9a98d1cd61057d806d4ab8f"
+      },
+      "nile-play.dump": {
+        "bytes": 94004,
+        "sha256": "cf1332bc5bfa307a4eb69c6c55712c059677454ceaa9c67e411a02b2f486ea44",
+        "archiveEntries": 178
+      }
+    }
+  },
+  "configurationPreserved": true,
+  "playerDatabaseRestored": false,
+  "oldModulesRetained": true,
+  "otherServicesRetained": true,
+  "financialHealth": {
+    "ok": true,
+    "ready": true,
+    "testOnly": true,
+    "at": 1793290810.9529526
+  },
+  "unchangedReviewedSources": [
+    {
+      "path": "src/shared/forestHeartMath.ts",
+      "sha256": "c3e04efc098aa9d61f0faa70fc9159d8460dcf0816d96ef5b560efd45ab46658",
+      "matchesReviewedDevelopment": true
+    },
+    {
+      "path": "src/shared/forestHeart.ts",
+      "sha256": "6f0ba79987ff2d24e5c242103ec6735bea1b9fcb3a0fba2abec773eff1dab52e",
+      "matchesReviewedDevelopment": true
+    },
+    {
+      "path": "server/games/forestHeart.ts",
+      "sha256": "0c7412ea5438c72d63c7808759e79bb76fa95e12a32a23690dd7b36fcca9a1be",
+      "matchesReviewedDevelopment": true
+    },
+    {
+      "path": "games/forest-heart/ForestCharacter.ts",
+      "sha256": "2a362a9b2e190a7c56cc52d06313ef81f3c2a8321c60ab474e43223eda08856d",
+      "matchesReviewedDevelopment": true
+    },
+    {
+      "path": "games/forest-heart/ForestAudio.ts",
+      "sha256": "45cfe78f20c3e986879d1a2d847023a88972b2f0128896e57c93604edd291210",
+      "matchesReviewedDevelopment": true
+    },
+    {
+      "path": "games/forest-heart/presentation.ts",
+      "sha256": "f722a510ed699cecb172b064e2b44a98f79d19f59039ead1c796e6c779e2e24f",
+      "matchesReviewedDevelopment": true
+    }
+  ],
+  "inventories": {
+    "sourceBefore": 2037,
+    "sourceAfter": 2143,
+    "runtimeBefore": 8313,
+    "runtimeAfter": 8352,
+    "financialSourceBefore": 204,
+    "financialSourceAfter": 204,
+    "externalFilesBefore": 2147,
+    "externalFilesAfter": 2166,
+    "contractsBefore": 118,
+    "contractsAfter": 119,
+    "persistentServices": 14
+  }
+}

@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import { build } from 'esbuild';
 
 const helper = dirname(fileURLToPath(import.meta.url)), root = resolve(helper, '../../..');
-const baseline = JSON.parse(readFileSync(resolve(helper, 'financial-baseline.json'))).files;
+const registry = JSON.parse(readFileSync(resolve(helper, 'financial-baseline.json'))), baseline = registry.files;
 const scope = JSON.parse(readFileSync(resolve(helper, 'scope.json')));
 const digest = data => createHash('sha256').update(data).digest('hex');
 
@@ -28,8 +28,10 @@ export async function buildFinancial({ before, entryPoints = ['scripts/finance-n
       builder.onLoad({ filter: /\.(ts|json)$/ }, args => {
         const file = relative(root, args.path).split('\\').join('/');
         if (file.startsWith('../') || file.includes('node_modules/')) return;
-        const bytes = retained.get(file) || readFileSync(args.path), sha = digest(Buffer.from(bytes.toString('utf8').replace(/\r\n/g,'\n')));
-        inputs[file] = sha;
+        const projected=file==='src/shared/arcadeCatalog.ts';
+        if(projected)assert([before.financeSource[file]?.sha256,before.financeSource[file]?.lf].includes(registry.catalog.oldSha256),'Financial catalogue baseline changed');
+        const bytes = projected?readFileSync(resolve(root,registry.catalog.projectedSource)):retained.get(file) || readFileSync(args.path), sha = digest(Buffer.from(bytes.toString('utf8').replace(/\r\n/g,'\n')));
+        inputs[file] = sha; if(projected){assert.equal(sha,registry.catalog.sha256);origins[file]=registry.catalog;}
         if (retained.has(file)) { origins[file] = baseline[file]; used.add(file); }
         else if (!scope.allowedSource.includes(file) && !file.startsWith('server-tests/'))
           assert([before.financeSource[file]?.sha256, before.financeSource[file]?.lf].includes(sha), 'Unreviewed financial input: ' + file);

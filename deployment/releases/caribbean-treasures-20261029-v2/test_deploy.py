@@ -1,6 +1,7 @@
 import copy
 import importlib.util
 import json
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -62,6 +63,22 @@ class DeploymentGuards(unittest.TestCase):
             self.assertEqual(self.helper.wait_finance_ready(),[sample,sample,sample])
             self.assertEqual(save.call_args.args[1]['consecutiveReady'],3)
             self.assertEqual(len(save.call_args.args[1]['attempts']),7)
+    def test_module_directories_are_public_and_private_umask_is_restored(self):
+        directory=self.root/'public-module'
+        publisher=types.SimpleNamespace(run=lambda args:directory.mkdir(mode=0o755))
+        previous=os.umask(0o077)
+        try:
+            self.helper.publish_module(publisher,None)
+            self.assertEqual(directory.stat().st_mode&0o777,0o755)
+            self.assertEqual(os.umask(0o077),0o077)
+        finally:os.umask(previous)
+    def test_failed_module_publication_restores_private_umask(self):
+        def fail(args):raise RuntimeError('injected')
+        previous=os.umask(0o077)
+        try:
+            with self.assertRaises(RuntimeError):self.helper.publish_module(types.SimpleNamespace(run=fail),None)
+            self.assertEqual(os.umask(0o077),0o077)
+        finally:os.umask(previous)
     def test_disk_reserve_is_never_lowered(self):
         with patch.object(self.helper.shutil,'disk_usage',return_value=types.SimpleNamespace(free=5*1024**3)):
             with self.assertRaises(AssertionError):self.helper.capacity()
