@@ -1,0 +1,410 @@
+{
+  "format": 1,
+  "date": "2026-10-29",
+  "sourceCommit": "36b0cb9f3091617e5d435d8a58bb6421439ab23b",
+  "baseline": "dcafea8c74059fbaff2ea14bcd849e49de9c8ef2",
+  "gamePackage": "1.5.1-2531f98fbc64",
+  "sourceSha256": "2531f98fbc648b6eeeb995d2a519789f56e9d1b43c4cb8162b525179c05e2918",
+  "manifestSha256": "60423281544979219d75c6a094f00870f18266a4ef38e1ebee7bc253932dff6c",
+  "contracts": {
+    "host": 1,
+    "rules": 1,
+    "progress": 1,
+    "collection": 1
+  },
+  "fixed": [
+    {
+      "issue": "An unconfirmed captain remained visible after closing a failed selection and starting a spin",
+      "reproducedBeforeFix": {
+        "expected": "isabella",
+        "actual": "amara"
+      },
+      "resolution": "Decode frames, await guarded account confirmation, then apply the identity. A cancelled late acceptance refreshes the same account after presentation."
+    },
+    {
+      "issue": "Refreshing during a pending selection could restore a stale identity",
+      "evidence": "Selection disabled cards but left the refresh control active; loadCrew accepted refreshes during choosingCaptain",
+      "resolution": "Disable refresh and reject concurrent profile loads until selection ends."
+    }
+  ],
+  "paidMathChanged": false,
+  "walletChanged": false,
+  "collectionEconomyChanged": false,
+  "audioAssetsChanged": false,
+  "productionChanged": false,
+  "checks": {
+    "applicationBuild": {
+      "format": 1,
+      "startedAt": "2026-10-29T04:55:17.166Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 2252
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 24009
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 26042
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 8743
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 98
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 30
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 35
+        }
+      ],
+      "passed": true,
+      "durationMs": 61210
+    },
+    "rtp": {
+      "verified": 12,
+      "legacyNotQualified": 114
+    },
+    "gameMathWalletCompatibility": {
+      "tests": 48,
+      "passed": 48,
+      "failed": 0,
+      "skipped": 0
+    },
+    "accountCollection": {
+      "tests": 11,
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0
+    },
+    "assetsAndPackages": {
+      "tests": 10,
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0
+    },
+    "browser": {
+      "channel": "chrome",
+      "host": "real Royal module host with connected chat",
+      "webPort": 5235,
+      "apiPort": 2635,
+      "stats": {
+        "startTime": "2026-10-29T04:56:27.997Z",
+        "duration": 386101.82800000004,
+        "expected": 20,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "scenarios": [
+        {
+          "title": "crew collection earns free tokens, unlocks a chosen captain and persists beyond browser storage",
+          "status": "passed",
+          "durationMs": 15834
+        },
+        {
+          "title": "a lost cosmetic unlock response preserves tokens, paid bonus and account ownership",
+          "status": "passed",
+          "durationMs": 15374
+        },
+        {
+          "title": "collection outage keeps the slot playable and recovers without resetting the account",
+          "status": "passed",
+          "durationMs": 9159
+        },
+        {
+          "title": "closing a captain selection before a failed confirmation keeps the saved identity during a spin",
+          "status": "passed",
+          "durationMs": 11795
+        },
+        {
+          "title": "a late accepted captain selection waits until paid presentation ends",
+          "status": "passed",
+          "durationMs": 16323
+        },
+        {
+          "title": "crew loading failure, cancellation and every captain reaction retain a consistent identity",
+          "status": "passed",
+          "durationMs": 1729
+        },
+        {
+          "title": "header controls paint above overlapping pirate art and every tool remains usable",
+          "status": "passed",
+          "durationMs": 14636
+        },
+        {
+          "title": "catalogue pirate captain cover stays sharp on desktop and mobile and reopens the same round",
+          "status": "passed",
+          "durationMs": 12403
+        },
+        {
+          "title": "responsive framing keeps the title and full captain artwork inside the host",
+          "status": "passed",
+          "durationMs": 20480
+        },
+        {
+          "title": "empty balance explains disabled spins, live funding unlocks an exact-cost single line and free spins need no balance",
+          "status": "passed",
+          "durationMs": 12765
+        },
+        {
+          "title": "natural bonus, real host/chat, line presets and desktop/mobile layout",
+          "status": "passed",
+          "durationMs": 18439
+        },
+        {
+          "title": "an accepted start survives a lost response and reopening without duplicate debit",
+          "status": "passed",
+          "durationMs": 16038
+        },
+        {
+          "title": "both purchased tactics show the accepted price and recover after a full reload",
+          "status": "passed",
+          "durationMs": 33646
+        },
+        {
+          "title": "switching accounts hides the previous series and restores it only for its owner",
+          "status": "passed",
+          "durationMs": 35261
+        },
+        {
+          "title": "confirmed animation, cannon, skip, mute, zero volume and close release owned audio",
+          "status": "passed",
+          "durationMs": 27884
+        },
+        {
+          "title": "extreme stakes, rapid double click, mobile purchase and English recovery keep one paid round",
+          "status": "passed",
+          "durationMs": 52661
+        },
+        {
+          "title": "recorded orchestral music and Foley render without clipping and end in silence",
+          "status": "passed",
+          "durationMs": 781
+        },
+        {
+          "title": "sample loading can fail and retry, and late decode after close cannot restart audio",
+          "status": "passed",
+          "durationMs": 1366
+        },
+        {
+          "title": "captain blinks and looks at the field, deduplicates reactions and releases her timer",
+          "status": "passed",
+          "durationMs": 707
+        },
+        {
+          "title": "saved complete rounds give distinct captain reactions in the real host",
+          "status": "passed",
+          "durationMs": 67076
+        }
+      ]
+    },
+    "framing": [
+      {
+        "width": 1440,
+        "height": 1000,
+        "rootOverflowX": 0,
+        "pageOverflowX": 0,
+        "captainClippedX": 0,
+        "captainClippedY": 0
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "rootOverflowX": 0,
+        "pageOverflowX": 0,
+        "captainClippedX": 0,
+        "captainClippedY": 0
+      },
+      {
+        "width": 1024,
+        "height": 768,
+        "rootOverflowX": 0,
+        "pageOverflowX": 0,
+        "captainClippedX": 0,
+        "captainClippedY": 0
+      },
+      {
+        "width": 900,
+        "height": 650,
+        "rootOverflowX": 0,
+        "pageOverflowX": 0,
+        "captainClippedX": 0,
+        "captainClippedY": 0
+      },
+      {
+        "width": 800,
+        "height": 600,
+        "rootOverflowX": 0,
+        "pageOverflowX": 0,
+        "captainClippedX": 0,
+        "captainClippedY": 0
+      },
+      {
+        "width": 640,
+        "height": 480,
+        "rootOverflowX": 0,
+        "pageOverflowX": 0,
+        "captainClippedX": 0,
+        "captainClippedY": 0
+      },
+      {
+        "width": 500,
+        "height": 760,
+        "rootOverflowX": 0,
+        "pageOverflowX": 0,
+        "captainClippedX": 0,
+        "captainClippedY": 0
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "rootOverflowX": 0,
+        "pageOverflowX": 0,
+        "captainClippedX": 0,
+        "captainClippedY": 0
+      },
+      {
+        "width": 342,
+        "height": 700,
+        "rootOverflowX": 0,
+        "pageOverflowX": 0,
+        "captainClippedX": 0,
+        "captainClippedY": 0
+      },
+      {
+        "width": 844,
+        "height": 390,
+        "rootOverflowX": 0,
+        "pageOverflowX": 0,
+        "captainClippedX": 0,
+        "captainClippedY": 0
+      },
+      {
+        "width": 342,
+        "height": 245,
+        "rootOverflowX": 0,
+        "pageOverflowX": 0,
+        "captainClippedX": 0,
+        "captainClippedY": 0
+      }
+    ],
+    "audio": {
+      "maximumScheduledDeviationMs": 17.213494326595537,
+      "targetMs": 50,
+      "peak": 0.31254756450653076,
+      "rms": 0.025705984728743303,
+      "tail": 0,
+      "ownedSourcesCreated": 52,
+      "ownedSourcesRemaining": 0
+    }
+  },
+  "limitations": [
+    "Mobile checks use desktop Chrome viewport emulation; physical phones and Bluetooth listening quality were not measured.",
+    "The legacy RTP count identifies unchanged unqualified modules and is not a claim of qualified RTP for those modules.",
+    "This report covers the Caribbean suites and application build, not all historical tests of other account and payment contracts. Earlier broad-suite mismatches remain documented in collection-review.md.",
+    "The former user preview on port 5234 was already stopped before the audit. Its stored temporary database was not opened or changed. This audit uses its own disposable database and accounts."
+  ],
+  "integration": {
+    "commit": "c5d14d3d9d3d705d95d7c20c13134fdc3c017d42",
+    "baseline": "55ede2760591e29c31a7681b024b2e4ffd08103c",
+    "caribbeanCodeAndRulesUnchanged": true,
+    "changes": "Preserved concurrent roulette work; shared catalogue and viewport changes were checked again with Caribbean.",
+    "applicationBuild": {
+      "format": 1,
+      "startedAt": "2026-10-29T05:05:39.637Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 4298
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 19492
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 17932
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 7607
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 80
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 27
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 36
+        }
+      ],
+      "passed": true,
+      "durationMs": 49473
+    },
+    "rtp": {
+      "verified": 13,
+      "legacyNotQualified": 114
+    },
+    "assetsAndPackages": {
+      "tests": 10,
+      "passed": 10,
+      "failed": 0
+    },
+    "browser": {
+      "stats": {
+        "startTime": "2026-10-29T05:06:41.723Z",
+        "duration": 48222.214,
+        "expected": 3,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "scenarios": [
+        {
+          "title": "catalogue pirate captain cover stays sharp on desktop and mobile and reopens the same round",
+          "status": "passed",
+          "durationMs": 12274
+        },
+        {
+          "title": "responsive framing keeps the title and full captain artwork inside the host",
+          "status": "passed",
+          "durationMs": 15281
+        },
+        {
+          "title": "natural bonus, real host/chat, line presets and desktop/mobile layout",
+          "status": "passed",
+          "durationMs": 19053
+        }
+      ]
+    }
+  }
+}

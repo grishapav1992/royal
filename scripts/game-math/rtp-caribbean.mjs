@@ -10,14 +10,18 @@ import { startCaribbean, moveCaribbean } from '../../server/games/caribbeanTreas
 
 export const CARIBBEAN_QUALIFICATION_METHOD = 'exact-caribbean-giant-round-v1';
 // Freeze the reviewed implementation. Changing a source requires reviewing this model.
+// Forest Heart integration adds an independent game branch and trailing capability flag.
+// The 2026-10-28 merge also retains main Neopolis v4 capability parsing and Last Exit guards.
+// Caribbean settings, costs, entropy, settlement and its existing flag position are preserved.
+// Requalify the complete Caribbean replay after reviewing these shared-file additions.
 export const CARIBBEAN_REVIEWED_SOURCES = {
   'src/shared/caribbeanTreasuresMath.ts': 'b86e71675dfd0179da8d8c43c7a62f8da41303d5e6bc59f07b81d4497b64647b',
   'src/shared/caribbeanTreasures.ts': '5590af9897cfb32dbf8fd7d9c0608ad52184051ddee7ca70cd309267a4311aee',
   'server/games/caribbeanTreasures.ts': 'bdb0aa8eecef1093f876dd3c467ff1b43d8a7b1606a63a56aa46430964556e99',
   'src/shared/caribbeanTransport.ts': 'c4a590c6778048f9ecd37852549762adde064f90dca072316ee215ba8ac89c78',
-  'src/shared/casinoExpansion.ts': '4fd2e0bc8c783150eb090f8e66b0dc038354dfa0f21a5b064e330779a31b7064',
-  'server/demoExpansion.ts': '4fef587fabddfca96bb7bbae3bac7ba44e333ca447938b6ad7d361b82b642502',
-  'server/finance/nile-game-runtime.ts': '88390bd627a09a0a5ad8b9446a538ad825c0e8dcb1596e2ef9e9dd087e46eeb8',
+  'src/shared/casinoExpansion.ts': 'b12c62592673ae8a458c381ca122bab1a29d529f978eb886c28774564c053eae',
+  'server/demoExpansion.ts': '6d940a4e5bb4d4e02fa9bddadbba66378a185d2396c1553449ae711188b19925',
+  'server/finance/nile-game-runtime.ts': 'c04d2391d39a660b90e1ee0506ecdc39427cb106397caa92c4d63c88b25477bc',
 };
 const WEIGHTS = [30,24,18,13,9,6];
 const PAYS = [[2,6,20,60],[4,10,30,100],[6,16,40,150],[8,24,60,200],[10,30,100,400],[16,50,200,1000]];

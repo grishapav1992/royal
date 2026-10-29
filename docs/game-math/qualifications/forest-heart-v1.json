@@ -1,0 +1,1952 @@
+{
+  "schemaVersion": 1,
+  "gameId": "studio-forest-heart",
+  "rulesVersion": 1,
+  "progressVersion": 1,
+  "startedAt": "2026-10-29T05:29:57.800Z",
+  "completedAt": "2026-10-29T05:30:01.074Z",
+  "sourceHashes": {
+    "src/shared/forestHeartMath.ts": "c3e04efc098aa9d61f0faa70fc9159d8460dcf0816d96ef5b560efd45ab46658",
+    "src/shared/forestHeart.ts": "6f0ba79987ff2d24e5c242103ec6735bea1b9fcb3a0fba2abec773eff1dab52e",
+    "src/shared/casinoExpansion.ts": "b12c62592673ae8a458c381ca122bab1a29d529f978eb886c28774564c053eae",
+    "server/games/forestHeart.ts": "0c7412ea5438c72d63c7808759e79bb76fa95e12a32a23690dd7b36fcca9a1be",
+    "server/demoExpansion.ts": "6d940a4e5bb4d4e02fa9bddadbba66378a185d2396c1553449ae711188b19925",
+    "server/demoWallet.ts": "6173c565c5860342950e04097d6f57913e49fc9dabe01f4ebb25249fd9568346",
+    "server/demoWalletAmounts.ts": "83f136ac575d0c3ca0deaadb6ff709f29308446c017c714862536d2bd56a4df0",
+    "server/demoWalletRoutes.ts": "bea55a2723a3efd9038820e83e50d4d32f3c0f8186991276a2716145fb63cc69",
+    "server/gameWalletRoutes.ts": "3491e86363cbef03d4a7bf0a05a2acf354cee29d27eb0b441abe6c5578155b77",
+    "server/finance/nile-game-runtime.ts": "c04d2391d39a660b90e1ee0506ecdc39427cb106397caa92c4d63c88b25477bc",
+    "server/pvp/virtual-wallet.ts": "03cfccc604a2748c7b7e4c461adb56c6dfd0e72265726104fd8a96697570327c",
+    "server/database.ts": "89c282f2e65158079bdafc07d815c5ca962aa82f89ba0d3c5f03a19aa7c81ca8",
+    "scripts/game-math/forest-heart-reference.mjs": "307b64ae1ee33b4e89291a945c2827e9ef985d721f8f898005b0a34fe1bede50",
+    "scripts/game-math/forest-heart-model.mjs": "37e1a4712b20337f2ee7041a8c16e0f23ebb968a9aa7d52a1d788e1bd3d68813",
+    "scripts/game-math/forest-heart-wallet.ts": "d87e7f36d9c1720ad785220f799c512f3894c5bd44e45b99adc5aa872172fc55",
+    "scripts/game-math/forest-heart-evidence.mjs": "444da1dfc36445194a53a817288ad976f8a9e4058da0a8e30dffaf71aa207a23",
+    "scripts/database-test.ts": "d451fca994b9d7d5c41dfc5f0fec13a1d34dab117264ae2f70c1c749c7fe08f8",
+    "src/wallet/ExpansionClient.ts": "9a7f81a1048d4e040fff7b9d85bfcaf09a41f5399c0f800e5c5ce82e5303919c",
+    "games/forest-heart/presentation.ts": "f722a510ed699cecb172b064e2b44a98f79d19f59039ead1c796e6c779e2e24f",
+    "scripts/game-math/rtp-forest-heart.mjs": "987a21552b35415c930c4d907007af6f87c0fd86a51b8a42fcb7c946a6661a15"
+  },
+  "policySha256": "5af210c5ca101e2c958d573b4d0d47767d9c368af30e546f9c3d8a145513c4b1",
+  "serverReplayChecks": 10752,
+  "method": "exact-forest-heart-runtime",
+  "scope": "server-engine-and-primary-common-wallet",
+  "clientVerification": "separate-browser-report",
+  "analysis": {
+    "schemaVersion": 1,
+    "gameId": "studio-forest-heart",
+    "scope": "mathematical-model-only",
+    "releaseQualified": false,
+    "method": "exact-finite-board-enumeration-and-bonus-state-propagation",
+    "policy": {
+      "target": 0.96,
+      "tolerance": 0.002,
+      "calibrationNumerator": 631,
+      "rules": {
+        "rulesVersion": 1,
+        "progressVersion": 1,
+        "size": 5,
+        "source": 10,
+        "receivers": [
+          4,
+          14,
+          24
+        ],
+        "abilityDenominator": 32,
+        "bonusDenominator": 64,
+        "bonusSpins": 4,
+        "payoutNumerator": 631,
+        "payoutDenominator": 1000,
+        "energy": [
+          {
+            "value": 1,
+            "weight": 9000
+          },
+          {
+            "value": 2,
+            "weight": 800
+          },
+          {
+            "value": 5,
+            "weight": 180
+          },
+          {
+            "value": 20,
+            "weight": 19
+          },
+          {
+            "value": 100,
+            "weight": 1
+          }
+        ],
+        "energyDenominator": 10000
+      },
+      "stakes": [
+        1000,
+        2000,
+        5000,
+        10000,
+        20000,
+        50000
+      ]
+    },
+    "enumeration": {
+      "boards": 4096,
+      "actionsPerAbility": 13,
+      "rotationComparisons": 49152,
+      "heldStates": 243,
+      "bonusComparisons": 131072,
+      "baseHistogram": [
+        1920,
+        526,
+        786,
+        864
+      ],
+      "optimalHistogram": [
+        196,
+        437,
+        1079,
+        2384
+      ],
+      "improvedBoards": 3036,
+      "bonusKernelSha256": "88b20c5a62977fb2eb99e7337d3bf1a91045ec1a3c4f73c54ee6d6f04892a503",
+      "forwardBackwardAgreement": true
+    },
+    "expectedEnergy": {
+      "numerator": "599",
+      "denominator": "500",
+      "decimal": 1.198
+    },
+    "baseExpectedFlowers": {
+      "numerator": "2345",
+      "denominator": "2048",
+      "decimal": 1.14501953125
+    },
+    "optimalAbilityExpectedFlowers": {
+      "numerator": "9747",
+      "denominator": "4096",
+      "decimal": 2.379638671875
+    },
+    "paidBaseExpectedFlowers": {
+      "numerator": "155137",
+      "denominator": "131072",
+      "decimal": 1.1836013793945312
+    },
+    "bonusExpectedFlowers": {
+      "numerator": "97128858934293",
+      "denominator": "17592186044416",
+      "decimal": 5.521136411874352
+    },
+    "bonusStages": [
+      {
+        "spin": 1,
+        "reachableStates": 13,
+        "expectedFlowers": {
+          "numerator": "2345",
+          "denominator": "2048",
+          "decimal": 1.14501953125
+        }
+      },
+      {
+        "spin": 2,
+        "reachableStates": 32,
+        "expectedFlowers": {
+          "numerator": "2795859",
+          "denominator": "2097152",
+          "decimal": 1.3331694602966309
+        }
+      },
+      {
+        "spin": 3,
+        "reachableStates": 32,
+        "expectedFlowers": {
+          "numerator": "12641990683",
+          "denominator": "8589934592",
+          "decimal": 1.4717214138945565
+        }
+      },
+      {
+        "spin": 4,
+        "reachableStates": 32,
+        "expectedFlowers": {
+          "numerator": "27641300222997",
+          "denominator": "17592186044416",
+          "decimal": 1.5712260064331645
+        }
+      }
+    ],
+    "components": {
+      "baseRtp": {
+        "numerator": "58636976753",
+        "denominator": "65536000000",
+        "decimal": 0.8947292595367432
+      },
+      "bonusRtp": {
+        "numerator": "36711697682535790917",
+        "denominator": "562949953421312000000",
+        "decimal": 0.06521307526436677
+      }
+    },
+    "optimalRtp": {
+      "numerator": "540399492663430330693",
+      "denominator": "562949953421312000000",
+      "decimal": 0.95994233480111
+    },
+    "strategies": [
+      {
+        "choice": "optimal",
+        "rtp": {
+          "numerator": "540399492663430330693",
+          "denominator": "562949953421312000000",
+          "decimal": 0.95994233480111
+        }
+      },
+      {
+        "choice": "pass",
+        "rtp": {
+          "numerator": "523980784172107282757",
+          "denominator": "562949953421312000000",
+          "decimal": 0.9307768496784293
+        }
+      },
+      {
+        "choice": "rotate-0",
+        "rtp": {
+          "numerator": "526311935585350302021",
+          "denominator": "562949953421312000000",
+          "decimal": 0.9349178064350211
+        }
+      },
+      {
+        "choice": "rotate-1",
+        "rtp": {
+          "numerator": "527324915029545040197",
+          "denominator": "562949953421312000000",
+          "decimal": 0.9367172193988883
+        }
+      },
+      {
+        "choice": "rotate-2",
+        "rtp": {
+          "numerator": "526311935585350302021",
+          "denominator": "562949953421312000000",
+          "decimal": 0.9349178064350211
+        }
+      },
+      {
+        "choice": "rotate-3",
+        "rtp": {
+          "numerator": "526006743060496759109",
+          "denominator": "562949953421312000000",
+          "decimal": 0.9343756756061636
+        }
+      },
+      {
+        "choice": "rotate-4",
+        "rtp": {
+          "numerator": "526721023437813561669",
+          "denominator": "562949953421312000000",
+          "decimal": 0.9356444924396597
+        }
+      },
+      {
+        "choice": "rotate-5",
+        "rtp": {
+          "numerator": "106183159458011174977",
+          "denominator": "112589990684262400000",
+          "decimal": 0.9430959076618277
+        }
+      },
+      {
+        "choice": "rotate-6",
+        "rtp": {
+          "numerator": "105832512727328380993",
+          "denominator": "112589990684262400000",
+          "decimal": 0.9399815390705191
+        }
+      },
+      {
+        "choice": "rotate-7",
+        "rtp": {
+          "numerator": "526311935585350302021",
+          "denominator": "562949953421312000000",
+          "decimal": 0.9349178064350211
+        }
+      },
+      {
+        "choice": "rotate-8",
+        "rtp": {
+          "numerator": "526006743060496759109",
+          "denominator": "562949953421312000000",
+          "decimal": 0.9343756756061636
+        }
+      },
+      {
+        "choice": "rotate-9",
+        "rtp": {
+          "numerator": "526721023437813561669",
+          "denominator": "562949953421312000000",
+          "decimal": 0.9356444924396597
+        }
+      },
+      {
+        "choice": "rotate-10",
+        "rtp": {
+          "numerator": "526311935585350302021",
+          "denominator": "562949953421312000000",
+          "decimal": 0.9349178064350211
+        }
+      },
+      {
+        "choice": "rotate-11",
+        "rtp": {
+          "numerator": "527324915029545040197",
+          "denominator": "562949953421312000000",
+          "decimal": 0.9367172193988883
+        }
+      }
+    ],
+    "stakeChecks": [
+      {
+        "stakeUnits": 1000,
+        "energy": 1,
+        "payoutPerFlowerUnits": "631"
+      },
+      {
+        "stakeUnits": 1000,
+        "energy": 2,
+        "payoutPerFlowerUnits": "1262"
+      },
+      {
+        "stakeUnits": 1000,
+        "energy": 5,
+        "payoutPerFlowerUnits": "3155"
+      },
+      {
+        "stakeUnits": 1000,
+        "energy": 20,
+        "payoutPerFlowerUnits": "12620"
+      },
+      {
+        "stakeUnits": 1000,
+        "energy": 100,
+        "payoutPerFlowerUnits": "63100"
+      },
+      {
+        "stakeUnits": 2000,
+        "energy": 1,
+        "payoutPerFlowerUnits": "1262"
+      },
+      {
+        "stakeUnits": 2000,
+        "energy": 2,
+        "payoutPerFlowerUnits": "2524"
+      },
+      {
+        "stakeUnits": 2000,
+        "energy": 5,
+        "payoutPerFlowerUnits": "6310"
+      },
+      {
+        "stakeUnits": 2000,
+        "energy": 20,
+        "payoutPerFlowerUnits": "25240"
+      },
+      {
+        "stakeUnits": 2000,
+        "energy": 100,
+        "payoutPerFlowerUnits": "126200"
+      },
+      {
+        "stakeUnits": 5000,
+        "energy": 1,
+        "payoutPerFlowerUnits": "3155"
+      },
+      {
+        "stakeUnits": 5000,
+        "energy": 2,
+        "payoutPerFlowerUnits": "6310"
+      },
+      {
+        "stakeUnits": 5000,
+        "energy": 5,
+        "payoutPerFlowerUnits": "15775"
+      },
+      {
+        "stakeUnits": 5000,
+        "energy": 20,
+        "payoutPerFlowerUnits": "63100"
+      },
+      {
+        "stakeUnits": 5000,
+        "energy": 100,
+        "payoutPerFlowerUnits": "315500"
+      },
+      {
+        "stakeUnits": 10000,
+        "energy": 1,
+        "payoutPerFlowerUnits": "6310"
+      },
+      {
+        "stakeUnits": 10000,
+        "energy": 2,
+        "payoutPerFlowerUnits": "12620"
+      },
+      {
+        "stakeUnits": 10000,
+        "energy": 5,
+        "payoutPerFlowerUnits": "31550"
+      },
+      {
+        "stakeUnits": 10000,
+        "energy": 20,
+        "payoutPerFlowerUnits": "126200"
+      },
+      {
+        "stakeUnits": 10000,
+        "energy": 100,
+        "payoutPerFlowerUnits": "631000"
+      },
+      {
+        "stakeUnits": 20000,
+        "energy": 1,
+        "payoutPerFlowerUnits": "12620"
+      },
+      {
+        "stakeUnits": 20000,
+        "energy": 2,
+        "payoutPerFlowerUnits": "25240"
+      },
+      {
+        "stakeUnits": 20000,
+        "energy": 5,
+        "payoutPerFlowerUnits": "63100"
+      },
+      {
+        "stakeUnits": 20000,
+        "energy": 20,
+        "payoutPerFlowerUnits": "252400"
+      },
+      {
+        "stakeUnits": 20000,
+        "energy": 100,
+        "payoutPerFlowerUnits": "1262000"
+      },
+      {
+        "stakeUnits": 50000,
+        "energy": 1,
+        "payoutPerFlowerUnits": "31550"
+      },
+      {
+        "stakeUnits": 50000,
+        "energy": 2,
+        "payoutPerFlowerUnits": "63100"
+      },
+      {
+        "stakeUnits": 50000,
+        "energy": 5,
+        "payoutPerFlowerUnits": "157750"
+      },
+      {
+        "stakeUnits": 50000,
+        "energy": 20,
+        "payoutPerFlowerUnits": "631000"
+      },
+      {
+        "stakeUnits": 50000,
+        "energy": 100,
+        "payoutPerFlowerUnits": "3155000"
+      }
+    ],
+    "maxReturn": {
+      "numerator": "1893",
+      "denominator": "2",
+      "decimal": 946.5
+    },
+    "interpretation": "Exact expectation of the specified finite candidate model, including the optimal visible action and all four sticky bonus spins. No sampled estimate or confidence interval. Not evidence of server RNG, transport, wallet settlement or runtime compatibility."
+  },
+  "results": [
+    {
+      "choice": "optimal",
+      "stakeUnits": 1000,
+      "rtpFraction": {
+        "numerator": "540399492663430330693",
+        "denominator": "562949953421312000000",
+        "decimal": 0.95994233480111
+      },
+      "rtp": 0.95994233480111
+    },
+    {
+      "choice": "optimal",
+      "stakeUnits": 2000,
+      "rtpFraction": {
+        "numerator": "540399492663430330693",
+        "denominator": "562949953421312000000",
+        "decimal": 0.95994233480111
+      },
+      "rtp": 0.95994233480111
+    },
+    {
+      "choice": "optimal",
+      "stakeUnits": 5000,
+      "rtpFraction": {
+        "numerator": "540399492663430330693",
+        "denominator": "562949953421312000000",
+        "decimal": 0.95994233480111
+      },
+      "rtp": 0.95994233480111
+    },
+    {
+      "choice": "optimal",
+      "stakeUnits": 10000,
+      "rtpFraction": {
+        "numerator": "540399492663430330693",
+        "denominator": "562949953421312000000",
+        "decimal": 0.95994233480111
+      },
+      "rtp": 0.95994233480111
+    },
+    {
+      "choice": "optimal",
+      "stakeUnits": 20000,
+      "rtpFraction": {
+        "numerator": "540399492663430330693",
+        "denominator": "562949953421312000000",
+        "decimal": 0.95994233480111
+      },
+      "rtp": 0.95994233480111
+    },
+    {
+      "choice": "optimal",
+      "stakeUnits": 50000,
+      "rtpFraction": {
+        "numerator": "540399492663430330693",
+        "denominator": "562949953421312000000",
+        "decimal": 0.95994233480111
+      },
+      "rtp": 0.95994233480111
+    },
+    {
+      "choice": "pass",
+      "stakeUnits": 1000,
+      "rtpFraction": {
+        "numerator": "523980784172107282757",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9307768496784293
+      },
+      "rtp": 0.9307768496784293
+    },
+    {
+      "choice": "pass",
+      "stakeUnits": 2000,
+      "rtpFraction": {
+        "numerator": "523980784172107282757",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9307768496784293
+      },
+      "rtp": 0.9307768496784293
+    },
+    {
+      "choice": "pass",
+      "stakeUnits": 5000,
+      "rtpFraction": {
+        "numerator": "523980784172107282757",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9307768496784293
+      },
+      "rtp": 0.9307768496784293
+    },
+    {
+      "choice": "pass",
+      "stakeUnits": 10000,
+      "rtpFraction": {
+        "numerator": "523980784172107282757",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9307768496784293
+      },
+      "rtp": 0.9307768496784293
+    },
+    {
+      "choice": "pass",
+      "stakeUnits": 20000,
+      "rtpFraction": {
+        "numerator": "523980784172107282757",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9307768496784293
+      },
+      "rtp": 0.9307768496784293
+    },
+    {
+      "choice": "pass",
+      "stakeUnits": 50000,
+      "rtpFraction": {
+        "numerator": "523980784172107282757",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9307768496784293
+      },
+      "rtp": 0.9307768496784293
+    },
+    {
+      "choice": "rotate-0",
+      "stakeUnits": 1000,
+      "rtpFraction": {
+        "numerator": "526311935585350302021",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9349178064350211
+      },
+      "rtp": 0.9349178064350211
+    },
+    {
+      "choice": "rotate-0",
+      "stakeUnits": 2000,
+      "rtpFraction": {
+        "numerator": "526311935585350302021",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9349178064350211
+      },
+      "rtp": 0.9349178064350211
+    },
+    {
+      "choice": "rotate-0",
+      "stakeUnits": 5000,
+      "rtpFraction": {
+        "numerator": "526311935585350302021",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9349178064350211
+      },
+      "rtp": 0.9349178064350211
+    },
+    {
+      "choice": "rotate-0",
+      "stakeUnits": 10000,
+      "rtpFraction": {
+        "numerator": "526311935585350302021",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9349178064350211
+      },
+      "rtp": 0.9349178064350211
+    },
+    {
+      "choice": "rotate-0",
+      "stakeUnits": 20000,
+      "rtpFraction": {
+        "numerator": "526311935585350302021",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9349178064350211
+      },
+      "rtp": 0.9349178064350211
+    },
+    {
+      "choice": "rotate-0",
+      "stakeUnits": 50000,
+      "rtpFraction": {
+        "numerator": "526311935585350302021",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9349178064350211
+      },
+      "rtp": 0.9349178064350211
+    },
+    {
+      "choice": "rotate-1",
+      "stakeUnits": 1000,
+      "rtpFraction": {
+        "numerator": "527324915029545040197",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9367172193988883
+      },
+      "rtp": 0.9367172193988883
+    },
+    {
+      "choice": "rotate-1",
+      "stakeUnits": 2000,
+      "rtpFraction": {
+        "numerator": "527324915029545040197",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9367172193988883
+      },
+      "rtp": 0.9367172193988883
+    },
+    {
+      "choice": "rotate-1",
+      "stakeUnits": 5000,
+      "rtpFraction": {
+        "numerator": "527324915029545040197",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9367172193988883
+      },
+      "rtp": 0.9367172193988883
+    },
+    {
+      "choice": "rotate-1",
+      "stakeUnits": 10000,
+      "rtpFraction": {
+        "numerator": "527324915029545040197",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9367172193988883
+      },
+      "rtp": 0.9367172193988883
+    },
+    {
+      "choice": "rotate-1",
+      "stakeUnits": 20000,
+      "rtpFraction": {
+        "numerator": "527324915029545040197",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9367172193988883
+      },
+      "rtp": 0.9367172193988883
+    },
+    {
+      "choice": "rotate-1",
+      "stakeUnits": 50000,
+      "rtpFraction": {
+        "numerator": "527324915029545040197",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9367172193988883
+      },
+      "rtp": 0.9367172193988883
+    },
+    {
+      "choice": "rotate-2",
+      "stakeUnits": 1000,
+      "rtpFraction": {
+        "numerator": "526311935585350302021",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9349178064350211
+      },
+      "rtp": 0.9349178064350211
+    },
+    {
+      "choice": "rotate-2",
+      "stakeUnits": 2000,
+      "rtpFraction": {
+        "numerator": "526311935585350302021",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9349178064350211
+      },
+      "rtp": 0.9349178064350211
+    },
+    {
+      "choice": "rotate-2",
+      "stakeUnits": 5000,
+      "rtpFraction": {
+        "numerator": "526311935585350302021",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9349178064350211
+      },
+      "rtp": 0.9349178064350211
+    },
+    {
+      "choice": "rotate-2",
+      "stakeUnits": 10000,
+      "rtpFraction": {
+        "numerator": "526311935585350302021",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9349178064350211
+      },
+      "rtp": 0.9349178064350211
+    },
+    {
+      "choice": "rotate-2",
+      "stakeUnits": 20000,
+      "rtpFraction": {
+        "numerator": "526311935585350302021",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9349178064350211
+      },
+      "rtp": 0.9349178064350211
+    },
+    {
+      "choice": "rotate-2",
+      "stakeUnits": 50000,
+      "rtpFraction": {
+        "numerator": "526311935585350302021",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9349178064350211
+      },
+      "rtp": 0.9349178064350211
+    },
+    {
+      "choice": "rotate-3",
+      "stakeUnits": 1000,
+      "rtpFraction": {
+        "numerator": "526006743060496759109",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9343756756061636
+      },
+      "rtp": 0.9343756756061636
+    },
+    {
+      "choice": "rotate-3",
+      "stakeUnits": 2000,
+      "rtpFraction": {
+        "numerator": "526006743060496759109",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9343756756061636
+      },
+      "rtp": 0.9343756756061636
+    },
+    {
+      "choice": "rotate-3",
+      "stakeUnits": 5000,
+      "rtpFraction": {
+        "numerator": "526006743060496759109",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9343756756061636
+      },
+      "rtp": 0.9343756756061636
+    },
+    {
+      "choice": "rotate-3",
+      "stakeUnits": 10000,
+      "rtpFraction": {
+        "numerator": "526006743060496759109",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9343756756061636
+      },
+      "rtp": 0.9343756756061636
+    },
+    {
+      "choice": "rotate-3",
+      "stakeUnits": 20000,
+      "rtpFraction": {
+        "numerator": "526006743060496759109",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9343756756061636
+      },
+      "rtp": 0.9343756756061636
+    },
+    {
+      "choice": "rotate-3",
+      "stakeUnits": 50000,
+      "rtpFraction": {
+        "numerator": "526006743060496759109",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9343756756061636
+      },
+      "rtp": 0.9343756756061636
+    },
+    {
+      "choice": "rotate-4",
+      "stakeUnits": 1000,
+      "rtpFraction": {
+        "numerator": "526721023437813561669",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9356444924396597
+      },
+      "rtp": 0.9356444924396597
+    },
+    {
+      "choice": "rotate-4",
+      "stakeUnits": 2000,
+      "rtpFraction": {
+        "numerator": "526721023437813561669",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9356444924396597
+      },
+      "rtp": 0.9356444924396597
+    },
+    {
+      "choice": "rotate-4",
+      "stakeUnits": 5000,
+      "rtpFraction": {
+        "numerator": "526721023437813561669",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9356444924396597
+      },
+      "rtp": 0.9356444924396597
+    },
+    {
+      "choice": "rotate-4",
+      "stakeUnits": 10000,
+      "rtpFraction": {
+        "numerator": "526721023437813561669",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9356444924396597
+      },
+      "rtp": 0.9356444924396597
+    },
+    {
+      "choice": "rotate-4",
+      "stakeUnits": 20000,
+      "rtpFraction": {
+        "numerator": "526721023437813561669",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9356444924396597
+      },
+      "rtp": 0.9356444924396597
+    },
+    {
+      "choice": "rotate-4",
+      "stakeUnits": 50000,
+      "rtpFraction": {
+        "numerator": "526721023437813561669",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9356444924396597
+      },
+      "rtp": 0.9356444924396597
+    },
+    {
+      "choice": "rotate-5",
+      "stakeUnits": 1000,
+      "rtpFraction": {
+        "numerator": "106183159458011174977",
+        "denominator": "112589990684262400000",
+        "decimal": 0.9430959076618277
+      },
+      "rtp": 0.9430959076618277
+    },
+    {
+      "choice": "rotate-5",
+      "stakeUnits": 2000,
+      "rtpFraction": {
+        "numerator": "106183159458011174977",
+        "denominator": "112589990684262400000",
+        "decimal": 0.9430959076618277
+      },
+      "rtp": 0.9430959076618277
+    },
+    {
+      "choice": "rotate-5",
+      "stakeUnits": 5000,
+      "rtpFraction": {
+        "numerator": "106183159458011174977",
+        "denominator": "112589990684262400000",
+        "decimal": 0.9430959076618277
+      },
+      "rtp": 0.9430959076618277
+    },
+    {
+      "choice": "rotate-5",
+      "stakeUnits": 10000,
+      "rtpFraction": {
+        "numerator": "106183159458011174977",
+        "denominator": "112589990684262400000",
+        "decimal": 0.9430959076618277
+      },
+      "rtp": 0.9430959076618277
+    },
+    {
+      "choice": "rotate-5",
+      "stakeUnits": 20000,
+      "rtpFraction": {
+        "numerator": "106183159458011174977",
+        "denominator": "112589990684262400000",
+        "decimal": 0.9430959076618277
+      },
+      "rtp": 0.9430959076618277
+    },
+    {
+      "choice": "rotate-5",
+      "stakeUnits": 50000,
+      "rtpFraction": {
+        "numerator": "106183159458011174977",
+        "denominator": "112589990684262400000",
+        "decimal": 0.9430959076618277
+      },
+      "rtp": 0.9430959076618277
+    },
+    {
+      "choice": "rotate-6",
+      "stakeUnits": 1000,
+      "rtpFraction": {
+        "numerator": "105832512727328380993",
+        "denominator": "112589990684262400000",
+        "decimal": 0.9399815390705191
+      },
+      "rtp": 0.9399815390705191
+    },
+    {
+      "choice": "rotate-6",
+      "stakeUnits": 2000,
+      "rtpFraction": {
+        "numerator": "105832512727328380993",
+        "denominator": "112589990684262400000",
+        "decimal": 0.9399815390705191
+      },
+      "rtp": 0.9399815390705191
+    },
+    {
+      "choice": "rotate-6",
+      "stakeUnits": 5000,
+      "rtpFraction": {
+        "numerator": "105832512727328380993",
+        "denominator": "112589990684262400000",
+        "decimal": 0.9399815390705191
+      },
+      "rtp": 0.9399815390705191
+    },
+    {
+      "choice": "rotate-6",
+      "stakeUnits": 10000,
+      "rtpFraction": {
+        "numerator": "105832512727328380993",
+        "denominator": "112589990684262400000",
+        "decimal": 0.9399815390705191
+      },
+      "rtp": 0.9399815390705191
+    },
+    {
+      "choice": "rotate-6",
+      "stakeUnits": 20000,
+      "rtpFraction": {
+        "numerator": "105832512727328380993",
+        "denominator": "112589990684262400000",
+        "decimal": 0.9399815390705191
+      },
+      "rtp": 0.9399815390705191
+    },
+    {
+      "choice": "rotate-6",
+      "stakeUnits": 50000,
+      "rtpFraction": {
+        "numerator": "105832512727328380993",
+        "denominator": "112589990684262400000",
+        "decimal": 0.9399815390705191
+      },
+      "rtp": 0.9399815390705191
+    },
+    {
+      "choice": "rotate-7",
+      "stakeUnits": 1000,
+      "rtpFraction": {
+        "numerator": "526311935585350302021",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9349178064350211
+      },
+      "rtp": 0.9349178064350211
+    },
+    {
+      "choice": "rotate-7",
+      "stakeUnits": 2000,
+      "rtpFraction": {
+        "numerator": "526311935585350302021",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9349178064350211
+      },
+      "rtp": 0.9349178064350211
+    },
+    {
+      "choice": "rotate-7",
+      "stakeUnits": 5000,
+      "rtpFraction": {
+        "numerator": "526311935585350302021",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9349178064350211
+      },
+      "rtp": 0.9349178064350211
+    },
+    {
+      "choice": "rotate-7",
+      "stakeUnits": 10000,
+      "rtpFraction": {
+        "numerator": "526311935585350302021",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9349178064350211
+      },
+      "rtp": 0.9349178064350211
+    },
+    {
+      "choice": "rotate-7",
+      "stakeUnits": 20000,
+      "rtpFraction": {
+        "numerator": "526311935585350302021",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9349178064350211
+      },
+      "rtp": 0.9349178064350211
+    },
+    {
+      "choice": "rotate-7",
+      "stakeUnits": 50000,
+      "rtpFraction": {
+        "numerator": "526311935585350302021",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9349178064350211
+      },
+      "rtp": 0.9349178064350211
+    },
+    {
+      "choice": "rotate-8",
+      "stakeUnits": 1000,
+      "rtpFraction": {
+        "numerator": "526006743060496759109",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9343756756061636
+      },
+      "rtp": 0.9343756756061636
+    },
+    {
+      "choice": "rotate-8",
+      "stakeUnits": 2000,
+      "rtpFraction": {
+        "numerator": "526006743060496759109",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9343756756061636
+      },
+      "rtp": 0.9343756756061636
+    },
+    {
+      "choice": "rotate-8",
+      "stakeUnits": 5000,
+      "rtpFraction": {
+        "numerator": "526006743060496759109",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9343756756061636
+      },
+      "rtp": 0.9343756756061636
+    },
+    {
+      "choice": "rotate-8",
+      "stakeUnits": 10000,
+      "rtpFraction": {
+        "numerator": "526006743060496759109",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9343756756061636
+      },
+      "rtp": 0.9343756756061636
+    },
+    {
+      "choice": "rotate-8",
+      "stakeUnits": 20000,
+      "rtpFraction": {
+        "numerator": "526006743060496759109",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9343756756061636
+      },
+      "rtp": 0.9343756756061636
+    },
+    {
+      "choice": "rotate-8",
+      "stakeUnits": 50000,
+      "rtpFraction": {
+        "numerator": "526006743060496759109",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9343756756061636
+      },
+      "rtp": 0.9343756756061636
+    },
+    {
+      "choice": "rotate-9",
+      "stakeUnits": 1000,
+      "rtpFraction": {
+        "numerator": "526721023437813561669",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9356444924396597
+      },
+      "rtp": 0.9356444924396597
+    },
+    {
+      "choice": "rotate-9",
+      "stakeUnits": 2000,
+      "rtpFraction": {
+        "numerator": "526721023437813561669",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9356444924396597
+      },
+      "rtp": 0.9356444924396597
+    },
+    {
+      "choice": "rotate-9",
+      "stakeUnits": 5000,
+      "rtpFraction": {
+        "numerator": "526721023437813561669",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9356444924396597
+      },
+      "rtp": 0.9356444924396597
+    },
+    {
+      "choice": "rotate-9",
+      "stakeUnits": 10000,
+      "rtpFraction": {
+        "numerator": "526721023437813561669",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9356444924396597
+      },
+      "rtp": 0.9356444924396597
+    },
+    {
+      "choice": "rotate-9",
+      "stakeUnits": 20000,
+      "rtpFraction": {
+        "numerator": "526721023437813561669",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9356444924396597
+      },
+      "rtp": 0.9356444924396597
+    },
+    {
+      "choice": "rotate-9",
+      "stakeUnits": 50000,
+      "rtpFraction": {
+        "numerator": "526721023437813561669",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9356444924396597
+      },
+      "rtp": 0.9356444924396597
+    },
+    {
+      "choice": "rotate-10",
+      "stakeUnits": 1000,
+      "rtpFraction": {
+        "numerator": "526311935585350302021",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9349178064350211
+      },
+      "rtp": 0.9349178064350211
+    },
+    {
+      "choice": "rotate-10",
+      "stakeUnits": 2000,
+      "rtpFraction": {
+        "numerator": "526311935585350302021",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9349178064350211
+      },
+      "rtp": 0.9349178064350211
+    },
+    {
+      "choice": "rotate-10",
+      "stakeUnits": 5000,
+      "rtpFraction": {
+        "numerator": "526311935585350302021",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9349178064350211
+      },
+      "rtp": 0.9349178064350211
+    },
+    {
+      "choice": "rotate-10",
+      "stakeUnits": 10000,
+      "rtpFraction": {
+        "numerator": "526311935585350302021",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9349178064350211
+      },
+      "rtp": 0.9349178064350211
+    },
+    {
+      "choice": "rotate-10",
+      "stakeUnits": 20000,
+      "rtpFraction": {
+        "numerator": "526311935585350302021",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9349178064350211
+      },
+      "rtp": 0.9349178064350211
+    },
+    {
+      "choice": "rotate-10",
+      "stakeUnits": 50000,
+      "rtpFraction": {
+        "numerator": "526311935585350302021",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9349178064350211
+      },
+      "rtp": 0.9349178064350211
+    },
+    {
+      "choice": "rotate-11",
+      "stakeUnits": 1000,
+      "rtpFraction": {
+        "numerator": "527324915029545040197",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9367172193988883
+      },
+      "rtp": 0.9367172193988883
+    },
+    {
+      "choice": "rotate-11",
+      "stakeUnits": 2000,
+      "rtpFraction": {
+        "numerator": "527324915029545040197",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9367172193988883
+      },
+      "rtp": 0.9367172193988883
+    },
+    {
+      "choice": "rotate-11",
+      "stakeUnits": 5000,
+      "rtpFraction": {
+        "numerator": "527324915029545040197",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9367172193988883
+      },
+      "rtp": 0.9367172193988883
+    },
+    {
+      "choice": "rotate-11",
+      "stakeUnits": 10000,
+      "rtpFraction": {
+        "numerator": "527324915029545040197",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9367172193988883
+      },
+      "rtp": 0.9367172193988883
+    },
+    {
+      "choice": "rotate-11",
+      "stakeUnits": 20000,
+      "rtpFraction": {
+        "numerator": "527324915029545040197",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9367172193988883
+      },
+      "rtp": 0.9367172193988883
+    },
+    {
+      "choice": "rotate-11",
+      "stakeUnits": 50000,
+      "rtpFraction": {
+        "numerator": "527324915029545040197",
+        "denominator": "562949953421312000000",
+        "decimal": 0.9367172193988883
+      },
+      "rtp": 0.9367172193988883
+    }
+  ],
+  "serverReplay": {
+    "seeds": [
+      831749,
+      962381
+    ],
+    "coverage": [
+      {
+        "choice": "optimal",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 132,
+        "sha256": "e7a775e70e70fbdb3142336584d8f050b4a1eea86c189db231bde1f8d2e199b9"
+      },
+      {
+        "choice": "optimal",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 132,
+        "sha256": "4baeeee35bca8720361d0a0f235cc999654b4f80c81c777ed91f5df48ac2fec9"
+      },
+      {
+        "choice": "optimal",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 132,
+        "sha256": "5822183293e1d181fb7b31506594727c578a14fadeea63758df6f0e4c2b922bc"
+      },
+      {
+        "choice": "optimal",
+        "stakeUnits": 10000,
+        "paidRounds": 128,
+        "spins": 136,
+        "sha256": "982a3bb679d2d28bb2e81c810f9c46a8cc5aed6b28c8bd3ff635a6862fbb74c8"
+      },
+      {
+        "choice": "optimal",
+        "stakeUnits": 20000,
+        "paidRounds": 128,
+        "spins": 132,
+        "sha256": "1485bb9cb7f13595229fcb4d9330ddd434559d6031ca3d613f3865ae5e2246f9"
+      },
+      {
+        "choice": "optimal",
+        "stakeUnits": 50000,
+        "paidRounds": 128,
+        "spins": 136,
+        "sha256": "3c784e8f8534abe45b1aa6099163e269965712a382fee690c8284b585ad270af"
+      },
+      {
+        "choice": "pass",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 132,
+        "sha256": "9ca3095cb2e444fc5dc375a645a6856e24520c363ce13411f7f44219f8e71783"
+      },
+      {
+        "choice": "pass",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 132,
+        "sha256": "c343e8e900da9eb3e25004d89e143b1f933ed26e0cc42394ac931018d198c521"
+      },
+      {
+        "choice": "pass",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 136,
+        "sha256": "e44b8115cd02b945b3f0adb441653f8b4b00b61a53bac06e1f0e8056df79fd14"
+      },
+      {
+        "choice": "pass",
+        "stakeUnits": 10000,
+        "paidRounds": 128,
+        "spins": 128,
+        "sha256": "8089f2c6e86acfac278828b721314fd3b5ac46097df0ade99fca33fed7c73ec7"
+      },
+      {
+        "choice": "pass",
+        "stakeUnits": 20000,
+        "paidRounds": 128,
+        "spins": 136,
+        "sha256": "fee95ddd372acfe81c193263a4496ea89b62eb970b31b0116de03c3ee4f27555"
+      },
+      {
+        "choice": "pass",
+        "stakeUnits": 50000,
+        "paidRounds": 128,
+        "spins": 136,
+        "sha256": "ead853304c0394a35719fbe4d0d67082382af62e9d8f2d15b1ab225348ddd078"
+      },
+      {
+        "choice": "rotate-0",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 128,
+        "sha256": "b931fd16cb06c8e1d3739e1862e34a28ecbe1214aa4d8ccefc97641728b8abf7"
+      },
+      {
+        "choice": "rotate-0",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 132,
+        "sha256": "f353903f5fc32b5e493222e4f34b0b694d3021b2ccb971c7e0663d06f3903ab2"
+      },
+      {
+        "choice": "rotate-0",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 136,
+        "sha256": "f11c61c48a5ab0e0a7a0ae2e7a5c9e8480c55d2f4acace4b19f45a99bf2200a2"
+      },
+      {
+        "choice": "rotate-0",
+        "stakeUnits": 10000,
+        "paidRounds": 128,
+        "spins": 136,
+        "sha256": "19b19171b16006d95e64d954a7c45f2a75ca03af88ac77a18ef0c793d1b309b7"
+      },
+      {
+        "choice": "rotate-0",
+        "stakeUnits": 20000,
+        "paidRounds": 128,
+        "spins": 132,
+        "sha256": "4c1a7635b9427850ab98af4211bc4b0fb7e120c2d7c0eb7ab18fba02b4e94500"
+      },
+      {
+        "choice": "rotate-0",
+        "stakeUnits": 50000,
+        "paidRounds": 128,
+        "spins": 140,
+        "sha256": "ebd7575f604d84b98d377d011ed2ced2938a932d02d82a21ffac1798bfaba5ab"
+      },
+      {
+        "choice": "rotate-1",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 136,
+        "sha256": "b753a6714015d1100282a8c287d490bb770edf9a92173eb1d027ff0cd6b19f6e"
+      },
+      {
+        "choice": "rotate-1",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 140,
+        "sha256": "b02d109e98c8cd68c5950a157003d5e78739f313ac7f4a8df4f7abfd3e451d7a"
+      },
+      {
+        "choice": "rotate-1",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 144,
+        "sha256": "d0c3b3d27ce40233d61d1027d325d56409e3957a77b51e096a38dc2a86b7a3ec"
+      },
+      {
+        "choice": "rotate-1",
+        "stakeUnits": 10000,
+        "paidRounds": 128,
+        "spins": 128,
+        "sha256": "3bd01c31badc6d71c35823902fca05490cf5cee3bcc1726bede9666bc415bd18"
+      },
+      {
+        "choice": "rotate-1",
+        "stakeUnits": 20000,
+        "paidRounds": 128,
+        "spins": 144,
+        "sha256": "1e834d369ef19b8de4fd55065acea487a9d2e83b1fe242a3013a74ada7f70173"
+      },
+      {
+        "choice": "rotate-1",
+        "stakeUnits": 50000,
+        "paidRounds": 128,
+        "spins": 136,
+        "sha256": "b3770f5dc1772de068e92d2fb38e0f35855999e150e84ebc79ef0cb2ea0036fb"
+      },
+      {
+        "choice": "rotate-2",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 152,
+        "sha256": "5fd1f1f357557b9adc8d0cf1d2b165d6de1cef73da284194a96c65f9d9a670d8"
+      },
+      {
+        "choice": "rotate-2",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 136,
+        "sha256": "828379024fbf5e95d75039c7d2f72fe7601f89ec4309d28a5c14914500075ed4"
+      },
+      {
+        "choice": "rotate-2",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 132,
+        "sha256": "474d63d43f2e83c58de70c2df7a46e3cd653cbc2c1071be77642bd6a185f51f7"
+      },
+      {
+        "choice": "rotate-2",
+        "stakeUnits": 10000,
+        "paidRounds": 128,
+        "spins": 128,
+        "sha256": "c7868812d9d4503f3c5e413f93437d4cc439c00d0a356fc8585296b8bb17b111"
+      },
+      {
+        "choice": "rotate-2",
+        "stakeUnits": 20000,
+        "paidRounds": 128,
+        "spins": 136,
+        "sha256": "c1f1e6b19dccb4f47c556fa23afb759c2c239333e2331accf27874a7b34f2f3d"
+      },
+      {
+        "choice": "rotate-2",
+        "stakeUnits": 50000,
+        "paidRounds": 128,
+        "spins": 132,
+        "sha256": "f4fd0b26d7ec917f6cdd00ab2674a610877990a6ff37abde596cc8a3a968e69e"
+      },
+      {
+        "choice": "rotate-3",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 144,
+        "sha256": "fa2295d2dddbe73972ae2896a5d5efce8ed57b71f96a4a4f110dd86a197005c8"
+      },
+      {
+        "choice": "rotate-3",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 140,
+        "sha256": "bd599a71d44ba34d56abbef5faf6fc833786cea9a0c22397093789fefdf9efcc"
+      },
+      {
+        "choice": "rotate-3",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 132,
+        "sha256": "3914f50133ceae796b00464d26751fd7df3165eb1257f2a0dcc2344536cb894b"
+      },
+      {
+        "choice": "rotate-3",
+        "stakeUnits": 10000,
+        "paidRounds": 128,
+        "spins": 140,
+        "sha256": "d99614aa703a9db1f5309d1310594f2ee95bf909a50db0c1b50f6428cbceef40"
+      },
+      {
+        "choice": "rotate-3",
+        "stakeUnits": 20000,
+        "paidRounds": 128,
+        "spins": 140,
+        "sha256": "966b81d756b7d1333fe8eb6bdeeac5da9e0cbd9ae0972b8e88830407a50ca69e"
+      },
+      {
+        "choice": "rotate-3",
+        "stakeUnits": 50000,
+        "paidRounds": 128,
+        "spins": 128,
+        "sha256": "6b957e429d76bc3f421c6ad130bf8c35a824347e377e063f845ccfe429b5c36b"
+      },
+      {
+        "choice": "rotate-4",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 132,
+        "sha256": "40aa42a6545b1b2f4479e6b939cdccd9393a5fd1512d19361cd0a1a3effe9e5c"
+      },
+      {
+        "choice": "rotate-4",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 132,
+        "sha256": "003887f81931564fc4e1597e5669d6d2fd12956130575d55b72ddc5d51093be3"
+      },
+      {
+        "choice": "rotate-4",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 132,
+        "sha256": "7603fd53521c287756be9580724cecc021b4339f9d10347e54bc9a71fe1fb1f1"
+      },
+      {
+        "choice": "rotate-4",
+        "stakeUnits": 10000,
+        "paidRounds": 128,
+        "spins": 132,
+        "sha256": "34546aa48d0f381cb1b934aeaeefd725e9d4f724059e7ce34479fd4856bce519"
+      },
+      {
+        "choice": "rotate-4",
+        "stakeUnits": 20000,
+        "paidRounds": 128,
+        "spins": 132,
+        "sha256": "88c84d8a705e4272b5ccf18461702e1199674f9b5e89b98f19dc4d9150724e16"
+      },
+      {
+        "choice": "rotate-4",
+        "stakeUnits": 50000,
+        "paidRounds": 128,
+        "spins": 140,
+        "sha256": "f093b5d4491c02b84c6cccba642ea0c4a4e3116b8895366a3bf809054e73dc8b"
+      },
+      {
+        "choice": "rotate-5",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 132,
+        "sha256": "030d937280b4215ffb35fc75cc0d87155cdf13dd012b2d3d6d2882c0515d39f5"
+      },
+      {
+        "choice": "rotate-5",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 128,
+        "sha256": "ce8b8c1a77c6775ef8abf902fa09d9a9b4094a04d1b8baccc49fae8cc394e843"
+      },
+      {
+        "choice": "rotate-5",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 136,
+        "sha256": "cfab310105ea12c005a5b582d034373fbffb9296d205930654e736fc090f913f"
+      },
+      {
+        "choice": "rotate-5",
+        "stakeUnits": 10000,
+        "paidRounds": 128,
+        "spins": 132,
+        "sha256": "23a7bb7b4ed67693923caf772a07d0b28c8ee88bc73f393cb5dcd5cdc12241ee"
+      },
+      {
+        "choice": "rotate-5",
+        "stakeUnits": 20000,
+        "paidRounds": 128,
+        "spins": 144,
+        "sha256": "91c8a9e47a664ca383c774018452fe41483397d3bcb14055d853eb22016adac9"
+      },
+      {
+        "choice": "rotate-5",
+        "stakeUnits": 50000,
+        "paidRounds": 128,
+        "spins": 144,
+        "sha256": "0908bad7955f5c8865067ae5a3b74fb06b9d7fd5aff53b4b5302ea9e1932f51d"
+      },
+      {
+        "choice": "rotate-6",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 128,
+        "sha256": "27f9dbc82c78f9da2ab321f2dd2a9a0338efe9500195aafafb6101cc0c4b958b"
+      },
+      {
+        "choice": "rotate-6",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 132,
+        "sha256": "14196170fd13e9e2371755a28f1dbee9324db549006d2dd2623cb6c965e8218c"
+      },
+      {
+        "choice": "rotate-6",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 140,
+        "sha256": "dc32dd6cebdfd0b1a1804d37d35478b81307dfd351b1ae508e4316cbea8dbdc9"
+      },
+      {
+        "choice": "rotate-6",
+        "stakeUnits": 10000,
+        "paidRounds": 128,
+        "spins": 136,
+        "sha256": "478c9e8ddd45cbefcca6cfb772e9336bcf1518e834a74005258d96d8b91074bf"
+      },
+      {
+        "choice": "rotate-6",
+        "stakeUnits": 20000,
+        "paidRounds": 128,
+        "spins": 144,
+        "sha256": "35fb0ddb290b37ea3d13c333e5443a29b9a540ff5c2aa11b75a619df3af0c4dd"
+      },
+      {
+        "choice": "rotate-6",
+        "stakeUnits": 50000,
+        "paidRounds": 128,
+        "spins": 132,
+        "sha256": "b92d3a52fe92b22b5f78a23ca18cd9eb8e1e4f31ab60f9132af371aa1c732358"
+      },
+      {
+        "choice": "rotate-7",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 140,
+        "sha256": "84ebc82a83a6fdd7f2d139df45e79a48f103eafcc9db30fbc7ffa8f2515f3184"
+      },
+      {
+        "choice": "rotate-7",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 132,
+        "sha256": "1378dbbb82bab9be14ee004ff4f0e1aa0b2bc95be7c441d50d25925b0d810701"
+      },
+      {
+        "choice": "rotate-7",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 144,
+        "sha256": "29a45bf652588a1a7e0340d35885c81bd0bcc1f32d2547c1b8d0f610882823f5"
+      },
+      {
+        "choice": "rotate-7",
+        "stakeUnits": 10000,
+        "paidRounds": 128,
+        "spins": 128,
+        "sha256": "ac55ff85ea56f3616c4de0e59dfc4ab8cd23140209e2f48c7b9e5c26bc7092a2"
+      },
+      {
+        "choice": "rotate-7",
+        "stakeUnits": 20000,
+        "paidRounds": 128,
+        "spins": 136,
+        "sha256": "50963a76d30deeb304530df1b18de63bf477fde8418321a0d9bd4f34a0536fe2"
+      },
+      {
+        "choice": "rotate-7",
+        "stakeUnits": 50000,
+        "paidRounds": 128,
+        "spins": 136,
+        "sha256": "abe5e8face5b546ef1a122bdc3677d9002cc69081d81a77c4cabe229db1de6cb"
+      },
+      {
+        "choice": "rotate-8",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 128,
+        "sha256": "5d618b7383f1aa1b16365f1b012b7e54199478e57b28df3fe96dd1ac5f7aab07"
+      },
+      {
+        "choice": "rotate-8",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 136,
+        "sha256": "97c24f9ef86f516db42980100d02551eefa812b7701033ffe504168f9393382e"
+      },
+      {
+        "choice": "rotate-8",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 132,
+        "sha256": "18826240655447727a716293535e10f63ae8b37809e463399232b35632a78501"
+      },
+      {
+        "choice": "rotate-8",
+        "stakeUnits": 10000,
+        "paidRounds": 128,
+        "spins": 132,
+        "sha256": "f82c46b7376c9f7be52cec74273f6e2975c471d27fc3ed155f513d017906e84b"
+      },
+      {
+        "choice": "rotate-8",
+        "stakeUnits": 20000,
+        "paidRounds": 128,
+        "spins": 136,
+        "sha256": "8db619773404b804243ec9a2d8c3557fe095ba8a5e3203a770c03ffd57526dc8"
+      },
+      {
+        "choice": "rotate-8",
+        "stakeUnits": 50000,
+        "paidRounds": 128,
+        "spins": 132,
+        "sha256": "409f2bcdd69ec359fff7a3b7cdc2fbab13a1bf9df29f731d66a6139921807959"
+      },
+      {
+        "choice": "rotate-9",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 136,
+        "sha256": "a4f475f40e266185c7414b659e957cf91db3fa2009fc03c0bac8e345343af7ab"
+      },
+      {
+        "choice": "rotate-9",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 132,
+        "sha256": "0c4e4526a34803be2bd2c5ef7ff3302ecc7b4b247653daf9fdd862561cb1d019"
+      },
+      {
+        "choice": "rotate-9",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 140,
+        "sha256": "66dbe6f469522d20e69b63620d7b884ac3b54f34bc324a6d50606d89de7fc923"
+      },
+      {
+        "choice": "rotate-9",
+        "stakeUnits": 10000,
+        "paidRounds": 128,
+        "spins": 144,
+        "sha256": "38daa7c325db392bbd35a1d461e9966f2c13c3f91b31b7e3b08d69e213762b58"
+      },
+      {
+        "choice": "rotate-9",
+        "stakeUnits": 20000,
+        "paidRounds": 128,
+        "spins": 136,
+        "sha256": "c22ff0307f339c31539d4a8240a88b1794a86292cc4ab4abd9ee7b2b237f69c3"
+      },
+      {
+        "choice": "rotate-9",
+        "stakeUnits": 50000,
+        "paidRounds": 128,
+        "spins": 128,
+        "sha256": "ace22ca192a067fcadac01a0176041097d1215472cc6d2fd2c31c679d473e655"
+      },
+      {
+        "choice": "rotate-10",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 132,
+        "sha256": "e60ca2c82260d428778cb46b659907026037d5da5267b624b58d883e51abba70"
+      },
+      {
+        "choice": "rotate-10",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 136,
+        "sha256": "796cfca9ab1ec4e9f4ce327f40315103e129f310de9a676bb9a46ee5e3e92bf1"
+      },
+      {
+        "choice": "rotate-10",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 136,
+        "sha256": "18b6fff8819cf879c3df2b2954de64cc30051d410200dfeb9c3866a0f3894673"
+      },
+      {
+        "choice": "rotate-10",
+        "stakeUnits": 10000,
+        "paidRounds": 128,
+        "spins": 136,
+        "sha256": "98dcacac38ea7fb65445ca0e1ea53a063493bb219b394a52a3f30f54542fa6cc"
+      },
+      {
+        "choice": "rotate-10",
+        "stakeUnits": 20000,
+        "paidRounds": 128,
+        "spins": 136,
+        "sha256": "b9f5b6113a688770ab9f8c05eb99ae4e0624f180bbe6991e7de0bf9647ac5afb"
+      },
+      {
+        "choice": "rotate-10",
+        "stakeUnits": 50000,
+        "paidRounds": 128,
+        "spins": 136,
+        "sha256": "c7c8ee304ec00230b3bcbc3aed58186d839d76937dfd49cf7747dacdc43dfd6f"
+      },
+      {
+        "choice": "rotate-11",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 148,
+        "sha256": "806d84cd331df2703441e942eefa1388386446027a19b1f57b527290eebe2a9c"
+      },
+      {
+        "choice": "rotate-11",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 136,
+        "sha256": "19437d88b568bad9e6f5842f71ea459122800ef780b1f6f66ec1a7c22d8a44ea"
+      },
+      {
+        "choice": "rotate-11",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 128,
+        "sha256": "72960a07be075c5eca30e8b4f309a441d9f6be1ed58b3772e3ac7850d08dcd13"
+      },
+      {
+        "choice": "rotate-11",
+        "stakeUnits": 10000,
+        "paidRounds": 128,
+        "spins": 132,
+        "sha256": "b4e5419d094274c54cebacb09bb1850b43ea2912ba56743460b6d7a7bf447938"
+      },
+      {
+        "choice": "rotate-11",
+        "stakeUnits": 20000,
+        "paidRounds": 128,
+        "spins": 132,
+        "sha256": "5383a4127ab3b6dfb37924f64f080e0628d75eed8871ca5e070cecc0412f25fb"
+      },
+      {
+        "choice": "rotate-11",
+        "stakeUnits": 50000,
+        "paidRounds": 128,
+        "spins": 132,
+        "sha256": "6e83b9e82c1623cb16a8d08dff6fb194248f5655efc256c71c1a53854f84bea4"
+      }
+    ],
+    "serverReplayChecks": 10752,
+    "naturalChoices": 343,
+    "naturalBonuses": 149,
+    "forcedChoiceChecks": 78,
+    "forcedMaximumChecks": 6,
+    "entropyCensus": {
+      "boards": 4096,
+      "energyTickets": 10000,
+      "abilityTickets": 32,
+      "bonusTickets": 64
+    }
+  },
+  "walletEvidence": {
+    "method": "postgres-common-wallet-v1",
+    "cases": [
+      "client-negotiation",
+      "concurrent-start-and-replay",
+      "saved-choice-and-private-future",
+      "ownership-revisions-and-actions",
+      "free-turn-and-concurrent-revision",
+      "rollback-and-retry",
+      "all-stakes-and-maximum-settlement",
+      "shared-pvp-balance",
+      "reserved-capacity",
+      "invalid-entropy-rollback",
+      "cross-operation-identity"
+    ],
+    "ledger": [
+      {
+        "account": "synthetic-0",
+        "rows": 15,
+        "credits": "84300834",
+        "debits": "89000",
+        "balance": "84211834",
+        "reserved": "0"
+      },
+      {
+        "account": "synthetic-1",
+        "rows": 3,
+        "credits": "39000",
+        "debits": "19000",
+        "balance": "20000",
+        "reserved": "0"
+      }
+    ],
+    "sha256": "c9c150dcf0bcf92c72b409573225f2fe289c305746377cf202d47a0ae4ce3f0a"
+  }
+}

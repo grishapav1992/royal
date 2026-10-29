@@ -53,8 +53,8 @@ test('common wallet settles once, recovers across store restart, rejects mutatio
     await assert.rejects(store.operate('alice',{...operation(),stakeUnits:'101'}));
     assert.equal(await demoBalanceUnits(db,'alice'),before-100+1152);
     assert(!validFlagSession({...s,returnedUnits:'1153'}));
-    const legacy=await store.active('alice',true,true,true,true,true,true,true,2,4,true,false);assert(!legacy.sessions.some(s=>s.gameId===FLAG_GAME));
-    await assert.rejects(store.operate('alice',operation(),2,true,true,true,true,true,true,true,true,2,4,true,false));
+    const legacy=await store.active('alice',true,true,true,true,true,true,true,2,4,true,false,false);assert(!legacy.sessions.some(s=>s.gameId===FLAG_GAME));
+    await assert.rejects(store.operate('alice',operation(),2,true,true,true,true,true,true,true,true,2,4,true,false,false));
     const loss=await store.operate('alice',operation('JP','500'));assert(validFlagSession(loss.session));assert.equal(loss.session.returnedUnits,'0');
     assert.equal(await demoBalanceUnits(db,'alice'),before-100+1152-500);
   }finally{await db.close();}
@@ -63,8 +63,8 @@ test('common wallet settles once, recovers across store restart, rejects mutatio
 test('mode settlement, ownership and capability 1 restore preserve immutable legacy rounds',async()=>{
   const db=new PostgresDatabase(':memory:');await db.exec("CREATE TABLE accounts(id TEXT PRIMARY KEY); INSERT INTO accounts VALUES('alice'),('bob')");
   const wallet=new DemoWalletStore(db),create=()=>new DemoExpansionStore(db,id=>wallet.snapshot(id),wallet.ready,async()=>{},()=>0);
-  const act=(store:DemoExpansionStore,op:unknown,cap:boolean|2=2)=>store.operate('alice',op,2,true,true,true,true,true,true,true,true,2,4,true,cap);
-  const active=(store:DemoExpansionStore,cap:boolean|2=2)=>store.active('alice',true,true,true,true,true,true,true,2,4,true,cap);
+  const act=(store:DemoExpansionStore,op:unknown,cap:boolean|2=2)=>store.operate('alice',op,2,true,true,true,true,true,true,true,true,2,4,true,false,cap);
+  const active=(store:DemoExpansionStore,cap:boolean|2=2)=>store.active('alice',true,true,true,true,true,true,true,2,4,true,false,cap);
   try{
     await wallet.operate('alice',{id:randomUUID(),kind:'deposit',amount:1000});const store=create();
     const old=await act(store,operation());assert.equal(old.session.rulesVersion,1);const original=structuredClone(old.session);

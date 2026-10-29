@@ -1,0 +1,76 @@
+{
+  "tool": "built-in image_gen",
+  "reference": "docs/concepts/forest-heart/approved-concept-v1.png",
+  "referenceSha256": "3fb306383487d6abd38e17de4502249aa718340fa18aca2ee37ec2fa18807cbc",
+  "generatedDirectory": "C:/Users/Aorus/.codex/generated_images/01a1793a-deb2-7031-9934-84f2a877618e",
+  "destination": "public/assets/forest-heart/v1",
+  "processing": "WebP encoding and proportional size optimization only; alpha preserved. Background 1672px, character poses 800px wide, flower 256px. Catalog is a 480x300 crop of the previously approved concept.",
+  "assets": [
+    {
+      "file": "elf.webp",
+      "source": "exec-ad7a21b7-d77a-49c6-8710-1d8e241e861e.png",
+      "transparent": true,
+      "prompt": "Use case: background-extraction. Asset type: production transparent character layer for the Forest Heart slot. Edit target: the supplied approved concept. Extract the SINGLE ADULT FEMALE ELF at the right as a separate high quality portrait cutout, head to below upper thighs, preserving exactly her beautiful face, green eyes, silver hair, pointed ears, gold leaf hair ornament, dark emerald and violet revealing fantasy dress, cleavage, gold botanical jewelry, emerald crystal in her right hand, original mature seductive appearance, original pose. Paint any small occluded part of her arm naturally. Entire hair and hands must be inside canvas with margins. She is the only subject. Absolutely no text, no title, no UI, no board, no flowers, no backdrop, no ground. Genuine clean alpha transparency, no checkerboard painted into image. Detailed polished fantasy illustration matching reference. Portrait 2:3 composition centered, broad flowing hair, lighting cool moonlight and mint crystal glow. Do not redesign her clothing or identity."
+    },
+    {
+      "file": "background.webp",
+      "source": "exec-e119dd32-e315-497f-b0c6-13c7a918f930.png",
+      "transparent": false,
+      "prompt": "Use case: precise-object-edit. Production game background from supplied Forest Heart approved concept. Keep the same detailed enchanted moonlit forest, violet blue depth, huge ancient trees arching from both sides, waterfalls, tiny warm lit houses in distant branches, bioluminescent mint and blue mushrooms, flowing stream at bottom, full moon upper right. Remove ALL character, elf, game board, roots interface, flowers receivers, crystals, title, logos, buttons, UI and lettering. Fill these removed areas with a coherent continuation of the forest. Wide 16:9 landscape 1920x1080 composition. Dark quiet negative space across central 60 percent for a separately rendered game board. Bright little glowing mushrooms at lower corners, moon and waterfalls at outer sides. Rich cinematic fantasy illustration faithful to the reference, indigo and violet with mint highlights. No people, no text, no watermark."
+    },
+    {
+      "file": "elf-spell.webp",
+      "source": "exec-24845d6b-bf5c-4c30-9d4e-7c2a43d45f1b.png",
+      "transparent": true,
+      "prompt": "Use case: identity-preserve. Production alternate spell-casting animation key pose for Forest Heart slot character. Edit supplied adult elf portrait layer. Keep EXACT same adult woman identity, face, head position, body position, long silver hair, pointed ears, emerald violet revealing dress, gold jewelry, right hand holding emerald crystal at hip, same lighting and portrait 2:3 framing. Change only her left arm (viewer left): raise her left forearm gently out to viewer left, palm open upwards near waist to cast a small delicate mint magical wisp toward game board on her left. Gentle confident smile. All hair, raised hand and body inside canvas. Preserve original head size and location for aligned in-game crossfade. Only this single adult elf, clean genuine transparent alpha background, no backdrop, no UI, no text, no extra characters. This is one separate key pose cutout, not a spritesheet, no panels. Artwork matches approved elegant high fidelity fantasy illustration."
+    },
+    {
+      "file": "flower.webp",
+      "source": "exec-19c8abe3-ca82-4985-a113-9168b21aced1.png",
+      "transparent": true,
+      "prompt": "Use case: background-extraction. Asset type: one production game receiver flower sprite on real transparent alpha. Reference supplied Forest Heart approved concept: extract and recreate ONE golden magical lotus receiver seen just right of the wooden board, as a complete separate detailed small game asset. A single fully open luminous lotus with layered ivory and warm gold petals, emerald sepals and a tiny gnarled dark wooden cradle at the bottom. Front view slightly from above, symmetrical, recognizably a glowing forest flower, compact round silhouette. Centre softly lit pale mint and gold, controlled glow staying inside canvas. It must read clearly at 60 pixels. No character, no board, no UI, no text, no coins, no extra flowers, no background. Entire flower and wood cradle inside square canvas with generous transparent margins. Match the original detailed elegant fantasy illustration, warm golden light contrasting with the indigo forest. Genuine transparent alpha, not a painted checkerboard."
+    }
+  ],
+  "assetInventory": [
+    {
+      "file": "background.webp",
+      "bytes": 433256,
+      "width": 1672,
+      "height": 941,
+      "alpha": false,
+      "sha256": "48e85194b3904c0aa7186dfd94d08ceb33a6308cad4430e38c81ac1924258777"
+    },
+    {
+      "file": "catalog.webp",
+      "bytes": 62598,
+      "width": 480,
+      "height": 300,
+      "alpha": false,
+      "sha256": "9446cedee578775b96f0797862a3bb7965742d865563ca5ea3c66e70dc17ab64"
+    },
+    {
+      "file": "elf-spell.webp",
+      "bytes": 382834,
+      "width": 800,
+      "height": 1200,
+      "alpha": true,
+      "sha256": "817b87a9453449582d0d1f94d35b03e76b63ba470837a61bf1bce393572f25c4"
+    },
+    {
+      "file": "elf.webp",
+      "bytes": 328878,
+      "width": 800,
+      "height": 1200,
+      "alpha": true,
+      "sha256": "8961b07c13a996df9ada58a09cbb64ea42ee8cd1f80b558353517389f736f5ca"
+    },
+    {
+      "file": "flower.webp",
+      "bytes": 24984,
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "sha256": "c50a172c767eaba4335deeaf591229959c5be62db24fadb4acd79d2f9c0088f9"
+    }
+  ]
+}

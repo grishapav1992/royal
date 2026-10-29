@@ -1,0 +1,111 @@
+{
+  "date": "2026-10-28",
+  "sourceCommit": "c85060f7660532e9152d5cf579c970a414fc3096",
+  "mainBaseline": "a1741cebd6d56b2f030d346951167b9b4d2c31a5",
+  "clientVersion": "1.6.0",
+  "module": {
+    "version": "1.6.0-84820b2f5b28",
+    "sourceSha256": "84820b2f5b285d14cc50392b841476898e2872f7ab0c1dfcb3e3ce3de0ec62d4",
+    "active": {
+      "format": 1,
+      "gameId": "studio-forest-heart",
+      "manifest": "/game-modules/studio-forest-heart/versions/1.6.0-84820b2f5b28/manifest.json",
+      "sha256": "7e2b2654ff4ef9727f234a061c1917ba970f16c04dff06132f88266ed4fed368"
+    }
+  },
+  "artwork": "All existing v3 character images retained; no generated or edited raster asset",
+  "checks": {
+    "characterBrowserScenarios": {
+      "passed": 3,
+      "minutes": 3.2
+    },
+    "fullBrowserSuite": {
+      "passed": 15,
+      "minutes": 4.9,
+      "sourceCommit": "c85060f7660532e9152d5cf579c970a414fc3096",
+      "realHostWithChat": true
+    },
+    "mathAndRtpTests": 9,
+    "protocolAndWalletTests": 8,
+    "artworkAndModuleCompatibilityTests": 10,
+    "rtpGate": {
+      "verified": 13,
+      "legacyNotQualified": 114
+    },
+    "fullApplicationBuild": {
+      "passed": true,
+      "durationMs": 98365,
+      "steps": [
+        "rtp",
+        "typecheck",
+        "modules",
+        "host",
+        "backend",
+        "reconciliation",
+        "payments"
+      ]
+    },
+    "initialCompatibilityFailure": "A stale Caribbean build from before the fetched main merge was rebuilt by the normal application build; all 10 checks then passed"
+  },
+  "measured": [
+    {
+      "mode": "normal",
+      "capturedFrames": 555,
+      "maxWeightStepUnder40Ms": 0.08613859609894114,
+      "maxGestureStepUnder40Ms": 0.1080766149648742,
+      "maxAwakenReach": 0.9999899787873332,
+      "maxPositiveLift": 0.9999998992406017,
+      "observedMeanDrawsPerSecond": 45.52683896620278,
+      "scope": "Local browser captures; not a physical mobile benchmark"
+    },
+    {
+      "mode": "muted",
+      "capturedFrames": 473,
+      "maxWeightStepUnder40Ms": 0.08574182685723941,
+      "maxGestureStepUnder40Ms": 0.10208944548368498,
+      "maxAwakenReach": 0.9999980337237389,
+      "maxPositiveLift": 0.9999998618432563,
+      "observedMeanDrawsPerSecond": 45.67670031515369,
+      "scope": "Local browser captures; not a physical mobile benchmark"
+    },
+    {
+      "mode": "fast",
+      "capturedFrames": 299,
+      "maxWeightStepUnder40Ms": 0.10390199681852241,
+      "maxGestureStepUnder40Ms": 0.11657412776882092,
+      "maxAwakenReach": 0.9657431963350926,
+      "maxPositiveLift": 0.9999998815224995,
+      "observedMeanDrawsPerSecond": 45.77077993409008,
+      "scope": "Local browser captures; not a physical mobile benchmark"
+    }
+  ],
+  "unchanged": [
+    "mathematics",
+    "settlement",
+    "original stake and result thresholds",
+    "wallet",
+    "transport",
+    "audio",
+    "registered raster poses"
+  ],
+  "manualPreview": {
+    "url": "http://localhost:5296/?room=aji8XeaT1",
+    "renderer": "webgl",
+    "restoredStage": "settled",
+    "restoredBalance": 10019.89,
+    "restoredPayout": 6.31,
+    "newWagersPlacedByManualReview": 0,
+    "session": 59998
+  },
+  "limits": [
+    "Art direction pending user review",
+    "Physical phone performance and battery use not measured",
+    "Weighted illustration deformation and raster pose blending, not a skeletal or 3D rig"
+  ],
+  "screenshots": [
+    "character-v6-win.webp",
+    "character-v6-mobile.webp",
+    "character-v6-local-preview.webp"
+  ],
+  "measurementLimits": "Weight/gesture step assertions are engineering regression checks, not scientific thresholds of human perception; no subjective user study performed"
+}

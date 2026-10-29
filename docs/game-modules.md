@@ -1,11 +1,11 @@
 # Independently published games
 
-Every existing game definition has an independent client package. The catalogue contains 119 module identities across the current and historical game families. This is a technical inventory, not a claim that the hall has 118 visible machines:
+Every existing game definition has an independent client package. The catalogue contains 120 module identities across the current and historical game families. This is a technical inventory, not a claim that the hall has 120 visible machines:
 
 | Family | Module identities |
 | --- | ---: |
-| Studio games, including Caribbean Treasures | 42 |
-| Original Royal games, GitHub practice games, session games and all casino/card variants, including LAST EXIT | 63 |
+| Studio games, including Forest Heart and Caribbean Treasures | 43 |
+| Original Royal games, GitHub practice games, session games and all casino/card variants, including LAST EXIT | 62 |
 | Air hockey, pool, chess, piano and Mortal Kombat | 5 |
 | Durak, transfer Durak and Crazy Eights PvP | 3 |
 | Breaker, Orbit, Drift and Pixel legacy arcade games | 4 |
@@ -21,6 +21,8 @@ The single Nile wallet release hides the two provider demos and the three practi
 
 
 ## Shared services and saved rounds
+
+Forest Heart has package `games/forest-heart/`, identity `studio-forest-heart`, host API 1, rules 1 and progress 1. It is a new Royal catalogue choice in the existing twelve physical seats. The common expansion client negotiates its rules header, validates its confirmed root history and keeps the original pending-operation UUID across recovery. The module owns its iframe, forest art, flow animation and original procedural music, using the common audio context and wallet. See [Forest Heart verification](concepts/forest-heart/verification.md).
 
 The hall supplies host API 1 with the existing wallet, serialized operation transport, audio, reactions, language services and shared Phaser runtime. Common layout and control styles remain part of the hall design system; packages include their game-specific styles. The Mines, Flight, demo/USDT casino, Nile, USDT and crypto clients remain live host singletons. The Luelon catalogue selection and preview watcher namespace is also shared. Modules import these services through the build bridge and never construct another wallet. Server rules, account locks, payout validation, persistent sessions and balances remain in the common backend. This change adds no game servers or microservices.
 
@@ -96,3 +98,5 @@ Existing native artwork, the small startup previews, preparation cache, latest c
 Mortal Kombat uses activity identity and package slug mortal-kombat on floor 2. See games/mortal-kombat/README.md for wager rules, escrow recovery, asset provenance, shared USDT · Nile integration and server anti-cheat controls (rules contract 2). It requires this compatible host/backend release before the client package can be published.
 
 Flag Battle (`flag-battle`, API 1, rules 2, progress 1) is an independent wagered client module in the existing Royal catalogue without adding seats. Players choose 12, 24 or 48 equal countries; every complete paid round has analytical RTP 96%. Rules-1 sessions remain readable and settle under their original twelve-country rules. Capability 2 is required for explicit mode starts and rules-2 session transport. This contract requires a compatible host/backend update before independent package publication. See [its rules and feedback specification](concepts/flag-battle.md).
+
+Module media inventory excludes noncanonical filenames (for example, synchronization copies containing spaces) before hashing or reading their contents. Such names cannot occur in a validated module resource path. Symlink, traversal, declared-root and immutable-byte validation remain enforced. This preserves unrelated local copies while preventing them from blocking a build.

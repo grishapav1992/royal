@@ -97,8 +97,9 @@ try {
   }
   if (!ready) throw Error('Local backend did not start: ' + log);
   await vite.listen();
-  await mkdir('artifacts/work/caribbean-character-motion',{recursive:true});
-  await writeFile('artifacts/work/caribbean-character-motion/owner.json',JSON.stringify({
+  const artifacts=process.env.CARIBBEAN_ARTIFACTS_DIR||'artifacts/work/caribbean-character-motion';
+  await mkdir(artifacts,{recursive:true});
+  await writeFile(artifacts+(process.env.CARIBBEAN_ARTIFACTS_DIR?'/runtime.json':'/owner.json'),JSON.stringify({
     owner:'caribbean-character-motion',purpose:'Captain reactions and field motion in the real Royal host and chat using qualified saved scenarios, disposable accounts and a temporary database',
     cleanupCondition:'Stop the local stand; retain only final desktop/mobile images and verification summary',
     webPort,apiPort,pid:process.pid,backendPid:backend.pid,temporaryDatabase:database.directory,

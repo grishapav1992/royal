@@ -1,8 +1,10 @@
+import {ROULETTE_METHOD,validateRouletteProof} from './rtp-roulette.mjs';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
 import { cosmicQualificationEvidence, COSMIC_QUALIFICATION_METHOD, COSMIC_QUALIFICATION_MODEL } from './rtp-cosmic.mjs';
+import {FOREST_QUALIFICATION_METHOD,FOREST_SERVER_STATUS,validateForestRuntimeProof} from './rtp-forest-heart.mjs';
 import { caribbeanQualificationEvidence, CARIBBEAN_QUALIFICATION_METHOD, CARIBBEAN_REVIEWED_SOURCES } from './rtp-caribbean.mjs';
 
 const digest = value => createHash('sha256').update(value).digest('hex');
@@ -28,11 +30,14 @@ export async function rtpInputs(root, gameId) {
 }
 export function validateRtpProof(gameId, inputs, proof) {
   const { policy: p } = inputs;
+  assert.notEqual(p.releaseStatus,'model-only','Mathematical model only: runtime and wallet qualification is still required for '+gameId);
   assert.equal(proof.schemaVersion, 1); assert.equal(proof.gameId, gameId);
   assert.equal(proof.rulesVersion, p.rulesVersion); assert.equal(proof.progressVersion, p.progressVersion);
   if (gameId==='studio-neopolis' && p.rulesVersion>=4) assert.equal(p.method,'neopolis-variable-stake-conditional-v4','Variable stakes require conditional qualification');
   assert.equal(proof.policySha256, inputs.policySha256, 'RTP policy changed: rerun qualification');
   assert.deepEqual(proof.sourceHashes, inputs.sourceHashes, 'RTP source changed: rerun qualification');
+  if(p.method===FOREST_QUALIFICATION_METHOD)return validateForestRuntimeProof(gameId,inputs,proof);
+  if(p.method===ROULETTE_METHOD){assert.equal(gameId,'royal-roulette');return validateRouletteProof(p,proof);}
   if(p.method===CARIBBEAN_QUALIFICATION_METHOD) {
     assert.equal(gameId,'studio-caribbean-treasures');
     assert.deepEqual(Object.fromEntries(Object.keys(CARIBBEAN_REVIEWED_SOURCES).map(file=>[file,inputs.sourceHashes[file]])),CARIBBEAN_REVIEWED_SOURCES,
@@ -223,17 +228,21 @@ export async function checkGameRtp(root, catalog, selected = catalog.map(game =>
   const changedProfiles=await changedLegacyProfiles(root,baseline.sourceHashes,registry.profiles);
   for (const gameId of ['studio-neopolis','studio-dracona']) assert(registry.profiles[gameId], 'A required RTP profile was removed: ' + gameId);
   for (const game of catalog) {
+    assert(!['model-only',FOREST_SERVER_STATUS].includes(registry.profiles[game.gameId]?.releaseStatus),
+      'Unfinished client: do not add '+game.gameId+' to the runnable catalogue before the client and host qualification');
     const exemption = registry.nonWagered[game.gameId];
     assert(registry.profiles[game.gameId] || baseline.games.includes(game.gameId) || typeof exemption === 'string' && exemption.trim().length >= 20,
       'New module has no RTP qualification or documented non-wagered classification: ' + game.gameId);
   }
   let verified = 0;
-  for (const gameId of new Set([...selected,...changedProfiles])) {
+  const serverOnly=Object.entries(registry.profiles).filter(([,p])=>p.releaseStatus===FOREST_SERVER_STATUS).map(([id])=>id);
+  for (const gameId of new Set([...selected,...changedProfiles,...serverOnly])) {
     if (!registry.profiles[gameId]) continue;
     const inputs = await rtpInputs(root, gameId), contract = catalog.find(game => game.gameId === gameId);
-    assert(contract && contract.rulesVersion === inputs.policy.rulesVersion && contract.progressVersion === inputs.policy.progressVersion);
+    if(inputs.policy.releaseStatus===FOREST_SERVER_STATUS)assert(gameId==='studio-forest-heart'&&!contract,'Only the reviewed Forest Heart server may precede its client');
+    else assert(contract && contract.rulesVersion === inputs.policy.rulesVersion && contract.progressVersion === inputs.policy.progressVersion);
     const proof = JSON.parse(await readFile(resolve(root, inputs.policy.proof), 'utf8').catch(() => { throw Error('Missing RTP qualification for ' + gameId + '; run npm run qualify:rtp -- --game ' + gameId + ' --write-proof'); }));
     validateRtpProof(gameId, inputs, proof); verified++;
   }
-  return { verified, legacyNotQualified: baseline.games.length };
+  return { verified, legacyNotQualified: baseline.games.length,...(serverOnly.length?{serverQualifiedClientPending:serverOnly}:{}) };
 }

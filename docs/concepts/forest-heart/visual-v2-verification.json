@@ -1,0 +1,156 @@
+{
+  "date": "2026-10-27",
+  "gameId": "studio-forest-heart",
+  "clientVersion": "1.1.0-b7e41fe97631",
+  "sourceSha256": "b7e41fe9763116754ee3239e67e5d7baeb7b1949914624bce6c8da5179d8115f",
+  "testedSourceCommit": "5b527fd34c974887264ac7d96f09212005b71507",
+  "fullSuiteCommit": "b6273bca17415b7a31afa7bb4d784b42cdcacd3f",
+  "integrationBaseline": "858b19a09372cf4b8df94af808c0ee2c66fb116f",
+  "browser": "Chrome on Windows",
+  "viewports": [
+    [
+      1280,
+      720
+    ],
+    [
+      1440,
+      1000
+    ],
+    [
+      1110,
+      1244
+    ],
+    [
+      390,
+      844
+    ],
+    [
+      320,
+      780
+    ]
+  ],
+  "tests": {
+    "math": 9,
+    "rtpGate": 27,
+    "walletAndCompatibility": 47,
+    "artworkModulesAndCatalog": 12,
+    "browserScenarios": 8,
+    "totalDistinct": 103,
+    "finalLayoutFocusedBrowserScenarios": 2
+  },
+  "finalLayoutVerification": "The complete eight-scenario suite passed after shared-contract integration. After reserving the bonus row, both affected full-host desktop/mobile and continuous-turn scenarios passed again.",
+  "mathChanged": false,
+  "exactOptimalRtp": 0.95994233480111,
+  "runtimePaidRounds": 10752,
+  "commonWalletQualificationCases": 11,
+  "caribbeanQualificationRounds": 4096,
+  "qualification": "Official qualifier regenerated both proofs after reviewing the merged shared routing; no probability, payout, cost or legacy-baseline edit.",
+  "motion": {
+    "sampledFrames": 226,
+    "intermediateTurnFrames": 39,
+    "continuousSapFrames": 121,
+    "angleRange": [
+      23.61252051539265,
+      89.9372549690382
+    ],
+    "onlyAcceptedTileRotates": true,
+    "all4096BoardsMatchIndependentOracle": true
+  },
+  "timing": {
+    "clockModes": [
+      "output-timestamp"
+    ],
+    "audibleCues": 6,
+    "maximumEstimatedFrameSkewMs": 31.543000001489418,
+    "engineeringGoalMs": 80,
+    "scope": "Calculated sample output versus DOM callback, not physical acoustic measurement; recorded before the final CSS spacing change, with identical audio and motion code."
+  },
+  "audio": {
+    "sampleRate": 22050,
+    "seconds": 12,
+    "peak": 0.10200496017932892,
+    "rms": 0.01158661847442376,
+    "ownedVoicesAfterDestroy": 0,
+    "scope": "Digital offline rendering only; no physical device or human listening assessment"
+  },
+  "build": {
+    "format": 1,
+    "startedAt": "2026-10-27T18:19:58.933Z",
+    "scope": "application",
+    "steps": [
+      {
+        "name": "rtp",
+        "passed": true,
+        "durationMs": 3355
+      },
+      {
+        "name": "typecheck",
+        "passed": true,
+        "durationMs": 8855
+      },
+      {
+        "name": "modules",
+        "passed": true,
+        "durationMs": 5038
+      },
+      {
+        "name": "host",
+        "passed": true,
+        "durationMs": 7516
+      },
+      {
+        "name": "backend",
+        "passed": true,
+        "durationMs": 97
+      },
+      {
+        "name": "reconciliation",
+        "passed": true,
+        "durationMs": 29
+      },
+      {
+        "name": "payments",
+        "passed": true,
+        "durationMs": 35
+      }
+    ],
+    "passed": true,
+    "durationMs": 24923
+  },
+  "screenshots": [
+    {
+      "path": "docs/concepts/forest-heart/visual-v2-desktop.webp",
+      "bytes": 207438,
+      "sha256": "cd9217138a7966b26a537d101f060bb34de1290c8201c52596e5068888cbdfc8"
+    },
+    {
+      "path": "docs/concepts/forest-heart/visual-v2-mobile.webp",
+      "bytes": 77282,
+      "sha256": "646b6d9f67d49f1f6fc28c8df4326662085b26b135fe6ca9cced703d88e5db0b"
+    }
+  ],
+  "review": {
+    "reference": "approved-concept-v1.png",
+    "priorClientRejected": true,
+    "changes": [
+      "painted organic root tiles",
+      "ornate root frame",
+      "gold Cyrillic title",
+      "crystal cradle",
+      "larger flowers",
+      "continuous sap reveal",
+      "single-tile rotation",
+      "stable portrait with pose crossfade",
+      "fitted desktop/mobile controls and bonus row"
+    ],
+    "userApprovalPending": true,
+    "skeletalCharacterAnimation": false
+  },
+  "localPreview": {
+    "web": "http://127.0.0.1:5296/",
+    "api": "http://127.0.0.1:2696/",
+    "syntheticOnly": true,
+    "preservedManualSession": true
+  },
+  "productionPublished": false
+}
