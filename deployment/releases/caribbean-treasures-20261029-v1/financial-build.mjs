@@ -28,7 +28,7 @@ export async function buildFinancial({ before, entryPoints = ['scripts/finance-n
       builder.onLoad({ filter: /\.(ts|json)$/ }, args => {
         const file = relative(root, args.path).split('\\').join('/');
         if (file.startsWith('../') || file.includes('node_modules/')) return;
-        const bytes = retained.get(file) || readFileSync(args.path), sha = digest(bytes);
+        const bytes = retained.get(file) || readFileSync(args.path), sha = digest(Buffer.from(bytes.toString('utf8').replace(/\r\n/g,'\n')));
         inputs[file] = sha;
         if (retained.has(file)) { origins[file] = baseline[file]; used.add(file); }
         else if (!scope.allowedSource.includes(file) && !file.startsWith('server-tests/'))
