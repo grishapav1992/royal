@@ -3946,13 +3946,22 @@
     "obsoleteOwnedPackage": "module-dist/studio-flooded-temple/versions/0.9.2-dc1294db2751",
     "obsoletePackageFiles": 42,
     "obsoletePackageBytes": 20858050,
-    "cleanupStatus": "pending exact GitHub preservation verification",
+    "cleanupStatus": "blocked by automatic approval review; no retry",
     "removedBytes": 0,
     "previousDeniedScopesUntouched": true,
     "activeExceptions": [
       "Current 0.9.2 package and managed worktree support the remaining acceptance steps.",
       "Manual stand 37167 and its temporary database remain active for physical listening.",
       "Earlier user-loaded versions and other games are not cleanup targets."
-    ]
+    ],
+    "rejectionReason": "blocked by policy",
+    "preservationCommit": "7a439cca52f68c37082924c43a4d22ae2342784c",
+    "remoteCommitVerified": true,
+    "removedFiles": 0,
+    "removedArchives": 0,
+    "retainedFiles": 75,
+    "retainedBytes": 21491980,
+    "freeBytesAfterRejectedCleanup": 298624475136,
+    "cleanupCondition": "Automatic cleanup review rejected both owned targets. Do not retry without a changed authorization or policy condition."
   }
 }
