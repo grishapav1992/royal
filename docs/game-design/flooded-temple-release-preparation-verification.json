@@ -1,0 +1,269 @@
+{
+  "format": 1,
+  "date": "2026-10-29",
+  "stage": "Final acceptance, step 4: release preparation",
+  "productionChanged": false,
+  "mathematicsChanged": false,
+  "gameImplementationCommit": "250747efe7b829bca6e7536a125a9ec5e1f4125c",
+  "candidateCodeCommit": "4ede7a95335601c5c287ffd9d84b38cd8016a97b",
+  "sharedFeatureIntegrationCommit": "f848981f331ce8ada0d85275031f278ab6713a14",
+  "releaseBranch": "codex/flooded-temple-release",
+  "releaseManifest": "module-build/release-manifest.json",
+  "readiness": "module-build/temple-release/readiness.json",
+  "baseCommit": "b921d0537fed52336aaee5d97144bf36a9188107",
+  "module": {
+    "gameId": "studio-flooded-temple",
+    "version": "0.9.3-4a6b3fba5115",
+    "manifestSha256": "abfdb74b2482ef809224b72dc1fbef99fd9ed857a1bcb64a0217678b7a81f0ab",
+    "contract": [
+      1,
+      2,
+      2
+    ],
+    "immutableFiles": 41
+  },
+  "production": {
+    "capturedAt": 1793294308.044651,
+    "refreshedAt": 1793296252.5694895,
+    "sourceFiles": 2342,
+    "financialSourceFiles": 208,
+    "contracts": 120,
+    "services": 14,
+    "freeBytes": 5675401216,
+    "freeBytesAtRefresh": 5515640832,
+    "unchanged": {
+      "sourceRevision": true,
+      "source": true,
+      "financeSource": true,
+      "configuration": true,
+      "financialProgram": true,
+      "preparedImage": true,
+      "preparedProgram": true,
+      "modules": true,
+      "hostContract": true,
+      "persistentContainerIdentity": true
+    },
+    "healthChanges": [
+      {
+        "name": "royal-ai-knowledge-graph-1",
+        "before": "healthy",
+        "after": "unhealthy"
+      },
+      {
+        "name": "royal-tron-reader",
+        "before": "healthy",
+        "after": "unhealthy"
+      }
+    ],
+    "images": {
+      "game": "sha256:dfced2c42ba973e54069cedc3a15e82fb566f88180a43f2c42d3822f7ad94961",
+      "finance": "sha256:7a9db125d05fc77a5f027c606a35e96bded244ec5681da0c6584ab6d0c76bd8e"
+    }
+  },
+  "checks": {
+    "compiledBrowser": {
+      "passed": 3,
+      "desktop": {
+        "geometry": {
+          "width": 1103,
+          "scroll": 1103,
+          "girl": {
+            "x": 33.078125,
+            "y": 80,
+            "width": 338.265625,
+            "height": 591.453125,
+            "top": 80,
+            "right": 371.34375,
+            "bottom": 671.453125,
+            "left": 33.078125
+          },
+          "board": {
+            "x": 393.390625,
+            "y": 175.859375,
+            "width": 676.53125,
+            "height": 422.71875,
+            "top": 175.859375,
+            "right": 1069.921875,
+            "bottom": 598.578125,
+            "left": 393.390625
+          },
+          "netFont": 13
+        },
+        "chatConnected": true,
+        "chatMessagesSent": 0,
+        "paidStarts": 2,
+        "requestStartAttempts": 3,
+        "recoveredSameUUID": true,
+        "exactBalance": true,
+        "quietReopen": true,
+        "module": "http://127.0.0.1:2635/game-modules/studio-flooded-temple/versions/0.9.3-4a6b3fba5115/manifest.json",
+        "errors": []
+      },
+      "phone": {
+        "geometry": {
+          "width": 384,
+          "scroll": 384,
+          "girl": {
+            "x": 12.515625,
+            "y": -198,
+            "width": 57,
+            "height": 52,
+            "top": -198,
+            "right": 69.515625,
+            "bottom": -146,
+            "left": 12.515625
+          },
+          "board": {
+            "x": 11.515625,
+            "y": -78,
+            "width": 360.96875,
+            "height": 226.96875,
+            "top": -78,
+            "right": 372.484375,
+            "bottom": 148.96875,
+            "left": 11.515625
+          },
+          "netFont": 12
+        },
+        "chatConnected": true,
+        "chatMessagesSent": 0,
+        "paidStarts": 2,
+        "requestStartAttempts": 3,
+        "recoveredSameUUID": true,
+        "exactBalance": true,
+        "quietReopen": true,
+        "module": "http://127.0.0.1:2635/game-modules/studio-flooded-temple/versions/0.9.3-4a6b3fba5115/manifest.json",
+        "errors": []
+      },
+      "protocol": {
+        "unsupportedClientsRejectedBeforeDebit": true,
+        "independentCapability": true,
+        "legacyRulesPreserved": true,
+        "paidRoundId": "5906beca-cd32-4a0b-b056-2dda42b6645d",
+        "stakeUnits": "1000",
+        "payoutUnits": "0",
+        "continuations": 0,
+        "replayWithoutDebit": true
+      },
+      "build": {
+        "origin": "http://127.0.0.1:2635",
+        "programSha256": "e53b91100ceedb1dd43058f59b8b4d252d6a7809212b237aa5cdd20f8765301f",
+        "clientIndexSha256": "a7a62c8a577853bdbf80c600e2aa261363c2e6682432eeabd90085d239b7e3a5",
+        "disposableDatabase": true,
+        "vite": false,
+        "walletMiddlewareFixture": false,
+        "syntheticFundsOnly": true,
+        "funding": "Existing wallet store, only in the isolated temporary database"
+      }
+    },
+    "financialComposition": {
+      "passed": 20,
+      "projectInputs": 143,
+      "retainedSourceOrigins": 15,
+      "catalogueOrigins": 1,
+      "programSha256": "6f75618a039ebd06f40e4c70b4e33e86ec08801fa2e900cbacd5a8f1b7830845",
+      "hostV4TestsReplacedWithPublishedV3Tests": 2,
+      "baselineComparison": {
+        "liveSha256": "5c87e2633773e21a3c89ce77a511517744b700d124e4b8d75f030065f7aa8086",
+        "rebuiltSha256": "afcc44cfcac255111bcc6c393940b9b0ebe0c359e15068eb39b9f64ac718a83c",
+        "canonicalLiveSha256": "7282059b4775563c389f7d9feac9ba5526771bc83991431a8b39d2cbdc03cc63",
+        "canonicalRebuiltSha256": "7282059b4775563c389f7d9feac9ba5526771bc83991431a8b39d2cbdc03cc63",
+        "sameAfterCanonicalCompilation": true
+      }
+    },
+    "releaseTooling": {
+      "passed": 9
+    },
+    "independentModules": {
+      "passed": 7
+    },
+    "candidateRtp": {
+      "verified": 17,
+      "legacyNotQualified": 114
+    },
+    "sharedMainReconciliation": {
+      "templeTests": 56,
+      "jackieTests": 21,
+      "rtpGateTests": 33,
+      "verifiedProfiles": 18,
+      "qualificationComparison": [
+        {
+          "file": "docs/game-math/qualifications/flooded-temple-v1.json",
+          "normalQualificationRerun": true,
+          "unchanged": {
+            "results": true,
+            "analysis": true,
+            "serverReplay": true
+          }
+        },
+        {
+          "file": "docs/game-math/qualifications/flooded-temple-v2.json",
+          "normalQualificationRerun": true,
+          "unchanged": {
+            "results": true,
+            "analysis": true,
+            "serverReplay": true
+          }
+        },
+        {
+          "file": "docs/game-math/qualifications/forest-heart-v1.json",
+          "normalQualificationRerun": true,
+          "unchanged": {
+            "results": true,
+            "analysis": true,
+            "serverReplay": true
+          }
+        },
+        {
+          "file": "docs/game-math/qualifications/caribbean-treasures-v1.json",
+          "normalQualificationRerun": true,
+          "unchanged": {
+            "results": true,
+            "analysis": true,
+            "serverReplay": true
+          }
+        },
+        {
+          "file": "docs/game-math/qualifications/flag-battle-v2.json",
+          "normalQualificationRerun": true,
+          "unchanged": {
+            "results": true,
+            "analysis": true,
+            "serverReplay": true
+          }
+        },
+        {
+          "file": "docs/game-math/qualifications/jackie-chan-v2.json",
+          "normalQualificationRerun": true,
+          "unchanged": {
+            "results": true,
+            "analysis": true,
+            "serverReplay": true
+          }
+        }
+      ]
+    }
+  },
+  "limitations": {
+    "physicalListening": "pending",
+    "physicalDevices": "unverified",
+    "initialCompiledHostTimeoutObserved": true,
+    "lastStandaloneAndFullCompiledHostRuns": "passed",
+    "localhostStringWasSdkFallback": true,
+    "productionInstallation": "not performed",
+    "templeScopedGuardedInstallerAndPublicChecks": "required at publication",
+    "allProductionServicesHealthy": "Not asserted; two unrelated health changes were observed, service identities were unchanged"
+  },
+  "storage": {
+    "scope": "artifacts/work/temple-release-preparation",
+    "initialFreeBytes": 298182164480,
+    "cleanupStatus": "pending preservation",
+    "previousDeniedScopesUntouched": true,
+    "archivesCreated": 0,
+    "activeExceptions": [
+      "Pinned release checkout and normal build outputs remain for the publication decision.",
+      "Existing manual listening stand remains while physical listening is pending.",
+      "Earlier denied scopes are preserved and never retried."
+    ]
+  }
+}
