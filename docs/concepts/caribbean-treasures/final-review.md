@@ -1,4 +1,6 @@
-Текущее обновление 1.5.0: [открытие команды за бесплатные задания](collection-review.md), [проверки](collection-verification.json).
+Текущее обновление 1.5.1: [итоговая проверка и исправления выбора персонажа](audit-review.md), [проверки](audit-verification.json).
+
+Обновление 1.5.0: [открытие команды за бесплатные задания](collection-review.md), [проверки](collection-verification.json).
 
 Обновление 1.4.0: [десять новых пираток и выбор героини](crew-review.md), [проверки](crew-verification.json).
 

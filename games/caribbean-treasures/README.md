@@ -1,10 +1,10 @@
-# Caribbean Treasures 1.5.0
+# Caribbean Treasures 1.5.1
 
 Independent client package for `studio-caribbean-treasures`. Host API 1, server rules 1 and progress contract 1. The common module loader mounts `entry.ts`; the host supplies the expansion client, wallet, account, money formatting and language.
 
 The portrait opens the account-backed crew collection. Isabella starts unlocked; ten additional adult captains cost 100 free profile tokens each. Five one-time lessons award 20 tokens each and two daily questions award 50 each, resetting at midnight Europe/Moscow. Players choose which captain to unlock. Tokens cannot be bought, wagered or redeemed. Answers, duplicate claims, unlock costs, ownership and selection are checked by the common authenticated backend and survive browser storage clearing or another device. A local 1.4.0 preview preference is not ownership. The API is optional for old hosts: the slot remains playable with Isabella if collection access fails. See [collection-policy.md](../../docs/concepts/caribbean-treasures/collection-policy.md).
 
-Every captain retains an individual face, costume and eight reaction frames. New art decodes before switching; failures and cancelled loads preserve the current identity. Paid presentation interrupts a pending cosmetic restore and defers it until the confirmed result is shown. Close/reopen restores the selected owned captain without replaying rewards. These profile operations never submit a wager or change an accepted round.
+Every captain retains an individual face, costume and eight reaction frames. New art decodes and its account selection is confirmed before switching; failures and cancelled loads preserve the current identity. A late accepted selection is reconciled from the server after closing its dialog. Paid presentation interrupts a pending cosmetic restore and defers it until the confirmed result is shown. Close/reopen restores the selected owned captain without replaying rewards. These profile operations never submit a wager or change an accepted round.
 
 Crew masters and prompts are in `assets/crew/`. Run `node scripts/export-caribbean-crew.mjs` from the repository root to export 80 transparent reaction images and 11 small gallery previews, or add `--check` to verify exact exported bytes. An eight-pixel atlas inset excludes neighboring frame edges. Only the chosen reaction set loads; the original 16-image startup list remains bounded. The additional crew has a separate 12 MiB runtime media budget. Music and recorded effects are unchanged.
 
@@ -29,6 +29,8 @@ Raster source PNGs and ImageGen prompts are in `assets/`. Reproducible WebP runt
 Build with `npm run build` or `node scripts/build-game-module.mjs --game caribbean-treasures`. Run `npm run test:caribbean` for full-round, transport and wallet coverage.
 
 For real-host browser checks, start `node --import tsx scripts/caribbean-preview.ts`, then run `npx playwright test --config playwright.caribbean.config.ts`. The loopback-only stand creates its own temporary PostgreSQL and disposable accounts. It uses the actual host, module loader, shared wallet store and live chat. Test-only top-up, forced bonus and seeded saved-scenario controls exist in that local stand only. Saved scenarios drive actual backend rounds, not injected UI results. Stop with POST `http://127.0.0.1:5234/__test/caribbean/stop`; this closes its backend and temporary database.
+
+Set `CARIBBEAN_WEB_PORT`, `CARIBBEAN_API_PORT` and `CARIBBEAN_ARTIFACTS_DIR` to the same values for the stand and Playwright when a user preview already runs. The separate stand writes `runtime.json` in its own artifact directory and does not replace another preview's ownership record.
 
 The local stand starts new accounts with zero funds. For free local test credit, sign in first and open `http://127.0.0.1:5234/scripts/caribbean-fund-local.html`, then use its explicit 1000-demo-credit button. This development page calls only the stand's existing authenticated fixture route and is excluded from production builds. It does not enable production deposits or change the shared wallet implementation.
 
