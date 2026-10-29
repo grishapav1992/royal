@@ -1,0 +1,3958 @@
+{
+  "format": 1,
+  "date": "2026-10-29",
+  "stage": "Final acceptance, step 2: devices and audio",
+  "status": {
+    "software": "passed",
+    "physicalDevices": "pending",
+    "physicalListening": "unverified",
+    "stageFullyComplete": false
+  },
+  "sourceCommit": "5d73e07",
+  "reconciledCommit": "f60c9e65bd8c75d0b0e0562df16581e127fec364",
+  "productionChanged": false,
+  "mathematicsChanged": false,
+  "contract": [
+    1,
+    2,
+    2
+  ],
+  "module": {
+    "gameId": "studio-flooded-temple",
+    "version": "0.9.2-32c5ec92ba8a",
+    "sourceSha256": "32c5ec92ba8afb4ebecfa4f32a723fcf8b536fd42dc3eae1c3cb644ba24c40d5",
+    "manifestSha256": "d17238c29cef16eccaa595900f7ed52cd35a2b4c74eea62b37557cdbc3f8b216",
+    "files": 41,
+    "allImmutableFilesVerified": true
+  },
+  "fixes": {
+    "phoneToolbar": {
+      "beforeCssPixels": [
+        29,
+        29
+      ],
+      "afterCssPixels": [
+        44,
+        44
+      ]
+    },
+    "audioScheduling": {
+      "baselineLateByMs": 15,
+      "reportedLatencySecondsTested": [
+        0.02,
+        0.3,
+        0.7
+      ],
+      "lookahead": "Confirmed cues inside audio lead horizon, including cues beyond a short silent beat",
+      "voiceBudget": 10,
+      "physicalDelayInjected": false
+    },
+    "musicRecovery": {
+      "failedStreamNotMarkedPlaying": true,
+      "voiceReservationPreservedWhilePending": true,
+      "reloadOnLaterGesture": true,
+      "noPastCueReplay": true
+    }
+  },
+  "checks": {
+    "browser": {
+      "passed": 11,
+      "durationMinutes": 2.6
+    },
+    "temple": {
+      "passed": 56
+    },
+    "rtpGateRegression": {
+      "passed": 33
+    },
+    "independentModulesAndAssets": {
+      "passed": 7,
+      "identities": 121
+    },
+    "rtp": {
+      "verifiedProfiles": 17,
+      "legacyNotQualified": 114
+    },
+    "build": {
+      "format": 1,
+      "startedAt": "2026-10-29T16:39:25.699Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 3853
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 9030
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 12267
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 8276
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 68
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 27
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 28
+        }
+      ],
+      "passed": true,
+      "durationMs": 33549
+    },
+    "additionalManualStandSmoke": {
+      "cookieIsolation": true,
+      "reload": true,
+      "websocketAndChat": true
+    }
+  },
+  "measurements": {
+    "desktop": {
+      "profile": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 1000,
+        "dpr": 1,
+        "touch": false,
+        "cpu": 1
+      },
+      "environment": "Desktop Chrome with explicit viewport/touch/CPU emulation, not physical phone",
+      "geometry": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "board": {
+          "x": 579.9375,
+          "y": 192.59375,
+          "width": 750,
+          "height": 466.796875,
+          "top": 192.59375,
+          "right": 1329.9375,
+          "bottom": 659.390625,
+          "left": 579.9375
+        },
+        "character": {
+          "x": 43.1875,
+          "y": 80,
+          "width": 441.875,
+          "height": 663,
+          "top": 80,
+          "right": 485.0625,
+          "bottom": 743,
+          "left": 43.1875
+        },
+        "console": {
+          "x": 43.1875,
+          "y": 757,
+          "width": 1353.625,
+          "height": 180,
+          "top": 757,
+          "right": 1396.8125,
+          "bottom": 937,
+          "left": 43.1875
+        },
+        "cell": {
+          "x": 605.9375,
+          "y": 218.59375,
+          "width": 137.1875,
+          "height": 136.265625,
+          "top": 218.59375,
+          "right": 743.125,
+          "bottom": 354.859375,
+          "left": 605.9375
+        },
+        "controls": [
+          {
+            "name": "journal",
+            "width": 36,
+            "height": 36,
+            "disabled": false
+          },
+          {
+            "name": "rules",
+            "width": 36,
+            "height": 36,
+            "disabled": false
+          },
+          {
+            "name": "mute",
+            "width": 36,
+            "height": 36,
+            "disabled": false
+          },
+          {
+            "name": "stake",
+            "width": 253.65625,
+            "height": 38,
+            "disabled": false
+          },
+          {
+            "name": "primary",
+            "width": 417.953125,
+            "height": 60,
+            "disabled": false
+          },
+          {
+            "name": "fast",
+            "width": 70.734375,
+            "height": 40,
+            "disabled": false
+          },
+          {
+            "name": "auto-count",
+            "width": 61,
+            "height": 40,
+            "disabled": false
+          },
+          {
+            "name": "auto",
+            "width": 95.359375,
+            "height": 40,
+            "disabled": false
+          }
+        ]
+      },
+      "timing": {
+        "frames": {
+          "samples": 3576,
+          "p50Ms": 6.900000000001455,
+          "p95Ms": 7.200000000000728,
+          "maxMs": 48.69999999999982,
+          "over50Ms": 0
+        },
+        "pointerDispatchToNextFrame": {
+          "samples": 1,
+          "p50Ms": 9.399999991059303,
+          "p95Ms": 9.399999991059303,
+          "maxMs": 9.399999991059303,
+          "over50Ms": 0
+        },
+        "longTasks": {
+          "samples": 0,
+          "p50Ms": 0,
+          "p95Ms": 0,
+          "maxMs": 0,
+          "over50Ms": 0
+        },
+        "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4070 Laptop GPU (0x00002820) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+        "dpr": 1,
+        "touchPoints": 0,
+        "viewport": {
+          "width": 1440,
+          "height": 962
+        },
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36"
+      },
+      "mix": {
+        "frames": 1272960,
+        "samples": 2545920,
+        "peak": 0.20755678415298462,
+        "rms": 0.04020105796320101,
+        "clipped": 0,
+        "sampleRate": 48000
+      },
+      "feedback": {
+        "active": false,
+        "event": null,
+        "offsetMs": 0,
+        "framePending": false,
+        "stalls": 0,
+        "frames": [
+          {
+            "kind": "drop",
+            "fall": 1,
+            "id": 0
+          },
+          {
+            "kind": "evaluate",
+            "fall": 1,
+            "id": 1
+          },
+          {
+            "kind": "break",
+            "fall": 2,
+            "id": 2
+          },
+          {
+            "kind": "drop",
+            "fall": 2,
+            "id": 3
+          },
+          {
+            "kind": "evaluate",
+            "fall": 2,
+            "id": 4
+          },
+          {
+            "kind": "bonus",
+            "fall": 2,
+            "id": 5
+          },
+          {
+            "kind": "drop",
+            "fall": 3,
+            "id": 6
+          },
+          {
+            "kind": "evaluate",
+            "fall": 3,
+            "id": 7
+          },
+          {
+            "kind": "drop",
+            "fall": 4,
+            "id": 8
+          },
+          {
+            "kind": "evaluate",
+            "fall": 4,
+            "id": 9
+          },
+          {
+            "kind": "break",
+            "fall": 5,
+            "id": 10
+          },
+          {
+            "kind": "drop",
+            "fall": 5,
+            "id": 11
+          },
+          {
+            "kind": "evaluate",
+            "fall": 5,
+            "id": 12
+          },
+          {
+            "kind": "drop",
+            "fall": 6,
+            "id": 13
+          },
+          {
+            "kind": "evaluate",
+            "fall": 6,
+            "id": 14
+          },
+          {
+            "kind": "drop",
+            "fall": 7,
+            "id": 15
+          },
+          {
+            "kind": "evaluate",
+            "fall": 7,
+            "id": 16
+          },
+          {
+            "kind": "drop",
+            "fall": 8,
+            "id": 17
+          },
+          {
+            "kind": "evaluate",
+            "fall": 8,
+            "id": 18
+          },
+          {
+            "kind": "drop",
+            "fall": 9,
+            "id": 19
+          },
+          {
+            "kind": "evaluate",
+            "fall": 9,
+            "id": 20
+          },
+          {
+            "kind": "drop",
+            "fall": 10,
+            "id": 21
+          },
+          {
+            "kind": "evaluate",
+            "fall": 10,
+            "id": 22
+          },
+          {
+            "kind": "drop",
+            "fall": 11,
+            "id": 23
+          },
+          {
+            "kind": "evaluate",
+            "fall": 11,
+            "id": 24
+          },
+          {
+            "kind": "drop",
+            "fall": 12,
+            "id": 25
+          },
+          {
+            "kind": "evaluate",
+            "fall": 12,
+            "id": 26
+          },
+          {
+            "kind": "drop",
+            "fall": 13,
+            "id": 27
+          },
+          {
+            "kind": "evaluate",
+            "fall": 13,
+            "id": 28
+          },
+          {
+            "kind": "break",
+            "fall": 14,
+            "id": 29
+          },
+          {
+            "kind": "drop",
+            "fall": 14,
+            "id": 30
+          },
+          {
+            "kind": "evaluate",
+            "fall": 14,
+            "id": 31
+          },
+          {
+            "kind": "break",
+            "fall": 15,
+            "id": 32
+          },
+          {
+            "kind": "drop",
+            "fall": 15,
+            "id": 33
+          },
+          {
+            "kind": "evaluate",
+            "fall": 15,
+            "id": 34
+          },
+          {
+            "kind": "break",
+            "fall": 16,
+            "id": 35
+          },
+          {
+            "kind": "drop",
+            "fall": 16,
+            "id": 36
+          },
+          {
+            "kind": "evaluate",
+            "fall": 16,
+            "id": 37
+          },
+          {
+            "kind": "drop",
+            "fall": 17,
+            "id": 0
+          },
+          {
+            "kind": "evaluate",
+            "fall": 17,
+            "id": 1
+          },
+          {
+            "kind": "drop",
+            "fall": 18,
+            "id": 2
+          },
+          {
+            "kind": "evaluate",
+            "fall": 18,
+            "id": 3
+          },
+          {
+            "kind": "drop",
+            "fall": 19,
+            "id": 4
+          },
+          {
+            "kind": "evaluate",
+            "fall": 19,
+            "id": 5
+          },
+          {
+            "kind": "drop",
+            "fall": 20,
+            "id": 6
+          },
+          {
+            "kind": "evaluate",
+            "fall": 20,
+            "id": 7
+          },
+          {
+            "kind": "break",
+            "fall": 21,
+            "id": 8
+          },
+          {
+            "kind": "drop",
+            "fall": 21,
+            "id": 9
+          },
+          {
+            "kind": "evaluate",
+            "fall": 21,
+            "id": 10
+          },
+          {
+            "kind": "drop",
+            "fall": 22,
+            "id": 11
+          },
+          {
+            "kind": "evaluate",
+            "fall": 22,
+            "id": 12
+          },
+          {
+            "kind": "drop",
+            "fall": 23,
+            "id": 13
+          },
+          {
+            "kind": "evaluate",
+            "fall": 23,
+            "id": 14
+          },
+          {
+            "kind": "drop",
+            "fall": 24,
+            "id": 15
+          },
+          {
+            "kind": "evaluate",
+            "fall": 24,
+            "id": 16
+          },
+          {
+            "kind": "break",
+            "fall": 25,
+            "id": 17
+          },
+          {
+            "kind": "drop",
+            "fall": 25,
+            "id": 18
+          },
+          {
+            "kind": "evaluate",
+            "fall": 25,
+            "id": 19
+          },
+          {
+            "kind": "break",
+            "fall": 26,
+            "id": 20
+          },
+          {
+            "kind": "drop",
+            "fall": 26,
+            "id": 21
+          },
+          {
+            "kind": "evaluate",
+            "fall": 26,
+            "id": 22
+          },
+          {
+            "kind": "break",
+            "fall": 27,
+            "id": 23
+          },
+          {
+            "kind": "drop",
+            "fall": 27,
+            "id": 24
+          },
+          {
+            "kind": "evaluate",
+            "fall": 27,
+            "id": 25
+          },
+          {
+            "kind": "drop",
+            "fall": 28,
+            "id": 26
+          },
+          {
+            "kind": "evaluate",
+            "fall": 28,
+            "id": 27
+          },
+          {
+            "kind": "drop",
+            "fall": 29,
+            "id": 28
+          },
+          {
+            "kind": "evaluate",
+            "fall": 29,
+            "id": 29
+          },
+          {
+            "kind": "drop",
+            "fall": 30,
+            "id": 30
+          },
+          {
+            "kind": "evaluate",
+            "fall": 30,
+            "id": 31
+          },
+          {
+            "kind": "base-return",
+            "fall": 31,
+            "id": 32
+          },
+          {
+            "kind": "break",
+            "fall": 31,
+            "id": 33
+          },
+          {
+            "kind": "drop",
+            "fall": 31,
+            "id": 34
+          },
+          {
+            "kind": "evaluate",
+            "fall": 31,
+            "id": 35
+          },
+          {
+            "kind": "outcome",
+            "fall": 31,
+            "id": 36
+          }
+        ],
+        "accents": [
+          {
+            "kind": "drop",
+            "fall": 3,
+            "planned": 4591.698333330353,
+            "shown": 4595.79999999702,
+            "skewMs": 4.1016666666664605
+          },
+          {
+            "kind": "drop",
+            "fall": 4,
+            "planned": 5151.698333330353,
+            "shown": 5159.899999991059,
+            "skewMs": 8.201666660705996
+          },
+          {
+            "kind": "break",
+            "fall": 5,
+            "planned": 5658.698333330353,
+            "shown": 5667.899999991059,
+            "skewMs": 9.201666660705996
+          },
+          {
+            "kind": "drop",
+            "fall": 5,
+            "planned": 6139.698333330353,
+            "shown": 6143.70000000298,
+            "skewMs": 4.001666672626925
+          },
+          {
+            "kind": "drop",
+            "fall": 6,
+            "planned": 6751.698333330353,
+            "shown": 6754.5,
+            "skewMs": 2.8016666696466928
+          },
+          {
+            "kind": "drop",
+            "fall": 7,
+            "planned": 7311.698333330353,
+            "shown": 7317.0999999940395,
+            "skewMs": 5.401666663686228
+          },
+          {
+            "kind": "drop",
+            "fall": 8,
+            "planned": 7871.698333330353,
+            "shown": 7872.5,
+            "skewMs": 0.8016666696466928
+          },
+          {
+            "kind": "drop",
+            "fall": 9,
+            "planned": 8431.698333330354,
+            "shown": 8434.89999999106,
+            "skewMs": 3.2016666607050865
+          },
+          {
+            "kind": "drop",
+            "fall": 10,
+            "planned": 8991.698333330352,
+            "shown": 8997.5,
+            "skewMs": 5.801666669647602
+          },
+          {
+            "kind": "drop",
+            "fall": 11,
+            "planned": 9551.698333330352,
+            "shown": 9552.79999999702,
+            "skewMs": 1.10166666666737
+          },
+          {
+            "kind": "drop",
+            "fall": 12,
+            "planned": 10111.698333330352,
+            "shown": 10115.5,
+            "skewMs": 3.8016666696476022
+          },
+          {
+            "kind": "drop",
+            "fall": 13,
+            "planned": 10671.698333330352,
+            "shown": 10677.70000000298,
+            "skewMs": 6.0016666726278345
+          },
+          {
+            "kind": "break",
+            "fall": 14,
+            "planned": 11178.698333330352,
+            "shown": 11185.09999999404,
+            "skewMs": 6.401666663687138
+          },
+          {
+            "kind": "drop",
+            "fall": 14,
+            "planned": 11675.698333330352,
+            "shown": 11677.89999999106,
+            "skewMs": 2.2016666607069055
+          },
+          {
+            "kind": "break",
+            "fall": 15,
+            "planned": 12218.698333330352,
+            "shown": 12219.59999999404,
+            "skewMs": 0.9016666636871378
+          },
+          {
+            "kind": "drop",
+            "fall": 15,
+            "planned": 12707.698333330352,
+            "shown": 12712.89999999106,
+            "skewMs": 5.2016666607069055
+          },
+          {
+            "kind": "break",
+            "fall": 16,
+            "planned": 13258.698333330352,
+            "shown": 13261.39999999106,
+            "skewMs": 2.7016666607069055
+          },
+          {
+            "kind": "drop",
+            "fall": 16,
+            "planned": 13755.698333330352,
+            "shown": 13761.09999999404,
+            "skewMs": 5.401666663687138
+          },
+          {
+            "kind": "drop",
+            "fall": 17,
+            "planned": 14934.243333324393,
+            "shown": 14934.59999999404,
+            "skewMs": 0.3566666696460743
+          },
+          {
+            "kind": "drop",
+            "fall": 18,
+            "planned": 15494.243333324393,
+            "shown": 15497.29999999702,
+            "skewMs": 3.0566666726263065
+          },
+          {
+            "kind": "drop",
+            "fall": 19,
+            "planned": 16054.243333324393,
+            "shown": 16059.5,
+            "skewMs": 5.256666675606539
+          },
+          {
+            "kind": "drop",
+            "fall": 20,
+            "planned": 16614.243333324393,
+            "shown": 16615.29999999702,
+            "skewMs": 1.0566666726263065
+          },
+          {
+            "kind": "break",
+            "fall": 21,
+            "planned": 17121.243333324393,
+            "shown": 17121.89999999106,
+            "skewMs": 0.6566666666658421
+          },
+          {
+            "kind": "drop",
+            "fall": 21,
+            "planned": 17620.243333324393,
+            "shown": 17622.20000000298,
+            "skewMs": 1.956666678586771
+          },
+          {
+            "kind": "drop",
+            "fall": 22,
+            "planned": 18214.243333324393,
+            "shown": 18223.70000000298,
+            "skewMs": 9.456666678586771
+          },
+          {
+            "kind": "drop",
+            "fall": 23,
+            "planned": 18774.243333324393,
+            "shown": 18775.09999999404,
+            "skewMs": 0.8566666696460743
+          },
+          {
+            "kind": "drop",
+            "fall": 24,
+            "planned": 19334.243333324393,
+            "shown": 19337.59999999404,
+            "skewMs": 3.3566666696460743
+          },
+          {
+            "kind": "break",
+            "fall": 25,
+            "planned": 19841.243333324393,
+            "shown": 19844.29999999702,
+            "skewMs": 3.0566666726263065
+          },
+          {
+            "kind": "drop",
+            "fall": 25,
+            "planned": 20348.243333324393,
+            "shown": 20351.5,
+            "skewMs": 3.2566666756065388
+          },
+          {
+            "kind": "break",
+            "fall": 26,
+            "planned": 20881.243333324393,
+            "shown": 20886,
+            "skewMs": 4.756666675606539
+          },
+          {
+            "kind": "drop",
+            "fall": 26,
+            "planned": 21378.243333324393,
+            "shown": 21379.5,
+            "skewMs": 1.2566666756065388
+          },
+          {
+            "kind": "break",
+            "fall": 27,
+            "planned": 21921.243333324393,
+            "shown": 21927.59999999404,
+            "skewMs": 6.356666669646074
+          },
+          {
+            "kind": "drop",
+            "fall": 27,
+            "planned": 22410.243333324393,
+            "shown": 22413.89999999106,
+            "skewMs": 3.656666666665842
+          },
+          {
+            "kind": "drop",
+            "fall": 28,
+            "planned": 23014.243333324393,
+            "shown": 23017.70000000298,
+            "skewMs": 3.456666678586771
+          },
+          {
+            "kind": "drop",
+            "fall": 29,
+            "planned": 23574.243333324393,
+            "shown": 23580.59999999404,
+            "skewMs": 6.356666669646074
+          },
+          {
+            "kind": "drop",
+            "fall": 30,
+            "planned": 24134.243333324393,
+            "shown": 24135.89999999106,
+            "skewMs": 1.656666666665842
+          },
+          {
+            "kind": "base-return",
+            "fall": 31,
+            "planned": 24526.243333324393,
+            "shown": 24526.29999999702,
+            "skewMs": 0.056666672626306536
+          },
+          {
+            "kind": "break",
+            "fall": 31,
+            "planned": 24841.243333324393,
+            "shown": 24844.20000000298,
+            "skewMs": 2.956666678586771
+          },
+          {
+            "kind": "drop",
+            "fall": 31,
+            "planned": 25330.243333324393,
+            "shown": 25330.29999999702,
+            "skewMs": 0.056666672626306536
+          },
+          {
+            "kind": "outcome",
+            "fall": 31,
+            "planned": 25766.243333324393,
+            "shown": 25768.09999999404,
+            "skewMs": 1.8566666696460743
+          }
+        ],
+        "effects": {
+          "nodes": 0,
+          "maxNodes": 16,
+          "shownUnits": "30250"
+        }
+      },
+      "audio": {
+        "ready": true,
+        "activeSources": 3,
+        "releasingSources": 0,
+        "looping": true,
+        "music": {
+          "title": "Memories Of Stone",
+          "playing": true,
+          "pending": false,
+          "positionSeconds": 26.531701,
+          "readyState": 4,
+          "error": "",
+          "disposed": false
+        },
+        "played": {
+          "cascadeLandB": 11,
+          "cascadeBreakB": 4,
+          "cascadeLandC": 10,
+          "cascadeBonus": 1,
+          "cascadeLandA": 10,
+          "cascadeBreakA": 6,
+          "cascadeReturn": 1,
+          "big": 1
+        },
+        "canceled": 7,
+        "clock": {
+          "contextTime": 26.478956999999998,
+          "performanceTime": 27759.59999999404,
+          "latencyMs": 51.70966666666743,
+          "method": "output-timestamp"
+        },
+        "anchors": [
+          {
+            "cue": "cascadeBreakB",
+            "targetPerformanceTime": 13258.698333330352,
+            "startContextTime": 11.948030166669646,
+            "method": "output-timestamp",
+            "latencyMs": 52.255666666667366,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeLandB",
+            "targetPerformanceTime": 13755.698333330352,
+            "startContextTime": 12.402853333327373,
+            "method": "output-timestamp",
+            "latencyMs": 53.02000000000007,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeLandC",
+            "targetPerformanceTime": 14934.243333324393,
+            "startContextTime": 13.566004333324395,
+            "method": "output-timestamp",
+            "latencyMs": 52.28066666666642,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeLandA",
+            "targetPerformanceTime": 15494.243333324393,
+            "startContextTime": 14.147471666666668,
+            "method": "output-timestamp",
+            "latencyMs": 51.49666666666697,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeLandB",
+            "targetPerformanceTime": 16054.243333324393,
+            "startContextTime": 14.701508333324394,
+            "method": "output-timestamp",
+            "latencyMs": 52.27666666666586,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeLandC",
+            "targetPerformanceTime": 16614.243333324393,
+            "startContextTime": 15.245957333324395,
+            "method": "output-timestamp",
+            "latencyMs": 52.49433333333364,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeBreakA",
+            "targetPerformanceTime": 17121.243333324393,
+            "startContextTime": 15.794138499988081,
+            "method": "output-timestamp",
+            "latencyMs": 51.50899999999936,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeLandA",
+            "targetPerformanceTime": 17620.243333324393,
+            "startContextTime": 16.273475666660705,
+            "method": "output-timestamp",
+            "latencyMs": 52.75933333333427,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeLandB",
+            "targetPerformanceTime": 18214.243333324393,
+            "startContextTime": 16.861438333324394,
+            "method": "output-timestamp",
+            "latencyMs": 51.84666666666615,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeLandC",
+            "targetPerformanceTime": 18774.243333324393,
+            "startContextTime": 17.405916333324395,
+            "method": "output-timestamp",
+            "latencyMs": 51.36866666666862,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeLandA",
+            "targetPerformanceTime": 19334.243333324393,
+            "startContextTime": 17.98751666665773,
+            "method": "output-timestamp",
+            "latencyMs": 51.85166666666419,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeBreakA",
+            "targetPerformanceTime": 19841.243333324393,
+            "startContextTime": 18.514082500000004,
+            "method": "output-timestamp",
+            "latencyMs": 51.36500000000055,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeLandB",
+            "targetPerformanceTime": 20348.243333324393,
+            "startContextTime": 18.995433333330354,
+            "method": "output-timestamp",
+            "latencyMs": 52.4183333333319,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeBreakB",
+            "targetPerformanceTime": 20881.243333324393,
+            "startContextTime": 19.570474166657725,
+            "method": "output-timestamp",
+            "latencyMs": 51.29000000000161,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeLandC",
+            "targetPerformanceTime": 21378.243333324393,
+            "startContextTime": 20.009897333327373,
+            "method": "output-timestamp",
+            "latencyMs": 52.25433333333385,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeBreakA",
+            "targetPerformanceTime": 21921.243333324393,
+            "startContextTime": 20.59419149998808,
+            "method": "output-timestamp",
+            "latencyMs": 51.45599999999817,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeLandA",
+            "targetPerformanceTime": 22410.243333324393,
+            "startContextTime": 21.063543666666664,
+            "method": "output-timestamp",
+            "latencyMs": 51.92466666666817,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeLandB",
+            "targetPerformanceTime": 23014.243333324393,
+            "startContextTime": 21.661405333327373,
+            "method": "output-timestamp",
+            "latencyMs": 52.079666666667634,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeLandC",
+            "targetPerformanceTime": 23574.243333324393,
+            "startContextTime": 22.205951333330358,
+            "method": "output-timestamp",
+            "latencyMs": 51.73366666666368,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeLandA",
+            "targetPerformanceTime": 24134.243333324393,
+            "startContextTime": 22.787478666657726,
+            "method": "output-timestamp",
+            "latencyMs": 51.38966666666889,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeReturn",
+            "targetPerformanceTime": 24526.243333324393,
+            "startContextTime": 23.194486166654748,
+            "method": "output-timestamp",
+            "latencyMs": 51.577999999999236,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeBreakA",
+            "targetPerformanceTime": 24841.243333324393,
+            "startContextTime": 23.51407649998808,
+            "method": "output-timestamp",
+            "latencyMs": 51.5710000000027,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeLandB",
+            "targetPerformanceTime": 25330.243333324393,
+            "startContextTime": 23.977429333327375,
+            "method": "output-timestamp",
+            "latencyMs": 52.05566666666428,
+            "state": "scheduled"
+          },
+          {
+            "cue": "big",
+            "targetPerformanceTime": 25766.243333324393,
+            "startContextTime": 24.45554933333035,
+            "method": "output-timestamp",
+            "latencyMs": 51.76066666667012,
+            "state": "scheduled"
+          }
+        ],
+        "disposed": false
+      },
+      "character": {
+        "clip": "triumph",
+        "poseBlendMode": "single-key-pose",
+        "clockMs": 26833.1,
+        "idleMs": 0,
+        "framePending": true,
+        "paused": false,
+        "reduced": false,
+        "transitions": [
+          {
+            "clip": "survey",
+            "pose": "observe"
+          },
+          {
+            "clip": "steady",
+            "pose": "brace"
+          },
+          {
+            "clip": "follow-chain",
+            "pose": "discover"
+          },
+          {
+            "clip": "follow-stones",
+            "pose": "brace"
+          },
+          {
+            "clip": "steady",
+            "pose": "brace"
+          },
+          {
+            "clip": "survey",
+            "pose": "observe"
+          },
+          {
+            "clip": "steady",
+            "pose": "brace"
+          },
+          {
+            "clip": "survey",
+            "pose": "observe"
+          },
+          {
+            "clip": "steady",
+            "pose": "brace"
+          },
+          {
+            "clip": "survey",
+            "pose": "observe"
+          },
+          {
+            "clip": "steady",
+            "pose": "brace"
+          },
+          {
+            "clip": "follow-chain",
+            "pose": "discover"
+          },
+          {
+            "clip": "shield",
+            "pose": "brace"
+          },
+          {
+            "clip": "steady",
+            "pose": "brace"
+          },
+          {
+            "clip": "follow-chain",
+            "pose": "observe"
+          },
+          {
+            "clip": "follow-stones",
+            "pose": "brace"
+          },
+          {
+            "clip": "steady",
+            "pose": "brace"
+          },
+          {
+            "clip": "follow-chain",
+            "pose": "discover"
+          },
+          {
+            "clip": "follow-stones",
+            "pose": "brace"
+          },
+          {
+            "clip": "steady",
+            "pose": "brace"
+          },
+          {
+            "clip": "survey",
+            "pose": "observe"
+          },
+          {
+            "clip": "steady",
+            "pose": "brace"
+          },
+          {
+            "clip": "survey",
+            "pose": "observe"
+          },
+          {
+            "clip": "steady",
+            "pose": "brace"
+          },
+          {
+            "clip": "survey",
+            "pose": "observe"
+          },
+          {
+            "clip": "steady",
+            "pose": "brace"
+          },
+          {
+            "clip": "survey",
+            "pose": "observe"
+          },
+          {
+            "clip": "back-to-temple",
+            "pose": "observe"
+          },
+          {
+            "clip": "shield",
+            "pose": "brace"
+          },
+          {
+            "clip": "steady",
+            "pose": "brace"
+          },
+          {
+            "clip": "survey",
+            "pose": "observe"
+          },
+          {
+            "clip": "triumph",
+            "pose": "celebrate"
+          }
+        ],
+        "renderer": "mesh",
+        "pose": "celebrate",
+        "textures": 6,
+        "loaded": [
+          "idle",
+          "observe",
+          "brace",
+          "discover",
+          "celebrate",
+          "reflect"
+        ],
+        "disposed": false
+      },
+      "errors": []
+    },
+    "phone-390-cpu4": {
+      "profile": {
+        "name": "phone-390-cpu4",
+        "width": 390,
+        "height": 844,
+        "dpr": 3,
+        "touch": true,
+        "cpu": 4
+      },
+      "environment": "Desktop Chrome with explicit viewport/touch/CPU emulation, not physical phone",
+      "geometry": {
+        "width": 390,
+        "scrollWidth": 390,
+        "board": {
+          "x": 11.6875,
+          "y": 182,
+          "width": 366.625,
+          "height": 230.375,
+          "top": 182,
+          "right": 378.3125,
+          "bottom": 412.375,
+          "left": 11.6875
+        },
+        "character": {
+          "x": 12.6875,
+          "y": 62,
+          "width": 57,
+          "height": 52,
+          "top": 62,
+          "right": 69.6875,
+          "bottom": 114,
+          "left": 12.6875
+        },
+        "console": {
+          "x": 11.6875,
+          "y": 468.375,
+          "width": 366.625,
+          "height": 267.390625,
+          "top": 468.375,
+          "right": 378.3125,
+          "bottom": 735.765625,
+          "left": 11.6875
+        },
+        "cell": {
+          "x": 28.6875,
+          "y": 199,
+          "width": 64.921875,
+          "height": 64.125,
+          "top": 199,
+          "right": 93.609375,
+          "bottom": 263.125,
+          "left": 28.6875
+        },
+        "controls": [
+          {
+            "name": "journal",
+            "width": 44,
+            "height": 44,
+            "disabled": false
+          },
+          {
+            "name": "rules",
+            "width": 44,
+            "height": 44,
+            "disabled": false
+          },
+          {
+            "name": "mute",
+            "width": 44,
+            "height": 44,
+            "disabled": false
+          },
+          {
+            "name": "stake",
+            "width": 136.421875,
+            "height": 44,
+            "disabled": false
+          },
+          {
+            "name": "primary",
+            "width": 338.625,
+            "height": 56,
+            "disabled": false
+          },
+          {
+            "name": "fast",
+            "width": 60.296875,
+            "height": 44,
+            "disabled": false
+          },
+          {
+            "name": "auto-count",
+            "width": 53,
+            "height": 44,
+            "disabled": false
+          },
+          {
+            "name": "auto",
+            "width": 82.6875,
+            "height": 44,
+            "disabled": false
+          }
+        ]
+      },
+      "timing": {
+        "frames": {
+          "samples": 2292,
+          "p50Ms": 7.099999999998545,
+          "p95Ms": 21.30000000000109,
+          "maxMs": 139,
+          "over50Ms": 18
+        },
+        "pointerDispatchToNextFrame": {
+          "samples": 1,
+          "p50Ms": 44.900000005960464,
+          "p95Ms": 44.900000005960464,
+          "maxMs": 44.900000005960464,
+          "over50Ms": 0
+        },
+        "longTasks": {
+          "samples": 2,
+          "p50Ms": 115,
+          "p95Ms": 115,
+          "maxMs": 115,
+          "over50Ms": 2
+        },
+        "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4070 Laptop GPU (0x00002820) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+        "dpr": 3,
+        "touchPoints": 1,
+        "viewport": {
+          "width": 390,
+          "height": 806
+        },
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36"
+      },
+      "mix": {
+        "frames": 1295104,
+        "samples": 2590208,
+        "peak": 0.22412614524364471,
+        "rms": 0.03999421091946265,
+        "clipped": 0,
+        "sampleRate": 48000
+      },
+      "feedback": {
+        "active": false,
+        "event": null,
+        "offsetMs": 0,
+        "framePending": false,
+        "stalls": 0,
+        "frames": [
+          {
+            "kind": "drop",
+            "fall": 1,
+            "id": 0
+          },
+          {
+            "kind": "evaluate",
+            "fall": 1,
+            "id": 1
+          },
+          {
+            "kind": "break",
+            "fall": 2,
+            "id": 2
+          },
+          {
+            "kind": "drop",
+            "fall": 2,
+            "id": 3
+          },
+          {
+            "kind": "evaluate",
+            "fall": 2,
+            "id": 4
+          },
+          {
+            "kind": "bonus",
+            "fall": 2,
+            "id": 5
+          },
+          {
+            "kind": "drop",
+            "fall": 3,
+            "id": 6
+          },
+          {
+            "kind": "evaluate",
+            "fall": 3,
+            "id": 7
+          },
+          {
+            "kind": "drop",
+            "fall": 4,
+            "id": 8
+          },
+          {
+            "kind": "evaluate",
+            "fall": 4,
+            "id": 9
+          },
+          {
+            "kind": "break",
+            "fall": 5,
+            "id": 10
+          },
+          {
+            "kind": "drop",
+            "fall": 5,
+            "id": 11
+          },
+          {
+            "kind": "evaluate",
+            "fall": 5,
+            "id": 12
+          },
+          {
+            "kind": "drop",
+            "fall": 6,
+            "id": 13
+          },
+          {
+            "kind": "evaluate",
+            "fall": 6,
+            "id": 14
+          },
+          {
+            "kind": "drop",
+            "fall": 7,
+            "id": 15
+          },
+          {
+            "kind": "evaluate",
+            "fall": 7,
+            "id": 16
+          },
+          {
+            "kind": "drop",
+            "fall": 8,
+            "id": 17
+          },
+          {
+            "kind": "evaluate",
+            "fall": 8,
+            "id": 18
+          },
+          {
+            "kind": "drop",
+            "fall": 9,
+            "id": 19
+          },
+          {
+            "kind": "evaluate",
+            "fall": 9,
+            "id": 20
+          },
+          {
+            "kind": "drop",
+            "fall": 10,
+            "id": 21
+          },
+          {
+            "kind": "evaluate",
+            "fall": 10,
+            "id": 22
+          },
+          {
+            "kind": "drop",
+            "fall": 11,
+            "id": 23
+          },
+          {
+            "kind": "evaluate",
+            "fall": 11,
+            "id": 24
+          },
+          {
+            "kind": "drop",
+            "fall": 12,
+            "id": 25
+          },
+          {
+            "kind": "evaluate",
+            "fall": 12,
+            "id": 26
+          },
+          {
+            "kind": "drop",
+            "fall": 13,
+            "id": 27
+          },
+          {
+            "kind": "evaluate",
+            "fall": 13,
+            "id": 28
+          },
+          {
+            "kind": "break",
+            "fall": 14,
+            "id": 29
+          },
+          {
+            "kind": "drop",
+            "fall": 14,
+            "id": 30
+          },
+          {
+            "kind": "evaluate",
+            "fall": 14,
+            "id": 31
+          },
+          {
+            "kind": "break",
+            "fall": 15,
+            "id": 32
+          },
+          {
+            "kind": "drop",
+            "fall": 15,
+            "id": 33
+          },
+          {
+            "kind": "evaluate",
+            "fall": 15,
+            "id": 34
+          },
+          {
+            "kind": "break",
+            "fall": 16,
+            "id": 35
+          },
+          {
+            "kind": "drop",
+            "fall": 16,
+            "id": 36
+          },
+          {
+            "kind": "evaluate",
+            "fall": 16,
+            "id": 37
+          },
+          {
+            "kind": "drop",
+            "fall": 17,
+            "id": 0
+          },
+          {
+            "kind": "evaluate",
+            "fall": 17,
+            "id": 1
+          },
+          {
+            "kind": "drop",
+            "fall": 18,
+            "id": 2
+          },
+          {
+            "kind": "evaluate",
+            "fall": 18,
+            "id": 3
+          },
+          {
+            "kind": "drop",
+            "fall": 19,
+            "id": 4
+          },
+          {
+            "kind": "evaluate",
+            "fall": 19,
+            "id": 5
+          },
+          {
+            "kind": "drop",
+            "fall": 20,
+            "id": 6
+          },
+          {
+            "kind": "evaluate",
+            "fall": 20,
+            "id": 7
+          },
+          {
+            "kind": "break",
+            "fall": 21,
+            "id": 8
+          },
+          {
+            "kind": "drop",
+            "fall": 21,
+            "id": 9
+          },
+          {
+            "kind": "evaluate",
+            "fall": 21,
+            "id": 10
+          },
+          {
+            "kind": "drop",
+            "fall": 22,
+            "id": 11
+          },
+          {
+            "kind": "evaluate",
+            "fall": 22,
+            "id": 12
+          },
+          {
+            "kind": "drop",
+            "fall": 23,
+            "id": 13
+          },
+          {
+            "kind": "evaluate",
+            "fall": 23,
+            "id": 14
+          },
+          {
+            "kind": "drop",
+            "fall": 24,
+            "id": 15
+          },
+          {
+            "kind": "evaluate",
+            "fall": 24,
+            "id": 16
+          },
+          {
+            "kind": "break",
+            "fall": 25,
+            "id": 17
+          },
+          {
+            "kind": "drop",
+            "fall": 25,
+            "id": 18
+          },
+          {
+            "kind": "evaluate",
+            "fall": 25,
+            "id": 19
+          },
+          {
+            "kind": "break",
+            "fall": 26,
+            "id": 20
+          },
+          {
+            "kind": "drop",
+            "fall": 26,
+            "id": 21
+          },
+          {
+            "kind": "evaluate",
+            "fall": 26,
+            "id": 22
+          },
+          {
+            "kind": "break",
+            "fall": 27,
+            "id": 23
+          },
+          {
+            "kind": "drop",
+            "fall": 27,
+            "id": 24
+          },
+          {
+            "kind": "evaluate",
+            "fall": 27,
+            "id": 25
+          },
+          {
+            "kind": "drop",
+            "fall": 28,
+            "id": 26
+          },
+          {
+            "kind": "evaluate",
+            "fall": 28,
+            "id": 27
+          },
+          {
+            "kind": "drop",
+            "fall": 29,
+            "id": 28
+          },
+          {
+            "kind": "evaluate",
+            "fall": 29,
+            "id": 29
+          },
+          {
+            "kind": "drop",
+            "fall": 30,
+            "id": 30
+          },
+          {
+            "kind": "evaluate",
+            "fall": 30,
+            "id": 31
+          },
+          {
+            "kind": "base-return",
+            "fall": 31,
+            "id": 32
+          },
+          {
+            "kind": "break",
+            "fall": 31,
+            "id": 33
+          },
+          {
+            "kind": "drop",
+            "fall": 31,
+            "id": 34
+          },
+          {
+            "kind": "evaluate",
+            "fall": 31,
+            "id": 35
+          },
+          {
+            "kind": "outcome",
+            "fall": 31,
+            "id": 36
+          }
+        ],
+        "accents": [
+          {
+            "kind": "drop",
+            "fall": 3,
+            "planned": 6142.30700000298,
+            "shown": 6149.9000000059605,
+            "skewMs": 7.593000002980261
+          },
+          {
+            "kind": "drop",
+            "fall": 4,
+            "planned": 6702.30700000298,
+            "shown": 6706,
+            "skewMs": 3.692999997019797
+          },
+          {
+            "kind": "break",
+            "fall": 5,
+            "planned": 7209.30700000298,
+            "shown": 7210.300000011921,
+            "skewMs": 0.9930000089407258
+          },
+          {
+            "kind": "drop",
+            "fall": 5,
+            "planned": 7690.30700000298,
+            "shown": 7691.9000000059605,
+            "skewMs": 1.5930000029802613
+          },
+          {
+            "kind": "drop",
+            "fall": 6,
+            "planned": 8302.30700000298,
+            "shown": 8313.70000000298,
+            "skewMs": 11.393000000000029
+          },
+          {
+            "kind": "drop",
+            "fall": 7,
+            "planned": 8862.30700000298,
+            "shown": 8869.40000000596,
+            "skewMs": 7.093000002980261
+          },
+          {
+            "kind": "drop",
+            "fall": 8,
+            "planned": 9422.30700000298,
+            "shown": 9431.5,
+            "skewMs": 9.192999997019797
+          },
+          {
+            "kind": "drop",
+            "fall": 9,
+            "planned": 9982.30700000298,
+            "shown": 10000.5,
+            "skewMs": 18.192999997019797
+          },
+          {
+            "kind": "drop",
+            "fall": 10,
+            "planned": 10542.30700000298,
+            "shown": 10552.800000011921,
+            "skewMs": 10.493000008940726
+          },
+          {
+            "kind": "drop",
+            "fall": 11,
+            "planned": 11102.30700000298,
+            "shown": 11115.40000000596,
+            "skewMs": 13.093000002980261
+          },
+          {
+            "kind": "drop",
+            "fall": 12,
+            "planned": 11662.30700000298,
+            "shown": 11665.800000011921,
+            "skewMs": 3.493000008940726
+          },
+          {
+            "kind": "drop",
+            "fall": 13,
+            "planned": 12222.30700000298,
+            "shown": 12238,
+            "skewMs": 15.692999997019797
+          },
+          {
+            "kind": "break",
+            "fall": 14,
+            "planned": 12729.30700000298,
+            "shown": 12750.5,
+            "skewMs": 21.192999997019797
+          },
+          {
+            "kind": "drop",
+            "fall": 14,
+            "planned": 13226.30700000298,
+            "shown": 13239.90000000596,
+            "skewMs": 13.593000002980261
+          },
+          {
+            "kind": "break",
+            "fall": 15,
+            "planned": 13769.30700000298,
+            "shown": 13775.20000000298,
+            "skewMs": 5.893000000000029
+          },
+          {
+            "kind": "drop",
+            "fall": 15,
+            "planned": 14258.30700000298,
+            "shown": 14262.800000011921,
+            "skewMs": 4.493000008940726
+          },
+          {
+            "kind": "break",
+            "fall": 16,
+            "planned": 14809.30700000298,
+            "shown": 14819.5,
+            "skewMs": 10.192999997019797
+          },
+          {
+            "kind": "drop",
+            "fall": 16,
+            "planned": 15306.30700000298,
+            "shown": 15323.800000011921,
+            "skewMs": 17.493000008940726
+          },
+          {
+            "kind": "drop",
+            "fall": 17,
+            "planned": 16545.168333342277,
+            "shown": 16568.10000000894,
+            "skewMs": 22.93166666666366
+          },
+          {
+            "kind": "drop",
+            "fall": 18,
+            "planned": 17105.168333342277,
+            "shown": 17110.30000001192,
+            "skewMs": 5.1316666696438915
+          },
+          {
+            "kind": "drop",
+            "fall": 19,
+            "planned": 17665.168333342277,
+            "shown": 17675,
+            "skewMs": 9.831666657722963
+          },
+          {
+            "kind": "drop",
+            "fall": 20,
+            "planned": 18225.168333342277,
+            "shown": 18250.80000001192,
+            "skewMs": 25.63166666964389
+          },
+          {
+            "kind": "break",
+            "fall": 21,
+            "planned": 18732.168333342277,
+            "shown": 18743.80000001192,
+            "skewMs": 11.631666669643892
+          },
+          {
+            "kind": "drop",
+            "fall": 21,
+            "planned": 19231.168333342277,
+            "shown": 19248.5,
+            "skewMs": 17.331666657722963
+          },
+          {
+            "kind": "drop",
+            "fall": 22,
+            "planned": 19825.168333342277,
+            "shown": 19848,
+            "skewMs": 22.831666657722963
+          },
+          {
+            "kind": "drop",
+            "fall": 23,
+            "planned": 20385.168333342277,
+            "shown": 20405.70000000298,
+            "skewMs": 20.531666660703195
+          },
+          {
+            "kind": "drop",
+            "fall": 24,
+            "planned": 20945.168333342277,
+            "shown": 20948.90000000596,
+            "skewMs": 3.731666663683427
+          },
+          {
+            "kind": "break",
+            "fall": 25,
+            "planned": 21452.168333342277,
+            "shown": 21465.80000001192,
+            "skewMs": 13.631666669643892
+          },
+          {
+            "kind": "drop",
+            "fall": 25,
+            "planned": 21959.168333342277,
+            "shown": 21960.5,
+            "skewMs": 1.3316666577229626
+          },
+          {
+            "kind": "break",
+            "fall": 26,
+            "planned": 22492.168333342277,
+            "shown": 22501.5,
+            "skewMs": 9.331666657722963
+          },
+          {
+            "kind": "drop",
+            "fall": 26,
+            "planned": 22989.168333342277,
+            "shown": 22996,
+            "skewMs": 6.8316666577229626
+          },
+          {
+            "kind": "break",
+            "fall": 27,
+            "planned": 23532.168333342277,
+            "shown": 23535.70000000298,
+            "skewMs": 3.531666660703195
+          },
+          {
+            "kind": "drop",
+            "fall": 27,
+            "planned": 24021.168333342277,
+            "shown": 24022.60000000894,
+            "skewMs": 1.4316666666636593
+          },
+          {
+            "kind": "drop",
+            "fall": 28,
+            "planned": 24625.168333342277,
+            "shown": 24650.30000001192,
+            "skewMs": 25.13166666964389
+          },
+          {
+            "kind": "drop",
+            "fall": 29,
+            "planned": 25185.168333342277,
+            "shown": 25198,
+            "skewMs": 12.831666657722963
+          },
+          {
+            "kind": "drop",
+            "fall": 30,
+            "planned": 25745.168333342277,
+            "shown": 25763.10000000894,
+            "skewMs": 17.93166666666366
+          },
+          {
+            "kind": "base-return",
+            "fall": 31,
+            "planned": 26137.168333342277,
+            "shown": 26145.40000000596,
+            "skewMs": 8.231666663683427
+          },
+          {
+            "kind": "break",
+            "fall": 31,
+            "planned": 26452.168333342277,
+            "shown": 26453,
+            "skewMs": 0.8316666577229626
+          },
+          {
+            "kind": "drop",
+            "fall": 31,
+            "planned": 26941.168333342277,
+            "shown": 26943.30000001192,
+            "skewMs": 2.1316666696438915
+          },
+          {
+            "kind": "outcome",
+            "fall": 31,
+            "planned": 27377.168333342277,
+            "shown": 27382.80000001192,
+            "skewMs": 5.6316666696438915
+          }
+        ],
+        "effects": {
+          "nodes": 0,
+          "maxNodes": 16,
+          "shownUnits": "30250"
+        }
+      },
+      "audio": {
+        "ready": true,
+        "activeSources": 2,
+        "releasingSources": 0,
+        "looping": true,
+        "music": {
+          "title": "Memories Of Stone",
+          "playing": true,
+          "pending": false,
+          "positionSeconds": 27.091882,
+          "readyState": 4,
+          "error": "",
+          "disposed": false
+        },
+        "played": {
+          "cascadeLandB": 11,
+          "cascadeBreakB": 4,
+          "cascadeLandC": 10,
+          "cascadeBonus": 1,
+          "cascadeLandA": 10,
+          "cascadeBreakA": 6,
+          "cascadeReturn": 1,
+          "big": 1
+        },
+        "canceled": 7,
+        "clock": {
+          "contextTime": 27.158711,
+          "performanceTime": 29613.20000000298,
+          "latencyMs": 51.955666666668066,
+          "method": "output-timestamp"
+        },
+        "anchors": [
+          {
+            "cue": "cascadeBreakB",
+            "targetPerformanceTime": 14809.30700000298,
+            "startContextTime": 12.324944833324391,
+            "method": "output-timestamp",
+            "latencyMs": 51.74966666666769,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeLandB",
+            "targetPerformanceTime": 15306.30700000298,
+            "startContextTime": 12.779819000002982,
+            "method": "output-timestamp",
+            "latencyMs": 52.0296666666642,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeLandC",
+            "targetPerformanceTime": 16545.168333342277,
+            "startContextTime": 14.00317333334228,
+            "method": "output-timestamp",
+            "latencyMs": 52.70333333333177,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeLandA",
+            "targetPerformanceTime": 17105.168333342277,
+            "startContextTime": 14.58472766667263,
+            "method": "output-timestamp",
+            "latencyMs": 53.198999999997554,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeLandB",
+            "targetPerformanceTime": 17665.168333342277,
+            "startContextTime": 15.138653333333338,
+            "method": "output-timestamp",
+            "latencyMs": 52.62333333333302,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeLandC",
+            "targetPerformanceTime": 18225.168333342277,
+            "startContextTime": 15.683275333336319,
+            "method": "output-timestamp",
+            "latencyMs": 52.034666666665785,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeBreakA",
+            "targetPerformanceTime": 18732.168333342277,
+            "startContextTime": 16.231399500002983,
+            "method": "output-timestamp",
+            "latencyMs": 51.473000000001434,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeLandA",
+            "targetPerformanceTime": 19231.168333342277,
+            "startContextTime": 16.710676666669652,
+            "method": "output-timestamp",
+            "latencyMs": 51.38333333333378,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeLandB",
+            "targetPerformanceTime": 19825.168333342277,
+            "startContextTime": 17.298635333330356,
+            "method": "output-timestamp",
+            "latencyMs": 51.60800000000165,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeLandC",
+            "targetPerformanceTime": 20385.168333342277,
+            "startContextTime": 17.843207333342278,
+            "method": "output-timestamp",
+            "latencyMs": 52.16933333333529,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeLandA",
+            "targetPerformanceTime": 20945.168333342277,
+            "startContextTime": 18.42473066667263,
+            "method": "output-timestamp",
+            "latencyMs": 52.52933333333232,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeBreakA",
+            "targetPerformanceTime": 21452.168333342277,
+            "startContextTime": 18.951418500002983,
+            "method": "output-timestamp",
+            "latencyMs": 52.95399999999972,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeLandB",
+            "targetPerformanceTime": 21959.168333342277,
+            "startContextTime": 19.43271733333334,
+            "method": "output-timestamp",
+            "latencyMs": 52.55933333333118,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeBreakB",
+            "targetPerformanceTime": 22492.168333342277,
+            "startContextTime": 20.00779716666369,
+            "method": "output-timestamp",
+            "latencyMs": 53.09199999999947,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeLandC",
+            "targetPerformanceTime": 22989.168333342277,
+            "startContextTime": 20.447182333333338,
+            "method": "output-timestamp",
+            "latencyMs": 53.260999999999115,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeBreakA",
+            "targetPerformanceTime": 23532.168333342277,
+            "startContextTime": 21.031366500002985,
+            "method": "output-timestamp",
+            "latencyMs": 52.50600000000105,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeLandA",
+            "targetPerformanceTime": 24021.168333342277,
+            "startContextTime": 21.50070866667561,
+            "method": "output-timestamp",
+            "latencyMs": 51.584666666666834,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeLandB",
+            "targetPerformanceTime": 24625.168333342277,
+            "startContextTime": 22.098649333333334,
+            "method": "output-timestamp",
+            "latencyMs": 52.62733333333358,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeLandC",
+            "targetPerformanceTime": 25185.168333342277,
+            "startContextTime": 22.64310033333334,
+            "method": "output-timestamp",
+            "latencyMs": 51.34299999999925,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeLandA",
+            "targetPerformanceTime": 25745.168333342277,
+            "startContextTime": 23.224727666663686,
+            "method": "output-timestamp",
+            "latencyMs": 52.93233333333447,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeReturn",
+            "targetPerformanceTime": 26137.168333342277,
+            "startContextTime": 23.631763166675608,
+            "method": "output-timestamp",
+            "latencyMs": 51.59266666666795,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeBreakA",
+            "targetPerformanceTime": 26452.168333342277,
+            "startContextTime": 23.951432500008945,
+            "method": "output-timestamp",
+            "latencyMs": 51.33999999999972,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeLandB",
+            "targetPerformanceTime": 26941.168333342277,
+            "startContextTime": 24.414661333330358,
+            "method": "output-timestamp",
+            "latencyMs": 51.74866666666844,
+            "state": "scheduled"
+          },
+          {
+            "cue": "big",
+            "targetPerformanceTime": 27377.168333342277,
+            "startContextTime": 24.892781333330355,
+            "method": "output-timestamp",
+            "latencyMs": 51.58700000000138,
+            "state": "scheduled"
+          }
+        ],
+        "disposed": false
+      },
+      "character": {
+        "clip": "triumph",
+        "poseBlendMode": "single-key-pose",
+        "clockMs": 27835.8,
+        "idleMs": 0,
+        "framePending": true,
+        "paused": false,
+        "reduced": false,
+        "transitions": [
+          {
+            "clip": "survey",
+            "pose": "observe"
+          },
+          {
+            "clip": "steady",
+            "pose": "brace"
+          },
+          {
+            "clip": "follow-chain",
+            "pose": "discover"
+          },
+          {
+            "clip": "follow-stones",
+            "pose": "brace"
+          },
+          {
+            "clip": "steady",
+            "pose": "brace"
+          },
+          {
+            "clip": "survey",
+            "pose": "observe"
+          },
+          {
+            "clip": "steady",
+            "pose": "brace"
+          },
+          {
+            "clip": "survey",
+            "pose": "observe"
+          },
+          {
+            "clip": "steady",
+            "pose": "brace"
+          },
+          {
+            "clip": "survey",
+            "pose": "observe"
+          },
+          {
+            "clip": "steady",
+            "pose": "brace"
+          },
+          {
+            "clip": "follow-chain",
+            "pose": "discover"
+          },
+          {
+            "clip": "shield",
+            "pose": "brace"
+          },
+          {
+            "clip": "steady",
+            "pose": "brace"
+          },
+          {
+            "clip": "follow-chain",
+            "pose": "observe"
+          },
+          {
+            "clip": "follow-stones",
+            "pose": "brace"
+          },
+          {
+            "clip": "steady",
+            "pose": "brace"
+          },
+          {
+            "clip": "follow-chain",
+            "pose": "discover"
+          },
+          {
+            "clip": "follow-stones",
+            "pose": "brace"
+          },
+          {
+            "clip": "steady",
+            "pose": "brace"
+          },
+          {
+            "clip": "survey",
+            "pose": "observe"
+          },
+          {
+            "clip": "steady",
+            "pose": "brace"
+          },
+          {
+            "clip": "survey",
+            "pose": "observe"
+          },
+          {
+            "clip": "steady",
+            "pose": "brace"
+          },
+          {
+            "clip": "survey",
+            "pose": "observe"
+          },
+          {
+            "clip": "steady",
+            "pose": "brace"
+          },
+          {
+            "clip": "survey",
+            "pose": "observe"
+          },
+          {
+            "clip": "back-to-temple",
+            "pose": "observe"
+          },
+          {
+            "clip": "shield",
+            "pose": "brace"
+          },
+          {
+            "clip": "steady",
+            "pose": "brace"
+          },
+          {
+            "clip": "survey",
+            "pose": "observe"
+          },
+          {
+            "clip": "triumph",
+            "pose": "celebrate"
+          }
+        ],
+        "renderer": "mesh",
+        "pose": "celebrate",
+        "textures": 6,
+        "loaded": [
+          "idle",
+          "observe",
+          "brace",
+          "discover",
+          "celebrate",
+          "reflect"
+        ],
+        "disposed": false
+      },
+      "errors": []
+    },
+    "edge": {
+      "browser": "156.0.4314.50",
+      "timing": {
+        "frames": {
+          "samples": 308,
+          "p50Ms": 6.999999999999886,
+          "p95Ms": 7.100000000000364,
+          "maxMs": 55.399999999999864,
+          "over50Ms": 1
+        },
+        "pointerDispatchToNextFrame": {
+          "samples": 1,
+          "p50Ms": 8.200000002980232,
+          "p95Ms": 8.200000002980232,
+          "maxMs": 8.200000002980232,
+          "over50Ms": 0
+        },
+        "longTasks": {
+          "samples": 0,
+          "p50Ms": 0,
+          "p95Ms": 0,
+          "maxMs": 0,
+          "over50Ms": 0
+        },
+        "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4070 Laptop GPU (0x00002820) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+        "dpr": 1,
+        "touchPoints": 0,
+        "viewport": {
+          "width": 1440,
+          "height": 962
+        },
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36 Edg/156.0.0.0"
+      },
+      "mix": {
+        "frames": 142976,
+        "samples": 285952,
+        "peak": 0.19844858348369598,
+        "rms": 0.0347515696110126,
+        "clipped": 0,
+        "sampleRate": 48000
+      },
+      "audio": {
+        "ready": true,
+        "activeSources": 2,
+        "releasingSources": 0,
+        "looping": true,
+        "music": {
+          "title": "Memories Of Stone",
+          "playing": true,
+          "pending": false,
+          "positionSeconds": 3.123084,
+          "readyState": 4,
+          "error": "",
+          "disposed": false
+        },
+        "played": {
+          "cascadeLandB": 1,
+          "cascadeBreakB": 1,
+          "cascadeLandC": 1,
+          "neutral": 1
+        },
+        "canceled": 5,
+        "clock": {
+          "contextTime": 3.068486,
+          "performanceTime": 4079.8999999910593,
+          "latencyMs": 51.51400000000006,
+          "method": "output-timestamp"
+        },
+        "anchors": [
+          {
+            "cue": "cascadeLandB",
+            "targetPerformanceTime": 1766.211,
+            "startContextTime": 0.682728,
+            "method": "output-timestamp",
+            "latencyMs": 53.35799999999996,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeBreakB",
+            "targetPerformanceTime": 2273.2110000000002,
+            "startContextTime": 1.231871833339294,
+            "method": "output-timestamp",
+            "latencyMs": 52.59333333333338,
+            "state": "scheduled"
+          },
+          {
+            "cue": "cascadeLandC",
+            "targetPerformanceTime": 2754.2110000000002,
+            "startContextTime": 1.6552750000000003,
+            "method": "output-timestamp",
+            "latencyMs": 53.310999999999886,
+            "state": "scheduled"
+          },
+          {
+            "cue": "neutral",
+            "targetPerformanceTime": 3198.2110000000002,
+            "startContextTime": 2.1718980000089405,
+            "method": "output-timestamp",
+            "latencyMs": 52.24633333333362,
+            "state": "scheduled"
+          }
+        ],
+        "disposed": false
+      }
+    },
+    "touch-rotation": {
+      "sizes": [
+        {
+          "width": 360,
+          "height": 740,
+          "scrollWidth": 360,
+          "board": {
+            "x": 10.796875,
+            "y": 182,
+            "width": 338.40625,
+            "height": 213.4375,
+            "top": 182,
+            "right": 349.203125,
+            "bottom": 395.4375,
+            "left": 10.796875
+          },
+          "character": {
+            "x": 11.796875,
+            "y": 62,
+            "width": 57,
+            "height": 52,
+            "top": 62,
+            "right": 68.796875,
+            "bottom": 114,
+            "left": 11.796875
+          },
+          "console": {
+            "x": 10.796875,
+            "y": 451.4375,
+            "width": 338.40625,
+            "height": 267.390625,
+            "top": 451.4375,
+            "right": 349.203125,
+            "bottom": 718.828125,
+            "left": 10.796875
+          },
+          "cell": {
+            "x": 27.796875,
+            "y": 199,
+            "width": 59.28125,
+            "height": 58.46875,
+            "top": 199,
+            "right": 87.078125,
+            "bottom": 257.46875,
+            "left": 27.796875
+          },
+          "controls": [
+            {
+              "name": "journal",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "name": "rules",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "name": "mute",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "name": "stake",
+              "width": 120.484375,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "name": "primary",
+              "width": 310.40625,
+              "height": 56,
+              "disabled": false
+            },
+            {
+              "name": "fast",
+              "width": 60.296875,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "name": "auto-count",
+              "width": 53,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "name": "auto",
+              "width": 82.6875,
+              "height": 44,
+              "disabled": false
+            }
+          ]
+        },
+        {
+          "width": 740,
+          "height": 360,
+          "scrollWidth": 740,
+          "board": {
+            "x": 263.921875,
+            "y": 150,
+            "width": 453.890625,
+            "height": 285.125,
+            "top": 150,
+            "right": 717.8125,
+            "bottom": 435.125,
+            "left": 263.921875
+          },
+          "character": {
+            "x": 22.1875,
+            "y": 77,
+            "width": 226.9375,
+            "height": 409.125,
+            "top": 77,
+            "right": 249.125,
+            "bottom": 486.125,
+            "left": 22.1875
+          },
+          "console": {
+            "x": 22.1875,
+            "y": 500.125,
+            "width": 695.625,
+            "height": 241,
+            "top": 500.125,
+            "right": 717.8125,
+            "bottom": 741.125,
+            "left": 22.1875
+          },
+          "cell": {
+            "x": 284.921875,
+            "y": 171,
+            "width": 79.96875,
+            "height": 79.03125,
+            "top": 171,
+            "right": 364.890625,
+            "bottom": 250.03125,
+            "left": 284.921875
+          },
+          "controls": [
+            {
+              "name": "journal",
+              "width": 31,
+              "height": 31,
+              "disabled": false
+            },
+            {
+              "name": "rules",
+              "width": 31,
+              "height": 31,
+              "disabled": false
+            },
+            {
+              "name": "mute",
+              "width": 31,
+              "height": 31,
+              "disabled": false
+            },
+            {
+              "name": "stake",
+              "width": 171.09375,
+              "height": 38,
+              "disabled": false
+            },
+            {
+              "name": "primary",
+              "width": 655.609375,
+              "height": 60,
+              "disabled": false
+            },
+            {
+              "name": "fast",
+              "width": 70.734375,
+              "height": 40,
+              "disabled": false
+            },
+            {
+              "name": "auto-count",
+              "width": 61,
+              "height": 40,
+              "disabled": false
+            },
+            {
+              "name": "auto",
+              "width": 95.359375,
+              "height": 40,
+              "disabled": false
+            }
+          ]
+        },
+        {
+          "width": 768,
+          "height": 1024,
+          "scrollWidth": 768,
+          "board": {
+            "x": 273.90625,
+            "y": 284.140625,
+            "width": 471.0625,
+            "height": 299.4375,
+            "top": 284.140625,
+            "right": 744.96875,
+            "bottom": 583.578125,
+            "left": 273.90625
+          },
+          "character": {
+            "x": 23.03125,
+            "y": 80,
+            "width": 235.515625,
+            "height": 687,
+            "top": 80,
+            "right": 258.546875,
+            "bottom": 767,
+            "left": 23.03125
+          },
+          "console": {
+            "x": 23.03125,
+            "y": 781,
+            "width": 721.9375,
+            "height": 180,
+            "top": 781,
+            "right": 744.96875,
+            "bottom": 961,
+            "left": 23.03125
+          },
+          "cell": {
+            "x": 299.90625,
+            "y": 310.140625,
+            "width": 81.40625,
+            "height": 80.46875,
+            "top": 310.140625,
+            "right": 381.3125,
+            "bottom": 390.609375,
+            "left": 299.90625
+          },
+          "controls": [
+            {
+              "name": "journal",
+              "width": 36,
+              "height": 36,
+              "disabled": false
+            },
+            {
+              "name": "rules",
+              "width": 36,
+              "height": 36,
+              "disabled": false
+            },
+            {
+              "name": "mute",
+              "width": 36,
+              "height": 36,
+              "disabled": false
+            },
+            {
+              "name": "stake",
+              "width": 121.203125,
+              "height": 38,
+              "disabled": false
+            },
+            {
+              "name": "primary",
+              "width": 214.1875,
+              "height": 60,
+              "disabled": false
+            },
+            {
+              "name": "fast",
+              "width": 70.734375,
+              "height": 40,
+              "disabled": false
+            },
+            {
+              "name": "auto-count",
+              "width": 61,
+              "height": 40,
+              "disabled": false
+            },
+            {
+              "name": "auto",
+              "width": 95.359375,
+              "height": 40,
+              "disabled": false
+            }
+          ]
+        },
+        {
+          "width": 1024,
+          "height": 768,
+          "scrollWidth": 1024,
+          "board": {
+            "x": 426.75,
+            "y": 145.921875,
+            "width": 505,
+            "height": 319.796875,
+            "top": 145.921875,
+            "right": 931.75,
+            "bottom": 465.71875,
+            "left": 426.75
+          },
+          "character": {
+            "x": 30.71875,
+            "y": 63,
+            "width": 314.03125,
+            "height": 461,
+            "top": 63,
+            "right": 344.75,
+            "bottom": 524,
+            "left": 30.71875
+          },
+          "console": {
+            "x": 30.71875,
+            "y": 532,
+            "width": 962.5625,
+            "height": 176,
+            "top": 532,
+            "right": 993.28125,
+            "bottom": 708,
+            "left": 30.71875
+          },
+          "cell": {
+            "x": 452.75,
+            "y": 171.921875,
+            "width": 88.1875,
+            "height": 87.265625,
+            "top": 171.921875,
+            "right": 540.9375,
+            "bottom": 259.1875,
+            "left": 452.75
+          },
+          "controls": [
+            {
+              "name": "journal",
+              "width": 36,
+              "height": 36,
+              "disabled": false
+            },
+            {
+              "name": "rules",
+              "width": 36,
+              "height": 36,
+              "disabled": false
+            },
+            {
+              "name": "mute",
+              "width": 36,
+              "height": 36,
+              "disabled": false
+            },
+            {
+              "name": "stake",
+              "width": 171.671875,
+              "height": 38,
+              "disabled": false
+            },
+            {
+              "name": "primary",
+              "width": 291.796875,
+              "height": 60,
+              "disabled": false
+            },
+            {
+              "name": "fast",
+              "width": 70.734375,
+              "height": 40,
+              "disabled": false
+            },
+            {
+              "name": "auto-count",
+              "width": 61,
+              "height": 40,
+              "disabled": false
+            },
+            {
+              "name": "auto",
+              "width": 95.359375,
+              "height": 40,
+              "disabled": false
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "scrollWidth": 390,
+          "board": {
+            "x": 11.6875,
+            "y": 182,
+            "width": 366.625,
+            "height": 230.375,
+            "top": 182,
+            "right": 378.3125,
+            "bottom": 412.375,
+            "left": 11.6875
+          },
+          "character": {
+            "x": 12.6875,
+            "y": 62,
+            "width": 57,
+            "height": 52,
+            "top": 62,
+            "right": 69.6875,
+            "bottom": 114,
+            "left": 12.6875
+          },
+          "console": {
+            "x": 11.6875,
+            "y": 468.375,
+            "width": 366.625,
+            "height": 287.390625,
+            "top": 468.375,
+            "right": 378.3125,
+            "bottom": 755.765625,
+            "left": 11.6875
+          },
+          "cell": {
+            "x": 28.6875,
+            "y": 199,
+            "width": 64.921875,
+            "height": 64.125,
+            "top": 199,
+            "right": 93.609375,
+            "bottom": 263.125,
+            "left": 28.6875
+          },
+          "controls": [
+            {
+              "name": "journal",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "name": "rules",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "name": "mute",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "name": "stake",
+              "width": 136.421875,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "name": "primary",
+              "width": 338.625,
+              "height": 56,
+              "disabled": false
+            },
+            {
+              "name": "fast",
+              "width": 60.296875,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "name": "auto-count",
+              "width": 53,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "name": "auto",
+              "width": 82.6875,
+              "height": 44,
+              "disabled": false
+            }
+          ]
+        }
+      ],
+      "timing": {
+        "frames": {
+          "samples": 326,
+          "p50Ms": 7,
+          "p95Ms": 14.199999999999818,
+          "maxMs": 34.899999999999636,
+          "over50Ms": 0
+        },
+        "pointerDispatchToNextFrame": {
+          "samples": 7,
+          "p50Ms": 11.299999997019768,
+          "p95Ms": 71.90000000596046,
+          "maxMs": 71.90000000596046,
+          "over50Ms": 1
+        },
+        "longTasks": {
+          "samples": 0,
+          "p50Ms": 0,
+          "p95Ms": 0,
+          "maxMs": 0,
+          "over50Ms": 0
+        },
+        "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4070 Laptop GPU (0x00002820) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+        "dpr": 2,
+        "touchPoints": 1,
+        "viewport": {
+          "width": 844,
+          "height": 352
+        },
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36"
+      },
+      "reducedMotion": true
+    },
+    "webgl-recovery": {
+      "fallbackVisibleDuringLoss": true,
+      "texturesAfterRestore": 6,
+      "paidResultUnits": "250"
+    },
+    "audio-output-lifecycle-0.3": {
+      "simulatedOutputLatencyMs": 300,
+      "physicalBluetooth": false,
+      "anchors": [
+        {
+          "cue": "cascadeLandB",
+          "targetPerformanceTime": 1900.7999999970198,
+          "startContextTime": 0.7252750000059605,
+          "method": "latency-estimate",
+          "latencyMs": 310,
+          "state": "scheduled"
+        },
+        {
+          "cue": "cascadeBreakB",
+          "targetPerformanceTime": 2407.7999999970198,
+          "startContextTime": 1.2805208333333333,
+          "method": "latency-estimate",
+          "latencyMs": 310,
+          "state": "scheduled"
+        },
+        {
+          "cue": "cascadeLandC",
+          "targetPerformanceTime": 2888.7999999970198,
+          "startContextTime": 1.7041749999970197,
+          "method": "latency-estimate",
+          "latencyMs": 310,
+          "state": "scheduled"
+        },
+        {
+          "cue": "neutral",
+          "targetPerformanceTime": 3332.7999999970198,
+          "startContextTime": 2.2159999999999997,
+          "method": "latency-estimate",
+          "latencyMs": 310,
+          "state": "scheduled"
+        }
+      ],
+      "accents": [
+        {
+          "kind": "drop",
+          "fall": 1,
+          "planned": 1900.7999999970198,
+          "shown": 1903.7000000029802,
+          "skewMs": 2.9000000059604645
+        },
+        {
+          "kind": "break",
+          "fall": 2,
+          "planned": 2407.7999999970198,
+          "shown": 2409.3999999910593,
+          "skewMs": 1.5999999940395355
+        },
+        {
+          "kind": "drop",
+          "fall": 2,
+          "planned": 2888.7999999970198,
+          "shown": 2889.2999999970198,
+          "skewMs": 0.5
+        },
+        {
+          "kind": "outcome",
+          "fall": 2,
+          "planned": 3332.7999999970198,
+          "shown": 3333.7999999970198,
+          "skewMs": 1
+        }
+      ],
+      "noOldCueReplay": true
+    },
+    "audio-output-lifecycle-0.7": {
+      "simulatedOutputLatencyMs": 700,
+      "physicalBluetooth": false,
+      "anchors": [
+        {
+          "cue": "cascadeLandB",
+          "targetPerformanceTime": 2363.8999999910593,
+          "startContextTime": 0.7166749999970198,
+          "method": "latency-estimate",
+          "latencyMs": 710,
+          "state": "scheduled"
+        },
+        {
+          "cue": "cascadeBreakB",
+          "targetPerformanceTime": 2870.8999999910593,
+          "startContextTime": 1.2577874999940395,
+          "method": "latency-estimate",
+          "latencyMs": 710,
+          "state": "scheduled"
+        },
+        {
+          "cue": "cascadeLandC",
+          "targetPerformanceTime": 3351.8999999910593,
+          "startContextTime": 1.6824416666577258,
+          "method": "latency-estimate",
+          "latencyMs": 710,
+          "state": "scheduled"
+        },
+        {
+          "cue": "neutral",
+          "targetPerformanceTime": 3795.8999999910593,
+          "startContextTime": 2.2050333333214125,
+          "method": "latency-estimate",
+          "latencyMs": 710,
+          "state": "scheduled"
+        }
+      ],
+      "accents": [
+        {
+          "kind": "drop",
+          "fall": 1,
+          "planned": 2363.8999999910593,
+          "shown": 2385,
+          "skewMs": 21.100000008940697
+        },
+        {
+          "kind": "break",
+          "fall": 2,
+          "planned": 2870.8999999910593,
+          "shown": 2876.2000000029802,
+          "skewMs": 5.300000011920929
+        },
+        {
+          "kind": "drop",
+          "fall": 2,
+          "planned": 3351.8999999910593,
+          "shown": 3355.3999999910593,
+          "skewMs": 3.5
+        },
+        {
+          "kind": "outcome",
+          "fall": 2,
+          "planned": 3795.8999999910593,
+          "shown": 3800.8999999910593,
+          "skewMs": 5
+        }
+      ],
+      "noOldCueReplay": true
+    },
+    "missing-music": {
+      "blocked": 2,
+      "paidResultUnits": "250",
+      "recordedEffectsUsable": true,
+      "recoveredOnGesture": true,
+      "failed": {
+        "title": "Memories Of Stone",
+        "playing": false,
+        "pending": false,
+        "positionSeconds": 0,
+        "readyState": 0,
+        "error": "Playback unavailable",
+        "disposed": false
+      },
+      "recovered": {
+        "title": "Memories Of Stone",
+        "playing": true,
+        "pending": false,
+        "positionSeconds": 0.133515,
+        "readyState": 4,
+        "error": "",
+        "disposed": false
+      }
+    },
+    "host-desktop": {
+      "mobile": false,
+      "emulated": false,
+      "sizes": [
+        {
+          "width": 1103,
+          "height": 1000,
+          "scrollWidth": 1103,
+          "board": {
+            "x": 393.390625,
+            "y": 185.640625,
+            "width": 676.53125,
+            "height": 422.71875,
+            "top": 185.640625,
+            "right": 1069.921875,
+            "bottom": 608.359375,
+            "left": 393.390625
+          },
+          "character": {
+            "x": 33.078125,
+            "y": 80,
+            "width": 338.265625,
+            "height": 605,
+            "top": 80,
+            "right": 371.34375,
+            "bottom": 685,
+            "left": 33.078125
+          },
+          "console": {
+            "x": 33.078125,
+            "y": 699,
+            "width": 1036.84375,
+            "height": 180,
+            "top": 699,
+            "right": 1069.921875,
+            "bottom": 879,
+            "left": 33.078125
+          },
+          "cell": {
+            "x": 419.390625,
+            "y": 211.640625,
+            "width": 122.5,
+            "height": 121.5625,
+            "top": 211.640625,
+            "right": 541.890625,
+            "bottom": 333.203125,
+            "left": 419.390625
+          },
+          "controls": [
+            {
+              "name": "journal",
+              "width": 36,
+              "height": 36,
+              "disabled": false
+            },
+            {
+              "name": "rules",
+              "width": 36,
+              "height": 36,
+              "disabled": false
+            },
+            {
+              "name": "mute",
+              "width": 36,
+              "height": 36,
+              "disabled": false
+            },
+            {
+              "name": "stake",
+              "width": 187.234375,
+              "height": 38,
+              "disabled": false
+            },
+            {
+              "name": "primary",
+              "width": 315.765625,
+              "height": 60,
+              "disabled": false
+            },
+            {
+              "name": "fast",
+              "width": 70.734375,
+              "height": 40,
+              "disabled": false
+            },
+            {
+              "name": "auto-count",
+              "width": 61,
+              "height": 40,
+              "disabled": false
+            },
+            {
+              "name": "auto",
+              "width": 95.359375,
+              "height": 40,
+              "disabled": false
+            }
+          ]
+        },
+        {
+          "width": 714,
+          "height": 1100,
+          "scrollWidth": 714,
+          "board": {
+            "x": 254.640625,
+            "y": 150,
+            "width": 437.953125,
+            "height": 275.5625,
+            "top": 150,
+            "right": 692.59375,
+            "bottom": 425.5625,
+            "left": 254.640625
+          },
+          "character": {
+            "x": 21.40625,
+            "y": 77,
+            "width": 218.96875,
+            "height": 399.5625,
+            "top": 77,
+            "right": 240.375,
+            "bottom": 476.5625,
+            "left": 21.40625
+          },
+          "console": {
+            "x": 21.40625,
+            "y": 490.5625,
+            "width": 671.1875,
+            "height": 241,
+            "top": 490.5625,
+            "right": 692.59375,
+            "bottom": 731.5625,
+            "left": 21.40625
+          },
+          "cell": {
+            "x": 275.640625,
+            "y": 171,
+            "width": 76.78125,
+            "height": 75.84375,
+            "top": 171,
+            "right": 352.421875,
+            "bottom": 246.84375,
+            "left": 275.640625
+          },
+          "controls": [
+            {
+              "name": "journal",
+              "width": 31,
+              "height": 31,
+              "disabled": false
+            },
+            {
+              "name": "rules",
+              "width": 31,
+              "height": 31,
+              "disabled": false
+            },
+            {
+              "name": "mute",
+              "width": 31,
+              "height": 31,
+              "disabled": false
+            },
+            {
+              "name": "stake",
+              "width": 163.96875,
+              "height": 38,
+              "disabled": false
+            },
+            {
+              "name": "primary",
+              "width": 631.171875,
+              "height": 60,
+              "disabled": false
+            },
+            {
+              "name": "fast",
+              "width": 70.734375,
+              "height": 40,
+              "disabled": false
+            },
+            {
+              "name": "auto-count",
+              "width": 61,
+              "height": 40,
+              "disabled": false
+            },
+            {
+              "name": "auto",
+              "width": 95.359375,
+              "height": 40,
+              "disabled": false
+            }
+          ]
+        }
+      ],
+      "timing": {
+        "frames": {
+          "samples": 238,
+          "p50Ms": 7,
+          "p95Ms": 20.5,
+          "maxMs": 27.899999999999864,
+          "over50Ms": 0
+        },
+        "pointerDispatchToNextFrame": {
+          "samples": 1,
+          "p50Ms": 22.19999998807907,
+          "p95Ms": 22.19999998807907,
+          "maxMs": 22.19999998807907,
+          "over50Ms": 0
+        },
+        "longTasks": {
+          "samples": 0,
+          "p50Ms": 0,
+          "p95Ms": 0,
+          "maxMs": 0,
+          "over50Ms": 0
+        },
+        "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4070 Laptop GPU (0x00002820) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+        "dpr": 1,
+        "touchPoints": 0,
+        "viewport": {
+          "width": 714,
+          "height": 1004
+        },
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36"
+      },
+      "chatConnected": true,
+      "chatMessagesSent": 0,
+      "closeReopen": true,
+      "errors": []
+    },
+    "host-phone": {
+      "mobile": true,
+      "emulated": true,
+      "sizes": [
+        {
+          "width": 384,
+          "height": 844,
+          "scrollWidth": 384,
+          "board": {
+            "x": 11.515625,
+            "y": 182,
+            "width": 360.96875,
+            "height": 226.96875,
+            "top": 182,
+            "right": 372.484375,
+            "bottom": 408.96875,
+            "left": 11.515625
+          },
+          "character": {
+            "x": 12.515625,
+            "y": 62,
+            "width": 57,
+            "height": 52,
+            "top": 62,
+            "right": 69.515625,
+            "bottom": 114,
+            "left": 12.515625
+          },
+          "console": {
+            "x": 11.515625,
+            "y": 464.96875,
+            "width": 360.96875,
+            "height": 267.390625,
+            "top": 464.96875,
+            "right": 372.484375,
+            "bottom": 732.359375,
+            "left": 11.515625
+          },
+          "cell": {
+            "x": 28.515625,
+            "y": 199,
+            "width": 63.78125,
+            "height": 62.984375,
+            "top": 199,
+            "right": 92.296875,
+            "bottom": 261.984375,
+            "left": 28.515625
+          },
+          "controls": [
+            {
+              "name": "journal",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "name": "rules",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "name": "mute",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "name": "stake",
+              "width": 133.21875,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "name": "primary",
+              "width": 332.953125,
+              "height": 56,
+              "disabled": false
+            },
+            {
+              "name": "fast",
+              "width": 60.296875,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "name": "auto-count",
+              "width": 53,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "name": "auto",
+              "width": 82.6875,
+              "height": 44,
+              "disabled": false
+            }
+          ]
+        },
+        {
+          "width": 588,
+          "height": 390,
+          "scrollWidth": 588,
+          "board": {
+            "x": 209.875,
+            "y": 150,
+            "width": 360.5,
+            "height": 229.09375,
+            "top": 150,
+            "right": 570.375,
+            "bottom": 379.09375,
+            "left": 209.875
+          },
+          "character": {
+            "x": 17.625,
+            "y": 77,
+            "width": 180.25,
+            "height": 353.09375,
+            "top": 77,
+            "right": 197.875,
+            "bottom": 430.09375,
+            "left": 17.625
+          },
+          "console": {
+            "x": 17.625,
+            "y": 444.09375,
+            "width": 552.75,
+            "height": 241,
+            "top": 444.09375,
+            "right": 570.375,
+            "bottom": 685.09375,
+            "left": 17.625
+          },
+          "cell": {
+            "x": 230.875,
+            "y": 171,
+            "width": 61.296875,
+            "height": 60.359375,
+            "top": 171,
+            "right": 292.171875,
+            "bottom": 231.359375,
+            "left": 230.875
+          },
+          "controls": [
+            {
+              "name": "journal",
+              "width": 31,
+              "height": 31,
+              "disabled": false
+            },
+            {
+              "name": "rules",
+              "width": 31,
+              "height": 31,
+              "disabled": false
+            },
+            {
+              "name": "mute",
+              "width": 31,
+              "height": 31,
+              "disabled": false
+            },
+            {
+              "name": "stake",
+              "width": 129.421875,
+              "height": 38,
+              "disabled": false
+            },
+            {
+              "name": "primary",
+              "width": 512.75,
+              "height": 60,
+              "disabled": false
+            },
+            {
+              "name": "fast",
+              "width": 70.734375,
+              "height": 40,
+              "disabled": false
+            },
+            {
+              "name": "auto-count",
+              "width": 61,
+              "height": 40,
+              "disabled": false
+            },
+            {
+              "name": "auto",
+              "width": 95.359375,
+              "height": 40,
+              "disabled": false
+            }
+          ]
+        },
+        {
+          "width": 384,
+          "height": 844,
+          "scrollWidth": 384,
+          "board": {
+            "x": 11.515625,
+            "y": 182,
+            "width": 360.96875,
+            "height": 226.96875,
+            "top": 182,
+            "right": 372.484375,
+            "bottom": 408.96875,
+            "left": 11.515625
+          },
+          "character": {
+            "x": 12.515625,
+            "y": 62,
+            "width": 57,
+            "height": 52,
+            "top": 62,
+            "right": 69.515625,
+            "bottom": 114,
+            "left": 12.515625
+          },
+          "console": {
+            "x": 11.515625,
+            "y": 464.96875,
+            "width": 360.96875,
+            "height": 267.390625,
+            "top": 464.96875,
+            "right": 372.484375,
+            "bottom": 732.359375,
+            "left": 11.515625
+          },
+          "cell": {
+            "x": 28.515625,
+            "y": 199,
+            "width": 63.78125,
+            "height": 62.984375,
+            "top": 199,
+            "right": 92.296875,
+            "bottom": 261.984375,
+            "left": 28.515625
+          },
+          "controls": [
+            {
+              "name": "journal",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "name": "rules",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "name": "mute",
+              "width": 44,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "name": "stake",
+              "width": 133.21875,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "name": "primary",
+              "width": 332.953125,
+              "height": 56,
+              "disabled": false
+            },
+            {
+              "name": "fast",
+              "width": 60.296875,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "name": "auto-count",
+              "width": 53,
+              "height": 44,
+              "disabled": false
+            },
+            {
+              "name": "auto",
+              "width": 82.6875,
+              "height": 44,
+              "disabled": false
+            }
+          ]
+        }
+      ],
+      "timing": {
+        "frames": {
+          "samples": 232,
+          "p50Ms": 7,
+          "p95Ms": 20.399999999999636,
+          "maxMs": 28.40000000000009,
+          "over50Ms": 0
+        },
+        "pointerDispatchToNextFrame": {
+          "samples": 1,
+          "p50Ms": 5.600000008940697,
+          "p95Ms": 5.600000008940697,
+          "maxMs": 5.600000008940697,
+          "over50Ms": 0
+        },
+        "longTasks": {
+          "samples": 0,
+          "p50Ms": 0,
+          "p95Ms": 0,
+          "maxMs": 0,
+          "over50Ms": 0
+        },
+        "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 4070 Laptop GPU (0x00002820) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+        "dpr": 3,
+        "touchPoints": 1,
+        "viewport": {
+          "width": 384,
+          "height": 525
+        },
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36"
+      },
+      "chatConnected": true,
+      "chatMessagesSent": 0,
+      "closeReopen": true,
+      "errors": []
+    },
+    "manual-review": {
+      "preparedExamples": true,
+      "choiceChangeCannotAlterAcceptedContinuation": true,
+      "unconfirmedDraft": true
+    },
+    "manual-host-smoke": {
+      "origin": "http://localhost:5233/tests/fixtures/temple-device-review.html?lang=ru",
+      "module": "0.9.2-32c5ec92ba8a",
+      "paidResultUnits": "250",
+      "audioSampleRate": 48000,
+      "physicalListeningConfirmed": false,
+      "cookieNamespaced": true,
+      "preexistingCookieUntouched": true,
+      "reloadRestoredAcceptedRound": true
+    },
+    "manual-host-chat-smoke": {
+      "origin": "http://localhost:5233",
+      "scopedCookieHttpAndWebSocket": true,
+      "chatConnected": true,
+      "chatMessagesSent": 0,
+      "preexistingCookieUntouched": true
+    }
+  },
+  "qualificationSourceScopeUpdatesFromMain": [
+    {
+      "file": "docs/game-math/qualifications/forest-heart-v1.json",
+      "normalQualificationRerun": true,
+      "unchanged": {
+        "results": true,
+        "analysis": true,
+        "serverReplay": true
+      }
+    },
+    {
+      "file": "docs/game-math/qualifications/caribbean-treasures-v1.json",
+      "normalQualificationRerun": true,
+      "unchanged": {
+        "results": true,
+        "analysis": true,
+        "serverReplay": true
+      }
+    },
+    {
+      "file": "docs/game-math/qualifications/flag-battle-v2.json",
+      "normalQualificationRerun": true,
+      "unchanged": {
+        "results": true,
+        "analysis": true
+      }
+    }
+  ],
+  "physicalReview": {
+    "androidAdbInventory": [],
+    "phoneModel": "unknown",
+    "deviceQuestionSent": true,
+    "userListeningResultsReceived": false,
+    "phoneSpeakers": "unverified",
+    "wiredHeadphones": "unverified",
+    "bluetooth": "unverified",
+    "computerSpeakers": "unverified",
+    "headlessOutputIsNotPhysicalListening": true
+  },
+  "manualStand": {
+    "url": "http://localhost:5233/tests/fixtures/temple-device-review.html?lang=ru",
+    "apiPort": 2633,
+    "sessionId": 37167,
+    "isolatedTemporaryDatabase": true,
+    "syntheticFundsOnly": true,
+    "sessionCookieNamespaced": true,
+    "existingPreviewCookiePreserved": true,
+    "preparedExamples": [
+      "partial return",
+      "20 free spins",
+      "500x cap"
+    ],
+    "physicalConfirmationRequiresHumanInput": true,
+    "exportsLocallyOnly": true,
+    "cleanupCondition": "Keep while physical listening review is pending; stop the owned stand when that review ends."
+  },
+  "limits": [
+    "Windows Chrome/Edge and GPU are desktop hardware; touch/viewport/DPR/CPU emulation does not certify Android, iOS, Safari, heat or battery behavior.",
+    "Latency tests inject metadata only; physical PCM output is not delayed, so Bluetooth synchronization is unverified.",
+    "Worklet captures digital mix before the host limiter. No clipping in these samples does not prove subjective sound quality.",
+    "Frame timings, pointer dispatch samples and bounded voices are engineering observations, not perception thresholds or heap-leak certification."
+  ],
+  "storage": {
+    "scope": "artifacts/work/temple-device-acceptance",
+    "initialFreeBytes": 297413763072,
+    "freeBytesBeforeCleanup": 298625204224,
+    "scopeFiles": 33,
+    "scopeBytes": 633930,
+    "obsoleteOwnedPackage": "module-dist/studio-flooded-temple/versions/0.9.2-dc1294db2751",
+    "obsoletePackageFiles": 42,
+    "obsoletePackageBytes": 20858050,
+    "cleanupStatus": "pending exact GitHub preservation verification",
+    "removedBytes": 0,
+    "previousDeniedScopesUntouched": true,
+    "activeExceptions": [
+      "Current 0.9.2 package and managed worktree support the remaining acceptance steps.",
+      "Manual stand 37167 and its temporary database remain active for physical listening.",
+      "Earlier user-loaded versions and other games are not cleanup targets."
+    ]
+  }
+}
