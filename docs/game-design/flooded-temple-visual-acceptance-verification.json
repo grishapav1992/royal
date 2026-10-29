@@ -9,7 +9,7 @@
     "physicalListeningFromStep2": "pending"
   },
   "sourceCommit": "250747efe7b829bca6e7536a125a9ec5e1f4125c",
-  "integrationBaseline": "3975d78197c639e89a1f555f0ffdcf23dd56d50b",
+  "integrationBaseline": "085bab3eb25ba253f6f9ea960d1b20dc727f07b9",
   "productionChanged": false,
   "mathematicsChanged": false,
   "contract": [
@@ -938,6 +938,12 @@
       "module": "http://localhost:5233/game-modules/studio-flooded-temple/versions/0.9.3-4a6b3fba5115/manifest.json",
       "syntheticFundsOnly": true,
       "physicalListening": false
+    },
+    "afterSync": {
+      "rtpVerifiedProfiles": 17,
+      "legacyNotQualified": 114,
+      "templeRuntimeInputsUnchanged": true,
+      "mainUpdate": "Caribbean deployment record only"
     }
   },
   "screenshots": [
@@ -972,5 +978,6 @@
       "Manual listening stand 37167 remains active while physical review is pending.",
       "Previously loaded packages and earlier denied cleanup scopes are preserved."
     ]
-  }
+  },
+  "reconciledCommit": "a8e625397bcacb3bfacd1249c13e3fed7ecf698d"
 }
