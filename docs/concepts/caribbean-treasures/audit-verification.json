@@ -320,5 +320,91 @@
     "The legacy RTP count identifies unchanged unqualified modules and is not a claim of qualified RTP for those modules.",
     "This report covers the Caribbean suites and application build, not all historical tests of other account and payment contracts. Earlier broad-suite mismatches remain documented in collection-review.md.",
     "The former user preview on port 5234 was already stopped before the audit. Its stored temporary database was not opened or changed. This audit uses its own disposable database and accounts."
-  ]
+  ],
+  "integration": {
+    "commit": "c5d14d3d9d3d705d95d7c20c13134fdc3c017d42",
+    "baseline": "55ede2760591e29c31a7681b024b2e4ffd08103c",
+    "caribbeanCodeAndRulesUnchanged": true,
+    "changes": "Preserved concurrent roulette work; shared catalogue and viewport changes were checked again with Caribbean.",
+    "applicationBuild": {
+      "format": 1,
+      "startedAt": "2026-10-29T05:05:39.637Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 4298
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 19492
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 17932
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 7607
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 80
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 27
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 36
+        }
+      ],
+      "passed": true,
+      "durationMs": 49473
+    },
+    "rtp": {
+      "verified": 13,
+      "legacyNotQualified": 114
+    },
+    "assetsAndPackages": {
+      "tests": 10,
+      "passed": 10,
+      "failed": 0
+    },
+    "browser": {
+      "stats": {
+        "startTime": "2026-10-29T05:06:41.723Z",
+        "duration": 48222.214,
+        "expected": 3,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "scenarios": [
+        {
+          "title": "catalogue pirate captain cover stays sharp on desktop and mobile and reopens the same round",
+          "status": "passed",
+          "durationMs": 12274
+        },
+        {
+          "title": "responsive framing keeps the title and full captain artwork inside the host",
+          "status": "passed",
+          "durationMs": 15281
+        },
+        {
+          "title": "natural bonus, real host/chat, line presets and desktop/mobile layout",
+          "status": "passed",
+          "durationMs": 19053
+        }
+      ]
+    }
+  }
 }

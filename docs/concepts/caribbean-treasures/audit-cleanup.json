@@ -7,8 +7,8 @@
   "preservedRemoteCommit": null,
   "taskDirectory": {
     "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\caribbean-final-review",
-    "files": 69,
-    "bytes": 39975696.0
+    "files": 75,
+    "bytes": 40031200.0
   },
   "supersededTaskPackages": [
     {
@@ -24,7 +24,7 @@
   ],
   "currentPackage": "1.5.1-2531f98fbc64",
   "freeBytesBeforeBuild": 303452672000,
-  "freeBytesBeforeCleanup": 303135547392,
+  "freeBytesBeforeCleanup": 302947725312,
   "freeBytesAfterCleanup": null,
   "separateStandStopped": true,
   "separateTemporaryDatabaseRemoved": true,
