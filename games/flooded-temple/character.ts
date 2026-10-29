@@ -1,10 +1,11 @@
 import type {TempleBeat} from './presentation';
+export type CharacterBeat=Pick<TempleBeat,'id'|'duration'|'kind'|'outcome'|'cue'>;
 
 export const templePoses=['idle','observe','brace','discover','celebrate','reflect'] as const;
 export type TemplePose=typeof templePoses[number];
 export type TempleReaction={clip:string;pose:TemplePose;energy:number;look:number};
 /** Presentation only. A gesture never chooses a route or predicts a server result. */
-export function templeReaction(beat:TempleBeat|undefined,waiting=false,rope=false,selected=false,idle=0):TempleReaction{
+export function templeReaction(beat:CharacterBeat|undefined,waiting=false,rope=false,selected=false,idle=0):TempleReaction{
   const make=(clip:string,pose:TemplePose,energy=0,look=0):TempleReaction=>({clip,pose,energy,look});
   if(beat)switch(beat.kind){
     case 'card':case 'expedition':return make('survey','observe',.25,-1);

@@ -489,12 +489,23 @@
       ]
     },
     "studio-flooded-temple": {
-      "method": "exhaustive-temple-decisions",
-      "rulesVersion": 1,
-      "progressVersion": 1,
+      "method": "temple-cascade-independent-monte-carlo-v2",
+      "rulesVersion": 2,
+      "progressVersion": 2,
       "target": 0.96,
-      "minimumReturn": 0.9,
-      "tolerance": 0.000001,
+      "tolerance": 0.0025,
+      "maxHalfWidth95": 0.001,
+      "maxUpper95": 0.9625,
+      "confidenceZ": 1.96,
+      "qualificationRoundsPerSeed": 200000000,
+      "seeds": [
+        2026102801,
+        2026102807
+      ],
+      "calibrationSeeds": [
+        19770203,
+        19840117
+      ],
       "stakes": [
         1000,
         2000,
@@ -504,31 +515,26 @@
         50000
       ],
       "choices": [
-        "optimal",
-        "nearest-chest",
-        "highest-first",
-        "random-walk",
-        "stop"
-      ],
-      "seeds": [
-        2026102601,
-        2026102607
+        "normal"
       ],
       "serverReplayRoundsPerSeed": 64,
-      "proof": "docs/game-math/qualifications/flooded-temple-v1.json",
-      "qualificationSource": "scripts/game-math/rtp-temple.mjs",
+      "proof": "docs/game-math/qualifications/flooded-temple-v2.json",
+      "qualificationSource": "scripts/game-math/rtp-temple-cascade.mjs",
       "sources": [
-        "src/shared/floodedTempleData.json",
-        "src/shared/floodedTempleMath.ts",
-        "src/shared/floodedTemple.ts",
-        "server/games/floodedTemple.ts",
-        "scripts/game-math/rtp-temple-model.mjs",
+        "src/shared/floodedTempleCascadeData.json",
+        "src/shared/floodedTempleCascadeMath.ts",
+        "src/shared/floodedTempleCascade.ts",
+        "server/games/floodedTempleCascade.ts",
+        "scripts/game-math/rtp-temple-cascade-model.mjs",
         "src/shared/casinoExpansion.ts",
         "server/demoExpansion.ts",
         "server/demoWalletRoutes.ts",
         "server/gameWalletRoutes.ts",
-        "server/finance/nile-game-runtime.ts"
-      ]
+        "server/finance/nile-game-runtime.ts",
+        "src/wallet/ExpansionClient.ts",
+        "scripts/game-math/rtp-temple-cascade-worker.mjs"
+      ],
+      "availability": "server-opt-in"
     }
   },
   "nonWagered": {
@@ -536,24 +542,13 @@
   },
   "versionProfiles": {
     "studio-flooded-temple": {
-      "2": {
-        "method": "temple-cascade-independent-monte-carlo-v2",
-        "rulesVersion": 2,
-        "progressVersion": 2,
+      "1": {
+        "method": "exhaustive-temple-decisions",
+        "rulesVersion": 1,
+        "progressVersion": 1,
         "target": 0.96,
-        "tolerance": 0.0025,
-        "maxHalfWidth95": 0.001,
-        "maxUpper95": 0.9625,
-        "confidenceZ": 1.96,
-        "qualificationRoundsPerSeed": 200000000,
-        "seeds": [
-          2026102801,
-          2026102807
-        ],
-        "calibrationSeeds": [
-          19770203,
-          19840117
-        ],
+        "minimumReturn": 0.9,
+        "tolerance": 0.000001,
         "stakes": [
           1000,
           2000,
@@ -563,26 +558,31 @@
           50000
         ],
         "choices": [
-          "normal"
+          "optimal",
+          "nearest-chest",
+          "highest-first",
+          "random-walk",
+          "stop"
+        ],
+        "seeds": [
+          2026102601,
+          2026102607
         ],
         "serverReplayRoundsPerSeed": 64,
-        "proof": "docs/game-math/qualifications/flooded-temple-v2.json",
-        "qualificationSource": "scripts/game-math/rtp-temple-cascade.mjs",
+        "proof": "docs/game-math/qualifications/flooded-temple-v1.json",
+        "qualificationSource": "scripts/game-math/rtp-temple.mjs",
         "sources": [
-          "src/shared/floodedTempleCascadeData.json",
-          "src/shared/floodedTempleCascadeMath.ts",
-          "src/shared/floodedTempleCascade.ts",
-          "server/games/floodedTempleCascade.ts",
-          "scripts/game-math/rtp-temple-cascade-model.mjs",
+          "src/shared/floodedTempleData.json",
+          "src/shared/floodedTempleMath.ts",
+          "src/shared/floodedTemple.ts",
+          "server/games/floodedTemple.ts",
+          "scripts/game-math/rtp-temple-model.mjs",
           "src/shared/casinoExpansion.ts",
           "server/demoExpansion.ts",
           "server/demoWalletRoutes.ts",
           "server/gameWalletRoutes.ts",
-          "server/finance/nile-game-runtime.ts",
-          "src/wallet/ExpansionClient.ts",
-          "scripts/game-math/rtp-temple-cascade-worker.mjs"
-        ],
-        "availability": "server-opt-in"
+          "server/finance/nile-game-runtime.ts"
+        ]
       }
     }
   }

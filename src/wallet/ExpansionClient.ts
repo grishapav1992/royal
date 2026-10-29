@@ -177,5 +177,5 @@ export class ExpansionClient extends EventTarget {
     finally{if(epoch===this.epoch){this.busy=false;this.lock();this.notify();if(!this.pending&&this.error)void this.refresh();}}
   }
 }
-export const expansionClient=new ExpansionClient();
+export const expansionClient=new ExpansionClient(2);
 demoWallet.addEventListener('change',()=>expansionClient.setAccount(demoWallet.accountId));

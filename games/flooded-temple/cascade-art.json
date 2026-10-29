@@ -1,0 +1,22 @@
+{
+  "mode": "built-in image_gen",
+  "asset": "public/assets/flooded-temple/cascade-symbols.webp",
+  "sha256": "4749337ac615814558c0fc9f1dd42a63e84b4509acf0029bda15354666506771",
+  "grid": [
+    3,
+    3
+  ],
+  "cellOrder": [
+    "idol",
+    "sun",
+    "jaguar",
+    "falcon",
+    "serpent",
+    "moon",
+    "fish",
+    "wild",
+    "relic"
+  ],
+  "normalization": "Sharp resize to 1200 x 1200, WebP quality 88, alphaQuality 100. No semantic edits.",
+  "prompt": "Use case: stylized-concept. Asset type: one production-ready 3 by 3 game symbol atlas for an original premium adventure slot, Flooded Temple. Exactly nine isolated carved stone relic icons, each centered in its own equal square cell of a perfectly aligned three-column three-row square atlas. Same straight-on camera, same consistent icon scale, same neutral three-quarter upper-left illumination, full silhouettes with generous transparent margins inside every cell, no overlap, no cell borders and no background. Rich dimensional hand-painted stone relief, ancient Mesoamerican temple craftsmanship, deep chiseled grooves, worn edges, wet stone sheen, restrained inlaid gold and colored mineral enamel, beautifully readable at 70 pixels. Not photorealistic objects on a table, not flat vector, not generic emoji. Exact order left to right: top row 1 golden stone idol face, 2 amber sun medallion, 3 rust-red jaguar head; middle row 4 turquoise falcon head, 5 emerald coiled serpent, 6 cobalt crescent moon stone; bottom row 7 violet fish relief, 8 ornate golden expedition compass for WILD, 9 radiant ancient turquoise-and-gold prism relic for bonus. Compass and bonus slightly more luminous but same scale and stone-and-bronze material language. No letters, numbers, words, lettering, logos, watermarks, people, reels or UI. Actual transparent alpha background across the atlas and between all icons. Preserve each icon entirely inside its own cell with at least 12 percent padding, and make the nine cell centers exactly evenly spaced."
+}

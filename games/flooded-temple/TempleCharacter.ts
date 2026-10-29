@@ -1,8 +1,8 @@
-import type {TempleBeat} from './presentation';
+import type {CharacterBeat} from './character';
 import {templeReaction,type TemplePose,type TempleReaction} from './character';
 import {TemplePortrait} from './TemplePortrait';
 
-type CharacterView={beat?:TempleBeat;key:string;offset:number;waiting:boolean;rope:boolean;selected:boolean;reduced:boolean;paused:boolean;connected:boolean};
+type CharacterView={beat?:CharacterBeat;key:string;offset:number;waiting:boolean;rope:boolean;selected:boolean;reduced:boolean;paused:boolean;connected:boolean};
 /** Owns one portrait and one frame callback across board renders. No reward queue. */
 export class TempleCharacter{
   readonly element:HTMLElement;
@@ -52,7 +52,7 @@ export class TempleCharacter{
     const blend=v.reduced||v.paused&&!v.beat?1:Math.min(1,Math.max(0,(this.clock-this.blendAt)/220));
     this.portrait.draw(this.from,this.reaction.pose,blend,this.reaction,this.clock,gesture,!v.reduced&&v.connected);
   }
-  tick(beat:TempleBeat,offset:number){this.view.beat=beat;this.view.offset=offset;this.draw();}
+  tick(beat:CharacterBeat,offset:number){this.view.beat=beat;this.view.offset=offset;this.draw();}
   getState(){return {clip:this.reaction.clip,clockMs:this.clock,idleMs:this.idle,framePending:!!this.handle,paused:this.view.paused,reduced:this.view.reduced,transitions:this.transitions.slice(),...this.portrait.getState(),disposed:this.disposed};}
   destroy(){if(this.disposed)return;this.disposed=true;cancelAnimationFrame(this.handle);this.handle=0;this.portrait.destroy();this.element.remove();}
 }

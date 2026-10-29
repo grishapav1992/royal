@@ -27,7 +27,7 @@ const fixture:Plugin={name:'temple-local-wallet',configureServer(server){server.
     const identity=await fetch(api+'/api/auth/me',{headers:{Cookie:req.headers.cookie??''}}).then(r=>r.json());
     if(!identity.account){res.statusCode=401;res.end();return;}
     if(!db){db=new PostgresDatabase('temple_preview',{existingSchema:true,config:databaseConfig(environment)});wallet=new DemoWalletStore(db);}
-    const account=identity.account.id,capable=req.headers['x-royal-temple-rules']==='1';let reply:unknown;
+    const account=identity.account.id,capable=req.headers['x-royal-temple-rules']==='2'?2:req.headers['x-royal-temple-rules']==='1';let reply:unknown;
     if(req.method==='GET')reply=path.endsWith('/expansion')?await wallet.expansion.active(account,true,true,true,true,true,true,true,2,3,true,capable):await wallet.snapshot(account);
     else if(req.method==='POST'){
       let body='';for await(const chunk of req){body+=chunk;if(body.length>8192)throw Error('Oversized test request');}
@@ -37,12 +37,21 @@ const fixture:Plugin={name:'temple-local-wallet',configureServer(server){server.
         if(op.gameId!=='studio-flooded-temple')throw Error('This local stand supports Flooded Temple only');
         let store=wallet.expansion;
         // Reproducible rare outcomes only on the isolated test stand. Production uses crypto.randomInt.
-        if(process.env.TEMPLE_TEST_RNG==='1'){
+        if(process.env.TEMPLE_TEST_RNG==='1'&&typeof req.headers['x-temple-test-case']==='string'){
           const key=account+':'+(req.headers['x-temple-test-case']??'bonus');
           if(!stores.has(key)){
             const cases:Record<string,number[]>={paid:[0,0,600000,0],partial:[0,0,367200,0],big:[0,0,611999,0],blank:[0,0,0,0]};
-            const values=cases[String(req.headers['x-temple-test-case'])]??[0,0,0,98,0,0];let cursor=0;
-            stores.set(key,new DemoExpansionStore(db,id=>wallet.snapshot(id),wallet.ready,async()=>{},max=>{const value=values[cursor++%values.length];if(value>=max)throw Error('Invalid test entropy');return value;}));
+            const scenario=String(req.headers['x-temple-test-case']);
+            const values=cases[scenario]??[0,0,0,98,0,0];let cursor=0,seed=Number(scenario.match(/seed-(\d+)/)?.[1]??92831)>>>0;
+            const tickets=[0,1800,3800,6000,8400,11100,14100];
+            stores.set(key,new DemoExpansionStore(db,id=>wallet.snapshot(id),wallet.ready,async()=>{},max=>{
+              const at=cursor++;
+              if(scenario==='cascade-cap')return 0;
+              if(scenario==='cascade-blank')return tickets[Math.floor(at%15/3)];
+              if(scenario==='cascade-bonus'&&at<15){const tape=[0,1800,-1,3800,6000,-1,8400,11100,-1,0,1800,3800,3800,6000,8400];return tape[at]<0?max-1:tape[at];}
+              if(scenario.startsWith('cascade-')){seed^=seed<<13;seed^=seed>>>17;seed^=seed<<5;return (seed>>>0)%max;}
+              const value=values[at%values.length];if(value>=max)throw Error('Invalid test entropy');return value;
+            }));
           }
           store=stores.get(key)!;
         }
