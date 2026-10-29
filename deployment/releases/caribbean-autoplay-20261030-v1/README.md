@@ -1,0 +1,9 @@
+# Caribbean 1.6.0 client publication
+
+Use a clean committed checkout already included in GitHub main. Take the exact current production host revision and Caribbean active pointer under the three shared publication locks with `publish.py snapshot`. Confirm the five existing source files match their reviewed Git origins. Prepare and verify only `caribbean-treasures` with the normal release commands and that production base.
+
+Transfer only changed package files, the five game source files, the normal manifest/receipt, and the unchanged existing server publisher. Unchanged media is hash checked and hardlinked from the previous immutable package into the temporary package stage. No full project or dependency tree is copied. Validate the exact normal release inventory before installing through `game-module-release.py` under all three locks. Keep at least five GiB free with space for the new package before writing.
+
+Back up the prior five source files, active pointer and host contract. Keep a verified hardlinked copy of the complete old immutable package and tag the current and prepared host images. Apply only the five committed game source files to the production source directory. The common host, backend, wallet, game rules, configuration, persistent data, other module pointers, and running services are unchanged. Do not restore a database or restart the hall for this compatible client update.
+
+Publish public verification, exact versions and source IDs in SERVER.md. Check anonymous protection, the module's complete resources, real local online host/chat, paid-budget limits, manual tactic choice, recovery, Stop and lifecycle cleanup. Production browser verification uses an offline guest and performs no account creation or wagers. After verified GitHub preservation remove only this task's temporary package, delta and captures; retain the rollback package and source backup.

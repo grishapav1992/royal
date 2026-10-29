@@ -1,5 +1,13 @@
 # Caribbean Treasures character and motion direction
 
+## Stable framing and autoplay in 1.6.0
+
+Confirmation, reveal, outcome, and recovery share fixed status and playback rows. The retry control no longer enters the flex flow during every accepted request. The bonus-choice panel overlays the field instead of shifting the ledger and portrait. The character keeps the current gesture transform when a reaction is interrupted; a new spin settles the old gesture over 180 ms, and the six reel stops produce one closing nod. These timings are presentation choices, not perceptual thresholds.
+
+Finite autoplay budgets 10, 25, 50, or 100 normal paid starts with locked line and stake settings. It waits for the player's bonus tactic, then uses only legal free continuations without decrementing the paid budget. It never purchases a bonus. Stop preserves the currently accepted operation and prevents further moves. Error or an unknown response, insufficient funds, blur/hidden tab, host pause, account change, opening a modal, or close stops the queue. Reopening, returning, and manually recovering the original UUID never restart it. A pending or externally locked common wallet cannot overlap a new autoplay request. The original math, paid costs, free-spin rules, and server settlement are unchanged.
+
+Verify frame positions across every animation frame at desktop and mobile sizes, interrupted character transforms, exact paid request count/debit, manual bonus choice and all six free flagship moves, lost-response replay, Stop during confirmation, and lifecycle cancellation in the real host with its connected chat.
+
 ## Account collection in 1.5.0
 
 The new collection supersedes 1.4.0 free selection and browser-local persistence. The original captain is owned initially. All other captains unlock for 100 free profile points; only authenticated server-owned captains can become the persisted selection. Five lessons and two Moscow-day puzzles supply fixed, non-wagered rewards. No rule, bonus progress, outcome, cost or payout is affected. The common account database owns this progress; public art itself is not a DRM boundary.

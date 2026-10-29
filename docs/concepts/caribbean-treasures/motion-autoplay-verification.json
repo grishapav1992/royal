@@ -1,0 +1,129 @@
+{
+  "version": "1.6.0",
+  "module": "1.6.0-cf05aa0c4b35",
+  "manifestSha256": "f73adb1a2d0511d0f868bc5641ac1d9276b6a16e45bf05a8a304da58afa0ceb7",
+  "sourceSha256": "cf05aa0c4b357b9082efa892f9e0874341119431494916bf337b6b9011771669",
+  "changes": [
+    "fixed playback/recovery row and status area",
+    "bonus choice overlays the board",
+    "continuous interrupted character gestures and one closing reel nod",
+    "finite 10/25/50/100 paid starts, manual tactic, free continuation and Stop"
+  ],
+  "mathematicsChanged": false,
+  "rtpProfilesVerified": 18,
+  "mathWalletChecksPassed": 48,
+  "browser": {
+    "startTime": "2026-10-29T21:25:00.370Z",
+    "duration": 542952.629,
+    "expected": 27,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0,
+    "physicalDevicesTested": false,
+    "realHostAndConnectedChat": true
+  },
+  "anchors": {
+    "before": [
+      {
+        "width": 1440,
+        "height": 1000,
+        "frames": 468,
+        "drift": {
+          ".ct-captain": 44,
+          ".ct-avatar": 0,
+          ".ct-ledger": 44,
+          ".ct-controls": 44,
+          ".ct-status": 44
+        }
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "frames": 417,
+        "drift": {
+          ".ct-captain": 42,
+          ".ct-avatar": 0,
+          ".ct-ledger": 42,
+          ".ct-controls": 42,
+          ".ct-status": 42
+        }
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "frames": 479,
+        "drift": {
+          ".ct-captain": 0,
+          ".ct-avatar": 0,
+          ".ct-ledger": 42,
+          ".ct-controls": 42,
+          ".ct-status": 42
+        }
+      }
+    ],
+    "after": [
+      {
+        "width": 1440,
+        "height": 1000,
+        "frames": 402,
+        "drift": {
+          ".ct-captain": 0,
+          ".ct-avatar": 0,
+          ".ct-ledger": 0,
+          ".ct-controls": 0,
+          ".ct-status": 0
+        }
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "frames": 530,
+        "drift": {
+          ".ct-captain": 0,
+          ".ct-avatar": 0,
+          ".ct-ledger": 0,
+          ".ct-controls": 0,
+          ".ct-status": 0
+        }
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "frames": 405,
+        "drift": {
+          ".ct-captain": 0,
+          ".ct-avatar": 0,
+          ".ct-ledger": 0,
+          ".ct-controls": 0,
+          ".ct-status": 0
+        }
+      }
+    ]
+  },
+  "autoplay": {
+    "paidMode": "normal",
+    "buysBonuses": false,
+    "countsFreeContinuations": false,
+    "stopsOn": [
+      "Stop",
+      "funds",
+      "unknown reply/error",
+      "blur/hidden",
+      "host pause",
+      "account change",
+      "modal",
+      "close"
+    ],
+    "restorationNeverRestarts": true
+  },
+  "cleanup": {
+    "testStandStopped": true,
+    "temporaryDatabaseRemoved": true,
+    "productionPublication": {
+      "published": true,
+      "sourceCommit": "0baa69d10ddea384ba7e58c499582d18e702de2c",
+      "version": "1.6.0-cf05aa0c4b35",
+      "publicChecksPassed": true
+    }
+  }
+}

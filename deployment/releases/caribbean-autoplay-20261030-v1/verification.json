@@ -1,0 +1,539 @@
+{
+  "release": "caribbean-autoplay-20261030-v1",
+  "published": true,
+  "sourceCommit": "0baa69d10ddea384ba7e58c499582d18e702de2c",
+  "baseHostCommit": "ee9319121f33bf14f45bacae448d21d62a17df9e",
+  "gameId": "studio-caribbean-treasures",
+  "version": "1.6.0-cf05aa0c4b35",
+  "manifestSha256": "f73adb1a2d0511d0f868bc5641ac1d9276b6a16e45bf05a8a304da58afa0ceb7",
+  "activeSha256": "e2a473fff77c1bf5712ba44dd81aeb0b1c99b28a3fe3fe1e814d371add0f55a3",
+  "image": "sha256:452a691baa92825409c6f66483b50efdb2e5142ab172de6e93b4eccd33cd4d5b",
+  "containerId": "77a708ebd39f1ec9ac70aed2156c883b9db0ed7fef09e75cacb20e718c2a9be8",
+  "healthy": true,
+  "compatibility": {
+    "apiVersion": 1,
+    "rulesVersion": 1,
+    "progressVersion": 1
+  },
+  "changes": [
+    "fixed playback/recovery row and status area",
+    "bonus choice overlays the board",
+    "continuous interrupted character gestures and one closing reel nod",
+    "finite 10/25/50/100 paid starts, manual tactic, free continuation and Stop"
+  ],
+  "mathematicsChanged": false,
+  "qualifiedProfilesChecked": 18,
+  "frozenUnqualifiedLegacy": 114,
+  "mathematicalWalletCompatibilityChecks": 48,
+  "releasePreparation": {
+    "scope": "modules",
+    "modules": [
+      "caribbean-treasures"
+    ],
+    "sourceCommit": "0baa69d10ddea384ba7e58c499582d18e702de2c",
+    "build": {
+      "format": 1,
+      "startedAt": "2026-10-29T21:41:14.773Z",
+      "scope": "modules",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 3617
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 21193
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 2764
+        }
+      ],
+      "passed": true,
+      "durationMs": 27574
+    },
+    "githubVerified": true,
+    "receipt": {
+      "format": 1,
+      "sourceCommit": "0baa69d10ddea384ba7e58c499582d18e702de2c",
+      "remoteMain": "0baa69d10ddea384ba7e58c499582d18e702de2c",
+      "checkedAt": "2026-10-29T21:41:51.623Z"
+    },
+    "outputFiles": 126
+  },
+  "browser": {
+    "startTime": "2026-10-29T21:25:00.370Z",
+    "duration": 542952.629,
+    "expected": 27,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0,
+    "physicalDevicesTested": false,
+    "realHostAndConnectedChat": true,
+    "scenarios": [
+      "crew collection earns free tokens, unlocks a chosen captain and persists beyond browser storage",
+      "spin keeps the portrait frame and lower controls anchored throughout confirmation and reveal",
+      "finite autoplay runs the selected paid budget once and stops without another debit",
+      "autoplay Stop during confirmation preserves the accepted request and prevents following starts",
+      "autoplay waits for the chosen tactic and free continuations do not spend its paid budget",
+      "autoplay stops on a lost response and a manual replay uses the original UUID",
+      "autoplay stops for funds, blur, account change and closing and never resumes when reopened",
+      "interrupting a captain reaction preserves its current transform before easing into focus",
+      "a lost cosmetic unlock response preserves tokens, paid bonus and account ownership",
+      "collection outage keeps the slot playable and recovers without resetting the account",
+      "closing a captain selection before a failed confirmation keeps the saved identity during a spin",
+      "a late accepted captain selection waits until paid presentation ends",
+      "crew loading failure, cancellation and every captain reaction retain a consistent identity",
+      "header controls paint above overlapping pirate art and every tool remains usable",
+      "catalogue pirate captain cover stays sharp on desktop and mobile and reopens the same round",
+      "responsive framing keeps the title and full captain artwork inside the host",
+      "empty balance explains disabled spins, live funding unlocks an exact-cost single line and free spins need no balance",
+      "natural bonus, real host/chat, line presets and desktop/mobile layout",
+      "an accepted start survives a lost response and reopening without duplicate debit",
+      "both purchased tactics show the accepted price and recover after a full reload",
+      "switching accounts hides the previous series and restores it only for its owner",
+      "confirmed animation, cannon, skip, mute, zero volume and close release owned audio",
+      "extreme stakes, rapid double click, mobile purchase and English recovery keep one paid round",
+      "recorded orchestral music and Foley render without clipping and end in silence",
+      "sample loading can fail and retry, and late decode after close cannot restart audio",
+      "captain blinks and looks at the field, deduplicates reactions and releases her timer",
+      "saved complete rounds give distinct captain reactions in the real host"
+    ],
+    "anchors": {
+      "before": [
+        {
+          "width": 1440,
+          "height": 1000,
+          "frames": 468,
+          "drift": {
+            ".ct-captain": 44,
+            ".ct-avatar": 0,
+            ".ct-ledger": 44,
+            ".ct-controls": 44,
+            ".ct-status": 44
+          }
+        },
+        {
+          "width": 1280,
+          "height": 720,
+          "frames": 417,
+          "drift": {
+            ".ct-captain": 42,
+            ".ct-avatar": 0,
+            ".ct-ledger": 42,
+            ".ct-controls": 42,
+            ".ct-status": 42
+          }
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "frames": 479,
+          "drift": {
+            ".ct-captain": 0,
+            ".ct-avatar": 0,
+            ".ct-ledger": 42,
+            ".ct-controls": 42,
+            ".ct-status": 42
+          }
+        }
+      ],
+      "after": [
+        {
+          "width": 1440,
+          "height": 1000,
+          "frames": 402,
+          "drift": {
+            ".ct-captain": 0,
+            ".ct-avatar": 0,
+            ".ct-ledger": 0,
+            ".ct-controls": 0,
+            ".ct-status": 0
+          }
+        },
+        {
+          "width": 1280,
+          "height": 720,
+          "frames": 530,
+          "drift": {
+            ".ct-captain": 0,
+            ".ct-avatar": 0,
+            ".ct-ledger": 0,
+            ".ct-controls": 0,
+            ".ct-status": 0
+          }
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "frames": 405,
+          "drift": {
+            ".ct-captain": 0,
+            ".ct-avatar": 0,
+            ".ct-ledger": 0,
+            ".ct-controls": 0,
+            ".ct-status": 0
+          }
+        }
+      ]
+    },
+    "autoplay": {
+      "paidMode": "normal",
+      "buysBonuses": false,
+      "countsFreeContinuations": false,
+      "stopsOn": [
+        "Stop",
+        "funds",
+        "unknown reply/error",
+        "blur/hidden",
+        "host pause",
+        "account change",
+        "modal",
+        "close"
+      ],
+      "restorationNeverRestarts": true
+    }
+  },
+  "publisherUnitTestsPassed": 3,
+  "production": {
+    "hostRestarted": false,
+    "databaseTouched": false,
+    "configurationPreserved": true,
+    "hostContractPreserved": true,
+    "runtimeCoreHashesPreserved": 4,
+    "persistentServicesPreserved": 14,
+    "otherModulePointersPreserved": 120,
+    "publicFilesVerified": 124,
+    "anonymous": {
+      "/api/demo-wallet": 401,
+      "/api/caribbean-crew": 401
+    },
+    "retiredGameWallet": 410,
+    "viewports": [
+      {
+        "width": 1440,
+        "height": 1000,
+        "overflowX": 0,
+        "autoplayCounts": [
+          10,
+          25,
+          50,
+          100
+        ],
+        "guestAutoplayDisabled": true
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "overflowX": 0,
+        "autoplayCounts": [
+          10,
+          25,
+          50,
+          100
+        ],
+        "guestAutoplayDisabled": true
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "overflowX": 0,
+        "autoplayCounts": [
+          10,
+          25,
+          50,
+          100
+        ],
+        "guestAutoplayDisabled": true
+      }
+    ],
+    "errors": [],
+    "mutationsAttempted": [],
+    "accountsCreated": false,
+    "stakesPlaced": false,
+    "connectedChat": {
+      "productionGuest": "absent by offline design",
+      "localRealOnlineHost": {
+        "scenariosPassed": 27,
+        "desktopAndMobile": true,
+        "physicalDevices": false
+      }
+    },
+    "verifiedAt": "2026-10-29T21:46:40.962Z"
+  },
+  "backup": {
+    "sourceArchive": "/opt/royal-backups/caribbean-autoplay-20261030-v1/source.tgz",
+    "bytes": 29542,
+    "sha256": "6c6c0bef52e392ebed8ccd9985eb25a6ea50247424008736d254cd830d8396be",
+    "oldVersion": "1.5.1-4ef3725616e6",
+    "oldPackageHardlinked": true,
+    "oldManifestSha256": "7ebc1e1b1c956f1921d8b2d45f29e375c2a0df6fbe141e9f99b0bd3c9c402016"
+  },
+  "transport": {
+    "sourceCommit": "0baa69d10ddea384ba7e58c499582d18e702de2c",
+    "version": "1.6.0-cf05aa0c4b35",
+    "changed": [
+      "entry-2317ee5e55c30a22.js",
+      "style-f19a86dcef70ca17.css"
+    ],
+    "files": 13,
+    "bytes": 284291,
+    "packageBytes": 14852104,
+    "unchangedResources": 122
+  },
+  "cleanup": {
+    "server": {
+      "removed": [
+        {
+          "path": "/opt/royal-releases/caribbean-autoplay-20261030-v1/package",
+          "logicalBytes": 14868362
+        },
+        {
+          "path": "/opt/royal-releases/caribbean-autoplay-20261030-v1/source",
+          "logicalBytes": 106339
+        },
+        {
+          "path": "/opt/royal-releases/caribbean-autoplay-20261030-v1/delta",
+          "logicalBytes": 128814
+        },
+        {
+          "path": "/opt/royal-releases/caribbean-autoplay-20261030-v1/transport",
+          "logicalBytes": 0
+        },
+        {
+          "path": "/opt/royal-releases/caribbean-autoplay-20261030-v1/__pycache__",
+          "logicalBytes": 41828
+        }
+      ],
+      "archivesRemoved": 0,
+      "freeBytesBefore": 5382545408,
+      "freeBytesAfter": 5382905856,
+      "physicalReclamationAttributed": false,
+      "note": "Most package resources were hardlinks; concurrent service writes affect free space. Rollback source/package/images retained."
+    },
+    "local": {
+      "exceptions": {
+        "condition": "Prior automatic review rejection remains respected; no retry",
+        "originalUserDatabase": "royal-pg-C70xv3",
+        "otherActivePreview": "localhost:5236",
+        "priorRejectedDirectory": "artifacts/work/caribbean-publish-20261029"
+      },
+      "retainedCurrentPackage": "1.6.0-cf05aa0c4b35",
+      "preservationCommit": "0baa69d10ddea384ba7e58c499582d18e702de2c",
+      "archivesRemoved": 0,
+      "physicalReclamationAttributed": false,
+      "removed": [
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/video",
+          "logicalBytes": 9714913
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/transport",
+          "logicalBytes": 284291
+        },
+        {
+          "path": "module-dist/studio-caribbean-treasures/versions/1.6.0-ead99cb16f59",
+          "logicalBytes": 14868155
+        },
+        {
+          "path": "module-dist/studio-caribbean-treasures/versions/1.6.0-7baf9e27574a",
+          "logicalBytes": 14868290
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/catalog-desktop.png",
+          "logicalBytes": 870418
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/catalog-mobile.png",
+          "logicalBytes": 81743
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/collection-lessons-complete.png",
+          "logicalBytes": 513833
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/collection-locked-desktop.png",
+          "logicalBytes": 798086
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/collection-unlocked-mobile.png",
+          "logicalBytes": 184468
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/desktop.png",
+          "logicalBytes": 1384680
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/empty-balance-desktop.png",
+          "logicalBytes": 1417027
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/empty-balance-mobile.png",
+          "logicalBytes": 301703
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/framing-1024x768.png",
+          "logicalBytes": 732980
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/framing-1280x720.png",
+          "logicalBytes": 957182
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/framing-1440x1000.png",
+          "logicalBytes": 1407390
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/framing-342x245.png",
+          "logicalBytes": 84059
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/framing-342x700.png",
+          "logicalBytes": 203679
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/framing-390x844.png",
+          "logicalBytes": 295500
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/framing-500x760.png",
+          "logicalBytes": 345359
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/framing-640x480.png",
+          "logicalBytes": 383680
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/framing-800x600.png",
+          "logicalBytes": 400970
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/framing-844x390.png",
+          "logicalBytes": 322751
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/framing-900x650.png",
+          "logicalBytes": 506167
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/framing-bonus-1280x720.png",
+          "logicalBytes": 882793
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/header-1280x720.png",
+          "logicalBytes": 957034
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/header-1440x1000.png",
+          "logicalBytes": 1407256
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/header-390x844.png",
+          "logicalBytes": 295007
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/header-overlap.png",
+          "logicalBytes": 1389355
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/mobile.png",
+          "logicalBytes": 303103
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/reaction-bigwin.png",
+          "logicalBytes": 1384171
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/reaction-bonus.png",
+          "logicalBytes": 1295435
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/reaction-loss.png",
+          "logicalBytes": 1353006
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/reaction-partial.png",
+          "logicalBytes": 1383930
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/reaction-positive.png",
+          "logicalBytes": 1369299
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/reaction-return.png",
+          "logicalBytes": 1330517
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/reels.png",
+          "logicalBytes": 1349223
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/reference-ready-desktop.png",
+          "logicalBytes": 1407806
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/sound-preview.wav",
+          "logicalBytes": 1675844
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/toolbar-after-0.png",
+          "logicalBytes": 393
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/toolbar-after-1.png",
+          "logicalBytes": 453
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/toolbar-after-2.png",
+          "logicalBytes": 420
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/toolbar-after-3.png",
+          "logicalBytes": 300
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/toolbar-before-0.png",
+          "logicalBytes": 393
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/toolbar-before-1.png",
+          "logicalBytes": 453
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/toolbar-before-2.png",
+          "logicalBytes": 420
+        },
+        {
+          "path": "artifacts/work/caribbean-motion-autoplay-20261030/toolbar-before-3.png",
+          "logicalBytes": 300
+        }
+      ],
+      "freeBytesAfter": 290709409792,
+      "freeBytesBefore": 290639933440,
+      "remoteMain": "0baa69d10ddea384ba7e58c499582d18e702de2c\trefs/heads/main"
+    },
+    "logicalLocalBytesRemoved": 68714235,
+    "localArchivesRemoved": 0,
+    "physicalFreeSpaceIncreaseNotAttributedToCleanup": true,
+    "retained": {
+      "currentPackage": "module-dist/studio-caribbean-treasures/versions/1.6.0-cf05aa0c4b35",
+      "finalImages": [
+        "artifacts/work/caribbean-motion-autoplay-20261030/desktop-final.png",
+        "artifacts/work/caribbean-motion-autoplay-20261030/motion-mobile.png",
+        "artifacts/work/caribbean-motion-autoplay-20261030/public-1440.png",
+        "artifacts/work/caribbean-motion-autoplay-20261030/public-390.png"
+      ],
+      "previousRejectedArtifacts": "artifacts/work/caribbean-publish-20261029",
+      "olderCaribbeanPackages": "Previously rejected cleanup remains respected; only two new unused 1.6.0 builds were removed.",
+      "originalUserDatabase": "royal-pg-C70xv3",
+      "otherActivePreview": {
+        "url": "http://127.0.0.1:5236",
+        "condition": "Preserve until its owner stops the preview; cleanup belongs to that task."
+      },
+      "rollback": "Production source archive, previous immutable package hardlinks and image tags retained."
+    }
+  }
+}
