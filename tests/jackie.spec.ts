@@ -32,6 +32,24 @@ async function enter(page:Page,lang='ru'){
 async function act(page:Page,selector='[data-fight]'){
   const reply=page.waitForResponse(r=>r.url().endsWith('/api/demo-wallet/expansion')&&r.request().method()==='POST');await page.locator('.jackie '+selector).click();const r=await reply;expect(r.ok()).toBe(true);const body=await r.json();await expect(page.locator('.jackie [data-fight]')).toBeEnabled({timeout:15000});return body.session;
 }
+test('game follows the real available stage, keeps actions visible and uses readable location options',async({page})=>{
+  test.setTimeout(180000);await enter(page);const game=page.locator('.jackie'),rows=[];let paidPosts=0;
+  page.on('request',r=>{if(r.method()==='POST'&&r.url().endsWith('/api/demo-wallet/expansion'))paidPosts++;});
+  for(const [width,height]of [[1920,1080],[1440,900],[1366,768],[1280,600],[1024,768],[820,1180],[768,1024],[640,900],[390,844],[360,640],[320,568],[844,390],[667,375]]){
+    await page.setViewportSize({width,height});
+    await expect.poll(()=>game.evaluate(el=>Math.abs(el.getBoundingClientRect().height-el.closest('.mini-stage')!.clientHeight))).toBeLessThanOrEqual(1);
+    const geometry=await game.evaluate(el=>{const root=el.getBoundingClientRect(),stage=el.closest('.mini-stage')!,arena=el.querySelector('canvas')!.getBoundingClientRect(),button=el.querySelector('[data-fight]')!.getBoundingClientRect();return{width:innerWidth,height:innerHeight,layout:(el as HTMLElement).dataset.layout,root:root.toJSON(),arena:arena.toJSON(),button:button.toJSON(),stageOverflow:stage.scrollHeight-stage.clientHeight,overflow:el.scrollWidth-el.clientWidth};});
+    expect(geometry.overflow).toBeLessThanOrEqual(1);expect(geometry.stageOverflow).toBeLessThanOrEqual(1);
+    expect(geometry.button.top).toBeGreaterThanOrEqual(geometry.root.top);expect(geometry.button.bottom).toBeLessThanOrEqual(geometry.root.bottom+1);expect(geometry.button.height).toBeGreaterThanOrEqual(44);
+    expect(geometry.arena.height).toBeGreaterThan(60);await expect(game.locator('[data-fight]')).toBeInViewport();await expect(page.locator('#mini-dialog #chat-input')).toBeInViewport();
+    await game.locator('[data-location]').scrollIntoViewIfNeeded();await expect(game.locator('[data-location]')).toBeInViewport();await game.locator('[data-location]').selectOption('harbor');await expect(game.locator('[data-scene-name]')).toHaveText('Старый порт');
+    const colors=await game.locator('[data-location]').evaluate(el=>{const s=getComputedStyle(el),o=getComputedStyle(el.querySelector('option')!);return{color:s.color,background:s.backgroundColor,scheme:s.colorScheme,font:parseFloat(s.fontSize),optionColor:o.color,optionBackground:o.backgroundColor};});
+    expect(colors.background).toBe('rgb(55, 41, 30)');expect(colors.color).toBe('rgb(255, 231, 187)');expect(colors.scheme).toBe('dark');expect(colors.font).toBeGreaterThanOrEqual(14);expect(colors.optionColor).toBe(colors.color);expect(colors.optionBackground).toBe(colors.background);
+    await expect(game.locator('[data-fight]')).toBeInViewport();rows.push({...geometry,colors});
+    if([1920,1366,390,844].includes(width))await page.screenshot({path:out+'/responsive-'+width+'x'+height+'.png'});
+  }
+  expect(paidPosts).toBe(0);await writeFile(out+'/responsive-layout.json',JSON.stringify(rows,null,2));
+});
 test('real host, chat, risk groups, gallery and account progress work on desktop and mobile',async({page})=>{
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await outcome('win');await enter(page);await page.emulateMedia({reducedMotion:'no-preference'});
   const game=page.locator('.jackie');
@@ -64,7 +82,7 @@ test('real host, chat, risk groups, gallery and account progress work on desktop
   await act(page);await act(page,'[data-cashout]');await expect(game).toHaveAttribute('data-result-kind','cashout');
   for(const [width,height]of [[1440,1000],[390,844],[320,740]]){
     await page.setViewportSize({width,height});await game.locator('.jc-stage').scrollIntoViewIfNeeded();await expect(page.locator('#mini-dialog #chat-input')).toBeEnabled();
-    await expect.poll(async()=>game.locator('.jc-stage').evaluate(stage=>{const canvas=stage.querySelector('canvas')!,hero=JSON.parse(canvas.dataset.heroFrame!),result=stage.querySelector('[data-result]')!.getBoundingClientRect();return canvas.getBoundingClientRect().top+hero.top-result.bottom;})).toBeGreaterThanOrEqual(6);
+    await expect.poll(async()=>game.locator('.jc-stage').evaluate(stage=>{const canvas=stage.querySelector('canvas')!,hero=JSON.parse(canvas.dataset.heroFrame!),result=stage.closest('.jackie')!.querySelector('[data-result]')!.getBoundingClientRect();return canvas.getBoundingClientRect().top+hero.top-result.bottom;})).toBeGreaterThanOrEqual(6);
   }
   await page.setViewportSize({width:1440,height:1000});
   await page.emulateMedia({reducedMotion:'reduce'});await game.locator('[data-stake]').selectOption('50000');await outcome('lose');for(let i=0;i<9;i++)await act(page);await expect(game.locator('[data-count]')).toHaveText('8/8');
@@ -102,9 +120,9 @@ test('preview brings a varied fight contact into a laptop viewport and reopens w
   for(const width of [1000,601,600,580,440,390,320]){
     await page.setViewportSize({width,height:900});await game.locator('.jc-stage').scrollIntoViewIfNeeded();
     await expect.poll(async()=>game.locator('.jc-stage').evaluate(stage=>{
-      const canvas=stage.querySelector('canvas')!,hero=JSON.parse(canvas.dataset.heroFrame!),result=stage.querySelector('[data-result]')!.getBoundingClientRect();return canvas.getBoundingClientRect().top+hero.top-result.bottom;
+      const canvas=stage.querySelector('canvas')!,hero=JSON.parse(canvas.dataset.heroFrame!),result=stage.closest('.jackie')!.querySelector('[data-result]')!.getBoundingClientRect();return canvas.getBoundingClientRect().top+hero.top-result.bottom;
     })).toBeGreaterThanOrEqual(6);
-    layouts.push(await game.locator('.jc-stage').evaluate(stage=>{const canvas=stage.querySelector('canvas')!,hero=JSON.parse(canvas.dataset.heroFrame!),result=stage.querySelector('[data-result]')!.getBoundingClientRect();return{width:innerWidth,sceneWidth:stage.clientWidth,resultBottom:result.bottom,heroTop:canvas.getBoundingClientRect().top+hero.top};}));
+    layouts.push(await game.locator('.jc-stage').evaluate(stage=>{const canvas=stage.querySelector('canvas')!,hero=JSON.parse(canvas.dataset.heroFrame!),result=stage.closest('.jackie')!.querySelector('[data-result]')!.getBoundingClientRect();return{width:innerWidth,sceneWidth:stage.clientWidth,resultBottom:result.bottom,heroTop:canvas.getBoundingClientRect().top+hero.top};}));
     if(width===580||width===320)await page.screenshot({path:out+'/cashout-raised-'+width+'.png'});
   }
   await writeFile(out+'/cashout-layout.json',JSON.stringify(layouts,null,2));
@@ -119,6 +137,12 @@ test('speed changes during a fight preserve its operation and survive reopening'
   await game.locator('[data-risk="extreme"]').click();let posts=0;page.on('request',r=>{if(r.method()==='POST'&&r.url().endsWith('/api/demo-wallet/expansion'))posts++;});
   const operation=act(page);await expect(game).toHaveAttribute('data-revision','1');
   await expect.poll(()=>page.evaluate(()=>(window as any).jackiePreview.state().elapsed)).toBeGreaterThan(1.2);
+  const resizing=await page.evaluate(()=>(window as any).jackiePreview.state());
+  for(const [width,height]of [[390,844],[844,390],[1440,1000]]){
+    await page.setViewportSize({width,height});const current=await page.evaluate(()=>(window as any).jackiePreview.state());
+    expect(current.sequence).toBe(resizing.sequence);expect(current.elapsed).toBeGreaterThanOrEqual(resizing.elapsed);expect(posts).toBe(1);
+    await expect(game.locator('[data-fight]')).toBeInViewport();
+  }
   const before=await page.evaluate(()=>(window as any).jackiePreview.state());await game.locator('[data-speed]').click();
   const after=await page.evaluate(()=>(window as any).jackiePreview.state());expect(after.elapsed).toBeGreaterThanOrEqual(before.elapsed);expect(after.elapsed-before.elapsed).toBeLessThan(.6);expect(after.sequence).toBe(before.sequence);expect(after.speed).toBe(2);
   await expect(game.locator('[data-fight]')).toBeDisabled();await expect(game.locator('[data-speed]')).toHaveAttribute('aria-pressed','true');
