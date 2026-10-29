@@ -5,7 +5,7 @@ import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import assert from 'node:assert/strict';
 import { buildFinancial } from './financial-build.mjs';
-const helper = dirname(fileURLToPath(import.meta.url)), root = resolve(helper, '../../..'), work = resolve(root, 'artifacts/work/forest-heart-ux-v7'), out = resolve(work, 'release/payload');
+const helper = dirname(fileURLToPath(import.meta.url)), root = resolve(helper, '../../..'), work = resolve(root, 'artifacts/work/forest-heart-ux-v7'), out = resolve(work, 'release/payload-v2');
 const json = path => JSON.parse(readFileSync(path, 'utf8').replace(/^\uFEFF/, '')), sha = path => createHash('sha256').update(readFileSync(path)).digest('hex');
 const scope = json(resolve(helper, 'scope.json')), before = json(resolve(work, 'production-before.json'));
 const git = (...args) => execFileSync(process.env.ROYAL_GIT_BINARY || 'git', args, { cwd: root, encoding: 'utf8' }).trim();
@@ -16,7 +16,12 @@ assert.deepEqual(before.program, before.preparedProgram); assert.equal(before.co
 assert.equal(before.containers['royal-game-1'].health, 'healthy'); assert(before.freeBytes > 5 * 1024 ** 3);
 assert(!existsSync(out)); mkdirSync(out, {recursive:true});
 const payload = {}, source = {}, financeSource = {}, dist = {}, modules = {}, backend = {};
-function canonical(file) { const raw=readFileSync(file); return /\.(ts|mjs|cjs|json|md|css|html|svg|txt)$/.test(file)?Buffer.from(raw.toString('utf8').replace(/\r\n/g,'\n')):raw; }
+function canonical(file) {
+  const raw=readFileSync(file);
+  if(raw.includes(0))return raw;
+  try { return Buffer.from(new TextDecoder('utf-8',{fatal:true}).decode(raw).replace(/\r\n/g,'\n')); }
+  catch { return raw; }
+}
 function sourceSha(file) { return createHash('sha256').update(canonical(file)).digest('hex'); }
 function copy(from, to, normalized=false) { const target = resolve(out, to), sub=relative(out,target); assert(sub && !sub.startsWith('..') && !isAbsolute(sub)); mkdirSync(dirname(target), { recursive: true }); if(normalized)writeFileSync(target,canonical(from));else copyFileSync(from, target); payload[to] = sha(target); return payload[to]; }
 const allowed = new Set(scope.allowedSource);
