@@ -704,7 +704,8 @@ export class RoomScene extends Phaser.Scene {
     const dt = Math.min(delta, 40) / 1000;
     if (!this.network) { this.catRoutine.tick(dt,[this.catPerson()]); this.catView=this.catRoutine.snapshot(); }
     const carrier = this.catView.carriedBy === (this.selfId || 'local-player') ? this.player : this.remotePlayers.get(this.catView.carriedBy)?.actor;
-    const catAudible = canHearCat(this.catView,{hall:this.hall,x:this.player.x,y:this.player.y});
+    const inCabinet = Boolean(this.player.cabinet || this.networkSelf?.playing || document.getElementById('mini-dialog')?.hasAttribute('open'));
+    const catAudible = !inCabinet && canHearCat(this.catView,{hall:this.hall,x:this.player.x,y:this.player.y});
     this.catRenderer?.update(this.catView,this.hall,time,dt,this.reducedMotion,carrier,catAudible);
     if (time >= this.catUiAt) { this.catUiAt=time+200;this.onCat(); }
     const now = performance.now(), inputMs = Math.min(50, now-this.predictionClock); this.predictionClock = now;

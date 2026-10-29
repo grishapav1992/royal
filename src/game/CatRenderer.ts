@@ -85,13 +85,13 @@ export class CatRenderer {
     this.sprite.setVisible(visible); this.shadow.setVisible(visible && view.mood !== 'carried');
     this.bubble.setVisible(false); this.treat.setVisible(false);this.hugArms.setVisible(false);
     if (!visible) { if(this.hall)stopCatPurr();this.hall = undefined;this.walkCycle.update(view,false,true); return; }
+    if (!audible) stopCatPurr();
     const enteringMood=this.mood!==view.mood;
     if(enteringMood) {
       stopCatPurr();
       if(audible&&(view.mood==='petting'||view.mood==='carried'))void catPurr(view.mood==='carried'?7:2.4);
     }
     if(view.mood==='purring'&&audible&&(enteringMood||time-this.purrAt>5200)) {this.purrAt=time;void catPurr(4.4);}
-    if(view.mood==='purring'&&!audible)stopCatPurr();
     this.mood = view.mood;
     const surface=catSurface(view.surfaceId);
     const carried = view.mood === 'carried';
