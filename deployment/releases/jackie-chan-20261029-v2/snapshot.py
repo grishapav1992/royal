@@ -47,7 +47,9 @@ def container_rows(protected=()):
         try:
             rows[name] = inspect(name)
         except subprocess.CalledProcessError as error:
-            if name in protected or error.returncode != 1 or 'No such object:' not in (error.stderr or ''):
+            message=(error.stderr or '').lower()
+            missing='no such object:' in message or 'no such container:' in message
+            if name in protected or error.returncode != 1 or not missing:
                 raise
     return rows
 

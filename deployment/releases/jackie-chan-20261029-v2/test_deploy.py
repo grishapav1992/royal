@@ -114,6 +114,18 @@ class SnapshotRaces(unittest.TestCase):
         missing=subprocess.CalledProcessError(1,['docker','inspect','royal-game-1'],stderr='Error: No such object: royal-game-1')
         with patch.object(self.helper,'run',return_value='royal-game-1'),patch.object(self.helper,'inspect',side_effect=missing):
             with self.assertRaises(subprocess.CalledProcessError):self.helper.container_rows({'royal-game-1'})
+    def test_lowercase_missing_unknown_job_is_ignored(self):
+        missing=subprocess.CalledProcessError(1,['docker','inspect','oneoff'],stderr='error: no such object: oneoff')
+        with patch.object(self.helper,'run',return_value='royal-game-1\noneoff'),patch.object(self.helper,'inspect',side_effect=[{'Id':'retained'},missing]):
+            self.assertEqual(self.helper.container_rows({'royal-game-1'}),{'royal-game-1':{'Id':'retained'}})
+    def test_missing_container_alias_is_ignored_only_for_unknown_jobs(self):
+        missing=subprocess.CalledProcessError(1,['docker','inspect','oneoff'],stderr='Error response from daemon: No such container: oneoff')
+        with patch.object(self.helper,'run',return_value='oneoff'),patch.object(self.helper,'inspect',side_effect=missing):
+            self.assertEqual(self.helper.container_rows({'royal-game-1'}),{})
+    def test_lowercase_missing_protected_service_is_rejected(self):
+        missing=subprocess.CalledProcessError(1,['docker','inspect','royal-game-1'],stderr='error: no such object: royal-game-1')
+        with patch.object(self.helper,'run',return_value='royal-game-1'),patch.object(self.helper,'inspect',side_effect=missing):
+            with self.assertRaises(subprocess.CalledProcessError):self.helper.container_rows({'royal-game-1'})
     def test_daemon_or_permission_error_is_rejected(self):
         denied=subprocess.CalledProcessError(1,['docker','inspect','oneoff'],stderr='permission denied')
         with patch.object(self.helper,'run',return_value='oneoff'),patch.object(self.helper,'inspect',side_effect=denied):
