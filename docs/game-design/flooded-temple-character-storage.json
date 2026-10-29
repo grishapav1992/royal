@@ -1,0 +1,844 @@
+{
+  "date": "2026-10-28",
+  "owner": "Flooded Temple character animation chat",
+  "purpose": "Remove owned temporary verification and inactive 0.5.0 builds after remote source verification",
+  "state": "blocked-by-policy",
+  "activePackage": "0.5.0-b9aceb3eec57",
+  "initialFreeBytes": 305244794880,
+  "preservationCommit": "1713f0df317409efd8b9985af512d7a04c205a0b",
+  "githubVerified": true,
+  "targets": [
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-animation",
+      "bytes": 16563341.0,
+      "files": [
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-animation\\capture.json",
+          "bytes": 69043,
+          "lastWriteUtc": "2026-10-28T16:35:51.8032729Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-animation\\capture.mjs",
+          "bytes": 4854,
+          "lastWriteUtc": "2026-10-28T16:31:54.8468248Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-animation\\clock-baseline.json",
+          "bytes": 8475,
+          "lastWriteUtc": "2026-10-28T16:27:56.4586674Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-animation\\clock-cpu-4x.json",
+          "bytes": 8722,
+          "lastWriteUtc": "2026-10-28T16:29:00.1609231Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-animation\\clock-simulated-latency.json",
+          "bytes": 8681,
+          "lastWriteUtc": "2026-10-28T16:28:35.927812Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-animation\\discovery-portrait.png",
+          "bytes": 629032,
+          "lastWriteUtc": "2026-10-28T16:35:28.9925997Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-animation\\discovery.png",
+          "bytes": 2392913,
+          "lastWriteUtc": "2026-10-28T16:35:28.8289996Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-animation\\idle.png",
+          "bytes": 2452457,
+          "lastWriteUtc": "2026-10-28T16:35:25.1876299Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-animation\\inventory.ps1",
+          "bytes": 3086,
+          "lastWriteUtc": "2026-10-28T16:44:39.6067464Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-animation\\OWNER.md",
+          "bytes": 515,
+          "lastWriteUtc": "2026-10-28T16:18:09.2582299Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-animation\\reflection-portrait.png",
+          "bytes": 645751,
+          "lastWriteUtc": "2026-10-28T16:35:39.4722296Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-animation\\reflection.png",
+          "bytes": 2444904,
+          "lastWriteUtc": "2026-10-28T16:35:39.3295039Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-animation\\rope-clock.json",
+          "bytes": 8355,
+          "lastWriteUtc": "2026-10-28T16:28:16.7400891Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-animation\\rope-portrait.png",
+          "bytes": 626765,
+          "lastWriteUtc": "2026-10-28T16:35:35.8606862Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-animation\\rope-stall.json",
+          "bytes": 8366,
+          "lastWriteUtc": "2026-10-28T16:29:46.9717187Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-animation\\rope.png",
+          "bytes": 2278303,
+          "lastWriteUtc": "2026-10-28T16:35:35.7017566Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-animation\\success-portrait.png",
+          "bytes": 639400,
+          "lastWriteUtc": "2026-10-28T16:35:46.4475754Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-animation\\success.png",
+          "bytes": 2180166,
+          "lastWriteUtc": "2026-10-28T16:35:45.9836602Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-animation\\browser\\.last-run.json",
+          "bytes": 45,
+          "lastWriteUtc": "2026-10-28T16:42:39.5880121Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-animation\\browser\\host-1440.png",
+          "bytes": 1794562,
+          "lastWriteUtc": "2026-10-28T16:42:37.2666607Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-animation\\browser\\host-390.png",
+          "bytes": 358946,
+          "lastWriteUtc": "2026-10-28T16:42:37.8198571Z"
+        }
+      ]
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-4d86e1400cd6",
+      "bytes": 19169783.0,
+      "files": [
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-4d86e1400cd6\\entry-0fa899bcb32a625d.js",
+          "bytes": 127097,
+          "lastWriteUtc": "2026-10-28T16:27:33.6911555Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-4d86e1400cd6\\manifest.json",
+          "bytes": 4068,
+          "lastWriteUtc": "2026-10-28T16:27:33.7777791Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-4d86e1400cd6\\style-3c986122be28d5d5.css",
+          "bytes": 103,
+          "lastWriteUtc": "2026-10-28T16:27:33.6913919Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-4d86e1400cd6\\media\\flooded-temple\\carving.webp",
+          "bytes": 3342,
+          "lastWriteUtc": "2026-10-28T16:27:33.7325572Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-4d86e1400cd6\\media\\flooded-temple\\frame.webp",
+          "bytes": 71442,
+          "lastWriteUtc": "2026-10-28T16:27:33.7555809Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-4d86e1400cd6\\media\\flooded-temple\\rooms.webp",
+          "bytes": 489702,
+          "lastWriteUtc": "2026-10-28T16:27:33.7777791Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-4d86e1400cd6\\media\\flooded-temple\\temple.webp",
+          "bytes": 503930,
+          "lastWriteUtc": "2026-10-28T16:27:33.7777791Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-4d86e1400cd6\\media\\flooded-temple\\audio\\ambience.wav",
+          "bytes": 1536044,
+          "lastWriteUtc": "2026-10-28T16:27:33.6950094Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-4d86e1400cd6\\media\\flooded-temple\\audio\\big.wav",
+          "bytes": 422448,
+          "lastWriteUtc": "2026-10-28T16:27:33.6979641Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-4d86e1400cd6\\media\\flooded-temple\\audio\\chest.wav",
+          "bytes": 211248,
+          "lastWriteUtc": "2026-10-28T16:27:33.6979641Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-4d86e1400cd6\\media\\flooded-temple\\audio\\lever.wav",
+          "bytes": 220844,
+          "lastWriteUtc": "2026-10-28T16:27:33.6979641Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-4d86e1400cd6\\media\\flooded-temple\\audio\\music.mp3",
+          "bytes": 13217159,
+          "lastWriteUtc": "2026-10-28T16:27:33.7074806Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-4d86e1400cd6\\media\\flooded-temple\\audio\\neutral.wav",
+          "bytes": 67244,
+          "lastWriteUtc": "2026-10-28T16:27:33.7074806Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-4d86e1400cd6\\media\\flooded-temple\\audio\\relic.wav",
+          "bytes": 403244,
+          "lastWriteUtc": "2026-10-28T16:27:33.716878Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-4d86e1400cd6\\media\\flooded-temple\\audio\\return.wav",
+          "bytes": 115244,
+          "lastWriteUtc": "2026-10-28T16:27:33.718963Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-4d86e1400cd6\\media\\flooded-temple\\audio\\rope.wav",
+          "bytes": 192044,
+          "lastWriteUtc": "2026-10-28T16:27:33.7199669Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-4d86e1400cd6\\media\\flooded-temple\\audio\\scrape.wav",
+          "bytes": 124844,
+          "lastWriteUtc": "2026-10-28T16:27:33.7225602Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-4d86e1400cd6\\media\\flooded-temple\\audio\\step.wav",
+          "bytes": 76844,
+          "lastWriteUtc": "2026-10-28T16:27:33.7260936Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-4d86e1400cd6\\media\\flooded-temple\\audio\\stone.wav",
+          "bytes": 105648,
+          "lastWriteUtc": "2026-10-28T16:27:33.7282956Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-4d86e1400cd6\\media\\flooded-temple\\audio\\win.wav",
+          "bytes": 240044,
+          "lastWriteUtc": "2026-10-28T16:27:33.7325572Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-4d86e1400cd6\\media\\flooded-temple\\character\\brace.webp",
+          "bytes": 95140,
+          "lastWriteUtc": "2026-10-28T16:27:33.7325572Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-4d86e1400cd6\\media\\flooded-temple\\character\\celebrate.webp",
+          "bytes": 115832,
+          "lastWriteUtc": "2026-10-28T16:27:33.7325572Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-4d86e1400cd6\\media\\flooded-temple\\character\\discover.webp",
+          "bytes": 108836,
+          "lastWriteUtc": "2026-10-28T16:27:33.7420637Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-4d86e1400cd6\\media\\flooded-temple\\character\\idle.webp",
+          "bytes": 105640,
+          "lastWriteUtc": "2026-10-28T16:27:33.7420637Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-4d86e1400cd6\\media\\flooded-temple\\character\\observe.webp",
+          "bytes": 110500,
+          "lastWriteUtc": "2026-10-28T16:27:33.7420637Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-4d86e1400cd6\\media\\flooded-temple\\character\\reflect.webp",
+          "bytes": 107002,
+          "lastWriteUtc": "2026-10-28T16:27:33.7420637Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-4d86e1400cd6\\media\\flooded-temple\\props\\chest-open.webp",
+          "bytes": 59544,
+          "lastWriteUtc": "2026-10-28T16:27:33.7576013Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-4d86e1400cd6\\media\\flooded-temple\\props\\chest.webp",
+          "bytes": 52874,
+          "lastWriteUtc": "2026-10-28T16:27:33.7606968Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-4d86e1400cd6\\media\\flooded-temple\\props\\compass.webp",
+          "bytes": 50038,
+          "lastWriteUtc": "2026-10-28T16:27:33.7633235Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-4d86e1400cd6\\media\\flooded-temple\\props\\gate.webp",
+          "bytes": 68822,
+          "lastWriteUtc": "2026-10-28T16:27:33.7673909Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-4d86e1400cd6\\media\\flooded-temple\\props\\lever-pulled.webp",
+          "bytes": 34188,
+          "lastWriteUtc": "2026-10-28T16:27:33.7677809Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-4d86e1400cd6\\media\\flooded-temple\\props\\lever.webp",
+          "bytes": 32232,
+          "lastWriteUtc": "2026-10-28T16:27:33.7677809Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-4d86e1400cd6\\media\\flooded-temple\\props\\relic.webp",
+          "bytes": 50622,
+          "lastWriteUtc": "2026-10-28T16:27:33.7677809Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-4d86e1400cd6\\media\\flooded-temple\\props\\rope.webp",
+          "bytes": 45930,
+          "lastWriteUtc": "2026-10-28T16:27:33.7777791Z"
+        }
+      ]
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-790094b0c8bd",
+      "bytes": 19169663.0,
+      "files": [
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-790094b0c8bd\\entry-b06763e4c932d2ad.js",
+          "bytes": 126977,
+          "lastWriteUtc": "2026-10-28T16:17:16.4817846Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-790094b0c8bd\\manifest.json",
+          "bytes": 4068,
+          "lastWriteUtc": "2026-10-28T16:17:16.5337871Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-790094b0c8bd\\style-3c986122be28d5d5.css",
+          "bytes": 103,
+          "lastWriteUtc": "2026-10-28T16:17:16.4817846Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-790094b0c8bd\\media\\flooded-temple\\carving.webp",
+          "bytes": 3342,
+          "lastWriteUtc": "2026-10-28T16:17:16.5057535Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-790094b0c8bd\\media\\flooded-temple\\frame.webp",
+          "bytes": 71442,
+          "lastWriteUtc": "2026-10-28T16:17:16.5237911Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-790094b0c8bd\\media\\flooded-temple\\rooms.webp",
+          "bytes": 489702,
+          "lastWriteUtc": "2026-10-28T16:17:16.5337871Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-790094b0c8bd\\media\\flooded-temple\\temple.webp",
+          "bytes": 503930,
+          "lastWriteUtc": "2026-10-28T16:17:16.5337871Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-790094b0c8bd\\media\\flooded-temple\\audio\\ambience.wav",
+          "bytes": 1536044,
+          "lastWriteUtc": "2026-10-28T16:17:16.4838171Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-790094b0c8bd\\media\\flooded-temple\\audio\\big.wav",
+          "bytes": 422448,
+          "lastWriteUtc": "2026-10-28T16:17:16.4848014Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-790094b0c8bd\\media\\flooded-temple\\audio\\chest.wav",
+          "bytes": 211248,
+          "lastWriteUtc": "2026-10-28T16:17:16.4857982Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-790094b0c8bd\\media\\flooded-temple\\audio\\lever.wav",
+          "bytes": 220844,
+          "lastWriteUtc": "2026-10-28T16:17:16.4857982Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-790094b0c8bd\\media\\flooded-temple\\audio\\music.mp3",
+          "bytes": 13217159,
+          "lastWriteUtc": "2026-10-28T16:17:16.4934368Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-790094b0c8bd\\media\\flooded-temple\\audio\\neutral.wav",
+          "bytes": 67244,
+          "lastWriteUtc": "2026-10-28T16:17:16.4944465Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-790094b0c8bd\\media\\flooded-temple\\audio\\relic.wav",
+          "bytes": 403244,
+          "lastWriteUtc": "2026-10-28T16:17:16.4954424Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-790094b0c8bd\\media\\flooded-temple\\audio\\return.wav",
+          "bytes": 115244,
+          "lastWriteUtc": "2026-10-28T16:17:16.4961726Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-790094b0c8bd\\media\\flooded-temple\\audio\\rope.wav",
+          "bytes": 192044,
+          "lastWriteUtc": "2026-10-28T16:17:16.4961726Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-790094b0c8bd\\media\\flooded-temple\\audio\\scrape.wav",
+          "bytes": 124844,
+          "lastWriteUtc": "2026-10-28T16:17:16.4961726Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-790094b0c8bd\\media\\flooded-temple\\audio\\step.wav",
+          "bytes": 76844,
+          "lastWriteUtc": "2026-10-28T16:17:16.4961726Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-790094b0c8bd\\media\\flooded-temple\\audio\\stone.wav",
+          "bytes": 105648,
+          "lastWriteUtc": "2026-10-28T16:17:16.4961726Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-790094b0c8bd\\media\\flooded-temple\\audio\\win.wav",
+          "bytes": 240044,
+          "lastWriteUtc": "2026-10-28T16:17:16.4961726Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-790094b0c8bd\\media\\flooded-temple\\character\\brace.webp",
+          "bytes": 95140,
+          "lastWriteUtc": "2026-10-28T16:17:16.5057535Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-790094b0c8bd\\media\\flooded-temple\\character\\celebrate.webp",
+          "bytes": 115832,
+          "lastWriteUtc": "2026-10-28T16:17:16.5057535Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-790094b0c8bd\\media\\flooded-temple\\character\\discover.webp",
+          "bytes": 108836,
+          "lastWriteUtc": "2026-10-28T16:17:16.5057535Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-790094b0c8bd\\media\\flooded-temple\\character\\idle.webp",
+          "bytes": 105640,
+          "lastWriteUtc": "2026-10-28T16:17:16.5186085Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-790094b0c8bd\\media\\flooded-temple\\character\\observe.webp",
+          "bytes": 110500,
+          "lastWriteUtc": "2026-10-28T16:17:16.5196527Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-790094b0c8bd\\media\\flooded-temple\\character\\reflect.webp",
+          "bytes": 107002,
+          "lastWriteUtc": "2026-10-28T16:17:16.5206963Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-790094b0c8bd\\media\\flooded-temple\\props\\chest-open.webp",
+          "bytes": 59544,
+          "lastWriteUtc": "2026-10-28T16:17:16.5237911Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-790094b0c8bd\\media\\flooded-temple\\props\\chest.webp",
+          "bytes": 52874,
+          "lastWriteUtc": "2026-10-28T16:17:16.5237911Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-790094b0c8bd\\media\\flooded-temple\\props\\compass.webp",
+          "bytes": 50038,
+          "lastWriteUtc": "2026-10-28T16:17:16.5237911Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-790094b0c8bd\\media\\flooded-temple\\props\\gate.webp",
+          "bytes": 68822,
+          "lastWriteUtc": "2026-10-28T16:17:16.5237911Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-790094b0c8bd\\media\\flooded-temple\\props\\lever-pulled.webp",
+          "bytes": 34188,
+          "lastWriteUtc": "2026-10-28T16:17:16.5237911Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-790094b0c8bd\\media\\flooded-temple\\props\\lever.webp",
+          "bytes": 32232,
+          "lastWriteUtc": "2026-10-28T16:17:16.5237911Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-790094b0c8bd\\media\\flooded-temple\\props\\relic.webp",
+          "bytes": 50622,
+          "lastWriteUtc": "2026-10-28T16:17:16.5237911Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-790094b0c8bd\\media\\flooded-temple\\props\\rope.webp",
+          "bytes": 45930,
+          "lastWriteUtc": "2026-10-28T16:17:16.5337871Z"
+        }
+      ]
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee",
+      "bytes": 19169804.0,
+      "files": [
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\entry-190ab66f3d8485ca.js",
+          "bytes": 127118,
+          "lastWriteUtc": "2026-10-28T16:35:22.1819219Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\manifest.json",
+          "bytes": 4068,
+          "lastWriteUtc": "2026-10-28T16:35:22.2155963Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\style-3c986122be28d5d5.css",
+          "bytes": 103,
+          "lastWriteUtc": "2026-10-28T16:35:22.1819219Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\media\\flooded-temple\\carving.webp",
+          "bytes": 3342,
+          "lastWriteUtc": "2026-10-28T16:35:22.1998867Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\media\\flooded-temple\\frame.webp",
+          "bytes": 71442,
+          "lastWriteUtc": "2026-10-28T16:35:22.2067733Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\media\\flooded-temple\\rooms.webp",
+          "bytes": 489702,
+          "lastWriteUtc": "2026-10-28T16:35:22.214093Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\media\\flooded-temple\\temple.webp",
+          "bytes": 503930,
+          "lastWriteUtc": "2026-10-28T16:35:22.2155963Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\media\\flooded-temple\\audio\\ambience.wav",
+          "bytes": 1536044,
+          "lastWriteUtc": "2026-10-28T16:35:22.1859033Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\media\\flooded-temple\\audio\\big.wav",
+          "bytes": 422448,
+          "lastWriteUtc": "2026-10-28T16:35:22.1873432Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\media\\flooded-temple\\audio\\chest.wav",
+          "bytes": 211248,
+          "lastWriteUtc": "2026-10-28T16:35:22.1878468Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\media\\flooded-temple\\audio\\lever.wav",
+          "bytes": 220844,
+          "lastWriteUtc": "2026-10-28T16:35:22.1878468Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\media\\flooded-temple\\audio\\music.mp3",
+          "bytes": 13217159,
+          "lastWriteUtc": "2026-10-28T16:35:22.1953937Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\media\\flooded-temple\\audio\\neutral.wav",
+          "bytes": 67244,
+          "lastWriteUtc": "2026-10-28T16:35:22.1953937Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\media\\flooded-temple\\audio\\relic.wav",
+          "bytes": 403244,
+          "lastWriteUtc": "2026-10-28T16:35:22.1953937Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\media\\flooded-temple\\audio\\return.wav",
+          "bytes": 115244,
+          "lastWriteUtc": "2026-10-28T16:35:22.1953937Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\media\\flooded-temple\\audio\\rope.wav",
+          "bytes": 192044,
+          "lastWriteUtc": "2026-10-28T16:35:22.1953937Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\media\\flooded-temple\\audio\\scrape.wav",
+          "bytes": 124844,
+          "lastWriteUtc": "2026-10-28T16:35:22.1953937Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\media\\flooded-temple\\audio\\step.wav",
+          "bytes": 76844,
+          "lastWriteUtc": "2026-10-28T16:35:22.1998867Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\media\\flooded-temple\\audio\\stone.wav",
+          "bytes": 105648,
+          "lastWriteUtc": "2026-10-28T16:35:22.1998867Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\media\\flooded-temple\\audio\\win.wav",
+          "bytes": 240044,
+          "lastWriteUtc": "2026-10-28T16:35:22.1998867Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\media\\flooded-temple\\character\\brace.webp",
+          "bytes": 95140,
+          "lastWriteUtc": "2026-10-28T16:35:22.1998867Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\media\\flooded-temple\\character\\celebrate.webp",
+          "bytes": 115832,
+          "lastWriteUtc": "2026-10-28T16:35:22.205494Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\media\\flooded-temple\\character\\discover.webp",
+          "bytes": 108836,
+          "lastWriteUtc": "2026-10-28T16:35:22.2064383Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\media\\flooded-temple\\character\\idle.webp",
+          "bytes": 105640,
+          "lastWriteUtc": "2026-10-28T16:35:22.2067733Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\media\\flooded-temple\\character\\observe.webp",
+          "bytes": 110500,
+          "lastWriteUtc": "2026-10-28T16:35:22.2067733Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\media\\flooded-temple\\character\\reflect.webp",
+          "bytes": 107002,
+          "lastWriteUtc": "2026-10-28T16:35:22.2067733Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\media\\flooded-temple\\props\\chest-open.webp",
+          "bytes": 59544,
+          "lastWriteUtc": "2026-10-28T16:35:22.2067733Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\media\\flooded-temple\\props\\chest.webp",
+          "bytes": 52874,
+          "lastWriteUtc": "2026-10-28T16:35:22.2067733Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\media\\flooded-temple\\props\\compass.webp",
+          "bytes": 50038,
+          "lastWriteUtc": "2026-10-28T16:35:22.2067733Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\media\\flooded-temple\\props\\gate.webp",
+          "bytes": 68822,
+          "lastWriteUtc": "2026-10-28T16:35:22.2067733Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\media\\flooded-temple\\props\\lever-pulled.webp",
+          "bytes": 34188,
+          "lastWriteUtc": "2026-10-28T16:35:22.2067733Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\media\\flooded-temple\\props\\lever.webp",
+          "bytes": 32232,
+          "lastWriteUtc": "2026-10-28T16:35:22.2067733Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\media\\flooded-temple\\props\\relic.webp",
+          "bytes": 50622,
+          "lastWriteUtc": "2026-10-28T16:35:22.2136001Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-8dba2a2b4dee\\media\\flooded-temple\\props\\rope.webp",
+          "bytes": 45930,
+          "lastWriteUtc": "2026-10-28T16:35:22.214093Z"
+        }
+      ]
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-ddfca1ad1ffb",
+      "bytes": 19169719.0,
+      "files": [
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-ddfca1ad1ffb\\entry-7c7f0361c8b3f4e5.js",
+          "bytes": 127033,
+          "lastWriteUtc": "2026-10-28T16:19:46.0913623Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-ddfca1ad1ffb\\manifest.json",
+          "bytes": 4068,
+          "lastWriteUtc": "2026-10-28T16:19:46.1224744Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-ddfca1ad1ffb\\style-3c986122be28d5d5.css",
+          "bytes": 103,
+          "lastWriteUtc": "2026-10-28T16:19:46.0923589Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-ddfca1ad1ffb\\media\\flooded-temple\\carving.webp",
+          "bytes": 3342,
+          "lastWriteUtc": "2026-10-28T16:19:46.1043791Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-ddfca1ad1ffb\\media\\flooded-temple\\frame.webp",
+          "bytes": 71442,
+          "lastWriteUtc": "2026-10-28T16:19:46.1194829Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-ddfca1ad1ffb\\media\\flooded-temple\\rooms.webp",
+          "bytes": 489702,
+          "lastWriteUtc": "2026-10-28T16:19:46.1224744Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-ddfca1ad1ffb\\media\\flooded-temple\\temple.webp",
+          "bytes": 503930,
+          "lastWriteUtc": "2026-10-28T16:19:46.1224744Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-ddfca1ad1ffb\\media\\flooded-temple\\audio\\ambience.wav",
+          "bytes": 1536044,
+          "lastWriteUtc": "2026-10-28T16:19:46.0943536Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-ddfca1ad1ffb\\media\\flooded-temple\\audio\\big.wav",
+          "bytes": 422448,
+          "lastWriteUtc": "2026-10-28T16:19:46.0943536Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-ddfca1ad1ffb\\media\\flooded-temple\\audio\\chest.wav",
+          "bytes": 211248,
+          "lastWriteUtc": "2026-10-28T16:19:46.0943536Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-ddfca1ad1ffb\\media\\flooded-temple\\audio\\lever.wav",
+          "bytes": 220844,
+          "lastWriteUtc": "2026-10-28T16:19:46.0943536Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-ddfca1ad1ffb\\media\\flooded-temple\\audio\\music.mp3",
+          "bytes": 13217159,
+          "lastWriteUtc": "2026-10-28T16:19:46.1043791Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-ddfca1ad1ffb\\media\\flooded-temple\\audio\\neutral.wav",
+          "bytes": 67244,
+          "lastWriteUtc": "2026-10-28T16:19:46.1043791Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-ddfca1ad1ffb\\media\\flooded-temple\\audio\\relic.wav",
+          "bytes": 403244,
+          "lastWriteUtc": "2026-10-28T16:19:46.1043791Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-ddfca1ad1ffb\\media\\flooded-temple\\audio\\return.wav",
+          "bytes": 115244,
+          "lastWriteUtc": "2026-10-28T16:19:46.1043791Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-ddfca1ad1ffb\\media\\flooded-temple\\audio\\rope.wav",
+          "bytes": 192044,
+          "lastWriteUtc": "2026-10-28T16:19:46.1043791Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-ddfca1ad1ffb\\media\\flooded-temple\\audio\\scrape.wav",
+          "bytes": 124844,
+          "lastWriteUtc": "2026-10-28T16:19:46.1043791Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-ddfca1ad1ffb\\media\\flooded-temple\\audio\\step.wav",
+          "bytes": 76844,
+          "lastWriteUtc": "2026-10-28T16:19:46.1043791Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-ddfca1ad1ffb\\media\\flooded-temple\\audio\\stone.wav",
+          "bytes": 105648,
+          "lastWriteUtc": "2026-10-28T16:19:46.1043791Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-ddfca1ad1ffb\\media\\flooded-temple\\audio\\win.wav",
+          "bytes": 240044,
+          "lastWriteUtc": "2026-10-28T16:19:46.1043791Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-ddfca1ad1ffb\\media\\flooded-temple\\character\\brace.webp",
+          "bytes": 95140,
+          "lastWriteUtc": "2026-10-28T16:19:46.1043791Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-ddfca1ad1ffb\\media\\flooded-temple\\character\\celebrate.webp",
+          "bytes": 115832,
+          "lastWriteUtc": "2026-10-28T16:19:46.1151377Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-ddfca1ad1ffb\\media\\flooded-temple\\character\\discover.webp",
+          "bytes": 108836,
+          "lastWriteUtc": "2026-10-28T16:19:46.1164645Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-ddfca1ad1ffb\\media\\flooded-temple\\character\\idle.webp",
+          "bytes": 105640,
+          "lastWriteUtc": "2026-10-28T16:19:46.1174898Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-ddfca1ad1ffb\\media\\flooded-temple\\character\\observe.webp",
+          "bytes": 110500,
+          "lastWriteUtc": "2026-10-28T16:19:46.1174898Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-ddfca1ad1ffb\\media\\flooded-temple\\character\\reflect.webp",
+          "bytes": 107002,
+          "lastWriteUtc": "2026-10-28T16:19:46.1184862Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-ddfca1ad1ffb\\media\\flooded-temple\\props\\chest-open.webp",
+          "bytes": 59544,
+          "lastWriteUtc": "2026-10-28T16:19:46.1194829Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-ddfca1ad1ffb\\media\\flooded-temple\\props\\chest.webp",
+          "bytes": 52874,
+          "lastWriteUtc": "2026-10-28T16:19:46.1204804Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-ddfca1ad1ffb\\media\\flooded-temple\\props\\compass.webp",
+          "bytes": 50038,
+          "lastWriteUtc": "2026-10-28T16:19:46.1204804Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-ddfca1ad1ffb\\media\\flooded-temple\\props\\gate.webp",
+          "bytes": 68822,
+          "lastWriteUtc": "2026-10-28T16:19:46.1214761Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-ddfca1ad1ffb\\media\\flooded-temple\\props\\lever-pulled.webp",
+          "bytes": 34188,
+          "lastWriteUtc": "2026-10-28T16:19:46.1214761Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-ddfca1ad1ffb\\media\\flooded-temple\\props\\lever.webp",
+          "bytes": 32232,
+          "lastWriteUtc": "2026-10-28T16:19:46.1224744Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-ddfca1ad1ffb\\media\\flooded-temple\\props\\relic.webp",
+          "bytes": 50622,
+          "lastWriteUtc": "2026-10-28T16:19:46.1224744Z"
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.5.0-ddfca1ad1ffb\\media\\flooded-temple\\props\\rope.webp",
+          "bytes": 45930,
+          "lastWriteUtc": "2026-10-28T16:19:46.1224744Z"
+        }
+      ]
+    }
+  ],
+  "candidateBytes": 93242310.0,
+  "removedFolders": 0,
+  "removedFiles": 0,
+  "removedBytes": 0,
+  "removedArchiveBytes": 0,
+  "freeBeforeBytes": 303773790208,
+  "freeAfterBytes": 303773560832,
+  "physicalReclaimedClaim": false,
+  "exceptions": [
+    "Owned local preview remains active for user review, stop terminal session 7918 with Ctrl+C afterwards.",
+    "Managed feature checkout remains active while the primary checkout has another chat work.",
+    "Previously denied cleanup scopes from stage 1, stage 3, stage 4 and reference refinement are excluded and must not be retried.",
+    "Prior user-loaded 0.4.0-ebe9fb2d7616 can remain pinned in the existing in-app window until it is reloaded.",
+    "Built-in image generation originals remain at the tool-owned generated_images path, as instructed by that tool."
+  ],
+  "cleanupCondition": "Source and required assets pushed to feature branch with exact remote commit verified. No active builds or captures remain.",
+  "rejection": "Automatic approval review rejected the removal command before execution: blocked by policy. No detailed reason. Do not retry these five targets or bypass the denial."
+}

@@ -73,6 +73,8 @@ for (let index = CABINETS.length - 1; index >= 0; index--) {
   if (isRetiredCardGame(CABINETS[index].id)) CABINETS.splice(index, 1);
 }
 
+// A collection entry uses the existing Royal seats and the shared wallet.
+CABINETS.push({id:'studio-flooded-temple',name:language==='en'?'Flooded Temple':'Затопленный храм',subtitle:language==='en'?'Explore the ruins · Six moves · One rope':'Исследуй руины · Шесть ходов · Одна верёвка',x:0,y:0,color:0x58d2cd,playable:true,wallet:true,hall:'arcade'});
 CABINETS.push({id:CARIBBEAN_GAME,name:'Карибские сокровища',subtitle:'Гигантские символы · Капитанский залп · Две тактики',x:0,y:0,color:0xd7a04a,playable:true,wallet:true,hall:'arcade'});
 
 // Keep game descriptions available even when their game has no dedicated physical seat.

@@ -20,7 +20,7 @@ export function platformGameCabinet(id: string, seat: Cabinet): Cabinet {
   const existing = GAME_CABINETS.find(c => c.id === id);
   return {...seat, id, name:studio ? studioCatalogName(studio.id) : existing?.name ?? 'Casino API Pro',
     subtitle:studio?.subtitle ?? existing?.subtitle ?? '', demo:false, provider:false, wallet:!!studio || !!existing?.wallet,
-    github:!studio && id !== 'flag-battle' && id !== 'studio-forest-heart' && id !== CARIBBEAN_GAME && id !== 'casinoapipro' && id !== 'royal-roulette', defaultGameId:undefined,collection:undefined};
+    github:!studio && id !== 'flag-battle' && id !== 'studio-forest-heart' && id !== 'studio-flooded-temple' && id !== CARIBBEAN_GAME && id !== 'casinoapipro' && id !== 'royal-roulette', defaultGameId:undefined,collection:undefined};
 }
 const kindNames: Record<string,string> = {
   all:t('Все жанры'), slot:t('Слоты'), crash:t('Крэш'), flight:t('Полёт'), keno:t('Кено'),
@@ -33,7 +33,7 @@ function localEntry(id: string): Entry {
   const studio = isStudioGame(id) ? STUDIO_INFO[id] : undefined;
   const theme = github.has(id) && Object.hasOwn(FIRST_FLOOR_GAME_THEMES,id) ? FIRST_FLOOR_ART[FIRST_FLOOR_GAME_THEMES[id as keyof typeof FIRST_FLOOR_GAME_THEMES]] : undefined;
   return {gameId:id, name:game.name, subtitle:theme?.title[language === 'en' ? 1 : 0] ?? game.subtitle,
-    kind:id===CARIBBEAN_GAME?'slot':studio?.kind ?? classicKinds[id], source:github.has(id) ? 'github' : 'royal', art:id==='original-jackie-chan'?'/assets/jackie-chan/cover.webp':royalCatalogArtwork(id),
+    kind:id===CARIBBEAN_GAME?'slot':studio?.kind ?? (id==='studio-flooded-temple'?'slot':classicKinds[id]), source:github.has(id) ? 'github' : 'royal', art:id==='original-jackie-chan'?'/assets/jackie-chan/cover.webp':royalCatalogArtwork(id),
     keywords:`${studio?.sourceReferenceId ?? ''} ${theme?.title.join(' ') ?? ''}`};
 }
 

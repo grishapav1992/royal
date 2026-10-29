@@ -1,0 +1,24 @@
+{
+  "tool": "built-in image_gen.imagegen",
+  "reference": "docs/assets/flooded-temple/approved-concept.png",
+  "referenceSha256": "cb3099f92de6dfa20dc228127ce62fd36b15dd854e7609a54a100ede3a5a6e2a",
+  "assets": [
+    {
+      "path": "public/assets/flooded-temple/explorer.webp",
+      "transparentBackground": true,
+      "conversion": "Generated PNG converted to WebP quality 92, original dimensions and alpha preserved. No visual retouching.",
+      "prompt": "Use case: background-extraction. Production game character asset for Flooded Temple. Reference image is the approved character and art direction. Extract and recreate ONLY the adult female explorer at the right of the reference as a beautifully detailed full-body isolated character, front facing toward player, age about 30. Preserve her face, proportions, brown braid with loose strands, fitted turquoise tank top, khaki short cargo shorts, leather belt and thigh straps, dark expedition boots, confident attractive expression, one hand at hip and the other holding a warm glowing vintage lantern. Same polished semi-realistic adventure game illustration, cool blue rim light and warm lantern light. Feet fully visible, full head, no cropping, centered portrait composition. Authentic transparent alpha background, no floor, no temple, no grid, no text, no UI, no watermark. Keep the approved outfit and identity. The character must be an independent overlay for the playable UI."
+    },
+    {
+      "path": "public/assets/flooded-temple/temple.webp",
+      "transparentBackground": false,
+      "conversion": "Generated PNG converted to WebP quality 88, original dimensions preserved. No visual retouching.",
+      "prompt": "Use case: stylized-concept. Production full screen background asset for the game Flooded Temple. Reference image is approved art direction, architecture and palette. Create ONLY the flooded ancient temple environment, remove all UI, all letters, all board cells and the female character. Landscape 1536 by 1024 composition. Cinematic semi-realistic highly detailed adventure game painting: immense ruined carved stone halls in a blue cavern, turquoise water reflecting amber fire bowls, statues, hanging vines, broken pillars, light shafts from above, right-hand distant stone platform, moody teal depth with restrained copper accents. Keep center-left broad calm dark open space suitable behind an interactive game board, detailed framing architecture near edges, clear uncluttered upper center for title. No maps, grid, symbols, chests, people, buttons, text, logo or watermark. Must support a separate overlay heroine on right and live 5 by4 board on left. Preserve blue-cyan flooded temple character of approved concept, luxurious rich materials, sharp architecture."
+    },
+    {
+      "path": "public/assets/flooded-temple/cover.webp",
+      "source": "docs/assets/flooded-temple/approved-concept.png",
+      "conversion": "Approved concept resized to width 480 and converted to WebP quality 83 for the host catalogue. Its painted grid is not used as the playable board."
+    }
+  ]
+}

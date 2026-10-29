@@ -571,6 +571,54 @@
         "server/games/luelonSlots.ts"
       ]
     },
+    "studio-flooded-temple": {
+      "method": "temple-cascade-independent-monte-carlo-v2",
+      "rulesVersion": 2,
+      "progressVersion": 2,
+      "target": 0.96,
+      "tolerance": 0.0025,
+      "maxHalfWidth95": 0.001,
+      "maxUpper95": 0.9625,
+      "confidenceZ": 1.96,
+      "qualificationRoundsPerSeed": 200000000,
+      "seeds": [
+        2026102801,
+        2026102807
+      ],
+      "calibrationSeeds": [
+        19770203,
+        19840117
+      ],
+      "stakes": [
+        1000,
+        2000,
+        5000,
+        10000,
+        20000,
+        50000
+      ],
+      "choices": [
+        "normal"
+      ],
+      "serverReplayRoundsPerSeed": 64,
+      "proof": "docs/game-math/qualifications/flooded-temple-v2.json",
+      "qualificationSource": "scripts/game-math/rtp-temple-cascade.mjs",
+      "sources": [
+        "src/shared/floodedTempleCascadeData.json",
+        "src/shared/floodedTempleCascadeMath.ts",
+        "src/shared/floodedTempleCascade.ts",
+        "server/games/floodedTempleCascade.ts",
+        "scripts/game-math/rtp-temple-cascade-model.mjs",
+        "src/shared/casinoExpansion.ts",
+        "server/demoExpansion.ts",
+        "server/demoWalletRoutes.ts",
+        "server/gameWalletRoutes.ts",
+        "server/finance/nile-game-runtime.ts",
+        "src/wallet/ExpansionClient.ts",
+        "scripts/game-math/rtp-temple-cascade-worker.mjs"
+      ],
+      "availability": "server-opt-in"
+    },
     "royal-roulette": {
       "rulesVersion": 1,
       "progressVersion": 1,
@@ -834,5 +882,51 @@
   },
   "nonWagered": {
     "caribbean-crew-collection": "Free educational challenges and cosmetic character ownership in the common account profile. No wager, paid cost, wallet conversion, random outcome, payout or paid-round bonus progress. The qualified studio-caribbean-treasures rules/progress 1 profile remains unchanged. See docs/concepts/caribbean-treasures/collection-policy.md."
+  },
+  "versionProfiles": {
+    "studio-flooded-temple": {
+      "1": {
+        "method": "exhaustive-temple-decisions",
+        "rulesVersion": 1,
+        "progressVersion": 1,
+        "target": 0.96,
+        "minimumReturn": 0.9,
+        "tolerance": 0.000001,
+        "stakes": [
+          1000,
+          2000,
+          5000,
+          10000,
+          20000,
+          50000
+        ],
+        "choices": [
+          "optimal",
+          "nearest-chest",
+          "highest-first",
+          "random-walk",
+          "stop"
+        ],
+        "seeds": [
+          2026102601,
+          2026102607
+        ],
+        "serverReplayRoundsPerSeed": 64,
+        "proof": "docs/game-math/qualifications/flooded-temple-v1.json",
+        "qualificationSource": "scripts/game-math/rtp-temple.mjs",
+        "sources": [
+          "src/shared/floodedTempleData.json",
+          "src/shared/floodedTempleMath.ts",
+          "src/shared/floodedTemple.ts",
+          "server/games/floodedTemple.ts",
+          "scripts/game-math/rtp-temple-model.mjs",
+          "src/shared/casinoExpansion.ts",
+          "server/demoExpansion.ts",
+          "server/demoWalletRoutes.ts",
+          "server/gameWalletRoutes.ts",
+          "server/finance/nile-game-runtime.ts"
+        ]
+      }
+    }
   }
 }

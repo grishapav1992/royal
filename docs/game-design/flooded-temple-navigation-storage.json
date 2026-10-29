@@ -1,0 +1,78 @@
+{
+  "date": "2026-10-28",
+  "owner": "Flooded Temple passage guidance chat",
+  "purpose": "Remove owned browser outputs and inactive 0.7.0 packages after exact GitHub source preservation",
+  "state": "blocked-by-policy",
+  "activePackage": "0.7.0-bc6bd4bcff7e",
+  "firstMeasuredFreeBytes": 297035366400,
+  "freeBeforeBytes": 299469049856,
+  "freeAfterBytes": 299467919360,
+  "preservationCommit": "42d50463172151005124f0448e0de0e48fc459ab",
+  "githubVerified": true,
+  "targets": [
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\artifacts\\work\\flooded-temple-navigation",
+      "files": 19,
+      "bytes": 14905207,
+      "inventorySha256": "aeb24a42775f971ad5d65ef1fa679bb8aceff2896d47c1931d387a1f24db9927",
+      "removedFiles": 0,
+      "removedBytes": 0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.7.0-1df8bd3b3631",
+      "files": 34,
+      "bytes": 19189627,
+      "inventorySha256": "80053f32aaed8184c8ef0a4ed56a6c0089a4d78d7ba0e049977edd3d2fb9eb4c",
+      "removedFiles": 0,
+      "removedBytes": 0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.7.0-9ae45174ae94",
+      "files": 34,
+      "bytes": 19191150,
+      "inventorySha256": "bd2b01c8202e691e18977c8863066e40d1d07b93a1d7113129ce89676d9aecac",
+      "removedFiles": 0,
+      "removedBytes": 0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.7.0-d17f17584d70",
+      "files": 34,
+      "bytes": 19189657,
+      "inventorySha256": "81217ec04577226e3e388b9c313e109843b425b6e42a7034e5b8fedf91af04d4",
+      "removedFiles": 0,
+      "removedBytes": 0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal\\module-dist\\studio-flooded-temple\\versions\\0.7.0-dd2fa2e4972f",
+      "files": 34,
+      "bytes": 19190183,
+      "inventorySha256": "ede9a52b995cb041d30df8a5aa8c5e9db20045fb0c794205efcb0578739fee6a",
+      "removedFiles": 0,
+      "removedBytes": 0
+    }
+  ],
+  "totalTargetBytes": 91665824,
+  "archivesCreated": 0,
+  "archivesRemoved": 0,
+  "removedBytes": 0,
+  "physicalReclaimedClaim": false,
+  "activeExceptions": [
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\flooded-temple\\royal",
+      "cleanupCondition": "Feature saved, preview review finished and concurrent work reconciled",
+      "reason": "Continuing Temple feature while primary checkout has concurrent work"
+    },
+    {
+      "path": "module-dist/studio-flooded-temple/versions/0.7.0-bc6bd4bcff7e",
+      "cleanupCondition": "Replaced by a later active package after user review",
+      "reason": "Active local package served by preview session 7918"
+    },
+    {
+      "path": "Inherited denied cleanup scopes and possibly pinned older packages",
+      "cleanupCondition": "Do not retry denied targets; retain their existing reports and session conditions",
+      "reason": "Automatic review denied earlier attempts; old ambient tab could not be found by tool"
+    }
+  ],
+  "previousDeniedScopesRetried": false,
+  "rejection": "Automatic approval review rejected the native PowerShell removal before execution: blocked by policy. No detailed reason supplied. No files removed and no retry performed."
+}

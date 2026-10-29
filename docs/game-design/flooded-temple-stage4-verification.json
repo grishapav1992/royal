@@ -1,0 +1,311 @@
+{
+  "date": "2026-10-27",
+  "gameId": "studio-flooded-temple",
+  "version": "0.3.0",
+  "integrationBaseline": "bb4b141b7946ad9c93db495a2ca6f0defa2f492c",
+  "module": {
+    "format": 1,
+    "gameId": "studio-flooded-temple",
+    "manifest": "/game-modules/studio-flooded-temple/versions/0.3.0-4c27de833e69/manifest.json",
+    "sha256": "8f805a91a58a090a45267b74b7301ddf7e6df878a1403c79d0fea41c7fa6ccc9"
+  },
+  "tests": {
+    "temple": 29,
+    "caribbean": 46,
+    "rtp": 26,
+    "modules": 6,
+    "shared-compat": 16,
+    "browser": 17
+  },
+  "build": {
+    "format": 1,
+    "startedAt": "2026-10-27T18:24:36.454Z",
+    "scope": "application",
+    "steps": [
+      {
+        "name": "rtp",
+        "passed": true,
+        "durationMs": 2415
+      },
+      {
+        "name": "typecheck",
+        "passed": true,
+        "durationMs": 8836
+      },
+      {
+        "name": "modules",
+        "passed": true,
+        "durationMs": 9202
+      },
+      {
+        "name": "host",
+        "passed": true,
+        "durationMs": 7362
+      },
+      {
+        "name": "backend",
+        "passed": true,
+        "durationMs": 98
+      },
+      {
+        "name": "reconciliation",
+        "passed": true,
+        "durationMs": 37
+      },
+      {
+        "name": "payments",
+        "passed": true,
+        "durationMs": 36
+      }
+    ],
+    "passed": true,
+    "durationMs": 27985
+  },
+  "modules": 119,
+  "rtpProfilesVerified": 13,
+  "mathematics": "Unchanged exact game results. Both affected wrapper fingerprints requalified by normal CLI; see stage4 integration report.",
+  "originalAudio": {
+    "files": 12,
+    "bytes": 1514456,
+    "sampleRate": 24000,
+    "format": "stereo PCM16",
+    "previewSeconds": 12,
+    "previewIsGameplayRecording": false
+  },
+  "clockMeasurement": "Desktop Chrome rAF timing against the browser reported audible target. This is not physical speaker/acoustic latency or a listening quality measurement.",
+  "clocks": [
+    {
+      "scenario": "baseline",
+      "frameAccents": 10,
+      "skippedPhases": 0,
+      "p95FrameSkewMs": 14.60266666219627,
+      "maxFrameSkewMs": 14.60266666219627,
+      "clockMethods": [
+        "output-timestamp"
+      ],
+      "reportedLatencyRangeMs": [
+        51.45900000000003,
+        53.719000000000015
+      ],
+      "frames": [
+        {
+          "kind": "card",
+          "skewMs": 2.7026666636863865,
+          "rendered": true
+        },
+        {
+          "kind": "card",
+          "skewMs": 14.60266666219627,
+          "rendered": true
+        },
+        {
+          "kind": "card",
+          "skewMs": 4.60266666219627,
+          "rendered": true
+        },
+        {
+          "kind": "card",
+          "skewMs": 2.0026666607061543,
+          "rendered": true
+        },
+        {
+          "kind": "arrive",
+          "skewMs": 2.702666663686614,
+          "rendered": true
+        },
+        {
+          "kind": "gate",
+          "skewMs": 6.402666666666846,
+          "rendered": true
+        },
+        {
+          "kind": "arrive",
+          "skewMs": 1.9026666666668461,
+          "rendered": true
+        },
+        {
+          "kind": "arrive",
+          "skewMs": 5.30266666517673,
+          "rendered": true
+        },
+        {
+          "kind": "arrive",
+          "skewMs": 1.702666663686614,
+          "rendered": true
+        },
+        {
+          "kind": "relic",
+          "skewMs": 1.30266666517673,
+          "rendered": true
+        }
+      ]
+    },
+    {
+      "scenario": "simulated-latency",
+      "frameAccents": 10,
+      "skippedPhases": 0,
+      "p95FrameSkewMs": 11,
+      "maxFrameSkewMs": 11,
+      "clockMethods": [
+        "latency-estimate"
+      ],
+      "reportedLatencyRangeMs": [
+        199.99999999999997,
+        199.99999999999997
+      ],
+      "frames": [
+        {
+          "kind": "card",
+          "skewMs": 3.899999998509884,
+          "rendered": true
+        },
+        {
+          "kind": "card",
+          "skewMs": 0.8999999985098839,
+          "rendered": true
+        },
+        {
+          "kind": "card",
+          "skewMs": 5.399999998509884,
+          "rendered": true
+        },
+        {
+          "kind": "card",
+          "skewMs": 2.6999999955296516,
+          "rendered": true
+        },
+        {
+          "kind": "arrive",
+          "skewMs": 3.600000001490116,
+          "rendered": true
+        },
+        {
+          "kind": "gate",
+          "skewMs": 0.29999999701976776,
+          "rendered": true
+        },
+        {
+          "kind": "arrive",
+          "skewMs": 2.899999998509884,
+          "rendered": true
+        },
+        {
+          "kind": "arrive",
+          "skewMs": 6,
+          "rendered": true
+        },
+        {
+          "kind": "arrive",
+          "skewMs": 2.399999998509884,
+          "rendered": true
+        },
+        {
+          "kind": "relic",
+          "skewMs": 11,
+          "rendered": true
+        }
+      ]
+    },
+    {
+      "scenario": "cpu-4x",
+      "frameAccents": 10,
+      "skippedPhases": 0,
+      "p95FrameSkewMs": 23.499000001490003,
+      "maxFrameSkewMs": 23.499000001490003,
+      "clockMethods": [
+        "output-timestamp"
+      ],
+      "reportedLatencyRangeMs": [
+        49.51700000000003,
+        63.41100000000002
+      ],
+      "frames": [
+        {
+          "kind": "card",
+          "skewMs": 0.19900000447023558,
+          "rendered": true
+        },
+        {
+          "kind": "card",
+          "skewMs": 4.0990000029801195,
+          "rendered": true
+        },
+        {
+          "kind": "card",
+          "skewMs": 23.499000001490003,
+          "rendered": true
+        },
+        {
+          "kind": "card",
+          "skewMs": 3.4990000014900033,
+          "rendered": true
+        },
+        {
+          "kind": "arrive",
+          "skewMs": 1.5990000029801195,
+          "rendered": true
+        },
+        {
+          "kind": "gate",
+          "skewMs": 5.0990000029801195,
+          "rendered": true
+        },
+        {
+          "kind": "arrive",
+          "skewMs": 6.699000004470236,
+          "rendered": true
+        },
+        {
+          "kind": "arrive",
+          "skewMs": 1.7990000059603517,
+          "rendered": true
+        },
+        {
+          "kind": "arrive",
+          "skewMs": 6.898999999999887,
+          "rendered": true
+        },
+        {
+          "kind": "relic",
+          "skewMs": 20.898999999999887,
+          "rendered": true
+        }
+      ]
+    }
+  ],
+  "layout": {
+    "desktop": [
+      [
+        1440,
+        1000
+      ],
+      [
+        1000,
+        760
+      ]
+    ],
+    "mobileViewports": [
+      [
+        390,
+        844
+      ],
+      [
+        360,
+        740
+      ]
+    ],
+    "realRoyalHost": true,
+    "connectedChat": true,
+    "languages": [
+      "ru",
+      "en"
+    ],
+    "physicalPhones": false
+  },
+  "limitations": [
+    "No physical phone, speaker, wired headphone or Bluetooth listening test.",
+    "No human pleasantness or repetition-fatigue study.",
+    "CPU 4x, 200ms latency and page hiding are simulations."
+  ],
+  "publication": "Not deployed; ongoing feature branch only."
+}

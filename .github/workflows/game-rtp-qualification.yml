@@ -5,6 +5,10 @@ on:
     paths:
       - 'src/shared/**'
       - 'server/games/**'
+      - 'server/demoExpansion.ts'
+      - 'server/demoWalletRoutes.ts'
+      - 'server/gameWalletRoutes.ts'
+      - 'server/finance/nile-game-runtime.ts'
       - 'server/combat*.ts'
       - 'server/finance/pvp-money.ts'
       - 'server/finance/combat-escrow.ts'
@@ -29,6 +33,10 @@ on:
     paths:
       - 'src/shared/**'
       - 'server/games/**'
+      - 'server/demoExpansion.ts'
+      - 'server/demoWalletRoutes.ts'
+      - 'server/gameWalletRoutes.ts'
+      - 'server/finance/nile-game-runtime.ts'
       - 'server/combat*.ts'
       - 'server/finance/pvp-money.ts'
       - 'server/finance/combat-escrow.ts'
@@ -57,7 +65,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        game: [studio-neopolis, studio-dracona, mortal-kombat, studio-cosmic-escape, studio-forest-heart, studio-caribbean-treasures, studio-afterglow]
+        game: [studio-forest-heart, studio-flooded-temple, studio-neopolis, studio-dracona, mortal-kombat, studio-cosmic-escape, studio-caribbean-treasures, studio-afterglow]
     steps:
       - uses: actions/checkout@v7
         with:

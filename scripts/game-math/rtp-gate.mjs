@@ -1,9 +1,11 @@
+import {CASCADE_METHOD,validateCascadeProof} from './rtp-temple-cascade.mjs';
 import {ROULETTE_METHOD,validateRouletteProof} from './rtp-roulette.mjs';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
 import { cosmicQualificationEvidence, COSMIC_QUALIFICATION_METHOD, COSMIC_QUALIFICATION_MODEL } from './rtp-cosmic.mjs';
+import {TEMPLE_METHOD,templeEvidence,expectedTempleReplay,expectedTempleStreams} from './rtp-temple.mjs';
 import {FOREST_QUALIFICATION_METHOD,FOREST_SERVER_STATUS,validateForestRuntimeProof} from './rtp-forest-heart.mjs';
 import { caribbeanQualificationEvidence, CARIBBEAN_QUALIFICATION_METHOD, CARIBBEAN_REVIEWED_SOURCES } from './rtp-caribbean.mjs';
 import { JACKIE_METHOD, jackieEvidence } from './rtp-jackie.mjs';
@@ -21,9 +23,9 @@ export async function changedLegacyProfiles(root,hashes,profiles) {
   }
   return changed;
 }
-export async function rtpInputs(root, gameId) {
+export async function rtpInputs(root, gameId, rulesVersion) {
   const registry = JSON.parse(await readFile(resolve(root, 'scripts/game-math/rtp-policy.json'), 'utf8'));
-  const policy = registry.profiles[gameId];
+  const policy = rulesVersion===undefined||registry.profiles[gameId]?.rulesVersion===rulesVersion?registry.profiles[gameId]:registry.versionProfiles?.[gameId]?.[String(rulesVersion)];
   assert(policy, 'No RTP qualification policy for ' + gameId);
   const sourceHashes = Object.fromEntries(await Promise.all([...policy.sources, policy.qualificationSource ?? 'scripts/game-math/rtp-simulation.mjs'].map(async file =>
     [file, sourceDigest(await readFile(resolve(root, file)))])));
@@ -37,6 +39,8 @@ export function validateRtpProof(gameId, inputs, proof) {
   if (gameId==='studio-neopolis' && p.rulesVersion>=4) assert.equal(p.method,'neopolis-variable-stake-conditional-v4','Variable stakes require conditional qualification');
   assert.equal(proof.policySha256, inputs.policySha256, 'RTP policy changed: rerun qualification');
   assert.deepEqual(proof.sourceHashes, inputs.sourceHashes, 'RTP source changed: rerun qualification');
+  if(p.method===CASCADE_METHOD){assert.equal(gameId,'studio-flooded-temple');return validateCascadeProof(p,proof);}
+  if(p.method===TEMPLE_METHOD)return validateTempleProof(gameId,p,proof);
   if (p.method===JACKIE_METHOD) {
     assert.equal(gameId,'original-jackie-chan');
     const expected=jackieEvidence(p);
@@ -86,6 +90,19 @@ export function validateRtpProof(gameId, inputs, proof) {
   if (p.method === 'neopolis-variable-stake-conditional-v4') validateNeopolisVariableStakeProof(p, proof);
   return true;
 }
+function validateTempleProof(gameId,p,proof){
+  assert.equal(gameId,'studio-flooded-temple');
+  const expected=templeEvidence(p);
+  assert.equal(proof.method,expected.method);
+  assert.deepEqual(proof.analysis,expected.analysis,'Invalid Temple exhaustive derivation');
+  assert.deepEqual(proof.results,expected.results,'Every Temple stake and strategy must match the exhaustive model');
+  assert.deepEqual(proof.serverReplay?.coverage,p.stakes.map(expectedTempleReplay),'Temple exhaustive server coverage mismatch');
+  assert.deepEqual(proof.serverReplay?.streams,expectedTempleStreams(p),'Temple independent seed replay mismatch');
+  const checks=proof.serverReplay.coverage.reduce((sum,r)=>sum+r.checks,0)+proof.serverReplay.streams.reduce((sum,r)=>sum+r.paidRounds,0);
+  assert.equal(proof.serverReplayChecks,checks);
+  return true;
+}
+
 function validateNeopolisVariableStakeProof(p, proof) {
   assert.equal(proof.method, p.method);
   assert.equal(p.rulesVersion, 4); assert.equal(p.progressVersion, 4);
@@ -243,6 +260,7 @@ export async function checkGameRtp(root, catalog, selected = catalog.map(game =>
     assert(registry.profiles[game.gameId] || baseline.games.includes(game.gameId) || typeof exemption === 'string' && exemption.trim().length >= 20,
       'New module has no RTP qualification or documented non-wagered classification: ' + game.gameId);
   }
+  if(registry.profiles['studio-flooded-temple'])assert(registry.versionProfiles?.['studio-flooded-temple']?.['2']?.method===CASCADE_METHOD||registry.profiles['studio-flooded-temple'].rulesVersion===2,'Temple cascade rules require their own qualification profile');
   let verified = 0;
   const serverOnly=Object.entries(registry.profiles).filter(([,p])=>p.releaseStatus===FOREST_SERVER_STATUS).map(([id])=>id);
   for (const gameId of new Set([...selected,...changedProfiles,...serverOnly])) {
@@ -252,6 +270,13 @@ export async function checkGameRtp(root, catalog, selected = catalog.map(game =>
     else assert(contract && contract.rulesVersion === inputs.policy.rulesVersion && contract.progressVersion === inputs.policy.progressVersion);
     const proof = JSON.parse(await readFile(resolve(root, inputs.policy.proof), 'utf8').catch(() => { throw Error('Missing RTP qualification for ' + gameId + '; run npm run qualify:rtp -- --game ' + gameId + ' --write-proof'); }));
     validateRtpProof(gameId, inputs, proof); verified++;
+  }
+  for(const gameId of new Set([...selected,...changedProfiles]))for(const [version,p]of Object.entries(registry.versionProfiles?.[gameId]??{})){
+    const contract=catalog.find(game=>game.gameId===gameId);assert(contract&&Number(version)===p.rulesVersion);
+    assert(p.rulesVersion<=contract.rulesVersion||p.availability==='server-opt-in','Future rules must be explicitly opt-in');
+    const inputs=await rtpInputs(root,gameId,Number(version));
+    const proof=JSON.parse(await readFile(resolve(root,inputs.policy.proof),'utf8').catch(()=>{throw Error('Missing versioned RTP qualification for '+gameId+' rules '+version);}));
+    validateRtpProof(gameId,inputs,proof);verified++;
   }
   return { verified, legacyNotQualified: baseline.games.length,...(serverOnly.length?{serverQualifiedClientPending:serverOnly}:{}) };
 }

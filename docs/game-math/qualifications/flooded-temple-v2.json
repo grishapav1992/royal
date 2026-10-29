@@ -1,0 +1,218 @@
+{
+  "schemaVersion": 1,
+  "gameId": "studio-flooded-temple",
+  "rulesVersion": 2,
+  "progressVersion": 2,
+  "startedAt": "2026-10-29T17:55:20.114Z",
+  "completedAt": "2026-10-29T17:58:38.091Z",
+  "sourceHashes": {
+    "src/shared/floodedTempleCascadeData.json": "5aa05b4cca0476f48d84e70402204ec9029949a8da3c8d2c7a95b6a5456fc07a",
+    "src/shared/floodedTempleCascadeMath.ts": "c798712865f7a016fc09e3b2c5962f826a6a7b7bc02eac4f721e4abb7e51957e",
+    "src/shared/floodedTempleCascade.ts": "018ca50c596551323f27cc3bcc29f54057c4612b96331553ccc5b99ee9bfefa6",
+    "server/games/floodedTempleCascade.ts": "8d7814d13dd390a72b9e64650e0da025bedc484e2c53f010c8966b8d5b7abe94",
+    "scripts/game-math/rtp-temple-cascade-model.mjs": "b08395ab6ca615fa81190d84371d9941b9c51705c68540bfdf2d7ba4da22e399",
+    "src/shared/casinoExpansion.ts": "4343630800082a5afd35be5f7c897027b1405e99436be22a1794a47659a0277f",
+    "server/demoExpansion.ts": "bd41ea36326075937f4e30045063e388cfde6198d786c19514e7651a87920d0b",
+    "server/demoWalletRoutes.ts": "ec8bb51443f1fa60f7dd27d0d44a274249c8eb5cc43b74bd77d5717831eeb47f",
+    "server/gameWalletRoutes.ts": "809272d37f542746a949ce3243f20a2d5c3f94d71352156c03fb4e2884fe9b11",
+    "server/finance/nile-game-runtime.ts": "a2db02a080d20f9e0599dae4180b80ef3d35f48bfd1bfceeb5b9da010f757648",
+    "src/wallet/ExpansionClient.ts": "1f3edd2e062684e852da8644861ab215244b581601adc244deec387738615aae",
+    "scripts/game-math/rtp-temple-cascade-worker.mjs": "fe4f9c82b9c14b00f0b3035351efa42ea27cc56e935aae5699e4d99ef8780899",
+    "scripts/game-math/rtp-temple-cascade.mjs": "03c60d9badf327f29666b5f6c582f3603229942ef5be5769b19521a1c06b44c2"
+  },
+  "policySha256": "7f1e171616efaf1f8a0815aabbf83cf19c6fc652fea69831582d3c45b4093b2b",
+  "serverReplayChecks": 768,
+  "method": "temple-cascade-independent-monte-carlo-v2",
+  "analysis": {
+    "lineStakeDivisor": 20,
+    "payoutPointCap": 10000,
+    "maximumPayoutX": 500,
+    "integerScalingForAllStakes": true,
+    "distinctPaidRounds": 400000000,
+    "stakeRowsShareHomogeneousPaths": true,
+    "estimator": "independent-row-major-complete-round",
+    "exactRtp": false
+  },
+  "results": [
+    {
+      "choice": "normal",
+      "stakeUnits": 1000,
+      "samples": 400000000,
+      "paidRounds": 400000000,
+      "cost": 400000000,
+      "reward": 383995060.5,
+      "rewardSquared": 17708762719.375,
+      "rtp": 0.95998765125,
+      "interval95": [
+        0.9593424097640131,
+        0.9606328927359868
+      ]
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 2000,
+      "samples": 400000000,
+      "paidRounds": 400000000,
+      "cost": 400000000,
+      "reward": 383995060.5,
+      "rewardSquared": 17708762719.375,
+      "rtp": 0.95998765125,
+      "interval95": [
+        0.9593424097640131,
+        0.9606328927359868
+      ]
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 5000,
+      "samples": 400000000,
+      "paidRounds": 400000000,
+      "cost": 400000000,
+      "reward": 383995060.5,
+      "rewardSquared": 17708762719.375,
+      "rtp": 0.95998765125,
+      "interval95": [
+        0.9593424097640131,
+        0.9606328927359868
+      ]
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 10000,
+      "samples": 400000000,
+      "paidRounds": 400000000,
+      "cost": 400000000,
+      "reward": 383995060.5,
+      "rewardSquared": 17708762719.375,
+      "rtp": 0.95998765125,
+      "interval95": [
+        0.9593424097640131,
+        0.9606328927359868
+      ]
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 20000,
+      "samples": 400000000,
+      "paidRounds": 400000000,
+      "cost": 400000000,
+      "reward": 383995060.5,
+      "rewardSquared": 17708762719.375,
+      "rtp": 0.95998765125,
+      "interval95": [
+        0.9593424097640131,
+        0.9606328927359868
+      ]
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 50000,
+      "samples": 400000000,
+      "paidRounds": 400000000,
+      "cost": 400000000,
+      "reward": 383995060.5,
+      "rewardSquared": 17708762719.375,
+      "rtp": 0.95998765125,
+      "interval95": [
+        0.9593424097640131,
+        0.9606328927359868
+      ]
+    }
+  ],
+  "streams": [
+    {
+      "seed": 2026102801,
+      "paidRounds": 200000000,
+      "reward": 191944611.5,
+      "rewardSquared": 8852207518.5,
+      "rtp": 0.9597230575,
+      "interval95": [
+        0.9588106572953594,
+        0.9606354577046405
+      ],
+      "falls": 297427729,
+      "freeSpins": 12103862,
+      "bonusRounds": 1001174,
+      "capped": 4242,
+      "positive": 62420756,
+      "aboveStake": 25583661,
+      "maxFalls": 155
+    },
+    {
+      "seed": 2026102807,
+      "paidRounds": 200000000,
+      "reward": 192050449,
+      "rewardSquared": 8856555200.875,
+      "rtp": 0.960252245,
+      "interval95": [
+        0.959339626695888,
+        0.9611648633041119
+      ],
+      "falls": 297511704,
+      "freeSpins": 12154757,
+      "bonusRounds": 1004599,
+      "capped": 4180,
+      "positive": 62430665,
+      "aboveStake": 25593249,
+      "maxFalls": 188
+    }
+  ],
+  "serverReplay": {
+    "coverage": [
+      {
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "forcedBonusRounds": 2,
+        "forcedCapRounds": 2,
+        "falls": 199,
+        "freeSpins": 20,
+        "sha256": "350159576831726baac349c7ae57b9ea86450bf56b9d9f4655773f374f6e13d4"
+      },
+      {
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "forcedBonusRounds": 2,
+        "forcedCapRounds": 2,
+        "falls": 219,
+        "freeSpins": 30,
+        "sha256": "f7ae5d4389540be4d82515a26fa2cbcfb5d2008ac7f17a603b300beae76da051"
+      },
+      {
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "forcedBonusRounds": 2,
+        "forcedCapRounds": 2,
+        "falls": 206,
+        "freeSpins": 20,
+        "sha256": "8440d69ceba3d18921cc0c5ac2187f31bbe3be23e6d49fde25e9ee362445ce9b"
+      },
+      {
+        "stakeUnits": 10000,
+        "paidRounds": 128,
+        "forcedBonusRounds": 2,
+        "forcedCapRounds": 2,
+        "falls": 211,
+        "freeSpins": 20,
+        "sha256": "1f6fae85287e26bfb285a0fe08f7eb46e61958b172056014201dc6434ab31609"
+      },
+      {
+        "stakeUnits": 20000,
+        "paidRounds": 128,
+        "forcedBonusRounds": 2,
+        "forcedCapRounds": 2,
+        "falls": 226,
+        "freeSpins": 20,
+        "sha256": "7e08c97a46ee6dd008740dce98018f7fcf1d10fe4262128e1bd9c2c5910ffe0e"
+      },
+      {
+        "stakeUnits": 50000,
+        "paidRounds": 128,
+        "forcedBonusRounds": 2,
+        "forcedCapRounds": 2,
+        "falls": 213,
+        "freeSpins": 20,
+        "sha256": "3c694bfe5cdb64b3e0f08d6738f29490f621d64300490ba805f90b421189cdf9"
+      }
+    ]
+  }
+}

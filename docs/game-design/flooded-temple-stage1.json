@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Deterministic rule examples only. No production probabilities, wallet or RTP qualification.",
+  "roomLabels": "ABCDEFGHIJKLMNOPQRST",
+  "base": {
+    "id": "lever-opens-relic",
+    "cols": 5,
+    "rows": 4,
+    "entry": 5,
+    "edges": [
+      { "a": 5, "b": 6, "kind": "open" },
+      { "a": 6, "b": 11, "kind": "open" },
+      { "a": 11, "b": 12, "kind": "open" },
+      { "a": 6, "b": 7, "kind": "gate" },
+      { "a": 7, "b": 8, "kind": "open" },
+      { "a": 8, "b": 9, "kind": "open" },
+      { "a": 12, "b": 13, "kind": "gap" }
+    ],
+    "treasures": { "7": 20, "9": 200, "12": 50, "13": 2500 },
+    "levers": { "11": "6:7" },
+    "relics": [8],
+    "expected": {
+      "visited": [5, 6, 7, 8, 9, 11, 12],
+      "scoreHundredths": 270,
+      "bonus": true
+    }
+  },
+  "bonus": {
+    "id": "six-steps-one-rope",
+    "cols": 5,
+    "rows": 4,
+    "entry": 5,
+    "steps": 6,
+    "ropes": 1,
+    "edges": [
+      { "a": 5, "b": 6, "kind": "open" },
+      { "a": 6, "b": 7, "kind": "open" },
+      { "a": 6, "b": 11, "kind": "open" },
+      { "a": 7, "b": 8, "kind": "gate" },
+      { "a": 11, "b": 12, "kind": "gap" },
+      { "a": 12, "b": 13, "kind": "open" },
+      { "a": 13, "b": 8, "kind": "open" },
+      { "a": 8, "b": 9, "kind": "open" }
+    ],
+    "treasures": { "7": 20, "9": 200, "12": 50, "13": 100 },
+    "levers": { "11": "7:8" },
+    "relics": [],
+    "examples": [
+      { "id": "small-chest-first", "path": [6, 7, 6, 11, 12, 13], "ropeAt": 5, "scoreHundredths": 170 },
+      { "id": "gate-without-rope", "path": [6, 11, 6, 7, 8, 9], "ropeAt": null, "scoreHundredths": 220 },
+      { "id": "bridge-to-treasure", "path": [6, 11, 12, 13, 8, 9], "ropeAt": 3, "scoreHundredths": 350 }
+    ]
+  }
+}

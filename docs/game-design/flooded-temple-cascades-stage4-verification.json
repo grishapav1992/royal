@@ -1,0 +1,415 @@
+{
+  "date": "2026-10-29",
+  "gameId": "studio-flooded-temple",
+  "stage": 4,
+  "status": "animation-and-audio-complete",
+  "branch": "codex/flooded-temple",
+  "verifiedSourceCommit": "eb7b42d20ff74e630d8ae376cd35aeaf818a7285",
+  "integrationBaseline": "89a974b3ea735fd5f279c51a30564ea4a9ab298d",
+  "productionChangedByThisTask": false,
+  "module": {
+    "version": "0.9.0-9323e3cab418",
+    "api": 1,
+    "rules": 2,
+    "progress": 2,
+    "sourceSha256": "9323e3cab418edf7cf94cec1e5dc0bcdddc9fe83d30a559daeaa99affe80f628",
+    "manifestSha256": "b3b97d794caf364576040cc88cd0ff5738b9dfcb188951f40b8beed7b2db1f94",
+    "files": 41
+  },
+  "changes": {
+    "confirmedPhases": [
+      "drop",
+      "evaluate",
+      "break",
+      "bonus",
+      "base-return",
+      "outcome"
+    ],
+    "stableSurvivorGravity": true,
+    "exactIntegerCounter": true,
+    "maximumBoardEffectsNodes": 60,
+    "explorerKeyPoses": "single visible silhouette with 2D mesh motion; no blend between distinct body silhouettes",
+    "heroineReactions": [
+      "watch-fall",
+      "steady",
+      "follow-stones",
+      "shield",
+      "treasure",
+      "follow-chain",
+      "relic",
+      "back-to-temple",
+      "reflect",
+      "success",
+      "triumph"
+    ],
+    "fullPaidRoundClassification": true,
+    "recordedMaterialCues": 7,
+    "sourceLicenses": "existing CC0 recordings only",
+    "music": "Unchanged full Memories Of Stone master by Scott Buckley, CC BY 4.0",
+    "hostAudioContextAndOutput": true,
+    "quickAndReducedModes": true,
+    "quietRecovery": true,
+    "probabilitiesOrPaytableChanged": false
+  },
+  "verification": {
+    "temple": {
+      "command": "npm run test:temple",
+      "passed": 52,
+      "includesFreshHttpAndNativeFinancialJournal": true
+    },
+    "forestHeartServer": {
+      "command": "npm run test:forest-heart-server",
+      "passed": 8
+    },
+    "caribbeanWalletAndNative": {
+      "passed": 9
+    },
+    "rtpGate": {
+      "command": "npm run test:rtp-gate",
+      "passed": 33
+    },
+    "registry": {
+      "verified": 16,
+      "legacyNotQualified": 114
+    },
+    "independentModules": {
+      "passed": 7,
+      "catalogueIdentities": 120
+    },
+    "ui": {
+      "command": "npm run test:temple:cascades:ui",
+      "passed": 16,
+      "fullFinalRunPassed": true,
+      "fixtureSizes": [
+        [
+          1440,
+          1000
+        ],
+        [
+          1000,
+          760
+        ],
+        [
+          768,
+          1024
+        ],
+        [
+          390,
+          844
+        ],
+        [
+          360,
+          740
+        ]
+      ],
+      "realHostSizes": [
+        [
+          1440,
+          1000
+        ],
+        [
+          1000,
+          1100
+        ],
+        [
+          768,
+          1024
+        ],
+        [
+          390,
+          844
+        ]
+      ],
+      "connectedChatVerified": true,
+      "userMessagesSent": false,
+      "scenarios": [
+        "confirmed stone movement, winning union, counter and recorded accents",
+        "mute and zero volume cancel voices",
+        "skip without another operation",
+        "reduced motion and mid-animation change",
+        "pause and simulated hidden document",
+        "20 free spins, two operations, saved base return",
+        "RU/EN, keyboard and responsive framing",
+        "cap 500x and quiet restore",
+        "lost continuation with same UUID",
+        "lost start survives reload",
+        "partial return, zero balance and account change",
+        "ordinary frames and quick result agree",
+        "close accepted bonus and resume without new paid start",
+        "ten exact paid autoplay starts, stop and pause",
+        "finish accepted legacy v1 before a new v2",
+        "real Royal host, chat, controls and close/reopen"
+      ]
+    },
+    "presentationRegression": {
+      "preparedRounds": 2048,
+      "confirmedFalls": 2967,
+      "bonusAwards": 7,
+      "baseReturns": 7,
+      "operationBoundaries": 4,
+      "financialRtpEstimate": false
+    },
+    "ordinaryTiming": {
+      "accents": 4,
+      "minVisualSkewMs": 2.2999999970197678,
+      "maxVisualSkewMs": 31.299999997019768,
+      "clockMethods": [
+        "latency-estimate",
+        "output-timestamp"
+      ],
+      "engineeringTestLimitMs": 120,
+      "physicalListeningSyncCertified": false
+    },
+    "bonusTiming": {
+      "accents": 40,
+      "minVisualSkewMs": 0.7966666696465836,
+      "maxVisualSkewMs": 26.042999999997846,
+      "clockMethods": [
+        "output-timestamp"
+      ],
+      "engineeringTestLimitMs": 120,
+      "physicalListeningSyncCertified": false,
+      "operations": 2,
+      "freeSpins": 20,
+      "phaseEvents": 75,
+      "maxNodes": 16,
+      "played": {
+        "cascadeLandB": 11,
+        "cascadeBreakB": 4,
+        "cascadeLandC": 10,
+        "cascadeBonus": 1,
+        "cascadeLandA": 10,
+        "cascadeBreakA": 6,
+        "cascadeReturn": 1,
+        "big": 1
+      }
+    },
+    "build": {
+      "format": 1,
+      "startedAt": "2026-10-29T05:57:10.28Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 3907
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 26415
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 32256
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 8380
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 82
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 29
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 31
+        }
+      ],
+      "passed": true,
+      "durationMs": 71101
+    }
+  },
+  "mathematicalEvidence": {
+    "refreshedBecause": "Main added Forest Heart to the shared dispatcher, client and financial wrapper source hashes",
+    "probabilitiesChanged": false,
+    "proofComparisons": [
+      {
+        "name": "flooded-temple-v1",
+        "reference": "300f17b",
+        "resultsUnchanged": true,
+        "analysisUnchanged": true,
+        "replayUnchanged": true,
+        "qualificationCompletedAt": "2026-10-29T05:49:35.262Z"
+      },
+      {
+        "name": "flooded-temple-v2",
+        "reference": "300f17b",
+        "resultsUnchanged": true,
+        "analysisUnchanged": true,
+        "replayUnchanged": true,
+        "qualificationCompletedAt": "2026-10-29T05:51:41.455Z"
+      },
+      {
+        "name": "forest-heart-v1",
+        "reference": "origin/main",
+        "resultsUnchanged": true,
+        "analysisUnchanged": true,
+        "replayUnchanged": true,
+        "qualificationCompletedAt": "2026-10-29T05:49:37.866Z"
+      },
+      {
+        "name": "caribbean-treasures-v1",
+        "reference": "300f17b",
+        "resultsUnchanged": true,
+        "analysisUnchanged": true,
+        "replayUnchanged": true,
+        "qualificationCompletedAt": "2026-10-29T05:49:32.516Z"
+      }
+    ],
+    "templeCascade": {
+      "distinctCompletePaidRounds": 400000000,
+      "seeds": [
+        2026102801,
+        2026102807
+      ],
+      "estimate": 0.95998765125,
+      "interval95": [
+        0.9593424097640131,
+        0.9606328927359868
+      ],
+      "exactAnalyticalRtp": false
+    },
+    "review": "Capability parameters remain Forest Heart then Temple; headers and NativeCommand fields are separate. Existing Caribbean numerical paths and both Temple rule versions retain their original results. Combined-source fingerprints were reviewed before normal requalification. Frozen legacy baseline was not expanded."
+  },
+  "limits": {
+    "listeningPreferenceStudy": false,
+    "physicalPhoneSpeakerListening": false,
+    "wiredHeadphoneListening": false,
+    "bluetoothListening": false,
+    "universalPerceptionThresholdClaim": false,
+    "researchReference": "docs/game-feedback.md",
+    "artisticTimings": "games/flooded-temple/cascade-feedback.md"
+  },
+  "preview": {
+    "url": "http://localhost:5227/tests/fixtures/temple-preview.html?lang=ru&version=0.9.0",
+    "terminalSession": 27096,
+    "isolatedDemoDatabase": true,
+    "acceptedRoundsPreserved": true,
+    "olderRoomPreview": {
+      "port": 5226,
+      "terminalSession": 7918
+    },
+    "commonWalletTestsUseFreshMergedSource": true
+  },
+  "storage": {
+    "taskScope": "artifacts/work/temple-cascades-stage4/",
+    "freeBytesAtStageStart": 302957445120,
+    "removedBytes": 0,
+    "removedFolders": [],
+    "removedArchiveBytes": 0,
+    "physicalSpaceReclaimedClaim": false,
+    "cleanupStatus": "automatic approval review rejected cleanup before execution",
+    "temporaryBytes": 191000,
+    "temporaryFiles": [
+      {
+        "path": "artifacts/work/temple-cascades-stage4/bonus-timing.json",
+        "bytes": 23318
+      },
+      {
+        "path": "artifacts/work/temple-cascades-stage4/geometry.json",
+        "bytes": 14820
+      },
+      {
+        "path": "artifacts/work/temple-cascades-stage4/OWNER.md",
+        "bytes": 415
+      },
+      {
+        "path": "artifacts/work/temple-cascades-stage4/patch-ui.mjs",
+        "bytes": 1370
+      },
+      {
+        "path": "artifacts/work/temple-cascades-stage4/reconcile-calls.mjs",
+        "bytes": 703
+      },
+      {
+        "path": "artifacts/work/temple-cascades-stage4/reconcile.mjs",
+        "bytes": 5485
+      },
+      {
+        "path": "artifacts/work/temple-cascades-stage4/report.mjs",
+        "bytes": 7644
+      },
+      {
+        "path": "artifacts/work/temple-cascades-stage4/studio-caribbean-treasures.json",
+        "bytes": 45380
+      },
+      {
+        "path": "artifacts/work/temple-cascades-stage4/studio-flooded-temple-rules-1.json",
+        "bytes": 27775
+      },
+      {
+        "path": "artifacts/work/temple-cascades-stage4/studio-flooded-temple.json",
+        "bytes": 6677
+      },
+      {
+        "path": "artifacts/work/temple-cascades-stage4/studio-forest-heart.json",
+        "bytes": 54015
+      },
+      {
+        "path": "artifacts/work/temple-cascades-stage4/timing.json",
+        "bytes": 3353
+      },
+      {
+        "path": "artifacts/work/temple-cascades-stage4/browser\\.last-run.json",
+        "bytes": 45
+      }
+    ],
+    "obsoleteTaskOwnedPackages": [
+      {
+        "path": "module-dist/studio-flooded-temple/versions/0.9.0-c77fe3f44f0c",
+        "bytes": 20857674
+      }
+    ],
+    "activeExceptions": [
+      {
+        "path": "module-dist/studio-flooded-temple/versions/0.9.0-9323e3cab418",
+        "cleanupCondition": "Current local package, keep until replaced and no review session uses it"
+      },
+      {
+        "path": "module-dist/studio-flooded-temple/versions/0.8.0-2abdb01f87f5",
+        "cleanupCondition": "Previously opened cascade review tabs; preserve until all old tabs close"
+      },
+      {
+        "path": "module-dist/studio-flooded-temple/versions/0.7.1-af8d1ba9080d",
+        "cleanupCondition": "Existing room preview and accepted v1 demo rounds at 5226"
+      },
+      {
+        "path": "current managed checkout, previews and their temporary PostgreSQL databases",
+        "cleanupCondition": "Multi-stage feature and accepted-round review remain active; preserve source before ending them"
+      },
+      {
+        "path": "previous denied cleanup scopes and other games",
+        "cleanupCondition": "Not owned by stage 4; no deletion attempted"
+      }
+    ],
+    "freeBytesBeforeCleanup": 300220776448,
+    "preservationCommit": "eb7b42d20ff74e630d8ae376cd35aeaf818a7285",
+    "cleanupTargets": [
+      {
+        "path": "artifacts/work/temple-cascades-stage4",
+        "files": 13,
+        "bytes": 191000
+      },
+      {
+        "path": "module-dist/studio-flooded-temple/versions/0.9.0-c77fe3f44f0c",
+        "files": 42,
+        "bytes": 20857674
+      }
+    ],
+    "freeBytesAfterCleanupAttempt": 297358303232,
+    "rejection": "Automatic approval review rejected removing the owned stage 4 temporary directory and obsolete task-owned 0.9.0-c77fe3f44f0c package before execution: blocked by policy. No detailed reason supplied. No files removed and no retry attempted.",
+    "obsoleteBytesRetained": 21048674,
+    "retryAttempted": false,
+    "freeSpaceChangeAttribution": "Cleanup did not execute. Do not attribute the change in free space to this task."
+  }
+}

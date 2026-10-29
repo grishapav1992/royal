@@ -1,0 +1,1048 @@
+{
+  "schemaVersion": 1,
+  "gameId": "studio-flooded-temple",
+  "rulesVersion": 1,
+  "progressVersion": 1,
+  "startedAt": "2026-10-29T17:58:38.105Z",
+  "completedAt": "2026-10-29T17:59:01.068Z",
+  "sourceHashes": {
+    "src/shared/floodedTempleData.json": "0033975e51c12770b84dbe04146ad9f474276e783ee7c2ed2c6179ad3ee437dc",
+    "src/shared/floodedTempleMath.ts": "b05f3bc3c01616fba9455da9ae75ac5cf7c9d559a2b591cdc1d1e37f16f58f9e",
+    "src/shared/floodedTemple.ts": "1c1369bd31afb101871e37b45373fbdaee0db09a631e4e4a242c24b396becb5b",
+    "server/games/floodedTemple.ts": "51652a2ae8207feec1153c1e18522e4ebcd8f86175f2edb8931ae46af981ed04",
+    "scripts/game-math/rtp-temple-model.mjs": "1c48ebf9dfb0ff3c82824d4df27acc24b3f1177bb7c65f8f7b086bea638c8eca",
+    "src/shared/casinoExpansion.ts": "4343630800082a5afd35be5f7c897027b1405e99436be22a1794a47659a0277f",
+    "server/demoExpansion.ts": "bd41ea36326075937f4e30045063e388cfde6198d786c19514e7651a87920d0b",
+    "server/demoWalletRoutes.ts": "ec8bb51443f1fa60f7dd27d0d44a274249c8eb5cc43b74bd77d5717831eeb47f",
+    "server/gameWalletRoutes.ts": "809272d37f542746a949ce3243f20a2d5c3f94d71352156c03fb4e2884fe9b11",
+    "server/finance/nile-game-runtime.ts": "a2db02a080d20f9e0599dae4180b80ef3d35f48bfd1bfceeb5b9da010f757648",
+    "scripts/game-math/rtp-temple.mjs": "2114ed210588aff04288cfac84c4d57ba83a7f77130007be54babd917679061f"
+  },
+  "policySha256": "3c754fd720dad6f800640bc171aea303ac0b034d7fc3889b7ff300153f28d03e",
+  "serverReplayChecks": 22452,
+  "method": "exhaustive-temple-decisions",
+  "analysis": {
+    "baseCases": 256,
+    "bonusCases": 16,
+    "decisionStates": 1032,
+    "decisionTransitions": 1814,
+    "baseRtp": {
+      "numerator": "9",
+      "denominator": "10"
+    },
+    "bonusProbability": {
+      "numerator": "1",
+      "denominator": "50"
+    },
+    "optimalBonusMean": {
+      "numerator": "3",
+      "denominator": "1"
+    },
+    "upperBoundForEveryStrategy": "24/25",
+    "lowerBoundForEveryStrategy": "9/10",
+    "actualMaximumHundredths": 23000,
+    "conservativeMaxRoundHundredths": 23555,
+    "capHundredths": 50000,
+    "rounding": "per-chest floor; every allowed stake divisible by 100",
+    "optimalDistribution": {
+      "fullRoundCases": 2176,
+      "positiveReturn": {
+        "numerator": "103",
+        "denominator": "250"
+      },
+      "netProfit": {
+        "numerator": "65557379",
+        "denominator": "195840000"
+      },
+      "partialReturn": {
+        "numerator": "15128701",
+        "denominator": "195840000"
+      },
+      "breakEven": {
+        "numerator": "0",
+        "denominator": "1"
+      },
+      "secondMoment": {
+        "numerator": "3652887868459",
+        "denominator": "148512000000"
+      },
+      "variance": {
+        "numerator": "3516019209259",
+        "denominator": "148512000000"
+      },
+      "standardDeviation": 4.8656945961,
+      "maximumProbability": {
+        "numerator": "49",
+        "denominator": "1600000"
+      }
+    }
+  },
+  "results": [
+    {
+      "choice": "optimal",
+      "stakeUnits": 1000,
+      "rtpFraction": {
+        "numerator": "24",
+        "denominator": "25"
+      },
+      "rtp": 0.96,
+      "rtpBounds": [
+        0.96,
+        0.96
+      ],
+      "conditionalBonusFraction": {
+        "numerator": "3",
+        "denominator": "1"
+      }
+    },
+    {
+      "choice": "optimal",
+      "stakeUnits": 2000,
+      "rtpFraction": {
+        "numerator": "24",
+        "denominator": "25"
+      },
+      "rtp": 0.96,
+      "rtpBounds": [
+        0.96,
+        0.96
+      ],
+      "conditionalBonusFraction": {
+        "numerator": "3",
+        "denominator": "1"
+      }
+    },
+    {
+      "choice": "optimal",
+      "stakeUnits": 5000,
+      "rtpFraction": {
+        "numerator": "24",
+        "denominator": "25"
+      },
+      "rtp": 0.96,
+      "rtpBounds": [
+        0.96,
+        0.96
+      ],
+      "conditionalBonusFraction": {
+        "numerator": "3",
+        "denominator": "1"
+      }
+    },
+    {
+      "choice": "optimal",
+      "stakeUnits": 10000,
+      "rtpFraction": {
+        "numerator": "24",
+        "denominator": "25"
+      },
+      "rtp": 0.96,
+      "rtpBounds": [
+        0.96,
+        0.96
+      ],
+      "conditionalBonusFraction": {
+        "numerator": "3",
+        "denominator": "1"
+      }
+    },
+    {
+      "choice": "optimal",
+      "stakeUnits": 20000,
+      "rtpFraction": {
+        "numerator": "24",
+        "denominator": "25"
+      },
+      "rtp": 0.96,
+      "rtpBounds": [
+        0.96,
+        0.96
+      ],
+      "conditionalBonusFraction": {
+        "numerator": "3",
+        "denominator": "1"
+      }
+    },
+    {
+      "choice": "optimal",
+      "stakeUnits": 50000,
+      "rtpFraction": {
+        "numerator": "24",
+        "denominator": "25"
+      },
+      "rtp": 0.96,
+      "rtpBounds": [
+        0.96,
+        0.96
+      ],
+      "conditionalBonusFraction": {
+        "numerator": "3",
+        "denominator": "1"
+      }
+    },
+    {
+      "choice": "nearest-chest",
+      "stakeUnits": 1000,
+      "rtpFraction": {
+        "numerator": "2147",
+        "denominator": "2275"
+      },
+      "rtp": 0.9437362637362637,
+      "rtpBounds": [
+        0.9437362637362637,
+        0.9437362637362637
+      ],
+      "conditionalBonusFraction": {
+        "numerator": "199",
+        "denominator": "91"
+      }
+    },
+    {
+      "choice": "nearest-chest",
+      "stakeUnits": 2000,
+      "rtpFraction": {
+        "numerator": "2147",
+        "denominator": "2275"
+      },
+      "rtp": 0.9437362637362637,
+      "rtpBounds": [
+        0.9437362637362637,
+        0.9437362637362637
+      ],
+      "conditionalBonusFraction": {
+        "numerator": "199",
+        "denominator": "91"
+      }
+    },
+    {
+      "choice": "nearest-chest",
+      "stakeUnits": 5000,
+      "rtpFraction": {
+        "numerator": "2147",
+        "denominator": "2275"
+      },
+      "rtp": 0.9437362637362637,
+      "rtpBounds": [
+        0.9437362637362637,
+        0.9437362637362637
+      ],
+      "conditionalBonusFraction": {
+        "numerator": "199",
+        "denominator": "91"
+      }
+    },
+    {
+      "choice": "nearest-chest",
+      "stakeUnits": 10000,
+      "rtpFraction": {
+        "numerator": "2147",
+        "denominator": "2275"
+      },
+      "rtp": 0.9437362637362637,
+      "rtpBounds": [
+        0.9437362637362637,
+        0.9437362637362637
+      ],
+      "conditionalBonusFraction": {
+        "numerator": "199",
+        "denominator": "91"
+      }
+    },
+    {
+      "choice": "nearest-chest",
+      "stakeUnits": 20000,
+      "rtpFraction": {
+        "numerator": "2147",
+        "denominator": "2275"
+      },
+      "rtp": 0.9437362637362637,
+      "rtpBounds": [
+        0.9437362637362637,
+        0.9437362637362637
+      ],
+      "conditionalBonusFraction": {
+        "numerator": "199",
+        "denominator": "91"
+      }
+    },
+    {
+      "choice": "nearest-chest",
+      "stakeUnits": 50000,
+      "rtpFraction": {
+        "numerator": "2147",
+        "denominator": "2275"
+      },
+      "rtp": 0.9437362637362637,
+      "rtpBounds": [
+        0.9437362637362637,
+        0.9437362637362637
+      ],
+      "conditionalBonusFraction": {
+        "numerator": "199",
+        "denominator": "91"
+      }
+    },
+    {
+      "choice": "highest-first",
+      "stakeUnits": 1000,
+      "rtpFraction": {
+        "numerator": "2169",
+        "denominator": "2275"
+      },
+      "rtp": 0.9534065934065934,
+      "rtpBounds": [
+        0.9534065934065934,
+        0.9534065934065934
+      ],
+      "conditionalBonusFraction": {
+        "numerator": "243",
+        "denominator": "91"
+      }
+    },
+    {
+      "choice": "highest-first",
+      "stakeUnits": 2000,
+      "rtpFraction": {
+        "numerator": "2169",
+        "denominator": "2275"
+      },
+      "rtp": 0.9534065934065934,
+      "rtpBounds": [
+        0.9534065934065934,
+        0.9534065934065934
+      ],
+      "conditionalBonusFraction": {
+        "numerator": "243",
+        "denominator": "91"
+      }
+    },
+    {
+      "choice": "highest-first",
+      "stakeUnits": 5000,
+      "rtpFraction": {
+        "numerator": "2169",
+        "denominator": "2275"
+      },
+      "rtp": 0.9534065934065934,
+      "rtpBounds": [
+        0.9534065934065934,
+        0.9534065934065934
+      ],
+      "conditionalBonusFraction": {
+        "numerator": "243",
+        "denominator": "91"
+      }
+    },
+    {
+      "choice": "highest-first",
+      "stakeUnits": 10000,
+      "rtpFraction": {
+        "numerator": "2169",
+        "denominator": "2275"
+      },
+      "rtp": 0.9534065934065934,
+      "rtpBounds": [
+        0.9534065934065934,
+        0.9534065934065934
+      ],
+      "conditionalBonusFraction": {
+        "numerator": "243",
+        "denominator": "91"
+      }
+    },
+    {
+      "choice": "highest-first",
+      "stakeUnits": 20000,
+      "rtpFraction": {
+        "numerator": "2169",
+        "denominator": "2275"
+      },
+      "rtp": 0.9534065934065934,
+      "rtpBounds": [
+        0.9534065934065934,
+        0.9534065934065934
+      ],
+      "conditionalBonusFraction": {
+        "numerator": "243",
+        "denominator": "91"
+      }
+    },
+    {
+      "choice": "highest-first",
+      "stakeUnits": 50000,
+      "rtpFraction": {
+        "numerator": "2169",
+        "denominator": "2275"
+      },
+      "rtp": 0.9534065934065934,
+      "rtpBounds": [
+        0.9534065934065934,
+        0.9534065934065934
+      ],
+      "conditionalBonusFraction": {
+        "numerator": "243",
+        "denominator": "91"
+      }
+    },
+    {
+      "choice": "random-walk",
+      "stakeUnits": 1000,
+      "rtpFraction": {
+        "numerator": "42768751",
+        "denominator": "47174400"
+      },
+      "rtp": 0.9066093262447429,
+      "rtpBounds": [
+        0.9066093262447429,
+        0.9066093262447429
+      ],
+      "conditionalBonusFraction": {
+        "numerator": "311791",
+        "denominator": "943488"
+      }
+    },
+    {
+      "choice": "random-walk",
+      "stakeUnits": 2000,
+      "rtpFraction": {
+        "numerator": "42768751",
+        "denominator": "47174400"
+      },
+      "rtp": 0.9066093262447429,
+      "rtpBounds": [
+        0.9066093262447429,
+        0.9066093262447429
+      ],
+      "conditionalBonusFraction": {
+        "numerator": "311791",
+        "denominator": "943488"
+      }
+    },
+    {
+      "choice": "random-walk",
+      "stakeUnits": 5000,
+      "rtpFraction": {
+        "numerator": "42768751",
+        "denominator": "47174400"
+      },
+      "rtp": 0.9066093262447429,
+      "rtpBounds": [
+        0.9066093262447429,
+        0.9066093262447429
+      ],
+      "conditionalBonusFraction": {
+        "numerator": "311791",
+        "denominator": "943488"
+      }
+    },
+    {
+      "choice": "random-walk",
+      "stakeUnits": 10000,
+      "rtpFraction": {
+        "numerator": "42768751",
+        "denominator": "47174400"
+      },
+      "rtp": 0.9066093262447429,
+      "rtpBounds": [
+        0.9066093262447429,
+        0.9066093262447429
+      ],
+      "conditionalBonusFraction": {
+        "numerator": "311791",
+        "denominator": "943488"
+      }
+    },
+    {
+      "choice": "random-walk",
+      "stakeUnits": 20000,
+      "rtpFraction": {
+        "numerator": "42768751",
+        "denominator": "47174400"
+      },
+      "rtp": 0.9066093262447429,
+      "rtpBounds": [
+        0.9066093262447429,
+        0.9066093262447429
+      ],
+      "conditionalBonusFraction": {
+        "numerator": "311791",
+        "denominator": "943488"
+      }
+    },
+    {
+      "choice": "random-walk",
+      "stakeUnits": 50000,
+      "rtpFraction": {
+        "numerator": "42768751",
+        "denominator": "47174400"
+      },
+      "rtp": 0.9066093262447429,
+      "rtpBounds": [
+        0.9066093262447429,
+        0.9066093262447429
+      ],
+      "conditionalBonusFraction": {
+        "numerator": "311791",
+        "denominator": "943488"
+      }
+    },
+    {
+      "choice": "stop",
+      "stakeUnits": 1000,
+      "rtpFraction": {
+        "numerator": "9",
+        "denominator": "10"
+      },
+      "rtp": 0.9,
+      "rtpBounds": [
+        0.9,
+        0.9
+      ],
+      "conditionalBonusFraction": {
+        "numerator": "0",
+        "denominator": "1"
+      }
+    },
+    {
+      "choice": "stop",
+      "stakeUnits": 2000,
+      "rtpFraction": {
+        "numerator": "9",
+        "denominator": "10"
+      },
+      "rtp": 0.9,
+      "rtpBounds": [
+        0.9,
+        0.9
+      ],
+      "conditionalBonusFraction": {
+        "numerator": "0",
+        "denominator": "1"
+      }
+    },
+    {
+      "choice": "stop",
+      "stakeUnits": 5000,
+      "rtpFraction": {
+        "numerator": "9",
+        "denominator": "10"
+      },
+      "rtp": 0.9,
+      "rtpBounds": [
+        0.9,
+        0.9
+      ],
+      "conditionalBonusFraction": {
+        "numerator": "0",
+        "denominator": "1"
+      }
+    },
+    {
+      "choice": "stop",
+      "stakeUnits": 10000,
+      "rtpFraction": {
+        "numerator": "9",
+        "denominator": "10"
+      },
+      "rtp": 0.9,
+      "rtpBounds": [
+        0.9,
+        0.9
+      ],
+      "conditionalBonusFraction": {
+        "numerator": "0",
+        "denominator": "1"
+      }
+    },
+    {
+      "choice": "stop",
+      "stakeUnits": 20000,
+      "rtpFraction": {
+        "numerator": "9",
+        "denominator": "10"
+      },
+      "rtp": 0.9,
+      "rtpBounds": [
+        0.9,
+        0.9
+      ],
+      "conditionalBonusFraction": {
+        "numerator": "0",
+        "denominator": "1"
+      }
+    },
+    {
+      "choice": "stop",
+      "stakeUnits": 50000,
+      "rtpFraction": {
+        "numerator": "9",
+        "denominator": "10"
+      },
+      "rtp": 0.9,
+      "rtpBounds": [
+        0.9,
+        0.9
+      ],
+      "conditionalBonusFraction": {
+        "numerator": "0",
+        "denominator": "1"
+      }
+    }
+  ],
+  "serverReplay": {
+    "coverage": [
+      {
+        "stakeUnits": 1000,
+        "checks": 3102,
+        "sha256": "3f0fc4833486dc746e52f52cc5d1167bc52fc70d7d827045737737cfc782cf43"
+      },
+      {
+        "stakeUnits": 2000,
+        "checks": 3102,
+        "sha256": "28e963fa483ef77d96b6f7fdad50f395af395e34e13ce1412dff4b2a1d764b3d"
+      },
+      {
+        "stakeUnits": 5000,
+        "checks": 3102,
+        "sha256": "b0782e67d40fb8f3f7a8467d7586909b9ab3d6ef5dfbcf713f769844d8bb8d72"
+      },
+      {
+        "stakeUnits": 10000,
+        "checks": 3102,
+        "sha256": "c75ae9e984f118dbad3f190bc1ea23ed3b79366413f5ea5cccfeddcabfed847d"
+      },
+      {
+        "stakeUnits": 20000,
+        "checks": 3102,
+        "sha256": "a7b3d8dc87df10079545f68f630152856f1872596241b303ae894590a1c408c7"
+      },
+      {
+        "stakeUnits": 50000,
+        "checks": 3102,
+        "sha256": "f489d233989ada3854b97785979414691a5489a4d8889d2037512c0ea3b00465"
+      }
+    ],
+    "streams": [
+      {
+        "seed": 2026102601,
+        "stakeUnits": 1000,
+        "choice": "optimal",
+        "paidRounds": 64,
+        "sha256": "c41b9bb9ee280c9e2e5f3f8919db1ccf4a69f7d6c4c08d9c3299500d7f41669d"
+      },
+      {
+        "seed": 2026102601,
+        "stakeUnits": 1000,
+        "choice": "nearest-chest",
+        "paidRounds": 64,
+        "sha256": "4f8eefd92f22b1007017fde855dc99e13308c92a429c59c8d98b46ef6400bb3d"
+      },
+      {
+        "seed": 2026102601,
+        "stakeUnits": 1000,
+        "choice": "highest-first",
+        "paidRounds": 64,
+        "sha256": "890df1b95fd195c170bcb2056eaf4478db97dfc29923e43aad835e4c335ed5ab"
+      },
+      {
+        "seed": 2026102601,
+        "stakeUnits": 1000,
+        "choice": "random-walk",
+        "paidRounds": 64,
+        "sha256": "762088d3e3605a965adefc650987094d2e19203f46030f7c36502b34eef24351"
+      },
+      {
+        "seed": 2026102601,
+        "stakeUnits": 1000,
+        "choice": "stop",
+        "paidRounds": 64,
+        "sha256": "1630c2265867c0aa3b74db62e5a2476f90f97f711055d383003799062c9b290b"
+      },
+      {
+        "seed": 2026102601,
+        "stakeUnits": 2000,
+        "choice": "optimal",
+        "paidRounds": 64,
+        "sha256": "2a88f54faeec4e5be2de5a9474e2949aa7116b4a7bf7e5f1a2c9d75bb464dd14"
+      },
+      {
+        "seed": 2026102601,
+        "stakeUnits": 2000,
+        "choice": "nearest-chest",
+        "paidRounds": 64,
+        "sha256": "9728ddf94c4e2448354d74318d88285c722491c06965bc543bd3c385098b5edd"
+      },
+      {
+        "seed": 2026102601,
+        "stakeUnits": 2000,
+        "choice": "highest-first",
+        "paidRounds": 64,
+        "sha256": "4e7a25de8e2b07408399dcb94408fc79891e810fd939bf870b65012234c93181"
+      },
+      {
+        "seed": 2026102601,
+        "stakeUnits": 2000,
+        "choice": "random-walk",
+        "paidRounds": 64,
+        "sha256": "783f631c7a5746e324b0608908b30e5f75fc4826d76c21e03cb82cfe225f5142"
+      },
+      {
+        "seed": 2026102601,
+        "stakeUnits": 2000,
+        "choice": "stop",
+        "paidRounds": 64,
+        "sha256": "23484aa9bfb521f244b4545be23697c6156c95d0ab5c1b88b161fe3a3d4ad210"
+      },
+      {
+        "seed": 2026102601,
+        "stakeUnits": 5000,
+        "choice": "optimal",
+        "paidRounds": 64,
+        "sha256": "0c42e750e8f736ef4f3823b908ec5622c6820924b34b64a86ee1ac33cea4b698"
+      },
+      {
+        "seed": 2026102601,
+        "stakeUnits": 5000,
+        "choice": "nearest-chest",
+        "paidRounds": 64,
+        "sha256": "e72b16d164c3c69896b41fa97c04ca8e2e0a19bf519918453d585c7581317afb"
+      },
+      {
+        "seed": 2026102601,
+        "stakeUnits": 5000,
+        "choice": "highest-first",
+        "paidRounds": 64,
+        "sha256": "c0f2c5150b807a57fe32c6da4bb7034cc073319ce7e0a8b0e8816a120efd8571"
+      },
+      {
+        "seed": 2026102601,
+        "stakeUnits": 5000,
+        "choice": "random-walk",
+        "paidRounds": 64,
+        "sha256": "7d59d6a25ac150ba88cc322c69f2c8e501ab75d8a4a2080e11c61b9594e69896"
+      },
+      {
+        "seed": 2026102601,
+        "stakeUnits": 5000,
+        "choice": "stop",
+        "paidRounds": 64,
+        "sha256": "480bd7b1179968583cf78c91a13e479b321c7fecee390af7f6aa80816ef72750"
+      },
+      {
+        "seed": 2026102601,
+        "stakeUnits": 10000,
+        "choice": "optimal",
+        "paidRounds": 64,
+        "sha256": "d31168a66ee7fa0fb2ae5636a2984f761436523ac2413522e6c1f28d1af06882"
+      },
+      {
+        "seed": 2026102601,
+        "stakeUnits": 10000,
+        "choice": "nearest-chest",
+        "paidRounds": 64,
+        "sha256": "214cf2e06f733e4c401f68d5cc124d55843e7da25e17d26988e2abd7200867e4"
+      },
+      {
+        "seed": 2026102601,
+        "stakeUnits": 10000,
+        "choice": "highest-first",
+        "paidRounds": 64,
+        "sha256": "8d3a9b8740aa2ffd4cfc65b6568a7d2a2ec24bd416beb641eb38b6a656f24906"
+      },
+      {
+        "seed": 2026102601,
+        "stakeUnits": 10000,
+        "choice": "random-walk",
+        "paidRounds": 64,
+        "sha256": "fe2fcda8ed0f985f85780dd8d74b3ad1cb9d0e0f876fa045ffe43757bde3000e"
+      },
+      {
+        "seed": 2026102601,
+        "stakeUnits": 10000,
+        "choice": "stop",
+        "paidRounds": 64,
+        "sha256": "d6048e88ecf510bb651b155b20c9baca11155dbbe022b813ad7ad7e923f4fdd2"
+      },
+      {
+        "seed": 2026102601,
+        "stakeUnits": 20000,
+        "choice": "optimal",
+        "paidRounds": 64,
+        "sha256": "ad7ffb921cfe01016fe1fa50ddf293cae8e9e1e6374627b19a307b4cbd8238d3"
+      },
+      {
+        "seed": 2026102601,
+        "stakeUnits": 20000,
+        "choice": "nearest-chest",
+        "paidRounds": 64,
+        "sha256": "61e0d86890b4974113e0987e169fcaceace36a2dc4c3590fb7e96d0f5d14b98e"
+      },
+      {
+        "seed": 2026102601,
+        "stakeUnits": 20000,
+        "choice": "highest-first",
+        "paidRounds": 64,
+        "sha256": "9ff08234216ce1590da2e5c08086411ea9dae469b2762862ca8b4b2a259f3773"
+      },
+      {
+        "seed": 2026102601,
+        "stakeUnits": 20000,
+        "choice": "random-walk",
+        "paidRounds": 64,
+        "sha256": "0fd464784834364542d7bb194addd60e9a3f6c19907c283826897c0dc28e1ae0"
+      },
+      {
+        "seed": 2026102601,
+        "stakeUnits": 20000,
+        "choice": "stop",
+        "paidRounds": 64,
+        "sha256": "fea21f1a119ed4da659bd65f4564997b33406d25708bc334eaa418e6af9595e8"
+      },
+      {
+        "seed": 2026102601,
+        "stakeUnits": 50000,
+        "choice": "optimal",
+        "paidRounds": 64,
+        "sha256": "83ba74d38122f37c725141557821fc8d2543ef468d5ca570b3e38e248036acab"
+      },
+      {
+        "seed": 2026102601,
+        "stakeUnits": 50000,
+        "choice": "nearest-chest",
+        "paidRounds": 64,
+        "sha256": "66825617ec47cf22a643304972d299fd3b60393ccdd68d305909a749ee1e52d6"
+      },
+      {
+        "seed": 2026102601,
+        "stakeUnits": 50000,
+        "choice": "highest-first",
+        "paidRounds": 64,
+        "sha256": "5fd5132d506eba31909a9d2c690dfad72ab9cadb4b94c83d8b9e81b973e41e21"
+      },
+      {
+        "seed": 2026102601,
+        "stakeUnits": 50000,
+        "choice": "random-walk",
+        "paidRounds": 64,
+        "sha256": "bb225630ca5ddb87878cf07e49b5c425f7f59466173c266e34067cfe30304d9f"
+      },
+      {
+        "seed": 2026102601,
+        "stakeUnits": 50000,
+        "choice": "stop",
+        "paidRounds": 64,
+        "sha256": "5ccd7d4be4a4dba91c42bb1ae088f8c3eceb1e562b787cb4f1cdeef4f2974a95"
+      },
+      {
+        "seed": 2026102607,
+        "stakeUnits": 1000,
+        "choice": "optimal",
+        "paidRounds": 64,
+        "sha256": "76c909c579a7752162828f337adf35585c317942db4b74ecf207cdfb2382532a"
+      },
+      {
+        "seed": 2026102607,
+        "stakeUnits": 1000,
+        "choice": "nearest-chest",
+        "paidRounds": 64,
+        "sha256": "502aa34c5f09991e30d6fce9a56344c35dadccbee139f81e06ed6534d113e336"
+      },
+      {
+        "seed": 2026102607,
+        "stakeUnits": 1000,
+        "choice": "highest-first",
+        "paidRounds": 64,
+        "sha256": "600bbacc9ee5d19c2fcf8d1df4628e968f1e440fed3876234a109ab2abe13780"
+      },
+      {
+        "seed": 2026102607,
+        "stakeUnits": 1000,
+        "choice": "random-walk",
+        "paidRounds": 64,
+        "sha256": "82f10e67d5e1a2cf502b60a8bf4da538cafec26fabd70d07f95a4721cfb02598"
+      },
+      {
+        "seed": 2026102607,
+        "stakeUnits": 1000,
+        "choice": "stop",
+        "paidRounds": 64,
+        "sha256": "75b5e3cf70e7cb063c060d5d00ff512cc048fa41775d1494c5e80849942560b4"
+      },
+      {
+        "seed": 2026102607,
+        "stakeUnits": 2000,
+        "choice": "optimal",
+        "paidRounds": 64,
+        "sha256": "db99b2133a28c13dabfbcf6859a55897ffb71e8690a32f1047b081e6c0416af8"
+      },
+      {
+        "seed": 2026102607,
+        "stakeUnits": 2000,
+        "choice": "nearest-chest",
+        "paidRounds": 64,
+        "sha256": "bbbb9497f55d165051738ac3d564fe43c83bc0b20425e469a232a0d7d37ca600"
+      },
+      {
+        "seed": 2026102607,
+        "stakeUnits": 2000,
+        "choice": "highest-first",
+        "paidRounds": 64,
+        "sha256": "418ddd8a65e9137803f121ff67b7d4f1c4af908cd609f270b43088c7acc79a9d"
+      },
+      {
+        "seed": 2026102607,
+        "stakeUnits": 2000,
+        "choice": "random-walk",
+        "paidRounds": 64,
+        "sha256": "87740a9f4bda0da55d0fe2172039a6e45f18552457e83da876d84419b9dde0f6"
+      },
+      {
+        "seed": 2026102607,
+        "stakeUnits": 2000,
+        "choice": "stop",
+        "paidRounds": 64,
+        "sha256": "aeb4bdcc0a1135a549e2dfe5fba3aca323cb8ccd94fdff5b46c3193a5180e471"
+      },
+      {
+        "seed": 2026102607,
+        "stakeUnits": 5000,
+        "choice": "optimal",
+        "paidRounds": 64,
+        "sha256": "7fe64d621832908f449d943cad3f9e4678c7fbdcbbf0606c9c30a2f2ef75377e"
+      },
+      {
+        "seed": 2026102607,
+        "stakeUnits": 5000,
+        "choice": "nearest-chest",
+        "paidRounds": 64,
+        "sha256": "372728552937e691a500aaaae5e5aa65e1df7db472f5e3303e1aab6768bf04d8"
+      },
+      {
+        "seed": 2026102607,
+        "stakeUnits": 5000,
+        "choice": "highest-first",
+        "paidRounds": 64,
+        "sha256": "ff569f24b4a4b53d7c648603a66ad380fe4eccdb283907d49262e433376460ce"
+      },
+      {
+        "seed": 2026102607,
+        "stakeUnits": 5000,
+        "choice": "random-walk",
+        "paidRounds": 64,
+        "sha256": "30eeceaa73f4b2009e6c64ff76e75e2c4e82cbdaa2ef5635436cdd209393ee45"
+      },
+      {
+        "seed": 2026102607,
+        "stakeUnits": 5000,
+        "choice": "stop",
+        "paidRounds": 64,
+        "sha256": "1c2d54cb2ae5c1ee2948d9d1e5610d672d0f163958c1fd319eefdbb13aadddbe"
+      },
+      {
+        "seed": 2026102607,
+        "stakeUnits": 10000,
+        "choice": "optimal",
+        "paidRounds": 64,
+        "sha256": "01db3fb410590d248f8b0bf8e62b5910f2caf34cbe4c5bdb38d3ede800f45b83"
+      },
+      {
+        "seed": 2026102607,
+        "stakeUnits": 10000,
+        "choice": "nearest-chest",
+        "paidRounds": 64,
+        "sha256": "e777ecc132b0d9b785243e5af0d3e265a677924804553e79312e295e555da41c"
+      },
+      {
+        "seed": 2026102607,
+        "stakeUnits": 10000,
+        "choice": "highest-first",
+        "paidRounds": 64,
+        "sha256": "3613cec0d07b3bdeee4388d93df94fb6e369338e2d3380e8b7b2dcec0d88190b"
+      },
+      {
+        "seed": 2026102607,
+        "stakeUnits": 10000,
+        "choice": "random-walk",
+        "paidRounds": 64,
+        "sha256": "9c1d9bc949025c68ec5c64c8404c4de1e03255ea3fd5cd753f9a777c402ec743"
+      },
+      {
+        "seed": 2026102607,
+        "stakeUnits": 10000,
+        "choice": "stop",
+        "paidRounds": 64,
+        "sha256": "9fb8ad245dfebc9244407639854a5fcedbdb0270656d5fdb82c34add0ff2ca11"
+      },
+      {
+        "seed": 2026102607,
+        "stakeUnits": 20000,
+        "choice": "optimal",
+        "paidRounds": 64,
+        "sha256": "996885e0970e1b20870ac2f03bc3d3c7240cda4f68bdf470075afc61251cae60"
+      },
+      {
+        "seed": 2026102607,
+        "stakeUnits": 20000,
+        "choice": "nearest-chest",
+        "paidRounds": 64,
+        "sha256": "8b49e75cd88018410767a17eb174a164fe9d635b33e7827fcd9b2688ab58497d"
+      },
+      {
+        "seed": 2026102607,
+        "stakeUnits": 20000,
+        "choice": "highest-first",
+        "paidRounds": 64,
+        "sha256": "a2d82ad0cceacdaeb4d054bd277e9fcc4a12aca0a984a200f9a3663fa24e9a83"
+      },
+      {
+        "seed": 2026102607,
+        "stakeUnits": 20000,
+        "choice": "random-walk",
+        "paidRounds": 64,
+        "sha256": "b8f3b78021b2d280045422dd0dadaa43118086e325196a62ebd41b198ead76ff"
+      },
+      {
+        "seed": 2026102607,
+        "stakeUnits": 20000,
+        "choice": "stop",
+        "paidRounds": 64,
+        "sha256": "16d8400b32d5291586b7229b64d72e790f3153564659e2b04849f3f77c06d543"
+      },
+      {
+        "seed": 2026102607,
+        "stakeUnits": 50000,
+        "choice": "optimal",
+        "paidRounds": 64,
+        "sha256": "bdecbea2bd1761bedf58e965ba8a1b2cdce412b55c1724a869ca20b5b6344870"
+      },
+      {
+        "seed": 2026102607,
+        "stakeUnits": 50000,
+        "choice": "nearest-chest",
+        "paidRounds": 64,
+        "sha256": "f42899b18474e94abaeb9ed1d5c8b9d0b2d9add0cb13dc608f08ae18122a7cd3"
+      },
+      {
+        "seed": 2026102607,
+        "stakeUnits": 50000,
+        "choice": "highest-first",
+        "paidRounds": 64,
+        "sha256": "2153e3b27a17555eb9ff9d731c0741831f4453dfeea023c44485d6381343e250"
+      },
+      {
+        "seed": 2026102607,
+        "stakeUnits": 50000,
+        "choice": "random-walk",
+        "paidRounds": 64,
+        "sha256": "25911638a0c6fca4e0424d99ac73cf7f8ca0dd658039090eabc2d7ead942c2ef"
+      },
+      {
+        "seed": 2026102607,
+        "stakeUnits": 50000,
+        "choice": "stop",
+        "paidRounds": 64,
+        "sha256": "0745b16b09035e487d69ae4156228c970e4f1e84fc5b9cb9781e3c1b51ad085a"
+      }
+    ]
+  }
+}

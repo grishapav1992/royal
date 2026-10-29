@@ -1,0 +1,322 @@
+{
+  "date": "2026-10-28",
+  "version": "0.4.0",
+  "mainBaseline": "57cac4b61b189c8e037849e111e6c9608d329fd4",
+  "module": {
+    "format": 1,
+    "gameId": "studio-flooded-temple",
+    "manifest": "/game-modules/studio-flooded-temple/versions/0.4.0-ebe9fb2d7616/manifest.json",
+    "sha256": "2903018d59592ecfcd34034339bd6af8afd461562ff0e63ab348885d24dac2f1"
+  },
+  "sourceSha256": "ebe9fb2d76169af6392eaeffb8d7b58ea0a4952b2374ca6536d3bf7517f7f4b9",
+  "tests": {
+    "temple": 29,
+    "rtpGate": 26,
+    "independentModuleContracts": 6,
+    "browser": 19
+  },
+  "build": {
+    "format": 1,
+    "startedAt": "2026-10-28T05:02:31.764Z",
+    "scope": "application",
+    "steps": [
+      {
+        "name": "rtp",
+        "passed": true,
+        "durationMs": 2633
+      },
+      {
+        "name": "typecheck",
+        "passed": true,
+        "durationMs": 8889
+      },
+      {
+        "name": "modules",
+        "passed": true,
+        "durationMs": 4327
+      },
+      {
+        "name": "host",
+        "passed": true,
+        "durationMs": 6846
+      },
+      {
+        "name": "backend",
+        "passed": true,
+        "durationMs": 109
+      },
+      {
+        "name": "reconciliation",
+        "passed": true,
+        "durationMs": 29
+      },
+      {
+        "name": "payments",
+        "passed": true,
+        "durationMs": 32
+      }
+    ],
+    "passed": true,
+    "durationMs": 22866
+  },
+  "modules": 119,
+  "qualification": {
+    "profiles": 13,
+    "mathematics": "No game mathematical source, paytable, probability, stake, bonus rule or settlement was changed in this refinement."
+  },
+  "audio": {
+    "effects": 12,
+    "effectRateHz": 48000,
+    "effectFormat": "stereo PCM16",
+    "effectWavBytes": 3715740,
+    "usedRecordingExcerpts": 12,
+    "music": {
+      "title": "Memories Of Stone",
+      "author": "Scott Buckley",
+      "license": "CC-BY-4.0",
+      "bytes": 13217159,
+      "sha256": "1ad908e4c0e0c2a311300f6b69f2587f9161e15990ee01f18e00992f25d1b252",
+      "unchangedMasterVerified": true,
+      "streamedThroughSharedHost": true,
+      "positionPreservedAcrossMovesAndPause": true,
+      "inGameAttributionVerified": true
+    },
+    "preview": "16 seconds of CC0 effects, not a gameplay recording and without the music master"
+  },
+  "clocks": [
+    {
+      "scenario": "baseline",
+      "accents": 10,
+      "skipped": 1,
+      "p95Ms": 16.906999994039325,
+      "maximumMs": 16.906999994039325,
+      "methods": [
+        "output-timestamp"
+      ],
+      "musicPlaying": true,
+      "frames": [
+        {
+          "kind": "card",
+          "skewMs": 12.406999994039552,
+          "rendered": true
+        },
+        {
+          "kind": "card",
+          "skewMs": 5.007000002980249,
+          "rendered": true
+        },
+        {
+          "kind": "card",
+          "skewMs": 2.4069999940393245,
+          "rendered": true
+        },
+        {
+          "kind": "card",
+          "skewMs": 6.606999997019557,
+          "rendered": true
+        },
+        {
+          "kind": "arrive",
+          "skewMs": null,
+          "rendered": false
+        },
+        {
+          "kind": "gate",
+          "skewMs": 10.106999997019557,
+          "rendered": true
+        },
+        {
+          "kind": "arrive",
+          "skewMs": 3.6069999970195568,
+          "rendered": true
+        },
+        {
+          "kind": "arrive",
+          "skewMs": 11.706999991059092,
+          "rendered": true
+        },
+        {
+          "kind": "arrive",
+          "skewMs": 14.206999991059092,
+          "rendered": true
+        },
+        {
+          "kind": "relic",
+          "skewMs": 16.906999994039325,
+          "rendered": true
+        }
+      ]
+    },
+    {
+      "scenario": "simulated-latency",
+      "accents": 10,
+      "skipped": 0,
+      "p95Ms": 35,
+      "maximumMs": 35,
+      "methods": [
+        "latency-estimate"
+      ],
+      "musicPlaying": true,
+      "frames": [
+        {
+          "kind": "card",
+          "skewMs": 5.100000008940697,
+          "rendered": true
+        },
+        {
+          "kind": "card",
+          "skewMs": 5.100000008940697,
+          "rendered": true
+        },
+        {
+          "kind": "card",
+          "skewMs": 6.100000008940697,
+          "rendered": true
+        },
+        {
+          "kind": "card",
+          "skewMs": 3.2000000029802322,
+          "rendered": true
+        },
+        {
+          "kind": "arrive",
+          "skewMs": 20.400000005960464,
+          "rendered": true
+        },
+        {
+          "kind": "gate",
+          "skewMs": 3.1000000089406967,
+          "rendered": true
+        },
+        {
+          "kind": "arrive",
+          "skewMs": 4.200000002980232,
+          "rendered": true
+        },
+        {
+          "kind": "arrive",
+          "skewMs": 8.300000011920929,
+          "rendered": true
+        },
+        {
+          "kind": "arrive",
+          "skewMs": 35,
+          "rendered": true
+        },
+        {
+          "kind": "relic",
+          "skewMs": 18.100000008940697,
+          "rendered": true
+        }
+      ]
+    },
+    {
+      "scenario": "cpu-4x",
+      "accents": 10,
+      "skipped": 0,
+      "p95Ms": 55.7186666547459,
+      "maximumMs": 55.7186666547459,
+      "methods": [
+        "output-timestamp"
+      ],
+      "musicPlaying": true,
+      "frames": [
+        {
+          "kind": "card",
+          "skewMs": 1.7186666547456753,
+          "rendered": true
+        },
+        {
+          "kind": "card",
+          "skewMs": 38.718666654745675,
+          "rendered": true
+        },
+        {
+          "kind": "card",
+          "skewMs": 39.018666666666604,
+          "rendered": true
+        },
+        {
+          "kind": "card",
+          "skewMs": 55.7186666547459,
+          "rendered": true
+        },
+        {
+          "kind": "arrive",
+          "skewMs": 30.218666654745903,
+          "rendered": true
+        },
+        {
+          "kind": "gate",
+          "skewMs": 7.918666657726135,
+          "rendered": true
+        },
+        {
+          "kind": "arrive",
+          "skewMs": 2.3186666636865993,
+          "rendered": true
+        },
+        {
+          "kind": "arrive",
+          "skewMs": 19.51866666666683,
+          "rendered": true
+        },
+        {
+          "kind": "arrive",
+          "skewMs": 19.51866666666683,
+          "rendered": true
+        },
+        {
+          "kind": "relic",
+          "skewMs": 7.018666666666832,
+          "rendered": true
+        }
+      ]
+    }
+  ],
+  "clockLimitation": "rAF relative to browser output timestamp or simulated fallback; not a physical acoustic measurement.",
+  "layouts": {
+    "desktop": [
+      [
+        1440,
+        1000
+      ],
+      [
+        1000,
+        760
+      ]
+    ],
+    "mobileViewports": [
+      [
+        390,
+        844
+      ],
+      [
+        360,
+        740
+      ]
+    ],
+    "languages": [
+      "ru",
+      "en"
+    ],
+    "realHostAndConnectedChat": true,
+    "minimumRoomHeightPx": 44,
+    "noHorizontalOverflow": true,
+    "noBoardConsoleOverlap": true
+  },
+  "notMeasured": [
+    "Physical phone speakers, headphones or Bluetooth.",
+    "Human pleasantness, fatigue or preference for the newly selected music."
+  ],
+  "preview": {
+    "url": "http://127.0.0.1:5226/tests/fixtures/temple-preview.html?lang=ru",
+    "temporaryDatabase": true,
+    "demoCoinsOnly": true
+  },
+  "published": false,
+  "observations": [
+    "One 55ms arrival accent in the baseline run had no dedicated rendered phase; the next confirmed frame contains the arrived room and the final state is exact. No stale animation or reward queue was replayed.",
+    "Streaming music reached readyState 4 and continued through four prepared moves; currentTime was 11.46 seconds with no media error."
+  ]
+}

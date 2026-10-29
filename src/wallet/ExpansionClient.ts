@@ -1,5 +1,7 @@
 import { JACKIE_GAME, JACKIE_HEADER, validJackieSession, validJackieReply } from '../shared/jackieChan';
 import { FLAG_GAME, FLAG_HEADER, flagViewMode, validFlagSettings, validFlagSession } from '../shared/flagBattle';
+import {validCascadeSession,validCascadeSettings,cascadeResult} from '../shared/floodedTempleCascade';
+import { TEMPLE_GAME, TEMPLE_CLIENT_HEADER, validTempleSession, validTempleSettings, templeResult } from '../shared/floodedTemple';
 import {CARIBBEAN_CLIENT_HEADER} from '../shared/caribbeanTransport';
 import { NEOPOLIS_GAME, NEOPOLIS_HEADER, validNeopolisSession, validNeopolisSettings } from '../shared/neopolis';
 import { FOREST_HEART_GAME, FOREST_HEART_CLIENT_HEADER, validForestHeartSession, validForestHeartSettings } from '../shared/forestHeart';
@@ -25,7 +27,26 @@ import type { DemoWallet } from '../shared/demoWallet';
 import { demoWallet } from './WalletClient';
 export type NewExpansionAction = ExpansionAction extends infer T ? T extends ExpansionAction ? Omit<T,'id'> : never : never;
 type Reply={wallet:DemoWallet;sessions:ExpansionSession[];session?:ExpansionSession;replayed?:boolean};
-function validSession(s:ExpansionSession){if(s?.gameId===JACKIE_GAME)return validJackieSession(s);if(s?.gameId===FLAG_GAME)return validFlagSession(s);if(s?.gameId===CARIBBEAN_GAME)return validCaribbeanSession(s);if(s?.gameId===FOREST_HEART_GAME)return validForestHeartSession(s)&&typeof s.id==='string'&&/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(s.id)&&Object.keys(s).sort().join(',')==='gameId,id,returnedUnits,rulesVersion,spentUnits,stakeUnits,state,view'&&Object.keys(s.view).sort().join(',')==='actions,community,dealer,ended,forestHeart,message,phase,player'&&[s.view.player,s.view.dealer,s.view.community].every(a=>Array.isArray(a)&&a.length===0)&&typeof s.view.message==='string';if(s?.gameId===NEOPOLIS_GAME)return validNeopolisSession(s);if(s?.gameId===DRACONA_GAME)return validDraconaSession(s);if(s?.gameId===PENALTY_GAME)return validPenaltySession(s);if(s?.gameId===AFTER_GAME)return validAfterSession(s);if(s?.gameId===MEME_GAME)return validMemeSession(s);if(s?.gameId===NITRO_GAME)return validNitroSession(s);return !!s&&isExpansionGame(s.gameId)&&validExpansionRulesVersion(s.gameId,s.rulesVersion)&&['active','settled'].includes(s.state)
+function validTempleEnvelope(s:ExpansionSession){
+  if(s.rulesVersion===2){
+    if(!validCascadeSession(s)||Object.keys(s).sort().join(',')!=='gameId,id,returnedUnits,rulesVersion,spentUnits,stakeUnits,state,view'||!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(s.id))return false;
+    const result=cascadeResult(s.view.templeCascade!);
+    return studioSamePayload(s.view,{player:[],dealer:[],community:[],templeCascade:result.view,actions:result.actions,phase:result.view.revision+1,ended:result.ended,message:result.message});
+  }
+  if(!validTempleSession(s)||Object.keys(s).sort().join(',')!=='gameId,id,returnedUnits,rulesVersion,spentUnits,stakeUnits,state,view'||!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(s.id))return false;
+  const result=templeResult(s.view.temple!);
+  return studioSamePayload(s.view,{player:[],dealer:[],community:[],temple:result.view,actions:result.actions,phase:result.view.revision+1,ended:result.ended,message:result.message});
+}
+function validTempleReply(s:ExpansionSession,op:ExpansionAction,replayed:boolean){
+  if(op.gameId!==TEMPLE_GAME)return true;
+  if(s.rulesVersion===2){const v=s.view.templeCascade;if(!v)return false;return op.action==='start'?validCascadeSettings(op.settings)&&s.stakeUnits===op.stakeUnits&&(replayed||v.revision===1):op.move==='temple-cascade'&&typeof op.revision==='number'&&v.revision>op.revision&&(replayed||v.revision===op.revision+1);}
+  const view=s.view.temple;if(!view)return false;
+  if(op.action==='start')return validTempleSettings(op.settings)&&s.stakeUnits===op.stakeUnits&&(replayed||view.revision===1);
+  if(typeof op.revision!=='number'||view.revision<=op.revision||!replayed&&view.revision!==op.revision+1)return false;
+  const expected=op.move==='temple-finish'?{kind:'finish'}:{kind:op.move==='temple-rope'?'rope':'step',to:op.picks?.[0]};
+  return studioSamePayload(view.history[op.revision-1],expected);
+}
+function validSession(s:ExpansionSession){if(s?.gameId===JACKIE_GAME)return validJackieSession(s);if(s?.gameId===FLAG_GAME)return validFlagSession(s);if(s?.gameId===CARIBBEAN_GAME)return validCaribbeanSession(s);if(s?.gameId===TEMPLE_GAME)return validTempleEnvelope(s);if(s?.gameId===FOREST_HEART_GAME)return validForestHeartSession(s)&&typeof s.id==='string'&&/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(s.id)&&Object.keys(s).sort().join(',')==='gameId,id,returnedUnits,rulesVersion,spentUnits,stakeUnits,state,view'&&Object.keys(s.view).sort().join(',')==='actions,community,dealer,ended,forestHeart,message,phase,player'&&[s.view.player,s.view.dealer,s.view.community].every(a=>Array.isArray(a)&&a.length===0)&&typeof s.view.message==='string';if(s?.gameId===NEOPOLIS_GAME)return validNeopolisSession(s);if(s?.gameId===DRACONA_GAME)return validDraconaSession(s);if(s?.gameId===PENALTY_GAME)return validPenaltySession(s);if(s?.gameId===AFTER_GAME)return validAfterSession(s);if(s?.gameId===MEME_GAME)return validMemeSession(s);if(s?.gameId===NITRO_GAME)return validNitroSession(s);return !!s&&isExpansionGame(s.gameId)&&validExpansionRulesVersion(s.gameId,s.rulesVersion)&&['active','settled'].includes(s.state)
   &&typeof s.id==='string'&&/^[a-f0-9-]{36}$/i.test(s.id)&&[s.stakeUnits,s.spentUnits,s.returnedUnits].every(n=>typeof n==='string'&&/^[0-9]{1,15}$/.test(n))
   &&!!s.view&&[s.view.player,s.view.dealer,s.view.community].every(a=>Array.isArray(a)&&a.every(c=>typeof c==='string'))
   &&Array.isArray(s.view.actions)&&s.view.actions.every(a=>typeof a.move==='string'&&typeof a.label==='string'&&Number.isSafeInteger(a.cost)&&a.cost>=0&&[a.perPick,a.minPicks,a.maxPicks].every(n=>n===undefined||Number.isSafeInteger(n)&&n>=0))
@@ -41,7 +62,7 @@ function validSession(s:ExpansionSession){if(s?.gameId===JACKIE_GAME)return vali
       &&/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(s.id)&&s.view.studio===undefined
       &&validLuelonSlotSettlement(s.gameId,s.state,s.stakeUnits,s.spentUnits,s.returnedUnits,s.view.luelon)&&validLuelonSlotEnvelope(s.gameId,s.state,s.view)
     :s.view.luelon===undefined&&(isStudioGame(s.gameId)?validStudioSettlement(s.gameId,s.state,s.stakeUnits,s.spentUnits,s.returnedUnits,s.view.studio)&&validStudioEnvelope(s.gameId,s.state,s.view):s.view.studio===undefined)))
-   )&&s.view.caribbean===undefined&&s.view.neopolis===undefined&&s.view.dracona===undefined&&s.view.afterglow===undefined&&s.view.nitro===undefined&&typeof s.view.message==='string';}
+   )&&s.view.templeCascade===undefined&&s.view.temple===undefined&&s.view.caribbean===undefined&&s.view.neopolis===undefined&&s.view.dracona===undefined&&s.view.afterglow===undefined&&s.view.nitro===undefined&&typeof s.view.message==='string';}
 function validStudioStart(s:ExpansionSession,op:ExpansionAction){
   if(op.action!=='start'||!isStudioGame(op.gameId))return true;
   if(op.gameId===NEOPOLIS_GAME)return [1,2,3,4].includes(s.rulesVersion)&&s.stakeUnits===op.stakeUnits&&validNeopolisSettings(op.settings)&&s.view.neopolis?.origin.starter===op.settings.neopolis.hero;
@@ -101,10 +122,11 @@ function validForestReply(s:ExpansionSession,op:ExpansionAction,replayed:boolean
  return op.move==='forest-spin'||view.base.choiceDone&&(op.move==='forest-pass'?view.base.rotation===null:view.base.rotation===Number(op.move.slice('forest-turn-'.length)));
 }
 export class ExpansionClient extends EventTarget {
+  constructor(readonly templeRules:1|2=1){super();}
   accountId:string|null=null;sessions:ExpansionSession[]=[];wallet?:DemoWallet;pending?:ExpansionAction;busy=false;loading=false;error='';private epoch=0;private version=0;
   private validatedSessions=new Map<string,string>();
   private checkedSession(s:ExpansionSession){
-    if(!s||!isExpansionGame(s.gameId))return false;
+    if(!s||!isExpansionGame(s.gameId)||s.gameId===TEMPLE_GAME&&s.rulesVersion===2&&this.templeRules!==2)return false;
     try{
       let cacheable=true;
       const serialized=JSON.stringify(s,function(key,value){
@@ -128,18 +150,25 @@ export class ExpansionClient extends EventTarget {
     if(id){try{const saved=sessionStorage.getItem(this.key());if(saved){const op=JSON.parse(saved);if(!validExpansionAction(op))throw Error();this.pending=op;}}catch{this.error=translateText('Не удалось восстановить ход. Проверь баланс.');}}
     this.lock();this.notify();if(id)void this.refresh();
   }
+  private cascadePrefix(s:ExpansionSession,op:ExpansionAction){
+    if(op.action!=='move'||op.gameId!==TEMPLE_GAME||s.rulesVersion!==2)return true;
+    const known=this.sessions.find(v=>v.id===s.id&&v.gameId===TEMPLE_GAME)?.view.templeCascade;
+    return !known||!!s.view.templeCascade&&studioSamePayload(s.view.templeCascade.operations.slice(0,known.operations.length),known.operations);
+  }
   private valid(r:Reply,op?:ExpansionAction){return !!r&&!!r.wallet&&Number.isFinite(r.wallet.balance)&&r.wallet.balance>=0&&Array.isArray(r.wallet.entries)
     &&Array.isArray(r.sessions)&&r.sessions.every(s=>this.checkedSession(s))&&new Set(r.sessions.map(s=>s.gameId)).size===r.sessions.length
     &&(!op||!!r.session&&this.checkedSession(r.session)&&r.session.gameId===op.gameId&&r.session.id===(op.action==='start'?op.id:op.sessionId)&&typeof r.replayed==='boolean'
       &&(op.gameId!==PENALTY_GAME||(op.action==='start'?validPenaltySettings(op.settings)&&r.session.stakeUnits===op.stakeUnits&&r.session.view.penalty?.hero===op.settings.penalty.hero&&(r.session.view.penalty?.shots[0].risk??r.session.view.penalty?.risk)===op.settings.penalty.risk:r.session.view.penalty!.revision>op.revision!&&(r.replayed===true||r.session.view.penalty!.revision===op.revision!+1)&&(op.penaltyRisk===undefined||r.session.view.penalty!.shots[op.revision!]?.risk===op.penaltyRisk)))
       &&(op.gameId!==FLAG_GAME||op.action==='start'&&validFlagSettings(op.settings)&&r.session.stakeUnits===op.stakeUnits&&r.session.view.flags?.country===op.settings.flags.country&&flagViewMode(r.session.view.flags)===(op.settings.flags.mode??'classic')&&r.session.rulesVersion===(op.settings.flags.mode===undefined?1:2)&&r.sessions.some(s=>s.gameId===FLAG_GAME&&(r.replayed||s.id===r.session!.id)))
+      &&validTempleReply(r.session,op,r.replayed===true)&&this.cascadePrefix(r.session,op)
+      &&(op.gameId!==TEMPLE_GAME||r.sessions.some(s=>s.gameId===TEMPLE_GAME&&(r.replayed===true||s.id===r.session!.id))&&r.sessions.every(s=>s.gameId!==TEMPLE_GAME||s.id!==r.session!.id||studioSamePayload(s,r.session)))
       &&(op.gameId!==FOREST_HEART_GAME||r.sessions.some(s=>s.gameId===op.gameId)&&(r.replayed===true||r.sessions.some(s=>s.gameId===op.gameId&&studioSamePayload(s,r.session))))&&validJackieReply(r.session,op,r.replayed===true)&&validForestReply(r.session,op,r.replayed===true)&&validCaribbeanReply(r.session,op,r.replayed===true,r.sessions)&&validNeopolisReply(r.session,op,r.replayed===true)&&validDraconaReply(r.session,op,r.replayed===true)&&validAfterReply(r.session,op,r.replayed===true)&&validNitroReply(r.session,op,r.replayed===true)&&validConvoyReply(r.session,op,r.replayed===true)&&validLuelonReply(r.session,op,r.replayed===true)&&validCaramelReply(r.session,op,r.replayed===true)
       &&(!isStudioGame(op.gameId)||validStudioStart(r.session,op)&&r.sessions.some(s=>s.gameId===op.gameId)&&(r.replayed===true||r.sessions.some(s=>s.gameId===op.gameId&&s.id===r.session!.id))&&r.sessions.every(s=>s.id!==r.session!.id||s.gameId!==r.session!.gameId||studioSamePayload(s,r.session))));}
   private accept(r:Reply){this.wallet=r.wallet;this.sessions=r.sessions;demoWallet.acceptExternalWallet(this.accountId!,r.wallet);}
   private message(e:unknown){return e instanceof Error&&isUserMessage(e.message)?translateText(e.message):translateText('Ответ не получен. Нажми «Проверить ход», чтобы подтвердить ту же операцию.');}
   async refresh(){
     if(!this.accountId||this.busy||this.loading)return;const epoch=this.epoch,version=++this.version,account=this.accountId;this.loading=true;
-    try{const response=await fetch('/api/demo-wallet/expansion',{credentials:'same-origin',cache:'no-store',headers:{[WALLET_ACCOUNT_HEADER]:account,[CARAMEL_CLIENT_HEADER]:'1',[VELVET_CLIENT_HEADER]:'1',[CONVOY_CLIENT_HEADER]:'1',[AFTER_CLIENT_HEADER]:'1',[AFTER_PROGRESS_HEADER]:AFTER_PROGRESS_VERSION,[NITRO_CLIENT_HEADER]:'1',[MEME_CLIENT_HEADER]:'1',[NEOPOLIS_HEADER]:'4',[FLAG_HEADER]:'2',[FOREST_HEART_CLIENT_HEADER]:'1',[CARIBBEAN_CLIENT_HEADER]:'1',[DRACONA_CLIENT_HEADER]:'2',[PENALTY_CLIENT_HEADER]:'1',[JACKIE_HEADER]:'2'},signal:AbortSignal.timeout(10000)});const r=await response.json();
+    try{const response=await fetch('/api/demo-wallet/expansion',{credentials:'same-origin',cache:'no-store',headers:{[WALLET_ACCOUNT_HEADER]:account,[CARAMEL_CLIENT_HEADER]:'1',[VELVET_CLIENT_HEADER]:'1',[CONVOY_CLIENT_HEADER]:'1',[AFTER_CLIENT_HEADER]:'1',[AFTER_PROGRESS_HEADER]:AFTER_PROGRESS_VERSION,[NITRO_CLIENT_HEADER]:'1',[MEME_CLIENT_HEADER]:'1',[NEOPOLIS_HEADER]:'4',[DRACONA_CLIENT_HEADER]:'2',[PENALTY_CLIENT_HEADER]:'1',[FLAG_HEADER]:'2',[JACKIE_HEADER]:'2',[TEMPLE_CLIENT_HEADER]:String(this.templeRules),[FOREST_HEART_CLIENT_HEADER]:'1',[CARIBBEAN_CLIENT_HEADER]:'1'},signal:AbortSignal.timeout(10000)});const r=await response.json();
       if(epoch!==this.epoch||version!==this.version)return;if(!response.ok)throw Error(r.error);if(!this.valid(r))throw Error(translateText('Баланс и партия не подтверждены.'));this.accept(r);this.error='';
     }catch(e){if(epoch===this.epoch&&version===this.version)this.error=this.message(e);}
     finally{if(epoch===this.epoch&&version===this.version){this.loading=false;this.notify();}}
@@ -151,12 +180,12 @@ export class ExpansionClient extends EventTarget {
     if(demoWallet.busy||demoWallet.pending||demoWallet.hasExternalBusy('expansion'))throw Error(translateText('Сначала проверь предыдущую операцию кошелька.'));
     const epoch=this.epoch,account=this.accountId,key=this.key();try{sessionStorage.setItem(key,JSON.stringify(op));}catch{throw Error(translateText('Разреши хранилище браузера для сохранения хода.'));}
     this.pending=op;this.busy=true;this.loading=false;this.version++;this.error='';this.lock();this.notify();
-    try{const response=await fetch('/api/demo-wallet/expansion',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json',[WALLET_ACCOUNT_HEADER]:account,'X-Royal-Card-Rules':'2',[CARAMEL_CLIENT_HEADER]:'1',[VELVET_CLIENT_HEADER]:'1',[CONVOY_CLIENT_HEADER]:'1',[AFTER_CLIENT_HEADER]:'1',[AFTER_PROGRESS_HEADER]:AFTER_PROGRESS_VERSION,[NITRO_CLIENT_HEADER]:'1',[MEME_CLIENT_HEADER]:'1',[NEOPOLIS_HEADER]:'4',[FLAG_HEADER]:'2',[FOREST_HEART_CLIENT_HEADER]:'1',[CARIBBEAN_CLIENT_HEADER]:'1',[DRACONA_CLIENT_HEADER]:'2',[PENALTY_CLIENT_HEADER]:'1',[JACKIE_HEADER]:'2'},body:JSON.stringify(op),signal:AbortSignal.timeout(15000)});const r=await response.json();
+    try{const response=await fetch('/api/demo-wallet/expansion',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json',[WALLET_ACCOUNT_HEADER]:account,'X-Royal-Card-Rules':'2',[CARAMEL_CLIENT_HEADER]:'1',[VELVET_CLIENT_HEADER]:'1',[CONVOY_CLIENT_HEADER]:'1',[AFTER_CLIENT_HEADER]:'1',[AFTER_PROGRESS_HEADER]:AFTER_PROGRESS_VERSION,[NITRO_CLIENT_HEADER]:'1',[MEME_CLIENT_HEADER]:'1',[NEOPOLIS_HEADER]:'4',[DRACONA_CLIENT_HEADER]:'2',[PENALTY_CLIENT_HEADER]:'1',[FLAG_HEADER]:'2',[JACKIE_HEADER]:'2',[TEMPLE_CLIENT_HEADER]:String(this.templeRules),[FOREST_HEART_CLIENT_HEADER]:'1',[CARIBBEAN_CLIENT_HEADER]:'1'},body:JSON.stringify(op),signal:AbortSignal.timeout(15000)});const r=await response.json();
       if(epoch!==this.epoch)return;if(!response.ok){if([400,403,404,409].includes(response.status)){this.pending=undefined;sessionStorage.removeItem(key);}throw Error(r.error);}
       if(!this.valid(r,op))throw Error(translateText('Ход не подтверждён. Проверь ту же операцию.'));this.accept(r);this.pending=undefined;sessionStorage.removeItem(key);this.version++;
     }catch(e){if(epoch===this.epoch){this.error=this.message(e);throw Error(this.error);}}
     finally{if(epoch===this.epoch){this.busy=false;this.lock();this.notify();if(!this.pending&&this.error)void this.refresh();}}
   }
 }
-export const expansionClient=new ExpansionClient();
+export const expansionClient=new ExpansionClient(2);
 demoWallet.addEventListener('change',()=>expansionClient.setAccount(demoWallet.accountId));

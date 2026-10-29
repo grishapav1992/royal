@@ -1,0 +1,153 @@
+{
+  "date": "2026-10-28",
+  "gameId": "studio-flooded-temple",
+  "moduleVersion": "0.6.0-66fb58b41116",
+  "sourceSha256": "66fb58b41116ed42f06612d7ed500062e6233685cae445f8b0ce89b8cc4b07fd",
+  "pointer": {
+    "format": 1,
+    "gameId": "studio-flooded-temple",
+    "manifest": "/game-modules/studio-flooded-temple/versions/0.6.0-66fb58b41116/manifest.json",
+    "sha256": "170732bc7ddfaed9430a0786414ed385792357e993cc1d0bd12891687be33fff"
+  },
+  "payloadFiles": 33,
+  "payloadBytes": 19178191,
+  "hashesVerified": true,
+  "contracts": {
+    "api": 1,
+    "rules": 1,
+    "progress": 1
+  },
+  "mathematics": "Unchanged qualified rules and per-round stake. No new outcome generator, price, strategy, progress or settlement mode.",
+  "tests": {
+    "profilePassed": 31,
+    "browserPassed": 31,
+    "rtpGatePassed": 27,
+    "moduleContractPassed": 7,
+    "rtp": {
+      "verified": 13,
+      "legacyNotQualified": 114
+    },
+    "application": {
+      "format": 1,
+      "startedAt": "2026-10-28T17:16:09.393Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 5461
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 16812
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 25581
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 8809
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 94
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 33
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 35
+        }
+      ],
+      "passed": true,
+      "durationMs": 56827
+    }
+  },
+  "browserScenarios": [
+    "Exact quick full-round payout, one reaction, quiet reopen and speed preference",
+    "Ten unique paid starts at locked stake, exact total debits, finite stop",
+    "Manual expedition pause, free move does not consume budget, automatic resumption",
+    "Stop during accepted HTTP request prevents the next start",
+    "Lost reply stops queue and manual recovery reuses original UUID",
+    "Insufficient shared funds prevent next request",
+    "Host pause, hidden tab, account change and close cancel queue",
+    "Existing animations, audio output clock, recovery, reduced motion and real host with chat"
+  ],
+  "layout": {
+    "sizes": [
+      [
+        1440,
+        1000
+      ],
+      [
+        1000,
+        760
+      ],
+      [
+        390,
+        844
+      ],
+      [
+        360,
+        740
+      ]
+    ],
+    "horizontalOverflow": false,
+    "minimumRoomHeight": 44,
+    "chat": true,
+    "controlMinHeight": 44
+  },
+  "controls": {
+    "counts": [
+      10,
+      25,
+      50,
+      100
+    ],
+    "defaultCount": 10,
+    "defaultQuick": false,
+    "autoRestored": false,
+    "stakeLockedDuringAuto": true,
+    "bonusStrategy": "manual",
+    "budgetUnit": "confirmed new paid start",
+    "nextStartDelayMs": {
+      "normal": 600,
+      "quick": 220
+    },
+    "quickSummaryMs": {
+      "loss": 250,
+      "partial": 280,
+      "return": 300,
+      "win": 500,
+      "big": 800,
+      "relic": 450,
+      "continuation": 350,
+      "reducedMotion": 180
+    }
+  },
+  "limitations": [
+    "Design durations exclude HTTP and shared audio output lead; no absolute latency guarantee.",
+    "No audience preference or physical listening measurement."
+  ],
+  "preview": {
+    "url": "http://127.0.0.1:5226/tests/fixtures/temple-preview.html?lang=ru&version=0.6.0",
+    "temporaryDemoDatabase": true,
+    "terminalSession": 7918
+  },
+  "publication": "Feature branch only, no production deployment",
+  "integration": {
+    "mainCommit": "d76746b1a5d22a4b5b15c2f2934aea7c052568b5",
+    "mergeCommit": "9d6b9f34c72c3f7b40e507b2a061f557960f1a91",
+    "templeBytesUnchanged": true,
+    "postMergeModuleContractsPassed": 7
+  }
+}
