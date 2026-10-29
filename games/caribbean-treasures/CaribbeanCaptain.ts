@@ -16,15 +16,20 @@ export class CaribbeanCaptain{
   this.mounts=Array.from(root.querySelectorAll<HTMLElement>('.ct-portrait-gesture'));this.caption=root.querySelector('.ct-captain-caption')!;
   void this.select(DEFAULT_CAPTAIN);
  }
- async select(id:string):Promise<boolean>{
+ async select(id:string,confirm?:()=>Promise<boolean>):Promise<boolean>{
   if(this.dead||!crewMember(id))return false;
   const ticket=++this.selection;
-  if(id===this.character&&this.loaded.size===8){this.loading=false;return true;}
+  if(!confirm&&id===this.character&&this.loaded.size===8){this.loading=false;return true;}
   this.loading=true;
   const poses=Object.keys(CAPTAIN_POSES) as CaptainPose[];
   const images=poses.map(pose=>{const image=new Image();image.decoding='async';image.src=crewPortrait(id as CrewId,pose);return image;});
   try{await Promise.all(images.map(image=>image.decode()));}catch{if(ticket===this.selection)this.loading=false;return false;}
   if(this.dead||ticket!==this.selection)return false;
+  if(confirm){
+   try{if(!await confirm()){if(ticket===this.selection)this.loading=false;return false;}}
+   catch(error){if(ticket===this.selection)this.loading=false;throw error;}
+   if(this.dead||ticket!==this.selection)return false;
+  }
   this.reset(true);this.character=id as CrewId;this.preloads=images;this.loaded=new Set(poses);this.loading=false;
   this.root.dataset.ctCaptain=this.character;
   for(const mount of this.mounts){

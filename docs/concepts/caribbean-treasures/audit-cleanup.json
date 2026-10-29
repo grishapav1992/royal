@@ -1,0 +1,44 @@
+{
+  "format": 1,
+  "date": "2026-10-29",
+  "owner": "caribbean-final-review",
+  "status": "cleanup-rejected-by-automatic-approval-review",
+  "sourceCommit": "36b0cb9f3091617e5d435d8a58bb6421439ab23b",
+  "preservedRemoteCommit": "1be52a18561fc3dd60bb9512baaac47335ec2f8e",
+  "taskDirectory": {
+    "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\caribbean-final-review",
+    "files": 75,
+    "bytes": 40031200.0
+  },
+  "supersededTaskPackages": [
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-caribbean-treasures\\versions\\1.5.0-dc212bbeb407",
+      "files": 125,
+      "bytes": 14856953.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-caribbean-treasures\\versions\\1.5.1-c7705e4d5b0d",
+      "files": 125,
+      "bytes": 14856953.0
+    }
+  ],
+  "currentPackage": "1.5.1-2531f98fbc64",
+  "freeBytesBeforeBuild": 303452672000,
+  "freeBytesBeforeCleanup": 302947725312,
+  "freeBytesAfterCleanup": 302892634112,
+  "separateStandStopped": true,
+  "separateTemporaryDatabaseRemoved": true,
+  "previousUserDatabaseRetained": true,
+  "removedPaths": [],
+  "removedLogicalBytes": 0,
+  "archivesCreated": [],
+  "archivesRemoved": [],
+  "exceptions": [
+    "The previously stopped user preview database is retained until its owner ends or replaces that preview.",
+    "Other tasks and their old build outputs are outside this cleanup inventory.",
+    "This existing worktree remains the active chat checkout while concurrent project work continues; no additional checkout was created for this audit."
+  ],
+  "rejection": "Automatic approval review rejected the owner/path checked native PowerShell Remove-Item command before execution: blocked by policy",
+  "remainingLogicalBytes": 69745106.0,
+  "cleanupCondition": "Remove only these inventoried task outputs and intermediate packages when native cleanup is permitted; do not substitute another deletion mechanism after this rejection"
+}
