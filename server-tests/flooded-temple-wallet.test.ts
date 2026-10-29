@@ -33,6 +33,9 @@ test('Caribbean and Temple capabilities remain separate after integration',async
     const caribbeanOnly=await f.store.active('alice',true,true,true,true,true,true,true,2,3,true,false,false);
     assert(!caribbeanOnly.sessions.some(s=>s.gameId===TEMPLE_GAME));
     const templeOnly=await f.store.active('alice',true,true,true,true,true,true,true,2,3,false,false,true);
+    const forestOnly=await f.store.active('alice',true,true,true,true,true,true,true,2,3,false,true,false);assert(!forestOnly.sessions.some(s=>s.gameId===TEMPLE_GAME));
+    await assert.rejects(f.store.operate('alice',f.start(),2,true,true,true,true,true,true,true,true,2,3,true,true,false),/Обнови/);
+    await assert.rejects(f.store.operate('alice',{...f.start(),gameId:'studio-forest-heart',settings:{forestHeart:{mode:'normal'}}},2,true,true,true,true,true,true,true,true,2,3,true,false,true),/Обнови/);
     assert(templeOnly.sessions.some(s=>s.id===started.session.id));
     await assert.rejects(f.store.operate('alice',f.start(),2,true,true,true,true,true,true,true,true,2,3,true,false,false));
     await assert.rejects(f.store.operate('alice',{id:randomUUID(),action:'start',gameId:'studio-caribbean-treasures',stakeUnits:'100',settings:{caribbean:{lines:1,mode:'normal'}}},2,true,true,true,true,true,true,true,true,2,3,false,false,true));
@@ -48,7 +51,7 @@ test('bonus survives a new store, hides from old clients, rejects foreign and st
     assert(!(await f.store.active('alice')).sessions.some(s=>s.gameId===TEMPLE_GAME));
     const first=f.move(reply.session,6);await assert.rejects(f.operate('bob',first));
     const racing=await Promise.allSettled([f.operate('alice',first),f.operate('alice',{...first,id:randomUUID()})]);assert.equal(racing.filter(r=>r.status==='fulfilled').length,1);
-    const restored=f.create(),active=await restored.active('alice',true,true,true,true,true,true,true,2,3,true,true);
+    const restored=f.create(),active=await restored.active('alice',true,true,true,true,true,true,true,2,3,true,false,true);
     let session=active.sessions.find(s=>s.id===op.id)!;assert.equal(session.view.temple!.revision,2);
     let last:any=first;
     for(const [to,rope]of [[11,false],[12,true],[13,false],[8,false],[9,false]]as const){last=f.move(session,to,rope);reply=await f.operate('alice',last,restored);session=reply.session;assert(validTempleSession(session));if(session.state==='active')assert.equal(await demoBalanceUnits(f.db,'alice'),before-1000);}

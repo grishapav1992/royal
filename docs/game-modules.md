@@ -1,6 +1,6 @@
 # Independently published games
 
-Every existing game definition has an independent client package. The catalogue contains 119 module identities across the current and historical game families. This is a technical inventory, not a claim that the hall has 119 visible machines:
+Every existing game definition has an independent client package. The catalogue contains 120 module identities across the current and historical game families. This is a technical inventory, not a claim that the hall has 119 visible machines:
 
 | Family | Module identities |
 | --- | ---: |
@@ -104,3 +104,5 @@ Casino API Pro accepts an optional embedded provider context. The shared host ow
 Existing native artwork, the small startup previews, preparation cache, latest chat implementation, server engines, payout rules and wallet transport are preserved. GitHub decoration is scoped to the current nine GitHub identities; native Plinko keeps its production design. Use the platform browser scenarios with the real host and connected chat on desktop and mobile, and verify package integrity and recovery before publication.
 
 Mortal Kombat uses activity identity and package slug mortal-kombat on floor 2. See games/mortal-kombat/README.md for wager rules, escrow recovery, asset provenance, shared USDT · Nile integration and server anti-cheat controls (rules contract 2). It requires this compatible host/backend release before the client package can be published.
+
+Flooded Temple stage 4 uses package 0.9.0 with the same 1/2/2 contract. Its common-clock presentation adds stable stone falls, union fractures, exact counters, recorded material Foley and single-silhouette explorer reactions. Recovery stays quiet and all financial transitions remain in the host/backend. See [stage 4 verification](game-design/flooded-temple-cascades-stage4.md).
