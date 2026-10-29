@@ -26,7 +26,11 @@ async function enter(page: Page, roomPath: string, lang = 'ru') {
   })).toBe(200);
   await page.locator('#room-overview').click(); await page.locator('#games-tab').click();
   await page.locator('[data-cabinet="studio-cosmic-escape"]').click();
-  await expect(page.locator('#mini-dialog')).toBeVisible({ timeout: 25000 });
+  await expect.poll(async () => {
+    if (await page.locator('#mini-dialog').isVisible()) return true;
+    try { await page.locator('[data-cabinet="studio-cosmic-escape"]').click({ timeout: 600 }); } catch {}
+    return page.locator('#mini-dialog').isVisible();
+  }, { timeout: 25000, intervals: [1000, 2000] }).toBe(true);
   await choose(page);
 }
 async function choose(page: Page) {

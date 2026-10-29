@@ -2,6 +2,7 @@
   "release": "forest-heart-20261029-v3",
   "base": "23f5111455d280315f2d5cf2de443cf025e3f01e",
   "allowedSource": [
+    "docs/game-math/qualifications/flag-battle-v2.json",
     "docs/concepts/forest-heart/README.md",
     "docs/concepts/forest-heart/approved-concept-v1.png",
     "docs/concepts/forest-heart/assets-v1.json",

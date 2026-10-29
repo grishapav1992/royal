@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import assert from 'node:assert/strict';
-const helper = dirname(fileURLToPath(import.meta.url)), root = resolve(helper, '../../..'), work = resolve(root, 'artifacts/work/forest-heart-ux-v7'), out = resolve(work, 'release-v3/payload');
+const helper = dirname(fileURLToPath(import.meta.url)), root = resolve(helper, '../../..'), work = resolve(root, 'artifacts/work/forest-heart-ux-v7'), out = resolve(work, 'release-v3/payload-reviewed');
 const json = path => JSON.parse(readFileSync(path, 'utf8').replace(/^\uFEFF/, '')), sha = path => createHash('sha256').update(readFileSync(path)).digest('hex');
 const scope = json(resolve(helper, 'scope.json')), before = json(resolve(work, 'production-v3.json'));
 const git = (...args) => execFileSync(process.env.ROYAL_GIT_BINARY || 'git', args, { cwd: root, encoding: 'utf8' }).trim();
