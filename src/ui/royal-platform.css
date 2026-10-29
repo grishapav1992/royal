@@ -3,6 +3,9 @@
 @media(max-width:640px){.royal-platform{padding:13px}.rp-heading{align-items:flex-start;gap:8px}.rp-heading h3{font-size:21px}.rp-heading>div>span{font-size:8px}.rp-heading button{font-size:10px;padding:9px;max-width:126px}.rp-sources{gap:6px;margin-bottom:16px}.rp-sources button{font-size:11px;padding:8px 10px}.rp-tools{gap:9px;grid-template-columns:minmax(0,1fr) 132px}.rp-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.rp-copy{padding:10px}.rp-copy strong{font-size:12px}.rp-copy>span{font-size:10px}.rp-intro{font-size:12px}.rp-provider-status{font-size:11px}.rp-kind{font-size:8px;top:6px;left:6px}}
 @media(prefers-reduced-motion:reduce){.rp-card{transition:none}}
 
+.rp-card[data-platform-game="studio-forest-heart"] .rp-art{background:#07172c url('/assets/forest-heart/v1/background.webp') center/cover}
+.rp-card[data-platform-game="studio-forest-heart"] .rp-art img{position:absolute;top:0;right:-4%;width:82%;height:135%;object-fit:contain;object-position:center top;filter:drop-shadow(-8px 4px 8px #04121db3)}
+
 #studio-game-list{flex-shrink:0;margin-left:auto;padding:9px 13px;border:1px solid #ad8c51;border-radius:8px;background:#e6d49b;color:#35374f;font:700 12px system-ui,sans-serif;cursor:pointer}
 #studio-game-list[hidden]{display:none}
 @media(max-width:640px){#mini-dialog #studio-game-list{padding:9px;font-size:11px}#mini-dialog .mini-top>div{min-width:0}}
