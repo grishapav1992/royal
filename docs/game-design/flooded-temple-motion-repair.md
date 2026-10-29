@@ -25,3 +25,18 @@ The local stand remains at `http://127.0.0.1:5233/tests/fixtures/temple-preview.
 ![Royal narrow viewport with connected chat](../assets/flooded-temple/motion-0.9.4-phone.webp)
 
 Temporary ownership: `artifacts/work/temple-motion-fix/OWNER.txt`. No archives, full source copies or dependency copies were created. Keep the active local preview, current immutable package and compact final evidence until review ends. Previously rejected cleanup targets and other chats' previews are outside this cleanup scope.
+
+Source preservation was verified on GitHub at `d97abd83ad4bd56a3721785ac9a337e55fa3739e` in `codex/flooded-temple`. The final synchronization incorporated main `2ce578d07f15d7a36daf42cbcf338427925a7091`, preserving the concurrent Hong Kong Warrior layout work and hall-only cat audio. It changed no Temple source or contract. The full build and all 7 module/resource checks passed again after that merge; the Temple package remained byte-bound to `0.9.4-08826707418d`.
+
+Cleanup was rejected before execution with `blocked by policy`. Removed files: 0; removed bytes: 0; removed archives: 0. The rejected targets were these task-owned obsolete outputs:
+
+| Target | Files | Bytes retained at inventory |
+| --- | ---: | ---: |
+| `module-dist/studio-flooded-temple/versions/0.9.4-5b1b229390fa/` | 42 | 20862701 |
+| `module-dist/studio-flooded-temple/versions/0.9.4-ff9de479e1d9/` | 42 | 20862732 |
+| `artifacts/work/temple-motion-fix/motion.json` | 1 | 254371 |
+| `artifacts/work/temple-motion-fix/host-1280.webp` | 1 | 134252 |
+| `artifacts/work/temple-motion-fix/host-390.webp` | 1 | 43080 |
+| Total | 87 | 42157136 |
+
+Measured C: free bytes before the rejected cleanup inventory: 293894610944; after rejection: 293893152768. Other activity can change these measurements. No physical space reclamation is claimed. Do not retry these rejected targets through another method. The active 5233/2633 preview, its temporary database, current 0.9.4 package, compact JSON evidence and normal current build outputs remain available until local review or new release preparation; stop and clean only the owned active stand when that review ends. Earlier denied targets remain untouched.
