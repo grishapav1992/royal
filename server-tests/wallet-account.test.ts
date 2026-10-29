@@ -176,7 +176,7 @@ test('wallet requests stay bound to the account that created them', { timeout: 2
       assert.equal(storage.getItem(`royal-demo-operation:${alice.account.id}`), null);
     });
 
-    await t.test('direct top-ups preserve their own journal and never replay a saved Nile request', async () => {
+    await t.test('retired direct top-ups cannot debit or credit a wallet or overwrite a saved Nile request', async () => {
       cookieToken = alice.token;
       const nileKey = `royal-nile-game-operation:${alice.account.id}`;
       const nilePending = { id: randomUUID(), kind: 'spin', amount: 100 };
@@ -184,19 +184,18 @@ test('wallet requests stay bound to the account that created them', { timeout: 2
       const client = new WalletClient();
       await initializeClient(client, alice.account.id);
       assert.equal(client.pending, undefined);
-      const before = client.wallet!.balance;
-      loseNextSuccessfulOperation = true;
-      await assert.rejects(client.operate('deposit', 2375));
-      const id = client.pending!.id;
-      const reloaded = new WalletClient();
-      await initializeClient(reloaded, alice.account.id);
-      const result = await reloaded.retry();
-      assert.equal(result.wallet.balance, before + 2375);
-      assert.equal(result.wallet.entries.filter(entry => entry.operationId === id).length, 1);
+      const before = await accounts.wallet.snapshot(alice.account.id);
+      const response = await fetch('/api/demo-wallet/operations', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', [accountHeader]: alice.account.id },
+        body: JSON.stringify({ id: randomUUID(), kind: 'deposit', amount: 2375 }),
+      });
+      assert.equal(response.status, 410);
+      assert.deepEqual(await accounts.wallet.snapshot(alice.account.id), before);
       assert.equal(storage.getItem(nileKey), JSON.stringify(nilePending));
-      const confirmed = reloaded.wallet;
-      assert.throws(() => reloaded.acceptExternalWallet(alice.account.id, { balance: 999, entries: [], asset: 'USDT_NILE_TEST' }));
-      assert.equal(reloaded.wallet, confirmed);
+      assert.equal(storage.getItem(`royal-demo-operation:${alice.account.id}`), null);
+      const confirmed = client.wallet;
+      assert.throws(() => client.acceptExternalWallet(alice.account.id, { balance: 999, entries: [], asset: 'USDT_NILE_TEST' }));
+      assert.equal(client.wallet, confirmed);
       storage.removeItem(nileKey);
     });
 

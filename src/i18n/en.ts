@@ -4261,5 +4261,6 @@ export const english: Record<string, string> = {
   "20 автоматов Рояль": "20 Royal cabinets",
   "Игра с обложки открывается сразу. Внутри каждого автомата есть каталог RoyalGames, Casino API Pro и GitHub-игр.": "The cover game opens immediately. Every cabinet includes RoyalGames, Casino API Pro and GitHub games.",
   "Проверяем подключение игры…": "Checking the game connection…",
-  "Игра больше недоступна. Выбери другую в каталоге.": "This game is no longer available. Choose another from the catalogue."
+  "Игра больше недоступна. Выбери другую в каталоге.": "This game is no longer available. Choose another from the catalogue.",
+  "Европейская рулетка · Одно зеро": "European roulette · Single zero",
 };

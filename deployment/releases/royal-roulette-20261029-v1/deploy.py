@@ -1,0 +1,541 @@
+"""Publish connected walking poses while preserving backend, modules and player data."""
+from pathlib import Path, PurePosixPath
+import fcntl
+import hashlib
+import json
+import os
+import re
+import shutil
+import signal
+import subprocess
+import sys
+import tarfile
+import time
+import uuid
+
+ROOT = Path(__file__).resolve().parent
+LIVE = Path('/opt/royal')
+NAME = 'royal-roulette-20261029-v1'
+BACKUP = Path('/opt/royal-backups') / NAME
+STATE = Path('/opt/royal-game-modules-state')
+HOST = STATE / 'host.json'
+COMPOSE = []
+M = json.loads((ROOT / 'install-manifest.json').read_text())
+OLD = M['before']
+COMPOSE = [Path(v).name for v in OLD['container']['composeFiles'].split(',')]
+SOURCE_ALLOWLIST = ["docs/concepts/royal-roulette/audio-review.md","docs/concepts/royal-roulette/audio-spec.md","docs/concepts/royal-roulette/motion-review.md","docs/concepts/royal-roulette/motion-spec.md","docs/concepts/royal-roulette/visual-review.md","docs/game-math/qualifications/royal-roulette-v1.json","docs/game-math/royal-roulette-review.md","games/royal-roulette/README.md","games/royal-roulette/RouletteAudioBank.ts","games/royal-roulette/RouletteMotion.ts","games/royal-roulette/RouletteSound.ts","games/royal-roulette/RouletteSoundTimeline.ts","games/royal-roulette/RoyalRoulette.ts","games/royal-roulette/SpinTimeline.ts","games/royal-roulette/WheelArtwork.ts","games/royal-roulette/entry.ts","games/royal-roulette/package.json","games/royal-roulette/roulette.css","public/assets/royal-roulette/cover.svg","scripts/game-math/rtp-gate.mjs","scripts/game-math/rtp-policy.json","scripts/game-math/rtp-roulette.mjs","scripts/qualify-game-rtp.mjs","scripts/roulette-preview.ts","src/i18n/en.ts","src/shared/arcadeCatalog.ts","src/shared/cabinets.ts","src/ui/GameViewport.ts","src/ui/RoyalGameArtwork.ts","src/ui/RoyalPlatformCatalog.ts"]
+CHANGES = M['changed']
+DELTA = M['delta']
+SERVER_DELTA = M['serverDelta']
+DIGEST = re.compile(r'[a-f0-9]{64}')
+
+
+def require(ok, message):
+    if not ok:
+        raise RuntimeError(message)
+
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def run(args, **kwargs):
+    return subprocess.check_output(args, text=True, **kwargs).strip()
+
+
+def write(name, value):
+    (ROOT / name).write_text(json.dumps(value, indent=2) + '\n')
+
+
+def snapshot(recovery=False):
+    return json.loads(run(['python3', str(ROOT / 'snapshot.py'), *(['--recovery'] if recovery else [])]))
+
+
+def compose(gate=None):
+    command = ['docker', 'compose', *[value for name in COMPOSE for value in ['-f', name]],
+               'up', '-d', '--no-deps', '--force-recreate', '--no-build', 'game']
+    return gate.run(command, cwd=LIVE) if gate else run(command, cwd=LIVE)
+
+def image(ref):
+    return run(['docker', 'image', 'inspect', ref, '--format', '{{.Id}}'])
+
+
+def inventory(root):
+    require(root.is_dir() and not root.is_symlink(), 'Missing regular payload directory')
+    result = {}
+    for path in sorted(root.rglob('*')):
+        require(not path.is_symlink(), 'Payload symlink rejected')
+        if path.is_file():
+            result[str(path.relative_to(root))] = sha(path)
+    return result
+
+
+def sources(state):
+    return {name: digest for name, digest in state['source'].items() if not name.endswith(('.orig', '.bak'))}
+
+
+BASE = sources(OLD)
+
+
+def safe_name(name):
+    require(isinstance(name, str), 'Invalid filename')
+    path = PurePosixPath(name)
+    require(str(path) == name and not path.is_absolute() and all(part not in ['.', '..']
+            and not part.startswith('.env') and part not in ['data', 'secrets', '.ssh', 'node_modules', '.git']
+            for part in path.parts), 'Unsafe release path')
+
+
+def settings(state, recovery=False):
+    for key in ['configHashes', 'moduleFiles', 'moduleHostContract']:
+        require(state[key] == OLD[key], 'Protected production state changed: ' + key)
+    for key in (['mounts', 'host', 'runtimeHash', 'composeFiles'] if state['container'] is not None else []):
+        require(state['container'][key] == OLD['container'][key], 'Runtime settings changed: ' + key)
+    require({name: row for name, row in state['services'].items() if name != '/royal-game-1'}
+            == {name: row for name, row in OLD['services'].items() if name != '/royal-game-1'},
+            'Another persistent service changed')
+    require(recovery or state['container'] is not None, 'Game container disappeared')
+    if state['realMoneyFlags'] is not None:
+        require(state['realMoneyFlags'] == OLD['realMoneyFlags'], 'Money runtime flags changed')
+
+
+def baseline():
+    state = snapshot()
+    settings(state)
+    require(state['container'] == OLD['container'], 'Running game changed since review')
+    require(state['container']['health'] == 'healthy', 'Current game is not healthy')
+    require(sources(state) == BASE, 'Production source changed since review')
+    require(state['program'] == OLD['program'] and state['preparedProgram'] == OLD['preparedProgram']
+            and state['preparedImage'] == OLD['preparedImage'], 'Runtime or prepared image changed')
+    require(state['program'] == state['preparedProgram'], 'Prepared image does not match the running files')
+    return state
+
+
+def expected_program():
+    return {**OLD['program'], **{'dist/' + name: digest for name, digest in DELTA.items()},
+            **{'dist-server/' + name: digest for name, digest in SERVER_DELTA.items()}}
+
+
+def recovery_guard(current, built):
+    settings(current, recovery=True)
+    require((current['container'] is None or current['container']['image'] in [OLD['container']['image'], OLD['preparedImage'], built['image']])
+            and current['preparedImage'] in [OLD['preparedImage'], built['image']], 'Later image prevents rollback')
+    actual = sources(current)
+    require(set(BASE).issubset(actual) and set(actual).issubset(set(BASE) | set(CHANGES)),
+            'Later source inventory prevents rollback')
+    for name, digest in actual.items():
+        require(digest in {value for value in [BASE.get(name), CHANGES.get(name)] if value},
+                'Later source prevents rollback: ' + name)
+    if current.get('program') is not None:
+        expected = built['program'] if current['container']['image'] == built['image'] else OLD['program']
+        require(current['program'] == expected, 'Later running files prevent rollback')
+
+
+def payload():
+    require(ROOT == Path('/opt/royal-releases') / NAME and M['release'] == NAME, 'Unexpected release path')
+    require(re.fullmatch(r'[a-f0-9]{40}', M['sourceCommit']), 'Missing reviewed source commit')
+    require(sha(ROOT / 'deploy.py') == M['helperSha256'], 'Deployment helper changed')
+    require(sha(ROOT / 'snapshot.py') == M['snapshotSha256'], 'Snapshot helper changed')
+    require(set(M.get('helpers', {})) == {'runtime-inventory.cjs', 'quiesce.cjs', 'financial_gate.py'}, 'Unexpected support helpers')
+    for name, digest in M['helpers'].items():
+        require(sha(ROOT / name) == digest, 'Support helper changed: ' + name)
+    require(CHANGES and DELTA and 'index.html' in DELTA, 'Incomplete client release')
+    require(set(SERVER_DELTA).issubset({'index.js'}), 'Only the game backend may change')
+    require(all(name == 'index.html' or re.fullmatch(r'assets/[a-zA-Z0-9_-]+\.(?:js|css)', name) or name == 'assets/royal-roulette/cover.svg' for name in DELTA),
+            'Only the client index and JavaScript or stylesheet bundles may change')
+    for name in [*CHANGES, *DELTA]:
+        safe_name(name)
+    require(all(name.startswith(('src/', 'server/', 'scripts/', 'docs/', 'games/', 'public/')) for name in CHANGES),
+            'Only application source and related documentation may change')
+    require(not any(name.endswith(('.orig', '.bak')) for name in CHANGES), 'Historical source backups may not change')
+    require(set(CHANGES).issubset(SOURCE_ALLOWLIST), 'Unreviewed animation source')
+    for name, digest in CHANGES.items():
+        require(DIGEST.fullmatch(digest), 'Invalid source digest')
+    for name, digest in DELTA.items():
+        require(DIGEST.fullmatch(digest), 'Invalid client digest')
+        require(name == 'index.html' or 'dist/' + name not in OLD['program']
+                or digest == OLD['program']['dist/' + name], 'Existing asset URL would change: ' + name)
+    require(inventory(ROOT / 'source') == CHANGES, 'Source payload differs')
+    require(inventory(ROOT / 'dist-delta') == DELTA, 'Client payload differs')
+    require(inventory(ROOT / 'server-delta') == SERVER_DELTA, 'Backend payload differs')
+
+
+def atomic(source, target):
+    require(not target.is_symlink() and not any(parent.is_symlink() for parent in target.parents),
+            'Target symlink rejected')
+    target.parent.mkdir(parents=True, exist_ok=True)
+    temporary = target.with_name('.left-lounge-next-' + uuid.uuid4().hex)
+    try:
+        with source.open('rb') as input_file, temporary.open('xb') as output:
+            shutil.copyfileobj(input_file, output)
+            os.fchmod(output.fileno(), source.stat().st_mode & 0o777)
+            output.flush()
+            os.fsync(output.fileno())
+        os.replace(temporary, target)
+        descriptor = os.open(target.parent, os.O_RDONLY)
+        try:
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
+def healthy():
+    for _ in range(60):
+        state = json.loads(run(['docker', 'inspect', 'royal-game-1']))[0]['State']
+        if state.get('Health', {}).get('Status') == 'healthy':
+            result = json.loads(run(['docker', 'exec', 'royal-game-1', 'node', '-e',
+                "fetch('http://127.0.0.1:2567/healthz').then(async r=>{if(!r.ok)process.exit(1);const d=await r.json();if(d.ok!==true)process.exit(1);console.log(JSON.stringify({ok:true}));}).catch(()=>process.exit(1))"]))
+            require(result.get('ok') is True, 'Game health endpoint failed')
+            return
+        time.sleep(1)
+    raise RuntimeError('Game did not become healthy')
+
+
+def verify_tar(path):
+    with tarfile.open(path) as archive:
+        members = archive.getmembers()
+        require(all(member.isfile() for member in members), 'Nonregular source backup entry')
+        result = {member.name: hashlib.sha256(archive.extractfile(member).read()).hexdigest() for member in members}
+        require(len(result) == len(members) and result == OLD['source'], 'Source backup differs')
+
+
+PROGRAM = "const fs = require('node:fs'), path = require('node:path'), crypto = require('node:crypto');\nconst result = {};\nconst canonical = process.argv.includes('--canonical');\nconst hash = value => crypto.createHash('sha256').update(value).digest('hex');\nfunction walk(directory, links = false) {\n  if (!fs.existsSync(directory)) return;\n  for (const name of fs.readdirSync(directory).sort()) {\n    const file = path.join(directory, name), stat = fs.lstatSync(file), relative = path.relative('/app', file);\n    if (stat.isSymbolicLink()) {\n      if (!links) throw Error('Unexpected runtime symlink');\n      result[relative] = hash('symlink\\0' + fs.readlinkSync(file));\n    } else if (stat.isDirectory()) walk(file, links);\n    else if (stat.isFile()) {\n      const bytes = fs.readFileSync(file);\n      result[relative] = hash(canonical && /\\.(?:js|css|html|json)$/.test(file) ? bytes.toString('utf8').replace(/\\r\\n/g, '\\n') : bytes);\n    }\n    else throw Error('Unexpected runtime file type');\n  }\n}\nfor (const directory of canonical ? ['dist'] : ['dist', 'dist-server', 'module-dist']) walk('/app/' + directory);\nif (!canonical) {\n  walk('/app/node_modules', true);\n  for (const name of ['package.json', 'package-lock.json']) result[name] = hash(fs.readFileSync('/app/' + name));\n}\nconsole.log(JSON.stringify(result));\n"
+
+
+def backup_guard(built):
+    require(sha(BACKUP / 'source.tgz') == built['sourceBackupSha256'], 'Source backup changed')
+    verify_tar(BACKUP / 'source.tgz')
+    require(sha(BACKUP / 'index.html') == OLD['program']['dist/index.html'], 'Client index backup changed')
+
+
+class BoundedBackup:
+    def __init__(self, file, limit):
+        self.file, self.limit, self.total = file, limit, 0
+
+    def write(self, data):
+        require(self.total + len(data) <= self.limit, 'Source backup exceeds disk budget')
+        self.total += len(data)
+        return self.file.write(data)
+
+    def flush(self):
+        return self.file.flush()
+
+
+def backup_sources(limit):
+    path = BACKUP / 'source.tgz'
+    try:
+        with path.open('xb') as output:
+            with tarfile.open(fileobj=BoundedBackup(output, limit), mode='w|gz') as archive:
+                for name, digest in OLD['source'].items():
+                    require(sha(LIVE / name) == digest, 'Source changed during backup')
+                    archive.add(LIVE / name, arcname=name, recursive=False)
+    except BaseException:
+        path.unlink(missing_ok=True)
+        raise
+
+
+def verify_existing_backup():
+    require(not (ROOT / 'build-result.json').exists() and not (ROOT / 'published.json').exists(), 'An existing built release cannot be rebuilt')
+    verify_tar(BACKUP / 'source.tgz')
+    require(sha(BACKUP / 'index.html') == OLD['program']['dist/index.html'], 'Existing client index backup differs')
+    for suffix, ref in [('', OLD['container']['image']), ('-prepared', OLD['preparedImage'])]:
+        require(image('royal-game:before-' + NAME + suffix) == ref, 'Existing rollback image tag differs')
+
+
+def build():
+    payload()
+    require(sha(ROOT/'game-module-release.py') == M['modulePublisherSha256'], 'Module publisher changed')
+    require(inventory(ROOT/'roulette-package') == M['moduleFiles'], 'Roulette package changed')
+    old = baseline()
+    delta_bytes = sum((ROOT / 'dist-delta' / name).stat().st_size for name in DELTA)
+    reserve = 5 * 1024**3 + delta_bytes * 3 + 8 * 1024**2
+    require(old['availableBytes'] > reserve, 'Insufficient free disk space')
+    if BACKUP.exists():
+        verify_existing_backup()
+    else:
+        BACKUP.mkdir(mode=0o700, exist_ok=False)
+        backup_sources(old['availableBytes'] - reserve)
+        verify_tar(BACKUP / 'source.tgz')
+        run(['docker', 'cp', 'royal-game-1:/app/dist/index.html', str(BACKUP / 'index.html')])
+        require(sha(BACKUP / 'index.html') == OLD['program']['dist/index.html'], 'Client index backup differs')
+        for suffix, ref in [('', OLD['container']['image']), ('-prepared', OLD['preparedImage'])]:
+            run(['docker', 'tag', ref, 'royal-game:before-' + NAME + suffix])
+    context = ROOT / 'runtime-context'
+    context.mkdir(exist_ok=False)
+    shutil.copytree(ROOT / 'dist-delta', context / 'dist-delta', copy_function=os.link)
+    shutil.copytree(ROOT / 'server-delta', context / 'server-delta', copy_function=os.link)
+    (context / 'Dockerfile').write_text('FROM royal-game:before-' + NAME + '-prepared\n'
+        'COPY --chown=node:node dist-delta/ /app/dist/\n'
+        'COPY --chown=node:node server-delta/ /app/dist-server/\n'
+        'LABEL org.opencontainers.image.revision="' + M['sourceCommit'] + '"\n')
+    (context / '.dockerignore').write_text('**\n!Dockerfile\n!.dockerignore\n!dist-delta\n!dist-delta/**\n!server-delta\n!server-delta/index.js\n')
+    baseline()
+    require(shutil.disk_usage(LIVE).free > reserve, 'Disk reserve consumed before build')
+    with (ROOT / 'build.log').open('w') as log:
+        subprocess.run(['docker', 'build', '--pull=false', '-t', 'royal-game:' + NAME, '.'], cwd=context,
+                       check=True, stdout=log, stderr=subprocess.STDOUT)
+    require(shutil.disk_usage(LIVE).free > 5 * 1024**3, 'Disk reserve consumed by build')
+    candidate = image('royal-game:' + NAME)
+    program = json.loads(run(['docker', 'run', '--rm', '--network=none', '--read-only', '--entrypoint',
+                              'node', candidate, '--v8-pool-size=1', '-e', PROGRAM]))
+    expected = expected_program()
+    require(program == expected, 'Candidate runtime differs from the reviewed client and backend deltas')
+    parent, child = json.loads(run(['docker', 'image', 'inspect', OLD['preparedImage'], candidate]))
+    require(child['Config'].get('Labels', {}).get('org.opencontainers.image.revision') == M['sourceCommit'],
+            'Candidate revision label differs from the reviewed source')
+    for key in ['User', 'WorkingDir', 'Env', 'Entrypoint', 'Cmd', 'ExposedPorts', 'Healthcheck', 'Volumes']:
+        require(parent['Config'].get(key) == child['Config'].get(key), 'Image configuration changed: ' + key)
+    require(child['RootFS']['Layers'][:len(parent['RootFS']['Layers'])] == parent['RootFS']['Layers'],
+            'Baseline image layers changed')
+    result = {'image': candidate, 'program': expected, 'sourceCommit': M['sourceCommit'],
+              'sourceBackupSha256': sha(BACKUP / 'source.tgz'), 'backup': str(BACKUP)}
+    write('build-result.json', result)
+    return {'built': True, 'image': candidate, 'clientDeltaFiles': len(DELTA), 'backendDeltaFiles': len(SERVER_DELTA),
+            'otherBackendProgramsAndModulesPreserved': True}
+
+
+def rollback():
+    payload()
+    built = json.loads((ROOT / 'build-result.json').read_text())
+    require(built['program'] == expected_program(), 'Reviewed build inventory changed')
+    current = snapshot(recovery=True)
+    if current['container'] is not None:
+        try:
+            current['program'] = json.loads(run(['docker', 'exec', 'royal-game-1', 'node', '-e', PROGRAM]))
+        except subprocess.CalledProcessError:
+            require(current['container']['health'] != 'healthy', 'Cannot verify files of the healthy game container')
+    recovery_guard(current, built)
+    backup_guard(built)
+    with tarfile.open(BACKUP / 'source.tgz') as archive:
+        for name in CHANGES:
+            if name in BASE:
+                restored = ROOT / 'restore' / name
+                restored.parent.mkdir(parents=True, exist_ok=True)
+                restored.write_bytes(archive.extractfile(name).read())
+                os.chmod(restored, archive.getmember(name).mode)
+                atomic(restored, LIVE / name)
+            else:
+                (LIVE / name).unlink(missing_ok=True)
+    gate = quiet_gate()
+    critical_command_inflight = False
+    try:
+        gate.confirm()
+        critical_command_inflight = True
+        gate.run(['docker', 'tag', OLD['preparedImage'], 'royal-game:latest'])
+        compose(gate)
+        critical_command_inflight = False
+        gate.release()
+    except BaseException as error:
+        if critical_command_inflight or bool(getattr(error, 'daemon_outcome_unknown', False)):
+            write('recovery-required.json', {'sourceCommit': M['sourceCommit'],
+                'reason': 'Inspect the daemon outcome before another container replacement',
+                'automaticSecondComposeRefused': True, 'databaseRestored': False})
+        raise
+    finally:
+        gate.close()
+    healthy()
+    atomic(BACKUP / 'index.html', LIVE / 'dist/index.html')
+    after = snapshot()
+    settings(after)
+    require(sources(after) == BASE and after['preparedImage'] == OLD['preparedImage']
+            and after['preparedProgram'] == OLD['preparedProgram'], 'Recovered source or prepared image differs')
+    require(after['program'] == OLD['program'], 'Recovered running files differ')
+    result = {'restored': True, 'containerRestarted': True, 'databaseTouched': False, 'externalModulesPreserved': True}
+    write('recovered.json', result)
+    return result
+
+
+def publication_min_free():
+    return 5 * 1024**3 + 8 * 1024**2
+
+
+def publication_capacity():
+    require(shutil.disk_usage(LIVE).free > publication_min_free(), 'Disk reserve consumed before publication')
+
+
+def publication_backup(built):
+    backup_guard(built)
+    for suffix, ref in [('', OLD['container']['image']), ('-prepared', OLD['preparedImage'])]:
+        require(image('royal-game:before-' + NAME + suffix) == ref, 'Rollback image tag changed')
+
+
+def quiet_gate(minimum=None):
+    from financial_gate import FinancialGate
+    command = ['docker','compose',*[value for name in COMPOSE for value in ['-f',name]],
+        'run','--rm','--no-deps','-T','--entrypoint','node','game','-e',(ROOT/'quiesce.cjs').read_text()]
+    gate = FinancialGate(command, cwd=LIVE, log_path=ROOT/'financial-gate.log',
+                         min_free_bytes=publication_min_free() if minimum is None else minimum,
+                         disk_paths=(LIVE, ROOT, BACKUP))
+    try:
+        gate.acquire()
+        return gate
+    except BaseException:
+        gate.close()
+        raise
+
+def settled_game(rows, built):
+    project = OLD['container']['host']['NetworkMode']
+    require(project.endswith('_default'), 'Cannot establish the reviewed Compose project')
+    project = project[:-8]
+    games = []
+    for row in rows:
+        labels = row.get('Config', {}).get('Labels') or {}
+        if labels.get('com.docker.compose.project') != project:
+            continue
+        if labels.get('com.docker.compose.oneoff', '').lower() == 'true':
+            continue
+        require(labels.get('com.docker.compose.service') == 'game', 'Unexpected service in game reconciliation')
+        games.append(row)
+    require(len(games) <= 1, 'Temporary replacement or duplicate game requires reconciliation')
+    if not games:
+        return None
+    row = games[0]
+    require(row['Name'] == '/royal-game-1', 'Temporary replacement game requires reconciliation')
+    require(row['Image'] in {OLD['container']['image'], built['image']}, 'Unreviewed game image during recovery')
+    require(row['State']['Status'] in {'running','created','exited'},
+            'Game lifecycle is not settled; inspect the daemon outcome before recovery')
+    return {'id': row['Id'], 'image': row['Image'], 'startedAt': row['State']['StartedAt'],
+            'status': row['State']['Status'], 'health': row['State'].get('Health', {}).get('Status')}
+
+def reconcile_game(built):
+    def inspect():
+        ids = run(['docker','ps','-aq','--filter','label=com.docker.compose.service=game']).split()
+        rows = json.loads(run(['docker','inspect',*ids])) if ids else []
+        return settled_game(rows, built)
+    first = inspect()
+    time.sleep(3)
+    require(inspect() == first, 'Game lifecycle changed during reconciliation')
+    result = {'observationsMatch': True, 'game': first, 'at': time.time(),
+              'daemonRequestCompletionProven': False,
+              'cancelledDockerRequestIsNotAnAtomicRollback': True}
+    write('reconciliation.json', result)
+    return result
+
+def publish():
+    payload()
+    baseline()
+    built = json.loads((ROOT / 'build-result.json').read_text())
+    require(built['program'] == expected_program(), 'Reviewed build inventory changed')
+    require(image('royal-game:' + NAME) == built['image'], 'Candidate image changed')
+    publication_backup(built)
+    publication_capacity()
+    gate = quiet_gate()
+    critical_command_inflight = False
+    publication_mutated = False
+    try:
+        try:
+            gate.confirm()
+            publication_capacity()
+            for name in CHANGES:
+                gate.check()
+                publication_mutated = True
+                atomic(ROOT / 'source' / name, LIVE / name)
+            publication_mutated = True
+            critical_command_inflight = True
+            gate.run(['docker', 'tag', built['image'], 'royal-game:latest'])
+            critical_command_inflight = False
+            critical_command_inflight = True
+            compose(gate)
+            critical_command_inflight = False
+            gate.release()
+        finally:
+            gate.close()
+        healthy()
+        after = snapshot()
+        settings(after)
+        require(sources(after) == {**BASE, **CHANGES}, 'Published source differs')
+        require(after['container']['image'] == built['image'] and after['program'] == built['program'] and after['preparedProgram'] == built['program']
+                and after['preparedImage'] == built['image'], 'Published runtime differs')
+        shutil.copytree(ROOT / 'dist-delta', LIVE / 'dist', dirs_exist_ok=True)
+        if SERVER_DELTA: shutil.copytree(ROOT / 'server-delta', LIVE / 'dist-server', dirs_exist_ok=True)
+        write('after.json', after)
+        result = {'published': True, 'preparedImage': built['image'], 'runningImage': after['container']['image'],
+                  'containerRestarted': True, 'sourceCommit': M['sourceCommit'], 'changedSources': len(CHANGES),
+                  'clientDeltaFiles': len(DELTA), 'configurationsAndMountsPreserved': True,
+                  'gameDataPreserved': True, 'backendDeltaFiles': len(SERVER_DELTA),
+                  'otherBackendProgramsAndModulesPreserved': True, 'oldAssetsPreserved': True,
+                  'otherPersistentServicesPreserved': len(after['services']) - 1}
+        write('published.json', result)
+        return result
+    except BaseException as error:
+        for number in [signal.SIGTERM, signal.SIGHUP, signal.SIGINT]:
+            signal.signal(number, signal.SIG_IGN)
+        unknown = critical_command_inflight or bool(getattr(error, 'daemon_outcome_unknown', False))
+        write('publication-failed.json', {'errorType': type(error).__name__, 'reason': str(error),
+                                        'daemonOutcomeUnknown': unknown, 'mutationStarted': publication_mutated,
+                                        'databaseRestored': False})
+        if unknown:
+            # CLI cancellation does not establish when the daemon stops its operation.
+            write('recovery-required.json', {'sourceCommit': M['sourceCommit'], 'candidate': built['image'],
+                'reason': 'Inspect the cancelled daemon operation and all game containers before explicit rollback',
+                'automaticSecondComposeRefused': True, 'databaseRestored': False})
+            reconcile_game(built)
+            raise
+        if publication_mutated: rollback()
+        raise
+
+def publish_module():
+    import argparse
+    import importlib.util
+    built = json.loads((ROOT/'build-result.json').read_text())
+    require(json.loads((ROOT/'published.json').read_text())['runningImage'] == built['image'], 'Host publication is incomplete')
+    current = snapshot()
+    settings(current)
+    require(current['container']['image'] == built['image'] and current['program'] == built['program'], 'Host changed before module publication')
+    require(sha(ROOT/'game-module-release.py') == M['modulePublisherSha256'], 'Module publisher changed')
+    require(inventory(ROOT/'roulette-package') == M['moduleFiles'], 'Roulette package changed')
+    require(sha(HOST) == OLD['moduleHostContract'], 'Host compatibility contract changed')
+    shutil.copyfile(Path('/opt/royal-game-modules/royal-roulette/active.json'), BACKUP/'roulette-active.json')
+    spec = importlib.util.spec_from_file_location('roulette_module_release', ROOT/'game-module-release.py')
+    module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+    args = argparse.Namespace(operation='install', package=str(ROOT/'roulette-package'), version=None, game='royal-roulette', expected_sha=M['moduleBeforeSha256'], root='/opt/royal-game-modules', state=str(STATE), app_lock=str(LIVE/'.client-presentation-deploy.lock'))
+    previous_umask = os.umask(0o022)
+    try:
+        result = module.run(args)
+    finally:
+        os.umask(previous_umask)
+    after = snapshot()
+    expected = {**OLD['moduleFiles'], **{'/opt/royal-game-modules/royal-roulette/versions/' + result['version'] + '/' + file: digest for file,digest in M['moduleFiles'].items()}}
+    pointer = Path('/opt/royal-game-modules/royal-roulette/active.json')
+    expected[str(pointer)] = sha(pointer)
+    require(after['moduleFiles'] == expected, 'Unrelated module changed')
+    metadata = json.loads(pointer.read_text())
+    require(metadata['sha256'] == M['moduleFiles']['manifest.json'], 'Published roulette pointer differs')
+    for folder in [pointer.parent, pointer.parent/'versions', pointer.parent/'versions'/result['version']]:
+        require(folder.stat().st_mode & 0o777 == 0o755, 'Published module folder is not public')
+    stable = {**after, 'moduleFiles': OLD['moduleFiles']}
+    settings(stable)
+    require(after['source'] == current['source'] and after['program'] == current['program'], 'Module publication changed host or source')
+    write('module-published.json',result)
+    return result
+
+
+if __name__ == '__main__':
+    require(len(sys.argv) == 2 and sys.argv[1] in ['check', 'build', 'publish', 'release', 'rollback', 'modules'], 'Unexpected operation')
+    require(not STATE.is_symlink() and not HOST.is_symlink(), 'Module state symlink rejected')
+    payload()
+    lock_path, module_lock_path = LIVE / '.client-presentation-deploy.lock', STATE / 'module.lock'
+    require(not lock_path.is_symlink() and not module_lock_path.is_symlink(), 'Deployment lock symlink rejected')
+    with (Path('/opt/royal-releases/themed-publish.lock').open('a') as themed_lock,
+          lock_path.open('a') as shared_lock, module_lock_path.open('a') as module_lock):
+        fcntl.flock(themed_lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        fcntl.flock(shared_lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        fcntl.flock(module_lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+
+        def interrupted(number, _frame):
+            raise InterruptedError('Deployment interrupted: ' + str(number))
+
+        for number in [signal.SIGTERM, signal.SIGHUP, signal.SIGINT]:
+            signal.signal(number, interrupted)
+        if sys.argv[1] == 'check':
+            baseline()
+            print(json.dumps({'ready': True, 'sourceFiles': len(CHANGES), 'clientFiles': len(DELTA), 'backendFiles': len(SERVER_DELTA)}))
+        elif sys.argv[1] == 'release':
+            print(json.dumps(build()), flush=True)
+            print(json.dumps(publish()), flush=True)
+            print(json.dumps(publish_module()), flush=True)
+        elif sys.argv[1] == 'modules':
+            print(json.dumps(publish_module()), flush=True)
+        else:
+            print(json.dumps(globals()[sys.argv[1]]()))
