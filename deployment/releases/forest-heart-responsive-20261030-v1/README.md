@@ -1,0 +1,7 @@
+# Forest Heart 1.8.1 and catalogue portrait
+
+Publish the reviewed responsive Forest Heart client, its complete wordmark and the approved elf catalogue portrait. The common client changes are limited to GameViewport, RoyalCatalogArtwork and royal-platform.css. Preserve the already published cat audio change, every backend program, dependency, contract, other game pointer, service, environment and persistent volume.
+
+Wait for the preceding client publication, record a fresh locked production snapshot, integrate the reviewed sources into main, and run release:plan, release:prepare and release:verify --github from that exact clean commit. prepare.mjs selects only the reviewed frontend delta and the Forest Heart package from those outputs. guard.py validates the baseline again under all three existing publication locks, backs up changed source and the old index/pointer, tags both prior images, verifies an inherited client image, installs the compatible package and atomically replaces the index without restarting the game server. Retain immutable resources for open clients. Rollback restores only presentation and the compatible prior package, never player data.
+
+The old mathematical-model archive has a historical policy fingerprint, while current server qualification uses the registered runtime policy. Do not edit either proof. Run the current mathematical oracle, runtime qualification, wallet, protocol, compatibility and real-host recovery checks and record the separate historical archive check accurately.
