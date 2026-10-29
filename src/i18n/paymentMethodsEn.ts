@@ -34,32 +34,4 @@ export const paymentMethodsEnglish: Record<string, string> = {
   'Этот способ оплаты удалён. Используй NOWPayments или NOWPayments Sandbox.': 'This payment method was removed. Use NOWPayments or NOWPayments Sandbox.',
 };
 
-Object.assign(paymentMethodsEnglish, {
-  "Денежный баланс": "Cash balance",
-  "Оплати Stars в боте. Подтверждённый платёж пополнит денежный баланс в USDT.": "Pay with Stars in the bot. Confirmed payments credit your cash balance in USDT.",
-  "Количество Stars": "Number of Stars",
-  "Принимаю": "I accept the",
-  "условия оплаты": "payment terms",
-  "Создать счёт Stars": "Create Stars invoice",
-  "Оплатить в Telegram": "Pay in Telegram",
-  "Проверить сохранённый платёж Stars": "Check saved Stars payment",
-  "Платёж Stars не подтверждён.": "Stars payment is not confirmed.",
-  "Счёт создан. Открой ссылку «Оплатить в Telegram» ниже.": "Invoice created. Open the Pay in Telegram link below.",
-  "Возврат Stars, требуется сверка": "Stars refunded, review required",
-  "{0} Stars: {1} USDT на баланс": "{0} Stars: {1} USDT to your balance"
-});
-Object.assign(paymentMethodsEnglish, {
-  "Telegram не подтвердил операцию. Проверь тот же платёж позже.": "Telegram did not confirm the operation. Check the same payment later.",
-  "Укажи от 100 до 10 000 Stars и прими условия оплаты.": "Choose 100 to 10,000 Stars and accept the payment terms.",
-  "Нельзя изменить сохранённый платёж Stars.": "A saved Stars payment cannot be changed.",
-  "Оплата Telegram Stars пока не подключена.": "Telegram Stars payments are not connected yet.",
-  "Подожди минуту перед новым платежом Stars.": "Wait a minute before creating another Stars payment.",
-  "Вывод приостановлен: требуется сверка возврата Stars. Обратись в поддержку.": "Withdrawals are paused while a Stars refund is reviewed. Contact support.",
-  "Платёж Stars уже использован.": "This Stars payment has already been used."
-});
-Object.assign(paymentMethodsEnglish, { 'Баланс хранится в USDT.': 'Your balance is held in USDT.' });
-Object.assign(paymentMethodsEnglish, {
-  'Оплатить можно из кошелька в Telegram, другого криптокошелька или с биржи, если они поддерживают выбранную монету и сеть.':
-    'Pay from a wallet in Telegram, another crypto wallet or an exchange that supports the selected asset and network.',
-});
 Object.assign(english, paymentMethodsEnglish);

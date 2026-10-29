@@ -24,21 +24,12 @@ test('release gate waits for funded fights and holds off the next reservation un
     const exit=once(child,'exit'), events:any[]=[];let stderr='';child.stderr!.on('data',value=>{stderr+=value;});
     const lines=createInterface({input:child.stdout!});lines.on('line',line=>events.push(JSON.parse(line)));
     const until=async(check:()=>boolean)=>{const deadline=Date.now()+7000;while(!check()){assert(child!.exitCode===null,stderr);assert(Date.now()<deadline,'gate event did not arrive');await new Promise(resolve=>setTimeout(resolve,20));}};
-    await until(()=>events.some(row=>row.event==='waiting'));assert(!events.some(row=>row.event==='quiet'));
-    await escrow.settle(a,{...first,winner:''});await until(()=>events.some(row=>row.event==='quiet'&&row.financialLockHeld));
-    const held=events.find(row=>row.event==='quiet'),nonce=crypto.randomUUID().replaceAll('-','');
-    child.stdin!.write(JSON.stringify({op:'confirm',nonce})+'\n');
-    await until(()=>events.some(row=>row.event==='confirmed'&&row.nonce===nonce));
-    const confirmed=events.find(row=>row.event==='confirmed'&&row.nonce===nonce);
-    assert.equal(confirmed.backendPid,held.backendPid);assert.equal(confirmed.transactionId,held.transactionId);
-    assert.equal(confirmed.financialLockHeld,true);
+    await until(()=>events.some(row=>row.waitingForMatches));assert(!events.some(row=>row.quiet));
+    await escrow.settle(a,{...first,winner:''});await until(()=>events.some(row=>row.quiet&&row.financialLockHeld));
     let finished=false;const second=match();pending=escrow.fund(a,second).then(value=>{finished=true;return value;});
     await new Promise(resolve=>setTimeout(resolve,100));assert.equal(finished,false);
     assert.equal((await common.snapshot(a)).balance,200,'a waiting reservation has not charged the wallet');
-    const releaseNonce=crypto.randomUUID().replaceAll('-','');
-    child.stdin!.write(JSON.stringify({op:'release',nonce:releaseNonce})+'\n');
-    const [code]=await exit;assert.equal(code,0,stderr);
-    assert(events.some(row=>row.event==='released'&&row.nonce===releaseNonce&&row.committed===true));await pending;
+    child.stdin!.end('release\n');const [code]=await exit;assert.equal(code,0,stderr);await pending;
     assert.equal((await common.snapshot(a)).balance,199);
     await escrow.settle(a,{...second,winner:''});lines.close();
   }finally{

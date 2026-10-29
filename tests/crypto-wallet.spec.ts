@@ -151,7 +151,7 @@ test('country currency is an estimate, checkout stays in USDT and shows confirme
       currency: request.currency, address: 'T' + 'C'.repeat(33), memo: '', payAmount: '20', txHash: '', createdAt: Date.now() };
     state.operations = [operation]; return route.fulfill({ json: operation });
   });
-  await login(page); await expect(page.locator('#crypto-wallet-button')).toHaveText('Денежный баланс');
+  await login(page); await expect(page.locator('#crypto-wallet-button')).toHaveText('NOWPayments · Боевой');
   await page.locator('#crypto-wallet-button').click();
   await expect(page.locator('#crypto-display-currency')).toHaveValue('USDT');
   await page.locator('#crypto-display-currency').selectOption('RUB');

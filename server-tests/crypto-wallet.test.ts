@@ -242,12 +242,6 @@ test('HTTP endpoints require session ownership; signed IPN needs no player sessi
     assert.equal((await fetch(base + '/api/crypto-wallet', { headers })).status, 200);
     assert.equal((await fetch(base + '/api/crypto-wallet', { headers: { ...headers, 'X-Royal-Account-Id': 'bob' } })).status, 401);
     assert.equal((await fetch(base + '/api/crypto-wallet', { headers: { ...headers, Origin: 'https://evil.example' } })).status, 403);
-    for (const method of ['GET', 'POST']) {
-      const options = { method, ...(method === 'POST' ? { body: '{}' } : {}) };
-      assert.equal((await fetch(base + '/api/crypto-wallet/stars', { ...options, headers: { 'Content-Type': 'application/json' } })).status, 401);
-      assert.equal((await fetch(base + '/api/crypto-wallet/stars', { ...options, headers: { ...headers, 'X-Royal-Account-Id': 'bob' } })).status, 401);
-      assert.equal((await fetch(base + '/api/crypto-wallet/stars', { ...options, headers: { ...headers, Origin: 'https://evil.example' } })).status, 403);
-    }
     const displayResponse = await fetch(base + '/api/crypto-wallet/display-rate', { method: 'POST', headers, body: JSON.stringify({ currency: 'RUB' }) });
     assert.equal(displayResponse.status, 200); assert.equal((await displayResponse.json() as any).currency, 'RUB');
     assert.equal((await store.snapshot('alice') as any).balanceUnits, '0');

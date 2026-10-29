@@ -33,13 +33,10 @@ export class LastExitAudio {
  private burst(duration:number,gain:number,frequency:number){
   const c=gameAudio.context;if(!c||!this.bus||!this.noise||!this.allowed())return;const n=this.own(c.createBufferSource()),f=c.createBiquadFilter(),g=c.createGain(),t=c.currentTime;n.buffer=this.noise;f.type='lowpass';f.frequency.setValueAtTime(frequency,t);f.frequency.exponentialRampToValueAtTime(90,t+duration);g.gain.setValueAtTime(gain,t);g.gain.exponentialRampToValueAtTime(.0001,t+duration);n.connect(f);f.connect(g);g.connect(this.bus);n.start();n.stop(t+duration+.02);this.cueUntil=Math.max(this.cueUntil,t+duration);
  }
- update(phase:RacePhase,value:number,seconds:number,quiet=false,runId='',presentationAge?:number,restored=false){
-  const old=this.phase;this.phase=phase;const c=gameAudio.context;
-  // Reopened runs reuse the unlocked shared context, respecting mute and visibility.
-  if(c&&!this.bus&&gameAudio.output&&this.allowed()&&!restored&&phase!=='idle')this.create(c,gameAudio.output);
-  if(!c||!this.bus)return;
+ update(phase:RacePhase,value:number,seconds:number,quiet=false,runId='',presentationAge?:number){
+  const old=this.phase;this.phase=phase;const c=gameAudio.context;if(!c||!this.bus)return;
   const changed=old!==phase||runId!==this.runId;if(changed){this.phaseAt=c.currentTime;this.runId=runId;this.cueKeys.clear();this.cuePlayed=[];this.gear=-1;}
-  const age=presentationAge===undefined?c.currentTime-this.phaseAt:Math.max(0,presentationAge),on=this.allowed()&&!restored,running=phase==='racing',waiting=phase==='waiting';
+  const age=presentationAge===undefined?c.currentTime-this.phaseAt:Math.max(0,presentationAge),on=this.allowed(),running=phase==='racing',waiting=phase==='waiting';
   this.bus.gain.setTargetAtTime(on?.62:0,c.currentTime,.035);
   this.engine!.gain.setTargetAtTime(on&&(running||waiting||phase==='crashed'&&age<.6)?running?.50:.17:0,c.currentTime,.09);
   const road=running?1:phase==='escaped'?clamp(1-age/4):phase==='crashed'?clamp(1-age):0;
@@ -51,9 +48,9 @@ export class LastExitAudio {
   const rev=running?78+(seconds%1.65)*32+Math.min(45,Math.log(Math.max(1,value))*15):38;
   this.oscillators.forEach((o,i)=>o.frequency.setTargetAtTime(rev*(i+1),c.currentTime,.07));this.sirenOsc!.frequency.setTargetAtTime(620+Math.sin(seconds*2.7)*220,c.currentTime,.06);
   const cue=(key:string,at:number,play:()=>void)=>{if(age>=at&&!this.cueKeys.has(key)){this.cueKeys.add(key);if(on&&!quiet&&age<at+.24){play();this.cuePlayed.push(key);}}};
-  if(on&&changed){this.played[phase]=(this.played[phase]??0)+1;if(quiet&&phase==='crashed'&&age<.24)this.burst(.3,.16,900);}
+  if(on&&changed){this.played[phase]=(this.played[phase]??0)+1;if(quiet&&phase==='crashed')this.burst(.3,.16,900);}
   if(phase==='racing'){
-   if(seconds<.24)cue('launch',0,()=>{this.tone(42,105,.9,.17,'sawtooth');this.burst(.35,.14,1600);});
+   cue('launch',0,()=>{this.tone(42,105,.9,.17,'sawtooth');this.burst(.35,.14,1600);});
    const gear=Math.floor(seconds/1.65);if(gear>this.gear){if(this.gear>=0&&on&&!quiet)this.burst(.12,.085,2200);this.gear=gear;}
   }
   if(phase==='escaped'&&plane){cue('aircraft-departure',cargoTiming.departure,()=>{this.tone(90,32,2.2,.12,'sawtooth');this.burst(1.4,.08,2400);});cue('cargo-aircraft',cargoTiming.planeAt,()=>this.tone(45,85,4.2,.17,'sawtooth'));cue('ramp-launch',cargoTiming.takeoff,()=>{this.tone(90,280,.65,.16,'sawtooth');this.burst(.65,.19,4400);});cue('cargo-landing',cargoTiming.landing,()=>{this.burst(.5,.24,1800);this.tone(95,36,.6,.16);});}

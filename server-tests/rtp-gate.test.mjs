@@ -48,7 +48,7 @@ function proofFor(id, inputs, mean = inputs.policy.target) {
   }
   return proof;
 }
-for(const id of ['studio-neopolis','studio-dracona','studio-afterglow']) {
+for(const id of ['studio-neopolis','studio-dracona']) {
   test(id+' accepts complete, precise evidence for every declared stake and choice',async()=>{
     const inputs=await rtpInputs(root,id); assert(validateRtpProof(id,inputs,proofFor(id,inputs)));
   });

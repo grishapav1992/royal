@@ -42,7 +42,7 @@ async function mount(page: Page, gameId: string) {
 
 test('GIRLHUB only waits for its visible look, cancels gallery work and reuses decoded images', async ({ page }) => {
  const errors: string[] = [], requests: string[] = [], posts: unknown[] = [];
- const profile = { version: 4, revision: 0, selectedGirl: 0, selectedLook: 0, albumUnits: 90000, pointsUnits: [400000, 100000, 300000, 200000], unlocked: [true, true, true, true], active: false, activeGirl: null };
+ const profile = { version: 3, revision: 0, selectedGirl: 0, selectedLook: 0, albumUnits: 90000, pointsUnits: [400000, 100000, 300000, 200000], unlocked: [true, true, true, true], active: false, activeGirl: null };
  page.on('pageerror', error => errors.push(error.message)); page.on('request', request => requests.push(new URL(request.url()).pathname));
  await page.route('**/api/**', async route => {
   const path = new URL(route.request().url()).pathname;
@@ -85,7 +85,7 @@ test('a fresh GIRLHUB entry prepares the saved second look without loading the o
  page.on('request', request => requests.push(new URL(request.url()).pathname));
  await page.route('**/api/**', route => {
   const path = new URL(route.request().url()).pathname;
-  if (path.endsWith('/afterglow-wardrobe')) return route.fulfill({ json: { version: 4, revision: 4, selectedGirl: 3, selectedLook: 1, albumUnits: 90000, pointsUnits: [400000, 100000, 300000, 200000], unlocked: [true, true, true, true], active: false, activeGirl: null } });
+  if (path.endsWith('/afterglow-wardrobe')) return route.fulfill({ json: { version: 3, revision: 4, selectedGirl: 3, selectedLook: 1, albumUnits: 90000, pointsUnits: [400000, 100000, 300000, 200000], unlocked: [true, true, true, true], active: false, activeGirl: null } });
   if (path === '/api/demo-wallet') return route.fulfill({ json: { balance: 1000, entries: [] } });
   if (path.endsWith('/expansion')) return route.fulfill({ json: { wallet: { balance: 1000, entries: [] }, sessions: [] } });
   return route.fulfill({ status: 401, json: { error: 'Fixture' } });

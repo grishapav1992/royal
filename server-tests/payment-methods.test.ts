@@ -17,7 +17,7 @@ test.after(() => accounts.close());
 const config: SandboxConfig = { enabled: true, apiKey: 'sandbox-fixture-only', ipnSecret: 'sandbox-fixture-ipn-secret',
   currency: 'btc', origin: 'https://royal.example.test' };
 
-test('supported payment methods are listed; retired URLs cannot reach a legacy handler', async () => {
+test('only NOWPayments live and Sandbox remain; retired URLs cannot reach a legacy handler', async () => {
   const app = express(); installPaymentMethods(app);
   let legacyCalls = 0;
   app.use(['/api/nile-wallet', '/api/nile-play', '/api/game-wallet', '/api/usdt-wallet'], (_req, res) => { legacyCalls++; res.json({ unsafe: true }); });
@@ -25,7 +25,7 @@ test('supported payment methods are listed; retired URLs cannot reach a legacy h
   const address = server.address(); assert(address && typeof address !== 'string'); const base = `http://127.0.0.1:${address.port}`;
   try {
     const methods = await (await fetch(base + '/api/payment-methods')).json();
-    assert.deepEqual(methods.methods.map((m: any) => [m.id, m.environment]), [['nowpayments', 'live'], ['nowpayments-sandbox', 'sandbox'], ['telegram-stars', 'live']]);
+    assert.deepEqual(methods.methods.map((m: any) => [m.id, m.environment]), [['nowpayments', 'live'], ['nowpayments-sandbox', 'sandbox']]);
     for (const path of ['/api/nile-wallet', '/api/nile-play/claim', '/api/nile-play/deposit', '/api/game-wallet/deposit',
       '/api/usdt-wallet/deposit', '/api/USDT-WALLET/deposit/', '/api/game-wallet/expansion']) {
       for (const method of ['GET', 'POST']) {
