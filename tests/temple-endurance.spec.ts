@@ -11,7 +11,9 @@ async function report(name:string,value:unknown){await mkdir('artifacts/work/tem
 
 for(const scenario of ['cascade-blank','cascade-seed-118',undefined])test(`sustained autoplay settles once and remains bounded: ${scenario??'crypto randomness'}`,async({page})=>{
   const errors:string[]=[],accepted=new Map<string,any>(),posts:any[]=[],times:number[]=[];page.on('pageerror',e=>errors.push(e.message));
-  page.on('request',r=>{if(r.method()==='POST'&&r.url().endsWith('/expansion')){posts.push(r.postDataJSON());times.push(r.timing().startTime);}});
+  page.on('request',r=>{if(r.method()==='POST'&&r.url().endsWith('/expansion'))posts.push(r.postDataJSON());});
+  // Before requestfinished, the installed Playwright exposes startTime=0.
+  page.on('requestfinished',r=>{if(r.method()==='POST'&&r.url().endsWith('/expansion'))times.push(r.timing().startTime);});
   page.on('response',async r=>{if(r.request().method()==='POST'&&r.url().endsWith('/expansion')&&r.ok()){const value=await r.json();if(value.session.state==='settled')accepted.set(value.session.id,value.session);}});
   await ready(page,scenario);await game(page).locator('[data-ft=fast]').click();await game(page).locator('[data-ft=auto-count]').selectOption('100');const initial=await balance(page),samples:any[]=[];
   const rounds=scenario==='cascade-blank'?300:100;
@@ -23,6 +25,7 @@ for(const scenario of ['cascade-blank','cascade-seed-118',undefined])test(`susta
   }
   await done(page);await expect.poll(()=>accepted.size).toBe(rounds);
   const starts=posts.filter(p=>p.action==='start');expect(starts.length).toBe(rounds);expect(new Set(starts.map(p=>p.id)).size).toBe(rounds);
+  await expect.poll(()=>times.length).toBe(posts.length);expect(times.every(t=>Number.isFinite(t)&&t>0)).toBe(true);times.sort((a,b)=>a-b);
   const minimumRequestGapMs=Math.min(...times.slice(1).map((t,i)=>t-times[i]));
   const maximumRequestsInMinute=Math.max(...times.map((t,i)=>times.slice(0,i+1).filter(v=>v>t-60000).length));
   expect(maximumRequestsInMinute).toBeLessThanOrEqual(120);
