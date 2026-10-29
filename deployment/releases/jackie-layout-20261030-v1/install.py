@@ -38,7 +38,7 @@ def main():
     receipt = json.loads((ROOT / 'release-github.json').read_text())
     require(release['scope'] == 'modules' and release['modules'] == ['jackie-chan'], 'Unexpected release scope')
     require(release['sourceCommit'] == receipt['sourceCommit'], 'GitHub source receipt differs')
-    require(release['packages'] == [{'gameId': GAME, 'version': '1.0.1-cc883212059f',
+    require(release['packages'] == [{'gameId': GAME, 'version': '1.0.1-b1c164533d84',
                                    'pointer': 'module-dist/' + GAME + '/active.json'}], 'Unexpected package')
     package = Path(args.package).resolve()
     prefix = 'module-dist/' + GAME + '/versions/' + package.name + '/'
