@@ -1,0 +1,596 @@
+{
+  "format": 1,
+  "date": "2026-10-29",
+  "stage": "Final acceptance, step 1: sustained play and recovery",
+  "status": "passed",
+  "sourceCommit": "22b7a53fbcc2523fc79132224116e7d039f9813c",
+  "productionChanged": false,
+  "module": {
+    "gameId": "studio-flooded-temple",
+    "version": "0.9.1-38469264fc32",
+    "sourceSha256": "38469264fc32f962e8abf996118701efde18b4e48c3856f742f9dcca8f8ba9a4",
+    "manifestSha256": "d7696e4592811f9db9d7c7c2228e23e49a3e25546658732819b0d2814ac8b777",
+    "files": 41,
+    "contract": [
+      1,
+      2,
+      2
+    ]
+  },
+  "story": "Game button -> shared expansion client UUID -> common wallet/runtime -> PostgreSQL and native financial journal -> confirmed frames and balance",
+  "fix": {
+    "baselineVersion": "0.9.0",
+    "baseline": {
+      "requests": 121,
+      "statuses": {
+        "200": 120,
+        "429": 1
+      },
+      "problem": "Repeated quick autoplay exceeds the unchanged 120 new operations/minute account guard; pending UUID is retained and autoplay stops."
+    },
+    "version": "0.9.1",
+    "automaticRequestIntervalMs": 550,
+    "serverLimitUnchanged": 120,
+    "windowMs": 60000,
+    "presentationDurationsUnchanged": true,
+    "probabilitiesAndSettlementUnchanged": true
+  },
+  "acceptance": {
+    "paidRounds": 1800,
+    "browserPaidRounds": 520,
+    "serverPaidRounds": 1280,
+    "measurements": {
+      "store": {
+        "paidRounds": 1024,
+        "clock": "virtual, 1000 ms per paid round",
+        "stakes": [
+          1000,
+          2000,
+          5000,
+          10000,
+          20000,
+          50000
+        ],
+        "bonuses": 129,
+        "continuations": 257,
+        "retries": 277,
+        "restarts": 20,
+        "totalSpent": 14978000,
+        "totalReturned": 50845250,
+        "finalBalanceUnits": 99867250,
+        "draws": 61636,
+        "ledger": [
+          {
+            "kind": "bet",
+            "n": 1024,
+            "total": -14978000
+          },
+          {
+            "kind": "win",
+            "n": 1024,
+            "total": 50845250
+          }
+        ]
+      },
+      "native": {
+        "paidRounds": 256,
+        "clock": "virtual, 1000 ms per paid round",
+        "stakes": [
+          1000,
+          2000,
+          5000,
+          10000,
+          20000,
+          50000
+        ],
+        "bonuses": 32,
+        "continuations": 64,
+        "retries": 111,
+        "restarts": 64,
+        "draws": 15363,
+        "finalBalanceUnits": "1071057500000",
+        "reservedUnits": "0",
+        "journalAudits": 9
+      },
+      "cascade-blank": {
+        "paidRounds": 300,
+        "requests": 300,
+        "continuations": 0,
+        "elapsedMs": 168343.5,
+        "minimumRequestGapMs": 547.566650390625,
+        "maximumRequestsInMinute": 107,
+        "initialBalance": 10000,
+        "finalBalance": 7000,
+        "spentUnits": "300000",
+        "returnedUnits": "0",
+        "samples": [
+          {
+            "requests": 0,
+            "dom": 101,
+            "fx": 0,
+            "history": 0,
+            "voices": 2
+          },
+          {
+            "requests": 25,
+            "dom": 100,
+            "fx": 0,
+            "history": 25,
+            "voices": 3
+          },
+          {
+            "requests": 50,
+            "dom": 100,
+            "fx": 0,
+            "history": 50,
+            "voices": 3
+          },
+          {
+            "requests": 75,
+            "dom": 100,
+            "fx": 0,
+            "history": 75,
+            "voices": 3
+          },
+          {
+            "requests": 100,
+            "dom": 100,
+            "fx": 0,
+            "history": 100,
+            "voices": 3
+          },
+          {
+            "requests": 125,
+            "dom": 100,
+            "fx": 0,
+            "history": 100,
+            "voices": 3
+          },
+          {
+            "requests": 150,
+            "dom": 100,
+            "fx": 0,
+            "history": 100,
+            "voices": 4
+          },
+          {
+            "requests": 175,
+            "dom": 100,
+            "fx": 0,
+            "history": 100,
+            "voices": 3
+          },
+          {
+            "requests": 200,
+            "dom": 100,
+            "fx": 0,
+            "history": 100,
+            "voices": 3
+          },
+          {
+            "requests": 225,
+            "dom": 100,
+            "fx": 0,
+            "history": 100,
+            "voices": 3
+          },
+          {
+            "requests": 250,
+            "dom": 100,
+            "fx": 0,
+            "history": 100,
+            "voices": 3
+          },
+          {
+            "requests": 275,
+            "dom": 100,
+            "fx": 0,
+            "history": 100,
+            "voices": 3
+          },
+          {
+            "requests": 300,
+            "dom": 100,
+            "fx": 0,
+            "history": 100,
+            "voices": 3
+          }
+        ],
+        "errors": []
+      },
+      "cascade-seed-118": {
+        "paidRounds": 100,
+        "requests": 101,
+        "continuations": 1,
+        "elapsedMs": 56005.59228515625,
+        "minimumRequestGapMs": 549.1318359375,
+        "maximumRequestsInMinute": 101,
+        "initialBalance": 10000,
+        "finalBalance": 9932.5,
+        "spentUnits": "100000",
+        "returnedUnits": "93250",
+        "samples": [
+          {
+            "requests": 0,
+            "dom": 101,
+            "fx": 0,
+            "history": 0,
+            "voices": 2
+          },
+          {
+            "requests": 25,
+            "dom": 100,
+            "fx": 0,
+            "history": 25,
+            "voices": 3
+          },
+          {
+            "requests": 50,
+            "dom": 101,
+            "fx": 0,
+            "history": 50,
+            "voices": 3
+          },
+          {
+            "requests": 75,
+            "dom": 102,
+            "fx": 0,
+            "history": 75,
+            "voices": 3
+          },
+          {
+            "requests": 100,
+            "dom": 100,
+            "fx": 0,
+            "history": 99,
+            "voices": 3
+          }
+        ],
+        "errors": []
+      },
+      "crypto": {
+        "paidRounds": 100,
+        "requests": 101,
+        "continuations": 1,
+        "elapsedMs": 56531.811767578125,
+        "minimumRequestGapMs": 543.22509765625,
+        "maximumRequestsInMinute": 101,
+        "initialBalance": 10000,
+        "finalBalance": 10090,
+        "spentUnits": "100000",
+        "returnedUnits": "109000",
+        "samples": [
+          {
+            "requests": 0,
+            "dom": 101,
+            "fx": 0,
+            "history": 0,
+            "voices": 2
+          },
+          {
+            "requests": 25,
+            "dom": 101,
+            "fx": 0,
+            "history": 25,
+            "voices": 3
+          },
+          {
+            "requests": 50,
+            "dom": 100,
+            "fx": 0,
+            "history": 50,
+            "voices": 3
+          },
+          {
+            "requests": 75,
+            "dom": 100,
+            "fx": 0,
+            "history": 75,
+            "voices": 3
+          },
+          {
+            "requests": 100,
+            "dom": 101,
+            "fx": 0,
+            "history": 99,
+            "voices": 3
+          }
+        ],
+        "errors": []
+      },
+      "lost-starts": {
+        "paidRounds": 8,
+        "cases": [
+          {
+            "acceptedBeforeLoss": true,
+            "requests": 5,
+            "startAttempts": 4,
+            "paidRounds": 1,
+            "continuations": 1
+          },
+          {
+            "acceptedBeforeLoss": false,
+            "requests": 4,
+            "startAttempts": 4,
+            "paidRounds": 1,
+            "continuations": 0
+          },
+          {
+            "acceptedBeforeLoss": true,
+            "requests": 4,
+            "startAttempts": 4,
+            "paidRounds": 1,
+            "continuations": 0
+          },
+          {
+            "acceptedBeforeLoss": false,
+            "requests": 4,
+            "startAttempts": 4,
+            "paidRounds": 1,
+            "continuations": 0
+          },
+          {
+            "acceptedBeforeLoss": true,
+            "requests": 4,
+            "startAttempts": 4,
+            "paidRounds": 1,
+            "continuations": 0
+          },
+          {
+            "acceptedBeforeLoss": false,
+            "requests": 4,
+            "startAttempts": 4,
+            "paidRounds": 1,
+            "continuations": 0
+          },
+          {
+            "acceptedBeforeLoss": true,
+            "requests": 4,
+            "startAttempts": 4,
+            "paidRounds": 1,
+            "continuations": 0
+          },
+          {
+            "acceptedBeforeLoss": false,
+            "requests": 4,
+            "startAttempts": 4,
+            "paidRounds": 1,
+            "continuations": 0
+          }
+        ],
+        "initialBalance": 10000,
+        "finalBalance": 10285,
+        "returnedUnits": 36500
+      },
+      "tab-recovery": {
+        "paidRounds": 12,
+        "tabClosures": 12,
+        "rounds": [
+          {
+            "falls": 31,
+            "freeSpins": 20,
+            "operations": 2
+          },
+          {
+            "falls": 31,
+            "freeSpins": 20,
+            "operations": 2
+          },
+          {
+            "falls": 31,
+            "freeSpins": 20,
+            "operations": 2
+          },
+          {
+            "falls": 31,
+            "freeSpins": 20,
+            "operations": 2
+          },
+          {
+            "falls": 31,
+            "freeSpins": 20,
+            "operations": 2
+          },
+          {
+            "falls": 31,
+            "freeSpins": 20,
+            "operations": 2
+          },
+          {
+            "falls": 31,
+            "freeSpins": 20,
+            "operations": 2
+          },
+          {
+            "falls": 31,
+            "freeSpins": 20,
+            "operations": 2
+          },
+          {
+            "falls": 31,
+            "freeSpins": 20,
+            "operations": 2
+          },
+          {
+            "falls": 31,
+            "freeSpins": 20,
+            "operations": 2
+          },
+          {
+            "falls": 31,
+            "freeSpins": 20,
+            "operations": 2
+          },
+          {
+            "falls": 31,
+            "freeSpins": 20,
+            "operations": 2
+          }
+        ],
+        "requests": 24,
+        "initialBalance": 10000,
+        "finalBalance": 13510
+      }
+    },
+    "isolatedBrowserPorts": [
+      5230,
+      2630
+    ],
+    "workers": 2,
+    "requestTiming": "Browser startTime collected on requestfinished; every timestamp must be finite and positive; rolling 60-second windows checked",
+    "virtualClock": "Financial tests only; real time used by browser tests",
+    "stressResultsAreNotRtpEvidence": true
+  },
+  "checks": {
+    "enduranceServer": {
+      "passed": 2,
+      "durationMs": 120343.5467
+    },
+    "enduranceBrowser": {
+      "passed": 5,
+      "durationMinutes": 3.1
+    },
+    "templeRegression": {
+      "passed": 52
+    },
+    "browserRecoveryRegression": {
+      "passed": 8
+    },
+    "rtpGateRegression": {
+      "passed": 33
+    },
+    "moduleInventoryAndAssets": {
+      "passed": 7,
+      "identities": 121
+    },
+    "forestCompatibility": {
+      "passed": 8
+    },
+    "templeFlagCaribbeanMergeCompatibility": {
+      "passed": 23
+    },
+    "rtp": {
+      "verifiedProfiles": 17,
+      "legacyNotQualified": 114
+    },
+    "build": {
+      "format": 1,
+      "startedAt": "2026-10-29T15:42:20.191Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 3686
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 37421
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 108496
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 12185
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 701
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 112
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 80
+        }
+      ],
+      "passed": true,
+      "durationMs": 162682
+    }
+  },
+  "qualification": {
+    "proofs": [
+      {
+        "file": "docs/game-math/qualifications/flooded-temple-v1.json",
+        "regeneratedNormally": true,
+        "comparisonCommit": "6588022eea36973132ca9dadb25fd7f2066917dc",
+        "unchanged": {
+          "results": true,
+          "analysis": true,
+          "serverReplay": true
+        }
+      },
+      {
+        "file": "docs/game-math/qualifications/flooded-temple-v2.json",
+        "regeneratedNormally": true,
+        "comparisonCommit": "6588022eea36973132ca9dadb25fd7f2066917dc",
+        "unchanged": {
+          "results": true,
+          "analysis": true,
+          "serverReplay": true
+        }
+      },
+      {
+        "file": "docs/game-math/qualifications/forest-heart-v1.json",
+        "regeneratedNormally": true,
+        "comparisonCommit": "6588022eea36973132ca9dadb25fd7f2066917dc",
+        "unchanged": {
+          "results": true,
+          "analysis": true,
+          "serverReplay": true
+        }
+      },
+      {
+        "file": "docs/game-math/qualifications/caribbean-treasures-v1.json",
+        "regeneratedNormally": true,
+        "comparisonCommit": "6588022eea36973132ca9dadb25fd7f2066917dc",
+        "unchanged": {
+          "results": true,
+          "analysis": true,
+          "serverReplay": true
+        }
+      },
+      {
+        "file": "docs/game-math/qualifications/flag-battle-v2.json",
+        "regeneratedNormally": true,
+        "comparisonCommit": "b981b47",
+        "unchanged": {
+          "results": true,
+          "analysis": true
+        }
+      }
+    ],
+    "frozenLegacyBaselineUnchanged": true
+  },
+  "limits": [
+    "Synthetic accounts and isolated PostgreSQL, no real player funds or external transfers.",
+    "Long browser autoplay uses quick and reduced motion; ordinary presentation has separate regression coverage.",
+    "DOM/history/voice bounds do not establish heap leak freedom or physical phone performance.",
+    "Physical speaker, headphone and Bluetooth listening remains a later acceptance step.",
+    "Other simultaneous activity on the same account can consume the shared rate limit."
+  ],
+  "storage": {
+    "scope": "artifacts/work/temple-endurance",
+    "initialFreeBytes": 301796331520,
+    "inventoryFiles": 43,
+    "inventoryBytes": 689124727,
+    "freeBytesAtReport": 299234463744,
+    "cleanupStatus": "pending after exact GitHub preservation verification",
+    "removedBytes": 0,
+    "previousDeniedScopesUntouched": true,
+    "activeExceptions": [
+      "Current worktree and 0.9.1 package retained for the next acceptance steps.",
+      "Earlier user-loaded package versions and other games were not cleanup targets."
+    ]
+  }
+}
