@@ -5,8 +5,11 @@ import {randomUUID,randomBytes} from 'node:crypto';
 import {writeFile,mkdir} from 'node:fs/promises';
 import {temporaryDatabase} from './database-test';
 import {PostgresDatabase,databaseConfig} from '../server/database';
+import {JACKIE_COLLECTION_MAX} from '../src/shared/jackieChan';
 
 // Loopback-only preview, temporary PostgreSQL, simulated coins, no production .env.
+const initialBalance=Number(process.env.JACKIE_PREVIEW_BALANCE||10000),initialCollection=Number(process.env.JACKIE_PREVIEW_COLLECTION_UNITS||0);
+if(!Number.isFinite(initialBalance)||initialBalance<0||initialBalance>1000000||!Number.isSafeInteger(initialCollection)||initialCollection<0||initialCollection>JACKIE_COLLECTION_MAX)throw Error('Invalid isolated preview seed');
 const database=await temporaryDatabase(),port=Number(process.env.JACKIE_PREVIEW_PORT||5236);
 const socket=netServer();await new Promise<void>(yes=>socket.listen(0,'127.0.0.1',yes));const apiPort=(socket.address() as {port:number}).port;await new Promise<void>(yes=>socket.close(()=>yes()));
 const backend=spawn(process.execPath,['--import','tsx','server/index.ts'],{env:{...process.env,...database.env,AUTH_DB_PATH:'jackie_preview',PORT:String(apiPort)},stdio:['ignore','pipe','pipe']});
@@ -25,7 +28,7 @@ vite=await createServer({configFile:false,root:process.cwd(),cacheDir:'node_modu
     if(req.method!=='POST'||req.headers.origin!==origin){res.statusCode=403;res.end('{}');return;}
     try{
       const cookie=req.headers.cookie??'';let account=(await(await fetch(target+'/api/auth/me',{headers:{Cookie:cookie}})).json()).account;
-      if(!account){const login=await fetch(target+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:`jackie-preview-${randomUUID()}@example.test`,password:randomBytes(24).toString('hex')})});if(!login.ok)throw Error('Local login unavailable');account=(await login.json()).account;res.setHeader('Set-Cookie',login.headers.get('set-cookie')!);await previewConnection.prepare('INSERT INTO demo_wallets(account_id,balance,fraction_units) VALUES(?,10000,0) ON CONFLICT DO NOTHING').run(account.id);}
+      if(!account){const login=await fetch(target+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:`jackie-preview-${randomUUID()}@example.test`,password:randomBytes(24).toString('hex')})});if(!login.ok)throw Error('Local login unavailable');account=(await login.json()).account;res.setHeader('Set-Cookie',login.headers.get('set-cookie')!);await previewConnection.prepare('INSERT INTO demo_wallets(account_id,balance,fraction_units) VALUES(?,?,0) ON CONFLICT DO NOTHING').run(account.id,initialBalance);if(initialCollection)await previewConnection.prepare('INSERT INTO demo_jackie_collection(account_id,units) VALUES(?,?) ON CONFLICT DO NOTHING').run(account.id,initialCollection);}
       res.end(JSON.stringify({account:{id:account.id}}));
     }catch{res.statusCode=503;res.end(JSON.stringify({error:'Локальный просмотр пока не готов. Обнови страницу.'}));}
   });

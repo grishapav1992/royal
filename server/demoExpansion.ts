@@ -103,7 +103,7 @@ export class DemoExpansionStore {
     else if(isStudioGame(s.gameId)&&!validStudioSettlement(s.gameId,s.state,s.stakeUnits,s.spentUnits,s.returnedUnits,s.view.studio))throw Error('Invalid studio settlement');
     if(s.gameId===AFTER_GAME&&s.state==='settled')await this.wardrobe.completeRound(account,s.id,s.stakeUnits);
     if(s.gameId===JACKIE_GAME){
-      if(s.state==='settled'){const units=await this.jackieCollection.complete(account,s);s.view.jackie!.collectionUnits=s.view.jackie!.version===1?Math.min(JACKIE_LEGACY_COLLECTION_MAX,units):units;}
+      if(s.state==='settled'){const units=await this.jackieCollection.complete(account,s,s.view.jackie!.version);s.view.jackie!.collectionUnits=s.view.jackie!.version===1?Math.min(JACKIE_LEGACY_COLLECTION_MAX,units):units;}
       if(!validJackieSession(this.public(s)))throw Error('Invalid Jackie settlement');
     }
     await this.save(account,s);await saveDemoUnits(this.db,account,balance);

@@ -83,15 +83,19 @@ test('furniture survives pickup, strike, return and group transition on wins and
   await sharp({create:{width:1200,height:800,channels:3,background:'#1c1511'}}).composite(shots).png().toFile(out+'/furniture-sequence.png');
   await writeFile(out+'/furniture-continuity.json',JSON.stringify({frames,viewports:[1000,360],costumes:8,outcomes:['win','loss'],invariant:'Every selected item exists exactly once, attached or on the floor; chair is released only after lowering.'},null,2));
 });
-test('new wood and victory mix has bounded peaks and cancels all owned sound without closing the host context',async({page})=>{
-  const stats=await page.evaluate(async()=>{
+test('arcade hits land on the contact markers with headroom and cancel all owned sound',async({page})=>{
+  const stats=await page.evaluate(async({contacts})=>{
     const path='/src/game/GameAudio.ts',{gameAudio}=await import(/* @vite-ignore */path);const previousContext=gameAudio.context,previousOutput=gameAudio.output;
-    async function render(cancel:boolean){
+    async function render(cancel:boolean,success=true){
       const context=new OfflineAudioContext(1,9*44100,44100),output=context.createGain();output.connect(context.destination);gameAudio.context=context as unknown as AudioContext;gameAudio.output=output;
-      const Audio=(window as any).jackieMotion.audio.constructor,audio=new Audio();audio.allowed=()=>true;audio.begin(3,true,true);const scheduled=audio.state().active;if(cancel)audio.cancel();
-      const buffer=await context.startRendering(),data=buffer.getChannelData(0);let peak=0,energy=0,tailPeak=0;for(let i=0;i<data.length;i++){peak=Math.max(peak,Math.abs(data[i]));energy+=data[i]*data[i];if(i>8*44100)tailPeak=Math.max(tailPeak,Math.abs(data[i]));}audio.destroy();return{scheduled,peak,rms:Math.sqrt(energy/data.length),tailPeak,active:audio.state().active};
+      const Audio=(window as any).jackieMotion.audio.constructor,audio=new Audio();audio.allowed=()=>true;audio.begin(3,success,success);const scheduled=audio.state().active;if(cancel)audio.cancel();
+      const buffer=await context.startRendering(),data=buffer.getChannelData(0);let peak=0,energy=0,tailPeak=0;for(let i=0;i<data.length;i++){peak=Math.max(peak,Math.abs(data[i]));energy+=data[i]*data[i];if(i>8*44100)tailPeak=Math.max(tailPeak,Math.abs(data[i]));}
+      const windowPeak=(start:number,end:number)=>{let peak=0;for(let i=Math.floor(start*44100);i<end*44100;i++)peak=Math.max(peak,Math.abs(data[i]));return peak;};
+      const strikes=contacts.map(at=>({impact:windowPeak(.06+at-.004,.06+at+.04),swing:windowPeak(.06+at-.12,.06+at-.005)}));
+      audio.destroy();return{scheduled,peak,rms:Math.sqrt(energy/data.length),tailPeak,strikes,active:audio.state().active};
     }
-    try{return{mix:await render(false),cancelled:await render(true)};}finally{gameAudio.context=previousContext;gameAudio.output=previousOutput;}
-  });
-  expect(stats.mix.scheduled).toBeGreaterThan(0);expect(stats.mix.peak).toBeGreaterThan(.01);expect(stats.mix.peak).toBeLessThan(.8);expect(stats.mix.tailPeak).toBe(0);expect(stats.mix.active).toBe(0);expect(stats.cancelled.peak).toBe(0);expect(stats.cancelled.active).toBe(0);await writeFile(out+'/furniture-audio.json',JSON.stringify({...stats,interpretation:'Signal, headroom and cleanup checks only; not a subjective listening assessment.'},null,2));
+    try{return{mix:await render(false),loss:await render(false,false),cancelled:await render(true)};}finally{gameAudio.context=previousContext;gameAudio.output=previousOutput;}
+  },{contacts:[contactAt(0),contactAt(1),contactAt(2)]});
+  for(const mix of [stats.mix,stats.loss]){expect(mix.scheduled).toBeGreaterThan(0);expect(mix.peak).toBeLessThan(.8);expect(mix.tailPeak).toBe(0);expect(mix.active).toBe(0);for(const strike of mix.strikes){expect(strike.impact).toBeGreaterThan(.35);expect(strike.impact).toBeGreaterThan(strike.swing*2);}}
+  expect(stats.cancelled.peak).toBe(0);expect(stats.cancelled.active).toBe(0);await writeFile(out+'/furniture-audio.json',JSON.stringify({...stats,interpretation:'Contact timing, signal, headroom and cleanup checks only; not a subjective listening assessment.'},null,2));
 });

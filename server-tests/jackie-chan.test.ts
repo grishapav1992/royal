@@ -68,6 +68,7 @@ test('expanding the collection preserves old progress and round credits while ea
   const db=new PostgresDatabase(':memory:');try{
     await db.exec("CREATE TABLE accounts(id TEXT PRIMARY KEY); INSERT INTO accounts VALUES('alice'); CREATE TABLE demo_jackie_collection(account_id TEXT PRIMARY KEY REFERENCES accounts(id),units INTEGER NOT NULL CHECK(units BETWEEN 0 AND 90000)); INSERT INTO demo_jackie_collection VALUES('alice',90000)");
     let collection=new JackieCollectionStore(db,Promise.resolve());await collection.ready;assert.equal(await collection.read('alice'),90000);
+    const legacy={id:randomUUID(),gameId:JACKIE_GAME,stakeUnits:'50000',state:'settled'};assert.equal(await collection.complete('alice',legacy,1),90000);assert.equal(await collection.complete('alice',legacy,2),90000);
     for(const costume of JACKIE_COSTUMES.slice(4)){
       await db.prepare('UPDATE demo_jackie_collection SET units=? WHERE account_id=?').run(costume.target-1000,'alice');
       assert.throws(()=>startJackie(settings('safe',costume.id),'1000',costume.target-1,()=>0));
@@ -87,7 +88,7 @@ test('legacy clients can finish their original series while new collection sessi
     const old=start('hawk'),accepted=await legacy(old);assert.equal(accepted.session.view.jackie!.version,1);
     await f.db.prepare('UPDATE demo_jackie_collection SET units=? WHERE account_id=?').run(140000,'alice');
     const cashout={id:randomUUID(),gameId:JACKIE_GAME,action:'move' as const,sessionId:old.id,move:'cashout',revision:1};
-    const settled=await legacy(cashout);assert(validJackieSession(settled.session));assert.equal(settled.session.view.jackie!.version,1);assert.equal(settled.session.view.jackie!.collectionUnits,90000);assert.equal(await f.store.jackieCollection.read('alice'),190000);
+    const settled=await legacy(cashout);assert(validJackieSession(settled.session));assert.equal(settled.session.view.jackie!.version,1);assert.equal(settled.session.view.jackie!.collectionUnits,90000);assert.equal(await f.store.jackieCollection.read('alice'),140000);
     assert.deepEqual((await legacy(cashout)).session,settled.session);
     const modern=start('rush'),current=await f.act('alice',modern);assert.equal(current.session.view.jackie!.version,2);
     const list=await f.store.active('alice',true,true,true,true,true,true,true,2,4,true,true);assert(!list.sessions.some(s=>s.id===modern.id));

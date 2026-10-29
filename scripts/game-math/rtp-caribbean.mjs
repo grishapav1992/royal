@@ -18,7 +18,7 @@ export const CARIBBEAN_REVIEWED_SOURCES = {
   // Reviewed 2026-10-29: only Hong Kong Warrior's versioned costume collection and client filtering changed.
   // The complete-round model, choices, settlement and all Caribbean rules are identical.
   'src/shared/casinoExpansion.ts': 'ac3bbf050236e4d4146dc5309556775f161b5bac6e9182eec9e290ce8c42af5a',
-  'server/demoExpansion.ts': '1a538b0a79d603a10f463f1e0b7e657a96ea9fb816dcc6bbb8a9c5cc36f8d880',
+  'server/demoExpansion.ts': '9005f888097ccaddd6bbc5cb725252823e9913d78d8d3f1e480abd699baa333c',
   'server/finance/nile-game-runtime.ts': 'b28bb143c82edb0379e541ab30a3bd95c88077637e28309e4954f766f5ca5b69',
 };
 const WEIGHTS = [30,24,18,13,9,6];

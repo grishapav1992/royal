@@ -1,5 +1,5 @@
 import type { PostgresDatabase } from './database';
-import { JACKIE_GAME, JACKIE_COLLECTION_MAX } from '../src/shared/jackieChan';
+import { JACKIE_GAME, JACKIE_COLLECTION_MAX, JACKIE_LEGACY_COLLECTION_MAX } from '../src/shared/jackieChan';
 
 /** Cosmetic progress shares the account transaction and never changes the wallet. */
 export class JackieCollectionStore {
@@ -26,10 +26,11 @@ export class JackieCollectionStore {
     if (!Number.isSafeInteger(units) || units < 0 || units > JACKIE_COLLECTION_MAX) throw Error('Invalid Jackie progress');
     return units;
   }
-  async complete(account: string, session: {id: string; gameId: string; stakeUnits: string; state: string}): Promise<number> {
+  async complete(account: string, session: {id: string; gameId: string; stakeUnits: string; state: string}, version:1|2=2): Promise<number> {
     if (session.gameId !== JACKIE_GAME || session.state !== 'settled') throw Error('Jackie progress requires a completed paid series');
     const inserted = await this.db.prepare('INSERT INTO demo_jackie_collection_rounds(account_id,session_id) VALUES(?,?) ON CONFLICT DO NOTHING RETURNING session_id').get(account, session.id);
-    if (inserted) await this.db.prepare(`INSERT INTO demo_jackie_collection(account_id,units) VALUES(?,?) ON CONFLICT(account_id) DO UPDATE SET units=LEAST(${JACKIE_COLLECTION_MAX},demo_jackie_collection.units+EXCLUDED.units)`).run(account, Math.min(JACKIE_COLLECTION_MAX, Number(session.stakeUnits)));
+    const cap=version===1?JACKIE_LEGACY_COLLECTION_MAX:JACKIE_COLLECTION_MAX;
+    if (inserted) await this.db.prepare(`INSERT INTO demo_jackie_collection(account_id,units) VALUES(?,?) ON CONFLICT(account_id) DO UPDATE SET units=GREATEST(demo_jackie_collection.units,LEAST(${cap},demo_jackie_collection.units+EXCLUDED.units))`).run(account, Math.min(cap, Number(session.stakeUnits)));
     return this.read(account);
   }
 }
