@@ -19,6 +19,8 @@ import {CaribbeanMotion} from './CaribbeanMotion';
 
 const escape = (value: string) => value.replace(/[&<>"']/g, character => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]!));
 const namesEn = ['Map','Compass','Pistol','Cutlass','Ruby','Parrot'];
+const AUTO_COUNTS=[10,25,50,100] as const;
+type AutoNote=''|'complete'|'stopped'|'funds'|'error'|'paused'|'account';
 const portraitLayers='<span class="ct-portrait-gesture" data-pose="idle"><img class="ct-portrait-layer ct-current" src="/assets/caribbean-treasures/captain.webp" alt=""><img class="ct-portrait-layer" src="/assets/caribbean-treasures/captain.webp" alt=""></span>';
 export class CaribbeanUI {
   private services = readGameHost();
@@ -58,6 +60,13 @@ export class CaribbeanUI {
   private boardSignature='';
   private tally?:string;
   private actionError='';
+  private autoCount:number=10;
+  private autoRemaining=0;
+  private autoRunning=false;
+  private autoInFlight=false;
+  private autoEpoch=0;
+  private autoTimer?:ReturnType<typeof setTimeout>;
+  private autoNote:AutoNote='';
   private lastBalance?:number;
   private captain:CaribbeanCaptain;
   private visuals:CaribbeanMotion;
@@ -88,9 +97,12 @@ export class CaribbeanUI {
       + '<div class="ct-stage"><div class="ct-board-wrap"><div class="ct-board" role="img"></div><div class="ct-waiting" hidden></div></div><aside class="ct-captain" aria-hidden="true"><span class="ct-captain-body">'+portraitLayers+'</span><span class="ct-captain-caption" hidden></span></aside><div class="ct-map" role="status"></div></div>'
       + '<div class="ct-ledger"><div><span data-ct-label="balance"></span><div class="ct-balance-value"><strong data-ct-balance></strong><button type="button" class="ct-wallet" data-ct-action="wallet">+</button></div></div><div><span data-ct-label="cost"></span><strong data-ct-cost></strong></div><div><span data-ct-label="payout"></span><strong data-ct-payout></strong></div><div><span data-ct-label="net"></span><strong data-ct-net></strong></div></div>'
       + '<div class="ct-controls"><div class="ct-lines-control"><label for="ct-lines-input" data-ct-label="lines"></label><span class="ct-stepper"><button type="button" data-ct-action="lines-down">−</button><select id="ct-lines-input" data-ct-lines></select><button type="button" data-ct-action="lines-up">+</button></span></div><div class="ct-stake-control"><label for="ct-stake-input" data-ct-label="stake"></label><span class="ct-stepper"><button type="button" data-ct-action="stake-down">−</button><select id="ct-stake-input" data-ct-stake></select><button type="button" data-ct-action="stake-up">+</button></span></div><button type="button" data-ct-action="lines"></button><button type="button" data-ct-action="buy"></button><button type="button" class="ct-play" data-ct-action="play"><span class="ct-spin-icon" aria-hidden="true">↻</span><b></b><small></small></button></div>'
-      + '<div class="ct-status" role="status" aria-live="polite"></div><div class="ct-choice" hidden></div><button type="button" class="ct-retry" data-ct-action="retry" hidden></button><button type="button" class="ct-skip" data-ct-action="skip" hidden></button>'
+      + '<div class="ct-playback"><select data-ct-auto-count>'+AUTO_COUNTS.map(count=>'<option>'+count+'</option>').join('')+'</select><button type="button" data-ct-action="auto" aria-pressed="false"></button><button type="button" class="ct-skip" data-ct-action="skip" hidden></button></div>'
+      + '<div class="ct-status" role="status" aria-live="polite"></div><div class="ct-choice" hidden></div><button type="button" class="ct-retry" data-ct-action="retry" hidden></button>'
       + '<div class="ct-backdrop" hidden><section class="ct-modal" role="dialog" aria-modal="true"></section></div>';
     host.replaceChildren(this.root);
+    this.element('.ct-board-wrap').append(this.element('.ct-choice'));
+    this.element('.ct-playback').append(this.element('[data-ct-action=retry]'));
     this.captain=new CaribbeanCaptain(this.root);this.visuals=new CaribbeanMotion(this.root,()=>this.reduced);
     this.root.querySelector('h2')!.textContent = this.title;
     this.element<HTMLSelectElement>('[data-ct-lines]').innerHTML = CARIBBEAN_LINE_COUNTS.map(lines => '<option>' + lines + '</option>').join('');
@@ -110,7 +122,8 @@ export class CaribbeanUI {
       const button = event.target.closest<HTMLButtonElement>('[data-ct-action]');
       if (!button || button.disabled) return;
       const action = button.dataset.ctAction;
-      if (action === 'info' || action === 'history') this.openDialog(action);
+      if(action==='auto'){if(this.autoRunning)this.stopAuto('stopped');else this.startAuto();}
+      else if (action === 'info' || action === 'history') this.openDialog(action);
       else if (action === 'crew') {if(!this.blocked){this.openDialog('crew');void this.loadCrew();}}
       else if (action === 'wallet') window.dispatchEvent(new Event('royal-open-wallet'));
       else if (action === 'skip') this.stopPresentation();
@@ -118,7 +131,7 @@ export class CaribbeanUI {
       else if (action === 'music') {this.audio.setMusic(!this.audio.musicEnabled());void this.audio.enter();this.render();}
       else if (action === 'lines') { this.showLines = !this.showLines; this.render(); }
       else if (action?.startsWith('lines-') || action?.startsWith('stake-')) {
-        if(this.blocked || this.active || this.dialogKind)return;
+        if(this.blocked || this.active || this.dialogKind || this.autoRunning)return;
         this.actionError='';
         const direction=action.endsWith('up')?1:-1;
         if(action.startsWith('lines-'))this.lines=CARIBBEAN_LINE_COUNTS[Math.max(0,Math.min(3,CARIBBEAN_LINE_COUNTS.indexOf(this.lines)+direction))];
@@ -127,16 +140,19 @@ export class CaribbeanUI {
       }
       else if (action === 'buy') { if (!this.blocked && !this.active) this.openDialog('buy'); }
       else if (action === 'play') {
+        if(this.autoRunning)return;
         if (this.active) void this.move('caribbean-spin');
         else void this.start('normal');
       } else if (action === 'choose-raid' || action === 'choose-flagship') void this.move('caribbean-' + action);
       else if (action === 'retry') { if (!this.client.busy) void this.client.retry().catch(() => {}).finally(() => this.update()); }
     },{signal:this.lifetime.signal});
     this.root.addEventListener('change',event => {
-      if (this.blocked || this.active || this.dialogKind) { this.render(); return; }
+      if (this.blocked || this.active || this.dialogKind || this.autoRunning) { this.render(); return; }
       const target = event.target;
       this.actionError='';
-      if (target instanceof HTMLSelectElement && target.matches('[data-ct-lines]')) {
+      if(target instanceof HTMLSelectElement&&target.matches('[data-ct-auto-count]')){
+        const count=Number(target.value);if(AUTO_COUNTS.some(value=>value===count))this.autoCount=count;
+      }else if (target instanceof HTMLSelectElement && target.matches('[data-ct-lines]')) {
         const lines = Number(target.value); if (validCaribbeanLineCount(lines)) this.lines = lines;
       } else if (target instanceof HTMLSelectElement && target.matches('[data-ct-stake]') && validCaribbeanStake(target.value)) this.lineStake = target.value;
       this.render();
@@ -147,7 +163,9 @@ export class CaribbeanUI {
     this.client.addEventListener('change',this.update,{signal:this.lifetime.signal});
     this.services.demoWallet.addEventListener('change',this.update,{signal:this.lifetime.signal});
     window.addEventListener('royal-account',this.update,{signal:this.lifetime.signal});
-    document.addEventListener('visibilitychange',()=>{if(document.hidden)this.stopPresentation();else this.render();},{signal:this.lifetime.signal});
+    document.addEventListener('visibilitychange',()=>{if(document.hidden){this.stopAuto('paused');this.stopPresentation();}else this.render();},{signal:this.lifetime.signal});
+    window.addEventListener('blur',()=>this.stopAuto('paused'),{signal:this.lifetime.signal});
+    window.addEventListener('offline',()=>this.stopAuto('error'),{signal:this.lifetime.signal});
     this.motionPreference.addEventListener('change',()=>{if(this.reduced)this.stopPresentation();else this.render();},{signal:this.lifetime.signal});
     this.unsubscribeAudio=this.services.gameAudio.onPreferences(()=>this.render());
     this.update(); void this.client.refresh();
@@ -156,6 +174,7 @@ export class CaribbeanUI {
   private update = () => {
     if (this.disposed) return;
     if (this.account !== this.client.accountId) {
+      this.stopAuto('account',false);
       this.stopPresentation();this.captain.reset(true);this.account = this.client.accountId; this.sessionKey = ''; this.lines = 20; this.lineStake = '100';this.actionError='';this.lastBalance=undefined; this.closeDialog();
       this.crewAbort.abort();this.crewAbort=new AbortController();this.crewLoad++;this.crewProfile=undefined;this.crewMessage='';this.crewBusy=false;this.crewPendingCaptain=undefined;
       void this.captain.select(DEFAULT_CAPTAIN).then(()=>{if(!this.disposed)this.render();});
@@ -168,6 +187,7 @@ export class CaribbeanUI {
     }
     if (this.dialogKind === 'buy' && this.blocked) this.closeDialog();
     this.render();
+    this.pumpAuto();
   };
   private render() {
     if (this.disposed) return;
@@ -177,7 +197,7 @@ export class CaribbeanUI {
     this.captain?.context(!this.paused&&!document.hidden&&!this.dialogKind,this.reduced,this.english);
     this.restoreCrewCaptain();
     const crewButton=this.element<HTMLButtonElement>('[data-ct-action=crew]'),member=crewMember(this.captain.state().character)!;
-    crewButton.disabled=this.blocked;
+    crewButton.disabled=this.blocked||this.autoRunning;
     crewButton.setAttribute('aria-label',this.text('Выбрать пиратку. Сейчас: ','Choose a pirate. Current: ')+(this.english?member.en:member.ru));
     crewButton.title=this.text('Выбрать пиратку','Choose a pirate');
     this.root.setAttribute('aria-busy',String(this.presenting||this.client.busy));
@@ -188,7 +208,7 @@ export class CaribbeanUI {
     const skip=this.element('[data-ct-action=skip]');skip.hidden=!this.presenting||this.visualPhase==='waiting';skip.textContent=this.text('Показать итог сразу','Show final result');
     const lines = this.element<HTMLSelectElement>('[data-ct-lines]'), stake = this.element<HTMLSelectElement>('[data-ct-stake]');
     lines.value = String(this.lines); stake.value = this.lineStake;
-    lines.disabled = stake.disabled = this.blocked || !!this.active || !!this.dialogKind;
+    lines.disabled = stake.disabled = this.blocked || !!this.active || !!this.dialogKind || this.autoRunning;
     for(const kind of ['lines','stake'])for(const direction of ['down','up']){
       const button=this.element<HTMLButtonElement>('[data-ct-action='+kind+'-'+direction+']');
       const index=kind==='lines'?CARIBBEAN_LINE_COUNTS.indexOf(this.lines):CARIBBEAN_LINE_STAKES.findIndex(stake=>stake===this.lineStake);
@@ -213,11 +233,19 @@ export class CaribbeanUI {
     this.element('[data-ct-action=lines]').textContent = this.text('Показать линии','Show lines');
     this.element('[data-ct-action=lines]').setAttribute('aria-pressed',String(this.showLines));
     const buy = this.element<HTMLButtonElement>('[data-ct-action=buy]');
-    buy.textContent = this.text('Купить бонус','Buy bonus'); buy.disabled = this.blocked || !!this.active || !!this.dialogKind || !this.canAfford('buy-raid');
+    buy.textContent = this.text('Купить бонус','Buy bonus'); buy.disabled = this.blocked || !!this.active || !!this.dialogKind || this.autoRunning || !this.canAfford('buy-raid');
     const play = this.element<HTMLButtonElement>('[data-ct-action=play]');
     play.querySelector('b')!.textContent = view?.phase === 'choice' ? this.text('Тактика','Tactic') : this.active ? this.text('Бесплатно','Free spin') : this.text('Вращать','Spin');
     play.querySelector('small')!.textContent=view?.phase === 'choice' ? this.text('Выбери ниже','Choose below') : this.active ? this.text('Осталось ','Remaining ') + (view?.remaining ?? 0) : this.money(caribbeanInitialCost({lines:this.lines,mode:'normal'},this.lineStake))+' USDT';
-    play.disabled = this.blocked || !!this.dialogKind || view?.phase === 'choice' || !this.active&&!this.canAfford('normal');
+    play.disabled = this.blocked || !!this.dialogKind || this.autoRunning || view?.phase === 'choice' || !this.active&&!this.canAfford('normal');
+    const auto=this.element<HTMLButtonElement>('[data-ct-action=auto]'),count=this.element<HTMLSelectElement>('[data-ct-auto-count]');
+    auto.textContent=this.autoRunning?this.text('Стоп · ','Stop · ')+this.autoRemaining:this.text('Авто','Auto');
+    auto.setAttribute('aria-pressed',String(this.autoRunning));
+    auto.setAttribute('aria-label',this.autoRunning?this.text('Остановить автокрутку','Stop autoplay'):this.text('Начать автокрутку','Start autoplay'));
+    auto.disabled=!this.autoRunning&&(this.blocked||!!this.active||!!this.dialogKind||!!this.client.error||!!this.actionError||!this.canAfford('normal'));
+    count.value=String(this.autoCount);count.disabled=this.autoRunning||this.blocked||!!this.active||!!this.dialogKind;
+    count.setAttribute('aria-label',this.text('Количество автовращений','Autoplay spin count'));
+    this.element('.ct-playback').setAttribute('aria-label',this.text('Автокрутка и показ результата','Autoplay and result playback'));
     const retry = this.element<HTMLButtonElement>('[data-ct-action=retry]');
     retry.hidden = !this.client.pending; retry.disabled = this.client.busy;
     retry.textContent = this.text('Проверить тот же ход','Check the same operation');
@@ -226,6 +254,8 @@ export class CaribbeanUI {
       : this.services.demoWallet.pending ? this.text('Проверь предыдущую операцию общего кошелька.','Check the previous shared wallet operation.')
       : this.presenting && this.visualPhase!=='outcome' ? this.text('Показываем подтверждённый результат...','Revealing the confirmed result...')
       : !this.active && this.wallet && !this.canAfford('normal') ? this.text('Недостаточно средств: нужно ','Not enough funds: need ')+this.money(caribbeanInitialCost({lines:this.lines,mode:'normal'},this.lineStake))+' USDT. '+this.text('Уменьши ставку или открой кошелёк кнопкой + у баланса.','Lower your stake or open the wallet with + beside the balance.')
+      : this.autoRunning ? (view?.phase==='choice'?this.text('Выбери тактику. Автокрутка ждёт.','Choose your tactic. Autoplay is waiting.'):this.text('Автокрутка: осталось раундов ','Autoplay: rounds remaining ')+this.autoRemaining)
+      : this.autoNote ? this.autoLabel()
       : view?.phase==='complete' ? this.outcomeLabel(view)
       : this.active ? this.text('Продолжение бесплатно. Выплата начисляется в конце раунда.','Free continuation. The complete round is credited at the end.')
       : this.text('Гигантский символ занимает несколько клеток. Выплаты считаются по активным линиям.','A giant symbol fills several cells. Active lines determine the payouts.'));
@@ -269,19 +299,75 @@ export class CaribbeanUI {
     if (this.disposed || this.blocked || this.active || this.dialogKind) return;
     if(!this.canAfford(mode)){this.actionError=this.text('Недостаточно средств: нужно ','Not enough funds: need ')+this.money(caribbeanInitialCost({lines:this.lines,mode},this.lineStake))+' USDT.';this.render();return;}
     this.actionError='';
+    if(!this.autoRunning)this.autoNote='';
     const settings: CaribbeanSettings = {lines:this.lines,mode};
+    const before=this.session?.id;
     try { await this.perform(()=>this.client.act({gameId:CARIBBEAN_GAME,action:'start',stakeUnits:this.lineStake,settings:{caribbean:settings}})); }
     catch(error) {this.actionError=this.client.pending?'':error instanceof Error?error.message:this.client.error;}
     finally { this.update(); }
+    return !!this.session&&this.session.id!==before;
+  }
+  private autoLabel(){
+    return this.text({complete:'Автокрутка завершена.',stopped:'Автокрутка остановлена.',funds:'Авто остановлено: недостаточно средств.',error:'Авто остановлено: проверь ход перед продолжением.',paused:'Авто остановлено при паузе.',account:'Авто остановлено при смене аккаунта.','':''}[this.autoNote],
+      {complete:'Autoplay complete.',stopped:'Autoplay stopped.',funds:'Autoplay stopped: insufficient balance.',error:'Autoplay stopped: check the move before continuing.',paused:'Autoplay stopped on pause.',account:'Autoplay stopped on account change.','':''}[this.autoNote]);
+  }
+  private stopAuto(note:AutoNote,notify=true){
+    clearTimeout(this.autoTimer);this.autoTimer=undefined;this.autoEpoch++;
+    const running=this.autoRunning;this.autoRunning=false;this.autoRemaining=0;this.autoInFlight=false;
+    if(running)this.autoNote=note;
+    if(running&&notify&&!this.disposed)this.render();
+  }
+  private startAuto(){
+    if(this.disposed||this.blocked||this.active||this.dialogKind||this.client.error||this.actionError||this.autoRunning||document.hidden||!this.canAfford('normal'))return;
+    this.autoRunning=true;this.autoRemaining=this.autoCount;this.autoNote='';this.autoEpoch++;this.render();this.pumpAuto();
+  }
+  private pumpAuto(){
+    if(!this.autoRunning||this.disposed)return;
+    if(this.paused||document.hidden){this.stopAuto('paused');return;}
+    if(!this.client.accountId||this.account!==this.client.accountId){this.stopAuto('account');return;}
+    if(this.autoInFlight)return;
+    if(this.client.pending||this.client.error||this.actionError||this.services.demoWallet.pending){this.stopAuto('error');return;}
+    if(this.blocked||this.dialogKind)return;
+    if(this.active&&this.view?.phase==='choice')return;
+    if(!this.active){
+      if(this.autoRemaining===0){this.stopAuto('complete');return;}
+      if(!this.canAfford('normal')){this.stopAuto('funds');return;}
+    }
+    if(this.autoTimer)return;
+    const epoch=this.autoEpoch;
+    this.autoTimer=setTimeout(()=>{this.autoTimer=undefined;void this.nextAuto(epoch).catch(()=>{if(epoch===this.autoEpoch&&!this.disposed)this.stopAuto('error');});},600);
+  }
+  private async nextAuto(epoch:number){
+    if(epoch!==this.autoEpoch||!this.autoRunning||this.disposed)return;
+    if(this.blocked||this.dialogKind||document.hidden||this.client.error||this.actionError){this.pumpAuto();return;}
+    const continuation=!!this.active;
+    if(continuation&&this.view?.phase!=='bonus'){this.pumpAuto();return;}
+    if(!continuation&&!this.canAfford('normal')){this.stopAuto('funds');return;}
+    this.autoInFlight=true;
+    if(continuation){
+      const before=this.view?.revision;await this.move('caribbean-spin');
+      if(epoch!==this.autoEpoch||!this.autoRunning||this.disposed)return;
+      if(this.view?.revision===before){this.autoInFlight=false;this.stopAuto('error');return;}
+    }
+    else{
+      const accepted=await this.start('normal');
+      if(epoch!==this.autoEpoch||!this.autoRunning||this.disposed)return;
+      if(!accepted){this.autoInFlight=false;this.stopAuto('error');return;}
+      this.autoRemaining--;
+    }
+    if(epoch!==this.autoEpoch||!this.autoRunning||this.disposed)return;
+    this.autoInFlight=false;this.render();this.pumpAuto();
   }
   private async move(move: string) {
     const session = this.session, view = this.view;
     if (this.disposed || this.blocked || !session || !view || session.state !== 'active' || this.dialogKind) return;
     if (!session.view.actions.some(action => action.move === move && action.cost === 0)) return;
+    const manualAutoChoice=this.autoRunning&&!this.autoInFlight,epoch=this.autoEpoch;
+    if(manualAutoChoice)this.autoInFlight=true;
     this.actionError='';
     try { await this.perform(()=>this.client.act({gameId:CARIBBEAN_GAME,action:'move',sessionId:session.id,move,revision:view.revision})); }
     catch(error) {this.actionError=this.client.pending?'':error instanceof Error?error.message:this.client.error;}
-    finally { this.update(); }
+    finally {if(manualAutoChoice&&epoch===this.autoEpoch)this.autoInFlight=false;this.update();}
   }
   private outcomeLabel(view:CaribbeanView){
     const kind=caribbeanOutcome(view);
@@ -354,10 +440,11 @@ export class CaribbeanUI {
       if(this.motion===motion&&!this.disposed){this.tally=undefined;this.presenting=false;this.displayed=undefined;this.visualPhase='idle';this.stopped=6;this.captain.finish();this.render();}
     }
   }
-  pause(){this.paused=true;this.stopPresentation();}
+  pause(){this.paused=true;this.stopAuto('paused');this.stopPresentation();}
   resume(){this.paused=false;this.render();}
   private openDialog(kind: 'info' | 'history' | 'buy' | 'crew') {
     if (this.disposed) return;
+    this.stopAuto('stopped',false);
     if(this.presenting)this.stopPresentation();
     this.crewDialog=kind==='crew';this.dialogKind = kind==='crew'?'info':kind;
     const panel = this.element('.ct-modal'), view = this.view;
@@ -372,7 +459,8 @@ export class CaribbeanUI {
         + '<p>' + this.text('Коэффициенты относятся к ставке одной линии. Блок 2×2 может увеличиться залпом до 3×3. Расчёт выполняется по итоговому полю.','Multipliers use the stake per line. A cannon can grow a 2×2 block into 3×3. The final field determines payouts.') + '</p>'
         + '<p>' + this.text('Рейд: 14 вращений с блоком 2×2 и возможным залпом. Флагман: 6 вращений с блоком 3×3. Продления нет. Выплата всей серии начисляется в конце.','Raid: 14 spins with a 2×2 block and possible cannon. Flagship: 6 spins with a 3×3 block. No retriggers. The entire round is credited at the end.') + '</p>'
         + '<p>' + this.text('Бонусная карта открывается отдельным случайным событием после обычного вращения. Картинки карты в поле являются обычными оплачиваемыми символами. Выбирается первый набор из 1, 5, 10 или 20 фиксированных линий; отдельные маршруты не переключаются.','A separate random event after a base spin unlocks the bonus map. Map icons on the field are ordinary paying symbols. Select the first 1, 5, 10 or 20 fixed lines; individual routes cannot be switched.') + '</p>'
-        + '<p>' + this.text('Теоретический RTP около 96%. Частота блоков и входа в бонус зависит от набора линий. RTP относится к полной игре на длинной дистанции.','Theoretical RTP is approximately 96%. Block and bonus entry probabilities depend on the line preset. RTP describes complete rounds over the long term.') + '</p>';
+        + '<p>' + this.text('Теоретический RTP около 96%. Частота блоков и входа в бонус зависит от набора линий. RTP относится к полной игре на длинной дистанции.','Theoretical RTP is approximately 96%. Block and bonus entry probabilities depend on the line preset. RTP describes complete rounds over the long term.') + '</p>'
+        + '<p>' + this.text('Автокрутка запускает 10, 25, 50 или 100 обычных платных раундов по текущим линиям и ставке. Тактику бонуса выбираешь сам; бесплатные продолжения выполняются автоматически и не расходуют счётчик. Покупок бонуса в авто нет. «Стоп» отменяет следующие ходы, сохраняя уже принятый. Ошибка, неизвестный ответ, нехватка средств, пауза, смена аккаунта или закрытие останавливают авто. Самостоятельного возобновления нет.','Autoplay starts 10, 25, 50 or 100 normal paid rounds at the current lines and stake. Choose your bonus tactic yourself; free continuations run automatically without using the counter. Auto never buys a bonus. Stop cancels future moves and preserves accepted operations. An error, unknown response, insufficient funds, pause, account change or closing stops auto. It never resumes on its own.') + '</p>';
     } else if (kind === 'history') {
       body = '<h3>' + this.text('История текущего раунда','Current round history') + '</h3>' + (view ?
         '<p>' + this.text('Линий: ','Lines: ') + view.settings.lines + ' · ' + this.text('На линию: ','Per line: ') + this.money(view.lineStakeUnits) + ' USDT</p>'
@@ -494,10 +582,10 @@ export class CaribbeanUI {
   getState() {
     return {gameId:CARIBBEAN_GAME,phase:this.view?.phase ?? 'ready',sessionId:this.session?.id ?? null,
       revision:this.view?.revision ?? 0,lines:this.lines,lineStakeUnits:this.lineStake,pendingId:this.client.pending?.id ?? null,
-      presenting:this.presenting,visualPhase:this.visualPhase,audio:this.audio.state(),captain:this.captain.state(),collection:this.crewProfile?{tokens:this.crewProfile.tokens,owned:[...this.crewProfile.owned],selected:this.crewProfile.selected,day:this.crewProfile.day,revision:this.crewProfile.revision}:null,visuals:this.visuals.state(),accents:[...this.accents]};
+      presenting:this.presenting,visualPhase:this.visualPhase,autoplay:{running:this.autoRunning,remaining:this.autoRemaining,count:this.autoCount,timerPending:!!this.autoTimer,note:this.autoNote,waitingForTactic:this.autoRunning&&this.view?.phase==='choice'},audio:this.audio.state(),captain:this.captain.state(),collection:this.crewProfile?{tokens:this.crewProfile.tokens,owned:[...this.crewProfile.owned],selected:this.crewProfile.selected,day:this.crewProfile.day,revision:this.crewProfile.revision}:null,visuals:this.visuals.state(),accents:[...this.accents]};
   }
   destroy() {
     if (this.disposed) return;
-    this.stopPresentation();this.disposed = true;this.crewAbort.abort();this.captain.destroy();this.visuals.cancel();this.audio.destroy();this.unsubscribeAudio(); this.lifetime.abort(); this.dialog.destroy(); this.root.remove();
+    this.stopAuto('stopped',false);this.stopPresentation();this.disposed = true;this.crewAbort.abort();this.captain.destroy();this.visuals.cancel();this.audio.destroy();this.unsubscribeAudio(); this.lifetime.abort(); this.dialog.destroy(); this.root.remove();
   }
 }

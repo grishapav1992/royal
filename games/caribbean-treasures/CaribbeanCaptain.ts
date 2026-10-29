@@ -58,11 +58,12 @@ export class CaribbeanCaptain{
    const images=mount.querySelectorAll<HTMLImageElement>('.ct-portrait-layer');
    images[this.slot].src=crewPortrait(this.character,next);
    images.forEach((image,index)=>image.classList.toggle('ct-current',index===this.slot));
-   mount.dataset.pose=next;mount.classList.toggle('ct-blinking',previous==='blink'||next==='blink');
+   mount.dataset.pose=next;mount.classList.toggle('ct-blinking',next==='blink'||previous==='blink'&&next==='idle');
   }
   this.root.dataset.ctCaptainPose=next;
  }
  private gesture(kind:string,variant:number){
+  const starts=this.mounts.map(mount=>getComputedStyle(mount).transform);
   this.clearMotion();if(!this.active||this.reduced)return;
   const side=[-1,1,-.45][variant%3];
   const frames:Keyframe[]=kind==='cannon'?[{transform:'none'},{transform:'translate(5px, 2px) rotate(1deg)',offset:.2},{transform:'translate(-1px, 0) rotate(-.2deg)',offset:.65},{transform:'none'}]
@@ -70,10 +71,15 @@ export class CaribbeanCaptain{
    :kind==='win'||kind==='bonus'?[{transform:'none'},{transform:`translateY(-4px) rotate(${side*.55}deg)`,offset:.45},{transform:'none'}]
    :kind==='loss'||kind==='partial'?[{transform:'none'},{transform:'translateY(2px) rotate(-.4deg)',offset:.5},{transform:'none'}]
    :[{transform:'none'},{transform:`translateY(1.4px) rotate(${side*.25}deg)`,offset:.4},{transform:'none'}];
-  for(const mount of this.mounts){const animation=mount.animate(frames,{duration:kind==='stop'?260:kind==='cannon'?520:900,easing:'cubic-bezier(.2,.7,.25,1)'});this.animations.add(animation);void animation.finished.catch(()=>{}).finally(()=>this.animations.delete(animation));}
+  for(const [index,mount] of this.mounts.entries()){const animation=mount.animate([{transform:starts[index]},...frames.slice(1)],{duration:kind==='stop'?260:kind==='cannon'?520:900,easing:'cubic-bezier(.2,.7,.25,1)'});this.animations.add(animation);void animation.finished.catch(()=>{}).finally(()=>this.animations.delete(animation));}
  }
  begin(){
-  if(this.dead)return;if(this.loading)this.cancelSelection();this.clearTimer();this.clearMotion();this.sequence=[];this.holding=false;this.busy=true;this.reaction='focus';this.show('focus');this.say('');
+  if(this.dead)return;if(this.loading)this.cancelSelection();this.clearTimer();
+  const starts=this.mounts.map(mount=>getComputedStyle(mount).transform);this.clearMotion();
+  if(this.active&&!this.reduced)for(const [index,mount]of this.mounts.entries())if(starts[index]!=='none'){
+   const animation=mount.animate([{transform:starts[index]},{transform:'none'}],{duration:180,easing:'ease-out'});this.animations.add(animation);void animation.finished.catch(()=>{}).finally(()=>this.animations.delete(animation));
+  }
+  this.sequence=[];this.holding=false;this.busy=true;this.reaction='focus';this.show('focus');this.say('');
  }
  finish(){this.busy=false;if(!this.holding){this.reaction='idle';this.show('idle');this.say('');this.scheduleIdle();}}
  react(cue:CaribbeanCue,key:string,variant=0){
@@ -82,7 +88,7 @@ export class CaribbeanCaptain{
   this.clearTimer();this.sequence=[];this.holding=false;this.reaction=cue;
   const take=cue==='stop'?variant:this.variation++%3;
   const pose:CaptainPose=cue==='cannon'?'surprise':cue==='bonus'?'bonus':cue==='loss'||cue==='partial'?'soft':cue==='win'?'win':cue==='bigwin'?'laugh':cue==='return'?'idle':'focus';
-  this.show(pose);this.say(cue);this.gesture(cue,take);
+  this.show(pose);this.say(cue);if(cue!=='stop'||variant===5)this.gesture(cue,take);
   this.history.push({cue,pose:this.pose,variant:take,key,wallTimeMs:Date.now()});if(this.history.length>200)this.history.shift();
   if(['stop','giant','line','click'].includes(cue))return;
   this.holding=true;
