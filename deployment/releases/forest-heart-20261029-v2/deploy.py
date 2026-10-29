@@ -16,7 +16,7 @@ from financial_gate import FinancialGate
 
 ROOT=Path(__file__).resolve().parent
 LIVE=Path('/opt/royal'); FINANCE=Path('/opt/royal-finance'); STATE=Path('/opt/royal-game-modules-state')
-NAME='forest-heart-20261029-v1'; BACKUP=Path('/opt/royal-backups')/NAME
+NAME='forest-heart-20261029-v2'; BACKUP=Path('/opt/royal-backups')/NAME
 M=json.loads((ROOT/'install-manifest.json').read_text()); OLD=M['before']; SCOPE=json.loads((ROOT/'scope.json').read_text())
 MIN_FREE=5*1024**3
 sha=lambda p:hashlib.sha256(Path(p).read_bytes()).hexdigest()

@@ -1,6 +1,6 @@
 {
-  "release": "forest-heart-20261029-v1",
-  "base": "9acf3686965fedc0c81efaaa6f740e30d4fef175",
+  "release": "forest-heart-20261029-v2",
+  "base": "29851103da0f9bbf997d3933d9be005ec7d5d6bf",
   "allowedSource": [
     "docs/concepts/forest-heart/README.md",
     "docs/concepts/forest-heart/approved-concept-v1.png",

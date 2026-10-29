@@ -5,9 +5,9 @@ import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import assert from 'node:assert/strict';
 import { buildFinancial } from './financial-build.mjs';
-const helper = dirname(fileURLToPath(import.meta.url)), root = resolve(helper, '../../..'), work = resolve(root, 'artifacts/work/forest-heart-ux-v7'), out = resolve(work, 'release/payload-v2');
+const helper = dirname(fileURLToPath(import.meta.url)), root = resolve(helper, '../../..'), work = resolve(root, 'artifacts/work/forest-heart-ux-v7'), out = resolve(work, 'release-v2/payload');
 const json = path => JSON.parse(readFileSync(path, 'utf8').replace(/^\uFEFF/, '')), sha = path => createHash('sha256').update(readFileSync(path)).digest('hex');
-const scope = json(resolve(helper, 'scope.json')), before = json(resolve(work, 'production-before.json'));
+const scope = json(resolve(helper, 'scope.json')), before = json(resolve(work, 'production-current.json'));
 const git = (...args) => execFileSync(process.env.ROYAL_GIT_BINARY || 'git', args, { cwd: root, encoding: 'utf8' }).trim();
 const release = json(resolve(root, 'module-build/release-manifest.json')), receipt = json(resolve(root, 'module-build/release-github.json'));
 assert.equal(release.sourceCommit, git('rev-parse', 'HEAD')); assert.equal(release.baseCommit, scope.base); assert(release.build.passed);
@@ -93,5 +93,5 @@ const manifest = { release: scope.release, sourceCommit: release.sourceCommit, b
   modulePackage: { gameId: scope.changedGame, version: metadata.version, manifestSha256: pointer.sha256, beforeSha256: before.modules['/opt/royal-game-modules/' + scope.changedGame + '/active.json'] || 'none' },
   compatibility: { onlyForestHeartAdded: true, forestHeartRules: [1], neopolisAcceptedRules: [1,2,3,4], unchangedDependencyManifests: true, retainedOtherModules: true, retainedOtherBackendPrograms: ['dist-server/payments.js','dist-server/crypto-reconcile.js'] } };
 writeFileSync(resolve(out, 'install-manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
-execFileSync('tar', [...(process.platform === 'darwin' ? ['--no-xattrs'] : []), '-czf', resolve(work, 'release/transport.tgz'), '-C', out, '.'], { env: { ...process.env, COPYFILE_DISABLE: '1' } });
-console.log(JSON.stringify({ sourceCommit: release.sourceCommit, changedSources: Object.keys(source).length, financeSources: Object.keys(financeSource).length, clientFiles: Object.keys(dist).length, moduleFiles: Object.keys(modules).length, transportBytes: statSync(resolve(work, 'release/transport.tgz')).size }));
+execFileSync('tar', [...(process.platform === 'darwin' ? ['--no-xattrs'] : []), '-czf', resolve(work, 'release-v2/transport.tgz'), '-C', out, '.'], { env: { ...process.env, COPYFILE_DISABLE: '1' } });
+console.log(JSON.stringify({ sourceCommit: release.sourceCommit, changedSources: Object.keys(source).length, financeSources: Object.keys(financeSource).length, clientFiles: Object.keys(dist).length, moduleFiles: Object.keys(modules).length, transportBytes: statSync(resolve(work, 'release-v2/transport.tgz')).size }));
