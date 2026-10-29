@@ -1,3 +1,4 @@
+import {CARIBBEAN_CLIENT_HEADER} from '../src/shared/caribbeanTransport';
 import { NEOPOLIS_HEADER } from '../src/shared/neopolis';
 import {DRACONA_CLIENT_HEADER} from '../src/shared/dracona';
 import {PENALTY_CLIENT_HEADER} from '../src/shared/crLeo';
@@ -37,7 +38,7 @@ export function installDemoWallet(app: Application, requestLimitOptions?: DemoWa
   };
   app.use('/api/demo-wallet', authorize, createDemoWalletRequestLimit(requestLimitOptions), express.json({ limit: '2kb', inflate: false }), bodyError);
   app.get('/api/demo-wallet', async (_req, res) => res.json(await accounts.wallet.snapshot(res.locals.accountId)));
-  app.get('/api/demo-wallet/expansion',async (req,res,next)=>{try{res.json(await accounts.wallet.expansion.active(res.locals.accountId,req.get(CARAMEL_CLIENT_HEADER)==='1',req.get(VELVET_CLIENT_HEADER)==='1',req.get(CONVOY_CLIENT_HEADER)==='1',req.get(NITRO_CLIENT_HEADER)==='1',req.get(AFTER_CLIENT_HEADER)==='1',req.get(MEME_CLIENT_HEADER)==='1',req.get(PENALTY_CLIENT_HEADER)==='1',(req.get(DRACONA_CLIENT_HEADER)==='2'?2:req.get(DRACONA_CLIENT_HEADER)==='1'),(req.get(NEOPOLIS_HEADER)==='4'?4:req.get(NEOPOLIS_HEADER)==='3'?3:req.get(NEOPOLIS_HEADER)==='2'?2:req.get(NEOPOLIS_HEADER)==='1')));}catch(error){next(error);}});
+  app.get('/api/demo-wallet/expansion',async (req,res,next)=>{try{res.json(await accounts.wallet.expansion.active(res.locals.accountId,req.get(CARAMEL_CLIENT_HEADER)==='1',req.get(VELVET_CLIENT_HEADER)==='1',req.get(CONVOY_CLIENT_HEADER)==='1',req.get(NITRO_CLIENT_HEADER)==='1',req.get(AFTER_CLIENT_HEADER)==='1',req.get(MEME_CLIENT_HEADER)==='1',req.get(PENALTY_CLIENT_HEADER)==='1',(req.get(DRACONA_CLIENT_HEADER)==='2'?2:req.get(DRACONA_CLIENT_HEADER)==='1'),(req.get(NEOPOLIS_HEADER)==='4'?4:req.get(NEOPOLIS_HEADER)==='3'?3:req.get(NEOPOLIS_HEADER)==='2'?2:req.get(NEOPOLIS_HEADER)==='1'),req.get(CARIBBEAN_CLIENT_HEADER)==='1'));}catch(error){next(error);}});
   app.get('/api/demo-wallet/expansion/presentation',async (req,res)=>{
     try{
       const {sessionId,phase,step}=req.query;
@@ -46,7 +47,7 @@ export function installDemoWallet(app: Application, requestLimitOptions?: DemoWa
     }catch(error){if(error instanceof WalletError)res.status(error.status).json({error:error.message});else{console.error('Demo studio presentation read failed');res.status(500).json({error:'Не удалось загрузить показ. Используй сохранённый результат.'});}}
   });
   app.post('/api/demo-wallet/expansion',async (req,res)=>{
-    try{res.json(await accounts.wallet.expansion.operate(res.locals.accountId,req.body,req.get('X-Royal-Card-Rules')==='2'?2:1,req.get(CARAMEL_CLIENT_HEADER)==='1',req.get(VELVET_CLIENT_HEADER)==='1',req.get(CONVOY_CLIENT_HEADER)==='1',req.get(NITRO_CLIENT_HEADER)==='1',req.get(AFTER_CLIENT_HEADER)==='1',req.get(AFTER_PROGRESS_HEADER)===AFTER_PROGRESS_VERSION,req.get(MEME_CLIENT_HEADER)==='1',req.get(PENALTY_CLIENT_HEADER)==='1',(req.get(DRACONA_CLIENT_HEADER)==='2'?2:req.get(DRACONA_CLIENT_HEADER)==='1'),(req.get(NEOPOLIS_HEADER)==='4'?4:req.get(NEOPOLIS_HEADER)==='3'?3:req.get(NEOPOLIS_HEADER)==='2'?2:req.get(NEOPOLIS_HEADER)==='1')));}
+    try{res.json(await accounts.wallet.expansion.operate(res.locals.accountId,req.body,req.get('X-Royal-Card-Rules')==='2'?2:1,req.get(CARAMEL_CLIENT_HEADER)==='1',req.get(VELVET_CLIENT_HEADER)==='1',req.get(CONVOY_CLIENT_HEADER)==='1',req.get(NITRO_CLIENT_HEADER)==='1',req.get(AFTER_CLIENT_HEADER)==='1',req.get(AFTER_PROGRESS_HEADER)===AFTER_PROGRESS_VERSION,req.get(MEME_CLIENT_HEADER)==='1',req.get(PENALTY_CLIENT_HEADER)==='1',(req.get(DRACONA_CLIENT_HEADER)==='2'?2:req.get(DRACONA_CLIENT_HEADER)==='1'),(req.get(NEOPOLIS_HEADER)==='4'?4:req.get(NEOPOLIS_HEADER)==='3'?3:req.get(NEOPOLIS_HEADER)==='2'?2:req.get(NEOPOLIS_HEADER)==='1'),req.get(CARIBBEAN_CLIENT_HEADER)==='1'));}
     catch(error){if(error instanceof WalletError)res.status(error.status).json({error:error.message});else{console.error('Demo expansion operation failed');res.status(500).json({error:'Ответ не подтверждён. Повтори тот же ход.'});}}
   });
   app.get('/api/demo-wallet/convoy-progress',async (req,res)=>{

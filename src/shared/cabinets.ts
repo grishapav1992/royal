@@ -2,6 +2,7 @@ import { t as translateText, language } from '../i18n/index';
 export type Cabinet = { id: string; name: string; subtitle: string; x: number; y: number; color: number; playable: boolean; hall?: 'arcade' | 'tables' | 'github'; demo?: boolean; wallet?: boolean; provider?: boolean; github?: boolean; defaultGameId?: string; collection?: CabinetCollection | 'luelon' };
 
 import { PENALTY_GAME } from './crLeo';
+import { CARIBBEAN_GAME } from './caribbeanTreasures';
 import { BASE_EXPANSION_GAMES, EXPANSION_NAMES } from './casinoExpansion';
 import { STUDIO_GAMES, STUDIO_INFO } from './studioGames';
 import { CARD_GAME_IDS, CARD_GAME_NAMES, isCardGame, isRetiredCardGame, cardTableBounds } from './cardTables';
@@ -67,6 +68,8 @@ CARD_GAME_IDS.forEach((id,index)=>{
 for (let index = CABINETS.length - 1; index >= 0; index--) {
   if (isRetiredCardGame(CABINETS[index].id)) CABINETS.splice(index, 1);
 }
+
+CABINETS.push({id:CARIBBEAN_GAME,name:'Карибские сокровища',subtitle:'Гигантские символы · Капитанский залп · Две тактики',x:0,y:0,color:0xd7a04a,playable:true,wallet:true,hall:'arcade'});
 
 // Keep game descriptions available even when their game has no dedicated physical seat.
 CABINETS.push({id:'royal-roulette',name:translateText('Рулетка'),subtitle:translateText('Европейская рулетка · Одно зеро'),x:0,y:0,color:0xd7b472,playable:true,wallet:true,hall:'arcade'});

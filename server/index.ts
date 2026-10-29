@@ -1,4 +1,5 @@
 import { installDemoWallet } from './demoWalletRoutes';
+import {installCaribbeanCrew} from './caribbeanCrewRoutes';
 import { installGameModuleAssets } from './gameModuleAssets';
 import { installCasinoApiPro } from './casinoApiProRoutes';
 import { installCryptoWallet } from './cryptoWalletRoutes';
@@ -35,6 +36,7 @@ const server = defineServer({
     });
     installPaymentMethods(app);
     installAuth(app);
+    installCaribbeanCrew(app);
     installFinanceAdmin(app);
     installDemoWallet(app);
     stopSandbox = installSandboxPayments(app);

@@ -1,0 +1,21 @@
+{
+  "peak": 0.31254756450653076,
+  "rms": 0.02570598472865571,
+  "maxSampleStep": 0.17697072331793606,
+  "tail": 0,
+  "samples": {
+    "music": 1,
+    "click": 1,
+    "stop-a": 3,
+    "metal": 6,
+    "stop-b": 2,
+    "stop-c": 2,
+    "thud": 1,
+    "creak": 4,
+    "latch": 3,
+    "cannon": 1,
+    "coins-small": 3,
+    "coins": 2
+  },
+  "ready": true
+}

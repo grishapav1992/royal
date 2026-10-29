@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Локальный демобаланс Caribbean</title>
+<style>body{max-width:620px;margin:48px auto;padding:20px;background:#102b38;color:#ffedcc;font:18px/1.5 system-ui}button{padding:14px 20px;font:inherit;cursor:pointer}a{color:#ffda8c}</style>
+<h1>Локальное превью</h1><p>Бесплатные тестовые средства для запущенного Caribbean preview. Реальные платежи не выполняются.</p>
+<button id="local-fund" type="button">Добавить 1000 демомонет</button><p id="result" role="status"></p>
+<p>После пополнения вернись во вкладку игры и открой её заново, чтобы обновить баланс.</p>
+<script type="module">
+const button=document.querySelector('#local-fund'),status=document.querySelector('#result');
+button.addEventListener('click',async()=>{
+ button.disabled=true;status.textContent='Пополняем локальный демобаланс...';
+ try{const response=await fetch('/__test/caribbean/topup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({amount:1000})});
+ const reply=await response.json();if(!response.ok)throw Error(reply.error||'Локальный preview не запущен.');
+ status.textContent='Демобаланс: '+reply.wallet.balance.toLocaleString('ru-RU')+'.';
+ }catch(error){status.textContent=error.message;}finally{button.disabled=false;}
+});
+</script></html>

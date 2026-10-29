@@ -467,7 +467,57 @@
         "src/shared/demoWallet.ts",
         "server/demoWallet.ts"
       ]
+    },
+    "studio-caribbean-treasures": {
+      "rulesVersion": 1,
+      "progressVersion": 1,
+      "method": "exact-caribbean-giant-round-v1",
+      "target": 0.96,
+      "tolerance": 0.0005,
+      "stakes": [
+        100,
+        200,
+        500,
+        1000
+      ],
+      "choices": [
+        "lines-1-normal-raid",
+        "lines-1-normal-flagship",
+        "lines-1-buy-raid",
+        "lines-1-buy-flagship",
+        "lines-5-normal-raid",
+        "lines-5-normal-flagship",
+        "lines-5-buy-raid",
+        "lines-5-buy-flagship",
+        "lines-10-normal-raid",
+        "lines-10-normal-flagship",
+        "lines-10-buy-raid",
+        "lines-10-buy-flagship",
+        "lines-20-normal-raid",
+        "lines-20-normal-flagship",
+        "lines-20-buy-raid",
+        "lines-20-buy-flagship"
+      ],
+      "seeds": [
+        700131,
+        929827
+      ],
+      "serverReplayRoundsPerSeed": 32,
+      "proof": "docs/game-math/qualifications/caribbean-treasures-v1.json",
+      "qualificationSource": "scripts/game-math/rtp-caribbean.mjs",
+      "sources": [
+        "src/shared/caribbeanTreasuresMath.ts",
+        "src/shared/caribbeanTreasures.ts",
+        "server/games/caribbeanTreasures.ts",
+        "src/shared/caribbeanTransport.ts",
+        "src/shared/casinoExpansion.ts",
+        "server/demoExpansion.ts",
+        "server/finance/nile-game-runtime.ts",
+        "scripts/game-math/rational.mjs"
+      ]
     }
   },
-  "nonWagered": {}
+  "nonWagered": {
+    "caribbean-crew-collection": "Free educational challenges and cosmetic character ownership in the common account profile. No wager, paid cost, wallet conversion, random outcome, payout or paid-round bonus progress. The qualified studio-caribbean-treasures rules/progress 1 profile remains unchanged. See docs/concepts/caribbean-treasures/collection-policy.md."
+  }
 }

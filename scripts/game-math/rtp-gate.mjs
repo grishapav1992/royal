@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
 import { cosmicQualificationEvidence, COSMIC_QUALIFICATION_METHOD, COSMIC_QUALIFICATION_MODEL } from './rtp-cosmic.mjs';
+import { caribbeanQualificationEvidence, CARIBBEAN_QUALIFICATION_METHOD, CARIBBEAN_REVIEWED_SOURCES } from './rtp-caribbean.mjs';
 
 const digest = value => createHash('sha256').update(value).digest('hex');
 // Git checkouts use CRLF on Windows and LF in Linux CI. Hash canonical text.
@@ -34,6 +35,12 @@ export function validateRtpProof(gameId, inputs, proof) {
   assert.equal(proof.policySha256, inputs.policySha256, 'RTP policy changed: rerun qualification');
   assert.deepEqual(proof.sourceHashes, inputs.sourceHashes, 'RTP source changed: rerun qualification');
   if(p.method===ROULETTE_METHOD){assert.equal(gameId,'royal-roulette');return validateRouletteProof(p,proof);}
+  if(p.method===CARIBBEAN_QUALIFICATION_METHOD) {
+    assert.equal(gameId,'studio-caribbean-treasures');
+    assert.deepEqual(Object.fromEntries(Object.keys(CARIBBEAN_REVIEWED_SOURCES).map(file=>[file,inputs.sourceHashes[file]])),CARIBBEAN_REVIEWED_SOURCES,
+      'Caribbean mathematical source changed: review the complete-round model');
+    return validateCaribbeanProof(p,proof);
+  }
   if(p.method==='exhaustive-pvp-journal')return validatePvpProof(gameId,p,proof);
   if(p.method==='exhaustive-virtual-pvp-pot')return validateVirtualPvpProof(gameId,p,proof);
   if(p.method===COSMIC_QUALIFICATION_METHOD){
@@ -65,6 +72,79 @@ export function validateRtpProof(gameId, inputs, proof) {
   }
   assert(proof.serverReplayChecks >= p.stakes.length * p.choices.length * 64, 'Server replay cross-check is missing');
   if (p.method === 'neopolis-variable-stake-conditional-v4') validateNeopolisVariableStakeProof(p, proof);
+  return true;
+}
+function validateNeopolisVariableStakeProof(p, proof) {
+  assert.equal(proof.method, p.method);
+  assert.equal(p.rulesVersion, 4); assert.equal(p.progressVersion, 4);
+  assert.equal(p.confidenceZ,2.241402727604947); assert.equal(p.qualificationLooks,2);
+  assert.equal(p.qualificationCyclesPerSeed,30000); assert(p.minCycles>=60000);
+  assert.deepEqual(p.choices, ['granite','impulse','prism']);
+  assert.deepEqual(p.stakes, [1000,2000,5000,10000,20000,50000]);
+  assert.deepEqual(p.stakePolicies, ['fixed','raise-when-ready','lower-when-ready','alternate-extremes','cycle-stakes']);
+  assert.equal(p.conditionalTarget, p.target);
+  assert(p.conditionalTolerance > 0 && p.conditionalTolerance <= .01);
+  assert(p.conditionalMaxUpper95 <= p.maxUpper95 && p.conditionalMaxHalfWidth95 <= p.maxHalfWidth95);
+  assert(p.conditionalRoundsPerSeed >= 500000 && p.conditionalReadyRoundsPerSeed >= 4000000);
+  assert.equal(new Set([...p.seeds,...p.conditionalSeeds,...p.calibrationSeeds]).size, p.seeds.length+p.conditionalSeeds.length+p.calibrationSeeds.length, 'Calibration and qualification seeds must be independent');
+  function statistical(row) {
+    assert([row.samples,row.paidRounds,row.reward,row.cost,row.rewardSquared,row.rewardCost,row.costSquared,row.rtp,...row.interval95].every(Number.isFinite));
+    assert(row.samples > 1 && row.cost > 0 && row.paidRounds >= row.samples);
+    const mean = row.reward / row.cost;
+    const residual = Math.max(0, row.rewardSquared - 2 * mean * row.rewardCost + mean * mean * row.costSquared);
+    const half = (p.confidenceZ ?? 1.96) * Math.sqrt(row.samples * residual / (row.samples - 1)) / row.cost;
+    assert(Math.abs(row.rtp-mean)<1e-10 && Math.abs(row.interval95[0]-mean+half)<1e-9 && Math.abs(row.interval95[1]-mean-half)<1e-9, 'Invalid variable-stake statistical evidence');
+    assert(half>0 && half<=p.conditionalMaxHalfWidth95, 'Conditional estimate is too imprecise');
+    assert(Math.abs(mean-p.conditionalTarget)<=p.conditionalTolerance && mean+half<=p.conditionalMaxUpper95, 'Conditional or variable-stake RTP is outside the approved budget');
+  }
+  assert.equal(proof.stateResults.length, p.choices.length*16*p.stakes.length, 'Every public team state and stake must be qualified');
+  const keys = new Set();
+  for (const row of proof.stateResults) {
+    assert(p.choices.includes(row.choice) && p.stakes.includes(row.stakeUnits));
+    assert(Number.isInteger(row.state) && row.state>=0 && row.state<16);
+    const key = row.choice+':'+row.state+':'+row.stakeUnits; assert(!keys.has(key)); keys.add(key);
+    const charges = [3,3,3], others = [0,1,2].filter(i=>i!==p.choices.indexOf(row.choice));
+    charges[others[0]]=Math.floor(row.state/4); charges[others[1]]=row.state%4;
+    assert.deepEqual(row.charges,charges);
+    const count=(row.state===15?p.conditionalReadyRoundsPerSeed:p.conditionalRoundsPerSeed)*p.conditionalSeeds.length;
+    assert.equal(row.samples,count); assert.equal(row.paidRounds,count); assert.equal(row.cost,count); statistical(row);
+  }
+  assert.equal(proof.conditionalStreams.length,p.choices.length*16*p.conditionalSeeds.length);
+  for (const [i,hero] of p.choices.entries()) for (let state=0;state<16;state++) for (const seed of p.conditionalSeeds) {
+    assert(proof.conditionalStreams.some(row=>row.hero===hero&&row.state===state&&row.seed===seed+i*1000003+state*7919&&row.paidRounds===(state===15?p.conditionalReadyRoundsPerSeed:p.conditionalRoundsPerSeed)));
+  }
+  assert.equal(proof.stakePolicyResults.length,p.choices.length*(p.stakePolicies.length-1)*p.stakes.length,'Adaptive stake policies must be qualified');
+  const weightedKeys=new Set();
+  for (const row of proof.stakePolicyResults) {
+    assert(p.choices.includes(row.choice)&&p.stakes.includes(row.stakeUnits)&&p.stakePolicies.includes(row.stakePolicy)&&row.stakePolicy!=='fixed');
+    const key=row.choice+':'+row.stakePolicy+':'+row.stakeUnits; assert(!weightedKeys.has(key));weightedKeys.add(key);
+    assert(row.cycles>=p.minCycles&&row.samples===row.cycles&&row.paidRounds>=p.minPaidRounds);
+    assert(row.cost>=row.paidRounds&&row.cost<=row.paidRounds*p.stakes.at(-1)/p.stakes[0]); statistical(row);
+  }
+  assert(proof.serverReplayChecks>=p.choices.length*16*p.stakes.length*64,'Every conditional state needs a real server replay');
+}
+function validateCaribbeanProof(p,proof){
+  const expected=caribbeanQualificationEvidence(p);
+  assert.equal(proof.method,expected.method);
+  assert.deepEqual(proof.analysis,expected.analysis,'Invalid Caribbean analytical derivation');
+  assert.deepEqual(proof.results,expected.results,'Every Caribbean line selection, mode and stake must match the exact complete-round expectation');
+  assert(proof.serverReplay&&Array.isArray(proof.serverReplay.coverage));
+  assert.deepEqual(proof.serverReplay.seeds,p.seeds);
+  assert.equal(proof.serverReplay.coverage.length,p.choices.length*p.stakes.length);
+  let total=0;const seen=new Set();
+  for(const row of proof.serverReplay.coverage){
+    assert(p.choices.includes(row.choice)&&p.stakes.includes(row.stakeUnits));
+    const key=row.choice+':'+row.stakeUnits;assert(!seen.has(key));seen.add(key);
+    assert.equal(row.paidRounds,p.seeds.length*p.serverReplayRoundsPerSeed);
+    const result=expected.results.find(result=>result.choice===row.choice&&result.stakeUnits===row.stakeUnits);
+    assert(Number.isSafeInteger(row.spins)&&row.spins>=row.paidRounds&&row.spins<=row.paidRounds*result.maximumSpins);
+    if(row.choice.includes('-buy-'))assert.equal(row.spins,row.paidRounds*result.maximumSpins);
+    assert(typeof row.sha256==='string'&&/^[a-f0-9]{64}$/.test(row.sha256));
+    total+=row.paidRounds;
+  }
+  assert.equal(proof.serverReplayChecks,total);
+  assert(Number.isSafeInteger(proof.serverReplay.cannons)&&proof.serverReplay.cannons>0);
+  assert(Number.isSafeInteger(proof.serverReplay.naturalEntries)&&proof.serverReplay.naturalEntries>=p.seeds.length*4*p.stakes.length*2);
   return true;
 }
 function validateCosmicProof(gameId,p,proof){
@@ -158,54 +238,4 @@ export async function checkGameRtp(root, catalog, selected = catalog.map(game =>
     validateRtpProof(gameId, inputs, proof); verified++;
   }
   return { verified, legacyNotQualified: baseline.games.length };
-}
-
-function validateNeopolisVariableStakeProof(p, proof) {
-  assert.equal(proof.method, p.method);
-  assert.equal(p.rulesVersion, 4); assert.equal(p.progressVersion, 4);
-  assert.equal(p.confidenceZ,2.241402727604947); assert.equal(p.qualificationLooks,2);
-  assert.equal(p.qualificationCyclesPerSeed,30000); assert(p.minCycles>=60000);
-  assert.deepEqual(p.choices, ['granite','impulse','prism']);
-  assert.deepEqual(p.stakes, [1000,2000,5000,10000,20000,50000]);
-  assert.deepEqual(p.stakePolicies, ['fixed','raise-when-ready','lower-when-ready','alternate-extremes','cycle-stakes']);
-  assert.equal(p.conditionalTarget, p.target);
-  assert(p.conditionalTolerance > 0 && p.conditionalTolerance <= .01);
-  assert(p.conditionalMaxUpper95 <= p.maxUpper95 && p.conditionalMaxHalfWidth95 <= p.maxHalfWidth95);
-  assert(p.conditionalRoundsPerSeed >= 500000 && p.conditionalReadyRoundsPerSeed >= 4000000);
-  assert.equal(new Set([...p.seeds,...p.conditionalSeeds,...p.calibrationSeeds]).size, p.seeds.length+p.conditionalSeeds.length+p.calibrationSeeds.length, 'Calibration and qualification seeds must be independent');
-  function statistical(row) {
-    assert([row.samples,row.paidRounds,row.reward,row.cost,row.rewardSquared,row.rewardCost,row.costSquared,row.rtp,...row.interval95].every(Number.isFinite));
-    assert(row.samples > 1 && row.cost > 0 && row.paidRounds >= row.samples);
-    const mean = row.reward / row.cost;
-    const residual = Math.max(0, row.rewardSquared - 2 * mean * row.rewardCost + mean * mean * row.costSquared);
-    const half = (p.confidenceZ ?? 1.96) * Math.sqrt(row.samples * residual / (row.samples - 1)) / row.cost;
-    assert(Math.abs(row.rtp-mean)<1e-10 && Math.abs(row.interval95[0]-mean+half)<1e-9 && Math.abs(row.interval95[1]-mean-half)<1e-9, 'Invalid variable-stake statistical evidence');
-    assert(half>0 && half<=p.conditionalMaxHalfWidth95, 'Conditional estimate is too imprecise');
-    assert(Math.abs(mean-p.conditionalTarget)<=p.conditionalTolerance && mean+half<=p.conditionalMaxUpper95, 'Conditional or variable-stake RTP is outside the approved budget');
-  }
-  assert.equal(proof.stateResults.length, p.choices.length*16*p.stakes.length, 'Every public team state and stake must be qualified');
-  const keys = new Set();
-  for (const row of proof.stateResults) {
-    assert(p.choices.includes(row.choice) && p.stakes.includes(row.stakeUnits));
-    assert(Number.isInteger(row.state) && row.state>=0 && row.state<16);
-    const key = row.choice+':'+row.state+':'+row.stakeUnits; assert(!keys.has(key)); keys.add(key);
-    const charges = [3,3,3], others = [0,1,2].filter(i=>i!==p.choices.indexOf(row.choice));
-    charges[others[0]]=Math.floor(row.state/4); charges[others[1]]=row.state%4;
-    assert.deepEqual(row.charges,charges);
-    const count=(row.state===15?p.conditionalReadyRoundsPerSeed:p.conditionalRoundsPerSeed)*p.conditionalSeeds.length;
-    assert.equal(row.samples,count); assert.equal(row.paidRounds,count); assert.equal(row.cost,count); statistical(row);
-  }
-  assert.equal(proof.conditionalStreams.length,p.choices.length*16*p.conditionalSeeds.length);
-  for (const [i,hero] of p.choices.entries()) for (let state=0;state<16;state++) for (const seed of p.conditionalSeeds) {
-    assert(proof.conditionalStreams.some(row=>row.hero===hero&&row.state===state&&row.seed===seed+i*1000003+state*7919&&row.paidRounds===(state===15?p.conditionalReadyRoundsPerSeed:p.conditionalRoundsPerSeed)));
-  }
-  assert.equal(proof.stakePolicyResults.length,p.choices.length*(p.stakePolicies.length-1)*p.stakes.length,'Adaptive stake policies must be qualified');
-  const weightedKeys=new Set();
-  for (const row of proof.stakePolicyResults) {
-    assert(p.choices.includes(row.choice)&&p.stakes.includes(row.stakeUnits)&&p.stakePolicies.includes(row.stakePolicy)&&row.stakePolicy!=='fixed');
-    const key=row.choice+':'+row.stakePolicy+':'+row.stakeUnits; assert(!weightedKeys.has(key));weightedKeys.add(key);
-    assert(row.cycles>=p.minCycles&&row.samples===row.cycles&&row.paidRounds>=p.minPaidRounds);
-    assert(row.cost>=row.paidRounds&&row.cost<=row.paidRounds*p.stakes.at(-1)/p.stakes[0]); statistical(row);
-  }
-  assert(proof.serverReplayChecks>=p.choices.length*16*p.stakes.length*64,'Every conditional state needs a real server replay');
 }

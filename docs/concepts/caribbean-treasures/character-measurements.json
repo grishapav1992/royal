@@ -1,0 +1,168 @@
+{
+  "format": 1,
+  "date": "2026-10-28",
+  "sourceCommit": "e6b1bfd3162ea7a5340edbf24377c197306bf0f2",
+  "poses": 8,
+  "newMasters": 6,
+  "displayedOutcomeSource": "Actual common wallet/backend rounds with saved local-only scenario seeds",
+  "results": [
+    {
+      "name": "partial",
+      "costUnits": "2000",
+      "payoutUnits": "200",
+      "cues": [
+        "stop",
+        "line",
+        "partial"
+      ],
+      "poses": [
+        "focus",
+        "soft"
+      ],
+      "stopVariants": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "name": "loss",
+      "costUnits": "2000",
+      "payoutUnits": "0",
+      "cues": [
+        "stop",
+        "giant",
+        "loss"
+      ],
+      "poses": [
+        "focus",
+        "soft"
+      ],
+      "stopVariants": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "name": "return",
+      "costUnits": "2000",
+      "payoutUnits": "2000",
+      "cues": [
+        "stop",
+        "line",
+        "return"
+      ],
+      "poses": [
+        "focus",
+        "idle"
+      ],
+      "stopVariants": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "name": "positive",
+      "costUnits": "2000",
+      "payoutUnits": "2400",
+      "cues": [
+        "stop",
+        "giant",
+        "line",
+        "win"
+      ],
+      "poses": [
+        "focus",
+        "win"
+      ],
+      "stopVariants": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "name": "natural-flagship",
+      "costUnits": "2000",
+      "payoutUnits": "63000",
+      "cues": [
+        "stop",
+        "bonus",
+        "giant",
+        "line",
+        "bigwin"
+      ],
+      "poses": [
+        "focus",
+        "bonus",
+        "laugh"
+      ],
+      "stopVariants": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "name": "cannon",
+      "cues": [
+        "bonus",
+        "stop",
+        "giant",
+        "cannon",
+        "line"
+      ],
+      "poses": [
+        "bonus",
+        "focus",
+        "surprise"
+      ],
+      "stopVariants": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    }
+  ],
+  "lifecycle": {
+    "idleBlinkAndGlance": true,
+    "eventDeduplication": true,
+    "reducedMotionStaticPose": true,
+    "hiddenTimers": 0,
+    "hiddenAnimations": 0,
+    "destroyedTimers": 0,
+    "destroyedAnimations": 0,
+    "noReopenRewardReplay": true
+  },
+  "preview": {
+    "path": "animation-preview.mp4",
+    "silent": true,
+    "recordedFrom": "Real Royal host with connected chat",
+    "bytes": 6370525,
+    "sha256": "eb2985b41fcaebad6f04ef69aec3428b1f594bfe937f7c2805bbad534a2fb485"
+  },
+  "limits": [
+    "Selected presentation scenarios are not an RTP sample",
+    "Technical and visual QA do not establish subjective preference"
+  ]
+}

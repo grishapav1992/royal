@@ -1,0 +1,1543 @@
+{
+  "date": "2026-10-28",
+  "owner": "caribbean-recorded-audio",
+  "preservationCommit": "c828aad51d0a6f36e651a896b80dc10dba6a7656",
+  "preservationRef": "refs/heads/codex/caribbean-recorded-audio",
+  "remoteCommitVerified": true,
+  "taskStartFreeBytes": 300897689600,
+  "freeBeforeStopBytes": 304189444096,
+  "removedFiles": [],
+  "removedArchives": [],
+  "removedLogicalBytes": 0,
+  "cleanupBlock": {
+    "action": "Delete only task-owned downloaded ZIP archives, duplicated source WAV/OGG, copied review screenshots, duplicated preview WAV and build log after GitHub verification",
+    "reason": "Automatic approval review rejected the command: blocked by policy",
+    "attemptExecuted": false
+  },
+  "retainedTaskArtifacts": {
+    "folder": "artifacts/work/caribbean-recorded-audio",
+    "bytes": 91838086,
+    "inventoriedAudioFiles": [
+      {
+        "file": "blackmoor.zip",
+        "bytes": 57333122
+      },
+      {
+        "file": "cannon.ogg",
+        "bytes": 181628
+      },
+      {
+        "file": "casino.zip",
+        "bytes": 876839
+      },
+      {
+        "file": "impact.zip",
+        "bytes": 800850
+      },
+      {
+        "file": "music.wav",
+        "bytes": 23990578
+      },
+      {
+        "file": "rpg.zip",
+        "bytes": 964837
+      },
+      {
+        "file": "sound-preview.wav",
+        "bytes": 1675844
+      }
+    ],
+    "cleanupCondition": "Remove inventoried redundant downloads and temporary review media when cleanup is permitted; required source masters and final media are verified in GitHub."
+  },
+  "retainedInactivePackages": [
+    {
+      "folder": "module-dist/github-andar-bahar/versions/1.0.0-0d08a69e741e",
+      "bytes": 226399
+    },
+    {
+      "folder": "module-dist/github-andar-bahar/versions/1.0.0-3cc18fedf68c",
+      "bytes": 226399
+    },
+    {
+      "folder": "module-dist/github-baccarat/versions/1.0.0-5bd9caaa8fcc",
+      "bytes": 8534336
+    },
+    {
+      "folder": "module-dist/github-baccarat/versions/1.0.0-c39cf8c656df",
+      "bytes": 8534336
+    },
+    {
+      "folder": "module-dist/github-blackjack/versions/1.0.0-3b21260dec63",
+      "bytes": 8534339
+    },
+    {
+      "folder": "module-dist/github-blackjack/versions/1.0.0-991aa86a213c",
+      "bytes": 8534339
+    },
+    {
+      "folder": "module-dist/github-caribbean/versions/1.0.0-8e2383f03fb3",
+      "bytes": 226395
+    },
+    {
+      "folder": "module-dist/github-caribbean/versions/1.0.0-b1f1030ce13f",
+      "bytes": 226395
+    },
+    {
+      "folder": "module-dist/github-caribbean-draw/versions/1.0.0-af24708054b6",
+      "bytes": 226405
+    },
+    {
+      "folder": "module-dist/github-caribbean-draw/versions/1.0.0-d5581df35e3b",
+      "bytes": 226405
+    },
+    {
+      "folder": "module-dist/github-craps/versions/1.0.0-39d23c45e2fb",
+      "bytes": 8713378
+    },
+    {
+      "folder": "module-dist/github-craps/versions/1.0.0-f62f35469590",
+      "bytes": 8713378
+    },
+    {
+      "folder": "module-dist/github-crash/versions/1.0.0-b6043afca36d",
+      "bytes": 21939385
+    },
+    {
+      "folder": "module-dist/github-crazy-four/versions/1.0.0-0cbda20cff7a",
+      "bytes": 226397
+    },
+    {
+      "folder": "module-dist/github-crazy-four/versions/1.0.0-dca9b7e4b407",
+      "bytes": 226397
+    },
+    {
+      "folder": "module-dist/github-deuces/versions/1.0.0-7f917dd777ff",
+      "bytes": 226389
+    },
+    {
+      "folder": "module-dist/github-deuces/versions/1.0.0-e549c595a94d",
+      "bytes": 226389
+    },
+    {
+      "folder": "module-dist/github-diamonds/versions/1.0.0-0c61733b92e1",
+      "bytes": 576096
+    },
+    {
+      "folder": "module-dist/github-diamonds/versions/1.0.0-faf785f13152",
+      "bytes": 576096
+    },
+    {
+      "folder": "module-dist/github-dragon-tiger/versions/1.0.0-70d1c072bdc7",
+      "bytes": 226401
+    },
+    {
+      "folder": "module-dist/github-dragon-tiger/versions/1.0.0-c0fb79825161",
+      "bytes": 226401
+    },
+    {
+      "folder": "module-dist/github-exposure/versions/1.0.0-2fc6a74606cf",
+      "bytes": 226393
+    },
+    {
+      "folder": "module-dist/github-exposure/versions/1.0.0-e05da5cf2941",
+      "bytes": 226393
+    },
+    {
+      "folder": "module-dist/github-flush/versions/1.0.0-0a54d06c28ce",
+      "bytes": 226387
+    },
+    {
+      "folder": "module-dist/github-flush/versions/1.0.0-af72a5e93a01",
+      "bytes": 226387
+    },
+    {
+      "folder": "module-dist/github-four-card/versions/1.0.0-03d145420592",
+      "bytes": 226395
+    },
+    {
+      "folder": "module-dist/github-four-card/versions/1.0.0-c2d56ceda557",
+      "bytes": 226395
+    },
+    {
+      "folder": "module-dist/github-free-bet/versions/1.0.0-a5d5ddfe603d",
+      "bytes": 226393
+    },
+    {
+      "folder": "module-dist/github-free-bet/versions/1.0.0-d28f1469bfac",
+      "bytes": 226393
+    },
+    {
+      "folder": "module-dist/github-holdem-bonus/versions/1.0.0-10d9d305b0b9",
+      "bytes": 226401
+    },
+    {
+      "folder": "module-dist/github-holdem-bonus/versions/1.0.0-3cf432569b16",
+      "bytes": 226401
+    },
+    {
+      "folder": "module-dist/github-let-it-ride/versions/1.0.0-0998d11a34e2",
+      "bytes": 226399
+    },
+    {
+      "folder": "module-dist/github-let-it-ride/versions/1.0.0-3ea41e0dd886",
+      "bytes": 226399
+    },
+    {
+      "folder": "module-dist/github-mississippi/versions/1.0.0-17fe8fa6b4b6",
+      "bytes": 226399
+    },
+    {
+      "folder": "module-dist/github-mississippi/versions/1.0.0-927782425fdb",
+      "bytes": 226399
+    },
+    {
+      "folder": "module-dist/github-oasis/versions/1.0.0-04c730a9fec0",
+      "bytes": 226387
+    },
+    {
+      "folder": "module-dist/github-oasis/versions/1.0.0-428a9d669317",
+      "bytes": 226387
+    },
+    {
+      "folder": "module-dist/github-pai-gow/versions/1.0.0-43efb7cc33e9",
+      "bytes": 226391
+    },
+    {
+      "folder": "module-dist/github-pai-gow/versions/1.0.0-f53139027328",
+      "bytes": 226391
+    },
+    {
+      "folder": "module-dist/github-poker/versions/1.0.0-1ddec03bfd41",
+      "bytes": 8534327
+    },
+    {
+      "folder": "module-dist/github-poker/versions/1.0.0-48180a8e25ed",
+      "bytes": 8534327
+    },
+    {
+      "folder": "module-dist/github-red-dog/versions/1.0.0-0111ddde2b09",
+      "bytes": 226391
+    },
+    {
+      "folder": "module-dist/github-red-dog/versions/1.0.0-1055f7c7f6f2",
+      "bytes": 226391
+    },
+    {
+      "folder": "module-dist/github-rummy/versions/1.0.0-7d98c8ef61d9",
+      "bytes": 226387
+    },
+    {
+      "folder": "module-dist/github-rummy/versions/1.0.0-b6cf781f42ca",
+      "bytes": 226387
+    },
+    {
+      "folder": "module-dist/github-russian/versions/1.0.0-4964af39350c",
+      "bytes": 226391
+    },
+    {
+      "folder": "module-dist/github-russian/versions/1.0.0-6352d7ce6984",
+      "bytes": 226391
+    },
+    {
+      "folder": "module-dist/github-sic-bo/versions/1.0.0-59c3376bc161",
+      "bytes": 497408
+    },
+    {
+      "folder": "module-dist/github-sic-bo/versions/1.0.0-f1a9c2447747",
+      "bytes": 497408
+    },
+    {
+      "folder": "module-dist/github-spanish/versions/1.0.0-65e3a27a3be0",
+      "bytes": 226391
+    },
+    {
+      "folder": "module-dist/github-spanish/versions/1.0.0-bf04c6ae5a92",
+      "bytes": 226391
+    },
+    {
+      "folder": "module-dist/github-switch/versions/1.0.0-bc32bb27ea93",
+      "bytes": 226389
+    },
+    {
+      "folder": "module-dist/github-switch/versions/1.0.0-bf786dfe83c7",
+      "bytes": 226389
+    },
+    {
+      "folder": "module-dist/github-three-card/versions/1.0.0-4e5a113602d9",
+      "bytes": 226397
+    },
+    {
+      "folder": "module-dist/github-three-card/versions/1.0.0-c2de47a45790",
+      "bytes": 226397
+    },
+    {
+      "folder": "module-dist/github-ultimate/versions/1.0.0-0966273ba68c",
+      "bytes": 226393
+    },
+    {
+      "folder": "module-dist/github-ultimate/versions/1.0.0-41f77d76cf70",
+      "bytes": 226393
+    },
+    {
+      "folder": "module-dist/github-video-poker/versions/1.0.0-c1e4bc22f5e7",
+      "bytes": 8534345
+    },
+    {
+      "folder": "module-dist/github-video-poker/versions/1.0.0-f69177cf847e",
+      "bytes": 8534345
+    },
+    {
+      "folder": "module-dist/github-war/versions/1.0.0-7ab63fc6b3ac",
+      "bytes": 226383
+    },
+    {
+      "folder": "module-dist/github-war/versions/1.0.0-e36954c63124",
+      "bytes": 226383
+    },
+    {
+      "folder": "module-dist/studio-afterglow/versions/1.1.0-e85c0ab3fe97",
+      "bytes": 3217013
+    },
+    {
+      "folder": "module-dist/studio-caribbean-treasures/versions/0.1.0-0b7b08e51454",
+      "bytes": 30670
+    },
+    {
+      "folder": "module-dist/studio-caribbean-treasures/versions/0.1.0-1f794c6878a7",
+      "bytes": 31457
+    },
+    {
+      "folder": "module-dist/studio-caribbean-treasures/versions/0.1.0-de10a45fd62a",
+      "bytes": 31647
+    },
+    {
+      "folder": "module-dist/studio-caribbean-treasures/versions/1.0.0-0134f049cdbf",
+      "bytes": 888854
+    },
+    {
+      "folder": "module-dist/studio-caribbean-treasures/versions/1.0.0-0317607c1ac7",
+      "bytes": 889748
+    },
+    {
+      "folder": "module-dist/studio-caribbean-treasures/versions/1.0.0-1f50dbd55dd0",
+      "bytes": 889746
+    },
+    {
+      "folder": "module-dist/studio-caribbean-treasures/versions/1.0.0-25af22835f64",
+      "bytes": 887600
+    },
+    {
+      "folder": "module-dist/studio-caribbean-treasures/versions/1.0.0-2952e3145a56",
+      "bytes": 889109
+    },
+    {
+      "folder": "module-dist/studio-caribbean-treasures/versions/1.0.0-c7dbbc132606",
+      "bytes": 887377
+    },
+    {
+      "folder": "module-dist/studio-caribbean-treasures/versions/1.0.0-d19be4e35877",
+      "bytes": 889105
+    },
+    {
+      "folder": "module-dist/studio-caribbean-treasures/versions/1.0.0-ef014cd85f32",
+      "bytes": 887984
+    },
+    {
+      "folder": "module-dist/studio-caribbean-treasures/versions/1.1.0-17c2bb53535a",
+      "bytes": 2032196
+    },
+    {
+      "folder": "module-dist/studio-caribbean-treasures/versions/1.1.0-625371ecb124",
+      "bytes": 2032444
+    },
+    {
+      "folder": "module-dist/studio-caribbean-treasures/versions/1.1.0-6e0466e824fd",
+      "bytes": 2032636
+    },
+    {
+      "folder": "module-dist/studio-caribbean-treasures/versions/1.1.0-8b037ff8c450",
+      "bytes": 2032462
+    },
+    {
+      "folder": "module-dist/studio-caribbean-treasures/versions/1.1.0-cf33a55b234a",
+      "bytes": 2032079
+    },
+    {
+      "folder": "module-dist/studio-caribbean-treasures/versions/1.1.0-e1098fd39b2d",
+      "bytes": 2032192
+    },
+    {
+      "folder": "module-dist/studio-caribbean-treasures/versions/1.1.0-ed00aa549206",
+      "bytes": 2032297
+    },
+    {
+      "folder": "module-dist/studio-neopolis/versions/0.4.0-163734723aa6",
+      "bytes": 6019489
+    }
+  ],
+  "retainedInactivePackageCount": 81,
+  "retainedInactiveLogicalBytes": 150868054,
+  "inactivePackageException": "Automatic approval review previously rejected local package-cache pruning; no alternate deletion mechanism was used.",
+  "temporaryDatabase": {
+    "folder": "C:\\Users\\Aorus\\AppData\\Local\\Temp\\royal-pg-sXTyXe",
+    "bytesBeforeStop": 68648927,
+    "presentAfterStop": false,
+    "removedBy": "Normal test-stand shutdown"
+  },
+  "standStopped": true,
+  "checkoutException": {
+    "folder": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal",
+    "reason": "Primary managed checkout; prior app archival returned that the primary checkout cannot be removed. Concurrent work in the original project is preserved.",
+    "cleanupCondition": "Archive through the app when it is no longer primary and all new source commits have been verified in GitHub."
+  },
+  "notes": "No physical disk-space reclamation is claimed. Free-space snapshots include other activity on this drive. No release source copies or new backup archives were created; the four ZIPs are downloaded source libraries retained after the rejected cleanup.",
+  "finalFreeBytes": 306518581248,
+  "characterMotionUpdate": {
+    "date": "2026-10-28",
+    "owner": "caribbean-character-motion",
+    "preservationCommit": "3b5519b800a71c5d27b35a9576850f46229ec818",
+    "preservationRefs": [
+      "refs/heads/main",
+      "refs/heads/codex/caribbean-character-motion"
+    ],
+    "remoteCommitVerified": true,
+    "taskStartFreeBytes": 305366937600,
+    "freeBeforeRejectedCleanupBytes": 303343800320,
+    "temporaryDatabase": {
+      "folder": "C:\\Users\\Aorus\\AppData\\Local\\Temp\\royal-pg-HgeacV",
+      "removed": true,
+      "bytesBeforeStop": null
+    },
+    "stoppedLoopbackPorts": [
+      5234,
+      2634
+    ],
+    "removedFiles": [],
+    "removedArchives": [],
+    "removedLogicalBytes": 0,
+    "cleanupBlock": {
+      "action": "Remove the exact task-owned temporary directory after source, final media and reports were verified in GitHub",
+      "reason": "Automatic approval review rejected the command: blocked by policy",
+      "attemptExecuted": false
+    },
+    "retainedTaskArtifacts": {
+      "folder": "artifacts/work/caribbean-character-motion",
+      "bytes": 44313183,
+      "files": [
+        {
+          "path": "artifacts/work/caribbean-character-motion/audio-measurements.json",
+          "bytes": 354
+        },
+        {
+          "path": "artifacts/work/caribbean-character-motion/browser-results-final.json",
+          "bytes": 12749
+        },
+        {
+          "path": "artifacts/work/caribbean-character-motion/browser-results.json",
+          "bytes": 19024
+        },
+        {
+          "path": "artifacts/work/caribbean-character-motion/character-measurements.json",
+          "bytes": 21514
+        },
+        {
+          "path": "artifacts/work/caribbean-character-motion/desktop-final.png",
+          "bytes": 1400257
+        },
+        {
+          "path": "artifacts/work/caribbean-character-motion/desktop.png",
+          "bytes": 1438482
+        },
+        {
+          "path": "artifacts/work/caribbean-character-motion/finalize-report.mjs",
+          "bytes": 4259
+        },
+        {
+          "path": "artifacts/work/caribbean-character-motion/grand-review.png",
+          "bytes": 2283241
+        },
+        {
+          "path": "artifacts/work/caribbean-character-motion/mobile.png",
+          "bytes": 306529
+        },
+        {
+          "path": "artifacts/work/caribbean-character-motion/motion-mobile.png",
+          "bytes": 307421
+        },
+        {
+          "path": "artifacts/work/caribbean-character-motion/owner.json",
+          "bytes": 476
+        },
+        {
+          "path": "artifacts/work/caribbean-character-motion/playback-measurements.json",
+          "bytes": 2959
+        },
+        {
+          "path": "artifacts/work/caribbean-character-motion/playwright-results/.last-run.json",
+          "bytes": 45
+        },
+        {
+          "path": "artifacts/work/caribbean-character-motion/preview-grand.png",
+          "bytes": 1773801
+        },
+        {
+          "path": "artifacts/work/caribbean-character-motion/reaction-bigwin.png",
+          "bytes": 1419737
+        },
+        {
+          "path": "artifacts/work/caribbean-character-motion/reaction-bonus.png",
+          "bytes": 1329726
+        },
+        {
+          "path": "artifacts/work/caribbean-character-motion/reaction-loss.png",
+          "bytes": 1369017
+        },
+        {
+          "path": "artifacts/work/caribbean-character-motion/reaction-partial.png",
+          "bytes": 1427342
+        },
+        {
+          "path": "artifacts/work/caribbean-character-motion/reaction-positive.png",
+          "bytes": 1403053
+        },
+        {
+          "path": "artifacts/work/caribbean-character-motion/reaction-return.png",
+          "bytes": 1347628
+        },
+        {
+          "path": "artifacts/work/caribbean-character-motion/reels.png",
+          "bytes": 1346593
+        },
+        {
+          "path": "artifacts/work/caribbean-character-motion/reference-ready-desktop.png",
+          "bytes": 1464941
+        },
+        {
+          "path": "artifacts/work/caribbean-character-motion/showcase-results.json",
+          "bytes": 3133
+        },
+        {
+          "path": "artifacts/work/caribbean-character-motion/sound-preview.wav",
+          "bytes": 1675844
+        },
+        {
+          "path": "artifacts/work/caribbean-character-motion/storage-report.mjs",
+          "bytes": 3677
+        },
+        {
+          "path": "artifacts/work/caribbean-character-motion/video/page@1e3d208e68e803ee22b7583294d26446.webm",
+          "bytes": 10345131
+        },
+        {
+          "path": "artifacts/work/caribbean-character-motion/video/page@a5764fdb9cc65270ed738628b6221040.webm",
+          "bytes": 10788639
+        },
+        {
+          "path": "artifacts/work/caribbean-character-motion/video-review.png",
+          "bytes": 2817611
+        }
+      ],
+      "cleanupCondition": "Remove redundant test screenshots, raw WebM recordings, WAV and temporary reporting scripts when cleanup is permitted; final media and compact reports are verified in GitHub."
+    },
+    "retainedInactivePackages": {
+      "count": 160,
+      "bytes": 322025495,
+      "folders": [
+        {
+          "folder": "module-dist/github-andar-bahar/versions/1.0.0-0d08a69e741e",
+          "bytes": 226399
+        },
+        {
+          "folder": "module-dist/github-andar-bahar/versions/1.0.0-3cc18fedf68c",
+          "bytes": 226399
+        },
+        {
+          "folder": "module-dist/github-andar-bahar/versions/1.0.0-5f4f211759d7",
+          "bytes": 226399
+        },
+        {
+          "folder": "module-dist/github-baccarat/versions/1.0.0-5bd9caaa8fcc",
+          "bytes": 8534336
+        },
+        {
+          "folder": "module-dist/github-baccarat/versions/1.0.0-94572429d816",
+          "bytes": 8534336
+        },
+        {
+          "folder": "module-dist/github-baccarat/versions/1.0.0-c39cf8c656df",
+          "bytes": 8534336
+        },
+        {
+          "folder": "module-dist/github-blackjack/versions/1.0.0-07cbbc9a27f2",
+          "bytes": 8534339
+        },
+        {
+          "folder": "module-dist/github-blackjack/versions/1.0.0-3b21260dec63",
+          "bytes": 8534339
+        },
+        {
+          "folder": "module-dist/github-blackjack/versions/1.0.0-991aa86a213c",
+          "bytes": 8534339
+        },
+        {
+          "folder": "module-dist/github-caribbean/versions/1.0.0-8e2383f03fb3",
+          "bytes": 226395
+        },
+        {
+          "folder": "module-dist/github-caribbean/versions/1.0.0-ab0eacf28936",
+          "bytes": 226395
+        },
+        {
+          "folder": "module-dist/github-caribbean/versions/1.0.0-b1f1030ce13f",
+          "bytes": 226395
+        },
+        {
+          "folder": "module-dist/github-caribbean-draw/versions/1.0.0-620bfff07b7d",
+          "bytes": 226405
+        },
+        {
+          "folder": "module-dist/github-caribbean-draw/versions/1.0.0-af24708054b6",
+          "bytes": 226405
+        },
+        {
+          "folder": "module-dist/github-caribbean-draw/versions/1.0.0-d5581df35e3b",
+          "bytes": 226405
+        },
+        {
+          "folder": "module-dist/github-craps/versions/1.0.0-39d23c45e2fb",
+          "bytes": 8713378
+        },
+        {
+          "folder": "module-dist/github-craps/versions/1.0.0-61059fcb8877",
+          "bytes": 8713378
+        },
+        {
+          "folder": "module-dist/github-craps/versions/1.0.0-f62f35469590",
+          "bytes": 8713378
+        },
+        {
+          "folder": "module-dist/github-crash/versions/1.0.0-b6043afca36d",
+          "bytes": 21939385
+        },
+        {
+          "folder": "module-dist/github-crash/versions/1.0.0-f4756ca77f2d",
+          "bytes": 21944565
+        },
+        {
+          "folder": "module-dist/github-crazy-four/versions/1.0.0-0cbda20cff7a",
+          "bytes": 226397
+        },
+        {
+          "folder": "module-dist/github-crazy-four/versions/1.0.0-124525b62a1a",
+          "bytes": 226397
+        },
+        {
+          "folder": "module-dist/github-crazy-four/versions/1.0.0-dca9b7e4b407",
+          "bytes": 226397
+        },
+        {
+          "folder": "module-dist/github-deuces/versions/1.0.0-7f917dd777ff",
+          "bytes": 226389
+        },
+        {
+          "folder": "module-dist/github-deuces/versions/1.0.0-9d2f2eff199e",
+          "bytes": 226389
+        },
+        {
+          "folder": "module-dist/github-deuces/versions/1.0.0-e549c595a94d",
+          "bytes": 226389
+        },
+        {
+          "folder": "module-dist/github-diamonds/versions/1.0.0-0c61733b92e1",
+          "bytes": 576096
+        },
+        {
+          "folder": "module-dist/github-diamonds/versions/1.0.0-98dbe2fc1661",
+          "bytes": 576096
+        },
+        {
+          "folder": "module-dist/github-diamonds/versions/1.0.0-faf785f13152",
+          "bytes": 576096
+        },
+        {
+          "folder": "module-dist/github-dragon-tiger/versions/1.0.0-55be2c867f81",
+          "bytes": 226401
+        },
+        {
+          "folder": "module-dist/github-dragon-tiger/versions/1.0.0-70d1c072bdc7",
+          "bytes": 226401
+        },
+        {
+          "folder": "module-dist/github-dragon-tiger/versions/1.0.0-c0fb79825161",
+          "bytes": 226401
+        },
+        {
+          "folder": "module-dist/github-exposure/versions/1.0.0-2e747d21f69e",
+          "bytes": 226393
+        },
+        {
+          "folder": "module-dist/github-exposure/versions/1.0.0-2fc6a74606cf",
+          "bytes": 226393
+        },
+        {
+          "folder": "module-dist/github-exposure/versions/1.0.0-e05da5cf2941",
+          "bytes": 226393
+        },
+        {
+          "folder": "module-dist/github-flush/versions/1.0.0-0a54d06c28ce",
+          "bytes": 226387
+        },
+        {
+          "folder": "module-dist/github-flush/versions/1.0.0-af72a5e93a01",
+          "bytes": 226387
+        },
+        {
+          "folder": "module-dist/github-flush/versions/1.0.0-e9a308294dbc",
+          "bytes": 226387
+        },
+        {
+          "folder": "module-dist/github-four-card/versions/1.0.0-03d145420592",
+          "bytes": 226395
+        },
+        {
+          "folder": "module-dist/github-four-card/versions/1.0.0-5f690058039d",
+          "bytes": 226395
+        },
+        {
+          "folder": "module-dist/github-four-card/versions/1.0.0-c2d56ceda557",
+          "bytes": 226395
+        },
+        {
+          "folder": "module-dist/github-free-bet/versions/1.0.0-a5d5ddfe603d",
+          "bytes": 226393
+        },
+        {
+          "folder": "module-dist/github-free-bet/versions/1.0.0-d28f1469bfac",
+          "bytes": 226393
+        },
+        {
+          "folder": "module-dist/github-free-bet/versions/1.0.0-d9c864af8690",
+          "bytes": 226393
+        },
+        {
+          "folder": "module-dist/github-hilo/versions/1.0.0-5d01b50a26ba",
+          "bytes": 164254
+        },
+        {
+          "folder": "module-dist/github-holdem-bonus/versions/1.0.0-10d9d305b0b9",
+          "bytes": 226401
+        },
+        {
+          "folder": "module-dist/github-holdem-bonus/versions/1.0.0-3cf432569b16",
+          "bytes": 226401
+        },
+        {
+          "folder": "module-dist/github-holdem-bonus/versions/1.0.0-9bfcf9b0c69a",
+          "bytes": 226401
+        },
+        {
+          "folder": "module-dist/github-let-it-ride/versions/1.0.0-0998d11a34e2",
+          "bytes": 226399
+        },
+        {
+          "folder": "module-dist/github-let-it-ride/versions/1.0.0-1459554b400a",
+          "bytes": 226399
+        },
+        {
+          "folder": "module-dist/github-let-it-ride/versions/1.0.0-3ea41e0dd886",
+          "bytes": 226399
+        },
+        {
+          "folder": "module-dist/github-mississippi/versions/1.0.0-17fe8fa6b4b6",
+          "bytes": 226399
+        },
+        {
+          "folder": "module-dist/github-mississippi/versions/1.0.0-75fed7a0e542",
+          "bytes": 226399
+        },
+        {
+          "folder": "module-dist/github-mississippi/versions/1.0.0-927782425fdb",
+          "bytes": 226399
+        },
+        {
+          "folder": "module-dist/github-oasis/versions/1.0.0-04c730a9fec0",
+          "bytes": 226387
+        },
+        {
+          "folder": "module-dist/github-oasis/versions/1.0.0-22d84609454d",
+          "bytes": 226387
+        },
+        {
+          "folder": "module-dist/github-oasis/versions/1.0.0-428a9d669317",
+          "bytes": 226387
+        },
+        {
+          "folder": "module-dist/github-pai-gow/versions/1.0.0-43efb7cc33e9",
+          "bytes": 226391
+        },
+        {
+          "folder": "module-dist/github-pai-gow/versions/1.0.0-88f98753c314",
+          "bytes": 226391
+        },
+        {
+          "folder": "module-dist/github-pai-gow/versions/1.0.0-f53139027328",
+          "bytes": 226391
+        },
+        {
+          "folder": "module-dist/github-poker/versions/1.0.0-1ddec03bfd41",
+          "bytes": 8534327
+        },
+        {
+          "folder": "module-dist/github-poker/versions/1.0.0-26001a16f050",
+          "bytes": 8534327
+        },
+        {
+          "folder": "module-dist/github-poker/versions/1.0.0-48180a8e25ed",
+          "bytes": 8534327
+        },
+        {
+          "folder": "module-dist/github-red-dog/versions/1.0.0-0111ddde2b09",
+          "bytes": 226391
+        },
+        {
+          "folder": "module-dist/github-red-dog/versions/1.0.0-1055f7c7f6f2",
+          "bytes": 226391
+        },
+        {
+          "folder": "module-dist/github-red-dog/versions/1.0.0-4296ec91fa8e",
+          "bytes": 226391
+        },
+        {
+          "folder": "module-dist/github-rummy/versions/1.0.0-7d98c8ef61d9",
+          "bytes": 226387
+        },
+        {
+          "folder": "module-dist/github-rummy/versions/1.0.0-b6cf781f42ca",
+          "bytes": 226387
+        },
+        {
+          "folder": "module-dist/github-rummy/versions/1.0.0-d60f77add4aa",
+          "bytes": 226387
+        },
+        {
+          "folder": "module-dist/github-russian/versions/1.0.0-4964af39350c",
+          "bytes": 226391
+        },
+        {
+          "folder": "module-dist/github-russian/versions/1.0.0-6352d7ce6984",
+          "bytes": 226391
+        },
+        {
+          "folder": "module-dist/github-russian/versions/1.0.0-a2ceabce7314",
+          "bytes": 226391
+        },
+        {
+          "folder": "module-dist/github-sic-bo/versions/1.0.0-59c3376bc161",
+          "bytes": 497408
+        },
+        {
+          "folder": "module-dist/github-sic-bo/versions/1.0.0-94d53954a75e",
+          "bytes": 497408
+        },
+        {
+          "folder": "module-dist/github-sic-bo/versions/1.0.0-f1a9c2447747",
+          "bytes": 497408
+        },
+        {
+          "folder": "module-dist/github-spanish/versions/1.0.0-52a59f4bb386",
+          "bytes": 226391
+        },
+        {
+          "folder": "module-dist/github-spanish/versions/1.0.0-65e3a27a3be0",
+          "bytes": 226391
+        },
+        {
+          "folder": "module-dist/github-spanish/versions/1.0.0-bf04c6ae5a92",
+          "bytes": 226391
+        },
+        {
+          "folder": "module-dist/github-switch/versions/1.0.0-bc32bb27ea93",
+          "bytes": 226389
+        },
+        {
+          "folder": "module-dist/github-switch/versions/1.0.0-bf786dfe83c7",
+          "bytes": 226389
+        },
+        {
+          "folder": "module-dist/github-switch/versions/1.0.0-d2ef789c2399",
+          "bytes": 226389
+        },
+        {
+          "folder": "module-dist/github-three-card/versions/1.0.0-0452c83ad67a",
+          "bytes": 226397
+        },
+        {
+          "folder": "module-dist/github-three-card/versions/1.0.0-4e5a113602d9",
+          "bytes": 226397
+        },
+        {
+          "folder": "module-dist/github-three-card/versions/1.0.0-c2de47a45790",
+          "bytes": 226397
+        },
+        {
+          "folder": "module-dist/github-tower/versions/1.0.0-53bebc545fdd",
+          "bytes": 425425
+        },
+        {
+          "folder": "module-dist/github-ultimate/versions/1.0.0-0966273ba68c",
+          "bytes": 226393
+        },
+        {
+          "folder": "module-dist/github-ultimate/versions/1.0.0-41f77d76cf70",
+          "bytes": 226393
+        },
+        {
+          "folder": "module-dist/github-ultimate/versions/1.0.0-abc3da1daea2",
+          "bytes": 226393
+        },
+        {
+          "folder": "module-dist/github-video-poker/versions/1.0.0-060c16acfd4a",
+          "bytes": 8534345
+        },
+        {
+          "folder": "module-dist/github-video-poker/versions/1.0.0-c1e4bc22f5e7",
+          "bytes": 8534345
+        },
+        {
+          "folder": "module-dist/github-video-poker/versions/1.0.0-f69177cf847e",
+          "bytes": 8534345
+        },
+        {
+          "folder": "module-dist/github-war/versions/1.0.0-0e1d7aaa567d",
+          "bytes": 226383
+        },
+        {
+          "folder": "module-dist/github-war/versions/1.0.0-7ab63fc6b3ac",
+          "bytes": 226383
+        },
+        {
+          "folder": "module-dist/github-war/versions/1.0.0-e36954c63124",
+          "bytes": 226383
+        },
+        {
+          "folder": "module-dist/royal-dice/versions/1.0.0-86702d91b4a0",
+          "bytes": 483934
+        },
+        {
+          "folder": "module-dist/royal-fruits/versions/1.0.0-67fa4245b48c",
+          "bytes": 511903
+        },
+        {
+          "folder": "module-dist/royal-keno/versions/1.0.0-d070cec9da30",
+          "bytes": 554905
+        },
+        {
+          "folder": "module-dist/royal-limbo/versions/1.0.0-c85d8689f90b",
+          "bytes": 457778
+        },
+        {
+          "folder": "module-dist/royal-mines/versions/1.0.0-7d56cf63a7ca",
+          "bytes": 510281
+        },
+        {
+          "folder": "module-dist/studio-afterglow/versions/1.1.0-e85c0ab3fe97",
+          "bytes": 3217013
+        },
+        {
+          "folder": "module-dist/studio-aurora-lift/versions/1.0.0-9fdee5589e9c",
+          "bytes": 4093284
+        },
+        {
+          "folder": "module-dist/studio-beacon-bay/versions/1.0.0-eb2db63596db",
+          "bytes": 2109595
+        },
+        {
+          "folder": "module-dist/studio-blazing-orchard/versions/1.0.0-63c1c1449375",
+          "bytes": 1632371
+        },
+        {
+          "folder": "module-dist/studio-canopy-crossing/versions/1.0.0-58be616dd58b",
+          "bytes": 4093316
+        },
+        {
+          "folder": "module-dist/studio-caramel-carnival/versions/1.0.0-b1fda70c2268",
+          "bytes": 3147889
+        },
+        {
+          "folder": "module-dist/studio-caribbean-treasures/versions/0.1.0-0b7b08e51454",
+          "bytes": 30670
+        },
+        {
+          "folder": "module-dist/studio-caribbean-treasures/versions/0.1.0-1f794c6878a7",
+          "bytes": 31457
+        },
+        {
+          "folder": "module-dist/studio-caribbean-treasures/versions/0.1.0-de10a45fd62a",
+          "bytes": 31647
+        },
+        {
+          "folder": "module-dist/studio-caribbean-treasures/versions/1.0.0-0134f049cdbf",
+          "bytes": 888854
+        },
+        {
+          "folder": "module-dist/studio-caribbean-treasures/versions/1.0.0-0317607c1ac7",
+          "bytes": 889748
+        },
+        {
+          "folder": "module-dist/studio-caribbean-treasures/versions/1.0.0-1f50dbd55dd0",
+          "bytes": 889746
+        },
+        {
+          "folder": "module-dist/studio-caribbean-treasures/versions/1.0.0-25af22835f64",
+          "bytes": 887600
+        },
+        {
+          "folder": "module-dist/studio-caribbean-treasures/versions/1.0.0-2952e3145a56",
+          "bytes": 889109
+        },
+        {
+          "folder": "module-dist/studio-caribbean-treasures/versions/1.0.0-c7dbbc132606",
+          "bytes": 887377
+        },
+        {
+          "folder": "module-dist/studio-caribbean-treasures/versions/1.0.0-d19be4e35877",
+          "bytes": 889105
+        },
+        {
+          "folder": "module-dist/studio-caribbean-treasures/versions/1.0.0-ef014cd85f32",
+          "bytes": 887984
+        },
+        {
+          "folder": "module-dist/studio-caribbean-treasures/versions/1.1.0-17c2bb53535a",
+          "bytes": 2032196
+        },
+        {
+          "folder": "module-dist/studio-caribbean-treasures/versions/1.1.0-625371ecb124",
+          "bytes": 2032444
+        },
+        {
+          "folder": "module-dist/studio-caribbean-treasures/versions/1.1.0-6e0466e824fd",
+          "bytes": 2032636
+        },
+        {
+          "folder": "module-dist/studio-caribbean-treasures/versions/1.1.0-8b037ff8c450",
+          "bytes": 2032462
+        },
+        {
+          "folder": "module-dist/studio-caribbean-treasures/versions/1.1.0-cf33a55b234a",
+          "bytes": 2032079
+        },
+        {
+          "folder": "module-dist/studio-caribbean-treasures/versions/1.1.0-e1098fd39b2d",
+          "bytes": 2032192
+        },
+        {
+          "folder": "module-dist/studio-caribbean-treasures/versions/1.1.0-ed00aa549206",
+          "bytes": 2032297
+        },
+        {
+          "folder": "module-dist/studio-caribbean-treasures/versions/1.2.0-2bb4a565e4ca",
+          "bytes": 4958307
+        },
+        {
+          "folder": "module-dist/studio-copperline-express/versions/1.0.0-f56297095e37",
+          "bytes": 1637407
+        },
+        {
+          "folder": "module-dist/studio-cosmic-escape/versions/1.0.0-4da958912b72",
+          "bytes": 3834928
+        },
+        {
+          "folder": "module-dist/studio-deep-current/versions/1.0.0-d18bc8425fed",
+          "bytes": 1632362
+        },
+        {
+          "folder": "module-dist/studio-dune-hopper/versions/1.0.0-d36c95c95dec",
+          "bytes": 4093284
+        },
+        {
+          "folder": "module-dist/studio-ember-vault/versions/1.0.0-6ba4e1b1833c",
+          "bytes": 1638850
+        },
+        {
+          "folder": "module-dist/studio-fossil-trail/versions/1.0.0-e417ce874bb0",
+          "bytes": 4093292
+        },
+        {
+          "folder": "module-dist/studio-frostline-courier/versions/1.0.0-7f122ff34bd1",
+          "bytes": 1630903
+        },
+        {
+          "folder": "module-dist/studio-gale-riders/versions/1.0.0-73960951013a",
+          "bytes": 4093284
+        },
+        {
+          "folder": "module-dist/studio-jade-koi/versions/1.0.0-d5a591158f68",
+          "bytes": 1637377
+        },
+        {
+          "folder": "module-dist/studio-lucky-spotlight/versions/1.0.0-971fce278c96",
+          "bytes": 1577463
+        },
+        {
+          "folder": "module-dist/studio-lumen-grove/versions/1.0.0-3e5f62a37e1e",
+          "bytes": 1622275
+        },
+        {
+          "folder": "module-dist/studio-midnight-market/versions/1.0.0-84d2fd61764c",
+          "bytes": 1638862
+        },
+        {
+          "folder": "module-dist/studio-moonlit-mint/versions/1.0.0-346f66d853e6",
+          "bytes": 1638853
+        },
+        {
+          "folder": "module-dist/studio-mosaic-muse/versions/1.0.0-34dd7b17703c",
+          "bytes": 4093284
+        },
+        {
+          "folder": "module-dist/studio-neon-crown/versions/1.0.0-7deddd573537",
+          "bytes": 1587486
+        },
+        {
+          "folder": "module-dist/studio-neopolis/versions/0.4.0-163734723aa6",
+          "bytes": 6019489
+        },
+        {
+          "folder": "module-dist/studio-neopolis/versions/0.4.0-427da438175a",
+          "bytes": 6031855
+        },
+        {
+          "folder": "module-dist/studio-obsidian-drop/versions/1.0.0-682af18f4d7e",
+          "bytes": 1608045
+        },
+        {
+          "folder": "module-dist/studio-orbit/versions/1.0.0-1e9c577ac70b",
+          "bytes": 4093236
+        },
+        {
+          "folder": "module-dist/studio-petal-parlor/versions/1.0.0-063e3f6fd2a3",
+          "bytes": 1641585
+        },
+        {
+          "folder": "module-dist/studio-prism-atelier/versions/1.0.0-dcab6dd4f9d3",
+          "bytes": 1622281
+        },
+        {
+          "folder": "module-dist/studio-pulse-district/versions/1.0.0-bd95b4d281a1",
+          "bytes": 1637395
+        },
+        {
+          "folder": "module-dist/studio-rivet-rally/versions/1.0.0-be1739250e5a",
+          "bytes": 1630885
+        },
+        {
+          "folder": "module-dist/studio-saffron-cipher/versions/1.0.0-9b99ebe92823",
+          "bytes": 2109611
+        },
+        {
+          "folder": "module-dist/studio-saffron-spin/versions/1.0.0-0626cfda933c",
+          "bytes": 1577454
+        },
+        {
+          "folder": "module-dist/studio-signal-fox/versions/1.0.0-2a6156b6c6c1",
+          "bytes": 1687693
+        },
+        {
+          "folder": "module-dist/studio-sky-lanterns/versions/1.0.0-a4a0a033ff2f",
+          "bytes": 1630888
+        },
+        {
+          "folder": "module-dist/studio-starfall-oracle/versions/1.0.0-5929ca9ccbc4",
+          "bytes": 2445232
+        },
+        {
+          "folder": "module-dist/studio-stormforge-duel/versions/1.0.0-422f010f48c1",
+          "bytes": 2109615
+        },
+        {
+          "folder": "module-dist/studio-sunbird-trails/versions/1.0.0-55b4f80ebc41",
+          "bytes": 1641591
+        },
+        {
+          "folder": "module-dist/studio-tidal-relay/versions/1.0.0-c3f3cf5c9a3e",
+          "bytes": 4093284
+        },
+        {
+          "folder": "module-dist/studio-velvet-reign/versions/1.0.0-cb89ea7dfc54",
+          "bytes": 4267423
+        },
+        {
+          "folder": "module-dist/variant-dice/versions/1.0.0-cb866eee50d0",
+          "bytes": 184010
+        },
+        {
+          "folder": "module-dist/variant-fruits/versions/1.0.0-cfd872291d25",
+          "bytes": 184339
+        },
+        {
+          "folder": "module-dist/variant-limbo/versions/1.0.0-311bc0f61f9c",
+          "bytes": 187649
+        },
+        {
+          "folder": "module-dist/variant-target-plinko/versions/1.0.0-fb8fb4d06f52",
+          "bytes": 104371
+        }
+      ],
+      "cleanupCondition": "Retain current active packages; remove verified inactive packages when cleanup is permitted and no running session requires them. Existing prior cleanup rejection remains unresolved."
+    },
+    "exceptions": [
+      {
+        "folder": "C:/Users/Aorus/.codex/worktrees/new-slot/royal",
+        "reason": "Primary checkout attached to this task; app previously refused archiving it. Concurrent checkout is preserved.",
+        "cleanupCondition": "Release the primary attachment through the app when no longer required; source is saved in GitHub."
+      },
+      {
+        "folder": "C:/Users/Aorus/.codex/generated_images/01a1793f-6c92-7992-85f5-379a1491ef5d",
+        "reason": "ImageGen requires keeping original tool outputs; selected six masters and exports are saved in GitHub.",
+        "cleanupCondition": "Keep originals unless the user explicitly requests removal."
+      }
+    ],
+    "physicalReclamationClaimed": false,
+    "freeAfterRejectedCleanupBytes": 303331323904,
+    "freeSpaceNote": "Measurements include other processes; no physical reclaimed-space claim is made. No manual files or archives were removed because approval review rejected cleanup before execution."
+  },
+  "emptyBalanceUpdate": {
+    "date": "2026-10-28",
+    "owner": "caribbean-empty-balance",
+    "preservationCommit": "ec73543db1eed0b28179ce32743109c3239e4098",
+    "preservationRefs": [
+      "refs/heads/main",
+      "refs/heads/codex/caribbean-empty-balance"
+    ],
+    "remoteCommitVerified": true,
+    "freeBeforeFirstBuildBytes": 298143285248,
+    "freeBeforeRejectedCleanupBytes": 299595214848,
+    "freeAfterRejectedCleanupBytes": 298410708992,
+    "removedFolders": [],
+    "removedFiles": [],
+    "removedArchives": [],
+    "removedLogicalBytes": 0,
+    "physicalReclamationClaimed": false,
+    "cleanupBlock": {
+      "action": "Remove only the verified task artifacts folder and superseded 1.3.1-dd3cbac12b15 package after final sources and media were saved in GitHub",
+      "reason": "Automatic approval review rejected the command: blocked by policy",
+      "attemptExecuted": false
+    },
+    "retained": [
+      {
+        "folder": "artifacts/work/caribbean-empty-balance",
+        "bytes": 38275733,
+        "cleanupCondition": "Remove redundant browser results, screenshots, raw videos, WAV and temporary reporting script when cleanup is permitted; final media and reports are verified in GitHub."
+      },
+      {
+        "folder": "module-dist/studio-caribbean-treasures/versions/1.3.1-dd3cbac12b15",
+        "bytes": 6309262,
+        "cleanupCondition": "Remove the superseded package when cleanup is permitted; current pointer is 1.3.1-ab7f323d092e and its source predecessor is preserved in GitHub."
+      }
+    ],
+    "activeExceptions": [
+      {
+        "folder": "artifacts/work/caribbean-character-motion",
+        "reason": "The user-requested local preview remains running on ports 5234 and 2634.",
+        "cleanupCondition": "After the user finishes, stop through POST /__test/caribbean/stop and remove redundant artifacts when permitted."
+      },
+      {
+        "folder": "C:/Users/Aorus/AppData/Local/Temp/royal-pg-C70xv3",
+        "reason": "Current local preview runtime data, including the user demo balance. Preserve while the preview is requested.",
+        "cleanupCondition": "The local stand cleans this directory during its normal shutdown."
+      },
+      {
+        "folder": "C:/Users/Aorus/.codex/worktrees/new-slot/royal",
+        "reason": "Primary attached checkout running the local preview; concurrent checkout is untouched.",
+        "cleanupCondition": "Keep current checkout while serving the user preview."
+      }
+    ],
+    "freeSpaceNote": "Measurements include other processes; rejection occurred before cleanup execution and no physical space reclamation is claimed."
+  },
+  "framingUpdate": {
+    "date": "2026-10-28",
+    "owner": "caribbean-layout-fit",
+    "preservationCommit": "c162aef294ac4be9ac3d9b6565a058a2ab517242",
+    "preservationRefs": [
+      "refs/heads/main",
+      "refs/heads/codex/caribbean-layout-fit"
+    ],
+    "remoteCommitVerified": true,
+    "freeBeforeBuildBytes": 300175269888,
+    "freeBeforeRejectedCleanupBytes": 300236619776,
+    "freeAfterRejectedCleanupBytes": 300231647232,
+    "removedFolders": [],
+    "removedFiles": [],
+    "removedArchives": [],
+    "removedLogicalBytes": 0,
+    "physicalReclamationClaimed": false,
+    "cleanupBlock": {
+      "action": "Remove the exact task-owned screenshots/report staging folder and superseded 1.3.2-43a188999426 build after GitHub verification",
+      "reason": "Automatic approval review rejected the command: blocked by policy",
+      "attemptExecuted": false
+    },
+    "retained": [
+      {
+        "folder": "artifacts/work/caribbean-layout-fit",
+        "bytesAtCleanupAttempt": 14451115,
+        "cleanupCondition": "Remove redundant probes, screenshots, logs and temporary report script when cleanup is permitted; compact reports and selected final images are verified in GitHub."
+      },
+      {
+        "folder": "module-dist/studio-caribbean-treasures/versions/1.3.2-43a188999426",
+        "bytesAtCleanupAttempt": 6310748,
+        "cleanupCondition": "Remove the intermediate build when cleanup is permitted; its probe session has ended and the active pointer is 1.3.2-734dfee8cfc0."
+      }
+    ],
+    "activeExceptions": [
+      {
+        "folder": "C:/Users/Aorus/.codex/worktrees/new-slot/royal",
+        "reason": "Primary checkout serving the local preview requested by the user; concurrent checkout is untouched.",
+        "cleanupCondition": "Retain while the user requests the local preview."
+      },
+      {
+        "folder": "artifacts/work/caribbean-character-motion",
+        "reason": "Current preview ownership and runtime metadata, plus artifacts retained after earlier review rejections.",
+        "cleanupCondition": "Stop the stand after the user finishes; remove obsolete media when cleanup is permitted."
+      },
+      {
+        "folder": "module-dist/studio-caribbean-treasures/versions/1.3.1-ab7f323d092e",
+        "reason": "The user reported an existing open game; its precise module version was unavailable to browser control. Preserve prior version until its session closes.",
+        "cleanupCondition": "Remove after the prior user window is confirmed closed and cleanup is permitted."
+      }
+    ],
+    "freeSpaceNote": "Disk measurements include other processes. Cleanup was rejected before execution; no physical space reclamation is claimed."
+  },
+  "catalogCaptainUpdate": {
+    "date": "2026-10-28",
+    "owner": "caribbean-catalog-captain",
+    "preservationCommit": "152fde070e377df6ff961f34274b75842afc6642",
+    "preservationRefs": [
+      "refs/heads/main",
+      "refs/heads/codex/caribbean-catalog-captain"
+    ],
+    "remoteCommitVerified": true,
+    "freeBeforeBuildBytes": 300204789760,
+    "freeBeforeRejectedCleanupBytes": 298811793408,
+    "freeAfterRejectedCleanupBytes": 297097203712,
+    "removedFolders": [],
+    "removedFiles": [],
+    "removedArchives": [],
+    "removedLogicalBytes": 0,
+    "physicalReclamationClaimed": false,
+    "cleanupBlock": {
+      "action": "Remove only the exact task-owned temporary catalogue screenshots, build log and report script after GitHub verification",
+      "reason": "Automatic approval review rejected the command: blocked by policy",
+      "attemptExecuted": false
+    },
+    "retainedTaskArtifacts": {
+      "folder": "artifacts/work/caribbean-catalog-captain",
+      "bytesAtCleanupAttempt": 864116,
+      "cleanupCondition": "Remove duplicated screenshots, browser report, build log and temporary report helper when cleanup is permitted; final selected art, prompt, proof images and compact report are verified in GitHub."
+    },
+    "activeExceptions": [
+      {
+        "folder": "C:/Users/Aorus/.codex/worktrees/new-slot/royal",
+        "reason": "Primary checkout and the existing user-requested local preview remain active.",
+        "cleanupCondition": "Retain while the local preview is requested."
+      },
+      {
+        "file": "C:/Users/Aorus/.codex/generated_images/01a1793f-6c92-7992-85f5-379a1491ef5d/exec-3a6a8d3d-c535-497b-ab95-05de679ca8d1.png",
+        "reason": "The built-in ImageGen tool requires keeping its original output; the project master and optimized export are saved in GitHub.",
+        "cleanupCondition": "Keep the original unless the user explicitly requests its removal."
+      }
+    ],
+    "freeSpaceNote": "Measurements include other processes. Cleanup was rejected before execution and no physical space reclamation is claimed."
+  },
+  "headerControlsUpdate": {
+    "date": "2026-10-28",
+    "owner": "caribbean-header-controls",
+    "preservationCommit": "46f27e1ae3179331a436cfa12946e08389fe6184",
+    "preservationRefs": [
+      "refs/heads/main",
+      "refs/heads/codex/caribbean-header-controls"
+    ],
+    "remoteCommitVerified": true,
+    "freeBeforeBuildBytes": 299242049536,
+    "freeBeforeRejectedCleanupBytes": 299137511424,
+    "freeAfterRejectedCleanupBytes": 299135414272,
+    "removedFolders": [],
+    "removedFiles": [],
+    "removedArchives": [],
+    "removedLogicalBytes": 0,
+    "physicalReclamationClaimed": false,
+    "cleanupBlock": {
+      "action": "Remove only artifacts/work/caribbean-header-controls after exact path and owner validation and GitHub preservation verification",
+      "reason": "Automatic approval review rejected the command: blocked by policy",
+      "attemptExecuted": false
+    },
+    "retainedTaskArtifacts": {
+      "folder": "artifacts/work/caribbean-header-controls",
+      "bytesAtCleanupAttempt": 13612828.0,
+      "cleanupCondition": "Remove duplicated browser screenshots, reports and build log when cleanup is permitted; compact proof and final screenshot are verified in GitHub"
+    },
+    "activeExceptions": [
+      {
+        "folder": "C:/Users/Aorus/.codex/worktrees/new-slot/royal",
+        "reason": "Existing local preview and primary checkout concurrent work remain active",
+        "cleanupCondition": "Preserve while requested preview is running"
+      },
+      {
+        "folder": "module-dist/studio-caribbean-treasures/versions",
+        "reason": "New 1.3.3 package is current; an already opened user window may still use the previous immutable package",
+        "cleanupCondition": "Remove obsolete packages only after the old game window is closed and no running session requires them"
+      },
+      {
+        "folder": "C:/Users/Aorus/AppData/Local/Temp/royal-pg-C70xv3",
+        "reason": "Database for the active user-requested local preview",
+        "cleanupCondition": "Preserve until that preview ends"
+      }
+    ],
+    "freeSpaceNote": "Measurements include other processes. Cleanup was rejected before execution; no physical reclamation is claimed"
+  },
+  "pirateCrewUpdate": {
+    "date": "2026-10-28",
+    "owner": "caribbean-pirate-crew",
+    "preservationCommit": "6637116af2a2eb0ba82d841099d081db1c50eeef",
+    "preservationRefs": [
+      "refs/heads/main",
+      "refs/heads/codex/caribbean-pirate-crew"
+    ],
+    "remoteCommitVerified": true,
+    "freeBeforeBuildBytes": 299134611456,
+    "freeBeforeRejectedCleanupBytes": 298180399104,
+    "freeAfterRejectedCleanupBytes": 298180292608,
+    "removedFolders": [],
+    "removedFiles": [],
+    "removedArchives": [],
+    "removedLogicalBytes": 0,
+    "physicalReclamationClaimed": false,
+    "cleanupBlock": {
+      "action": "Remove only this task temporary directory and three superseded 1.4.0 packages, after exact path and owner checks, preserving the current package and user preview",
+      "reason": "Automatic approval review rejected the command: blocked by policy",
+      "attemptExecuted": false
+    },
+    "retainedTaskArtifacts": [
+      {
+        "folder": "artifacts/work/caribbean-pirate-crew",
+        "bytes": 22700368,
+        "cleanupCondition": "Remove duplicate screenshots, discarded variants, logs and reports when permitted; selected masters, prompts and compact proof are verified in GitHub"
+      },
+      {
+        "folder": "module-dist/studio-caribbean-treasures/versions/1.4.0-d9f52c7d68c0",
+        "bytes": 15370914,
+        "cleanupCondition": "Remove superseded task package when cleanup is permitted"
+      },
+      {
+        "folder": "module-dist/studio-caribbean-treasures/versions/1.4.0-0a5138a35a7e",
+        "bytes": 15070570,
+        "cleanupCondition": "Remove superseded task package when cleanup is permitted"
+      },
+      {
+        "folder": "module-dist/studio-caribbean-treasures/versions/1.4.0-0741188c410c",
+        "bytes": 14993243,
+        "cleanupCondition": "Remove superseded task package when cleanup is permitted"
+      }
+    ],
+    "retainedLogicalBytes": 68135095,
+    "activeExceptions": [
+      {
+        "folder": "C:/Users/Aorus/.codex/worktrees/new-slot/royal",
+        "reason": "The user-requested local preview remains active alongside concurrent work in the primary checkout",
+        "cleanupCondition": "Retain while the preview is requested"
+      },
+      {
+        "folder": "C:/Users/Aorus/AppData/Local/Temp/royal-pg-C70xv3",
+        "reason": "Active preview database",
+        "cleanupCondition": "Preserve until the preview ends"
+      },
+      {
+        "folder": "module-dist/studio-caribbean-treasures/versions/1.3.3-54b6b0c0cc94",
+        "reason": "An already open user game window may still use the previous immutable package",
+        "cleanupCondition": "Remove after that window is closed and no running session requires it"
+      },
+      {
+        "folder": "C:/Users/Aorus/.codex/generated_images/01a1793f-6c92-7992-85f5-379a1491ef5d",
+        "reason": "Built-in ImageGen requires retaining original outputs; all ten selected project masters and exact prompts are saved in GitHub",
+        "cleanupCondition": "Keep tool originals unless the user explicitly requests removal"
+      }
+    ],
+    "freeSpaceNote": "Measurements include other processes. Cleanup was rejected before execution and no physical space reclamation is claimed"
+  },
+  "crewUnlocksUpdate": {
+    "date": "2026-10-29",
+    "owner": "caribbean-crew-unlocks",
+    "preservationCommit": "28516a9faef3c276e3ea6674146df2f8b17779a6",
+    "preservationRefs": [
+      "refs/heads/main",
+      "refs/heads/codex/caribbean-crew-unlocks"
+    ],
+    "remoteCommitVerified": true,
+    "freeBeforeBuildBytes": 294723399680,
+    "freeBeforeRejectedCleanupBytes": 290031497216,
+    "freeAfterRejectedCleanupBytes": 292208340992,
+    "removedFolders": [],
+    "removedFiles": [],
+    "removedArchives": [],
+    "removedLogicalBytes": 0,
+    "physicalReclamationClaimed": false,
+    "cleanupBlock": {
+      "action": "Remove only inventoried temporary test files and three superseded 1.5.0 packages, preserving current package, active API watcher, logs and original database",
+      "reason": "Automatic approval review rejected the command: blocked by policy",
+      "attemptExecuted": false
+    },
+    "retainedTaskArtifacts": [
+      {
+        "folder": "artifacts/work/caribbean-crew-unlocks",
+        "removableBytes": 15392407.0,
+        "cleanupCondition": "Remove duplicate screenshots, traces, test outputs, candidate/restart diagnostics and one-off verification scripts when cleanup is permitted; final compact proof is saved in GitHub"
+      },
+      {
+        "folder": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-caribbean-treasures\\versions\\1.5.0-5bd2334f6da9",
+        "bytes": 14855509.0,
+        "cleanupCondition": "Remove superseded task package when cleanup is permitted"
+      },
+      {
+        "folder": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-caribbean-treasures\\versions\\1.5.0-a93bff0576dd",
+        "bytes": 14855509.0,
+        "cleanupCondition": "Remove superseded task package when cleanup is permitted"
+      },
+      {
+        "folder": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-caribbean-treasures\\versions\\1.5.0-b917a79139a8",
+        "bytes": 14855410.0,
+        "cleanupCondition": "Remove superseded task package when cleanup is permitted"
+      }
+    ],
+    "retainedLogicalBytes": 59958835.0,
+    "activeExceptions": [
+      {
+        "folder": "C:/Users/Aorus/.codex/worktrees/new-slot/royal",
+        "reason": "Existing user-requested local preview continues alongside concurrent primary-checkout work",
+        "cleanupCondition": "Preserve while preview is requested"
+      },
+      {
+        "folder": "artifacts/work/caribbean-crew-unlocks",
+        "files": [
+          "owner.json",
+          "api-watch.mjs",
+          "runtime-api.json",
+          "active-api.log",
+          "api-watch.log"
+        ],
+        "reason": "Current common API watcher and its owned child remain active for the preserved preview",
+        "cleanupCondition": "Stop watcher and backend when the original preview ends; keep their current owner record and log while running"
+      },
+      {
+        "folder": "C:/Users/Aorus/AppData/Local/Temp/royal-pg-C70xv3",
+        "reason": "Original active local database, authentication, wallet and accepted rounds",
+        "cleanupCondition": "Preserve until the user-requested preview ends"
+      },
+      {
+        "folder": "module-dist/studio-caribbean-treasures/versions/1.4.0-2c6b41ca2da3",
+        "reason": "An existing user window may still own the previous immutable package",
+        "cleanupCondition": "Remove only after that game window is closed and no running session needs it"
+      }
+    ],
+    "freeSpaceNote": "Measurements include other processes. Cleanup was rejected before execution and no physical reclamation is claimed"
+  }
+}

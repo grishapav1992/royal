@@ -1,0 +1,26 @@
+# Caribbean Treasures feedback specification
+
+Design parameters below are game-specific hypotheses, not scientific perception thresholds. Confirmed rules and money remain in the common backend.
+
+| Event and condition | Picture and meaning | Sound and synchronization | Interruption and verification |
+| --- | --- | --- | --- |
+| User requests a paid start or free spin | Decorative rolling strips and confirmation badge; no invented result | Music starts only after a gesture. No result sound until confirmation | Failed request leaves the common pending operation. No outcome cue |
+| A new confirmed spin is accepted | Six columns settle sequentially, with a 100 ms preparation wait before each aligned accent, then the server's `gridBefore` is readable | Short wooden/percussive landings, each visual scheduled for the predicted audible output time | Skip, pause, hide, close or account change shows the current confirmed field and cancels owned audio |
+| Confirmed giant exists | One continuous 2×2 or 3×3 symbol rises and settles inside its occupied cells over 340 ms | Wood impact, creak and metal latch at reveal | Reduced motion shows the complete shape immediately |
+| Confirmed cannon expands `blockBefore` | Warm muzzle accent, exact containing block growth over 380 ms, local recoil and fading smoke; captain briefly surprised | Recorded cannon impact; no repeated screen flashes | The block never grows beyond confirmed coordinates |
+| Confirmed winning cells | Continuous giant outline, borders outside it and one traced paid prefix route; smooth integer round tally over 420 ms | Small recorded coin movement, softer than final positive outcome | This is accumulated round money, not a separate wallet credit |
+| Natural tactic choice or purchased series | Boarding card and explicit free-spin count | Chest latch, creak and coins | A purchase confirmation states its actual rounded price; cancelling does not wager |
+| Complete paid round, W < B | Exact credit and negative net; neutral return label | Quiet wood settling, no victory fanfare | Partial payouts are not celebrated as profit |
+| Complete paid round, W = B | Stake returned label and zero net | Quiet neutral latch | Classification uses full accepted paid-round cost |
+| Complete paid round, B < W < 20B | Positive round result, short gold emphasis | Recorded coins and chest accent | Same key cannot replay through refresh or reopen |
+| Complete paid round, W >= 20B | Large positive round result, 700 ms gold flourish | Layered recorded coins and chest accent, music ducks | Skip ends decoration without another request or credit |
+
+Recorded music: the instrumental loop of Blackmoor Tides by Matthew Pablo (CC BY 3.0). Finished Foley: Kenney and Thimras (CC0). See [audio selection](audio-selection.md) and [credits](assets/audio-credits.md). Twelve stereo AAC files are preloaded and decoded into the common host context; no oscillators or generated melody remain. A native buffer loop, separate music preference, measured sample attack markers and background ducking keep events clear. Owned voices are limited to 24 simultaneously, stop on mute, zero volume, hide, pause, close and account change, and never replay an event after loading. Music preference changes cancel future duck automation. Async loading after destruction cannot restart audio.
+
+Audio accents use `AudioContext.getOutputTimestamp()` when valid, otherwise output/base latency, with 70 ms of audio scheduling lookahead. Visual accents reserve 24 ms for the next animation frame and painting before the estimated audible moment. Engineering target on the local test device: absolute scheduling deviation <= 50 ms. This measures scheduling, not physical speaker or Bluetooth latency. Silent and reduced-motion variants preserve all money and state information. There is no repeating full-screen flash; decorative pulses are at most one per confirmed event.
+
+Compare the same saved scenarios from `docs/concepts/caribbean-treasures/scenarios.json`. Record signal peak, owned-source cleanup, actual scheduling deviation, readable money, no replay, and real host/chat layout. Listening comfort and physical phone/headphone/Bluetooth assessment must be distinguished from automated signal tests.
+
+Reference art upgrade: see [reference-polish.md](reference-polish.md). Every cell and giant uses the same illustrated WebP master. The owned music and effects branches use the room character of the recordings; muting music leaves effects available. Pausing stops both branches, so sample tails cannot return on reopen. The default gain is explicitly zero before scheduling the first attack, including starts between sample boundaries.
+
+Character update: [character-motion.md](character-motion.md) defines eight poses and their meaning. Idle breathing, blinking and occasional glances stop when hidden or paused. Confirmed landings get restrained gesture variations; a new spin interrupts the previous pose sequence. Reactions use the revision and cue as identity and never replay after recovery. Calm loss/partial-return poses differ from positive results. Static expressions remain available with reduced motion. Caption text is decorative and localized in RU/EN; the existing status and money fields remain authoritative and accessible.
