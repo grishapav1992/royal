@@ -4,8 +4,8 @@
   "stage": 3,
   "status": "interface-complete",
   "branch": "codex/flooded-temple",
-  "verifiedSourceCommit": "f17bc6176d587cddb0868fb2ecc2edc65fd5c144",
-  "integrationBaseline": "1be52a18561fc3dd60bb9512baaac47335ec2f8e",
+  "verifiedSourceCommit": "2d04ea0b33864406f99334c0c847333d336f470b",
+  "integrationBaseline": "3db899cc38b12558edd881f43413e4fc8af4b947",
   "productionChanged": false,
   "module": {
     "version": "0.8.0-2abdb01f87f5",
@@ -171,47 +171,47 @@
     },
     "build": {
       "format": 1,
-      "startedAt": "2026-10-29T05:06:53.814Z",
+      "startedAt": "2026-10-29T05:10:18.068Z",
       "scope": "application",
       "steps": [
         {
           "name": "rtp",
           "passed": true,
-          "durationMs": 3399
+          "durationMs": 2888
         },
         {
           "name": "typecheck",
           "passed": true,
-          "durationMs": 10478
+          "durationMs": 9331
         },
         {
           "name": "modules",
           "passed": true,
-          "durationMs": 10968
+          "durationMs": 5150
         },
         {
           "name": "host",
           "passed": true,
-          "durationMs": 7828
+          "durationMs": 7798
         },
         {
           "name": "backend",
           "passed": true,
-          "durationMs": 97
+          "durationMs": 90
         },
         {
           "name": "reconciliation",
           "passed": true,
-          "durationMs": 27
+          "durationMs": 29
         },
         {
           "name": "payments",
           "passed": true,
-          "durationMs": 56
+          "durationMs": 35
         }
       ],
       "passed": true,
-      "durationMs": 32854
+      "durationMs": 25321
     }
   },
   "art": {
@@ -250,11 +250,11 @@
   "storage": {
     "taskScope": "artifacts/work/temple-cascades-stage3/",
     "freeBytesAtStageStart": 288629501952,
-    "freeBytesBeforeCleanup": 302948548608,
+    "freeBytesBeforeCleanup": 299031851008,
     "removedBytes": 0,
     "removedFolders": [],
     "physicalSpaceReclaimedClaim": false,
-    "cleanupStatus": "pending GitHub preservation verification",
+    "cleanupStatus": "automatic approval review rejected cleanup before execution",
     "temporaryFiles": [
       {
         "path": "artifacts/work/temple-cascades-stage3/geometry.json",
@@ -321,6 +321,40 @@
         "path": "previous denied cleanup scopes and other games",
         "cleanupCondition": "Not owned by this stage; no deletion attempted"
       }
-    ]
+    ],
+    "preservationCommit": "2d04ea0b33864406f99334c0c847333d336f470b",
+    "cleanupTargets": [
+      {
+        "path": "artifacts/work/temple-cascades-stage3",
+        "files": 7,
+        "bytes": 233104
+      },
+      {
+        "path": "module-dist/studio-flooded-temple/versions/0.8.0-0448886a45f4",
+        "files": 35,
+        "bytes": 19814816
+      },
+      {
+        "path": "module-dist/studio-flooded-temple/versions/0.8.0-c3060d807d48",
+        "files": 35,
+        "bytes": 19815202
+      },
+      {
+        "path": "module-dist/studio-flooded-temple/versions/0.8.0-e43ea71d3acb",
+        "files": 35,
+        "bytes": 19814994
+      },
+      {
+        "path": "module-dist/studio-flooded-temple/versions/0.8.0-e4f35c415067",
+        "files": 35,
+        "bytes": 19815213
+      }
+    ],
+    "freeBytesAfterCleanupAttempt": 299809198080,
+    "rejection": "Automatic approval review rejected removing the owned temporary directory and four obsolete task-owned 0.8.0 packages before execution: blocked by policy. No detailed reason supplied. No files removed and no retry attempted.",
+    "obsoleteBytesRetained": 79493329,
+    "retryAttempted": false,
+    "removedArchiveBytes": 0,
+    "freeSpaceChangeAttribution": "Cleanup did not execute. Do not attribute the change in free space to this task."
   }
 }
