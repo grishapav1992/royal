@@ -28,7 +28,7 @@ async function enter(page:Page,lang='ru'){
   await page.locator('#games-tab').click();await page.locator('[data-cabinet="studio-afterglow"]').click();await expect(page.locator('#mini-dialog')).toBeVisible({timeout:30000});await page.locator('[data-platform-game="original-jackie-chan"]').click();await expect(page.locator('.jackie')).toHaveAttribute('data-loading','false',{timeout:30000});await expect(page.locator('#mini-dialog #chat-input')).toBeEnabled();
 }
 async function act(page:Page,selector='[data-fight]'){
-  const reply=page.waitForResponse(r=>r.url().endsWith('/api/demo-wallet/expansion')&&r.request().method()==='POST');await page.locator('.jackie '+selector).click();const r=await reply;expect(r.ok()).toBe(true);const body=await r.json();await expect(page.locator('.jackie [data-fight]')).toBeEnabled({timeout:10000});return body.session;
+  const reply=page.waitForResponse(r=>r.url().endsWith('/api/demo-wallet/expansion')&&r.request().method()==='POST');await page.locator('.jackie '+selector).click();const r=await reply;expect(r.ok()).toBe(true);const body=await r.json();await expect(page.locator('.jackie [data-fight]')).toBeEnabled({timeout:15000});return body.session;
 }
 test('real host, chat, risk groups, gallery and account progress work on desktop and mobile',async({page})=>{
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await outcome('win');await enter(page);await page.emulateMedia({reducedMotion:'no-preference'});
@@ -52,7 +52,7 @@ test('real host, chat, risk groups, gallery and account progress work on desktop
   await act(page);await act(page);
   let posts=0;page.on('request',request=>{if(request.method()==='POST'&&request.url().endsWith('/api/demo-wallet/expansion'))posts++;});
   const finalOperation=act(page);
-  await expect(game).toHaveAttribute('data-result-kind','complete');await expect(game.locator('[data-result-title]')).toHaveText('ПОБЕДА!');await expect(game.locator('[data-result-caption]')).toContainText('5 БОЁВ');await expect(game.locator('.jc-takes .won')).toHaveCount(5);
+  await expect(game).toHaveAttribute('data-result-kind','complete',{timeout:15000});await expect(game.locator('[data-result-title]')).toHaveText('ПОБЕДА!');await expect(game.locator('[data-result-caption]')).toContainText('5 БОЁВ');await expect(game.locator('.jc-takes .won')).toHaveCount(5);
   await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getMiniState()?.phase)).toBe('victory-fist');
   await page.screenshot({path:out+'/victory-desktop.png'});await game.locator('[data-skip-victory]').click();const completed=await finalOperation;expect(completed.view.jackie.combat.status).toBe('complete');expect(posts).toBe(1);await expect(game.locator('[data-skip-victory]')).toBeHidden();
   expect(await page.evaluate(()=>(window as any).royalDemo.getMiniState()?.audio.active)).toBe(0);
@@ -87,7 +87,7 @@ test('preview brings a varied fight contact into a laptop viewport and reopens w
   const version=await page.locator('#preview').getAttribute('data-game-module-version');
   let posts=0;page.on('request',r=>{if(r.method()==='POST'&&r.url().endsWith('/api/demo-wallet/expansion'))posts++;});
   const operation=act(page);
-  await page.waitForFunction(()=>!!document.querySelector('canvas')?.dataset.phase?.match(/^(cross-punch|straight-punch|counter-punch|side-kick|table-vault|stool-kick)$/),undefined,{polling:'raf',timeout:10000});
+  await page.waitForFunction(()=>!!document.querySelector('canvas')?.dataset.phase?.match(/^(cross-punch|straight-punch|counter-punch|side-kick|table-vault|stool-kick|backfist-strike|palm-strike|sweep-strike|knee-strike|elbow-strike|spin-kick-strike)$/),undefined,{polling:'raf',timeout:15000});
   const scene=await game.locator('canvas').evaluate(el=>{const r=el.getBoundingClientRect();return{top:r.top,bottom:r.bottom,height:innerHeight,held:(el as HTMLElement).dataset.heldFurniture,phase:(el as HTMLElement).dataset.phase,sequence:(el as HTMLElement).dataset.sequence};});
   expect(scene.top).toBeGreaterThanOrEqual(0);expect(scene.bottom).toBeLessThanOrEqual(scene.height);expect(scene.held).not.toBe('chair');
   await page.screenshot({path:out+'/furniture-live-preview.png'});const accepted=await operation;expect(accepted.view.jackie.combat.shots).toHaveLength(1);
@@ -105,6 +105,26 @@ test('preview brings a varied fight contact into a laptop viewport and reopens w
     if(width===580||width===320)await page.screenshot({path:out+'/cashout-raised-'+width+'.png'});
   }
   await writeFile(out+'/cashout-layout.json',JSON.stringify(layouts,null,2));
+});
+
+test('speed changes during a fight preserve its operation and survive reopening',async({page})=>{
+  await page.emulateMedia({reducedMotion:'no-preference'});await outcome('win');
+  const email='jackie-speed-'+crypto.randomUUID()+'@example.test';
+  expect((await page.request.post(baseURL+'/api/auth/login',{data:{email,password:'Jackie-isolated-check-123!'}})).ok()).toBe(true);const account=await seed(email);
+  await page.route('**/__jackie/setup',route=>route.fulfill({json:{account:{id:account}}}));await page.goto(baseURL+'/tests/fixtures/jackie-play.html');
+  const game=page.locator('.jackie');await expect(game).toHaveAttribute('data-loading','false',{timeout:30000});await expect(game.locator('[data-speed]')).toHaveAttribute('aria-pressed','false');
+  await game.locator('[data-risk="extreme"]').click();let posts=0;page.on('request',r=>{if(r.method()==='POST'&&r.url().endsWith('/api/demo-wallet/expansion'))posts++;});
+  const operation=act(page);await expect(game).toHaveAttribute('data-revision','1');
+  await expect.poll(()=>page.evaluate(()=>(window as any).jackiePreview.state().elapsed)).toBeGreaterThan(1.2);
+  const before=await page.evaluate(()=>(window as any).jackiePreview.state());await game.locator('[data-speed]').click();
+  const after=await page.evaluate(()=>(window as any).jackiePreview.state());expect(after.elapsed).toBeGreaterThanOrEqual(before.elapsed);expect(after.elapsed-before.elapsed).toBeLessThan(.6);expect(after.sequence).toBe(before.sequence);expect(after.speed).toBe(2);
+  await expect(game.locator('[data-fight]')).toBeDisabled();await expect(game.locator('[data-speed]')).toHaveAttribute('aria-pressed','true');
+  expect((await operation).view.jackie.combat.shots).toHaveLength(1);expect(posts).toBe(1);
+  await page.locator('#reopen').click();await expect(game).toHaveAttribute('data-loading','false',{timeout:30000});await expect(game).toHaveAttribute('data-speed','2');await expect(game.locator('[data-cashout]')).toBeVisible();
+  const restored=await page.evaluate(()=>(window as any).jackiePreview.state());expect(restored.busy).toBe(false);expect(restored.audio.active).toBe(0);expect(posts).toBe(1);
+  await page.emulateMedia({reducedMotion:'reduce'});await game.locator('[data-speed]').click();await expect(game).toHaveAttribute('data-speed','1');expect((await page.evaluate(()=>(window as any).jackiePreview.state())).busy).toBe(false);
+  await page.setViewportSize({width:320,height:740});await expect.poll(()=>game.evaluate(e=>e.scrollWidth-e.clientWidth)).toBeLessThanOrEqual(1);await game.locator('[data-speed]').scrollIntoViewIfNeeded();await expect(game.locator('[data-speed]')).toBeInViewport();
+  await writeFile(out+'/speed-continuity.json',JSON.stringify({before,after,restored,operations:posts,preferenceSurvivedReopen:true,mobileWidth:320},null,2));
 });
 
 test('lost response recovers the same operation; reopening loads saved state without another stake',async({page})=>{

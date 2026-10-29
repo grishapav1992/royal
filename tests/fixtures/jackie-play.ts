@@ -5,6 +5,7 @@ import {expansionClient} from '../../src/wallet/ExpansionClient';
 import {validModulePointer} from '../../src/modules/GameModuleManifest';
 const host=document.querySelector<HTMLElement>('#preview')!;let view:IndependentGameUI|undefined;
 const open=()=>{view?.destroy();view=new IndependentGameUI(host,'original-jackie-chan');};
+(window as any).jackiePreview={state:()=>view?.getState()};
 try{const response=await fetch('/__jackie/setup',{method:'POST',credentials:'same-origin'});const result=await response.json();if(!response.ok)throw Error(result.error);gameAudio.install();demoWallet.setAccount(result.account.id);open();}catch(e){host.textContent=(e as Error).message;}
 document.querySelector<HTMLButtonElement>('#reopen')!.onclick=open;
 // Only this disposable development preview follows rebuilt packages automatically.

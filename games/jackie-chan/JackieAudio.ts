@@ -22,20 +22,13 @@ export class JackieAudio {
     source.onended = () => { this.sources.delete(source); source.disconnect(); gain.disconnect(); };
     source.start(at); source.stop(at + duration + .01);
   }
-  private sound(at:number,cue:FightSound,variation=0){
+  private sound(at:number,cue:FightSound,variation=0,level=1){
     if(!this.allowed())return;
     const context=gameAudio.context!,key=cue+':'+variation%4+':'+context.sampleRate;
     let buffer=this.buffers.get(key);
     if(!buffer){const samples=fightSound(cue,context.sampleRate,variation);buffer=context.createBuffer(1,samples.length,context.sampleRate);buffer.getChannelData(0).set(samples);this.buffers.set(key,buffer);}
-    const source=context.createBufferSource();source.buffer=buffer;source.connect(gameAudio.output!);this.sources.add(source);
-    source.onended=()=>{this.sources.delete(source);source.disconnect();};source.start(at);
-  }
-  private wood(at:number){this.sound(at,'wood',this.variation);}
-  private victory(at:number){
-    // Soft gong body, then a pentatonic phrase. This is original synthesized audio.
-    [196,392,588.7].forEach((f,i)=>this.tone(at,f,.85,.025/(i+1),'sine'));
-    [392,494,587,784,880,784].forEach((f,i)=>this.tone(at+.2+i*.14,f,.26,.035,'triangle'));
-    this.wood(at+1.2);this.wood(at+1.34);
+    const source=context.createBufferSource(),gain=context.createGain();source.buffer=buffer;gain.gain.value=level;source.connect(gain);gain.connect(gameAudio.output!);this.sources.add(source);
+    source.onended=()=>{this.sources.delete(source);source.disconnect();gain.disconnect();};source.start(at);
   }
   /** Visuals follow estimated audible time, including the shared output latency. */
   private audible(at: number) {
@@ -43,22 +36,28 @@ export class JackieAudio {
     return stamp?.performanceTime && stamp.contextTime ? stamp.performanceTime + (at - stamp.contextTime) * 1000
       : performance.now() + (at - c.currentTime + (c.outputLatency || c.baseLatency || 0)) * 1000;
   }
-  begin(count: number, success: boolean, paid: boolean,plan:FightPlan=FIGHT_PLANS[0]) {
+  begin(count: number, success: boolean, paid: boolean,plan:FightPlan=FIGHT_PLANS[0],speed:1|2=1,from=0) {
     this.cancel();
     if (!this.allowed()) return performance.now();
     const at = gameAudio.context!.currentTime + .06;
     this.variation=(this.variation+1)%4;
-    if(plan.moves[0]==='chair'){this.wood(at+.5);this.wood(at+.84);this.wood(at+chairReleaseAt());}
-    plan.moves.slice(0,count).forEach((move,i)=>{if(move==='table'||move==='stool')this.wood(at+contactAt(i)-.24);if(move==='evade')this.sound(at+contactAt(i)-.52,'whoosh',(this.variation+i)%4);});
+    const when=(time:number)=>at+(time-from)/speed;
+    const cue=(time:number,kind:FightSound,variant=this.variation,level=1)=>{if(time>=from+.001)this.sound(when(time),kind,variant,level*.9*(speed===2?.84:1));};
+    const note=(time:number,frequency:number,duration:number,level:number,type:OscillatorType='sine')=>{if(time>=from+.001)this.tone(when(time),frequency,duration/speed,level,type);};
+    if(plan.moves[0]==='chair'){cue(.5,'wood');cue(.84,'wood');cue(chairReleaseAt(),'wood');}
+    plan.moves.slice(0,count).forEach((move,i)=>{if(move==='table'||move==='stool')cue(contactAt(i)-.24,'wood');if(move==='evade')cue(contactAt(i)-.52,'whoosh',(this.variation+i)%4);});
     for (const impact of impacts(plan,count)) {
-      const contact=at+impact.at,variant=(this.variation+impact.fighter)%4,hit=success||impact.fighter<count-1;
-      this.sound(contact-.16,'whoosh',variant);
-      this.sound(contact,!impact.primary?'block':hit?impact.kind:'punch',variant);
-      if(impact.primary&&!hit){this.sound(contact+.045,'block',variant);this.sound(contact+.24,'landing',variant);}
+      const contact=impact.at,variant=(this.variation+impact.fighter)%4,hit=success||impact.fighter<count-1;
+      cue(contact-.16,'whoosh',variant,.65);
+      cue(contact,impact.primary&&!hit?'punch':impact.kind,variant,impact.primary?1:.55);
+      if(impact.primary&&!hit){cue(contact+.045,'block',variant);cue(contact+.24,'landing',variant);}
     }
-    const end = at + resultAt(count);
-    if (paid) this.victory(end+.12);
-    else this.tone(end, success ? 330 : 100, success ? .10 : .18, .028, 'triangle');
+    const end = resultAt(count);
+    if (paid) {
+      [196,392,588.7].forEach((f,i)=>note(end+.12,f,.85,.025/(i+1)));
+      [392,494,587,784,880,784].forEach((f,i)=>note(end+.32+i*.14,f,.26,.035,'triangle'));
+      cue(end+1.32,'wood');cue(end+1.46,'wood');
+    } else note(end,success?330:100,success?.10:.18,.028,'triangle');
     return this.audible(at);
   }
   cashout() {

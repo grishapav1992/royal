@@ -29,14 +29,14 @@ test('victory has fist and bow poses, while restored results and losses remain s
   }
 });
 
-test('seven routines show different unarmed and prop contacts in every costume on desktop and mobile',async({page})=>{
+test('thirteen routines show different unarmed and prop contacts in every costume on desktop and mobile',async({page})=>{
   const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));let frames=0;
   for(const width of [1000,360]){
     await page.setViewportSize({width,height:800});
     const rows=await page.evaluate(({contacts,end})=>{
       const h=(window as any).jackieMotion,rows=[];
       for(const plan of h.plans)for(const costume of ['master','sailor','police','hawk','rush','whoami','tuxedo','mentor']){
-        const times=[0,...contacts.flatMap((at:number)=>[at-.3,at,at+.22]),end+.1];
+        const times=[0,...contacts.flatMap((at:number)=>[at-1.45,at-.95,at-.6,at-.3,at,at+.22]),end+.1];
         for(const time of times)rows.push({id:plan.id,moves:plan.moves,time,width:document.querySelector('canvas')!.clientWidth,height:document.querySelector('canvas')!.clientHeight,...h.render({plan:plan.id,costume,risk:'extreme',time})});
         rows.push({id:plan.id,moves:plan.moves,time:end+.1,width:document.querySelector('canvas')!.clientWidth,height:document.querySelector('canvas')!.clientHeight,...h.render({plan:plan.id,costume,risk:'extreme',status:'lost',time:end+.1})});
       }
@@ -50,8 +50,9 @@ test('seven routines show different unarmed and prop contacts in every costume o
     frames+=rows.length;
   }
   await page.setViewportSize({width:1000,height:700});
-  for(const plan of ['boxing','counter','high-kick','straight','table-run','stool-step','chair-counter']){await page.evaluate(config=>(window as any).jackieMotion.render(config),{plan,time:contactAt(0)});await page.locator('canvas').screenshot({path:out+'/fight-'+plan+'.png'});}
-  expect(errors).toEqual([]);await writeFile(out+'/fight-variety.json',JSON.stringify({frames,routines:7,costumes:8,viewports:[1000,360],pageErrors:errors},null,2));
+  for(const plan of ['boxing','counter','high-kick','straight','table-run','stool-step','chair-counter','backfist-chain','palm-counter','low-sweep','flying-knee','elbow-lock','turning-heel']){await page.evaluate(config=>(window as any).jackieMotion.render(config),{plan,time:contactAt(0)});await page.locator('canvas').screenshot({path:out+'/fight-'+plan+'.png'});}
+  for(const [offset,name]of [[-1.45,'block'],[-.95,'answer'],[-.6,'slip']]as const){await page.evaluate(config=>(window as any).jackieMotion.render(config),{plan:'turning-heel',time:contactAt(0)+offset});await page.locator('canvas').screenshot({path:out+'/exchange-'+name+'.png'});}
+  expect(errors).toEqual([]);await writeFile(out+'/fight-variety.json',JSON.stringify({frames,routines:13,costumes:8,viewports:[1000,360],pageErrors:errors},null,2));
 });
 
 test('automatic fight choices change through five wins and survive restoring the same accepted shot',async({page})=>{
@@ -123,16 +124,29 @@ test('furniture survives pickup, strike, return and group transition on wins and
 test('arcade hits land on the contact markers with headroom and cancel all owned sound',async({page})=>{
   const stats=await page.evaluate(async({contacts})=>{
     const path='/src/game/GameAudio.ts',{gameAudio}=await import(/* @vite-ignore */path);const previousContext=gameAudio.context,previousOutput=gameAudio.output;
-    async function render(cancel:boolean,success=true,plan?:any){
-      const context=new OfflineAudioContext(1,9*44100,44100),output=context.createGain();output.connect(context.destination);gameAudio.context=context as unknown as AudioContext;gameAudio.output=output;
-      const Audio=(window as any).jackieMotion.audio.constructor,audio=new Audio();audio.allowed=()=>true;audio.begin(3,success,success,plan);const scheduled=audio.state().active;if(cancel)audio.cancel();
-      const buffer=await context.startRendering(),data=buffer.getChannelData(0);let peak=0,energy=0,tailPeak=0;for(let i=0;i<data.length;i++){peak=Math.max(peak,Math.abs(data[i]));energy+=data[i]*data[i];if(i>8*44100)tailPeak=Math.max(tailPeak,Math.abs(data[i]));}
+    async function render(cancel:boolean,success=true,plan?:any,speed:1|2=1,from=0){
+      const context=new OfflineAudioContext(1,13*44100/speed,44100),output=context.createGain();output.connect(context.destination);gameAudio.context=context as unknown as AudioContext;gameAudio.output=output;
+      const Audio=(window as any).jackieMotion.audio.constructor,audio=new Audio();audio.allowed=()=>true;audio.begin(3,success,success,plan,speed,from);const scheduled=audio.state().active;if(cancel)audio.cancel();
+      const buffer=await context.startRendering(),data=buffer.getChannelData(0);let peak=0,energy=0,tailPeak=0;for(let i=0;i<data.length;i++){peak=Math.max(peak,Math.abs(data[i]));energy+=data[i]*data[i];if(i>12*44100/speed)tailPeak=Math.max(tailPeak,Math.abs(data[i]));}
       const windowPeak=(start:number,end:number)=>{let peak=0;for(let i=Math.floor(start*44100);i<end*44100;i++)peak=Math.max(peak,Math.abs(data[i]));return peak;};
-      const strikes=contacts.map(at=>({impact:windowPeak(.06+at-.004,.06+at+.04),swing:windowPeak(.06+at-.12,.06+at-.005)}));
+      const strikes=contacts.filter(at=>at>from).map(at=>({impact:windowPeak(.06+(at-from)/speed-.004,.06+(at-from)/speed+.04),swing:windowPeak(.06+(at-from-.12)/speed,.06+(at-from)/speed-.005)}));
       audio.destroy();return{scheduled,peak,rms:Math.sqrt(energy/data.length),tailPeak,strikes,active:audio.state().active};
     }
-    try{const routines=[];for(const plan of (window as any).jackieMotion.plans)routines.push({id:plan.id,mix:await render(false,true,plan),loss:await render(false,false,plan)});return{routines,cancelled:await render(true)};}finally{gameAudio.context=previousContext;gameAudio.output=previousOutput;}
+    try{const routines=[];for(const plan of (window as any).jackieMotion.plans)for(const speed of [1,2]as const)routines.push({id:plan.id,speed,mix:await render(false,true,plan,speed),loss:await render(false,false,plan,speed)});return{routines,cancelled:await render(true),resumed:await render(false,true,undefined,2,contacts[1]+.1)};}finally{gameAudio.context=previousContext;gameAudio.output=previousOutput;}
   },{contacts:[contactAt(0),contactAt(1),contactAt(2)]});
+  await writeFile(out+'/furniture-audio.json',JSON.stringify({...stats,interpretation:'Contact timing, signal, headroom and cleanup checks only; not a subjective listening assessment.'},null,2));
   for(const routine of stats.routines)for(const mix of [routine.mix,routine.loss]){expect(mix.scheduled).toBeGreaterThan(0);expect(mix.peak).toBeLessThan(.8);expect(mix.tailPeak).toBe(0);expect(mix.active).toBe(0);for(const strike of mix.strikes){expect(strike.impact).toBeGreaterThan(.35);expect(strike.impact).toBeGreaterThan(strike.swing*2);}}
-  expect(stats.cancelled.peak).toBe(0);expect(stats.cancelled.active).toBe(0);await writeFile(out+'/furniture-audio.json',JSON.stringify({...stats,interpretation:'Contact timing, signal, headroom and cleanup checks only; not a subjective listening assessment.'},null,2));
+  expect(stats.cancelled.peak).toBe(0);expect(stats.cancelled.active).toBe(0);
+  expect(stats.resumed.strikes).toHaveLength(1);expect(stats.resumed.scheduled).toBeLessThan(stats.routines[0].mix.scheduled);
+});
+
+test('enabling reduced motion during a running fight settles once without replay on speed changes',async({page})=>{
+  await page.emulateMedia({reducedMotion:'no-preference'});
+  await page.evaluate(()=>{const h=(window as any).jackieMotion;h.render({risk:'extreme',status:'complete'});Reflect.get(h.scene,'playback').start(performance.now());});
+  expect(await page.evaluate(()=>(window as any).jackieMotion.scene.state().busy)).toBe(true);
+  await page.emulateMedia({reducedMotion:'reduce'});
+  await expect.poll(()=>page.evaluate(()=>(window as any).jackieMotion.scene.state().reduced)).toBe(true);
+  await expect.poll(()=>page.evaluate(()=>(window as any).jackieMotion.scene.state().phase)).toBe('victory-hold');
+  const state=await page.evaluate(()=>{const h=(window as any).jackieMotion;h.scene.setSpeed(2);return{...h.scene.state(),audio:h.audio.state()};});
+  expect(state.busy).toBe(false);expect(state.celebrating).toBe(false);expect(state.audio.active).toBe(0);expect(state.speed).toBe(2);
 });

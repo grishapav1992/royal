@@ -344,6 +344,78 @@
         "prompt": "Use case: identity-preserve.\nAsset type: transparent eight-action 2D fighting-game furniture and victory animation atlas, exact 4 columns by 2 rows.\nEdit target: image 1, original eight-pose furniture atlas. Reference image 2 supplies ONLY the character's new clothing, face age and hair. Dress the figure in ALL EIGHT cells in exactly the outfit and character age from reference 2, inspired by The Karate Kid (2010), Mr Han: older Jackie Chan about 56 years old, distinctly mature lined face, shorter slightly unkempt salt-and-pepper hair, light grey stubble; faded dark navy work jacket over a pale grey crewneck shirt, loose charcoal work trousers and worn dark flat shoes.\nKeep image 1's exact canvas dimensions, cell grid, all eight poses, body size, original hand and foot positions, hand-inked/gouache animation-cel style, and wooden chair/table/stool designs and their precise positions. Keep every hand physically gripping its chair or planted on its table; keep foot resting on stool. The character in every cell faces RIGHT as before. Match the mature lined face, grey hair and stubble from reference 2 for the mentor version; otherwise keep the character identity unchanged.\nReading order: 1 bend forward grip upright chair back; 2 lift sideways chair; 3 chair shield in front; 4 extend chair strike to right; 5 both hands planted on table during vault; 6 crouched kick with support foot on stool; 7 raised fist victory (no furniture); 8 palms together bow (no furniture).\nPreserve true transparent alpha outside the figures and furniture. No background, ground plane, shadows, labels, text, grid lines, effects, extra people, duplicate chairs, weapons or new objects. Full bodies and furniture fully within their original cells. No cream kung fu shirt or maroon sash remains.",
         "sourceGeneration": "exec-22c2beb0-de45-48ed-8db2-6d455eb7f7d1.png"
       }
+    },
+    {
+      "asset": "public/assets/jackie-chan/master-combat.webp",
+      "width": 1774,
+      "height": 887,
+      "bytes": 407362,
+      "sha256": "839e91c528386f8b160c85ee010d8435f37552a8aac556c54db62e64e2e9f05a",
+      "prompt": "Use case: stylized-concept with character identity reference.\nAsset type: production TRANSPARENT 2D martial-arts game animation atlas, exact 4 columns by 2 rows, landscape 2048x1024 pixels, eight new full-body action poses.\nReference image supplies ONLY the exact young adult hero's recognizable face, shaggy black hair, ivory frog-button kung fu shirt with maroon sash, charcoal baggy trousers, black cloth shoes, warm hand-inked/gouache animation-cel rendering. Create NEW poses, not a recolor or rearrangement of the reference.\nStrict reading order, ONE complete figure per equal square cell, all attacks directed to the RIGHT:\n1. Standing horizontal BACKFIST strike, right fist and back of hand swinging right at shoulder height, opposite hand guarding ribs.\n2. Strong right OPEN-PALM strike toward right at chest height, left palm guarding torso, grounded bent-knee stance.\n3. LOW SWEEP kick: deep crouch on left bent support leg, right leg fully extended horizontally right at ankle/shin height, left hand balancing near floor.\n4. FLYING KNEE strike: airborne compact pose, right knee driven forward/up toward right at waist height, other leg folded beneath, hands guarding head.\n5. Close-range right ELBOW strike: right elbow driven horizontally right, forearm folded across upper chest, left hand bracing the right fist, low stable legs.\n6. SPINNING HEEL KICK toward right at chest height: torso turned partly away, head looking over right shoulder, right leg extended right with heel leading, left leg supporting, arms balancing. Clearly different from a front-facing side kick.\n7. Strong defensive guard with BOTH FOREARMS CROSSED in front of face/chest, grounded feet apart.\n8. Low backward SLIP/DUCK, torso leaning slightly left/back, knees bent, open hands guarding, both feet grounded and body compact.\nEvery full body, hair, fingers and both feet must be COMPLETELY inside its own cell with generous empty transparent gutters, no cell crossing. Consistent adult human scale and anatomy in all cells; knee and sweep naturally compact. Face, age, costume and artistic rendering exactly match the reference. Mild three-quarter side-view camera. No furniture or weapons. Genuine transparent alpha background, no glow, backdrop, ground plane, shadows, lettering, grid, effects, labels, logos or extra figures.",
+      "sourceGeneration": "exec-25ed9974-3921-4f53-8c79-1ecb35ca1c4a.png"
+    },
+    {
+      "asset": "public/assets/jackie-chan/sailor-combat.webp",
+      "width": 1774,
+      "height": 887,
+      "bytes": 397210,
+      "sha256": "9a8e438d4feac5d09c83828d307d60db6718ad69c64054b59de874c3256fe82b",
+      "prompt": "Use case: precise-object-edit.\nAsset type: transparent 2D fighting-game animation sprite atlas, EXACT original 2048x1024 wide canvas, FOUR columns by TWO rows.\nImage 1 is the EDIT TARGET for eight NEW combat poses. Image 2 is the authoritative CHARACTER APPEARANCE reference. Change the entire hero in ALL EIGHT cells of image 1 to the exact face, hair, age, clothes, shoes and colors from image 2. Appearance: short neatly parted hair, angular young sailor face, white marine uniform with navy collar and neckerchief. The older mentor must retain his receding grey hair, stubble and weary mature face, not a young man with grey dye. Other versions must retain their distinct screen-era hairstyles from reference 2.\nKeep image 1's exact poses, cell positions, body size, hands/feet, right-facing attack direction and warm hand-inked/gouache cel-art rendering. Keep eight separate full bodies with transparent gutters, no missing or additional figures. Preserve the NEW move meanings in reading order: 1 horizontal backfist; 2 open-palm chest strike; 3 deep crouching low sweep kick to right; 4 airborne forward knee strike; 5 close elbow strike right; 6 spinning heel kick right while looking over shoulder; 7 crossed-forearm guard; 8 low backward slip/duck. Do NOT substitute the old ready/punch atlas poses. Every cell must match the new appearance consistently, including face during kicks.\nGenuinely transparent alpha background. No background, ground, shadows, glow, text, grid lines, labels, extra characters, props or weapons. Maintain complete hands, hair and feet, contained in their intended cells.",
+      "sourceGeneration": "exec-6abb06f2-a0a8-44b4-8661-a166db692a9b.png"
+    },
+    {
+      "asset": "public/assets/jackie-chan/police-combat.webp",
+      "width": 1774,
+      "height": 887,
+      "bytes": 412388,
+      "sha256": "b175d7245361d3b7a6d72613fffa74ed7f948369034a501be42ce2ce81d0faba",
+      "prompt": "Use case: precise-object-edit.\nAsset type: transparent 2D fighting-game animation sprite atlas, EXACT original 2048x1024 wide canvas, FOUR columns by TWO rows.\nImage 1 is the EDIT TARGET for eight NEW combat poses. Image 2 is the authoritative CHARACTER APPEARANCE reference. Change the entire hero in ALL EIGHT cells of image 1 to the exact face, hair, age, clothes, shoes and colors from image 2. Appearance: feathered side-swept 1980s hair, focused serious young policeman face, beige jacket, white shirt, blue jeans, white sneakers. The older mentor must retain his receding grey hair, stubble and weary mature face, not a young man with grey dye. Other versions must retain their distinct screen-era hairstyles from reference 2.\nKeep image 1's exact poses, cell positions, body size, hands/feet, right-facing attack direction and warm hand-inked/gouache cel-art rendering. Keep eight separate full bodies with transparent gutters, no missing or additional figures. Preserve the NEW move meanings in reading order: 1 horizontal backfist; 2 open-palm chest strike; 3 deep crouching low sweep kick to right; 4 airborne forward knee strike; 5 close elbow strike right; 6 spinning heel kick right while looking over shoulder; 7 crossed-forearm guard; 8 low backward slip/duck. Do NOT substitute the old ready/punch atlas poses. Every cell must match the new appearance consistently, including face during kicks.\nGenuinely transparent alpha background. No background, ground, shadows, glow, text, grid lines, labels, extra characters, props or weapons. Maintain complete hands, hair and feet, contained in their intended cells.",
+      "sourceGeneration": "exec-f8c02057-e39c-4388-9ea1-dd6b4badc748.png"
+    },
+    {
+      "asset": "public/assets/jackie-chan/hawk-combat.webp",
+      "width": 1774,
+      "height": 887,
+      "bytes": 421176,
+      "sha256": "4d8685e1682be5cdc3fc4afa71565658cf8eecbc6aea10ea0af8c7aaba815fb0",
+      "prompt": "Use case: precise-object-edit.\nAsset type: transparent 2D fighting-game animation sprite atlas, EXACT original 2048x1024 wide canvas, FOUR columns by TWO rows.\nImage 1 is the EDIT TARGET for eight NEW combat poses. Image 2 is the authoritative CHARACTER APPEARANCE reference. Change the entire hero in ALL EIGHT cells of image 1 to the exact face, hair, age, clothes, shoes and colors from image 2. Appearance: short cropped hair and open forehead, confident adventurer face, olive waistcoat, cream shirt, brown trousers and boots. The older mentor must retain his receding grey hair, stubble and weary mature face, not a young man with grey dye. Other versions must retain their distinct screen-era hairstyles from reference 2.\nKeep image 1's exact poses, cell positions, body size, hands/feet, right-facing attack direction and warm hand-inked/gouache cel-art rendering. Keep eight separate full bodies with transparent gutters, no missing or additional figures. Preserve the NEW move meanings in reading order: 1 horizontal backfist; 2 open-palm chest strike; 3 deep crouching low sweep kick to right; 4 airborne forward knee strike; 5 close elbow strike right; 6 spinning heel kick right while looking over shoulder; 7 crossed-forearm guard; 8 low backward slip/duck. Do NOT substitute the old ready/punch atlas poses. Every cell must match the new appearance consistently, including face during kicks.\nGenuinely transparent alpha background. No background, ground, shadows, glow, text, grid lines, labels, extra characters, props or weapons. Maintain complete hands, hair and feet, contained in their intended cells.",
+      "sourceGeneration": "exec-205c3891-7d57-45ea-a1cc-a1548d9a93ac.png"
+    },
+    {
+      "asset": "public/assets/jackie-chan/rush-combat.webp",
+      "width": 1774,
+      "height": 887,
+      "bytes": 334268,
+      "sha256": "c4cda4428ee1d96ef74fe25130436218a8544511af07fa203b1d1d57ca1c6bda",
+      "prompt": "Use case: precise-object-edit.\nAsset type: transparent 2D fighting-game animation sprite atlas, EXACT original 2048x1024 wide canvas, FOUR columns by TWO rows.\nImage 1 is the EDIT TARGET for eight NEW combat poses. Image 2 is the authoritative CHARACTER APPEARANCE reference. Change the entire hero in ALL EIGHT cells of image 1 to the exact face, hair, age, clothes, shoes and colors from image 2. Appearance: mature mid-forties face, neat short side-parted hair, charcoal suit, white shirt and burgundy tie. The older mentor must retain his receding grey hair, stubble and weary mature face, not a young man with grey dye. Other versions must retain their distinct screen-era hairstyles from reference 2.\nKeep image 1's exact poses, cell positions, body size, hands/feet, right-facing attack direction and warm hand-inked/gouache cel-art rendering. Keep eight separate full bodies with transparent gutters, no missing or additional figures. Preserve the NEW move meanings in reading order: 1 horizontal backfist; 2 open-palm chest strike; 3 deep crouching low sweep kick to right; 4 airborne forward knee strike; 5 close elbow strike right; 6 spinning heel kick right while looking over shoulder; 7 crossed-forearm guard; 8 low backward slip/duck. Do NOT substitute the old ready/punch atlas poses. Every cell must match the new appearance consistently, including face during kicks.\nGenuinely transparent alpha background. No background, ground, shadows, glow, text, grid lines, labels, extra characters, props or weapons. Maintain complete hands, hair and feet, contained in their intended cells.",
+      "sourceGeneration": "exec-305734c6-fe4f-46fc-bd38-295fbb0f3fb1.png"
+    },
+    {
+      "asset": "public/assets/jackie-chan/whoami-combat.webp",
+      "width": 1774,
+      "height": 887,
+      "bytes": 388024,
+      "sha256": "3853c7c39abcf3e2c4abebacbf3248d833eb54bae0f11651a1eaaa2fb1c9906f",
+      "prompt": "Use case: precise-object-edit.\nAsset type: transparent 2D fighting-game animation sprite atlas, EXACT original 2048x1024 wide canvas, FOUR columns by TWO rows.\nImage 1 is the EDIT TARGET for eight NEW combat poses. Image 2 is the authoritative CHARACTER APPEARANCE reference. Change the entire hero in ALL EIGHT cells of image 1 to the exact face, hair, age, clothes, shoes and colors from image 2. Appearance: weathered mid-forties face, short tousled hair, black leather jacket, white T-shirt, dark jeans and boots. The older mentor must retain his receding grey hair, stubble and weary mature face, not a young man with grey dye. Other versions must retain their distinct screen-era hairstyles from reference 2.\nKeep image 1's exact poses, cell positions, body size, hands/feet, right-facing attack direction and warm hand-inked/gouache cel-art rendering. Keep eight separate full bodies with transparent gutters, no missing or additional figures. Preserve the NEW move meanings in reading order: 1 horizontal backfist; 2 open-palm chest strike; 3 deep crouching low sweep kick to right; 4 airborne forward knee strike; 5 close elbow strike right; 6 spinning heel kick right while looking over shoulder; 7 crossed-forearm guard; 8 low backward slip/duck. Do NOT substitute the old ready/punch atlas poses. Every cell must match the new appearance consistently, including face during kicks.\nGenuinely transparent alpha background. No background, ground, shadows, glow, text, grid lines, labels, extra characters, props or weapons. Maintain complete hands, hair and feet, contained in their intended cells.",
+      "sourceGeneration": "exec-f54f883b-cdbb-4392-b725-8fade83c30e9.png"
+    },
+    {
+      "asset": "public/assets/jackie-chan/tuxedo-combat.webp",
+      "width": 1774,
+      "height": 887,
+      "bytes": 323346,
+      "sha256": "a69cb4851182665c141e9b00494dd551226538af7e129a6050a0b0dda5291c5f",
+      "prompt": "Use case: precise-object-edit.\nAsset type: transparent 2D fighting-game animation sprite atlas, EXACT original 2048x1024 wide canvas, FOUR columns by TWO rows.\nImage 1 is the EDIT TARGET for eight NEW combat poses. Image 2 is the authoritative CHARACTER APPEARANCE reference. Change the entire hero in ALL EIGHT cells of image 1 to the exact face, hair, age, clothes, shoes and colors from image 2. Appearance: mature late-forties face, compact neatly combed hair, fitted black tuxedo, white shirt and black bow tie. The older mentor must retain his receding grey hair, stubble and weary mature face, not a young man with grey dye. Other versions must retain their distinct screen-era hairstyles from reference 2.\nKeep image 1's exact poses, cell positions, body size, hands/feet, right-facing attack direction and warm hand-inked/gouache cel-art rendering. Keep eight separate full bodies with transparent gutters, no missing or additional figures. Preserve the NEW move meanings in reading order: 1 horizontal backfist; 2 open-palm chest strike; 3 deep crouching low sweep kick to right; 4 airborne forward knee strike; 5 close elbow strike right; 6 spinning heel kick right while looking over shoulder; 7 crossed-forearm guard; 8 low backward slip/duck. Do NOT substitute the old ready/punch atlas poses. Every cell must match the new appearance consistently, including face during kicks.\nGenuinely transparent alpha background. No background, ground, shadows, glow, text, grid lines, labels, extra characters, props or weapons. Maintain complete hands, hair and feet, contained in their intended cells.",
+      "sourceGeneration": "exec-a72064cd-3c2f-4781-8ac2-1671a109224b.png"
+    },
+    {
+      "asset": "public/assets/jackie-chan/mentor-combat.webp",
+      "width": 1774,
+      "height": 887,
+      "bytes": 360828,
+      "sha256": "0c5de9b69210203eaea592ee3c1927abc68962e404ca2bf1de95e4be51c303b8",
+      "prompt": "Use case: precise-object-edit.\nAsset type: transparent 2D fighting-game animation sprite atlas, EXACT original 2048x1024 wide canvas, FOUR columns by TWO rows.\nImage 1 is the EDIT TARGET for eight NEW combat poses. Image 2 is the authoritative CHARACTER APPEARANCE reference. Change the entire hero in ALL EIGHT cells of image 1 to the exact face, hair, age, clothes, shoes and colors from image 2. Appearance: older lined face, receding salt-and-pepper hair and grey moustache/stubble, navy work jacket, off-white henley, charcoal trousers and worn flat shoes. The older mentor must retain his receding grey hair, stubble and weary mature face, not a young man with grey dye. Other versions must retain their distinct screen-era hairstyles from reference 2.\nKeep image 1's exact poses, cell positions, body size, hands/feet, right-facing attack direction and warm hand-inked/gouache cel-art rendering. Keep eight separate full bodies with transparent gutters, no missing or additional figures. Preserve the NEW move meanings in reading order: 1 horizontal backfist; 2 open-palm chest strike; 3 deep crouching low sweep kick to right; 4 airborne forward knee strike; 5 close elbow strike right; 6 spinning heel kick right while looking over shoulder; 7 crossed-forearm guard; 8 low backward slip/duck. Do NOT substitute the old ready/punch atlas poses. Every cell must match the new appearance consistently, including face during kicks.\nGenuinely transparent alpha background. No background, ground, shadows, glow, text, grid lines, labels, extra characters, props or weapons. Maintain complete hands, hair and feet, contained in their intended cells.",
+      "sourceGeneration": "exec-03142d50-c086-46dd-a7bc-9ebe810dc3fc.png"
     }
   ],
   "appearanceRevision": {
@@ -361,6 +433,21 @@
       "https://www.jackiechan.com/filmography.htm",
       "https://amblin.com/movie/the-tuxedo/",
       "https://www.sonypictures.com/movies/thekaratekid"
+    ]
+  },
+  "combatRevision": {
+    "date": "2026-10-29",
+    "tool": "image_gen.imagegen",
+    "grid": "4x2",
+    "poses": [
+      "backfist",
+      "palm",
+      "sweep",
+      "knee",
+      "elbow",
+      "spin-kick",
+      "forearm-block",
+      "slip-counter"
     ]
   }
 }

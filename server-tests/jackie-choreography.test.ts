@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {choreography as timeline,contactAt,chairReleaseAt,resultAt,VICTORY_DURATION,impacts} from '../games/jackie-chan/JackieChoreography';
-import {FIGHT_PLANS,FURNITURE_PLAN,fightPlan,moveFurniture} from '../games/jackie-chan/JackieFightPlans';
+import {choreography as timeline,contactAt,chairReleaseAt,resultAt,VICTORY_DURATION,impacts,recoveryX} from '../games/jackie-chan/JackieChoreography';
+import {FIGHT_PLANS,FURNITURE_PLAN,fightPlan,moveFurniture,combatPose} from '../games/jackie-chan/JackieFightPlans';
 const choreography=(elapsed:number,count:number,status:Parameters<typeof timeline>[2],cashout=false)=>timeline(elapsed,count,status,cashout,FURNITURE_PLAN);
 
 test('chair grip, lift, block and physical strike precede the confirmed group result',()=>{
@@ -44,20 +44,34 @@ test('every series changes choreography between its five fights and restores the
     const plans=Array.from({length:5},(_,i)=>fightPlan('series-'+series,i,place));assert.equal(new Set(plans.map(p=>p.id)).size,5);assert.notEqual(plans[0].moves[0],'chair');
     for(let i=0;i<5;i++){assert.deepEqual(fightPlan('series-'+series,i,place),plans[i]);seen.add(plans[i].id);}
   }
-  assert.equal(seen.size,7);
+  assert.equal(seen.size,13);
 });
 
-test('all seven move types have the right contact pose, material and unchanged result boundary',()=>{
-  assert.equal(new Set(FIGHT_PLANS.map(p=>p.moves[0])).size,7);
+test('all thirteen move types have the right contact pose, material and result boundary',()=>{
+  assert.equal(new Set(FIGHT_PLANS.map(p=>p.moves[0])).size,13);
   for(const plan of FIGHT_PLANS)for(const count of [1,2,3])for(const status of ['playing','lost']as const){
     for(let i=0;i<count;i++){
       const move=plan.moves[i],frame=timeline(contactAt(i),count,status,false,plan);assert.equal(frame.fighter,i);assert.equal(frame.move,move);assert.equal(frame.furniture,moveFurniture(move));assert(!frame.reveal);assert(frame.busy);
-      assert.equal(frame.pose,move==='table'?4:move==='stool'?5:move==='kick'?4:3);
+      assert.equal(frame.pose,combatPose(move)??(move==='table'?4:move==='stool'?5:move==='kick'?4:3));
       const events=impacts(plan,count).filter(event=>event.fighter===i);assert.equal(events.filter(e=>e.primary).length,1);assert.equal(events.at(-1)!.at,contactAt(i));
-      if(move==='combo'){assert.equal(events.length,2);assert.equal(events[0].kind,'block');assert.equal(timeline(events[0].at,count,status,false,plan).phase,'jab');}
-      else assert.equal(events.length,1);
+      assert.equal(events.length,move==='combo'?5:4);assert.equal(events[0].actor,'foe');assert.equal(events[0].kind,'block');
+      if(move!=='chair'){
+        assert.equal(timeline(events[0].at,count,status,false,plan).phase,'forearm-block');
+        assert.equal(timeline(events[1].at,count,status,false,plan).phase,'opening-punch');
+        assert.equal(timeline(events[2].at,count,status,false,plan).phase,'slip-counter');
+      }
+      if(move==='combo')assert.equal(timeline(events[3].at,count,status,false,plan).phase,'jab');
     }
     assert(!timeline(resultAt(count)-.001,count,status,false,plan).reveal);assert(timeline(resultAt(count),count,status,false,plan).reveal);
     assert(!timeline(Infinity,count,status,false,plan).busy);
+  }
+});
+
+test('the next opponent starts after chair release and the hero continues from the recovery position',()=>{
+  for(const plan of [...FIGHT_PLANS,FURNITURE_PLAN])for(let i=1;i<3;i++){
+    const start=contactAt(i)-1.82;
+    if(plan.moves[i-1]==='chair')assert(start>chairReleaseAt(i-1));
+    const next=timeline(start+.001,3,'playing',false,plan);
+    assert.equal(next.fighter,i);assert.equal(next.phase,'approach');assert(Math.abs(next.x-recoveryX(plan,i-1))<.001);
   }
 });
