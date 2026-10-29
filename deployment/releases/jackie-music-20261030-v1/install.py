@@ -77,6 +77,8 @@ def main():
     checked = publisher.run(options); save('package-check.json', checked)
     save('media-storage-before.json', deduplicate(VERSIONS / '1.0.0-ebe2d87de8aa', VERSIONS / OLD))
     before = snapshot.snapshot(); save('before.json', before)
+    save('public-baseline.json', {name.replace('/opt/royal-game-modules/', '/game-modules/'): digest
+         for name, digest in before['modules'].items() if name.endswith('/active.json') and name != pointer})
     previous = json.loads((PRIOR / 'after.json').read_text())
     stable = ['sourceRevision', 'source', 'financeSource', 'program', 'financialProgram', 'configuration', 'hostContract', 'moduleHost', 'preparedImage']
     for key in stable:
