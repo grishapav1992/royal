@@ -78,10 +78,10 @@ def snapshot(*, include_program=True, include_prepared=True):
                 'composeFiles': row['Config'].get('Labels', {}).get('com.docker.compose.project.config_files', '').split(',')})
     game = inspect('royal-game-1')
     prepared = run(['docker', 'image', 'inspect', 'royal-game:latest', '--format', '{{.Id}}'])
-    prior = json.loads(Path('/opt/royal-releases/neopolis-variable-stake-20261028-v1/build-result.json').read_text())
+    prior = json.loads(Path('/opt/royal-releases/royal-roulette-20261029-v1/build-result.json').read_text())
     built = json.loads((ROOT/'build-result.json').read_text()) if (ROOT/'build-result.json').exists() else {}
     if prepared == built.get('game'): prepared_program = built['program']
-    elif prepared == prior['game']: prepared_program = prior['program']
+    elif prepared == prior['image']: prepared_program = prior['program']
     else: raise RuntimeError('Unreviewed prepared image')
     financial = inspect('royal-nile-play')
     finance_program = json.loads(run(['docker','exec','royal-nile-play','node','--v8-pool-size=1','-e',
