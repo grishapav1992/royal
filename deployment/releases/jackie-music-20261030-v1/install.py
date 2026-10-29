@@ -63,6 +63,7 @@ def main():
     contract = json.loads(Path('/opt/royal-game-modules-state/host.json').read_text())['games'][GAME]
     publisher.verify(VERSIONS / OLD, contract, GAME)
     publisher.verify(VERSIONS / '1.0.0-ebe2d87de8aa', contract, GAME)
+    save('media-storage-before.json', deduplicate(VERSIONS / '1.0.0-ebe2d87de8aa', VERSIONS / OLD))
     old_manifest = json.loads((VERSIONS / OLD / 'manifest.json').read_text())
     # Do not stage a second physical copy of unchanged artwork.
     for name, digest in expected.items():
@@ -75,11 +76,15 @@ def main():
     options = SimpleNamespace(operation='check', package=str(package), version=None, game=GAME,
         expected_sha=old_sha, root='/opt/royal-game-modules', state='/opt/royal-game-modules-state')
     checked = publisher.run(options); save('package-check.json', checked)
-    save('media-storage-before.json', deduplicate(VERSIONS / '1.0.0-ebe2d87de8aa', VERSIONS / OLD))
     before = snapshot.snapshot(); save('before.json', before)
     save('public-baseline.json', {name.replace('/opt/royal-game-modules/', '/game-modules/'): digest
          for name, digest in before['modules'].items() if name.endswith('/active.json') and name != pointer})
     previous = json.loads((PRIOR / 'after.json').read_text())
+    overlay = json.loads((ROOT / 'baseline-overlay.json').read_text())
+    require(overlay['sourceCommit'] == '0baa69d10ddea384ba7e58c499582d18e702de2c' and
+            set(overlay['source']) == {'games/caribbean-treasures/' + name for name in
+                ['CaribbeanUI.ts', 'CaribbeanCaptain.ts', 'caribbean.css', 'package.json', 'character-motion.md']}, 'Unexpected reviewed source overlay')
+    previous['source'].update(overlay['source'])
     stable = ['sourceRevision', 'source', 'financeSource', 'program', 'financialProgram', 'configuration', 'hostContract', 'moduleHost', 'preparedImage']
     for key in stable:
         require(before[key] == previous[key], 'Production baseline differs: ' + key)

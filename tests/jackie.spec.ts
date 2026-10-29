@@ -28,7 +28,8 @@ async function enter(page:Page,lang='ru'){
   await page.locator('#game').focus();await page.keyboard.down('ArrowRight');try{await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getState().x),{timeout:15000,intervals:[50]}).toBeGreaterThan(1100);}finally{await page.keyboard.up('ArrowRight');}
   await page.locator('#game').focus();await page.keyboard.down('ArrowDown');try{await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getState().y),{timeout:15000,intervals:[50]}).toBeGreaterThan(760);}finally{await page.keyboard.up('ArrowDown');}
   await page.locator('#games-tab').click();
-  await expect.poll(async()=>{if(await page.locator('#mini-dialog').isVisible())return true;try{await page.locator('[data-cabinet="studio-afterglow"]').click({timeout:1000});}catch{}return page.locator('#mini-dialog').isVisible();},{timeout:30000,intervals:[1000,2500]}).toBe(true);
+  let cabinet='studio-afterglow';
+  await expect.poll(async()=>{if(await page.locator('#mini-dialog').isVisible())return true;cabinet=await page.evaluate(preferred=>{const occupied=new Set((window as any).royalDemo.getState().remotePositions.map((player:any)=>player.cabinet));return [preferred,'studio-nitro-run','studio-last-convoy','studio-meme-overload','studio-velvet-reign','studio-caramel-carnival','studio-cosmic-escape'].find(id=>!occupied.has(id))??preferred;},cabinet);try{await page.locator(`[data-cabinet="${cabinet}"]`).click({timeout:1000});}catch{}return page.locator('#mini-dialog').isVisible();},{timeout:30000,intervals:[1000,2500]}).toBe(true);
   await page.locator('[data-platform-game="original-jackie-chan"]').click();await expect(page.locator('.jackie')).toHaveAttribute('data-loading','false',{timeout:30000});await expect(page.locator('#mini-dialog #chat-input')).toBeEnabled();
 }
 async function act(page:Page,selector='[data-fight]'){
@@ -73,6 +74,7 @@ test('location themes, independent switches and shared audio lifecycle work in t
   await expect(game.locator('[data-music]')).toHaveAttribute('aria-pressed','false');await expect(game.locator('[data-sound]')).toHaveAttribute('aria-pressed','false');expect((await state()).active).toBe(0);expect(posts).toBe(2);
   await game.locator('[data-music]').click();await expect.poll(async()=>(await state()).playing).toBe(true);await expect.poll(async()=>(await state()).active).toBe(1);
   expect(errors).toEqual([]);await writeFile(out+'/music-acceptance.json',JSON.stringify({themes,independentSwitches:true,preferencesSurviveReopen:true,sharedMuteAndVolume:true,contextAndVisibilityRecovery:true,closeDisposesAllMedia:true,duckingDuringFight:true,settingsPosts:0,realTemporaryPostgres:true,connectedChat:true,errors},null,2));
+  await page.locator('#mini-dialog .mini-top [data-close]').click({timeout:5000});await expect(page.locator('#mini-dialog')).toBeHidden();
 });
 
 test('game follows the real available stage, keeps actions visible and uses readable location options',async({page})=>{
@@ -92,6 +94,7 @@ test('game follows the real available stage, keeps actions visible and uses read
     if([1920,1366,390,844].includes(width))await page.screenshot({path:out+'/responsive-'+width+'x'+height+'.png'});
   }
   expect(paidPosts).toBe(0);await writeFile(out+'/responsive-layout.json',JSON.stringify(rows,null,2));
+  await page.locator('#mini-dialog .mini-top [data-close]').click({timeout:5000});await expect(page.locator('#mini-dialog')).toBeHidden();
 });
 test('real host, chat, risk groups, gallery and account progress work on desktop and mobile',async({page})=>{
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await outcome('win');await enter(page);await page.emulateMedia({reducedMotion:'no-preference'});
