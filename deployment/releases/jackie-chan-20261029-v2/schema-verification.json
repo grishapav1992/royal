@@ -1,0 +1,9 @@
+{
+  "readOnly": true,
+  "tables": [
+    "royal_game.demo_jackie_collection",
+    "royal_game.demo_jackie_collection_rounds"
+  ],
+  "productionAccountsCreated": false,
+  "productionWagersPlaced": false
+}

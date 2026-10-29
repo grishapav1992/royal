@@ -1,0 +1,496 @@
+{
+  "format": 1,
+  "release": "jackie-chan-20261029-v2",
+  "verifiedAt": "2026-10-29T19:56:07.920Z",
+  "runtimeSourceCommit": "ee9319121f33bf14f45bacae448d21d62a17df9e",
+  "installerSourceCommit": "3b11ce2c184ea75f72d6caccc8f57e41e824bf9d",
+  "baseCommit": "b921d0537fed52336aaee5d97144bf36a9188107",
+  "githubSourcePreservedBeforePublication": true,
+  "publicationExit": {
+    "sourceCommit": "ee9319121f33bf14f45bacae448d21d62a17df9e",
+    "installerSourceCommit": "3b11ce2c184ea75f72d6caccc8f57e41e824bf9d",
+    "exitCode": 0,
+    "endedAt": "2026-10-29T19:41:40.865053+00:00"
+  },
+  "images": {
+    "game": "sha256:452a691baa92825409c6f66483b50efdb2e5142ab172de6e93b4eccd33cd4d5b",
+    "finance": "sha256:041e861af11fce6e2b95c5ad79de8b91524dea861c3e6148e0cf71e195ddc957"
+  },
+  "module": {
+    "verified": true,
+    "gameId": "original-jackie-chan",
+    "version": "1.0.0-ebe2d87de8aa",
+    "bytes": 13692780,
+    "files": 36,
+    "beforeSha256": "none",
+    "hostProgramTouched": false,
+    "databaseTouched": false,
+    "restartRequired": false,
+    "published": true,
+    "operation": "install",
+    "activeSha256": "dc4c78141d146d8380b0e6b61e02301d66b4bfc9b462da29d499863c5bbbf9b0",
+    "history": "/opt/royal-game-modules-state/history/20261029T193840-9984d767af5b4abea19340923bc32af1.json",
+    "manifestSha256": "14c104df461e4139893ade53ccb03e93a2bc71a72066c3e80f1c003e35a8a3aa",
+    "contract": {
+      "apiVersion": 1,
+      "rulesVersion": 1,
+      "progressVersion": 2
+    }
+  },
+  "runtime": {
+    "sourceRevision": "ee9319121f33bf14f45bacae448d21d62a17df9e",
+    "programFiles": 8521,
+    "sourceFiles": 2362,
+    "financeSourceFiles": 211,
+    "hostContracts": 121,
+    "services": 14,
+    "freeBytes": 5450440704,
+    "oldContractsPreserved": 120,
+    "otherServicesPreserved": 12,
+    "configurationPreserved": true,
+    "playerDatabaseRestored": false
+  },
+  "fixes": [
+    "Defeated enemies remain down at loss reveal",
+    "Future fight sounds resume after mute, zero volume or AudioContext suspension",
+    "Audio recovery stays aligned to the current visual frame at both speeds",
+    "Twelve unarmed routines have distinct opening triples"
+  ],
+  "validation": {
+    "releasePlan": true,
+    "releasePrepare": true,
+    "releaseVerifyGithub": true,
+    "rtpQualifiedProfiles": 18,
+    "unchangedUnqualifiedLegacyProfiles": 114,
+    "rtpGateTests": 33,
+    "purePresentationTests": 14,
+    "actualProjectedWalletTests": 32,
+    "changedFinancialInputsCovered": 8,
+    "backendInputs": 218,
+    "financialInputs": 138,
+    "financialBundledDependencyInputs": 3,
+    "hostInputs": 217,
+    "linuxInstallerTests": 18,
+    "normalBrowserScenarios": 13,
+    "projectedRealHostBrowserScenarios": 4,
+    "audioRecoveryCases": 8,
+    "publicChecks": 167,
+    "retainedPublicPointers": 120,
+    "publicBrowser": {
+      "verifiedAt": "2026-10-29T19:40:19.065Z",
+      "viewports": [
+        {
+          "width": 1440,
+          "height": 1000,
+          "overflow": 0
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "overflow": 0
+        }
+      ],
+      "errors": [],
+      "productionPosts": 0,
+      "guestOffline": true,
+      "connectedChat": "Verified separately with temporary accounts in the local real host"
+    },
+    "collectionSchema": {
+      "readOnly": true,
+      "tables": [
+        "royal_game.demo_jackie_collection",
+        "royal_game.demo_jackie_collection_rounds"
+      ],
+      "productionAccountsCreated": false,
+      "productionWagersPlaced": false
+    },
+    "financialHealth": {
+      "ok": true,
+      "ready": true,
+      "testOnly": true,
+      "at": 1793302254.5695312
+    },
+    "publicVisualReview": true
+  },
+  "backup": {
+    "path": "/opt/royal-backups/jackie-chan-20261029-v2",
+    "composition": "Verified hardlinked prior source archives plus verified current source delta archives and a fresh private dump of both player schemas",
+    "baseSourceRevision": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+    "currentSourceRevision": "b921d0537fed52336aaee5d97144bf36a9188107",
+    "archives": {
+      "source.tgz": {
+        "bytes": 206839093,
+        "sha256": "d7717bb2bcfce75e789e215b01e6add1d9b80ccbd2ce017bb34d870e03987878"
+      },
+      "source-delta.tgz": {
+        "bytes": 30908078,
+        "sha256": "9c46832c932d72090ff651767f843f6bcec31d72365ce843a9ec730a205b8873"
+      },
+      "financial-source.tgz": {
+        "bytes": 515773,
+        "sha256": "e45656959d1121326a1fca4cd6e271f8eb269bd60d4693f5852e5a941a1fc97b"
+      },
+      "financial-source-delta.tgz": {
+        "bytes": 30014,
+        "sha256": "5514970900c823d5047d453ff784036e067fe148ad447f99e68f98dd8c0f7c53"
+      },
+      "source-inventory.json": {
+        "bytes": 287230,
+        "sha256": "bcc2bf6bbf6abe8624afe93ac6b6442063c18891815a43347d77638ff19b0367"
+      },
+      "player-journals.dump": {
+        "bytes": 30893487,
+        "sha256": "6aa5d6f5d538e029ceac16b46931f683d5d34a172065fac643fcdaa6fef42524",
+        "archiveEntries": 434
+      }
+    },
+    "privateDataStayedOnServer": true
+  },
+  "attempts": [
+    {
+      "release": "jackie-chan-20261029-v1",
+      "sourceCommit": "e07a8daef93b5b047c3425cfb9beae89a622d739",
+      "exit": {
+        "sourceCommit": "e07a8daef93b5b047c3425cfb9beae89a622d739",
+        "exitCode": 1,
+        "endedAt": "2026-10-29T18:23:17.948147+00:00"
+      },
+      "stoppedBeforePublication": true,
+      "reason": "Minimal finance image lacked an external @noble/hashes import; fixed by bundling financial dependencies except pg and pg-native"
+    },
+    {
+      "release": "jackie-chan-20261029-v2",
+      "exit": {
+        "sourceCommit": "ee9319121f33bf14f45bacae448d21d62a17df9e",
+        "exitCode": 1,
+        "endedAt": "2026-10-29T19:08:15.040641+00:00"
+      },
+      "stoppedBeforePublication": true,
+      "reason": "Docker returned a lowercase missing-object error for an unprotected transient account-view job; corrected inventory handling with protected-service checks retained",
+      "resumedWithUnchangedRuntimeArtifacts": true
+    }
+  ],
+  "cleanup": {
+    "server": {
+      "transportV1": {
+        "removed": "/opt/royal-releases/jackie-chan-20261029-v1/transport.tgz",
+        "bytes": 30980984,
+        "freeBefore": 5466419200,
+        "freeAfter": 5497405440,
+        "reason": "Transport verified and extracted; all payload bytes verified by the installer before creating backups."
+      },
+      "failedV1": {
+        "removed": [
+          {
+            "path": "/opt/royal-releases/jackie-chan-20261029-v1/game-context",
+            "logicalBytes": 18878663
+          },
+          {
+            "path": "/opt/royal-releases/jackie-chan-20261029-v1/finance-context",
+            "logicalBytes": 1855011
+          },
+          {
+            "path": "/opt/royal-releases/jackie-chan-20261029-v1/dist",
+            "logicalBytes": 2975985
+          },
+          {
+            "path": "/opt/royal-releases/jackie-chan-20261029-v1/module-dist",
+            "logicalBytes": 13710301
+          },
+          {
+            "path": "/opt/royal-releases/jackie-chan-20261029-v1/backend",
+            "logicalBytes": 2192094
+          },
+          {
+            "path": "/opt/royal-releases/jackie-chan-20261029-v1/source",
+            "logicalBytes": 1578337
+          },
+          {
+            "path": "/opt/royal-releases/jackie-chan-20261029-v1/finance-source",
+            "logicalBytes": 560977
+          },
+          {
+            "path": "/opt/royal-releases/jackie-chan-20261029-v1/jackie-package",
+            "logicalBytes": 13697043
+          },
+          {
+            "path": "/opt/royal-releases/jackie-chan-20261029-v1/play.js",
+            "logicalBytes": 1854832
+          }
+        ],
+        "freeBefore": 5514997760,
+        "freeAfter": 5553901568,
+        "sourcePreservedInGithub": "e07a8daef93b5b047c3425cfb9beae89a622d739",
+        "kept": [
+          "backups",
+          "candidate images",
+          "install manifest",
+          "failure logs",
+          "runtime inventory helpers"
+        ]
+      },
+      "transportV2": {
+        "removed": "/opt/royal-releases/jackie-chan-20261029-v2/transport.tgz",
+        "bytes": 30988905,
+        "freeBefore": 5449490432,
+        "freeAfter": 5480484864,
+        "reason": "Transport verified and extracted; all payload bytes verified by the installer before creating backups."
+      },
+      "publishedV2": {
+        "removed": [
+          {
+            "path": "/opt/royal-releases/jackie-chan-20261029-v2/game-context",
+            "logicalBytes": 160
+          },
+          {
+            "path": "/opt/royal-releases/jackie-chan-20261029-v2/finance-context",
+            "logicalBytes": 1866130
+          },
+          {
+            "path": "/opt/royal-releases/jackie-chan-20261029-v2/dist",
+            "logicalBytes": 2975985
+          },
+          {
+            "path": "/opt/royal-releases/jackie-chan-20261029-v2/module-dist",
+            "logicalBytes": 13710301
+          },
+          {
+            "path": "/opt/royal-releases/jackie-chan-20261029-v2/backend",
+            "logicalBytes": 2192094
+          },
+          {
+            "path": "/opt/royal-releases/jackie-chan-20261029-v2/source",
+            "logicalBytes": 1581975
+          },
+          {
+            "path": "/opt/royal-releases/jackie-chan-20261029-v2/finance-source",
+            "logicalBytes": 560977
+          },
+          {
+            "path": "/opt/royal-releases/jackie-chan-20261029-v2/jackie-package",
+            "logicalBytes": 13697043
+          },
+          {
+            "path": "/opt/royal-releases/jackie-chan-20261029-v2/play.js",
+            "logicalBytes": 1865951
+          }
+        ],
+        "freeBefore": 5429391360,
+        "freeAfter": 5468278784,
+        "sourcePreservedInGithub": [
+          "ee9319121f33bf14f45bacae448d21d62a17df9e",
+          "3b11ce2c184ea75f72d6caccc8f57e41e824bf9d"
+        ],
+        "kept": [
+          "active immutable package",
+          "current and rollback images",
+          "private backups",
+          "source and runtime inventories",
+          "publication receipts"
+        ]
+      },
+      "failedFinanceImage": {
+        "removedTag": "royal-nile-play:jackie-chan-20261029-v1",
+        "removedImage": "sha256:07d2b43f2d96aec2a7be3328e427de6e81f268129ae9fc0ea83c938d424452ef",
+        "dockerResult": [
+          "Untagged: royal-nile-play:jackie-chan-20261029-v1",
+          "Deleted: sha256:07d2b43f2d96aec2a7be3328e427de6e81f268129ae9fc0ea83c938d424452ef",
+          "Deleted: sha256:0b5136aebe657929e3e39656558af099ae8ce22e3af2b31fd3b5743c6ce29a1f"
+        ],
+        "freeBefore": 5466664960,
+        "freeAfter": 5468934144,
+        "runningImagesPreserved": true,
+        "sourcePreservedInGithub": "e07a8daef93b5b047c3425cfb9beae89a622d739"
+      },
+      "removedLogicalBytes": 157723748
+    },
+    "local": {
+      "status": "Owned stale packages and delivery artifacts removed; residual captures retained after automatic rejection",
+      "removed": {
+        "removed": [
+          {
+            "path": "C:\\Users\\Aorus\\.codex\\worktrees\\jackie-chan\\royal\\artifacts\\work\\jackie-chan\\payload",
+            "logicalBytes": 40801670
+          },
+          {
+            "path": "C:\\Users\\Aorus\\.codex\\worktrees\\jackie-chan\\royal\\artifacts\\work\\jackie-chan\\payload-v2",
+            "logicalBytes": 40832184
+          },
+          {
+            "path": "C:\\Users\\Aorus\\.codex\\worktrees\\jackie-chan\\royal\\artifacts\\work\\jackie-chan\\installer-patch",
+            "logicalBytes": 62947
+          },
+          {
+            "path": "C:\\Users\\Aorus\\.codex\\worktrees\\jackie-chan\\royal\\artifacts\\work\\jackie-chan\\transport.tgz",
+            "logicalBytes": 30980984
+          },
+          {
+            "path": "C:\\Users\\Aorus\\.codex\\worktrees\\jackie-chan\\royal\\artifacts\\work\\jackie-chan\\transport-v2.tgz",
+            "logicalBytes": 30988905
+          },
+          {
+            "path": "C:\\Users\\Aorus\\.codex\\worktrees\\jackie-chan\\royal\\module-dist\\original-jackie-chan\\versions\\1.0.0-131b85040bed",
+            "logicalBytes": 10655061
+          },
+          {
+            "path": "C:\\Users\\Aorus\\.codex\\worktrees\\jackie-chan\\royal\\module-dist\\original-jackie-chan\\versions\\1.0.0-21079699642a",
+            "logicalBytes": 6119979
+          },
+          {
+            "path": "C:\\Users\\Aorus\\.codex\\worktrees\\jackie-chan\\royal\\module-dist\\original-jackie-chan\\versions\\1.0.0-2e3df1f890b8",
+            "logicalBytes": 7679377
+          },
+          {
+            "path": "C:\\Users\\Aorus\\.codex\\worktrees\\jackie-chan\\royal\\module-dist\\original-jackie-chan\\versions\\1.0.0-32ca9ad42256",
+            "logicalBytes": 10658640
+          },
+          {
+            "path": "C:\\Users\\Aorus\\.codex\\worktrees\\jackie-chan\\royal\\module-dist\\original-jackie-chan\\versions\\1.0.0-344706f3f1b6",
+            "logicalBytes": 13694701
+          },
+          {
+            "path": "C:\\Users\\Aorus\\.codex\\worktrees\\jackie-chan\\royal\\module-dist\\original-jackie-chan\\versions\\1.0.0-3bf86b9fe8db",
+            "logicalBytes": 4341589
+          },
+          {
+            "path": "C:\\Users\\Aorus\\.codex\\worktrees\\jackie-chan\\royal\\module-dist\\original-jackie-chan\\versions\\1.0.0-3ed55064ecce",
+            "logicalBytes": 7648348
+          },
+          {
+            "path": "C:\\Users\\Aorus\\.codex\\worktrees\\jackie-chan\\royal\\module-dist\\original-jackie-chan\\versions\\1.0.0-40022e15b00d",
+            "logicalBytes": 6119509
+          },
+          {
+            "path": "C:\\Users\\Aorus\\.codex\\worktrees\\jackie-chan\\royal\\module-dist\\original-jackie-chan\\versions\\1.0.0-404b9979311a",
+            "logicalBytes": 6119956
+          },
+          {
+            "path": "C:\\Users\\Aorus\\.codex\\worktrees\\jackie-chan\\royal\\module-dist\\original-jackie-chan\\versions\\1.0.0-412853052c35",
+            "logicalBytes": 7679425
+          },
+          {
+            "path": "C:\\Users\\Aorus\\.codex\\worktrees\\jackie-chan\\royal\\module-dist\\original-jackie-chan\\versions\\1.0.0-45a229523987",
+            "logicalBytes": 10644942
+          },
+          {
+            "path": "C:\\Users\\Aorus\\.codex\\worktrees\\jackie-chan\\royal\\module-dist\\original-jackie-chan\\versions\\1.0.0-4a7d9096777c",
+            "logicalBytes": 6119815
+          },
+          {
+            "path": "C:\\Users\\Aorus\\.codex\\worktrees\\jackie-chan\\royal\\module-dist\\original-jackie-chan\\versions\\1.0.0-4d5bb1fc6a4c",
+            "logicalBytes": 6119979
+          },
+          {
+            "path": "C:\\Users\\Aorus\\.codex\\worktrees\\jackie-chan\\royal\\module-dist\\original-jackie-chan\\versions\\1.0.0-635862f64711",
+            "logicalBytes": 7645045
+          },
+          {
+            "path": "C:\\Users\\Aorus\\.codex\\worktrees\\jackie-chan\\royal\\module-dist\\original-jackie-chan\\versions\\1.0.0-6748d64f2eca",
+            "logicalBytes": 10659020
+          },
+          {
+            "path": "C:\\Users\\Aorus\\.codex\\worktrees\\jackie-chan\\royal\\module-dist\\original-jackie-chan\\versions\\1.0.0-722ca4e66124",
+            "logicalBytes": 13694790
+          },
+          {
+            "path": "C:\\Users\\Aorus\\.codex\\worktrees\\jackie-chan\\royal\\module-dist\\original-jackie-chan\\versions\\1.0.0-98bbf5f4bef2",
+            "logicalBytes": 10652981
+          },
+          {
+            "path": "C:\\Users\\Aorus\\.codex\\worktrees\\jackie-chan\\royal\\module-dist\\original-jackie-chan\\versions\\1.0.0-9f573a9b242d",
+            "logicalBytes": 4343217
+          },
+          {
+            "path": "C:\\Users\\Aorus\\.codex\\worktrees\\jackie-chan\\royal\\module-dist\\original-jackie-chan\\versions\\1.0.0-a7f0fcd6c023",
+            "logicalBytes": 10652981
+          },
+          {
+            "path": "C:\\Users\\Aorus\\.codex\\worktrees\\jackie-chan\\royal\\module-dist\\original-jackie-chan\\versions\\1.0.0-ac52599910cd",
+            "logicalBytes": 6119933
+          },
+          {
+            "path": "C:\\Users\\Aorus\\.codex\\worktrees\\jackie-chan\\royal\\module-dist\\original-jackie-chan\\versions\\1.0.0-bdee823131b2",
+            "logicalBytes": 13694790
+          },
+          {
+            "path": "C:\\Users\\Aorus\\.codex\\worktrees\\jackie-chan\\royal\\module-dist\\original-jackie-chan\\versions\\1.0.0-c5925ee710d1",
+            "logicalBytes": 6120030
+          },
+          {
+            "path": "C:\\Users\\Aorus\\.codex\\worktrees\\jackie-chan\\royal\\module-dist\\original-jackie-chan\\versions\\1.0.0-d5822f2c4f24",
+            "logicalBytes": 13694530
+          },
+          {
+            "path": "C:\\Users\\Aorus\\.codex\\worktrees\\jackie-chan\\royal\\module-dist\\original-jackie-chan\\versions\\1.0.0-d673ffbf826c",
+            "logicalBytes": 4343169
+          },
+          {
+            "path": "C:\\Users\\Aorus\\.codex\\worktrees\\jackie-chan\\royal\\module-dist\\original-jackie-chan\\versions\\1.0.0-da7cb6edb4a3",
+            "logicalBytes": 6119519
+          },
+          {
+            "path": "C:\\Users\\Aorus\\.codex\\worktrees\\jackie-chan\\royal\\module-dist\\original-jackie-chan\\versions\\1.0.0-ec356cfffdf3",
+            "logicalBytes": 4343356
+          },
+          {
+            "path": "C:\\Users\\Aorus\\.codex\\worktrees\\jackie-chan\\royal\\module-dist\\original-jackie-chan\\versions\\1.0.0-f6b20c59d0f3",
+            "logicalBytes": 4342518
+          },
+          {
+            "path": "C:\\Users\\Aorus\\.codex\\worktrees\\jackie-chan\\royal\\module-dist\\original-jackie-chan\\versions\\1.0.0-fe4670c2fc73",
+            "logicalBytes": 13694712
+          },
+          {
+            "path": "C:\\Users\\Aorus\\.codex\\worktrees\\jackie-chan\\royal\\module-dist\\original-jackie-chan\\versions\\1.0.0-fe5248754313",
+            "logicalBytes": 7647678
+          }
+        ],
+        "freeBefore": 298188894208,
+        "freeAfter": 298576113664,
+        "sourceCommitsPreserved": [
+          "ee9319121f33bf14f45bacae448d21d62a17df9e",
+          "3b11ce2c184ea75f72d6caccc8f57e41e824bf9d"
+        ],
+        "activePreview": {
+          "port": 5236,
+          "pid": 1796,
+          "preservedVersions": [
+            "1.0.0-ebe2d87de8aa",
+            "1.0.0-72f1a24751cb"
+          ],
+          "cleanupCondition": "Close the user preview, let its temporary database shut down, then archive this extra managed checkout after verifying GitHub preservation."
+        }
+      },
+      "remaining": {
+        "status": "blocked_by_automatic_approval_review",
+        "reason": "blocked by policy",
+        "action": "Delete remaining task-owned local screenshots, rendered audio previews and obsolete logs",
+        "filesRemovedByRejectedAction": 0,
+        "retainedFiles": 111,
+        "retainedLogicalBytes": 38905807,
+        "remainingTaskLogicalBytes": 74328962,
+        "freeBytes": 298574237696,
+        "cleanupCondition": "Retain while the user reviews the active localhost preview; remove after preview shutdown and permitted cleanup."
+      },
+      "activePreview": {
+        "owner": "jackie-chan",
+        "purpose": "Active local visual review with a temporary wallet",
+        "url": "http://127.0.0.1:5236/tests/fixtures/jackie-play.html",
+        "pid": 1796,
+        "cleanup": "Stop this process to close and delete its temporary PostgreSQL; archive the extra checkout after the user finishes reviewing."
+      },
+      "concurrentPrimaryWorktreeUntouched": true,
+      "removedLogicalBytes": 385036280,
+      "obsoletePackagesRemoved": 29
+    },
+    "note": "Logical sizes may count hardlinks more than once. Free-space measurements are observations and include concurrent filesystem activity."
+  },
+  "limits": {
+    "publicGuestChat": "Absent in offline mode by design; connected authenticated chat was verified in the local real host on desktop and mobile viewports",
+    "physicalMobileDeviceTested": false,
+    "listeningQualityClaimed": false,
+    "productionAccountsCreated": false,
+    "productionWagersPlaced": false,
+    "productionBalancesCredited": false
+  }
+}
