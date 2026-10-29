@@ -1,0 +1,41 @@
+{
+  "format": 1,
+  "date": "2026-10-29",
+  "owner": "caribbean-final-review",
+  "status": "awaiting-verified-GitHub-preservation",
+  "sourceCommit": "36b0cb9f3091617e5d435d8a58bb6421439ab23b",
+  "preservedRemoteCommit": null,
+  "taskDirectory": {
+    "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\caribbean-final-review",
+    "files": 69,
+    "bytes": 39975696.0
+  },
+  "supersededTaskPackages": [
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-caribbean-treasures\\versions\\1.5.0-dc212bbeb407",
+      "files": 125,
+      "bytes": 14856953.0
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\module-dist\\studio-caribbean-treasures\\versions\\1.5.1-c7705e4d5b0d",
+      "files": 125,
+      "bytes": 14856953.0
+    }
+  ],
+  "currentPackage": "1.5.1-2531f98fbc64",
+  "freeBytesBeforeBuild": 303452672000,
+  "freeBytesBeforeCleanup": 303135547392,
+  "freeBytesAfterCleanup": null,
+  "separateStandStopped": true,
+  "separateTemporaryDatabaseRemoved": true,
+  "previousUserDatabaseRetained": true,
+  "removedPaths": [],
+  "removedLogicalBytes": 0,
+  "archivesCreated": [],
+  "archivesRemoved": [],
+  "exceptions": [
+    "The previously stopped user preview database is retained until its owner ends or replaces that preview.",
+    "Other tasks and their old build outputs are outside this cleanup inventory.",
+    "This existing worktree remains the active chat checkout while concurrent project work continues; no additional checkout was created for this audit."
+  ]
+}
