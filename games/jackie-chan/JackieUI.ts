@@ -7,7 +7,9 @@ import { JackieScene, JACKIE_SCENE_ASSETS } from './JackieScene';
 import { JackieAudio } from './JackieAudio';
 import type { FightSpeed } from './JackiePlayback';
 import { OPPONENT_DIFFICULTIES, opponentLineup } from './JackieOpponents';
+import { JackieLayout } from './JackieLayout';
 import './jackie.css';
+import './layout.css';
 
 const en = language === 'en';
 const t = (ru:string,english:string) => en ? english : ru;
@@ -20,6 +22,7 @@ export class JackieUI {
   private root = document.createElement('section');
   readonly audio = new JackieAudio();
   readonly scene: JackieScene;
+  private layout:JackieLayout;
   private risk:PenaltyRisk='safe';
   private costume:JackieCostume='master';
   private location:JackieLocation='restaurant';
@@ -48,7 +51,12 @@ export class JackieUI {
     <div class="jc-collection-line"><span data-collection-label></span><progress max="1" value="0" data-collection-progress aria-label="${t('Прогресс коллекции костюмов','Costume collection progress')}"></progress><button data-gallery>${t('Открыть гардероб','Open wardrobe')} ↗</button></div>
     <footer class="jc-footer"><p role="status" data-status></p><span>${t('Одна ставка · До пяти боёв','One stake · Up to five fights')}</span></footer><div class="jc-recovery" data-recovery hidden><span>${t('Ответ ещё не подтверждён.','The result is not confirmed yet.')}</span><button data-retry>${t('Проверить тот же запрос','Check the same request')}</button></div><p class="jc-error" role="alert" data-error></p>
     <dialog class="jc-dialog" data-dialog><button class="jc-dialog-close" data-close aria-label="${t('Закрыть','Close')}">×</button><div data-dialog-content></div></dialog><div class="jc-unlock" role="status" data-unlock hidden></div>`;
-    host.replaceChildren(this.root);this.scene=new JackieScene(this.find('canvas'),this.audio);
+    const consolePanel=document.createElement('div'),scroll=document.createElement('div');consolePanel.className='jc-console';scroll.className='jc-scroll';
+    const actions=this.find('.jc-actions');
+    for(const selector of ['.jc-controls','.jc-settings','.jc-collection-line','.jc-footer','[data-recovery]','[data-error]','[data-unlock]'])scroll.append(this.find(selector));
+    consolePanel.append(scroll,actions);this.root.append(consolePanel);
+    this.find('.jc-stage').after(this.find('[data-result]'));
+    host.replaceChildren(this.root);this.layout=new JackieLayout(host,this.root);this.scene=new JackieScene(this.find('canvas'),this.audio);
     try{if(localStorage.getItem('royal-kungfu-speed')==='2')this.scene.setSpeed(2);}catch{}
     this.find('[data-speed]').onclick=()=>{const speed:FightSpeed=this.scene.state().speed===1?2:1;this.scene.setSpeed(speed);try{localStorage.setItem('royal-kungfu-speed',String(speed));}catch{}this.renderKey='';this.render();};
     this.root.addEventListener('pointerdown',()=>void this.audio.unlock(),{capture:true});this.root.addEventListener('keydown',()=>void this.audio.unlock(),{capture:true});
@@ -150,5 +158,5 @@ export class JackieUI {
     this.root.querySelectorAll<HTMLButtonElement>('[data-costume]').forEach(b=>{b.disabled=locked||!costumeUnlocked(b.dataset.costume as JackieCostume,units);b.onclick=()=>{if(this.active()||this.blocked())return;this.costume=b.dataset.costume as JackieCostume;this.preview=true;this.scene.select(this.costume,this.location,this.risk);this.find<HTMLDialogElement>('[data-dialog]').close();this.renderKey='';this.render();};});
     this.find<HTMLDialogElement>('[data-dialog]').showModal();
   }
-  destroy(){this.alive=false;this.epoch++;cancelAnimationFrame(this.frame);document.removeEventListener('visibilitychange',this.onVisibility);client.removeEventListener('change',this.onChange);demoWallet.removeEventListener('change',this.onChange);this.find<HTMLDialogElement>('[data-dialog]').close();this.scene.destroy();this.audio.destroy();this.root.remove();}
+  destroy(){this.alive=false;this.epoch++;cancelAnimationFrame(this.frame);document.removeEventListener('visibilitychange',this.onVisibility);client.removeEventListener('change',this.onChange);demoWallet.removeEventListener('change',this.onChange);this.find<HTMLDialogElement>('[data-dialog]').close();this.layout.destroy();this.scene.destroy();this.audio.destroy();this.root.remove();}
 }

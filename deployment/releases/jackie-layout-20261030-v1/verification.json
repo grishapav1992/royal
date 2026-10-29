@@ -1,0 +1,287 @@
+{
+  "format": 1,
+  "release": "jackie-layout-20261030-v1",
+  "verifiedAt": "2026-10-29T21:29:08.962Z",
+  "sourceCommit": "2ce578d07f15d7a36daf42cbcf338427925a7091",
+  "version": "1.0.1-b1c164533d84",
+  "manifestSha256": "6e20fd712a57cf01de5ca238861b8c393a3ffddb3a38f1625753568563d995fe",
+  "activeSha256": "8b57e1df78b1c227b4f3ed5611afa970103863c5fa460786007b6c6d817da7ac",
+  "preservedRuntimeFiles": 8521,
+  "preservedSourceFiles": 2362,
+  "preservedFinanceSourceFiles": 211,
+  "preservedServices": 14,
+  "preservedOtherPointers": 120,
+  "freeBefore": 5415723008,
+  "freeAfter": 5398310912,
+  "restartRequired": false,
+  "databaseTouched": false,
+  "verified": true,
+  "runtimeBaseCommit": "ee9319121f33bf14f45bacae448d21d62a17df9e",
+  "githubSourceVerifiedBeforePublication": true,
+  "contract": {
+    "apiVersion": 1,
+    "rulesVersion": 1,
+    "progressVersion": 2
+  },
+  "scope": "Compatible independent client layout and location picker only",
+  "hostAndOtherSourceChangesInMainExcluded": true,
+  "build": {
+    "passed": true,
+    "steps": [
+      {
+        "name": "rtp",
+        "passed": true,
+        "durationMs": 3453
+      },
+      {
+        "name": "typecheck",
+        "passed": true,
+        "durationMs": 10068
+      },
+      {
+        "name": "modules",
+        "passed": true,
+        "durationMs": 2238
+      }
+    ],
+    "files": 38,
+    "github": {
+      "format": 1,
+      "sourceCommit": "2ce578d07f15d7a36daf42cbcf338427925a7091",
+      "remoteMain": "2ce578d07f15d7a36daf42cbcf338427925a7091",
+      "checkedAt": "2026-10-29T21:20:46.978Z"
+    }
+  },
+  "acceptance": {
+    "uniqueBrowserScenariosPassed": 14,
+    "connectedAuthenticatedChat": true,
+    "localMatrix": [
+      [
+        1920,
+        1080
+      ],
+      [
+        1440,
+        900
+      ],
+      [
+        1366,
+        768
+      ],
+      [
+        1280,
+        600
+      ],
+      [
+        1024,
+        768
+      ],
+      [
+        820,
+        1180
+      ],
+      [
+        768,
+        1024
+      ],
+      [
+        640,
+        900
+      ],
+      [
+        390,
+        844
+      ],
+      [
+        360,
+        640
+      ],
+      [
+        320,
+        568
+      ],
+      [
+        844,
+        390
+      ],
+      [
+        667,
+        375
+      ]
+    ],
+    "realTemporaryPostgres": true,
+    "resizePreservesFightAndSingleOperation": true,
+    "walletRecoveryAndReopen": true,
+    "interruptions": [
+      {
+        "cause": "Work synchronization reloaded the local Vite hall during module entry",
+        "resolution": "Matrix passed when repeated on stable files"
+      },
+      {
+        "cause": "Preview fixture minimum height of 400 CSS pixels overrode the new host layout on landscape",
+        "resolution": "Module explicitly overrides host minimum height; live-fight resize/speed/reopen test passed afterward"
+      }
+    ],
+    "rtp": {
+      "qualifiedProfilesVerified": 18,
+      "unchangedLegacyNotQualified": 114,
+      "mathematicsChanged": false
+    },
+    "physicalDevicesVerified": false
+  },
+  "publicAssets": {
+    "verifiedAt": "2026-10-29T21:25:16.129Z",
+    "sourceCommit": "2ce578d07f15d7a36daf42cbcf338427925a7091",
+    "version": "1.0.1-b1c164533d84",
+    "manifestSha256": "6e20fd712a57cf01de5ca238861b8c393a3ffddb3a38f1625753568563d995fe",
+    "checks": 167,
+    "retainedPointers": 120,
+    "productionAccountsCreated": false,
+    "productionStakesPlaced": false
+  },
+  "publicBrowser": {
+    "verifiedAt": "2026-10-29T21:25:08.489Z",
+    "viewports": [
+      {
+        "width": 1920,
+        "height": 1080,
+        "overflow": 0,
+        "buttonVisible": true,
+        "background": "rgb(55, 41, 30)",
+        "color": "rgb(255, 231, 187)",
+        "font": "14px"
+      },
+      {
+        "width": 1366,
+        "height": 768,
+        "overflow": 0,
+        "buttonVisible": true,
+        "background": "rgb(55, 41, 30)",
+        "color": "rgb(255, 231, 187)",
+        "font": "14px"
+      },
+      {
+        "width": 1280,
+        "height": 600,
+        "overflow": 0,
+        "buttonVisible": true,
+        "background": "rgb(55, 41, 30)",
+        "color": "rgb(255, 231, 187)",
+        "font": "14px"
+      },
+      {
+        "width": 820,
+        "height": 1180,
+        "overflow": 0,
+        "buttonVisible": true,
+        "background": "rgb(55, 41, 30)",
+        "color": "rgb(255, 231, 187)",
+        "font": "14px"
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "overflow": 0,
+        "buttonVisible": true,
+        "background": "rgb(55, 41, 30)",
+        "color": "rgb(255, 231, 187)",
+        "font": "14px"
+      },
+      {
+        "width": 360,
+        "height": 640,
+        "overflow": 0,
+        "buttonVisible": true,
+        "background": "rgb(55, 41, 30)",
+        "color": "rgb(255, 231, 187)",
+        "font": "14px"
+      },
+      {
+        "width": 320,
+        "height": 568,
+        "overflow": 0,
+        "buttonVisible": true,
+        "background": "rgb(55, 41, 30)",
+        "color": "rgb(255, 231, 187)",
+        "font": "14px"
+      },
+      {
+        "width": 844,
+        "height": 390,
+        "overflow": 0,
+        "buttonVisible": true,
+        "background": "rgb(55, 41, 30)",
+        "color": "rgb(255, 231, 187)",
+        "font": "14px"
+      },
+      {
+        "width": 667,
+        "height": 375,
+        "overflow": 0,
+        "buttonVisible": true,
+        "background": "rgb(55, 41, 30)",
+        "color": "rgb(255, 231, 187)",
+        "font": "14px"
+      }
+    ],
+    "errors": [],
+    "productionPosts": 0,
+    "guestOffline": true,
+    "connectedChat": "Verified separately with temporary accounts in the local real host"
+  },
+  "backup": {
+    "path": "/opt/royal-backups/jackie-layout-20261030-v1/game-source.tgz",
+    "bytes": 27917,
+    "sha256": "7d601514cbffa0ddb667721d7a48b52fdff35df7f3898491625b1e5b5adb8fd0",
+    "image": "sha256:452a691baa92825409c6f66483b50efdb2e5142ab172de6e93b4eccd33cd4d5b",
+    "tag": "royal-game:before-jackie-layout-20261030-v1",
+    "retainedPriorPackage": "/opt/royal-game-modules/original-jackie-chan/versions/1.0.0-ebe2d87de8aa",
+    "fullSourceBackup": "/opt/royal-backups/jackie-chan-20261029-v2",
+    "databaseTouched": false
+  },
+  "serverCleanup": {
+    "sourceCommit": "2ce578d07f15d7a36daf42cbcf338427925a7091",
+    "removed": [
+      {
+        "path": "/opt/royal-releases/jackie-layout-20261030-v1/1.0.1-b1c164533d84",
+        "bytes": 13704591
+      },
+      {
+        "path": "/opt/royal-releases/jackie-layout-20261030-v1/__pycache__",
+        "bytes": 20353
+      }
+    ],
+    "archivesRemoved": [],
+    "freeBefore": 5394649088,
+    "freeAfter": 5408452608,
+    "backupAndInstalledVersionsPreserved": true,
+    "physicalSpaceReclaimedAttribution": "Not attributed during concurrent server activity"
+  },
+  "localCleanup": {
+    "retainedPackages": [
+      "1.0.0-ebe2d87de8aa",
+      "1.0.1-088d7afb21ee",
+      "1.0.1-cc883212059f"
+    ],
+    "freeAtInitialCheck": 292809240576,
+    "removedArchives": [],
+    "reason": "blocked by policy",
+    "blockedAction": "Remove three obsolete local module packages",
+    "removedFolders": [],
+    "preservationSource": "2ce578d07f15d7a36daf42cbcf338427925a7091",
+    "verifiedAt": "2026-10-29T21:23:31.2464118Z",
+    "githubMainVerified": true,
+    "previousBlockedCapturesPreserved": true,
+    "taskFolderBytes": 81957274,
+    "physicalSpaceReclaimedClaimed": false,
+    "freeAtCurrentCheck": 293896400896,
+    "removedBytes": 0,
+    "activeException": {
+      "cleanupCondition": "Stop preview and remove its temporary database after user finishes inspection",
+      "purpose": "Open local user preview on port 5236",
+      "version": "1.0.0-72f1a24751cb"
+    },
+    "deletionExecuted": false,
+    "retainedObsoletePackageBytes": 41106183
+  }
+}
