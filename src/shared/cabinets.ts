@@ -72,6 +72,7 @@ for (let index = CABINETS.length - 1; index >= 0; index--) {
 CABINETS.push({id:CARIBBEAN_GAME,name:'Карибские сокровища',subtitle:'Гигантские символы · Капитанский залп · Две тактики',x:0,y:0,color:0xd7a04a,playable:true,wallet:true,hall:'arcade'});
 
 // Keep game descriptions available even when their game has no dedicated physical seat.
+CABINETS.push({id:'royal-roulette',name:translateText('Рулетка'),subtitle:translateText('Европейская рулетка · Одно зеро'),x:0,y:0,color:0xd7b472,playable:true,wallet:true,hall:'arcade'});
 export const GAME_CABINETS: readonly Cabinet[] = CABINETS.map(c=>({...c}));
 for (let index = CABINETS.length - 1; index >= 0; index--) {
   if ((CABINETS[index].hall ?? 'arcade') === 'arcade') CABINETS.splice(index, 1);
