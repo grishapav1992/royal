@@ -5,7 +5,7 @@
   "productionChanged": false,
   "mathematicsChanged": false,
   "gameImplementationCommit": "250747efe7b829bca6e7536a125a9ec5e1f4125c",
-  "candidateCodeCommit": "4ede7a95335601c5c287ffd9d84b38cd8016a97b",
+  "candidateCodeCommit": "be8b064521070537b23a307b2f80adeecb32ef46",
   "sharedFeatureIntegrationCommit": "f848981f331ce8ada0d85275031f278ab6713a14",
   "releaseBranch": "codex/flooded-temple-release",
   "releaseManifest": "module-build/release-manifest.json",
@@ -139,16 +139,16 @@
         "unsupportedClientsRejectedBeforeDebit": true,
         "independentCapability": true,
         "legacyRulesPreserved": true,
-        "paidRoundId": "5906beca-cd32-4a0b-b056-2dda42b6645d",
+        "paidRoundId": "5660229f-2194-4310-ba2e-195cd34a6998",
         "stakeUnits": "1000",
-        "payoutUnits": "0",
+        "payoutUnits": "500",
         "continuations": 0,
         "replayWithoutDebit": true
       },
       "build": {
         "origin": "http://127.0.0.1:2635",
-        "programSha256": "e53b91100ceedb1dd43058f59b8b4d252d6a7809212b237aa5cdd20f8765301f",
-        "clientIndexSha256": "a7a62c8a577853bdbf80c600e2aa261363c2e6682432eeabd90085d239b7e3a5",
+        "programSha256": "401349e8e80062d1a9b39e3d60bc0aab305dc1f26b1352b37cdcf9073cbc6d8f",
+        "clientIndexSha256": "a59fc55ea4f1bbb07f24b82f00fc359b90dfb95b1d1a32077c31bfe5c067ae1b",
         "disposableDatabase": true,
         "vite": false,
         "walletMiddlewareFixture": false,
@@ -169,7 +169,8 @@
         "canonicalLiveSha256": "7282059b4775563c389f7d9feac9ba5526771bc83991431a8b39d2cbdc03cc63",
         "canonicalRebuiltSha256": "7282059b4775563c389f7d9feac9ba5526771bc83991431a8b39d2cbdc03cc63",
         "sameAfterCanonicalCompilation": true
-      }
+      },
+      "exactProgramPreservedAfterComposition": true
     },
     "releaseTooling": {
       "passed": 9
@@ -178,7 +179,7 @@
       "passed": 7
     },
     "candidateRtp": {
-      "verified": 17,
+      "verified": 16,
       "legacyNotQualified": 114
     },
     "sharedMainReconciliation": {
@@ -242,6 +243,56 @@
           }
         }
       ]
+    },
+    "composedTemple": {
+      "passed": 56
+    },
+    "composedBuild": {
+      "format": 1,
+      "startedAt": "2026-10-29T18:25:09.187Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 3628
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 8634
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 11823
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 7471
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 87
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 24
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 34
+        }
+      ],
+      "passed": true,
+      "durationMs": 31700
+    },
+    "resourceFingerprint": {
+      "passed": 1
     }
   },
   "limitations": {
@@ -252,7 +303,9 @@
     "localhostStringWasSdkFallback": true,
     "productionInstallation": "not performed",
     "templeScopedGuardedInstallerAndPublicChecks": "required at publication",
-    "allProductionServicesHealthy": "Not asserted; two unrelated health changes were observed, service identities were unchanged"
+    "allProductionServicesHealthy": "Not asserted; two unrelated health changes were observed, service identities were unchanged",
+    "initialCandidateRejectedForUnrelatedGirlhubContractChange": true,
+    "productionScopeCorrected": true
   },
   "storage": {
     "scope": "artifacts/work/temple-release-preparation",
@@ -272,7 +325,6 @@
     "removedBytes": 0,
     "removedArchives": 0,
     "retainedObsoleteFiles": 15,
-    "retainedObsoleteBytes": 18254833,
     "retainedTargets": [
       "financial-tests",
       "production-financial-program.js",
@@ -286,6 +338,94 @@
     ],
     "freeBytesLastMeasuredBeforeRejectedCleanup": 298533462016,
     "freeBytesAfterRejectedCleanup": 298543005696,
-    "cleanupCondition": "Do not retry denied cleanup without a changed authorization or policy condition. Keep required baseline/evidence and normal active build outputs for publication review."
+    "cleanupCondition": "Do not retry denied cleanup without a changed authorization or policy condition. Keep required baseline/evidence and normal active build outputs for publication review.",
+    "bytesAtRejectedCleanup": 18254833,
+    "retainedObsoleteBytesAtRejectedCleanup": 18254833
+  },
+  "templeFeatureReviewCommit": "4ede7a95335601c5c287ffd9d84b38cd8016a97b",
+  "runtimeComposition": {
+    "base": "b921d0537fed52336aaee5d97144bf36a9188107",
+    "reviewed": "4ede7a95335601c5c287ffd9d84b38cd8016a97b",
+    "featureBase": "085bab3eb25ba253f6f9ea960d1b20dc727f07b9",
+    "restoredProductionPaths": [
+      "games/girlhub/entry.ts",
+      "games/girlhub/package.json",
+      "server/afterglowWardrobe.ts",
+      "server/cryptoWalletRoutes.ts",
+      "server/demoExpansion.ts",
+      "server/demoWalletRoutes.ts",
+      "server/finance/nile-game-runtime.ts",
+      "server/gameWalletRoutes.ts",
+      "server/payments/client.ts",
+      "src/crypto-wallet.css",
+      "src/i18n/paymentMethodsEn.ts",
+      "src/modules/GameModuleCatalog.ts",
+      "src/shared/afterglowWardrobe.ts",
+      "src/shared/arcadeCatalog.ts",
+      "src/shared/cabinets.ts",
+      "src/shared/casinoExpansion.ts",
+      "src/shared/paymentMethods.ts",
+      "src/ui/AfterglowText.ts",
+      "src/ui/AfterglowUI.ts",
+      "src/ui/CasinoExpansionUI.ts",
+      "src/ui/CryptoWalletUI.ts",
+      "src/ui/GameViewport.ts",
+      "src/ui/LastExitAudio.ts",
+      "src/ui/LastExitScene.ts",
+      "src/ui/LastExitUI.ts",
+      "src/ui/RoyalCatalogArtwork.ts",
+      "src/ui/RoyalPlatformCatalog.ts",
+      "src/ui/last-exit.css",
+      "src/ui/lastExitModel.ts",
+      "src/wallet/ExpansionClient.ts"
+    ],
+    "templePatchPaths": [
+      "server/demoExpansion.ts",
+      "server/demoWalletRoutes.ts",
+      "server/finance/nile-game-runtime.ts",
+      "server/gameWalletRoutes.ts",
+      "src/modules/GameModuleCatalog.ts",
+      "src/shared/arcadeCatalog.ts",
+      "src/shared/cabinets.ts",
+      "src/shared/casinoExpansion.ts",
+      "src/ui/GameViewport.ts",
+      "src/ui/RoyalCatalogArtwork.ts",
+      "src/ui/RoyalPlatformCatalog.ts",
+      "src/wallet/ExpansionClient.ts"
+    ],
+    "unrelatedAdditionsRemoved": [
+      "src/ui/LastExitAssets.ts",
+      "src/ui/TelegramStarsUI.ts"
+    ],
+    "restoredTestPaths": [
+      "server-tests/afterglow-unlock-order.test.ts",
+      "server-tests/combat-release-gate.test.ts",
+      "server-tests/crypto-wallet.test.ts",
+      "server-tests/finance/nile-native-games.test.ts",
+      "server-tests/last-exit-boundaries.test.ts",
+      "server-tests/last-exit-display.test.ts",
+      "server-tests/last-exit-regression.test.ts",
+      "server-tests/module-resource-fingerprint.test.mjs",
+      "server-tests/payment-methods.test.ts",
+      "server-tests/rtp-gate.test.mjs",
+      "server-tests/telegram-stars.test.ts",
+      "tests/crypto-wallet.spec.ts",
+      "tests/demo-wallet.spec.ts",
+      "tests/fixtures/independent-games.ts",
+      "tests/flag-battle-host.spec.ts",
+      "tests/girlhub-feedback.spec.ts",
+      "tests/independent-game-modules.spec.ts",
+      "tests/native-slot-assets.spec.ts",
+      "tests/nile-play.spec.ts",
+      "tests/roulette-host.spec.ts",
+      "tests/telegram-stars.spec.ts"
+    ],
+    "retainedOriginalQualification": {
+      "gameId": "studio-afterglow",
+      "progressVersion": 3,
+      "legacyFrozenNotQualified": true,
+      "baselineUnchanged": true,
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107"
+    }
   }
 }
