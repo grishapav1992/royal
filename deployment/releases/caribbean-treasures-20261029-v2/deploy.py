@@ -201,8 +201,7 @@ def publish():
         audit=json.loads(run([*compose('nile-play'),'run','-T','--rm','--no-deps','--entrypoint','node','nile-play','play.js','audit'],cwd=FINANCE));assert audit.get('ok') and audit.get('testOnly')
         for file in M['financeSource']:atomic(ROOT/'finance-source'/file,FINANCE/file)
         run([*compose('nile-play'),'up','-d','--no-deps','--no-build','--force-recreate','nile-play'],cwd=FINANCE)
-        wait_health('royal-nile-play');samples=[]
-        for i in range(3):samples.append(finance_health());time.sleep(10 if i<2 else 0)
+        wait_health('royal-nile-play');samples=wait_finance_ready()
         save('finance-published.json',{'image':built['finance'],'samples':samples,'sourceCommit':M['sourceCommit']});stable(snapshot(include_program=False),finance=True)
         phase='host';gate=FinancialGate([*compose('game'),'run','--rm','--no-deps','-T','--entrypoint','node','game','-e',(ROOT/'quiesce.cjs').read_text()],cwd=LIVE,log_path=ROOT/'financial-gate.log',min_free_bytes=MIN_FREE,disk_paths=(LIVE,ROOT,BACKUP))
         try:
