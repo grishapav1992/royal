@@ -1,0 +1,5285 @@
+{
+  "schemaVersion": 1,
+  "gameId": "royal-roulette",
+  "rulesVersion": 1,
+  "progressVersion": 1,
+  "startedAt": "2026-10-28T21:53:29.589Z",
+  "completedAt": "2026-10-28T21:53:29.751Z",
+  "sourceHashes": {
+    "server/games/roulette.ts": "b8aba50f88ff2c65b54bef35a056b13d5b470d6b9f955f2610559c101e0390ef",
+    "server/games/core.ts": "246ebe0febf3ad89a8997b1cdac83c28a0e6f175a14d2318403a39d3a27b1146",
+    "server/games/types.ts": "c866ed8a8a19a66f4210caae41e25becf8c6d169871da1934a7b152d0f2aedc0",
+    "src/shared/gameCore.ts": "aa9520b435a5c969d257290e3b06060051db76de45955f99dd68c48f1b5addab",
+    "src/shared/originalGames.ts": "9743f1465b625e64055c8c6c9f268ce8023d61adc7eed187507be7d4163d40c0",
+    "src/shared/demoWallet.ts": "2f3d21554eaa03930e306f8db103fe8299649387853574dff516cd01cd7e1cef",
+    "server/demoWallet.ts": "6173c565c5860342950e04097d6f57913e49fc9dabe01f4ebb25249fd9568346",
+    "scripts/game-math/rtp-roulette.mjs": "fcd5158dd4342675226247a70b4452189d1b972c73a10dd65ee565aa7db8fb24"
+  },
+  "policySha256": "7d75f001943988834b07449ca760beb8d78872d53833d4e6202ab3357b7a55b1",
+  "serverReplayChecks": 39196,
+  "method": "exhaustive-european-roulette-v1",
+  "analysis": {
+    "outcomes": 37,
+    "equalProbability": "1/37",
+    "completeRound": "One accepted stake and one settled draw; no bonus continuations or additional paid choices.",
+    "returnNumerator": 36,
+    "returnDenominator": 37,
+    "houseEdgeNumerator": 1,
+    "houseEdgeDenominator": 37,
+    "settlement": "Exact integer stake units multiplied by 0, 2 or 36. No rounding loss at any positive integer stake.",
+    "allPositiveIntegerStakes": "For stake s, the sum of returns over 37 equally likely outcomes is exactly 36*s for every available choice.",
+    "boundsKind": "Exact exhaustive bounds. Sampling confidence intervals are not used for the analytical RTP."
+  },
+  "results": [
+    {
+      "choice": "red",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 18,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "89d362c1b51e868416f50b4f84e3c074a44145af94de33ad0788d94276e60ca0"
+    },
+    {
+      "choice": "red",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 18,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "fd5ba371a480f7d94fbd54d35705111bb3fa3289e4d3770f445e79e91ded42b6"
+    },
+    {
+      "choice": "red",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 18,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "05364207e72ef090a66df072765268db1c1ea0821bf68ccf058706d98a116f01"
+    },
+    {
+      "choice": "red",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 18,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "2907f5152cc858804b5271357b5dddda89a539ee328295efcd65e3f95608b9b5"
+    },
+    {
+      "choice": "black",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 18,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "3ff7c874edc48dc076e89c8c069a2585d9a8fc46c3b2e3dba8015bdb1a44add8"
+    },
+    {
+      "choice": "black",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 18,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "81a51546bd35e9a77bb45caea53572052ed52ca627ec5f483cad400abd623026"
+    },
+    {
+      "choice": "black",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 18,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "de70c862d74c2ad1e922a8ab4b72199cb48fe21e5f65586ff83016223b3391f9"
+    },
+    {
+      "choice": "black",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 18,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "ee5cf5099c5dc2b5a69d18e0b3ae2aa63c271818e47b281737ac3cd03b717501"
+    },
+    {
+      "choice": "even",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 18,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "e5919377c2347b1f5664faf8a578d635016f48d2e2565200362d1a6ac4e89fdf"
+    },
+    {
+      "choice": "even",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 18,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "359a129d5d77ff33f526bd04678efe849198c887d5cae053fe4574aa6ada158a"
+    },
+    {
+      "choice": "even",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 18,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "537000c2e473cb64929c7fc94fc0d2aaa16853aa14cf00ddb902652eb002eef0"
+    },
+    {
+      "choice": "even",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 18,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "fdeed0a2735cd1f813b8193719c5edf4fb36ae402cf77ffb8a3fa1ad4f28f15b"
+    },
+    {
+      "choice": "odd",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 18,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "1bb78e9715394ce286d863ab07351e6d1065f617839ac803cc725b466fff5f54"
+    },
+    {
+      "choice": "odd",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 18,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "71aa91ce41eb34f6a1927a815b3e2b809a24f47b5753c5729d0546d36e10c631"
+    },
+    {
+      "choice": "odd",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 18,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "0b0b43439fa1f72a0d6a62771c37be22ca9fae2f2b547707f90509f184dd1b22"
+    },
+    {
+      "choice": "odd",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 18,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "18cdb7570cd9d50251640d016bb724408c7061011b9244d379befc2e1f8c09a5"
+    },
+    {
+      "choice": "number-0",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "410aa35bd065187b81bc266fd7d3fb6b3481a498106a9be94223b62d14728d30"
+    },
+    {
+      "choice": "number-0",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "ebb8e614f68131159e223b6236b9134a67624513b637265e9af4c5aa91a10da6"
+    },
+    {
+      "choice": "number-0",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "12eef0eb165931a256dd38f8030b2580d8b63b8cc40bba141607492a425852a1"
+    },
+    {
+      "choice": "number-0",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "1688ea9cf799064dcc93fc7f76b7d8913f3f38e6e0b01dcf2bbc0a463e263ae3"
+    },
+    {
+      "choice": "number-1",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "2dd05f01b60d6aef4ff0fa00330e0d303aba0a83379cd4feeef696c81f576f10"
+    },
+    {
+      "choice": "number-1",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "48b9d3e935620b31dad0d1fa7758dd7ea4510577ca73e150aec5d8c2ad23ca85"
+    },
+    {
+      "choice": "number-1",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "96e61a613bd872b7169f4871e3fdc14d982a4dfcc2d78bbdd6d495a81fda2ba6"
+    },
+    {
+      "choice": "number-1",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "ee4b4331b162f739f5802a625d6bbcd3a0d94a910b3a40b92b0f8daead4e9c5e"
+    },
+    {
+      "choice": "number-2",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "c1fc60877f8e4cbe5d5e054b44606c96f39862fa985f82e4094d42f07213dc46"
+    },
+    {
+      "choice": "number-2",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "1015c191465d56ac8d21f15e41262f56e25c84d45dc57bd4ba9d97a5ab49d3a4"
+    },
+    {
+      "choice": "number-2",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "ed3efaa32efad3e215131e5452accd0b01064fd51af99203c6ca6618d96b546d"
+    },
+    {
+      "choice": "number-2",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "ab78b7b2b0a1159f4f201fb32b77b85078cfc2310316104b90072b3d4b57464c"
+    },
+    {
+      "choice": "number-3",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "322f23acba153e6905d20386b166b7737807d5ca1f5400340cd14f92c39256f6"
+    },
+    {
+      "choice": "number-3",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "d3d53f4a5e182e58a4d5b7ca400ba528d3c4165c1e163077ae86845f00dfa3ad"
+    },
+    {
+      "choice": "number-3",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "d9d7cd0904975db6f1388bc9a35fc1345fa7e036e1c110ccbdd11badb7809ea3"
+    },
+    {
+      "choice": "number-3",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "6b74f96b7931350a74c5f737998de7395e9104450df543777e454bd8ec508daa"
+    },
+    {
+      "choice": "number-4",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "785122f0e139982e1fd2deb0d4f7ac3188a43c286b39e5b9077c7384d3fc7c5b"
+    },
+    {
+      "choice": "number-4",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "f7afb581505ad744475fd757a142f82c396233725132d6c6faac2f23e4e0a2c5"
+    },
+    {
+      "choice": "number-4",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "ca0d6946e67289bb82bfad5714168ae7ed9eb98862f3b02b22ac22e0ad04c655"
+    },
+    {
+      "choice": "number-4",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "0ff2dc95c247d1cf26a82f7ab7aa7412047d50d9951877ca94b76bcc17221f2d"
+    },
+    {
+      "choice": "number-5",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "448e5ac81630743ebd64d349f94b6fff4e3a0501b47028a4563316cc1398b18a"
+    },
+    {
+      "choice": "number-5",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "7628d7e7a4aae4b6caa95e42950733d5fec098f52af21151eb5cd377f3b10fbb"
+    },
+    {
+      "choice": "number-5",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "f235d70bdd92fc11aff3ec4b381d2a16181e0f983866ea4b7b3e0508dc491cf5"
+    },
+    {
+      "choice": "number-5",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "b3fef437a00360a25faa95fdc3c26843bbf7e7c12c36bdbff6584d4062725197"
+    },
+    {
+      "choice": "number-6",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "56bba8c1e0141e27025fdeb614ef9f413452b4826246bd011bffcdeaf2811c2a"
+    },
+    {
+      "choice": "number-6",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "0646059a86d846a7c666cb59132d739fd37f8813270f200929f4d017ffd67452"
+    },
+    {
+      "choice": "number-6",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "3dc328382971aadce140dde0922e97413e5be584b30e634ada24f275319cbad3"
+    },
+    {
+      "choice": "number-6",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "3d39035a4727e1813f5cc14246c3a6e8978faaefe9bff426ea25f1d4a220f9a4"
+    },
+    {
+      "choice": "number-7",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "44bc1bf9d25361e6b74fdcf30f6bc6d673c56b3fcf1918b62a7d436b0ce0ea42"
+    },
+    {
+      "choice": "number-7",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "0dd6c23e6928cece0294d561d957989c1200169eafc1aa952213788835184587"
+    },
+    {
+      "choice": "number-7",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "8826bf6c9ca0185a183b61dc35bee4eeff0c59cfdcacc45beeb44be7340776ee"
+    },
+    {
+      "choice": "number-7",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "3085d7651635a7503e106caa65a5978f3ddde5e0deaeb7f4f129db5d7e4267e3"
+    },
+    {
+      "choice": "number-8",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "3e7087819309ddcb955fe35ad462db61f1ac9b4192121659b86d41cc2847c779"
+    },
+    {
+      "choice": "number-8",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "17c6df036c057005409752f606671936e0db88d76e9aba81c5c9f1e11aac25f6"
+    },
+    {
+      "choice": "number-8",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "e695482a68476e36acc95d0992f428b0240b618f8467bf493333ad91fa8e065a"
+    },
+    {
+      "choice": "number-8",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "26fe202d0d5c979536f0e6de7c7bfbe4ee9d98900e2aaed2c1b375d73bf959ad"
+    },
+    {
+      "choice": "number-9",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "61f3c1c1670047fcfc078887e1e8a77a1908d66a8942c0b861e41c0eb697735c"
+    },
+    {
+      "choice": "number-9",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "2ee7ef904aede9bc65e0a46a91e5aa91e4c03096034aa00a8c7b6594352bca7b"
+    },
+    {
+      "choice": "number-9",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "8e7872789269170dc8e73bae0d7c1aa9929e0d062b13cabb577f005afc75a0a4"
+    },
+    {
+      "choice": "number-9",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "9570af368beef78526eab54b61128c1844589bcfc8a36efd11d4118a4364529b"
+    },
+    {
+      "choice": "number-10",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "797ffb385b0228daab9ac54aab2f96184f1870d18e3d56b297b8e4efd26c9a41"
+    },
+    {
+      "choice": "number-10",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "d5de0b8ebd33bbba9df444b7fb4af323fc00f801eee702504ff6e53e0eae12fc"
+    },
+    {
+      "choice": "number-10",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "77bbf8f85bb9a9cf254b702e7cf855dedf883f201238d39115c35060fb403777"
+    },
+    {
+      "choice": "number-10",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "07af5ea741c5927f01ee98ead5dbf7385b0cd57f9561e448e01a015fafd4c564"
+    },
+    {
+      "choice": "number-11",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "298573d6cb023fd7e3eaa709b3308928e2e0512f110042d416d2a57246f8449f"
+    },
+    {
+      "choice": "number-11",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "a27785289aabf66407ffdb1c85e784188f4a3e10325f369914cc6e14c5fb99be"
+    },
+    {
+      "choice": "number-11",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "2e3cc7e98db87a8abaafe9c0f5468d4226b3201e8e63ac58cc371666c457811c"
+    },
+    {
+      "choice": "number-11",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "21cbbce1df5f0c2488debc6c33d94937d777dba3c05e90b70fd493078eb2202c"
+    },
+    {
+      "choice": "number-12",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "0d6427521c0783e4e3eb01f529039a0d8ba6033f8edd005c7c569c4402b5087d"
+    },
+    {
+      "choice": "number-12",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "118d326fe7e1d4dea3ce5faa909fa6b78af04609ce2b97025a534817b51894d5"
+    },
+    {
+      "choice": "number-12",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "b89496df3d3b7faebf6ecaeb5b507b21f9d974dbd85edba9478c5bdd5a6a6baa"
+    },
+    {
+      "choice": "number-12",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "7ab5e7583ff77edfa414f4687e12f057705711518239983f84c4a20e6f75f66d"
+    },
+    {
+      "choice": "number-13",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "a0b2b98748d6e91acf3cf181b8df318fc6490f76b91782c42fbdb7225dda6ab6"
+    },
+    {
+      "choice": "number-13",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "5c2be1c5de62f32f89cb2957822a43023e953909c1703947f249fc2ddb9cef98"
+    },
+    {
+      "choice": "number-13",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "55fa62f6c9b313fa1536b4487e3ac09bc21a2533f89d8855859239cf08e8b41c"
+    },
+    {
+      "choice": "number-13",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "041c622c918e766509f0b28a709d8c54a595568c08c5dc91c983d8b82768ad94"
+    },
+    {
+      "choice": "number-14",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "e282aa44b49b99f17a6467b235cf692aec762f9a4045b6a5e50b7fc1248ee55c"
+    },
+    {
+      "choice": "number-14",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "c657f65d4cc9b32b06b020a2d2d366b41f8be59afb6c4a8184fcd7558972a6e5"
+    },
+    {
+      "choice": "number-14",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "f397304adb44d877f9d4c0c97b01b5af69455309e0792418f16b5342d46bc5f9"
+    },
+    {
+      "choice": "number-14",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "0a8216bbfbbc8d6e8cfefbe5306f10bc757dfc231e2d6eb06c275cf81fa802e7"
+    },
+    {
+      "choice": "number-15",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "97bd39a6b7146c7bb58ab5cda938ff2e84c3a1879f61c6cbe13960f5db4d8c5a"
+    },
+    {
+      "choice": "number-15",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "d4affc5e6424ea8be3e41b720017fd817c86a7f8b7c8a86572ad8a4707ba98d0"
+    },
+    {
+      "choice": "number-15",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "bcfb739d0b4de9007dd2779498fac6f85b37a6ba435d358e37263de14a8a6fde"
+    },
+    {
+      "choice": "number-15",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "40fb8125ce994656a02f0f8b36db62f183a795a4f10fbe78dd17179ede02b2aa"
+    },
+    {
+      "choice": "number-16",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "556f97fde7a351b4f94caba6a9de7a354a423f835f8b6ffdf84ad93d8501cb1b"
+    },
+    {
+      "choice": "number-16",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "622cc31bb4804030415442fd6aeb8a8776544d8236714fb0cc8ce83af91c22dd"
+    },
+    {
+      "choice": "number-16",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "cd961654c63950d14e1f887ef4ca311bbb9b83de4404c8a86ec1ffe207e3561d"
+    },
+    {
+      "choice": "number-16",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "576ce778e7e2028d983a00f0f9159f2162b188bb7c7d0a56322ac4ae605a164f"
+    },
+    {
+      "choice": "number-17",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "9ff657cb05e02b2604b64838001d6e483fee062ce81e4d25363e78cdd9657725"
+    },
+    {
+      "choice": "number-17",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "7316313db12e6fa215b701803421bc3972cd975e9b87d26dbb031ccf4aabc6aa"
+    },
+    {
+      "choice": "number-17",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "70a0913ea92e90d1878dbc2f1ec21c12e1a936dbf9142b4cb3c64cf4dbbda277"
+    },
+    {
+      "choice": "number-17",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "249b13a99908c86090cc502a9d4efc6718c792401e42618e5defcec84dc2f182"
+    },
+    {
+      "choice": "number-18",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "524ba8a6c0c90f0e6776c5fed895c9e0aa90e20a9989fe37ca9145b7d0088239"
+    },
+    {
+      "choice": "number-18",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "aedc319769329a244cdcbb7481d6909c1c361ba014ea9d8eb18f850f47071e60"
+    },
+    {
+      "choice": "number-18",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "8580fdc5b3d00bd5e1f40cab9832b30ae74feb578618f724ff29f47a30b4ff66"
+    },
+    {
+      "choice": "number-18",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "4ce5b203d3d478e44685ef3bfe10b4b1ea61edb377b258546a4718a58ca6b55b"
+    },
+    {
+      "choice": "number-19",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "3987c0fccfb58c8b0d8971b5508a78c6385e9d794ff3d3f4a5484f3f134b8d29"
+    },
+    {
+      "choice": "number-19",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "64a8de8008d360ab0dc80cf9692e7bef8e761a3ace0c64ec0424f59b6f454348"
+    },
+    {
+      "choice": "number-19",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "cd0449d511860b62fe98a3c86d73333776748f95a7207752af9bfaf0f20c57ac"
+    },
+    {
+      "choice": "number-19",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "440f08c3dc3a181e4f9c16aed2a715b953139e0d7bacecf5e7457d56f19fb246"
+    },
+    {
+      "choice": "number-20",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "278e81d951e88a7b82a500ca82164ce59eeb060392ab58a3c1f6dd192956333d"
+    },
+    {
+      "choice": "number-20",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "38677b2dafc9c11d73d26839d84c8c47c63449beca754efea5f26b8fb5dd9589"
+    },
+    {
+      "choice": "number-20",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "32639192ee477c65b9c531933ff9dfe3a1b9c975a1472d3610d88a401778ca3b"
+    },
+    {
+      "choice": "number-20",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "1fde99bca010c244de4436989f01792f221e7c0dc33abbf20577abe00ad15854"
+    },
+    {
+      "choice": "number-21",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "f7ac19a1a47b2f8128d22be40918b664935a426828e3a8e83ace22bba77f5bef"
+    },
+    {
+      "choice": "number-21",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "0f2a93788d5f467ed6f6a8d00d203657599144581c186e4d08c403174e5fcc57"
+    },
+    {
+      "choice": "number-21",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "5c243e4311c030bc66bbac75e7baccfe365fa51927f4f6ab62a58b089e07a567"
+    },
+    {
+      "choice": "number-21",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "ec9f2c4e3891c49fff4f1a77d291963a3b0fc9af5ed44e7a274fd7d19808a03e"
+    },
+    {
+      "choice": "number-22",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "9b9d6d155a67613d3a4e5a6e50035f3394481a94f46426223f4e8c60e0dfe551"
+    },
+    {
+      "choice": "number-22",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "3c4ff48082e101effcf72e80a9d759088d9e4930de25279d3fe730e768f0d264"
+    },
+    {
+      "choice": "number-22",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "c075725bbf1a51f96d3394092283ac6aa2723929ec7cbd33d423d3155ee06d6b"
+    },
+    {
+      "choice": "number-22",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "abc99c1019f6a588f4bbad0cf744b1caec49b6ec44a8d4b232d6c7e18fcd6a97"
+    },
+    {
+      "choice": "number-23",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "fe77a5fb53f6ea816791f8ef2dffe8ef029172aef8b844b4939f23e09d441b5d"
+    },
+    {
+      "choice": "number-23",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "6beb36b091c1d14205c4cd81070aeb234aa0f58a0d1c49973be98398ba4de3ac"
+    },
+    {
+      "choice": "number-23",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "50ff9eacfde36fbc86bae068f320df4a7f8ec32b46732cc06dcbd045a90460f7"
+    },
+    {
+      "choice": "number-23",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "32cc172aca271dd2f6f7b820d007bdbd0874ddb8bcd133afa6fe282690e30ef1"
+    },
+    {
+      "choice": "number-24",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "f7d9a4e813888fe0e476b40458166678c44fa9878aa49919c0d61a5ea399004d"
+    },
+    {
+      "choice": "number-24",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "f44d9b5d92c399c131a22e76b2adb7961320464b85fd87bad428450af37a1b4f"
+    },
+    {
+      "choice": "number-24",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "97204f0d136b7060e1151ac78900e8b61dc102d54681048d9271215d6b4f278f"
+    },
+    {
+      "choice": "number-24",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "01d75eedad84a2e1cc34d8ae9119383c531798360c6fb90dfd47b5be7b74637c"
+    },
+    {
+      "choice": "number-25",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "c4d97f1d0033be48549371743bd4c3525a86ce467a470b984cb2a4be9c7a706e"
+    },
+    {
+      "choice": "number-25",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "3d6d38caa280c03503f4a0c4b33e55502f2a6196bd1b6cab1fe0828082d1c67f"
+    },
+    {
+      "choice": "number-25",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "3399fc738449bbc66aac787c8228d7b9d5f0d1fa6d415d55570f62b3ac15d740"
+    },
+    {
+      "choice": "number-25",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "5c94066b1f8a4f4e2b11ed4e38f0fee4373cee4cbd08e0d8e2250e3f0b45cff7"
+    },
+    {
+      "choice": "number-26",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "82e0985402ff9d693e0a916a3f5616d718d72e3354ea37f80f7f00561114dd10"
+    },
+    {
+      "choice": "number-26",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "aaab08140f8aa9ee946000e60a9a6f74e9c19da475f84df064bff1ebb4a6a65b"
+    },
+    {
+      "choice": "number-26",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "7a7fa277c1a5643235235ef3a1e9a86772ecdc10433c33ae8252bc33b150ff6a"
+    },
+    {
+      "choice": "number-26",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "84120d0d31d17245e1a0d9f5b807d935c80c85f910c85fc3b092cd2ad5f285e2"
+    },
+    {
+      "choice": "number-27",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "4876e75b359fb37c25b33d03eacc812e947ff39f9d7c0e62f883f0ec2ffa03fc"
+    },
+    {
+      "choice": "number-27",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "79d8e298651a8f7c3e21fe8a41077cd7c8d8ec2149ddbb7d9ea318a9e3dce5be"
+    },
+    {
+      "choice": "number-27",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "7eb9eafde475cceb60d6f5e996ed2f9942526ca7cb5bf14de6ee8f14b524d09b"
+    },
+    {
+      "choice": "number-27",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "df70eb6a9e9a4b6df2c40c9307f46043fb0615b101edaccc4fc405ec87a0a7e7"
+    },
+    {
+      "choice": "number-28",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "a41cd0edce53428ff4c5a97508326bebff138c6c916a32ceba741fa3acbc9c35"
+    },
+    {
+      "choice": "number-28",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "458414554edc910e14dde0a85b27764c65a38155dcec27590ab26fe86b185bfd"
+    },
+    {
+      "choice": "number-28",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "4af3e0e4419df6a00333fb75c3c54c227a643c1db98565647b10d572eef8f3fd"
+    },
+    {
+      "choice": "number-28",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "5e3055559dacc5e60b7afac3f945b7923330c6ab42e38d65d86d146d4d69a474"
+    },
+    {
+      "choice": "number-29",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "bbe040e6c4c0ffea0c8e1564bad953bf6632de268973d34415a0c58b5f1143d3"
+    },
+    {
+      "choice": "number-29",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "006543d88030d5f024f65616dd8d0209aa80c9bf386fd43c88505d639260b3e3"
+    },
+    {
+      "choice": "number-29",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "692559f90511f373ce25309364c5e33d0449189ec0549d9afc2c58191cd71a35"
+    },
+    {
+      "choice": "number-29",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "e2aed4208d9e9adcc23177305482c3acf4e4d90f2b8f95efe0161bcea97ef046"
+    },
+    {
+      "choice": "number-30",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "a5ee889bf8a1fa4e133b6be98e67428f0a0012b223d7d2541ca4cd86f5343294"
+    },
+    {
+      "choice": "number-30",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "1df792b63315adfb92b17122b210ca2f60ce2f6c0317d029cca14072dc8ea161"
+    },
+    {
+      "choice": "number-30",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "12cc8ab832596323045ea3b2e32720985b375982a2708c9ef62041b59fb294e0"
+    },
+    {
+      "choice": "number-30",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "739ec522650a42caf80666729632243c7d9b9b2182299961ba6becf1812d7e61"
+    },
+    {
+      "choice": "number-31",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "19f488feca25c085b984aa2b23ddba54ad82fd27e9456fe7d593da471059dee3"
+    },
+    {
+      "choice": "number-31",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "824ad48eee9b7b0edf142dc7c257f5c81c16e3c74469af577ff3429bd45ee6f4"
+    },
+    {
+      "choice": "number-31",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "63fd4d54cdf0a7a49c8d48a7ed032e183dcfa45569ef42a577e86e581e993987"
+    },
+    {
+      "choice": "number-31",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "faaac47af9e1db35e0d731d4dcd858e0676f1f762e983fce6d46e21330efb7af"
+    },
+    {
+      "choice": "number-32",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "4d67ecee4d9108720660055ffde357a5dcffbc7768dd3488cffae14e176f8d2b"
+    },
+    {
+      "choice": "number-32",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "89a43da2bea8ba7e0c7a12b934e4374042c0a073234a4d9b7de76b64b06f700c"
+    },
+    {
+      "choice": "number-32",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "42baf3b13546bd4b2ee19f81f33ed5bc2428ca85d952c93e2c48fa2b94c06e62"
+    },
+    {
+      "choice": "number-32",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "5bdb8e3dc7d4147f587e7c9445029c5ffbd5e91432a6d02908de5a9df91e33b1"
+    },
+    {
+      "choice": "number-33",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "17c60af4d06e2a16cdc5c5a6f9f3b119e64f4ca6e1b53c5951c20e380d994603"
+    },
+    {
+      "choice": "number-33",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "0975de5db3f71ed2a404f1fce275a8c7e852263c698d3f9367636349bfb6e3cd"
+    },
+    {
+      "choice": "number-33",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "40a3301934434b1896c0cbbfa53e51f88f52a6e832edf716cdaa60b14dee6b1e"
+    },
+    {
+      "choice": "number-33",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "94b167f611fd788e96830c81e48b2a41245e05e7ba3e573a8ec93b6ba56ccd04"
+    },
+    {
+      "choice": "number-34",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "62c12842e84fd9e8e46af7ee47a6171ff0c81a30dbe03312e47adbe933af8057"
+    },
+    {
+      "choice": "number-34",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "c856a33ef5b2d44a2924558e17c4d0b2771c326d12b78dd357a0410f08e33647"
+    },
+    {
+      "choice": "number-34",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "0e005f3430e8a4854e56e47946538697ac7d256cf865f3ba3849561461a682c5"
+    },
+    {
+      "choice": "number-34",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "476c44cc8d4f8b905ef839466acda7f2ad7261aa240c5a9d0da3e2e4b5c492db"
+    },
+    {
+      "choice": "number-35",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "a7367d06d5c177dff90e95e72ff570a75e4fb5787126e4f554077a4c22ec1181"
+    },
+    {
+      "choice": "number-35",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "6e6cfb1e785cc5000669371c61e5cf1eb10fde510dc55b7c93e3bc215b873372"
+    },
+    {
+      "choice": "number-35",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "8a74f187d31040691eab50d89331526a32c6a3c56f11390bb58c9ff6a1084004"
+    },
+    {
+      "choice": "number-35",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "524b95d8d4a40df75abef82f8886dab2ab608c9219a004979430b24a509f43ba"
+    },
+    {
+      "choice": "number-36",
+      "stakeUnits": 1000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "37000",
+      "totalReturnedUnits": "36000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "333244c2cf4af1fadf8a25b1988b45f83b972f1c386a21b9f2abb43f1a4020fc"
+    },
+    {
+      "choice": "number-36",
+      "stakeUnits": 5000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "185000",
+      "totalReturnedUnits": "180000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "8929304ba40a46b49439779afe690ac29b9ce48e0e6f9fb7ae514e262c132261"
+    },
+    {
+      "choice": "number-36",
+      "stakeUnits": 10000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "370000",
+      "totalReturnedUnits": "360000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "67d27ed2b3d50e8562f305568f03dd53c3ce522193599f9fe9c44b2593f37fc9"
+    },
+    {
+      "choice": "number-36",
+      "stakeUnits": 50000,
+      "outcomes": 37,
+      "wins": 1,
+      "totalCostUnits": "1850000",
+      "totalReturnedUnits": "1800000",
+      "rtp": 0.972972972972973,
+      "rtpBounds": [
+        0.972972972972973,
+        0.972972972972973
+      ],
+      "sha256": "707e3f0757cafff87c7da0e0ccce2094dd291bf729780e2234d6658e1dd05877"
+    }
+  ],
+  "serverReplay": [
+    {
+      "choice": "red",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "9c44d405a5063cf0c77ef7ced1c74ac510441571afc48a2da86d49f5da9b2ea5"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "3f4e60c90af22380ba5b1c454d6f4f36c646595a36f73cc7c9f15f421701cb05"
+        }
+      ]
+    },
+    {
+      "choice": "red",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "7407374b90102afa52b071a556022c45ba06eb62f277ea88cfb0e7876da0f226"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "7e7437926c8ce501316375583fb4cc94d3c7466c6740c2acfc4e76be8a376b0d"
+        }
+      ]
+    },
+    {
+      "choice": "red",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "a89b002b18af58fc1a246efed860cbe53608e0f6fda2b3f73cb6c72e0685b40f"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "e016a1b6c4daf16325ff6ddb0723d3778fef211103ea14dc58b98e0fdb1ffcd6"
+        }
+      ]
+    },
+    {
+      "choice": "red",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "f4d1764c165d2173170405f8616cdde0c850f055b176305216267e8e7b6b882d"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "8196072966dfe4f0beb9516ba4fb2484ca724c4a0fd2a00326cdd3f2866c409d"
+        }
+      ]
+    },
+    {
+      "choice": "black",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "5938d969d39a6d0e078c2afb740f590cfc5d4cd4dbce8838ec0d45e1d05ba627"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "cc57961132d2fdbe2d6b26f0d0ecfea9d5b60123e4958f333d5412b1119ba2ef"
+        }
+      ]
+    },
+    {
+      "choice": "black",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "22daeefd6d801372b174d4608fcfff64d5d482719e356d290b165eda8188819d"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "6d14da92349c2bdac04de6fffa3e6d15abc55465092b13c964269a9c653105a1"
+        }
+      ]
+    },
+    {
+      "choice": "black",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "9a1f63004900ea9ec75b4ae81b0598991ca5cb3b836dacc6a883be38e66f872e"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "226e6c3561befd07eaeb9da522bb5a642ceca6468f0c532f7d348039f51267ed"
+        }
+      ]
+    },
+    {
+      "choice": "black",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "6be1b192dd740a18b51083e0341e45e867503cd63a1537955cad22959435d529"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "e27c0e11121ae7f783f1846768531c1a5902381c7024376f2cdfed687f00f22d"
+        }
+      ]
+    },
+    {
+      "choice": "even",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "0c23e1625378927994f913e03fa48ad95f812da2f7bdb7fdfdfb4f20f73855ca"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "71650b0cd4394a5ba0feee7cd384603d4d43c8db83a605cc1c0535a3923c47fc"
+        }
+      ]
+    },
+    {
+      "choice": "even",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "a0f6a01c29137d3e4516c5a32e0b0ed73b9ea463d83cb7337ff8a5987d9ca3a3"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "cad3d380878a0483cea22a867e97712676521a5368f0726062cc130399ffcfe9"
+        }
+      ]
+    },
+    {
+      "choice": "even",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "aabf938048d62bc666bcee931eddedd3f4096df944bda5c2a3ec072dffb7311e"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "3e95ece89f6b17ac98ec8a45709369031cbcdeaf594ea2eb36d1c25e15ef480f"
+        }
+      ]
+    },
+    {
+      "choice": "even",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "169ddcf7cc9138f76004832b560c81ae645a7a509e856317981f10f0b4fcc778"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "8cf22d0dd562c8acc2f58f29a66f3ed3875fa7dd68cf431437c7176a5c9be725"
+        }
+      ]
+    },
+    {
+      "choice": "odd",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "7858061b11c9c98b81249863292e10748c8b02466895bc59487c2fb3f43883d8"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "4a0e53a66bcfad649f260aed689566f8fe562ba95ee82a887a5905dc6fffa913"
+        }
+      ]
+    },
+    {
+      "choice": "odd",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "5b0d606d969c4f19ab0531cf9c63aa1bc5044c960db4720a6abbbe2b2127d075"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "9a0cd86a06844183dd18eeac0303450b1a4d49887586c30d3bc5c54489be78c7"
+        }
+      ]
+    },
+    {
+      "choice": "odd",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "1f02c5339f7e7b01fdc32ad3b728c2de31dead421f100d18460a0e9cbfcfa44b"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "fbbbd10871caaf299e39041bbd0af7cee405200321ef361320696dbf08800fc9"
+        }
+      ]
+    },
+    {
+      "choice": "odd",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "b011a6fe0e3949b8a13e696bb462d721fb5ab21cf4787c92c97f35cd52cccfc3"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "a4b9911aa941d2133b8110aa9372de2d417ddb055ee9c8868624042aaf765d6e"
+        }
+      ]
+    },
+    {
+      "choice": "number-0",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "fb465bf7c63fd80c0ee1faff3a94ed207739ebc6c0a22adcc8c53f4740845218"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "ab7943f3f43ac08b0b735d5c03b23b25728580578f52cebf521907e51aca0dc6"
+        }
+      ]
+    },
+    {
+      "choice": "number-0",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "1635f17ebfcdd66aa575953436441d53a2619e89551c8c6564751b6cc932d6ea"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "8faba5889023f9542f2ee5bbba0e5a653619b477fecf17f85955a0133c582a6e"
+        }
+      ]
+    },
+    {
+      "choice": "number-0",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "e664a0ef9999aac31f3757a8e3e23a26b5665d7e907cf3ee3e7eae4bb0a1d5a1"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "b30ee34bff8768ec8738dfe22238019245cda22febce36649be857c6073bb3ba"
+        }
+      ]
+    },
+    {
+      "choice": "number-0",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "ed2339ea6e96b8fefee3d4efacfa6c110200247220394e0e8c83563e3008ab48"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "464ea1fd7784330c6f249333be07d0c8c106f34480e00ff7acfc3f24c9a74945"
+        }
+      ]
+    },
+    {
+      "choice": "number-1",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "298ad9a04e019604bce1f73ea7e0f369c847da4e36cf27323ea89b100642841b"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "d8049f64ba5fe9f87f6fb39343813704b50242b1dbc4ac52c4c8fef826890eaa"
+        }
+      ]
+    },
+    {
+      "choice": "number-1",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "6ad845428ae6e2d21d469b7d85059fdc1374f56a0d5284094e8ffeda136098f8"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "13994a796918511312312fa980e71ea8b2cf5c60e94f2468a593d903438647b6"
+        }
+      ]
+    },
+    {
+      "choice": "number-1",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "3a741f4fbc140308026eaf45f23148bc9aa381e54e7976f258324306c1a5dcea"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "5a7e8a6400ecc15d2dcbde48f7818cfd51d8713520ba49b1b6e57e96e76b9a73"
+        }
+      ]
+    },
+    {
+      "choice": "number-1",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "7c18c6da02ee4eb07fb07a35258cca46179f170e8f243c38d4c0b760655b8e71"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "30166f9a6e43e42e32f0152e3ffa79955576d67564c50ac397709348a733b2d0"
+        }
+      ]
+    },
+    {
+      "choice": "number-2",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "46ea79be5eb3364075e8f8654640830ab01ec4d40411c41522208a4ef65e5d80"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "772a87862bf3cbd8fa394ebca1e7cf3bd5b935030c2cc641198c3956f2ab0eba"
+        }
+      ]
+    },
+    {
+      "choice": "number-2",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "de8864cc320fa7eb467bfce92bc46924ae8e46565232e4b2ee23b9dd9624263f"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "b5c962a5b285935acbf3abdb6a3b8b9ad9245232e78cd7f853629d4a4dc8152c"
+        }
+      ]
+    },
+    {
+      "choice": "number-2",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "da0672654692ede4cdce773af102c7b55b6191adc4cf2f3584c39eedf3949916"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "8aeb004b2ef6188e46f99ea1f6ce5bb7163529c5ab4807e543dc0f21856a8eed"
+        }
+      ]
+    },
+    {
+      "choice": "number-2",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "9f827c3b425c56d17cceb3751c64b74f14bf38b6e38eefb4b361027eceaa2dda"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "f5c2bfd2aca9bab1e86f040f119641190e4bc222936ea46cd2cd56dec1236b4d"
+        }
+      ]
+    },
+    {
+      "choice": "number-3",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "2d4bcfeacb31f65e9f2cc83651221161d1c66425d8bcf0e7dfdf1e66c6454f96"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "7092d2bdb867d1353ce3223785d9e9ab0948089c045d76276ee64db548687cfa"
+        }
+      ]
+    },
+    {
+      "choice": "number-3",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "3c89c77ba0bbbc59858f338830fc83841f192d60932e962765533f30df3aac6a"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "099f7dbb91745ced68517c765d9f6fc6dff3c7e1ced1e7b55eb09e8d2515d879"
+        }
+      ]
+    },
+    {
+      "choice": "number-3",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "6754c7391f43e8774d9019cf904a3286cd9d90a46f5bab13ae01f670de866dc3"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "c234a0b6df6ff71cdfc01fb9f59ac8b35fdf0bd992447eddb2ad2c3e43f43066"
+        }
+      ]
+    },
+    {
+      "choice": "number-3",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "6e6d45d48f43778335cc660154f8ef46eafd2b39f6d39c5466d200c15e628d16"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "af86f534b62d5810571741be33dd1ae8bbe6965992bf645fb0629b040bdf57b1"
+        }
+      ]
+    },
+    {
+      "choice": "number-4",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "81a69de0a70927a172b448f067995345ef70a40beb2e788b84787a6acb1ab29d"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "55658bbedc8e46cfb9d9a65d95410712930df760b16f35d0376ede14accffe32"
+        }
+      ]
+    },
+    {
+      "choice": "number-4",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "6e8da0ef97dd1b80c91603188bad863134ea0074c2032fade6fb22fef95e14c4"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "83c407cc70361ccd2b9e355395584e213b2f4f37815cf166d2a7fe7c38f2119e"
+        }
+      ]
+    },
+    {
+      "choice": "number-4",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "5b3695eaaaa7ac20f8bf203b024affd06579caed00b3f4fb8263256353bc011f"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "5f6e4f8afddf8754754bd5c7625867dfdd756bb44f69f9d078e41f7283c1e5fa"
+        }
+      ]
+    },
+    {
+      "choice": "number-4",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "51e1f3347645bd9b964bbb22abe004e3c4a67c1a7cf48d55e847daceb9326067"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "61a288d9e971755fbf7b0f871dc74d478a792d5798e6d564a533135c6acec571"
+        }
+      ]
+    },
+    {
+      "choice": "number-5",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "242b4f4346d6f849ec5d64af41fbcc2c1a585609be5d2a79fc3551130e4fc861"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "8347a44dab26127d9d190cf7d94affd70dfcf5e660c0ba8a198a8c86b0c29ea4"
+        }
+      ]
+    },
+    {
+      "choice": "number-5",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "e98cb3bfd89df7856e11977349c4bac645ff8587a5033b8aff29b7a713eab33e"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "a10b47013b474275ba6514f415a4b6524cb3396d114b67036da217ff40246bba"
+        }
+      ]
+    },
+    {
+      "choice": "number-5",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "312e7ca8f6e0e4f978956265e23e984eb5e18e4fec02ff8222f613a2218d2a0b"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "51181a2c219513c9e4dc810a0dc662bf3aeb6ea2c76d9e427b05c555213c8dca"
+        }
+      ]
+    },
+    {
+      "choice": "number-5",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "4e222ddd1bbc0433cbb34ea8abba674a98d1ea1fdb079d6c079af15339bc594e"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "3f9cf85b58b6a89dd03658e747a2cf824e1563cf3bcad077785162fb72f815bc"
+        }
+      ]
+    },
+    {
+      "choice": "number-6",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "c14b72d5147daf920f28f1069a8204f32deb385e3f8c194fd443b695eedaef4c"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "bcd01f5c7c7d3d006fb28308d650d610948eec602ff852d068a0f5e278444bd6"
+        }
+      ]
+    },
+    {
+      "choice": "number-6",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "2795d784607bd4d77d89f06c0a0ad69b11b4d12cf0f21630c11ac94ca2dd7918"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "ae2db539c56c75377ad41e510ee4d03d11b52e45b75c622174a691cac4fc353d"
+        }
+      ]
+    },
+    {
+      "choice": "number-6",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "149bf22fcae573e13b915be236f1a967403dbe76293d59ac350012b9b8df3adf"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "5a14dda35fa443242ef99be5b19b475d46d4b7e74203cd224a2c9705da5c526a"
+        }
+      ]
+    },
+    {
+      "choice": "number-6",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "1594324a75a2a403b158309fffa355f3e75b880feaea9f881d29181371b3b399"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "7ca90c214030370213c3305c915060a088d30c6737fc94f04a3c416131a2b447"
+        }
+      ]
+    },
+    {
+      "choice": "number-7",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "cc5dd72ef20878b8995144b16e6bce30e1eeb488b48583b762fca8ea89c84022"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "81c1915f54393c452b8932ff94c21de7e9a7bfa2309369751bf3ebb187290241"
+        }
+      ]
+    },
+    {
+      "choice": "number-7",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "8a525a1efc3ff89c5036698221e994d0470f1c3d72684d12c3ca55c6cd9f9178"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "49f5b6826d7ba58ae6606869af6f50bee7dbe31d635ae94930e1046bc0022a92"
+        }
+      ]
+    },
+    {
+      "choice": "number-7",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "20b864686701653b1090e48c5c19f55eb6fa977fb146e1e963d8bfb5dfb0d15e"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "b16ef024bbb468986225e5020da05040557cbab143dbe06d53e86fb70de1aece"
+        }
+      ]
+    },
+    {
+      "choice": "number-7",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "79f47a0d6b3f0ffa86c90939a0e9c2feee386c2038fa6b1949f1da9187542069"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "2db9b4c4fa23d62fffd28a1055bbb852e6db374b11afeb88245a2e0b6812f001"
+        }
+      ]
+    },
+    {
+      "choice": "number-8",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "b05eb88c6c327b3caf758f32b36938fc1985c89172c22ab4188cc93cf1907469"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "dfb0e8ad03f54d62a630f491b45edb96bee1b509695757d6b526f8ded125b41a"
+        }
+      ]
+    },
+    {
+      "choice": "number-8",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "be93aaa50b4167fe4e674ac0d955e14217eca6c0943ba1e0c9498e4d3936b365"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "8969c998fc4f1dce85d7eb139ea4166d9f215bea4e0169f2181a1d33055fffb2"
+        }
+      ]
+    },
+    {
+      "choice": "number-8",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "0323f6196c49f05111a7dbbd1f31563dc70843b46b70b83916d937d33b879b66"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "c5dc288022ad0212856a5ccc4ae31315da2268b270454bce425c8468c5d01e4e"
+        }
+      ]
+    },
+    {
+      "choice": "number-8",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "c9b338052d09635f32a978faba7d00c431ccd4edd6b636aa379634ba6732169b"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "9ca5c6027222dfaab3034b9f57a114ea4cbc66c6f1d272d168adbe6d49d19144"
+        }
+      ]
+    },
+    {
+      "choice": "number-9",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "ad869f6591280879817cc60a219633c5c6ed3d2a6c30d23cbd29774596c6e960"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "c23b7efca22b1e2aefe967be2e12f932cbb855015e356d46a17a088a270b2592"
+        }
+      ]
+    },
+    {
+      "choice": "number-9",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "0e4368a9ba1b09e0d6d9203de3b29b29c79617f9fe3e989b0ebacb1452f4e2ab"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "ec80190266c4e05c4b6b1bd21612a621021cd24b5e37f7b434a232f4a828b9c1"
+        }
+      ]
+    },
+    {
+      "choice": "number-9",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "8b58542a00e315723e6cf8f7b45d5816843f9663acbbb72970b4169f3e4aeee1"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "4151046b76a8cf2082a92f82391aaef71ce90c73aa3e7b87a03bbaade6c11272"
+        }
+      ]
+    },
+    {
+      "choice": "number-9",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "ee94da0bc2b1d2f89a44102e08418fed78f6bbfcf3112b2d028e5cb4b1560bb9"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "a138a4e762b4a4b28f0a62a19dbadb1d694a34a24dcc5182874aa2f9bcd543a7"
+        }
+      ]
+    },
+    {
+      "choice": "number-10",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "db3455d782160967ebe99fb96565ae45cf1df9afea322d96808fbae141ce6f52"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "84140c98ea80101955fde996c7612bd091902c26a52db364512ad0311b37d0fd"
+        }
+      ]
+    },
+    {
+      "choice": "number-10",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "e5ec4ad78a8089915a09ee9bf3e12e4c7caa486711e78712124a98020abbe7af"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "7894fda00b7a4e918317266a6bcc08204153839dec835ddc8360c3a123f3ef77"
+        }
+      ]
+    },
+    {
+      "choice": "number-10",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "515d5bf43e4d0a07a5161e947205f81c204a1f6120c6b5d30bcf4b0989868b9c"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "28ba0080868ea20b75eb8fa740fe3a5f1444b9c47f51f231172875b8a0972f2a"
+        }
+      ]
+    },
+    {
+      "choice": "number-10",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "18dae915a6196ad8aec5a650e49b5b409d776d69010205bb6f5b6278ea9bd733"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "ace9eb953a4cab9fc16804f854a31493aeef6896683490d4ce4b713e33979196"
+        }
+      ]
+    },
+    {
+      "choice": "number-11",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "345f7cb47f2759e75687c9de0c273dea93716e8949fd877c6713cc21087cd9ef"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "8dadce6b0c2ee111973e31bf427d2ca946d3e69e30026cfbb704c969fb15aa22"
+        }
+      ]
+    },
+    {
+      "choice": "number-11",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "fd34a4b36afffaa1aede59b4294f377b12f6819b4fbac82eea48f580baa36b10"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "f05dd564f79a8386fb8b1b1c4b9d914464ba4a0bab966c0fae573e7debcf810e"
+        }
+      ]
+    },
+    {
+      "choice": "number-11",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "a1527c88ed8e88c578864c89ddfa9c1270c68278ea47889731a28918012b9b93"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "e50d342d6609e27f09cdf3eea2ca7b0896fe825f28acd6cbb2cde44978e76458"
+        }
+      ]
+    },
+    {
+      "choice": "number-11",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "5f6003768fb32950b9c3eb179d57e45c56bf8fe819682b342feca1582d03d758"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "a2f0a50fdf83641c5da78af0e4d255c400ded300ce82ecf439a48987aa259ffe"
+        }
+      ]
+    },
+    {
+      "choice": "number-12",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "3e262021e1890aa61ba8a8ba3dd728df5402bb2e62f73810c01b5cab0edd14f7"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "29d275beda8533ea0ced4e72409e2f086d45a6eec041fba5a2ce0cd9a6505519"
+        }
+      ]
+    },
+    {
+      "choice": "number-12",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "1034f4d529e6ae79a8d89562f35e82d8c6348ae3a12d145e0c659b09cf42dca0"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "a892cb1304317f1038afc33d4099d7f7af93f1d3650e63eb8c5371fa9cc422aa"
+        }
+      ]
+    },
+    {
+      "choice": "number-12",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "73e4b9a1fe7b018c55fa387acbd74ed8ce166c47800a01fa3145b1c7e879666c"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "d853ab74ab6156ebe726d6bb0aeba91bbe23e14130b6c9f25f59744ca17dfe73"
+        }
+      ]
+    },
+    {
+      "choice": "number-12",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "d7f68a2315400809424dd6b641d3ededff67235cf2a1540cf1c62fa06498ea29"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "2d982744fca905346c50a850f99adada442fb51b8704f4dcb999b23cdc28f398"
+        }
+      ]
+    },
+    {
+      "choice": "number-13",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "c5ff7cf768cea8f985e5ba229fb83b6cb37c4cdd266074c2052430097ee76c0b"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "18a23c8d54355d4d30f7d5f2c3f99a6497bb168685c9f951507f82b1280f14f7"
+        }
+      ]
+    },
+    {
+      "choice": "number-13",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "3b5a8e4f7f795c5a926cc3557aa6053e6926d73bc70e72ea960ecb44e7ecaf7b"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "691e9c846810297c6fa9ead1b4f8905c8e20fc860cc620ef0383873a3e569b30"
+        }
+      ]
+    },
+    {
+      "choice": "number-13",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "5d00f08b6200235ee3dc858a0756f1714e1563383567bcb14afb855a127b39e4"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "c802bf0df10cf8d8f1c736142670a8b6c1e7950877f895655c696ef2eb1f5426"
+        }
+      ]
+    },
+    {
+      "choice": "number-13",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "a11133bad92a72f6747b6d4ae644a389c7ab6104e23c50760f6bc08d1559cccd"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "3768b9e71360efe3d07f7015d99395be61b525644e1a1f0d28d3f8efd8ea5abe"
+        }
+      ]
+    },
+    {
+      "choice": "number-14",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "dfd43d410818cb1eba091583147327fe24f6bbe58d0361aa68ab8405dc8a4fe9"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "ce0dc2e5dbecd17eb194b9002319b92de07b90fdd848a287a6e1dfd42ee1d555"
+        }
+      ]
+    },
+    {
+      "choice": "number-14",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "00e24083bb04955f949b4153ce28c5c3e2fd6be15d3f60dbc44f0686b475bbb9"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "bddb105649524c89824148c9691a62101ee7cac37f2d251e0775e63b9958bbcf"
+        }
+      ]
+    },
+    {
+      "choice": "number-14",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "ca4e14417b9dfc8d834a12bf6dee13437bec47f31ffbe1eb319bfc5a7965c089"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "feed9e633bffa2271d421aa3715a943a1e1882b479e7c6c0145b006a9c6ea136"
+        }
+      ]
+    },
+    {
+      "choice": "number-14",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "7ab39ddc0e84d4b653306d79f888f785a3ac1d5f6ea71e6b6ba107b14b801bec"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "da704bd5588dbcc677198691dd75d2ddbe19495094caf17092bfc2fbcc88af4d"
+        }
+      ]
+    },
+    {
+      "choice": "number-15",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "30ee3863c8223f3af1d30a82a1062a44cfac79af22c9b2d123437734c902b7e1"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "bd9039b2411172766c4a9cdea5bcc11e0ce42063240b2d154cba75cec2aa47fa"
+        }
+      ]
+    },
+    {
+      "choice": "number-15",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "5234e32f28106367bcfb4e4a33a27dbae6694e77fd90ac96ab6d4ae423ff1685"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "512e30644db3999f8860edb7b739bbf6fa7e07965f859397e79248855310ef0b"
+        }
+      ]
+    },
+    {
+      "choice": "number-15",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "c9c8654269dd69beac0b0bdc05b1889d785be653c2ee6c4806684221e4a44934"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "f54bef51938e3b7cb60973150c1b2e0b403f3a842a09fc00678cd3eb0e096072"
+        }
+      ]
+    },
+    {
+      "choice": "number-15",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "f1b3eb57562b17cd4ab5482bdf6315bfa29b6a3ef1ae3545789de7f86f87ab32"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "6e5f98b294f4f6f66ebb204458bda0872c643851a6d42b664e39a227b9f9f4a4"
+        }
+      ]
+    },
+    {
+      "choice": "number-16",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "41dcd89161d90bfe48f6a097c461be6dba4df4fdbc97e46268a0f1d0751aa269"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "a4fa7eac5bb44747a6bca682cdd251c8abff210e7366a192f60a60c603f63cfe"
+        }
+      ]
+    },
+    {
+      "choice": "number-16",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "97c025a3f01ca42cc7dff9a1ef5a2848abbd59091c8816444d3236d575d94bfe"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "68a11cb917228a37f6c090078972a5689c3a212bb10a3a32f8fb32cfaa97e449"
+        }
+      ]
+    },
+    {
+      "choice": "number-16",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "97ef40c3c765bf0d911b392a99a6d392cc1492f9b9cfd8828fbb97a7798a421f"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "010d981f266925e331e60efffeb3fb56af3e677dc92bba81689925dcbcb09ab8"
+        }
+      ]
+    },
+    {
+      "choice": "number-16",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "08db2f71e6ece1398489f7535ec51e4fb755bb6e80a4a127eb9d9bc797f8a12d"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "403b3b81b2da917f7ba97999d774675a94217ffff0b40703357d3b2fa60bfeac"
+        }
+      ]
+    },
+    {
+      "choice": "number-17",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "6a8b8d35e51f225829f9b430d3d05810085304248e8e2a8125c0f208a1ace562"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "c51c5a496506b4d7e0c974df3822d77a71dc9d8ad87c982244845c16017eebd6"
+        }
+      ]
+    },
+    {
+      "choice": "number-17",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "1ba5aa74582d16137f7178435066a310ae0c44b6722061648bc0bc61b3445fd6"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "6c32c0e01f08b196f4c3a188ac9d8b3802aeac6039c9b4a6a61076b35c3dff55"
+        }
+      ]
+    },
+    {
+      "choice": "number-17",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "f7075a2fa3ecfba9cb8843bf4e3e82501e9117591cc7b19b28184b2771fefe4c"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "200f462f634e41f98a02141c6bc483b622f8b071101032f55809f20d74290092"
+        }
+      ]
+    },
+    {
+      "choice": "number-17",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "56e9bb8574669668c55f345400efa1d03bb96346666809e027b57709e8370920"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "6b22684f365ec038bf77f4b996aa57cd56536dce7915f700c2ede5b4859ed98a"
+        }
+      ]
+    },
+    {
+      "choice": "number-18",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "b7b4e06e17533df241ee18230db0d818bdcaaed6828427647a451cd571933826"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "b651766fd4852e3f9c63c43047072f036b89397e13e2e2a3c55bd5d4bdff5ecd"
+        }
+      ]
+    },
+    {
+      "choice": "number-18",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "3299d97c34df87874b30c86472891c91afe496bc6f02df7e6c1c2151b2b75558"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "0863d2981fb6e295a3195592dbdf1ba3863bda908925454ef67bdc85d6da1b3f"
+        }
+      ]
+    },
+    {
+      "choice": "number-18",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "d43465e30f47db806ac6f0873af1770704d3d263d9b9a0571fc8750166c53958"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "eb9d789dffca03272c1a368520a125417631b233dda4b098bf39c82332a7b7a2"
+        }
+      ]
+    },
+    {
+      "choice": "number-18",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "b66916299e1f697307c5d60d991b3158194494f2c82c837f2b381e293e157570"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "ca16bae617569d87c06aa01a616d802492e4cbfaecc36b9b7d1eaa8be6e4a9e8"
+        }
+      ]
+    },
+    {
+      "choice": "number-19",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "3e1c32e2a070ed02b8271bcadf8b90dde00363c956a6542ab118c371f8f32da2"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "04ee1703943a7acf55744f0a626834b1ef7b824798b8cbd3c2e42e01ec4ef505"
+        }
+      ]
+    },
+    {
+      "choice": "number-19",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "3a054d9ae98a1d23a1daf2c2a1296a6cd0f123440bad5feaee746dc302638bb2"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "30208e20320f6b80365e8f23540e6c169c13b631d67716f82a61448e62e59f5a"
+        }
+      ]
+    },
+    {
+      "choice": "number-19",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "e3b8604cb15233612cd175a27c58b30add03778809f394dfa280db6e07b6d98c"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "75c6767b8db26cfd26f496a0e0c9d32a5ace15823a6b71e38e08329ac511da30"
+        }
+      ]
+    },
+    {
+      "choice": "number-19",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "1919983ad62b77c0c43b317ceccc731cf2d5d9aa5dbcb9357ecea0212ef6eb09"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "95dbe6155fba378255e98705d67c24305795d7f3a389d5988ea57ad3432dfbc4"
+        }
+      ]
+    },
+    {
+      "choice": "number-20",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "34e5e88acf755a721ed4145b27a868a8c80687febd3a2303f953997d345b9395"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "e2c434d6780847713b684dd1709226e8cb30e7b7c35fa21c10228f96128706a5"
+        }
+      ]
+    },
+    {
+      "choice": "number-20",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "791f9420ff3626a9cce0881b20f69e7c01275d9e0079ea945040fab7c8cf4298"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "e76acb8c0bb5ba3908a0b922bb396da1825dd1a20a4316fb4e391a064116d04b"
+        }
+      ]
+    },
+    {
+      "choice": "number-20",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "307ae8565096083a04f0022736439220ba752152d979b323fa308d0454708395"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "750100a327293b3950e182837be3fedfbda3371d6d27de0ef9aa30ddfe90adbd"
+        }
+      ]
+    },
+    {
+      "choice": "number-20",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "05bf76a223f43642f213b837c8ee0f33011b0f41cf52eb53e3993ffc49eddb38"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "785f20629ac0c66b37e9f366f64aa45c107c4001ce9ec031f5c8e296a2db4e4d"
+        }
+      ]
+    },
+    {
+      "choice": "number-21",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "c8c9671513727e651ef036c6b34d809ef639fd1693de0355675ba5d54318b4b1"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "54bf534520dae58de32b4c3f7521c7322b68f96e3b988ca2181e147384300922"
+        }
+      ]
+    },
+    {
+      "choice": "number-21",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "c09e85dfccb3103673473c85c7c319f7a8c9e37e52defe4d435b9fdde3b8c88b"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "de7d23f07b403b5ef4f896203a40781c03988be925ce2e0d403699812a11cbdf"
+        }
+      ]
+    },
+    {
+      "choice": "number-21",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "c8ef8b1124ec5b6fa9fe9151dbf1b2f3e7e7b743f714b845edc6f5e70545caf2"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "3703e759e9c3561fc434d50aeaeb577d8d57d5a67fb6c66dca63444174e30db7"
+        }
+      ]
+    },
+    {
+      "choice": "number-21",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "99299cea92caa823c595bc14df87c5ae85ffc7897b69eafe87cd5ce4058d7870"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "80d0a2ac9e31674f7d6fcc674d4cc415384a227687f991b9b7a51935ca2506fa"
+        }
+      ]
+    },
+    {
+      "choice": "number-22",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "8e0582e29c8b060d5bde43177dd1a2f7bb619931c37d1c096b6aefbed220ed1d"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "6cb6eedaf1552c38442503311d8fd211785f1191dbde835691d9411f2dfa5519"
+        }
+      ]
+    },
+    {
+      "choice": "number-22",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "d3dea1f7ec24531e6300876fe4d50694a60d5a8a8be730b4a26ebfa87f5b7d87"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "5ab004dbb0bbf1b797110a39b12b8c65fccb5f05625fabc54c7d579cddcedef4"
+        }
+      ]
+    },
+    {
+      "choice": "number-22",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "35e4854011fd95c1f8adf700134b63c4f4d7a63a38beae0fc625539350d85896"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "531a5820a0525a01c7845cbbec31b2606259d17828901c27cab182d5492b8ce4"
+        }
+      ]
+    },
+    {
+      "choice": "number-22",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "476cfac6d0792cbead4e2853a88aa18a9482cba8284ab4f460fde7d01f847acf"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "13ad82e750e7bf6bbe860412253f3ad4d2757e10862a3881d3eb33e9339871e8"
+        }
+      ]
+    },
+    {
+      "choice": "number-23",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "76cf191e6965aec452da7e516b6de285808c3857e82c74a08339e6a88be3df14"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "a92559604067fa97d8b0113eef15308247fd174f15678068f5ac0164bbec7f9a"
+        }
+      ]
+    },
+    {
+      "choice": "number-23",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "19801349ff5e5afe0c710e42e5b1e97da3ecb87b39226e0f5f0ee7953e30c822"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "3b4332a4a4d802c70c376b6635d856a5e9b680c958030b6de3102e3710a488e0"
+        }
+      ]
+    },
+    {
+      "choice": "number-23",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "bbdc0365c684ffee84d2f316e611cf72b66cf8462c1e698fd86cf7a079c98069"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "d815b34bdaddec2cda7d8f71e41ba2be39671b812a196342183f988e8877206f"
+        }
+      ]
+    },
+    {
+      "choice": "number-23",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "ec6078fa2c0633c1402b9751773206ba4c96282d5b6582160785281c8b77a022"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "e51bbe42ff91992b53ecc83eaf623867976033fb724183ef6736894e2ac94473"
+        }
+      ]
+    },
+    {
+      "choice": "number-24",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "cee4929ada4afd4d441e4c354d0e3d785422e4670937ca0588f5e0713dddd4ca"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "189eb861ffee6a64fba9a2de2aad7ffdbffe4a7a28068f11a96bfac96b7d39ae"
+        }
+      ]
+    },
+    {
+      "choice": "number-24",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "baf9b0fcedf30876645cb57776090d8df89a5a938e4f7e05e4906eabdbb5e684"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "4306ecae1abd0efd9cea66e111b7d8616bfba4373678f68aac29de25719b2a9e"
+        }
+      ]
+    },
+    {
+      "choice": "number-24",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "b49a6552becb8c6d7cbf414a0a9e9751774f9f802dd521933000f23a5aecb1e0"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "a748942de89b689e7e07de9f8f714b928cce4febeb4d41d8585f8f1318f8b4ed"
+        }
+      ]
+    },
+    {
+      "choice": "number-24",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "9facaba639379a46e1fbbc842cad1409cccfe4c0e2378129700d4968d2216bb2"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "192591a298f0ec85a1610da68a28f00939f631b8099868a7bc7a4b5bc48d6e51"
+        }
+      ]
+    },
+    {
+      "choice": "number-25",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "9e2b7758a6464b7eaefc7d31fe102da7e4dc8b37c9b584d39d541d8c8c373fa5"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "f8fe6eaa9df425a468ee5e4a4b8caf64ef4a4581242e7b4854e7981d9c8dc9bf"
+        }
+      ]
+    },
+    {
+      "choice": "number-25",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "19a25611724b76c2b9dc689ed354377383b24ca13678ce7235fb55cf6a7ca5a3"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "6d6990bbee8de88a96308c708eec5d7efd3621f89aec00920ace7db29cbbdd1b"
+        }
+      ]
+    },
+    {
+      "choice": "number-25",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "bdf60e4ac11d48d47ef5ecb7e42f4d588bbfbe2e9b8b6595e50d3e38517d5e68"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "6da45dcea02cab6045bca3885e1cec893ea9b398cf89eb51840a7a68e0481239"
+        }
+      ]
+    },
+    {
+      "choice": "number-25",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "fe5b7f0f01ba5e7bd3c1cd7609fb3bcb44518ff0367b47075c96b61609b99b4d"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "0499bd5cb9ba8c19d20ba50255a05c577b6244ced88a62fba3e2d4c3bc2f0218"
+        }
+      ]
+    },
+    {
+      "choice": "number-26",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "b15e33da7b884e7b1996c821f1e62c210fe9cea7ba3fb3c675a18dd92a553392"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "a00ece37985f559897241ddfdf05bdfd59d2c6227aad75f6c08d9eed94c07ff9"
+        }
+      ]
+    },
+    {
+      "choice": "number-26",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "e7948314e706240ef34dc154cd319c6cb694b5c5928938f966f4959cea318852"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "c82fff296e75bcb25978afa403f5a0d0945d407dc2f3295874bdb9cfb3661b74"
+        }
+      ]
+    },
+    {
+      "choice": "number-26",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "84ad8f6a482fe2438668303908f994ce7b6aa3e93ba6c34dc7a4ef75d3527206"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "ca31595161f61f240622d1cfa60cbefb78718dd194db5cedf5abff30f849cc4f"
+        }
+      ]
+    },
+    {
+      "choice": "number-26",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "1ecf31c189f4b944cc5d21cc1da32843324c85618a820a96df00a44d12a189b2"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "5edaf11b9852d2bdcff72861c2f7c4f44d9307961cbb20daebf0ea1bf87229e9"
+        }
+      ]
+    },
+    {
+      "choice": "number-27",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "330fa4177a0d2beff334c772166449ea33c217ef3f406066f9d2dfa08ada508c"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "f742f9d78adf57ed1cbcb5746cbc56e97e6feb54f7f54d203a6e5f05bb1c4f6d"
+        }
+      ]
+    },
+    {
+      "choice": "number-27",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "ee5694a6a3c2caa5a833e06a658a04514bece32846f8a128f2b37d3e9179aa12"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "5bdacd02cb46c604c06e722eea11788d23a826294eb46b03f23ac3e0ac164366"
+        }
+      ]
+    },
+    {
+      "choice": "number-27",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "ac7313df40d57716cc51d637efb316fe19f0378dd64ad19dc18cb85bec4629b8"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "bb5f35dadf68e52bae52d65f55e38bea8fc42dd9f4cd2da9646345c043f7d2d6"
+        }
+      ]
+    },
+    {
+      "choice": "number-27",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "15aa3f3c75d8e20e8d2c06d6f2c08292b24edd024f88de9109be03f87990d99b"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "04685e8b6f3112bb40b480db3451b7fdc9c0dc7775daee605404e34811ea6537"
+        }
+      ]
+    },
+    {
+      "choice": "number-28",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "2c987fd2bcb0ededd2faae36a17bb8029c6544e70486aa7942a948c629b5d464"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "fe4879dbbcb9835438ea40451382d3b4c4581d78e07695b396c202b0470b594e"
+        }
+      ]
+    },
+    {
+      "choice": "number-28",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "95628fe00768b32ff328eeda0d546df47684f7817d9cff4c14d60064ce374feb"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "ae42e966a2017289d9764f4f04a01b96e6a0176bc6849e295940a327451cca60"
+        }
+      ]
+    },
+    {
+      "choice": "number-28",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "36a58f3ae02ff889534a3a208aa7dcb4cdb8048619723c0e42f262a04e2799b1"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "1318af295f7e06f8ae77be005bca2b36c9ca05992d20e8d7f749a01a3127bc8c"
+        }
+      ]
+    },
+    {
+      "choice": "number-28",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "fa94207793ccd1277dbf56607c42d2b4df834f579d38b1d4b1f55df8f5370b2a"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "cfa46aaf9f1899fa962902dd756b815067b38366a71dd354327dd2a4c0a1287d"
+        }
+      ]
+    },
+    {
+      "choice": "number-29",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "90fecda559d67897bbb7bf558dd7f1263b29e69c8d3af3d223140e2e75c63962"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "29d8c1d7ee74d6592e89ae44c4036aa9a6d31bc4bdc48286f82303e369807dac"
+        }
+      ]
+    },
+    {
+      "choice": "number-29",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "c1c4cf9ef68a523fb68a6327fd76435132ba225e960de841a06b556659e596e3"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "d6db53eb67f7e912197057c6c696a9d9807abdf0df2de8423a69984c5869fef9"
+        }
+      ]
+    },
+    {
+      "choice": "number-29",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "5b96a3337e7389c63edca7a413bbff9dcb77f0a5f2e4d214c9bff6e8d6e03cc4"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "7e77824a4bc1a4e633e7e634261ce8f4b08df8026577cdb5ad4cc2044c8a0c43"
+        }
+      ]
+    },
+    {
+      "choice": "number-29",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "dab09b2513cca5bb13e6fd7b73bdb169919f5f262f4928ab2dabfdf6cc631d75"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "f423e2b03b4a145be0c1994b21e985d9f48011873b1c35336c2bae138be12168"
+        }
+      ]
+    },
+    {
+      "choice": "number-30",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "00fd8b2f3e8437921c0dd90f058a193df773188414a319a423eefcbd3e7ff44d"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "056b4849dbb340b6d6fddf22c8902320e70e3fa96431815e800671b19c6d7640"
+        }
+      ]
+    },
+    {
+      "choice": "number-30",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "63072baf3d3b93487ecd929555296b5398525a4a37833e1bc921352311d08e03"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "8b31915581a62822a09d4b691c92848018d39151f7a77b1ae2702d31e629e979"
+        }
+      ]
+    },
+    {
+      "choice": "number-30",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "4896579024c1dc7bc693392cb653c7dc64452efe9ec5d05dc3a7cde682644884"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "056ca533377d7ba817a855ab6d1cdd87e4cf7e828bf64dac7d10d515e218940c"
+        }
+      ]
+    },
+    {
+      "choice": "number-30",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "2e02f14f55719035267851bcb90ba58ef3416adcae90aa15ec8b843a3e50432e"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "832bfa1b046b152b44fa5bac80b1a5fe22df1d8cff83c44f773b7775f56a34f7"
+        }
+      ]
+    },
+    {
+      "choice": "number-31",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "03310e9cfdfbb56e765e3fb2ea05ed1f239a7d4cf08ac0641a04ccb66dbe039f"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "6e1afec7fa65f8c088adc33aae29b530284a9c7164f9120e90b8aaf66c24c56d"
+        }
+      ]
+    },
+    {
+      "choice": "number-31",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "ceb3af06c1c68955c5069944d6675c5e4fc8515d33148501f19794e9a4e65ecd"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "398e7f3aba88537121b17de470460a9296b0df64fb61c72fb5beb22a1f2df1e3"
+        }
+      ]
+    },
+    {
+      "choice": "number-31",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "39920d954f0b53ad788585a1f7eb00c9252a5dc51e52190510100206f34c7c5c"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "7b43cb21ace4b3381489fc85e9d07f0e7f01d3930669373c77c2d9474ff7d2b8"
+        }
+      ]
+    },
+    {
+      "choice": "number-31",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "17cbd75d9725bb236c95bed6d6c6c83196808738f74b34d6c857cd999f96a003"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "ff66976f02404db6833074ed865cca6b9d034434f9b91a4c03134b7f10e2ef36"
+        }
+      ]
+    },
+    {
+      "choice": "number-32",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "4b00f73587b2cb702322c731a860d69a63f4158c69f6663bb4a273c3221108de"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "0e63f52737cea53894b3cf77313aa6778418d48c46148dc750634eb40e50b478"
+        }
+      ]
+    },
+    {
+      "choice": "number-32",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "045da966c835fd30b9d508daf5ec91b9f9572e68e1c8f5ec1e65c6119024dc23"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "64cc4346b87c1cdb7760caa8d223e457ba850db826e113a4d8ef2dda661dc100"
+        }
+      ]
+    },
+    {
+      "choice": "number-32",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "02b161487a13fa2e4c8c7e212cb1355d0c6f014c01609e0c66959a2c9f69a2e5"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "4382329eed24ca49e62f2c24d45e473120811bbf2eeb87fa0dbd591f740a2018"
+        }
+      ]
+    },
+    {
+      "choice": "number-32",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "5b9178aaaa093deca64663d29f4276abc352daaa25ed6c0a2690bd593dce2570"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "6ca40df698fcdac0f6bbd36dca11b67126806d2fdd476accd9424abe09464356"
+        }
+      ]
+    },
+    {
+      "choice": "number-33",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "b212e7641b413ae63cccb3ec6d160d38752c8618c1ceb17c771be3e143e8e6eb"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "a2290d84cd6749d54613a3a0c3710cf409ca6b5784d52cfba24c7cf62e724c16"
+        }
+      ]
+    },
+    {
+      "choice": "number-33",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "55072fb68e18346d0c80d4e470e421657e0b16db42962b03232c98f9a94586b6"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "548ff174bad402f8678a1f2b9796f438aae248f8f8872679423fc17cb1f8849e"
+        }
+      ]
+    },
+    {
+      "choice": "number-33",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "bcc7fc44d2011f7df2577ba43326969a3a37da8e8e3c9d0829d64ea2220b59ed"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "76805b4833b7498551cdd339e8a13f8fbef522395ddbe0641ebabf54aed93d08"
+        }
+      ]
+    },
+    {
+      "choice": "number-33",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "3e7dabeb4fac24a06e19215dca39460d760556a9c22f5abe259745c483957352"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "469857f671a6187b3594ec6e8c5f294b1ced62ef4f68cc96c4843f1564e5fc17"
+        }
+      ]
+    },
+    {
+      "choice": "number-34",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "923c8ceb68fef31a945f1d35834a20232c0e4fc35d99bfe5e29b0c282f868c5d"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "1d3f9d1c400844819c5b9ba38557441cb415aebfeaaf73fab6f7cf9bb46544c0"
+        }
+      ]
+    },
+    {
+      "choice": "number-34",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "2202962e1fcd81fc75e99dfc331f36f7e13fb3009d17b9e25a47a8600c8c925b"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "8c0907d2a6c9515f8529abae2214af66d6cdbc6faac92cb75083428b8b84ad3a"
+        }
+      ]
+    },
+    {
+      "choice": "number-34",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "6b1272f54f95d07a785a109ecdc9802a0d90c07c70e3338570e4dfe4675481e0"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "e5becfa3588b656b70b917cc88192ea6245caa75736ca926d8f7c9b32d786016"
+        }
+      ]
+    },
+    {
+      "choice": "number-34",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "7e9a8fb8fb2fc6eb6e497f44b38cd7a2fbf6373577aaf128bfa12a69d8e06c96"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "268625e32b3ff7062370f38be962b76195e991370be14f9dc094911496911647"
+        }
+      ]
+    },
+    {
+      "choice": "number-35",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "8c8331bf8acf232dc79729be371514e25a61026f8f72f510062e62e21a639df4"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "7b86810f544b9b5007cbe2c57ffee5e30c8f88f04145afe738e8b74e03aa430e"
+        }
+      ]
+    },
+    {
+      "choice": "number-35",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "1ae78aef9d138bedf14588473fa71eb583f571572f03a33c4c784c0da68496d1"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "69b85c2a48c0e26619c37b49df5653bb1874fd5b031501089592f3043caff300"
+        }
+      ]
+    },
+    {
+      "choice": "number-35",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "dc74e53d2aab5cbff2d286778d27411060c6a8cc7fbfd99bb3f58c573923ca29"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "cb1090a1cd27601e6b7d896a61054ac3694f2e4be1749896523d264d7ecbb13c"
+        }
+      ]
+    },
+    {
+      "choice": "number-35",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "2412b77b352da5f17500b9948073436676527587a3b69c714dfe10283cf937ff"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "8e1b10c19b7616bcd4b7873a5d76a4926ffbeb77e8aac9ff9e95812985ccedcd"
+        }
+      ]
+    },
+    {
+      "choice": "number-36",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "1fc3f6747b3deda83f49deab444186a81e8d3c50ef07f815be8c89ddbace52be"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "f3dbdc1bf41c49cddcaccfe41c73a5a9245cd30f4e46b6488b7bae828ab374d5"
+        }
+      ]
+    },
+    {
+      "choice": "number-36",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "445dedffb2d1375770cfda64430babce072350622497fd9bba43cb5104bf8360"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "5289b256a79f066bb12b5c0ba535db820a74c81b7111f0b417f2a5d31a051f1f"
+        }
+      ]
+    },
+    {
+      "choice": "number-36",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "35c10335163cc35b2f76a8860ec9ffe4aff94c02f4838dd1dac389fe69b30a8b"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "479b95a7b854004a152de98dd84de49f594a638db7524c1271b3f306eede7024"
+        }
+      ]
+    },
+    {
+      "choice": "number-36",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 37,
+      "integerBoundaryChecks": 74,
+      "streams": [
+        {
+          "seed": 19103729,
+          "rounds": 64,
+          "sha256": "e91cb13f89f8c417c7191b7e42876e50ec60e2a58795f9039bb946afe64c2e19"
+        },
+        {
+          "seed": 83049281,
+          "rounds": 64,
+          "sha256": "47ae7fe3673700f9eba9b31847d2688029a7e6cec54375e7d8c5d7106ecd2ae1"
+        }
+      ]
+    }
+  ]
+}

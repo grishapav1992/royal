@@ -1,3 +1,4 @@
+import {ROULETTE_METHOD,validateRouletteProof} from './rtp-roulette.mjs';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
@@ -35,6 +36,7 @@ export function validateRtpProof(gameId, inputs, proof) {
   assert.equal(proof.policySha256, inputs.policySha256, 'RTP policy changed: rerun qualification');
   assert.deepEqual(proof.sourceHashes, inputs.sourceHashes, 'RTP source changed: rerun qualification');
   if(p.method===FOREST_QUALIFICATION_METHOD)return validateForestRuntimeProof(gameId,inputs,proof);
+  if(p.method===ROULETTE_METHOD){assert.equal(gameId,'royal-roulette');return validateRouletteProof(p,proof);}
   if(p.method==='exhaustive-pvp-journal')return validatePvpProof(gameId,p,proof);
   if(p.method==='exhaustive-virtual-pvp-pot')return validateVirtualPvpProof(gameId,p,proof);
   if(p.method===COSMIC_QUALIFICATION_METHOD){

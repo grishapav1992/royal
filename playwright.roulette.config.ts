@@ -1,0 +1,2 @@
+import {defineConfig} from '@playwright/test';
+export default defineConfig({testDir:'./tests',testMatch:'roulette-host.spec.ts',workers:1,timeout:90000,outputDir:'artifacts/work/roulette-audio/playwright-results',use:{baseURL:'http://127.0.0.1:5384',channel:'chrome',viewport:{width:1440,height:1000},headless:true},webServer:{command:'node --import tsx scripts/roulette-preview.ts',url:'http://127.0.0.1:5384',timeout:90000,reuseExistingServer:false}});
