@@ -1,1 +1,10 @@
 .forest-heart-frame{display:block;width:100%;min-width:0;border:0;background:#060d1a;color-scheme:dark}
+
+/* Give the field room on a phone held sideways while keeping its connected chat. */
+@media(max-height:500px) and (orientation:landscape){
+  #mini-dialog.game-chat-layout:has(.forest-heart-frame)[open]{grid-template-columns:minmax(0,1fr) 180px}
+}
+@media(min-width:641px) and (max-width:900px) and (orientation:portrait){
+  #mini-dialog.game-chat-layout:has(.forest-heart-frame)[open]{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) minmax(150px,27%)}
+  #mini-dialog.game-chat-layout:has(.forest-heart-frame) .game-chat-dock{border-left:0;border-top:2px solid #ad8c51}
+}

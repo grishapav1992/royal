@@ -1,0 +1,352 @@
+{
+  "date": "2026-10-30",
+  "timezone": "Europe/Moscow",
+  "baseCommit": "c4e1bab9c6fe08c08508465ab3077aef985af450",
+  "module": {
+    "version": "1.8.0-5322d33b596d",
+    "manifestSha256": "5c07d587ac478b1fe764e779a7ea93835c9cf55fa811f718300fb264c815f12e",
+    "contracts": {
+      "apiVersion": 1,
+      "rulesVersion": 1,
+      "progressVersion": 1
+    }
+  },
+  "scope": "Responsive presentation only; no wager, probability, payout, wallet or protocol changes",
+  "status": "Verified local review; production publication is a separate operation",
+  "causes": [
+    "The shared presentation scaler treated Forest Heart as a legacy DOM game and capped its iframe at 1120 CSS pixels. The reported-size regression reproduced 1021 unused pixels.",
+    "The character image kept its aspect ratio at the bottom of a narrow, tall box, pushing its visible head below the field.",
+    "Moving the character back from the mobile status row prepended it before the field, swapping implicit grid columns on a return to desktop."
+  ],
+  "changes": [
+    "The shared host delegates sizing to the Forest Heart iframe, as for other independently sized games.",
+    "The square field and full-height character are fitted together inside the actual stage; wide grid columns are explicit.",
+    "Short landscape windows use a control rail beside the field, with the free action and bonus progress visible.",
+    "The game retains its connected chat on desktop, phones and tablets; tall tablet scenes use an intentional upper-body banner."
+  ],
+  "unchangedSources": [
+    {
+      "file": "src/shared/forestHeartMath.ts",
+      "sha256": "c3e04efc098aa9d61f0faa70fc9159d8460dcf0816d96ef5b560efd45ab46658",
+      "unchanged": true
+    },
+    {
+      "file": "src/shared/forestHeart.ts",
+      "sha256": "6f0ba79987ff2d24e5c242103ec6735bea1b9fcb3a0fba2abec773eff1dab52e",
+      "unchanged": true
+    },
+    {
+      "file": "server/games/forestHeart.ts",
+      "sha256": "0c7412ea5438c72d63c7808759e79bb76fa95e12a32a23690dd7b36fcca9a1be",
+      "unchanged": true
+    },
+    {
+      "file": "games/forest-heart/presentation.ts",
+      "sha256": "f722a510ed699cecb172b064e2b44a98f79d19f59039ead1c796e6c779e2e24f",
+      "unchanged": true
+    },
+    {
+      "file": "games/forest-heart/RootArtwork.ts",
+      "sha256": "b7e27259f0fe62994da1b03739158563d6dbbe411c43550ef57db76cf79bdef6",
+      "unchanged": true
+    },
+    {
+      "file": "games/forest-heart/ForestCharacter.ts",
+      "sha256": "2a362a9b2e190a7c56cc52d06313ef81f3c2a8321c60ab474e43223eda08856d",
+      "unchanged": true
+    },
+    {
+      "file": "games/forest-heart/ForestAudio.ts",
+      "sha256": "45cfe78f20c3e986879d1a2d847023a88972b2f0128896e57c93604edd291210",
+      "unchanged": true
+    },
+    {
+      "file": "games/forest-heart/ForestMusic.ts",
+      "sha256": "f92d5e187353dfa18a0f927bb6dbdd7751489419d1e9fb932dae5375ae00d615",
+      "unchanged": true
+    },
+    {
+      "file": "games/forest-heart/ForestScore.ts",
+      "sha256": "ad249e30e099a4be139a9b8eb8c9845f1f4b99a96c97a4b9c76dfd4acb2bae52",
+      "unchanged": true
+    }
+  ],
+  "checks": {
+    "rtpProfiles": 18,
+    "legacyBaseline": 114,
+    "typecheckPassed": true,
+    "moduleBuildPassed": true,
+    "fullBrowserSuite": {
+      "passed": 17,
+      "moduleVersion": "1.8.0-8a3e12cdccf5",
+      "scope": "Full game, animation, sound, recovery and initial resize suite. Subsequent isolated portrait spacing and short-landscape bonus rail refinements were checked by the final expanded suite."
+    },
+    "finalResponsiveSuite": {
+      "passed": 1,
+      "moduleVersion": "1.8.0-5322d33b596d",
+      "uniqueViewportSizes": 13,
+      "resizeSteps": 14,
+      "landscapeBonusSizes": [
+        "667x375",
+        "844x390"
+      ],
+      "restoresAcceptedBonus": true,
+      "frameFillsRealHost": true,
+      "connectedChatVisible": true
+    },
+    "physicalPhoneTested": false
+  },
+  "viewports": [
+    {
+      "viewport": {
+        "width": 2507,
+        "height": 1100
+      },
+      "layout": "wide",
+      "stage": {
+        "width": 2141,
+        "height": 1004
+      },
+      "board": 700,
+      "frameWidth": 2141,
+      "hostWidth": 2141,
+      "controlsBottom": 986,
+      "overflowX": 0,
+      "overflowY": 0
+    },
+    {
+      "viewport": {
+        "width": 2560,
+        "height": 1440
+      },
+      "layout": "wide",
+      "stage": {
+        "width": 2194,
+        "height": 1344
+      },
+      "board": 759,
+      "frameWidth": 2194,
+      "hostWidth": 2194,
+      "controlsBottom": 1326,
+      "overflowX": 0,
+      "overflowY": 0
+    },
+    {
+      "viewport": {
+        "width": 2006,
+        "height": 880
+      },
+      "layout": "wide",
+      "stage": {
+        "width": 1640,
+        "height": 784
+      },
+      "board": 500,
+      "frameWidth": 1640,
+      "hostWidth": 1640,
+      "controlsBottom": 766,
+      "overflowX": 0,
+      "overflowY": 0
+    },
+    {
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "layout": "wide",
+      "stage": {
+        "width": 1554,
+        "height": 984
+      },
+      "board": 682,
+      "frameWidth": 1554,
+      "hostWidth": 1554,
+      "controlsBottom": 966,
+      "overflowX": 0,
+      "overflowY": 0
+    },
+    {
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "layout": "wide",
+      "stage": {
+        "width": 1046,
+        "height": 672
+      },
+      "board": 399,
+      "frameWidth": 1045.828125,
+      "hostWidth": 1045.828125,
+      "controlsBottom": 654,
+      "overflowX": 0,
+      "overflowY": 0
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "layout": "wide",
+      "stage": {
+        "width": 980,
+        "height": 624
+      },
+      "board": 356,
+      "frameWidth": 979.609375,
+      "hostWidth": 979.609375,
+      "controlsBottom": 606,
+      "overflowX": 0,
+      "overflowY": 0
+    },
+    {
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "layout": "wide",
+      "stage": {
+        "width": 738,
+        "height": 672
+      },
+      "board": 294,
+      "frameWidth": 738,
+      "hostWidth": 738,
+      "controlsBottom": 654,
+      "overflowX": 0,
+      "overflowY": 0
+    },
+    {
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "layout": "poster",
+      "stage": {
+        "width": 738,
+        "height": 1270
+      },
+      "board": 516,
+      "frameWidth": 738,
+      "hostWidth": 738,
+      "controlsBottom": 1252,
+      "overflowX": 0,
+      "overflowY": 0
+    },
+    {
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "layout": "wide",
+      "stage": {
+        "width": 762,
+        "height": 653
+      },
+      "board": 306,
+      "frameWidth": 762,
+      "hostWidth": 762,
+      "controlsBottom": 635,
+      "overflowX": 0,
+      "overflowY": 0
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "layout": "mobile",
+      "stage": {
+        "width": 384,
+        "height": 525
+      },
+      "board": 248,
+      "frameWidth": 384,
+      "hostWidth": 384,
+      "controlsBottom": 525,
+      "overflowX": 0,
+      "overflowY": 0
+    },
+    {
+      "viewport": {
+        "width": 320,
+        "height": 780
+      },
+      "layout": "mobile",
+      "stage": {
+        "width": 314,
+        "height": 454
+      },
+      "board": 180,
+      "frameWidth": 314,
+      "hostWidth": 314,
+      "controlsBottom": 454,
+      "overflowX": 0,
+      "overflowY": 0
+    },
+    {
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "layout": "landscape",
+      "stage": {
+        "width": 658,
+        "height": 294
+      },
+      "board": 172,
+      "frameWidth": 658,
+      "hostWidth": 658,
+      "controlsBottom": 288,
+      "overflowX": 0,
+      "overflowY": 0
+    },
+    {
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "layout": "landscape",
+      "stage": {
+        "width": 481,
+        "height": 279
+      },
+      "board": 157,
+      "frameWidth": 481,
+      "hostWidth": 481,
+      "controlsBottom": 273,
+      "overflowX": 0,
+      "overflowY": 0
+    },
+    {
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "layout": "wide",
+      "stage": {
+        "width": 1554,
+        "height": 984
+      },
+      "board": 682,
+      "frameWidth": 1554,
+      "hostWidth": 1554,
+      "controlsBottom": 966,
+      "overflowX": 0,
+      "overflowY": 0
+    }
+  ],
+  "screenshots": [
+    "docs/concepts/forest-heart/responsive-v8-desktop.webp",
+    "docs/concepts/forest-heart/responsive-v8-mobile.webp",
+    "docs/concepts/forest-heart/responsive-v8-landscape.webp",
+    "docs/concepts/forest-heart/responsive-v8-tablet.webp"
+  ],
+  "screenshotEncoding": "WebP quality 90; no crop or resize. Original PNGs are temporary QA artifacts.",
+  "releaseRequirement": "The host GameViewport change must ship together with the compatible Forest Heart package. Publishing only the package leaves the old host width cap in place.",
+  "cleanup": {
+    "taskDirectory": "artifacts/work/forest-heart-responsive/",
+    "condition": "Remove obsolete review media and task-owned inactive 1.8 packages after source is verified on GitHub. Keep the active local preview and its temporary database until the user finishes reviewing it.",
+    "excludedPriorTask": "Previously rejected forest-heart-ux-v7 cleanup paths remain outside this task."
+  }
+}
