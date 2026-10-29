@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, mkdirSync, copyFileSync, existsSync, statSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, copyFileSync, existsSync, statSync, lstatSync, readdirSync } from 'node:fs';
 import { resolve, dirname, relative, isAbsolute } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
@@ -6,9 +6,9 @@ import { execFileSync } from 'node:child_process';
 import assert from 'node:assert/strict';
 import {build} from 'esbuild';
 import { buildFinancial } from './financial-build.mjs';
-const helper = dirname(fileURLToPath(import.meta.url)), root = resolve(helper, '../../..'), work = resolve(root, 'artifacts/work/caribbean-publish-20261029'), out = resolve(work, 'payload');
+const helper = dirname(fileURLToPath(import.meta.url)), root = resolve(helper, '../../..'), work = resolve(root, 'artifacts/work/caribbean-publish-20261029'), out = resolve(work, 'payload-final');
 const json = path => JSON.parse(readFileSync(path, 'utf8')), sha = path => createHash('sha256').update(readFileSync(path)).digest('hex');
-const canonicalSha=path=>{const bytes=readFileSync(path);return createHash('sha256').update(/\.(?:[cm]?[jt]sx?|json|css|html|md|txt|ya?ml|py|sh|toml)$/.test(path)?bytes.toString('utf8').replace(/\r\n/g,'\n'):bytes).digest('hex');};
+const canonicalSha=path=>{const bytes=readFileSync(path);return createHash('sha256').update(/\.(?:[cm]?[jt]sx?|json|css|html|svg|md|txt|ya?ml|py|sh|toml)$/.test(path)?bytes.toString('utf8').replace(/\r\n/g,'\n'):bytes).digest('hex');};
 const scope = json(resolve(helper, 'scope.json')), before = json(resolve(work, 'before-full.json'));
 const git = (...args) => execFileSync(process.env.ROYAL_GIT_BINARY || 'git', args, { cwd: root, encoding: 'utf8' }).trim();
 const release = json(resolve(root, 'module-build/release-manifest.json')), receipt = json(resolve(root, 'module-build/release-github.json'));
@@ -16,9 +16,9 @@ assert.equal(release.sourceCommit, git('rev-parse', 'HEAD')); assert.equal(relea
 assert.equal(receipt.sourceCommit, release.sourceCommit); assert.equal(git('status', '--porcelain'), '');
 assert.deepEqual(before.program, before.preparedProgram); assert.equal(before.containers['royal-game-1'].image, before.preparedImage);
 assert.equal(before.containers['royal-game-1'].health, 'healthy'); assert(before.freeBytes > 5 * 1024 ** 3);
-assert(!existsSync(out)); mkdirSync(out);
+if(existsSync(out)){assert(lstatSync(out).isDirectory()&&!lstatSync(out).isSymbolicLink());assert(!existsSync(resolve(out,'install-manifest.json')),'A complete payload must not be reconstructed');}else mkdirSync(out);
 const payload = {}, source = {}, financeSource = {}, dist = {}, modules = {}, backend = {};
-function copy(from, to) { const target = resolve(out, to),sub=relative(out,target); assert(sub&&!sub.startsWith('..')&&!isAbsolute(sub)); mkdirSync(dirname(target), { recursive: true }); copyFileSync(from, target); payload[to] = sha(target); return payload[to]; }
+function copy(from, to) { const target = resolve(out, to),sub=relative(out,target); assert(sub&&!sub.startsWith('..')&&!isAbsolute(sub)); mkdirSync(dirname(target), { recursive: true });if(existsSync(target)){assert(!lstatSync(target).isSymbolicLink()&&lstatSync(target).isFile());assert.equal(sha(target),sha(from),'An incomplete payload contains different bytes: '+to);}else copyFileSync(from, target); payload[to] = sha(target); return payload[to]; }
 const allowed = new Set(scope.allowedSource);
 for (const file of release.changed.filter(file => allowed.has(file))) {
   const digest = sha(resolve(root, file));
@@ -29,7 +29,7 @@ for (const [file, old] of Object.entries(before.source)) {
   if (file === 'deployment/SERVER.md' || file.endsWith('.orig') || file.endsWith('.bak') || file in source) continue;
   const current=existsSync(resolve(root,file))?sha(resolve(root,file)):null;if([old.sha256,old.lf].includes(current)||existsSync(resolve(root,file))&&canonicalSha(resolve(root,file))===old.lf)continue;
   const origins=[];for(const commit of ['3e428397544ec9a18d2bb64e51cfce2f4293a627',scope.base,'9acf3686965fedc0c81efaaa6f740e30d4fef175']){
-    try{const blob=execFileSync(process.env.ROYAL_GIT_BINARY||'git',['show',commit+':'+file],{cwd:root,stdio:['ignore','pipe','ignore']});const digest=createHash('sha256').update(blob).digest('hex');if([old.sha256,old.lf].includes(digest))origins.push(commit);}catch{}
+    try{const blob=execFileSync(process.env.ROYAL_GIT_BINARY||'git',['show',commit+':'+file],{cwd:root,stdio:['ignore','pipe','ignore']});const digests=[createHash('sha256').update(blob).digest('hex'),createHash('sha256').update(blob.toString('utf8').replace(/\r\n/g,'\n')).digest('hex')];if(digests.some(digest=>[old.sha256,old.lf].includes(digest)))origins.push(commit);}catch{}
   }
   assert(origins.length,'Unknown retained production source: '+file);retainedSource.push({file,liveSha256:old.sha256,buildSha256:current,origins});
 }
@@ -39,8 +39,8 @@ for (const [file, digest] of Object.entries(release.files)) {
     const sub = file.slice(5); if (before.program[file] === digest) continue;
     const publicSource = before.source['public/' + sub];
     if (publicSource && ([publicSource.sha256, publicSource.lf].includes(digest)||canonicalSha(resolve(root,file))===publicSource.lf)) continue;
-    if (sub === 'index.html' || /^assets\/[a-zA-Z0-9_-]+\.(js|css)$/.test(sub) || sub.startsWith('assets/caribbean-treasures/') || sub==='assets/royal-catalog/studio-caribbean-treasures.9f55140c4e61.webp') {
-      assert(sub === 'index.html' || !(file in before.program), 'Immutable host asset differs'); dist[sub] = copy(resolve(root, file), 'dist/' + sub);
+    if (['index.html','admin.html'].includes(sub) || /^assets\/[a-zA-Z0-9_-]+\.(js|css)$/.test(sub) || sub.startsWith('assets/caribbean-treasures/') || sub==='assets/royal-catalog/studio-caribbean-treasures.9f55140c4e61.webp') {
+      assert(['index.html','admin.html'].includes(sub) || !(file in before.program), 'Immutable host asset differs'); dist[sub] = copy(resolve(root, file), 'dist/' + sub);
     } else {
       const old = before.source['public/' + sub]; assert(old && [old.sha256, old.lf].includes(digest), 'Unrelated public asset differs: ' + file);
     }
@@ -84,13 +84,14 @@ for (const [file, digest] of Object.entries(financialInputs)) {
 assert.equal(before.containers['royal-nile-play'].profile.host.ReadonlyRootfs, true);
 for (const file of ['deploy.py', 'snapshot.py', 'financial_gate.py', 'quiesce.cjs', 'runtime-inventory.cjs', 'run-release.py', 'scope.json', 'financial-baseline.json']) copy(resolve(helper, file), file);
 copy(resolve(root, 'scripts/game-module-release.py'), 'game-module-release.py');
-assert.equal(sha(resolve(root, 'scripts/game-module-release.py')), before.source['scripts/game-module-release.py'].sha256);
+assert.equal(canonicalSha(resolve(root, 'scripts/game-module-release.py')), before.source['scripts/game-module-release.py'].lf);
 for (const file of ['release-manifest.json', 'release-github.json']) copy(resolve(root, 'module-build', file), file);
 const manifest = { release: scope.release, sourceCommit: release.sourceCommit, baseCommit: scope.base, before, source, financeSource, financialInputs, retainedFinancialOrigins: financial.retainedOrigins, dist, modules, backend,
   financial: payload['play.js'], payload, hostContract: payload['host.json'], helperSha256: payload['deploy.py'],
   retainedSource,backendInputs,
   modulePackage: { gameId: scope.changedGame, version: metadata.version, manifestSha256: pointer.sha256, beforeSha256: before.modules['/opt/royal-game-modules/' + scope.changedGame + '/active.json']??'none' },
   compatibility: { onlyCaribbeanContractAdded: true, acceptedRules: [1], unchangedDependencyManifests: true, retainedOtherModules: true, retainedOtherBackendPrograms: ['dist-server/payments.js','dist-server/crypto-reconcile.js'] } };
-writeFileSync(resolve(out, 'install-manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
+function checkInventory(folder,prefix=''){for(const entry of readdirSync(folder,{withFileTypes:true})){assert(!entry.isSymbolicLink(),'Payload symlink rejected');const name=prefix+entry.name;if(entry.isDirectory())checkInventory(resolve(folder,entry.name),name+'/');else assert(entry.isFile()&&Object.hasOwn(payload,name),'Uninventoried partial payload: '+name);}}
+checkInventory(out);writeFileSync(resolve(out, 'install-manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
 execFileSync('tar', [...(process.platform === 'darwin' ? ['--no-xattrs'] : []), '-czf', resolve(work, 'transport.tgz'), '-C', out, '.'], { env: { ...process.env, COPYFILE_DISABLE: '1' } });
 console.log(JSON.stringify({ sourceCommit: release.sourceCommit, changedSources: Object.keys(source).length, financeSources: Object.keys(financeSource).length, clientFiles: Object.keys(dist).length, moduleFiles: Object.keys(modules).length, transportBytes: statSync(resolve(work, 'transport.tgz')).size }));
