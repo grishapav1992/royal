@@ -585,12 +585,20 @@
     "inventoryFiles": 43,
     "inventoryBytes": 689124727,
     "freeBytesAtReport": 299234463744,
-    "cleanupStatus": "pending after exact GitHub preservation verification",
+    "cleanupStatus": "blocked by automatic approval review; not retried",
     "removedBytes": 0,
     "previousDeniedScopesUntouched": true,
     "activeExceptions": [
       "Current worktree and 0.9.1 package retained for the next acceptance steps.",
       "Earlier user-loaded package versions and other games were not cleanup targets."
-    ]
+    ],
+    "rejectionReason": "blocked by policy",
+    "preservationCommit": "116a893ab7b9cd61eb9db4c9f2af92fbb2e326e6",
+    "remoteCommitVerified": true,
+    "removedFiles": 0,
+    "retainedFiles": 43,
+    "retainedBytes": 689124727,
+    "freeBytesAfterRejectedCleanup": 299174596608,
+    "cleanupCondition": "Retained because automatic review rejected cleanup; no retry without a changed authorization or policy condition."
   }
 }
