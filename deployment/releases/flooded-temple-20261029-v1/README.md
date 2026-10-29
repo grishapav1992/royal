@@ -4,6 +4,8 @@ This step prepares and audits a release candidate. It does not install, tag Dock
 
 The observed application base is `b921d0537fed52336aaee5d97144bf36a9188107`, currently Caribbean Treasures v2. Production has 120 contracts and no Temple contract. The first Temple release therefore needs the compatible host/backend before the independent package. The candidate adds only the 1/2/2 Temple contract. Preserve all existing external module pointers, dependencies, environment, player databases, payment and reconciliation programs and other persistent services.
 
+The candidate is pinned in `codex/flooded-temple-release` to the reviewed Temple code from `4ede7a95335601c5c287ffd9d84b38cd8016a97b` plus its final reports. Shared development and synchronization continue in `codex/flooded-temple`, which also preserves the later Hong Kong Warrior integration. After the pinned candidate is included in main, select that exact clean source commit for preparation. Do not use the release branch as an ongoing feature branch: merging subsequent unrelated work changes its candidate identity and requires a fresh scope review.
+
 From a clean committed checkout already included in GitHub main, run:
 
 ```powershell

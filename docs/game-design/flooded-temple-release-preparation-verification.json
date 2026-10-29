@@ -257,13 +257,35 @@
   "storage": {
     "scope": "artifacts/work/temple-release-preparation",
     "initialFreeBytes": 298182164480,
-    "cleanupStatus": "pending preservation",
+    "cleanupStatus": "blocked by automatic approval review; no retry",
     "previousDeniedScopesUntouched": true,
     "archivesCreated": 0,
     "activeExceptions": [
       "Pinned release checkout and normal build outputs remain for the publication decision.",
       "Existing manual listening stand remains while physical listening is pending.",
       "Earlier denied scopes are preserved and never retried."
-    ]
+    ],
+    "rejectionReason": "blocked by policy",
+    "preservationCommit": "5011cc82543134d13914c5f6aee1bcfef392e0bc",
+    "remoteVerified": true,
+    "removedFiles": 0,
+    "removedBytes": 0,
+    "removedArchives": 0,
+    "retainedObsoleteFiles": 15,
+    "retainedObsoleteBytes": 18254833,
+    "retainedTargets": [
+      "financial-tests",
+      "production-financial-program.js",
+      "baseline-financial-program.js",
+      "funding-store.mjs",
+      "protocol-debug.log",
+      "host-debug.log",
+      "baseline-financial-inputs.json",
+      "reconcile-main.mjs",
+      "compare-qualification.mjs"
+    ],
+    "freeBytesLastMeasuredBeforeRejectedCleanup": 298533462016,
+    "freeBytesAfterRejectedCleanup": 298543005696,
+    "cleanupCondition": "Do not retry denied cleanup without a changed authorization or policy condition. Keep required baseline/evidence and normal active build outputs for publication review."
   }
 }
