@@ -109,6 +109,8 @@ Flooded Temple stage 4 uses package 0.9.0 with the same 1/2/2 contract. Its comm
 
 Flooded Temple acceptance package 0.9.1 retains the 1/2/2 contract and adds automatic-request pacing for the shared account guard. See [sustained play and recovery acceptance](game-design/flooded-temple-endurance.md).
 
+Flooded Temple package 0.9.2 retains 1/2/2, enlarges phone toolbar hit areas, schedules audio across short silent phases and recovers a failed music stream on a gesture. See [device and audio acceptance](game-design/flooded-temple-device-acceptance.md); physical-device listening remains unverified.
+
 Flag Battle (`flag-battle`, API 1, rules 2, progress 1) is an independent wagered client module in the existing Royal catalogue without adding seats. Players choose 12, 24 or 48 equal countries; every complete paid round has analytical RTP 96%. Rules-1 sessions remain readable and settle under their original twelve-country rules. Capability 2 is required for explicit mode starts and rules-2 session transport. This contract requires a compatible host/backend update before independent package publication. See [its rules and feedback specification](concepts/flag-battle.md).
 
 Module media inventory excludes noncanonical filenames (for example, synchronization copies containing spaces) before hashing or reading their contents. Such names cannot occur in a validated module resource path. Symlink, traversal, declared-root and immutable-byte validation remain enforced. This preserves unrelated local copies while preventing them from blocking a build.

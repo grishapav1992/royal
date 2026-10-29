@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Flooded Temple: проверка на устройстве</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;background:#071a25;color:#d4e0d8;font:14px Arial,sans-serif}#review{padding:10px 14px;background:#102e36;border-bottom:1px solid #728d77;display:flex;gap:10px;align-items:center;flex-wrap:wrap}#review-label{flex:1;font-size:12px;color:#b2c7bc}button,select,input{font:inherit;min-height:44px;border:1px solid #8a9b75;border-radius:5px;background:#163e42;color:#f0e3b9;padding:7px 10px}label{display:flex;gap:8px;align-items:center}details{width:100%}summary{cursor:pointer;min-height:30px;padding:6px 0;color:#e0d6b1}.review-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding-top:10px}.review-form label{align-items:flex-start;flex-direction:column}.review-form input,.review-form select{width:100%}.review-form .wide{grid-column:1/-1}.review-form .check{flex-direction:row;align-items:center}.review-form .check input{width:22px;min-height:22px}small{line-height:1.5;color:#b4c5bc}#preview{height:calc(100dvh - var(--review-height,130px));min-height:420px;overflow:auto;width:100%}#review-status{font-size:12px;color:#b9dbd0}@media(max-width:520px){#review{padding:7px 10px;gap:6px;font-size:12px}#review-label{flex-basis:100%}.review-form{grid-template-columns:1fr}.review-form .wide{grid-column:auto}}
+</style></head><body>
+<header id="review">
+<span id="review-label">Локальный прототип · отдельная тестовая база</span>
+<label>Пример <select id="review-case"><option value="partial">Каскад и частичный возврат</option><option value="bonus">20 бесплатных вращений</option><option value="cap">Предел выплаты 500×</option></select></label>
+<button id="reopen" type="button">Переоткрыть игру</button>
+<details><summary>Оценить звук на своём устройстве</summary>
+<small>Выберите пример и нажмите «Вращать» в игре. Для сравнения повторите его на одинаковой системной громкости. Здесь используются отдельная тестовая база и демомонеты. Техническая проверка не оценивает приятность звука.</small>
+<form class="review-form" id="listening-form">
+<label>Устройство<input id="device-model" placeholder="Модель телефона или компьютера" maxlength="120"></label>
+<label>Вывод звука<select id="audio-output"><option value="unverified">Ещё не проверен</option><option value="phone-speaker">Динамики телефона</option><option value="computer-speaker">Динамики компьютера</option><option value="wired">Проводные наушники</option><option value="bluetooth">Bluetooth</option></select></label>
+<label>Понятно, что произошло?<select id="clarity"><option value="unrated">Не оценено</option><option value="clear">Понятно</option><option value="unclear">Непонятно</option></select></label>
+<label>Баланс музыки и эффектов<select id="mix-rating"><option value="unrated">Не оценён</option><option value="balanced">Слышно и музыку, и действия</option><option value="music-loud">Музыка заглушает действия</option><option value="effects-sharp">Эффекты слишком резкие</option></select></label>
+<label class="wide">Замечания<input id="listening-notes" maxlength="1000" placeholder="Задержка, щелчки, утомление при повторении"></label>
+<label class="check wide"><input id="heard-physically" type="checkbox">Я действительно прослушал пример через выбранное устройство</label>
+<button type="submit">Скачать свои замечания</button><span id="review-status" role="status">Прослушивание пока не подтверждено.</span>
+</form></details></header>
+<main id="preview">Загрузка…</main>
+<script type="module" src="/tests/fixtures/temple-device-review.ts"></script>
+</body></html>

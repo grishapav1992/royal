@@ -42,11 +42,13 @@ export class CascadeTimeline{
       beat=plan.beats[this.index];this.enter(beat);
     }
     const horizon=this.audio.lead(plan.beats.flatMap(b=>b.cue?[b.cue]:[]))+80;
-    // At most the current and next beat can own a scheduled sound.
-    for(const candidate of plan.beats.slice(this.index,this.index+2)){
+    // Short silent beats must not hide an approaching cue from a slower audio output.
+    // The lead horizon and TempleAudio's voice budget bound scheduled sources.
+    for(const candidate of plan.beats.slice(this.index)){
       if(!candidate.cue||this.scheduled.has(candidate.id))continue;
       const target=this.startAt+candidate.at+candidate.accentMs;
-      if(target-now<=horizon){this.scheduled.add(candidate.id);if(target>=now-20)this.audio.schedule(candidate.cue,target);}
+      if(target-now>horizon)break;
+      this.scheduled.add(candidate.id);if(target>=now-20)this.audio.schedule(candidate.cue,target);
     }
     const offset=Math.max(0,this.elapsed-beat.at);this.paint(beat,offset);
     const planned=this.startAt+beat.at+beat.accentMs;

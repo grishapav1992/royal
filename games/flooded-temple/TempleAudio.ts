@@ -54,7 +54,7 @@ export class TempleAudio{
   schedule(cue:TempleCue,targetPerformanceTime:number):TempleAudioAnchor{
     const now=performance.now(),clock=readTempleClock(this.host.context,now),c=this.context;
     const spec=this.cues[cue];let start=c&&spec?contextTimeForAccent(clock,targetPerformanceTime,spec.accent):NaN;
-    const state=!this.enabled()||!c||!this.master||!this.buffers.has(cue)||this.voices.size+this.releasing.size+(this.music.playing?1:0)>=10?'silent':start<c.currentTime+.002?'late':'scheduled';
+    const state=!this.enabled()||!c||!this.master||!this.buffers.has(cue)||this.voices.size+this.releasing.size+(this.music.reserved?1:0)>=10?'silent':start<c.currentTime+.002?'late':'scheduled';
     const anchor:TempleAudioAnchor={cue,targetPerformanceTime,startContextTime:state==='scheduled'?start:null,method:clock.method,latencyMs:clock.latencyMs,state};
     this.anchors.push(anchor);if(this.anchors.length>120)this.anchors.shift();
     if(state==='scheduled'){
@@ -68,7 +68,7 @@ export class TempleAudio{
     let ended=false;const voice:Voice={source,gain,end:()=>{if(ended)return;ended=true;source.disconnect();gain.disconnect();this.voices.delete(voice);this.releasing.delete(voice);if(this.loop===voice)this.loop=undefined;this.releaseMaster();}};
     this.voices.add(voice);source.onended=voice.end;source.start(start);return voice;
   }
-  ambience(){this.music.sync();if(!this.enabled()||this.loop||!this.context||!this.loopGain||!this.buffers.has('ambience')||this.voices.size+this.releasing.size+(this.music.playing?1:0)>=10)return;this.loop=this.voice(this.buffers.get('ambience')!,this.context.currentTime,this.loopGain,true,1);}
+  ambience(){this.music.sync();if(!this.enabled()||this.loop||!this.context||!this.loopGain||!this.buffers.has('ambience')||this.voices.size+this.releasing.size+(this.music.reserved?1:0)>=10)return;this.loop=this.voice(this.buffers.get('ambience')!,this.context.currentTime,this.loopGain,true,1);}
   duck(active:boolean){this.music.duck(active);if(this.context&&this.loopGain)this.loopGain.gain.setTargetAtTime(active?.065:.24,this.context.currentTime,.07);}
   setAllowed(value:boolean){this.allowed=value;if(!value)this.cancel();else this.ambience();}
   setAccountActive(value:boolean){if(this.accountActive===value)return;this.accountActive=value;if(!value)this.cancel();else this.ambience();}
@@ -82,6 +82,6 @@ export class TempleAudio{
     }else{try{v.source.stop();}catch{}v.end();}
   }if(!keepBed)this.loop=undefined;if(keepBed)this.music.duck(false);if(this.context&&this.loopGain)this.loopGain.gain.setTargetAtTime(.24,this.context.currentTime,.07);}
   private releaseMaster(){if(this.dead&&!this.voices.size&&!this.releasing.size){this.loopGain?.disconnect();this.master?.disconnect();}}
-  getState(){return {ready:this.buffers.size===Object.keys(this.cues).length,activeSources:this.voices.size+this.releasing.size+(this.music.playing?1:0),releasingSources:this.releasing.size,looping:!!this.loop,music:this.music.getState(),played:{...this.played},canceled:this.canceled,clock:this.clock(),anchors:this.anchors.slice(-24),disposed:this.dead};}
+  getState(){return {ready:this.buffers.size===Object.keys(this.cues).length,activeSources:this.voices.size+this.releasing.size+(this.music.reserved?1:0),releasingSources:this.releasing.size,looping:!!this.loop,music:this.music.getState(),played:{...this.played},canceled:this.canceled,clock:this.clock(),anchors:this.anchors.slice(-24),disposed:this.dead};}
   destroy(){if(this.dead)return;this.dead=true;this.unsubscribe();this.music.destroy();this.cancel();this.context?.removeEventListener('statechange',this.contextChanged);this.buffers.clear();this.releaseMaster();}
 }

@@ -6,6 +6,7 @@ import {temporaryDatabase} from './database-test';
 import {PostgresDatabase,databaseConfig} from '../server/database';
 import {DemoWalletStore,WalletError} from '../server/demoWallet';
 import {DemoExpansionStore} from '../server/demoExpansion';
+import {templePreviewCookies} from './temple-preview-cookies';
 
 const apiPort=Number(process.env.TEMPLE_API_PORT||2626),webPort=Number(process.env.TEMPLE_WEB_PORT||5226),api='http://127.0.0.1:'+apiPort;
 const closeGuard=(server:Server)=>new Promise<void>(resolve=>server.listening?server.close(()=>resolve()):resolve());
@@ -19,8 +20,11 @@ const environment={...process.env,...database.env,PORT:String(apiPort),AUTH_DB_P
 const backend=spawn(process.execPath,['--import','tsx','server/index.ts'],{cwd:process.cwd(),env:environment,stdio:['ignore','pipe','pipe'],windowsHide:true});
 let log='',stopping=false,db:PostgresDatabase|undefined,wallet:DemoWalletStore;
 const stores=new Map<string,DemoExpansionStore>();
+const cookies=templePreviewCookies(process.env.TEMPLE_COOKIE_NAMESPACE);
 backend.stdout.on('data',b=>{log=(log+b).slice(-5000);});backend.stderr.on('data',b=>{log=(log+b).slice(-5000);});
-const fixture:Plugin={name:'temple-local-wallet',configureServer(server){server.middlewares.use(async(req,res,next)=>{
+const fixture:Plugin={name:'temple-local-wallet',configureServer(server){
+server.middlewares.use((req,_res,next)=>{if(cookies.scoped)req.headers.cookie=cookies.request(req.headers.cookie);next();});
+server.middlewares.use(async(req,res,next)=>{
   const path=new URL(req.url??'/',api).pathname;
   if(!/^\/api\/(?:demo|game)-wallet(?:\/expansion|\/operations)?$/.test(path)){next();return;}
   try{
@@ -61,7 +65,7 @@ const fixture:Plugin={name:'temple-local-wallet',configureServer(server){server.
     res.setHeader('Content-Type','application/json');res.end(JSON.stringify(reply));
   }catch(error){res.statusCode=error instanceof WalletError?error.status:400;res.end(JSON.stringify({error:error instanceof Error?error.message:'Local fixture failed'}));}
 });}};
-const vite=await createServer({configFile:false,root:process.cwd(),plugins:[fixture],optimizeDeps:{entries:['tests/fixtures/temple-preview.html']},server:{host:'127.0.0.1',port:webPort,strictPort:true,watch:{ignored:['**/module-dist/**','**/module-build/**','**/artifacts/**','**/dist/**','**/dist-server/**']},proxy:{'/api':api,'/game-modules':api,'/multiplayer':{target:api,ws:true,rewrite:path=>path.replace(/^\/multiplayer/,'')}}}});
+const vite=await createServer({configFile:false,root:process.cwd(),plugins:[fixture],optimizeDeps:{entries:['tests/fixtures/temple-preview.html','tests/fixtures/temple-device-review.html']},server:{host:'127.0.0.1',port:webPort,strictPort:true,watch:{ignored:['**/module-dist/**','**/module-build/**','**/artifacts/**','**/dist/**','**/dist-server/**']},proxy:{'/api':{target:api,configure(proxy){proxy.on('proxyRes',response=>{if(cookies.scoped&&response.headers['set-cookie'])response.headers['set-cookie']=cookies.response(response.headers['set-cookie']);});}},'/game-modules':api,'/multiplayer':{target:api,ws:true,rewrite:path=>path.replace(/^\/multiplayer/,''),configure(proxy){proxy.on('proxyReqWs',(outgoing,request)=>{if(cookies.scoped)outgoing.setHeader('Cookie',cookies.request(request.headers.cookie)??'');});}}}}});
 async function stop(){if(stopping)return;stopping=true;await closeGuard(webGuard);await vite.close();await db?.close();backend.kill();if(backend.exitCode===null)await new Promise<void>(resolve=>{const timer=setTimeout(resolve,3000);backend.once('exit',()=>{clearTimeout(timer);resolve();});});await database.cleanup();}
 process.once('SIGINT',()=>{void stop().then(()=>process.exit(0));});process.once('SIGTERM',()=>{void stop().then(()=>process.exit(0));});
 try{

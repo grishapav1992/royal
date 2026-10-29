@@ -7,12 +7,48 @@ import {cascadePlan,cascadeMoves,cascadeCounter,cascadeLandMs,cascadeCharacter} 
 import {templeReaction} from '../games/flooded-temple/character';
 import {renderCascadeCue,cascadeCueSpecs} from '../scripts/design/temple-cascade-audio.mjs';
 import {renderCue,wav,rate,metrics} from '../scripts/design/temple-audio.mjs';
+import {CascadeTimeline} from '../games/flooded-temple/CascadeTimeline';
+import type {TempleAudio} from '../games/flooded-temple/TempleAudio';
+import {TempleMusic} from '../games/flooded-temple/TempleMusic';
 
 function* views(seed:number,stake='1000'){
   const state=initialCascadeState(),ops:number[][][]=[];
   const draw=(max:number)=>{seed^=seed<<13;seed^=seed>>>17;seed^=seed<<5;return(seed>>>0)%max;};
   while(state.next!=='done'){ops.push(generateCascadeOperation(state,draw));yield replayCascadeOperations(stake,ops);}
 }
+
+test('output latency never makes a confirmed cue late behind a short silent evaluation beat',t=>{
+  const bank={...JSON.parse(readFileSync('games/flooded-temple/sounds.json','utf8')).cues,...JSON.parse(readFileSync('games/flooded-temple/cascadeSounds.json','utf8')).cues};
+  const previousRaf=globalThis.requestAnimationFrame,previousCancel=globalThis.cancelAnimationFrame;
+  const callbacks=new Map<number,FrameRequestCallback>();let now=0,id=0;
+  t.mock.method(performance,'now',()=>now);
+  globalThis.requestAnimationFrame=callback=>{callbacks.set(++id,callback);return id;};globalThis.cancelAnimationFrame=handle=>{callbacks.delete(handle);};
+  try{
+    for(const latency of[.02,.3,.7]){
+      now=0;callbacks.clear();const scheduled:{cue:string;leadMs:number}[]=[];
+      const audio={audible:true,lead:()=>latency*1000+200,cancelEffects(){},duck(){},schedule(cue:string,target:number){scheduled.push({cue,leadMs:target-now-latency*1000-bank[cue].accent*1000});}} as unknown as TempleAudio;
+      const plan=cascadePlan('latency-'+latency,Array.from(views(15)).at(-1)!);
+      const timeline=new CascadeTimeline(audio,()=>{},()=>{});timeline.start(plan);
+      while(callbacks.size&&now<plan.duration+latency*1000+1000){now+=10;const batch=[...callbacks.values()];callbacks.clear();for(const callback of batch)callback(now);}
+      assert.equal(scheduled.length,4);assert(scheduled.every(a=>a.leadMs>=2),JSON.stringify({latency,scheduled}));assert.equal(timeline.active,false);timeline.destroy();
+    }
+  }finally{globalThis.requestAnimationFrame=previousRaf;globalThis.cancelAnimationFrame=previousCancel;}
+});
+
+test('a failed streamed score releases its voice reservation and retries only on a later gesture',async()=>{
+  let broken=true,loads=0,sources=0;
+  const audio={paused:true,ended:false,readyState:0,error:null as object|null,currentTime:0,
+    async play(){this.paused=false;if(broken){this.error={code:2};throw Error('Unavailable recording');}this.readyState=4;},
+    pause(){this.paused=true;},load(){loads++;broken=false;this.error=null;this.readyState=0;this.paused=true;},removeAttribute(){},
+  };
+  const context={currentTime:0,createMediaElementSource(){sources++;return {connect(){},disconnect(){}};},createGain(){return {gain:{value:0,setTargetAtTime(){},cancelScheduledValues(){},setValueAtTime(){}},connect(){},disconnect(){}};}} as unknown as AudioContext;
+  const music=new TempleMusic({createElement:()=>audio} as unknown as Document,()=>true);
+  music.attach(context,{} as AudioNode);music.gesture();await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(music.playing,false);assert.equal(music.reserved,false);assert.notEqual(music.getState().error,'');assert.equal(loads,0);
+  music.sync();await new Promise(resolve=>setImmediate(resolve));assert.equal(loads,0);
+  music.gesture();await new Promise(resolve=>setImmediate(resolve));assert.equal(loads,1);assert.equal(music.playing,true);assert.equal(music.reserved,true);assert.equal(music.getState().error,'');assert.equal(sources,1);
+  music.destroy();assert.equal(music.reserved,false);
+});
 test('cascade presentation preserves all confirmed frames, integer counters and stable gravity through free spins and operation boundaries',()=>{
   let falls=0,returns=0,bonuses=0,continued=0;
   for(let sample=1;sample<=2048;sample++){
