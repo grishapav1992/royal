@@ -148,7 +148,7 @@
   },
   "cleanup": {
     "server": {
-      "status": "pending",
+      "status": "complete",
       "previousCompletedReleaseCopies": {
         "sourceCommitVerifiedInGithubMain": "2ff53f19090b7ef2c32923872f7ed52c86bf833d",
         "retainedImage": "sha256:ca0e7b52d117f6526a733f1824ee132ffdd3d740b4d468450c75045f589d307e",
@@ -173,19 +173,84 @@
         "applicationOrDatabaseChanged": false,
         "freeAfter": 5876547584,
         "removed": true
+      },
+      "currentRelease": {
+        "sourceCommitPreservedInGithubMain": "b921d0537fed52336aaee5d97144bf36a9188107",
+        "publicationRecordPreservedInGithubMain": "085bab3eb25ba253f6f9ea960d1b20dc727f07b9",
+        "foldersAndFiles": {
+          "/opt/royal-releases/caribbean-treasures-20261029-v2/source": 31867158,
+          "/opt/royal-releases/caribbean-treasures-20261029-v2/finance-source": 120651,
+          "/opt/royal-releases/caribbean-treasures-20261029-v2/dist": 2734244,
+          "/opt/royal-releases/caribbean-treasures-20261029-v2/backend": 2159934,
+          "/opt/royal-releases/caribbean-treasures-20261029-v2/module-dist": 14870816,
+          "/opt/royal-releases/caribbean-treasures-20261029-v2/caribbean-package": 14857658,
+          "/opt/royal-releases/caribbean-treasures-20261029-v2/game-context": 19765285,
+          "/opt/royal-releases/caribbean-treasures-20261029-v2/finance-context": 1833027,
+          "/opt/royal-releases/caribbean-treasures-20261029-v2/helper-review": 65313,
+          "/opt/royal-releases/caribbean-treasures-20261029-v2/transport.tgz": 63139714,
+          "/opt/royal-releases/caribbean-treasures-20261029-v2/play.js": 1832840
+        },
+        "removedLogicalBytes": 153246640,
+        "inventorySha256": "9b06dfb7aa16b45ad71934684e73d21cc918f3bd29d12a9b239280c7082ed072",
+        "freeBefore": 5540880384,
+        "backupsAndImagesRetained": true,
+        "activePackageRetained": true,
+        "removed": true,
+        "freeAfter": 5675728896
+      },
+      "secondObsoleteOwnTransport": {
+        "sourceCommitPreservedInGithubMain": "678058fe59345ed3d96524c897a6fcb96c9b71d2",
+        "file": "/opt/royal-releases/caribbean-treasures-20261029-v2/transport.tgz",
+        "bytes": 63139650,
+        "sha256": "88a5ca831d95ee7f36ed6c924cbf9bc00978cb61b66668dc6ee29b4a3543db5e",
+        "freeBefore": 5968568320,
+        "removed": true,
+        "freeAfter": 6031712256
       }
     },
     "local": {
       "status": "retained_after_automatic_review_rejection",
       "reason": "blocked by policy",
       "taskDirectory": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\caribbean-publish-20261029",
-      "logicalBytes": 966572936,
-      "freeBytesObserved": 298254757888,
+      "logicalBytes": 966582162,
+      "freeBytesObserved": 298181222400,
       "physicalSpaceReclaimedClaimed": false,
       "testStandStopped": true,
       "ownPreviewDatabaseRemoved": true,
       "originalUserPreviewDatabaseRetained": "C:/Users/Aorus/AppData/Local/Temp/royal-pg-C70xv3",
-      "cleanupCondition": "Remove only owned temporary packages after their preserved source is verified and the automatic approval restriction is resolved."
+      "cleanupCondition": "Remove only owned temporary packages after their preserved source is verified and the automatic approval restriction is resolved.",
+      "remainingFolders": {
+        "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\caribbean-publish-20261029\\payload": 123094663,
+        "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\caribbean-publish-20261029\\payload-v2": 123094663,
+        "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\caribbean-publish-20261029\\payload-final": 178142533,
+        "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\caribbean-publish-20261029\\payload-release-v2": 72337202,
+        "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\caribbean-publish-20261029\\payload-release-final": 72337348,
+        "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\caribbean-publish-20261029\\browser-v2": 41031871
+      },
+      "remainingArchives": {
+        "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\caribbean-publish-20261029\\transport.tgz": 168108308,
+        "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\caribbean-publish-20261029\\transport-v2.tgz": 63139650,
+        "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\caribbean-publish-20261029\\transport-final.tgz": 63139714
+      }
     }
+  },
+  "finalServerCheck": {
+    "sourceCommit": "b921d0537fed52336aaee5d97144bf36a9188107",
+    "services": {
+      "royal-game-1": {
+        "image": "sha256:dfced2c42ba973e54069cedc3a15e82fb566f88180a43f2c42d3822f7ad94961",
+        "health": "healthy"
+      },
+      "royal-nile-play": {
+        "image": "sha256:7a9db125d05fc77a5f027c606a35e96bded244ec5681da0c6584ab6d0c76bd8e",
+        "health": "healthy"
+      }
+    },
+    "contracts": 120,
+    "freeBytes": 5675143168
+  },
+  "finalPublicHealth": {
+    "ok": true,
+    "service": "royal-arcade"
   }
 }
