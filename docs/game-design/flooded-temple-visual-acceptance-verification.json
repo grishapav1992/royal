@@ -971,13 +971,41 @@
   "storage": {
     "scope": "artifacts/work/temple-visual-acceptance",
     "initialFreeBytes": 298622820352,
-    "cleanupStatus": "pending GitHub preservation",
+    "cleanupStatus": "blocked by automatic approval review; no retry",
     "previousDeniedScopesUntouched": true,
     "activeExceptions": [
       "Current worktree and package support the remaining staged feature and release preparation.",
       "Manual listening stand 37167 remains active while physical review is pending.",
       "Previously loaded packages and earlier denied cleanup scopes are preserved."
-    ]
+    ],
+    "rejectionReason": "blocked by policy",
+    "preservationCommit": "19c25bb06e1935c5a5429e49794689f99270716f",
+    "remoteCommitVerified": true,
+    "retainedTargets": [
+      {
+        "path": "artifacts/work/temple-visual-acceptance",
+        "files": 21,
+        "bytes": 107601
+      },
+      {
+        "path": "module-dist/studio-flooded-temple/versions/0.9.3-193f144d3ad0",
+        "files": 42,
+        "bytes": 20860659
+      },
+      {
+        "path": "module-dist/studio-flooded-temple/versions/0.9.3-99f46b64e9c4",
+        "files": 42,
+        "bytes": 20860701
+      }
+    ],
+    "removedFiles": 0,
+    "removedBytes": 0,
+    "removedArchives": 0,
+    "freeBytesLastMeasuredBeforeRejectedCleanup": 298201010176,
+    "cleanupCondition": "Do not retry denied cleanup without a changed authorization or policy condition.",
+    "freeBytesAfterRejectedCleanup": 298099662848,
+    "retainedBytes": 41828961,
+    "retainedFiles": 105
   },
   "reconciledCommit": "a8e625397bcacb3bfacd1249c13e3fed7ecf698d"
 }
