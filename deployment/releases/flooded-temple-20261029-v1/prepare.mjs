@@ -1,0 +1,15 @@
+import {execFileSync} from 'node:child_process';
+import {resolve,dirname} from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {writeFileSync,mkdirSync} from 'node:fs';
+import assert from 'node:assert/strict';
+import {productionBase} from './financial-build.mjs';
+const helper=dirname(fileURLToPath(import.meta.url)),root=resolve(helper,'../../..');
+assert.equal(process.argv.length,3,'Specify the read-only production snapshot');
+const snapshot=resolve(process.argv[2]),run=args=>execFileSync(process.execPath,args,{cwd:root,stdio:'inherit',env:{...process.env,VITE_SERVER_URL:''}});
+const out=resolve(root,'artifacts/work/temple-release-preparation');mkdirSync(out,{recursive:true});
+writeFileSync(resolve(out,'release-plan.json'),execFileSync(process.execPath,['scripts/release.mjs','plan','--base',productionBase],{cwd:root}));
+run(['scripts/release.mjs','prepare','--base',productionBase]);
+run(['scripts/release.mjs','verify','--github']);
+run([resolve(helper,'financial-build.mjs'),snapshot]);
+run([resolve(helper,'audit.mjs'),snapshot]);

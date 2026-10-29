@@ -1,0 +1,13 @@
+{
+  "purpose": "Preserve the two running Nile wardrobe inputs, without including newer host wardrobe behavior.",
+  "files": {
+    "server/afterglowWardrobe.ts": {
+      "commit": "6ea6b2a20276d03561b16bc6290ce832c8ffc3cb",
+      "sha256": "24009dddabe9d73931a3f71065d7a49c890901053cfa22cc7be48a83a48654a9"
+    },
+    "src/shared/afterglowWardrobe.ts": {
+      "commit": "6ea6b2a20276d03561b16bc6290ce832c8ffc3cb",
+      "sha256": "6dace1ede72ee479115b5cbf2d1d512c9e8800fd315be407cea787377362dc1f"
+    }
+  }
+}
