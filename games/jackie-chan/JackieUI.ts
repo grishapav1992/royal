@@ -75,7 +75,7 @@ export class JackieUI {
       const oldUnits=Number(this.root.dataset.collection??0),animate=!!this.action&&!document.hidden;
       this.seen=key;this.costume=v.costume;this.location=v.location;this.stake=s!.stakeUnits;this.preview=false;
       if(this.action!=='cashout')this.risk=v.combat.risk;
-      this.scene.show(v,animate,this.action==='cashout');
+      this.scene.show(v,animate,this.action==='cashout',s!.id);
       if(animate)this.unlocks=JACKIE_COSTUMES.filter(c=>c.target>oldUnits&&c.target<=v.collectionUnits).map(c=>c.id);
       this.root.dataset.collection=String(v.collectionUnits);
     }

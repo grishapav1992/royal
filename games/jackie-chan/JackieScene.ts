@@ -1,7 +1,8 @@
 import { JACKIE_COSTUMES, JACKIE_LOCATIONS, JACKIE_RISKS, type JackieCostume, type JackieLocation, type JackieView } from '../../src/shared/jackieChan';
 import type { PenaltyRisk } from '../../src/shared/crLeo';
 import { JackieAudio } from './JackieAudio';
-import { choreography, contactAt, chairReleaseAt, resultAt, fighterX, ease, type Furniture } from './JackieChoreography';
+import { choreography, contactAt, chairReleaseAt, resultAt, fighterX, ease, impacts } from './JackieChoreography';
+import {FIGHT_PLANS,fightPlan,moveFurniture,moveReach,type Furniture,type FightPlan} from './JackieFightPlans';
 import { extractSpriteFrames } from '../../src/ui/crLeoSprites';
 import { language } from '../../src/i18n/index';
 import { OPPONENTS, opponentLineup } from './JackieOpponents';
@@ -28,6 +29,7 @@ export class JackieScene {
   loading={ready:false,failed:false,loaded:0,total:JACKIE_SCENE_ASSETS.length};
   costume:JackieCostume='master';location:JackieLocation='restaurant';risk:PenaltyRisk='safe';
   private view?:JackieView;
+  private plan:FightPlan=FIGHT_PLANS[0];
   private started=-Infinity;
   private cashout=false;
   private dead=false;
@@ -44,19 +46,20 @@ export class JackieScene {
     }));
     if(!this.dead){this.loading.ready=this.images.size===JACKIE_SCENE_ASSETS.length;this.key='';}
   }
-  select(costume:JackieCostume,location:JackieLocation,risk:PenaltyRisk){this.costume=costume;this.location=location;this.risk=risk;this.view=undefined;this.started=-Infinity;this.cashout=false;this.key='';}
+  select(costume:JackieCostume,location:JackieLocation,risk:PenaltyRisk){this.costume=costume;this.location=location;this.risk=risk;this.view=undefined;this.plan=FIGHT_PLANS[0];this.started=-Infinity;this.cashout=false;this.key='';}
   chooseRisk(risk:PenaltyRisk){this.risk=risk;this.key='';}
-  show(view:JackieView,animate:boolean,cashout=false){
+  show(view:JackieView,animate:boolean,cashout=false,seriesId='preview',plan?:FightPlan){
     this.view=view;this.costume=view.costume;this.location=view.location;this.risk=view.combat.risk;this.cashout=cashout;
+    this.plan=plan??fightPlan(seriesId,Math.max(0,view.combat.shots.length-1),view.location);
     const count=JACKIE_RISKS[this.risk].opponents,won=view.combat.shots.at(-1)!.goal;
-    if(animate&&!this.motion.matches){this.started=cashout?performance.now():this.audio.begin(count,won,view.combat.status==='complete');if(cashout)this.audio.cashout();}
+    if(animate&&!this.motion.matches){this.started=cashout?performance.now():this.audio.begin(count,won,view.combat.status==='complete',this.plan);if(cashout)this.audio.cashout();}
     else{this.started=-Infinity;if(animate)this.audio.result(won,cashout||view.combat.status==='complete');}
     this.key='';
   }
   settle(){this.started=-Infinity;this.audio.cancel();this.key='';}
   state(now=performance.now()){
     const elapsed=Math.max(0,(now-this.started)/1000),count=JACKIE_RISKS[this.risk].opponents;
-    return {elapsed,...choreography(elapsed,count,this.view?.combat.status??'idle',this.cashout),reduced:this.motion.matches};
+    return {elapsed,...choreography(elapsed,count,this.view?.combat.status??'idle',this.cashout,this.plan),sequence:this.plan.id,moveSequence:this.plan.moves.join(','),reduced:this.motion.matches};
   }
   paint(now:number){
     if(!this.loading.ready||this.dead)return;
@@ -83,16 +86,19 @@ export class JackieScene {
     };
     const props=prepare(this.images.get('/assets/jackie-chan/props.webp')!);
     const floor:Furniture[]=[];
-    // Each linked action already contains its own item. Never paint a second item at the grip.
-    if(count>=3&&state.furniture!=='stool'){draw(props,1,w*fighterX(2)+heroH*.2,ground,heroH*.28,0,true);floor.push('stool');}
-    if(count>=2&&state.furniture!=='table'){draw(props,2,w*fighterX(1)+heroH*.14,ground,heroH*.34,0,true);floor.push('table');}
-    if(state.furniture!=='chair'){
-      const released=!!combat&&state.elapsed>=chairReleaseAt();
-      draw(props,0,w*(fighterX(0)-(released?.08:0))+heroH*.36,ground,heroH*.55,0,true);floor.push('chair');
+    // The selected routine owns its props. Linked poses already contain the held item.
+    for(let i=count-1;i>=0;i--){
+      const item=moveFurniture(this.plan.moves[i]);if(!item||state.furniture===item)continue;
+      const released=item==='chair'&&!!combat&&state.elapsed>=chairReleaseAt(i);
+      const x=w*(fighterX(i)-(released?.08:0));
+      if(item==='chair')draw(props,0,x+heroH*.36,ground,heroH*.55,0,true);
+      else if(item==='table')draw(props,2,x+heroH*.14,ground,heroH*.34,0,true);
+      else draw(props,1,x+heroH*.2,ground,heroH*.28,0,true);
+      floor.push(item);
     }
     const lineup=opponentLineup(this.location,Math.max(0,(combat?.shots.length??1)-1),count);
     const foeFrames:Array<{id:string;pose:number;left:number;right:number;top:number;bottom:number}>=[];
-    const reach=(i:number)=>heroH*(i===0?.57:i===1?.68:.64);
+    const reach=(i:number)=>heroH*moveReach(this.plan.moves[i]);
     for(let i=count-1;i>=0;i--){
       const opponent=lineup[i];
       const local=state.elapsed-contactAt(i),defeated=!!combat&&(won||i<count-1)&&(state.reveal||local>=.13),engaged=fighting&&i===state.fighter;
@@ -101,6 +107,8 @@ export class JackieScene {
       let x=initial+(target-initial)*approach,y=backY+(ground-backY)*approach,pose=0,angle=0;
       if(defeated){const retreat=ease((local-.13)/.46);pose=local<.36&&state.busy?3:6;x=target+(initial-target)*retreat;y=ground+(backY-ground)*retreat;if(local<.36&&state.busy)y-=Math.sin(ease((local-.13)/.23)*Math.PI)*h*.025;}
       else if(engaged)pose=local<-.34?0:local<-.06?opponent.attack:local<.15?opponent.guard:won||i<count-1?2:opponent.attack;
+      if(engaged&&!won&&i===count-1)pose=local<-.34?0:local<-.18?opponent.guard:local<.16?opponent.attack:opponent.guard;
+      if(engaged&&this.plan.moves[i]==='combo'&&local>=-.34&&local<-.17)pose=opponent.guard;
       else if(combat&&!won&&state.reveal)pose=7;
       if(engaged&&local>=0&&local<.13&&(won||i<count-1)){pose=2;x+=Math.sin(local/.13*Math.PI)*w*.012;}
       if(wideVictory)x+=(w*(.22+i*.13)-x)*ease(state.victory/.2);
@@ -112,16 +120,20 @@ export class JackieScene {
     }
     const sheet=prepare(this.images.get(`/assets/jackie-chan/${this.costume}${state.atlas==='furniture'?'-furniture':''}.webp`)!,state.atlas==='furniture');
     draw(sheet,state.pose,heroX,heroY,heroH,state.angle);
-    const contactLocal=state.elapsed-contactAt(state.fighter);
-    if(fighting&&Math.abs(contactLocal)<.09){
-      const x=heroX+reach(state.fighter),y=ground-heroH*.58;c.save();c.strokeStyle='#fbe3aa';c.lineWidth=2;c.globalAlpha=1-Math.abs(contactLocal)/.09;
-      for(let j=0;j<5;j++){const angle=j*1.26;c.beginPath();c.moveTo(x+Math.cos(angle)*7,y+Math.sin(angle)*7);c.lineTo(x+Math.cos(angle)*17,y+Math.sin(angle)*17);c.stroke();}c.restore();
+    const hero=sheet.frames[state.pose],heroScale=heroH/sheet.height;
+    const corners=[[-hero.anchor,-hero.baseline],[hero.image.width-hero.anchor,-hero.baseline],[-hero.anchor,0],[hero.image.width-hero.anchor,0]].map(([x,y])=>({x:heroX+(x*Math.cos(state.angle)-y*Math.sin(state.angle))*heroScale,y:heroY+(x*Math.sin(state.angle)+y*Math.cos(state.angle))*heroScale}));
+    const heroFrame={left:Math.min(...corners.map(p=>p.x)),right:Math.max(...corners.map(p=>p.x)),top:Math.min(...corners.map(p=>p.y)),bottom:Math.max(...corners.map(p=>p.y))};
+    for(const impact of impacts(this.plan,count)){
+      const contactLocal=state.elapsed-impact.at;if(!fighting||Math.abs(contactLocal)>=.07)continue;
+      const x=heroX+reach(impact.fighter),y=ground-heroH*(impact.kind==='kick'?.67:.58);c.save();c.strokeStyle=impact.primary?'#fbe3aa':'#b9b5a5';c.lineWidth=2;c.globalAlpha=1-Math.abs(contactLocal)/.07;
+      const rays=impact.primary?5:3,radius=impact.primary?17:11;
+      for(let j=0;j<rays;j++){const angle=j*Math.PI*2/rays;c.beginPath();c.moveTo(x+Math.cos(angle)*7,y+Math.sin(angle)*7);c.lineTo(x+Math.cos(angle)*radius,y+Math.sin(angle)*radius);c.stroke();}c.restore();
     }
     if(state.celebrating&&!this.motion.matches){
       const t=state.elapsed-resultAt(count),fade=Math.min(1,t/.25,(2.65-t)/.4);c.save();c.globalAlpha=Math.max(0,fade)*.8;
       for(let i=0;i<18;i++){const x=w*(.08+(i*.173)% .84)+Math.sin(t*1.8+i)*9,y=h*((.04+i*.037+t*.17)% .76);c.save();c.translate(x,y);c.rotate(t+i*.7);c.fillStyle=i%3===0?'#aa3e2e':'#e8bb6b';c.fillRect(-2,-3,4,6);c.restore();}c.restore();
     }
-    Object.assign(this.canvas.dataset,{opponents:String(count),foes:lineup.map(foe=>foe.id).join(','),foeFrames:JSON.stringify(foeFrames),pose:String(state.pose),atlas:state.atlas,phase:state.phase,heldFurniture:state.furniture??'',floorFurniture:floor.join(','),reveal:String(state.reveal),celebrating:String(state.celebrating),sceneCostume:this.costume,sceneLocation:this.location});
+    Object.assign(this.canvas.dataset,{opponents:String(count),foes:lineup.map(foe=>foe.id).join(','),foeFrames:JSON.stringify(foeFrames),heroFrame:JSON.stringify(heroFrame),sequence:this.plan.id,move:state.move,moveSequence:state.moveSequence,pose:String(state.pose),atlas:state.atlas,phase:state.phase,heldFurniture:state.furniture??'',floorFurniture:floor.join(','),reveal:String(state.reveal),celebrating:String(state.celebrating),sceneCostume:this.costume,sceneLocation:this.location});
     this.canvas.setAttribute('aria-label',(language==='en'?'Illustrated kung fu fight scene. Opponents: ':'Рисованная сцена кунг-фу. Противники: ')+lineup.map(foe=>language==='en'?foe.en:foe.ru).join(', '));
   }
   destroy(){this.dead=true;this.resize.disconnect();this.images.clear();this.audio.cancel();}

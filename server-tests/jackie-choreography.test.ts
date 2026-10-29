@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {choreography,contactAt,chairReleaseAt,resultAt,VICTORY_DURATION} from '../games/jackie-chan/JackieChoreography';
+import {choreography as timeline,contactAt,chairReleaseAt,resultAt,VICTORY_DURATION,impacts} from '../games/jackie-chan/JackieChoreography';
+import {FIGHT_PLANS,FURNITURE_PLAN,fightPlan,moveFurniture} from '../games/jackie-chan/JackieFightPlans';
+const choreography=(elapsed:number,count:number,status:Parameters<typeof timeline>[2],cashout=false)=>timeline(elapsed,count,status,cashout,FURNITURE_PLAN);
 
 test('chair grip, lift, block and physical strike precede the confirmed group result',()=>{
   for(const [time,phase,pose]of [[.25,'chair-grab',0],[.6,'chair-lift',1],[.9,'chair-block',2],[contactAt(0),'chair-strike',3]]as const){
@@ -33,5 +35,29 @@ test('complete series has a distinct fist, bow and final victory pose, while los
     assert(!choreography(end+.6,count,'lost').celebrating);assert.equal(choreography(end+.6,count,'lost').phase,'lost');
     const restored=choreography(Infinity,count,'complete');assert.equal(restored.phase,'victory-hold');assert(!restored.busy);assert(!restored.celebrating);
     assert(!choreography(end+.6,count,'playing').celebrating);assert(!choreography(.5,count,'banked',true).celebrating);
+  }
+});
+
+test('every series changes choreography between its five fights and restores the same choice without a chair opener',()=>{
+  const seen=new Set<string>();
+  for(let series=0;series<100;series++)for(const place of ['restaurant','harbor','market']as const){
+    const plans=Array.from({length:5},(_,i)=>fightPlan('series-'+series,i,place));assert.equal(new Set(plans.map(p=>p.id)).size,5);assert.notEqual(plans[0].moves[0],'chair');
+    for(let i=0;i<5;i++){assert.deepEqual(fightPlan('series-'+series,i,place),plans[i]);seen.add(plans[i].id);}
+  }
+  assert.equal(seen.size,7);
+});
+
+test('all seven move types have the right contact pose, material and unchanged result boundary',()=>{
+  assert.equal(new Set(FIGHT_PLANS.map(p=>p.moves[0])).size,7);
+  for(const plan of FIGHT_PLANS)for(const count of [1,2,3])for(const status of ['playing','lost']as const){
+    for(let i=0;i<count;i++){
+      const move=plan.moves[i],frame=timeline(contactAt(i),count,status,false,plan);assert.equal(frame.fighter,i);assert.equal(frame.move,move);assert.equal(frame.furniture,moveFurniture(move));assert(!frame.reveal);assert(frame.busy);
+      assert.equal(frame.pose,move==='table'?4:move==='stool'?5:move==='kick'?4:3);
+      const events=impacts(plan,count).filter(event=>event.fighter===i);assert.equal(events.filter(e=>e.primary).length,1);assert.equal(events.at(-1)!.at,contactAt(i));
+      if(move==='combo'){assert.equal(events.length,2);assert.equal(events[0].kind,'block');assert.equal(timeline(events[0].at,count,status,false,plan).phase,'jab');}
+      else assert.equal(events.length,1);
+    }
+    assert(!timeline(resultAt(count)-.001,count,status,false,plan).reveal);assert(timeline(resultAt(count),count,status,false,plan).reveal);
+    assert(!timeline(Infinity,count,status,false,plan).busy);
   }
 });

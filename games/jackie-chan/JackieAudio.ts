@@ -1,7 +1,8 @@
 import { gameAudio } from '../../src/game/GameAudio';
 import {fightSound,type FightSound} from './JackieFightSounds';
 
-import { contactAt, chairReleaseAt, resultAt } from './JackieChoreography';
+import { contactAt, chairReleaseAt, resultAt, impacts } from './JackieChoreography';
+import {FIGHT_PLANS,type FightPlan} from './JackieFightPlans';
 export { contactAt, resultAt } from './JackieChoreography';
 export class JackieAudio {
   enabled = true;
@@ -42,17 +43,18 @@ export class JackieAudio {
     return stamp?.performanceTime && stamp.contextTime ? stamp.performanceTime + (at - stamp.contextTime) * 1000
       : performance.now() + (at - c.currentTime + (c.outputLatency || c.baseLatency || 0)) * 1000;
   }
-  begin(count: number, success: boolean, paid: boolean) {
+  begin(count: number, success: boolean, paid: boolean,plan:FightPlan=FIGHT_PLANS[0]) {
     this.cancel();
     if (!this.allowed()) return performance.now();
     const at = gameAudio.context!.currentTime + .06;
     this.variation=(this.variation+1)%4;
-    this.wood(at+.5);this.wood(at+.84);this.wood(at+chairReleaseAt());
-    for (let i = 0; i < count; i++) {
-      const contact=at+contactAt(i),variant=(this.variation+i)%4,hit=success||i<count-1;
+    if(plan.moves[0]==='chair'){this.wood(at+.5);this.wood(at+.84);this.wood(at+chairReleaseAt());}
+    plan.moves.slice(0,count).forEach((move,i)=>{if(move==='table'||move==='stool')this.wood(at+contactAt(i)-.24);if(move==='evade')this.sound(at+contactAt(i)-.52,'whoosh',(this.variation+i)%4);});
+    for (const impact of impacts(plan,count)) {
+      const contact=at+impact.at,variant=(this.variation+impact.fighter)%4,hit=success||impact.fighter<count-1;
       this.sound(contact-.16,'whoosh',variant);
-      this.sound(contact,hit?i===0?'chair':'kick':'punch',variant);
-      if(!hit){this.sound(contact+.045,'block',variant);this.sound(contact+.24,'landing',variant);}
+      this.sound(contact,!impact.primary?'block':hit?impact.kind:'punch',variant);
+      if(impact.primary&&!hit){this.sound(contact+.045,'block',variant);this.sound(contact+.24,'landing',variant);}
     }
     const end = at + resultAt(count);
     if (paid) this.victory(end+.12);

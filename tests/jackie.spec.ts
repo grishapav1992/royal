@@ -41,11 +41,12 @@ test('real host, chat, risk groups, gallery and account progress work on desktop
   await game.locator('[data-risk="extreme"]').click();await expect(game.locator('canvas')).toHaveAttribute('data-opponents','3');
   const initialFoes=(await game.locator('canvas').getAttribute('data-foes'))!.split(',');expect(initialFoes).toHaveLength(3);expect(new Set(initialFoes).size).toBe(3);await page.screenshot({path:out+'/desktop.png'});
   expect(initialFoes).toContain('master');await expect(game.locator('[data-risk="extreme"] b')).toHaveText('Сложный');
-  const first=await act(page);expect(first.view.jackie.combat.shots).toHaveLength(1);await expect(game.locator('[data-cashout]')).toContainText('22,00');await expect(game.locator('[data-location]')).toBeDisabled();
+  const first=await act(page);expect(first.view.jackie.combat.shots).toHaveLength(1);const firstRoutine=await game.locator('canvas').getAttribute('data-sequence');await expect(game.locator('[data-cashout]')).toContainText('22,00');await expect(game.locator('[data-location]')).toBeDisabled();
   await game.locator('[data-risk="sharp"]').click();await expect(game.locator('[data-lineup]')).toBeVisible();
   const plannedFoes=(await game.getAttribute('data-next-foes'))!.split(',');expect(plannedFoes).toHaveLength(2);expect(plannedFoes).not.toContain('master');
   await expect(game.locator('canvas')).toHaveAttribute('data-foes',initialFoes.join(','));
   const second=await act(page);expect(second.view.jackie.combat.shots.map((s:any)=>s.risk)).toEqual(['extreme','sharp']);
+  expect(await game.locator('canvas').getAttribute('data-sequence')).not.toBe(firstRoutine);
   const nextFoes=(await game.locator('canvas').getAttribute('data-foes'))!.split(',');expect(nextFoes).toEqual(plannedFoes);expect(new Set(nextFoes).size).toBe(2);
   await act(page);await act(page);
   let posts=0;page.on('request',request=>{if(request.method()==='POST'&&request.url().endsWith('/api/demo-wallet/expansion'))posts++;});
@@ -68,7 +69,7 @@ test('real host, chat, risk groups, gallery and account progress work on desktop
   await game.locator('[data-wardrobe]').click();await expect(game.locator('[data-dialog]')).toBeVisible();await page.screenshot({path:out+'/wardrobe-mobile.png'});await game.locator('[data-close]').click();expect(errors).toEqual([]);
   await writeFile(out+'/browser-summary.json',JSON.stringify({errors,viewports:[1440,390,320],realHost:true,connectedGuestChat:false,connectedAuthenticatedChat:true,realTemporaryPostgres:true,actualWalletRequests:true,realWagers:false},null,2));
 });
-test('preview brings the entire furniture contact into a laptop viewport and reopens without a new stake',async({page})=>{
+test('preview brings a varied fight contact into a laptop viewport and reopens without a new stake',async({page})=>{
   await page.setViewportSize({width:1280,height:720});await page.emulateMedia({reducedMotion:'no-preference'});await outcome('win');
   const email='jackie-preview-'+crypto.randomUUID()+'@example.test';
   const login=await page.request.post(baseURL+'/api/auth/login',{data:{email,password:'Jackie-isolated-check-123!'}});expect(login.ok()).toBe(true);const account=await seed(email);
@@ -78,11 +79,11 @@ test('preview brings the entire furniture contact into a laptop viewport and reo
   const version=await page.locator('#preview').getAttribute('data-game-module-version');
   let posts=0;page.on('request',r=>{if(r.method()==='POST'&&r.url().endsWith('/api/demo-wallet/expansion'))posts++;});
   const operation=act(page);
-  await page.waitForFunction(()=>document.querySelector('canvas')?.dataset.phase==='chair-strike',undefined,{polling:'raf',timeout:10000});
-  const scene=await game.locator('canvas').evaluate(el=>{const r=el.getBoundingClientRect();return{top:r.top,bottom:r.bottom,height:innerHeight,held:(el as HTMLElement).dataset.heldFurniture,phase:(el as HTMLElement).dataset.phase};});
-  expect(scene.top).toBeGreaterThanOrEqual(0);expect(scene.bottom).toBeLessThanOrEqual(scene.height);expect(scene.held).toBe('chair');
+  await page.waitForFunction(()=>!!document.querySelector('canvas')?.dataset.phase?.match(/^(cross-punch|straight-punch|counter-punch|side-kick|table-vault|stool-kick)$/),undefined,{polling:'raf',timeout:10000});
+  const scene=await game.locator('canvas').evaluate(el=>{const r=el.getBoundingClientRect();return{top:r.top,bottom:r.bottom,height:innerHeight,held:(el as HTMLElement).dataset.heldFurniture,phase:(el as HTMLElement).dataset.phase,sequence:(el as HTMLElement).dataset.sequence};});
+  expect(scene.top).toBeGreaterThanOrEqual(0);expect(scene.bottom).toBeLessThanOrEqual(scene.height);expect(scene.held).not.toBe('chair');
   await page.screenshot({path:out+'/furniture-live-preview.png'});const accepted=await operation;expect(accepted.view.jackie.combat.shots).toHaveLength(1);
-  await page.locator('#reopen').click();await expect(game).toHaveAttribute('data-loading','false');await expect(game.locator('[data-cashout]')).toBeVisible();expect(posts).toBe(1);
+  await page.locator('#reopen').click();await expect(game).toHaveAttribute('data-loading','false');await expect(game.locator('[data-cashout]')).toBeVisible();await expect(game.locator('canvas')).toHaveAttribute('data-sequence',scene.sequence!);expect(posts).toBe(1);
   await expect(page.locator('#preview')).toHaveAttribute('data-game-module-version',version!);await expect(page.locator('#preview-version')).toContainText('Актуальная сборка');
   await writeFile(out+'/preview-continuity.json',JSON.stringify({viewport:[1280,720],version,scene,postOperations:posts,reopenPreservedAcceptedShot:true},null,2));
 });
