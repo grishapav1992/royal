@@ -1,3 +1,6 @@
+import { JACKIE_GAME, JACKIE_LEGACY_COLLECTION_MAX, supportsJackie, costumeUnlocked, validJackieSettings, validJackieSession, type JackieView } from '../src/shared/jackieChan';
+import { startJackie, moveJackie } from './games/jackieChan';
+import { JackieCollectionStore } from './jackieCollection';
 import { FLAG_GAME, supportsFlagRules, flagModeInfo, flagViewMode, validFlagSettings, validFlagSession, validFlagStake, flagPayout, type FlagSettings } from '../src/shared/flagBattle';
 import { startFlagBattle } from './games/flagBattle';
 import {validCascadeSettings,validCascadeSettlement,type TempleCascadeResult} from '../src/shared/floodedTempleCascade';
@@ -53,7 +56,7 @@ const supportsNeopolis=(client:boolean|2|3|4,rules:number)=>rules<=(typeof clien
 const supportsDracona=(client:boolean|2,rules:number)=>client===2||client===true&&rules===2;
 const cardRulesVersion=(version:1|2|3|4):1|2=>{if(version!==1&&version!==2)throw Error('Not a card rules version');return version;};
 const CARDS:Partial<Record<ExpansionGameId,string>> = {'github-three-card':'three-card','github-caribbean':'caribbean','github-let-it-ride':'let-it-ride','github-ultimate':'ultimate','github-war':'war','github-red-dog':'red-dog','github-pai-gow':'pai-gow','github-dragon-tiger':'dragon-tiger','github-deuces':'deuces','github-mississippi':'mississippi','github-four-card':'four-card','github-crazy-four':'crazy-four','github-flush':'flush','github-holdem-bonus':'holdem-bonus','github-oasis':'oasis','github-russian':'russian','github-caribbean-draw':'caribbean-draw','github-spanish':'spanish','github-exposure':'exposure','github-switch':'switch','github-free-bet':'free-bet','github-rummy':'rummy','github-andar-bahar':'andar-bahar'};
-export const EXPANSION_MAX:Record<ExpansionGameId,number> = {[FLAG_GAME]:48,[FOREST_HEART_GAME]:FOREST_HEART_RESERVE_MULTIPLIER,[CARIBBEAN_GAME]:300000,[TEMPLE_GAME]:TEMPLE_MAX_WIN,...STUDIO_MAX,...VARIANT_MAX,[PENALTY_GAME]:PENALTY_MAX,'github-diamonds':30,'github-crash':100,'github-three-card':55,'github-caribbean':205,'github-let-it-ride':3003,'github-ultimate':570,'github-war':3,'github-red-dog':24,'github-pai-gow':2,'github-dragon-tiger':2,'github-deuces':800,'github-sic-bo':2,'github-mississippi':5010,'github-four-card':40,'github-crazy-four':300,'github-flush':10,'github-holdem-bonus':1010,'github-oasis':205,'github-russian':205,'github-caribbean-draw':105,'github-spanish':64,'github-exposure':64,'github-switch':10,'github-free-bet':16,'github-rummy':20,'github-andar-bahar':2};
+export const EXPANSION_MAX:Record<ExpansionGameId,number> = {[FLAG_GAME]:48,[FOREST_HEART_GAME]:FOREST_HEART_RESERVE_MULTIPLIER,[CARIBBEAN_GAME]:300000,[TEMPLE_GAME]:TEMPLE_MAX_WIN,[JACKIE_GAME]:PENALTY_MAX,...STUDIO_MAX,...VARIANT_MAX,[PENALTY_GAME]:PENALTY_MAX,'github-diamonds':30,'github-crash':100,'github-three-card':55,'github-caribbean':205,'github-let-it-ride':3003,'github-ultimate':570,'github-war':3,'github-red-dog':24,'github-pai-gow':2,'github-dragon-tiger':2,'github-deuces':800,'github-sic-bo':2,'github-mississippi':5010,'github-four-card':40,'github-crazy-four':300,'github-flush':10,'github-holdem-bonus':1010,'github-oasis':205,'github-russian':205,'github-caribbean-draw':105,'github-spanish':64,'github-exposure':64,'github-switch':10,'github-free-bet':16,'github-rummy':20,'github-andar-bahar':2};
 export const expansionMax = (game:ExpansionGameId,version:1|2|3|4,settings?:unknown) => game===FLAG_GAME&&validFlagSettings(settings)?flagModeInfo(settings.flags.mode??'classic').count:game===CARIBBEAN_GAME?caribbeanMaximumFactor(settings): game===NEOPOLIS_GAME?NEOPOLIS_MAX_WIN:game===DRACONA_GAME?DRACONA_MAX_WIN:game===AFTER_GAME?AFTER_MAX_WIN:isNitroFamily(game)?NITRO_MAX_WIN:game===CONVOY_GAME?CONVOY_MAX_WIN:version===2&&game===CARAMEL_GAME?CARAMEL_MAX_WIN:version===2&&isLuelonSlotGame(game)?luelonSlotMax(game):version===2&&game==='github-holdem-bonus'?10:version===2&&game==='github-rummy'?13:EXPANSION_MAX[game];
 export function expansionInitialCost(game:ExpansionGameId,side=false){return ['github-crazy-four','github-switch'].includes(game)?2:game==='github-let-it-ride'?3:game==='github-ultimate'?2+Number(side):game==='github-three-card'?1+Number(side):1;}
 const emptyView=():ExpansionView=>({player:[],dealer:[],community:[],actions:[],phase:1,ended:false,message:''});
@@ -61,8 +64,9 @@ const placeholders=EXPANSION_GAMES.map(()=>'?').join(',');
 export class DemoExpansionStore {
   readonly ready:Promise<void>;
   readonly wardrobe:AfterglowWardrobeStore;
+  readonly jackieCollection:JackieCollectionStore;
   constructor(private db:PostgresDatabase,private snapshot:(id:string)=>Promise<DemoWallet>,prerequisite:Promise<void>,private settleOther:(id:string)=>Promise<void>,
-    private draw:(max:number)=>number=randomInt,private now:()=>number=Date.now,private cards=cardEngine,private crashRoll=rollCrashPoint,private cashoutDelay=new LastExitCashoutDelay()){const albumReady=prerequisite.then(()=>this.db.exec(`CREATE TABLE IF NOT EXISTS demo_afterglow_albums(account_id TEXT PRIMARY KEY REFERENCES accounts(id) ON DELETE CASCADE,cards INTEGER NOT NULL CHECK(cards>=0 AND cards<=45))`));this.wardrobe=new AfterglowWardrobeStore(db,albumReady);this.ready=this.wardrobe.ready;}
+    private draw:(max:number)=>number=randomInt,private now:()=>number=Date.now,private cards=cardEngine,private crashRoll=rollCrashPoint,private cashoutDelay=new LastExitCashoutDelay()){const albumReady=prerequisite.then(()=>this.db.exec(`CREATE TABLE IF NOT EXISTS demo_afterglow_albums(account_id TEXT PRIMARY KEY REFERENCES accounts(id) ON DELETE CASCADE,cards INTEGER NOT NULL CHECK(cards>=0 AND cards<=45))`));this.wardrobe=new AfterglowWardrobeStore(db,albumReady);this.jackieCollection=new JackieCollectionStore(db,this.wardrobe.ready);this.ready=this.jackieCollection.ready;}
   private async album(account:string){const row=await this.db.prepare('SELECT cards FROM demo_afterglow_albums WHERE account_id=?').get(account);const cards=Number(row?.cards??0);if(!Number.isSafeInteger(cards)||cards<0||cards>45)throw Error('Invalid saved Afterglow album');return cards;}
   async convoyProgress(account:string):Promise<ConvoyProgress>{
     await this.ready;
@@ -109,6 +113,10 @@ export class DemoExpansionStore {
     else if(s.rulesVersion===2&&isLuelonSlotGame(s.gameId)){if(!validLuelonSlotSettlement(s.gameId,s.state,s.stakeUnits,s.spentUnits,s.returnedUnits,s.view.luelon))throw Error('Invalid Cosmic settlement');}
     else if(isStudioGame(s.gameId)&&!validStudioSettlement(s.gameId,s.state,s.stakeUnits,s.spentUnits,s.returnedUnits,s.view.studio))throw Error('Invalid studio settlement');
     if(s.gameId===AFTER_GAME&&s.state==='settled')await this.wardrobe.completeRound(account,s.id,s.stakeUnits);
+    if(s.gameId===JACKIE_GAME){
+      if(s.state==='settled'){const units=await this.jackieCollection.complete(account,s,s.view.jackie!.version);s.view.jackie!.collectionUnits=s.view.jackie!.version===1?Math.min(JACKIE_LEGACY_COLLECTION_MAX,units):units;}
+      if(!validJackieSession(this.public(s)))throw Error('Invalid Jackie settlement');
+    }
     await this.save(account,s);await saveDemoUnits(this.db,account,balance);
   }
   private async crashDue(account:string,now:number){
@@ -120,11 +128,11 @@ export class DemoExpansionStore {
     await this.money(account,s,s.id,0,s.crashPoint===100?Number(s.stakeUnits)*100:0);
   }
   async settleDue(account:string){await this.ready;await this.db.transaction(()=>this.crashDue(account,this.now()),{lockKey:'account:'+account});}
-  private async sessions(account:string,caramelClient=true,velvetClient=true,convoyClient=true,nitroClient=true,afterClient=true,memeClient=true,penaltyClient=true,draconaClient:boolean|2=2,neopolisClient:boolean|2|3|4=4,caribbeanClient=true,forestHeartClient=false,flagClient:boolean|2=true,templeClient:boolean|2=false){
+  private async sessions(account:string,caramelClient=true,velvetClient=true,convoyClient=true,nitroClient=true,afterClient=true,memeClient=true,penaltyClient=true,draconaClient:boolean|2=2,neopolisClient:boolean|2|3|4=4,caribbeanClient=true,forestHeartClient=false,flagClient:boolean|2=true,jackieClient:boolean|2=false,templeClient:boolean|2=false){
     const rows=await this.db.prepare(`SELECT DISTINCT ON(game_id) payload FROM demo_casino_sessions WHERE account_id=? AND game_id IN (${placeholders}) ORDER BY game_id,(payload::jsonb->>'createdAt')::bigint DESC,id DESC`).all(account,...EXPANSION_GAMES);
-    return rows.map(row=>this.public(JSON.parse(row.payload))).filter(s=>caramelClient||s.gameId!==CARAMEL_GAME||s.rulesVersion!==2).filter(s=>velvetClient||s.gameId!==VELVET_GAME||s.rulesVersion!==2).filter(s=>convoyClient||s.gameId!==CONVOY_GAME).filter(s=>nitroClient||s.gameId!==NITRO_GAME).filter(s=>afterClient||s.gameId!==AFTER_GAME).filter(s=>memeClient||s.gameId!==MEME_GAME).filter(s=>penaltyClient||s.gameId!==PENALTY_GAME).filter(s=>s.gameId!==DRACONA_GAME||supportsDracona(draconaClient,s.rulesVersion)).filter(s=>s.gameId!==NEOPOLIS_GAME||supportsNeopolis(neopolisClient,s.rulesVersion)).filter(s=>caribbeanClient||s.gameId!==CARIBBEAN_GAME).filter(s=>s.gameId!==TEMPLE_GAME||templeClient&&(s.rulesVersion===1||templeClient===2&&s.rulesVersion===2)).filter(s=>forestHeartClient||s.gameId!==FOREST_HEART_GAME).filter(s=>s.gameId!==FLAG_GAME||supportsFlagRules(flagClient,s.rulesVersion));
+    return rows.map(row=>this.public(JSON.parse(row.payload))).filter(s=>caramelClient||s.gameId!==CARAMEL_GAME||s.rulesVersion!==2).filter(s=>velvetClient||s.gameId!==VELVET_GAME||s.rulesVersion!==2).filter(s=>convoyClient||s.gameId!==CONVOY_GAME).filter(s=>nitroClient||s.gameId!==NITRO_GAME).filter(s=>afterClient||s.gameId!==AFTER_GAME).filter(s=>memeClient||s.gameId!==MEME_GAME).filter(s=>penaltyClient||s.gameId!==PENALTY_GAME).filter(s=>s.gameId!==DRACONA_GAME||supportsDracona(draconaClient,s.rulesVersion)).filter(s=>s.gameId!==NEOPOLIS_GAME||supportsNeopolis(neopolisClient,s.rulesVersion)).filter(s=>caribbeanClient||s.gameId!==CARIBBEAN_GAME).filter(s=>forestHeartClient||s.gameId!==FOREST_HEART_GAME).filter(s=>s.gameId!==FLAG_GAME||supportsFlagRules(flagClient,s.rulesVersion)).filter(s=>s.gameId!==TEMPLE_GAME||templeClient&&(s.rulesVersion===1||templeClient===2&&s.rulesVersion===2)).filter(s=>s.gameId!==JACKIE_GAME||supportsJackie(jackieClient,s.view.jackie!.version));
   }
-  async active(account:string,caramelClient=true,velvetClient=true,convoyClient=true,nitroClient=true,afterClient=true,memeClient=true,penaltyClient=true,draconaClient:boolean|2=2,neopolisClient:boolean|2|3|4=4,caribbeanClient=true,forestHeartClient=false,flagClient:boolean|2=true,templeClient:boolean|2=false){await this.ready;return this.db.transaction(async()=>{await this.settleOther(account);await this.crashDue(account,this.now());return {wallet:await this.snapshot(account),sessions:await this.sessions(account,caramelClient,velvetClient,convoyClient,nitroClient,afterClient,memeClient,penaltyClient,draconaClient,neopolisClient,caribbeanClient,forestHeartClient,flagClient,templeClient)};},{lockKey:'account:'+account});}
+  async active(account:string,caramelClient=true,velvetClient=true,convoyClient=true,nitroClient=true,afterClient=true,memeClient=true,penaltyClient=true,draconaClient:boolean|2=2,neopolisClient:boolean|2|3|4=4,caribbeanClient=true,forestHeartClient=false,flagClient:boolean|2=true,jackieClient:boolean|2=false,templeClient:boolean|2=false){await this.ready;return this.db.transaction(async()=>{await this.settleOther(account);await this.crashDue(account,this.now());return {wallet:await this.snapshot(account),sessions:await this.sessions(account,caramelClient,velvetClient,convoyClient,nitroClient,afterClient,memeClient,penaltyClient,draconaClient,neopolisClient,caribbeanClient,forestHeartClient,flagClient,jackieClient,templeClient)};},{lockKey:'account:'+account});}
   async presentation(account:string,sessionId:unknown,phase:unknown,step:unknown):Promise<StudioSlotPresentation> {
     await this.ready;
     if(typeof sessionId!=='string'||!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(sessionId)||!Number.isSafeInteger(phase)||Number(phase)<1||Number(phase)>3||!Number.isSafeInteger(step)||Number(step)<0||Number(step)>2)throw new WalletError(400,'Некорректный запрос показа игры.');
@@ -171,6 +179,11 @@ export class DemoExpansionStore {
     }
     s.view={...emptyView(),studio,ended:result.ended,message:result.message,phase,actions};return {debit:0,credit:result.credit};
   }
+  private applyJackie(s:ExpansionState,v:JackieView){
+    const combat=v.combat;s.state=combat.status==='playing'?'active':'settled';
+    s.view={...emptyView(),jackie:v,phase:combat.revision+1,ended:s.state==='settled',message:combat.status==='lost'?'Этот дубль не удался.':combat.status==='playing'?'Группа побеждена. Продолжить или забрать?':'Выплата подтверждена.',actions:s.state==='active'?[{move:'jackie-fight',label:'Следующий бой',cost:0},{move:'cashout',label:'Забрать',cost:0}]:[]};
+    return {debit:0,credit:combat.status==='banked'||combat.status==='complete'?Number(combat.availableUnits):0};
+  }
   private applyPenalty(s:ExpansionState,v:PenaltyView){
     s.state=v.status==='playing'?'active':'settled';
     s.view={...emptyView(),penalty:v,phase:v.revision+1,ended:s.state==='settled',message:v.status==='lost'?'Удар не достиг цели.':v.status==='playing'?'Гол! Продолжить или забрать?':'Выплата подтверждена.',actions:s.state==='active'?[{move:'penalty-kick',label:'Следующий удар',cost:0},{move:'cashout',label:'Забрать',cost:0}]:[]};
@@ -213,13 +226,14 @@ export class DemoExpansionStore {
   private applyLuelon(s:ExpansionState,result:LuelonSlotResult){
     s.engine=undefined;s.state=result.ended?'settled':'active';s.view={...emptyView(),luelon:result.luelon,ended:result.ended,message:result.message,phase:result.luelon.revision+1,actions:result.actions};return {debit:0,credit:result.credit};
   }
-  async operate(account:string,value:unknown,clientRules:1|2=2,caramelClient=true,velvetClient=true,convoyClient=true,nitroClient=true,afterClient=true,afterProgressClient=true,memeClient=true,penaltyClient=true,draconaClient:boolean|2=2,neopolisClient:boolean|2|3|4=4,caribbeanClient=true,forestHeartClient=false,flagClient:boolean|2=true,templeClient:boolean|2=false){
+  async operate(account:string,value:unknown,clientRules:1|2=2,caramelClient=true,velvetClient=true,convoyClient=true,nitroClient=true,afterClient=true,afterProgressClient=true,memeClient=true,penaltyClient=true,draconaClient:boolean|2=2,neopolisClient:boolean|2|3|4=4,caribbeanClient=true,forestHeartClient=false,flagClient:boolean|2=true,jackieClient:boolean|2=false,templeClient:boolean|2=false){
     await this.ready;if(!validExpansionAction(value))throw new WalletError(400,'Некорректное действие казино.');
     const op=structuredClone(value),key=JSON.stringify(op);
     if(op.gameId===CARIBBEAN_GAME&&!caribbeanClient)throw new WalletError(409,'Обнови страницу для игры «Карибские сокровища». Ставка не списана.');
     if(op.gameId===FLAG_GAME&&(!flagClient||op.action==='start'&&validFlagSettings(op.settings)&&op.settings.flags.mode!==undefined&&flagClient!==2))throw new WalletError(409,'Refresh for Flag Battle modes');
     if(op.gameId===TEMPLE_GAME&&(!templeClient||(op.action==='start'?validCascadeSettings(op.settings):op.move==='temple-cascade')&&templeClient!==2))throw new WalletError(409,'Обнови игру для исследования храма. Ставка не списана.');
     if(op.gameId===FOREST_HEART_GAME&&!forestHeartClient)throw new WalletError(409,'Обнови страницу для игры Сердце леса.');
+    if(op.gameId===JACKIE_GAME&&!jackieClient)throw new WalletError(409,'Обнови страницу для игры «Гонконгский воин». Ставка не списана.');
     if(op.gameId===PENALTY_GAME&&!penaltyClient)throw new WalletError(409,'Обнови страницу для игры CR vs. Leo. Ставка не списана.');
     if(op.gameId===NEOPOLIS_GAME&&!neopolisClient)throw new WalletError(409,'Neopolis: refresh the game');
     if(op.gameId===DRACONA_GAME&&!draconaClient)throw new WalletError(409,'Обнови страницу для игры Дракона.');
@@ -239,10 +253,11 @@ export class DemoExpansionStore {
         if(old.request_key!==key)throw new WalletError(409,'Нельзя изменить отправленный ход.');
         const row=await this.db.prepare('SELECT payload FROM demo_casino_sessions WHERE account_id=? AND id=?').get(account,old.session_id);
         const session=this.public(JSON.parse(row!.payload));
+        if(session.gameId===JACKIE_GAME&&!supportsJackie(jackieClient,session.view.jackie!.version))throw new WalletError(409,'Обнови страницу для новой коллекции костюмов.');
         if(session.gameId===FLAG_GAME&&!supportsFlagRules(flagClient,session.rulesVersion))throw new WalletError(409,'Refresh for Flag Battle modes');
         if(session.gameId===NEOPOLIS_GAME&&!supportsNeopolis(neopolisClient,session.rulesVersion))throw new WalletError(409,'Neopolis: refresh for variable stakes');
         if(session.gameId===DRACONA_GAME&&!supportsDracona(draconaClient,session.rulesVersion))throw new WalletError(409,'Dracona: refresh for the current rules');
-        return {wallet:await this.snapshot(account),session,sessions:await this.sessions(account,caramelClient,velvetClient,convoyClient,nitroClient,afterClient,memeClient,penaltyClient,draconaClient,neopolisClient,caribbeanClient,forestHeartClient,flagClient,templeClient),replayed:true};
+        return {wallet:await this.snapshot(account),session,sessions:await this.sessions(account,caramelClient,velvetClient,convoyClient,nitroClient,afterClient,memeClient,penaltyClient,draconaClient,neopolisClient,caribbeanClient,forestHeartClient,flagClient,jackieClient,templeClient),replayed:true};
       }
       if(op.gameId===AFTER_GAME&&op.action==='start'&&!afterProgressClient)throw new WalletError(409,'Обнови страницу: прогресс GIRLHUB теперь зависит от суммы ставки. Ставка не списана.');
       if(op.action==='start'&&isRetiredArcadeGame(op.gameId))throw new WalletError(409,'Эта игра убрана из зала. Сохранённую партию можно завершить. Новая ставка не принята.');
@@ -276,6 +291,13 @@ export class DemoExpansionStore {
         else if(op.gameId===CARIBBEAN_GAME){
           if(!validCaribbeanTransportSettings(op.settings))throw new WalletError(400,'Некорректные настройки Карибских сокровищ.');
           credit=this.applyCaribbean(s,startCaribbean(op.settings.caribbean,op.stakeUnits,this.draw)).credit;
+        }
+        else if(op.gameId===JACKIE_GAME){
+          const version=jackieClient===2?2:1;
+          if(!validJackieSettings(op.settings,version))throw new WalletError(400,'Выбери костюм, локацию и число противников.');
+          const collection=await this.jackieCollection.read(account),units=version===1?Math.min(JACKIE_LEGACY_COLLECTION_MAX,collection):collection;
+          if(!costumeUnlocked(op.settings.jackie.costume,units))throw new WalletError(409,'Этот костюм ещё не открыт.');
+          credit=this.applyJackie(s,startJackie(op.settings,op.stakeUnits,units,this.draw,version)).credit;
         }
         else if(op.gameId===PENALTY_GAME){credit=this.applyPenalty(s,startPenalty(op.settings as PenaltySettings,op.stakeUnits,this.draw)).credit;}
         else if(op.gameId===NEOPOLIS_GAME){
@@ -316,7 +338,7 @@ export class DemoExpansionStore {
         if(s.state!=='active'){
           if(s.gameId==='github-crash'&&op.move==='cashout'){
             await this.db.prepare('INSERT INTO demo_casino_requests VALUES(?,?,?,?,?)').run(account,op.id,key,s.id,at);
-            return {wallet:await this.snapshot(account),session:this.public(s),sessions:await this.sessions(account,caramelClient,velvetClient,convoyClient,nitroClient,afterClient,memeClient,penaltyClient,draconaClient,neopolisClient,caribbeanClient,forestHeartClient,flagClient,templeClient),replayed:false};
+            return {wallet:await this.snapshot(account),session:this.public(s),sessions:await this.sessions(account,caramelClient,velvetClient,convoyClient,nitroClient,afterClient,memeClient,penaltyClient,draconaClient,neopolisClient,caribbeanClient,forestHeartClient,flagClient,jackieClient,templeClient),replayed:false};
           }
           throw new WalletError(409,'Эта партия уже завершена.');
         }
@@ -336,6 +358,10 @@ export class DemoExpansionStore {
           try{({debit,credit}=this.applyCaribbean(s,moveCaribbean(s.view.caribbean!,op.revision,caribbeanCoreMove(op.move),this.draw)));}
           catch(error){if(error instanceof CaribbeanMoveError)throw new WalletError(409,'Этот этап уже изменился. Обнови сохранённый раунд.');throw error;}
           if(debit!==0||required!==0)throw Error('Caribbean continuation must be free');
+        }else if(s.gameId===JACKIE_GAME){
+          if(!supportsJackie(jackieClient,s.view.jackie!.version))throw new WalletError(409,'Обнови страницу для новой коллекции костюмов.');
+          try{({debit,credit}=this.applyJackie(s,moveJackie(s.view.jackie!,s.stakeUnits,op.move,op.revision,this.draw,op.penaltyRisk)));}
+          catch(error){if(error instanceof PenaltyMoveError)throw new WalletError(409,error.message);throw error;}
         }else if(s.gameId===PENALTY_GAME){
           try{({debit,credit}=this.applyPenalty(s,movePenalty(s.view.penalty,s.stakeUnits,op.move,op.revision,this.draw,op.penaltyRisk)));}
           catch(error){if(error instanceof PenaltyMoveError)throw new WalletError(409,error.message);throw error;}
@@ -393,7 +419,7 @@ export class DemoExpansionStore {
       if(op.gameId===AFTER_GAME&&op.action==='start')await this.wardrobe.beginRound(account,s.id);
       await this.money(account,s,op.id,debit,credit,op.action==='move'&&op.move==='pull'?'refund':'win');
       await this.db.prepare('INSERT INTO demo_casino_requests VALUES(?,?,?,?,?)').run(account,op.id,key,s.id,this.now());
-      return {wallet:await this.snapshot(account),session:this.public(s),sessions:await this.sessions(account,caramelClient,velvetClient,convoyClient,nitroClient,afterClient,memeClient,penaltyClient,draconaClient,neopolisClient,caribbeanClient,forestHeartClient,flagClient,templeClient),replayed:false};
+      return {wallet:await this.snapshot(account),session:this.public(s),sessions:await this.sessions(account,caramelClient,velvetClient,convoyClient,nitroClient,afterClient,memeClient,penaltyClient,draconaClient,neopolisClient,caribbeanClient,forestHeartClient,flagClient,jackieClient,templeClient),replayed:false};
     },{lockKey:'account:'+account});
   }
 }

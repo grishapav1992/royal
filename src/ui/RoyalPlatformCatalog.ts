@@ -26,14 +26,14 @@ const kindNames: Record<string,string> = {
   all:t('Все жанры'), slot:t('Слоты'), crash:t('Крэш'), flight:t('Полёт'), keno:t('Кено'),
   plinko:t('Плинко'), dice:t('Кости'), wheel:t('Колесо'), mines:t('Мины'), tower:t('Башня'), instant:t('Быстрые игры'),
 };
-const classicKinds: Record<string,string> = {'flag-battle':'instant','royal-roulette':'wheel','studio-forest-heart':'slot','royal-fruits':'slot','royal-dice':'dice','royal-limbo':'instant','royal-mines':'mines','royal-plinko':'plinko','royal-keno':'keno','github-craps':'dice','github-tower':'tower','github-diamonds':'instant','github-crash':'crash','github-sic-bo':'dice','original-cr-vs-leo':'instant'};
+const classicKinds: Record<string,string> = {'flag-battle':'instant','royal-roulette':'wheel','studio-forest-heart':'slot','royal-fruits':'slot','royal-dice':'dice','royal-limbo':'instant','royal-mines':'mines','royal-plinko':'plinko','royal-keno':'keno','github-craps':'dice','github-tower':'tower','github-diamonds':'instant','github-crash':'crash','github-sic-bo':'dice','original-cr-vs-leo':'instant','original-jackie-chan':'instant'};
 const sourceNames: Record<Source,string> = {royal:'RoyalGames',casinoapipro:'Casino API Pro',github:t('GitHub-игры')};
 function localEntry(id: string): Entry {
   const game = platformGameCabinet(id, {id, name:id, subtitle:'', x:0,y:0,color:0,playable:true});
   const studio = isStudioGame(id) ? STUDIO_INFO[id] : undefined;
   const theme = github.has(id) && Object.hasOwn(FIRST_FLOOR_GAME_THEMES,id) ? FIRST_FLOOR_ART[FIRST_FLOOR_GAME_THEMES[id as keyof typeof FIRST_FLOOR_GAME_THEMES]] : undefined;
   return {gameId:id, name:game.name, subtitle:theme?.title[language === 'en' ? 1 : 0] ?? game.subtitle,
-    kind:id===CARIBBEAN_GAME?'slot':studio?.kind ?? (id==='studio-flooded-temple'?'slot':classicKinds[id]), source:github.has(id) ? 'github' : 'royal', art:royalCatalogArtwork(id),
+    kind:id===CARIBBEAN_GAME?'slot':studio?.kind ?? (id==='studio-flooded-temple'?'slot':classicKinds[id]), source:github.has(id) ? 'github' : 'royal', art:id==='original-jackie-chan'?'/assets/jackie-chan/cover.webp':royalCatalogArtwork(id),
     keywords:`${studio?.sourceReferenceId ?? ''} ${theme?.title.join(' ') ?? ''}`};
 }
 

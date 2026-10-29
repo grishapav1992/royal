@@ -10,7 +10,8 @@ test('European roulette opens from Royal seats as its existing independent walle
  assert(!isCollectionGame('github','royal-roulette'));assert(!isRetiredArcadeGame('royal-roulette'));
  const game=GAME_CABINETS.find(game=>game.id==='royal-roulette');assert(game?.wallet);assert(!game?.demo);
  assert.deepEqual(gameModuleContract('royal-roulette'),{gameId:'royal-roulette',slug:'royal-roulette',apiVersion:1,rulesVersion:1,progressVersion:1});
- assert.equal(CABINETS.filter(c=>c.hall==='arcade').length,12);
- assert.equal(ARCADE_CABINET_SPECS.length,12);
+ const seats=CABINETS.filter(c=>c.hall==='arcade').map(c=>c.id).sort();
+ assert.deepEqual(seats,ARCADE_CABINET_SPECS.map(c=>c.id).sort());
+ assert.equal(new Set(seats).size,seats.length);assert(!seats.includes('royal-roulette'));
  assert.equal(royalCatalogArtwork('royal-roulette'),'/assets/royal-roulette/cover.svg');
 });

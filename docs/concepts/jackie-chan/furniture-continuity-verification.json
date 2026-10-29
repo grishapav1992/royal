@@ -1,0 +1,141 @@
+{
+  "date": "2026-10-28",
+  "status": "local candidate, production unchanged",
+  "sourceCommit": "b959e4b9896e4c855c35ce7707a3a3a987bfb913",
+  "featureSourceCommit": "6a8d17a9db44f34e740a84519191873f6644f444",
+  "integrationBaseline": "d2588ccc449de1e6cb3dac567413b0b5f413e728",
+  "branch": "codex/jackie-chan",
+  "findings": [
+    "Loss rendered broken furniture regardless of an actual breaking contact.",
+    "Chair disappeared instead of completing its return to the floor.",
+    "In a laptop-height preview, clicking the action scrolled the upper fight out of view.",
+    "An already mounted immutable package did not follow local rebuilds."
+  ],
+  "changes": [
+    "Grip, lift, block, contact, recovery, lowering and release share one presentation timeline.",
+    "No outcome-triggered broken-pieces sprite. Table and stool remain after use.",
+    "The action brings the stage into view in every host size and the standalone preview.",
+    "Only the disposable local preview follows package changes between actions; live monetary uncertainty and animation defer switching."
+  ],
+  "module": {
+    "version": "1.0.0-ac52599910cd",
+    "sourceSha256": "ac52599910cd6d15313f7b13ccb444899763a638262bf7aef727a789c764b4af",
+    "manifestSha256": "bdf7f8c965629dba31f16fdaaf5ffdf7f43c4a7974b6c99a84420a6e7cfe602d",
+    "files": 16,
+    "bytes": 6119933,
+    "allHashesVerified": true,
+    "apiVersion": 1,
+    "rulesVersion": 1,
+    "progressVersion": 1
+  },
+  "checks": {
+    "typescript": true,
+    "unitTests": 4,
+    "walletAndGameRegressionTests": 9,
+    "rtp": {
+      "verifiedProfiles": 13,
+      "legacyNotQualified": 114,
+      "mathOrProgressChanged": false
+    },
+    "browserMotionCases": 4,
+    "browserHostAndRecoveryCases": 3,
+    "contactFrames": {
+      "frames": 144,
+      "viewports": [
+        1000,
+        360
+      ],
+      "costumes": 4,
+      "locations": 3,
+      "pageErrors": []
+    },
+    "continuity": {
+      "frames": 1824,
+      "viewports": [
+        1000,
+        360
+      ],
+      "costumes": 4,
+      "outcomes": [
+        "win",
+        "loss"
+      ],
+      "invariant": "Every selected item exists exactly once, attached or on the floor; chair is released only after lowering."
+    },
+    "laptopPreview": {
+      "viewport": [
+        1280,
+        720
+      ],
+      "version": "1.0.0-ac52599910cd",
+      "scene": {
+        "top": 0,
+        "bottom": 525,
+        "height": 720,
+        "held": "chair",
+        "phase": "chair-strike"
+      },
+      "postOperations": 1,
+      "reopenPreservedAcceptedShot": true
+    },
+    "realHostWithAuthenticatedChat": {
+      "errors": [],
+      "viewports": [
+        1440,
+        390,
+        320
+      ],
+      "realHost": true,
+      "connectedGuestChat": false,
+      "connectedAuthenticatedChat": true,
+      "realTemporaryPostgres": true,
+      "actualWalletRequests": true,
+      "realWagers": false
+    },
+    "audio": {
+      "mix": {
+        "scheduled": 37,
+        "peak": 0.1868869960308075,
+        "rms": 0.00831407652430698,
+        "tailPeak": 0,
+        "active": 0
+      },
+      "cancelled": {
+        "scheduled": 37,
+        "peak": 0,
+        "rms": 0,
+        "tailPeak": 0,
+        "active": 0
+      },
+      "interpretation": "Signal, headroom and cleanup checks only; not a subjective listening assessment."
+    },
+    "manualBrowser": {
+      "visibleChairContact": true,
+      "fullStageVisibleAfterAction": true,
+      "observedVersion": "1.0.0-ac52599910cd",
+      "automaticUpdateObservedFrom": "1.0.0-4a7d9096777c",
+      "acceptedSeriesSurvived": true
+    },
+    "testAdjustment": "Use animation-frame polling to capture the short contact pose; default assertion polling could skip it."
+  },
+  "limitations": [
+    "Physical phones, Bluetooth and subjective sound preferences were not tested.",
+    "Furniture and actor use a linked illustrated pose; no skeletal animation was added."
+  ],
+  "preview": {
+    "url": "http://127.0.0.1:5236/tests/fixtures/jackie-play.html",
+    "productionChanged": false,
+    "simulatedFunds": true
+  },
+  "storage": {
+    "removedFolders": [],
+    "removedArchives": [],
+    "removedBytes": 0,
+    "freeBeforeCleanupBytes": null,
+    "freeAfterCleanupBytes": null,
+    "currentVolumeFreeBytes": 298806484992,
+    "physicalSpaceReclamationClaimed": false,
+    "priorCleanupBlock": "See verification.json. Previously rejected targets were not deleted through an alternative API.",
+    "activeReviewException": "Running local preview PID 9892, managed worktree and review captures remain while the user evaluates the game. After review, stop the owned preview process to clean its temporary database and archive the extra checkout after verifying its source on GitHub."
+  }
+}

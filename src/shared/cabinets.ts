@@ -1,3 +1,4 @@
+import {JACKIE_GAME} from './jackieChan';
 import { t as translateText, language } from '../i18n/index';
 export type Cabinet = { id: string; name: string; subtitle: string; x: number; y: number; color: number; playable: boolean; hall?: 'arcade' | 'tables' | 'github'; demo?: boolean; wallet?: boolean; provider?: boolean; github?: boolean; defaultGameId?: string; collection?: CabinetCollection | 'luelon' };
 
@@ -30,6 +31,7 @@ export const CABINETS: Cabinet[] = [
   ...BASE_EXPANSION_GAMES.map((id,i):Cabinet=>({id,name:id==='github-crash'?'LAST EXIT':EXPANSION_NAMES[id],subtitle:id==='github-crash'?(language==='en'?'Car chase · Take the exit':'Погоня · Успей уйти'):translateText('Общий тестовый кошелёк · Ставки и выплаты'),x:expansionPositions[i][0],y:expansionPositions[i][1],color:id==='github-crash'?0xd3b477:[0xe2c484,0x8ecba2,0xc6a0ed,0x75cbd9][i%4],playable:true,hall:'arcade',github:true})),
 ];
 
+CABINETS.push({id:JACKIE_GAME,name:translateText('Гонконгский воин'),subtitle:translateText('Кунг-фу кино · Коллекция костюмов'),x:1560,y:1050,color:0xd9a356,playable:true,wallet:true,hall:'arcade'});
 CABINETS.push({id:PENALTY_GAME,name:'CR vs. Leo',subtitle:translateText('Серия ударов · Пенальти и штрафные'),x:1380,y:1050,color:0xdce6ca,playable:true,wallet:true,hall:'arcade'});
 
 const leftCabinets=new Set(['casinoapipro','royal-fruits','luelon','github-diamonds','github-crash','github-deuces','github-sic-bo']);

@@ -1,0 +1,12 @@
+{
+  "name": "@royal/jackie-chan",
+  "version": "1.0.0",
+  "private": true,
+  "gameId": "original-jackie-chan",
+  "apiVersion": 1,
+  "rulesVersion": 1,
+  "progressVersion": 2,
+  "entry": "entry.ts",
+  "assetRoots": ["jackie-chan"],
+  "scripts": {"build": "node ../../node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && node ../../scripts/build-game-module.mjs"}
+}

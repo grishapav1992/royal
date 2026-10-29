@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "gameId": "original-jackie-chan",
+  "rulesVersion": 1,
+  "progressVersion": 1,
+  "startedAt": "2026-10-28T19:11:01.726Z",
+  "completedAt": "2026-10-28T19:11:02.127Z",
+  "sourceHashes": {
+    "src/shared/jackieChan.ts": "0d34c257aa307c72081af3532a393bde141bf2320888e2270142cd3f4d815899",
+    "server/games/jackieChan.ts": "4f10c082dbda2c3b869e1f4813839a1a3faef1e5ad44bfa7eec05c1a9524406d",
+    "server/jackieCollection.ts": "1ca1da871f7ab851822b18f63be61f91a5ddba1503f88cbe95ac5787bbf7bf80",
+    "src/shared/crLeo.ts": "f0c9eae07611011cd3675eec1ed8a46a00f2f84822d8430a4b4267e6bfe15b38",
+    "server/games/crLeo.ts": "5bc956040fb008f21a3a5bcaa7b9296f3ef9f049ae32b44654bcef06e6b6e7c1",
+    "src/shared/casinoExpansion.ts": "ac3bbf050236e4d4146dc5309556775f161b5bac6e9182eec9e290ce8c42af5a",
+    "server/demoExpansion.ts": "3f35ffef0a677e9aa5050409b35ec26025fcef920648cd6c213fa13e46fb2e7d",
+    "server/finance/nile-game-runtime.ts": "584c3256cf6b69432131c1ffe8e0445efad468ad418ae6bd66bc10357ca40cd0",
+    "scripts/game-math/rtp-jackie.mjs": "d63de8e75211e63ef3c886d42eb429bb7fe788f1d1846e9e2e0c693dc48f6a49"
+  },
+  "policySha256": "32c9f389caf87064beb382d483cb6ae53b917dccf4710bf2f307bb6105e3e5c5",
+  "serverReplayChecks": 17388,
+  "method": "exact-jackie-series-v1",
+  "analysis": {
+    "method": "Finite enumeration and backward induction; one house edge, integer final settlement, all 363 risk paths and all stopping points.",
+    "cosmeticChoices": 12,
+    "maximumSteps": 5,
+    "maximumAdditionalCost": 0
+  },
+  "results": [
+    {
+      "stakeUnits": 1000,
+      "paths": 363,
+      "minRtp": 0.98971875,
+      "maxRtp": 0.99,
+      "optimalRtp": 0.99,
+      "sha256": "2ccb491adc8b540b9fe92e307c78d095b72e16dbac54e3a0f047a6e2105af2e1"
+    },
+    {
+      "stakeUnits": 5000,
+      "paths": 363,
+      "minRtp": 0.989955,
+      "maxRtp": 0.99,
+      "optimalRtp": 0.99,
+      "sha256": "0ab571aa2d585056bbab2c0b2b6f95a81f50cb4f49652e57211badeb627680b2"
+    },
+    {
+      "stakeUnits": 10000,
+      "paths": 363,
+      "minRtp": 0.989971875,
+      "maxRtp": 0.99,
+      "optimalRtp": 0.99,
+      "sha256": "86d20f763786affb9ff81b0b0ccba1eefbf68e1622612ed47234ef4ee11e1284"
+    },
+    {
+      "stakeUnits": 50000,
+      "paths": 363,
+      "minRtp": 0.9899955,
+      "maxRtp": 0.99,
+      "optimalRtp": 0.99,
+      "sha256": "f9e9f138e402e4ecdb7f86d0ba312e8beb32f1fbbcfe01353a75eb562a311de8"
+    }
+  ],
+  "serverReplay": {
+    "seeds": [
+      27102801,
+      27102807
+    ],
+    "sha256": "39805872e6cc3dcda4e909d3098a681186fe0b46004137d467059ad03102f445"
+  }
+}

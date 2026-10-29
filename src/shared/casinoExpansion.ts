@@ -7,6 +7,7 @@ import { CARIBBEAN_GAME, type CaribbeanView } from './caribbeanTreasures';
 import { CARIBBEAN_MOVES, validCaribbeanTransportSettings, type CaribbeanTransportSettings } from './caribbeanTransport';
 import {DRACONA_GAME,validDraconaSettings,type DraconaSettings,type DraconaView} from './dracona';
 import { PENALTY_GAME, validPenaltyRisk, validPenaltySettings, type PenaltyRisk, type PenaltySettings, type PenaltyView } from './crLeo';
+import { JACKIE_GAME, validJackieSettings, type JackieSettings, type JackieView } from './jackieChan';
 import { t as translateText } from '../i18n/index';
 import {validAfterLookChoice,type AfterLookChoice} from './afterglowWardrobe';
 import {AFTER_GAME,AFTER_RULES,validAfterSettings,type AfterSettings,type AfterView} from './afterglow';
@@ -18,9 +19,10 @@ import {isLuelonSlotGame,validLuelonSlotSettings,type LuelonSlotSettings,type Lu
 import { VARIANT_GAMES, VARIANT_NAMES, VARIANT_RULES, isVariantGame, validVariantSettings, type VariantSettings, type VariantView } from './casinoVariants';
 import { STUDIO_GAMES, STUDIO_INFO, STUDIO_RULES, isStudioGame, validStudioSettings, type StudioSettings, type StudioView } from './studioGames';
 export const BASE_EXPANSION_GAMES = ['github-diamonds','github-crash','github-three-card','github-caribbean','github-let-it-ride','github-ultimate','github-war','github-red-dog','github-pai-gow','github-dragon-tiger','github-deuces','github-sic-bo','github-mississippi','github-four-card','github-crazy-four','github-flush','github-holdem-bonus','github-oasis','github-russian','github-caribbean-draw','github-spanish','github-exposure','github-switch','github-free-bet','github-rummy','github-andar-bahar'] as const;
-export const EXPANSION_GAMES = [...BASE_EXPANSION_GAMES,...VARIANT_GAMES,...STUDIO_GAMES,PENALTY_GAME,TEMPLE_GAME,FOREST_HEART_GAME,CARIBBEAN_GAME,FLAG_GAME] as const;
+export const EXPANSION_GAMES = [...BASE_EXPANSION_GAMES,...VARIANT_GAMES,...STUDIO_GAMES,PENALTY_GAME,TEMPLE_GAME,FOREST_HEART_GAME,CARIBBEAN_GAME,FLAG_GAME,JACKIE_GAME] as const;
 export type ExpansionGameId = typeof EXPANSION_GAMES[number];
 export const EXPANSION_NAMES: Record<ExpansionGameId,string> = {
+  [JACKIE_GAME]:translateText('Гонконгский воин'),
   [FLAG_GAME]:translateText('Флажочки'),
   [FOREST_HEART_GAME]:translateText('Сердце леса'),
   [CARIBBEAN_GAME]:'Карибские сокровища',
@@ -49,6 +51,7 @@ export const EXPANSION_NAMES: Record<ExpansionGameId,string> = {
 // Casino variants share the same server-owned wallet sessions.
 export const EXPANSION_RULES: Record<ExpansionGameId,string> = {
   [TEMPLE_GAME]:'20 комнат. Выплачиваются только доступные сундуки, каждый один раз. Рычаг открывает решётку. Доступная реликвия даёт экспедицию на шесть переходов с одной верёвкой. Продолжение бесплатно, награды сохраняются. Расчётный RTP 96% при оптимальном маршруте, от 90% до 96% с учётом решений игрока.',
+  [JACKIE_GAME]:'Одна ставка на пять боёв. Один, два или три противника: шанс победы над всей группой 75%, 60% или 45%. После победы забери выплату или продолжи бесплатно. Пятая победа выплачивается автоматически. Поражение теряет ставку и незабранный выигрыш. Возврат 99% до округления. Костюмы открываются за сумму завершённых ставок и не меняют шансы.',
   [FOREST_HEART_GAME]:translateText('Поле 5×5, один источник и три цветка. Цветок оплачивается один раз за вращение. Руна разрешает один поворот корня или пропуск без новой ставки. Бонус содержит четыре бесплатных импульса с закреплением крайних корней. Одна начальная ставка и одно итоговое начисление.'),
     [FLAG_GAME]:translateText('12, 24 или 48 стран с равными шансами. Последний флаг побеждает. Выплаты 11,52×, 23,04× или 46,08× включают ставку. RTP 96%. Без дополнительных ставок и бонусов.'),
   [CARIBBEAN_GAME]:'6×4 · Гигантские символы · 1/5/10/20 линий · Две бесплатные серии',
@@ -96,9 +99,9 @@ export const LEGACY_CARD_RULES:Partial<Record<ExpansionGameId,string>> = {
   'github-rummy':translateText('Три карты. Три одинаковые карты или три последовательные одной масти дают 0 очков; остальные суммируются (туз 1, картинки 10). Пары не уменьшают сумму. Дилеру нужен счёт не выше 20. Play стоит одну Ante. Прежний Ante bonus: 0 очков +9 Ante, 1-5 +3, 6-10 +1. Low Bonus выключен.'),
 };
 export type ExpansionAction =
-  | {id:string;gameId:ExpansionGameId;action:'start';stakeUnits:string;appearance?:AfterLookChoice;settings:({side?:boolean;bet?:'dragon'|'tiger'|'small'|'big'} | CaribbeanTransportSettings | ForestHeartSettings | FlagSettings | TempleSettings | TempleCascadeSettings | VariantSettings | StudioSettings | LuelonSlotSettings | CaramelSettings | ConvoySettings | NeopolisSettings | DraconaSettings | AfterSettings | NitroSettings | PenaltySettings)}
+  | {id:string;gameId:ExpansionGameId;action:'start';stakeUnits:string;appearance?:AfterLookChoice;settings:({side?:boolean;bet?:'dragon'|'tiger'|'small'|'big'} | CaribbeanTransportSettings | ForestHeartSettings | FlagSettings | JackieSettings | TempleSettings | TempleCascadeSettings | VariantSettings | StudioSettings | LuelonSlotSettings | CaramelSettings | ConvoySettings | NeopolisSettings | DraconaSettings | AfterSettings | NitroSettings | PenaltySettings)}
   | {id:string;gameId:ExpansionGameId;action:'move';sessionId:string;move:string;picks?:number[];revision?:number;penaltyRisk?:PenaltyRisk};
-export type ExpansionView = {flags?:FlagView;forestHeart?:ForestHeartView;templeCascade?:TempleCascadeView;temple?:TempleView;caribbean?:CaribbeanView;neopolis?:NeopolisView;dracona?:DraconaView;penalty?:PenaltyView;afterglow?:AfterView;nitro?:NitroView;convoy?:ConvoyView;caramel?:CaramelView;luelon?:LuelonSlotView;studio?:StudioView;variant?:VariantView;player:string[];dealer:string[];community:string[];actions:{move:string;label:string;cost:number;perPick?:number;minPicks?:number;maxPicks?:number}[];hands?:{cards:string[];score:number;label:string;active:boolean}[];phase:number;ended:boolean;message:string;hint?:number[]};
+export type ExpansionView = {jackie?:JackieView;flags?:FlagView;forestHeart?:ForestHeartView;templeCascade?:TempleCascadeView;temple?:TempleView;caribbean?:CaribbeanView;neopolis?:NeopolisView;dracona?:DraconaView;penalty?:PenaltyView;afterglow?:AfterView;nitro?:NitroView;convoy?:ConvoyView;caramel?:CaramelView;luelon?:LuelonSlotView;studio?:StudioView;variant?:VariantView;player:string[];dealer:string[];community:string[];actions:{move:string;label:string;cost:number;perPick?:number;minPicks?:number;maxPicks?:number}[];hands?:{cards:string[];score:number;label:string;active:boolean}[];phase:number;ended:boolean;message:string;hint?:number[]};
 export type ExpansionSession = {id:string;gameId:ExpansionGameId;rulesVersion:1|2|3|4;state:'active'|'settled';stakeUnits:string;spentUnits:string;returnedUnits:string;view:ExpansionView;startedAt?:number;serverNow?:number;multiplier?:number;crashAt?:number;dice?:number[];gems?:string[]};
 const uuid=(s:unknown)=>typeof s==='string'&&/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(s);
 export function validExpansionAction(value:unknown):value is ExpansionAction {
@@ -110,6 +113,7 @@ export function validExpansionAction(value:unknown):value is ExpansionAction {
     if(r.gameId===TEMPLE_GAME)return validTempleSettings(r.settings)||validCascadeSettings(r.settings);
     if(r.gameId===FOREST_HEART_GAME)return validForestHeartSettings(r.settings);
     if(r.gameId===CARIBBEAN_GAME)return validCaribbeanTransportSettings(r.settings);
+    if(r.gameId===JACKIE_GAME)return validJackieSettings(r.settings);
     if(r.gameId===PENALTY_GAME)return validPenaltySettings(r.settings);
     if(r.gameId===NEOPOLIS_GAME)return validNeopolisSettings(r.settings);
     if(r.gameId===DRACONA_GAME)return validDraconaSettings(r.settings);
@@ -135,13 +139,14 @@ export function validExpansionAction(value:unknown):value is ExpansionAction {
     &&(CARIBBEAN_MOVES as readonly string[]).includes(r.move)&&Number.isSafeInteger(r.revision)
     &&Number(r.revision)>=1&&Number(r.revision)<=15
     &&Object.keys(r).sort().join(',')==='action,gameId,id,move,revision,sessionId';
-  if(r.action!=='move'||!uuid(r.sessionId)||typeof r.move!=='string'||!['temple-cascade','temple-step','temple-rope','temple-finish','neopolis-spin','dracona-spin','penalty-kick','afterglow-spin','nitro-spin','convoy-spin','caramel-spin','luelon-spin','studio-spin','studio-advance','roll','red','black','unlock','reveal','play','fold','pull','ride','play1','play2','play3','play4','check','war','surrender','raise','stay','set','auto','hold','cashout','exchange','draw','discard','buy-sixth','force','decline','hit','stand','double','split','insurance','no-insurance','switch','keep','free-double','free-split','andar','bahar'].includes(r.move))return false;
+  if(r.action!=='move'||!uuid(r.sessionId)||typeof r.move!=='string'||!['jackie-fight','temple-cascade','temple-step','temple-rope','temple-finish','neopolis-spin','dracona-spin','penalty-kick','afterglow-spin','nitro-spin','convoy-spin','caramel-spin','luelon-spin','studio-spin','studio-advance','roll','red','black','unlock','reveal','play','fold','pull','ride','play1','play2','play3','play4','check','war','surrender','raise','stay','set','auto','hold','cashout','exchange','draw','discard','buy-sixth','force','decline','hit','stand','double','split','insurance','no-insurance','switch','keep','free-double','free-split','andar','bahar'].includes(r.move))return false;
   if(r.gameId===TEMPLE_GAME){
     if(r.move==='temple-cascade')return Number.isSafeInteger(r.revision)&&Number(r.revision)>=1&&Object.keys(r).sort().join(',')==='action,gameId,id,move,revision,sessionId';
     if(!Number.isSafeInteger(r.revision)||Number(r.revision)<1||Number(r.revision)>6)return false;
     return r.move==='temple-finish'?r.picks===undefined&&Object.keys(r).sort().join(',')==='action,gameId,id,move,revision,sessionId':
       ['temple-step','temple-rope'].includes(r.move)&&Array.isArray(r.picks)&&r.picks.length===1&&Number.isInteger(r.picks[0])&&r.picks[0]>=0&&r.picks[0]<20&&Object.keys(r).sort().join(',')==='action,gameId,id,move,picks,revision,sessionId';
   }
+  if(r.gameId===JACKIE_GAME)return ['jackie-fight','cashout'].includes(r.move)&&Number.isInteger(r.revision)&&Number(r.revision)>=1&&Number(r.revision)<=4&&(r.penaltyRisk===undefined||r.move==='jackie-fight'&&validPenaltyRisk(r.penaltyRisk))&&Object.keys(r).sort().join(',')===(r.penaltyRisk===undefined?'action,gameId,id,move,revision,sessionId':'action,gameId,id,move,penaltyRisk,revision,sessionId');
   if(r.gameId===PENALTY_GAME)return ['penalty-kick','cashout'].includes(r.move)&&Number.isInteger(r.revision)&&Number(r.revision)>=1&&Number(r.revision)<=4&&(r.penaltyRisk===undefined||r.move==='penalty-kick'&&validPenaltyRisk(r.penaltyRisk))&&Object.keys(r).sort().join(',')===(r.penaltyRisk===undefined?'action,gameId,id,move,revision,sessionId':'action,gameId,id,move,penaltyRisk,revision,sessionId');
   if(r.penaltyRisk!==undefined)return false;
   if(r.gameId===NEOPOLIS_GAME)return r.move==='neopolis-spin'&&r.picks===undefined&&Number.isSafeInteger(r.revision)&&Number(r.revision)>=1&&Number(r.revision)<=45&&Object.keys(r).sort().join(',')==='action,gameId,id,move,revision,sessionId';

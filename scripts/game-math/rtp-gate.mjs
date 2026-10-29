@@ -8,6 +8,7 @@ import { cosmicQualificationEvidence, COSMIC_QUALIFICATION_METHOD, COSMIC_QUALIF
 import {TEMPLE_METHOD,templeEvidence,expectedTempleReplay,expectedTempleStreams} from './rtp-temple.mjs';
 import {FOREST_QUALIFICATION_METHOD,FOREST_SERVER_STATUS,validateForestRuntimeProof} from './rtp-forest-heart.mjs';
 import { caribbeanQualificationEvidence, CARIBBEAN_QUALIFICATION_METHOD, CARIBBEAN_REVIEWED_SOURCES } from './rtp-caribbean.mjs';
+import { JACKIE_METHOD, jackieEvidence } from './rtp-jackie.mjs';
 
 const digest = value => createHash('sha256').update(value).digest('hex');
 // Git checkouts use CRLF on Windows and LF in Linux CI. Hash canonical text.
@@ -40,6 +41,14 @@ export function validateRtpProof(gameId, inputs, proof) {
   assert.deepEqual(proof.sourceHashes, inputs.sourceHashes, 'RTP source changed: rerun qualification');
   if(p.method===CASCADE_METHOD){assert.equal(gameId,'studio-flooded-temple');return validateCascadeProof(p,proof);}
   if(p.method===TEMPLE_METHOD)return validateTempleProof(gameId,p,proof);
+  if (p.method===JACKIE_METHOD) {
+    assert.equal(gameId,'original-jackie-chan');
+    const expected=jackieEvidence(p);
+    assert.equal(proof.method,expected.method);assert.deepEqual(proof.analysis,expected.analysis);assert.deepEqual(proof.results,expected.results);
+    assert.deepEqual(proof.serverReplay.seeds,p.seeds);assert.equal(new Set(p.seeds).size,2);
+    assert.equal(proof.serverReplayChecks,46188);assert.match(proof.serverReplay.sha256,/^[a-f0-9]{64}$/);
+    return true;
+  }
   if(p.method===FOREST_QUALIFICATION_METHOD)return validateForestRuntimeProof(gameId,inputs,proof);
   if(p.method===ROULETTE_METHOD){assert.equal(gameId,'royal-roulette');return validateRouletteProof(p,proof);}
   if(p.method===CARIBBEAN_QUALIFICATION_METHOD) {

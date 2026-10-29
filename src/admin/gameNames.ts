@@ -31,6 +31,7 @@ export const gameNames:Record<string,string>={
   "github-ultimate": "Казино Холдем",
   "github-war": "Карточная война",
   "hockey": "Аэрохоккей",
+  "original-jackie-chan": "Гонконгский воин",
   "original-cr-vs-leo": "CR vs. Leo",
   "pool": "Бильярд",
   "royal-coins": "Royal Coins",

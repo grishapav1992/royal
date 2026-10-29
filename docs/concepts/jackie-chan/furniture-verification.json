@@ -1,0 +1,150 @@
+{
+  "date": "2026-10-28",
+  "status": "local review candidate, no production publication",
+  "sourceCommit": "c939492d8c8a4eabd7daa5b73afd0dc19cd7fd92",
+  "featureSourceCommit": "40c30eedf1b2b72c9cd7640631387cc61f694d6c",
+  "integrationBaseline": "a23bedd79125642c4f743327d6c8a5253479f74b",
+  "branch": "codex/jackie-chan",
+  "module": {
+    "version": "1.0.0-4a7d9096777c",
+    "sourceSha256": "4a7d9096777cfd8850c7567f4887ef2789483b5e3eae706826d42029c467ed59",
+    "manifestSha256": "d75321e512ef39e2cc774d80c5d6c998be2db8badf8be7d153d065552fd111a8",
+    "files": 16,
+    "bytes": 6119815,
+    "allHashesVerified": true,
+    "apiVersion": 1,
+    "rulesVersion": 1,
+    "progressVersion": 1
+  },
+  "presentation": {
+    "furniture": [
+      "chair grip, lift, block and strike",
+      "table vault kick",
+      "stool kick"
+    ],
+    "celebration": [
+      "group success gesture",
+      "fifth fight raised fist, salute and final hold"
+    ],
+    "skippable": true,
+    "restoredResultsStatic": true,
+    "probabilitiesPayoutsAndCostumeProgressChanged": false
+  },
+  "checks": {
+    "typescript": true,
+    "moduleBuild": true,
+    "rtp": {
+      "verifiedProfiles": 13,
+      "legacyNotQualified": 114,
+      "qualificationRegenerationRequired": false,
+      "reason": "Presentation changes only; mathematical sources unchanged"
+    },
+    "choreographyUnitTests": 3,
+    "walletAndGameRegressionTests": 9,
+    "browserMotionTests": 3,
+    "browserHostAndRecoveryTests": 2,
+    "frames": {
+      "frames": 144,
+      "viewports": [
+        1000,
+        360
+      ],
+      "costumes": 4,
+      "locations": 3,
+      "pageErrors": []
+    },
+    "host": {
+      "errors": [],
+      "viewports": [
+        1440,
+        390,
+        320
+      ],
+      "realHost": true,
+      "connectedGuestChat": false,
+      "connectedAuthenticatedChat": true,
+      "realTemporaryPostgres": true,
+      "actualWalletRequests": true,
+      "realWagers": false
+    },
+    "audio": {
+      "mix": {
+        "scheduled": 35,
+        "peak": 0.18015168607234955,
+        "rms": 0.009284462047092303,
+        "tailPeak": 0,
+        "active": 0
+      },
+      "cancelled": {
+        "scheduled": 35,
+        "peak": 0,
+        "rms": 0,
+        "tailPeak": 0,
+        "active": 0
+      },
+      "interpretation": "Signal, headroom and cleanup checks only; not a subjective listening assessment."
+    },
+    "skipVictory": {
+      "fifthOperationRequests": 1,
+      "audioSourcesAfterSkip": 0
+    },
+    "latestHostRun": {
+      "status": "passed",
+      "failedTests": []
+    }
+  },
+  "artwork": {
+    "tool": "built-in image_gen",
+    "promptsAndFinalPaths": "docs/artwork/jackie-chan.json",
+    "assets": [
+      {
+        "asset": "public/assets/jackie-chan/master-furniture.webp",
+        "sha256": "6f7a4b3cc5d5982bd07e88d91f7921cc6cf860c4ea5338f52de7cf3648fec14d",
+        "bytes": 473700,
+        "width": 1774,
+        "height": 887
+      },
+      {
+        "asset": "public/assets/jackie-chan/sailor-furniture.webp",
+        "sha256": "2c10a657b6aacbd44eaa97946984899dcee271461f30b699e2431eb545017d6e",
+        "bytes": 390070,
+        "width": 1774,
+        "height": 887
+      },
+      {
+        "asset": "public/assets/jackie-chan/police-furniture.webp",
+        "sha256": "257c337bceb08d2f37a5369f6f27c6d1ccdf9617b0152361d0784e9139a5dd78",
+        "bytes": 450814,
+        "width": 1774,
+        "height": 887
+      },
+      {
+        "asset": "public/assets/jackie-chan/hawk-furniture.webp",
+        "sha256": "f26be0ea36fd0c42602927ff334070df1118fde0b9454df7293c804908dc359a",
+        "bytes": 454704,
+        "width": 1774,
+        "height": 887
+      }
+    ]
+  },
+  "preview": {
+    "url": "http://127.0.0.1:5236/tests/fixtures/jackie-play.html",
+    "httpStatus": 200,
+    "productionChanged": false
+  },
+  "limitations": [
+    "Physical phones, Bluetooth and subjective sound preferences were not tested.",
+    "Frame assertions establish selected poses and layering; furniture grip quality was visually inspected in representative captures."
+  ],
+  "storage": {
+    "removedFolders": [],
+    "removedArchives": [],
+    "removedBytes": 0,
+    "freeBeforeCleanupBytes": null,
+    "freeAfterCleanupBytes": null,
+    "currentVolumeFreeBytes": 300239515648,
+    "physicalSpaceReclamationClaimed": false,
+    "previousCleanupRejection": "See verification.json; rejected targets have not been deleted through another API.",
+    "activeWorkException": "The running local preview, managed worktree and review captures remain for the user review. Stop the preview and remove its owned temporary data and extra checkout when review ends and source is verified on GitHub."
+  }
+}

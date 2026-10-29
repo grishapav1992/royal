@@ -5,13 +5,13 @@ Every existing game definition has an independent client package. The catalogue 
 | Family | Module identities |
 | --- | ---: |
 | Studio games, including Forest Heart, Caribbean Treasures and Flooded Temple | 44 |
-| Original Royal games, GitHub practice games, session games and all casino/card variants, including LAST EXIT and Flag Battle | 63 |
+| Original Royal games, GitHub practice games, session games and all casino/card variants, including LAST EXIT and Flag Battle and Jackie Chan | 64 |
 | Air hockey, pool, chess, piano and Mortal Kombat | 5 |
 | Durak, transfer Durak and Crazy Eights PvP | 3 |
 | Breaker, Orbit, Drift and Pixel legacy arcade games | 4 |
 | Luelon and Casino API Pro provider adapters | 2 |
 
-Supported identities and host contracts are in `src/modules/GameModuleCatalog.ts`. Each `games/<slug>/` directory contains its entry, package metadata and TypeScript configuration. GIRLHUB keeps slug `girlhub` and identity `studio-afterglow`. LAST EXIT keeps identity `github-crash` and uses slug `last-exit`. CR vs. Leo keeps its production identity `original-cr-vs-leo` in package `cr-vs-leo`; Royal Plinko keeps the current «Завеса ночи» implementation and its assets. The arcade Orbit uses identity `orbit` and slug `arcade-orbit`, distinct from `studio-orbit`.
+Supported identities and host contracts are in `src/modules/GameModuleCatalog.ts`. Each `games/<slug>/` directory contains its entry, package metadata and TypeScript configuration. GIRLHUB keeps slug `girlhub` and identity `studio-afterglow`. LAST EXIT keeps identity `github-crash` and uses slug `last-exit`. CR vs. Leo keeps its production identity `original-cr-vs-leo` in package `cr-vs-leo`; Royal Plinko keeps the current «Завеса ночи» implementation and its assets. Hong Kong Warrior uses identity `original-jackie-chan`, slug `jackie-chan` and API/rules contracts 1 plus progress contract 2, with the shared CR vs. Leo engine and a separate cosmetic collection. The arcade Orbit uses identity `orbit` and slug `arcade-orbit`, distinct from `studio-orbit`.
 
 The hall keeps its existing visible cabinets, card tables, activities and recovery paths. Historical definitions are packaged without changing their retired status. Provider games remain hosted by their providers; Royal independently packages the local catalogue, launch and iframe adapter for each provider. Their remote game engines are already loaded separately.
 

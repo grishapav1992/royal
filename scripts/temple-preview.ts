@@ -32,7 +32,7 @@ server.middlewares.use(async(req,res,next)=>{
     if(!identity.account){res.statusCode=401;res.end();return;}
     if(!db){db=new PostgresDatabase('temple_preview',{existingSchema:true,config:databaseConfig(environment)});wallet=new DemoWalletStore(db);}
     const account=identity.account.id,capable=req.headers['x-royal-temple-rules']==='2'?2:req.headers['x-royal-temple-rules']==='1';let reply:unknown;
-    if(req.method==='GET')reply=path.endsWith('/expansion')?await wallet.expansion.active(account,true,true,true,true,true,true,true,2,3,true,false,2,capable):await wallet.snapshot(account);
+    if(req.method==='GET')reply=path.endsWith('/expansion')?await wallet.expansion.active(account,true,true,true,true,true,true,true,2,3,true,false,2,false,capable):await wallet.snapshot(account);
     else if(req.method==='POST'){
       let body='';for await(const chunk of req){body+=chunk;if(body.length>8192)throw Error('Oversized test request');}
       const op=JSON.parse(body);
@@ -59,7 +59,7 @@ server.middlewares.use(async(req,res,next)=>{
           }
           store=stores.get(key)!;
         }
-        reply=await store.operate(account,op,2,true,true,true,true,true,true,true,true,2,3,true,false,2,capable);
+        reply=await store.operate(account,op,2,true,true,true,true,true,true,true,true,2,3,true,false,2,false,capable);
       }
     }else{res.statusCode=405;res.end();return;}
     res.setHeader('Content-Type','application/json');res.end(JSON.stringify(reply));

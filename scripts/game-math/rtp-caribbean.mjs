@@ -10,14 +10,20 @@ import { startCaribbean, moveCaribbean } from '../../server/games/caribbeanTreas
 
 export const CARIBBEAN_QUALIFICATION_METHOD = 'exact-caribbean-giant-round-v1';
 // Freeze the reviewed implementation. Changing a source requires reviewing this model.
+// Forest Heart and Hong Kong Warrior use independent branches and separate trailing capability flags.
+// The 2026-10-28 merge also retains main Neopolis v4 capability parsing and Last Exit guards.
+// Reviewed 2026-10-29 after reconciliation: Caribbean settings, costs, entropy, settlement
+// and its existing flag position are preserved; Jackie collection completion is game-scoped.
+// Flag Battle adds its own branch and capability after Forest Heart; existing round rules are unchanged.
+// Requalify the complete Caribbean replay after reviewing these shared-file additions.
 export const CARIBBEAN_REVIEWED_SOURCES = {
   'src/shared/caribbeanTreasuresMath.ts': 'b86e71675dfd0179da8d8c43c7a62f8da41303d5e6bc59f07b81d4497b64647b',
   'src/shared/caribbeanTreasures.ts': '5590af9897cfb32dbf8fd7d9c0608ad52184051ddee7ca70cd309267a4311aee',
   'server/games/caribbeanTreasures.ts': 'bdb0aa8eecef1093f876dd3c467ff1b43d8a7b1606a63a56aa46430964556e99',
   'src/shared/caribbeanTransport.ts': 'c4a590c6778048f9ecd37852549762adde064f90dca072316ee215ba8ac89c78',
-  'src/shared/casinoExpansion.ts': '5f30c013042d0f80f346e4d5813f95e929c2f3b530690099a05bb68ac108499f',
-  'server/demoExpansion.ts': '716552be62c06ca7f49e7986ff8433520aa121da7422d11673901060a083b830',
-  'server/finance/nile-game-runtime.ts': '86169ea4ad4fe16329ce90c59480ce2c994986b32bc710b76204d3cf81f50a14',
+  'src/shared/casinoExpansion.ts': '4343630800082a5afd35be5f7c897027b1405e99436be22a1794a47659a0277f',
+  'server/demoExpansion.ts': 'bd41ea36326075937f4e30045063e388cfde6198d786c19514e7651a87920d0b',
+  'server/finance/nile-game-runtime.ts': 'a2db02a080d20f9e0599dae4180b80ef3d35f48bfd1bfceeb5b9da010f757648',
 };
 const WEIGHTS = [30,24,18,13,9,6];
 const PAYS = [[2,6,20,60],[4,10,30,100],[6,16,40,150],[8,24,60,200],[10,30,100,400],[16,50,200,1000]];

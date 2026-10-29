@@ -31,7 +31,7 @@ test('1024 paid rounds retain exact integer settlement across stakes, repeated r
     let random=cascadeRandom(1),draws=0,clock=Date.now();
     const create=()=>new DemoExpansionStore(db,async()=>({balance:await demoBalanceUnits(db,'stress')/100,entries:[]}),wallet.ready,async()=>{},max=>{draws++;return random(max);},()=>clock);
     let store=create(),expected=await demoBalanceUnits(db,'stress'),totalSpent=0,totalReturned=0,bonuses=0,continuations=0,retries=0,restarts=0;
-    const run=(op:unknown)=>store.operate('stress',op,2,true,true,true,true,true,true,true,true,2,4,true,false,2,2);
+    const run=(op:unknown)=>store.operate('stress',op,2,true,true,true,true,true,true,true,true,2,4,true,false,2,false,2);
     for(let i=0;i<1024;i++){
       clock+=1000; // Financial endurance uses virtual time, below the real 120/minute guard.
       const stake=CASCADE_DATA.stakes[i%CASCADE_DATA.stakes.length],seed=seedFor(i),oracle=independentCascadeRound(cascadeRandom(seed));random=cascadeRandom(seed);
@@ -42,7 +42,7 @@ test('1024 paid rounds retain exact integer settlement across stakes, repeated r
       let last=op as any;
       while(s.state==='active'){
         assert.equal(s.returnedUnits,'0');assert.equal(s.spentUnits,String(stake));
-        if(i%13===0){store=create();restarts++;const active=await store.active('stress',true,true,true,true,true,true,true,2,4,true,false,2,2);assert.deepEqual(active.sessions.find(v=>v.id===s.id),s);}
+        if(i%13===0){store=create();restarts++;const active=await store.active('stress',true,true,true,true,true,true,true,2,4,true,false,2,false,2);assert.deepEqual(active.sessions.find(v=>v.id===s.id),s);}
         last=move(s);reply=await run(last);s=reply.session;continuations++;assert(validCascadeSession(s));
       }
       const payout=oracle.points*(stake/20);assert.equal(s.returnedUnits,String(payout));assert.equal(s.view.templeCascade.state.falls,oracle.falls);
