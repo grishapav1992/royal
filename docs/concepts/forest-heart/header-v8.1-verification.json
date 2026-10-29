@@ -334,6 +334,14 @@
     "removedArchiveBytes": 0,
     "physicalSpaceReclaimed": false,
     "status": "Previous automatic cleanup review rejected deletion with blocked by policy; no retry or bypass attempted.",
-    "activeExceptions": "Keep the local review server and its temporary PostgreSQL until the user finishes review. Retain rejected cleanup paths until the rejection is resolved; do not archive the checkout as a bypass."
+    "activeExceptions": "Keep the local review server and its temporary PostgreSQL until the user finishes review. Retain rejected cleanup paths until the rejection is resolved; do not archive the checkout as a bypass.",
+    "sourcePreservedOnGitHub": "bc82e4cd9086441e30f566621a76e890e27274a7"
+  },
+  "synchronization": {
+    "implementationCommit": "a1b1bbe2945b0c4d8118d1ee7785f9c254f629ce",
+    "savedSourceCommit": "bc82e4cd9086441e30f566621a76e890e27274a7",
+    "verifiedRemoteRef": "refs/heads/codex/forest-heart-responsive",
+    "mainCommit": "493409500718374c67837c4c193ed1ca6f2c555b",
+    "mergedChanges": "Caribbean module and its release record only; no Forest Heart, shared host, dependencies or RTP source changes"
   }
 }
