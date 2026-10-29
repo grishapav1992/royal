@@ -45,6 +45,7 @@ export class CascadeUI{
   private completed=false;
   private timer=0;
   private pumpTimer=0;
+  private lastRequestAt=0;
   private beat?:CharacterBeat;
   private inspected=-1;
   private focusCell=0;
@@ -135,15 +136,18 @@ export class CascadeUI{
   private pump(){
     clearTimeout(this.pumpTimer);this.pumpTimer=0;
     if(this.disposed||this.suspended||!this.connected||this.locked||this.presenting||this.client.pending)return;
-    if(this.session?.state==='active'){this.pumpTimer=window.setTimeout(()=>{this.pumpTimer=0;void this.operate('continue');},this.fast||this.media.matches?30:280);return;}
+    // All automatic requests share the 120/minute account guard, including free continuations.
+    const cadence=Math.max(0,550-(performance.now()-this.lastRequestAt));
+    if(this.session?.state==='active'){this.pumpTimer=window.setTimeout(()=>{this.pumpTimer=0;void this.operate('continue');},Math.max(cadence,this.fast||this.media.matches?30:280));return;}
     if(!this.autoRunning)return;
     if(this.autoRemaining===0){this.stopAuto(this.text('Серия автоспинов завершена.','Autoplay completed.'));this.render();return;}
     if(!this.affordable){this.stopAuto(this.text('Автоспины остановлены: недостаточно средств.','Autoplay stopped: insufficient balance.'));this.render();return;}
-    this.pumpTimer=window.setTimeout(()=>{this.pumpTimer=0;void this.operate('start');},this.fast||this.media.matches?80:650);
+    this.pumpTimer=window.setTimeout(()=>{this.pumpTimer=0;void this.operate('start');},Math.max(cadence,this.fast||this.media.matches?80:650));
   }
   private async operate(kind:'start'|'continue'|'retry'){
     if(this.disposed||this.suspended||this.locked||!this.connected||kind!=='retry'&&this.client.pending||kind==='start'&&(this.playing||!this.affordable)||kind==='continue'&&this.session?.state!=='active')return;
     const epoch=this.epoch,previous=this.view,oldId=this.session?.id,newRound=kind==='start'||kind==='retry'&&this.client.pending?.action==='start';this.sending=true;this.completed=false;this.localError='';this.inspected=-1;this.render();
+    this.lastRequestAt=performance.now();
     try{
       if(kind==='retry')await this.client.retry();
       else if(kind==='start')await this.client.act({gameId:TEMPLE_GAME,action:'start',stakeUnits:this.stake,settings:{temple:{mode:'cascades'}}});
