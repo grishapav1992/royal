@@ -94,7 +94,12 @@
       "frameFillsRealHost": true,
       "connectedChatVisible": true
     },
-    "physicalPhoneTested": false
+    "physicalPhoneTested": false,
+    "synchronizedHost": {
+      "sourceCommit": "a1bd88dc78f66540916eb8187fed782b4d5e59fa",
+      "passedScenarios": 2,
+      "scope": "Paid choice, bonus, exact settlement, close/reopen and the final 13-size resize matrix on freshly synchronized main."
+    }
   },
   "viewports": [
     {
@@ -347,6 +352,22 @@
   "cleanup": {
     "taskDirectory": "artifacts/work/forest-heart-responsive/",
     "condition": "Remove obsolete review media and task-owned inactive 1.8 packages after source is verified on GitHub. Keep the active local preview and its temporary database until the user finishes reviewing it.",
-    "excludedPriorTask": "Previously rejected forest-heart-ux-v7 cleanup paths remain outside this task."
+    "excludedPriorTask": "Previously rejected forest-heart-ux-v7 cleanup paths remain outside this task.",
+    "status": "Automatic deletion review rejected the command before execution",
+    "reason": "blocked by policy",
+    "removedFolders": [],
+    "removedArchiveBytes": 0,
+    "physicalSpaceReclaimed": false,
+    "taskTemporaryBytes": 146160134,
+    "localFreeAtTaskStartBytes": 292462235648,
+    "localFreeLatestBytes": 290905034752,
+    "sourcePreservedOnGitHub": "a1bd88dc78f66540916eb8187fed782b4d5e59fa",
+    "activeLocalPreview": {
+      "url": "http://127.0.0.1:5296/?room=9QMvXx794",
+      "apiPort": 2696,
+      "previewProcessSession": 46571,
+      "syntheticDemoBalance": true,
+      "cleanupCondition": "After the user closes the local review, stop this preview and remove its temporary PostgreSQL. Obsolete review folders and task-owned inactive 1.8 packages remain until the automatic deletion rejection is resolved. Do not archive the checkout to bypass that rejection."
+    }
   }
 }
