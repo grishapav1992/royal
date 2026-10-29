@@ -69,5 +69,16 @@ export const styles=String.raw`
 .fh[data-layout=landscape] .fh-fast{grid-column:1;grid-row:1;justify-self:end;font-size:11px;width:44px;min-width:44px;min-height:44px}
 .fh[data-layout=landscape] .fh-action .fh-pass,.fh[data-layout=landscape] .fh-action .fh-retry,.fh[data-layout=landscape] .fh-action .fh-refresh{font-size:12px;padding:5px}
 .fh[data-layout=landscape] .fh-skip{top:48px;right:calc(var(--landscape-controls-width) + 6px)}
+/* Keep the complete ornamental wordmark above a single, tightly packed scene. */
+.fh-top{background:none;border-bottom:0;max-width:1600px;justify-self:center;width:100%;grid-template-columns:148px minmax(0,1fr) 148px;padding:4px 12px}
+.fh-brand{opacity:.72;justify-self:start}
+.fh-title{height:100%;min-height:0;justify-content:center}
+.fh-title-logo{height:100%;min-height:0;object-fit:contain;object-position:center}
+.fh-title>span{display:none}
+.fh:is([data-layout=wide],[data-layout=poster]){--masthead-height:clamp(80px,12dvh,140px);--console-height:96px;--note-height:18px;grid-template-rows:var(--masthead-height) var(--world-height,300px) calc(var(--status-height) + var(--bonus-extra)) var(--console-height) var(--note-height);align-content:start}
+.fh:is([data-layout=wide],[data-layout=poster])[data-compact=true]{--masthead-height:56px;--console-height:88px;--note-height:0px}
+.fh:is([data-layout=wide],[data-layout=poster]) .fh-title{height:calc(var(--masthead-height) - 8px)}
+.fh:is([data-layout=wide],[data-layout=poster]) .fh-title-logo{height:100%}
+.fh:is([data-layout=wide],[data-layout=poster]) .fh-world{align-content:start}
 .fh[data-paused=true] *{animation-play-state:paused!important}.fh[data-reduced=true] *{animation:none!important;transition:none!important}@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
 `;

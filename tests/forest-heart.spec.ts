@@ -475,7 +475,8 @@ test('the full host uses the available monitor and keeps the board, elf and paid
     const outer=await page.locator('.forest-heart-frame').evaluate(frame=>({frame:frame.getBoundingClientRect().toJSON(),stage:frame.closest('.mini-stage')!.getBoundingClientRect().toJSON(),mode:frame.closest('#mini-dialog')!.getAttribute('data-game-viewport')}));
     const inner=await game(page).locator('.fh').evaluate(root=>{
       const box=(selector:string)=>root.querySelector(selector)!.getBoundingClientRect().toJSON();
-      return{width:root.clientWidth,height:root.clientHeight,layout:(root as HTMLElement).dataset.layout,board:box('.fh-board'),machine:box('.fh-machine'),character:box('.fh-character'),portrait:box('.fh-character-canvas'),controls:box('.fh-controls'),status:box('.fh-status-band'),spin:box('[data-fh=spin]'),scrollWidth:root.ownerDocument.documentElement.scrollWidth,scrollHeight:root.ownerDocument.documentElement.scrollHeight};
+      const logo=root.querySelector<HTMLImageElement>('.fh-title-logo')!;
+      return{width:root.clientWidth,height:root.clientHeight,layout:(root as HTMLElement).dataset.layout,header:box('.fh-top'),world:box('.fh-world'),logo:{...logo.getBoundingClientRect().toJSON(),fit:getComputedStyle(logo).objectFit},board:box('.fh-board'),machine:box('.fh-machine'),character:box('.fh-character'),portrait:box('.fh-character-canvas'),controls:box('.fh-controls'),status:box('.fh-status-band'),spin:box('[data-fh=spin]'),scrollWidth:root.ownerDocument.documentElement.scrollWidth,scrollHeight:root.ownerDocument.documentElement.scrollHeight};
     });
     await page.screenshot({path:out+`/responsive-${viewport.width}x${viewport.height}.png`});
     records.push({viewport,outer,inner});await writeFile(out+'/responsive-metrics.json',JSON.stringify(records,null,2));
@@ -486,7 +487,10 @@ test('the full host uses the available monitor and keeps the board, elf and paid
       expect(box.right).toBeLessThanOrEqual(inner.width+1);expect(box.bottom).toBeLessThanOrEqual(inner.height+1);
     }
     expect(inner.board.width).toBeGreaterThanOrEqual(viewport.height<500?150:180);
+    expect(inner.logo.fit).toBe('contain');
+    expect(inner.logo.top).toBeGreaterThanOrEqual(inner.header.top-1);expect(inner.logo.bottom).toBeLessThanOrEqual(inner.header.bottom+1);
     if(inner.layout==='wide'){
+      expect(inner.machine.top-inner.header.bottom).toBeLessThanOrEqual(12);
       expect(Math.abs(inner.character.top-inner.machine.top)).toBeLessThanOrEqual(2);
       expect(inner.portrait.height).toBeGreaterThanOrEqual(inner.board.height*.95);
       expect(inner.portrait.width/inner.portrait.height).toBeCloseTo(5/6,1);

@@ -6,10 +6,16 @@ export class ForestLayout {
   private machine: HTMLElement;
   private portrait: HTMLElement;
   private status: HTMLElement;
+  private header: HTMLElement;
+  private controls: HTMLElement;
+  private footnote: HTMLElement;
   constructor(private root: HTMLElement) {
     this.world=root.querySelector('.fh-world')!;this.machine=root.querySelector('.fh-machine')!;
     this.portrait=root.querySelector('.fh-character')!;this.status=root.querySelector('.fh-status-band')!;
-    this.observer=new ResizeObserver(()=>this.schedule());this.observer.observe(root);this.observer.observe(this.world);this.fit();
+    this.header=root.querySelector('.fh-top')!;this.controls=root.querySelector('.fh-controls')!;this.footnote=root.querySelector('.fh-footnote')!;
+    this.observer=new ResizeObserver(()=>this.schedule());
+    for(const element of [root,this.world,this.header,this.status,this.controls])this.observer.observe(element);
+    this.fit();
   }
   private schedule(){if(!this.raf)this.raf=this.root.ownerDocument.defaultView!.requestAnimationFrame(()=>{this.raf=0;this.fit();});}
   private fit(){
@@ -24,7 +30,8 @@ export class ForestLayout {
     const sidebar=landscape?(width<540?172:208):0;
     this.root.style.setProperty('--landscape-controls-width',sidebar+'px');
     const availableWidth=(landscape?width-sidebar:Math.min(width,1600))-padding;
-    const availableHeight=this.world.clientHeight-parseFloat(css.paddingTop)-parseFloat(css.paddingBottom);
+    const paddingY=parseFloat(css.paddingTop)+parseFloat(css.paddingBottom);
+    const availableHeight=(small?this.world.clientHeight:height-this.header.offsetHeight-this.status.offsetHeight-this.controls.offsetHeight-this.footnote.offsetHeight)-paddingY;
     const gap=small?4:8,source=mobile?44:landscape?36:56,flower=mobile?58:landscape?48:76;
     const banner=mode==='poster'?Math.min(240,Math.max(104,Math.floor(availableHeight*.26))):0;
     const columnsGap=mode==='wide'?24:0,portraitRatio=mode==='wide'?.68:0;
@@ -36,7 +43,7 @@ export class ForestLayout {
     let board=128;
     while(board<780&&fits(board+1))board++;
     const frame=frameFor(board),scene=board+frame*2,portrait=Math.floor(scene*portraitRatio);
-    const values:Record<string,number>={board,frame,'source-width':source,'flower-width':flower,'network-gap':gap,'portrait-width':portrait,'portrait-banner-height':banner,'scene-height':scene,'machine-width':scene+source+flower+gap*2};
+    const values:Record<string,number>={board,frame,'source-width':source,'flower-width':flower,'network-gap':gap,'portrait-width':portrait,'portrait-banner-height':banner,'scene-height':scene,'machine-width':scene+source+flower+gap*2,'world-height':scene+banner+(banner?8:0)+paddingY};
     for(const [name,value] of Object.entries(values))this.root.style.setProperty('--'+name,value+'px');
     this.world.style.removeProperty('width');
     this.machine.style.maxWidth='100%';
