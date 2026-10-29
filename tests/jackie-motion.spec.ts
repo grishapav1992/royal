@@ -6,19 +6,20 @@ let vite:ViteDevServer,url:string;const out='artifacts/work/jackie-chan';
 test.beforeAll(async()=>{vite=await createServer({configFile:false,root:process.cwd(),cacheDir:'node_modules/.vite-jackie-motion',server:{host:'127.0.0.1',port:0}});await vite.listen();url=`http://127.0.0.1:${(vite.httpServer!.address()as{port:number}).port}`;await mkdir(out,{recursive:true});});
 test.afterAll(async()=>await vite?.close());
 test.beforeEach(async({page})=>{await page.goto(url+'/tests/fixtures/jackie-motion.html');await page.waitForFunction(()=>(window as any).jackieMotion?.ready(),{timeout:30000});});
-test('all four costumes grip furniture at every contact without a second item on the floor',async({page})=>{
+test('all eight costumes grip furniture at every contact without a second item on the floor',async({page})=>{
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));let frames=0;
   for(const width of [1000,360]){
     await page.setViewportSize({width,height:800});
     const results=await page.evaluate(({contacts})=>{
-      const rows=[];for(const costume of ['master','sailor','police','hawk'])for(const location of ['restaurant','harbor','market'])for(const [risk,count]of [['safe',1],['sharp',2],['extreme',3]]as const)for(let i=0;i<count;i++){
+      const rows=[];for(const costume of ['master','sailor','police','hawk','rush','whoami','tuxedo','mentor'])for(const location of ['restaurant','harbor','market'])for(const [risk,count]of [['safe',1],['sharp',2],['extreme',3]]as const)for(let i=0;i<count;i++){
         const data=(window as any).jackieMotion.render({costume,location,risk,time:contacts[i]});rows.push({costume,location,risk,i,...data});
       }return rows;
     },{contacts:[contactAt(0),contactAt(1),contactAt(2)]});
     for(const row of results){expect(row.atlas).toBe('furniture');expect(row.heldFurniture).toBe(['chair','table','stool'][row.i]);expect(row.floorFurniture.split(',')).not.toContain(row.heldFurniture);expect(row.pose).toBe(String([3,4,5][row.i]));expect(row.reveal).toBe('false');}frames+=results.length;
   }
   for(const [costume,location,risk,i]of [['master','restaurant','safe',0],['sailor','harbor','sharp',1],['hawk','market','extreme',2]]as const){await page.setViewportSize({width:1000,height:700});await page.evaluate(c=>(window as any).jackieMotion.render(c),{costume,location,risk,time:contactAt(i)});await page.locator('canvas').screenshot({path:out+'/furniture-'+['chair','table','stool'][i]+'.png'});}
-  expect(errors).toEqual([]);await writeFile(out+'/furniture-frames.json',JSON.stringify({frames,viewports:[1000,360],costumes:4,locations:3,pageErrors:errors},null,2));
+  expect(errors).toEqual([]);await writeFile(out+'/furniture-frames.json',JSON.stringify({frames,viewports:[1000,360],costumes:8,locations:3,pageErrors:errors},null,2));
+  for(const costume of ['rush','whoami','tuxedo','mentor']){await page.setViewportSize({width:1000,height:700});await page.evaluate(config=>(window as any).jackieMotion.render(config),{costume,time:contactAt(0)});await page.locator('canvas').screenshot({path:out+'/costume-'+costume+'.png'});}
 });
 test('victory has fist and bow poses, while restored results and losses remain static',async({page})=>{
   for(const [risk,count]of [['safe',1],['sharp',2],['extreme',3]]as const){
@@ -59,7 +60,7 @@ test('furniture survives pickup, strike, return and group transition on wins and
     await page.setViewportSize({width,height:800});
     const rows=await page.evaluate(({end,release})=>{
       const rows=[];
-      for(const costume of ['master','sailor','police','hawk'])for(const [risk,count]of [['safe',1],['sharp',2],['extreme',3]]as const)for(const status of ['playing','lost']){
+      for(const costume of ['master','sailor','police','hawk','rush','whoami','tuxedo','mentor'])for(const [risk,count]of [['safe',1],['sharp',2],['extreme',3]]as const)for(const status of ['playing','lost']){
         const times=Array.from({length:Math.ceil(end[count-1]*10)+1},(_,i)=>i/10);times.push(release-.01,release+.01,end[count-1]+.8);
         for(const time of times)rows.push({count,time,...(window as any).jackieMotion.render({costume,risk,status,time})});
       }
@@ -80,7 +81,7 @@ test('furniture survives pickup, strike, return and group transition on wins and
     const bytes=await page.locator('canvas').screenshot();shots.push({input:await sharp(bytes).resize(400,200).png().toBuffer(),left:i%3*400,top:Math.floor(i/3)*200});
   }
   await sharp({create:{width:1200,height:800,channels:3,background:'#1c1511'}}).composite(shots).png().toFile(out+'/furniture-sequence.png');
-  await writeFile(out+'/furniture-continuity.json',JSON.stringify({frames,viewports:[1000,360],costumes:4,outcomes:['win','loss'],invariant:'Every selected item exists exactly once, attached or on the floor; chair is released only after lowering.'},null,2));
+  await writeFile(out+'/furniture-continuity.json',JSON.stringify({frames,viewports:[1000,360],costumes:8,outcomes:['win','loss'],invariant:'Every selected item exists exactly once, attached or on the floor; chair is released only after lowering.'},null,2));
 });
 test('new wood and victory mix has bounded peaks and cancels all owned sound without closing the host context',async({page})=>{
   const stats=await page.evaluate(async()=>{

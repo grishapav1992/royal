@@ -32,9 +32,9 @@ async function act(page:Page,selector='[data-fight]'){
 test('real host, chat, risk groups, gallery and account progress work on desktop and mobile',async({page})=>{
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await outcome('win');await enter(page);await page.emulateMedia({reducedMotion:'no-preference'});
   const game=page.locator('.jackie');
-  await game.locator('[data-wardrobe]').click();const concealed=game.locator('.jc-costume[data-open="false"]');await expect(concealed).toHaveCount(3);
+  await game.locator('[data-wardrobe]').click();const concealed=game.locator('.jc-costume[data-open="false"]');await expect(concealed).toHaveCount(7);
   const cards=await concealed.evaluateAll(cards=>cards.map(card=>{const image=card.querySelector('.jc-costume-image')!,bar=card.querySelector('progress')!;return{text:card.textContent,background:getComputedStyle(image).backgroundImage,filter:getComputedStyle(image).filter,value:bar.value,max:bar.max};}));
-  expect(new Set(cards.map(c=>c.background)).size).toBe(1);for(const card of cards){expect(card.background).toContain('/master.webp');expect(card.filter).toContain('brightness(0)');expect(card.text).toContain('Скрытый костюм');expect(card.text).not.toMatch(/USDT|1983|1985|1986|Проект|Полицейская|Доспехи|\d+\s*\/\s*\d+/);expect(card.max).toBe(1);expect(card.value).toBe(0);}
+  expect(new Set(cards.map(c=>c.background)).size).toBe(1);for(const card of cards){expect(card.background).toContain('/master.webp');expect(card.filter).toContain('brightness(0)');expect(card.text).toContain('Скрытый костюм');expect(card.text).not.toMatch(/USDT|1983|1985|1986|1998|2002|2010|Проект|Полицейская|Доспехи|Час пик|Кто я|Смокинг|Карате|\d+\s*\/\s*\d+/);expect(card.max).toBe(1);expect(card.value).toBe(0);}
   await page.screenshot({path:out+'/wardrobe-concealed-desktop.png'});
   await page.setViewportSize({width:320,height:740});await expect.poll(()=>game.locator('[data-dialog]').evaluate(el=>el.scrollWidth-el.clientWidth)).toBeLessThanOrEqual(1);await page.screenshot({path:out+'/wardrobe-concealed-mobile.png'});
   await page.setViewportSize({width:1440,height:1000});await game.locator('[data-close]').click();await expect(game.locator('[data-collection-label]')).toHaveText('Прогресс коллекции костюмов');
@@ -56,8 +56,12 @@ test('real host, chat, risk groups, gallery and account progress work on desktop
   expect(await page.evaluate(()=>(window as any).royalDemo.getMiniState()?.audio.active)).toBe(0);
   for(const [width,height]of [[390,844],[320,740]]){await page.setViewportSize({width,height});await page.locator('.jc-stage').scrollIntoViewIfNeeded();await expect(game.locator('[data-result-title]')).toBeInViewport();await expect(game.locator('canvas')).toHaveAttribute('data-celebrating','false');await page.screenshot({path:out+'/victory-'+width+'.png'});}
   await page.setViewportSize({width:1440,height:1000});
-  await page.emulateMedia({reducedMotion:'reduce'});await game.locator('[data-stake]').selectOption('50000');await outcome('lose');await act(page);await act(page);await expect(game.locator('[data-count]')).toHaveText('4/4');
-  await game.locator('[data-wardrobe]').click();await expect(game.locator('[data-costume="hawk"]')).toBeEnabled();await game.locator('[data-costume="sailor"]').click();await game.locator('[data-location]').selectOption('harbor');await page.screenshot({path:out+'/sailor-harbor.png'});
+  await page.emulateMedia({reducedMotion:'reduce'});await game.locator('[data-stake]').selectOption('50000');await outcome('lose');for(let i=0;i<9;i++)await act(page);await expect(game.locator('[data-count]')).toHaveText('8/8');
+  await game.locator('[data-wardrobe]').click();await expect(game.locator('.jc-costume[data-open="true"]')).toHaveCount(8);
+  for(const [id,film]of [['rush','Час пик'],['whoami','Кто я?'],['tuxedo','Смокинг'],['mentor','Карате-пацан']])await expect(game.locator(`[data-costume="${id}"] strong`)).toHaveText(film);
+  await game.locator('[data-costume="mentor"]').scrollIntoViewIfNeeded();await page.screenshot({path:out+'/wardrobe-eight-desktop.png'});
+  await game.locator('[data-costume="mentor"]').click();const mentor=await act(page);expect(mentor.view.jackie.costume).toBe('mentor');expect(mentor.view.jackie.version).toBe(2);
+  await game.locator('[data-wardrobe]').click();await game.locator('[data-costume="sailor"]').click();await game.locator('[data-location]').selectOption('harbor');await page.screenshot({path:out+'/sailor-harbor.png'});
   for(const [width,height] of [[1440,1000],[390,844],[320,740]]){
     await page.setViewportSize({width,height});await expect(page.locator('#mini-dialog #chat-input')).toBeVisible();await writeFile(out+'/layout-'+width+'.json',JSON.stringify(await game.evaluate(e=>{const root=e.getBoundingClientRect();return{width:e.clientWidth,scroll:e.scrollWidth,overflow:[...e.querySelectorAll('*')].map(n=>({class:n.className,tag:n.tagName,rect:n.getBoundingClientRect().toJSON()})).filter(n=>n.rect.width>0&&(n.rect.right>root.right+1||n.rect.left<root.left-1))};}),null,2));await expect.poll(()=>game.evaluate(e=>e.scrollWidth-e.clientWidth),{timeout:3000}).toBeLessThanOrEqual(1);await game.locator('[data-fight]').scrollIntoViewIfNeeded();await expect(game.locator('[data-fight]')).toBeInViewport();await page.screenshot({path:out+'/host-'+width+'.png'});
   }

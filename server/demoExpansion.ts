@@ -1,4 +1,4 @@
-import { JACKIE_GAME, costumeUnlocked, validJackieSettings, validJackieSession, type JackieView } from '../src/shared/jackieChan';
+import { JACKIE_GAME, JACKIE_LEGACY_COLLECTION_MAX, supportsJackie, costumeUnlocked, validJackieSettings, validJackieSession, type JackieView } from '../src/shared/jackieChan';
 import { startJackie, moveJackie } from './games/jackieChan';
 import { JackieCollectionStore } from './jackieCollection';
 import { NEOPOLIS_GAME, NEOPOLIS_MAX_WIN, validNeopolisStake, validNeopolisSettlement, type NeopolisSettings, type NeopolisResult } from '../src/shared/neopolis';
@@ -103,7 +103,7 @@ export class DemoExpansionStore {
     else if(isStudioGame(s.gameId)&&!validStudioSettlement(s.gameId,s.state,s.stakeUnits,s.spentUnits,s.returnedUnits,s.view.studio))throw Error('Invalid studio settlement');
     if(s.gameId===AFTER_GAME&&s.state==='settled')await this.wardrobe.completeRound(account,s.id,s.stakeUnits);
     if(s.gameId===JACKIE_GAME){
-      if(s.state==='settled')s.view.jackie!.collectionUnits=await this.jackieCollection.complete(account,s);
+      if(s.state==='settled'){const units=await this.jackieCollection.complete(account,s);s.view.jackie!.collectionUnits=s.view.jackie!.version===1?Math.min(JACKIE_LEGACY_COLLECTION_MAX,units):units;}
       if(!validJackieSession(this.public(s)))throw Error('Invalid Jackie settlement');
     }
     await this.save(account,s);await saveDemoUnits(this.db,account,balance);
@@ -117,11 +117,11 @@ export class DemoExpansionStore {
     await this.money(account,s,s.id,0,s.crashPoint===100?Number(s.stakeUnits)*100:0);
   }
   async settleDue(account:string){await this.ready;await this.db.transaction(()=>this.crashDue(account,this.now()),{lockKey:'account:'+account});}
-  private async sessions(account:string,caramelClient=true,velvetClient=true,convoyClient=true,nitroClient=true,afterClient=true,memeClient=true,penaltyClient=true,draconaClient:boolean|2=2,neopolisClient:boolean|2|3|4=4,caribbeanClient=true,jackieClient=false){
+  private async sessions(account:string,caramelClient=true,velvetClient=true,convoyClient=true,nitroClient=true,afterClient=true,memeClient=true,penaltyClient=true,draconaClient:boolean|2=2,neopolisClient:boolean|2|3|4=4,caribbeanClient=true,jackieClient:boolean|2=false){
     const rows=await this.db.prepare(`SELECT DISTINCT ON(game_id) payload FROM demo_casino_sessions WHERE account_id=? AND game_id IN (${placeholders}) ORDER BY game_id,(payload::jsonb->>'createdAt')::bigint DESC,id DESC`).all(account,...EXPANSION_GAMES);
-    return rows.map(row=>this.public(JSON.parse(row.payload))).filter(s=>caramelClient||s.gameId!==CARAMEL_GAME||s.rulesVersion!==2).filter(s=>velvetClient||s.gameId!==VELVET_GAME||s.rulesVersion!==2).filter(s=>convoyClient||s.gameId!==CONVOY_GAME).filter(s=>nitroClient||s.gameId!==NITRO_GAME).filter(s=>afterClient||s.gameId!==AFTER_GAME).filter(s=>memeClient||s.gameId!==MEME_GAME).filter(s=>penaltyClient||s.gameId!==PENALTY_GAME).filter(s=>s.gameId!==DRACONA_GAME||supportsDracona(draconaClient,s.rulesVersion)).filter(s=>s.gameId!==NEOPOLIS_GAME||supportsNeopolis(neopolisClient,s.rulesVersion)).filter(s=>caribbeanClient||s.gameId!==CARIBBEAN_GAME).filter(s=>jackieClient||s.gameId!==JACKIE_GAME);
+    return rows.map(row=>this.public(JSON.parse(row.payload))).filter(s=>caramelClient||s.gameId!==CARAMEL_GAME||s.rulesVersion!==2).filter(s=>velvetClient||s.gameId!==VELVET_GAME||s.rulesVersion!==2).filter(s=>convoyClient||s.gameId!==CONVOY_GAME).filter(s=>nitroClient||s.gameId!==NITRO_GAME).filter(s=>afterClient||s.gameId!==AFTER_GAME).filter(s=>memeClient||s.gameId!==MEME_GAME).filter(s=>penaltyClient||s.gameId!==PENALTY_GAME).filter(s=>s.gameId!==DRACONA_GAME||supportsDracona(draconaClient,s.rulesVersion)).filter(s=>s.gameId!==NEOPOLIS_GAME||supportsNeopolis(neopolisClient,s.rulesVersion)).filter(s=>caribbeanClient||s.gameId!==CARIBBEAN_GAME).filter(s=>s.gameId!==JACKIE_GAME||supportsJackie(jackieClient,s.view.jackie!.version));
   }
-  async active(account:string,caramelClient=true,velvetClient=true,convoyClient=true,nitroClient=true,afterClient=true,memeClient=true,penaltyClient=true,draconaClient:boolean|2=2,neopolisClient:boolean|2|3|4=4,caribbeanClient=true,jackieClient=false){await this.ready;return this.db.transaction(async()=>{await this.settleOther(account);await this.crashDue(account,this.now());return {wallet:await this.snapshot(account),sessions:await this.sessions(account,caramelClient,velvetClient,convoyClient,nitroClient,afterClient,memeClient,penaltyClient,draconaClient,neopolisClient,caribbeanClient,jackieClient)};},{lockKey:'account:'+account});}
+  async active(account:string,caramelClient=true,velvetClient=true,convoyClient=true,nitroClient=true,afterClient=true,memeClient=true,penaltyClient=true,draconaClient:boolean|2=2,neopolisClient:boolean|2|3|4=4,caribbeanClient=true,jackieClient:boolean|2=false){await this.ready;return this.db.transaction(async()=>{await this.settleOther(account);await this.crashDue(account,this.now());return {wallet:await this.snapshot(account),sessions:await this.sessions(account,caramelClient,velvetClient,convoyClient,nitroClient,afterClient,memeClient,penaltyClient,draconaClient,neopolisClient,caribbeanClient,jackieClient)};},{lockKey:'account:'+account});}
   async presentation(account:string,sessionId:unknown,phase:unknown,step:unknown):Promise<StudioSlotPresentation> {
     await this.ready;
     if(typeof sessionId!=='string'||!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(sessionId)||!Number.isSafeInteger(phase)||Number(phase)<1||Number(phase)>3||!Number.isSafeInteger(step)||Number(step)<0||Number(step)>2)throw new WalletError(400,'Некорректный запрос показа игры.');
@@ -204,11 +204,11 @@ export class DemoExpansionStore {
   private applyLuelon(s:ExpansionState,result:LuelonSlotResult){
     s.engine=undefined;s.state=result.ended?'settled':'active';s.view={...emptyView(),luelon:result.luelon,ended:result.ended,message:result.message,phase:result.luelon.revision+1,actions:result.actions};return {debit:0,credit:result.credit};
   }
-  async operate(account:string,value:unknown,clientRules:1|2=2,caramelClient=true,velvetClient=true,convoyClient=true,nitroClient=true,afterClient=true,afterProgressClient=true,memeClient=true,penaltyClient=true,draconaClient:boolean|2=2,neopolisClient:boolean|2|3|4=4,caribbeanClient=true,jackieClient=false){
+  async operate(account:string,value:unknown,clientRules:1|2=2,caramelClient=true,velvetClient=true,convoyClient=true,nitroClient=true,afterClient=true,afterProgressClient=true,memeClient=true,penaltyClient=true,draconaClient:boolean|2=2,neopolisClient:boolean|2|3|4=4,caribbeanClient=true,jackieClient:boolean|2=false){
     await this.ready;if(!validExpansionAction(value))throw new WalletError(400,'Некорректное действие казино.');
     const op=structuredClone(value),key=JSON.stringify(op);
     if(op.gameId===CARIBBEAN_GAME&&!caribbeanClient)throw new WalletError(409,'Обнови страницу для игры «Карибские сокровища». Ставка не списана.');
-    if(op.gameId===JACKIE_GAME&&!jackieClient)throw new WalletError(409,'Обнови страницу для игры Джеки Чан. Ставка не списана.');
+    if(op.gameId===JACKIE_GAME&&!jackieClient)throw new WalletError(409,'Обнови страницу для игры «Гонконгский воин». Ставка не списана.');
     if(op.gameId===PENALTY_GAME&&!penaltyClient)throw new WalletError(409,'Обнови страницу для игры CR vs. Leo. Ставка не списана.');
     if(op.gameId===NEOPOLIS_GAME&&!neopolisClient)throw new WalletError(409,'Neopolis: refresh the game');
     if(op.gameId===DRACONA_GAME&&!draconaClient)throw new WalletError(409,'Обнови страницу для игры Дракона.');
@@ -228,6 +228,7 @@ export class DemoExpansionStore {
         if(old.request_key!==key)throw new WalletError(409,'Нельзя изменить отправленный ход.');
         const row=await this.db.prepare('SELECT payload FROM demo_casino_sessions WHERE account_id=? AND id=?').get(account,old.session_id);
         const session=this.public(JSON.parse(row!.payload));
+        if(session.gameId===JACKIE_GAME&&!supportsJackie(jackieClient,session.view.jackie!.version))throw new WalletError(409,'Обнови страницу для новой коллекции костюмов.');
         if(session.gameId===NEOPOLIS_GAME&&!supportsNeopolis(neopolisClient,session.rulesVersion))throw new WalletError(409,'Neopolis: refresh for variable stakes');
         if(session.gameId===DRACONA_GAME&&!supportsDracona(draconaClient,session.rulesVersion))throw new WalletError(409,'Dracona: refresh for the current rules');
         return {wallet:await this.snapshot(account),session,sessions:await this.sessions(account,caramelClient,velvetClient,convoyClient,nitroClient,afterClient,memeClient,penaltyClient,draconaClient,neopolisClient,caribbeanClient,jackieClient),replayed:true};
@@ -259,10 +260,11 @@ export class DemoExpansionStore {
           credit=this.applyCaribbean(s,startCaribbean(op.settings.caribbean,op.stakeUnits,this.draw)).credit;
         }
         else if(op.gameId===JACKIE_GAME){
-          if(!validJackieSettings(op.settings))throw new WalletError(400,'Выбери костюм, локацию и число противников.');
-          const units=await this.jackieCollection.read(account);
+          const version=jackieClient===2?2:1;
+          if(!validJackieSettings(op.settings,version))throw new WalletError(400,'Выбери костюм, локацию и число противников.');
+          const collection=await this.jackieCollection.read(account),units=version===1?Math.min(JACKIE_LEGACY_COLLECTION_MAX,collection):collection;
           if(!costumeUnlocked(op.settings.jackie.costume,units))throw new WalletError(409,'Этот костюм ещё не открыт.');
-          credit=this.applyJackie(s,startJackie(op.settings,op.stakeUnits,units,this.draw)).credit;
+          credit=this.applyJackie(s,startJackie(op.settings,op.stakeUnits,units,this.draw,version)).credit;
         }
         else if(op.gameId===PENALTY_GAME){credit=this.applyPenalty(s,startPenalty(op.settings as PenaltySettings,op.stakeUnits,this.draw)).credit;}
         else if(op.gameId===NEOPOLIS_GAME){
@@ -316,6 +318,7 @@ export class DemoExpansionStore {
           catch(error){if(error instanceof CaribbeanMoveError)throw new WalletError(409,'Этот этап уже изменился. Обнови сохранённый раунд.');throw error;}
           if(debit!==0||required!==0)throw Error('Caribbean continuation must be free');
         }else if(s.gameId===JACKIE_GAME){
+          if(!supportsJackie(jackieClient,s.view.jackie!.version))throw new WalletError(409,'Обнови страницу для новой коллекции костюмов.');
           try{({debit,credit}=this.applyJackie(s,moveJackie(s.view.jackie!,s.stakeUnits,op.move,op.revision,this.draw,op.penaltyRisk)));}
           catch(error){if(error instanceof PenaltyMoveError)throw new WalletError(409,error.message);throw error;}
         }else if(s.gameId===PENALTY_GAME){

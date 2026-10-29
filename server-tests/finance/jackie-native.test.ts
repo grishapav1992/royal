@@ -5,7 +5,7 @@ import { pvpFixture } from './helpers/nile-pvp-fixture';
 import { block } from './helpers/nile-play-fixture';
 import { NileGameRuntime, type NativeCommand } from '../../server/finance/nile-game-runtime';
 import { JACKIE_GAME, validJackieSession } from '../../src/shared/jackieChan';
-const command=(body:unknown=null,capability=true):NativeCommand=>({path:'/expansion',body,method:body===null?'GET':'POST',flags:[true,true,true,true,true,true,true,true,2],rules:2,query:{},jackieRules:capability?1:0});
+const command=(body:unknown=null,capability=true):NativeCommand=>({path:'/expansion',body,method:body===null?'GET':'POST',flags:[true,true,true,true,true,true,true,true,2],rules:2,query:{},jackieRules:capability?2:0});
 test('Jackie restores and pays mixed groups once through the real Nile journal with shared reserves',async()=>{
   const c=await pvpFixture();try{
     await c.source.ingest(block(102,'1000000000000',c.config.source.addresses.find(a=>a.userId==='reserve')!.address));await c.ledger.sync(c.source,await c.reconciliation());

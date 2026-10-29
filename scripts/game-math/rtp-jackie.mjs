@@ -25,11 +25,12 @@ export function jackieEvidence(policy) {
     const [optimalNumerator,optimalDenominator]=optimal([]);assert(optimalNumerator*100n<=optimalDenominator*99n);const optimalRtp=Number(optimalNumerator)/Number(optimalDenominator);
     results.push({stakeUnits:stake,paths,minRtp:min,maxRtp:max,optimalRtp,sha256:hash.digest('hex')});
   }
-  return {method:JACKIE_METHOD,analysis:{method:'Finite enumeration and backward induction; one house edge, integer final settlement, all 363 risk paths and all stopping points.',cosmeticChoices:12,maximumSteps:5,maximumAdditionalCost:0},results};
+  return {method:JACKIE_METHOD,analysis:{method:'Finite enumeration and backward induction; one house edge, integer final settlement, all 363 risk paths and all stopping points.',cosmeticChoices:24,legacyCosmeticChoices:12,collectionTargetsUnits:[0,16000,44000,90000,140000,210000,300000,420000],maximumSteps:5,maximumAdditionalCost:0},results};
 }
 export async function qualifyJackie(policy){
-  const [{startJackie,moveJackie},{JACKIE_COSTUMES,JACKIE_LOCATIONS,validJackieView}]=await Promise.all([import('../../server/games/jackieChan.ts'),import('../../src/shared/jackieChan.ts')]);
+  const [{startJackie,moveJackie},{JACKIE_COSTUMES,JACKIE_LOCATIONS,JACKIE_COLLECTION_MAX,validJackieView}]=await Promise.all([import('../../server/games/jackieChan.ts'),import('../../src/shared/jackieChan.ts')]);
   const exact=jackieEvidence(policy);let checks=0;const replay=createHash('sha256');
+  assert.equal(policy.progressVersion,2);assert.deepEqual(JACKIE_COSTUMES.map(c=>c.target),exact.analysis.collectionTargetsUnits);assert.equal(JACKIE_COSTUMES.length*JACKIE_LOCATIONS.length,exact.analysis.cosmeticChoices);
   for(const stake of policy.stakes){
     function visit(path){
       if(path.length){
@@ -44,9 +45,11 @@ export async function qualifyJackie(policy){
   }
   for(const stake of policy.stakes)for(const costume of JACKIE_COSTUMES)for(const location of JACKIE_LOCATIONS)for(let i=0;i<3;i++)for(let roll=0;roll<100;roll++){
     let n=0;const draw=max=>{const v=n++===0?roll:0;assert(v<max);return v;};
-    const v=startJackie({jackie:{risk:RISKS[i],costume:costume.id,location:location.id}},String(stake),90000,draw);
+    const settings={jackie:{risk:RISKS[i],costume:costume.id,location:location.id}};
+    const v=startJackie(settings,String(stake),JACKIE_COLLECTION_MAX,draw);
     assert.equal(v.combat.shots[0].goal,roll<CHANCES[i]);assert(validJackieView(v,String(stake)));checks++;
     replay.update(JSON.stringify([stake,costume.id,location.id,roll,v])+'\n');
+    if(costume.target<=90000){let n=0;const legacy=startJackie(settings,String(stake),90000,max=>{const value=n++===0?roll:0;assert(value<max);return value;},1);assert.deepEqual(legacy.combat,v.combat);assert(validJackieView(legacy,String(stake)));checks++;replay.update(JSON.stringify(legacy)+'\n');}
   }
   for(const seed of policy.seeds){
     let state=seed>>>0;const draw=max=>{state=(Math.imul(state,1664525)+1013904223)>>>0;return Math.floor(state/4294967296*max);};

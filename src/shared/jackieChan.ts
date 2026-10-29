@@ -8,13 +8,20 @@ export const JACKIE_RISKS = {
   sharp: { opponents: 2, chance: PENALTY_RISKS.sharp.chance },
   extreme: { opponents: 3, chance: PENALTY_RISKS.extreme.chance },
 } as const;
-// Match GIRLHUB's sequential album thresholds, in wallet hundredths.
+// Preserve the original four thresholds and extend the cosmetic album in wallet hundredths.
 export const JACKIE_COSTUMES = [
   { id: 'master', film: 'Пьяный мастер', year: 1978, target: 0, name: 'Ученик мастера' },
   { id: 'sailor', film: 'Проект А', year: 1983, target: 16000, name: 'Морской патруль' },
   { id: 'police', film: 'Полицейская история', year: 1985, target: 44000, name: 'Инспектор' },
   { id: 'hawk', film: 'Доспехи бога', year: 1986, target: 90000, name: 'Азиатский ястреб' },
+  { id: 'rush', film: 'Час пик', year: 1998, target: 140000, name: 'Детектив' },
+  { id: 'whoami', film: 'Кто я?', year: 1998, target: 210000, name: 'Секретный агент' },
+  { id: 'tuxedo', film: 'Смокинг', year: 2002, target: 300000, name: 'Супершпион' },
+  { id: 'mentor', film: 'Карате-пацан', year: 2010, target: 420000, name: 'Наставник' },
 ] as const;
+export const JACKIE_COLLECTION_MAX = JACKIE_COSTUMES[JACKIE_COSTUMES.length-1].target;
+export const JACKIE_LEGACY_COLLECTION_MAX = 90000;
+export const supportsJackie = (client:boolean|2, version:number) => client === 2 || client === true && version === 1;
 export const JACKIE_LOCATIONS = [
   { id: 'restaurant', name: 'Чайный дом', chapter: 'Столы, стулья и немного кунг-фу' },
   { id: 'harbor', name: 'Старый порт', chapter: 'Последний груз до заката' },
@@ -23,20 +30,22 @@ export const JACKIE_LOCATIONS = [
 export type JackieCostume = typeof JACKIE_COSTUMES[number]['id'];
 export type JackieLocation = typeof JACKIE_LOCATIONS[number]['id'];
 export type JackieSettings = { jackie: { risk: PenaltyRisk; costume: JackieCostume; location: JackieLocation } };
-export type JackieView = { version: 1; costume: JackieCostume; location: JackieLocation; collectionUnits: number; combat: PenaltyView };
+export type JackieView = { version: 1|2; costume: JackieCostume; location: JackieLocation; collectionUnits: number; combat: PenaltyView };
 export const costumeUnlocked = (costume: JackieCostume, units: number) => JACKIE_COSTUMES.some(c => c.id === costume && units >= c.target);
 export const validCostume = (v: unknown): v is JackieCostume => JACKIE_COSTUMES.some(c => c.id === v);
 export const validLocation = (v: unknown): v is JackieLocation => JACKIE_LOCATIONS.some(c => c.id === v);
 const object = (v: unknown): v is Record<string, any> => !!v && typeof v === 'object' && !Array.isArray(v);
-export function validJackieSettings(v: unknown): v is JackieSettings {
+export function validJackieSettings(v: unknown, version:1|2=2): v is JackieSettings {
   return object(v) && Object.keys(v).join() === 'jackie' && object(v.jackie)
     && Object.keys(v.jackie).sort().join() === 'costume,location,risk'
-    && validPenaltyRisk(v.jackie.risk) && validCostume(v.jackie.costume) && validLocation(v.jackie.location);
+    && validPenaltyRisk(v.jackie.risk) && validCostume(v.jackie.costume) && validLocation(v.jackie.location)
+    && (version === 2 || JACKIE_COSTUMES.slice(0,4).some(c=>c.id===v.jackie.costume));
 }
 export function validJackieView(v: unknown, stake: string): v is JackieView {
   return object(v) && Object.keys(v).sort().join() === 'collectionUnits,combat,costume,location,version'
-    && v.version === 1 && validCostume(v.costume) && validLocation(v.location)
-    && Number.isSafeInteger(v.collectionUnits) && v.collectionUnits >= 0 && v.collectionUnits <= 90000
+    && (v.version === 1 || v.version === 2) && validCostume(v.costume) && validLocation(v.location)
+    && (v.version === 2 || JACKIE_COSTUMES.slice(0,4).some(c=>c.id===v.costume))
+    && Number.isSafeInteger(v.collectionUnits) && v.collectionUnits >= 0 && v.collectionUnits <= (v.version === 1 ? JACKIE_LEGACY_COLLECTION_MAX : JACKIE_COLLECTION_MAX)
     && costumeUnlocked(v.costume, v.collectionUnits) && validPenaltyView(v.combat, stake)
     && v.combat.version === 2 && v.combat.hero === 'cr';
 }

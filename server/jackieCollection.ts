@@ -1,5 +1,5 @@
 import type { PostgresDatabase } from './database';
-import { JACKIE_GAME } from '../src/shared/jackieChan';
+import { JACKIE_GAME, JACKIE_COLLECTION_MAX } from '../src/shared/jackieChan';
 
 /** Cosmetic progress shares the account transaction and never changes the wallet. */
 export class JackieCollectionStore {
@@ -8,7 +8,13 @@ export class JackieCollectionStore {
     this.ready = prerequisite.then(() => db.exec(`
       CREATE TABLE IF NOT EXISTS demo_jackie_collection (
         account_id TEXT PRIMARY KEY REFERENCES accounts(id) ON DELETE CASCADE,
-        units INTEGER NOT NULL CHECK(units BETWEEN 0 AND 90000));
+        units INTEGER NOT NULL CONSTRAINT demo_jackie_collection_units_v2_check CHECK(units BETWEEN 0 AND ${JACKIE_COLLECTION_MAX}));
+      ALTER TABLE demo_jackie_collection DROP CONSTRAINT IF EXISTS demo_jackie_collection_units_check;
+      DO $$ BEGIN
+        IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conrelid='demo_jackie_collection'::regclass AND conname='demo_jackie_collection_units_v2_check') THEN
+          ALTER TABLE demo_jackie_collection ADD CONSTRAINT demo_jackie_collection_units_v2_check CHECK(units BETWEEN 0 AND ${JACKIE_COLLECTION_MAX});
+        END IF;
+      END $$;
       CREATE TABLE IF NOT EXISTS demo_jackie_collection_rounds (
         account_id TEXT NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
         session_id TEXT NOT NULL, PRIMARY KEY(account_id,session_id));
@@ -17,13 +23,13 @@ export class JackieCollectionStore {
   async read(account: string): Promise<number> {
     const row = await this.db.prepare('SELECT units FROM demo_jackie_collection WHERE account_id=?').get(account);
     const units = Number(row?.units ?? 0);
-    if (!Number.isSafeInteger(units) || units < 0 || units > 90000) throw Error('Invalid Jackie progress');
+    if (!Number.isSafeInteger(units) || units < 0 || units > JACKIE_COLLECTION_MAX) throw Error('Invalid Jackie progress');
     return units;
   }
   async complete(account: string, session: {id: string; gameId: string; stakeUnits: string; state: string}): Promise<number> {
     if (session.gameId !== JACKIE_GAME || session.state !== 'settled') throw Error('Jackie progress requires a completed paid series');
     const inserted = await this.db.prepare('INSERT INTO demo_jackie_collection_rounds(account_id,session_id) VALUES(?,?) ON CONFLICT DO NOTHING RETURNING session_id').get(account, session.id);
-    if (inserted) await this.db.prepare('INSERT INTO demo_jackie_collection(account_id,units) VALUES(?,?) ON CONFLICT(account_id) DO UPDATE SET units=LEAST(90000,demo_jackie_collection.units+EXCLUDED.units)').run(account, Math.min(90000, Number(session.stakeUnits)));
+    if (inserted) await this.db.prepare(`INSERT INTO demo_jackie_collection(account_id,units) VALUES(?,?) ON CONFLICT(account_id) DO UPDATE SET units=LEAST(${JACKIE_COLLECTION_MAX},demo_jackie_collection.units+EXCLUDED.units)`).run(account, Math.min(JACKIE_COLLECTION_MAX, Number(session.stakeUnits)));
     return this.read(account);
   }
 }

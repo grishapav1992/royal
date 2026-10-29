@@ -15,11 +15,11 @@ export const CARIBBEAN_REVIEWED_SOURCES = {
   'src/shared/caribbeanTreasures.ts': '5590af9897cfb32dbf8fd7d9c0608ad52184051ddee7ca70cd309267a4311aee',
   'server/games/caribbeanTreasures.ts': 'bdb0aa8eecef1093f876dd3c467ff1b43d8a7b1606a63a56aa46430964556e99',
   'src/shared/caribbeanTransport.ts': 'c4a590c6778048f9ecd37852549762adde064f90dca072316ee215ba8ac89c78',
-  // Reviewed 2026-10-28: only the public title of the kung fu game changed.
+  // Reviewed 2026-10-29: only Hong Kong Warrior's versioned costume collection and client filtering changed.
   // The complete-round model, choices, settlement and all Caribbean rules are identical.
   'src/shared/casinoExpansion.ts': 'ac3bbf050236e4d4146dc5309556775f161b5bac6e9182eec9e290ce8c42af5a',
-  'server/demoExpansion.ts': '3f35ffef0a677e9aa5050409b35ec26025fcef920648cd6c213fa13e46fb2e7d',
-  'server/finance/nile-game-runtime.ts': '584c3256cf6b69432131c1ffe8e0445efad468ad418ae6bd66bc10357ca40cd0',
+  'server/demoExpansion.ts': '1a538b0a79d603a10f463f1e0b7e657a96ea9fb816dcc6bbb8a9c5cc36f8d880',
+  'server/finance/nile-game-runtime.ts': 'b28bb143c82edb0379e541ab30a3bd95c88077637e28309e4954f766f5ca5b69',
 };
 const WEIGHTS = [30,24,18,13,9,6];
 const PAYS = [[2,6,20,60],[4,10,30,100],[6,16,40,150],[8,24,60,200],[10,30,100,400],[16,50,200,1000]];

@@ -39,7 +39,7 @@ export function validateRtpProof(gameId, inputs, proof) {
     const expected=jackieEvidence(p);
     assert.equal(proof.method,expected.method);assert.deepEqual(proof.analysis,expected.analysis);assert.deepEqual(proof.results,expected.results);
     assert.deepEqual(proof.serverReplay.seeds,p.seeds);assert.equal(new Set(p.seeds).size,2);
-    assert.equal(proof.serverReplayChecks,17388);assert.match(proof.serverReplay.sha256,/^[a-f0-9]{64}$/);
+    assert.equal(proof.serverReplayChecks,46188);assert.match(proof.serverReplay.sha256,/^[a-f0-9]{64}$/);
     return true;
   }
   if(p.method===CARIBBEAN_QUALIFICATION_METHOD) {

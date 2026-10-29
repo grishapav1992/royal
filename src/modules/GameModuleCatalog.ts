@@ -45,7 +45,7 @@ export const STUDIO_GAME_MODULES = [
 ] as const;
 
 export const CASINO_GAME_MODULES = [
- { gameId: 'original-jackie-chan', slug: 'jackie-chan', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
+ { gameId: 'original-jackie-chan', slug: 'jackie-chan', apiVersion: 1, rulesVersion: 1, progressVersion: 2 },
  { gameId: 'original-cr-vs-leo', slug: 'cr-vs-leo', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
  { gameId: 'github-crash', slug: 'last-exit', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
  { gameId: 'royal-wheel', slug: 'royal-wheel', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },

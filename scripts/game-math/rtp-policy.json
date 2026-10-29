@@ -491,7 +491,7 @@
     "original-jackie-chan": {
       "method": "exact-jackie-series-v1",
       "rulesVersion": 1,
-      "progressVersion": 1,
+      "progressVersion": 2,
       "target": 0.99,
       "tolerance": 0.0003,
       "stakes": [
@@ -509,7 +509,7 @@
         27102801,
         27102807
       ],
-      "proof": "docs/game-math/qualifications/jackie-chan-v1.json",
+      "proof": "docs/game-math/qualifications/jackie-chan-v2.json",
       "qualificationSource": "scripts/game-math/rtp-jackie.mjs",
       "sources": [
         "src/shared/jackieChan.ts",
