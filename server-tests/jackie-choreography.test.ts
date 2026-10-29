@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {choreography as timeline,contactAt,chairReleaseAt,resultAt,VICTORY_DURATION,impacts,recoveryX} from '../games/jackie-chan/JackieChoreography';
 import {FIGHT_PLANS,FURNITURE_PLAN,fightPlan,moveFurniture,combatPose} from '../games/jackie-chan/JackieFightPlans';
+import {openingActions} from '../games/jackie-chan/JackieOpenings';
 const choreography=(elapsed:number,count:number,status:Parameters<typeof timeline>[2],cashout=false)=>timeline(elapsed,count,status,cashout,FURNITURE_PLAN);
 
 test('chair grip, lift, block and physical strike precede the confirmed group result',()=>{
@@ -54,17 +55,25 @@ test('all thirteen move types have the right contact pose, material and result b
       const move=plan.moves[i],frame=timeline(contactAt(i),count,status,false,plan);assert.equal(frame.fighter,i);assert.equal(frame.move,move);assert.equal(frame.furniture,moveFurniture(move));assert(!frame.reveal);assert(frame.busy);
       assert.equal(frame.pose,combatPose(move)??(move==='table'?4:move==='stool'?5:move==='kick'?4:3));
       const events=impacts(plan,count).filter(event=>event.fighter===i);assert.equal(events.filter(e=>e.primary).length,1);assert.equal(events.at(-1)!.at,contactAt(i));
-      assert.equal(events.length,move==='combo'?5:4);assert.equal(events[0].actor,'foe');assert.equal(events[0].kind,'block');
+      assert.equal(events.length,move==='combo'?5:4);
       if(move!=='chair'){
-        assert.equal(timeline(events[0].at,count,status,false,plan).phase,'forearm-block');
-        assert.equal(timeline(events[1].at,count,status,false,plan).phase,'opening-punch');
-        assert.equal(timeline(events[2].at,count,status,false,plan).phase,'slip-counter');
+        for(const [index,opening]of openingActions(plan,i).entries()){
+          const frame=timeline(events[index].at,count,status,false,plan);
+          assert.equal(frame.phase,opening.phase);assert.equal(frame.pose,opening.pose);assert.equal(frame.atlas,opening.atlas);
+          assert.equal(events[index].actor,opening.actor);assert.equal(events[index].kind,opening.kind);
+        }
       }
       if(move==='combo')assert.equal(timeline(events[3].at,count,status,false,plan).phase,'jab');
     }
     assert(!timeline(resultAt(count)-.001,count,status,false,plan).reveal);assert(timeline(resultAt(count),count,status,false,plan).reveal);
     assert(!timeline(Infinity,count,status,false,plan).busy);
   }
+});
+
+test('all twelve unarmed routines have distinct opening exchanges and vary between opponents',()=>{
+  const plans=FIGHT_PLANS.filter(plan=>plan.id!=='chair-counter');
+  assert.equal(new Set(plans.map(plan=>openingActions(plan,0).map(a=>a.phase).join(','))).size,12);
+  for(const plan of plans)assert.notDeepEqual(openingActions(plan,0),openingActions(plan,1));
 });
 
 test('the next opponent starts after chair release and the hero continues from the recovery position',()=>{

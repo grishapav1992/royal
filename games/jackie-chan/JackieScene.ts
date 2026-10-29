@@ -36,9 +36,10 @@ export class JackieScene {
   private dead=false;
   private key='';
   private resize:ResizeObserver;
+  private unsubscribeAudio:()=>void;
   private motion=matchMedia('(prefers-reduced-motion: reduce)');
   private onMotion=()=>{if(this.motion.matches)this.settle();this.key='';};
-  constructor(private canvas:HTMLCanvasElement,private audio:JackieAudio){this.resize=new ResizeObserver(()=>this.key='');this.resize.observe(canvas);this.motion.addEventListener('change',this.onMotion);void this.retry();}
+  constructor(private canvas:HTMLCanvasElement,private audio:JackieAudio){this.unsubscribeAudio=audio.onResume(()=>this.resumeAudio());this.resize=new ResizeObserver(()=>this.key='');this.resize.observe(canvas);this.motion.addEventListener('change',this.onMotion);void this.retry();}
   async retry(){
     if(this.dead)return;this.loading.failed=false;
     await Promise.all(JACKIE_SCENE_ASSETS.map(async url=>{
@@ -55,14 +56,17 @@ export class JackieScene {
     this.plan=plan??fightPlan(seriesId,Math.max(0,view.combat.shots.length-1),view.location);
     const count=JACKIE_RISKS[this.risk].opponents,won=view.combat.shots.at(-1)!.goal;
     if(animate&&!this.motion.matches){this.playback.start(cashout?performance.now():this.audio.begin(count,won,view.combat.status==='complete',this.plan,this.playback.speed));if(cashout)this.audio.cashout();}
-    else{this.playback.settle();if(animate)this.audio.result(won,cashout||view.combat.status==='complete');}
+    else{this.playback.settle();this.audio.cancel();if(animate)this.audio.result(won,cashout||view.combat.status==='complete');}
     this.key='';
   }
   setSpeed(speed:FightSpeed){
-    const now=performance.now(),state=this.state(now);this.playback.setSpeed(speed,now);this.audio.cancel();
-    if(this.view&&state.busy&&!this.cashout&&!this.motion.matches&&!document.hidden){
+    this.playback.setSpeed(speed,performance.now());this.audio.cancel();this.resumeAudio();this.key='';
+  }
+  private resumeAudio(){
+    const state=this.state();
+    if(!this.dead&&this.view&&state.busy&&!this.cashout&&!this.motion.matches&&!document.hidden){
       const count=JACKIE_RISKS[this.risk].opponents,won=this.view.combat.shots.at(-1)!.goal;
-      const anchor=this.audio.begin(count,won,this.view.combat.status==='complete',this.plan,speed,state.elapsed);
+      const anchor=this.audio.begin(count,won,this.view.combat.status==='complete',this.plan,this.playback.speed,state.elapsed);
       this.playback.start(anchor,state.elapsed);
     }
     this.key='';
@@ -122,7 +126,7 @@ export class JackieScene {
       else if(engaged)pose=local<-.34?0:local<-.06?opponent.attack:local<.15?opponent.guard:won||i<count-1?2:opponent.attack;
       if(engaged&&!won&&i===count-1)pose=local<-.34?0:local<-.18?opponent.guard:local<.16?opponent.attack:opponent.guard;
       if(engaged&&this.plan.moves[i]==='combo'&&local>=-.34&&local<-.17)pose=opponent.guard;
-      else if(combat&&!won&&state.reveal)pose=7;
+      else if(combat&&!won&&state.reveal&&!defeated)pose=7;
       if(engaged&&local<-.3){
         const exchange=impacts(this.plan,count).find(event=>event.fighter===i&&Math.abs(state.elapsed-event.at)<.16);
         pose=exchange?(exchange.actor==='foe'?opponent.attack:exchange.kind==='block'?opponent.guard:2):opponent.guard;
@@ -160,5 +164,5 @@ export class JackieScene {
     Object.assign(this.canvas.dataset,{opponents:String(count),foes:lineup.map(foe=>foe.id).join(','),foeFrames:JSON.stringify(foeFrames),heroFrame:JSON.stringify(heroFrame),playbackSpeed:String(state.speed),sequence:this.plan.id,move:state.move,moveSequence:state.moveSequence,pose:String(state.pose),atlas:state.atlas,phase:state.phase,heldFurniture:state.furniture??'',floorFurniture:floor.join(','),reveal:String(state.reveal),celebrating:String(state.celebrating),sceneCostume:this.costume,sceneLocation:this.location});
     this.canvas.setAttribute('aria-label',(language==='en'?'Illustrated kung fu fight scene. Opponents: ':'Рисованная сцена кунг-фу. Противники: ')+lineup.map(foe=>language==='en'?foe.en:foe.ru).join(', '));
   }
-  destroy(){this.dead=true;this.resize.disconnect();this.motion.removeEventListener('change',this.onMotion);this.images.clear();this.audio.cancel();}
+  destroy(){this.dead=true;this.unsubscribeAudio();this.resize.disconnect();this.motion.removeEventListener('change',this.onMotion);this.images.clear();this.audio.cancel();}
 }

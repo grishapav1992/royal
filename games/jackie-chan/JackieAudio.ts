@@ -10,8 +10,24 @@ export class JackieAudio {
   private disposed = false;
   private buffers = new Map<string,AudioBuffer>();
   private variation = 0;
-  private unsubscribe = gameAudio.onPreferences(p => { if (p.muted || p.volume === 0) this.cancel(); });
-  async unlock() { if (!this.disposed && this.enabled) await gameAudio.unlock(); }
+  private resumeListener?:()=>void;
+  private needsResume=false;
+  private preferred=true;
+  private context?:AudioContext;
+  private onContextState=()=>{if(this.context?.state!=='running'){this.needsResume=true;this.cancel();}else this.resumeIfNeeded();};
+  private unsubscribe = gameAudio.onPreferences(p => {
+    const available=!p.muted&&p.volume>0,changed=available&&!this.preferred;this.preferred=available;
+    if(!available){this.needsResume=true;this.cancel();}
+    else if(changed&&this.enabled)void this.unlock();
+  });
+  onResume(listener:()=>void){this.resumeListener=listener;return()=>{if(this.resumeListener===listener)this.resumeListener=undefined;};}
+  private watchContext(){
+    if(this.context===gameAudio.context)return;
+    this.context?.removeEventListener('statechange',this.onContextState);this.context=gameAudio.context;
+    this.context?.addEventListener('statechange',this.onContextState);
+  }
+  private resumeIfNeeded(){if(this.needsResume&&this.allowed()){this.needsResume=false;this.resumeListener?.();}}
+  async unlock() { if (!this.disposed && this.enabled){await gameAudio.unlock();if(this.disposed)return;this.watchContext();this.resumeIfNeeded();} }
   private allowed() { const p = gameAudio.getPreferences(); return !this.disposed && this.enabled && !p.muted && p.volume > 0 && !document.hidden && gameAudio.context?.state === 'running' && !!gameAudio.output; }
   private tone(at: number, frequency: number, duration: number, level: number, type: OscillatorType = 'sine') {
     if (!this.allowed()) return;
@@ -33,12 +49,13 @@ export class JackieAudio {
   /** Visuals follow estimated audible time, including the shared output latency. */
   private audible(at: number) {
     const c = gameAudio.context!; const stamp = c.getOutputTimestamp?.();
-    return stamp?.performanceTime && stamp.contextTime ? stamp.performanceTime + (at - stamp.contextTime) * 1000
-      : performance.now() + (at - c.currentTime + (c.outputLatency || c.baseLatency || 0)) * 1000;
+    const now=performance.now(),estimated=stamp?.performanceTime&&stamp.contextTime?stamp.performanceTime+(at-stamp.contextTime)*1000:0;
+    return estimated>=now?estimated:now+(at-c.currentTime+(c.outputLatency||c.baseLatency||0))*1000;
   }
   begin(count: number, success: boolean, paid: boolean,plan:FightPlan=FIGHT_PLANS[0],speed:1|2=1,from=0) {
-    this.cancel();
-    if (!this.allowed()) return performance.now();
+    this.cancel();this.watchContext();
+    if (!this.allowed()){this.needsResume=true;return performance.now();}
+    this.needsResume=false;
     const at = gameAudio.context!.currentTime + .06;
     this.variation=(this.variation+1)%4;
     const when=(time:number)=>at+(time-from)/speed;
@@ -66,8 +83,8 @@ export class JackieAudio {
     [392,494,587].forEach((f,i) => this.tone(at + i * .08, f, .2, .035, 'triangle'));
   }
   result(success:boolean,paid:boolean){this.cancel();if(paid){this.cashout();return;}if(this.allowed())this.tone(gameAudio.context!.currentTime+.02,success?330:100,.12,.028,'triangle');}
-  toggle() { this.enabled = !this.enabled; if (!this.enabled) this.cancel(); else void this.unlock(); }
+  toggle() { this.enabled = !this.enabled; if (!this.enabled){this.needsResume=true;this.cancel();}else void this.unlock(); }
   cancel() { for (const source of this.sources) { try { source.stop(); } catch {} } this.sources.clear(); }
   state() { return { active: this.sources.size, enabled: this.enabled, style:'arcade-brawler' }; }
-  destroy() { this.disposed = true; this.cancel(); this.buffers.clear(); this.unsubscribe(); }
+  destroy() { this.disposed = true; this.cancel(); this.resumeListener=undefined;this.context?.removeEventListener('statechange',this.onContextState);this.buffers.clear(); this.unsubscribe(); }
 }

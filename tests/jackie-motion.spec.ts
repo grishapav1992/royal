@@ -26,7 +26,31 @@ test('victory has fist and bow poses, while restored results and losses remain s
     for(const [offset,phase,pose]of [[.6,'victory-fist',6],[1.6,'victory-bow',7]]as const){const frame=await page.evaluate(config=>(window as any).jackieMotion.render(config),{risk,status:'complete',time:resultAt(count)+offset});expect(frame.phase).toBe(phase);expect(frame.pose).toBe(String(pose));expect(frame.celebrating).toBe('true');}
     const restored=await page.evaluate(c=>(window as any).jackieMotion.restore(c),{risk,status:'complete'});expect(restored.phase).toBe('victory-hold');expect(restored.celebrating).toBe('false');
     const lost=await page.evaluate(config=>(window as any).jackieMotion.render(config),{risk,status:'lost',time:resultAt(count)+.6});expect(lost.phase).toBe('lost');expect(lost.celebrating).toBe('false');
+    const foes=JSON.parse(lost.foeFrames);expect(foes[0].pose).toBe(7);for(const foe of foes.slice(1))expect(foe.pose).toBe(6);
   }
+});
+
+test('sound returns on the current timeline after mute, zero volume and context suspension',async({page})=>{
+  await page.locator('#sound').click();
+  await page.waitForFunction(async()=>{const p='/src/game/GameAudio.ts';return(await import(/* @vite-ignore */p)).gameAudio.context?.state==='running';});
+  const rows=await page.evaluate(async()=>{
+    const h=(window as any).jackieMotion,p='/src/game/GameAudio.ts',{gameAudio}=await import(/* @vite-ignore */p),rows=[];
+    const original=h.audio.begin.bind(h.audio),calls:any[]=[];h.audio.begin=(...args:any[])=>{calls.push(args);return original(...args);};
+    for(const speed of [1,2])for(const mode of ['local','global','volume','context']){
+      h.render({risk:'extreme',plan:'turning-heel'});h.scene.setSpeed(speed);h.scene.show(Reflect.get(h.scene,'view'),true,false,'audio-recovery',h.plans.find((p:any)=>p.id==='turning-heel'));
+      await new Promise(resolve=>setTimeout(resolve,1900/speed));const before=h.scene.state();
+      if(mode==='local')h.audio.toggle();else if(mode==='global')gameAudio.setMuted(true);else if(mode==='volume')gameAudio.setVolume(0);else await gameAudio.context!.suspend();
+      await new Promise(resolve=>setTimeout(resolve,60));const stopped=h.audio.state().active,previous=calls.length;
+      if(mode==='local')h.audio.toggle();else if(mode==='global')gameAudio.setMuted(false);else if(mode==='volume')gameAudio.setVolume(.35);else await gameAudio.context!.resume();
+      await new Promise(resolve=>setTimeout(resolve,80));const after=h.scene.state();
+      rows.push({speed,mode,before,after,stopped,active:h.audio.state().active,resumes:calls.slice(previous).map(a=>({speed:a[4],from:a[5]}))});
+      h.scene.settle();
+    }
+    h.scene.show(Reflect.get(h.scene,'view'),true);await gameAudio.context!.suspend();const previous=calls.length;h.scene.destroy();h.audio.destroy();await gameAudio.context!.resume();await new Promise(resolve=>setTimeout(resolve,50));
+    return{rows,closed:{active:h.audio.state().active,resumes:calls.length-previous}};
+  });
+  for(const row of rows.rows){expect(row.stopped).toBe(0);expect(row.active).toBeGreaterThan(0);expect(row.resumes).toHaveLength(1);expect(row.resumes[0].from).toBeGreaterThanOrEqual(row.before.elapsed);expect(row.resumes[0].speed).toBe(row.speed);expect(row.after.elapsed).toBeGreaterThanOrEqual(row.before.elapsed);expect(row.after.busy).toBe(true);}
+  expect(rows.closed).toEqual({active:0,resumes:0});await writeFile(out+'/audio-recovery.json',JSON.stringify(rows,null,2));
 });
 
 test('thirteen routines show different unarmed and prop contacts in every costume on desktop and mobile',async({page})=>{

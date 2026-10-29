@@ -2,7 +2,7 @@ import {test,expect,type Page} from '@playwright/test';
 import {createServer,type ViteDevServer} from 'vite';
 import {spawn,type ChildProcess} from 'node:child_process';
 import {createServer as netServer} from 'node:net';
-import {mkdir,writeFile} from 'node:fs/promises';
+import {mkdir,writeFile,readFile} from 'node:fs/promises';
 import {temporaryDatabase} from '../scripts/database-test';
 import {PostgresDatabase,databaseConfig} from '../server/database';
 
@@ -10,11 +10,13 @@ let vite:ViteDevServer,backend:ChildProcess,db:Awaited<ReturnType<typeof tempora
 const out='artifacts/work/jackie-chan';
 test.beforeAll(async()=>{
   test.setTimeout(120000);db=await temporaryDatabase();const socket=netServer();await new Promise<void>(yes=>socket.listen(0,'127.0.0.1',yes));const port=(socket.address() as {port:number}).port;await new Promise<void>(yes=>socket.close(()=>yes()));
-  backend=spawn(process.execPath,['--import','tsx','tests/fixtures/jackie-backend.ts'],{env:{...process.env,...db.env,AUTH_DB_PATH:'jackie_qa',PORT:String(port)},stdio:['ignore','pipe','pipe','ipc']});
+  const projected=process.env.JACKIE_RELEASE_PROJECTION==='1';
+  backend=spawn(process.execPath,projected?['artifacts/work/jackie-chan/jackie-backend.mjs']:['--import','tsx','tests/fixtures/jackie-backend.ts'],{env:{...process.env,...db.env,AUTH_DB_PATH:'jackie_qa',PORT:String(port)},stdio:['ignore','pipe','pipe','ipc']});
   backend.stdout?.on('data',b=>logs=(logs+b.toString()).slice(-6000));backend.stderr?.on('data',b=>logs=(logs+b.toString()).slice(-6000));const target=`http://127.0.0.1:${port}`;
   try{await expect.poll(async()=>{try{return(await fetch(target+'/healthz')).ok;}catch{return false;}},{timeout:60000,message:'Jackie backend readiness'}).toBe(true);}
   catch(error){throw new Error(`Jackie backend did not become ready (exit ${backend.exitCode}): ${logs}`,{cause:error});}
-  vite=await createServer({configFile:false,root:process.cwd(),cacheDir:'node_modules/.vite-jackie',optimizeDeps:{entries:['index.html','tests/fixtures/independent-games.html']},server:{host:'127.0.0.1',port:0,watch:{ignored:['**/module-dist/**','**/module-build/**']},proxy:{'/api':target,'/game-modules':target,'/multiplayer':{target,ws:true,rewrite:path=>path.replace(/^\/multiplayer/,'')}}}});await vite.listen();baseURL=`http://127.0.0.1:${(vite.httpServer!.address() as {port:number}).port}`;await mkdir(out,{recursive:true});
+  const plugins=projected?[(await import('../deployment/releases/jackie-chan-20261029-v1/projection.mjs')).viteProjection(JSON.parse(await readFile(out+'/production-before.json','utf8')))]:[];
+  vite=await createServer({configFile:false,root:process.cwd(),plugins,cacheDir:projected?'node_modules/.vite-jackie-production':'node_modules/.vite-jackie',optimizeDeps:{entries:['index.html','tests/fixtures/independent-games.html']},server:{host:'127.0.0.1',port:0,watch:{ignored:['**/module-dist/**','**/module-build/**']},proxy:{'/api':target,'/game-modules':target,'/multiplayer':{target,ws:true,rewrite:path=>path.replace(/^\/multiplayer/,'')}}}});await vite.listen();baseURL=`http://127.0.0.1:${(vite.httpServer!.address() as {port:number}).port}`;await mkdir(out,{recursive:true});
 });
 test.afterAll(async()=>{await vite?.close();if(backend?.exitCode===null){backend.kill();await new Promise<void>(yes=>backend.once('exit',()=>yes()));}await db?.cleanup();});
 async function seed(email:string){const connection=new PostgresDatabase('jackie_qa',{existingSchema:true,config:databaseConfig({...process.env,...db.env})});try{const a=await connection.prepare('SELECT id FROM accounts WHERE email=?').get(email);expect(a).toBeDefined();await connection.prepare('INSERT INTO demo_wallets(account_id,balance,fraction_units) VALUES(?,10000,0) ON CONFLICT(account_id) DO UPDATE SET balance=10000,fraction_units=0').run(a!.id);return String(a!.id);}finally{await connection.close();}}

@@ -1,0 +1,135 @@
+{
+  "production": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+  "featureBase": "3975d78197c639e89a1f555f0ffdcf23dd56d50b",
+  "reviewedFeature": "ce784d39cbd83df6dc50c0b3248fc2713823f19c",
+  "rows": [
+    {
+      "file": "server/demoExpansion.ts",
+      "source": "deployment/releases/jackie-chan-20261029-v1/source/server/demoExpansion.ts",
+      "liveSha256": "0e5ebaac6d2ee4b1d4f27b46e7ce625b56957a60fd9ffe8600edab42c6bc5496",
+      "sha256": "889546a21c357389b45b5b44f249dbd8d4c5463e3ab2ac661de54cd527bdf477"
+    },
+    {
+      "file": "server/demoWalletRoutes.ts",
+      "source": "deployment/releases/jackie-chan-20261029-v1/source/server/demoWalletRoutes.ts",
+      "liveSha256": "7753a5f2382aa6a755bb61aeb7c11a58c1e2865b3de6284c6cafad5037b697e4",
+      "sha256": "2dc23760560d88207bdfd8e7fa002b713b3f8921550cfd13010c3e44d06832f2"
+    },
+    {
+      "file": "server/finance/nile-game-runtime.ts",
+      "source": "deployment/releases/jackie-chan-20261029-v1/source/server/finance/nile-game-runtime.ts",
+      "liveSha256": "eb0a2f8a2e127ae7d08c840614fbfb17de6720864fbcb80f834efe2eebde4331",
+      "sha256": "3d0f776711c9f31856ac023aff5feffbf6e01d8993d39243603f635ee2ecda7c"
+    },
+    {
+      "file": "server/gameWalletRoutes.ts",
+      "source": "deployment/releases/jackie-chan-20261029-v1/source/server/gameWalletRoutes.ts",
+      "liveSha256": "b5de3cad7bfed65ca7bfba3500086427eb28f61715bca4ab4db2b10d89dcabbe",
+      "sha256": "823b05f96bedcce6d0a8dd9ed0cd3cf7d064e558d821d46fd486f5f675e91d25"
+    },
+    {
+      "file": "server/games/jackieChan.ts",
+      "source": "server/games/jackieChan.ts",
+      "sha256": "12ad39116f68c9aec96ec49a88d46ff66d9bb75f751d981ebcc35c5eb9974297",
+      "new": true
+    },
+    {
+      "file": "server/jackieCollection.ts",
+      "source": "server/jackieCollection.ts",
+      "sha256": "343b64552a0249b240436d717fbd2c9c3f4e9dbe457319126b478ad6cd63f13c",
+      "new": true
+    },
+    {
+      "file": "src/admin/gameNames.ts",
+      "source": "deployment/releases/jackie-chan-20261029-v1/source/src/admin/gameNames.ts",
+      "liveSha256": "6f2c5be0cae5fdb98b84b8e93f583c3cb2a99b47827ecedeb755b1da0cbb448e",
+      "sha256": "784bc8b0f6cd4e698ad369f6d7cbcef4c3f1a8dfcd3b56a155301de0aa719dc8"
+    },
+    {
+      "file": "src/game/cabinetArtwork.ts",
+      "source": "deployment/releases/jackie-chan-20261029-v1/source/src/game/cabinetArtwork.ts",
+      "liveSha256": "a2ef6f31c5425876368f759d6667c01157a2bc1cce5b0475ede52c68b33c8266",
+      "sha256": "7940b701dcd38ceb40e97ee53053d7c3d7516f4044137bc20150c2ca8d0b3642"
+    },
+    {
+      "file": "src/game/cabinetArtworkSources.ts",
+      "source": "deployment/releases/jackie-chan-20261029-v1/source/src/game/cabinetArtworkSources.ts",
+      "liveSha256": "a6b73f6cfab5884baf2d121323517cdd98a82fdd5ff74831c35e625b01311a89",
+      "sha256": "c3a0794897d912b7233650e506071e8586e01207e94f3ad3e5c0a694b0bbcea4"
+    },
+    {
+      "file": "src/i18n/en.ts",
+      "source": "deployment/releases/jackie-chan-20261029-v1/source/src/i18n/en.ts",
+      "liveSha256": "d216375c0ef40ae8d24b1ad9e4c5a475bae393119b0a2a76cd3b73bda1a53e45",
+      "sha256": "333f6414f2f1349aa14fbd518bbbbdb6975612ecba4622c5e24b4b1de9a0bee8"
+    },
+    {
+      "file": "src/modules/GameModuleCatalog.ts",
+      "source": "deployment/releases/jackie-chan-20261029-v1/source/src/modules/GameModuleCatalog.ts",
+      "liveSha256": "cccfb5e14147d6b2ce782180656a387506f01157e082f30d383e97687299260d",
+      "sha256": "82cb4bd31de1a69ce2f77690c27e59be33491b1967725d544d4dbce24d1d8a54"
+    },
+    {
+      "file": "src/shared/arcadeCatalog.ts",
+      "source": "deployment/releases/jackie-chan-20261029-v1/source/src/shared/arcadeCatalog.ts",
+      "liveSha256": "876d100674609ae777d300cae6ba0571f699a8b29de91a9094c1fa4e7ed17895",
+      "sha256": "1e00177b6098be763553d17916a31f236c719bde31cae53cc4d8f23df07c7c00"
+    },
+    {
+      "file": "src/shared/cabinets.ts",
+      "source": "deployment/releases/jackie-chan-20261029-v1/source/src/shared/cabinets.ts",
+      "liveSha256": "4e2fbdfe5111392ddb2722b7752eef4ba6ad27d8e3a89435ef1d6dbe3e5e3d93",
+      "sha256": "5ab6b1cb1640204982dc6f019792bdcdaf2b4392746a602a94d986986fdeffb5"
+    },
+    {
+      "file": "src/shared/casinoExpansion.ts",
+      "source": "deployment/releases/jackie-chan-20261029-v1/source/src/shared/casinoExpansion.ts",
+      "liveSha256": "36ecbf54a4c45efc3b396c80035eb0663cc0bd427001e254802d098b2018aa43",
+      "sha256": "4179ff2dc32d484198c4a1ce79f9648bede88bac9d9a71aa26bbe7beb5588e1f"
+    },
+    {
+      "file": "src/shared/jackieChan.ts",
+      "source": "src/shared/jackieChan.ts",
+      "sha256": "5f7cd0a034676f79cf94b01b7a5e725d8c27cc7af5e8734d36ce3e27dff47faf",
+      "new": true
+    },
+    {
+      "file": "src/ui/CasinoExpansionUI.ts",
+      "source": "deployment/releases/jackie-chan-20261029-v1/source/src/ui/CasinoExpansionUI.ts",
+      "liveSha256": "107da7dd14d3f1dd42dfeb3c8fb6290f22d1cc7f623e1681a4ef5c48c8da3207",
+      "sha256": "b23f2b066c7040da1fe43b3e1fe0c9448ce5fe77efe5248f83d9e395c86eb057"
+    },
+    {
+      "file": "src/ui/DemoWalletUI.ts",
+      "source": "deployment/releases/jackie-chan-20261029-v1/source/src/ui/DemoWalletUI.ts",
+      "liveSha256": "78e78c25afbbf68124d20f58c1c1f8501a18e96506c5dcb6867e96599799bb16",
+      "sha256": "de2a7f2999160d694b855d9a3e59ae2b05cdc5b4f31222318b4e670b1c6de1dd"
+    },
+    {
+      "file": "src/ui/RoyalPlatformCatalog.ts",
+      "source": "deployment/releases/jackie-chan-20261029-v1/source/src/ui/RoyalPlatformCatalog.ts",
+      "liveSha256": "b2eae58e8496d33572471d9fcb8db57e32ad19d18758dc87f24172e6dac9d857",
+      "sha256": "2dd818892f815c877702a9365af29110a0775529a44a55d48417e73157b97faa"
+    },
+    {
+      "file": "src/wallet/ExpansionClient.ts",
+      "source": "deployment/releases/jackie-chan-20261029-v1/source/src/wallet/ExpansionClient.ts",
+      "liveSha256": "d332ac67637c90e39cd1b0746f3ece68eb7d64c59252a561a9b5917371a03cb9",
+      "sha256": "402d1dc1d5ccb9341dee2c93e1c03ee1a7cbb0cbf9adf75e2e394bb4eddbf35c"
+    }
+  ],
+  "financialOverrides": [
+    {
+      "file": "src/shared/arcadeCatalog.ts",
+      "source": "deployment/releases/jackie-chan-20261029-v1/finance-source/src/shared/arcadeCatalog.ts",
+      "liveSha256": "22c57baaabca82124b5cdbe4276dbbc20ed0fea16e227d2258659491281d208d",
+      "sha256": "cdb934cb970cc208a453365419fdeb2076bf03b19a3638884b86a341e2c8cee3"
+    },
+    {
+      "file": "src/i18n/en.ts",
+      "source": "deployment/releases/jackie-chan-20261029-v1/finance-source/src/i18n/en.ts",
+      "liveSha256": "b6ba026c8b72fb124efce3f69fa7af5338a48ae44149930cb6383b9d6161f47b",
+      "sha256": "7a45366f52d63b42c47a193a7115e35cfec0d9d3690d0770e8e91f3a30d13c38"
+    }
+  ]
+}

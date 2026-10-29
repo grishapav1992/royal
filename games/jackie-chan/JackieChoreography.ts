@@ -1,4 +1,5 @@
 import {FIGHT_PLANS,moveFurniture,combatPose,kickMove,type FightMove,type FightPlan,type Furniture} from './JackieFightPlans';
+import {openingActions} from './JackieOpenings';
 export type {Furniture} from './JackieFightPlans';
 
 const CONTACT_INTERVAL = 2.55;
@@ -11,9 +12,7 @@ export const GROUP_REACTION = .66;
 export type Impact={at:number;fighter:number;kind:'punch'|'kick'|'chair'|'block'|'whoosh';primary:boolean;actor:'hero'|'foe'};
 export function impacts(plan:FightPlan,count:number):Impact[]{
   return plan.moves.slice(0,count).flatMap((move,fighter):Impact[]=>[
-    {at:contactAt(fighter)-1.45,fighter,kind:'block',primary:false,actor:'foe'},
-    {at:contactAt(fighter)-.95,fighter,kind:move==='chair'?'block':'punch',primary:false,actor:move==='chair'?'foe':'hero'},
-    {at:contactAt(fighter)-.6,fighter,kind:move==='chair'?'block':'whoosh',primary:false,actor:'foe'},
+    ...openingActions(plan,fighter).map((action,index)=>({at:contactAt(fighter)-[1.45,.95,.6][index],fighter,kind:action.kind,primary:false,actor:action.actor})),
     ...(move==='combo'?[{at:contactAt(fighter)-.25,fighter,kind:'block' as const,primary:false,actor:'hero' as const}]:[]),
     {at:contactAt(fighter),fighter,kind:move==='chair'?'chair':kickMove(move)?'kick':'punch',primary:true,actor:'hero'},
   ]);
@@ -63,10 +62,10 @@ export function choreography(elapsed:number,count:number,status:'playing'|'compl
   }
   if(local<-.48){
     if(local<-1.6)return {...action,phase:'guard-step'};
-    if(local<-1.25)return {...action,phase:'forearm-block',atlas:'combat',pose:6,x:target-.012};
+    if(local<-1.25){const opening=openingActions(plan,fighter)[0];return {...action,phase:opening.phase,atlas:opening.atlas,pose:opening.pose,x:target+(opening.actor==='hero'?.012:-.012)};}
     if(local<-1.1)return {...action,phase:'opening-windup',pose:2,x:target-.012};
-    if(local<-.8)return {...action,phase:'opening-punch',pose:3,x:target+.018*ease((local+1.1)/.12)};
-    return {...action,phase:'slip-counter',atlas:'combat',pose:7,x:target-.025*ease((local+.8)/.15)};
+    const opening=openingActions(plan,fighter)[local<-.8?1:2];
+    return {...action,phase:opening.phase,atlas:opening.atlas,pose:opening.pose,x:target+(opening.actor==='hero'?.018:-.012)};
   }
   const special=combatPose(move);
   if(special!==undefined){
