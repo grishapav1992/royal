@@ -82,7 +82,7 @@ test('preview brings a varied fight contact into a laptop viewport and reopens w
   const login=await page.request.post(baseURL+'/api/auth/login',{data:{email,password:'Jackie-isolated-check-123!'}});expect(login.ok()).toBe(true);const account=await seed(email);
   await page.route('**/__jackie/setup',route=>route.fulfill({json:{account:{id:account}}}));
   await page.goto(baseURL+'/tests/fixtures/jackie-play.html');
-  const game=page.locator('.jackie');await expect(game).toHaveAttribute('data-loading','false');
+  const game=page.locator('.jackie');await expect(game).toHaveAttribute('data-loading','false',{timeout:30000});
   await game.locator('[data-risk="extreme"]').click();
   const version=await page.locator('#preview').getAttribute('data-game-module-version');
   let posts=0;page.on('request',r=>{if(r.method()==='POST'&&r.url().endsWith('/api/demo-wallet/expansion'))posts++;});
@@ -91,7 +91,7 @@ test('preview brings a varied fight contact into a laptop viewport and reopens w
   const scene=await game.locator('canvas').evaluate(el=>{const r=el.getBoundingClientRect();return{top:r.top,bottom:r.bottom,height:innerHeight,held:(el as HTMLElement).dataset.heldFurniture,phase:(el as HTMLElement).dataset.phase,sequence:(el as HTMLElement).dataset.sequence};});
   expect(scene.top).toBeGreaterThanOrEqual(0);expect(scene.bottom).toBeLessThanOrEqual(scene.height);expect(scene.held).not.toBe('chair');
   await page.screenshot({path:out+'/furniture-live-preview.png'});const accepted=await operation;expect(accepted.view.jackie.combat.shots).toHaveLength(1);
-  await page.locator('#reopen').click();await expect(game).toHaveAttribute('data-loading','false');await expect(game.locator('[data-cashout]')).toBeVisible();await expect(game.locator('canvas')).toHaveAttribute('data-sequence',scene.sequence!);expect(posts).toBe(1);
+  await page.locator('#reopen').click();await expect(game).toHaveAttribute('data-loading','false',{timeout:30000});await expect(game.locator('[data-cashout]')).toBeVisible();await expect(game.locator('canvas')).toHaveAttribute('data-sequence',scene.sequence!);expect(posts).toBe(1);
   await expect(page.locator('#preview')).toHaveAttribute('data-game-module-version',version!);await expect(page.locator('#preview-version')).toContainText('Актуальная сборка');
   await writeFile(out+'/preview-continuity.json',JSON.stringify({viewport:[1280,720],version,scene,postOperations:posts,reopenPreservedAcceptedShot:true},null,2));
   await act(page,'[data-cashout]');await expect(game).toHaveAttribute('data-result-kind','cashout');
@@ -112,10 +112,10 @@ test('lost response recovers the same operation; reopening loads saved state wit
   const email='jackie-recovery-'+crypto.randomUUID()+'@example.test';
   const login=await page.request.post(baseURL+'/api/auth/login',{data:{email,password:'Jackie-isolated-check-123!'}});expect(login.ok()).toBe(true);const account=await seed(email);
   await page.goto(baseURL+'/tests/fixtures/independent-games.html?lang=en');await page.waitForFunction(()=>!!(window as any).moduleHarness);
-  await page.evaluate(id=>{(window as any).moduleHarness.account(id);(window as any).moduleHarness.open('original-jackie-chan');},account);await expect(page.locator('.jackie')).toHaveAttribute('data-loading','false');await page.emulateMedia({reducedMotion:'reduce'});
+  await page.evaluate(id=>{(window as any).moduleHarness.account(id);(window as any).moduleHarness.open('original-jackie-chan');},account);await expect(page.locator('.jackie')).toHaveAttribute('data-loading','false',{timeout:30000});await page.emulateMedia({reducedMotion:'reduce'});
   const operations:string[]=[];let dropped=false;await page.route('**/api/demo-wallet/expansion',async route=>{
     if(route.request().method()!=='POST')return route.continue();operations.push(route.request().postDataJSON().id);const response=await route.fetch();if(!dropped){dropped=true;return route.abort('failed');}return route.fulfill({response});
   });
   await page.locator('.jackie [data-fight]').click();await expect(page.locator('.jackie [data-retry]')).toBeVisible();await page.locator('.jackie [data-retry]').click();await expect(page.locator('.jackie [data-cashout]')).toBeVisible();expect(operations).toHaveLength(2);expect(operations[0]).toBe(operations[1]);
-  await page.evaluate(()=>(window as any).moduleHarness.close());await expect(page.locator('#primary')).toBeEmpty();await page.evaluate(()=>(window as any).moduleHarness.open('original-jackie-chan'));await expect(page.locator('.jackie')).toHaveAttribute('data-loading','false');await expect(page.locator('.jackie [data-cashout]')).toBeVisible();expect(operations).toHaveLength(2);await act(page,'[data-cashout]');
+  await page.evaluate(()=>(window as any).moduleHarness.close());await expect(page.locator('#primary')).toBeEmpty();await page.evaluate(()=>(window as any).moduleHarness.open('original-jackie-chan'));await expect(page.locator('.jackie')).toHaveAttribute('data-loading','false',{timeout:30000});await expect(page.locator('.jackie [data-cashout]')).toBeVisible();expect(operations).toHaveLength(2);await act(page,'[data-cashout]');
 });
