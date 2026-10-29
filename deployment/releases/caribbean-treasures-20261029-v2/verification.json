@@ -1,0 +1,256 @@
+{
+  "format": 1,
+  "release": "caribbean-treasures-20261029-v2",
+  "verifiedAt": "2026-10-29T17:10:17.628Z",
+  "sourceCommit": "b921d0537fed52336aaee5d97144bf36a9188107",
+  "baseCommit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+  "githubSourcePreservedBeforePublication": true,
+  "publicationExit": {
+    "sourceCommit": "b921d0537fed52336aaee5d97144bf36a9188107",
+    "exitCode": 0,
+    "endedAt": "2026-10-29T16:54:38.731036+00:00"
+  },
+  "images": {
+    "game": "sha256:dfced2c42ba973e54069cedc3a15e82fb566f88180a43f2c42d3822f7ad94961",
+    "finance": "sha256:7a9db125d05fc77a5f027c606a35e96bded244ec5681da0c6584ab6d0c76bd8e"
+  },
+  "module": {
+    "gameId": "studio-caribbean-treasures",
+    "version": "1.5.1-4ef3725616e6",
+    "manifestSha256": "7ebc1e1b1c956f1921d8b2d45f29e375c2a0df6fbe141e9f99b0bd3c9c402016",
+    "beforeSha256": "none",
+    "contract": {
+      "apiVersion": 1,
+      "rulesVersion": 1,
+      "progressVersion": 1
+    },
+    "resources": 124,
+    "bytes": 14841400,
+    "activeSha256": "80d86d9eb4a3d5a958aff5c370f55033478de9bca0e40e1709009e3bba351cce"
+  },
+  "runtime": {
+    "programFiles": 8480,
+    "sourceFiles": 2342,
+    "hostContracts": 120,
+    "oldContractsPreserved": 119,
+    "persistentServices": 14,
+    "otherServicesPreserved": 12,
+    "configurationPreserved": true,
+    "playerDatabaseRestored": false
+  },
+  "wallet": {
+    "activeRoute": "/api/demo-wallet",
+    "currency": "shared Royal virtual USDT",
+    "legacyRoute": "/api/game-wallet",
+    "legacyRouteStatus": 410,
+    "legacyNileReserveDoesNotGateCurrentGame": true,
+    "productionAccountsCreated": false,
+    "productionWagersPlaced": false,
+    "productionBalancesCredited": false
+  },
+  "validation": {
+    "releasePlan": true,
+    "releasePrepare": true,
+    "releaseVerifyGithub": true,
+    "qualifiedRtpProfiles": 14,
+    "unchangedUnqualifiedLegacyProfiles": 114,
+    "caribbeanMathAndWalletTests": 48,
+    "collectionAndForestFlagWalletTests": 12,
+    "actualFinancialInputTests": 18,
+    "changedFinancialInputsCovered": 8,
+    "moduleTests": 7,
+    "installerLinuxTests": 13,
+    "realOnlineHostWithChatBrowserTests": 20,
+    "unchangedApplicationBytes": 2018,
+    "collectionSchema": {
+      "readOnly": true,
+      "collectionTables": [
+        "royal_game.caribbean_crew_profiles",
+        "royal_game.caribbean_crew_owned",
+        "royal_game.caribbean_crew_completed",
+        "royal_game.caribbean_crew_requests"
+      ],
+      "verified": true
+    }
+  },
+  "installerFollowup": {
+    "boundedFinancialReadinessHelperWiredForFutureRuns": true,
+    "runningReleaseWasAlreadyConfirmedByThreeSuccessfulSamples": true,
+    "runningImagesAndHistoricalReleaseHelperWereNotModified": true
+  },
+  "financialHealth": {
+    "ok": true,
+    "ready": true,
+    "testOnly": true,
+    "at": 1793292742.197451
+  },
+  "backups": {
+    "directory": "/opt/royal-backups/caribbean-treasures-20261029-v2",
+    "source.tgz": {
+      "bytes": 206839093,
+      "sha256": "d7717bb2bcfce75e789e215b01e6add1d9b80ccbd2ce017bb34d870e03987878"
+    },
+    "financial-source.tgz": {
+      "bytes": 515773,
+      "sha256": "e45656959d1121326a1fca4cd6e271f8eb269bd60d4693f5852e5a941a1fc97b"
+    },
+    "player-journals.dump": {
+      "bytes": 30886468,
+      "sha256": "21988df174b22fd3755367fe3b23a7fb9024cadf986d55bbf38465f9c493d28b",
+      "archiveEntries": 418
+    },
+    "privateDataKeptOnServer": true
+  },
+  "transfer": {
+    "received": true,
+    "sourceCommit": "b921d0537fed52336aaee5d97144bf36a9188107",
+    "transportSha256": "6770cefcfd9ba0cc3e1591c879b13537675032b81ee47c762d5fd10c5a448ed6",
+    "manifestSha256": "c30086221f1c67de91d8539936a34782243f2a448a2bbb0cd4b88241dc1bc07f",
+    "transportBytes": 63139714,
+    "unpackedBytes": 72337348,
+    "files": 498,
+    "freeBefore": 5968494592,
+    "freeAfter": 5894766592
+  },
+  "publicVerification": {
+    "passed": true,
+    "resources": 128,
+    "oldPointers": 119,
+    "anonymous": {
+      "/api/demo-wallet": 401,
+      "/api/caribbean-crew": 401
+    },
+    "retiredGameWallet": 410,
+    "viewports": [
+      {
+        "width": 1440,
+        "height": 1000,
+        "overflowX": 0
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "overflowX": 0
+      }
+    ],
+    "errors": [],
+    "mutations": [],
+    "connectedChat": {
+      "publicGuest": "absent by offline design",
+      "localRealOnlineHost": {
+        "scenariosPassed": 20,
+        "desktopAndMobile": true,
+        "unchangedBuildFiles": 2018
+      }
+    },
+    "screenshotsReviewed": true,
+    "physicalMobileDevicesTested": false
+  },
+  "cleanup": {
+    "server": {
+      "status": "complete",
+      "previousCompletedReleaseCopies": {
+        "sourceCommitVerifiedInGithubMain": "2ff53f19090b7ef2c32923872f7ed52c86bf833d",
+        "retainedImage": "sha256:ca0e7b52d117f6526a733f1824ee132ffdd3d740b4d468450c75045f589d307e",
+        "folders": {
+          "/opt/royal-releases/atelier-20261023-v1/runtime-context": 202938770,
+          "/opt/royal-releases/atelier-20261023-v1/module-delta": 193365023
+        },
+        "files": 1948,
+        "inventorySha256": "14d01977311fc6601cd282a7b339d8d38d32a1ee2f02048430f178a8a0427505",
+        "freeBefore": 5549535232,
+        "removed": true,
+        "freeAfter": 5954703360
+      },
+      "obsoleteOwnTransport": {
+        "at": 1793288239.861924,
+        "reason": "Uninstalled transport superseded after concurrent Flag publication changed its exact production base",
+        "sourcePreservedInMain": "69af2cb5dfbce14eb92a88b68cc52d5b2f077f4a",
+        "sha256": "4685716484bf9e40c83c622abfdfb58d94d28605aa503da0bab010a2b5961db7",
+        "path": "/opt/royal-releases/caribbean-treasures-20261029-v1/transport.tgz",
+        "bytes": 168108308,
+        "freeBefore": 5708431360,
+        "applicationOrDatabaseChanged": false,
+        "freeAfter": 5876547584,
+        "removed": true
+      },
+      "currentRelease": {
+        "sourceCommitPreservedInGithubMain": "b921d0537fed52336aaee5d97144bf36a9188107",
+        "publicationRecordPreservedInGithubMain": "085bab3eb25ba253f6f9ea960d1b20dc727f07b9",
+        "foldersAndFiles": {
+          "/opt/royal-releases/caribbean-treasures-20261029-v2/source": 31867158,
+          "/opt/royal-releases/caribbean-treasures-20261029-v2/finance-source": 120651,
+          "/opt/royal-releases/caribbean-treasures-20261029-v2/dist": 2734244,
+          "/opt/royal-releases/caribbean-treasures-20261029-v2/backend": 2159934,
+          "/opt/royal-releases/caribbean-treasures-20261029-v2/module-dist": 14870816,
+          "/opt/royal-releases/caribbean-treasures-20261029-v2/caribbean-package": 14857658,
+          "/opt/royal-releases/caribbean-treasures-20261029-v2/game-context": 19765285,
+          "/opt/royal-releases/caribbean-treasures-20261029-v2/finance-context": 1833027,
+          "/opt/royal-releases/caribbean-treasures-20261029-v2/helper-review": 65313,
+          "/opt/royal-releases/caribbean-treasures-20261029-v2/transport.tgz": 63139714,
+          "/opt/royal-releases/caribbean-treasures-20261029-v2/play.js": 1832840
+        },
+        "removedLogicalBytes": 153246640,
+        "inventorySha256": "9b06dfb7aa16b45ad71934684e73d21cc918f3bd29d12a9b239280c7082ed072",
+        "freeBefore": 5540880384,
+        "backupsAndImagesRetained": true,
+        "activePackageRetained": true,
+        "removed": true,
+        "freeAfter": 5675728896
+      },
+      "secondObsoleteOwnTransport": {
+        "sourceCommitPreservedInGithubMain": "678058fe59345ed3d96524c897a6fcb96c9b71d2",
+        "file": "/opt/royal-releases/caribbean-treasures-20261029-v2/transport.tgz",
+        "bytes": 63139650,
+        "sha256": "88a5ca831d95ee7f36ed6c924cbf9bc00978cb61b66668dc6ee29b4a3543db5e",
+        "freeBefore": 5968568320,
+        "removed": true,
+        "freeAfter": 6031712256
+      }
+    },
+    "local": {
+      "status": "retained_after_automatic_review_rejection",
+      "reason": "blocked by policy",
+      "taskDirectory": "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\caribbean-publish-20261029",
+      "logicalBytes": 966582162,
+      "freeBytesObserved": 298181222400,
+      "physicalSpaceReclaimedClaimed": false,
+      "testStandStopped": true,
+      "ownPreviewDatabaseRemoved": true,
+      "originalUserPreviewDatabaseRetained": "C:/Users/Aorus/AppData/Local/Temp/royal-pg-C70xv3",
+      "cleanupCondition": "Remove only owned temporary packages after their preserved source is verified and the automatic approval restriction is resolved.",
+      "remainingFolders": {
+        "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\caribbean-publish-20261029\\payload": 123094663,
+        "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\caribbean-publish-20261029\\payload-v2": 123094663,
+        "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\caribbean-publish-20261029\\payload-final": 178142533,
+        "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\caribbean-publish-20261029\\payload-release-v2": 72337202,
+        "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\caribbean-publish-20261029\\payload-release-final": 72337348,
+        "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\caribbean-publish-20261029\\browser-v2": 41031871
+      },
+      "remainingArchives": {
+        "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\caribbean-publish-20261029\\transport.tgz": 168108308,
+        "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\caribbean-publish-20261029\\transport-v2.tgz": 63139650,
+        "C:\\Users\\Aorus\\.codex\\worktrees\\new-slot\\royal\\artifacts\\work\\caribbean-publish-20261029\\transport-final.tgz": 63139714
+      }
+    }
+  },
+  "finalServerCheck": {
+    "sourceCommit": "b921d0537fed52336aaee5d97144bf36a9188107",
+    "services": {
+      "royal-game-1": {
+        "image": "sha256:dfced2c42ba973e54069cedc3a15e82fb566f88180a43f2c42d3822f7ad94961",
+        "health": "healthy"
+      },
+      "royal-nile-play": {
+        "image": "sha256:7a9db125d05fc77a5f027c606a35e96bded244ec5681da0c6584ab6d0c76bd8e",
+        "health": "healthy"
+      }
+    },
+    "contracts": 120,
+    "freeBytes": 5675143168
+  },
+  "finalPublicHealth": {
+    "ok": true,
+    "service": "royal-arcade"
+  }
+}
