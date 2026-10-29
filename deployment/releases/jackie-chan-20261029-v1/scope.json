@@ -1,6 +1,6 @@
 {
   "release": "jackie-chan-20261029-v1",
-  "base": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+  "base": "b921d0537fed52336aaee5d97144bf36a9188107",
   "reviewedFeature": "ce784d39cbd83df6dc50c0b3248fc2713823f19c",
   "allowedSource": [
     "docs/artwork/jackie-chan.json",
@@ -41,7 +41,8 @@
     "src/ui/CasinoExpansionUI.ts",
     "src/ui/DemoWalletUI.ts",
     "src/ui/RoyalPlatformCatalog.ts",
-    "src/wallet/ExpansionClient.ts"
+    "src/wallet/ExpansionClient.ts",
+    "docs/game-math/qualifications/caribbean-treasures-v1.json"
   ],
   "changedGame": "original-jackie-chan",
   "contract": {

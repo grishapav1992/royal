@@ -1,8 +1,8 @@
 {
-  "base": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+  "base": "b921d0537fed52336aaee5d97144bf36a9188107",
   "files": {
     "tsconfig.finance.json": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "tsconfig.finance.json",
       "sha256": "c2f92547ced3b90630d92f49053385cb1bbd52232016e02c7b0d02302827e34a"
     },
@@ -12,52 +12,57 @@
       "sha256": "b6ba026c8b72fb124efce3f69fa7af5338a48ae44149930cb6383b9d6161f47b"
     },
     "src/i18n/volcanicPlinkoEn.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/i18n/volcanicPlinkoEn.ts",
       "sha256": "5c029cf589bfccbcdc6c3ee1de27dba9fcc56850ec89201bf4ffa10bc4a027a8"
     },
     "src/i18n/index.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/i18n/index.ts",
       "sha256": "2d164e663d6a3922184508c3a65f01615c7c9bd64ac7e6717a790e78959e00ea"
     },
     "src/shared/draconaMath.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/draconaMath.ts",
       "sha256": "5735d0173b801e80329ec93f9d0dc049da94068addd042f7de0fb6bf9ca248b4"
     },
     "src/shared/caramelCarnival.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/caramelCarnival.ts",
       "sha256": "17f9e338297ac7fc37fa0f6ac6608e22cdc9ad145ad18f8c6764d72575f725aa"
     },
+    "src/shared/caribbeanTransport.ts": {
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
+      "path": "src/shared/caribbeanTransport.ts",
+      "sha256": "c4a590c6778048f9ecd37852549762adde064f90dca072316ee215ba8ac89c78"
+    },
     "src/shared/luelonSlots.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/luelonSlots.ts",
       "sha256": "1867b3f6e7e3fbc1e00dd6fad2bb094c42e6038f8eba18e0ef7250381f95cdcb"
     },
     "src/shared/themedGames.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/themedGames.ts",
       "sha256": "49c241391d49b34e463186ca8a073e6a3bf3aa3d1de56830db4a6a4caea05946"
     },
     "src/shared/neopolisMathV1.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/neopolisMathV1.ts",
       "sha256": "84adb49d9303b29bd8a460b30b7e6993d77df343f8dae33025a0646f7ca3bb92"
     },
     "src/shared/casinoSessions.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/casinoSessions.ts",
       "sha256": "002e31c3198d885571e78b3fdc714aeed6179cd269f5927de3ad0c23dacbb2dd"
     },
     "src/shared/neopolisMath.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/neopolisMath.ts",
       "sha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5"
     },
     "src/shared/neopolisMathV3.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/neopolisMathV3.ts",
       "sha256": "e32db65f28cb4cac308d07154fb56f7816fc630c82a7548e1733ad34e0a91820"
     },
@@ -67,102 +72,112 @@
       "sha256": "9629a12c51eee2850887a7a4cad31015aabb4be1b395799c4801ee9b016cf557"
     },
     "src/shared/forestHeart.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/forestHeart.ts",
       "sha256": "6f0ba79987ff2d24e5c242103ec6735bea1b9fcb3a0fba2abec773eff1dab52e"
     },
     "src/shared/demoWallet.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/demoWallet.ts",
       "sha256": "2f3d21554eaa03930e306f8db103fe8299649387853574dff516cd01cd7e1cef"
     },
     "src/shared/luelonSlotsModels.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/luelonSlotsModels.ts",
       "sha256": "b8644fecff250437909ff88950c5ef129c1d534108344f9643b815614d844c74"
     },
     "src/shared/dracona.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/dracona.ts",
       "sha256": "fa6d089b90592693ac3da96fed174f53db6733c37f3ab16e9205cc606396d649"
     },
     "src/shared/convoyWardrobe.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/convoyWardrobe.ts",
       "sha256": "e00ff55831b480cfc785354d0bddebef35bd58f754c8bb3dc26fdbd1fe8b60fa"
     },
     "src/shared/cosmicEscapeBets.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/cosmicEscapeBets.ts",
       "sha256": "5e079e858e39cd73070f95f77688c774aee887e025a2f84fbc365c1e9cddd625"
     },
     "src/shared/studioGames.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/studioGames.ts",
       "sha256": "5be1d552e408e7a2fe1d1cff923b70bdda059a57847c46db09c96dc2ae63e29a"
     },
     "src/shared/flightGame.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/flightGame.ts",
       "sha256": "5bf2cd8dc8b462ffda56bf79cfabbe59c825c49c39786ce7aa3811ec0c62e3e9"
     },
     "src/shared/forestHeartMath.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/forestHeartMath.ts",
       "sha256": "c3e04efc098aa9d61f0faa70fc9159d8460dcf0816d96ef5b560efd45ab46658"
     },
     "src/shared/usdtWallet.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/usdtWallet.ts",
       "sha256": "23b523bb24b84dcdbda636f1b6bd940e3072a5069b9ba8c44c71da29129c484a"
     },
+    "src/shared/caribbeanTreasures.ts": {
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
+      "path": "src/shared/caribbeanTreasures.ts",
+      "sha256": "5590af9897cfb32dbf8fd7d9c0608ad52184051ddee7ca70cd309267a4311aee"
+    },
     "src/shared/velvetReignHistory.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/velvetReignHistory.ts",
       "sha256": "597f90f94bcbecd64fc37a27f730009651ed5c4d6731a1ee54602195e508118c"
     },
     "src/shared/gameCore.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/gameCore.ts",
       "sha256": "aa9520b435a5c969d257290e3b06060051db76de45955f99dd68c48f1b5addab"
     },
     "src/shared/originalGames.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/originalGames.ts",
       "sha256": "9743f1465b625e64055c8c6c9f268ce8023d61adc7eed187507be7d4163d40c0"
     },
     "src/shared/neopolisMathV2.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/neopolisMathV2.ts",
       "sha256": "22c2d4646ea2ac8db021bde42fcb90b38035848041cea217acd1d9eeb2682692"
     },
     "src/shared/casinoVariants.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/casinoVariants.ts",
       "sha256": "806e62338241a65561b7170957045ce2fd931a599302d50785c35f6f0f9f1ca5"
     },
+    "src/shared/caribbeanTreasuresMath.ts": {
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
+      "path": "src/shared/caribbeanTreasuresMath.ts",
+      "sha256": "b86e71675dfd0179da8d8c43c7a62f8da41303d5e6bc59f07b81d4497b64647b"
+    },
     "src/shared/velvetReign.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/velvetReign.ts",
       "sha256": "8cd399677940ae5fddd67dea255fd83b54faf297cb00b8290ae918b53e26db2f"
     },
     "src/shared/draconaMathV1.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/draconaMathV1.ts",
       "sha256": "760b567c64aae4a5190641cad162fd9a6ff9e5764e8bd9d91d06dcb1d707ee21"
     },
     "src/shared/nilePlay.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/nilePlay.ts",
       "sha256": "d760785a5eb68a5e6d321f499e6bbf2fd4fbe2b1b835e6cbe52d81798f27d8d6"
     },
     "src/shared/flagBattle.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/flagBattle.ts",
       "sha256": "e156fd61e71243759c27d9a9d3fed8a0ab1555e9938f6a2b7ac854c344d16e6f"
     },
     "src/shared/nileWallet.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/nileWallet.ts",
       "sha256": "f46ab635e6b3b59a0c1bb60d39bbf13de046a2ec3b1cc1ee832d4d36ed669b29"
     },
@@ -172,68 +187,67 @@
       "sha256": "5940a05dc30857ee376a8f4969d6015217b8c71f9f2790763021af8971507695"
     },
     "src/shared/casinoNextVariants.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/casinoNextVariants.ts",
       "sha256": "6f525322bc640eb29ad7bfc025205686f87214b174a08a92d0f800afe636eaa7"
     },
     "src/shared/neopolis.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/neopolis.ts",
       "sha256": "e686a82b272bbfc15f9bd88193f095233490564fbbe8f594893cac101c57c6d1"
     },
     "src/shared/casinoBatchVariants.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/casinoBatchVariants.ts",
       "sha256": "e09ea94fdb5929596f610ef7462dc80d50bcf4926335c398fca6c031a0496135"
     },
     "src/shared/afterglow.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/afterglow.ts",
       "sha256": "3a20c05490f1fce9fb33244091230f5106c23d9686566e40f0051d124e941256"
     },
     "src/shared/nitroRun.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/nitroRun.ts",
       "sha256": "621e54ab208ea598573dc79f22be813509a85523309af76d5f3b8da7d038cc08"
     },
     "src/shared/lastConvoy.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/lastConvoy.ts",
       "sha256": "f4d1b22f8a67dfda6fadbb4539b85211d8ad6c165657ba394bcd5c258e1f280a"
     },
     "src/shared/afterglowWardrobe.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/afterglowWardrobe.ts",
       "sha256": "6dace1ede72ee479115b5cbf2d1d512c9e8800fd315be407cea787377362dc1f"
     },
     "src/shared/casinoExpansion.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/casinoExpansion.ts",
-      "sha256": "36ecbf54a4c45efc3b396c80035eb0663cc0bd427001e254802d098b2018aa43"
+      "sha256": "b12c62592673ae8a458c381ca122bab1a29d529f978eb886c28774564c053eae"
     },
     "src/shared/crLeo.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/crLeo.ts",
       "sha256": "f0c9eae07611011cd3675eec1ed8a46a00f2f84822d8430a4b4267e6bfe15b38"
     },
     "src/shared/appearance.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/appearance.ts",
       "sha256": "d753df5f08e1c6717c4ba3fdbe1b0202013177859995751296a8a900f6a5f1a1"
     },
     "src/shared/arcadeCatalog.ts": {
-      "commit": "47e9e7bf3429df1f4ebc5a6d3b4146e4a6c31f9d",
-      "path": "deployment/releases/forest-heart-20261029-v2/financial-arcadeCatalog.ts",
-      "sha256": "22c57baaabca82124b5cdbe4276dbbc20ed0fea16e227d2258659491281d208d",
-      "flagAddition": true
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
+      "path": "deployment/releases/caribbean-treasures-20261029-v2/financial-arcadeCatalog.ts",
+      "sha256": "1c97c2a8d9988c12d48144c9fe946dcab097fee681e4d64fa45652a289692ccc"
     },
     "src/shared/memeOverload.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/memeOverload.ts",
       "sha256": "3380fce5ee723cea9a07d8b098c933e0465300fcc19fa727ef30ccbf7303244b"
     },
     "src/shared/neopolisStakePayouts.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/neopolisStakePayouts.ts",
       "sha256": "8a5b1ce043a5e3341148412c422561aa38c9de04e2fdb01989bb0c384157ecae"
     },
@@ -243,37 +257,37 @@
       "sha256": "b60220a94b33e5618d42d3f2dc37496adeeeabbe21939652362bf84601d13a19"
     },
     "src/shared/cardTables.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "src/shared/cardTables.ts",
       "sha256": "12197eabb008c9166bfedc0ddbb6bce5a1023090faf1c71bc56960418d00f6ab"
     },
     "server/skinPayments.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/skinPayments.ts",
       "sha256": "9dd701b23a72072a7ddab02f6946608ef859ee3912fd8c7c3619339db97754e4"
     },
     "server/demoCasino.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/demoCasino.ts",
       "sha256": "8cd914d9ca5f78282deae590f1f9f440f3b4fb384e503e9a526bbc2d61f51c9a"
     },
     "server/nileWalletRoutes.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/nileWalletRoutes.ts",
       "sha256": "6f2d82026c9e66221cb9c15b5bf5d9129477eb23cdcd8dfde911cd83bbeff67b"
     },
     "server/moderation.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/moderation.ts",
       "sha256": "91925b614047a301e24db2274b44704a4866b8e6aa7de981e25f84a3ef67f63f"
     },
     "server/lastExitCashoutDelay.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/lastExitCashoutDelay.ts",
       "sha256": "a65fdb48822ab46fc913b72cd4c70fc904b0d66c97e7ebc7c0960899c1849edd"
     },
     "server/casinoApiProWallet.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/casinoApiProWallet.ts",
       "sha256": "b2d74ad27ecf809e086e8573625201d36d346c5866c48a4b3f6d3bd1352b632c"
     },
@@ -288,57 +302,57 @@
       "sha256": "fc222d7f79b495a0d35542a27a8309f26ce02a5acb6948a1dfe179a391f5d7b6"
     },
     "server/game-database-migrations.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/game-database-migrations.ts",
       "sha256": "6d4446e40557697a55338ac1ce5552a5849acc24494cd7032fc32b62a27a8492"
     },
     "server/nilePlayRoutes.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/nilePlayRoutes.ts",
       "sha256": "3a2a07178abfd57475c8eacd849243ad0718101e03e9eec685844a806ff8c84f"
     },
     "server/miraMemory.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/miraMemory.ts",
       "sha256": "0b6168881412e1d7b81101f86041810918924a3b432509237a2c16bc68f2e442"
     },
     "server/providerPending.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/providerPending.ts",
       "sha256": "09c0bda54e971862815188731f2ce6dfa2a0d7fd79e21ceb301883ece001e4a8"
     },
     "server/demoFlight.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/demoFlight.ts",
       "sha256": "97b5a64dc961e6fd9b4a83c07113332aafd3919cb5e3cadba4a1b6512f280593"
     },
     "server/demoExpansion.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/demoExpansion.ts",
-      "sha256": "0e5ebaac6d2ee4b1d4f27b46e7ce625b56957a60fd9ffe8600edab42c6bc5496"
+      "sha256": "6d940a4e5bb4d4e02fa9bddadbba66378a185d2396c1553449ae711188b19925"
     },
     "server/afterglowProgress.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/afterglowProgress.ts",
       "sha256": "1605ddaefa120c87da21fd1db9260c645840cbfc1db690c8f58787ccfe7acf2c"
     },
     "server/intoxicationStore.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/intoxicationStore.ts",
       "sha256": "7c5b74fea951e449e5bebc621621e1222cea9252d0873d2e15eafe22eedefe5c"
     },
     "server/database-migrations.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/database-migrations.ts",
       "sha256": "3502380cf90176df4543365115ad4d9292ca4e6eed11ba2ce77f8ffed95b70a4"
     },
     "server/afterglowWardrobe.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/afterglowWardrobe.ts",
       "sha256": "24009dddabe9d73931a3f71065d7a49c890901053cfa22cc7be48a83a48654a9"
     },
     "server/database.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/database.ts",
       "sha256": "89c282f2e65158079bdafc07d815c5ca962aa82f89ba0d3c5f03a19aa7c81ca8"
     },
@@ -348,7 +362,7 @@
       "sha256": "7c4bd3aa01d007d7cd3cae614aeda123df5000ee12603c7c1c8a332f4fed7e01"
     },
     "server/crypto/config.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/crypto/config.ts",
       "sha256": "b33bbb2e6d6aaed135ebc14555dfe81916db77492ad3fb1c02e6fd3cc1e340ee"
     },
@@ -358,7 +372,7 @@
       "sha256": "b5d2542905f40339e25835b4ec158b61fef7efd55fd236541fa0e2f088944c56"
     },
     "server/admin/validation.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/admin/validation.ts",
       "sha256": "1146a17967d226bd845baf37fb9525c1f9dc1254ac88ecda19ba40915264fcb7"
     },
@@ -373,162 +387,167 @@
       "sha256": "23deed253a3bcbcfdaf5493bbb8d3208331ba22664e09e70bf97559e9cc46852"
     },
     "server/pvp/cards.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/pvp/cards.ts",
       "sha256": "42db70683726228f6ab2217c7ef48b269cf372368950faa9f4555825880f6cf0"
     },
     "server/games/caramelCarnival.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/caramelCarnival.ts",
       "sha256": "efea2d448a692637819eef014badf72ac2aa1a0621284ba12011ab68ff1886a7"
     },
     "server/games/wheel.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/wheel.ts",
       "sha256": "6e9d4238c3a98b53e913553f92af64766b54b40c83e793516549a649e46d2ab6"
     },
     "server/games/luelonSlots.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/luelonSlots.ts",
       "sha256": "be78b2715aa850d3801445edf0f714b89dcb76ed98719e5589fcac71dc7fe3f2"
     },
     "server/games/casinoSessions.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/casinoSessions.ts",
       "sha256": "ffd0232b3a380a4a781cbdd943559e530cbdac5417740fdcf4f862c3fcf98d1f"
     },
     "server/games/coins.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/coins.ts",
       "sha256": "727e6a62b098f0591525a4dfd646c78568e3a04ff554364f2c157d41cbbba5da"
     },
     "server/games/originals.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/originals.ts",
       "sha256": "a40c038406cf6a7ffbb0fa7b92af2937c40a7012626bc2ab06a232d03c152d45"
     },
     "server/games/forestHeart.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/forestHeart.ts",
       "sha256": "0c7412ea5438c72d63c7808759e79bb76fa95e12a32a23690dd7b36fcca9a1be"
     },
     "server/games/dracona.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/dracona.ts",
       "sha256": "9d7b86aa2db9dd2ebe0d6a6dc09283a33b868b03a1e5c444f722d90822e9fa95"
     },
     "server/games/studioGames.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/studioGames.ts",
       "sha256": "e3484145ad3dbebc1ded5df6d808f98b5d79e9ebc2fc58b7f8a413782f7b130c"
     },
     "server/games/core.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/core.ts",
       "sha256": "246ebe0febf3ad89a8997b1cdac83c28a0e6f175a14d2318403a39d3a27b1146"
     },
+    "server/games/caribbeanTreasures.ts": {
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
+      "path": "server/games/caribbeanTreasures.ts",
+      "sha256": "bdb0aa8eecef1093f876dd3c467ff1b43d8a7b1606a63a56aa46430964556e99"
+    },
     "server/games/types.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/types.ts",
       "sha256": "c866ed8a8a19a66f4210caae41e25becf8c6d169871da1934a7b152d0f2aedc0"
     },
     "server/games/casinoVariants.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/casinoVariants.ts",
       "sha256": "f8950c9dbb0285f2d2462f1257620f95e06514c5b4c09574bc152aaf62c78a50"
     },
     "server/games/velvetReign.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/velvetReign.ts",
       "sha256": "31798d0ddf4cfdf6717fe9e29a4f01cb538e59485c63275b6c2cba4239afe0cc"
     },
     "server/games/flagBattle.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/flagBattle.ts",
       "sha256": "48adde5247fa57348efecb91f05dec1eb9203e544c3f42407e5ebbcff52c9068"
     },
     "server/games/casinoNextVariants.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/casinoNextVariants.ts",
       "sha256": "f989cee4147e107faf7c4e4df216729025fc2baf6e779dde1a64f9b825ce1e43"
     },
     "server/games/neopolis.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/neopolis.ts",
       "sha256": "d8e3a0ac628636293f3317ac61de6ce83054c8b41985fcc8886e78c71e5dfad3"
     },
     "server/games/casinoBatchVariants.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/casinoBatchVariants.ts",
       "sha256": "4d2127a24c5a95e91550cb39394f1a4abbb2c05ebf455e9492947ec97c454b2c"
     },
     "server/games/afterglow.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/afterglow.ts",
       "sha256": "732c928d299e6a6adb501d1682e80ec2ea02e510884812771c757f5173013258"
     },
     "server/games/nitroRun.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/nitroRun.ts",
       "sha256": "9bb335cf87be9306035da1457bec8c1af6e8276f8c8275d940aee6c6681ab2e6"
     },
     "server/games/lastConvoy.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/lastConvoy.ts",
       "sha256": "ac691553c2636edc35f0291ca0c9cd9f21b94565da4572856df1f131f4591e3d"
     },
     "server/games/crLeo.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/crLeo.ts",
       "sha256": "5bc956040fb008f21a3a5bcaa7b9296f3ef9f049ae32b44654bcef06e6b6e7c1"
     },
     "server/games/velvetMath.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/velvetMath.ts",
       "sha256": "54a874506c31467b076be9d8b4513014e2faa676ba286111b1c24eb35873e94f"
     },
     "server/games/roulette.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/roulette.ts",
       "sha256": "b8aba50f88ff2c65b54bef35a056b13d5b470d6b9f955f2610559c101e0390ef"
     },
     "server/games/fruits.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/fruits.ts",
       "sha256": "3880e46cb2cacd41cf855eb69ef2edda956b39209caf7bb4b73fdca16a8aea05"
     },
     "server/games/cardEngine.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/cardEngine.ts",
       "sha256": "f36f147ee6f76799fdf1ff18e769d583534b01cb4b34528a09be8f2268877891"
     },
     "server/finance/deposits.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/finance/deposits.ts",
       "sha256": "f71e92533d439351119356bf69b9ce412c6d3b83d48437ff435f3306ce24cc9d"
     },
     "server/finance/tron-store.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/finance/tron-store.ts",
       "sha256": "ec151713be8607f2804650b8acea699d12418fb7467c69d5c792082ad3578fa1"
     },
     "server/finance/nile-address.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/finance/nile-address.ts",
       "sha256": "b7ea0d61970817d181e9afb47e400366b47214ecfc01612977a6e32898371c56"
     },
     "server/finance/nile-test-creditor.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/finance/nile-test-creditor.ts",
       "sha256": "33662a0375e4979de2e38bce908d54e010568ea7e8dfadf73efc90f0c5bfe32a"
     },
     "server/finance/tron-snapshot.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/finance/tron-snapshot.ts",
       "sha256": "522b4501f32ff67d0b12a7d9551d3f957dfe6a4b3719cb617bca655e3179ad0b"
     },
     "server/finance/pg-ledger-schema.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/finance/pg-ledger-schema.ts",
       "sha256": "5e962ec09ceb66fdc01713682461d0c4111377656bcf7621908c862606b1db90"
     },
@@ -538,62 +557,62 @@
       "sha256": "132c386abbcae222ea4a9d258a59d1ac5ff4de022b7e5e1c9c647c6c11f2b6d9"
     },
     "server/finance/source-refresh.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/finance/source-refresh.ts",
       "sha256": "9f525e05375ba4727543f14c369bdcbebbff16e898ca10903d53be62411668fe"
     },
     "server/finance/schema.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/finance/schema.ts",
       "sha256": "739e0d48e7e3f5fd991a6f2405efd2c4f539cc891853bd20654af9bfcbf5d91e"
     },
     "server/finance/store.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/finance/store.ts",
       "sha256": "60e93f883f684ca4ea1af1a7bd3adcd6ce83cbf36069cb8ccd279b925b8d76dc"
     },
     "server/finance/nile-game-runtime.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/finance/nile-game-runtime.ts",
-      "sha256": "eb0a2f8a2e127ae7d08c840614fbfb17de6720864fbcb80f834efe2eebde4331"
+      "sha256": "c04d2391d39a660b90e1ee0506ecdc39427cb106397caa92c4d63c88b25477bc"
     },
     "server/finance/app.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/finance/app.ts",
       "sha256": "389eb7fe4286dac19d54585f994069c40a5248fbd3ad5360c1913fff1bb2f43d"
     },
     "server/finance/tron-rpc.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/finance/tron-rpc.ts",
       "sha256": "8b311d1df2782101ec37028251103bcdb8df2c53facd6c7bd019ea491e7998d9"
     },
     "server/finance/tron-protocol.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/finance/tron-protocol.ts",
       "sha256": "002659ddf7e65461a0bbc59e77f31a4438a71b7e3479cd732975ca2d196f3766"
     },
     "server/finance/mainnet-service.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/finance/mainnet-service.ts",
       "sha256": "773ba48ff4d569ec9b770a06280f91d33e2c4b21d7ed0d09e9bdfa8f9ad7ebeb"
     },
     "server/finance/mainnet-rpc.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/finance/mainnet-rpc.ts",
       "sha256": "3e0510e8c9ca91410e7c1817b3f71aa5f22d5d4cbc6f4a8fea30f56873a0a8fc"
     },
     "server/finance/deposit-schema.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/finance/deposit-schema.ts",
       "sha256": "d35e77c857b9e3bff5f800d65413302d52b06a3d3635dd6fa14bca1ed58526be"
     },
     "server/finance/block-audit-pages.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/finance/block-audit-pages.ts",
       "sha256": "531372a73ee20ef238182a73319f1531dd6537792d52e65cfcc7ec98d6da1f78"
     },
     "server/finance/nile-account-views.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/finance/nile-account-views.ts",
       "sha256": "616b7ce7945ea176b60184482ae02aec42e56f03f9d3a80b8c3888ada1264045"
     },
@@ -603,67 +622,67 @@
       "sha256": "917cc17f4e9dd93704701b44ba04ac76c727243d67ff5767ac28ab5fab63b9b8"
     },
     "server/finance/config.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/finance/config.ts",
       "sha256": "89d867d57f1fee2a3864e2f947390c5f275a98072f7bc970da2e86ecf69cf4b8"
     },
     "server/finance/native-game-money.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/finance/native-game-money.ts",
       "sha256": "212803a6df8e95db84ecdd2b44e819681cd2d8b3ef3dcb8b276c961c1fd5ed71"
     },
     "server/finance/hardening-schema.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/finance/hardening-schema.ts",
       "sha256": "767966cbd2bc0cabf1c34984f1466fe713181e873452a5c11941dfacba3f6569"
     },
     "server/finance/mainnet-config.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/finance/mainnet-config.ts",
       "sha256": "74f5fcc114703603f911234786d2a325561c98917a0d47c129fc0897d459f90c"
     },
     "server/finance/mainnet-scanner.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/finance/mainnet-scanner.ts",
       "sha256": "760044b7320bb84121f5410b9dde5272d0fc51656fdb82fd4eae61df70bca708"
     },
     "server/finance/nile-test-snapshot.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/finance/nile-test-snapshot.ts",
       "sha256": "6ed225fda811284d915788c16320c77f77380b12e7d3a0365c3f746f1748375b"
     },
     "server/finance/role-safety.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/finance/role-safety.ts",
       "sha256": "eb4abbe3d65469bb96661d789c86f2d709bbc04296432b405e348d1833d4f03e"
     },
     "server/finance/mainnet-ledger.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/finance/mainnet-ledger.ts",
       "sha256": "3df67374117e4a3b9cb3a2956c2fa7f9d2af1757d6dd5693f58253b30ba3c25a"
     },
     "server/finance/nile-deposit-proof.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/finance/nile-deposit-proof.ts",
       "sha256": "22985509460b5071265283cd0967cdd2a8b5550cd7e413b77440ea9c26ffbc14"
     },
     "server/finance/tron-reader.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/finance/tron-reader.ts",
       "sha256": "e19c89b58b2c58d4e036e907b58e98c7cfd12b7848cebcf4220f90db900de7ff"
     },
     "server/finance/nile-deposit-pool.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/finance/nile-deposit-pool.ts",
       "sha256": "c5660ea8dbc2eb8ba8f931625ee4230c5fb251ede2edf9b2662646d247e49012"
     },
     "server/finance/nile-test-ledger.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/finance/nile-test-ledger.ts",
       "sha256": "e0ea16b70d0ca3e83587dd31b22186e4e64f5788b4c84afe2e15969118e2f830"
     },
     "server/finance/index.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/finance/index.ts",
       "sha256": "cd886ed71ff81d612813bb53774b476bc5e3a942d1eabe42c7b9c52273545179"
     },
@@ -673,262 +692,262 @@
       "sha256": "08077aeedb3df7068661efc9f28dd10c41ac81d48d13492cef71de9ed8998ee6"
     },
     "server/finance/performance-migrations.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/finance/performance-migrations.ts",
       "sha256": "2026e150c2d032ba4b203806e5c9bdf46731b82735239947ead1bfb5feda926b"
     },
     "server/finance/nile-test-reconciliation.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/finance/nile-test-reconciliation.ts",
       "sha256": "5982b34ade4ed468a9716909bd42529cae49c533d6e45b9790b0b538c0957a85"
     },
     "server/finance/amount.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/finance/amount.ts",
       "sha256": "d0f15eeca7047443cbd939f80be77468d48400703b82323681c2bc94490558a3"
     },
     "server/games/rush/dragontower.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/rush/dragontower.ts",
       "sha256": "5c7adc3f4bd84c473da9ab583fbff1ebf27c5db8b4bde78b7016d1a673475405"
     },
     "server/games/rush/hilo.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/rush/hilo.ts",
       "sha256": "1d55a974edac435060aebb0c34b222c0763259476c2b9ddcab22ee69bd9d2803"
     },
     "server/games/rush/diamonds.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/rush/diamonds.ts",
       "sha256": "213895e44a196028767720525c4de2b5beb54f6662d859d4f9d12e8ab08c789a"
     },
     "server/games/rush/crash.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/rush/crash.ts",
       "sha256": "18182aa65f5babc4bf693b234aeec8a239646c41d33d4c3126b3abefc7b15a94"
     },
     "server/games/vfair/decimal.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/vfair/decimal.ts",
       "sha256": "235cf2ea332f2a635b06e86462809821f9e515e5a73de6c944811f2d3b0f60d7"
     },
     "server/games/vfair/game-rtp.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/vfair/game-rtp.ts",
       "sha256": "850598f0b5b9c2c8d9a13a4ff151be5d23467804bc457f35665e95b6008f87c7"
     },
     "server/games/vfair/plinko/plinko-constants.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/vfair/plinko/plinko-constants.ts",
       "sha256": "dca86dc20365d497f6fd6b220f2cc0157e00112b4b2206c03c82959547b67afc"
     },
     "server/games/vfair/plinko/plinko-multipliers.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/vfair/plinko/plinko-multipliers.ts",
       "sha256": "4be4d4ccb0dca62ec216edf295d6459075817d5b115e5d28038df2ebaf96f072"
     },
     "server/games/vfair/plinko/plinko-math.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/vfair/plinko/plinko-math.ts",
       "sha256": "9c83981207341b625aca8e5f976da24c2b50bbba3a7e66fd6c330a0584cd15dc"
     },
     "server/games/vfair/mines/mines-constants.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/vfair/mines/mines-constants.ts",
       "sha256": "168798b8df86084da0848ef2d4589256a1ad5d8f4c0c30c13960fb0ba47d69db"
     },
     "server/games/vfair/mines/mines-math.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/vfair/mines/mines-math.ts",
       "sha256": "ab647b2f14b6cb49b2ad4045dc84b453326cd74d7f5d182a9d6fca257f812f0b"
     },
     "server/games/vfair/dice/dice-rtp-bounds.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/vfair/dice/dice-rtp-bounds.ts",
       "sha256": "c4f310051ab1d73b634855897f9d1f14b13452a6bf8b0d2d64e72cbb4d508fc7"
     },
     "server/games/vfair/dice/dice-constants.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/vfair/dice/dice-constants.ts",
       "sha256": "88219a7c455889904b6ed1c4804737736cf551fa0f83fe382d7835dcd25c44a3"
     },
     "server/games/vfair/dice/dice-math.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/vfair/dice/dice-math.ts",
       "sha256": "a6e83f4cf71c63ab3cca9751012fe1dbc93a832ea553a4bfbe2c8eaa27d8867e"
     },
     "server/games/vfair/keno/keno-multipliers.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/vfair/keno/keno-multipliers.ts",
       "sha256": "c76e0a9698539ea0f09f3bfc863ed47351a7ac38270078a0fee8ec579fe240b4"
     },
     "server/games/vfair/keno/keno-math.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/vfair/keno/keno-math.ts",
       "sha256": "094054bab14de6b4c54b53070804448a39f4bb83f5d4b2eb80cc59bcc6c3fbfa"
     },
     "server/games/vfair/keno/keno-reference-paytables.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/vfair/keno/keno-reference-paytables.ts",
       "sha256": "caa92b92343afa04889b13ef484f6d1598aac196ffe1f7e2e789dbf77c4f25bc"
     },
     "server/games/vfair/keno/keno-constants.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/vfair/keno/keno-constants.ts",
       "sha256": "75476a6be66e77e6830e2bff964b9f4cacb7a89925c9e20a97ebcb7a4dc8946c"
     },
     "server/games/vfair/keno/keno-probability.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/vfair/keno/keno-probability.ts",
       "sha256": "0f870c04fe76f39b72962ee86a41e63e9ebf7c35edbc82299ba004d98cb4df70"
     },
     "server/games/vfair/limbo/limbo-rtp-bounds.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/vfair/limbo/limbo-rtp-bounds.ts",
       "sha256": "67756ce5182e7fb4ecce1ce9ecc60aba34986929309b3c631f6ba43c58e534ee"
     },
     "server/games/vfair/limbo/limbo-constants.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/vfair/limbo/limbo-constants.ts",
       "sha256": "b5bc95ccd1943068b60bc621354e68a6e53c872d50a34414b52babbd02c3d527"
     },
     "server/games/vfair/limbo/limbo-roll.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/vfair/limbo/limbo-roll.ts",
       "sha256": "d3a0eeffcebdf1c4103116acdebd58ac63e8f97f1a9760328b52f5db02baa347"
     },
     "server/games/vfair/limbo/limbo-math.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "server/games/vfair/limbo/limbo-math.ts",
       "sha256": "71ca6f7b1aeedf1b05804d9ff2c8e72e05fc6242e3d5a5b51b924b08669bdb52"
     },
     "scripts/finance-nile-play-proof.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "scripts/finance-nile-play-proof.ts",
       "sha256": "1c4ab9221fb3f705edcb87e13feeed6afdc02fdb6d5fa5196129272fe7d54cd3"
     },
     "scripts/database-archive.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "scripts/database-archive.ts",
       "sha256": "4eaee868a9b05ee4fcf2191f3e890c4294d8d144f3820df315da3d443e80339c"
     },
     "scripts/finance-tls-smoke.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "scripts/finance-tls-smoke.ts",
       "sha256": "fc6f776e0593b6f377029cb0c7182dbadd79e1e5edfb599e4e9d5b232702a76b"
     },
     "scripts/finance-tron-reader.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "scripts/finance-tron-reader.ts",
       "sha256": "99ecadbfceca90900f7e1d34356ef36a20e78de590cb27e425b0bb94570e1fe1"
     },
     "scripts/finance-mainnet-read-proof.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "scripts/finance-mainnet-read-proof.ts",
       "sha256": "6dafcd47bf9da9f052c780286ef228e9b3b2d3306cc8ec98c7ff6b6854f34fe4"
     },
     "scripts/finance-nile-keys.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "scripts/finance-nile-keys.ts",
       "sha256": "f2a466f3a6eb6600bf0cc924746559b6c309cd457758212ea4e19a7761bbb290"
     },
     "scripts/finance-mainnet-keys.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "scripts/finance-mainnet-keys.ts",
       "sha256": "76c0613c277f58b5366bc5b9063fa021a9bbb24e9445c8a2c0b6dfb552e0fb70"
     },
     "scripts/finance-mainnet-prepare.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "scripts/finance-mainnet-prepare.ts",
       "sha256": "a29d47b6e03e6f2e6e34cad2ebf94d40ff3d07930c85cdc57e074d550a6d855a"
     },
     "scripts/finance-postgres.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "scripts/finance-postgres.ts",
       "sha256": "875fa25ec4e16d3b3001f39f45ed57a8765b2ba9497947f58d04c6cb7fef37b8"
     },
     "scripts/finance-hardening-benchmark.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "scripts/finance-hardening-benchmark.ts",
       "sha256": "1cd8eee108054ae5211d6d492d69f1bf20ca62092dfc7fc90c926a10314c0fb9"
     },
     "scripts/finance-nile-reconcile.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "scripts/finance-nile-reconcile.ts",
       "sha256": "8ba8f0ef66a191b4f122fa0254b35d2d3223638b9a5875c53d1a1d616efee625"
     },
     "scripts/finance-migrate.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "scripts/finance-migrate.ts",
       "sha256": "94d314338f77407e3b611f143701ba12d4be380fa981b12ef04f6442fc28b006"
     },
     "scripts/finance-nile-creditor.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "scripts/finance-nile-creditor.ts",
       "sha256": "cccc182d63fee052f4e0e0c703187d9efd536fa970c077ade543e8924258a667"
     },
     "scripts/database-migrate.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "scripts/database-migrate.ts",
       "sha256": "7ac385c38a6446f45f0f2e92243286b9676bf5db7dc0e23b7f2abb806bca1f7d"
     },
     "scripts/finance-nile-token.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "scripts/finance-nile-token.ts",
       "sha256": "b9319b9d5b822d22175d35d4bc313801833451e4814d95a8545d08e48ea025d0"
     },
     "scripts/finance-nile-pool-keys.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "scripts/finance-nile-pool-keys.ts",
       "sha256": "b72d43e8187b0eb1d1d01befbcead83be85f56ab32aa368110f8ec2f8b010a17"
     },
     "scripts/finance-nile-account-views.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "scripts/finance-nile-account-views.ts",
       "sha256": "21de21dd640a5ee66a228d0046d5668a42d9ffd34a9aaaebfe27bfb9de9b2b90"
     },
     "scripts/finance-multi-smoke.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "scripts/finance-multi-smoke.ts",
       "sha256": "ff3deed8e563648f2480ef7667d16d39a8fd7a0238a36cd874a70040012e6ab8"
     },
     "scripts/finance-smoke.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "scripts/finance-smoke.ts",
       "sha256": "d5f40ab0cb57f28a3d60097bd8687ddda8d4ed9afe60cbaf82e091789d67a63f"
     },
     "scripts/finance-deposit-smoke.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "scripts/finance-deposit-smoke.ts",
       "sha256": "363b0d67638eb1f539dd891b6fea36715d4849eb54a7e0e3d94460e60e224345"
     },
     "scripts/database-cutover-check.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "scripts/database-cutover-check.ts",
       "sha256": "c3421b8abc233e3ed7483506052c9b0ef47ce29797e828d4f011d655754e7aef"
     },
     "scripts/finance-nile-play.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "scripts/finance-nile-play.ts",
       "sha256": "1700895d3d0934012a6d275990b5e5b10f7e01477a28b1cd7b5ca31bfa679a36"
     },
     "scripts/finance-nile-deposit-proof.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "scripts/finance-nile-deposit-proof.ts",
       "sha256": "2c235fee99adb1aff423877419b08242ad8c7e0cd3be872ed7968363a35ef1ee"
     },
     "scripts/finance-mainnet.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "scripts/finance-mainnet.ts",
       "sha256": "d51abf51c273ce4b46c9360aaa6ddc329303d3b79cd97e0d323d60d769d264bb"
     },
     "scripts/finance-deposits.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "scripts/finance-deposits.ts",
       "sha256": "6958c82f279451ac77933b15e92e9377f3604fdb6d777039c569ce04f971b7ad"
     },
     "scripts/finance-demo.ts": {
-      "commit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "commit": "b921d0537fed52336aaee5d97144bf36a9188107",
       "path": "scripts/finance-demo.ts",
       "sha256": "412696c653bfd40f72a0555ec77cb97eaedbbfd25d422aa3ed045ff1ac9629e9"
     }

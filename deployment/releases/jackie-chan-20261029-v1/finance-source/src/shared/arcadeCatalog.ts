@@ -1,4 +1,5 @@
 import {JACKIE_GAME} from './jackieChan';
+import {CARIBBEAN_GAME} from './caribbeanTreasures';
 import {FLAG_GAME} from './flagBattle';
 import {FOREST_HEART_GAME} from './forestHeart';
 import {PENALTY_GAME} from './crLeo';
@@ -39,7 +40,7 @@ export const ACTIVE_ARCADE_GAMES: readonly string[] = ARCADE_CABINET_SPECS.map(c
 export const ROYAL_CABINET_IDS = ARCADE_CABINET_SPECS.filter(c=>c.collection==='royal').map(c=>c.id);
 export const ARCADE_CABINET_POSITIONS: Readonly<Record<string,{x:number;y:number}>> = Object.fromEntries(ARCADE_CABINET_SPECS.map(c=>[c.id,{x:c.x,y:c.y}]));
 export const STUDIO_CABINET_GAMES = ACTIVE_STUDIO_GAMES;
-export const ROYAL_PLATFORM_GAMES: readonly string[] = [...STUDIO_GAMES, ...ARCADE_CLASSIC_GAMES, FOREST_HEART_GAME, FLAG_GAME, JACKIE_GAME];
+export const ROYAL_PLATFORM_GAMES: readonly string[] = [...STUDIO_GAMES, ...ARCADE_CLASSIC_GAMES, FOREST_HEART_GAME, FLAG_GAME, CARIBBEAN_GAME, JACKIE_GAME];
 export const ROYAL_COLLECTION_GAMES = ROYAL_PLATFORM_GAMES.filter(id=>!ARCADE_GITHUB_GAMES.includes(id as typeof ARCADE_GITHUB_GAMES[number]));
 export const PLATFORM_CABINET_DEFAULTS: Readonly<Record<string,string>> = Object.freeze(Object.fromEntries(ARCADE_CABINET_SPECS.filter(c=>c.defaultGameId).map(c=>[c.id,c.defaultGameId!])));
 export const isPlatformGame=(id:string):boolean=>ROYAL_PLATFORM_GAMES.includes(id);

@@ -1,31 +1,31 @@
 {
-  "production": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+  "production": "b921d0537fed52336aaee5d97144bf36a9188107",
   "featureBase": "3975d78197c639e89a1f555f0ffdcf23dd56d50b",
   "reviewedFeature": "ce784d39cbd83df6dc50c0b3248fc2713823f19c",
   "rows": [
     {
       "file": "server/demoExpansion.ts",
       "source": "deployment/releases/jackie-chan-20261029-v1/source/server/demoExpansion.ts",
-      "liveSha256": "0e5ebaac6d2ee4b1d4f27b46e7ce625b56957a60fd9ffe8600edab42c6bc5496",
-      "sha256": "889546a21c357389b45b5b44f249dbd8d4c5463e3ab2ac661de54cd527bdf477"
+      "liveSha256": "6d940a4e5bb4d4e02fa9bddadbba66378a185d2396c1553449ae711188b19925",
+      "sha256": "735df438e093196e95bd80845997e8aa00aa4f6b2a9f5ab8b12609216a4f1f31"
     },
     {
       "file": "server/demoWalletRoutes.ts",
       "source": "deployment/releases/jackie-chan-20261029-v1/source/server/demoWalletRoutes.ts",
-      "liveSha256": "7753a5f2382aa6a755bb61aeb7c11a58c1e2865b3de6284c6cafad5037b697e4",
-      "sha256": "2dc23760560d88207bdfd8e7fa002b713b3f8921550cfd13010c3e44d06832f2"
+      "liveSha256": "bea55a2723a3efd9038820e83e50d4d32f3c0f8186991276a2716145fb63cc69",
+      "sha256": "bab841ca81e618d339be40337f8b1b3eb583f0e72e77667c170a208fb2e5054a"
     },
     {
       "file": "server/finance/nile-game-runtime.ts",
       "source": "deployment/releases/jackie-chan-20261029-v1/source/server/finance/nile-game-runtime.ts",
-      "liveSha256": "eb0a2f8a2e127ae7d08c840614fbfb17de6720864fbcb80f834efe2eebde4331",
-      "sha256": "3d0f776711c9f31856ac023aff5feffbf6e01d8993d39243603f635ee2ecda7c"
+      "liveSha256": "c04d2391d39a660b90e1ee0506ecdc39427cb106397caa92c4d63c88b25477bc",
+      "sha256": "14c98c4c76b962ae398174fe3377e701075c6d378dc176a70b0bb78f8f413c72"
     },
     {
       "file": "server/gameWalletRoutes.ts",
       "source": "deployment/releases/jackie-chan-20261029-v1/source/server/gameWalletRoutes.ts",
-      "liveSha256": "b5de3cad7bfed65ca7bfba3500086427eb28f61715bca4ab4db2b10d89dcabbe",
-      "sha256": "823b05f96bedcce6d0a8dd9ed0cd3cf7d064e558d821d46fd486f5f675e91d25"
+      "liveSha256": "3491e86363cbef03d4a7bf0a05a2acf354cee29d27eb0b441abe6c5578155b77",
+      "sha256": "4b902a3f82b44698f78ec5fe147ceed555bf352ffbd24e0562688ea6a0c0c07a"
     },
     {
       "file": "server/games/jackieChan.ts",
@@ -66,26 +66,26 @@
     {
       "file": "src/modules/GameModuleCatalog.ts",
       "source": "deployment/releases/jackie-chan-20261029-v1/source/src/modules/GameModuleCatalog.ts",
-      "liveSha256": "cccfb5e14147d6b2ce782180656a387506f01157e082f30d383e97687299260d",
-      "sha256": "82cb4bd31de1a69ce2f77690c27e59be33491b1967725d544d4dbce24d1d8a54"
+      "liveSha256": "7fae455a9d3df672ab7ca3c56b150c7878bddebb444c27f4f5fa05832e4fef0d",
+      "sha256": "412fabe4eaf3421dbffd25314358f579d53af2da25651c96a0ebfc20c7818a2a"
     },
     {
       "file": "src/shared/arcadeCatalog.ts",
       "source": "deployment/releases/jackie-chan-20261029-v1/source/src/shared/arcadeCatalog.ts",
-      "liveSha256": "876d100674609ae777d300cae6ba0571f699a8b29de91a9094c1fa4e7ed17895",
-      "sha256": "1e00177b6098be763553d17916a31f236c719bde31cae53cc4d8f23df07c7c00"
+      "liveSha256": "361466f1d1e8f79a92f89cdb8bdf4b57214fba44b0959fb2a964087081217b4b",
+      "sha256": "6efcf93ef73f267d15b2a9d5ff42de4ad13d758881f7574c8c994fe49366c450"
     },
     {
       "file": "src/shared/cabinets.ts",
       "source": "deployment/releases/jackie-chan-20261029-v1/source/src/shared/cabinets.ts",
-      "liveSha256": "4e2fbdfe5111392ddb2722b7752eef4ba6ad27d8e3a89435ef1d6dbe3e5e3d93",
-      "sha256": "5ab6b1cb1640204982dc6f019792bdcdaf2b4392746a602a94d986986fdeffb5"
+      "liveSha256": "5e0c7eb57156dfb69e1047c9043682b707bd4b85f00cb2c7cae7a7ac6b0e22cd",
+      "sha256": "2c9212df02cf3eef376af83a9274bfa27b41fb3bf2d6a076c2d92d00af61b759"
     },
     {
       "file": "src/shared/casinoExpansion.ts",
       "source": "deployment/releases/jackie-chan-20261029-v1/source/src/shared/casinoExpansion.ts",
-      "liveSha256": "36ecbf54a4c45efc3b396c80035eb0663cc0bd427001e254802d098b2018aa43",
-      "sha256": "4179ff2dc32d484198c4a1ce79f9648bede88bac9d9a71aa26bbe7beb5588e1f"
+      "liveSha256": "b12c62592673ae8a458c381ca122bab1a29d529f978eb886c28774564c053eae",
+      "sha256": "4c4d2a2ad539e9e7b162c9ea63ed9aca6373fa4f2dd2b8f4d8e836c2c655393c"
     },
     {
       "file": "src/shared/jackieChan.ts",
@@ -108,22 +108,22 @@
     {
       "file": "src/ui/RoyalPlatformCatalog.ts",
       "source": "deployment/releases/jackie-chan-20261029-v1/source/src/ui/RoyalPlatformCatalog.ts",
-      "liveSha256": "b2eae58e8496d33572471d9fcb8db57e32ad19d18758dc87f24172e6dac9d857",
-      "sha256": "2dd818892f815c877702a9365af29110a0775529a44a55d48417e73157b97faa"
+      "liveSha256": "bd05cad2edcefe1017846240a73d4c9225e021f84a1628319b5168d8a6c50f03",
+      "sha256": "33f3aebd93d94ed440f333ccc9f54761dfad3cbc2d64f55ade879db8d242360a"
     },
     {
       "file": "src/wallet/ExpansionClient.ts",
       "source": "deployment/releases/jackie-chan-20261029-v1/source/src/wallet/ExpansionClient.ts",
-      "liveSha256": "d332ac67637c90e39cd1b0746f3ece68eb7d64c59252a561a9b5917371a03cb9",
-      "sha256": "402d1dc1d5ccb9341dee2c93e1c03ee1a7cbb0cbf9adf75e2e394bb4eddbf35c"
+      "liveSha256": "9a7f81a1048d4e040fff7b9d85bfcaf09a41f5399c0f800e5c5ce82e5303919c",
+      "sha256": "2abf931fb94be3aba17d063b899d84bda3885dad819c15545ca0280a34521a52"
     }
   ],
   "financialOverrides": [
     {
       "file": "src/shared/arcadeCatalog.ts",
       "source": "deployment/releases/jackie-chan-20261029-v1/finance-source/src/shared/arcadeCatalog.ts",
-      "liveSha256": "22c57baaabca82124b5cdbe4276dbbc20ed0fea16e227d2258659491281d208d",
-      "sha256": "cdb934cb970cc208a453365419fdeb2076bf03b19a3638884b86a341e2c8cee3"
+      "liveSha256": "1c97c2a8d9988c12d48144c9fe946dcab097fee681e4d64fa45652a289692ccc",
+      "sha256": "8f448aac22ce13d718ee11312a4e5c96ff2d4d1d2e10e03750df75e7245e2f81"
     },
     {
       "file": "src/i18n/en.ts",
@@ -131,5 +131,6 @@
       "liveSha256": "b6ba026c8b72fb124efce3f69fa7af5338a48ae44149930cb6383b9d6161f47b",
       "sha256": "7a45366f52d63b42c47a193a7115e35cfec0d9d3690d0770e8e91f3a30d13c38"
     }
-  ]
+  ],
+  "previousProduction": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f"
 }

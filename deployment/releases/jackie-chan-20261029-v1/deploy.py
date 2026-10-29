@@ -103,27 +103,40 @@ def verify_archive(file,expected):
         actual={member.name:hashlib.sha256(archive.extractfile(member).read()).hexdigest() for member in members}
         assert len(actual)==len(members) and actual==expected
 
+def composite_rows(kind):
+    baseline=digests(M['backupBase'][kind]);current=digests(OLD[kind])
+    assert set(baseline).issubset(current),'A composite backup must preserve its complete base'
+    delta={file:digest for file,digest in current.items() if baseline.get(file)!=digest}
+    assert {**baseline,**delta}==current
+    return baseline,delta
+
+def verify_backups():
+    for kind,name in [('source','source'),('financeSource','financial-source')]:
+        baseline,delta=composite_rows(kind)
+        verify_archive(BACKUP/(name+'.tgz'),baseline)
+        verify_archive(BACKUP/(name+'-delta.tgz'),delta)
+
 def backup():
     if BACKUP.exists():
         copies=json.loads((ROOT/'backup.json').read_text())
         for file,row in copies.items():assert sha(BACKUP/file)==row['sha256'] and (BACKUP/file).stat().st_size==row['bytes']
-        verify_archive(BACKUP/'source.tgz',digests(OLD['source']));verify_archive(BACKUP/'financial-source.tgz',digests(OLD['financeSource']))
+        verify_backups()
         assert image('royal-game:before-'+NAME)==OLD['containers']['royal-game-1']['image']
         assert image('royal-game:before-'+NAME+'-prepared')==OLD['preparedImage']
         assert image('royal-nile-play:before-'+NAME)==OLD['containers']['royal-nile-play']['image']
         return copies
     BACKUP.mkdir(mode=0o700,exist_ok=False)
     for folder,rows,name in [(LIVE,OLD['source'],'source.tgz'),(FINANCE,OLD['financeSource'],'financial-source.tgz')]:
+        kind='source' if folder==LIVE else 'financeSource';baseline,delta=composite_rows(kind)
         prior=Path('/opt/royal-backups/caribbean-treasures-20261029-v2')/name
-        if prior.is_file() and not prior.is_symlink():
-            verify_archive(prior,digests(rows))
-            os.link(prior,BACKUP/name)
-        else:
-            with tarfile.open(BACKUP/name,'w:gz') as archive:
-                for file,row in rows.items():
-                    assert not (folder/file).is_symlink() and sha(folder/file)==row['sha256'];capacity((folder/file).stat().st_size)
-                    archive.add(folder/file,arcname=file,recursive=False)
-        verify_archive(BACKUP/name,digests(rows))
+        assert prior.is_file() and not prior.is_symlink()
+        verify_archive(prior,baseline);os.link(prior,BACKUP/name)
+        with tarfile.open(BACKUP/(name.removesuffix('.tgz')+'-delta.tgz'),'w:gz') as archive:
+            for file,digest in delta.items():
+                assert not (folder/file).is_symlink() and sha(folder/file)==digest;capacity((folder/file).stat().st_size)
+                archive.add(folder/file,arcname=file,recursive=False)
+    verify_backups()
+    (BACKUP/'source-inventory.json').write_text(json.dumps({'baseRevision':M['backupBase']['revision'],'currentRevision':M['baseCommit'],'baseArchives':['source.tgz','financial-source.tgz'],'deltaArchives':['source-delta.tgz','financial-source-delta.tgz'],'source':digests(OLD['source']),'financeSource':digests(OLD['financeSource'])},indent=2)+'\n')
     shutil.copyfile(STATE/'host.json',BACKUP/'host.json')
     assert not Path('/opt/royal-game-modules/original-jackie-chan/active.json').exists(),'Hong Kong Warrior was installed outside this reviewed release'
     for file in OLD['configuration']:
@@ -141,7 +154,7 @@ def backup():
         listing=run(['docker','exec','-i','royal-finance-sim-finance-db-1','pg_restore','--list'],stdin=saved)
     entries=len([line for line in listing.splitlines() if line and not line.startswith(';')]);assert entries>0
     assert 'royal_game' in listing and 'royal_nile_play' in listing,'Both player schemas must be backed up'
-    record={file:{'bytes':(BACKUP/file).stat().st_size,'sha256':sha(BACKUP/file)} for file in ['source.tgz','financial-source.tgz','player-journals.dump']}
+    record={file:{'bytes':(BACKUP/file).stat().st_size,'sha256':sha(BACKUP/file)} for file in ['source.tgz','source-delta.tgz','financial-source.tgz','financial-source-delta.tgz','source-inventory.json','player-journals.dump']}
     record['player-journals.dump']['archiveEntries']=entries
     save('backup.json',record);capacity();return record
 

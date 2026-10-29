@@ -27,17 +27,15 @@ export function projectedReader(before,kind='application'){
   }else if(file.startsWith('server-tests/')||file.startsWith('tests/fixtures/')||file==='scripts/database-test.ts'){
    if(file.startsWith('server-tests/')&&!file.includes('jackie')){bytes=blob(meta.production,file);origin={testOnly:true,commit:meta.production};}
    else{bytes=canonical(fs.readFileSync(path.resolve(root,file)));origin={testOnly:true};}
-   if(file==='server-tests/jackie-chan.test.ts'){
-    const text=bytes.toString();assert.equal(text.split(',2,4,true,false,false,').length-1,3,'Review the direct-call capability adapter');
-    bytes=Buffer.from(text.replaceAll(',2,4,true,false,false,',',2,4,false,false,'));origin.capabilityAdapter='Omit the unpublished Caribbean positional flag; preserve Forest, Flag and Jackie positions.';
-   }
   }
   else if(kind==='finance'){
    const row=financial.files[file];assert(row,'Unreviewed finance input: '+file);
    bytes=blob(row.commit,row.path);if(row.flagAddition)bytes=Buffer.from("import {FLAG_GAME} from './flagBattle';\n"+bytes.toString().split('\n').map(line=>{if(/^export const (ARCADE_HOUSE_GAMES|ROYAL_PLATFORM_GAMES)\b/.test(line)){const i=line.lastIndexOf(']');return line.slice(0,i)+', FLAG_GAME'+line.slice(i);}return line;}).join('\n'));
    assert.equal(digest(bytes),row.sha256,file);assert.equal(live?.lf,row.sha256,'Finance input changed: '+file);origin=row;
   }else{
-   assert(live,'Unreviewed application input: '+file);bytes=blob(meta.production,file);assert.equal(digest(bytes),live.lf,'Application baseline changed: '+file);origin={commit:meta.production,path:file};
+   assert(live,'Unreviewed application input: '+file);
+   for(const commit of [meta.production,meta.previousProduction]){try{const candidate=blob(commit,file);if(digest(candidate)===live.lf){bytes=candidate;origin={commit,path:file};break;}}catch{}}
+   assert(bytes,'Application baseline changed: '+file);
   }
   inputs[file]=digest(bytes);contents[file]=bytes;origins[file]=origin;return bytes;
  }

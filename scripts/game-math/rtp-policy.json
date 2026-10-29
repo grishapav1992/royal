@@ -165,7 +165,15 @@
         "scripts/game-math/rational.mjs",
         "deployment/releases/caribbean-treasures-20261029-v2/financial-build.mjs",
         "deployment/releases/caribbean-treasures-20261029-v2/financial-baseline.json",
-        "deployment/releases/caribbean-treasures-20261029-v2/financial-arcadeCatalog.ts"
+        "deployment/releases/caribbean-treasures-20261029-v2/financial-arcadeCatalog.ts",
+        "deployment/releases/jackie-chan-20261029-v1/projection.mjs",
+        "deployment/releases/jackie-chan-20261029-v1/projection-origins.json",
+        "deployment/releases/jackie-chan-20261029-v1/financial-origins.json",
+        "deployment/releases/jackie-chan-20261029-v1/source/server/demoExpansion.ts",
+        "deployment/releases/jackie-chan-20261029-v1/source/server/finance/nile-game-runtime.ts",
+        "deployment/releases/jackie-chan-20261029-v1/source/src/shared/casinoExpansion.ts",
+        "deployment/releases/jackie-chan-20261029-v1/finance-source/src/shared/arcadeCatalog.ts",
+        "deployment/releases/jackie-chan-20261029-v1/finance-source/src/i18n/en.ts"
       ]
     },
     "studio-neopolis": {

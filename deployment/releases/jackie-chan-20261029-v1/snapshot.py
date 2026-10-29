@@ -79,7 +79,7 @@ def snapshot(*, include_program=True, include_prepared=True):
     game = inspect('royal-game-1')
     prepared = run(['docker', 'image', 'inspect', 'royal-game:latest', '--format', '{{.Id}}'])
     priors=[]
-    for name,key in [('neopolis-variable-stake-20261028-v1','game'),('royal-roulette-20261029-v1','image'),('flag-battle-20261029-v1','game'),('forest-heart-20261029-v3','game')]:
+    for name,key in [('neopolis-variable-stake-20261028-v1','game'),('royal-roulette-20261029-v1','image'),('flag-battle-20261029-v1','game'),('forest-heart-20261029-v3','game'),('caribbean-treasures-20261029-v2','game')]:
         path=Path('/opt/royal-releases')/name/'build-result.json'
         if path.exists():
             row=json.loads(path.read_text());priors.append((row.get(key),row['program']))

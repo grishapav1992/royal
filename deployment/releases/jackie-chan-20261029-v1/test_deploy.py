@@ -86,6 +86,15 @@ class DeploymentGuards(unittest.TestCase):
     def test_disk_reserve_is_never_lowered(self):
         with patch.object(self.helper.shutil,'disk_usage',return_value=types.SimpleNamespace(free=5*1024**3)):
             with self.assertRaises(AssertionError):self.helper.capacity()
+    def test_composite_backup_covers_changed_and_added_current_files(self):
+        self.helper.M['backupBase']={'source':copy.deepcopy(self.old['source'])}
+        self.helper.OLD['source']['src/shared/jackieChan.ts']={'sha256':'changed','lf':'changed'}
+        self.helper.OLD['source']['new.ts']={'sha256':'added','lf':'added'}
+        baseline,delta=self.helper.composite_rows('source')
+        self.assertEqual(baseline,{'src/shared/jackieChan.ts':'old'})
+        self.assertEqual(delta,{'src/shared/jackieChan.ts':'changed','new.ts':'added'})
+        del self.helper.OLD['source']['src/shared/jackieChan.ts']
+        with self.assertRaises(AssertionError):self.helper.composite_rows('source')
 
 class SnapshotRaces(unittest.TestCase):
     def setUp(self):
