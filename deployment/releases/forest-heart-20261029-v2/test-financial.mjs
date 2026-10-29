@@ -5,7 +5,7 @@ import {execFileSync} from 'node:child_process';
 import {buildFinancial} from './financial-build.mjs';
 const root=fileURLToPath(new URL('../../../',import.meta.url));
 const work=resolve(root,'artifacts/work/forest-heart-ux-v7');
-const before=JSON.parse(readFileSync(resolve(work,'production-before.json'),'utf8').replace(/^\uFEFF/,''));
+const before=JSON.parse(readFileSync(resolve(work,'production-current.json'),'utf8').replace(/^\uFEFF/,''));
 const tests=[];
 for(const name of ['forest-heart-production','nile-native-games']){
  const built=await buildFinancial({before,entryPoints:['server-tests/finance/'+name+'.test.ts']});
