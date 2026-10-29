@@ -119,6 +119,11 @@
   "cleanup": {
     "testStandStopped": true,
     "temporaryDatabaseRemoved": true,
-    "productionPublication": "pending"
+    "productionPublication": {
+      "published": true,
+      "sourceCommit": "0baa69d10ddea384ba7e58c499582d18e702de2c",
+      "version": "1.6.0-cf05aa0c4b35",
+      "publicChecksPassed": true
+    }
   }
 }
