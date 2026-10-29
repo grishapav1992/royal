@@ -2,7 +2,8 @@
 export {};
 const select=document.querySelector<HTMLSelectElement>('#review-case')!;
 const key='royal:temple:device-review-cases';
-const allowed=['partial','bonus','cap'];
+const preparedCases:Record<string,string>={partial:'cascade-seed-15',bonus:'cascade-seed-118',cap:'cascade-cap',blank:'cascade-blank',return:'cascade-seed-7',win:'cascade-seed-5'};
+const allowed=Object.keys(preparedCases);
 let cases:Record<string,string>={};
 try{const saved=JSON.parse(sessionStorage.getItem(key)??'{}');if(saved&&typeof saved==='object')for(const [id,value]of Object.entries(saved))if(typeof value==='string'&&allowed.includes(value))cases[id]=value;}catch{}
 const originalFetch=window.fetch.bind(window);
@@ -16,7 +17,7 @@ window.fetch=(input,init)=>{
         if(typeof id==='string'){
           const choice=cases[id]??select.value;cases[id]=choice;
           cases=Object.fromEntries(Object.entries(cases).slice(-100));sessionStorage.setItem(key,JSON.stringify(cases));
-          const scenario=choice==='cap'?'cascade-cap':`cascade-seed-${choice==='bonus'?118:15}-device-${id}`;
+          const scenario=(preparedCases[choice]??preparedCases.partial)+(choice==='cap'||choice==='blank'?'':'-device-'+id);
           const headers=new Headers(init.headers);headers.set('x-temple-test-case',scenario);return originalFetch(input,{...init,headers});
         }
       }

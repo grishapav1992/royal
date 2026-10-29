@@ -57,6 +57,7 @@
     "test:temple:endurance": "node --import tsx scripts/database-test.ts --import tsx --test --test-concurrency=1 server-tests/flooded-temple-endurance.test.ts",
     "test:temple:endurance:ui": "playwright test --config playwright.temple-endurance.config.ts",
     "test:temple:devices": "playwright test --config playwright.temple-devices.config.ts",
+    "test:temple:visual": "playwright test --config playwright.temple-visual.config.ts",
     "preview:temple:devices": "node --import tsx scripts/temple-device-preview.ts"
   },
   "dependencies": {

@@ -3,6 +3,7 @@ import {TempleUI} from './TempleUI';
 import {CascadeUI} from './CascadeUI';
 import {cascadeStyles} from './cascadeStyles';
 import {cascadeFeedbackStyles} from './cascadeFeedbackStyles';
+import {cascadeResultStyles} from './cascadeResultStyles';
 import {styles} from './styles';
 import {feedbackStyles} from './feedbackStyles';
 import {referenceStyles} from './referenceStyles';
@@ -41,7 +42,7 @@ export const mount:GameModuleV1['mount']=(host,context)=>{
     if(disposed||!frame.contentDocument)return;
     game?.destroy();
     const doc=frame.contentDocument;doc.documentElement.lang=services.i18n.language;doc.title=title;
-    const style=doc.createElement('style');style.textContent=styles+feedbackStyles+referenceStyles+characterStyles+playbackStyles+navigationStyles+cascadeStyles+cascadeFeedbackStyles;doc.head.replaceChildren(style);
+    const style=doc.createElement('style');style.textContent=styles+feedbackStyles+referenceStyles+characterStyles+playbackStyles+navigationStyles+cascadeStyles+cascadeFeedbackStyles+cascadeResultStyles;doc.head.replaceChildren(style);
     app=doc.createElement('main');doc.body.replaceChildren(app);game=undefined;sync();
   });
   frame.src='about:blank';host.replaceChildren(frame);
