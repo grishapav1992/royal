@@ -6,9 +6,9 @@ import { execFileSync } from 'node:child_process';
 import assert from 'node:assert/strict';
 import {build} from 'esbuild';
 import { buildFinancial } from './financial-build.mjs';
-const helper = dirname(fileURLToPath(import.meta.url)), root = resolve(helper, '../../..'), work = resolve(root, 'artifacts/work/caribbean-publish-20261029'), out = resolve(work, 'payload');
+const helper = dirname(fileURLToPath(import.meta.url)), root = resolve(helper, '../../..'), work = resolve(root, 'artifacts/work/caribbean-publish-20261029'), out = resolve(work, 'payload-v2');
 const json = path => JSON.parse(readFileSync(path, 'utf8')), sha = path => createHash('sha256').update(readFileSync(path)).digest('hex');
-const canonicalSha=path=>{const bytes=readFileSync(path);return createHash('sha256').update(/\.(?:[cm]?[jt]sx?|json|css|html|md|txt|ya?ml|py|sh|toml)$/.test(path)?bytes.toString('utf8').replace(/\r\n/g,'\n'):bytes).digest('hex');};
+const canonicalSha=path=>{const bytes=readFileSync(path);return createHash('sha256').update(/\.(?:[cm]?[jt]sx?|json|css|html|svg|md|txt|ya?ml|py|sh|toml)$/.test(path)?bytes.toString('utf8').replace(/\r\n/g,'\n'):bytes).digest('hex');};
 const scope = json(resolve(helper, 'scope.json')), before = json(resolve(work, 'before-full.json'));
 const git = (...args) => execFileSync(process.env.ROYAL_GIT_BINARY || 'git', args, { cwd: root, encoding: 'utf8' }).trim();
 const release = json(resolve(root, 'module-build/release-manifest.json')), receipt = json(resolve(root, 'module-build/release-github.json'));
@@ -29,7 +29,7 @@ for (const [file, old] of Object.entries(before.source)) {
   if (file === 'deployment/SERVER.md' || file.endsWith('.orig') || file.endsWith('.bak') || file in source) continue;
   const current=existsSync(resolve(root,file))?sha(resolve(root,file)):null;if([old.sha256,old.lf].includes(current)||existsSync(resolve(root,file))&&canonicalSha(resolve(root,file))===old.lf)continue;
   const origins=[];for(const commit of ['3e428397544ec9a18d2bb64e51cfce2f4293a627',scope.base,'9acf3686965fedc0c81efaaa6f740e30d4fef175']){
-    try{const blob=execFileSync(process.env.ROYAL_GIT_BINARY||'git',['show',commit+':'+file],{cwd:root,stdio:['ignore','pipe','ignore']});const digest=createHash('sha256').update(blob).digest('hex');if([old.sha256,old.lf].includes(digest))origins.push(commit);}catch{}
+    try{const blob=execFileSync(process.env.ROYAL_GIT_BINARY||'git',['show',commit+':'+file],{cwd:root,stdio:['ignore','pipe','ignore']});const digests=[createHash('sha256').update(blob).digest('hex'),createHash('sha256').update(blob.toString('utf8').replace(/\r\n/g,'\n')).digest('hex')];if(digests.some(digest=>[old.sha256,old.lf].includes(digest)))origins.push(commit);}catch{}
   }
   assert(origins.length,'Unknown retained production source: '+file);retainedSource.push({file,liveSha256:old.sha256,buildSha256:current,origins});
 }
