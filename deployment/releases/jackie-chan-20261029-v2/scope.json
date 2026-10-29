@@ -1,5 +1,5 @@
 {
-  "release": "jackie-chan-20261029-v1",
+  "release": "jackie-chan-20261029-v2",
   "base": "b921d0537fed52336aaee5d97144bf36a9188107",
   "reviewedFeature": "ce784d39cbd83df6dc50c0b3248fc2713823f19c",
   "allowedSource": [
@@ -49,5 +49,9 @@
     "apiVersion": 1,
     "rulesVersion": 1,
     "progressVersion": 2
+  },
+  "reuseGameCandidate": {
+    "image": "sha256:ecf42dd8505738a50472883a03c3df3bb365b22092fd336121c24a3108f448d2",
+    "sourceCommit": "e07a8daef93b5b047c3425cfb9beae89a622d739"
   }
 }

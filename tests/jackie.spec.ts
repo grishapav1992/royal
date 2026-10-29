@@ -15,7 +15,7 @@ test.beforeAll(async()=>{
   backend.stdout?.on('data',b=>logs=(logs+b.toString()).slice(-6000));backend.stderr?.on('data',b=>logs=(logs+b.toString()).slice(-6000));const target=`http://127.0.0.1:${port}`;
   try{await expect.poll(async()=>{try{return(await fetch(target+'/healthz')).ok;}catch{return false;}},{timeout:60000,message:'Jackie backend readiness'}).toBe(true);}
   catch(error){throw new Error(`Jackie backend did not become ready (exit ${backend.exitCode}): ${logs}`,{cause:error});}
-  const plugins=projected?[(await import('../deployment/releases/jackie-chan-20261029-v1/projection.mjs')).viteProjection(JSON.parse(await readFile(out+'/production-before.json','utf8')))]:[];
+  const plugins=projected?[(await import('../deployment/releases/jackie-chan-20261029-v2/projection.mjs')).viteProjection(JSON.parse(await readFile(out+'/production-before.json','utf8')))]:[];
   vite=await createServer({configFile:false,root:process.cwd(),plugins,cacheDir:projected?'node_modules/.vite-jackie-production':'node_modules/.vite-jackie',optimizeDeps:{entries:['index.html','tests/fixtures/independent-games.html']},server:{host:'127.0.0.1',port:0,watch:{ignored:['**/module-dist/**','**/module-build/**']},proxy:{'/api':target,'/game-modules':target,'/multiplayer':{target,ws:true,rewrite:path=>path.replace(/^\/multiplayer/,'')}}}});await vite.listen();baseURL=`http://127.0.0.1:${(vite.httpServer!.address() as {port:number}).port}`;await mkdir(out,{recursive:true});
 });
 test.afterAll(async()=>{await vite?.close();if(backend?.exitCode===null){backend.kill();await new Promise<void>(yes=>backend.once('exit',()=>yes()));}await db?.cleanup();});

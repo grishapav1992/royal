@@ -1,5 +1,9 @@
 # Hong Kong Warrior production release
 
+Attempt v1 stopped before publication because its financial bundle left @noble/hashes external, while the minimal financial image supplies only PostgreSQL dependencies. No running image, application source, financial source or external module was changed. This attempt bundles all financial dependencies except pg and pg-native, matching the established financial build contract. An offline read-only import probe mounts the candidate program into the exact existing financial base before any image build. The same probe remains mandatory for the finished image.
+
+The already verified v1 game candidate may be reused only when every backend, host and module output matches the new reviewed payload, its source label matches the preserved Git commit, and its entire runtime inventory matches the expected additive composition. The new image changes the revision label to the current source commit. Both previous source deltas may be hardlinked only after complete verification; the player schema dump is fresh for this attempt.
+
 Publish the reviewed independent game with contract 1/1/2, eight account costumes and the original CR vs Leo round mathematics. Repair defeated enemy poses, audio recovery after mute or suspension, and repeated combat openings.
 
 The refreshed production baseline is b921d0537fed52336aaee5d97144bf36a9188107, including the Caribbean release published while this task was preparing. Main also contains unpublished work. projection-origins.json therefore specifies a small reviewed source delta over the actual application, while financial-origins.json retains the older financial service inputs. The source and finance-source folders contain only changed inputs. All remaining compiled inputs must match their current server fingerprints and an explicit Git blob. No independent development checkout is created on the server.

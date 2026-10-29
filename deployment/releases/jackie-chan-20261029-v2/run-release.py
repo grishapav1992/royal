@@ -1,7 +1,7 @@
 from pathlib import Path
 from datetime import datetime, timezone
 import hashlib,json,os,subprocess,sys,re
-root=Path('/opt/royal-releases/jackie-chan-20261029-v1')
+root=Path('/opt/royal-releases/jackie-chan-20261029-v2')
 source=sys.argv[1]
 assert re.fullmatch(r'[a-f0-9]{40}',source)
 os.umask(0o077)

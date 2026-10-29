@@ -16,7 +16,7 @@ from financial_gate import FinancialGate
 
 ROOT=Path(__file__).resolve().parent
 LIVE=Path('/opt/royal'); FINANCE=Path('/opt/royal-finance'); STATE=Path('/opt/royal-game-modules-state')
-NAME='jackie-chan-20261029-v1'; BACKUP=Path('/opt/royal-backups')/NAME
+NAME='jackie-chan-20261029-v2'; BACKUP=Path('/opt/royal-backups')/NAME
 M=json.loads((ROOT/'install-manifest.json').read_text()); OLD=M['before']; SCOPE=json.loads((ROOT/'scope.json').read_text())
 MIN_FREE=5*1024**3
 sha=lambda p:hashlib.sha256(Path(p).read_bytes()).hexdigest()
@@ -131,10 +131,15 @@ def backup():
         prior=Path('/opt/royal-backups/caribbean-treasures-20261029-v2')/name
         assert prior.is_file() and not prior.is_symlink()
         verify_archive(prior,baseline);os.link(prior,BACKUP/name)
-        with tarfile.open(BACKUP/(name.removesuffix('.tgz')+'-delta.tgz'),'w:gz') as archive:
-            for file,digest in delta.items():
-                assert not (folder/file).is_symlink() and sha(folder/file)==digest;capacity((folder/file).stat().st_size)
-                archive.add(folder/file,arcname=file,recursive=False)
+        delta_name=name.removesuffix('.tgz')+'-delta.tgz'
+        prior_delta=Path('/opt/royal-backups/jackie-chan-20261029-v1')/delta_name
+        if prior_delta.is_file() and not prior_delta.is_symlink():
+            verify_archive(prior_delta,delta);os.link(prior_delta,BACKUP/delta_name)
+        else:
+            with tarfile.open(BACKUP/delta_name,'w:gz') as archive:
+                for file,digest in delta.items():
+                    assert not (folder/file).is_symlink() and sha(folder/file)==digest;capacity((folder/file).stat().st_size)
+                    archive.add(folder/file,arcname=file,recursive=False)
     verify_backups()
     (BACKUP/'source-inventory.json').write_text(json.dumps({'baseRevision':M['backupBase']['revision'],'currentRevision':M['baseCommit'],'baseArchives':['source.tgz','financial-source.tgz'],'deltaArchives':['source-delta.tgz','financial-source-delta.tgz'],'source':digests(OLD['source']),'financeSource':digests(OLD['financeSource'])},indent=2)+'\n')
     shutil.copyfile(STATE/'host.json',BACKUP/'host.json')
@@ -158,14 +163,30 @@ def backup():
     record['player-journals.dump']['archiveEntries']=entries
     save('backup.json',record);capacity();return record
 
+FINANCE_IMPORT_CHECK="import('/app/play.js').then(()=>process.exit(1)).catch(e=>{if(e.message!=='test_scope_required'){console.error(e.name+': '+e.message);process.exit(1)}})"
+
+def probe_finance(image_ref,*,mounted=False):
+    args=['docker','run','--rm','--network=none','--read-only']
+    if mounted:args+=['--mount','type=bind,source='+str(ROOT/'play.js')+',target=/app/play.js,readonly']
+    run([*args,'--entrypoint','node',image_ref,'--v8-pool-size=1','-e',FINANCE_IMPORT_CHECK])
+
 def build():
-    payload();before=snapshot();stable(before);assert before['sourceRevision']==M['baseCommit'];assert before['program']==before['preparedProgram']
+    payload();probe_finance(OLD['containers']['royal-nile-play']['image'],mounted=True)
+    before=snapshot();stable(before);assert before['sourceRevision']==M['baseCommit'];assert before['program']==before['preparedProgram']
     assert before['containers']['royal-game-1']['health']=='healthy';copies=backup()
     for kind in ['game','finance']:
         context=ROOT/(kind+'-context');context.mkdir(exist_ok=False)
         if kind=='game':
-            for name in ['dist','module-dist','backend']:shutil.copytree(ROOT/name,context/name,copy_function=os.link)
-            text='FROM royal-game:before-'+NAME+'-prepared\nCOPY --chown=node:node dist/ /app/dist/\nCOPY --chown=node:node module-dist/ /app/module-dist/\nCOPY --chown=node:node backend/ /app/dist-server/\n'
+            reuse=SCOPE.get('reuseGameCandidate')
+            if reuse:
+                reused=json.loads(run(['docker','image','inspect',reuse['image']]))[0]
+                assert reused['Id']==reuse['image'] and reused['Config']['Labels']['org.opencontainers.image.revision']==reuse['sourceCommit']
+                expected={**OLD['program'],**{'dist/'+k:v for k,v in M['dist'].items()},**{'module-dist/'+k:v for k,v in M['modules'].items()},**{'dist-server/'+k:v for k,v in M['backend'].items()}}
+                actual=json.loads(run(['docker','run','--rm','--network=none','--read-only','--entrypoint','node',reuse['image'],'--v8-pool-size=1','-e',PROGRAM]));assert actual==expected,'The reused candidate differs from reviewed outputs'
+                text='FROM '+reuse['image']+'\n'
+            else:
+                for name in ['dist','module-dist','backend']:shutil.copytree(ROOT/name,context/name,copy_function=os.link)
+                text='FROM royal-game:before-'+NAME+'-prepared\nCOPY --chown=node:node dist/ /app/dist/\nCOPY --chown=node:node module-dist/ /app/module-dist/\nCOPY --chown=node:node backend/ /app/dist-server/\n'
         else:
             shutil.copyfile(ROOT/'play.js',context/'play.js');text='FROM royal-nile-play:before-'+NAME+'\nCOPY --chown=node:node play.js /app/play.js\n'
         text+='LABEL org.opencontainers.image.revision="'+M['sourceCommit']+'"\n';(context/'Dockerfile').write_text(text)
@@ -179,7 +200,7 @@ def build():
         parent,child=json.loads(run(['docker','image','inspect',base,candidate]));assert child['RootFS']['Layers'][:len(parent['RootFS']['Layers'])]==parent['RootFS']['Layers']
         assert image_runtime(child['Config'])==image_runtime(parent['Config']),'Image runtime configuration changed'
         assert child['Config'].get('Labels',{}).get('org.opencontainers.image.revision')==M['sourceCommit']
-    run(['docker','run','--rm','--network=none','--read-only','--entrypoint','node',finance,'--v8-pool-size=1','-e',"import('/app/play.js').then(()=>process.exit(1)).catch(e=>{if(e.message!=='test_scope_required')process.exit(1)})"])
+    probe_finance(finance)
     result={'game':game,'finance':finance,'program':expected,'sourceCommit':M['sourceCommit'],'backups':copies};save('build-result.json',result)
     stable(snapshot());return result
 
