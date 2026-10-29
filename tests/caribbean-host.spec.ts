@@ -113,6 +113,131 @@ test('crew collection earns free tokens, unlocks a chosen captain and persists b
  expect((await wallet(page)).entries).toEqual(before.entries);
 });
 
+test('spin keeps the portrait frame and lower controls anchored throughout confirmation and reveal',async({page,roomPath})=>{
+ test.setTimeout(120000);await enter(page,roomPath);await topup(page);await open(page);
+ await page.emulateMedia({reducedMotion:'no-preference'});
+ const measurements:any[]=[];
+ await page.route('**/api/demo-wallet/expansion',async route=>{
+  if(route.request().method()==='POST')await new Promise(resolve=>setTimeout(resolve,500));
+  await route.continue();
+ });
+ for(const [width,height]of [[1440,1000],[1280,720],[390,844]]){
+  await page.setViewportSize({width,height});await page.waitForTimeout(150);
+  await page.request.post('/__test/caribbean/force-scenario',{data:{name:'loss'}});
+  await page.evaluate(()=>{
+   const selectors=['.ct-captain','.ct-avatar','.ct-ledger','.ct-controls','.ct-status'];
+   const state=(window as any).__ctAnchors={samples:[] as any[],running:true};
+   const sample=()=>{state.samples.push(Object.fromEntries(selectors.map(selector=>{const r=document.querySelector(selector)!.getBoundingClientRect();return[selector,{x:r.x,y:r.y,width:r.width,height:r.height}];})));if(state.running)requestAnimationFrame(sample);};sample();
+  });
+  await action(page,'[data-ct-action=play]');
+  const sample=await page.evaluate(()=>{const s=(window as any).__ctAnchors;s.running=false;return s.samples;});
+  const drift=Object.fromEntries(Object.keys(sample[0]).map(selector=>[selector,Math.max(...sample.flatMap((s:any)=>['x','y','width','height'].map(key=>Math.abs(s[selector][key]-sample[0][selector][key]))))]));
+  measurements.push({width,height,frames:sample.length,drift});
+ }
+ const{writeFile}=await import('node:fs/promises');await writeFile(out+'/spin-anchors.json',JSON.stringify(measurements,null,2));
+ for(const m of measurements)for(const[selector,drift]of Object.entries(m.drift))expect(drift,`${m.width} ${selector}`).toBeLessThanOrEqual(.75);
+});
+
+test('finite autoplay runs the selected paid budget once and stops without another debit',async({page,roomPath})=>{
+ test.setTimeout(90000);await enter(page,roomPath);await topup(page);await open(page);
+ const requests:string[]=[];
+ await page.route('**/api/demo-wallet/expansion',async route=>{
+  if(route.request().method()==='POST'){
+   const op=route.request().postDataJSON();expect(op.action).toBe('start');expect(op.settings.caribbean.mode).toBe('normal');requests.push(op.id);
+   await page.request.post('/__test/caribbean/force-scenario',{data:{name:'loss'}});
+  }
+  await route.continue();
+ });
+ const before=(await wallet(page)).balance;
+ await page.locator('[data-ct-auto-count]').selectOption('10');await page.locator('[data-ct-action=auto]').click();
+ await expect(page.locator('[data-ct-lines]')).toBeDisabled();await expect(page.locator('[data-ct-stake]')).toBeDisabled();await expect(page.locator('[data-ct-action=buy]')).toBeDisabled();
+ await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getMiniState()?.autoplay.note),{timeout:45000}).toBe('complete');
+ expect(requests).toHaveLength(10);expect(new Set(requests).size).toBe(10);
+ expect((await wallet(page)).balance).toBe(before-200);expect((await wallet(page)).entries.filter((e:any)=>e.kind==='bet')).toHaveLength(10);
+ expect(await page.evaluate(()=>(window as any).royalDemo.getMiniState().autoplay.timerPending)).toBe(false);
+ await page.waitForTimeout(800);expect(requests).toHaveLength(10);
+});
+
+test('autoplay Stop during confirmation preserves the accepted request and prevents following starts',async({page,roomPath})=>{
+ await enter(page,roomPath);await topup(page);await open(page);let starts=0;
+ await page.route('**/api/demo-wallet/expansion',async route=>{
+  if(route.request().method()==='POST'){starts++;await page.request.post('/__test/caribbean/force-scenario',{data:{name:'loss'}});await new Promise(resolve=>setTimeout(resolve,600));}
+  await route.continue();
+ });
+ await page.locator('[data-ct-action=auto]').click();await expect.poll(()=>starts).toBe(1);
+ await page.locator('[data-ct-action=auto]').click();await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().presenting)).toBe(false);
+ await page.waitForTimeout(900);expect(starts).toBe(1);expect((await wallet(page)).entries.filter((e:any)=>e.kind==='bet')).toHaveLength(1);
+ expect(await page.evaluate(()=>(window as any).royalDemo.getMiniState().autoplay)).toMatchObject({running:false,timerPending:false,note:'stopped'});
+});
+
+test('autoplay waits for the chosen tactic and free continuations do not spend its paid budget',async({page,roomPath})=>{
+ test.setTimeout(90000);await enter(page,roomPath);await topup(page);await open(page);
+ let starts=0,chosen=false,free=0;
+ await page.route('**/api/demo-wallet/expansion',async route=>{
+  if(route.request().method()==='POST'){
+   const op=route.request().postDataJSON();
+   if(op.action==='start'){starts++;if(starts===1)await page.request.post('/__test/caribbean/force-bonus');else await page.request.post('/__test/caribbean/force-scenario',{data:{name:'loss'}});}
+   else if(op.move==='caribbean-spin'){expect(chosen).toBe(true);free++;}
+  }
+  await route.continue();
+ });
+ await page.locator('[data-ct-action=auto]').click();await expect(page.locator('[data-ct-action=choose-flagship]')).toBeVisible();
+ await page.waitForTimeout(800);expect(starts).toBe(1);expect(free).toBe(0);
+ expect(await page.evaluate(()=>(window as any).royalDemo.getMiniState().autoplay)).toMatchObject({running:true,remaining:9,waitingForTactic:true});
+ chosen=true;await page.locator('[data-ct-action=choose-flagship]').click();
+ await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().autoplay.note),{timeout:45000}).toBe('complete');
+ expect(starts).toBe(10);expect(free).toBe(6);expect((await wallet(page)).entries.filter((e:any)=>e.kind==='bet')).toHaveLength(10);
+});
+
+test('autoplay stops on a lost response and a manual replay uses the original UUID',async({page,roomPath})=>{
+ await enter(page,roomPath);await topup(page);await open(page);const ids:string[]=[];let dropped=false;
+ await page.route('**/api/demo-wallet/expansion',async route=>{
+  if(route.request().method()==='POST'){
+   ids.push(route.request().postDataJSON().id);
+   if(!dropped){dropped=true;await page.request.post('/__test/caribbean/force-scenario',{data:{name:'loss'}});await route.fetch();await route.abort('failed');return;}
+  }
+  await route.continue();
+ });
+ await page.locator('[data-ct-action=auto]').click();await expect(page.locator('[data-ct-action=retry]')).toBeVisible();
+ await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().autoplay.note)).toBe('error');
+ await page.locator('[data-ct-action=retry]').click();await expect(page.locator('[data-ct-action=retry]')).toBeHidden();
+ await page.waitForTimeout(900);expect(ids).toHaveLength(2);expect(ids[1]).toBe(ids[0]);expect((await wallet(page)).entries.filter((e:any)=>e.kind==='bet')).toHaveLength(1);
+ expect(await page.evaluate(()=>(window as any).royalDemo.getMiniState().autoplay.running)).toBe(false);
+});
+
+test('autoplay stops for funds, blur, account change and closing and never resumes when reopened',async({page,roomPath})=>{
+ await enter(page,roomPath);await topup(page);await open(page);
+ await page.locator('[data-ct-lines]').selectOption('20');await page.locator('[data-ct-stake]').selectOption('1000');let starts=0;
+ await page.route('**/api/demo-wallet/expansion',async route=>{
+  if(route.request().method()==='POST'){starts++;await page.request.post('/__test/caribbean/force-scenario',{data:{name:'loss'}});}
+  await route.continue();
+ });
+ await page.locator('[data-ct-action=auto]').click();await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().autoplay.note),{timeout:30000}).toBe('funds');
+ expect(starts).toBe(5);await topup(page);await page.locator('[data-ct-action=auto]').click();await page.evaluate(()=>window.dispatchEvent(new Event('blur')));
+ expect(await page.evaluate(()=>(window as any).royalDemo.getMiniState().autoplay)).toMatchObject({running:false,timerPending:false,note:'paused'});
+ await page.locator('[data-ct-action=auto]').click();await close(page);await page.waitForTimeout(800);expect(starts).toBe(5);await open(page);
+ expect(await page.evaluate(()=>(window as any).royalDemo.getMiniState().autoplay)).toMatchObject({running:false,timerPending:false});
+ await page.locator('[data-ct-action=auto]').click();
+ await page.evaluate(async()=>{const path='/src/wallet/ExpansionClient.ts';(await import(/* @vite-ignore */path)).expansionClient.setAccount(null);});
+ expect(await page.evaluate(()=>(window as any).royalDemo.getMiniState().autoplay)).toMatchObject({running:false,timerPending:false,note:'account'});
+ await page.waitForTimeout(800);expect(starts).toBe(5);
+});
+
+test('interrupting a captain reaction preserves its current transform before easing into focus',async({page})=>{
+ await page.goto('/?offline=1');await page.emulateMedia({reducedMotion:'no-preference'});
+ const continuity=await page.evaluate(async()=>{
+  const path='/games/caribbean-treasures/CaribbeanCaptain.ts',module=await import(/* @vite-ignore */path);
+  const root=document.createElement('section');root.innerHTML='<span class="ct-portrait-gesture" style="display:block;width:200px;height:300px"><img class="ct-portrait-layer"><img class="ct-portrait-layer"></span><span class="ct-captain-caption" hidden></span>';document.body.append(root);
+  const captain=new module.CaribbeanCaptain(root);await captain.select('isabella');captain.context(true,false,false);captain.react('bigwin','continuity');
+  await new Promise(resolve=>setTimeout(resolve,250));
+  const node=root.querySelector('.ct-portrait-gesture')!,before=new DOMMatrix(getComputedStyle(node).transform);
+  captain.begin();const after=new DOMMatrix(getComputedStyle(node).transform);
+  const displacement=Math.hypot(after.e-before.e,after.f-before.f);captain.destroy();root.remove();
+  return{displacement,animations:captain.state().animations,timers:captain.state().timers};
+ });
+ expect(continuity.displacement).toBeLessThanOrEqual(.75);expect(continuity.animations).toBe(0);expect(continuity.timers).toBe(0);
+});
+
 test('a lost cosmetic unlock response preserves tokens, paid bonus and account ownership',async({page,roomPath})=>{
  await enter(page,roomPath);await topup(page);await open(page);await expect.poll(()=>crewState(page)).not.toBeNull();
  await page.request.post('/__test/caribbean/force-bonus');const paid=await action(page,'[data-ct-action=play]');expect(paid.view.caribbean.phase).toBe('choice');const before=await wallet(page);
