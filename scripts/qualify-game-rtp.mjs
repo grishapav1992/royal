@@ -1,3 +1,4 @@
+import {qualifyRoulette} from './game-math/rtp-roulette.mjs';
 import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
@@ -13,9 +14,9 @@ import {qualifyJackie} from './game-math/rtp-jackie.mjs';
 import {preflightAfterglow,simulateAfterglow} from './game-math/rtp-afterglow.mjs';
 const root = fileURLToPath(new URL('../', import.meta.url)), args = process.argv.slice(2);
 const index = args.indexOf('--game'), gameId = index < 0 ? undefined : args[index + 1];
-assert(['original-jackie-chan','studio-afterglow','studio-caribbean-treasures','studio-neopolis','studio-dracona','studio-cosmic-escape','mortal-kombat','hockey','pool','chess','durak','transfer-durak','crazy-eights'].includes(gameId), 'Choose a registered paid game');
+assert(['royal-roulette','original-jackie-chan','studio-afterglow','studio-caribbean-treasures','studio-neopolis','studio-dracona','studio-cosmic-escape','mortal-kombat','hockey','pool','chess','durak','transfer-durak','crazy-eights'].includes(gameId), 'Choose a registered paid game');
 const inputs = await rtpInputs(root, gameId), startedAt = new Date().toISOString();
-const exact = gameId==='original-jackie-chan'?await qualifyJackie(inputs.policy):gameId==='studio-neopolis'&&inputs.policy.method==='neopolis-variable-stake-conditional-v4'?qualifyNeopolisV4(inputs.policy,value=>console.log(JSON.stringify(value))):gameId==='studio-caribbean-treasures'?await qualifyCaribbean(inputs.policy,value=>console.log(JSON.stringify(value))):gameId==='studio-cosmic-escape'?await qualifyCosmic(inputs.policy,value=>console.log(JSON.stringify(value))):gameId==='mortal-kombat'?qualifyCombat(inputs.policy):inputs.policy.method==='exhaustive-virtual-pvp-pot'?qualifyVirtualPvp(gameId,inputs.policy):undefined;
+const exact = gameId==='royal-roulette'?await qualifyRoulette(inputs.policy):gameId==='original-jackie-chan'?await qualifyJackie(inputs.policy):gameId==='studio-neopolis'&&inputs.policy.method==='neopolis-variable-stake-conditional-v4'?qualifyNeopolisV4(inputs.policy,value=>console.log(JSON.stringify(value))):gameId==='studio-caribbean-treasures'?await qualifyCaribbean(inputs.policy,value=>console.log(JSON.stringify(value))):gameId==='studio-cosmic-escape'?await qualifyCosmic(inputs.policy,value=>console.log(JSON.stringify(value))):gameId==='mortal-kombat'?qualifyCombat(inputs.policy):inputs.policy.method==='exhaustive-virtual-pvp-pot'?qualifyVirtualPvp(gameId,inputs.policy):undefined;
 const serverReplayChecks = exact?.serverReplayChecks??(gameId==='studio-afterglow'?preflightAfterglow(inputs.policy):preflight(gameId, inputs.policy));
 console.log(JSON.stringify({ gameId, phase: 'server-replay', serverReplayChecks }));
 const sample = exact??(gameId==='studio-afterglow'?simulateAfterglow:gameId === 'studio-neopolis' ? simulateNeopolis : simulateDracona)(inputs.policy, value => console.log(JSON.stringify(value)));
