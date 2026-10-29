@@ -1,0 +1,56 @@
+{
+  "sampleRate": 48000,
+  "format": "stereo PCM16",
+  "source": "Existing CC0 recordings in assets/audio-source/sources.json; no new external audio",
+  "cues": {
+    "cascadeLandA": {
+      "file": "cascadeLandA.wav",
+      "duration": 0.62,
+      "accent": 0.06604166666666667,
+      "peak": 0.1899999976158142,
+      "rms": 0.04317043231147843
+    },
+    "cascadeLandB": {
+      "file": "cascadeLandB.wav",
+      "duration": 0.62,
+      "accent": 0.072125,
+      "peak": 0.1899999976158142,
+      "rms": 0.04248455368304715
+    },
+    "cascadeLandC": {
+      "file": "cascadeLandC.wav",
+      "duration": 0.62,
+      "accent": 0.087625,
+      "peak": 0.1899999976158142,
+      "rms": 0.046316083146044816
+    },
+    "cascadeBreakA": {
+      "file": "cascadeBreakA.wav",
+      "duration": 0.58,
+      "accent": 0.04639583333333333,
+      "peak": 0.1599999964237213,
+      "rms": 0.03147731529612314
+    },
+    "cascadeBreakB": {
+      "file": "cascadeBreakB.wav",
+      "duration": 0.58,
+      "accent": 0.029979166666666668,
+      "peak": 0.1599999964237213,
+      "rms": 0.03088330872451363
+    },
+    "cascadeBonus": {
+      "file": "cascadeBonus.wav",
+      "duration": 1.65,
+      "accent": 0.13841666666666666,
+      "peak": 0.23999999463558197,
+      "rms": 0.023650529500982728
+    },
+    "cascadeReturn": {
+      "file": "cascadeReturn.wav",
+      "duration": 0.68,
+      "accent": 0.050979166666666666,
+      "peak": 0.11999999731779099,
+      "rms": 0.025717604141807973
+    }
+  }
+}

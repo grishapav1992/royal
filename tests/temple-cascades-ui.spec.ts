@@ -2,7 +2,7 @@ import {test,expect,request as apiRequest,type Page,type Route} from '@playwrigh
 import {Client} from '@colyseus/sdk';
 import {mkdir,writeFile} from 'node:fs/promises';
 import sharp from 'sharp';
-const entry='/tests/fixtures/temple-preview.html',review='artifacts/work/temple-cascades-stage3';
+const entry='/tests/fixtures/temple-preview.html',review='artifacts/work/temple-cascades-stage4';
 const game=(p:Page)=>p.frameLocator('.temple-frame');
 const state=(p:Page)=>p.evaluate(()=>(window as any).templePreview.state());
 const session=(p:Page)=>p.evaluate(()=>(window as any).templePreview.client.sessions.find((s:any)=>s.gameId==='studio-flooded-temple'));
@@ -98,7 +98,7 @@ test('real Royal host keeps connected chat, heroine lane, controls and close/reo
     for(const [width,height]of[[1440,1000],[1000,1100],[768,1024],[390,844]]){
       await page.setViewportSize({width,height});await expect(page.locator('#mini-dialog #chat-input')).toBeVisible();await expect(page.locator('#mini-dialog #chat-input')).toBeEnabled();
       const g=await game(page).locator('.ft').evaluate(root=>({width:root.clientWidth,scroll:root.scrollWidth,board:root.querySelector('.ft-cabinet')!.getBoundingClientRect().toJSON(),character:root.querySelector('.ft-character')!.getBoundingClientRect().toJSON()}));expect(g.scroll).toBeLessThanOrEqual(g.width+1);if(g.width>520)expect(g.character.right).toBeLessThanOrEqual(g.board.left-8);else expect(g.character.bottom).toBeLessThanOrEqual(g.board.top);
-      await game(page).locator('[data-ft=primary]').scrollIntoViewIfNeeded();await expect(game(page).locator('[data-ft=primary]')).toBeInViewport();await mkdir('docs/assets/flooded-temple',{recursive:true});if(width===1440||width===390)await sharp(await page.screenshot()).webp({quality:82}).toFile(`docs/assets/flooded-temple/cascades-host-${width}.webp`);
+      await game(page).locator('[data-ft=primary]').scrollIntoViewIfNeeded();await expect(game(page).locator('[data-ft=primary]')).toBeInViewport();await mkdir('docs/assets/flooded-temple',{recursive:true});if(width===1440||width===390)await sharp(await page.screenshot()).webp({quality:82}).toFile(`docs/assets/flooded-temple/cascades-stage4-host-${width}.webp`);
     }
     await page.locator('#studio-game-list').click();await page.locator('[data-platform-game=studio-flooded-temple]').click();await expect(game(page).locator('.ft-status')).toContainText('Round net -10.00');expect(paid.length).toBe(1);
     await page.locator('#mini-dialog .mini-top [data-close]').click();await expect(page.locator('#club-chat-dock')).toBeVisible();expect(errors).toEqual([]);

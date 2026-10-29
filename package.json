@@ -45,7 +45,7 @@
     "test:skins:ui": "playwright test --config playwright.skins.config.ts",
     "test:roulette": "node --import tsx scripts/database-test.ts --import tsx --test --test-concurrency=1 server-tests/game-core.test.ts server-tests/game-wallet.test.ts server-tests/wallet-account.test.ts server-tests/roulette-catalog.test.ts server-tests/roulette-motion.test.ts server-tests/roulette-audio.test.ts server-tests/roulette-rtp-gate.test.mjs",
     "test:roulette:ui": "playwright test --config playwright.roulette.config.ts",
-    "test:temple": "node --import tsx scripts/database-test.ts --import tsx --test --test-concurrency=1 server-tests/flooded-temple-math.test.ts server-tests/flooded-temple-cascade-math.test.ts server-tests/flooded-temple-cascade-wallet.test.ts server-tests/flooded-temple-wallet.test.ts server-tests/flooded-temple-http.test.ts server-tests/flooded-temple-client.test.ts server-tests/flooded-temple-feedback.test.ts server-tests/finance/flooded-temple-native.test.ts",
+    "test:temple": "node --import tsx scripts/database-test.ts --import tsx --test --test-concurrency=1 server-tests/flooded-temple-math.test.ts server-tests/flooded-temple-cascade-math.test.ts server-tests/flooded-temple-cascade-wallet.test.ts server-tests/flooded-temple-wallet.test.ts server-tests/flooded-temple-http.test.ts server-tests/flooded-temple-client.test.ts server-tests/flooded-temple-feedback.test.ts server-tests/flooded-temple-cascade-feedback.test.ts server-tests/finance/flooded-temple-native.test.ts",
     "test:temple:ui": "playwright test --config playwright.temple.config.ts",
     "preview:temple": "node --import tsx scripts/temple-preview.ts",
     "test:temple:cascades:ui": "playwright test --config playwright.temple-cascades.config.ts"

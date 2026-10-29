@@ -6,7 +6,7 @@ import {pathToFileURL} from 'node:url';
 export const rate=48000;
 const specs={scrape:[.65,.02],stone:[.55,.012],step:[.4,.012],chest:[1.1,.025],lever:[1.15,.02],rope:[1,.27],relic:[2.1,.04],neutral:[.35,.015],return:[.6,.015],win:[1.25,.025],big:[2.2,.03],ambience:[8,0]};
 const cache=new Map();
-function recording(name){
+export function recording(name){
  if(cache.has(name))return cache.get(name);
  const bytes=readFileSync(resolve('games/flooded-temple/assets/audio-source',name+'.wav'));let format,pcm;
  if(bytes.toString('ascii',0,4)!=='RIFF')throw Error('Not a PCM recording');
