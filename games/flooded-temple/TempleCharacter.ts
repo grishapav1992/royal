@@ -17,6 +17,8 @@ export class TempleCharacter{
   private handle=0;
   private disposed=false;
   private clipKey='';
+  private drawnAt=0;
+  private motion={energy:0,look:0,gesture:0};
   private transitions:{clip:string;pose:TemplePose;key:string}[]=[];
   constructor(doc:Document,en:boolean,private singlePose=false){
     this.element=doc.createElement('aside');this.element.className='ft-character';this.element.setAttribute('aria-label',en?'Temple explorer':'Исследовательница храма');
@@ -50,10 +52,16 @@ export class TempleCharacter{
     const v=this.view,p=v.beat?Math.min(1,Math.max(0,v.offset/v.beat.duration)):this.idle%7000/7000;
     const gesture=Math.sin(p*Math.PI)*(this.reaction.clip==='triumph'?1+.15*Math.sin(p*Math.PI*4):1);
     const blend=v.reduced||v.paused&&!v.beat?1:Math.min(1,Math.max(0,(this.clock-this.blendAt)/220));
-    // Distinct illustrated silhouettes use one key pose. Blending them creates a second body.
-    this.portrait.draw(this.singlePose?this.reaction.pose:this.from,this.reaction.pose,this.singlePose?1:blend,this.reaction,this.clock,gesture,!v.reduced&&v.connected);
+    if(this.singlePose){
+      // Cascade reactions move one anchored illustration. Swapping six distinct
+      // silhouettes on every fall made her boots, head and lantern teleport.
+      const dt=Math.max(0,this.clock-this.drawnAt),ease=1-Math.exp(-dt/140);
+      this.drawnAt=this.clock;
+      for(const key of ['energy','look','gesture'] as const){const target=key==='gesture'?gesture:this.reaction[key];this.motion[key]=v.reduced||!v.connected?0:this.motion[key]+(target-this.motion[key])*ease;}
+      this.portrait.draw('idle','idle',1,{...this.reaction,energy:this.motion.energy,look:this.motion.look},this.clock,this.motion.gesture,!v.reduced&&v.connected);
+    }else this.portrait.draw(this.from,this.reaction.pose,blend,this.reaction,this.clock,gesture,!v.reduced&&v.connected);
   }
   tick(beat:CharacterBeat,offset:number){this.view.beat=beat;this.view.offset=offset;this.draw();}
-  getState(){return {clip:this.reaction.clip,poseBlendMode:this.singlePose?'single-key-pose':'crossfade',clockMs:this.clock,idleMs:this.idle,framePending:!!this.handle,paused:this.view.paused,reduced:this.view.reduced,transitions:this.transitions.slice(),...this.portrait.getState(),disposed:this.disposed};}
+  getState(){return {clip:this.reaction.clip,poseBlendMode:this.singlePose?'anchored-mesh':'crossfade',motion:{...this.motion},clockMs:this.clock,idleMs:this.idle,framePending:!!this.handle,paused:this.view.paused,reduced:this.view.reduced,transitions:this.transitions.slice(),...this.portrait.getState(),disposed:this.disposed};}
   destroy(){if(this.disposed)return;this.disposed=true;cancelAnimationFrame(this.handle);this.handle=0;this.portrait.destroy();this.element.remove();}
 }

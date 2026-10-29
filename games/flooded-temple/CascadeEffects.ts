@@ -16,9 +16,12 @@ export class CascadeEffects{
   private width=0;
   private height=0;
   private stride=0;
+  private attached?:CascadeBeat;
   constructor(private root:HTMLElement,private money:(units:string)=>string){}
   attach(beat:CascadeBeat|undefined,stake:string,offset:number,fallbackUnits='0'){
+    if(beat&&beat===this.attached&&this.cells[0]?.isConnected&&this.width===this.layer?.clientWidth&&this.height===this.layer?.clientHeight){this.tick(beat,offset,stake);return;}
     this.clear();this.cells=Array.from(this.root.querySelectorAll<HTMLElement>('[data-cell]'));this.counter=this.root.querySelector<HTMLElement>('[data-ft-value=payout]')??undefined;this.award=this.root.querySelector<HTMLElement>('.ft-fall-award')??undefined;
+    this.attached=beat;
     if(!beat){this.shownUnits=fallbackUnits;return;}
     const layer=this.root.querySelector<HTMLElement>('.ft-cascade-fx');if(!layer)return;this.layer=layer;this.width=layer.clientWidth;this.height=layer.clientHeight;
     const reels=this.root.querySelector<HTMLElement>('.ft-reels')!;this.stride=(this.cells[0]?.getBoundingClientRect().height??0)+parseFloat(this.root.ownerDocument.defaultView!.getComputedStyle(reels).rowGap);
@@ -47,7 +50,8 @@ export class CascadeEffects{
       const cell=this.cells[move.cell];if(!cell||!move.rows)continue;
       const land=cascadeLandMs(move.cell),fall=clamp(offset/land),bounce=offset>land?Math.sin(clamp((offset-land)/80)*Math.PI):0;
       const travel=move.rows*this.stride;
-      cell.style.transform=`translateY(${-travel*(1-fall*fall)}px) scale(${1+bounce*.018},${1-bounce*.04})`;
+      // Enter the visible field early, then ease into the shared landing accent.
+      cell.style.transform=`translateY(${-travel*Math.pow(1-fall,3)}px) scale(${1+bounce*.018},${1-bounce*.04})`;
       cell.style.opacity=String(move.from===null?Math.max(.08,fall):1);
       cell.style.setProperty('--ft-glow',String(bounce*.16));
     }
@@ -68,6 +72,7 @@ export class CascadeEffects{
     this.shownUnits=cascadeUnits(cascadeCounter(beat,offset),stake);if(this.counter)this.counter.textContent=this.money(this.shownUnits);
   }
   clear(){
+    this.attached=undefined;
     this.layer?.replaceChildren();this.layer=undefined;this.pieces=[];this.lines=undefined;
     for(const cell of this.cells){cell.style.removeProperty('transform');cell.style.removeProperty('opacity');cell.style.removeProperty('--ft-glow');}this.cells=[];
     this.root.style.removeProperty('--ft-seal');if(this.award){this.award.style.removeProperty('transform');this.award.style.removeProperty('opacity');}

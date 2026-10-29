@@ -59,7 +59,8 @@
     "test:temple:devices": "playwright test --config playwright.temple-devices.config.ts",
     "test:temple:visual": "playwright test --config playwright.temple-visual.config.ts",
     "preview:temple:devices": "node --import tsx scripts/temple-device-preview.ts",
-    "test:temple:release": "playwright test --config playwright.temple-release.config.ts"
+    "test:temple:release": "playwright test --config playwright.temple-release.config.ts",
+    "test:temple:motion": "playwright test --config playwright.temple-motion.config.ts"
   },
   "dependencies": {
     "@colyseus/core": "^0.18.18",

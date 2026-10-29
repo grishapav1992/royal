@@ -2,6 +2,10 @@
 
 Approved theme: the existing explorer, flooded temple, stone relief symbols and Scott Buckley score. Mathematics and operation transport stay unchanged. These timings are game-specific design choices, not scientific perception thresholds. Follow `docs/game-feedback.md`.
 
+Motion repair in 0.9.4: retain the cabinet, 15 stone controls, heroine canvas and primary button across wallet and presentation updates. Reserve the round-net and autoplay-note rows before they have text, so the console does not resize the board and heroine when results arrive. A new grid starts as a spaced column of three stones above the field, rather than three overlapping stones; the descent enters the visible field early and eases into the existing landing accent. Confirmed survivors still move by their actual vacancies. The existing clock, durations, recordings, settlement and reduced/quick choices are preserved.
+
+Cascade character reactions now deform one anchored illustration with eased attention and gesture intensity instead of instantly swapping differently drawn bodies on each fall/evaluation/result. This removes the discontinuous boots, head and lantern positions and avoids a crossfade showing two silhouettes. It is restrained illustration motion, not skeletal character animation. The six original assets and the saved v1 expedition presentation remain available unchanged. Verify visible stone displacement and stable cabinet/heroine geometry on consecutive frames, not just timeline event diagnostics.
+
 | Confirmed event | Visual phases and meaning | Sound and common accent | Interruption and verification |
 | --- | --- | --- | --- |
 | New paid or free grid | Stones descend from above; columns settle in a short sequence. The heroine watches the board. No win highlight before landing. | Three restrained variants made from licensed stone, footstep and small water recordings. The main recorded transient meets the last landing on the shared output clock. | Skip shows the confirmed state. Pause, hidden window and close cancel owned effects. Verify incoming cells and all frame grids. |

@@ -8,7 +8,7 @@ export type CascadeMove={cell:number;from:number|null;rows:number};
 export type CascadeSource={grid:number[];removeMask:number};
 export type CascadeBeat={id:number;at:number;duration:number;kind:'drop'|'evaluate'|'break'|'bonus'|'base-return'|'outcome'|'summary';frame:CascadeFrame;grid?:number[];removeMask?:number;fromPoints:number;toPoints:number;moves:CascadeMove[];cue?:TempleCue;accentMs:number;outcome?:TempleOutcome};
 export type CascadePlan={key:string;beats:CascadeBeat[];duration:number;final:CascadeFrame;quick:boolean;reduced:boolean};
-const fullMoves=():CascadeMove[]=>Array.from({length:15},(_,cell)=>({cell,from:null,rows:cell%3+3}));
+const fullMoves=():CascadeMove[]=>Array.from({length:15},(_,cell)=>({cell,from:null,rows:3}));
 
 /** The source is a confirmed grid. New symbols are read from the next confirmed frame. */
 export function cascadeMoves(source:CascadeSource|undefined,grid:readonly number[]):CascadeMove[]{
