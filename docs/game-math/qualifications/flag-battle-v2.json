@@ -3,8 +3,8 @@
   "gameId": "flag-battle",
   "rulesVersion": 2,
   "progressVersion": 1,
-  "startedAt": "2026-10-29T15:46:54.931Z",
-  "completedAt": "2026-10-29T15:46:58.460Z",
+  "startedAt": "2026-10-29T16:05:34.867Z",
+  "completedAt": "2026-10-29T16:05:38.041Z",
   "sourceHashes": {
     "src/shared/flagBattle.ts": "e156fd61e71243759c27d9a9d3fed8a0ab1555e9938f6a2b7ac854c344d16e6f",
     "server/games/flagBattle.ts": "48adde5247fa57348efecb91f05dec1eb9203e544c3f42407e5ebbcff52c9068",
@@ -14,9 +14,12 @@
     "deployment/releases/flag-battle-20261029-v1/source-transform.mjs": "12ad655422284cdffabdfe1ce3227b3e9a9aac7c41df0e678b46f4ef52e6287c",
     "deployment/releases/flag-battle-20261029-v1/financial-build.mjs": "de0af06bf0024cade2f939023e60bb2f12f0fbad0a343068ab4cb48f301c2d31",
     "deployment/releases/flag-battle-20261029-v1/financial-baseline.json": "11f15f7024cbe2fd77fbe26792257245dd0448760144dcb8dc1d83363906f6d4",
+    "deployment/releases/caribbean-treasures-20261029-v2/financial-build.mjs": "f2cdaef59904fd119addf58884f9142a166dbee4b8ac0d82b086e616e8889c63",
+    "deployment/releases/caribbean-treasures-20261029-v2/financial-baseline.json": "832011c8b7062bef1bd55e63a6e5497cb3b37321819ea1d9ec873f4c1bab6292",
+    "deployment/releases/caribbean-treasures-20261029-v2/financial-arcadeCatalog.ts": "1c97c2a8d9988c12d48144c9fe946dcab097fee681e4d64fa45652a289692ccc",
     "scripts/game-math/rtp-flag-battle.mjs": "80d4fe8301c8697ceec90a50dfa6ca2520f533c55edf8ad48dd58862d801f6af"
   },
-  "policySha256": "32cd1dfcd0e36240ac614bd2466392f1d2aad9a9e3443304ea6bc0cbf8e1539d",
+  "policySha256": "4608adfae50c7bc7ed204e0699568e2f29346ba0a5b2cdb95b3e67b7a2ab7b76",
   "serverReplayChecks": 304128,
   "method": "uniform-flag-battle-v2",
   "streams": [
