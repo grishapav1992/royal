@@ -1,0 +1,7 @@
+# Forest Heart host publication after Flag Battle
+
+Publish only the reviewed Forest Heart 1.7 client and compatible host support over the running Flag Battle source 23f5111455d280315f2d5cf2de443cf025e3f01e. Keep the exact running Nile image, source and configuration. Its qualified financial graph already contains both Forest Heart and Flag Battle. No database restoration, payment change, migration or financial restart is permitted.
+
+The v2 failure remains immutable. Its financial service was installed before its host and module. The subsequent verified Flag Battle publication retained that handler. This v3 attempt uses a fresh locked snapshot and a new exact source commit saved in main before standard release preparation. All old game contracts and external pointers must remain unchanged. Three consecutive existing readiness checks are required before and after publication, with bounded retries for transient source refresh delays. Existing readiness limits are unchanged.
+
+Use standard release:plan, release:prepare and release:verify --github, then prepare.mjs. The guarded installer takes all three existing locks, verifies the entire baseline, backs up source, configuration and the Nile schema, extends the current game image, checks all runtime bytes, changes the host under the financial lease, and installs only the Forest Heart package. Player data and all other services remain in place.
