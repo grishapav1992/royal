@@ -6,7 +6,7 @@ import { execFileSync } from 'node:child_process';
 import assert from 'node:assert/strict';
 import {build} from 'esbuild';
 import { buildFinancial } from './financial-build.mjs';
-const helper = dirname(fileURLToPath(import.meta.url)), root = resolve(helper, '../../..'), work = resolve(root, 'artifacts/work/caribbean-publish-20261029'), out = resolve(work, 'payload-v2');
+const helper = dirname(fileURLToPath(import.meta.url)), root = resolve(helper, '../../..'), work = resolve(root, 'artifacts/work/caribbean-publish-20261029'), out = resolve(work, 'payload-final');
 const json = path => JSON.parse(readFileSync(path, 'utf8')), sha = path => createHash('sha256').update(readFileSync(path)).digest('hex');
 const canonicalSha=path=>{const bytes=readFileSync(path);return createHash('sha256').update(/\.(?:[cm]?[jt]sx?|json|css|html|svg|md|txt|ya?ml|py|sh|toml)$/.test(path)?bytes.toString('utf8').replace(/\r\n/g,'\n'):bytes).digest('hex');};
 const scope = json(resolve(helper, 'scope.json')), before = json(resolve(work, 'before-full.json'));
@@ -39,8 +39,8 @@ for (const [file, digest] of Object.entries(release.files)) {
     const sub = file.slice(5); if (before.program[file] === digest) continue;
     const publicSource = before.source['public/' + sub];
     if (publicSource && ([publicSource.sha256, publicSource.lf].includes(digest)||canonicalSha(resolve(root,file))===publicSource.lf)) continue;
-    if (sub === 'index.html' || /^assets\/[a-zA-Z0-9_-]+\.(js|css)$/.test(sub) || sub.startsWith('assets/caribbean-treasures/') || sub==='assets/royal-catalog/studio-caribbean-treasures.9f55140c4e61.webp') {
-      assert(sub === 'index.html' || !(file in before.program), 'Immutable host asset differs'); dist[sub] = copy(resolve(root, file), 'dist/' + sub);
+    if (['index.html','admin.html'].includes(sub) || /^assets\/[a-zA-Z0-9_-]+\.(js|css)$/.test(sub) || sub.startsWith('assets/caribbean-treasures/') || sub==='assets/royal-catalog/studio-caribbean-treasures.9f55140c4e61.webp') {
+      assert(['index.html','admin.html'].includes(sub) || !(file in before.program), 'Immutable host asset differs'); dist[sub] = copy(resolve(root, file), 'dist/' + sub);
     } else {
       const old = before.source['public/' + sub]; assert(old && [old.sha256, old.lf].includes(digest), 'Unrelated public asset differs: ' + file);
     }
