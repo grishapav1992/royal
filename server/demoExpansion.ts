@@ -1,3 +1,5 @@
+import { FLAG_GAME, supportsFlagRules, flagModeInfo, flagViewMode, validFlagSettings, validFlagSession, validFlagStake, flagPayout, type FlagSettings } from '../src/shared/flagBattle';
+import { startFlagBattle } from './games/flagBattle';
 import { NEOPOLIS_GAME, NEOPOLIS_MAX_WIN, validNeopolisStake, validNeopolisSettlement, type NeopolisSettings, type NeopolisResult } from '../src/shared/neopolis';
 import { startNeopolis, moveNeopolis, NeopolisMoveError } from './games/neopolis';
 import {DRACONA_GAME,DRACONA_MAX_WIN,validDraconaStake,validDraconaSettlement,type DraconaSettings,type DraconaResult} from '../src/shared/dracona';
@@ -42,8 +44,8 @@ const supportsNeopolis=(client:boolean|2|3|4,rules:number)=>rules<=(typeof clien
 const supportsDracona=(client:boolean|2,rules:number)=>client===2||client===true&&rules===2;
 const cardRulesVersion=(version:1|2|3|4):1|2=>{if(version!==1&&version!==2)throw Error('Not a card rules version');return version;};
 const CARDS:Partial<Record<ExpansionGameId,string>> = {'github-three-card':'three-card','github-caribbean':'caribbean','github-let-it-ride':'let-it-ride','github-ultimate':'ultimate','github-war':'war','github-red-dog':'red-dog','github-pai-gow':'pai-gow','github-dragon-tiger':'dragon-tiger','github-deuces':'deuces','github-mississippi':'mississippi','github-four-card':'four-card','github-crazy-four':'crazy-four','github-flush':'flush','github-holdem-bonus':'holdem-bonus','github-oasis':'oasis','github-russian':'russian','github-caribbean-draw':'caribbean-draw','github-spanish':'spanish','github-exposure':'exposure','github-switch':'switch','github-free-bet':'free-bet','github-rummy':'rummy','github-andar-bahar':'andar-bahar'};
-export const EXPANSION_MAX:Record<ExpansionGameId,number> = {...STUDIO_MAX,...VARIANT_MAX,[PENALTY_GAME]:PENALTY_MAX,'github-diamonds':30,'github-crash':100,'github-three-card':55,'github-caribbean':205,'github-let-it-ride':3003,'github-ultimate':570,'github-war':3,'github-red-dog':24,'github-pai-gow':2,'github-dragon-tiger':2,'github-deuces':800,'github-sic-bo':2,'github-mississippi':5010,'github-four-card':40,'github-crazy-four':300,'github-flush':10,'github-holdem-bonus':1010,'github-oasis':205,'github-russian':205,'github-caribbean-draw':105,'github-spanish':64,'github-exposure':64,'github-switch':10,'github-free-bet':16,'github-rummy':20,'github-andar-bahar':2};
-export const expansionMax = (game:ExpansionGameId,version:1|2|3|4) => game===NEOPOLIS_GAME?NEOPOLIS_MAX_WIN:game===DRACONA_GAME?DRACONA_MAX_WIN:game===AFTER_GAME?AFTER_MAX_WIN:isNitroFamily(game)?NITRO_MAX_WIN:game===CONVOY_GAME?CONVOY_MAX_WIN:version===2&&game===CARAMEL_GAME?CARAMEL_MAX_WIN:version===2&&isLuelonSlotGame(game)?luelonSlotMax(game):version===2&&game==='github-holdem-bonus'?10:version===2&&game==='github-rummy'?13:EXPANSION_MAX[game];
+export const EXPANSION_MAX:Record<ExpansionGameId,number> = {[FLAG_GAME]:48,...STUDIO_MAX,...VARIANT_MAX,[PENALTY_GAME]:PENALTY_MAX,'github-diamonds':30,'github-crash':100,'github-three-card':55,'github-caribbean':205,'github-let-it-ride':3003,'github-ultimate':570,'github-war':3,'github-red-dog':24,'github-pai-gow':2,'github-dragon-tiger':2,'github-deuces':800,'github-sic-bo':2,'github-mississippi':5010,'github-four-card':40,'github-crazy-four':300,'github-flush':10,'github-holdem-bonus':1010,'github-oasis':205,'github-russian':205,'github-caribbean-draw':105,'github-spanish':64,'github-exposure':64,'github-switch':10,'github-free-bet':16,'github-rummy':20,'github-andar-bahar':2};
+export const expansionMax = (game:ExpansionGameId,version:1|2|3|4,settings?:unknown) => game===FLAG_GAME&&validFlagSettings(settings)?flagModeInfo(settings.flags.mode??'classic').count:game===NEOPOLIS_GAME?NEOPOLIS_MAX_WIN:game===DRACONA_GAME?DRACONA_MAX_WIN:game===AFTER_GAME?AFTER_MAX_WIN:isNitroFamily(game)?NITRO_MAX_WIN:game===CONVOY_GAME?CONVOY_MAX_WIN:version===2&&game===CARAMEL_GAME?CARAMEL_MAX_WIN:version===2&&isLuelonSlotGame(game)?luelonSlotMax(game):version===2&&game==='github-holdem-bonus'?10:version===2&&game==='github-rummy'?13:EXPANSION_MAX[game];
 export function expansionInitialCost(game:ExpansionGameId,side=false){return ['github-crazy-four','github-switch'].includes(game)?2:game==='github-let-it-ride'?3:game==='github-ultimate'?2+Number(side):game==='github-three-card'?1+Number(side):1;}
 const emptyView=():ExpansionView=>({player:[],dealer:[],community:[],actions:[],phase:1,ended:false,message:''});
 const placeholders=EXPANSION_GAMES.map(()=>'?').join(',');
@@ -72,14 +74,15 @@ export class DemoExpansionStore {
     return result;
   }
   private async save(account:string,s:ExpansionState){
-    const reserve=s.state==='active'?Math.max(0,Number(s.stakeUnits)*expansionMax(s.gameId,s.rulesVersion)-Number(s.returnedUnits)):0;
+    const reserve=s.state==='active'?Math.max(0,Number(s.stakeUnits)*expansionMax(s.gameId,s.rulesVersion,s.settings)-Number(s.returnedUnits)):0;
     await this.db.prepare('UPDATE demo_casino_sessions SET state=?,payload=?,reserved_units=? WHERE account_id=? AND id=?').run(s.state,JSON.stringify(s),reserve,account,s.id);
   }
   private async money(account:string,s:ExpansionState,id:string,debit:number,credit:number,kind:'win'|'refund'='win'){
     let balance=await demoBalanceUnits(this.db,account);if(balance<debit)throw new WalletError(409,'Недостаточно демомонет для этого хода.');
-    if(credit>Number(s.stakeUnits)*expansionMax(s.gameId,s.rulesVersion))throw Error('Expansion payout exceeds reserve');
+    if(credit>Number(s.stakeUnits)*expansionMax(s.gameId,s.rulesVersion,s.settings))throw Error('Expansion payout exceeds reserve');
     if(debit){balance-=debit;s.spentUnits=(BigInt(s.spentUnits)+BigInt(debit)).toString();await recordDemoUnits(this.db,account,id,'bet',-debit,balance,s.gameId,EXPANSION_NAMES[s.gameId]);}
     if(credit||s.state==='settled'){balance+=credit;s.returnedUnits=(BigInt(s.returnedUnits)+BigInt(credit)).toString();await recordDemoUnits(this.db,account,id,kind,credit,balance,s.gameId,EXPANSION_NAMES[s.gameId]);}
+    if(s.gameId===FLAG_GAME&&!validFlagSession(this.public(s)))throw Error('Invalid Flag Battle settlement');
     if(s.gameId===PENALTY_GAME&&!validPenaltySettlement(s.state,s.stakeUnits,s.spentUnits,s.returnedUnits,s.view.penalty))throw Error('Invalid penalty settlement');
     if(s.gameId===NEOPOLIS_GAME){if(s.rulesVersion!==s.view.neopolis?.version||!validNeopolisSettlement(s.state,s.stakeUnits,s.spentUnits,s.returnedUnits,s.view.neopolis))throw Error('Invalid Neopolis settlement');}
     else if(s.gameId===DRACONA_GAME){if(s.rulesVersion!==Number(s.view.dracona?.version)+1||!validDraconaSettlement(s.state,s.stakeUnits,s.spentUnits,s.returnedUnits,s.view.dracona))throw Error('Invalid Dracona settlement');}
@@ -105,11 +108,11 @@ export class DemoExpansionStore {
     await this.money(account,s,s.id,0,s.crashPoint===100?Number(s.stakeUnits)*100:0);
   }
   async settleDue(account:string){await this.ready;await this.db.transaction(()=>this.crashDue(account,this.now()),{lockKey:'account:'+account});}
-  private async sessions(account:string,caramelClient=true,velvetClient=true,convoyClient=true,nitroClient=true,afterClient=true,memeClient=true,penaltyClient=true,draconaClient:boolean|2=2,neopolisClient:boolean|2|3|4=4){
+  private async sessions(account:string,caramelClient=true,velvetClient=true,convoyClient=true,nitroClient=true,afterClient=true,memeClient=true,penaltyClient=true,draconaClient:boolean|2=2,neopolisClient:boolean|2|3|4=4,flagClient:boolean|2=true){
     const rows=await this.db.prepare(`SELECT DISTINCT ON(game_id) payload FROM demo_casino_sessions WHERE account_id=? AND game_id IN (${placeholders}) ORDER BY game_id,(payload::jsonb->>'createdAt')::bigint DESC,id DESC`).all(account,...EXPANSION_GAMES);
-    return rows.map(row=>this.public(JSON.parse(row.payload))).filter(s=>caramelClient||s.gameId!==CARAMEL_GAME||s.rulesVersion!==2).filter(s=>velvetClient||s.gameId!==VELVET_GAME||s.rulesVersion!==2).filter(s=>convoyClient||s.gameId!==CONVOY_GAME).filter(s=>nitroClient||s.gameId!==NITRO_GAME).filter(s=>afterClient||s.gameId!==AFTER_GAME).filter(s=>memeClient||s.gameId!==MEME_GAME).filter(s=>penaltyClient||s.gameId!==PENALTY_GAME).filter(s=>s.gameId!==DRACONA_GAME||supportsDracona(draconaClient,s.rulesVersion)).filter(s=>s.gameId!==NEOPOLIS_GAME||supportsNeopolis(neopolisClient,s.rulesVersion));
+    return rows.map(row=>this.public(JSON.parse(row.payload))).filter(s=>caramelClient||s.gameId!==CARAMEL_GAME||s.rulesVersion!==2).filter(s=>velvetClient||s.gameId!==VELVET_GAME||s.rulesVersion!==2).filter(s=>convoyClient||s.gameId!==CONVOY_GAME).filter(s=>nitroClient||s.gameId!==NITRO_GAME).filter(s=>afterClient||s.gameId!==AFTER_GAME).filter(s=>memeClient||s.gameId!==MEME_GAME).filter(s=>penaltyClient||s.gameId!==PENALTY_GAME).filter(s=>s.gameId!==DRACONA_GAME||supportsDracona(draconaClient,s.rulesVersion)).filter(s=>s.gameId!==NEOPOLIS_GAME||supportsNeopolis(neopolisClient,s.rulesVersion)).filter(s=>s.gameId!==FLAG_GAME||supportsFlagRules(flagClient,s.rulesVersion));
   }
-  async active(account:string,caramelClient=true,velvetClient=true,convoyClient=true,nitroClient=true,afterClient=true,memeClient=true,penaltyClient=true,draconaClient:boolean|2=2,neopolisClient:boolean|2|3|4=4){await this.ready;return this.db.transaction(async()=>{await this.settleOther(account);await this.crashDue(account,this.now());return {wallet:await this.snapshot(account),sessions:await this.sessions(account,caramelClient,velvetClient,convoyClient,nitroClient,afterClient,memeClient,penaltyClient,draconaClient,neopolisClient)};},{lockKey:'account:'+account});}
+  async active(account:string,caramelClient=true,velvetClient=true,convoyClient=true,nitroClient=true,afterClient=true,memeClient=true,penaltyClient=true,draconaClient:boolean|2=2,neopolisClient:boolean|2|3|4=4,flagClient:boolean|2=true){await this.ready;return this.db.transaction(async()=>{await this.settleOther(account);await this.crashDue(account,this.now());return {wallet:await this.snapshot(account),sessions:await this.sessions(account,caramelClient,velvetClient,convoyClient,nitroClient,afterClient,memeClient,penaltyClient,draconaClient,neopolisClient,flagClient)};},{lockKey:'account:'+account});}
   async presentation(account:string,sessionId:unknown,phase:unknown,step:unknown):Promise<StudioSlotPresentation> {
     await this.ready;
     if(typeof sessionId!=='string'||!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(sessionId)||!Number.isSafeInteger(phase)||Number(phase)<1||Number(phase)>3||!Number.isSafeInteger(step)||Number(step)<0||Number(step)>2)throw new WalletError(400,'Некорректный запрос показа игры.');
@@ -183,9 +186,10 @@ export class DemoExpansionStore {
   private applyLuelon(s:ExpansionState,result:LuelonSlotResult){
     s.engine=undefined;s.state=result.ended?'settled':'active';s.view={...emptyView(),luelon:result.luelon,ended:result.ended,message:result.message,phase:result.luelon.revision+1,actions:result.actions};return {debit:0,credit:result.credit};
   }
-  async operate(account:string,value:unknown,clientRules:1|2=2,caramelClient=true,velvetClient=true,convoyClient=true,nitroClient=true,afterClient=true,afterProgressClient=true,memeClient=true,penaltyClient=true,draconaClient:boolean|2=2,neopolisClient:boolean|2|3|4=4){
+  async operate(account:string,value:unknown,clientRules:1|2=2,caramelClient=true,velvetClient=true,convoyClient=true,nitroClient=true,afterClient=true,afterProgressClient=true,memeClient=true,penaltyClient=true,draconaClient:boolean|2=2,neopolisClient:boolean|2|3|4=4,flagClient:boolean|2=true){
     await this.ready;if(!validExpansionAction(value))throw new WalletError(400,'Некорректное действие казино.');
     const op=structuredClone(value),key=JSON.stringify(op);
+    if(op.gameId===FLAG_GAME&&(!flagClient||op.action==='start'&&validFlagSettings(op.settings)&&op.settings.flags.mode!==undefined&&flagClient!==2))throw new WalletError(409,'Refresh for Flag Battle modes');
     if(op.gameId===PENALTY_GAME&&!penaltyClient)throw new WalletError(409,'Обнови страницу для игры CR vs. Leo. Ставка не списана.');
     if(op.gameId===NEOPOLIS_GAME&&!neopolisClient)throw new WalletError(409,'Neopolis: refresh the game');
     if(op.gameId===DRACONA_GAME&&!draconaClient)throw new WalletError(409,'Обнови страницу для игры Дракона.');
@@ -195,7 +199,7 @@ export class DemoExpansionStore {
     if(op.gameId===CONVOY_GAME&&!convoyClient)throw new WalletError(409,'Обнови страницу для игры «Последний конвой».');
     if(!velvetClient&&op.gameId===VELVET_GAME&&(op.action==='start'?validLuelonSlotSettings(VELVET_GAME,op.settings):op.move==='luelon-spin'))throw new WalletError(409,'Обнови страницу для новой версии Velvet Reign. Ставка не списана.');
     if(!caramelClient&&op.gameId===CARAMEL_GAME&&(op.action==='start'?validCaramelSettings(op.settings):op.move==='caramel-spin'))throw new WalletError(409,'Обнови страницу для новой версии Caramel Carnival. Ставка не списана повторно.');
-    if(op.action==='start'&&!(op.gameId===NEOPOLIS_GAME?validNeopolisStake(op.stakeUnits):op.gameId===DRACONA_GAME?validDraconaStake(op.stakeUnits):op.gameId===AFTER_GAME?validAfterStake(op.stakeUnits):isNitroFamily(op.gameId)?validNitroStake(op.stakeUnits):op.gameId===CONVOY_GAME?validConvoyStake(op.stakeUnits):isLuelonSlotGame(op.gameId)?validCosmicStake(op.stakeUnits):op.gameId===CARAMEL_GAME&&validCaramelSettings(op.settings)?validCaramelStake(op.stakeUnits):(DEMO_BETS as readonly number[]).some(n=>String(n*100)===op.stakeUnits)))throw new WalletError(400,'Недопустимая ставка.');
+    if(op.action==='start'&&!(op.gameId===FLAG_GAME?validFlagStake(op.stakeUnits):op.gameId===NEOPOLIS_GAME?validNeopolisStake(op.stakeUnits):op.gameId===DRACONA_GAME?validDraconaStake(op.stakeUnits):op.gameId===AFTER_GAME?validAfterStake(op.stakeUnits):isNitroFamily(op.gameId)?validNitroStake(op.stakeUnits):op.gameId===CONVOY_GAME?validConvoyStake(op.stakeUnits):isLuelonSlotGame(op.gameId)?validCosmicStake(op.stakeUnits):op.gameId===CARAMEL_GAME&&validCaramelSettings(op.settings)?validCaramelStake(op.stakeUnits):(DEMO_BETS as readonly number[]).some(n=>String(n*100)===op.stakeUnits)))throw new WalletError(400,'Недопустимая ставка.');
     await this.cashoutDelay.wait(account,op);
     return this.db.transaction(async()=>{
       if(op.action==='start'&&isRetiredCardGame(op.gameId)&&!await this.db.prepare('SELECT 1 FROM demo_casino_requests WHERE account_id=? AND id=?').get(account,op.id))throw new WalletError(409,'Эта карточная игра удалена из каталога.');
@@ -205,9 +209,10 @@ export class DemoExpansionStore {
         if(old.request_key!==key)throw new WalletError(409,'Нельзя изменить отправленный ход.');
         const row=await this.db.prepare('SELECT payload FROM demo_casino_sessions WHERE account_id=? AND id=?').get(account,old.session_id);
         const session=this.public(JSON.parse(row!.payload));
+        if(session.gameId===FLAG_GAME&&!supportsFlagRules(flagClient,session.rulesVersion))throw new WalletError(409,'Refresh for Flag Battle modes');
         if(session.gameId===NEOPOLIS_GAME&&!supportsNeopolis(neopolisClient,session.rulesVersion))throw new WalletError(409,'Neopolis: refresh for variable stakes');
         if(session.gameId===DRACONA_GAME&&!supportsDracona(draconaClient,session.rulesVersion))throw new WalletError(409,'Dracona: refresh for the current rules');
-        return {wallet:await this.snapshot(account),session,sessions:await this.sessions(account,caramelClient,velvetClient,convoyClient,nitroClient,afterClient,memeClient,penaltyClient,draconaClient,neopolisClient),replayed:true};
+        return {wallet:await this.snapshot(account),session,sessions:await this.sessions(account,caramelClient,velvetClient,convoyClient,nitroClient,afterClient,memeClient,penaltyClient,draconaClient,neopolisClient,flagClient),replayed:true};
       }
       if(op.gameId===AFTER_GAME&&op.action==='start'&&!afterProgressClient)throw new WalletError(409,'Обнови страницу: прогресс GIRLHUB теперь зависит от суммы ставки. Ставка не списана.');
       if(op.action==='start'&&isRetiredArcadeGame(op.gameId))throw new WalletError(409,'Эта игра убрана из зала. Сохранённую партию можно завершить. Новая ставка не принята.');
@@ -225,13 +230,17 @@ export class DemoExpansionStore {
         if(op.gameId===AFTER_GAME)await this.wardrobe.assertSelection(account,op.appearance);
         const stake=Number(op.stakeUnits),balance=await demoBalanceUnits(this.db,account),cost=stake*(op.gameId===CARAMEL_GAME&&validCaramelSettings(op.settings)?caramelCost(op.settings):isLuelonSlotGame(op.gameId)&&validLuelonSlotSettings(op.gameId,op.settings)?luelonSlotInitialCost(op.gameId,op.settings):expansionInitialCost(op.gameId,('side' in op.settings?op.settings.side:false)));
         if(balance<cost)throw new WalletError(409,'Недостаточно демомонет для начальных ставок.');
-        if(balance-cost+stake*expansionMax(op.gameId,expansionRulesVersion(op.gameId))+await demoReservedUnits(this.db,account)>MAX_DEMO_UNITS)throw new WalletError(409,'Уменьши ставку: возможный выигрыш превышает лимит баланса.');
+        if(balance-cost+stake*expansionMax(op.gameId,expansionRulesVersion(op.gameId),op.settings)+await demoReservedUnits(this.db,account)>MAX_DEMO_UNITS)throw new WalletError(409,'Уменьши ставку: возможный выигрыш превышает лимит баланса.');
         // Keep committed round order when the clock repeats or moves backwards.
         const last=await this.db.prepare("SELECT MAX((payload::jsonb->>'createdAt')::bigint) AS created_at FROM demo_casino_sessions WHERE account_id=? AND game_id=?").get(account,op.gameId);
         const createdAt=Math.max(this.now(),Number(last!.created_at??-1)+1);
         if(!Number.isSafeInteger(createdAt)||createdAt<0)throw Error('Invalid casino session order');
         s={id:op.id,gameId:op.gameId,rulesVersion:expansionRulesVersion(op.gameId),state:'active',stakeUnits:op.stakeUnits,spentUnits:'0',returnedUnits:'0',createdAt,settings:op.settings,view:emptyView(),...(op.gameId==='studio-cosmic-escape'?{mathProfileVersion:COSMIC_MATH_PROFILE_VERSION}:{})};debit=cost;
-        if(op.gameId===PENALTY_GAME){credit=this.applyPenalty(s,startPenalty(op.settings as PenaltySettings,op.stakeUnits,this.draw)).credit;}
+        if(op.gameId===FLAG_GAME){
+          const flags=startFlagBattle(op.settings as FlagSettings,op.stakeUnits,this.draw);
+          s.rulesVersion=flags.version;s.state='settled';s.view={...emptyView(),flags,ended:true,message:'Flag Battle complete'};
+          credit=flags.order.at(-1)===flags.country?Number(flagPayout(op.stakeUnits,flagViewMode(flags))):0;
+        }else if(op.gameId===PENALTY_GAME){credit=this.applyPenalty(s,startPenalty(op.settings as PenaltySettings,op.stakeUnits,this.draw)).credit;}
         else if(op.gameId===NEOPOLIS_GAME){
           const previousRow=await this.db.prepare("SELECT payload FROM demo_casino_sessions WHERE account_id=? AND game_id=? AND state='settled' ORDER BY (payload::jsonb->>'createdAt')::bigint DESC,id DESC LIMIT 1").get(account,NEOPOLIS_GAME);
           const previous=previousRow?JSON.parse(previousRow.payload):undefined;
@@ -270,7 +279,7 @@ export class DemoExpansionStore {
         if(s.state!=='active'){
           if(s.gameId==='github-crash'&&op.move==='cashout'){
             await this.db.prepare('INSERT INTO demo_casino_requests VALUES(?,?,?,?,?)').run(account,op.id,key,s.id,at);
-            return {wallet:await this.snapshot(account),session:this.public(s),sessions:await this.sessions(account,caramelClient,velvetClient,convoyClient,nitroClient,afterClient,memeClient,penaltyClient,draconaClient,neopolisClient),replayed:false};
+            return {wallet:await this.snapshot(account),session:this.public(s),sessions:await this.sessions(account,caramelClient,velvetClient,convoyClient,nitroClient,afterClient,memeClient,penaltyClient,draconaClient,neopolisClient,flagClient),replayed:false};
           }
           throw new WalletError(409,'Эта партия уже завершена.');
         }
@@ -335,7 +344,7 @@ export class DemoExpansionStore {
       if(op.gameId===AFTER_GAME&&op.action==='start')await this.wardrobe.beginRound(account,s.id);
       await this.money(account,s,op.id,debit,credit,op.action==='move'&&op.move==='pull'?'refund':'win');
       await this.db.prepare('INSERT INTO demo_casino_requests VALUES(?,?,?,?,?)').run(account,op.id,key,s.id,this.now());
-      return {wallet:await this.snapshot(account),session:this.public(s),sessions:await this.sessions(account,caramelClient,velvetClient,convoyClient,nitroClient,afterClient,memeClient,penaltyClient,draconaClient,neopolisClient),replayed:false};
+      return {wallet:await this.snapshot(account),session:this.public(s),sessions:await this.sessions(account,caramelClient,velvetClient,convoyClient,nitroClient,afterClient,memeClient,penaltyClient,draconaClient,neopolisClient,flagClient),replayed:false};
     },{lockKey:'account:'+account});
   }
 }

@@ -1,0 +1,92 @@
+{
+  "format": 1,
+  "at": "2026-10-29T07:10:50.260149+00:00",
+  "productionBase": "29851103da0f9bbf997d3933d9be005ec7d5d6bf",
+  "retainedFinancialBase": "47e9e7bf3429df1f4ebc5a6d3b4146e4a6c31f9d",
+  "checks": {
+    "flagMathWalletPhysicsAudio": {
+      "passed": 21
+    },
+    "retainedFinancialGraph": {
+      "passed": 12,
+      "forestStakeChoicePaths": 84,
+      "unchangedFinancialInputsVerifiedAgainstProduction": true
+    },
+    "rtpGateTests": {
+      "passed": 17
+    },
+    "moduleIntegrity": {
+      "passed": 7,
+      "packages": 118
+    },
+    "deploymentGuards": {
+      "passed": 10
+    },
+    "realHostChrome": {
+      "passed": 4,
+      "chatEnabled": true,
+      "widths": [
+        1440,
+        669,
+        390
+      ],
+      "includes48FlagsNaturalRound": true,
+      "noProductionAccountsOrWagers": true
+    },
+    "applicationBuild": {
+      "format": 1,
+      "startedAt": "2026-10-29T07:08:02.961Z",
+      "scope": "application",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 1318
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 6115
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 5852
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 5472
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 63
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 19
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 23
+        }
+      ],
+      "passed": true,
+      "durationMs": 18862
+    }
+  },
+  "math": {
+    "exactRtp": "24/25",
+    "profiles": 576,
+    "independentDrawsPerMode": 16000000,
+    "serverReplayChecks": 304128,
+    "acceptedRules": [
+      1,
+      2
+    ]
+  },
+  "publication": "pending guarded installation; production results belong in deployment/SERVER.md"
+}
