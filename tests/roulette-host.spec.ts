@@ -12,7 +12,7 @@ const test=base.extend<{roomPath:string}>({roomPath:async({request},use)=>{
  for(const name of ['chat','activities','piano-note','notice','chat-check','security','ejected','pvp'])room.onMessage(name,()=>{});
  try{await use('/?room='+room.roomId);}finally{await Promise.race([room.leave(),new Promise(r=>setTimeout(r,1500))]);}
 }});
-const state=(page:Page)=>page.evaluate(()=>(window as any).royalDemo.getState());
+const state=(page:Page)=>page.evaluate(()=>{try{return (window as any).royalDemo.getState();}catch{return{online:false};}});
 async function enter(page:Page,path:string){
  await page.emulateMedia({reducedMotion:'reduce'});await page.goto(path);
  await page.getByLabel('Почта',{exact:true}).fill(`roulette-player-${crypto.randomUUID()}@example.test`);
