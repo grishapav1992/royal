@@ -44,6 +44,22 @@ class MusicStorageTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, 'Unsafe'):
             module.plain(self.target, 'media/../../outside')
 
+    def test_verified_upload_is_retained_atomically_without_copying_media(self):
+        destination = self.target.parent / '1.1.0-aaaaaaaaaaaa'
+        def verify(folder):
+            value=json.loads((folder / 'manifest.json').read_text())
+            for name,digest in value['files'].items():self.assertEqual(module.sha(module.plain(folder,name)),digest)
+        module.materialize(self.base,destination,verify)
+        self.assertTrue((destination / 'media/art.webp').samefile(self.base / 'media/art.webp'))
+        module.materialize(self.base,destination,verify)
+        self.assertEqual(list(destination.parent.glob('.pending-*')),[])
+
+    def test_failed_verification_does_not_publish_a_partial_version(self):
+        destination=self.target.parent / '1.1.0-aaaaaaaaaaaa'
+        def reject(_):raise RuntimeError('Unverified')
+        with self.assertRaisesRegex(RuntimeError,'Unverified'):module.materialize(self.base,destination,reject)
+        self.assertFalse(destination.exists())
+
 
 if __name__ == '__main__':
     unittest.main()

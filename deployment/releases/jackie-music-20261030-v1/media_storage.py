@@ -6,6 +6,7 @@ import os
 import shutil
 import stat
 import uuid
+import re
 
 
 def sha(path):
@@ -67,3 +68,40 @@ def deduplicate(base, target):
     return {'linked': linked, 'logicalDuplicateBytes': sum(row['bytes'] for row in linked),
             'freeBefore': before, 'freeAfter': shutil.disk_usage(target).free,
             'versionsAndBytesPreserved': True, 'physicalSpaceAttribution': 'Concurrent activity is not attributed to this operation'}
+
+
+def materialize(package, destination, verify):
+    """Verify and atomically retain the already uploaded bytes without a second media copy."""
+    package, destination = Path(package), Path(destination)
+    if not re.fullmatch(r'[0-9]+\.[0-9]+\.[0-9]+-[a-f0-9]{12}', destination.name):
+        raise RuntimeError('Invalid immutable destination')
+    destination = destination.parent.resolve(strict=True) / destination.name
+    verify(package)
+    if destination.exists():
+        verify(destination)
+        if sha(package / 'manifest.json') != sha(destination / 'manifest.json'):
+            raise RuntimeError('Immutable version collision')
+        return
+    temporary = destination.parent / ('.pending-' + uuid.uuid4().hex)
+    try:
+        shutil.copytree(package, temporary, copy_function=os.link)
+        verify(temporary)
+        if os.name == 'posix':
+            for path in temporary.rglob('*'):
+                if path.is_file():
+                    with path.open('rb') as handle:
+                        os.fsync(handle.fileno())
+            for directory in sorted([temporary, *[p for p in temporary.rglob('*') if p.is_dir()]], key=lambda p:len(p.parts), reverse=True):
+                descriptor = os.open(directory, os.O_RDONLY)
+                try:os.fsync(descriptor)
+                finally:os.close(descriptor)
+        temporary.rename(destination)
+        if os.name == 'posix':
+            descriptor = os.open(destination.parent, os.O_RDONLY)
+            try:os.fsync(descriptor)
+            finally:os.close(descriptor)
+    finally:
+        if temporary.exists():
+            if temporary.is_symlink() or temporary.resolve().parent != destination.parent:
+                raise RuntimeError('Temporary cleanup escaped immutable version root')
+            shutil.rmtree(temporary)

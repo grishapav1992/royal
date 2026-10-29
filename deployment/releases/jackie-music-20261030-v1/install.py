@@ -9,7 +9,7 @@ from pathlib import Path
 import subprocess
 import tarfile
 from types import SimpleNamespace
-from media_storage import deduplicate, plain, sha
+from media_storage import deduplicate, materialize, plain, sha
 
 ROOT = Path(__file__).resolve().parent
 GAME = 'original-jackie-chan'
@@ -88,7 +88,7 @@ def main():
     stable = ['sourceRevision', 'source', 'financeSource', 'program', 'financialProgram', 'configuration', 'hostContract', 'moduleHost', 'preparedImage']
     for key in stable:
         require(before[key] == previous[key], 'Production baseline differs: ' + key)
-    require(before['freeBytes'] >= 5 * 1024**3 + checked['bytes'] + 2 * 1024**2, 'Need 5 GiB reserve after publication')
+    require(before['freeBytes'] >= 5 * 1024**3 + 4 * 1024**2, 'Need 5 GiB reserve plus metadata headroom')
     backup = Path('/opt/royal-backups') / ROOT.name; backup.mkdir(mode=0o700)
     archive = backup / 'game-source.tgz'
     with tarfile.open(archive, 'w:gz') as output:
@@ -100,6 +100,7 @@ def main():
     save('backup.json', {'path': str(archive), 'bytes': archive.stat().st_size, 'sha256': sha(archive),
         'image': old_image, 'tag': tag, 'retainedPriorPackage': str(VERSIONS / OLD),
         'fullSourceBackup': '/opt/royal-backups/jackie-chan-20261029-v2', 'databaseTouched': False})
+    materialize(package, VERSIONS / VERSION, lambda folder: publisher.verify(folder, contract, GAME))
     options.operation = 'install'; result = publisher.run(options); save('published.json', result)
     save('media-storage-after.json', deduplicate(VERSIONS / '1.0.0-ebe2d87de8aa', VERSIONS / VERSION))
     after = snapshot.snapshot(); save('after.json', after)
