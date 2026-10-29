@@ -30,5 +30,7 @@
 .crypto-wallet ol { padding-left: 20px; overflow-wrap: anywhere; }
 .crypto-wallet li { margin: 12px 0; }
 .crypto-wallet li button { margin-left: 8px; }
+#stars-form label:has(input[type="checkbox"]) { display: flex; align-items: center; flex-wrap: wrap; }
+#stars-form input[type="checkbox"] { width: auto; }
 #crypto-withdraw-calculation, #crypto-deposit-info { overflow-wrap: anywhere; }
 @media (max-width: 480px) { #crypto-wallet-button { font-size: 10px; padding: 5px 7px; } }

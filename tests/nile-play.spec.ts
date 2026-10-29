@@ -7,5 +7,5 @@ test('retired Nile and direct TRON URLs cannot allocate an address or accept a p
     expect((await response.json()).code).toBe('PAYMENT_METHOD_RETIRED');
   }
   const methods = await (await request.get('/api/payment-methods')).json();
-  expect(methods.methods.map((method: any) => method.id)).toEqual(['nowpayments', 'nowpayments-sandbox']);
+  expect(methods.methods.map((method: any) => method.id)).toEqual(['nowpayments', 'nowpayments-sandbox', 'telegram-stars']);
 });
