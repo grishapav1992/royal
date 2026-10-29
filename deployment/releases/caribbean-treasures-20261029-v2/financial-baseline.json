@@ -54,5 +54,13 @@
       "commit": "9acf3686965fedc0c81efaaa6f740e30d4fef175",
       "sha256": "b6ba026c8b72fb124efce3f69fa7af5338a48ae44149930cb6383b9d6161f47b"
     }
+  },
+  "catalog": {
+    "commit": "47e9e7bf3429df1f4ebc5a6d3b4146e4a6c31f9d",
+    "path": "deployment/releases/forest-heart-20261029-v2/financial-arcadeCatalog.ts",
+    "sha256": "1c97c2a8d9988c12d48144c9fe946dcab097fee681e4d64fa45652a289692ccc",
+    "flagAddition": true,
+    "oldSha256": "22c57baaabca82124b5cdbe4276dbbc20ed0fea16e227d2258659491281d208d",
+    "projectedSource": "deployment/releases/caribbean-treasures-20261029-v2/financial-arcadeCatalog.ts"
   }
 }

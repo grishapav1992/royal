@@ -80,7 +80,7 @@ const financialInputs = financial.financialInputs;
 for (const [file, digest] of Object.entries(financialInputs)) {
   assert(!file.startsWith('/') && !file.split('/').includes('..'));
   if (before.financeSource[file]?.lf !== digest && before.financeSource[file]?.sha256 !== digest) {
-    assert(allowed.has(file), 'Unrelated financial input differs: ' + file); financeSource[file] = copy(resolve(root, file), 'finance-source/' + file);
+    assert(allowed.has(file), 'Unrelated financial input differs: ' + file); financeSource[file] = copy(file==='src/shared/arcadeCatalog.ts'?resolve(helper,'financial-arcadeCatalog.ts'):resolve(root, file), 'finance-source/' + file);
   }
 }
 assert.equal(before.containers['royal-nile-play'].profile.host.ReadonlyRootfs, true);
