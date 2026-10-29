@@ -49,6 +49,10 @@ export class PaymentClient {
   currencies() { return this.call('currencies', '00000000-0000-4000-8000-000000000000'); }
   displayRate(currency: unknown) { return this.call('display-rate', '00000000-0000-4000-8000-000000000000', { currency }); }
   deposit(id: string, value: unknown) { return this.call('deposits', id, value); }
+  stars(id: string, value?: unknown) {
+    if (!this.config.url && value !== undefined) throw new CryptoError(503, 'Оплата Telegram Stars пока не подключена.');
+    return this.config.url ? this.call('stars', id, value) : Promise.resolve({ enabled: false, operations: [] });
+  }
   quote(id: string, value: unknown) { return this.call('quotes', id, value); }
   withdraw(id: string, value: unknown) { return this.call('withdrawals', id, value); }
   refresh(id: string, operation: string) { return this.call('operations/' + operation + '/refresh', id, {}); }

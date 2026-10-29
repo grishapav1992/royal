@@ -1,4 +1,16 @@
 {$SITE_DOMAIN} {
     encode zstd gzip
-    reverse_proxy game:2567
+    redir /team /team/ 308
+    handle_path /team/* {
+        reverse_proxy royal-ai-api:2580
+    }
+    handle /api/crypto-wallet/ipn {
+        reverse_proxy payments:2570
+    }
+    handle /api/telegram-stars/* {
+        reverse_proxy payments:2570
+    }
+    handle {
+        reverse_proxy game:2567
+    }
 }
