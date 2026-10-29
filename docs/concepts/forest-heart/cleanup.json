@@ -1,0 +1,85 @@
+{
+  "owner": "forest-heart-client",
+  "date": "2026-10-26",
+  "sourcePreservedOnGitHub": "6293db0d2a36ec0af1d55eb4a40a3abf0ba0d7bc",
+  "removed": [
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.0.0-68e6d93303ec",
+      "kind": "obsolete-owned-package",
+      "bytes": null,
+      "note": "Removed before per-directory byte inventory; no exact size claimed."
+    },
+    {
+      "path": "C:\\Users\\Aorus\\AppData\\Local\\Temp\\royal-pg-2RIDpU",
+      "kind": "owned-temporary-postgres",
+      "bytes": 51170097
+    },
+    {
+      "path": "C:\\Users\\Aorus\\AppData\\Local\\Temp\\royal-pg-b2eTsF",
+      "kind": "owned-temporary-postgres",
+      "bytes": 50981679
+    },
+    {
+      "path": "C:\\Users\\Aorus\\AppData\\Local\\Temp\\royal-pg-CkIICe",
+      "kind": "owned-temporary-postgres",
+      "bytes": 50914904
+    },
+    {
+      "path": "C:\\Users\\Aorus\\AppData\\Local\\Temp\\royal-pg-KqNqng",
+      "kind": "owned-temporary-postgres",
+      "bytes": 51071793
+    },
+    {
+      "path": "C:\\Users\\Aorus\\AppData\\Local\\Temp\\royal-pg-lSdw3p",
+      "kind": "owned-temporary-postgres",
+      "bytes": 51161905
+    },
+    {
+      "path": "C:\\Users\\Aorus\\AppData\\Local\\Temp\\royal-pg-SuATP5",
+      "kind": "owned-temporary-postgres",
+      "bytes": 51096369
+    },
+    {
+      "path": "C:\\Users\\Aorus\\AppData\\Local\\Temp\\royal-pg-vNPn7p",
+      "kind": "owned-temporary-postgres",
+      "bytes": 51137328
+    },
+    {
+      "path": "C:\\Users\\Aorus\\AppData\\Local\\Temp\\royal-pg-Y5dKws",
+      "kind": "owned-temporary-postgres",
+      "bytes": 51104560
+    },
+    {
+      "path": "C:\\Users\\Aorus\\AppData\\Local\\Temp\\royal-pg-zTxB9T",
+      "kind": "owned-temporary-postgres",
+      "bytes": 51161904
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.0.0-d1eee267a1b9",
+      "kind": "obsolete-owned-package",
+      "bytes": 1205577
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\artifacts\\work\\forest-heart-client",
+      "kind": "completed-browser-evidence-temporary",
+      "bytes": 2205223
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\artifacts\\rtp-qualification\\studio-forest-heart.json",
+      "kind": "redundant-qualification-report",
+      "bytes": 54015
+    }
+  ],
+  "removedArchiveBytes": 0,
+  "measuredRemovedFileBytes": 463265354,
+  "freeBytesBefore": 308253102080,
+  "freeBytesAfter": 308653731840,
+  "observedFreeByteDelta": 400629760,
+  "retainedActivePackage": "1.0.0-b78c4bed0bc8",
+  "previewShutdownVerified": true,
+  "cleanupMethod": "The initial batch removal was blocked by automatic review. All removals above succeeded as separate explicitly scoped PowerShell operations after ownership and active-process checks.",
+  "activeWorkExceptions": [
+    "Current primary managed checkout and normal current build outputs retained for review and the compatible release. Remove only when the current checkout is no longer needed.",
+    "Unrelated active PostgreSQL and other chats' working directories were preserved."
+  ]
+}

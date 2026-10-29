@@ -1,0 +1,125 @@
+{
+  "date": "2026-10-28",
+  "preservedRemoteCommit": "92d52c69a8d7b101a5d8963ac9c3a7439d3006cc",
+  "latestSourceCommit": "27b80d9ab460b9f10abbe15a983e23a33f2a0d1b",
+  "remoteVerification": "git ls-remote confirms 92d52c69a8d7b101a5d8963ac9c3a7439d3006cc on codex/forest-heart-visual",
+  "packageInventory": [
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.0.0-b78c4bed0bc8",
+      "bytes": 1231037,
+      "active": false,
+      "removed": false
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.1.0-17ed65250255",
+      "bytes": 2312985,
+      "active": false,
+      "removed": false
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.1.0-19fd67923905",
+      "bytes": 2313002,
+      "active": false,
+      "removed": false
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.1.0-b7e41fe97631",
+      "bytes": 2313053,
+      "active": false,
+      "removed": false
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.1.0-e00a1ecca259",
+      "bytes": 2313053,
+      "active": false,
+      "removed": false
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.2.0-75cb0b1ce4e0",
+      "bytes": 2318638,
+      "active": false,
+      "removed": false
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.3.0-053c18b03bcd",
+      "bytes": 2327254,
+      "active": false,
+      "removed": false
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.3.0-10815b108385",
+      "bytes": 2327255,
+      "active": false,
+      "removed": false
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.3.0-e8a10dd72de2",
+      "bytes": 2327392,
+      "active": true,
+      "removed": false
+    }
+  ],
+  "freeBeforeBytes": 306562867200,
+  "archivesCreated": 0,
+  "archivesRemoved": 0,
+  "activeVersion": "1.3.0-e8a10dd72de2",
+  "status": "incomplete-automatic-approval-review-blocked-temporary-file-cleanup",
+  "priorBlockedAction": "Removal of obsolete Forest Heart package directories, automatic approval review rejected the prior attempt",
+  "priorRejectionReason": "blocked by policy; no additional reason supplied",
+  "removedFolders": [],
+  "removedArchives": [],
+  "physicalReclaimClaimed": false,
+  "automatedDatabaseCleanup": [
+    {
+      "path": "C:\\Users\\Aorus\\AppData\\Local\\Temp\\royal-pg-801C3r",
+      "exists": false,
+      "cleanup": "Owned stand finalizer at test completion or manual preview Ctrl+C"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\AppData\\Local\\Temp\\royal-pg-BKWoqa",
+      "exists": false,
+      "cleanup": "Owned stand finalizer at test completion or manual preview Ctrl+C"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\AppData\\Local\\Temp\\royal-pg-IANbAt",
+      "exists": true,
+      "cleanup": "Owned stand finalizer at test completion or manual preview Ctrl+C"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\AppData\\Local\\Temp\\royal-pg-rFF4cO",
+      "exists": false,
+      "cleanup": "Owned stand finalizer at test completion or manual preview Ctrl+C"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\AppData\\Local\\Temp\\royal-pg-jNrDRg",
+      "exists": false,
+      "cleanup": "Owned stand finalizer at test completion or manual preview Ctrl+C"
+    }
+  ],
+  "activeExceptions": [
+    {
+      "path": "artifacts/work/forest-heart-audio-v3",
+      "reason": "Manual local review at 5296 and API 2696, session 73118; synthetic account and round data",
+      "cleanup": "Stop manual preview with Ctrl+C when user review finishes; remove generated captures, audio duplicates and logs when cleanup is permitted"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal",
+      "reason": "Current managed checkout and user review; the original root has unrelated active work",
+      "cleanup": "Retain while local review and concurrent original-root work continue"
+    }
+  ],
+  "blockedAction": "Remove enumerated task-owned temporary captures, audio duplicates, logs and the empty browser-results folder after verifying durable reports in GitHub",
+  "rejectionReason": "blocked by policy; no additional reason supplied; command rejected before execution",
+  "freeAfterBytes": 306544013312,
+  "removedFiles": [
+    {
+      "path": "docs/concepts/forest-heart/layout-v3-local-preview.png",
+      "bytes": 186135,
+      "replacement": "layout-v3-local-preview.webp"
+    }
+  ],
+  "deletedLogicalBytes": 186135,
+  "retainedObsoletePackageBytes": 17456277,
+  "retainedTemporaryArtifactsBytes": 10675500,
+  "measurementNote": "Whole-volume free-space observations include concurrent work. No physical reclaimed byte count is attributed to this cleanup. No folders or archives were removed."
+}

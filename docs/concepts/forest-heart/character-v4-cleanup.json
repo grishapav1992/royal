@@ -1,0 +1,136 @@
+{
+  "date": "2026-10-28",
+  "sourceCommit": "6e86aa7cd53c2160de08e7a3badc74e8a67a2d9f",
+  "remotePreservation": "Verified with git ls-remote: 6405d657cf8c052efb759ab480480bf89f8d72ab on codex/forest-heart-visual contains source 6e86aa7cd53c2160de08e7a3badc74e8a67a2d9f, assets and reports",
+  "freeBeforeTaskBytes": 305367203840,
+  "freeBeforeCleanupBytes": 303774900224,
+  "packageInventory": [
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.0.0-b78c4bed0bc8",
+      "bytes": 1231037,
+      "active": false,
+      "taskCreated": false,
+      "removed": false
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.1.0-17ed65250255",
+      "bytes": 2312985,
+      "active": false,
+      "taskCreated": false,
+      "removed": false
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.1.0-19fd67923905",
+      "bytes": 2313002,
+      "active": false,
+      "taskCreated": false,
+      "removed": false
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.1.0-b7e41fe97631",
+      "bytes": 2313053,
+      "active": false,
+      "taskCreated": false,
+      "removed": false
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.1.0-e00a1ecca259",
+      "bytes": 2313053,
+      "active": false,
+      "taskCreated": false,
+      "removed": false
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.2.0-75cb0b1ce4e0",
+      "bytes": 2318638,
+      "active": false,
+      "taskCreated": false,
+      "removed": false
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.3.0-053c18b03bcd",
+      "bytes": 2327254,
+      "active": false,
+      "taskCreated": false,
+      "removed": false
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.3.0-10815b108385",
+      "bytes": 2327255,
+      "active": false,
+      "taskCreated": false,
+      "removed": false
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.3.0-e8a10dd72de2",
+      "bytes": 2327392,
+      "active": false,
+      "taskCreated": false,
+      "removed": false
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.4.0-03da3cc1a2fc",
+      "bytes": 3042430,
+      "active": false,
+      "taskCreated": true,
+      "removed": false
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.4.0-1a1329c4942c",
+      "bytes": 3042337,
+      "active": false,
+      "taskCreated": true,
+      "removed": false
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\module-dist\\studio-forest-heart\\versions\\1.4.0-367f4795c8d2",
+      "bytes": 2994220,
+      "active": true,
+      "taskCreated": true,
+      "removed": false
+    }
+  ],
+  "archivesCreated": 0,
+  "archivesRemoved": 0,
+  "removedFolders": [],
+  "removedFiles": [],
+  "deletedLogicalBytes": 0,
+  "physicalReclaimClaimed": false,
+  "retainedPriorArtifacts": "Earlier cleanup rejections are recorded in visual-v2-cleanup.json and layout-v3-cleanup.json; their targets are not retried here",
+  "automatedDatabaseCleanup": [
+    {
+      "path": "C:\\Users\\Aorus\\AppData\\Local\\Temp\\royal-pg-gHQ4mU",
+      "exists": false,
+      "cleanup": "Owned stand finalizer at completion; manual FtUWBB on review ending and Ctrl+C"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\AppData\\Local\\Temp\\royal-pg-Iw4ocA",
+      "exists": false,
+      "cleanup": "Owned stand finalizer at completion; manual FtUWBB on review ending and Ctrl+C"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\AppData\\Local\\Temp\\royal-pg-FtUWBB",
+      "exists": true,
+      "cleanup": "Owned stand finalizer at completion; manual FtUWBB on review ending and Ctrl+C"
+    }
+  ],
+  "activeExceptions": [
+    {
+      "path": "artifacts/work/forest-heart-elf-v4",
+      "reason": "Manual local review on 5296 and API 2696, session 59998, synthetic database FtUWBB",
+      "cleanup": "Generated intermediates remain pending permitted cleanup; preserve the manual database while the user reviews, then stop owned session 59998 with Ctrl+C"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal",
+      "reason": "Current review checkout; original root has unrelated concurrent work",
+      "cleanup": "Retain until user review and concurrent work permit managed cleanup"
+    }
+  ],
+  "status": "incomplete-automatic-approval-review-blocked-temporary-file-cleanup",
+  "freeAfterCleanupBytes": 303773745152,
+  "blockedAction": "Remove the explicitly enumerated derived atlas extracts, temporary audio duplicates, screenshots, logs and last-run metadata in artifacts/work/forest-heart-elf-v4",
+  "rejectionReason": "blocked by policy; no additional reason supplied; command rejected before execution",
+  "retainedTemporaryArtifactsBytes": 29136249,
+  "retainedObsoletePackageBytes": 25868436,
+  "measurementNote": "No folders, files or archives were removed by this task cleanup. Whole-volume free-space measurements also include concurrent activity; no physical space reclamation is claimed. Obsolete package cleanup was not retried after the rejection."
+}

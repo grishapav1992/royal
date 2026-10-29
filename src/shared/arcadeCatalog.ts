@@ -1,5 +1,6 @@
 import {JACKIE_GAME} from './jackieChan';
 import {PENALTY_GAME} from './crLeo';
+import {FOREST_HEART_GAME} from './forestHeart';
 import {CARIBBEAN_GAME} from './caribbeanTreasures';
 import {STUDIO_GAMES, type StudioGameId} from './studioGames';
 import {VARIANT_GAMES} from './casinoVariants';
@@ -27,7 +28,7 @@ const retired = new Set<unknown>(RETIRED_ARCADE_GAMES);
 export const isRetiredArcadeGame = (id: unknown): boolean => retired.has(id);
 
 // LAST EXIT keeps the historical Crash ID, but belongs with the house games.
-export const ARCADE_HOUSE_GAMES = [...ACTIVE_STUDIO_GAMES, 'github-crash', 'royal-plinko', PENALTY_GAME, JACKIE_GAME] as const;
+export const ARCADE_HOUSE_GAMES = [...ACTIVE_STUDIO_GAMES, FOREST_HEART_GAME, 'github-crash', 'royal-plinko', PENALTY_GAME, JACKIE_GAME] as const;
 export const ARCADE_GITHUB_GAMES: readonly string[] = [];
 
 export type CabinetCollection = 'royal' | 'github' | 'casinoapipro';
@@ -35,7 +36,8 @@ export type ArcadeCabinetSpec = {id:string; collection:CabinetCollection | 'luel
 
 // Physical seats and game identities are independent. Each seat exposes one collection.
 export const ARCADE_CABINET_SPECS: readonly ArcadeCabinetSpec[] = [
-  ...ARCADE_HOUSE_GAMES.map((id,index) => ({id,collection:'royal' as const,defaultGameId:id,x:1200+index%4*165,y:430+Math.floor(index/4)*270})),
+  // Forest Heart is a catalogue choice in the existing twelve physical seats.
+  ...ARCADE_HOUSE_GAMES.filter(id=>id!==FOREST_HEART_GAME).map((id,index) => ({id,collection:'royal' as const,defaultGameId:id,x:1200+index%4*165,y:430+Math.floor(index/4)*270})),
 ];
 export const ACTIVE_ARCADE_GAMES: readonly string[] = ARCADE_CABINET_SPECS.map(c=>c.id);
 export const ROYAL_CABINET_IDS = ARCADE_CABINET_SPECS.filter(c=>c.collection==='royal').map(c=>c.id);

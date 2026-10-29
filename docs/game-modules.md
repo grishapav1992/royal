@@ -1,17 +1,17 @@
 # Independently published games
 
-Every existing game definition has an independent client package. The catalogue contains 119 module identities across the current and historical game families. This is a technical inventory, not a claim that the hall has 119 visible machines:
+Every existing game definition has an independent client package. The catalogue contains 120 module identities across the current and historical game families. This is a technical inventory, not a claim that the hall has 120 visible machines:
 
 | Family | Module identities |
 | --- | ---: |
-| Studio games, including Caribbean Treasures | 42 |
+| Studio games, including Forest Heart and Caribbean Treasures | 43 |
 | Original Royal games, GitHub practice games, session games and all casino/card variants, including LAST EXIT | 63 |
 | Air hockey, pool, chess, piano and Mortal Kombat | 5 |
 | Durak, transfer Durak and Crazy Eights PvP | 3 |
 | Breaker, Orbit, Drift and Pixel legacy arcade games | 4 |
 | Luelon and Casino API Pro provider adapters | 2 |
 
-Supported identities and host contracts are in `src/modules/GameModuleCatalog.ts`. Each `games/<slug>/` directory contains its entry, package metadata and TypeScript configuration. GIRLHUB keeps slug `girlhub` and identity `studio-afterglow`. LAST EXIT keeps identity `github-crash` and uses slug `last-exit`. CR vs. Leo keeps its production identity `original-cr-vs-leo` in package `cr-vs-leo`; Royal Plinko keeps the current «Завеса ночи» implementation and its assets. Jackie Chan: Five Takes uses identity `original-jackie-chan`, slug `jackie-chan` and API/rules contracts 1 plus progress contract 2, with the shared CR vs. Leo engine and a separate cosmetic collection. The arcade Orbit uses identity `orbit` and slug `arcade-orbit`, distinct from `studio-orbit`.
+Supported identities and host contracts are in `src/modules/GameModuleCatalog.ts`. Each `games/<slug>/` directory contains its entry, package metadata and TypeScript configuration. GIRLHUB keeps slug `girlhub` and identity `studio-afterglow`. LAST EXIT keeps identity `github-crash` and uses slug `last-exit`. CR vs. Leo keeps its production identity `original-cr-vs-leo` in package `cr-vs-leo`; Royal Plinko keeps the current «Завеса ночи» implementation and its assets. Hong Kong Warrior uses identity `original-jackie-chan`, slug `jackie-chan` and API/rules contracts 1 plus progress contract 2, with the shared CR vs. Leo engine and a separate cosmetic collection. The arcade Orbit uses identity `orbit` and slug `arcade-orbit`, distinct from `studio-orbit`.
 
 The hall keeps its existing visible cabinets, card tables, activities and recovery paths. Historical definitions are packaged without changing their retired status. Provider games remain hosted by their providers; Royal independently packages the local catalogue, launch and iframe adapter for each provider. Their remote game engines are already loaded separately.
 
@@ -21,6 +21,8 @@ The single Nile wallet release hides the two provider demos and the three practi
 
 
 ## Shared services and saved rounds
+
+Forest Heart has package `games/forest-heart/`, identity `studio-forest-heart`, host API 1, rules 1 and progress 1. It is a new Royal catalogue choice in the existing twelve physical seats. The common expansion client negotiates its rules header, validates its confirmed root history and keeps the original pending-operation UUID across recovery. The module owns its iframe, forest art, flow animation and original procedural music, using the common audio context and wallet. See [Forest Heart verification](concepts/forest-heart/verification.md).
 
 The hall supplies host API 1 with the existing wallet, serialized operation transport, audio, reactions, language services and shared Phaser runtime. Common layout and control styles remain part of the hall design system; packages include their game-specific styles. The Mines, Flight, demo/USDT casino, Nile, USDT and crypto clients remain live host singletons. The Luelon catalogue selection and preview watcher namespace is also shared. Modules import these services through the build bridge and never construct another wallet. Server rules, account locks, payout validation, persistent sessions and balances remain in the common backend. This change adds no game servers or microservices.
 

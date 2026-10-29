@@ -7,6 +7,7 @@ type Artwork = {background: string; focus?: number; layers: readonly Layer[]};
 
 // Reuse each game's own art. The roster also requires artwork for every house cabinet.
 export const CABINET_ARTWORK: Record<HouseGameId, Artwork> = {
+  'studio-forest-heart': { background: '/assets/forest-heart/v1/catalog.webp', layers: [] },
   'studio-neopolis': { background: '/assets/neopolis/cover-cabinet-v2.webp', layers: [] },
   'studio-dracona': {
     background: '/assets/dracona/manor.webp',

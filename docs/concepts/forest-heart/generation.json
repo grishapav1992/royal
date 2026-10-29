@@ -1,0 +1,19 @@
+{
+  "concept": "Сердце леса",
+  "slug": "forest-heart",
+  "approvalDate": "2026-10-26",
+  "approvalTimeZone": "Europe/Moscow",
+  "approvalText": "Отлично, давай её использовать",
+  "approvalScope": "Selected visual concept with one adult female elf",
+  "tool": "Built-in image_gen.imagegen",
+  "mode": "edit",
+  "transparentBackground": false,
+  "file": "approved-concept-v1.png",
+  "width": 1672,
+  "height": 941,
+  "bytes": 3132034,
+  "sha256": "3fb306383487d6abd38e17de4502249aa718340fa18aca2ee37ec2fa18807cbc",
+  "generatedImageId": "exec-079f2ede-899a-4d0b-a488-a2d8935cb941",
+  "editTargetImageId": "exec-e6421427-b77b-4caa-9e11-6691459b97ea",
+  "prompt": "Use case: precise-object-edit / character redesign. Edit the supplied «СЕРДЦЕ ЛЕСА» fantasy slot concept. The supplied image is the EDIT TARGET. Make ONE updated landscape game-screen concept.\nUser request: only ONE character, a sexy adult female ELF. Remove the male character completely, including his face, body, staff and associated silhouette on the left. Fill his former area naturally with the same beautiful moonlit bioluminescent forest, roots and depth; do not replace him with any other person, portrait, statue, face or humanoid.\nRedesign the female guardian on the right as an unmistakably ADULT elf woman about 30 years old. She is the only character in the image. Give her clearly visible elegant pointed elf ears, a beautiful mature expressive face, long silver-blonde hair, luminous green eyes, confident alluring eye contact and an elegant feminine curvy figure. Her look should be noticeably sexy and glamorous: fitted deep emerald and dark violet fantasy corset with gold botanical filigree, a plunging neckline with covered breasts, bare shoulders, exposed midriff, an asymmetric opaque skirt with a high slit revealing one thigh, and elegant high forest boots. Beautiful botanical jewelry and restrained glowing accents connect her to the setting. Sensual premium fantasy character art, realistic adult proportions, graceful stance, no nudity, no transparent clothing. She may hold the small glowing seed-heart near her hip. Place her beside the board without covering any tile, route, flower receiver or control. Show enough of her outfit and figure for the silhouette to read clearly.\nPRESERVE the existing premium painterly 3D style, mysterious ancient forest, cyan/mint magical sap, indigo/violet lighting, dark bark and living-root materials. PRESERVE the square FIVE by FIVE grid with 25 tiles, its simple root channel network, the single seed-heart source on its left, the THREE flower receivers on its right, and the clear relationship of source, routes and receivers. Preserve exact Cyrillic title «СЕРДЦЕ ЛЕСА», ROYAL wordmark, «ДЕМО» label and button «ВРАЩАТЬ», settings and sound icons. Maintain a readable front-facing playable game interface. With the male removed, rebalance the empty forest area subtly but keep the gameplay board dominant and preserve all gameplay elements. No second character, no collage, no explanatory text, no watermarks."
+}

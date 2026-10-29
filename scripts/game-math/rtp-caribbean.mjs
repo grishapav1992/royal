@@ -10,16 +10,19 @@ import { startCaribbean, moveCaribbean } from '../../server/games/caribbeanTreas
 
 export const CARIBBEAN_QUALIFICATION_METHOD = 'exact-caribbean-giant-round-v1';
 // Freeze the reviewed implementation. Changing a source requires reviewing this model.
+// Forest Heart and Hong Kong Warrior use independent branches and separate trailing capability flags.
+// The 2026-10-28 merge also retains main Neopolis v4 capability parsing and Last Exit guards.
+// Reviewed 2026-10-29 after reconciliation: Caribbean settings, costs, entropy, settlement
+// and its existing flag position are preserved; Jackie collection completion is game-scoped.
+// Requalify the complete Caribbean replay after reviewing these shared-file additions.
 export const CARIBBEAN_REVIEWED_SOURCES = {
   'src/shared/caribbeanTreasuresMath.ts': 'b86e71675dfd0179da8d8c43c7a62f8da41303d5e6bc59f07b81d4497b64647b',
   'src/shared/caribbeanTreasures.ts': '5590af9897cfb32dbf8fd7d9c0608ad52184051ddee7ca70cd309267a4311aee',
   'server/games/caribbeanTreasures.ts': 'bdb0aa8eecef1093f876dd3c467ff1b43d8a7b1606a63a56aa46430964556e99',
   'src/shared/caribbeanTransport.ts': 'c4a590c6778048f9ecd37852549762adde064f90dca072316ee215ba8ac89c78',
-  // Reviewed 2026-10-29: only Hong Kong Warrior's versioned costume collection and client filtering changed.
-  // The complete-round model, choices, settlement and all Caribbean rules are identical.
-  'src/shared/casinoExpansion.ts': 'ac3bbf050236e4d4146dc5309556775f161b5bac6e9182eec9e290ce8c42af5a',
-  'server/demoExpansion.ts': '9005f888097ccaddd6bbc5cb725252823e9913d78d8d3f1e480abd699baa333c',
-  'server/finance/nile-game-runtime.ts': 'b28bb143c82edb0379e541ab30a3bd95c88077637e28309e4954f766f5ca5b69',
+  'src/shared/casinoExpansion.ts': 'ce246f9b2210a04fc66958baf59d727d54bba8ce989e463fd48bdce88194b598',
+  'server/demoExpansion.ts': 'efe2e163d4b9894e5066bb5059db65663b9bf8a0e8c09b29188f24f469ae07d4',
+  'server/finance/nile-game-runtime.ts': '99c5ba83ec6c7a8e3fe0b578587d5f78d05cd4424b46eb40db04b0e11542939c',
 };
 const WEIGHTS = [30,24,18,13,9,6];
 const PAYS = [[2,6,20,60],[4,10,30,100],[6,16,40,150],[8,24,60,200],[10,30,100,400],[16,50,200,1000]];

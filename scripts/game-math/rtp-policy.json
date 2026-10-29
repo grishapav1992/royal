@@ -1,6 +1,30 @@
 {
   "schemaVersion": 1,
   "profiles": {
+    "studio-forest-heart": {
+      "method": "exact-forest-heart-runtime",
+      "releaseStatus": "qualified",
+      "rulesVersion": 1,
+      "progressVersion": 1,
+      "target": 0.96,
+      "tolerance": 0.002,
+      "seeds": [831749, 962381],
+      "serverReplayRoundsPerSeed": 64,
+      "stakes": [1000, 2000, 5000, 10000, 20000, 50000],
+      "choices": ["optimal", "pass", "rotate-0", "rotate-1", "rotate-2", "rotate-3", "rotate-4", "rotate-5", "rotate-6", "rotate-7", "rotate-8", "rotate-9", "rotate-10", "rotate-11"],
+      "proof": "docs/game-math/qualifications/forest-heart-v1.json",
+      "qualificationSource": "scripts/game-math/rtp-forest-heart.mjs",
+      "sources": [
+        "src/shared/forestHeartMath.ts", "src/shared/forestHeart.ts", "src/shared/casinoExpansion.ts",
+        "server/games/forestHeart.ts", "server/demoExpansion.ts", "server/demoWallet.ts", "server/demoWalletAmounts.ts",
+        "server/demoWalletRoutes.ts", "server/gameWalletRoutes.ts", "server/finance/nile-game-runtime.ts",
+        "server/pvp/virtual-wallet.ts", "server/database.ts",
+        "scripts/game-math/forest-heart-reference.mjs", "scripts/game-math/forest-heart-model.mjs",
+        "scripts/game-math/forest-heart-wallet.ts", "scripts/game-math/forest-heart-evidence.mjs", "scripts/database-test.ts",
+        "src/wallet/ExpansionClient.ts", "games/forest-heart/presentation.ts"
+      ],
+      "note": "Exact full-round model with server entropy census, independent seeded start/move replay and real PostgreSQL common-wallet qualification. Presentation reads only the confirmed public view. Browser, module, layout and audio checks are recorded separately from mathematical qualification."
+    },
     "studio-afterglow": {
       "rulesVersion": 2,
       "progressVersion": 4,

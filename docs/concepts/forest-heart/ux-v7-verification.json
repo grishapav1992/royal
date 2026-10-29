@@ -1,0 +1,323 @@
+{
+  "date": "2026-10-29",
+  "timezone": "Europe/Moscow",
+  "clientVersion": "1.7.0",
+  "clientSourceCommit": "708ccdb96a6a3e8fa777b74b6b81c655ef80c528",
+  "testsSourceCommit": "9f445ec",
+  "integrationCommit": "878360ea86e535bc4433e6e841becf0d1f6eb378",
+  "latestMain": "28516a9faef3c276e3ea6674146df2f8b17779a6",
+  "module": {
+    "version": "1.7.0-06c5c0f2f206",
+    "sourceSha256": "06c5c0f2f206d5bd89d8b60f29602ee740e2b34e62c912fdef36e887f680b225",
+    "active": {
+      "format": 1,
+      "gameId": "studio-forest-heart",
+      "manifest": "/game-modules/studio-forest-heart/versions/1.7.0-06c5c0f2f206/manifest.json",
+      "sha256": "d798eb38f92f134cb6fd02ae9aa2b6bf23aad693f8b3178ddbe24c4192078b20"
+    }
+  },
+  "changes": [
+    "Separate network, current action and financial rows",
+    "Equal type size for return and net; neutral partial return",
+    "Automatic field, offered free turn, bonus continuation and next paid action guidance",
+    "Accepted pulse flower values and dismissible energy explanation",
+    "Larger short-window board and 44px utility targets",
+    "Direct settings and three-step rules; keyboard tabs and sticky close button",
+    "Short-phone bonus layout without reduced monetary type or tap targets"
+  ],
+  "unchangedSources": [
+    {
+      "file": "src/shared/forestHeartMath.ts",
+      "unchanged": true,
+      "sha256": "c3e04efc098aa9d61f0faa70fc9159d8460dcf0816d96ef5b560efd45ab46658"
+    },
+    {
+      "file": "src/shared/forestHeart.ts",
+      "unchanged": true,
+      "sha256": "6f0ba79987ff2d24e5c242103ec6735bea1b9fcb3a0fba2abec773eff1dab52e"
+    },
+    {
+      "file": "games/forest-heart/presentation.ts",
+      "unchanged": true,
+      "sha256": "f722a510ed699cecb172b064e2b44a98f79d19f59039ead1c796e6c779e2e24f"
+    },
+    {
+      "file": "games/forest-heart/RootArtwork.ts",
+      "unchanged": true,
+      "sha256": "b7e27259f0fe62994da1b03739158563d6dbbe411c43550ef57db76cf79bdef6"
+    },
+    {
+      "file": "games/forest-heart/ForestAudio.ts",
+      "unchanged": true,
+      "sha256": "45cfe78f20c3e986879d1a2d847023a88972b2f0128896e57c93604edd291210"
+    },
+    {
+      "file": "games/forest-heart/ForestCharacter.ts",
+      "unchanged": true,
+      "sha256": "2a362a9b2e190a7c56cc52d06313ef81f3c2a8321c60ab474e43223eda08856d"
+    },
+    {
+      "file": "server/demoExpansion.ts",
+      "unchanged": true,
+      "sha256": "dc05f62c325f46a82de892e09d4ea2dfff5be205b01f9dabeb1f341742680487"
+    }
+  ],
+  "checks": {
+    "fullBrowserSuite": {
+      "passed": 16,
+      "minutes": 5.2,
+      "clientVersion": "1.7.0-06c5c0f2f206"
+    },
+    "mathAndRtpTests": 9,
+    "serverAndWalletTestsBeforeMainMerge": 8,
+    "moduleAndArtworkTestsBeforeMainMerge": 10,
+    "rtpGateAfterMainMerge": {
+      "verified": 13,
+      "legacyNotQualified": 114
+    },
+    "freshMergedBuild": "pending",
+    "freshMergedServerAndCompatibility": "pending"
+  },
+  "earlierCorrections": [
+    "Initial 320px width left a 178px field, fixed by fitting actual rounded mobile frame thickness",
+    "Bonus in the shortest 320px host left a 162px field, fixed by a short-screen layout; later complete round scenario passed",
+    "One earlier character scenario exceeded the test helper's default 5 second completion wait; helper now allows complete accepted animations up to 15 seconds without changing game timing"
+  ],
+  "devices": {
+    "desktop": [
+      1280,
+      720
+    ],
+    "phones": [
+      [
+        390,
+        844
+      ],
+      [
+        320,
+        780
+      ]
+    ],
+    "hostWithConnectedChat": true,
+    "physicalPhoneTested": false
+  },
+  "limits": [
+    "Browser responsive emulation, no physical phone performance study",
+    "Technical verification, no user study or claim of complete WCAG conformance"
+  ],
+  "productionPublished": false,
+  "measurements": [
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "width": 980,
+      "height": 624,
+      "board": {
+        "x": 188.84375,
+        "y": 75,
+        "width": 356,
+        "height": 356,
+        "top": 75,
+        "right": 544.84375,
+        "bottom": 431,
+        "left": 188.84375
+      },
+      "controls": [
+        {
+          "selector": "[data-fh=lower]",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "selector": "[data-fh=higher]",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "selector": "[data-fh=rules]",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "selector": "[data-fh=settings]",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "selector": "[data-fh=energy]",
+          "width": 56,
+          "height": 44
+        },
+        {
+          "selector": ".fh-fast",
+          "width": 54,
+          "height": 48
+        }
+      ],
+      "fonts": [
+        {
+          "selector": "[data-fh=net]",
+          "size": 26
+        },
+        {
+          "selector": "[data-fh=next]",
+          "size": 12
+        },
+        {
+          "selector": ".fh-spin small",
+          "size": 12
+        }
+      ],
+      "returnColor": "rgb(242, 232, 211)",
+      "netFont": 26,
+      "returnFont": 26,
+      "textFits": true
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "width": 384,
+      "height": 525,
+      "board": {
+        "x": 61,
+        "y": 57.5,
+        "width": 248,
+        "height": 248,
+        "top": 57.5,
+        "right": 309,
+        "bottom": 305.5,
+        "left": 61
+      },
+      "controls": [
+        {
+          "selector": "[data-fh=lower]",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "selector": "[data-fh=higher]",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "selector": "[data-fh=rules]",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "selector": "[data-fh=settings]",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "selector": "[data-fh=energy]",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "selector": ".fh-fast",
+          "width": 52,
+          "height": 48
+        }
+      ],
+      "fonts": [
+        {
+          "selector": "[data-fh=net]",
+          "size": 22
+        },
+        {
+          "selector": "[data-fh=next]",
+          "size": 12
+        },
+        {
+          "selector": ".fh-spin small",
+          "size": 12
+        }
+      ],
+      "returnColor": "rgb(242, 232, 211)",
+      "netFont": 22,
+      "returnFont": 22,
+      "textFits": true
+    },
+    {
+      "viewport": {
+        "width": 320,
+        "height": 780
+      },
+      "width": 314,
+      "height": 454,
+      "board": {
+        "x": 60,
+        "y": 62,
+        "width": 180,
+        "height": 180,
+        "top": 62,
+        "right": 240,
+        "bottom": 242,
+        "left": 60
+      },
+      "controls": [
+        {
+          "selector": "[data-fh=lower]",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "selector": "[data-fh=higher]",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "selector": "[data-fh=rules]",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "selector": "[data-fh=settings]",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "selector": "[data-fh=energy]",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "selector": ".fh-fast",
+          "width": 52,
+          "height": 48
+        }
+      ],
+      "fonts": [
+        {
+          "selector": "[data-fh=net]",
+          "size": 22
+        },
+        {
+          "selector": "[data-fh=next]",
+          "size": 12
+        },
+        {
+          "selector": ".fh-spin small",
+          "size": 12
+        }
+      ],
+      "returnColor": "rgb(242, 232, 211)",
+      "netFont": 22,
+      "returnFont": 22,
+      "textFits": true
+    }
+  ],
+  "screenshots": [
+    "ux-v7-desktop.webp",
+    "ux-v7-mobile.webp",
+    "ux-v7-narrow.webp",
+    "ux-v7-settings.webp",
+    "ux-v7-rules.webp"
+  ],
+  "productionRequested": true
+}
