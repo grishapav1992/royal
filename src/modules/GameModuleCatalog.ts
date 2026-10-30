@@ -1,5 +1,6 @@
 /** Independent client packages supported by this host release. */
 export const STUDIO_GAME_MODULES = [
+ { gameId: 'studio-wild-nudge', slug: 'wild-nudge', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
  { gameId: 'studio-flooded-temple', slug: 'flooded-temple', apiVersion: 1, rulesVersion: 2, progressVersion: 2 },
  { gameId: 'studio-forest-heart', slug: 'forest-heart', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
  { gameId: 'studio-caribbean-treasures', slug: 'caribbean-treasures', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
@@ -137,6 +138,7 @@ export const PVP_GAME_MODULES=[
  {gameId:'durak',slug:'durak',apiVersion:1,rulesVersion:1,progressVersion:1},
  {gameId:'transfer-durak',slug:'transfer-durak',apiVersion:1,rulesVersion:1,progressVersion:1},
  {gameId:'crazy-eights',slug:'crazy-eights',apiVersion:1,rulesVersion:1,progressVersion:1},
+ {gameId:'tsu-e-fa',slug:'tsu-e-fa',apiVersion:1,rulesVersion:1,progressVersion:1},
 ] as const;
 export const GAME_MODULES = [...STUDIO_GAME_MODULES, ...CASINO_GAME_MODULES, ...ACTIVITY_GAME_MODULES, ...ARCADE_GAME_MODULES, ...PROVIDER_GAME_MODULES,...PVP_GAME_MODULES] as const;
 

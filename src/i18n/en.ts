@@ -3,6 +3,7 @@ import { progressionEnglish } from './progressionEn';
 
 export const english: Record<string, string> = {
   ...progressionEnglish,
+  'Галактический реактор':'Galactic Reactor',
   'Гонконгский воин':'Hong Kong Warrior',
   'Кунг-фу кино · Коллекция костюмов':'Kung fu cinema · Costume collection',
   'Выбери игру в каталоге':'Choose a game from the catalogue',

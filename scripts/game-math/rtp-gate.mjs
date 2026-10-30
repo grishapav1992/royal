@@ -1,4 +1,5 @@
 import { REWARD_SLOTS_METHOD, validateRewardSlotsProof } from './rtp-reward-slots.mjs';
+import {NUDGE_RUNTIME_METHOD,validateNudgeRuntimeProof} from './rtp-wild-nudge.mjs';
 import {CASCADE_METHOD,validateCascadeProof} from './rtp-temple-cascade.mjs';
 import {ROULETTE_METHOD,validateRouletteProof} from './rtp-roulette.mjs';
 import assert from 'node:assert/strict';
@@ -41,6 +42,7 @@ export function validateRtpProof(gameId, inputs, proof) {
   assert.equal(proof.policySha256, inputs.policySha256, 'RTP policy changed: rerun qualification');
   assert.deepEqual(proof.sourceHashes, inputs.sourceHashes, 'RTP source changed: rerun qualification');
   if(p.method===REWARD_SLOTS_METHOD)return validateRewardSlotsProof(gameId,p,proof);
+  if(p.method===NUDGE_RUNTIME_METHOD)return validateNudgeRuntimeProof(gameId,inputs,proof);
   if(p.method===CASCADE_METHOD){assert.equal(gameId,'studio-flooded-temple');return validateCascadeProof(p,proof);}
   if(p.method===TEMPLE_METHOD)return validateTempleProof(gameId,p,proof);
   if (p.method===JACKIE_METHOD) {
@@ -208,7 +210,8 @@ function validateCosmicProof(gameId,p,proof){
   return true;
 }
 function validateVirtualPvpProof(gameId,p,proof){
-  assert(['hockey','pool','chess','durak','transfer-durak','crazy-eights'].includes(gameId));
+  assert(['hockey','pool','chess','durak','transfer-durak','crazy-eights','tsu-e-fa'].includes(gameId));
+  if(gameId==='tsu-e-fa')assert.deepEqual(proof.rulesCoverage,{scores:4,pairsPerScore:9,orders:2,cases:72,privacyChecks:144});
   assert.equal(p.target,.95);assert.equal(p.refundReturn,1);assert.equal(p.commissionBasisPoints,500);
   assert.deepEqual(p.stakeRange,{min:1000000,max:500000000,step:100000});
   assert.deepEqual(p.choices,['left-win','right-win','draw','cancel','disconnect-left','disconnect-right','expired','server']);

@@ -1,0 +1,307 @@
+{
+  "format": 1,
+  "base": "aed09286a21e315cb506b1befc754f5a7b4eecd2",
+  "developmentCommit": "780b1dec3ca1a7b335a4c08987cccd1f52cf19ce",
+  "files": {
+    "src/crypto-wallet.css": {
+      "projection": {
+        "commit": "5745dbe90332ff2234ab8d6402347ed2228a0e1d",
+        "path": "src/crypto-wallet.css",
+        "baseSha256": "435caa63aa1a947644d7d2dc1c73ea64e2013e749fe526c82f2881fc45fe4fe4",
+        "sha256": "435caa63aa1a947644d7d2dc1c73ea64e2013e749fe526c82f2881fc45fe4fe4"
+      },
+      "sha256": "435caa63aa1a947644d7d2dc1c73ea64e2013e749fe526c82f2881fc45fe4fe4"
+    },
+    "src/modules/GameModuleCatalog.ts": {
+      "projection": {
+        "commit": "74bdac662648d28c4954bd594a5d3ffc435b508f",
+        "path": "deployment/releases/jackie-chan-20261029-v2/source/src/modules/GameModuleCatalog.ts",
+        "baseSha256": "412fabe4eaf3421dbffd25314358f579d53af2da25651c96a0ebfc20c7818a2a",
+        "sha256": "412fabe4eaf3421dbffd25314358f579d53af2da25651c96a0ebfc20c7818a2a"
+      },
+      "sha256": "412fabe4eaf3421dbffd25314358f579d53af2da25651c96a0ebfc20c7818a2a"
+    },
+    "src/wallet/ExpansionClient.ts": {
+      "projection": {
+        "commit": "74bdac662648d28c4954bd594a5d3ffc435b508f",
+        "path": "deployment/releases/jackie-chan-20261029-v2/source/src/wallet/ExpansionClient.ts",
+        "baseSha256": "2abf931fb94be3aba17d063b899d84bda3885dad819c15545ca0280a34521a52",
+        "sha256": "2abf931fb94be3aba17d063b899d84bda3885dad819c15545ca0280a34521a52"
+      },
+      "sha256": "2abf931fb94be3aba17d063b899d84bda3885dad819c15545ca0280a34521a52"
+    },
+    "src/i18n/paymentMethodsEn.ts": {
+      "projection": {
+        "commit": "172a07c2eddd43bc24ed4b54c4ebf5034e6e44cb",
+        "path": "src/i18n/paymentMethodsEn.ts",
+        "baseSha256": "841b789e4e0ba8f3a6f2f399758ade90d900824457d2b2e5d0408546269943c8",
+        "sha256": "841b789e4e0ba8f3a6f2f399758ade90d900824457d2b2e5d0408546269943c8"
+      },
+      "sha256": "841b789e4e0ba8f3a6f2f399758ade90d900824457d2b2e5d0408546269943c8"
+    },
+    "src/ui/LastExitAudio.ts": {
+      "projection": {
+        "commit": "6ea6b2a20276d03561b16bc6290ce832c8ffc3cb",
+        "path": "src/ui/LastExitAudio.ts",
+        "baseSha256": "96249fef4a83523ce6cd8ec912e480ab3c56f4eda217611daec0b17539b2c867",
+        "sha256": "96249fef4a83523ce6cd8ec912e480ab3c56f4eda217611daec0b17539b2c867"
+      },
+      "sha256": "96249fef4a83523ce6cd8ec912e480ab3c56f4eda217611daec0b17539b2c867"
+    },
+    "src/ui/LastExitScene.ts": {
+      "projection": {
+        "commit": "6ea6b2a20276d03561b16bc6290ce832c8ffc3cb",
+        "path": "src/ui/LastExitScene.ts",
+        "baseSha256": "3c776c29151eb7c68f2cd40263a0b2d6e43558214990e3b5da2e3a79b012574f",
+        "sha256": "3c776c29151eb7c68f2cd40263a0b2d6e43558214990e3b5da2e3a79b012574f"
+      },
+      "sha256": "3c776c29151eb7c68f2cd40263a0b2d6e43558214990e3b5da2e3a79b012574f"
+    },
+    "src/ui/RoyalCatalogArtwork.ts": {
+      "projection": {
+        "commit": "9cbc4be2568ae0f46c653cb1ed611f35ab35cec4",
+        "path": "src/ui/RoyalCatalogArtwork.ts",
+        "baseSha256": "133f68d47c0db148e1f6e6dd3f57ca7f09c1e2ec7b4c486410f65036c5a9f152",
+        "sha256": "34d2d6d5e57a5589caf6c229c527af9caf12f0b5f773f7224d71fe3ac3fb89ed",
+        "patches": [
+          {
+            "from": "export function royalCatalogArtwork(id: string): string {",
+            "to": "export function royalCatalogArtwork(id: string): string {\n  if(id==='studio-forest-heart')return '/assets/forest-heart/v3/elf-idle.webp';"
+          }
+        ]
+      },
+      "sha256": "34d2d6d5e57a5589caf6c229c527af9caf12f0b5f773f7224d71fe3ac3fb89ed"
+    },
+    "src/ui/lastExitModel.ts": {
+      "projection": {
+        "commit": "6ea6b2a20276d03561b16bc6290ce832c8ffc3cb",
+        "path": "src/ui/lastExitModel.ts",
+        "baseSha256": "7531a2f03313c982d22bccd1fd389c0c87d6538870ce677efc0b1a6c2004200a",
+        "sha256": "7531a2f03313c982d22bccd1fd389c0c87d6538870ce677efc0b1a6c2004200a"
+      },
+      "sha256": "7531a2f03313c982d22bccd1fd389c0c87d6538870ce677efc0b1a6c2004200a"
+    },
+    "src/ui/CryptoWalletUI.ts": {
+      "projection": {
+        "commit": "9a06c46be5f845cbec621c806a9a772bb5a4b189",
+        "path": "src/ui/CryptoWalletUI.ts",
+        "baseSha256": "4c3783755a1699fcf7e7b6a7287b8cf664ae79841acfa8220b2f47543e506a89",
+        "sha256": "4c3783755a1699fcf7e7b6a7287b8cf664ae79841acfa8220b2f47543e506a89"
+      },
+      "sha256": "4c3783755a1699fcf7e7b6a7287b8cf664ae79841acfa8220b2f47543e506a89"
+    },
+    "src/ui/LastExitUI.ts": {
+      "projection": {
+        "commit": "463946ee557d1b5e883920961b8e11f986b8f183",
+        "path": "src/ui/LastExitUI.ts",
+        "baseSha256": "a970ad10abbc2a246ea8a513288d3dcf0a253fe25237ba755cde251fac227feb",
+        "sha256": "a970ad10abbc2a246ea8a513288d3dcf0a253fe25237ba755cde251fac227feb"
+      },
+      "sha256": "a970ad10abbc2a246ea8a513288d3dcf0a253fe25237ba755cde251fac227feb"
+    },
+    "src/ui/last-exit.css": {
+      "projection": {
+        "commit": "6ea6b2a20276d03561b16bc6290ce832c8ffc3cb",
+        "path": "src/ui/last-exit.css",
+        "baseSha256": "db2116678fcfba3f6b27b6057b32949cfef1424ce119990513e1bde50f784ac9",
+        "sha256": "db2116678fcfba3f6b27b6057b32949cfef1424ce119990513e1bde50f784ac9"
+      },
+      "sha256": "db2116678fcfba3f6b27b6057b32949cfef1424ce119990513e1bde50f784ac9"
+    },
+    "src/ui/RoyalPlatformCatalog.ts": {
+      "projection": {
+        "commit": "74bdac662648d28c4954bd594a5d3ffc435b508f",
+        "path": "deployment/releases/jackie-chan-20261029-v2/source/src/ui/RoyalPlatformCatalog.ts",
+        "baseSha256": "33f3aebd93d94ed440f333ccc9f54761dfad3cbc2d64f55ade879db8d242360a",
+        "sha256": "33f3aebd93d94ed440f333ccc9f54761dfad3cbc2d64f55ade879db8d242360a"
+      },
+      "sha256": "33f3aebd93d94ed440f333ccc9f54761dfad3cbc2d64f55ade879db8d242360a"
+    },
+    "src/ui/GameViewport.ts": {
+      "projection": {
+        "commit": "50b78d7201ed26918788f3cb3cb09f489f9e39fc",
+        "path": "src/ui/GameViewport.ts",
+        "baseSha256": "7d4451ea312a7c09c71cdd5145f23acb5e475a674d9974d66c84d1e4165c3fef",
+        "sha256": "6844812ca272cbce40aa1eba5c5f83008684dfd854aae7be16a77c4d410b60c2",
+        "patches": [
+          {
+            "from": ".dracona-frame",
+            "to": ".dracona-frame, .forest-heart-frame"
+          }
+        ]
+      },
+      "sha256": "6844812ca272cbce40aa1eba5c5f83008684dfd854aae7be16a77c4d410b60c2"
+    },
+    "src/ui/AfterglowText.ts": {
+      "projection": {
+        "commit": "08bac41af9a6d26ea5b0ed00c84aa063f36d2bcd",
+        "path": "src/ui/AfterglowText.ts",
+        "baseSha256": "ade23bcbb7dde7159e19dfe680b23a306eec78f3c661a7e17603c77f6bb12fd8",
+        "sha256": "ade23bcbb7dde7159e19dfe680b23a306eec78f3c661a7e17603c77f6bb12fd8"
+      },
+      "sha256": "ade23bcbb7dde7159e19dfe680b23a306eec78f3c661a7e17603c77f6bb12fd8"
+    },
+    "src/ui/AfterglowUI.ts": {
+      "projection": {
+        "commit": "463946ee557d1b5e883920961b8e11f986b8f183",
+        "path": "src/ui/AfterglowUI.ts",
+        "baseSha256": "bb83f9cc09c7e47d5cf5b8c125ebce417e34b171237cae9ab25bd347311bc3f9",
+        "sha256": "bb83f9cc09c7e47d5cf5b8c125ebce417e34b171237cae9ab25bd347311bc3f9"
+      },
+      "sha256": "bb83f9cc09c7e47d5cf5b8c125ebce417e34b171237cae9ab25bd347311bc3f9"
+    },
+    "src/shared/cabinets.ts": {
+      "projection": {
+        "commit": "74bdac662648d28c4954bd594a5d3ffc435b508f",
+        "path": "deployment/releases/jackie-chan-20261029-v2/source/src/shared/cabinets.ts",
+        "baseSha256": "2c9212df02cf3eef376af83a9274bfa27b41fb3bf2d6a076c2d92d00af61b759",
+        "sha256": "2c9212df02cf3eef376af83a9274bfa27b41fb3bf2d6a076c2d92d00af61b759"
+      },
+      "sha256": "2c9212df02cf3eef376af83a9274bfa27b41fb3bf2d6a076c2d92d00af61b759"
+    },
+    "src/shared/paymentMethods.ts": {
+      "projection": {
+        "commit": "9a06c46be5f845cbec621c806a9a772bb5a4b189",
+        "path": "src/shared/paymentMethods.ts",
+        "baseSha256": "a5f187bce65ca55e9bf4219ecfccb4e3df8dca8dc306debc6167988a56b993ef",
+        "sha256": "a5f187bce65ca55e9bf4219ecfccb4e3df8dca8dc306debc6167988a56b993ef"
+      },
+      "sha256": "a5f187bce65ca55e9bf4219ecfccb4e3df8dca8dc306debc6167988a56b993ef"
+    },
+    "src/shared/afterglowWardrobe.ts": {
+      "projection": {
+        "commit": "6ea6b2a20276d03561b16bc6290ce832c8ffc3cb",
+        "path": "src/shared/afterglowWardrobe.ts",
+        "baseSha256": "6dace1ede72ee479115b5cbf2d1d512c9e8800fd315be407cea787377362dc1f",
+        "sha256": "6dace1ede72ee479115b5cbf2d1d512c9e8800fd315be407cea787377362dc1f"
+      },
+      "sha256": "6dace1ede72ee479115b5cbf2d1d512c9e8800fd315be407cea787377362dc1f"
+    },
+    "src/shared/casinoExpansion.ts": {
+      "projection": {
+        "commit": "74bdac662648d28c4954bd594a5d3ffc435b508f",
+        "path": "deployment/releases/jackie-chan-20261029-v2/source/src/shared/casinoExpansion.ts",
+        "baseSha256": "4c4d2a2ad539e9e7b162c9ea63ed9aca6373fa4f2dd2b8f4d8e836c2c655393c",
+        "sha256": "4c4d2a2ad539e9e7b162c9ea63ed9aca6373fa4f2dd2b8f4d8e836c2c655393c"
+      },
+      "sha256": "4c4d2a2ad539e9e7b162c9ea63ed9aca6373fa4f2dd2b8f4d8e836c2c655393c"
+    },
+    "src/shared/arcadeCatalog.ts": {
+      "projection": {
+        "commit": "74bdac662648d28c4954bd594a5d3ffc435b508f",
+        "path": "deployment/releases/jackie-chan-20261029-v2/source/src/shared/arcadeCatalog.ts",
+        "baseSha256": "6efcf93ef73f267d15b2a9d5ff42de4ad13d758881f7574c8c994fe49366c450",
+        "sha256": "6efcf93ef73f267d15b2a9d5ff42de4ad13d758881f7574c8c994fe49366c450"
+      },
+      "sha256": "6efcf93ef73f267d15b2a9d5ff42de4ad13d758881f7574c8c994fe49366c450"
+    },
+    "server/demoWalletRoutes.ts": {
+      "projection": {
+        "commit": "74bdac662648d28c4954bd594a5d3ffc435b508f",
+        "path": "deployment/releases/jackie-chan-20261029-v2/source/server/demoWalletRoutes.ts",
+        "baseSha256": "bab841ca81e618d339be40337f8b1b3eb583f0e72e77667c170a208fb2e5054a",
+        "sha256": "bab841ca81e618d339be40337f8b1b3eb583f0e72e77667c170a208fb2e5054a"
+      },
+      "sha256": "bab841ca81e618d339be40337f8b1b3eb583f0e72e77667c170a208fb2e5054a"
+    },
+    "server/demoExpansion.ts": {
+      "projection": {
+        "commit": "74bdac662648d28c4954bd594a5d3ffc435b508f",
+        "path": "deployment/releases/jackie-chan-20261029-v2/source/server/demoExpansion.ts",
+        "baseSha256": "735df438e093196e95bd80845997e8aa00aa4f6b2a9f5ab8b12609216a4f1f31",
+        "sha256": "735df438e093196e95bd80845997e8aa00aa4f6b2a9f5ab8b12609216a4f1f31"
+      },
+      "sha256": "735df438e093196e95bd80845997e8aa00aa4f6b2a9f5ab8b12609216a4f1f31"
+    },
+    "server/cryptoWalletRoutes.ts": {
+      "projection": {
+        "commit": "6ea6b2a20276d03561b16bc6290ce832c8ffc3cb",
+        "path": "server/cryptoWalletRoutes.ts",
+        "baseSha256": "bce306753a9116511b6977183ce6695ea48b8c555f15dc617af939de3b57a7fe",
+        "sha256": "bce306753a9116511b6977183ce6695ea48b8c555f15dc617af939de3b57a7fe"
+      },
+      "sha256": "bce306753a9116511b6977183ce6695ea48b8c555f15dc617af939de3b57a7fe"
+    },
+    "server/gameWalletRoutes.ts": {
+      "projection": {
+        "commit": "74bdac662648d28c4954bd594a5d3ffc435b508f",
+        "path": "deployment/releases/jackie-chan-20261029-v2/source/server/gameWalletRoutes.ts",
+        "baseSha256": "4b902a3f82b44698f78ec5fe147ceed555bf352ffbd24e0562688ea6a0c0c07a",
+        "sha256": "4b902a3f82b44698f78ec5fe147ceed555bf352ffbd24e0562688ea6a0c0c07a"
+      },
+      "sha256": "4b902a3f82b44698f78ec5fe147ceed555bf352ffbd24e0562688ea6a0c0c07a"
+    },
+    "server/afterglowWardrobe.ts": {
+      "projection": {
+        "commit": "6ea6b2a20276d03561b16bc6290ce832c8ffc3cb",
+        "path": "server/afterglowWardrobe.ts",
+        "baseSha256": "24009dddabe9d73931a3f71065d7a49c890901053cfa22cc7be48a83a48654a9",
+        "sha256": "24009dddabe9d73931a3f71065d7a49c890901053cfa22cc7be48a83a48654a9"
+      },
+      "sha256": "24009dddabe9d73931a3f71065d7a49c890901053cfa22cc7be48a83a48654a9"
+    },
+    "server/payments/client.ts": {
+      "projection": {
+        "commit": "ccb215a407355dfd9f3e8cd72144176d893f9a88",
+        "path": "server/payments/client.ts",
+        "baseSha256": "3895dae49df2ca687941b79e6a65c6dfef3fcb5c1630d1ccd58fc3320569afbf",
+        "sha256": "3895dae49df2ca687941b79e6a65c6dfef3fcb5c1630d1ccd58fc3320569afbf"
+      },
+      "sha256": "3895dae49df2ca687941b79e6a65c6dfef3fcb5c1630d1ccd58fc3320569afbf"
+    },
+    "server/finance/nile-game-runtime.ts": {
+      "projection": {
+        "commit": "74bdac662648d28c4954bd594a5d3ffc435b508f",
+        "path": "deployment/releases/jackie-chan-20261029-v2/source/server/finance/nile-game-runtime.ts",
+        "baseSha256": "14c98c4c76b962ae398174fe3377e701075c6d378dc176a70b0bb78f8f413c72",
+        "sha256": "14c98c4c76b962ae398174fe3377e701075c6d378dc176a70b0bb78f8f413c72"
+      },
+      "sha256": "14c98c4c76b962ae398174fe3377e701075c6d378dc176a70b0bb78f8f413c72"
+    },
+    "games/jackie-chan/package.json": {
+      "projection": {
+        "commit": "eef4a59ca28b4afcf2a2f3f473540ed0ecce2616",
+        "path": "games/jackie-chan/package.json",
+        "baseSha256": "28d53ae02e4d7481f9c13a4ddf415a970e1f1efbc62a21219bd85c4546307c3c",
+        "sha256": "28d53ae02e4d7481f9c13a4ddf415a970e1f1efbc62a21219bd85c4546307c3c"
+      },
+      "sha256": "28d53ae02e4d7481f9c13a4ddf415a970e1f1efbc62a21219bd85c4546307c3c"
+    },
+    "games/jackie-chan/JackieUI.ts": {
+      "projection": {
+        "commit": "81ae3d30b935fc9c2ae39f67b8686f2d56856abc",
+        "path": "games/jackie-chan/JackieUI.ts",
+        "baseSha256": "d7aed951fe5c892d38424e49cea607e35d746b07528997c1cb3019d8ad871447",
+        "sha256": "d7aed951fe5c892d38424e49cea607e35d746b07528997c1cb3019d8ad871447"
+      },
+      "sha256": "d7aed951fe5c892d38424e49cea607e35d746b07528997c1cb3019d8ad871447"
+    },
+    "games/jackie-chan/JackieAudio.ts": {
+      "projection": {
+        "commit": "97498133139e8364d0862ceb9aabcb56e04a4f06",
+        "path": "games/jackie-chan/JackieAudio.ts",
+        "baseSha256": "0ea20546630410739f67204694920b0baf56629594902df856f958acf9a2c5f9",
+        "sha256": "0ea20546630410739f67204694920b0baf56629594902df856f958acf9a2c5f9"
+      },
+      "sha256": "0ea20546630410739f67204694920b0baf56629594902df856f958acf9a2c5f9"
+    },
+    "games/girlhub/package.json": {
+      "projection": {
+        "commit": "46a624fe6222e56f5438b0f640f0f39842abbab4",
+        "path": "games/girlhub/package.json",
+        "baseSha256": "0dae33b437ba56a9a2c2ff327941be4f9571a6d2ae50aa93c38a67494cd4998d",
+        "sha256": "0dae33b437ba56a9a2c2ff327941be4f9571a6d2ae50aa93c38a67494cd4998d"
+      },
+      "sha256": "0dae33b437ba56a9a2c2ff327941be4f9571a6d2ae50aa93c38a67494cd4998d"
+    },
+    "games/girlhub/entry.ts": {
+      "projection": {
+        "commit": "7fdb80e201c868e54412ea5b266c0f098f628f34",
+        "path": "games/girlhub/entry.ts",
+        "baseSha256": "e2c0986f796a3dcec167019e5f7c674580785e0938dcadb9f35f3eddb724d6d0",
+        "sha256": "e2c0986f796a3dcec167019e5f7c674580785e0938dcadb9f35f3eddb724d6d0"
+      },
+      "sha256": "e2c0986f796a3dcec167019e5f7c674580785e0938dcadb9f35f3eddb724d6d0"
+    }
+  }
+}

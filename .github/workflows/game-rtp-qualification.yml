@@ -14,6 +14,7 @@ on:
       - 'server/finance/combat-escrow.ts'
       - 'scripts/game-math/rtp-*'
       - 'scripts/game-math/forest-heart-*'
+      - 'scripts/game-math/wild-nudge-*'
       - 'server/demoExpansion.ts'
       - 'server/demoWallet*.ts'
       - 'server/gameWalletRoutes.ts'
@@ -42,6 +43,7 @@ on:
       - 'server/finance/combat-escrow.ts'
       - 'scripts/game-math/rtp-*'
       - 'scripts/game-math/forest-heart-*'
+      - 'scripts/game-math/wild-nudge-*'
       - 'server/demoExpansion.ts'
       - 'server/demoWallet*.ts'
       - 'server/gameWalletRoutes.ts'
@@ -65,7 +67,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        game: [studio-forest-heart, studio-flooded-temple, studio-neopolis, studio-dracona, mortal-kombat, studio-cosmic-escape, studio-caribbean-treasures, studio-afterglow]
+        game: [studio-wild-nudge, studio-forest-heart, studio-flooded-temple, studio-neopolis, studio-dracona, mortal-kombat, studio-cosmic-escape, studio-caribbean-treasures, studio-afterglow]
     steps:
       - uses: actions/checkout@v7
         with:

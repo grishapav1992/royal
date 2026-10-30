@@ -1,6 +1,6 @@
 import type { CombatView } from './combatView';
-import { t as translateText } from '../i18n/index';
-export type ActivityId = 'hockey' | 'pool' | 'piano' | 'chess' | 'mortal-kombat' | 'durak' | 'transfer-durak' | 'crazy-eights';
+import { t as translateText, language } from '../i18n/index';
+export type ActivityId = 'hockey' | 'pool' | 'piano' | 'chess' | 'mortal-kombat' | 'durak' | 'transfer-durak' | 'crazy-eights' | 'tsu-e-fa';
 const pianoBounds = {x:750,y:400,w:110,h:60} as const;
 export const ACTIVITIES = {
   'mortal-kombat': { name:'Mortal Kombat', entry:{x:1460,y:510}, bounds:{x:1408,y:372,w:104,h:103} },
@@ -13,6 +13,7 @@ export const ACTIVITIES = {
   durak: {name:'Подкидной дурак',entry:{x:1048,y:405},bounds:{x:1004,y:228,w:232,h:122}},
   'transfer-durak': {name:'Переводной дурак',entry:{x:1508,y:405},bounds:{x:1464,y:228,w:232,h:122}},
   'crazy-eights': {name:'Восьмёрки',entry:{x:1968,y:405},bounds:{x:1924,y:228,w:232,h:122}},
+  'tsu-e-fa': {name:language==='en'?'Rock Paper Scissors':'Цу-е-фа',entry:{x:1048,y:1030},bounds:{x:1004,y:853,w:232,h:122}},
 } as const;
 export const isActivity = (value: unknown): value is ActivityId => typeof value === 'string' && Object.hasOwn(ACTIVITIES,value);
 export type Ball = {id:number;x:number;y:number;vx:number;vy:number;active:boolean};

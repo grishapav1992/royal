@@ -1,6 +1,6 @@
 import { ACTIVITIES, type ActivityId } from '../../src/shared/activities';
 import { activityHall } from '../../src/shared/world';
-import { isPvpCardGame, validPvpRequest, type PvpChallenge, type PvpSnapshot } from '../../src/shared/pvp';
+import { isPvpSnapshotGame, validPvpRequest, type PvpChallenge, type PvpSnapshot } from '../../src/shared/pvp';
 import { playCommand } from '../nilePlayRoutes';
 import {pvpSeat} from '../../src/shared/pvpSeats';
 import type { Activities } from '../activities';
@@ -84,7 +84,7 @@ export class PvpRoom {
       const players=[c.creatorId,c.opponentId].map(id=>people.find(p=>p.accountId===id));
       if(players.some(p=>!p?.connected))continue;
       this.host.activities.startWager(c.gameId,players.map(p=>p!.sessionId));this.running.set(c.gameId,c.id);
-      if(isPvpCardGame(c.gameId))continue;
+      if(isPvpSnapshotGame(c.gameId))continue;
       const state=c.gameId==='chess'?this.host.activities.chess.state:this.host.activities.tables.find(t=>t.state.id===c.gameId)!.state;
       let winner:string|null|undefined;
       if(state.phase==='finished')winner=state.winner?people.find(p=>p.sessionId===state.winner)?.accountId??null:null;

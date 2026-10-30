@@ -6,11 +6,16 @@ import { tmpdir } from 'node:os';
 import { rtpInputs, validateRtpProof, checkGameRtp, sourceDigest, changedLegacyProfiles } from '../scripts/game-math/rtp-gate.mjs';
 const root = process.cwd();
 test('virtual PvP qualification covers the complete stake range and rejects missing cases and altered returns',async()=>{
- for(const id of ['hockey','pool','chess','durak','transfer-durak','crazy-eights']){
+ for(const id of ['hockey','pool','chess','durak','transfer-durak','crazy-eights','tsu-e-fa']){
   const inputs=await rtpInputs(root,id),proof=JSON.parse(await readFile(resolve(root,inputs.policy.proof),'utf8'));
   assert(validateRtpProof(id,inputs,proof));assert.equal(proof.serverReplayChecks,4991*8*3);
   for(const mutate of [p=>p.results.pop(),p=>p.results[0].cases--,p=>p.results[0].feeUnits='0',p=>p.results[2].sha256=p.results[0].sha256,p=>p.serverReplayChecks--]){
    const changed=structuredClone(proof);mutate(changed);assert.throws(()=>validateRtpProof(id,inputs,changed));
+  }
+  if(id==='tsu-e-fa'){
+   for(const mutate of [p=>{delete p.rulesCoverage;},p=>{p.rulesCoverage.cases--;}]){
+    const changed=structuredClone(proof);mutate(changed);assert.throws(()=>validateRtpProof(id,inputs,changed));
+   }
   }
  }
 });

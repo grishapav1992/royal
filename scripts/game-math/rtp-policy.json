@@ -347,7 +347,8 @@
         "server/pvp/cards.ts",
         "server/finance/pvp-money.ts",
         "server/pvp/virtual-wallet.ts",
-        "server/finance/nile-play-error.ts"
+        "server/finance/nile-play-error.ts",
+        "src/shared/pvpSeats.ts"
       ]
     },
     "pool": {
@@ -380,7 +381,8 @@
         "server/pvp/cards.ts",
         "server/finance/pvp-money.ts",
         "server/pvp/virtual-wallet.ts",
-        "server/finance/nile-play-error.ts"
+        "server/finance/nile-play-error.ts",
+        "src/shared/pvpSeats.ts"
       ]
     },
     "chess": {
@@ -413,7 +415,8 @@
         "server/pvp/cards.ts",
         "server/finance/pvp-money.ts",
         "server/pvp/virtual-wallet.ts",
-        "server/finance/nile-play-error.ts"
+        "server/finance/nile-play-error.ts",
+        "src/shared/pvpSeats.ts"
       ]
     },
     "durak": {
@@ -446,7 +449,8 @@
         "server/pvp/cards.ts",
         "server/finance/pvp-money.ts",
         "server/pvp/virtual-wallet.ts",
-        "server/finance/nile-play-error.ts"
+        "server/finance/nile-play-error.ts",
+        "src/shared/pvpSeats.ts"
       ]
     },
     "transfer-durak": {
@@ -479,7 +483,8 @@
         "server/pvp/cards.ts",
         "server/finance/pvp-money.ts",
         "server/pvp/virtual-wallet.ts",
-        "server/finance/nile-play-error.ts"
+        "server/finance/nile-play-error.ts",
+        "src/shared/pvpSeats.ts"
       ]
     },
     "crazy-eights": {
@@ -512,7 +517,8 @@
         "server/pvp/cards.ts",
         "server/finance/pvp-money.ts",
         "server/pvp/virtual-wallet.ts",
-        "server/finance/nile-play-error.ts"
+        "server/finance/nile-play-error.ts",
+        "src/shared/pvpSeats.ts"
       ]
     },
     "studio-cosmic-escape": {
@@ -878,6 +884,92 @@
         "deployment/releases/jackie-chan-20261029-v2/finance-source/src/i18n/en.ts"
       ],
       "serverReplayRunsPerWinner": 16
+    },
+    "tsu-e-fa": {
+      "method": "exhaustive-virtual-pvp-pot",
+      "rulesVersion": 1,
+      "progressVersion": 1,
+      "target": 0.95,
+      "refundReturn": 1,
+      "commissionBasisPoints": 500,
+      "stakeRange": {
+        "min": 1000000,
+        "max": 500000000,
+        "step": 100000
+      },
+      "choices": [
+        "left-win",
+        "right-win",
+        "draw",
+        "cancel",
+        "disconnect-left",
+        "disconnect-right",
+        "expired",
+        "server"
+      ],
+      "proof": "docs/game-math/qualifications/tsu-e-fa-v1.json",
+      "qualificationSource": "scripts/game-math/rtp-tsu-e-fa.mjs",
+      "sources": [
+        "src/shared/pvp.ts",
+        "server/pvp/store.ts",
+        "server/pvp/cards.ts",
+        "server/finance/pvp-money.ts",
+        "server/pvp/virtual-wallet.ts",
+        "server/finance/nile-play-error.ts",
+        "src/shared/tsuEFa.ts",
+        "server/pvp/tsu-e-fa.ts",
+        "server/pvp/room.ts",
+        "scripts/game-math/rtp-virtual-pvp.mjs",
+        "src/shared/pvpSeats.ts"
+      ]
+    },
+    "studio-wild-nudge": {
+      "method": "exact-wild-nudge-runtime",
+      "releaseStatus": "qualified",
+      "rulesVersion": 1,
+      "progressVersion": 1,
+      "target": 0.96,
+      "tolerance": 0.002,
+      "stakes": [
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "choices": [
+        "normal"
+      ],
+      "seeds": [
+        2026103031,
+        2026103047
+      ],
+      "modelReplayRoundsPerSeed": 64,
+      "proof": "docs/game-math/qualifications/wild-nudge-v1.json",
+      "qualificationSource": "scripts/game-math/rtp-wild-nudge.mjs",
+      "sources": [
+        "src/shared/wildNudgeData.json",
+        "src/shared/wildNudgeMath.ts",
+        "scripts/game-math/wild-nudge-reference.mjs",
+        "scripts/game-math/rational.mjs",
+        "src/shared/wildNudge.ts",
+        "server/games/wildNudge.ts",
+        "scripts/game-math/wild-nudge-model.mjs",
+        "scripts/game-math/wild-nudge-wallet.ts",
+        "src/shared/casinoExpansion.ts",
+        "server/demoExpansion.ts",
+        "server/demoWalletRoutes.ts",
+        "server/gameWalletRoutes.ts",
+        "server/finance/nile-game-runtime.ts",
+        "server/demoWallet.ts",
+        "server/demoWalletAmounts.ts",
+        "server/database.ts",
+        "src/wallet/ExpansionClient.ts",
+        "src/shared/arcadeCatalog.ts"
+      ],
+      "note": "Exact full-round expectation plus exhaustive cyclic-stop server census, independent seeded full-round replay, reachable maximum on every stake and real PostgreSQL common-wallet concurrency/recovery/rollback qualification. Client layout and media are verified separately.",
+      "serverReplayRoundsPerSeed": 256
     },
     "royal-coins": {
       "method": "exact-paid-and-reward-slots-v1",

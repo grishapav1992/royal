@@ -1,0 +1,82 @@
+{
+  "gameId": "studio-wild-nudge",
+  "prompts": [
+    {
+      "asset": "background",
+      "prompt": "Create a production GAME BACKGROUND bitmap for a premium space-opera slot game, visual direction inspired by Star Wars: vast atmospheric orbital station hangar opening onto deep stars, a huge distant planet and distant angular spacecraft silhouettes. Cinematic polished 3D illustration, highly detailed graphite metal, brushed titanium beams and walkways, dim cyan holographic panels, restrained crimson accent lights, warm small practical lights. Wide landscape 16:9 composition. Important UI composition: left two thirds and center are relatively dark low-detail empty space where a separate slot board will be overlaid, interesting hangar architecture and a parked starfighter on the far right third and upper distant background. Rich depth and believable materials, sharp and premium, not a flat mobile cartoon. No people, no text, no logos, no letters or numerals, no slot grid, no buttons, no UI border. Background only. Do not bake game symbols or a game machine into the image.",
+      "transparentBackground": false,
+      "mode": "built-in image_gen",
+      "intent": "generate"
+    },
+    {
+      "asset": "symbols",
+      "prompt": "Create one high-quality sprite sheet of eight ORIGINAL fictional science-fiction equipment icons for a space-station slot game. Exactly four equal columns and two equal rows, each icon completely within its own cell and centered with transparent padding. Genuinely transparent background. Polished cinematic 3D game-item illustrations, graphite titanium, vivid colored glass and gentle local energy glow, consistent perspective and studio lighting. Top row left to right: a violet faceted crystal in a metallic mount; an original small spherical blue-white maintenance robot; an orange-visored futuristic pilot helmet; an original compact silver starfighter with red accents. Bottom row left to right: a green luminous power capsule; a gold geometric fleet medal with red center; a tall narrow cylindrical blue reactor tower with three joined illuminated chambers; an amber circular space portal with mechanical rim. The reactor tower must be fully visible and vertical, with a narrow silhouette. No branded or recognizable characters, no letters, no words, no numbers, no logos, no UI, no frames, no labels, no background scenery, no extra objects between cells. Strong clean readable silhouettes, detailed tactile materials, suitable for crisp game symbols.",
+      "transparentBackground": true,
+      "mode": "built-in image_gen",
+      "intent": "generate"
+    }
+  ],
+  "exports": "Background compressed to WebP; cover cropped to 640x360; transparent 4x2 atlas sliced at rounded fractional cell boundaries, each tile materialized before alpha trim, fit inside 512x512 and WebP quality 94 / alpha 100. Original generated images stay in the Codex image library.",
+  "audio": {
+    "source": "scripts/render-galactic-score.mjs",
+    "kind": "Original deterministic 32-second stereo PCM ambient score, no third-party recording. Runtime effects use the common host AudioContext.",
+    "reviewLimit": "Browser playback and signal checks do not establish physical-device listening quality."
+  },
+  "assets": [
+    {
+      "path": "public/assets/wild-nudge/background.webp",
+      "bytes": 221826,
+      "sha256": "08da069a40ecd93db5ea3698f561b31fc6478f92f139f8117a5fa9aff89171fb"
+    },
+    {
+      "path": "public/assets/wild-nudge/cover.webp",
+      "bytes": 40998,
+      "sha256": "2aaa60c7a1aaf299d4dc07482d466a24f3dc5ef3d72082d7e7039f0ccee288cc"
+    },
+    {
+      "path": "public/assets/wild-nudge/score.wav",
+      "bytes": 5644844,
+      "sha256": "282b5a2b358905645e3741d7d6ec198f07e391262f57430ac8ebc4d27cd875d2"
+    },
+    {
+      "path": "public/assets/wild-nudge/symbol-0.webp",
+      "bytes": 73326,
+      "sha256": "c4eadd72c39d56fb32be17c447e6b38e50db00351da9789f02ddbb6ff90674a7"
+    },
+    {
+      "path": "public/assets/wild-nudge/symbol-1.webp",
+      "bytes": 85588,
+      "sha256": "93a97508d3ccf8b8f4b118e0418ee6fd35e2d8555100d85370df2e5c9b1c3074"
+    },
+    {
+      "path": "public/assets/wild-nudge/symbol-2.webp",
+      "bytes": 82424,
+      "sha256": "e03cf8297b6e810ce009874a9bfe3837166769c58963594a916950fc900de44b"
+    },
+    {
+      "path": "public/assets/wild-nudge/symbol-3.webp",
+      "bytes": 90456,
+      "sha256": "3841febd0915ab59c65d2d228d59f382e9433050e3528dc02fed05e95ee6ebed"
+    },
+    {
+      "path": "public/assets/wild-nudge/symbol-4.webp",
+      "bytes": 63450,
+      "sha256": "4f301a9e3d1b496953b6f962e38f3a00eacb2bf57ca43ab8dfa185f2d81a7004"
+    },
+    {
+      "path": "public/assets/wild-nudge/symbol-5.webp",
+      "bytes": 72266,
+      "sha256": "603bd0613ab533c7fb58dd6f4632266b5c526835763da6d2c55990400fb0dc2d"
+    },
+    {
+      "path": "public/assets/wild-nudge/symbol-6.webp",
+      "bytes": 54882,
+      "sha256": "860bbe00d3d70251d21c180cc5d2a2ded1a7fbdf5267929575e80be37591ace4"
+    },
+    {
+      "path": "public/assets/wild-nudge/symbol-7.webp",
+      "bytes": 105168,
+      "sha256": "7849af2e0f7a7a3394ee1fc3599edf2efc38dfe35befd81df73d205f87988999"
+    }
+  ]
+}

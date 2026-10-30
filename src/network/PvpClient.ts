@@ -19,7 +19,7 @@ export class PvpClient extends EventTarget {
   receive(value:PvpSnapshot){
     if(!this.accountId||!value||!Array.isArray(value.challenges)||!Array.isArray(value.people)||!validVirtualPvpWallet(value.wallet))return;
     const previous=this.snapshot;
-    if(previous?.active&&value.active?.id===previous.active.id&&value.active.revision<previous.active.revision)value={...value,active:previous.active,cards:previous.cards};
+    if(previous?.active&&value.active?.id===previous.active.id&&value.active.revision<previous.active.revision)value={...value,active:previous.active,cards:previous.cards,tsuEFa:previous.tsuEFa};
     this.receivedAt=performance.now();this.snapshot=value;
     if(value.requestId===this.pending?.id){sessionStorage.removeItem(this.key());this.pending=undefined;this.error='';}
     this.notify();
