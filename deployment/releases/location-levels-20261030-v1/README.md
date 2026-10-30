@@ -19,6 +19,10 @@ After the source is committed and pushed to main, use the standard `release:prep
 
 The backend artifact must equal `release-manifest.files["dist-server/index.js"]`. The projection report must be identical in the top-level manifest and its build report. Every backend input must match either an explicitly replaced source or the retained production raw/normalized source fact. The installer rejects an unknown input, a changed immutable client asset URL or any extra backend bundle.
 
+Run `node deployment/releases/location-levels-20261030-v1/prepare.mjs` after official verification. Set `ROYAL_GIT_BINARY` to the bundled Git executable if the system Git is unavailable. The preparer uses the existing `module-build/release-manifest.json`, `module-build/release-github.json` and `artifacts/work/location-levels-mvp/baseline.json`. It performs no build, network request or production operation. It requires a clean committed checkout, a receipt matching the local `origin/main`, and the exact production and feature source commits pinned in the reviewed configurations.
+
+The preparer writes only `artifacts/work/location-levels-mvp/publication`, refuses an existing directory, and keeps a 10 GiB local free-space reserve. Only the fourteen projected source files, changed client index/new hashed bundles, backend index and bound metadata/helpers enter this directory. It creates no source checkout, dependency copy or transport archive. The unchanged catalog read by the verified client must contain exactly the installed host compatibility versions. Dependency resolution fields must match the retained production package configuration, and the local lock hash must match the installed lock. Newly built unrelated modules and auxiliary programs from the official application build remain outside this publication.
+
 ## Guards and additive migration readiness
 
 All operations hold the existing application, client-presentation and module publication locks. Baseline source/runtime/configuration/service checks repeat under those locks before build, after build and before publication. Candidate and final running inventories include dependencies, all bundled modules and every auxiliary backend program. External module symlinks and host contract symlinks are rejected.
@@ -40,5 +44,7 @@ Commands `check`, `build`, `publish`, `release`, and `rollback` are accepted onl
 ## Local verification
 
 Run `test_deploy.py` with Python and `node --test test_quiesce.cjs`. They use temporary fixtures and fake clients only. The existing 28 tests of the reused overlay engine also verify its lease loss and uncertain-Docker recovery behavior. No production checks are performed by these tests.
+
+Run `node --test deployment/releases/location-levels-20261030-v1/test_prepare.mjs` from the repository to verify the scoped package and its rejection of changed provenance, foreign sources, output collisions, compatibility changes, unsafe paths and an existing publication directory.
 
 Run `node --import tsx scripts/database-test.ts --test deployment/releases/location-levels-20261030-v1/test_quiesce_pg.cjs` from the repository to verify the real PostgreSQL privilege query, retained table locks, blocked account writer and explicit release in a disposable database.
