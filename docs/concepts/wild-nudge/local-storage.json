@@ -1,0 +1,70 @@
+{
+  "condition": "Keep the current feature checkout while continuing stage two; source and compact evidence are preserved in GitHub",
+  "removedLogicalBytes": 14250.0,
+  "freeAfterCleanupBytes": 200583831552,
+  "removedFolders": [],
+  "preservationCommit": "d82b4ae712f13482e8d7a596c1d6b1356fc7ae2e",
+  "removedFiles": [
+    {
+      "path": "artifacts/work/wild-nudge-math-20261030/calibrate.mjs",
+      "bytes": 759
+    },
+    {
+      "path": "artifacts/work/wild-nudge-math-20261030/model.log",
+      "bytes": 1587
+    },
+    {
+      "path": "artifacts/work/wild-nudge-math-20261030/tests.log",
+      "bytes": 1442
+    },
+    {
+      "path": "artifacts/work/wild-nudge-math-20261030/characterization.log",
+      "bytes": 1941
+    },
+    {
+      "path": "artifacts/work/wild-nudge-math-20261030/rtp-check.log",
+      "bytes": 118
+    },
+    {
+      "path": "artifacts/work/wild-nudge-math-20261030/typecheck.log",
+      "bytes": 0
+    },
+    {
+      "path": "artifacts/work/wild-nudge-math-20261030/common-wallet.log",
+      "bytes": 1846
+    },
+    {
+      "path": "artifacts/work/wild-nudge-math-20261030/model-verify.log",
+      "bytes": 1588
+    },
+    {
+      "path": "artifacts/work/wild-nudge-math-20261030/characterization-verify.log",
+      "bytes": 1941
+    },
+    {
+      "path": "artifacts/work/wild-nudge-math-20261030/tests-final.log",
+      "bytes": 1440
+    },
+    {
+      "path": "artifacts/work/wild-nudge-math-20261030/model-verify-after-sync.log",
+      "bytes": 1588
+    }
+  ],
+  "owner": "wild-nudge-math-20261030",
+  "exceptions": [
+    "Existing user preview databases and other chats were not touched",
+    "Prior rejected cleanup paths were not retried"
+  ],
+  "date": "2026-10-30",
+  "remoteRef": "refs/heads/codex/wild-nudge-math",
+  "removedArchives": [],
+  "freeAtStartBytes": 199070990336,
+  "physicalReclamationAttributed": false,
+  "remoteCommitVerified": true,
+  "freeBeforeCleanupBytes": 200583794688,
+  "kept": [
+    "current source checkout for next development stage",
+    "normal installed dependencies",
+    "owner record and compact final reports"
+  ]
+}

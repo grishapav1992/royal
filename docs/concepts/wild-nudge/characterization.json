@@ -1,0 +1,182 @@
+{
+  "replay": {
+    "scope": "pure-model-reference-replay",
+    "server": false,
+    "wallet": false,
+    "coverage": [
+      {
+        "seed": 2026103031,
+        "stakeUnits": "100",
+        "paidRounds": 64,
+        "spins": 72,
+        "bonusRounds": 1,
+        "sha256": "6dced7bfd530f4bf8f970bacbf5a708d52b01f4822576bcc66101a0596d3c59b"
+      },
+      {
+        "seed": 2026103031,
+        "stakeUnits": "200",
+        "paidRounds": 64,
+        "spins": 72,
+        "bonusRounds": 1,
+        "sha256": "87c973d89e04ba497f832f12e7331e23cc4f69c8d0b2729da68a1067e7518952"
+      },
+      {
+        "seed": 2026103031,
+        "stakeUnits": "500",
+        "paidRounds": 64,
+        "spins": 72,
+        "bonusRounds": 1,
+        "sha256": "673503d045fdd37dde605875dd84c8c0c3e95cb72ff815aed8dcb93b7c703db1"
+      },
+      {
+        "seed": 2026103031,
+        "stakeUnits": "1000",
+        "paidRounds": 64,
+        "spins": 72,
+        "bonusRounds": 1,
+        "sha256": "b3e48499dc51746024e4628eb85789c658367bf49433d801c4ee9c14833fe60c"
+      },
+      {
+        "seed": 2026103031,
+        "stakeUnits": "2000",
+        "paidRounds": 64,
+        "spins": 72,
+        "bonusRounds": 1,
+        "sha256": "29f2c4b6867dd0e1737b57fe7d7ba478531be888d2d5c604876aae05b0ef5551"
+      },
+      {
+        "seed": 2026103031,
+        "stakeUnits": "5000",
+        "paidRounds": 64,
+        "spins": 72,
+        "bonusRounds": 1,
+        "sha256": "2bd16a0c63a3e05abf34a9d96b565bda5ab9069e9065b753f2942b95ff68781a"
+      },
+      {
+        "seed": 2026103047,
+        "stakeUnits": "100",
+        "paidRounds": 64,
+        "spins": 72,
+        "bonusRounds": 1,
+        "sha256": "5ae2bd7d5d726a05ad012024216f23818a156f7cf0de7369431d99292c9f1eb7"
+      },
+      {
+        "seed": 2026103047,
+        "stakeUnits": "200",
+        "paidRounds": 64,
+        "spins": 72,
+        "bonusRounds": 1,
+        "sha256": "a90244bbeb675b5e9a5717aaeb82f002645cf2d7a3105842bbed6910b602d3df"
+      },
+      {
+        "seed": 2026103047,
+        "stakeUnits": "500",
+        "paidRounds": 64,
+        "spins": 72,
+        "bonusRounds": 1,
+        "sha256": "165d174051ad94c3809a712dc77451a333680e3ddcb504de08d276e37f0cccba"
+      },
+      {
+        "seed": 2026103047,
+        "stakeUnits": "1000",
+        "paidRounds": 64,
+        "spins": 72,
+        "bonusRounds": 1,
+        "sha256": "97d2a7b83fb925e2bcfd5eb9ce76e46d919664dc704b56f68d0ec0261873c9a5"
+      },
+      {
+        "seed": 2026103047,
+        "stakeUnits": "2000",
+        "paidRounds": 64,
+        "spins": 72,
+        "bonusRounds": 1,
+        "sha256": "88fddfc01fec9d0d66c867245ff89b58339f98a9f57ffe6297264d8efdee7c93"
+      },
+      {
+        "seed": 2026103047,
+        "stakeUnits": "5000",
+        "paidRounds": 64,
+        "spins": 72,
+        "bonusRounds": 1,
+        "sha256": "2e03fa82ee55c44b7e9787cb07cfabe942e8801bdc7de801b2ee35161fde9e90"
+      }
+    ],
+    "checks": 768,
+    "bonusRounds": 12,
+    "coupling": "The same stream is reused across stakes to check integer scaling; coverage rows are not independent statistical samples."
+  },
+  "characterization": {
+    "scope": "sampled-pure-model-characterization",
+    "releaseQualified": false,
+    "seeds": [
+      2026103031,
+      2026103047
+    ],
+    "roundsPerSeed": 125000,
+    "paidRounds": 250000,
+    "streams": [
+      {
+        "seed": 2026103031,
+        "rounds": 125000,
+        "payoutPoints": 11882214,
+        "bonusRounds": 916,
+        "sha256": "c2a9423a75f16c4909fe2284de5ba780b438ac0d22d502c9cf482d84f679328b"
+      },
+      {
+        "seed": 2026103047,
+        "rounds": 125000,
+        "payoutPoints": 12055635,
+        "bonusRounds": 922,
+        "sha256": "bb9e33540404c365a9d4d58802d69fb81db195e8d13e0e294af841ce08cbd36b"
+      }
+    ],
+    "observedRtp": 0.95751396,
+    "approximateNormalInterval95": [
+      0.9417877546584699,
+      0.9732401653415301
+    ],
+    "sampleStandardDeviationInStakes": 4.011860795804522,
+    "anyPayout": {
+      "count": 141278,
+      "rate": 0.565112,
+      "wilson95": [
+        0.5631677400823613,
+        0.5670542589478514
+      ]
+    },
+    "netPositive": {
+      "count": 43166,
+      "rate": 0.172664,
+      "wilson95": [
+        0.1711874701621492,
+        0.17415058926539556
+      ]
+    },
+    "zeroPayout": {
+      "count": 108722,
+      "rate": 0.434888,
+      "wilson95": [
+        0.43294574105214856,
+        0.43683225991763863
+      ]
+    },
+    "bonusEntry": {
+      "count": 1838,
+      "rate": 0.007352,
+      "wilson95": [
+        0.00702461513683662,
+        0.0076945245265705835
+      ]
+    },
+    "payoutQuantilesInStakes": {
+      "p50": 0.08,
+      "p90": 2.04,
+      "p95": 4.08,
+      "p99": 14.9,
+      "p999": 51.72
+    },
+    "observedMaximumInStakes": 306,
+    "interpretation": "Observed characterization of full paid rounds, not exact hit/profit probabilities or certification. The normal RTP interval may underrepresent rare tails. Exact RTP and maximum come from the finite model, independently of this sample. Any payout includes returns below stake; only payout above cost is net positive."
+  },
+  "sourceSha256": "d5fbcdc7f793bf46b18be88793ad55886b2edb67f9f67edd0e5ccfc5944e197f"
+}

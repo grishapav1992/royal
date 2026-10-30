@@ -1,0 +1,451 @@
+{
+  "release": "flooded-temple-20261030-v1",
+  "published": true,
+  "sourceCommit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+  "productionBase": "aed09286a21e315cb506b1befc754f5a7b4eecd2",
+  "finishedAt": "2026-10-30T20:46:27.228143+00:00",
+  "sourceSavedInMainBeforePublication": true,
+  "version": "0.9.6-0991b4ae7a91",
+  "gameId": "studio-flooded-temple",
+  "manifestSha256": "ae0a94ff7dacf63ad6ee8c6fdd0231ef15c9e28f7eabfc5d3b96aaa44ab601b2",
+  "activeSha256": "d4c2ffc56dbdfe31d680cf0534814c9971c130c652c8a1c747ce5224657fd2f7",
+  "images": {
+    "game": "sha256:2d84a12f6be4a6d53a08e903997ab400d6f57b2af7f3473ef5efee45304785f9",
+    "finance": "sha256:f5fedb95bb0d295e839110ce263d48e2b6a4cc58295130268f731bcae6805ea2"
+  },
+  "releaseManifestSha256": "2c90757c2cd44896a4dc6949cd6b34ab8581454a587d354dc4899d7cd6c3ad59",
+  "githubReceiptSha256": "d70c4a20cecf0cccf383a1f9b0fdae3313b009934830884b319f783fc674991e",
+  "build": {
+    "format": 1,
+    "startedAt": "2026-10-30T20:29:37.534Z",
+    "scope": "application",
+    "steps": [
+      {
+        "name": "rtp",
+        "passed": true,
+        "durationMs": 7005
+      },
+      {
+        "name": "typecheck",
+        "passed": true,
+        "durationMs": 31105
+      },
+      {
+        "name": "modules",
+        "passed": true,
+        "durationMs": 9031
+      },
+      {
+        "name": "host",
+        "passed": true,
+        "durationMs": 7004
+      },
+      {
+        "name": "backend",
+        "passed": true,
+        "durationMs": 83
+      },
+      {
+        "name": "reconciliation",
+        "passed": true,
+        "durationMs": 50
+      },
+      {
+        "name": "payments",
+        "passed": true,
+        "durationMs": 30
+      }
+    ],
+    "passed": true,
+    "durationMs": 54309
+  },
+  "health": {
+    "healthy": {
+      "royal-game-1": {
+        "id": "a9133674a8f3e1d21e41de9576c108c1e91f24b554e5bf0d25df42f86970e461",
+        "image": "sha256:2d84a12f6be4a6d53a08e903997ab400d6f57b2af7f3473ef5efee45304785f9",
+        "health": "healthy"
+      },
+      "royal-nile-play": {
+        "id": "747104325f9955b0b3e36aa9c65faedaa2edd4f617e0af376720ef92cf71ecaa",
+        "image": "sha256:f5fedb95bb0d295e839110ce263d48e2b6a4cc58295130268f731bcae6805ea2",
+        "health": "healthy"
+      }
+    },
+    "persistentServices": 14,
+    "onlyRecreated": [
+      "royal-game-1",
+      "royal-nile-play"
+    ],
+    "contracts": 122,
+    "retainedContracts": 121,
+    "runtimeVerifiedFiles": 8572,
+    "preparedMatchesRunning": true,
+    "sourceFiles": 2466,
+    "financialReadinessSamples": 3,
+    "configurationPreserved": true
+  },
+  "checks": {
+    "temple": 60,
+    "financialCompatibility": 21,
+    "linuxInstallerGuards": 13,
+    "moduleResources": 7,
+    "compiledAPIAndConnectedHost": 3,
+    "portraitAndMotionScenariosPreviouslyVerifiedOnIdenticalModule": 12,
+    "qualifiedProfiles": 17,
+    "frozenUnqualifiedLegacy": 114,
+    "backendBaselineReproduced": true,
+    "financialBaselineReproduced": true,
+    "buildInputs": {
+      "runtimeDependencyManifestIdentical": true,
+      "dependencyLockMatchesProduction": true,
+      "onlyCompilerDifference": "resolveJsonModule type-checking flag",
+      "productionConfigurationInstalled": false
+    },
+    "desktop": {
+      "geometry": {
+        "width": 1103,
+        "scroll": 1103,
+        "girl": {
+          "x": 33.078125,
+          "y": 80,
+          "width": 338.265625,
+          "height": 585,
+          "top": 80,
+          "right": 371.34375,
+          "bottom": 665,
+          "left": 33.078125
+        },
+        "board": {
+          "x": 393.390625,
+          "y": 166.34375,
+          "width": 676.53125,
+          "height": 422.71875,
+          "top": 166.34375,
+          "right": 1069.921875,
+          "bottom": 589.0625,
+          "left": 393.390625
+        },
+        "netFont": 13
+      },
+      "chatConnected": true,
+      "chatMessagesSent": 0,
+      "paidStarts": 2,
+      "requestStartAttempts": 3,
+      "recoveredSameUUID": true,
+      "exactBalance": true,
+      "quietReopen": true,
+      "module": "http://127.0.0.1:2679/game-modules/studio-flooded-temple/versions/0.9.6-0991b4ae7a91/manifest.json",
+      "errors": []
+    },
+    "phone": {
+      "geometry": {
+        "width": 384,
+        "scroll": 384,
+        "girl": {
+          "x": 12.515625,
+          "y": -249,
+          "width": 57,
+          "height": 52,
+          "top": -249,
+          "right": 69.515625,
+          "bottom": -197,
+          "left": 12.515625
+        },
+        "board": {
+          "x": 11.515625,
+          "y": -129,
+          "width": 360.96875,
+          "height": 226.96875,
+          "top": -129,
+          "right": 372.484375,
+          "bottom": 97.96875,
+          "left": 11.515625
+        },
+        "netFont": 12
+      },
+      "chatConnected": true,
+      "chatMessagesSent": 0,
+      "paidStarts": 2,
+      "requestStartAttempts": 3,
+      "recoveredSameUUID": true,
+      "exactBalance": true,
+      "quietReopen": true,
+      "module": "http://127.0.0.1:2679/game-modules/studio-flooded-temple/versions/0.9.6-0991b4ae7a91/manifest.json",
+      "errors": []
+    },
+    "public": {
+      "sourceCommit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "at": "2026-10-30T20:50:55.036Z",
+      "passed": true,
+      "httpFiles": 166,
+      "productionAccountsCreated": 0,
+      "productionStakes": 0,
+      "productionMessages": 0,
+      "viewports": [
+        {
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "geometry": {
+            "width": 1214,
+            "scroll": 1214,
+            "character": {
+              "x": 36.40625,
+              "y": 80,
+              "width": 372.296875,
+              "height": 577.390625,
+              "top": 80,
+              "right": 408.703125,
+              "bottom": 657.390625,
+              "left": 36.40625
+            },
+            "board": {
+              "x": 462.78125,
+              "y": 160,
+              "width": 685,
+              "height": 427.796875,
+              "top": 160,
+              "right": 1147.78125,
+              "bottom": 587.796875,
+              "left": 462.78125
+            },
+            "portrait": {
+              "x": 42.40625,
+              "y": 86,
+              "width": 360.296875,
+              "height": 565.390625,
+              "top": 86,
+              "right": 402.703125,
+              "bottom": 651.390625,
+              "left": 42.40625
+            },
+            "primary": {
+              "x": 808.171875,
+              "y": 682.5,
+              "width": 349.421875,
+              "height": 60,
+              "top": 682.5,
+              "right": 1157.59375,
+              "bottom": 742.5,
+              "left": 808.171875
+            }
+          }
+        },
+        {
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "geometry": {
+            "width": 1214,
+            "scroll": 1214,
+            "character": {
+              "x": 36.40625,
+              "y": 63,
+              "width": 372.296875,
+              "height": 346.390625,
+              "top": 63,
+              "right": 408.703125,
+              "bottom": 409.390625,
+              "left": 36.40625
+            },
+            "board": {
+              "x": 652.78125,
+              "y": 140,
+              "width": 305,
+              "height": 199.796875,
+              "top": 140,
+              "right": 957.78125,
+              "bottom": 339.796875,
+              "left": 652.78125
+            },
+            "portrait": {
+              "x": 42.40625,
+              "y": 69,
+              "width": 360.296875,
+              "height": 334.390625,
+              "top": 69,
+              "right": 402.703125,
+              "bottom": 403.390625,
+              "left": 42.40625
+            },
+            "primary": {
+              "x": 808.171875,
+              "y": 427.5,
+              "width": 349.421875,
+              "height": 60,
+              "top": 427.5,
+              "right": 1157.59375,
+              "bottom": 487.5,
+              "left": 808.171875
+            }
+          }
+        },
+        {
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "geometry": {
+            "width": 368,
+            "scroll": 368,
+            "character": {
+              "x": 12.03125,
+              "y": 62,
+              "width": 57,
+              "height": 52,
+              "top": 62,
+              "right": 69.03125,
+              "bottom": 114,
+              "left": 12.03125
+            },
+            "board": {
+              "x": 11.03125,
+              "y": 182,
+              "width": 345.9375,
+              "height": 217.953125,
+              "top": 182,
+              "right": 356.96875,
+              "bottom": 399.953125,
+              "left": 11.03125
+            },
+            "portrait": {
+              "x": -23.96875,
+              "y": 63,
+              "width": 130,
+              "height": 195,
+              "top": 63,
+              "right": 106.03125,
+              "bottom": 258,
+              "left": -23.96875
+            },
+            "primary": {
+              "x": 25.03125,
+              "y": 602.140625,
+              "width": 317.921875,
+              "height": 56,
+              "top": 602.140625,
+              "right": 342.953125,
+              "bottom": 658.140625,
+              "left": 25.03125
+            }
+          }
+        },
+        {
+          "viewport": {
+            "width": 667,
+            "height": 375
+          },
+          "geometry": {
+            "width": 645,
+            "scroll": 645,
+            "character": {
+              "x": 19.34375,
+              "y": 0,
+              "width": 197.796875,
+              "height": 392.765625,
+              "top": 0,
+              "right": 217.140625,
+              "bottom": 392.765625,
+              "left": 19.34375
+            },
+            "board": {
+              "x": 230.03125,
+              "y": 73,
+              "width": 395.625,
+              "height": 250.171875,
+              "top": 73,
+              "right": 625.65625,
+              "bottom": 323.171875,
+              "left": 230.03125
+            },
+            "portrait": {
+              "x": 25.34375,
+              "y": 6,
+              "width": 185.796875,
+              "height": 380.765625,
+              "top": 6,
+              "right": 211.140625,
+              "bottom": 386.765625,
+              "left": 25.34375
+            },
+            "primary": {
+              "x": 39.34375,
+              "y": 498.765625,
+              "width": 566.296875,
+              "height": 60,
+              "top": 498.765625,
+              "right": 605.640625,
+              "bottom": 558.765625,
+              "left": 39.34375
+            }
+          }
+        }
+      ],
+      "errors": [],
+      "protectedEndpoints": {
+        "/api/demo-wallet": 401,
+        "/api/demo-wallet/expansion": 401,
+        "/api/game-wallet": 410,
+        "/api/nile-play/wallet": 410
+      },
+      "moduleVersion": "0.9.6-0991b4ae7a91",
+      "pointerNoStore": true,
+      "publicMode": "Offline guest, all API writes and WebSockets blocked; connected chat and wallet recovery checked locally."
+    }
+  },
+  "scope": {
+    "sourceFiles": 114,
+    "financialSourceFiles": 12,
+    "retainedContracts": 121,
+    "newContract": {
+      "apiVersion": 1,
+      "rulesVersion": 2,
+      "progressVersion": 2
+    },
+    "publishedWardrobeProgress": 3,
+    "templeMathematicsChangedSinceQualification": false,
+    "unchangedMediaFiles": 39,
+    "playerDatabaseRestored": false,
+    "productionAccountsCreated": 0,
+    "productionWagers": 0,
+    "productionChatMessages": 0
+  },
+  "backups": {
+    "directory": "/opt/royal-backups/flooded-temple-20261030-v1",
+    "files": {
+      "source.tgz": {
+        "bytes": 44997,
+        "sha256": "b6df37063455d9c4f7b789517683eb2155d537887701664f2b02ad165bcb9501"
+      },
+      "financial-source.tgz": {
+        "bytes": 24821,
+        "sha256": "7f2d818a7b7ce6c308e01d0f44a5cf82d7ae5b0f0c673b3fbfd6e777c7a02ca9"
+      },
+      "player-journals.dump": {
+        "bytes": 33541166,
+        "sha256": "b9bf39b0b70017409a8e414d047a82b76dcdfb488e824d50e4db5120f0458723",
+        "archiveEntries": 450
+      }
+    },
+    "financialDumpRemainsOnServer": true,
+    "previousGameTags": [
+      "royal-game:before-flooded-temple-20261030-v1",
+      "royal-game:before-flooded-temple-20261030-v1-prepared"
+    ],
+    "previousFinancialTag": "royal-nile-play:before-flooded-temple-20261030-v1"
+  },
+  "storage": {
+    "serverFreeBeforePreparation": 5945024512,
+    "serverFreeAfterPublication": 5686816768,
+    "minimumServerBytes": 5368709120,
+    "cleanupPending": true
+  },
+  "limits": [
+    "Chrome viewport emulation does not certify a physical phone.",
+    "Physical speaker, headphone and Bluetooth listening was not performed during publication.",
+    "Public browser verification was a read-only offline guest; connected chat and wallet recovery used isolated local databases."
+  ]
+}

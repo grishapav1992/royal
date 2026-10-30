@@ -1,0 +1,77 @@
+{
+  "date": "2026-10-30",
+  "stage": 1,
+  "scope": "mechanics-and-mathematical-candidate",
+  "releaseQualified": false,
+  "branch": "codex/wild-nudge-math",
+  "baseCommit": "99b5114d8711dbe649eff6ad618d8fd7fc19800d",
+  "checks": {
+    "candidateTestsPassed": 11,
+    "effectiveLineStatesCompared": 200000,
+    "cyclicReelStatesCompared": 640,
+    "exactLineStateComparisons": 4000000,
+    "completeModelReplayRounds": 768,
+    "independentCharacterizationRounds": 250000,
+    "maximumTriggerFields": 2160,
+    "supportedStakes": 6,
+    "existingCommonWalletRegressionTestsPassed": 14,
+    "typecheckPassed": true,
+    "rtpGate": {
+      "qualifiedExistingProfiles": 18,
+      "frozenUnqualifiedLegacy": 114,
+      "candidateExcludedFromRunnableCatalog": true
+    },
+    "archivedExactEvidenceVerified": true,
+    "archivedCharacterizationVerified": true,
+    "ciChecksAdded": true
+  },
+  "mathematics": {
+    "rtp": {
+      "fraction": "10824085584723361/11258999068426240",
+      "value": 0.96137192293385
+    },
+    "components": {
+      "baseRtp": {
+        "fraction": "59214757/67108864",
+        "value": 0.8823686391115189
+      },
+      "bonusSpinMean": {
+        "fraction": "7441691129/5368709120",
+        "value": 1.3861229883506894
+      },
+      "bonusRtp": {
+        "fraction": "889497898958241/11258999068426240",
+        "value": 0.07900328382233121
+      }
+    },
+    "bonusProbability": {
+      "fraction": "119529/16777216",
+      "value": 0.007124483585357666
+    },
+    "nudgeProbability": {
+      "fraction": "289201/1048576",
+      "value": 0.2758035659790039
+    },
+    "maximum": {
+      "fraction": "86079/10",
+      "value": 8607.9
+    }
+  },
+  "limits": {
+    "serverImplemented": false,
+    "newGameWalletQualification": false,
+    "existingWalletTestScope": "Existing common account/ledger regression, not qualification of this candidate",
+    "browser": false,
+    "assets": false,
+    "productionChanged": false,
+    "mathematicalCandidateOnly": true
+  },
+  "sourceHashes": {
+    "src/shared/wildNudgeData.json": "4cc0a4f71c052c276890d8446c1e21e4b3a8dce522f27ee42b7909c5263131d8",
+    "src/shared/wildNudgeMath.ts": "c8bc8a58124c81d1f66f2d52bfa823e4baf471db8e41c3dbbb3364c10daa7e7f",
+    "scripts/game-math/wild-nudge-reference.mjs": "93c3e272abe11523ddd77985c9d733b76b06089a054aac5cf5a9ce4e762e7bb5",
+    "scripts/game-math/wild-nudge-model.mjs": "dbb1c05253731ab2657e36ee58c0c9749262b1183ad841228719a48156c37805",
+    "scripts/game-math/rational.mjs": "18e762bcf6b3790f0e191f2f774cbdb1ba94b7f4674c5c7caec8fd3257a85d62"
+  },
+  "interpretation": "Mechanics and exact complete-round candidate model are ready. Runtime sampler, saved rules, shared-wallet settlement and module/host compatibility remain the next stage and block production qualification."
+}

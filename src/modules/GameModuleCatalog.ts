@@ -1,5 +1,6 @@
 /** Independent client packages supported by this host release. */
 export const STUDIO_GAME_MODULES = [
+ { gameId: 'studio-wild-nudge', slug: 'wild-nudge', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
  { gameId: 'studio-flooded-temple', slug: 'flooded-temple', apiVersion: 1, rulesVersion: 2, progressVersion: 2 },
  { gameId: 'studio-forest-heart', slug: 'forest-heart', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
  { gameId: 'studio-caribbean-treasures', slug: 'caribbean-treasures', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
