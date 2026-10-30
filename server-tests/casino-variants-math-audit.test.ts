@@ -336,8 +336,8 @@ test('math audit: classic Keno and Plinko tables match independent distributions
   }
 });
 
-test('math audit: classic HiLo and Tower use 99% once and reserves cover exact payouts', () => {
-  const state:SessionState={id:'audit',gameId:'github-hilo',rulesVersion:1,state:'cashed_out',stakeUnits:'1000',settings:{},choices:[],cards:[],dragons:[]};
+test('math audit: classic HiLo uses 99% once and reserves cover exact payouts', () => {
+  const state:SessionState={id:'audit',gameId:'github-hilo',rulesVersion:1,state:'cashed_out',stakeUnits:'1000',settings:{},choices:[],cards:[]};
   for(const stake of stakes) {
     let minHiloRtp=Infinity,maxHiloRtp=0;
     for(let rank=1;rank<=13;rank++) for(const direction of ['higher','lower'] as const) {
@@ -351,12 +351,6 @@ test('math audit: classic HiLo and Tower use 99% once and reserves cover exact p
     const maxHilo={...state,stakeUnits:String(stake),choices:Array(HILO_MAX_GUESSES).fill('higher' as const),cards:Array(HILO_MAX_GUESSES+1).fill({rank:12,suit:0})};
     assert.equal(sessionPayout(maxHilo),BigInt(stake)*99n*13n**BigInt(HILO_MAX_GUESSES)/100n);
     assert(Number(sessionPayout(maxHilo))<=stake*maxSessionMultiplier('github-hilo',{}));
-    for(const [difficulty,columns] of [['easy',4],['medium',3],['hard',2]] as const) for(let step=1;step<=9;step++) {
-      const current={...state,gameId:'github-tower' as const,stakeUnits:String(stake),settings:{difficulty},choices:Array(step).fill(0)},numerator=99n*BigInt(columns)**BigInt(step),denominator=100n*BigInt(columns-1)**BigInt(step),expected=BigInt(stake)*numerator/denominator;
-      assert.equal(sessionPayout(current),expected); assert(Number(expected)<=stake*maxSessionMultiplier('github-tower',{difficulty}));
-      const rtp=((columns-1)/columns)**step*Number(expected)/stake; assert(rtp<=.99+1e-12);
-      report.push({game:'github-tower',mode:`${difficulty}/${step} rows`,stakeUnits:stake,rtp,maxMultiplier:Number(numerator)/Number(denominator),outcomes:columns**step,method:'Exact rational inverse survival probability; edge applied once'});
-    }
   }
 });
 

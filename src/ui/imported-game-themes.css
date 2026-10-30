@@ -91,11 +91,6 @@
 .imported-game :is(.expansion-dice, .expansion-gems, .github-dice) { padding: 25px 0; gap: 16px; }
 .imported-game :is(.expansion-dice > span, .github-dice > span) { display: grid; place-items: center; width: 82px; height: 82px; border: 1px solid var(--ig-accent); border-radius: 18px; color: var(--ig-soft); background: linear-gradient(145deg, color-mix(in srgb, var(--ig-accent) 16%, var(--ig-panel)), var(--ig-ground)); box-shadow: 0 8px 0 #0003, 0 15px 20px #0003, inset 0 1px #ffffff25; font: 64px/1 system-ui; }
 .imported-game .expansion-gems > span { display: grid; place-items: center; width: 72px; height: 84px; font-size: 44px; border: 1px solid var(--ig-line); border-radius: 12px; background: linear-gradient(145deg, #ffffff0c, #ffffff02); text-shadow: 0 0 18px color-mix(in srgb, var(--ig-accent) 50%, transparent); }
-.imported-game .casino-tower { width: min(100%, 380px); gap: 6px; }
-.imported-game .casino-row > button { min-height: 35px; border-radius: 6px; border-color: var(--ig-line); color: var(--ig-accent); background: linear-gradient(145deg, var(--ig-panel), var(--ig-ground)); box-shadow: inset 0 1px #ffffff0b; }
-.imported-game .casino-row > button.chosen { opacity: 1; background: var(--ig-accent); color: var(--ig-ink); }
-.imported-game .casino-row > button.dragon { opacity: 1; background: #713c50; color: #ffcfdb; border-color: #d78c9d; }
-.imported-game .casino-row > span { color: var(--ig-muted); }
 
 .imported-game :is(.github-controls, .expansion-toolbar, .casino-controls, .variant-controls, .batch-controls, .next-controls, .dice-settings, .coins-selectors) { padding: 14px; border: 1px solid #ffffff0b; border-radius: 12px; background: #ffffff04; gap: 12px; }
 .imported-game :is(.github-controls label, .expansion-toolbar label, .casino-controls label) { color: var(--ig-muted); font-size: 11px; }

@@ -68,7 +68,6 @@ export const CASINO_GAME_MODULES = [
  { gameId: 'github-baccarat', slug: 'github-baccarat', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
  { gameId: 'github-craps', slug: 'github-craps', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
  { gameId: 'github-hilo', slug: 'github-hilo', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
- { gameId: 'github-tower', slug: 'github-tower', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
  { gameId: 'github-diamonds', slug: 'github-diamonds', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
  { gameId: 'github-three-card', slug: 'github-three-card', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
  { gameId: 'github-caribbean', slug: 'github-caribbean', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },

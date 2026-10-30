@@ -8,8 +8,8 @@ import { MOTION_PROFILES } from './Profiles';
 import { WorldScene, type WorldAssets } from './WorldScene';
 import './imported-motion.css';
 
-const actions = '[data-start],[data-fruits-spin],[data-dice-play],[data-limbo-play],#original-play,[data-mine-cell],[data-cell],[data-cashout],[data-action="start"],[data-action="roll"]';
-const cells = '[data-mine-cell],[data-cell],[data-keno-number],[data-confirmed-die],[data-confirmed-gem]';
+const actions = '[data-start],[data-fruits-spin],[data-dice-play],[data-limbo-play],#original-play,[data-mine-cell],[data-cashout],[data-action="start"],[data-action="roll"]';
+const cells = '[data-mine-cell],[data-keno-number],[data-confirmed-die],[data-confirmed-gem]';
 const boardSelector = '.fruits-frame,[data-dice-board-host],[data-limbo-board],.limbo-stage,.original-board-wrap,.royal-confirmed-motion,.expansion-board,.casino-board,.github-table';
 const labels = () => language === 'en'
   ? { win: 'WIN', big: 'BIG WIN', epic: 'EPIC WIN', payout: 'Return', profit: 'Profit', skip: 'Skip effects', coins: 'coins', chips: 'chips' }
@@ -55,7 +55,7 @@ export class ImportedMotion {
       this.scan(this.armed);
       if (this.armed && content.querySelector('[role="alert"]')?.textContent?.trim()) this.cancel();
     });
-    this.observer.observe(content, { subtree: true, childList: true, attributes: true, attributeFilter: ['class', 'data-revealed', 'data-state', 'data-phase', 'data-motion-phase', 'data-motion', 'data-keno-presentation', 'data-tower-motion'] });
+    this.observer.observe(content, { subtree: true, childList: true, attributes: true, attributeFilter: ['class', 'data-revealed', 'data-state', 'data-phase', 'data-motion-phase', 'data-motion', 'data-keno-presentation'] });
   }
   private start(event: Event) {
     const button = (event.target as Element | null)?.closest<HTMLButtonElement>('button');
@@ -75,22 +75,22 @@ export class ImportedMotion {
   private scan(play: boolean) {
     this.world?.sync();
     if (play) {
-      const phase = this.content.dataset.motionPhase ?? this.content.querySelector<HTMLElement>('[data-phase],[data-keno-presentation],[data-tower-motion],[data-motion]')?.dataset;
-      const value = typeof phase === 'string' ? phase : phase?.phase ?? phase?.kenoPresentation ?? phase?.towerMotion ?? phase?.motion;
+      const phase = this.content.dataset.motionPhase ?? this.content.querySelector<HTMLElement>('[data-phase],[data-keno-presentation],[data-motion]')?.dataset;
+      const value = typeof phase === 'string' ? phase : phase?.phase ?? phase?.kenoPresentation ?? phase?.motion;
       if (value && ['waiting', 'pending', 'rolling', 'accelerating', 'spinning'].includes(value)) this.phase('spinning');
       if (value && ['stopping', 'revealing', 'confirmed', 'drawing'].includes(value)) this.phase('revealing');
     }
     const next = new Map<string, string>(); let index = 0;
     this.content.querySelectorAll<HTMLElement>(cells).forEach(node => {
-      const key = ['mineCell', 'cell', 'kenoNumber', 'confirmedDie', 'confirmedGem'].map(name => `${name}:${node.dataset[name] ?? ''}`).join('/');
+      const key = ['mineCell', 'kenoNumber', 'confirmedDie', 'confirmedGem'].map(name => `${name}:${node.dataset[name] ?? ''}`).join('/');
       const state = [node.className, node.dataset.revealed ?? '', node.dataset.gem ?? ''].join('/');
       next.set(key, state);
       const prior = this.states.get(key);
-      const revealed = node.matches('.is-gem,.is-mine,.is-drawn,.safe,.trap,.chosen,.dragon,[data-revealed="true"]');
+      const revealed = node.matches('.is-gem,.is-mine,.is-drawn,.safe,.trap,.chosen,[data-revealed="true"]');
       if (!play || !revealed || prior === state || prior === undefined && !node.matches('[data-revealed="true"]')) return;
       if (!this.reduced.matches) {
         this.animate(node, [{ transform: node.hasAttribute('data-mine-cell') ? 'perspective(600px) rotateY(-72deg) scale(.9)' : 'translateY(-4px) scale(.94)', opacity: .6 }, { transform: 'scale(1.045)', opacity: 1, offset: .68 }, { transform: 'scale(1)', opacity: 1 }], node.hasAttribute('data-mine-cell') ? 340 : 220);
-        const safe = !node.matches('.is-mine,.trap,.dragon');
+        const safe = !node.matches('.is-mine,.trap');
         const position = Number(node.dataset.confirmedGem ?? node.dataset.confirmedDie ?? index++);
         if (safe) this.audio.reveal(position);
         this.world?.reveal(node, safe, position);

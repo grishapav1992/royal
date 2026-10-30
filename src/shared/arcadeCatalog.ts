@@ -14,7 +14,7 @@ export const ACTIVE_STUDIO_GAMES = [
 
 export const ARCADE_CLASSIC_GAMES = [
   'royal-fruits', 'royal-dice', 'royal-limbo', 'royal-mines', 'royal-plinko',
-  'royal-keno', 'github-craps', 'github-tower', 'github-diamonds', 'github-crash', 'github-sic-bo', PENALTY_GAME,
+  'royal-keno', 'github-craps', 'github-diamonds', 'github-crash', 'github-sic-bo', PENALTY_GAME,
 ] as const;
 export const ARCADE_PROVIDER_GAMES = [] as const;
 // Preserved for mathematical provenance and old saved rounds, never a live collection.

@@ -8,6 +8,7 @@ import {seededRandom} from '../../src/shared/draconaMath';
 import {validDraconaSession} from '../../src/shared/dracona';
 import {validNeopolisSession} from '../../src/shared/neopolis';
 import {validAfterSession} from '../../src/shared/afterglow';
+import {savedTower,seedNativeTower} from '../helpers/removed-tower';
 
 const command=(path:string,body:unknown=null,method:'GET'|'POST'=body===null?'GET':'POST'):NativeCommand=>({path,body,method,flags:Array(9).fill(true),rules:2,query:{}});
 const draconaCommand=(body:unknown=null):NativeCommand=>({...command('/expansion',body),flags:[true,true,true,true,true,true,true,true,2]});
@@ -108,24 +109,21 @@ test('insufficient house coverage rejects before drawing and leaves no game proj
  }finally{await c.close();}
 });
 
-test('Tower restores a native session and settles once into the same Nile balance',async()=>{
- const c=await setup();try{
-  const start={id:randomUUID(),action:'start',gameId:'github-tower',stakeUnits:'1000',settings:{difficulty:'easy'}};
-  const begun=await c.games.run(c.a,command('/casino-sessions',start))as any;
-  assert.equal(begun.wallet.balance,190);assert.equal(begun.session.state,'active');
-  assert.equal(begun.session.dragons,undefined);
-  const restored=new NileGameRuntime(c.ledger,()=>0);
-  const active=await restored.run(c.a,command('/casino-sessions'))as any;
-  assert.equal(active.sessions[0].id,start.id);assert.equal(active.wallet.balance,190);
-  const picked=await restored.run(c.a,command('/casino-sessions',{id:randomUUID(),action:'pick',gameId:start.gameId,sessionId:start.id,choice:1}))as any;
-  assert.equal(picked.session.steps,1);assert.equal(picked.session.state,'active');
-  const cashout={id:randomUUID(),action:'cashout',gameId:start.gameId,sessionId:start.id};
-  const paid=await restored.run(c.a,command('/casino-sessions',cashout))as any;
-  const expected=190000000n+BigInt(paid.session.payoutUnits)*10000n;
-  assert.equal(paid.wallet.balanceUnits,String(expected));
-  assert.equal((await restored.run(c.a,command('/casino-sessions',cashout))as any).wallet.balanceUnits,String(expected));
-  assert.equal((await c.ledger.wallet(c.a)as any).balanceUnits,String(expected));await c.ledger.audit();
- }finally{await c.close();}
+test('reopening the native wallet refunds untouched removed rounds or pays their saved cashout exactly once',async()=>{
+ for(const choices of [[],[1]]){
+  const c=await setup();try{
+   const state=await seedNativeTower(c.ledger,c.a,savedTower(choices));
+   assert.equal((await c.ledger.wallet(c.a)as any).balanceUnits,'190000000');
+   const restored=new NileGameRuntime(c.ledger,()=>{throw Error('Retirement must not draw new results');});
+   const reply=await restored.run(c.a,command('/casino-sessions'))as any;
+   const expected=choices.length?'203200000':'200000000';
+   assert.deepEqual(reply.sessions,[]);assert.equal(reply.wallet.balanceUnits,expected);assert.equal(reply.wallet.reservedUnits,'0');
+   const receipt=await c.ledger.db.prepare('SELECT * FROM removed_casino_settlements WHERE account_id=? AND session_id=?').get(c.a,state.id);
+   assert.equal(receipt!.reason,choices.length?'cashout':'refund');assert.deepEqual(JSON.parse(receipt!.original_payload),state);
+   assert.equal((await restored.run(c.a,command('/casino-sessions'))as any).wallet.balanceUnits,expected);
+   assert.equal((await c.ledger.wallet(c.a)as any).balanceUnits,expected);await c.ledger.audit();
+  }finally{await c.close();}
+ }
 });
 test('a failed financial append rolls back game state, then retry settles once',async()=>{
  const c=await setup();try{

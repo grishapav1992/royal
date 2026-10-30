@@ -1,4 +1,4 @@
-export const IMPORTED_MOTION_GAMES = ['royal-fruits', 'royal-dice', 'royal-limbo', 'royal-mines', 'royal-keno', 'github-craps', 'github-tower', 'github-diamonds', 'github-sic-bo'] as const;
+export const IMPORTED_MOTION_GAMES = ['royal-fruits', 'royal-dice', 'royal-limbo', 'royal-mines', 'royal-keno', 'github-craps', 'github-diamonds', 'github-sic-bo'] as const;
 export type ImportedMotionGame = typeof IMPORTED_MOTION_GAMES[number];
 export type WinTier = 'none' | 'return' | 'win' | 'big' | 'epic';
 export type ImportedOutcome = { gameId: string; spentUnits: string; returnedUnits: string; decimals?: 2 | 6; unit?: 'coins' | 'chips' | 'USDT' };

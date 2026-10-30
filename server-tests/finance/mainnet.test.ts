@@ -354,22 +354,22 @@ test('small finalized node lag is safe only with stable boundaries and exact mat
     }
 });
 
-test('Casino USDT reserves bankroll, persists hidden Tower, restores and settles exact micro-units once', async () => {
-  let draws=0;
-  const ledger=await fixture(':memory:',()=>{draws++;return 0;});
-  const op={id:randomUUID(),gameId:'github-tower' as const,action:'start' as const,stakeUnits:'1000000',settings:{difficulty:'easy' as const}};
-  const pick={id:randomUUID(),gameId:op.gameId,action:'pick' as const,sessionId:op.id,choice:1};
+test('Casino USDT reserves bankroll, persists hidden Hi-Lo cards, restores and settles exact micro-units once', async () => {
+  let draws=0;const ranks=[0,0,6,0,12,0];
+  const ledger=await fixture(':memory:',()=>{draws++;return ranks.shift()!;});
+  const op={id:randomUUID(),gameId:'github-hilo' as const,action:'start' as const,stakeUnits:'1000000',settings:{}};
+  const pick={id:randomUUID(),gameId:op.gameId,action:'pick' as const,sessionId:op.id,choice:'higher' as const};
   const cashout={id:randomUUID(),gameId:op.gameId,action:'cashout' as const,sessionId:op.id};
   try {
     const first=await ledger.casinoPlay(config.accountId,op);
-    assert.equal((await ledger.balances()).player,9000000n);assert.equal(first.session.payoutUnits,'1000000');assert(!('dragons' in first.session));assert.equal(draws,9);
+    assert.equal((await ledger.balances()).player,9000000n);assert.equal(first.session.payoutUnits,'1000000');assert.equal(first.session.cards!.length,1);assert.equal(draws,6);
     const replays=await Promise.all([ledger.casinoPlay(config.accountId,op),ledger.casinoPlay(config.accountId,op)]);
-    assert(replays.every(r=>r.replayed));assert.equal(draws,9);assert.equal((await ledger.casinoWallet(config.accountId)).sessions[0].id,op.id);
+    assert(replays.every(r=>r.replayed));assert.equal(draws,6);assert.equal((await ledger.casinoWallet(config.accountId)).sessions[0].id,op.id);
     await assert.rejects(ledger.casinoPlay(config.accountId,{...op,id:randomUUID()}));await assert.rejects(ledger.casinoPlay(randomUUID(),pick));await assert.rejects(ledger.casinoPlay(config.accountId,{...op,stakeUnits:'2000000'}));
-    const next=await ledger.casinoPlay(config.accountId,pick);assert.equal(next.session.payoutUnits,'1320000');assert(!('dragons' in next.session));
-    const paid=await ledger.casinoPlay(config.accountId,cashout);assert.equal(paid.session.state,'cashed_out');assert.equal(paid.session.dragons!.length,9);assert.equal((await ledger.audit()).player,10320000n);assert.equal((await ledger.audit()).house,499680000n);
-    assert.equal((await ledger.casinoWallet(config.accountId)).sessions.length,0);await ledger.fail('network_lost');assert.equal((await ledger.casinoPlay(config.accountId,cashout)).replayed,true);assert.equal((await ledger.casinoPlay(config.accountId,op)).session.state,'cashed_out');assert.equal(draws,9);
-    await assert.rejects(ledger.casinoPlay(config.accountId,{...cashout,id:randomUUID()}));assert.equal((await ledger.audit()).player,10320000n);
+    const next=await ledger.casinoPlay(config.accountId,pick);assert.equal(next.session.payoutUnits,'1072500');assert.equal(next.session.cards!.length,2);
+    const paid=await ledger.casinoPlay(config.accountId,cashout);assert.equal(paid.session.state,'cashed_out');assert.equal(paid.session.cards!.length,2);assert.equal((await ledger.audit()).player,10072500n);assert.equal((await ledger.audit()).house,499927500n);
+    assert.equal((await ledger.casinoWallet(config.accountId)).sessions.length,0);await ledger.fail('network_lost');assert.equal((await ledger.casinoPlay(config.accountId,cashout)).replayed,true);assert.equal((await ledger.casinoPlay(config.accountId,op)).session.state,'cashed_out');assert.equal(draws,6);
+    await assert.rejects(ledger.casinoPlay(config.accountId,{...cashout,id:randomUUID()}));assert.equal((await ledger.audit()).player,10072500n);
   }finally{await ledger.close();}
 });
 test('Casino USDT rejects insufficient coverage before drawing and isolates request IDs across instant games',async()=>{
@@ -397,10 +397,11 @@ test('Hi-Lo USDT pays exact two-win product, immutable journal catches a forged 
 });
 test('Casino USDT active party and retries survive reopening of the ledger without revealing future cards',async()=>{
   const dir=mkdtempSync(join(tmpdir(),'royal-casino-restart-')),file=join(dir,'casino.pg');
-  const op={id:randomUUID(),gameId:'github-tower' as const,action:'start' as const,stakeUnits:'1000000',settings:{difficulty:'medium' as const}};
+  const op={id:randomUUID(),gameId:'github-hilo' as const,action:'start' as const,stakeUnits:'1000000',settings:{}};
+  const ranks=[0,0,6,0,12,0];
   try{
-    const first=await fixture(file);await first.casinoPlay(config.accountId,op);await first.close();
+    const first=await fixture(file,()=>ranks.shift()!);await first.casinoPlay(config.accountId,op);await first.close();
     const reopened=new MainnetLedger(file,config,()=>{throw Error('must not redraw');});await reopened.ready;
-    try{assert.equal((await reopened.casinoWallet(config.accountId)).sessions[0].id,op.id);assert.equal((await reopened.casinoPlay(config.accountId,op)).replayed,true);await reopened.reconcile(101,'510000000');await reopened.casinoPlay(config.accountId,{id:randomUUID(),gameId:op.gameId,action:'pick',sessionId:op.id,choice:1});const paid=await reopened.casinoPlay(config.accountId,{id:randomUUID(),gameId:op.gameId,action:'cashout',sessionId:op.id});assert.equal(paid.session.payoutUnits,'1485000');assert.equal((await reopened.audit()).player,10485000n);}finally{await reopened.close();}
+    try{assert.equal((await reopened.casinoWallet(config.accountId)).sessions[0].id,op.id);assert.equal((await reopened.casinoPlay(config.accountId,op)).replayed,true);await reopened.reconcile(101,'510000000');await reopened.casinoPlay(config.accountId,{id:randomUUID(),gameId:op.gameId,action:'pick',sessionId:op.id,choice:'higher'});const paid=await reopened.casinoPlay(config.accountId,{id:randomUUID(),gameId:op.gameId,action:'cashout',sessionId:op.id});assert.equal(paid.session.payoutUnits,'1072500');assert.equal((await reopened.audit()).player,10072500n);}finally{await reopened.close();}
   }finally{rmSync(dir,{recursive:true,force:true});}
 });

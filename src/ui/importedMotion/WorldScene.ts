@@ -7,7 +7,7 @@ type WorldPhase = 'idle' | 'anticipation' | 'spinning' | 'revealing' | 'landing'
 const ornaments: Record<ImportedMotionGame, string> = {
   'royal-fruits': 'petal', 'royal-dice': 'bubble', 'royal-limbo': 'star',
   'royal-mines': 'firefly', 'royal-keno': 'constellation', 'github-craps': 'note',
-  'github-tower': 'ember', 'github-diamonds': 'crystal', 'github-sic-bo': 'sand',
+  'github-diamonds': 'crystal', 'github-sic-bo': 'sand',
 };
 
 /** Layered artwork and decorative responses. Never owns a round or changes a result. */
@@ -122,7 +122,7 @@ export class WorldScene {
   reveal(node: HTMLElement, safe: boolean, index: number) {
     if (!this.canAnimate()) return;
     if (safe) this.spark(node, index);
-    if (this.game === 'github-tower' || this.game === 'royal-mines') this.gesture(false);
+    if (this.game === 'royal-mines') this.gesture(false);
   }
   result(profit: boolean) {
     if (!profit) return;
@@ -132,7 +132,7 @@ export class WorldScene {
   private gesture(win: boolean) {
     const figure = this.intro?.querySelector<HTMLElement>('.imp-world-character');
     if (!figure || !this.visible || !this.canAnimate()) return;
-    const flying = ['royal-limbo', 'royal-keno', 'github-tower', 'github-sic-bo'].includes(this.game);
+    const flying = ['royal-limbo', 'royal-keno', 'github-sic-bo'].includes(this.game);
     const distance = win ? -10 : flying ? -5 : 3;
     this.animate(figure, [{ translate: '0 0', rotate: '0deg' }, { translate: `0 ${distance}px`, rotate: `${win ? -3 : 2}deg`, offset: .4 }, { translate: '0 0', rotate: '0deg' }], win ? 720 : 420);
   }
