@@ -62,6 +62,9 @@
     "test:temple:release": "playwright test --config playwright.temple-release.config.ts",
     "analyze:wild-nudge": "node --import tsx scripts/game-math/wild-nudge-model.mjs",
     "test:wild-nudge-math": "node --import tsx --test server-tests/wild-nudge-math.test.mjs server-tests/wild-nudge-rtp.test.mjs",
+    "test:wild-nudge-runtime": "node --import tsx scripts/database-test.ts --import tsx --test --test-concurrency=1 server-tests/wild-nudge-runtime.test.ts server-tests/finance/wild-nudge-native.test.ts",
+    "test:wild-nudge-ui": "playwright test --config playwright.wild-nudge.config.ts",
+    "preview:wild-nudge": "node --import tsx scripts/wild-nudge-preview.ts",
     "test:temple:motion": "playwright test --config playwright.temple-motion.config.ts",
     "test:temple:character": "playwright test --config playwright.temple-character.config.ts"
   },

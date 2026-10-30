@@ -22,5 +22,5 @@ test('model evidence cannot qualify a release or enter the runnable catalogue',a
   const id='studio-wild-nudge',inputs=await rtpInputs(process.cwd(),id);
   assert.throws(()=>validateRtpProof(id,{...inputs,policy:{...inputs.policy,releaseStatus:'model-only'}},{releaseQualified:true}),/Mathematical model only/);
   const report=await wildNudgeModelReport();assert.throws(()=>validateRtpProof(id,inputs,{...report,releaseQualified:true}));
-  assert(GAME_MODULES.some(game=>game.gameId===id));assert.equal((await checkGameRtp(process.cwd(),GAME_MODULES,[id])).verified,1);
+  assert(GAME_MODULES.some(game=>game.gameId===id));assert((await checkGameRtp(process.cwd(),GAME_MODULES,[id])).verified>=1,'Selected release and affected shared sources must be qualified');
 });

@@ -9,6 +9,9 @@ const test=base.extend<{roomPath:string}>({roomPath:async({request},use)=>{
  try{await use('/?room='+room.roomId);}finally{await Promise.race([room.leave(),new Promise(r=>setTimeout(r,1500))]);}
 }});
 const mini=(page:Page)=>page.evaluate(()=>{try{return(window as any).royalDemo?.getMiniState();}catch{return{};}});
+const browserErrors=new WeakMap<Page,string[]>();
+test.beforeEach(({page})=>{const errors:string[]=[];browserErrors.set(page,errors);page.on('pageerror',error=>errors.push(error.message));});
+test.afterEach(({page})=>{expect(browserErrors.get(page)).toEqual([]);});
 async function enter(page:Page,path:string){
  await page.route('https://luelonplay.com/demo-api/**',route=>route.fulfill({json:{games:[]}}));await page.emulateMedia({reducedMotion:'reduce'});await page.goto(path);
  await page.getByLabel('Почта',{exact:true}).fill(`gn-player-${crypto.randomUUID()}@example.test`);await page.getByLabel('Пароль',{exact:true}).fill('Royal-gn-check-123!');await page.getByRole('button',{name:'Продолжить',exact:true}).click();
@@ -24,7 +27,6 @@ async function open(page:Page){
 }
 async function topup(page:Page){const r=await page.request.post('/__test/nudge/topup',{data:{amount:1000}});expect(r.ok()).toBe(true);await page.evaluate(async()=>{const url='/src/wallet/WalletClient.ts';await(await import(/* @vite-ignore */url)).demoWallet.refresh();});}
 async function scenario(page:Page,name:string){expect((await page.request.post('/__test/nudge/scenario',{data:{name}})).ok()).toBe(true);}
-async function state(page:Page){const r=await page.request.get('/api/demo-wallet/expansion',{headers:{'X-Royal-Wild-Nudge':'1','X-Royal-Account-Id':await page.evaluate(()=>(window as any).royalDemo.getState().accountId)}});if(!r.ok())return(await mini(page));return(await r.json()).sessions.find((s:any)=>s.gameId===game);}
 async function session(page:Page){return page.evaluate(async()=>{const url='/src/wallet/ExpansionClient.ts';return(await import(/* @vite-ignore */url)).expansionClient.sessions.find((s:any)=>s.gameId==='studio-wild-nudge');});}
 async function spin(page:Page){await page.locator('[data-gn=spin]').click();await expect.poll(async()=>(await mini(page))?.busy).toBe(false);await expect.poll(async()=>(await mini(page))?.presenting).toBe(false);expect(await page.locator('[data-gn=status]').textContent()).not.toContain('не подтвержд');}
 async function fast(page:Page){await page.locator('[data-gn=settings]').click();await page.locator('[data-setting=fast]').check();await page.locator('[data-setting=music]').uncheck();await page.locator('[data-gn=close]').click();await expect(page.locator('.gn-modal')).toBeHidden();}
@@ -75,4 +77,20 @@ test('settings persist, Escape closes only the inner panel and typing in chat ca
 test('a real-server spin has a validated response and the account guard rejects a forged owner',async({page,roomPath})=>{
  await enter(page,roomPath);await topup(page);await open(page);await fast(page);await spin(page);const saved=await session(page);expect(saved.gameId).toBe(game);expect(saved.spentUnits).toBe('100');
  const result=await page.request.post('/api/demo-wallet/expansion',{headers:{'X-Royal-Account-Id':crypto.randomUUID(),'X-Royal-Wild-Nudge':'1'},data:{id:crypto.randomUUID(),gameId:game,action:'start',stakeUnits:'100',settings:{wildNudge:{mode:'normal'}}}});expect(result.status()).toBe(401);
+});
+
+test('animated nudge follows the accepted steps, supports skip and cancels owned motion',async({page,roomPath})=>{
+ await enter(page,roomPath);await topup(page);await open(page);await fast(page);await page.emulateMedia({reducedMotion:'no-preference'});await scenario(page,'nudge');await spin(page);
+ const saved=await session(page),frame=saved.view.wildNudge.spins[0],observed=await mini(page);
+ expect(observed.audio.counts.stop).toBe(5);expect(observed.audio.counts.nudge).toBe(frame.reels.reduce((n:number,reel:any)=>n+reel.steps,0));
+ for(let c=0;c<5;c++)await expect(page.locator(`[data-reel="${c}"]`)).toHaveAttribute('aria-label',new RegExp(frame.reels[c].multiplier>1?'×'+frame.reels[c].multiplier:'.+'));
+ expect(observed.animations).toBe(0);await writeFile(output+'/feedback-verification.json',JSON.stringify({acceptedSteps:frame.reels.map((r:any)=>({direction:r.direction,steps:r.steps,multiplier:r.multiplier})),audio:observed.audio,synchronization:observed.synchronization},null,2));
+ await scenario(page,'nudge');await page.locator('[data-gn=spin]').click();await expect(page.locator('[data-gn=skip]')).toBeVisible();await page.locator('[data-gn=skip]').click();await expect.poll(async()=>(await mini(page)).busy).toBe(false);await expect.poll(async()=>(await mini(page)).animations).toBe(0);await expect(page.locator('.gn-charging')).toHaveCount(0);expect((await session(page)).state).toBe('settled');
+});
+
+test('simulated page visibility events stop autoplay and preserve the accepted real-server round',async({page,roomPath})=>{
+ await enter(page,roomPath);await topup(page);await open(page);await fast(page);await scenario(page,'loss');let starts=0;
+ await page.route('**/api/demo-wallet/expansion',async route=>{if(route.request().method()==='POST'){starts++;await new Promise(r=>setTimeout(r,400));}await route.continue();});
+ await page.locator('[data-gn=auto]').click();await expect.poll(()=>starts).toBe(1);await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,get:()=>true});document.dispatchEvent(new Event('visibilitychange'));});await expect.poll(async()=>(await mini(page)).autoplay.running).toBe(false);
+ await expect.poll(async()=>(await mini(page)).busy).toBe(false);expect((await mini(page)).audio.activeEffects).toBe(0);await page.evaluate(()=>{delete(document as any).hidden;document.dispatchEvent(new Event('visibilitychange'));});await page.waitForTimeout(1200);expect(starts).toBe(1);expect((await session(page)).state).toBe('settled');expect((await mini(page)).autoplay.running).toBe(false);await expect(page.locator('[data-gn=spin]')).toBeEnabled();
 });

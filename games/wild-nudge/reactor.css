@@ -5,3 +5,38 @@
 @media(max-width:700px){.gn{grid-template-rows:49px minmax(0,1fr) 64px 74px 36px 42px;padding:8px 10px;gap:6px}}
 @media(max-height:650px){.gn{grid-template-rows:43px minmax(0,1fr) 52px 62px 34px 32px;padding:6px 12px;gap:5px}.gn-controls .gn-spin{height:58px}.gn-telemetry p,.gn-orbit{display:none}.gn-telemetry h3{font-size:17px}.gn-charge>strong{font-size:17px}.gn-reactor-bars{height:28px;margin-bottom:12px}.gn-title h2{font-size:17px}.gn-status{font-size:10px}.gn-money strong{font-size:17px}.gn-money span{font-size:8px}.gn-header{gap:10px}.gn-machine{grid-template-rows:16px minmax(0,1fr) 18px}}
 @media(prefers-reduced-motion:reduce){.gn *{transition:none!important;scroll-behavior:auto!important}.gn-roll{animation-duration:2s;filter:none}}
+.mini-dialog.originals-mode[data-game="studio-wild-nudge"] #mini-game{height:100%;min-height:0}
+.gn.gn-compact{grid-template-rows:43px minmax(0,1fr) 52px 62px 34px 32px;padding:6px 12px;gap:5px}
+.gn-compact .gn-controls .gn-spin{height:58px}
+.gn-compact .gn-telemetry p,.gn-compact .gn-orbit{display:none}
+.gn-compact .gn-telemetry h3{font-size:17px}
+.gn-compact .gn-reactor-bars{height:28px;margin-bottom:12px}
+.gn-compact .gn-title h2{font-size:16px}
+.gn-compact .gn-status{font-size:10px}
+.gn-compact .gn-money strong{font-size:17px}
+.gn-compact .gn-money span{font-size:8px}
+.gn-compact .gn-machine{grid-template-rows:16px minmax(0,1fr) 18px}
+.gn.gn-short{grid-template-rows:32px minmax(0,1fr) 44px 48px 32px 28px;padding:5px 9px;gap:4px}
+.gn-short .gn-world{grid-template-columns:minmax(0,1fr)}
+.gn-short .gn-telemetry,.gn-short .gn-title small,.gn-short .gn-brand{display:none}
+.gn-short .gn-title h2{font-size:12px}
+.gn-short .gn-controls .gn-spin{height:46px;padding:3px 6px;grid-template-columns:24px 1fr}
+.gn-short .gn-spin>span{font-size:26px}
+.gn-short .gn-spin>b{font-size:13px}
+.gn-short .gn-money{padding:3px 6px}
+.gn-short .gn-money>div{min-height:36px;gap:1px}
+.gn-short .gn-money span{min-height:16px;font-size:7px}
+.gn-short .gn-money strong{font-size:14px}
+.gn-short .gn-stake{gap:1px;font-size:8px}
+.gn-short .gn-status{font-size:9px}
+.gn-short .gn-tools button{min-height:28px;height:28px}
+.gn-short .gn-machine{grid-template-rows:12px minmax(0,1fr) 12px}
+.gn.gn-short{grid-template-rows:28px minmax(0,1fr) 36px 46px 30px 20px;padding:4px 9px;gap:3px}
+.gn-short .gn-money>div{min-height:28px;gap:0}
+.gn-short .gn-money span{min-height:12px;font-size:7px}
+.gn-short .gn-money strong{font-size:13px}
+.gn-short .gn-machine{grid-template-rows:10px minmax(0,1fr) 10px}
+.gn-short .gn-lines-button{height:42px;min-height:0;display:block;padding:4px}
+.gn-short .gn-lines-button small{display:none}
+.gn-short .gn-playback button,.gn-short .gn-playback select{min-height:28px;height:28px;padding:3px}
+.gn-short .gn-status{padding:2px;font-size:9px}

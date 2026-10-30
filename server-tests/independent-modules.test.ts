@@ -32,7 +32,7 @@ test('every defined game has a distinct module package and matching public contr
   ...EXPANSION_GAMES, ...SESSION_GAMES, ...GITHUB_GAME_IDS, ...GAME_CATALOG.map(game => game.id),
   ...Object.keys(ACTIVITIES), 'casinoapipro', 'luelon', 'breaker', 'orbit', 'drift', 'pixel',
  ])].sort();
- assert.equal(required.length, 122); // Includes the separately integrated Hong Kong Warrior and Flooded Temple.
+ assert.equal(required.length, 123); // Includes Galactic Reactor, Hong Kong Warrior and Flooded Temple.
  assert(required.includes('studio-forest-heart')&&required.includes('studio-flooded-temple')&&required.includes('original-jackie-chan'));
  assert.deepEqual(GAME_MODULES.map(game => game.gameId).sort(), required);
  assert.ok(STUDIO_GAMES.every(id => required.includes(id)));

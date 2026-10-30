@@ -51,8 +51,8 @@ export class GalacticReactorUI {
     this.media.addEventListener('change',()=>{this.cancelPresentation();this.sync();},{signal:this.lifetime.signal});
     this.client.addEventListener('change',this.changed);this.services.demoWallet.addEventListener('change',this.changed);
     this.unsubscribe=this.services.gameAudio.onPreferences(()=>{this.el('sound').setAttribute('aria-pressed',String(!this.services.gameAudio.getPreferences().muted));});
-    this.resize=new ResizeObserver(()=>this.fit());this.resize.observe(this.el('stage'));
-    this.drawFrame(wildNudgeSpin([10,20,30,40,50],'base'));this.sync();this.fit();
+    this.resize=new ResizeObserver(()=>this.fit());this.resize.observe(this.root);this.resize.observe(this.el('stage'));
+    this.drawPreview();this.sync();this.fit();
   }
   private click(action:string){
     if(action==='spin')void this.perform();
@@ -65,7 +65,7 @@ export class GalacticReactorUI {
     else if(action==='close')this.modal.close();
     else if(action==='rules'||action==='settings'||action==='lines')this.openModal(action);
   }
-  private fit(){const stage=this.el('stage'),width=Math.max(1,Math.floor(Math.min(stage.clientWidth,stage.clientHeight*5/3))),board=this.el('board');board.style.width=width+'px';board.style.height=(width*3/5)+'px';board.style.setProperty('--cell',(width/5)+'px');}
+  private fit(){this.root.classList.toggle('gn-compact',this.root.clientHeight<700);this.root.classList.toggle('gn-short',this.root.clientHeight<350);const margin=this.root.clientHeight<350?8:16,stage=this.el('stage'),width=Math.max(1,Math.floor(Math.min(stage.clientWidth-margin,(stage.clientHeight-margin)*5/3))),board=this.el('board');board.style.width=width+'px';board.style.height=(width*3/5)+'px';board.style.setProperty('--cell',(width/5)+'px');}
   private column(column:number,stop:number,multiplier:number){
     const reel=this.root.querySelector<HTMLElement>(`[data-reel="${column}"]`)!,track=reel.querySelector<HTMLElement>('.gn-track')!,strip=R.reels[column],wrap=(n:number)=>(n%strip.length+strip.length)%strip.length;
     const symbols=Array.from({length:5},(_,row)=>strip[wrap(stop+row-1)]);
@@ -75,6 +75,7 @@ export class GalacticReactorUI {
     reel.setAttribute('aria-label',this.text('Барабан ','Reel ')+(column+1)+': '+symbols.slice(1,4).map(s=>this.services.i18n.language==='en'?symbolNamesEn[s]:symbolNames[s]).join(', ')+(badge.hidden?'':' ×'+multiplier));
   }
   private drawFrame(frame:NudgeSpin){for(const [c,reel]of frame.reels.entries())this.column(c,reel.finalStop,reel.multiplier);this.paintLines(frame);}
+  private drawPreview(){this.drawFrame(wildNudgeSpin([10,20,30,40,50],'base'));this.el('payline').replaceChildren();this.root.querySelectorAll('.gn-paid').forEach(el=>el.classList.remove('gn-paid'));this.el('field-note').textContent=this.text('20 линий активны','20 active paylines');}
   private paintLines(frame:NudgeSpin){
     this.el('payline').replaceChildren();this.root.querySelectorAll('.gn-paid').forEach(el=>el.classList.remove('gn-paid'));
     const win=[...frame.wins].sort((a,b)=>b.points-a.points)[0];
@@ -84,7 +85,7 @@ export class GalacticReactorUI {
   }
   private sync(){
     if(this.dead)return;
-    if(this.owner!==this.client.accountId){this.owner=this.client.accountId;this.epoch++;this.busy=false;this.presenting=false;this.stopAuto(false);this.cancelPresentation();this.shown=undefined;this.shownKey='';this.error='';this.note='';this.audio.cancel();this.drawFrame(wildNudgeSpin([10,20,30,40,50],'base'));this.root.dataset.phase='idle';}
+    if(this.owner!==this.client.accountId){this.owner=this.client.accountId;this.epoch++;this.busy=false;this.presenting=false;this.stopAuto(false);this.cancelPresentation();this.shown=undefined;this.shownKey='';this.error='';this.note='';this.audio.cancel();this.drawPreview();this.root.dataset.phase='idle';}
     if(this.wallet?.balance!==this.lastBalance){this.error='';this.lastBalance=this.wallet?.balance;}
     if(!this.busy&&!this.presenting&&this.view){const key=this.session!.id+':'+this.view.revision;if(key!==this.shownKey){this.shown=structuredClone(this.view);this.shownKey=key;this.stake=this.view.stakeUnits;this.drawFrame(this.view.spins.at(-1)!);this.note=this.view.stage==='bonus'?this.text('Бонус восстановлен. Продолжение бесплатно.','Bonus restored. Continue without another stake.'):this.resultText(this.view);}}
     this.render();
@@ -107,7 +108,7 @@ export class GalacticReactorUI {
   private wait(ms:number,signal=this.motion.signal){return new Promise<void>(resolve=>{if(signal.aborted){resolve();return;}const done=()=>{clearTimeout(timer);this.timers.delete(timer);signal.removeEventListener('abort',done);resolve();};const timer=setTimeout(done,Math.max(0,ms));this.timers.add(timer);signal.addEventListener('abort',done,{once:true});});}
   private async accent(cue:GalacticCue,action:()=>void,signal:AbortSignal){if(signal.aborted||this.dead)return;const sync=this.audio.schedule(cue);await this.wait(sync.delayMs,signal);if(signal.aborted||this.dead)return;action();this.skew.push({cue,mode:sync.mode,skewMs:performance.now()-sync.target});if(this.skew.length>60)this.skew.shift();}
   private async animate(element:HTMLElement,frames:Keyframe[],duration:number,signal:AbortSignal){if(this.reduced||signal.aborted)return;const animation=element.animate(frames,{duration,easing:'cubic-bezier(.2,.75,.3,1)'});this.animations.add(animation);const cancel=()=>animation.cancel();signal.addEventListener('abort',cancel,{once:true});await animation.finished.catch(()=>{});signal.removeEventListener('abort',cancel);this.animations.delete(animation);}
-  private cancelPresentation(){this.motion.abort();for(const animation of this.animations)animation.cancel();this.animations.clear();this.audio.cancel();this.root.querySelectorAll('.gn-spinning').forEach(el=>el.classList.remove('gn-spinning'));}
+  private cancelPresentation(){this.motion.abort();for(const animation of this.animations)animation.cancel();this.animations.clear();this.audio.cancel();this.root.querySelectorAll('.gn-spinning,.gn-charging').forEach(el=>el.classList.remove('gn-spinning','gn-charging'));}
   private async show(view:WildNudgeView){
     this.motion.abort();this.motion=new AbortController();const signal=this.motion.signal,frame=view.spins.at(-1)!,epoch=this.epoch,owner=this.owner;this.presenting=true;this.root.dataset.phase='reveal';this.el('payline').replaceChildren();this.render();
     for(let c=0;c<5&&!signal.aborted;c++){
@@ -144,6 +145,7 @@ export class GalacticReactorUI {
     try{
       await this.audio.unlock();
       if(this.dead||epoch!==this.epoch||owner!==this.client.accountId||this.paused||this.modal.open||automatic&&!this.auto)return false;
+      this.audio.schedule('start');
       if(retry)await this.client.retry();else if(this.active)await this.client.act({gameId:WILD_NUDGE_GAME,action:'move',sessionId:this.session!.id,move:'wild-nudge-spin',revision:this.view!.revision});else await this.client.act({gameId:WILD_NUDGE_GAME,action:'start',stakeUnits:this.stake,settings:{wildNudge:{mode:'normal'}}});
       if(this.dead||epoch!==this.epoch||owner!==this.client.accountId)return false;
       const view=this.view;if(!view||this.client.pending)throw Error(this.text('Раунд не подтверждён. Повтори запрос.','Round not confirmed. Retry the request.'));
