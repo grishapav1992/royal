@@ -178,7 +178,7 @@ def publish():
     require(image(parent_tag)==before['preparedImage'],'Prepared parent tag differs')
     (context/'Dockerfile').write_text('FROM '+parent_tag+'\nCOPY --chown=node:node dist-delta/ /app/dist/\nLABEL org.opencontainers.image.revision="'+release['sourceCommit']+'"\n')
     (context/'.dockerignore').write_text('**\n!Dockerfile\n!.dockerignore\n!dist-delta\n!dist-delta/**\n')
-    with (ROOT/'build.log').open('w') as log: subprocess.run(['docker','build','--pull=false','--network=none','-t','royal-game:'+NAME,'.'],cwd=context,check=True,stdout=log,stderr=subprocess.STDOUT)
+    with (ROOT/'build.log').open('w') as log: subprocess.run(['docker','build','--pull=false','--network=none','-t','royal-game:'+NAME,'.'],cwd=context,env={**os.environ,'DOCKER_BUILDKIT':'0'},check=True,stdout=log,stderr=subprocess.STDOUT)
     candidate=image('royal-game:'+NAME); expected_program={**before['program'],**{'dist/'+n:h for n,h in op['dist'].items()}}
     require(runtime(candidate)==expected_program,'Candidate changed protected runtime bytes')
     parent,child=[inspect(n) for n in [before['preparedImage'],candidate]]
