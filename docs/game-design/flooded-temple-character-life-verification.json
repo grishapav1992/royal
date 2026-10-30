@@ -17,7 +17,8 @@
     "typecheck": true,
     "fullBuild": true,
     "rtpVerified": 18,
-    "legacyUnqualified": 114
+    "legacyUnqualified": 114,
+    "additionalMobilePortraitRuns": 2
   },
   "portraits": {
     "partial": {
@@ -237,5 +238,25 @@
     "Sampled browser rendering, not a physical-device frame-rate guarantee.",
     "Visual review does not establish subjective preference.",
     "No production installation."
-  ]
+  ],
+  "preservation": {
+    "branch": "codex/flooded-temple",
+    "remoteCommit": "fbd707f0f2a7e1811c20e70e39a409f9064a3186",
+    "mainCommit": "aed09286a21e315cb506b1befc754f5a7b4eecd2"
+  },
+  "cleanup": {
+    "removedFiles": 109,
+    "removedBytes": 47180796,
+    "removedDirectories": 13,
+    "removedPackageRoots": [
+      "0.9.6-866e8d728fe4",
+      "0.9.6-3ad9d7e12c37"
+    ],
+    "removedArchives": 0,
+    "removedArchiveBytes": 0,
+    "freeBefore": 201170042880,
+    "freeAfter": 201217490944,
+    "physicalSpaceAttribution": false,
+    "retained": "Active package 0.9.6-0991b4ae7a91, current normal builds, local preview database, compact reports and earlier rejected targets"
+  }
 }
