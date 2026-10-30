@@ -1,0 +1,241 @@
+{
+  "date": "2026-10-30",
+  "gameId": "studio-flooded-temple",
+  "version": "0.9.6-0991b4ae7a91",
+  "sourceSha256": "0991b4ae7a91967a56a3a0914f4038afe843654e94e64bbd5f2d55b61f9b953c",
+  "manifestSha256": "ae0a94ff7dacf63ad6ee8c6fdd0231ef15c9e28f7eabfc5d3b96aaa44ab601b2",
+  "contract": {
+    "api": 1,
+    "rules": 2,
+    "progress": 2
+  },
+  "unchangedMedia": 39,
+  "tests": {
+    "browser": 12,
+    "temple": 60,
+    "moduleResources": 7,
+    "typecheck": true,
+    "fullBuild": true,
+    "rtpVerified": 18,
+    "legacyUnqualified": 114
+  },
+  "portraits": {
+    "partial": {
+      "samples": 98,
+      "clips": [
+        "breathe",
+        "waiting",
+        "watch-fall",
+        "treasure",
+        "follow-stones",
+        "survey",
+        "reflect"
+      ],
+      "footHashes": [
+        3441598676
+      ],
+      "upperHashes": 98,
+      "blinkPeak": 0.8864498438927316,
+      "maxLift": 0,
+      "maxSmile": 0,
+      "captures": [
+        "blink"
+      ],
+      "bounds": {
+        "minX": 108,
+        "maxX": 463,
+        "maxY": 739
+      }
+    },
+    "bonus": {
+      "samples": 491,
+      "clips": [
+        "waiting",
+        "watch-fall",
+        "treasure",
+        "follow-stones",
+        "survey",
+        "relic",
+        "steady",
+        "follow-chain",
+        "shield",
+        "breathe",
+        "back-to-temple",
+        "triumph"
+      ],
+      "footHashes": [
+        3441598676
+      ],
+      "upperHashes": 490,
+      "blinkPeak": 0.934876749206612,
+      "maxLift": 0.7499999987310397,
+      "maxSmile": 0.9999999999999987,
+      "captures": [
+        "bonus",
+        "blink",
+        "big"
+      ],
+      "bounds": {
+        "minX": 105,
+        "maxX": 463,
+        "maxY": 750
+      }
+    },
+    "quick-big": {
+      "samples": 35,
+      "clips": [
+        "waiting",
+        "watch-fall",
+        "treasure",
+        "triumph"
+      ],
+      "footHashes": [
+        3441598676
+      ],
+      "upperHashes": 35,
+      "blinkPeak": 0,
+      "maxLift": 0.749964700599945,
+      "maxSmile": 0.9999999729937001,
+      "captures": [
+        "big"
+      ],
+      "bounds": {
+        "minX": 105,
+        "maxX": 463,
+        "maxY": 749
+      }
+    }
+  },
+  "host": {
+    "fixture": {
+      "frames": 417,
+      "dropFrames": 156,
+      "visibleTopPositions": 65,
+      "stable": true,
+      "ranges": {
+        "board": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "character": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "viewportShift": [
+        0,
+        0
+      ],
+      "scrollRange": 0
+    },
+    "host-1280": {
+      "frames": 365,
+      "dropFrames": 118,
+      "visibleTopPositions": 50,
+      "stable": true,
+      "ranges": {
+        "board": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "character": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "viewportShift": [
+        0,
+        0
+      ],
+      "scrollRange": 0
+    },
+    "host-390": {
+      "frames": 418,
+      "dropFrames": 161,
+      "visibleTopPositions": 68,
+      "stable": true,
+      "ranges": {
+        "board": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "character": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "viewportShift": [
+        0,
+        1
+      ],
+      "scrollRange": 1
+    },
+    "host-1280-quick": {
+      "frames": 179,
+      "dropFrames": 71,
+      "visibleTopPositions": 27,
+      "stable": true,
+      "ranges": {
+        "board": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "character": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "viewportShift": [
+        0,
+        0
+      ],
+      "scrollRange": 0
+    },
+    "host-390-quick": {
+      "frames": 198,
+      "dropFrames": 71,
+      "visibleTopPositions": 27,
+      "stable": true,
+      "ranges": {
+        "board": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "character": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "viewportShift": [
+        0,
+        1
+      ],
+      "scrollRange": 1
+    }
+  },
+  "limits": [
+    "Sampled browser rendering, not a physical-device frame-rate guarantee.",
+    "Visual review does not establish subjective preference.",
+    "No production installation."
+  ]
+}

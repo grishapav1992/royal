@@ -78,6 +78,12 @@ for(const viewport of [{width:1280,height:720,quick:false},{width:390,height:844
   await expect(game(page).locator('[data-ft-value=payout]')).toHaveText('2,50');await expect(page.locator('#mini-dialog #chat-input')).toBeEnabled();
   const state=await page.evaluate(()=>(window as any).royalDemo.getMiniState());expect(state.audio.played.win??0).toBe(0);
   await sharp(await page.screenshot()).webp({quality:82}).toFile(scope+'/'+name+'.webp');
+  await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getMiniState().character.renderer)).toBe('mesh');
+  if(viewport.width<600){
+    await game(page).locator('.ft-character').scrollIntoViewIfNeeded();
+    await expect(game(page).locator('.ft-character')).toBeInViewport();
+    await sharp(await page.screenshot()).webp({quality:82}).toFile(scope+'/'+name+'-portrait.webp');
+  }
   }finally{if(peer)await peer.leave();await api.dispose();}
 });
 

@@ -151,7 +151,9 @@ export class CascadeUI{
   }
   private async operate(kind:'start'|'continue'|'retry'){
     if(this.disposed||this.suspended||this.locked||!this.connected||kind!=='retry'&&this.client.pending||kind==='start'&&(this.playing||!this.affordable)||kind==='continue'&&this.session?.state!=='active')return;
-    const epoch=this.epoch,previous=this.view,oldId=this.session?.id,newRound=kind==='start'||kind==='retry'&&this.client.pending?.action==='start';this.sending=true;this.completed=false;this.localError='';this.inspected=-1;this.render();
+    const epoch=this.epoch,previous=this.view,oldId=this.session?.id,newRound=kind==='start'||kind==='retry'&&this.client.pending?.action==='start';
+    if(newRound){this.beat=undefined;clearTimeout(this.timer);this.timer=0;}
+    this.sending=true;this.completed=false;this.localError='';this.inspected=-1;this.render();
     this.lastRequestAt=performance.now();
     try{
       if(kind==='retry')await this.client.retry();
