@@ -24,7 +24,7 @@ const patches={
  'src/ui/royal-platform.css':[{from:cssAnchor,to:cssAnchor+'\n\n'+css}]
 };
 const files={};
-for(const file of Object.keys(before.sourceLF).filter(f=>f==='index.html'||f.startsWith('src/')&&/\.(?:ts|json|css)$/.test(f)).sort()){
+for(const file of Object.keys(before.sourceLF).filter(f=>f==='index.html'||f.startsWith('src/')&&/\.(?:ts|js|mjs|cjs|json|css)$/.test(f)||f.startsWith('public/')&&/\.(?:json|js|mjs)$/.test(f)).sort()){
  const expected=before.sourceLF[file];let bytes,origin;
  for(const path of [file,...tracked.filter(p=>p.endsWith('/source/'+file))]){
   try{const value=blob(commit,path);if(hash(value)===expected){bytes=value;origin={commit,path};break;}}catch{}

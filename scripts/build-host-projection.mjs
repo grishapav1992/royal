@@ -35,7 +35,7 @@ export async function readHostProjection(root,name){
 export async function buildProjectedHost(root,name){
  const reader=await readHostProjection(root,name);
  const plugin={name:'reviewed-production-host',enforce:'pre',
-  load(id){const file=relative(root,id.split('?')[0]).replaceAll('\\','/');if(file.startsWith('../')||file.includes('node_modules/')||!/\.(?:ts|json|css)$/.test(file))return;return reader.read(file).toString();},
+  load(id){if(id.startsWith('\0'))return;const file=relative(root,id.split('?')[0]).replaceAll('\\','/');if(file.startsWith('../')||file.includes('node_modules/')||!/\.(?:ts|js|mjs|cjs|json|css)$/.test(file))return;return reader.read(file).toString();},
   transformIndexHtml:{order:'pre',handler(_html,context){const file=relative(root,context.filename).replaceAll('\\','/');return reader.read(file).toString();}}};
  const {build}=await import('vite');
  assert.deepEqual(reader.metadata.entries,['index.html'],'Only the reviewed hall entry may be projected');

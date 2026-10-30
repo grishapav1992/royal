@@ -11,31 +11,265 @@
   ],
   "files": {
     "index.html": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "index.html",
       "baseSha256": "9b9fc51a4e14bfe10d9517b2377d96ac467e5305374c09714619b30994d401a9",
       "sha256": "9b9fc51a4e14bfe10d9517b2377d96ac467e5305374c09714619b30994d401a9"
     },
+    "public/assets/arcades-CI-JAXAn.js": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/assets/arcades-CI-JAXAn.js",
+      "baseSha256": "8e37713121e0de1e62186a4782add6c098fda3b77e20764cf666cb8c026ae3fa",
+      "sha256": "8e37713121e0de1e62186a4782add6c098fda3b77e20764cf666cb8c026ae3fa"
+    },
+    "public/assets/arcades-CMFHfLsf.js": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/assets/arcades-CMFHfLsf.js",
+      "baseSha256": "3e453ef564d3856e2146e163831c1673eb3a8a574db24b12c89496d522c66b01",
+      "sha256": "3e453ef564d3856e2146e163831c1673eb3a8a574db24b12c89496d522c66b01"
+    },
+    "public/assets/arcades-CXvafMrE.js": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/assets/arcades-CXvafMrE.js",
+      "baseSha256": "e7cdb9eada234bc19bd70226a13296a0d060d7ae3fd94060e2e4d80b45dcd654",
+      "sha256": "e7cdb9eada234bc19bd70226a13296a0d060d7ae3fd94060e2e4d80b45dcd654"
+    },
+    "public/assets/arcades-CifICqma.js": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/assets/arcades-CifICqma.js",
+      "baseSha256": "55aac530dffbd90f27541294144f307d0f226e36f081b62c006fb95640755aa6",
+      "sha256": "55aac530dffbd90f27541294144f307d0f226e36f081b62c006fb95640755aa6"
+    },
+    "public/assets/arcades-ClAE53Tx.js": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/assets/arcades-ClAE53Tx.js",
+      "baseSha256": "35aeb94f558b47aa8a3db99d9b2b5e03d9e99f8726923956822470237f89dd6c",
+      "sha256": "35aeb94f558b47aa8a3db99d9b2b5e03d9e99f8726923956822470237f89dd6c"
+    },
+    "public/assets/arcades-DhcuRgaQ.js": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/assets/arcades-DhcuRgaQ.js",
+      "baseSha256": "c35c33d85effaa2d62a333c2f60443877f90c7dca3c406319f6c2a823988f4de",
+      "sha256": "c35c33d85effaa2d62a333c2f60443877f90c7dca3c406319f6c2a823988f4de"
+    },
+    "public/assets/arcades-sUVRMCR9.js": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/assets/arcades-sUVRMCR9.js",
+      "baseSha256": "ee6794a79d38f47ea9480392729871c31cba5e66bcbfc141c0b032fff2f26478",
+      "sha256": "ee6794a79d38f47ea9480392729871c31cba5e66bcbfc141c0b032fff2f26478"
+    },
+    "public/assets/arcane-plinko/artwork.json": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/assets/arcane-plinko/artwork.json",
+      "baseSha256": "c0c8a917aac3a93ced3cb98fd9dfaff3a6b62fe29efe64df5c3fe40fd8d70d02",
+      "sha256": "c0c8a917aac3a93ced3cb98fd9dfaff3a6b62fe29efe64df5c3fe40fd8d70d02"
+    },
+    "public/assets/arcane-plinko/vespera-video.json": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/assets/arcane-plinko/vespera-video.json",
+      "baseSha256": "9d539f8a0172a153c2a39ccdbf351e2333d815e06c4e219c1f8e0ca589c45e46",
+      "sha256": "9d539f8a0172a153c2a39ccdbf351e2333d815e06c4e219c1f8e0ca589c45e46"
+    },
+    "public/assets/breaker-BMo7leNw.js": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/assets/breaker-BMo7leNw.js",
+      "baseSha256": "dbc56a0cb117e3a9e30f40aa0958ed105e75455e521cac4f191219374aec93dd",
+      "sha256": "dbc56a0cb117e3a9e30f40aa0958ed105e75455e521cac4f191219374aec93dd"
+    },
+    "public/assets/breaker-BgHd52gr.js": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/assets/breaker-BgHd52gr.js",
+      "baseSha256": "3bdb912e39152e2c638734e8eea9e909746206a920d4334db464dc9dcde36e37",
+      "sha256": "3bdb912e39152e2c638734e8eea9e909746206a920d4334db464dc9dcde36e37"
+    },
+    "public/assets/breaker-CNktkquB.js": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/assets/breaker-CNktkquB.js",
+      "baseSha256": "726fdc23d352ba3c7c59140df8a5ae66bd62a1bb84ee6ce6b654b9410500ca12",
+      "sha256": "726fdc23d352ba3c7c59140df8a5ae66bd62a1bb84ee6ce6b654b9410500ca12"
+    },
+    "public/assets/breaker-DYXrGOZw.js": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/assets/breaker-DYXrGOZw.js",
+      "baseSha256": "3e591779117b30f41b2a10a73ea4470ebc6da5caeea801a4a5fffc443e4aaaaf",
+      "sha256": "3e591779117b30f41b2a10a73ea4470ebc6da5caeea801a4a5fffc443e4aaaaf"
+    },
+    "public/assets/breaker-Dw1dUm-9.js": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/assets/breaker-Dw1dUm-9.js",
+      "baseSha256": "01649d1bd9438ec33870283a8a85019ead2451fd362e517ede1e69909653126a",
+      "sha256": "01649d1bd9438ec33870283a8a85019ead2451fd362e517ede1e69909653126a"
+    },
+    "public/assets/breaker-Q4dKvWFF.js": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/assets/breaker-Q4dKvWFF.js",
+      "baseSha256": "779f8e25780ac01bc786f0b10711dee4841acbc1ded8c771db120efd51014435",
+      "sha256": "779f8e25780ac01bc786f0b10711dee4841acbc1ded8c771db120efd51014435"
+    },
+    "public/assets/breaker-e9YtZfyW.js": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/assets/breaker-e9YtZfyW.js",
+      "baseSha256": "85b48c3b9cbf8aa20651b4ce3c198daed3032d167a54fbed3214259ebd248375",
+      "sha256": "85b48c3b9cbf8aa20651b4ce3c198daed3032d167a54fbed3214259ebd248375"
+    },
+    "public/assets/caribbean-treasures/audio/credits.json": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/assets/caribbean-treasures/audio/credits.json",
+      "baseSha256": "8f0370fda96ac17a8519e0e940b4a03f9a344ab72d5a2531ca0f2fce4aabcc0b",
+      "sha256": "8f0370fda96ac17a8519e0e940b4a03f9a344ab72d5a2531ca0f2fce4aabcc0b"
+    },
+    "public/assets/caribbean-treasures/audio/manifest.json": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/assets/caribbean-treasures/audio/manifest.json",
+      "baseSha256": "297b94b8bfa3f6acdee553f757c985cb98170999681b0dfe10c136af5e22ef8f",
+      "sha256": "297b94b8bfa3f6acdee553f757c985cb98170999681b0dfe10c136af5e22ef8f"
+    },
+    "public/assets/caribbean-treasures/crew/manifest.json": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/assets/caribbean-treasures/crew/manifest.json",
+      "baseSha256": "a9e85a0262eaddf226ce089cb27dce54b348baf1be979f206d1b6c8169dcf0ac",
+      "sha256": "a9e85a0262eaddf226ce089cb27dce54b348baf1be979f206d1b6c8169dcf0ac"
+    },
+    "public/assets/cat/walk-v3-frames.json": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/assets/cat/walk-v3-frames.json",
+      "baseSha256": "e7a8600b80a163e7a3371aab7acdc9b0b29df9c3e52e9e44b099c95c3619beed",
+      "sha256": "e7a8600b80a163e7a3371aab7acdc9b0b29df9c3e52e9e44b099c95c3619beed"
+    },
+    "public/assets/dracona/audio/palette.json": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/assets/dracona/audio/palette.json",
+      "baseSha256": "007481fd82810ac3be693adb006d1ba11c3d23f65a6ff3b3ca39eb61518d3a14",
+      "sha256": "007481fd82810ac3be693adb006d1ba11c3d23f65a6ff3b3ca39eb61518d3a14"
+    },
+    "public/assets/index-B5hVrR8P.js": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/assets/index-B5hVrR8P.js",
+      "baseSha256": "7f071cf8072b75a97b3926fae4ade16b55a25ac87dbf3bd1de4cc6ee6fc10a77",
+      "sha256": "7f071cf8072b75a97b3926fae4ade16b55a25ac87dbf3bd1de4cc6ee6fc10a77"
+    },
+    "public/assets/index-BCpi7dtw.js": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/assets/index-BCpi7dtw.js",
+      "baseSha256": "1133ca949b98ebe136c0f7f3ef24253fa4d06df23d07ee8f87f47f9e66bd0876",
+      "sha256": "1133ca949b98ebe136c0f7f3ef24253fa4d06df23d07ee8f87f47f9e66bd0876"
+    },
+    "public/assets/index-BOSLenQm.js": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/assets/index-BOSLenQm.js",
+      "baseSha256": "8f68214f9a44ea1fe98ab804385d7107318873fff65f6515d1b77e9a0be0a8d5",
+      "sha256": "8f68214f9a44ea1fe98ab804385d7107318873fff65f6515d1b77e9a0be0a8d5"
+    },
+    "public/assets/index-BysqK1gp.js": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/assets/index-BysqK1gp.js",
+      "baseSha256": "cb8a9469a81342c26cfa1e348cc844871d2f4e6571fb3e4a572f0cc5fcc122bf",
+      "sha256": "cb8a9469a81342c26cfa1e348cc844871d2f4e6571fb3e4a572f0cc5fcc122bf"
+    },
+    "public/assets/index-DsxVRl3l.js": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/assets/index-DsxVRl3l.js",
+      "baseSha256": "85bfdff042ff8e463defb8b269b69767a05e821a5b9321f6d7d7c9bd5f700dfe",
+      "sha256": "85bfdff042ff8e463defb8b269b69767a05e821a5b9321f6d7d7c9bd5f700dfe"
+    },
+    "public/assets/index-O7NyH5P7.js": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/assets/index-O7NyH5P7.js",
+      "baseSha256": "1e9e121449dfef0263194a27524f78cd3f2d60d23df076bcebe27448892c5f94",
+      "sha256": "1e9e121449dfef0263194a27524f78cd3f2d60d23df076bcebe27448892c5f94"
+    },
+    "public/assets/index-a1gVQ7Tk.js": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/assets/index-a1gVQ7Tk.js",
+      "baseSha256": "39abb635390895098a69ea14c24eb804725bec6b5205be74563056cea8a2979c",
+      "sha256": "39abb635390895098a69ea14c24eb804725bec6b5205be74563056cea8a2979c"
+    },
+    "public/chat-media/v1/sources.json": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/chat-media/v1/sources.json",
+      "baseSha256": "4794e9d2ccace0afa90c00653d2a1898622492e0d57689fef34b5f66cde67415",
+      "sha256": "4794e9d2ccace0afa90c00653d2a1898622492e0d57689fef34b5f66cde67415"
+    },
+    "public/licenses/afterglow-user-audio.json": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/licenses/afterglow-user-audio.json",
+      "baseSha256": "e5c2517e885540b5c12d58c8f979e49a6e38c4af26f0adf3a786204416f8acf3",
+      "sha256": "e5c2517e885540b5c12d58c8f979e49a6e38c4af26f0adf3a786204416f8acf3"
+    },
+    "public/licenses/afterglow-voices.json": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/licenses/afterglow-voices.json",
+      "baseSha256": "8f15fb024c46a8dfb6b0d63762f1a9bc0571ad34fd5be21938a40f5410b881c0",
+      "sha256": "8f15fb024c46a8dfb6b0d63762f1a9bc0571ad34fd5be21938a40f5410b881c0"
+    },
+    "public/licenses/dracona-audio.json": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/licenses/dracona-audio.json",
+      "baseSha256": "7033983b72d67789699c5feda200aeec3a5bbcbf224de682b1f6644e30ba2510",
+      "sha256": "7033983b72d67789699c5feda200aeec3a5bbcbf224de682b1f6644e30ba2510"
+    },
+    "public/licenses/github/card-engine.json": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/licenses/github/card-engine.json",
+      "baseSha256": "2f1e300526554fe44025a1b3058d4b04de9bcb98336bb378f8f929f434ca50b4",
+      "sha256": "2f1e300526554fe44025a1b3058d4b04de9bcb98336bb378f8f929f434ca50b4"
+    },
+    "public/licenses/github/games.json": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/licenses/github/games.json",
+      "baseSha256": "bd2fd79026fa92b4372e4c9078018d71bb993ade2fc51312a43d7261c8ecbfdf",
+      "sha256": "bd2fd79026fa92b4372e4c9078018d71bb993ade2fc51312a43d7261c8ecbfdf"
+    },
+    "public/licenses/github/rush.json": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/licenses/github/rush.json",
+      "baseSha256": "cda7a87d1fd2ae4f35763160cdd00ad0a10e303912e1b9b750b54ef2311bb4f3",
+      "sha256": "cda7a87d1fd2ae4f35763160cdd00ad0a10e303912e1b9b750b54ef2311bb4f3"
+    },
+    "public/licenses/github/sic-bo.json": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/licenses/github/sic-bo.json",
+      "baseSha256": "52ec8b1892a7cdfc8799c6d96e668f7572aa9c30f940c0838758fd92d93a62c2",
+      "sha256": "52ec8b1892a7cdfc8799c6d96e668f7572aa9c30f940c0838758fd92d93a62c2"
+    },
+    "public/licenses/meme-overload-audio.json": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/licenses/meme-overload-audio.json",
+      "baseSha256": "18e9df5e45163ad7a9c9ef9baeaa7953c318b04d1ea8a72efe8f098b77ed2b93",
+      "sha256": "18e9df5e45163ad7a9c9ef9baeaa7953c318b04d1ea8a72efe8f098b77ed2b93"
+    },
+    "public/licenses/meme-overload-references.json": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/licenses/meme-overload-references.json",
+      "baseSha256": "2176fbdb77345a4cd0b09a1060ec2ca187b9a6a0e1380e79fa8c2fbf7ccafe99",
+      "sha256": "2176fbdb77345a4cd0b09a1060ec2ca187b9a6a0e1380e79fa8c2fbf7ccafe99"
+    },
+    "public/licenses/upstream-games.json": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "public/licenses/upstream-games.json",
+      "baseSha256": "75a25aafeb443062f4ba8d3eb57d0364b607159390272f7d872082abfdac6fff",
+      "sha256": "75a25aafeb443062f4ba8d3eb57d0364b607159390272f7d872082abfdac6fff"
+    },
     "src/admin/gameNames.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/admin/gameNames.ts",
       "baseSha256": "784bc8b0f6cd4e698ad369f6d7cbcef4c3f1a8dfcd3b56a155301de0aa719dc8",
       "sha256": "784bc8b0f6cd4e698ad369f6d7cbcef4c3f1a8dfcd3b56a155301de0aa719dc8"
     },
     "src/admin/main.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/admin/main.ts",
       "baseSha256": "52ed0d95ebb11431f05ab920564641ef2ed9b78286814e4886235d4820ae1b9e",
       "sha256": "52ed0d95ebb11431f05ab920564641ef2ed9b78286814e4886235d4820ae1b9e"
     },
     "src/admin/style.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/admin/style.css",
       "baseSha256": "b4a2e4698aef91823b8239c6fc64f4ed83f81f7a98fb8a4340d777fd076eff24",
       "sha256": "b4a2e4698aef91823b8239c6fc64f4ed83f81f7a98fb8a4340d777fd076eff24"
     },
     "src/casino-api-pro.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/casino-api-pro.css",
       "baseSha256": "7fb8b369d315f49f7a2ac434a529480cff9812466ccd9ce98f99eaa0fdd8ddc6",
       "sha256": "7fb8b369d315f49f7a2ac434a529480cff9812466ccd9ce98f99eaa0fdd8ddc6"
@@ -47,49 +281,49 @@
       "sha256": "435caa63aa1a947644d7d2dc1c73ea64e2013e749fe526c82f2881fc45fe4fe4"
     },
     "src/demo-library.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/demo-library.css",
       "baseSha256": "205532de376aec7ae1b39f8e1ba74e435176ec3eee9d6bcc4958d5fbe322d6fb",
       "sha256": "205532de376aec7ae1b39f8e1ba74e435176ec3eee9d6bcc4958d5fbe322d6fb"
     },
     "src/demo-preview.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/demo-preview.css",
       "baseSha256": "ccea5a598a2cee3fe65dc6465006875e18034b7736f671fba9702eb4f4635721",
       "sha256": "ccea5a598a2cee3fe65dc6465006875e18034b7736f671fba9702eb4f4635721"
     },
     "src/ez-slots-game.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ez-slots-game.css",
       "baseSha256": "53c12d2f4708993211a219159aed7c21214b471fefab8872b2ae800af785300a",
       "sha256": "53c12d2f4708993211a219159aed7c21214b471fefab8872b2ae800af785300a"
     },
     "src/game/BackgroundImages.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/BackgroundImages.ts",
       "baseSha256": "3e9ccdf9d475e74a7bc8399efb5644964b617c7eb557cecf6a763339e5a83319",
       "sha256": "3e9ccdf9d475e74a7bc8399efb5644964b617c7eb557cecf6a763339e5a83319"
     },
     "src/game/Bar.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/Bar.ts",
       "baseSha256": "0480e105813da99c266796d665f9aee6401ffe75d38cebaa80137a6dd9f1d53d",
       "sha256": "0480e105813da99c266796d665f9aee6401ffe75d38cebaa80137a6dd9f1d53d"
     },
     "src/game/CardTablesRenderer.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/CardTablesRenderer.ts",
       "baseSha256": "9539673ed053b7a3eba9f8444ba348a79b3f926865684b71681d0ca9b2795a8d",
       "sha256": "9539673ed053b7a3eba9f8444ba348a79b3f926865684b71681d0ca9b2795a8d"
     },
     "src/game/CasinoAudio.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/CasinoAudio.ts",
       "baseSha256": "b2a0e223ad8ab27f39e0bc6cfd84ccc75879bc92cbff84558436f2013ffe00b3",
       "sha256": "b2a0e223ad8ab27f39e0bc6cfd84ccc75879bc92cbff84558436f2013ffe00b3"
     },
     "src/game/CatAudio.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/CatAudio.ts",
       "baseSha256": "bae7a38e7772766397097c7e0b0aa920e551c4892543fa47194454766b363f76",
       "sha256": "bae7a38e7772766397097c7e0b0aa920e551c4892543fa47194454766b363f76"
@@ -101,19 +335,19 @@
       "sha256": "a328df63e79c7705e1f2edc9772d15a4e5f72c922e7855fa65ff85d181fc1010"
     },
     "src/game/CatWalkCycle.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/CatWalkCycle.ts",
       "baseSha256": "32cd0638c2ccf3394bd23fc3f123584e71798ac257db7adaca606242d7d282b0",
       "sha256": "32cd0638c2ccf3394bd23fc3f123584e71798ac257db7adaca606242d7d282b0"
     },
     "src/game/GameAudio.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/GameAudio.ts",
       "baseSha256": "4b876566a0585498c2f07ed8efc695aac7d8f40eae4bf528ba39ef7fb1e260c9",
       "sha256": "4b876566a0585498c2f07ed8efc695aac7d8f40eae4bf528ba39ef7fb1e260c9"
     },
     "src/game/PianoAudio.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/PianoAudio.ts",
       "baseSha256": "5fbc000ee9939e486fd27bf5a6b584522262b8d165697280427aa133ed085039",
       "sha256": "5fbc000ee9939e486fd27bf5a6b584522262b8d165697280427aa133ed085039"
@@ -125,145 +359,145 @@
       "sha256": "c0090aeeb0a9bf38cbefa4d0ea568ca78fffeff55f35ed07f91d72bf62678a7f"
     },
     "src/game/SecurityGuard.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/SecurityGuard.ts",
       "baseSha256": "fba8bb4a6b807fa22667198106034da16b9a2e32e251f66b1abc19cb89a60434",
       "sha256": "fba8bb4a6b807fa22667198106034da16b9a2e32e251f66b1abc19cb89a60434"
     },
     "src/game/SlotAudio.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/SlotAudio.ts",
       "baseSha256": "db8bd5a92a91cbf4a57ae70166c022d41f3de93a6b893fe331f9bfdfb245cb92",
       "sha256": "db8bd5a92a91cbf4a57ae70166c022d41f3de93a6b893fe331f9bfdfb245cb92"
     },
     "src/game/TableAudio.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/TableAudio.ts",
       "baseSha256": "1877d4cf8f2b299513819c043b3294c1f84bf0477ea6194173d059d2d32c887d",
       "sha256": "1877d4cf8f2b299513819c043b3294c1f84bf0477ea6194173d059d2d32c887d"
     },
     "src/game/TailorRenderer.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/TailorRenderer.ts",
       "baseSha256": "1a37366c43474dc983d39938c67e4dc9bfa469ccc15cdf0350523bef9e16277b",
       "sha256": "1a37366c43474dc983d39938c67e4dc9bfa469ccc15cdf0350523bef9e16277b"
     },
     "src/game/VolcanicPlinkoAudio.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/VolcanicPlinkoAudio.ts",
       "baseSha256": "59a2e84d3776157199359b8b8abcc2ec4d680928b8995609790b7a9cbc350394",
       "sha256": "59a2e84d3776157199359b8b8abcc2ec4d680928b8995609790b7a9cbc350394"
     },
     "src/game/activityArt.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/activityArt.ts",
       "baseSha256": "4d8282d2a08c32223e2d28e098d0c0ff04448411c5f8d2645befb4afa6f3f1ff",
       "sha256": "4d8282d2a08c32223e2d28e098d0c0ff04448411c5f8d2645befb4afa6f3f1ff"
     },
     "src/game/arcades.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/arcades.ts",
       "baseSha256": "0cbfc99cbed6a2debd055d56536da4c8d7fe0803db826dc0ea54fb090e48acd2",
       "sha256": "0cbfc99cbed6a2debd055d56536da4c8d7fe0803db826dc0ea54fb090e48acd2"
     },
     "src/game/art.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/art.ts",
       "baseSha256": "403a9a2befd20fac75f131883a9dba3cba2d3a0a44491c2727bc14f682d3d805",
       "sha256": "403a9a2befd20fac75f131883a9dba3cba2d3a0a44491c2727bc14f682d3d805"
     },
     "src/game/atelierArt.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/atelierArt.ts",
       "baseSha256": "447349cd517c7580d2eee8352fa6b757a301f77fce81907d401c657616e959b5",
       "sha256": "447349cd517c7580d2eee8352fa6b757a301f77fce81907d401c657616e959b5"
     },
     "src/game/avatarArt.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/avatarArt.ts",
       "baseSha256": "3c949e04c1de843b7959bbeae331c8a6854bac120fb90f1f800b65d3b1848c4e",
       "sha256": "3c949e04c1de843b7959bbeae331c8a6854bac120fb90f1f800b65d3b1848c4e"
     },
     "src/game/breaker.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/breaker.ts",
       "baseSha256": "5a9fd1d72662a3aa60d3f0973615d048c15b0fd6cd018f26089d332978bb6058",
       "sha256": "5a9fd1d72662a3aa60d3f0973615d048c15b0fd6cd018f26089d332978bb6058"
     },
     "src/game/cabinetArt.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/cabinetArt.ts",
       "baseSha256": "647b9ea5c5b4611e6c8fff0bce4d0a7377c14d4fbe928822711e6383cdf82e67",
       "sha256": "647b9ea5c5b4611e6c8fff0bce4d0a7377c14d4fbe928822711e6383cdf82e67"
     },
     "src/game/cabinetArtwork.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/cabinetArtwork.ts",
       "baseSha256": "7940b701dcd38ceb40e97ee53053d7c3d7516f4044137bc20150c2ca8d0b3642",
       "sha256": "7940b701dcd38ceb40e97ee53053d7c3d7516f4044137bc20150c2ca8d0b3642"
     },
     "src/game/cabinetArtworkSources.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/cabinetArtworkSources.ts",
       "baseSha256": "c3a0794897d912b7233650e506071e8586e01207e94f3ad3e5c0a694b0bbcea4",
       "sha256": "c3a0794897d912b7233650e506071e8586e01207e94f3ad3e5c0a694b0bbcea4"
     },
     "src/game/cabinetStoolArt.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/cabinetStoolArt.ts",
       "baseSha256": "a068b4e7c3ed97559929c07519c4311fd12fbfb0f03f757caa09a1ff8182b945",
       "sha256": "a068b4e7c3ed97559929c07519c4311fd12fbfb0f03f757caa09a1ff8182b945"
     },
     "src/game/catCareArt.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/catCareArt.ts",
       "baseSha256": "5628881698aa9fd3e1bd17a794c64534a5dadf738eb4c3870aad66d671d53ab2",
       "sha256": "5628881698aa9fd3e1bd17a794c64534a5dadf738eb4c3870aad66d671d53ab2"
     },
     "src/game/catHomeArt.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/catHomeArt.ts",
       "baseSha256": "f643a5192309debe0b1a925848780fb5422586ae8a8e7e011fa975e6765d2ef9",
       "sha256": "f643a5192309debe0b1a925848780fb5422586ae8a8e7e011fa975e6765d2ef9"
     },
     "src/game/catImages.json": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/catImages.json",
       "baseSha256": "f2ced9c528395125f8566b3b4d2df3605fc27e9eb3271bcfe2ff042a9149cd89",
       "sha256": "f2ced9c528395125f8566b3b4d2df3605fc27e9eb3271bcfe2ff042a9149cd89"
     },
     "src/game/characterAnimation.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/characterAnimation.ts",
       "baseSha256": "49df70ede6b275b544e43c7858b4a4e92b36b5c06231c3ad001b1c949a25f758",
       "sha256": "49df70ede6b275b544e43c7858b4a4e92b36b5c06231c3ad001b1c949a25f758"
     },
     "src/game/characters.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/characters.ts",
       "baseSha256": "e2071b019b1d144d97ab89ca2369ddf7076bbc71d3aa3a1e23f1771673d8b971",
       "sha256": "e2071b019b1d144d97ab89ca2369ddf7076bbc71d3aa3a1e23f1771673d8b971"
     },
     "src/game/clubArt.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/clubArt.ts",
       "baseSha256": "03d50686862a3260a9e20e61f54bb0e1087a65c887ebfdeffdc7c052348d2ce1",
       "sha256": "03d50686862a3260a9e20e61f54bb0e1087a65c887ebfdeffdc7c052348d2ce1"
     },
     "src/game/dealerArt.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/dealerArt.ts",
       "baseSha256": "e62324d5ac69571a476a158eaca165c8593022bec1eed8e66c1963e5222111c5",
       "sha256": "e62324d5ac69571a476a158eaca165c8593022bec1eed8e66c1963e5222111c5"
     },
     "src/game/demoCabinetArt.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/demoCabinetArt.ts",
       "baseSha256": "f6f0e2c9c88c1bcaba5e0fae2e5be5c588f8dc5a6f3fdc57bea8f4d6c0bb2970",
       "sha256": "f6f0e2c9c88c1bcaba5e0fae2e5be5c588f8dc5a6f3fdc57bea8f4d6c0bb2970"
     },
     "src/game/demoGames.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/demoGames.ts",
       "baseSha256": "f3d2366ed1d4416b63825e896b9790524d6e2de0216fbb836720212fc7dfe078",
       "sha256": "f3d2366ed1d4416b63825e896b9790524d6e2de0216fbb836720212fc7dfe078"
@@ -275,61 +509,61 @@
       "sha256": "7cd47c7de40751d4f1070e61d02fb70131e17574e6925ed5f692d8b8527268a4"
     },
     "src/game/hallWindows.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/hallWindows.ts",
       "baseSha256": "18baf193c3f7304e12291a6fbc7bcb269afe9b9a6170febaa6def395ee903633",
       "sha256": "18baf193c3f7304e12291a6fbc7bcb269afe9b9a6170febaa6def395ee903633"
     },
     "src/game/interiorArt.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/interiorArt.ts",
       "baseSha256": "2be6bc87fed3260de4f6717847a91b39a00efa44158be40c95dfba0490c91cf4",
       "sha256": "2be6bc87fed3260de4f6717847a91b39a00efa44158be40c95dfba0490c91cf4"
     },
     "src/game/materials.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/materials.ts",
       "baseSha256": "d47d4c04cfc5cd1139d84080f37ee95683490f4934a37560010767d0c2af229e",
       "sha256": "d47d4c04cfc5cd1139d84080f37ee95683490f4934a37560010767d0c2af229e"
     },
     "src/game/miraArt.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/miraArt.ts",
       "baseSha256": "d8d9ca535eb7dc5236c21f988d8270407dcfc0645b6333bebade5731006e4aa3",
       "sha256": "d8d9ca535eb7dc5236c21f988d8270407dcfc0645b6333bebade5731006e4aa3"
     },
     "src/game/navigation.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/navigation.ts",
       "baseSha256": "3c4919cddf664e5a3bcc58095734eb0dfcc3d61787454a306623379787d97e4d",
       "sha256": "3c4919cddf664e5a3bcc58095734eb0dfcc3d61787454a306623379787d97e4d"
     },
     "src/game/roomDetails.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/roomDetails.ts",
       "baseSha256": "88ba66ad03b75054aec40862a384ea35947dab41d0c67dd1e664823e07b236f3",
       "sha256": "88ba66ad03b75054aec40862a384ea35947dab41d0c67dd1e664823e07b236f3"
     },
     "src/game/startupPreviews.json": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/startupPreviews.json",
       "baseSha256": "23f6a630ce19f74115999bf53d24d802c967b4829a6886792394a204a62ed45f",
       "sha256": "23f6a630ce19f74115999bf53d24d802c967b4829a6886792394a204a62ed45f"
     },
     "src/game/themedGameArt.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/game/themedGameArt.ts",
       "baseSha256": "c34dad4c10b6152d10359ba1fcc62e42613909fd63d6bc28071069bea628d245",
       "sha256": "c34dad4c10b6152d10359ba1fcc62e42613909fd63d6bc28071069bea628d245"
     },
     "src/i18n/en.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/i18n/en.ts",
       "baseSha256": "333f6414f2f1349aa14fbd518bbbbdb6975612ecba4622c5e24b4b1de9a0bee8",
       "sha256": "333f6414f2f1349aa14fbd518bbbbdb6975612ecba4622c5e24b4b1de9a0bee8"
     },
     "src/i18n/index.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/i18n/index.ts",
       "baseSha256": "2d164e663d6a3922184508c3a65f01615c7c9bd64ac7e6717a790e78959e00ea",
       "sha256": "2d164e663d6a3922184508c3a65f01615c7c9bd64ac7e6717a790e78959e00ea"
@@ -341,145 +575,145 @@
       "sha256": "841b789e4e0ba8f3a6f2f399758ade90d900824457d2b2e5d0408546269943c8"
     },
     "src/i18n/volcanicPlinkoEn.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/i18n/volcanicPlinkoEn.ts",
       "baseSha256": "5c029cf589bfccbcdc6c3ee1de27dba9fcc56850ec89201bf4ffa10bc4a027a8",
       "sha256": "5c029cf589bfccbcdc6c3ee1de27dba9fcc56850ec89201bf4ffa10bc4a027a8"
     },
     "src/main.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/main.ts",
       "baseSha256": "9c863d399278d73e845ceba8d74a5129d5b2965af1b03268aa648bfc7eb76961",
       "sha256": "9c863d399278d73e845ceba8d74a5129d5b2965af1b03268aa648bfc7eb76961"
     },
     "src/mira-dialog.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/mira-dialog.css",
       "baseSha256": "43be372b93d4af6ba10e83fab0e6b9e787dd258412fc04ed9b5478ee046c190a",
       "sha256": "43be372b93d4af6ba10e83fab0e6b9e787dd258412fc04ed9b5478ee046c190a"
     },
     "src/modules/ActivityHostContract.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/modules/ActivityHostContract.ts",
       "baseSha256": "8e8e04246b2769a6d0dac94ff3e109bb32268252ac7944d8512084e4f0c904e7",
       "sha256": "8e8e04246b2769a6d0dac94ff3e109bb32268252ac7944d8512084e4f0c904e7"
     },
     "src/modules/GameHostContract.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/modules/GameHostContract.ts",
       "baseSha256": "88b6f28bfa65a2f7cb405be72d5b7de503075286016e87ed59a7468cd9340547",
       "sha256": "88b6f28bfa65a2f7cb405be72d5b7de503075286016e87ed59a7468cd9340547"
     },
     "src/modules/GameHostRuntime.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/modules/GameHostRuntime.ts",
       "baseSha256": "628d4ddfb01767f5151c2aa2f811a1c6e3dce2eba7e5a91657a15a4584b54435",
       "sha256": "628d4ddfb01767f5151c2aa2f811a1c6e3dce2eba7e5a91657a15a4584b54435"
     },
     "src/modules/GameModuleCatalog.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "deployment/releases/jackie-chan-20261029-v2/source/src/modules/GameModuleCatalog.ts",
       "baseSha256": "412fabe4eaf3421dbffd25314358f579d53af2da25651c96a0ebfc20c7818a2a",
       "sha256": "412fabe4eaf3421dbffd25314358f579d53af2da25651c96a0ebfc20c7818a2a"
     },
     "src/modules/GameModuleManifest.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/modules/GameModuleManifest.ts",
       "baseSha256": "3570f80c6c5c76741c61caa766cc437747a1a58ff10f195e3f21dc22bd0ebd22",
       "sha256": "3570f80c6c5c76741c61caa766cc437747a1a58ff10f195e3f21dc22bd0ebd22"
     },
     "src/modules/GameModulePreparation.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/modules/GameModulePreparation.ts",
       "baseSha256": "0b80e9894d33b75a9d697c946082d0028c5d7cc9f890996b168a2560e7c02e3e",
       "sha256": "0b80e9894d33b75a9d697c946082d0028c5d7cc9f890996b168a2560e7c02e3e"
     },
     "src/modules/IndependentGameUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/modules/IndependentGameUI.ts",
       "baseSha256": "81ccfa6e29069b8acf5ce3e8541dd9345f4f20a44088f410f39a90533b2bc4cc",
       "sha256": "81ccfa6e29069b8acf5ce3e8541dd9345f4f20a44088f410f39a90533b2bc4cc"
     },
     "src/modules/ProviderGameUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/modules/ProviderGameUI.ts",
       "baseSha256": "43f8ddb4e2738ee3ed62c73f19675a1ed1a7cdaec4fedb72ab78419e73b3bfe2",
       "sha256": "43f8ddb4e2738ee3ed62c73f19675a1ed1a7cdaec4fedb72ab78419e73b3bfe2"
     },
     "src/modules/arcade-module.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/modules/arcade-module.css",
       "baseSha256": "94b7ab908fce9d745863347ee07b2860dba35c3ce13c12976d1fff0dbc96d666",
       "sha256": "94b7ab908fce9d745863347ee07b2860dba35c3ce13c12976d1fff0dbc96d666"
     },
     "src/network/ClickTargetScheduler.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/network/ClickTargetScheduler.ts",
       "baseSha256": "101003b745a683284b5c604bb254f0db1869b9e07baff689b34ae756ae8d382f",
       "sha256": "101003b745a683284b5c604bb254f0db1869b9e07baff689b34ae756ae8d382f"
     },
     "src/network/LobbyClient.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/network/LobbyClient.ts",
       "baseSha256": "c9c323aab32731f835b99be35b83541c4d18c45e48c80feb0dc1008643e6db3a",
       "sha256": "c9c323aab32731f835b99be35b83541c4d18c45e48c80feb0dc1008643e6db3a"
     },
     "src/network/MovementPrediction.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/network/MovementPrediction.ts",
       "baseSha256": "c7d1b505759607fb3038cad73d2ecdee021082a9607a7100f5a8b6257da0a0a0",
       "sha256": "c7d1b505759607fb3038cad73d2ecdee021082a9607a7100f5a8b6257da0a0a0"
     },
     "src/network/NpcMotion.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/network/NpcMotion.ts",
       "baseSha256": "c1d0c86bfdc41fd09af1548ca4abf294195793bfa5403a922050d4e85e45107c",
       "sha256": "c1d0c86bfdc41fd09af1548ca4abf294195793bfa5403a922050d4e85e45107c"
     },
     "src/network/NpcTimeline.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/network/NpcTimeline.ts",
       "baseSha256": "3dcbc65216fc7d3d17c89438363b6050c1d0e8bec2890bdc88ab612a95398225",
       "sha256": "3dcbc65216fc7d3d17c89438363b6050c1d0e8bec2890bdc88ab612a95398225"
     },
     "src/network/PvpClient.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/network/PvpClient.ts",
       "baseSha256": "3638f2df6fa9eb90ce80d6ae8cf9e550e58ca778b8edc1cb9eab384dacffdb83",
       "sha256": "3638f2df6fa9eb90ce80d6ae8cf9e550e58ca778b8edc1cb9eab384dacffdb83"
     },
     "src/network/sessionRecovery.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/network/sessionRecovery.ts",
       "baseSha256": "00b109a4d8fed2d65a493e7c557dcdeb124174cc51d640a92ba4fe9e13b907f3",
       "sha256": "00b109a4d8fed2d65a493e7c557dcdeb124174cc51d640a92ba4fe9e13b907f3"
     },
     "src/original-games.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/original-games.css",
       "baseSha256": "874bc3eedf2ab5cc4f0d4b4026b514c217640b8643568eced469448f1c5ce69f",
       "sha256": "874bc3eedf2ab5cc4f0d4b4026b514c217640b8643568eced469448f1c5ce69f"
     },
     "src/own-cabinets.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/own-cabinets.css",
       "baseSha256": "2f41cb8d374b83371cced2505d0dc7d62d336c560852ed218a50470d83fa9a09",
       "sha256": "2f41cb8d374b83371cced2505d0dc7d62d336c560852ed218a50470d83fa9a09"
     },
     "src/paper-theme.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/paper-theme.css",
       "baseSha256": "c2618a4b9fee4b3e28ae07c1292ed59dc0ce4b1fed7fa80f7146c2dfe2f6a1c6",
       "sha256": "c2618a4b9fee4b3e28ae07c1292ed59dc0ce4b1fed7fa80f7146c2dfe2f6a1c6"
     },
     "src/shared/activities.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/activities.ts",
       "baseSha256": "4066a87d6fa8bcec96f5a4a419ef73f4c140ac3d46873ae7bb418f0f8b056023",
       "sha256": "4066a87d6fa8bcec96f5a4a419ef73f4c140ac3d46873ae7bb418f0f8b056023"
     },
     "src/shared/afterglow.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/afterglow.ts",
       "baseSha256": "3a20c05490f1fce9fb33244091230f5106c23d9686566e40f0051d124e941256",
       "sha256": "3a20c05490f1fce9fb33244091230f5106c23d9686566e40f0051d124e941256"
@@ -491,457 +725,457 @@
       "sha256": "6dace1ede72ee479115b5cbf2d1d512c9e8800fd315be407cea787377362dc1f"
     },
     "src/shared/ambientGuests.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/ambientGuests.ts",
       "baseSha256": "6a30d7b77ae830984256dee833ebf5edb57e1c7cdd63d49f6c3d928a91a670fd",
       "sha256": "6a30d7b77ae830984256dee833ebf5edb57e1c7cdd63d49f6c3d928a91a670fd"
     },
     "src/shared/appearance.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/appearance.ts",
       "baseSha256": "d753df5f08e1c6717c4ba3fdbe1b0202013177859995751296a8a900f6a5f1a1",
       "sha256": "d753df5f08e1c6717c4ba3fdbe1b0202013177859995751296a8a900f6a5f1a1"
     },
     "src/shared/arcadeCatalog.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "deployment/releases/jackie-chan-20261029-v2/source/src/shared/arcadeCatalog.ts",
       "baseSha256": "6efcf93ef73f267d15b2a9d5ff42de4ad13d758881f7574c8c994fe49366c450",
       "sha256": "6efcf93ef73f267d15b2a9d5ff42de4ad13d758881f7574c8c994fe49366c450"
     },
     "src/shared/atelier.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/atelier.ts",
       "baseSha256": "6c947abfc6a4c2ce585568027bcb5a317debbbd3dbefe95b186ac843eebdcb95",
       "sha256": "6c947abfc6a4c2ce585568027bcb5a317debbbd3dbefe95b186ac843eebdcb95"
     },
     "src/shared/cabinetGeometry.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/cabinetGeometry.ts",
       "baseSha256": "c63adb8bd873e609053ee24384e999eb4fe170b0be536b02f9ec61e848c00118",
       "sha256": "c63adb8bd873e609053ee24384e999eb4fe170b0be536b02f9ec61e848c00118"
     },
     "src/shared/cabinetSeating.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/cabinetSeating.ts",
       "baseSha256": "79306f90ae0607f6f3b60bf4868816027bb023af454a1b95f09b1163815c4a8c",
       "sha256": "79306f90ae0607f6f3b60bf4868816027bb023af454a1b95f09b1163815c4a8c"
     },
     "src/shared/cabinets.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "deployment/releases/jackie-chan-20261029-v2/source/src/shared/cabinets.ts",
       "baseSha256": "2c9212df02cf3eef376af83a9274bfa27b41fb3bf2d6a076c2d92d00af61b759",
       "sha256": "2c9212df02cf3eef376af83a9274bfa27b41fb3bf2d6a076c2d92d00af61b759"
     },
     "src/shared/caramelCarnival.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/caramelCarnival.ts",
       "baseSha256": "17f9e338297ac7fc37fa0f6ac6608e22cdc9ad145ad18f8c6764d72575f725aa",
       "sha256": "17f9e338297ac7fc37fa0f6ac6608e22cdc9ad145ad18f8c6764d72575f725aa"
     },
     "src/shared/cardTables.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/cardTables.ts",
       "baseSha256": "12197eabb008c9166bfedc0ddbb6bce5a1023090faf1c71bc56960418d00f6ab",
       "sha256": "12197eabb008c9166bfedc0ddbb6bce5a1023090faf1c71bc56960418d00f6ab"
     },
     "src/shared/caribbeanCrew.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/caribbeanCrew.ts",
       "baseSha256": "e96587114a2e20aaeb7504fd43a7c03a6769b4d77aaa3d91a4f39597d5057b7c",
       "sha256": "e96587114a2e20aaeb7504fd43a7c03a6769b4d77aaa3d91a4f39597d5057b7c"
     },
     "src/shared/caribbeanTransport.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/caribbeanTransport.ts",
       "baseSha256": "c4a590c6778048f9ecd37852549762adde064f90dca072316ee215ba8ac89c78",
       "sha256": "c4a590c6778048f9ecd37852549762adde064f90dca072316ee215ba8ac89c78"
     },
     "src/shared/caribbeanTreasures.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/caribbeanTreasures.ts",
       "baseSha256": "5590af9897cfb32dbf8fd7d9c0608ad52184051ddee7ca70cd309267a4311aee",
       "sha256": "5590af9897cfb32dbf8fd7d9c0608ad52184051ddee7ca70cd309267a4311aee"
     },
     "src/shared/caribbeanTreasuresMath.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/caribbeanTreasuresMath.ts",
       "baseSha256": "b86e71675dfd0179da8d8c43c7a62f8da41303d5e6bc59f07b81d4497b64647b",
       "sha256": "b86e71675dfd0179da8d8c43c7a62f8da41303d5e6bc59f07b81d4497b64647b"
     },
     "src/shared/casinoApiPro.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/casinoApiPro.ts",
       "baseSha256": "11587445aebd984d43fb16aec2d8f4fdf2eb17c06ff49158aa0ea7f1e4564ad2",
       "sha256": "11587445aebd984d43fb16aec2d8f4fdf2eb17c06ff49158aa0ea7f1e4564ad2"
     },
     "src/shared/casinoBatchVariants.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/casinoBatchVariants.ts",
       "baseSha256": "e09ea94fdb5929596f610ef7462dc80d50bcf4926335c398fca6c031a0496135",
       "sha256": "e09ea94fdb5929596f610ef7462dc80d50bcf4926335c398fca6c031a0496135"
     },
     "src/shared/casinoExpansion.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "deployment/releases/jackie-chan-20261029-v2/source/src/shared/casinoExpansion.ts",
       "baseSha256": "4c4d2a2ad539e9e7b162c9ea63ed9aca6373fa4f2dd2b8f4d8e836c2c655393c",
       "sha256": "4c4d2a2ad539e9e7b162c9ea63ed9aca6373fa4f2dd2b8f4d8e836c2c655393c"
     },
     "src/shared/casinoNextVariants.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/casinoNextVariants.ts",
       "baseSha256": "6f525322bc640eb29ad7bfc025205686f87214b174a08a92d0f800afe636eaa7",
       "sha256": "6f525322bc640eb29ad7bfc025205686f87214b174a08a92d0f800afe636eaa7"
     },
     "src/shared/casinoSessions.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/casinoSessions.ts",
       "baseSha256": "002e31c3198d885571e78b3fdc714aeed6179cd269f5927de3ad0c23dacbb2dd",
       "sha256": "002e31c3198d885571e78b3fdc714aeed6179cd269f5927de3ad0c23dacbb2dd"
     },
     "src/shared/casinoVariants.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/casinoVariants.ts",
       "baseSha256": "806e62338241a65561b7170957045ce2fd931a599302d50785c35f6f0f9f1ca5",
       "sha256": "806e62338241a65561b7170957045ce2fd931a599302d50785c35f6f0f9f1ca5"
     },
     "src/shared/cat.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/cat.ts",
       "baseSha256": "a42a808a4d6e582a2fc7f47c0b1836a6cc1a4157a1a140d425e792c220e070b9",
       "sha256": "a42a808a4d6e582a2fc7f47c0b1836a6cc1a4157a1a140d425e792c220e070b9"
     },
     "src/shared/catCare.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/catCare.ts",
       "baseSha256": "83f8f64ca8a13f97e3fd20f7eec5d59623a1f0181d0393fa2e855880a201f5c8",
       "sha256": "83f8f64ca8a13f97e3fd20f7eec5d59623a1f0181d0393fa2e855880a201f5c8"
     },
     "src/shared/catHome.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/catHome.ts",
       "baseSha256": "37f33f935166ea7da5beeddd9f4df5c208d483f8b62d3e6d72b4298a09851b10",
       "sha256": "37f33f935166ea7da5beeddd9f4df5c208d483f8b62d3e6d72b4298a09851b10"
     },
     "src/shared/catSurfaces.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/catSurfaces.ts",
       "baseSha256": "57d15054db858053e7bc67910cd361f79aa59053b2641fcb8b8b6e41d063dd47",
       "sha256": "57d15054db858053e7bc67910cd361f79aa59053b2641fcb8b8b6e41d063dd47"
     },
     "src/shared/characters.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/characters.ts",
       "baseSha256": "ec8a3741b571d301f72f28e79f2293d7bcdb83e9654fe21d1acd9e0eb1bded1f",
       "sha256": "ec8a3741b571d301f72f28e79f2293d7bcdb83e9654fe21d1acd9e0eb1bded1f"
     },
     "src/shared/chat.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/chat.ts",
       "baseSha256": "1b513fd076d2cfb871b9be0c00bb9218a2ebf296e3b29738ca705c908e9c8d71",
       "sha256": "1b513fd076d2cfb871b9be0c00bb9218a2ebf296e3b29738ca705c908e9c8d71"
     },
     "src/shared/chatMedia.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/chatMedia.ts",
       "baseSha256": "c16f283c9310455322193a89038bd39a12213d25d777dc37425d502a85e79b78",
       "sha256": "c16f283c9310455322193a89038bd39a12213d25d777dc37425d502a85e79b78"
     },
     "src/shared/clubGeometry.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/clubGeometry.ts",
       "baseSha256": "e70216f7cea75cd5f14f868b777431f1f824ee0347e017c3124d213a243d7290",
       "sha256": "e70216f7cea75cd5f14f868b777431f1f824ee0347e017c3124d213a243d7290"
     },
     "src/shared/clubLayout.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/clubLayout.ts",
       "baseSha256": "6df6051ddd013821d78193622fa7c8bc8b765bc8f971a2d30eeb462d0cc86414",
       "sha256": "6df6051ddd013821d78193622fa7c8bc8b765bc8f971a2d30eeb462d0cc86414"
     },
     "src/shared/combat.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/combat.ts",
       "baseSha256": "89c43e69c2a65adf3213c8583c5fdef873f296a20fb6ec8682d75bd6bed3190d",
       "sha256": "89c43e69c2a65adf3213c8583c5fdef873f296a20fb6ec8682d75bd6bed3190d"
     },
     "src/shared/combatEscrow.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/combatEscrow.ts",
       "baseSha256": "16bd3c5b7a60e35ab946f98bc4a5acbc85f72e683cf913c27a834da0b03a4f44",
       "sha256": "16bd3c5b7a60e35ab946f98bc4a5acbc85f72e683cf913c27a834da0b03a4f44"
     },
     "src/shared/combatView.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/combatView.ts",
       "baseSha256": "a1b52fda09c17b623776603ba93290915fc37543f9e0b3074cc967d1c2f013d7",
       "sha256": "a1b52fda09c17b623776603ba93290915fc37543f9e0b3074cc967d1c2f013d7"
     },
     "src/shared/convoyWardrobe.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/convoyWardrobe.ts",
       "baseSha256": "e00ff55831b480cfc785354d0bddebef35bd58f754c8bb3dc26fdbd1fe8b60fa",
       "sha256": "e00ff55831b480cfc785354d0bddebef35bd58f754c8bb3dc26fdbd1fe8b60fa"
     },
     "src/shared/cosmicEscapeBets.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/cosmicEscapeBets.ts",
       "baseSha256": "5e079e858e39cd73070f95f77688c774aee887e025a2f84fbc365c1e9cddd625",
       "sha256": "5e079e858e39cd73070f95f77688c774aee887e025a2f84fbc365c1e9cddd625"
     },
     "src/shared/crLeo.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/crLeo.ts",
       "baseSha256": "f0c9eae07611011cd3675eec1ed8a46a00f2f84822d8430a4b4267e6bfe15b38",
       "sha256": "f0c9eae07611011cd3675eec1ed8a46a00f2f84822d8430a4b4267e6bfe15b38"
     },
     "src/shared/cryptoDisplay.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/cryptoDisplay.ts",
       "baseSha256": "a38f98bbe1d9fbb8c6dd5328195bd606d96144aec7a6bc3489ffee57ce243206",
       "sha256": "a38f98bbe1d9fbb8c6dd5328195bd606d96144aec7a6bc3489ffee57ce243206"
     },
     "src/shared/cryptoWallet.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/cryptoWallet.ts",
       "baseSha256": "4bddde9c8fa664711fd18f66207366c53e810ce9fa09fb9c98775fdd554bc89b",
       "sha256": "4bddde9c8fa664711fd18f66207366c53e810ce9fa09fb9c98775fdd554bc89b"
     },
     "src/shared/demoWallet.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/demoWallet.ts",
       "baseSha256": "2f3d21554eaa03930e306f8db103fe8299649387853574dff516cd01cd7e1cef",
       "sha256": "2f3d21554eaa03930e306f8db103fe8299649387853574dff516cd01cd7e1cef"
     },
     "src/shared/dicePresentation.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/dicePresentation.ts",
       "baseSha256": "f8f11851e9b7858e62120d2e043e5e145df0f647ac828e947a5904ac77251e19",
       "sha256": "f8f11851e9b7858e62120d2e043e5e145df0f647ac828e947a5904ac77251e19"
     },
     "src/shared/dracona.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/dracona.ts",
       "baseSha256": "fa6d089b90592693ac3da96fed174f53db6733c37f3ab16e9205cc606396d649",
       "sha256": "fa6d089b90592693ac3da96fed174f53db6733c37f3ab16e9205cc606396d649"
     },
     "src/shared/draconaMath.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/draconaMath.ts",
       "baseSha256": "5735d0173b801e80329ec93f9d0dc049da94068addd042f7de0fb6bf9ca248b4",
       "sha256": "5735d0173b801e80329ec93f9d0dc049da94068addd042f7de0fb6bf9ca248b4"
     },
     "src/shared/draconaMathV1.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/draconaMathV1.ts",
       "baseSha256": "760b567c64aae4a5190641cad162fd9a6ff9e5764e8bd9d91d06dcb1d707ee21",
       "sha256": "760b567c64aae4a5190641cad162fd9a6ff9e5764e8bd9d91d06dcb1d707ee21"
     },
     "src/shared/financeAdmin.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/financeAdmin.ts",
       "baseSha256": "5e3e9d41c4ce82a0ba8c610a89e622ca55fc678eb383332da9f2c565d95ad761",
       "sha256": "5e3e9d41c4ce82a0ba8c610a89e622ca55fc678eb383332da9f2c565d95ad761"
     },
     "src/shared/flagBattle.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/flagBattle.ts",
       "baseSha256": "e156fd61e71243759c27d9a9d3fed8a0ab1555e9938f6a2b7ac854c344d16e6f",
       "sha256": "e156fd61e71243759c27d9a9d3fed8a0ab1555e9938f6a2b7ac854c344d16e6f"
     },
     "src/shared/flightGame.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/flightGame.ts",
       "baseSha256": "5bf2cd8dc8b462ffda56bf79cfabbe59c825c49c39786ce7aa3811ec0c62e3e9",
       "sha256": "5bf2cd8dc8b462ffda56bf79cfabbe59c825c49c39786ce7aa3811ec0c62e3e9"
     },
     "src/shared/forestHeart.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/forestHeart.ts",
       "baseSha256": "6f0ba79987ff2d24e5c242103ec6735bea1b9fcb3a0fba2abec773eff1dab52e",
       "sha256": "6f0ba79987ff2d24e5c242103ec6735bea1b9fcb3a0fba2abec773eff1dab52e"
     },
     "src/shared/forestHeartMath.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/forestHeartMath.ts",
       "baseSha256": "c3e04efc098aa9d61f0faa70fc9159d8460dcf0816d96ef5b560efd45ab46658",
       "sha256": "c3e04efc098aa9d61f0faa70fc9159d8460dcf0816d96ef5b560efd45ab46658"
     },
     "src/shared/fruitsPresentation.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/fruitsPresentation.ts",
       "baseSha256": "37665084b89a404ee44e6424171b3f3282dfbf14a7aca2d536df22be3f8ce382",
       "sha256": "37665084b89a404ee44e6424171b3f3282dfbf14a7aca2d536df22be3f8ce382"
     },
     "src/shared/furniture.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/furniture.ts",
       "baseSha256": "dbbb212cc84b3c1c5b6bb41b144102e38b974e29a240bca524eedeb8f6f5d5da",
       "sha256": "dbbb212cc84b3c1c5b6bb41b144102e38b974e29a240bca524eedeb8f6f5d5da"
     },
     "src/shared/gameCore.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/gameCore.ts",
       "baseSha256": "aa9520b435a5c969d257290e3b06060051db76de45955f99dd68c48f1b5addab",
       "sha256": "aa9520b435a5c969d257290e3b06060051db76de45955f99dd68c48f1b5addab"
     },
     "src/shared/gameThemes.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/gameThemes.ts",
       "baseSha256": "a24d1d8dcef7bae07f0764a78e96a7158942228815e8e2ba47a1f846e42abeab",
       "sha256": "a24d1d8dcef7bae07f0764a78e96a7158942228815e8e2ba47a1f846e42abeab"
     },
     "src/shared/githubGames.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/githubGames.ts",
       "baseSha256": "2296858200d156461f81f1c99739354ee935325848385b14d8a876d99df40bbc",
       "sha256": "2296858200d156461f81f1c99739354ee935325848385b14d8a876d99df40bbc"
     },
     "src/shared/guardCollision.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/guardCollision.ts",
       "baseSha256": "a050c55ac5d5e9ab9615635de1b64801343d9a9675c1cd1b23d7bc4e9b49a9f2",
       "sha256": "a050c55ac5d5e9ab9615635de1b64801343d9a9675c1cd1b23d7bc4e9b49a9f2"
     },
     "src/shared/hockey.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/hockey.ts",
       "baseSha256": "eba673cd220fac7d85a3ba9da53d9cf0b5dfae7ca3732306327ac7a28a7ca320",
       "sha256": "eba673cd220fac7d85a3ba9da53d9cf0b5dfae7ca3732306327ac7a28a7ca320"
     },
     "src/shared/intoxication.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/intoxication.ts",
       "baseSha256": "742b40f26c4efe392d9a76895e9287a06c877aeecc5cbbc5d2419e7ff9689e95",
       "sha256": "742b40f26c4efe392d9a76895e9287a06c877aeecc5cbbc5d2419e7ff9689e95"
     },
     "src/shared/jackieChan.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/jackieChan.ts",
       "baseSha256": "5f7cd0a034676f79cf94b01b7a5e725d8c27cc7af5e8734d36ce3e27dff47faf",
       "sha256": "5f7cd0a034676f79cf94b01b7a5e725d8c27cc7af5e8734d36ce3e27dff47faf"
     },
     "src/shared/lastConvoy.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/lastConvoy.ts",
       "baseSha256": "f4d1b22f8a67dfda6fadbb4539b85211d8ad6c165657ba394bcd5c258e1f280a",
       "sha256": "f4d1b22f8a67dfda6fadbb4539b85211d8ad6c165657ba394bcd5c258e1f280a"
     },
     "src/shared/limboPresentation.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/limboPresentation.ts",
       "baseSha256": "ba85eba81edb54b18b48752f617593962990b95a39aceab218f9767867bbbebb",
       "sha256": "ba85eba81edb54b18b48752f617593962990b95a39aceab218f9767867bbbebb"
     },
     "src/shared/luelonSlots.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/luelonSlots.ts",
       "baseSha256": "1867b3f6e7e3fbc1e00dd6fad2bb094c42e6038f8eba18e0ef7250381f95cdcb",
       "sha256": "1867b3f6e7e3fbc1e00dd6fad2bb094c42e6038f8eba18e0ef7250381f95cdcb"
     },
     "src/shared/luelonSlotsLines.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/luelonSlotsLines.ts",
       "baseSha256": "cc9e2528bae03e8965c154f82aa271b3c9976bb3d817130ba51dedf6e8eb67ee",
       "sha256": "cc9e2528bae03e8965c154f82aa271b3c9976bb3d817130ba51dedf6e8eb67ee"
     },
     "src/shared/luelonSlotsModels.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/luelonSlotsModels.ts",
       "baseSha256": "b8644fecff250437909ff88950c5ef129c1d534108344f9643b815614d844c74",
       "sha256": "b8644fecff250437909ff88950c5ef129c1d534108344f9643b815614d844c74"
     },
     "src/shared/memeOverload.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/memeOverload.ts",
       "baseSha256": "3380fce5ee723cea9a07d8b098c933e0465300fcc19fa727ef30ccbf7303244b",
       "sha256": "3380fce5ee723cea9a07d8b098c933e0465300fcc19fa727ef30ccbf7303244b"
     },
     "src/shared/minesGame.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/minesGame.ts",
       "baseSha256": "ec6983dd397611cf6703e8a72529844f66df5ff9131a6f30e3dba75d26ff3f1d",
       "sha256": "ec6983dd397611cf6703e8a72529844f66df5ff9131a6f30e3dba75d26ff3f1d"
     },
     "src/shared/miraRoutine.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/miraRoutine.ts",
       "baseSha256": "6c4c54350515d5157afa57edb2a29cad149d1becea98b7fccd3473d20e069c47",
       "sha256": "6c4c54350515d5157afa57edb2a29cad149d1becea98b7fccd3473d20e069c47"
     },
     "src/shared/movement.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/movement.ts",
       "baseSha256": "d9dbc4e857101b0a432d95d76f34addf5787ea7566234692e14513dbfef1cf6b",
       "sha256": "d9dbc4e857101b0a432d95d76f34addf5787ea7566234692e14513dbfef1cf6b"
     },
     "src/shared/movementLimits.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/movementLimits.ts",
       "baseSha256": "6d70cf0d47e42fc3dafac122c24f33da7a00946ad4ac22f06a0a07e4dc118d02",
       "sha256": "6d70cf0d47e42fc3dafac122c24f33da7a00946ad4ac22f06a0a07e4dc118d02"
     },
     "src/shared/neopolis.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/neopolis.ts",
       "baseSha256": "e686a82b272bbfc15f9bd88193f095233490564fbbe8f594893cac101c57c6d1",
       "sha256": "e686a82b272bbfc15f9bd88193f095233490564fbbe8f594893cac101c57c6d1"
     },
     "src/shared/neopolisMath.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/neopolisMath.ts",
       "baseSha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
       "sha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5"
     },
     "src/shared/neopolisMathV1.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/neopolisMathV1.ts",
       "baseSha256": "84adb49d9303b29bd8a460b30b7e6993d77df343f8dae33025a0646f7ca3bb92",
       "sha256": "84adb49d9303b29bd8a460b30b7e6993d77df343f8dae33025a0646f7ca3bb92"
     },
     "src/shared/neopolisMathV2.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/neopolisMathV2.ts",
       "baseSha256": "22c2d4646ea2ac8db021bde42fcb90b38035848041cea217acd1d9eeb2682692",
       "sha256": "22c2d4646ea2ac8db021bde42fcb90b38035848041cea217acd1d9eeb2682692"
     },
     "src/shared/neopolisMathV3.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/neopolisMathV3.ts",
       "baseSha256": "e32db65f28cb4cac308d07154fb56f7816fc630c82a7548e1733ad34e0a91820",
       "sha256": "e32db65f28cb4cac308d07154fb56f7816fc630c82a7548e1733ad34e0a91820"
     },
     "src/shared/neopolisStakePayouts.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/neopolisStakePayouts.ts",
       "baseSha256": "8a5b1ce043a5e3341148412c422561aa38c9de04e2fdb01989bb0c384157ecae",
       "sha256": "8a5b1ce043a5e3341148412c422561aa38c9de04e2fdb01989bb0c384157ecae"
     },
     "src/shared/nilePlay.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/nilePlay.ts",
       "baseSha256": "d760785a5eb68a5e6d321f499e6bbf2fd4fbe2b1b835e6cbe52d81798f27d8d6",
       "sha256": "d760785a5eb68a5e6d321f499e6bbf2fd4fbe2b1b835e6cbe52d81798f27d8d6"
     },
     "src/shared/nileWallet.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/nileWallet.ts",
       "baseSha256": "f46ab635e6b3b59a0c1bb60d39bbf13de046a2ec3b1cc1ee832d4d36ed669b29",
       "sha256": "f46ab635e6b3b59a0c1bb60d39bbf13de046a2ec3b1cc1ee832d4d36ed669b29"
     },
     "src/shared/nitroRun.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/nitroRun.ts",
       "baseSha256": "621e54ab208ea598573dc79f22be813509a85523309af76d5f3b8da7d038cc08",
       "sha256": "621e54ab208ea598573dc79f22be813509a85523309af76d5f3b8da7d038cc08"
     },
     "src/shared/nowpaymentsSandbox.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/nowpaymentsSandbox.ts",
       "baseSha256": "95df8061741dcf8ea642d1aa80ba7937505d3e1b81e17b1fb5dbb64711e37b43",
       "sha256": "95df8061741dcf8ea642d1aa80ba7937505d3e1b81e17b1fb5dbb64711e37b43"
     },
     "src/shared/originalGames.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/originalGames.ts",
       "baseSha256": "9743f1465b625e64055c8c6c9f268ce8023d61adc7eed187507be7d4163d40c0",
       "sha256": "9743f1465b625e64055c8c6c9f268ce8023d61adc7eed187507be7d4163d40c0"
@@ -953,157 +1187,157 @@
       "sha256": "a5f187bce65ca55e9bf4219ecfccb4e3df8dca8dc306debc6167988a56b993ef"
     },
     "src/shared/plinkoPresentation.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/plinkoPresentation.ts",
       "baseSha256": "e79f0119130678ae960bf948cb81bde3cbcdfcef5dc344aa43b8650ba39a0968",
       "sha256": "e79f0119130678ae960bf948cb81bde3cbcdfcef5dc344aa43b8650ba39a0968"
     },
     "src/shared/pool.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/pool.ts",
       "baseSha256": "5d07e5bb44576ebac96353101584436fb22dfa8d404803195f2b1e57c01fe096",
       "sha256": "5d07e5bb44576ebac96353101584436fb22dfa8d404803195f2b1e57c01fe096"
     },
     "src/shared/pvp.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/pvp.ts",
       "baseSha256": "d20cd82ca7f1c8cd20d25daa3e420519a42993a8583924e38d9e67d3cd8f31b3",
       "sha256": "d20cd82ca7f1c8cd20d25daa3e420519a42993a8583924e38d9e67d3cd8f31b3"
     },
     "src/shared/pvpSeats.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/pvpSeats.ts",
       "baseSha256": "a1430b142a89b77f77268a7a419a4ae62e735d17416b769ef3cb6dd594ea180d",
       "sha256": "a1430b142a89b77f77268a7a419a4ae62e735d17416b769ef3cb6dd594ea180d"
     },
     "src/shared/security.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/security.ts",
       "baseSha256": "c97474be324300fae8e277dbc3480c9ad66f3fb1a1f68287317426c4c550afff",
       "sha256": "c97474be324300fae8e277dbc3480c9ad66f3fb1a1f68287317426c4c550afff"
     },
     "src/shared/skinDescription.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/skinDescription.ts",
       "baseSha256": "e2308ca8dae8c626a786c448eb832ac0deaad14b5f0ec0320b936c5bbe81130b",
       "sha256": "e2308ca8dae8c626a786c448eb832ac0deaad14b5f0ec0320b936c5bbe81130b"
     },
     "src/shared/skinStudio.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "453e241b42fc9b71cf28386a52f071475f279951",
       "path": "src/shared/skinStudio.ts",
       "baseSha256": "f183634963d4cc89d7addc0027eb1823ab8fd95555148cce8239160e83473ee8",
       "sha256": "f183634963d4cc89d7addc0027eb1823ab8fd95555148cce8239160e83473ee8"
     },
     "src/shared/studioGames.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/studioGames.ts",
       "baseSha256": "5be1d552e408e7a2fe1d1cff923b70bdda059a57847c46db09c96dc2ae63e29a",
       "sha256": "5be1d552e408e7a2fe1d1cff923b70bdda059a57847c46db09c96dc2ae63e29a"
     },
     "src/shared/targetPlinkoPresentation.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/targetPlinkoPresentation.ts",
       "baseSha256": "3364addf699c9f204a2a51b6265ef8b0f409179c01e7e963bd6f127cb63c19e6",
       "sha256": "3364addf699c9f204a2a51b6265ef8b0f409179c01e7e963bd6f127cb63c19e6"
     },
     "src/shared/themedGames.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/themedGames.ts",
       "baseSha256": "49c241391d49b34e463186ca8a073e6a3bf3aa3d1de56830db4a6a4caea05946",
       "sha256": "49c241391d49b34e463186ca8a073e6a3bf3aa3d1de56830db4a6a4caea05946"
     },
     "src/shared/usdtWallet.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/usdtWallet.ts",
       "baseSha256": "23b523bb24b84dcdbda636f1b6bd940e3072a5069b9ba8c44c71da29129c484a",
       "sha256": "23b523bb24b84dcdbda636f1b6bd940e3072a5069b9ba8c44c71da29129c484a"
     },
     "src/shared/velvetReign.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/velvetReign.ts",
       "baseSha256": "8cd399677940ae5fddd67dea255fd83b54faf297cb00b8290ae918b53e26db2f",
       "sha256": "8cd399677940ae5fddd67dea255fd83b54faf297cb00b8290ae918b53e26db2f"
     },
     "src/shared/velvetReignHistory.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/velvetReignHistory.ts",
       "baseSha256": "597f90f94bcbecd64fc37a27f730009651ed5c4d6731a1ee54602195e508118c",
       "sha256": "597f90f94bcbecd64fc37a27f730009651ed5c4d6731a1ee54602195e508118c"
     },
     "src/shared/walletAccount.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/walletAccount.ts",
       "baseSha256": "f048e9d0e18ffe32619ee9e8b5f457d9d6af69329dbd2b26b994c2bcf6448560",
       "sha256": "f048e9d0e18ffe32619ee9e8b5f457d9d6af69329dbd2b26b994c2bcf6448560"
     },
     "src/shared/wheelSpinPresentation.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/wheelSpinPresentation.ts",
       "baseSha256": "586d23cdc127cbb3bfc9be7ec5b9819a91a9724c58fcb25347f843342c55b122",
       "sha256": "586d23cdc127cbb3bfc9be7ec5b9819a91a9724c58fcb25347f843342c55b122"
     },
     "src/shared/world.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/shared/world.ts",
       "baseSha256": "88c5b4473a23d396e12dc699174caa764ede9257dfea2df5361eaef14ea8e45d",
       "sha256": "88c5b4473a23d396e12dc699174caa764ede9257dfea2df5361eaef14ea8e45d"
     },
     "src/style.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/style.css",
       "baseSha256": "d4823bafd1cc130ceac4610efc1a6e83d9ca2b50965279c245d7a510398f12a6",
       "sha256": "d4823bafd1cc130ceac4610efc1a6e83d9ca2b50965279c245d7a510398f12a6"
     },
     "src/table-games.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/table-games.css",
       "baseSha256": "cd755e83429f6e5498b3bcf2f6bc865353e75eaef9dc9d394e920d3ac63b8a59",
       "sha256": "cd755e83429f6e5498b3bcf2f6bc865353e75eaef9dc9d394e920d3ac63b8a59"
     },
     "src/themed-games.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/themed-games.css",
       "baseSha256": "b12fdf792f69df1074df0d3d2efdcf0766c75616c57d84bf82befad771e1cd5d",
       "sha256": "b12fdf792f69df1074df0d3d2efdcf0766c75616c57d84bf82befad771e1cd5d"
     },
     "src/ui/ActivitiesUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/ActivitiesUI.ts",
       "baseSha256": "431721288ecfcb33043f6d3806f4df5dfc383d2e6fce0d0471436e967e890701",
       "sha256": "431721288ecfcb33043f6d3806f4df5dfc383d2e6fce0d0471436e967e890701"
     },
     "src/ui/ActivityGameView.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/ActivityGameView.ts",
       "baseSha256": "8d070b735fbaaed7426ffd75197e62e42403dac27d9bf24d44b0af122406617b",
       "sha256": "8d070b735fbaaed7426ffd75197e62e42403dac27d9bf24d44b0af122406617b"
     },
     "src/ui/AfterglowArtwork.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/AfterglowArtwork.ts",
       "baseSha256": "fe2592598277af9d9b0d40ac3a135bb67602cee87c45c9b99615e0db9c3c3295",
       "sha256": "fe2592598277af9d9b0d40ac3a135bb67602cee87c45c9b99615e0db9c3c3295"
     },
     "src/ui/AfterglowAssets.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/AfterglowAssets.ts",
       "baseSha256": "b7ffc3ed03191f2ffd738a2bbabe1a3a5fc88357954bbbf822cea0c727e9d444",
       "sha256": "b7ffc3ed03191f2ffd738a2bbabe1a3a5fc88357954bbbf822cea0c727e9d444"
     },
     "src/ui/AfterglowAudio.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/AfterglowAudio.ts",
       "baseSha256": "31b555c4883fece6e12ffd8b08e1a6643796c604506893b1e447790684ac1e05",
       "sha256": "31b555c4883fece6e12ffd8b08e1a6643796c604506893b1e447790684ac1e05"
     },
     "src/ui/AfterglowBoard.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/AfterglowBoard.ts",
       "baseSha256": "b693ef127a2c76244f1d448846d84b8271c195e0510a1a89809ff727cefa0e3b",
       "sha256": "b693ef127a2c76244f1d448846d84b8271c195e0510a1a89809ff727cefa0e3b"
     },
     "src/ui/AfterglowFeedback.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/AfterglowFeedback.ts",
       "baseSha256": "5a8d1eec80ba7d59813f5d8021e323bbb592c3d049c7170bcbbb0622f48756c8",
       "sha256": "5a8d1eec80ba7d59813f5d8021e323bbb592c3d049c7170bcbbb0622f48756c8"
@@ -1121,295 +1355,295 @@
       "sha256": "bb83f9cc09c7e47d5cf5b8c125ebce417e34b171237cae9ab25bd347311bc3f9"
     },
     "src/ui/AfterglowVoices.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/AfterglowVoices.ts",
       "baseSha256": "2b7375d6dee3d2866e26f563ed4b7d091bbdd75879d6375946baa208f9e5c8ce",
       "sha256": "2b7375d6dee3d2866e26f563ed4b7d091bbdd75879d6375946baa208f9e5c8ce"
     },
     "src/ui/AuthUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/AuthUI.ts",
       "baseSha256": "2f88202b5f8d349612f5a85028c4dda7b834ef0bb0912437575e8fa8604786cd",
       "sha256": "2f88202b5f8d349612f5a85028c4dda7b834ef0bb0912437575e8fa8604786cd"
     },
     "src/ui/CaramelArtwork.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/CaramelArtwork.ts",
       "baseSha256": "cbc1ddaced3cfd215307e33e3b7aecc5cb00c9860b1a12536097166e5f971bcc",
       "sha256": "cbc1ddaced3cfd215307e33e3b7aecc5cb00c9860b1a12536097166e5f971bcc"
     },
     "src/ui/CaramelBoard.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/CaramelBoard.ts",
       "baseSha256": "9e3f0f5962ceda7ab7d9f3e04029c5538fc4b6a6b6884701c0fb502a772df2a0",
       "sha256": "9e3f0f5962ceda7ab7d9f3e04029c5538fc4b6a6b6884701c0fb502a772df2a0"
     },
     "src/ui/CaramelCarnivalAssets.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/CaramelCarnivalAssets.ts",
       "baseSha256": "f70864f02a1c8ffe68714d55f382320f9c56a03ad0505b6b1e18dafeaabd7cb1",
       "sha256": "f70864f02a1c8ffe68714d55f382320f9c56a03ad0505b6b1e18dafeaabd7cb1"
     },
     "src/ui/CaramelCarnivalAudio.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/CaramelCarnivalAudio.ts",
       "baseSha256": "1705c37de6702f2c3e5618863f68d1dc342d3c069aaa435a1be09cdf46e3044c",
       "sha256": "1705c37de6702f2c3e5618863f68d1dc342d3c069aaa435a1be09cdf46e3044c"
     },
     "src/ui/CaramelCarnivalUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/CaramelCarnivalUI.ts",
       "baseSha256": "fb3b13ec3995463b1098c82e1457c605747b7319a37d1d7a2d5009a577181e46",
       "sha256": "fb3b13ec3995463b1098c82e1457c605747b7319a37d1d7a2d5009a577181e46"
     },
     "src/ui/CardDealerStage.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/CardDealerStage.ts",
       "baseSha256": "0399162aaf74b2ed438553ef3a428f82d766e917a5bd36f5e747e3944fe77ca3",
       "sha256": "0399162aaf74b2ed438553ef3a428f82d766e917a5bd36f5e747e3944fe77ca3"
     },
     "src/ui/CardDuelView.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/CardDuelView.ts",
       "baseSha256": "dce1591b7bb438da10fc9d3412fc57d031ea60803bf124ada76dec3ea7986500",
       "sha256": "dce1591b7bb438da10fc9d3412fc57d031ea60803bf124ada76dec3ea7986500"
     },
     "src/ui/CardTablesCatalog.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/CardTablesCatalog.ts",
       "baseSha256": "03c4d279cd72e71d2b05f370eaf886e311920ccffe39f4120e30cac1868a40ed",
       "sha256": "03c4d279cd72e71d2b05f370eaf886e311920ccffe39f4120e30cac1868a40ed"
     },
     "src/ui/CascadeArtwork.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/CascadeArtwork.ts",
       "baseSha256": "7c7d104aa1145ab1537c57c1806e209efee0eee8a5f38614cfec5ad649f75391",
       "sha256": "7c7d104aa1145ab1537c57c1806e209efee0eee8a5f38614cfec5ad649f75391"
     },
     "src/ui/CascadeBoard.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/CascadeBoard.ts",
       "baseSha256": "06a62ad6af7786851c836148f9401936a6ca092cd08b05e4524510f848c5fb84",
       "sha256": "06a62ad6af7786851c836148f9401936a6ca092cd08b05e4524510f848c5fb84"
     },
     "src/ui/CascadeSlotUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/CascadeSlotUI.ts",
       "baseSha256": "771473524acef87faa4dff4fdb4329686afe0d5875069b45aeee841c8cc1b012",
       "sha256": "771473524acef87faa4dff4fdb4329686afe0d5875069b45aeee841c8cc1b012"
     },
     "src/ui/CasinoApiProUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/CasinoApiProUI.ts",
       "baseSha256": "69e1919979f38ece25abbc1bf567574f5ace289270c6b26f72acb289ec6b5a45",
       "sha256": "69e1919979f38ece25abbc1bf567574f5ace289270c6b26f72acb289ec6b5a45"
     },
     "src/ui/CasinoBatchVariantView.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/CasinoBatchVariantView.ts",
       "baseSha256": "dfaf0b6c5c40603b988b60853b349b255a43e3976ab62eb72910bc985677d817",
       "sha256": "dfaf0b6c5c40603b988b60853b349b255a43e3976ab62eb72910bc985677d817"
     },
     "src/ui/CasinoBatchVariantsUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/CasinoBatchVariantsUI.ts",
       "baseSha256": "7fb49e93e7ba90fded4f9c2e46c1e4685c07c36a78771cf74385cd3539d3e240",
       "sha256": "7fb49e93e7ba90fded4f9c2e46c1e4685c07c36a78771cf74385cd3539d3e240"
     },
     "src/ui/CasinoConfirmedMotion.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/CasinoConfirmedMotion.ts",
       "baseSha256": "46d55c5572740680d11a1194d55442a5246d945796e2c2cf37a5f6b1cc4511b0",
       "sha256": "46d55c5572740680d11a1194d55442a5246d945796e2c2cf37a5f6b1cc4511b0"
     },
     "src/ui/CasinoExpansionUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/CasinoExpansionUI.ts",
       "baseSha256": "b23f2b066c7040da1fe43b3e1fe0c9448ce5fe77efe5248f83d9e395c86eb057",
       "sha256": "b23f2b066c7040da1fe43b3e1fe0c9448ce5fe77efe5248f83d9e395c86eb057"
     },
     "src/ui/CasinoExpansionView.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/CasinoExpansionView.ts",
       "baseSha256": "bf1011376795b3c196e2d80c37b6cfec890b7766f1a8339f242abdeb6eecd2a3",
       "sha256": "bf1011376795b3c196e2d80c37b6cfec890b7766f1a8339f242abdeb6eecd2a3"
     },
     "src/ui/CasinoNextVariantView.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/CasinoNextVariantView.ts",
       "baseSha256": "c699b3beb2af1758563f3f16687dd97feb647498494a0e2529c719fe172c90fd",
       "sha256": "c699b3beb2af1758563f3f16687dd97feb647498494a0e2529c719fe172c90fd"
     },
     "src/ui/CasinoNextVariantsUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/CasinoNextVariantsUI.ts",
       "baseSha256": "4ca5fa7961f72c7d625283b408e89496bcf41ef8877111d5c7148e7486252037",
       "sha256": "4ca5fa7961f72c7d625283b408e89496bcf41ef8877111d5c7148e7486252037"
     },
     "src/ui/CasinoSessionsUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/CasinoSessionsUI.ts",
       "baseSha256": "fbf881b85f7e19e0d4b37be5004f3e35c5c48924a663786666299b153d7e747b",
       "sha256": "fbf881b85f7e19e0d4b37be5004f3e35c5c48924a663786666299b153d7e747b"
     },
     "src/ui/CasinoVariantView.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/CasinoVariantView.ts",
       "baseSha256": "17c31069bf6b1768e8430c5585aa67c023f3a54eefb8d4f46466d286a0972adc",
       "sha256": "17c31069bf6b1768e8430c5585aa67c023f3a54eefb8d4f46466d286a0972adc"
     },
     "src/ui/CasinoVariantsUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/CasinoVariantsUI.ts",
       "baseSha256": "bdc34eb197dc8ab1d6380321d60e50ce83428be0c5dbab321f6462d31234e072",
       "sha256": "bdc34eb197dc8ab1d6380321d60e50ce83428be0c5dbab321f6462d31234e072"
     },
     "src/ui/CatUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/CatUI.ts",
       "baseSha256": "5e1705b7fd7edbc02be78397851ed87c5c07966fc742924b5a7ba2121bfcc02a",
       "sha256": "5e1705b7fd7edbc02be78397851ed87c5c07966fc742924b5a7ba2121bfcc02a"
     },
     "src/ui/CharacterEditor.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/CharacterEditor.ts",
       "baseSha256": "78155e8bdef3723fc0325a0ed6500ea370ee8ab24bcf76d3b0edc9eaaf3baf18",
       "sha256": "78155e8bdef3723fc0325a0ed6500ea370ee8ab24bcf76d3b0edc9eaaf3baf18"
     },
     "src/ui/ChatMedia.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/ChatMedia.ts",
       "baseSha256": "c81d2929c11f835e2310e3fe817d042f97837672532ad29a9ba3106c1152a7c8",
       "sha256": "c81d2929c11f835e2310e3fe817d042f97837672532ad29a9ba3106c1152a7c8"
     },
     "src/ui/ChessBoard.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/ChessBoard.ts",
       "baseSha256": "0f2ce5ef7651c6d9b72b90c1683ab3dda4dbf9ca3b50d4db4747d25e4532546d",
       "sha256": "0f2ce5ef7651c6d9b72b90c1683ab3dda4dbf9ca3b50d4db4747d25e4532546d"
     },
     "src/ui/ChessPieces.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/ChessPieces.ts",
       "baseSha256": "521f2a93a78cdf127568776f254addf9844c4f575d2f963f468155c5103574b9",
       "sha256": "521f2a93a78cdf127568776f254addf9844c4f575d2f963f468155c5103574b9"
     },
     "src/ui/ClubMap.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/ClubMap.ts",
       "baseSha256": "87c63ab6736a8a4ed45d50cb22015c291aae8cc8102c5595e56d29347a8b453e",
       "sha256": "87c63ab6736a8a4ed45d50cb22015c291aae8cc8102c5595e56d29347a8b453e"
     },
     "src/ui/ClusterArtwork.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/ClusterArtwork.ts",
       "baseSha256": "b815ba872ba32fb8cd1db077bf2f821c4a0c148ca3cf5746d9872cd4f2b0a6ee",
       "sha256": "b815ba872ba32fb8cd1db077bf2f821c4a0c148ca3cf5746d9872cd4f2b0a6ee"
     },
     "src/ui/ClusterBoard.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/ClusterBoard.ts",
       "baseSha256": "1969b648cb8e5c230e215e703506482264c0cb2ddd89a71cb32d47d7a7bd5e11",
       "sha256": "1969b648cb8e5c230e215e703506482264c0cb2ddd89a71cb32d47d7a7bd5e11"
     },
     "src/ui/ClusterSlotUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/ClusterSlotUI.ts",
       "baseSha256": "c006dae532572add626212bd7a78424fe8b01f6185940332d8db903e0b3676ab",
       "sha256": "c006dae532572add626212bd7a78424fe8b01f6185940332d8db903e0b3676ab"
     },
     "src/ui/CollectArtwork.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/CollectArtwork.ts",
       "baseSha256": "fc97aa5454176206586f26ef62a1696ecf346434df95e325f0e2cc025acc00fc",
       "sha256": "fc97aa5454176206586f26ef62a1696ecf346434df95e325f0e2cc025acc00fc"
     },
     "src/ui/CollectReels.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/CollectReels.ts",
       "baseSha256": "d1f86d6d7c1b5276597689a394244f14020e4ac174eb4988ac81b6b78124a00e",
       "sha256": "d1f86d6d7c1b5276597689a394244f14020e4ac174eb4988ac81b6b78124a00e"
     },
     "src/ui/CollectSlotUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/CollectSlotUI.ts",
       "baseSha256": "a397e13a21f972a62eac830c4f71b0573f616cf06ea47d4048e86481da5d874b",
       "sha256": "a397e13a21f972a62eac830c4f71b0573f616cf06ea47d4048e86481da5d874b"
     },
     "src/ui/ConfirmedVisualMotion.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/ConfirmedVisualMotion.ts",
       "baseSha256": "ea29831e49b57da8b909a945118d1aa25bea725ba33fc47b1ed04c8ee208aa1e",
       "sha256": "ea29831e49b57da8b909a945118d1aa25bea725ba33fc47b1ed04c8ee208aa1e"
     },
     "src/ui/ConvoyArtwork.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/ConvoyArtwork.ts",
       "baseSha256": "2fe04a440fb3d6260506baddccf462c63785e5ba995a4b927f886a175967a3a8",
       "sha256": "2fe04a440fb3d6260506baddccf462c63785e5ba995a4b927f886a175967a3a8"
     },
     "src/ui/ConvoyBoard.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/ConvoyBoard.ts",
       "baseSha256": "34616fef7e1bc2d53418d371e009a5f767c2ee5ddbb648baff982938dfa5b1af",
       "sha256": "34616fef7e1bc2d53418d371e009a5f767c2ee5ddbb648baff982938dfa5b1af"
     },
     "src/ui/ConvoyHeroine.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/ConvoyHeroine.ts",
       "baseSha256": "808191d0a8926441c80d21eede20c066685506dc15a5b8f0f49eed67d9118dd6",
       "sha256": "808191d0a8926441c80d21eede20c066685506dc15a5b8f0f49eed67d9118dd6"
     },
     "src/ui/ConvoyPortraitAnimation.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/ConvoyPortraitAnimation.ts",
       "baseSha256": "66040221e403a88f4b81e1ff82d92e1a7c4d2b8381ab3cb65e3d8c63d674e14c",
       "sha256": "66040221e403a88f4b81e1ff82d92e1a7c4d2b8381ab3cb65e3d8c63d674e14c"
     },
     "src/ui/CosmicEscapeAssets.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/CosmicEscapeAssets.ts",
       "baseSha256": "d70ff9c4ef88bed7422999f4e314594982338d28f894a03d6faf293452a578e6",
       "sha256": "d70ff9c4ef88bed7422999f4e314594982338d28f894a03d6faf293452a578e6"
     },
     "src/ui/CosmicEscapeAudio.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/CosmicEscapeAudio.ts",
       "baseSha256": "04ffe7016d5df2ca1a096d7886e1c639b5d4f722986042d54aa33c3165f6abd6",
       "sha256": "04ffe7016d5df2ca1a096d7886e1c639b5d4f722986042d54aa33c3165f6abd6"
     },
     "src/ui/CosmicEscapeBoard.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/CosmicEscapeBoard.ts",
       "baseSha256": "7376725a93559e9464dea2dda25eab58ea7a208255fac54318d1ecec6b050155",
       "sha256": "7376725a93559e9464dea2dda25eab58ea7a208255fac54318d1ecec6b050155"
     },
     "src/ui/CosmicEscapeUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/CosmicEscapeUI.ts",
       "baseSha256": "99805b8e60a5cc965c022e3619016d4f8555ca2f0a43b625f389d9ea60aa1177",
       "sha256": "99805b8e60a5cc965c022e3619016d4f8555ca2f0a43b625f389d9ea60aa1177"
     },
     "src/ui/CrLeoAudio.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/CrLeoAudio.ts",
       "baseSha256": "9eaa20d9b026be4c79bee149b35bd1a975e7e7d0e3b5250f68a6574236ed0a23",
       "sha256": "9eaa20d9b026be4c79bee149b35bd1a975e7e7d0e3b5250f68a6574236ed0a23"
     },
     "src/ui/CrLeoScene.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/CrLeoScene.ts",
       "baseSha256": "688cf375d9bf61548890b86528592126cb22540b2f204ec53948f5dcb518abd7",
       "sha256": "688cf375d9bf61548890b86528592126cb22540b2f204ec53948f5dcb518abd7"
     },
     "src/ui/CrLeoUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/CrLeoUI.ts",
       "baseSha256": "5a4a3ead5180d26aaff5711314d0c9c0d49afe88dd22950b3bb87635cb900752",
       "sha256": "5a4a3ead5180d26aaff5711314d0c9c0d49afe88dd22950b3bb87635cb900752"
     },
     "src/ui/CrashMotionUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/CrashMotionUI.ts",
       "baseSha256": "a2bcec3fd6d532621e63db546b39a20ea3b2369aed6c6ff0fe7d817fe4bab474",
       "sha256": "a2bcec3fd6d532621e63db546b39a20ea3b2369aed6c6ff0fe7d817fe4bab474"
@@ -1421,91 +1655,91 @@
       "sha256": "4c3783755a1699fcf7e7b6a7287b8cf664ae79841acfa8220b2f47543e506a89"
     },
     "src/ui/DemoPreview.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/DemoPreview.ts",
       "baseSha256": "ae69c7ae725e3884b4f939c260dbae8fe13731ed2afb2e16a308412c8bd5ef50",
       "sha256": "ae69c7ae725e3884b4f939c260dbae8fe13731ed2afb2e16a308412c8bd5ef50"
     },
     "src/ui/DemoSlot.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/DemoSlot.ts",
       "baseSha256": "a89343fcfab67b940ad00c3bb14004bd123045143c240195259e263017620e9e",
       "sha256": "a89343fcfab67b940ad00c3bb14004bd123045143c240195259e263017620e9e"
     },
     "src/ui/DemoWalletUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/DemoWalletUI.ts",
       "baseSha256": "de2a7f2999160d694b855d9a3e59ae2b05cdc5b4f31222318b4e670b1c6de1dd",
       "sha256": "de2a7f2999160d694b855d9a3e59ae2b05cdc5b4f31222318b4e670b1c6de1dd"
     },
     "src/ui/DiceArtwork.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/DiceArtwork.ts",
       "baseSha256": "46206fd4b12f4087197cc9c1af980a1fda6257ac173e68e88a0948a1e2dddeb1",
       "sha256": "46206fd4b12f4087197cc9c1af980a1fda6257ac173e68e88a0948a1e2dddeb1"
     },
     "src/ui/DiceBoard.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/DiceBoard.ts",
       "baseSha256": "89cb358fa9a5de2551d331d275660d7fd98534f800fa7100c32b4dfa2cf71135",
       "sha256": "89cb358fa9a5de2551d331d275660d7fd98534f800fa7100c32b4dfa2cf71135"
     },
     "src/ui/DiceSlotUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/DiceSlotUI.ts",
       "baseSha256": "c63ad5973062e40d6831b4eb2e0ace3e7bda2653c802082c247bf1ea95403668",
       "sha256": "c63ad5973062e40d6831b4eb2e0ace3e7bda2653c802082c247bf1ea95403668"
     },
     "src/ui/EZSlotsGame.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/EZSlotsGame.ts",
       "baseSha256": "37106c60b46e5dfc0078c51dcdc77715f66e3116999c7f797ee9a625fa4b84a1",
       "sha256": "37106c60b46e5dfc0078c51dcdc77715f66e3116999c7f797ee9a625fa4b84a1"
     },
     "src/ui/ElementArtwork.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/ElementArtwork.ts",
       "baseSha256": "49ca680e7de58da6ef0617a5a2963f14f84f1fd876bc44d6fbdbf14c9d54a5d7",
       "sha256": "49ca680e7de58da6ef0617a5a2963f14f84f1fd876bc44d6fbdbf14c9d54a5d7"
     },
     "src/ui/ElementReels.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/ElementReels.ts",
       "baseSha256": "794b5deb20926d467518bc8a9ff4b59339f56bf1fbc0b61aa7ee94787a1a86e6",
       "sha256": "794b5deb20926d467518bc8a9ff4b59339f56bf1fbc0b61aa7ee94787a1a86e6"
     },
     "src/ui/ElementSlotUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/ElementSlotUI.ts",
       "baseSha256": "9c9d40a0b98e2e97103db815b18bf72b2654bca839749de171c2a1173e3f0ae6",
       "sha256": "9c9d40a0b98e2e97103db815b18bf72b2654bca839749de171c2a1173e3f0ae6"
     },
     "src/ui/FirstFloorGameArt.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/FirstFloorGameArt.ts",
       "baseSha256": "3b3a1ba969fafaa32517101eee7ae196e756af09030b09473798745b8ac9abc4",
       "sha256": "3b3a1ba969fafaa32517101eee7ae196e756af09030b09473798745b8ac9abc4"
     },
     "src/ui/FruitsArtwork.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/FruitsArtwork.ts",
       "baseSha256": "3d9460c556973454ab843f8f906c2468cc8f608d0aab58cf373d8771d7f332e1",
       "sha256": "3d9460c556973454ab843f8f906c2468cc8f608d0aab58cf373d8771d7f332e1"
     },
     "src/ui/FruitsReels.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/FruitsReels.ts",
       "baseSha256": "45c3f7ff6150bfaeecd3d4b169227307898a9386ff7cfe1579f5a769d1584448",
       "sha256": "45c3f7ff6150bfaeecd3d4b169227307898a9386ff7cfe1579f5a769d1584448"
     },
     "src/ui/FruitsSlotUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/FruitsSlotUI.ts",
       "baseSha256": "40d17459fce45f928b087d8848655ced7bb04b1c36cd5361b4e1ab956f95e04d",
       "sha256": "40d17459fce45f928b087d8848655ced7bb04b1c36cd5361b4e1ab956f95e04d"
     },
     "src/ui/GameChat.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/GameChat.ts",
       "baseSha256": "6f0a65584aba1fbd0b2dfffdb1460e6818934a348702e7fec0eb83dd6f3ec40b",
       "sha256": "6f0a65584aba1fbd0b2dfffdb1460e6818934a348702e7fec0eb83dd6f3ec40b"
@@ -1523,67 +1757,67 @@
       ]
     },
     "src/ui/GithubGames.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/GithubGames.ts",
       "baseSha256": "638b7204d1c7db7370f529f5cf82414bd5ed52c6e88ba93e0b8335a7a61a1065",
       "sha256": "638b7204d1c7db7370f529f5cf82414bd5ed52c6e88ba93e0b8335a7a61a1065"
     },
     "src/ui/HoldArtwork.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/HoldArtwork.ts",
       "baseSha256": "2f7856e6b85fcc5fe7d8952979890d85f073d6b67ae339cf61caf4d94ba6e36a",
       "sha256": "2f7856e6b85fcc5fe7d8952979890d85f073d6b67ae339cf61caf4d94ba6e36a"
     },
     "src/ui/HoldReels.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/HoldReels.ts",
       "baseSha256": "7693262910c77671d3a0fb2465efc54c7cf94e440943542788b98cb72cfb4a13",
       "sha256": "7693262910c77671d3a0fb2465efc54c7cf94e440943542788b98cb72cfb4a13"
     },
     "src/ui/HoldSlotUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/HoldSlotUI.ts",
       "baseSha256": "9e0820e022b85bfe23fc43011e9f3dd049772571343e209b73b77c769787f03e",
       "sha256": "9e0820e022b85bfe23fc43011e9f3dd049772571343e209b73b77c769787f03e"
     },
     "src/ui/ImportedGameThemes.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/ImportedGameThemes.ts",
       "baseSha256": "c88e553f54a51f4b218c3c210eaac4210371f652a9b19ee77609573aa2884e85",
       "sha256": "c88e553f54a51f4b218c3c210eaac4210371f652a9b19ee77609573aa2884e85"
     },
     "src/ui/JourneyArtwork.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/JourneyArtwork.ts",
       "baseSha256": "61636815a5c4c388e64a33e94d5475dd48941619b845bbe50fb93ea7142e3790",
       "sha256": "61636815a5c4c388e64a33e94d5475dd48941619b845bbe50fb93ea7142e3790"
     },
     "src/ui/JourneyReels.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/JourneyReels.ts",
       "baseSha256": "f4259d6f84675f94e4d7401ec2ffca5d9372737302f82bfa2b4e6dd3379a48b7",
       "sha256": "f4259d6f84675f94e4d7401ec2ffca5d9372737302f82bfa2b4e6dd3379a48b7"
     },
     "src/ui/JourneySlotUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/JourneySlotUI.ts",
       "baseSha256": "28c29e6c86c59684b7c206d58ae2a1f56eca981a7c18d942513e2fc49b73ffb9",
       "sha256": "28c29e6c86c59684b7c206d58ae2a1f56eca981a7c18d942513e2fc49b73ffb9"
     },
     "src/ui/LastConvoyAssets.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/LastConvoyAssets.ts",
       "baseSha256": "5c768a0f88cfd16ff2f60ec0a898bfe3101bccf8e7ac65df0d08506afde39b78",
       "sha256": "5c768a0f88cfd16ff2f60ec0a898bfe3101bccf8e7ac65df0d08506afde39b78"
     },
     "src/ui/LastConvoyAudio.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/LastConvoyAudio.ts",
       "baseSha256": "f3bc53b3546e4e442b7ac6139de5e98fb4b673822f171c0a030cedc7d55803c0",
       "sha256": "f3bc53b3546e4e442b7ac6139de5e98fb4b673822f171c0a030cedc7d55803c0"
     },
     "src/ui/LastConvoyUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/LastConvoyUI.ts",
       "baseSha256": "ab92c4fccfc970619df2372d769e49bf1ea1dd84d0c77df9561ee50389625227",
       "sha256": "ab92c4fccfc970619df2372d769e49bf1ea1dd84d0c77df9561ee50389625227"
@@ -1607,175 +1841,175 @@
       "sha256": "a970ad10abbc2a246ea8a513288d3dcf0a253fe25237ba755cde251fac227feb"
     },
     "src/ui/LimboArtwork.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/LimboArtwork.ts",
       "baseSha256": "f2dc1c8066b277321253b6442cfe21154723e9ffd5aba712a2190f5cac4635b0",
       "sha256": "f2dc1c8066b277321253b6442cfe21154723e9ffd5aba712a2190f5cac4635b0"
     },
     "src/ui/LimboBoard.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/LimboBoard.ts",
       "baseSha256": "0ec65a261e1edf8376860d7dffc8309ce49b526d66439302680a182642df61c1",
       "sha256": "0ec65a261e1edf8376860d7dffc8309ce49b526d66439302680a182642df61c1"
     },
     "src/ui/LimboSlotUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/LimboSlotUI.ts",
       "baseSha256": "a6abc451a95dad2f7037215839f6dfccd11a7c881b51949604fd453fa7d3d31e",
       "sha256": "a6abc451a95dad2f7037215839f6dfccd11a7c881b51949604fd453fa7d3d31e"
     },
     "src/ui/LuelonArtwork.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/LuelonArtwork.ts",
       "baseSha256": "15c36a9c7b40663671bb4358fae58075b891ecb0bb85e10ba4d95fbd8e625419",
       "sha256": "15c36a9c7b40663671bb4358fae58075b891ecb0bb85e10ba4d95fbd8e625419"
     },
     "src/ui/LuelonGameRouter.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/LuelonGameRouter.ts",
       "baseSha256": "5289f1211170916a80960eb039b8a0e762bd253c50638f9e0f570976c0e0ea9a",
       "sha256": "5289f1211170916a80960eb039b8a0e762bd253c50638f9e0f570976c0e0ea9a"
     },
     "src/ui/MemeArtwork.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/MemeArtwork.ts",
       "baseSha256": "43fbd6b4d08e985ced069d08862851a630216a83d976cc2863ef8e101f965039",
       "sha256": "43fbd6b4d08e985ced069d08862851a630216a83d976cc2863ef8e101f965039"
     },
     "src/ui/MemeAssets.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/MemeAssets.ts",
       "baseSha256": "778f43865b3c2e42ace103510580e1a63721bc2baab0fc31c8327b9252ecaca0",
       "sha256": "778f43865b3c2e42ace103510580e1a63721bc2baab0fc31c8327b9252ecaca0"
     },
     "src/ui/MemeAudio.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/MemeAudio.ts",
       "baseSha256": "e214c74b2b7d9ae4761a030aa8c6c9a747fcadac84de7686bcaa756240e2edbf",
       "sha256": "e214c74b2b7d9ae4761a030aa8c6c9a747fcadac84de7686bcaa756240e2edbf"
     },
     "src/ui/MemeBoard.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/MemeBoard.ts",
       "baseSha256": "d3d249b77fa4bc71da113d5a8249924f33ed8b5ffaddfabab8d70e4519fb3971",
       "sha256": "d3d249b77fa4bc71da113d5a8249924f33ed8b5ffaddfabab8d70e4519fb3971"
     },
     "src/ui/MemeOverloadUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/MemeOverloadUI.ts",
       "baseSha256": "31f0941bddd85ed7d1dc63d4b30343492643080d131ea0845a103b9be1927560",
       "sha256": "31f0941bddd85ed7d1dc63d4b30343492643080d131ea0845a103b9be1927560"
     },
     "src/ui/MemeReactions.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/MemeReactions.ts",
       "baseSha256": "eec95be7fe9da9441214e38cf1fae5047c85aee39ca4ec5feedc0f8e0cc6cb33",
       "sha256": "eec95be7fe9da9441214e38cf1fae5047c85aee39ca4ec5feedc0f8e0cc6cb33"
     },
     "src/ui/MiraChat.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/MiraChat.ts",
       "baseSha256": "11b4d67df4defaa38ee15b209f425f81fa32454b50226b20df6ef85153efd616",
       "sha256": "11b4d67df4defaa38ee15b209f425f81fa32454b50226b20df6ef85153efd616"
     },
     "src/ui/MiraPortrait.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/MiraPortrait.ts",
       "baseSha256": "f4c25a1bdea0dc5205ec33882fa630835ec1130eecc80997a5219f5aaaa39190",
       "sha256": "f4c25a1bdea0dc5205ec33882fa630835ec1130eecc80997a5219f5aaaa39190"
     },
     "src/ui/NeonReels.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/NeonReels.ts",
       "baseSha256": "af3eabc8f93d9270b0cc4c5f33aa541333a7b461add88204c023a9857da6650a",
       "sha256": "af3eabc8f93d9270b0cc4c5f33aa541333a7b461add88204c023a9857da6650a"
     },
     "src/ui/NeonSlotUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/NeonSlotUI.ts",
       "baseSha256": "c4d5bb3873eb46cd02c2f2836fa14aeac4907b82096705601dec06511534674c",
       "sha256": "c4d5bb3873eb46cd02c2f2836fa14aeac4907b82096705601dec06511534674c"
     },
     "src/ui/NitroArtwork.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/NitroArtwork.ts",
       "baseSha256": "a5e2acf4c2e02d327cd4bb1e0d1ef012eed0d1d0468c9913fd7688e7196392c8",
       "sha256": "a5e2acf4c2e02d327cd4bb1e0d1ef012eed0d1d0468c9913fd7688e7196392c8"
     },
     "src/ui/NitroBoard.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/NitroBoard.ts",
       "baseSha256": "b61d322fc4cb4cd400c4810a5951a150c9618a46047553bd74d2af92f03d5a3f",
       "sha256": "b61d322fc4cb4cd400c4810a5951a150c9618a46047553bd74d2af92f03d5a3f"
     },
     "src/ui/NitroRunAssets.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/NitroRunAssets.ts",
       "baseSha256": "7f0fdca72880c4c0a8d437d633ae9571244bd91eeb935ebb4b51b294ed3a45e8",
       "sha256": "7f0fdca72880c4c0a8d437d633ae9571244bd91eeb935ebb4b51b294ed3a45e8"
     },
     "src/ui/NitroRunAudio.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/NitroRunAudio.ts",
       "baseSha256": "67af60dffd0e66eeeb9901082fe6f402cc18d5cf681dce5a9deeb975491c6c38",
       "sha256": "67af60dffd0e66eeeb9901082fe6f402cc18d5cf681dce5a9deeb975491c6c38"
     },
     "src/ui/NitroRunUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/NitroRunUI.ts",
       "baseSha256": "62121c32098a06f676c5bfe7ff312b989e5f43bcc77d5b6fbcb2726fa0904f18",
       "sha256": "62121c32098a06f676c5bfe7ff312b989e5f43bcc77d5b6fbcb2726fa0904f18"
     },
     "src/ui/NowPaymentsSandboxUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/NowPaymentsSandboxUI.ts",
       "baseSha256": "b38266c11783e626b009817b6e9613f4fc84cfe477d5bae5943b8b1dbbcc3743",
       "sha256": "b38266c11783e626b009817b6e9613f4fc84cfe477d5bae5943b8b1dbbcc3743"
     },
     "src/ui/OriginalGameView.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/OriginalGameView.ts",
       "baseSha256": "c454ae1cde93286ccc8c5ca6467eefe80034e8033f4e019861e039e13fdbeded",
       "sha256": "c454ae1cde93286ccc8c5ca6467eefe80034e8033f4e019861e039e13fdbeded"
     },
     "src/ui/OriginalGames.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/OriginalGames.ts",
       "baseSha256": "d14c0569005b97dac6b283fcb5f163ab0d735b4e96d489fac1fd30533a96c687",
       "sha256": "d14c0569005b97dac6b283fcb5f163ab0d735b4e96d489fac1fd30533a96c687"
     },
     "src/ui/PlinkoArtwork.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/PlinkoArtwork.ts",
       "baseSha256": "8484075a3d4798e9736dfe638bce59deb07387a74375fa43e890e8d355e4c4d7",
       "sha256": "8484075a3d4798e9736dfe638bce59deb07387a74375fa43e890e8d355e4c4d7"
     },
     "src/ui/PlinkoBoard.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/PlinkoBoard.ts",
       "baseSha256": "8e3b17d2deb6465146ce241a218b1cf8dd53e306098d3572ce300990dca56e9f",
       "sha256": "8e3b17d2deb6465146ce241a218b1cf8dd53e306098d3572ce300990dca56e9f"
     },
     "src/ui/PlinkoSlotUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/PlinkoSlotUI.ts",
       "baseSha256": "2949dddee0d759bf4a40d26b7cc4d4c188d8216628c785687ca58de7b5bcee7b",
       "sha256": "2949dddee0d759bf4a40d26b7cc4d4c188d8216628c785687ca58de7b5bcee7b"
     },
     "src/ui/PvpUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/PvpUI.ts",
       "baseSha256": "cd133edaf4ee83ee7052f7227d6d64ca7c41045442aed3d8af19a3db42d60285",
       "sha256": "cd133edaf4ee83ee7052f7227d6d64ca7c41045442aed3d8af19a3db42d60285"
     },
     "src/ui/RetiredArcadeRounds.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/RetiredArcadeRounds.ts",
       "baseSha256": "abf6b6d93319db76a7ab766cfe0879b5ea92c75b6e15af75b66211106b9a98fc",
       "sha256": "abf6b6d93319db76a7ab766cfe0879b5ea92c75b6e15af75b66211106b9a98fc"
     },
     "src/ui/RoomLayout.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/RoomLayout.ts",
       "baseSha256": "14eb9433cc854fb136769a61ad8a38523f0b5aeeb948ff79de25ad623916e7ee",
       "sha256": "14eb9433cc854fb136769a61ad8a38523f0b5aeeb948ff79de25ad623916e7ee"
@@ -1793,523 +2027,523 @@
       ]
     },
     "src/ui/RoyalCoins.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/RoyalCoins.ts",
       "baseSha256": "ad11ff92a6fbd05bbc60730ec94514c49b785589832cc325c374f3223832df0b",
       "sha256": "ad11ff92a6fbd05bbc60730ec94514c49b785589832cc325c374f3223832df0b"
     },
     "src/ui/RoyalGameArtwork.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/RoyalGameArtwork.ts",
       "baseSha256": "a9cd2ace39a0fc8af73b6a12c32d40d1ff8b52837d1042b238eb31ee0d2e473f",
       "sha256": "a9cd2ace39a0fc8af73b6a12c32d40d1ff8b52837d1042b238eb31ee0d2e473f"
     },
     "src/ui/RoyalPlatformCatalog.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "deployment/releases/jackie-chan-20261029-v2/source/src/ui/RoyalPlatformCatalog.ts",
       "baseSha256": "33f3aebd93d94ed440f333ccc9f54761dfad3cbc2d64f55ade879db8d242360a",
       "sha256": "33f3aebd93d94ed440f333ccc9f54761dfad3cbc2d64f55ade879db8d242360a"
     },
     "src/ui/SecurityUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/SecurityUI.ts",
       "baseSha256": "ff86ee2c130424ecc3908b3facc78c3e5186fc7fd0cf6d8e8e7220a8855b5644",
       "sha256": "ff86ee2c130424ecc3908b3facc78c3e5186fc7fd0cf6d8e8e7220a8855b5644"
     },
     "src/ui/SkinFittingRoom.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/SkinFittingRoom.ts",
       "baseSha256": "58fac5c92ba998cc6f31b3ae6b3f32c53c0ae8b61b6f415c1bc0589effe6932e",
       "sha256": "58fac5c92ba998cc6f31b3ae6b3f32c53c0ae8b61b6f415c1bc0589effe6932e"
     },
     "src/ui/SkinStudioUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/SkinStudioUI.ts",
       "baseSha256": "677ad10e512b0cac4c6ea159ef4ef8a8482f4d3bb28d3da807e854c49488f4e5",
       "sha256": "677ad10e512b0cac4c6ea159ef4ef8a8482f4d3bb28d3da807e854c49488f4e5"
     },
     "src/ui/SocialUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/SocialUI.ts",
       "baseSha256": "80453ad682038acf65e9b2696a399430e5829e94eabaefd6c2f0a6479175d100",
       "sha256": "80453ad682038acf65e9b2696a399430e5829e94eabaefd6c2f0a6479175d100"
     },
     "src/ui/StudioArtwork.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/StudioArtwork.ts",
       "baseSha256": "17cf6de27f5961a6e7c8522efa60c9aa8b105194f003016d0e939c74ebc2526f",
       "sha256": "17cf6de27f5961a6e7c8522efa60c9aa8b105194f003016d0e939c74ebc2526f"
     },
     "src/ui/StudioCatalog.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/StudioCatalog.ts",
       "baseSha256": "8bedebf31abadd10c614d5ca1d2b18c026d0132a865a4934a82fe5463bf57905",
       "sha256": "8bedebf31abadd10c614d5ca1d2b18c026d0132a865a4934a82fe5463bf57905"
     },
     "src/ui/StudioGameView.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/StudioGameView.ts",
       "baseSha256": "c5299320c63c0b10e0e9345d35191dd7ca396a13503d0328d285119318dc10f5",
       "sha256": "c5299320c63c0b10e0e9345d35191dd7ca396a13503d0328d285119318dc10f5"
     },
     "src/ui/StudioGamesUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/StudioGamesUI.ts",
       "baseSha256": "af70abfe4ec8c82a61ce0806d0fb9af918111cc4babbc38ffdb89eccdef45841",
       "sha256": "af70abfe4ec8c82a61ce0806d0fb9af918111cc4babbc38ffdb89eccdef45841"
     },
     "src/ui/StudioMotion.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/StudioMotion.ts",
       "baseSha256": "519c0c560226b0dee1de035703320de520a1e3ff376738b8643a2527c495f6c7",
       "sha256": "519c0c560226b0dee1de035703320de520a1e3ff376738b8643a2527c495f6c7"
     },
     "src/ui/StudioReels.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/StudioReels.ts",
       "baseSha256": "24868ea6cdba80fe8f722f448de5f6b6288322b4d350b036526873c77c329c58",
       "sha256": "24868ea6cdba80fe8f722f448de5f6b6288322b4d350b036526873c77c329c58"
     },
     "src/ui/StudioSlotArtwork.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/StudioSlotArtwork.ts",
       "baseSha256": "735528ddd186b3416231924e58f3771ec556fdec7f0d4fa1ffe788987e547d70",
       "sha256": "735528ddd186b3416231924e58f3771ec556fdec7f0d4fa1ffe788987e547d70"
     },
     "src/ui/StudioSlotUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/StudioSlotUI.ts",
       "baseSha256": "e81ef4070f9cea4c24be96dd3c50a7420c34a0baecf3a687709e358d7f8b7f87",
       "sha256": "e81ef4070f9cea4c24be96dd3c50a7420c34a0baecf3a687709e358d7f8b7f87"
     },
     "src/ui/TableRenderer.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/TableRenderer.ts",
       "baseSha256": "780e0907239a6d800788fe3b48aa3a8af7199da3c76a70ff9e3eac99bf4f03f1",
       "sha256": "780e0907239a6d800788fe3b48aa3a8af7199da3c76a70ff9e3eac99bf4f03f1"
     },
     "src/ui/TargetPlinkoArtwork.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/TargetPlinkoArtwork.ts",
       "baseSha256": "08c23dd81ecb403b5d6f10a7613890f652e1c9d92b104c52580b87f6b61eb082",
       "sha256": "08c23dd81ecb403b5d6f10a7613890f652e1c9d92b104c52580b87f6b61eb082"
     },
     "src/ui/TargetPlinkoBoard.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/TargetPlinkoBoard.ts",
       "baseSha256": "feb2509ec32490d7d35e20f3b7cef0f2eaac1d98507ed0eeb19cbfa3cbd7c3d2",
       "sha256": "feb2509ec32490d7d35e20f3b7cef0f2eaac1d98507ed0eeb19cbfa3cbd7c3d2"
     },
     "src/ui/TargetPlinkoUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/TargetPlinkoUI.ts",
       "baseSha256": "2addaf37a0c9cc8d4559c21bf39d849e3e5deb9e61facc30878664cc955e50de",
       "sha256": "2addaf37a0c9cc8d4559c21bf39d849e3e5deb9e61facc30878664cc955e50de"
     },
     "src/ui/ThemedGames.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/ThemedGames.ts",
       "baseSha256": "d003fc53d0aa5d14548240de1f3f970c6d59c171a13e525b230f49339aa4f79c",
       "sha256": "d003fc53d0aa5d14548240de1f3f970c6d59c171a13e525b230f49339aa4f79c"
     },
     "src/ui/VelvetReignAssets.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/VelvetReignAssets.ts",
       "baseSha256": "03e71db3b710cf3fc9cd0eae361a8b64b54b42b1ee6115276103bcbcb6f4f6a6",
       "sha256": "03e71db3b710cf3fc9cd0eae361a8b64b54b42b1ee6115276103bcbcb6f4f6a6"
     },
     "src/ui/VelvetReignAudio.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/VelvetReignAudio.ts",
       "baseSha256": "1a3d84d9ac52f9f3d78b98c33cd96cf175338ced09b8a9b97f26642bb7b14fd8",
       "sha256": "1a3d84d9ac52f9f3d78b98c33cd96cf175338ced09b8a9b97f26642bb7b14fd8"
     },
     "src/ui/VelvetReignBoard.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/VelvetReignBoard.ts",
       "baseSha256": "f8eb01fbbcd7863b6043d8e35b82a543c730dcb18baf33b99b7161f99b959377",
       "sha256": "f8eb01fbbcd7863b6043d8e35b82a543c730dcb18baf33b99b7161f99b959377"
     },
     "src/ui/VelvetReignUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/VelvetReignUI.ts",
       "baseSha256": "1791d1ab78ff9d016f5e666760f3d403a2a0cb79c5679a223da8102b49fe4099",
       "sha256": "1791d1ab78ff9d016f5e666760f3d403a2a0cb79c5679a223da8102b49fe4099"
     },
     "src/ui/VesperaPortrait.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/VesperaPortrait.ts",
       "baseSha256": "a8374f7dd856ba438151e1727365d328ad8c678d7482cc29a42a429ce3c8bbbf",
       "sha256": "a8374f7dd856ba438151e1727365d328ad8c678d7482cc29a42a429ce3c8bbbf"
     },
     "src/ui/VolcanicPlinkoBoard.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/VolcanicPlinkoBoard.ts",
       "baseSha256": "91d9ff06e260479d4a02c91f7867437378d6eabd80a11184e0698a33a41033c1",
       "sha256": "91d9ff06e260479d4a02c91f7867437378d6eabd80a11184e0698a33a41033c1"
     },
     "src/ui/VolcanicPlinkoUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/VolcanicPlinkoUI.ts",
       "baseSha256": "cc3c0b70aa4487c81a427accd8a295e9ce25a69aa424eafd963e57bd474e7f4e",
       "sha256": "cc3c0b70aa4487c81a427accd8a295e9ce25a69aa424eafd963e57bd474e7f4e"
     },
     "src/ui/WaysArtwork.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/WaysArtwork.ts",
       "baseSha256": "2d850709cf9ae70089e51aba1d239e6ab5674f59bd1b37ecb2d35eba7e86badb",
       "sha256": "2d850709cf9ae70089e51aba1d239e6ab5674f59bd1b37ecb2d35eba7e86badb"
     },
     "src/ui/WaysReels.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/WaysReels.ts",
       "baseSha256": "2544bc889579c4741256a7b04d6f7bcca576dcd29b55ba81240cc897f6ff4a57",
       "sha256": "2544bc889579c4741256a7b04d6f7bcca576dcd29b55ba81240cc897f6ff4a57"
     },
     "src/ui/WaysSlotUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/WaysSlotUI.ts",
       "baseSha256": "50bc0c9b07aa2dd83192d73b8c9adcc58068ce7020b849be8788d4f3618f7304",
       "sha256": "50bc0c9b07aa2dd83192d73b8c9adcc58068ce7020b849be8788d4f3618f7304"
     },
     "src/ui/WheelSpinArtwork.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/WheelSpinArtwork.ts",
       "baseSha256": "50a4e539bab60ae9396a1e1f727723ab50247956babca46f2f779a25cc3834b3",
       "sha256": "50a4e539bab60ae9396a1e1f727723ab50247956babca46f2f779a25cc3834b3"
     },
     "src/ui/WheelSpinBoard.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/WheelSpinBoard.ts",
       "baseSha256": "da2917effebd0fcdd4e8efe0ee8d3ea2b7d2c5b286f3a9862b0785d5f7c3f496",
       "sha256": "da2917effebd0fcdd4e8efe0ee8d3ea2b7d2c5b286f3a9862b0785d5f7c3f496"
     },
     "src/ui/WheelSpinUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/WheelSpinUI.ts",
       "baseSha256": "0320698abfdacddec0d9e1769550b0ad8ec3fa933db657dcd0965981542bb488",
       "sha256": "0320698abfdacddec0d9e1769550b0ad8ec3fa933db657dcd0965981542bb488"
     },
     "src/ui/WheelTrailArtwork.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/WheelTrailArtwork.ts",
       "baseSha256": "281c8672b0d04be897447154417d361b03babfb7a0983ef65db5cd490ac91005",
       "sha256": "281c8672b0d04be897447154417d361b03babfb7a0983ef65db5cd490ac91005"
     },
     "src/ui/WheelTrailReels.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/WheelTrailReels.ts",
       "baseSha256": "be79bda482f735ccf2cadc619d3e8068a04fc2ae634df1a19bf68f6c42a09f0b",
       "sha256": "be79bda482f735ccf2cadc619d3e8068a04fc2ae634df1a19bf68f6c42a09f0b"
     },
     "src/ui/WheelTrailSlotUI.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/WheelTrailSlotUI.ts",
       "baseSha256": "512af0e9edc9e98be43cf68c135b22dc15e43f2854a6656d180b212fd4074408",
       "sha256": "512af0e9edc9e98be43cf68c135b22dc15e43f2854a6656d180b212fd4074408"
     },
     "src/ui/afterglow.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/afterglow.css",
       "baseSha256": "e0cd7c9ffed4d27be9896b6dd2dedd294bfa8d45d60258f8d025bc2863077407",
       "sha256": "e0cd7c9ffed4d27be9896b6dd2dedd294bfa8d45d60258f8d025bc2863077407"
     },
     "src/ui/caramel-carnival.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/caramel-carnival.css",
       "baseSha256": "2e0078654fb9754e15c09e837aaea32f08aa10e4947dffe6b7eb342a0b1a3bb6",
       "sha256": "2e0078654fb9754e15c09e837aaea32f08aa10e4947dffe6b7eb342a0b1a3bb6"
     },
     "src/ui/card-tables.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/card-tables.css",
       "baseSha256": "70f6e1f6dec8a8c4a16afd627b95b5566c4bbb601fcbdcafb3577b7628bcd50f",
       "sha256": "70f6e1f6dec8a8c4a16afd627b95b5566c4bbb601fcbdcafb3577b7628bcd50f"
     },
     "src/ui/cascade-slot.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/cascade-slot.css",
       "baseSha256": "11077582105b04dc2e7b25fcde30d3b1199a2ae1de666b7626b7ec91036aa128",
       "sha256": "11077582105b04dc2e7b25fcde30d3b1199a2ae1de666b7626b7ec91036aa128"
     },
     "src/ui/casino-batch-variants.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/casino-batch-variants.css",
       "baseSha256": "5c13fe75e5d1d4f9d28df16ea51a26c7718b98406b5f1444e18c10e4828612b1",
       "sha256": "5c13fe75e5d1d4f9d28df16ea51a26c7718b98406b5f1444e18c10e4828612b1"
     },
     "src/ui/casino-confirmed-motion.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/casino-confirmed-motion.css",
       "baseSha256": "f8df3e4df63cc17990362af5ce39fec1c9764675b157643967dae0f49da580b1",
       "sha256": "f8df3e4df63cc17990362af5ce39fec1c9764675b157643967dae0f49da580b1"
     },
     "src/ui/casino-expansion.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/casino-expansion.css",
       "baseSha256": "cd0403266ee004744e26eaeb6072091b70faaf9e27f95134bee214966c15d51e",
       "sha256": "cd0403266ee004744e26eaeb6072091b70faaf9e27f95134bee214966c15d51e"
     },
     "src/ui/casino-next-variants.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/casino-next-variants.css",
       "baseSha256": "dadc16ef0cebeb7b0d5683940aa2bf306fe2feebf9d4f85918b9623d1359b27f",
       "sha256": "dadc16ef0cebeb7b0d5683940aa2bf306fe2feebf9d4f85918b9623d1359b27f"
     },
     "src/ui/casino-sessions.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/casino-sessions.css",
       "baseSha256": "c2e249ae9a27c3a55b6f349608badc15f8ceda916bca42d0a95c3b771dcda29b",
       "sha256": "c2e249ae9a27c3a55b6f349608badc15f8ceda916bca42d0a95c3b771dcda29b"
     },
     "src/ui/casino-variant-catalog.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/casino-variant-catalog.css",
       "baseSha256": "c273fda7874c32de18ea9533132a169ea0ffcb002bd7692acf28a2a0ac6db108",
       "sha256": "c273fda7874c32de18ea9533132a169ea0ffcb002bd7692acf28a2a0ac6db108"
     },
     "src/ui/casino-variants.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/casino-variants.css",
       "baseSha256": "ab2ee087259cde81f81a95c2d029f5977cdcf0fe7fca8bd8cfecacb28faf7e77",
       "sha256": "ab2ee087259cde81f81a95c2d029f5977cdcf0fe7fca8bd8cfecacb28faf7e77"
     },
     "src/ui/cat.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/cat.css",
       "baseSha256": "cf2d2d1478b7992bb33829e31d414aa6ff1e8f0f5b96cf3bc3aa171fb91accb1",
       "sha256": "cf2d2d1478b7992bb33829e31d414aa6ff1e8f0f5b96cf3bc3aa171fb91accb1"
     },
     "src/ui/character-editor.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/character-editor.css",
       "baseSha256": "5bc5d8b77178d2eb08838eec9eb7a72f58f57731db7bbe655f380ec517e7619c",
       "sha256": "5bc5d8b77178d2eb08838eec9eb7a72f58f57731db7bbe655f380ec517e7619c"
     },
     "src/ui/chat-delivery.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/chat-delivery.css",
       "baseSha256": "086c476b241afcbe976729fe96f3b5c6099618cb531007d35f8d55894f057a82",
       "sha256": "086c476b241afcbe976729fe96f3b5c6099618cb531007d35f8d55894f057a82"
     },
     "src/ui/chat-media.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/chat-media.css",
       "baseSha256": "9948203720ed42959b34ecb095a458ae5ccc521ddf9ca3d35f5536692c45141c",
       "sha256": "9948203720ed42959b34ecb095a458ae5ccc521ddf9ca3d35f5536692c45141c"
     },
     "src/ui/club-map.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/club-map.css",
       "baseSha256": "61471a07f483a29a3ee032893f5a0e4319456b373453998da9ce7c82cfdb639c",
       "sha256": "61471a07f483a29a3ee032893f5a0e4319456b373453998da9ce7c82cfdb639c"
     },
     "src/ui/cluster-slot.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/cluster-slot.css",
       "baseSha256": "fa33a730ea6e0a79b92acfbdd2820e2b277c8a2dbe83ceb206eec72c0d499f1f",
       "sha256": "fa33a730ea6e0a79b92acfbdd2820e2b277c8a2dbe83ceb206eec72c0d499f1f"
     },
     "src/ui/collect-slot.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/collect-slot.css",
       "baseSha256": "f9ddfaf1825d7d22332e707e61cf5932f0a62b773a3843379100ee4c14b4a53a",
       "sha256": "f9ddfaf1825d7d22332e707e61cf5932f0a62b773a3843379100ee4c14b4a53a"
     },
     "src/ui/convoy-heroine.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/convoy-heroine.css",
       "baseSha256": "8aed278e5870cfb12853d281c1dfb45722b992c8724fcb1b069a33c0fe1649dd",
       "sha256": "8aed278e5870cfb12853d281c1dfb45722b992c8724fcb1b069a33c0fe1649dd"
     },
     "src/ui/cosmic-escape.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/cosmic-escape.css",
       "baseSha256": "fcd6a695f9cce992fc641a7f02f7fd6169e550ee025afd3a8747b336a3ea1878",
       "sha256": "fcd6a695f9cce992fc641a7f02f7fd6169e550ee025afd3a8747b336a3ea1878"
     },
     "src/ui/cosmic-guardians.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/cosmic-guardians.css",
       "baseSha256": "e370a58028e14518e4ec34d33c8229c077f21153137b7dd43a3e3145c8def277",
       "sha256": "e370a58028e14518e4ec34d33c8229c077f21153137b7dd43a3e3145c8def277"
     },
     "src/ui/cr-leo.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/cr-leo.css",
       "baseSha256": "3c8329801aa497aebdff2da8ef392c9f40d65ac888ac834e25705a6dca2a9131",
       "sha256": "3c8329801aa497aebdff2da8ef392c9f40d65ac888ac834e25705a6dca2a9131"
     },
     "src/ui/crLeoAssetManifest.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/crLeoAssetManifest.ts",
       "baseSha256": "815b84ca76ea622a41fd0d550b733618e805f9e09d0efba89d0e3f36d0059298",
       "sha256": "815b84ca76ea622a41fd0d550b733618e805f9e09d0efba89d0e3f36d0059298"
     },
     "src/ui/crLeoAssets.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/crLeoAssets.ts",
       "baseSha256": "dcd36c0d417807b6780c47a4cf8da6c8e7b2f70f2146d4bf7636c8a87623c41f",
       "sha256": "dcd36c0d417807b6780c47a4cf8da6c8e7b2f70f2146d4bf7636c8a87623c41f"
     },
     "src/ui/crLeoBall.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/crLeoBall.ts",
       "baseSha256": "e4349f388c356c71f4f0a46c528b11ff285c381b57de658e20a8713953ce9c25",
       "sha256": "e4349f388c356c71f4f0a46c528b11ff285c381b57de658e20a8713953ce9c25"
     },
     "src/ui/crLeoFreeKick.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/crLeoFreeKick.ts",
       "baseSha256": "db3843730faf2c869215f61e2251e43b696416a421c6f2edac3e050863f89924",
       "sha256": "db3843730faf2c869215f61e2251e43b696416a421c6f2edac3e050863f89924"
     },
     "src/ui/crLeoGoal.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/crLeoGoal.ts",
       "baseSha256": "7812d5b177bbf2affdfc0f9e6f7a11feebd31fba35be105774c793a59e9787b9",
       "sha256": "7812d5b177bbf2affdfc0f9e6f7a11feebd31fba35be105774c793a59e9787b9"
     },
     "src/ui/crLeoPitch.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/crLeoPitch.ts",
       "baseSha256": "e098007eb1418586e3743d152485d7d6e5017636f813231ae8df16e7e07defcd",
       "sha256": "e098007eb1418586e3743d152485d7d6e5017636f813231ae8df16e7e07defcd"
     },
     "src/ui/crLeoSprites.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/crLeoSprites.ts",
       "baseSha256": "67013625467f78241d5e0ce9098bc7dd950341b302e3d9fb6317e8addef7e427",
       "sha256": "67013625467f78241d5e0ce9098bc7dd950341b302e3d9fb6317e8addef7e427"
     },
     "src/ui/crLeoTimeline.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/crLeoTimeline.ts",
       "baseSha256": "57711a018d74ba9d0e7354d5ba04a10f8cefc91eb1019bf20f42a795e80f8bc1",
       "sha256": "57711a018d74ba9d0e7354d5ba04a10f8cefc91eb1019bf20f42a795e80f8bc1"
     },
     "src/ui/crash-motion.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/crash-motion.css",
       "baseSha256": "0cafb95b2270d11781eecfaa24c71076b1df20d5759fadcc342e43cd0cc61b0d",
       "sha256": "0cafb95b2270d11781eecfaa24c71076b1df20d5759fadcc342e43cd0cc61b0d"
     },
     "src/ui/dice-slot.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/dice-slot.css",
       "baseSha256": "6010693023320a2472516955dda59550975ea1a32ba64878c51e68fa3e83b70e",
       "sha256": "6010693023320a2472516955dda59550975ea1a32ba64878c51e68fa3e83b70e"
     },
     "src/ui/element-slot.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/element-slot.css",
       "baseSha256": "a51915f865d8c07e477edd3de35b9db69b0f6c27042f82caa7bfd2a6e36c426e",
       "sha256": "a51915f865d8c07e477edd3de35b9db69b0f6c27042f82caa7bfd2a6e36c426e"
     },
     "src/ui/first-floor-game-worlds.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/first-floor-game-worlds.css",
       "baseSha256": "c70e559fc92551137047c799ce7328e01b3360087f7f6604fbf25f5888483c65",
       "sha256": "c70e559fc92551137047c799ce7328e01b3360087f7f6604fbf25f5888483c65"
     },
     "src/ui/floor-navigation.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/floor-navigation.css",
       "baseSha256": "c3086e261a5e69cde5a49cc535ad40c90aa856f3f05535052983cdc4194cf470",
       "sha256": "c3086e261a5e69cde5a49cc535ad40c90aa856f3f05535052983cdc4194cf470"
     },
     "src/ui/fruits-slot.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/fruits-slot.css",
       "baseSha256": "cd288e94477508d844d012aabcd4f8e4200683ebc5be030b09837383ac938725",
       "sha256": "cd288e94477508d844d012aabcd4f8e4200683ebc5be030b09837383ac938725"
     },
     "src/ui/game-chat.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/game-chat.css",
       "baseSha256": "6f5e853440cf379023da50c51de27504406db8234b29093bb771c13ac1e1dc92",
       "sha256": "6f5e853440cf379023da50c51de27504406db8234b29093bb771c13ac1e1dc92"
     },
     "src/ui/game-viewport.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/game-viewport.css",
       "baseSha256": "a9e05fa35afcfebe571aa9aafe8c8d686a2a6d62757187969ac964c7b86e2ac6",
       "sha256": "a9e05fa35afcfebe571aa9aafe8c8d686a2a6d62757187969ac964c7b86e2ac6"
     },
     "src/ui/gameReactions.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/gameReactions.ts",
       "baseSha256": "e77578be2dd82c468c067795b7778154b1d2353be7587dc08de0e62cc6402888",
       "sha256": "e77578be2dd82c468c067795b7778154b1d2353be7587dc08de0e62cc6402888"
     },
     "src/ui/github-games.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/github-games.css",
       "baseSha256": "55a62d51dd2b7606f30f88db02d3c61e8fb7469b1c7ff66b6f31943a947bfba6",
       "sha256": "55a62d51dd2b7606f30f88db02d3c61e8fb7469b1c7ff66b6f31943a947bfba6"
     },
     "src/ui/hold-slot.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/hold-slot.css",
       "baseSha256": "a83d1c7d1075a56c58999ce6f050ff14ed8fc9b86dc6b3497a59241c8bfbdee1",
       "sha256": "a83d1c7d1075a56c58999ce6f050ff14ed8fc9b86dc6b3497a59241c8bfbdee1"
     },
     "src/ui/imported-game-themes.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/imported-game-themes.css",
       "baseSha256": "e5a37156dc2d85ff5f360ea84342b73e9c027c1ebf331215e77f88d9dce941a1",
       "sha256": "e5a37156dc2d85ff5f360ea84342b73e9c027c1ebf331215e77f88d9dce941a1"
     },
     "src/ui/importedMotion/Audio.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/importedMotion/Audio.ts",
       "baseSha256": "2cc55d92c5a1091dc9efac57db8944f0a2daef179dd8ecd7d9608f9fc6d2d922",
       "sha256": "2cc55d92c5a1091dc9efac57db8944f0a2daef179dd8ecd7d9608f9fc6d2d922"
     },
     "src/ui/importedMotion/ImportedMotion.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/importedMotion/ImportedMotion.ts",
       "baseSha256": "86970b006d8242edcbaf1d229f19d3fa919716aca5766d81ce1c53d30c5dba60",
       "sha256": "86970b006d8242edcbaf1d229f19d3fa919716aca5766d81ce1c53d30c5dba60"
     },
     "src/ui/importedMotion/Outcome.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/importedMotion/Outcome.ts",
       "baseSha256": "38eb12bff5e798447b2f98e3627206fd9ba2ee1af9777a9541f2568b9c1f284c",
       "sha256": "38eb12bff5e798447b2f98e3627206fd9ba2ee1af9777a9541f2568b9c1f284c"
     },
     "src/ui/importedMotion/Profiles.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/importedMotion/Profiles.ts",
       "baseSha256": "0ec8b8ba3744e93c48e6b23e9400c3fbc81b7958a62fd93181139b8fb80607e7",
       "sha256": "0ec8b8ba3744e93c48e6b23e9400c3fbc81b7958a62fd93181139b8fb80607e7"
     },
     "src/ui/importedMotion/WorldScene.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/importedMotion/WorldScene.ts",
       "baseSha256": "3ea3846e59658c06817883f95f2d797850aec404530947cb8bbdf4ac0b059a65",
       "sha256": "3ea3846e59658c06817883f95f2d797850aec404530947cb8bbdf4ac0b059a65"
     },
     "src/ui/importedMotion/imported-motion.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/importedMotion/imported-motion.css",
       "baseSha256": "d6d8fbd9f474c0b8c5496920c9c989afe7a1906f839e499625e74ef5bea137f6",
       "sha256": "d6d8fbd9f474c0b8c5496920c9c989afe7a1906f839e499625e74ef5bea137f6"
     },
     "src/ui/importedMotion/world-scene.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/importedMotion/world-scene.css",
       "baseSha256": "97e01926478635636bd79ec7ec7871622a4a32980991b6b5fbe3518cf741b49a",
       "sha256": "97e01926478635636bd79ec7ec7871622a4a32980991b6b5fbe3518cf741b49a"
     },
     "src/ui/journey-slot.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/journey-slot.css",
       "baseSha256": "98199e82db6021983be2a57a20df3acaac9d717e4fa11250fb141728c36c2d4a",
       "sha256": "98199e82db6021983be2a57a20df3acaac9d717e4fa11250fb141728c36c2d4a"
     },
     "src/ui/last-convoy.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/last-convoy.css",
       "baseSha256": "e2a23eb842c5a7c813a962f2b770fa9e2d46b751d80cde541a7bcaf3dd3d7da4",
       "sha256": "e2a23eb842c5a7c813a962f2b770fa9e2d46b751d80cde541a7bcaf3dd3d7da4"
@@ -2327,73 +2561,73 @@
       "sha256": "7531a2f03313c982d22bccd1fd389c0c87d6538870ce677efc0b1a6c2004200a"
     },
     "src/ui/lastExitRoute.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/lastExitRoute.ts",
       "baseSha256": "f6a84fc1d7a7ed931603171ac6ddb1fc871172d94e373ec66bca721812fe1a85",
       "sha256": "f6a84fc1d7a7ed931603171ac6ddb1fc871172d94e373ec66bca721812fe1a85"
     },
     "src/ui/lastExitStunts.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/lastExitStunts.ts",
       "baseSha256": "a37aa10aa33dc69b7b120ff6bbe8caa3cf1a00f11176ba9d6614fb862ea84b19",
       "sha256": "a37aa10aa33dc69b7b120ff6bbe8caa3cf1a00f11176ba9d6614fb862ea84b19"
     },
     "src/ui/limbo-slot.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/limbo-slot.css",
       "baseSha256": "8acea9df35591ccf6e5e410150116fd745da40067d1f46f8eb3256f96f254db7",
       "sha256": "8acea9df35591ccf6e5e410150116fd745da40067d1f46f8eb3256f96f254db7"
     },
     "src/ui/luelon-games.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/luelon-games.css",
       "baseSha256": "09cf892dfaefcb008910346daf7cc795cd6d5ce07667b36cc594db8663c983b3",
       "sha256": "09cf892dfaefcb008910346daf7cc795cd6d5ce07667b36cc594db8663c983b3"
     },
     "src/ui/meme-overload.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/meme-overload.css",
       "baseSha256": "3fd4d420c9274186db0584891915fa34b4fa09dca73cad8a35eb9c5622deedb9",
       "sha256": "3fd4d420c9274186db0584891915fa34b4fa09dca73cad8a35eb9c5622deedb9"
     },
     "src/ui/neon-slot.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/neon-slot.css",
       "baseSha256": "9ad88ec5fd4d06f91a9d98b07637b491a2bb3d93aeb19c7d154fc0e95b42b887",
       "sha256": "9ad88ec5fd4d06f91a9d98b07637b491a2bb3d93aeb19c7d154fc0e95b42b887"
     },
     "src/ui/nitro-run.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/nitro-run.css",
       "baseSha256": "3ee01db3929e7de61a8c831de22e4d2d17ac5cfb3eda23ca1154a028527f0416",
       "sha256": "3ee01db3929e7de61a8c831de22e4d2d17ac5cfb3eda23ca1154a028527f0416"
     },
     "src/ui/plinko-slot.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/plinko-slot.css",
       "baseSha256": "7b6231b949b930863d6c16c0f5a87219402fbd876e171d5bb4fabd3048d0ad26",
       "sha256": "7b6231b949b930863d6c16c0f5a87219402fbd876e171d5bb4fabd3048d0ad26"
     },
     "src/ui/pvp-cards.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/pvp-cards.css",
       "baseSha256": "e73c7e3eacc94a6868088f554ba41aabe7ce3e1f3ab27b7035f77efd821a04d2",
       "sha256": "e73c7e3eacc94a6868088f554ba41aabe7ce3e1f3ab27b7035f77efd821a04d2"
     },
     "src/ui/pvp.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/pvp.css",
       "baseSha256": "2363035baacfa3dbd0c512feb9bb80bfee3f9bab726292ff9fa414acc6c738ba",
       "sha256": "2363035baacfa3dbd0c512feb9bb80bfee3f9bab726292ff9fa414acc6c738ba"
     },
     "src/ui/retired-arcade-rounds.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/retired-arcade-rounds.css",
       "baseSha256": "f6f01f6f0d0b88dbc70f74379e65eb1ea66b9d4342541d0823c3e7fe18a5712b",
       "sha256": "f6f01f6f0d0b88dbc70f74379e65eb1ea66b9d4342541d0823c3e7fe18a5712b"
     },
     "src/ui/royal-coins.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/royal-coins.css",
       "baseSha256": "37ca1b6130f970d45a975feedfd3d2d1d126dad9d7a38d7fa18f8a3bd017b614",
       "sha256": "37ca1b6130f970d45a975feedfd3d2d1d126dad9d7a38d7fa18f8a3bd017b614"
@@ -2411,337 +2645,373 @@
       ]
     },
     "src/ui/royalCatalogArtwork.json": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/royalCatalogArtwork.json",
       "baseSha256": "4487d43f5c9925173e456348e9341f7876455244bd03c1c30677687e57b5c812",
       "sha256": "4487d43f5c9925173e456348e9341f7876455244bd03c1c30677687e57b5c812"
     },
     "src/ui/skin-studio.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/skin-studio.css",
       "baseSha256": "fc5b72eb39487b329cab7aa34606a34f656bef746f7db130f34f0be3a79b65d0",
       "sha256": "fc5b72eb39487b329cab7aa34606a34f656bef746f7db130f34f0be3a79b65d0"
     },
     "src/ui/slot-layout.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/slot-layout.css",
       "baseSha256": "44365d78f816cdc2277f36982c3816765d686a46e82c78a2c2f2dc8e2774a752",
       "sha256": "44365d78f816cdc2277f36982c3816765d686a46e82c78a2c2f2dc8e2774a752"
     },
     "src/ui/slotKit/SlotAssets.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/slotKit/SlotAssets.ts",
       "baseSha256": "8bbd409578830ee7f3f025340003155335af03ce684bcae23bc913acb02052d2",
       "sha256": "8bbd409578830ee7f3f025340003155335af03ce684bcae23bc913acb02052d2"
     },
     "src/ui/slotKit/SlotAudio.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/slotKit/SlotAudio.ts",
       "baseSha256": "7f7c3536e0202ebd39dd79bcd36c886882332c6d5e84e4a73831d46e06aefbc0",
       "sha256": "7f7c3536e0202ebd39dd79bcd36c886882332c6d5e84e4a73831d46e06aefbc0"
     },
     "src/ui/slotKit/SlotCascadeBoard.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/slotKit/SlotCascadeBoard.ts",
       "baseSha256": "4191802cc8bb47fd16fa90c11560393adae6004336bf701e48480674b3b54928",
       "sha256": "4191802cc8bb47fd16fa90c11560393adae6004336bf701e48480674b3b54928"
     },
     "src/ui/slotKit/SlotControls.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/slotKit/SlotControls.ts",
       "baseSha256": "64d08da02ff7e5fa34add413acdd1ad804c91ccab14d6bf5504d2d4b4cef0be7",
       "sha256": "64d08da02ff7e5fa34add413acdd1ad804c91ccab14d6bf5504d2d4b4cef0be7"
     },
     "src/ui/slotKit/SlotDefinition.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/slotKit/SlotDefinition.ts",
       "baseSha256": "200b1a4c4340480b75831ba074a7afeaa09ca1f53948f429f9d516120dcf8893",
       "sha256": "200b1a4c4340480b75831ba074a7afeaa09ca1f53948f429f9d516120dcf8893"
     },
     "src/ui/slotKit/SlotDialog.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/slotKit/SlotDialog.ts",
       "baseSha256": "ab1afa6596855626571b00824b7b22b57a7b3f1045857fbe410b23af65d5e295",
       "sha256": "ab1afa6596855626571b00824b7b22b57a7b3f1045857fbe410b23af65d5e295"
     },
     "src/ui/slotKit/SlotGeometry.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/slotKit/SlotGeometry.ts",
       "baseSha256": "9050e51c87d77646845e206f2618a1ab6a3887e008f17abb0b1fbd29303ee90f",
       "sha256": "9050e51c87d77646845e206f2618a1ab6a3887e008f17abb0b1fbd29303ee90f"
     },
     "src/ui/slotKit/SlotLifecycle.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/slotKit/SlotLifecycle.ts",
       "baseSha256": "33c227f915cbff994e7218a7e98410f7ae4d1fee129dfd013f531092e9eee71f",
       "sha256": "33c227f915cbff994e7218a7e98410f7ae4d1fee129dfd013f531092e9eee71f"
     },
     "src/ui/slotKit/SlotPhotoViewer.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/slotKit/SlotPhotoViewer.ts",
       "baseSha256": "a81a111181059ee94cc2cc68bd142bd83ba2556a3dd184644753924638fd8235",
       "sha256": "a81a111181059ee94cc2cc68bd142bd83ba2556a3dd184644753924638fd8235"
     },
     "src/ui/slotKit/SlotPlayback.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/slotKit/SlotPlayback.ts",
       "baseSha256": "b16043b19396cabe7cf67d8864400ccb8f20c5a916565eb6c90ca148cc3d6954",
       "sha256": "b16043b19396cabe7cf67d8864400ccb8f20c5a916565eb6c90ca148cc3d6954"
     },
     "src/ui/slotKit/SlotReelBoard.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/slotKit/SlotReelBoard.ts",
       "baseSha256": "56fcfee9078672cc7c69e810eae575ba2606b0e08430a377bf8b317569766f47",
       "sha256": "56fcfee9078672cc7c69e810eae575ba2606b0e08430a377bf8b317569766f47"
     },
     "src/ui/slotKit/SlotScreens.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/slotKit/SlotScreens.ts",
       "baseSha256": "59140beebcb205fa8e52c3e35f0f2283a0746ebd42b08ef54122598fd986756a",
       "sha256": "59140beebcb205fa8e52c3e35f0f2283a0746ebd42b08ef54122598fd986756a"
     },
     "src/ui/slotKit/SlotSessions.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/slotKit/SlotSessions.ts",
       "baseSha256": "f51283d66ea4936932d496d9daee46db703bab1c2e8c55c4445c57955968a5d2",
       "sha256": "f51283d66ea4936932d496d9daee46db703bab1c2e8c55c4445c57955968a5d2"
     },
     "src/ui/slotKit/SlotSettings.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/slotKit/SlotSettings.ts",
       "baseSha256": "d71f7ef39e2b982d99fe8538387162d3b78ed19d940ff763bfa54c59627aae91",
       "sha256": "d71f7ef39e2b982d99fe8538387162d3b78ed19d940ff763bfa54c59627aae91"
     },
     "src/ui/slotKit/nativeSlotImages.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/slotKit/nativeSlotImages.ts",
       "baseSha256": "20e93c94b87b767d25d9f41a5d033275e76947eab02f0299032b583800e5da9f",
       "sha256": "20e93c94b87b767d25d9f41a5d033275e76947eab02f0299032b583800e5da9f"
     },
     "src/ui/slotKit/nativeSlots.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/slotKit/nativeSlots.ts",
       "baseSha256": "fc823e2892a7fcc49d32b8fa21bd938498ac1762d4444213f8c624bec21cf6f7",
       "sha256": "fc823e2892a7fcc49d32b8fa21bd938498ac1762d4444213f8c624bec21cf6f7"
     },
     "src/ui/slotKit/slot-photo-viewer.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/slotKit/slot-photo-viewer.css",
       "baseSha256": "bfe9a0202038e5e4beb26c2372aecd39a4dbe0a4dc3405d665b8d3ed73f760a8",
       "sha256": "bfe9a0202038e5e4beb26c2372aecd39a4dbe0a4dc3405d665b8d3ed73f760a8"
     },
     "src/ui/slotKit/slot-settings.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/slotKit/slot-settings.css",
       "baseSha256": "a9bc7aabfd5f8649a3220820199d709f57b8cd260205c3d18cfa5236ea854f5b",
       "sha256": "a9bc7aabfd5f8649a3220820199d709f57b8cd260205c3d18cfa5236ea854f5b"
     },
     "src/ui/studio-catalog.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/studio-catalog.css",
       "baseSha256": "9e43a8ffd2582a2906c72ff44156b86584f24adb4608806df74d5f80aa6adb6c",
       "sha256": "9e43a8ffd2582a2906c72ff44156b86584f24adb4608806df74d5f80aa6adb6c"
     },
     "src/ui/studio-games.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/studio-games.css",
       "baseSha256": "0a3c6fc2d4655e9814b349952d5c9578d49c194d483cdaba0e9a76eb23b12259",
       "sha256": "0a3c6fc2d4655e9814b349952d5c9578d49c194d483cdaba0e9a76eb23b12259"
     },
     "src/ui/studio-motion.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/studio-motion.css",
       "baseSha256": "6b0c392dc87cfde2f16e3ac932378d39a2062ccc700307c179d044553aba903c",
       "sha256": "6b0c392dc87cfde2f16e3ac932378d39a2062ccc700307c179d044553aba903c"
     },
     "src/ui/studio-slot.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/studio-slot.css",
       "baseSha256": "a1081abcb9304f0ff54bf5d0e69a83edc8f85f40f07319af0e186f74e15bdd5f",
       "sha256": "a1081abcb9304f0ff54bf5d0e69a83edc8f85f40f07319af0e186f74e15bdd5f"
     },
     "src/ui/target-plinko.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/target-plinko.css",
       "baseSha256": "61892bdd339b327eca839baaa7adb3e334132eb2dd5f3c59cb4cc18413b84565",
       "sha256": "61892bdd339b327eca839baaa7adb3e334132eb2dd5f3c59cb4cc18413b84565"
     },
     "src/ui/velvet-reign.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/velvet-reign.css",
       "baseSha256": "baa526ce816c7a98c023db4d805c3b782519df2b8155f0e850ade4b44f8fa0fb",
       "sha256": "baa526ce816c7a98c023db4d805c3b782519df2b8155f0e850ade4b44f8fa0fb"
     },
     "src/ui/vesperaMedia.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/vesperaMedia.ts",
       "baseSha256": "f6df52d473846b3f32112435e1012c7cae6ae74e2d33c3cfac1ad86dbd693497",
       "sha256": "f6df52d473846b3f32112435e1012c7cae6ae74e2d33c3cfac1ad86dbd693497"
     },
     "src/ui/volcanic-plinko.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/volcanic-plinko.css",
       "baseSha256": "af089c2398e4f86979a19d36ea107129fb96339b43cfec070a4f3ee3fea87c1e",
       "sha256": "af089c2398e4f86979a19d36ea107129fb96339b43cfec070a4f3ee3fea87c1e"
     },
     "src/ui/volcanicPlinkoModel.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/volcanicPlinkoModel.ts",
       "baseSha256": "203bcae345e6b378ae490a371e2f7a978cdb62bf8f32de1fdb950c7c2b705d65",
       "sha256": "203bcae345e6b378ae490a371e2f7a978cdb62bf8f32de1fdb950c7c2b705d65"
     },
     "src/ui/ways-slot.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/ways-slot.css",
       "baseSha256": "46f04297ef028fb5566bf170b349e26e2d72020a612211e043f35c1af7901224",
       "sha256": "46f04297ef028fb5566bf170b349e26e2d72020a612211e043f35c1af7901224"
     },
     "src/ui/wheel-spin.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/wheel-spin.css",
       "baseSha256": "1f7946560618d3a29efd950d50afd84a04f813265598b6508a80d1ac3628454a",
       "sha256": "1f7946560618d3a29efd950d50afd84a04f813265598b6508a80d1ac3628454a"
     },
     "src/ui/wheel-trail-slot.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/ui/wheel-trail-slot.css",
       "baseSha256": "af2210528b8eb62dfeef40713ef9e8f6e54b4140b45bef2f2186f327f0cc5ef2",
       "sha256": "af2210528b8eb62dfeef40713ef9e8f6e54b4140b45bef2f2186f327f0cc5ef2"
     },
     "src/vendor/ezslots/Slots.d.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/vendor/ezslots/Slots.d.ts",
       "baseSha256": "f2b93295998b92cf12708022ec629ee762856fb417ea9a5d7f9cb0f11ca562e9",
       "sha256": "f2b93295998b92cf12708022ec629ee762856fb417ea9a5d7f9cb0f11ca562e9"
     },
+    "src/vendor/ezslots/Slots.js": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "src/vendor/ezslots/Slots.js",
+      "baseSha256": "d5c08b4b491fa0c68b4e60e9303ca2069591ccdd96a7e8e06ec397c4bb00bed5",
+      "sha256": "d5c08b4b491fa0c68b4e60e9303ca2069591ccdd96a7e8e06ec397c4bb00bed5"
+    },
     "src/vendor/github/baccarat/constants.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/vendor/github/baccarat/constants.ts",
       "baseSha256": "396c5002ef85a8b2d845e57e94e5072d0f064f96dc773ec66eb960dd3ecc54c5",
       "sha256": "396c5002ef85a8b2d845e57e94e5072d0f064f96dc773ec66eb960dd3ecc54c5"
     },
     "src/vendor/github/baccarat/rules.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/vendor/github/baccarat/rules.ts",
       "baseSha256": "703f8692bd1e1952107093863f1f0790978842c98cc739741e9923c393866722",
       "sha256": "703f8692bd1e1952107093863f1f0790978842c98cc739741e9923c393866722"
     },
     "src/vendor/github/baccarat/types.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/vendor/github/baccarat/types.ts",
       "baseSha256": "7b70e60871e27292f57dc5cde163336c90027ac7fab5b68c68f9d67f0743a95c",
       "sha256": "7b70e60871e27292f57dc5cde163336c90027ac7fab5b68c68f9d67f0743a95c"
     },
     "src/vendor/github/blackjack/math.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/vendor/github/blackjack/math.ts",
       "baseSha256": "08d65e81ed94d2d08359f5a1d9cea2672becf56195999524230cf1881892df02",
       "sha256": "08d65e81ed94d2d08359f5a1d9cea2672becf56195999524230cf1881892df02"
     },
+    "src/vendor/github/blackjack/upstream/21game.js": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "src/vendor/github/blackjack/upstream/21game.js",
+      "baseSha256": "8f0f2bf00345192bd0d74b720285ee4648d1e83eddf2aa02b06c8b1b36d3eecb",
+      "sha256": "8f0f2bf00345192bd0d74b720285ee4648d1e83eddf2aa02b06c8b1b36d3eecb"
+    },
     "src/vendor/github/craps/engine.d.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/vendor/github/craps/engine.d.ts",
       "baseSha256": "586c6ce6afdc8c75a3be1eb3afa811fb3db960e6b264047606e20fe31a8eac5a",
       "sha256": "586c6ce6afdc8c75a3be1eb3afa811fb3db960e6b264047606e20fe31a8eac5a"
     },
+    "src/vendor/github/craps/engine.js": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "src/vendor/github/craps/engine.js",
+      "baseSha256": "e23cb59ab354b738b5e1b732a0d9975ba80ae1c9ab53f74d1d7e70850cefd9a0",
+      "sha256": "e23cb59ab354b738b5e1b732a0d9975ba80ae1c9ab53f74d1d7e70850cefd9a0"
+    },
+    "src/vendor/github/craps/upstream/crapsengine.js": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "src/vendor/github/craps/upstream/crapsengine.js",
+      "baseSha256": "b3db9d991c490b0635e8ddda002ea90ece6fbea5ad7a788f7f040e3f12211196",
+      "sha256": "b3db9d991c490b0635e8ddda002ea90ece6fbea5ad7a788f7f040e3f12211196"
+    },
     "src/vendor/github/dragontower/upstream/dragontower.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/vendor/github/dragontower/upstream/dragontower.ts",
       "baseSha256": "5c7adc3f4bd84c473da9ab583fbff1ebf27c5db8b4bde78b7016d1a673475405",
       "sha256": "5c7adc3f4bd84c473da9ab583fbff1ebf27c5db8b4bde78b7016d1a673475405"
     },
     "src/vendor/github/hilo/upstream/hilo.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/vendor/github/hilo/upstream/hilo.ts",
       "baseSha256": "1d55a974edac435060aebb0c34b222c0763259476c2b9ddcab22ee69bd9d2803",
       "sha256": "1d55a974edac435060aebb0c34b222c0763259476c2b9ddcab22ee69bd9d2803"
     },
     "src/vendor/github/poker/engine.d.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/vendor/github/poker/engine.d.ts",
       "baseSha256": "f2309d02619b051dccb1276bcd43275c619518396b9c932631234d8aa271ec9c",
       "sha256": "f2309d02619b051dccb1276bcd43275c619518396b9c932631234d8aa271ec9c"
     },
+    "src/vendor/github/poker/engine.js": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "src/vendor/github/poker/engine.js",
+      "baseSha256": "30cacb5e42d89d1118e6fdd33f42700dd0abe54f88281130d8f397a7aa002191",
+      "sha256": "30cacb5e42d89d1118e6fdd33f42700dd0abe54f88281130d8f397a7aa002191"
+    },
+    "src/vendor/github/poker/upstream/PokerEngine.js": {
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
+      "path": "src/vendor/github/poker/upstream/PokerEngine.js",
+      "baseSha256": "2aff8a21f676d20fa47245fa4b2da804f0e4cf6d4fbbd29566f94fcf5b91a0a4",
+      "sha256": "2aff8a21f676d20fa47245fa4b2da804f0e4cf6d4fbbd29566f94fcf5b91a0a4"
+    },
     "src/vendor/github/video-poker/math.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/vendor/github/video-poker/math.ts",
       "baseSha256": "4af8857a0a14958d9a3c20e6b3b19d574bea1d56951dab7b6be106d024444849",
       "sha256": "4af8857a0a14958d9a3c20e6b3b19d574bea1d56951dab7b6be106d024444849"
     },
     "src/vite-env.d.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/vite-env.d.ts",
       "baseSha256": "65996936fbb042915f7b74a200fcdde7e410f32a669b1ab9597cfaa4b0faddb5",
       "sha256": "65996936fbb042915f7b74a200fcdde7e410f32a669b1ab9597cfaa4b0faddb5"
     },
     "src/wallet.css": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/wallet.css",
       "baseSha256": "30c5fb0aa6cbee1cdef1bd5a6e062e91c7b8ea94b69fbaacabc74dbbf7da630a",
       "sha256": "30c5fb0aa6cbee1cdef1bd5a6e062e91c7b8ea94b69fbaacabc74dbbf7da630a"
     },
     "src/wallet/AfterglowWardrobeClient.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/wallet/AfterglowWardrobeClient.ts",
       "baseSha256": "195fadd07996dd60a0c07a2ba59e0fcc9ca9d64e0da42260f6dffcb676d22aab",
       "sha256": "195fadd07996dd60a0c07a2ba59e0fcc9ca9d64e0da42260f6dffcb676d22aab"
     },
     "src/wallet/CasinoClient.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/wallet/CasinoClient.ts",
       "baseSha256": "feb8e2a78c62aa0d9272b1f18f07eb8db38de2ea01b337a1b132f06d702c3633",
       "sha256": "feb8e2a78c62aa0d9272b1f18f07eb8db38de2ea01b337a1b132f06d702c3633"
     },
     "src/wallet/ConvoyProgressClient.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/wallet/ConvoyProgressClient.ts",
       "baseSha256": "292f57d2807fa8a522b8c51b52a11fef4c32f763ee1b0177981a71ed96decb1a",
       "sha256": "292f57d2807fa8a522b8c51b52a11fef4c32f763ee1b0177981a71ed96decb1a"
     },
     "src/wallet/CryptoClient.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/wallet/CryptoClient.ts",
       "baseSha256": "a0a05010eba83a16df2a7f0e2424e155cdd14fd9fd51d1b329d212f0aeccd57d",
       "sha256": "a0a05010eba83a16df2a7f0e2424e155cdd14fd9fd51d1b329d212f0aeccd57d"
     },
     "src/wallet/ExpansionClient.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "deployment/releases/jackie-chan-20261029-v2/source/src/wallet/ExpansionClient.ts",
       "baseSha256": "2abf931fb94be3aba17d063b899d84bda3885dad819c15545ca0280a34521a52",
       "sha256": "2abf931fb94be3aba17d063b899d84bda3885dad819c15545ca0280a34521a52"
     },
     "src/wallet/FlightClient.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/wallet/FlightClient.ts",
       "baseSha256": "5378317a883a9dbda28394d65e9db4161f5873ac1ea4a3da1264fd37339ae7a6",
       "sha256": "5378317a883a9dbda28394d65e9db4161f5873ac1ea4a3da1264fd37339ae7a6"
     },
     "src/wallet/MinesClient.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/wallet/MinesClient.ts",
       "baseSha256": "45eb0ece3169e28b80fff7d4d746cff4b62666611f9bb8d1af5b82f6d7ec3c69",
       "sha256": "45eb0ece3169e28b80fff7d4d746cff4b62666611f9bb8d1af5b82f6d7ec3c69"
     },
     "src/wallet/NilePlayClient.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/wallet/NilePlayClient.ts",
       "baseSha256": "1789e48810dea6a2390265a7ccdfe7853d5f4d8f92d41954def9ab1a20f41db0",
       "sha256": "1789e48810dea6a2390265a7ccdfe7853d5f4d8f92d41954def9ab1a20f41db0"
     },
     "src/wallet/UsdtClient.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/wallet/UsdtClient.ts",
       "baseSha256": "65585a87cfbde54e0a03ddba4c3ab3190660a54ffb61bbb1f334c3fcab249592",
       "sha256": "65585a87cfbde54e0a03ddba4c3ab3190660a54ffb61bbb1f334c3fcab249592"
     },
     "src/wallet/WalletClient.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/wallet/WalletClient.ts",
       "baseSha256": "629677fba3015fd8887040b86a88d14cb4f0103e456e06b749fbc1b9f61c05ca",
       "sha256": "629677fba3015fd8887040b86a88d14cb4f0103e456e06b749fbc1b9f61c05ca"
     },
     "src/wallet/paymentQr.ts": {
-      "commit": "46a9aaff581a6ec374bc848905df037f87b2d832",
+      "commit": "ca95ce593fb9266b81c242537aa6ada55a1be002",
       "path": "src/wallet/paymentQr.ts",
       "baseSha256": "e647374f0cd5e1089de51cad09bc1d123c4b4a662a681adeb2684089740184a9",
       "sha256": "e647374f0cd5e1089de51cad09bc1d123c4b4a662a681adeb2684089740184a9"
