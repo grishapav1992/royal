@@ -1,10 +1,10 @@
 # Independently published games
 
-Every existing game definition has an independent client package. The catalogue contains 123 module identities across the current and historical game families. This is a technical inventory, not a claim that the hall has 123 visible machines:
+Every existing game definition has an independent client package. The catalogue contains 124 module identities across the current and historical game families. This is a technical inventory, not a claim that the hall has 124 visible machines:
 
 | Family | Module identities |
 | --- | ---: |
-| Studio games, including Forest Heart, Caribbean Treasures and Flooded Temple | 44 |
+| Studio games, including Forest Heart, Caribbean Treasures, Flooded Temple and Galactic Reactor | 45 |
 | Original Royal games, GitHub practice games, session games and all casino/card variants, including LAST EXIT, Flag Battle and Jackie Chan | 64 |
 | Air hockey, pool, chess, piano and Mortal Kombat | 5 |
 | Durak, transfer Durak, Crazy Eights and Tsu-e-fa PvP | 4 |
