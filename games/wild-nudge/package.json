@@ -1,0 +1,13 @@
+{
+  "name": "@royal/wild-nudge",
+  "version": "1.0.0",
+  "private": true,
+  "gameId": "studio-wild-nudge",
+  "apiVersion": 1,
+  "rulesVersion": 1,
+  "progressVersion": 1,
+  "entry": "entry.ts",
+  "assetRoots": ["wild-nudge"],
+  "preload": ["wild-nudge/background.webp","wild-nudge/symbol-0.webp","wild-nudge/symbol-1.webp","wild-nudge/symbol-2.webp","wild-nudge/symbol-3.webp","wild-nudge/symbol-4.webp","wild-nudge/symbol-5.webp","wild-nudge/symbol-6.webp","wild-nudge/symbol-7.webp"],
+  "scripts": {"build":"node ../../node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && node ../../scripts/build-game-module.mjs"}
+}

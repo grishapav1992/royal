@@ -922,6 +922,54 @@
         "scripts/game-math/rtp-virtual-pvp.mjs",
         "src/shared/pvpSeats.ts"
       ]
+    },
+    "studio-wild-nudge": {
+      "method": "exact-wild-nudge-runtime",
+      "releaseStatus": "qualified",
+      "rulesVersion": 1,
+      "progressVersion": 1,
+      "target": 0.96,
+      "tolerance": 0.002,
+      "stakes": [
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "choices": [
+        "normal"
+      ],
+      "seeds": [
+        2026103031,
+        2026103047
+      ],
+      "modelReplayRoundsPerSeed": 64,
+      "proof": "docs/game-math/qualifications/wild-nudge-v1.json",
+      "qualificationSource": "scripts/game-math/rtp-wild-nudge.mjs",
+      "sources": [
+        "src/shared/wildNudgeData.json",
+        "src/shared/wildNudgeMath.ts",
+        "scripts/game-math/wild-nudge-reference.mjs",
+        "scripts/game-math/rational.mjs",
+        "src/shared/wildNudge.ts",
+        "server/games/wildNudge.ts",
+        "scripts/game-math/wild-nudge-model.mjs",
+        "scripts/game-math/wild-nudge-wallet.ts",
+        "src/shared/casinoExpansion.ts",
+        "server/demoExpansion.ts",
+        "server/demoWalletRoutes.ts",
+        "server/gameWalletRoutes.ts",
+        "server/finance/nile-game-runtime.ts",
+        "server/demoWallet.ts",
+        "server/demoWalletAmounts.ts",
+        "server/database.ts",
+        "src/wallet/ExpansionClient.ts",
+        "src/shared/arcadeCatalog.ts"
+      ],
+      "note": "Exact full-round expectation plus exhaustive cyclic-stop server census, independent seeded full-round replay, reachable maximum on every stake and real PostgreSQL common-wallet concurrency/recovery/rollback qualification. Client layout and media are verified separately.",
+      "serverReplayRoundsPerSeed": 256
     }
   },
   "nonWagered": {
@@ -935,7 +983,7 @@
         "progressVersion": 1,
         "target": 0.96,
         "minimumReturn": 0.9,
-        "tolerance": 0.000001,
+        "tolerance": 1e-06,
         "stakes": [
           1000,
           2000,

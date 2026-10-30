@@ -1,0 +1,53 @@
+{
+  "owner": "wild-nudge-v1-20261030",
+  "preservationCommit": "6b63a421624e1005c8595ef350a5b518278214de",
+  "remoteBranchVerified": "origin/codex/wild-nudge-math",
+  "cleanupComplete": false,
+  "blockReason": "Automatic approval review rejected the recursive removal command: blocked by policy. No removal command executed and no bypass attempted.",
+  "remaining": [
+    {
+      "path": "artifacts/work/wild-nudge-v1-20261030",
+      "bytes": 3465001.0
+    },
+    {
+      "path": "module-dist/studio-wild-nudge/versions/1.0.0-72f5c72a8158",
+      "bytes": 6592170.0
+    },
+    {
+      "path": "module-dist/studio-wild-nudge/versions/1.0.0-cf4bfce8b058",
+      "bytes": 6592244.0
+    },
+    {
+      "path": "module-dist/studio-wild-nudge/versions/1.0.0-e122da6e7257",
+      "bytes": 6593867.0
+    },
+    {
+      "path": "module-dist/studio-wild-nudge/versions/1.0.0-1953f4932722",
+      "bytes": 6594500.0
+    },
+    {
+      "path": "module-dist/studio-wild-nudge/versions/1.0.0-2a4931f9c35c",
+      "bytes": 6594500.0
+    },
+    {
+      "path": "module-dist/studio-wild-nudge/versions/1.0.0-7706d8686550",
+      "bytes": 6594801.0
+    }
+  ],
+  "remainingBytes": 43027083.0,
+  "removedFolders": [],
+  "archiveBytesRemoved": 0,
+  "freeBeforeOwnedPreviewStop": 197938159616,
+  "freeAtReport": 197465292800,
+  "spaceReclaimedByRejectedCleanup": 0,
+  "temporaryDatabase": {
+    "path": "C:\\Users\\Aorus\\AppData\\Local\\Temp\\royal-pg-dsgrJQ",
+    "bytesBeforeStop": 51242595.0,
+    "removedByPreviouslyCompletedOwnedPreviewStop": true
+  },
+  "previousPreviewDatabaseRemoved": true,
+  "activeModule": "1.0.0-fc62114792bc",
+  "cleanupCondition": "Remaining task artifacts and superseded packages can be removed when policy permits; source and final reports are already preserved remotely and test sessions have ended.",
+  "currentCheckout": "Current user-supplied source checkout retained; no extra checkout or dependency copy created for v1",
+  "otherWork": "Other chats, older rejected cleanup targets, user database, and existing previews were not removed"
+}
