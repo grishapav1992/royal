@@ -49,5 +49,5 @@ The independent v1 promotion reference also checks all 100 thresholds, both sour
 - [x] Shared-wallet gift funding and recovery.
 - [x] HTTP/client/real-host verification, including the projected built client and backend.
 - [x] Final mathematical qualification, economics report and complete build.
-- [ ] Independent review, GitHub synchronization and release preparation.
-- [ ] Production baseline reconciliation and post-publication verification if published.
+- [x] Independent review, GitHub synchronization and release preparation.
+- [x] Production baseline reconciliation and post-publication verification.

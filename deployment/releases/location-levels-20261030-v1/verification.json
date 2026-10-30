@@ -1,0 +1,357 @@
+{
+  "format": 1,
+  "release": "location-levels-20261030-v1",
+  "state": "published-and-verified",
+  "applicationSourceCommit": "38ce8d04adbc70cf2a7e80cf017663463dd68b2a",
+  "productionBaseline": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+  "featureProjectionCommit": "f9a6a231e73da8618d745a654d1b684b18bcda5d",
+  "completionTool": {
+    "format": 1,
+    "applicationSourceCommit": "38ce8d04adbc70cf2a7e80cf017663463dd68b2a",
+    "helperSourceCommit": "89fd0b1e13a8d6410934f3cda23d6d5e065cd584",
+    "remoteMain": "89fd0b1e13a8d6410934f3cda23d6d5e065cd584",
+    "helperSha256": "15d82a9f42d797d258a33f42c3cc6c84fce180b4410761944e02de001b3d1982",
+    "githubVerified": true,
+    "checkedAt": "2026-10-30T22:34:08.693Z"
+  },
+  "publication": {
+    "published": {
+      "published": true,
+      "sourceCommit": "38ce8d04adbc70cf2a7e80cf017663463dd68b2a",
+      "preparedImage": "sha256:951f794090a54b025382ee92b0c7fba2557defa35b80c0e352dd5872ceda45f6",
+      "runningImage": "sha256:951f794090a54b025382ee92b0c7fba2557defa35b80c0e352dd5872ceda45f6",
+      "containerRestarted": true,
+      "changedSources": 14,
+      "clientDeltaFiles": 3,
+      "backendDeltaFiles": 1,
+      "configurationsAndMountsPreserved": true,
+      "gameDataPreserved": true,
+      "otherBackendProgramsAndModulesPreserved": true,
+      "oldAssetsPreserved": true,
+      "otherPersistentServicesPreserved": 13,
+      "completionToolCommit": "89fd0b1e13a8d6410934f3cda23d6d5e065cd584",
+      "completionRecreatedContainer": false,
+      "semanticGameProfileVerified": true,
+      "at": 1793399783.4928732
+    },
+    "sourceFiles": 2476,
+    "runtimeFiles": 8574,
+    "externalModuleFiles": 2593,
+    "services": 14,
+    "sourceCommit": "38ce8d04adbc70cf2a7e80cf017663463dd68b2a",
+    "officialManifestSha256": "f66a2f7e75c0be5114af5302b214688b3c5c04deb5c83e6bdcad022eb2186dbf",
+    "installManifestSha256": "6b9341605ce55605ffc66b3025f3aeb4319ac17520b28c05fd3d2c69514343f4",
+    "backups": {
+      "source.tgz": {
+        "bytes": 142626,
+        "sha256": "ee375afa3fe299b4013fc5fb340c4acd927343ad18230f08236d99574b60c49e"
+      },
+      "game-wallet.dump": {
+        "bytes": 31899124,
+        "sha256": "bb5b573e834cf5bbc4dc03ba7041c936f02c1001b8dc1b5c6532e5811e34ded0"
+      },
+      "index.html": {
+        "bytes": 811,
+        "sha256": "84f6cceb53774b9597f85806a3ec748ef0f2c42a800ade4c8a2d780254943b95"
+      }
+    },
+    "databaseBackupEvidence": {
+      "schema": "royal_game",
+      "format": "custom",
+      "tocEntries": 264,
+      "bytes": 31899124,
+      "sha256": "bb5b573e834cf5bbc4dc03ba7041c936f02c1001b8dc1b5c6532e5811e34ded0"
+    },
+    "protectedProgramsPreserved": true,
+    "configurationHashesPreserved": true,
+    "moduleFilesPreserved": true,
+    "preparedMatchesRunning": true,
+    "availableBytes": 5647147008
+  },
+  "checks": {
+    "serverClientHttpMoneyAndCompatibility": {
+      "passed": 73,
+      "failed": 0,
+      "command": "node --import tsx scripts/database-test.ts --import tsx --test server-tests/progression*.test.ts server-tests/finance/progression-spins.test.ts server-tests/reward-slots-rtp-gate.test.mjs server-tests/accounts.test.ts server-tests/pvp-virtual-wallet.test.ts server-tests/game-wallet.test.ts"
+    },
+    "browser": {
+      "passed": 3,
+      "scope": "real host with connected chat, desktop/mobile, accepted reward response loss and reload, English",
+      "candidateProjectionRecheckRequired": false,
+      "projectedCandidate": {
+        "passed": 3,
+        "failed": 0,
+        "builtClientAndBackend": true,
+        "files": {
+          "dist/assets/index-B7XqEtd0.js": "ba895fc8fcae28856c5a6b1b933391cfa2aec896fd1bf983a7ebc8a9073ff429",
+          "dist/assets/index-DSWJtOAy.css": "3aed8b12dfce27f47cd6644ee7191e2dc2b6efefb2fb8456834a9dbe66d78951",
+          "dist/index.html": "fa389ba9f4ea428bba2b1a63d6cbb09aa5bd19a2a702a91d7c2fd29a946f9b4a"
+        }
+      },
+      "standCorrections": [
+        "Production Colyseus root routes are forwarded by the built local stand"
+      ],
+      "exactPublishedArtifactBinding": {
+        "sourceCommit": "38ce8d04adbc70cf2a7e80cf017663463dd68b2a",
+        "passed": true,
+        "browserTests": 3,
+        "exactClientFiles": {
+          "dist/assets/index-B7XqEtd0.js": "ba895fc8fcae28856c5a6b1b933391cfa2aec896fd1bf983a7ebc8a9073ff429",
+          "dist/assets/index-DSWJtOAy.css": "3aed8b12dfce27f47cd6644ee7191e2dc2b6efefb2fb8456834a9dbe66d78951",
+          "dist/index.html": "fa389ba9f4ea428bba2b1a63d6cbb09aa5bd19a2a702a91d7c2fd29a946f9b4a"
+        },
+        "backend": {
+          "path": "dist-server/index.js",
+          "sha256": "0f47be562308630a7c8e041d593e13bc85f72ff3ed202a822ce6538865d5289d"
+        }
+      }
+    },
+    "financeTypecheck": true,
+    "applicationBuild": true,
+    "rtpProfilesVerified": 23,
+    "extensibility": {
+      "passed": 6,
+      "scope": "explicit nonmonetary source, independent reward resource, atomic milestone, old rights migration and pinned policy compatibility"
+    },
+    "releaseProjection": {
+      "passed": 22
+    },
+    "installer": {
+      "python": 16,
+      "protocol": 5,
+      "realPostgresFence": 1
+    },
+    "projectionPreflight": {
+      "hostInputs": 229,
+      "backendInputs": 236,
+      "backendSha256": "0f47be562308630a7c8e041d593e13bc85f72ff3ed202a822ce6538865d5289d"
+    },
+    "independentReviews": {
+      "runtime": "no critical blockers",
+      "guardedInstaller": "no actionable blockers"
+    },
+    "packagePreparation": {
+      "passed": 10
+    },
+    "publicVerifier": {
+      "passed": 5
+    },
+    "mergedPvpCompatibility": {
+      "passed": 2,
+      "scope": "own stake and refunds after latest Tsu-e-fa changes"
+    },
+    "nativeRestart": {
+      "passed": 14,
+      "unchangedBackendInputs": 226,
+      "unchangedGoSources": 128,
+      "persistedCasinoTypes": 13,
+      "report": "deployment/releases/location-levels-20261030-v1/native-round-compatibility.json",
+      "reportSha256": "31d079dca9b000a2b956f11a87108e05ae5789266991e2558e4ea585bbff8f53",
+      "scope": "Untimed casino and Mines continue; Flight, Crash, PvP, combat and skin reservations still drain"
+    },
+    "completionTool": {
+      "passed": 10,
+      "sourceCommit": "89fd0b1e13a8d6410934f3cda23d6d5e065cd584",
+      "sha256": "15d82a9f42d797d258a33f42c3cc6c84fce180b4410761944e02de001b3d1982"
+    },
+    "rtpApplicationSourceCommit": "38ce8d04adbc70cf2a7e80cf017663463dd68b2a",
+    "productionDatabase": {
+      "passed": true,
+      "readOnly": true,
+      "featureTables": 9,
+      "activation": {
+        "scope": "VIRTUAL_USD:south-park",
+        "activated_at": "1793398378580",
+        "earn_enabled": true,
+        "spins_enabled": true
+      },
+      "policyVersion": "location-levels-v1",
+      "counts": {
+        "progression_players": "0",
+        "progression_outbox": "0",
+        "progression_rewards": "0",
+        "progression_spin_uses": "0"
+      },
+      "invalidXp": "0",
+      "invalidAcknowledgments": "0",
+      "invalidUses": "0",
+      "playerDataIncluded": false
+    },
+    "public": {
+      "release": "location-levels-20261030-v1",
+      "sourceCommit": "38ce8d04adbc70cf2a7e80cf017663463dd68b2a",
+      "baseCommit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "manifestSha256": "f66a2f7e75c0be5114af5302b214688b3c5c04deb5c83e6bdcad022eb2186dbf",
+      "origin": "https://stealth-spark-gokmxooi.expresshost.cloud",
+      "at": "2026-10-30T22:19:24.356Z",
+      "passed": true,
+      "httpFiles": 3,
+      "endpoints": {
+        "GET /healthz": 200,
+        "GET /api/progression": 401,
+        "POST /api/progression/spins": 401,
+        "GET /api/demo-wallet": 401,
+        "GET /api/demo-wallet/expansion": 401,
+        "GET /api/game-wallet": 410,
+        "GET /api/nile-play/wallet": 410,
+        "GET /api/auth/me": 200
+      },
+      "errors": [],
+      "productionAccountsCreated": 0,
+      "productionStakes": 0,
+      "productionMessages": 0,
+      "deniedGuestPosts": 1,
+      "viewports": [
+        {
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "geometry": {
+            "documentWidth": 1440,
+            "viewportWidth": 1440,
+            "appWidth": 1440,
+            "appScrollWidth": 1440
+          },
+          "screenshot": "guest-1440x1000-ce6be423-4b8e-498c-bce7-f60e032b817d.png"
+        },
+        {
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "geometry": {
+            "documentWidth": 390,
+            "viewportWidth": 390,
+            "appWidth": 390,
+            "appScrollWidth": 390
+          },
+          "screenshot": "guest-390x844-319302af-5494-4299-bc71-b9305061d9be.png"
+        }
+      ],
+      "browserScope": "Offline guest host only. API writes, WebSockets and external requests blocked. Authenticated levels and recovery are verified locally."
+    }
+  },
+  "mathematics": {
+    "coins": {
+      "exactReturn": "24/25",
+      "outcomes": 125,
+      "serverReplayChecks": 2527
+    },
+    "fruits": {
+      "exactReturn": "97/100",
+      "outcomes": 8000,
+      "serverReplayChecks": 89152
+    },
+    "rewardPlayerStake": "0",
+    "rewardRtp": null,
+    "normalization": "fixed nominal",
+    "fullTrack": {
+      "requiredTurnover": "1000000.00",
+      "issuedSpins": 260,
+      "issuedNominal": "220.00",
+      "expectedPayout": "212.622"
+    },
+    "profitabilityClaim": false,
+    "promotionBudget": {
+      "maximumCumulativeBasisPoints": 100,
+      "everyMilestoneVerified": true,
+      "independentDefinition": true,
+      "profitabilityClaim": false
+    }
+  },
+  "cleanup": {
+    "server": {
+      "removed": [
+        {
+          "path": "/opt/royal-releases/location-levels-20261030-v1/runtime-context",
+          "logicalBytes": 5156372,
+          "hardLinkedPayloadRetained": true
+        },
+        {
+          "path": "/opt/royal-releases/location-levels-20261030-v1/next-install-manifest.json",
+          "logicalBytes": 3837188
+        },
+        {
+          "path": "/opt/royal-releases/location-levels-20261030-v1/recovery-observation.json",
+          "logicalBytes": 3274469
+        },
+        {
+          "path": "/opt/royal-releases/location-levels-20261030-v1/attempt-1-build-result.json",
+          "logicalBytes": 1168516
+        },
+        {
+          "path": "/opt/royal-releases/location-levels-20261030-v1/attempt-1-build.log",
+          "logicalBytes": 794
+        },
+        {
+          "path": "/opt/royal-releases/location-levels-20261030-v1/attempt-1-financial-gate.log",
+          "logicalBytes": 31
+        },
+        {
+          "path": "/opt/royal-releases/location-levels-20261030-v1/__pycache__",
+          "logicalBytes": 80671
+        }
+      ],
+      "removedUnusedCandidateImage": "sha256:9bc9cd8a5c5fcdbbefb49efcbdb8919b708d6cae50cc66ac3d14e5c594f686b9",
+      "freeBefore": 5646749696,
+      "freeAfter": 5655326720,
+      "backupsRetained": "/opt/royal-backups/location-levels-20261030-v1",
+      "currentPackageRetainedForGuardedRollback": true,
+      "noOtherTaskArtifactsRemoved": true
+    },
+    "completedLocalTooling": {
+      "removed": [
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/location-levels-mvp/checkout/artifacts/work/location-levels-mvp/tooling",
+          "logicalBytes": 240004670
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/location-levels-mvp/checkout/artifacts/work/location-levels-mvp/go-cache",
+          "logicalBytes": 71626295
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/location-levels-mvp/checkout/artifacts/work/location-levels-mvp/go1.27.3.darwin-arm64.tar.gz",
+          "logicalBytes": 68196737
+        }
+      ],
+      "freeBefore": 46904774656,
+      "freeAfter": 47156596736,
+      "reason": "Native restart tests completed; normal built card binaries remain until feature verification completes",
+      "preservedSourceCommit": "38ce8d0"
+    },
+    "supersededLocalPackage": {
+      "path": "artifacts/work/location-levels-mvp/publication",
+      "logicalBytes": 11437501,
+      "files": 33,
+      "freeBefore": 47042625536,
+      "freeAfter": 47042465792,
+      "preservedSourceCommit": "a67141300fa018cb5bb12e1d7005840cdcaf14c1",
+      "condition": "Unpublished first package replaced by newly reviewed official package; original source and compact attempt record preserved"
+    },
+    "isolatedCheckoutRemovalCondition": "After this deployment record is pushed and verified in GitHub; retain only the compact final local completion report",
+    "physicalSpaceAttribution": "Logical sizes can include hardlinks; measured free-space changes also include parallel activity"
+  },
+  "limitations": [
+    "Public browser checks cover offline guests only; authenticated levels, wallet operations, connected chat and recovery used the identical built client/backend in a disposable local database.",
+    "Physical mobile devices were not tested.",
+    "The feature uses the existing shared VIRTUAL_USD wallet; it does not enable real-money withdrawals."
+  ],
+  "releaseHistory": [
+    {
+      "sourceCommit": "a67141300fa018cb5bb12e1d7005840cdcaf14c1",
+      "published": false,
+      "gateRefused": true,
+      "productionUnchangedVerified": true,
+      "nativeActiveCasinoSessions": 13,
+      "reason": "Persistent untimed rounds require demonstrated compatible restoration"
+    },
+    {
+      "sourceCommit": "38ce8d04adbc70cf2a7e80cf017663463dd68b2a",
+      "stage": "post-switch verification",
+      "originalCheck": "Order-sensitive game service profile digest differed",
+      "resolution": "Full effective profile equals the SHA-pinned prior Temple manifest; all original source/runtime/configuration/service/module checks retained; no second container recreation during completion",
+      "published": true
+    }
+  ]
+}
