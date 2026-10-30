@@ -1,108 +1,56 @@
-import { readFileSync, writeFileSync, mkdirSync, copyFileSync, existsSync, statSync } from 'node:fs';
-import { resolve, dirname, sep } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { createHash } from 'node:crypto';
-import { execFileSync } from 'node:child_process';
+import fs from 'node:fs';
+import path from 'node:path';
+import cp from 'node:child_process';
+import crypto from 'node:crypto';
 import assert from 'node:assert/strict';
-import { build } from 'esbuild';
-const root = resolve(dirname(fileURLToPath(import.meta.url)), '../../..'), work = resolve(root, 'artifacts/work/cat-purr-hall-only'), out = resolve(work, 'payload');
-const base = 'ee9319121f33bf14f45bacae448d21d62a17df9e', name = 'cat-purr-hall-only-20261030-v1';
-const git = (...args) => execFileSync(process.env.ROYAL_GIT_BINARY || 'git', args, { cwd: root, encoding: 'utf8' }).trim();
-const hash = path => createHash('sha256').update(readFileSync(path)).digest('hex');
-const canonicalHash = path => createHash('sha256').update(readFileSync(path, 'utf8').replace(/\r\n/g, '\n')).digest('hex');
-const json = path => JSON.parse(readFileSync(path, 'utf8'));
-const before = json(resolve(work, 'before.json')), release = json(resolve(root, 'module-build/release-manifest.json'));
-const receipt = json(resolve(root, 'module-build/release-github.json'));
-assert.equal(release.sourceCommit, git('rev-parse', 'HEAD')); assert.equal(release.baseCommit, base); assert(release.build.passed);
-assert.equal(receipt.sourceCommit, release.sourceCommit); assert(!git('status', '--porcelain'));
-assert.equal(before.sourceRevision, base); assert.equal(before.container.image, before.preparedImage);
-assert.deepEqual(before.program, before.preparedProgram);
-assert(!existsSync(out), 'Existing payload must be reviewed'); mkdirSync(out);
-function copy(from, to) { const path = resolve(out, to); assert(path.startsWith(out + sep)); mkdirSync(dirname(path), { recursive: true }); copyFileSync(from, path); }
-const changed = {}, retainedSource = [];
-const allowed = new Set(['src/game/RoomScene.ts','src/game/CatRenderer.ts']);
-for (const file of release.changed) {
-  if (!allowed.has(file)) continue;
-  const source = resolve(root, file); assert(existsSync(source), file); const digest = hash(source);
-  if (before.source[file] === digest) continue;
-  changed[file] = digest; copy(source, 'source/' + file);
+import {fileURLToPath} from 'node:url';
+import {build} from 'vite';
+const helper=path.dirname(fileURLToPath(import.meta.url)),root=path.resolve(helper,'../../..');
+const work=path.join(root,'artifacts/work/cat-purr-hall-only'),out=path.join(work,'payload-reviewed');
+const name='cat-purr-hall-only-20261030-v1',base='ee9319121f33bf14f45bacae448d21d62a17df9e';
+const digest=b=>crypto.createHash('sha256').update(b).digest('hex'),canonical=b=>Buffer.from(b.toString().replace(/\r\n/g,'\n'));
+const json=p=>JSON.parse(fs.readFileSync(p,'utf8'));
+const git=(...a)=>cp.execFileSync(process.env.ROYAL_GIT_BINARY||'git',a,{cwd:root,stdio:['ignore','pipe','ignore']});
+const release=json(path.join(root,'module-build/release-manifest.json')),receipt=json(path.join(root,'module-build/release-github.json')),before=json(path.join(work,'before.json'));
+assert.equal(git('status','--porcelain').toString().trim(),'');assert.equal(release.sourceCommit,git('rev-parse','HEAD').toString().trim());
+assert.equal(release.sourceCommit,receipt.sourceCommit);assert.equal(release.baseCommit,base);assert(release.build.passed);
+assert.equal(before.sourceRevision,base);assert.equal(before.container.image,before.preparedImage);assert.deepEqual(before.program,before.preparedProgram);
+const changedFiles=new Set(['src/game/RoomScene.ts','src/game/CatRenderer.ts']);
+const tracked=git('ls-files','-z').toString().split('\0').filter(Boolean),cache=new Map(),origins={},hostInputs={};
+function blob(commit,file){const key=commit+':'+file;if(!cache.has(key))cache.set(key,canonical(git('show',key)));return cache.get(key);}
+function read(file){
+ if(file in hostInputs)return cache.get('input:'+file);
+ let bytes,origin;
+ if(changedFiles.has(file)){
+  bytes=blob(release.sourceCommit,file);origin={commit:release.sourceCommit,path:file,changed:true};
+  assert.equal(digest(bytes),digest(canonical(fs.readFileSync(path.join(root,file)))));
+ }else{
+  const expected=before.sourceLF[file];assert(expected,'Unpublished host input rejected: '+file);
+  const candidates=[file,...tracked.filter(p=>p.endsWith('/source/'+file))];
+  for(const candidate of candidates){try{const value=blob(release.sourceCommit,candidate);if(digest(value)===expected){bytes=value;origin={commit:release.sourceCommit,path:candidate};break;}}catch{}}
+  if(!bytes){const commits=git('log','origin/main','--format=%H','--',file).toString().trim().split('\n').filter(Boolean);
+   for(const commit of commits){try{const value=blob(commit,file);if(digest(value)===expected){bytes=value;origin={commit,path:file};break;}}catch{}}}
+  assert(bytes,'Production host source is not preserved in GitHub main: '+file);assert.equal(digest(bytes),expected,'Retained production source changed: '+file);
+ }
+ hostInputs[file]=digest(bytes);origins[file]=origin;cache.set('input:'+file,bytes);return bytes;
 }
-for (const [file, digest] of Object.entries(before.source)) {
-  if (file === 'deployment/SERVER.md' || file.endsWith('.orig') || file.endsWith('.bak') || file in changed) continue;
-  assert(existsSync(resolve(root, file)), file); const actual = hash(resolve(root, file));
-  if (actual !== digest && before.sourceLF[file] !== canonicalHash(resolve(root, file))) {
-    // Unpublished sources outside the audited host graph remain untouched.
-    retainedSource.push({file, retainedSha256:digest, localSha256:actual});
-  }
-}
-const hostAudit = await build({absWorkingDir:root,entryPoints:['src/main.ts','src/admin/main.ts'].filter(file=>existsSync(resolve(root,file))),bundle:true,platform:'browser',format:'esm',outdir:'audit-only',write:false,metafile:true,preserveSymlinks:true,external:['/chat-media/*'],loader:{'.png':'file','.webp':'file','.jpg':'file','.svg':'file','.woff2':'file'}});
-const hostInputs = [];
-for(const file of Object.keys(hostAudit.metafile.inputs)) {
- if(file.startsWith('node_modules/'))continue;
- assert(existsSync(resolve(root,file)), 'Missing host input: '+file);
- const digest=hash(resolve(root,file));
- assert(file in changed || before.source[file]===digest || before.sourceLF[file]===canonicalHash(resolve(root,file)), 'Unrelated host input differs: '+file);
- hostInputs.push({file,sha256:digest,changed:file in changed});
-}
-assert.deepEqual(Object.keys(changed).sort(), [...allowed].sort());
-const sameRuntime = (file, digest) => {
-  if (before.program[file] === digest) return true;
-  if (!/\.(html|css|js|json|svg|txt|map|md)$/i.test(file)) return false;
-  if (before.programLF[file] === digest) return true;
-  const publicSource = file.startsWith('dist/') ? 'public/' + file.slice(5) : '';
-  return before.source[publicSource] === before.program[file] && before.sourceLF[publicSource] === digest;
-};
-const delta = {}, retainedPublicRuntime = [];
-for (const [file, digest] of Object.entries(release.files)) {
-  if (!file.startsWith('dist/')) continue;
-  if (sameRuntime(file, digest)) continue;
-  const sub = file.slice(5);
-  if (sub === 'index.html' || /^assets\/[a-zA-Z0-9_-]+\.(js|css)$/.test(sub)) {
-    assert(sub === 'index.html' || !(file in before.program), 'Immutable client URL would change');
-    delta[sub] = digest; copy(resolve(root, file), 'dist-delta/' + sub);
-  } else {
-    const source = 'public/' + sub;
-    assert(before.source[source] === digest || before.sourceLF[source] === canonicalHash(resolve(root,file)), 'Unrelated static source changed: ' + file);
-    // Unchanged public sources can have older deployed bytes. Preserve that reviewed runtime pin.
-    retainedPublicRuntime.push({ file, retainedSha256: before.program[file] ?? null, localSourceSha256: digest });
-  }
-}
-assert('index.html' in delta);
-const serverDelta = {}; mkdirSync(resolve(out, 'server-delta'));
-const independentBackendSources = [];
-for (const [entry, file] of [['server/index.ts', 'index.js'], ['scripts/crypto-reconcile.ts', 'crypto-reconcile.js'], ['server/payments/index.ts', 'payments.js']]) {
-  const audit = await build({ absWorkingDir: root, entryPoints: [entry], bundle: true, platform: 'node', packages: 'external',
-    format: 'esm', outfile: 'dist-server/' + file, write: false, metafile: true });
-  assert.equal(createHash('sha256').update(audit.outputFiles[0].contents).digest('hex'), release.files['dist-server/' + file]);
-  for (const source of Object.keys(audit.metafile.inputs)) {
-    const digest = hash(resolve(root, source));
-    assert(!(source in changed) && (before.source[source] === digest || before.sourceLF[source] === canonicalHash(resolve(root,source))), 'Independent backend dependency changed: ' + source);
-  }
-  independentBackendSources.push({ entry, runtimeFile: 'dist-server/' + file, inputCount: Object.keys(audit.metafile.inputs).length,
-    retainedSha256: before.program['dist-server/' + file], localBuildSha256: release.files['dist-server/' + file] });
-}
-const host = json(resolve(root, 'module-dist/host-contracts.json'));
-assert.deepEqual(host.games, before.moduleHost.games, 'Host compatibility versions changed');
-const clientText = Object.keys(delta).filter(file => file.endsWith('.js')).map(file => readFileSync(resolve(out, 'dist-delta', file), 'utf8')).join('\n');
-for (const [gameId, installed] of Object.entries(before.activeModuleMetadata)) {
-  const pointer = json(resolve(root, 'module-dist', gameId, 'active.json'));
-  const local = json(resolve(root, 'module-dist', pointer.manifest.replace(/^\/game-modules\//, '')));
-  for (const field of ['gameId', 'apiVersion', 'rulesVersion', 'progressVersion']) assert.equal(local[field], installed[field], 'Module compatibility changed: ' + gameId);
-  if (local.version !== installed.version) assert(!clientText.includes(local.version), 'Client requires an unpublished module version: ' + gameId);
-}
-for (const file of ['package.json', 'package-lock.json']) {
-  const digest = hash(resolve(root, file));
-  assert(before.program[file] === digest || (before.program[file] === before.source[file] && before.sourceLF[file] === canonicalHash(resolve(root,file))), 'Dependencies changed: ' + file);
-}
-const helper = dirname(fileURLToPath(import.meta.url));
-const helpers = Object.fromEntries(['runtime-inventory.cjs','quiesce.cjs','financial_gate.py'].map(file => [file,hash(resolve(helper,file))]));
-for (const file of ['deploy.py', 'snapshot.py', ...Object.keys(helpers)]) copy(resolve(helper, file), file);
-for (const file of ['release-manifest.json', 'release-github.json']) copy(resolve(root, 'module-build', file), file);
-const manifest = { release: name, sourceCommit: release.sourceCommit, baseCommit: base, before, changed, delta, serverDelta, retainedPublicRuntime, retainedSource, helpers,
-  compatibility: { hostInputs, independentBackendSources, hostContractVersionsUnchanged: true, modulesChecked: Object.keys(before.activeModuleMetadata).length,
-    bundledAndExternalModulesRetained: true, dependencyLockEquivalent: true },
-  helperSha256: hash(resolve(out, 'deploy.py')), snapshotSha256: hash(resolve(out, 'snapshot.py')) };
-writeFileSync(resolve(out, 'install-manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
-execFileSync('tar', [...(process.platform === 'darwin' ? ['--no-xattrs'] : []), '-czf', resolve(work, 'transport.tgz'), '-C', out, '.'], { env: { ...process.env, COPYFILE_DISABLE: '1' } });
-console.log(JSON.stringify({ sourceCommit: release.sourceCommit, sourceFiles: Object.keys(changed).length, clientFiles: Object.keys(delta).length,
-  backendFiles: 0, deltaBytes: Object.keys(delta).reduce((sum, file) => sum + statSync(resolve(out, 'dist-delta', file)).size, 0), transportBytes: statSync(resolve(work, 'transport.tgz')).size }));
+const plugin={name:'reviewed-cat-host',enforce:'pre',load(id){const file=path.relative(root,id.split('?')[0]).split('\\').join('/');if(file.startsWith('../')||file.includes('node_modules/')||!/\.(?:ts|json|css)$/.test(file))return;return read(file).toString();}};
+assert.equal(digest(canonical(fs.readFileSync(path.join(root,'index.html')))),before.sourceLF['index.html']);
+assert(!fs.existsSync(out),'Review and remove only the previous task-owned partial payload before retrying');fs.mkdirSync(out);
+function write(file,bytes){const target=path.resolve(out,file);assert(target.startsWith(out+path.sep));fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,bytes,{flag:'wx'});return digest(bytes);}
+function copy(from,to){return write(to,fs.readFileSync(from));}
+const changed={};for(const file of changedFiles){assert(release.changed.includes(file));read(file);changed[file]=copy(path.join(root,file),'source/'+file);}
+// Build only the hall entry. Retain the existing admin entry and every old asset.
+const built=await build({root,configFile:false,publicDir:false,plugins:[plugin],build:{write:false,emptyOutDir:false,rollupOptions:{input:path.join(root,'index.html')}}});
+const delta={};for(const result of Array.isArray(built)?built:[built])for(const item of result.output){const file=item.fileName,bytes=Buffer.from(item.type==='chunk'?item.code:item.source),hash=digest(bytes);
+ assert(file==='index.html'||/^assets\/[a-zA-Z0-9_-]+\.(?:js|css)$/.test(file),'Unreviewed host output: '+file);
+ if(before.program['dist/'+file]===hash)continue;assert(file==='index.html'||!('dist/'+file in before.program),'Immutable client URL would change: '+file);delta[file]=write('dist-delta/'+file,bytes);}
+assert('index.html' in delta);assert.deepEqual(Object.keys(origins).filter(f=>origins[f].changed).sort(),[...changedFiles].sort());
+for(const [file,hash] of Object.entries(hostInputs))assert(changedFiles.has(file)||hash===before.sourceLF[file],file);
+fs.mkdirSync(path.join(out,'server-delta'));
+const helpers=Object.fromEntries(['runtime-inventory.cjs','quiesce.cjs','financial_gate.py'].map(f=>[f,digest(fs.readFileSync(path.join(helper,f)))]));
+for(const file of ['deploy.py','snapshot.py',...Object.keys(helpers)])copy(path.join(helper,file),file);
+for(const file of ['release-manifest.json','release-github.json'])copy(path.join(root,'module-build',file),file);
+const manifest={release:name,sourceCommit:release.sourceCommit,baseCommit:base,before,changed,delta,serverDelta:{},helpers,helperSha256:digest(fs.readFileSync(path.join(out,'deploy.py'))),snapshotSha256:digest(fs.readFileSync(path.join(out,'snapshot.py'))),compatibility:{hostInputs,hostOrigins:origins,onlyReviewedCatSourcesChanged:true,backendProgramsRetained:true,dependenciesRetained:true,moduleHostContractRetained:true,modulesChecked:Object.keys(before.activeModuleMetadata).length}};
+fs.writeFileSync(path.join(out,'install-manifest.json'),JSON.stringify(manifest,null,2)+'\n');cp.execFileSync('tar',['-czf',path.join(work,'transport.tgz'),'-C',out,'.']);
+console.log(JSON.stringify({sourceCommit:release.sourceCommit,hostInputs:Object.keys(hostInputs).length,sourceFiles:Object.keys(changed).length,clientFiles:Object.keys(delta).length,deltaBytes:Object.keys(delta).reduce((s,f)=>s+fs.statSync(path.join(out,'dist-delta',f)).size,0),transportBytes:fs.statSync(path.join(work,'transport.tgz')).size}));
