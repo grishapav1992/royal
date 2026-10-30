@@ -7,10 +7,7 @@ import { JackieScene, JACKIE_SCENE_ASSETS } from './JackieScene';
 import { JackieAudio } from './JackieAudio';
 import type { FightSpeed } from './JackiePlayback';
 import { OPPONENT_DIFFICULTIES, opponentLineup } from './JackieOpponents';
-import { JackieLayout } from './JackieLayout';
 import './jackie.css';
-import './layout.css';
-import musicTracks from './music-sources.json';
 
 const en = language === 'en';
 const t = (ru:string,english:string) => en ? english : ru;
@@ -23,7 +20,6 @@ export class JackieUI {
   private root = document.createElement('section');
   readonly audio = new JackieAudio();
   readonly scene: JackieScene;
-  private layout:JackieLayout;
   private risk:PenaltyRisk='safe';
   private costume:JackieCostume='master';
   private location:JackieLocation='restaurant';
@@ -52,16 +48,10 @@ export class JackieUI {
     <div class="jc-collection-line"><span data-collection-label></span><progress max="1" value="0" data-collection-progress aria-label="${t('Прогресс коллекции костюмов','Costume collection progress')}"></progress><button data-gallery>${t('Открыть гардероб','Open wardrobe')} ↗</button></div>
     <footer class="jc-footer"><p role="status" data-status></p><span>${t('Одна ставка · До пяти боёв','One stake · Up to five fights')}</span></footer><div class="jc-recovery" data-recovery hidden><span>${t('Ответ ещё не подтверждён.','The result is not confirmed yet.')}</span><button data-retry>${t('Проверить тот же запрос','Check the same request')}</button></div><p class="jc-error" role="alert" data-error></p>
     <dialog class="jc-dialog" data-dialog><button class="jc-dialog-close" data-close aria-label="${t('Закрыть','Close')}">×</button><div data-dialog-content></div></dialog><div class="jc-unlock" role="status" data-unlock hidden></div>`;
-    const consolePanel=document.createElement('div'),scroll=document.createElement('div');consolePanel.className='jc-console';scroll.className='jc-scroll';
-    const actions=this.find('.jc-actions');
-    for(const selector of ['.jc-controls','.jc-settings','.jc-collection-line','.jc-footer','[data-recovery]','[data-error]','[data-unlock]'])scroll.append(this.find(selector));
-    consolePanel.append(scroll,actions);this.root.append(consolePanel);
-    this.find('.jc-stage').after(this.find('[data-result]'));
-    host.replaceChildren(this.root);this.layout=new JackieLayout(host,this.root);this.scene=new JackieScene(this.find('canvas'),this.audio);
+    host.replaceChildren(this.root);this.scene=new JackieScene(this.find('canvas'),this.audio);
     try{if(localStorage.getItem('royal-kungfu-speed')==='2')this.scene.setSpeed(2);}catch{}
     this.find('[data-speed]').onclick=()=>{const speed:FightSpeed=this.scene.state().speed===1?2:1;this.scene.setSpeed(speed);try{localStorage.setItem('royal-kungfu-speed',String(speed));}catch{}this.renderKey='';this.render();};
-    const gesture=(event:Event)=>{if(!(event.target as Element).closest('[data-music]'))void this.audio.unlock();};
-    this.root.addEventListener('pointerdown',gesture,{capture:true});this.root.addEventListener('keydown',gesture,{capture:true});
+    this.root.addEventListener('pointerdown',()=>void this.audio.unlock(),{capture:true});this.root.addEventListener('keydown',()=>void this.audio.unlock(),{capture:true});
     this.root.querySelectorAll<HTMLButtonElement>('[data-risk]').forEach(b=>b.onclick=()=>{if(this.blocked())return;this.risk=b.dataset.risk as PenaltyRisk;if(!this.active()){this.preview=true;this.scene.select(this.costume,this.location,this.risk);}this.renderKey='';this.render();});
     this.find<HTMLSelectElement>('[data-location]').onchange=e=>{if(this.active()||this.blocked())return;this.location=(e.target as HTMLSelectElement).value as JackieLocation;this.preview=true;this.scene.select(this.costume,this.location,this.risk);this.renderKey='';this.render();};
     this.find<HTMLSelectElement>('[data-stake]').onchange=e=>{if(this.active()||this.blocked())return;this.stake=(e.target as HTMLSelectElement).value;this.renderKey='';this.render();};
@@ -70,12 +60,9 @@ export class JackieUI {
     this.find('[data-rules]').onclick=()=>this.openRules();this.find('[data-wardrobe]').onclick=()=>this.openWardrobe();this.find('[data-gallery]').onclick=()=>this.openWardrobe();
     this.find('[data-close]').onclick=()=>this.find<HTMLDialogElement>('[data-dialog]').close();
     this.find('[data-sound]').onclick=()=>{this.audio.toggle();this.renderKey='';this.render();};
-    const musicButton=document.createElement('button');musicButton.dataset.music='';musicButton.type='button';
-    musicButton.onclick=()=>{this.audio.music.toggle();if(this.audio.music.enabled)void this.audio.unlock();this.renderKey='';this.render();};
-    this.find('.jc-tools').append(musicButton);
     this.find('[data-load-retry]').onclick=()=>void this.scene.retry();this.find('[data-retry]').onclick=async()=>{try{await client.retry();}catch{}this.sync();};
     document.addEventListener('visibilitychange',this.onVisibility);client.addEventListener('change',this.onChange);demoWallet.addEventListener('change',this.onChange);
-    this.sync();this.audio.prime();void client.refresh();this.frame=requestAnimationFrame(now=>this.tick(now));
+    this.sync();void client.refresh();this.frame=requestAnimationFrame(now=>this.tick(now));
   }
   private find<T extends HTMLElement=HTMLElement>(selector:string):T{return this.root.querySelector<T>(selector)!;}
   private text(selector:string,value:string){const el=this.find(selector);if(el.textContent!==value)el.textContent=value;}
@@ -85,7 +72,7 @@ export class JackieUI {
   private units(){return this.session()?.view.jackie?.collectionUnits??0;}
   private sync(){
     if(!this.alive)return;
-    if(this.owner!==client.accountId){this.owner=client.accountId;this.epoch++;this.seen='';this.action='';this.error='';this.costume='master';this.location='restaurant';this.risk='safe';this.stake='1000';this.preview=false;this.unlocks=[];this.audio.cancel();this.audio.music.reset();this.scene.select(this.costume,this.location,this.risk);this.find<HTMLDialogElement>('[data-dialog]').close();}
+    if(this.owner!==client.accountId){this.owner=client.accountId;this.epoch++;this.seen='';this.action='';this.error='';this.costume='master';this.location='restaurant';this.risk='safe';this.stake='1000';this.preview=false;this.unlocks=[];this.audio.cancel();this.scene.select(this.costume,this.location,this.risk);this.find<HTMLDialogElement>('[data-dialog]').close();}
     const s=this.session(),v=s?.view.jackie,key=v?s!.id+':'+v.combat.revision:'';
     if(v&&key!==this.seen){
       const oldUnits=Number(this.root.dataset.collection??0),animate=!!this.action&&!document.hidden;
@@ -99,8 +86,7 @@ export class JackieUI {
   }
   private render(){
     if(!this.alive)return;const s=this.session(),v=this.preview?undefined:s?.view.jackie,combat=v?.combat,state=this.scene.state(),active=!!this.active(),busy=this.blocked(),ready=this.scene.loading.ready;
-    this.audio.music.select(this.location);this.audio.music.duck(state.busy);
-    const key=JSON.stringify([s?.id,combat?.revision,state.reveal,state.busy,state.phase,state.celebrating,state.speed,busy,ready,this.scene.loading,this.costume,this.location,this.risk,this.stake,this.units(),client.wallet?.balance,client.pending?.id,this.error,client.error,this.audio.enabled,this.audio.music.enabled]);
+    const key=JSON.stringify([s?.id,combat?.revision,state.reveal,state.busy,state.phase,state.celebrating,state.speed,busy,ready,this.scene.loading,this.costume,this.location,this.risk,this.stake,this.units(),client.wallet?.balance,client.pending?.id,this.error,client.error,this.audio.enabled]);
     if(key===this.renderKey)return;this.renderKey=key;
     this.root.dataset.loading=String(!ready);this.root.dataset.risk=this.risk;this.root.dataset.state=s?.state??'idle';this.root.dataset.revision=String(combat?.revision??0);
     this.root.dataset.speed=String(state.speed);this.text('[data-speed]',state.speed===2?t('Темп 2×','Speed 2×'):t('Темп 1×','Speed 1×'));this.find('[data-speed]').setAttribute('aria-pressed',String(state.speed===2));
@@ -134,8 +120,7 @@ export class JackieUI {
     this.text('[data-count]',count+'/'+JACKIE_COSTUMES.length);this.find<HTMLProgressElement>('[data-collection-progress]').value=Math.min(1,units/JACKIE_COSTUMES[JACKIE_COSTUMES.length-1].target);
     this.text('[data-collection-label]',next?t('Прогресс коллекции костюмов','Costume collection progress'):t('Вся коллекция костюмов открыта','All costumes collected'));
     this.text('[data-status]',client.busy?t('Подтверждаем действие…','Confirming action…'):!ready?t('Загружаем рисунки…','Loading artwork…'):state.busy?complete?t('Победа! Пять боёв пройдены, выплата подтверждена.','Victory! All five fights complete, payout confirmed.'):t('Камера, мотор!','Camera, action!'):active?t('Забери выплату или выбери следующую группу. Таймера нет.','Cash out or choose the next group. There is no timer.'):t('Выбери число противников. Первая кнопка принимает одну ставку.','Choose the group size. The first action accepts one stake.'));
-    this.text('[data-sound]',this.audio.enabled?t('Звуки: вкл.','Effects: on'):t('Звуки: выкл.','Effects: off'));this.find('[data-sound]').setAttribute('aria-pressed',String(this.audio.enabled));this.find('[data-sound]').setAttribute('aria-label',t('Звуки боя','Fight effects'));
-    this.text('[data-music]',this.audio.music.enabled?'♫ '+t('Музыка: вкл.','Music: on'):'♫ '+t('Музыка: выкл.','Music: off'));this.find('[data-music]').setAttribute('aria-pressed',String(this.audio.music.enabled));this.find('[data-music]').setAttribute('aria-label',t('Музыка локации','Location music'));this.find('[data-music]').title=this.audio.music.getState().title;
+    this.text('[data-sound]',this.audio.enabled?'♫ '+t('Звук включён','Sound on'):'♫ '+t('Звук выключен','Sound off'));this.find('[data-sound]').setAttribute('aria-pressed',String(this.audio.enabled));
     this.find('[data-recovery]').hidden=!client.pending||client.busy;this.find<HTMLButtonElement>('[data-retry]').disabled=client.busy||client.loading;this.text('[data-error]',this.error||client.error);
     if(this.unlocks.length&&!state.busy){this.find('[data-unlock]').hidden=false;this.text('[data-unlock]',t('Новый костюм в гардеробе: ','New costume in your wardrobe: ')+this.unlocks.map(id=>filmName(JACKIE_COSTUMES.findIndex(c=>c.id===id))).join(', '));}
   }
@@ -154,7 +139,6 @@ export class JackieUI {
   }
   private openRules(){
     this.find('[data-dialog-content]').innerHTML=`<small class="jc-label">ROYAL PICTURES</small><h2>${t('Пять боёв. Одна ставка.','Five fights. One stake.')}</h2><p>${t('Выбери костюм, локацию, ставку и число противников. Первая кнопка принимает ставку и проводит первый бой. После победы можно забрать доступную выплату или бесплатно продолжить серию. Поражение теряет исходную ставку и всю незабранную выплату. Пятая победа выплачивается автоматически.','Choose a costume, location, stake and group size. The first action accepts the stake and plays the first fight. After a success, cash out or continue at no extra cost. A loss forfeits the stake and all unbanked winnings. The fifth success pays automatically.')}</p><p>${t('Один противник: 75%. Два: 60%. Три: 45%. Это шанс победить всю группу за один бой. Между боями число противников можно менять. Нажатия, движения, костюмы и локации не влияют на исход.','One opponent: 75%. Two: 60%. Three: 45%. This is the chance of defeating the whole group in one fight. Change the group size between fights. Taps, movements, costumes and locations do not change the outcome.')}</p><p>${t('Лёгкий бой: один уличный или ловкий боец. Средний: два бойца из группы ловкого бойца, громилы и телохранителя. Сложный: мастер кунг-фу, громила и телохранитель. Состав меняется между боями в пределах выбранной сложности. Шанс победить всю группу задаётся её численностью.','Easy: one street or agile fighter. Medium: two from the agile fighter, bruiser and bodyguard. Hard: the kung fu master, bruiser and bodyguard. The lineup rotates within the chosen difficulty. Group size determines the chance of defeating the whole group.')}</p><p>${t('Расчётный возврат 99% до округления конечной выплаты вниз до 0,01 USDT. Коэффициенты приблизительные; кнопка «Забрать» показывает точную доступную сумму. Между боями нет таймера. Закрытие окна сохраняет серию. При потере ответа проверяется тот же запрос.','The theoretical return is 99% before rounding the final payment down to 0.01 USDT. Multipliers are approximate; the cashout button shows the exact available amount. There is no timer between fights. Closing the window preserves the series. A lost response is recovered using the same request.')}</p><p>${t('Костюмы открываются последовательно за сумму завершённых платных серий: 0, 160, 440, 900, 1400, 2100, 3000 и 4200 USDT. Победа и поражение дают одинаковый прогресс за одну исходную ставку. Бесплатные продолжения не добавляют прогресс. Костюм и локация сохраняются на всю принятую серию.','Costumes unlock in order at completed stake totals of 0, 160, 440, 900, 1400, 2100, 3000 and 4200 USDT. Wins and losses credit the same progress for one original stake. Free continuations add no progress. The accepted costume and location stay fixed for the series.')}</p>`;
-    this.find('[data-dialog-content]').insertAdjacentHTML('beforeend',`<h3>${t('Музыка локаций','Location music')}</h3><p>${t('Музыка и звуки боя отключаются отдельно. Настройки сохраняются.','Music and fight effects have separate switches. Preferences are saved.')}</p><ul class="jc-music-credits">${musicTracks.map(track=>`<li><a href="${track.source}" target="_blank" rel="noopener noreferrer">${track.title}</a> · Kevin MacLeod (incompetech.com)</li>`).join('')}</ul><p><a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">Creative Commons Attribution 4.0</a>. ${t('Записи нормализованы по громкости и перекодированы в MP3; полные композиции повторяются в игре.','Recordings are level-normalized and re-encoded to MP3; complete tracks loop in the game.')}</p>`);
     this.find<HTMLDialogElement>('[data-dialog]').showModal();
   }
   private openWardrobe(){
@@ -166,5 +150,5 @@ export class JackieUI {
     this.root.querySelectorAll<HTMLButtonElement>('[data-costume]').forEach(b=>{b.disabled=locked||!costumeUnlocked(b.dataset.costume as JackieCostume,units);b.onclick=()=>{if(this.active()||this.blocked())return;this.costume=b.dataset.costume as JackieCostume;this.preview=true;this.scene.select(this.costume,this.location,this.risk);this.find<HTMLDialogElement>('[data-dialog]').close();this.renderKey='';this.render();};});
     this.find<HTMLDialogElement>('[data-dialog]').showModal();
   }
-  destroy(){this.alive=false;this.epoch++;cancelAnimationFrame(this.frame);document.removeEventListener('visibilitychange',this.onVisibility);client.removeEventListener('change',this.onChange);demoWallet.removeEventListener('change',this.onChange);this.find<HTMLDialogElement>('[data-dialog]').close();this.layout.destroy();this.scene.destroy();this.audio.destroy();this.root.remove();}
+  destroy(){this.alive=false;this.epoch++;cancelAnimationFrame(this.frame);document.removeEventListener('visibilitychange',this.onVisibility);client.removeEventListener('change',this.onChange);demoWallet.removeEventListener('change',this.onChange);this.find<HTMLDialogElement>('[data-dialog]').close();this.scene.destroy();this.audio.destroy();this.root.remove();}
 }

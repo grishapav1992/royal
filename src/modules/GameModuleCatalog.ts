@@ -42,7 +42,7 @@ export const STUDIO_GAME_MODULES = [
  { gameId: 'studio-lucky-spotlight', slug: 'lucky-spotlight', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
  { gameId: 'studio-last-convoy', slug: 'last-convoy', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },
  { gameId: 'studio-nitro-run', slug: 'nitro-run', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },
- { gameId: 'studio-afterglow', slug: 'girlhub', apiVersion: 1, rulesVersion: 2, progressVersion: 4 },
+ { gameId: 'studio-afterglow', slug: 'girlhub', apiVersion: 1, rulesVersion: 2, progressVersion: 3 },
  { gameId: 'studio-meme-overload', slug: 'meme-overload', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },
 ] as const;
 

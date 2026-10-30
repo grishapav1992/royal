@@ -9,7 +9,7 @@ import {build} from 'esbuild';
 import {temporaryDatabase} from '../scripts/database-test';
 import {PostgresDatabase,databaseConfig} from '../server/database';
 
-const port=process.env.TEMPLE_RELEASE_PORT??'2635',origin='http://127.0.0.1:'+port,scope='artifacts/work/temple-release-preparation';
+const port=process.env.TEMPLE_RELEASE_PORT??'2635',origin='http://127.0.0.1:'+port,scope=process.env.TEMPLE_RELEASE_SCOPE??'artifacts/work/temple-release-preparation';
 let database:Awaited<ReturnType<typeof temporaryDatabase>>|undefined,backend:ChildProcess|undefined,backendLog='';
 let fundingDb:PostgresDatabase,fundingWallet:any;
 const game=(p:Page)=>p.frameLocator('.temple-frame');
@@ -94,7 +94,8 @@ for(const mobile of[false,true])test(`built Royal, real wallet, connected chat a
   await page.reload();await expect(page.locator('#join-dialog')).toBeHidden({timeout:30000});await page.waitForFunction(()=>(window as any).royalDemo?.getState().online===true);await open(page);
   await expect.poll(async()=>(await state(page)).pending).toBe(true);await page.unroute('**/api/demo-wallet/expansion');await game(page).locator('[data-ft=primary]').click();await done(page);
   const recovered=await accepted(page);expect(recovered.id).toBe(pendingId);expect(recovered.id).toBe(acceptedBeforeLoss.session.id);expect(recovered.spentUnits).toBe('1000');expect(new Set(posts.filter(p=>p.action==='start').map(p=>p.id)).size).toBe(2);
-  expect(Math.round((await balance(page))*100)).toBe(Math.round(initial*100)-2000+Number(first.returnedUnits)+Number(recovered.returnedUnits));expect(manifests.some(m=>m.includes('0.9.3-4a6b3fba5115'))).toBe(true);expect(errors).toEqual([]);
+  expect(Math.round((await balance(page))*100)).toBe(Math.round(initial*100)-2000+Number(first.returnedUnits)+Number(recovered.returnedUnits));expect(manifests.some(m=>m.includes(process.env.TEMPLE_RELEASE_VERSION??'0.9.3-4a6b3fba5115'))).toBe(true);expect(errors).toEqual([]);
+  await page.screenshot({path:scope+'/built-host-'+(mobile?'phone':'desktop')+'.png'});
   await report('built-host-'+(mobile?'phone':'desktop'),{geometry,chatConnected:true,chatMessagesSent:0,paidStarts:2,requestStartAttempts:posts.filter(p=>p.action==='start').length,recoveredSameUUID:true,exactBalance:true,quietReopen:true,module:manifests.at(-1),errors});
  }catch(error){await report('built-host-failure',{mobile,diagnostics,network:await reviewPage?.evaluate(()=>(window as any).royalDemo?.getNetworkState()).catch(()=>undefined),backend:backendLog});throw error;}
  finally{if(peer)await peer.leave();await context.close();await api.dispose();}

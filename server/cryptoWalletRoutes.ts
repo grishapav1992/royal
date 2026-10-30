@@ -6,7 +6,7 @@ import { WALLET_ACCOUNT_HEADER } from '../src/shared/walletAccount';
 import { gameAccountId } from '../src/shared/nileWallet';
 import { createDemoWalletRequestLimit } from './demoWalletRequestLimit';
 
-export function installCryptoWallet(app: Application, store: Pick<PaymentClient, 'snapshot' | 'currencies' | 'displayRate' | 'deposit' | 'quote' | 'withdraw' | 'refresh' | 'receiveIpn'> & Partial<Pick<PaymentClient, 'stars'>> & { play(id: string, value: unknown): Promise<unknown> } = accounts.cryptoWallet,
+export function installCryptoWallet(app: Application, store: Pick<PaymentClient, 'snapshot' | 'currencies' | 'displayRate' | 'deposit' | 'quote' | 'withdraw' | 'refresh' | 'receiveIpn'> & { play(id: string, value: unknown): Promise<unknown> } = accounts.cryptoWallet,
   session: (token: string | undefined) => Promise<{ account: { id: string } } | null | undefined> = token => accounts.session(token)) {
   const bodyError: ErrorRequestHandler = (error, _req, res, next) => {
     if (error?.type === 'entity.too.large') res.status(413).json({ error: 'Слишком большой запрос.' });
@@ -37,11 +37,6 @@ export function installCryptoWallet(app: Application, store: Pick<PaymentClient,
     return store.displayRate(req.body.currency);
   }));
   app.post('/api/crypto-wallet/deposits', handle((req, id) => store.deposit(id, req.body)));
-  app.get('/api/crypto-wallet/stars', handle(async (_req, id) => store.stars ? store.stars(id) : { enabled: false, operations: [] }));
-  app.post('/api/crypto-wallet/stars', handle((req, id) => {
-    if (!store.stars) throw new CryptoError(503, 'Оплата Telegram Stars пока не подключена.');
-    return store.stars(id, req.body);
-  }));
   app.post('/api/crypto-wallet/quotes', handle((req, id) => store.quote(id, req.body)));
   app.post('/api/crypto-wallet/withdrawals', handle((req, id) => store.withdraw(id, req.body)));
   app.post('/api/crypto-wallet/rounds', handle((req, id) => store.play(id, req.body)));
