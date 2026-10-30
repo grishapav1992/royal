@@ -4,7 +4,7 @@ import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { buildApplication, projectRoot, saveJson, run } from './build-application.mjs';
 import { digest, inventory, regularPath } from './module-build-cache.mjs';
-import { verifyHostProjection } from './build-host-projection.mjs';
+import { verifyHostProjection, verifyBackendProjection } from './build-host-projection.mjs';
 
 const defaultManifest = 'module-build/release-manifest.json';
 export function git(root, args) {
@@ -64,6 +64,12 @@ export async function verifyRelease(root, path = defaultManifest) {
     if (manifest.scope !== 'application' || manifest.hostProjection.productionCommit !== manifest.baseCommit || JSON.stringify(manifest.hostProjection) !== JSON.stringify(manifest.build.hostProjection)) throw Error('Projection build evidence differs');
     await verifyHostProjection(root, manifest.hostProjection);
   } else if (manifest.build.hostProjection) throw Error('Projection evidence missing');
+  if (manifest.backendProjection) {
+    if (manifest.scope !== 'application' || manifest.backendProjection.productionCommit !== manifest.baseCommit
+      || JSON.stringify(manifest.backendProjection) !== JSON.stringify(manifest.build.backendProjection)
+      || manifest.files[manifest.backendProjection.output?.path] !== manifest.backendProjection.output?.sha256) throw Error('Backend projection build evidence differs');
+    await verifyBackendProjection(root,manifest.backendProjection);
+  } else if (manifest.build.backendProjection) throw Error('Backend projection evidence missing');
   for (const [name, hash] of Object.entries(manifest.files)) {
     if (!name.startsWith('dist/') && !name.startsWith('dist-server/') && !name.startsWith('module-dist/')) throw Error('Unexpected release output');
     if (digest(await readFile(await regularPath(root, name))) !== hash) throw Error('Release output changed: ' + name);
@@ -86,7 +92,7 @@ export async function verifyGithub(root) {
   return receipt;
 }
 
-export async function prepareRelease(root, { base, local = false, modules = null, hostProjection = null } = {}) {
+export async function prepareRelease(root, { base, local = false, modules = null, hostProjection = null, backendProjection = null } = {}) {
   await mkdir(resolve(root, 'module-build'), { recursive: true });
   const lock = resolve(root, 'module-build/release.lock');
   await mkdir(lock); // Never remove another process's lock or build into its outputs.
@@ -109,13 +115,15 @@ export async function prepareRelease(root, { base, local = false, modules = null
     const plan = releasePlan(root, base);
     const disk = await statfs(root);
     if (disk.bavail * disk.bsize < 11 * 1024 ** 3) throw Error('Need at least 11 GiB free before a build (10 GiB reserve plus build headroom).');
-    const build = await step('build', () => buildApplication({ root, modules, hostProjection }));
+    const build = await step('build', () => buildApplication({ root, modules, hostProjection, backendProjection }));
     if (build.hostProjection && build.hostProjection.productionCommit !== plan.baseCommit) throw Error('Host projection targets another production baseline');
+    if (build.backendProjection && build.backendProjection.productionCommit !== plan.baseCommit) throw Error('Backend projection targets another production baseline');
     assertClean(root);
     if (git(root, ['rev-parse', 'HEAD']) !== plan.sourceCommit) throw Error('Source commit changed during build');
     const outputs = await step('inventory', () => releaseFiles(root, modules));
     const manifest = { ...plan, scope: modules ? 'modules' : 'application', modules,
-      githubVerified: !local, build, ...(build.hostProjection ? { hostProjection: build.hostProjection } : {}), ...outputs, verificationRequired: ['production baseline', 'compatible host contract',
+      githubVerified: !local, build, ...(build.hostProjection ? { hostProjection: build.hostProjection } : {}),
+      ...(build.backendProjection ? { backendProjection: build.backendProjection } : {}), ...outputs, verificationRequired: ['production baseline', 'compatible host contract',
         'game-specific tests and wallet recovery', 'desktop/mobile host with chat', 'public checks after guarded installation'] };
     await saveJson(resolve(root, defaultManifest), manifest);
     timings.passed = true;
@@ -129,12 +137,13 @@ export async function prepareRelease(root, { base, local = false, modules = null
 
 async function main() {
   const [operation, ...args] = process.argv.slice(2);
-  let base, local = false, modules = null, github = false, hostProjection = null;
+  let base, local = false, modules = null, github = false, hostProjection = null, backendProjection = null;
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--base' && args[i + 1]) base = args[++i];
     else if (args[i] === '--local') local = true;
     else if (args[i] === '--github') github = true;
     else if (args[i] === '--host-projection' && args[i + 1]) hostProjection = args[++i];
+    else if (args[i] === '--backend-projection' && args[i + 1]) backendProjection = args[++i];
     else if (args[i] === '--modules' && args[i + 1]) {
       modules = [...new Set(args[++i].split(','))];
       if (!modules.every(name => /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(name))) throw Error('Invalid module slug list');
@@ -142,7 +151,7 @@ async function main() {
   }
   if (operation === 'plan') console.log(JSON.stringify(releasePlan(projectRoot, base), null, 2));
   else if (operation === 'prepare') {
-    const manifest = await prepareRelease(projectRoot, { base, local, modules, hostProjection });
+    const manifest = await prepareRelease(projectRoot, { base, local, modules, hostProjection, backendProjection });
     console.log(JSON.stringify({ prepared: true, sourceCommit: manifest.sourceCommit, scope: manifest.scope,
       githubVerified: manifest.githubVerified, manifest: defaultManifest, files: Object.keys(manifest.files).length }));
   } else if (operation === 'verify') {

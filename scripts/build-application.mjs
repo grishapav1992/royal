@@ -4,7 +4,7 @@ import { resolve, dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { randomUUID } from 'node:crypto';
 import { build } from 'esbuild';
-import { buildProjectedHost } from './build-host-projection.mjs';
+import { buildProjectedHost, buildProjectedBackend } from './build-host-projection.mjs';
 
 export const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 export async function saveJson(path, value) {
@@ -29,8 +29,8 @@ export async function buildServer(root, input, output) {
   if (result.metafile) await saveJson(resolve(root, 'dist-server/payments-meta.json'), result.metafile);
 }
 
-export async function buildApplication({ root = projectRoot, modules = null, hostProjection = null } = {}) {
-  if (modules && hostProjection) throw Error('A host projection requires an application release');
+export async function buildApplication({ root = projectRoot, modules = null, hostProjection = null, backendProjection = null } = {}) {
+  if (modules && (hostProjection || backendProjection)) throw Error('A source projection requires an application release');
   const report = { format: 1, startedAt: new Date().toISOString(), scope: modules ? 'modules' : 'application', steps: [] };
   const started = performance.now();
   const step = async (name, action) => {
@@ -52,7 +52,9 @@ export async function buildApplication({ root = projectRoot, modules = null, hos
         ['backend', 'server/index.ts', 'index.js'],
         ['reconciliation', 'scripts/crypto-reconcile.ts', 'crypto-reconcile.js'],
         ['payments', 'server/payments/index.ts', 'payments.js'],
-      ]) await step(name, () => buildServer(root, input, output));
+      ]) await step(name, name === 'backend' && backendProjection
+        ? async () => { report.backendProjection = await buildProjectedBackend(root, backendProjection); }
+        : () => buildServer(root, input, output));
     }
     report.passed = true;
     return report;
@@ -62,7 +64,10 @@ export async function buildApplication({ root = projectRoot, modules = null, hos
     await saveJson(resolve(root, 'module-build/application-report.json'), report);
     const hostProjection = report.hostProjection && { config: report.hostProjection.config, sha256: report.hostProjection.sha256,
       productionCommit: report.hostProjection.productionCommit, inputCount: Object.keys(report.hostProjection.inputs).length };
-    console.log(JSON.stringify({ applicationBuild: { ...report, ...(hostProjection ? { hostProjection } : {}) } }));
+    const backendProjection = report.backendProjection && { config: report.backendProjection.config, sha256: report.backendProjection.sha256,
+      productionCommit: report.backendProjection.productionCommit, inputCount: Object.keys(report.backendProjection.inputs).length,
+      graphSha256:report.backendProjection.graphSha256, output:report.backendProjection.output };
+    console.log(JSON.stringify({ applicationBuild: { ...report, ...(hostProjection ? { hostProjection } : {}), ...(backendProjection ? { backendProjection } : {}) } }));
   }
 }
 

@@ -1,0 +1,27 @@
+{
+  "release": "location-levels-20261030-v1",
+  "base": "aed09286a21e315cb506b1befc754f5a7b4eecd2",
+  "requiredProtectedPrograms": {"royal-nile-play": ["play.js", "proof.js"]},
+  "allowedSource": [
+    "server/accounts.ts", "server/index.ts", "server/progressionRoutes.ts",
+    "server/progression/store.ts", "server/progression/sources.ts", "server/progression/freeSpins.ts", "server/progression/handlers.ts",
+    "src/main.ts", "src/shared/progression.ts", "src/wallet/ProgressionClient.ts",
+    "src/ui/ProgressionUI.ts", "src/ui/progression.css", "src/i18n/en.ts", "src/i18n/progressionEn.ts",
+    "scripts/progression-report.ts", "scripts/game-math/rtp-reward-slots.mjs",
+    "docs/game-math/qualifications/royal-coins-rewards-v1.json",
+    "docs/game-math/qualifications/royal-fruits-rewards-v1.json",
+    "docs/location-levels.md", "docs/location-levels-sources.md"
+  ],
+  "requiredSource": [
+    "server/accounts.ts", "server/index.ts", "server/progressionRoutes.ts",
+    "server/progression/store.ts", "server/progression/sources.ts", "server/progression/freeSpins.ts", "server/progression/handlers.ts",
+    "src/main.ts", "src/shared/progression.ts", "src/wallet/ProgressionClient.ts",
+    "src/ui/ProgressionUI.ts", "src/ui/progression.css", "src/i18n/en.ts", "src/i18n/progressionEn.ts"
+  ],
+  "references": {
+    "overlay-base.py": "deployment/releases/cat-purr-hall-only-20261030-v1/deploy.py",
+    "financial_gate.py": "deployment/releases/cat-purr-hall-only-20261030-v1/financial_gate.py",
+    "quiesce-base.cjs": "deployment/releases/cat-purr-hall-only-20261030-v1/quiesce.cjs",
+    "runtime-inventory.cjs": "deployment/releases/cat-purr-hall-only-20261030-v1/runtime-inventory.cjs"
+  }
+}

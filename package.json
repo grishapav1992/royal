@@ -12,7 +12,7 @@
     "release:plan": "node scripts/release.mjs plan",
     "release:prepare": "node scripts/release.mjs prepare",
     "release:verify": "node scripts/release.mjs verify",
-    "test:release": "node --test server-tests/release-tooling.test.mjs",
+    "test:release": "node --test server-tests/release-tooling.test.mjs server-tests/host-projection.test.mjs server-tests/backend-projection.test.mjs",
     "check:rtp": "node scripts/check-game-rtp.mjs",
     "analyze:forest-heart": "node --import tsx scripts/game-math/forest-heart-model.mjs",
     "test:forest-heart-math": "node --import tsx --test server-tests/forest-heart-math.test.ts server-tests/forest-heart-rtp.test.mjs",
