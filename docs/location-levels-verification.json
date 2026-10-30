@@ -28,7 +28,7 @@
     },
     "financeTypecheck": true,
     "applicationBuild": true,
-    "rtpProfilesVerified": 22,
+    "rtpProfilesVerified": 23,
     "extensibility": {
       "passed": 6,
       "scope": "explicit nonmonetary source, independent reward resource, atomic milestone, old rights migration and pinned policy compatibility"
@@ -49,6 +49,16 @@
     "independentReviews": {
       "runtime": "no critical blockers",
       "guardedInstaller": "no actionable blockers"
+    },
+    "packagePreparation": {
+      "passed": 9
+    },
+    "publicVerifier": {
+      "passed": 5
+    },
+    "mergedPvpCompatibility": {
+      "passed": 2,
+      "scope": "own stake and refunds after latest Tsu-e-fa changes"
     }
   },
   "mathematics": {
