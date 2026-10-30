@@ -23,6 +23,15 @@ test('source fingerprints survive Windows and Linux checkouts and detect mathema
   assert.equal(sourceDigest(Buffer.from('pay=1;\r\n')),sourceDigest(Buffer.from('pay=1;\n')));
   assert.notEqual(sourceDigest(Buffer.from('pay=2;\n')),sourceDigest(Buffer.from('pay=1;\n')));
 });
+
+test('Tsu-e-fa qualifies the agreed 3/5/7 targets and retains accepted rules 1',async()=>{
+  for(const rules of [1,2]){
+    const inputs=await rtpInputs(root,'tsu-e-fa',rules),proof=JSON.parse(await readFile(resolve(root,inputs.policy.proof),'utf8'));
+    assert(validateRtpProof('tsu-e-fa',inputs,proof));
+    assert.equal(proof.rulesCoverage.cases,rules===1?72:1494);
+    if(rules===2){const altered=structuredClone(proof);altered.rulesCoverage.targets=[2,5,7];assert.throws(()=>validateRtpProof('tsu-e-fa',inputs,altered));}
+  }
+});
 function proofFor(id, inputs, mean = inputs.policy.target) {
   const p = inputs.policy, cycles = p.minCycles || p.minPaidRounds;
   const cost = p.minCycles ? p.minPaidRounds / cycles : 1, reward = mean * cost, variance = 1;

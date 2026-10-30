@@ -8,9 +8,10 @@ export function qualifyTsuEFa(gameId, policy) {
   const signs = ['rock', 'scissors', 'paper'];
   const expected = [[null, 0, 1], [1, null, 0], [0, 1, null]];
   let cases = 0, privacyChecks = 0;
-  for (let left = 0; left < 2; left++) for (let right = 0; right < 2; right++) {
+  const targets=policy.rulesVersion===1?[2]:policy.targetWins;
+  for(const target of targets)for (let left = 0; left < target; left++) for (let right = 0; right < target; right++) {
     for (let a = 0; a < 3; a++) for (let b = 0; b < 3; b++) for (const first of [0, 1]) {
-      const seed = createTsuEFa(); seed.score = [left, right];
+      const seed = createTsuEFa(target,policy.rulesVersion); seed.score = [left, right];
       const choices = [signs[a], signs[b]], move = side => ({ kind: 'choose', round: 1, choice: choices[side] });
       const locked = playTsuEFa(seed, first, move(first));
       const opponent = publicTsuEFa(locked, 1 - first);
@@ -19,7 +20,7 @@ export function qualifyTsuEFa(gameId, policy) {
       const winner = expected[a][b], scores = [left, right]; if (winner !== null) scores[winner]++;
       assert.deepEqual(result.score, scores); assert.equal(result.last.winner, winner);
       assert.deepEqual(result.last.choices, choices);
-      const finished = scores.includes(2);
+      const finished = scores.includes(target);
       assert.equal(result.phase, finished ? 'finished' : 'playing');
       assert.equal(result.winner, finished ? winner : null);
       assert.equal(result.round, finished ? 1 : 2);
@@ -27,5 +28,5 @@ export function qualifyTsuEFa(gameId, policy) {
       cases++;
     }
   }
-  return { ...qualifyVirtualPvp(gameId, policy), rulesCoverage: { scores: 4, pairsPerScore: 9, orders: 2, cases, privacyChecks } };
+  return { ...qualifyVirtualPvp(gameId, policy), rulesCoverage: { ...(policy.rulesVersion===2?{targets}:{}),scores: targets.reduce((sum,target)=>sum+target*target,0), pairsPerScore: 9, orders: 2, cases, privacyChecks } };
 }

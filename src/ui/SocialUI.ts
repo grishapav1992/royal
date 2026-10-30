@@ -290,17 +290,20 @@ export class SocialUI {
       portrait.dataset.appearance = `${self.skin}:${self.appearance ?? ''}`;
     }
     this.activities.updatePlayers(players,selfId);
+    this.pvp.updatePlayers(players,selfId);
     document.querySelector('#room-count')!.textContent = `${players.length} / 30`;
     (document.querySelector('.npc-count') as HTMLElement).dataset.players=String(players.filter(p=>p.hall===this.scene.hall).length);
-    this.people.replaceChildren();
+    const tags=new Map(Array.from(this.people.querySelectorAll<HTMLElement>('[data-player-id]'),tag=>[tag.dataset.playerId!,tag]));
     for (const player of players) {
-      const tag = document.createElement('span'); tag.className = 'person-tag';
+      const tag = tags.get(player.id)??document.createElement(player.id===selfId?'span':'button'); tag.className = 'person-tag';tag.dataset.playerId=player.id;tags.delete(player.id);
+      if(tag instanceof HTMLButtonElement){tag.type='button';tag.disabled=!player.connected;tag.title=translateText('Действия с игроком');tag.onclick=()=>this.pvp.openPlayer(player.id);}
       tag.textContent = player.name + ' · ' + HALLS[player.hall].number + (player.id === selfId ? translateText(' (ты)') : '') + (player.ears?' · 🙉':'') + (player.activity==='piano'?translateText(' · рояль'):player.playing ? translateText(' · играет') : player.action === 'drink' ? translateText(' · пьёт') : player.seat ? translateText(' · сидит') : '');
       const intoxication = getIntoxication(player.soberAt);
       if (intoxication.stage) tag.textContent += ' · ' + intoxication.label.toLowerCase();
       if (!player.connected) tag.classList.add('away');
-      this.people.append(tag);
+      if(!tag.parentElement)this.people.append(tag);
     }
+    for(const tag of tags.values())tag.remove();
   }
   private addMessage(message: ChatMessage) {
     if (message.requestId) this.removeOutgoing(message.requestId);

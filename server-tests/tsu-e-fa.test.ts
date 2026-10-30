@@ -35,25 +35,30 @@ test('malformed choices and future round tokens cannot alter state', () => {
   assert.deepEqual(state, createTsuEFa());
 });
 
-async function fixture() {
+async function fixture(options:{mode?:'free'|'stake';targetWins?:3|5|7;amount?:number;legacy?:boolean}={}) {
   const db = new PostgresDatabase(':memory:'), a = randomUUID(), b = randomUUID(), now = Date.now();
   await db.exec('CREATE TABLE accounts(id TEXT PRIMARY KEY)');
   for (const id of [a, b]) await db.prepare('INSERT INTO accounts VALUES(?)').run(id);
   const common = new DemoWalletStore(db); await common.ready;
-  for (const id of [a, b]) await common.operate(id, { id: randomUUID(), kind: 'deposit', amount: 200 });
+  for (const id of [a, b]) if(options.amount!==0)await common.operate(id, { id: randomUUID(), kind: 'deposit', amount: options.amount??200 });
   const ledger = new VirtualPvpLedger(db, common), store = new PvpStore(ledger); await store.ready;
   const actors = [a, b].map((accountId, side) => ({ accountId, name: ['Анна', 'Борис'][side], roomId: 'tsu-test' }));
   const people = actors.map(actor => ({ ...actor, connected: true, available: true }));
   await store.syncRoom('tsu-test', people, now);
-  const created = await store.command(actors[0], { id: randomUUID(), action: 'create', gameId: 'tsu-e-fa', stakeUnits: '1100000', targetId: b }, now);
+  const created = await store.command(actors[0], { id: randomUUID(), action: 'create', gameId: 'tsu-e-fa', mode:options.mode??'stake',targetWins:options.targetWins??3,stakeUnits: options.mode==='free'?'0':'1100000', targetId: b }, now);
   const challengeId = created.active!.id;
+  if(options.legacy){
+    const row=await db.prepare('SELECT payload FROM pvp_matches WHERE id=?').get(challengeId),saved=JSON.parse(String(row!.payload));
+    delete saved.challenge.rulesVersion;delete saved.challenge.mode;delete saved.challenge.targetWins;
+    await db.prepare('UPDATE pvp_matches SET payload=? WHERE id=?').run(JSON.stringify(saved),challengeId);
+  }
   await store.command(actors[1], { id: randomUUID(), action: 'accept', challengeId }, now);
   for (const actor of actors) await store.command(actor, { id: randomUUID(), action: 'ready', challengeId }, now);
   const choice = (round: number, sign: 'rock' | 'scissors' | 'paper'): PvpRequest => ({ id: randomUUID(), action: 'move', challengeId, revision: 0, move: { kind: 'choose', round, choice: sign } });
   return { db, common, ledger, store, now, actors, people, challengeId, choice };
 }
 
-test('real wallet: simultaneous moves, tie, reload, replay and first-to-two settle exactly once', async () => {
+test('real wallet: simultaneous moves, tie, reload, replay and first-to-three settle exactly once', async () => {
   const c = await fixture(); try {
     const [a, b] = c.actors, first = c.choice(1, 'rock');
     await c.store.command(a, first, c.now);
@@ -71,9 +76,11 @@ test('real wallet: simultaneous moves, tie, reload, replay and first-to-two sett
     assert.deepEqual((await restarted.snapshot(b, c.now)).tsuEFa!.score, [1, 0]);
     await assert.rejects(restarted.command(a, c.choice(2, 'paper'), c.now));
     await Promise.all([restarted.command(a, c.choice(3, 'paper'), c.now), restarted.command(b, c.choice(3, 'rock'), c.now)]);
+    assert.equal((await restarted.snapshot(a,c.now)).active!.status,'playing');
+    await Promise.all([restarted.command(a,c.choice(4,'paper'),c.now),restarted.command(b,c.choice(4,'rock'),c.now)]);
     const final = await restarted.snapshot(a, c.now);
     assert.equal(final.active!.status, 'finished'); assert.equal(final.active!.winnerId, a.accountId);
-    assert.deepEqual(final.tsuEFa!.score, [2, 0]); assert.deepEqual(final.tsuEFa!.last!.choices, ['paper', 'rock']);
+    assert.deepEqual(final.tsuEFa!.score, [3, 0]); assert.deepEqual(final.tsuEFa!.last!.choices, ['paper', 'rock']);
     await restarted.command(a, decisive, c.now);
     assert.equal((await c.common.snapshot(a.accountId)).balance, 200.99);
     assert.equal((await c.common.snapshot(b.accountId)).balance, 198.9);
@@ -81,6 +88,31 @@ test('real wallet: simultaneous moves, tie, reload, replay and first-to-two sett
     assert.equal(Number((await c.db.prepare('SELECT count(*) AS n FROM virtual_pvp_holds').get())!.n), 2);
     await assert.rejects(restarted.adjudicate('tsu-test', c.challengeId, b.accountId, 'win', c.now));
   } finally { await c.db.close(); }
+});
+
+test('free match with zero balances completes without any bank, hold, commission or wallet entry',async()=>{
+  const c=await fixture({mode:'free',amount:0});try{
+    for(let round=1;round<=3;round++)for(const [side,sign]of [[0,'rock'],[1,'scissors']]as const)await c.store.command(c.actors[side],c.choice(round,sign),c.now);
+    const snapshot=await c.store.snapshot(c.actors[0],c.now);
+    assert.equal(snapshot.active!.status,'finished');assert.equal(snapshot.active!.feeUnits,'0');assert.equal(snapshot.active!.payoutUnits,'0');assert.deepEqual(snapshot.tsuEFa!.score,[3,0]);
+    for(const table of ['virtual_pvp_banks','virtual_pvp_holds','demo_ledger'])assert.equal(Number((await c.db.prepare('SELECT count(*) AS n FROM '+table).get())!.n),0,table);
+    for(const actor of c.actors)assert.equal((await c.common.snapshot(actor.accountId)).balance,0);
+  }finally{await c.db.close();}
+});
+
+test('accepted legacy invitations finish under their original two-win rules',async()=>{
+  const c=await fixture({legacy:true});try{
+    for(let round=1;round<=2;round++)for(const [side,sign]of [[0,'rock'],[1,'scissors']]as const)await c.store.command(c.actors[side],c.choice(round,sign),c.now);
+    const snapshot=await c.store.snapshot(c.actors[0],c.now);assert.equal(snapshot.tsuEFa!.rulesVersion,1);assert.equal(snapshot.tsuEFa!.target,2);assert.equal(snapshot.active!.status,'finished');
+  }finally{await c.db.close();}
+});
+
+test('new targets are 3, 5 or 7, with no settlement before the agreed score',()=>{
+  for(const target of [3,5,7]as const){let state=createTsuEFa(target);for(let round=1;round<=target;round++){
+    state=playTsuEFa(state,0,{kind:'choose',round,choice:'paper'});state=playTsuEFa(state,1,{kind:'choose',round,choice:'rock'});
+    assert.equal(state.phase,round===target?'finished':'playing');assert.equal(state.target,target);
+  }}
+  assert.throws(()=>createTsuEFa(2));assert.equal(createTsuEFa(2,1).target,2);
 });
 
 for (const chosen of [null, 0, 1] as const) test(`round timeout with chosen side ${chosen} refunds or settles the confirmed player`, async () => {

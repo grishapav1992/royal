@@ -211,7 +211,10 @@ function validateCosmicProof(gameId,p,proof){
 }
 function validateVirtualPvpProof(gameId,p,proof){
   assert(['hockey','pool','chess','durak','transfer-durak','crazy-eights','tsu-e-fa'].includes(gameId));
-  if(gameId==='tsu-e-fa')assert.deepEqual(proof.rulesCoverage,{scores:4,pairsPerScore:9,orders:2,cases:72,privacyChecks:144});
+  if(gameId==='tsu-e-fa'){
+    if(p.rulesVersion===2){assert.deepEqual(p.targetWins,[3,5,7]);assert.deepEqual(proof.rulesCoverage,{targets:[3,5,7],scores:83,pairsPerScore:9,orders:2,cases:1494,privacyChecks:2988});}
+    else {assert.equal(p.rulesVersion,1);assert.deepEqual(proof.rulesCoverage,{scores:4,pairsPerScore:9,orders:2,cases:72,privacyChecks:144});}
+  }
   assert.equal(p.target,.95);assert.equal(p.refundReturn,1);assert.equal(p.commissionBasisPoints,500);
   assert.deepEqual(p.stakeRange,{min:1000000,max:500000000,step:100000});
   assert.deepEqual(p.choices,['left-win','right-win','draw','cancel','disconnect-left','disconnect-right','expired','server']);

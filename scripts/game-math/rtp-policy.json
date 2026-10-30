@@ -887,7 +887,7 @@
     },
     "tsu-e-fa": {
       "method": "exhaustive-virtual-pvp-pot",
-      "rulesVersion": 1,
+      "rulesVersion": 2,
       "progressVersion": 1,
       "target": 0.95,
       "refundReturn": 1,
@@ -907,7 +907,7 @@
         "expired",
         "server"
       ],
-      "proof": "docs/game-math/qualifications/tsu-e-fa-v1.json",
+      "proof": "docs/game-math/qualifications/tsu-e-fa-v2.json",
       "qualificationSource": "scripts/game-math/rtp-tsu-e-fa.mjs",
       "sources": [
         "src/shared/pvp.ts",
@@ -920,7 +920,13 @@
         "server/pvp/tsu-e-fa.ts",
         "server/pvp/room.ts",
         "scripts/game-math/rtp-virtual-pvp.mjs",
-        "src/shared/pvpSeats.ts"
+        "src/shared/pvpSeats.ts",
+        "server/activities.ts"
+      ],
+      "targetWins": [
+        3,
+        5,
+        7
       ]
     },
     "studio-wild-nudge": {
@@ -1141,6 +1147,46 @@
           "server/demoWalletRoutes.ts",
           "server/gameWalletRoutes.ts",
           "server/finance/nile-game-runtime.ts"
+        ]
+      }
+    },
+    "tsu-e-fa": {
+      "1": {
+        "method": "exhaustive-virtual-pvp-pot",
+        "rulesVersion": 1,
+        "progressVersion": 1,
+        "target": 0.95,
+        "refundReturn": 1,
+        "commissionBasisPoints": 500,
+        "stakeRange": {
+          "min": 1000000,
+          "max": 500000000,
+          "step": 100000
+        },
+        "choices": [
+          "left-win",
+          "right-win",
+          "draw",
+          "cancel",
+          "disconnect-left",
+          "disconnect-right",
+          "expired",
+          "server"
+        ],
+        "proof": "docs/game-math/qualifications/tsu-e-fa-v1.json",
+        "qualificationSource": "scripts/game-math/rtp-tsu-e-fa.mjs",
+        "sources": [
+          "src/shared/pvp.ts",
+          "server/pvp/store.ts",
+          "server/pvp/cards.ts",
+          "server/finance/pvp-money.ts",
+          "server/pvp/virtual-wallet.ts",
+          "server/finance/nile-play-error.ts",
+          "src/shared/tsuEFa.ts",
+          "server/pvp/tsu-e-fa.ts",
+          "server/pvp/room.ts",
+          "scripts/game-math/rtp-virtual-pvp.mjs",
+          "src/shared/pvpSeats.ts"
         ]
       }
     }

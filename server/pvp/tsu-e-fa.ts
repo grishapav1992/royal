@@ -1,8 +1,9 @@
-import { isTsuEFaChoice, tsuEFaWinner, type TsuEFaChoice, type TsuEFaResult, type TsuEFaView } from '../../src/shared/tsuEFa';
+import { isTsuEFaChoice, tsuEFaWinner, validTsuEFaTarget, type TsuEFaChoice, type TsuEFaResult, type TsuEFaView } from '../../src/shared/tsuEFa';
 
 export type TsuEFaState = Omit<TsuEFaView, 'self' | 'locked' | 'choice'> & { choices: [TsuEFaChoice | null, TsuEFaChoice | null] };
-export function createTsuEFa(): TsuEFaState {
-  return { rulesVersion: 1, revision: 0, phase: 'playing', round: 1, score: [0, 0], target: 2,
+export function createTsuEFa(target: TsuEFaView['target'] = 3, rulesVersion: 1 | 2 = 2): TsuEFaState {
+  if (rulesVersion === 1 ? target !== 2 : !validTsuEFaTarget(target)) throw Error('Недопустимая длина матча.');
+  return { rulesVersion, revision: 0, phase: 'playing', round: 1, score: [0, 0], target,
     choices: [null, null], last: null, winner: null };
 }
 export function playTsuEFa(state: TsuEFaState, side: number, value: unknown): TsuEFaState {

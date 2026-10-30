@@ -2,6 +2,7 @@ import { gameAccountId, nileUnits } from './nileWallet';
 import type { NilePlayWallet } from './nilePlay';
 import type { DemoWallet } from './demoWallet';
 import type { TsuEFaMove, TsuEFaView } from './tsuEFa';
+import { validTsuEFaTarget, type TsuEFaTarget } from './tsuEFa';
 
 export const VIRTUAL_PVP_SCOPE = 'virtual-usdt-v1' as const;
 export type VirtualPvpWallet = { scope: typeof VIRTUAL_PVP_SCOPE; state:'assigned'; ready:true;
@@ -56,6 +57,7 @@ export type PvpCardView = {
   winner: number | null; message: string; moves: PvpCardMove[];
 };
 export type PvpChallenge = {
+  rulesVersion?: 1 | 2; mode?: 'free' | 'stake'; targetWins?: TsuEFaTarget;
   id: string; gameId: PvpGameId; creatorId: string; creatorName: string;
   targetId: string | null; opponentId: string | null; opponentName: string;
   stakeUnits: string; potUnits: string; feeUnits: string; payoutUnits: string;
@@ -65,8 +67,10 @@ export type PvpChallenge = {
 };
 export type PvpRequest = ({ id: string; action: 'create'; gameId: PvpGameId; stakeUnits: string; targetId: string | null }
   | { id: string; action: 'accept' | 'cancel' | 'ready' | 'resign'; challengeId: string }
-  | { id: string; action: 'move'; challengeId: string; revision: number; move: PvpMove }) & { walletScope?:typeof VIRTUAL_PVP_SCOPE };
-export type PvpPerson = { accountId: string; name: string; available: boolean };
+  | { id: string; action: 'move'; challengeId: string; revision: number; move: PvpMove }) & { walletScope?:typeof VIRTUAL_PVP_SCOPE; mode?:'free'|'stake'; targetWins?:TsuEFaTarget };
+export const isDirectPvp = (match: Pick<PvpChallenge, 'gameId' | 'rulesVersion'>) => match.gameId === 'tsu-e-fa' && match.rulesVersion === 2;
+export const isFreePvp = (match: Pick<PvpChallenge, 'gameId' | 'mode' | 'stakeUnits'>) => match.gameId === 'tsu-e-fa' && match.mode === 'free' && match.stakeUnits === '0';
+export type PvpPerson = { accountId: string; name: string; available: boolean; sessionId?: string };
 export type PvpSnapshot = { challenges: PvpChallenge[]; active: PvpChallenge | null; cards: PvpCardView | null;
   tsuEFa?: TsuEFaView | null;
   people: PvpPerson[]; wallet: NilePlayWallet | VirtualPvpWallet; now: number; error?: string; requestId?: string };
@@ -75,9 +79,12 @@ export function validPvpRequest(value: unknown): value is PvpRequest {
   const row = value as PvpRequest;
   if (!gameAccountId(row.id)) return false;
   if(row.walletScope!==undefined && row.walletScope!==VIRTUAL_PVP_SCOPE)return false;
-  const keys = Object.keys(row).filter(k=>k!=='walletScope').sort().join(',');
+  const custom = row.action === 'create' && row.gameId === 'tsu-e-fa';
+  if (!custom && (row.mode !== undefined || row.targetWins !== undefined)) return false;
+  if (custom && (row.mode !== undefined && !['free','stake'].includes(row.mode) || row.targetWins !== undefined && !validTsuEFaTarget(row.targetWins))) return false;
+  const keys = Object.keys(row).filter(k=>k!=='walletScope' && (!custom || !['mode','targetWins'].includes(k))).sort().join(',');
   if (row.action === 'create') return keys === 'action,gameId,id,stakeUnits,targetId' && isPvpGame(row.gameId)
-    && validPvpStake(row.stakeUnits) && (row.targetId === null || gameAccountId(row.targetId));
+    && (custom && row.mode === 'free' ? row.stakeUnits === '0' : validPvpStake(row.stakeUnits)) && (row.targetId === null || gameAccountId(row.targetId));
   if (!('challengeId' in row) || !gameAccountId(row.challengeId)) return false;
   if (row.action === 'move') return keys === 'action,challengeId,id,move,revision' && Number.isSafeInteger(row.revision)
     && row.revision >= 0 && !!row.move && typeof row.move === 'object' && !Array.isArray(row.move);
