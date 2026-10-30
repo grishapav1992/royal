@@ -878,6 +878,39 @@
         "deployment/releases/jackie-chan-20261029-v2/finance-source/src/i18n/en.ts"
       ],
       "serverReplayRunsPerWinner": 16
+    },
+    "studio-wild-nudge": {
+      "method": "exact-wild-nudge-model",
+      "releaseStatus": "model-only",
+      "rulesVersion": 1,
+      "progressVersion": 1,
+      "target": 0.96,
+      "tolerance": 0.002,
+      "stakes": [
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "choices": [
+        "normal"
+      ],
+      "seeds": [
+        2026103031,
+        2026103047
+      ],
+      "modelReplayRoundsPerSeed": 64,
+      "proof": "docs/concepts/wild-nudge/math-model.json",
+      "qualificationSource": "scripts/game-math/wild-nudge-model.mjs",
+      "sources": [
+        "src/shared/wildNudgeData.json",
+        "src/shared/wildNudgeMath.ts",
+        "scripts/game-math/wild-nudge-reference.mjs",
+        "scripts/game-math/rational.mjs"
+      ],
+      "note": "Stage-one candidate only: exact full paid round, twenty fixed lines, cyclic reel dovetail and eight free bonus continuations. Not registered in the runnable catalogue. Server RNG, original-rules recovery, shared-wallet settlement and host/module compatibility must be qualified before release; model evidence cannot pass the production RTP gate."
     }
   },
   "nonWagered": {

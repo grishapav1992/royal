@@ -59,7 +59,9 @@
     "test:temple:devices": "playwright test --config playwright.temple-devices.config.ts",
     "test:temple:visual": "playwright test --config playwright.temple-visual.config.ts",
     "preview:temple:devices": "node --import tsx scripts/temple-device-preview.ts",
-    "test:temple:release": "playwright test --config playwright.temple-release.config.ts"
+    "test:temple:release": "playwright test --config playwright.temple-release.config.ts",
+    "analyze:wild-nudge": "node --import tsx scripts/game-math/wild-nudge-model.mjs",
+    "test:wild-nudge-math": "node --import tsx --test server-tests/wild-nudge-math.test.mjs server-tests/wild-nudge-rtp.test.mjs"
   },
   "dependencies": {
     "@colyseus/core": "^0.18.18",

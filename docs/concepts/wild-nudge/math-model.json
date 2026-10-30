@@ -1,0 +1,552 @@
+{
+  "schemaVersion": 1,
+  "gameId": "studio-wild-nudge",
+  "scope": "mathematical-model-only",
+  "releaseQualified": false,
+  "method": "exact-independent-reel-marginals-and-finite-bonus-expectation",
+  "enumeration": {
+    "jointStopSpace": "1073741824",
+    "reelCensusChecks": 640,
+    "lineStateComparisons": 4000000,
+    "lines": [
+      {
+        "mode": "base",
+        "line": 0,
+        "weightedPointSum": "4719904887",
+        "combinations": 100000
+      },
+      {
+        "mode": "base",
+        "line": 1,
+        "weightedPointSum": "4708505526",
+        "combinations": 100000
+      },
+      {
+        "mode": "base",
+        "line": 2,
+        "weightedPointSum": "4773561298",
+        "combinations": 100000
+      },
+      {
+        "mode": "base",
+        "line": 3,
+        "weightedPointSum": "4724062548",
+        "combinations": 100000
+      },
+      {
+        "mode": "base",
+        "line": 4,
+        "weightedPointSum": "4733994789",
+        "combinations": 100000
+      },
+      {
+        "mode": "base",
+        "line": 5,
+        "weightedPointSum": "4717639173",
+        "combinations": 100000
+      },
+      {
+        "mode": "base",
+        "line": 6,
+        "weightedPointSum": "4745169624",
+        "combinations": 100000
+      },
+      {
+        "mode": "base",
+        "line": 7,
+        "weightedPointSum": "4706478793",
+        "combinations": 100000
+      },
+      {
+        "mode": "base",
+        "line": 8,
+        "weightedPointSum": "4779577743",
+        "combinations": 100000
+      },
+      {
+        "mode": "base",
+        "line": 9,
+        "weightedPointSum": "4727258612",
+        "combinations": 100000
+      },
+      {
+        "mode": "base",
+        "line": 10,
+        "weightedPointSum": "4713330081",
+        "combinations": 100000
+      },
+      {
+        "mode": "base",
+        "line": 11,
+        "weightedPointSum": "4709612679",
+        "combinations": 100000
+      },
+      {
+        "mode": "base",
+        "line": 12,
+        "weightedPointSum": "4754746823",
+        "combinations": 100000
+      },
+      {
+        "mode": "base",
+        "line": 13,
+        "weightedPointSum": "4745659740",
+        "combinations": 100000
+      },
+      {
+        "mode": "base",
+        "line": 14,
+        "weightedPointSum": "4717550973",
+        "combinations": 100000
+      },
+      {
+        "mode": "base",
+        "line": 15,
+        "weightedPointSum": "4739918427",
+        "combinations": 100000
+      },
+      {
+        "mode": "base",
+        "line": 16,
+        "weightedPointSum": "4719176423",
+        "combinations": 100000
+      },
+      {
+        "mode": "base",
+        "line": 17,
+        "weightedPointSum": "4816626395",
+        "combinations": 100000
+      },
+      {
+        "mode": "base",
+        "line": 18,
+        "weightedPointSum": "4696845254",
+        "combinations": 100000
+      },
+      {
+        "mode": "base",
+        "line": 19,
+        "weightedPointSum": "4793991412",
+        "combinations": 100000
+      },
+      {
+        "mode": "bonus",
+        "line": 0,
+        "weightedPointSum": "7419431085",
+        "combinations": 100000
+      },
+      {
+        "mode": "bonus",
+        "line": 1,
+        "weightedPointSum": "7402515024",
+        "combinations": 100000
+      },
+      {
+        "mode": "bonus",
+        "line": 2,
+        "weightedPointSum": "7489245022",
+        "combinations": 100000
+      },
+      {
+        "mode": "bonus",
+        "line": 3,
+        "weightedPointSum": "7422627150",
+        "combinations": 100000
+      },
+      {
+        "mode": "bonus",
+        "line": 4,
+        "weightedPointSum": "7435996449",
+        "combinations": 100000
+      },
+      {
+        "mode": "bonus",
+        "line": 5,
+        "weightedPointSum": "7417094871",
+        "combinations": 100000
+      },
+      {
+        "mode": "bonus",
+        "line": 6,
+        "weightedPointSum": "7450348140",
+        "combinations": 100000
+      },
+      {
+        "mode": "bonus",
+        "line": 7,
+        "weightedPointSum": "7401353203",
+        "combinations": 100000
+      },
+      {
+        "mode": "bonus",
+        "line": 8,
+        "weightedPointSum": "7499136099",
+        "combinations": 100000
+      },
+      {
+        "mode": "bonus",
+        "line": 9,
+        "weightedPointSum": "7428303878",
+        "combinations": 100000
+      },
+      {
+        "mode": "bonus",
+        "line": 10,
+        "weightedPointSum": "7408817517",
+        "combinations": 100000
+      },
+      {
+        "mode": "bonus",
+        "line": 11,
+        "weightedPointSum": "7407073479",
+        "combinations": 100000
+      },
+      {
+        "mode": "bonus",
+        "line": 12,
+        "weightedPointSum": "7465407269",
+        "combinations": 100000
+      },
+      {
+        "mode": "bonus",
+        "line": 13,
+        "weightedPointSum": "7452325512",
+        "combinations": 100000
+      },
+      {
+        "mode": "bonus",
+        "line": 14,
+        "weightedPointSum": "7414034097",
+        "combinations": 100000
+      },
+      {
+        "mode": "bonus",
+        "line": 15,
+        "weightedPointSum": "7445639079",
+        "combinations": 100000
+      },
+      {
+        "mode": "bonus",
+        "line": 16,
+        "weightedPointSum": "7417387709",
+        "combinations": 100000
+      },
+      {
+        "mode": "bonus",
+        "line": 17,
+        "weightedPointSum": "7549226597",
+        "combinations": 100000
+      },
+      {
+        "mode": "bonus",
+        "line": 18,
+        "weightedPointSum": "7388461772",
+        "combinations": 100000
+      },
+      {
+        "mode": "bonus",
+        "line": 19,
+        "weightedPointSum": "7519398628",
+        "combinations": 100000
+      }
+    ],
+    "maximumTriggerFields": 2160
+  },
+  "census": [
+    {
+      "column": 0,
+      "stops": 64,
+      "scatterStops": 6,
+      "partialWildStops": 4,
+      "fullWildStops": 5
+    },
+    {
+      "column": 1,
+      "stops": 64,
+      "scatterStops": 6,
+      "partialWildStops": 4,
+      "fullWildStops": 5
+    },
+    {
+      "column": 2,
+      "stops": 64,
+      "scatterStops": 6,
+      "partialWildStops": 4,
+      "fullWildStops": 5
+    },
+    {
+      "column": 3,
+      "stops": 64,
+      "scatterStops": 6,
+      "partialWildStops": 4,
+      "fullWildStops": 5
+    },
+    {
+      "column": 4,
+      "stops": 64,
+      "scatterStops": 6,
+      "partialWildStops": 4,
+      "fullWildStops": 5
+    }
+  ],
+  "components": {
+    "baseRtp": {
+      "fraction": "59214757/67108864",
+      "value": 0.8823686391115189
+    },
+    "bonusSpinMean": {
+      "fraction": "7441691129/5368709120",
+      "value": 1.3861229883506894
+    },
+    "bonusRtp": {
+      "fraction": "889497898958241/11258999068426240",
+      "value": 0.07900328382233121
+    }
+  },
+  "exactRtp": {
+    "fraction": "10824085584723361/11258999068426240",
+    "value": 0.96137192293385
+  },
+  "bonusProbability": {
+    "fraction": "119529/16777216",
+    "value": 0.007124483585357666
+  },
+  "meanRoundsBetweenBonuses": {
+    "fraction": "16777216/119529",
+    "value": 140.3610504563746
+  },
+  "probabilityOfAnyNudge": {
+    "fraction": "289201/1048576",
+    "value": 0.2758035659790039
+  },
+  "scatterCountDistribution": [
+    {
+      "columns": 0,
+      "probability": {
+        "fraction": "20511149/33554432",
+        "value": 0.6112798750400543
+      }
+    },
+    {
+      "columns": 1,
+      "probability": {
+        "fraction": "10609215/33554432",
+        "value": 0.3161792457103729
+      }
+    },
+    {
+      "columns": 2,
+      "probability": {
+        "fraction": "1097505/16777216",
+        "value": 0.06541639566421509
+      }
+    },
+    {
+      "columns": 3,
+      "probability": {
+        "fraction": "113535/16777216",
+        "value": 0.006767213344573975
+      }
+    },
+    {
+      "columns": 4,
+      "probability": {
+        "fraction": "11745/33554432",
+        "value": 0.00035002827644348145
+      }
+    },
+    {
+      "columns": 5,
+      "probability": {
+        "fraction": "243/33554432",
+        "value": 0.000007241964340209961
+      }
+    }
+  ],
+  "bonusStages": [
+    {
+      "spin": 1,
+      "conditionalMean": {
+        "fraction": "7441691129/5368709120",
+        "value": 1.3861229883506894
+      },
+      "unconditionalContribution": {
+        "fraction": "889497898958241/90071992547409920",
+        "value": 0.009875410477791401
+      }
+    },
+    {
+      "spin": 2,
+      "conditionalMean": {
+        "fraction": "7441691129/5368709120",
+        "value": 1.3861229883506894
+      },
+      "unconditionalContribution": {
+        "fraction": "889497898958241/90071992547409920",
+        "value": 0.009875410477791401
+      }
+    },
+    {
+      "spin": 3,
+      "conditionalMean": {
+        "fraction": "7441691129/5368709120",
+        "value": 1.3861229883506894
+      },
+      "unconditionalContribution": {
+        "fraction": "889497898958241/90071992547409920",
+        "value": 0.009875410477791401
+      }
+    },
+    {
+      "spin": 4,
+      "conditionalMean": {
+        "fraction": "7441691129/5368709120",
+        "value": 1.3861229883506894
+      },
+      "unconditionalContribution": {
+        "fraction": "889497898958241/90071992547409920",
+        "value": 0.009875410477791401
+      }
+    },
+    {
+      "spin": 5,
+      "conditionalMean": {
+        "fraction": "7441691129/5368709120",
+        "value": 1.3861229883506894
+      },
+      "unconditionalContribution": {
+        "fraction": "889497898958241/90071992547409920",
+        "value": 0.009875410477791401
+      }
+    },
+    {
+      "spin": 6,
+      "conditionalMean": {
+        "fraction": "7441691129/5368709120",
+        "value": 1.3861229883506894
+      },
+      "unconditionalContribution": {
+        "fraction": "889497898958241/90071992547409920",
+        "value": 0.009875410477791401
+      }
+    },
+    {
+      "spin": 7,
+      "conditionalMean": {
+        "fraction": "7441691129/5368709120",
+        "value": 1.3861229883506894
+      },
+      "unconditionalContribution": {
+        "fraction": "889497898958241/90071992547409920",
+        "value": 0.009875410477791401
+      }
+    },
+    {
+      "spin": 8,
+      "conditionalMean": {
+        "fraction": "7441691129/5368709120",
+        "value": 1.3861229883506894
+      },
+      "unconditionalContribution": {
+        "fraction": "889497898958241/90071992547409920",
+        "value": 0.009875410477791401
+      }
+    }
+  ],
+  "exactMaximum": {
+    "basePoints": 56100,
+    "bonusSpinPoints": 107100,
+    "triggeringBasePoints": 3990,
+    "paidRoundPoints": 860790,
+    "returnMultiple": {
+      "fraction": "86079/10",
+      "value": 8607.9
+    },
+    "baseStops": [
+      2,
+      45,
+      2,
+      16,
+      14
+    ],
+    "bonusStops": [
+      2,
+      2,
+      2,
+      2,
+      2
+    ],
+    "dominance": "Nondecreasing paytables and additive nonnegative WILD increments permit replacing non-SCATTER columns by full x3 WILD. Any field with four/five SCATTER reels is dominated by a three-SCATTER field. All 2160 remaining fields are enumerated; all eight bonus maxima can occur independently."
+  },
+  "stakeChecks": [
+    {
+      "stakeUnits": "100",
+      "costUnits": "100",
+      "maximumPayoutUnits": "860790",
+      "rtp": {
+        "fraction": "10824085584723361/11258999068426240",
+        "value": 0.96137192293385
+      },
+      "settlement": "exact integer; every spin is an integral multiple of stake/100"
+    },
+    {
+      "stakeUnits": "200",
+      "costUnits": "200",
+      "maximumPayoutUnits": "1721580",
+      "rtp": {
+        "fraction": "10824085584723361/11258999068426240",
+        "value": 0.96137192293385
+      },
+      "settlement": "exact integer; every spin is an integral multiple of stake/100"
+    },
+    {
+      "stakeUnits": "500",
+      "costUnits": "500",
+      "maximumPayoutUnits": "4303950",
+      "rtp": {
+        "fraction": "10824085584723361/11258999068426240",
+        "value": 0.96137192293385
+      },
+      "settlement": "exact integer; every spin is an integral multiple of stake/100"
+    },
+    {
+      "stakeUnits": "1000",
+      "costUnits": "1000",
+      "maximumPayoutUnits": "8607900",
+      "rtp": {
+        "fraction": "10824085584723361/11258999068426240",
+        "value": 0.96137192293385
+      },
+      "settlement": "exact integer; every spin is an integral multiple of stake/100"
+    },
+    {
+      "stakeUnits": "2000",
+      "costUnits": "2000",
+      "maximumPayoutUnits": "17215800",
+      "rtp": {
+        "fraction": "10824085584723361/11258999068426240",
+        "value": 0.96137192293385
+      },
+      "settlement": "exact integer; every spin is an integral multiple of stake/100"
+    },
+    {
+      "stakeUnits": "5000",
+      "costUnits": "5000",
+      "maximumPayoutUnits": "43039500",
+      "rtp": {
+        "fraction": "10824085584723361/11258999068426240",
+        "value": 0.96137192293385
+      },
+      "settlement": "exact integer; every spin is an integral multiple of stake/100"
+    }
+  ],
+  "interpretation": "Exact rational expectation of the finite candidate, including all eight free continuations and every allowed stake. No sampled confidence interval is attached to exact RTP. This is not qualification of a server RNG, saved sessions, common-wallet settlement, host compatibility or a production module.",
+  "policySha256": "91b801a0beaea579a9271d4f12852a0c7c897c02a5b6bdf669f3de19e9a694d1",
+  "sourceHashes": {
+    "src/shared/wildNudgeData.json": "4cc0a4f71c052c276890d8446c1e21e4b3a8dce522f27ee42b7909c5263131d8",
+    "src/shared/wildNudgeMath.ts": "c8bc8a58124c81d1f66f2d52bfa823e4baf471db8e41c3dbbb3364c10daa7e7f",
+    "scripts/game-math/wild-nudge-reference.mjs": "93c3e272abe11523ddd77985c9d733b76b06089a054aac5cf5a9ce4e762e7bb5",
+    "scripts/game-math/wild-nudge-model.mjs": "dbb1c05253731ab2657e36ee58c0c9749262b1183ad841228719a48156c37805",
+    "scripts/game-math/rational.mjs": "18e762bcf6b3790f0e191f2f774cbdb1ba94b7f4674c5c7caec8fd3257a85d62"
+  }
+}

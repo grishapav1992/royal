@@ -32,6 +32,8 @@ jobs:
             ${{ runner.os }}-modules-
       - run: npm run test:rtp-gate
       - run: npm run test:forest-heart-math
+      - run: npm run test:wild-nudge-math
+      - run: node --import tsx scripts/game-math/wild-nudge-characterize.mjs --verify
       - run: npm run test:forest-heart-server
       - run: npm run test:caribbean
       - run: npm run test:release
