@@ -43,12 +43,24 @@ try{
  await page.setViewportSize({width:390,height:844});await expect(card).toBeInViewport();await page.screenshot({path:resolve(out,'catalog-mobile.png')});
  await card.click();await expect(page.locator('#mini-game')).toHaveAttribute('data-game-module-id','studio-forest-heart',{timeout:60000});
  const frame=page.frameLocator('.forest-heart-frame');await expect(frame.locator('.fh-board')).toBeVisible({timeout:60000});
+ await expect.poll(()=>frame.locator('.fh-title-logo').evaluate(e=>e.complete&&e.naturalWidth>0),{timeout:60000}).toBe(true);
+ await expect.poll(()=>frame.locator('.fh-character').evaluate(e=>Array.from(e.querySelectorAll('img')).every(image=>image.complete&&image.naturalWidth>0)),{timeout:60000}).toBe(true);
+ await frame.locator('.fh').evaluate(async(root,urls)=>{await Promise.all(urls.map(async url=>{const image=root.ownerDocument.createElement('img');image.src=url;await image.decode();}));},meta.preload.map(name=>origin+pointer.manifest.replace(/manifest\.json$/,'')+name));
  for(const viewport of [{width:1920,height:1080},{width:1280,height:720},{width:390,height:844},{width:667,height:375}]){
   await page.setViewportSize(viewport);
-  await expect.poll(()=>frame.locator('.fh').evaluate(e=>Math.abs(e.clientWidth-e.ownerDocument.defaultView.innerWidth))).toBeLessThanOrEqual(1);
-  const boxes=await frame.locator('.fh').evaluate(root=>{const box=s=>root.querySelector(s).getBoundingClientRect().toJSON();const image=root.querySelector('.fh-title-logo');return{width:root.clientWidth,height:root.clientHeight,board:box('.fh-board'),header:box('.fh-top'),logo:box('.fh-title-logo'),spin:box('[data-fh=spin]'),logoFit:getComputedStyle(image).objectFit,scrollWidth:root.ownerDocument.documentElement.scrollWidth,scrollHeight:root.ownerDocument.documentElement.scrollHeight};});
+  // Outer host resizing and the inner ResizeObserver each schedule layout work.
+  // Wait for matching modes and stable geometry, rather than sampling one frame.
+  // ForestLayout declares a 128 px minimum. This disabled guest dialog is shorter
+  // than the connected full host, whose 150 px minimum was checked locally.
+  try{await expect.poll(()=>frame.locator('.fh').evaluate(root=>{const w=root.clientWidth,h=root.clientHeight,mode=h<440&&w>=360?'landscape':w<=620?'mobile':h>w*1.08?'poster':'wide';return root.dataset.layout===mode&&Math.abs(w-root.ownerDocument.defaultView.innerWidth)<=1&&root.querySelector('.fh-board').getBoundingClientRect().width>=128;}),{timeout:15000}).toBe(true);}catch(error){
+   report.failure={viewport,geometry:await frame.locator('.fh').evaluate(root=>{const win=root.ownerDocument.defaultView,box=s=>root.querySelector(s).getBoundingClientRect().toJSON(),element=win.frameElement;return{width:root.clientWidth,height:root.clientHeight,innerWidth:win.innerWidth,innerHeight:win.innerHeight,layout:root.dataset.layout,board:box('.fh-board'),world:box('.fh-world'),header:box('.fh-top'),controls:box('.fh-controls'),spin:box('[data-fh=spin]'),outerFrame:element.getBoundingClientRect().toJSON(),stage:element.closest('.mini-stage').getBoundingClientRect().toJSON(),hostMode:element.closest('#mini-dialog').getAttribute('data-game-viewport')};})};
+   await page.screenshot({path:resolve(out,'failed-'+viewport.width+'x'+viewport.height+'.png')});throw error;
+  }
+  await frame.locator('.fh').evaluate(root=>new Promise(resolve=>{let previous='',stable=0;const sample=()=>{const board=root.querySelector('.fh-board').getBoundingClientRect();const value=JSON.stringify([root.clientWidth,root.clientHeight,root.dataset.layout,board.x,board.y,board.width]);stable=value===previous?stable+1:0;previous=value;if(stable>=4)resolve();else root.ownerDocument.defaultView.requestAnimationFrame(sample);};root.ownerDocument.defaultView.requestAnimationFrame(sample);}));
+  const boxes=await frame.locator('.fh').evaluate(root=>{const box=s=>root.querySelector(s).getBoundingClientRect().toJSON();const image=root.querySelector('.fh-title-logo');return{width:root.clientWidth,height:root.clientHeight,layout:root.dataset.layout,board:box('.fh-board'),header:box('.fh-top'),logo:box('.fh-title-logo'),controls:box('.fh-controls'),spin:box('[data-fh=spin]'),logoFit:getComputedStyle(image).objectFit,scrollWidth:root.ownerDocument.documentElement.scrollWidth,scrollHeight:root.ownerDocument.documentElement.scrollHeight};});
   assert(boxes.logo.top>=boxes.header.top-1&&boxes.logo.bottom<=boxes.header.bottom+1);assert.equal(boxes.logoFit,'contain');
-  assert(boxes.scrollWidth<=boxes.width+1&&boxes.scrollHeight<=boxes.height+1);assert(boxes.board.width>=150);assert(boxes.spin.bottom<=boxes.height+1);
+  assert(boxes.scrollWidth<=boxes.width+1&&boxes.scrollHeight<=boxes.height+1);assert(boxes.board.width>=128);
+  for(const box of [boxes.board,boxes.controls,boxes.spin])assert(box.x>=0&&box.y>=0&&box.right<=boxes.width+1&&box.bottom<=boxes.height+1);
   report.viewports.push({viewport,...boxes});await page.screenshot({path:resolve(out,'game-'+viewport.width+'x'+viewport.height+'.png')});
  }
  assert.deepEqual(report.errors,[]);report.passed=true;report.moduleVersion=meta.version;report.pointerNoStore=true;report.publicMode='Guest offline host; API writes and WebSockets blocked. Connected chat and financial recovery verified locally.';
