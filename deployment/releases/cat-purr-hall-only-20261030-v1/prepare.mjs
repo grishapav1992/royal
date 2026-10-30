@@ -35,7 +35,7 @@ for (const [file, digest] of Object.entries(before.source)) {
     retainedSource.push({file, retainedSha256:digest, localSha256:actual});
   }
 }
-const hostAudit = await build({absWorkingDir:root,entryPoints:['src/main.ts','src/admin/main.ts'].filter(file=>existsSync(resolve(root,file))),bundle:true,platform:'browser',format:'esm',outdir:'audit-only',write:false,metafile:true,loader:{'.png':'file','.webp':'file','.jpg':'file','.svg':'file','.woff2':'file'}});
+const hostAudit = await build({absWorkingDir:root,entryPoints:['src/main.ts','src/admin/main.ts'].filter(file=>existsSync(resolve(root,file))),bundle:true,platform:'browser',format:'esm',outdir:'audit-only',write:false,metafile:true,preserveSymlinks:true,external:['/chat-media/*'],loader:{'.png':'file','.webp':'file','.jpg':'file','.svg':'file','.woff2':'file'}});
 const hostInputs = [];
 for(const file of Object.keys(hostAudit.metafile.inputs)) {
  if(file.startsWith('node_modules/'))continue;
