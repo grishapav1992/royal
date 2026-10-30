@@ -35,6 +35,16 @@
       "command": "npm run build",
       "passed": true,
       "scope": "current merged host, all 124 modules, backend, reconciliation and payments"
+    },
+    {
+      "command": "npm run test:forest-heart-math",
+      "passed": 9,
+      "note": "Regenerated the offline model using analyze:forest-heart --write; only the registered policy hash changed, all mathematical outputs were preserved."
+    },
+    {
+      "command": "node --import tsx scripts/game-math/wild-nudge-characterize.mjs --verify",
+      "passed": true,
+      "paidRounds": 250000
     }
   ],
   "mathematics": {
@@ -340,5 +350,6 @@
     "Visibility pause uses explicitly simulated visibility events in headless Chrome, with an actual accepted HTTP round.",
     "Sound loading, cue counts and output timestamp estimates were checked; physical-device latency and subjective music quality require listening.",
     "No production release was performed."
-  ]
+  ],
+  "ciQualification": "studio-wild-nudge is included in the independent recomputation matrix and its oracle/model paths trigger the workflow."
 }
