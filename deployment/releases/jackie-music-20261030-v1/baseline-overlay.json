@@ -1,0 +1,26 @@
+{
+  "sourceCommit": "0baa69d10ddea384ba7e58c499582d18e702de2c",
+  "release": "caribbean-autoplay-20261030-v1",
+  "source": {
+    "games/caribbean-treasures/CaribbeanUI.ts": {
+      "sha256": "a3357a66361849e33cb31136ee8cf08d50908a1576c3e952e96af6e33e3480d1",
+      "lf": "193f5863a5d5174c012e97fcc31229434937851fa20afe9b11ea16ad60d2e8ff"
+    },
+    "games/caribbean-treasures/CaribbeanCaptain.ts": {
+      "sha256": "09383acdf86696910b2538e5257d8836d388291560d8b5f20175dcd460297530",
+      "lf": "cff65fc4a333edfaa0cddcde8e6a8cdced3c837de2b61aa01be884c4edb0fb72"
+    },
+    "games/caribbean-treasures/caribbean.css": {
+      "sha256": "6ab57b09480f35c6cdcde7b91ec713a7ae84d9962424a0f27516e1a13de3599a",
+      "lf": "8bd81a577dafd9527596e599fad0201156f3560735a145a513028abe49d8dad5"
+    },
+    "games/caribbean-treasures/package.json": {
+      "sha256": "dfb3b1454f174144da4ac423025b33ac9dd42294d744cf75818608616e466c3f",
+      "lf": "48b0e526d2c774bf3547193f432b14191d24859d5d58726e12c7adf26458cdf6"
+    },
+    "games/caribbean-treasures/character-motion.md": {
+      "sha256": "d54e4b09b8c4e9fdc7447479027057e3a62881c92117c31e562341fe1d853b22",
+      "lf": "0be5481bafb01c08650f6f1d2eb4dfbe2a192013f315cc803514e9863bb5ba02"
+    }
+  }
+}
