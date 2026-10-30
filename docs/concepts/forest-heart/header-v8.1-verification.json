@@ -1,0 +1,347 @@
+{
+  "date": "2026-10-30",
+  "baseCommit": "ccd1d479920aca3c1476fd54f897a860e3b866b1",
+  "scope": "Header composition and responsive presentation only; local review, no production publication",
+  "causes": [
+    "The 1400x464 wordmark was cropped into a 380x44 cover box.",
+    "The flexible world row centered the scene far below the header when width limited the field."
+  ],
+  "changes": [
+    "Show the complete ornamental wordmark using contain inside a bounded header.",
+    "Remove the separate dark header strip and duplicate subtitle.",
+    "Fit the scene below the header and pack status and controls directly after it."
+  ],
+  "module": {
+    "version": "1.8.1-6a53ddc4805f",
+    "manifestSha256": "52b7b83d7a7488aed4b7e569465ab0b1b643d68c00d22a0f48efed8f6c1908f9",
+    "active": {
+      "format": 1,
+      "gameId": "studio-forest-heart",
+      "manifest": "/game-modules/studio-forest-heart/versions/1.8.1-6a53ddc4805f/manifest.json",
+      "sha256": "52b7b83d7a7488aed4b7e569465ab0b1b643d68c00d22a0f48efed8f6c1908f9"
+    }
+  },
+  "checks": {
+    "browserScenariosPassed": 3,
+    "uniqueViewportSizes": 13,
+    "resizeSteps": 14,
+    "fullHostWithChat": true,
+    "acceptedBonusRecovery": true,
+    "physicalPhoneTested": false,
+    "typecheckPassed": true,
+    "moduleBuildPassed": true,
+    "rtpQualifiedProfiles": 18,
+    "legacyBaseline": 114
+  },
+  "viewports": [
+    {
+      "viewport": {
+        "width": 2507,
+        "height": 1100
+      },
+      "layout": "wide",
+      "headerHeight": 120.46875,
+      "logoHeight": 112.46875,
+      "logoInsideHeader": true,
+      "fieldGapAfterHeader": 6,
+      "boardWidth": 639,
+      "stageWidth": 2141,
+      "frameWidth": 2141,
+      "overflowX": 0,
+      "overflowY": 0
+    },
+    {
+      "viewport": {
+        "width": 2560,
+        "height": 1440
+      },
+      "layout": "wide",
+      "headerHeight": 140,
+      "logoHeight": 132,
+      "logoInsideHeader": true,
+      "fieldGapAfterHeader": 6,
+      "boardWidth": 759,
+      "stageWidth": 2194,
+      "frameWidth": 2194,
+      "overflowX": 0,
+      "overflowY": 0
+    },
+    {
+      "viewport": {
+        "width": 2006,
+        "height": 880
+      },
+      "layout": "wide",
+      "headerHeight": 94.078125,
+      "logoHeight": 86.078125,
+      "logoInsideHeader": true,
+      "fieldGapAfterHeader": 6,
+      "boardWidth": 462,
+      "stageWidth": 1640,
+      "frameWidth": 1640,
+      "overflowX": 0,
+      "overflowY": 0
+    },
+    {
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "layout": "wide",
+      "headerHeight": 118.078125,
+      "logoHeight": 110.078125,
+      "logoInsideHeader": true,
+      "fieldGapAfterHeader": 6,
+      "boardWidth": 622,
+      "stageWidth": 1554,
+      "frameWidth": 1554,
+      "overflowX": 0,
+      "overflowY": 0
+    },
+    {
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "layout": "wide",
+      "headerHeight": 80.625,
+      "logoHeight": 72.625,
+      "logoInsideHeader": true,
+      "fieldGapAfterHeader": 6,
+      "boardWidth": 373,
+      "stageWidth": 1045.828125,
+      "frameWidth": 1045.828125,
+      "overflowX": 0,
+      "overflowY": 0
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "layout": "wide",
+      "headerHeight": 80,
+      "logoHeight": 72,
+      "logoInsideHeader": true,
+      "fieldGapAfterHeader": 6,
+      "boardWidth": 330,
+      "stageWidth": 979.609375,
+      "frameWidth": 979.609375,
+      "overflowX": 0,
+      "overflowY": 0
+    },
+    {
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "layout": "wide",
+      "headerHeight": 80.625,
+      "logoHeight": 72.625,
+      "logoInsideHeader": true,
+      "fieldGapAfterHeader": 6,
+      "boardWidth": 294,
+      "stageWidth": 738,
+      "frameWidth": 738,
+      "overflowX": 0,
+      "overflowY": 0
+    },
+    {
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "layout": "poster",
+      "headerHeight": 140,
+      "logoHeight": 132,
+      "logoInsideHeader": true,
+      "fieldGapAfterHeader": 254,
+      "boardWidth": 516,
+      "stageWidth": 738,
+      "frameWidth": 738,
+      "overflowX": 0,
+      "overflowY": 0
+    },
+    {
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "layout": "wide",
+      "headerHeight": 80,
+      "logoHeight": 72,
+      "logoInsideHeader": true,
+      "fieldGapAfterHeader": 6,
+      "boardWidth": 306,
+      "stageWidth": 762,
+      "frameWidth": 762,
+      "overflowX": 0,
+      "overflowY": 0
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "layout": "mobile",
+      "headerHeight": 44,
+      "logoHeight": 42,
+      "logoInsideHeader": true,
+      "fieldGapAfterHeader": 4.5,
+      "boardWidth": 248,
+      "stageWidth": 384,
+      "frameWidth": 384,
+      "overflowX": 0,
+      "overflowY": 0
+    },
+    {
+      "viewport": {
+        "width": 320,
+        "height": 780
+      },
+      "layout": "mobile",
+      "headerHeight": 44,
+      "logoHeight": 42,
+      "logoInsideHeader": true,
+      "fieldGapAfterHeader": 10,
+      "boardWidth": 180,
+      "stageWidth": 314,
+      "frameWidth": 314,
+      "overflowX": 0,
+      "overflowY": 0
+    },
+    {
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "layout": "landscape",
+      "headerHeight": 44,
+      "logoHeight": 42,
+      "logoInsideHeader": true,
+      "fieldGapAfterHeader": 4,
+      "boardWidth": 172,
+      "stageWidth": 658,
+      "frameWidth": 658,
+      "overflowX": 0,
+      "overflowY": 0
+    },
+    {
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "layout": "landscape",
+      "headerHeight": 44,
+      "logoHeight": 42,
+      "logoInsideHeader": true,
+      "fieldGapAfterHeader": 4,
+      "boardWidth": 157,
+      "stageWidth": 481,
+      "frameWidth": 481,
+      "overflowX": 0,
+      "overflowY": 0
+    },
+    {
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "layout": "wide",
+      "headerHeight": 118.078125,
+      "logoHeight": 110.078125,
+      "logoInsideHeader": true,
+      "fieldGapAfterHeader": 6,
+      "boardWidth": 622,
+      "stageWidth": 1554,
+      "frameWidth": 1554,
+      "overflowX": 0,
+      "overflowY": 0
+    }
+  ],
+  "unchangedSources": [
+    {
+      "file": "src/shared/forestHeartMath.ts",
+      "sha256": "c3e04efc098aa9d61f0faa70fc9159d8460dcf0816d96ef5b560efd45ab46658",
+      "encoding": "UTF-8 with LF, matching tracked Git source",
+      "unchanged": true
+    },
+    {
+      "file": "src/shared/forestHeart.ts",
+      "sha256": "6f0ba79987ff2d24e5c242103ec6735bea1b9fcb3a0fba2abec773eff1dab52e",
+      "encoding": "UTF-8 with LF, matching tracked Git source",
+      "unchanged": true
+    },
+    {
+      "file": "server/games/forestHeart.ts",
+      "sha256": "0c7412ea5438c72d63c7808759e79bb76fa95e12a32a23690dd7b36fcca9a1be",
+      "encoding": "UTF-8 with LF, matching tracked Git source",
+      "unchanged": true
+    },
+    {
+      "file": "games/forest-heart/presentation.ts",
+      "sha256": "f722a510ed699cecb172b064e2b44a98f79d19f59039ead1c796e6c779e2e24f",
+      "encoding": "UTF-8 with LF, matching tracked Git source",
+      "unchanged": true
+    },
+    {
+      "file": "games/forest-heart/RootArtwork.ts",
+      "sha256": "b7e27259f0fe62994da1b03739158563d6dbbe411c43550ef57db76cf79bdef6",
+      "encoding": "UTF-8 with LF, matching tracked Git source",
+      "unchanged": true
+    },
+    {
+      "file": "games/forest-heart/ForestCharacter.ts",
+      "sha256": "2a362a9b2e190a7c56cc52d06313ef81f3c2a8321c60ab474e43223eda08856d",
+      "encoding": "UTF-8 with LF, matching tracked Git source",
+      "unchanged": true
+    },
+    {
+      "file": "games/forest-heart/ForestAudio.ts",
+      "sha256": "45cfe78f20c3e986879d1a2d847023a88972b2f0128896e57c93604edd291210",
+      "encoding": "UTF-8 with LF, matching tracked Git source",
+      "unchanged": true
+    },
+    {
+      "file": "games/forest-heart/ForestMusic.ts",
+      "sha256": "f92d5e187353dfa18a0f927bb6dbdd7751489419d1e9fb932dae5375ae00d615",
+      "encoding": "UTF-8 with LF, matching tracked Git source",
+      "unchanged": true
+    },
+    {
+      "file": "games/forest-heart/ForestScore.ts",
+      "sha256": "ad249e30e099a4be139a9b8eb8c9845f1f4b99a96c97a4b9c76dfd4acb2bae52",
+      "encoding": "UTF-8 with LF, matching tracked Git source",
+      "unchanged": true
+    }
+  ],
+  "screenshots": [
+    "docs/concepts/forest-heart/header-v8.1-desktop.webp",
+    "docs/concepts/forest-heart/header-v8.1-mobile.webp"
+  ],
+  "screenshotEncoding": "WebP quality 90; no crop or resize",
+  "localReview": {
+    "url": "http://127.0.0.1:5296/?room=9QMvXx794",
+    "syntheticDemoAccount": true,
+    "gameReopenedWithNewHeader": true
+  },
+  "cleanup": {
+    "taskDirectory": "artifacts/work/forest-heart-responsive",
+    "taskTemporaryBytes": 166912299,
+    "freeBeforeThisHeaderRefinementBytes": 288941248512,
+    "freeLatestBytes": 292209602560,
+    "removedFolders": [],
+    "removedArchiveBytes": 0,
+    "physicalSpaceReclaimed": false,
+    "status": "Previous automatic cleanup review rejected deletion with blocked by policy; no retry or bypass attempted.",
+    "activeExceptions": "Keep the local review server and its temporary PostgreSQL until the user finishes review. Retain rejected cleanup paths until the rejection is resolved; do not archive the checkout as a bypass.",
+    "sourcePreservedOnGitHub": "bc82e4cd9086441e30f566621a76e890e27274a7"
+  },
+  "synchronization": {
+    "implementationCommit": "a1b1bbe2945b0c4d8118d1ee7785f9c254f629ce",
+    "savedSourceCommit": "bc82e4cd9086441e30f566621a76e890e27274a7",
+    "verifiedRemoteRef": "refs/heads/codex/forest-heart-responsive",
+    "mainCommit": "493409500718374c67837c4c193ed1ca6f2c555b",
+    "mergedChanges": "Caribbean module and its release record only; no Forest Heart, shared host, dependencies or RTP source changes"
+  }
+}

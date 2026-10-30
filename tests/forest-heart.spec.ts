@@ -461,3 +461,58 @@ test('readable outcomes, accepted flower values and separate settings fit deskto
   expect((await state(page)).presentations).toBe(0);await expect(game(page).locator('[data-fh=net]')).toHaveText('-3,69');
   await writeFile(out+'/ux-v7-metrics.json',JSON.stringify(metrics,null,2));
 });
+
+test('the full host uses the available monitor and keeps the board, elf and paid controls in view through resizing',async({page,roomPath})=>{
+  await page.setViewportSize({width:2507,height:1100});
+  await page.emulateMedia({reducedMotion:'reduce'});await routeScenario(page,'choice-bonus');await enter(page,roomPath);
+  const records=[];
+  for(const viewport of [{width:2507,height:1100},{width:2560,height:1440},{width:2006,height:880},{width:1920,height:1080},{width:1366,height:768},{width:1280,height:720},{width:1024,height:768},{width:1024,height:1366},{width:768,height:1024},{width:390,height:844},{width:320,height:780},{width:844,height:390},{width:667,height:375},{width:1920,height:1080}]){
+    await page.setViewportSize(viewport);
+    await expect.poll(async()=>{
+      const boxes=await page.locator('.forest-heart-frame').evaluate(frame=>({width:frame.getBoundingClientRect().width,stage:frame.closest('.mini-stage')!.getBoundingClientRect().width}));
+      return Math.abs(boxes.width-boxes.stage);
+    }).toBeLessThanOrEqual(2);
+    const outer=await page.locator('.forest-heart-frame').evaluate(frame=>({frame:frame.getBoundingClientRect().toJSON(),stage:frame.closest('.mini-stage')!.getBoundingClientRect().toJSON(),mode:frame.closest('#mini-dialog')!.getAttribute('data-game-viewport')}));
+    const inner=await game(page).locator('.fh').evaluate(root=>{
+      const box=(selector:string)=>root.querySelector(selector)!.getBoundingClientRect().toJSON();
+      const logo=root.querySelector<HTMLImageElement>('.fh-title-logo')!;
+      return{width:root.clientWidth,height:root.clientHeight,layout:(root as HTMLElement).dataset.layout,header:box('.fh-top'),world:box('.fh-world'),logo:{...logo.getBoundingClientRect().toJSON(),fit:getComputedStyle(logo).objectFit},board:box('.fh-board'),machine:box('.fh-machine'),character:box('.fh-character'),portrait:box('.fh-character-canvas'),controls:box('.fh-controls'),status:box('.fh-status-band'),spin:box('[data-fh=spin]'),scrollWidth:root.ownerDocument.documentElement.scrollWidth,scrollHeight:root.ownerDocument.documentElement.scrollHeight};
+    });
+    await page.screenshot({path:out+`/responsive-${viewport.width}x${viewport.height}.png`});
+    records.push({viewport,outer,inner});await writeFile(out+'/responsive-metrics.json',JSON.stringify(records,null,2));
+    expect(Math.abs(outer.frame.height-outer.stage.height)).toBeLessThanOrEqual(2);
+    expect(inner.scrollWidth).toBeLessThanOrEqual(inner.width+1);expect(inner.scrollHeight).toBeLessThanOrEqual(inner.height+1);
+    for(const box of [inner.board,inner.controls,inner.spin]){
+      expect(box.x).toBeGreaterThanOrEqual(0);expect(box.y).toBeGreaterThanOrEqual(0);
+      expect(box.right).toBeLessThanOrEqual(inner.width+1);expect(box.bottom).toBeLessThanOrEqual(inner.height+1);
+    }
+    expect(inner.board.width).toBeGreaterThanOrEqual(viewport.height<500?150:180);
+    expect(inner.logo.fit).toBe('contain');
+    expect(inner.logo.top).toBeGreaterThanOrEqual(inner.header.top-1);expect(inner.logo.bottom).toBeLessThanOrEqual(inner.header.bottom+1);
+    if(inner.layout==='wide'){
+      expect(inner.machine.top-inner.header.bottom).toBeLessThanOrEqual(12);
+      expect(Math.abs(inner.character.top-inner.machine.top)).toBeLessThanOrEqual(2);
+      expect(inner.portrait.height).toBeGreaterThanOrEqual(inner.board.height*.95);
+      expect(inner.portrait.width/inner.portrait.height).toBeCloseTo(5/6,1);
+      expect(inner.character.left).toBeGreaterThanOrEqual(inner.machine.right);
+    }
+    await expect(page.locator('#chat-input')).toBeInViewport();
+  }
+  await act(page);await expect(game(page).locator('[data-cell]:enabled')).toHaveCount(12);
+  await page.setViewportSize({width:844,height:390});await expect(game(page).locator('[data-fh=pass]')).toBeInViewport();
+  await act(page,'[data-cell="5"]');
+  await expect(game(page).locator('[data-fh=spin]')).toBeInViewport();
+  const round=await state(page);expect(round.view.stage).toBe('bonus');
+  for(const viewport of [{width:667,height:375},{width:844,height:390}]){
+    await page.setViewportSize(viewport);
+    await expect.poll(()=>game(page).locator('.fh-board').evaluate(e=>e.clientWidth)).toBeGreaterThanOrEqual(150);
+    const boxes=await game(page).locator('.fh').evaluate(root=>({height:root.clientHeight,button:root.querySelector('[data-fh=spin]')!.getBoundingClientRect().toJSON(),bonus:root.querySelector('.fh-bonus')!.getBoundingClientRect().toJSON()}));
+    expect(boxes.button.bottom).toBeLessThanOrEqual(boxes.height);expect(boxes.bonus.bottom).toBeLessThanOrEqual(boxes.height);
+    await expect(game(page).locator('[data-fh=spin]')).toContainText(/БЕСПЛАТН/i);
+    expect(await game(page).locator('.fh-button-label').evaluate(e=>e.scrollWidth<=e.clientWidth+1)).toBe(true);
+    await page.screenshot({path:out+`/responsive-bonus-${viewport.width}.png`});
+  }
+  await page.locator('#mini-dialog .mini-top [data-close]').click();await page.locator('#games-tab').click();await page.locator('[data-cabinet="studio-cosmic-escape"]').click();
+  await expect(page.locator('#mini-dialog')).toBeVisible();
+  await choose(page);expect((await state(page)).sessionId).toBe(round.sessionId);
+});

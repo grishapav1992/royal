@@ -14,7 +14,7 @@ export const mount: GameModuleV1['mount'] = host => {
   frame.title = language === 'en' ? 'Forest Heart' : 'Сердце леса';
   const stage = host.closest<HTMLElement>('.mini-stage') ?? host;
   let game: ForestHeartUI | undefined, disposed = false;
-  const fit = () => { frame.style.height = Math.max(180, stage.clientHeight) + 'px'; };
+  const fit = () => { frame.style.height = Math.max(1, stage.clientHeight) + 'px'; };
   const observer = new ResizeObserver(fit); observer.observe(stage); fit();
   frame.addEventListener('load', () => {
     if (disposed || !frame.contentDocument) return;

@@ -1,6 +1,7 @@
 /** Disposable local full-host review. Never imported by the production application. */
 import { spawn } from 'node:child_process';
-import { mkdir, appendFile } from 'node:fs/promises';
+import { mkdir, appendFile, readFile } from 'node:fs/promises';
+import { resolve, sep } from 'node:path';
 import { createServer, type Plugin } from 'vite';
 import { temporaryDatabase } from './database-test';
 import { PostgresDatabase, databaseConfig } from '../server/database';
@@ -13,6 +14,7 @@ await mkdir(reviewArtifacts,{recursive:true});
 await appendFile(reviewArtifacts+'/preview-databases.jsonl',JSON.stringify({owner:'forest-heart-client',directory:database.directory,pid:process.pid,cleanup:'On the explicit test shutdown or Ctrl+C'})+'\n');
 const apiPort = Number(process.env.FOREST_API_PORT || 2696), webPort = Number(process.env.FOREST_WEB_PORT || 5296);
 const api = 'http://127.0.0.1:' + apiPort;
+const preparedHost = process.env.FOREST_TEST_PREPARED_HOST === '1' && process.env.FOREST_TEST_AUTOMATED === '1';
 const environment = { ...process.env, ...database.env, PORT: String(apiPort), AUTH_DB_PATH: 'forest_heart_review', PUBLIC_ORIGIN: '' };
 const backend = spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], { cwd: process.cwd(), env: environment, stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true });
 let log = '', stopping = false, db: PostgresDatabase | undefined, wallet: DemoWalletStore;
@@ -23,6 +25,13 @@ const fixture: Plugin = { name: 'forest-heart-isolated-entropy', configureServer
     if(path==='/__test/forest-heart/shutdown'){
       if(process.env.FOREST_TEST_AUTOMATED!=='1'||req.method!=='POST'||req.headers['x-royal-forest-test']!=='shutdown'){res.statusCode=404;res.end();return;}
       void stop(()=>res.end('stopped')).then(()=>process.exit(0)).catch(error=>{res.statusCode=500;res.end('shutdown failed');console.error(error);process.exit(1);});return;
+    }
+    if(preparedHost&&req.method==='GET'&&(path==='/'||path==='/index.html'||path.startsWith('/assets/')&&/\.(?:js|css)$/.test(path))){
+      const folder=resolve('dist'),file=resolve(folder,'.'+(path==='/'?'/index.html':path));
+      if(file.startsWith(folder+sep)){
+        try{const bytes=await readFile(file);res.setHeader('Content-Type',file.endsWith('.html')?'text/html; charset=utf-8':file.endsWith('.css')?'text/css; charset=utf-8':'application/javascript; charset=utf-8');res.setHeader('Cache-Control','no-store');res.end(bytes);return;}
+        catch(error){if((error as NodeJS.ErrnoException).code!=='ENOENT')throw error;}
+      }
     }
     if (!['/__test/forest-heart/operate','/__test/forest-heart/fund'].includes(path)) { next(); return; }
     try {
@@ -65,7 +74,8 @@ backend.stderr.on('data', bytes => { log = (log + bytes.toString()).slice(-6000)
 const vite = await createServer({ configFile: false, root: process.cwd(), plugins: [fixture],
   server: { host: '127.0.0.1', port: webPort, strictPort: true,
     watch: { ignored: ['**/module-dist/**', '**/module-build/**', '**/artifacts/**', '**/dist/**', '**/dist-server/**'] },
-    proxy: { '/api': api, '/game-modules': api, '/multiplayer': { target: api, ws: true, rewrite: path => path.replace(/^\/multiplayer/, '') } },
+    proxy: { '/api': api, '/game-modules': api, '/multiplayer': { target: api, ws: true, rewrite: path => path.replace(/^\/multiplayer/, '') },
+      ...(preparedHost ? { '/matchmake':api, '^/[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+(?:\\?.*)?$': { target:api, ws:true } } : {}) },
   },
 });
 async function stop(databaseRemoved?:()=>void) {
