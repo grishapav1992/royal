@@ -24,6 +24,7 @@
     "test:caribbean": "node --import tsx scripts/database-test.ts --import tsx --test --test-concurrency=1 server-tests/caribbean-treasures-draft.test.mjs server-tests/caribbean-treasures-round.test.mjs server-tests/caribbean-rtp-gate.test.mjs server-tests/caribbean-scenarios.test.mjs server-tests/caribbean-transport.test.ts server-tests/caribbean-presentation.test.ts server-tests/caribbean-assets.test.ts server-tests/caribbean-wallet.test.ts server-tests/finance/caribbean-native.test.ts",
     "test:slot-balance": "node --import tsx scripts/database-test.ts --import tsx --test server-tests/neopolis-math.test.ts server-tests/neopolis-wallet.test.ts server-tests/neopolis-catalog.test.ts server-tests/dracona-math.test.ts server-tests/dracona-protocol.test.ts server-tests/dracona-wallet.test.ts server-tests/rebalanced-slots-http.test.ts server-tests/finance/nile-native-games.test.ts",
     "preview": "vite preview --host 0.0.0.0",
+    "preview:tsu-e-fa": "node scripts/build-game-module.mjs --game tsu-e-fa && node --import tsx scripts/tsu-e-fa-local.ts",
     "build:admin": "tsc --noEmit && vite build --config vite.admin.config.ts",
     "test": "playwright test",
     "dev:web": "npm run build:modules && vite --host 0.0.0.0",
