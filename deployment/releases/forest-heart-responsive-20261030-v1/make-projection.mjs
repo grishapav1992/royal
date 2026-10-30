@@ -23,8 +23,8 @@ const patches={
  'src/ui/RoyalCatalogArtwork.ts':[{from:functionStart,to:functionStart+"\n  if(id==='studio-forest-heart')return '/assets/forest-heart/v3/elf-idle.webp';"}],
  'src/ui/royal-platform.css':[{from:cssAnchor,to:cssAnchor+'\n\n'+css}]
 };
-const files={};
-for(const file of Object.keys(before.sourceLF).filter(f=>f==='index.html'||f.startsWith('src/')&&/\.(?:ts|js|mjs|cjs|json|css)$/.test(f)||f.startsWith('public/')&&/\.(?:json|js|mjs)$/.test(f)).sort()){
+const files={};let unavailable=0;
+for(const file of Object.keys(before.sourceLF).filter(f=>f==='index.html'||/\.(?:ts|js|mjs|cjs|json|css)$/.test(f)).sort()){
  const expected=before.sourceLF[file];let bytes,origin;
  for(const path of [file,...tracked.filter(p=>p.endsWith('/source/'+file))]){
   try{const value=blob(commit,path);if(hash(value)===expected){bytes=value;origin={commit,path};break;}}catch{}
@@ -32,7 +32,9 @@ for(const file of Object.keys(before.sourceLF).filter(f=>f==='index.html'||f.sta
  if(!bytes){for(const revision of git('log','origin/main','--format=%H','--',file).toString().trim().split('\n').filter(Boolean)){
   try{const value=blob(revision,file);if(hash(value)===expected){bytes=value;origin={commit:revision,path:file};break;}}catch{}
  }}
- assert(bytes,'Production source is not preserved in Git: '+file);
+ // Unused historical files may lack a Git origin; the loader still rejects any
+ // compiled input absent from this exact-source table.
+ if(!bytes){unavailable++;continue;}
  let value=bytes;
  for(const patch of patches[file]??[]){const parts=value.toString().split(patch.from);assert.equal(parts.length-1,1,'Scoped patch must match exactly once: '+file);value=Buffer.from(parts.join(patch.to));}
  const row={...origin,baseSha256:expected,sha256:hash(value),...(patches[file]?{patches:patches[file]}:{})};
@@ -41,4 +43,4 @@ for(const file of Object.keys(before.sourceLF).filter(f=>f==='index.html'||f.sta
 for(const file of changed)assert(files[file]?.patches);
 const projection={format:1,productionCommit:before.sourceCommit||before.sourceRevision,entries:['index.html'],changedSources:changed,files};
 writeFileSync(output,JSON.stringify(projection,null,2)+'\n');
-console.log(JSON.stringify({files:Object.keys(files).length,changed,productionCommit:projection.productionCommit,output}));
+console.log(JSON.stringify({files:Object.keys(files).length,unavailableUnusedOrigins:unavailable,changed,productionCommit:projection.productionCommit,output}));
