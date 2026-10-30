@@ -17,6 +17,18 @@ MIN_FREE = 5 * 1024**3
 DATABASE_BACKUP_LIMIT = 64 * 1024**2
 BASE_HELPER_SHA256 = 'f53c960aabf24983d549def3155da240ca253284bb5451063fe8fbbc90cd5fe2'
 SUPPORT = {'overlay-base.py', 'financial_gate.py', 'quiesce-base.cjs', 'quiesce.cjs', 'runtime-inventory.cjs'}
+NATIVE_ROUND_SOURCES = {
+    'server/database.ts', 'server/database-migrations.ts', 'server/game-database-migrations.ts',
+    'server/demoWallet.ts', 'server/demoWalletAmounts.ts', 'server/providerPending.ts',
+    'server/demoCasino.ts', 'server/demoMines.ts', 'server/demoFlight.ts', 'server/demoExpansion.ts',
+    'server/games/core.ts', 'server/games/casinoSessions.ts', 'server/games/cardEngine.ts', 'server/games/rush/crash.ts',
+    'src/shared/gameCore.ts', 'src/shared/demoWallet.ts', 'src/shared/casinoSessions.ts',
+    'src/shared/casinoExpansion.ts', 'src/shared/originalGames.ts', 'src/shared/flightGame.ts',
+}
+NATIVE_RESTART_TEST = 'deployment/releases/' + NAME + '/test_native_rounds.ts'
+NATIVE_RESTART_HELPER = 'deployment/releases/' + NAME + '/projected-runtime.mjs'
+NATIVE_RESTART_CHECKS = {'sameSchemaRestart', 'savedPayloadAndReservePreserved',
+    'referenceSettlementAndReplayEqual', 'oldSessionsGiveNoXp', 'freshPaidRoundGivesXpOnce'}
 
 
 def require(ok, reason):
@@ -122,9 +134,38 @@ def payload(base):
         require(projection['origins'][name]['sha256'] == digest, 'Backend input origin differs: ' + name)
         expected = [base.CHANGES[name]] if name in base.CHANGES else [old['source'].get(name), old['sourceLF'].get(name)]
         require(digest in expected, 'Backend input differs from installed source facts: ' + name)
+    native_round_compatibility(base, projection)
     require(old['program'] == old['preparedProgram'], 'Prepared and running baseline inventories differ')
     for flag in ['hostContractVersionsUnchanged', 'bundledAndExternalModulesRetained', 'dependencyLockEquivalent']:
         require(m['compatibility'].get(flag) is True, 'Missing compatibility evidence: ' + flag)
+
+
+def native_round_compatibility(base, projection):
+    m, old, root = base.M, base.OLD, base.ROOT
+    compatibility = m['compatibility']
+    file = root / 'native-round-compatibility.json'
+    require(file.is_file() and not file.is_symlink()
+            and sha(file) == compatibility.get('nativeRoundCompatibilitySha256'), 'Native restart evidence changed')
+    report = read(file)
+    require(compatibility.get('nativeRoundsRestorable') is True and report.get('format') == 1
+            and report.get('productionCommit') == m['baseCommit']
+            and report.get('featureCommit') == compatibility.get('featureSourceCommit')
+            and report.get('featureCommit') == 'f9a6a231e73da8618d745a654d1b684b18bcda5d', 'Native restart provenance differs')
+    require(report.get('backendProjection') == {key: projection[key] for key in ['config', 'sha256', 'graphSha256', 'output']},
+            'Native restart backend differs')
+    unchanged = {name: value for name, value in projection['inputs'].items() if name not in base.CHANGES}
+    require(report.get('sourceHashes') == unchanged == compatibility.get('nativeRoundSources')
+            and NATIVE_ROUND_SOURCES.issubset(unchanged), 'Native restart source inventory differs')
+    for name, value in unchanged.items():
+        require(value in [old['source'].get(name), old['sourceLF'].get(name)], 'Native restart engine differs: ' + name)
+    require(set(report.get('checks', {})) == NATIVE_RESTART_CHECKS
+            and all(value is True for value in report['checks'].values()), 'Native restart checks did not pass')
+    test = report.get('test', {})
+    require(test.get('passed') is True and test.get('path') == NATIVE_RESTART_TEST
+            and test.get('helperPath') == NATIVE_RESTART_HELPER, 'Native restart test identity differs')
+    evidence = {test['path']: test.get('sha256'), test['helperPath']: test.get('helperSha256')}
+    require(all(isinstance(value, str) and base.DIGEST.fullmatch(value) for value in evidence.values())
+            and base.inventory(root / 'verification') == evidence, 'Native restart test bytes changed')
 
 
 def database_backup_guard(base):

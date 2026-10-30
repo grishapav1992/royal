@@ -5,7 +5,7 @@ const {Client}=require('pg');
 const base=require('../cat-purr-hall-only-20261030-v1/quiesce.cjs');
 const helper=require('./quiesce.cjs');
 
-test('actual PostgreSQL role checks and table fence block a native account writer until lease release',{timeout:15000},async()=>{
+test('persisted native sessions remain while the PostgreSQL fence blocks an actual writer until lease release',{timeout:15000},async()=>{
   assert.equal(process.env.NODE_ENV,'test');assert.equal(process.env.PGDATABASE,'royal_test');assert.equal(process.env.PGHOST,'127.0.0.1');
   const config={host:process.env.PGHOST,port:Number(process.env.PGPORT),database:process.env.PGDATABASE,user:process.env.PGUSER,password:process.env.PGPASSWORD};
   const admin=new Client(config),writer=new Client(config),gateClient=new Client(config);
@@ -20,7 +20,18 @@ test('actual PostgreSQL role checks and table fence block a native account write
   });
   try{
     await admin.query('CREATE SCHEMA royal_game');
-    for(const name of helper.TABLES)await admin.query('CREATE TABLE royal_game.'+name+'('+ (stateTables.has(name)?'state TEXT':'id TEXT')+')');
+    for(const name of helper.TABLES)await admin.query('CREATE TABLE royal_game.'+name+'('+ (name==='demo_casino_sessions'?'state TEXT,game_id TEXT':stateTables.has(name)?'state TEXT':'id TEXT')+')');
+    await admin.query("INSERT INTO royal_game.demo_casino_sessions VALUES('active','github-tower')");
+    await admin.query("INSERT INTO royal_game.demo_mines_sessions VALUES('active')");
+    assert.equal(Number((await admin.query(helper.ACTIVE_SQL)).rows[0].active),0);
+    for(const[name,state]of [['demo_flight_sessions','active'],['combat_matches','active'],['virtual_pvp_holds','held'],['skin_purchases','reserved']]){
+      await admin.query('INSERT INTO royal_game.'+name+' VALUES($1)',[state]);
+      assert.equal(Number((await admin.query(helper.ACTIVE_SQL)).rows[0].active),1,name+' must block publication');
+      await admin.query('DELETE FROM royal_game.'+name);
+    }
+    await admin.query("INSERT INTO royal_game.demo_casino_sessions VALUES('active','github-crash')");
+    assert.equal(Number((await admin.query(helper.ACTIVE_SQL)).rows[0].active),1,'Crash must block publication');
+    await admin.query("DELETE FROM royal_game.demo_casino_sessions WHERE game_id='github-crash'");
     assert.equal((await admin.query(helper.DDL_SQL)).rows[0].ready,true);
     await admin.query('CREATE ROLE location_levels_no_ddl NOLOGIN');
     await admin.query('GRANT USAGE ON SCHEMA royal_game TO location_levels_no_ddl');
@@ -37,6 +48,7 @@ test('actual PostgreSQL role checks and table fence block a native account write
     input.write(JSON.stringify({op:'release',nonce:'b'.repeat(32)})+'\n');assert.equal(await gate,0);
     await writer.query("INSERT INTO royal_game.demo_wallets VALUES('fixture')");
     assert.equal((await writer.query('SELECT count(*)::int AS n FROM royal_game.demo_wallets')).rows[0].n,1);
+    for(const name of ['demo_casino_sessions','demo_mines_sessions'])assert.equal((await admin.query('SELECT count(*)::int AS n FROM royal_game.'+name+" WHERE state='active'")).rows[0].n,1);
   }finally{
     if(quiet&&gate){input.end();await gate.catch(()=>{});}
     await writer.end();await admin.query('RESET ROLE').catch(()=>{});

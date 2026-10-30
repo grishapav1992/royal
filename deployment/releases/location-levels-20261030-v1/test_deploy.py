@@ -30,11 +30,13 @@ class LocationInstallerTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory(); self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
         self.scope = json.loads((HERE / 'scope.json').read_text())
+        native_module = load(HERE / 'deploy.py', 'location_native_contract')
         for name in ['deploy.py', 'snapshot.py', 'scope.json', 'quiesce.cjs']: shutil.copy2(HERE / name, self.root / name)
         for target, source in self.scope['references'].items(): shutil.copy2(REPO / source, self.root / target)
         changed = {name: digest(('new:' + name).encode()) for name in self.scope['requiredSource']}
         old_source = {name: digest(('old:' + name).encode()) for name in ['server/accounts.ts', 'server/index.ts', 'src/main.ts', 'src/i18n/en.ts']}
         old_source.update({'server/demoWallet.ts': digest(b'frozen engine'), 'package-lock.json': digest(b'dependencies')})
+        for name in native_module.NATIVE_ROUND_SOURCES: old_source.setdefault(name, digest(('frozen:' + name).encode()))
         old_image, prepared = 'sha256:' + 'a' * 64, 'sha256:' + 'b' * 64
         before = {'sourceCommit': self.scope['base'], 'source': old_source, 'sourceLF': dict(old_source),
             'container': {'id': 'old-game', 'image': old_image, 'health': 'healthy', 'startedAt': 'then',
@@ -59,10 +61,21 @@ class LocationInstallerTests(unittest.TestCase):
         (self.root / 'backend-projection.json').write_text(json.dumps(config))
         projection = {'config': 'deployment/releases/location-levels-20261030-v1/backend-projection.json',
             'sha256': digest((self.root / 'backend-projection.json').read_bytes()), 'productionCommit': self.scope['base'],
-            'entries': ['server/index.ts'], 'inputs': {'server/accounts.ts': changed['server/accounts.ts'], 'server/demoWallet.ts': old_source['server/demoWallet.ts']},
-            'origins': {'server/accounts.ts': {'sha256': changed['server/accounts.ts']}, 'server/demoWallet.ts': {'sha256': old_source['server/demoWallet.ts']}},
+            'entries': ['server/index.ts'], 'graphSha256': digest(b'bound complete graph'),
+            'inputs': {'server/accounts.ts': changed['server/accounts.ts'], **{name: old_source[name] for name in native_module.NATIVE_ROUND_SOURCES}},
             'output': {'path': 'dist-server/index.js', 'sha256': server['index.js']}}
+        projection['origins'] = {name: {'sha256': value} for name, value in projection['inputs'].items()}
         (self.root / 'backend-projection-report.json').write_text(json.dumps(projection))
+        self.evidence = {native_module.NATIVE_RESTART_TEST: digest(b'reviewed restart test'),
+            native_module.NATIVE_RESTART_HELPER: digest(b'reviewed projected loader')}
+        native_report = {'format': 1, 'productionCommit': self.scope['base'],
+            'featureCommit': 'f9a6a231e73da8618d745a654d1b684b18bcda5d',
+            'backendProjection': {name: projection[name] for name in ['config', 'sha256', 'graphSha256', 'output']},
+            'sourceHashes': {name: projection['inputs'][name] for name in native_module.NATIVE_ROUND_SOURCES},
+            'checks': {name: True for name in native_module.NATIVE_RESTART_CHECKS},
+            'test': {'path': native_module.NATIVE_RESTART_TEST, 'sha256': self.evidence[native_module.NATIVE_RESTART_TEST],
+                'helperPath': native_module.NATIVE_RESTART_HELPER, 'helperSha256': self.evidence[native_module.NATIVE_RESTART_HELPER], 'passed': True}}
+        (self.root / 'native-round-compatibility.json').write_text(json.dumps(native_report))
         release = {'scope': 'application', 'sourceCommit': 'c' * 40, 'baseCommit': self.scope['base'],
             'build': {'passed': True, 'backendProjection': projection}, 'backendProjection': projection,
             'files': {**{'dist/' + name: sha for name, sha in delta.items()}, 'dist-server/index.js': server['index.js']}}
@@ -74,7 +87,9 @@ class LocationInstallerTests(unittest.TestCase):
             'helperSha256': digest((self.root / 'deploy.py').read_bytes()), 'snapshotSha256': digest((self.root / 'snapshot.py').read_bytes()),
             'scopeSha256': digest((self.root / 'scope.json').read_bytes()), 'releaseManifestSha256': digest((self.root / 'release-manifest.json').read_bytes()),
             'receiptSha256': digest((self.root / 'release-github.json').read_bytes()), 'backendProjectionSha256': digest((self.root / 'backend-projection-report.json').read_bytes()),
-            'compatibility': {'hostContractVersionsUnchanged': True, 'bundledAndExternalModulesRetained': True, 'dependencyLockEquivalent': True}}
+            'compatibility': {'hostContractVersionsUnchanged': True, 'bundledAndExternalModulesRetained': True, 'dependencyLockEquivalent': True,
+                'featureSourceCommit': native_report['featureCommit'], 'nativeRoundsRestorable': True,
+                'nativeRoundSources': native_report['sourceHashes'], 'nativeRoundCompatibilitySha256': digest((self.root / 'native-round-compatibility.json').read_bytes())}}
         (self.root / 'install-manifest.json').write_text(json.dumps(manifest))
         self.module = load(self.root / 'deploy.py', 'location_installer_test')
         self.base = self.module.configure(self.root)
@@ -88,7 +103,7 @@ class LocationInstallerTests(unittest.TestCase):
         real_file, real_link = Path.is_file, Path.is_symlink
         def mirror(path): return local(path) if path.is_relative_to(expected) else path
         original_root = base.ROOT; base.ROOT = expected
-        inventories = {'source': base.CHANGES, 'dist-delta': base.DELTA, 'server-delta': base.SERVER_DELTA}
+        inventories = {'source': base.CHANGES, 'dist-delta': base.DELTA, 'server-delta': base.SERVER_DELTA, 'verification': self.evidence}
         try:
             with patch.object(self.module, 'read', lambda path: real_read(local(path))), patch.object(self.module, 'sha', lambda path: real_sha(local(path))), patch.object(base, 'inventory', lambda path: inventories[path.name]), patch.object(Path, 'is_file', lambda path: real_file(mirror(path))), patch.object(Path, 'is_symlink', lambda path: real_link(mirror(path))):
                 yield
@@ -131,6 +146,38 @@ class LocationInstallerTests(unittest.TestCase):
         release['backendProjection'] = release['build']['backendProjection'] = report; release_file.write_text(json.dumps(release))
         self.base.M['releaseManifestSha256'] = digest(release_file.read_bytes())
         with self.assertRaisesRegex(RuntimeError, 'installed source facts'): self.check_payload()
+
+    def test_refuses_missing_required_native_engine_even_if_both_evidence_maps_omit_it(self):
+        name = 'server/demoMines.ts'
+        file = self.root / 'backend-projection-report.json'; projection = json.loads(file.read_text())
+        del projection['inputs'][name]; del projection['origins'][name]
+        file.write_text(json.dumps(projection)); self.base.M['backendProjectionSha256'] = digest(file.read_bytes())
+        release_file = self.root / 'release-manifest.json'; release = json.loads(release_file.read_text())
+        release['backendProjection'] = release['build']['backendProjection'] = projection; release_file.write_text(json.dumps(release))
+        self.base.M['releaseManifestSha256'] = digest(release_file.read_bytes())
+        native_file = self.root / 'native-round-compatibility.json'; native = json.loads(native_file.read_text())
+        del native['sourceHashes'][name]; native_file.write_text(json.dumps(native))
+        self.base.M['compatibility']['nativeRoundSources'] = native['sourceHashes']
+        self.base.M['compatibility']['nativeRoundCompatibilitySha256'] = digest(native_file.read_bytes())
+        with self.assertRaisesRegex(RuntimeError, 'Native restart source inventory'): self.check_payload()
+
+    def test_native_restart_checks_and_backend_are_bound_to_the_copied_report(self):
+        file = self.root / 'native-round-compatibility.json'; original = json.loads(file.read_text())
+        for change, message in [
+            (lambda value: value['checks'].update({'sameSchemaRestart': False}), 'checks did not pass'),
+            (lambda value: value['backendProjection']['output'].update({'sha256': '0' * 64}), 'backend differs'),
+            (lambda value: value.update({'featureCommit': '0' * 40}), 'provenance differs'),
+        ]:
+            report = copy.deepcopy(original); change(report); file.write_text(json.dumps(report))
+            self.base.M['compatibility']['nativeRoundCompatibilitySha256'] = digest(file.read_bytes())
+            with self.assertRaisesRegex(RuntimeError, message): self.check_payload()
+
+    def test_refuses_changed_native_report_or_restart_test_bytes(self):
+        file = self.root / 'native-round-compatibility.json'; original = file.read_bytes()
+        file.write_bytes(original + b'\n')
+        with self.assertRaisesRegex(RuntimeError, 'Native restart evidence changed'): self.check_payload()
+        file.write_bytes(original); self.evidence[self.module.NATIVE_RESTART_TEST] = digest(b'changed test')
+        with self.assertRaisesRegex(RuntimeError, 'Native restart test bytes changed'): self.check_payload()
 
     def test_full_source_and_service_profiles_include_previously_unchecked_files(self):
         old = self.base.OLD

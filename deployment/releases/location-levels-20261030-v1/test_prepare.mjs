@@ -5,7 +5,7 @@ import {dirname, join, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import test from 'node:test';
 import {digest, inventory} from '../../../scripts/module-build-cache.mjs';
-import {BASE, FEATURE, NAME, SOURCES, planPublication, writePublication} from './prepare.mjs';
+import {BASE, FEATURE, NAME, SOURCES, NATIVE_ROUND_SOURCES, NATIVE_RESTART_TEST, NATIVE_RESTART_HELPER, planPublication, writePublication} from './prepare.mjs';
 
 const folder = dirname(fileURLToPath(import.meta.url)), root = resolve(folder, '../../..');
 const encode = value => Buffer.from(JSON.stringify(value, null, 2) + '\n');
@@ -20,7 +20,7 @@ async function fixture() {
   const catalog = Buffer.from("export const GAMES = [{ gameId: 'royal-coins', slug: 'royal-coins', apiVersion: 1, rulesVersion: 1, progressVersion: 1 }] as const;\n");
   const compatibilitySources = {'src/modules/GameModuleCatalog.ts': catalog,
     'package.json': encode({name: 'royal', type: 'module', dependencies: {pg: '1.2.3'}}), 'package-lock.json': encode({lockfileVersion: 3})};
-  const retained = {...compatibilitySources, 'server/demoWallet.ts': Buffer.from('retained math engine\n')};
+  const retained = {...compatibilitySources, ...Object.fromEntries(NATIVE_ROUND_SOURCES.map(name => [name, Buffer.from('retained native lifecycle: ' + name + '\n')])), 'server/demoWallet.ts': Buffer.from('retained math engine\n')};
   const source = Object.fromEntries(Object.entries(retained).map(([file, bytes]) => [file, digest(bytes)]));
   for (const name of ['server/accounts.ts', 'server/index.ts', 'src/main.ts', 'src/i18n/en.ts']) source[name] = digest('old source: ' + name);
   const program = {'dist/index.html': digest('old index'), 'dist/assets/retained.js': digest('retained asset'),
@@ -59,9 +59,16 @@ async function fixture() {
     build: {passed: true, hostProjection, backendProjection}, hostProjection, backendProjection,
     files: {...Object.fromEntries(Object.entries(artifacts).map(([name, bytes]) => [name, digest(bytes)])),
       'dist-server/payments.js': digest('unpublished main build, retained in production'), 'module-dist/new-game/active.json': digest('new module not published')}};
+  const restartEvidenceSources = {[NATIVE_RESTART_TEST]: Buffer.from('synthetic restart test fixture'), [NATIVE_RESTART_HELPER]: Buffer.from('synthetic runtime helper fixture')};
+  const restart = {format: 1, productionCommit: BASE, featureCommit: FEATURE,
+    backendProjection: Object.fromEntries(['config', 'sha256', 'graphSha256', 'output'].map(key => [key, backendProjection[key]])),
+    sourceHashes: Object.fromEntries(Object.entries(inputs).filter(([name]) => !SOURCES.includes(name))),
+    test: {path: NATIVE_RESTART_TEST, sha256: digest(restartEvidenceSources[NATIVE_RESTART_TEST]), helperPath: NATIVE_RESTART_HELPER,
+      helperSha256: digest(restartEvidenceSources[NATIVE_RESTART_HELPER]), passed: true},
+    checks: {sameSchemaRestart: true, savedPayloadAndReservePreserved: true, referenceSettlementAndReplayEqual: true, oldSessionsGiveNoXp: true, freshPaidRoundGivesXpOnce: true}};
   return {baselineBytes: encode(before), scopeBytes, releaseBytes: encode(release),
     receiptBytes: encode({format: 1, sourceCommit: release.sourceCommit, remoteMain: release.sourceCommit, checkedAt: '2026-10-31T09:00:00.000Z'}),
-    hostConfigBytes, backendConfigBytes, projectedSources, compatibilitySources, artifacts, helpers};
+    hostConfigBytes, backendConfigBytes, projectedSources, compatibilitySources, artifacts, helpers, restartEvidenceBytes: encode(restart), restartEvidenceSources};
 }
 
 test('plans exactly fourteen projected sources and verified tiny runtime deltas', async () => {
@@ -75,6 +82,11 @@ test('plans exactly fourteen projected sources and verified tiny runtime deltas'
   assert.equal(m.releaseManifestSha256, digest(input.releaseBytes)); assert.equal(m.receiptSha256, digest(input.receiptBytes));
   assert.equal(m.backendProjectionSha256, digest(plan.files['backend-projection-report.json']));
   assert.equal(m.compatibility.hostContractVersionsUnchanged, true);
+  assert.equal(m.compatibility.nativeRoundsRestorable, true);
+  assert.deepEqual(m.compatibility.nativeRoundSources, readJson(input.restartEvidenceBytes).sourceHashes);
+  assert.equal(m.compatibility.nativeRoundCompatibilitySha256, digest(input.restartEvidenceBytes));
+  assert(plan.files['native-round-compatibility.json'].equals(input.restartEvidenceBytes));
+  for (const [path, bytes] of Object.entries(input.restartEvidenceSources)) assert(plan.files['verification/' + path].equals(bytes));
 });
 
 test('rejects wrong baseline, receipt identity, scope and feature origin', async () => {
@@ -155,4 +167,29 @@ test('rejects unsafe destination parents and payload traversal before writing', 
   await assert.rejects(writePublication(plan, join(temp, 'linked', 'publication')), /parent symlink/);
   plan.files['../outside'] = Buffer.from('escape');
   await assert.rejects(writePublication(plan, join(temp, 'publication')), /Unsafe payload path/);
+});
+
+
+test('requires complete native restart provenance, unchanged graph closure and successful bound evidence', async () => {
+  for (const [change, message] of [
+    [r => { r.productionCommit = 'e'.repeat(40); }, /equal/],
+    [r => { r.featureCommit = 'e'.repeat(40); }, /equal/],
+    [r => { r.backendProjection.output.sha256 = '0'.repeat(64); }, /Native restart backend/],
+    [r => { delete r.sourceHashes['server/demoWallet.ts']; }, /Native restart source inventory/],
+    [r => { r.sourceHashes['server/demoWallet.ts'] = '0'.repeat(64); }, /Native restart source inventory/],
+    [r => { r.checks.oldSessionsGiveNoXp = false; }, /checks did not pass/],
+    [r => { delete r.checks.savedPayloadAndReservePreserved; }, /checks incomplete/],
+    [r => { r.test.passed = false; }, /test did not pass/],
+    [r => { r.test.sha256 = '0'.repeat(64); }, /test bytes differ/],
+    [r => { r.test.helperPath = '../foreign.mjs'; }, /equal/],
+  ]) {
+    const input = await fixture(); edit(input, 'restartEvidenceBytes', change);
+    assert.throws(() => planPublication(input), message);
+  }
+  const missing = await fixture(); delete missing.restartEvidenceBytes;
+  assert.throws(() => planPublication(missing), /Missing native restart evidence/);
+  const bytes = await fixture(); bytes.restartEvidenceSources[NATIVE_RESTART_HELPER] = Buffer.from('changed test helper');
+  assert.throws(() => planPublication(bytes), /helper bytes differ/);
+  const extra = await fixture(); extra.restartEvidenceSources['unrelated-source.ts'] = Buffer.from('foreign evidence');
+  assert.throws(() => planPublication(extra), /Unexpected restart verification source/);
 });

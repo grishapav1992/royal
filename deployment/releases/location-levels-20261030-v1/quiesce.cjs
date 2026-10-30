@@ -2,10 +2,10 @@
 const TABLES=Object.freeze(['accounts','demo_wallets','demo_operations','demo_ledger','demo_casino_sessions',
   'demo_casino_requests','demo_mines_sessions','demo_mines_requests','demo_flight_sessions','demo_flight_requests',
   'virtual_pvp_banks','virtual_pvp_holds','combat_matches','skin_purchases']);
+// Untimed native rounds resume under their retained engines. Timed manual-cashout games still drain.
 const ACTIVE_SQL=`SELECT
-  (SELECT count(*) FROM royal_game.demo_casino_sessions WHERE state='active')+
-  (SELECT count(*) FROM royal_game.demo_mines_sessions WHERE state='active')+
   (SELECT count(*) FROM royal_game.demo_flight_sessions WHERE state='active')+
+  (SELECT count(*) FROM royal_game.demo_casino_sessions WHERE state='active' AND game_id IN ('github-crash'))+
   (SELECT count(*) FROM royal_game.combat_matches WHERE state='active')+
   (SELECT count(*) FROM royal_game.virtual_pvp_holds WHERE state='held')+
   (SELECT count(*) FROM royal_game.skin_purchases WHERE state='reserved') AS active`;

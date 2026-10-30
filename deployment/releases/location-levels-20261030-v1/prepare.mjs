@@ -17,6 +17,19 @@ export const SOURCES = [
   'src/main.ts', 'src/shared/progression.ts', 'src/wallet/ProgressionClient.ts',
   'src/ui/ProgressionUI.ts', 'src/ui/progression.css', 'src/i18n/en.ts', 'src/i18n/progressionEn.ts',
 ];
+export const NATIVE_RESTART_TEST = FOLDER + '/test_native_rounds.ts';
+export const NATIVE_RESTART_HELPER = FOLDER + '/projected-runtime.mjs';
+export const NATIVE_RESTART_REPORT = FOLDER + '/native-round-compatibility.json';
+export const NATIVE_ROUND_SOURCES = [
+  'server/database.ts', 'server/database-migrations.ts', 'server/game-database-migrations.ts',
+  'server/demoWallet.ts', 'server/demoWalletAmounts.ts', 'server/providerPending.ts',
+  'server/demoCasino.ts', 'server/demoMines.ts', 'server/demoFlight.ts', 'server/demoExpansion.ts',
+  'server/games/core.ts', 'server/games/casinoSessions.ts', 'server/games/cardEngine.ts', 'server/games/rush/crash.ts',
+  'src/shared/gameCore.ts', 'src/shared/demoWallet.ts', 'src/shared/casinoSessions.ts',
+  'src/shared/casinoExpansion.ts', 'src/shared/originalGames.ts', 'src/shared/flightGame.ts',
+];
+const NATIVE_RESTART_CHECKS = ['sameSchemaRestart', 'savedPayloadAndReservePreserved',
+  'referenceSettlementAndReplayEqual', 'oldSessionsGiveNoXp', 'freshPaidRoundGivesXpOnce'];
 const REFERENCES = {
   'overlay-base.py': 'deployment/releases/cat-purr-hall-only-20261030-v1/deploy.py',
   'financial_gate.py': 'deployment/releases/cat-purr-hall-only-20261030-v1/financial_gate.py',
@@ -54,7 +67,7 @@ function catalogContracts(bytes) {
 /** Validate captured, verified bytes before creating any publication directory. */
 export function planPublication(input) {
   const {baselineBytes, scopeBytes, releaseBytes, receiptBytes, hostConfigBytes, backendConfigBytes,
-    projectedSources, compatibilitySources, artifacts, helpers} = input;
+    projectedSources, compatibilitySources, artifacts, helpers, restartEvidenceBytes, restartEvidenceSources} = input;
   const before = json(baselineBytes), scope = json(scopeBytes), release = json(releaseBytes), receipt = json(receiptBytes);
   const configs = {host: json(hostConfigBytes), backend: json(backendConfigBytes)};
   assert.equal(scope.release, NAME); assert.equal(scope.base, BASE); assert.equal(before.sourceCommit, BASE);
@@ -115,6 +128,21 @@ export function planPublication(input) {
   const backend = release.backendProjection;
   assert.deepEqual(backend.entries, ['server/index.ts']); assert.match(backend.graphSha256, HASH);
   assert.equal(backend.output?.path, 'dist-server/index.js'); assert.equal(backend.output.sha256, release.files['dist-server/index.js']);
+  assert(Buffer.isBuffer(restartEvidenceBytes), 'Missing native restart evidence');
+  const restart = json(restartEvidenceBytes);
+  assert.equal(restart.format, 1); assert.equal(restart.productionCommit, BASE); assert.equal(restart.featureCommit, FEATURE);
+  assert.deepEqual(restart.backendProjection, Object.fromEntries(['config', 'sha256', 'graphSha256', 'output'].map(key => [key, backend[key]])), 'Native restart backend differs');
+  const nativeRoundSources = Object.fromEntries(Object.entries(backend.inputs).filter(([name]) => !Object.hasOwn(changed, name)));
+  assert.deepEqual(restart.sourceHashes, nativeRoundSources, 'Native restart source inventory differs');
+  assert(NATIVE_ROUND_SOURCES.every(name => Object.hasOwn(nativeRoundSources, name)), 'Native restart lifecycle source missing');
+  for (const [name, hash] of Object.entries(nativeRoundSources)) assert([before.source[name], before.sourceLF[name]].includes(hash), 'Native restart engine differs: ' + name);
+  sameKeys(restart.checks, NATIVE_RESTART_CHECKS, 'Native restart checks incomplete');
+  assert(Object.values(restart.checks).every(value => value === true), 'Native restart checks did not pass');
+  assert.equal(restart.test?.passed, true, 'Native restart test did not pass');
+  assert.equal(restart.test.path, NATIVE_RESTART_TEST); assert.equal(restart.test.helperPath, NATIVE_RESTART_HELPER);
+  sameKeys(restartEvidenceSources, [NATIVE_RESTART_TEST, NATIVE_RESTART_HELPER], 'Unexpected restart verification source');
+  assert.equal(digest(restartEvidenceSources[NATIVE_RESTART_TEST]), restart.test.sha256, 'Native restart test bytes differ');
+  assert.equal(digest(restartEvidenceSources[NATIVE_RESTART_HELPER]), restart.test.helperSha256, 'Native restart helper bytes differ');
   const requiredArtifacts = keys(release.files).filter(name => name.startsWith('dist/') || name === 'dist-server/index.js');
   sameKeys(artifacts, requiredArtifacts, 'Unexpected captured publication artifact');
   const delta = {}, files = {};
@@ -140,6 +168,8 @@ export function planPublication(input) {
   sameKeys(helpers, ['deploy.py', 'snapshot.py', ...SUPPORT], 'Unexpected installer helper inventory');
   assert.equal(digest(helpers['overlay-base.py']), BASE_HELPER, 'Reviewed overlay engine changed');
   for (const name of SOURCES) files['source/' + name] = projectedSources[name];
+  files['native-round-compatibility.json'] = restartEvidenceBytes;
+  for (const [name, bytes] of Object.entries(restartEvidenceSources)) files['verification/' + name] = bytes;
   Object.assign(files, helpers, {'scope.json': scopeBytes, 'release-manifest.json': releaseBytes, 'release-github.json': receiptBytes,
     'backend-projection.json': backendConfigBytes, 'backend-projection-report.json': encoded(backend),
     'host-projection.json': hostConfigBytes, 'host-projection-report.json': encoded(release.hostProjection)});
@@ -147,7 +177,7 @@ export function planPublication(input) {
     serverDelta: {'index.js': backend.output.sha256}, helperSha256: digest(helpers['deploy.py']), snapshotSha256: digest(helpers['snapshot.py']),
     scopeSha256: digest(scopeBytes), helpers: Object.fromEntries(SUPPORT.map(name => [name, digest(helpers[name])])),
     releaseManifestSha256: digest(releaseBytes), receiptSha256: digest(receiptBytes), backendProjectionSha256: digest(files['backend-projection-report.json']),
-    compatibility: {hostContractVersionsUnchanged: true, bundledAndExternalModulesRetained: true, dependencyLockEquivalent: true,
+    compatibility: {nativeRoundsRestorable: true, nativeRoundSources, nativeRoundCompatibilitySha256: digest(restartEvidenceBytes), hostContractVersionsUnchanged: true, bundledAndExternalModulesRetained: true, dependencyLockEquivalent: true,
       installedContractSha256: before.moduleHostContract, projectedCatalogSha256: catalogHash,
       projectedPackageSha256: packageHash, installedLockSha256: lockHash,
       hostProjectionSha256: digest(files['host-projection-report.json']), featureSourceCommit: FEATURE,
@@ -210,8 +240,11 @@ export async function preparePublication(root = resolve(dirname(fileURLToPath(im
   assert.deepEqual(scope.references, REFERENCES, 'Reviewed helper references changed');
   for (const [name, source] of Object.entries(REFERENCES)) helpers[name] = await committed(source);
   const baselineBytes = await readFile(await regularPath(root, 'artifacts/work/location-levels-mvp/baseline.json'));
+  const restartEvidenceBytes = await committed(NATIVE_RESTART_REPORT), restart = json(restartEvidenceBytes);
+  assert.equal(restart.test?.path, NATIVE_RESTART_TEST); assert.equal(restart.test?.helperPath, NATIVE_RESTART_HELPER);
+  const restartEvidenceSources = {[NATIVE_RESTART_TEST]: await committed(NATIVE_RESTART_TEST), [NATIVE_RESTART_HELPER]: await committed(NATIVE_RESTART_HELPER)};
   const plan = planPublication({baselineBytes, scopeBytes, releaseBytes, receiptBytes, hostConfigBytes, backendConfigBytes,
-    projectedSources, compatibilitySources, artifacts, helpers});
+    projectedSources, compatibilitySources, artifacts, helpers, restartEvidenceBytes, restartEvidenceSources});
   assertClean(root); assert.equal(git(root, ['rev-parse', 'HEAD']), release.sourceCommit, 'Source commit changed during preparation');
   assert.equal(git(root, ['rev-parse', 'HEAD^{tree}']), release.sourceTree);
   assert.equal(git(root, ['rev-parse', 'origin/main']), receipt.remoteMain, 'GitHub baseline changed during preparation');

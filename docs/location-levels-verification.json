@@ -37,8 +37,8 @@
       "passed": 22
     },
     "installer": {
-      "python": 13,
-      "protocol": 4,
+      "python": 16,
+      "protocol": 5,
       "realPostgresFence": 1
     },
     "projectionPreflight": {
@@ -51,7 +51,7 @@
       "guardedInstaller": "no actionable blockers"
     },
     "packagePreparation": {
-      "passed": 9
+      "passed": 10
     },
     "publicVerifier": {
       "passed": 5
@@ -59,6 +59,15 @@
     "mergedPvpCompatibility": {
       "passed": 2,
       "scope": "own stake and refunds after latest Tsu-e-fa changes"
+    },
+    "nativeRestart": {
+      "passed": 14,
+      "unchangedBackendInputs": 226,
+      "unchangedGoSources": 128,
+      "persistedCasinoTypes": 13,
+      "report": "deployment/releases/location-levels-20261030-v1/native-round-compatibility.json",
+      "reportSha256": "31d079dca9b000a2b956f11a87108e05ae5789266991e2558e4ea585bbff8f53",
+      "scope": "Untimed casino and Mines continue; Flight, Crash, PvP, combat and skin reservations still drain"
     }
   },
   "mathematics": {
@@ -98,6 +107,16 @@
       "verified release manifest from pushed main",
       "guarded installer and backup",
       "production checks and pushed deployment record"
+    ],
+    "attempts": [
+      {
+        "sourceCommit": "a67141300fa018cb5bb12e1d7005840cdcaf14c1",
+        "published": false,
+        "gateRefused": true,
+        "productionUnchangedVerified": true,
+        "nativeActiveCasinoSessions": 13,
+        "reason": "Persistent untimed rounds require demonstrated compatible restoration"
+      }
     ]
   }
 }

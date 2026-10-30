@@ -6,12 +6,22 @@ const base=require('../cat-purr-hall-only-20261030-v1/quiesce.cjs');
 const helper=require('./quiesce.cjs');
 
 class Client extends EventEmitter{
-  constructor({active=0,ready=true,busy=false,fence=true}={}){super();this.active=active;this.ready=ready;this.busy=busy;this.fence=fence;this.seen=[];}
+  constructor({combat=0,pvp=0,skin=0,flight=0,crash=0,native=0,ready=true,busy=false,fence=true}={}){
+    super();this.states={combat_matches:combat,virtual_pvp_holds:pvp,skin_purchases:skin,
+      demo_casino_sessions:native,demo_mines_sessions:native,demo_flight_sessions:flight};this.crash=crash;
+    this.ready=ready;this.busy=busy;this.fence=fence;this.seen=[];
+  }
   async connect(){}
   async end(){this.closed=true;}
   async query(value){
     const text=typeof value==='string'?value:value.text;this.seen.push(text);
-    if(text===helper.ACTIVE_SQL){const active=this.active;this.active=0;return{rows:[{active:String(active)}]};}
+    if(text===helper.ACTIVE_SQL){
+      let active=Object.entries(this.states).reduce((sum,[name,count])=>sum+(name!=='demo_casino_sessions'&&text.includes(name)?count:0),0);
+      if(text.includes('demo_casino_sessions'))active+=this.crash+(text.includes("game_id IN ('github-crash')")?0:this.states.demo_casino_sessions);
+      for(const name of ['combat_matches','virtual_pvp_holds','skin_purchases','demo_flight_sessions'])this.states[name]=0;
+      this.crash=0;
+      return{rows:[{active:String(active)}]};
+    }
     if(text===helper.DDL_SQL)return{rows:[{ready:this.ready}]};
     if(text===helper.FENCE_SQL&&this.busy){this.busy=false;throw Object.assign(Error('busy'),{code:'55P03'});}
     if(text===helper.FENCE_IDENTITY_SQL)return{rows:[{held:this.fence}]};
@@ -33,13 +43,26 @@ async function run(options){
   return{client,events,result};
 }
 
-test('native active rounds drain before a verified table fence and explicit lease release',async()=>{
-  const r=await run({active:1});assert.equal(r.result,0);assert(r.client.closed);
-  assert(r.events.some(e=>e.event==='waiting'));assert(r.events.some(e=>e.event==='quiet'));assert(r.events.some(e=>e.event==='released'));
+test('persisted native sessions survive the verified table fence and explicit lease release',async()=>{
+  const r=await run({native:1});assert.equal(r.result,0);assert(r.client.closed);
+  assert(!r.events.some(e=>e.event==='waiting'));assert(r.events.some(e=>e.event==='quiet'));assert(r.events.some(e=>e.event==='released'));
   assert(r.client.seen.indexOf(helper.DDL_SQL)<r.client.seen.indexOf(helper.FENCE_SQL));
   assert(r.client.seen.indexOf(helper.FENCE_SQL)<r.client.seen.indexOf(base.SQL.identity));
-  for(const name of ['demo_casino_sessions','demo_mines_sessions','demo_flight_sessions','virtual_pvp_holds','combat_matches','skin_purchases'])assert(helper.ACTIVE_SQL.includes(name));
+  for(const name of ['demo_casino_sessions','demo_mines_sessions']){
+    if(name==='demo_mines_sessions')assert(!helper.ACTIVE_SQL.includes(name));
+    assert(helper.FENCE_SQL.includes(name));assert.equal(r.client.states[name],1);
+  }
+  assert(helper.ACTIVE_SQL.includes("game_id IN ('github-crash')"));assert(helper.ACTIVE_SQL.includes('demo_flight_sessions'));
+  for(const name of ['virtual_pvp_holds','combat_matches','skin_purchases'])assert(helper.ACTIVE_SQL.includes(name));
+  assert.equal(helper.TABLES.length,14);
   assert(helper.FENCE_SQL.includes('accounts'));assert(helper.FENCE_SQL.endsWith('IN SHARE MODE NOWAIT'));
+});
+test('Flight, Crash, combat, PvP holds and reserved skins each wait for their obligation to finish',async()=>{
+  for(const obligation of ['flight','crash','combat','pvp','skin']){
+    const r=await run({[obligation]:1,native:1});assert.equal(r.result,0);
+    assert(r.events.some(e=>e.event==='waiting'),obligation+' must drain');assert(r.events.some(e=>e.event==='quiet'));
+    assert(r.client.seen.includes('ROLLBACK'));
+  }
 });
 test('a competing account transaction rolls the fence attempt back and waits instead of bypassing it',async()=>{
   const r=await run({busy:true});assert.equal(r.result,0);assert(r.events.some(e=>e.event==='waiting'));
