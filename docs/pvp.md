@@ -4,7 +4,9 @@ The only player-facing currency is test USDT on TRON Nile. Native slots, persist
 
 ## Player flow
 
-The header's `Поединки` button supports a personal invitation to an available player in the same room or an open table. Air hockey, pool, chess, podkidnoy Durak, perevodnoy Durak and Crazy Eights support exactly two players. Poker is excluded.
+The header's `Поединки` button supports a personal invitation to an available player in the same room or an open table. Air hockey, pool, chess, podkidnoy Durak, perevodnoy Durak, Crazy Eights and Tsu-e-fa support exactly two players. Poker is excluded.
+
+Tsu-e-fa is Rock Paper Scissors, played first to two wins with a single accepted stake. Choices are final, server-private and revealed together. A tie starts another round without another stake. Each round gives both players 60 seconds; one submitted choice wins on timeout, and no choices refunds both stakes. It uses the current common virtual USDT wallet with 5% commission from the decisive pot. Its independent client and matching common host/backend have to be released together. See [module rules](../games/tsu-e-fa/README.md). This feature is not deployed.
 
 The creator's stake is reserved immediately. Acceptance reserves the second stake and the physical table. Both avatars walk through the existing floor navigation and stairs to different walkable seats. Each player confirms readiness at their own seat after the client package loads. There is no teleport. Closing a playing table preserves the match; `Мой поединок` reopens it. A new match requires a new invitation and stake.
 

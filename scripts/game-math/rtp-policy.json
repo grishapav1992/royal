@@ -347,7 +347,8 @@
         "server/pvp/cards.ts",
         "server/finance/pvp-money.ts",
         "server/pvp/virtual-wallet.ts",
-        "server/finance/nile-play-error.ts"
+        "server/finance/nile-play-error.ts",
+        "src/shared/pvpSeats.ts"
       ]
     },
     "pool": {
@@ -380,7 +381,8 @@
         "server/pvp/cards.ts",
         "server/finance/pvp-money.ts",
         "server/pvp/virtual-wallet.ts",
-        "server/finance/nile-play-error.ts"
+        "server/finance/nile-play-error.ts",
+        "src/shared/pvpSeats.ts"
       ]
     },
     "chess": {
@@ -413,7 +415,8 @@
         "server/pvp/cards.ts",
         "server/finance/pvp-money.ts",
         "server/pvp/virtual-wallet.ts",
-        "server/finance/nile-play-error.ts"
+        "server/finance/nile-play-error.ts",
+        "src/shared/pvpSeats.ts"
       ]
     },
     "durak": {
@@ -446,7 +449,8 @@
         "server/pvp/cards.ts",
         "server/finance/pvp-money.ts",
         "server/pvp/virtual-wallet.ts",
-        "server/finance/nile-play-error.ts"
+        "server/finance/nile-play-error.ts",
+        "src/shared/pvpSeats.ts"
       ]
     },
     "transfer-durak": {
@@ -479,7 +483,8 @@
         "server/pvp/cards.ts",
         "server/finance/pvp-money.ts",
         "server/pvp/virtual-wallet.ts",
-        "server/finance/nile-play-error.ts"
+        "server/finance/nile-play-error.ts",
+        "src/shared/pvpSeats.ts"
       ]
     },
     "crazy-eights": {
@@ -512,7 +517,8 @@
         "server/pvp/cards.ts",
         "server/finance/pvp-money.ts",
         "server/pvp/virtual-wallet.ts",
-        "server/finance/nile-play-error.ts"
+        "server/finance/nile-play-error.ts",
+        "src/shared/pvpSeats.ts"
       ]
     },
     "studio-cosmic-escape": {
@@ -878,6 +884,44 @@
         "deployment/releases/jackie-chan-20261029-v2/finance-source/src/i18n/en.ts"
       ],
       "serverReplayRunsPerWinner": 16
+    },
+    "tsu-e-fa": {
+      "method": "exhaustive-virtual-pvp-pot",
+      "rulesVersion": 1,
+      "progressVersion": 1,
+      "target": 0.95,
+      "refundReturn": 1,
+      "commissionBasisPoints": 500,
+      "stakeRange": {
+        "min": 1000000,
+        "max": 500000000,
+        "step": 100000
+      },
+      "choices": [
+        "left-win",
+        "right-win",
+        "draw",
+        "cancel",
+        "disconnect-left",
+        "disconnect-right",
+        "expired",
+        "server"
+      ],
+      "proof": "docs/game-math/qualifications/tsu-e-fa-v1.json",
+      "qualificationSource": "scripts/game-math/rtp-tsu-e-fa.mjs",
+      "sources": [
+        "src/shared/pvp.ts",
+        "server/pvp/store.ts",
+        "server/pvp/cards.ts",
+        "server/finance/pvp-money.ts",
+        "server/pvp/virtual-wallet.ts",
+        "server/finance/nile-play-error.ts",
+        "src/shared/tsuEFa.ts",
+        "server/pvp/tsu-e-fa.ts",
+        "server/pvp/room.ts",
+        "scripts/game-math/rtp-virtual-pvp.mjs",
+        "src/shared/pvpSeats.ts"
+      ]
     }
   },
   "nonWagered": {

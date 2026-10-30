@@ -39,7 +39,7 @@ export class Activities {
     if(v.type==='leave'){this.leave(id);return;}
     if(v.type==='join'&&isActivity(v.id)){
       if(!this.canJoin(id,v.id))return;
-      if(['durak','transfer-durak','crazy-eights'].includes(v.id)){this.notice(id,'Открой вызов на поединок.');return;}
+      if(['durak','transfer-durak','crazy-eights','tsu-e-fa'].includes(v.id)){this.notice(id,'Открой вызов на поединок.');return;}
       if(p.hall && p.hall!==activityHall(v.id)){this.notice(id,'Эта игра находится в другом зале.');return;}
       if(p.activity===v.id)return;
       if(p.playing||p.seat||p.action==='drink'){this.notice(id,'Сначала заверши текущее занятие.');return;}

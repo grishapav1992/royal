@@ -1,6 +1,7 @@
 import { gameAccountId, nileUnits } from './nileWallet';
 import type { NilePlayWallet } from './nilePlay';
 import type { DemoWallet } from './demoWallet';
+import type { TsuEFaMove, TsuEFaView } from './tsuEFa';
 
 export const VIRTUAL_PVP_SCOPE = 'virtual-usdt-v1' as const;
 export type VirtualPvpWallet = { scope: typeof VIRTUAL_PVP_SCOPE; state:'assigned'; ready:true;
@@ -17,11 +18,13 @@ export const validVirtualPvpStake = (value:unknown):value is string => validPvpS
 export const PVP_GAMES = {
   hockey: 'Аэрохоккей', pool: 'Бильярд', chess: 'Шахматы',
   durak: 'Подкидной дурак', 'transfer-durak': 'Переводной дурак', 'crazy-eights': 'Восьмёрки',
+  'tsu-e-fa': 'Цу-е-фа',
 } as const;
 export type PvpGameId = keyof typeof PVP_GAMES;
 export type PvpCardGameId = Extract<PvpGameId, 'durak' | 'transfer-durak' | 'crazy-eights'>;
 export const isPvpGame = (id: unknown): id is PvpGameId => typeof id === 'string' && Object.hasOwn(PVP_GAMES, id);
 export const isPvpCardGame = (id: unknown): id is PvpCardGameId => ['durak', 'transfer-durak', 'crazy-eights'].includes(String(id));
+export const isPvpSnapshotGame = (id: unknown) => isPvpCardGame(id) || id === 'tsu-e-fa';
 export const PVP_RECONNECT_MS = 60_000;
 export const PVP_INVITE_MS = 120_000;
 export const PVP_ARRIVAL_MS = 180_000;
@@ -44,6 +47,7 @@ export const cardRank = (card: PvpCard) => card % 13 + 2;
 export const cardLabel = (card: PvpCard) => (({ 11: 'В', 12: 'Д', 13: 'К', 14: 'Т' } as Record<number, string>)[cardRank(card)] ?? String(cardRank(card))) + ['♠', '♥', '♦', '♣'][cardSuit(card)];
 export type PvpCardMove = { kind: 'play' | 'attack' | 'defend' | 'transfer'; card: PvpCard; target?: number; suit?: CardSuit }
   | { kind: 'take' | 'done' | 'draw' | 'pass' };
+export type PvpMove = PvpCardMove | TsuEFaMove;
 export type PvpCardView = {
   gameId: PvpCardGameId; revision: number; phase: 'playing' | 'finished';
   hand: PvpCard[]; opponentCount: number; stockCount: number; discardCount: number;
@@ -61,9 +65,10 @@ export type PvpChallenge = {
 };
 export type PvpRequest = ({ id: string; action: 'create'; gameId: PvpGameId; stakeUnits: string; targetId: string | null }
   | { id: string; action: 'accept' | 'cancel' | 'ready' | 'resign'; challengeId: string }
-  | { id: string; action: 'move'; challengeId: string; revision: number; move: PvpCardMove }) & { walletScope?:typeof VIRTUAL_PVP_SCOPE };
+  | { id: string; action: 'move'; challengeId: string; revision: number; move: PvpMove }) & { walletScope?:typeof VIRTUAL_PVP_SCOPE };
 export type PvpPerson = { accountId: string; name: string; available: boolean };
 export type PvpSnapshot = { challenges: PvpChallenge[]; active: PvpChallenge | null; cards: PvpCardView | null;
+  tsuEFa?: TsuEFaView | null;
   people: PvpPerson[]; wallet: NilePlayWallet | VirtualPvpWallet; now: number; error?: string; requestId?: string };
 export function validPvpRequest(value: unknown): value is PvpRequest {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false;

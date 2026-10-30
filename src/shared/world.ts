@@ -69,7 +69,7 @@ const ARCADE_OBSTACLES = [
 const TABLE_OBSTACLES = [
   ...clubObstacles('tables'),
   ...cabinetsInHall('tables').map(cabinetBounds),
-  furnitureBounds(FURNITURE.pool), furnitureBounds(FURNITURE.table), ACTIVITIES.hockey.bounds, ACTIVITIES['mortal-kombat'].bounds, ...PLANTS.map(plantBounds),
+  furnitureBounds(FURNITURE.pool), furnitureBounds(FURNITURE.table), ACTIVITIES.hockey.bounds, ACTIVITIES['mortal-kombat'].bounds, ACTIVITIES['tsu-e-fa'].bounds, ...PLANTS.map(plantBounds),
 ];
 export const DRINKS = [
   { id: 'lemonade', name: translateText('Лимонад'), description: translateText('Лимон, мята и пузырьки · без алкоголя'), color: '#d6ed88', strength: 0 },
