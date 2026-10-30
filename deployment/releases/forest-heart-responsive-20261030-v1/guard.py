@@ -121,6 +121,7 @@ def rollback_scope(current,before,source,program):
 def payload():
     operator=read(ROOT/'operator.json'); release=read(ROOT/'release-manifest.json'); receipt=read(ROOT/'release-github.json'); before=read(ROOT/'before.json')
     require(release['scope']=='application' and release['build']['passed'], 'Expected a complete prepared application')
+    require(re.fullmatch(r'[a-f0-9]{40}',release['sourceCommit']), 'Invalid source commit')
     require(release['sourceCommit']==receipt['sourceCommit']==operator['sourceCommit'] and release['baseCommit']==before['sourceCommit'], 'Wrong reviewed source or baseline')
     require(sha(ROOT/'guard.py')==operator['guardSha256'] and sha(ROOT/'publisher.py')==operator['publisherSha256']==before['source']['scripts/game-module-release.py'], 'Installer changed')
     require(sha(ROOT/'release-manifest.json')==operator['releaseManifestSha256'] and sha(ROOT/'release-github.json')==operator['receiptSha256'], 'Release receipt changed')
@@ -201,6 +202,7 @@ def publish():
         finally: os.umask(previous)
         runtime_index(ROOT/'dist-delta/index.html'); atomic(ROOT/'dist-delta/index.html',LIVE/'dist/index.html'); run(['docker','tag',candidate,'royal-game:latest'])
         healthy(); after=snapshot()
+        require(after['health']=='healthy','Published host is not healthy')
         require(after['services']==before['services'] and after['configuration']==before['configuration'],'Services or private configuration changed')
         require(after['hostContractSha256']==before['hostContractSha256'],'Host contract changed')
         require(after['source']=={**before['source'],**op['source']},'Unrelated source changed')
