@@ -4,18 +4,31 @@
   "state": "implemented-and-locally-verified; production release in preparation",
   "checks": {
     "serverClientHttpMoneyAndCompatibility": {
-      "passed": 71,
+      "passed": 73,
       "failed": 0,
       "command": "node --import tsx scripts/database-test.ts --import tsx --test server-tests/progression*.test.ts server-tests/finance/progression-spins.test.ts server-tests/reward-slots-rtp-gate.test.mjs server-tests/accounts.test.ts server-tests/pvp-virtual-wallet.test.ts server-tests/game-wallet.test.ts"
     },
     "browser": {
       "passed": 3,
       "scope": "real host with connected chat, desktop/mobile, accepted reward response loss and reload, English",
-      "candidateProjectionRecheckRequired": true
+      "candidateProjectionRecheckRequired": true,
+      "projectedCandidate": {
+        "passed": 3,
+        "failed": 0,
+        "builtClientAndBackend": true,
+        "files": {
+          "dist/assets/index-B7XqEtd0.js": "ba895fc8fcae28856c5a6b1b933391cfa2aec896fd1bf983a7ebc8a9073ff429",
+          "dist/assets/index-DSWJtOAy.css": "3aed8b12dfce27f47cd6644ee7191e2dc2b6efefb2fb8456834a9dbe66d78951",
+          "dist/index.html": "fa389ba9f4ea428bba2b1a63d6cbb09aa5bd19a2a702a91d7c2fd29a946f9b4a"
+        }
+      },
+      "standCorrections": [
+        "Production Colyseus root routes are forwarded by the built local stand"
+      ]
     },
     "financeTypecheck": true,
     "applicationBuild": true,
-    "rtpProfilesVerified": 20,
+    "rtpProfilesVerified": 22,
     "extensibility": {
       "passed": 6,
       "scope": "explicit nonmonetary source, independent reward resource, atomic milestone, old rights migration and pinned policy compatibility"
@@ -27,6 +40,15 @@
       "python": 13,
       "protocol": 4,
       "realPostgresFence": 1
+    },
+    "projectionPreflight": {
+      "hostInputs": 229,
+      "backendInputs": 236,
+      "backendSha256": "0f47be562308630a7c8e041d593e13bc85f72ff3ed202a822ce6538865d5289d"
+    },
+    "independentReviews": {
+      "runtime": "no critical blockers",
+      "guardedInstaller": "no actionable blockers"
     }
   },
   "mathematics": {
@@ -60,7 +82,7 @@
   "release": {
     "published": false,
     "sourceSynchronizedToMain": false,
-    "productionBaseline": "aed09286a21e315cb506b1befc754f5a7b4eecd2",
+    "productionBaseline": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
     "requirements": [
       "reviewed frontend and backend projection",
       "verified release manifest from pushed main",

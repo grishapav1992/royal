@@ -49,7 +49,8 @@ const vite = await createServer({ configFile: false, root: built ? resolve('dist
   cacheDir: resolve('artifacts/work/location-levels-mvp/vite-cache'), plugins: [plugin],
   optimizeDeps: built ? { noDiscovery: true, include: [] } : { entries: ['index.html'] }, server: { host: '127.0.0.1', port: webPort, strictPort: true,
     watch: { ignored: ['**/module-dist/**', '**/module-build/**', '**/artifacts/**', '**/dist/**', '**/dist-server/**'] },
-    proxy: { '/api': api, '/game-modules': api, '/multiplayer': { target: api, ws: true, rewrite: path => path.replace(/^\/multiplayer/, '') } } } });
+    proxy: { '/api': api, '/game-modules': api, '/multiplayer': { target: api, ws: true, rewrite: path => path.replace(/^\/multiplayer/, '') },
+      ...(built ? { '^/(?:matchmake(?:/|$)|[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+(?:\\?|$))': { target: api, ws: true } } : {}) } } });
 async function stop() {
   if (stopping) return; stopping = true;
   await vite.close(); await db?.close(); backend.kill();

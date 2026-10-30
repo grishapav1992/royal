@@ -47,7 +47,7 @@ The independent v1 promotion reference also checks all 100 thresholds, both sour
 - [x] Paid source matrix and full-round adapters.
 - [x] Durable XP and milestone grants.
 - [x] Shared-wallet gift funding and recovery.
-- [ ] HTTP/client/real-host verification.
-- [ ] Final mathematical qualification, economics report and complete build.
+- [x] HTTP/client/real-host verification, including the projected built client and backend.
+- [x] Final mathematical qualification, economics report and complete build.
 - [ ] Independent review, GitHub synchronization and release preparation.
 - [ ] Production baseline reconciliation and post-publication verification if published.
