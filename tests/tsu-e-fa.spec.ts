@@ -80,8 +80,9 @@ test('two real players play a recovered staked match in the host with connected 
     await a.locator('#pvp-dialog [data-close]').click(); await open(a);
     await expect(score(a)).toHaveText('2 : 1');
     await expect(a.locator('.tsu-reveal')).toHaveCount(0);
-    const english = new URL(a.url()); english.searchParams.set('lang', 'en');
-    await a.goto(english.href); await connected(a); await open(a);
+    await a.locator('#pvp-dialog [data-close]').click();
+    await Promise.all([a.waitForEvent('load'), a.locator('.profile select[name=language]').selectOption('en')]);
+    await connected(a); await open(a);
     await expect(a.locator('.tsu-heading h2')).toHaveText('Rock Paper Scissors');
     await expect(a.locator('.tsu-status')).toHaveText('You win the duel!');
     await expect(score(a)).toHaveText('2 : 1');
