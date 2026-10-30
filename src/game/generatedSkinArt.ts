@@ -1,4 +1,4 @@
-import { skinAssetUrl } from '../shared/skinStudio';
+import { skinAssetUrl } from '../shared/skinAssetUrl';
 import type { Facing } from '../shared/movement';
 import { alignSkinWalkingPoses, type SkinPoseAlignment } from './skinPoseAlignment';
 
