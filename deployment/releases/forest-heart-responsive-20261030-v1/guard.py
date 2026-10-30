@@ -59,7 +59,11 @@ def source_inventory():
     for n in ['src','server','public','games','scripts']:
         files += list((LIVE/n).rglob('*'))
     selected=[p for p in files if p.is_file() and not p.is_symlink() and not any(n.startswith(('._','.env')) or n in ['data','secrets','node_modules','__pycache__'] for n in p.relative_to(LIVE).parts)]
-    return ({p.relative_to(LIVE).as_posix():sha(p) for p in selected},{p.relative_to(LIVE).as_posix():hashlib.sha256(p.read_bytes().replace(b'\r\n',b'\n')).hexdigest() for p in selected})
+    raw,normalized={},{}
+    for p in selected:
+        name=p.relative_to(LIVE).as_posix();data=p.read_bytes();raw[name]=hashlib.sha256(data).hexdigest()
+        normalized[name]=hashlib.sha256(data.replace(b'\r\n',b'\n')).hexdigest() if p.suffix in ['.ts','.js','.mjs','.cjs','.css','.json','.html','.md','.txt','.yaml','.yml'] and b'\r\n' in data else raw[name]
+    return raw,normalized
 
 def inspect(name): return json.loads(run(['docker','inspect',name]))[0]
 def runtime(ref, running=False):
@@ -67,11 +71,12 @@ def runtime(ref, running=False):
     return json.loads(run(args+(['node'] if running else [])+['--v8-pool-size=1','-e',PROGRAM]))
 def snapshot():
     rows = []
-    for name in run(['docker','ps','--format','{{.Names}}']).splitlines():
-        try: row=inspect(name)
-        except subprocess.CalledProcessError:
-            require(name.startswith(('royal-nile-','royal-finance-sim-')) and not name in ['royal-nile-play','royal-finance-sim-finance-db-1'], 'Protected service disappeared')
-            continue
+    ids=run(['docker','ps','--no-trunc','-q']).splitlines()
+    require(ids,'No running services')
+    try: inspected=json.loads(run(['docker','inspect',*ids],stderr=subprocess.PIPE))
+    except subprocess.CalledProcessError as error:
+        raise RuntimeError('Docker inventory changed or could not be read; retry a fresh snapshot before publication') from error
+    for row in inspected:
         labels=row['Config'].get('Labels') or {}
         if row['HostConfig'].get('RestartPolicy',{}).get('Name','no') in ['','no'] and (labels.get('com.docker.compose.oneoff','').lower()=='true' or not labels.get('com.docker.compose.project')): continue
         rows.append(row)
@@ -80,7 +85,7 @@ def snapshot():
         config=row['Config']; host=row['HostConfig']
         services[row['Name'].lstrip('/')]={'id':row['Id'],'image':row['Image'],'startedAt':row['State']['StartedAt'],
             'profileSha256':hashlib.sha256(json.dumps({'config':{k:config.get(k) for k in ['User','WorkingDir','Env','Entrypoint','Cmd']},'host':{k:host.get(k) for k in ['CpuShares','NanoCpus','Memory','MemorySwap','MemoryReservation','PidsLimit','ReadonlyRootfs','RestartPolicy','PortBindings','CapAdd','CapDrop','SecurityOpt','Privileged','Ulimits','GroupAdd','Dns','ExtraHosts']},'mounts':sorted([{k:m.get(k) for k in ['Type','Source','Destination','RW','Propagation']} for m in row['Mounts']],key=lambda m:m['Destination']),'networks':sorted(row['NetworkSettings']['Networks'])},sort_keys=True).encode()).hexdigest()}
-    game=inspect('royal-game-1'); prepared=image('royal-game:latest')
+    game=next(row for row in rows if row['Name']=='/royal-game-1'); prepared=image('royal-game:latest')
     prior=read(ROOT/'before.json') if (ROOT/'before.json').exists() else {}
     built=read(ROOT/'build-result.json') if (ROOT/'build-result.json').exists() else {}
     prepared_program=prior.get('preparedProgram') if prepared==prior.get('preparedImage') else built.get('program') if prepared==built.get('image') else runtime(prepared)
