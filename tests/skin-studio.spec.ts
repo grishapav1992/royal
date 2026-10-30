@@ -1,10 +1,45 @@
 import { test, expect } from '@playwright/test';
 import { SKIN_PRICE_UNITS, SKIN_THEME } from '../src/shared/skinStudio';
 import sharp from 'sharp';
+import { misalignedSkinSheet } from './fixtures/skin-walk-sheet';
 
 const user = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 const jobId = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
 const ids = ['cccccccc-cccc-4ccc-8ccc-cccccccccccc', 'dddddddd-dddd-4ddd-8ddd-dddddddddddd', 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee'];
+
+test('holding left in the fitting room never reverses a shifted or mirrored generated walking pose', async ({ page }) => {
+  const png = await misalignedSkinSheet();
+  await page.route('**/api/skin-studio**', route => route.request().url().includes('/assets/')
+    ? route.fulfill({ contentType: 'image/png', body: png })
+    : route.fulfill({ json: { theme: SKIN_THEME, priceUnits: SKIN_PRICE_UNITS, variantCount: 2, enabled: true, wardrobe: [], equippedId: null,
+      job: { id: jobId, prompt: 'Сохранённый образ с неровными кадрами', state: 'ready', variantCount: 2, createdAt: 1,
+        variants: ids.slice(0, 2).map(id => ({ id, jobId, prompt: '', createdAt: 1 })) } } }));
+  await page.goto('/tests/fixtures/skin-studio.html');
+  await page.getByRole('button', { name: 'Образы', exact: true }).click();
+  await page.getByRole('button', { name: 'Примерить вариант 1' }).click();
+  await expect(page.locator('.skin-fitting-caption')).toContainText('Походи');
+  const floor = page.getByLabel('Площадка для примерки скина');
+  await page.clock.install(); await page.clock.pauseAt(new Date(Date.now() + 100));
+  await floor.focus(); await page.keyboard.down('ArrowLeft');
+  const samples: { x: number; y: number; facing: string | undefined }[] = [];
+  try {
+    for (let frame = 0; frame < 14; frame++) {
+      await page.clock.runFor(60);
+      const sample = await floor.evaluate((element: HTMLCanvasElement) => {
+        const { data, width } = element.getContext('2d')!.getImageData(0, 0, element.width, element.height);
+        let x = 0, y = 0, n = 0;
+        for (let at = 0; at < data.length; at += 4) if (data[at] > 220 && data[at + 1] > 200 && data[at + 2] < 40 && data[at + 3] > 240) {
+          x += at / 4 % width; y += Math.floor(at / 4 / width); n++;
+        }
+        return { x: x / n, y: y / n, facing: element.dataset.facing };
+      });
+      expect(Number.isFinite(sample.x)).toBe(true); samples.push(sample);
+    }
+  } finally { await page.keyboard.up('ArrowLeft'); }
+  expect(samples.every(s => s.facing === 'left')).toBe(true);
+  for (let at = 1; at < samples.length; at++) expect(samples[at].x - samples[at - 1].x, 'The face must keep travelling left through pose changes.').toBeLessThan(0);
+  expect(Math.max(...samples.map(s => s.y)) - Math.min(...samples.map(s => s.y)), 'The head must stay vertically anchored.').toBeLessThan(4);
+});
 test('Mira replaces a cached fallback portrait when the generated sheet loads, including reduced motion', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   const png = await sharp({ create: { width: 1024, height: 1536, channels: 4, background: '#63b7cb' } }).png().toBuffer();
