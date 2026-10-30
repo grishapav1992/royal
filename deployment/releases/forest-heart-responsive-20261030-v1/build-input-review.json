@@ -1,0 +1,21 @@
+{
+  "productionCommit": "afced898da518429a934aab3d9bb242929674360",
+  "files": {
+    "package.json": {
+      "productionSha256": "992ca42e63bc84b173c51551db3f7fbb2627d73b9e1e7a1ff68261251c6326bb",
+      "preparedSha256": "44bc6c4b907700a356ebf5672453e7f16a2e1231b479eaf271eab21bc611b6a2"
+    },
+    "tsconfig.json": {
+      "productionSha256": "72f038daeebea654f36d8cec9cfe8911d3189d0949aa4647215c927540c8ec5b",
+      "preparedSha256": "ac92a48aa49e6d4a13a2ce4191379133d7156d219b8b3f10723921ad695f8888"
+    }
+  },
+  "scriptChanges": [
+    "test:rtp-gate", "test:caribbean", "test:temple", "test:temple:ui",
+    "preview:temple", "test:temple:cascades:ui", "test:temple:endurance",
+    "test:temple:endurance:ui", "test:temple:devices", "test:temple:visual",
+    "preview:temple:devices", "test:temple:release"
+  ],
+  "compilerDifference": "The prepared checkout enables resolveJsonModule for type checking. Vite handles JSON imports independently; no emitter option changes.",
+  "publication": "Both production configuration files remain unchanged. Only the three reviewed host sources, five Forest sources, client assets and the Forest package are installed."
+}

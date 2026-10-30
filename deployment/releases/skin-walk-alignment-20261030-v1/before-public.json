@@ -1,0 +1,24 @@
+{
+  "phase": "before",
+  "passed": true,
+  "productionWritesSent": 0,
+  "mockedApi": true,
+  "files": [],
+  "errors": [],
+  "viewports": [
+    {
+      "width": 1440,
+      "height": 1000,
+      "maxBackstep": 9,
+      "headVerticalRange": 6.5,
+      "samples": 14
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "maxBackstep": 9.436363636363637,
+      "headVerticalRange": 6.5,
+      "samples": 14
+    }
+  ]
+}

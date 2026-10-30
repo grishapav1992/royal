@@ -1,0 +1,24 @@
+{
+  "phase": "candidate",
+  "passed": true,
+  "productionWritesSent": 0,
+  "mockedApi": true,
+  "files": [],
+  "errors": [],
+  "viewports": [
+    {
+      "width": 1440,
+      "height": 1000,
+      "maxBackstep": -5,
+      "headVerticalRange": 0.06097560975609895,
+      "samples": 14
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "maxBackstep": -5,
+      "headVerticalRange": 0.06097560975609895,
+      "samples": 14
+    }
+  ]
+}

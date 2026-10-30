@@ -1,0 +1,29 @@
+{
+  "sourceCommit": "afced898da518429a934aab3d9bb242929674360",
+  "baseCommit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+  "changed": {
+    "src/game/generatedSkinArt.ts": "1cbe65c94a725a79f37c3a3b9b22240fc7463ef1ed0ae5163b18287c7a0819de",
+    "src/game/skinPoseAlignment.ts": "0db0ef0bc9c728fa0fa12d3e07fa4a9343708b541bb2ed0718fe40a3e9120c65",
+    "src/shared/skinAssetUrl.ts": "311cc40981247c36d08bfd547df8455443a606489830530c73a0852ff04ef15d",
+    "src/shared/skinStudio.ts": "7cfeaaac49278ee8547f1acccb242d772c7dee52060b3a3fd5e79de279526b4f"
+  },
+  "delta": {
+    "assets/main-skin-walk-05ab817b88dc.js": "05ab817b88dc41f75f6b7946b7c7d840320fd452a4342bee4d6036ad6a0645fc",
+    "index.html": "d41486938fc167c166866712037aaafefdab365c6bdf8ffc36edba61ea52ce9b"
+  },
+  "helpers": {
+    "publish.py": "d44e5958e37f8b288c7a04875849a141dc1efa740ac99b28879b9c065454f61d",
+    "snapshot.py": "b2e3fb43834395d5f8b0398474313c70866b07bfba89a2ca987598c16d1a3057",
+    "runtime-inventory.cjs": "a1b9ac4bc7506926f87382cc696b2fc6562f8b08e07d347ce6bb0dfd46951a4d",
+    "patch-client.mjs": "3bc5b5890d354d435db79a842f302ec38131a90e2d6dd86c62414d2572f401c8"
+  },
+  "artifactKind": "exact-published-client-with-isolated-renderer",
+  "originalClient": {
+    "url": "/assets/index-CLGGaXly.js",
+    "sha256": "f1d4b1b2b3d705e3b8ce15a45ddb9f76cddcea5ed72e657e015b62bc06ac4ed1",
+    "indexSha256": "6f9b723c58268489e65fa01960da9aab9024d1cd3466d505194d7d7edea2c555"
+  },
+  "rendererBytes": 3780,
+  "untouchedClientBytes": 2662367,
+  "releaseToolingCommit": "4a048f8b76f834e5262844e2fe709870c9879ab7"
+}

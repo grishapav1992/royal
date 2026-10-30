@@ -1,0 +1,189 @@
+{
+  "status": "published-and-publicly-verified",
+  "published": true,
+  "verifiedAt": "2026-10-30T17:25:04.710Z",
+  "sourceCommit": "afced898da518429a934aab3d9bb242929674360",
+  "releaseToolingCommit": "4a048f8b76f834e5262844e2fe709870c9879ab7",
+  "baseCommit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+  "sourceInOriginMain": true,
+  "publication": {
+    "published": true,
+    "sourceCommit": "afced898da518429a934aab3d9bb242929674360",
+    "runningImage": "sha256:37af05f8646ef2a3c127272d17ef2ee5c51b8d9703b9545355320714bbc8d506",
+    "preparedImage": "sha256:fd0eca658915e14d5feb22073a4ef5d104c6ea257f221162ef2ac1135a61f2e9",
+    "containerRestarted": false,
+    "backendAndDependenciesPreserved": true,
+    "modulesAndConfigurationPreserved": true,
+    "playerDataTouched": false,
+    "backup": "/opt/royal-backups/skin-walk-alignment-20261030-v1",
+    "sourceBackupSha256": "b60300e259db4d6bc9de3a11b5e84e6ca4d183e9b0298eff0b67ee612b124e47",
+    "sourceBackupBytes": 2216,
+    "delta": {
+      "assets/main-skin-walk-05ab817b88dc.js": "05ab817b88dc41f75f6b7946b7c7d840320fd452a4342bee4d6036ad6a0645fc",
+      "index.html": "d41486938fc167c166866712037aaafefdab365c6bdf8ffc36edba61ea52ce9b"
+    }
+  },
+  "standardPreparation": {
+    "releasePrepare": true,
+    "releaseVerifyGithub": true,
+    "typecheck": true,
+    "rtp": {
+      "qualified": 18,
+      "unchangedLegacy": 114
+    }
+  },
+  "applicationBuild": {
+    "format": 1,
+    "startedAt": "2026-10-30T16:28:25.797Z",
+    "scope": "application",
+    "steps": [
+      {
+        "name": "rtp",
+        "passed": true,
+        "durationMs": 3589
+      },
+      {
+        "name": "typecheck",
+        "passed": true,
+        "durationMs": 9339
+      },
+      {
+        "name": "modules",
+        "passed": true,
+        "durationMs": 9738
+      },
+      {
+        "name": "host",
+        "passed": true,
+        "durationMs": 8560
+      },
+      {
+        "name": "backend",
+        "passed": true,
+        "durationMs": 86
+      },
+      {
+        "name": "reconciliation",
+        "passed": true,
+        "durationMs": 30
+      },
+      {
+        "name": "payments",
+        "passed": true,
+        "durationMs": 30
+      }
+    ],
+    "passed": true,
+    "durationMs": 31372
+  },
+  "tests": {
+    "alignmentCasesPassed": 2,
+    "clientTransformationCasesPassed": 2,
+    "existingBrowserCasesPassed": 15,
+    "holdingLeftRegressionPassed": true,
+    "browserColdNavigation": "The first Vite page load timed out; the targeted retry passed. Candidate replay of the exact derived client passed on both sizes.",
+    "publicationGuardCasesPassed": 4
+  },
+  "infrastructure": {
+    "firstBuildCancelledBeforeLiveChanges": true,
+    "firstBuildExitCode": 130,
+    "finalBuilder": "legacy, selected only for this subprocess",
+    "diagnosticStack": "/run/docker/goroutine-stacks-2026-10-30T165125Z.log",
+    "observedWait": "BuildKit source pull waited for immutableRef.Release; cache DiskUsage waited for containerd snapshots.Stat.",
+    "dockerDaemonRestarted": false,
+    "otherJobsStopped": false
+  },
+  "artifact": {
+    "kind": "exact-published-client-with-isolated-renderer",
+    "rendererBytes": 3780,
+    "untouchedClientBytes": 2662367,
+    "delta": {
+      "assets/main-skin-walk-05ab817b88dc.js": "05ab817b88dc41f75f6b7946b7c7d840320fd452a4342bee4d6036ad6a0645fc",
+      "index.html": "d41486938fc167c166866712037aaafefdab365c6bdf8ffc36edba61ea52ce9b"
+    }
+  },
+  "preservation": {
+    "previousRuntimeFiles": 8523,
+    "sourcePathsUpdated": [
+      "src/game/generatedSkinArt.ts",
+      "src/game/skinPoseAlignment.ts",
+      "src/shared/skinAssetUrl.ts",
+      "src/shared/skinStudio.ts"
+    ],
+    "fullRuntimeInventoriesCompared": true,
+    "allOtherSourceAndRuntimeBytesPreserved": true,
+    "modulesAndHostContractPreserved": true,
+    "allContainersPreserved": true,
+    "environmentHashesPreserved": true
+  },
+  "publicChecks": {
+    "proofs": [
+      "before-public.json",
+      "candidate-public.json",
+      "after-public.json"
+    ],
+    "actualPublishedArtifactChecked": true,
+    "mockedApi": true,
+    "liveReadOnlyEndpoints": {
+      "/healthz": 200,
+      "/api/skin-studio": 401,
+      "/api/demo-wallet": 401,
+      "/api/game-wallet": 410
+    },
+    "productionAccountsCreated": 0,
+    "productionTransactionsSent": 0,
+    "interpretation": "Controlled shifted and mirrored PNG fixture in the real host and fitting component; desktop Chrome with emulated viewport sizes, not physical-device or perceptual research."
+  },
+  "cleanup": {
+    "archivedWorktree": {
+      "path": "~/.codex/worktrees/atelier-release/royal",
+      "logicalBytes": 1736327727,
+      "preservedCommit": "7f37a1a0782db7cc06c907ba8f502898d84a4bf4",
+      "remoteBranch": "codex/atelier-release",
+      "remoteVerified": true,
+      "freeBefore": 197230129152,
+      "freeAfter": 199000342528
+    },
+    "server": "cleanup-server.json",
+    "note": "Observed free-space changes overlap other active tasks; the whole change is not attributed to this cleanup.",
+    "activeExceptions": [
+      {
+        "path": "~/Documents/Codex/royal",
+        "reason": "Original unrelated modified and untracked work, environment and local runtime are preserved."
+      }
+    ],
+    "currentWorktree": {
+      "path": "~/.codex/worktrees/atelier-fresh-prod/royal",
+      "cleanupCondition": "Archive after this verification record is pushed and its GitHub commit is verified. Report the measured removal in chat."
+    },
+    "releaseStage": {
+      "removed": [
+        {
+          "path": "/opt/royal-releases/skin-walk-alignment-20261030-v1/context",
+          "logicalBytes": 2667314
+        },
+        {
+          "path": "/opt/royal-releases/skin-walk-alignment-20261030-v1/obsolete-dist-pre-cat",
+          "logicalBytes": 2666469
+        },
+        {
+          "path": "/opt/royal-releases/skin-walk-alignment-20261030-v1/client-transport.tgz",
+          "logicalBytes": 1731695
+        },
+        {
+          "path": "/opt/royal-releases/skin-walk-alignment-20261030-v1/client-transport-v2.tgz",
+          "logicalBytes": 1732263
+        }
+      ],
+      "freeBytesBefore": 5992873984,
+      "freeBytesAfter": 6001704960,
+      "preserved": [
+        "active client payload and source",
+        "verification manifests",
+        "rollback images and source backup",
+        "all live application data and configuration"
+      ],
+      "note": "Observed free-space changes overlap other active tasks; do not attribute the entire change to this cleanup."
+    }
+  }
+}

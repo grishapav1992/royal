@@ -1,0 +1,27 @@
+{
+  "phase": "after",
+  "passed": true,
+  "productionWritesSent": 0,
+  "mockedApi": true,
+  "files": [
+    "assets/main-skin-walk-05ab817b88dc.js",
+    "index.html"
+  ],
+  "errors": [],
+  "viewports": [
+    {
+      "width": 1440,
+      "height": 1000,
+      "maxBackstep": -4.5,
+      "headVerticalRange": 0.125,
+      "samples": 14
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "maxBackstep": -4.5,
+      "headVerticalRange": 0.125,
+      "samples": 14
+    }
+  ]
+}
