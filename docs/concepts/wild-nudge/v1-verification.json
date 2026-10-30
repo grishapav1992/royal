@@ -1,0 +1,344 @@
+{
+  "gameId": "studio-wild-nudge",
+  "version": "1.0.0",
+  "completedAt": "2026-10-30T20:51:31.142815+00:00",
+  "implementationCommit": "2e64999f2611c99b75e0cecf384d14fb61b4e8e2",
+  "productionPublished": false,
+  "checks": [
+    {
+      "command": "npm run test:wild-nudge-math",
+      "passed": 11
+    },
+    {
+      "command": "npm run test:wild-nudge-runtime",
+      "passed": 4,
+      "database": "real temporary PostgreSQL; includes native financial runtime"
+    },
+    {
+      "command": "npm run test:rtp-gate",
+      "passed": 33
+    },
+    {
+      "command": "independent-modules.test.ts + game-module-assets.test.ts",
+      "passed": 7
+    },
+    {
+      "command": "Caribbean math, wallet, native and transport regression",
+      "passed": 22
+    },
+    {
+      "command": "npm run check:rtp",
+      "verified": 20,
+      "legacyNotQualified": 114
+    },
+    {
+      "command": "npm run build",
+      "passed": true,
+      "scope": "current merged host, all 124 modules, backend, reconciliation and payments"
+    }
+  ],
+  "mathematics": {
+    "proof": "docs/game-math/qualifications/wild-nudge-v1.json",
+    "exactRtpFraction": "10824085584723361/11258999068426240",
+    "exactRtpPercent": 96.137192293385,
+    "serverFullRoundReplays": 3072,
+    "serverStopCensus": 640,
+    "walletCases": [
+      "capability-before-entropy",
+      "concurrent-paid-start",
+      "request-identity-and-ownership",
+      "saved-round-and-hidden-future",
+      "free-continuation-and-stale-revision",
+      "eight-free-spins-one-credit",
+      "lost-final-response",
+      "all-stakes-integer-journal",
+      "atomic-rollback-and-retry",
+      "invalid-input-before-entropy",
+      "reserve-before-randomness",
+      "common-wallet-regression"
+    ],
+    "walletStakeRows": [
+      {
+        "stakeUnits": "100",
+        "payoutUnits": "860790",
+        "betCount": 1,
+        "creditCount": 1,
+        "freeContinuations": 8
+      },
+      {
+        "stakeUnits": "200",
+        "payoutUnits": "1721580",
+        "betCount": 1,
+        "creditCount": 1,
+        "freeContinuations": 8
+      },
+      {
+        "stakeUnits": "500",
+        "payoutUnits": "4303950",
+        "betCount": 1,
+        "creditCount": 1,
+        "freeContinuations": 8
+      },
+      {
+        "stakeUnits": "1000",
+        "payoutUnits": "8607900",
+        "betCount": 1,
+        "creditCount": 1,
+        "freeContinuations": 8
+      },
+      {
+        "stakeUnits": "2000",
+        "payoutUnits": "17215800",
+        "betCount": 1,
+        "creditCount": 1,
+        "freeContinuations": 8
+      },
+      {
+        "stakeUnits": "5000",
+        "payoutUnits": "43039500",
+        "betCount": 1,
+        "creditCount": 1,
+        "freeContinuations": 8
+      }
+    ]
+  },
+  "module": {
+    "version": "1.0.0-fc62114792bc",
+    "manifestSha256": "1f7d233c4a8c17c842a93254e890e88e36ecf7b5e41a743bb0f08803f9fe8889",
+    "allFilesVerified": 13,
+    "contract": [
+      1,
+      1,
+      1
+    ]
+  },
+  "browser": {
+    "fullSuite": {
+      "module": "1.0.0-7706d8686550",
+      "stats": {
+        "startTime": "2026-10-30T20:43:23.528Z",
+        "duration": 191591.583,
+        "expected": 10,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "cases": [
+        "ordinary paid spin and all eight free continuations use the real host and common wallet",
+        "finite autoplay makes ten paid starts, completes their bonuses and never runs an eleventh",
+        "Stop during an accepted request preserves that round and prevents another paid start",
+        "a committed reply lost on the wire recovers the same UUID once",
+        "closing a saved bonus restores it quietly and never restarts autoplay",
+        "responsive host keeps chat, settings and controls reachable without moving the lower panels",
+        "settings persist, Escape closes only the inner panel and typing in chat cannot start a spin",
+        "a real-server spin has a validated response and the account guard rejects a forged owner",
+        "animated nudge follows the accepted steps, supports skip and cancels owned motion",
+        "simulated page visibility events stop autoplay and preserve the accepted real-server round"
+      ]
+    },
+    "afterMainReconciliation": {
+      "module": "1.0.0-fc62114792bc",
+      "passed": 4,
+      "cases": [
+        "paid spin and eight free continuations",
+        "responsive real host with connected chat",
+        "actual HTTP sampler and forged owner rejection",
+        "recorded nudge steps, audio cues, skip cancellation"
+      ]
+    },
+    "uncaughtPageErrors": 0,
+    "layout": {
+      "measurements": [
+        {
+          "width": 1440,
+          "height": 1000,
+          "overflow": 0,
+          "stageHeight": 497,
+          "machineHeight": 543,
+          "boardWidth": 781
+        },
+        {
+          "width": 1280,
+          "height": 720,
+          "overflow": 0,
+          "stageHeight": 324,
+          "machineHeight": 358,
+          "boardWidth": 513
+        },
+        {
+          "width": 1024,
+          "height": 768,
+          "overflow": 0,
+          "stageHeight": 372,
+          "machineHeight": 406,
+          "boardWidth": 508
+        },
+        {
+          "width": 800,
+          "height": 600,
+          "overflow": 0,
+          "stageHeight": 204,
+          "machineHeight": 238,
+          "boardWidth": 313
+        },
+        {
+          "width": 640,
+          "height": 480,
+          "overflow": 0,
+          "stageHeight": 88,
+          "machineHeight": 122,
+          "boardWidth": 120
+        },
+        {
+          "width": 500,
+          "height": 760,
+          "overflow": 0,
+          "stageHeight": 163,
+          "machineHeight": 197,
+          "boardWidth": 245
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "overflow": 0,
+          "stageHeight": 227,
+          "machineHeight": 261,
+          "boardWidth": 336
+        },
+        {
+          "width": 320,
+          "height": 568,
+          "overflow": 0,
+          "stageHeight": 75,
+          "machineHeight": 95,
+          "boardWidth": 111
+        },
+        {
+          "width": 844,
+          "height": 390,
+          "overflow": 0,
+          "stageHeight": 88,
+          "machineHeight": 108,
+          "boardWidth": 133
+        }
+      ],
+      "spinPanelDrift": 0
+    },
+    "feedback": {
+      "acceptedSteps": [
+        {
+          "direction": -1,
+          "steps": 1,
+          "multiplier": 2
+        },
+        {
+          "direction": -1,
+          "steps": 2,
+          "multiplier": 3
+        },
+        {
+          "direction": 1,
+          "steps": 2,
+          "multiplier": 3
+        },
+        {
+          "direction": 1,
+          "steps": 1,
+          "multiplier": 2
+        },
+        {
+          "direction": 0,
+          "steps": 0,
+          "multiplier": 1
+        }
+      ],
+      "audio": {
+        "music": false,
+        "effects": true,
+        "activeEffects": 0,
+        "musicPlaying": false,
+        "loaded": true,
+        "counts": {
+          "start": 1,
+          "stop": 5,
+          "nudge": 6,
+          "win": 1
+        }
+      },
+      "synchronization": [
+        {
+          "cue": "stop",
+          "mode": "output-timestamp",
+          "skewMs": 8.440000001490262
+        },
+        {
+          "cue": "stop",
+          "mode": "output-timestamp",
+          "skewMs": 10.951333332584909
+        },
+        {
+          "cue": "stop",
+          "mode": "output-timestamp",
+          "skewMs": 4.83566666443221
+        },
+        {
+          "cue": "stop",
+          "mode": "output-timestamp",
+          "skewMs": 5.927666668900201
+        },
+        {
+          "cue": "stop",
+          "mode": "output-timestamp",
+          "skewMs": 7.729333331843009
+        },
+        {
+          "cue": "nudge",
+          "mode": "output-timestamp",
+          "skewMs": 6.772333333330607
+        },
+        {
+          "cue": "nudge",
+          "mode": "output-timestamp",
+          "skewMs": 3.3730000000014115
+        },
+        {
+          "cue": "nudge",
+          "mode": "output-timestamp",
+          "skewMs": 3.5100000014899706
+        },
+        {
+          "cue": "nudge",
+          "mode": "output-timestamp",
+          "skewMs": 0.113999999999578
+        },
+        {
+          "cue": "nudge",
+          "mode": "output-timestamp",
+          "skewMs": 1.926333334076844
+        },
+        {
+          "cue": "nudge",
+          "mode": "output-timestamp",
+          "skewMs": 12.954999998506537
+        }
+      ]
+    }
+  },
+  "screenshots": [
+    "preview-desktop.webp",
+    "preview-mobile.webp"
+  ],
+  "reviewFixes": [
+    "Root follows the real host height instead of natural-content scaling.",
+    "Board fills the available stage; short windows use compact controls.",
+    "Lower panel displacement during spin is zero in the measured run.",
+    "Initial preview does not show a paid line before wagering.",
+    "Skip removes residual reactor charge glow.",
+    "Escape closes only the inner settings panel."
+  ],
+  "limits": [
+    "Visibility pause uses explicitly simulated visibility events in headless Chrome, with an actual accepted HTTP round.",
+    "Sound loading, cue counts and output timestamp estimates were checked; physical-device latency and subjective music quality require listening.",
+    "No production release was performed."
+  ]
+}

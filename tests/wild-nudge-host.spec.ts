@@ -85,6 +85,7 @@ test('animated nudge follows the accepted steps, supports skip and cancels owned
  expect(observed.audio.counts.stop).toBe(5);expect(observed.audio.counts.nudge).toBe(frame.reels.reduce((n:number,reel:any)=>n+reel.steps,0));
  for(let c=0;c<5;c++)await expect(page.locator(`[data-reel="${c}"]`)).toHaveAttribute('aria-label',new RegExp(frame.reels[c].multiplier>1?'×'+frame.reels[c].multiplier:'.+'));
  expect(observed.animations).toBe(0);await writeFile(output+'/feedback-verification.json',JSON.stringify({acceptedSteps:frame.reels.map((r:any)=>({direction:r.direction,steps:r.steps,multiplier:r.multiplier})),audio:observed.audio,synchronization:observed.synchronization},null,2));
+ await page.screenshot({path:output+'/host-nudge.png'});
  await scenario(page,'nudge');await page.locator('[data-gn=spin]').click();await expect(page.locator('[data-gn=skip]')).toBeVisible();await page.locator('[data-gn=skip]').click();await expect.poll(async()=>(await mini(page)).busy).toBe(false);await expect.poll(async()=>(await mini(page)).animations).toBe(0);await expect(page.locator('.gn-charging')).toHaveCount(0);expect((await session(page)).state).toBe('settled');
 });
 
