@@ -7,6 +7,8 @@ import {demoBalanceUnits,saveDemoUnits,recordDemoUnits} from '../server/demoWall
 import {ProgressionStore} from '../server/progression/store';
 import {instrumentProgressionWallet,instrumentProgressionPvpLedger,NativeProgressionSources} from '../server/progression/sources';
 import {VirtualPvpLedger} from '../server/pvp/virtual-wallet';
+import {PvpStore} from '../server/pvp/store';
+import {WILD_NUDGE_GAME} from '../src/shared/wildNudge';
 
 async function fixture(draw:(max:number)=>number=()=>0){
  const db=new PostgresDatabase(':memory:');await db.ready;
@@ -144,5 +146,40 @@ test('virtual PvP and combat use the paid stake of both participants and exclude
   await pvp.pvpFinish(c.a,{matchId,winnerId:null,reason:'draw'});
   events=await c.events();assert.equal(events.length,6);assert.equal(events.filter(e=>e.outcome==='refunded'&&e.paidUnits===e.refundedUnits).length,2);
   assert.equal((await c.progression.snapshot(c.a)).xp,'10000');assert.equal((await c.progression.snapshot(c.b)).xp,'10000');
+ }finally{await c.close();}
+});
+
+test('new Wild Nudge registration earns XP once after its whole paid round and bonus continuation',async()=>{
+ const stops=[16,16,16,30,30],c=await fixture(()=>stops.length?stops.shift()!:2);
+ try{
+  const capabilities=[2,true,true,true,true,true,true,true,true,2,4,true,false,2,2,2,true] as const;
+  const play=(op:unknown)=>c.wallet.expansion.operate(c.a,op,...capabilities);
+  const start={id:randomUUID(),gameId:WILD_NUDGE_GAME,action:'start',stakeUnits:'100',settings:{wildNudge:{mode:'normal'}}};
+  let reply=await play(start);assert.equal(reply.session.state,'active');assert.equal((await c.events()).length,0);
+  await play(start);let last:unknown=start;
+  while(reply.session.state==='active'){
+   last={id:randomUUID(),gameId:WILD_NUDGE_GAME,action:'move',sessionId:start.id,revision:reply.session.view.wildNudge!.revision,move:'wild-nudge-spin'};
+   reply=await play(last);
+  }
+  await play(last);const events=await c.events();assert.equal(events.length,1);
+  assert.equal(events[0].sourceId,'native:casino:'+start.id);assert.equal(events[0].paidUnits,'1000000');
+  assert.equal(events[0].refundedUnits,'0');assert.equal((await c.progression.snapshot(c.a)).xp,'100');
+ }finally{await c.close();}
+});
+
+test('new Tsu-e-fa registration earns the same own-stake XP for both settled PvP participants',async()=>{
+ const c=await fixture();try{
+  const ledger=instrumentProgressionPvpLedger(c.db,new VirtualPvpLedger(c.db,c.wallet),c.progression),store=new PvpStore(ledger);
+  const now=Date.now(),actors=[c.a,c.b].map((accountId,i)=>({accountId,name:'Player '+i,roomId:'progression-tsu'}));
+  await store.syncRoom('progression-tsu',actors.map(a=>({...a,connected:true,available:true})),now);
+  const created=await store.command(actors[0],{id:randomUUID(),action:'create',gameId:'tsu-e-fa',stakeUnits:'1100000',targetId:c.b},now);
+  const challengeId=created.active!.id;
+  await store.command(actors[1],{id:randomUUID(),action:'accept',challengeId},now);
+  for(const actor of actors)await store.command(actor,{id:randomUUID(),action:'ready',challengeId},now);
+  assert.equal((await c.events()).length,0);
+  const finish={id:randomUUID(),action:'resign' as const,challengeId};await store.command(actors[1],finish,now);await store.command(actors[1],finish,now);
+  const events=await c.events();assert.equal(events.length,2);assert.deepEqual(new Set(events.map(e=>e.accountId)),new Set([c.a,c.b]));
+  assert(events.every(e=>e.sourceId===challengeId&&e.paidUnits==='1100000'&&e.refundedUnits==='0'));
+  assert.equal((await c.progression.snapshot(c.a)).xp,'110');assert.equal((await c.progression.snapshot(c.b)).xp,'110');
  }finally{await c.close();}
 });

@@ -4,17 +4,19 @@ import {createHash} from 'node:crypto';
 import assert from 'node:assert/strict';
 const git=process.env.ROYAL_GIT_BINARY||'git';
 const featureCommit='f9a6a231e73da8618d745a654d1b684b18bcda5d';
-const productionCommit='aed09286a21e315cb506b1befc754f5a7b4eecd2';
+const productionCommit='b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0';
 const directory='deployment/releases/location-levels-20261030-v1';
 const canonical=b=>Buffer.from(b.toString().replace(/\r\n/g,'\n'));
 const hash=b=>createHash('sha256').update(b).digest('hex');
-const old=JSON.parse(await readFile('deployment/releases/forest-heart-responsive-20261030-v1/host-projection.json'));
+const origins=JSON.parse(await readFile('artifacts/work/location-levels-mvp/production-origin-map.json'));
 const baseline=JSON.parse(await readFile('artifacts/work/location-levels-mvp/baseline.json'));
 assert.equal(baseline.sourceCommit,productionCommit);
+assert.equal(origins.productionCommit,productionCommit);
 const changed=['server/accounts.ts','server/index.ts','src/main.ts','src/i18n/en.ts'];
 const added=['server/progression/store.ts','server/progression/sources.ts','server/progression/freeSpins.ts','server/progression/handlers.ts','server/progressionRoutes.ts',
   'src/shared/progression.ts','src/wallet/ProgressionClient.ts','src/ui/ProgressionUI.ts','src/ui/progression.css','src/i18n/progressionEn.ts'];
-const files=structuredClone(old.files);
+const files=structuredClone(origins.files);
+for(const [name,row] of Object.entries(files))assert.equal(row.sha256,baseline.sourceLF[name],'Origin differs from verified production: '+name);
 for(const name of changed){
   const before=canonical(execFileSync(git,['show','780b1dec:'+name]));
   assert.equal(hash(before),baseline.sourceLF[name],'Feature baseline differs from production: '+name);
