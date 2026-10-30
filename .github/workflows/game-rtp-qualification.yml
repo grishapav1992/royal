@@ -20,6 +20,8 @@ on:
       - 'server/gameWalletRoutes.ts'
       - 'server/finance/nile-game-runtime.ts'
       - 'server/pvp/virtual-wallet.ts'
+      - 'server/pvp/**'
+      - 'server/activities.ts'
       - 'server/database.ts'
       - 'src/wallet/ExpansionClient.ts'
       - 'games/forest-heart/presentation.ts'
@@ -49,6 +51,8 @@ on:
       - 'server/gameWalletRoutes.ts'
       - 'server/finance/nile-game-runtime.ts'
       - 'server/pvp/virtual-wallet.ts'
+      - 'server/pvp/**'
+      - 'server/activities.ts'
       - 'server/database.ts'
       - 'src/wallet/ExpansionClient.ts'
       - 'games/forest-heart/presentation.ts'
@@ -67,7 +71,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        game: [studio-wild-nudge, studio-forest-heart, studio-flooded-temple, studio-neopolis, studio-dracona, mortal-kombat, studio-cosmic-escape, studio-caribbean-treasures, studio-afterglow]
+        game: [studio-wild-nudge, studio-forest-heart, studio-flooded-temple, studio-neopolis, studio-dracona, mortal-kombat, tsu-e-fa, studio-cosmic-escape, studio-caribbean-treasures, studio-afterglow]
     steps:
       - uses: actions/checkout@v7
         with:
