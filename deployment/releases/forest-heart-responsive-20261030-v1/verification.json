@@ -2343,6 +2343,18 @@
       "failed": 1,
       "command": "npm run test:forest-heart-math",
       "reason": "The archived mathematical-model-only report retains the historical registeredPolicySha256, while forestHeartModelReport fingerprints the current qualified runtime policy. Exact mathematical values and source hashes match. No proof or gate was edited."
+    },
+    "afterCleanupHTTP": {
+      "passed": true,
+      "at": "2026-10-30T18:18:22.616Z",
+      "files": [
+        "/healthz",
+        "/",
+        "/game-modules/studio-forest-heart/active.json",
+        "/game-modules/studio-forest-heart/versions/1.8.1-6a53ddc4805f/manifest.json"
+      ],
+      "health": true,
+      "exactClientAndModule": true
     }
   },
   "checkCorrections": [
@@ -2426,16 +2438,156 @@
       "physicalChangeNotAttributedExclusivelyToCleanup": true
     },
     "currentServerRelease": {
-      "status": "planned after this record is preserved in GitHub"
+      "status": "removed verified transport duplicates",
+      "sourceCommit": "aed09286a21e315cb506b1befc754f5a7b4eecd2",
+      "apply": true,
+      "targets": [
+        {
+          "path": "/opt/royal-releases/forest-heart-responsive-20261030-v1/runtime-context",
+          "logicalBytes": 2821380,
+          "files": 5
+        },
+        {
+          "path": "/opt/royal-releases/forest-heart-responsive-20261030-v1/assets",
+          "logicalBytes": 2820418,
+          "files": 2
+        },
+        {
+          "path": "/opt/royal-releases/forest-heart-responsive-20261030-v1/package",
+          "logicalBytes": 3142023,
+          "files": 18
+        },
+        {
+          "path": "/opt/royal-releases/forest-heart-responsive-20261030-v1/transport.tgz",
+          "logicalBytes": 4970086,
+          "files": 1
+        }
+      ],
+      "freeBefore": 5955526656,
+      "protectedBackup": {
+        "archive": "/opt/royal-backups/forest-heart-responsive-20261030-v1/source.tgz",
+        "bytes": 14205,
+        "sha256": "6806b27030af67a8418055611b2bd0a7a36bd42083a9cdda31c3f2b9cfebabf8",
+        "oldVersion": "1.7.0-f59a3572e207",
+        "previousImagesTagged": true
+      },
+      "kept": [
+        "source",
+        "dist-delta",
+        "before.json",
+        "after.json",
+        "operator.json",
+        "release-manifest.json",
+        "release-github.json",
+        "published.json",
+        "exit.json",
+        "rollback image tags",
+        "all installed immutable module versions"
+      ],
+      "physicalDeltaAttribution": "Measurements include concurrent server activity; hardlinks are counted logically.",
+      "freeAfter": 5963747328,
+      "preservationCommit": "430ecced381820336dc71abbea5169ce685aeb4f"
     },
     "currentLocalRelease": {
-      "status": "planned after this record is preserved in GitHub"
+      "status": "automatic approval review rejected before process creation",
+      "reason": "blocked by policy",
+      "preservationCommit": "430ecced381820336dc71abbea5169ce685aeb4f",
+      "filesRemoved": 0,
+      "logicalBytesRemoved": 0,
+      "requestedTargets": [
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\artifacts\\work\\forest-heart-responsive\\publication",
+          "logicalBytes": 46620519,
+          "files": 90,
+          "directory": true
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\artifacts\\work\\forest-heart-responsive\\publication-compiled",
+          "logicalBytes": 20963785,
+          "files": 21,
+          "directory": true
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\artifacts\\work\\forest-heart-responsive\\check-compiled-index.mjs",
+          "logicalBytes": 737,
+          "files": 1,
+          "directory": false
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\artifacts\\work\\forest-heart-responsive\\publication-browser.log",
+          "logicalBytes": 4976,
+          "files": 1,
+          "directory": false
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\artifacts\\work\\forest-heart-responsive\\publication-compiled-browser.log",
+          "logicalBytes": 3267,
+          "files": 1,
+          "directory": false
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\artifacts\\work\\forest-heart-responsive\\publication-host-graph-tests.log",
+          "logicalBytes": 361,
+          "files": 1,
+          "directory": false
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\artifacts\\work\\forest-heart-responsive\\publication-local-build.log",
+          "logicalBytes": 112421,
+          "files": 1,
+          "directory": false
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\artifacts\\work\\forest-heart-responsive\\publication-math.log",
+          "logicalBytes": 8416,
+          "files": 1,
+          "directory": false
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\artifacts\\work\\forest-heart-responsive\\publication-prepared-typecheck.log",
+          "logicalBytes": 0,
+          "files": 1,
+          "directory": false
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\artifacts\\work\\forest-heart-responsive\\publication-projection-tests.log",
+          "logicalBytes": 2423,
+          "files": 1,
+          "directory": false
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\artifacts\\work\\forest-heart-responsive\\publication-qualified-math.log",
+          "logicalBytes": 1232,
+          "files": 1,
+          "directory": false
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\artifacts\\work\\forest-heart-responsive\\publication-rtp.log",
+          "logicalBytes": 118,
+          "files": 1,
+          "directory": false
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\forest-heart-visual\\royal\\artifacts\\work\\forest-heart-responsive\\publication-wallet.log",
+          "logicalBytes": 1233,
+          "files": 1,
+          "directory": false
+        }
+      ],
+      "requestedLogicalBytes": 67719488,
+      "archivesRemoved": [],
+      "retainedTransportArchiveBytes": 4970086,
+      "freeAtInventory": 201201197056,
+      "freeAfterRejectedAttempt": 201200967680,
+      "physicalDeltaAttribution": "No deletion ran. Any free-space change is not attributed to this cleanup.",
+      "cleanupCondition": "Keep these exact rejected targets. Remove only after an allowed cleanup; do not remove or archive the checkout to bypass the rejection."
     },
     "historicalLocalExceptions": {
       "reason": "Previous automatic review rejected deletion of older forest-heart-ux-v7 and responsive raw folders and older packages: blocked by policy. These paths were not retried.",
       "worktree": "Current chat checkout retained because removing it would also remove the rejected ignored files. Remove after an authorized cleanup of those exact paths and verified GitHub preservation.",
       "preview": "Ports 5296 and 2696 were no longer listening at final review. The previous local user-review database remains preserved until that review data is no longer required.",
-      "dependencies": "node_modules is a junction to the active new-slot checkout; no dependency copies were created or removed."
+      "dependencies": "node_modules is a junction to the active new-slot checkout; no dependency copies were created or removed.",
+      "additionalServerException": "The first-release staging inventory was not deleted. Its finance-source and play.js variant need separate GitHub reconciliation; older capacity cleanup was limited to the recorded v2/v3 paths."
     }
   },
   "proofImages": [
