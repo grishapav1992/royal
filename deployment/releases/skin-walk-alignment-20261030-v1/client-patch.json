@@ -1,0 +1,39 @@
+{
+  "original": {
+    "url": "/assets/index-CLGGaXly.js",
+    "sha256": "f1d4b1b2b3d705e3b8ce15a45ddb9f76cddcea5ed72e657e015b62bc06ac4ed1",
+    "indexSha256": "6f9b723c58268489e65fa01960da9aab9024d1cd3466d505194d7d7edea2c555"
+  },
+  "file": "assets/main-skin-walk-05ab817b88dc.js",
+  "sha256": "05ab817b88dc41f75f6b7946b7c7d840320fd452a4342bee4d6036ad6a0645fc",
+  "rendererBytes": 3780,
+  "changes": [
+    {
+      "start": 1998050,
+      "end": 1998565,
+      "method": "loadSkinSheet",
+      "name": "Mm",
+      "oldSha256": "bf62f2b162b3c45cfc2f30a89ed3aefe6d4b7007ae1420bf0bdf167534f529f6"
+    },
+    {
+      "start": 1998565,
+      "end": 1998597,
+      "method": "hasSkinSheet",
+      "name": "Vd",
+      "oldSha256": "af869f2ad7d588259f7b7c07a2c7918e4db74bfce395d913ed11f1b32c0abd48"
+    },
+    {
+      "start": 1998597,
+      "end": 1999279,
+      "method": "drawGeneratedSkin",
+      "name": "Wd",
+      "oldSha256": "ca51295b1650916a27ca2f4a0843738a045855b8e0ef0038139eab10645f35cf"
+    }
+  ],
+  "untouchedBytes": 2662367,
+  "inputs": {
+    "src/shared/skinAssetUrl.ts": "311cc40981247c36d08bfd547df8455443a606489830530c73a0852ff04ef15d",
+    "src/game/skinPoseAlignment.ts": "0db0ef0bc9c728fa0fa12d3e07fa4a9343708b541bb2ed0718fe40a3e9120c65",
+    "src/game/generatedSkinArt.ts": "1cbe65c94a725a79f37c3a3b9b22240fc7463ef1ed0ae5163b18287c7a0819de"
+  }
+}
