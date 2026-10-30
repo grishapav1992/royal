@@ -17,7 +17,7 @@ import type { BreakerStatus } from '../game/breaker';
 import type { ActivitiesState, PianoNote } from '../shared/activities';
 import type { PlayerView } from '../shared/world';
 import type { ActivityHostContext } from './ActivityHostContract';
-import type { PvpCardMove, PvpSnapshot } from '../shared/pvp';
+import type { PvpMove, PvpSnapshot } from '../shared/pvp';
 
 export const GAME_HOST_KEY = Symbol.for('royal.game-host.v1');
 export interface GameHostV1 {
@@ -62,7 +62,7 @@ export interface GameModuleContextV1 {
  readonly onMounted?: (instance: GameModuleInstance) => void;
  readonly provider?: { readonly embedded: boolean; readonly gameId?: string; readonly gameName?: string; readonly onCatalogue: () => void };
  readonly activity?: ActivityHostContext;
- readonly pvp?: {get():PvpSnapshot|undefined;busy():boolean;subscribe(callback:()=>void):()=>void;move(value:PvpCardMove):void};
+ readonly pvp?: {get():PvpSnapshot|undefined;busy():boolean;subscribe(callback:()=>void):()=>void;move(value:PvpMove):void};
 }
 export interface GameModuleV1 {
  readonly gameId: IndependentGameId;

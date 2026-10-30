@@ -1,8 +1,9 @@
 import { randomUUID } from 'node:crypto';
 import { gameAccountId } from '../../src/shared/nileWallet';
 import { PVP_ARRIVAL_MS, PVP_INVITE_MS, PVP_MOVE_MS, PVP_RECONNECT_MS, isPvpCardGame, pvpPayout, validPvpRequest,
-  type PvpChallenge, type PvpRequest, type PvpSnapshot } from '../../src/shared/pvp';
+  isPvpSnapshotGame, type PvpChallenge, type PvpRequest, type PvpSnapshot } from '../../src/shared/pvp';
 import { createCardGame, playCardMove, publicCardGame, type CardState } from './cards';
+import { createTsuEFa, playTsuEFa, publicTsuEFa, type TsuEFaState } from './tsu-e-fa';
 import type { NilePlayLedger } from '../finance/nile-play-ledger';
 import {NilePlayError} from '../finance/nile-play-error';
 
@@ -14,7 +15,7 @@ export type PvpLedger = Pick<NilePlayLedger,'ready'|'db'> & {
 
 export type PvpPresence = { accountId: string; name: string; connected: boolean; available: boolean };
 type Actor = { accountId: string; name: string; roomId: string };
-type StoredMatch = { challenge: PvpChallenge; cards: CardState | null; roomId: string; lastMoveAt: number; roomSeenAt: number };
+type StoredMatch = { challenge: PvpChallenge; cards: CardState | null; tsuEFa?: TsuEFaState; roomId: string; lastMoveAt: number; roomSeenAt: number };
 const participant = (c: PvpChallenge, id: string) => c.creatorId === id || c.opponentId === id;
 const members = (c: PvpChallenge) => [c.creatorId, ...(c.opponentId ? [c.opponentId] : [])];
 const live = (c: PvpChallenge) => ['open', 'arriving', 'playing'].includes(c.status);
@@ -69,6 +70,11 @@ export class PvpStore {
     }
     if (c.status === 'playing' && s.cards?.phase === 'playing' && now - s.lastMoveAt >= PVP_MOVE_MS) {
       return this.finish(s, members(c)[1 - s.cards.actor], 'timeout', now);
+    }
+    if (c.status === 'playing' && s.tsuEFa?.phase === 'playing' && now >= c.expiresAt) {
+      const [a, b] = s.tsuEFa.choices;
+      return this.finish(s, a !== null && b === null ? c.creatorId : b !== null && a === null ? c.opponentId : null,
+        a === null && b === null ? 'draw' : 'timeout', now);
     }
   }
   async sweep(now = Date.now()) {
@@ -144,15 +150,29 @@ export class PvpStore {
         } else if (op.action === 'ready') {
           if (c.status !== 'arriving' || !participant(c, actor.accountId)) return fail('Подтверждение сейчас недоступно.');
           if (!c.ready.includes(actor.accountId)) c.ready.push(actor.accountId);
-          if (c.ready.length === 2) { c.status = 'playing'; c.expiresAt = now + PVP_MOVE_MS; s.lastMoveAt = now; if (isPvpCardGame(c.gameId)) s.cards = createCardGame(c.gameId); }
+          if (c.ready.length === 2) {
+            c.status = 'playing'; c.expiresAt = now + PVP_MOVE_MS; s.lastMoveAt = now;
+            if (isPvpCardGame(c.gameId)) s.cards = createCardGame(c.gameId);
+            if (c.gameId === 'tsu-e-fa') s.tsuEFa = createTsuEFa();
+          }
         } else if (op.action === 'resign') {
           if (c.status !== 'playing' || !participant(c, actor.accountId)) return fail('Партия ещё не началась.');
           await this.finish(s, members(c).find(id => id !== actor.accountId)!, 'resign', now);
         } else if (op.action === 'move') {
-          if (c.status !== 'playing' || !s.cards || !participant(c, actor.accountId) || op.revision !== s.cards.revision) return fail('Состояние партии изменилось. Обнови стол.');
-          try { s.cards = playCardMove(s.cards, c.creatorId === actor.accountId ? 0 : 1, op.move); } catch { return fail('Этот ход недоступен.'); }
-          s.lastMoveAt = now; c.expiresAt = now + PVP_MOVE_MS;
-          if (s.cards.phase === 'finished') await this.finish(s, s.cards.winner === null ? null : members(c)[s.cards.winner], s.cards.winner === null ? 'draw' : 'win', now);
+          if (c.status !== 'playing' || !participant(c, actor.accountId)) return fail('Состояние партии изменилось. Обнови стол.');
+          const side = c.creatorId === actor.accountId ? 0 : 1;
+          if (c.gameId === 'tsu-e-fa' && s.tsuEFa) {
+            const round = s.tsuEFa.round;
+            // Choices share a round token: the first player's revision must not reject a simultaneous second choice.
+            try { s.tsuEFa = playTsuEFa(s.tsuEFa, side, op.move); } catch { return fail('Этот выбор недоступен.'); }
+            if (s.tsuEFa.round !== round) { s.lastMoveAt = now; c.expiresAt = now + PVP_MOVE_MS; }
+            if (s.tsuEFa.phase === 'finished') await this.finish(s, members(c)[s.tsuEFa.winner!], 'win', now);
+          } else {
+            if (!s.cards || op.revision !== s.cards.revision || op.move.kind === 'choose') return fail('Состояние партии изменилось. Обнови стол.');
+            try { s.cards = playCardMove(s.cards, side, op.move); } catch { return fail('Этот ход недоступен.'); }
+            s.lastMoveAt = now; c.expiresAt = now + PVP_MOVE_MS;
+            if (s.cards.phase === 'finished') await this.finish(s, s.cards.winner === null ? null : members(c)[s.cards.winner], s.cards.winner === null ? 'draw' : 'win', now);
+          }
         }
         c.revision++;
       }
@@ -165,7 +185,7 @@ export class PvpStore {
     await this.ready;
     return this.ledger.db.transaction(async () => {
       const s = await this.saved(matchId);
-      if (s.roomId !== roomId || isPvpCardGame(s.challenge.gameId)) return fail('Неверный игровой стол.');
+      if (s.roomId !== roomId || isPvpSnapshotGame(s.challenge.gameId)) return fail('Неверный игровой стол.');
       if (s.challenge.status === 'playing') await this.finish(s, winnerId, reason, now);
     });
   }
@@ -182,8 +202,10 @@ export class PvpStore {
     const own = available.find(s => participant(s.challenge, actor.accountId) && live(s.challenge)) ?? available.find(s => participant(s.challenge, actor.accountId));
     const cards=own?.cards?publicCardGame(own.cards,own.challenge.creatorId===actor.accountId?0:1):null;
     if(cards&&own?.challenge.status!=='playing'){cards.phase='finished';cards.moves=[];}
+    const tsuEFa = own?.tsuEFa ? publicTsuEFa(own.tsuEFa, own.challenge.creatorId === actor.accountId ? 0 : 1) : null;
+    if (tsuEFa && own?.challenge.status !== 'playing') { tsuEFa.phase = 'finished'; tsuEFa.winner = own?.challenge.winnerId === null ? null : own?.challenge.winnerId === own?.challenge.creatorId ? 0 : 1; }
     return { challenges: available.map(s => s.challenge), active: own?.challenge ?? null,
-      cards,
+      cards, tsuEFa,
       people: (this.rooms.get(actor.roomId)?.people ?? []).filter(p => p.connected && p.accountId !== actor.accountId)
         .map(p => ({ accountId: p.accountId, name: p.name, available: p.available && !all.some(s => participant(s.challenge, p.accountId) && live(s.challenge)) })),
       wallet: await this.ledger.wallet(actor.accountId, now), now };

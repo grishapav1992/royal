@@ -1,6 +1,6 @@
 import { PvpClient } from '../network/PvpClient';
 import { ACTIVITIES, type ActivityId } from '../shared/activities';
-import { PVP_GAMES, isPvpCardGame, pvpPayout, validVirtualPvpWallet, validVirtualPvpStake, type PvpChallenge, type PvpGameId, type PvpRequest } from '../shared/pvp';
+import { PVP_GAMES, isPvpSnapshotGame, pvpPayout, validVirtualPvpWallet, validVirtualPvpStake, type PvpChallenge, type PvpGameId, type PvpRequest } from '../shared/pvp';
 import { activityHall, hallLinks, type HallId } from '../shared/world';
 import { formatNileUnits } from '../shared/nileWallet';
 import { usdtUnits } from '../shared/cryptoWallet';
@@ -52,11 +52,15 @@ export class PvpUI {
     form.onsubmit=event=>{event.preventDefault();this.run(()=>this.client.send({id:crypto.randomUUID(),action:'create',gameId:(form.elements.namedItem('game')as HTMLSelectElement).value as PvpGameId,
       stakeUnits:usdtUnits((form.elements.namedItem('stake')as HTMLInputElement).value.trim().replace(',','.')),targetId:(form.elements.namedItem('target')as HTMLSelectElement).value||null}));};
     this.client.addEventListener('change',()=>this.update());
-    window.addEventListener('royal-account',event=>{this.dialog.close();this.travelId='';this.openedId='';this.client.setAccount((event as CustomEvent<string|null>).detail);});
+    window.addEventListener('royal-account',event=>{
+      const account=(event as CustomEvent<string|null>).detail;
+      if(account===this.client.accountId)return;
+      this.dialog.close();this.travelId='';this.openedId='';this.client.setAccount(account);
+    });
     activities.pvpOpen=id=>{
       if(id==='piano')return false;
       const active=this.client.snapshot?.active;
-      if(active?.status==='playing'&&active.gameId===id&&!isPvpCardGame(id)){this.openPhysics(active);return true;}
+      if(active?.status==='playing'&&active.gameId===id&&!isPvpSnapshotGame(id)){this.openPhysics(active);return true;}
       (form.elements.namedItem('game')as HTMLSelectElement).value=id;this.show();return true;
     };
     this.tick=setInterval(()=>{this.route();this.renderCountdown();},250);this.preview();
@@ -75,9 +79,11 @@ export class PvpUI {
     if(c?.status==='arriving'&&!this.packages.has(c.id)){
       const id=c.id;this.packages.set(id,'loading');void prepareGameModule(c.gameId).then(ready=>{this.packages.set(id,ready?'ready':'failed');this.update();});
     }
-    if(c&&['finished','cancelled'].includes(c.status)&&!isPvpCardGame(c.gameId)&&this.openedId===c.id){this.openedId='';this.activities.closeWager();this.show();return;}
-    this.dialog.dataset.phase=c?.status??'lobby';this.dialog.dataset.cards=String(c?.status==='playing'&&!!snapshot?.cards);
-    this.moduleRoot.hidden=c?.status!=='playing';
+    if(c&&['finished','cancelled'].includes(c.status)&&!isPvpSnapshotGame(c.gameId)&&this.openedId===c.id){this.openedId='';this.activities.closeWager();this.show();return;}
+    const hasView=!!(snapshot?.cards||snapshot?.tsuEFa);
+    const showModule=!!c&&hasView&&(c.status==='playing'||c.gameId==='tsu-e-fa'&&['finished','cancelled'].includes(c.status));
+    this.dialog.dataset.phase=c?.status??'lobby';this.dialog.dataset.cards=String(showModule);
+    this.moduleRoot.hidden=!showModule;
     this.button.hidden=!self;
     this.button.textContent=c&&['open','arriving','playing'].includes(c.status)?'Мой поединок':`Поединки${snapshot?.challenges.some(c=>c.status==='open'&&c.creatorId!==self)?' · Есть вызовы':''}`;
     if(snapshot&&self&&validVirtualPvpWallet(snapshot.wallet))demoWallet.acceptExternalWallet(self,snapshot.wallet.wallet);
@@ -100,20 +106,20 @@ export class PvpUI {
         <p data-countdown></p>${c.disconnected.length?'<p>Связь с участником прервалась. Ожидаем возвращения.</p>':''}<p>${escape(reason)}</p><div class="pvp-active-actions">
         ${c.status==='open'||c.status==='arriving'?`<button type="button" data-pvp-action="cancel" data-id="${c.id}" ${busy?'disabled':''}>Отменить вызов</button>`:''}
         ${c.status==='arriving'?`<button type="button" data-route>Идти к столу</button><button type="button" class="primary-button" data-pvp-action="ready" data-id="${c.id}" ${busy||c.ready.includes(self!)||this.packages.get(c.id)!=='ready'?'disabled':''}>${c.ready.includes(self!)?'Готовность подтверждена':this.packages.get(c.id)==='ready'?'Я готов за столом':'Подготавливаем игру…'}</button>${this.packages.get(c.id)==='failed'?'<button type="button" data-prepare>Повторить загрузку игры</button>':''}`:''}
-        ${c.status==='playing'?`${!isPvpCardGame(c.gameId)?'<button type="button" class="primary-button" data-open-table>Открыть стол</button>':''}<button type="button" data-pvp-action="resign" data-id="${c.id}" ${busy?'disabled':''}>Сдаться</button>`:''}</div>`;
+        ${c.status==='playing'?`${!isPvpSnapshotGame(c.gameId)?'<button type="button" class="primary-button" data-open-table>Открыть стол</button>':''}<button type="button" data-pvp-action="resign" data-id="${c.id}" ${busy?'disabled':''}>Сдаться</button>`:''}</div>`;
       if(panel.dataset.render!==html){panel.innerHTML=html;panel.dataset.render=html;}
       const route=panel.querySelector<HTMLButtonElement>('[data-route]');if(route)route.onclick=()=>{this.travelId=c.id;this.routeHall='';this.dialog.close();this.route();};
       const open=panel.querySelector<HTMLButtonElement>('[data-open-table]');if(open)open.onclick=()=>this.openPhysics(c);
       const prepare=panel.querySelector<HTMLButtonElement>('[data-prepare]');if(prepare)prepare.onclick=()=>{this.packages.delete(c.id);this.update();};
       if(c.status==='arriving'&&this.travelId!==c.id){this.travelId=c.id;this.routeHall='';this.dialog.close();}
-      if(c.status==='playing'&&!isPvpCardGame(c.gameId)&&this.openedId!==c.id){this.openedId=c.id;this.openPhysics(c);}
-      if(c.status==='playing'&&isPvpCardGame(c.gameId)&&snapshot?.cards&&this.dialog.open){
+      if(c.status==='playing'&&!isPvpSnapshotGame(c.gameId)&&this.openedId!==c.id){this.openedId=c.id;this.openPhysics(c);}
+      if(showModule&&isPvpSnapshotGame(c.gameId)&&this.dialog.open){
         if(this.moduleId!==c.id){this.module?.destroy();this.moduleId=c.id;
           this.module=new IndependentGameUI(this.moduleRoot,c.gameId,{pvp:{get:()=>this.client.snapshot,busy:()=>!!this.client.pending,
             subscribe:callback=>{this.client.addEventListener('change',callback);return()=>this.client.removeEventListener('change',callback);},
-            move:move=>this.run(()=>this.client.send({id:crypto.randomUUID(),action:'move',challengeId:c.id,revision:this.client.snapshot!.cards!.revision,move}))}});
+            move:move=>this.run(()=>this.client.send({id:crypto.randomUUID(),action:'move',challengeId:c.id,revision:(this.client.snapshot!.tsuEFa??this.client.snapshot!.cards)!.revision,move}))}});
         }
-      }else if(this.module&&(c.status!=='playing'||!snapshot?.cards||!this.dialog.open)){this.module.destroy();this.module=undefined;this.moduleId='';}
+      }else if(this.module&&(!showModule||!this.dialog.open)){this.module.destroy();this.module=undefined;this.moduleId='';}
     }
     const invitations=snapshot?.challenges.filter(item=>item.status==='open'&&item.creatorId!==self)??[];
     const list=this.body.querySelector<HTMLElement>('[data-list]')!,listHtml=invitations.length?invitations.map(item=>`<article><div><strong>${escape(PVP_GAMES[item.gameId])}</strong><span>${escape(item.creatorName)}${item.targetId?' · Приглашает тебя':''}</span></div><p>Ставка ${money(item.stakeUnits)} · Победителю ${money(item.payoutUnits)}</p><button type="button" class="primary-button" data-pvp-action="accept" data-id="${item.id}" ${busy?'disabled':''}>Принять ставку</button>${item.targetId?`<button type="button" data-pvp-action="cancel" data-id="${item.id}">Отклонить</button>`:''}</article>`).join(''):'<p class="pvp-empty">Пока нет открытых вызовов. Создай свой стол или пригласи игрока.</p>';
@@ -122,7 +128,7 @@ export class PvpUI {
     this.renderCountdown();
   }
   private renderCountdown(){const c=this.client.snapshot?.active,output=this.body.querySelector('[data-countdown]');if(!c||!output)return;
-    const remaining=Math.max(0,Math.ceil((c.expiresAt-this.client.now())/1000));output.textContent=c.status==='open'?`На принятие вызова: ${remaining} сек.`:c.status==='arriving'?`На встречу за столом: ${remaining} сек.`:c.status==='playing'&&isPvpCardGame(c.gameId)?`На ход: ${remaining} сек.`:'';}
+    const remaining=Math.max(0,Math.ceil((c.expiresAt-this.client.now())/1000));output.textContent=c.status==='open'?`На принятие вызова: ${remaining} сек.`:c.status==='arriving'?`На встречу за столом: ${remaining} сек.`:c.status==='playing'&&isPvpSnapshotGame(c.gameId)?`${c.gameId==='tsu-e-fa'?'На выбор обоих':'На ход'}: ${remaining} сек.`:'';}
   private openPhysics(c:PvpChallenge){
     this.dialog.close();const shell=this.activities.openWager(c.gameId as ActivityId);if(!shell)return;
     const bar=document.createElement('div');bar.className='pvp-wager-bar';bar.textContent=`Банк ${money(c.potUnits)} · Победителю ${money(c.payoutUnits)} · Комиссия ${money(c.feeUnits)}`;
