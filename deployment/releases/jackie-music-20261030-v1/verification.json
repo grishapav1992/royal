@@ -1,0 +1,590 @@
+{
+  "format": 1,
+  "release": "jackie-music-20261030-v1",
+  "verifiedAt": "2026-10-30T15:44:32.148Z",
+  "sourceCommit": "0d8de07f08677af717631629bb09b1ed8896a3af",
+  "version": "1.1.0-d7adf4f69d77",
+  "manifestSha256": "62ffd0d2e80325f94a598227adf0f08e230c4769f854b1f10bf28130d9a400cc",
+  "activeSha256": "ba985c42893b55c74ddc1ec8e01f65645d71bc6c767a8795400283088e9c68b1",
+  "preservedRuntimeFiles": 8521,
+  "preservedSourceFiles": 2362,
+  "preservedFinanceSourceFiles": 211,
+  "preservedServices": 14,
+  "preservedOtherPointers": 120,
+  "freeBefore": 5385093120,
+  "freeAfter": 6052540416,
+  "restartRequired": false,
+  "databaseTouched": false,
+  "verified": true,
+  "healthRecheck": {
+    "ready": true,
+    "freeBytes": 6052540416,
+    "health": {
+      "royal-game-1": "healthy",
+      "royal-nile-play": "healthy",
+      "royal-payments-1": "healthy",
+      "royal-ai-api-1": "healthy",
+      "royal-ai-worker-1": null,
+      "royal-ai-knowledge-graph-1": "healthy",
+      "royal-caddy-1": null,
+      "royal-ai-db-1": "healthy",
+      "royal-finance-sim-finance-db-1": "healthy",
+      "royal-finance-sim-finance-api-4": "healthy",
+      "royal-finance-sim-finance-api-3": "healthy",
+      "royal-nile-creditor": "healthy",
+      "royal-tron-reader": "healthy",
+      "royal-finance-sim-finance-gateway-1": "healthy"
+    },
+    "serviceHealthChangesDuringOriginalCheck": {
+      "royal-ai-knowledge-graph-1": {
+        "before": "healthy",
+        "after": "unhealthy"
+      },
+      "royal-tron-reader": {
+        "before": "healthy",
+        "after": "unhealthy"
+      }
+    },
+    "serviceIdentitiesPreserved": true,
+    "programAndSourcePreserved": true
+  },
+  "operatorSourceCommit": "01a3256",
+  "runtimeBaseCommit": "ee9319121f33bf14f45bacae448d21d62a17df9e",
+  "contract": {
+    "apiVersion": 1,
+    "rulesVersion": 1,
+    "progressVersion": 2
+  },
+  "githubSourceSavedBeforePublication": true,
+  "reviewedProductionOverlay": {
+    "sourceCommit": "0baa69d10ddea384ba7e58c499582d18e702de2c",
+    "release": "caribbean-autoplay-20261030-v1",
+    "source": {
+      "games/caribbean-treasures/CaribbeanUI.ts": {
+        "sha256": "a3357a66361849e33cb31136ee8cf08d50908a1576c3e952e96af6e33e3480d1",
+        "lf": "193f5863a5d5174c012e97fcc31229434937851fa20afe9b11ea16ad60d2e8ff"
+      },
+      "games/caribbean-treasures/CaribbeanCaptain.ts": {
+        "sha256": "09383acdf86696910b2538e5257d8836d388291560d8b5f20175dcd460297530",
+        "lf": "cff65fc4a333edfaa0cddcde8e6a8cdced3c837de2b61aa01be884c4edb0fb72"
+      },
+      "games/caribbean-treasures/caribbean.css": {
+        "sha256": "6ab57b09480f35c6cdcde7b91ec713a7ae84d9962424a0f27516e1a13de3599a",
+        "lf": "8bd81a577dafd9527596e599fad0201156f3560735a145a513028abe49d8dad5"
+      },
+      "games/caribbean-treasures/package.json": {
+        "sha256": "dfb3b1454f174144da4ac423025b33ac9dd42294d744cf75818608616e466c3f",
+        "lf": "48b0e526d2c774bf3547193f432b14191d24859d5d58726e12c7adf26458cdf6"
+      },
+      "games/caribbean-treasures/character-motion.md": {
+        "sha256": "d54e4b09b8c4e9fdc7447479027057e3a62881c92117c31e562341fe1d853b22",
+        "lf": "0be5481bafb01c08650f6f1d2eb4dfbe2a192013f315cc803514e9863bb5ba02"
+      }
+    }
+  },
+  "tracks": [
+    {
+      "location": "restaurant",
+      "title": "Shenyang",
+      "author": "Kevin MacLeod",
+      "isrc": "USUAN1600066",
+      "source": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1600066",
+      "download": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Shenyang.mp3",
+      "license": "https://creativecommons.org/licenses/by/4.0/",
+      "changes": "Level normalization and MP3 128 kbit/s encoding; full track, looped in game.",
+      "originalSha256": "1cf2e0f57f820d82e9066ba4dca076735aedd512bc1909fdaa2e0065bd866786",
+      "file": "restaurant.mp3",
+      "sha256": "0c9831e6a8fd15cb78d077e40412fc7939e6992d003c668655bcffcfd843751a",
+      "bytes": 2424206
+    },
+    {
+      "location": "harbor",
+      "title": "Hot Pursuit",
+      "author": "Kevin MacLeod",
+      "isrc": "USUAN1700084",
+      "source": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1700084",
+      "download": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Hot%20Pursuit.mp3",
+      "license": "https://creativecommons.org/licenses/by/4.0/",
+      "changes": "Level normalization and MP3 128 kbit/s encoding; full track, looped in game.",
+      "originalSha256": "0cbd748d447d43dd881e7dc519bbd702010dfe0fa9d4d6460be8f314e608f6f3",
+      "file": "harbor.mp3",
+      "sha256": "95fece7bf2c28cffa45183ae20ffe55727c236f62c916784e8b3599388326d69",
+      "bytes": 2708836
+    },
+    {
+      "location": "market",
+      "title": "Eighties Action",
+      "author": "Kevin MacLeod",
+      "isrc": "USUAN1100243",
+      "source": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100243",
+      "download": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Eighties%20Action.mp3",
+      "license": "https://creativecommons.org/licenses/by/4.0/",
+      "changes": "Level normalization and MP3 128 kbit/s encoding; full track, looped in game.",
+      "originalSha256": "ae418a7f7e1b4ed77b0b3edb9ae416b34936777fd262e4c30cfe7483a8da45dd",
+      "file": "market.mp3",
+      "sha256": "ef0a91279aa986857531cf19b78e1928decde21ae768f7dc25ead62a3499c494",
+      "bytes": 2736421
+    }
+  ],
+  "changes": [
+    "Three full location themes through the shared host audio output",
+    "Independent persisted music and effect switches",
+    "Crossfade on location changes and lower music gain during fights",
+    "Pause/resume on global mute, zero volume, context suspension and page visibility",
+    "Dispose all owned streams on close/account replacement; recover loading errors on gestures"
+  ],
+  "mathematicsChanged": false,
+  "rtp": {
+    "qualifiedProfilesChecked": 18,
+    "unchangedLegacyNotQualified": 114
+  },
+  "build": {
+    "sourceCommit": "0d8de07f08677af717631629bb09b1ed8896a3af",
+    "passed": true,
+    "steps": [
+      {
+        "name": "rtp",
+        "passed": true,
+        "durationMs": 3453
+      },
+      {
+        "name": "typecheck",
+        "passed": true,
+        "durationMs": 9509
+      },
+      {
+        "name": "modules",
+        "passed": true,
+        "durationMs": 2227
+      }
+    ],
+    "files": 41,
+    "github": {
+      "format": 1,
+      "sourceCommit": "0d8de07f08677af717631629bb09b1ed8896a3af",
+      "remoteMain": "0d8de07f08677af717631629bb09b1ed8896a3af",
+      "checkedAt": "2026-10-29T22:06:48.228Z"
+    }
+  },
+  "acceptance": {
+    "uniqueBrowserCasesPassed": 15,
+    "fullRun": {
+      "passed": 14,
+      "failedBeforeGameEntry": 1,
+      "reason": "The preferred physical cabinet became occupied by an NPC"
+    },
+    "finalHostRecheck": {
+      "passed": 2,
+      "sourceUpdatedToSelectFreeCabinets": true
+    },
+    "cleanupTestCorrection": "The real host chat wrapper moves its toolbar; the test close selector was corrected and repeated successfully.",
+    "storageGuardUnitTestsPassed": 5,
+    "localMusic": {
+      "themes": [
+        {
+          "enabled": true,
+          "location": "restaurant",
+          "title": "Shenyang",
+          "playing": true,
+          "pending": false,
+          "positionSeconds": 0.112387,
+          "readyState": 4,
+          "error": "",
+          "ducked": false,
+          "active": 1,
+          "disposed": false
+        },
+        {
+          "enabled": true,
+          "location": "harbor",
+          "title": "Hot Pursuit",
+          "playing": true,
+          "pending": false,
+          "positionSeconds": 0.469943,
+          "readyState": 4,
+          "error": "",
+          "ducked": false,
+          "active": 1,
+          "disposed": false
+        },
+        {
+          "enabled": true,
+          "location": "market",
+          "title": "Eighties Action",
+          "playing": true,
+          "pending": false,
+          "positionSeconds": 0.481814,
+          "readyState": 4,
+          "error": "",
+          "ducked": false,
+          "active": 1,
+          "disposed": false
+        }
+      ],
+      "independentSwitches": true,
+      "preferencesSurviveReopen": true,
+      "sharedMuteAndVolume": true,
+      "contextAndVisibilityRecovery": true,
+      "closeDisposesAllMedia": true,
+      "duckingDuringFight": true,
+      "settingsPosts": 0,
+      "realTemporaryPostgres": true,
+      "connectedChat": true,
+      "errors": []
+    },
+    "localViewportCount": 13,
+    "signal": {
+      "signalPresenceOnly": true,
+      "subjectiveListeningVerified": false,
+      "tracks": [
+        {
+          "file": "harbor.mp3",
+          "durationSeconds": 169.24733333333333,
+          "peak": 0.674872636795044,
+          "rms": 0.0903884619474411,
+          "firstFiveSecondsRms": 0.08836226910352707
+        },
+        {
+          "file": "market.mp3",
+          "durationSeconds": 170.97141666666667,
+          "peak": 0.7750920653343201,
+          "rms": 0.1225569024682045,
+          "firstFiveSecondsRms": 0.09826453030109406
+        },
+        {
+          "file": "restaurant.mp3",
+          "durationSeconds": 151.458,
+          "peak": 0.5823419094085693,
+          "rms": 0.08339277654886246,
+          "firstFiveSecondsRms": 0.08771555870771408
+        }
+      ]
+    },
+    "physicalDevicesAndSubjectiveListeningVerified": false
+  },
+  "interruptions": [
+    {
+      "phase": "Before pointer switch",
+      "sourceCommit": "1cd3f1e71f539e5fe401eb878a7d4f61f05bdfa9",
+      "reason": "Conservative second-copy capacity guard refused to cross the 5 GiB reserve",
+      "resolution": "Verified uploaded bytes are atomically retained with hardlinks before the existing guarded publisher switches the pointer"
+    },
+    {
+      "phase": "After pointer switch",
+      "reason": "Knowledge graph and Tron reader health changed while identities/configuration/programs stayed identical",
+      "resolution": "Strict immutable comparisons were retained; current service identities, core executables, every protected health check and free-space reserve were checked again successfully"
+    }
+  ],
+  "publicAssets": {
+    "verifiedAt": "2026-10-30T15:35:30.539Z",
+    "sourceCommit": "0d8de07f08677af717631629bb09b1ed8896a3af",
+    "version": "1.1.0-d7adf4f69d77",
+    "manifestSha256": "62ffd0d2e80325f94a598227adf0f08e230c4769f854b1f10bf28130d9a400cc",
+    "checks": 170,
+    "retainedPointers": 120,
+    "productionAccountsCreated": false,
+    "productionStakesPlaced": false
+  },
+  "publicBrowser": {
+    "verifiedAt": "2026-10-30T15:37:52.902Z",
+    "version": "1.1.0-d7adf4f69d77",
+    "themes": [
+      {
+        "enabled": true,
+        "location": "restaurant",
+        "title": "Shenyang",
+        "playing": true,
+        "pending": false,
+        "positionSeconds": 0.481814,
+        "readyState": 4,
+        "error": "",
+        "ducked": false,
+        "active": 1,
+        "disposed": false
+      },
+      {
+        "enabled": true,
+        "location": "harbor",
+        "title": "Hot Pursuit",
+        "playing": true,
+        "pending": false,
+        "positionSeconds": 0.539864,
+        "readyState": 4,
+        "error": "",
+        "ducked": false,
+        "active": 1,
+        "disposed": false
+      },
+      {
+        "enabled": true,
+        "location": "market",
+        "title": "Eighties Action",
+        "playing": true,
+        "pending": false,
+        "positionSeconds": 0.510839,
+        "readyState": 4,
+        "error": "",
+        "ducked": false,
+        "active": 1,
+        "disposed": false
+      }
+    ],
+    "layouts": [
+      {
+        "width": 1366,
+        "height": 768,
+        "overflow": 0,
+        "touchTargetsAtLeast44": true
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "overflow": 0,
+        "touchTargetsAtLeast44": true
+      },
+      {
+        "width": 320,
+        "height": 568,
+        "overflow": 0,
+        "touchTargetsAtLeast44": true
+      },
+      {
+        "width": 844,
+        "height": 390,
+        "overflow": 0,
+        "touchTargetsAtLeast44": true
+      }
+    ],
+    "independentSwitches": true,
+    "preferencesSurviveReopen": true,
+    "productionPosts": 0,
+    "errors": [],
+    "guestOffline": true,
+    "connectedChat": "Verified in local authenticated real host with temporary PostgreSQL"
+  },
+  "backup": {
+    "path": "/opt/royal-backups/jackie-music-20261030-v1/game-source.tgz",
+    "bytes": 27925,
+    "sha256": "00977aac6a0652ad556ad1492b790aa996d2627db1ec3feb60832fc9557f1f56",
+    "image": "sha256:452a691baa92825409c6f66483b50efdb2e5142ab172de6e93b4eccd33cd4d5b",
+    "tag": "royal-game:before-jackie-music-20261030-v1",
+    "retainedPriorPackage": "/opt/royal-game-modules/original-jackie-chan/versions/1.0.1-b1c164533d84",
+    "fullSourceBackup": "/opt/royal-backups/jackie-chan-20261029-v2",
+    "databaseTouched": false
+  },
+  "initialImmutableMediaSharing": {
+    "linked": [
+      {
+        "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.0.1-b1c164533d84/media/jackie-chan/cover.webp",
+        "bytes": 273866
+      },
+      {
+        "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.0.1-b1c164533d84/media/jackie-chan/foe-agile.webp",
+        "bytes": 327128
+      },
+      {
+        "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.0.1-b1c164533d84/media/jackie-chan/foe-bruiser.webp",
+        "bytes": 424766
+      },
+      {
+        "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.0.1-b1c164533d84/media/jackie-chan/foe-enforcer.webp",
+        "bytes": 348102
+      },
+      {
+        "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.0.1-b1c164533d84/media/jackie-chan/foe-master.webp",
+        "bytes": 422424
+      },
+      {
+        "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.0.1-b1c164533d84/media/jackie-chan/foes.webp",
+        "bytes": 396288
+      },
+      {
+        "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.0.1-b1c164533d84/media/jackie-chan/harbor.webp",
+        "bytes": 491722
+      },
+      {
+        "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.0.1-b1c164533d84/media/jackie-chan/hawk-combat.webp",
+        "bytes": 421176
+      },
+      {
+        "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.0.1-b1c164533d84/media/jackie-chan/hawk-furniture.webp",
+        "bytes": 432414
+      },
+      {
+        "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.0.1-b1c164533d84/media/jackie-chan/hawk.webp",
+        "bytes": 390406
+      },
+      {
+        "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.0.1-b1c164533d84/media/jackie-chan/market.webp",
+        "bytes": 564842
+      },
+      {
+        "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.0.1-b1c164533d84/media/jackie-chan/master-combat.webp",
+        "bytes": 407362
+      },
+      {
+        "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.0.1-b1c164533d84/media/jackie-chan/master-furniture.webp",
+        "bytes": 473700
+      },
+      {
+        "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.0.1-b1c164533d84/media/jackie-chan/master.webp",
+        "bytes": 381124
+      },
+      {
+        "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.0.1-b1c164533d84/media/jackie-chan/mentor-combat.webp",
+        "bytes": 360828
+      },
+      {
+        "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.0.1-b1c164533d84/media/jackie-chan/mentor-furniture.webp",
+        "bytes": 416588
+      },
+      {
+        "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.0.1-b1c164533d84/media/jackie-chan/mentor.webp",
+        "bytes": 368380
+      },
+      {
+        "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.0.1-b1c164533d84/media/jackie-chan/police-combat.webp",
+        "bytes": 412388
+      },
+      {
+        "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.0.1-b1c164533d84/media/jackie-chan/police-furniture.webp",
+        "bytes": 436116
+      },
+      {
+        "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.0.1-b1c164533d84/media/jackie-chan/police.webp",
+        "bytes": 388278
+      },
+      {
+        "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.0.1-b1c164533d84/media/jackie-chan/props.webp",
+        "bytes": 535994
+      },
+      {
+        "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.0.1-b1c164533d84/media/jackie-chan/restaurant.webp",
+        "bytes": 519018
+      },
+      {
+        "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.0.1-b1c164533d84/media/jackie-chan/rush-combat.webp",
+        "bytes": 334268
+      },
+      {
+        "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.0.1-b1c164533d84/media/jackie-chan/rush-furniture.webp",
+        "bytes": 382596
+      },
+      {
+        "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.0.1-b1c164533d84/media/jackie-chan/rush.webp",
+        "bytes": 293806
+      },
+      {
+        "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.0.1-b1c164533d84/media/jackie-chan/sailor-combat.webp",
+        "bytes": 397210
+      },
+      {
+        "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.0.1-b1c164533d84/media/jackie-chan/sailor-furniture.webp",
+        "bytes": 437198
+      },
+      {
+        "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.0.1-b1c164533d84/media/jackie-chan/sailor.webp",
+        "bytes": 357138
+      },
+      {
+        "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.0.1-b1c164533d84/media/jackie-chan/tuxedo-combat.webp",
+        "bytes": 323346
+      },
+      {
+        "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.0.1-b1c164533d84/media/jackie-chan/tuxedo-furniture.webp",
+        "bytes": 379540
+      },
+      {
+        "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.0.1-b1c164533d84/media/jackie-chan/tuxedo.webp",
+        "bytes": 297152
+      },
+      {
+        "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.0.1-b1c164533d84/media/jackie-chan/whoami-combat.webp",
+        "bytes": 388024
+      },
+      {
+        "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.0.1-b1c164533d84/media/jackie-chan/whoami-furniture.webp",
+        "bytes": 435614
+      },
+      {
+        "path": "/opt/royal-game-modules/original-jackie-chan/versions/1.0.1-b1c164533d84/media/jackie-chan/whoami.webp",
+        "bytes": 393184
+      }
+    ],
+    "logicalDuplicateBytes": 13611986,
+    "freeBefore": 5315194880,
+    "freeAfter": 5328859136,
+    "versionsAndBytesPreserved": true,
+    "physicalSpaceAttribution": "Concurrent activity is not attributed to this operation"
+  },
+  "laterCapacityAudit": {
+    "possibleDuplicateBytes": 223499509,
+    "maintenance": {
+      "verified": true,
+      "freeBefore": 6056628224,
+      "freeAfter": 6056628224,
+      "pairs": [],
+      "logicalDuplicateBytes": 0,
+      "versionsRemoved": [],
+      "archivesRemoved": [],
+      "allPointersPreserved": true,
+      "allVerifiedBytesPreserved": true,
+      "physicalSpaceAttribution": "Concurrent writes are not attributed to this maintenance"
+    },
+    "allocatedCopiesActuallyReplaced": 0,
+    "note": "Capacity had recovered through concurrent server activity before maintenance started; this invocation changed no media files."
+  },
+  "serverCleanup": {
+    "sourceCommit": "0d8de07f08677af717631629bb09b1ed8896a3af",
+    "removed": [
+      {
+        "path": "/opt/royal-releases/jackie-music-20261030-v1/1.1.0-d7adf4f69d77",
+        "bytes": 21583295
+      },
+      {
+        "path": "/opt/royal-releases/jackie-music-20261030-v1/__pycache__",
+        "bytes": 29494
+      }
+    ],
+    "archivesRemoved": [],
+    "freeBefore": 6052532224,
+    "freeAfter": 6052585472,
+    "backupAndInstalledVersionsPreserved": true,
+    "physicalSpaceReclaimedAttribution": "Not attributed during concurrent server activity"
+  },
+  "localCleanup": {
+    "previousBlockedPackagesAndCapturesUntouched": true,
+    "retainedFiles": [
+      {
+        "bytes": 5418166,
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\jackie-chan\\royal\\artifacts\\work\\jackie-chan\\music-source\\harbor.mp3"
+      },
+      {
+        "bytes": 6962129,
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\jackie-chan\\royal\\artifacts\\work\\jackie-chan\\music-source\\market.mp3"
+      },
+      {
+        "bytes": 4848882,
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\jackie-chan\\royal\\artifacts\\work\\jackie-chan\\music-source\\restaurant.mp3"
+      }
+    ],
+    "blockedAction": "Delete the three temporary downloaded music masters after source and normalized assets were preserved in GitHub",
+    "removedBytes": 0,
+    "githubMainVerified": true,
+    "activePreview": {
+      "url": "http://127.0.0.1:5236/tests/fixtures/jackie-play.html",
+      "cleanupCondition": "User finishes preview, then stop the preview, remove its temporary database and archive the additional checkout after verifying GitHub source"
+    },
+    "sourceCommit": "0d8de07f08677af717631629bb09b1ed8896a3af",
+    "physicalSpaceReclaimedClaimed": false,
+    "deletionExecuted": false,
+    "removed": [],
+    "reason": "blocked by policy",
+    "temporaryFolderBytes": 101038316,
+    "archivesRemoved": [],
+    "freeAtCurrentCheck": 288410144768,
+    "previewListeningAtFinalCheck": false,
+    "finalLocalFreeBytes": 197531230208,
+    "archiveDeferredReason": "Ignored files have deletion denials; archiving this checkout would delete those files and is not used as a workaround."
+  }
+}
