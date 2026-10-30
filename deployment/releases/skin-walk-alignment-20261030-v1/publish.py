@@ -52,7 +52,7 @@ def publish():
     old = m['before']
     require(ROOT == Path('/opt/royal-releases') / NAME and m['release'] == NAME, 'Wrong release directory')
     require(m['githubVerified'] and len(m['sourceCommit']) == 40, 'Missing saved source')
-    require(set(m['changed']) == {'src/game/generatedSkinArt.ts', 'src/game/skinPoseAlignment.ts', 'docs/skin-studio.md'}, 'Unexpected source scope')
+    require(set(m['changed']) == {'src/game/generatedSkinArt.ts', 'src/game/skinPoseAlignment.ts', 'src/shared/skinAssetUrl.ts', 'src/shared/skinStudio.ts'}, 'Unexpected source scope')
     for name in ['publish.py', 'snapshot.py', 'runtime-inventory.cjs']:
         require(sha(ROOT / name) == m['helpers'][name], 'Helper changed: ' + name)
     for folder, expected in [('source', m['changed']), ('dist', m['delta'])]:
@@ -63,10 +63,18 @@ def publish():
     spec = importlib.util.spec_from_file_location('skin_snapshot', ROOT / 'snapshot.py')
     snapshot = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(snapshot)
-    before = stable(snapshot.snapshot())
+    current = snapshot.snapshot()
+    require(current['containers']['royal-game-1']['health'] == 'healthy', 'Unhealthy current game')
+    before = stable(current)
     require(before == stable(old), 'Production advanced after review')
     require(old['containers']['royal-game-1']['health'] == 'healthy', 'Unhealthy game baseline')
     require(old['containers']['royal-game-1']['image'] == old['preparedImage'] and old['program'] == old['preparedProgram'], 'Unexpected existing runtime overlay')
+    proof = m['clientPatch']
+    require(proof['original']['sha256'] == old['program']['dist' + proof['original']['url']]
+            and proof['original']['indexSha256'] == old['program']['dist/index.html'], 'Client patch baseline differs')
+    require(len(proof['changes']) == 3 and proof['rendererBytes'] < 16384, 'Unexpected renderer transformation')
+    require(set(proof['inputs']) == {'src/game/generatedSkinArt.ts', 'src/game/skinPoseAlignment.ts', 'src/shared/skinAssetUrl.ts'}, 'Unrelated renderer imports')
+    require(all(digest == m['changed'][name] for name, digest in proof['inputs'].items()), 'Renderer source differs from payload')
     require(shutil.disk_usage(LIVE).free >= 5 * 1024 ** 3, 'Less than 5 GiB free')
     BACKUP.mkdir(mode=0o700, exist_ok=False)
     originals = {name: (LIVE / name).exists() for name in m['changed']}
