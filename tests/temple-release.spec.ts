@@ -9,7 +9,7 @@ import {build} from 'esbuild';
 import {temporaryDatabase} from '../scripts/database-test';
 import {PostgresDatabase,databaseConfig} from '../server/database';
 
-const port=process.env.TEMPLE_RELEASE_PORT??'2635',origin='http://127.0.0.1:'+port,scope='artifacts/work/temple-release-preparation';
+const port=process.env.TEMPLE_RELEASE_PORT??'2635',origin='http://127.0.0.1:'+port,scope=process.env.TEMPLE_RELEASE_SCOPE??'artifacts/work/temple-release-preparation';
 let database:Awaited<ReturnType<typeof temporaryDatabase>>|undefined,backend:ChildProcess|undefined,backendLog='';
 let fundingDb:PostgresDatabase,fundingWallet:any;
 const game=(p:Page)=>p.frameLocator('.temple-frame');
@@ -80,7 +80,7 @@ for(const mobile of[false,true])test(`built Royal, real wallet, connected chat a
   peer=await new Client(origin,{headers:{Cookie:identity.cookie},fetchFn:async(url,options)=>{const r=await api.fetch(String(url),{method:options?.method,headers:Object.fromEntries(new Headers(options?.headers)),data:options?.body as string});return new Response(await r.body(),{status:r.status(),headers:r.headers()});}}).create('lobby');for(const type of['chat','activities','piano-note','notice','pvp'])peer.onMessage(type,()=>{});
   const page=reviewPage=await context.newPage(),errors:string[]=[],posts:any[]=[],manifests:string[]=[];page.on('pageerror',e=>{errors.push(e.message);diagnostics.push({pageError:e.stack});});page.on('console',m=>{if(m.type()==='error')diagnostics.push({console:m.text()});});page.on('requestfailed',r=>diagnostics.push({failed:new URL(r.url()).pathname,error:r.failure()?.errorText}));
   page.on('request',r=>{if(r.method()==='POST'&&r.url().endsWith('/expansion')){expect(r.headers()['x-temple-test-case']).toBeUndefined();posts.push(r.postDataJSON());}if(r.url().includes('/studio-flooded-temple/versions/')&&r.url().endsWith('/manifest.json'))manifests.push(r.url());});
-  await auth(page.request);await page.goto('/?lang='+(mobile?'en':'ru')+'&room='+peer.roomId);await expect(page.locator('#join-dialog')).toBeHidden({timeout:30000});await page.waitForFunction(()=>(window as any).royalDemo?.getState().online===true,{},{timeout:20000});await open(page);
+  await auth(page.request);await page.goto('/?lang='+(mobile?'en':'ru')+'&room='+peer.roomId);await expect(page.locator('#loading')).toHaveCount(0,{timeout:60000});await expect(page.locator('#join-dialog')).toBeHidden({timeout:30000});await page.waitForFunction(()=>(window as any).royalDemo?.getState().online===true,{},{timeout:20000});await open(page);
   const initial=await balance(page);await game(page).locator('[data-ft=primary]').click();await done(page);const first=await accepted(page);expect(first.rulesVersion).toBe(2);expect(Math.round((await balance(page))*100)).toBe(Math.round(initial*100)-1000+Number(first.returnedUnits));
   const geometry=await game(page).locator('.ft').evaluate(root=>{const box=(q:string)=>root.querySelector(q)!.getBoundingClientRect().toJSON();return{width:root.clientWidth,scroll:root.scrollWidth,girl:box('.ft-character'),board:box('.ft-cabinet'),netFont:parseFloat(getComputedStyle(root.querySelector('.ft-net')!).fontSize)};});
   expect(geometry.scroll).toBeLessThanOrEqual(geometry.width+1);expect(geometry.netFont).toBeGreaterThanOrEqual(12);if(geometry.width>520)expect(geometry.girl.right).toBeLessThanOrEqual(geometry.board.left-8);else expect(geometry.girl.bottom).toBeLessThanOrEqual(geometry.board.top);
@@ -91,10 +91,11 @@ for(const mobile of[false,true])test(`built Royal, real wallet, connected chat a
    const r=route.request();if(r.method()==='POST'&&r.postDataJSON().action==='start'&&!lost){lost=true;acceptedBeforeLoss=await(await route.fetch()).json();await route.abort('failed');}else await route.continue();
   });
   await game(page).locator('[data-ft=primary]').click();await expect.poll(async()=>{const s=await state(page);return s.pending&&!s.busy;}).toBe(true);const pendingId=posts.filter(p=>p.action==='start').at(-1).id;
-  await page.reload();await expect(page.locator('#join-dialog')).toBeHidden({timeout:30000});await page.waitForFunction(()=>(window as any).royalDemo?.getState().online===true);await open(page);
+  await page.reload();await expect(page.locator('#loading')).toHaveCount(0,{timeout:60000});await expect(page.locator('#join-dialog')).toBeHidden({timeout:30000});await page.waitForFunction(()=>(window as any).royalDemo?.getState().online===true);await open(page);
   await expect.poll(async()=>(await state(page)).pending).toBe(true);await page.unroute('**/api/demo-wallet/expansion');await game(page).locator('[data-ft=primary]').click();await done(page);
   const recovered=await accepted(page);expect(recovered.id).toBe(pendingId);expect(recovered.id).toBe(acceptedBeforeLoss.session.id);expect(recovered.spentUnits).toBe('1000');expect(new Set(posts.filter(p=>p.action==='start').map(p=>p.id)).size).toBe(2);
-  expect(Math.round((await balance(page))*100)).toBe(Math.round(initial*100)-2000+Number(first.returnedUnits)+Number(recovered.returnedUnits));expect(manifests.some(m=>m.includes('0.9.3-4a6b3fba5115'))).toBe(true);expect(errors).toEqual([]);
+  expect(Math.round((await balance(page))*100)).toBe(Math.round(initial*100)-2000+Number(first.returnedUnits)+Number(recovered.returnedUnits));expect(manifests.some(m=>m.includes(process.env.TEMPLE_RELEASE_VERSION??'0.9.3-4a6b3fba5115'))).toBe(true);expect(errors).toEqual([]);
+  await page.screenshot({path:scope+'/built-host-'+(mobile?'phone':'desktop')+'.png'});
   await report('built-host-'+(mobile?'phone':'desktop'),{geometry,chatConnected:true,chatMessagesSent:0,paidStarts:2,requestStartAttempts:posts.filter(p=>p.action==='start').length,recoveredSameUUID:true,exactBalance:true,quietReopen:true,module:manifests.at(-1),errors});
  }catch(error){await report('built-host-failure',{mobile,diagnostics,network:await reviewPage?.evaluate(()=>(window as any).royalDemo?.getNetworkState()).catch(()=>undefined),backend:backendLog});throw error;}
  finally{if(peer)await peer.leave();await context.close();await api.dispose();}
