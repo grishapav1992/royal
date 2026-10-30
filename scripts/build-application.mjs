@@ -4,6 +4,7 @@ import { resolve, dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { randomUUID } from 'node:crypto';
 import { build } from 'esbuild';
+import { buildProjectedHost } from './build-host-projection.mjs';
 
 export const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 export async function saveJson(path, value) {
@@ -28,7 +29,8 @@ export async function buildServer(root, input, output) {
   if (result.metafile) await saveJson(resolve(root, 'dist-server/payments-meta.json'), result.metafile);
 }
 
-export async function buildApplication({ root = projectRoot, modules = null } = {}) {
+export async function buildApplication({ root = projectRoot, modules = null, hostProjection = null } = {}) {
+  if (modules && hostProjection) throw Error('A host projection requires an application release');
   const report = { format: 1, startedAt: new Date().toISOString(), scope: modules ? 'modules' : 'application', steps: [] };
   const started = performance.now();
   const step = async (name, action) => {
@@ -44,7 +46,8 @@ export async function buildApplication({ root = projectRoot, modules = null } = 
     await step('typecheck', node(['node_modules/typescript/bin/tsc', '--noEmit']));
     await step('modules', node(['scripts/build-game-module.mjs', ...(modules ? ['--games', ...modules] : ['--all'])]));
     if (!modules) {
-      await step('host', node(['node_modules/vite/bin/vite.js', 'build']));
+      await step('host', hostProjection ? async () => { report.hostProjection = await buildProjectedHost(root, hostProjection); }
+        : node(['node_modules/vite/bin/vite.js', 'build']));
       for (const [name, input, output] of [
         ['backend', 'server/index.ts', 'index.js'],
         ['reconciliation', 'scripts/crypto-reconcile.ts', 'crypto-reconcile.js'],

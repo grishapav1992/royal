@@ -58,7 +58,8 @@ def source_inventory():
     files = [LIVE/n for n in ['package.json','package-lock.json','Dockerfile','.dockerignore','index.html','admin.html','tsconfig.json','tsconfig.finance.json','vite.config.ts','vite.admin.config.ts']]
     for n in ['src','server','public','games','scripts']:
         files += list((LIVE/n).rglob('*'))
-    return {p.relative_to(LIVE).as_posix():sha(p) for p in files if p.is_file() and not p.is_symlink() and not any(n.startswith(('._','.env')) or n in ['data','secrets','node_modules','__pycache__'] for n in p.relative_to(LIVE).parts)}
+    selected=[p for p in files if p.is_file() and not p.is_symlink() and not any(n.startswith(('._','.env')) or n in ['data','secrets','node_modules','__pycache__'] for n in p.relative_to(LIVE).parts)]
+    return ({p.relative_to(LIVE).as_posix():sha(p) for p in selected},{p.relative_to(LIVE).as_posix():hashlib.sha256(p.read_bytes().replace(b'\r\n',b'\n')).hexdigest() for p in selected})
 
 def inspect(name): return json.loads(run(['docker','inspect',name]))[0]
 def runtime(ref, running=False):
@@ -86,7 +87,8 @@ def snapshot():
     prepared_config=inspect(prepared)['Config']
     compose=game['Config']['Labels']['com.docker.compose.project.config_files'].split(',')
     configuration={str(p):sha(p) for p in [LIVE/'.env',LIVE/'.env.nowpayments-sandbox',*[Path(n) for n in compose]]}
-    return {'sourceCommit':prepared_config.get('Labels',{}).get('org.opencontainers.image.revision'), 'source':source_inventory(),'services':services,'health':game['State'].get('Health',{}).get('Status'),
+    source,source_lf=source_inventory()
+    return {'sourceCommit':prepared_config.get('Labels',{}).get('org.opencontainers.image.revision'), 'source':source,'sourceLF':source_lf,'services':services,'health':game['State'].get('Health',{}).get('Status'),
         'configuration':configuration,'preparedImage':prepared,'preparedProgram':prepared_program,'program':runtime('royal-game-1',True),
         'moduleFiles':inventory(MODULES),'hostContractSha256':sha(STATE/'host.json')}
 
