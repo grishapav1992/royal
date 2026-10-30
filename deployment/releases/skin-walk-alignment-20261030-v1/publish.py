@@ -28,6 +28,25 @@ def stable(state):
     return result
 
 
+def check_backup(backup, source_hashes, index_hash):
+    require(backup.is_dir() and not backup.is_symlink(), 'Unexpected backup directory')
+    require({p.name for p in backup.iterdir()} == {'source.tgz', 'index.html'}, 'Unexpected backup files')
+    require(not any(p.is_symlink() for p in backup.iterdir()), 'Backup symlink')
+    with tarfile.open(backup / 'source.tgz') as archive:
+        members = archive.getmembers()
+        require(all(row.isfile() for row in members) and len(members) == len(source_hashes), 'Unexpected source backup members')
+        require({row.name: hashlib.sha256(archive.extractfile(row).read()).hexdigest() for row in members} == source_hashes, 'Source backup differs')
+    require(sha(backup / 'index.html') == index_hash, 'Index backup differs')
+
+
+def check_context(context, delta, dockerfile):
+    require(context.is_dir() and not context.is_symlink(), 'Unexpected build context')
+    require(not any(p.is_symlink() for p in context.rglob('*')), 'Build context symlink')
+    expected = {'dist/' + name: digest for name, digest in delta.items()}
+    expected['Dockerfile'] = hashlib.sha256(dockerfile.encode()).hexdigest()
+    require({p.relative_to(context).as_posix(): sha(p) for p in context.rglob('*') if p.is_file()} == expected, 'Build context differs')
+
+
 def atomic(source, destination):
     require(not destination.is_symlink(), 'Destination symlink')
     destination.parent.mkdir(parents=True, exist_ok=True)
@@ -75,25 +94,31 @@ def publish():
     require(set(proof['inputs']) == {'src/game/generatedSkinArt.ts', 'src/game/skinPoseAlignment.ts', 'src/shared/skinAssetUrl.ts'}, 'Unrelated renderer imports')
     require(all(digest == m['changed'][name] for name, digest in proof['inputs'].items()), 'Renderer source differs from payload')
     require(shutil.disk_usage(LIVE).free >= 5 * 1024 ** 3, 'Less than 5 GiB free')
-    BACKUP.mkdir(mode=0o700, exist_ok=False)
     originals = {name: (LIVE / name).exists() for name in m['changed']}
-    with tarfile.open(BACKUP / 'source.tgz', 'w:gz') as archive:
-        for name, exists in originals.items():
-            if exists:
-                archive.add(LIVE / name, arcname=name)
-    with tarfile.open(BACKUP / 'source.tgz') as archive:
-        require({row.name: hashlib.sha256(archive.extractfile(row).read()).hexdigest() for row in archive} ==
-                {name: old['source'][name]['sha256'] for name, exists in originals.items() if exists}, 'Source backup differs')
-    run(['docker', 'cp', 'royal-game-1:/app/dist/index.html', str(BACKUP / 'index.html')])
-    require(sha(BACKUP / 'index.html') == old['program']['dist/index.html'], 'Index backup differs')
-    run(['docker', 'tag', old['preparedImage'], 'royal-game:before-' + NAME])
-    run(['docker', 'tag', old['preparedImage'], 'royal-game:before-' + NAME + '-prepared'])
+    existing_backup = BACKUP.exists()
+    if not existing_backup:
+        BACKUP.mkdir(mode=0o700)
+        with tarfile.open(BACKUP / 'source.tgz', 'w:gz') as archive:
+            for name, exists in originals.items():
+                if exists:
+                    archive.add(LIVE / name, arcname=name)
+        run(['docker', 'cp', 'royal-game-1:/app/dist/index.html', str(BACKUP / 'index.html')])
+    check_backup(BACKUP, {name: old['source'][name]['sha256'] for name, exists in originals.items() if exists}, old['program']['dist/index.html'])
+    for tag in ['royal-game:before-' + NAME, 'royal-game:before-' + NAME + '-prepared']:
+        if existing_backup:
+            require(run(['docker', 'image', 'inspect', tag, '--format', '{{.Id}}']) == old['preparedImage'], 'Previous-image tag differs')
+        else:
+            run(['docker', 'tag', old['preparedImage'], tag])
     context = ROOT / 'context'
-    context.mkdir(exist_ok=False)
-    shutil.copytree(ROOT / 'dist', context / 'dist')
-    (context / 'Dockerfile').write_text('FROM royal-game:before-' + NAME + '\nCOPY --chown=node:node dist/ /app/dist/\nLABEL org.opencontainers.image.revision="' + m['sourceCommit'] + '"\n')
+    dockerfile = 'FROM royal-game:before-' + NAME + '\nCOPY --chown=node:node dist/ /app/dist/\nLABEL org.opencontainers.image.revision="' + m['sourceCommit'] + '"\n'
+    if not context.exists():
+        context.mkdir()
+        shutil.copytree(ROOT / 'dist', context / 'dist')
+        (context / 'Dockerfile').write_text(dockerfile)
+    check_context(context, m['delta'], dockerfile)
     with (ROOT / 'build.log').open('w') as output:
-        subprocess.run(['docker', 'build', '--pull=false', '-t', 'royal-game:' + NAME, '.'], cwd=context, check=True, stdout=output, stderr=subprocess.STDOUT)
+        # Scope the builder selection to this process, without changing the daemon.
+        subprocess.run(['docker', 'build', '--pull=false', '-t', 'royal-game:' + NAME, '.'], cwd=context, env={**os.environ, 'DOCKER_BUILDKIT': '0'}, check=True, stdout=output, stderr=subprocess.STDOUT)
     image = run(['docker', 'image', 'inspect', 'royal-game:' + NAME, '--format', '{{.Id}}'])
     program = {**old['program'], **{'dist/' + name: digest for name, digest in m['delta'].items()}}
     actual = json.loads(run(['docker', 'run', '--rm', '--read-only', '--network=none', '--entrypoint', 'node', image, '-e', snapshot.PROGRAM]))
