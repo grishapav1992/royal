@@ -1,10 +1,10 @@
 {
   "name": "@royal/tsu-e-fa",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "gameId": "tsu-e-fa",
   "apiVersion": 1,
-  "rulesVersion": 1,
+  "rulesVersion": 2,
   "progressVersion": 1,
   "entry": "entry.ts",
   "assetRoots": [],

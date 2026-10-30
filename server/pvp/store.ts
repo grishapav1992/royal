@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { gameAccountId } from '../../src/shared/nileWallet';
 import { PVP_ARRIVAL_MS, PVP_INVITE_MS, PVP_MOVE_MS, PVP_RECONNECT_MS, isPvpCardGame, pvpPayout, validPvpRequest,
-  isPvpSnapshotGame, type PvpChallenge, type PvpRequest, type PvpSnapshot } from '../../src/shared/pvp';
+  isPvpSnapshotGame, isDirectPvp, isFreePvp, type PvpChallenge, type PvpRequest, type PvpSnapshot } from '../../src/shared/pvp';
 import { createCardGame, playCardMove, publicCardGame, type CardState } from './cards';
 import { createTsuEFa, playTsuEFa, publicTsuEFa, type TsuEFaState } from './tsu-e-fa';
 import type { NilePlayLedger } from '../finance/nile-play-ledger';
@@ -51,7 +51,7 @@ export class PvpStore {
     return !!await this.ledger.db.prepare("SELECT 1 FROM pvp_matches WHERE (creator_id=? OR opponent_id=?) AND status IN ('open','arriving','playing') LIMIT 1").get(id, id);
   }
   private async finish(s: StoredMatch, winnerId: string | null, reason: string, now: number) {
-    await this.ledger.pvpFinish(s.challenge.creatorId, { matchId: s.challenge.id, winnerId, reason }, now);
+    if (!isFreePvp(s.challenge)) await this.ledger.pvpFinish(s.challenge.creatorId, { matchId: s.challenge.id, winnerId, reason }, now);
     const c = s.challenge;
     c.status = winnerId || reason === 'draw' ? 'finished' : 'cancelled'; c.winnerId = winnerId; c.reason = reason;
     c.expiresAt = now; c.revision++; c.disconnected = [];
@@ -128,10 +128,12 @@ export class PvpStore {
         if (!room || now - room.at > 10_000 || !room.people.some(p => p.accountId === actor.accountId && p.connected && p.available)) return fail('Сначала вернись в зал и заверши текущую игру.');
         if (op.targetId && !room.people.some(p => p.accountId === op.targetId && p.connected && p.available)) return fail('Соперник сейчас недоступен.');
         const challenge: PvpChallenge = { id: randomUUID(), gameId: op.gameId, creatorId: actor.accountId, creatorName: cleanName(actor.name),
-          targetId: op.targetId, opponentId: null, opponentName: '', stakeUnits: op.stakeUnits, ...pvpPayout(op.stakeUnits),
+          targetId: op.targetId, opponentId: null, opponentName: '', stakeUnits: op.stakeUnits,
+          ...(isFreePvp(op) ? { potUnits: '0', feeUnits: '0', payoutUnits: '0' } : pvpPayout(op.stakeUnits)),
+          ...(op.gameId === 'tsu-e-fa' ? { rulesVersion: 2 as const, mode: op.mode ?? 'stake', targetWins: op.targetWins ?? 3 } : {}),
           status: 'open', createdAt: now, expiresAt: now + PVP_INVITE_MS, ready: [], winnerId: null, reason: '', revision: 0, disconnected: [] };
         s = { challenge, cards: null, roomId: actor.roomId, lastMoveAt: now, roomSeenAt: now };
-        await this.ledger.pvpHold(actor.accountId, { matchId: challenge.id, gameId: op.gameId, stakeUnits: op.stakeUnits }, now);
+        if (!isFreePvp(challenge)) await this.ledger.pvpHold(actor.accountId, { matchId: challenge.id, gameId: op.gameId, stakeUnits: op.stakeUnits }, now);
       } else {
         s = await this.saved(op.challengeId); const c = s.challenge;
         if (s.roomId !== actor.roomId || !participant(c, actor.accountId) && c.targetId !== actor.accountId && !(op.action === 'accept' && c.targetId === null)) return fail('Этот вызов недоступен.');
@@ -139,10 +141,10 @@ export class PvpStore {
         if (op.action === 'accept') {
           if (c.status !== 'open' || c.creatorId === actor.accountId || c.targetId && c.targetId !== actor.accountId || await this.current(actor.accountId)) return fail('Этот вызов уже занят или недоступен.');
           const busy = await this.ledger.db.prepare("SELECT 1 FROM pvp_matches WHERE room_id=? AND status IN ('arriving','playing') AND (payload::jsonb->'challenge'->>'gameId')=? LIMIT 1").get(actor.roomId, c.gameId);
-          if (busy) return fail('Этот стол уже зарезервирован. Выбери другой вызов.');
+          if (busy && !isDirectPvp(c)) return fail('Этот стол уже зарезервирован. Выбери другой вызов.');
           if (!this.rooms.get(actor.roomId)?.people.some(p => p.accountId === actor.accountId && p.connected && p.available)) return fail('Сначала заверши текущую игру.');
           if (!this.rooms.get(actor.roomId)?.people.some(p => p.accountId === c.creatorId && p.connected && p.available)) return fail('Автор вызова сейчас недоступен.');
-          await this.ledger.pvpHold(actor.accountId, { matchId: c.id, gameId: c.gameId, stakeUnits: c.stakeUnits }, now);
+          if (!isFreePvp(c)) await this.ledger.pvpHold(actor.accountId, { matchId: c.id, gameId: c.gameId, stakeUnits: c.stakeUnits }, now);
           c.opponentId = actor.accountId; c.opponentName = cleanName(actor.name); c.status = 'arriving'; c.expiresAt = now + PVP_ARRIVAL_MS;
         } else if (op.action === 'cancel') {
           if (c.status === 'playing' || !participant(c, actor.accountId) && c.targetId !== actor.accountId) return fail('Партию можно завершить только сдачей.');
@@ -153,7 +155,7 @@ export class PvpStore {
           if (c.ready.length === 2) {
             c.status = 'playing'; c.expiresAt = now + PVP_MOVE_MS; s.lastMoveAt = now;
             if (isPvpCardGame(c.gameId)) s.cards = createCardGame(c.gameId);
-            if (c.gameId === 'tsu-e-fa') s.tsuEFa = createTsuEFa();
+            if (c.gameId === 'tsu-e-fa') s.tsuEFa = isDirectPvp(c) ? createTsuEFa(c.targetWins ?? 3) : createTsuEFa(2, 1);
           }
         } else if (op.action === 'resign') {
           if (c.status !== 'playing' || !participant(c, actor.accountId)) return fail('Партия ещё не началась.');

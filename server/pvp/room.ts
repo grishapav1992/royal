@@ -1,6 +1,7 @@
 import { ACTIVITIES, type ActivityId } from '../../src/shared/activities';
 import { activityHall } from '../../src/shared/world';
-import { isPvpSnapshotGame, validPvpRequest, type PvpChallenge, type PvpSnapshot } from '../../src/shared/pvp';
+import { isPvpSnapshotGame, isDirectPvp, isFreePvp, validPvpRequest, type PvpChallenge, type PvpSnapshot } from '../../src/shared/pvp';
+import { PVP_PLAYER_DISTANCE } from '../../src/shared/tsuEFa';
 import { playCommand } from '../nilePlayRoutes';
 import {pvpSeat} from '../../src/shared/pvpSeats';
 import type { Activities } from '../activities';
@@ -20,10 +21,14 @@ export class PvpRoom {
   private outstanding=new Map<string,string>();
   private attempts=new Map<string,{at:number;n:number}>();
   constructor(private host:Host,private socket:string|((account:string,action:string,value:unknown)=>Promise<{status:number;value:any}>)|undefined=process.env.NILE_PLAY_SOCKET_FILE){
-    host.activities.canJoin=(session,game)=>!this.matches.some(c=>c.gameId===game&&['arriving','playing'].includes(c.status))
+    host.activities.canJoin=(session,game)=>!this.matches.some(c=>!isDirectPvp(c)&&c.gameId===game&&['arriving','playing'].includes(c.status))
       ||this.matches.some(c=>c.gameId===game&&c.status==='playing'&&this.host.people().some(p=>p.sessionId===session&&(p.accountId===c.creatorId||p.accountId===c.opponentId)));
   }
   locked(session:string){return [...this.host.activities.wagers.values()].some(ids=>ids.includes(session));}
+  private publicSnapshot(snapshot:PvpSnapshot):PvpSnapshot{
+    const people=this.host.people();
+    return {...snapshot,people:snapshot.people.map(person=>({...person,sessionId:people.find(p=>p.accountId===person.accountId&&p.connected)?.sessionId}))};
+  }
   private async call(account:string,action:string,value:unknown){
     if(!this.socket)throw Error('Тестовый USDT пока не подключён.');
     if(typeof this.socket==='function')return this.socket(account,action,value);
@@ -42,12 +47,18 @@ export class PvpRoom {
       const person=this.host.people().find(p=>p.sessionId===session&&p.connected);
       if(!person||!validPvpRequest(value))return;
       try{
-        if(value.action==='create'||value.action==='accept')await this.host.allowMoney?.(person.accountId);
+        const match='challengeId'in value?this.matches.find(c=>c.id===value.challengeId):undefined;
+        if(value.action==='create'&&!isFreePvp(value)||value.action==='accept'&&(!match||!isFreePvp(match)))await this.host.allowMoney?.(person.accountId);
+        const targetId=value.action==='create'&&value.gameId==='tsu-e-fa'?value.targetId:value.action==='accept'&&match&&isDirectPvp(match)&&match.targetId?match.creatorId:null;
+        if(targetId){
+          const target=this.host.people().find(p=>p.accountId===targetId&&p.connected);
+          if(!target||target.hall!==person.hall||Math.hypot(target.x-person.x,target.y-person.y)>PVP_PLAYER_DISTANCE)throw Error('Сначала подойди ближе к игроку.');
+        }
         if(value.action==='ready'){
           const match=this.matches.find(c=>c.id===value.challengeId),game=match?.gameId;
           if(!game)throw Error('Обнови список поединков.');
           const target=pvpSeat(game,match.creatorId===person.accountId?0:1);
-          if(person.hall!==activityHall(game)||Math.hypot(person.x-target.x,person.y-target.y)>65)throw Error('Сначала подойди к своему столу.');
+          if(!isDirectPvp(match)&&(person.hall!==activityHall(game)||Math.hypot(person.x-target.x,person.y-target.y)>65))throw Error('Сначала подойди к своему столу.');
         }
         if(value.action==='accept'){
           const game=this.matches.find(c=>c.id===value.challengeId)?.gameId;
@@ -61,7 +72,7 @@ export class PvpRoom {
         const snapshot=result.value as PvpSnapshot;
         this.matches=snapshot.challenges.filter(c=>['open','arriving','playing'].includes(c.status));
         await this.sync();
-        this.host.send(session,'pvp',snapshot);
+        this.host.send(session,'pvp',this.publicSnapshot(snapshot));
       }catch(error){this.host.send(session,'pvp-result',{requestId:value.id,error:error instanceof Error&&/[а-я]/i.test(error.message)?error.message:'Связь с кошельком прервалась. Повтори то же действие.',rejected:error instanceof Error&&((error as any).status===403||/Сначала|Обнови|другая партия/.test(error.message))});}
     };
     const task=async()=>{try{await run();}finally{this.outstanding.delete(session);}};
@@ -83,7 +94,8 @@ export class PvpRoom {
       if(c.status!=='playing')continue;
       const players=[c.creatorId,c.opponentId].map(id=>people.find(p=>p.accountId===id));
       if(players.some(p=>!p?.connected))continue;
-      this.host.activities.startWager(c.gameId,players.map(p=>p!.sessionId));this.running.set(c.gameId,c.id);
+      const key=isDirectPvp(c)?'tsu-e-fa:'+c.id:c.gameId;
+      this.host.activities.startWager(key,players.map(p=>p!.sessionId),c.gameId);this.running.set(key,c.id);
       if(isPvpSnapshotGame(c.gameId))continue;
       const state=c.gameId==='chess'?this.host.activities.chess.state:this.host.activities.tables.find(t=>t.state.id===c.gameId)!.state;
       let winner:string|null|undefined;
@@ -98,7 +110,7 @@ export class PvpRoom {
         if(settled.status===200)c.status='finished';
       }
     }
-    for(const row of result.value.snapshots){const person=people.find(p=>p.accountId===row.accountId&&p.connected);if(person)this.host.send(person.sessionId,'pvp',row.snapshot);}
+    for(const row of result.value.snapshots){const person=people.find(p=>p.accountId===row.accountId&&p.connected);if(person)this.host.send(person.sessionId,'pvp',this.publicSnapshot(row.snapshot));}
   }
   stop(){this.stopped=true;}
 }

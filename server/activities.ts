@@ -101,7 +101,7 @@ export class Activities {
     this.pianoElapsed+=dt;
     if(this.pianoElapsed+1e-9>=.05){this.pianoElapsed=Math.max(0,(this.pianoElapsed+1e-9)%.05-1e-9);this.sendPiano();}
   }
-  startWager(game:string,ids:string[]){
+  startWager(game:string,ids:string[],activity=game){
     const previous=this.wagers.get(game);
     if(previous){
       if(previous.join(',')!==ids.join(',')){
@@ -116,7 +116,7 @@ export class Activities {
       if(engine){for(const id of [...engine.state.players])engine.leave(id);for(const id of ids)engine.join(id);}
       this.wagers.set(game,[...ids]);
     }
-    for(const id of ids){const p=this.player(id);if(p){this.stop(id);p.activity=game;p.playing=true;}}
+    for(const id of ids){const p=this.player(id);if(p){this.stop(id);p.activity=activity;p.playing=true;}}
     this.changed();
   }
   finishWager(game:string){const ids=this.wagers.get(game);this.wagers.delete(game);for(const id of ids??[])this.leave(id,true);}

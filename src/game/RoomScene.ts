@@ -91,6 +91,7 @@ export class RoomScene extends Phaser.Scene {
   private network?: NetworkCommands;
   private networkSelf?: PlayerView;
   private remotePlayers = new Map<string, { actor: Actor; target: PlayerView }>();
+  onPlayer: (id: string) => void = () => {};
   private lastInput = '0,0';
   private lastInputAt = 0;
   private prediction = new MovementPrediction();
@@ -158,10 +159,11 @@ export class RoomScene extends Phaser.Scene {
     this.input.keyboard!.on('keydown-E', () => this.interact());
     this.input.keyboard!.on('keydown-SPACE', () => this.interact());
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer, objects: Phaser.GameObjects.GameObject[]) => {
-      if (this.locked || this.typing || objects.length) return;
+      if (this.locked || this.typing || objects.length || pointer.rightButtonDown()) return;
       this.pendingCabinet = null; this.pendingLounge = null;
       this.goTo({ x: pointer.worldX, y: pointer.worldY });
     });
+    this.input.mouse?.disableContextMenu();
     this.game.events.on(Phaser.Core.Events.BLUR, () => { this.input.keyboard?.resetKeys(); this.player.path = []; this.marker.setVisible(false); this.endPrediction(); this.network?.stop(); });
     if (this.reducedMotion) this.tweens.pauseAll();
     this.guard = new SecurityGuard(this);
@@ -638,7 +640,14 @@ export class RoomScene extends Phaser.Scene {
     for (const p of players) if (p.id !== selfId) {
       const remote = this.remotePlayers.get(p.id);
       if (remote) remote.target = p;
-      else this.remotePlayers.set(p.id, { actor: this.actor(p.x, p.y, p.skin, p.name, false, p.appearance), target: p });
+      else {
+        const actor=this.actor(p.x,p.y,p.skin,p.name,false,p.appearance);
+        actor.sprite.setInteractive({useHandCursor:true}).on('pointerdown',(_pointer:Phaser.Input.Pointer,_x:number,_y:number,event:Phaser.Types.Input.EventData)=>{
+          event.stopPropagation();
+          if(!this.locked&&!this.typing&&this.remotePlayers.get(p.id)?.target.connected)this.onPlayer(p.id);
+        });
+        this.remotePlayers.set(p.id,{actor,target:p});
+      }
     }
   }
   private interpolate(actor: Actor, target: PlayerView, dt: number, time: number) {
