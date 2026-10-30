@@ -10,7 +10,6 @@ import shutil
 import subprocess
 import sys
 import tarfile
-import time
 import uuid
 
 NAME = 'forest-heart-responsive-20261030-v1'
@@ -104,12 +103,19 @@ def module_scope(before, after, metadata, pointer_sha):
     expected={**before,**{folder+n:h for n,h in metadata['files'].items()},folder+'manifest.json':metadata['_manifestSha256'],GAME+'/active.json':pointer_sha}
     require(after==expected, 'Another module or retained resource changed')
 def capacity(extra=0): require(shutil.disk_usage(LIVE).free>MIN_FREE+extra, 'Five GiB disk reserve would be crossed')
+def rollback_scope(current,before,source,program):
+    require(current['services']==before['services'] and current['configuration']==before['configuration'],'Later services prevent rollback')
+    require(current['hostContractSha256']==before['hostContractSha256'],'Later contract prevents rollback')
+    require(set(current['source'])==set(before['source']),'Missing or added source prevents rollback')
+    require(set(before['program']).issubset(current['program']) and set(current['program']).issubset(program),'Missing or added runtime prevents rollback')
+    for n,h in current['source'].items(): require(h in [before['source'].get(n),source.get(n)],'Later source prevents rollback')
+    for n,h in current['program'].items(): require(h in [before['program'].get(n),program.get(n)],'Later runtime prevents rollback')
 
 def payload():
     operator=read(ROOT/'operator.json'); release=read(ROOT/'release-manifest.json'); receipt=read(ROOT/'release-github.json'); before=read(ROOT/'before.json')
     require(release['scope']=='application' and release['build']['passed'], 'Expected a complete prepared application')
     require(release['sourceCommit']==receipt['sourceCommit']==operator['sourceCommit'] and release['baseCommit']==before['sourceCommit'], 'Wrong reviewed source or baseline')
-    require(sha(ROOT/'guard.py')==operator['guardSha256'] and sha(ROOT/'publisher.py')==operator['publisherSha256'], 'Installer changed')
+    require(sha(ROOT/'guard.py')==operator['guardSha256'] and sha(ROOT/'publisher.py')==operator['publisherSha256']==before['source']['scripts/game-module-release.py'], 'Installer changed')
     require(sha(ROOT/'release-manifest.json')==operator['releaseManifestSha256'] and sha(ROOT/'release-github.json')==operator['receiptSha256'], 'Release receipt changed')
     source_scope(operator['source'])
     require(inventory(ROOT/'source')==operator['source'] and inventory(ROOT/'dist-delta')==operator['dist'], 'Payload differs')
@@ -165,6 +171,7 @@ def publish():
     candidate=image('royal-game:'+NAME); expected_program={**before['program'],**{'dist/'+n:h for n,h in op['dist'].items()}}
     require(runtime(candidate)==expected_program,'Candidate changed protected runtime bytes')
     parent,child=[inspect(n) for n in [before['preparedImage'],candidate]]
+    require(child['Config'].get('Labels',{}).get('org.opencontainers.image.revision')==release['sourceCommit'],'Candidate revision differs')
     for k in ['User','WorkingDir','Env','Entrypoint','Cmd','ExposedPorts','Healthcheck','Volumes']: require(parent['Config'].get(k)==child['Config'].get(k),'Image configuration changed')
     require(child['RootFS']['Layers'][:len(parent['RootFS']['Layers'])]==parent['RootFS']['Layers'],'Parent layers changed')
     save('build-result.json',{'image':candidate,'program':expected_program,'sourceCommit':release['sourceCommit']})
@@ -203,19 +210,20 @@ def publish():
 
 def rollback(op,before,meta,publisher,old_version,candidate,expected_program):
     current=snapshot()
-    require(current['services']==before['services'] and current['configuration']==before['configuration'],'Later services prevent rollback')
-    require(current['hostContractSha256']==before['hostContractSha256'],'Later contract prevents rollback')
+    rollback_scope(current,before,op['source'],expected_program)
     require(current['preparedImage'] in [before['preparedImage'],candidate],'Later prepared image prevents rollback')
-    for n,h in current['source'].items(): require(h in [before['source'].get(n),op['source'].get(n)],'Later source prevents rollback')
-    for n,h in current['program'].items(): require(h in [before['program'].get(n),expected_program.get(n)],'Later runtime prevents rollback')
     pointer=MODULES/GAME/'active.json'; value=read(pointer)
-    module_scope(before['moduleFiles'],current['moduleFiles'],meta,sha(pointer)) if value['manifest'].split('/')[4]==meta['version'] else require(current['moduleFiles']==before['moduleFiles'],'Unexpected module state prevents rollback')
+    require(sha(pointer) in [op['beforePointerSha256'],op['pointerSha256']],'Later pointer prevents rollback')
+    if current['moduleFiles']!=before['moduleFiles']: module_scope(before['moduleFiles'],current['moduleFiles'],meta,sha(pointer))
     if value['manifest'].split('/')[4]==meta['version']:
         publisher.run(SimpleNamespace(operation='rollback',version=old_version,game=GAME,root=str(MODULES),state=str(STATE),expected_sha=sha(pointer)))
     with tarfile.open(BACKUP/'source.tgz') as archive:
         for n in op['source']:
             target=ROOT/'restore'/n; target.parent.mkdir(parents=True,exist_ok=True); target.write_bytes(archive.extractfile(n).read()); require(sha(target)==before['source'][n],'Rollback source differs'); atomic(target,LIVE/n)
     runtime_index(BACKUP/'index.html'); atomic(BACKUP/'index.html',LIVE/'dist/index.html'); run(['docker','tag',before['preparedImage'],'royal-game:latest']); healthy()
+    recovered=snapshot()
+    require(recovered['source']==before['source'] and recovered['program']['dist/index.html']==before['program']['dist/index.html'],'Recovered presentation differs')
+    require(sha(pointer)==op['beforePointerSha256'],'Recovered pointer differs')
     save('recovered.json',{'restored':True,'databaseTouched':False,'hostRestarted':False,'newImmutableAssetsRetained':True})
 
 def main():

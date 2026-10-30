@@ -59,7 +59,9 @@ for(const name of ['manifest.json',...Object.keys(metadata.files)]){
 for(const name of ['release-manifest.json','release-github.json'])copy(resolve(root,'module-build',name),name);
 copy(resolve(task,'before.json'),'before.json');
 const guardSha256=copy(resolve(helper,'guard.py'),'guard.py');
-const publisherSha256=copy(resolve(root,'scripts/game-module-release.py'),'publisher.py');
+const publisherBytes=tracked('scripts/game-module-release.py');
+const publisherSha256=hash(publisherBytes);assert.equal(publisherSha256,before.source['scripts/game-module-release.py'],'Live publisher changed');
+writeFileSync(resolve(out,'publisher.py'),publisherBytes);
 const operator={release:'forest-heart-responsive-20261030-v1',sourceCommit:release.sourceCommit,source,dist,guardSha256,publisherSha256,
   releaseManifestSha256:sha(resolve(out,'release-manifest.json')),receiptSha256:sha(resolve(out,'release-github.json')),
   beforePointerSha256:before.moduleFiles['studio-forest-heart/active.json'],pointerSha256:release.files[pkg.pointer],moduleVersion:pkg.version};

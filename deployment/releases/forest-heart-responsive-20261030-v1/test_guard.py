@@ -29,4 +29,12 @@ class Isolation(unittest.TestCase):
         for changed in [{**after,'other/active.json':'tampered'},{**after,'studio-forest-heart/versions/old/entry.js':'tampered'},{**after,'studio-forest-heart/versions/new/extra.js':'unknown'}]:
             with self.assertRaises(RuntimeError):guard.module_scope(before,changed,meta,'new-pointer')
 
+    def test_rollback_refuses_missing_protected_files_and_later_writes(self):
+        before={'services':{'game':'keep'},'configuration':{'env':'keep'},'hostContractSha256':'keep','source':{'src/app.ts':'old','server/index.ts':'keep'},'program':{'dist/index.html':'old','dist-server/index.js':'keep'}}
+        changed={'src/app.ts':'new'};program={**before['program'],'dist/index.html':'new','dist/new.js':'new'}
+        current={**before,'source':{**before['source'],**changed},'program':program}
+        guard.rollback_scope(current,before,changed,program)
+        for damaged in [{**current,'source':{'src/app.ts':'new'}},{**current,'program':{'dist/index.html':'new'}},{**current,'source':{**current['source'],'server/index.ts':'foreign'}},{**current,'program':{**program,'foreign.js':'foreign'}}]:
+            with self.assertRaises(RuntimeError):guard.rollback_scope(damaged,before,changed,program)
+
 if __name__=='__main__': unittest.main()
