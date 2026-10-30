@@ -12,6 +12,7 @@
     "server/progression/store.ts",
     "server/progression/sources.ts",
     "server/progression/freeSpins.ts",
+    "server/progression/handlers.ts",
     "server/progressionRoutes.ts",
     "src/shared/progression.ts",
     "src/wallet/ProgressionClient.ts",
@@ -3795,7 +3796,7 @@
       "sha256": "339fa9f2bea088f4c92ea48a9babccc4d57da8da7a966465463d9bf78480c24a"
     },
     "server/accounts.ts": {
-      "commit": "3b551a4495b917740dfd28c3296ce41be5fac348",
+      "commit": "f9a6a231e73da8618d745a654d1b684b18bcda5d",
       "path": "server/accounts.ts",
       "baseSha256": "64b0526cc577d6df4689bb840ef445f3ad062ca75f9bf5d51c9934a2e143b055",
       "sha256": "64b0526cc577d6df4689bb840ef445f3ad062ca75f9bf5d51c9934a2e143b055"
@@ -4659,7 +4660,7 @@
       "sha256": "434f60205dfe5c25d0f26b83479017477fda94fb06c28b19120ebd56b467a600"
     },
     "server/index.ts": {
-      "commit": "3b551a4495b917740dfd28c3296ce41be5fac348",
+      "commit": "f9a6a231e73da8618d745a654d1b684b18bcda5d",
       "path": "server/index.ts",
       "baseSha256": "7cf7ff7de2c422de390dd7140c953c978d0f99dd0574bfe19fd419789016f748",
       "sha256": "7cf7ff7de2c422de390dd7140c953c978d0f99dd0574bfe19fd419789016f748"
@@ -5223,7 +5224,7 @@
       "sha256": "c34dad4c10b6152d10359ba1fcc62e42613909fd63d6bc28071069bea628d245"
     },
     "src/i18n/en.ts": {
-      "commit": "3b551a4495b917740dfd28c3296ce41be5fac348",
+      "commit": "f9a6a231e73da8618d745a654d1b684b18bcda5d",
       "path": "src/i18n/en.ts",
       "baseSha256": "8853e5a8bd533ca85608eb11975f1f0d98a03fd0d1b749f48cca00e9db86cd68",
       "sha256": "8853e5a8bd533ca85608eb11975f1f0d98a03fd0d1b749f48cca00e9db86cd68"
@@ -5247,7 +5248,7 @@
       "sha256": "5c029cf589bfccbcdc6c3ee1de27dba9fcc56850ec89201bf4ffa10bc4a027a8"
     },
     "src/main.ts": {
-      "commit": "3b551a4495b917740dfd28c3296ce41be5fac348",
+      "commit": "f9a6a231e73da8618d745a654d1b684b18bcda5d",
       "path": "src/main.ts",
       "baseSha256": "bb582cbad07f6d1e03a990f36c312057619e60a2037faf616c46b62feeceb80b",
       "sha256": "bb582cbad07f6d1e03a990f36c312057619e60a2037faf616c46b62feeceb80b"
@@ -7713,55 +7714,61 @@
       "sha256": "1bf97aae02fa8bc6146fc5dcb281a586894a92bfe24b52cec1bded20c35e71d4"
     },
     "server/progression/store.ts": {
-      "commit": "3b551a4495b917740dfd28c3296ce41be5fac348",
+      "commit": "f9a6a231e73da8618d745a654d1b684b18bcda5d",
       "path": "server/progression/store.ts",
-      "baseSha256": "f7075c23203e4a1baba851308d7bc8d7324fc57b7f34e29235010ba0014c67f1",
-      "sha256": "f7075c23203e4a1baba851308d7bc8d7324fc57b7f34e29235010ba0014c67f1"
+      "baseSha256": "f009747047782b5aaf961e121df3f9d33173448a5bd74a8716a2b5c66ce44df0",
+      "sha256": "f009747047782b5aaf961e121df3f9d33173448a5bd74a8716a2b5c66ce44df0"
     },
     "server/progression/sources.ts": {
-      "commit": "3b551a4495b917740dfd28c3296ce41be5fac348",
+      "commit": "f9a6a231e73da8618d745a654d1b684b18bcda5d",
       "path": "server/progression/sources.ts",
-      "baseSha256": "6291057cf2c6cf556861a8f5cfc6752565dd8246fc7b4eefd8185e1f7091cf9c",
-      "sha256": "6291057cf2c6cf556861a8f5cfc6752565dd8246fc7b4eefd8185e1f7091cf9c"
+      "baseSha256": "6640ff15833378a077ca7ef19a502414fab6f99bf6ccb63db30f8ceb8cdd9674",
+      "sha256": "6640ff15833378a077ca7ef19a502414fab6f99bf6ccb63db30f8ceb8cdd9674"
     },
     "server/progression/freeSpins.ts": {
-      "commit": "3b551a4495b917740dfd28c3296ce41be5fac348",
+      "commit": "f9a6a231e73da8618d745a654d1b684b18bcda5d",
       "path": "server/progression/freeSpins.ts",
       "baseSha256": "06beb20c2714af66b60b201dee341159aff53d9dd0f4bf2de3961e171494f199",
       "sha256": "06beb20c2714af66b60b201dee341159aff53d9dd0f4bf2de3961e171494f199"
     },
+    "server/progression/handlers.ts": {
+      "commit": "f9a6a231e73da8618d745a654d1b684b18bcda5d",
+      "path": "server/progression/handlers.ts",
+      "baseSha256": "e0b9fd117de4937fcaa76296c20d8e31060ea346b6297bd828a3c95f3b9d099f",
+      "sha256": "e0b9fd117de4937fcaa76296c20d8e31060ea346b6297bd828a3c95f3b9d099f"
+    },
     "server/progressionRoutes.ts": {
-      "commit": "3b551a4495b917740dfd28c3296ce41be5fac348",
+      "commit": "f9a6a231e73da8618d745a654d1b684b18bcda5d",
       "path": "server/progressionRoutes.ts",
       "baseSha256": "a3b76f0fe37bb378e3754c3e816741a6f1c1a064bae7f15b810391dd28820747",
       "sha256": "a3b76f0fe37bb378e3754c3e816741a6f1c1a064bae7f15b810391dd28820747"
     },
     "src/shared/progression.ts": {
-      "commit": "3b551a4495b917740dfd28c3296ce41be5fac348",
+      "commit": "f9a6a231e73da8618d745a654d1b684b18bcda5d",
       "path": "src/shared/progression.ts",
-      "baseSha256": "ba6d80743670dc04a1d317ef6cee54b9f81fd14ef87431586611ba07fcd538b3",
-      "sha256": "ba6d80743670dc04a1d317ef6cee54b9f81fd14ef87431586611ba07fcd538b3"
+      "baseSha256": "866cda46a4f9cac3ff42e815dc616838d61368db2819b916e7a5e3f24b472318",
+      "sha256": "866cda46a4f9cac3ff42e815dc616838d61368db2819b916e7a5e3f24b472318"
     },
     "src/wallet/ProgressionClient.ts": {
-      "commit": "3b551a4495b917740dfd28c3296ce41be5fac348",
+      "commit": "f9a6a231e73da8618d745a654d1b684b18bcda5d",
       "path": "src/wallet/ProgressionClient.ts",
       "baseSha256": "df4ac0c7399050dc115983ac71592634b03ef9be0303a73341e87c5e320b260b",
       "sha256": "df4ac0c7399050dc115983ac71592634b03ef9be0303a73341e87c5e320b260b"
     },
     "src/ui/ProgressionUI.ts": {
-      "commit": "3b551a4495b917740dfd28c3296ce41be5fac348",
+      "commit": "f9a6a231e73da8618d745a654d1b684b18bcda5d",
       "path": "src/ui/ProgressionUI.ts",
       "baseSha256": "ec5d4fb8d6eaa2ee570cf5cc97aa39de7d464913a552f2d2f86282a5f9cd4e5f",
       "sha256": "ec5d4fb8d6eaa2ee570cf5cc97aa39de7d464913a552f2d2f86282a5f9cd4e5f"
     },
     "src/ui/progression.css": {
-      "commit": "3b551a4495b917740dfd28c3296ce41be5fac348",
+      "commit": "f9a6a231e73da8618d745a654d1b684b18bcda5d",
       "path": "src/ui/progression.css",
       "baseSha256": "a612c91c6ca81a70474224f25fbd466eac364383a0264c7cbf25bb73884807f3",
       "sha256": "a612c91c6ca81a70474224f25fbd466eac364383a0264c7cbf25bb73884807f3"
     },
     "src/i18n/progressionEn.ts": {
-      "commit": "3b551a4495b917740dfd28c3296ce41be5fac348",
+      "commit": "f9a6a231e73da8618d745a654d1b684b18bcda5d",
       "path": "src/i18n/progressionEn.ts",
       "baseSha256": "67ddb8f3639da6d7b955136201699ad1469c535c23f16f2a7d844557898e5cc5",
       "sha256": "67ddb8f3639da6d7b955136201699ad1469c535c23f16f2a7d844557898e5cc5"

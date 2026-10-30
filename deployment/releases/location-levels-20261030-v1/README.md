@@ -40,3 +40,5 @@ Commands `check`, `build`, `publish`, `release`, and `rollback` are accepted onl
 ## Local verification
 
 Run `test_deploy.py` with Python and `node --test test_quiesce.cjs`. They use temporary fixtures and fake clients only. The existing 28 tests of the reused overlay engine also verify its lease loss and uncertain-Docker recovery behavior. No production checks are performed by these tests.
+
+Run `node --import tsx scripts/database-test.ts --test deployment/releases/location-levels-20261030-v1/test_quiesce_pg.cjs` from the repository to verify the real PostgreSQL privilege query, retained table locks, blocked account writer and explicit release in a disposable database.
