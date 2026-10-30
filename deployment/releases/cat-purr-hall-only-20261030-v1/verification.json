@@ -1,0 +1,1946 @@
+{
+  "release": "cat-purr-hall-only-20261030-v1",
+  "sourceCommit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+  "productionBase": "ee9319121f33bf14f45bacae448d21d62a17df9e",
+  "sourceChanges": {
+    "src/game/RoomScene.ts": "ed347de811ee74344d8a3abb48042e22ba3ae281ccc8ffa32c2acfb8d83eab88",
+    "src/game/CatRenderer.ts": "6a941a8a80cd98346e4daa1a1b5b868265ccdcfac86e00c23dac2c2ef9989176"
+  },
+  "clientChanges": {
+    "assets/index-CLGGaXly.js": "f1d4b1b2b3d705e3b8ce15a45ddb9f76cddcea5ed72e657e015b62bc06ac4ed1",
+    "assets/index-3Z476rI5.css": "b463c52f03d5684cbe36468e4c09019e7b7b649004170b6579c4b95e1b907127",
+    "index.html": "6f9b723c58268489e65fa01960da9aab9024d1cd3466d505194d7d7edea2c555"
+  },
+  "hostInputs": {
+    "src/game/RoomScene.ts": "d7e1b0f05eb6be5dcf594ef0ea96e0edf902515b493bafa4f9ac3113745730a2",
+    "src/game/CatRenderer.ts": "fd44284d154e3a0e47cc393b25c193c1f4e1fb62677d66f74951f14137a7b189",
+    "src/main.ts": "9c863d399278d73e845ceba8d74a5129d5b2965af1b03268aa648bfc7eb76961",
+    "src/i18n/paymentMethodsEn.ts": "841b789e4e0ba8f3a6f2f399758ade90d900824457d2b2e5d0408546269943c8",
+    "src/modules/IndependentGameUI.ts": "81ccfa6e29069b8acf5ce3e8541dd9345f4f20a44088f410f39a90533b2bc4cc",
+    "src/modules/GameModulePreparation.ts": "0b80e9894d33b75a9d697c946082d0028c5d7cc9f890996b168a2560e7c02e3e",
+    "src/modules/GameModuleCatalog.ts": "412fabe4eaf3421dbffd25314358f579d53af2da25651c96a0ebfc20c7818a2a",
+    "src/i18n/index.ts": "2d164e663d6a3922184508c3a65f01615c7c9bd64ac7e6717a790e78959e00ea",
+    "src/ui/gameReactions.ts": "e77578be2dd82c468c067795b7778154b1d2353be7587dc08de0e62cc6402888",
+    "src/ui/GameViewport.ts": "7d4451ea312a7c09c71cdd5145f23acb5e475a674d9974d66c84d1e4165c3fef",
+    "src/ui/RoyalPlatformCatalog.ts": "33f3aebd93d94ed440f333ccc9f54761dfad3cbc2d64f55ade879db8d242360a",
+    "src/ui/CardTablesCatalog.ts": "03c4d279cd72e71d2b05f370eaf886e311920ccffe39f4120e30cac1868a40ed",
+    "src/ui/CardDealerStage.ts": "0399162aaf74b2ed438553ef3a428f82d766e917a5bd36f5e747e3944fe77ca3",
+    "src/shared/cardTables.ts": "12197eabb008c9166bfedc0ddbb6bce5a1023090faf1c71bc56960418d00f6ab",
+    "src/ui/floor-navigation.css": "c3086e261a5e69cde5a49cc535ad40c90aa856f3f05535052983cdc4194cf470",
+    "src/shared/studioGames.ts": "5be1d552e408e7a2fe1d1cff923b70bdda059a57847c46db09c96dc2ae63e29a",
+    "src/shared/casinoVariants.ts": "806e62338241a65561b7170957045ce2fd931a599302d50785c35f6f0f9f1ca5",
+    "src/shared/arcadeCatalog.ts": "6efcf93ef73f267d15b2a9d5ff42de4ad13d758881f7574c8c994fe49366c450",
+    "src/ui/RetiredArcadeRounds.ts": "abf6b6d93319db76a7ab766cfe0879b5ea92c75b6e15af75b66211106b9a98fc",
+    "src/shared/casinoExpansion.ts": "4c4d2a2ad539e9e7b162c9ea63ed9aca6373fa4f2dd2b8f4d8e836c2c655393c",
+    "src/shared/casinoSessions.ts": "002e31c3198d885571e78b3fdc714aeed6179cd269f5927de3ad0c23dacbb2dd",
+    "src/ui/ClubMap.ts": "87c63ab6736a8a4ed45d50cb22015c291aae8cc8102c5595e56d29347a8b453e",
+    "src/ui/DemoWalletUI.ts": "de2a7f2999160d694b855d9a3e59ae2b05cdc5b4f31222318b4e670b1c6de1dd",
+    "src/ui/CryptoWalletUI.ts": "4c3783755a1699fcf7e7b6a7287b8cf664ae79841acfa8220b2f47543e506a89",
+    "src/ui/MiraChat.ts": "11b4d67df4defaa38ee15b209f425f81fa32454b50226b20df6ef85153efd616",
+    "src/shared/githubGames.ts": "2296858200d156461f81f1c99739354ee935325848385b14d8a876d99df40bbc",
+    "src/demo-preview.css": "ccea5a598a2cee3fe65dc6465006875e18034b7736f671fba9702eb4f4635721",
+    "src/game/GameAudio.ts": "4b876566a0585498c2f07ed8efc695aac7d8f40eae4bf528ba39ef7fb1e260c9",
+    "src/shared/cabinets.ts": "2c9212df02cf3eef376af83a9274bfa27b41fb3bf2d6a076c2d92d00af61b759",
+    "src/game/navigation.ts": "3c4919cddf664e5a3bcc58095734eb0dfcc3d61787454a306623379787d97e4d",
+    "src/style.css": "d4823bafd1cc130ceac4610efc1a6e83d9ca2b50965279c245d7a510398f12a6",
+    "src/paper-theme.css": "c2618a4b9fee4b3e28ae07c1292ed59dc0ce4b1fed7fa80f7146c2dfe2f6a1c6",
+    "src/own-cabinets.css": "2f41cb8d374b83371cced2505d0dc7d62d336c560852ed218a50470d83fa9a09",
+    "src/mira-dialog.css": "43be372b93d4af6ba10e83fab0e6b9e787dd258412fc04ed9b5478ee046c190a",
+    "src/shared/world.ts": "88c5b4473a23d396e12dc699174caa764ede9257dfea2df5361eaef14ea8e45d",
+    "src/ui/SocialUI.ts": "80453ad682038acf65e9b2696a399430e5829e94eabaefd6c2f0a6479175d100",
+    "src/ui/CatUI.ts": "5e1705b7fd7edbc02be78397851ed87c5c07966fc742924b5a7ba2121bfcc02a",
+    "src/ui/RoomLayout.ts": "14eb9433cc854fb136769a61ad8a38523f0b5aeeb948ff79de25ad623916e7ee",
+    "src/i18n/en.ts": "333f6414f2f1349aa14fbd518bbbbdb6975612ecba4622c5e24b4b1de9a0bee8",
+    "src/modules/GameModuleManifest.ts": "3570f80c6c5c76741c61caa766cc437747a1a58ff10f195e3f21dc22bd0ebd22",
+    "src/wallet/WalletClient.ts": "629677fba3015fd8887040b86a88d14cb4f0103e456e06b749fbc1b9f61c05ca",
+    "src/shared/demoWallet.ts": "2f3d21554eaa03930e306f8db103fe8299649387853574dff516cd01cd7e1cef",
+    "src/ui/NowPaymentsSandboxUI.ts": "b38266c11783e626b009817b6e9613f4fc84cfe477d5bae5943b8b1dbbcc3743",
+    "src/wallet.css": "30c5fb0aa6cbee1cdef1bd5a6e062e91c7b8ea94b69fbaacabc74dbbf7da630a",
+    "src/shared/clubLayout.ts": "6df6051ddd013821d78193622fa7c8bc8b765bc8f971a2d30eeb462d0cc86414",
+    "src/shared/furniture.ts": "dbbb212cc84b3c1c5b6bb41b144102e38b974e29a240bca524eedeb8f6f5d5da",
+    "src/shared/activities.ts": "4066a87d6fa8bcec96f5a4a419ef73f4c140ac3d46873ae7bb418f0f8b056023",
+    "src/shared/clubGeometry.ts": "e70216f7cea75cd5f14f868b777431f1f824ee0347e017c3124d213a243d7290",
+    "src/ui/club-map.css": "61471a07f483a29a3ee032893f5a0e4319456b373453998da9ce7c82cfdb639c",
+    "src/shared/jackieChan.ts": "5f7cd0a034676f79cf94b01b7a5e725d8c27cc7af5e8734d36ce3e27dff47faf",
+    "src/shared/crLeo.ts": "f0c9eae07611011cd3675eec1ed8a46a00f2f84822d8430a4b4267e6bfe15b38",
+    "src/shared/forestHeart.ts": "6f0ba79987ff2d24e5c242103ec6735bea1b9fcb3a0fba2abec773eff1dab52e",
+    "src/shared/caribbeanTreasures.ts": "5590af9897cfb32dbf8fd7d9c0608ad52184051ddee7ca70cd309267a4311aee",
+    "src/game/dealerArt.ts": "e62324d5ac69571a476a158eaca165c8593022bec1eed8e66c1963e5222111c5",
+    "src/ui/card-tables.css": "70f6e1f6dec8a8c4a16afd627b95b5566c4bbb601fcbdcafb3577b7628bcd50f",
+    "src/shared/catSurfaces.ts": "57d15054db858053e7bc67910cd361f79aa59053b2641fcb8b8b6e41d063dd47",
+    "src/ui/cat.css": "cf2d2d1478b7992bb33829e31d414aa6ff1e8f0f5b96cf3bc3aa171fb91accb1",
+    "src/modules/GameHostRuntime.ts": "628d4ddfb01767f5151c2aa2f811a1c6e3dce2eba7e5a91657a15a4584b54435",
+    "src/ui/FirstFloorGameArt.ts": "3b3a1ba969fafaa32517101eee7ae196e756af09030b09473798745b8ac9abc4",
+    "src/ui/RoyalCatalogArtwork.ts": "133f68d47c0db148e1f6e6dd3f57ca7f09c1e2ec7b4c486410f65036c5a9f152",
+    "src/ui/royal-platform.css": "59627d8a063bdb861cb6655807327b306683e982ffb0c00d86e555cd7ea13cc5",
+    "src/ui/game-viewport.css": "a9e05fa35afcfebe571aa9aafe8c8d686a2a6d62757187969ac964c7b86e2ac6",
+    "src/ui/slot-layout.css": "44365d78f816cdc2277f36982c3816765d686a46e82c78a2c2f2dc8e2774a752",
+    "src/ui/SecurityUI.ts": "ff86ee2c130424ecc3908b3facc78c3e5186fc7fd0cf6d8e8e7220a8855b5644",
+    "src/ui/GameChat.ts": "6f0a65584aba1fbd0b2dfffdb1460e6818934a348702e7fec0eb83dd6f3ec40b",
+    "src/ui/ChatMedia.ts": "c81d2929c11f835e2310e3fe817d042f97837672532ad29a9ba3106c1152a7c8",
+    "src/game/demoGames.ts": "f3d2366ed1d4416b63825e896b9790524d6e2de0216fbb836720212fc7dfe078",
+    "src/ui/AuthUI.ts": "2f88202b5f8d349612f5a85028c4dda7b834ef0bb0912437575e8fa8604786cd",
+    "src/ui/ActivitiesUI.ts": "431721288ecfcb33043f6d3806f4df5dfc383d2e6fce0d0471436e967e890701",
+    "src/ui/PvpUI.ts": "cd133edaf4ee83ee7052f7227d6d64ca7c41045442aed3d8af19a3db42d60285",
+    "src/network/LobbyClient.ts": "c9c323aab32731f835b99be35b83541c4d18c45e48c80feb0dc1008643e6db3a",
+    "src/shared/intoxication.ts": "742b40f26c4efe392d9a76895e9287a06c877aeecc5cbbc5d2419e7ff9689e95",
+    "src/shared/chat.ts": "1b513fd076d2cfb871b9be0c00bb9218a2ebf296e3b29738ca705c908e9c8d71",
+    "src/ui/chat-delivery.css": "086c476b241afcbe976729fe96f3b5c6099618cb531007d35f8d55894f057a82",
+    "src/wallet/ExpansionClient.ts": "2abf931fb94be3aba17d063b899d84bda3885dad819c15545ca0280a34521a52",
+    "src/wallet/MinesClient.ts": "45eb0ece3169e28b80fff7d4d746cff4b62666611f9bb8d1af5b82f6d7ec3c69",
+    "src/ui/retired-arcade-rounds.css": "f6f01f6f0d0b88dbc70f74379e65eb1ea66b9d4342541d0823c3e7fe18a5712b",
+    "src/shared/flagBattle.ts": "e156fd61e71243759c27d9a9d3fed8a0ab1555e9938f6a2b7ac854c344d16e6f",
+    "src/shared/neopolis.ts": "e686a82b272bbfc15f9bd88193f095233490564fbbe8f594893cac101c57c6d1",
+    "src/shared/caribbeanTransport.ts": "c4a590c6778048f9ecd37852549762adde064f90dca072316ee215ba8ac89c78",
+    "src/shared/dracona.ts": "fa6d089b90592693ac3da96fed174f53db6733c37f3ab16e9205cc606396d649",
+    "src/shared/afterglowWardrobe.ts": "6dace1ede72ee479115b5cbf2d1d512c9e8800fd315be407cea787377362dc1f",
+    "src/shared/afterglow.ts": "3a20c05490f1fce9fb33244091230f5106c23d9686566e40f0051d124e941256",
+    "src/shared/memeOverload.ts": "3380fce5ee723cea9a07d8b098c933e0465300fcc19fa727ef30ccbf7303244b",
+    "src/shared/nitroRun.ts": "621e54ab208ea598573dc79f22be813509a85523309af76d5f3b8da7d038cc08",
+    "src/shared/lastConvoy.ts": "f4d1b22f8a67dfda6fadbb4539b85211d8ad6c165657ba394bcd5c258e1f280a",
+    "src/shared/caramelCarnival.ts": "17f9e338297ac7fc37fa0f6ac6608e22cdc9ad145ad18f8c6764d72575f725aa",
+    "src/shared/luelonSlots.ts": "1867b3f6e7e3fbc1e00dd6fad2bb094c42e6038f8eba18e0ef7250381f95cdcb",
+    "src/vendor/github/blackjack/math.ts": "08d65e81ed94d2d08359f5a1d9cea2672becf56195999524230cf1881892df02",
+    "src/vendor/github/baccarat/rules.ts": "703f8692bd1e1952107093863f1f0790978842c98cc739741e9923c393866722",
+    "src/vendor/github/video-poker/math.ts": "4af8857a0a14958d9a3c20e6b3b19d574bea1d56951dab7b6be106d024444849",
+    "src/game/CasinoAudio.ts": "b2a0e223ad8ab27f39e0bc6cfd84ccc75879bc92cbff84558436f2013ffe00b3",
+    "src/game/TableAudio.ts": "1877d4cf8f2b299513819c043b3294c1f84bf0477ea6194173d059d2d32c887d",
+    "src/game/SlotAudio.ts": "db8bd5a92a91cbf4a57ae70166c022d41f3de93a6b893fe331f9bfdfb245cb92",
+    "src/shared/catCare.ts": "83f8f64ca8a13f97e3fd20f7eec5d59623a1f0181d0393fa2e855880a201f5c8",
+    "src/shared/originalGames.ts": "9743f1465b625e64055c8c6c9f268ce8023d61adc7eed187507be7d4163d40c0",
+    "src/shared/casinoNextVariants.ts": "6f525322bc640eb29ad7bfc025205686f87214b174a08a92d0f800afe636eaa7",
+    "src/shared/casinoBatchVariants.ts": "e09ea94fdb5929596f610ef7462dc80d50bcf4926335c398fca6c031a0496135",
+    "src/wallet/CryptoClient.ts": "a0a05010eba83a16df2a7f0e2424e155cdd14fd9fd51d1b329d212f0aeccd57d",
+    "src/shared/cryptoWallet.ts": "4bddde9c8fa664711fd18f66207366c53e810ce9fa09fb9c98775fdd554bc89b",
+    "src/shared/nileWallet.ts": "f46ab635e6b3b59a0c1bb60d39bbf13de046a2ec3b1cc1ee832d4d36ed669b29",
+    "src/wallet/paymentQr.ts": "e647374f0cd5e1089de51cad09bc1d123c4b4a662a681adeb2684089740184a9",
+    "src/shared/cryptoDisplay.ts": "a38f98bbe1d9fbb8c6dd5328195bd606d96144aec7a6bc3489ffee57ce243206",
+    "src/crypto-wallet.css": "435caa63aa1a947644d7d2dc1c73ea64e2013e749fe526c82f2881fc45fe4fe4",
+    "src/ui/MiraPortrait.ts": "f4c25a1bdea0dc5205ec33882fa630835ec1130eecc80997a5219f5aaaa39190",
+    "src/shared/skinStudio.ts": "f183634963d4cc89d7addc0027eb1823ab8fd95555148cce8239160e83473ee8",
+    "src/game/generatedSkinArt.ts": "7cd47c7de40751d4f1070e61d02fb70131e17574e6925ed5f692d8b8527268a4",
+    "src/shared/cabinetSeating.ts": "79306f90ae0607f6f3b60bf4868816027bb023af454a1b95f09b1163815c4a8c",
+    "src/game/cabinetStoolArt.ts": "a068b4e7c3ed97559929c07519c4311fd12fbfb0f03f757caa09a1ff8182b945",
+    "src/game/clubArt.ts": "03d50686862a3260a9e20e61f54bb0e1087a65c887ebfdeffdc7c052348d2ce1",
+    "src/shared/cat.ts": "a42a808a4d6e582a2fc7f47c0b1836a6cc1a4157a1a140d425e792c220e070b9",
+    "src/game/catCareArt.ts": "5628881698aa9fd3e1bd17a794c64534a5dadf738eb4c3870aad66d671d53ab2",
+    "src/shared/atelier.ts": "6c947abfc6a4c2ce585568027bcb5a317debbbd3dbefe95b186ac843eebdcb95",
+    "src/game/atelierArt.ts": "447349cd517c7580d2eee8352fa6b757a301f77fce81907d401c657616e959b5",
+    "src/game/TailorRenderer.ts": "1a37366c43474dc983d39938c67e4dc9bfa469ccc15cdf0350523bef9e16277b",
+    "src/shared/ambientGuests.ts": "6a30d7b77ae830984256dee833ebf5edb57e1c7cdd63d49f6c3d928a91a670fd",
+    "src/game/SecurityGuard.ts": "fba8bb4a6b807fa22667198106034da16b9a2e32e251f66b1abc19cb89a60434",
+    "src/game/demoCabinetArt.ts": "f6f0e2c9c88c1bcaba5e0fae2e5be5c588f8dc5a6f3fdc57bea8f4d6c0bb2970",
+    "src/game/art.ts": "403a9a2befd20fac75f131883a9dba3cba2d3a0a44491c2727bc14f682d3d805",
+    "src/game/materials.ts": "d47d4c04cfc5cd1139d84080f37ee95683490f4934a37560010767d0c2af229e",
+    "src/game/cabinetArtwork.ts": "7940b701dcd38ceb40e97ee53053d7c3d7516f4044137bc20150c2ca8d0b3642",
+    "src/game/catImages.json": "f2ced9c528395125f8566b3b4d2df3605fc27e9eb3271bcfe2ff042a9149cd89",
+    "src/game/BackgroundImages.ts": "3e9ccdf9d475e74a7bc8399efb5644964b617c7eb557cecf6a763339e5a83319",
+    "src/game/cabinetArt.ts": "647b9ea5c5b4611e6c8fff0bce4d0a7377c14d4fbe928822711e6383cdf82e67",
+    "src/game/interiorArt.ts": "2be6bc87fed3260de4f6717847a91b39a00efa44158be40c95dfba0490c91cf4",
+    "src/game/characters.ts": "e2071b019b1d144d97ab89ca2369ddf7076bbc71d3aa3a1e23f1771673d8b971",
+    "src/game/characterAnimation.ts": "49df70ede6b275b544e43c7858b4a4e92b36b5c06231c3ad001b1c949a25f758",
+    "src/game/Bar.ts": "0480e105813da99c266796d665f9aee6401ffe75d38cebaa80137a6dd9f1d53d",
+    "src/game/activityArt.ts": "4d8282d2a08c32223e2d28e098d0c0ff04448411c5f8d2645befb4afa6f3f1ff",
+    "src/shared/movement.ts": "d9dbc4e857101b0a432d95d76f34addf5787ea7566234692e14513dbfef1cf6b",
+    "src/network/MovementPrediction.ts": "c7d1b505759607fb3038cad73d2ecdee021082a9607a7100f5a8b6257da0a0a0",
+    "src/network/ClickTargetScheduler.ts": "101003b745a683284b5c604bb254f0db1869b9e07baff689b34ae756ae8d382f",
+    "src/network/NpcMotion.ts": "c1d0c86bfdc41fd09af1548ca4abf294195793bfa5403a922050d4e85e45107c",
+    "src/network/NpcTimeline.ts": "3dcbc65216fc7d3d17c89438363b6050c1d0e8bec2890bdc88ab612a95398225",
+    "src/game/roomDetails.ts": "88ba66ad03b75054aec40862a384ea35947dab41d0c67dd1e664823e07b236f3",
+    "src/game/CardTablesRenderer.ts": "9539673ed053b7a3eba9f8444ba348a79b3f926865684b71681d0ca9b2795a8d",
+    "src/shared/neopolisMath.ts": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
+    "src/shared/appearance.ts": "d753df5f08e1c6717c4ba3fdbe1b0202013177859995751296a8a900f6a5f1a1",
+    "src/wallet/CasinoClient.ts": "feb8e2a78c62aa0d9272b1f18f07eb8db38de2ea01b337a1b132f06d702c3633",
+    "src/wallet/NilePlayClient.ts": "1789e48810dea6a2390265a7ccdfe7853d5f4d8f92d41954def9ab1a20f41db0",
+    "src/wallet/UsdtClient.ts": "65585a87cfbde54e0a03ddba4c3ab3190660a54ffb61bbb1f334c3fcab249592",
+    "src/wallet/FlightClient.ts": "5378317a883a9dbda28394d65e9db4161f5873ac1ea4a3da1264fd37339ae7a6",
+    "src/modules/GameHostContract.ts": "88b6f28bfa65a2f7cb405be72d5b7de503075286016e87ed59a7468cd9340547",
+    "src/shared/forestHeartMath.ts": "c3e04efc098aa9d61f0faa70fc9159d8460dcf0816d96ef5b560efd45ab46658",
+    "src/shared/cabinetGeometry.ts": "c63adb8bd873e609053ee24384e999eb4fe170b0be536b02f9ec61e848c00118",
+    "src/shared/catHome.ts": "37f33f935166ea7da5beeddd9f4df5c208d483f8b62d3e6d72b4298a09851b10",
+    "src/shared/usdtWallet.ts": "23b523bb24b84dcdbda636f1b6bd940e3072a5069b9ba8c44c71da29129c484a",
+    "src/ui/game-chat.css": "6f5e853440cf379023da50c51de27504406db8234b29093bb771c13ac1e1dc92",
+    "src/shared/caribbeanTreasuresMath.ts": "b86e71675dfd0179da8d8c43c7a62f8da41303d5e6bc59f07b81d4497b64647b",
+    "src/shared/guardCollision.ts": "a050c55ac5d5e9ab9615635de1b64801343d9a9675c1cd1b23d7bc4e9b49a9f2",
+    "src/ui/CharacterEditor.ts": "78155e8bdef3723fc0325a0ed6500ea370ee8ab24bcf76d3b0edc9eaaf3baf18",
+    "src/ui/SkinStudioUI.ts": "677ad10e512b0cac4c6ea159ef4ef8a8482f4d3bb28d3da807e854c49488f4e5",
+    "src/shared/velvetReignHistory.ts": "597f90f94bcbecd64fc37a27f730009651ed5c4d6731a1ee54602195e508118c",
+    "src/shared/cosmicEscapeBets.ts": "5e079e858e39cd73070f95f77688c774aee887e025a2f84fbc365c1e9cddd625",
+    "src/shared/luelonSlotsModels.ts": "b8644fecff250437909ff88950c5ef129c1d534108344f9643b815614d844c74",
+    "src/shared/luelonSlotsLines.ts": "cc9e2528bae03e8965c154f82aa271b3c9976bb3d817130ba51dedf6e8eb67ee",
+    "src/i18n/volcanicPlinkoEn.ts": "5c029cf589bfccbcdc6c3ee1de27dba9fcc56850ec89201bf4ffa10bc4a027a8",
+    "src/game/CatAudio.ts": "bae7a38e7772766397097c7e0b0aa920e551c4892543fa47194454766b363f76",
+    "src/game/CatWalkCycle.ts": "32cd0638c2ccf3394bd23fc3f123584e71798ac257db7adaca606242d7d282b0",
+    "public/assets/cat/walk-v3-frames.json": "e7a8600b80a163e7a3371aab7acdc9b0b29df9c3e52e9e44b099c95c3619beed",
+    "src/ui/royalCatalogArtwork.json": "4487d43f5c9925173e456348e9341f7876455244bd03c1c30677687e57b5c812",
+    "src/ui/RoyalGameArtwork.ts": "a9cd2ace39a0fc8af73b6a12c32d40d1ff8b52837d1042b238eb31ee0d2e473f",
+    "src/shared/gameCore.ts": "aa9520b435a5c969d257290e3b06060051db76de45955f99dd68c48f1b5addab",
+    "src/network/PvpClient.ts": "3638f2df6fa9eb90ce80d6ae8cf9e550e58ca778b8edc1cb9eab384dacffdb83",
+    "src/shared/pvp.ts": "d20cd82ca7f1c8cd20d25daa3e420519a42993a8583924e38d9e67d3cd8f31b3",
+    "src/ui/pvp.css": "2363035baacfa3dbd0c512feb9bb80bfee3f9bab726292ff9fa414acc6c738ba",
+    "src/shared/pvpSeats.ts": "a1430b142a89b77f77268a7a419a4ae62e735d17416b769ef3cb6dd594ea180d",
+    "src/game/startupPreviews.json": "23f6a630ce19f74115999bf53d24d802c967b4829a6886792394a204a62ed45f",
+    "server/games/vfair/dice/dice-math.ts": "a6e83f4cf71c63ab3cca9751012fe1dbc93a832ea553a4bfbe2c8eaa27d8867e",
+    "server/games/vfair/limbo/limbo-math.ts": "71ca6f7b1aeedf1b05804d9ff2c8e72e05fc6242e3d5a5b51b924b08669bdb52",
+    "server/games/vfair/limbo/limbo-roll.ts": "d3a0eeffcebdf1c4103116acdebd58ac63e8f97f1a9760328b52f5db02baa347",
+    "server/games/vfair/mines/mines-math.ts": "ab647b2f14b6cb49b2ad4045dc84b453326cd74d7f5d182a9d6fca257f812f0b",
+    "server/games/vfair/plinko/plinko-math.ts": "9c83981207341b625aca8e5f976da24c2b50bbba3a7e66fd6c330a0584cd15dc",
+    "server/games/vfair/keno/keno-math.ts": "094054bab14de6b4c54b53070804448a39f4bb83f5d4b2eb80cc59bcc6c3fbfa",
+    "server/games/vfair/keno/keno-probability.ts": "0f870c04fe76f39b72962ee86a41e63e9ebf7c35edbc82299ba004d98cb4df70",
+    "server/games/vfair/plinko/plinko-constants.ts": "dca86dc20365d497f6fd6b220f2cc0157e00112b4b2206c03c82959547b67afc",
+    "server/games/vfair/keno/keno-constants.ts": "75476a6be66e77e6830e2bff964b9f4cacb7a89925c9e20a97ebcb7a4dc8946c",
+    "src/game/catHomeArt.ts": "f643a5192309debe0b1a925848780fb5422586ae8a8e7e011fa975e6765d2ef9",
+    "src/game/hallWindows.ts": "18baf193c3f7304e12291a6fbc7bcb269afe9b9a6170febaa6def395ee903633",
+    "src/shared/chatMedia.ts": "c16f283c9310455322193a89038bd39a12213d25d777dc37425d502a85e79b78",
+    "src/ui/chat-media.css": "9948203720ed42959b34ecb095a458ae5ccc521ddf9ca3d35f5536692c45141c",
+    "src/shared/neopolisMathV3.ts": "e32db65f28cb4cac308d07154fb56f7816fc630c82a7548e1733ad34e0a91820",
+    "src/shared/neopolisStakePayouts.ts": "8a5b1ce043a5e3341148412c422561aa38c9de04e2fdb01989bb0c384157ecae",
+    "src/shared/neopolisMathV1.ts": "84adb49d9303b29bd8a460b30b7e6993d77df343f8dae33025a0646f7ca3bb92",
+    "src/shared/neopolisMathV2.ts": "22c2d4646ea2ac8db021bde42fcb90b38035848041cea217acd1d9eeb2682692",
+    "src/shared/draconaMath.ts": "5735d0173b801e80329ec93f9d0dc049da94068addd042f7de0fb6bf9ca248b4",
+    "src/shared/draconaMathV1.ts": "760b567c64aae4a5190641cad162fd9a6ff9e5764e8bd9d91d06dcb1d707ee21",
+    "src/game/miraArt.ts": "d8d9ca535eb7dc5236c21f988d8270407dcfc0645b6333bebade5731006e4aa3",
+    "src/shared/miraRoutine.ts": "6c4c54350515d5157afa57edb2a29cad149d1becea98b7fccd3473d20e069c47",
+    "src/shared/hockey.ts": "eba673cd220fac7d85a3ba9da53d9cf0b5dfae7ca3732306327ac7a28a7ca320",
+    "src/game/PianoAudio.ts": "5fbc000ee9939e486fd27bf5a6b584522262b8d165697280427aa133ed085039",
+    "src/shared/walletAccount.ts": "f048e9d0e18ffe32619ee9e8b5f457d9d6af69329dbd2b26b994c2bcf6448560",
+    "src/shared/nowpaymentsSandbox.ts": "95df8061741dcf8ea642d1aa80ba7937505d3e1b81e17b1fb5dbb64711e37b43",
+    "src/game/avatarArt.ts": "3c949e04c1de843b7959bbeae331c8a6854bac120fb90f1f800b65d3b1848c4e",
+    "src/shared/movementLimits.ts": "6d70cf0d47e42fc3dafac122c24f33da7a00946ad4ac22f06a0a07e4dc118d02",
+    "src/shared/velvetReign.ts": "8cd399677940ae5fddd67dea255fd83b54faf297cb00b8290ae918b53e26db2f",
+    "src/ui/SkinFittingRoom.ts": "58fac5c92ba998cc6f31b3ae6b3f32c53c0ae8b61b6f415c1bc0589effe6932e",
+    "src/ui/skin-studio.css": "fc5b72eb39487b329cab7aa34606a34f656bef746f7db130f34f0be3a79b65d0",
+    "src/shared/nilePlay.ts": "d760785a5eb68a5e6d321f499e6bbf2fd4fbe2b1b835e6cbe52d81798f27d8d6",
+    "src/ui/StudioArtwork.ts": "17cf6de27f5961a6e7c8522efa60c9aa8b105194f003016d0e939c74ebc2526f",
+    "src/ui/character-editor.css": "5bc5d8b77178d2eb08838eec9eb7a72f58f57731db7bbe655f380ec517e7619c",
+    "src/vendor/github/baccarat/constants.ts": "396c5002ef85a8b2d845e57e94e5072d0f064f96dc773ec66eb960dd3ecc54c5",
+    "src/network/sessionRecovery.ts": "00b109a4d8fed2d65a493e7c557dcdeb124174cc51d640a92ba4fe9e13b907f3",
+    "server/games/vfair/decimal.ts": "235cf2ea332f2a635b06e86462809821f9e515e5a73de6c944811f2d3b0f60d7",
+    "server/games/vfair/game-rtp.ts": "850598f0b5b9c2c8d9a13a4ff151be5d23467804bc457f35665e95b6008f87c7",
+    "server/games/vfair/mines/mines-constants.ts": "168798b8df86084da0848ef2d4589256a1ad5d8f4c0c30c13960fb0ba47d69db",
+    "server/games/vfair/keno/keno-multipliers.ts": "c76e0a9698539ea0f09f3bfc863ed47351a7ac38270078a0fee8ec579fe240b4",
+    "server/games/vfair/plinko/plinko-multipliers.ts": "4be4d4ccb0dca62ec216edf295d6459075817d5b115e5d28038df2ebaf96f072",
+    "server/games/vfair/limbo/limbo-constants.ts": "b5bc95ccd1943068b60bc621354e68a6e53c872d50a34414b52babbd02c3d527",
+    "server/games/vfair/limbo/limbo-rtp-bounds.ts": "67756ce5182e7fb4ecce1ce9ecc60aba34986929309b3c631f6ba43c58e534ee",
+    "server/games/vfair/dice/dice-constants.ts": "88219a7c455889904b6ed1c4804737736cf551fa0f83fe382d7835dcd25c44a3",
+    "server/games/vfair/dice/dice-rtp-bounds.ts": "c4f310051ab1d73b634855897f9d1f14b13452a6bf8b0d2d64e72cbb4d508fc7",
+    "server/games/vfair/keno/keno-reference-paytables.ts": "caa92b92343afa04889b13ef484f6d1598aac196ffe1f7e2e789dbf77c4f25bc"
+  },
+  "hostOrigins": {
+    "src/game/RoomScene.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/game/RoomScene.ts",
+      "changed": true
+    },
+    "src/game/CatRenderer.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/game/CatRenderer.ts",
+      "changed": true
+    },
+    "src/main.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/main.ts"
+    },
+    "src/i18n/paymentMethodsEn.ts": {
+      "commit": "172a07c2eddd43bc24ed4b54c4ebf5034e6e44cb",
+      "path": "src/i18n/paymentMethodsEn.ts"
+    },
+    "src/modules/IndependentGameUI.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/modules/IndependentGameUI.ts"
+    },
+    "src/modules/GameModulePreparation.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/modules/GameModulePreparation.ts"
+    },
+    "src/modules/GameModuleCatalog.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "deployment/releases/jackie-chan-20261029-v2/source/src/modules/GameModuleCatalog.ts"
+    },
+    "src/i18n/index.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/i18n/index.ts"
+    },
+    "src/ui/gameReactions.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/gameReactions.ts"
+    },
+    "src/ui/GameViewport.ts": {
+      "commit": "50b78d7201ed26918788f3cb3cb09f489f9e39fc",
+      "path": "src/ui/GameViewport.ts"
+    },
+    "src/ui/RoyalPlatformCatalog.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "deployment/releases/jackie-chan-20261029-v2/source/src/ui/RoyalPlatformCatalog.ts"
+    },
+    "src/ui/CardTablesCatalog.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/CardTablesCatalog.ts"
+    },
+    "src/ui/CardDealerStage.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/CardDealerStage.ts"
+    },
+    "src/shared/cardTables.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/cardTables.ts"
+    },
+    "src/ui/floor-navigation.css": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/floor-navigation.css"
+    },
+    "src/shared/studioGames.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/studioGames.ts"
+    },
+    "src/shared/casinoVariants.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/casinoVariants.ts"
+    },
+    "src/shared/arcadeCatalog.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "deployment/releases/jackie-chan-20261029-v2/source/src/shared/arcadeCatalog.ts"
+    },
+    "src/ui/RetiredArcadeRounds.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/RetiredArcadeRounds.ts"
+    },
+    "src/shared/casinoExpansion.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "deployment/releases/jackie-chan-20261029-v2/source/src/shared/casinoExpansion.ts"
+    },
+    "src/shared/casinoSessions.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/casinoSessions.ts"
+    },
+    "src/ui/ClubMap.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/ClubMap.ts"
+    },
+    "src/ui/DemoWalletUI.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/DemoWalletUI.ts"
+    },
+    "src/ui/CryptoWalletUI.ts": {
+      "commit": "9a06c46be5f845cbec621c806a9a772bb5a4b189",
+      "path": "src/ui/CryptoWalletUI.ts"
+    },
+    "src/ui/MiraChat.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/MiraChat.ts"
+    },
+    "src/shared/githubGames.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/githubGames.ts"
+    },
+    "src/demo-preview.css": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/demo-preview.css"
+    },
+    "src/game/GameAudio.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/game/GameAudio.ts"
+    },
+    "src/shared/cabinets.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "deployment/releases/jackie-chan-20261029-v2/source/src/shared/cabinets.ts"
+    },
+    "src/game/navigation.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/game/navigation.ts"
+    },
+    "src/style.css": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/style.css"
+    },
+    "src/paper-theme.css": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/paper-theme.css"
+    },
+    "src/own-cabinets.css": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/own-cabinets.css"
+    },
+    "src/mira-dialog.css": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/mira-dialog.css"
+    },
+    "src/shared/world.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/world.ts"
+    },
+    "src/ui/SocialUI.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/SocialUI.ts"
+    },
+    "src/ui/CatUI.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/CatUI.ts"
+    },
+    "src/ui/RoomLayout.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/RoomLayout.ts"
+    },
+    "src/i18n/en.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/i18n/en.ts"
+    },
+    "src/modules/GameModuleManifest.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/modules/GameModuleManifest.ts"
+    },
+    "src/wallet/WalletClient.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/wallet/WalletClient.ts"
+    },
+    "src/shared/demoWallet.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/demoWallet.ts"
+    },
+    "src/ui/NowPaymentsSandboxUI.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/NowPaymentsSandboxUI.ts"
+    },
+    "src/wallet.css": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/wallet.css"
+    },
+    "src/shared/clubLayout.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/clubLayout.ts"
+    },
+    "src/shared/furniture.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/furniture.ts"
+    },
+    "src/shared/activities.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/activities.ts"
+    },
+    "src/shared/clubGeometry.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/clubGeometry.ts"
+    },
+    "src/ui/club-map.css": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/club-map.css"
+    },
+    "src/shared/jackieChan.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/jackieChan.ts"
+    },
+    "src/shared/crLeo.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/crLeo.ts"
+    },
+    "src/shared/forestHeart.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/forestHeart.ts"
+    },
+    "src/shared/caribbeanTreasures.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/caribbeanTreasures.ts"
+    },
+    "src/game/dealerArt.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/game/dealerArt.ts"
+    },
+    "src/ui/card-tables.css": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/card-tables.css"
+    },
+    "src/shared/catSurfaces.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/catSurfaces.ts"
+    },
+    "src/ui/cat.css": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/cat.css"
+    },
+    "src/modules/GameHostRuntime.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/modules/GameHostRuntime.ts"
+    },
+    "src/ui/FirstFloorGameArt.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/FirstFloorGameArt.ts"
+    },
+    "src/ui/RoyalCatalogArtwork.ts": {
+      "commit": "9cbc4be2568ae0f46c653cb1ed611f35ab35cec4",
+      "path": "src/ui/RoyalCatalogArtwork.ts"
+    },
+    "src/ui/royal-platform.css": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/royal-platform.css"
+    },
+    "src/ui/game-viewport.css": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/game-viewport.css"
+    },
+    "src/ui/slot-layout.css": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/slot-layout.css"
+    },
+    "src/ui/SecurityUI.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/SecurityUI.ts"
+    },
+    "src/ui/GameChat.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/GameChat.ts"
+    },
+    "src/ui/ChatMedia.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/ChatMedia.ts"
+    },
+    "src/game/demoGames.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/game/demoGames.ts"
+    },
+    "src/ui/AuthUI.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/AuthUI.ts"
+    },
+    "src/ui/ActivitiesUI.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/ActivitiesUI.ts"
+    },
+    "src/ui/PvpUI.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/PvpUI.ts"
+    },
+    "src/network/LobbyClient.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/network/LobbyClient.ts"
+    },
+    "src/shared/intoxication.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/intoxication.ts"
+    },
+    "src/shared/chat.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/chat.ts"
+    },
+    "src/ui/chat-delivery.css": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/chat-delivery.css"
+    },
+    "src/wallet/ExpansionClient.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "deployment/releases/jackie-chan-20261029-v2/source/src/wallet/ExpansionClient.ts"
+    },
+    "src/wallet/MinesClient.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/wallet/MinesClient.ts"
+    },
+    "src/ui/retired-arcade-rounds.css": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/retired-arcade-rounds.css"
+    },
+    "src/shared/flagBattle.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/flagBattle.ts"
+    },
+    "src/shared/neopolis.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/neopolis.ts"
+    },
+    "src/shared/caribbeanTransport.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/caribbeanTransport.ts"
+    },
+    "src/shared/dracona.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/dracona.ts"
+    },
+    "src/shared/afterglowWardrobe.ts": {
+      "commit": "6ea6b2a20276d03561b16bc6290ce832c8ffc3cb",
+      "path": "src/shared/afterglowWardrobe.ts"
+    },
+    "src/shared/afterglow.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/afterglow.ts"
+    },
+    "src/shared/memeOverload.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/memeOverload.ts"
+    },
+    "src/shared/nitroRun.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/nitroRun.ts"
+    },
+    "src/shared/lastConvoy.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/lastConvoy.ts"
+    },
+    "src/shared/caramelCarnival.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/caramelCarnival.ts"
+    },
+    "src/shared/luelonSlots.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/luelonSlots.ts"
+    },
+    "src/vendor/github/blackjack/math.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/vendor/github/blackjack/math.ts"
+    },
+    "src/vendor/github/baccarat/rules.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/vendor/github/baccarat/rules.ts"
+    },
+    "src/vendor/github/video-poker/math.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/vendor/github/video-poker/math.ts"
+    },
+    "src/game/CasinoAudio.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/game/CasinoAudio.ts"
+    },
+    "src/game/TableAudio.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/game/TableAudio.ts"
+    },
+    "src/game/SlotAudio.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/game/SlotAudio.ts"
+    },
+    "src/shared/catCare.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/catCare.ts"
+    },
+    "src/shared/originalGames.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/originalGames.ts"
+    },
+    "src/shared/casinoNextVariants.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/casinoNextVariants.ts"
+    },
+    "src/shared/casinoBatchVariants.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/casinoBatchVariants.ts"
+    },
+    "src/wallet/CryptoClient.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/wallet/CryptoClient.ts"
+    },
+    "src/shared/cryptoWallet.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/cryptoWallet.ts"
+    },
+    "src/shared/nileWallet.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/nileWallet.ts"
+    },
+    "src/wallet/paymentQr.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/wallet/paymentQr.ts"
+    },
+    "src/shared/cryptoDisplay.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/cryptoDisplay.ts"
+    },
+    "src/crypto-wallet.css": {
+      "commit": "5745dbe90332ff2234ab8d6402347ed2228a0e1d",
+      "path": "src/crypto-wallet.css"
+    },
+    "src/ui/MiraPortrait.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/MiraPortrait.ts"
+    },
+    "src/shared/skinStudio.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/skinStudio.ts"
+    },
+    "src/game/generatedSkinArt.ts": {
+      "commit": "374de8e4d626a599c2440e8bf717c59043f5be3e",
+      "path": "src/game/generatedSkinArt.ts"
+    },
+    "src/shared/cabinetSeating.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/cabinetSeating.ts"
+    },
+    "src/game/cabinetStoolArt.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/game/cabinetStoolArt.ts"
+    },
+    "src/game/clubArt.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/game/clubArt.ts"
+    },
+    "src/shared/cat.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/cat.ts"
+    },
+    "src/game/catCareArt.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/game/catCareArt.ts"
+    },
+    "src/shared/atelier.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/atelier.ts"
+    },
+    "src/game/atelierArt.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/game/atelierArt.ts"
+    },
+    "src/game/TailorRenderer.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/game/TailorRenderer.ts"
+    },
+    "src/shared/ambientGuests.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/ambientGuests.ts"
+    },
+    "src/game/SecurityGuard.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/game/SecurityGuard.ts"
+    },
+    "src/game/demoCabinetArt.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/game/demoCabinetArt.ts"
+    },
+    "src/game/art.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/game/art.ts"
+    },
+    "src/game/materials.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/game/materials.ts"
+    },
+    "src/game/cabinetArtwork.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/game/cabinetArtwork.ts"
+    },
+    "src/game/catImages.json": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/game/catImages.json"
+    },
+    "src/game/BackgroundImages.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/game/BackgroundImages.ts"
+    },
+    "src/game/cabinetArt.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/game/cabinetArt.ts"
+    },
+    "src/game/interiorArt.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/game/interiorArt.ts"
+    },
+    "src/game/characters.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/game/characters.ts"
+    },
+    "src/game/characterAnimation.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/game/characterAnimation.ts"
+    },
+    "src/game/Bar.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/game/Bar.ts"
+    },
+    "src/game/activityArt.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/game/activityArt.ts"
+    },
+    "src/shared/movement.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/movement.ts"
+    },
+    "src/network/MovementPrediction.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/network/MovementPrediction.ts"
+    },
+    "src/network/ClickTargetScheduler.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/network/ClickTargetScheduler.ts"
+    },
+    "src/network/NpcMotion.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/network/NpcMotion.ts"
+    },
+    "src/network/NpcTimeline.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/network/NpcTimeline.ts"
+    },
+    "src/game/roomDetails.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/game/roomDetails.ts"
+    },
+    "src/game/CardTablesRenderer.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/game/CardTablesRenderer.ts"
+    },
+    "src/shared/neopolisMath.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/neopolisMath.ts"
+    },
+    "src/shared/appearance.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/appearance.ts"
+    },
+    "src/wallet/CasinoClient.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/wallet/CasinoClient.ts"
+    },
+    "src/wallet/NilePlayClient.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/wallet/NilePlayClient.ts"
+    },
+    "src/wallet/UsdtClient.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/wallet/UsdtClient.ts"
+    },
+    "src/wallet/FlightClient.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/wallet/FlightClient.ts"
+    },
+    "src/modules/GameHostContract.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/modules/GameHostContract.ts"
+    },
+    "src/shared/forestHeartMath.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/forestHeartMath.ts"
+    },
+    "src/shared/cabinetGeometry.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/cabinetGeometry.ts"
+    },
+    "src/shared/catHome.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/catHome.ts"
+    },
+    "src/shared/usdtWallet.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/usdtWallet.ts"
+    },
+    "src/ui/game-chat.css": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/game-chat.css"
+    },
+    "src/shared/caribbeanTreasuresMath.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/caribbeanTreasuresMath.ts"
+    },
+    "src/shared/guardCollision.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/guardCollision.ts"
+    },
+    "src/ui/CharacterEditor.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/CharacterEditor.ts"
+    },
+    "src/ui/SkinStudioUI.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/SkinStudioUI.ts"
+    },
+    "src/shared/velvetReignHistory.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/velvetReignHistory.ts"
+    },
+    "src/shared/cosmicEscapeBets.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/cosmicEscapeBets.ts"
+    },
+    "src/shared/luelonSlotsModels.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/luelonSlotsModels.ts"
+    },
+    "src/shared/luelonSlotsLines.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/luelonSlotsLines.ts"
+    },
+    "src/i18n/volcanicPlinkoEn.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/i18n/volcanicPlinkoEn.ts"
+    },
+    "src/game/CatAudio.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/game/CatAudio.ts"
+    },
+    "src/game/CatWalkCycle.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/game/CatWalkCycle.ts"
+    },
+    "public/assets/cat/walk-v3-frames.json": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "public/assets/cat/walk-v3-frames.json"
+    },
+    "src/ui/royalCatalogArtwork.json": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/royalCatalogArtwork.json"
+    },
+    "src/ui/RoyalGameArtwork.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/RoyalGameArtwork.ts"
+    },
+    "src/shared/gameCore.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/gameCore.ts"
+    },
+    "src/network/PvpClient.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/network/PvpClient.ts"
+    },
+    "src/shared/pvp.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/pvp.ts"
+    },
+    "src/ui/pvp.css": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/pvp.css"
+    },
+    "src/shared/pvpSeats.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/pvpSeats.ts"
+    },
+    "src/game/startupPreviews.json": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/game/startupPreviews.json"
+    },
+    "server/games/vfair/dice/dice-math.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "server/games/vfair/dice/dice-math.ts"
+    },
+    "server/games/vfair/limbo/limbo-math.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "server/games/vfair/limbo/limbo-math.ts"
+    },
+    "server/games/vfair/limbo/limbo-roll.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "server/games/vfair/limbo/limbo-roll.ts"
+    },
+    "server/games/vfair/mines/mines-math.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "server/games/vfair/mines/mines-math.ts"
+    },
+    "server/games/vfair/plinko/plinko-math.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "server/games/vfair/plinko/plinko-math.ts"
+    },
+    "server/games/vfair/keno/keno-math.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "server/games/vfair/keno/keno-math.ts"
+    },
+    "server/games/vfair/keno/keno-probability.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "server/games/vfair/keno/keno-probability.ts"
+    },
+    "server/games/vfair/plinko/plinko-constants.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "server/games/vfair/plinko/plinko-constants.ts"
+    },
+    "server/games/vfair/keno/keno-constants.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "server/games/vfair/keno/keno-constants.ts"
+    },
+    "src/game/catHomeArt.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/game/catHomeArt.ts"
+    },
+    "src/game/hallWindows.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/game/hallWindows.ts"
+    },
+    "src/shared/chatMedia.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/chatMedia.ts"
+    },
+    "src/ui/chat-media.css": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/chat-media.css"
+    },
+    "src/shared/neopolisMathV3.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/neopolisMathV3.ts"
+    },
+    "src/shared/neopolisStakePayouts.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/neopolisStakePayouts.ts"
+    },
+    "src/shared/neopolisMathV1.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/neopolisMathV1.ts"
+    },
+    "src/shared/neopolisMathV2.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/neopolisMathV2.ts"
+    },
+    "src/shared/draconaMath.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/draconaMath.ts"
+    },
+    "src/shared/draconaMathV1.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/draconaMathV1.ts"
+    },
+    "src/game/miraArt.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/game/miraArt.ts"
+    },
+    "src/shared/miraRoutine.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/miraRoutine.ts"
+    },
+    "src/shared/hockey.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/hockey.ts"
+    },
+    "src/game/PianoAudio.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/game/PianoAudio.ts"
+    },
+    "src/shared/walletAccount.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/walletAccount.ts"
+    },
+    "src/shared/nowpaymentsSandbox.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/nowpaymentsSandbox.ts"
+    },
+    "src/game/avatarArt.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/game/avatarArt.ts"
+    },
+    "src/shared/movementLimits.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/movementLimits.ts"
+    },
+    "src/shared/velvetReign.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/velvetReign.ts"
+    },
+    "src/ui/SkinFittingRoom.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/SkinFittingRoom.ts"
+    },
+    "src/ui/skin-studio.css": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/skin-studio.css"
+    },
+    "src/shared/nilePlay.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/shared/nilePlay.ts"
+    },
+    "src/ui/StudioArtwork.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/StudioArtwork.ts"
+    },
+    "src/ui/character-editor.css": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/ui/character-editor.css"
+    },
+    "src/vendor/github/baccarat/constants.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/vendor/github/baccarat/constants.ts"
+    },
+    "src/network/sessionRecovery.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "src/network/sessionRecovery.ts"
+    },
+    "server/games/vfair/decimal.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "server/games/vfair/decimal.ts"
+    },
+    "server/games/vfair/game-rtp.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "server/games/vfair/game-rtp.ts"
+    },
+    "server/games/vfair/mines/mines-constants.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "server/games/vfair/mines/mines-constants.ts"
+    },
+    "server/games/vfair/keno/keno-multipliers.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "server/games/vfair/keno/keno-multipliers.ts"
+    },
+    "server/games/vfair/plinko/plinko-multipliers.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "server/games/vfair/plinko/plinko-multipliers.ts"
+    },
+    "server/games/vfair/limbo/limbo-constants.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "server/games/vfair/limbo/limbo-constants.ts"
+    },
+    "server/games/vfair/limbo/limbo-rtp-bounds.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "server/games/vfair/limbo/limbo-rtp-bounds.ts"
+    },
+    "server/games/vfair/dice/dice-constants.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "server/games/vfair/dice/dice-constants.ts"
+    },
+    "server/games/vfair/dice/dice-rtp-bounds.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "server/games/vfair/dice/dice-rtp-bounds.ts"
+    },
+    "server/games/vfair/keno/keno-reference-paytables.ts": {
+      "commit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "path": "server/games/vfair/keno/keno-reference-paytables.ts"
+    }
+  },
+  "guardTests": {
+    "passed": 28,
+    "platform": "Linux Python on server, isolated fixtures; no live state changes"
+  },
+  "build": {
+    "format": 1,
+    "startedAt": "2026-10-30T15:38:17.403Z",
+    "scope": "application",
+    "steps": [
+      {
+        "name": "rtp",
+        "passed": true,
+        "durationMs": 3350
+      },
+      {
+        "name": "typecheck",
+        "passed": true,
+        "durationMs": 9914
+      },
+      {
+        "name": "modules",
+        "passed": true,
+        "durationMs": 9491
+      },
+      {
+        "name": "host",
+        "passed": true,
+        "durationMs": 7709
+      },
+      {
+        "name": "backend",
+        "passed": true,
+        "durationMs": 91
+      },
+      {
+        "name": "reconciliation",
+        "passed": true,
+        "durationMs": 38
+      },
+      {
+        "name": "payments",
+        "passed": true,
+        "durationMs": 30
+      }
+    ],
+    "passed": true,
+    "durationMs": 30623
+  },
+  "legacyCatTests": {
+    "passed": 16,
+    "failed": 6,
+    "reason": "Pre-existing tests still reference removed cabinets and expect seven card tables. Changed renderer and scene are not imported by this suite."
+  },
+  "implementationBrowserChecks": {
+    "passed": true,
+    "cases": [
+      "hall purr",
+      "dialog stop and suppression",
+      "return to hall",
+      "local cabinet suppression",
+      "server playing suppression",
+      "petting purr stop"
+    ],
+    "mode": "Local deterministic guest host in desktop Chrome; no wagers"
+  },
+  "cleanup": {
+    "localPartialPayloadDeletion": "Automatic approval review rejected deletion as blocked by policy; partial payload retained and separate reviewed delta created",
+    "archivesCreated": [
+      "artifacts/work/cat-purr-hall-only/transport.tgz"
+    ],
+    "archiveBytes": 2048803,
+    "worktree": "Primary checkout of this chat; archive_worktree previously refused removal. Remove after the chat switches to another checkout and GitHub preservation is verified.",
+    "aptCache": {
+      "path": "/var/cache/apt/archives",
+      "logicalBytesBefore": 16802158,
+      "logicalBytesAfter": 0,
+      "freeBytesBefore": 5374242816,
+      "freeBytesAfter": 5508218880,
+      "concurrentDiskActivity": true
+    },
+    "dockerBuildCache": {
+      "olderThanHours": 24,
+      "reportedReclaimableBytes": "1.745GB",
+      "finalFreeBytes": 6050844672,
+      "runtimeAndRollbackImagesPreserved": true,
+      "physicalSpaceNotAttributedSolelyToThisCleanup": true
+    },
+    "peerOwnedForestStaging": {
+      "report": "/opt/royal-releases/forest-heart-responsive-20261030-v1/old-staging-cleanup.json",
+      "logicalBytes": 64211751,
+      "freeBytesBefore": 5309403136,
+      "freeBytesAfter": 5374910464,
+      "backupAndImagesPreserved": true
+    },
+    "server": {
+      "sourceCommit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "removed": [
+        {
+          "path": "/opt/royal-releases/cat-purr-hall-only-20261030-v1/runtime-context",
+          "logicalBytes": 2818965,
+          "hardlinks": true
+        },
+        {
+          "path": "/opt/royal-releases/cat-purr-hall-only-20261030-v1/transport.tgz",
+          "logicalBytes": 2048803
+        }
+      ],
+      "freeBytesBefore": 6011011072,
+      "freeBytesAfter": 6013087744,
+      "backupPreserved": true,
+      "imagesPreserved": true,
+      "retainedRollbackPayload": [
+        "source",
+        "dist-delta",
+        "server-delta",
+        "install-manifest.json",
+        "build-result.json"
+      ],
+      "cleanupCondition": "Retain guarded rollback inputs until a subsequent verified compatible host release supersedes this release",
+      "concurrentDiskActivity": true
+    },
+    "local": {
+      "retained": [
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\cat-purr-hall-only\\royal\\dist",
+          "logicalBytes": 232413582
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\cat-purr-hall-only\\royal\\dist-server",
+          "logicalBytes": 4477338
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\cat-purr-hall-only\\royal\\module-dist",
+          "logicalBytes": 261417686
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\cat-purr-hall-only\\royal\\module-build",
+          "logicalBytes": 1158049
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\cat-purr-hall-only\\royal\\artifacts\\work\\cat-purr-hall-only",
+          "logicalBytes": 17892849
+        }
+      ],
+      "freeBytes": 199099584512,
+      "removedBytes": 0,
+      "reason": "Primary checkout cannot be archived by the app. Local partial-payload deletion was rejected by automatic approval review with blocked by policy. Normal current builds and reports remain; remove transient files after switching the chat checkout and verifying GitHub preservation."
+    }
+  },
+  "unpublishedMainFeaturesRetained": true,
+  "backendChanged": false,
+  "modulesChanged": false,
+  "databaseTouched": false,
+  "candidate": {
+    "image": "sha256:37af05f8646ef2a3c127272d17ef2ee5c51b8d9703b9545355320714bbc8d506",
+    "sourceCommit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+    "sourceBackupSha256": "542221b739f094aa5a4f92aca94d0b566b03f795f9506e6792d0d773dd40bb9d",
+    "backup": "/opt/royal-backups/cat-purr-hall-only-20261030-v1"
+  },
+  "verifiedCandidateRuntimeFiles": 8523,
+  "public": {
+    "sourceCommit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+    "base": "https://stealth-spark-gokmxooi.expresshost.cloud",
+    "passed": true,
+    "httpChecks": [
+      {
+        "path": "/healthz",
+        "status": 200,
+        "sha256": "7482326171995296103a4f794befc2c7831df741969bdbe936bdb637195e4dfc"
+      },
+      {
+        "path": "/assets/index-CLGGaXly.js",
+        "status": 200,
+        "sha256": "f1d4b1b2b3d705e3b8ce15a45ddb9f76cddcea5ed72e657e015b62bc06ac4ed1"
+      },
+      {
+        "path": "/assets/index-3Z476rI5.css",
+        "status": 200,
+        "sha256": "b463c52f03d5684cbe36468e4c09019e7b7b649004170b6579c4b95e1b907127"
+      },
+      {
+        "path": "/",
+        "status": 200,
+        "sha256": "6f9b723c58268489e65fa01960da9aab9024d1cd3466d505194d7d7edea2c555"
+      },
+      {
+        "path": "/game-modules/breaker/active.json",
+        "status": 200,
+        "sha256": "da3dd3d62280c0ef1b76b1266e1ba582f1c85825c328d8f9dac362cea5e261b4"
+      },
+      {
+        "path": "/game-modules/casinoapipro/active.json",
+        "status": 200,
+        "sha256": "a8ed752020f79076205eded16e4757cd12f6c96ee6f2e8ad37566cf0165d5d99"
+      },
+      {
+        "path": "/game-modules/crazy-eights/active.json",
+        "status": 200,
+        "sha256": "6e213a4e4e73e7fea3621bfc8591794bed59016775e6531b3cb499e192c81f5a"
+      },
+      {
+        "path": "/game-modules/chess/active.json",
+        "status": 200,
+        "sha256": "164bf2d6b6c2699a091eb08287e6ee895dde5352eb7a553fa4e42959440aa176"
+      },
+      {
+        "path": "/game-modules/drift/active.json",
+        "status": 200,
+        "sha256": "80ae84b219ae4c334a6f2f5cdc7a9d6ced80d5758f8fe4aeecec99255c5e8d68"
+      },
+      {
+        "path": "/game-modules/durak/active.json",
+        "status": 200,
+        "sha256": "4009b3e53608142243e999bf494eaf5d14c9b807e88c68c78efdbc765f9cf4d8"
+      },
+      {
+        "path": "/game-modules/flag-battle/active.json",
+        "status": 200,
+        "sha256": "a797f0fa3a5cf8e199b018b32f7d3d42aac81a8233b3353bcf9f8249fb98ee0d"
+      },
+      {
+        "path": "/game-modules/github-andar-bahar/active.json",
+        "status": 200,
+        "sha256": "9cc87d44126976a38d2356284d151999773bf208ee886d983daf41d446c81b38"
+      },
+      {
+        "path": "/game-modules/github-caribbean/active.json",
+        "status": 200,
+        "sha256": "d14e2bd21b291d1757c94c7d1a4a5b820af99e612d02e4e4be0b322ef5682343"
+      },
+      {
+        "path": "/game-modules/github-baccarat/active.json",
+        "status": 200,
+        "sha256": "ca536506ce09e5281d4bd866c38e5d3c85f7832ab6d2ae337280707d78ac9f9e"
+      },
+      {
+        "path": "/game-modules/github-blackjack/active.json",
+        "status": 200,
+        "sha256": "de7f031a3d62036bb6953d2c0e89ca7229623dbda23228144868bd29acdcc496"
+      },
+      {
+        "path": "/game-modules/github-caribbean-draw/active.json",
+        "status": 200,
+        "sha256": "5008bd0793263db7856d82de92ab9941673b15053f18107a05ca98c2a9898342"
+      },
+      {
+        "path": "/game-modules/github-craps/active.json",
+        "status": 200,
+        "sha256": "e3160994bf9433b150a86659290fbe7191928a693b47c4e054505d91f3314c43"
+      },
+      {
+        "path": "/game-modules/github-deuces/active.json",
+        "status": 200,
+        "sha256": "98a1f5f5e6c554f7d98d5ee5b5d8d3ea145e8b544e4394f67f1fb955d16cd80b"
+      },
+      {
+        "path": "/game-modules/github-crash/active.json",
+        "status": 200,
+        "sha256": "fd89a552b07cda3b557752b061b196e6d12df75ed3fc0e7d0726a6c68cb89082"
+      },
+      {
+        "path": "/game-modules/github-crazy-four/active.json",
+        "status": 200,
+        "sha256": "b65122760e437a99df3c5ecc225d5ec93263cd03fb795c202c140277fc34476e"
+      },
+      {
+        "path": "/game-modules/github-diamonds/active.json",
+        "status": 200,
+        "sha256": "4b0f84058be557c7fb3e3bc7cabccfd9c3f3a1f2782f64794d47d0d0d81a6dd0"
+      },
+      {
+        "path": "/game-modules/github-flush/active.json",
+        "status": 200,
+        "sha256": "63f8868a8816881f22214e327124082e6a69c96e62fddbe64d7fd9b48240ecbf"
+      },
+      {
+        "path": "/game-modules/github-dragon-tiger/active.json",
+        "status": 200,
+        "sha256": "6928cc9f0a357e8b07f9b179a0cd2c2bbc045ac6e685ed893747058631e732c5"
+      },
+      {
+        "path": "/game-modules/github-exposure/active.json",
+        "status": 200,
+        "sha256": "a8e412cf552fb83a67dfa5127b8bcc75017606ddc0424efa1dbabeb58f4576a9"
+      },
+      {
+        "path": "/game-modules/github-holdem-bonus/active.json",
+        "status": 200,
+        "sha256": "eb767045f62914e0eb9d028dc328f34e1966fc0f67feeb81823c8d3edd82f77f"
+      },
+      {
+        "path": "/game-modules/github-hilo/active.json",
+        "status": 200,
+        "sha256": "52f3ad89dea63e24610aee2fc6f7035b69651eccccd989a4c713fe75205fd502"
+      },
+      {
+        "path": "/game-modules/github-free-bet/active.json",
+        "status": 200,
+        "sha256": "3b963098fa7368f66b051f1cceb493b2a1458cc393c0e0cfb34d8b520e5ca5e6"
+      },
+      {
+        "path": "/game-modules/github-four-card/active.json",
+        "status": 200,
+        "sha256": "65b6c789e843a85d0f13bfcba52ae07ed3ba40a4003cd1726875341d3558c281"
+      },
+      {
+        "path": "/game-modules/github-let-it-ride/active.json",
+        "status": 200,
+        "sha256": "9d9754605ce59a30258dc167f35ab046a6469f66541ccc48568d620016c6f6c0"
+      },
+      {
+        "path": "/game-modules/github-pai-gow/active.json",
+        "status": 200,
+        "sha256": "ce170754f621ef7afaf54f682a4e3a414c3f5cbe7de023ebeeb75784e758f487"
+      },
+      {
+        "path": "/game-modules/github-mississippi/active.json",
+        "status": 200,
+        "sha256": "25f7a68962df97e501279796d7841be38b5396258c9f7156f09966c6fee6aae3"
+      },
+      {
+        "path": "/game-modules/github-oasis/active.json",
+        "status": 200,
+        "sha256": "7aa1049d8aa64af386a307fa428dbd830ade50d94dfe0210ec55b4b856849070"
+      },
+      {
+        "path": "/game-modules/github-red-dog/active.json",
+        "status": 200,
+        "sha256": "40d17e261492ec6141c7014964e8bb7716fe5f402dd75fcc30ede9b847e64af2"
+      },
+      {
+        "path": "/game-modules/github-russian/active.json",
+        "status": 200,
+        "sha256": "aa7f3c9fb7595042c34ded34a4e7c1a2bb0a4ab35a03d8a3b77239c1f6c6f8e5"
+      },
+      {
+        "path": "/game-modules/github-rummy/active.json",
+        "status": 200,
+        "sha256": "6f0c21e4f425fbfb38f5c8bf7d426b8036a379a441a206e016915b2b880e7ae5"
+      },
+      {
+        "path": "/game-modules/github-poker/active.json",
+        "status": 200,
+        "sha256": "210b0d689b095cefb43c68e1a2b15a7ed4181b73ac13ddc7fb7131a65e215008"
+      },
+      {
+        "path": "/game-modules/github-spanish/active.json",
+        "status": 200,
+        "sha256": "d5e58c0b408fc135c207c3bde8c81f34164ad864650b9f6fac68e11df355570d"
+      },
+      {
+        "path": "/game-modules/github-sic-bo/active.json",
+        "status": 200,
+        "sha256": "e55b657cf4bc5d77f4744103844850c92b550b1d27f415ced5ae5d9894256c87"
+      },
+      {
+        "path": "/game-modules/github-switch/active.json",
+        "status": 200,
+        "sha256": "01d63662d31640ee3d7a02893eac9dfa1dcc35e6f7a5248f52c1b51e605be118"
+      },
+      {
+        "path": "/game-modules/github-three-card/active.json",
+        "status": 200,
+        "sha256": "a124793fd28dee1cfee720c451bb02d12c1ab0e0ec3c22ebfb65071c966aa464"
+      },
+      {
+        "path": "/game-modules/github-war/active.json",
+        "status": 200,
+        "sha256": "e9cac3137c2ed5fba9569fab392d271db889dea5a707641d8e5a69632f689745"
+      },
+      {
+        "path": "/game-modules/github-video-poker/active.json",
+        "status": 200,
+        "sha256": "440f096a81fb6853b02daf22147498a683c84957b56986252cfac45a88aea7f4"
+      },
+      {
+        "path": "/game-modules/github-ultimate/active.json",
+        "status": 200,
+        "sha256": "c8a21422fac1708e4a0b72b1d183c2e3bb436183dc2cd6231b91a1c6c3fb2053"
+      },
+      {
+        "path": "/game-modules/github-tower/active.json",
+        "status": 200,
+        "sha256": "35357193383a1fd48c12f7116374c8d13e625fc6a3ecb26bc727fc7c7e25595e"
+      },
+      {
+        "path": "/game-modules/luelon/active.json",
+        "status": 200,
+        "sha256": "8ee429242a558d0fee767ede59c747e7000db481f4bd4be8c1fd0597fd002b8e"
+      },
+      {
+        "path": "/game-modules/hockey/active.json",
+        "status": 200,
+        "sha256": "41170597843be9aacf6827d2a79833906b931457e1d36b7cef2eeb0587408d7c"
+      },
+      {
+        "path": "/game-modules/mortal-kombat/active.json",
+        "status": 200,
+        "sha256": "5f52a6ce2a6d56409e74e41072e43daf69318b933908453ac1e1f4b9f418ae5a"
+      },
+      {
+        "path": "/game-modules/orbit/active.json",
+        "status": 200,
+        "sha256": "93d3ff26b5fd89cf6161719ab2e3e826965f74b5db88e9359048de8237f75462"
+      },
+      {
+        "path": "/game-modules/piano/active.json",
+        "status": 200,
+        "sha256": "ee8f48b1dbdeb3adcb49b4ed7ca59bfbb9c6762ebf1f22b9ea766a08dd7d0e69"
+      },
+      {
+        "path": "/game-modules/original-cr-vs-leo/active.json",
+        "status": 200,
+        "sha256": "175412f23fb1bb6089b0fe1b5332a10eb14d31577dfb256074348cc9ba574386"
+      },
+      {
+        "path": "/game-modules/original-jackie-chan/active.json",
+        "status": 200,
+        "sha256": "ba985c42893b55c74ddc1ec8e01f65645d71bc6c767a8795400283088e9c68b1"
+      },
+      {
+        "path": "/game-modules/pixel/active.json",
+        "status": 200,
+        "sha256": "a28031c3c64865005f9ea0e01c75c14c0ce2ea21a59ef5797b29ea92b55a04b9"
+      },
+      {
+        "path": "/game-modules/pool/active.json",
+        "status": 200,
+        "sha256": "a6fd05b34899440116dd6217251cfc7e5d114dfd24cb6e4f8a36b2ee1fab0c2b"
+      },
+      {
+        "path": "/game-modules/royal-flight/active.json",
+        "status": 200,
+        "sha256": "db41d3f2cee5b8ae6925ae2654536ff93b8f8e2013a41aa5b170b3b3ac634048"
+      },
+      {
+        "path": "/game-modules/royal-coins/active.json",
+        "status": 200,
+        "sha256": "4d185006de924ddb6d4d68f5c9132f2f42fc6cce1220a5e95d0646d667fb78ce"
+      },
+      {
+        "path": "/game-modules/royal-dice/active.json",
+        "status": 200,
+        "sha256": "cf80efa31ca31798f15e4485cf38d5038a93e757da8f5f983dcb32c8249b2b5b"
+      },
+      {
+        "path": "/game-modules/royal-fruits/active.json",
+        "status": 200,
+        "sha256": "fd4c31517b66284a19dc4a08409f5d7e5ec934381db6ade238042619f71384f1"
+      },
+      {
+        "path": "/game-modules/royal-keno/active.json",
+        "status": 200,
+        "sha256": "3169bb1365937ee45fe25e4640779790449525caca2543d6137e43a463d66bd0"
+      },
+      {
+        "path": "/game-modules/royal-mines/active.json",
+        "status": 200,
+        "sha256": "18d88fd0b202e3da854d49cf01ab9d2f24ff03cf9a28a34c1f96bb2265e98cf3"
+      },
+      {
+        "path": "/game-modules/royal-limbo/active.json",
+        "status": 200,
+        "sha256": "c985309a14fe78d7f04c61fb42c04a620e24168c1fbe4ce5b60082751a9897bf"
+      },
+      {
+        "path": "/game-modules/royal-wheel/active.json",
+        "status": 200,
+        "sha256": "cb01bc94046103f225e68f8ca46c05e975ad2f765c860ea28ffa465b9a5e77fa"
+      },
+      {
+        "path": "/game-modules/royal-plinko/active.json",
+        "status": 200,
+        "sha256": "52b8163fbb54f56e93742401e34c5ef90b07bb45425d3e4dae161f09584db943"
+      },
+      {
+        "path": "/game-modules/studio-afterglow/active.json",
+        "status": 200,
+        "sha256": "e45be7351d002f160bac26917a432add3480b966dadffcb3e5418a9174dd1c2c"
+      },
+      {
+        "path": "/game-modules/royal-roulette/active.json",
+        "status": 200,
+        "sha256": "89cda20da23d7faf770da982300920af19b8861035f43ce5baacdd7c5fc64fba"
+      },
+      {
+        "path": "/game-modules/studio-aurora-lift/active.json",
+        "status": 200,
+        "sha256": "923a9b58cbe9dd3a15c1ff90aec78e9835fb32458c65dae2f10e06977bf9d264"
+      },
+      {
+        "path": "/game-modules/studio-blazing-orchard/active.json",
+        "status": 200,
+        "sha256": "bcdaa9bc8adc56e909332e0ac7dd0a2f6ac8485d55eebfde2e08ee452039a505"
+      },
+      {
+        "path": "/game-modules/studio-canopy-crossing/active.json",
+        "status": 200,
+        "sha256": "91c6c35b2144f2ca81914944f4c75bbb19346a5cecfabce862d8dcd504fc77e2"
+      },
+      {
+        "path": "/game-modules/studio-beacon-bay/active.json",
+        "status": 200,
+        "sha256": "04567108af5cb6143ecccabba714eac0a1dec2789b700e8725a8da8b2d5c2f38"
+      },
+      {
+        "path": "/game-modules/studio-caramel-carnival/active.json",
+        "status": 200,
+        "sha256": "526da8b23405608f8e9872b4970ce84996101e2848717fd075f4d6e54d2e6769"
+      },
+      {
+        "path": "/game-modules/studio-copperline-express/active.json",
+        "status": 200,
+        "sha256": "30a5d4f762ed8d64018c1e221daf7365a289f647de6cb76c04fd88bbdd1a1250"
+      },
+      {
+        "path": "/game-modules/studio-caribbean-treasures/active.json",
+        "status": 200,
+        "sha256": "e2a473fff77c1bf5712ba44dd81aeb0b1c99b28a3fe3fe1e814d371add0f55a3"
+      },
+      {
+        "path": "/game-modules/studio-cosmic-escape/active.json",
+        "status": 200,
+        "sha256": "a29c675f42e920c18a587d48310b0be3b1bbcf9a612c81c64cfb92eab4344a91"
+      },
+      {
+        "path": "/game-modules/studio-ember-vault/active.json",
+        "status": 200,
+        "sha256": "38ef9ec995898714ac9b632e1af7cd0f44e1b866b115c82ce228f8a722260e32"
+      },
+      {
+        "path": "/game-modules/studio-dune-hopper/active.json",
+        "status": 200,
+        "sha256": "6edb3abbbcbf6692de68bdea8894df97abeed53a0a8dc1419b604178d76656fb"
+      },
+      {
+        "path": "/game-modules/studio-deep-current/active.json",
+        "status": 200,
+        "sha256": "20756a8a11a051612c85b91e779f08f9cd5f2a514514ee4b6122eb4ff10a183b"
+      },
+      {
+        "path": "/game-modules/studio-dracona/active.json",
+        "status": 200,
+        "sha256": "0aed9628aec84376cf4a2f96e1e9074a9abb13b591d5c4b54e07b53165771251"
+      },
+      {
+        "path": "/game-modules/studio-forest-heart/active.json",
+        "status": 200,
+        "sha256": "3631a26ae0773b219e3d644b7350c262d46b8cd726f0ae7824f36a331f6d23f9"
+      },
+      {
+        "path": "/game-modules/studio-gale-riders/active.json",
+        "status": 200,
+        "sha256": "5e37e1641a339bb116f4a0d5ac7875cb9c57754b05d65cf092166f6855f159e7"
+      },
+      {
+        "path": "/game-modules/studio-fossil-trail/active.json",
+        "status": 200,
+        "sha256": "f23818016b1e555b9c1a5c2e0af0635aaa607d26c24285bfdab0bea1e1f5950e"
+      },
+      {
+        "path": "/game-modules/studio-frostline-courier/active.json",
+        "status": 200,
+        "sha256": "de91ab3b7ac902043b11161dd94160ec9887678c165284101e6bd89c3c950d6f"
+      },
+      {
+        "path": "/game-modules/studio-jade-koi/active.json",
+        "status": 200,
+        "sha256": "30697685f89bf8c495215dbe175ddcf07cbcb3101e57a2deb5f0bc7707675fca"
+      },
+      {
+        "path": "/game-modules/studio-lumen-grove/active.json",
+        "status": 200,
+        "sha256": "b5d832221f3ee97915bac0280f08e604d3e1eae049139caaa8c24bd14a4e0b74"
+      },
+      {
+        "path": "/game-modules/studio-last-convoy/active.json",
+        "status": 200,
+        "sha256": "094559f5dc14da7298cb9ca03adbd739bc506d05744c209c5a73b67cd5b6b972"
+      },
+      {
+        "path": "/game-modules/studio-lucky-spotlight/active.json",
+        "status": 200,
+        "sha256": "fd7a5767931b7d3c86a35faa5f5826f127bd4683e33372cccefb971c2ca2fc6c"
+      },
+      {
+        "path": "/game-modules/studio-meme-overload/active.json",
+        "status": 200,
+        "sha256": "90e14ecde93b13514faf2bf5b0cb50ab6a1bb31d0803d6f93c90887892a53a36"
+      },
+      {
+        "path": "/game-modules/studio-midnight-market/active.json",
+        "status": 200,
+        "sha256": "f17672457734ed742e044cc68dc2e0d2b87cb06cce926460c4cf5f1ca942b7c0"
+      },
+      {
+        "path": "/game-modules/studio-mosaic-muse/active.json",
+        "status": 200,
+        "sha256": "c12bc30e6d245082f7fcee130ba75b54ba8227ed5edd54dd01c9da949ee3f89c"
+      },
+      {
+        "path": "/game-modules/studio-moonlit-mint/active.json",
+        "status": 200,
+        "sha256": "fdd6e14e936075552067c3f14cdd9c9e75111c2d4313e04673dd6afd1bcd0dc3"
+      },
+      {
+        "path": "/game-modules/studio-obsidian-drop/active.json",
+        "status": 200,
+        "sha256": "abb4903b996bf53eedde5008fc03520fc15f03384ef704d53ed4482b73eda5b3"
+      },
+      {
+        "path": "/game-modules/studio-neon-crown/active.json",
+        "status": 200,
+        "sha256": "e9c59aefc378b0a4c206aafa5c2f6cdcdb822b03c00fd4b4792599b53c309206"
+      },
+      {
+        "path": "/game-modules/studio-neopolis/active.json",
+        "status": 200,
+        "sha256": "5f8a8317e0a63977c4ad6e47515a35cd886b517a8a1cae262ea54a9a58a334ea"
+      },
+      {
+        "path": "/game-modules/studio-nitro-run/active.json",
+        "status": 200,
+        "sha256": "924a533a4335d5df47017b853a4563cea24432858f67a70579a3a900453195d2"
+      },
+      {
+        "path": "/game-modules/studio-orbit/active.json",
+        "status": 200,
+        "sha256": "1d18f3acda784f38dba6641b5b09caa524b946b7935a035928e89e1a8a082511"
+      },
+      {
+        "path": "/game-modules/studio-pulse-district/active.json",
+        "status": 200,
+        "sha256": "8676316ad70426e94d61cea06150e625186ddf508a0606050413f4e3fcef9d04"
+      },
+      {
+        "path": "/game-modules/studio-petal-parlor/active.json",
+        "status": 200,
+        "sha256": "5b9d61c68a0c0b539ce20c003462ea81b84887556621a4c5ddc4633a2328cd84"
+      },
+      {
+        "path": "/game-modules/studio-prism-atelier/active.json",
+        "status": 200,
+        "sha256": "c714aa53e95952da45249c797b7b600f156685b5d0e729143b28ca63f5b80c22"
+      },
+      {
+        "path": "/game-modules/studio-saffron-spin/active.json",
+        "status": 200,
+        "sha256": "a15484ff27f222a2bac8ceb3651794b0616fb8feb79820fd7af35543b32109bc"
+      },
+      {
+        "path": "/game-modules/studio-saffron-cipher/active.json",
+        "status": 200,
+        "sha256": "8c87d642fd409dfc34ae8848fe515dc4c10e17622638dd5e885331612f34c3e3"
+      },
+      {
+        "path": "/game-modules/studio-signal-fox/active.json",
+        "status": 200,
+        "sha256": "4e3823fdf7ea48dd303495a37691ddf12625f91a624c11487840486713cb5d34"
+      },
+      {
+        "path": "/game-modules/studio-rivet-rally/active.json",
+        "status": 200,
+        "sha256": "ee52d5e31c71c04448039e28ba323451592e330977bd5b9645ca5ec8dfadee61"
+      },
+      {
+        "path": "/game-modules/studio-starfall-oracle/active.json",
+        "status": 200,
+        "sha256": "2561186f0476870c3e1a9248e3c037907ab0d86843865622b0d7406db7cfcf29"
+      },
+      {
+        "path": "/game-modules/studio-stormforge-duel/active.json",
+        "status": 200,
+        "sha256": "ee1c3f845bdb31d1b7bffdf71826b6df0382715fca3e4888a99a665d8c0aebd2"
+      },
+      {
+        "path": "/game-modules/studio-sky-lanterns/active.json",
+        "status": 200,
+        "sha256": "c8eb4a3b54510ed1e24bb67ff751467e50a0bedcacd374d4554ac894f18761fa"
+      },
+      {
+        "path": "/game-modules/studio-sunbird-trails/active.json",
+        "status": 200,
+        "sha256": "c30e26f06441945227acc1dd0cf806763f60e9d5bc04fa6183f671580c103725"
+      },
+      {
+        "path": "/game-modules/studio-tidal-relay/active.json",
+        "status": 200,
+        "sha256": "1d97e1f015885921bda6c50acd07a42e04c83eecc6b6307bce688f16332cbe05"
+      },
+      {
+        "path": "/game-modules/studio-velvet-reign/active.json",
+        "status": 200,
+        "sha256": "1a44f5a9a00bb54699d3aee22c4276368e9a5b2e8ddab7684fb41850f6e299c2"
+      },
+      {
+        "path": "/game-modules/transfer-durak/active.json",
+        "status": 200,
+        "sha256": "c972c8c96ccfdc2275a86717c4ce98fd074c52e634bd235ddf31a357fade09d0"
+      },
+      {
+        "path": "/game-modules/variant-blackjack-target/active.json",
+        "status": 200,
+        "sha256": "dc542b31ea214d92614c30063bb4e2f31733c3e14d1d02af42ba781d354f8660"
+      },
+      {
+        "path": "/game-modules/variant-color/active.json",
+        "status": 200,
+        "sha256": "a73b9686b935060f852214fd4d81e3f8cf833ff23c6a6709dfc7c27386e6a9c3"
+      },
+      {
+        "path": "/game-modules/variant-dice-streak/active.json",
+        "status": 200,
+        "sha256": "a07795b3f1334d923803c16576ba92138366bc80b976aa826587f0f6f4df240a"
+      },
+      {
+        "path": "/game-modules/variant-dice/active.json",
+        "status": 200,
+        "sha256": "044b142dfb966bdf0efc828c392bb5b706fb6d0681045107dee424d731a2a4c4"
+      },
+      {
+        "path": "/game-modules/variant-diamonds/active.json",
+        "status": 200,
+        "sha256": "68adaf924a54bd55d990be959b6d1e0464dd6daa9e4b0066bcaedc6ceeb1d511"
+      },
+      {
+        "path": "/game-modules/variant-double-mines/active.json",
+        "status": 200,
+        "sha256": "6725bc50b818a6022a1d6a560305f9f07d70148b6abda40eb8536f1329aa8a2b"
+      },
+      {
+        "path": "/game-modules/variant-fruits/active.json",
+        "status": 200,
+        "sha256": "c58bb175e828f241c65cb1e24474dd23aaa6b1f6faa5e503e627fabb46e710a7"
+      },
+      {
+        "path": "/game-modules/variant-gem-collection/active.json",
+        "status": 200,
+        "sha256": "389705aaa9f90c971e04abd8e3b0ec1ca336eaaf368bd235067939675d591adb"
+      },
+      {
+        "path": "/game-modules/variant-duel/active.json",
+        "status": 200,
+        "sha256": "3751bedd23935429166ae3078c250e4531160f4c3140355107038f48de740f32"
+      },
+      {
+        "path": "/game-modules/variant-mines/active.json",
+        "status": 200,
+        "sha256": "533e529e886bcaa379f189b2158f7589323d1c217a87b0aff30dabc2b65607e1"
+      },
+      {
+        "path": "/game-modules/variant-keys/active.json",
+        "status": 200,
+        "sha256": "0f30898d5edc162bb1264182a83a6288a9e8118a703214091fef58c17773b737"
+      },
+      {
+        "path": "/game-modules/variant-limbo/active.json",
+        "status": 200,
+        "sha256": "1125f0c486d22c75355bafddd5ceebb691dbc1e4fb641336c981bc01c94692e1"
+      },
+      {
+        "path": "/game-modules/variant-keno/active.json",
+        "status": 200,
+        "sha256": "5155de2550a6a6bd6f8ccfa933e8d14455a50ecad8b19aa595d233e904b19034"
+      },
+      {
+        "path": "/game-modules/variant-plinko/active.json",
+        "status": 200,
+        "sha256": "8c7d9870aa53bc6bd79e40bc451a56103033f584b2f1a29c226fe236493a8b79"
+      },
+      {
+        "path": "/game-modules/variant-triple-poker/active.json",
+        "status": 200,
+        "sha256": "88dd0f6f4aba4872803a103ad3f784eda46b51006010b2e01feaaf1d603f8f73"
+      },
+      {
+        "path": "/game-modules/variant-target-plinko/active.json",
+        "status": 200,
+        "sha256": "a050ead2e19af19d176a277f3ea6ee66716d7570c133a821191063f6a33b8a44"
+      },
+      {
+        "path": "/game-modules/variant-sic-bo/active.json",
+        "status": 200,
+        "sha256": "597eb8479c675a4f948db28e78d7996052c10243e93ae715d18b73f81f7580ba"
+      },
+      {
+        "path": "/game-modules/variant-war/active.json",
+        "status": 200,
+        "sha256": "2c4e9e9a89acc02ee51a9a33466632ea78a0732d94702e1ceb25fc156b550f99"
+      }
+    ],
+    "scenarios": [
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "hallPurr": true,
+        "gameDialogStopsAndBlocks": true,
+        "hallReturn": true,
+        "localCabinetBlocks": true,
+        "serverPlayingBlocks": true,
+        "pettingPurrStops": true,
+        "errors": []
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "hallPurr": true,
+        "gameDialogStopsAndBlocks": true,
+        "hallReturn": true,
+        "localCabinetBlocks": true,
+        "serverPlayingBlocks": true,
+        "pettingPurrStops": true,
+        "errors": []
+      }
+    ],
+    "scope": "Instrumented public guest host with deterministic cat state and audio source lifecycle checks; no production accounts or wagers; no listening-quality claim",
+    "physicalDevicesTested": false
+  },
+  "verified": true,
+  "published": {
+    "published": true,
+    "preparedImage": "sha256:37af05f8646ef2a3c127272d17ef2ee5c51b8d9703b9545355320714bbc8d506",
+    "runningImage": "sha256:37af05f8646ef2a3c127272d17ef2ee5c51b8d9703b9545355320714bbc8d506",
+    "containerRestarted": true,
+    "sourceCommit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+    "changedSources": 2,
+    "clientDeltaFiles": 3,
+    "configurationsAndMountsPreserved": true,
+    "gameDataPreserved": true,
+    "backendDeltaFiles": 0,
+    "otherBackendProgramsAndModulesPreserved": true,
+    "oldAssetsPreserved": true,
+    "otherPersistentServicesPreserved": 13
+  },
+  "exit": {
+    "sourceCommit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+    "exitCode": 0,
+    "endedAt": "2026-10-30T16:30:49.577567+00:00"
+  },
+  "job": {
+    "sourceCommit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+    "pid": 1085270,
+    "startedAt": "2026-10-30T15:49:32.247957+00:00"
+  },
+  "finalInventory": {
+    "sourceRevision": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+    "runtimeFiles": 8523,
+    "sourceFiles": 2361,
+    "moduleFiles": 2532,
+    "services": 14,
+    "healthy": true
+  },
+  "infrastructureDelay": {
+    "observed": "Containerd Diff.Compare waited while Docker committed the LABEL build step; daemon diagnostic stack recorded the wait",
+    "diagnosticStack": "/run/docker/goroutine-stacks-2026-10-30T160949Z.log",
+    "daemonDiagnosticReference": "https://docs.docker.com/engine/daemon/logs/#force-a-stack-trace-to-be-logged"
+  }
+}
