@@ -174,7 +174,9 @@ def publish():
     for suffix,ref in [('',before['services']['royal-game-1']['image']),('-prepared',before['preparedImage'])]: run(['docker','tag',ref,'royal-game:before-'+NAME+suffix])
     save('backup.json',{'archive':str(BACKUP/'source.tgz'),'bytes':(BACKUP/'source.tgz').stat().st_size,'sha256':sha(BACKUP/'source.tgz'),'oldVersion':old_version,'previousImagesTagged':True})
     context=ROOT/'runtime-context'; context.mkdir(); shutil.copytree(ROOT/'dist-delta',context/'dist-delta',copy_function=os.link)
-    (context/'Dockerfile').write_text('FROM '+before['preparedImage']+'\nCOPY --chown=node:node dist-delta/ /app/dist/\nLABEL org.opencontainers.image.revision="'+release['sourceCommit']+'"\n')
+    parent_tag='royal-game:before-'+NAME+'-prepared'
+    require(image(parent_tag)==before['preparedImage'],'Prepared parent tag differs')
+    (context/'Dockerfile').write_text('FROM '+parent_tag+'\nCOPY --chown=node:node dist-delta/ /app/dist/\nLABEL org.opencontainers.image.revision="'+release['sourceCommit']+'"\n')
     (context/'.dockerignore').write_text('**\n!Dockerfile\n!.dockerignore\n!dist-delta\n!dist-delta/**\n')
     with (ROOT/'build.log').open('w') as log: subprocess.run(['docker','build','--pull=false','--network=none','-t','royal-game:'+NAME,'.'],cwd=context,check=True,stdout=log,stderr=subprocess.STDOUT)
     candidate=image('royal-game:'+NAME); expected_program={**before['program'],**{'dist/'+n:h for n,h in op['dist'].items()}}
