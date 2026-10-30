@@ -5,6 +5,7 @@ import {fileURLToPath} from 'node:url';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {verifyHostProjection} from '../../../scripts/build-host-projection.mjs';
+import {reviewBuildInputs} from './build-input-review.mjs';
 
 const helper=dirname(fileURLToPath(import.meta.url)),root=resolve(helper,'../../..');
 const task=resolve(root,'artifacts/work/forest-heart-responsive/publication');
@@ -35,7 +36,12 @@ for(const [file,digest] of Object.entries(release.hostProjection.inputs)){
   if(host.includes(file)){assert.equal(projected.metadata.files[file].baseSha256,before.sourceLF[file]);continue;}
   assert.equal(digest,before.sourceLF[file],'Unrelated compiled host source changed: '+file);
 }
-for(const file of ['package.json','package-lock.json','index.html','tsconfig.json'])assert.equal(hash(tracked(file)),before.sourceLF[file],'Dependencies or entry changed: '+file);
+for(const file of ['package-lock.json','index.html'])assert.equal(hash(tracked(file)),before.sourceLF[file],'Dependencies or entry changed: '+file);
+const releasePath='deployment/releases/forest-heart-responsive-20261030-v1/';
+const buildInputReview=reviewBuildInputs(before,
+ Object.fromEntries(['package.json','tsconfig.json'].map(file=>[file,tracked(releasePath+'production-build-inputs/'+file)])),
+ Object.fromEntries(['package.json','tsconfig.json'].map(file=>[file,tracked(file)])),
+ JSON.parse(tracked(releasePath+'build-input-review.json')));
 for(const file of ['src/shared/forestHeartMath.ts','src/shared/forestHeart.ts','server/games/forestHeart.ts'])assert.equal(hash(tracked(file)),before.sourceLF[file],'Forest mathematics differ from production: '+file);
 for(const file of [...host,...git('ls-files','-z','games/forest-heart').toString().split('\0').filter(Boolean)]){
   const bytes=host.includes(file)?projected.read(file):tracked(file),digest=hash(bytes);
@@ -70,7 +76,7 @@ copy(resolve(helper,'run-release.py'),'run-release.py');
 const publisherBytes=tracked('scripts/game-module-release.py');
 const publisherSha256=hash(publisherBytes);assert.equal(publisherSha256,before.source['scripts/game-module-release.py'],'Live publisher changed');
 writeFileSync(resolve(out,'publisher.py'),publisherBytes);
-const operator={release:'forest-heart-responsive-20261030-v1',sourceCommit:release.sourceCommit,source,dist,guardSha256,publisherSha256,
+const operator={release:'forest-heart-responsive-20261030-v1',sourceCommit:release.sourceCommit,source,dist,guardSha256,publisherSha256,buildInputReview,
   releaseManifestSha256:sha(resolve(out,'release-manifest.json')),receiptSha256:sha(resolve(out,'release-github.json')),
   beforePointerSha256:before.moduleFiles['studio-forest-heart/active.json'],pointerSha256:release.files[pkg.pointer],moduleVersion:pkg.version};
 assert.equal(pointer.sha256,sha(resolve(out,'package/manifest.json')));
