@@ -441,7 +441,68 @@
     "serverFreeBeforePreparation": 5945024512,
     "serverFreeAfterPublication": 5686816768,
     "minimumServerBytes": 5368709120,
-    "cleanupPending": true
+    "cleanupPending": false,
+    "serverCleanup": {
+      "preservedRemoteCommit": "bc6bec1bb19a2ae86d50dd50f1a553197e122ccb",
+      "sourceCommit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "removedFiles": 283,
+      "removedLogicalBytes": 137401728,
+      "removedDirectories": 60,
+      "removedRoots": [
+        "source",
+        "finance-source",
+        "dist",
+        "backend",
+        "module-dist",
+        "temple-package",
+        "game-context",
+        "finance-context",
+        "__pycache__"
+      ],
+      "removedArchives": [
+        {
+          "path": "transport.tgz",
+          "bytes": 25119257
+        }
+      ],
+      "freeBefore": 5685149696,
+      "freeAfter": 5755387904,
+      "physicalSpaceAttribution": false,
+      "retained": [
+        "Production source and financial backups, previous images, current immutable module, installed canonical source, normal release manifests and compact verification"
+      ],
+      "priorRejectedTargetsRetried": false
+    },
+    "localCleanup": {
+      "preservedRemoteCommit": "bc6bec1bb19a2ae86d50dd50f1a553197e122ccb",
+      "sourceCommit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "removedFiles": 286,
+      "removedLogicalBytes": 134356915,
+      "removedDirectories": 48,
+      "removedRoots": [
+        "payload",
+        "public",
+        "financial-tests",
+        "browser"
+      ],
+      "removedArchives": [
+        {
+          "path": "transport.tgz",
+          "bytes": 25119257
+        }
+      ],
+      "freeBefore": 196438491136,
+      "freeAfter": 196526637056,
+      "physicalSpaceAttribution": false,
+      "retained": [
+        "Current checkout and normal build outputs",
+        "Active Temple 0.9.6 package and local preview on 5233/2633 until user review ends",
+        "Compact cleanup records and tracked public captures",
+        "Earlier rejected targets and other chats"
+      ],
+      "priorRejectedTargetsRetried": false
+    },
+    "sourcePreservationVerifiedAt": "bc6bec1bb19a2ae86d50dd50f1a553197e122ccb"
   },
   "limits": [
     "Chrome viewport emulation does not certify a physical phone.",
