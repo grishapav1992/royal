@@ -18,3 +18,5 @@ npm run check:rtp
 ```
 
 Исходники: [движок](../../../src/shared/wildNudgeMath.ts), [точные параметры](../../../src/shared/wildNudgeData.json), [независимый расчёт](../../../scripts/game-math/wild-nudge-reference.mjs), [полный анализ](../../../scripts/game-math/wild-nudge-model.mjs). Квалификация настоящего сервера через `qualify:rtp` остаётся условием будущего подключения; офлайн-отчёт не выдаётся за такое доказательство.
+
+Итоговые проверки и их область: [stage1-verification.json](stage1-verification.json). Временный подбор параметров и дубли журналов удалены после проверки сохранения исходников в GitHub; размеры, замеры свободного места и исключения: [local-storage.json](local-storage.json).
