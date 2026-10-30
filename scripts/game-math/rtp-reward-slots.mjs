@@ -37,6 +37,45 @@ function stream(gameId, row, seed, rounds, visit) {
   }
   return { seed, rounds, sha256: hash.digest('hex') };
 }
+
+/** Independent v1 business budget. This does not qualify the RTP of games earning the XP. */
+export function promotionProgramEvidence(policy) {
+  assert.equal(policy.promotionProgramVersion, 'location-levels-v1');
+  assert.equal(policy.maxPromotionCostBasisPoints, 100, 'The reviewed cumulative promotion budget is fixed at 1%');
+  const milestones = [], levels = [];
+  let spins = 0, nominal = 0n, expectedHundredths = 0n;
+  for (let level = 1; level <= 100; level++) {
+    const i = BigInt(level - 1), threshold = (100000000n * i * i * i + 970298n) / 970299n;
+    let reward;
+    if (level % 5 === 0) {
+      const count = level === 100 ? 40 : level >= 75 ? 20 : level >= 50 ? 12 : level >= 25 ? 8 : 5;
+      const stakeUnits = level === 100 ? '2000000' : level >= 75 ? '1000000' : level >= 50 ? '500000' : level >= 25 ? '200000' : '100000';
+      const gameId = level % 10 === 0 ? 'royal-fruits' : 'royal-coins';
+      reward = { kind: 'free_spins', gameId, count, stakeUnits };
+      spins += count; nominal += BigInt(count) * BigInt(stakeUnits);
+      expectedHundredths += BigInt(count) * BigInt(stakeUnits) * (gameId === 'royal-coins' ? 96n : 97n);
+      const turnover = threshold * 10000n;
+      assert(expectedHundredths * 10000n <= turnover * BigInt(policy.maxPromotionCostBasisPoints) * 100n,
+        'Promotion prefix exceeds budget at level ' + level);
+      assert.equal(expectedHundredths % 100n, 0n);
+      milestones.push({ level, thresholdXp: String(threshold), qualifiedTurnoverUnits: String(turnover), reward,
+        cumulativeSpins: spins, cumulativeNominalUnits: String(nominal), expectedFullRedemptionPayoutUnits: String(expectedHundredths / 100n),
+        expectedPayoutFraction: { numerator: String(expectedHundredths), denominator: 100 },
+        costBasisPointsFraction: { numerator: String(expectedHundredths * 100n), denominator: String(turnover) } });
+    }
+    levels.push({ level, xp: String(threshold), ...(reward ? { reward } : {}) });
+  }
+  assert.equal(spins, 260); assert.equal(nominal, 220000000n); assert.equal(expectedHundredths, 21262200000n);
+  return { version: 'location-levels-v1', maxPromotionCostBasisPoints: 100,
+    scope: 'Expected full redemption of every issued reward from level 1, divided by cumulative qualified turnover. This business budget is not casino profit or the combined RTP of legacy games.',
+    definition: { version: 'location-levels-v1', coefficients: { 'paid-game': { numerator: 1, denominator: 1 }, pvp: { numerator: 1, denominator: 1 } }, levels },
+    milestones, totalSpins: spins, totalNominalUnits: String(nominal), expectedFullRedemptionPayoutUnits: String(expectedHundredths / 100n) };
+}
+export function validatePromotionDefinition(policy, definition) {
+  assert.deepEqual(definition, promotionProgramEvidence(policy).definition,
+    'The default level, source or reward program differs from its independent reviewed v1 model');
+}
+
 function policyChecks(gameId, policy) {
   const s = spec(gameId);
   assert.equal(policy.method, REWARD_SLOTS_METHOD); assert.equal(policy.rulesVersion, 1); assert.equal(policy.progressVersion, 1);
@@ -87,13 +126,14 @@ export function rewardSlotEvidence(gameId, policy) {
     promotionalFunding: 'A reward spin charges the player zero. Its expected payout is measured against the fixed nominal, not against zero player cost. Promotional RTP is undefined.',
     confidence: 'Exhaustive exact results, not a sampled RTP estimate or a sampling confidence interval.',
     runtimeScope: 'Every model outcome is compared with the unchanged server engine. Common-wallet ownership, concurrency, rollback and payout tests are separate release checks.',
-  }, results, integerBoundaries: boundary };
+  }, results, integerBoundaries: boundary, program: promotionProgramEvidence(policy) };
 }
 export async function qualifyRewardSlots(gameId, policy) {
   const evidence = rewardSlotEvidence(gameId, policy), s = spec(gameId);
   const { prepareGame, verifyGameRound } = await import('../../server/games/core.ts');
   const { DEMO_BETS } = await import('../../src/shared/demoWallet.ts');
   const { DEFAULT_PROGRESSION_POLICY } = await import('../../src/shared/progression.ts');
+  validatePromotionDefinition(policy, DEFAULT_PROGRESSION_POLICY);
   assert.deepEqual(DEMO_BETS.map(amount => amount * 100), policy.paidStakes, 'Every allowed paid wallet stake must be qualified');
   for (const level of DEFAULT_PROGRESSION_POLICY.levels) if (level.reward?.gameId === gameId) {
     const micro = BigInt(level.reward.stakeUnits);
@@ -139,6 +179,7 @@ export function validateRewardSlotsProof(gameId, policy, proof) {
   assert.equal(proof.method, REWARD_SLOTS_METHOD);
   assert.deepEqual(proof.analysis, expected.analysis); assert.deepEqual(proof.results, expected.results);
   assert.deepEqual(proof.integerBoundaries, expected.integerBoundaries);
+  assert.deepEqual(proof.program, expected.program, 'The complete promotion program or its cumulative cost budget changed');
   assert.equal(proof.serverReplay.length, expected.results.length);
   let checks = expected.integerBoundaries.length * s.outcomes;
   for (const [i, row] of proof.serverReplay.entries()) {

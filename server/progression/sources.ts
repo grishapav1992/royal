@@ -14,7 +14,7 @@ export interface ProgressionSourceSink {
  readonly ready:Promise<void>;
  acceptRound(context:ProgressionSourceContext):Promise<unknown>;
  recordSettled(event:ProgressionSourceSettlement):Promise<unknown>;
- pendingRounds(accountId:string,sourceType?:'paid-game'|'pvp'):Promise<ProgressionSourceContext[]>;
+ pendingRounds(accountId:string,sourceType:'paid-game'|'pvp'):Promise<ProgressionSourceContext[]>;
 }
 type SourceCommand={path:string;method:'GET'|'POST';body:unknown};
 type Family='instant'|'casino'|'mines'|'flight';

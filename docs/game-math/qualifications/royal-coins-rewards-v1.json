@@ -3,24 +3,25 @@
   "gameId": "royal-coins",
   "rulesVersion": 1,
   "progressVersion": 1,
-  "startedAt": "2026-10-30T20:23:21.267Z",
-  "completedAt": "2026-10-30T20:23:21.356Z",
+  "startedAt": "2026-10-30T21:03:40.644Z",
+  "completedAt": "2026-10-30T21:03:40.674Z",
   "sourceHashes": {
     "src/shared/gameCore.ts": "aa9520b435a5c969d257290e3b06060051db76de45955f99dd68c48f1b5addab",
     "src/shared/originalGames.ts": "9743f1465b625e64055c8c6c9f268ce8023d61adc7eed187507be7d4163d40c0",
     "src/shared/demoWallet.ts": "2f3d21554eaa03930e306f8db103fe8299649387853574dff516cd01cd7e1cef",
-    "src/shared/progression.ts": "ba6d80743670dc04a1d317ef6cee54b9f81fd14ef87431586611ba07fcd538b3",
+    "src/shared/progression.ts": "866cda46a4f9cac3ff42e815dc616838d61368db2819b916e7a5e3f24b472318",
     "server/games/core.ts": "246ebe0febf3ad89a8997b1cdac83c28a0e6f175a14d2318403a39d3a27b1146",
     "server/games/types.ts": "c866ed8a8a19a66f4210caae41e25becf8c6d169871da1934a7b152d0f2aedc0",
     "server/games/coins.ts": "727e6a62b098f0591525a4dfd646c78568e3a04ff554364f2c157d41cbbba5da",
     "server/games/fruits.ts": "3880e46cb2cacd41cf855eb69ef2edda956b39209caf7bb4b73fdca16a8aea05",
     "server/progression/freeSpins.ts": "06beb20c2714af66b60b201dee341159aff53d9dd0f4bf2de3961e171494f199",
-    "server/progression/store.ts": "f7075c23203e4a1baba851308d7bc8d7324fc57b7f34e29235010ba0014c67f1",
-    "server/progression/sources.ts": "6291057cf2c6cf556861a8f5cfc6752565dd8246fc7b4eefd8185e1f7091cf9c",
+    "server/progression/store.ts": "f009747047782b5aaf961e121df3f9d33173448a5bd74a8716a2b5c66ce44df0",
+    "server/progression/sources.ts": "6640ff15833378a077ca7ef19a502414fab6f99bf6ccb63db30f8ceb8cdd9674",
     "server/accounts.ts": "64b0526cc577d6df4689bb840ef445f3ad062ca75f9bf5d51c9934a2e143b055",
-    "scripts/game-math/rtp-reward-slots.mjs": "2542f31c0f2e8f4598af69b383dbbb95e6fb13dfacc080fc95d1429d9b1a489f"
+    "server/progression/handlers.ts": "e0b9fd117de4937fcaa76296c20d8e31060ea346b6297bd828a3c95f3b9d099f",
+    "scripts/game-math/rtp-reward-slots.mjs": "06bd58779cd28c99fb44347e2a40e09958ebecbd7ffa3dbb5c4b37931f170dd7"
   },
-  "policySha256": "55d2ef91b5c8997edc06b041e908df59a67ca67f965f724c023b6621135ef2f7",
+  "policySha256": "cbdf176b4f80a25ed8ccfca2c360170d13d012f6c741831fdc44c415f3dcaa64",
   "serverReplayChecks": 2527,
   "method": "exact-paid-and-reward-slots-v1",
   "analysis": {
@@ -238,6 +239,991 @@
       "sha256": "aeb70fe9975916c31c04ff2f7bcb2c8e0fe2e564bf8f3a2380938194a30bbd63"
     }
   ],
+  "program": {
+    "version": "location-levels-v1",
+    "maxPromotionCostBasisPoints": 100,
+    "scope": "Expected full redemption of every issued reward from level 1, divided by cumulative qualified turnover. This business budget is not casino profit or the combined RTP of legacy games.",
+    "definition": {
+      "version": "location-levels-v1",
+      "coefficients": {
+        "paid-game": {
+          "numerator": 1,
+          "denominator": 1
+        },
+        "pvp": {
+          "numerator": 1,
+          "denominator": 1
+        }
+      },
+      "levels": [
+        {
+          "level": 1,
+          "xp": "0"
+        },
+        {
+          "level": 2,
+          "xp": "104"
+        },
+        {
+          "level": 3,
+          "xp": "825"
+        },
+        {
+          "level": 4,
+          "xp": "2783"
+        },
+        {
+          "level": 5,
+          "xp": "6596",
+          "reward": {
+            "kind": "free_spins",
+            "gameId": "royal-coins",
+            "count": 5,
+            "stakeUnits": "100000"
+          }
+        },
+        {
+          "level": 6,
+          "xp": "12883"
+        },
+        {
+          "level": 7,
+          "xp": "22262"
+        },
+        {
+          "level": 8,
+          "xp": "35350"
+        },
+        {
+          "level": 9,
+          "xp": "52768"
+        },
+        {
+          "level": 10,
+          "xp": "75132",
+          "reward": {
+            "kind": "free_spins",
+            "gameId": "royal-fruits",
+            "count": 5,
+            "stakeUnits": "100000"
+          }
+        },
+        {
+          "level": 11,
+          "xp": "103062"
+        },
+        {
+          "level": 12,
+          "xp": "137175"
+        },
+        {
+          "level": 13,
+          "xp": "178090"
+        },
+        {
+          "level": 14,
+          "xp": "226426"
+        },
+        {
+          "level": 15,
+          "xp": "282800",
+          "reward": {
+            "kind": "free_spins",
+            "gameId": "royal-coins",
+            "count": 5,
+            "stakeUnits": "100000"
+          }
+        },
+        {
+          "level": 16,
+          "xp": "347831"
+        },
+        {
+          "level": 17,
+          "xp": "422138"
+        },
+        {
+          "level": 18,
+          "xp": "506339"
+        },
+        {
+          "level": 19,
+          "xp": "601052"
+        },
+        {
+          "level": 20,
+          "xp": "706896",
+          "reward": {
+            "kind": "free_spins",
+            "gameId": "royal-fruits",
+            "count": 5,
+            "stakeUnits": "100000"
+          }
+        },
+        {
+          "level": 21,
+          "xp": "824489"
+        },
+        {
+          "level": 22,
+          "xp": "954449"
+        },
+        {
+          "level": 23,
+          "xp": "1097394"
+        },
+        {
+          "level": 24,
+          "xp": "1253944"
+        },
+        {
+          "level": 25,
+          "xp": "1424716",
+          "reward": {
+            "kind": "free_spins",
+            "gameId": "royal-coins",
+            "count": 8,
+            "stakeUnits": "200000"
+          }
+        },
+        {
+          "level": 26,
+          "xp": "1610329"
+        },
+        {
+          "level": 27,
+          "xp": "1811401"
+        },
+        {
+          "level": 28,
+          "xp": "2028550"
+        },
+        {
+          "level": 29,
+          "xp": "2262396"
+        },
+        {
+          "level": 30,
+          "xp": "2513556",
+          "reward": {
+            "kind": "free_spins",
+            "gameId": "royal-fruits",
+            "count": 8,
+            "stakeUnits": "200000"
+          }
+        },
+        {
+          "level": 31,
+          "xp": "2782648"
+        },
+        {
+          "level": 32,
+          "xp": "3070291"
+        },
+        {
+          "level": 33,
+          "xp": "3377104"
+        },
+        {
+          "level": 34,
+          "xp": "3703704"
+        },
+        {
+          "level": 35,
+          "xp": "4050711",
+          "reward": {
+            "kind": "free_spins",
+            "gameId": "royal-coins",
+            "count": 8,
+            "stakeUnits": "200000"
+          }
+        },
+        {
+          "level": 36,
+          "xp": "4418742"
+        },
+        {
+          "level": 37,
+          "xp": "4808415"
+        },
+        {
+          "level": 38,
+          "xp": "5220350"
+        },
+        {
+          "level": 39,
+          "xp": "5655165"
+        },
+        {
+          "level": 40,
+          "xp": "6113477",
+          "reward": {
+            "kind": "free_spins",
+            "gameId": "royal-fruits",
+            "count": 8,
+            "stakeUnits": "200000"
+          }
+        },
+        {
+          "level": 41,
+          "xp": "6595905"
+        },
+        {
+          "level": 42,
+          "xp": "7103069"
+        },
+        {
+          "level": 43,
+          "xp": "7635585"
+        },
+        {
+          "level": 44,
+          "xp": "8194073"
+        },
+        {
+          "level": 45,
+          "xp": "8779150",
+          "reward": {
+            "kind": "free_spins",
+            "gameId": "royal-coins",
+            "count": 8,
+            "stakeUnits": "200000"
+          }
+        },
+        {
+          "level": 46,
+          "xp": "9391436"
+        },
+        {
+          "level": 47,
+          "xp": "10031547"
+        },
+        {
+          "level": 48,
+          "xp": "10700104"
+        },
+        {
+          "level": 49,
+          "xp": "11397724"
+        },
+        {
+          "level": 50,
+          "xp": "12125026",
+          "reward": {
+            "kind": "free_spins",
+            "gameId": "royal-fruits",
+            "count": 12,
+            "stakeUnits": "500000"
+          }
+        },
+        {
+          "level": 51,
+          "xp": "12882627"
+        },
+        {
+          "level": 52,
+          "xp": "13671147"
+        },
+        {
+          "level": 53,
+          "xp": "14491204"
+        },
+        {
+          "level": 54,
+          "xp": "15343415"
+        },
+        {
+          "level": 55,
+          "xp": "16228400",
+          "reward": {
+            "kind": "free_spins",
+            "gameId": "royal-coins",
+            "count": 12,
+            "stakeUnits": "500000"
+          }
+        },
+        {
+          "level": 56,
+          "xp": "17146777"
+        },
+        {
+          "level": 57,
+          "xp": "18099164"
+        },
+        {
+          "level": 58,
+          "xp": "19086179"
+        },
+        {
+          "level": 59,
+          "xp": "20108441"
+        },
+        {
+          "level": 60,
+          "xp": "21166569",
+          "reward": {
+            "kind": "free_spins",
+            "gameId": "royal-fruits",
+            "count": 12,
+            "stakeUnits": "500000"
+          }
+        },
+        {
+          "level": 61,
+          "xp": "22261180"
+        },
+        {
+          "level": 62,
+          "xp": "23392893"
+        },
+        {
+          "level": 63,
+          "xp": "24562326"
+        },
+        {
+          "level": 64,
+          "xp": "25770098"
+        },
+        {
+          "level": 65,
+          "xp": "27016827",
+          "reward": {
+            "kind": "free_spins",
+            "gameId": "royal-coins",
+            "count": 12,
+            "stakeUnits": "500000"
+          }
+        },
+        {
+          "level": 66,
+          "xp": "28303132"
+        },
+        {
+          "level": 67,
+          "xp": "29629630"
+        },
+        {
+          "level": 68,
+          "xp": "30996941"
+        },
+        {
+          "level": 69,
+          "xp": "32405682"
+        },
+        {
+          "level": 70,
+          "xp": "33856472",
+          "reward": {
+            "kind": "free_spins",
+            "gameId": "royal-fruits",
+            "count": 12,
+            "stakeUnits": "500000"
+          }
+        },
+        {
+          "level": 71,
+          "xp": "35349929"
+        },
+        {
+          "level": 72,
+          "xp": "36886672"
+        },
+        {
+          "level": 73,
+          "xp": "38467318"
+        },
+        {
+          "level": 74,
+          "xp": "40092487"
+        },
+        {
+          "level": 75,
+          "xp": "41762797",
+          "reward": {
+            "kind": "free_spins",
+            "gameId": "royal-coins",
+            "count": 20,
+            "stakeUnits": "1000000"
+          }
+        },
+        {
+          "level": 76,
+          "xp": "43478866"
+        },
+        {
+          "level": 77,
+          "xp": "45241313"
+        },
+        {
+          "level": 78,
+          "xp": "47050755"
+        },
+        {
+          "level": 79,
+          "xp": "48907811"
+        },
+        {
+          "level": 80,
+          "xp": "50813100",
+          "reward": {
+            "kind": "free_spins",
+            "gameId": "royal-fruits",
+            "count": 20,
+            "stakeUnits": "1000000"
+          }
+        },
+        {
+          "level": 81,
+          "xp": "52767240"
+        },
+        {
+          "level": 82,
+          "xp": "54770849"
+        },
+        {
+          "level": 83,
+          "xp": "56824546"
+        },
+        {
+          "level": 84,
+          "xp": "58928949"
+        },
+        {
+          "level": 85,
+          "xp": "61084676",
+          "reward": {
+            "kind": "free_spins",
+            "gameId": "royal-coins",
+            "count": 20,
+            "stakeUnits": "1000000"
+          }
+        },
+        {
+          "level": 86,
+          "xp": "63292346"
+        },
+        {
+          "level": 87,
+          "xp": "65552578"
+        },
+        {
+          "level": 88,
+          "xp": "67865988"
+        },
+        {
+          "level": 89,
+          "xp": "70233197"
+        },
+        {
+          "level": 90,
+          "xp": "72654821",
+          "reward": {
+            "kind": "free_spins",
+            "gameId": "royal-fruits",
+            "count": 20,
+            "stakeUnits": "1000000"
+          }
+        },
+        {
+          "level": 91,
+          "xp": "75131481"
+        },
+        {
+          "level": 92,
+          "xp": "77663793"
+        },
+        {
+          "level": 93,
+          "xp": "80252376"
+        },
+        {
+          "level": 94,
+          "xp": "82897850"
+        },
+        {
+          "level": 95,
+          "xp": "85600831",
+          "reward": {
+            "kind": "free_spins",
+            "gameId": "royal-coins",
+            "count": 20,
+            "stakeUnits": "1000000"
+          }
+        },
+        {
+          "level": 96,
+          "xp": "88361938"
+        },
+        {
+          "level": 97,
+          "xp": "91181791"
+        },
+        {
+          "level": 98,
+          "xp": "94061006"
+        },
+        {
+          "level": 99,
+          "xp": "97000204"
+        },
+        {
+          "level": 100,
+          "xp": "100000000",
+          "reward": {
+            "kind": "free_spins",
+            "gameId": "royal-fruits",
+            "count": 40,
+            "stakeUnits": "2000000"
+          }
+        }
+      ]
+    },
+    "milestones": [
+      {
+        "level": 5,
+        "thresholdXp": "6596",
+        "qualifiedTurnoverUnits": "65960000",
+        "reward": {
+          "kind": "free_spins",
+          "gameId": "royal-coins",
+          "count": 5,
+          "stakeUnits": "100000"
+        },
+        "cumulativeSpins": 5,
+        "cumulativeNominalUnits": "500000",
+        "expectedFullRedemptionPayoutUnits": "480000",
+        "expectedPayoutFraction": {
+          "numerator": "48000000",
+          "denominator": 100
+        },
+        "costBasisPointsFraction": {
+          "numerator": "4800000000",
+          "denominator": "65960000"
+        }
+      },
+      {
+        "level": 10,
+        "thresholdXp": "75132",
+        "qualifiedTurnoverUnits": "751320000",
+        "reward": {
+          "kind": "free_spins",
+          "gameId": "royal-fruits",
+          "count": 5,
+          "stakeUnits": "100000"
+        },
+        "cumulativeSpins": 10,
+        "cumulativeNominalUnits": "1000000",
+        "expectedFullRedemptionPayoutUnits": "965000",
+        "expectedPayoutFraction": {
+          "numerator": "96500000",
+          "denominator": 100
+        },
+        "costBasisPointsFraction": {
+          "numerator": "9650000000",
+          "denominator": "751320000"
+        }
+      },
+      {
+        "level": 15,
+        "thresholdXp": "282800",
+        "qualifiedTurnoverUnits": "2828000000",
+        "reward": {
+          "kind": "free_spins",
+          "gameId": "royal-coins",
+          "count": 5,
+          "stakeUnits": "100000"
+        },
+        "cumulativeSpins": 15,
+        "cumulativeNominalUnits": "1500000",
+        "expectedFullRedemptionPayoutUnits": "1445000",
+        "expectedPayoutFraction": {
+          "numerator": "144500000",
+          "denominator": 100
+        },
+        "costBasisPointsFraction": {
+          "numerator": "14450000000",
+          "denominator": "2828000000"
+        }
+      },
+      {
+        "level": 20,
+        "thresholdXp": "706896",
+        "qualifiedTurnoverUnits": "7068960000",
+        "reward": {
+          "kind": "free_spins",
+          "gameId": "royal-fruits",
+          "count": 5,
+          "stakeUnits": "100000"
+        },
+        "cumulativeSpins": 20,
+        "cumulativeNominalUnits": "2000000",
+        "expectedFullRedemptionPayoutUnits": "1930000",
+        "expectedPayoutFraction": {
+          "numerator": "193000000",
+          "denominator": 100
+        },
+        "costBasisPointsFraction": {
+          "numerator": "19300000000",
+          "denominator": "7068960000"
+        }
+      },
+      {
+        "level": 25,
+        "thresholdXp": "1424716",
+        "qualifiedTurnoverUnits": "14247160000",
+        "reward": {
+          "kind": "free_spins",
+          "gameId": "royal-coins",
+          "count": 8,
+          "stakeUnits": "200000"
+        },
+        "cumulativeSpins": 28,
+        "cumulativeNominalUnits": "3600000",
+        "expectedFullRedemptionPayoutUnits": "3466000",
+        "expectedPayoutFraction": {
+          "numerator": "346600000",
+          "denominator": 100
+        },
+        "costBasisPointsFraction": {
+          "numerator": "34660000000",
+          "denominator": "14247160000"
+        }
+      },
+      {
+        "level": 30,
+        "thresholdXp": "2513556",
+        "qualifiedTurnoverUnits": "25135560000",
+        "reward": {
+          "kind": "free_spins",
+          "gameId": "royal-fruits",
+          "count": 8,
+          "stakeUnits": "200000"
+        },
+        "cumulativeSpins": 36,
+        "cumulativeNominalUnits": "5200000",
+        "expectedFullRedemptionPayoutUnits": "5018000",
+        "expectedPayoutFraction": {
+          "numerator": "501800000",
+          "denominator": 100
+        },
+        "costBasisPointsFraction": {
+          "numerator": "50180000000",
+          "denominator": "25135560000"
+        }
+      },
+      {
+        "level": 35,
+        "thresholdXp": "4050711",
+        "qualifiedTurnoverUnits": "40507110000",
+        "reward": {
+          "kind": "free_spins",
+          "gameId": "royal-coins",
+          "count": 8,
+          "stakeUnits": "200000"
+        },
+        "cumulativeSpins": 44,
+        "cumulativeNominalUnits": "6800000",
+        "expectedFullRedemptionPayoutUnits": "6554000",
+        "expectedPayoutFraction": {
+          "numerator": "655400000",
+          "denominator": 100
+        },
+        "costBasisPointsFraction": {
+          "numerator": "65540000000",
+          "denominator": "40507110000"
+        }
+      },
+      {
+        "level": 40,
+        "thresholdXp": "6113477",
+        "qualifiedTurnoverUnits": "61134770000",
+        "reward": {
+          "kind": "free_spins",
+          "gameId": "royal-fruits",
+          "count": 8,
+          "stakeUnits": "200000"
+        },
+        "cumulativeSpins": 52,
+        "cumulativeNominalUnits": "8400000",
+        "expectedFullRedemptionPayoutUnits": "8106000",
+        "expectedPayoutFraction": {
+          "numerator": "810600000",
+          "denominator": 100
+        },
+        "costBasisPointsFraction": {
+          "numerator": "81060000000",
+          "denominator": "61134770000"
+        }
+      },
+      {
+        "level": 45,
+        "thresholdXp": "8779150",
+        "qualifiedTurnoverUnits": "87791500000",
+        "reward": {
+          "kind": "free_spins",
+          "gameId": "royal-coins",
+          "count": 8,
+          "stakeUnits": "200000"
+        },
+        "cumulativeSpins": 60,
+        "cumulativeNominalUnits": "10000000",
+        "expectedFullRedemptionPayoutUnits": "9642000",
+        "expectedPayoutFraction": {
+          "numerator": "964200000",
+          "denominator": 100
+        },
+        "costBasisPointsFraction": {
+          "numerator": "96420000000",
+          "denominator": "87791500000"
+        }
+      },
+      {
+        "level": 50,
+        "thresholdXp": "12125026",
+        "qualifiedTurnoverUnits": "121250260000",
+        "reward": {
+          "kind": "free_spins",
+          "gameId": "royal-fruits",
+          "count": 12,
+          "stakeUnits": "500000"
+        },
+        "cumulativeSpins": 72,
+        "cumulativeNominalUnits": "16000000",
+        "expectedFullRedemptionPayoutUnits": "15462000",
+        "expectedPayoutFraction": {
+          "numerator": "1546200000",
+          "denominator": 100
+        },
+        "costBasisPointsFraction": {
+          "numerator": "154620000000",
+          "denominator": "121250260000"
+        }
+      },
+      {
+        "level": 55,
+        "thresholdXp": "16228400",
+        "qualifiedTurnoverUnits": "162284000000",
+        "reward": {
+          "kind": "free_spins",
+          "gameId": "royal-coins",
+          "count": 12,
+          "stakeUnits": "500000"
+        },
+        "cumulativeSpins": 84,
+        "cumulativeNominalUnits": "22000000",
+        "expectedFullRedemptionPayoutUnits": "21222000",
+        "expectedPayoutFraction": {
+          "numerator": "2122200000",
+          "denominator": 100
+        },
+        "costBasisPointsFraction": {
+          "numerator": "212220000000",
+          "denominator": "162284000000"
+        }
+      },
+      {
+        "level": 60,
+        "thresholdXp": "21166569",
+        "qualifiedTurnoverUnits": "211665690000",
+        "reward": {
+          "kind": "free_spins",
+          "gameId": "royal-fruits",
+          "count": 12,
+          "stakeUnits": "500000"
+        },
+        "cumulativeSpins": 96,
+        "cumulativeNominalUnits": "28000000",
+        "expectedFullRedemptionPayoutUnits": "27042000",
+        "expectedPayoutFraction": {
+          "numerator": "2704200000",
+          "denominator": 100
+        },
+        "costBasisPointsFraction": {
+          "numerator": "270420000000",
+          "denominator": "211665690000"
+        }
+      },
+      {
+        "level": 65,
+        "thresholdXp": "27016827",
+        "qualifiedTurnoverUnits": "270168270000",
+        "reward": {
+          "kind": "free_spins",
+          "gameId": "royal-coins",
+          "count": 12,
+          "stakeUnits": "500000"
+        },
+        "cumulativeSpins": 108,
+        "cumulativeNominalUnits": "34000000",
+        "expectedFullRedemptionPayoutUnits": "32802000",
+        "expectedPayoutFraction": {
+          "numerator": "3280200000",
+          "denominator": 100
+        },
+        "costBasisPointsFraction": {
+          "numerator": "328020000000",
+          "denominator": "270168270000"
+        }
+      },
+      {
+        "level": 70,
+        "thresholdXp": "33856472",
+        "qualifiedTurnoverUnits": "338564720000",
+        "reward": {
+          "kind": "free_spins",
+          "gameId": "royal-fruits",
+          "count": 12,
+          "stakeUnits": "500000"
+        },
+        "cumulativeSpins": 120,
+        "cumulativeNominalUnits": "40000000",
+        "expectedFullRedemptionPayoutUnits": "38622000",
+        "expectedPayoutFraction": {
+          "numerator": "3862200000",
+          "denominator": 100
+        },
+        "costBasisPointsFraction": {
+          "numerator": "386220000000",
+          "denominator": "338564720000"
+        }
+      },
+      {
+        "level": 75,
+        "thresholdXp": "41762797",
+        "qualifiedTurnoverUnits": "417627970000",
+        "reward": {
+          "kind": "free_spins",
+          "gameId": "royal-coins",
+          "count": 20,
+          "stakeUnits": "1000000"
+        },
+        "cumulativeSpins": 140,
+        "cumulativeNominalUnits": "60000000",
+        "expectedFullRedemptionPayoutUnits": "57822000",
+        "expectedPayoutFraction": {
+          "numerator": "5782200000",
+          "denominator": 100
+        },
+        "costBasisPointsFraction": {
+          "numerator": "578220000000",
+          "denominator": "417627970000"
+        }
+      },
+      {
+        "level": 80,
+        "thresholdXp": "50813100",
+        "qualifiedTurnoverUnits": "508131000000",
+        "reward": {
+          "kind": "free_spins",
+          "gameId": "royal-fruits",
+          "count": 20,
+          "stakeUnits": "1000000"
+        },
+        "cumulativeSpins": 160,
+        "cumulativeNominalUnits": "80000000",
+        "expectedFullRedemptionPayoutUnits": "77222000",
+        "expectedPayoutFraction": {
+          "numerator": "7722200000",
+          "denominator": 100
+        },
+        "costBasisPointsFraction": {
+          "numerator": "772220000000",
+          "denominator": "508131000000"
+        }
+      },
+      {
+        "level": 85,
+        "thresholdXp": "61084676",
+        "qualifiedTurnoverUnits": "610846760000",
+        "reward": {
+          "kind": "free_spins",
+          "gameId": "royal-coins",
+          "count": 20,
+          "stakeUnits": "1000000"
+        },
+        "cumulativeSpins": 180,
+        "cumulativeNominalUnits": "100000000",
+        "expectedFullRedemptionPayoutUnits": "96422000",
+        "expectedPayoutFraction": {
+          "numerator": "9642200000",
+          "denominator": 100
+        },
+        "costBasisPointsFraction": {
+          "numerator": "964220000000",
+          "denominator": "610846760000"
+        }
+      },
+      {
+        "level": 90,
+        "thresholdXp": "72654821",
+        "qualifiedTurnoverUnits": "726548210000",
+        "reward": {
+          "kind": "free_spins",
+          "gameId": "royal-fruits",
+          "count": 20,
+          "stakeUnits": "1000000"
+        },
+        "cumulativeSpins": 200,
+        "cumulativeNominalUnits": "120000000",
+        "expectedFullRedemptionPayoutUnits": "115822000",
+        "expectedPayoutFraction": {
+          "numerator": "11582200000",
+          "denominator": 100
+        },
+        "costBasisPointsFraction": {
+          "numerator": "1158220000000",
+          "denominator": "726548210000"
+        }
+      },
+      {
+        "level": 95,
+        "thresholdXp": "85600831",
+        "qualifiedTurnoverUnits": "856008310000",
+        "reward": {
+          "kind": "free_spins",
+          "gameId": "royal-coins",
+          "count": 20,
+          "stakeUnits": "1000000"
+        },
+        "cumulativeSpins": 220,
+        "cumulativeNominalUnits": "140000000",
+        "expectedFullRedemptionPayoutUnits": "135022000",
+        "expectedPayoutFraction": {
+          "numerator": "13502200000",
+          "denominator": 100
+        },
+        "costBasisPointsFraction": {
+          "numerator": "1350220000000",
+          "denominator": "856008310000"
+        }
+      },
+      {
+        "level": 100,
+        "thresholdXp": "100000000",
+        "qualifiedTurnoverUnits": "1000000000000",
+        "reward": {
+          "kind": "free_spins",
+          "gameId": "royal-fruits",
+          "count": 40,
+          "stakeUnits": "2000000"
+        },
+        "cumulativeSpins": 260,
+        "cumulativeNominalUnits": "220000000",
+        "expectedFullRedemptionPayoutUnits": "212622000",
+        "expectedPayoutFraction": {
+          "numerator": "21262200000",
+          "denominator": 100
+        },
+        "costBasisPointsFraction": {
+          "numerator": "2126220000000",
+          "denominator": "1000000000000"
+        }
+      }
+    ],
+    "totalSpins": 260,
+    "totalNominalUnits": "220000000",
+    "expectedFullRedemptionPayoutUnits": "212622000"
+  },
   "serverReplay": [
     {
       "choice": "paid",

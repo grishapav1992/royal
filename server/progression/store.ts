@@ -1,23 +1,27 @@
 import { randomUUID, createHash } from 'node:crypto';
 import type { PostgresDatabase, DatabaseRow } from '../database';
-import { DEFAULT_PROGRESSION_POLICY, PROGRESSION_CURRENCY, PROGRESSION_LOCATION, type ExperienceSource, type ProgressionPolicy, type ProgressionSnapshot } from '../../src/shared/progression';
+import { isDeepStrictEqual } from 'node:util';
+import { DEFAULT_PROGRESSION_HANDLERS, type ExperienceHandler, type MilestoneClaim, type ProgressionHandlers, type RewardHandler } from './handlers';
+import { DEFAULT_PROGRESSION_POLICY, PROGRESSION_CURRENCY, PROGRESSION_LOCATION, type ExperienceSource, type FreeSpinReward, type ProgressionReward, type ProgressionPolicy, type ProgressionSnapshot } from '../../src/shared/progression';
 
-export type RoundContext = { sourceType: ExperienceSource; sourceId: string; accountId: string; locationId: string; gameId: string;
-  environment: string; fundingSource: 'cash' | 'reward'; acceptedAt: number; policyVersion?: string };
-export type SettledExperience = { sourceType: ExperienceSource; sourceId: string; accountId: string; paidUnits: string; refundedUnits: string;
-  settledAt: number; outcome: 'settled' | 'refunded' };
+export type RoundContext<S extends string = ExperienceSource> = { sourceType: S; sourceId: string; accountId: string; locationId: string; gameId: string;
+  environment: string; fundingSource: S extends ExperienceSource ? 'cash' | 'reward' : string; acceptedAt: number; policyVersion?: string };
+export type SettledExperience<S extends string = ExperienceSource> = { sourceType: S; sourceId: string; accountId: string;
+  settledAt: number; outcome: 'settled' | 'refunded' } & (S extends ExperienceSource ? { paidUnits: string; refundedUnits: string } : { valueUnits: string; data?: unknown });
 const units = (v: unknown): v is string => typeof v === 'string' && /^(0|[1-9]\d{0,29})$/.test(v);
 const scopeKey = (e: string, l: string) => e + ':' + l;
-const key = (c: Pick<RoundContext, 'sourceType' | 'sourceId' | 'accountId'>) => createHash('sha256').update(JSON.stringify([c.sourceType,c.sourceId,c.accountId])).digest('hex');
-export class ProgressionStore {
+const key = (c: Pick<RoundContext<string>, 'sourceType' | 'sourceId' | 'accountId'>) => createHash('sha256').update(JSON.stringify([c.sourceType,c.sourceId,c.accountId])).digest('hex');
+export class ProgressionStore<S extends string = ExperienceSource, R extends ProgressionReward = FreeSpinReward> {
   readonly ready: Promise<void>;
-  readonly policy: ProgressionPolicy;
+  readonly policy: ProgressionPolicy<S,R>;
+  private handlers: ProgressionHandlers<S,R>;
   readonly environment: string;
   readonly locationId: string;
   private scope: string;
-  constructor(readonly db: PostgresDatabase, private options: { policy?: ProgressionPolicy; environment?: string; locationId?: string;
+  constructor(readonly db: PostgresDatabase, private options: { policy?: ProgressionPolicy<S,R>; handlers?: ProgressionHandlers<S,R>; environment?: string; locationId?: string;
     now?: () => number; prerequisite?: Promise<unknown>; readOnly?: boolean } = {}) {
-    this.policy = structuredClone(options.policy ?? DEFAULT_PROGRESSION_POLICY);
+    this.policy = structuredClone(options.policy ?? DEFAULT_PROGRESSION_POLICY as unknown as ProgressionPolicy<S,R>);
+    this.handlers = options.handlers ?? DEFAULT_PROGRESSION_HANDLERS as unknown as ProgressionHandlers<S,R>;
     this.environment = options.environment ?? PROGRESSION_CURRENCY;
     this.locationId = options.locationId ?? PROGRESSION_LOCATION;
     this.scope = scopeKey(this.environment,this.locationId);
@@ -31,10 +35,21 @@ export class ProgressionStore {
     for (const [i,row] of this.policy.levels.entries()) {
       if (row.level !== i+1 || !units(row.xp) || i > 0 && BigInt(row.xp) <= BigInt(this.policy.levels[i-1].xp)) throw Error('Invalid level threshold');
       const r=row.reward;
-      if (r && (r.kind!=='free_spins'||!['royal-coins','royal-fruits'].includes(r.gameId)||!Number.isInteger(r.count)||r.count<1||r.count>10000
-        || !units(r.stakeUnits)||BigInt(r.stakeUnits)<100000n||BigInt(r.stakeUnits)>2000000n||BigInt(r.stakeUnits)%10000n!==0n)) throw Error('Invalid reward policy');
+      if (r && !this.rewardHandler(r).valid(r)) throw Error('Invalid reward policy');
     }
-    for (const source of ['paid-game','pvp'] as const) { const c=this.policy.coefficients[source]; if(!c||![c.numerator,c.denominator].every(Number.isSafeInteger)||c.numerator<0||c.denominator<1||c.denominator>1000000)throw Error('Invalid experience coefficient'); }
+    if(Object.keys(this.handlers.sources).some(s=>!Object.hasOwn(this.policy.coefficients,s)))throw Error('Missing experience coefficient');
+    for (const source of Object.keys(this.policy.coefficients) as S[]) { this.sourceHandler(source); const c=this.policy.coefficients[source]; if(!c||![c.numerator,c.denominator].every(Number.isSafeInteger)||c.numerator<0||c.denominator<1||c.denominator>1000000)throw Error('Invalid experience coefficient'); }
+  }
+  private sourceHandler(source: S): ExperienceHandler<S> {
+    if(!Object.hasOwn(this.handlers.sources,source))throw Error('Unregistered experience source');
+    return this.handlers.sources[source] as ExperienceHandler<S>;
+  }
+  private rewardHandler(definition: R): RewardHandler<R> {
+    if(!Object.hasOwn(this.handlers.rewards,definition.kind))throw Error('Unregistered reward kind');
+    return this.handlers.rewards[definition.kind as R['kind']] as RewardHandler<R>;
+  }
+  private claim(row: DatabaseRow): MilestoneClaim {
+    return {id:row.id,accountId:row.account_id,locationId:this.locationId,environment:this.environment,milestoneId:row.milestone_id,policyVersion:row.policy_version,level:Number(row.level),createdAt:Number(row.created_at)};
   }
   private async initialize() {
     if (this.options.readOnly) return;
@@ -49,7 +64,12 @@ export class ProgressionStore {
         CREATE TABLE IF NOT EXISTS progression_xp(id TEXT PRIMARY KEY REFERENCES progression_outbox(id),account_id TEXT NOT NULL,scope TEXT NOT NULL,policy_version TEXT NOT NULL,xp TEXT NOT NULL,created_at BIGINT NOT NULL);
         CREATE TABLE IF NOT EXISTS progression_rewards(id TEXT PRIMARY KEY,account_id TEXT NOT NULL,location_id TEXT NOT NULL,milestone_id TEXT NOT NULL,policy_version TEXT NOT NULL,type TEXT NOT NULL CHECK(type='free_spins'),level BIGINT NOT NULL,
           game_id TEXT NOT NULL,count BIGINT NOT NULL CHECK(count>0),remaining BIGINT NOT NULL CHECK(remaining>=0 AND remaining<=count),nominal_units TEXT NOT NULL,currency TEXT NOT NULL,rules_version BIGINT NOT NULL,created_at BIGINT NOT NULL,
-          UNIQUE(account_id,location_id,currency,milestone_id));`);
+          UNIQUE(account_id,location_id,currency,milestone_id));
+        CREATE TABLE IF NOT EXISTS progression_milestones(id TEXT PRIMARY KEY,account_id TEXT NOT NULL,scope TEXT NOT NULL,milestone_id TEXT NOT NULL,policy_version TEXT NOT NULL,level BIGINT NOT NULL,kind TEXT NOT NULL,definition_json TEXT NOT NULL,created_at BIGINT NOT NULL,UNIQUE(account_id,scope,milestone_id));`);
+      // Preserve already issued v1 rights if upgrading a database created before the handler seam.
+      await this.db.exec(`INSERT INTO progression_milestones SELECT id,account_id,currency||':'||location_id,milestone_id,policy_version,level,type,
+        jsonb_build_object('kind','free_spins','gameId',game_id,'count',count,'stakeUnits',nominal_units)::text,created_at
+        FROM progression_rewards ON CONFLICT DO NOTHING`);
       await this.db.prepare('INSERT INTO progression_settings(scope,activated_at) VALUES(?,?) ON CONFLICT DO NOTHING').run(this.scope,this.now());
       const definition=JSON.stringify(this.policy);
       await this.db.prepare('INSERT INTO progression_policies VALUES(?,?,?) ON CONFLICT DO NOTHING').run(this.scope,this.policy.version,definition);
@@ -57,10 +77,10 @@ export class ProgressionStore {
     });
   }
   async spinsEnabled() { await this.ready; return !!(await this.db.prepare('SELECT spins_enabled FROM progression_settings WHERE scope=?').get(this.scope))?.spins_enabled; }
-  async acceptRound(c: RoundContext) {
+  async acceptRound(c: RoundContext<S>) {
     await this.ready;
-    if (!['paid-game','pvp'].includes(c.sourceType)||!c.sourceId||c.sourceId.length>256||!c.accountId||!c.gameId||!Number.isSafeInteger(c.acceptedAt)||c.acceptedAt<1) throw Error('Invalid progression round context');
-    if(c.environment!==this.environment||c.locationId!==this.locationId||c.fundingSource!=='cash')return false;
+    if (!c.sourceId||c.sourceId.length>256||!c.accountId||!c.gameId||!Number.isSafeInteger(c.acceptedAt)||c.acceptedAt<1) throw Error('Invalid progression round context');
+    if(c.environment!==this.environment||c.locationId!==this.locationId||!this.sourceHandler(c.sourceType).eligible(c))return false;
     return this.db.transaction(async()=>{
       const settings=await this.db.prepare('SELECT * FROM progression_settings WHERE scope=?').get(this.scope);
       if(!settings?.earn_enabled||c.acceptedAt<Number(settings.activated_at))return false;
@@ -69,24 +89,30 @@ export class ProgressionStore {
       // Pin before settlement: a delayed round and a policy rollout must not assign different tracks.
       await this.db.prepare('INSERT INTO progression_players VALUES(?,?,?,\'0\',\'0\',1) ON CONFLICT DO NOTHING').run(c.accountId,this.scope,this.policy.version);
       const player=await this.db.prepare('SELECT policy_version FROM progression_players WHERE account_id=? AND scope=?').get(c.accountId,this.scope);
+      const pinned=await this.db.prepare('SELECT definition FROM progression_policies WHERE scope=? AND version=?').get(this.scope,player!.policy_version);
+      if(!pinned)throw Error('Missing accepted progression policy');
+      if(!Object.hasOwn(JSON.parse(pinned.definition).coefficients,c.sourceType))return false;
       const context={...c,policyVersion:player?.policy_version??this.policy.version};
       await this.db.prepare("INSERT INTO progression_rounds VALUES(?,?,?,?,'pending')").run(key(c),c.accountId,this.scope,JSON.stringify(context));
       return true;
     });
   }
-  async pendingRounds(accountId: string, sourceType?: ExperienceSource): Promise<RoundContext[]> {
+  async pendingRounds<K extends S>(accountId: string, sourceType: K): Promise<RoundContext<K>[]>;
+  async pendingRounds(accountId: string): Promise<RoundContext<S>[]>;
+  async pendingRounds(accountId: string, sourceType?: S): Promise<RoundContext<S>[]> {
     await this.ready;
     const rows=await this.db.prepare("SELECT context_json FROM progression_rounds WHERE account_id=? AND scope=? AND state='pending'").all(accountId,this.scope);
-    return rows.map(r=>JSON.parse(r.context_json) as RoundContext).filter(c=>!sourceType||c.sourceType===sourceType);
+    return rows.map(r=>JSON.parse(r.context_json) as RoundContext<S>).filter(c=>!sourceType||c.sourceType===sourceType);
   }
-  async recordSettled(e: SettledExperience) {
+  async recordSettled(e: SettledExperience<S>) {
     await this.ready;
-    if(!units(e.paidUnits)||!units(e.refundedUnits)||BigInt(e.refundedUnits)>BigInt(e.paidUnits)||!Number.isSafeInteger(e.settledAt)||!['settled','refunded'].includes(e.outcome))throw Error('Invalid settled experience');
+    const handler=this.sourceHandler(e.sourceType);
+    if(!handler.valid(e)||!Number.isSafeInteger(e.settledAt)||!['settled','refunded'].includes(e.outcome))throw Error('Invalid settled experience');
     return this.db.transaction(async()=>{
       const row=await this.db.prepare('SELECT * FROM progression_rounds WHERE id=? AND scope=?').get(key(e),this.scope);
       if(!row)return false;
       const old=await this.db.prepare('SELECT payload FROM progression_outbox WHERE id=?').get(key(e));
-      if(old){const p=JSON.parse(old.payload);for(const f of ['paidUnits','refundedUnits','outcome'] as const)if(p[f]!==e[f])throw Error('Settled experience conflict');return true;}
+      if(old){if(handler.identity(JSON.parse(old.payload))!==handler.identity(e))throw Error('Settled experience conflict');return true;}
       await this.db.prepare('INSERT INTO progression_outbox(id,account_id,payload,created_at) VALUES(?,?,?,?)').run(key(e),e.accountId,JSON.stringify(e),e.settledAt);
       await this.db.prepare("UPDATE progression_rounds SET state='settled' WHERE id=?").run(key(e));
       return true;
@@ -103,31 +129,33 @@ export class ProgressionStore {
     });
   }
   private async apply(row: DatabaseRow) {
-    const c=JSON.parse(row.context_json) as RoundContext,e=JSON.parse(row.payload) as SettledExperience;
+    const c=JSON.parse(row.context_json) as RoundContext<S>,e=JSON.parse(row.payload) as SettledExperience<S>;
     const policyRow=await this.db.prepare('SELECT definition FROM progression_policies WHERE scope=? AND version=?').get(row.scope,c.policyVersion);
     if(!policyRow)throw Error('Missing accepted progression policy');
-    const policy=JSON.parse(policyRow.definition) as ProgressionPolicy;
+    const policy=JSON.parse(policyRow.definition) as ProgressionPolicy<S,R>;
     await this.db.prepare('INSERT INTO progression_players VALUES(?,?,?,\'0\',\'0\',1) ON CONFLICT DO NOTHING').run(c.accountId,row.scope,c.policyVersion);
     const player=(await this.db.prepare('SELECT * FROM progression_players WHERE account_id=? AND scope=? FOR UPDATE').get(c.accountId,row.scope))!;
     if(player.policy_version!==c.policyVersion)throw Error('Progression policy migration is required');
     const coefficient=policy.coefficients[c.sourceType];
-    const net=e.outcome==='refunded'?0n:BigInt(e.paidUnits)-BigInt(e.refundedUnits);
+    const net=this.sourceHandler(c.sourceType).basisUnits(e);if(net<0n)throw Error('Invalid normalized experience');
     const gcd=(a:bigint,b:bigint):bigint=>b===0n?a:gcd(b,a%b);
-    const denominators=Object.values(policy.coefficients).map(v=>BigInt(v.denominator));
+    const denominators=Object.values(policy.coefficients as Record<string,{denominator:number}>).map(v=>BigInt(v.denominator));
     const common=denominators.reduce((a,b)=>a/gcd(a,b)*b,1n),precision=common*10000n;
     const scaled=net*BigInt(coefficient.numerator)*(common/BigInt(coefficient.denominator))+BigInt(player.remainder);
     const delta=scaled/precision, remainder=scaled%precision,xp=BigInt(player.xp)+delta;
     let level=1;for(const threshold of policy.levels)if(xp>=BigInt(threshold.xp))level=threshold.level;
     await this.db.prepare('INSERT INTO progression_xp VALUES(?,?,?,?,?,?)').run(row.id,c.accountId,row.scope,c.policyVersion,String(delta),e.settledAt);
     await this.db.prepare('UPDATE progression_players SET xp=?,remainder=?,level=? WHERE account_id=? AND scope=?').run(String(xp),String(remainder),level,c.accountId,row.scope);
-    for(const milestone of policy.levels.filter(l=>l.level<=level&&l.reward)){
+    for(const milestone of policy.levels.filter(l=>l.level>Number(player.level)&&l.level<=level&&l.reward)){
       const r=milestone.reward!;
-      await this.db.prepare('INSERT INTO progression_rewards VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(account_id,location_id,currency,milestone_id) DO NOTHING')
-        .run(randomUUID(),c.accountId,c.locationId,'level:'+milestone.level,c.policyVersion,'free_spins',milestone.level,r.gameId,r.count,r.count,r.stakeUnits,c.environment,1,this.now());
+      const claim:MilestoneClaim={id:randomUUID(),accountId:c.accountId,locationId:c.locationId,environment:c.environment,milestoneId:'level:'+milestone.level,policyVersion:c.policyVersion!,level:milestone.level,createdAt:this.now()};
+      const inserted=await this.db.prepare('INSERT INTO progression_milestones VALUES(?,?,?,?,?,?,?,?,?) ON CONFLICT(account_id,scope,milestone_id) DO NOTHING')
+        .run(claim.id,claim.accountId,row.scope,claim.milestoneId,claim.policyVersion,claim.level,r.kind,JSON.stringify(r),claim.createdAt);
+      if(inserted.changes===1)await this.rewardHandler(r).issue(this.db,claim,r);
     }
     await this.db.prepare('UPDATE progression_outbox SET processed=true WHERE id=?').run(row.id);
   }
-  async snapshot(accountId: string, locationId=this.locationId): Promise<ProgressionSnapshot> {
+  async snapshot(accountId: string, locationId=this.locationId): Promise<ProgressionSnapshot<R>> {
     await this.ready;
     if(locationId!==this.locationId)throw Error('Unknown progression location');
     await this.processPending(accountId);
@@ -172,14 +200,14 @@ export class ProgressionStore {
       for(const player of players){
         const definition=await this.db.prepare('SELECT definition FROM progression_policies WHERE scope=? AND version=?').get(this.scope,player.policy_version);
         if(!definition){projectionMismatches++;continue;}
-        const policy=JSON.parse(definition.definition) as ProgressionPolicy;
+        const policy=JSON.parse(definition.definition) as ProgressionPolicy<S,R>;
         const expected=policy.levels.filter(l=>BigInt(l.xp)<=BigInt(player.xp)),level=expected.at(-1)?.level??1;
         if(Number(player.level)!==level)projectionMismatches++;
-        const grants=await this.db.prepare('SELECT * FROM progression_rewards WHERE account_id=? AND location_id=? AND currency=?').all(player.account_id,this.locationId,this.environment);
+        const grants=await this.db.prepare('SELECT * FROM progression_milestones WHERE account_id=? AND scope=?').all(player.account_id,this.scope);
         const milestones=expected.filter(l=>l.reward);
         for(const milestone of milestones){const grant=grants.find(g=>g.milestone_id==='level:'+milestone.level),reward=milestone.reward!;
-          if(!grant||Number(grant.level)!==milestone.level||grant.type!=='free_spins'||grant.game_id!==reward.gameId||Number(grant.count)!==reward.count
-            ||grant.nominal_units!==reward.stakeUnits||grant.policy_version!==player.policy_version||Number(grant.rules_version)!==1)milestoneMismatches++;}
+          if(!grant||Number(grant.level)!==milestone.level||grant.kind!==reward.kind||grant.policy_version!==player.policy_version
+            ||!isDeepStrictEqual(JSON.parse(grant.definition_json),reward)||!await this.rewardHandler(reward).audit(this.db,this.claim(grant),reward))milestoneMismatches++;}
         milestoneMismatches+=grants.filter(g=>!milestones.some(m=>g.milestone_id==='level:'+m.level)).length;
       }
       return {ok:[mismatches.length,missing.length,badRemaining.length,projectionMismatches,milestoneMismatches].every(n=>n===0),

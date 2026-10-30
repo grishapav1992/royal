@@ -934,9 +934,12 @@
         "server/progression/freeSpins.ts",
         "server/progression/store.ts",
         "server/progression/sources.ts",
-        "server/accounts.ts"
+        "server/accounts.ts",
+        "server/progression/handlers.ts"
       ],
-      "note": "Exact exhaustive paid and promotional nominal qualification. Reward player cost is zero; expected promotional payout is not reported as RTP. Common-wallet accounting is verified separately by progression-spins tests."
+      "note": "Exact exhaustive paid and promotional nominal qualification. Reward player cost is zero; expected promotional payout is not reported as RTP. Common-wallet accounting is verified separately by progression-spins tests.",
+      "promotionProgramVersion": "location-levels-v1",
+      "maxPromotionCostBasisPoints": 100
     },
     "royal-fruits": {
       "method": "exact-paid-and-reward-slots-v1",
@@ -993,9 +996,12 @@
         "server/progression/freeSpins.ts",
         "server/progression/store.ts",
         "server/progression/sources.ts",
-        "server/accounts.ts"
+        "server/accounts.ts",
+        "server/progression/handlers.ts"
       ],
-      "note": "Exact exhaustive paid and promotional nominal qualification. Reward player cost is zero; expected promotional payout is not reported as RTP. Common-wallet accounting is verified separately by progression-spins tests."
+      "note": "Exact exhaustive paid and promotional nominal qualification. Reward player cost is zero; expected promotional payout is not reported as RTP. Common-wallet accounting is verified separately by progression-spins tests.",
+      "promotionProgramVersion": "location-levels-v1",
+      "maxPromotionCostBasisPoints": 100
     }
   },
   "nonWagered": {

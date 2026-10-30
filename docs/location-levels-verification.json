@@ -4,9 +4,9 @@
   "state": "implemented-and-locally-verified; production release in preparation",
   "checks": {
     "serverClientHttpMoneyAndCompatibility": {
-      "passed": 65,
+      "passed": 71,
       "failed": 0,
-      "command": "node --import tsx scripts/database-test.ts --import tsx --test server-tests/progression.test.ts server-tests/progression-sources.test.ts server-tests/progression-client.test.ts server-tests/progression-http.test.ts server-tests/progression-review.test.ts server-tests/finance/progression-spins.test.ts server-tests/reward-slots-rtp-gate.test.mjs server-tests/accounts.test.ts server-tests/pvp-virtual-wallet.test.ts server-tests/game-wallet.test.ts"
+      "command": "node --import tsx scripts/database-test.ts --import tsx --test server-tests/progression*.test.ts server-tests/finance/progression-spins.test.ts server-tests/reward-slots-rtp-gate.test.mjs server-tests/accounts.test.ts server-tests/pvp-virtual-wallet.test.ts server-tests/game-wallet.test.ts"
     },
     "browser": {
       "passed": 3,
@@ -15,7 +15,19 @@
     },
     "financeTypecheck": true,
     "applicationBuild": true,
-    "rtpProfilesVerified": 20
+    "rtpProfilesVerified": 20,
+    "extensibility": {
+      "passed": 6,
+      "scope": "explicit nonmonetary source, independent reward resource, atomic milestone, old rights migration and pinned policy compatibility"
+    },
+    "releaseProjection": {
+      "passed": 22
+    },
+    "installer": {
+      "python": 13,
+      "protocol": 4,
+      "realPostgresFence": 1
+    }
   },
   "mathematics": {
     "coins": {
@@ -37,7 +49,13 @@
       "issuedNominal": "220.00",
       "expectedPayout": "212.622"
     },
-    "profitabilityClaim": false
+    "profitabilityClaim": false,
+    "promotionBudget": {
+      "maximumCumulativeBasisPoints": 100,
+      "everyMilestoneVerified": true,
+      "independentDefinition": true,
+      "profitabilityClaim": false
+    }
   },
   "release": {
     "published": false,
