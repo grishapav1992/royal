@@ -1,7 +1,9 @@
 import { skinAssetUrl } from '../shared/skinStudio';
 import type { Facing } from '../shared/movement';
+import { alignSkinWalkingPoses, type SkinPoseAlignment } from './skinPoseAlignment';
 
 const sheets = new Map<string, HTMLImageElement>();
+const alignments = new Map<string, SkinPoseAlignment[]>();
 const requests = new Map<string, Promise<HTMLImageElement>>();
 export function loadSkinSheet(id: string) {
   if (sheets.has(id)) return Promise.resolve(sheets.get(id)!);
@@ -10,8 +12,14 @@ export function loadSkinSheet(id: string) {
     const img = new Image(); img.decoding = 'async';
     img.onload = () => {
       if (img.naturalWidth !== 1024 || img.naturalHeight !== 1536) { reject(new Error('Invalid skin atlas')); return; }
+      try {
+        const thumbnail = document.createElement('canvas'); thumbnail.width = 128; thumbnail.height = 192;
+        const context = thumbnail.getContext('2d', { willReadFrequently: true })!;
+        context.drawImage(img, 0, 0, 128, 192);
+        alignments.set(id, alignSkinWalkingPoses(context.getImageData(0, 0, 128, 192).data));
+      } catch (error) { reject(error); return; }
       sheets.set(id, img);
-      if (sheets.size > 48) sheets.delete(sheets.keys().next().value!);
+      if (sheets.size > 48) { const oldest = sheets.keys().next().value!; sheets.delete(oldest); alignments.delete(oldest); }
       window.dispatchEvent(new CustomEvent('royal-skin-loaded', { detail: id })); resolve(img);
     };
     img.onerror = () => reject(new Error('Skin artwork unavailable'));
@@ -32,7 +40,12 @@ export function drawGeneratedSkin(c: CanvasRenderingContext2D, id: string, facin
   const bounce = winning ? -Math.max(0, Math.sin(phase)) * 1.1 : 0;
   c.save(); c.beginPath(); c.rect(0, -8, 32, 48); c.clip();
   c.translate(16, 39 + bounce); c.rotate((losing ? Math.sin(phase) * .025 : winning ? Math.sin(phase) * .04 : 0));
-  c.drawImage(image, pose * 256, row * 384, 256, 384, -16, -47, 32, 48);
+  const alignment = walking ? alignments.get(id)?.[row * 4 + pose] : undefined;
+  if (alignment) {
+    c.translate(alignment.x - (alignment.mirrored ? alignment.scale : 0), alignment.y);
+    c.scale(alignment.mirrored ? -alignment.scale : alignment.scale, alignment.scale);
+    c.drawImage(image, alignment.pose * 256, row * 384, 256, 384, -16, -47 / alignment.scale, 32, 48);
+  } else c.drawImage(image, pose * 256, row * 384, 256, 384, -16, -47, 32, 48);
   c.restore();
   if (sip >= 0 && facing !== 'up') {
     // A cup follows the existing six-phase drinking cycle; body artwork remains intact.
