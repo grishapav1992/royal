@@ -66,6 +66,7 @@ for(const name of ['manifest.json',...Object.keys(metadata.files)]){
 for(const name of ['release-manifest.json','release-github.json'])copy(resolve(root,'module-build',name),name);
 copy(resolve(task,'before.json'),'before.json');
 const guardSha256=copy(resolve(helper,'guard.py'),'guard.py');
+copy(resolve(helper,'run-release.py'),'run-release.py');
 const publisherBytes=tracked('scripts/game-module-release.py');
 const publisherSha256=hash(publisherBytes);assert.equal(publisherSha256,before.source['scripts/game-module-release.py'],'Live publisher changed');
 writeFileSync(resolve(out,'publisher.py'),publisherBytes);
