@@ -1,7 +1,6 @@
 """Publish the reviewed skin client without interrupting rooms or financial operations."""
 from pathlib import Path
 import contextlib
-import fcntl
 import hashlib
 import importlib.util
 import json
@@ -24,7 +23,7 @@ def require(ok, reason):
 
 
 def stable(state):
-    result = dict(state)
+    result = {key: value for key, value in state.items() if key not in ['at', 'freeBytes']}
     result['containers'] = {name: {k: v for k, v in row.items() if k != 'health'} for name, row in state['containers'].items()}
     return result
 
@@ -154,6 +153,7 @@ def publish():
 
 
 if __name__ == '__main__':
+    import fcntl
     with contextlib.ExitStack() as stack:
         for name in ['/opt/royal-releases/themed-publish.lock', '/opt/royal/.client-presentation-deploy.lock', '/opt/royal-game-modules-state/module.lock']:
             handle = stack.enter_context(Path(name).open('a'))
