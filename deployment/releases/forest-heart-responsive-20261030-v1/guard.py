@@ -145,6 +145,7 @@ def payload():
     return operator,release,before,meta,publisher
 
 def runtime_index(file):
+    file.chmod(0o644)
     run(['docker','cp',str(file),'royal-game-1:/app/dist/index.html.forest-next'])
     run(['docker','exec','--user','0','royal-game-1','node','-e',"require('fs').renameSync('/app/dist/index.html.forest-next','/app/dist/index.html')"])
 def healthy():
@@ -190,6 +191,7 @@ def publish():
         for n in op['dist']:
             if n=='index.html': continue
             target=assets/n; target.parent.mkdir(parents=True,exist_ok=True); os.link(ROOT/'dist-delta'/n,target)
+        for p in [assets,*assets.rglob('*')]: p.chmod(0o755 if p.is_dir() else 0o644)
         run(['docker','cp',str(assets)+'/.','royal-game-1:/app/dist/'])
         for n in op['source']: atomic(ROOT/'source'/n,LIVE/n)
         for n in op['dist']:
