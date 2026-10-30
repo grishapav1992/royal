@@ -60,7 +60,9 @@ export async function buildApplication({ root = projectRoot, modules = null, hos
     report.passed ??= false;
     report.durationMs = Math.round(performance.now() - started);
     await saveJson(resolve(root, 'module-build/application-report.json'), report);
-    console.log(JSON.stringify({ applicationBuild: report }));
+    const hostProjection = report.hostProjection && { config: report.hostProjection.config, sha256: report.hostProjection.sha256,
+      productionCommit: report.hostProjection.productionCommit, inputCount: Object.keys(report.hostProjection.inputs).length };
+    console.log(JSON.stringify({ applicationBuild: { ...report, ...(hostProjection ? { hostProjection } : {}) } }));
   }
 }
 
