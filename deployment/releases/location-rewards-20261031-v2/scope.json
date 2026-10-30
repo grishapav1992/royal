@@ -1,0 +1,42 @@
+{
+  "release": "location-rewards-20261031-v2",
+  "base": "38ce8d04adbc70cf2a7e80cf017663463dd68b2a",
+  "requiredProtectedPrograms": {
+    "royal-nile-play": [
+      "play.js",
+      "proof.js"
+    ]
+  },
+  "allowedSource": [
+    "server/accounts.ts",
+    "server/progression/store.ts",
+    "server/progression/freeSpins.ts",
+    "server/progression/handlers.ts",
+    "server/progression/skinGenerations.ts",
+    "server/skinStudio.ts",
+    "src/shared/progression.ts",
+    "src/shared/skinStudio.ts",
+    "src/ui/ProgressionUI.ts",
+    "src/ui/SkinStudioUI.ts",
+    "src/i18n/progressionEn.ts"
+  ],
+  "requiredSource": [
+    "server/accounts.ts",
+    "server/progression/store.ts",
+    "server/progression/freeSpins.ts",
+    "server/progression/handlers.ts",
+    "server/progression/skinGenerations.ts",
+    "server/skinStudio.ts",
+    "src/shared/progression.ts",
+    "src/shared/skinStudio.ts",
+    "src/ui/ProgressionUI.ts",
+    "src/ui/SkinStudioUI.ts",
+    "src/i18n/progressionEn.ts"
+  ],
+  "references": {
+    "overlay-base.py": "deployment/releases/cat-purr-hall-only-20261030-v1/deploy.py",
+    "financial_gate.py": "deployment/releases/cat-purr-hall-only-20261030-v1/financial_gate.py",
+    "quiesce-base.cjs": "deployment/releases/cat-purr-hall-only-20261030-v1/quiesce.cjs",
+    "runtime-inventory.cjs": "deployment/releases/cat-purr-hall-only-20261030-v1/runtime-inventory.cjs"
+  }
+}
