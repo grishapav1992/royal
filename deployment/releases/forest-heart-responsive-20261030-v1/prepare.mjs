@@ -36,6 +36,7 @@ for(const [file,digest] of Object.entries(release.hostProjection.inputs)){
   assert.equal(digest,before.sourceLF[file],'Unrelated compiled host source changed: '+file);
 }
 for(const file of ['package.json','package-lock.json','index.html','tsconfig.json'])assert.equal(hash(tracked(file)),before.sourceLF[file],'Dependencies or entry changed: '+file);
+for(const file of ['src/shared/forestHeartMath.ts','src/shared/forestHeart.ts','server/games/forestHeart.ts'])assert.equal(hash(tracked(file)),before.sourceLF[file],'Forest mathematics differ from production: '+file);
 for(const file of [...host,...git('ls-files','-z','games/forest-heart').toString().split('\0').filter(Boolean)]){
   const bytes=host.includes(file)?projected.read(file):tracked(file),digest=hash(bytes);
   assert(before.source[file],'New source needs explicit review: '+file);
