@@ -19,8 +19,8 @@ test('the target check uses the exact fraction and ignores a forged display valu
   for(const fraction of ['957999/1000000','962001/1000000'])assert(nudgeRtpError({exactRtp:{fraction,value:.96}},policy));
 });
 test('model evidence cannot qualify a release or enter the runnable catalogue',async()=>{
-  const id='studio-wild-nudge',inputs=await rtpInputs(process.cwd(),id);assert.equal(inputs.policy.releaseStatus,'model-only');
-  assert(!GAME_MODULES.some(game=>game.gameId===id));
-  assert.throws(()=>validateRtpProof(id,inputs,{releaseQualified:true}),/Mathematical model only/);
-  await assert.rejects(()=>checkGameRtp(process.cwd(),[...GAME_MODULES,{gameId:id,rulesVersion:1,progressVersion:1}],[id]),/Unfinished client/);
+  const id='studio-wild-nudge',inputs=await rtpInputs(process.cwd(),id);
+  assert.throws(()=>validateRtpProof(id,{...inputs,policy:{...inputs.policy,releaseStatus:'model-only'}},{releaseQualified:true}),/Mathematical model only/);
+  const report=await wildNudgeModelReport();assert.throws(()=>validateRtpProof(id,inputs,{...report,releaseQualified:true}));
+  assert(GAME_MODULES.some(game=>game.gameId===id));assert.equal((await checkGameRtp(process.cwd(),GAME_MODULES,[id])).verified,1);
 });

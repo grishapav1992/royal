@@ -1,5 +1,5 @@
-/** Stage-one candidate only. No runnable module, transport, RNG or wallet is registered. */
-import data from './wildNudgeData.json';
+/** Pure Galactic Reactor mathematics. Entropy and settlement belong to the shared backend. */
+import data from './wildNudgeData.json' with {type:'json'};
 
 function freezeParameters(value:unknown):void {
   if(!value||typeof value!=='object'||Object.isFrozen(value))return;
