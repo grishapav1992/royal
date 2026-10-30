@@ -25,7 +25,7 @@ export class CascadeEffects{
     if(!beat){this.shownUnits=fallbackUnits;return;}
     const layer=this.root.querySelector<HTMLElement>('.ft-cascade-fx');if(!layer)return;this.layer=layer;this.width=layer.clientWidth;this.height=layer.clientHeight;
     const reels=this.root.querySelector<HTMLElement>('.ft-reels')!;this.stride=(this.cells[0]?.getBoundingClientRect().height??0)+parseFloat(this.root.ownerDocument.defaultView!.getComputedStyle(reels).rowGap);
-    if(beat.kind==='break'){
+    if(beat.kind==='break'&&beat.rate===1){
       const box=layer.getBoundingClientRect(),mask=beat.removeMask??beat.frame.removeMask;
       for(const cell of this.cells){const index=Number(cell.dataset.cell);if(!(mask&(1<<index)))continue;
         const rect=cell.getBoundingClientRect(),symbol=Number(cell.dataset.symbol);
@@ -36,7 +36,7 @@ export class CascadeEffects{
         }
       }
     }
-    if(beat.kind==='evaluate'&&beat.frame.wins.length){
+    if(beat.kind==='evaluate'&&beat.frame.wins.length&&beat.rate===1){
       const doc=this.root.ownerDocument,svg=doc.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 5 3');svg.setAttribute('preserveAspectRatio','none');svg.classList.add('ft-cascade-lines');
       for(const rows of cascadeLines(beat.frame)){const path=doc.createElementNS(svg.namespaceURI,'path');path.setAttribute('d',rows.map((r,c)=>(c?'L':'M')+(c+.5)+','+(r+.5)).join(' '));svg.append(path);}
       layer.append(svg);this.lines=svg;
@@ -48,7 +48,7 @@ export class CascadeEffects{
     const p=clamp(offset/beat.duration),envelope=Math.sin(p*Math.PI),mask=beat.removeMask??beat.frame.removeMask;
     if(beat.kind==='drop')for(const move of beat.moves){
       const cell=this.cells[move.cell];if(!cell||!move.rows)continue;
-      const land=cascadeLandMs(move.cell),fall=clamp(offset/land),bounce=offset>land?Math.sin(clamp((offset-land)/80)*Math.PI):0;
+      const land=cascadeLandMs(move.cell,beat.rate),fall=clamp(offset/land),bounce=offset>land?Math.sin(clamp((offset-land)/(80/beat.rate))*Math.PI):0;
       const travel=move.rows*this.stride;
       // Enter the visible field early, then ease into the shared landing accent.
       cell.style.transform=`translateY(${-travel*Math.pow(1-fall,3)}px) scale(${1+bounce*.018},${1-bounce*.04})`;

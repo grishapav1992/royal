@@ -1,0 +1,76 @@
+{
+  "date": "2026-10-30",
+  "module": "0.9.5-76d19e8e4cc3",
+  "sourceSha256": "76d19e8e4cc3ce803f5aabbe1badd0de4c0273aaa4c4d21c747607de4383daf7",
+  "contracts": {
+    "apiVersion": 1,
+    "rulesVersion": 2,
+    "progressVersion": 2
+  },
+  "unchangedMediaFiles": 39,
+  "browserScenariosPassed": 9,
+  "templeTestsPassed": 56,
+  "moduleTestsPassed": 7,
+  "rtpRegisteredVerified": 18,
+  "legacyUnqualified": 114,
+  "quickEventRate": 2,
+  "hostSamples": {
+    "host-1280-quick": {
+      "frames": 235,
+      "dropFrames": 72,
+      "visibleTopPositions": 29,
+      "stable": true,
+      "ranges": {
+        "board": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "character": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "viewportShift": [
+        0,
+        0
+      ],
+      "scrollRange": 0
+    },
+    "host-390-quick": {
+      "frames": 199,
+      "dropFrames": 78,
+      "visibleTopPositions": 31,
+      "stable": true,
+      "ranges": {
+        "board": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "character": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "viewportShift": [
+        0,
+        1
+      ],
+      "scrollRange": 1
+    }
+  },
+  "bonusObservedElapsedSeconds": {
+    "normal": 27.8,
+    "quick": 15.9
+  },
+  "physicalPhoneVerified": false,
+  "newListeningQualityClaim": false,
+  "productionInstalled": false
+}

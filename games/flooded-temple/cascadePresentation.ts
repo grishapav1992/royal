@@ -6,7 +6,7 @@ import type {CharacterBeat} from './character';
 
 export type CascadeMove={cell:number;from:number|null;rows:number};
 export type CascadeSource={grid:number[];removeMask:number};
-export type CascadeBeat={id:number;at:number;duration:number;kind:'drop'|'evaluate'|'break'|'bonus'|'base-return'|'outcome'|'summary';frame:CascadeFrame;grid?:number[];removeMask?:number;fromPoints:number;toPoints:number;moves:CascadeMove[];cue?:TempleCue;accentMs:number;outcome?:TempleOutcome};
+export type CascadeBeat={id:number;at:number;duration:number;rate:number;kind:'drop'|'evaluate'|'break'|'bonus'|'base-return'|'outcome'|'summary';frame:CascadeFrame;grid?:number[];removeMask?:number;fromPoints:number;toPoints:number;moves:CascadeMove[];cue?:TempleCue;accentMs:number;outcome?:TempleOutcome};
 export type CascadePlan={key:string;beats:CascadeBeat[];duration:number;final:CascadeFrame;quick:boolean;reduced:boolean};
 const fullMoves=():CascadeMove[]=>Array.from({length:15},(_,cell)=>({cell,from:null,rows:3}));
 
@@ -25,20 +25,21 @@ export function cascadeMoves(source:CascadeSource|undefined,grid:readonly number
   }
   return moves.sort((a,b)=>a.cell-b.cell);
 }
-export const cascadeLandMs=(cell:number)=>260+Math.floor(cell/3)*18+(cell%3)*8;
-export const cascadeCounter=(beat:CascadeBeat,elapsed:number)=>beat.fromPoints+Math.floor((beat.toPoints-beat.fromPoints)*Math.min(1,Math.max(0,elapsed/Math.min(320,beat.duration))));
+export const cascadeLandMs=(cell:number,rate=1)=>(260+Math.floor(cell/3)*18+(cell%3)*8)/rate;
+export const cascadeCounter=(beat:CascadeBeat,elapsed:number)=>beat.fromPoints+Math.floor((beat.toPoints-beat.fromPoints)*Math.min(1,Math.max(0,elapsed/Math.min(320/beat.rate,beat.duration))));
 
 /** Pure presentation plan. No random draws, wallet writes or server continuation here. */
 export function cascadePlan(key:string,view:TempleCascadeView,previous?:TempleCascadeView,quick=false,reduced=false):CascadePlan{
   const final=view.frames.at(-1)!;if(!final)throw Error('No confirmed cascade frames');
-  const beats:CascadeBeat[]=[];let at=0,points=previous?.state.totalPoints??0;
+  const beats:CascadeBeat[]=[],rate=quick&&!reduced?2:1;let at=0,points=previous?.state.totalPoints??0;
   const add=(kind:CascadeBeat['kind'],duration:number,frame:CascadeFrame,extra:Partial<CascadeBeat>={})=>{
-    beats.push({id:beats.length,at,duration,kind,frame,fromPoints:points,toPoints:points,moves:[],accentMs:0,...extra});at+=duration;
+    const beat={id:beats.length,at,duration:duration/rate,rate,kind,frame,fromPoints:points,toPoints:points,moves:[],...extra,accentMs:(extra.accentMs??0)/rate};
+    beats.push(beat);at+=beat.duration;
   };
   const outcome=view.phase==='complete'?templeOutcome(view.stakeUnits,view.totalPayoutUnits):undefined;
   const resultCue:TempleCue|undefined=outcome?outcome==='partial'||outcome==='loss'?'neutral':outcome:undefined;
-  if(quick||reduced){
-    add('summary',reduced?100:outcome==='big'?520:outcome==='win'?360:180,final,{fromPoints:final.totalPoints,toPoints:final.totalPoints,outcome,cue:resultCue,accentMs:reduced?40:100});
+  if(reduced){
+    add('summary',100,final,{fromPoints:final.totalPoints,toPoints:final.totalPoints,outcome,cue:resultCue,accentMs:40});
     return {key,beats,duration:at,final,quick,reduced};
   }
   let prior=previous?.frames.at(-1),base:CascadeSource|undefined=previous?.state.parent??undefined;
