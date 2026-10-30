@@ -140,18 +140,18 @@ test('signed admin adjustment crosses payment service and reaches game credit mi
 
 test('mainnet reports one logical progressive game, uses actual paid payout and reserves coverage during adjustments',async()=>{
   const address=(n:number)=>{const e=createECDH('secp256k1');e.setPrivateKey(Buffer.from(n.toString(16).padStart(64,'0'),'hex'));return nileBase58(nilePublicKeyAddress(e.getPublicKey('hex','uncompressed')));};
-  const hash=(n:number)=>n.toString(16).padStart(16,'0')+'a'.repeat(48),player=randomUUID(),actor=randomUUID();
+  const hash=(n:number)=>n.toString(16).padStart(16,'0')+'a'.repeat(48),player=randomUUID(),actor=randomUUID(),ranks=[0,0,6,0,12,0];
   const ledger=new MainnetLedger(':memory:',{version:1,network:'tron-mainnet',token:MAINNET_USDT_TOKEN,genesis:MAINNET_GENESIS,accountId:player,
-    playerAddress:address(41),serviceAddress:address(42),anchorHeight:100,anchorHash:hash(100),openingReserveUnits:'500000000'},()=>0);
+    playerAddress:address(41),serviceAddress:address(42),anchorHeight:100,anchorHash:hash(100),openingReserveUnits:'500000000'},()=>ranks.shift()!);
   await ledger.ready;const tx='1'.repeat(64);
   try{
     await ledger.ingest({height:101,hash:hash(101),parentHash:hash(100),timestamp:Date.now(),txIds:[tx],outcomes:[{txId:tx,status:'SUCCESS'}],
       transfers:[{txId:tx,logIndex:0,contract:MAINNET_USDT_TOKEN,from:nileHex(address(41)),to:nileHex(address(42)),amountUnits:'10000000'}]});
     await ledger.reconcile(101,'510000000');
-    const start={id:randomUUID(),action:'start' as const,gameId:'github-tower' as const,stakeUnits:'1000000',settings:{difficulty:'easy' as const}};
+    const start={id:randomUUID(),action:'start' as const,gameId:'github-hilo' as const,stakeUnits:'1000000',settings:{}};
     await ledger.casinoPlay(player,start);
     let report=await ledger.adminReport({kind:'game'});assert.equal(report.totals.count,1);assert.equal(report.totals.ggr,'0');assert.equal(report.rows[0].status,'pending');
-    await ledger.casinoPlay(player,{id:randomUUID(),action:'pick',gameId:start.gameId,sessionId:start.id,choice:1});
+    await ledger.casinoPlay(player,{id:randomUUID(),action:'pick',gameId:start.gameId,sessionId:start.id,choice:'higher'});
     const paid=await ledger.casinoPlay(player,{id:randomUUID(),action:'cashout',gameId:start.gameId,sessionId:start.id});
     report=await ledger.adminReport({kind:'game'});assert.equal(report.totals.count,1);assert.equal(report.totals.stakes,'1000000');
     assert.equal(report.totals.payouts,paid.session.payoutUnits);assert.equal(report.totals.ggr,(1000000n-BigInt(paid.session.payoutUnits)).toString());
@@ -215,11 +215,12 @@ test('all native paid games and atelier purchases are read only from their Nile 
   try{
     const instant={id:randomUUID(),kind:'play',amount:10,gameId:'royal-coins',rulesVersion:1,input:{}};await run('/operations',instant);await run('/operations',instant);
     let report=await c.ledger.adminReport({kind:'game'});assert.equal(report.rows.length,1);assert.equal(report.totals.stakes,'10000000');assert.equal(report.totals.payouts,'120000000');
-    const start={id:randomUUID(),action:'start',gameId:'github-tower',stakeUnits:'1000',settings:{difficulty:'easy'}};
-    await run('/casino-sessions',start);report=await c.ledger.adminReport({game:'github-tower'});assert.equal(report.rows[0].status,'pending');
-    await run('/casino-sessions',{id:randomUUID(),action:'pick',gameId:start.gameId,sessionId:start.id,choice:1});
-    await run('/casino-sessions',{id:randomUUID(),action:'cashout',gameId:start.gameId,sessionId:start.id});
-    report=await c.ledger.adminReport({game:'github-tower'});assert.equal(report.rows.length,1);assert.equal(report.totals.stakes,'10000000');assert.equal(report.totals.payouts,'13200000');
+    const start={id:randomUUID(),action:'start',gameId:'original-cr-vs-leo',stakeUnits:'1000',settings:{penalty:{hero:'cr',risk:'safe'}}};
+    await run('/expansion',start);report=await c.ledger.adminReport({game:start.gameId});assert.equal(report.rows[0].status,'pending');
+    await run('/expansion',{id:randomUUID(),action:'move',gameId:start.gameId,sessionId:start.id,move:'penalty-kick',revision:1});
+    const cashout={id:randomUUID(),action:'move',gameId:start.gameId,sessionId:start.id,move:'cashout',revision:2};
+    await run('/expansion',cashout);await run('/expansion',cashout);
+    report=await c.ledger.adminReport({game:start.gameId});assert.equal(report.rows.length,2);assert.equal(report.totals.rounds,1);assert.equal(report.totals.stakes,'10000000');assert.equal(report.totals.payouts,'17600000');
     const purchase=randomUUID();await runtime.skinPurchase(player,{id:purchase,action:'reserve'});await runtime.skinPurchase(player,{id:purchase,action:'capture'});
     report=await c.ledger.adminReport({kind:'purchase'});assert.equal(report.rows.length,1);assert.equal(report.totals.purchases,'10000000');assert.equal(report.totals.ggr,'0');
     assert.equal((await c.ledger.audit()).ok,true);

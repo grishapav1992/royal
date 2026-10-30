@@ -31,7 +31,7 @@ const introductions: Record<NextVariantGameId, string> = {
 };
 const kickers: Record<NextVariantGameId, string> = {
   'variant-keno': translateText('Кено / маленький билет'), 'variant-color': translateText('Hi-Lo / новая колода'),
-  'variant-keys': translateText('Dragon Tower / механика ключей'), 'variant-fruits': translateText('Royal Fruits / больше линий'),
+  'variant-keys': translateText('Лестница / механика ключей'), 'variant-fruits': translateText('Royal Fruits / больше линий'),
   'variant-duel': translateText('Дракон и тигр / разница рангов'), 'variant-war': translateText('Карточная война / два фронта'),
 };
 const startLabels: Record<NextVariantGameId, string> = {

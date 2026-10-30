@@ -19,7 +19,6 @@ export const FIRST_FLOOR_GAME_THEMES = {
   'royal-plinko': 'pearl-reef',
   'royal-keno': 'star-atlas',
   'github-craps': 'midnight-jazz',
-  'github-tower': 'dragon-citadel',
   'github-diamonds': 'aurora-vault',
   'github-sic-bo': 'scarab-tomb',
 } as const;
@@ -80,14 +79,6 @@ export const FIRST_FLOOR_ART: Record<typeof FIRST_FLOOR_GAME_THEMES[keyof typeof
     palette: ['#edbd75', '#db91b3', '#251b2f', '#402a42', '#d1bdce'],
     scene: `<path d="m590 0-94 229h174L638 0m136 0-68 229h142L814 0" fill="#f2ce98" opacity=".065"/><path d="M433 0h71v197q-26-35-71 0Zm396 0h71v197q-38-35-71 0Z" fill="#6c3852" opacity=".55"/><g fill="none" stroke="#f0bf77" stroke-width="5" stroke-linejoin="round"><path d="M628 50h34v91q0 37 30 37t30-37v-29l-13-8v-30q20 18 34 19v47q0 64-51 64t-51-63V67h-13Z" fill="#9b6b49"/><path d="m709 74 39-15v44l-39-1Zm-64 17h17m-17 17h17m-17 18h17"/></g><path d="M537 222V89m-16 12h32m-16-12q-16-24 0-24t0 24m-15 132h30" fill="none" stroke="#bca6b5" stroke-width="3"/><g fill="#d795b8"><path d="M795 93v41q-16-6-20 5t10 11 17-12V99l24-7v34q-16-6-20 5t10 11 17-12V73Z"/></g><path d="M434 231h466" stroke="#c09866" stroke-width="4"/>`,
     emblem: '<path d="M66 35h34v98q0 25 22 25t23-25V93l-12-10V56l37-12v50l-12-1v40q0 52-37 52t-37-52V51H66Zm67 21 37-12M86 76h14m-14 18h14m-14 18h14"/>',
-  },
-  'dragon-citadel': {
-    title: ['Цитадель дракона', 'Dragon Citadel'],
-    caption: ['Девять этажей древней крепости среди туманных скал.', 'Nine floors of an ancient fortress above the misty cliffs.'],
-    location: ['ЗЕМЛИ БАГРОВОГО ДРАКОНА', 'LAND OF THE CRIMSON DRAGON'],
-    palette: ['#e8b27d', '#c8787c', '#261d27', '#40303a', '#d0bcc5'],
-    scene: `<circle cx="742" cy="62" r="45" fill="#e9b980" opacity=".13"/><path d="M414 237 514 167l62 31 56-48 92 50 98-40 78 66" fill="#352d3c"/><g fill="#46313b" stroke="#b98474" stroke-width="1.5"><path d="M570 226V74h24V53h19v21h25V53h19v21h23v152m-98-152 49-44 49 44m14 152V115h20V94h18v21h21V94h18v21h19v111m-76-111 48-37 48 37"/><path d="M611 226v-52q20-25 40 0v52" fill="#211c28"/></g><g fill="#e3a16b" opacity=".75"><path d="M603 103h12v17h-12Zm38 0h12v17h-12Zm-38 38h12v17h-12Zm38 0h12v17h-12Zm79 0h12v17h-12Zm37 0h12v17h-12Z"/></g><path d="M789 82q58-36 29-63l-13 13 12 9-18 7 1 15-33-8-28 20 30-3-7 27 23-16-1 22 18-14Z" fill="#c27c7b"/><path d="M416 235q97-22 182-3t188-6 114 5" fill="#1c202a"/>`,
-    emblem: '<path d="M51 177V77h24V53h22v24h26V53h22v24h24v100M44 77l66-50 66 50M93 177v-45q17-23 34 0v45M69 101h15v19H69Zm67 0h15v19h-15Z"/>',
   },
   'aurora-vault': {
     title: ['Северная сокровищница', 'The Aurora Vault'],

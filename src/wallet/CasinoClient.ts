@@ -30,7 +30,14 @@ export class CasinoClient extends EventTarget {
     this.epoch++; this.version++; this.accountId = id; this.wallet = undefined; this.sessions = []; this.last = undefined;
     this.pending = undefined; this.busy = false; this.loading = false; this.error = '';
     if (id) {
-      try { const saved = sessionStorage.getItem(this.key()); if (saved) { const op = JSON.parse(saved); if (!validCasinoAction(op)) throw Error(); this.pending = op; } }
+      try {
+        const saved = sessionStorage.getItem(this.key());
+        if (saved) {
+          const op = JSON.parse(saved);
+          if (op?.gameId === 'github-tower') sessionStorage.removeItem(this.key());
+          else { if (!validCasinoAction(op)) throw Error(); this.pending = op; }
+        }
+      }
       catch { this.error = translateText('Не удалось восстановить ход. Проверь баланс перед игрой.'); }
     }
     this.lock(); this.notify(); if (id) void this.refresh();

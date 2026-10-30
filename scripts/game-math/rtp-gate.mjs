@@ -1,3 +1,5 @@
+import {KEYS_METHOD,validateKeysProof} from './rtp-keys.mjs';
+import {HILO_METHOD,validateHiloProof} from './rtp-hilo.mjs';
 import { REWARD_SLOTS_METHOD, validateRewardSlotsProof } from './rtp-reward-slots.mjs';
 import {NUDGE_RUNTIME_METHOD,validateNudgeRuntimeProof} from './rtp-wild-nudge.mjs';
 import {CASCADE_METHOD,validateCascadeProof} from './rtp-temple-cascade.mjs';
@@ -41,6 +43,8 @@ export function validateRtpProof(gameId, inputs, proof) {
   if (gameId==='studio-neopolis' && p.rulesVersion>=4) assert.equal(p.method,'neopolis-variable-stake-conditional-v4','Variable stakes require conditional qualification');
   assert.equal(proof.policySha256, inputs.policySha256, 'RTP policy changed: rerun qualification');
   assert.deepEqual(proof.sourceHashes, inputs.sourceHashes, 'RTP source changed: rerun qualification');
+  if(p.method===KEYS_METHOD){assert.equal(gameId,'variant-keys');return validateKeysProof(p,proof);}
+  if(p.method===HILO_METHOD){assert.equal(gameId,'github-hilo');return validateHiloProof(p,proof);}
   if(p.method===REWARD_SLOTS_METHOD)return validateRewardSlotsProof(gameId,p,proof);
   if(p.method===NUDGE_RUNTIME_METHOD)return validateNudgeRuntimeProof(gameId,inputs,proof);
   if(p.method===CASCADE_METHOD){assert.equal(gameId,'studio-flooded-temple');return validateCascadeProof(p,proof);}

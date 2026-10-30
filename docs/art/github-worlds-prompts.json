@@ -86,20 +86,6 @@
       "prompt": "Use case: stylized-concept. Asset type: wide painted game header environment background, aspect ratio 3:2 or 16:9. Scene: an intimate art deco jazz club stage, velvet plum curtains, brass saxophone stand, round table silhouettes, warm amber spotlights through soft haze, elegant geometric gold trim. Style: premium richly rendered painterly 3D game environment key art, cinematic light and tangible material texture, sophisticated composition. Color palette: deep plum, smoky mauve, warm amber, antique brass. Composition: environment detail concentrated at the center and right, left 40 percent quieter and darker for a text overlay; broad composition with depth and clean lighting. No foreground character, no people, no letters, no numbers, no logo, no watermark, no UI, no cards or dice faces. Background only."
     },
     {
-      "key": "github-tower-character",
-      "game": "github-tower",
-      "kind": "character",
-      "transparent_background": true,
-      "prompt": "Use case: stylized-concept. Asset type: transparent game character cutout for a layered game header, displayed at 140 to 230px tall. Primary request: an original majestic compact crimson dragon with copper scale edges, elegant curled tail, small spread wings, ember amber eyes, expressive noble head, full body three-quarter silhouette, premium fantasy creature concept art. Style: premium richly rendered painterly 3D game key art with fine material texture, strong readable silhouette, expressive face where applicable. Color palette: charcoal burgundy, crimson, ember orange, copper gold. Composition: one isolated subject, entire figure inside frame with generous transparent padding around the silhouette, no horizon or room, no floor plane, alpha transparency. No text, letters, numbers, logo, watermark, UI, dice values or game symbols. No rectangular backdrop. Character must remain readable at small scale. Original design."
-    },
-    {
-      "key": "github-tower-background",
-      "game": "github-tower",
-      "kind": "background",
-      "transparent_background": false,
-      "prompt": "Use case: stylized-concept. Asset type: wide painted game header environment background, aspect ratio 3:2 or 16:9. Scene: a dramatic ancient dragon citadel rising through misty mountain cliffs, narrow glowing windows, distant warm moon, floating ember specks, deep burgundy rock and copper architecture, majestic fantasy atmosphere. Style: premium richly rendered painterly 3D game environment key art, cinematic light and tangible material texture, sophisticated composition. Color palette: charcoal burgundy, crimson, ember orange, copper gold. Composition: environment detail concentrated at the center and right, left 40 percent quieter and darker for a text overlay; broad composition with depth and clean lighting. No foreground character, no people, no letters, no numbers, no logo, no watermark, no UI, no cards or dice faces. Background only."
-    },
-    {
       "key": "github-diamonds-character",
       "game": "github-diamonds",
       "kind": "character",

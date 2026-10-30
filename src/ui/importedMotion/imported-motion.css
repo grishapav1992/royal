@@ -17,6 +17,6 @@
 .imported-motion .royal-confirmed-motion{background:radial-gradient(ellipse at 50% 0,color-mix(in srgb,var(--imp-color) 14%,transparent),transparent 75%),var(--ig-panel,#162536);border-color:color-mix(in srgb,var(--imp-color) 45%,transparent);color:var(--ig-text,#f2e9d6)}
 .imported-motion .confirmed-die{box-shadow:0 8px 0 #0002,0 13px 22px #0003,inset 0 2px 2px #fff8;border-radius:16px}
 .imported-motion .confirmed-gem[data-revealed=true]{filter:drop-shadow(0 6px 12px color-mix(in srgb,var(--gem-color) 35%,transparent))}
-.imported-motion [data-keno-number].is-hit,.imported-motion [data-mine-cell].is-gem,.imported-motion .casino-tower .safe{box-shadow:inset 0 0 0 1px var(--imp-color),0 0 12px color-mix(in srgb,var(--imp-color) 20%,transparent)}
+.imported-motion [data-keno-number].is-hit,.imported-motion [data-mine-cell].is-gem{box-shadow:inset 0 0 0 1px var(--imp-color),0 0 12px color-mix(in srgb,var(--imp-color) 20%,transparent)}
 @media(max-width:640px){.imp-celebration{padding:21px 14px 17px;width:calc(100% - 26px)}.imp-heading{font-size:9px;letter-spacing:1.2px}.imp-value{font-size:35px}.imp-detail{font-size:9px}.imp-tier-win{width:min(260px,calc(100% - 30px));padding:12px}.imp-tier-win .imp-value{font-size:26px}}
 @media(prefers-reduced-motion:reduce){.imp-particle{display:none}.imp-value{text-shadow:none}.imp-celebration{box-shadow:0 4px 16px #0005}}

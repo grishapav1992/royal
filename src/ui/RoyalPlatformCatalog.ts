@@ -24,9 +24,9 @@ export function platformGameCabinet(id: string, seat: Cabinet): Cabinet {
 }
 const kindNames: Record<string,string> = {
   all:t('Все жанры'), slot:t('Слоты'), crash:t('Крэш'), flight:t('Полёт'), keno:t('Кено'),
-  plinko:t('Плинко'), dice:t('Кости'), wheel:t('Колесо'), mines:t('Мины'), tower:t('Башня'), instant:t('Быстрые игры'),
+  plinko:t('Плинко'), dice:t('Кости'), wheel:t('Колесо'), mines:t('Мины'), instant:t('Быстрые игры'),
 };
-const classicKinds: Record<string,string> = {'flag-battle':'instant','royal-roulette':'wheel','studio-forest-heart':'slot','royal-fruits':'slot','royal-dice':'dice','royal-limbo':'instant','royal-mines':'mines','royal-plinko':'plinko','royal-keno':'keno','github-craps':'dice','github-tower':'tower','github-diamonds':'instant','github-crash':'crash','github-sic-bo':'dice','original-cr-vs-leo':'instant','original-jackie-chan':'instant'};
+const classicKinds: Record<string,string> = {'flag-battle':'instant','royal-roulette':'wheel','studio-forest-heart':'slot','royal-fruits':'slot','royal-dice':'dice','royal-limbo':'instant','royal-mines':'mines','royal-plinko':'plinko','royal-keno':'keno','github-craps':'dice','github-diamonds':'instant','github-crash':'crash','github-sic-bo':'dice','original-cr-vs-leo':'instant','original-jackie-chan':'instant'};
 const sourceNames: Record<Source,string> = {royal:'RoyalGames',casinoapipro:'Casino API Pro',github:t('GitHub-игры')};
 function localEntry(id: string): Entry {
   const game = platformGameCabinet(id, {id, name:id, subtitle:'', x:0,y:0,color:0,playable:true});

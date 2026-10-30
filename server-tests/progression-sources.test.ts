@@ -36,17 +36,18 @@ test('live shared wallet captures full paid stake even at a zero balance delta a
  }finally{await c.close();}
 });
 
-test('Mines and casino sessions give one fact only after their full paid round finishes',async()=>{
+test('Mines and progressive games give one fact only after their full paid round finishes',async()=>{
  const c=await fixture();try{
   const mineId=randomUUID();await c.wallet.mines.operate(c.a,{id:mineId,action:'start',amount:10,mineCount:1});
   assert.equal((await c.events()).length,0);
   await c.wallet.mines.operate(c.a,{id:randomUUID(),action:'reveal',sessionId:mineId,cell:0});
   assert.equal((await c.events())[0].sourceId,'native:mines:'+mineId);
-  const start={id:randomUUID(),action:'start' as const,gameId:'github-tower' as const,stakeUnits:'1000',settings:{difficulty:'easy' as const}};
-  await c.wallet.casino.operate(c.a,start);assert.equal((await c.events()).length,1);
-  await c.wallet.casino.operate(c.a,{id:randomUUID(),action:'pick',gameId:start.gameId,sessionId:start.id,choice:1});
-  const end={id:randomUUID(),action:'cashout' as const,gameId:start.gameId,sessionId:start.id};
-  await c.wallet.casino.operate(c.a,end);await c.wallet.casino.operate(c.a,end);
+  const start={id:randomUUID(),action:'start' as const,gameId:'original-cr-vs-leo' as const,stakeUnits:'1000',settings:{penalty:{hero:'cr' as const,risk:'safe' as const}}};
+  await c.wallet.expansion.operate(c.a,start);assert.equal((await c.events()).length,1);
+  await c.wallet.expansion.operate(c.a,{id:randomUUID(),action:'move',gameId:start.gameId,sessionId:start.id,move:'penalty-kick',revision:1});
+  assert.equal((await c.events()).length,1);
+  const end={id:randomUUID(),action:'move' as const,gameId:start.gameId,sessionId:start.id,move:'cashout',revision:2};
+  await c.wallet.expansion.operate(c.a,end);await c.wallet.expansion.operate(c.a,end);
   const events=await c.events();assert.equal(events.length,2);
   assert.equal(events.find(e=>e.sourceId==='native:casino:'+start.id).paidUnits,'10000000');
  }finally{await c.close();}

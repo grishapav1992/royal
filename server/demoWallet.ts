@@ -9,6 +9,7 @@ import { DemoFlightStore } from './demoFlight';
 import { DemoCasinoStore } from './demoCasino';
 import { DemoExpansionStore } from './demoExpansion';
 import {providerDecimal,providerPendingUnits,releaseProviderPending} from './providerPending';
+import { removedCasinoSchema, settleRemovedCasino } from './removedCasino';
 
 export class WalletError extends Error { constructor(public status: number, message: string) { super(message); } }
 const MAX_BALANCE = MAX_DEMO_UNITS / 100;
@@ -33,7 +34,7 @@ export class DemoWalletStore {
       operation_id TEXT NOT NULL, kind TEXT NOT NULL CHECK(kind IN ('deposit','bet','win')),
       amount INTEGER NOT NULL, balance INTEGER NOT NULL CHECK(balance >= 0), created_at INTEGER NOT NULL);`);
     await db.exec('ALTER TABLE demo_operations ADD COLUMN IF NOT EXISTS request_key TEXT');
-    })).then(() => migrateDemoAmounts(db));
+    })).then(() => migrateDemoAmounts(db)).then(() => removedCasinoSchema(db));
     this.mines = new DemoMinesStore(db, accountId => this.rawSnapshot(accountId), draw,
       async accountId => await this.flight.reservedUnits(accountId)+await this.casino.reservedUnits(accountId), accountId => this.flight.settleDue(accountId), schemaReady);
     this.flight = new DemoFlightStore(db, accountId => this.rawSnapshot(accountId), async accountId => await this.mines.reservedUnits(accountId)+await this.casino.reservedUnits(accountId), draw, now, schemaReady);
@@ -50,6 +51,7 @@ export class DemoWalletStore {
     }, { lockKey: 'account:' + accountId });
   }
   private async rawSnapshot(accountId: string,releasePending=true): Promise<DemoWallet> {
+    await settleRemovedCasino(this.db, accountId);
     const pending=await (releasePending?releaseProviderPending(this.db,accountId):providerPendingUnits(this.db,accountId));
     const entries = (await this.db.prepare('SELECT id,entry_type AS kind,amount_units/100.0 AS amount,balance_units/100.0 AS balance,operation_id AS operationId,created_at AS createdAt,source,game_name AS gameName FROM demo_ledger WHERE account_id=? ORDER BY id DESC LIMIT 50').all(accountId));
     return { balance: await demoBalanceUnits(this.db,accountId) / 100, entries: entries.map(entry => ({ ...entry, amount: Number(entry.amount), balance: Number(entry.balance) })),...(pending?{pendingBalance:providerDecimal(pending)}:{}) } as DemoWallet;
