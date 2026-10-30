@@ -24,12 +24,13 @@ export async function readHostProjection(root,name){
  function read(input){
   safe(input);const row=metadata.files[input];assert(row,'Unreviewed projected host input: '+input);
   if(!cache.has(input)){
+   assert.match(row.commit,/^[a-f0-9]{40}$/);safe(row.path);
    if(!commits.has(row.commit)){git('merge-base','--is-ancestor',row.commit,'HEAD');commits.add(row.commit);}
    const bytes=projectHostSource(row,git('show',row.commit+':'+row.path));cache.set(input,bytes);inputs[input]=digest(bytes);origins[input]=row;
   }
   return cache.get(input);
  }
- return{read,metadata,inputs,origins,config:name,sha256:digest(raw)};
+ return{read,metadata,inputs,origins,config:name,sha256:digest(canonical(raw))};
 }
 export async function buildProjectedHost(root,name){
  const reader=await readHostProjection(root,name);
@@ -37,7 +38,8 @@ export async function buildProjectedHost(root,name){
   load(id){const file=relative(root,id.split('?')[0]).replaceAll('\\','/');if(file.startsWith('../')||file.includes('node_modules/')||!/\.(?:ts|json|css)$/.test(file))return;return reader.read(file).toString();},
   transformIndexHtml:{order:'pre',handler(_html,context){const file=relative(root,context.filename).replaceAll('\\','/');return reader.read(file).toString();}}};
  const {build}=await import('vite');
- await build({root,configFile:false,plugins:[plugin],build:{rollupOptions:{input:{main:resolve(root,'index.html'),admin:resolve(root,'admin.html')}}}});
+ assert.deepEqual(reader.metadata.entries,['index.html'],'Only the reviewed hall entry may be projected');
+ await build({root,configFile:false,publicDir:false,plugins:[plugin],build:{rollupOptions:{input:resolve(root,'index.html')}}});
  assert(Object.keys(reader.inputs).length>0,'Empty projected host graph');
  return{config:name,sha256:reader.sha256,productionCommit:reader.metadata.productionCommit,inputs:reader.inputs,origins:reader.origins};
 }

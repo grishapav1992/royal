@@ -4,6 +4,7 @@ import {resolve,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
+import {verifyHostProjection} from '../../../scripts/build-host-projection.mjs';
 
 const helper=dirname(fileURLToPath(import.meta.url)),root=resolve(helper,'../../..');
 const task=resolve(root,'artifacts/work/forest-heart-responsive/publication');
@@ -26,12 +27,17 @@ const host=['src/ui/GameViewport.ts','src/ui/RoyalCatalogArtwork.ts','src/ui/roy
 const source={},dist={};
 function copy(from,to){const file=resolve(out,to);mkdirSync(dirname(file),{recursive:true});copyFileSync(from,file);return sha(file);}
 function tracked(file){return git('show','HEAD:'+file);}
-for(const file of git('ls-files','-z','src','package.json','package-lock.json','index.html','vite.config.ts','tsconfig.json').toString().split('\0').filter(Boolean)){
-  if(host.includes(file))continue;
-  assert.equal(hash(tracked(file)),before.source[file],'Unpublished or changed host source: '+file);
+assert(release.hostProjection,'A reviewed production host graph is required');
+const projected=await verifyHostProjection(root,release.hostProjection);
+assert.equal(projected.metadata.productionCommit,before.sourceCommit);
+assert.deepEqual([...projected.metadata.changedSources].sort(),[...host].sort());
+for(const [file,digest] of Object.entries(release.hostProjection.inputs)){
+  if(host.includes(file)){assert.equal(projected.metadata.files[file].baseSha256,before.sourceLF[file]);continue;}
+  assert.equal(digest,before.sourceLF[file],'Unrelated compiled host source changed: '+file);
 }
+for(const file of ['package.json','package-lock.json','index.html','tsconfig.json'])assert.equal(hash(tracked(file)),before.sourceLF[file],'Dependencies or entry changed: '+file);
 for(const file of [...host,...git('ls-files','-z','games/forest-heart').toString().split('\0').filter(Boolean)]){
-  const bytes=tracked(file),digest=hash(bytes);
+  const bytes=host.includes(file)?projected.read(file):tracked(file),digest=hash(bytes);
   assert(before.source[file],'New source needs explicit review: '+file);
   if(before.source[file]===digest)continue;
   const target=resolve(out,'source',file);mkdirSync(dirname(target),{recursive:true});writeFileSync(target,bytes);source[file]=digest;
@@ -46,7 +52,7 @@ for(const [name,digest] of Object.entries(release.files)){
 }
 assert(dist['index.html']);
 for(const asset of ['assets/forest-heart/v1/background.webp','assets/forest-heart/v3/elf-idle.webp']){
-  assert.equal(release.files['dist/'+asset],before.program['dist/'+asset],'Catalogue asset missing or different in production: '+asset);
+  assert.equal(sha(resolve(root,'public',asset)),before.program['dist/'+asset],'Catalogue asset missing or different in production: '+asset);
 }
 const pkg=release.packages.find(p=>p.gameId==='studio-forest-heart');assert(pkg);
 const pointer=read(resolve(root,pkg.pointer));

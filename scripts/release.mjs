@@ -61,7 +61,7 @@ export async function verifyRelease(root, path = defaultManifest) {
       || manifest.sourceTree !== git(root, ['rev-parse', 'HEAD^{tree}'])) throw Error('Release source or build identity changed');
   if (!manifest.files || !Object.keys(manifest.files).length) throw Error('Empty release');
   if (manifest.hostProjection) {
-    if (manifest.scope !== 'application' || JSON.stringify(manifest.hostProjection) !== JSON.stringify(manifest.build.hostProjection)) throw Error('Projection build evidence differs');
+    if (manifest.scope !== 'application' || manifest.hostProjection.productionCommit !== manifest.baseCommit || JSON.stringify(manifest.hostProjection) !== JSON.stringify(manifest.build.hostProjection)) throw Error('Projection build evidence differs');
     await verifyHostProjection(root, manifest.hostProjection);
   } else if (manifest.build.hostProjection) throw Error('Projection evidence missing');
   for (const [name, hash] of Object.entries(manifest.files)) {
@@ -110,6 +110,7 @@ export async function prepareRelease(root, { base, local = false, modules = null
     const disk = await statfs(root);
     if (disk.bavail * disk.bsize < 11 * 1024 ** 3) throw Error('Need at least 11 GiB free before a build (10 GiB reserve plus build headroom).');
     const build = await step('build', () => buildApplication({ root, modules, hostProjection }));
+    if (build.hostProjection && build.hostProjection.productionCommit !== plan.baseCommit) throw Error('Host projection targets another production baseline');
     assertClean(root);
     if (git(root, ['rev-parse', 'HEAD']) !== plan.sourceCommit) throw Error('Source commit changed during build');
     const outputs = await step('inventory', () => releaseFiles(root, modules));

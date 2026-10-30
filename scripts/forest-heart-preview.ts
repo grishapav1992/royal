@@ -1,6 +1,7 @@
 /** Disposable local full-host review. Never imported by the production application. */
 import { spawn } from 'node:child_process';
-import { mkdir, appendFile } from 'node:fs/promises';
+import { mkdir, appendFile, readFile } from 'node:fs/promises';
+import { resolve, sep } from 'node:path';
 import { createServer, type Plugin } from 'vite';
 import { temporaryDatabase } from './database-test';
 import { PostgresDatabase, databaseConfig } from '../server/database';
@@ -23,6 +24,13 @@ const fixture: Plugin = { name: 'forest-heart-isolated-entropy', configureServer
     if(path==='/__test/forest-heart/shutdown'){
       if(process.env.FOREST_TEST_AUTOMATED!=='1'||req.method!=='POST'||req.headers['x-royal-forest-test']!=='shutdown'){res.statusCode=404;res.end();return;}
       void stop(()=>res.end('stopped')).then(()=>process.exit(0)).catch(error=>{res.statusCode=500;res.end('shutdown failed');console.error(error);process.exit(1);});return;
+    }
+    if(process.env.FOREST_TEST_PREPARED_HOST==='1'&&process.env.FOREST_TEST_AUTOMATED==='1'&&req.method==='GET'&&(path==='/'||path==='/index.html'||path.startsWith('/assets/')&&/\.(?:js|css)$/.test(path))){
+      const folder=resolve('dist'),file=resolve(folder,'.'+(path==='/'?'/index.html':path));
+      if(file.startsWith(folder+sep)){
+        try{const bytes=await readFile(file);res.setHeader('Content-Type',file.endsWith('.html')?'text/html; charset=utf-8':file.endsWith('.css')?'text/css; charset=utf-8':'application/javascript; charset=utf-8');res.setHeader('Cache-Control','no-store');res.end(bytes);return;}
+        catch(error){if((error as NodeJS.ErrnoException).code!=='ENOENT')throw error;}
+      }
     }
     if (!['/__test/forest-heart/operate','/__test/forest-heart/fund'].includes(path)) { next(); return; }
     try {
