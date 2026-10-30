@@ -1,5 +1,9 @@
 /** Persistent result hierarchy. A restored result stays still and never replays a ceremony. */
 export const cascadeResultStyles=String.raw`
+.ft-cascade .ft-net{min-height:18px}
+.ft-cascade .ft-net[data-empty=true]{visibility:hidden}
+.ft-cascade .ft-auto-note:empty{display:block}
+.ft-cascade .ft-auto-note{min-height:15px;line-height:15px}
 .ft-cascade .ft-net{display:block;margin-top:4px;font:600 13px/1.35 Arial,sans-serif;letter-spacing:.02em;color:#d7e2d9;overflow-wrap:anywhere}
 .ft-cascade[data-outcome=win] .ft-net,.ft-cascade[data-outcome=big] .ft-net{color:#f0db9b}
 .ft-cascade .ft-fall-award{font-size:14px;min-height:35px;line-height:1.45}
@@ -17,4 +21,6 @@ export const cascadeResultStyles=String.raw`
  .ft-cascade .ft-playback label{font-size:11px}
  .ft-cascade .ft-cascade-heading{font-size:9px}
 }
+.ft-cascade .ft-fall-award{min-height:calc(2.9em + 7px);display:flex;align-items:center;justify-content:center}
+.ft-cascade .ft-status{min-height:calc(3em + 5px)}
 `;

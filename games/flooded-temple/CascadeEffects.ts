@@ -16,13 +16,16 @@ export class CascadeEffects{
   private width=0;
   private height=0;
   private stride=0;
+  private attached?:CascadeBeat;
   constructor(private root:HTMLElement,private money:(units:string)=>string){}
   attach(beat:CascadeBeat|undefined,stake:string,offset:number,fallbackUnits='0'){
+    if(beat&&beat===this.attached&&this.cells[0]?.isConnected&&this.width===this.layer?.clientWidth&&this.height===this.layer?.clientHeight){this.tick(beat,offset,stake);return;}
     this.clear();this.cells=Array.from(this.root.querySelectorAll<HTMLElement>('[data-cell]'));this.counter=this.root.querySelector<HTMLElement>('[data-ft-value=payout]')??undefined;this.award=this.root.querySelector<HTMLElement>('.ft-fall-award')??undefined;
+    this.attached=beat;
     if(!beat){this.shownUnits=fallbackUnits;return;}
     const layer=this.root.querySelector<HTMLElement>('.ft-cascade-fx');if(!layer)return;this.layer=layer;this.width=layer.clientWidth;this.height=layer.clientHeight;
     const reels=this.root.querySelector<HTMLElement>('.ft-reels')!;this.stride=(this.cells[0]?.getBoundingClientRect().height??0)+parseFloat(this.root.ownerDocument.defaultView!.getComputedStyle(reels).rowGap);
-    if(beat.kind==='break'){
+    if(beat.kind==='break'&&beat.rate===1){
       const box=layer.getBoundingClientRect(),mask=beat.removeMask??beat.frame.removeMask;
       for(const cell of this.cells){const index=Number(cell.dataset.cell);if(!(mask&(1<<index)))continue;
         const rect=cell.getBoundingClientRect(),symbol=Number(cell.dataset.symbol);
@@ -33,7 +36,7 @@ export class CascadeEffects{
         }
       }
     }
-    if(beat.kind==='evaluate'&&beat.frame.wins.length){
+    if(beat.kind==='evaluate'&&beat.frame.wins.length&&beat.rate===1){
       const doc=this.root.ownerDocument,svg=doc.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 5 3');svg.setAttribute('preserveAspectRatio','none');svg.classList.add('ft-cascade-lines');
       for(const rows of cascadeLines(beat.frame)){const path=doc.createElementNS(svg.namespaceURI,'path');path.setAttribute('d',rows.map((r,c)=>(c?'L':'M')+(c+.5)+','+(r+.5)).join(' '));svg.append(path);}
       layer.append(svg);this.lines=svg;
@@ -45,9 +48,10 @@ export class CascadeEffects{
     const p=clamp(offset/beat.duration),envelope=Math.sin(p*Math.PI),mask=beat.removeMask??beat.frame.removeMask;
     if(beat.kind==='drop')for(const move of beat.moves){
       const cell=this.cells[move.cell];if(!cell||!move.rows)continue;
-      const land=cascadeLandMs(move.cell),fall=clamp(offset/land),bounce=offset>land?Math.sin(clamp((offset-land)/80)*Math.PI):0;
+      const land=cascadeLandMs(move.cell,beat.rate),fall=clamp(offset/land),bounce=offset>land?Math.sin(clamp((offset-land)/(80/beat.rate))*Math.PI):0;
       const travel=move.rows*this.stride;
-      cell.style.transform=`translateY(${-travel*(1-fall*fall)}px) scale(${1+bounce*.018},${1-bounce*.04})`;
+      // Enter the visible field early, then ease into the shared landing accent.
+      cell.style.transform=`translateY(${-travel*Math.pow(1-fall,3)}px) scale(${1+bounce*.018},${1-bounce*.04})`;
       cell.style.opacity=String(move.from===null?Math.max(.08,fall):1);
       cell.style.setProperty('--ft-glow',String(bounce*.16));
     }
@@ -68,6 +72,7 @@ export class CascadeEffects{
     this.shownUnits=cascadeUnits(cascadeCounter(beat,offset),stake);if(this.counter)this.counter.textContent=this.money(this.shownUnits);
   }
   clear(){
+    this.attached=undefined;
     this.layer?.replaceChildren();this.layer=undefined;this.pieces=[];this.lines=undefined;
     for(const cell of this.cells){cell.style.removeProperty('transform');cell.style.removeProperty('opacity');cell.style.removeProperty('--ft-glow');}this.cells=[];
     this.root.style.removeProperty('--ft-seal');if(this.award){this.award.style.removeProperty('transform');this.award.style.removeProperty('opacity');}

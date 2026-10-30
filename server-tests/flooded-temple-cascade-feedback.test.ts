@@ -24,10 +24,10 @@ test('output latency never makes a confirmed cue late behind a short silent eval
   t.mock.method(performance,'now',()=>now);
   globalThis.requestAnimationFrame=callback=>{callbacks.set(++id,callback);return id;};globalThis.cancelAnimationFrame=handle=>{callbacks.delete(handle);};
   try{
-    for(const latency of[.02,.3,.7]){
+    for(const quick of[false,true])for(const latency of[.02,.3,.7]){
       now=0;callbacks.clear();const scheduled:{cue:string;leadMs:number}[]=[];
       const audio={audible:true,lead:()=>latency*1000+200,cancelEffects(){},duck(){},schedule(cue:string,target:number){scheduled.push({cue,leadMs:target-now-latency*1000-bank[cue].accent*1000});}} as unknown as TempleAudio;
-      const plan=cascadePlan('latency-'+latency,Array.from(views(15)).at(-1)!);
+      const plan=cascadePlan('latency-'+latency+'-'+quick,Array.from(views(15)).at(-1)!,undefined,quick);
       const timeline=new CascadeTimeline(audio,()=>{},()=>{});timeline.start(plan);
       while(callbacks.size&&now<plan.duration+latency*1000+1000){now+=10;const batch=[...callbacks.values()];callbacks.clear();for(const callback of batch)callback(now);}
       assert.equal(scheduled.length,4);assert(scheduled.every(a=>a.leadMs>=2),JSON.stringify({latency,scheduled}));assert.equal(timeline.active,false);timeline.destroy();
@@ -82,9 +82,20 @@ test('gravity mapping retains survivors in order and creates exactly the union v
   assert.deepEqual(moves.filter(m=>m.from===null).map(m=>m.cell),[0,1,6]);assert.deepEqual(moves.find(m=>m.from===1),{cell:2,from:1,rows:1});assert.deepEqual(moves.find(m=>m.from===6),{cell:7,from:6,rows:1});
   assert.throws(()=>cascadeMoves(source,Array(15).fill(0)),/survivor/);
 });
-test('quick and reduced feedback preserve the full result and never celebrate partial returns or recovery',()=>{
+test('quick cascades preserve every confirmed event with visible half-duration motion; reduced motion stays still',()=>{
   const view=Array.from(views(15)).at(-1)!;assert.equal(view.totalPayoutUnits,'250');
-  for(const [quick,reduced]of[[true,false],[false,true],[true,true]]){
+  const normal=cascadePlan('normal',view),quick=cascadePlan('quick',view,undefined,true);
+  assert.equal(quick.duration,normal.duration/2);
+  assert.deepEqual(quick.beats.map(b=>b.kind),normal.beats.map(b=>b.kind));
+  assert.deepEqual(quick.beats.filter(b=>b.kind==='drop').map(b=>b.frame),view.frames);
+  for(const [i,beat]of quick.beats.entries()){
+    const before=normal.beats[i];assert.deepEqual(beat.moves,before.moves);assert.equal(beat.frame,before.frame);
+    assert.equal(beat.at,before.at/2);assert.equal(beat.accentMs,before.accentMs/2);assert.equal(beat.rate,2);
+    assert.equal(cascadeCounter(beat,0),beat.fromPoints);assert.equal(cascadeCounter(beat,beat.duration),beat.toPoints);
+    if(beat.kind==='drop')for(const move of beat.moves)assert(cascadeLandMs(move.cell,beat.rate)+80/beat.rate<=beat.duration);
+  }
+  assert.equal(quick.beats.at(-1)!.outcome,'partial');assert.equal(quick.beats.at(-1)!.cue,'neutral');assert.equal(quick.final,normal.final);
+  for(const [quick,reduced]of[[false,true],[true,true]]){
     const plan=cascadePlan('quiet',view,undefined,quick,reduced);assert.equal(plan.beats.length,1);assert.equal(plan.final,view.frames.at(-1));assert.equal(plan.beats[0].outcome,'partial');assert.equal(plan.beats[0].cue,'neutral');assert.equal(templeReaction(cascadeCharacter(plan.beats[0])).pose,'reflect');assert.equal(plan.beats[0].toPoints,view.state.totalPoints);
   }
   assert.equal(templeReaction(undefined).pose,'idle');
@@ -100,14 +111,14 @@ test('cascade Foley is reproducible licensed PCM, has soft boundaries and measur
 test('representative dense cascade mixes retain headroom with bounded overlapping voices',()=>{
   let highest=0;
   const bank=new Map(Object.keys(cascadeCueSpecs).map(name=>[name,renderCascadeCue(name)]));for(const name of['neutral','return','win','big'])bank.set(name,renderCue(name));
-  for(const seed of[15,118,351])for(const view of views(seed)){
-    const plan=cascadePlan('mix',view),mix=[new Float32Array(Math.ceil((plan.duration/1000+3)*rate)),new Float32Array(Math.ceil((plan.duration/1000+3)*rate))];
+  for(const quick of[false,true])for(const seed of[15,118,351])for(const view of views(seed)){
+    const plan=cascadePlan('mix',view,undefined,quick),mix=[new Float32Array(Math.ceil((plan.duration/1000+3)*rate)),new Float32Array(Math.ceil((plan.duration/1000+3)*rate))];
     const intervals:number[][]=[];
     for(const beat of plan.beats){if(!beat.cue)continue;const audio=bank.get(beat.cue)!;const start=.3+(beat.at+beat.accentMs)/1000-audio.accent;intervals.push([start,start+audio.duration]);
       for(let c=0;c<2;c++)for(let i=0;i<audio.channels[c].length;i++){const at=Math.floor(start*rate)+i;if(at>=0&&at<mix[c].length)mix[c][at]+=audio.channels[c][i]*.9;}
     }
     const water=renderCue('ambience');for(let c=0;c<2;c++)for(let i=0;i<mix[c].length;i++)mix[c][i]+=water.channels[c][i%water.channels[c].length]*.24*.9;
-    highest=Math.max(highest,metrics(mix).peak);for(const [start]of intervals)assert(intervals.filter(([a,b])=>a<=start&&b>start).length<=3);
+    highest=Math.max(highest,metrics(mix).peak);for(const [start]of intervals)assert(intervals.filter(([a,b])=>a<=start&&b>start).length<=(quick?6:3));
   }
   assert(highest<.65);
 });

@@ -1,6 +1,7 @@
 import type {CharacterBeat} from './character';
 import {templeReaction,type TemplePose,type TempleReaction} from './character';
 import {TemplePortrait} from './TemplePortrait';
+import {CharacterMotion} from './CharacterMotion';
 
 type CharacterView={beat?:CharacterBeat;key:string;offset:number;waiting:boolean;rope:boolean;selected:boolean;reduced:boolean;paused:boolean;connected:boolean};
 /** Owns one portrait and one frame callback across board renders. No reward queue. */
@@ -17,6 +18,9 @@ export class TempleCharacter{
   private handle=0;
   private disposed=false;
   private clipKey='';
+  private drawnAt=0;
+  private motion={energy:0,look:0,gesture:0};
+  private rig=new CharacterMotion();
   private transitions:{clip:string;pose:TemplePose;key:string}[]=[];
   constructor(doc:Document,en:boolean,private singlePose=false){
     this.element=doc.createElement('aside');this.element.className='ft-character';this.element.setAttribute('aria-label',en?'Temple explorer':'Исследовательница храма');
@@ -27,6 +31,7 @@ export class TempleCharacter{
     const old=this.view;this.view=view;
     if(old.key!==view.key||old.waiting!==view.waiting||old.selected!==view.selected||old.rope!==view.rope)this.idle=0;
     if(view.reduced||view.paused||!view.connected){cancelAnimationFrame(this.handle);this.handle=0;this.previous=0;}
+    if(!view.connected||view.reduced)this.rig.reset();else if(view.paused)this.rig.freeze();
     this.select();this.draw();
     if(!this.handle&&!view.reduced&&!view.paused&&view.connected){this.previous=0;this.handle=requestAnimationFrame(this.frame);}
   }
@@ -37,6 +42,7 @@ export class TempleCharacter{
     if(key===this.clipKey)return;
     this.clipKey=key;this.from=v.connected?this.reaction.pose:'idle';this.reaction=reaction;this.blendAt=v.reduced||!v.connected?this.clock-240:this.clock;
     this.element.dataset.reaction=reaction.clip;this.element.dataset.pose=reaction.pose;
+    if(this.singlePose)this.rig.select(key,reaction,v.beat);
     this.transitions.push({clip:reaction.clip,pose:reaction.pose,key});if(this.transitions.length>32)this.transitions.shift();
   }
   private frame=(now:number)=>{
@@ -50,10 +56,15 @@ export class TempleCharacter{
     const v=this.view,p=v.beat?Math.min(1,Math.max(0,v.offset/v.beat.duration)):this.idle%7000/7000;
     const gesture=Math.sin(p*Math.PI)*(this.reaction.clip==='triumph'?1+.15*Math.sin(p*Math.PI*4):1);
     const blend=v.reduced||v.paused&&!v.beat?1:Math.min(1,Math.max(0,(this.clock-this.blendAt)/220));
-    // Distinct illustrated silhouettes use one key pose. Blending them creates a second body.
-    this.portrait.draw(this.singlePose?this.reaction.pose:this.from,this.reaction.pose,this.singlePose?1:blend,this.reaction,this.clock,gesture,!v.reduced&&v.connected);
+    if(this.singlePose){
+      const dt=v.paused||v.reduced||!v.connected?0:Math.max(0,this.clock-this.drawnAt);
+      this.drawnAt=this.clock;
+      const pose=this.rig.step(dt,this.clock,v.offset);
+      this.motion={energy:this.reaction.energy,look:pose.gaze,gesture:pose.lift};
+      this.portrait.draw('idle','idle',1,this.reaction,this.clock,gesture,!v.reduced&&v.connected,pose);
+    }else this.portrait.draw(this.from,this.reaction.pose,blend,this.reaction,this.clock,gesture,!v.reduced&&v.connected);
   }
   tick(beat:CharacterBeat,offset:number){this.view.beat=beat;this.view.offset=offset;this.draw();}
-  getState(){return {clip:this.reaction.clip,poseBlendMode:this.singlePose?'single-key-pose':'crossfade',clockMs:this.clock,idleMs:this.idle,framePending:!!this.handle,paused:this.view.paused,reduced:this.view.reduced,transitions:this.transitions.slice(),...this.portrait.getState(),disposed:this.disposed};}
+  getState(){return {clip:this.reaction.clip,poseBlendMode:this.singlePose?'anchored-mesh':'crossfade',motion:{...this.motion},rig:this.singlePose?this.rig.getState():undefined,clockMs:this.clock,idleMs:this.idle,framePending:!!this.handle,paused:this.view.paused,reduced:this.view.reduced,transitions:this.transitions.slice(),...this.portrait.getState(),disposed:this.disposed};}
   destroy(){if(this.disposed)return;this.disposed=true;cancelAnimationFrame(this.handle);this.handle=0;this.portrait.destroy();this.element.remove();}
 }
