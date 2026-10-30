@@ -878,6 +878,124 @@
         "deployment/releases/jackie-chan-20261029-v2/finance-source/src/i18n/en.ts"
       ],
       "serverReplayRunsPerWinner": 16
+    },
+    "royal-coins": {
+      "method": "exact-paid-and-reward-slots-v1",
+      "rulesVersion": 1,
+      "progressVersion": 1,
+      "target": 0.96,
+      "tolerance": 1e-12,
+      "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        1000,
+        5000,
+        10000,
+        50000
+      ],
+      "paidStakes": [
+        1000,
+        5000,
+        10000,
+        50000
+      ],
+      "rewardStakes": [
+        10,
+        20,
+        50,
+        100,
+        200
+      ],
+      "choices": [
+        "paid",
+        "reward"
+      ],
+      "rewardPlayerCostUnits": "0",
+      "rewardReturnBasis": "nominal-not-player-cost",
+      "seeds": [
+        743147,
+        934537
+      ],
+      "serverReplayRoundsPerSeed": 64,
+      "proof": "docs/game-math/qualifications/royal-coins-rewards-v1.json",
+      "qualificationSource": "scripts/game-math/rtp-reward-slots.mjs",
+      "sources": [
+        "src/shared/gameCore.ts",
+        "src/shared/originalGames.ts",
+        "src/shared/demoWallet.ts",
+        "src/shared/progression.ts",
+        "server/games/core.ts",
+        "server/games/types.ts",
+        "server/games/coins.ts",
+        "server/games/fruits.ts",
+        "server/progression/freeSpins.ts",
+        "server/progression/store.ts",
+        "server/progression/sources.ts",
+        "server/accounts.ts"
+      ],
+      "note": "Exact exhaustive paid and promotional nominal qualification. Reward player cost is zero; expected promotional payout is not reported as RTP. Common-wallet accounting is verified separately by progression-spins tests."
+    },
+    "royal-fruits": {
+      "method": "exact-paid-and-reward-slots-v1",
+      "rulesVersion": 1,
+      "progressVersion": 1,
+      "target": 0.97,
+      "tolerance": 1e-12,
+      "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        1000,
+        5000,
+        10000,
+        50000
+      ],
+      "paidStakes": [
+        1000,
+        5000,
+        10000,
+        50000
+      ],
+      "rewardStakes": [
+        10,
+        20,
+        50,
+        100,
+        200
+      ],
+      "choices": [
+        "paid",
+        "reward"
+      ],
+      "rewardPlayerCostUnits": "0",
+      "rewardReturnBasis": "nominal-not-player-cost",
+      "seeds": [
+        743147,
+        934537
+      ],
+      "serverReplayRoundsPerSeed": 64,
+      "proof": "docs/game-math/qualifications/royal-fruits-rewards-v1.json",
+      "qualificationSource": "scripts/game-math/rtp-reward-slots.mjs",
+      "sources": [
+        "src/shared/gameCore.ts",
+        "src/shared/originalGames.ts",
+        "src/shared/demoWallet.ts",
+        "src/shared/progression.ts",
+        "server/games/core.ts",
+        "server/games/types.ts",
+        "server/games/coins.ts",
+        "server/games/fruits.ts",
+        "server/progression/freeSpins.ts",
+        "server/progression/store.ts",
+        "server/progression/sources.ts",
+        "server/accounts.ts"
+      ],
+      "note": "Exact exhaustive paid and promotional nominal qualification. Reward player cost is zero; expected promotional payout is not reported as RTP. Common-wallet accounting is verified separately by progression-spins tests."
     }
   },
   "nonWagered": {

@@ -23,6 +23,9 @@ import { applyAccountSchemaMigrations } from './game-database-migrations';
 import { randomBytes, randomUUID, scrypt, timingSafeEqual, createHash } from 'node:crypto';
 import { EventEmitter } from 'node:events';
 import { FinanceAdminStore } from './admin/store';
+import { ProgressionStore } from './progression/store';
+import { instrumentProgressionWallet, instrumentProgressionPvpLedger } from './progression/sources';
+import { LiveFreeSpinService } from './progression/freeSpins';
 
 export type Account = { id: string; email: string; name: string; skin: number | null; appearance?: CharacterAppearance | null };
 type StoredAccount = Account & { password: string };
@@ -45,6 +48,8 @@ export class AccountStore {
   readonly ready: Promise<void>;
   readonly schema: string;
   readonly wallet: DemoWalletStore;
+  readonly progression: ProgressionStore;
+  readonly rewardSpins: LiveFreeSpinService;
   readonly caribbeanCrew:CaribbeanCrewStore;
   readonly pvp: PvpStore;
   readonly combat: NileCombatEscrow;
@@ -69,11 +74,14 @@ export class AccountStore {
       CREATE TABLE IF NOT EXISTS accounts (id TEXT PRIMARY KEY, email TEXT UNIQUE NOT NULL, name TEXT NOT NULL, password TEXT NOT NULL, skin INTEGER CHECK(skin >= 0), created_at INTEGER NOT NULL);
       CREATE TABLE IF NOT EXISTS sessions (hash TEXT PRIMARY KEY, account_id TEXT NOT NULL REFERENCES accounts(id) ON DELETE CASCADE, expires INTEGER NOT NULL);
       CREATE INDEX IF NOT EXISTS sessions_expiry ON sessions(expires);`)).then(() => applyAccountSchemaMigrations(this.db));
-    this.wallet = new DemoWalletStore(this.db, undefined, undefined, schemaReady);
+    const commonWallet = new DemoWalletStore(this.db, undefined, undefined, schemaReady);
+    this.progression = new ProgressionStore(this.db,{prerequisite:commonWallet.ready});
+    this.wallet = instrumentProgressionWallet(this.db,commonWallet,this.progression);
+    this.rewardSpins = new LiveFreeSpinService(this.db,this.wallet,this.progression,undefined,undefined,id=>this.financeAdmin.assertAllowed(id));
     this.caribbeanCrew=new CaribbeanCrewStore(this.db,schemaReady);
     const sandbox = sandboxConfig();
     this.sandboxPayments = new SandboxPaymentStore(this.db, sandbox, new SandboxNowPayments(sandbox), this.wallet.ready);
-    const virtualWallet=new VirtualPvpLedger(this.db,this.wallet);
+    const virtualWallet=instrumentProgressionPvpLedger(this.db,new VirtualPvpLedger(this.db,this.wallet),this.progression);
     this.pvp=new PvpStore(virtualWallet);
     this.combat=new NileCombatEscrow(virtualWallet);
     this.casinoApiProWallet = new CasinoApiProWallet(this.db, schemaReady);
@@ -90,8 +98,8 @@ export class AccountStore {
       return (job?.payment_source==='nile'?legacySkins:commonSkins).skinPurchase(account,id,action);
     }}, new CodexSkinImages(), () => true,
       (id, appearance) => this.events.emit('appearance', id, appearance), this.wallet.ready, Date.now, new CodexSkinDescriptions());
-    this.ready = Promise.all([schemaReady, this.wallet.ready, this.caribbeanCrew.ready, this.sandboxPayments.ready, this.pvp.ready, this.combat.ready, this.casinoApiProWallet.ready, this.moderation.ready, this.drinking.ready, this.paymentCredits.ready, this.skinStudio.ready, this.financeAdmin.ready]).then(() => {
-      this.wagerSweep=setInterval(()=>{if(!this.sweeping)this.sweeping=Promise.allSettled([this.pvp.sweep(),this.combat.recoverExpired()]).finally(()=>{this.sweeping=undefined;});},1000);
+    this.ready = Promise.all([schemaReady, this.wallet.ready, this.progression.ready, this.rewardSpins.ready, this.caribbeanCrew.ready, this.sandboxPayments.ready, this.pvp.ready, this.combat.ready, this.casinoApiProWallet.ready, this.moderation.ready, this.drinking.ready, this.paymentCredits.ready, this.skinStudio.ready, this.financeAdmin.ready]).then(() => {
+      this.wagerSweep=setInterval(()=>{if(!this.sweeping)this.sweeping=Promise.allSettled([this.pvp.sweep(),this.combat.recoverExpired(),this.progression.processPending()]).finally(()=>{this.sweeping=undefined;});},1000);
       this.wagerSweep.unref();
     });
     this.events.setMaxListeners(0);

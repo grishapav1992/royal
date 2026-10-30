@@ -1,0 +1,53 @@
+{
+  "feature": "location-levels-mvp",
+  "integrationBase": "780b1dec3ca1a7b335a4c08987cccd1f52cf19ce",
+  "state": "implemented-and-locally-verified; production release in preparation",
+  "checks": {
+    "serverClientHttpMoneyAndCompatibility": {
+      "passed": 65,
+      "failed": 0,
+      "command": "node --import tsx scripts/database-test.ts --import tsx --test server-tests/progression.test.ts server-tests/progression-sources.test.ts server-tests/progression-client.test.ts server-tests/progression-http.test.ts server-tests/progression-review.test.ts server-tests/finance/progression-spins.test.ts server-tests/reward-slots-rtp-gate.test.mjs server-tests/accounts.test.ts server-tests/pvp-virtual-wallet.test.ts server-tests/game-wallet.test.ts"
+    },
+    "browser": {
+      "passed": 3,
+      "scope": "real host with connected chat, desktop/mobile, accepted reward response loss and reload, English",
+      "candidateProjectionRecheckRequired": true
+    },
+    "financeTypecheck": true,
+    "applicationBuild": true,
+    "rtpProfilesVerified": 20
+  },
+  "mathematics": {
+    "coins": {
+      "exactReturn": "24/25",
+      "outcomes": 125,
+      "serverReplayChecks": 2527
+    },
+    "fruits": {
+      "exactReturn": "97/100",
+      "outcomes": 8000,
+      "serverReplayChecks": 89152
+    },
+    "rewardPlayerStake": "0",
+    "rewardRtp": null,
+    "normalization": "fixed nominal",
+    "fullTrack": {
+      "requiredTurnover": "1000000.00",
+      "issuedSpins": 260,
+      "issuedNominal": "220.00",
+      "expectedPayout": "212.622"
+    },
+    "profitabilityClaim": false
+  },
+  "release": {
+    "published": false,
+    "sourceSynchronizedToMain": false,
+    "productionBaseline": "aed09286a21e315cb506b1befc754f5a7b4eecd2",
+    "requirements": [
+      "reviewed frontend and backend projection",
+      "verified release manifest from pushed main",
+      "guarded installer and backup",
+      "production checks and pushed deployment record"
+    ]
+  }
+}

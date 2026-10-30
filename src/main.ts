@@ -24,6 +24,7 @@ import { isGithubGame } from './shared/githubGames';
 import './demo-preview.css';
 import { gameAudio } from './game/GameAudio';
 import Phaser from 'phaser';
+import { ProgressionUI } from './ui/ProgressionUI';
 import { RoomScene, CABINETS, type Cabinet } from './game/RoomScene';
 import { cabinetHall, cabinetsInHall } from './shared/cabinets';
 import { WORLD } from './game/navigation';
@@ -271,6 +272,7 @@ const room = new RoomScene({
     const portrait = document.createElement('img'); portrait.src = game.textures.getBase64('citizen-0', 'down-6'); portrait.alt = ''; $('#player-portrait').append(portrait);
     if (!offline) social = new SocialUI(room, toast);
     else { room.onActivity=()=>toast(translateText('Войди в онлайн-зал, чтобы играть вместе и слушать рояль.')); }
+    new ProgressionUI(room);
     new CatUI(room);
     if (offline) {
       const settings=document.createElement('dialog');settings.id='name-dialog';settings.className='join-dialog auth-dialog';settings.setAttribute('aria-labelledby','name-title');

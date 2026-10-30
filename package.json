@@ -61,7 +61,10 @@
     "preview:temple:devices": "node --import tsx scripts/temple-device-preview.ts",
     "test:temple:release": "playwright test --config playwright.temple-release.config.ts",
     "test:temple:motion": "playwright test --config playwright.temple-motion.config.ts",
-    "test:temple:character": "playwright test --config playwright.temple-character.config.ts"
+    "test:temple:character": "playwright test --config playwright.temple-character.config.ts",
+    "test:progression": "node --import tsx scripts/database-test.ts --import tsx --test server-tests/progression*.test.ts server-tests/finance/progression-spins.test.ts server-tests/reward-slots-rtp-gate.test.mjs",
+    "test:progression:ui": "playwright test --config=playwright.progression.config.ts",
+    "progression:report": "node --env-file-if-exists=.env --import tsx scripts/progression-report.ts"
   },
   "dependencies": {
     "@colyseus/core": "^0.18.18",

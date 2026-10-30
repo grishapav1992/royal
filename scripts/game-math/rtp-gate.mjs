@@ -1,3 +1,4 @@
+import { REWARD_SLOTS_METHOD, validateRewardSlotsProof } from './rtp-reward-slots.mjs';
 import {CASCADE_METHOD,validateCascadeProof} from './rtp-temple-cascade.mjs';
 import {ROULETTE_METHOD,validateRouletteProof} from './rtp-roulette.mjs';
 import assert from 'node:assert/strict';
@@ -39,6 +40,7 @@ export function validateRtpProof(gameId, inputs, proof) {
   if (gameId==='studio-neopolis' && p.rulesVersion>=4) assert.equal(p.method,'neopolis-variable-stake-conditional-v4','Variable stakes require conditional qualification');
   assert.equal(proof.policySha256, inputs.policySha256, 'RTP policy changed: rerun qualification');
   assert.deepEqual(proof.sourceHashes, inputs.sourceHashes, 'RTP source changed: rerun qualification');
+  if(p.method===REWARD_SLOTS_METHOD)return validateRewardSlotsProof(gameId,p,proof);
   if(p.method===CASCADE_METHOD){assert.equal(gameId,'studio-flooded-temple');return validateCascadeProof(p,proof);}
   if(p.method===TEMPLE_METHOD)return validateTempleProof(gameId,p,proof);
   if (p.method===JACKIE_METHOD) {

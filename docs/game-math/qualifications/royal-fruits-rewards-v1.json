@@ -1,0 +1,405 @@
+{
+  "schemaVersion": 1,
+  "gameId": "royal-fruits",
+  "rulesVersion": 1,
+  "progressVersion": 1,
+  "startedAt": "2026-10-30T20:23:21.566Z",
+  "completedAt": "2026-10-30T20:23:21.967Z",
+  "sourceHashes": {
+    "src/shared/gameCore.ts": "aa9520b435a5c969d257290e3b06060051db76de45955f99dd68c48f1b5addab",
+    "src/shared/originalGames.ts": "9743f1465b625e64055c8c6c9f268ce8023d61adc7eed187507be7d4163d40c0",
+    "src/shared/demoWallet.ts": "2f3d21554eaa03930e306f8db103fe8299649387853574dff516cd01cd7e1cef",
+    "src/shared/progression.ts": "ba6d80743670dc04a1d317ef6cee54b9f81fd14ef87431586611ba07fcd538b3",
+    "server/games/core.ts": "246ebe0febf3ad89a8997b1cdac83c28a0e6f175a14d2318403a39d3a27b1146",
+    "server/games/types.ts": "c866ed8a8a19a66f4210caae41e25becf8c6d169871da1934a7b152d0f2aedc0",
+    "server/games/coins.ts": "727e6a62b098f0591525a4dfd646c78568e3a04ff554364f2c157d41cbbba5da",
+    "server/games/fruits.ts": "3880e46cb2cacd41cf855eb69ef2edda956b39209caf7bb4b73fdca16a8aea05",
+    "server/progression/freeSpins.ts": "06beb20c2714af66b60b201dee341159aff53d9dd0f4bf2de3961e171494f199",
+    "server/progression/store.ts": "f7075c23203e4a1baba851308d7bc8d7324fc57b7f34e29235010ba0014c67f1",
+    "server/progression/sources.ts": "6291057cf2c6cf556861a8f5cfc6752565dd8246fc7b4eefd8185e1f7091cf9c",
+    "server/accounts.ts": "64b0526cc577d6df4689bb840ef445f3ad062ca75f9bf5d51c9934a2e143b055",
+    "scripts/game-math/rtp-reward-slots.mjs": "2542f31c0f2e8f4598af69b383dbbb95e6fb13dfacc080fc95d1429d9b1a489f"
+  },
+  "policySha256": "b18490ef9ace1c32d85c698472a09b8444350d4df62b6334dd89382714df2d86",
+  "serverReplayChecks": 89152,
+  "method": "exact-paid-and-reward-slots-v1",
+  "analysis": {
+    "model": "Three independent uniform stops from twenty; symbol weights 8,6,4,2 and matching triples pay 5,10,30,140.",
+    "outcomes": 8000,
+    "equalProbability": "1/8000",
+    "fullRound": "One draw with three stops and one integer settlement. These rules have no bonus continuations or paid choices.",
+    "exactReturnNumerator": 97,
+    "exactReturnDenominator": 100,
+    "arbitraryIntegerStake": "Every multiplier is a nonnegative integer independent of stake. For every positive integer s, each payout is s times that multiplier, without rounding loss.",
+    "promotionalFunding": "A reward spin charges the player zero. Its expected payout is measured against the fixed nominal, not against zero player cost. Promotional RTP is undefined.",
+    "confidence": "Exhaustive exact results, not a sampled RTP estimate or a sampling confidence interval.",
+    "runtimeScope": "Every model outcome is compared with the unchanged server engine. Common-wallet ownership, concurrency, rollback and payout tests are separate release checks."
+  },
+  "results": [
+    {
+      "choice": "paid",
+      "stakeUnits": 1000,
+      "outcomes": 8000,
+      "wins": 800,
+      "totalNominalUnits": "8000000",
+      "totalPlayerCostUnits": "8000000",
+      "totalReturnedUnits": "7760000",
+      "nominalReturn": 0.97,
+      "nominalReturnFraction": {
+        "numerator": 97,
+        "denominator": 100
+      },
+      "rtp": 0.97,
+      "rtpBounds": [
+        0.97,
+        0.97
+      ],
+      "expectedPromotionalPayoutUnits": null,
+      "sha256": "06cdb2e87c7ee727c4a4ed37e2783d613f64036de93613b82ccadbbe249feea5"
+    },
+    {
+      "choice": "paid",
+      "stakeUnits": 5000,
+      "outcomes": 8000,
+      "wins": 800,
+      "totalNominalUnits": "40000000",
+      "totalPlayerCostUnits": "40000000",
+      "totalReturnedUnits": "38800000",
+      "nominalReturn": 0.97,
+      "nominalReturnFraction": {
+        "numerator": 97,
+        "denominator": 100
+      },
+      "rtp": 0.97,
+      "rtpBounds": [
+        0.97,
+        0.97
+      ],
+      "expectedPromotionalPayoutUnits": null,
+      "sha256": "7cc6c98d3ebf70c8046dd2eead49baa681b51afecbb043a9d5306706859397db"
+    },
+    {
+      "choice": "paid",
+      "stakeUnits": 10000,
+      "outcomes": 8000,
+      "wins": 800,
+      "totalNominalUnits": "80000000",
+      "totalPlayerCostUnits": "80000000",
+      "totalReturnedUnits": "77600000",
+      "nominalReturn": 0.97,
+      "nominalReturnFraction": {
+        "numerator": 97,
+        "denominator": 100
+      },
+      "rtp": 0.97,
+      "rtpBounds": [
+        0.97,
+        0.97
+      ],
+      "expectedPromotionalPayoutUnits": null,
+      "sha256": "cc6c9797a4bf9a6269fc79645f85797a6e9764f6af5bac2cd426f2b9b9da6c52"
+    },
+    {
+      "choice": "paid",
+      "stakeUnits": 50000,
+      "outcomes": 8000,
+      "wins": 800,
+      "totalNominalUnits": "400000000",
+      "totalPlayerCostUnits": "400000000",
+      "totalReturnedUnits": "388000000",
+      "nominalReturn": 0.97,
+      "nominalReturnFraction": {
+        "numerator": 97,
+        "denominator": 100
+      },
+      "rtp": 0.97,
+      "rtpBounds": [
+        0.97,
+        0.97
+      ],
+      "expectedPromotionalPayoutUnits": null,
+      "sha256": "b5a0c80466c66af07ed0ef822a666cd99a357be8cd6436c8d5c22fa4f29fa073"
+    },
+    {
+      "choice": "reward",
+      "stakeUnits": 10,
+      "outcomes": 8000,
+      "wins": 800,
+      "totalNominalUnits": "80000",
+      "totalPlayerCostUnits": "0",
+      "totalReturnedUnits": "77600",
+      "nominalReturn": 0.97,
+      "nominalReturnFraction": {
+        "numerator": 97,
+        "denominator": 100
+      },
+      "rtp": null,
+      "rtpBounds": null,
+      "expectedPromotionalPayoutUnits": {
+        "numerator": "970",
+        "denominator": 100
+      },
+      "sha256": "39d64c46a052efb280ffc3fb70f987826b89b9cf5e97dbc81f53219fd02453be"
+    },
+    {
+      "choice": "reward",
+      "stakeUnits": 20,
+      "outcomes": 8000,
+      "wins": 800,
+      "totalNominalUnits": "160000",
+      "totalPlayerCostUnits": "0",
+      "totalReturnedUnits": "155200",
+      "nominalReturn": 0.97,
+      "nominalReturnFraction": {
+        "numerator": 97,
+        "denominator": 100
+      },
+      "rtp": null,
+      "rtpBounds": null,
+      "expectedPromotionalPayoutUnits": {
+        "numerator": "1940",
+        "denominator": 100
+      },
+      "sha256": "965035ceb366e8cbf8d8195ff409ec6123a1f0cb7e2a6031c1a484b8bef9198d"
+    },
+    {
+      "choice": "reward",
+      "stakeUnits": 50,
+      "outcomes": 8000,
+      "wins": 800,
+      "totalNominalUnits": "400000",
+      "totalPlayerCostUnits": "0",
+      "totalReturnedUnits": "388000",
+      "nominalReturn": 0.97,
+      "nominalReturnFraction": {
+        "numerator": 97,
+        "denominator": 100
+      },
+      "rtp": null,
+      "rtpBounds": null,
+      "expectedPromotionalPayoutUnits": {
+        "numerator": "4850",
+        "denominator": 100
+      },
+      "sha256": "b9e163d2606c13cd6b5011bd990ce639ec4d864613c429900f436b5b5382d6fb"
+    },
+    {
+      "choice": "reward",
+      "stakeUnits": 100,
+      "outcomes": 8000,
+      "wins": 800,
+      "totalNominalUnits": "800000",
+      "totalPlayerCostUnits": "0",
+      "totalReturnedUnits": "776000",
+      "nominalReturn": 0.97,
+      "nominalReturnFraction": {
+        "numerator": 97,
+        "denominator": 100
+      },
+      "rtp": null,
+      "rtpBounds": null,
+      "expectedPromotionalPayoutUnits": {
+        "numerator": "9700",
+        "denominator": 100
+      },
+      "sha256": "1d5a97ddb05c03c91c4ea9276d22f4400f2ecdc92f8defd734dae506825bb715"
+    },
+    {
+      "choice": "reward",
+      "stakeUnits": 200,
+      "outcomes": 8000,
+      "wins": 800,
+      "totalNominalUnits": "1600000",
+      "totalPlayerCostUnits": "0",
+      "totalReturnedUnits": "1552000",
+      "nominalReturn": 0.97,
+      "nominalReturnFraction": {
+        "numerator": 97,
+        "denominator": 100
+      },
+      "rtp": null,
+      "rtpBounds": null,
+      "expectedPromotionalPayoutUnits": {
+        "numerator": "19400",
+        "denominator": 100
+      },
+      "sha256": "96172c27dfee4597da98c8f9d460ae7895a24e6dd797cdac71cc3173dbbfb584"
+    }
+  ],
+  "integerBoundaries": [
+    {
+      "stakeUnits": "1",
+      "outcomes": 8000,
+      "sha256": "bf0cc6350523e51716357c8e3f89639334d15fc54501de9e2081ddd83e2c9fba"
+    },
+    {
+      "stakeUnits": "9007199254740993123456789",
+      "outcomes": 8000,
+      "sha256": "715e92dd098d7c53b56976c38ff6f206084632002c4a8c4283ff53c07b69ee4f"
+    }
+  ],
+  "serverReplay": [
+    {
+      "choice": "paid",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 8000,
+      "sha256": "06cdb2e87c7ee727c4a4ed37e2783d613f64036de93613b82ccadbbe249feea5",
+      "streams": [
+        {
+          "seed": 743147,
+          "rounds": 64,
+          "sha256": "28730204f493127168aeee474d197ee7fdaa41afec5a076cf0dd75c688f9a57c"
+        },
+        {
+          "seed": 934537,
+          "rounds": 64,
+          "sha256": "fb5f49577358430f24227b9ca17fc0dc47826f648a1b2b2111299a7b5f109fe8"
+        }
+      ]
+    },
+    {
+      "choice": "paid",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 8000,
+      "sha256": "7cc6c98d3ebf70c8046dd2eead49baa681b51afecbb043a9d5306706859397db",
+      "streams": [
+        {
+          "seed": 743147,
+          "rounds": 64,
+          "sha256": "b0b3561812a682cc42e31b398400e0fc5bc8e8d5b46ed59193ed9160aca56382"
+        },
+        {
+          "seed": 934537,
+          "rounds": 64,
+          "sha256": "ac13b43edafdfaf1184e23890e1c057df4708fb9c4b51d0b0e5520997c831e4e"
+        }
+      ]
+    },
+    {
+      "choice": "paid",
+      "stakeUnits": 10000,
+      "exhaustiveOutcomes": 8000,
+      "sha256": "cc6c9797a4bf9a6269fc79645f85797a6e9764f6af5bac2cd426f2b9b9da6c52",
+      "streams": [
+        {
+          "seed": 743147,
+          "rounds": 64,
+          "sha256": "9a6ebac4c0d990c7c6d0136accc01eb4070f9f03c221b636d12ac0f8522ad653"
+        },
+        {
+          "seed": 934537,
+          "rounds": 64,
+          "sha256": "c4ce64c6444df3bc94c311b310c4c32780b534a88b0c933fc7882278bc3a0b45"
+        }
+      ]
+    },
+    {
+      "choice": "paid",
+      "stakeUnits": 50000,
+      "exhaustiveOutcomes": 8000,
+      "sha256": "b5a0c80466c66af07ed0ef822a666cd99a357be8cd6436c8d5c22fa4f29fa073",
+      "streams": [
+        {
+          "seed": 743147,
+          "rounds": 64,
+          "sha256": "23ba73e255eab129bdb274a7da9d3b769ef7a65d8dd491b56181c72456b783a8"
+        },
+        {
+          "seed": 934537,
+          "rounds": 64,
+          "sha256": "d9532bbda2b2266e7955cdfbd5da977d948c34c34491f25f467c61693ab88ab6"
+        }
+      ]
+    },
+    {
+      "choice": "reward",
+      "stakeUnits": 10,
+      "exhaustiveOutcomes": 8000,
+      "sha256": "39d64c46a052efb280ffc3fb70f987826b89b9cf5e97dbc81f53219fd02453be",
+      "streams": [
+        {
+          "seed": 743147,
+          "rounds": 64,
+          "sha256": "31180c2671d4a94fbd0ec6a2767e717ba85b0d4c6a6fbfc5569d5f51aacb979c"
+        },
+        {
+          "seed": 934537,
+          "rounds": 64,
+          "sha256": "3e39f4326e581829eb306726f7bcc7565eaec53af17cfc918068cee1d8c4b5e1"
+        }
+      ]
+    },
+    {
+      "choice": "reward",
+      "stakeUnits": 20,
+      "exhaustiveOutcomes": 8000,
+      "sha256": "965035ceb366e8cbf8d8195ff409ec6123a1f0cb7e2a6031c1a484b8bef9198d",
+      "streams": [
+        {
+          "seed": 743147,
+          "rounds": 64,
+          "sha256": "be7419f92c20ef441ab1c0a860a9f2a30bb56a71477a7bd55716b5ac60e6b604"
+        },
+        {
+          "seed": 934537,
+          "rounds": 64,
+          "sha256": "53127c71cfeef7fd523066ab1bb1282300facbf28a2ab199e470c2396487cff5"
+        }
+      ]
+    },
+    {
+      "choice": "reward",
+      "stakeUnits": 50,
+      "exhaustiveOutcomes": 8000,
+      "sha256": "b9e163d2606c13cd6b5011bd990ce639ec4d864613c429900f436b5b5382d6fb",
+      "streams": [
+        {
+          "seed": 743147,
+          "rounds": 64,
+          "sha256": "a67a917eb601d105c8275cbefd32e9edae895023190c0ddde8c50d1bc7951c2c"
+        },
+        {
+          "seed": 934537,
+          "rounds": 64,
+          "sha256": "8bebd7854e114af10acaf5367e0f07c1ec5c09f6196bef54a09c266ccc19e967"
+        }
+      ]
+    },
+    {
+      "choice": "reward",
+      "stakeUnits": 100,
+      "exhaustiveOutcomes": 8000,
+      "sha256": "1d5a97ddb05c03c91c4ea9276d22f4400f2ecdc92f8defd734dae506825bb715",
+      "streams": [
+        {
+          "seed": 743147,
+          "rounds": 64,
+          "sha256": "c33582bb84c0d83b7587bfb68d8e771a2467e24f7c23d6d5fe4e40138022468d"
+        },
+        {
+          "seed": 934537,
+          "rounds": 64,
+          "sha256": "3b9e7637c5323b5e36698902c185313fbb24645a6b60f65fdb6cb71d493221e4"
+        }
+      ]
+    },
+    {
+      "choice": "reward",
+      "stakeUnits": 200,
+      "exhaustiveOutcomes": 8000,
+      "sha256": "96172c27dfee4597da98c8f9d460ae7895a24e6dd797cdac71cc3173dbbfb584",
+      "streams": [
+        {
+          "seed": 743147,
+          "rounds": 64,
+          "sha256": "b4692f006fda5a30f016efe88437bab12a3bd1bb3717486f05d98a06480d2880"
+        },
+        {
+          "seed": 934537,
+          "rounds": 64,
+          "sha256": "75b9f7e935d84b94d529d0d07f8fc36bc614fa5bae61c808f52d17bb44d239f8"
+        }
+      ]
+    }
+  ]
+}
