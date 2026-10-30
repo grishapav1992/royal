@@ -21,5 +21,21 @@
     "inputImage": false,
     "proof": "provider-verification.json"
   },
-  "productionAccountsOrFundsChanged": false
+  "productionAccountsOrFundsChanged": false,
+  "installer": {
+    "linuxTestsPassed": 16
+  },
+  "exactProductionSource": {
+    "commit": "31dcf804cdc0f9314aea3f339e501c9843b5d516",
+    "base": "5045c401063b5f2c792497ae2f4e53bcd34e1a98",
+    "releasePrepare": true,
+    "releaseVerifyGithub": true,
+    "rtp": {
+      "qualified": 2,
+      "unchangedLegacy": 114
+    },
+    "atelierCasesPassed": 15,
+    "catalogAndRecoveryCasesPassed": 2,
+    "archiveRawHashTest": "Windows CRLF differs; independent verification of all 73 committed Git blob hashes passed. No math files or proofs changed."
+  }
 }

@@ -1,0 +1,29 @@
+{
+  "sourceCommit": "31dcf804cdc0f9314aea3f339e501c9843b5d516",
+  "baseCommit": "5045c401063b5f2c792497ae2f4e53bcd34e1a98",
+  "beforeImage": "sha256:84d643da5eab7e9c368a7861040740df4911d5cd8b8d23dbf22341b805b4dcc5",
+  "changed": {
+    "docs/skin-studio.md": "acdfb15eb00b65c92425e9cf0cd8d4ce20a7d7a16436880662f79e7e7a6f4961",
+    "server/skinImages.ts": "c0d15f1cf8bdad6fa855d3b4b9e0275a682661aeec23126877c30284a7078a83",
+    "server/skinStudio.ts": "0219089f64bdbc4c09bf3cff6e595c027145ea571b2305a3dc2c78e5e0f503be",
+    "server/skinStudioRoutes.ts": "c3163166eb9e79a1d6b4ae8340064bf0ea6ef31fb0030dd785621ef9625b84b4",
+    "src/game/generatedSkinArt.ts": "1cd0a73021f3c666564583884ebf633eda04c5584ed644dc3ab5e5785b848999",
+    "src/shared/skinStudio.ts": "12c6f324a7960485dcafc58312d73d26ea198c5b39001c75428af6f79aacad6d",
+    "src/ui/SkinStudioUI.ts": "8756b8d4a6871a977aceaadbe6a0e63d34990dafb446e58fb03bb81b4e51194f",
+    "src/ui/skin-studio.css": "f24d063e1e302b878cafabc87039bbfbee3aedc62cccbf9cbcd6e9196f52e89d"
+  },
+  "delta": {
+    "assets/main-156FdK3-.js": "2ef1f098ac684fd225b7a30e0428f44def79a01f4aaaa8a70877140904dff0b7",
+    "assets/main-B3_0isoX.css": "148220e85bac91846123415eeb73b7f98ad6279a456e8bffeb8b0a616e9cf79d",
+    "index.html": "7f78a8a74bf6da93001f07db67a2cb98204f03a087eff8abd322661133dad32a"
+  },
+  "serverDelta": {
+    "index.js": "6dc2b6f8f7be4072808088c1fc80267d149de029108c8532e39cbf7da780b9ab"
+  },
+  "comparedUnchanged": 1747,
+  "retainedStaticLineEndings": [
+    "assets/neopolis/cover.svg"
+  ],
+  "githubVerified": true,
+  "normalizedSourceCount": 1315
+}
