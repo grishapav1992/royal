@@ -4,17 +4,17 @@ import { createHash } from 'node:crypto';
 import { rtpInputs, validateRtpProof } from '../scripts/game-math/rtp-gate.mjs';
 import { qualifyRewardSlots, rewardSlotEvidence, validatePromotionDefinition } from '../scripts/game-math/rtp-reward-slots.mjs';
 
-for (const [gameId, checks, target] of [['royal-coins', 2527, .96], ['royal-fruits', 89152, .97]]) {
+for (const [gameId, checks, target] of [['royal-coins', 3792, .96], ['royal-fruits', 129792, .97]]) {
   test(gameId + ' exact qualification covers every paid stake and every configured reward nominal', async () => {
     const inputs = await rtpInputs(process.cwd(), gameId);
     const proof = { schemaVersion: 1, gameId, rulesVersion: 1, progressVersion: 1,
       sourceHashes: inputs.sourceHashes, policySha256: inputs.policySha256, ...await qualifyRewardSlots(gameId, inputs.policy) };
     assert(validateRtpProof(gameId, inputs, proof));
-    assert.equal(proof.results.length, 9); assert.equal(proof.serverReplayChecks, checks);
+    assert.equal(proof.results.length, 14); assert.equal(proof.serverReplayChecks, checks);
     assert.equal(proof.program.milestones.length, 20); assert.equal(proof.program.totalSpins, 260);
-    assert.equal(proof.program.totalNominalUnits, '220000000'); assert.equal(proof.program.expectedFullRedemptionPayoutUnits, '212622000');
+    assert.equal(proof.program.totalNominalUnits, '4832500000'); assert.equal(proof.program.expectedFullRedemptionPayoutUnits, '4671800000');
     for (const prefix of proof.program.milestones)
-      assert(BigInt(prefix.expectedPayoutFraction.numerator) * 10000n <= BigInt(prefix.qualifiedTurnoverUnits) * 100n * 100n);
+      assert(BigInt(prefix.expectedPayoutFraction.numerator) * 10000n <= BigInt(prefix.qualifiedTurnoverUnits) * 400n * 100n);
     for (const row of proof.results) {
       assert.equal(row.nominalReturn, target);
       if (row.choice === 'reward') {

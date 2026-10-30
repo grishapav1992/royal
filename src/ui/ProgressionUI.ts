@@ -1,6 +1,6 @@
 import { locale, t, tr } from '../i18n/index';
 import type { RoomScene } from '../game/RoomScene';
-import type { FreeSpinReward, ProgressionGrant, RewardGame } from '../shared/progression';
+import { rewardLeaves, type LevelReward, type ProgressionGrant, type RewardGame } from '../shared/progression';
 import { formatNileUnits } from '../shared/nileWallet';
 import { DEMO_SYMBOLS } from '../shared/demoWallet';
 import { progression, type ProgressionClient } from '../wallet/ProgressionClient';
@@ -11,7 +11,11 @@ import './progression.css';
 
 const xp = (value: string | bigint) => BigInt(value).toLocaleString(locale);
 const gameName = (game: RewardGame) => game === 'royal-coins' ? 'Royal Coins' : 'Royal Fruits';
-const rewardText = (reward: FreeSpinReward | ProgressionGrant) => `${gameName(reward.gameId)} · ${tr`${reward.count} спинов по ${formatNileUnits(reward.stakeUnits)} USDT`}`;
+function rewardText(reward: LevelReward | ProgressionGrant):string {
+  if('gameId' in reward)return `${gameName(reward.gameId)} · ${tr`${reward.count} спинов по ${formatNileUnits(reward.stakeUnits)} USDT`}`;
+  if(reward.kind==='skin_generation')return tr`${reward.count} бесплатная генерация · 2 варианта на выбор`;
+  return reward.rewards.map(rewardText).join(' + ');
+}
 
 export class ProgressionUI {
   readonly dialog = document.createElement('dialog');
@@ -31,9 +35,9 @@ export class ProgressionUI {
       <section data-progression-summary class="progression-summary" hidden><div class="progression-level" data-progression-current-level></div><div><h3 data-progression-location></h3><p data-progression-xp></p><progress data-progression-progress max="100" value="0"></progress><p data-progression-next-level></p></div></section>
       <section class="progression-next" data-progression-next hidden></section>
       <p class="progression-notes">Опыт начисляется после расчёта платных игр и ставок PvP. Бесплатные спины не дают XP.</p>
-      <div class="progression-tools"><button type="button" data-progression-tab="track" aria-pressed="true">Дорожка наград</button><button type="button" data-progression-tab="rewards" aria-pressed="false">Мои бесплатные спины</button><button type="button" data-progression-refresh>Обновить уровни</button></div>
+      <div class="progression-tools"><button type="button" data-progression-tab="track" aria-pressed="true">Дорожка наград</button><button type="button" data-progression-tab="rewards" aria-pressed="false">Мои награды</button><button type="button" data-progression-refresh>Обновить уровни</button></div>
       <p class="progression-error" data-progression-error role="alert" hidden></p><p class="progression-status" data-progression-pending role="status" hidden></p><button type="button" class="primary-button" data-progression-retry hidden>Проверить бесплатный спин</button>
-      <section data-progression-track><div class="progression-detail" data-progression-detail></div><ol class="progression-roadmap" data-progression-roadmap aria-label="Дорожка наград"></ol><p class="progression-notes">Бесплатные спины начисляются автоматически за достигнутые уровни.</p></section>
+      <section data-progression-track><div class="progression-detail" data-progression-detail></div><ol class="progression-roadmap" data-progression-roadmap aria-label="Дорожка наград"></ol><p class="progression-notes">Спины и бесплатные генерации начисляются автоматически за достигнутые уровни.</p></section>
       <section data-progression-rewards hidden><section class="progression-result" data-progression-result role="status" hidden></section><div class="progression-grants" data-progression-grants></div></section>
       <p class="progression-notes">Прогресс этой локации сохраняется. В новой локации уровни начинаются с 1.</p></div>`;
     document.body.append(this.dialog);
@@ -51,6 +55,8 @@ export class ProgressionUI {
         this.selectedLevel = Number(button.dataset.progressionLevel); this.renderDetail();
       } else if (button.dataset.progressionGrant) {
         this.tab = 'rewards'; void this.run(() => this.client.spin(button.dataset.progressionGrant!));
+      } else if (button.hasAttribute('data-progression-atelier')) {
+        this.dialog.close();this.scene.onAtelier?.();
       }
     });
     window.addEventListener('royal-account', event => this.client.setAccount((event as CustomEvent<string | null>).detail));
@@ -136,7 +142,9 @@ export class ProgressionUI {
         const item = document.createElement('li'), button = document.createElement('button');
         button.type = 'button'; button.dataset.progressionLevel = String(level.level); button.dataset.reward = String(!!level.reward);
         button.append(String(level.level));
-        const caption = document.createElement('small'); caption.textContent = level.reward ? `${level.reward.count} FS` : `${xp(level.xp)} XP`;
+        const caption = document.createElement('small');
+        const spin=level.reward?rewardLeaves(level.reward).find(r=>r.kind==='free_spins'):undefined;
+        caption.textContent = level.reward ? `${spin?.count??0} FS + 🎨` : `${xp(level.xp)} XP`;
         button.append(caption); item.append(button); roadmap.append(item);
       }
       this.selectedLevel = snapshot.level;
@@ -162,7 +170,7 @@ export class ProgressionUI {
     const snapshot = this.client.snapshot!, host = this.find('[data-progression-grants]');
     const disabled = this.client.busy || !!this.client.pending || this.client.recoveryBlocked || this.client.walletBlocked || !snapshot.enabled;
     host.replaceChildren();
-    if (!snapshot.grants.length) {
+    if (!snapshot.grants.length && !snapshot.skinGrants?.length) {
       const empty = document.createElement('p'); empty.className = 'progression-empty';
       empty.textContent = t('Пакеты появятся здесь после достижения уровня с наградой.'); host.append(empty); return;
     }
@@ -176,6 +184,16 @@ export class ProgressionUI {
       button.dataset.progressionGrant = grant.id; button.textContent = t(grant.remaining ? 'Использовать спин' : 'Пакет использован');
       button.disabled = disabled || grant.remaining === 0;
       card.append(title, origin, nominal, remaining, button); host.append(card);
+    }
+    for(const grant of snapshot.skinGrants??[]){
+      const card=document.createElement('article');card.className='progression-grant progression-skin-grant';card.dataset.empty=String(grant.remaining===0);
+      const title=document.createElement('h3');title.textContent=t('Бесплатная генерация скина');
+      const origin=document.createElement('p');origin.textContent=tr`Награда за уровень ${grant.level}`;
+      const offer=document.createElement('p');offer.textContent=t('2 варианта на выбор · 1 образ навсегда');
+      const remaining=document.createElement('p');remaining.textContent=tr`Осталось: ${grant.remaining} из ${grant.count}`;
+      const button=document.createElement('button');button.type='button';button.className='primary-button';button.setAttribute('data-progression-atelier','');
+      button.textContent=t(grant.remaining?'Открыть ателье':'Генерация использована');button.disabled=grant.remaining===0||!this.scene.onAtelier;
+      card.append(title,origin,offer,remaining,button);host.append(card);
     }
   }
   private renderLast() {

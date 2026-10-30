@@ -29,13 +29,13 @@ test('one micro-unit below a million cannot reach 100; its final micro-unit gran
     const reached = await f.earn('1');
     assert.equal(reached.xp, '100000000'); assert.equal(reached.level, 100); assert.equal(reached.grants.length, 20);
     const final = reached.grants.find(g => g.level === 100)!;
-    assert.equal(final.gameId, 'royal-fruits'); assert.equal(final.count, 40); assert.equal(final.remaining, 40); assert.equal(final.stakeUnits, '2000000');
+    assert.equal(final.gameId, 'royal-fruits'); assert.equal(final.count, 40); assert.equal(final.remaining, 40); assert.equal(final.stakeUnits, '50000000');
     await f.earn('10000');
     assert.equal((await f.store.snapshot(f.account)).grants.filter(g => g.level === 100).length, 1);
     const report = await f.store.report();
     assert.equal(report.issuedSpins, 260);
-    assert.equal(report.expectedIssuedPayoutUnits, '212622000');
-    assert.equal(report.expectedOutstandingPayoutUnits, '212622000');
+    assert.equal(report.expectedIssuedPayoutUnits, '4671800000');
+    assert.equal(report.expectedOutstandingPayoutUnits, '4671800000');
     assert.equal((await f.store.audit()).ok, true);
   } finally { await f.db.close(); }
 });

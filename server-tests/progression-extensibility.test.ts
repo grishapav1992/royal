@@ -4,7 +4,7 @@ import { randomUUID } from 'node:crypto';
 import { PostgresDatabase } from '../server/database';
 import { ProgressionStore, type RoundContext, type SettledExperience } from '../server/progression/store';
 import { DEFAULT_PROGRESSION_HANDLERS, type ExperienceHandler, type ProgressionHandlers, type RewardHandler } from '../server/progression/handlers';
-import { DEFAULT_PROGRESSION_POLICY, type ExperienceSource, type FreeSpinReward, type ProgressionPolicy } from '../src/shared/progression';
+import { DEFAULT_PROGRESSION_POLICY, LEGACY_PROGRESSION_POLICY, type ExperienceSource, type FreeSpinReward, type ProgressionPolicy } from '../src/shared/progression';
 import { instrumentProgressionWallet } from '../server/progression/sources';
 import { DemoWalletStore } from '../server/demoWallet';
 import { saveDemoUnits } from '../server/demoWalletAmounts';
@@ -106,7 +106,7 @@ test('registering an extension never makes paid-game or PvP reward-funded rounds
 
 test('upgrading pre-registry free-spin grants preserves their identity and remaining rights', async () => {
   const db = new PostgresDatabase(':memory:'), account = randomUUID();
-  const store = new ProgressionStore(db, { now: () => 1000 }); await store.ready;
+  const store = new ProgressionStore(db, { policy: LEGACY_PROGRESSION_POLICY, now: () => 1000 }); await store.ready;
   try {
     const sourceId = randomUUID();
     await store.acceptRound({ sourceType: 'paid-game', sourceId, accountId: account, gameId: 'royal-coins',

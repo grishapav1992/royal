@@ -6,6 +6,7 @@ import { generatedAppearance, normalizeCharacterAppearance, SKIN_THEME, SKIN_UUI
 import type { SkinDescribedSnapshot, SkinNpcContext } from '../src/shared/skinDescription';
 import type { SkinImageGenerator } from './skinImages';
 import { skinDescription, type SkinDescriptionGenerator } from './skinDescriptions';
+import type { FreeSkinGenerations } from './progression/skinGenerations';
 
 export type SkinPayments = { skinPurchase(user: string, id: string, action: 'reserve' | 'capture' | 'refund'): Promise<SkinPurchase> };
 export class SkinStudioError extends Error { constructor(public status: number, message: string) { super(message); } }
@@ -18,7 +19,8 @@ export class SkinStudioStore {
   private describing?: Promise<void>;
   constructor(private db: PostgresDatabase, private payments: SkinPayments, private images: SkinImageGenerator,
     private paymentEnabled: () => boolean, private changed: (accountId: string, appearance: unknown) => void,
-    prerequisite: Promise<void> = Promise.resolve(), private now = Date.now, private descriptions?: SkinDescriptionGenerator) {
+    prerequisite: Promise<void> = Promise.resolve(), private now = Date.now, private descriptions?: SkinDescriptionGenerator,
+    private freeGenerations?: FreeSkinGenerations) {
     this.ready = prerequisite.then(() => applySchemaMigration(db, { id: 'skin-studio-v1', statements: [
       `CREATE TABLE IF NOT EXISTS skin_jobs(id TEXT PRIMARY KEY,account_id TEXT NOT NULL REFERENCES accounts(id),theme TEXT NOT NULL,
         prompt TEXT NOT NULL,reference BYTEA,state TEXT NOT NULL CHECK(state IN ('reserving','generating','capturing','ready','selected','refunding','failed')),
@@ -41,7 +43,9 @@ export class SkinStudioStore {
       'ALTER TABLE generated_skins ADD COLUMN description_attempts INTEGER NOT NULL DEFAULT 0',
       'ALTER TABLE generated_skins ADD COLUMN description_retry_at BIGINT NOT NULL DEFAULT 0',
       "CREATE INDEX generated_skins_description_pending ON generated_skins(description_retry_at,description_lease_until) WHERE description='' AND description_requested",
-    ] }));
+    ] })).then(()=>applySchemaMigration(db,{id:'skin-studio-level-rewards-v1',statements:[
+      'ALTER TABLE skin_jobs ADD COLUMN reward_grant_id TEXT',
+    ]}));
   }
   enabled() { return this.paymentEnabled() && this.images.available(); }
   private card(row: DatabaseRow) { return { id: String(row.id), jobId: String(row.job_id), prompt: String(row.prompt), createdAt: Number(row.created_at),
@@ -53,34 +57,40 @@ export class SkinStudioStore {
     let job: SkinDescribedSnapshot['job'] = null;
     if (row) {
       const variants = row.state === 'ready' ? await this.db.prepare(`SELECT ${CARD_FIELDS} FROM generated_skins s JOIN skin_jobs j ON j.id=s.job_id WHERE j.id=? ORDER BY variant`).all(row.id) : [];
-      job = { id: row.id, prompt: row.prompt, state: row.state, error: row.error, selectedId: row.selected_id, createdAt: Number(row.created_at), variantCount: Number(row.variant_count), variants: variants.map(s => this.card(s)) };
+      job = { id: row.id, prompt: row.prompt, state: row.state, error: row.error, selectedId: row.selected_id, createdAt: Number(row.created_at), variantCount: Number(row.variant_count), variants: variants.map(s => this.card(s)), funding:row.reward_grant_id?'reward':'paid' };
     }
     const wardrobe = await this.db.prepare(`SELECT ${CARD_FIELDS} FROM generated_skins s JOIN skin_jobs j ON j.id=s.job_id
       WHERE j.account_id=? AND j.theme=? AND j.selected_id=s.id AND j.state='selected' ORDER BY j.created_at DESC LIMIT 200`).all(accountId, SKIN_THEME.id);
     const account = await this.db.prepare('SELECT skin,appearance FROM accounts WHERE id=?').get(accountId);
     return { theme: SKIN_THEME, priceUnits: SKIN_PRICE_UNITS, variantCount: SKIN_VARIANTS, enabled: this.enabled(), job, wardrobe: wardrobe.map(s => this.card(s)), equippedId: generatedAppearance(account?.appearance)?.skinId ?? null,
+      freeGenerations:await this.freeGenerations?.available(accountId)??[],
       character: { skin: Number(account?.skin ?? 0), appearance: normalizeCharacterAppearance(account?.appearance) } };
   }
   async create(accountId: string, value: unknown) {
     await this.ready;
-    const op = value as { id: string; prompt: string; reference?: string };
+    const op = value as { id: string; prompt: string; reference?: string; rewardGrantId?:string };
     // Accept old clients' reference field, but never retain or send their previous character.
-    if (!op || !['id,prompt', 'id,prompt,reference'].includes(Object.keys(op).sort().join(',')) || typeof op.id !== 'string' || !SKIN_UUID.test(op.id)
+    if (!op || !['id,prompt', 'id,prompt,reference','id,prompt,rewardGrantId','id,prompt,reference,rewardGrantId'].includes(Object.keys(op).sort().join(',')) || typeof op.id !== 'string' || !SKIN_UUID.test(op.id)
       || typeof op.prompt !== 'string' || !op.prompt.trim() || Array.from(op.prompt).length > 1000
-      || (op.reference !== undefined && (typeof op.reference !== 'string' || op.reference.length > 1_500_000))) fail(400, 'Опиши образ, до 1000 символов.');
+      || (op.reference !== undefined && (typeof op.reference !== 'string' || op.reference.length > 1_500_000))
+      || (op.rewardGrantId!==undefined && (typeof op.rewardGrantId!=='string'||!SKIN_UUID.test(op.rewardGrantId)))) fail(400, 'Опиши образ, до 1000 символов.');
     const prompt = op.prompt.trim();
     await this.db.transaction(async () => {
       const previous = await this.db.prepare('SELECT * FROM skin_jobs WHERE id=?').get(op.id);
       if (previous) {
-        if (previous.account_id !== accountId || previous.prompt !== prompt) fail(409, 'Нельзя изменить отправленную генерацию.');
+        if (previous.account_id !== accountId || previous.prompt !== prompt || (previous.reward_grant_id??undefined)!==op.rewardGrantId) fail(409, 'Нельзя изменить отправленную генерацию.');
         return;
       }
       if (!this.enabled()) fail(503, 'Генерация пока недоступна. Деньги не списаны.');
       if (await this.db.prepare(`SELECT 1 FROM skin_jobs WHERE account_id=? AND state IN ${ACTIVE}`).get(accountId)) fail(409, 'Сначала дождись генерации и выбери один образ.');
       const recent = await this.db.prepare('SELECT count(*) AS n FROM skin_jobs WHERE account_id=? AND created_at>?').get(accountId, this.now() - 3600000);
       if (Number(recent?.n) >= 10) fail(429, 'Доступно до 10 генераций в час. Попробуй позже.');
-      await this.db.prepare("INSERT INTO skin_jobs(id,account_id,theme,prompt,state,created_at,variant_count,payment_source) VALUES (?,?,?,?,'reserving',?,?,'virtual-usdt-v1')")
-        .run(op.id, accountId, SKIN_THEME.id, prompt, this.now(), SKIN_VARIANTS);
+      await this.db.prepare("INSERT INTO skin_jobs(id,account_id,theme,prompt,state,created_at,variant_count,payment_source,reward_grant_id) VALUES (?,?,?,?,'reserving',?,?,'virtual-usdt-v1',?)")
+        .run(op.id, accountId, SKIN_THEME.id, prompt, this.now(), op.rewardGrantId?2:SKIN_VARIANTS,op.rewardGrantId??null);
+      if(op.rewardGrantId){
+        if(!this.freeGenerations)fail(503,'Бесплатная генерация временно недоступна. Награда сохранена.');
+        try{await this.freeGenerations!.reserveForJob(accountId,op.id,op.rewardGrantId);}catch(error){if(error instanceof CryptoError)fail(error.status,error.message);throw error;}
+      }
     }, { lockKey: 'skin:' + accountId });
     return this.snapshot(accountId);
   }
@@ -217,8 +227,8 @@ export class SkinStudioStore {
         if (purchase.state !== 'refunded') throw new Error('Purchase refund not confirmed');
         await this.withLease(job, async () => {
           await this.db.prepare('DELETE FROM generated_skins WHERE job_id=?').run(job.id);
-          await this.db.prepare("UPDATE skin_jobs SET state='failed',reference=NULL,lease_until=0,error=error || ' Оплата возвращена или не списывалась. Можно попробовать ещё раз.' WHERE id=?")
-            .run(job.id);
+          await this.db.prepare("UPDATE skin_jobs SET state='failed',reference=NULL,lease_until=0,error=error || ? WHERE id=?")
+            .run(job.reward_grant_id?' Бесплатная генерация возвращена. Можно попробовать ещё раз.':' Оплата возвращена или не списывалась. Можно попробовать ещё раз.',job.id);
         });
       }
     } catch (error) {

@@ -3,26 +3,28 @@
   "gameId": "royal-coins",
   "rulesVersion": 1,
   "progressVersion": 1,
-  "startedAt": "2026-10-30T21:03:40.644Z",
-  "completedAt": "2026-10-30T21:03:40.674Z",
+  "startedAt": "2026-10-30T23:43:35.922Z",
+  "completedAt": "2026-10-30T23:43:35.972Z",
   "sourceHashes": {
     "src/shared/gameCore.ts": "aa9520b435a5c969d257290e3b06060051db76de45955f99dd68c48f1b5addab",
     "src/shared/originalGames.ts": "9743f1465b625e64055c8c6c9f268ce8023d61adc7eed187507be7d4163d40c0",
     "src/shared/demoWallet.ts": "2f3d21554eaa03930e306f8db103fe8299649387853574dff516cd01cd7e1cef",
-    "src/shared/progression.ts": "866cda46a4f9cac3ff42e815dc616838d61368db2819b916e7a5e3f24b472318",
+    "src/shared/progression.ts": "db2ef63a028ddad2c6a4f5d8d1285b4cfd5357f4983bf526e2dd06fb1c8b98fc",
     "server/games/core.ts": "246ebe0febf3ad89a8997b1cdac83c28a0e6f175a14d2318403a39d3a27b1146",
     "server/games/types.ts": "c866ed8a8a19a66f4210caae41e25becf8c6d169871da1934a7b152d0f2aedc0",
     "server/games/coins.ts": "727e6a62b098f0591525a4dfd646c78568e3a04ff554364f2c157d41cbbba5da",
     "server/games/fruits.ts": "3880e46cb2cacd41cf855eb69ef2edda956b39209caf7bb4b73fdca16a8aea05",
-    "server/progression/freeSpins.ts": "06beb20c2714af66b60b201dee341159aff53d9dd0f4bf2de3961e171494f199",
-    "server/progression/store.ts": "f009747047782b5aaf961e121df3f9d33173448a5bd74a8716a2b5c66ce44df0",
+    "server/progression/freeSpins.ts": "cd30bb7634e7d1f1083d9190a7fc42f1a4ea4edc7683a906b6fe0e25386de4fb",
+    "server/progression/store.ts": "3f12caa3e1e54319711ba17a5038c1a581479e8594f2aa6b31a18495f19460a4",
     "server/progression/sources.ts": "6640ff15833378a077ca7ef19a502414fab6f99bf6ccb63db30f8ceb8cdd9674",
-    "server/accounts.ts": "64b0526cc577d6df4689bb840ef445f3ad062ca75f9bf5d51c9934a2e143b055",
-    "server/progression/handlers.ts": "e0b9fd117de4937fcaa76296c20d8e31060ea346b6297bd828a3c95f3b9d099f",
-    "scripts/game-math/rtp-reward-slots.mjs": "06bd58779cd28c99fb44347e2a40e09958ebecbd7ffa3dbb5c4b37931f170dd7"
+    "server/accounts.ts": "f621ae52b8055c100f7d219a3030b417603927e0c8a0fb2185e1f2b25bfa8927",
+    "server/progression/handlers.ts": "ff41c0acaa0601c1008d6d38eda6a1309c673dd3d3b0ea4a5066626ce55e13ad",
+    "server/progression/skinGenerations.ts": "ae72341e7ea85c8eb8e787ea7f82799548ee146aac152cd09d8ddd847c280390",
+    "server/skinStudio.ts": "0abc4ee79b714793dc81bb315cf73c16357086330ce7ee60092473b3af15e9ad",
+    "scripts/game-math/rtp-reward-slots.mjs": "6cd1aeb4734067cee80672c75f5bbdcf74b9669f22354d4ff7815c9a89f86e7a"
   },
-  "policySha256": "cbdf176b4f80a25ed8ccfca2c360170d13d012f6c741831fdc44c415f3dcaa64",
-  "serverReplayChecks": 2527,
+  "policySha256": "0defa5a47ce2f236821e93df4d00582e6af23fdfd94d387ed55eb6e4d77697bb",
+  "serverReplayChecks": 3792,
   "method": "exact-paid-and-reward-slots-v1",
   "analysis": {
     "model": "Three independent uniform symbols from five; triples pay 12 and exactly one pair pays 1.",
@@ -225,6 +227,111 @@
         "denominator": 25
       },
       "sha256": "4f15e6f4095c1913f3e90abb04ace01afe86cbe79a58e1c1d5b9193a90f64b61"
+    },
+    {
+      "choice": "reward",
+      "stakeUnits": 300,
+      "outcomes": 125,
+      "wins": 65,
+      "totalNominalUnits": "37500",
+      "totalPlayerCostUnits": "0",
+      "totalReturnedUnits": "36000",
+      "nominalReturn": 0.96,
+      "nominalReturnFraction": {
+        "numerator": 24,
+        "denominator": 25
+      },
+      "rtp": null,
+      "rtpBounds": null,
+      "expectedPromotionalPayoutUnits": {
+        "numerator": "7200",
+        "denominator": 25
+      },
+      "sha256": "d2440c7f403d66229bff80d0224a2d18cff58e610c3f175eee556d5bc1585f51"
+    },
+    {
+      "choice": "reward",
+      "stakeUnits": 500,
+      "outcomes": 125,
+      "wins": 65,
+      "totalNominalUnits": "62500",
+      "totalPlayerCostUnits": "0",
+      "totalReturnedUnits": "60000",
+      "nominalReturn": 0.96,
+      "nominalReturnFraction": {
+        "numerator": 24,
+        "denominator": 25
+      },
+      "rtp": null,
+      "rtpBounds": null,
+      "expectedPromotionalPayoutUnits": {
+        "numerator": "12000",
+        "denominator": 25
+      },
+      "sha256": "1e75a238d2402f7a50ec4d4b0e4ae89af6df7124dd2c5c773c4709a988a70f65"
+    },
+    {
+      "choice": "reward",
+      "stakeUnits": 1000,
+      "outcomes": 125,
+      "wins": 65,
+      "totalNominalUnits": "125000",
+      "totalPlayerCostUnits": "0",
+      "totalReturnedUnits": "120000",
+      "nominalReturn": 0.96,
+      "nominalReturnFraction": {
+        "numerator": 24,
+        "denominator": 25
+      },
+      "rtp": null,
+      "rtpBounds": null,
+      "expectedPromotionalPayoutUnits": {
+        "numerator": "24000",
+        "denominator": 25
+      },
+      "sha256": "7b2765cb2a2855692bb8a0b6c1c95eeb0c1b50bb5dc26e65e25c0f1f216798a2"
+    },
+    {
+      "choice": "reward",
+      "stakeUnits": 2000,
+      "outcomes": 125,
+      "wins": 65,
+      "totalNominalUnits": "250000",
+      "totalPlayerCostUnits": "0",
+      "totalReturnedUnits": "240000",
+      "nominalReturn": 0.96,
+      "nominalReturnFraction": {
+        "numerator": 24,
+        "denominator": 25
+      },
+      "rtp": null,
+      "rtpBounds": null,
+      "expectedPromotionalPayoutUnits": {
+        "numerator": "48000",
+        "denominator": 25
+      },
+      "sha256": "6803394e5a8dd99f60abf621681b5d96f82c1298528a35f36fba62db215e77a9"
+    },
+    {
+      "choice": "reward",
+      "stakeUnits": 5000,
+      "outcomes": 125,
+      "wins": 65,
+      "totalNominalUnits": "625000",
+      "totalPlayerCostUnits": "0",
+      "totalReturnedUnits": "600000",
+      "nominalReturn": 0.96,
+      "nominalReturnFraction": {
+        "numerator": 24,
+        "denominator": 25
+      },
+      "rtp": null,
+      "rtpBounds": null,
+      "expectedPromotionalPayoutUnits": {
+        "numerator": "120000",
+        "denominator": 25
+      },
+      "sha256": "aba62d7b27b017a9d7fc9c5d28e5556ce95a4685f036d3a38b3ec59589a85718"
     }
   ],
   "integerBoundaries": [
@@ -240,11 +347,11 @@
     }
   ],
   "program": {
-    "version": "location-levels-v1",
-    "maxPromotionCostBasisPoints": 100,
-    "scope": "Expected full redemption of every issued reward from level 1, divided by cumulative qualified turnover. This business budget is not casino profit or the combined RTP of legacy games.",
+    "version": "location-levels-v2",
+    "maxPromotionCostBasisPoints": 400,
+    "scope": "Expected full redemption payout of spins only from level 1, divided by qualified turnover. Skin generation provider costs are excluded and must be measured separately. This budget is not casino profit or combined RTP.",
     "definition": {
-      "version": "location-levels-v1",
+      "version": "location-levels-v2",
       "coefficients": {
         "paid-game": {
           "numerator": 1,
@@ -276,10 +383,21 @@
           "level": 5,
           "xp": "6596",
           "reward": {
-            "kind": "free_spins",
-            "gameId": "royal-coins",
-            "count": 5,
-            "stakeUnits": "100000"
+            "kind": "bundle",
+            "rewards": [
+              {
+                "kind": "free_spins",
+                "gameId": "royal-coins",
+                "count": 5,
+                "stakeUnits": "500000"
+              },
+              {
+                "kind": "skin_generation",
+                "count": 1,
+                "theme": "south-park",
+                "variantCount": 2
+              }
+            ]
           }
         },
         {
@@ -302,10 +420,21 @@
           "level": 10,
           "xp": "75132",
           "reward": {
-            "kind": "free_spins",
-            "gameId": "royal-fruits",
-            "count": 5,
-            "stakeUnits": "100000"
+            "kind": "bundle",
+            "rewards": [
+              {
+                "kind": "free_spins",
+                "gameId": "royal-fruits",
+                "count": 5,
+                "stakeUnits": "1000000"
+              },
+              {
+                "kind": "skin_generation",
+                "count": 1,
+                "theme": "south-park",
+                "variantCount": 2
+              }
+            ]
           }
         },
         {
@@ -328,10 +457,21 @@
           "level": 15,
           "xp": "282800",
           "reward": {
-            "kind": "free_spins",
-            "gameId": "royal-coins",
-            "count": 5,
-            "stakeUnits": "100000"
+            "kind": "bundle",
+            "rewards": [
+              {
+                "kind": "free_spins",
+                "gameId": "royal-coins",
+                "count": 5,
+                "stakeUnits": "2000000"
+              },
+              {
+                "kind": "skin_generation",
+                "count": 1,
+                "theme": "south-park",
+                "variantCount": 2
+              }
+            ]
           }
         },
         {
@@ -354,10 +494,21 @@
           "level": 20,
           "xp": "706896",
           "reward": {
-            "kind": "free_spins",
-            "gameId": "royal-fruits",
-            "count": 5,
-            "stakeUnits": "100000"
+            "kind": "bundle",
+            "rewards": [
+              {
+                "kind": "free_spins",
+                "gameId": "royal-fruits",
+                "count": 5,
+                "stakeUnits": "3000000"
+              },
+              {
+                "kind": "skin_generation",
+                "count": 1,
+                "theme": "south-park",
+                "variantCount": 2
+              }
+            ]
           }
         },
         {
@@ -380,10 +531,21 @@
           "level": 25,
           "xp": "1424716",
           "reward": {
-            "kind": "free_spins",
-            "gameId": "royal-coins",
-            "count": 8,
-            "stakeUnits": "200000"
+            "kind": "bundle",
+            "rewards": [
+              {
+                "kind": "free_spins",
+                "gameId": "royal-coins",
+                "count": 8,
+                "stakeUnits": "5000000"
+              },
+              {
+                "kind": "skin_generation",
+                "count": 1,
+                "theme": "south-park",
+                "variantCount": 2
+              }
+            ]
           }
         },
         {
@@ -406,10 +568,21 @@
           "level": 30,
           "xp": "2513556",
           "reward": {
-            "kind": "free_spins",
-            "gameId": "royal-fruits",
-            "count": 8,
-            "stakeUnits": "200000"
+            "kind": "bundle",
+            "rewards": [
+              {
+                "kind": "free_spins",
+                "gameId": "royal-fruits",
+                "count": 8,
+                "stakeUnits": "5000000"
+              },
+              {
+                "kind": "skin_generation",
+                "count": 1,
+                "theme": "south-park",
+                "variantCount": 2
+              }
+            ]
           }
         },
         {
@@ -432,10 +605,21 @@
           "level": 35,
           "xp": "4050711",
           "reward": {
-            "kind": "free_spins",
-            "gameId": "royal-coins",
-            "count": 8,
-            "stakeUnits": "200000"
+            "kind": "bundle",
+            "rewards": [
+              {
+                "kind": "free_spins",
+                "gameId": "royal-coins",
+                "count": 8,
+                "stakeUnits": "5000000"
+              },
+              {
+                "kind": "skin_generation",
+                "count": 1,
+                "theme": "south-park",
+                "variantCount": 2
+              }
+            ]
           }
         },
         {
@@ -458,10 +642,21 @@
           "level": 40,
           "xp": "6113477",
           "reward": {
-            "kind": "free_spins",
-            "gameId": "royal-fruits",
-            "count": 8,
-            "stakeUnits": "200000"
+            "kind": "bundle",
+            "rewards": [
+              {
+                "kind": "free_spins",
+                "gameId": "royal-fruits",
+                "count": 8,
+                "stakeUnits": "5000000"
+              },
+              {
+                "kind": "skin_generation",
+                "count": 1,
+                "theme": "south-park",
+                "variantCount": 2
+              }
+            ]
           }
         },
         {
@@ -484,10 +679,21 @@
           "level": 45,
           "xp": "8779150",
           "reward": {
-            "kind": "free_spins",
-            "gameId": "royal-coins",
-            "count": 8,
-            "stakeUnits": "200000"
+            "kind": "bundle",
+            "rewards": [
+              {
+                "kind": "free_spins",
+                "gameId": "royal-coins",
+                "count": 8,
+                "stakeUnits": "5000000"
+              },
+              {
+                "kind": "skin_generation",
+                "count": 1,
+                "theme": "south-park",
+                "variantCount": 2
+              }
+            ]
           }
         },
         {
@@ -510,10 +716,21 @@
           "level": 50,
           "xp": "12125026",
           "reward": {
-            "kind": "free_spins",
-            "gameId": "royal-fruits",
-            "count": 12,
-            "stakeUnits": "500000"
+            "kind": "bundle",
+            "rewards": [
+              {
+                "kind": "free_spins",
+                "gameId": "royal-fruits",
+                "count": 12,
+                "stakeUnits": "10000000"
+              },
+              {
+                "kind": "skin_generation",
+                "count": 1,
+                "theme": "south-park",
+                "variantCount": 2
+              }
+            ]
           }
         },
         {
@@ -536,10 +753,21 @@
           "level": 55,
           "xp": "16228400",
           "reward": {
-            "kind": "free_spins",
-            "gameId": "royal-coins",
-            "count": 12,
-            "stakeUnits": "500000"
+            "kind": "bundle",
+            "rewards": [
+              {
+                "kind": "free_spins",
+                "gameId": "royal-coins",
+                "count": 12,
+                "stakeUnits": "10000000"
+              },
+              {
+                "kind": "skin_generation",
+                "count": 1,
+                "theme": "south-park",
+                "variantCount": 2
+              }
+            ]
           }
         },
         {
@@ -562,10 +790,21 @@
           "level": 60,
           "xp": "21166569",
           "reward": {
-            "kind": "free_spins",
-            "gameId": "royal-fruits",
-            "count": 12,
-            "stakeUnits": "500000"
+            "kind": "bundle",
+            "rewards": [
+              {
+                "kind": "free_spins",
+                "gameId": "royal-fruits",
+                "count": 12,
+                "stakeUnits": "10000000"
+              },
+              {
+                "kind": "skin_generation",
+                "count": 1,
+                "theme": "south-park",
+                "variantCount": 2
+              }
+            ]
           }
         },
         {
@@ -588,10 +827,21 @@
           "level": 65,
           "xp": "27016827",
           "reward": {
-            "kind": "free_spins",
-            "gameId": "royal-coins",
-            "count": 12,
-            "stakeUnits": "500000"
+            "kind": "bundle",
+            "rewards": [
+              {
+                "kind": "free_spins",
+                "gameId": "royal-coins",
+                "count": 12,
+                "stakeUnits": "10000000"
+              },
+              {
+                "kind": "skin_generation",
+                "count": 1,
+                "theme": "south-park",
+                "variantCount": 2
+              }
+            ]
           }
         },
         {
@@ -614,10 +864,21 @@
           "level": 70,
           "xp": "33856472",
           "reward": {
-            "kind": "free_spins",
-            "gameId": "royal-fruits",
-            "count": 12,
-            "stakeUnits": "500000"
+            "kind": "bundle",
+            "rewards": [
+              {
+                "kind": "free_spins",
+                "gameId": "royal-fruits",
+                "count": 12,
+                "stakeUnits": "10000000"
+              },
+              {
+                "kind": "skin_generation",
+                "count": 1,
+                "theme": "south-park",
+                "variantCount": 2
+              }
+            ]
           }
         },
         {
@@ -640,10 +901,21 @@
           "level": 75,
           "xp": "41762797",
           "reward": {
-            "kind": "free_spins",
-            "gameId": "royal-coins",
-            "count": 20,
-            "stakeUnits": "1000000"
+            "kind": "bundle",
+            "rewards": [
+              {
+                "kind": "free_spins",
+                "gameId": "royal-coins",
+                "count": 20,
+                "stakeUnits": "20000000"
+              },
+              {
+                "kind": "skin_generation",
+                "count": 1,
+                "theme": "south-park",
+                "variantCount": 2
+              }
+            ]
           }
         },
         {
@@ -666,10 +938,21 @@
           "level": 80,
           "xp": "50813100",
           "reward": {
-            "kind": "free_spins",
-            "gameId": "royal-fruits",
-            "count": 20,
-            "stakeUnits": "1000000"
+            "kind": "bundle",
+            "rewards": [
+              {
+                "kind": "free_spins",
+                "gameId": "royal-fruits",
+                "count": 20,
+                "stakeUnits": "20000000"
+              },
+              {
+                "kind": "skin_generation",
+                "count": 1,
+                "theme": "south-park",
+                "variantCount": 2
+              }
+            ]
           }
         },
         {
@@ -692,10 +975,21 @@
           "level": 85,
           "xp": "61084676",
           "reward": {
-            "kind": "free_spins",
-            "gameId": "royal-coins",
-            "count": 20,
-            "stakeUnits": "1000000"
+            "kind": "bundle",
+            "rewards": [
+              {
+                "kind": "free_spins",
+                "gameId": "royal-coins",
+                "count": 20,
+                "stakeUnits": "20000000"
+              },
+              {
+                "kind": "skin_generation",
+                "count": 1,
+                "theme": "south-park",
+                "variantCount": 2
+              }
+            ]
           }
         },
         {
@@ -718,10 +1012,21 @@
           "level": 90,
           "xp": "72654821",
           "reward": {
-            "kind": "free_spins",
-            "gameId": "royal-fruits",
-            "count": 20,
-            "stakeUnits": "1000000"
+            "kind": "bundle",
+            "rewards": [
+              {
+                "kind": "free_spins",
+                "gameId": "royal-fruits",
+                "count": 20,
+                "stakeUnits": "20000000"
+              },
+              {
+                "kind": "skin_generation",
+                "count": 1,
+                "theme": "south-park",
+                "variantCount": 2
+              }
+            ]
           }
         },
         {
@@ -744,10 +1049,21 @@
           "level": 95,
           "xp": "85600831",
           "reward": {
-            "kind": "free_spins",
-            "gameId": "royal-coins",
-            "count": 20,
-            "stakeUnits": "1000000"
+            "kind": "bundle",
+            "rewards": [
+              {
+                "kind": "free_spins",
+                "gameId": "royal-coins",
+                "count": 20,
+                "stakeUnits": "20000000"
+              },
+              {
+                "kind": "skin_generation",
+                "count": 1,
+                "theme": "south-park",
+                "variantCount": 2
+              }
+            ]
           }
         },
         {
@@ -770,34 +1086,59 @@
           "level": 100,
           "xp": "100000000",
           "reward": {
-            "kind": "free_spins",
-            "gameId": "royal-fruits",
-            "count": 40,
-            "stakeUnits": "2000000"
+            "kind": "bundle",
+            "rewards": [
+              {
+                "kind": "free_spins",
+                "gameId": "royal-fruits",
+                "count": 40,
+                "stakeUnits": "50000000"
+              },
+              {
+                "kind": "skin_generation",
+                "count": 1,
+                "theme": "south-park",
+                "variantCount": 2
+              }
+            ]
           }
         }
       ]
     },
+    "skinGenerations": 20,
+    "skinGenerationRetailValueUnits": "200000000",
+    "skinGenerationProviderCostUnits": null,
     "milestones": [
       {
         "level": 5,
         "thresholdXp": "6596",
         "qualifiedTurnoverUnits": "65960000",
         "reward": {
-          "kind": "free_spins",
-          "gameId": "royal-coins",
-          "count": 5,
-          "stakeUnits": "100000"
+          "kind": "bundle",
+          "rewards": [
+            {
+              "kind": "free_spins",
+              "gameId": "royal-coins",
+              "count": 5,
+              "stakeUnits": "500000"
+            },
+            {
+              "kind": "skin_generation",
+              "count": 1,
+              "theme": "south-park",
+              "variantCount": 2
+            }
+          ]
         },
         "cumulativeSpins": 5,
-        "cumulativeNominalUnits": "500000",
-        "expectedFullRedemptionPayoutUnits": "480000",
+        "cumulativeNominalUnits": "2500000",
+        "expectedFullRedemptionPayoutUnits": "2400000",
         "expectedPayoutFraction": {
-          "numerator": "48000000",
+          "numerator": "240000000",
           "denominator": 100
         },
         "costBasisPointsFraction": {
-          "numerator": "4800000000",
+          "numerator": "24000000000",
           "denominator": "65960000"
         }
       },
@@ -806,20 +1147,31 @@
         "thresholdXp": "75132",
         "qualifiedTurnoverUnits": "751320000",
         "reward": {
-          "kind": "free_spins",
-          "gameId": "royal-fruits",
-          "count": 5,
-          "stakeUnits": "100000"
+          "kind": "bundle",
+          "rewards": [
+            {
+              "kind": "free_spins",
+              "gameId": "royal-fruits",
+              "count": 5,
+              "stakeUnits": "1000000"
+            },
+            {
+              "kind": "skin_generation",
+              "count": 1,
+              "theme": "south-park",
+              "variantCount": 2
+            }
+          ]
         },
         "cumulativeSpins": 10,
-        "cumulativeNominalUnits": "1000000",
-        "expectedFullRedemptionPayoutUnits": "965000",
+        "cumulativeNominalUnits": "7500000",
+        "expectedFullRedemptionPayoutUnits": "7250000",
         "expectedPayoutFraction": {
-          "numerator": "96500000",
+          "numerator": "725000000",
           "denominator": 100
         },
         "costBasisPointsFraction": {
-          "numerator": "9650000000",
+          "numerator": "72500000000",
           "denominator": "751320000"
         }
       },
@@ -828,20 +1180,31 @@
         "thresholdXp": "282800",
         "qualifiedTurnoverUnits": "2828000000",
         "reward": {
-          "kind": "free_spins",
-          "gameId": "royal-coins",
-          "count": 5,
-          "stakeUnits": "100000"
+          "kind": "bundle",
+          "rewards": [
+            {
+              "kind": "free_spins",
+              "gameId": "royal-coins",
+              "count": 5,
+              "stakeUnits": "2000000"
+            },
+            {
+              "kind": "skin_generation",
+              "count": 1,
+              "theme": "south-park",
+              "variantCount": 2
+            }
+          ]
         },
         "cumulativeSpins": 15,
-        "cumulativeNominalUnits": "1500000",
-        "expectedFullRedemptionPayoutUnits": "1445000",
+        "cumulativeNominalUnits": "17500000",
+        "expectedFullRedemptionPayoutUnits": "16850000",
         "expectedPayoutFraction": {
-          "numerator": "144500000",
+          "numerator": "1685000000",
           "denominator": 100
         },
         "costBasisPointsFraction": {
-          "numerator": "14450000000",
+          "numerator": "168500000000",
           "denominator": "2828000000"
         }
       },
@@ -850,20 +1213,31 @@
         "thresholdXp": "706896",
         "qualifiedTurnoverUnits": "7068960000",
         "reward": {
-          "kind": "free_spins",
-          "gameId": "royal-fruits",
-          "count": 5,
-          "stakeUnits": "100000"
+          "kind": "bundle",
+          "rewards": [
+            {
+              "kind": "free_spins",
+              "gameId": "royal-fruits",
+              "count": 5,
+              "stakeUnits": "3000000"
+            },
+            {
+              "kind": "skin_generation",
+              "count": 1,
+              "theme": "south-park",
+              "variantCount": 2
+            }
+          ]
         },
         "cumulativeSpins": 20,
-        "cumulativeNominalUnits": "2000000",
-        "expectedFullRedemptionPayoutUnits": "1930000",
+        "cumulativeNominalUnits": "32500000",
+        "expectedFullRedemptionPayoutUnits": "31400000",
         "expectedPayoutFraction": {
-          "numerator": "193000000",
+          "numerator": "3140000000",
           "denominator": 100
         },
         "costBasisPointsFraction": {
-          "numerator": "19300000000",
+          "numerator": "314000000000",
           "denominator": "7068960000"
         }
       },
@@ -872,20 +1246,31 @@
         "thresholdXp": "1424716",
         "qualifiedTurnoverUnits": "14247160000",
         "reward": {
-          "kind": "free_spins",
-          "gameId": "royal-coins",
-          "count": 8,
-          "stakeUnits": "200000"
+          "kind": "bundle",
+          "rewards": [
+            {
+              "kind": "free_spins",
+              "gameId": "royal-coins",
+              "count": 8,
+              "stakeUnits": "5000000"
+            },
+            {
+              "kind": "skin_generation",
+              "count": 1,
+              "theme": "south-park",
+              "variantCount": 2
+            }
+          ]
         },
         "cumulativeSpins": 28,
-        "cumulativeNominalUnits": "3600000",
-        "expectedFullRedemptionPayoutUnits": "3466000",
+        "cumulativeNominalUnits": "72500000",
+        "expectedFullRedemptionPayoutUnits": "69800000",
         "expectedPayoutFraction": {
-          "numerator": "346600000",
+          "numerator": "6980000000",
           "denominator": 100
         },
         "costBasisPointsFraction": {
-          "numerator": "34660000000",
+          "numerator": "698000000000",
           "denominator": "14247160000"
         }
       },
@@ -894,20 +1279,31 @@
         "thresholdXp": "2513556",
         "qualifiedTurnoverUnits": "25135560000",
         "reward": {
-          "kind": "free_spins",
-          "gameId": "royal-fruits",
-          "count": 8,
-          "stakeUnits": "200000"
+          "kind": "bundle",
+          "rewards": [
+            {
+              "kind": "free_spins",
+              "gameId": "royal-fruits",
+              "count": 8,
+              "stakeUnits": "5000000"
+            },
+            {
+              "kind": "skin_generation",
+              "count": 1,
+              "theme": "south-park",
+              "variantCount": 2
+            }
+          ]
         },
         "cumulativeSpins": 36,
-        "cumulativeNominalUnits": "5200000",
-        "expectedFullRedemptionPayoutUnits": "5018000",
+        "cumulativeNominalUnits": "112500000",
+        "expectedFullRedemptionPayoutUnits": "108600000",
         "expectedPayoutFraction": {
-          "numerator": "501800000",
+          "numerator": "10860000000",
           "denominator": 100
         },
         "costBasisPointsFraction": {
-          "numerator": "50180000000",
+          "numerator": "1086000000000",
           "denominator": "25135560000"
         }
       },
@@ -916,20 +1312,31 @@
         "thresholdXp": "4050711",
         "qualifiedTurnoverUnits": "40507110000",
         "reward": {
-          "kind": "free_spins",
-          "gameId": "royal-coins",
-          "count": 8,
-          "stakeUnits": "200000"
+          "kind": "bundle",
+          "rewards": [
+            {
+              "kind": "free_spins",
+              "gameId": "royal-coins",
+              "count": 8,
+              "stakeUnits": "5000000"
+            },
+            {
+              "kind": "skin_generation",
+              "count": 1,
+              "theme": "south-park",
+              "variantCount": 2
+            }
+          ]
         },
         "cumulativeSpins": 44,
-        "cumulativeNominalUnits": "6800000",
-        "expectedFullRedemptionPayoutUnits": "6554000",
+        "cumulativeNominalUnits": "152500000",
+        "expectedFullRedemptionPayoutUnits": "147000000",
         "expectedPayoutFraction": {
-          "numerator": "655400000",
+          "numerator": "14700000000",
           "denominator": 100
         },
         "costBasisPointsFraction": {
-          "numerator": "65540000000",
+          "numerator": "1470000000000",
           "denominator": "40507110000"
         }
       },
@@ -938,20 +1345,31 @@
         "thresholdXp": "6113477",
         "qualifiedTurnoverUnits": "61134770000",
         "reward": {
-          "kind": "free_spins",
-          "gameId": "royal-fruits",
-          "count": 8,
-          "stakeUnits": "200000"
+          "kind": "bundle",
+          "rewards": [
+            {
+              "kind": "free_spins",
+              "gameId": "royal-fruits",
+              "count": 8,
+              "stakeUnits": "5000000"
+            },
+            {
+              "kind": "skin_generation",
+              "count": 1,
+              "theme": "south-park",
+              "variantCount": 2
+            }
+          ]
         },
         "cumulativeSpins": 52,
-        "cumulativeNominalUnits": "8400000",
-        "expectedFullRedemptionPayoutUnits": "8106000",
+        "cumulativeNominalUnits": "192500000",
+        "expectedFullRedemptionPayoutUnits": "185800000",
         "expectedPayoutFraction": {
-          "numerator": "810600000",
+          "numerator": "18580000000",
           "denominator": 100
         },
         "costBasisPointsFraction": {
-          "numerator": "81060000000",
+          "numerator": "1858000000000",
           "denominator": "61134770000"
         }
       },
@@ -960,20 +1378,31 @@
         "thresholdXp": "8779150",
         "qualifiedTurnoverUnits": "87791500000",
         "reward": {
-          "kind": "free_spins",
-          "gameId": "royal-coins",
-          "count": 8,
-          "stakeUnits": "200000"
+          "kind": "bundle",
+          "rewards": [
+            {
+              "kind": "free_spins",
+              "gameId": "royal-coins",
+              "count": 8,
+              "stakeUnits": "5000000"
+            },
+            {
+              "kind": "skin_generation",
+              "count": 1,
+              "theme": "south-park",
+              "variantCount": 2
+            }
+          ]
         },
         "cumulativeSpins": 60,
-        "cumulativeNominalUnits": "10000000",
-        "expectedFullRedemptionPayoutUnits": "9642000",
+        "cumulativeNominalUnits": "232500000",
+        "expectedFullRedemptionPayoutUnits": "224200000",
         "expectedPayoutFraction": {
-          "numerator": "964200000",
+          "numerator": "22420000000",
           "denominator": 100
         },
         "costBasisPointsFraction": {
-          "numerator": "96420000000",
+          "numerator": "2242000000000",
           "denominator": "87791500000"
         }
       },
@@ -982,20 +1411,31 @@
         "thresholdXp": "12125026",
         "qualifiedTurnoverUnits": "121250260000",
         "reward": {
-          "kind": "free_spins",
-          "gameId": "royal-fruits",
-          "count": 12,
-          "stakeUnits": "500000"
+          "kind": "bundle",
+          "rewards": [
+            {
+              "kind": "free_spins",
+              "gameId": "royal-fruits",
+              "count": 12,
+              "stakeUnits": "10000000"
+            },
+            {
+              "kind": "skin_generation",
+              "count": 1,
+              "theme": "south-park",
+              "variantCount": 2
+            }
+          ]
         },
         "cumulativeSpins": 72,
-        "cumulativeNominalUnits": "16000000",
-        "expectedFullRedemptionPayoutUnits": "15462000",
+        "cumulativeNominalUnits": "352500000",
+        "expectedFullRedemptionPayoutUnits": "340600000",
         "expectedPayoutFraction": {
-          "numerator": "1546200000",
+          "numerator": "34060000000",
           "denominator": 100
         },
         "costBasisPointsFraction": {
-          "numerator": "154620000000",
+          "numerator": "3406000000000",
           "denominator": "121250260000"
         }
       },
@@ -1004,20 +1444,31 @@
         "thresholdXp": "16228400",
         "qualifiedTurnoverUnits": "162284000000",
         "reward": {
-          "kind": "free_spins",
-          "gameId": "royal-coins",
-          "count": 12,
-          "stakeUnits": "500000"
+          "kind": "bundle",
+          "rewards": [
+            {
+              "kind": "free_spins",
+              "gameId": "royal-coins",
+              "count": 12,
+              "stakeUnits": "10000000"
+            },
+            {
+              "kind": "skin_generation",
+              "count": 1,
+              "theme": "south-park",
+              "variantCount": 2
+            }
+          ]
         },
         "cumulativeSpins": 84,
-        "cumulativeNominalUnits": "22000000",
-        "expectedFullRedemptionPayoutUnits": "21222000",
+        "cumulativeNominalUnits": "472500000",
+        "expectedFullRedemptionPayoutUnits": "455800000",
         "expectedPayoutFraction": {
-          "numerator": "2122200000",
+          "numerator": "45580000000",
           "denominator": 100
         },
         "costBasisPointsFraction": {
-          "numerator": "212220000000",
+          "numerator": "4558000000000",
           "denominator": "162284000000"
         }
       },
@@ -1026,20 +1477,31 @@
         "thresholdXp": "21166569",
         "qualifiedTurnoverUnits": "211665690000",
         "reward": {
-          "kind": "free_spins",
-          "gameId": "royal-fruits",
-          "count": 12,
-          "stakeUnits": "500000"
+          "kind": "bundle",
+          "rewards": [
+            {
+              "kind": "free_spins",
+              "gameId": "royal-fruits",
+              "count": 12,
+              "stakeUnits": "10000000"
+            },
+            {
+              "kind": "skin_generation",
+              "count": 1,
+              "theme": "south-park",
+              "variantCount": 2
+            }
+          ]
         },
         "cumulativeSpins": 96,
-        "cumulativeNominalUnits": "28000000",
-        "expectedFullRedemptionPayoutUnits": "27042000",
+        "cumulativeNominalUnits": "592500000",
+        "expectedFullRedemptionPayoutUnits": "572200000",
         "expectedPayoutFraction": {
-          "numerator": "2704200000",
+          "numerator": "57220000000",
           "denominator": 100
         },
         "costBasisPointsFraction": {
-          "numerator": "270420000000",
+          "numerator": "5722000000000",
           "denominator": "211665690000"
         }
       },
@@ -1048,20 +1510,31 @@
         "thresholdXp": "27016827",
         "qualifiedTurnoverUnits": "270168270000",
         "reward": {
-          "kind": "free_spins",
-          "gameId": "royal-coins",
-          "count": 12,
-          "stakeUnits": "500000"
+          "kind": "bundle",
+          "rewards": [
+            {
+              "kind": "free_spins",
+              "gameId": "royal-coins",
+              "count": 12,
+              "stakeUnits": "10000000"
+            },
+            {
+              "kind": "skin_generation",
+              "count": 1,
+              "theme": "south-park",
+              "variantCount": 2
+            }
+          ]
         },
         "cumulativeSpins": 108,
-        "cumulativeNominalUnits": "34000000",
-        "expectedFullRedemptionPayoutUnits": "32802000",
+        "cumulativeNominalUnits": "712500000",
+        "expectedFullRedemptionPayoutUnits": "687400000",
         "expectedPayoutFraction": {
-          "numerator": "3280200000",
+          "numerator": "68740000000",
           "denominator": 100
         },
         "costBasisPointsFraction": {
-          "numerator": "328020000000",
+          "numerator": "6874000000000",
           "denominator": "270168270000"
         }
       },
@@ -1070,20 +1543,31 @@
         "thresholdXp": "33856472",
         "qualifiedTurnoverUnits": "338564720000",
         "reward": {
-          "kind": "free_spins",
-          "gameId": "royal-fruits",
-          "count": 12,
-          "stakeUnits": "500000"
+          "kind": "bundle",
+          "rewards": [
+            {
+              "kind": "free_spins",
+              "gameId": "royal-fruits",
+              "count": 12,
+              "stakeUnits": "10000000"
+            },
+            {
+              "kind": "skin_generation",
+              "count": 1,
+              "theme": "south-park",
+              "variantCount": 2
+            }
+          ]
         },
         "cumulativeSpins": 120,
-        "cumulativeNominalUnits": "40000000",
-        "expectedFullRedemptionPayoutUnits": "38622000",
+        "cumulativeNominalUnits": "832500000",
+        "expectedFullRedemptionPayoutUnits": "803800000",
         "expectedPayoutFraction": {
-          "numerator": "3862200000",
+          "numerator": "80380000000",
           "denominator": 100
         },
         "costBasisPointsFraction": {
-          "numerator": "386220000000",
+          "numerator": "8038000000000",
           "denominator": "338564720000"
         }
       },
@@ -1092,20 +1576,31 @@
         "thresholdXp": "41762797",
         "qualifiedTurnoverUnits": "417627970000",
         "reward": {
-          "kind": "free_spins",
-          "gameId": "royal-coins",
-          "count": 20,
-          "stakeUnits": "1000000"
+          "kind": "bundle",
+          "rewards": [
+            {
+              "kind": "free_spins",
+              "gameId": "royal-coins",
+              "count": 20,
+              "stakeUnits": "20000000"
+            },
+            {
+              "kind": "skin_generation",
+              "count": 1,
+              "theme": "south-park",
+              "variantCount": 2
+            }
+          ]
         },
         "cumulativeSpins": 140,
-        "cumulativeNominalUnits": "60000000",
-        "expectedFullRedemptionPayoutUnits": "57822000",
+        "cumulativeNominalUnits": "1232500000",
+        "expectedFullRedemptionPayoutUnits": "1187800000",
         "expectedPayoutFraction": {
-          "numerator": "5782200000",
+          "numerator": "118780000000",
           "denominator": 100
         },
         "costBasisPointsFraction": {
-          "numerator": "578220000000",
+          "numerator": "11878000000000",
           "denominator": "417627970000"
         }
       },
@@ -1114,20 +1609,31 @@
         "thresholdXp": "50813100",
         "qualifiedTurnoverUnits": "508131000000",
         "reward": {
-          "kind": "free_spins",
-          "gameId": "royal-fruits",
-          "count": 20,
-          "stakeUnits": "1000000"
+          "kind": "bundle",
+          "rewards": [
+            {
+              "kind": "free_spins",
+              "gameId": "royal-fruits",
+              "count": 20,
+              "stakeUnits": "20000000"
+            },
+            {
+              "kind": "skin_generation",
+              "count": 1,
+              "theme": "south-park",
+              "variantCount": 2
+            }
+          ]
         },
         "cumulativeSpins": 160,
-        "cumulativeNominalUnits": "80000000",
-        "expectedFullRedemptionPayoutUnits": "77222000",
+        "cumulativeNominalUnits": "1632500000",
+        "expectedFullRedemptionPayoutUnits": "1575800000",
         "expectedPayoutFraction": {
-          "numerator": "7722200000",
+          "numerator": "157580000000",
           "denominator": 100
         },
         "costBasisPointsFraction": {
-          "numerator": "772220000000",
+          "numerator": "15758000000000",
           "denominator": "508131000000"
         }
       },
@@ -1136,20 +1642,31 @@
         "thresholdXp": "61084676",
         "qualifiedTurnoverUnits": "610846760000",
         "reward": {
-          "kind": "free_spins",
-          "gameId": "royal-coins",
-          "count": 20,
-          "stakeUnits": "1000000"
+          "kind": "bundle",
+          "rewards": [
+            {
+              "kind": "free_spins",
+              "gameId": "royal-coins",
+              "count": 20,
+              "stakeUnits": "20000000"
+            },
+            {
+              "kind": "skin_generation",
+              "count": 1,
+              "theme": "south-park",
+              "variantCount": 2
+            }
+          ]
         },
         "cumulativeSpins": 180,
-        "cumulativeNominalUnits": "100000000",
-        "expectedFullRedemptionPayoutUnits": "96422000",
+        "cumulativeNominalUnits": "2032500000",
+        "expectedFullRedemptionPayoutUnits": "1959800000",
         "expectedPayoutFraction": {
-          "numerator": "9642200000",
+          "numerator": "195980000000",
           "denominator": 100
         },
         "costBasisPointsFraction": {
-          "numerator": "964220000000",
+          "numerator": "19598000000000",
           "denominator": "610846760000"
         }
       },
@@ -1158,20 +1675,31 @@
         "thresholdXp": "72654821",
         "qualifiedTurnoverUnits": "726548210000",
         "reward": {
-          "kind": "free_spins",
-          "gameId": "royal-fruits",
-          "count": 20,
-          "stakeUnits": "1000000"
+          "kind": "bundle",
+          "rewards": [
+            {
+              "kind": "free_spins",
+              "gameId": "royal-fruits",
+              "count": 20,
+              "stakeUnits": "20000000"
+            },
+            {
+              "kind": "skin_generation",
+              "count": 1,
+              "theme": "south-park",
+              "variantCount": 2
+            }
+          ]
         },
         "cumulativeSpins": 200,
-        "cumulativeNominalUnits": "120000000",
-        "expectedFullRedemptionPayoutUnits": "115822000",
+        "cumulativeNominalUnits": "2432500000",
+        "expectedFullRedemptionPayoutUnits": "2347800000",
         "expectedPayoutFraction": {
-          "numerator": "11582200000",
+          "numerator": "234780000000",
           "denominator": 100
         },
         "costBasisPointsFraction": {
-          "numerator": "1158220000000",
+          "numerator": "23478000000000",
           "denominator": "726548210000"
         }
       },
@@ -1180,20 +1708,31 @@
         "thresholdXp": "85600831",
         "qualifiedTurnoverUnits": "856008310000",
         "reward": {
-          "kind": "free_spins",
-          "gameId": "royal-coins",
-          "count": 20,
-          "stakeUnits": "1000000"
+          "kind": "bundle",
+          "rewards": [
+            {
+              "kind": "free_spins",
+              "gameId": "royal-coins",
+              "count": 20,
+              "stakeUnits": "20000000"
+            },
+            {
+              "kind": "skin_generation",
+              "count": 1,
+              "theme": "south-park",
+              "variantCount": 2
+            }
+          ]
         },
         "cumulativeSpins": 220,
-        "cumulativeNominalUnits": "140000000",
-        "expectedFullRedemptionPayoutUnits": "135022000",
+        "cumulativeNominalUnits": "2832500000",
+        "expectedFullRedemptionPayoutUnits": "2731800000",
         "expectedPayoutFraction": {
-          "numerator": "13502200000",
+          "numerator": "273180000000",
           "denominator": 100
         },
         "costBasisPointsFraction": {
-          "numerator": "1350220000000",
+          "numerator": "27318000000000",
           "denominator": "856008310000"
         }
       },
@@ -1202,27 +1741,38 @@
         "thresholdXp": "100000000",
         "qualifiedTurnoverUnits": "1000000000000",
         "reward": {
-          "kind": "free_spins",
-          "gameId": "royal-fruits",
-          "count": 40,
-          "stakeUnits": "2000000"
+          "kind": "bundle",
+          "rewards": [
+            {
+              "kind": "free_spins",
+              "gameId": "royal-fruits",
+              "count": 40,
+              "stakeUnits": "50000000"
+            },
+            {
+              "kind": "skin_generation",
+              "count": 1,
+              "theme": "south-park",
+              "variantCount": 2
+            }
+          ]
         },
         "cumulativeSpins": 260,
-        "cumulativeNominalUnits": "220000000",
-        "expectedFullRedemptionPayoutUnits": "212622000",
+        "cumulativeNominalUnits": "4832500000",
+        "expectedFullRedemptionPayoutUnits": "4671800000",
         "expectedPayoutFraction": {
-          "numerator": "21262200000",
+          "numerator": "467180000000",
           "denominator": 100
         },
         "costBasisPointsFraction": {
-          "numerator": "2126220000000",
+          "numerator": "46718000000000",
           "denominator": "1000000000000"
         }
       }
     ],
     "totalSpins": 260,
-    "totalNominalUnits": "220000000",
-    "expectedFullRedemptionPayoutUnits": "212622000"
+    "totalNominalUnits": "4832500000",
+    "expectedFullRedemptionPayoutUnits": "4671800000"
   },
   "serverReplay": [
     {
@@ -1384,6 +1934,96 @@
           "seed": 934537,
           "rounds": 64,
           "sha256": "5753b563e45f55744ebf87062eac0b1f61ca99737bfb14fcfd04ea5c54c1fa3c"
+        }
+      ]
+    },
+    {
+      "choice": "reward",
+      "stakeUnits": 300,
+      "exhaustiveOutcomes": 125,
+      "sha256": "d2440c7f403d66229bff80d0224a2d18cff58e610c3f175eee556d5bc1585f51",
+      "streams": [
+        {
+          "seed": 743147,
+          "rounds": 64,
+          "sha256": "d1b3133230e0d6ef6349425e1cb4659e3bebe364305f2c20411963f9e246788a"
+        },
+        {
+          "seed": 934537,
+          "rounds": 64,
+          "sha256": "8f1695053779a2d7bd3132b1455d2a382cbcab0d8e18e5b5f1b2ea92be491885"
+        }
+      ]
+    },
+    {
+      "choice": "reward",
+      "stakeUnits": 500,
+      "exhaustiveOutcomes": 125,
+      "sha256": "1e75a238d2402f7a50ec4d4b0e4ae89af6df7124dd2c5c773c4709a988a70f65",
+      "streams": [
+        {
+          "seed": 743147,
+          "rounds": 64,
+          "sha256": "5c7d4b89d44ad5e7d8e9fdde6ad02a804578d371ade2a3d2ee8709a36cc06c0e"
+        },
+        {
+          "seed": 934537,
+          "rounds": 64,
+          "sha256": "8d5faf0b9570ff6d02766462390578ccdeb90f9c63c07b08ce73e791ed70051e"
+        }
+      ]
+    },
+    {
+      "choice": "reward",
+      "stakeUnits": 1000,
+      "exhaustiveOutcomes": 125,
+      "sha256": "7b2765cb2a2855692bb8a0b6c1c95eeb0c1b50bb5dc26e65e25c0f1f216798a2",
+      "streams": [
+        {
+          "seed": 743147,
+          "rounds": 64,
+          "sha256": "64c449f8dabdd0e05a02a1c6eed15aa654b90d011f5769c6938920c995cb4cc9"
+        },
+        {
+          "seed": 934537,
+          "rounds": 64,
+          "sha256": "6204b6d4634d6bebd6805b96f2d27e45be786939846f80773a09b42d07ee02a5"
+        }
+      ]
+    },
+    {
+      "choice": "reward",
+      "stakeUnits": 2000,
+      "exhaustiveOutcomes": 125,
+      "sha256": "6803394e5a8dd99f60abf621681b5d96f82c1298528a35f36fba62db215e77a9",
+      "streams": [
+        {
+          "seed": 743147,
+          "rounds": 64,
+          "sha256": "9eb50e3b8a29ba5a2fe784c02487fd624e329ec2b5e1142ea8ceaf026f9b9843"
+        },
+        {
+          "seed": 934537,
+          "rounds": 64,
+          "sha256": "e74e00fb82bbcdeed63c257d2d478f6264921ce7e4dfcdbb70794961c98ece16"
+        }
+      ]
+    },
+    {
+      "choice": "reward",
+      "stakeUnits": 5000,
+      "exhaustiveOutcomes": 125,
+      "sha256": "aba62d7b27b017a9d7fc9c5d28e5556ce95a4685f036d3a38b3ec59589a85718",
+      "streams": [
+        {
+          "seed": 743147,
+          "rounds": 64,
+          "sha256": "4d54e00ff5991cc7d85670ec1c9550e73f84e14db2aa046c455a1699249f4295"
+        },
+        {
+          "seed": 934537,
+          "rounds": 64,
+          "sha256": "4d5f6567b7de6f3eb42cfef0d2029b6bf89864fcdfa7d7bbb0c9df125b2003ff"
         }
       ]
     }

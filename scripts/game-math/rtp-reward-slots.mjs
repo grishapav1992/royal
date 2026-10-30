@@ -4,7 +4,7 @@ import { createHash } from 'node:crypto';
 export const REWARD_SLOTS_METHOD = 'exact-paid-and-reward-slots-v1';
 export const REWARD_SLOT_GAMES = ['royal-coins', 'royal-fruits'];
 const paidStakes = [1000, 5000, 10000, 50000];
-const rewardStakes = [10, 20, 50, 100, 200];
+const rewardStakes = [10, 20, 50, 100, 200, 300, 500, 1000, 2000, 5000];
 const digest = () => createHash('sha256');
 
 // This reference does not import production symbol weights, tables, scoring or settlement helpers.
@@ -38,10 +38,10 @@ function stream(gameId, row, seed, rounds, visit) {
   return { seed, rounds, sha256: hash.digest('hex') };
 }
 
-/** Independent v1 business budget. This does not qualify the RTP of games earning the XP. */
+/** Independent v2 spin budget. Skin provider costs are separate from the retail value of a generation. */
 export function promotionProgramEvidence(policy) {
-  assert.equal(policy.promotionProgramVersion, 'location-levels-v1');
-  assert.equal(policy.maxPromotionCostBasisPoints, 100, 'The reviewed cumulative promotion budget is fixed at 1%');
+  assert.equal(policy.promotionProgramVersion, 'location-levels-v2');
+  assert.equal(policy.maxPromotionCostBasisPoints, 400, 'The configured cumulative spin budget is 4%');
   const milestones = [], levels = [];
   let spins = 0, nominal = 0n, expectedHundredths = 0n;
   for (let level = 1; level <= 100; level++) {
@@ -49,9 +49,11 @@ export function promotionProgramEvidence(policy) {
     let reward;
     if (level % 5 === 0) {
       const count = level === 100 ? 40 : level >= 75 ? 20 : level >= 50 ? 12 : level >= 25 ? 8 : 5;
-      const stakeUnits = level === 100 ? '2000000' : level >= 75 ? '1000000' : level >= 50 ? '500000' : level >= 25 ? '200000' : '100000';
+      const stakeUnits = level === 100 ? '50000000' : level >= 75 ? '20000000' : level >= 50 ? '10000000' : level >= 25 ? '5000000'
+        : level === 20 ? '3000000' : level === 15 ? '2000000' : level === 10 ? '1000000' : '500000';
       const gameId = level % 10 === 0 ? 'royal-fruits' : 'royal-coins';
-      reward = { kind: 'free_spins', gameId, count, stakeUnits };
+      reward = { kind: 'bundle', rewards: [{ kind: 'free_spins', gameId, count, stakeUnits },
+        { kind: 'skin_generation', count: 1, theme: 'south-park', variantCount: 2 }] };
       spins += count; nominal += BigInt(count) * BigInt(stakeUnits);
       expectedHundredths += BigInt(count) * BigInt(stakeUnits) * (gameId === 'royal-coins' ? 96n : 97n);
       const turnover = threshold * 10000n;
@@ -65,15 +67,16 @@ export function promotionProgramEvidence(policy) {
     }
     levels.push({ level, xp: String(threshold), ...(reward ? { reward } : {}) });
   }
-  assert.equal(spins, 260); assert.equal(nominal, 220000000n); assert.equal(expectedHundredths, 21262200000n);
-  return { version: 'location-levels-v1', maxPromotionCostBasisPoints: 100,
-    scope: 'Expected full redemption of every issued reward from level 1, divided by cumulative qualified turnover. This business budget is not casino profit or the combined RTP of legacy games.',
-    definition: { version: 'location-levels-v1', coefficients: { 'paid-game': { numerator: 1, denominator: 1 }, pvp: { numerator: 1, denominator: 1 } }, levels },
+  assert.equal(spins, 260); assert.equal(nominal, 4832500000n);
+  return { version: 'location-levels-v2', maxPromotionCostBasisPoints: 400,
+    scope: 'Expected full redemption payout of spins only from level 1, divided by qualified turnover. Skin generation provider costs are excluded and must be measured separately. This budget is not casino profit or combined RTP.',
+    definition: { version: 'location-levels-v2', coefficients: { 'paid-game': { numerator: 1, denominator: 1 }, pvp: { numerator: 1, denominator: 1 } }, levels },
+    skinGenerations:20,skinGenerationRetailValueUnits:'200000000',skinGenerationProviderCostUnits:null,
     milestones, totalSpins: spins, totalNominalUnits: String(nominal), expectedFullRedemptionPayoutUnits: String(expectedHundredths / 100n) };
 }
 export function validatePromotionDefinition(policy, definition) {
   assert.deepEqual(definition, promotionProgramEvidence(policy).definition,
-    'The default level, source or reward program differs from its independent reviewed v1 model');
+    'The default level, source or reward program differs from its independent v2 model');
 }
 
 function policyChecks(gameId, policy) {
@@ -132,11 +135,11 @@ export async function qualifyRewardSlots(gameId, policy) {
   const evidence = rewardSlotEvidence(gameId, policy), s = spec(gameId);
   const { prepareGame, verifyGameRound } = await import('../../server/games/core.ts');
   const { DEMO_BETS } = await import('../../src/shared/demoWallet.ts');
-  const { DEFAULT_PROGRESSION_POLICY } = await import('../../src/shared/progression.ts');
+  const { DEFAULT_PROGRESSION_POLICY, rewardLeaves } = await import('../../src/shared/progression.ts');
   validatePromotionDefinition(policy, DEFAULT_PROGRESSION_POLICY);
   assert.deepEqual(DEMO_BETS.map(amount => amount * 100), policy.paidStakes, 'Every allowed paid wallet stake must be qualified');
-  for (const level of DEFAULT_PROGRESSION_POLICY.levels) if (level.reward?.gameId === gameId) {
-    const micro = BigInt(level.reward.stakeUnits);
+  for (const level of DEFAULT_PROGRESSION_POLICY.levels) for(const reward of level.reward?rewardLeaves(level.reward):[]) if (reward.kind==='free_spins' && reward.gameId === gameId) {
+    const micro = BigInt(reward.stakeUnits);
     assert.equal(micro % 10000n, 0n); assert(policy.rewardStakes.includes(Number(micro / 10000n)), 'Every configured reward nominal must be qualified');
   }
   const game = prepareGame(gameId, 1, {}), serverReplay = [];

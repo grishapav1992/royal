@@ -2,7 +2,7 @@ import { randomUUID, createHash } from 'node:crypto';
 import type { PostgresDatabase, DatabaseRow } from '../database';
 import { isDeepStrictEqual } from 'node:util';
 import { DEFAULT_PROGRESSION_HANDLERS, type ExperienceHandler, type MilestoneClaim, type ProgressionHandlers, type RewardHandler } from './handlers';
-import { DEFAULT_PROGRESSION_POLICY, PROGRESSION_CURRENCY, PROGRESSION_LOCATION, type ExperienceSource, type FreeSpinReward, type ProgressionReward, type ProgressionPolicy, type ProgressionSnapshot } from '../../src/shared/progression';
+import { DEFAULT_PROGRESSION_POLICY, PROGRESSION_CURRENCY, PROGRESSION_LOCATION, type ExperienceSource, type LevelReward, type ProgressionReward, type ProgressionPolicy, type ProgressionSnapshot } from '../../src/shared/progression';
 
 export type RoundContext<S extends string = ExperienceSource> = { sourceType: S; sourceId: string; accountId: string; locationId: string; gameId: string;
   environment: string; fundingSource: S extends ExperienceSource ? 'cash' | 'reward' : string; acceptedAt: number; policyVersion?: string };
@@ -11,7 +11,7 @@ export type SettledExperience<S extends string = ExperienceSource> = { sourceTyp
 const units = (v: unknown): v is string => typeof v === 'string' && /^(0|[1-9]\d{0,29})$/.test(v);
 const scopeKey = (e: string, l: string) => e + ':' + l;
 const key = (c: Pick<RoundContext<string>, 'sourceType' | 'sourceId' | 'accountId'>) => createHash('sha256').update(JSON.stringify([c.sourceType,c.sourceId,c.accountId])).digest('hex');
-export class ProgressionStore<S extends string = ExperienceSource, R extends ProgressionReward = FreeSpinReward> {
+export class ProgressionStore<S extends string = ExperienceSource, R extends ProgressionReward = LevelReward> {
   readonly ready: Promise<void>;
   readonly policy: ProgressionPolicy<S,R>;
   private handlers: ProgressionHandlers<S,R>;
@@ -65,11 +65,15 @@ export class ProgressionStore<S extends string = ExperienceSource, R extends Pro
         CREATE TABLE IF NOT EXISTS progression_rewards(id TEXT PRIMARY KEY,account_id TEXT NOT NULL,location_id TEXT NOT NULL,milestone_id TEXT NOT NULL,policy_version TEXT NOT NULL,type TEXT NOT NULL CHECK(type='free_spins'),level BIGINT NOT NULL,
           game_id TEXT NOT NULL,count BIGINT NOT NULL CHECK(count>0),remaining BIGINT NOT NULL CHECK(remaining>=0 AND remaining<=count),nominal_units TEXT NOT NULL,currency TEXT NOT NULL,rules_version BIGINT NOT NULL,created_at BIGINT NOT NULL,
           UNIQUE(account_id,location_id,currency,milestone_id));
-        CREATE TABLE IF NOT EXISTS progression_milestones(id TEXT PRIMARY KEY,account_id TEXT NOT NULL,scope TEXT NOT NULL,milestone_id TEXT NOT NULL,policy_version TEXT NOT NULL,level BIGINT NOT NULL,kind TEXT NOT NULL,definition_json TEXT NOT NULL,created_at BIGINT NOT NULL,UNIQUE(account_id,scope,milestone_id));`);
+        CREATE TABLE IF NOT EXISTS progression_milestones(id TEXT PRIMARY KEY,account_id TEXT NOT NULL,scope TEXT NOT NULL,milestone_id TEXT NOT NULL,policy_version TEXT NOT NULL,level BIGINT NOT NULL,kind TEXT NOT NULL,definition_json TEXT NOT NULL,created_at BIGINT NOT NULL,UNIQUE(account_id,scope,milestone_id));
+        CREATE TABLE IF NOT EXISTS progression_skin_rewards(id TEXT PRIMARY KEY,account_id TEXT NOT NULL,location_id TEXT NOT NULL,milestone_id TEXT NOT NULL,policy_version TEXT NOT NULL,level BIGINT NOT NULL,
+          theme TEXT NOT NULL,variant_count BIGINT NOT NULL CHECK(variant_count=2),count BIGINT NOT NULL CHECK(count>0),remaining BIGINT NOT NULL CHECK(remaining>=0 AND remaining<=count),currency TEXT NOT NULL,created_at BIGINT NOT NULL,
+          UNIQUE(account_id,location_id,currency,milestone_id));`);
       // Preserve already issued v1 rights if upgrading a database created before the handler seam.
       await this.db.exec(`INSERT INTO progression_milestones SELECT id,account_id,currency||':'||location_id,milestone_id,policy_version,level,type,
         jsonb_build_object('kind','free_spins','gameId',game_id,'count',count,'stakeUnits',nominal_units)::text,created_at
         FROM progression_rewards ON CONFLICT DO NOTHING`);
+      await this.db.exec('ALTER TABLE progression_settings ADD COLUMN IF NOT EXISTS skins_enabled BOOLEAN NOT NULL DEFAULT true');
       await this.db.prepare('INSERT INTO progression_settings(scope,activated_at) VALUES(?,?) ON CONFLICT DO NOTHING').run(this.scope,this.now());
       const definition=JSON.stringify(this.policy);
       await this.db.prepare('INSERT INTO progression_policies VALUES(?,?,?) ON CONFLICT DO NOTHING').run(this.scope,this.policy.version,definition);
@@ -163,8 +167,10 @@ export class ProgressionStore<S extends string = ExperienceSource, R extends Pro
       const player=await this.db.prepare('SELECT * FROM progression_players WHERE account_id=? AND scope=?').get(accountId,this.scope);
       const policy=player?JSON.parse((await this.db.prepare('SELECT definition FROM progression_policies WHERE scope=? AND version=?').get(this.scope,player.policy_version))!.definition):this.policy;
       const grants=await this.db.prepare('SELECT * FROM progression_rewards WHERE account_id=? AND location_id=? AND currency=? ORDER BY level,id').all(accountId,this.locationId,this.environment);
+      const skins=await this.db.prepare('SELECT * FROM progression_skin_rewards WHERE account_id=? AND location_id=? AND currency=? ORDER BY level,id').all(accountId,this.locationId,this.environment);
       return {accountId,locationId,policyVersion:policy.version,currency:this.environment,xp:String(player?.xp??'0'),level:Number(player?.level??1),levels:policy.levels,
-        grants:grants.map(g=>({id:g.id,gameId:g.game_id,count:Number(g.count),remaining:Number(g.remaining),stakeUnits:g.nominal_units,level:Number(g.level),currency:g.currency})),enabled:await this.spinsEnabled()};
+        grants:grants.map(g=>({id:g.id,gameId:g.game_id,count:Number(g.count),remaining:Number(g.remaining),stakeUnits:g.nominal_units,level:Number(g.level),currency:g.currency})),
+        skinGrants:skins.map(g=>({id:g.id,count:Number(g.count),remaining:Number(g.remaining),level:Number(g.level),theme:g.theme,variantCount:2 as const,currency:g.currency})),enabled:await this.spinsEnabled()};
     });
   }
   async report() {
@@ -179,9 +185,11 @@ export class ProgressionStore<S extends string = ExperienceSource, R extends Pro
       const actual=hasUses?await this.db.prepare(`SELECT count(*) AS n,coalesce(sum((u.result_json::jsonb->>'payoutUnits')::numeric),0)::text AS payout
         FROM progression_spin_uses u JOIN progression_rewards r ON r.id=u.grant_id WHERE r.location_id=? AND r.currency=?`).get(this.locationId,this.environment):{n:0,payout:'0'};
       const pending=await this.db.prepare('SELECT count(*) AS n FROM progression_outbox o JOIN progression_rounds r ON r.id=o.id WHERE NOT o.processed AND r.scope=?').get(this.scope);
+      const skins=await this.db.prepare('SELECT coalesce(sum(count),0)::text AS issued,coalesce(sum(remaining),0)::text AS available FROM progression_skin_rewards WHERE location_id=? AND currency=?').get(this.locationId,this.environment);
       return {currency:this.environment,locationId:this.locationId,grants:rows.length,issuedSpins:rows.reduce((n,r)=>n+Number(r.count),0),
         availableSpins:rows.reduce((n,r)=>n+Number(r.remaining),0),usedSpins:Number(actual?.n??0),actualPayoutUnits:String(actual?.payout??'0'),
-        expectedIssuedPayoutUnits:String(issuedExpected),expectedOutstandingPayoutUnits:String(outstandingExpected),pendingEvents:Number(pending?.n??0)};
+        expectedIssuedPayoutUnits:String(issuedExpected),expectedOutstandingPayoutUnits:String(outstandingExpected),pendingEvents:Number(pending?.n??0),
+        issuedSkinGenerations:Number(skins?.issued??0),availableSkinGenerations:Number(skins?.available??0)};
     });
   }
   async audit() {
@@ -194,6 +202,9 @@ export class ProgressionStore<S extends string = ExperienceSource, R extends Pro
         WHERE r.scope=? AND o.processed<>(x.id IS NOT NULL)`).all(this.scope);
       const badRemaining=await this.db.hasTable('progression_spin_uses')?await this.db.prepare(`SELECT r.id FROM progression_rewards r
         LEFT JOIN (SELECT grant_id,count(*) AS n FROM progression_spin_uses GROUP BY grant_id) u ON u.grant_id=r.id
+        WHERE r.location_id=? AND r.currency=? AND r.remaining<>r.count-coalesce(u.n,0)`).all(this.locationId,this.environment):[];
+      const badSkins=await this.db.hasTable('progression_skin_uses')?await this.db.prepare(`SELECT r.id FROM progression_skin_rewards r LEFT JOIN
+        (SELECT grant_id,count(*) AS n FROM progression_skin_uses WHERE state IN ('reserved','captured') GROUP BY grant_id) u ON u.grant_id=r.id
         WHERE r.location_id=? AND r.currency=? AND r.remaining<>r.count-coalesce(u.n,0)`).all(this.locationId,this.environment):[];
       let projectionMismatches=0,milestoneMismatches=0;
       const players=await this.db.prepare('SELECT * FROM progression_players WHERE scope=?').all(this.scope);
@@ -210,16 +221,17 @@ export class ProgressionStore<S extends string = ExperienceSource, R extends Pro
             ||!isDeepStrictEqual(JSON.parse(grant.definition_json),reward)||!await this.rewardHandler(reward).audit(this.db,this.claim(grant),reward))milestoneMismatches++;}
         milestoneMismatches+=grants.filter(g=>!milestones.some(m=>g.milestone_id==='level:'+m.level)).length;
       }
-      return {ok:[mismatches.length,missing.length,badRemaining.length,projectionMismatches,milestoneMismatches].every(n=>n===0),
-        xpMismatches:mismatches.length,outboxMismatches:missing.length,rewardMismatches:badRemaining.length,projectionMismatches,milestoneMismatches};
+      return {ok:[mismatches.length,missing.length,badRemaining.length,badSkins.length,projectionMismatches,milestoneMismatches].every(n=>n===0),
+        xpMismatches:mismatches.length,outboxMismatches:missing.length,rewardMismatches:badRemaining.length,skinRewardMismatches:badSkins.length,projectionMismatches,milestoneMismatches};
     });
   }
-  async setSwitches(value:{earnEnabled?:boolean;spinsEnabled?:boolean}) {
+  async setSwitches(value:{earnEnabled?:boolean;spinsEnabled?:boolean;skinsEnabled?:boolean}) {
     await this.ready;
     if(Object.values(value).some(v=>typeof v!=='boolean'))throw Error('Invalid progression switches');
     await this.db.transaction(async()=>{
       if(value.earnEnabled!==undefined)await this.db.prepare('UPDATE progression_settings SET earn_enabled=? WHERE scope=?').run(value.earnEnabled,this.scope);
       if(value.spinsEnabled!==undefined)await this.db.prepare('UPDATE progression_settings SET spins_enabled=? WHERE scope=?').run(value.spinsEnabled,this.scope);
+      if(value.skinsEnabled!==undefined)await this.db.prepare('UPDATE progression_settings SET skins_enabled=? WHERE scope=?').run(value.skinsEnabled,this.scope);
     });
   }
 }

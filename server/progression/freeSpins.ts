@@ -1,6 +1,6 @@
 import { createHash, randomInt } from 'node:crypto';
 import { gameAccountId, nileUnits } from '../../src/shared/nileWallet';
-import { validProgressionAccount, type RewardSpinResult } from '../../src/shared/progression';
+import { FREE_SPIN_NOMINAL_UNITS, validProgressionAccount, type RewardSpinResult } from '../../src/shared/progression';
 import { demoBalanceUnits, demoReservedUnits, MAX_DEMO_UNITS, recordDemoUnits, saveDemoUnits } from '../demoWalletAmounts';
 import type { PostgresDatabase } from '../database';
 import type { DemoWalletStore } from '../demoWallet';
@@ -54,7 +54,7 @@ async function gameForGrant(db: PostgresDatabase, accountId: string, request: Sp
   if (grant.currency !== currency || !['royal-coins', 'royal-fruits'].includes(String(grant.game_id))
     || Number(grant.rules_version) !== 1 || !nileUnits(grant.nominal_units)) return fail('reward_rules_unavailable');
   const nominal = BigInt(String(grant.nominal_units));
-  if (nominal < 100_000n || nominal > 2_000_000n || nominal % unitsPerCent !== 0n) return fail('reward_rules_unavailable');
+  if (!(FREE_SPIN_NOMINAL_UNITS as readonly string[]).includes(String(nominal))) return fail('reward_rules_unavailable');
   return { grant, nominal, game: prepareGame(String(grant.game_id), Number(grant.rules_version), {}) };
 }
 
