@@ -141,5 +141,22 @@ class AutomaticRetentionTest(unittest.TestCase):
         host=calls[0][2]['HostConfig'];self.assertTrue(host['ReadonlyRootfs']);self.assertEqual(host['NetworkMode'],'none')
         self.assertNotIn('Binds',host);self.assertEqual(calls[-1][:2],('DELETE','/containers/'+identity))
 
+    def test_independent_game_source_requires_the_verified_current_pointer(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp);live=root/'live';releases=root/'releases';modules=root/'modules'
+            folder=releases/'game-update';folder.mkdir(parents=True);game=live/'games'/'example';game.mkdir(parents=True)
+            (game/'package.json').write_text(json.dumps({'gameId':'studio-example'}))
+            active=modules/'studio-example'/'active.json';active.parent.mkdir(parents=True)
+            active.write_text(json.dumps({'manifest':'/game-modules/studio-example/versions/1.0.1/manifest.json'}))
+            source='a'*40;name='games/example/view.ts';digest='b'*64
+            operator={'sourceCommit':source,'source':{name:digest},'pointerSha256':cleanup.sha(active)}
+            (folder/'operator.json').write_text(json.dumps(operator))
+            (folder/'published.json').write_text(json.dumps({'published':True,'sourceCommit':source,'module':{'verified':True,'gameId':'studio-example','version':'1.0.1'}}))
+            (folder/'release-github.json').write_text(json.dumps({'sourceCommit':source,'remoteMain':source}))
+            with patch.object(cleanup,'LIVE',live),patch.object(cleanup,'RELEASES',releases),patch.object(cleanup,'MODULES',modules):
+                self.assertEqual(len(cleanup.module_source_proof(name,digest)),3)
+                self.assertIsNone(cleanup.module_source_proof('server/index.ts',digest))
+                active.write_text('{}');self.assertIsNone(cleanup.module_source_proof(name,digest))
+
 
 if __name__ == '__main__': unittest.main()

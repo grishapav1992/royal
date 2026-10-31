@@ -181,6 +181,26 @@ def native_retention():
     return module
 
 
+def module_source_proof(name, digest):
+    if not name.startswith('games/'): return None
+    for path in RELEASES.glob('*/operator.json'):
+        try:
+            operator = read(path); published = read(path.parent/'published.json'); module = published.get('module', {})
+            receipt = read(path.parent/'release-github.json')
+            if not (published.get('published') is True and module.get('verified') is True
+                    and operator.get('source', {}).get(name) == digest
+                    and operator.get('sourceCommit') == published.get('sourceCommit') == receipt.get('sourceCommit')
+                    and re.fullmatch('[a-f0-9]{40}', str(receipt.get('remoteMain','')))): continue
+            game = module['gameId']; require(re.fullmatch('[a-z0-9-]+',game), 'Unsafe module identity')
+            active = MODULES/game/'active.json'; pointer = read(active)
+            package = read(LIVE/'games'/name.split('/')[1]/'package.json')
+            if (sha(active) == operator.get('pointerSha256') and pointer['manifest'].split('/')[4] == module['version']
+                    and package.get('gameId') == game):
+                return [path, path.parent/'published.json', path.parent/'release-github.json']
+        except (OSError, ValueError, KeyError, IndexError): continue
+    return None
+
+
 def recovery(release):
     root, backup = RELEASES / release, BACKUPS / release
     require(root.is_dir() and backup.is_dir() and not root.is_symlink() and not backup.is_symlink(), 'Recovery paths missing')
@@ -199,8 +219,14 @@ def recovery(release):
     recovered = rollback_source_inventory(backup / 'source.tgz', before['source'], manifest['changed'])
     require(sha(backup / 'index.html') == before['program']['dist/index.html'], 'Rollback client index differs')
     expected = {**before['source'], **manifest['changed']}
-    require(all((LIVE / name).is_file() and sha(LIVE / name) == digest for name, digest in expected.items()),
-            'Live source differs from the published release')
+    independent = set()
+    for name, digest in expected.items():
+        file = LIVE/name; require(file.is_file() and not file.is_symlink(), 'Live source missing: '+name)
+        actual = sha(file)
+        if actual != digest:
+            proof = module_source_proof(name,actual)
+            require(proof is not None, 'Live source differs without a verified current module publication: '+name)
+            independent.update(proof)
     image = docker_object('image', before['preparedImage'])
     validate_rollback_identity(current, image, before)
     # Validate every rollback program byte in a transient container without network or mounts.
@@ -217,6 +243,7 @@ def recovery(release):
         require(sha(root / name) == digest, 'Recovery helper changed: ' + name)
     proof_paths = [root / name for name in ['install-manifest.json', 'build-result.json', 'published.json', 'deploy.py', 'snapshot.py']]
     proof_paths += [backup / 'source.tgz', backup / 'index.html']
+    proof_paths += list(independent)
     proof_paths += [p for p in root.rglob('*') if p.is_file() and not p.is_symlink() and p.suffix != '.log' and '__pycache__' not in p.parts]
     proofs = [{'path': str(path), 'sha256': sha(path)} for path in sorted(set(proof_paths))]
     old_policy = read(RETENTION / 'policy.json')
@@ -236,6 +263,7 @@ def recovery(release):
     return {'release': release, 'sourceCommit': manifest['sourceCommit'], 'currentImage': current['Image'],
             'rollbackImage': image['Id'], 'keep': [str(root), str(backup)], 'proofs': proofs,
             'sourceFiles': len(recovered), 'rollbackProgramFiles': len(program),
+            'independentModuleProofs': sorted(str(p) for p in independent),
             'programHashCommand': node,
             'configuration': configuration(), 'services': persistent_services(), 'modules': modules(),
             'moduleHostContract': sha(MODULE_STATE / 'host.json'), 'oldPolicySha256': sha(RETENTION / 'policy.json'),
@@ -339,11 +367,11 @@ def apply(plan, state):
     return result
 
 
-def safe_history_candidates(keep):
+def safe_history_candidates(keep, extra_protected=()):
     """Preserve financial material, fresh work, and source without GitHub evidence."""
     allow = Path('/opt/royal-maintenance/preserved-commits.json')
     commits = set(read(allow)['commits']) if allow.exists() else set()
-    retained, protected = set(keep), set()
+    retained, protected = set(keep), {Path(p) for p in extra_protected}
     reasons = {}
     for root in ROOTS:
         for path in root.iterdir():
@@ -378,7 +406,7 @@ def safe_history_candidates(keep):
 
 def prepare_plan(release, skip_images=False):
     value = recovery(release)
-    rows, retained, financial, reasons = safe_history_candidates(value['keep'])
+    rows, retained, financial, reasons = safe_history_candidates(value['keep'], value.get('independentModuleProofs',()))
     value.update({'entries': rows, 'keep': sorted(set(value['keep']) | set(retained) | set(financial)),
                   'preservedFinancialFiles': financial, 'retainedHistoryReasons': reasons,
                   'images': [] if skip_images else image_candidates({value['currentImage'], value['rollbackImage']}),

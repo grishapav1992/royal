@@ -21,6 +21,15 @@ Image candidates come from exact IDs recorded in release evidence, and every tag
 is rechecked against all container references before removal. The slow global image
 index is not required. No image is forced and no data volume is deleted.
 
+OCI manifests and configuration blobs are read with digest verification. Quiet
+containerd reference queries avoid size traversal, as implemented in its
+[image listing](https://github.com/containerd/containerd/blob/main/cmd/ctr/commands/images/images.go).
+The read-only rollback hash process is created through the
+[Docker Engine API](https://docs.docker.com/reference/api/engine/version/v1.52/),
+with explicit ownership and cleanup, rather than the CLI's image-inspect preflight.
+Independent game source updates require their committed publication receipt and
+the exact current active pointer. Their compact proofs survive history cleanup.
+
 After every publication, once its locks are released, start
 `royal-dev-app-retention.service` and verify that the last result is `completed`,
 the timer is enabled, the host remains healthy, and at least five GiB is free.
