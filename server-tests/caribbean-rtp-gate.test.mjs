@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { rtpInputs, validateRtpProof } from '../scripts/game-math/rtp-gate.mjs';
 import { caribbeanQualificationEvidence } from '../scripts/game-math/rtp-caribbean.mjs';
 const root = fileURLToPath(new URL('../',import.meta.url));
-const inputs = await rtpInputs(root,'studio-caribbean-treasures');
+const inputs = await rtpInputs(root,'studio-caribbean-treasures',1);
 const proof = JSON.parse(await readFile(new URL('../docs/game-math/qualifications/caribbean-treasures-v1.json',import.meta.url),'utf8'));
 test('complete-round qualification covers 64 mode, line and stake combinations and replays 4096 paid rounds', () => {
   assert(validateRtpProof('studio-caribbean-treasures',inputs,proof));

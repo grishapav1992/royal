@@ -1,0 +1,218 @@
+{
+  "passed": true,
+  "productionSource": "fb599494fbee9accff92c8a30126a071ebcceb5c",
+  "oldRuntimeSha256": "e565a86367d841fc761b6aad6c704503a00c91174df5207d4d730af5f269c404",
+  "newRuntimeSha256": "6f2b6df5ea8be57d91b3350811b08b87bf06725d80fa289473eb93fc3ec91b76",
+  "legacyCases": 23,
+  "legacyBonuses": 7,
+  "continuations": 47,
+  "preservedWardrobeVersion": 3,
+  "sha256": "aaa7de86e31c1e9de71d333ebb95c5f990dcc586534c5cf3d1f05f1b9c83049f",
+  "cases": [
+    {
+      "game": "studio-caramel-carnival",
+      "choice": "normal",
+      "legacyUnchanged": true,
+      "moves": 0,
+      "freshMinimumUnits": "10",
+      "freshCreditedUnits": "0",
+      "journalBalanced": true
+    },
+    {
+      "game": "studio-last-convoy",
+      "choice": "normal",
+      "legacyUnchanged": true,
+      "moves": 0,
+      "freshMinimumUnits": "10",
+      "freshCreditedUnits": "9",
+      "journalBalanced": true
+    },
+    {
+      "game": "studio-nitro-run",
+      "choice": "normal",
+      "legacyUnchanged": true,
+      "moves": 0,
+      "freshMinimumUnits": "10",
+      "freshCreditedUnits": "34",
+      "journalBalanced": true
+    },
+    {
+      "game": "studio-meme-overload",
+      "choice": "normal",
+      "legacyUnchanged": true,
+      "moves": 0,
+      "freshMinimumUnits": "10",
+      "freshCreditedUnits": "0",
+      "journalBalanced": true
+    },
+    {
+      "game": "studio-velvet-reign",
+      "choice": "normal",
+      "legacyUnchanged": true,
+      "moves": 0,
+      "freshMinimumUnits": "10",
+      "freshCreditedUnits": "0",
+      "journalBalanced": true
+    },
+    {
+      "game": "original-cr-vs-leo",
+      "choice": "all-adaptive-risk-paths",
+      "legacyUnchanged": true,
+      "moves": 1,
+      "freshMinimumUnits": "10",
+      "freshCreditedUnits": "13",
+      "journalBalanced": true
+    },
+    {
+      "game": "original-jackie-chan",
+      "choice": "all-adaptive-risk-paths",
+      "legacyUnchanged": true,
+      "moves": 1,
+      "freshMinimumUnits": "10",
+      "freshCreditedUnits": "13",
+      "journalBalanced": true
+    },
+    {
+      "game": "royal-plinko",
+      "choice": "8:easy",
+      "legacyUnchanged": true,
+      "moves": 0,
+      "freshMinimumUnits": "10",
+      "freshCreditedUnits": "20",
+      "journalBalanced": true
+    },
+    {
+      "game": "royal-roulette",
+      "choice": "all-colour-parity-and-number-bets",
+      "legacyUnchanged": true,
+      "moves": 0,
+      "freshMinimumUnits": "10",
+      "freshCreditedUnits": "0",
+      "journalBalanced": true
+    },
+    {
+      "game": "github-crash",
+      "choice": "all-server-cashout-times",
+      "legacyUnchanged": true,
+      "moves": 1,
+      "freshMinimumUnits": "10",
+      "freshCreditedUnits": "11",
+      "journalBalanced": true
+    },
+    {
+      "game": "flag-battle",
+      "choice": "classic",
+      "legacyUnchanged": true,
+      "moves": 0,
+      "freshMinimumUnits": "10",
+      "freshCreditedUnits": "0",
+      "journalBalanced": true
+    },
+    {
+      "game": "studio-forest-heart",
+      "choice": "optimal",
+      "legacyUnchanged": true,
+      "moves": 0,
+      "freshMinimumUnits": "10",
+      "freshCreditedUnits": "6",
+      "journalBalanced": true
+    },
+    {
+      "game": "studio-caribbean-treasures",
+      "choice": "lines-1-normal-raid",
+      "legacyUnchanged": true,
+      "moves": 0,
+      "freshMinimumUnits": "10",
+      "freshCreditedUnits": "20",
+      "journalBalanced": true
+    },
+    {
+      "game": "studio-cosmic-escape",
+      "choice": "normal",
+      "legacyUnchanged": true,
+      "moves": 0,
+      "freshMinimumUnits": "10",
+      "freshCreditedUnits": "0",
+      "journalBalanced": true
+    },
+    {
+      "game": "studio-flooded-temple",
+      "choice": "normal",
+      "legacyUnchanged": true,
+      "moves": 0,
+      "freshMinimumUnits": "10",
+      "freshCreditedUnits": "0",
+      "journalBalanced": true
+    },
+    {
+      "game": "studio-afterglow",
+      "choice": "normal",
+      "legacyUnchanged": true,
+      "moves": 0,
+      "freshMinimumUnits": "10",
+      "freshCreditedUnits": "0",
+      "journalBalanced": true
+    },
+    {
+      "game": "studio-dracona",
+      "choice": "normal",
+      "legacyUnchanged": true,
+      "moves": 0,
+      "freshMinimumUnits": "10",
+      "freshCreditedUnits": "0",
+      "journalBalanced": true
+    },
+    {
+      "game": "studio-neopolis",
+      "choice": "granite",
+      "legacyUnchanged": true,
+      "moves": 0,
+      "freshMinimumUnits": "10",
+      "freshCreditedUnits": "0",
+      "journalBalanced": true
+    },
+    {
+      "game": "studio-caramel-carnival",
+      "choice": "festival",
+      "legacyUnchanged": true,
+      "moves": 10,
+      "freshMinimumUnits": "10",
+      "freshCreditedUnits": "7",
+      "journalBalanced": true
+    },
+    {
+      "game": "studio-velvet-reign",
+      "choice": "super-encore",
+      "legacyUnchanged": true,
+      "moves": 10,
+      "freshMinimumUnits": "10",
+      "freshCreditedUnits": "0",
+      "journalBalanced": true
+    },
+    {
+      "game": "studio-cosmic-escape",
+      "choice": "cosmic-chaos",
+      "legacyUnchanged": true,
+      "moves": 10,
+      "freshMinimumUnits": "10",
+      "freshCreditedUnits": "0",
+      "journalBalanced": true
+    },
+    {
+      "game": "studio-caribbean-treasures",
+      "choice": "lines-20-buy-raid",
+      "legacyUnchanged": true,
+      "moves": 14,
+      "freshMinimumUnits": "10",
+      "freshCreditedUnits": "0",
+      "journalBalanced": true
+    },
+    {
+      "game": "studio-flooded-temple",
+      "choice": "legacy-map",
+      "legacyUnchanged": true,
+      "moves": 0,
+      "freshCoveredByCascadeCase": true
+    }
+  ]
+}
