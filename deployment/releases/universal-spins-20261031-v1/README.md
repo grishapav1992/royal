@@ -19,3 +19,15 @@ Publication order:
 6. Record the source commit, image, module versions and results in `deployment/SERVER.md`, push the record, and remove only task-owned local build/review material. Keep the compact completion report and required server recovery protection.
 
 Module publication and host rollback must be coordinated. A host rollback cannot retain a new module that requires the progression bridge. No blanket Docker cleanup, data restoration or lower disk threshold is part of this release.
+# Finalize an existing Docker candidate
+
+`complete-build.py` is limited to the already prepared application source
+`4028e369c4fb7d0588f6ddd3c155306505fdbfd9`. It accepts only a finished Docker
+build whose original process stopped at the post-build disk guard. It does not
+build an image, change application source, publish, or lower the five GiB floor.
+It rechecks the original payload, context, baseline, backups, candidate revision,
+parent layers, image configuration and complete runtime inventory, then checks
+the disk floor again before writing the normal build result. Publication still
+uses the original guarded installer. The original logs and completion evidence
+remain available. Run `test_complete_build.py` together with installer tests.
+
