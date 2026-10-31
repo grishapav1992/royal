@@ -1,6 +1,6 @@
 import { isUserMessage, t as translateText } from '../i18n/index';
-import { validProgressionSnapshot, validRewardSpinRequest, validRewardSpinResult,
-  type ProgressionSnapshot, type RewardSpinRequest, type RewardSpinResult } from '../shared/progression';
+import { FREE_SPIN_NOMINAL_UNITS, rewardGames, validProgressionSnapshot, validRewardSpinRequest, validRewardSpinResult,
+  type ProgressionSnapshot, type RewardGame, type RewardSpinRequest, type RewardSpinResult } from '../shared/progression';
 import { WALLET_ACCOUNT_HEADER } from '../shared/walletAccount';
 import { demoWallet } from './WalletClient';
 
@@ -13,10 +13,12 @@ export class ProgressionClient extends EventTarget {
   snapshot?: ProgressionSnapshot;
   pending?: RewardSpinRequest;
   last?: RewardSpinResult;
+  lastOperation?: RewardSpinRequest;
   busy = false;
   loading = false;
   recoveryBlocked = false;
   error = '';
+  freeNominal: string | null = null;
   private epoch = 0;
   private readVersion = 0;
   private request?: AbortController;
@@ -31,10 +33,13 @@ export class ProgressionClient extends EventTarget {
   setAccount(account: string | null) {
     if (account === this.accountId) return;
     this.epoch++; this.readVersion++; this.request?.abort(); this.request = undefined;
-    this.accountId = account; this.snapshot = undefined; this.pending = undefined; this.last = undefined;
+    this.accountId = account; this.snapshot = undefined; this.pending = undefined; this.last = undefined; this.lastOperation = undefined;
+    this.freeNominal = null;
     this.busy = this.loading = this.refreshAgain = this.recoveryBlocked = false; this.error = '';
     if (account) {
       try {
+        const nominal = this.storage.getItem(`royal-reward-funding:${account}`);
+        if (nominal && (FREE_SPIN_NOMINAL_UNITS as readonly string[]).includes(nominal)) this.freeNominal = nominal;
         const saved = this.storage.getItem(this.key());
         if (saved) {
           const operation: unknown = JSON.parse(saved);
@@ -77,9 +82,17 @@ export class ProgressionClient extends EventTarget {
     }
   }
 
-  async spin(grantId: string) {
+  chooseFunding(nominal: string | null) {
+    if (nominal !== null && !(FREE_SPIN_NOMINAL_UNITS as readonly string[]).includes(nominal)) throw Error('invalid_reward_nominal');
+    if (this.busy || this.pending) return;
+    this.freeNominal = nominal;
+    try { if (nominal) this.storage.setItem(`royal-reward-funding:${this.accountId}`, nominal);
+      else this.storage.removeItem(`royal-reward-funding:${this.accountId}`); } catch { /* Preference persistence is optional. */ }
+    this.notify();
+  }
+  async spin(grantId: string, gameId?: RewardGame) {
     if (this.pending) throw Error(translateText('Сначала проверь предыдущий бесплатный спин.'));
-    return this.send({ id: crypto.randomUUID(), grantId });
+    return this.send({ id: crypto.randomUUID(), grantId, ...(gameId ? { gameId } : {}) });
   }
   async retry() {
     if (!this.pending) return;
@@ -94,7 +107,7 @@ export class ProgressionClient extends EventTarget {
     if (this.recoveryBlocked) throw Error(this.error);
     if (this.walletBlocked) throw Error(translateText('Сначала проверь незавершённую операцию в другой игре.'));
     if (!validRewardSpinRequest(operation)) throw Error(translateText('Некорректный запрос бесплатного спина.'));
-    if (this.pending && (operation.id !== this.pending.id || operation.grantId !== this.pending.grantId)) {
+    if (this.pending && (operation.id !== this.pending.id || operation.grantId !== this.pending.grantId || operation.gameId !== this.pending.gameId)) {
       throw Error(translateText('Сначала проверь предыдущий бесплатный спин.'));
     }
     const account = this.accountId, epoch = this.epoch, key = this.key(), storage = this.storage;
@@ -117,10 +130,13 @@ export class ProgressionClient extends EventTarget {
       const grant = this.snapshot?.grants.find(value => value.id === operation.grantId);
       if (!validRewardSpinResult(result) || result.id !== operation.id || result.grantId !== operation.grantId
         || !('balance' in result.wallet) || result.wallet.asset === 'USDT_NILE_TEST'
-        || grant && (result.gameRound.gameId !== grant.gameId
+        || result.gameId !== operation.gameId || operation.gameId && result.gameRound.gameId !== operation.gameId
+        || grant && (!rewardGames(grant).includes(result.gameRound.gameId as RewardGame)
           || BigInt(result.gameRound.stakeUnits) * 10000n !== BigInt(grant.stakeUnits))) throw Error(uncertain());
       demoWallet.acceptExternalWallet(account, result.wallet);
       this.last = result;
+      this.lastOperation = operation;
+      this.dispatchEvent(new CustomEvent('settlement', { detail: { accountId: account, operation, result } }));
       if (this.snapshot) this.snapshot = { ...this.snapshot, grants: this.snapshot.grants.map(value => value.id === operation.grantId
         ? { ...value, remaining: Math.min(value.remaining, result.remaining) } : value) };
       storage.removeItem(key); this.pending = undefined; this.error = ''; this.readVersion++;

@@ -33,7 +33,7 @@ async function open(page: Page) {
   await expect(page.locator('#chat-input')).toBeInViewport();
 }
 
-test('the real host keeps local levels, fixed free-spin packs and chat usable on desktop and mobile', async ({ page }, info) => {
+test('the real host keeps local levels, shared free-spin packs and chat usable on desktop and mobile', async ({ page }, info) => {
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
   await enter(page); const before = await unlock(page); await open(page);
   await expect(page.locator('[data-progression-current-level]')).toHaveText(String(before.level));
@@ -88,7 +88,7 @@ test('a lost accepted reward survives reload and replays its original operation 
   await expect(page.locator('[data-progression-retry]')).toBeHidden();
 });
 
-test('the same location track and fixed rewards are fully translated in English', async ({ page }) => {
+test('the same location track and shared rewards are fully translated in English', async ({ page }) => {
   await enter(page); await unlock(page);
   await page.getByRole('combobox', { name: 'Язык', exact: true }).selectOption('en');
   await expect(page.locator('#join-dialog')).toBeHidden({ timeout: 25000 }); await open(page);
@@ -120,3 +120,80 @@ test('a level reward opens the real atelier, recovers a lost accepted request an
   await page.setViewportSize({width:390,height:844});expect(await page.locator('#skin-studio-dialog').evaluate(el=>el.scrollWidth<=el.clientWidth+1)).toBe(true);
   await page.screenshot({path:info.outputPath('free-generation-mobile.png')});expect(errors).toEqual([]);
 });
+
+async function openSlot(page: Page, game: 'royal-coins' | 'royal-fruits') {
+  await page.emulateMedia({reducedMotion:'reduce'});
+  if (!await page.locator('#mini-dialog').isVisible()) {
+    if(await page.locator('#room-overview').getAttribute('aria-pressed')!=='true')await page.locator('#room-overview').click();
+    if((await page.evaluate(()=>(window as any).royalDemo.getState())).x<1100){const point=await worldPoint(page,1100,900);await page.mouse.click(point.x,point.y);
+      await expect.poll(async()=>{const state=await page.evaluate(()=>(window as any).royalDemo.getState());return Math.hypot(state.x-1100,state.y-900);},{timeout:25000}).toBeLessThan(30);}
+    await page.locator('#games-tab').click();
+    await page.locator('[data-cabinet="studio-cosmic-escape"]').click();
+    await expect(page.locator('#mini-dialog')).toBeVisible({timeout:30000});
+  }
+  if(!await page.locator('#mini-game .royal-platform').isVisible())await page.locator('#studio-game-list').click();
+  await page.locator('[data-platform-game="'+game+'"]').click();
+  await expect(page.locator('#mini-game')).toHaveAttribute('data-game-module-id',game,{timeout:25000});
+  await expect(page.locator('[data-reward-mode]')).toBeVisible();
+}
+async function current(page:Page) {
+  return page.evaluate(async()=>{const {account}=await(await fetch('/api/auth/me')).json();const headers={'X-Royal-Account-Id':account.id};
+    return {progression:await(await fetch('/api/progression',{headers})).json(),wallet:await(await fetch('/api/demo-wallet',{headers})).json()};});
+}
+async function freeSpin(page:Page, game:'royal-coins'|'royal-fruits') {
+  const selector=game==='royal-coins'?'#coins-spin':'[data-fruits-spin]';
+  await expect(page.locator(selector)).toBeEnabled();
+  const received=page.waitForResponse(r=>r.url().endsWith('/api/progression/spins')&&r.request().method()==='POST');
+  await page.locator(selector).click();const response=await received;expect(response.ok()).toBe(true);
+  const result=await response.json();expect(result.gameRound.gameId).toBe(game);
+  if(game==='royal-coins')await expect(page.locator('.royal-coins')).not.toHaveClass(/spinning/);
+  else await expect(page.locator('.fruits-slot')).toHaveAttribute('data-phase','result');
+  return result;
+}
+
+test('ordinary Coins and Fruits windows spend one shared packet, stop at zero and retain another nominal',async({page},info)=>{
+  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
+  await enter(page);const earned=await unlock(page);const before=await current(page);let payout=0;
+  await openSlot(page,'royal-coins');await page.locator('[data-reward-mode]').selectOption('500000');
+  await expect(page.locator('[data-reward-remaining]')).toContainText('5');
+  for(let i=0;i<3;i++){const result=await freeSpin(page,'royal-coins');payout+=Number(result.gameRound.payoutUnits);}
+  await openSlot(page,'royal-fruits');await expect(page.locator('[data-reward-mode]')).toHaveValue('500000');
+  await expect(page.locator('[data-reward-remaining]')).toContainText('2');
+  await expect(page.locator('#mini-dialog #club-chat-dock')).toBeVisible();
+  for(let i=0;i<2;i++){const result=await freeSpin(page,'royal-fruits');payout+=Number(result.gameRound.payoutUnits);}
+  await expect(page.locator('[data-fruits-spin]')).toBeDisabled();
+  await expect(page.locator('[data-reward-mode]')).toHaveValue('500000');
+  await expect(page.locator('[data-reward-remaining]')).toContainText('закончились');
+  const after=await current(page);expect(after.progression.xp).toBe(earned.xp);
+  expect(after.progression.grants[0].remaining).toBe(0);expect(after.progression.grants[1].remaining).toBe(5);
+  expect(Math.round(after.wallet.balance*100)).toBe(Math.round(before.wallet.balance*100)+payout);
+  await page.screenshot({path:info.outputPath('shared-spins-desktop.png')});
+  await page.setViewportSize({width:390,height:844});await expect(page.locator('#chat-input')).toBeInViewport();
+  expect(await page.locator('.fruits-slot').evaluate(el=>el.scrollWidth<=el.clientWidth+1)).toBe(true);
+  await page.screenshot({path:info.outputPath('shared-spins-mobile.png')});
+  await page.locator('[data-reward-mode]').selectOption('1000000');await expect(page.locator('[data-fruits-spin]')).toBeEnabled();
+  await page.locator('[data-reward-mode]').selectOption('');await expect(page.locator('[data-fruits-stake]')).toHaveValue('1000');
+  await expect(page.locator('[data-fruits-spin]')).toHaveText('ВРАЩАТЬ');await page.locator('#mini-dialog .mini-top [data-close]').click();await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getState().cabinet)).toBe('');expect(errors).toEqual([]);
+});
+
+test('a lost normal-window spin blocks another game and recovers the same game and UUID after reload',async({page})=>{
+  await enter(page);await unlock(page);await openSlot(page,'royal-coins');await page.locator('[data-reward-mode]').selectOption('500000');
+  let original:any,accepted:any;
+  await page.route('**/api/progression/spins',async route=>{original=route.request().postDataJSON();const response=await route.fetch();expect(response.ok()).toBe(true);accepted=await response.json();await route.abort('failed');},{times:1});
+  await page.locator('#coins-spin').click();await expect(page.locator('#coins-spin')).toHaveText('Проверить бесплатный спин');
+  await expect(page.locator('#coins-spin')).toBeEnabled();await openSlot(page,'royal-fruits');await expect(page.locator('[data-fruits-spin]')).toBeDisabled();
+  await page.reload();await expect(page.locator('#join-dialog')).toBeHidden({timeout:25000});await openSlot(page,'royal-coins');
+  const received=page.waitForResponse(r=>r.url().endsWith('/api/progression/spins')&&r.request().method()==='POST');
+  await page.locator('#coins-spin').click();const response=await received;expect(response.request().postDataJSON()).toEqual(original);
+  const replay=await response.json();expect(replay.replayed).toBe(true);expect(replay.gameRound).toEqual(accepted.gameRound);
+  expect(replay.remaining).toBe(4);await expect(page.locator('#coins-result')).toContainText('Деньги не списаны');
+  await page.locator('#mini-dialog .mini-top [data-close]').click();await openSlot(page,'royal-coins');
+  await expect(page.locator('[data-reward-remaining]')).toContainText('4');
+});
+
+async function worldPoint(page:Page,x:number,y:number){
+  await page.bringToFront();await page.evaluate(()=>document.fonts.ready);
+  const box=(await page.locator('#game canvas').boundingBox())!;
+  const {view}=await page.evaluate(()=>(window as any).royalDemo.getState());
+  return {x:box.x+(x-view.x)*view.zoom*box.width/view.width,y:box.y+(y-view.y)*view.zoom*box.height/view.height};
+}

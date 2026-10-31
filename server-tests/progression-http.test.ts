@@ -29,8 +29,8 @@ test('authenticated progression HTTP ignores client scope, starts at one, grants
     snapshot = await (await fetch(base, { headers })).json(); assert.equal(snapshot.level, 1); assert.equal(snapshot.xp, '0');
     await accounts.wallet.operate(login.account.id, { id: randomUUID(), kind: 'play', amount: 100, gameId: 'royal-coins', rulesVersion: 1, input: {} });
     snapshot = await (await fetch(base, { headers })).json(); assert(validProgressionSnapshot(snapshot)); assert(snapshot.level >= 5);
-    assert.equal(snapshot.grants.length, 1); const grant = snapshot.grants[0]; assert.equal(grant.gameId, 'royal-coins');
-    const operation = { id: randomUUID(), grantId: grant.id };
+    assert.equal(snapshot.grants.length, 1); const grant = snapshot.grants[0]; assert.equal(grant.poolId, 'royal-slots-v1');
+    const operation = { id: randomUUID(), grantId: grant.id, gameId: 'royal-coins' };
     const post = (body: unknown) => fetch(base + '/spins', { method: 'POST', headers, body: JSON.stringify(body) });
     const before = await accounts.wallet.snapshot(login.account.id);
     assert.equal((await post({ ...operation, locationId: 'other' })).status, 400);

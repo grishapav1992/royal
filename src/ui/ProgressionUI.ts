@@ -1,6 +1,6 @@
 import { locale, t, tr } from '../i18n/index';
 import type { RoomScene } from '../game/RoomScene';
-import { rewardLeaves, type LevelReward, type ProgressionGrant, type RewardGame } from '../shared/progression';
+import { rewardGames, rewardLeaves, type LevelReward, type ProgressionGrant, type RewardGame } from '../shared/progression';
 import { formatNileUnits } from '../shared/nileWallet';
 import { DEMO_SYMBOLS } from '../shared/demoWallet';
 import { progression, type ProgressionClient } from '../wallet/ProgressionClient';
@@ -12,7 +12,7 @@ import './progression.css';
 const xp = (value: string | bigint) => BigInt(value).toLocaleString(locale);
 const gameName = (game: RewardGame) => game === 'royal-coins' ? 'Royal Coins' : 'Royal Fruits';
 function rewardText(reward: LevelReward | ProgressionGrant):string {
-  if('gameId' in reward)return `${gameName(reward.gameId)} · ${tr`${reward.count} спинов по ${formatNileUnits(reward.stakeUnits)} USDT`}`;
+  if('stakeUnits' in reward)return `${reward.poolId ? t('Общие спины') : gameName(reward.gameId!)} · ${tr`${reward.count} спинов по ${formatNileUnits(reward.stakeUnits)} USDT`}`;
   if(reward.kind==='skin_generation')return tr`${reward.count} бесплатная генерация · 2 варианта на выбор`;
   return reward.rewards.map(rewardText).join(' + ');
 }
@@ -54,7 +54,8 @@ export class ProgressionUI {
       } else if (button.dataset.progressionLevel) {
         this.selectedLevel = Number(button.dataset.progressionLevel); this.renderDetail();
       } else if (button.dataset.progressionGrant) {
-        this.tab = 'rewards'; void this.run(() => this.client.spin(button.dataset.progressionGrant!));
+        const choice = button.closest('article')?.querySelector<HTMLSelectElement>('[data-progression-game]')?.value as RewardGame | undefined;
+        this.tab = 'rewards'; void this.run(() => this.client.spin(button.dataset.progressionGrant!, choice));
       } else if (button.hasAttribute('data-progression-atelier')) {
         this.dialog.close();this.scene.onAtelier?.();
       }
@@ -176,14 +177,21 @@ export class ProgressionUI {
     }
     for (const grant of [...snapshot.grants].sort((a, b) => Number(b.remaining > 0) - Number(a.remaining > 0) || a.level - b.level)) {
       const card = document.createElement('article'); card.className = 'progression-grant'; card.dataset.empty = String(grant.remaining === 0);
-      const title = document.createElement('h3'); title.textContent = gameName(grant.gameId);
+      const title = document.createElement('h3'); title.textContent = grant.poolId ? t('Общие спины') : gameName(grant.gameId!);
       const origin = document.createElement('p'); origin.textContent = tr`Награда за уровень ${grant.level}`;
       const nominal = document.createElement('p'); nominal.textContent = tr`${grant.count} спинов по ${formatNileUnits(grant.stakeUnits)} USDT`;
       const remaining = document.createElement('p'); remaining.textContent = tr`Осталось: ${grant.remaining} из ${grant.count}`;
       const button = document.createElement('button'); button.type = 'button'; button.className = 'primary-button';
       button.dataset.progressionGrant = grant.id; button.textContent = t(grant.remaining ? 'Использовать спин' : 'Пакет использован');
       button.disabled = disabled || grant.remaining === 0;
-      card.append(title, origin, nominal, remaining, button); host.append(card);
+      card.append(title, origin, nominal, remaining);
+      if (grant.poolId) {
+        const label = document.createElement('label'); label.append(t('Игра'));
+        const select = document.createElement('select'); select.dataset.progressionGame = '';
+        for (const game of rewardGames(grant)) select.append(new Option(gameName(game), game));
+        select.disabled = disabled || grant.remaining === 0; label.append(select); card.append(label);
+      }
+      card.append(button); host.append(card);
     }
     for(const grant of snapshot.skinGrants??[]){
       const card=document.createElement('article');card.className='progression-grant progression-skin-grant';card.dataset.empty=String(grant.remaining===0);

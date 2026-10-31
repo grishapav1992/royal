@@ -79,6 +79,7 @@ CABINETS.push({id:CARIBBEAN_GAME,name:'Карибские сокровища',su
 
 // Keep game descriptions available even when their game has no dedicated physical seat.
 CABINETS.push({id:'royal-roulette',name:translateText('Рулетка'),subtitle:translateText('Европейская рулетка · Одно зеро'),x:0,y:0,color:0xd7b472,playable:true,wallet:true,hall:'arcade'});
+CABINETS.push({id:'royal-coins',name:'Royal Coins',subtitle:translateText('Три барабана · Одна линия'),x:0,y:0,color:0xd7b472,playable:true,wallet:true,hall:'arcade'});
 export const GAME_CABINETS: readonly Cabinet[] = CABINETS.map(c=>({...c}));
 for (let index = CABINETS.length - 1; index >= 0; index--) {
   if ((CABINETS[index].hall ?? 'arcade') === 'arcade') CABINETS.splice(index, 1);

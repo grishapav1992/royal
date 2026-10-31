@@ -1045,10 +1045,12 @@
         "server/accounts.ts",
         "server/progression/handlers.ts",
         "server/progression/skinGenerations.ts",
-        "server/skinStudio.ts"
+        "server/skinStudio.ts",
+        "src/shared/rewardFruitsPresentation.ts",
+        "src/shared/rewardSpinCatalog.ts"
       ],
       "note": "Exact exhaustive paid and promotional nominal qualification. Reward player cost is zero; expected promotional payout is not reported as RTP. Common-wallet accounting is verified separately by progression-spins tests.",
-      "promotionProgramVersion": "location-levels-v2",
+      "promotionProgramVersion": "location-levels-v3",
       "maxPromotionCostBasisPoints": 400
     },
     "royal-fruits": {
@@ -1119,10 +1121,12 @@
         "server/accounts.ts",
         "server/progression/handlers.ts",
         "server/progression/skinGenerations.ts",
-        "server/skinStudio.ts"
+        "server/skinStudio.ts",
+        "src/shared/rewardFruitsPresentation.ts",
+        "src/shared/rewardSpinCatalog.ts"
       ],
       "note": "Exact exhaustive paid and promotional nominal qualification. Reward player cost is zero; expected promotional payout is not reported as RTP. Common-wallet accounting is verified separately by progression-spins tests.",
-      "promotionProgramVersion": "location-levels-v2",
+      "promotionProgramVersion": "location-levels-v3",
       "maxPromotionCostBasisPoints": 400
     },
     "github-hilo": {

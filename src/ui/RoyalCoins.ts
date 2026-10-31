@@ -11,6 +11,8 @@ import { usdtWallet } from '../wallet/UsdtClient';
 import { cryptoWallet } from '../wallet/CryptoClient';
 import { USDT_BETS } from '../shared/usdtWallet';
 import './royal-coins.css';
+import { RewardSpinControls } from './RewardSpinControls';
+import { progression } from '../wallet/ProgressionClient';
 
 const redNumbers = new Set<number>(rouletteRedNumbers);
 const numberColor = (value: number) => value === 0 ? 'green' : redNumbers.has(value) ? 'red' : 'black';
@@ -30,6 +32,12 @@ export class RoyalCoins {
   private themeId: CoinsThemeId = 'classic';
   private symbols = [0, 1, 4];
   private hasResult = false;
+  private rewards: RewardSpinControls;
+  private rewardSettlement = () => {
+    const result = progression.last;
+    if (this.alive && !this.spinning && result?.gameRound.gameId === this.gameId
+      && progression.accountId === demoWallet.accountId) { this.showFreeRound(result.gameRound); this.render(); }
+  };
   private update = () => this.render();
   private onSettlement = (event: Event) => {
     const { accountId, operation, result } = (event as CustomEvent<WalletSettlement>).detail;
@@ -58,6 +66,8 @@ export class RoyalCoins {
       <button id="coins-spin" class="primary-button">Крутить</button><button id="coins-wallet" class="text-button">Пополнить баланс USDT</button>
       <p class="coins-rules"></p><p class="coins-rtp"></p><small>Бесплатные виртуальные USDT. Введи сумму в кошельке клуба и играй. Вывод недоступен.</small>`;
     container.replaceChildren(this.root);
+    this.rewards = new RewardSpinControls(() => this.gameId, this.update);
+    this.element('.coins-controls').before(this.rewards.root);
     this.element<HTMLSelectElement>('#coins-game').value = this.gameId;
     this.setBets();
     this.element<HTMLButtonElement>('#coins-spin').onclick = () => { void this.spin(); };
@@ -77,7 +87,8 @@ export class RoyalCoins {
     nilePlay.addEventListener('change', this.update);
     usdtWallet.addEventListener('change', this.update);
     cryptoWallet.addEventListener('change', this.update);
-    this.render(); void demoWallet.refresh();
+    progression.addEventListener('settlement', this.rewardSettlement);
+    this.render(); this.rewardSettlement(); void demoWallet.refresh();
   }
   private element<T extends Element = HTMLElement>(selector: string) { return this.root.querySelector<T>(selector)!; }
   private setBets(amount?: string) {
@@ -150,11 +161,21 @@ export class RoyalCoins {
     const spec = GAME_CATALOG.find(item => item.id === this.gameId)!;
     const rtp = spec.rtp ? (100 * spec.rtp.numerator / spec.rtp.denominator).toLocaleString(locale, { maximumFractionDigits: 2 }) : '';
     this.element('.coins-rtp').textContent = tr`Теоретический RTP: ${rtp}%. ${fruits ? translateText('Вероятность выигрыша: 10%. ') : ''}Это средний возврат на большой дистанции, а результат отдельной игры случаен.`;
+    this.rewards.root.hidden = this.usdt || this.nile;
+    this.rewards.render(this.spinning || !!demoWallet.pending || demoWallet.busy || nilePlay.busy || usdtWallet.busy || cryptoWallet.busy);
     if (this.usdt) { this.renderUsdt(); return; }
     if (this.nile) { this.renderNile(); return; }
     this.element<HTMLButtonElement>('#coins-wallet').textContent = translateText('Пополнить баланс USDT');
     this.element('#coins-balance').textContent = demoWallet.wallet ? coins(demoWallet.wallet.balance) : '…';
     const spin = this.element<HTMLButtonElement>('#coins-spin'), bet = this.element<HTMLSelectElement>('#coins-bet');
+    this.element<HTMLElement>('.coins-controls label[for="coins-bet"]').hidden = this.rewards.active;
+    if (this.rewards.active) {
+      spin.textContent = this.spinning ? translateText('Крутим…') : this.rewards.pending ? translateText('Проверить бесплатный спин') : translateText('Бесплатный спин');
+      spin.disabled = this.spinning || this.rewards.blocked || !!nilePlay.pending || !!usdtWallet.pending || !!cryptoWallet.pending;
+      bet.disabled = true;
+      this.element<HTMLButtonElement>('#coins-wallet').disabled = !demoWallet.accountId;
+      return;
+    }
     const pendingGame = demoWallet.pending?.kind === 'spin' || (demoWallet.pending?.kind === 'play' && legacyGame(demoWallet.pending.gameId));
     spin.textContent = this.spinning ? translateText('Крутим…') : pendingGame ? translateText('Проверить результат') : translateText('Крутить');
     spin.disabled = this.spinning || demoWallet.busy || demoWallet.externalBusy || cryptoWallet.busy || !!cryptoWallet.pending || !demoWallet.accountId || (!pendingGame && (!demoWallet.wallet || demoWallet.wallet.balance < Number(bet.value))) || (!!demoWallet.pending && !pendingGame) || !!nilePlay.pending || !!usdtWallet.pending;
@@ -199,6 +220,7 @@ export class RoyalCoins {
     if (this.spinning) return;
     if (this.usdt) { await this.spinUsdt(); return; }
     if (this.nile) { await this.spinNile(); return; }
+    if (this.rewards.active) { await this.spinFree(); return; }
     const amount = Number(this.element<HTMLSelectElement>('#coins-bet').value);
     this.hasResult = false;
     this.spinning = true; this.root.classList.add('spinning'); this.render();
@@ -218,6 +240,24 @@ export class RoyalCoins {
       this.symbols = result.round.symbols;
       this.showPayout(result.round.multiplier, result.round.bet, result.round.payout);
     }
+  }
+  private async spinFree() {
+    if (this.rewards.blocked) return;
+    const account = demoWallet.accountId;
+    this.hasResult = false; this.spinning = true; this.root.classList.add('spinning'); this.render();
+    try {
+      const [result] = await Promise.all([this.rewards.spin(), this.animationDelay()]);
+      if (this.alive && account === demoWallet.accountId && result) this.showFreeRound(result.gameRound);
+    } catch (error) { if (this.alive && account === demoWallet.accountId) this.element('#coins-result').textContent = (error as Error).message; }
+    finally { this.spinning = false; this.root.classList.remove('spinning'); this.render(); }
+  }
+  private showFreeRound(round: GameRound) {
+    if ('symbols' in round.outcome) this.symbols = round.outcome.symbols;
+    this.hasResult = true;
+    emitGameOutcome(this.root, '0', round.payoutUnits);
+    this.element('#coins-result').textContent = BigInt(round.payoutUnits) > 0n
+      ? tr`Бесплатный спин. Начислено ${coins(Number(round.payoutUnits) / 100)} USDT. Деньги не списаны.`
+      : translateText('Бесплатный спин завершён без выигрыша. Деньги не списаны.');
   }
   private animationDelay() { return new Promise(resolve => setTimeout(resolve, matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 650)); }
   private showGameRound(round: GameRound) {
@@ -263,5 +303,5 @@ export class RoyalCoins {
     } catch(e){if(this.alive)this.element('#coins-result').textContent=(e as Error).message;}
     finally{this.spinning=false;this.root.classList.remove('spinning');this.render();}
   }
-  destroy() { this.alive = false; demoWallet.removeEventListener('change', this.update); demoWallet.removeEventListener('settlement', this.onSettlement); nilePlay.removeEventListener('change', this.update); usdtWallet.removeEventListener('change', this.update); cryptoWallet.removeEventListener('change', this.update); this.root.remove(); }
+  destroy() { this.alive = false; this.rewards.destroy(); progression.removeEventListener('settlement', this.rewardSettlement); demoWallet.removeEventListener('change', this.update); demoWallet.removeEventListener('settlement', this.onSettlement); nilePlay.removeEventListener('change', this.update); usdtWallet.removeEventListener('change', this.update); cryptoWallet.removeEventListener('change', this.update); this.root.remove(); }
 }

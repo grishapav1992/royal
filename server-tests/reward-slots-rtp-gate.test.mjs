@@ -12,7 +12,7 @@ for (const [gameId, checks, target] of [['royal-coins', 3792, .96], ['royal-frui
     assert(validateRtpProof(gameId, inputs, proof));
     assert.equal(proof.results.length, 14); assert.equal(proof.serverReplayChecks, checks);
     assert.equal(proof.program.milestones.length, 20); assert.equal(proof.program.totalSpins, 260);
-    assert.equal(proof.program.totalNominalUnits, '4832500000'); assert.equal(proof.program.expectedFullRedemptionPayoutUnits, '4671800000');
+    assert.equal(proof.program.totalNominalUnits, '4832500000'); assert.equal(proof.program.expectedFullRedemptionPayoutUnits, '4687525000');
     for (const prefix of proof.program.milestones)
       assert(BigInt(prefix.expectedPayoutFraction.numerator) * 10000n <= BigInt(prefix.qualifiedTurnoverUnits) * 400n * 100n);
     for (const row of proof.results) {

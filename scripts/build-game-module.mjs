@@ -33,6 +33,7 @@ const report = [];
 const bridgeModules = new Map([
  ['src/wallet/ExpansionClient', ['expansionClient']],
  ['src/wallet/WalletClient', ['demoWallet', 'coins']],
+ ['src/wallet/ProgressionClient', ['progression']],
  ['src/wallet/MinesClient', ['minesClient']],
  ['src/wallet/CasinoClient', ['casinoClients']],
  ['src/wallet/NilePlayClient', ['nilePlay']],

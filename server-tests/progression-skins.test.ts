@@ -31,10 +31,10 @@ async function fixture() {
     request:(grantId:string)=>({id:randomUUID(),prompt:'Костюм космонавта',rewardGrantId:grantId})};
 }
 
-test('v2 awards the entire higher-denomination track and twenty independent atelier rights exactly once',async()=>{
+test('v3 awards the entire higher-denomination track and twenty independent atelier rights exactly once',async()=>{
   const f=await fixture();try{const s=await f.earn('1000000000000');assert(validProgressionSnapshot(s));assert.equal(s.grants.length,20);assert.equal(s.skinGrants?.length,20);
     assert.deepEqual(s.grants.slice(0,5).map(g=>g.stakeUnits),['500000','1000000','2000000','3000000','5000000']);
-    assert.equal(s.grants.at(-1)?.stakeUnits,'50000000');assert.equal((await f.progression.report()).expectedIssuedPayoutUnits,'4671800000');
+    assert.equal(s.grants.at(-1)?.stakeUnits,'50000000');assert.equal((await f.progression.report()).expectedIssuedPayoutUnits,'4687525000');
     assert.equal((await f.progression.report()).issuedSkinGenerations,20);assert.equal((await f.progression.audit()).ok,true);
     await f.progression.processPending();assert.equal((await f.rights.available('alice')).length,20);
   }finally{await f.db.close();}
@@ -85,11 +85,11 @@ test('failed bundle delivery rolls back XP, the spin packet and the skin right t
     const s=await f.progression.snapshot('alice');assert.equal(s.grants.length,1);assert.equal(s.skinGrants?.length,1);
   }finally{await f.db.close();}
 });
-test('accepted legacy policy and issued nominal remain unchanged when v2 becomes available',async()=>{
+test('accepted legacy policy and issued nominal remain unchanged when v3 becomes available',async()=>{
   const f=await fixture();try{const old=new ProgressionStore(f.db,{policy:LEGACY_PROGRESSION_POLICY,now:()=>1000});await old.ready;
     const before=await f.earn('65960000','bob',old);assert.equal(before.policyVersion,'location-levels-v1');
     const retained=await f.progression.snapshot('bob');assert.deepEqual(retained,before);assert.equal(retained.grants[0].stakeUnits,'100000');assert.equal(retained.skinGrants?.length,0);
-    const current=await f.earn();assert.equal(current.policyVersion,'location-levels-v2');assert.equal(current.skinGrants?.length,1);
+    const current=await f.earn();assert.equal(current.policyVersion,'location-levels-v3');assert.equal(current.skinGrants?.length,1);
   }finally{await f.db.close();}
 });
 test('a reservation storage failure rolls back the atelier job and leaves its free right available',async()=>{

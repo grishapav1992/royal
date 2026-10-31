@@ -18,12 +18,14 @@ import type { ActivitiesState, PianoNote } from '../shared/activities';
 import type { PlayerView } from '../shared/world';
 import type { ActivityHostContext } from './ActivityHostContract';
 import type { PvpMove, PvpSnapshot } from '../shared/pvp';
+import type { progression } from '../wallet/ProgressionClient';
 
 export const GAME_HOST_KEY = Symbol.for('royal.game-host.v1');
 export interface GameHostV1 {
  readonly apiVersion: 1;
  readonly expansionClient: typeof expansionClient;
  readonly demoWallet: typeof demoWallet;
+ readonly progression: typeof progression;
  readonly walletCoins: typeof coins;
  readonly gameAudio: typeof gameAudio;
  readonly i18n: typeof i18n;

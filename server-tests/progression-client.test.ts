@@ -120,3 +120,32 @@ test('two tabs for the same account keep independent pending UUIDs and cannot re
   assert.notEqual(firstId, secondId); await two.retry(); assert.equal(second.size, 0);
   one.setAccount(null); two.setAccount(null);
 }));
+
+test('a pooled pending operation freezes its chosen game and the selected nominal never falls back to paid mode', () => fixture(async (client, storage) => {
+  const pooled = snapshot(); pooled.grants[0] = { ...pooled.grants[0], gameId: undefined, poolId: 'royal-slots-v1' };
+  client.snapshot = pooled; client.chooseFunding('100000'); let operation: RewardSpinRequest | undefined;
+  globalThis.fetch = (async (_url, init) => {
+    if (init?.method !== 'POST') return Response.json(pooled);
+    operation = JSON.parse(String(init.body)); throw Error('lost pooled result');
+  }) as typeof fetch;
+  await assert.rejects(client.spin(grant, 'royal-coins'));
+  assert.equal(client.pending?.gameId, 'royal-coins'); assert.equal(client.freeNominal, '100000');
+  client.chooseFunding(null); assert.equal(client.freeNominal, '100000');
+  const reloaded = new ProgressionClient(); reloaded.setAccount(account);
+  assert.equal(reloaded.freeNominal, '100000'); assert.deepEqual(reloaded.pending, operation);
+  pooled.grants[0].remaining = 0;
+  globalThis.fetch = (async (_url, init) => init?.method === 'POST'
+    ? Response.json({ ...reply(operation!), remaining: 0, replayed: true }) : Response.json(pooled)) as typeof fetch;
+  await reloaded.retry(); assert.equal(reloaded.pending, undefined); assert.equal(reloaded.freeNominal, '100000');
+  assert.equal(storage.get('royal-reward-funding:' + account), '100000');
+  reloaded.setAccount(randomUUID()); assert.equal(reloaded.freeNominal, null); assert.equal(reloaded.last, undefined);
+  reloaded.setAccount(null);
+}));
+
+test('a response for another chosen game cannot clear a pooled recovery request', () => fixture(async client => {
+  const pooled = snapshot(); pooled.grants[0] = { ...pooled.grants[0], gameId: undefined, poolId: 'royal-slots-v1' }; client.snapshot = pooled;
+  globalThis.fetch = (async (_url, init) => init?.method === 'POST'
+    ? Response.json({ ...reply(JSON.parse(String(init.body))), gameId: 'royal-coins' }) : Response.json(pooled)) as typeof fetch;
+  await assert.rejects(client.spin(grant, 'royal-fruits')); assert.equal(client.pending?.gameId, 'royal-fruits');
+  assert.equal(demoWallet.wallet?.balance, 100);
+}));

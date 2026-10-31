@@ -1,7 +1,7 @@
 import type { PostgresDatabase } from '../database';
 import type { ExperienceSource, FreeSpinReward, ProgressionReward, SkinGenerationReward, RewardBundle, LevelReward } from '../../src/shared/progression';
 import type { RoundContext, SettledExperience } from './store';
-import { FREE_SPIN_NOMINAL_UNITS } from '../../src/shared/progression';
+import { FREE_SPIN_NOMINAL_UNITS, validLevelReward } from '../../src/shared/progression';
 
 /** Source handlers normalize domain facts into fixed units: 10,000 units are one unweighted XP. */
 export interface ExperienceHandler<S extends string> {
@@ -30,17 +30,18 @@ const cash: ExperienceHandler<ExperienceSource> = {
   identity: event => JSON.stringify([event.paidUnits, event.refundedUnits, event.outcome]),
 };
 export const freeSpinRewardHandler: RewardHandler<FreeSpinReward> = {
-  valid: r => r.kind === 'free_spins' && ['royal-coins', 'royal-fruits'].includes(r.gameId) && Number.isInteger(r.count) && r.count >= 1 && r.count <= 10000
+  valid: r => validLevelReward(r) && r.kind === 'free_spins' && Number.isInteger(r.count) && r.count >= 1 && r.count <= 10000
     && units(r.stakeUnits) && (FREE_SPIN_NOMINAL_UNITS as readonly string[]).includes(r.stakeUnits),
   async issue(db, c, r) {
-    await db.prepare('INSERT INTO progression_rewards VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)').run(c.id, c.accountId, c.locationId,
-      c.milestoneId, c.policyVersion, 'free_spins', c.level, r.gameId, r.count, r.count, r.stakeUnits, c.environment, 1, c.createdAt);
+    await db.prepare('INSERT INTO progression_rewards(id,account_id,location_id,milestone_id,policy_version,type,level,game_id,count,remaining,nominal_units,currency,rules_version,created_at,pool_id) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)').run(c.id, c.accountId, c.locationId,
+      c.milestoneId, c.policyVersion, 'free_spins', c.level, r.gameId ?? '', r.count, r.count, r.stakeUnits, c.environment, 1, c.createdAt, r.poolId ?? null);
   },
   async audit(db, c, r) {
     const grant = await db.prepare('SELECT * FROM progression_rewards WHERE id=?').get(c.id);
     return !!grant && grant.account_id === c.accountId && grant.location_id === c.locationId && grant.currency === c.environment
       && grant.milestone_id === c.milestoneId && grant.policy_version === c.policyVersion && Number(grant.level) === c.level
-      && grant.type === 'free_spins' && grant.game_id === r.gameId && Number(grant.count) === r.count && grant.nominal_units === r.stakeUnits && Number(grant.rules_version) === 1;
+      && grant.type === 'free_spins' && grant.game_id === (r.gameId ?? '') && (grant.pool_id ?? null) === (r.poolId ?? null)
+      && Number(grant.count) === r.count && grant.nominal_units === r.stakeUnits && Number(grant.rules_version) === 1;
   },
 };
 export const skinGenerationRewardHandler: RewardHandler<SkinGenerationReward> = {
