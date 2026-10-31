@@ -1255,6 +1255,62 @@
         "src/shared/demoWallet.ts",
         "src/shared/usdtWallet.ts"
       ]
+    },
+    "flag-tote": {
+      "method": "exact-parimutuel-flag-pool-v1",
+      "releaseStatus": "qualified",
+      "rulesVersion": 1,
+      "progressVersion": 1,
+      "target": 0.95,
+      "refundReturn": 1,
+      "commissionBasisPoints": 500,
+      "consolationWeights": [
+        60,
+        30,
+        10
+      ],
+      "countries": 48,
+      "minBackedCountries": 3,
+      "minAccounts": 2,
+      "maxBankUnits": 1000000,
+      "maxAccountStakeUnits": 50000,
+      "maxTickets": 256,
+      "stakes": [
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "choices": [
+        "winner-backed",
+        "winner-unbacked",
+        "insufficient-countries",
+        "insufficient-accounts"
+      ],
+      "seeds": [
+        731831,
+        963161
+      ],
+      "replaysPerSeed": 256,
+      "proof": "docs/game-math/qualifications/flag-tote-v1.json",
+      "qualificationSource": "scripts/game-math/rtp-flag-tote.mjs",
+      "sources": [
+        "src/shared/flagTote.ts",
+        "server/flagTote.ts",
+        "server/flagToteRoutes.ts",
+        "server/demoWallet.ts",
+        "server/demoWalletAmounts.ts",
+        "server/database.ts",
+        "src/wallet/FlagToteClient.ts",
+        "scripts/game-math/flag-tote-reference.mjs",
+        "server-tests/flag-tote.test.ts",
+        "src/shared/flagBattle.ts",
+        "server/demoWalletRoutes.ts",
+        "server-tests/flag-tote-http.test.ts"
+      ],
+      "note": "Exact aggregate bank conservation and conditional allocation with real PostgreSQL common-wallet qualification. Individual return varies with the pool. Client layout and sound are checked separately before publication."
     }
   },
   "nonWagered": {

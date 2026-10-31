@@ -1,3 +1,4 @@
+import type { flagToteClient } from '../wallet/FlagToteClient';
 import type { IndependentGameId } from './GameModuleCatalog';
 import type { expansionClient } from '../wallet/ExpansionClient';
 import type { demoWallet, coins } from '../wallet/WalletClient';
@@ -23,6 +24,7 @@ import type { progression } from '../wallet/ProgressionClient';
 export const GAME_HOST_KEY = Symbol.for('royal.game-host.v1');
 export interface GameHostV1 {
  readonly apiVersion: 1;
+ readonly flagToteClient?: typeof flagToteClient;
  readonly expansionClient: typeof expansionClient;
  readonly demoWallet: typeof demoWallet;
  readonly progression: typeof progression;

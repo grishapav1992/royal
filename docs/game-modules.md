@@ -1,11 +1,11 @@
 # Independently published games
 
-Every retained game definition has an independent client package. The catalogue contains 123 module identities across the current and historical game families. This is a technical inventory, not a claim that the hall has 123 visible machines:
+Every retained game definition has an independent client package. The catalogue contains 124 module identities across the current and historical game families. This is a technical inventory, not a claim that the hall has 123 visible machines:
 
 | Family | Module identities |
 | --- | ---: |
 | Studio games, including Forest Heart, Caribbean Treasures, Flooded Temple and Galactic Reactor | 45 |
-| Original Royal games, GitHub practice games, session games and all casino/card variants, including LAST EXIT, Flag Battle and Jackie Chan | 63 |
+| Original Royal games, GitHub practice games, session games and all casino/card variants, including LAST EXIT, Flag Battle, Flag Totalizator and Jackie Chan | 64 |
 | Air hockey, pool, chess, piano and Mortal Kombat | 5 |
 | Durak, transfer Durak, Crazy Eights and Tsu-e-fa PvP | 4 |
 | Breaker, Orbit, Drift and Pixel legacy arcade games | 4 |
@@ -114,3 +114,5 @@ Flooded Temple package 0.9.2 retains 1/2/2, enlarges phone toolbar hit areas, sc
 Flag Battle (`flag-battle`, API 1, rules 2, progress 1) is an independent wagered client module in the existing Royal catalogue without adding seats. Players choose 12, 24 or 48 equal countries; every complete paid round has analytical RTP 96%. Rules-1 sessions remain readable and settle under their original twelve-country rules. Capability 2 is required for explicit mode starts and rules-2 session transport. This contract requires a compatible host/backend update before independent package publication. See [its rules and feedback specification](concepts/flag-battle.md).
 
 Module media inventory excludes noncanonical filenames (for example, synchronization copies containing spaces) before hashing or reading their contents. Such names cannot occur in a validated module resource path. Symlink, traversal, declared-root and immutable-byte validation remain enforced. This preserves unrelated local copies while preventing them from blocking a build.
+
+Flag Totalizator (`flag-tote`, API/rules/progress 1/1/1) is a separate shared player-funded pool with all 48 countries. The common host owns the singleton `flagToteClient`, account-bound pending ticket recovery, wallet and audio; the common backend owns cutoff, entropy, persistent rounds and integer settlement. Its optional host service is required by this package, so a matching host/backend must ship before independent publication. The existing Flag Battle solo contracts and saved rounds remain unchanged. The new module is verified locally, not published to production. See [rules and verification](concepts/flag-tote.md).

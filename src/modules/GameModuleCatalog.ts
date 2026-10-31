@@ -48,6 +48,7 @@ export const STUDIO_GAME_MODULES = [
 ] as const;
 
 export const CASINO_GAME_MODULES = [
+ { gameId: 'flag-tote', slug: 'flag-tote', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
  { gameId: 'original-jackie-chan', slug: 'jackie-chan', apiVersion: 1, rulesVersion: 1, progressVersion: 2 },
  { gameId: 'flag-battle', slug: 'flag-battle', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },
  { gameId: 'original-cr-vs-leo', slug: 'cr-vs-leo', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },

@@ -1,3 +1,4 @@
+import {TOTE_METHOD,validateToteProof} from './rtp-flag-tote.mjs';
 import {KEYS_METHOD,validateKeysProof} from './rtp-keys.mjs';
 import {HILO_METHOD,validateHiloProof} from './rtp-hilo.mjs';
 import { REWARD_SLOTS_METHOD, validateRewardSlotsProof } from './rtp-reward-slots.mjs';
@@ -43,6 +44,7 @@ export function validateRtpProof(gameId, inputs, proof) {
   if (gameId==='studio-neopolis' && p.rulesVersion>=4) assert.equal(p.method,'neopolis-variable-stake-conditional-v4','Variable stakes require conditional qualification');
   assert.equal(proof.policySha256, inputs.policySha256, 'RTP policy changed: rerun qualification');
   assert.deepEqual(proof.sourceHashes, inputs.sourceHashes, 'RTP source changed: rerun qualification');
+  if(p.method===TOTE_METHOD)return validateToteProof(gameId,inputs,proof);
   if(p.method===KEYS_METHOD){assert.equal(gameId,'variant-keys');return validateKeysProof(p,proof);}
   if(p.method===HILO_METHOD){assert.equal(gameId,'github-hilo');return validateHiloProof(p,proof);}
   if(p.method===REWARD_SLOTS_METHOD)return validateRewardSlotsProof(gameId,p,proof);

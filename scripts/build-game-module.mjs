@@ -46,6 +46,7 @@ const fingerprint = moduleFingerprinter(root, { esbuildVersion, node: process.ve
 const report = [];
 
 const bridgeModules = new Map([
+ ['src/wallet/FlagToteClient', ['flagToteClient']],
  ['src/wallet/ExpansionClient', ['expansionClient']],
  ['src/wallet/WalletClient', ['demoWallet', 'coins']],
  ['src/wallet/ProgressionClient', ['progression']],

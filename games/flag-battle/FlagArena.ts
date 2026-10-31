@@ -29,6 +29,15 @@ export class FlagArena {
     this.labels = flagCountries(this.mode).map(c => c.id);
     if (view && this.plan) for (const [i, body] of this.plan.order.entries()) this.labels[body] = view.order[i];
   }
+  /** Shared rounds seek to server presentation time; the solo frame clock is unchanged. */
+  seek(seconds: number) {
+    if (!this.plan) return;
+    const elapsed = Math.max(0, seconds);
+    const target = Math.min(this.plan.duration, elapsed / this.seconds * this.plan.duration);
+    if (target > this.world.time) this.world.advance(target - this.world.time);
+    if (elapsed >= this.seconds + .7) this.finish();
+    else if (this.world.finished) this.celebration = Math.min(1, Math.max(0, (elapsed - this.seconds) / .7));
+  }
   soundTimeline(selected: FlagCountry, won: boolean) { return this.plan ? flagSoundTimeline(this.plan, this.labels, selected, won, this.seconds) : []; }
   count() { return this.world.exits.length; }
   finish() {

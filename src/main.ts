@@ -1,3 +1,4 @@
+import { FlagToteAnnouncement } from './ui/FlagToteAnnouncement';
 import './i18n/paymentMethodsEn';
 import { IndependentGameUI } from './modules/IndependentGameUI';
 import { prepareGameModule } from './modules/GameModulePreparation';
@@ -26,7 +27,7 @@ import { gameAudio } from './game/GameAudio';
 import Phaser from 'phaser';
 import { ProgressionUI } from './ui/ProgressionUI';
 import { RoomScene, CABINETS, type Cabinet } from './game/RoomScene';
-import { cabinetHall, cabinetsInHall } from './shared/cabinets';
+import { GAME_CABINETS, cabinetHall, cabinetsInHall } from './shared/cabinets';
 import { WORLD } from './game/navigation';
 import './style.css';
 import './paper-theme.css';
@@ -262,6 +263,11 @@ const room = new RoomScene({
   },
   onPlay: cabinet => { void play(cabinet); },
   onReady: () => { new ClubMap(room);
+    if (!offline) new FlagToteAnnouncement($('.room-panel'), () => {
+      if (openingCabinet || document.querySelector('dialog[open]')) return;
+      const cabinet = GAME_CABINETS.find(c => c.id === 'flag-tote');
+      if (cabinet) { platformCabinet = undefined; selectedPlatformGame = undefined; void openCabinetGame(cabinet); }
+    });
     $('#loading').remove();
     catalogCabinets.forEach((c, artIndex) => {
       const i=CABINETS.indexOf(c);

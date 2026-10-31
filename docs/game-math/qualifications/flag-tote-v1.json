@@ -1,0 +1,275 @@
+{
+  "schemaVersion": 1,
+  "gameId": "flag-tote",
+  "rulesVersion": 1,
+  "progressVersion": 1,
+  "startedAt": "2026-10-31T12:34:56.422Z",
+  "completedAt": "2026-10-31T12:34:58.988Z",
+  "sourceHashes": {
+    "src/shared/flagTote.ts": "98c84c8e3de49e97fde4097939fb2b42acc1ea912b09e875af80cd9597322619",
+    "server/flagTote.ts": "f00e6b1cb1bfd7f3350d53948d931faccc0e61e5e56a97a6ede3dd0ddd0345c5",
+    "server/flagToteRoutes.ts": "ce0a795d06c4c5e662e4afd80bd322d035eedf6cac0839afd4aba2fcc24c8e4c",
+    "server/demoWallet.ts": "73811ed429d0591966a49cbeaacbb638ef2f3dee715aac9d879de7d4c740a8ad",
+    "server/demoWalletAmounts.ts": "1da7a73b63c79cba0ff674f59c75fe517d8445eafaf831be8afa7f9a4c6e6317",
+    "server/database.ts": "89c282f2e65158079bdafc07d815c5ca962aa82f89ba0d3c5f03a19aa7c81ca8",
+    "src/wallet/FlagToteClient.ts": "676ad2de6288d1d3e713e267d74d9a96faa8b3238900287661553032356e90ad",
+    "scripts/game-math/flag-tote-reference.mjs": "5ef2b1deb1554574952b8a94fc6de2138cc5afd4ed8037d66db41a5ad91f9812",
+    "server-tests/flag-tote.test.ts": "441b0a3f234e7270c89cae7b73406360b850cc667cb3dcb89cfe4dd1459a3634",
+    "src/shared/flagBattle.ts": "e156fd61e71243759c27d9a9d3fed8a0ab1555e9938f6a2b7ac854c344d16e6f",
+    "server/demoWalletRoutes.ts": "703a40600ade2d1ff79a34f7bff5aaf955a8b084ffcb8964ea3bedcf5193d24b",
+    "server-tests/flag-tote-http.test.ts": "2e024298a3fa6338290db2cdaa7153f072442b1494574b6676c4d7335de9aa68",
+    "scripts/game-math/rtp-flag-tote.mjs": "a58a66041c3658db2bff86b4b4eb0c00d4d94ddd99aa6d2170a88b5909ce68b0"
+  },
+  "policySha256": "211e87b814cb98064846564d1c016f861106595536fd056f568e39ff3604986f",
+  "serverReplayChecks": 14912,
+  "method": "exact-parimutuel-flag-pool-v1",
+  "analysis": {
+    "countries": 48,
+    "countryFirstProbability": "1/48",
+    "aggregateCompletedReturn": "19/20",
+    "aggregateRefundReturn": "1",
+    "individualReturn": "Depends on stake distribution and finishing order; no fixed individual RTP is asserted.",
+    "conservation": "For any accepted bank B, B is divisible by 100. F=B/20 is exact. Hamilton allocations sum to B-F at both country and ticket levels. Hence sum(player credits)+F=B for every composition and permutation.",
+    "allocationBound": "A floor allocation leaves fewer cents than recipients. Largest distinct remainders receive one cent each; input order breaks ties. Every ticket credit is nonnegative and at most B. A fixed maximum-bank reservation therefore covers any award or refund.",
+    "outcomeBranches": "Backed first place: one country receives the net bank. Unbacked first place: the three nearest backed countries receive Hamilton weights 6:3:1. Fewer than three backed countries or two accounts: full refunds without drawing.",
+    "coverage": "All 48 countries, six allowed stakes, direct first place and every possible consolation finishing place 2 through 48, both refund branches; independent seeded multi-player compositions.",
+    "boundsKind": "Algebraic exact aggregate bounds, not a sampling confidence interval or a fixed player RTP."
+  },
+  "results": [
+    {
+      "choice": "winner-backed",
+      "stakeUnits": 100,
+      "cases": 48,
+      "potUnits": "52800",
+      "feeUnits": "2640",
+      "returnedUnits": "50160",
+      "sha256": "831427e29bb1eda4a9f21c5e5d2991042f12a68c3fa8de2fcd4208b71ba4ea36"
+    },
+    {
+      "choice": "winner-unbacked",
+      "stakeUnits": 100,
+      "cases": 2256,
+      "potUnits": "2481600",
+      "feeUnits": "124080",
+      "returnedUnits": "2357520",
+      "sha256": "5d3cb5a4e0fb320342205ec8d5920f50f1009bd83de68c16e4c7265844f1cda1"
+    },
+    {
+      "choice": "insufficient-countries",
+      "stakeUnits": 100,
+      "cases": 48,
+      "potUnits": "14400",
+      "feeUnits": "0",
+      "returnedUnits": "14400",
+      "sha256": "1d0869e72cfa6013783f2d97601e7f17683bce6547ca8a7eb02d9c3f15d5cfff"
+    },
+    {
+      "choice": "insufficient-accounts",
+      "stakeUnits": 100,
+      "cases": 48,
+      "potUnits": "52800",
+      "feeUnits": "0",
+      "returnedUnits": "52800",
+      "sha256": "d5b6c4c06d12652c23e102d3e62a4b102373479ea2f0e6cef14c95cbf3a95bdc"
+    },
+    {
+      "choice": "winner-backed",
+      "stakeUnits": 200,
+      "cases": 48,
+      "potUnits": "72000",
+      "feeUnits": "3600",
+      "returnedUnits": "68400",
+      "sha256": "a7825ba2514a7f84d66338729195a5076dea21851c2838ab983c1d55d2dbeb00"
+    },
+    {
+      "choice": "winner-unbacked",
+      "stakeUnits": 200,
+      "cases": 2256,
+      "potUnits": "3384000",
+      "feeUnits": "169200",
+      "returnedUnits": "3214800",
+      "sha256": "6bee5ad44b65d7ed6ca09b3f7e64a215b0b13f311eacf76fa1140905cfc014c5"
+    },
+    {
+      "choice": "insufficient-countries",
+      "stakeUnits": 200,
+      "cases": 48,
+      "potUnits": "33600",
+      "feeUnits": "0",
+      "returnedUnits": "33600",
+      "sha256": "84629692bf8975d65507fdc81f115090bc3fdf84cc0794e7a09e7535d4810bca"
+    },
+    {
+      "choice": "insufficient-accounts",
+      "stakeUnits": 200,
+      "cases": 48,
+      "potUnits": "72000",
+      "feeUnits": "0",
+      "returnedUnits": "72000",
+      "sha256": "2ec87aaa27326bcefd853a8b09406a49f404f8973dfcdc1829011c0ff6f7f538"
+    },
+    {
+      "choice": "winner-backed",
+      "stakeUnits": 500,
+      "cases": 48,
+      "potUnits": "110400",
+      "feeUnits": "5520",
+      "returnedUnits": "104880",
+      "sha256": "7f1f6b968a9bbedd75c1f28fb92208774af3c0890005a06e89f153b7d83a91dc"
+    },
+    {
+      "choice": "winner-unbacked",
+      "stakeUnits": 500,
+      "cases": 2256,
+      "potUnits": "5188800",
+      "feeUnits": "259440",
+      "returnedUnits": "4929360",
+      "sha256": "88987c045ea5d8416649d3dca8b1422b0121b5188838fb264aa7e9f717606d26"
+    },
+    {
+      "choice": "insufficient-countries",
+      "stakeUnits": 500,
+      "cases": 48,
+      "potUnits": "72000",
+      "feeUnits": "0",
+      "returnedUnits": "72000",
+      "sha256": "04f3514a46e5bcb5e2dae3a6919d499b119e45a059fa9e14a62840424591380c"
+    },
+    {
+      "choice": "insufficient-accounts",
+      "stakeUnits": 500,
+      "cases": 48,
+      "potUnits": "110400",
+      "feeUnits": "0",
+      "returnedUnits": "110400",
+      "sha256": "da5a711f078108768f734313b242ba4ecdfd3c2d3a079d06d47f9992b1f2ffd3"
+    },
+    {
+      "choice": "winner-backed",
+      "stakeUnits": 1000,
+      "cases": 48,
+      "potUnits": "182400",
+      "feeUnits": "9120",
+      "returnedUnits": "173280",
+      "sha256": "1d86f5a55863722a100c5e5b7669ebf2ea2f0f7588e2fb5737b4ea81940fce20"
+    },
+    {
+      "choice": "winner-unbacked",
+      "stakeUnits": 1000,
+      "cases": 2256,
+      "potUnits": "8572800",
+      "feeUnits": "428640",
+      "returnedUnits": "8144160",
+      "sha256": "129bd635fd8c428c1e9197d809181250c154de03afa6839e992619a2901b711d"
+    },
+    {
+      "choice": "insufficient-countries",
+      "stakeUnits": 1000,
+      "cases": 48,
+      "potUnits": "144000",
+      "feeUnits": "0",
+      "returnedUnits": "144000",
+      "sha256": "9c568e784e819d8f1bf67d1e986688527998276ccfcb111cff6a913dc505a40a"
+    },
+    {
+      "choice": "insufficient-accounts",
+      "stakeUnits": 1000,
+      "cases": 48,
+      "potUnits": "182400",
+      "feeUnits": "0",
+      "returnedUnits": "182400",
+      "sha256": "aad9769875c80f9abc8acb84d2bcf1c5a0528cda172ac6d7a2fa2dac1e3cfcaa"
+    },
+    {
+      "choice": "winner-backed",
+      "stakeUnits": 2000,
+      "cases": 48,
+      "potUnits": "374400",
+      "feeUnits": "18720",
+      "returnedUnits": "355680",
+      "sha256": "0022d3649ad386a92659090358bc8179d681249e09c107db6e7ea5ee824ab7e7"
+    },
+    {
+      "choice": "winner-unbacked",
+      "stakeUnits": 2000,
+      "cases": 2256,
+      "potUnits": "17596800",
+      "feeUnits": "879840",
+      "returnedUnits": "16716960",
+      "sha256": "99fbce904652085a4b032b0f2a6221dc44fbd23ba280c223bd172c2b1c9a6741"
+    },
+    {
+      "choice": "insufficient-countries",
+      "stakeUnits": 2000,
+      "cases": 48,
+      "potUnits": "336000",
+      "feeUnits": "0",
+      "returnedUnits": "336000",
+      "sha256": "405569edd3278a7bac35094cc991f5f5399903d37fe65a68ededcf9d5ce185a0"
+    },
+    {
+      "choice": "insufficient-accounts",
+      "stakeUnits": 2000,
+      "cases": 48,
+      "potUnits": "374400",
+      "feeUnits": "0",
+      "returnedUnits": "374400",
+      "sha256": "ab1049409dbefa996bb983163b5207627abd0920e9c55354060158e989d58745"
+    },
+    {
+      "choice": "winner-backed",
+      "stakeUnits": 5000,
+      "cases": 48,
+      "potUnits": "283200",
+      "feeUnits": "14160",
+      "returnedUnits": "269040",
+      "sha256": "95f90dd9a8f610b37b7778fa4ff2b3bd21d701cda7b3be5b076e2c161d298def"
+    },
+    {
+      "choice": "winner-unbacked",
+      "stakeUnits": 5000,
+      "cases": 2256,
+      "potUnits": "13310400",
+      "feeUnits": "665520",
+      "returnedUnits": "12644880",
+      "sha256": "f70ec15321aef5ed24839b2ac8ddd62583a70e164425308145bebf3008f85ec6"
+    },
+    {
+      "choice": "insufficient-countries",
+      "stakeUnits": 5000,
+      "cases": 48,
+      "potUnits": "244800",
+      "feeUnits": "0",
+      "returnedUnits": "244800",
+      "sha256": "338cb4293f7f2667b3cf7fb5b28a4c9f4a135b3aaa06ca94fc3ad470b4a98ce5"
+    },
+    {
+      "choice": "insufficient-accounts",
+      "stakeUnits": 5000,
+      "cases": 48,
+      "potUnits": "283200",
+      "feeUnits": "0",
+      "returnedUnits": "283200",
+      "sha256": "95ee2ea9de7129023a0f352e992e874b3237cea5e4d4da4c7ad064a8311c9486"
+    }
+  ],
+  "streams": [
+    {
+      "seed": 731831,
+      "rounds": 256,
+      "sha256": "4d6c2cc2eec7e426a4e910db4cc8ac3ad9e3c2ca41c5f26e10194102872cf49e"
+    },
+    {
+      "seed": 963161,
+      "rounds": 256,
+      "sha256": "6d1c8253127b5b14b8d354fa34aa21ed5a74db44c120715cdef1542feba028ff"
+    }
+  ],
+  "wallet": {
+    "tests": 9,
+    "passed": 9,
+    "failed": 0,
+    "sha256": "163916b635505107a69eed572718f7314224f50b52c74997655cd70ea98befa1",
+    "scope": "Real common wallet: acceptance, fee, conservation, proportional return, rounding, refunds, ownership, replay, cutoff after lock, restart, capacity, invalid entropy rollback."
+  }
+}

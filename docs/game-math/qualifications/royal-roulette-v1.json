@@ -3,8 +3,8 @@
   "gameId": "royal-roulette",
   "rulesVersion": 1,
   "progressVersion": 1,
-  "startedAt": "2026-10-30T22:16:01.708Z",
-  "completedAt": "2026-10-30T22:16:01.864Z",
+  "startedAt": "2026-10-31T12:31:39.976Z",
+  "completedAt": "2026-10-31T12:31:40.116Z",
   "sourceHashes": {
     "server/games/roulette.ts": "b8aba50f88ff2c65b54bef35a056b13d5b470d6b9f955f2610559c101e0390ef",
     "server/games/core.ts": "246ebe0febf3ad89a8997b1cdac83c28a0e6f175a14d2318403a39d3a27b1146",
@@ -12,7 +12,7 @@
     "src/shared/gameCore.ts": "aa9520b435a5c969d257290e3b06060051db76de45955f99dd68c48f1b5addab",
     "src/shared/originalGames.ts": "9743f1465b625e64055c8c6c9f268ce8023d61adc7eed187507be7d4163d40c0",
     "src/shared/demoWallet.ts": "2f3d21554eaa03930e306f8db103fe8299649387853574dff516cd01cd7e1cef",
-    "server/demoWallet.ts": "18b5a68e54de2bb5d6110388cefd1a07d9b1224dc9e2d8ced757e06d999fb65c",
+    "server/demoWallet.ts": "73811ed429d0591966a49cbeaacbb638ef2f3dee715aac9d879de7d4c740a8ad",
     "scripts/game-math/rtp-roulette.mjs": "fcd5158dd4342675226247a70b4452189d1b972c73a10dd65ee565aa7db8fb24"
   },
   "policySha256": "7d75f001943988834b07449ca760beb8d78872d53833d4e6202ab3357b7a55b1",

@@ -1,4 +1,5 @@
 import test from 'node:test';
+import {TOTE_GAME} from '../src/shared/flagTote';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
@@ -31,9 +32,9 @@ function manifest(gameId: IndependentGameId) {
 test('every defined game has a distinct module package and matching public contract', async () => {
  const required = [...new Set([
   ...EXPANSION_GAMES, ...SESSION_GAMES, ...GITHUB_GAME_IDS, ...GAME_CATALOG.map(game => game.id),
-  ...Object.keys(ACTIVITIES), 'casinoapipro', 'luelon', 'breaker', 'orbit', 'drift', 'pixel',
+  ...Object.keys(ACTIVITIES), TOTE_GAME, 'casinoapipro', 'luelon', 'breaker', 'orbit', 'drift', 'pixel',
  ])].sort();
- assert.equal(required.length, 123); // Tower was removed; the independent games retain their contracts.
+ assert.equal(required.length, 124); // Shared Flag totalizator adds its own independent contract.
  assert(required.includes('studio-forest-heart')&&required.includes('studio-flooded-temple')&&required.includes('original-jackie-chan'));
  assert.deepEqual(GAME_MODULES.map(game => game.gameId).sort(), required);
  assert.ok(STUDIO_GAMES.every(id => required.includes(id)));

@@ -1,0 +1,1 @@
+{"name":"@royal/flag-tote","version":"1.0.0","private":true,"gameId":"flag-tote","apiVersion":1,"rulesVersion":1,"progressVersion":1,"entry":"entry.ts","assetRoots":["flag-tote","flag-battle"],"scripts":{"build":"node ../../node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && node ../../scripts/build-game-module.mjs"}}
