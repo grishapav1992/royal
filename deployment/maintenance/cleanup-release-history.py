@@ -70,13 +70,27 @@ def allocated(path):
     return int(run(['du', '-sk', str(path)]).split()[0]) * 1024
 
 
-def tree_identity(path):
+def tree_identity(path, shared_files=None, capture_shared=False, hash_cache=None):
     path = Path(path)
+    shared_files = {} if shared_files is None else shared_files
+    hash_cache = {} if hash_cache is None else hash_cache
     rows = []
     def visit(item):
         s = item.lstat()
-        rows.append([str(item.relative_to(path)), s.st_dev, s.st_ino, s.st_mode,
-                     s.st_size, s.st_mtime_ns, s.st_ctime_ns])
+        name = str(item.relative_to(path))
+        if name in shared_files or capture_shared and stat.S_ISREG(s.st_mode) and s.st_nlink > 1:
+            require(stat.S_ISREG(s.st_mode), 'Shared history file changed type')
+            key = (s.st_dev, s.st_ino, s.st_size, s.st_mtime_ns, s.st_ctime_ns)
+            if key not in hash_cache: hash_cache[key] = sha(item)
+            digest = hash_cache[key]
+            if capture_shared: shared_files[name] = digest
+            # Unlinking a reviewed sibling changes this inode's ctime even when
+            # its bytes are unchanged. Content hashes still detect real edits.
+            change_identity = ['shared-sha256', digest]
+        else:
+            change_identity = s.st_ctime_ns
+        rows.append([name, s.st_dev, s.st_ino, s.st_mode,
+                     s.st_size, s.st_mtime_ns, change_identity])
         if stat.S_ISDIR(s.st_mode):
             require(not os.path.ismount(item), 'Mounted directory in deletion scope: ' + str(item))
             for child in sorted(item.iterdir()):
@@ -89,6 +103,7 @@ def deletion_candidates(keep, roots=ROOTS, protected=()):
     keep = {Path(path) for path in keep}
     protected = {Path(path) for path in protected}
     result = []
+    hash_cache = {}
     def visit(path):
         if path in keep or path in protected or path.name.endswith('.lock'): return
         if any(child.is_relative_to(path) for child in protected):
@@ -96,7 +111,9 @@ def deletion_candidates(keep, roots=ROOTS, protected=()):
             for child in sorted(path.iterdir()): visit(child)
             return
         require(time.time() - path.lstat().st_mtime > 600, 'Recent history entry may be in use: ' + str(path))
-        result.append({'path': str(path), 'identity': tree_identity(path), 'allocatedBytes': allocated(path)})
+        shared_files = {}
+        identity = tree_identity(path, shared_files, capture_shared=True, hash_cache=hash_cache)
+        result.append({'path': str(path), 'identity': identity, 'sharedFiles': shared_files, 'allocatedBytes': allocated(path)})
     for root in roots:
         require(root.is_dir() and not root.is_symlink(), 'Unsafe history root')
         for path in sorted(root.iterdir()):
@@ -109,7 +126,7 @@ def remove_entry(row, keep, roots=ROOTS):
     path = Path(row['path'])
     require(any(path.is_relative_to(root) and path != root for root in roots)
             and not any(path == Path(p) or path.is_relative_to(p) for p in keep), 'Deletion escaped approved scope')
-    require(tree_identity(path) == row['identity'], 'History entry changed after review: ' + str(path))
+    require(tree_identity(path, row.get('sharedFiles')) == row['identity'], 'History entry changed after review: ' + str(path))
     if path.is_symlink() or not path.is_dir():
         path.unlink()
     else:
@@ -122,7 +139,7 @@ def validate_selection(rows, keep, roots=ROOTS):
         path = Path(row['path'])
         require(any(path.is_relative_to(root) and path != root for root in roots)
                 and not any(path == Path(p) or path.is_relative_to(p) for p in keep), 'Deletion escaped approved scope')
-        require(tree_identity(path) == row['identity'], 'History entry changed since review: ' + str(path))
+        require(tree_identity(path, row.get('sharedFiles')) == row['identity'], 'History entry changed since review: ' + str(path))
 
 
 def configuration():
