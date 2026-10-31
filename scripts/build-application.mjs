@@ -47,8 +47,15 @@ export async function buildApplication({ root = projectRoot, modules = null, hos
     await step('modules', node(['scripts/build-game-module.mjs', ...(modules ? ['--games', ...modules] : ['--all'])]));
     if(hostProjection){const reader=await readHostProjection(root,hostProjection,{strictOrigins:true});const games=reader.metadata.moduleGames;
       if(games){if(!Array.isArray(games)||!games.length||!games.every(n=>/^[a-z0-9-]+$/.test(n)))throw Error('Invalid projected module selection');
+        const initialModules=JSON.parse(await readFile(resolve(root,'module-build/build-report.json'),'utf8'));
         await step('projected-modules',node(['scripts/build-game-module.mjs','--games',...games,'--source-projection',hostProjection]));
-        report.moduleProjection=JSON.parse(await readFile(resolve(root,'module-build/source-projection-report.json'),'utf8'));}}
+        report.moduleProjection=JSON.parse(await readFile(resolve(root,'module-build/source-projection-report.json'),'utf8'));
+        const projectedModules=JSON.parse(await readFile(resolve(root,'module-build/build-report.json'),'utf8'));
+        const replacements=new Map(projectedModules.games.map(game=>[game.gameId,game]));
+        const mergedGames=initialModules.games.map(game=>replacements.get(game.gameId)??game);
+        if(replacements.size!==games.length||mergedGames.length!==initialModules.games.length)throw Error('Projected module inventory changed');
+        await saveJson(resolve(root,'module-build/build-report.json'),{...initialModules,durationMs:initialModules.durationMs+projectedModules.durationMs,
+          games:mergedGames,built:mergedGames.filter(game=>!game.reused).length,reused:mergedGames.filter(game=>game.reused).length});}}
     if (!modules) {
       await step('host', hostProjection ? async () => { report.hostProjection = await buildProjectedHost(root, hostProjection); }
         : node(['node_modules/vite/bin/vite.js', 'build']));
