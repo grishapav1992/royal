@@ -126,7 +126,7 @@
 }
 /* Keep the board large on phones by sharing the final row and compacting labels. */
 @container ct-viewport (max-width:650px){
- .ct-root{display:grid;grid-template-columns:146px minmax(0,1fr);grid-template-rows:auto minmax(min(330px,calc((100cqw - 70px)*2/3 + 54px)),1fr) auto auto 40px;grid-template-areas:"heading heading" "stage stage" "ledger ledger" "controls controls" "playback status";padding:7px;gap:6px;min-height:0}
+ .ct-root{display:grid;grid-template-columns:146px minmax(0,1fr);grid-template-rows:auto minmax(min(330px,calc((100cqw - 70px)*2/3 + 26px)),1fr) auto auto 40px;grid-template-areas:"heading heading" "stage stage" "ledger ledger" "controls controls" "playback status";padding:7px;gap:6px;min-height:0}
  .ct-heading{grid-area:heading}.ct-stage{grid-area:stage;min-height:0}
  .ct-title{padding:7px 8px}.ct-title small{display:none}.ct-heading h2{font-size:clamp(15px,4.6cqw,20px);margin:0}
  .ct-ledger{grid-area:ledger}.ct-ledger strong{min-block-size:1.2em}.ct-ledger span{min-block-size:2.4em}
