@@ -46,7 +46,7 @@ async function routeScenario(page: Page, scenario: string, loseFirst = false) {
     const request = route.request();
     if (request.method() !== 'POST' || request.postDataJSON()?.gameId !== id) { await route.fallback(); return; }
     const response = await route.fetch({ url: new URL('/__test/forest-heart/operate', request.url()).href, headers: { ...request.headers(), 'x-forest-scenario': scenario } });
-    if (loseFirst && !lost) { lost = true; await route.abort('connectionreset'); return; }
+    if (loseFirst && !lost) { expect(response.status()).toBe(200); lost = true; await route.abort('connectionreset'); return; }
     await route.fulfill({ response });
   });
 }
@@ -69,6 +69,56 @@ async function wallet(page: Page) {
     return (await fetch('/api/demo-wallet', { headers: { 'X-Royal-Account-Id': me.account.id } })).json();
   });
 }
+
+test('Kling character video decodes in the real host, follows accepted flow and stops for rules and reduced motion', async ({page,roomPath}) => {
+  const errors: string[] = []; page.on('pageerror',error=>errors.push(error.message));
+  await routeScenario(page,'win'); await enter(page,roomPath);
+  await expect.poll(async()=>(await state(page)).character.video.blend,{timeout:20000}).toBeGreaterThan(.95);
+  await expect.poll(async()=>(await state(page)).character.video.frames).toBeGreaterThan(4);
+  const idle=await state(page);
+  expect(idle.character.video.clip).toBe('idle');
+  expect(idle.character.video.media.every((media:any)=>media.muted)).toBe(true);
+  const source=await game(page).locator('video').evaluateAll(elements=>elements.map(element=>(element as HTMLVideoElement).currentSrc));
+  expect(source.some(url=>/\/game-modules\/studio-forest-heart\/versions\/[^/]+\/media\/forest-heart\/kling-v1\/idle\.mp4/.test(url))).toBe(true);
+  await page.screenshot({path:out+'/kling-desktop.png'});
+  await game(page).locator('[data-fh=spin]').click();
+  await expect.poll(async()=>{const video=(await state(page)).character.video;return video.clip==='channel'&&video.blend>.5;},{timeout:12000,intervals:[50]}).toBe(true);
+  await page.screenshot({path:out+'/kling-channel.png'});
+  await expect.poll(async()=>!(await state(page)).busy,{timeout:15000}).toBe(true);
+  await game(page).locator('[data-fh=rules]').click();
+  const paused=await state(page);
+  expect(paused.character.video.blend).toBe(0);
+  expect(paused.character.video.media.every((media:any)=>media.paused)).toBe(true);
+  await game(page).locator('[data-fh=close]').click();
+  await expect.poll(async()=>(await state(page)).character.video.blend).toBeGreaterThan(.95);
+  await page.setViewportSize({width:390,height:844}); await fit(game(page));
+  await expect(page.locator('#chat-input')).toBeInViewport();
+  await page.screenshot({path:out+'/kling-mobile.png'});
+  await game(page).locator('[data-fh=settings]').click();
+  await game(page).locator('[data-fh=motion]').check();
+  await game(page).locator('[data-fh=close]').click();
+  await expect.poll(async()=>(await state(page)).character.video.blend).toBe(0);
+  expect((await state(page)).character.video.media.every((media:any)=>media.paused)).toBe(true);
+  await page.screenshot({path:out+'/kling-reduced.png'});
+  await game(page).locator('[data-fh=settings]').click();
+  await game(page).locator('[data-fh=motion]').uncheck();
+  await game(page).locator('[data-fh=close]').click();
+  await expect.poll(async()=>(await state(page)).character.video.blend).toBeGreaterThan(.95);
+  await page.locator('#mini-dialog .mini-top [data-close]').click();
+  await expect(page.locator('.forest-heart-frame')).toHaveCount(0);
+  expect(errors).toEqual([]);
+});
+
+test('unavailable character videos preserve the existing elf and playable controls', async({page,roomPath})=>{
+  const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
+  await page.route('**/kling-v1/*.mp4',route=>route.abort());
+  await enter(page,roomPath);
+  await expect.poll(async()=>(await state(page)).character.video.failed).toContain('idle');
+  expect((await state(page)).character.video.blend).toBe(0);
+  await expect(game(page).locator('.fh-character-canvas')).toHaveCSS('opacity','1');
+  await expect(game(page).locator('[data-fh=spin]')).toBeEnabled();
+  expect(errors).toEqual([]);
+});
 async function fit(frame: FrameLocator) {
   const boxes = await frame.locator('.fh').evaluate(root => ({ width: root.ownerDocument.documentElement.clientWidth, scroll: root.ownerDocument.documentElement.scrollWidth, board: root.querySelector('.fh-board')!.getBoundingClientRect().toJSON(), bonusBottom:(root.querySelector('.fh-bonus') as HTMLElement).hidden ? 0 : root.querySelector('.fh-bonus')!.getBoundingClientRect().bottom, controlsTop:root.querySelector('.fh-controls')!.getBoundingClientRect().top }));
   expect(boxes.scroll).toBeLessThanOrEqual(boxes.width + 1); expect(boxes.board.width).toBeGreaterThanOrEqual(180);
@@ -119,6 +169,7 @@ test('real host preserves choice, bonus, exact settlement and connected chat acr
 test('a lost accepted response retries the same UUID once, with no repeated charge or award', async ({ page, roomPath }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' }); await routeScenario(page, 'partial', true); await enter(page, roomPath);
   await game(page).locator('[data-fh=spin]').click(); await expect(game(page).locator('[data-fh=retry]')).toBeVisible();
+  await expect(game(page).locator('[data-fh=retry]')).toBeEnabled();
   expect((await wallet(page)).balance).toBe(9996.31);
   await page.reload();await expect(page.locator('#join-dialog')).toBeHidden({timeout:20000});
   await expect.poll(()=>online(page)).toBe(true);

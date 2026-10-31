@@ -1,5 +1,13 @@
 # Forest Heart client 1.7
 
+## Local character video experiment 1.9
+
+Two reviewed silent Kling 3.0 clips augment the existing illustrated character. Idle uses a forward/reverse loop of restrained breathing, hair and head movement. The accepted `awaken` and `channel` poses select the crystal gesture; choice, flower, bonus and final result reactions retain the existing mesh and artwork. Neither waiting for a request nor restoring a session starts a result reaction. The game never calls a generation service at runtime.
+
+Each MP4 packs RGB and its corresponding grayscale alpha side by side in the same decoded frame. A separate small WebGL surface composites that alpha over the existing forest. Chroma spill suppression is restricted to the silhouette boundary to preserve the purple costume. The original portrait remains available while loading, on failed media or rendering, and when motion is reduced. Pauses and hidden pages stop owned playback; closing clears decoder sources and graphics resources. Videos are always muted, leaving the shared host audio authoritative. The 180 ms transition is an artistic choice, not a measured perceptual threshold.
+
+This is a local experiment, not a production release or catalogue change. No paid costs, probabilities, payouts, rules, wallet or qualification evidence changed. Provenance, the discarded first two requests and the separate failed Seedance reference trial are recorded in [the review](../../docs/concepts/forest-heart/video-local-review.md) and [asset inventory](../../docs/concepts/forest-heart/kling-v1-assets.json).
+
 ## Interface presentation 1.7
 
 The accepted field, current action guidance and financial controls now occupy separate rows. Source and receiver ports, board masks, carried roots and all 1.6 character reactions are unchanged. The frame fitting uses its actual rounded pixel thickness, with a thinner mobile frame, instead of reserving a fixed percentage that could underuse a narrow viewport. The approved elf remains beside the field on desktop and has a larger portrait in the mobile instruction panel. The real host and connected chat remain intact.

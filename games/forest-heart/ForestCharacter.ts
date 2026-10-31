@@ -1,3 +1,5 @@
+import { ForestVideo } from './ForestVideo';
+
 export const FOREST_POSES = ['idle', 'blink', 'choice', 'channel', 'flower', 'bonus', 'win', 'big'] as const;
 export type ForestPose = Exclude<typeof FOREST_POSES[number], 'blink'>;
 type ForestReaction = ForestPose | 'awaken';
@@ -57,6 +59,7 @@ void main(){
 /** Owned presentation renderer. It has no transport, wallet, game entropy or outcome calculation. */
 export class ForestCharacter {
   private canvas: HTMLCanvasElement;
+  private video: ForestVideo;
   private images = new Map<typeof FOREST_POSES[number], HTMLImageElement>();
   private gl?: WebGLRenderingContext;
   private program?: WebGLProgram;
@@ -104,6 +107,7 @@ export class ForestCharacter {
       this.images.set(pose, image); host.prepend(image);
       return image.decode().catch(() => {});
     });
+    this.video = new ForestVideo(host);
     this.host.dataset.pose = 'idle'; this.host.dataset.renderer = 'loading';
     this.canvas.addEventListener('webglcontextlost', event => {
       event.preventDefault(); this.stop(); this.gl = undefined; this.host.dataset.renderer = 'image'; this.fallback(); this.run();
@@ -172,6 +176,8 @@ export class ForestCharacter {
     const gesture = this.gesture();
     this.host.style.setProperty('--fh-character-light', String(this.reduced || this.paused ? 0 : gesture[3]));
     const gl = this.gl;
+    this.video.suspend(this.paused || this.reduced || !gl || !this.program);
+    this.video.update(this.pose, this.elapsed);
     if (!gl || !this.program) { this.fallback(); return; }
     gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); gl.useProgram(this.program);
     const bind = (pose: typeof FOREST_POSES[number], unit: number, uniform: string) => {
@@ -237,6 +243,7 @@ export class ForestCharacter {
   }
   mode(paused: boolean, reduced: boolean) {
     this.paused = paused; this.reduced = reduced;
+    this.video.suspend(paused || reduced);
     if (paused || reduced) {
       this.stop(); this.holdUntil = 0; this.transitionDuration = 0; this.finishGesture(true); this.blinkValue = 0; this.blinkAt = -Infinity; this.draw();
     } else this.run();
@@ -261,12 +268,12 @@ export class ForestCharacter {
       this.raf = this.host.ownerDocument.defaultView!.requestAnimationFrame(this.tick);
   }
   private stop() { this.host.ownerDocument.defaultView!.cancelAnimationFrame(this.raf); this.raf = 0; this.last = 0; }
-  state() { return { ready: this.ready, renderer: this.host.dataset.renderer, pose: this.pose, resting: this.resting, reaction: this.reaction ?? null, gesture:this.gesture(), weights:this.weights(), paused: this.paused, reduced: this.reduced, running: !!this.raf, elapsedMs: this.elapsed, frames: this.frameCount, renderSize:[this.canvas.width,this.canvas.height], blinks: this.blinkCount, blink: this.blinkValue, transition: this.transitionDuration ? Math.min(1, (this.elapsed - this.transitionAt) / this.transitionDuration) : 1, events: [...this.events] }; }
+  state() { return { ready: this.ready, renderer: this.host.dataset.renderer, pose: this.pose, resting: this.resting, reaction: this.reaction ?? null, gesture:this.gesture(), weights:this.weights(), paused: this.paused, reduced: this.reduced, running: !!this.raf, elapsedMs: this.elapsed, frames: this.frameCount, renderSize:[this.canvas.width,this.canvas.height], blinks: this.blinkCount, blink: this.blinkValue, transition: this.transitionDuration ? Math.min(1, (this.elapsed - this.transitionAt) / this.transitionDuration) : 1, events: [...this.events], video: this.video.state() }; }
   private release() {
     const gl = this.gl; if (!gl) return;
     for (const texture of this.textures.values()) gl.deleteTexture(texture); this.textures.clear();
     if (this.vertices) gl.deleteBuffer(this.vertices); if (this.indices) gl.deleteBuffer(this.indices); if (this.program) gl.deleteProgram(this.program);
     this.gl = undefined; this.program = undefined;
   }
-  destroy() { this.alive = false; this.stop(); this.observer.disconnect(); this.controller.abort(); this.release(); this.images.clear(); }
+  destroy() { this.alive = false; this.stop(); this.video.destroy(); this.observer.disconnect(); this.controller.abort(); this.release(); this.images.clear(); }
 }

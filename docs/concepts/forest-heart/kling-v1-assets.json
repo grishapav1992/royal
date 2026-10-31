@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-31",
+  "scope": "Local experiment only",
+  "provider": "A6API",
+  "endpoint": "https://api.a6api.vip/v1/videos",
+  "modelReportedByGateway": "kling-3.0",
+  "reference": "public/assets/forest-heart/v3/elf-idle.webp",
+  "notes": [
+    "The first two JSON requests were completed but did not preserve the reference and are excluded.",
+    "Accepted requests use multipart input_reference with a 720x1280 blue matte reference.",
+    "Each final MP4 stores 480x576 RGB on the left and the matching grayscale alpha on the right, with no audio.",
+    "Idle uses a forward/reverse segment to return to its starting frame.",
+    "Four five-second submissions in total. Estimated total at observed USD 0.1392-0.144 per second: USD 2.784-2.88. Actual account settlement was not retrieved.",
+    "The gateway-reported model has not been independently authenticated."
+  ],
+  "clips": [
+    {
+      "kind": "idle",
+      "model": "kling-3.0",
+      "requestFormat": "multipart/input_reference",
+      "requestedSeconds": 5,
+      "referenceSha256": "6995caee68c4e85235262e6eb03cd656f7fdb1ab9f28e56ba3f92120861b2626",
+      "sourceSha256": "7a0c8302602782e259cd3b73adc09d6d4ecf12072d433abd0d0d4317dd1fd658",
+      "asset": "public/assets/forest-heart/kling-v1/idle.mp4",
+      "bytes": 1124396,
+      "sha256": "be934a2d98d2c6d8de4d6c507349b99742c0d1b90c39ab211b34980c87a694c8",
+      "prompt": "Animate only the adult elven forest guardian in this reference image. Preserve her exact face, silver hair, pointed ears, emerald and purple costume, gold jewelry and emerald crystal. Locked camera, identical framing and body scale throughout. Gentle natural breathing, a single soft blink, a tiny calm head movement, a few strands of hair and sleeve fabric drifting softly. Her hands and crystal stay in place. Return to the exact starting pose at the end for a seamless five second idle loop. Keep the entire background perfectly flat pure blue RGB 0 0 255 with no gradients, scenery, shadows, light spill or particles on the background. High quality fantasy game character animation. Silent."
+    },
+    {
+      "kind": "channel",
+      "model": "kling-3.0",
+      "requestFormat": "multipart/input_reference",
+      "requestedSeconds": 5,
+      "referenceSha256": "6995caee68c4e85235262e6eb03cd656f7fdb1ab9f28e56ba3f92120861b2626",
+      "sourceSha256": "67515b9db52fc837ec2f0caf0cbc49e832a15f40660a04fa53c739dfaa0afad7",
+      "asset": "public/assets/forest-heart/kling-v1/channel.mp4",
+      "bytes": 1364587,
+      "sha256": "35b011aa8b5776c0bdfdf5a0fe961997948e31cc96ecffce9645bc78efbec923",
+      "prompt": "Animate only the adult elven forest guardian in this reference image. Preserve her exact face, silver hair, pointed ears, emerald and purple costume, gold jewelry and emerald crystal. Locked camera, identical framing and body scale throughout. She gives a restrained graceful nod toward the game board on the left of the image and gently lifts the hand holding the emerald crystal, channeling a soft mint glow contained near her hand. No large arm swing. Hair and sleeve follow subtly. She calmly returns to the exact starting pose by the end of five seconds. Keep the entire background perfectly flat pure blue RGB 0 0 255 with no gradients, scenery, shadows, light spill or particles on the background. High quality fantasy game character animation. Silent."
+    }
+  ]
+}
