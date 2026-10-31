@@ -4,10 +4,10 @@
   "productionBefore": "591461b5350f5c164e69fe14476c5b912b3bd2da",
   "runtimeFeature": "60b13bb8dde910919057835ed056a98257b78857",
   "verifiedBuild": {
-    "sourceCommit": "09967c1524323b86da5905d9e051825317aa321d",
-    "hostProjection": "0c751399bd9ba8c37048927418154cd12c90f81b2ead25bbf0d8b139cc7ff885",
-    "backendProjection": "6a118f834e2278432b12786473dedcfaf5fc1390fc1701a17d1f76d7fa3399b4",
-    "backendSha256": "8b28184b3dbfd27def1bc8cedf9ff71fc6b521ac9de452d8ecd98a09750d0323",
+    "sourceCommit": "ec4502b7981cdc459fad244f99dba91263210426",
+    "hostProjection": "c312d487a90973cf600c0dff54126bf81d1441e90783a9f8f16f6990c9524e7e",
+    "backendProjection": "3d93e947bc0b4cfb96fd90c0314553c80c72d44c75a307e08ae26d7d15ddb551",
+    "backendSha256": "3ceb2df6a200de11c7e2e02de168a629c82ddb6ac74ef078fc042991e6df661c",
     "client": {
       "dist/assets/index-DfLkemkt.js": "9cb0faeb1994db038e44bae3d92ec01c8559345bc72dada4d41742d678333068",
       "dist/assets/index-DSWJtOAy.css": "3aed8b12dfce27f47cd6644ee7191e2dc2b6efefb2fb8456834a9dbe66d78951",
@@ -15,26 +15,126 @@
     },
     "modules": {
       "royal-coins": {
-        "version": "1.0.0-278b412559b3",
-        "manifestSha256": "a27c0af8544271ec6ec354eeff99a942231d0d4fa06a8cef804a88fd2319fe8f",
-        "files": {
-          "entry-7ee92650964eb226.js": "7ee92650964eb22613730954620cf3f0ce79d42fa0187d2baeb84053835ae6eb",
-          "style-17f45676c5354929.css": "17f45676c5354929ce18900c49fa21315ba8d0aa1c8b2bc537e909009864a460"
+        "version": "1.0.0-c3b9f97595b9",
+        "sourceFiles": {
+          "games/royal-coins/entry.ts": "11684f5dbca57c081549c46a5f0ef87eb3cabb0eb20927301fd8996de5235fdd",
+          "src/modules/GameHostContract.ts": "8207926c234eeb52901591d5f1913c59aa296f6a880ee6a8985501756e8b0bf7",
+          "src/shared/casinoSessions.ts": "002e31c3198d885571e78b3fdc714aeed6179cd269f5927de3ad0c23dacbb2dd",
+          "src/shared/demoWallet.ts": "2f3d21554eaa03930e306f8db103fe8299649387853574dff516cd01cd7e1cef",
+          "src/shared/gameCore.ts": "aa9520b435a5c969d257290e3b06060051db76de45955f99dd68c48f1b5addab",
+          "src/shared/gameThemes.ts": "a24d1d8dcef7bae07f0764a78e96a7158942228815e8e2ba47a1f846e42abeab",
+          "src/shared/nilePlay.ts": "d760785a5eb68a5e6d321f499e6bbf2fd4fbe2b1b835e6cbe52d81798f27d8d6",
+          "src/shared/nileWallet.ts": "f46ab635e6b3b59a0c1bb60d39bbf13de046a2ec3b1cc1ee832d4d36ed669b29",
+          "src/shared/progression.ts": "5f79d619753062d77aa5a6c15c93a06b9435da241da861bd0308eb6a6982184e",
+          "src/shared/rewardSpinCatalog.ts": "df633494f99d6fcf81b5c8a0aa87ed69e8fd3d1cb907617007124bbf8ead6429",
+          "src/shared/usdtWallet.ts": "23b523bb24b84dcdbda636f1b6bd940e3072a5069b9ba8c44c71da29129c484a",
+          "src/ui/RewardSpinControls.ts": "ad856d5b29b8aa12d1ced65c7f82388205f1cffef067dc34a21fc098ad3ce410",
+          "src/ui/RoyalCoins.ts": "16423aad9770484624c02f3ae46539572748d03323030f8b39751f8a651ad111",
+          "src/ui/reward-spin-controls.css": "9a57fbfcf0f6e8de0f5c288f5f3d81fbf584f616b6feeb8e8891a225a73da78f",
+          "src/ui/royal-coins.css": "37ca1b6130f970d45a975feedfd3d2d1d126dad9d7a38d7fa18f8a3bd017b614"
         },
-        "pointerSha256": "783b8573d1d608b62cdf856055f85e71fb9cf1ab05c514a488675676e521ba44"
+        "hostBridges": [
+          "royal-host:src/i18n/index",
+          "royal-host:src/ui/gameReactions",
+          "royal-host:src/wallet/CryptoClient",
+          "royal-host:src/wallet/NilePlayClient",
+          "royal-host:src/wallet/ProgressionClient",
+          "royal-host:src/wallet/UsdtClient",
+          "royal-host:src/wallet/WalletClient"
+        ],
+        "manifestPath": "module-dist/royal-coins/versions/1.0.0-c3b9f97595b9/manifest.json",
+        "manifestSha256": "8dbaf1c02b458d6b78727d9488a02d2b5f930a3da4e0cb3d0b21b5e5cbed5a63",
+        "files": {
+          "entry-308e6e6f0a3030cd.js": "308e6e6f0a3030cd6ad98a2f7f8a6738007787eac25d5e82ee6afb900d6adb46",
+          "style-17f45676c5354929.css": "17f45676c5354929ce18900c49fa21315ba8d0aa1c8b2bc537e909009864a460"
+        }
       },
       "royal-fruits": {
-        "version": "1.0.0-b173e0aab264",
-        "manifestSha256": "7025ee0c2d378225c4465fab921ff882e7f7c75dca1d6ba5bfc4a84f1a3121a0",
+        "version": "1.0.0-13dd4a939bf1",
+        "sourceFiles": {
+          "games/royal-fruits/entry.ts": "8d5704fc039850f7a0267b3042f1afcf7f14e4d31294a6e3c5da4bdcda16b831",
+          "server/games/vfair/decimal.ts": "235cf2ea332f2a635b06e86462809821f9e515e5a73de6c944811f2d3b0f60d7",
+          "server/games/vfair/dice/dice-constants.ts": "88219a7c455889904b6ed1c4804737736cf551fa0f83fe382d7835dcd25c44a3",
+          "server/games/vfair/dice/dice-math.ts": "a6e83f4cf71c63ab3cca9751012fe1dbc93a832ea553a4bfbe2c8eaa27d8867e",
+          "server/games/vfair/dice/dice-rtp-bounds.ts": "c4f310051ab1d73b634855897f9d1f14b13452a6bf8b0d2d64e72cbb4d508fc7",
+          "server/games/vfair/game-rtp.ts": "850598f0b5b9c2c8d9a13a4ff151be5d23467804bc457f35665e95b6008f87c7",
+          "server/games/vfair/keno/keno-constants.ts": "75476a6be66e77e6830e2bff964b9f4cacb7a89925c9e20a97ebcb7a4dc8946c",
+          "server/games/vfair/keno/keno-math.ts": "094054bab14de6b4c54b53070804448a39f4bb83f5d4b2eb80cc59bcc6c3fbfa",
+          "server/games/vfair/keno/keno-multipliers.ts": "c76e0a9698539ea0f09f3bfc863ed47351a7ac38270078a0fee8ec579fe240b4",
+          "server/games/vfair/keno/keno-probability.ts": "0f870c04fe76f39b72962ee86a41e63e9ebf7c35edbc82299ba004d98cb4df70",
+          "server/games/vfair/keno/keno-reference-paytables.ts": "caa92b92343afa04889b13ef484f6d1598aac196ffe1f7e2e789dbf77c4f25bc",
+          "server/games/vfair/limbo/limbo-constants.ts": "b5bc95ccd1943068b60bc621354e68a6e53c872d50a34414b52babbd02c3d527",
+          "server/games/vfair/limbo/limbo-math.ts": "71ca6f7b1aeedf1b05804d9ff2c8e72e05fc6242e3d5a5b51b924b08669bdb52",
+          "server/games/vfair/limbo/limbo-roll.ts": "d3a0eeffcebdf1c4103116acdebd58ac63e8f97f1a9760328b52f5db02baa347",
+          "server/games/vfair/limbo/limbo-rtp-bounds.ts": "67756ce5182e7fb4ecce1ce9ecc60aba34986929309b3c631f6ba43c58e534ee",
+          "server/games/vfair/mines/mines-constants.ts": "168798b8df86084da0848ef2d4589256a1ad5d8f4c0c30c13960fb0ba47d69db",
+          "server/games/vfair/mines/mines-math.ts": "ab647b2f14b6cb49b2ad4045dc84b453326cd74d7f5d182a9d6fca257f812f0b",
+          "server/games/vfair/plinko/plinko-constants.ts": "dca86dc20365d497f6fd6b220f2cc0157e00112b4b2206c03c82959547b67afc",
+          "server/games/vfair/plinko/plinko-math.ts": "9c83981207341b625aca8e5f976da24c2b50bbba3a7e66fd6c330a0584cd15dc",
+          "server/games/vfair/plinko/plinko-multipliers.ts": "4be4d4ccb0dca62ec216edf295d6459075817d5b115e5d28038df2ebaf96f072",
+          "src/modules/GameHostContract.ts": "8207926c234eeb52901591d5f1913c59aa296f6a880ee6a8985501756e8b0bf7",
+          "src/shared/afterglow.ts": "3a20c05490f1fce9fb33244091230f5106c23d9686566e40f0051d124e941256",
+          "src/shared/arcadeCatalog.ts": "c679f9e2f9cfeb5a8e7b83ef2033c3e391e144fd05959aafb0cfe9193b85528c",
+          "src/shared/cardTables.ts": "12197eabb008c9166bfedc0ddbb6bce5a1023090faf1c71bc56960418d00f6ab",
+          "src/shared/caribbeanTreasures.ts": "5590af9897cfb32dbf8fd7d9c0608ad52184051ddee7ca70cd309267a4311aee",
+          "src/shared/caribbeanTreasuresMath.ts": "b86e71675dfd0179da8d8c43c7a62f8da41303d5e6bc59f07b81d4497b64647b",
+          "src/shared/casinoBatchVariants.ts": "e09ea94fdb5929596f610ef7462dc80d50bcf4926335c398fca6c031a0496135",
+          "src/shared/casinoNextVariants.ts": "6f525322bc640eb29ad7bfc025205686f87214b174a08a92d0f800afe636eaa7",
+          "src/shared/casinoVariants.ts": "806e62338241a65561b7170957045ce2fd931a599302d50785c35f6f0f9f1ca5",
+          "src/shared/crLeo.ts": "f0c9eae07611011cd3675eec1ed8a46a00f2f84822d8430a4b4267e6bfe15b38",
+          "src/shared/demoWallet.ts": "2f3d21554eaa03930e306f8db103fe8299649387853574dff516cd01cd7e1cef",
+          "src/shared/forestHeart.ts": "6f0ba79987ff2d24e5c242103ec6735bea1b9fcb3a0fba2abec773eff1dab52e",
+          "src/shared/forestHeartMath.ts": "c3e04efc098aa9d61f0faa70fc9159d8460dcf0816d96ef5b560efd45ab46658",
+          "src/shared/fruitsPresentation.ts": "37665084b89a404ee44e6424171b3f3282dfbf14a7aca2d536df22be3f8ce382",
+          "src/shared/gameCore.ts": "aa9520b435a5c969d257290e3b06060051db76de45955f99dd68c48f1b5addab",
+          "src/shared/jackieChan.ts": "5f7cd0a034676f79cf94b01b7a5e725d8c27cc7af5e8734d36ce3e27dff47faf",
+          "src/shared/neopolisMath.ts": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
+          "src/shared/nilePlay.ts": "d760785a5eb68a5e6d321f499e6bbf2fd4fbe2b1b835e6cbe52d81798f27d8d6",
+          "src/shared/nileWallet.ts": "f46ab635e6b3b59a0c1bb60d39bbf13de046a2ec3b1cc1ee832d4d36ed669b29",
+          "src/shared/nitroRun.ts": "621e54ab208ea598573dc79f22be813509a85523309af76d5f3b8da7d038cc08",
+          "src/shared/originalGames.ts": "9743f1465b625e64055c8c6c9f268ce8023d61adc7eed187507be7d4163d40c0",
+          "src/shared/progression.ts": "5f79d619753062d77aa5a6c15c93a06b9435da241da861bd0308eb6a6982184e",
+          "src/shared/rewardFruitsPresentation.ts": "4792cfca98e464feed67e263ab75e07880acba4dfe4f2b4746373ee8e33d1a51",
+          "src/shared/rewardSpinCatalog.ts": "df633494f99d6fcf81b5c8a0aa87ed69e8fd3d1cb907617007124bbf8ead6429",
+          "src/shared/studioGames.ts": "5be1d552e408e7a2fe1d1cff923b70bdda059a57847c46db09c96dc2ae63e29a",
+          "src/ui/FirstFloorGameArt.ts": "3b3a1ba969fafaa32517101eee7ae196e756af09030b09473798745b8ac9abc4",
+          "src/ui/FruitsArtwork.ts": "3d9460c556973454ab843f8f906c2468cc8f608d0aab58cf373d8771d7f332e1",
+          "src/ui/FruitsReels.ts": "45c3f7ff6150bfaeecd3d4b169227307898a9386ff7cfe1579f5a769d1584448",
+          "src/ui/FruitsSlotUI.ts": "4813b015f8637aca17c011a95b2a584fd71d2e700e8d44cb5749f99976cac793",
+          "src/ui/ImportedGameThemes.ts": "c88e553f54a51f4b218c3c210eaac4210371f652a9b19ee77609573aa2884e85",
+          "src/ui/RewardSpinControls.ts": "ad856d5b29b8aa12d1ced65c7f82388205f1cffef067dc34a21fc098ad3ce410",
+          "src/ui/first-floor-game-worlds.css": "c70e559fc92551137047c799ce7328e01b3360087f7f6604fbf25f5888483c65",
+          "src/ui/fruits-slot.css": "cd288e94477508d844d012aabcd4f8e4200683ebc5be030b09837383ac938725",
+          "src/ui/imported-game-themes.css": "e5a37156dc2d85ff5f360ea84342b73e9c027c1ebf331215e77f88d9dce941a1",
+          "src/ui/importedMotion/Audio.ts": "2cc55d92c5a1091dc9efac57db8944f0a2daef179dd8ecd7d9608f9fc6d2d922",
+          "src/ui/importedMotion/ImportedMotion.ts": "86970b006d8242edcbaf1d229f19d3fa919716aca5766d81ce1c53d30c5dba60",
+          "src/ui/importedMotion/Outcome.ts": "38eb12bff5e798447b2f98e3627206fd9ba2ee1af9777a9541f2568b9c1f284c",
+          "src/ui/importedMotion/Profiles.ts": "0ec8b8ba3744e93c48e6b23e9400c3fbc81b7958a62fd93181139b8fb80607e7",
+          "src/ui/importedMotion/WorldScene.ts": "3ea3846e59658c06817883f95f2d797850aec404530947cb8bbdf4ac0b059a65",
+          "src/ui/importedMotion/imported-motion.css": "d6d8fbd9f474c0b8c5496920c9c989afe7a1906f839e499625e74ef5bea137f6",
+          "src/ui/importedMotion/world-scene.css": "97e01926478635636bd79ec7ec7871622a4a32980991b6b5fbe3518cf741b49a",
+          "src/ui/reward-spin-controls.css": "9a57fbfcf0f6e8de0f5c288f5f3d81fbf584f616b6feeb8e8891a225a73da78f"
+        },
+        "hostBridges": [
+          "royal-host:src/game/GameAudio",
+          "royal-host:src/i18n/index",
+          "royal-host:src/ui/gameReactions",
+          "royal-host:src/wallet/ExpansionClient",
+          "royal-host:src/wallet/ProgressionClient",
+          "royal-host:src/wallet/WalletClient"
+        ],
+        "manifestPath": "module-dist/royal-fruits/versions/1.0.0-13dd4a939bf1/manifest.json",
+        "manifestSha256": "e489645417d0861cddb1861278e1c122018745fef547a73f97c95c3090244be0",
         "files": {
-          "entry-52024b65277a565c.js": "52024b65277a565c3b1ab17b1892ce93b6c8d374e788d8d99e7d4fc4f58ef22f",
+          "entry-f4f9ebbae7328fd5.js": "f4f9ebbae7328fd5845fc7591b6ad94f3456ad824812954b57f7b00f47e367e6",
           "media/github-worlds/royal-fruits/background-v1.webp": "a04a36b64c8178ed12bffd8e8144942ea38282d5a7b95c3d935333ea9f035c43",
           "media/github-worlds/royal-fruits/character-v1.webp": "059d9e17ae40e24b0b9c96d1d288caed815a495a03cc6527c5a1b52dd2e9e4c0",
-          "style-b88bd6d1e9bd0061.css": "b88bd6d1e9bd00612da97fb9d9b7d228302bf424de4c05b3300f673f634dd361"
-        },
-        "pointerSha256": "5f2c9c76b83db69825a173326e156bf20010dccdc3c23d8374e4372b2c14d04b"
+          "style-15923c26394afc52.css": "15923c26394afc52365c27b84eb0e24d6301527de36070bbd4e914ff1c08d6ae"
+        }
       }
-    }
+    },
+    "moduleInputs": 72,
+    "allPackages": 123
   },
   "checks": {
     "serverClientHttpMathAndAtelier": 68,
@@ -42,7 +142,7 @@
     "exactBuiltHostBrowser": 6,
     "additionalMobileInteraction": 1,
     "guardedInstaller": 19,
-    "preparationProtocolAndPublicVerifier": 22,
+    "preparationProtocolAndPublicVerifier": 23,
     "projectedRewardMath": 2,
     "postgresFinancialFence": 1,
     "nativeRestart": 14,
@@ -52,7 +152,8 @@
     "typescript": true,
     "financeTypescript": true,
     "rtpProfiles": 25,
-    "legacyUnchangedNotQualified": 114
+    "legacyUnchangedNotQualified": 114,
+    "exactProjectedModuleBrowser": 6
   },
   "knownPreExistingFailure": {
     "test": "server-tests/appearance.test.ts",
@@ -75,5 +176,46 @@
     "complete": false,
     "hostInstalled": false,
     "modulesInstalled": false
+  },
+  "storageCleanup": {
+    "serverFirstImage": {
+      "image": "sha256:c49eb49e48f4d79f03338d20a03e63d97952e4b48bf31dfc6a6fa0ccc4c88ba3",
+      "observerDisconnected": true,
+      "resultConfirmedAbsent": true,
+      "freeBeforeBytes": 5382397952,
+      "freeAfterBytes": 5384548352
+    },
+    "serverSecondImage": {
+      "image": "sha256:35519c5cd0f24b9bc9143201c4c5319dc16ebeb1d5c81b74d6b56ae640ef6080",
+      "sourceCommitPreservedInGitHub": "9cbc4be2568ae0f46c653cb1ed611f35ab35cec4",
+      "pid": 3183128,
+      "startedAt": 1793441545.182667,
+      "state": "completed",
+      "logicalBytes": 1131992908,
+      "freeBeforeBytes": 5382893568,
+      "forceUsed": false,
+      "exitCode": 0,
+      "stdout": "Deleted: sha256:35519c5cd0f24b9bc9143201c4c5319dc16ebeb1d5c81b74d6b56ae640ef6080\n",
+      "stderr": "",
+      "freeAfterBytes": 5736476672
+    },
+    "localTooling": {
+      "removed": [
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/universal-spins/tooling",
+          "logicalBytes": 308201407
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/universal-spins/go-cache",
+          "logicalBytes": 71536472
+        }
+      ],
+      "archiveBytes": 68196737,
+      "freeBeforeBytes": 57705189376,
+      "freeAfterBytes": 57953738752,
+      "reason": "Native restart and retained-engine checks completed; normal fixture card binaries are preserved until task cleanup",
+      "sourcePreservedInGitHub": "447d5ea44e735e2d83146287bde0658ebaf20ec6",
+      "physicalAttribution": "Concurrent activity can also change available space"
+    }
   }
 }

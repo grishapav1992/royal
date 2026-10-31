@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
+import { readHostProjection } from '../scripts/build-host-projection.mjs';
 import { resolve } from 'node:path';
 import { GAME_MODULES, type IndependentGameId } from '../src/modules/GameModuleCatalog';
 import { moduleRoot, validModuleManifest, validModulePointer } from '../src/modules/GameModuleManifest';
@@ -107,7 +108,9 @@ test('all built game packages pass runtime validation and every inventoried byte
   assert.equal(proof.hostSingletonsExternalized, true, game.gameId);
   assert.equal(proof.serverImplementationIncluded, false, game.gameId);
   assert.ok(proof.nativeImplementations.length <= 1, game.gameId);
-  for (const [name, expected] of Object.entries(proof.sourceFiles)) assert.equal(sha(await readFile(resolve(name))), expected, `${game.gameId} has stale source ${name}`);
+  const projected = proof.sourceProjection ? await readHostProjection(process.cwd(),proof.sourceProjection.config,{strictOrigins:true}) : undefined;
+  if(projected){assert.equal(proof.sourceProjection.sha256,projected.sha256);assert.equal(proof.sourceProjection.productionCommit,projected.metadata.productionCommit);}
+  for (const [name, expected] of Object.entries(proof.sourceFiles)) assert.equal(sha(projected?projected.read(name):await readFile(resolve(name))), expected, `${game.gameId} has stale source ${name}`);
  }
 });
 

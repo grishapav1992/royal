@@ -114,6 +114,16 @@ test('rejects missing, extra or stale projected source bytes', async () => {
   assert.throws(() => planPublication(stale), /Projected source bytes differ/);
 });
 
+test('independent module evidence rejects an extra game, changed source, artwork or unbound manifest',async()=>{
+  for(const modify of [
+    value=>{value.build.moduleProjection.modules['foreign-game']={};},
+    value=>{value.build.moduleProjection.modules['royal-coins'].sourceFiles['src/ui/RoyalCoins.ts']='0'.repeat(64);},
+    value=>{value.build.moduleProjection.assets['public/assets/unreviewed.webp']='0'.repeat(64);},
+    value=>{value.build.moduleProjection.modules['royal-fruits'].manifestSha256='0'.repeat(64);},
+    value=>{delete value.build.moduleProjection;},
+  ]){const input=await fixture();edit(input,'releaseBytes',modify);assert.throws(()=>planPublication(input));}
+});
+
 test('rejects unpublished immutable source facts and incomplete graph provenance', async () => {
   const input = await fixture(); edit(input, 'hostConfigBytes', value => { value.files['server/demoWallet.ts'].sha256 = digest('new unqualified math'); });
   assert.throws(() => planPublication(input), /Unrelated projected source/);
