@@ -3,8 +3,8 @@
   "gameId": "studio-caribbean-treasures",
   "rulesVersion": 2,
   "progressVersion": 1,
-  "startedAt": "2026-10-31T21:08:12.503Z",
-  "completedAt": "2026-10-31T21:09:27.830Z",
+  "startedAt": "2026-10-31T21:28:18.674Z",
+  "completedAt": "2026-10-31T21:29:05.047Z",
   "sourceHashes": {
     "src/shared/gameStakes.ts": "9e207c51bc5cd9c342992f2f92258826a678cbf00d409b329447e7abca654637",
     "src/shared/roundPrecision.ts": "8d9f64dd7ae146fa1a7288bf0d4bf8f947a8bc419d12c94fe8f765ec2a75b307",
@@ -12,7 +12,7 @@
     "src/shared/forestHeartMath.ts": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
     "src/shared/neopolisMath.ts": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
     "src/shared/neopolisStakePayouts.ts": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
-    "server/demoExpansion.ts": "355b75eb024907c989e1b2a26031de1ada8e54de6c44289730fc6922702465ed",
+    "server/demoExpansion.ts": "a94d6436cf35550c10f3e395eb06ae11f4895fc215345f2d069042f25f135118",
     "server/demoWallet.ts": "695130f9e8eec2b6854f6f620ea2aae33084f25c182ae4755f49347cedcebf63",
     "server/demoWalletAmounts.ts": "1da7a73b63c79cba0ff674f59c75fe517d8445eafaf831be8afa7f9a4c6e6317",
     "server/demoWalletRoutes.ts": "8d60c69f76d12f274c1a691786cfda57b48deabc354527202ed124a433feba82",
@@ -28,7 +28,7 @@
     "src/shared/caribbeanTreasuresMath.ts": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9",
     "src/shared/caribbeanTransport.ts": "8623c8e5f4f7eef28997a3b9630873e86c4c7fa7f1ff1b790490802d9fd9415a",
     "server/games/caribbeanTreasures.ts": "bdb0aa8eecef1093f876dd3c467ff1b43d8a7b1606a63a56aa46430964556e99",
-    "scripts/game-math/rtp-caribbean.mjs": "cfb22f286d190161ab76d83b23020fcc695e0ae4476352ea15fc79c2c39edfe5",
+    "scripts/game-math/rtp-caribbean.mjs": "a31487b885bffcb7aa027046d0b19a5b08e199b0c9fe7b8e5be3490a1ad3fdcf",
     "scripts/game-math/stake-runtime.mjs": "24aadf4414fe0daf402931901d773143291bee2c099713355e3e345c1e5145ca",
     "scripts/game-math/stakes-wallet.ts": "d9a4084a6ddb188ef52a6d2e05fb93e09f0ade96a95ae75a16ad065c80f2c695",
     "scripts/game-math/rtp-stakes-samples.mjs": "d2cdeaf1311ba67c78a04b04d78c6353caaed0b490933c93d8b231b94e481b1c",
@@ -1634,7 +1634,7 @@
   "evidence": {
     "reference": {
       "path": "docs/game-math/qualifications/caribbean-treasures-v1.json",
-      "sha256": "a59b12ca24850f64ec280042018274cc921977e6b9e5891bd51919f89b983f92"
+      "sha256": "84bb65e85e709957dc3c81f19ca5fefd7a588f50734512611212d8e1e24decc3"
     }
   },
   "replay": {

@@ -3,8 +3,8 @@
   "gameId": "studio-flooded-temple",
   "rulesVersion": 2,
   "progressVersion": 2,
-  "startedAt": "2026-10-31T21:09:08.584Z",
-  "completedAt": "2026-10-31T21:09:11.510Z",
+  "startedAt": "2026-10-31T21:28:49.373Z",
+  "completedAt": "2026-10-31T21:28:53.927Z",
   "sourceHashes": {
     "src/shared/gameStakes.ts": "9e207c51bc5cd9c342992f2f92258826a678cbf00d409b329447e7abca654637",
     "src/shared/roundPrecision.ts": "8d9f64dd7ae146fa1a7288bf0d4bf8f947a8bc419d12c94fe8f765ec2a75b307",
@@ -12,7 +12,7 @@
     "src/shared/forestHeartMath.ts": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
     "src/shared/neopolisMath.ts": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
     "src/shared/neopolisStakePayouts.ts": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
-    "server/demoExpansion.ts": "355b75eb024907c989e1b2a26031de1ada8e54de6c44289730fc6922702465ed",
+    "server/demoExpansion.ts": "a94d6436cf35550c10f3e395eb06ae11f4895fc215345f2d069042f25f135118",
     "server/demoWallet.ts": "695130f9e8eec2b6854f6f620ea2aae33084f25c182ae4755f49347cedcebf63",
     "server/demoWalletAmounts.ts": "1da7a73b63c79cba0ff674f59c75fe517d8445eafaf831be8afa7f9a4c6e6317",
     "server/demoWalletRoutes.ts": "8d60c69f76d12f274c1a691786cfda57b48deabc354527202ed124a433feba82",
@@ -158,7 +158,7 @@
   "evidence": {
     "reference": {
       "path": "docs/game-math/qualifications/flooded-temple-v2.json",
-      "sha256": "7bb8264a0e1bfa7805df3beea61005f0df41231e8ed48877bd6485d0c2ddafd4"
+      "sha256": "946c5d9de8648f69d8876c1a77a2b58dd3309ab9575a36bcba505d3e3682bbd4"
     }
   },
   "replay": {

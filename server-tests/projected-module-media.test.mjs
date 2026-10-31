@@ -11,3 +11,10 @@ test('production JSON media uses verified Git bytes and preserves a concurrent w
   reader.metadata.moduleAssets[name]=digest(production);await assert.rejects(projectedModuleAsset(root,name,reader));
  }finally{await rm(root,{recursive:true,force:true});}
 });
+
+test('public JSON projection preserves exact production CRLF bytes and rejects executable source overrides',async()=>{
+ const{projectHostSource}=await import('../scripts/build-host-projection.mjs');const plain=Buffer.from('{\n "name": "music"\n}\n'),crlf=Buffer.from(plain.toString().replaceAll('\n','\r\n'));
+ const row={commit:'a'.repeat(40),path:'public/audio/manifest.json',baseSha256:digest(plain),sha256:digest(crlf),lineEndings:'crlf'};
+ assert.deepEqual(projectHostSource(row,plain),crlf);assert.throws(()=>projectHostSource({...row,path:'server/index.ts'},plain));
+ assert.throws(()=>projectHostSource({...row,lineEndings:'lf'},plain));
+});

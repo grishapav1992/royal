@@ -3483,19 +3483,22 @@
       "commit": "279e2415f583fe65d2149d56fa35c3ceefb978ac",
       "path": "public/assets/caribbean-treasures/audio/credits.json",
       "baseSha256": "8f0370fda96ac17a8519e0e940b4a03f9a344ab72d5a2531ca0f2fce4aabcc0b",
-      "sha256": "8f0370fda96ac17a8519e0e940b4a03f9a344ab72d5a2531ca0f2fce4aabcc0b"
+      "sha256": "0aff826824fe96185fa8f94c8310905a5154d847ecdaee14952b4c2e156cee8f",
+      "lineEndings": "crlf"
     },
     "public/assets/caribbean-treasures/audio/manifest.json": {
       "commit": "279e2415f583fe65d2149d56fa35c3ceefb978ac",
       "path": "public/assets/caribbean-treasures/audio/manifest.json",
       "baseSha256": "297b94b8bfa3f6acdee553f757c985cb98170999681b0dfe10c136af5e22ef8f",
-      "sha256": "297b94b8bfa3f6acdee553f757c985cb98170999681b0dfe10c136af5e22ef8f"
+      "sha256": "c910dcd74eac123b2a821c6e97e795724bba9c51d9858f9c44583bd1f9e34280",
+      "lineEndings": "crlf"
     },
     "public/assets/caribbean-treasures/crew/manifest.json": {
       "commit": "279e2415f583fe65d2149d56fa35c3ceefb978ac",
       "path": "public/assets/caribbean-treasures/crew/manifest.json",
       "baseSha256": "a9e85a0262eaddf226ce089cb27dce54b348baf1be979f206d1b6c8169dcf0ac",
-      "sha256": "a9e85a0262eaddf226ce089cb27dce54b348baf1be979f206d1b6c8169dcf0ac"
+      "sha256": "9b42a15d7de156344030008e7fc3061b0fdadef7131b9133cc73128048aa4321",
+      "lineEndings": "crlf"
     },
     "scripts/archive-first-floor-math.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",

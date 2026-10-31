@@ -3,8 +3,8 @@
   "gameId": "royal-coins",
   "rulesVersion": 1,
   "progressVersion": 1,
-  "startedAt": "2026-10-31T21:09:01.347Z",
-  "completedAt": "2026-10-31T21:09:01.443Z",
+  "startedAt": "2026-10-31T21:32:55.364Z",
+  "completedAt": "2026-10-31T21:32:55.406Z",
   "sourceHashes": {
     "src/shared/gameCore.ts": "3e59b987bd47e61137af39aace7717bc7490e3dabf52193de8668fbcca5ca737",
     "src/shared/originalGames.ts": "9743f1465b625e64055c8c6c9f268ce8023d61adc7eed187507be7d4163d40c0",

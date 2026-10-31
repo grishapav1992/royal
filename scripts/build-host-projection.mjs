@@ -14,6 +14,10 @@ export function projectHostSource(row,bytes){
   assert(typeof patch.from==='string'&&patch.from&&typeof patch.to==='string');
   const text=value.toString(),parts=text.split(patch.from);assert.equal(parts.length-1,1,'Projection patch must match exactly once');value=Buffer.from(parts.join(patch.to));
  }
+ if(row.lineEndings!==undefined){
+  assert(row.lineEndings==='crlf'&&/^public\/.+\.json$/.test(row.path),'Only public JSON media may retain CRLF bytes');
+  value=Buffer.from(value.toString().replace(/\r?\n/g,'\r\n'));
+ }
  assert.equal(digest(value),row.sha256,'Projected source differs');return value;
 }
 export async function readHostProjection(root,name,{strictOrigins=false}={}){

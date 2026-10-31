@@ -1,0 +1,1502 @@
+{
+  "schemaVersion": 1,
+  "gameId": "studio-velvet-reign",
+  "rulesVersion": 2,
+  "progressVersion": 1,
+  "startedAt": "2026-10-31T21:27:44.477Z",
+  "completedAt": "2026-10-31T21:28:03.192Z",
+  "sourceHashes": {
+    "src/shared/gameStakes.ts": "9e207c51bc5cd9c342992f2f92258826a678cbf00d409b329447e7abca654637",
+    "src/shared/roundPrecision.ts": "8d9f64dd7ae146fa1a7288bf0d4bf8f947a8bc419d12c94fe8f765ec2a75b307",
+    "src/shared/casinoExpansion.ts": "c89133d0c011baa56241b09e56913e315534ac3e52871308238e234cb8c75f74",
+    "src/shared/forestHeartMath.ts": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
+    "src/shared/neopolisMath.ts": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
+    "src/shared/neopolisStakePayouts.ts": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
+    "server/demoExpansion.ts": "a94d6436cf35550c10f3e395eb06ae11f4895fc215345f2d069042f25f135118",
+    "server/demoWallet.ts": "695130f9e8eec2b6854f6f620ea2aae33084f25c182ae4755f49347cedcebf63",
+    "server/demoWalletAmounts.ts": "1da7a73b63c79cba0ff674f59c75fe517d8445eafaf831be8afa7f9a4c6e6317",
+    "server/demoWalletRoutes.ts": "8d60c69f76d12f274c1a691786cfda57b48deabc354527202ed124a433feba82",
+    "server/finance/nile-game-runtime.ts": "b667f5865791852f0c79f5b85176548c5c012478c561c021bab5cde3e8dc8d96",
+    "server/afterglowProgress.ts": "cf38081a14f88c034f1a32af9e99ca7bbd7f56590decd419867469cb2f753a42",
+    "src/wallet/ExpansionClient.ts": "bc253f9200daec9539ade6a26f715e7a7734b80b02562989be2d5516019b81e1",
+    "src/wallet/WalletClient.ts": "0e8bb81228f8bd9566fd2308e089323027bc3f7f0422ccbeda858f998f6de6a9",
+    "scripts/game-math/rtp-stakes-sampler.mjs": "d0c297ee40636be7c1312d5de8be1f4023e858efbe61e6aba26486f011fc4d7d",
+    "scripts/game-math/rtp-stakes-worker.mjs": "f5db2c6be7cc4c68bb07c719eea5ba3db3f0d237d7bf8cd75736c891f91a218d",
+    "server-tests/game-stakes.test.ts": "810c0f42c5137ed0e49b94a796808c6753ab4e204408c773c12176eefc896031",
+    "server-tests/round-precision.test.ts": "d48a631f198636a97db8e70952c600a47b9cb1d04b20ebc6d08cbfa2cd452abb",
+    "src/shared/luelonSlots.ts": "1867b3f6e7e3fbc1e00dd6fad2bb094c42e6038f8eba18e0ef7250381f95cdcb",
+    "src/shared/velvetReign.ts": "8cd399677940ae5fddd67dea255fd83b54faf297cb00b8290ae918b53e26db2f",
+    "src/shared/velvetReignHistory.ts": "597f90f94bcbecd64fc37a27f730009651ed5c4d6731a1ee54602195e508118c",
+    "server/games/velvetReign.ts": "2de78bed621067021920d9ad742986a60034f975647a227a11bcc87869ff45a7",
+    "server/games/velvetMath.ts": "54a874506c31467b076be9d8b4513014e2faa676ba286111b1c24eb35873e94f",
+    "scripts/game-math/stake-runtime.mjs": "24aadf4414fe0daf402931901d773143291bee2c099713355e3e345c1e5145ca",
+    "scripts/game-math/stakes-wallet.ts": "d9a4084a6ddb188ef52a6d2e05fb93e09f0ade96a95ae75a16ad065c80f2c695",
+    "scripts/game-math/rtp-stakes-samples.mjs": "d2cdeaf1311ba67c78a04b04d78c6353caaed0b490933c93d8b231b94e481b1c",
+    "scripts/game-math/rtp-stakes.mjs": "303243abd909c97683260439f51d7730b2550c2ffb660e434ae59db2730da6ad"
+  },
+  "policySha256": "11d65a35b486e18bd8e97b00aaf480142b94cfe35fa93fc37ffd6b86c3839377",
+  "method": "full-round-unbiased-cent-policy-v1",
+  "precisionLaw": {
+    "method": "Independent uniform final ticket; exact BigInt rational accumulation and integer settlement",
+    "identity": "For exact reward n/d, let q=floor(n/d), r=n mod d and uniform U in {0,...,d-1}. Pay q+1 if U<r, otherwise q. The sum over all tickets is q*d+r=n.",
+    "stopping": "The ticket is drawn only after the final player choice and every free continuation. No future rounding ticket is exposed to adaptive choices.",
+    "preservation": "Every intermediate discarded fraction is restored before the final ticket. For a fixed consumed path the expected credit equals its capped exact reward, and the actual credit never falls below the original sum of floors.",
+    "caps": "Nonnegative rewards couple every denomination to the same latent capped paid round. Stopping a presentation after its floor reaches the cap does not change that round reward.",
+    "compatibility": "Only starts pinned to stakePolicyVersion=1 use this receipt. Accepted historical rounds and UUID replays retain their original rules and committed credit.",
+    "confidence": "Exact analytical bounds and statistical intervals are labelled separately. A statistical estimate is not an exact RTP. Conditional estimates are per case, not simultaneous confidence guarantees."
+  },
+  "results": [
+    {
+      "choice": "normal",
+      "stakeUnits": 10,
+      "kind": "statistical-estimate",
+      "paidRounds": 50000000,
+      "reward": 48216581.501816094,
+      "rewardSquared": 24685843021.04681,
+      "rtp": 0.9643316300363218,
+      "interval95": [
+        0.9572950037495982,
+        0.9713682563230455
+      ],
+      "halfWidth": 0.007036626286723653,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 20,
+      "kind": "statistical-estimate",
+      "paidRounds": 50000000,
+      "reward": 48216581.501816094,
+      "rewardSquared": 24685843021.04681,
+      "rtp": 0.9643316300363218,
+      "interval95": [
+        0.9572950037495982,
+        0.9713682563230455
+      ],
+      "halfWidth": 0.007036626286723653,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 50,
+      "kind": "statistical-estimate",
+      "paidRounds": 50000000,
+      "reward": 48216581.501816094,
+      "rewardSquared": 24685843021.04681,
+      "rtp": 0.9643316300363218,
+      "interval95": [
+        0.9572950037495982,
+        0.9713682563230455
+      ],
+      "halfWidth": 0.007036626286723653,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 100,
+      "kind": "statistical-estimate",
+      "paidRounds": 50000000,
+      "reward": 48216581.501816094,
+      "rewardSquared": 24685843021.04681,
+      "rtp": 0.9643316300363218,
+      "interval95": [
+        0.9572950037495982,
+        0.9713682563230455
+      ],
+      "halfWidth": 0.007036626286723653,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 200,
+      "kind": "statistical-estimate",
+      "paidRounds": 50000000,
+      "reward": 48216581.501816094,
+      "rewardSquared": 24685843021.04681,
+      "rtp": 0.9643316300363218,
+      "interval95": [
+        0.9572950037495982,
+        0.9713682563230455
+      ],
+      "halfWidth": 0.007036626286723653,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 500,
+      "kind": "statistical-estimate",
+      "paidRounds": 50000000,
+      "reward": 48216581.501816094,
+      "rewardSquared": 24685843021.04681,
+      "rtp": 0.9643316300363218,
+      "interval95": [
+        0.9572950037495982,
+        0.9713682563230455
+      ],
+      "halfWidth": 0.007036626286723653,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 1000,
+      "kind": "statistical-estimate",
+      "paidRounds": 50000000,
+      "reward": 48216581.501816094,
+      "rewardSquared": 24685843021.04681,
+      "rtp": 0.9643316300363218,
+      "interval95": [
+        0.9572950037495982,
+        0.9713682563230455
+      ],
+      "halfWidth": 0.007036626286723653,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 2000,
+      "kind": "statistical-estimate",
+      "paidRounds": 50000000,
+      "reward": 48216581.501816094,
+      "rewardSquared": 24685843021.04681,
+      "rtp": 0.9643316300363218,
+      "interval95": [
+        0.9572950037495982,
+        0.9713682563230455
+      ],
+      "halfWidth": 0.007036626286723653,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 5000,
+      "kind": "statistical-estimate",
+      "paidRounds": 50000000,
+      "reward": 48216581.501816094,
+      "rewardSquared": 24685843021.04681,
+      "rtp": 0.9643316300363218,
+      "interval95": [
+        0.9572950037495982,
+        0.9713682563230455
+      ],
+      "halfWidth": 0.007036626286723653,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "booster",
+      "stakeUnits": 10,
+      "kind": "statistical-estimate",
+      "paidRounds": 50000000,
+      "reward": 48239907.0488687,
+      "rewardSquared": 18719275654.94639,
+      "rtp": 0.964798140977374,
+      "interval95": [
+        0.9586724674076542,
+        0.9709238145470939
+      ],
+      "halfWidth": 0.006125673569719867,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "booster",
+      "stakeUnits": 20,
+      "kind": "statistical-estimate",
+      "paidRounds": 50000000,
+      "reward": 48239907.0488687,
+      "rewardSquared": 18719275654.94639,
+      "rtp": 0.964798140977374,
+      "interval95": [
+        0.9586724674076542,
+        0.9709238145470939
+      ],
+      "halfWidth": 0.006125673569719867,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "booster",
+      "stakeUnits": 50,
+      "kind": "statistical-estimate",
+      "paidRounds": 50000000,
+      "reward": 48239907.0488687,
+      "rewardSquared": 18719275654.94639,
+      "rtp": 0.964798140977374,
+      "interval95": [
+        0.9586724674076542,
+        0.9709238145470939
+      ],
+      "halfWidth": 0.006125673569719867,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "booster",
+      "stakeUnits": 100,
+      "kind": "statistical-estimate",
+      "paidRounds": 50000000,
+      "reward": 48239907.0488687,
+      "rewardSquared": 18719275654.94639,
+      "rtp": 0.964798140977374,
+      "interval95": [
+        0.9586724674076542,
+        0.9709238145470939
+      ],
+      "halfWidth": 0.006125673569719867,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "booster",
+      "stakeUnits": 200,
+      "kind": "statistical-estimate",
+      "paidRounds": 50000000,
+      "reward": 48239907.0488687,
+      "rewardSquared": 18719275654.94639,
+      "rtp": 0.964798140977374,
+      "interval95": [
+        0.9586724674076542,
+        0.9709238145470939
+      ],
+      "halfWidth": 0.006125673569719867,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "booster",
+      "stakeUnits": 500,
+      "kind": "statistical-estimate",
+      "paidRounds": 50000000,
+      "reward": 48239907.0488687,
+      "rewardSquared": 18719275654.94639,
+      "rtp": 0.964798140977374,
+      "interval95": [
+        0.9586724674076542,
+        0.9709238145470939
+      ],
+      "halfWidth": 0.006125673569719867,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "booster",
+      "stakeUnits": 1000,
+      "kind": "statistical-estimate",
+      "paidRounds": 50000000,
+      "reward": 48239907.0488687,
+      "rewardSquared": 18719275654.94639,
+      "rtp": 0.964798140977374,
+      "interval95": [
+        0.9586724674076542,
+        0.9709238145470939
+      ],
+      "halfWidth": 0.006125673569719867,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "booster",
+      "stakeUnits": 2000,
+      "kind": "statistical-estimate",
+      "paidRounds": 50000000,
+      "reward": 48239907.0488687,
+      "rewardSquared": 18719275654.94639,
+      "rtp": 0.964798140977374,
+      "interval95": [
+        0.9586724674076542,
+        0.9709238145470939
+      ],
+      "halfWidth": 0.006125673569719867,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "booster",
+      "stakeUnits": 5000,
+      "kind": "statistical-estimate",
+      "paidRounds": 50000000,
+      "reward": 48239907.0488687,
+      "rewardSquared": 18719275654.94639,
+      "rtp": 0.964798140977374,
+      "interval95": [
+        0.9586724674076542,
+        0.9709238145470939
+      ],
+      "halfWidth": 0.006125673569719867,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "hyper",
+      "stakeUnits": 10,
+      "kind": "statistical-estimate",
+      "paidRounds": 50000000,
+      "reward": 48141087.301692925,
+      "rewardSquared": 4813225076.491873,
+      "rtp": 0.9628217460338585,
+      "interval95": [
+        0.9597267027790372,
+        0.9659167892886799
+      ],
+      "halfWidth": 0.0030950432548213372,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "hyper",
+      "stakeUnits": 20,
+      "kind": "statistical-estimate",
+      "paidRounds": 50000000,
+      "reward": 48141087.301692925,
+      "rewardSquared": 4813225076.491873,
+      "rtp": 0.9628217460338585,
+      "interval95": [
+        0.9597267027790372,
+        0.9659167892886799
+      ],
+      "halfWidth": 0.0030950432548213372,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "hyper",
+      "stakeUnits": 50,
+      "kind": "statistical-estimate",
+      "paidRounds": 50000000,
+      "reward": 48141087.301692925,
+      "rewardSquared": 4813225076.491873,
+      "rtp": 0.9628217460338585,
+      "interval95": [
+        0.9597267027790372,
+        0.9659167892886799
+      ],
+      "halfWidth": 0.0030950432548213372,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "hyper",
+      "stakeUnits": 100,
+      "kind": "statistical-estimate",
+      "paidRounds": 50000000,
+      "reward": 48141087.301692925,
+      "rewardSquared": 4813225076.491873,
+      "rtp": 0.9628217460338585,
+      "interval95": [
+        0.9597267027790372,
+        0.9659167892886799
+      ],
+      "halfWidth": 0.0030950432548213372,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "hyper",
+      "stakeUnits": 200,
+      "kind": "statistical-estimate",
+      "paidRounds": 50000000,
+      "reward": 48141087.301692925,
+      "rewardSquared": 4813225076.491873,
+      "rtp": 0.9628217460338585,
+      "interval95": [
+        0.9597267027790372,
+        0.9659167892886799
+      ],
+      "halfWidth": 0.0030950432548213372,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "hyper",
+      "stakeUnits": 500,
+      "kind": "statistical-estimate",
+      "paidRounds": 50000000,
+      "reward": 48141087.301692925,
+      "rewardSquared": 4813225076.491873,
+      "rtp": 0.9628217460338585,
+      "interval95": [
+        0.9597267027790372,
+        0.9659167892886799
+      ],
+      "halfWidth": 0.0030950432548213372,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "hyper",
+      "stakeUnits": 1000,
+      "kind": "statistical-estimate",
+      "paidRounds": 50000000,
+      "reward": 48141087.301692925,
+      "rewardSquared": 4813225076.491873,
+      "rtp": 0.9628217460338585,
+      "interval95": [
+        0.9597267027790372,
+        0.9659167892886799
+      ],
+      "halfWidth": 0.0030950432548213372,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "hyper",
+      "stakeUnits": 2000,
+      "kind": "statistical-estimate",
+      "paidRounds": 50000000,
+      "reward": 48141087.301692925,
+      "rewardSquared": 4813225076.491873,
+      "rtp": 0.9628217460338585,
+      "interval95": [
+        0.9597267027790372,
+        0.9659167892886799
+      ],
+      "halfWidth": 0.0030950432548213372,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "hyper",
+      "stakeUnits": 5000,
+      "kind": "statistical-estimate",
+      "paidRounds": 50000000,
+      "reward": 48141087.301692925,
+      "rewardSquared": 4813225076.491873,
+      "rtp": 0.9628217460338585,
+      "interval95": [
+        0.9597267027790372,
+        0.9659167892886799
+      ],
+      "halfWidth": 0.0030950432548213372,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "spotlight",
+      "stakeUnits": 10,
+      "kind": "statistical-estimate",
+      "paidRounds": 2000000,
+      "reward": 1928234.5869998657,
+      "rewardSquared": 20554048.518114492,
+      "rtp": 0.9641172934999328,
+      "interval95": [
+        0.9592716351244521,
+        0.9689629518754135
+      ],
+      "halfWidth": 0.004845658375480679,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "spotlight",
+      "stakeUnits": 20,
+      "kind": "statistical-estimate",
+      "paidRounds": 2000000,
+      "reward": 1928234.5869998657,
+      "rewardSquared": 20554048.518114492,
+      "rtp": 0.9641172934999328,
+      "interval95": [
+        0.9592716351244521,
+        0.9689629518754135
+      ],
+      "halfWidth": 0.004845658375480679,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "spotlight",
+      "stakeUnits": 50,
+      "kind": "statistical-estimate",
+      "paidRounds": 2000000,
+      "reward": 1928234.5869998657,
+      "rewardSquared": 20554048.518114492,
+      "rtp": 0.9641172934999328,
+      "interval95": [
+        0.9592716351244521,
+        0.9689629518754135
+      ],
+      "halfWidth": 0.004845658375480679,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "spotlight",
+      "stakeUnits": 100,
+      "kind": "statistical-estimate",
+      "paidRounds": 2000000,
+      "reward": 1928234.5869998657,
+      "rewardSquared": 20554048.518114492,
+      "rtp": 0.9641172934999328,
+      "interval95": [
+        0.9592716351244521,
+        0.9689629518754135
+      ],
+      "halfWidth": 0.004845658375480679,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "spotlight",
+      "stakeUnits": 200,
+      "kind": "statistical-estimate",
+      "paidRounds": 2000000,
+      "reward": 1928234.5869998657,
+      "rewardSquared": 20554048.518114492,
+      "rtp": 0.9641172934999328,
+      "interval95": [
+        0.9592716351244521,
+        0.9689629518754135
+      ],
+      "halfWidth": 0.004845658375480679,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "spotlight",
+      "stakeUnits": 500,
+      "kind": "statistical-estimate",
+      "paidRounds": 2000000,
+      "reward": 1928234.5869998657,
+      "rewardSquared": 20554048.518114492,
+      "rtp": 0.9641172934999328,
+      "interval95": [
+        0.9592716351244521,
+        0.9689629518754135
+      ],
+      "halfWidth": 0.004845658375480679,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "spotlight",
+      "stakeUnits": 1000,
+      "kind": "statistical-estimate",
+      "paidRounds": 2000000,
+      "reward": 1928234.5869998657,
+      "rewardSquared": 20554048.518114492,
+      "rtp": 0.9641172934999328,
+      "interval95": [
+        0.9592716351244521,
+        0.9689629518754135
+      ],
+      "halfWidth": 0.004845658375480679,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "spotlight",
+      "stakeUnits": 2000,
+      "kind": "statistical-estimate",
+      "paidRounds": 2000000,
+      "reward": 1928234.5869998657,
+      "rewardSquared": 20554048.518114492,
+      "rtp": 0.9641172934999328,
+      "interval95": [
+        0.9592716351244521,
+        0.9689629518754135
+      ],
+      "halfWidth": 0.004845658375480679,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "spotlight",
+      "stakeUnits": 5000,
+      "kind": "statistical-estimate",
+      "paidRounds": 2000000,
+      "reward": 1928234.5869998657,
+      "rewardSquared": 20554048.518114492,
+      "rtp": 0.9641172934999328,
+      "interval95": [
+        0.9592716351244521,
+        0.9689629518754135
+      ],
+      "halfWidth": 0.004845658375480679,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "super-encore",
+      "stakeUnits": 10,
+      "kind": "statistical-estimate",
+      "paidRounds": 2000000,
+      "reward": 1922572.8666666634,
+      "rewardSquared": 9957175.550863784,
+      "rtp": 0.9612864333333317,
+      "interval95": [
+        0.9580950826819619,
+        0.9644777839847016
+      ],
+      "halfWidth": 0.0031913506513698412,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "super-encore",
+      "stakeUnits": 20,
+      "kind": "statistical-estimate",
+      "paidRounds": 2000000,
+      "reward": 1922572.8666666634,
+      "rewardSquared": 9957175.550863784,
+      "rtp": 0.9612864333333317,
+      "interval95": [
+        0.9580950826819619,
+        0.9644777839847016
+      ],
+      "halfWidth": 0.0031913506513698412,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "super-encore",
+      "stakeUnits": 50,
+      "kind": "statistical-estimate",
+      "paidRounds": 2000000,
+      "reward": 1922572.8666666634,
+      "rewardSquared": 9957175.550863784,
+      "rtp": 0.9612864333333317,
+      "interval95": [
+        0.9580950826819619,
+        0.9644777839847016
+      ],
+      "halfWidth": 0.0031913506513698412,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "super-encore",
+      "stakeUnits": 100,
+      "kind": "statistical-estimate",
+      "paidRounds": 2000000,
+      "reward": 1922572.8666666634,
+      "rewardSquared": 9957175.550863784,
+      "rtp": 0.9612864333333317,
+      "interval95": [
+        0.9580950826819619,
+        0.9644777839847016
+      ],
+      "halfWidth": 0.0031913506513698412,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "super-encore",
+      "stakeUnits": 200,
+      "kind": "statistical-estimate",
+      "paidRounds": 2000000,
+      "reward": 1922572.8666666634,
+      "rewardSquared": 9957175.550863784,
+      "rtp": 0.9612864333333317,
+      "interval95": [
+        0.9580950826819619,
+        0.9644777839847016
+      ],
+      "halfWidth": 0.0031913506513698412,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "super-encore",
+      "stakeUnits": 500,
+      "kind": "statistical-estimate",
+      "paidRounds": 2000000,
+      "reward": 1922572.8666666634,
+      "rewardSquared": 9957175.550863784,
+      "rtp": 0.9612864333333317,
+      "interval95": [
+        0.9580950826819619,
+        0.9644777839847016
+      ],
+      "halfWidth": 0.0031913506513698412,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "super-encore",
+      "stakeUnits": 1000,
+      "kind": "statistical-estimate",
+      "paidRounds": 2000000,
+      "reward": 1922572.8666666634,
+      "rewardSquared": 9957175.550863784,
+      "rtp": 0.9612864333333317,
+      "interval95": [
+        0.9580950826819619,
+        0.9644777839847016
+      ],
+      "halfWidth": 0.0031913506513698412,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "super-encore",
+      "stakeUnits": 2000,
+      "kind": "statistical-estimate",
+      "paidRounds": 2000000,
+      "reward": 1922572.8666666634,
+      "rewardSquared": 9957175.550863784,
+      "rtp": 0.9612864333333317,
+      "interval95": [
+        0.9580950826819619,
+        0.9644777839847016
+      ],
+      "halfWidth": 0.0031913506513698412,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "super-encore",
+      "stakeUnits": 5000,
+      "kind": "statistical-estimate",
+      "paidRounds": 2000000,
+      "reward": 1922572.8666666634,
+      "rewardSquared": 9957175.550863784,
+      "rtp": 0.9612864333333317,
+      "interval95": [
+        0.9580950826819619,
+        0.9644777839847016
+      ],
+      "halfWidth": 0.0031913506513698412,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    }
+  ],
+  "evidence": {
+    "samples": [
+      {
+        "game": "studio-velvet-reign",
+        "choice": "normal",
+        "look": 2,
+        "streams": [
+          {
+            "game": "studio-velvet-reign",
+            "choice": "normal",
+            "seed": 4139817,
+            "paidRounds": 25000000,
+            "reward": 23890984.400904767,
+            "rewardSquared": 11497336526.122007,
+            "freeSpins": 1058003,
+            "bonuses": 87252,
+            "capped": 15,
+            "durationMs": 479784,
+            "sourceHashes": {
+              "server/games/caramelCarnival.ts": "ba16c7b4b5e51559b05c705c67558ef6f34fef22ceb063ab24dd7a1945e40994",
+              "server/games/lastConvoy.ts": "57545363662a64f1e8a29be7dbab0e6ce183ab4367784ae6bcb68c1bfc9c7dae",
+              "server/games/nitroRun.ts": "9bb335cf87be9306035da1457bec8c1af6e8276f8c8275d940aee6c6681ab2e6",
+              "server/games/velvetReign.ts": "2de78bed621067021920d9ad742986a60034f975647a227a11bcc87869ff45a7",
+              "server/games/velvetMath.ts": "54a874506c31467b076be9d8b4513014e2faa676ba286111b1c24eb35873e94f",
+              "src/shared/caramelCarnival.ts": "97a3fb25da798a45c2046725d7afe95adad971664ef708f83fd5556b3ff1af8b",
+              "src/shared/lastConvoy.ts": "3785225275083c74d12bf61eb5855b8ae544e72eaefadc6f172bc51f305d6978",
+              "src/shared/nitroRun.ts": "ecea0b8d695c9de6a808b79a8ba95bee4a18ec1a1bfde98c552e7caa1ef02a8a",
+              "src/shared/velvetReign.ts": "8cd399677940ae5fddd67dea255fd83b54faf297cb00b8290ae918b53e26db2f",
+              "src/shared/velvetReignHistory.ts": "597f90f94bcbecd64fc37a27f730009651ed5c4d6731a1ee54602195e508118c",
+              "scripts/game-math/rtp-stakes-sampler.mjs": "d0c297ee40636be7c1312d5de8be1f4023e858efbe61e6aba26486f011fc4d7d"
+            }
+          },
+          {
+            "game": "studio-velvet-reign",
+            "choice": "normal",
+            "seed": 6371291,
+            "paidRounds": 25000000,
+            "reward": 24325597.100911323,
+            "rewardSquared": 13188506494.924803,
+            "freeSpins": 1063292,
+            "bonuses": 87684,
+            "capped": 19,
+            "durationMs": 506015,
+            "sourceHashes": {
+              "server/games/caramelCarnival.ts": "ba16c7b4b5e51559b05c705c67558ef6f34fef22ceb063ab24dd7a1945e40994",
+              "server/games/lastConvoy.ts": "57545363662a64f1e8a29be7dbab0e6ce183ab4367784ae6bcb68c1bfc9c7dae",
+              "server/games/nitroRun.ts": "9bb335cf87be9306035da1457bec8c1af6e8276f8c8275d940aee6c6681ab2e6",
+              "server/games/velvetReign.ts": "2de78bed621067021920d9ad742986a60034f975647a227a11bcc87869ff45a7",
+              "server/games/velvetMath.ts": "54a874506c31467b076be9d8b4513014e2faa676ba286111b1c24eb35873e94f",
+              "src/shared/caramelCarnival.ts": "97a3fb25da798a45c2046725d7afe95adad971664ef708f83fd5556b3ff1af8b",
+              "src/shared/lastConvoy.ts": "3785225275083c74d12bf61eb5855b8ae544e72eaefadc6f172bc51f305d6978",
+              "src/shared/nitroRun.ts": "ecea0b8d695c9de6a808b79a8ba95bee4a18ec1a1bfde98c552e7caa1ef02a8a",
+              "src/shared/velvetReign.ts": "8cd399677940ae5fddd67dea255fd83b54faf297cb00b8290ae918b53e26db2f",
+              "src/shared/velvetReignHistory.ts": "597f90f94bcbecd64fc37a27f730009651ed5c4d6731a1ee54602195e508118c",
+              "scripts/game-math/rtp-stakes-sampler.mjs": "d0c297ee40636be7c1312d5de8be1f4023e858efbe61e6aba26486f011fc4d7d"
+            }
+          }
+        ],
+        "statistics": {
+          "paidRounds": 50000000,
+          "reward": 48216581.501816094,
+          "rewardSquared": 24685843021.04681,
+          "rtp": 0.9643316300363218,
+          "interval95": [
+            0.9572950037495982,
+            0.9713682563230455
+          ],
+          "halfWidth": 0.007036626286723653
+        },
+        "passed": true
+      },
+      {
+        "game": "studio-velvet-reign",
+        "choice": "booster",
+        "look": 2,
+        "streams": [
+          {
+            "game": "studio-velvet-reign",
+            "choice": "booster",
+            "seed": 4139817,
+            "paidRounds": 25000000,
+            "reward": 24093120.199430384,
+            "rewardSquared": 9211571827.748653,
+            "freeSpins": 3180992,
+            "bonuses": 262244,
+            "capped": 41,
+            "durationMs": 475497,
+            "sourceHashes": {
+              "server/games/caramelCarnival.ts": "ba16c7b4b5e51559b05c705c67558ef6f34fef22ceb063ab24dd7a1945e40994",
+              "server/games/lastConvoy.ts": "57545363662a64f1e8a29be7dbab0e6ce183ab4367784ae6bcb68c1bfc9c7dae",
+              "server/games/nitroRun.ts": "9bb335cf87be9306035da1457bec8c1af6e8276f8c8275d940aee6c6681ab2e6",
+              "server/games/velvetReign.ts": "2de78bed621067021920d9ad742986a60034f975647a227a11bcc87869ff45a7",
+              "server/games/velvetMath.ts": "54a874506c31467b076be9d8b4513014e2faa676ba286111b1c24eb35873e94f",
+              "src/shared/caramelCarnival.ts": "97a3fb25da798a45c2046725d7afe95adad971664ef708f83fd5556b3ff1af8b",
+              "src/shared/lastConvoy.ts": "3785225275083c74d12bf61eb5855b8ae544e72eaefadc6f172bc51f305d6978",
+              "src/shared/nitroRun.ts": "ecea0b8d695c9de6a808b79a8ba95bee4a18ec1a1bfde98c552e7caa1ef02a8a",
+              "src/shared/velvetReign.ts": "8cd399677940ae5fddd67dea255fd83b54faf297cb00b8290ae918b53e26db2f",
+              "src/shared/velvetReignHistory.ts": "597f90f94bcbecd64fc37a27f730009651ed5c4d6731a1ee54602195e508118c",
+              "scripts/game-math/rtp-stakes-sampler.mjs": "d0c297ee40636be7c1312d5de8be1f4023e858efbe61e6aba26486f011fc4d7d"
+            }
+          },
+          {
+            "game": "studio-velvet-reign",
+            "choice": "booster",
+            "seed": 6371291,
+            "paidRounds": 25000000,
+            "reward": 24146786.849438317,
+            "rewardSquared": 9507703827.197737,
+            "freeSpins": 3180908,
+            "bonuses": 262273,
+            "capped": 50,
+            "durationMs": 655303,
+            "sourceHashes": {
+              "server/games/caramelCarnival.ts": "ba16c7b4b5e51559b05c705c67558ef6f34fef22ceb063ab24dd7a1945e40994",
+              "server/games/lastConvoy.ts": "57545363662a64f1e8a29be7dbab0e6ce183ab4367784ae6bcb68c1bfc9c7dae",
+              "server/games/nitroRun.ts": "9bb335cf87be9306035da1457bec8c1af6e8276f8c8275d940aee6c6681ab2e6",
+              "server/games/velvetReign.ts": "2de78bed621067021920d9ad742986a60034f975647a227a11bcc87869ff45a7",
+              "server/games/velvetMath.ts": "54a874506c31467b076be9d8b4513014e2faa676ba286111b1c24eb35873e94f",
+              "src/shared/caramelCarnival.ts": "97a3fb25da798a45c2046725d7afe95adad971664ef708f83fd5556b3ff1af8b",
+              "src/shared/lastConvoy.ts": "3785225275083c74d12bf61eb5855b8ae544e72eaefadc6f172bc51f305d6978",
+              "src/shared/nitroRun.ts": "ecea0b8d695c9de6a808b79a8ba95bee4a18ec1a1bfde98c552e7caa1ef02a8a",
+              "src/shared/velvetReign.ts": "8cd399677940ae5fddd67dea255fd83b54faf297cb00b8290ae918b53e26db2f",
+              "src/shared/velvetReignHistory.ts": "597f90f94bcbecd64fc37a27f730009651ed5c4d6731a1ee54602195e508118c",
+              "scripts/game-math/rtp-stakes-sampler.mjs": "d0c297ee40636be7c1312d5de8be1f4023e858efbe61e6aba26486f011fc4d7d"
+            }
+          }
+        ],
+        "statistics": {
+          "paidRounds": 50000000,
+          "reward": 48239907.0488687,
+          "rewardSquared": 18719275654.94639,
+          "rtp": 0.964798140977374,
+          "interval95": [
+            0.9586724674076542,
+            0.9709238145470939
+          ],
+          "halfWidth": 0.006125673569719867
+        },
+        "passed": true
+      },
+      {
+        "game": "studio-velvet-reign",
+        "choice": "hyper",
+        "look": 2,
+        "streams": [
+          {
+            "game": "studio-velvet-reign",
+            "choice": "hyper",
+            "seed": 4139817,
+            "paidRounds": 25000000,
+            "reward": 24057058.600843087,
+            "rewardSquared": 2391061902.3269324,
+            "freeSpins": 21245984,
+            "bonuses": 1751231,
+            "capped": 246,
+            "durationMs": 1522173,
+            "sourceHashes": {
+              "server/games/caramelCarnival.ts": "ba16c7b4b5e51559b05c705c67558ef6f34fef22ceb063ab24dd7a1945e40994",
+              "server/games/lastConvoy.ts": "57545363662a64f1e8a29be7dbab0e6ce183ab4367784ae6bcb68c1bfc9c7dae",
+              "server/games/nitroRun.ts": "9bb335cf87be9306035da1457bec8c1af6e8276f8c8275d940aee6c6681ab2e6",
+              "server/games/velvetReign.ts": "2de78bed621067021920d9ad742986a60034f975647a227a11bcc87869ff45a7",
+              "server/games/velvetMath.ts": "54a874506c31467b076be9d8b4513014e2faa676ba286111b1c24eb35873e94f",
+              "src/shared/caramelCarnival.ts": "97a3fb25da798a45c2046725d7afe95adad971664ef708f83fd5556b3ff1af8b",
+              "src/shared/lastConvoy.ts": "3785225275083c74d12bf61eb5855b8ae544e72eaefadc6f172bc51f305d6978",
+              "src/shared/nitroRun.ts": "ecea0b8d695c9de6a808b79a8ba95bee4a18ec1a1bfde98c552e7caa1ef02a8a",
+              "src/shared/velvetReign.ts": "8cd399677940ae5fddd67dea255fd83b54faf297cb00b8290ae918b53e26db2f",
+              "src/shared/velvetReignHistory.ts": "597f90f94bcbecd64fc37a27f730009651ed5c4d6731a1ee54602195e508118c",
+              "scripts/game-math/rtp-stakes-sampler.mjs": "d0c297ee40636be7c1312d5de8be1f4023e858efbe61e6aba26486f011fc4d7d"
+            }
+          },
+          {
+            "game": "studio-velvet-reign",
+            "choice": "hyper",
+            "seed": 6371291,
+            "paidRounds": 25000000,
+            "reward": 24084028.70084984,
+            "rewardSquared": 2422163174.164941,
+            "freeSpins": 21272292,
+            "bonuses": 1753294,
+            "capped": 268,
+            "durationMs": 1175170,
+            "sourceHashes": {
+              "server/games/caramelCarnival.ts": "ba16c7b4b5e51559b05c705c67558ef6f34fef22ceb063ab24dd7a1945e40994",
+              "server/games/lastConvoy.ts": "57545363662a64f1e8a29be7dbab0e6ce183ab4367784ae6bcb68c1bfc9c7dae",
+              "server/games/nitroRun.ts": "9bb335cf87be9306035da1457bec8c1af6e8276f8c8275d940aee6c6681ab2e6",
+              "server/games/velvetReign.ts": "2de78bed621067021920d9ad742986a60034f975647a227a11bcc87869ff45a7",
+              "server/games/velvetMath.ts": "54a874506c31467b076be9d8b4513014e2faa676ba286111b1c24eb35873e94f",
+              "src/shared/caramelCarnival.ts": "97a3fb25da798a45c2046725d7afe95adad971664ef708f83fd5556b3ff1af8b",
+              "src/shared/lastConvoy.ts": "3785225275083c74d12bf61eb5855b8ae544e72eaefadc6f172bc51f305d6978",
+              "src/shared/nitroRun.ts": "ecea0b8d695c9de6a808b79a8ba95bee4a18ec1a1bfde98c552e7caa1ef02a8a",
+              "src/shared/velvetReign.ts": "8cd399677940ae5fddd67dea255fd83b54faf297cb00b8290ae918b53e26db2f",
+              "src/shared/velvetReignHistory.ts": "597f90f94bcbecd64fc37a27f730009651ed5c4d6731a1ee54602195e508118c",
+              "scripts/game-math/rtp-stakes-sampler.mjs": "d0c297ee40636be7c1312d5de8be1f4023e858efbe61e6aba26486f011fc4d7d"
+            }
+          }
+        ],
+        "statistics": {
+          "paidRounds": 50000000,
+          "reward": 48141087.301692925,
+          "rewardSquared": 4813225076.491873,
+          "rtp": 0.9628217460338585,
+          "interval95": [
+            0.9597267027790372,
+            0.9659167892886799
+          ],
+          "halfWidth": 0.0030950432548213372
+        },
+        "passed": true
+      },
+      {
+        "game": "studio-velvet-reign",
+        "choice": "spotlight",
+        "look": 1,
+        "streams": [
+          {
+            "game": "studio-velvet-reign",
+            "choice": "spotlight",
+            "seed": 4139817,
+            "paidRounds": 1000000,
+            "reward": 959765.136999929,
+            "rewardSquared": 10215255.801460654,
+            "freeSpins": 11189562,
+            "bonuses": 1000000,
+            "capped": 108,
+            "durationMs": 398601,
+            "sourceHashes": {
+              "server/games/caramelCarnival.ts": "ba16c7b4b5e51559b05c705c67558ef6f34fef22ceb063ab24dd7a1945e40994",
+              "server/games/lastConvoy.ts": "57545363662a64f1e8a29be7dbab0e6ce183ab4367784ae6bcb68c1bfc9c7dae",
+              "server/games/nitroRun.ts": "9bb335cf87be9306035da1457bec8c1af6e8276f8c8275d940aee6c6681ab2e6",
+              "server/games/velvetReign.ts": "2de78bed621067021920d9ad742986a60034f975647a227a11bcc87869ff45a7",
+              "server/games/velvetMath.ts": "54a874506c31467b076be9d8b4513014e2faa676ba286111b1c24eb35873e94f",
+              "src/shared/caramelCarnival.ts": "97a3fb25da798a45c2046725d7afe95adad971664ef708f83fd5556b3ff1af8b",
+              "src/shared/lastConvoy.ts": "3785225275083c74d12bf61eb5855b8ae544e72eaefadc6f172bc51f305d6978",
+              "src/shared/nitroRun.ts": "ecea0b8d695c9de6a808b79a8ba95bee4a18ec1a1bfde98c552e7caa1ef02a8a",
+              "src/shared/velvetReign.ts": "8cd399677940ae5fddd67dea255fd83b54faf297cb00b8290ae918b53e26db2f",
+              "src/shared/velvetReignHistory.ts": "597f90f94bcbecd64fc37a27f730009651ed5c4d6731a1ee54602195e508118c",
+              "scripts/game-math/rtp-stakes-sampler.mjs": "d0c297ee40636be7c1312d5de8be1f4023e858efbe61e6aba26486f011fc4d7d"
+            }
+          },
+          {
+            "game": "studio-velvet-reign",
+            "choice": "spotlight",
+            "seed": 6371291,
+            "paidRounds": 1000000,
+            "reward": 968469.4499999367,
+            "rewardSquared": 10338792.716653839,
+            "freeSpins": 11191644,
+            "bonuses": 1000000,
+            "capped": 97,
+            "durationMs": 570164,
+            "sourceHashes": {
+              "server/games/caramelCarnival.ts": "ba16c7b4b5e51559b05c705c67558ef6f34fef22ceb063ab24dd7a1945e40994",
+              "server/games/lastConvoy.ts": "57545363662a64f1e8a29be7dbab0e6ce183ab4367784ae6bcb68c1bfc9c7dae",
+              "server/games/nitroRun.ts": "9bb335cf87be9306035da1457bec8c1af6e8276f8c8275d940aee6c6681ab2e6",
+              "server/games/velvetReign.ts": "2de78bed621067021920d9ad742986a60034f975647a227a11bcc87869ff45a7",
+              "server/games/velvetMath.ts": "54a874506c31467b076be9d8b4513014e2faa676ba286111b1c24eb35873e94f",
+              "src/shared/caramelCarnival.ts": "97a3fb25da798a45c2046725d7afe95adad971664ef708f83fd5556b3ff1af8b",
+              "src/shared/lastConvoy.ts": "3785225275083c74d12bf61eb5855b8ae544e72eaefadc6f172bc51f305d6978",
+              "src/shared/nitroRun.ts": "ecea0b8d695c9de6a808b79a8ba95bee4a18ec1a1bfde98c552e7caa1ef02a8a",
+              "src/shared/velvetReign.ts": "8cd399677940ae5fddd67dea255fd83b54faf297cb00b8290ae918b53e26db2f",
+              "src/shared/velvetReignHistory.ts": "597f90f94bcbecd64fc37a27f730009651ed5c4d6731a1ee54602195e508118c",
+              "scripts/game-math/rtp-stakes-sampler.mjs": "d0c297ee40636be7c1312d5de8be1f4023e858efbe61e6aba26486f011fc4d7d"
+            }
+          }
+        ],
+        "statistics": {
+          "paidRounds": 2000000,
+          "reward": 1928234.5869998657,
+          "rewardSquared": 20554048.518114492,
+          "rtp": 0.9641172934999328,
+          "interval95": [
+            0.9592716351244521,
+            0.9689629518754135
+          ],
+          "halfWidth": 0.004845658375480679
+        },
+        "passed": true
+      },
+      {
+        "game": "studio-velvet-reign",
+        "choice": "super-encore",
+        "look": 1,
+        "streams": [
+          {
+            "game": "studio-velvet-reign",
+            "choice": "super-encore",
+            "seed": 4139817,
+            "paidRounds": 1000000,
+            "reward": 959983.6779999961,
+            "rewardSquared": 4977514.577089426,
+            "freeSpins": 10612865,
+            "bonuses": 1000000,
+            "capped": 522,
+            "durationMs": 808155,
+            "sourceHashes": {
+              "server/games/caramelCarnival.ts": "ba16c7b4b5e51559b05c705c67558ef6f34fef22ceb063ab24dd7a1945e40994",
+              "server/games/lastConvoy.ts": "57545363662a64f1e8a29be7dbab0e6ce183ab4367784ae6bcb68c1bfc9c7dae",
+              "server/games/nitroRun.ts": "9bb335cf87be9306035da1457bec8c1af6e8276f8c8275d940aee6c6681ab2e6",
+              "server/games/velvetReign.ts": "2de78bed621067021920d9ad742986a60034f975647a227a11bcc87869ff45a7",
+              "server/games/velvetMath.ts": "54a874506c31467b076be9d8b4513014e2faa676ba286111b1c24eb35873e94f",
+              "src/shared/caramelCarnival.ts": "97a3fb25da798a45c2046725d7afe95adad971664ef708f83fd5556b3ff1af8b",
+              "src/shared/lastConvoy.ts": "3785225275083c74d12bf61eb5855b8ae544e72eaefadc6f172bc51f305d6978",
+              "src/shared/nitroRun.ts": "ecea0b8d695c9de6a808b79a8ba95bee4a18ec1a1bfde98c552e7caa1ef02a8a",
+              "src/shared/velvetReign.ts": "8cd399677940ae5fddd67dea255fd83b54faf297cb00b8290ae918b53e26db2f",
+              "src/shared/velvetReignHistory.ts": "597f90f94bcbecd64fc37a27f730009651ed5c4d6731a1ee54602195e508118c",
+              "scripts/game-math/rtp-stakes-sampler.mjs": "d0c297ee40636be7c1312d5de8be1f4023e858efbe61e6aba26486f011fc4d7d"
+            }
+          },
+          {
+            "game": "studio-velvet-reign",
+            "choice": "super-encore",
+            "seed": 6371291,
+            "paidRounds": 1000000,
+            "reward": 962589.1886666674,
+            "rewardSquared": 4979660.973774357,
+            "freeSpins": 10616817,
+            "bonuses": 1000000,
+            "capped": 511,
+            "durationMs": 519662,
+            "sourceHashes": {
+              "server/games/caramelCarnival.ts": "ba16c7b4b5e51559b05c705c67558ef6f34fef22ceb063ab24dd7a1945e40994",
+              "server/games/lastConvoy.ts": "57545363662a64f1e8a29be7dbab0e6ce183ab4367784ae6bcb68c1bfc9c7dae",
+              "server/games/nitroRun.ts": "9bb335cf87be9306035da1457bec8c1af6e8276f8c8275d940aee6c6681ab2e6",
+              "server/games/velvetReign.ts": "2de78bed621067021920d9ad742986a60034f975647a227a11bcc87869ff45a7",
+              "server/games/velvetMath.ts": "54a874506c31467b076be9d8b4513014e2faa676ba286111b1c24eb35873e94f",
+              "src/shared/caramelCarnival.ts": "97a3fb25da798a45c2046725d7afe95adad971664ef708f83fd5556b3ff1af8b",
+              "src/shared/lastConvoy.ts": "3785225275083c74d12bf61eb5855b8ae544e72eaefadc6f172bc51f305d6978",
+              "src/shared/nitroRun.ts": "ecea0b8d695c9de6a808b79a8ba95bee4a18ec1a1bfde98c552e7caa1ef02a8a",
+              "src/shared/velvetReign.ts": "8cd399677940ae5fddd67dea255fd83b54faf297cb00b8290ae918b53e26db2f",
+              "src/shared/velvetReignHistory.ts": "597f90f94bcbecd64fc37a27f730009651ed5c4d6731a1ee54602195e508118c",
+              "scripts/game-math/rtp-stakes-sampler.mjs": "d0c297ee40636be7c1312d5de8be1f4023e858efbe61e6aba26486f011fc4d7d"
+            }
+          }
+        ],
+        "statistics": {
+          "paidRounds": 2000000,
+          "reward": 1922572.8666666634,
+          "rewardSquared": 9957175.550863784,
+          "rtp": 0.9612864333333317,
+          "interval95": [
+            0.9580950826819619,
+            0.9644777839847016
+          ],
+          "halfWidth": 0.0031913506513698412
+        },
+        "passed": true
+      }
+    ],
+    "samplerServerChecks": 640
+  },
+  "replay": {
+    "coverage": [
+      {
+        "choice": "normal",
+        "stakeUnits": 10,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "8a794bd4fcd683f0c92c975c4bcd1127e76d91a88731d76fa39c0d4ba3c46ff1"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 20,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "9a17c5677009055edb446bee772fd5bc1fd7a729e99b9ae4f4da3e55e09696b3"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 50,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "e69f32aaf009f10808d58c89eb5d63e4d012a38b9923ff3bad7af2fe99d1b436"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 100,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "25f196b514bebebd0da9b6dd353013dd8e8985a2435ca0b5117fc81cfbcf4d6c"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 200,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "1a7c46b8bbb5e7da5b00ec390a3b63e946796c302371d3708d004d80659c70ea"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 500,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "c508184dbede679fde82c9042939c60ed09eb3b26884edb24c4ca5bbedf46adc"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "65b7296538c3b71537c747a3c85a83544832711d8aa843831b9e36b90cb73051"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "7d7cd5603cf88c7b06e918dd87e5b2201cdb5b539d8f9c71f2930ee76983af9a"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "6a91fa926af8284312e1386af5002449d63c7e06ef535312abc1995bebe4cac8"
+      },
+      {
+        "choice": "booster",
+        "stakeUnits": 10,
+        "paidRounds": 128,
+        "spins": 142,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "1886ca7be0be5c5089a147306eaa377b38c9cb8547462ff1dea6368d2e7c5117"
+      },
+      {
+        "choice": "booster",
+        "stakeUnits": 20,
+        "paidRounds": 128,
+        "spins": 142,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "5f411c522a35d0daf36f4ef534b02224b0a18ad75c055ac262cf82c5d28dd60c"
+      },
+      {
+        "choice": "booster",
+        "stakeUnits": 50,
+        "paidRounds": 128,
+        "spins": 142,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "8f1b105ff683c29f82205028472ae759c1cff5afe805fbc1b1d657759b4541c2"
+      },
+      {
+        "choice": "booster",
+        "stakeUnits": 100,
+        "paidRounds": 128,
+        "spins": 142,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "35f851f7f49c4e1cf9b74c1eb6052ac11f9d17784176b4635ba7c65c20ce7014"
+      },
+      {
+        "choice": "booster",
+        "stakeUnits": 200,
+        "paidRounds": 128,
+        "spins": 142,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "906dc014795e06cd86150890e0335b37710b9e7231ab97cec270787217ab6736"
+      },
+      {
+        "choice": "booster",
+        "stakeUnits": 500,
+        "paidRounds": 128,
+        "spins": 142,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "d25f37453f3eb2f2d8de45f8666cd07b137ab244df98017ebd9ee7b974148dc4"
+      },
+      {
+        "choice": "booster",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 142,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "1e2cd1bd8886fe4fe97a5cdf9297ea0e56c6b58d05b3ff9ccc7e9cbc70c7ecdc"
+      },
+      {
+        "choice": "booster",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 142,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "392fe25ea6bfad684b7466d1b7620e510ec3ab55784d02554fd9d6ea96115a9c"
+      },
+      {
+        "choice": "booster",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 142,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "51407de1440c123ef44ac6353236bf9e93df693ba9ca67621ecc4a400d1cb6f8"
+      },
+      {
+        "choice": "hyper",
+        "stakeUnits": 10,
+        "paidRounds": 128,
+        "spins": 248,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "8eb75a2eda4324d47f2c40a1943cb4aa8cef2df265af64166b7ba15175d81053"
+      },
+      {
+        "choice": "hyper",
+        "stakeUnits": 20,
+        "paidRounds": 128,
+        "spins": 248,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "27f0f22ed2dd7a1b34ede23737e53bb73d61ae16f5423c537de0374c634ae376"
+      },
+      {
+        "choice": "hyper",
+        "stakeUnits": 50,
+        "paidRounds": 128,
+        "spins": 248,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "332367e5342a48881db465a7aa3f0f037cdaa81c95fab8cad759cab19e694aa6"
+      },
+      {
+        "choice": "hyper",
+        "stakeUnits": 100,
+        "paidRounds": 128,
+        "spins": 248,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "42fd32e78bde4656caecaeec9801ee69dd6261e2070f460fa035c372a0ad7d78"
+      },
+      {
+        "choice": "hyper",
+        "stakeUnits": 200,
+        "paidRounds": 128,
+        "spins": 248,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "35e351fd77b88e01c4dd1e7fcbb92dcfe0ff1d68ee09c17f7a111d3dd7eb2bff"
+      },
+      {
+        "choice": "hyper",
+        "stakeUnits": 500,
+        "paidRounds": 128,
+        "spins": 248,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "be9102fab0ad114b3b2b324b9c0435343b99b26162183545259c128863ff7485"
+      },
+      {
+        "choice": "hyper",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 248,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "1f3f917ab13480ffb504e80f89971b44b3d69ea8dbf4efad9ede846037fc47e9"
+      },
+      {
+        "choice": "hyper",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 248,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "b47f46e874b9e4c2f94bedf2b3bb3c6d9d0ff7b8982e2c1e504f621cddaccbcb"
+      },
+      {
+        "choice": "hyper",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 248,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "97509369c2649a8c802b5d0efd1fba4ae42149cafe1222e37420d3e833e92cdb"
+      },
+      {
+        "choice": "spotlight",
+        "stakeUnits": 10,
+        "paidRounds": 128,
+        "spins": 1680,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "3e2f227569bb6bdfd0888d63507d528aada6e2716171df26ee0168bf270c5330"
+      },
+      {
+        "choice": "spotlight",
+        "stakeUnits": 20,
+        "paidRounds": 128,
+        "spins": 1680,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "c5a2737baea1215d7f5a7a9efdeeaf1168ba2033e0308181fd8cae1500845eb2"
+      },
+      {
+        "choice": "spotlight",
+        "stakeUnits": 50,
+        "paidRounds": 128,
+        "spins": 1680,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "5ce68b953535d1c7b9bf896fbeb7e73ff0119ca19a8b9843b88667675db13bee"
+      },
+      {
+        "choice": "spotlight",
+        "stakeUnits": 100,
+        "paidRounds": 128,
+        "spins": 1680,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "64f96cbc676437cc7d9edd034f520e5187e948bac5dc89818ef5d0856a6999e1"
+      },
+      {
+        "choice": "spotlight",
+        "stakeUnits": 200,
+        "paidRounds": 128,
+        "spins": 1680,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "934d681dece9f5f33117b0cabc4eb2d8ee798ddec7026076937f3573abe28fff"
+      },
+      {
+        "choice": "spotlight",
+        "stakeUnits": 500,
+        "paidRounds": 128,
+        "spins": 1680,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "ba35f0a819cdda43f267a2eb5cb7d56d214a2289e8a01ecd94fe57b1e15d2218"
+      },
+      {
+        "choice": "spotlight",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 1680,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "3d11d1a0a17e67febf4aebb9c1dbe48cfa6b894be6e8c5c6d19a5622d46e4cd4"
+      },
+      {
+        "choice": "spotlight",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 1680,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "d6bbb7aadbac4b38ffd4d3f247134f07a2ad4db853a7ed7a31f975d72e598aca"
+      },
+      {
+        "choice": "spotlight",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 1680,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "fbda0e678a13f77a6c3be116115fe4b750733aae520c2a8833310c2d15a7f364"
+      },
+      {
+        "choice": "super-encore",
+        "stakeUnits": 10,
+        "paidRounds": 128,
+        "spins": 1604,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "3d0d63ebe6aa5218390f88604374e8cc260a2ab8458a69c1ce992d8d347bd0b1"
+      },
+      {
+        "choice": "super-encore",
+        "stakeUnits": 20,
+        "paidRounds": 128,
+        "spins": 1604,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "3ed69a283dfcddea4bea30bd842f0430436704d33d0a349ae61cdd4e0798babf"
+      },
+      {
+        "choice": "super-encore",
+        "stakeUnits": 50,
+        "paidRounds": 128,
+        "spins": 1604,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "bce0a8ff799d5a4ab3baffced850879bfbf3f36c8dd44f870c5e4b469b924f0f"
+      },
+      {
+        "choice": "super-encore",
+        "stakeUnits": 100,
+        "paidRounds": 128,
+        "spins": 1604,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "488cd9c9af7a4a062d42dcbdbdc4237b07b2f601743fc2e7998ed9b2932d25f0"
+      },
+      {
+        "choice": "super-encore",
+        "stakeUnits": 200,
+        "paidRounds": 128,
+        "spins": 1604,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "fc24b3d827aab61138941f8a980a895a2342a9edf85a9dc55a98309e6687e16b"
+      },
+      {
+        "choice": "super-encore",
+        "stakeUnits": 500,
+        "paidRounds": 128,
+        "spins": 1604,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "b26e1b5c79b1fbdcc46fd83d63234410bbbaf0bbbb55a56d8585c31f0bca4737"
+      },
+      {
+        "choice": "super-encore",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 1604,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "97892dbb00d69043738cbcf77c0dbc09f8e2368afe643a462225b50ba93e0b41"
+      },
+      {
+        "choice": "super-encore",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 1604,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "a62d7447dcd6b19df4b5db7e214e8385d4f281cf65f7842ea80f0c34a5cf3ca1"
+      },
+      {
+        "choice": "super-encore",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 1604,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "a676dcde9542dcd3790aa7d61dfe9f9a67ede6857980347c521972fe37fcb2e3"
+      }
+    ]
+  },
+  "serverReplayChecks": 5760,
+  "walletEvidence": {
+    "passed": true,
+    "native": {
+      "passed": true,
+      "minimumStakeUnits": "10",
+      "replayPreserved": true,
+      "reservationReleased": true,
+      "journalBalanced": true
+    },
+    "gameId": "studio-velvet-reign",
+    "cases": 45,
+    "freeContinuationChecks": 218,
+    "replayAndRestartCases": 45,
+    "oneDebitAndCredit": true,
+    "clientVerified": true,
+    "sha256": "9029157d1feabf2d1504ceb9611b6339b2d3f70d6b969cf8b3d76a97ecb8b21c"
+  }
+}
