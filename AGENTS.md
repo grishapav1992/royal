@@ -12,6 +12,14 @@
 - Read the fetched `origin/main:AGENTS.md` when local instructions differ, and apply its current project rules together with applicable local instructions. Do not request confirmation for routine fetching, clean fast-forward updates or creating an isolated worktree within the authorized task.
 - Fetch again before integrating, pushing or publishing, and reconcile changes made by other chats. If fetching fails, report that freshness could not be verified; do not claim that the checkout is current or silently publish from an outdated base.
 
+## Game catalogue scope and retired games
+
+- Use the verified active production game catalogue as the baseline for every task and release. Existing source code, module registrations, assets or older releases do not make an inactive game part of the approved catalogue. `origin/main` may contain games that are not published.
+- Removed, hidden, retired or disabled games must remain unavailable until the user explicitly requests the return of those specific games. Do not restore them on your own initiative, under a new name, through another catalogue or through a direct launch or new-round API.
+- Add new games only when their addition is part of the user's task. Authorization to add or update one game does not authorize changes to the availability of other games. A general feature, refactor, compatibility fix or deployment request does not authorize expanding the catalogue or restoring old games.
+- If an implementation depends on an inactive game, use the approved active games where possible or explain the limitation. Do not solve the dependency by re-enabling that game. Existing authorization for specifically named games remains valid; do not ask for it again.
+- Before publishing, compare actual player access before and after the release, including catalogues, direct launches and acceptance of new rounds. Every added or restored game must correspond to the user's request and be identified in the release record. Exclude unrequested availability changes. Preserve access needed to finish already accepted rounds without reopening the game for new play.
+
 ## Local storage: current version only
 
 - The PC keeps one current working checkout. GitHub stores source history and unfinished work in pushed feature or WIP branches. Do not create or retain local project backup ZIP/TAR files, full source staging copies, dependency copies or permanent folders for completed tasks.
