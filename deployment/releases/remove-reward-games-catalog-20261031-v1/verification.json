@@ -1,6 +1,6 @@
 {
   "release": "remove-reward-games-catalog-20261031-v1",
-  "state": "published-and-verified",
+  "state": "published-and-verified-maintenance-pending",
   "sourceCommit": "fb599494fbee9accff92c8a30126a071ebcceb5c",
   "productionBase": "4028e369c4fb7d0588f6ddd3c155306505fdbfd9",
   "image": "sha256:06da11bea5d5b8c1c167339ff12a32952c67dcad85eb1293f56aa4b939e47bb8",
@@ -145,5 +145,19 @@
     "macOsMetadataRemovedBeforeMutation": true,
     "sharedLockWaitedWithoutInterruptingOtherTasks": true,
     "roulettePublicationReconciledBeforeInstall": true
+  },
+  "releaseMaintenance": {
+    "status": "unresolved-external-setup",
+    "checkedAt": "2026-10-31T19:00:45.258Z",
+    "serviceStartedAfterPublication": true,
+    "timerEnabled": true,
+    "currentHandler": "/opt/royal-dev-app-retention/app-retention.py",
+    "expectedHandler": "/opt/royal-maintenance/bin/automatic-retention.py",
+    "completedResultPresent": false,
+    "observedResult": "Legacy service skipped because the shared deployment lock was busy",
+    "ownerThread": "01a192ec-0c7f-7160-a4dc-97eab40aebbc",
+    "ownerThreadTitle": "Разобраться с разрешениями в игре",
+    "catalogueChangePublishedAndVerified": true,
+    "successfulMaintenanceNotClaimed": true
   }
 }
