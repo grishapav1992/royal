@@ -1,5 +1,5 @@
 import { tr } from '../../i18n/index';
-import {slotLocalRect} from './SlotGeometry';
+import {slotLocalRect,type SlotLocalRect} from './SlotGeometry';
 
 export type SlotGravityFrame = {
   drops: {from:number;to:number;symbol:number}[];
@@ -57,21 +57,37 @@ export class SlotCascadeBoard {
   };
   highlight(positions:readonly number[]){const set=new Set(positions);this.reels.forEach(reel=>reel.cells.forEach(cell=>cell.classList.toggle('cc-winning',set.has(Number(cell.dataset.ccCell)))));}
   remove(positions: readonly number[]) { const set = new Set(positions); this.reels.forEach(reel => reel.cells.forEach(cell => cell.classList.toggle('removing', set.has(Number(cell.dataset.ccCell))))); }
+  private cellRect(position:number):SlotLocalRect {
+    const row=Math.floor(position/COLS), grid=this.reels[position%COLS].cells[row].parentElement!;
+    // Grid tracks keep their full size while the departing cells shrink and rotate.
+    const rect=slotLocalRect(grid,this.overlay), style=getComputedStyle(grid);
+    const heights=style.gridTemplateRows.split(/\s+/).map(Number.parseFloat), gap=Number.parseFloat(style.rowGap)||0;
+    return {left:rect.left,top:rect.top+heights.slice(0,row).reduce((sum,height)=>sum+height,0)+row*gap,width:rect.width,height:heights[row]};
+  }
   drops(drops: SlotGravityFrame['drops']) {
     this.host.classList.add('overlay-active'); this.overlay.replaceChildren();
-    for (const drop of drops) { const token = this.overlayToken(drop.from, drop.symbol); token.dataset.ccDrop = ''; token.dataset.from = String(drop.from); token.dataset.to = String(drop.to); token.dataset.symbol = String(drop.symbol); token.dataset.distance = String(Math.floor(drop.to / COLS) - Math.floor(drop.from / COLS)); token.dataset.shiftY=String(slotLocalRect(this.reels[drop.to%COLS].cells[Math.floor(drop.to/COLS)],this.overlay).top-slotLocalRect(this.reels[drop.from%COLS].cells[Math.floor(drop.from/COLS)],this.overlay).top); }
+    for (const drop of drops) { const token = this.overlayToken(drop.from, drop.symbol); token.dataset.ccDrop = ''; token.dataset.from = String(drop.from); token.dataset.to = String(drop.to); token.dataset.symbol = String(drop.symbol); token.dataset.distance = String(Math.floor(drop.to / COLS) - Math.floor(drop.from / COLS)); token.dataset.shiftY=String(this.cellRect(drop.to).top-this.cellRect(drop.from).top); }
   }
   animateDrops() { this.overlay.getBoundingClientRect(); this.motionFrame = requestAnimationFrame(() => { this.motionFrame = 0; this.overlay.querySelectorAll<HTMLElement>('[data-cc-drop]').forEach(token => { token.style.transition = 'transform 380ms cubic-bezier(.18,.7,.25,1)'; token.style.transform = `translate3d(0,${Number(token.dataset.shiftY)}px,0)`; }); }); }
   refills(refills: SlotGravityFrame['refills']) {
-    for (const refill of refills) { const token = this.overlayToken(refill.position, refill.symbol), col = refill.position % COLS, fill = refills.filter(item => item.position % COLS === col).length; token.dataset.ccRefill = ''; token.dataset.to = String(refill.position); token.dataset.symbol = String(refill.symbol); const pitch=slotLocalRect(this.reels[col].cells[1],this.overlay).top-slotLocalRect(this.reels[col].cells[0],this.overlay).top; token.style.transform = `translate3d(0,${-fill*pitch}px,0)`; }
+    for (const refill of refills) { const token = this.overlayToken(refill.position, refill.symbol), col = refill.position % COLS, fill = refills.filter(item => item.position % COLS === col).length; token.dataset.ccRefill = ''; token.dataset.to = String(refill.position); token.dataset.symbol = String(refill.symbol); const pitch=this.cellRect(COLS+col).top-this.cellRect(col).top; token.style.transform = `translate3d(0,${-fill*pitch}px,0)`; }
   }
   animateRefills() { this.overlay.getBoundingClientRect(); this.motionFrame = requestAnimationFrame(() => { this.motionFrame = 0; this.overlay.querySelectorAll<HTMLElement>('[data-cc-refill]').forEach(token => { token.style.transition = `transform 420ms cubic-bezier(.18,.65,.25,1) ${(Number(token.dataset.to) % COLS) * 30}ms`; token.style.transform = 'translate3d(0,0,0)'; }); }); }
   gravity(frame:SlotGravityFrame,fast:boolean){
     this.drops(frame.drops);this.refills(frame.refills);this.overlay.getBoundingClientRect();
     this.motionFrame=requestAnimationFrame(()=>{this.motionFrame=0;this.overlay.querySelectorAll<HTMLElement>('[data-cc-drop],[data-cc-refill]').forEach(token=>{const refill=token.hasAttribute('data-cc-refill');token.style.transition=`transform ${fast?170:400}ms cubic-bezier(.18,.7,.25,1) ${refill?Number(token.dataset.to)%6*(fast?8:20):0}ms`;token.style.transform=refill?'translate3d(0,0,0)':`translate3d(0,${Number(token.dataset.shiftY)}px,0)`;});});
   }
-  private overlayToken(position: number, symbol: number) { const token = document.createElement('div'); token.className = 'cc-falling-symbol'; const rect=slotLocalRect(this.reels[position%COLS].cells[Math.floor(position/COLS)],this.overlay);token.style.left=`${rect.left}px`;token.style.top=`${rect.top}px`;token.style.width=`${rect.width}px`;token.style.height=`${rect.height}px`; token.innerHTML = this.artwork.symbol(symbol); this.overlay.append(token); return token; }
-  clearOverlay() { cancelAnimationFrame(this.motionFrame); this.motionFrame = 0; this.host.classList.remove('overlay-active'); this.overlay.replaceChildren(); this.reels.forEach(reel => reel.cells.forEach(cell => cell.classList.remove('removing'))); }
+  private overlayToken(position: number, symbol: number) { const token = document.createElement('div'); token.className = 'cc-falling-symbol'; const rect=this.cellRect(position);token.style.left=`${rect.left}px`;token.style.top=`${rect.top}px`;token.style.width=`${rect.width}px`;token.style.height=`${rect.height}px`; token.innerHTML = this.artwork.symbol(symbol); this.overlay.append(token); return token; }
+  clearOverlay() {
+    cancelAnimationFrame(this.motionFrame); this.motionFrame = 0;
+    this.reels.forEach(reel => reel.cells.forEach(cell => {
+      if (!cell.classList.contains('removing')) return;
+      cell.classList.remove('removing');
+      // Reveal the settled cell at full size without reversing its exit transition.
+      cell.getAnimations().forEach(animation => animation.cancel());
+    }));
+    this.host.classList.remove('overlay-active'); this.overlay.replaceChildren();
+  }
   cancel() { cancelAnimationFrame(this.frame); this.frame = 0; this.moving = false; this.token = ''; this.final = undefined; const resolve = this.resolve; this.resolve = undefined; resolve?.(false); this.clearOverlay(); this.show(this.shown); }
   destroy() { this.cancel(); }
 }
