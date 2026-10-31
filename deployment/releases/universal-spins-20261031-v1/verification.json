@@ -1,10 +1,10 @@
 {
   "format": 1,
-  "state": "verified-candidate",
+  "state": "published",
   "productionBefore": "591461b5350f5c164e69fe14476c5b912b3bd2da",
   "runtimeFeature": "60b13bb8dde910919057835ed056a98257b78857",
   "verifiedBuild": {
-    "sourceCommit": "ec4502b7981cdc459fad244f99dba91263210426",
+    "sourceCommit": "4028e369c4fb7d0588f6ddd3c155306505fdbfd9",
     "hostProjection": "c312d487a90973cf600c0dff54126bf81d1441e90783a9f8f16f6990c9524e7e",
     "backendProjection": "3d93e947bc0b4cfb96fd90c0314553c80c72d44c75a307e08ae26d7d15ddb551",
     "backendSha256": "3ceb2df6a200de11c7e2e02de168a629c82ddb6ac74ef078fc042991e6df661c",
@@ -134,7 +134,8 @@
       }
     },
     "moduleInputs": 72,
-    "allPackages": 123
+    "allPackages": 123,
+    "manifestSha256": "3eff92e3eb56d798d9e4b3ce872d0aba84a9df3821893d6e07f828e1c175e523"
   },
   "checks": {
     "serverClientHttpMathAndAtelier": 68,
@@ -154,7 +155,8 @@
     "rtpProfiles": 25,
     "legacyUnchangedNotQualified": 114,
     "exactProjectedModuleBrowser": 6,
-    "snapshotInventory": 5
+    "snapshotInventory": 5,
+    "candidateCompletion": 7
   },
   "knownPreExistingFailure": {
     "test": "server-tests/appearance.test.ts",
@@ -174,9 +176,9 @@
   },
   "productionTestsWritePlayerData": false,
   "publication": {
-    "complete": false,
-    "hostInstalled": false,
-    "modulesInstalled": false,
+    "complete": true,
+    "hostInstalled": true,
+    "modulesInstalled": true,
     "firstBuildAttempt": {
       "sourceCommit": "9a0987324b26c31bb42e84ab73e959b3dfcb07b0",
       "pid": 3233020,
@@ -184,6 +186,300 @@
       "reason": "Docker inspect lost an unprotected short-lived container; stopped before source, runtime or backup changes",
       "buildResultCreated": false,
       "backupCreated": false
+    },
+    "secondBuildAttempt": {
+      "sourceCommit": "4028e369c4fb7d0588f6ddd3c155306505fdbfd9",
+      "pid": 3261410,
+      "state": "built-but-finalization-stopped",
+      "reason": "Post-build free space briefly crossed five GiB; no publication started",
+      "candidate": "sha256:0f78302cdea4a5ba2da5c291655dea3d4144f4402da5004bc974c0a64d78604b"
+    },
+    "candidateCompletion": {
+      "originalProcess": {
+        "sourceCommit": "4028e369c4fb7d0588f6ddd3c155306505fdbfd9",
+        "createdAt": 1793444193.647566,
+        "pid": 3261410,
+        "command": [
+          "python3",
+          "/opt/royal-releases/universal-spins-20261031-v1/deploy.py",
+          "build"
+        ],
+        "previousAttempt": {
+          "sourceCommit": "9a0987324b26c31bb42e84ab73e959b3dfcb07b0",
+          "supersededBy": "4028e369c4fb7d0588f6ddd3c155306505fdbfd9",
+          "state": "failed-before-mutation",
+          "removedPayloadLogicalBytes": 11534656,
+          "sourcePreservedInGitHub": true,
+          "freeBeforeBytes": 5707837440,
+          "freeAfterBytes": 5719568384
+        }
+      },
+      "originalFailure": "RuntimeError: Image build crossed the disk reserve",
+      "buildLogSha256": "73768791a4277ae9a6010f6b481afd8558c14f1e7ee926a1b80b908d2a5f4a0e",
+      "errorLogSha256": "4b2f5a2a617f55b00e1d2e5799df050dcf1fceb8238d9381be3ed252c1214622",
+      "helperSha256": "7f596f741a1fce9be9290ddc85079c5ddcedff1a1f2a36ece907298735f49897",
+      "rebuildPerformed": false,
+      "diskGuardPreserved": true,
+      "allOriginalFinalizationChecksPassed": true,
+      "toolSourceCommit": "ee33e699caec84a4ab29e6359efd1be6ce9e3c2d",
+      "checks": 7
+    },
+    "host": {
+      "published": true,
+      "preparedImage": "sha256:0f78302cdea4a5ba2da5c291655dea3d4144f4402da5004bc974c0a64d78604b",
+      "runningImage": "sha256:0f78302cdea4a5ba2da5c291655dea3d4144f4402da5004bc974c0a64d78604b",
+      "containerRestarted": true,
+      "sourceCommit": "4028e369c4fb7d0588f6ddd3c155306505fdbfd9",
+      "changedSources": 25,
+      "clientDeltaFiles": 2,
+      "configurationsAndMountsPreserved": true,
+      "gameDataPreserved": true,
+      "backendDeltaFiles": 1,
+      "otherBackendProgramsAndModulesPreserved": true,
+      "oldAssetsPreserved": true,
+      "otherPersistentServicesPreserved": 13,
+      "pid": 3321563
+    },
+    "modules": [
+      {
+        "game": "royal-coins",
+        "beforeSha256": "4d185006de924ddb6d4d68f5c9132f2f42fc6cce1220a5e95d0646d667fb78ce",
+        "verified": true,
+        "gameId": "royal-coins",
+        "version": "1.0.0-c3b9f97595b9",
+        "bytes": 38383,
+        "files": 2,
+        "hostProgramTouched": false,
+        "databaseTouched": false,
+        "restartRequired": false,
+        "published": true,
+        "operation": "install",
+        "activeSha256": "4a7d9b02002ff04353ab4793108d414d92306309803223b09a633c2bf339c85f",
+        "history": "/opt/royal-game-modules-state/history/20261031T113540-1a66979abec745b0aedba75a3d5740c4.json"
+      },
+      {
+        "game": "royal-fruits",
+        "beforeSha256": "fd4c31517b66284a19dc4a08409f5d7e5ec934381db6ade238042619f71384f1",
+        "verified": true,
+        "gameId": "royal-fruits",
+        "version": "1.0.0-13dd4a939bf1",
+        "bytes": 525240,
+        "files": 4,
+        "hostProgramTouched": false,
+        "databaseTouched": false,
+        "restartRequired": false,
+        "published": true,
+        "operation": "install",
+        "activeSha256": "6de2c605b527fe796d9926e471c5cb631454435e1a4b6ad8ca08848f3563511b",
+        "history": "/opt/royal-game-modules-state/history/20261031T113541-11a98490945242d0bf949046f9d18eb6.json"
+      }
+    ],
+    "finalInventory": {
+      "passed": true,
+      "sourceCommit": "4028e369c4fb7d0588f6ddd3c155306505fdbfd9",
+      "image": "sha256:0f78302cdea4a5ba2da5c291655dea3d4144f4402da5004bc974c0a64d78604b",
+      "sourceFiles": 2485,
+      "runtimeFiles": 8576,
+      "moduleFiles": 2601,
+      "unchangedExistingModuleFiles": 2591,
+      "newImmutableModuleFiles": 8,
+      "changedActivePointers": 2,
+      "services": 14,
+      "otherPersistentServicesPreserved": 13,
+      "freeBytes": 5643042816,
+      "finalSnapshotSha256": "3f7e3885107000205eef8334a159f10631dba0ac6d0a116bdde2324bc15b1e6f",
+      "fullContainerAndHealthPreserved": true
+    },
+    "installManifestSha256": "4d24734c33e96a9bf3560cf498f79829aa0b4b1a432999647bfc6a8b8ac7a525",
+    "backup": {
+      "path": "/opt/royal-backups/universal-spins-20261031-v1",
+      "sourceArchiveBytes": 53574,
+      "sourceArchiveSha256": "e2d62b05cddaaa1c507546b6b8b88e3f71c5131e63937d0b10d1fe5f52cb5cbc",
+      "database": {
+        "schema": "royal_game",
+        "format": "custom",
+        "tocEntries": 309,
+        "bytes": 31920119,
+        "sha256": "2c5b3c297d665a7b7bb83b014bf68787f84310e78e9601b86487a81fee82d639"
+      },
+      "indexBytes": 708
+    },
+    "public": {
+      "origin": "https://stealth-spark-gokmxooi.expresshost.cloud",
+      "clientFiles": 3,
+      "moduleFiles": 10,
+      "endpoints": {
+        "GET /healthz": 200,
+        "GET /api/progression": 401,
+        "POST /api/progression/spins": 401,
+        "GET /api/demo-wallet": 401,
+        "GET /api/demo-wallet/expansion": 401,
+        "GET /api/game-wallet": 410,
+        "GET /api/nile-play/wallet": 410,
+        "GET /api/auth/me": 200,
+        "GET /api/skin-studio": 401,
+        "POST /api/skin-studio/generations": 401
+      },
+      "viewports": [
+        {
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "geometry": {
+            "documentWidth": 1440,
+            "viewportWidth": 1440,
+            "appWidth": 1440,
+            "appScrollWidth": 1440
+          }
+        },
+        {
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "geometry": {
+            "documentWidth": 390,
+            "viewportWidth": 390,
+            "appWidth": 390,
+            "appScrollWidth": 390
+          }
+        }
+      ],
+      "javascriptErrors": 0,
+      "productionAccountsCreated": 0,
+      "productionStakes": 0,
+      "productionMessages": 0,
+      "productionGenerations": 0,
+      "authenticatedBrowserScope": "Six exact projected host/module scenarios with a disposable local PostgreSQL fixture and a stub atelier provider",
+      "physicalMobileDevicesTested": false
+    },
+    "readOnlyProductionAudit": {
+      "readOnly": true,
+      "counts": {
+        "progression_settings": 1,
+        "progression_policies": 3,
+        "progression_rounds": 0,
+        "progression_outbox": 0,
+        "progression_players": 0,
+        "progression_xp": 0,
+        "progression_rewards": 0,
+        "progression_milestones": 0,
+        "progression_skin_rewards": 0,
+        "progression_spin_uses": 0,
+        "progression_skin_uses": 0
+      },
+      "policies": [
+        {
+          "version": "location-levels-v1",
+          "sha256": "ba8eb998e66d4d1a77e2663413a1585cf0175102011d63905809338fafca85d2"
+        },
+        {
+          "version": "location-levels-v2",
+          "sha256": "2b73bd91f0e9e24cda8ac88203f47bd6c64ebfd6be7982c0109698c9ae271d65"
+        },
+        {
+          "version": "location-levels-v3",
+          "sha256": "3ea38a2cb85685e6e91b61d1ea41fd59d352b9df7be560dd5790579efb960d84"
+        }
+      ],
+      "settings": [
+        {
+          "scope": "VIRTUAL_USD:south-park",
+          "activated_at": 1793398378580,
+          "earn_enabled": true,
+          "spins_enabled": true,
+          "skins_enabled": true
+        }
+      ],
+      "poolColumnReady": true,
+      "rateIndexReady": true,
+      "invariants": {
+        "ok": true,
+        "xpMismatches": 0,
+        "outboxMismatches": 0,
+        "rewardMismatches": 0,
+        "skinRewardMismatches": 0,
+        "projectionMismatches": 0,
+        "milestoneMismatches": 0,
+        "receiptMismatches": 0
+      },
+      "helperSha256": "7829b1807074f02e0285927fca27b4cb4a0cc309df0f0d3238502a619f196a1a",
+      "sourceProjection": "3d93e947bc0b4cfb96fd90c0314553c80c72d44c75a307e08ae26d7d15ddb551",
+      "sourceInputs": {
+        "server/progression/store.ts": {
+          "commit": "60b13bb8dde910919057835ed056a98257b78857",
+          "path": "server/progression/store.ts",
+          "baseSha256": "31c2ad735adda4257d6c042330b7fb17a2cb8b5e445ab582bef35219fcc32658",
+          "sha256": "31c2ad735adda4257d6c042330b7fb17a2cb8b5e445ab582bef35219fcc32658"
+        },
+        "server/database.ts": {
+          "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+          "path": "server/database.ts",
+          "baseSha256": "89c282f2e65158079bdafc07d815c5ca962aa82f89ba0d3c5f03a19aa7c81ca8",
+          "sha256": "89c282f2e65158079bdafc07d815c5ca962aa82f89ba0d3c5f03a19aa7c81ca8"
+        },
+        "src/shared/progression.ts": {
+          "commit": "60b13bb8dde910919057835ed056a98257b78857",
+          "path": "src/shared/progression.ts",
+          "baseSha256": "5f79d619753062d77aa5a6c15c93a06b9435da241da861bd0308eb6a6982184e",
+          "sha256": "5f79d619753062d77aa5a6c15c93a06b9435da241da861bd0308eb6a6982184e"
+        },
+        "server/progression/handlers.ts": {
+          "commit": "60b13bb8dde910919057835ed056a98257b78857",
+          "path": "server/progression/handlers.ts",
+          "baseSha256": "afed32a614f614ea72e68ad2d87de8025462d42d21bb1d71241379c9d34c4edf",
+          "sha256": "afed32a614f614ea72e68ad2d87de8025462d42d21bb1d71241379c9d34c4edf"
+        },
+        "src/shared/gameCore.ts": {
+          "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+          "path": "src/shared/gameCore.ts",
+          "baseSha256": "aa9520b435a5c969d257290e3b06060051db76de45955f99dd68c48f1b5addab",
+          "sha256": "aa9520b435a5c969d257290e3b06060051db76de45955f99dd68c48f1b5addab"
+        },
+        "src/shared/rewardSpinCatalog.ts": {
+          "commit": "60b13bb8dde910919057835ed056a98257b78857",
+          "path": "src/shared/rewardSpinCatalog.ts",
+          "baseSha256": "df633494f99d6fcf81b5c8a0aa87ed69e8fd3d1cb907617007124bbf8ead6429",
+          "sha256": "df633494f99d6fcf81b5c8a0aa87ed69e8fd3d1cb907617007124bbf8ead6429"
+        },
+        "src/shared/nilePlay.ts": {
+          "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+          "path": "src/shared/nilePlay.ts",
+          "baseSha256": "d760785a5eb68a5e6d321f499e6bbf2fd4fbe2b1b835e6cbe52d81798f27d8d6",
+          "sha256": "d760785a5eb68a5e6d321f499e6bbf2fd4fbe2b1b835e6cbe52d81798f27d8d6"
+        },
+        "src/shared/nileWallet.ts": {
+          "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+          "path": "src/shared/nileWallet.ts",
+          "baseSha256": "f46ab635e6b3b59a0c1bb60d39bbf13de046a2ec3b1cc1ee832d4d36ed669b29",
+          "sha256": "f46ab635e6b3b59a0c1bb60d39bbf13de046a2ec3b1cc1ee832d4d36ed669b29"
+        },
+        "src/i18n/index.ts": {
+          "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+          "path": "src/i18n/index.ts",
+          "baseSha256": "2d164e663d6a3922184508c3a65f01615c7c9bd64ac7e6717a790e78959e00ea",
+          "sha256": "2d164e663d6a3922184508c3a65f01615c7c9bd64ac7e6717a790e78959e00ea"
+        },
+        "src/i18n/en.ts": {
+          "commit": "f9a6a231e73da8618d745a654d1b684b18bcda5d",
+          "path": "src/i18n/en.ts",
+          "baseSha256": "8853e5a8bd533ca85608eb11975f1f0d98a03fd0d1b749f48cca00e9db86cd68",
+          "sha256": "8853e5a8bd533ca85608eb11975f1f0d98a03fd0d1b749f48cca00e9db86cd68"
+        },
+        "src/i18n/progressionEn.ts": {
+          "commit": "60b13bb8dde910919057835ed056a98257b78857",
+          "path": "src/i18n/progressionEn.ts",
+          "baseSha256": "66c68ac05b3b362c4ef1dae60afaeb1c484d6ada0887adefd9954a4de12c1ba4",
+          "sha256": "66c68ac05b3b362c4ef1dae60afaeb1c484d6ada0887adefd9954a4de12c1ba4"
+        },
+        "src/i18n/volcanicPlinkoEn.ts": {
+          "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+          "path": "src/i18n/volcanicPlinkoEn.ts",
+          "baseSha256": "5c029cf589bfccbcdc6c3ee1de27dba9fcc56850ec89201bf4ffa10bc4a027a8",
+          "sha256": "5c029cf589bfccbcdc6c3ee1de27dba9fcc56850ec89201bf4ffa10bc4a027a8"
+        }
+      }
     }
   },
   "storageCleanup": {
@@ -225,6 +521,45 @@
       "reason": "Native restart and retained-engine checks completed; normal fixture card binaries are preserved until task cleanup",
       "sourcePreservedInGitHub": "447d5ea44e735e2d83146287bde0658ebaf20ec6",
       "physicalAttribution": "Concurrent activity can also change available space"
+    },
+    "serverFinal": {
+      "removed": [
+        {
+          "path": "/opt/royal-releases/universal-spins-20261031-v1/runtime-context",
+          "logicalBytes": 5026951
+        },
+        {
+          "path": "/opt/royal-releases/universal-spins-20261031-v1-modules",
+          "logicalBytes": 575864
+        },
+        {
+          "path": "/opt/royal-releases/universal-spins-20261031-v1/readonly-audit.cjs",
+          "logicalBytes": 1018227
+        },
+        {
+          "path": "/tmp/royal-universal-spins-cleanup-35519c5cd0f2.json",
+          "logicalBytes": 465
+        }
+      ],
+      "freeBeforeBytes": 5641510912,
+      "freeAfterBytes": 5643182080,
+      "sourcePreservedInGitHub": "4028e369c4fb7d0588f6ddd3c155306505fdbfd9",
+      "completionToolPreservedInGitHub": "ee33e699caec84a4ab29e6359efd1be6ce9e3c2d",
+      "backupsAndImagesPreserved": true,
+      "installedOldAndNewModuleVersionsPreserved": true,
+      "concurrentDiskActivity": true
+    },
+    "localFinal": {
+      "pendingUntilPushedRecord": true,
+      "owner": "01a1884c-e46b-77c2-bd34-35e741b6af18",
+      "path": "artifacts/work/universal-spins",
+      "cleanupCondition": "After this record is pushed and its remote commit verified, remove the isolated checkout and task-owned builds, logs and captures; preserve only OWNER.md and completion.json. Keep shared node_modules and the unrelated dirty original checkout unchanged.",
+      "originalCheckoutPreserved": {
+        "head": "6a8adc7b9836f50bc7da297fa3073054910fd75f",
+        "statusSha256": "b49fa820941f87161b689cc682b742488e74371aaae53fce0367fed8c7b48da1",
+        "statusRecords": 335
+      },
+      "report": "artifacts/work/universal-spins/completion.json"
     }
   }
 }
