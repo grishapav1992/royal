@@ -237,7 +237,15 @@ export class CascadeUI{
     this.dialog.innerHTML=`<button type="button" class="ft-dialog-close" data-ft="close" aria-label="${this.text('Закрыть','Close')}">×</button><h2 id="ft-dialog-title">${kind==='rules'?this.text('Правила и выплаты','Rules and payouts'):this.text('История раунда','Round history')}</h2>${kind==='rules'?rules:journal}`;
     this.dialog.showModal();this.audio.setAllowed(false);this.render();
   }
-  private closed=()=>{if(this.disposed)return;this.audio.setAllowed(!this.suspended);this.render();this.root.querySelector<HTMLElement>(`[data-ft="${this.returnFocus}"]`)?.focus();this.pump();};
+  private closed=()=>{
+    if(this.disposed)return;
+    // The native dialog may already have restored focus before this queued event.
+    const focused=this.doc.activeElement;
+    const restore=!focused||focused===this.doc.body||this.dialog.contains(focused);
+    this.audio.setAllowed(!this.suspended);this.render();
+    if(restore)this.root.querySelector<HTMLElement>(`[data-ft="${this.returnFocus}"]`)?.focus();
+    this.pump();
+  };
   private motion=()=>{if(this.media.matches)this.settleFeedback();this.render();};
   private visibility=()=>{if(this.hidden){this.stopAuto(this.text('Автоспины остановлены: окно скрыто.','Autoplay stopped: window hidden.'));clearTimeout(this.pumpTimer);this.pumpTimer=0;this.settleFeedback();}this.audio.setAllowed(!this.suspended);this.render();if(!this.hidden)this.pump();};
   pause(){this.paused=true;this.stopAuto(this.text('Автоспины остановлены.','Autoplay stopped.'));this.settleFeedback();this.audio.setAllowed(false);this.render();}
