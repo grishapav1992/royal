@@ -1,84 +1,315 @@
 {
-  "date": "2026-10-31",
-  "module": "studio-caribbean-treasures",
-  "version": "1.6.1-2b002a7972d6",
-  "status": "publication-blocked",
-  "production": {
-    "sourceCommit": "4028e369c4fb7d0588f6ddd3c155306505fdbfd9",
-    "moduleVersion": "1.6.0-cf05aa0c4b35",
-    "freeBytes": 5226688512,
-    "requiredFreeBytes": 5368709120,
-    "reason": "Server free space is below the mandatory five GiB reserve. Docker image inventory timed out after 15 seconds, so no unused image was proven safe to remove. No production source, package, services or player data changed."
-  },
-  "checks": {
-    "rtp": {
-      "qualified": 26,
-      "unchangedLegacy": 114
-    },
-    "moduleTypes": true,
-    "moduleBuild": true,
-    "walletTransportMediaTests": 13,
-    "installerTests": 3,
-    "browserScenarios": 9,
-    "viewportSizes": 12,
-    "browserScenariosPassed": 9
-  },
+  "date": "2026-11-01",
+  "sourceCommit": "7211cc1a62eb9f2781487d27605f1b83bdabbba5",
+  "release": "caribbean-responsive-20261031-v1",
+  "version": "1.6.1-6a6b72d6f312",
+  "state": "published-and-verified",
   "scope": [
     "games/caribbean-treasures/caribbean.css",
     "games/caribbean-treasures/package.json"
   ],
-  "cleanup": {
-    "freeBeforeBytes": 54606176256,
-    "removedFolders": [
-      {
-        "path": "artifacts/work/caribbean-responsive-20261031/checkout",
-        "logicalBytes": 506666846
-      },
-      {
-        "path": "artifacts/work/caribbean-responsive-20261031/evidence",
-        "logicalBytes": 16270769
-      }
-    ],
-    "archiveBytes": 0,
-    "testDatabaseRemoved": true,
-    "retainedCurrentPackage": "module-dist/studio-caribbean-treasures/versions/1.6.1-2b002a7972d6",
-    "retainedFinalImages": [
-      "artifacts/work/caribbean-responsive-20261031/desktop.png",
-      "artifacts/work/caribbean-responsive-20261031/mobile.png"
-    ],
-    "exceptions": "Original checkout untracked files, existing local packages and shared dependencies preserved; owned preview stopped.",
-    "freeAfterBytes": 54597181440
+  "changes": [
+    "Layout follows the actual game pane, including connected chat.",
+    "Short desktop panes share the lower controls and ledger in one row.",
+    "Title and complete source portrait fit without cover cropping.",
+    "Normal portrait phones show the full autoplay row; short screens retain scroll access."
+  ],
+  "checks": {
+    "rtp": {
+      "qualified": 26,
+      "unchangedLegacy": 114,
+      "mathematicsChanged": false
+    },
+    "typecheck": true,
+    "normalReleasePrepared": true,
+    "normalReleaseVerifiedWithGitHub": true,
+    "localWalletTransportPresentationAndMediaTests": 15,
+    "publisherTests": 3,
+    "realOnlineHostAndChatScenarios": 9,
+    "localViewportSizes": 13,
+    "publicGuestViewportSizes": 5,
+    "publicResources": 124,
+    "publicPageErrors": [],
+    "publicMutations": [],
+    "originalCatalogueCards": 18,
+    "originalCataloguePreserved": true,
+    "anonymousRoutes": {
+      "/healthz": 200,
+      "/api/demo-wallet": 401,
+      "/api/caribbean-crew": 401,
+      "/api/game-wallet": 410
+    },
+    "productionAccountsCreated": false,
+    "productionWagersPlaced": false,
+    "physicalDevicesTested": false,
+    "publicConnectedChat": "Absent in guest mode by existing design; connected chat was verified locally."
   },
-  "sourceCommit": "4cd7a13f37254cf019ec703103e3b4994feb8abe",
-  "release": {
-    "prepared": true,
-    "verified": true,
-    "githubVerified": true,
-    "manifestSha256": "c474d14556f8e591e6c3827d7de5bbf6b0ed0c7efad2e1503f77b406af506728",
-    "files": 126,
-    "packageManifestSha256": "3b31070c1e9da835dee86d388f51900247298d462f0fdeb588e2c177639c91ae"
+  "publication": {
+    "published": true,
+    "release": "caribbean-responsive-20261031-v1",
+    "sourceCommit": "7211cc1a62eb9f2781487d27605f1b83bdabbba5",
+    "baseCommit": "fb599494fbee9accff92c8a30126a071ebcceb5c",
+    "module": {
+      "gameId": "studio-caribbean-treasures",
+      "version": "1.6.1-6a6b72d6f312",
+      "verified": true,
+      "bytes": 14852850,
+      "files": 124,
+      "beforeSha256": "e2a473fff77c1bf5712ba44dd81aeb0b1c99b28a3fe3fe1e814d371add0f55a3",
+      "activeSha256": "9b44f3c89ca3ba6b195b5a667bb8f97f191cdd3d5bd992ae4ca5e5ead58f6249"
+    },
+    "backup": {
+      "bytes": 8508,
+      "sha256": "5b6f129d30e2539dfdaba212622e94621ba5d343f3ae251a17f790ae5d5a0666",
+      "oldVersion": "1.6.0-cf05aa0c4b35",
+      "oldPackageHardlinked": true,
+      "imageTag": "royal-game:before-caribbean-responsive-20261031-v1",
+      "image": "sha256:06da11bea5d5b8c1c167339ff12a32952c67dcad85eb1293f56aa4b939e47bb8"
+    },
+    "sourceFilesPreserved": 2484,
+    "runtimeFilesPreserved": 8577,
+    "servicesPreserved": 14,
+    "hostRestarted": false,
+    "databaseTouched": false,
+    "otherModulesPreserved": true,
+    "hostAndBackendProgramUnchanged": true,
+    "configurationUnchanged": true,
+    "allServiceProfilesUnchanged": true,
+    "currentHostImage": "sha256:06da11bea5d5b8c1c167339ff12a32952c67dcad85eb1293f56aa4b939e47bb8",
+    "healthy": true,
+    "freeBefore": 12526874624,
+    "freeAfter": 12511608832,
+    "measuredFreeBytes": 12507664384,
+    "checkedAtUtc": "2026-10-31T21:31:03.435161+00:00",
+    "fullInventoriesKeptOnServer": true
   },
-  "measurements": [
+  "packageManifestSha256": "5767a2820f38fb4c1b42b72c9bcebae99575f70256ac8f86d8ed37ffac660b68",
+  "localMeasurements": [
+    {
+      "width": 1440,
+      "height": 1000,
+      "gameWidth": 1102.8125,
+      "gameHeight": 905,
+      "boardWidth": 616.28125,
+      "horizontalOverflow": 0,
+      "playbackBottom": 898.453125,
+      "rootBottom": 959
+    },
     {
       "width": 1280,
       "height": 720,
       "gameWidth": 979.609375,
+      "gameHeight": 625,
       "boardWidth": 459.609375,
-      "stageHeight": 384.40625
+      "horizontalOverflow": 0,
+      "playbackBottom": 669,
+      "rootBottom": 679
+    },
+    {
+      "width": 1094,
+      "height": 803,
+      "gameWidth": 808,
+      "gameHeight": 708,
+      "boardWidth": 334.703125,
+      "horizontalOverflow": 0,
+      "playbackBottom": 701.453125,
+      "rootBottom": 762
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "gameWidth": 738,
+      "gameHeight": 673,
+      "boardWidth": 285.515625,
+      "horizontalOverflow": 0,
+      "playbackBottom": 666.453125,
+      "rootBottom": 727
+    },
+    {
+      "width": 900,
+      "height": 650,
+      "gameWidth": 614,
+      "gameHeight": 555,
+      "boardWidth": 411.90625,
+      "horizontalOverflow": 0,
+      "playbackBottom": 662.1875,
+      "rootBottom": 609
+    },
+    {
+      "width": 800,
+      "height": 600,
+      "gameWidth": 514,
+      "gameHeight": 505,
+      "boardWidth": 399.90625,
+      "horizontalOverflow": 0,
+      "playbackBottom": 645.1875,
+      "rootBottom": 559
+    },
+    {
+      "width": 640,
+      "height": 480,
+      "gameWidth": 634,
+      "gameHeight": 769.671875,
+      "boardWidth": 585.984375,
+      "horizontalOverflow": 0,
+      "playbackBottom": 774.234375,
+      "rootBottom": 823.671875
     },
     {
       "width": 500,
       "height": 760,
       "gameWidth": 494,
-      "boardWidth": 411.90625,
-      "stageHeight": 330
+      "gameHeight": 461.421875,
+      "boardWidth": 379.890625,
+      "horizontalOverflow": 0,
+      "playbackBottom": 640.84375,
+      "rootBottom": 515.421875
+    },
+    {
+      "width": 430,
+      "height": 932,
+      "gameWidth": 424,
+      "gameHeight": 588.984375,
+      "boardWidth": 366.609375,
+      "horizontalOverflow": 0,
+      "playbackBottom": 631.984375,
+      "rootBottom": 642.984375
     },
     {
       "width": 390,
       "height": 844,
       "gameWidth": 384,
-      "boardWidth": 311.90625,
-      "stageHeight": 263.328125
+      "gameHeight": 524.75,
+      "boardWidth": 270.25,
+      "horizontalOverflow": 0,
+      "playbackBottom": 567.75,
+      "rootBottom": 578.75
+    },
+    {
+      "width": 342,
+      "height": 700,
+      "gameWidth": 336,
+      "gameHeight": 378.625,
+      "boardWidth": 221.90625,
+      "horizontalOverflow": 0,
+      "playbackBottom": 552.515625,
+      "rootBottom": 449.625
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "gameWidth": 588,
+      "gameHeight": 295,
+      "boardWidth": 411.90625,
+      "horizontalOverflow": 0,
+      "playbackBottom": 662.1875,
+      "rootBottom": 349
+    },
+    {
+      "width": 342,
+      "height": 245,
+      "gameWidth": 336,
+      "gameHeight": 571.015625,
+      "boardWidth": 288,
+      "horizontalOverflow": 0,
+      "playbackBottom": 592.578125,
+      "rootBottom": 642.015625
     }
-  ]
+  ],
+  "inventoryPrivacy": "Complete before/after host inventories remain on the server. Only selected verification results were exported.",
+  "cleanup": {
+    "obsoleteOwnedPackageRemovedBytes": 14869108,
+    "temporaryDatabaseRemoved": true,
+    "temporaryDataBelowTwoGiB": true,
+    "serverTemporaryPaths": [
+      {
+        "path": "/opt/royal-releases/caribbean-responsive-20261031-v1/client-payload.tgz",
+        "allocatedBytes": 14786560
+      },
+      {
+        "path": "/opt/royal-releases/caribbean-responsive-20261031-v1/package",
+        "allocatedBytes": 15163392
+      },
+      {
+        "path": "/opt/royal-releases/caribbean-responsive-20261031-v1/source",
+        "allocatedBytes": 45056
+      },
+      {
+        "path": "/opt/royal-releases/caribbean-responsive-20261031-v1/publisher.py",
+        "allocatedBytes": 12288
+      },
+      {
+        "path": "/opt/royal-releases/caribbean-responsive-20261031-v1/publish.py",
+        "allocatedBytes": 12288
+      },
+      {
+        "path": "/opt/royal-releases/caribbean-responsive-20261031-v1/__pycache__",
+        "allocatedBytes": 24576
+      }
+    ],
+    "serverFreeBeforeTemporaryCleanup": 12497387520,
+    "serverFreeAfterTemporaryCleanup": 12527427584,
+    "localCheckoutCleanup": "Remove after this record is pushed and verified in GitHub; keep final desktop/mobile images and compact completion record.",
+    "accidentalEncodedScratchPathRelocatedBytes": 4545344,
+    "accidentalEncodedTaskPathRemoved": true
+  },
+  "postPublicationMaintenance": {
+    "maintenance": {
+      "status": "completed",
+      "startedAt": 1793482264.3261952,
+      "finishedAt": 1793482919.2229915,
+      "durationSeconds": 654.9,
+      "removedEntries": 1,
+      "removedImageTags": 0,
+      "freeAfter": 12506046464,
+      "containersUnchanged": true,
+      "healthOk": true
+    },
+    "timerEnabled": "enabled",
+    "oldImmutablePackageRetained": true,
+    "sourceBackupRetainedAfterMaintenance": false,
+    "oldSourceCommitPreservedInGitHub": "0baa69d10ddea384ba7e58c499582d18e702de2c",
+    "removedTemporaryPaths": [
+      {
+        "path": "/opt/royal-releases/caribbean-responsive-20261031-v1/client-payload.tgz",
+        "allocatedBytes": 14786560
+      },
+      {
+        "path": "/opt/royal-releases/caribbean-responsive-20261031-v1/package",
+        "allocatedBytes": 15163392
+      },
+      {
+        "path": "/opt/royal-releases/caribbean-responsive-20261031-v1/source",
+        "allocatedBytes": 45056
+      },
+      {
+        "path": "/opt/royal-releases/caribbean-responsive-20261031-v1/publisher.py",
+        "allocatedBytes": 12288
+      },
+      {
+        "path": "/opt/royal-releases/caribbean-responsive-20261031-v1/publish.py",
+        "allocatedBytes": 12288
+      },
+      {
+        "path": "/opt/royal-releases/caribbean-responsive-20261031-v1/__pycache__",
+        "allocatedBytes": 24576
+      }
+    ],
+    "freeBeforeTemporaryCleanup": 12497387520,
+    "freeAfterTemporaryCleanup": 12527427584,
+    "checkedAtUtc": "2026-10-31T21:48:00.219004+00:00",
+    "privateInventoriesRemainOnServer": true
+  },
+  "verifiedAtUtc": "2026-10-31T21:48:00.219004+00:00",
+  "rollback": {
+    "package": "1.6.0-cf05aa0c4b35",
+    "packageStillAvailable": true,
+    "sourceCommit": "0baa69d10ddea384ba7e58c499582d18e702de2c",
+    "sourceArchiveCreatedBeforeInstallation": {
+      "bytes": 8508,
+      "sha256": "5b6f129d30e2539dfdaba212622e94621ba5d343f3ae251a17f790ae5d5a0666"
+    },
+    "sourceArchiveRetainedAfterHistoryCleanup": false,
+    "recovery": "The prior immutable module package remains verified. Restore its reviewed CSS/package sources from the preserved GitHub commit and use the guarded module rollback without restoring a database or changing the host."
+  }
 }
