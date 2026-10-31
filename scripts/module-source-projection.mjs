@@ -28,7 +28,7 @@ export async function projectedModuleAsset(root,name,reader){
  const fromGit=reader.metadata.moduleAssetSources?.includes(name);
  if(fromGit)assert(/^public\/.+\.json$/.test(name)&&reader.metadata.files[name],'Only explicitly reviewed JSON media may be projected');
  const bytes=fromGit?reader.read(name):await readFile(file);
- same(digest(bytes),reader.metadata.moduleAssets?.[name]);return bytes;
+ assert.equal(digest(bytes),reader.metadata.moduleAssets?.[name],'Unreviewed projected module media: '+name);return bytes;
 }
 export async function verifyModuleProjection(root,report,slugs){
  const reader=await readHostProjection(root,report.config,{strictOrigins:true});
