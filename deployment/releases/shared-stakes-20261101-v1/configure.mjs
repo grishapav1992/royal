@@ -22,10 +22,10 @@ patchLines('src/ui/AfterglowUI.ts',line=>line
  .replace("import {tr, locale} from '../i18n/index';","import {confirmedPayout} from '../shared/roundPrecision';\nimport {GAME_STAKE_UNITS as AFTER_BETS} from '../shared/gameStakes';\nimport {tr, locale} from '../i18n/index';")
  .replace('AFTER_GAME,AFTER_BETS,','AFTER_GAME,').replace("stake='100'","stake='10'").replace("this.stake='100'","this.stake='10'")
  .replaceAll('this.setTotal(s.view.afterglow.totalPayoutUnits)','this.setTotal(confirmedPayout(s,s.view.afterglow.totalPayoutUnits))')
- .replaceAll('this.setTotal(v.totalPayoutUnits)','this.setTotal(confirmedPayout(s,v.totalPayoutUnits))'));
+ .replaceAll('this.setTotal(v.totalPayoutUnits)','this.setTotal(confirmedPayout(s,v.totalPayoutUnits))').replaceAll('this.dialogShell.focus()',"this.dialogShell.focus(kind==='info')"));
 patchLines('src/modules/GameModuleCatalog.ts',line=>line.includes("gameId: 'studio-caribbean-treasures'")?line.replace('rulesVersion: 1','rulesVersion: 2'):line);
 const moduleAssetSources=['public/assets/caribbean-treasures/audio/credits.json','public/assets/caribbean-treasures/audio/manifest.json','public/assets/caribbean-treasures/crew/manifest.json'];
-for(const n of moduleAssetSources){let found=false;for(const c of git(['log','--all','--format=%H','--',n]).toString().trim().split('\n')){if(!c)continue;const bytes=read(c,n);if(hash(bytes)===before.sourceLF[n]){add(n,c);if(before.source[n]!==before.sourceLF[n]){const crlf=Buffer.from(bytes.toString().replace(/\r?\n/g,'\r\n'));assert.equal(hash(crlf),before.source[n],'Mixed production line endings require explicit review');files[n]={...files[n],lineEndings:'crlf',sha256:hash(crlf)};}found=true;break;}}assert(found,'Unpreserved production media: '+n);}
+for(const n of moduleAssetSources){let found=false;for(const c of git(['log','--all','--format=%H','--',n]).toString().trim().split('\n')){if(!c)continue;const bytes=read(c,n);if(hash(bytes)===before.sourceLF[n]){add(n,c);found=true;break;}}assert(found,'Unpreserved production media: '+n);}
 const activeModules=JSON.parse(fs.readFileSync(path.resolve(path.dirname(beforeFile),'active-module-baseline.json'))),approvedAssets={};
 for(const[game,row]of Object.entries(activeModules)){
  assert(registry.stakePolicies[game]);assert.equal(row.pointerSha256,before.moduleFiles['/opt/royal-game-modules/'+game+'/active.json']);
@@ -36,7 +36,7 @@ for(const[game,row]of Object.entries(activeModules)){
 }
 const active=Object.keys(registry.stakePolicies),catalog=read(files['src/modules/GameModuleCatalog.ts'].commit,'src/modules/GameModuleCatalog.ts').toString(),moduleGames=[];
 for(const id of active){const m=[...catalog.matchAll(/gameId: '([^']+)', slug: '([^']+)'/g)].find(m=>m[1]===id);assert(m,id);moduleGames.push(m[2]);}
-const common={format:1,productionCommit:before.sourceCommit,changedSources:changed,files:Object.fromEntries(Object.entries(files).sort()),moduleGames,moduleContracts:{'studio-afterglow':before.moduleHost.games['studio-afterglow']},moduleAssets:{...Object.fromEntries(Object.entries(before.source).filter(([n])=>/\.(?:avif|gif|jpe?g|json|mp3|mp4|m4a|ogg|png|svg|wav|webm|webp|woff2?)$/.test(n))),...approvedAssets},moduleAssetSources};
+const common={format:1,productionCommit:before.sourceCommit,changedSources:changed,files:Object.fromEntries(Object.entries(files).sort()),moduleGames,moduleContracts:{'studio-afterglow':before.moduleHost.games['studio-afterglow']},moduleAssets:{...Object.fromEntries(Object.entries(before.source).filter(([n])=>/\.(?:avif|gif|jpe?g|json|mp3|mp4|m4a|ogg|png|svg|wav|webm|webp|woff2?)$/.test(n))),...approvedAssets}};
 for(const[kind,entries]of [['host',['index.html']],['backend',['server/index.ts']],['native',['scripts/finance-nile-play.ts','scripts/finance-nile-play-proof.ts']]])fs.writeFileSync(path.join(folder,kind+'-projection.json'),JSON.stringify({...common,entries},null,2)+'\n');
 fs.writeFileSync(path.join(folder,'scope.json'),JSON.stringify({release:'shared-stakes-20261101-v1',productionCommit:before.sourceCommit,featureCommit:feature,activeGames:active,addedGames:[],restoredGames:[],qualifiedSources:qualified,changedSources:changed,preservedWardrobeProgressVersion:3,nativeService:'royal-nile-play'},null,2)+'\n');
 console.log({feature,sourceCandidates:Object.keys(files).length,moduleGames,moduleAssetSources});

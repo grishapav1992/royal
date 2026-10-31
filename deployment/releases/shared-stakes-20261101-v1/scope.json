@@ -1,7 +1,7 @@
 {
   "release": "shared-stakes-20261101-v1",
   "productionCommit": "fb599494fbee9accff92c8a30126a071ebcceb5c",
-  "featureCommit": "86bb7fb99b697cb31f14b568833cca175d68ebe6",
+  "featureCommit": "a32dd2f6bdee32fdc8bccf362fb258d96314d645",
   "activeGames": [
     "studio-caramel-carnival",
     "studio-last-convoy",
@@ -160,8 +160,6 @@
     "games/jackie-chan/JackieUI.ts",
     "games/neopolis/NeopolisUI.ts",
     "games/royal-roulette/RoyalRoulette.ts",
-    "scripts/build-game-module.mjs",
-    "scripts/build-host-projection.mjs",
     "scripts/game-math/audit-unified-stakes.mjs",
     "scripts/game-math/rtp-caribbean.mjs",
     "scripts/game-math/rtp-cosmic.mjs",
@@ -176,7 +174,6 @@
     "scripts/game-math/rtp-stakes.mjs",
     "scripts/game-math/stake-runtime.mjs",
     "scripts/game-math/stakes-wallet.ts",
-    "scripts/module-source-projection.mjs",
     "scripts/qualify-game-rtp.mjs",
     "server/afterglowProgress.ts",
     "server/demoExpansion.ts",
