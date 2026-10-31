@@ -1,10 +1,13 @@
-type Clip = 'idle' | 'channel';
+type Clip = 'look' | 'focus' | 'magic';
+const clips: Clip[] = ['look', 'focus', 'magic'];
 const sources: Record<Clip, string> = {
-  idle: '/assets/forest-heart/kling-v1/idle.mp4',
-  channel: '/assets/forest-heart/kling-v1/channel.mp4',
+  look: '/assets/forest-heart/video-v3/look.mp4',
+  focus: '/assets/forest-heart/video-v3/focus.mp4',
+  magic: '/assets/forest-heart/video-v3/magic.mp4',
 };
+const episodeMs = 3000, standingMs = 6000, fadeMs = 240;
 
-/** Silent local media only. The existing character clock and confirmed pose select a clip. */
+/** Three short, silent episodes separated by a standing interval on the owned active-time clock. */
 export class ForestVideo {
   private canvas: HTMLCanvasElement;
   private videos = new Map<Clip, HTMLVideoElement>();
@@ -15,7 +18,13 @@ export class ForestVideo {
   private buffer?: WebGLBuffer;
   private texture?: WebGLTexture;
   private current: Clip | null = null;
-  private desired: Clip | null = null;
+  private phase: 'standing' | 'loading' | 'playing' | 'fading' = 'standing';
+  private nextIndex = 0;
+  private nextAt = 0;
+  private loadingAt = 0;
+  private episodeAt = 0;
+  private resumePending = false;
+  private history: {clip: Clip; startMs: number; endMs?: number}[] = [];
   private suspended = false;
   private alive = true;
   private blend = 0;
@@ -31,11 +40,11 @@ export class ForestVideo {
     this.canvas.width = 640; this.canvas.height = 768;
     this.canvas.setAttribute('aria-hidden', 'true');
     host.prepend(this.canvas);
-    for (const kind of ['idle', 'channel'] as const) {
+    for (const kind of clips) {
       const video = doc.createElement('video');
       video.hidden = true; video.muted = true; video.defaultMuted = true; video.volume = 0;
       video.playsInline = true; video.disablePictureInPicture = true;
-      video.preload = 'none'; video.loop = kind === 'idle';
+      video.preload = 'none'; video.loop = false;
       video.setAttribute('aria-hidden', 'true');
       video.addEventListener('error', () => { this.failed.add(kind); }, { signal: this.controller.signal });
       host.prepend(video); this.videos.set(kind, video);
@@ -90,20 +99,34 @@ export class ForestVideo {
     }
   }
 
+  private finish(elapsed: number) {
+    if (this.phase === 'fading' || this.phase === 'standing') return;
+    if (this.current) this.videos.get(this.current)!.pause();
+    const last = this.history.at(-1);
+    if (this.phase === 'playing' && last && last.endMs === undefined) last.endMs = elapsed;
+    this.phase = 'fading';
+  }
+
   update(pose: string, elapsed: number) {
     if (!this.alive || this.suspended || this.host.ownerDocument.hidden) return;
-    this.desired = pose === 'idle' ? 'idle' : pose === 'channel' ? 'channel' : null;
-    if (this.desired && this.failed.has(this.desired)) this.desired = null;
+    if (this.resumePending) { this.nextAt = elapsed + standingMs; this.resumePending = false; }
+    const eligible = pose === 'idle' || pose === 'channel';
     const dt = this.last ? Math.max(0, Math.min(80, elapsed - this.last)) : 0;
     this.last = elapsed;
-    if (this.current !== this.desired && this.blend <= 0) {
-      if (this.current) this.videos.get(this.current)!.pause();
-      this.current = this.desired; this.uploadedTime = -1;
-      if (this.current) { const video = this.videos.get(this.current)!; video.currentTime = 0; }
+    if (this.phase === 'standing' && eligible && elapsed >= this.nextAt) {
+      const kind = clips[this.nextIndex]; this.nextIndex = (this.nextIndex + 1) % clips.length;
+      this.nextAt = elapsed + standingMs;
+      if (!this.failed.has(kind)) {
+        this.current = kind; this.uploadedTime = -1; this.loadingAt = elapsed; this.phase = 'loading';
+        this.videos.get(kind)!.currentTime = 0;
+      }
     }
     const video = this.current ? this.videos.get(this.current)! : undefined;
-    if (this.current === this.desired && this.current) this.play(this.current);
+    if (this.current && (this.phase === 'loading' || this.phase === 'playing')) this.play(this.current);
     const ready = !!video && video.readyState >= 2 && !video.ended && !this.failed.has(this.current!);
+    // An episode that has started completes once. A new game pose never restarts it or queues another one.
+    if ((this.phase === 'loading' && (!eligible || elapsed - this.loadingAt >= 8000)) || (this.current && this.failed.has(this.current))) this.finish(elapsed);
+    if (this.phase === 'playing' && (elapsed - this.episodeAt >= episodeMs || video?.ended)) this.finish(elapsed);
     if (ready && !this.gl && !this.setup()) { this.failed.add(this.current!); return; }
     if (ready && this.gl && video.currentTime !== this.uploadedTime) {
       try {
@@ -113,24 +136,35 @@ export class ForestVideo {
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, video);
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
         this.uploadedTime = video.currentTime; this.frames++;
+        if (this.phase === 'loading') {
+          this.episodeAt = elapsed; this.phase = 'playing';
+          this.history.push({clip:this.current!,startMs:elapsed}); this.history = this.history.slice(-12);
+        }
       } catch { this.failed.add(this.current!); }
     }
-    const target = ready && this.current === this.desired && !this.failed.has(this.current!) && this.frames > 0 ? 1 : 0;
-    this.blend = Math.max(0, Math.min(1, this.blend + (target ? 1 : -1) * dt / 180));
+    const target = ready && this.phase === 'playing' ? 1 : 0;
+    this.blend = Math.max(0, Math.min(1, this.blend + (target ? 1 : -1) * dt / fadeMs));
+    if (this.phase === 'fading' && this.blend === 0) {
+      this.current = null; this.phase = 'standing'; this.nextAt = elapsed + standingMs;
+    }
     this.host.style.setProperty('--fh-video-blend', String(this.blend));
-    this.host.dataset.video = this.blend > 0 ? this.current! : 'fallback';
+    this.host.dataset.video = this.blend > 0 ? this.current! : 'standing';
   }
 
   suspend(value: boolean) {
+    if (value === this.suspended) return;
     if (value) {
       for (const video of this.videos.values()) video.pause();
-      this.current = null; this.desired = null; this.blend = 0; this.last = 0;
-      this.host.style.setProperty('--fh-video-blend', '0'); this.host.dataset.video = 'fallback';
+      const last = this.history.at(-1); if (last && last.endMs === undefined) last.endMs = this.last;
+      this.current = null; this.phase = 'standing'; this.blend = 0; this.last = 0;
+      this.resumePending = true;
+      this.host.style.setProperty('--fh-video-blend', '0'); this.host.dataset.video = 'standing';
     }
     this.suspended = value;
   }
 
-  state() { return { clip: this.current, blend: this.blend, frames: this.frames, suspended: this.suspended, failed: [...this.failed], media: [...this.videos].map(([clip, video]) => ({ clip, paused: video.paused, time: video.currentTime, ready: video.readyState, muted: video.muted })) }; }
+  get showing() { return this.blend > 0; }
+  state() { return { clip: this.current, phase: this.phase, nextClip: clips[this.nextIndex], nextAtMs: this.nextAt, episodeMs, standingMs, history: this.history.map(event=>({...event})), blend: this.blend, frames: this.frames, suspended: this.suspended, failed: [...this.failed], media: [...this.videos].map(([clip, video]) => ({ clip, paused: video.paused, time: video.currentTime, ready: video.readyState, muted: video.muted, loop: video.loop })) }; }
   private release() {
     const gl = this.gl;
     if (gl) { if (this.texture) gl.deleteTexture(this.texture); if (this.buffer) gl.deleteBuffer(this.buffer); if (this.program) gl.deleteProgram(this.program); }

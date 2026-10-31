@@ -1,4 +1,14 @@
-# Forest Heart client 1.9 (local experiment)
+# Forest Heart client 1.10 (local experiment)
+
+## Three-second character episodes 1.10
+
+The local revision replaces continuous idle video with three new independent reference generations: a quiet nod (`look`), a glance toward the board (`focus`), and a small crystal gesture (`magic`). Each final clip has exactly 72 frames at 24 fps, three seconds and no audio. The old palindrome and media looping are removed.
+
+Visible playback follows `look (3 s), standing (6 s), focus (3 s), standing (6 s), magic (3 s), standing (6 s)`. The standing interval begins after the 240 ms return to the existing portrait. These timings are local artistic choices for user review. Idle body deformation stops during the standing interval; the existing eye blink and background effects remain. An already playing decorative episode finishes once while the accepted board animation continues. It never restarts because another pose arrives. A new episode starts only from idle or confirmed channeling, so no result or choice reaction is queued for later.
+
+The actual game image is attached as multipart `input_reference`, with its original pixels over black and padding to the required 720 by 1280 frame. Native three-second Kling 3 requests were rejected and Kling 4 had no available merchant. Three five-second Kling 3.0 sources therefore provide the complete forward gestures, timed to three seconds at 5/3 speed. New token usage was USD 2.088; total token usage after this revision was USD 4.872. No further paid requests are needed for playback.
+
+Rules, pause, hidden pages and reduced motion stop video immediately. Resuming begins with a quiet standing interval, without replaying missed clips. The original result poses, shared audio, board clock and controls remain authoritative. The media and schedule inventory is [video-v3-assets.json](../../docs/concepts/forest-heart/video-v3-assets.json). Earlier provenance and the failed Seedance trial remain below and in the review.
 
 ## Local character video experiment 1.9
 

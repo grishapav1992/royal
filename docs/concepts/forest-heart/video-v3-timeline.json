@@ -1,0 +1,55 @@
+{
+  "clip": null,
+  "phase": "standing",
+  "nextClip": "look",
+  "nextAtMs": 28142.5,
+  "episodeMs": 3000,
+  "standingMs": 6000,
+  "history": [
+    {
+      "clip": "look",
+      "startMs": 346.70000000000005,
+      "endMs": 3326.6
+    },
+    {
+      "clip": "focus",
+      "startMs": 9609.7,
+      "endMs": 12609.5
+    },
+    {
+      "clip": "magic",
+      "startMs": 18909.3,
+      "endMs": 21909.199999999997
+    }
+  ],
+  "blend": 0,
+  "frames": 322,
+  "suspended": false,
+  "failed": [],
+  "media": [
+    {
+      "clip": "look",
+      "paused": true,
+      "time": 3,
+      "ready": 4,
+      "muted": true,
+      "loop": false
+    },
+    {
+      "clip": "focus",
+      "paused": true,
+      "time": 3,
+      "ready": 4,
+      "muted": true,
+      "loop": false
+    },
+    {
+      "clip": "magic",
+      "paused": true,
+      "time": 3,
+      "ready": 4,
+      "muted": true,
+      "loop": false
+    }
+  ]
+}

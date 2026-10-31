@@ -1,0 +1,132 @@
+{
+  "scope": "Three new independent reference generations for the local game",
+  "newAcceptedGenerationCount": 3,
+  "sequence": [
+    "look",
+    "focus",
+    "magic"
+  ],
+  "episodeMs": 3000,
+  "standingMs": 6000,
+  "fadeMs": 240,
+  "earlierUsageQuota": 1392000,
+  "quotaUnitsPerUsd": 500000,
+  "sourceNominalSeconds": 5,
+  "finalSeconds": 3,
+  "notes": [
+    "The 3-second Kling 3 requests were rejected; Kling 4 had no available merchant. These rejections created no task and the usage counter was unchanged before successful submission.",
+    "Three new 5-second source generations use the real game elf, converted to RGB PNG over black with padding, with the original image bounds and visible reference colors preserved.",
+    "The full forward gesture is timed to 3 seconds. There is no reverse playback or media looping.",
+    "A border-connected matte preserves enclosed dark costume shadows using the original reference alpha.",
+    "Model identity is reported by A6API, not independently authenticated."
+  ],
+  "rejectedRequests": [
+    {
+      "httpStatus": 400,
+      "error": "upstream_unavailable",
+      "taskCreated": false
+    },
+    {
+      "httpStatus": 400,
+      "error": "invalid_request",
+      "taskCreated": false
+    },
+    {
+      "httpStatus": 503,
+      "error": "video_candidate_incompatible",
+      "taskCreated": false
+    },
+    {
+      "httpStatus": 400,
+      "error": "invalid_request",
+      "taskCreated": false
+    },
+    {
+      "httpStatus": 400,
+      "error": "video_spec_not_offered",
+      "taskCreated": false
+    }
+  ],
+  "assets": [
+    {
+      "clip": "look",
+      "path": "public/assets/forest-heart/video-v3/look.mp4",
+      "bytes": 1014787,
+      "sha256": "efc70fb92dfd71971b912765490fcbc848048465fb2356b254e49e7da47bf1ca",
+      "model": "kling-3.0",
+      "referenceOriginalSha256": "180c90f9c6850bada1ce9a6a346dea4dcf4881f4325b394240f0d3defedb601b",
+      "referenceSubmittedSha256": "ec94306cd4cdfbeea64202e2018f5d5abc126d3e9b5cb1d7c187dd4ddb88ba30",
+      "unchangedReferenceColorsOverBlack": true,
+      "referencePadding": {
+        "top": 256,
+        "bottom": 256,
+        "left": 40,
+        "right": 40,
+        "color": "#000000"
+      },
+      "requestFormat": "multipart/input_reference",
+      "requestedSourceSeconds": 5,
+      "sourceSha256": "07eb9604d6fe9173e656dedf7deb897c08ba0ff5edb005c91c12524ea7f0da61",
+      "targetSeconds": 3,
+      "frames": 72,
+      "forwardSpeedFactor": 1.6666666666666667,
+      "prompt": "Animate only the supplied reference image of the adult elf. It is the exact first frame. Preserve the face, body proportions, hairstyle, clothing, jewelry, crystal and framing exactly. Locked camera. Keep the background unchanged and still. No zoom, scene change, redesign, added objects, text or large gestures. Five seconds total: hold the reference for 0.25 seconds, perform one tiny gesture during seconds 0.25-2.25, return naturally to the exact reference posture by second 2.75, then hold that posture until the end. Silent. One very small acknowledging nod and one natural blink. The crystal and both hands stay still. Only a few hair strands move softly."
+    },
+    {
+      "clip": "focus",
+      "path": "public/assets/forest-heart/video-v3/focus.mp4",
+      "bytes": 1096499,
+      "sha256": "d4c711a1b356833c5712d8ec2198cafd210cbebade661a387938dc8a2082615e",
+      "model": "kling-3.0",
+      "referenceOriginalSha256": "180c90f9c6850bada1ce9a6a346dea4dcf4881f4325b394240f0d3defedb601b",
+      "referenceSubmittedSha256": "ec94306cd4cdfbeea64202e2018f5d5abc126d3e9b5cb1d7c187dd4ddb88ba30",
+      "unchangedReferenceColorsOverBlack": true,
+      "referencePadding": {
+        "top": 256,
+        "bottom": 256,
+        "left": 40,
+        "right": 40,
+        "color": "#000000"
+      },
+      "requestFormat": "multipart/input_reference",
+      "requestedSourceSeconds": 5,
+      "sourceSha256": "0cbb4ad58cca474bacd40ee6d9ee7b959dc07467e795f9c88c293385ac49e2bc",
+      "targetSeconds": 3,
+      "frames": 72,
+      "forwardSpeedFactor": 1.6666666666666667,
+      "prompt": "Animate only the supplied reference image of the adult elf. It is the exact first frame. Preserve the face, body proportions, hairstyle, clothing, jewelry, crystal and framing exactly. Locked camera. Keep the background unchanged and still. No zoom, scene change, redesign, added objects, text or large gestures. Five seconds total: hold the reference for 0.25 seconds, perform one tiny gesture during seconds 0.25-2.25, return naturally to the exact reference posture by second 2.75, then hold that posture until the end. Silent. She briefly glances slightly toward the game board on the left, with a tiny head turn, then looks back at the viewer. Hands, shoulders and crystal remain still."
+    },
+    {
+      "clip": "magic",
+      "path": "public/assets/forest-heart/video-v3/magic.mp4",
+      "bytes": 1101252,
+      "sha256": "7ed3b8b1e42b3ad4e8e4cff392e19712d5567fd8b8886c6067621f06ff593701",
+      "model": "kling-3.0",
+      "referenceOriginalSha256": "180c90f9c6850bada1ce9a6a346dea4dcf4881f4325b394240f0d3defedb601b",
+      "referenceSubmittedSha256": "ec94306cd4cdfbeea64202e2018f5d5abc126d3e9b5cb1d7c187dd4ddb88ba30",
+      "unchangedReferenceColorsOverBlack": true,
+      "referencePadding": {
+        "top": 256,
+        "bottom": 256,
+        "left": 40,
+        "right": 40,
+        "color": "#000000"
+      },
+      "requestFormat": "multipart/input_reference",
+      "requestedSourceSeconds": 5,
+      "sourceSha256": "771235a3538dbe93228a09853b41f5fdb92bda8c11e9bcd6ee587433334dc833",
+      "targetSeconds": 3,
+      "frames": 72,
+      "forwardSpeedFactor": 1.6666666666666667,
+      "prompt": "Animate only the supplied reference image of the adult elf. It is the exact first frame. Preserve the face, body proportions, hairstyle, clothing, jewelry, crystal and framing exactly. Locked camera. Keep the background unchanged and still. No zoom, scene change, redesign, added objects, text or large gestures. Five seconds total: hold the reference for 0.25 seconds, perform one tiny gesture during seconds 0.25-2.25, return naturally to the exact reference posture by second 2.75, then hold that posture until the end. Silent. She gently lifts the crystal hand only a few centimeters, gives the crystal a restrained warm glance, then lowers it back to the original position. A very soft glow stays inside the existing crystal; no flying effects or particles."
+    }
+  ],
+  "usage": {
+    "beforeQuota": 1392000,
+    "afterQuota": 2436000,
+    "quotaUnitsPerUsd": 500000,
+    "additionalUsd": 2.088,
+    "totalTokenUsd": 4.872,
+    "source": "A6API read-only token usage counter"
+  }
+}

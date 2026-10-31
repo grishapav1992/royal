@@ -189,8 +189,9 @@ export class ForestCharacter {
     gl.uniform4f(this.uniforms.uWeightsA, weights[0], weights[1], weights[2], weights[3]);
     gl.uniform4f(this.uniforms.uWeightsB, weights[4], weights[5], weights[6], 0);
     gl.uniform4fv(this.uniforms.uGesture, gesture);
-    gl.uniform1f(this.uniforms.uTime, this.elapsed / 1000); gl.uniform1f(this.uniforms.uMotion, this.reduced || this.paused ? 0 : 1);
-    gl.uniform1f(this.uniforms.uBlink, this.pose === 'idle' && t >= 1 ? this.blinkValue : 0);
+    const moving = this.pose !== 'idle' || gesture.some(value => Math.abs(value) > .001);
+    gl.uniform1f(this.uniforms.uTime, this.elapsed / 1000); gl.uniform1f(this.uniforms.uMotion, this.reduced || this.paused || !moving ? 0 : 1);
+    gl.uniform1f(this.uniforms.uBlink, !this.video.showing && this.pose === 'idle' && t >= 1 ? this.blinkValue : 0);
     gl.drawElements(gl.TRIANGLES, 24 * 32 * 6, gl.UNSIGNED_SHORT, 0); this.frameCount++;
   }
   private setPose(pose: ForestPose, immediate = false) {

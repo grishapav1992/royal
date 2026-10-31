@@ -70,40 +70,55 @@ async function wallet(page: Page) {
   });
 }
 
-test('Kling character video decodes in the real host, follows accepted flow and stops for rules and reduced motion', async ({page,roomPath}) => {
+test('three short character videos alternate with a quiet standing pose and stop for rules and reduced motion', async ({page,roomPath}) => {
   const errors: string[] = []; page.on('pageerror',error=>errors.push(error.message));
   await routeScenario(page,'win'); await enter(page,roomPath);
-  await expect.poll(async()=>(await state(page)).character.video.blend,{timeout:20000}).toBeGreaterThan(.95);
-  await expect.poll(async()=>(await state(page)).character.video.frames).toBeGreaterThan(4);
-  const idle=await state(page);
-  expect(idle.character.video.clip).toBe('idle');
-  expect(idle.character.video.media.every((media:any)=>media.muted)).toBe(true);
+  const video = async () => (await state(page)).character.video;
+  await expect.poll(async()=>(await video()).blend,{timeout:20000}).toBeGreaterThan(.95);
+  expect((await video()).clip).toBe('look');
+  expect((await video()).media.every((media:any)=>media.muted&&!media.loop)).toBe(true);
   const source=await game(page).locator('video').evaluateAll(elements=>elements.map(element=>(element as HTMLVideoElement).currentSrc));
-  expect(source.some(url=>/\/game-modules\/studio-forest-heart\/versions\/[^/]+\/media\/forest-heart\/kling-v1\/idle\.mp4/.test(url))).toBe(true);
-  await page.screenshot({path:out+'/kling-desktop.png'});
+  expect(source.some(url=>/\/game-modules\/studio-forest-heart\/versions\/[^/]+\/media\/forest-heart\/video-v3\/look\.mp4/.test(url))).toBe(true);
+  await page.screenshot({path:out+'/video-v3-first.png'});
   await game(page).locator('[data-fh=spin]').click();
-  await expect.poll(async()=>{const video=(await state(page)).character.video;return video.clip==='channel'&&video.blend>.5;},{timeout:12000,intervals:[50]}).toBe(true);
-  await page.screenshot({path:out+'/kling-channel.png'});
+  await expect(game(page).locator('[data-fh=skip]')).toBeVisible();
+  await expect.poll(async()=>(await video()).phase,{timeout:6000}).toBe('standing');
   await expect.poll(async()=>!(await state(page)).busy,{timeout:15000}).toBe(true);
+  const firstRest=await video();
+  expect(firstRest.blend).toBe(0);
+  expect(firstRest.media.every((media:any)=>media.paused)).toBe(true);
+  await expect(game(page).locator('.fh-character-canvas')).toHaveCSS('opacity','1');
+  await page.screenshot({path:out+'/video-v3-standing.png'});
+  await page.waitForTimeout(1000);
+  expect((await video()).history).toHaveLength(1);
+  await expect.poll(async()=>(await video()).clip,{timeout:10000}).toBe('focus');
+  await expect.poll(async()=>(await video()).blend).toBeGreaterThan(.95);
+  await page.screenshot({path:out+'/video-v3-second.png'});
+  await expect.poll(async()=>(await video()).history.length,{timeout:15000}).toBe(3);
+  await expect.poll(async()=>(await video()).phase,{timeout:6000}).toBe('standing');
+  const cycle=await video();
+  expect(cycle.history.map((event:any)=>event.clip)).toEqual(['look','focus','magic']);
+  for(const event of cycle.history) { expect(event.endMs).toBeGreaterThan(event.startMs); expect(event.endMs-event.startMs).toBeLessThanOrEqual(3100); }
+  for(let i=1;i<cycle.history.length;i++)expect(cycle.history[i].startMs-cycle.history[i-1].endMs).toBeGreaterThanOrEqual(6000);
+  expect(cycle.media.every((media:any)=>media.paused)).toBe(true);
+  await writeFile(out+'/video-v3-timeline.json',JSON.stringify(cycle,null,2));
   await game(page).locator('[data-fh=rules]').click();
-  const paused=await state(page);
-  expect(paused.character.video.blend).toBe(0);
-  expect(paused.character.video.media.every((media:any)=>media.paused)).toBe(true);
+  expect((await video()).blend).toBe(0);
+  expect((await video()).media.every((media:any)=>media.paused)).toBe(true);
   await game(page).locator('[data-fh=close]').click();
-  await expect.poll(async()=>(await state(page)).character.video.blend).toBeGreaterThan(.95);
+  expect((await video()).phase).toBe('standing');
   await page.setViewportSize({width:390,height:844}); await fit(game(page));
   await expect(page.locator('#chat-input')).toBeInViewport();
-  await page.screenshot({path:out+'/kling-mobile.png'});
+  await page.screenshot({path:out+'/video-v3-mobile.png'});
   await game(page).locator('[data-fh=settings]').click();
   await game(page).locator('[data-fh=motion]').check();
   await game(page).locator('[data-fh=close]').click();
-  await expect.poll(async()=>(await state(page)).character.video.blend).toBe(0);
-  expect((await state(page)).character.video.media.every((media:any)=>media.paused)).toBe(true);
-  await page.screenshot({path:out+'/kling-reduced.png'});
+  expect((await video()).blend).toBe(0);
+  expect((await video()).media.every((media:any)=>media.paused)).toBe(true);
   await game(page).locator('[data-fh=settings]').click();
   await game(page).locator('[data-fh=motion]').uncheck();
   await game(page).locator('[data-fh=close]').click();
-  await expect.poll(async()=>(await state(page)).character.video.blend).toBeGreaterThan(.95);
+  expect((await video()).phase).toBe('standing');
   await page.locator('#mini-dialog .mini-top [data-close]').click();
   await expect(page.locator('.forest-heart-frame')).toHaveCount(0);
   expect(errors).toEqual([]);
@@ -111,9 +126,9 @@ test('Kling character video decodes in the real host, follows accepted flow and 
 
 test('unavailable character videos preserve the existing elf and playable controls', async({page,roomPath})=>{
   const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
-  await page.route('**/kling-v1/*.mp4',route=>route.abort());
+  await page.route('**/video-v3/*.mp4',route=>route.abort());
   await enter(page,roomPath);
-  await expect.poll(async()=>(await state(page)).character.video.failed).toContain('idle');
+  await expect.poll(async()=>(await state(page)).character.video.failed).toContain('look');
   expect((await state(page)).character.video.blend).toBe(0);
   await expect(game(page).locator('.fh-character-canvas')).toHaveCSS('opacity','1');
   await expect(game(page).locator('[data-fh=spin]')).toBeEnabled();
