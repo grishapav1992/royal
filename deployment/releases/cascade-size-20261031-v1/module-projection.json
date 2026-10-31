@@ -604,7 +604,7 @@
       "sha256": "292f57d2807fa8a522b8c51b52a11fef4c32f763ee1b0177981a71ed96decb1a"
     },
     "tsconfig.json": {
-      "commit": "736e10b41c04f654955052415a36bfb2476ac828",
+      "commit": "7fdb80e201c868e54412ea5b266c0f098f628f34",
       "path": "tsconfig.json",
       "baseSha256": "72f038daeebea654f36d8cec9cfe8911d3189d0949aa4647215c927540c8ec5b",
       "sha256": "72f038daeebea654f36d8cec9cfe8911d3189d0949aa4647215c927540c8ec5b"
