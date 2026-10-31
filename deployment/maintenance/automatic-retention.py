@@ -18,22 +18,7 @@ spec.loader.exec_module(cleanup)
 
 
 def select_release(image, source_commit, root=None):
-    matches = []
-    for path in (root or cleanup.RELEASES).glob('*/install-manifest.json'):
-        try:
-            manifest = cleanup.read(path)
-            built = cleanup.read(path.parent / 'build-result.json')
-            published = cleanup.read(path.parent / 'published.json')
-        except (OSError, ValueError):
-            continue
-        if (manifest.get('release') == path.parent.name and manifest.get('sourceCommit') == source_commit
-                and built.get('sourceCommit') == source_commit and built.get('image') == image
-                and published.get('sourceCommit') == source_commit and published.get('published') is True
-                and published.get('runningImage', published.get('image')) == image
-                and isinstance(manifest.get('before', {}).get('source'), dict) and built.get('program')):
-            matches.append(path.parent.name)
-    cleanup.require(len(matches) == 1, 'Running image needs one complete host release proof; found ' + str(len(matches)))
-    return matches[0]
+    return cleanup.select_current_release(image, source_commit, root)
 
 
 def rotate_audits(root, current):
