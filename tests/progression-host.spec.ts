@@ -171,7 +171,9 @@ test('ordinary Coins and Fruits windows spend one shared packet, stop at zero an
   await page.setViewportSize({width:390,height:844});await expect(page.locator('#chat-input')).toBeInViewport();
   expect(await page.locator('.fruits-slot').evaluate(el=>el.scrollWidth<=el.clientWidth+1)).toBe(true);
   await page.screenshot({path:info.outputPath('shared-spins-mobile.png')});
-  await page.locator('[data-reward-mode]').selectOption('1000000');await expect(page.locator('[data-fruits-spin]')).toBeEnabled();
+  await page.locator('[data-reward-mode]').scrollIntoViewIfNeeded();await expect(page.locator('[data-reward-mode]')).toBeInViewport();
+  await page.locator('[data-reward-mode]').selectOption('1000000');await page.locator('[data-fruits-spin]').scrollIntoViewIfNeeded();await expect(page.locator('[data-fruits-spin]')).toBeInViewport();
+  await freeSpin(page,'royal-fruits');const mobile=await current(page);expect(mobile.progression.grants[1].remaining).toBe(4);expect(mobile.progression.xp).toBe(earned.xp);
   await page.locator('[data-reward-mode]').selectOption('');await expect(page.locator('[data-fruits-stake]')).toHaveValue('1000');
   await expect(page.locator('[data-fruits-spin]')).toHaveText('ВРАЩАТЬ');await page.locator('#mini-dialog .mini-top [data-close]').click();await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getState().cabinet)).toBe('');expect(errors).toEqual([]);
 });

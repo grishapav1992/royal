@@ -1,0 +1,79 @@
+{
+  "format": 1,
+  "state": "verified-candidate",
+  "productionBefore": "591461b5350f5c164e69fe14476c5b912b3bd2da",
+  "runtimeFeature": "60b13bb8dde910919057835ed056a98257b78857",
+  "verifiedBuild": {
+    "sourceCommit": "09967c1524323b86da5905d9e051825317aa321d",
+    "hostProjection": "0c751399bd9ba8c37048927418154cd12c90f81b2ead25bbf0d8b139cc7ff885",
+    "backendProjection": "6a118f834e2278432b12786473dedcfaf5fc1390fc1701a17d1f76d7fa3399b4",
+    "backendSha256": "8b28184b3dbfd27def1bc8cedf9ff71fc6b521ac9de452d8ecd98a09750d0323",
+    "client": {
+      "dist/assets/index-DfLkemkt.js": "9cb0faeb1994db038e44bae3d92ec01c8559345bc72dada4d41742d678333068",
+      "dist/assets/index-DSWJtOAy.css": "3aed8b12dfce27f47cd6644ee7191e2dc2b6efefb2fb8456834a9dbe66d78951",
+      "dist/index.html": "53a5c27ca8af6fef47bbfec28a3fc130e93ac2f0a19ab1a8e06d572c4d1b08af"
+    },
+    "modules": {
+      "royal-coins": {
+        "version": "1.0.0-278b412559b3",
+        "manifestSha256": "a27c0af8544271ec6ec354eeff99a942231d0d4fa06a8cef804a88fd2319fe8f",
+        "files": {
+          "entry-7ee92650964eb226.js": "7ee92650964eb22613730954620cf3f0ce79d42fa0187d2baeb84053835ae6eb",
+          "style-17f45676c5354929.css": "17f45676c5354929ce18900c49fa21315ba8d0aa1c8b2bc537e909009864a460"
+        },
+        "pointerSha256": "783b8573d1d608b62cdf856055f85e71fb9cf1ab05c514a488675676e521ba44"
+      },
+      "royal-fruits": {
+        "version": "1.0.0-b173e0aab264",
+        "manifestSha256": "7025ee0c2d378225c4465fab921ff882e7f7c75dca1d6ba5bfc4a84f1a3121a0",
+        "files": {
+          "entry-52024b65277a565c.js": "52024b65277a565c3b1ab17b1892ce93b6c8d374e788d8d99e7d4fc4f58ef22f",
+          "media/github-worlds/royal-fruits/background-v1.webp": "a04a36b64c8178ed12bffd8e8144942ea38282d5a7b95c3d935333ea9f035c43",
+          "media/github-worlds/royal-fruits/character-v1.webp": "059d9e17ae40e24b0b9c96d1d288caed815a495a03cc6527c5a1b52dd2e9e4c0",
+          "style-b88bd6d1e9bd0061.css": "b88bd6d1e9bd00612da97fb9d9b7d228302bf424de4c05b3300f673f634dd361"
+        },
+        "pointerSha256": "5f2c9c76b83db69825a173326e156bf20010dccdc3c23d8374e4372b2c14d04b"
+      }
+    }
+  },
+  "checks": {
+    "serverClientHttpMathAndAtelier": 68,
+    "realHostSourceBrowser": 6,
+    "exactBuiltHostBrowser": 6,
+    "additionalMobileInteraction": 1,
+    "guardedInstaller": 19,
+    "preparationProtocolAndPublicVerifier": 22,
+    "projectedRewardMath": 2,
+    "postgresFinancialFence": 1,
+    "nativeRestart": 14,
+    "moduleContractsAndByteInventories": 7,
+    "walletPvpAndAccountIsolation": 19,
+    "authentication": 6,
+    "typescript": true,
+    "financeTypescript": true,
+    "rtpProfiles": 25,
+    "legacyUnchangedNotQualified": 114
+  },
+  "knownPreExistingFailure": {
+    "test": "server-tests/appearance.test.ts",
+    "message": "store.events.connect is not a function",
+    "evidence": "AccountStore.events and this test are unchanged from origin/main before the feature; the current AccountStore uses EventEmitter. No runtime changes were made to that unrelated bridge."
+  },
+  "security": {
+    "serverChosenNominalAndRules": true,
+    "accountLockedAtomicConsumption": true,
+    "requestBindsAccountGrantAndGame": true,
+    "durableSharedNewRoundLimitPerMinute": 120,
+    "originalReceiptsReplayBeforeLimitsAndPause": true,
+    "milestoneIssuanceUnique": true,
+    "rewardsDoNotEarnXp": true,
+    "ordinaryWindowsStopAtZero": true,
+    "multipleAccountsIdentityDetectionIncluded": false
+  },
+  "productionTestsWritePlayerData": false,
+  "publication": {
+    "complete": false,
+    "hostInstalled": false,
+    "modulesInstalled": false
+  }
+}
