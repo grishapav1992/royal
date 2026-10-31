@@ -3,6 +3,7 @@ import importlib.util
 import io
 import json
 import os
+import subprocess
 from pathlib import Path
 import tarfile
 import tempfile
@@ -96,9 +97,12 @@ class AutomaticRetentionTest(unittest.TestCase):
             (release/'build-result.json').write_text(json.dumps({'image': game, 'before': {'image': other}}))
             helper = unittest.mock.Mock()
             helper.image_row.side_effect = lambda identity: {'id': identity, 'tags': ['royal-game:old' if identity==game else 'royal-payments:old'], 'created': '2026-10-01'}
-            with patch.object(cleanup, 'RELEASES', root), patch.object(cleanup, 'referenced_images', return_value=set()), patch.object(cleanup, 'native_retention', return_value=helper):
+            with patch.object(cleanup, 'RELEASES', root), patch.object(cleanup,'IMAGE_LEDGER',root/'known.json'), patch.object(cleanup, 'referenced_images', return_value=set()), patch.object(cleanup, 'native_retention', return_value=helper):
                 rows = cleanup.image_candidates(set())
+                (release/'build-result.json').unlink()
+                resumed = cleanup.image_candidates(set())
             self.assertEqual([r['id'] for r in rows], [game])
+            self.assertEqual([r['id'] for r in resumed], [game])
 
     def test_low_space_after_cleanup_is_reported_as_failure(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -180,6 +184,25 @@ class AutomaticRetentionTest(unittest.TestCase):
             root=Path(temp);path=self.release(root,'scoped')
             built=json.loads((path/'build-result.json').read_text());built.pop('sourceCommit');(path/'build-result.json').write_text(json.dumps(built))
             self.assertEqual(automatic.select_release('active','source',root),'scoped')
+
+    def test_periodic_exit_retries_the_complete_container_snapshot(self):
+        runtime=cleanup.native_retention();stable='a'*64;periodic='b'*64
+        row={'Id':stable,'Name':'/royal-game-1'}
+        missing=subprocess.CalledProcessError(1,['docker','inspect'],stderr='Error: No such object: '+periodic)
+        outputs=[stable+' royal-game-1\n'+periodic+' royal-nile-reconcile-once',missing,stable+' royal-game-1',json.dumps([row])]
+        with patch.object(runtime,'run',side_effect=outputs):
+            self.assertEqual(runtime.container_inspections(),[row])
+        with patch.object(runtime,'run',side_effect=[stable+' royal-game-1',subprocess.CalledProcessError(1,[],stderr='Error: No such object: '+stable)]):
+            with self.assertRaisesRegex(RuntimeError,'unknown container'):runtime.container_inspections()
+
+    def test_persistent_service_guard_uses_the_retrying_snapshot(self):
+        helper=unittest.mock.Mock()
+        helper.container_inspections.return_value=[
+            {'Name':'/royal-game-1','State':{'Status':'running'},'Config':{'Labels':{}},'HostConfig':{'RestartPolicy':{'Name':'always'}}},
+            {'Name':'/royal-nile-reconcile-once','State':{'Status':'running'}},
+            {'Name':'/old-stopped','State':{'Status':'exited'}}]
+        with patch.object(cleanup,'native_retention',return_value=helper),patch.object(cleanup,'service_identity',return_value={'stable':True}):
+            self.assertEqual(cleanup.persistent_services(),{'/royal-game-1':{'stable':True}})
 
 
 if __name__ == '__main__': unittest.main()
