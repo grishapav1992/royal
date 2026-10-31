@@ -1,0 +1,1920 @@
+{
+  "format": 1,
+  "releases": {
+    "atelier-live-preview-20261025-v1": [
+      {
+        "sourceCommit": "27264a8cac2744aad98145631e76a291af5cbedf",
+        "sourceBackupSha256": "71df38bb84f2cb715a6116f48596c53b05743bf8f3176a5b84cebc3c79fe4550"
+      }
+    ],
+    "caribbean-autoplay-20261030-v1": [
+      {
+        "sourceCommit": "0baa69d10ddea384ba7e58c499582d18e702de2c",
+        "sourceBackupSha256": "6c6c0bef52e392ebed8ccd9985eb25a6ea50247424008736d254cd830d8396be"
+      },
+      {
+        "sourceCommit": "0baa69d10ddea384ba7e58c499582d18e702de2c",
+        "sourceBackupSha256": "09383acdf86696910b2538e5257d8836d388291560d8b5f20175dcd460297530"
+      },
+      {
+        "sourceCommit": "0baa69d10ddea384ba7e58c499582d18e702de2c",
+        "sourceBackupSha256": "6ab57b09480f35c6cdcde7b91ec713a7ae84d9962424a0f27516e1a13de3599a"
+      },
+      {
+        "sourceCommit": "0baa69d10ddea384ba7e58c499582d18e702de2c",
+        "sourceBackupSha256": "a3357a66361849e33cb31136ee8cf08d50908a1576c3e952e96af6e33e3480d1"
+      },
+      {
+        "sourceCommit": "0baa69d10ddea384ba7e58c499582d18e702de2c",
+        "sourceBackupSha256": "d54e4b09b8c4e9fdc7447479027057e3a62881c92117c31e562341fe1d853b22"
+      },
+      {
+        "sourceCommit": "0baa69d10ddea384ba7e58c499582d18e702de2c",
+        "sourceBackupSha256": "dfb3b1454f174144da4ac423025b33ac9dd42294d744cf75818608616e466c3f"
+      }
+    ],
+    "caribbean-treasures-20261029-v1": [
+      {
+        "sourceCommit": "b921d0537fed52336aaee5d97144bf36a9188107",
+        "sourceBackupSha256": "d7717bb2bcfce75e789e215b01e6add1d9b80ccbd2ce017bb34d870e03987878"
+      }
+    ],
+    "caribbean-treasures-20261029-v2": [
+      {
+        "sourceCommit": "b921d0537fed52336aaee5d97144bf36a9188107",
+        "sourceBackupSha256": "d7717bb2bcfce75e789e215b01e6add1d9b80ccbd2ce017bb34d870e03987878"
+      }
+    ],
+    "cat-purr-hall-only-20261030-v1": [
+      {
+        "sourceCommit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+        "sourceBackupSha256": "542221b739f094aa5a4f92aca94d0b566b03f795f9506e6792d0d773dd40bb9d"
+      }
+    ],
+    "forest-heart-responsive-20261030-v1": [
+      {
+        "sourceCommit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+        "sourceBackupSha256": "542221b739f094aa5a4f92aca94d0b566b03f795f9506e6792d0d773dd40bb9d"
+      },
+      {
+        "sourceCommit": "aed09286a21e315cb506b1befc754f5a7b4eecd2",
+        "sourceBackupSha256": "6806b27030af67a8418055611b2bd0a7a36bd42083a9cdda31c3f2b9cfebabf8"
+      }
+    ],
+    "character-motion-20261027-v1": [
+      {
+        "sourceCommit": "0b434f1e2c897d7a4f3f4602a6af8200e5e652ef",
+        "sourceBackupSha256": "2596668c6eeac63dbc245a6cd17e5723f503373f081e3717cf79d2c6435f7a7e"
+      },
+      {
+        "sourceCommit": "0b434f1e2c897d7a4f3f4602a6af8200e5e652ef",
+        "sourceBackupSha256": "4085d330333c72f56554de6225b22c7680c2750abdac45b51fb045f17bda9b88"
+      },
+      {
+        "sourceCommit": "0b434f1e2c897d7a4f3f4602a6af8200e5e652ef",
+        "sourceBackupSha256": "561f122c79d236c9b114b2c64915c6becaafd0c9e5531835df0868cdc9610247"
+      },
+      {
+        "sourceCommit": "0b434f1e2c897d7a4f3f4602a6af8200e5e652ef",
+        "sourceBackupSha256": "afe3e44eb292bab518224182be34d6f8d8b3b0ac0dc400aaf7b07e68d315c6da"
+      },
+      {
+        "sourceCommit": "0b434f1e2c897d7a4f3f4602a6af8200e5e652ef",
+        "sourceBackupSha256": "d5ad1c9361d55bdd0a5aee5a7869d29082f2fc4e25151c15b6bd1959d111a161"
+      },
+      {
+        "sourceCommit": "0b434f1e2c897d7a4f3f4602a6af8200e5e652ef",
+        "sourceBackupSha256": "df30c8bed24ab3c6b5b76d787958fb3ed350a1878a6782da1023f1d631c0dccb"
+      }
+    ],
+    "character-motion-20261027-v2": [
+      {
+        "sourceCommit": "0b434f1e2c897d7a4f3f4602a6af8200e5e652ef",
+        "sourceBackupSha256": "2596668c6eeac63dbc245a6cd17e5723f503373f081e3717cf79d2c6435f7a7e"
+      },
+      {
+        "sourceCommit": "0b434f1e2c897d7a4f3f4602a6af8200e5e652ef",
+        "sourceBackupSha256": "4085d330333c72f56554de6225b22c7680c2750abdac45b51fb045f17bda9b88"
+      },
+      {
+        "sourceCommit": "0b434f1e2c897d7a4f3f4602a6af8200e5e652ef",
+        "sourceBackupSha256": "561f122c79d236c9b114b2c64915c6becaafd0c9e5531835df0868cdc9610247"
+      },
+      {
+        "sourceCommit": "0b434f1e2c897d7a4f3f4602a6af8200e5e652ef",
+        "sourceBackupSha256": "afe3e44eb292bab518224182be34d6f8d8b3b0ac0dc400aaf7b07e68d315c6da"
+      },
+      {
+        "sourceCommit": "0b434f1e2c897d7a4f3f4602a6af8200e5e652ef",
+        "sourceBackupSha256": "d5ad1c9361d55bdd0a5aee5a7869d29082f2fc4e25151c15b6bd1959d111a161"
+      },
+      {
+        "sourceCommit": "0b434f1e2c897d7a4f3f4602a6af8200e5e652ef",
+        "sourceBackupSha256": "df30c8bed24ab3c6b5b76d787958fb3ed350a1878a6782da1023f1d631c0dccb"
+      }
+    ],
+    "chat-moderation-20261022-v1": [
+      {
+        "sourceCommit": "6bc234991e3d3afb38af55b48f58bd8f28ceb6e2",
+        "sourceBackupSha256": "0ee7e3864d2afa4d02fc5cc8e0f176737f086d205e9b3ddc2c54d3a11944caa2"
+      }
+    ],
+    "chat-reliability-20261022-v1": [
+      {
+        "sourceCommit": "fd8777464db607c903f8ffaf41d6e9d2ace91ffe",
+        "sourceBackupSha256": "9d9e27e44e7829685a65ae15afdc9cf211d2883ad3d492b3d55d885b36189449"
+      },
+      {
+        "sourceCommit": "09dbad7d86ec4b5c7d18c16715d1861de65468f3",
+        "sourceBackupSha256": "516230f039a6517f03d08969220a42788a2d017c3f2ac95be756be9818c92731"
+      },
+      {
+        "sourceCommit": "09dbad7d86ec4b5c7d18c16715d1861de65468f3",
+        "sourceBackupSha256": "79d3caf4ada394be095454e2d287a1d863e0e9021950da0cbe2fd775175966b9"
+      }
+    ],
+    "convoy-poses-20261021-v1": [
+      {
+        "sourceCommit": "91fbc7f0e5a874f2299e0b73620e0cf2ad584d18",
+        "sourceBackupSha256": "e69d32ea9ec1bdeee29059a34fcd3dc5a0f6a9a7f4aff61879b9962b3168d433"
+      }
+    ],
+    "cosmic-math-20261026-v1": [
+      {
+        "sourceCommit": "d3e4f9c0ef50a4d1ab63f0862696e288125fd740",
+        "sourceBackupSha256": "f9e90039e767ee0b9debc95929ab0a846d491f6da09c81496a9978a01eb0fd72"
+      }
+    ],
+    "cr-leo-20261021-data": [
+      {
+        "sourceCommit": "dfc0c0821a1df757dacac8a3cb615721e01ec95e",
+        "sourceBackupSha256": "1d47eecf680017e6c971c1302802a7451ad5f1fe0a40a69595540429890611c7"
+      }
+    ],
+    "cr-leo-20261021-v1": [
+      {
+        "sourceCommit": "dfc0c0821a1df757dacac8a3cb615721e01ec95e",
+        "sourceBackupSha256": "1d47eecf680017e6c971c1302802a7451ad5f1fe0a40a69595540429890611c7"
+      }
+    ],
+    "cr-leo-audio-sync-20261022-v1": [
+      {
+        "sourceCommit": "dd0446729de03948de56315dab919beced1f30fe",
+        "sourceBackupSha256": "0b9732911849302e0e5ce521befb02023d0b36708e2e75d6d459986250eead7c"
+      },
+      {
+        "sourceCommit": "dd0446729de03948de56315dab919beced1f30fe",
+        "sourceBackupSha256": "0cd8995fbf7b330752086a074720ba59a33d15b8c82e610560f3f26371388548"
+      },
+      {
+        "sourceCommit": "dd0446729de03948de56315dab919beced1f30fe",
+        "sourceBackupSha256": "1149b45f40bff1882c4e79bf582f509433bdc71a45a162ca77ad8aaf6bdb9302"
+      },
+      {
+        "sourceCommit": "dd0446729de03948de56315dab919beced1f30fe",
+        "sourceBackupSha256": "203f3599b96d2b0d0aeddac43e2a417a28b44045e00ab02aa7924150cc75b55f"
+      },
+      {
+        "sourceCommit": "dd0446729de03948de56315dab919beced1f30fe",
+        "sourceBackupSha256": "3c10132247d3b3a3b9c5608fcb6fea59a75c00db6a2ad6b9a6af93d866eebef1"
+      },
+      {
+        "sourceCommit": "dd0446729de03948de56315dab919beced1f30fe",
+        "sourceBackupSha256": "40836e046fcbf157e80b6afc6b497c623c695051944e97fd7b10cc77cf408ea3"
+      },
+      {
+        "sourceCommit": "dd0446729de03948de56315dab919beced1f30fe",
+        "sourceBackupSha256": "42d1e309b730eda13c1c44290c4c813ec9e5ac9e45e64204593db15264bbffba"
+      },
+      {
+        "sourceCommit": "dd0446729de03948de56315dab919beced1f30fe",
+        "sourceBackupSha256": "4390e06290de978bbd5a38d87f9d1c0c6952f4f489af0f38b411334908741651"
+      },
+      {
+        "sourceCommit": "dd0446729de03948de56315dab919beced1f30fe",
+        "sourceBackupSha256": "518b310cb80356fa5496abd433e632ecfc3195ba8e322b5d51cb8ae1796c05c7"
+      },
+      {
+        "sourceCommit": "dd0446729de03948de56315dab919beced1f30fe",
+        "sourceBackupSha256": "57b320a5d213701b8204f30f2deb9d9edcb0244e196cac156a2a1525e56b7ff4"
+      },
+      {
+        "sourceCommit": "dd0446729de03948de56315dab919beced1f30fe",
+        "sourceBackupSha256": "6f17d912319ab61c745c4e60b784962d0830875f1781c1d7ed54a30d9f5fae0e"
+      },
+      {
+        "sourceCommit": "dd0446729de03948de56315dab919beced1f30fe",
+        "sourceBackupSha256": "8676722cdd894272f155c5a8613e5aa052903541230eddae0e612df3fc34535d"
+      },
+      {
+        "sourceCommit": "dd0446729de03948de56315dab919beced1f30fe",
+        "sourceBackupSha256": "91024de3d3cbe29293e6461c23c4a59109c0afc7dfb13731a0e203d5ce98409c"
+      },
+      {
+        "sourceCommit": "dd0446729de03948de56315dab919beced1f30fe",
+        "sourceBackupSha256": "9b5291eaffeb17215ae0efd98fe971db0f9d4852c3d5dbd10e1a6383b2f6a10f"
+      },
+      {
+        "sourceCommit": "dd0446729de03948de56315dab919beced1f30fe",
+        "sourceBackupSha256": "b65aa4095f242c0ab582dbd1088199cf5873d3e1fa022943ad59de22b5ccbead"
+      },
+      {
+        "sourceCommit": "dd0446729de03948de56315dab919beced1f30fe",
+        "sourceBackupSha256": "bb04818d6538e4e28b6d915b7893bbccbb38d760d34afb092c4677f220e5f474"
+      },
+      {
+        "sourceCommit": "dd0446729de03948de56315dab919beced1f30fe",
+        "sourceBackupSha256": "bf9daf9caa361b0ac43fe82bd690019f3c6d709d15990da6dec2f90afd15d46a"
+      },
+      {
+        "sourceCommit": "dd0446729de03948de56315dab919beced1f30fe",
+        "sourceBackupSha256": "cdef2c478c70bf5b7a7fa3de78643e5e1bd7eca7b65d7fb2a3c5386d1e936f0f"
+      },
+      {
+        "sourceCommit": "dd0446729de03948de56315dab919beced1f30fe",
+        "sourceBackupSha256": "dc352bac0f7c21079ea437ebac94395793ae54a00148505b17e86ce27f35ba92"
+      },
+      {
+        "sourceCommit": "dd0446729de03948de56315dab919beced1f30fe",
+        "sourceBackupSha256": "e2169e3b76e785bca01edb1e9e9e189df670299aa0b4db2101657fdd6e152ed6"
+      },
+      {
+        "sourceCommit": "dd0446729de03948de56315dab919beced1f30fe",
+        "sourceBackupSha256": "f74054bb9714f7a1f6e31a22c84c214b399d053efdad65eaceb3cc136392d36c"
+      },
+      {
+        "sourceCommit": "dd0446729de03948de56315dab919beced1f30fe",
+        "sourceBackupSha256": "fc205e3b36032e68c64e166a710b15bf0bcb685a1b5f7aea2d3ee02c469d953c"
+      },
+      {
+        "sourceCommit": "09dbad7d86ec4b5c7d18c16715d1861de65468f3",
+        "sourceBackupSha256": "516230f039a6517f03d08969220a42788a2d017c3f2ac95be756be9818c92731"
+      },
+      {
+        "sourceCommit": "09dbad7d86ec4b5c7d18c16715d1861de65468f3",
+        "sourceBackupSha256": "79d3caf4ada394be095454e2d287a1d863e0e9021950da0cbe2fd775175966b9"
+      }
+    ],
+    "cr-leo-ball-20261022-v1": [
+      {
+        "sourceCommit": "2b0298ce355b05f9b5576c447cb0ec4f213d256e",
+        "sourceBackupSha256": "1149b45f40bff1882c4e79bf582f509433bdc71a45a162ca77ad8aaf6bdb9302"
+      },
+      {
+        "sourceCommit": "2b0298ce355b05f9b5576c447cb0ec4f213d256e",
+        "sourceBackupSha256": "203f3599b96d2b0d0aeddac43e2a417a28b44045e00ab02aa7924150cc75b55f"
+      },
+      {
+        "sourceCommit": "2b0298ce355b05f9b5576c447cb0ec4f213d256e",
+        "sourceBackupSha256": "23b53be08876aa0b7d1fdb1f7ae65c2f8b1a856c693a177d63fe5f9d6daff061"
+      },
+      {
+        "sourceCommit": "2b0298ce355b05f9b5576c447cb0ec4f213d256e",
+        "sourceBackupSha256": "40836e046fcbf157e80b6afc6b497c623c695051944e97fd7b10cc77cf408ea3"
+      },
+      {
+        "sourceCommit": "2b0298ce355b05f9b5576c447cb0ec4f213d256e",
+        "sourceBackupSha256": "42d1e309b730eda13c1c44290c4c813ec9e5ac9e45e64204593db15264bbffba"
+      },
+      {
+        "sourceCommit": "2b0298ce355b05f9b5576c447cb0ec4f213d256e",
+        "sourceBackupSha256": "6f17d912319ab61c745c4e60b784962d0830875f1781c1d7ed54a30d9f5fae0e"
+      },
+      {
+        "sourceCommit": "2b0298ce355b05f9b5576c447cb0ec4f213d256e",
+        "sourceBackupSha256": "8676722cdd894272f155c5a8613e5aa052903541230eddae0e612df3fc34535d"
+      },
+      {
+        "sourceCommit": "2b0298ce355b05f9b5576c447cb0ec4f213d256e",
+        "sourceBackupSha256": "91024de3d3cbe29293e6461c23c4a59109c0afc7dfb13731a0e203d5ce98409c"
+      },
+      {
+        "sourceCommit": "2b0298ce355b05f9b5576c447cb0ec4f213d256e",
+        "sourceBackupSha256": "9b5291eaffeb17215ae0efd98fe971db0f9d4852c3d5dbd10e1a6383b2f6a10f"
+      },
+      {
+        "sourceCommit": "2b0298ce355b05f9b5576c447cb0ec4f213d256e",
+        "sourceBackupSha256": "aaaab50a09f43fc3b5b6f1a77259beaf266a37b02618c1a6dd0bd57e8e289131"
+      },
+      {
+        "sourceCommit": "2b0298ce355b05f9b5576c447cb0ec4f213d256e",
+        "sourceBackupSha256": "bf9daf9caa361b0ac43fe82bd690019f3c6d709d15990da6dec2f90afd15d46a"
+      },
+      {
+        "sourceCommit": "2b0298ce355b05f9b5576c447cb0ec4f213d256e",
+        "sourceBackupSha256": "dc352bac0f7c21079ea437ebac94395793ae54a00148505b17e86ce27f35ba92"
+      },
+      {
+        "sourceCommit": "2b0298ce355b05f9b5576c447cb0ec4f213d256e",
+        "sourceBackupSha256": "f4eee17547bc4b511aaf7a1a09b67144d86a523fa908ef84e3d08b1c938bc4aa"
+      },
+      {
+        "sourceCommit": "2b0298ce355b05f9b5576c447cb0ec4f213d256e",
+        "sourceBackupSha256": "f74054bb9714f7a1f6e31a22c84c214b399d053efdad65eaceb3cc136392d36c"
+      },
+      {
+        "sourceCommit": "2b0298ce355b05f9b5576c447cb0ec4f213d256e",
+        "sourceBackupSha256": "fc205e3b36032e68c64e166a710b15bf0bcb685a1b5f7aea2d3ee02c469d953c"
+      },
+      {
+        "sourceCommit": "09dbad7d86ec4b5c7d18c16715d1861de65468f3",
+        "sourceBackupSha256": "516230f039a6517f03d08969220a42788a2d017c3f2ac95be756be9818c92731"
+      },
+      {
+        "sourceCommit": "09dbad7d86ec4b5c7d18c16715d1861de65468f3",
+        "sourceBackupSha256": "79d3caf4ada394be095454e2d287a1d863e0e9021950da0cbe2fd775175966b9"
+      }
+    ],
+    "cr-leo-global-load-20261021-v1": [
+      {
+        "sourceCommit": "db34f73797bd9d3f2ee5a0eb4e0866f9630b5110",
+        "sourceBackupSha256": "1149b45f40bff1882c4e79bf582f509433bdc71a45a162ca77ad8aaf6bdb9302"
+      },
+      {
+        "sourceCommit": "db34f73797bd9d3f2ee5a0eb4e0866f9630b5110",
+        "sourceBackupSha256": "1dea6228613984b9013867cbaa18b0724b3282afcf57f43286bd11d74408ccc2"
+      },
+      {
+        "sourceCommit": "db34f73797bd9d3f2ee5a0eb4e0866f9630b5110",
+        "sourceBackupSha256": "40836e046fcbf157e80b6afc6b497c623c695051944e97fd7b10cc77cf408ea3"
+      },
+      {
+        "sourceCommit": "db34f73797bd9d3f2ee5a0eb4e0866f9630b5110",
+        "sourceBackupSha256": "42d1e309b730eda13c1c44290c4c813ec9e5ac9e45e64204593db15264bbffba"
+      },
+      {
+        "sourceCommit": "db34f73797bd9d3f2ee5a0eb4e0866f9630b5110",
+        "sourceBackupSha256": "6f17d912319ab61c745c4e60b784962d0830875f1781c1d7ed54a30d9f5fae0e"
+      },
+      {
+        "sourceCommit": "db34f73797bd9d3f2ee5a0eb4e0866f9630b5110",
+        "sourceBackupSha256": "7c23e792835de07e5a315524880fddb389d7f10b79b903c852fffefec9200f0f"
+      },
+      {
+        "sourceCommit": "db34f73797bd9d3f2ee5a0eb4e0866f9630b5110",
+        "sourceBackupSha256": "8676722cdd894272f155c5a8613e5aa052903541230eddae0e612df3fc34535d"
+      },
+      {
+        "sourceCommit": "db34f73797bd9d3f2ee5a0eb4e0866f9630b5110",
+        "sourceBackupSha256": "91024de3d3cbe29293e6461c23c4a59109c0afc7dfb13731a0e203d5ce98409c"
+      },
+      {
+        "sourceCommit": "db34f73797bd9d3f2ee5a0eb4e0866f9630b5110",
+        "sourceBackupSha256": "9b5291eaffeb17215ae0efd98fe971db0f9d4852c3d5dbd10e1a6383b2f6a10f"
+      },
+      {
+        "sourceCommit": "db34f73797bd9d3f2ee5a0eb4e0866f9630b5110",
+        "sourceBackupSha256": "bf9daf9caa361b0ac43fe82bd690019f3c6d709d15990da6dec2f90afd15d46a"
+      },
+      {
+        "sourceCommit": "db34f73797bd9d3f2ee5a0eb4e0866f9630b5110",
+        "sourceBackupSha256": "dc1386054ffb86904285ea25c33cc6f939d44754169ffe7b0af92f6a5dbe9edb"
+      },
+      {
+        "sourceCommit": "db34f73797bd9d3f2ee5a0eb4e0866f9630b5110",
+        "sourceBackupSha256": "dc352bac0f7c21079ea437ebac94395793ae54a00148505b17e86ce27f35ba92"
+      },
+      {
+        "sourceCommit": "db34f73797bd9d3f2ee5a0eb4e0866f9630b5110",
+        "sourceBackupSha256": "f74054bb9714f7a1f6e31a22c84c214b399d053efdad65eaceb3cc136392d36c"
+      },
+      {
+        "sourceCommit": "db34f73797bd9d3f2ee5a0eb4e0866f9630b5110",
+        "sourceBackupSha256": "fc205e3b36032e68c64e166a710b15bf0bcb685a1b5f7aea2d3ee02c469d953c"
+      }
+    ],
+    "cr-leo-stadium-20261022-v1": [
+      {
+        "sourceCommit": "b7192eaa561c09523adf60f91efb5835ceb575bd",
+        "sourceBackupSha256": "016f96fa141164f3f229f807f705422f509bc928886607a23e0c14a7e745b689"
+      },
+      {
+        "sourceCommit": "b7192eaa561c09523adf60f91efb5835ceb575bd",
+        "sourceBackupSha256": "1149b45f40bff1882c4e79bf582f509433bdc71a45a162ca77ad8aaf6bdb9302"
+      },
+      {
+        "sourceCommit": "b7192eaa561c09523adf60f91efb5835ceb575bd",
+        "sourceBackupSha256": "203f3599b96d2b0d0aeddac43e2a417a28b44045e00ab02aa7924150cc75b55f"
+      },
+      {
+        "sourceCommit": "b7192eaa561c09523adf60f91efb5835ceb575bd",
+        "sourceBackupSha256": "3c10132247d3b3a3b9c5608fcb6fea59a75c00db6a2ad6b9a6af93d866eebef1"
+      },
+      {
+        "sourceCommit": "b7192eaa561c09523adf60f91efb5835ceb575bd",
+        "sourceBackupSha256": "40836e046fcbf157e80b6afc6b497c623c695051944e97fd7b10cc77cf408ea3"
+      },
+      {
+        "sourceCommit": "b7192eaa561c09523adf60f91efb5835ceb575bd",
+        "sourceBackupSha256": "42d1e309b730eda13c1c44290c4c813ec9e5ac9e45e64204593db15264bbffba"
+      },
+      {
+        "sourceCommit": "b7192eaa561c09523adf60f91efb5835ceb575bd",
+        "sourceBackupSha256": "57b320a5d213701b8204f30f2deb9d9edcb0244e196cac156a2a1525e56b7ff4"
+      },
+      {
+        "sourceCommit": "b7192eaa561c09523adf60f91efb5835ceb575bd",
+        "sourceBackupSha256": "6f17d912319ab61c745c4e60b784962d0830875f1781c1d7ed54a30d9f5fae0e"
+      },
+      {
+        "sourceCommit": "b7192eaa561c09523adf60f91efb5835ceb575bd",
+        "sourceBackupSha256": "7461481ada4043e7010588fb58840dc2ee3303d8338d86561622d3156f88b79f"
+      },
+      {
+        "sourceCommit": "b7192eaa561c09523adf60f91efb5835ceb575bd",
+        "sourceBackupSha256": "8676722cdd894272f155c5a8613e5aa052903541230eddae0e612df3fc34535d"
+      },
+      {
+        "sourceCommit": "b7192eaa561c09523adf60f91efb5835ceb575bd",
+        "sourceBackupSha256": "91024de3d3cbe29293e6461c23c4a59109c0afc7dfb13731a0e203d5ce98409c"
+      },
+      {
+        "sourceCommit": "b7192eaa561c09523adf60f91efb5835ceb575bd",
+        "sourceBackupSha256": "9b5291eaffeb17215ae0efd98fe971db0f9d4852c3d5dbd10e1a6383b2f6a10f"
+      },
+      {
+        "sourceCommit": "b7192eaa561c09523adf60f91efb5835ceb575bd",
+        "sourceBackupSha256": "b65aa4095f242c0ab582dbd1088199cf5873d3e1fa022943ad59de22b5ccbead"
+      },
+      {
+        "sourceCommit": "b7192eaa561c09523adf60f91efb5835ceb575bd",
+        "sourceBackupSha256": "bf9daf9caa361b0ac43fe82bd690019f3c6d709d15990da6dec2f90afd15d46a"
+      },
+      {
+        "sourceCommit": "b7192eaa561c09523adf60f91efb5835ceb575bd",
+        "sourceBackupSha256": "dc352bac0f7c21079ea437ebac94395793ae54a00148505b17e86ce27f35ba92"
+      },
+      {
+        "sourceCommit": "b7192eaa561c09523adf60f91efb5835ceb575bd",
+        "sourceBackupSha256": "df8409ddd81702e5aa4ec2f1341eb9cea2abeba912fdcd339f364792cdf740d6"
+      },
+      {
+        "sourceCommit": "b7192eaa561c09523adf60f91efb5835ceb575bd",
+        "sourceBackupSha256": "e2169e3b76e785bca01edb1e9e9e189df670299aa0b4db2101657fdd6e152ed6"
+      },
+      {
+        "sourceCommit": "b7192eaa561c09523adf60f91efb5835ceb575bd",
+        "sourceBackupSha256": "e2ed299884ae09e2494d8dd1ec46a360a80e52741ea52a3aa44c192d6eeb0810"
+      },
+      {
+        "sourceCommit": "b7192eaa561c09523adf60f91efb5835ceb575bd",
+        "sourceBackupSha256": "f74054bb9714f7a1f6e31a22c84c214b399d053efdad65eaceb3cc136392d36c"
+      },
+      {
+        "sourceCommit": "b7192eaa561c09523adf60f91efb5835ceb575bd",
+        "sourceBackupSha256": "fc205e3b36032e68c64e166a710b15bf0bcb685a1b5f7aea2d3ee02c469d953c"
+      },
+      {
+        "sourceCommit": "09dbad7d86ec4b5c7d18c16715d1861de65468f3",
+        "sourceBackupSha256": "516230f039a6517f03d08969220a42788a2d017c3f2ac95be756be9818c92731"
+      },
+      {
+        "sourceCommit": "09dbad7d86ec4b5c7d18c16715d1861de65468f3",
+        "sourceBackupSha256": "79d3caf4ada394be095454e2d287a1d863e0e9021950da0cbe2fd775175966b9"
+      }
+    ],
+    "dracona-20261022-v1": [
+      {
+        "sourceCommit": "9fe42339b28291d51cb5c66e0acbfa46ffe59a7f",
+        "sourceBackupSha256": "e734b8b746d7caaabf0ea6e13f747e78aa7ab284f14ba566d5b9ab930410d060"
+      }
+    ],
+    "fast-entry-20261022-v1": [
+      {
+        "sourceCommit": "7b7d52c3a1eeede99922116e799f586cf91a70d2",
+        "sourceBackupSha256": "f0758c26af4c6fcff2a0db7166c80b5425c2998704b4aa2df8ba56df196f7b9e"
+      }
+    ],
+    "flag-battle-20261029-v1": [
+      {
+        "sourceCommit": "23f5111455d280315f2d5cf2de443cf025e3f01e",
+        "sourceBackupSha256": "3ec37f742374a2df715878a53b2bf028fbe2d0de5d8286816956cfc8e3013c7b"
+      }
+    ],
+    "flooded-temple-20261030-v1": [
+      {
+        "sourceCommit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+        "sourceBackupSha256": "b6df37063455d9c4f7b789517683eb2155d537887701664f2b02ad165bcb9501"
+      }
+    ],
+    "forest-heart-20261029-v2": [
+      {
+        "sourceCommit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+        "sourceBackupSha256": "0c7412ea5438c72d63c7808759e79bb76fa95e12a32a23690dd7b36fcca9a1be"
+      },
+      {
+        "sourceCommit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+        "sourceBackupSha256": "2a362a9b2e190a7c56cc52d06313ef81f3c2a8321c60ab474e43223eda08856d"
+      },
+      {
+        "sourceCommit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+        "sourceBackupSha256": "45cfe78f20c3e986879d1a2d847023a88972b2f0128896e57c93604edd291210"
+      },
+      {
+        "sourceCommit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+        "sourceBackupSha256": "518520016060b439e0eec106a2a3b78e5162f47661d1f2d95f962cf8a47f39ae"
+      },
+      {
+        "sourceCommit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+        "sourceBackupSha256": "6f0ba79987ff2d24e5c242103ec6735bea1b9fcb3a0fba2abec773eff1dab52e"
+      },
+      {
+        "sourceCommit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+        "sourceBackupSha256": "c3e04efc098aa9d61f0faa70fc9159d8460dcf0816d96ef5b560efd45ab46658"
+      },
+      {
+        "sourceCommit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+        "sourceBackupSha256": "f722a510ed699cecb172b064e2b44a98f79d19f59039ead1c796e6c779e2e24f"
+      },
+      {
+        "sourceCommit": "aed09286a21e315cb506b1befc754f5a7b4eecd2",
+        "sourceBackupSha256": "6806b27030af67a8418055611b2bd0a7a36bd42083a9cdda31c3f2b9cfebabf8"
+      }
+    ],
+    "forest-heart-20261029-v3": [
+      {
+        "sourceCommit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+        "sourceBackupSha256": "0c7412ea5438c72d63c7808759e79bb76fa95e12a32a23690dd7b36fcca9a1be"
+      },
+      {
+        "sourceCommit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+        "sourceBackupSha256": "2a362a9b2e190a7c56cc52d06313ef81f3c2a8321c60ab474e43223eda08856d"
+      },
+      {
+        "sourceCommit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+        "sourceBackupSha256": "45cfe78f20c3e986879d1a2d847023a88972b2f0128896e57c93604edd291210"
+      },
+      {
+        "sourceCommit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+        "sourceBackupSha256": "518520016060b439e0eec106a2a3b78e5162f47661d1f2d95f962cf8a47f39ae"
+      },
+      {
+        "sourceCommit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+        "sourceBackupSha256": "6f0ba79987ff2d24e5c242103ec6735bea1b9fcb3a0fba2abec773eff1dab52e"
+      },
+      {
+        "sourceCommit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+        "sourceBackupSha256": "c3e04efc098aa9d61f0faa70fc9159d8460dcf0816d96ef5b560efd45ab46658"
+      },
+      {
+        "sourceCommit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+        "sourceBackupSha256": "f722a510ed699cecb172b064e2b44a98f79d19f59039ead1c796e6c779e2e24f"
+      },
+      {
+        "sourceCommit": "aed09286a21e315cb506b1befc754f5a7b4eecd2",
+        "sourceBackupSha256": "6806b27030af67a8418055611b2bd0a7a36bd42083a9cdda31c3f2b9cfebabf8"
+      }
+    ],
+    "game-entry-20261022-v1": [
+      {
+        "sourceCommit": "08f22472b2b90a3ca07c4efeec267e28cd6b384a",
+        "sourceBackupSha256": "237b8185aca490ab9e3af4d4ba1fe1091f0dacac7469a48faf1d830f80313c19"
+      }
+    ],
+    "girlhub-feedback-20261023-v1": [
+      {
+        "sourceCommit": "c71cd32bbef6f923994392bdb693fff3a635ab4e",
+        "sourceBackupSha256": "285cd01db207a50ea5532f3745d4be9a0a43ac34615c67b6d9154c219b2c42bd"
+      }
+    ],
+    "girlhub-sidebar-20261021-v1": [
+      {
+        "sourceCommit": "77638b5275a3247a68bfa8af1a3ccad63b82357b",
+        "sourceBackupSha256": "fa6a65c5e3541cbd1fc9b459e0af31eabbdad8fe1a1cb34e89159e590f949bd7"
+      }
+    ],
+    "github-motion-20261022-v1": [
+      {
+        "sourceCommit": "b63115d73062c88e9b39be608a3bff9f1093b8fd",
+        "sourceBackupSha256": "321f26e7da9afeb0867c0c4236e63d83391e7028aec64b129563a39abe1ef290"
+      },
+      {
+        "sourceCommit": "09dbad7d86ec4b5c7d18c16715d1861de65468f3",
+        "sourceBackupSha256": "516230f039a6517f03d08969220a42788a2d017c3f2ac95be756be9818c92731"
+      },
+      {
+        "sourceCommit": "09dbad7d86ec4b5c7d18c16715d1861de65468f3",
+        "sourceBackupSha256": "79d3caf4ada394be095454e2d287a1d863e0e9021950da0cbe2fd775175966b9"
+      }
+    ],
+    "github-worlds-20261023-v1": [
+      {
+        "sourceCommit": "e8f02c1eee942e539aa06646e0db85d511d3feb2",
+        "sourceBackupSha256": "df990b0bfb59d62a4936239f68acae25fabee89291cee41c46ae82185cb55260"
+      }
+    ],
+    "hall-layout-20261021-v1": [
+      {
+        "sourceCommit": "554ff6d9828280f779a9f8b04a4e9254c14754ab",
+        "sourceBackupSha256": "6364f38f680b01986e05bb05ac781cc087006f5c66c5694bef5b4d9eb4ff85d6"
+      }
+    ],
+    "jackie-chan-20261029-v1": [
+      {
+        "sourceCommit": "ee9319121f33bf14f45bacae448d21d62a17df9e",
+        "sourceBackupSha256": "9c46832c932d72090ff651767f843f6bcec31d72365ce843a9ec730a205b8873"
+      },
+      {
+        "sourceCommit": "ee9319121f33bf14f45bacae448d21d62a17df9e",
+        "sourceBackupSha256": "bcc2bf6bbf6abe8624afe93ac6b6442063c18891815a43347d77638ff19b0367"
+      },
+      {
+        "sourceCommit": "ee9319121f33bf14f45bacae448d21d62a17df9e",
+        "sourceBackupSha256": "d7717bb2bcfce75e789e215b01e6add1d9b80ccbd2ce017bb34d870e03987878"
+      }
+    ],
+    "jackie-chan-20261029-v2": [
+      {
+        "sourceCommit": "ee9319121f33bf14f45bacae448d21d62a17df9e",
+        "sourceBackupSha256": "9c46832c932d72090ff651767f843f6bcec31d72365ce843a9ec730a205b8873"
+      },
+      {
+        "sourceCommit": "ee9319121f33bf14f45bacae448d21d62a17df9e",
+        "sourceBackupSha256": "bcc2bf6bbf6abe8624afe93ac6b6442063c18891815a43347d77638ff19b0367"
+      },
+      {
+        "sourceCommit": "ee9319121f33bf14f45bacae448d21d62a17df9e",
+        "sourceBackupSha256": "d7717bb2bcfce75e789e215b01e6add1d9b80ccbd2ce017bb34d870e03987878"
+      },
+      {
+        "sourceCommit": "2ce578d07f15d7a36daf42cbcf338427925a7091",
+        "sourceBackupSha256": "7d601514cbffa0ddb667721d7a48b52fdff35df7f3898491625b1e5b5adb8fd0"
+      },
+      {
+        "sourceCommit": "0d8de07f08677af717631629bb09b1ed8896a3af",
+        "sourceBackupSha256": "00977aac6a0652ad556ad1492b790aa996d2627db1ec3feb60832fc9557f1f56"
+      },
+      {
+        "sourceCommit": "0d8de07f08677af717631629bb09b1ed8896a3af",
+        "sourceBackupSha256": "09383acdf86696910b2538e5257d8836d388291560d8b5f20175dcd460297530"
+      },
+      {
+        "sourceCommit": "0d8de07f08677af717631629bb09b1ed8896a3af",
+        "sourceBackupSha256": "6ab57b09480f35c6cdcde7b91ec713a7ae84d9962424a0f27516e1a13de3599a"
+      },
+      {
+        "sourceCommit": "0d8de07f08677af717631629bb09b1ed8896a3af",
+        "sourceBackupSha256": "a3357a66361849e33cb31136ee8cf08d50908a1576c3e952e96af6e33e3480d1"
+      },
+      {
+        "sourceCommit": "0d8de07f08677af717631629bb09b1ed8896a3af",
+        "sourceBackupSha256": "d54e4b09b8c4e9fdc7447479027057e3a62881c92117c31e562341fe1d853b22"
+      },
+      {
+        "sourceCommit": "0d8de07f08677af717631629bb09b1ed8896a3af",
+        "sourceBackupSha256": "dfb3b1454f174144da4ac423025b33ac9dd42294d744cf75818608616e466c3f"
+      }
+    ],
+    "jackie-layout-20261030-v1": [
+      {
+        "sourceCommit": "2ce578d07f15d7a36daf42cbcf338427925a7091",
+        "sourceBackupSha256": "7d601514cbffa0ddb667721d7a48b52fdff35df7f3898491625b1e5b5adb8fd0"
+      }
+    ],
+    "jackie-music-20261030-v1": [
+      {
+        "sourceCommit": "0d8de07f08677af717631629bb09b1ed8896a3af",
+        "sourceBackupSha256": "00977aac6a0652ad556ad1492b790aa996d2627db1ec3feb60832fc9557f1f56"
+      },
+      {
+        "sourceCommit": "0d8de07f08677af717631629bb09b1ed8896a3af",
+        "sourceBackupSha256": "09383acdf86696910b2538e5257d8836d388291560d8b5f20175dcd460297530"
+      },
+      {
+        "sourceCommit": "0d8de07f08677af717631629bb09b1ed8896a3af",
+        "sourceBackupSha256": "6ab57b09480f35c6cdcde7b91ec713a7ae84d9962424a0f27516e1a13de3599a"
+      },
+      {
+        "sourceCommit": "0d8de07f08677af717631629bb09b1ed8896a3af",
+        "sourceBackupSha256": "a3357a66361849e33cb31136ee8cf08d50908a1576c3e952e96af6e33e3480d1"
+      },
+      {
+        "sourceCommit": "0d8de07f08677af717631629bb09b1ed8896a3af",
+        "sourceBackupSha256": "d54e4b09b8c4e9fdc7447479027057e3a62881c92117c31e562341fe1d853b22"
+      },
+      {
+        "sourceCommit": "0d8de07f08677af717631629bb09b1ed8896a3af",
+        "sourceBackupSha256": "dfb3b1454f174144da4ac423025b33ac9dd42294d744cf75818608616e466c3f"
+      }
+    ],
+    "last-exit-continuous-20261028-v1": [
+      {
+        "sourceCommit": "8e9ee3fb49b6b631d63864adec66d9c36ff1f63e",
+        "sourceBackupSha256": "1cb73767a03ee981637545d18aae2d8808a1eb561309166d69ece3fa3939a649"
+      },
+      {
+        "sourceCommit": "8e9ee3fb49b6b631d63864adec66d9c36ff1f63e",
+        "sourceBackupSha256": "20686ce279ad35eba254619090a1128f0d6827f7a99aebe5c5af08a33e20e065"
+      },
+      {
+        "sourceCommit": "8e9ee3fb49b6b631d63864adec66d9c36ff1f63e",
+        "sourceBackupSha256": "23042ff0c02d3e561ca93d81b9f9fc41d8d777af86c020dace828b9dbfc3b763"
+      },
+      {
+        "sourceCommit": "8e9ee3fb49b6b631d63864adec66d9c36ff1f63e",
+        "sourceBackupSha256": "2a35d38cdc3bb12336358811e5a2cbe7c8559b89866756185b490d473636a675"
+      },
+      {
+        "sourceCommit": "8e9ee3fb49b6b631d63864adec66d9c36ff1f63e",
+        "sourceBackupSha256": "3104990812135e1c9e034af9e92f6a211316b4be5633f52368c40e199003430b"
+      },
+      {
+        "sourceCommit": "8e9ee3fb49b6b631d63864adec66d9c36ff1f63e",
+        "sourceBackupSha256": "3b1be7e4297f430910a3284ab22695606565c21cc55e7d9eab15e34079ba342d"
+      },
+      {
+        "sourceCommit": "8e9ee3fb49b6b631d63864adec66d9c36ff1f63e",
+        "sourceBackupSha256": "42f4c2c85f68b79527800c3f502760a25e2804e955e36b9524067f7d2b3ace86"
+      },
+      {
+        "sourceCommit": "8e9ee3fb49b6b631d63864adec66d9c36ff1f63e",
+        "sourceBackupSha256": "452c5c49fa7e085c13e20670c0dea604bca8644608807d94534e5788be338b20"
+      },
+      {
+        "sourceCommit": "8e9ee3fb49b6b631d63864adec66d9c36ff1f63e",
+        "sourceBackupSha256": "471d0fc79632555707de8e116c720294749ef62095a407bb5e150c1e5f557fbe"
+      },
+      {
+        "sourceCommit": "8e9ee3fb49b6b631d63864adec66d9c36ff1f63e",
+        "sourceBackupSha256": "4cf1a1da3fb13aa787febe8dec787acd5b25c76c8d99200e952f97f9d4847840"
+      },
+      {
+        "sourceCommit": "8e9ee3fb49b6b631d63864adec66d9c36ff1f63e",
+        "sourceBackupSha256": "578e546ad8aff9776fd116daf260cd9c82c953f798b31f32067015e05a0e8ddf"
+      },
+      {
+        "sourceCommit": "8e9ee3fb49b6b631d63864adec66d9c36ff1f63e",
+        "sourceBackupSha256": "62646cbfaf9c0b1675cf83d6487e4491cfcbebb6d087d1977fefad4c26ce17dd"
+      },
+      {
+        "sourceCommit": "8e9ee3fb49b6b631d63864adec66d9c36ff1f63e",
+        "sourceBackupSha256": "73eae0b9ee3f49d10a0e58f2a9e3898966b429fec08e27997c28af9cb5376fe5"
+      },
+      {
+        "sourceCommit": "8e9ee3fb49b6b631d63864adec66d9c36ff1f63e",
+        "sourceBackupSha256": "7482326171995296103a4f794befc2c7831df741969bdbe936bdb637195e4dfc"
+      },
+      {
+        "sourceCommit": "8e9ee3fb49b6b631d63864adec66d9c36ff1f63e",
+        "sourceBackupSha256": "7c56e71723bdec4d5d08159afb862c1b8a9863020c7f305a87c5ac6712a9bfed"
+      },
+      {
+        "sourceCommit": "8e9ee3fb49b6b631d63864adec66d9c36ff1f63e",
+        "sourceBackupSha256": "7d964f28a6bcc8f9f92c01962525753244446fe6d43e203ec53f77b085ff5652"
+      },
+      {
+        "sourceCommit": "8e9ee3fb49b6b631d63864adec66d9c36ff1f63e",
+        "sourceBackupSha256": "adccd9133d1fce002eb2dd63259fde91fa9948b3d1b03b3fb81929fd44f3ce0d"
+      },
+      {
+        "sourceCommit": "8e9ee3fb49b6b631d63864adec66d9c36ff1f63e",
+        "sourceBackupSha256": "b2916c832d144b050df897f3ba9c30034295be17cb98fda5e9f9b0d32abffd89"
+      },
+      {
+        "sourceCommit": "8e9ee3fb49b6b631d63864adec66d9c36ff1f63e",
+        "sourceBackupSha256": "babad83afc79f10e7f7dd6c3d0e67ca82249e4be3edf8bbcbcd7b7917690ee78"
+      },
+      {
+        "sourceCommit": "8e9ee3fb49b6b631d63864adec66d9c36ff1f63e",
+        "sourceBackupSha256": "d1a6972839bac0d0d25cb73e6e8c96829e9cc8c13cede3be606fab11a8b68b3e"
+      },
+      {
+        "sourceCommit": "8e9ee3fb49b6b631d63864adec66d9c36ff1f63e",
+        "sourceBackupSha256": "d23d0774b6b6ea9083d32f168ba73a09824c7c29b3c1cf519e0d9c8470da0991"
+      },
+      {
+        "sourceCommit": "8e9ee3fb49b6b631d63864adec66d9c36ff1f63e",
+        "sourceBackupSha256": "d8beb99b419cc3cac56310911490097d7629363667d64f9ce16816d559684113"
+      },
+      {
+        "sourceCommit": "8e9ee3fb49b6b631d63864adec66d9c36ff1f63e",
+        "sourceBackupSha256": "e31e02af5a7b2cf0bb0fc187f2244cea2593f76f70a6edc35f92649594a6d5ab"
+      },
+      {
+        "sourceCommit": "8e9ee3fb49b6b631d63864adec66d9c36ff1f63e",
+        "sourceBackupSha256": "f464f456857d8866eaf5b047e9d83cef6c6e18ba596e9320a22a3a99138755cd"
+      }
+    ],
+    "last-exit-loading-20261028-v1": [
+      {
+        "sourceCommit": "73edc78860889a0732e5fe626cb2d0fcd8d0cdf4",
+        "sourceBackupSha256": "ff3d476cde21dfb684b3e279da75187bceafbd03e021fc9a658d7fd7b4f40870"
+      }
+    ],
+    "last-exit-resume-20261028-v1": [
+      {
+        "sourceCommit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
+        "sourceBackupSha256": "1cb73767a03ee981637545d18aae2d8808a1eb561309166d69ece3fa3939a649"
+      },
+      {
+        "sourceCommit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
+        "sourceBackupSha256": "288fa69d511ee2a5b234ff8dc8643b2d5f7e1dca4b55a5481485b91d7a4416f7"
+      },
+      {
+        "sourceCommit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
+        "sourceBackupSha256": "2a35d38cdc3bb12336358811e5a2cbe7c8559b89866756185b490d473636a675"
+      },
+      {
+        "sourceCommit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
+        "sourceBackupSha256": "3104990812135e1c9e034af9e92f6a211316b4be5633f52368c40e199003430b"
+      },
+      {
+        "sourceCommit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
+        "sourceBackupSha256": "3b1be7e4297f430910a3284ab22695606565c21cc55e7d9eab15e34079ba342d"
+      },
+      {
+        "sourceCommit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
+        "sourceBackupSha256": "42f4c2c85f68b79527800c3f502760a25e2804e955e36b9524067f7d2b3ace86"
+      },
+      {
+        "sourceCommit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
+        "sourceBackupSha256": "452c5c49fa7e085c13e20670c0dea604bca8644608807d94534e5788be338b20"
+      },
+      {
+        "sourceCommit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
+        "sourceBackupSha256": "471d0fc79632555707de8e116c720294749ef62095a407bb5e150c1e5f557fbe"
+      },
+      {
+        "sourceCommit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
+        "sourceBackupSha256": "4c189a5744786322c2f04f2620d791f7f9454d702402900ed6faf04638981040"
+      },
+      {
+        "sourceCommit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
+        "sourceBackupSha256": "4cf1a1da3fb13aa787febe8dec787acd5b25c76c8d99200e952f97f9d4847840"
+      },
+      {
+        "sourceCommit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
+        "sourceBackupSha256": "62646cbfaf9c0b1675cf83d6487e4491cfcbebb6d087d1977fefad4c26ce17dd"
+      },
+      {
+        "sourceCommit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
+        "sourceBackupSha256": "73eae0b9ee3f49d10a0e58f2a9e3898966b429fec08e27997c28af9cb5376fe5"
+      },
+      {
+        "sourceCommit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
+        "sourceBackupSha256": "7482326171995296103a4f794befc2c7831df741969bdbe936bdb637195e4dfc"
+      },
+      {
+        "sourceCommit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
+        "sourceBackupSha256": "7c56e71723bdec4d5d08159afb862c1b8a9863020c7f305a87c5ac6712a9bfed"
+      },
+      {
+        "sourceCommit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
+        "sourceBackupSha256": "7d964f28a6bcc8f9f92c01962525753244446fe6d43e203ec53f77b085ff5652"
+      },
+      {
+        "sourceCommit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
+        "sourceBackupSha256": "adccd9133d1fce002eb2dd63259fde91fa9948b3d1b03b3fb81929fd44f3ce0d"
+      },
+      {
+        "sourceCommit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
+        "sourceBackupSha256": "b2916c832d144b050df897f3ba9c30034295be17cb98fda5e9f9b0d32abffd89"
+      },
+      {
+        "sourceCommit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
+        "sourceBackupSha256": "b32aaabfec2ec6269bd7b09b0f6a9314a2ccdf77ca182593798fa23ef9e4f3cd"
+      },
+      {
+        "sourceCommit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
+        "sourceBackupSha256": "babad83afc79f10e7f7dd6c3d0e67ca82249e4be3edf8bbcbcd7b7917690ee78"
+      },
+      {
+        "sourceCommit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
+        "sourceBackupSha256": "d1a6972839bac0d0d25cb73e6e8c96829e9cc8c13cede3be606fab11a8b68b3e"
+      },
+      {
+        "sourceCommit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
+        "sourceBackupSha256": "d23d0774b6b6ea9083d32f168ba73a09824c7c29b3c1cf519e0d9c8470da0991"
+      },
+      {
+        "sourceCommit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
+        "sourceBackupSha256": "d8beb99b419cc3cac56310911490097d7629363667d64f9ce16816d559684113"
+      },
+      {
+        "sourceCommit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
+        "sourceBackupSha256": "e31e02af5a7b2cf0bb0fc187f2244cea2593f76f70a6edc35f92649594a6d5ab"
+      },
+      {
+        "sourceCommit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
+        "sourceBackupSha256": "fd89a552b07cda3b557752b061b196e6d12df75ed3fc0e7d0726a6c68cb89082"
+      }
+    ],
+    "left-lounge-20261023-v1": [
+      {
+        "sourceCommit": "cfb20ac5c5cc1226171c814a077e97236b1cdbd7",
+        "sourceBackupSha256": "2afb581884672143ebc88b0b3d1550f99557d8c5a079be8bf8147b408883a074"
+      }
+    ],
+    "mk-security-20261026-v1": [
+      {
+        "sourceCommit": "37e5c750f92f9708f92c4c0695e5badcd3bb0366",
+        "sourceBackupSha256": "c581b1ea3feb92688d89a2a16487c3915e009d102f778386089333ac4a4b680c"
+      }
+    ],
+    "mk-security-only-20261026-v1": [
+      {
+        "sourceCommit": "37e5c750f92f9708f92c4c0695e5badcd3bb0366",
+        "sourceBackupSha256": "c581b1ea3feb92688d89a2a16487c3915e009d102f778386089333ac4a4b680c"
+      }
+    ],
+    "modular-games-20261021-v1": [
+      {
+        "sourceCommit": "7fdb80e201c868e54412ea5b266c0f098f628f34",
+        "sourceBackupSha256": "cea2386ef86baaacfb737e3b892a1c85908d8aca7a3278973efe6cfcc1ca918b"
+      }
+    ],
+    "mortal-kombat-20261023-v1": [
+      {
+        "sourceCommit": "ac364b2db6e8c107e296b3763aa63a5569c17406",
+        "sourceBackupSha256": "12188e799df3fdee82bd4365c188b954bf5e26e4c2a231dc006b41791560ff87"
+      }
+    ],
+    "mortal-kombat-virtual-20261024-v1": [
+      {
+        "sourceCommit": "ac364b2db6e8c107e296b3763aa63a5569c17406",
+        "sourceBackupSha256": "12188e799df3fdee82bd4365c188b954bf5e26e4c2a231dc006b41791560ff87"
+      }
+    ],
+    "nowpayments-sandbox-20261027-v1": [
+      {
+        "sourceCommit": "9892f8fc1a78369bce385221466f80a45d426b42",
+        "sourceBackupSha256": "24340e23c9473f0fcc6b2258297aeecc3d3135e23d5bd6b276c2d7f5112c9b9b"
+      }
+    ],
+    "pvp-virtual-usdt-20261024-v1": [
+      {
+        "sourceCommit": "83b3e6b71c504a32f2461261b6637cca9092c5b7",
+        "sourceBackupSha256": "9a2118c0be346937918946b2e6c931879a4325107e02bfd1a82763dfe7019054"
+      }
+    ],
+    "raise-windows-20261023-v2": [
+      {
+        "sourceCommit": "c68fd25d79245a5404b4182f8c55a2318806883b",
+        "sourceBackupSha256": "714b2d4bf612fb99e750c851a0b50fa46adc82367c75a537b72524c1495c1b70"
+      }
+    ],
+    "remove-reward-games-catalog-20261031-v1": [
+      {
+        "sourceCommit": "fb599494fbee9accff92c8a30126a071ebcceb5c",
+        "sourceBackupSha256": "8041f7329b7c9446d4a4f58450b1430282ff68dabaa95c9da86bdc5fc194c414"
+      }
+    ],
+    "__pycache__": [
+      {
+        "sourceCommit": "09dbad7d86ec4b5c7d18c16715d1861de65468f3",
+        "sourceBackupSha256": "516230f039a6517f03d08969220a42788a2d017c3f2ac95be756be9818c92731"
+      },
+      {
+        "sourceCommit": "09dbad7d86ec4b5c7d18c16715d1861de65468f3",
+        "sourceBackupSha256": "79d3caf4ada394be095454e2d287a1d863e0e9021950da0cbe2fd775175966b9"
+      }
+    ],
+    "restore-direct-topup-20261023-v1": [
+      {
+        "sourceCommit": "09dbad7d86ec4b5c7d18c16715d1861de65468f3",
+        "sourceBackupSha256": "516230f039a6517f03d08969220a42788a2d017c3f2ac95be756be9818c92731"
+      },
+      {
+        "sourceCommit": "09dbad7d86ec4b5c7d18c16715d1861de65468f3",
+        "sourceBackupSha256": "79d3caf4ada394be095454e2d287a1d863e0e9021950da0cbe2fd775175966b9"
+      }
+    ],
+    "royal-catalog-characters-20261022-v1": [
+      {
+        "sourceCommit": "09dbad7d86ec4b5c7d18c16715d1861de65468f3",
+        "sourceBackupSha256": "516230f039a6517f03d08969220a42788a2d017c3f2ac95be756be9818c92731"
+      },
+      {
+        "sourceCommit": "09dbad7d86ec4b5c7d18c16715d1861de65468f3",
+        "sourceBackupSha256": "79d3caf4ada394be095454e2d287a1d863e0e9021950da0cbe2fd775175966b9"
+      },
+      {
+        "sourceCommit": "9cbc4be2568ae0f46c653cb1ed611f35ab35cec4",
+        "sourceBackupSha256": "8b9415f9baba7a43bf6d070a22a218d1261b4689eb75c77d02e2c3b5befde625"
+      }
+    ],
+    "royal-platform-20261022-v1": [
+      {
+        "sourceCommit": "09dbad7d86ec4b5c7d18c16715d1861de65468f3",
+        "sourceBackupSha256": "516230f039a6517f03d08969220a42788a2d017c3f2ac95be756be9818c92731"
+      },
+      {
+        "sourceCommit": "09dbad7d86ec4b5c7d18c16715d1861de65468f3",
+        "sourceBackupSha256": "79d3caf4ada394be095454e2d287a1d863e0e9021950da0cbe2fd775175966b9"
+      },
+      {
+        "sourceCommit": "4b4b092ed20dc2546d6b45cccd79e68ebd525b86",
+        "sourceBackupSha256": "e9549ccb9e86840d98ba029459651739133b5b9aed42fc5e79b910bc788314e5"
+      }
+    ],
+    "royal-floor-one-only-20261024-v1": [
+      {
+        "sourceCommit": "5045c401063b5f2c792497ae2f4e53bcd34e1a98",
+        "sourceBackupSha256": "463be69094c4f9114d9d522ef2533421bed8ad87b89a6135f04bebb352dc051b"
+      }
+    ],
+    "skin-npc-context-20261026-v1": [
+      {
+        "sourceCommit": "ae17a8df9e894278dedc29f08c052fe68ee09c04",
+        "sourceBackupSha256": "2596668c6eeac63dbc245a6cd17e5723f503373f081e3717cf79d2c6435f7a7e"
+      },
+      {
+        "sourceCommit": "ae17a8df9e894278dedc29f08c052fe68ee09c04",
+        "sourceBackupSha256": "561f122c79d236c9b114b2c64915c6becaafd0c9e5531835df0868cdc9610247"
+      },
+      {
+        "sourceCommit": "ae17a8df9e894278dedc29f08c052fe68ee09c04",
+        "sourceBackupSha256": "afe3e44eb292bab518224182be34d6f8d8b3b0ac0dc400aaf7b07e68d315c6da"
+      },
+      {
+        "sourceCommit": "ae17a8df9e894278dedc29f08c052fe68ee09c04",
+        "sourceBackupSha256": "d3c953018ae622e0d163fd63b0636adf86af4ce9df9d21d48724a7378490e4c2"
+      },
+      {
+        "sourceCommit": "ae17a8df9e894278dedc29f08c052fe68ee09c04",
+        "sourceBackupSha256": "d5ad1c9361d55bdd0a5aee5a7869d29082f2fc4e25151c15b6bd1959d111a161"
+      }
+    ],
+    "skin-walk-alignment-20261030-v1": [
+      {
+        "sourceCommit": "afced898da518429a934aab3d9bb242929674360",
+        "sourceBackupSha256": "b60300e259db4d6bc9de3a11b5e84e6ca4d183e9b0298eff0b67ee612b124e47"
+      }
+    ],
+    "skin-walk-seams-20261027-v1": [
+      {
+        "sourceCommit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+        "sourceBackupSha256": "137fad5c9406bf70597d6b1518a9046ec64c577a7f844ac14f03c511abdc6058"
+      },
+      {
+        "sourceCommit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+        "sourceBackupSha256": "2596668c6eeac63dbc245a6cd17e5723f503373f081e3717cf79d2c6435f7a7e"
+      },
+      {
+        "sourceCommit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+        "sourceBackupSha256": "2837b5d2fa71525d1f02662ba9937a066a8ea893e691868809b5aa3c370128ca"
+      },
+      {
+        "sourceCommit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+        "sourceBackupSha256": "2a5f440615e975ff0797e9a48464855dd2a71be1cc4a0fa497042062856d9a65"
+      },
+      {
+        "sourceCommit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+        "sourceBackupSha256": "460dabbe443c173c43bc6acb96f543777b3fa5cabdd5ffec5f203ad188894f6c"
+      },
+      {
+        "sourceCommit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+        "sourceBackupSha256": "561f122c79d236c9b114b2c64915c6becaafd0c9e5531835df0868cdc9610247"
+      },
+      {
+        "sourceCommit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+        "sourceBackupSha256": "832e5dbda669667e54785d58d246a3e2266803482838bcd307d274fce80d6b12"
+      },
+      {
+        "sourceCommit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+        "sourceBackupSha256": "9291b700b73cda5720c0dedbd0b87bf9d31ae2dc3ab2ffba9b6ec0c69f1965c8"
+      },
+      {
+        "sourceCommit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+        "sourceBackupSha256": "9a33f4d0d5e1cd6a89e38a01344433d6544b7d5614e80fcc4b46a2d49f257046"
+      },
+      {
+        "sourceCommit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+        "sourceBackupSha256": "9a688dc59bb36ba3588fcacd29891055eb6a7eaa0f611a0b89449c8b42d73d51"
+      },
+      {
+        "sourceCommit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+        "sourceBackupSha256": "afe3e44eb292bab518224182be34d6f8d8b3b0ac0dc400aaf7b07e68d315c6da"
+      },
+      {
+        "sourceCommit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+        "sourceBackupSha256": "b899b927152f9d0567b580260aa706fab220d197c2ea1a001b264c6f97a90772"
+      },
+      {
+        "sourceCommit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+        "sourceBackupSha256": "c9e71bfdf2d473d07815ecd9ea43e1f2b09e48823449d48d3eb590327d32cfc8"
+      },
+      {
+        "sourceCommit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+        "sourceBackupSha256": "d443ad9ea1d119f2956d7fd0f42281eb4b206b54e1e076a72c6b9413c8fdb324"
+      },
+      {
+        "sourceCommit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+        "sourceBackupSha256": "d5ad1c9361d55bdd0a5aee5a7869d29082f2fc4e25151c15b6bd1959d111a161"
+      },
+      {
+        "sourceCommit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+        "sourceBackupSha256": "d5da65fc2cc3560defae7189cf703236c757ba63aeb670470ee9a153c25260e6"
+      },
+      {
+        "sourceCommit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+        "sourceBackupSha256": "d75f83bfc3c80022bf5b021f6f9d5e90aaa8429d3bd64ac63ba21ad57d4e9b5d"
+      },
+      {
+        "sourceCommit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+        "sourceBackupSha256": "df7bb598c7ba57f86c749f401b3754653b5aaab0802953f96133444c99974359"
+      },
+      {
+        "sourceCommit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+        "sourceBackupSha256": "eadca45a3432349dd6b285bb304169f9eea1bbc6907682b0ce74176669ff1f67"
+      },
+      {
+        "sourceCommit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+        "sourceBackupSha256": "ed8084212127308f98feda457d14404c20f294ee0ee299f7723d5ef66f34705a"
+      },
+      {
+        "sourceCommit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+        "sourceBackupSha256": "f3974aba494a446e90299b4e4784046e95a67f22cd62a26e66c17dbb7523a506"
+      },
+      {
+        "sourceCommit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+        "sourceBackupSha256": "fde372ba94969f017b5d7420ad5dbb8d077ad37763e50ff535cb4f95a158ff34"
+      }
+    ],
+    "telegram-stars-20261029-v1": [
+      {
+        "sourceCommit": "3e428397544ec9a18d2bb64e51cfce2f4293a627",
+        "sourceBackupSha256": "f3019a1e8b2cfccbb0149d9f6cebadaaf22afbe3cea7bdd47df6ad2fff2f2754"
+      }
+    ],
+    "temple-layout-20261031-v1": [
+      {
+        "sourceCommit": "a69c5cc641133d44ee44989515f55edb4fa63083",
+        "sourceBackupSha256": "9cec80fdee4419e976fff13fd85f7b32b6c4b65a73db46d9fa20578695340bc1"
+      }
+    ],
+    "veil-of-night-20261020": [
+      {
+        "sourceCommit": "b62cc2a39a5c5641463a08036eae7300359f2795",
+        "sourceBackupSha256": "0fe17dc7cfb719a382bd4e4b46a72fc1a8bb6661d16daa39797d0e86d637cd6a"
+      }
+    ],
+    "veil-of-night-20261020-v1": [
+      {
+        "sourceCommit": "4a44f067e8f7cedfbb46535876eb306ef5badddc",
+        "sourceBackupSha256": "0fe17dc7cfb719a382bd4e4b46a72fc1a8bb6661d16daa39797d0e86d637cd6a"
+      },
+      {
+        "sourceCommit": "4a44f067e8f7cedfbb46535876eb306ef5badddc",
+        "sourceBackupSha256": "7599445668b000e284cdb488c921f9f75f494fabf4b17e4716ff561700dc4691"
+      }
+    ]
+  },
+  "reconciledFromGitHubCommit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+  "proofs": [
+    {
+      "file": "deployment/releases/atelier-live-preview-20261025-v1/verification.json",
+      "sha256": "5c917ddbf22246dc22f3b32d96bc437121977c4470ee1e197d78c7a2720e9f1c",
+      "sourceCommit": "27264a8cac2744aad98145631e76a291af5cbedf",
+      "releases": [
+        "atelier-live-preview-20261025-v1"
+      ],
+      "sourceArchiveHashes": [
+        "71df38bb84f2cb715a6116f48596c53b05743bf8f3176a5b84cebc3c79fe4550"
+      ]
+    },
+    {
+      "file": "deployment/releases/caribbean-autoplay-20261030-v1/verification.json",
+      "sha256": "c01f2eda53c4e15ade8fa74edb82fd4a88aa486fd1412cf2fc6ff9d6539fe4d6",
+      "sourceCommit": "0baa69d10ddea384ba7e58c499582d18e702de2c",
+      "releases": [
+        "caribbean-autoplay-20261030-v1"
+      ],
+      "sourceArchiveHashes": [
+        "6c6c0bef52e392ebed8ccd9985eb25a6ea50247424008736d254cd830d8396be"
+      ]
+    },
+    {
+      "file": "deployment/releases/caribbean-treasures-20261029-v2/verification.json",
+      "sha256": "8570f160ea28672a05b251b809cb0d01cc5166ac18c5be0e371de02ee4df4fd4",
+      "sourceCommit": "b921d0537fed52336aaee5d97144bf36a9188107",
+      "releases": [
+        "caribbean-treasures-20261029-v1",
+        "caribbean-treasures-20261029-v2"
+      ],
+      "sourceArchiveHashes": [
+        "d7717bb2bcfce75e789e215b01e6add1d9b80ccbd2ce017bb34d870e03987878"
+      ]
+    },
+    {
+      "file": "deployment/releases/cat-purr-hall-only-20261030-v1/verification.json",
+      "sha256": "d45c91b3761e83d5bb80a613ac5250983663b358517b4a9ada5748f59f09260e",
+      "sourceCommit": "36e82d9e74efc962a79eaeb4203e0968e02b04dd",
+      "releases": [
+        "cat-purr-hall-only-20261030-v1",
+        "forest-heart-responsive-20261030-v1"
+      ],
+      "sourceArchiveHashes": [
+        "542221b739f094aa5a4f92aca94d0b566b03f795f9506e6792d0d773dd40bb9d"
+      ]
+    },
+    {
+      "file": "deployment/releases/character-motion-20261027-v2/verification.json",
+      "sha256": "aeeb77d08859af7c72c2b415825644819e4c5bc9c5ba55c930c20c731092d15c",
+      "sourceCommit": "0b434f1e2c897d7a4f3f4602a6af8200e5e652ef",
+      "releases": [
+        "character-motion-20261027-v1",
+        "character-motion-20261027-v2"
+      ],
+      "sourceArchiveHashes": [
+        "2596668c6eeac63dbc245a6cd17e5723f503373f081e3717cf79d2c6435f7a7e",
+        "4085d330333c72f56554de6225b22c7680c2750abdac45b51fb045f17bda9b88",
+        "561f122c79d236c9b114b2c64915c6becaafd0c9e5531835df0868cdc9610247",
+        "afe3e44eb292bab518224182be34d6f8d8b3b0ac0dc400aaf7b07e68d315c6da",
+        "d5ad1c9361d55bdd0a5aee5a7869d29082f2fc4e25151c15b6bd1959d111a161",
+        "df30c8bed24ab3c6b5b76d787958fb3ed350a1878a6782da1023f1d631c0dccb"
+      ]
+    },
+    {
+      "file": "deployment/releases/chat-moderation-20261022-v1/verification.json",
+      "sha256": "e95a2cd66f547b49174aacc6e62ebd6673cf6cd4254fee79dd87521f0ba26ab7",
+      "sourceCommit": "6bc234991e3d3afb38af55b48f58bd8f28ceb6e2",
+      "releases": [
+        "chat-moderation-20261022-v1"
+      ],
+      "sourceArchiveHashes": [
+        "0ee7e3864d2afa4d02fc5cc8e0f176737f086d205e9b3ddc2c54d3a11944caa2"
+      ]
+    },
+    {
+      "file": "deployment/releases/chat-reliability-20261022-v1/verification.json",
+      "sha256": "3e833f32422150607d9db0481bca590c831474620794ece02cae6d7657b54ef6",
+      "sourceCommit": "fd8777464db607c903f8ffaf41d6e9d2ace91ffe",
+      "releases": [
+        "chat-reliability-20261022-v1"
+      ],
+      "sourceArchiveHashes": [
+        "9d9e27e44e7829685a65ae15afdc9cf211d2883ad3d492b3d55d885b36189449"
+      ]
+    },
+    {
+      "file": "deployment/releases/convoy-poses-20261021-v1/verification.json",
+      "sha256": "c56632a075c5a544d51cf789e0ba2049df0c675c0d93e8c9217843ccbed66be9",
+      "sourceCommit": "91fbc7f0e5a874f2299e0b73620e0cf2ad584d18",
+      "releases": [
+        "convoy-poses-20261021-v1"
+      ],
+      "sourceArchiveHashes": [
+        "e69d32ea9ec1bdeee29059a34fcd3dc5a0f6a9a7f4aff61879b9962b3168d433"
+      ]
+    },
+    {
+      "file": "deployment/releases/cosmic-math-20261026-v1/verification.json",
+      "sha256": "41a9c195bbc06ff38cc61b45d126be8b85924b155351b4be851ae9f5f55663c8",
+      "sourceCommit": "d3e4f9c0ef50a4d1ab63f0862696e288125fd740",
+      "releases": [
+        "cosmic-math-20261026-v1"
+      ],
+      "sourceArchiveHashes": [
+        "f9e90039e767ee0b9debc95929ab0a846d491f6da09c81496a9978a01eb0fd72"
+      ]
+    },
+    {
+      "file": "deployment/releases/cr-leo-20261021-v1/published.json",
+      "sha256": "51404f3083b8d3bb2cdbca4bfcfb0e7b72c3ff71e54ce711e92f49c67b0d80f7",
+      "sourceCommit": "dfc0c0821a1df757dacac8a3cb615721e01ec95e",
+      "releases": [
+        "cr-leo-20261021-data",
+        "cr-leo-20261021-v1"
+      ],
+      "sourceArchiveHashes": [
+        "1d47eecf680017e6c971c1302802a7451ad5f1fe0a40a69595540429890611c7"
+      ]
+    },
+    {
+      "file": "deployment/releases/cr-leo-audio-sync-20261022-v1/verification.json",
+      "sha256": "fcbcece5b9a458b2517c491db7747d93e53980ef0e00fe630b731a1b83d38b03",
+      "sourceCommit": "dd0446729de03948de56315dab919beced1f30fe",
+      "releases": [
+        "cr-leo-audio-sync-20261022-v1"
+      ],
+      "sourceArchiveHashes": [
+        "0b9732911849302e0e5ce521befb02023d0b36708e2e75d6d459986250eead7c",
+        "0cd8995fbf7b330752086a074720ba59a33d15b8c82e610560f3f26371388548",
+        "1149b45f40bff1882c4e79bf582f509433bdc71a45a162ca77ad8aaf6bdb9302",
+        "203f3599b96d2b0d0aeddac43e2a417a28b44045e00ab02aa7924150cc75b55f",
+        "3c10132247d3b3a3b9c5608fcb6fea59a75c00db6a2ad6b9a6af93d866eebef1",
+        "40836e046fcbf157e80b6afc6b497c623c695051944e97fd7b10cc77cf408ea3",
+        "42d1e309b730eda13c1c44290c4c813ec9e5ac9e45e64204593db15264bbffba",
+        "4390e06290de978bbd5a38d87f9d1c0c6952f4f489af0f38b411334908741651",
+        "518b310cb80356fa5496abd433e632ecfc3195ba8e322b5d51cb8ae1796c05c7",
+        "57b320a5d213701b8204f30f2deb9d9edcb0244e196cac156a2a1525e56b7ff4",
+        "6f17d912319ab61c745c4e60b784962d0830875f1781c1d7ed54a30d9f5fae0e",
+        "8676722cdd894272f155c5a8613e5aa052903541230eddae0e612df3fc34535d",
+        "91024de3d3cbe29293e6461c23c4a59109c0afc7dfb13731a0e203d5ce98409c",
+        "9b5291eaffeb17215ae0efd98fe971db0f9d4852c3d5dbd10e1a6383b2f6a10f",
+        "b65aa4095f242c0ab582dbd1088199cf5873d3e1fa022943ad59de22b5ccbead",
+        "bb04818d6538e4e28b6d915b7893bbccbb38d760d34afb092c4677f220e5f474",
+        "bf9daf9caa361b0ac43fe82bd690019f3c6d709d15990da6dec2f90afd15d46a",
+        "cdef2c478c70bf5b7a7fa3de78643e5e1bd7eca7b65d7fb2a3c5386d1e936f0f",
+        "dc352bac0f7c21079ea437ebac94395793ae54a00148505b17e86ce27f35ba92",
+        "e2169e3b76e785bca01edb1e9e9e189df670299aa0b4db2101657fdd6e152ed6",
+        "f74054bb9714f7a1f6e31a22c84c214b399d053efdad65eaceb3cc136392d36c",
+        "fc205e3b36032e68c64e166a710b15bf0bcb685a1b5f7aea2d3ee02c469d953c"
+      ]
+    },
+    {
+      "file": "deployment/releases/cr-leo-ball-20261022-v1/verification.json",
+      "sha256": "7deb972c5b53bb698d60484000e20060cba9af33188975679003a3ab309be9c3",
+      "sourceCommit": "2b0298ce355b05f9b5576c447cb0ec4f213d256e",
+      "releases": [
+        "cr-leo-ball-20261022-v1"
+      ],
+      "sourceArchiveHashes": [
+        "1149b45f40bff1882c4e79bf582f509433bdc71a45a162ca77ad8aaf6bdb9302",
+        "203f3599b96d2b0d0aeddac43e2a417a28b44045e00ab02aa7924150cc75b55f",
+        "23b53be08876aa0b7d1fdb1f7ae65c2f8b1a856c693a177d63fe5f9d6daff061",
+        "40836e046fcbf157e80b6afc6b497c623c695051944e97fd7b10cc77cf408ea3",
+        "42d1e309b730eda13c1c44290c4c813ec9e5ac9e45e64204593db15264bbffba",
+        "6f17d912319ab61c745c4e60b784962d0830875f1781c1d7ed54a30d9f5fae0e",
+        "8676722cdd894272f155c5a8613e5aa052903541230eddae0e612df3fc34535d",
+        "91024de3d3cbe29293e6461c23c4a59109c0afc7dfb13731a0e203d5ce98409c",
+        "9b5291eaffeb17215ae0efd98fe971db0f9d4852c3d5dbd10e1a6383b2f6a10f",
+        "aaaab50a09f43fc3b5b6f1a77259beaf266a37b02618c1a6dd0bd57e8e289131",
+        "bf9daf9caa361b0ac43fe82bd690019f3c6d709d15990da6dec2f90afd15d46a",
+        "dc352bac0f7c21079ea437ebac94395793ae54a00148505b17e86ce27f35ba92",
+        "f4eee17547bc4b511aaf7a1a09b67144d86a523fa908ef84e3d08b1c938bc4aa",
+        "f74054bb9714f7a1f6e31a22c84c214b399d053efdad65eaceb3cc136392d36c",
+        "fc205e3b36032e68c64e166a710b15bf0bcb685a1b5f7aea2d3ee02c469d953c"
+      ]
+    },
+    {
+      "file": "deployment/releases/cr-leo-global-load-20261021-v1/verification.json",
+      "sha256": "10de6534df6a11f59dd8e655dbf0d0fa21c0ac4f8ac64eb14921681a250b4c32",
+      "sourceCommit": "db34f73797bd9d3f2ee5a0eb4e0866f9630b5110",
+      "releases": [
+        "cr-leo-global-load-20261021-v1"
+      ],
+      "sourceArchiveHashes": [
+        "1149b45f40bff1882c4e79bf582f509433bdc71a45a162ca77ad8aaf6bdb9302",
+        "1dea6228613984b9013867cbaa18b0724b3282afcf57f43286bd11d74408ccc2",
+        "40836e046fcbf157e80b6afc6b497c623c695051944e97fd7b10cc77cf408ea3",
+        "42d1e309b730eda13c1c44290c4c813ec9e5ac9e45e64204593db15264bbffba",
+        "6f17d912319ab61c745c4e60b784962d0830875f1781c1d7ed54a30d9f5fae0e",
+        "7c23e792835de07e5a315524880fddb389d7f10b79b903c852fffefec9200f0f",
+        "8676722cdd894272f155c5a8613e5aa052903541230eddae0e612df3fc34535d",
+        "91024de3d3cbe29293e6461c23c4a59109c0afc7dfb13731a0e203d5ce98409c",
+        "9b5291eaffeb17215ae0efd98fe971db0f9d4852c3d5dbd10e1a6383b2f6a10f",
+        "bf9daf9caa361b0ac43fe82bd690019f3c6d709d15990da6dec2f90afd15d46a",
+        "dc1386054ffb86904285ea25c33cc6f939d44754169ffe7b0af92f6a5dbe9edb",
+        "dc352bac0f7c21079ea437ebac94395793ae54a00148505b17e86ce27f35ba92",
+        "f74054bb9714f7a1f6e31a22c84c214b399d053efdad65eaceb3cc136392d36c",
+        "fc205e3b36032e68c64e166a710b15bf0bcb685a1b5f7aea2d3ee02c469d953c"
+      ]
+    },
+    {
+      "file": "deployment/releases/cr-leo-stadium-20261022-v1/verification.json",
+      "sha256": "65ad3033a4ce8faef85178c7ac8b4e44f81a1899dd5ff60da15092153a77d5e5",
+      "sourceCommit": "b7192eaa561c09523adf60f91efb5835ceb575bd",
+      "releases": [
+        "cr-leo-stadium-20261022-v1"
+      ],
+      "sourceArchiveHashes": [
+        "016f96fa141164f3f229f807f705422f509bc928886607a23e0c14a7e745b689",
+        "1149b45f40bff1882c4e79bf582f509433bdc71a45a162ca77ad8aaf6bdb9302",
+        "203f3599b96d2b0d0aeddac43e2a417a28b44045e00ab02aa7924150cc75b55f",
+        "3c10132247d3b3a3b9c5608fcb6fea59a75c00db6a2ad6b9a6af93d866eebef1",
+        "40836e046fcbf157e80b6afc6b497c623c695051944e97fd7b10cc77cf408ea3",
+        "42d1e309b730eda13c1c44290c4c813ec9e5ac9e45e64204593db15264bbffba",
+        "57b320a5d213701b8204f30f2deb9d9edcb0244e196cac156a2a1525e56b7ff4",
+        "6f17d912319ab61c745c4e60b784962d0830875f1781c1d7ed54a30d9f5fae0e",
+        "7461481ada4043e7010588fb58840dc2ee3303d8338d86561622d3156f88b79f",
+        "8676722cdd894272f155c5a8613e5aa052903541230eddae0e612df3fc34535d",
+        "91024de3d3cbe29293e6461c23c4a59109c0afc7dfb13731a0e203d5ce98409c",
+        "9b5291eaffeb17215ae0efd98fe971db0f9d4852c3d5dbd10e1a6383b2f6a10f",
+        "b65aa4095f242c0ab582dbd1088199cf5873d3e1fa022943ad59de22b5ccbead",
+        "bf9daf9caa361b0ac43fe82bd690019f3c6d709d15990da6dec2f90afd15d46a",
+        "dc352bac0f7c21079ea437ebac94395793ae54a00148505b17e86ce27f35ba92",
+        "df8409ddd81702e5aa4ec2f1341eb9cea2abeba912fdcd339f364792cdf740d6",
+        "e2169e3b76e785bca01edb1e9e9e189df670299aa0b4db2101657fdd6e152ed6",
+        "e2ed299884ae09e2494d8dd1ec46a360a80e52741ea52a3aa44c192d6eeb0810",
+        "f74054bb9714f7a1f6e31a22c84c214b399d053efdad65eaceb3cc136392d36c",
+        "fc205e3b36032e68c64e166a710b15bf0bcb685a1b5f7aea2d3ee02c469d953c"
+      ]
+    },
+    {
+      "file": "deployment/releases/dracona-20261022-v1/verification.json",
+      "sha256": "2cdef1c3e04b37080ac17810f1c127fdfe0a4ba2d58124ca59f699990ebad37d",
+      "sourceCommit": "9fe42339b28291d51cb5c66e0acbfa46ffe59a7f",
+      "releases": [
+        "dracona-20261022-v1"
+      ],
+      "sourceArchiveHashes": [
+        "e734b8b746d7caaabf0ea6e13f747e78aa7ab284f14ba566d5b9ab930410d060"
+      ]
+    },
+    {
+      "file": "deployment/releases/fast-entry-20261022-v1/verification.json",
+      "sha256": "93f159e2461f7fb2d9124e328d90bbc07d3226ecee828986daa4a6ba1aa48205",
+      "sourceCommit": "7b7d52c3a1eeede99922116e799f586cf91a70d2",
+      "releases": [
+        "fast-entry-20261022-v1"
+      ],
+      "sourceArchiveHashes": [
+        "f0758c26af4c6fcff2a0db7166c80b5425c2998704b4aa2df8ba56df196f7b9e"
+      ]
+    },
+    {
+      "file": "deployment/releases/flag-battle-20261029-v1/public-verification.json",
+      "sha256": "8fe18dbba06adfebc9aeaae4a5813d39cd61d8d126754f4c44faead287b980da",
+      "sourceCommit": "23f5111455d280315f2d5cf2de443cf025e3f01e",
+      "releases": [
+        "flag-battle-20261029-v1"
+      ],
+      "sourceArchiveHashes": [
+        "3ec37f742374a2df715878a53b2bf028fbe2d0de5d8286816956cfc8e3013c7b"
+      ]
+    },
+    {
+      "file": "deployment/releases/flooded-temple-20261030-v1/verification.json",
+      "sha256": "3d9a3f285e3d04a37bb4b6dc991defaa52c99af01b7a05f3e55a0a9f36c25d7e",
+      "sourceCommit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+      "releases": [
+        "flooded-temple-20261030-v1"
+      ],
+      "sourceArchiveHashes": [
+        "b6df37063455d9c4f7b789517683eb2155d537887701664f2b02ad165bcb9501"
+      ]
+    },
+    {
+      "file": "deployment/releases/forest-heart-20261029-v3/verification.json",
+      "sha256": "e22b526a8e52f250f98b049c60a709ded4186502f0a63887afe4ddf46842a094",
+      "sourceCommit": "d07f25b9d2c3766b1e473c82d7d71ad14fd48f1f",
+      "releases": [
+        "forest-heart-20261029-v2",
+        "forest-heart-20261029-v3"
+      ],
+      "sourceArchiveHashes": [
+        "0c7412ea5438c72d63c7808759e79bb76fa95e12a32a23690dd7b36fcca9a1be",
+        "2a362a9b2e190a7c56cc52d06313ef81f3c2a8321c60ab474e43223eda08856d",
+        "45cfe78f20c3e986879d1a2d847023a88972b2f0128896e57c93604edd291210",
+        "518520016060b439e0eec106a2a3b78e5162f47661d1f2d95f962cf8a47f39ae",
+        "6f0ba79987ff2d24e5c242103ec6735bea1b9fcb3a0fba2abec773eff1dab52e",
+        "c3e04efc098aa9d61f0faa70fc9159d8460dcf0816d96ef5b560efd45ab46658",
+        "f722a510ed699cecb172b064e2b44a98f79d19f59039ead1c796e6c779e2e24f"
+      ]
+    },
+    {
+      "file": "deployment/releases/forest-heart-responsive-20261030-v1/verification.json",
+      "sha256": "e8d97d00715a7b096226296e8954713ab5b476835c7e1db91473259aa7042b3f",
+      "sourceCommit": "aed09286a21e315cb506b1befc754f5a7b4eecd2",
+      "releases": [
+        "forest-heart-20261029-v2",
+        "forest-heart-20261029-v3",
+        "forest-heart-responsive-20261030-v1"
+      ],
+      "sourceArchiveHashes": [
+        "6806b27030af67a8418055611b2bd0a7a36bd42083a9cdda31c3f2b9cfebabf8"
+      ]
+    },
+    {
+      "file": "deployment/releases/game-entry-20261022-v1/verification.json",
+      "sha256": "c21850083a0cb938b1aef3d317055385405b3753c63c5d24950e666ef6ce7f82",
+      "sourceCommit": "08f22472b2b90a3ca07c4efeec267e28cd6b384a",
+      "releases": [
+        "game-entry-20261022-v1"
+      ],
+      "sourceArchiveHashes": [
+        "237b8185aca490ab9e3af4d4ba1fe1091f0dacac7469a48faf1d830f80313c19"
+      ]
+    },
+    {
+      "file": "deployment/releases/girlhub-feedback-20261023-v1/verification.json",
+      "sha256": "a9cae5efdc48f35badb835e53ad686bffafe96af7fb890330f162c4f3e9e9b72",
+      "sourceCommit": "c71cd32bbef6f923994392bdb693fff3a635ab4e",
+      "releases": [
+        "girlhub-feedback-20261023-v1"
+      ],
+      "sourceArchiveHashes": [
+        "285cd01db207a50ea5532f3745d4be9a0a43ac34615c67b6d9154c219b2c42bd"
+      ]
+    },
+    {
+      "file": "deployment/releases/girlhub-sidebar-20261021-v1/verified.json",
+      "sha256": "80419ebdf6f9b759585579d0a98bcda6b79de910ea4752c0b5647a72984155fc",
+      "sourceCommit": "77638b5275a3247a68bfa8af1a3ccad63b82357b",
+      "releases": [
+        "girlhub-sidebar-20261021-v1"
+      ],
+      "sourceArchiveHashes": [
+        "fa6a65c5e3541cbd1fc9b459e0af31eabbdad8fe1a1cb34e89159e590f949bd7"
+      ]
+    },
+    {
+      "file": "deployment/releases/github-motion-20261022-v1/verification.json",
+      "sha256": "a66fcc57fa8b618f5bfecdfe14c0a10e2fd3ac068f7bc165ce833da3f5523bd5",
+      "sourceCommit": "b63115d73062c88e9b39be608a3bff9f1093b8fd",
+      "releases": [
+        "github-motion-20261022-v1"
+      ],
+      "sourceArchiveHashes": [
+        "321f26e7da9afeb0867c0c4236e63d83391e7028aec64b129563a39abe1ef290"
+      ]
+    },
+    {
+      "file": "deployment/releases/github-worlds-20261023-v1/verification.json",
+      "sha256": "5f89faef39b956ca18c017bc8aba30b3709d69474e9277e714e625e6e680b8c6",
+      "sourceCommit": "e8f02c1eee942e539aa06646e0db85d511d3feb2",
+      "releases": [
+        "github-worlds-20261023-v1"
+      ],
+      "sourceArchiveHashes": [
+        "df990b0bfb59d62a4936239f68acae25fabee89291cee41c46ae82185cb55260"
+      ]
+    },
+    {
+      "file": "deployment/releases/hall-layout-20261021-v1.json",
+      "sha256": "7d39a11dfb41d29bbf2aa8f2c077e13951176356924a25c98ca81a7763e615dd",
+      "sourceCommit": "554ff6d9828280f779a9f8b04a4e9254c14754ab",
+      "releases": [
+        "hall-layout-20261021-v1"
+      ],
+      "sourceArchiveHashes": [
+        "6364f38f680b01986e05bb05ac781cc087006f5c66c5694bef5b4d9eb4ff85d6"
+      ]
+    },
+    {
+      "file": "deployment/releases/jackie-chan-20261029-v2/verification.json",
+      "sha256": "376a2cd05e616e42217d84d9d3d0fafb328e8fddb6893a6688a4aaa354f98483",
+      "sourceCommit": "ee9319121f33bf14f45bacae448d21d62a17df9e",
+      "releases": [
+        "jackie-chan-20261029-v1",
+        "jackie-chan-20261029-v2"
+      ],
+      "sourceArchiveHashes": [
+        "9c46832c932d72090ff651767f843f6bcec31d72365ce843a9ec730a205b8873",
+        "bcc2bf6bbf6abe8624afe93ac6b6442063c18891815a43347d77638ff19b0367",
+        "d7717bb2bcfce75e789e215b01e6add1d9b80ccbd2ce017bb34d870e03987878"
+      ]
+    },
+    {
+      "file": "deployment/releases/jackie-layout-20261030-v1/verification.json",
+      "sha256": "ab840d917e526923228e4323b60839a02c673a3c7ea6be3a35b131954256daaa",
+      "sourceCommit": "2ce578d07f15d7a36daf42cbcf338427925a7091",
+      "releases": [
+        "jackie-chan-20261029-v2",
+        "jackie-layout-20261030-v1"
+      ],
+      "sourceArchiveHashes": [
+        "7d601514cbffa0ddb667721d7a48b52fdff35df7f3898491625b1e5b5adb8fd0"
+      ]
+    },
+    {
+      "file": "deployment/releases/jackie-music-20261030-v1/baseline-overlay.json",
+      "sha256": "ff5575bb5b395a5cc4f6753f2cb622319694d1437ee1137fefa7f951dd19a189",
+      "sourceCommit": "0baa69d10ddea384ba7e58c499582d18e702de2c",
+      "releases": [
+        "caribbean-autoplay-20261030-v1"
+      ],
+      "sourceArchiveHashes": [
+        "09383acdf86696910b2538e5257d8836d388291560d8b5f20175dcd460297530",
+        "6ab57b09480f35c6cdcde7b91ec713a7ae84d9962424a0f27516e1a13de3599a",
+        "a3357a66361849e33cb31136ee8cf08d50908a1576c3e952e96af6e33e3480d1",
+        "d54e4b09b8c4e9fdc7447479027057e3a62881c92117c31e562341fe1d853b22",
+        "dfb3b1454f174144da4ac423025b33ac9dd42294d744cf75818608616e466c3f"
+      ]
+    },
+    {
+      "file": "deployment/releases/jackie-music-20261030-v1/verification.json",
+      "sha256": "25045daac1c2eff5864185fe3db59938b6a6bac458d70fab47561ac50f02ef89",
+      "sourceCommit": "0d8de07f08677af717631629bb09b1ed8896a3af",
+      "releases": [
+        "jackie-chan-20261029-v2",
+        "jackie-music-20261030-v1"
+      ],
+      "sourceArchiveHashes": [
+        "00977aac6a0652ad556ad1492b790aa996d2627db1ec3feb60832fc9557f1f56",
+        "09383acdf86696910b2538e5257d8836d388291560d8b5f20175dcd460297530",
+        "6ab57b09480f35c6cdcde7b91ec713a7ae84d9962424a0f27516e1a13de3599a",
+        "a3357a66361849e33cb31136ee8cf08d50908a1576c3e952e96af6e33e3480d1",
+        "d54e4b09b8c4e9fdc7447479027057e3a62881c92117c31e562341fe1d853b22",
+        "dfb3b1454f174144da4ac423025b33ac9dd42294d744cf75818608616e466c3f"
+      ]
+    },
+    {
+      "file": "deployment/releases/last-exit-continuous-20261028-v1/verification.json",
+      "sha256": "8e20288207d74119d799c920c4d534530fd9e067b54016a298af98e6161950b4",
+      "sourceCommit": "8e9ee3fb49b6b631d63864adec66d9c36ff1f63e",
+      "releases": [
+        "last-exit-continuous-20261028-v1"
+      ],
+      "sourceArchiveHashes": [
+        "1cb73767a03ee981637545d18aae2d8808a1eb561309166d69ece3fa3939a649",
+        "20686ce279ad35eba254619090a1128f0d6827f7a99aebe5c5af08a33e20e065",
+        "23042ff0c02d3e561ca93d81b9f9fc41d8d777af86c020dace828b9dbfc3b763",
+        "2a35d38cdc3bb12336358811e5a2cbe7c8559b89866756185b490d473636a675",
+        "3104990812135e1c9e034af9e92f6a211316b4be5633f52368c40e199003430b",
+        "3b1be7e4297f430910a3284ab22695606565c21cc55e7d9eab15e34079ba342d",
+        "42f4c2c85f68b79527800c3f502760a25e2804e955e36b9524067f7d2b3ace86",
+        "452c5c49fa7e085c13e20670c0dea604bca8644608807d94534e5788be338b20",
+        "471d0fc79632555707de8e116c720294749ef62095a407bb5e150c1e5f557fbe",
+        "4cf1a1da3fb13aa787febe8dec787acd5b25c76c8d99200e952f97f9d4847840",
+        "578e546ad8aff9776fd116daf260cd9c82c953f798b31f32067015e05a0e8ddf",
+        "62646cbfaf9c0b1675cf83d6487e4491cfcbebb6d087d1977fefad4c26ce17dd",
+        "73eae0b9ee3f49d10a0e58f2a9e3898966b429fec08e27997c28af9cb5376fe5",
+        "7482326171995296103a4f794befc2c7831df741969bdbe936bdb637195e4dfc",
+        "7c56e71723bdec4d5d08159afb862c1b8a9863020c7f305a87c5ac6712a9bfed",
+        "7d964f28a6bcc8f9f92c01962525753244446fe6d43e203ec53f77b085ff5652",
+        "adccd9133d1fce002eb2dd63259fde91fa9948b3d1b03b3fb81929fd44f3ce0d",
+        "b2916c832d144b050df897f3ba9c30034295be17cb98fda5e9f9b0d32abffd89",
+        "babad83afc79f10e7f7dd6c3d0e67ca82249e4be3edf8bbcbcd7b7917690ee78",
+        "d1a6972839bac0d0d25cb73e6e8c96829e9cc8c13cede3be606fab11a8b68b3e",
+        "d23d0774b6b6ea9083d32f168ba73a09824c7c29b3c1cf519e0d9c8470da0991",
+        "d8beb99b419cc3cac56310911490097d7629363667d64f9ce16816d559684113",
+        "e31e02af5a7b2cf0bb0fc187f2244cea2593f76f70a6edc35f92649594a6d5ab",
+        "f464f456857d8866eaf5b047e9d83cef6c6e18ba596e9320a22a3a99138755cd"
+      ]
+    },
+    {
+      "file": "deployment/releases/last-exit-loading-20261028-v1/verification.json",
+      "sha256": "22ae80556aefb2e32223c7894800e8e42eee5577fc8efc33ee68a0543c3fdc22",
+      "sourceCommit": "73edc78860889a0732e5fe626cb2d0fcd8d0cdf4",
+      "releases": [
+        "last-exit-loading-20261028-v1"
+      ],
+      "sourceArchiveHashes": [
+        "ff3d476cde21dfb684b3e279da75187bceafbd03e021fc9a658d7fd7b4f40870"
+      ]
+    },
+    {
+      "file": "deployment/releases/last-exit-resume-20261028-v1/verification.json",
+      "sha256": "79a16ca0b35a22c9a3fc01697e41b101a24d7902f41c14ac0fc7eaf9aca4e749",
+      "sourceCommit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
+      "releases": [
+        "last-exit-resume-20261028-v1"
+      ],
+      "sourceArchiveHashes": [
+        "1cb73767a03ee981637545d18aae2d8808a1eb561309166d69ece3fa3939a649",
+        "288fa69d511ee2a5b234ff8dc8643b2d5f7e1dca4b55a5481485b91d7a4416f7",
+        "2a35d38cdc3bb12336358811e5a2cbe7c8559b89866756185b490d473636a675",
+        "3104990812135e1c9e034af9e92f6a211316b4be5633f52368c40e199003430b",
+        "3b1be7e4297f430910a3284ab22695606565c21cc55e7d9eab15e34079ba342d",
+        "42f4c2c85f68b79527800c3f502760a25e2804e955e36b9524067f7d2b3ace86",
+        "452c5c49fa7e085c13e20670c0dea604bca8644608807d94534e5788be338b20",
+        "471d0fc79632555707de8e116c720294749ef62095a407bb5e150c1e5f557fbe",
+        "4c189a5744786322c2f04f2620d791f7f9454d702402900ed6faf04638981040",
+        "4cf1a1da3fb13aa787febe8dec787acd5b25c76c8d99200e952f97f9d4847840",
+        "62646cbfaf9c0b1675cf83d6487e4491cfcbebb6d087d1977fefad4c26ce17dd",
+        "73eae0b9ee3f49d10a0e58f2a9e3898966b429fec08e27997c28af9cb5376fe5",
+        "7482326171995296103a4f794befc2c7831df741969bdbe936bdb637195e4dfc",
+        "7c56e71723bdec4d5d08159afb862c1b8a9863020c7f305a87c5ac6712a9bfed",
+        "7d964f28a6bcc8f9f92c01962525753244446fe6d43e203ec53f77b085ff5652",
+        "adccd9133d1fce002eb2dd63259fde91fa9948b3d1b03b3fb81929fd44f3ce0d",
+        "b2916c832d144b050df897f3ba9c30034295be17cb98fda5e9f9b0d32abffd89",
+        "b32aaabfec2ec6269bd7b09b0f6a9314a2ccdf77ca182593798fa23ef9e4f3cd",
+        "babad83afc79f10e7f7dd6c3d0e67ca82249e4be3edf8bbcbcd7b7917690ee78",
+        "d1a6972839bac0d0d25cb73e6e8c96829e9cc8c13cede3be606fab11a8b68b3e",
+        "d23d0774b6b6ea9083d32f168ba73a09824c7c29b3c1cf519e0d9c8470da0991",
+        "d8beb99b419cc3cac56310911490097d7629363667d64f9ce16816d559684113",
+        "e31e02af5a7b2cf0bb0fc187f2244cea2593f76f70a6edc35f92649594a6d5ab",
+        "fd89a552b07cda3b557752b061b196e6d12df75ed3fc0e7d0726a6c68cb89082"
+      ]
+    },
+    {
+      "file": "deployment/releases/left-lounge-20261023-v1/verification.json",
+      "sha256": "ce5f0997ca22d9faa3ecc2f73cd6c441d38287b0a651c1ee1b48b7a3396625e3",
+      "sourceCommit": "cfb20ac5c5cc1226171c814a077e97236b1cdbd7",
+      "releases": [
+        "left-lounge-20261023-v1"
+      ],
+      "sourceArchiveHashes": [
+        "2afb581884672143ebc88b0b3d1550f99557d8c5a079be8bf8147b408883a074"
+      ]
+    },
+    {
+      "file": "deployment/releases/mk-security-only-20261026-v1/verification.json",
+      "sha256": "f329358f9f047894dcbf441501001a8a26d37553409f5f66e8c4a53eccf4aa45",
+      "sourceCommit": "37e5c750f92f9708f92c4c0695e5badcd3bb0366",
+      "releases": [
+        "mk-security-20261026-v1",
+        "mk-security-only-20261026-v1"
+      ],
+      "sourceArchiveHashes": [
+        "c581b1ea3feb92688d89a2a16487c3915e009d102f778386089333ac4a4b680c"
+      ]
+    },
+    {
+      "file": "deployment/releases/modular-games-20261021-v1/verification.json",
+      "sha256": "b2b8c68400b8e1fde2c09664668f855fe99bbcd39f4aa13ec4dccfe66210b919",
+      "sourceCommit": "7fdb80e201c868e54412ea5b266c0f098f628f34",
+      "releases": [
+        "modular-games-20261021-v1"
+      ],
+      "sourceArchiveHashes": [
+        "cea2386ef86baaacfb737e3b892a1c85908d8aca7a3278973efe6cfcc1ca918b"
+      ]
+    },
+    {
+      "file": "deployment/releases/mortal-kombat-virtual-20261024-v1/verification.json",
+      "sha256": "c0499e907380933c79cb60b80f1b4fcd93cbd6d825638446c2b554884a04855b",
+      "sourceCommit": "ac364b2db6e8c107e296b3763aa63a5569c17406",
+      "releases": [
+        "mortal-kombat-20261023-v1",
+        "mortal-kombat-virtual-20261024-v1"
+      ],
+      "sourceArchiveHashes": [
+        "12188e799df3fdee82bd4365c188b954bf5e26e4c2a231dc006b41791560ff87"
+      ]
+    },
+    {
+      "file": "deployment/releases/nowpayments-sandbox-20261027-v1/verification.json",
+      "sha256": "c6f3373390cb6b8804be91e3ee95ee50436c7ea65a2107abeb8345d18c9c26b4",
+      "sourceCommit": "9892f8fc1a78369bce385221466f80a45d426b42",
+      "releases": [
+        "nowpayments-sandbox-20261027-v1"
+      ],
+      "sourceArchiveHashes": [
+        "24340e23c9473f0fcc6b2258297aeecc3d3135e23d5bd6b276c2d7f5112c9b9b"
+      ]
+    },
+    {
+      "file": "deployment/releases/pvp-virtual-usdt-20261024-v1/verification.json",
+      "sha256": "ab97948c6f287960119a4979a66d2223d111f568430bfc1eec424dfe23aa1474",
+      "sourceCommit": "83b3e6b71c504a32f2461261b6637cca9092c5b7",
+      "releases": [
+        "pvp-virtual-usdt-20261024-v1"
+      ],
+      "sourceArchiveHashes": [
+        "9a2118c0be346937918946b2e6c931879a4325107e02bfd1a82763dfe7019054"
+      ]
+    },
+    {
+      "file": "deployment/releases/raise-windows-20261023-v2/verification.json",
+      "sha256": "0e0e0f06e9b482ddbe2e01342f44585b3e6d5255f4250a478389aac39c865eca",
+      "sourceCommit": "c68fd25d79245a5404b4182f8c55a2318806883b",
+      "releases": [
+        "raise-windows-20261023-v2"
+      ],
+      "sourceArchiveHashes": [
+        "714b2d4bf612fb99e750c851a0b50fa46adc82367c75a537b72524c1495c1b70"
+      ]
+    },
+    {
+      "file": "deployment/releases/remove-reward-games-catalog-20261031-v1/verification.json",
+      "sha256": "8d4180d47e92e5427a534698f6b85da3d165a385933f89854743ecc39f98d5ca",
+      "sourceCommit": "fb599494fbee9accff92c8a30126a071ebcceb5c",
+      "releases": [
+        "remove-reward-games-catalog-20261031-v1"
+      ],
+      "sourceArchiveHashes": [
+        "8041f7329b7c9446d4a4f58450b1430282ff68dabaa95c9da86bdc5fc194c414"
+      ]
+    },
+    {
+      "file": "deployment/releases/restore-direct-topup-20261023-v1/verification.json",
+      "sha256": "43ff4d03fd83220d9f21af66e23a0e14be95b9bebdaa3d8358d66e4851a66725",
+      "sourceCommit": "09dbad7d86ec4b5c7d18c16715d1861de65468f3",
+      "releases": [
+        "__pycache__",
+        "chat-reliability-20261022-v1",
+        "cr-leo-audio-sync-20261022-v1",
+        "cr-leo-ball-20261022-v1",
+        "cr-leo-stadium-20261022-v1",
+        "github-motion-20261022-v1",
+        "restore-direct-topup-20261023-v1",
+        "royal-catalog-characters-20261022-v1",
+        "royal-platform-20261022-v1"
+      ],
+      "sourceArchiveHashes": [
+        "516230f039a6517f03d08969220a42788a2d017c3f2ac95be756be9818c92731",
+        "79d3caf4ada394be095454e2d287a1d863e0e9021950da0cbe2fd775175966b9"
+      ]
+    },
+    {
+      "file": "deployment/releases/royal-catalog-characters-20261022-v1/verification.json",
+      "sha256": "a3336945594941ba5526c72f6fbd6ec3d591fbe4c533d442d6906b096099f24b",
+      "sourceCommit": "9cbc4be2568ae0f46c653cb1ed611f35ab35cec4",
+      "releases": [
+        "royal-catalog-characters-20261022-v1"
+      ],
+      "sourceArchiveHashes": [
+        "8b9415f9baba7a43bf6d070a22a218d1261b4689eb75c77d02e2c3b5befde625"
+      ]
+    },
+    {
+      "file": "deployment/releases/royal-floor-one-only-20261024-v1/verification.json",
+      "sha256": "5a8e51ad1e83976486f8a4d7f30a6a17cd8585231e718308ce7591603280050b",
+      "sourceCommit": "5045c401063b5f2c792497ae2f4e53bcd34e1a98",
+      "releases": [
+        "royal-floor-one-only-20261024-v1"
+      ],
+      "sourceArchiveHashes": [
+        "463be69094c4f9114d9d522ef2533421bed8ad87b89a6135f04bebb352dc051b"
+      ]
+    },
+    {
+      "file": "deployment/releases/royal-platform-20261022-v1/verification.json",
+      "sha256": "65e417ed128e139891da2892cd4a6dcb7e4a5e96a9ebaa73e8a0ac44a5bd3447",
+      "sourceCommit": "4b4b092ed20dc2546d6b45cccd79e68ebd525b86",
+      "releases": [
+        "royal-platform-20261022-v1"
+      ],
+      "sourceArchiveHashes": [
+        "e9549ccb9e86840d98ba029459651739133b5b9aed42fc5e79b910bc788314e5"
+      ]
+    },
+    {
+      "file": "deployment/releases/skin-npc-context-20261026-v1/verification.json",
+      "sha256": "6453c9cccaeb8e6ed76f632d2c6ed7418b4b0437e9bca3a2e4a7cd2d6bd56194",
+      "sourceCommit": "ae17a8df9e894278dedc29f08c052fe68ee09c04",
+      "releases": [
+        "skin-npc-context-20261026-v1"
+      ],
+      "sourceArchiveHashes": [
+        "2596668c6eeac63dbc245a6cd17e5723f503373f081e3717cf79d2c6435f7a7e",
+        "561f122c79d236c9b114b2c64915c6becaafd0c9e5531835df0868cdc9610247",
+        "afe3e44eb292bab518224182be34d6f8d8b3b0ac0dc400aaf7b07e68d315c6da",
+        "d3c953018ae622e0d163fd63b0636adf86af4ce9df9d21d48724a7378490e4c2",
+        "d5ad1c9361d55bdd0a5aee5a7869d29082f2fc4e25151c15b6bd1959d111a161"
+      ]
+    },
+    {
+      "file": "deployment/releases/skin-walk-alignment-20261030-v1/verification.json",
+      "sha256": "b4dde63bf755f13ab05c665950b5efc8f56c7aaddd503c9b27461428264d920b",
+      "sourceCommit": "afced898da518429a934aab3d9bb242929674360",
+      "releases": [
+        "skin-walk-alignment-20261030-v1"
+      ],
+      "sourceArchiveHashes": [
+        "b60300e259db4d6bc9de3a11b5e84e6ca4d183e9b0298eff0b67ee612b124e47"
+      ]
+    },
+    {
+      "file": "deployment/releases/skin-walk-seams-20261027-v1/verification.json",
+      "sha256": "232c36bf8dd39eaf4abf5adf6e28bd4fb666c481d0e55c53d4b1376a26887115",
+      "sourceCommit": "bffc5eb54ef9957cfb9847ecd8bd721fc77e3e11",
+      "releases": [
+        "skin-walk-seams-20261027-v1"
+      ],
+      "sourceArchiveHashes": [
+        "137fad5c9406bf70597d6b1518a9046ec64c577a7f844ac14f03c511abdc6058",
+        "2596668c6eeac63dbc245a6cd17e5723f503373f081e3717cf79d2c6435f7a7e",
+        "2837b5d2fa71525d1f02662ba9937a066a8ea893e691868809b5aa3c370128ca",
+        "2a5f440615e975ff0797e9a48464855dd2a71be1cc4a0fa497042062856d9a65",
+        "460dabbe443c173c43bc6acb96f543777b3fa5cabdd5ffec5f203ad188894f6c",
+        "561f122c79d236c9b114b2c64915c6becaafd0c9e5531835df0868cdc9610247",
+        "832e5dbda669667e54785d58d246a3e2266803482838bcd307d274fce80d6b12",
+        "9291b700b73cda5720c0dedbd0b87bf9d31ae2dc3ab2ffba9b6ec0c69f1965c8",
+        "9a33f4d0d5e1cd6a89e38a01344433d6544b7d5614e80fcc4b46a2d49f257046",
+        "9a688dc59bb36ba3588fcacd29891055eb6a7eaa0f611a0b89449c8b42d73d51",
+        "afe3e44eb292bab518224182be34d6f8d8b3b0ac0dc400aaf7b07e68d315c6da",
+        "b899b927152f9d0567b580260aa706fab220d197c2ea1a001b264c6f97a90772",
+        "c9e71bfdf2d473d07815ecd9ea43e1f2b09e48823449d48d3eb590327d32cfc8",
+        "d443ad9ea1d119f2956d7fd0f42281eb4b206b54e1e076a72c6b9413c8fdb324",
+        "d5ad1c9361d55bdd0a5aee5a7869d29082f2fc4e25151c15b6bd1959d111a161",
+        "d5da65fc2cc3560defae7189cf703236c757ba63aeb670470ee9a153c25260e6",
+        "d75f83bfc3c80022bf5b021f6f9d5e90aaa8429d3bd64ac63ba21ad57d4e9b5d",
+        "df7bb598c7ba57f86c749f401b3754653b5aaab0802953f96133444c99974359",
+        "eadca45a3432349dd6b285bb304169f9eea1bbc6907682b0ce74176669ff1f67",
+        "ed8084212127308f98feda457d14404c20f294ee0ee299f7723d5ef66f34705a",
+        "f3974aba494a446e90299b4e4784046e95a67f22cd62a26e66c17dbb7523a506",
+        "fde372ba94969f017b5d7420ad5dbb8d077ad37763e50ff535cb4f95a158ff34"
+      ]
+    },
+    {
+      "file": "deployment/releases/telegram-stars-20261029-v1/verification.json",
+      "sha256": "8dd7781011717c236711cb8cf7f1d95be1c155a71d3662c0970479f6444aed53",
+      "sourceCommit": "3e428397544ec9a18d2bb64e51cfce2f4293a627",
+      "releases": [
+        "telegram-stars-20261029-v1"
+      ],
+      "sourceArchiveHashes": [
+        "f3019a1e8b2cfccbb0149d9f6cebadaaf22afbe3cea7bdd47df6ad2fff2f2754"
+      ]
+    },
+    {
+      "file": "deployment/releases/temple-layout-20261031-v1/verification.json",
+      "sha256": "19ecaa86e8ae72d032334015343061f12b168ead4eece53ecfafc250e674b381",
+      "sourceCommit": "a69c5cc641133d44ee44989515f55edb4fa63083",
+      "releases": [
+        "temple-layout-20261031-v1"
+      ],
+      "sourceArchiveHashes": [
+        "9cec80fdee4419e976fff13fd85f7b32b6c4b65a73db46d9fa20578695340bc1"
+      ]
+    },
+    {
+      "file": "deployment/releases/veil-of-night-20261020/source-validation.json",
+      "sha256": "7d57ff1ea57721012b60bdfaf9965da522c624ffa406325d803cca085686efd7",
+      "sourceCommit": "b62cc2a39a5c5641463a08036eae7300359f2795",
+      "releases": [
+        "veil-of-night-20261020"
+      ],
+      "sourceArchiveHashes": [
+        "0fe17dc7cfb719a382bd4e4b46a72fc1a8bb6661d16daa39797d0e86d637cd6a"
+      ]
+    },
+    {
+      "file": "deployment/releases/veil-of-night-20261020-v1/verified.json",
+      "sha256": "5551e7d4fab12f66aa8e98b5a73bd89821e6fb6870e5fadfb9f9a40ea08367a7",
+      "sourceCommit": "4a44f067e8f7cedfbb46535876eb306ef5badddc",
+      "releases": [
+        "veil-of-night-20261020-v1"
+      ],
+      "sourceArchiveHashes": [
+        "0fe17dc7cfb719a382bd4e4b46a72fc1a8bb6661d16daa39797d0e86d637cd6a",
+        "7599445668b000e284cdb488c921f9f75f494fabf4b17e4716ff561700dc4691"
+      ]
+    }
+  ]
+}
