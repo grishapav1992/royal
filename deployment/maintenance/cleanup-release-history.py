@@ -216,7 +216,39 @@ def select_current_release(image, source_commit, root=None):
     return matches[0]
 
 
+def shared_client_source_proof(name, digest):
+    if name != 'src/ui/slotKit/SlotCascadeBoard.ts': return None
+    for path in RELEASES.glob('*/operator.json'):
+        try:
+            operator=read(path); published=read(path.parent/'published.json'); receipt=read(path.parent/'release-github.json')
+            manifest=read(path.parent/'release-manifest.json'); modules=published.get('modules',[])
+            if not (published.get('published') is True and operator.get('source')=={name:digest}
+                    and operator.get('sourceCommit')==published.get('sourceCommit')==receipt.get('sourceCommit')==manifest.get('sourceCommit')
+                    and re.fullmatch('[a-f0-9]{40}',str(receipt.get('remoteMain','')))
+                    and sha(path.parent/'release-github.json')==operator.get('receiptSha256')
+                    and sha(path.parent/'release-manifest.json')==operator.get('releaseManifestSha256')
+                    and manifest.get('scope')=='modules' and manifest.get('build',{}).get('passed') is True
+                    and manifest.get('moduleProjection',{}).get('inputs',{}).get(name)==digest
+                    and isinstance(modules,list) and modules): continue
+            expected={row['gameId']:row['version'] for row in manifest['packages']}
+            if len(expected)!=len(modules) or set(expected)!=set(operator.get('packages',{})): continue
+            seen=set()
+            for module in modules:
+                game=module['gameId']; require(re.fullmatch('[a-z0-9-]+',game),'Unsafe module identity')
+                if game in seen or module.get('verified') is not True or expected.get(game)!=module.get('version'): break
+                seen.add(game); active=MODULES/game/'active.json'; pointer=read(active); row=operator['packages'][game]
+                prefix='module-dist/'+game+'/versions/'+module['version']+'/'
+                if (sha(active)!=row.get('pointerSha256') or pointer['manifest'].split('/')[4]!=module['version']
+                        or manifest['files'].get('module-dist/'+game+'/active.json')!=sha(active)
+                        or manifest['files'].get(prefix+'manifest.json')!=pointer.get('sha256')): break
+            else:
+                if seen==set(expected): return [path,path.parent/'published.json',path.parent/'release-github.json',path.parent/'release-manifest.json']
+        except (OSError,ValueError,KeyError,IndexError,TypeError): continue
+    return None
+
+
 def module_source_proof(name, digest):
+    if name == 'src/ui/slotKit/SlotCascadeBoard.ts': return shared_client_source_proof(name,digest)
     if not name.startswith('games/'): return None
     for path in RELEASES.glob('*/operator.json'):
         try:
