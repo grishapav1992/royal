@@ -37,7 +37,7 @@ export class RouletteSound {
       if(epoch!==this.epoch||!this.enabled())return false;
       const c=this.host.context,out=this.host.output;if(!c||!out||c.state!=='running')return false;
       if(this.context!==c){
-        this.clearGraph();this.context=c;this.master=c.createGain();this.master.gain.value=.8;this.master.connect(out);
+        this.clearGraph();this.context=c;this.master=c.createGain();this.master.gain.value=.72;this.master.connect(out);
         this.bank=roulettePcm(c.sampleRate);
         for(const [name,sample]of Object.entries(this.bank)){const buffer=c.createBuffer(1,sample.data.length,c.sampleRate);buffer.getChannelData(0).set(sample.data);this.buffers.set(name as RouletteCue,buffer);}
         c.addEventListener('statechange',()=>{if(c.state!=='running')this.cancel();},{signal:this.lifetime.signal});
@@ -54,14 +54,14 @@ export class RouletteSound {
   select(kind:'chip'|'bet',peak:number){
     if(!this.enabled())return peak;
     const target=Math.max(peak,this.now()+this.lead()+18),cue=kind==='chip'?(this.sequence++%2?'chip-alt':'chip'):'bet';
-    void this.event(()=>this.cue(cue,target,kind==='chip'?.39:.32));return target;
+    void this.event(()=>this.cue(cue,target,kind==='chip'?.33:.27));return target;
   }
   begin(animate:boolean){
     if(!this.enabled())return this.now();
     const target=this.now()+(this.enabled()?this.lead()+18:0),epoch=this.epoch;
     this.armed=animate&&this.enabled();
     void this.event(()=>{
-      this.cue('start',target+120,.19);
+      this.cue('start',target+120,.13);
       if(this.armed){this.loops=[this.cue('wheel',target,0,0,true),this.cue('roll',target,0,0,true)].filter((v):v is Voice=>!!v);}
     },epoch);
     return target;
@@ -75,8 +75,8 @@ export class RouletteSound {
     const at=this.context.currentTime,w=Math.min(1,Math.max(0,pose.wheelVelocity/450)),relative=Math.min(1,Math.abs(pose.ballVelocity-pose.wheelVelocity)/1450);
     const falling=pose.phase==='drop'?Math.max(0,Math.min(1,(pose.radius-148)/39)):pose.phase==='pocket'||pose.phase==='idle'?0:1;
     for(const v of this.loops){
-      if(v.stopped)continue;const ball=v.cue==='roll';v.gain.gain.setTargetAtTime(ball?.27*relative*falling:.2*w,at,.035);
-      v.source.playbackRate.setTargetAtTime(ball?.65+.5*relative:.6+.5*w,at,.045);
+      if(v.stopped)continue;const ball=v.cue==='roll';v.gain.gain.setTargetAtTime(ball?.23*Math.sqrt(relative)*falling:.14*w,at,.035);
+      v.source.playbackRate.setTargetAtTime(ball?.6+.6*relative:.55+.5*w,at,.045);
       v.pan.pan.setTargetAtTime(ball?.28*Math.sin(pose.ball*Math.PI/180):0,at,.035);
     }
   }
@@ -84,7 +84,7 @@ export class RouletteSound {
   result(multiplier:number,peak:number){
     if(!this.enabled())return peak;
     const cue=multiplier>=36?'straight':multiplier>1?'win':'settle',target=Math.max(peak,this.now()+this.lead()+18);
-    void this.event(()=>this.cue(cue,target,multiplier>1?.43:.14));return target;
+    void this.event(()=>this.cue(cue,target,multiplier>1?.34:.1));return target;
   }
   private cue(cue:RouletteCue,target:number,level:number,pan=0,loop=false){
     const c=this.context,sample=this.bank?.[cue],buffer=this.buffers.get(cue);

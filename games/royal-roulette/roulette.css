@@ -348,3 +348,5 @@
 @media(prefers-reduced-motion:reduce) { .rr-wheel::after { display:none; } }
 .rr-spindle { transform-origin:200px 200px; }
 .rr-root[data-motion-phase="quiet"] .rr-wheel::after { transition:none; opacity:0; }
+
+.rr-ball-shadow { transform-origin:201px 54px; }

@@ -37,3 +37,26 @@ test('infinite poses, stationary landings and invalid pockets are rejected',()=>
  for(const pocket of [-1,37,1.5,NaN])assert.throws(()=>landingPlan(p,pocket));
  for(const value of [0,NaN,Infinity])assert.throws(()=>landingPlan({...p,wheelVelocity:value},0));
 });
+
+test('rolling drag loses speed before the ball leaves the rim, including delayed replies',()=>{
+ for(const wait of [650,5000,30000])for(let pocket=0;pocket<37;pocket++){
+  const plan=landingPlan(launchPose(base,wait),pocket);let previous=plan.start.ballVelocity;
+  for(let ms=0;ms<SPIN_TIMING.drop*SPIN_TIMING.landing;ms+=12){
+   const p=landingPose(plan,ms);assert.equal(p.phase,'coast');assert.equal(p.radius,187);
+   assert(p.ballVelocity<0);assert(p.ballVelocity>=previous-1e-8);previous=p.ballVelocity;
+  }
+  const at=SPIN_TIMING.drop*SPIN_TIMING.landing,a=landingPose(plan,at-.001),b=landingPose(plan,at+.001);
+  assert(Math.abs(a.ball-b.ball)<.001);assert(Math.abs(a.ballVelocity-b.ballVelocity)<.01);
+ }
+});
+
+test('reported angular velocities match the visible ball through deflections and pocket capture',()=>{
+ for(let pocket=0;pocket<37;pocket++){
+  const plan=landingPlan(launchPose(base,650),pocket);
+  for(let ms=2;ms<SPIN_TIMING.landing-2;ms+=13){
+   const a=landingPose(plan,ms-.001),b=landingPose(plan,ms+.001),p=landingPose(plan,ms);
+   assert(Math.abs((b.ball-a.ball)/.000002-p.ballVelocity)<.02);
+   assert(Math.abs((b.wheel-a.wheel)/.000002-p.wheelVelocity)<.02);
+  }
+ }
+});

@@ -1,5 +1,12 @@
 /** Presentation kinematics. None of these values select a game outcome. */
-export const SPIN_TIMING = Object.freeze({launch:650, landing:3200, join:.83});
+const restitution=.68,firstImpact=.6,bounces=5;
+const flightWeight=Array.from({length:bounces},(_,i)=>restitution**i).reduce((a,b)=>a+b,0);
+const firstFlight=(1-firstImpact)/flightWeight;
+const contacts=[firstImpact];
+for(let i=0;i<bounces;i++)contacts.push(contacts[i]+firstFlight*restitution**i);
+contacts[contacts.length-1]=1;
+export const SPIN_CONTACTS:readonly number[]=Object.freeze(contacts);
+export const SPIN_TIMING = Object.freeze({launch:650,landing:4400,drop:.43,join:contacts[2]});
 export type SpinPhase = 'idle' | 'launch' | 'orbit' | 'coast' | 'drop' | 'pocket' | 'quiet';
 export type SpinPose = {wheel:number; wheelVelocity:number; ball:number; ballVelocity:number; radius:number; hop:number; phase:SpinPhase};
 export type LandingPlan = {start:SpinPose; pocket:number; distance:number; ballJoin:number; ballJoinVelocity:number; ballOffset:number};
@@ -24,6 +31,11 @@ function hermite(from:number,to:number,v0:number,v1:number,t:number,duration:num
 function wheelPose(plan:Pick<LandingPlan,'start'|'distance'>,t:number) {
   return hermite(plan.start.wheel,plan.start.wheel+plan.distance,plan.start.wheelVelocity,0,t,SPIN_TIMING.landing/1000);
 }
+/** Rolling drag dissipates speed while the ball is still supported by the rim. */
+function coast(start:SpinPose,seconds:number){
+  const drag=.68,decay=Math.exp(-drag*seconds);
+  return {value:start.ball+start.ballVelocity*(1-decay)/drag,velocity:start.ballVelocity*decay};
+}
 export function landingPlan(start:SpinPose,pocket:number):LandingPlan {
   if(!Number.isInteger(pocket)||pocket<0||pocket>=37||start.wheelVelocity<360||!Object.values(start).filter(v=>typeof v==='number').every(Number.isFinite))throw Error('Invalid roulette presentation pose');
   const duration=SPIN_TIMING.landing/1000,min=start.wheelVelocity*duration/3,max=2*min;
@@ -32,21 +44,34 @@ export function landingPlan(start:SpinPose,pocket:number):LandingPlan {
   if(distance+360<=max&&Math.abs(distance+360-start.wheelVelocity*duration/2)<Math.abs(distance-start.wheelVelocity*duration/2))distance+=360;
   if(distance<min-1e-8||distance>max+1e-8)throw Error('Wheel deceleration bounds are invalid');
   const joining=wheelPose({start,distance},SPIN_TIMING.join),worldJoin=joining.value+pocket*360/37;
-  const ideal=start.ball+(start.ballVelocity+joining.velocity)*duration*SPIN_TIMING.join/2;
-  let ballJoin=worldJoin+360*Math.round((ideal-worldJoin)/360);
-  while(ballJoin>start.ball-360)ballJoin-=360;
+  const dropping=coast(start,duration*SPIN_TIMING.drop),flight=duration*(SPIN_TIMING.join-SPIN_TIMING.drop);
+  const ideal=dropping.value+(dropping.velocity+joining.velocity)*flight/2;
+  const ballJoin=worldJoin+360*Math.round((ideal-worldJoin)/360);
   return {start,pocket,distance,ballJoin,ballJoinVelocity:joining.velocity,ballOffset:ballJoin-worldJoin};
 }
-export function landingPose(plan:LandingPlan,elapsedMs:number):SpinPose {
-  const t=clamp(elapsedMs/SPIN_TIMING.landing),w=wheelPose(plan,t),join=SPIN_TIMING.join;
-  if(t>=1)return {wheel:plan.start.wheel+plan.distance,wheelVelocity:0,ball:plan.start.wheel+plan.distance+plan.pocket*360/37+plan.ballOffset,ballVelocity:0,radius:148,hop:0,phase:'idle'};
-  if(t<join){
-    const b=hermite(plan.start.ball,plan.ballJoin,plan.start.ballVelocity,plan.ballJoinVelocity,t/join,SPIN_TIMING.landing/1000*join);
-    const drop=clamp((t-.52)/(join-.52)),hop=Math.sin(drop*Math.PI*6)**2*(1-drop);
-    return {wheel:w.value,wheelVelocity:w.velocity,ball:b.value,ballVelocity:b.velocity,radius:187-39*smooth(drop)+4.5*hop,hop,phase:t<.52?'coast':'drop'};
+/** Ballistic flights lose height and duration with a constant restitution ratio. */
+function bounce(t:number){
+  for(let i=0;i<SPIN_CONTACTS.length-1;i++){
+    const start=SPIN_CONTACTS[i],end=SPIN_CONTACTS[i+1];
+    if(t>=start&&t<end){
+      const u=(t-start)/(end-start),height=restitution**(2*i);
+      return {hop:4*u*(1-u)*height,sway:(i%2?-1:1)*1.8*height*Math.sin(Math.PI*u)**2,
+        swayVelocity:(i%2?-1:1)*1.8*height*Math.PI*Math.sin(2*Math.PI*u)/((end-start)*SPIN_TIMING.landing/1000)};
+    }
   }
-  const local=(t-join)/(1-join),hop=Math.sin(local*Math.PI*3)**2*(1-local)**2;
-  const wobble=2.2*Math.sin(local*Math.PI*4)*Math.sin(local*Math.PI)**2*(1-local);
-  return {wheel:w.value,wheelVelocity:w.velocity,ball:w.value+plan.pocket*360/37+plan.ballOffset+wobble,ballVelocity:w.velocity,
-    radius:148+5*hop,hop,phase:'pocket'};
+  return {hop:0,sway:0,swayVelocity:0};
+}
+export function landingPose(plan:LandingPlan,elapsedMs:number):SpinPose {
+  const t=clamp(elapsedMs/SPIN_TIMING.landing),w=wheelPose(plan,t),{drop,join}=SPIN_TIMING,duration=SPIN_TIMING.landing/1000;
+  if(t>=1)return {wheel:plan.start.wheel+plan.distance,wheelVelocity:0,ball:plan.start.wheel+plan.distance+plan.pocket*360/37+plan.ballOffset,ballVelocity:0,radius:148,hop:0,phase:'idle'};
+  if(t<drop){const b=coast(plan.start,t*duration);return {wheel:w.value,wheelVelocity:w.velocity,ball:b.value,ballVelocity:b.velocity,radius:187,hop:0,phase:'coast'};}
+  const impact=bounce(t);
+  if(t<join){
+    const from=coast(plan.start,drop*duration),u=(t-drop)/(join-drop);
+    const b=hermite(from.value,plan.ballJoin,from.velocity,plan.ballJoinVelocity,u,duration*(join-drop));
+    return {wheel:w.value,wheelVelocity:w.velocity,ball:b.value+impact.sway,ballVelocity:b.velocity+impact.swayVelocity,
+      radius:187-39*smooth(u)+5.5*impact.hop,hop:impact.hop,phase:'drop'};
+  }
+  return {wheel:w.value,wheelVelocity:w.velocity,ball:w.value+plan.pocket*360/37+plan.ballOffset+impact.sway,ballVelocity:w.velocity+impact.swayVelocity,
+    radius:148+5.5*impact.hop,hop:impact.hop,phase:'pocket'};
 }

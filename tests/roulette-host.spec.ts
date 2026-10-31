@@ -1,5 +1,7 @@
 import {test as base,expect,type Page} from '@playwright/test';
 import {Client} from '@colyseus/sdk';
+import {SPIN_TIMING} from '../games/royal-roulette/SpinTimeline';
+const settlingTimeout=SPIN_TIMING.launch+SPIN_TIMING.landing+2500;
 const out='artifacts/work/roulette-audio';
 const test=base.extend<{roomPath:string}>({roomPath:async({request},use)=>{
  const r=await request.post('/api/auth/login',{data:{email:`roulette-room-${crypto.randomUUID()}@example.test`,password:'Roulette-test-123!'}});expect(r.ok()).toBe(true);
@@ -53,7 +55,7 @@ async function layout(page:Page,name:string){
 async function play(page:Page){
  const response=page.waitForResponse(r=>r.url().endsWith('/api/demo-wallet/operations')&&r.request().method()==='POST');
  await page.locator('[data-rr-spin]').click();const r=await response;expect(r.ok()).toBe(true);const result=await r.json();
- await expect(page.locator('.rr-root')).toHaveAttribute('data-busy','false');
+ await expect(page.locator('.rr-root')).toHaveAttribute('data-busy','false',{timeout:settlingTimeout});
  await expect(page.locator('[data-rr-number]')).toHaveText(String(result.gameRound.outcome.number));return result;
 }
 test('roulette uses real wallet settlement, responsive host chat, history, and catalogue reopening',async({page,roomPath})=>{
@@ -90,7 +92,7 @@ test('a lost accepted response survives close and reopening and retries the exac
  const response=page.waitForResponse(r=>r.url().endsWith('/api/demo-wallet/operations')&&r.request().method()==='POST');
  await page.locator('[data-rr-spin]').click();const r=await response;expect(r.request().postDataJSON()).toEqual(original);
  const retried=await r.json();expect(retried.gameRound).toEqual(accepted.gameRound);expect(retried.wallet.balance).toEqual(accepted.wallet.balance);
- await expect(page.locator('.rr-root')).toHaveAttribute('data-busy','false');
+ await expect(page.locator('.rr-root')).toHaveAttribute('data-busy','false',{timeout:settlingTimeout});
  await expect(page.locator('[data-rr-number]')).toHaveText(String(accepted.gameRound.outcome.number));
  const bets=retried.wallet.entries.filter((e:any)=>e.operationId===original.id&&e.kind==='bet');expect(bets).toHaveLength(1);
  await close(page);
@@ -128,7 +130,7 @@ test('wheel and ball share a continuous confirmed landing and release their fram
   await expect.poll(async()=>(await motion(page)).phase,{intervals:[30,50,80]}).toBe('drop');const drop=await motion(page);
   await expect.poll(async()=>(await motion(page)).phase,{intervals:[30,50,80]}).toBe('pocket');const pocket=await motion(page);
   const index=numberOrder.indexOf(receipt.gameRound.outcome.number);expect(angularError(pocket.pose.ball-pocket.pose.wheel-index*360/37)).toBeLessThanOrEqual(2.21);
-  await expect(page.locator('.rr-root')).toHaveAttribute('data-busy','false');await expect(page.locator('[data-rr-number]')).toHaveText(String(receipt.gameRound.outcome.number));
+  await expect(page.locator('.rr-root')).toHaveAttribute('data-busy','false',{timeout:settlingTimeout});await expect(page.locator('[data-rr-number]')).toHaveText(String(receipt.gameRound.outcome.number));
   await expect.poll(async()=>(await motion(page)).effects).toBe(0);const end=await motion(page);
   expect(end.active).toBe(false);expect(end.scheduledFrames).toBe(0);expect(end.frames).toBeGreaterThan(10);expect(end.pose.radius).toBe(148);
   expect(angularError(end.pose.wheel+index*360/37)).toBeLessThan(.000001);expect(angularError(end.pose.ball)).toBeLessThan(.000001);
@@ -145,13 +147,13 @@ test('reduced motion, hidden pages and closing interrupt a spin without another 
  let posts=0;page.on('request',r=>{if(r.url().endsWith('/api/demo-wallet/operations')&&r.method()==='POST')posts++;});
  const start=async()=>{const response=page.waitForResponse(r=>r.url().endsWith('/api/demo-wallet/operations')&&r.request().method()==='POST');await page.locator('[data-rr-spin]').click();const receipt=await(await response).json();await expect(page.locator('.rr-root')).toHaveAttribute('data-motion-phase','coast');return receipt;};
  const first=await start();await page.emulateMedia({reducedMotion:'reduce'});
- await expect(page.locator('.rr-root')).toHaveAttribute('data-busy','false');await expect(page.locator('[data-rr-number]')).toHaveText(String(first.gameRound.outcome.number));
+ await expect(page.locator('.rr-root')).toHaveAttribute('data-busy','false',{timeout:settlingTimeout});await expect(page.locator('[data-rr-number]')).toHaveText(String(first.gameRound.outcome.number));
  expect((await motion(page)).scheduledFrames).toBe(0);expect((await motion(page)).effects).toBe(0);expect(posts).toBe(1);await expect.poll(async()=>(await sound(page)).activeSources).toBe(0);
  expect(angularError((await motion(page)).pose.wheel+numberOrder.indexOf(first.gameRound.outcome.number)*360/37)).toBeLessThan(.000001);
  await page.emulateMedia({reducedMotion:'no-preference'});const frames=(await motion(page)).frames;await page.waitForTimeout(150);expect((await motion(page)).frames).toBe(frames);
  const second=await start();
  await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,value:true});document.dispatchEvent(new Event('visibilitychange'));});
- await expect(page.locator('.rr-root')).toHaveAttribute('data-busy','false');await expect(page.locator('[data-rr-number]')).toHaveText(String(second.gameRound.outcome.number));
+ await expect(page.locator('.rr-root')).toHaveAttribute('data-busy','false',{timeout:settlingTimeout});await expect(page.locator('[data-rr-number]')).toHaveText(String(second.gameRound.outcome.number));
  expect((await motion(page)).scheduledFrames).toBe(0);expect((await motion(page)).effects).toBe(0);await expect.poll(async()=>(await sound(page)).activeSources).toBe(0);
  await page.evaluate(()=>{Reflect.deleteProperty(document,'hidden');document.dispatchEvent(new Event('visibilitychange'));});
  const hiddenFrames=(await motion(page)).frames;await page.waitForTimeout(150);expect((await motion(page)).frames).toBe(hiddenFrames);
@@ -178,7 +180,7 @@ test('roulette uses shared mute and volume, drops interrupted cues and stays qui
  await page.emulateMedia({reducedMotion:'no-preference'});await page.locator('[data-rr-spin]').click();
  await expect(page.locator('.rr-root')).toHaveAttribute('data-motion-phase','coast');expect((await sound(page)).looping).toBe(2);
  await preferences(true);await expect.poll(async()=>(await sound(page)).activeSources).toBe(0);const counts=(await sound(page)).scheduled;
- await preferences(false);await expect(page.locator('.rr-root')).toHaveAttribute('data-busy','false');
+ await preferences(false);await expect(page.locator('.rr-root')).toHaveAttribute('data-busy','false',{timeout:settlingTimeout});
  const after=await sound(page);expect(after.scheduled.roll).toBe(counts.roll);expect(after.scheduled.wheel).toBe(counts.wheel);expect(after.scheduled.tap??0).toBe(counts.tap??0);
  await expect.poll(async()=>(await sound(page)).activeSources).toBe(0);
  await preferences(false,0);const silent=(await sound(page)).scheduled;
@@ -201,7 +203,7 @@ test('original roulette sound sequence renders without clipping, with aligned co
    const value=Reflect.get(target,key,target);return typeof value==='function'?value.bind(target):value;
   }});
   const path='/games/royal-roulette/RouletteSound.ts',timeline='/games/royal-roulette/SpinTimeline.ts';
-  const {RouletteSound}=await import(/* @vite-ignore */path),{launchPose,landingPose,landingPlan}=await import(/* @vite-ignore */timeline);
+  const {RouletteSound}=await import(/* @vite-ignore */path),{launchPose,landingPose,landingPlan,SPIN_TIMING}=await import(/* @vite-ignore */timeline);
   const host={context,output,unlock:async()=>{},getPreferences:()=>({muted:false,volume:.35}),onPreferences:(fn:()=>void)=>{fn();return()=>{};}};
   const audio=new RouletteSound(host as any,now);await audio.warm();
   seconds=.05;audio.select('chip',now()+137.5);await audio.warm();await Promise.resolve();
@@ -212,8 +214,8 @@ test('original roulette sound sequence renders without clipping, with aligned co
   const plan=landingPlan(launchPose(base,650),17);
   for(let time=began;time<landingAt;time+=1000/60){seconds=(time-origin)/1000;audio.frame(launchPose(base,time-began));}
   seconds=(landingAt-origin)/1000;audio.plan(plan,landingAt);
-  for(let time=landingAt;time<=landingAt+3200;time+=1000/60){seconds=(time-origin)/1000;audio.frame(landingPose(plan,time-landingAt));}
-  seconds=(landingAt+3200-origin)/1000;audio.finish();audio.result(2,now()+252);await audio.warm();await Promise.resolve();
+  for(let time=landingAt;time<=landingAt+SPIN_TIMING.landing;time+=1000/60){seconds=(time-origin)/1000;audio.frame(landingPose(plan,time-landingAt));}
+  seconds=(landingAt+SPIN_TIMING.landing-origin)/1000;audio.finish();audio.result(2,now()+252);await audio.warm();await Promise.resolve();
   seconds=6.3;audio.result(0,now()+252);await audio.warm();await Promise.resolve();
   seconds=7.3;audio.result(36,now()+252);await audio.warm();await Promise.resolve();
   const scheduled=audio.state();const buffer=await offline.startRendering();audio.destroy();const end=audio.state();
@@ -232,7 +234,7 @@ test('original roulette sound sequence renders without clipping, with aligned co
  const {writeFile}=await import('node:fs/promises');await writeFile(out+'/sound-preview.wav',Buffer.from(rendered.wav,'base64'));
  await writeFile(out+'/audio-measurements.json',JSON.stringify({...rendered,wav:undefined},null,2));
  expect(rendered.peak).toBeGreaterThan(.01);expect(rendered.peak).toBeLessThan(.5);expect(Math.abs(rendered.dc)).toBeLessThan(.005);expect(rendered.tail).toBeLessThan(.00001);
- expect(rendered.scheduled.skipped).toBe(0);expect(rendered.scheduled.maxVoices).toBeLessThanOrEqual(24);expect(rendered.scheduled.scheduled).toMatchObject({chip:1,'chip-alt':1,bet:1,wheel:1,roll:1,tap:9,landing:1,win:1,settle:1,straight:1});
+ expect(rendered.scheduled.skipped).toBe(0);expect(rendered.scheduled.maxVoices).toBeLessThanOrEqual(24);expect(rendered.scheduled.scheduled).toMatchObject({chip:1,'chip-alt':1,bet:1,wheel:1,roll:1,tap:5,landing:1,win:1,settle:1,straight:1});
  expect(Math.max(...rendered.scheduled.alignment.map((v:any)=>Math.abs(v.errorMs)))).toBeLessThan(40);
  expect(rendered.end.activeSources).toBe(0);expect(rendered.end.graphOwners).toBe(0);expect(rendered.end.disposed).toBe(true);
 });
