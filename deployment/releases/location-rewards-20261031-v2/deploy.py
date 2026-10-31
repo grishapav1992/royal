@@ -9,6 +9,7 @@ import shutil
 import signal
 import subprocess
 import sys
+import tarfile
 import types
 
 NAME = 'location-rewards-20261031-v2'
@@ -86,6 +87,7 @@ def configure(root=ROOT):
     base.payload = lambda: payload(base)
     base.build = lambda: build(base)
     base.quiet_gate = lambda minimum=None: quiet_gate(base, minimum)
+    base.rollback = lambda: rollback(base)
     return base
 
 
@@ -252,6 +254,7 @@ def gate_program(base):
     source = (base.ROOT / 'quiesce-base.cjs').read_text()
     return ('const reviewedLease={exports:{},parent:{}};\n(function(module,exports){\n' + source +
             '\n})(reviewedLease,reviewedLease.exports);\nglobalThis.ROYAL_LOCATION_GATE_BASE=reviewedLease.exports;\n' +
+            'globalThis.ROYAL_REWARDS_DOWNGRADE=' + ('true' if getattr(base, 'reward_downgrade', False) else 'false') + ';\n' +
             (base.ROOT / 'quiesce.cjs').read_text())
 
 
@@ -263,6 +266,63 @@ def quiet_gate(base, minimum=None):
         min_free_bytes=base.publication_min_free() if minimum is None else minimum, disk_paths=(base.LIVE, base.ROOT, base.BACKUP))
     try: gate.acquire(); return gate
     except BaseException: gate.close(); raise
+
+
+def rollback(base):
+    """A v1 host cannot interpret an adopted bundle policy; fence and reject before restoring any bytes."""
+    base.payload()
+    built = read(base.ROOT / 'build-result.json')
+    require(built['program'] == base.expected_program(), 'Reviewed build inventory changed')
+    current = base.snapshot(recovery=True)
+    if current['container'] is not None:
+        try:
+            current['program'] = json.loads(base.run(['docker', 'exec', 'royal-game-1', 'node', '-e', base.PROGRAM]))
+        except subprocess.CalledProcessError:
+            require(current['container']['health'] != 'healthy', 'Cannot verify files of the healthy game container')
+    base.recovery_guard(current, built)
+    base.backup_guard(built)
+    base.reward_downgrade = True
+    try:
+        gate = quiet_gate(base)
+    finally:
+        base.reward_downgrade = False
+    critical_command_inflight = False
+    try:
+        gate.confirm()
+        with tarfile.open(base.BACKUP / 'source.tgz') as archive:
+            for name in base.CHANGES:
+                if name in base.BASE:
+                    restored = base.ROOT / 'restore' / name
+                    restored.parent.mkdir(parents=True, exist_ok=True)
+                    restored.write_bytes(archive.extractfile(name).read())
+                    os.chmod(restored, archive.getmember(name).mode)
+                    base.atomic(restored, base.LIVE / name)
+                else:
+                    (base.LIVE / name).unlink(missing_ok=True)
+        gate.confirm()
+        critical_command_inflight = True
+        gate.run(['docker', 'tag', base.OLD['preparedImage'], 'royal-game:latest'])
+        base.compose(gate)
+        critical_command_inflight = False
+        gate.release()
+    except BaseException as error:
+        if critical_command_inflight or bool(getattr(error, 'daemon_outcome_unknown', False)):
+            base.write('recovery-required.json', {'sourceCommit': base.M['sourceCommit'],
+                'reason': 'Inspect daemon outcome before another container replacement',
+                'automaticSecondComposeRefused': True, 'databaseRestored': False})
+        raise
+    finally:
+        gate.close()
+    base.healthy()
+    base.atomic(base.BACKUP / 'index.html', base.LIVE / 'dist/index.html')
+    after = base.snapshot()
+    base.settings(after)
+    require(base.sources(after) == base.BASE and after['preparedImage'] == base.OLD['preparedImage']
+            and after['preparedProgram'] == base.OLD['preparedProgram'], 'Recovered source or prepared image differs')
+    require(after['program'] == base.OLD['program'], 'Recovered running files differ')
+    result = {'restored': True, 'containerRestarted': True, 'databaseTouched': False, 'externalModulesPreserved': True}
+    base.write('recovered.json', result)
+    return result
 
 
 def main():

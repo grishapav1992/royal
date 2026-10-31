@@ -6,10 +6,10 @@ const base=require('../cat-purr-hall-only-20261030-v1/quiesce.cjs');
 const helper=require('./quiesce.cjs');
 
 class Client extends EventEmitter{
-  constructor({combat=0,pvp=0,skin=0,studio=0,flight=0,crash=0,native=0,ready=true,busy=false,fence=true}={}){
+  constructor({combat=0,pvp=0,skin=0,studio=0,flight=0,crash=0,native=0,ready=true,busy=false,fence=true,adopted=0,legacy=0}={}){
     super();this.states={combat_matches:combat,virtual_pvp_holds:pvp,skin_purchases:skin,skin_jobs:studio,
       demo_casino_sessions:native,demo_mines_sessions:native,demo_flight_sessions:flight};this.crash=crash;
-    this.ready=ready;this.busy=busy;this.fence=fence;this.seen=[];
+    this.ready=ready;this.busy=busy;this.fence=fence;this.seen=[];this.adopted=adopted;this.legacy=legacy;
   }
   async connect(){}
   async end(){this.closed=true;}
@@ -23,6 +23,8 @@ class Client extends EventEmitter{
       return{rows:[{active:String(active)}]};
     }
     if(text===helper.DDL_SQL)return{rows:[{ready:this.ready}]};
+    if(text===helper.DOWNGRADE_SQL)return{rows:[{adopted:String(this.adopted)}]};
+    if(text===helper.ROLLOUT_SQL)return{rows:[{legacy:String(this.legacy)}]};
     if(text===helper.FENCE_SQL&&this.busy){this.busy=false;throw Object.assign(Error('busy'),{code:'55P03'});}
     if(text===helper.FENCE_IDENTITY_SQL)return{rows:[{held:this.fence}]};
     if(text===base.SQL.identity)return{rows:[{backend_pid:12,transaction_id:'42',financial_lock_held:true}]};
@@ -75,4 +77,14 @@ test('missing additive schema privileges abort before the quiet signal',async()=
 test('missing table locks invalidate the otherwise valid financial lease identity',async()=>{
   const r=await run({fence:false});assert.equal(r.result,1);assert(!r.events.some(e=>e.event==='quiet'));
   assert(!r.client.seen.includes('COMMIT'));assert(r.client.seen.includes('ROLLBACK'));
+});
+test('legacy rollback is refused after v2 adoption while normal publication can proceed',async()=>{
+  globalThis.ROYAL_REWARDS_DOWNGRADE=true;
+  try{const blocked=await run({adopted:1});assert.equal(blocked.result,1);assert(!blocked.events.some(e=>e.event==='quiet'));
+    const empty=await run({adopted:0});assert.equal(empty.result,0);assert(empty.events.some(e=>e.event==='quiet'));
+  }finally{delete globalThis.ROYAL_REWARDS_DOWNGRADE;}
+  assert.equal((await run({adopted:1})).result,0);
+});
+test('a player pinned during preparation blocks rollout instead of silently retaining the old reward track',async()=>{
+  const r=await run({legacy:1});assert.equal(r.result,1);assert(!r.events.some(e=>e.event==='quiet'));
 });

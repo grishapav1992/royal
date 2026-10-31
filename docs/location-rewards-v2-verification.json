@@ -1,0 +1,61 @@
+{
+  "feature": "location-rewards-v2",
+  "state": "verified-publication-pending",
+  "release": "location-rewards-20261031-v2",
+  "featureSourceCommit": "5120fa89698356a3deb9ee5788f45cd570a18154",
+  "productionBaseline": "38ce8d04adbc70cf2a7e80cf017663463dd68b2a",
+  "checks": {
+    "serverAndAtelier": 77,
+    "walletPvpAuthAndAppearanceCompatibility": 23,
+    "browserDevelopment": 4,
+    "browserBuilt": 4,
+    "nativeRestart": 14,
+    "unchangedNativeSources": 128,
+    "unchangedBackendInputs": 228,
+    "installerPython": 19,
+    "preparationProtocolAndPublicVerifier": 22,
+    "postgresFence": 1,
+    "typecheck": true,
+    "rtpProfiles": 25,
+    "legacyUnqualifiedUnchanged": 114,
+    "applicationBuild": true
+  },
+  "testedBuild": {
+    "sourceCommit": "0a924bf4529f5034c3567b9fade5cb8e916f8299",
+    "files": {
+      "dist/assets/index-DSWJtOAy.css": "3aed8b12dfce27f47cd6644ee7191e2dc2b6efefb2fb8456834a9dbe66d78951",
+      "dist/assets/index-qjUnRy22.js": "141333fc50260cdcd9ac29b0b0972cc78440147ed53e1119b9017e50a1136d69",
+      "dist/index.html": "5afe2db5b97fb62a9d2837b23ee80e096b145a0e82301b399f5e0a91220212ed",
+      "dist-server/index.js": "a58fe8666efff1be0819fd3a9407580ec81ea51c7e3c0018700ba830153113ea"
+    },
+    "browserTests": 4,
+    "nativeTests": 14,
+    "passed": true
+  },
+  "mathematics": {
+    "policy": "location-levels-v2",
+    "totalSpins": 260,
+    "totalNominalUnits": "4832500000",
+    "expectedFullRedemptionSpinPayoutUnits": "4671800000",
+    "skinGenerations": 20,
+    "variantsPerGeneration": 2,
+    "maxCumulativeSpinCostBasisPoints": 400,
+    "skinRetailValueUnits": "200000000",
+    "skinProviderCostUnits": null,
+    "profitabilityClaim": false
+  },
+  "compatibility": {
+    "legacyPolicyImmutable": true,
+    "issuedRightsRetained": true,
+    "initialProductionProgressionPlayers": 0,
+    "rolloutRechecksNoLegacyPinnedPlayersUnderFence": true,
+    "legacyRollbackBlockedAfterV2Adoption": true,
+    "rollbackGuardBeforeSourceRestore": true
+  },
+  "nativeReportSha256": "f41046fbd4cc8204072ce6521b8dba55adf78cb286bb2f51efef18af5b0859db",
+  "limitations": [
+    "Authenticated browser checks use a disposable local database and a fixture image provider.",
+    "Physical mobile devices were not tested.",
+    "Existing shared VIRTUAL_USD wallet remains in use."
+  ]
+}

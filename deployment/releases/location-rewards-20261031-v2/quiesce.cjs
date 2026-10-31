@@ -20,6 +20,8 @@ const FENCE_SQL='LOCK TABLE '+TABLES.map(n=>'royal_game.'+n).join(',')+' IN SHAR
 const FENCE_IDENTITY_SQL=`SELECT count(DISTINCT relation)=${TABLES.length} AS held FROM pg_locks
   WHERE pid=pg_backend_pid() AND locktype='relation' AND mode='ShareLock' AND granted
   AND relation IN (${TABLES.map(n=>"'royal_game."+n+"'::regclass").join(',')})`;
+const DOWNGRADE_SQL="SELECT count(*)::text AS adopted FROM royal_game.progression_players WHERE policy_version='location-levels-v2'";
+const ROLLOUT_SQL="SELECT count(*)::text AS legacy FROM royal_game.progression_players WHERE scope='VIRTUAL_USD:south-park' AND policy_version<>'location-levels-v2'";
 
 function decorateClient(client,base){
   const query=client.query.bind(client);
@@ -40,6 +42,13 @@ function decorateClient(client,base){
           if(error?.code==='55P03')return{rows:[{active:'1'}]};
           throw error;
         }
+        if(globalThis.ROYAL_REWARDS_DOWNGRADE){
+          const adoption=await query(DOWNGRADE_SQL);
+          if(adoption.rows?.length!==1||String(adoption.rows[0].adopted)!=='0')throw Error('Adopted v2 rewards require a compatible forward release');
+        }else{
+          const legacy=await query(ROLLOUT_SQL);
+          if(legacy.rows?.length!==1||String(legacy.rows[0].legacy)!=='0')throw Error('Existing pinned players require an explicit policy transition before v2 rollout');
+        }
         return query(replacement(value,ACTIVE_SQL),...args);
       }
       const result=await query(value,...args);
@@ -54,7 +63,7 @@ function decorateClient(client,base){
   }});
 }
 
-module.exports={decorateClient,TABLES,ACTIVE_SQL,DDL_SQL,FENCE_SQL,FENCE_IDENTITY_SQL};
+module.exports={decorateClient,TABLES,ACTIVE_SQL,DDL_SQL,FENCE_SQL,FENCE_IDENTITY_SQL,DOWNGRADE_SQL,ROLLOUT_SQL};
 if(!module.parent){
   (async()=>{
     try{

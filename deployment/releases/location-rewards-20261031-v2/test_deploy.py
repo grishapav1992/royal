@@ -28,7 +28,7 @@ def load(path, name):
 class LocationInstallerTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(); self.addCleanup(self.temp.cleanup)
-        self.root = Path(self.temp.name)
+        self.root = Path(self.temp.name).resolve()
         self.scope = json.loads((HERE / 'scope.json').read_text())
         native_module = load(HERE / 'deploy.py', 'location_native_contract')
         for name in ['deploy.py', 'snapshot.py', 'scope.json', 'quiesce.cjs']: shutil.copy2(HERE / name, self.root / name)
@@ -270,6 +270,60 @@ class LocationInstallerTests(unittest.TestCase):
         with tarfile.open(base.BACKUP / 'source.tgz') as archive:
             self.assertEqual(set(m.name for m in archive.getmembers()), set(base.CHANGES) & set(base.OLD['source']))
             self.assertNotIn('server/demoWallet.ts', archive.getnames())
+
+    def test_rollback_adoption_guard_runs_before_source_restore(self):
+        base = self.base
+        base.payload = lambda: None
+        expected = {'dist/index.html': digest(b'candidate')}
+        (self.root / 'build-result.json').write_text(json.dumps({'program': expected}))
+        base.expected_program = lambda: expected
+        base.snapshot = lambda recovery=False: {'container': None}
+        base.recovery_guard = lambda current, built: None
+        base.backup_guard = lambda built: None
+        with patch.object(self.module, 'quiet_gate', side_effect=RuntimeError('adopted v2 rights')), patch.object(base, 'atomic') as atomic:
+            with self.assertRaisesRegex(RuntimeError, 'adopted v2 rights'):
+                base.rollback()
+            atomic.assert_not_called()
+        self.assertFalse(base.reward_downgrade)
+        self.assertIn('ROYAL_REWARDS_DOWNGRADE=false', self.module.gate_program(base))
+        base.reward_downgrade = True
+        self.assertIn('ROYAL_REWARDS_DOWNGRADE=true', self.module.gate_program(base))
+
+    def test_empty_adoption_rollback_restores_only_reviewed_source_and_index_under_the_fence(self):
+        base = self.base; events = []
+        base.LIVE = self.root / 'live'; base.BACKUP = self.root / 'backup'
+        (base.LIVE / 'server/progression').mkdir(parents=True); (base.LIVE / 'dist').mkdir(); base.BACKUP.mkdir()
+        account = base.LIVE / 'server/accounts.ts'; account.write_bytes(b'new account source')
+        added = base.LIVE / 'server/progression/skinGenerations.ts'; added.write_bytes(b'new service')
+        (base.LIVE / '.env').write_bytes(b'fixture configuration')
+        old = self.root / 'old-account'; old.write_bytes(b'old account source')
+        with tarfile.open(base.BACKUP / 'source.tgz', 'w:gz') as archive:
+            archive.add(old, arcname='server/accounts.ts')
+        (base.BACKUP / 'index.html').write_bytes(b'old index')
+        base.BASE = {'server/accounts.ts': digest(b'old account source')}
+        base.CHANGES = {'server/accounts.ts': digest(b'new account source'), 'server/progression/skinGenerations.ts': digest(b'new service')}
+        expected = {'dist/index.html': digest(b'candidate')}
+        base.OLD = {'preparedImage': 'old-image', 'program': {'dist/index.html': digest(b'old index')}}
+        base.OLD['preparedProgram'] = dict(base.OLD['program'])
+        (self.root / 'build-result.json').write_text(json.dumps({'program': expected}))
+        base.expected_program = lambda: expected; base.payload = lambda: None
+        base.snapshot = lambda recovery=False: {'container': None} if recovery else {'source': base.BASE, **base.OLD}
+        base.recovery_guard = lambda current, built: None; base.backup_guard = lambda built: None
+        base.settings = lambda state: None; base.healthy = lambda: None
+        base.compose = lambda gate: events.append('compose'); base.write = lambda name, value: events.append(name)
+        class Gate:
+            def confirm(self): events.append('confirm')
+            def run(self, command): events.append(command)
+            def release(self): events.append('release')
+            def close(self): events.append('close')
+        with patch.object(self.module, 'quiet_gate', return_value=Gate()):
+            result = base.rollback()
+        self.assertTrue(result['restored']); self.assertFalse(result['databaseTouched'])
+        self.assertEqual(account.read_bytes(), b'old account source'); self.assertFalse(added.exists())
+        self.assertEqual((base.LIVE / 'dist/index.html').read_bytes(), b'old index')
+        self.assertEqual((base.LIVE / '.env').read_bytes(), b'fixture configuration')
+        self.assertLess(events.index('confirm'), events.index('compose'))
+        self.assertLess(events.index('release'), events.index('close'))
 
 
 class ServiceProfileTests(unittest.TestCase):

@@ -22,6 +22,14 @@ test('persisted native sessions remain while the PostgreSQL fence blocks an actu
     await admin.query('CREATE SCHEMA royal_game');
     for(const name of helper.TABLES)await admin.query('CREATE TABLE royal_game.'+name+'('+ (name==='demo_casino_sessions'?'state TEXT,game_id TEXT':stateTables.has(name)?'state TEXT':'id TEXT')+')');
     await admin.query('CREATE TABLE royal_game.progression_settings(id TEXT)');
+    await admin.query('CREATE TABLE royal_game.progression_players(scope TEXT,policy_version TEXT)');
+    await admin.query("INSERT INTO royal_game.progression_players VALUES('VIRTUAL_USD:south-park','location-levels-v2')");
+    assert.equal((await admin.query(helper.DOWNGRADE_SQL)).rows[0].adopted,'1');
+    assert.equal((await admin.query(helper.ROLLOUT_SQL)).rows[0].legacy,'0');
+    await admin.query("UPDATE royal_game.progression_players SET policy_version='location-levels-v1'");
+    assert.equal((await admin.query(helper.ROLLOUT_SQL)).rows[0].legacy,'1');
+    await admin.query('DELETE FROM royal_game.progression_players');
+    assert.equal((await admin.query(helper.DOWNGRADE_SQL)).rows[0].adopted,'0');
     await admin.query("INSERT INTO royal_game.demo_casino_sessions VALUES('active','github-tower')");
     await admin.query("INSERT INTO royal_game.demo_mines_sessions VALUES('active')");
     assert.equal(Number((await admin.query(helper.ACTIVE_SQL)).rows[0].active),0);
