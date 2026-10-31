@@ -1,0 +1,70 @@
+{
+  "release": "universal-spins-20261031-v1",
+  "base": "591461b5350f5c164e69fe14476c5b912b3bd2da",
+  "requiredProtectedPrograms": {
+    "royal-nile-play": [
+      "play.js",
+      "proof.js"
+    ]
+  },
+  "allowedSource": [
+    "server/progression/store.ts",
+    "server/progression/freeSpins.ts",
+    "server/progression/handlers.ts",
+    "server/progressionRoutes.ts",
+    "src/shared/progression.ts",
+    "src/shared/rewardSpinCatalog.ts",
+    "src/shared/rewardFruitsPresentation.ts",
+    "src/wallet/ProgressionClient.ts",
+    "src/ui/ProgressionUI.ts",
+    "src/i18n/progressionEn.ts",
+    "src/ui/RewardSpinControls.ts",
+    "src/ui/reward-spin-controls.css",
+    "src/ui/RoyalCoins.ts",
+    "src/ui/FruitsSlotUI.ts",
+    "src/modules/GameHostContract.ts",
+    "src/modules/GameHostRuntime.ts",
+    "src/shared/arcadeCatalog.ts",
+    "src/shared/cabinets.ts",
+    "src/ui/RoyalPlatformCatalog.ts",
+    "scripts/build-game-module.mjs",
+    "scripts/game-math/rtp-policy.json",
+    "scripts/game-math/rtp-reward-slots.mjs",
+    "docs/game-math/qualifications/royal-coins-rewards-v1.json",
+    "docs/game-math/qualifications/royal-fruits-rewards-v1.json",
+    "docs/universal-free-spins.md"
+  ],
+  "requiredSource": [
+    "server/progression/store.ts",
+    "server/progression/freeSpins.ts",
+    "server/progression/handlers.ts",
+    "server/progressionRoutes.ts",
+    "src/shared/progression.ts",
+    "src/shared/rewardSpinCatalog.ts",
+    "src/shared/rewardFruitsPresentation.ts",
+    "src/wallet/ProgressionClient.ts",
+    "src/ui/ProgressionUI.ts",
+    "src/i18n/progressionEn.ts",
+    "src/ui/RewardSpinControls.ts",
+    "src/ui/reward-spin-controls.css",
+    "src/ui/RoyalCoins.ts",
+    "src/ui/FruitsSlotUI.ts",
+    "src/modules/GameHostContract.ts",
+    "src/modules/GameHostRuntime.ts",
+    "src/shared/arcadeCatalog.ts",
+    "src/shared/cabinets.ts",
+    "src/ui/RoyalPlatformCatalog.ts",
+    "scripts/build-game-module.mjs",
+    "scripts/game-math/rtp-policy.json",
+    "scripts/game-math/rtp-reward-slots.mjs",
+    "docs/game-math/qualifications/royal-coins-rewards-v1.json",
+    "docs/game-math/qualifications/royal-fruits-rewards-v1.json",
+    "docs/universal-free-spins.md"
+  ],
+  "references": {
+    "overlay-base.py": "deployment/releases/cat-purr-hall-only-20261030-v1/deploy.py",
+    "financial_gate.py": "deployment/releases/cat-purr-hall-only-20261030-v1/financial_gate.py",
+    "quiesce-base.cjs": "deployment/releases/cat-purr-hall-only-20261030-v1/quiesce.cjs",
+    "runtime-inventory.cjs": "deployment/releases/cat-purr-hall-only-20261030-v1/runtime-inventory.cjs"
+  }
+}
