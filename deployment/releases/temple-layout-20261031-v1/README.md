@@ -1,0 +1,7 @@
+# Temple layout 0.9.7 publication
+
+Publish only the compatible Flooded Temple client and its four source paths. Prepare a modules-only release from a clean commit included in main, using the verified current host source as base. The active 18-game catalogue and all launch and new-round handlers must remain unchanged.
+
+The wrapper follows the reviewed roulette publisher. It uses all three shared publication locks, the current catalogue release's full snapshot, exact OCI image identities and the standard game-module-release.py installer. The new cascadeLayoutStyles.ts source must be absent before installation. Back up the three replaced source files, active pointer and host contract, preserve the previous immutable package, and tag the exact running image. Retained module inputs must match production. No database, migration, service restart or contract update is permitted.
+
+Run test_publish.py, review the locked snapshot and operator hashes, then verify the prepared release with GitHub before installation. Confirm all public package files, unchanged other pointers and catalogue, wallet authorization and desktop/mobile rendering. Preserve old immutable URLs for already open games. Record source, package and checks in SERVER.md and push the record. Run and verify the required retention service after publication, preserving its rollback evidence. Remove temporary payloads and the extra checkout after their unique source is confirmed in GitHub.
