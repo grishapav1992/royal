@@ -1,4 +1,4 @@
-# Forest Heart client 1.7
+# Forest Heart client 1.9 (local experiment)
 
 ## Local character video experiment 1.9
 

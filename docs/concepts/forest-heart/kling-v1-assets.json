@@ -38,5 +38,21 @@
       "sha256": "35b011aa8b5776c0bdfdf5a0fe961997948e31cc96ecffce9645bc78efbec923",
       "prompt": "Animate only the adult elven forest guardian in this reference image. Preserve her exact face, silver hair, pointed ears, emerald and purple costume, gold jewelry and emerald crystal. Locked camera, identical framing and body scale throughout. She gives a restrained graceful nod toward the game board on the left of the image and gently lifts the hand holding the emerald crystal, channeling a soft mint glow contained near her hand. No large arm swing. Hair and sleeve follow subtly. She calmly returns to the exact starting pose by the end of five seconds. Keep the entire background perfectly flat pure blue RGB 0 0 255 with no gradients, scenery, shadows, light spill or particles on the background. High quality fantasy game character animation. Silent."
     }
-  ]
+  ],
+  "usageCheck": {
+    "tokenUsedQuota": 1392000,
+    "quotaUnitsPerUsd": 500000,
+    "tokenUsedUsd": 2.784,
+    "scope": "Token usage counter after all four Kling clips and the rejected Seedance submission; not the account balance"
+  },
+  "seedanceTrial": {
+    "model": "doubao-seedance-2.0-fast",
+    "seconds": 4,
+    "resolution": "480p",
+    "referenceUnmodified": true,
+    "httpStatus": 400,
+    "errorCode": "upstream_unavailable",
+    "taskCreated": false,
+    "automaticRetries": 0
+  }
 }
