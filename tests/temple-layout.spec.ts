@@ -54,6 +54,8 @@ for(const language of ['ru','en'])test(`field and controls use the available hos
   await expect(game(page).locator('dialog')).toBeVisible();
   await game(page).locator('[data-ft=close]').click();
   await expect(game(page).locator('[data-ft=rules]')).toBeFocused();
+  await game(page).locator('[data-cell="0"]').focus();await page.keyboard.press('ArrowRight');
+  await expect(game(page).locator('[data-cell="3"]')).toBeFocused();
 });
 
 test('real Royal host retains connected chat, compact controls and the same round on reopen',async({page})=>{
