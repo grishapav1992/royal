@@ -243,7 +243,7 @@ def runtime_fingerprint(raw):
     return value_hash(strong)
 
 
-def container_rows():
+def container_inspections():
     rows = None
     for attempt in range(3):
         snapshot = [line.split() for line in run(['docker', 'ps', '-a', '--no-trunc', '--format', '{{.ID}} {{.Names}}']).splitlines()]
@@ -262,6 +262,11 @@ def container_rows():
     require(rows is not None, 'Docker inventory unavailable')
     require(isinstance(rows, list) and len(rows) == len(identities) and {x.get('Id') for x in rows} == set(identities)
             and all(x.get('Name') == identities.get(x.get('Id')) for x in rows), 'Inspected Docker container identity mismatch')
+    return rows
+
+
+def container_rows():
+    rows = container_inspections()
     return [{'id': x['Id'], 'name': x['Name'], 'image': x['Image'],
              'started': x['State']['StartedAt'], 'status': x['State']['Status'],
              'health': x['State'].get('Health', {}).get('Status'),

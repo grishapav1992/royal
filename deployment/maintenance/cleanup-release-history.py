@@ -142,9 +142,8 @@ def service_identity(container):
 
 
 def persistent_services():
-    ids = run(['docker', 'ps', '-q']).split()
-    data = json.loads(run(['docker', 'inspect', *ids]))
-    return {c['Name']: service_identity(c) for c in data if c['Name'] not in PERIODIC
+    data = native_retention().container_inspections()
+    return {c['Name']: service_identity(c) for c in data if c['Name'] not in PERIODIC and c['State']['Status'] == 'running'
             and (c['HostConfig'].get('RestartPolicy', {}).get('Name', 'no') not in ['', 'no']
                  or ((c['Config'].get('Labels') or {}).get('com.docker.compose.project')
                      and (c['Config'].get('Labels') or {}).get('com.docker.compose.oneoff', '').lower() != 'true'))}
