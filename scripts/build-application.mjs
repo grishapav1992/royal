@@ -1,10 +1,10 @@
 import { spawn } from 'node:child_process';
-import { mkdir, writeFile, rename } from 'node:fs/promises';
+import { mkdir, writeFile, rename, readFile } from 'node:fs/promises';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { randomUUID } from 'node:crypto';
 import { build } from 'esbuild';
-import { buildProjectedHost, buildProjectedBackend } from './build-host-projection.mjs';
+import { readHostProjection, buildProjectedHost, buildProjectedBackend } from './build-host-projection.mjs';
 
 export const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 export async function saveJson(path, value) {
@@ -45,6 +45,10 @@ export async function buildApplication({ root = projectRoot, modules = null, hos
     await step('rtp', node(['scripts/check-game-rtp.mjs']));
     await step('typecheck', node(['node_modules/typescript/bin/tsc', '--noEmit']));
     await step('modules', node(['scripts/build-game-module.mjs', ...(modules ? ['--games', ...modules] : ['--all'])]));
+    if(hostProjection){const reader=await readHostProjection(root,hostProjection,{strictOrigins:true});const games=reader.metadata.moduleGames;
+      if(games){if(!Array.isArray(games)||!games.length||!games.every(n=>/^[a-z0-9-]+$/.test(n)))throw Error('Invalid projected module selection');
+        await step('projected-modules',node(['scripts/build-game-module.mjs','--games',...games,'--source-projection',hostProjection]));
+        report.moduleProjection=JSON.parse(await readFile(resolve(root,'module-build/source-projection-report.json'),'utf8'));}}
     if (!modules) {
       await step('host', hostProjection ? async () => { report.hostProjection = await buildProjectedHost(root, hostProjection); }
         : node(['node_modules/vite/bin/vite.js', 'build']));

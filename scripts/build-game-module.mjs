@@ -6,6 +6,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import { setTimeout as delay } from 'node:timers/promises';
 import { checkGameRtp } from './game-math/rtp-gate.mjs';
 import { moduleFingerprinter, cachedModule } from './module-build-cache.mjs';
+import { readHostProjection } from './build-host-projection.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const sha = value => createHash('sha256').update(value).digest('hex');
@@ -16,6 +17,12 @@ const { GAME_MODULES } = await import('data:text/javascript;base64,' + Buffer.fr
 const catalog = new Map(GAME_MODULES.map(game => [game.slug, game]));
 const started = performance.now();
 const args = process.argv.slice(2);
+const projectionFlag=args.indexOf('--source-projection');
+let projection;
+if(projectionFlag>=0){const name=args[projectionFlag+1];if(!name)throw Error('Missing module source projection');args.splice(projectionFlag,2);projection=await readHostProjection(root,name,{strictOrigins:true});}
+const projectedAssets={};
+async function sourceBytes(path){return projection?projection.read(relative(root,resolve(path)).replaceAll('\\','/')):readFile(path);}
+async function mediaBytes(path){const bytes=await readFile(path);if(projection){const name=relative(root,path).replaceAll('\\','/');if(sha(bytes)!==projection.metadata.moduleAssets?.[name])throw Error('Unreviewed projected module media: '+name);projectedAssets[name]=sha(bytes);}return bytes;}
 const force = args.includes('--force');
 if (force) args.splice(args.indexOf('--force'), 1);
 const all = args.length === 1 && args[0] === '--all';
@@ -25,6 +32,14 @@ else if (args[0] === '--game' && args.length === 2) selection = args[1];
 else if (args.length === 1 && !args[0].startsWith('-')) selection = args[0];
 else if (!args.length) selection = dirname(process.cwd()) === resolve(root, 'games') ? basename(process.cwd()) : 'girlhub';
 const selected = all ? [...catalog.keys()] : Array.isArray(selection) ? selection : [selection];
+if(projection&&JSON.stringify([...selected].sort())!==JSON.stringify([...(projection.metadata.moduleGames??[])].sort()))throw Error('Projection must build exactly its reviewed module list');
+if(projection){
+ const code=await build({stdin:{contents:projection.read('src/modules/GameModuleCatalog.ts').toString('utf8'),loader:'ts'},bundle:true,write:false,metafile:true,format:'esm',platform:'node',logLevel:'silent'});
+ if(Object.keys(code.metafile.inputs).some(n=>n!=='<stdin>'))throw Error('Projected module catalogue imports unreviewed code');
+ const projected=await import('data:text/javascript;base64,'+Buffer.from(code.outputFiles[0].contents).toString('base64'));
+ for(const slug of selected){const wanted=catalog.get(slug),actual=projected.GAME_MODULES.find(g=>g.slug===slug);
+  if(!actual||!['gameId','apiVersion','rulesVersion','progressVersion'].every(k=>actual[k]===wanted[k]))throw Error('Projected module host contract differs: '+slug);}
+}
 if (selected.some(slug => !catalog.has(slug))) throw Error('Choose registered packages with --game <slug>, --games <slug...>, or --all');
 await checkGameRtp(root, GAME_MODULES, selected.map(slug => catalog.get(slug).gameId));
 const fingerprint = moduleFingerprinter(root, { esbuildVersion, node: process.version, platform: process.platform });
@@ -62,7 +77,7 @@ async function walk(directory, prefix = '') {
   else if (item.isFile() && allowedResources.test(name)) {
    // Unpackageable sync copies must not enter the inventory or block local builds.
    if (!/^[a-zA-Z0-9_./-]+$/.test(name)) continue;
-   files.push([name, await readFile(path)]);
+   files.push([name, await mediaBytes(path)]);
   }
  }
  return files;
@@ -103,7 +118,7 @@ async function referencedMedia(outputs, sentinel, assetRoots, assetFiles) {
     if ((await lstat(parent)).isSymbolicLink()) throw Error('Module resource symlinks are not allowed');
     parent = dirname(parent);
    }
-   collected.set(name, await readFile(path));
+   collected.set(name, await mediaBytes(path));
   } else {
    if (!info && allowedResources.test(name)) throw Error('Referenced module media is missing: ' + name);
    // A template or concatenation ends at its static prefix. Keep its directory's
@@ -123,12 +138,12 @@ async function buildGame(slug) {
  const gameStarted = performance.now();
  const registered = catalog.get(slug);
  const packageRoot = resolve(root, 'games', slug);
- const config = JSON.parse(await readFile(resolve(packageRoot, 'package.json'), 'utf8'));
+ const config = JSON.parse(await sourceBytes(resolve(packageRoot, 'package.json')));
  if (!/^\d+\.\d+\.\d+$/.test(config.version) || !['gameId', 'apiVersion', 'rulesVersion', 'progressVersion'].every(key => config[key] === registered[key])) throw Error('Unsupported module contract: ' + slug);
  if (config.entry !== 'entry.ts' || !Array.isArray(config.assetRoots) || new Set(config.assetRoots).size !== config.assetRoots.length || !config.assetRoots.every(name => typeof name === 'string' && /^[a-z0-9-]+$/.test(name))) throw Error('Invalid module entry or asset roots: ' + slug);
  const assetFiles = config.assetFiles ?? [];
  if (!Array.isArray(assetFiles) || new Set(assetFiles).size !== assetFiles.length || !assetFiles.every(name => typeof name === 'string' && /^[a-zA-Z0-9_./-]+$/.test(name) && !name.split('/').some(part => part === '..' || part === '.') && allowedResources.test(name))) throw Error('Invalid module asset files: ' + slug);
- const cached = force ? null : await cachedModule(root, config, registered, fingerprint);
+ const cached = force || projection ? null : await cachedModule(root, config, registered, fingerprint);
  if (cached) {
   await atomicFile(resolve(root, 'module-dist', config.gameId, 'active.json'), JSON.stringify(cached.pointer, null, 2) + '\n');
   const result = { gameId: config.gameId, version: cached.proof.version, directory: cached.folder,
@@ -140,11 +155,14 @@ async function buildGame(slug) {
   absWorkingDir: root, entryPoints: [resolve(packageRoot, config.entry)],
   bundle: true, write: false, metafile: true, outfile: 'module.js',
   format: 'esm', platform: 'browser', target: 'es2022', minify: true, legalComments: 'none',
+  ...(projection ? {tsconfigRaw:projection.read('tsconfig.json').toString('utf8')} : {}),
   plugins: [{ name: 'royal-host-and-module-media', setup(builder) {
    builder.onResolve({ filter: /^phaser$/ }, () => ({ path: 'phaser', namespace: 'royal-host' }));
    builder.onResolve({ filter: /^\./ }, args => {
     const path = relative(root, resolve(args.resolveDir, args.path)).replaceAll('\\', '/').replace(/\.ts$/, '');
     if (bridgeModules.has(path)) return { path, namespace: 'royal-host' };
+    if(projection){const name=relative(root,resolve(args.resolveDir,args.path)).replaceAll('\\','/');const candidates=[name,...['.ts','.tsx','.js','.css','.json'].map(ext=>name+ext),name+'/index.ts'];
+      const match=candidates.find(n=>Object.hasOwn(projection.metadata.files,n));if(!match)throw Error('Unreviewed projected module import: '+name);return{path:resolve(root,match)};}
    });
    builder.onLoad({ filter: /.*/, namespace: 'royal-host' }, args => {
     if (args.path === 'phaser') return { contents: "const h=globalThis[Symbol.for('royal.game-host.v1')];if(!h||h.apiVersion!==1||!h.Phaser)throw Error('Game host is unavailable');export default h.Phaser;", loader: 'js' };
@@ -152,11 +170,11 @@ async function buildGame(slug) {
     const field = name => args.path === 'src/i18n/index' ? 'i18n.' + name : args.path === 'src/ui/gameReactions' ? 'reactions.' + name : args.path === 'src/game/demoGames' ? 'demoGames.' + name : name === 'coins' ? 'walletCoins' : name;
     return { contents: `const h=globalThis[Symbol.for('royal.game-host.v1')];if(!h||h.apiVersion!==1)throw Error('Game host is unavailable');\n` + names.map(name => `export const ${name}=h.${field(name)};`).join('\n'), loader: 'js' };
    });
-   builder.onLoad({ filter: /\.(?:ts|css)$/ }, async args => {
-    let contents = await readFile(args.path, 'utf8');
+   builder.onLoad({ filter: /\.(?:ts|tsx|js|json|css)$/ }, async args => {
+    let contents = (await sourceBytes(args.path)).toString('utf8');
     for (const assetRoot of config.assetRoots) contents = contents.replaceAll('/assets/' + assetRoot + '/', sentinel + '/' + assetRoot + '/');
     for (const assetFile of assetFiles) contents = contents.replaceAll('/assets/' + assetFile, sentinel + '/' + assetFile);
-    return { contents, loader: args.path.endsWith('.css') ? 'css' : 'ts', resolveDir: dirname(args.path) };
+    return { contents, loader: args.path.endsWith('.css') ? 'css' : args.path.endsWith('.json') ? 'json' : args.path.endsWith('.tsx') ? 'tsx' : args.path.endsWith('.js') ? 'js' : 'ts', resolveDir: dirname(args.path) };
    });
    // Absolute versioned media URLs are served by the game host, never bundled as JS imports.
    builder.onResolve({ filter: /^__ROYAL_MODULE_MEDIA_/ }, args => ({ path: args.path, external: true }));
@@ -167,7 +185,7 @@ async function buildGame(slug) {
  if (inputs.some(name => backendImplementation(name) || bridgeModules.has(name.replace(/\.ts$/, '')) || /^src\/modules\/(?:GameHostRuntime|IndependentGameUI)\.ts$/.test(name)) || ownNative.length > 1) throw Error('Module imported a forbidden host or unrelated native game implementation: ' + slug);
  const remainingAssets = result.outputFiles.flatMap(output => [...output.text.matchAll(/\/assets\/([a-zA-Z0-9_./-]+)/g)].map(match => match[1]));
  if (remainingAssets.length) throw Error('Module references media outside its declared asset roots: ' + slug + ': ' + [...new Set(remainingAssets)].join(', '));
- const sourceFiles = Object.fromEntries(await Promise.all(inputs.map(async name => [name, sha(await readFile(resolve(root, name)))])));
+ const sourceFiles = Object.fromEntries(await Promise.all(inputs.map(async name => [name, sha(await sourceBytes(resolve(root, name)))])));
  const { media, references: mediaReferences, dynamicDirectories } = await referencedMedia(result.outputFiles, sentinel, config.assetRoots, assetFiles);
  const mediaHashes = Object.fromEntries(media.map(([name, bytes]) => ['media/' + name, sha(bytes)]));
  const preload = config.preload;
@@ -230,7 +248,8 @@ async function buildGame(slug) {
   assetRoots: config.assetRoots, assetFiles, mediaReferences, dynamicMediaDirectories: dynamicDirectories,
   startupImages: manifest.preload ?? [],
   bytes: totalBytes, files: Object.keys(files).length,
-  cache: { format: 1, fingerprint: await fingerprint(config, registered, inputs),
+  ...(projection?{sourceProjection:{config:projection.config,sha256:projection.sha256,productionCommit:projection.metadata.productionCommit,inputs:{...projection.inputs},origins:{...projection.origins},assets:{...projectedAssets}}}:{}),
+  cache: { format: projection ? 0 : 1, fingerprint: await fingerprint(config, registered, inputs),
    outputs: Object.fromEntries([...outputs].map(([name, bytes]) => [name, sha(bytes)])) } }, null, 2) + '\n');
  const resultRow = { gameId: config.gameId, version, directory: destination, files: Object.keys(files).length,
   reused: false, durationMs: Math.round(performance.now() - gameStarted) };
@@ -238,6 +257,10 @@ async function buildGame(slug) {
 }
 
 for (const slug of selected) await buildGame(slug);
+if(projection){
+ const modules={};for(const slug of selected){const proof=JSON.parse(await readFile(resolve(root,'module-build',slug+'-proof.json'),'utf8'));const pointer=JSON.parse(await readFile(resolve(root,'module-dist',proof.gameId,'active.json'),'utf8'));const manifestPath=pointer.manifest.replace('/game-modules/','module-dist/');const bytes=await readFile(resolve(root,manifestPath));modules[proof.gameId]={version:proof.version,sourceFiles:proof.sourceFiles,hostBridges:proof.hostBridges,manifestPath,manifestSha256:sha(bytes),files:JSON.parse(bytes).files};}
+ await atomicFile(resolve(root,'module-build/source-projection-report.json'),JSON.stringify({config:projection.config,sha256:projection.sha256,productionCommit:projection.metadata.productionCommit,inputs:projection.inputs,origins:projection.origins,assets:projectedAssets,builderSha256:sha(buildScript),modules},null,2)+'\n');
+}
 await mkdir(resolve(root, 'module-dist'), { recursive: true });
 await atomicFile(resolve(root, 'module-dist/host-contracts.json'), JSON.stringify({ format: 1, games: Object.fromEntries(GAME_MODULES.map(({ gameId, apiVersion, rulesVersion, progressVersion }) => [gameId, { apiVersion, rulesVersion, progressVersion }])) }, null, 2) + '\n');
 const summary = { format: 1, durationMs: Math.round(performance.now() - started),

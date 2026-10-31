@@ -8606,5 +8606,13 @@
       "baseSha256": "5fa2f86495eeb0aa17d44ed62cfde6ade0f6b0fd03892a392e1fe3e7d96a96f4",
       "sha256": "5fa2f86495eeb0aa17d44ed62cfde6ade0f6b0fd03892a392e1fe3e7d96a96f4"
     }
+  },
+  "moduleGames": [
+    "royal-coins",
+    "royal-fruits"
+  ],
+  "moduleAssets": {
+    "public/assets/github-worlds/royal-fruits/background-v1.webp": "a04a36b64c8178ed12bffd8e8144942ea38282d5a7b95c3d935333ea9f035c43",
+    "public/assets/github-worlds/royal-fruits/character-v1.webp": "059d9e17ae40e24b0b9c96d1d288caed815a495a03cc6527c5a1b52dd2e9e4c0"
   }
 }

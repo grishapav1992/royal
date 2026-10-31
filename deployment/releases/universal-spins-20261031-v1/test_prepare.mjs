@@ -44,7 +44,7 @@ async function fixture() {
   for (const [file, bytes] of Object.entries({...retained, ...projectedSources})) {
     const sha256 = digest(bytes); configFiles[file] = {commit: SOURCES.includes(file) ? FEATURE : BASE, path: file, baseSha256: sha256, sha256};
   }
-  const hostConfig = {format: 1, productionCommit: BASE, entries: ['index.html'], changedSources: [...SOURCES], files: configFiles};
+  const hostConfig = {format: 1, productionCommit: BASE, entries: ['index.html'], changedSources: [...SOURCES], moduleGames:['royal-coins','royal-fruits'],moduleAssets:{},files: configFiles};
   const backendConfig = {...hostConfig, entries: ['server/index.ts']};
   const hostConfigBytes = encode(hostConfig), backendConfigBytes = encode(backendConfig);
   const inputs = Object.fromEntries(Object.entries(configFiles).map(([file, row]) => [file, row.sha256]));
@@ -59,6 +59,12 @@ async function fixture() {
     build: {passed: true, hostProjection, backendProjection}, hostProjection, backendProjection,
     files: {...Object.fromEntries(Object.entries(artifacts).map(([name, bytes]) => [name, digest(bytes)])),
       'dist-server/payments.js': digest('unpublished main build, retained in production'), 'module-dist/new-game/active.json': digest('new module not published')}};
+  const moduleProjection={config:hostProjection.config,sha256:hostProjection.sha256,productionCommit:BASE,inputs:{...inputs},origins:structuredClone(configFiles),assets:{},modules:{}};
+  for(const game of ['royal-coins','royal-fruits']){const manifestPath='module-dist/'+game+'/versions/1.0.0-111111111111/manifest.json';const entry='entry-'+digest(game).slice(0,16)+'.js';
+    const files={[entry]:digest(game+' entry')};release.files[manifestPath]=digest(game+' manifest');release.files[manifestPath.replace('manifest.json',entry)]=files[entry];
+    const names=game==='royal-coins'?['src/ui/RewardSpinControls.ts','src/ui/reward-spin-controls.css','src/ui/RoyalCoins.ts']:['src/shared/rewardFruitsPresentation.ts','src/ui/RewardSpinControls.ts','src/ui/reward-spin-controls.css','src/ui/FruitsSlotUI.ts'];
+    moduleProjection.modules[game]={manifestPath,manifestSha256:release.files[manifestPath],sourceFiles:Object.fromEntries(names.map(n=>[n,inputs[n]])),files,hostBridges:['royal-host:src/wallet/ProgressionClient']};}
+  release.build.moduleProjection=moduleProjection;
   const restartEvidenceSources = {[NATIVE_RESTART_TEST]: Buffer.from('synthetic restart test fixture'), [NATIVE_RESTART_HELPER]: Buffer.from('synthetic runtime helper fixture')};
   const restart = {format: 1, productionCommit: BASE, featureCommit: FEATURE,
     backendProjection: Object.fromEntries(['config', 'sha256', 'graphSha256', 'output'].map(key => [key, backendProjection[key]])),

@@ -66,6 +66,9 @@ const RESOLUTION_FIELDS = ['name', 'type', 'main', 'module', 'exports', 'imports
   'dependencies', 'devDependencies', 'optionalDependencies', 'peerDependencies', 'overrides', 'engines'];
 const COMMIT = /^[a-f0-9]{40}$/, HASH = /^[a-f0-9]{64}$/;
 const keys = value => Object.keys(value).sort();
+const MODULE_SOURCES = ['src/shared/rewardFruitsPresentation.ts','src/ui/RewardSpinControls.ts','src/ui/reward-spin-controls.css','src/ui/RoyalCoins.ts','src/ui/FruitsSlotUI.ts'];
+const EVIDENCE_SOURCES = ['scripts/build-game-module.mjs','scripts/game-math/rtp-policy.json','scripts/game-math/rtp-reward-slots.mjs',
+  'docs/game-math/qualifications/royal-coins-rewards-v1.json','docs/game-math/qualifications/royal-fruits-rewards-v1.json','docs/universal-free-spins.md'];
 const json = bytes => JSON.parse(bytes.toString('utf8'));
 const encoded = value => Buffer.from(JSON.stringify(value, null, 2) + '\n');
 
@@ -165,7 +168,26 @@ export function planPublication(input) {
     }
   }
   assert.deepEqual(configs.host.files, configs.backend.files, 'Host and backend source selections differ');
-  assert(SOURCES.every(name => graphInputs.has(name)), 'A required source is not used by either verified graph');
+  const modules = release.build.moduleProjection;
+  assert(modules,'Missing verified independent module projection');
+  assert.equal(modules.config,FOLDER+'/host-projection.json'); assert.equal(modules.sha256,release.hostProjection.sha256);
+  assert.equal(modules.productionCommit,BASE); sameKeys(modules.modules,['royal-coins','royal-fruits'],'Only the reviewed slots may change');
+  sameKeys(modules.origins,keys(modules.inputs),'Module projection origins incomplete');
+  for(const[name,hash]of Object.entries(modules.inputs)) {
+    assert.equal(configs.host.files[name]?.sha256,hash,'Unreviewed module source');
+    assert.deepEqual(modules.origins[name],configs.host.files[name],'Module source origin differs');
+  }
+  for(const[name,hash]of Object.entries(modules.assets))assert.equal(before.source[name],hash,'Existing module artwork changed');
+  assert.deepEqual(modules.assets,configs.host.moduleAssets,'Module artwork inventory differs');
+  const moduleInputs = new Set();
+  for(const[game,value]of Object.entries(modules.modules)) {
+    assert(value.hostBridges.includes('royal-host:src/wallet/ProgressionClient'),'Module lost the shared progression bridge');
+    assert.equal(release.files[value.manifestPath],value.manifestSha256,'Module manifest is not bound to official release');
+    for(const[name,hash]of Object.entries(value.sourceFiles)){assert.equal(modules.inputs[name],hash,'Module source bytes differ');moduleInputs.add(name);}
+    for(const[name,hash]of Object.entries(value.files))assert.equal(release.files[value.manifestPath.replace(/manifest\.json$/,name)],hash,'Module asset is not bound to official release');
+  }
+  for(const name of MODULE_SOURCES)assert(moduleInputs.has(name)&&modules.inputs[name]===changed[name],'Independent module source is not qualified by its package: '+name);
+  assert(SOURCES.every(name => graphInputs.has(name)||MODULE_SOURCES.includes(name)||EVIDENCE_SOURCES.includes(name)), 'A required source has no verified use');
   const backend = release.backendProjection;
   assert.deepEqual(backend.entries, ['server/index.ts']); assert.match(backend.graphSha256, HASH);
   assert.equal(backend.output?.path, 'dist-server/index.js'); assert.equal(backend.output.sha256, release.files['dist-server/index.js']);
