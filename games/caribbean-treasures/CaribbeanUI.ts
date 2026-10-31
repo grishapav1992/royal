@@ -486,7 +486,7 @@ export class CaribbeanUI {
     if(kind==='info')body+='<p class="ct-audio-credits">'+this.text('Музыка: ','Music: ')+'<a href="https://opengameart.org/content/blackmoor-tides-epic-pirate-battle-theme" target="_blank" rel="noopener noreferrer">Blackmoor Tides</a> · <a href="https://www.matthewpablo.com" target="_blank" rel="noopener noreferrer">Matthew Pablo</a> · <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noopener noreferrer">CC BY 3.0</a>. '+this.text('Инструментальная петля, нормализация и короткие затухания. Звуковые эффекты: Kenney и Thimras, CC0.','Instrumental loop, normalization and short fades. Sound effects: Kenney and Thimras, CC0.')+'</p>';
     panel.innerHTML = body + '<button type="button" class="ct-modal-close" data-ct-modal="close">' + this.text('Закрыть','Close') + '</button>';
     panel.setAttribute('aria-label',this.crewDialog?this.text('Выбор пиратки','Pirate selection'):this.text('Информация об игре','Game information'));
-    this.dialog.begin(this.dialogKind); this.render(); this.dialog.focus();
+    this.dialog.begin(this.dialogKind); this.render(); this.dialog.focus(kind==='info');
   }
   private crewError(error:unknown){
     const code=error instanceof Error?error.message:'';return crewErrors[code]?.[this.english?1:0]??this.text('Не удалось подтвердить изменение коллекции. Обнови её состояние.','The collection change could not be confirmed. Refresh its status.');

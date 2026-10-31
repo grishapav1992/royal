@@ -42,8 +42,8 @@ export class SlotDialog {
     this.element.dataset.dialog = kind;
   }
 
-  focus() {
-    if (this.element.dataset.dialog === 'info' && !this.element.querySelector('[data-stake-rules]')) this.element.insertAdjacentHTML('beforeend', stakeRulesHtml());
+  focus(includeStakeRules = false) {
+    if (includeStakeRules && this.element.dataset.dialog === 'info' && !this.element.querySelector('[data-stake-rules]')) this.element.insertAdjacentHTML('beforeend', stakeRulesHtml());
     if (!this.disposed && this.open) this.focusable()[0]?.focus();
   }
 
