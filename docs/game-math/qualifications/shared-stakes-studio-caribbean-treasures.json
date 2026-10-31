@@ -1,0 +1,2958 @@
+{
+  "schemaVersion": 1,
+  "gameId": "studio-caribbean-treasures",
+  "rulesVersion": 2,
+  "progressVersion": 1,
+  "startedAt": "2026-10-31T21:08:12.503Z",
+  "completedAt": "2026-10-31T21:09:27.830Z",
+  "sourceHashes": {
+    "src/shared/gameStakes.ts": "9e207c51bc5cd9c342992f2f92258826a678cbf00d409b329447e7abca654637",
+    "src/shared/roundPrecision.ts": "8d9f64dd7ae146fa1a7288bf0d4bf8f947a8bc419d12c94fe8f765ec2a75b307",
+    "src/shared/casinoExpansion.ts": "c89133d0c011baa56241b09e56913e315534ac3e52871308238e234cb8c75f74",
+    "src/shared/forestHeartMath.ts": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
+    "src/shared/neopolisMath.ts": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
+    "src/shared/neopolisStakePayouts.ts": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
+    "server/demoExpansion.ts": "355b75eb024907c989e1b2a26031de1ada8e54de6c44289730fc6922702465ed",
+    "server/demoWallet.ts": "695130f9e8eec2b6854f6f620ea2aae33084f25c182ae4755f49347cedcebf63",
+    "server/demoWalletAmounts.ts": "1da7a73b63c79cba0ff674f59c75fe517d8445eafaf831be8afa7f9a4c6e6317",
+    "server/demoWalletRoutes.ts": "8d60c69f76d12f274c1a691786cfda57b48deabc354527202ed124a433feba82",
+    "server/finance/nile-game-runtime.ts": "b667f5865791852f0c79f5b85176548c5c012478c561c021bab5cde3e8dc8d96",
+    "server/afterglowProgress.ts": "cf38081a14f88c034f1a32af9e99ca7bbd7f56590decd419867469cb2f753a42",
+    "src/wallet/ExpansionClient.ts": "bc253f9200daec9539ade6a26f715e7a7734b80b02562989be2d5516019b81e1",
+    "src/wallet/WalletClient.ts": "0e8bb81228f8bd9566fd2308e089323027bc3f7f0422ccbeda858f998f6de6a9",
+    "scripts/game-math/rtp-stakes-sampler.mjs": "d0c297ee40636be7c1312d5de8be1f4023e858efbe61e6aba26486f011fc4d7d",
+    "scripts/game-math/rtp-stakes-worker.mjs": "f5db2c6be7cc4c68bb07c719eea5ba3db3f0d237d7bf8cd75736c891f91a218d",
+    "server-tests/game-stakes.test.ts": "810c0f42c5137ed0e49b94a796808c6753ab4e204408c773c12176eefc896031",
+    "server-tests/round-precision.test.ts": "d48a631f198636a97db8e70952c600a47b9cb1d04b20ebc6d08cbfa2cd452abb",
+    "src/shared/caribbeanTreasures.ts": "8e987b2de8799b444dd01fe2fcb3a567dd7921a8c1dee4b139e00e13ee3e03bb",
+    "src/shared/caribbeanTreasuresMath.ts": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9",
+    "src/shared/caribbeanTransport.ts": "8623c8e5f4f7eef28997a3b9630873e86c4c7fa7f1ff1b790490802d9fd9415a",
+    "server/games/caribbeanTreasures.ts": "bdb0aa8eecef1093f876dd3c467ff1b43d8a7b1606a63a56aa46430964556e99",
+    "scripts/game-math/rtp-caribbean.mjs": "cfb22f286d190161ab76d83b23020fcc695e0ae4476352ea15fc79c2c39edfe5",
+    "scripts/game-math/stake-runtime.mjs": "24aadf4414fe0daf402931901d773143291bee2c099713355e3e345c1e5145ca",
+    "scripts/game-math/stakes-wallet.ts": "d9a4084a6ddb188ef52a6d2e05fb93e09f0ade96a95ae75a16ad065c80f2c695",
+    "scripts/game-math/rtp-stakes-samples.mjs": "d2cdeaf1311ba67c78a04b04d78c6353caaed0b490933c93d8b231b94e481b1c",
+    "scripts/game-math/rtp-stakes.mjs": "303243abd909c97683260439f51d7730b2550c2ffb660e434ae59db2730da6ad"
+  },
+  "policySha256": "5fe9df7aa123d561aa01890eb31a1e98b2d7ffb9f0172c0817eaa614f2af44ad",
+  "method": "full-round-unbiased-cent-policy-v1",
+  "precisionLaw": {
+    "method": "Independent uniform final ticket; exact BigInt rational accumulation and integer settlement",
+    "identity": "For exact reward n/d, let q=floor(n/d), r=n mod d and uniform U in {0,...,d-1}. Pay q+1 if U<r, otherwise q. The sum over all tickets is q*d+r=n.",
+    "stopping": "The ticket is drawn only after the final player choice and every free continuation. No future rounding ticket is exposed to adaptive choices.",
+    "preservation": "Every intermediate discarded fraction is restored before the final ticket. For a fixed consumed path the expected credit equals its capped exact reward, and the actual credit never falls below the original sum of floors.",
+    "caps": "Nonnegative rewards couple every denomination to the same latent capped paid round. Stopping a presentation after its floor reaches the cap does not change that round reward.",
+    "compatibility": "Only starts pinned to stakePolicyVersion=1 use this receipt. Accepted historical rounds and UUID replays retain their original rules and committed credit.",
+    "confidence": "Exact analytical bounds and statistical intervals are labelled separately. A statistical estimate is not an exact RTP. Conditional estimates are per case, not simultaneous confidence guarantees."
+  },
+  "results": [
+    {
+      "choice": "lines-1-normal-raid",
+      "stakeUnits": 10,
+      "kind": "exact",
+      "rtp": 0.9599750675175298,
+      "rtpBounds": [
+        0.9599750675175298,
+        0.9599750675175298
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-1-normal-raid",
+      "stakeUnits": 20,
+      "kind": "exact",
+      "rtp": 0.9599750675175298,
+      "rtpBounds": [
+        0.9599750675175298,
+        0.9599750675175298
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-1-normal-raid",
+      "stakeUnits": 50,
+      "kind": "exact",
+      "rtp": 0.9599750675175298,
+      "rtpBounds": [
+        0.9599750675175298,
+        0.9599750675175298
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-1-normal-raid",
+      "stakeUnits": 100,
+      "kind": "exact",
+      "rtp": 0.9599750675175298,
+      "rtpBounds": [
+        0.9599750675175298,
+        0.9599750675175298
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-1-normal-raid",
+      "stakeUnits": 200,
+      "kind": "exact",
+      "rtp": 0.9599750675175298,
+      "rtpBounds": [
+        0.9599750675175298,
+        0.9599750675175298
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-1-normal-raid",
+      "stakeUnits": 500,
+      "kind": "exact",
+      "rtp": 0.9599750675175298,
+      "rtpBounds": [
+        0.9599750675175298,
+        0.9599750675175298
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-1-normal-raid",
+      "stakeUnits": 1000,
+      "kind": "exact",
+      "rtp": 0.9599750675175298,
+      "rtpBounds": [
+        0.9599750675175298,
+        0.9599750675175298
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-1-normal-raid",
+      "stakeUnits": 2000,
+      "kind": "exact",
+      "rtp": 0.9599750675175298,
+      "rtpBounds": [
+        0.9599750675175298,
+        0.9599750675175298
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-1-normal-raid",
+      "stakeUnits": 5000,
+      "kind": "exact",
+      "rtp": 0.9599750675175298,
+      "rtpBounds": [
+        0.9599750675175298,
+        0.9599750675175298
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-1-normal-flagship",
+      "stakeUnits": 10,
+      "kind": "exact",
+      "rtp": 0.9599755250220974,
+      "rtpBounds": [
+        0.9599755250220974,
+        0.9599755250220974
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-1-normal-flagship",
+      "stakeUnits": 20,
+      "kind": "exact",
+      "rtp": 0.9599755250220974,
+      "rtpBounds": [
+        0.9599755250220974,
+        0.9599755250220974
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-1-normal-flagship",
+      "stakeUnits": 50,
+      "kind": "exact",
+      "rtp": 0.9599755250220974,
+      "rtpBounds": [
+        0.9599755250220974,
+        0.9599755250220974
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-1-normal-flagship",
+      "stakeUnits": 100,
+      "kind": "exact",
+      "rtp": 0.9599755250220974,
+      "rtpBounds": [
+        0.9599755250220974,
+        0.9599755250220974
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-1-normal-flagship",
+      "stakeUnits": 200,
+      "kind": "exact",
+      "rtp": 0.9599755250220974,
+      "rtpBounds": [
+        0.9599755250220974,
+        0.9599755250220974
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-1-normal-flagship",
+      "stakeUnits": 500,
+      "kind": "exact",
+      "rtp": 0.9599755250220974,
+      "rtpBounds": [
+        0.9599755250220974,
+        0.9599755250220974
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-1-normal-flagship",
+      "stakeUnits": 1000,
+      "kind": "exact",
+      "rtp": 0.9599755250220974,
+      "rtpBounds": [
+        0.9599755250220974,
+        0.9599755250220974
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-1-normal-flagship",
+      "stakeUnits": 2000,
+      "kind": "exact",
+      "rtp": 0.9599755250220974,
+      "rtpBounds": [
+        0.9599755250220974,
+        0.9599755250220974
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-1-normal-flagship",
+      "stakeUnits": 5000,
+      "kind": "exact",
+      "rtp": 0.9599755250220974,
+      "rtpBounds": [
+        0.9599755250220974,
+        0.9599755250220974
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-1-buy-raid",
+      "stakeUnits": 10,
+      "kind": "exact",
+      "rtp": 0.9599982953573476,
+      "rtpBounds": [
+        0.9599982953573476,
+        0.9599982953573476
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-1-buy-raid",
+      "stakeUnits": 20,
+      "kind": "exact",
+      "rtp": 0.9599982953573476,
+      "rtpBounds": [
+        0.9599982953573476,
+        0.9599982953573476
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-1-buy-raid",
+      "stakeUnits": 50,
+      "kind": "exact",
+      "rtp": 0.9599982953573476,
+      "rtpBounds": [
+        0.9599982953573476,
+        0.9599982953573476
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-1-buy-raid",
+      "stakeUnits": 100,
+      "kind": "exact",
+      "rtp": 0.9599982953573476,
+      "rtpBounds": [
+        0.9599982953573476,
+        0.9599982953573476
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-1-buy-raid",
+      "stakeUnits": 200,
+      "kind": "exact",
+      "rtp": 0.9599982953573476,
+      "rtpBounds": [
+        0.9599982953573476,
+        0.9599982953573476
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-1-buy-raid",
+      "stakeUnits": 500,
+      "kind": "exact",
+      "rtp": 0.9599982953573476,
+      "rtpBounds": [
+        0.9599982953573476,
+        0.9599982953573476
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-1-buy-raid",
+      "stakeUnits": 1000,
+      "kind": "exact",
+      "rtp": 0.9599982953573476,
+      "rtpBounds": [
+        0.9599982953573476,
+        0.9599982953573476
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-1-buy-raid",
+      "stakeUnits": 2000,
+      "kind": "exact",
+      "rtp": 0.9599982953573476,
+      "rtpBounds": [
+        0.9599982953573476,
+        0.9599982953573476
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-1-buy-raid",
+      "stakeUnits": 5000,
+      "kind": "exact",
+      "rtp": 0.9599982953573476,
+      "rtpBounds": [
+        0.9599982953573476,
+        0.9599982953573476
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-1-buy-flagship",
+      "stakeUnits": 10,
+      "kind": "exact",
+      "rtp": 0.9599999847505263,
+      "rtpBounds": [
+        0.9599999847505263,
+        0.9599999847505263
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-1-buy-flagship",
+      "stakeUnits": 20,
+      "kind": "exact",
+      "rtp": 0.9599999847505263,
+      "rtpBounds": [
+        0.9599999847505263,
+        0.9599999847505263
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-1-buy-flagship",
+      "stakeUnits": 50,
+      "kind": "exact",
+      "rtp": 0.9599999847505263,
+      "rtpBounds": [
+        0.9599999847505263,
+        0.9599999847505263
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-1-buy-flagship",
+      "stakeUnits": 100,
+      "kind": "exact",
+      "rtp": 0.9599999847505263,
+      "rtpBounds": [
+        0.9599999847505263,
+        0.9599999847505263
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-1-buy-flagship",
+      "stakeUnits": 200,
+      "kind": "exact",
+      "rtp": 0.9599999847505263,
+      "rtpBounds": [
+        0.9599999847505263,
+        0.9599999847505263
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-1-buy-flagship",
+      "stakeUnits": 500,
+      "kind": "exact",
+      "rtp": 0.9599999847505263,
+      "rtpBounds": [
+        0.9599999847505263,
+        0.9599999847505263
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-1-buy-flagship",
+      "stakeUnits": 1000,
+      "kind": "exact",
+      "rtp": 0.9599999847505263,
+      "rtpBounds": [
+        0.9599999847505263,
+        0.9599999847505263
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-1-buy-flagship",
+      "stakeUnits": 2000,
+      "kind": "exact",
+      "rtp": 0.9599999847505263,
+      "rtpBounds": [
+        0.9599999847505263,
+        0.9599999847505263
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-1-buy-flagship",
+      "stakeUnits": 5000,
+      "kind": "exact",
+      "rtp": 0.9599999847505263,
+      "rtpBounds": [
+        0.9599999847505263,
+        0.9599999847505263
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-5-normal-raid",
+      "stakeUnits": 10,
+      "kind": "exact",
+      "rtp": 0.9599880238180297,
+      "rtpBounds": [
+        0.9599880238180297,
+        0.9599880238180297
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-5-normal-raid",
+      "stakeUnits": 20,
+      "kind": "exact",
+      "rtp": 0.9599880238180297,
+      "rtpBounds": [
+        0.9599880238180297,
+        0.9599880238180297
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-5-normal-raid",
+      "stakeUnits": 50,
+      "kind": "exact",
+      "rtp": 0.9599880238180297,
+      "rtpBounds": [
+        0.9599880238180297,
+        0.9599880238180297
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-5-normal-raid",
+      "stakeUnits": 100,
+      "kind": "exact",
+      "rtp": 0.9599880238180297,
+      "rtpBounds": [
+        0.9599880238180297,
+        0.9599880238180297
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-5-normal-raid",
+      "stakeUnits": 200,
+      "kind": "exact",
+      "rtp": 0.9599880238180297,
+      "rtpBounds": [
+        0.9599880238180297,
+        0.9599880238180297
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-5-normal-raid",
+      "stakeUnits": 500,
+      "kind": "exact",
+      "rtp": 0.9599880238180297,
+      "rtpBounds": [
+        0.9599880238180297,
+        0.9599880238180297
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-5-normal-raid",
+      "stakeUnits": 1000,
+      "kind": "exact",
+      "rtp": 0.9599880238180297,
+      "rtpBounds": [
+        0.9599880238180297,
+        0.9599880238180297
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-5-normal-raid",
+      "stakeUnits": 2000,
+      "kind": "exact",
+      "rtp": 0.9599880238180297,
+      "rtpBounds": [
+        0.9599880238180297,
+        0.9599880238180297
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-5-normal-raid",
+      "stakeUnits": 5000,
+      "kind": "exact",
+      "rtp": 0.9599880238180297,
+      "rtpBounds": [
+        0.9599880238180297,
+        0.9599880238180297
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-5-normal-flagship",
+      "stakeUnits": 10,
+      "kind": "exact",
+      "rtp": 0.959988233616954,
+      "rtpBounds": [
+        0.959988233616954,
+        0.959988233616954
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-5-normal-flagship",
+      "stakeUnits": 20,
+      "kind": "exact",
+      "rtp": 0.959988233616954,
+      "rtpBounds": [
+        0.959988233616954,
+        0.959988233616954
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-5-normal-flagship",
+      "stakeUnits": 50,
+      "kind": "exact",
+      "rtp": 0.959988233616954,
+      "rtpBounds": [
+        0.959988233616954,
+        0.959988233616954
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-5-normal-flagship",
+      "stakeUnits": 100,
+      "kind": "exact",
+      "rtp": 0.959988233616954,
+      "rtpBounds": [
+        0.959988233616954,
+        0.959988233616954
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-5-normal-flagship",
+      "stakeUnits": 200,
+      "kind": "exact",
+      "rtp": 0.959988233616954,
+      "rtpBounds": [
+        0.959988233616954,
+        0.959988233616954
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-5-normal-flagship",
+      "stakeUnits": 500,
+      "kind": "exact",
+      "rtp": 0.959988233616954,
+      "rtpBounds": [
+        0.959988233616954,
+        0.959988233616954
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-5-normal-flagship",
+      "stakeUnits": 1000,
+      "kind": "exact",
+      "rtp": 0.959988233616954,
+      "rtpBounds": [
+        0.959988233616954,
+        0.959988233616954
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-5-normal-flagship",
+      "stakeUnits": 2000,
+      "kind": "exact",
+      "rtp": 0.959988233616954,
+      "rtpBounds": [
+        0.959988233616954,
+        0.959988233616954
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-5-normal-flagship",
+      "stakeUnits": 5000,
+      "kind": "exact",
+      "rtp": 0.959988233616954,
+      "rtpBounds": [
+        0.959988233616954,
+        0.959988233616954
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-5-buy-raid",
+      "stakeUnits": 10,
+      "kind": "exact",
+      "rtp": 0.9599992077458147,
+      "rtpBounds": [
+        0.9599992077458147,
+        0.9599992077458147
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-5-buy-raid",
+      "stakeUnits": 20,
+      "kind": "exact",
+      "rtp": 0.9599992077458147,
+      "rtpBounds": [
+        0.9599992077458147,
+        0.9599992077458147
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-5-buy-raid",
+      "stakeUnits": 50,
+      "kind": "exact",
+      "rtp": 0.9599992077458147,
+      "rtpBounds": [
+        0.9599992077458147,
+        0.9599992077458147
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-5-buy-raid",
+      "stakeUnits": 100,
+      "kind": "exact",
+      "rtp": 0.9599992077458147,
+      "rtpBounds": [
+        0.9599992077458147,
+        0.9599992077458147
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-5-buy-raid",
+      "stakeUnits": 200,
+      "kind": "exact",
+      "rtp": 0.9599992077458147,
+      "rtpBounds": [
+        0.9599992077458147,
+        0.9599992077458147
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-5-buy-raid",
+      "stakeUnits": 500,
+      "kind": "exact",
+      "rtp": 0.9599992077458147,
+      "rtpBounds": [
+        0.9599992077458147,
+        0.9599992077458147
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-5-buy-raid",
+      "stakeUnits": 1000,
+      "kind": "exact",
+      "rtp": 0.9599992077458147,
+      "rtpBounds": [
+        0.9599992077458147,
+        0.9599992077458147
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-5-buy-raid",
+      "stakeUnits": 2000,
+      "kind": "exact",
+      "rtp": 0.9599992077458147,
+      "rtpBounds": [
+        0.9599992077458147,
+        0.9599992077458147
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-5-buy-raid",
+      "stakeUnits": 5000,
+      "kind": "exact",
+      "rtp": 0.9599992077458147,
+      "rtpBounds": [
+        0.9599992077458147,
+        0.9599992077458147
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-5-buy-flagship",
+      "stakeUnits": 10,
+      "kind": "exact",
+      "rtp": 0.9599999824219868,
+      "rtpBounds": [
+        0.9599999824219868,
+        0.9599999824219868
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-5-buy-flagship",
+      "stakeUnits": 20,
+      "kind": "exact",
+      "rtp": 0.9599999824219868,
+      "rtpBounds": [
+        0.9599999824219868,
+        0.9599999824219868
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-5-buy-flagship",
+      "stakeUnits": 50,
+      "kind": "exact",
+      "rtp": 0.9599999824219868,
+      "rtpBounds": [
+        0.9599999824219868,
+        0.9599999824219868
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-5-buy-flagship",
+      "stakeUnits": 100,
+      "kind": "exact",
+      "rtp": 0.9599999824219868,
+      "rtpBounds": [
+        0.9599999824219868,
+        0.9599999824219868
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-5-buy-flagship",
+      "stakeUnits": 200,
+      "kind": "exact",
+      "rtp": 0.9599999824219868,
+      "rtpBounds": [
+        0.9599999824219868,
+        0.9599999824219868
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-5-buy-flagship",
+      "stakeUnits": 500,
+      "kind": "exact",
+      "rtp": 0.9599999824219868,
+      "rtpBounds": [
+        0.9599999824219868,
+        0.9599999824219868
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-5-buy-flagship",
+      "stakeUnits": 1000,
+      "kind": "exact",
+      "rtp": 0.9599999824219868,
+      "rtpBounds": [
+        0.9599999824219868,
+        0.9599999824219868
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-5-buy-flagship",
+      "stakeUnits": 2000,
+      "kind": "exact",
+      "rtp": 0.9599999824219868,
+      "rtpBounds": [
+        0.9599999824219868,
+        0.9599999824219868
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-5-buy-flagship",
+      "stakeUnits": 5000,
+      "kind": "exact",
+      "rtp": 0.9599999824219868,
+      "rtpBounds": [
+        0.9599999824219868,
+        0.9599999824219868
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-10-normal-raid",
+      "stakeUnits": 10,
+      "kind": "exact",
+      "rtp": 0.9599838549044649,
+      "rtpBounds": [
+        0.9599838549044649,
+        0.9599838549044649
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-10-normal-raid",
+      "stakeUnits": 20,
+      "kind": "exact",
+      "rtp": 0.9599838549044649,
+      "rtpBounds": [
+        0.9599838549044649,
+        0.9599838549044649
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-10-normal-raid",
+      "stakeUnits": 50,
+      "kind": "exact",
+      "rtp": 0.9599838549044649,
+      "rtpBounds": [
+        0.9599838549044649,
+        0.9599838549044649
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-10-normal-raid",
+      "stakeUnits": 100,
+      "kind": "exact",
+      "rtp": 0.9599838549044649,
+      "rtpBounds": [
+        0.9599838549044649,
+        0.9599838549044649
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-10-normal-raid",
+      "stakeUnits": 200,
+      "kind": "exact",
+      "rtp": 0.9599838549044649,
+      "rtpBounds": [
+        0.9599838549044649,
+        0.9599838549044649
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-10-normal-raid",
+      "stakeUnits": 500,
+      "kind": "exact",
+      "rtp": 0.9599838549044649,
+      "rtpBounds": [
+        0.9599838549044649,
+        0.9599838549044649
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-10-normal-raid",
+      "stakeUnits": 1000,
+      "kind": "exact",
+      "rtp": 0.9599838549044649,
+      "rtpBounds": [
+        0.9599838549044649,
+        0.9599838549044649
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-10-normal-raid",
+      "stakeUnits": 2000,
+      "kind": "exact",
+      "rtp": 0.9599838549044649,
+      "rtpBounds": [
+        0.9599838549044649,
+        0.9599838549044649
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-10-normal-raid",
+      "stakeUnits": 5000,
+      "kind": "exact",
+      "rtp": 0.9599838549044649,
+      "rtpBounds": [
+        0.9599838549044649,
+        0.9599838549044649
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-10-normal-flagship",
+      "stakeUnits": 10,
+      "kind": "exact",
+      "rtp": 0.9599842121096187,
+      "rtpBounds": [
+        0.9599842121096187,
+        0.9599842121096187
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-10-normal-flagship",
+      "stakeUnits": 20,
+      "kind": "exact",
+      "rtp": 0.9599842121096187,
+      "rtpBounds": [
+        0.9599842121096187,
+        0.9599842121096187
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-10-normal-flagship",
+      "stakeUnits": 50,
+      "kind": "exact",
+      "rtp": 0.9599842121096187,
+      "rtpBounds": [
+        0.9599842121096187,
+        0.9599842121096187
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-10-normal-flagship",
+      "stakeUnits": 100,
+      "kind": "exact",
+      "rtp": 0.9599842121096187,
+      "rtpBounds": [
+        0.9599842121096187,
+        0.9599842121096187
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-10-normal-flagship",
+      "stakeUnits": 200,
+      "kind": "exact",
+      "rtp": 0.9599842121096187,
+      "rtpBounds": [
+        0.9599842121096187,
+        0.9599842121096187
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-10-normal-flagship",
+      "stakeUnits": 500,
+      "kind": "exact",
+      "rtp": 0.9599842121096187,
+      "rtpBounds": [
+        0.9599842121096187,
+        0.9599842121096187
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-10-normal-flagship",
+      "stakeUnits": 1000,
+      "kind": "exact",
+      "rtp": 0.9599842121096187,
+      "rtpBounds": [
+        0.9599842121096187,
+        0.9599842121096187
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-10-normal-flagship",
+      "stakeUnits": 2000,
+      "kind": "exact",
+      "rtp": 0.9599842121096187,
+      "rtpBounds": [
+        0.9599842121096187,
+        0.9599842121096187
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-10-normal-flagship",
+      "stakeUnits": 5000,
+      "kind": "exact",
+      "rtp": 0.9599842121096187,
+      "rtpBounds": [
+        0.9599842121096187,
+        0.9599842121096187
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-10-buy-raid",
+      "stakeUnits": 10,
+      "kind": "exact",
+      "rtp": 0.959998661432516,
+      "rtpBounds": [
+        0.959998661432516,
+        0.959998661432516
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-10-buy-raid",
+      "stakeUnits": 20,
+      "kind": "exact",
+      "rtp": 0.959998661432516,
+      "rtpBounds": [
+        0.959998661432516,
+        0.959998661432516
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-10-buy-raid",
+      "stakeUnits": 50,
+      "kind": "exact",
+      "rtp": 0.959998661432516,
+      "rtpBounds": [
+        0.959998661432516,
+        0.959998661432516
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-10-buy-raid",
+      "stakeUnits": 100,
+      "kind": "exact",
+      "rtp": 0.959998661432516,
+      "rtpBounds": [
+        0.959998661432516,
+        0.959998661432516
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-10-buy-raid",
+      "stakeUnits": 200,
+      "kind": "exact",
+      "rtp": 0.959998661432516,
+      "rtpBounds": [
+        0.959998661432516,
+        0.959998661432516
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-10-buy-raid",
+      "stakeUnits": 500,
+      "kind": "exact",
+      "rtp": 0.959998661432516,
+      "rtpBounds": [
+        0.959998661432516,
+        0.959998661432516
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-10-buy-raid",
+      "stakeUnits": 1000,
+      "kind": "exact",
+      "rtp": 0.959998661432516,
+      "rtpBounds": [
+        0.959998661432516,
+        0.959998661432516
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-10-buy-raid",
+      "stakeUnits": 2000,
+      "kind": "exact",
+      "rtp": 0.959998661432516,
+      "rtpBounds": [
+        0.959998661432516,
+        0.959998661432516
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-10-buy-raid",
+      "stakeUnits": 5000,
+      "kind": "exact",
+      "rtp": 0.959998661432516,
+      "rtpBounds": [
+        0.959998661432516,
+        0.959998661432516
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-10-buy-flagship",
+      "stakeUnits": 10,
+      "kind": "exact",
+      "rtp": 0.9599999804151818,
+      "rtpBounds": [
+        0.9599999804151818,
+        0.9599999804151818
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-10-buy-flagship",
+      "stakeUnits": 20,
+      "kind": "exact",
+      "rtp": 0.9599999804151818,
+      "rtpBounds": [
+        0.9599999804151818,
+        0.9599999804151818
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-10-buy-flagship",
+      "stakeUnits": 50,
+      "kind": "exact",
+      "rtp": 0.9599999804151818,
+      "rtpBounds": [
+        0.9599999804151818,
+        0.9599999804151818
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-10-buy-flagship",
+      "stakeUnits": 100,
+      "kind": "exact",
+      "rtp": 0.9599999804151818,
+      "rtpBounds": [
+        0.9599999804151818,
+        0.9599999804151818
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-10-buy-flagship",
+      "stakeUnits": 200,
+      "kind": "exact",
+      "rtp": 0.9599999804151818,
+      "rtpBounds": [
+        0.9599999804151818,
+        0.9599999804151818
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-10-buy-flagship",
+      "stakeUnits": 500,
+      "kind": "exact",
+      "rtp": 0.9599999804151818,
+      "rtpBounds": [
+        0.9599999804151818,
+        0.9599999804151818
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-10-buy-flagship",
+      "stakeUnits": 1000,
+      "kind": "exact",
+      "rtp": 0.9599999804151818,
+      "rtpBounds": [
+        0.9599999804151818,
+        0.9599999804151818
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-10-buy-flagship",
+      "stakeUnits": 2000,
+      "kind": "exact",
+      "rtp": 0.9599999804151818,
+      "rtpBounds": [
+        0.9599999804151818,
+        0.9599999804151818
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-10-buy-flagship",
+      "stakeUnits": 5000,
+      "kind": "exact",
+      "rtp": 0.9599999804151818,
+      "rtpBounds": [
+        0.9599999804151818,
+        0.9599999804151818
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-20-normal-raid",
+      "stakeUnits": 10,
+      "kind": "exact",
+      "rtp": 0.9599922921112992,
+      "rtpBounds": [
+        0.9599922921112992,
+        0.9599922921112992
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-20-normal-raid",
+      "stakeUnits": 20,
+      "kind": "exact",
+      "rtp": 0.9599922921112992,
+      "rtpBounds": [
+        0.9599922921112992,
+        0.9599922921112992
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-20-normal-raid",
+      "stakeUnits": 50,
+      "kind": "exact",
+      "rtp": 0.9599922921112992,
+      "rtpBounds": [
+        0.9599922921112992,
+        0.9599922921112992
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-20-normal-raid",
+      "stakeUnits": 100,
+      "kind": "exact",
+      "rtp": 0.9599922921112992,
+      "rtpBounds": [
+        0.9599922921112992,
+        0.9599922921112992
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-20-normal-raid",
+      "stakeUnits": 200,
+      "kind": "exact",
+      "rtp": 0.9599922921112992,
+      "rtpBounds": [
+        0.9599922921112992,
+        0.9599922921112992
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-20-normal-raid",
+      "stakeUnits": 500,
+      "kind": "exact",
+      "rtp": 0.9599922921112992,
+      "rtpBounds": [
+        0.9599922921112992,
+        0.9599922921112992
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-20-normal-raid",
+      "stakeUnits": 1000,
+      "kind": "exact",
+      "rtp": 0.9599922921112992,
+      "rtpBounds": [
+        0.9599922921112992,
+        0.9599922921112992
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-20-normal-raid",
+      "stakeUnits": 2000,
+      "kind": "exact",
+      "rtp": 0.9599922921112992,
+      "rtpBounds": [
+        0.9599922921112992,
+        0.9599922921112992
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-20-normal-raid",
+      "stakeUnits": 5000,
+      "kind": "exact",
+      "rtp": 0.9599922921112992,
+      "rtpBounds": [
+        0.9599922921112992,
+        0.9599922921112992
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-20-normal-flagship",
+      "stakeUnits": 10,
+      "kind": "exact",
+      "rtp": 0.959992782661165,
+      "rtpBounds": [
+        0.959992782661165,
+        0.959992782661165
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-20-normal-flagship",
+      "stakeUnits": 20,
+      "kind": "exact",
+      "rtp": 0.959992782661165,
+      "rtpBounds": [
+        0.959992782661165,
+        0.959992782661165
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-20-normal-flagship",
+      "stakeUnits": 50,
+      "kind": "exact",
+      "rtp": 0.959992782661165,
+      "rtpBounds": [
+        0.959992782661165,
+        0.959992782661165
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-20-normal-flagship",
+      "stakeUnits": 100,
+      "kind": "exact",
+      "rtp": 0.959992782661165,
+      "rtpBounds": [
+        0.959992782661165,
+        0.959992782661165
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-20-normal-flagship",
+      "stakeUnits": 200,
+      "kind": "exact",
+      "rtp": 0.959992782661165,
+      "rtpBounds": [
+        0.959992782661165,
+        0.959992782661165
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-20-normal-flagship",
+      "stakeUnits": 500,
+      "kind": "exact",
+      "rtp": 0.959992782661165,
+      "rtpBounds": [
+        0.959992782661165,
+        0.959992782661165
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-20-normal-flagship",
+      "stakeUnits": 1000,
+      "kind": "exact",
+      "rtp": 0.959992782661165,
+      "rtpBounds": [
+        0.959992782661165,
+        0.959992782661165
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-20-normal-flagship",
+      "stakeUnits": 2000,
+      "kind": "exact",
+      "rtp": 0.959992782661165,
+      "rtpBounds": [
+        0.959992782661165,
+        0.959992782661165
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-20-normal-flagship",
+      "stakeUnits": 5000,
+      "kind": "exact",
+      "rtp": 0.959992782661165,
+      "rtpBounds": [
+        0.959992782661165,
+        0.959992782661165
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-20-buy-raid",
+      "stakeUnits": 10,
+      "kind": "exact",
+      "rtp": 0.9599981722261921,
+      "rtpBounds": [
+        0.9599981722261921,
+        0.9599981722261921
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-20-buy-raid",
+      "stakeUnits": 20,
+      "kind": "exact",
+      "rtp": 0.9599981722261921,
+      "rtpBounds": [
+        0.9599981722261921,
+        0.9599981722261921
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-20-buy-raid",
+      "stakeUnits": 50,
+      "kind": "exact",
+      "rtp": 0.9599981722261921,
+      "rtpBounds": [
+        0.9599981722261921,
+        0.9599981722261921
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-20-buy-raid",
+      "stakeUnits": 100,
+      "kind": "exact",
+      "rtp": 0.9599981722261921,
+      "rtpBounds": [
+        0.9599981722261921,
+        0.9599981722261921
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-20-buy-raid",
+      "stakeUnits": 200,
+      "kind": "exact",
+      "rtp": 0.9599981722261921,
+      "rtpBounds": [
+        0.9599981722261921,
+        0.9599981722261921
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-20-buy-raid",
+      "stakeUnits": 500,
+      "kind": "exact",
+      "rtp": 0.9599981722261921,
+      "rtpBounds": [
+        0.9599981722261921,
+        0.9599981722261921
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-20-buy-raid",
+      "stakeUnits": 1000,
+      "kind": "exact",
+      "rtp": 0.9599981722261921,
+      "rtpBounds": [
+        0.9599981722261921,
+        0.9599981722261921
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-20-buy-raid",
+      "stakeUnits": 2000,
+      "kind": "exact",
+      "rtp": 0.9599981722261921,
+      "rtpBounds": [
+        0.9599981722261921,
+        0.9599981722261921
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-20-buy-raid",
+      "stakeUnits": 5000,
+      "kind": "exact",
+      "rtp": 0.9599981722261921,
+      "rtpBounds": [
+        0.9599981722261921,
+        0.9599981722261921
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-20-buy-flagship",
+      "stakeUnits": 10,
+      "kind": "exact",
+      "rtp": 0.9599999835347174,
+      "rtpBounds": [
+        0.9599999835347174,
+        0.9599999835347174
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-20-buy-flagship",
+      "stakeUnits": 20,
+      "kind": "exact",
+      "rtp": 0.9599999835347174,
+      "rtpBounds": [
+        0.9599999835347174,
+        0.9599999835347174
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-20-buy-flagship",
+      "stakeUnits": 50,
+      "kind": "exact",
+      "rtp": 0.9599999835347174,
+      "rtpBounds": [
+        0.9599999835347174,
+        0.9599999835347174
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-20-buy-flagship",
+      "stakeUnits": 100,
+      "kind": "exact",
+      "rtp": 0.9599999835347174,
+      "rtpBounds": [
+        0.9599999835347174,
+        0.9599999835347174
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-20-buy-flagship",
+      "stakeUnits": 200,
+      "kind": "exact",
+      "rtp": 0.9599999835347174,
+      "rtpBounds": [
+        0.9599999835347174,
+        0.9599999835347174
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-20-buy-flagship",
+      "stakeUnits": 500,
+      "kind": "exact",
+      "rtp": 0.9599999835347174,
+      "rtpBounds": [
+        0.9599999835347174,
+        0.9599999835347174
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-20-buy-flagship",
+      "stakeUnits": 1000,
+      "kind": "exact",
+      "rtp": 0.9599999835347174,
+      "rtpBounds": [
+        0.9599999835347174,
+        0.9599999835347174
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-20-buy-flagship",
+      "stakeUnits": 2000,
+      "kind": "exact",
+      "rtp": 0.9599999835347174,
+      "rtpBounds": [
+        0.9599999835347174,
+        0.9599999835347174
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    },
+    {
+      "choice": "lines-20-buy-flagship",
+      "stakeUnits": 5000,
+      "kind": "exact",
+      "rtp": 0.9599999835347174,
+      "rtpBounds": [
+        0.9599999835347174,
+        0.9599999835347174
+      ],
+      "price": "Normal stake is total across all selected lines. Bought-bonus expected payout includes the exact charged-price/ideal-price ratio before final cent settlement."
+    }
+  ],
+  "evidence": {
+    "reference": {
+      "path": "docs/game-math/qualifications/caribbean-treasures-v1.json",
+      "sha256": "a59b12ca24850f64ec280042018274cc921977e6b9e5891bd51919f89b983f92"
+    }
+  },
+  "replay": {
+    "coverage": [
+      {
+        "choice": "lines-1-normal-raid",
+        "stakeUnits": 10,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "ac5bc8dfb3dbb7e073a1c460a5bb0468670fd947e20a1fc404368f8aeb522680"
+      },
+      {
+        "choice": "lines-1-normal-raid",
+        "stakeUnits": 20,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "bfadd49dc6f98bbf3d3eb91f27f24400d871e7431d4a7ab6b5cffc8785b54318"
+      },
+      {
+        "choice": "lines-1-normal-raid",
+        "stakeUnits": 50,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "9375052ea404fef4cf5c36486368c06267232e4a542bd213e60886c9707324f1"
+      },
+      {
+        "choice": "lines-1-normal-raid",
+        "stakeUnits": 100,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "52c8c887f7c57bdb290adaffda73ac17e345853806dcdba687ef6980ac116572"
+      },
+      {
+        "choice": "lines-1-normal-raid",
+        "stakeUnits": 200,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "b37bcc4ab7c9987cc7da421f249ccd0ed69717bc35013aa823567e104e9c6b67"
+      },
+      {
+        "choice": "lines-1-normal-raid",
+        "stakeUnits": 500,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "c926f2244ecc25dccb2a850b3094fdfd186c8951d7eea0f4803924a0911afa12"
+      },
+      {
+        "choice": "lines-1-normal-raid",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "ff8cbb1249f35a9daceca27d00ce632aad33ab7855a5ac752beadc047756a28d"
+      },
+      {
+        "choice": "lines-1-normal-raid",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "bae55f939f0e1554e635634541c71bd26cb011f994dca72bc740c726d0f1d975"
+      },
+      {
+        "choice": "lines-1-normal-raid",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "4164a656a412f55cbb6129fa13f94cd4b8036a882ba452b5d2683680215a84ae"
+      },
+      {
+        "choice": "lines-1-normal-flagship",
+        "stakeUnits": 10,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "ac5bc8dfb3dbb7e073a1c460a5bb0468670fd947e20a1fc404368f8aeb522680"
+      },
+      {
+        "choice": "lines-1-normal-flagship",
+        "stakeUnits": 20,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "bfadd49dc6f98bbf3d3eb91f27f24400d871e7431d4a7ab6b5cffc8785b54318"
+      },
+      {
+        "choice": "lines-1-normal-flagship",
+        "stakeUnits": 50,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "9375052ea404fef4cf5c36486368c06267232e4a542bd213e60886c9707324f1"
+      },
+      {
+        "choice": "lines-1-normal-flagship",
+        "stakeUnits": 100,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "52c8c887f7c57bdb290adaffda73ac17e345853806dcdba687ef6980ac116572"
+      },
+      {
+        "choice": "lines-1-normal-flagship",
+        "stakeUnits": 200,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "b37bcc4ab7c9987cc7da421f249ccd0ed69717bc35013aa823567e104e9c6b67"
+      },
+      {
+        "choice": "lines-1-normal-flagship",
+        "stakeUnits": 500,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "c926f2244ecc25dccb2a850b3094fdfd186c8951d7eea0f4803924a0911afa12"
+      },
+      {
+        "choice": "lines-1-normal-flagship",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "ff8cbb1249f35a9daceca27d00ce632aad33ab7855a5ac752beadc047756a28d"
+      },
+      {
+        "choice": "lines-1-normal-flagship",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "bae55f939f0e1554e635634541c71bd26cb011f994dca72bc740c726d0f1d975"
+      },
+      {
+        "choice": "lines-1-normal-flagship",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "4164a656a412f55cbb6129fa13f94cd4b8036a882ba452b5d2683680215a84ae"
+      },
+      {
+        "choice": "lines-1-buy-raid",
+        "stakeUnits": 10,
+        "paidRounds": 128,
+        "spins": 1920,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 2,
+        "sha256": "ac3f415f84f379162d1993be50cf9de5f232261f62a3e5bafd79142e95350aaa"
+      },
+      {
+        "choice": "lines-1-buy-raid",
+        "stakeUnits": 20,
+        "paidRounds": 128,
+        "spins": 1920,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 5,
+        "sha256": "2cf13b55116c2460e4582050602c1a20d12f3eed0297d6636ebaafa195b6b454"
+      },
+      {
+        "choice": "lines-1-buy-raid",
+        "stakeUnits": 50,
+        "paidRounds": 128,
+        "spins": 1920,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 2,
+        "sha256": "3253588a79dde1217815f613e8fb9961f8548ba86f69007936d2270e04494358"
+      },
+      {
+        "choice": "lines-1-buy-raid",
+        "stakeUnits": 100,
+        "paidRounds": 128,
+        "spins": 1920,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 5,
+        "sha256": "0564575003a86686a8af85602dfb91de976513459889c2d134e8f1fa632f09b6"
+      },
+      {
+        "choice": "lines-1-buy-raid",
+        "stakeUnits": 200,
+        "paidRounds": 128,
+        "spins": 1920,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "75f155a078050693f170c090ebf7448661dca6391c0b5d3ab9da2f21b8330a85"
+      },
+      {
+        "choice": "lines-1-buy-raid",
+        "stakeUnits": 500,
+        "paidRounds": 128,
+        "spins": 1920,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 7,
+        "sha256": "ddc06393d32f891489ba851f579a1a80fb2b5f2ac32bfa39ab33839c248842cd"
+      },
+      {
+        "choice": "lines-1-buy-raid",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 1920,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 3,
+        "sha256": "9b60379131c2c702ad5a840e22c75bb70f6430a1122f62414d54eeaedf67ca4a"
+      },
+      {
+        "choice": "lines-1-buy-raid",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 1920,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 7,
+        "sha256": "9be8c8df0e77eefc9fdfa0e2be5ba2029747b5fcb286d90514f7b8a2fb666071"
+      },
+      {
+        "choice": "lines-1-buy-raid",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 1920,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 7,
+        "sha256": "71991df239e78e9af0e539e4b16e8af6132b2e0f60e3fee765f500aae35fead4"
+      },
+      {
+        "choice": "lines-1-buy-flagship",
+        "stakeUnits": 10,
+        "paidRounds": 128,
+        "spins": 896,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 2,
+        "sha256": "616a8f38f2000463f85d184841711c1a666b6ccb4c08417e62d629b43850b88e"
+      },
+      {
+        "choice": "lines-1-buy-flagship",
+        "stakeUnits": 20,
+        "paidRounds": 128,
+        "spins": 896,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 3,
+        "sha256": "3626470d19f093aa53065b3c6d16ee506439bcab0803684175e7c8243d33b74f"
+      },
+      {
+        "choice": "lines-1-buy-flagship",
+        "stakeUnits": 50,
+        "paidRounds": 128,
+        "spins": 896,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 2,
+        "sha256": "e50ec76a4966b379d503720188db7386f3b37f763f71fc9be8a0e5fe8ae65d43"
+      },
+      {
+        "choice": "lines-1-buy-flagship",
+        "stakeUnits": 100,
+        "paidRounds": 128,
+        "spins": 896,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 3,
+        "sha256": "a5c81c7020e5345671a527d2ec94b90f68ebc2a65ed1f68e6c92e08a9a998862"
+      },
+      {
+        "choice": "lines-1-buy-flagship",
+        "stakeUnits": 200,
+        "paidRounds": 128,
+        "spins": 896,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "71d1afd94c05ba748a98bc5271b6ac005c11573564cf22fc318e242465859dd5"
+      },
+      {
+        "choice": "lines-1-buy-flagship",
+        "stakeUnits": 500,
+        "paidRounds": 128,
+        "spins": 896,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 4,
+        "sha256": "2cfed344ac29418bc1e53247d7f75f1c4c90052cdcee10223ad2af84bfaecfa8"
+      },
+      {
+        "choice": "lines-1-buy-flagship",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 896,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 2,
+        "sha256": "a53e2ea2736dcd8c531f7935305daee9a6249f94fa82d1f857779479f11f229b"
+      },
+      {
+        "choice": "lines-1-buy-flagship",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 896,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 4,
+        "sha256": "2cdd5b80ed94c48ebc23d92e51e9a3f82949dccbc71388fdbb29b4951fd92b30"
+      },
+      {
+        "choice": "lines-1-buy-flagship",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 896,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 4,
+        "sha256": "e8a9e994b34e73c8534b5490dcf489574b78bb4b6bbd1b137d67e12740decabf"
+      },
+      {
+        "choice": "lines-5-normal-raid",
+        "stakeUnits": 10,
+        "paidRounds": 128,
+        "spins": 143,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "48b736a93affe2f0a8e03f7e2882bfaecaae4114600575d5f39ea54deb0fa8c0"
+      },
+      {
+        "choice": "lines-5-normal-raid",
+        "stakeUnits": 20,
+        "paidRounds": 128,
+        "spins": 143,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "c5bc350b2cb24a0f9563e485ec48bc46a30a8ccac45dfd8fe678886321f51fe8"
+      },
+      {
+        "choice": "lines-5-normal-raid",
+        "stakeUnits": 50,
+        "paidRounds": 128,
+        "spins": 143,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "2cfad8a0584112d5fa3dfefd12fec57723f19e6ba489ca8d94cf34cfde5f2225"
+      },
+      {
+        "choice": "lines-5-normal-raid",
+        "stakeUnits": 100,
+        "paidRounds": 128,
+        "spins": 143,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "5a4b86982340ed47badf70d941543584c2b4ebb5bb6bfd443cdd7790d039beb6"
+      },
+      {
+        "choice": "lines-5-normal-raid",
+        "stakeUnits": 200,
+        "paidRounds": 128,
+        "spins": 143,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "50a8aae50eda5a003e89751497b4545069a35f83743e3f6add90672032ddec6a"
+      },
+      {
+        "choice": "lines-5-normal-raid",
+        "stakeUnits": 500,
+        "paidRounds": 128,
+        "spins": 143,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "5d963b1f3820f43758a69a0a72b0783bd2aacce0c83bf8e289112172f8d1cc92"
+      },
+      {
+        "choice": "lines-5-normal-raid",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 143,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "1b915fd999a6ddf8964496825e5785d22c8a459f411ee4a9bd745de4dd918e6b"
+      },
+      {
+        "choice": "lines-5-normal-raid",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 143,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "5cdd5d17c322df1bcefceace34d778e32314b9ca3f6df30b7ba146304392483c"
+      },
+      {
+        "choice": "lines-5-normal-raid",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 143,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "40ac3024e9491fbba79ac4a4b66832658956c2d46659f4743fd2f6dcba45bee5"
+      },
+      {
+        "choice": "lines-5-normal-flagship",
+        "stakeUnits": 10,
+        "paidRounds": 128,
+        "spins": 135,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "6c02427ccb6abc066a173e14af0203ac1f80a77ebf846293145ae883fff708bd"
+      },
+      {
+        "choice": "lines-5-normal-flagship",
+        "stakeUnits": 20,
+        "paidRounds": 128,
+        "spins": 135,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "9871dfaef1c172675e6dbfe1b73e943cf58059030409588a4fd461b10208a552"
+      },
+      {
+        "choice": "lines-5-normal-flagship",
+        "stakeUnits": 50,
+        "paidRounds": 128,
+        "spins": 135,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "9cd015da7a3573c13751bac2418d88cc97c6e01a0656c828ade02c0a1fc0966c"
+      },
+      {
+        "choice": "lines-5-normal-flagship",
+        "stakeUnits": 100,
+        "paidRounds": 128,
+        "spins": 135,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "6090aa18c27ac3f9cc65f5b3450264250826dd299bd5c3407c44f512659417f9"
+      },
+      {
+        "choice": "lines-5-normal-flagship",
+        "stakeUnits": 200,
+        "paidRounds": 128,
+        "spins": 135,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "98f166a4a2a283a62877fbe2a85a7b3fc24117d93741f5db3b31bbfc63a442ed"
+      },
+      {
+        "choice": "lines-5-normal-flagship",
+        "stakeUnits": 500,
+        "paidRounds": 128,
+        "spins": 135,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "5cd991d06be1f0621ae41ad2d8ba27f16e1c36b34af15178e82dd4cd6e46ab26"
+      },
+      {
+        "choice": "lines-5-normal-flagship",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 135,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "14d415931820af1596d096e0bab1f4375cbdb5970cf8d104783b93ce23a28c9f"
+      },
+      {
+        "choice": "lines-5-normal-flagship",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 135,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "3f813406bae1537f3e2d33c0e02afbc707c516927a6d9055e6cd46c02fcd160f"
+      },
+      {
+        "choice": "lines-5-normal-flagship",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 135,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "bf46a00990cad9503d3c9c5f1ece3346d383565de498dece77e9b2b2a7a3eec4"
+      },
+      {
+        "choice": "lines-5-buy-raid",
+        "stakeUnits": 10,
+        "paidRounds": 128,
+        "spins": 1920,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "7272fcbfc6bc234fc81cdd89bed03d41628e3082a19f092fc1fd87636c1bdb52"
+      },
+      {
+        "choice": "lines-5-buy-raid",
+        "stakeUnits": 20,
+        "paidRounds": 128,
+        "spins": 1920,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 2,
+        "sha256": "d639116a24fd7200ed5e49803a7d4a0951d5a98f69d191b819c08eaeceb1db7d"
+      },
+      {
+        "choice": "lines-5-buy-raid",
+        "stakeUnits": 50,
+        "paidRounds": 128,
+        "spins": 1920,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "91d34c7887ce258f5cc57598f9d85f02f133aef790697c4a04ff872b48a073c9"
+      },
+      {
+        "choice": "lines-5-buy-raid",
+        "stakeUnits": 100,
+        "paidRounds": 128,
+        "spins": 1920,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 2,
+        "sha256": "e3df390aa4d9e5c6c480c7f81939032205ef8f8c516d3db5e5697fa92ae71d76"
+      },
+      {
+        "choice": "lines-5-buy-raid",
+        "stakeUnits": 200,
+        "paidRounds": 128,
+        "spins": 1920,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "771f05ddd9fcec11ecf0a46ee1186610374a057dc822347cd9fe5d05b0ec989d"
+      },
+      {
+        "choice": "lines-5-buy-raid",
+        "stakeUnits": 500,
+        "paidRounds": 128,
+        "spins": 1920,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 2,
+        "sha256": "c7f7ce9e5563c8b284df4277f256bf17f1546723556e7b367cd6ef1e39aba84f"
+      },
+      {
+        "choice": "lines-5-buy-raid",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 1920,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 3,
+        "sha256": "cc29a67300c68a75fb4837dfd7ad91129aa5961fd8f9fd0d970564473cd04192"
+      },
+      {
+        "choice": "lines-5-buy-raid",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 1920,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 2,
+        "sha256": "19a70e5b8d65cb6f3fb640a72538d4498a88632436071442d2af19e26c8c680d"
+      },
+      {
+        "choice": "lines-5-buy-raid",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 1920,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 3,
+        "sha256": "69ede269705b86aade27d51d965b75c899b02e13176f9bcd3c05e7bec174df10"
+      },
+      {
+        "choice": "lines-5-buy-flagship",
+        "stakeUnits": 10,
+        "paidRounds": 128,
+        "spins": 896,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "11b9239f02caf3d72e85ae21de324ce8683c11ff80ee5be1c11f853e15bde507"
+      },
+      {
+        "choice": "lines-5-buy-flagship",
+        "stakeUnits": 20,
+        "paidRounds": 128,
+        "spins": 896,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 2,
+        "sha256": "344c8d3b59e4cf60c4a610a2be8cc63e5535550ae5029351303911ab8f374b86"
+      },
+      {
+        "choice": "lines-5-buy-flagship",
+        "stakeUnits": 50,
+        "paidRounds": 128,
+        "spins": 896,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "98e31fa4653134f665dc7044744fb1dc5ed185751b827efbad3b225033186e25"
+      },
+      {
+        "choice": "lines-5-buy-flagship",
+        "stakeUnits": 100,
+        "paidRounds": 128,
+        "spins": 896,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 3,
+        "sha256": "1e9678953d66c969b40a5433f2fb74bbb0fc097da1edcf2b77ca399aef7f84ae"
+      },
+      {
+        "choice": "lines-5-buy-flagship",
+        "stakeUnits": 200,
+        "paidRounds": 128,
+        "spins": 896,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "14e895561b347732647f08f2ff30db21f19d131d7b6bb45a6585615785dcca41"
+      },
+      {
+        "choice": "lines-5-buy-flagship",
+        "stakeUnits": 500,
+        "paidRounds": 128,
+        "spins": 896,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 2,
+        "sha256": "aa9b2a5ca44371b585cd999e21e77792dbbdd4650e9317dd2aa81c89aa11c7eb"
+      },
+      {
+        "choice": "lines-5-buy-flagship",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 896,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 3,
+        "sha256": "871f3b2d9dbfa97c1ab888232115ca3240cb4dc994130f93cbaadd2756344c4f"
+      },
+      {
+        "choice": "lines-5-buy-flagship",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 896,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 2,
+        "sha256": "4a2acec689e47273297358004d424dac37d30e6d3e13362bd20cc3b2dee83f8b"
+      },
+      {
+        "choice": "lines-5-buy-flagship",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 896,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 4,
+        "sha256": "dc9f1b8ed0b10c3faf0ef06e0f75943a5d75791ef149f842c0e6d35eab0fc519"
+      },
+      {
+        "choice": "lines-10-normal-raid",
+        "stakeUnits": 10,
+        "paidRounds": 128,
+        "spins": 143,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "0ea671c725f4384fe81aa132fcf1de44ff26ce441a6d0e469ef7b8be15c61ec5"
+      },
+      {
+        "choice": "lines-10-normal-raid",
+        "stakeUnits": 20,
+        "paidRounds": 128,
+        "spins": 143,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "e7c4e5b47a2ce4a3df42e924c5823a8f760e17ee815fe1b4d517b1c2a0aafc23"
+      },
+      {
+        "choice": "lines-10-normal-raid",
+        "stakeUnits": 50,
+        "paidRounds": 128,
+        "spins": 143,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "d3846f2486cd48eb453dbd21e7bee295f1085a688dc2488d0b4445221c8461ae"
+      },
+      {
+        "choice": "lines-10-normal-raid",
+        "stakeUnits": 100,
+        "paidRounds": 128,
+        "spins": 143,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "db4f78013d66c8bfe5220c5a01706ef4dc1ec00b78073c8a9ea1a56662341577"
+      },
+      {
+        "choice": "lines-10-normal-raid",
+        "stakeUnits": 200,
+        "paidRounds": 128,
+        "spins": 143,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "e6fdc506462928995bbbb066d13632e1c8d3bb01e827e0f3be80c0882a926d9b"
+      },
+      {
+        "choice": "lines-10-normal-raid",
+        "stakeUnits": 500,
+        "paidRounds": 128,
+        "spins": 143,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "96ff32bcc7a7c4e82572e4d06089b67ffdf48f72e994ea03e1875a7dfa87df10"
+      },
+      {
+        "choice": "lines-10-normal-raid",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 143,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "f3655ae6eb9b9a5a7002d44450016f58af1bbe7242315e32e66068b281da2680"
+      },
+      {
+        "choice": "lines-10-normal-raid",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 143,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "82ca0031a0e2b05b92427d561a4e60d26a4a27e02585b1bbbe68b395053923f9"
+      },
+      {
+        "choice": "lines-10-normal-raid",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 143,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "52fc7b4c7952ed9b837cf52f52fa705a446bcb86ff1f2d24300304f0a429a3de"
+      },
+      {
+        "choice": "lines-10-normal-flagship",
+        "stakeUnits": 10,
+        "paidRounds": 128,
+        "spins": 135,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "f158d03e95364fb45f2ea0340e1c2f2d36b8e063e821899e72de3f26e471ce93"
+      },
+      {
+        "choice": "lines-10-normal-flagship",
+        "stakeUnits": 20,
+        "paidRounds": 128,
+        "spins": 135,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "7dfbb21e41b9eea1a5d2e4a64f4bcca29eaf0d40f3360c42b8ef5203ff63a073"
+      },
+      {
+        "choice": "lines-10-normal-flagship",
+        "stakeUnits": 50,
+        "paidRounds": 128,
+        "spins": 135,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "c0660935ef96b31dca8d71b6ce3c3928a50c5bd553622448b9bc0ee558bf60a8"
+      },
+      {
+        "choice": "lines-10-normal-flagship",
+        "stakeUnits": 100,
+        "paidRounds": 128,
+        "spins": 135,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "7401c6823f2c1e256fdf8e2e5ac00b053accd92aeb1906c163c3410cdeb692b7"
+      },
+      {
+        "choice": "lines-10-normal-flagship",
+        "stakeUnits": 200,
+        "paidRounds": 128,
+        "spins": 135,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "e263316d3b3a04e6f4824c9611bd41e773ff81c9f4864ecdd3bb7857ed9a41bb"
+      },
+      {
+        "choice": "lines-10-normal-flagship",
+        "stakeUnits": 500,
+        "paidRounds": 128,
+        "spins": 135,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "e8a4087734c643ee61f088895118f2666637cb6f9e9de2fe17b2539d077ac88b"
+      },
+      {
+        "choice": "lines-10-normal-flagship",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 135,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "aa405f78ba78e5bad4b456e426001586455f678897b5b512c856ad9465283886"
+      },
+      {
+        "choice": "lines-10-normal-flagship",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 135,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "1272e94bae03d5fc21d3a05da26af3fcee25eea0f1141d8fe833df7f4942a536"
+      },
+      {
+        "choice": "lines-10-normal-flagship",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 135,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "2383c632d52b8d2a54bf0d092198b70480a1ddda0753a7699e31333b26982ec0"
+      },
+      {
+        "choice": "lines-10-buy-raid",
+        "stakeUnits": 10,
+        "paidRounds": 128,
+        "spins": 1920,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "f67b1e8fa36dbaba4f60337b16df482243dc5bfef3549ad51c0bcb2bb3d0323e"
+      },
+      {
+        "choice": "lines-10-buy-raid",
+        "stakeUnits": 20,
+        "paidRounds": 128,
+        "spins": 1920,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "ab9d59bb1e5035c70f50aaafd284df57d7eb56aa45b80867643dc2ccf1183f5d"
+      },
+      {
+        "choice": "lines-10-buy-raid",
+        "stakeUnits": 50,
+        "paidRounds": 128,
+        "spins": 1920,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "82b7c9e669127597b4372c321648bf87c799a59a7dcabb765ac10558ad7d62b2"
+      },
+      {
+        "choice": "lines-10-buy-raid",
+        "stakeUnits": 100,
+        "paidRounds": 128,
+        "spins": 1920,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "3250d705689916dc9a95e4f9faf2bfa0314ff71bf0584e73ecc3e926e845abeb"
+      },
+      {
+        "choice": "lines-10-buy-raid",
+        "stakeUnits": 200,
+        "paidRounds": 128,
+        "spins": 1920,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "5c859a4ce981dfa0e94a0499989d6946c8a4da504df9ff4185712a790fbb564e"
+      },
+      {
+        "choice": "lines-10-buy-raid",
+        "stakeUnits": 500,
+        "paidRounds": 128,
+        "spins": 1920,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "0a15efdfe40066f266e9caf7de9775f0bd4a6354508114142518e40aef876b55"
+      },
+      {
+        "choice": "lines-10-buy-raid",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 1920,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 2,
+        "sha256": "aac6ab6f537d9e4032bfcb92f09b5d446be53ce4a25eddb09044a4b0f302feec"
+      },
+      {
+        "choice": "lines-10-buy-raid",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 1920,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 2,
+        "sha256": "03459284f7c2e59e3d862a3e1b5dbcd2319d7f6eb99efc536b62cda498b5b610"
+      },
+      {
+        "choice": "lines-10-buy-raid",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 1920,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 2,
+        "sha256": "de4f5eaf3609a4cc2a02ba660190c40e723a42cec407105aa344a3428ad75038"
+      },
+      {
+        "choice": "lines-10-buy-flagship",
+        "stakeUnits": 10,
+        "paidRounds": 128,
+        "spins": 896,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "187ca5af36bae3708b6dc991e0fdfb762ff299862a1de6665bf1f300761cae65"
+      },
+      {
+        "choice": "lines-10-buy-flagship",
+        "stakeUnits": 20,
+        "paidRounds": 128,
+        "spins": 896,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "5a62de260dacd81a704512eaa744fffa40c610a240bea29fa46b9c6ac3ac33fd"
+      },
+      {
+        "choice": "lines-10-buy-flagship",
+        "stakeUnits": 50,
+        "paidRounds": 128,
+        "spins": 896,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "80e2941421df9fbbe4d25d86c4273f6a69641806c942fce4916312edb48cc188"
+      },
+      {
+        "choice": "lines-10-buy-flagship",
+        "stakeUnits": 100,
+        "paidRounds": 128,
+        "spins": 896,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "e9eeb2c112c1f90f470069ab8ccaa52b072b3917e651c41ce7d5a3b9cd68e37b"
+      },
+      {
+        "choice": "lines-10-buy-flagship",
+        "stakeUnits": 200,
+        "paidRounds": 128,
+        "spins": 896,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "3b0465e7d3e68e55a93d5b6abf971365540fef339a975bcc426cd38387dd4f4a"
+      },
+      {
+        "choice": "lines-10-buy-flagship",
+        "stakeUnits": 500,
+        "paidRounds": 128,
+        "spins": 896,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "54b33cea61a0f3b0231e95011b5d159bca3ca6617140c1a2eca56ab2947181ea"
+      },
+      {
+        "choice": "lines-10-buy-flagship",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 896,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 2,
+        "sha256": "3316cd5353e1143a0a18058ab8c92da751089228f7604bc307e9b90ad7d4917c"
+      },
+      {
+        "choice": "lines-10-buy-flagship",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 896,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "e077051a17d8aeec80f76bba24797c142ff59538265d44e287507be06261cf44"
+      },
+      {
+        "choice": "lines-10-buy-flagship",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 896,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 2,
+        "sha256": "987b7e6143a49fa7091ae009e149e92f70007e98bd54766ff9a69278055ebeaf"
+      },
+      {
+        "choice": "lines-20-normal-raid",
+        "stakeUnits": 10,
+        "paidRounds": 128,
+        "spins": 143,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "a270d9787722baec69f913e6fb5ef017742f2ceea6d6ef0e5a385cb8d73994e5"
+      },
+      {
+        "choice": "lines-20-normal-raid",
+        "stakeUnits": 20,
+        "paidRounds": 128,
+        "spins": 143,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "31b8466e30b87e9cbd6265c0f8ffbcced604ce7c92a0502f852174b3e7c3152b"
+      },
+      {
+        "choice": "lines-20-normal-raid",
+        "stakeUnits": 50,
+        "paidRounds": 128,
+        "spins": 143,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "97ca278c5b554cc56149506a3a5f043e5779aef4c01e30678732396ace7852d8"
+      },
+      {
+        "choice": "lines-20-normal-raid",
+        "stakeUnits": 100,
+        "paidRounds": 128,
+        "spins": 143,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "ea98e97ea2932872869ff95d71f9731465d06e45385eaa6b18e6d59ee2e1362c"
+      },
+      {
+        "choice": "lines-20-normal-raid",
+        "stakeUnits": 200,
+        "paidRounds": 128,
+        "spins": 143,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "ec3b5431689fc81457ac965743b26eb0291faa021410e63feb689f5c1aeed693"
+      },
+      {
+        "choice": "lines-20-normal-raid",
+        "stakeUnits": 500,
+        "paidRounds": 128,
+        "spins": 143,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "58fafc460f39aecc614e10e6290d462c8f95dd49afbb0d81a7765d5466817bd0"
+      },
+      {
+        "choice": "lines-20-normal-raid",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 143,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "962afea4e3867d1d160cb23e8b1af7a5fb526072b99eabb2f3c86e0e8a71e2a4"
+      },
+      {
+        "choice": "lines-20-normal-raid",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 143,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "9c86e7571ea120dfb17475fea936b0332cb5bc4fbf4e9a1d822970271e08946f"
+      },
+      {
+        "choice": "lines-20-normal-raid",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 143,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "9a40fd143b509b11fefc3760db5aff47cb4c8f3c34c473daad352a51a42f2dfe"
+      },
+      {
+        "choice": "lines-20-normal-flagship",
+        "stakeUnits": 10,
+        "paidRounds": 128,
+        "spins": 135,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "db3b1e414132493b4f4e037be04793e49b5eaecb35346adbbaa18347d5b7164d"
+      },
+      {
+        "choice": "lines-20-normal-flagship",
+        "stakeUnits": 20,
+        "paidRounds": 128,
+        "spins": 135,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "42e200ea3250ad66dc6502ee59712e18aaa8332185ed604eb64f72c9fa8db13b"
+      },
+      {
+        "choice": "lines-20-normal-flagship",
+        "stakeUnits": 50,
+        "paidRounds": 128,
+        "spins": 135,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "fd43cf8b7838bc122e9b9678c7ed350ef86fc469addb279093250c93fdb1bc95"
+      },
+      {
+        "choice": "lines-20-normal-flagship",
+        "stakeUnits": 100,
+        "paidRounds": 128,
+        "spins": 135,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "61d3aae5710c9dffd95e9e97e7b96865dc5aa70ab91eb73dfc6928fac0a9ecbc"
+      },
+      {
+        "choice": "lines-20-normal-flagship",
+        "stakeUnits": 200,
+        "paidRounds": 128,
+        "spins": 135,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "02f39bfe324434e34d87df205b78411594f0cb158072bb114942af01ae127017"
+      },
+      {
+        "choice": "lines-20-normal-flagship",
+        "stakeUnits": 500,
+        "paidRounds": 128,
+        "spins": 135,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "8a0a7fcdf548b9067df67c4cf47a56e666c8b0a62db3eb7781dee3c298e60b95"
+      },
+      {
+        "choice": "lines-20-normal-flagship",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 135,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "0467f7176e523ea8ba0fa82604837d9f95cf1c7aa5f708bd0e7053f0026b397c"
+      },
+      {
+        "choice": "lines-20-normal-flagship",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 135,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "8b6ec05a18c1e29290a391367860aac6d76061f920be22c020b6e9b1a75e6329"
+      },
+      {
+        "choice": "lines-20-normal-flagship",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 135,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "2bfe64f7c8b129c68325b7485216e3efa443bd0114e0cf7de40b53d8093ad87f"
+      },
+      {
+        "choice": "lines-20-buy-raid",
+        "stakeUnits": 10,
+        "paidRounds": 128,
+        "spins": 1920,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 2,
+        "sha256": "f1aa9cf44a86945f61c910ed2d42178e23bea8b6a5c1a46934864cd2d1306102"
+      },
+      {
+        "choice": "lines-20-buy-raid",
+        "stakeUnits": 20,
+        "paidRounds": 128,
+        "spins": 1920,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 2,
+        "sha256": "d71d3a3860c4b0ab8e90074778d33ac967c871920151fca282ecbd6768bc8907"
+      },
+      {
+        "choice": "lines-20-buy-raid",
+        "stakeUnits": 50,
+        "paidRounds": 128,
+        "spins": 1920,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 2,
+        "sha256": "942bd36e919068516159ef0fbcf7e6b774cf193cae5841cdc3adc51b05ca6319"
+      },
+      {
+        "choice": "lines-20-buy-raid",
+        "stakeUnits": 100,
+        "paidRounds": 128,
+        "spins": 1920,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 2,
+        "sha256": "507a922104b37b53c387ab7c0a1950f5cd63b0a6a1249bb6e835fb13ffb83110"
+      },
+      {
+        "choice": "lines-20-buy-raid",
+        "stakeUnits": 200,
+        "paidRounds": 128,
+        "spins": 1920,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "78092715073b744306d99ca41433637a39e55773bd8b6983cf62938899b844c4"
+      },
+      {
+        "choice": "lines-20-buy-raid",
+        "stakeUnits": 500,
+        "paidRounds": 128,
+        "spins": 1920,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "66547684a744ef7d9450041f2d51aa0106495959267a906bfbf197b562c137c6"
+      },
+      {
+        "choice": "lines-20-buy-raid",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 1920,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 2,
+        "sha256": "0b9bcaa8eadba6b4296cc1defd9d6dcb2303ecaa36b1ce21e91a199bf0f58c73"
+      },
+      {
+        "choice": "lines-20-buy-raid",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 1920,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "21527d4726fddb56d9b5809256820cbaa52d504dcedfd178f5becf716aa75caf"
+      },
+      {
+        "choice": "lines-20-buy-raid",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 1920,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 2,
+        "sha256": "6b34f16cc29acde653907bdc187709bbaa9e13751102f72ff2e9b13d19477eeb"
+      },
+      {
+        "choice": "lines-20-buy-flagship",
+        "stakeUnits": 10,
+        "paidRounds": 128,
+        "spins": 896,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 3,
+        "sha256": "41c69b104b21dd2fd81983de2d945765707d37e80681d472851fec0088a418a8"
+      },
+      {
+        "choice": "lines-20-buy-flagship",
+        "stakeUnits": 20,
+        "paidRounds": 128,
+        "spins": 896,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 3,
+        "sha256": "98c6aaf1064b393f3cbca80da8f546b08990ba410f67fd95761cc8187b002170"
+      },
+      {
+        "choice": "lines-20-buy-flagship",
+        "stakeUnits": 50,
+        "paidRounds": 128,
+        "spins": 896,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 3,
+        "sha256": "bbe65494f7f4b0bfb79142e718cedad01387c03652c6a2b469add32feba50d24"
+      },
+      {
+        "choice": "lines-20-buy-flagship",
+        "stakeUnits": 100,
+        "paidRounds": 128,
+        "spins": 896,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 2,
+        "sha256": "f3432ad5c4838719cff8d151c87241aa9668f5fb60b7a9e75332376aeee7bc3b"
+      },
+      {
+        "choice": "lines-20-buy-flagship",
+        "stakeUnits": 200,
+        "paidRounds": 128,
+        "spins": 896,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "be5e8179f6759f7278ca959b9c2462dac3dd3107904d1b418807ef90961970b7"
+      },
+      {
+        "choice": "lines-20-buy-flagship",
+        "stakeUnits": 500,
+        "paidRounds": 128,
+        "spins": 896,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "3f8f928d28825cceea25829aef7864273ce02f8217c95c749272aad3c47312ca"
+      },
+      {
+        "choice": "lines-20-buy-flagship",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 896,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 2,
+        "sha256": "05de0359e9eb0d9fa6cf5c4dadb27756ba5a5299d211149b9e58d89baba76067"
+      },
+      {
+        "choice": "lines-20-buy-flagship",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 896,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "8e5aa2249533c62e1b02049344597cf9b26ce7980024d2ab9f465be31cd51f64"
+      },
+      {
+        "choice": "lines-20-buy-flagship",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 896,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 2,
+        "sha256": "4a85b232e3a2ea0021b5ed541ed6124284ed4526c43c64550414aed341bb7fdd"
+      }
+    ]
+  },
+  "serverReplayChecks": 18432,
+  "walletEvidence": {
+    "passed": true,
+    "native": {
+      "passed": true,
+      "minimumStakeUnits": "10",
+      "replayPreserved": true,
+      "reservationReleased": true,
+      "journalBalanced": true
+    },
+    "gameId": "studio-caribbean-treasures",
+    "cases": 144,
+    "freeContinuationChecks": 749,
+    "replayAndRestartCases": 144,
+    "oneDebitAndCredit": true,
+    "clientVerified": true,
+    "sha256": "773ef82ad216d93a08c982f8867d988aa90eb5375a1d8e8d1a6e20a0d59b0947"
+  }
+}

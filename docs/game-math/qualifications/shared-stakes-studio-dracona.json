@@ -1,0 +1,266 @@
+{
+  "schemaVersion": 1,
+  "gameId": "studio-dracona",
+  "rulesVersion": 3,
+  "progressVersion": 2,
+  "startedAt": "2026-10-31T21:09:11.906Z",
+  "completedAt": "2026-10-31T21:09:15.065Z",
+  "sourceHashes": {
+    "src/shared/gameStakes.ts": "9e207c51bc5cd9c342992f2f92258826a678cbf00d409b329447e7abca654637",
+    "src/shared/roundPrecision.ts": "8d9f64dd7ae146fa1a7288bf0d4bf8f947a8bc419d12c94fe8f765ec2a75b307",
+    "src/shared/casinoExpansion.ts": "c89133d0c011baa56241b09e56913e315534ac3e52871308238e234cb8c75f74",
+    "src/shared/forestHeartMath.ts": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
+    "src/shared/neopolisMath.ts": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
+    "src/shared/neopolisStakePayouts.ts": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
+    "server/demoExpansion.ts": "355b75eb024907c989e1b2a26031de1ada8e54de6c44289730fc6922702465ed",
+    "server/demoWallet.ts": "695130f9e8eec2b6854f6f620ea2aae33084f25c182ae4755f49347cedcebf63",
+    "server/demoWalletAmounts.ts": "1da7a73b63c79cba0ff674f59c75fe517d8445eafaf831be8afa7f9a4c6e6317",
+    "server/demoWalletRoutes.ts": "8d60c69f76d12f274c1a691786cfda57b48deabc354527202ed124a433feba82",
+    "server/finance/nile-game-runtime.ts": "b667f5865791852f0c79f5b85176548c5c012478c561c021bab5cde3e8dc8d96",
+    "server/afterglowProgress.ts": "cf38081a14f88c034f1a32af9e99ca7bbd7f56590decd419867469cb2f753a42",
+    "src/wallet/ExpansionClient.ts": "bc253f9200daec9539ade6a26f715e7a7734b80b02562989be2d5516019b81e1",
+    "src/wallet/WalletClient.ts": "0e8bb81228f8bd9566fd2308e089323027bc3f7f0422ccbeda858f998f6de6a9",
+    "scripts/game-math/rtp-stakes-sampler.mjs": "d0c297ee40636be7c1312d5de8be1f4023e858efbe61e6aba26486f011fc4d7d",
+    "scripts/game-math/rtp-stakes-worker.mjs": "f5db2c6be7cc4c68bb07c719eea5ba3db3f0d237d7bf8cd75736c891f91a218d",
+    "server-tests/game-stakes.test.ts": "810c0f42c5137ed0e49b94a796808c6753ab4e204408c773c12176eefc896031",
+    "server-tests/round-precision.test.ts": "d48a631f198636a97db8e70952c600a47b9cb1d04b20ebc6d08cbfa2cd452abb",
+    "src/shared/dracona.ts": "ee182b2547a155c80978ebbbabcc28c9dd2fd88224a7015eb9d03973132e0137",
+    "src/shared/draconaMath.ts": "7b73a84f00df88ebce06e8eca1676b90ca457b36d3db4329b723cc66e9977583",
+    "server/games/dracona.ts": "9d7b86aa2db9dd2ebe0d6a6dc09283a33b868b03a1e5c444f722d90822e9fa95",
+    "scripts/game-math/rtp-simulation.mjs": "0fe613b19c2f9e16453953d1abdc149b65104910d77be65487a55529c16f02e5",
+    "scripts/game-math/stake-runtime.mjs": "24aadf4414fe0daf402931901d773143291bee2c099713355e3e345c1e5145ca",
+    "scripts/game-math/stakes-wallet.ts": "d9a4084a6ddb188ef52a6d2e05fb93e09f0ade96a95ae75a16ad065c80f2c695",
+    "scripts/game-math/rtp-stakes-samples.mjs": "d2cdeaf1311ba67c78a04b04d78c6353caaed0b490933c93d8b231b94e481b1c",
+    "scripts/game-math/rtp-stakes.mjs": "303243abd909c97683260439f51d7730b2550c2ffb660e434ae59db2730da6ad"
+  },
+  "policySha256": "14f440ac598b6647f0e5be7c5d442e457720ca4aafc2f003e4ca9905a3b21759",
+  "method": "full-round-unbiased-cent-policy-v1",
+  "precisionLaw": {
+    "method": "Independent uniform final ticket; exact BigInt rational accumulation and integer settlement",
+    "identity": "For exact reward n/d, let q=floor(n/d), r=n mod d and uniform U in {0,...,d-1}. Pay q+1 if U<r, otherwise q. The sum over all tickets is q*d+r=n.",
+    "stopping": "The ticket is drawn only after the final player choice and every free continuation. No future rounding ticket is exposed to adaptive choices.",
+    "preservation": "Every intermediate discarded fraction is restored before the final ticket. For a fixed consumed path the expected credit equals its capped exact reward, and the actual credit never falls below the original sum of floors.",
+    "caps": "Nonnegative rewards couple every denomination to the same latent capped paid round. Stopping a presentation after its floor reaches the cap does not change that round reward.",
+    "compatibility": "Only starts pinned to stakePolicyVersion=1 use this receipt. Accepted historical rounds and UUID replays retain their original rules and committed credit.",
+    "confidence": "Exact analytical bounds and statistical intervals are labelled separately. A statistical estimate is not an exact RTP. Conditional estimates are per case, not simultaneous confidence guarantees."
+  },
+  "results": [
+    {
+      "choice": "normal",
+      "stakeUnits": 10,
+      "kind": "statistical-estimate",
+      "rtp": 0.957930679411363,
+      "interval95": [
+        0.9537109611631953,
+        0.9621503976595307
+      ],
+      "paidRounds": 5000000,
+      "estimator": "Complete paid-round exact-reward moments, including all bonus state and caps."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 20,
+      "kind": "statistical-estimate",
+      "rtp": 0.957930679411363,
+      "interval95": [
+        0.9537109611631953,
+        0.9621503976595307
+      ],
+      "paidRounds": 5000000,
+      "estimator": "Complete paid-round exact-reward moments, including all bonus state and caps."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 50,
+      "kind": "statistical-estimate",
+      "rtp": 0.957930679411363,
+      "interval95": [
+        0.9537109611631953,
+        0.9621503976595307
+      ],
+      "paidRounds": 5000000,
+      "estimator": "Complete paid-round exact-reward moments, including all bonus state and caps."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 100,
+      "kind": "statistical-estimate",
+      "rtp": 0.957930679411363,
+      "interval95": [
+        0.9537109611631953,
+        0.9621503976595307
+      ],
+      "paidRounds": 5000000,
+      "estimator": "Complete paid-round exact-reward moments, including all bonus state and caps."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 200,
+      "kind": "statistical-estimate",
+      "rtp": 0.957930679411363,
+      "interval95": [
+        0.9537109611631953,
+        0.9621503976595307
+      ],
+      "paidRounds": 5000000,
+      "estimator": "Complete paid-round exact-reward moments, including all bonus state and caps."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 500,
+      "kind": "statistical-estimate",
+      "rtp": 0.957930679411363,
+      "interval95": [
+        0.9537109611631953,
+        0.9621503976595307
+      ],
+      "paidRounds": 5000000,
+      "estimator": "Complete paid-round exact-reward moments, including all bonus state and caps."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 1000,
+      "kind": "statistical-estimate",
+      "rtp": 0.957930679411363,
+      "interval95": [
+        0.9537109611631953,
+        0.9621503976595307
+      ],
+      "paidRounds": 5000000,
+      "estimator": "Complete paid-round exact-reward moments, including all bonus state and caps."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 2000,
+      "kind": "statistical-estimate",
+      "rtp": 0.957930679411363,
+      "interval95": [
+        0.9537109611631953,
+        0.9621503976595307
+      ],
+      "paidRounds": 5000000,
+      "estimator": "Complete paid-round exact-reward moments, including all bonus state and caps."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 5000,
+      "kind": "statistical-estimate",
+      "rtp": 0.957930679411363,
+      "interval95": [
+        0.9537109611631953,
+        0.9621503976595307
+      ],
+      "paidRounds": 5000000,
+      "estimator": "Complete paid-round exact-reward moments, including all bonus state and caps."
+    }
+  ],
+  "evidence": {
+    "reference": {
+      "path": "docs/game-math/qualifications/dracona-v3.json",
+      "sha256": "05fe7a3ad49ada4f78dba0e4bf2b9e357bd7ade6848317ae087eff4e7939462d"
+    }
+  },
+  "replay": {
+    "coverage": [
+      {
+        "choice": "normal",
+        "stakeUnits": 10,
+        "paidRounds": 128,
+        "spins": 164,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 3,
+        "sha256": "c65d02a24c041641a92330bf76b71fa903dad3873f9cb2194c9e6a09c1be6a0d"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 20,
+        "paidRounds": 128,
+        "spins": 164,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 3,
+        "sha256": "46f54abeac53e6a514ea2eaf43bae102e42a2fa7ce254e4ef97555f30e9bdeaf"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 50,
+        "paidRounds": 128,
+        "spins": 164,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 3,
+        "sha256": "aff071bfa3afdfcfcac939d616eb7ca991887a568afaf672e1936cdbcc5e9c84"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 100,
+        "paidRounds": 128,
+        "spins": 164,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 3,
+        "sha256": "fc9cc0734ac0deea59c1faeeb71bd6b7e59c79bbab4249b262c10f3d2cb9ab30"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 200,
+        "paidRounds": 128,
+        "spins": 164,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 4,
+        "sha256": "55cb1376f872d50ba59697c2e2f55961adf9c430d9461333b4d55b65228da701"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 500,
+        "paidRounds": 128,
+        "spins": 164,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 3,
+        "sha256": "6c8732d70b4422edd829673111c2ae5e9fca5a22bd7c7b9697962dfdb0f6a430"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 164,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 3,
+        "sha256": "000e965c9a932cd1e7e913560c9327878c2d4b6484e73d4bbd5fd4c8a70fc7fc"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 164,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 3,
+        "sha256": "c81ed4d02db53f57fd8ce3bf20dc7e0b7c29fd205a33b3f4f8f1cf68aa33c2b4"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 164,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 2,
+        "sha256": "86d5729bf3c51b91344b19c6e8e547c7a1c598e310f8d13e7234307baf6f9ede"
+      }
+    ]
+  },
+  "serverReplayChecks": 1152,
+  "walletEvidence": {
+    "passed": true,
+    "native": {
+      "passed": true,
+      "minimumStakeUnits": "10",
+      "replayPreserved": true,
+      "reservationReleased": true,
+      "journalBalanced": true
+    },
+    "gameId": "studio-dracona",
+    "cases": 9,
+    "freeContinuationChecks": 0,
+    "replayAndRestartCases": 9,
+    "oneDebitAndCredit": true,
+    "clientVerified": true,
+    "sha256": "cca1b84fe6fd28490baa4da7ab25c431f1ef2f254585f58af71814b9381385f4"
+  }
+}

@@ -22,6 +22,14 @@ export async function moduleProjectionCatalog(reader){
  assert(Object.keys(code.metafile.inputs).every(n=>n==='<stdin>'),'Projected module catalogue imports code');
  return (await import('data:text/javascript;base64,'+Buffer.from(code.outputFiles[0].contents).toString('base64'))).GAME_MODULES;
 }
+/** Read reviewed JSON media from Git without replacing concurrent working files. */
+export async function projectedModuleAsset(root,name,reader){
+ const file=await regularPath(root,name);
+ const fromGit=reader.metadata.moduleAssetSources?.includes(name);
+ if(fromGit)assert(/^public\/.+\.json$/.test(name)&&reader.metadata.files[name],'Only explicitly reviewed JSON media may be projected');
+ const bytes=fromGit?reader.read(name):await readFile(file);
+ same(digest(bytes),reader.metadata.moduleAssets?.[name]);return bytes;
+}
 export async function verifyModuleProjection(root,report,slugs){
  const reader=await readHostProjection(root,report.config,{strictOrigins:true});
  same(report.sha256,reader.sha256);same(report.productionCommit,reader.metadata.productionCommit);
@@ -29,7 +37,7 @@ export async function verifyModuleProjection(root,report,slugs){
  const catalog=await moduleProjectionCatalog(reader),builder=digest(await readFile(await regularPath(root,'scripts/build-game-module.mjs')));
  same(report.builderSha256,builder);
  for(const [name,hash]of Object.entries(report.inputs)){same(digest(reader.read(name)),hash);same(reader.origins[name],report.origins[name]);}
- for(const [name,hash]of Object.entries(report.assets)){same(digest(await readFile(await regularPath(root,name))),hash);same(reader.metadata.moduleAssets[name],hash);}
+ for(const [name,hash]of Object.entries(report.assets)){same(digest(await projectedModuleAsset(root,name,reader)),hash);same(reader.metadata.moduleAssets[name],hash);}
  const expected={};
  for(const slug of slugs){
   const config=JSON.parse(reader.read(`games/${slug}/package.json`)),contract=catalog.find(game=>game.slug===slug),game=config.gameId;

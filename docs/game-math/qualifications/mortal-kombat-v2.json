@@ -3,8 +3,8 @@
   "gameId": "mortal-kombat",
   "rulesVersion": 2,
   "progressVersion": 1,
-  "startedAt": "2026-10-30T20:47:32.614Z",
-  "completedAt": "2026-10-30T20:47:32.620Z",
+  "startedAt": "2026-10-31T21:05:41.094Z",
+  "completedAt": "2026-10-31T21:05:41.113Z",
   "sourceHashes": {
     "server/finance/pvp-money.ts": "14708dc154295ba2baaadf0b9dbe54a7a225b30267d2358ad2aecb729c6db614",
     "src/shared/pvp.ts": "7ef9bd5df153a2f62d060025684384d105acd8607d943b2901eacac2ad55836a",

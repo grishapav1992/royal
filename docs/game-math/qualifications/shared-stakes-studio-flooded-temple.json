@@ -1,0 +1,267 @@
+{
+  "schemaVersion": 1,
+  "gameId": "studio-flooded-temple",
+  "rulesVersion": 2,
+  "progressVersion": 2,
+  "startedAt": "2026-10-31T21:09:08.584Z",
+  "completedAt": "2026-10-31T21:09:11.510Z",
+  "sourceHashes": {
+    "src/shared/gameStakes.ts": "9e207c51bc5cd9c342992f2f92258826a678cbf00d409b329447e7abca654637",
+    "src/shared/roundPrecision.ts": "8d9f64dd7ae146fa1a7288bf0d4bf8f947a8bc419d12c94fe8f765ec2a75b307",
+    "src/shared/casinoExpansion.ts": "c89133d0c011baa56241b09e56913e315534ac3e52871308238e234cb8c75f74",
+    "src/shared/forestHeartMath.ts": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
+    "src/shared/neopolisMath.ts": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
+    "src/shared/neopolisStakePayouts.ts": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
+    "server/demoExpansion.ts": "355b75eb024907c989e1b2a26031de1ada8e54de6c44289730fc6922702465ed",
+    "server/demoWallet.ts": "695130f9e8eec2b6854f6f620ea2aae33084f25c182ae4755f49347cedcebf63",
+    "server/demoWalletAmounts.ts": "1da7a73b63c79cba0ff674f59c75fe517d8445eafaf831be8afa7f9a4c6e6317",
+    "server/demoWalletRoutes.ts": "8d60c69f76d12f274c1a691786cfda57b48deabc354527202ed124a433feba82",
+    "server/finance/nile-game-runtime.ts": "b667f5865791852f0c79f5b85176548c5c012478c561c021bab5cde3e8dc8d96",
+    "server/afterglowProgress.ts": "cf38081a14f88c034f1a32af9e99ca7bbd7f56590decd419867469cb2f753a42",
+    "src/wallet/ExpansionClient.ts": "bc253f9200daec9539ade6a26f715e7a7734b80b02562989be2d5516019b81e1",
+    "src/wallet/WalletClient.ts": "0e8bb81228f8bd9566fd2308e089323027bc3f7f0422ccbeda858f998f6de6a9",
+    "scripts/game-math/rtp-stakes-sampler.mjs": "d0c297ee40636be7c1312d5de8be1f4023e858efbe61e6aba26486f011fc4d7d",
+    "scripts/game-math/rtp-stakes-worker.mjs": "f5db2c6be7cc4c68bb07c719eea5ba3db3f0d237d7bf8cd75736c891f91a218d",
+    "server-tests/game-stakes.test.ts": "810c0f42c5137ed0e49b94a796808c6753ab4e204408c773c12176eefc896031",
+    "server-tests/round-precision.test.ts": "d48a631f198636a97db8e70952c600a47b9cb1d04b20ebc6d08cbfa2cd452abb",
+    "src/shared/floodedTempleCascade.ts": "4eeca742538d793bb5efdf79c9b15389ad827716e8728f385e0c9090ec727cde",
+    "src/shared/floodedTempleCascadeMath.ts": "cf9b490bb9bb7f96f18f53e8662c9f931b5e308ca9a291acf8e66d483e352604",
+    "src/shared/floodedTempleCascadeData.json": "5aa05b4cca0476f48d84e70402204ec9029949a8da3c8d2c7a95b6a5456fc07a",
+    "server/games/floodedTempleCascade.ts": "8d7814d13dd390a72b9e64650e0da025bedc484e2c53f010c8966b8d5b7abe94",
+    "scripts/game-math/rtp-temple-cascade-model.mjs": "b08395ab6ca615fa81190d84371d9941b9c51705c68540bfdf2d7ba4da22e399",
+    "scripts/game-math/stake-runtime.mjs": "24aadf4414fe0daf402931901d773143291bee2c099713355e3e345c1e5145ca",
+    "scripts/game-math/stakes-wallet.ts": "d9a4084a6ddb188ef52a6d2e05fb93e09f0ade96a95ae75a16ad065c80f2c695",
+    "scripts/game-math/rtp-stakes-samples.mjs": "d2cdeaf1311ba67c78a04b04d78c6353caaed0b490933c93d8b231b94e481b1c",
+    "scripts/game-math/rtp-stakes.mjs": "303243abd909c97683260439f51d7730b2550c2ffb660e434ae59db2730da6ad"
+  },
+  "policySha256": "824cd09da3fb6ec4e10807ca760258e0d3ec7caa690204d734c2a3ac637d44ab",
+  "method": "full-round-unbiased-cent-policy-v1",
+  "precisionLaw": {
+    "method": "Independent uniform final ticket; exact BigInt rational accumulation and integer settlement",
+    "identity": "For exact reward n/d, let q=floor(n/d), r=n mod d and uniform U in {0,...,d-1}. Pay q+1 if U<r, otherwise q. The sum over all tickets is q*d+r=n.",
+    "stopping": "The ticket is drawn only after the final player choice and every free continuation. No future rounding ticket is exposed to adaptive choices.",
+    "preservation": "Every intermediate discarded fraction is restored before the final ticket. For a fixed consumed path the expected credit equals its capped exact reward, and the actual credit never falls below the original sum of floors.",
+    "caps": "Nonnegative rewards couple every denomination to the same latent capped paid round. Stopping a presentation after its floor reaches the cap does not change that round reward.",
+    "compatibility": "Only starts pinned to stakePolicyVersion=1 use this receipt. Accepted historical rounds and UUID replays retain their original rules and committed credit.",
+    "confidence": "Exact analytical bounds and statistical intervals are labelled separately. A statistical estimate is not an exact RTP. Conditional estimates are per case, not simultaneous confidence guarantees."
+  },
+  "results": [
+    {
+      "choice": "normal",
+      "stakeUnits": 10,
+      "kind": "statistical-estimate",
+      "rtp": 0.95998765125,
+      "interval95": [
+        0.9593424097640131,
+        0.9606328927359868
+      ],
+      "paidRounds": 400000000,
+      "estimator": "Independent complete cascade-round point model, scaled exactly and settled without cent loss."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 20,
+      "kind": "statistical-estimate",
+      "rtp": 0.95998765125,
+      "interval95": [
+        0.9593424097640131,
+        0.9606328927359868
+      ],
+      "paidRounds": 400000000,
+      "estimator": "Independent complete cascade-round point model, scaled exactly and settled without cent loss."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 50,
+      "kind": "statistical-estimate",
+      "rtp": 0.95998765125,
+      "interval95": [
+        0.9593424097640131,
+        0.9606328927359868
+      ],
+      "paidRounds": 400000000,
+      "estimator": "Independent complete cascade-round point model, scaled exactly and settled without cent loss."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 100,
+      "kind": "statistical-estimate",
+      "rtp": 0.95998765125,
+      "interval95": [
+        0.9593424097640131,
+        0.9606328927359868
+      ],
+      "paidRounds": 400000000,
+      "estimator": "Independent complete cascade-round point model, scaled exactly and settled without cent loss."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 200,
+      "kind": "statistical-estimate",
+      "rtp": 0.95998765125,
+      "interval95": [
+        0.9593424097640131,
+        0.9606328927359868
+      ],
+      "paidRounds": 400000000,
+      "estimator": "Independent complete cascade-round point model, scaled exactly and settled without cent loss."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 500,
+      "kind": "statistical-estimate",
+      "rtp": 0.95998765125,
+      "interval95": [
+        0.9593424097640131,
+        0.9606328927359868
+      ],
+      "paidRounds": 400000000,
+      "estimator": "Independent complete cascade-round point model, scaled exactly and settled without cent loss."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 1000,
+      "kind": "statistical-estimate",
+      "rtp": 0.95998765125,
+      "interval95": [
+        0.9593424097640131,
+        0.9606328927359868
+      ],
+      "paidRounds": 400000000,
+      "estimator": "Independent complete cascade-round point model, scaled exactly and settled without cent loss."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 2000,
+      "kind": "statistical-estimate",
+      "rtp": 0.95998765125,
+      "interval95": [
+        0.9593424097640131,
+        0.9606328927359868
+      ],
+      "paidRounds": 400000000,
+      "estimator": "Independent complete cascade-round point model, scaled exactly and settled without cent loss."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 5000,
+      "kind": "statistical-estimate",
+      "rtp": 0.95998765125,
+      "interval95": [
+        0.9593424097640131,
+        0.9606328927359868
+      ],
+      "paidRounds": 400000000,
+      "estimator": "Independent complete cascade-round point model, scaled exactly and settled without cent loss."
+    }
+  ],
+  "evidence": {
+    "reference": {
+      "path": "docs/game-math/qualifications/flooded-temple-v2.json",
+      "sha256": "7bb8264a0e1bfa7805df3beea61005f0df41231e8ed48877bd6485d0c2ddafd4"
+    }
+  },
+  "replay": {
+    "coverage": [
+      {
+        "choice": "normal",
+        "stakeUnits": 10,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "904efe545c50e18593be775d74f3ed24cd625382ec6d57ff2858e66abd0fa465"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 20,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "38f7b4377e4e73292388706985e5e5d88ba32c21fd10e93c7c54080816b81f5f"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 50,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "7ca5e3ce338056bb8974ab687fbbbaf2b0415fad8ec4277a13628a256fc94cbc"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 100,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "ee93439769001ae2ba27aeabcde2746260dddc75982efcca4b40cf4c42ad7d5d"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 200,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "4eb4c04276e5611f12c099bed1acfd817dd64da243d030bdd32983162625e152"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 500,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "9de582182ea8896b20cf9bdae2c520f69f349ec350e21e7cf120639d9adb93fc"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "654177ef1660eefbff07ca50b5ce550999ed1bd178495a9413865fa12fd0fe6b"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "6fd6712ced4c4d870e2a9808373f826ec30b1769b1a50f26a61d49a4df1d0e02"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "201329591705ab4382e6878c2c433ac5c2698fcf988255555ea5afc731e78e39"
+      }
+    ]
+  },
+  "serverReplayChecks": 1152,
+  "walletEvidence": {
+    "passed": true,
+    "native": {
+      "passed": true,
+      "minimumStakeUnits": "10",
+      "replayPreserved": true,
+      "reservationReleased": true,
+      "journalBalanced": true
+    },
+    "gameId": "studio-flooded-temple",
+    "cases": 9,
+    "freeContinuationChecks": 0,
+    "replayAndRestartCases": 9,
+    "oneDebitAndCredit": true,
+    "clientVerified": true,
+    "sha256": "c54d2de119ee66dd9214b332716a37c589abcec992f680d8eed981ad77facfa0"
+  }
+}

@@ -36,3 +36,20 @@ test('large-denominator sampling rejects biased tails and stays in range',()=>{
  for(let i=0;i<1000;i++){const ticket=drawPrecisionTicket(denominator,random);assert(ticket>=0n&&ticket<denominator);}
  assert.throws(()=>drawPrecisionTicket(100n,()=>100));
 });
+
+test('independent slot sampler matches the complete server transcript and exact capped award',async()=>{
+ const {sampleLegacyRound}=await import('../scripts/game-math/rtp-stakes-sampler.mjs');
+ const {runtimeRound}=await import('../scripts/game-math/stake-runtime.mjs');
+ const {cascadeRandom}=await import('../scripts/game-math/rtp-temple-cascade-model.mjs');
+ const choices:Record<string,string[]>={
+  'studio-caramel-carnival':['normal','festival'],'studio-last-convoy':['normal'],
+  'studio-nitro-run':['normal'],'studio-meme-overload':['normal'],
+  'studio-velvet-reign':['normal','booster','hyper','spotlight','super-encore'],
+ };
+ for(const [game,modes]of Object.entries(choices))for(const choice of modes)for(let i=0;i<128;i++){
+  const seed=(5912731+i*7919)>>>0,full=sampleLegacyRound(game,choice,cascadeRandom(seed),true),compact=sampleLegacyRound(game,choice,cascadeRandom(seed)),runtime=runtimeRound(game,choice,'100',seed);
+  assert.deepEqual(runtime.view,full.view,game+':'+choice+':'+seed);
+  assert.equal(compact.reward,full.reward);assert.equal(compact.spins,full.spins);
+  assert.equal(Number(runtime.exact.numerator)/Number(runtime.exact.denominator)/100/full.cost,full.reward);
+ }
+});

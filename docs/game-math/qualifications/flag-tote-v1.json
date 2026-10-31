@@ -3,21 +3,21 @@
   "gameId": "flag-tote",
   "rulesVersion": 1,
   "progressVersion": 1,
-  "startedAt": "2026-10-31T12:34:56.422Z",
-  "completedAt": "2026-10-31T12:34:58.988Z",
+  "startedAt": "2026-10-31T21:11:45.306Z",
+  "completedAt": "2026-10-31T21:11:49.820Z",
   "sourceHashes": {
     "src/shared/flagTote.ts": "98c84c8e3de49e97fde4097939fb2b42acc1ea912b09e875af80cd9597322619",
-    "server/flagTote.ts": "f00e6b1cb1bfd7f3350d53948d931faccc0e61e5e56a97a6ede3dd0ddd0345c5",
-    "server/flagToteRoutes.ts": "ce0a795d06c4c5e662e4afd80bd322d035eedf6cac0839afd4aba2fcc24c8e4c",
-    "server/demoWallet.ts": "73811ed429d0591966a49cbeaacbb638ef2f3dee715aac9d879de7d4c740a8ad",
+    "server/flagTote.ts": "3484afadaa02475db78d57dc540e405e87412063eed2b35bb7ff1c81ec891707",
+    "server/flagToteRoutes.ts": "a2c478f90b8c4ebbf155fca224965bc1b5b3c119bcc5324bc4958bab77f81b58",
+    "server/demoWallet.ts": "695130f9e8eec2b6854f6f620ea2aae33084f25c182ae4755f49347cedcebf63",
     "server/demoWalletAmounts.ts": "1da7a73b63c79cba0ff674f59c75fe517d8445eafaf831be8afa7f9a4c6e6317",
     "server/database.ts": "89c282f2e65158079bdafc07d815c5ca962aa82f89ba0d3c5f03a19aa7c81ca8",
     "src/wallet/FlagToteClient.ts": "676ad2de6288d1d3e713e267d74d9a96faa8b3238900287661553032356e90ad",
     "scripts/game-math/flag-tote-reference.mjs": "5ef2b1deb1554574952b8a94fc6de2138cc5afd4ed8037d66db41a5ad91f9812",
     "server-tests/flag-tote.test.ts": "441b0a3f234e7270c89cae7b73406360b850cc667cb3dcb89cfe4dd1459a3634",
-    "src/shared/flagBattle.ts": "e156fd61e71243759c27d9a9d3fed8a0ab1555e9938f6a2b7ac854c344d16e6f",
-    "server/demoWalletRoutes.ts": "703a40600ade2d1ff79a34f7bff5aaf955a8b084ffcb8964ea3bedcf5193d24b",
-    "server-tests/flag-tote-http.test.ts": "2e024298a3fa6338290db2cdaa7153f072442b1494574b6676c4d7335de9aa68",
+    "src/shared/flagBattle.ts": "269b48f9367609b2343b732982631f88203fed9fa2b40e6bb08d9f6611b64aa4",
+    "server/demoWalletRoutes.ts": "8d60c69f76d12f274c1a691786cfda57b48deabc354527202ed124a433feba82",
+    "server-tests/flag-tote-http.test.ts": "75866058f7639f1b685e9562704b3aa3a8addae290f9ca84ae3552ebeac76a4a",
     "scripts/game-math/rtp-flag-tote.mjs": "a58a66041c3658db2bff86b4b4eb0c00d4d94ddd99aa6d2170a88b5909ce68b0"
   },
   "policySha256": "211e87b814cb98064846564d1c016f861106595536fd056f568e39ff3604986f",
@@ -269,7 +269,7 @@
     "tests": 9,
     "passed": 9,
     "failed": 0,
-    "sha256": "163916b635505107a69eed572718f7314224f50b52c74997655cd70ea98befa1",
+    "sha256": "ff32741010aee39af2c18a5cd6c77ef9bfa1e84ae9a4d611fb096ec53fda4722",
     "scope": "Real common wallet: acceptance, fee, conservation, proportional return, rounding, refunds, ownership, replay, cutoff after lock, restart, capacity, invalid entropy rollback."
   }
 }

@@ -7,7 +7,7 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { checkGameRtp } from './game-math/rtp-gate.mjs';
 import { moduleFingerprinter, cachedModule } from './module-build-cache.mjs';
 import { readHostProjection } from './build-host-projection.mjs';
-import {projectedModuleContract,moduleProjectionCatalog} from './module-source-projection.mjs';
+import {projectedModuleContract,moduleProjectionCatalog,projectedModuleAsset} from './module-source-projection.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const sha = value => createHash('sha256').update(value).digest('hex');
@@ -23,7 +23,11 @@ let projection;
 if(projectionFlag>=0){const name=args[projectionFlag+1];if(!name)throw Error('Missing module source projection');args.splice(projectionFlag,2);projection=await readHostProjection(root,name,{strictOrigins:true});}
 const projectedAssets={};
 async function sourceBytes(path){return projection?projection.read(relative(root,resolve(path)).replaceAll('\\','/')):readFile(path);}
-async function mediaBytes(path){const bytes=await readFile(path);if(projection){const name=relative(root,path).replaceAll('\\','/');if(sha(bytes)!==projection.metadata.moduleAssets?.[name])throw Error('Unreviewed projected module media: '+name);projectedAssets[name]=sha(bytes);}return bytes;}
+async function mediaBytes(path){
+ if(!projection)return readFile(path);
+ const name=relative(root,path).replaceAll('\\','/'),bytes=await projectedModuleAsset(root,name,projection);
+ projectedAssets[name]=sha(bytes);return bytes;
+}
 const force = args.includes('--force');
 if (force) args.splice(args.indexOf('--force'), 1);
 const all = args.length === 1 && args[0] === '--all';

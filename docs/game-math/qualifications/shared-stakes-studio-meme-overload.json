@@ -1,0 +1,360 @@
+{
+  "schemaVersion": 1,
+  "gameId": "studio-meme-overload",
+  "rulesVersion": 2,
+  "progressVersion": 1,
+  "startedAt": "2026-10-31T21:07:34.725Z",
+  "completedAt": "2026-10-31T21:07:39.164Z",
+  "sourceHashes": {
+    "src/shared/gameStakes.ts": "9e207c51bc5cd9c342992f2f92258826a678cbf00d409b329447e7abca654637",
+    "src/shared/roundPrecision.ts": "8d9f64dd7ae146fa1a7288bf0d4bf8f947a8bc419d12c94fe8f765ec2a75b307",
+    "src/shared/casinoExpansion.ts": "c89133d0c011baa56241b09e56913e315534ac3e52871308238e234cb8c75f74",
+    "src/shared/forestHeartMath.ts": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
+    "src/shared/neopolisMath.ts": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
+    "src/shared/neopolisStakePayouts.ts": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
+    "server/demoExpansion.ts": "355b75eb024907c989e1b2a26031de1ada8e54de6c44289730fc6922702465ed",
+    "server/demoWallet.ts": "695130f9e8eec2b6854f6f620ea2aae33084f25c182ae4755f49347cedcebf63",
+    "server/demoWalletAmounts.ts": "1da7a73b63c79cba0ff674f59c75fe517d8445eafaf831be8afa7f9a4c6e6317",
+    "server/demoWalletRoutes.ts": "8d60c69f76d12f274c1a691786cfda57b48deabc354527202ed124a433feba82",
+    "server/finance/nile-game-runtime.ts": "b667f5865791852f0c79f5b85176548c5c012478c561c021bab5cde3e8dc8d96",
+    "server/afterglowProgress.ts": "cf38081a14f88c034f1a32af9e99ca7bbd7f56590decd419867469cb2f753a42",
+    "src/wallet/ExpansionClient.ts": "bc253f9200daec9539ade6a26f715e7a7734b80b02562989be2d5516019b81e1",
+    "src/wallet/WalletClient.ts": "0e8bb81228f8bd9566fd2308e089323027bc3f7f0422ccbeda858f998f6de6a9",
+    "scripts/game-math/rtp-stakes-sampler.mjs": "d0c297ee40636be7c1312d5de8be1f4023e858efbe61e6aba26486f011fc4d7d",
+    "scripts/game-math/rtp-stakes-worker.mjs": "f5db2c6be7cc4c68bb07c719eea5ba3db3f0d237d7bf8cd75736c891f91a218d",
+    "server-tests/game-stakes.test.ts": "810c0f42c5137ed0e49b94a796808c6753ab4e204408c773c12176eefc896031",
+    "server-tests/round-precision.test.ts": "d48a631f198636a97db8e70952c600a47b9cb1d04b20ebc6d08cbfa2cd452abb",
+    "src/shared/nitroRun.ts": "ecea0b8d695c9de6a808b79a8ba95bee4a18ec1a1bfde98c552e7caa1ef02a8a",
+    "src/shared/memeOverload.ts": "3380fce5ee723cea9a07d8b098c933e0465300fcc19fa727ef30ccbf7303244b",
+    "server/games/nitroRun.ts": "9bb335cf87be9306035da1457bec8c1af6e8276f8c8275d940aee6c6681ab2e6",
+    "scripts/game-math/stake-runtime.mjs": "24aadf4414fe0daf402931901d773143291bee2c099713355e3e345c1e5145ca",
+    "scripts/game-math/stakes-wallet.ts": "d9a4084a6ddb188ef52a6d2e05fb93e09f0ade96a95ae75a16ad065c80f2c695",
+    "scripts/game-math/rtp-stakes-samples.mjs": "d2cdeaf1311ba67c78a04b04d78c6353caaed0b490933c93d8b231b94e481b1c",
+    "scripts/game-math/rtp-stakes.mjs": "303243abd909c97683260439f51d7730b2550c2ffb660e434ae59db2730da6ad"
+  },
+  "policySha256": "739d01c4426a23ec7fe920b1cb2309247cceed16c8604382bf223f1304931785",
+  "method": "full-round-unbiased-cent-policy-v1",
+  "precisionLaw": {
+    "method": "Independent uniform final ticket; exact BigInt rational accumulation and integer settlement",
+    "identity": "For exact reward n/d, let q=floor(n/d), r=n mod d and uniform U in {0,...,d-1}. Pay q+1 if U<r, otherwise q. The sum over all tickets is q*d+r=n.",
+    "stopping": "The ticket is drawn only after the final player choice and every free continuation. No future rounding ticket is exposed to adaptive choices.",
+    "preservation": "Every intermediate discarded fraction is restored before the final ticket. For a fixed consumed path the expected credit equals its capped exact reward, and the actual credit never falls below the original sum of floors.",
+    "caps": "Nonnegative rewards couple every denomination to the same latent capped paid round. Stopping a presentation after its floor reaches the cap does not change that round reward.",
+    "compatibility": "Only starts pinned to stakePolicyVersion=1 use this receipt. Accepted historical rounds and UUID replays retain their original rules and committed credit.",
+    "confidence": "Exact analytical bounds and statistical intervals are labelled separately. A statistical estimate is not an exact RTP. Conditional estimates are per case, not simultaneous confidence guarantees."
+  },
+  "results": [
+    {
+      "choice": "normal",
+      "stakeUnits": 10,
+      "kind": "statistical-estimate",
+      "paidRounds": 2000000,
+      "reward": 1922219.6300013114,
+      "rewardSquared": 17913533.87070004,
+      "rtp": 0.9611098150006557,
+      "interval95": [
+        0.9566177624047827,
+        0.9656018675965288
+      ],
+      "halfWidth": 0.004492052595873042,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 20,
+      "kind": "statistical-estimate",
+      "paidRounds": 2000000,
+      "reward": 1922219.6300013114,
+      "rewardSquared": 17913533.87070004,
+      "rtp": 0.9611098150006557,
+      "interval95": [
+        0.9566177624047827,
+        0.9656018675965288
+      ],
+      "halfWidth": 0.004492052595873042,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 50,
+      "kind": "statistical-estimate",
+      "paidRounds": 2000000,
+      "reward": 1922219.6300013114,
+      "rewardSquared": 17913533.87070004,
+      "rtp": 0.9611098150006557,
+      "interval95": [
+        0.9566177624047827,
+        0.9656018675965288
+      ],
+      "halfWidth": 0.004492052595873042,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 100,
+      "kind": "statistical-estimate",
+      "paidRounds": 2000000,
+      "reward": 1922219.6300013114,
+      "rewardSquared": 17913533.87070004,
+      "rtp": 0.9611098150006557,
+      "interval95": [
+        0.9566177624047827,
+        0.9656018675965288
+      ],
+      "halfWidth": 0.004492052595873042,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 200,
+      "kind": "statistical-estimate",
+      "paidRounds": 2000000,
+      "reward": 1922219.6300013114,
+      "rewardSquared": 17913533.87070004,
+      "rtp": 0.9611098150006557,
+      "interval95": [
+        0.9566177624047827,
+        0.9656018675965288
+      ],
+      "halfWidth": 0.004492052595873042,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 500,
+      "kind": "statistical-estimate",
+      "paidRounds": 2000000,
+      "reward": 1922219.6300013114,
+      "rewardSquared": 17913533.87070004,
+      "rtp": 0.9611098150006557,
+      "interval95": [
+        0.9566177624047827,
+        0.9656018675965288
+      ],
+      "halfWidth": 0.004492052595873042,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 1000,
+      "kind": "statistical-estimate",
+      "paidRounds": 2000000,
+      "reward": 1922219.6300013114,
+      "rewardSquared": 17913533.87070004,
+      "rtp": 0.9611098150006557,
+      "interval95": [
+        0.9566177624047827,
+        0.9656018675965288
+      ],
+      "halfWidth": 0.004492052595873042,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 2000,
+      "kind": "statistical-estimate",
+      "paidRounds": 2000000,
+      "reward": 1922219.6300013114,
+      "rewardSquared": 17913533.87070004,
+      "rtp": 0.9611098150006557,
+      "interval95": [
+        0.9566177624047827,
+        0.9656018675965288
+      ],
+      "halfWidth": 0.004492052595873042,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 5000,
+      "kind": "statistical-estimate",
+      "paidRounds": 2000000,
+      "reward": 1922219.6300013114,
+      "rewardSquared": 17913533.87070004,
+      "rtp": 0.9611098150006557,
+      "interval95": [
+        0.9566177624047827,
+        0.9656018675965288
+      ],
+      "halfWidth": 0.004492052595873042,
+      "estimator": "Complete paid-round expectation, with final ticket integrated out exactly (Rao-Blackwell estimator). Independent qualification streams, including every free continuation and the cap."
+    }
+  ],
+  "evidence": {
+    "samples": [
+      {
+        "game": "studio-nitro-run",
+        "choice": "normal",
+        "look": 1,
+        "streams": [
+          {
+            "game": "studio-nitro-run",
+            "choice": "normal",
+            "seed": 4139817,
+            "paidRounds": 1000000,
+            "reward": 961596.3600006601,
+            "rewardSquared": 9065499.378999515,
+            "freeSpins": 44020,
+            "bonuses": 5329,
+            "capped": 0,
+            "durationMs": 14642,
+            "sourceHashes": {
+              "server/games/caramelCarnival.ts": "ba16c7b4b5e51559b05c705c67558ef6f34fef22ceb063ab24dd7a1945e40994",
+              "server/games/lastConvoy.ts": "57545363662a64f1e8a29be7dbab0e6ce183ab4367784ae6bcb68c1bfc9c7dae",
+              "server/games/nitroRun.ts": "9bb335cf87be9306035da1457bec8c1af6e8276f8c8275d940aee6c6681ab2e6",
+              "server/games/velvetReign.ts": "2de78bed621067021920d9ad742986a60034f975647a227a11bcc87869ff45a7",
+              "server/games/velvetMath.ts": "54a874506c31467b076be9d8b4513014e2faa676ba286111b1c24eb35873e94f",
+              "src/shared/caramelCarnival.ts": "97a3fb25da798a45c2046725d7afe95adad971664ef708f83fd5556b3ff1af8b",
+              "src/shared/lastConvoy.ts": "3785225275083c74d12bf61eb5855b8ae544e72eaefadc6f172bc51f305d6978",
+              "src/shared/nitroRun.ts": "ecea0b8d695c9de6a808b79a8ba95bee4a18ec1a1bfde98c552e7caa1ef02a8a",
+              "src/shared/velvetReign.ts": "8cd399677940ae5fddd67dea255fd83b54faf297cb00b8290ae918b53e26db2f",
+              "src/shared/velvetReignHistory.ts": "597f90f94bcbecd64fc37a27f730009651ed5c4d6731a1ee54602195e508118c",
+              "scripts/game-math/rtp-stakes-sampler.mjs": "d0c297ee40636be7c1312d5de8be1f4023e858efbe61e6aba26486f011fc4d7d"
+            }
+          },
+          {
+            "game": "studio-nitro-run",
+            "choice": "normal",
+            "seed": 6371291,
+            "paidRounds": 1000000,
+            "reward": 960623.2700006514,
+            "rewardSquared": 8848034.491700526,
+            "freeSpins": 43052,
+            "bonuses": 5204,
+            "capped": 0,
+            "durationMs": 14402,
+            "sourceHashes": {
+              "server/games/caramelCarnival.ts": "ba16c7b4b5e51559b05c705c67558ef6f34fef22ceb063ab24dd7a1945e40994",
+              "server/games/lastConvoy.ts": "57545363662a64f1e8a29be7dbab0e6ce183ab4367784ae6bcb68c1bfc9c7dae",
+              "server/games/nitroRun.ts": "9bb335cf87be9306035da1457bec8c1af6e8276f8c8275d940aee6c6681ab2e6",
+              "server/games/velvetReign.ts": "2de78bed621067021920d9ad742986a60034f975647a227a11bcc87869ff45a7",
+              "server/games/velvetMath.ts": "54a874506c31467b076be9d8b4513014e2faa676ba286111b1c24eb35873e94f",
+              "src/shared/caramelCarnival.ts": "97a3fb25da798a45c2046725d7afe95adad971664ef708f83fd5556b3ff1af8b",
+              "src/shared/lastConvoy.ts": "3785225275083c74d12bf61eb5855b8ae544e72eaefadc6f172bc51f305d6978",
+              "src/shared/nitroRun.ts": "ecea0b8d695c9de6a808b79a8ba95bee4a18ec1a1bfde98c552e7caa1ef02a8a",
+              "src/shared/velvetReign.ts": "8cd399677940ae5fddd67dea255fd83b54faf297cb00b8290ae918b53e26db2f",
+              "src/shared/velvetReignHistory.ts": "597f90f94bcbecd64fc37a27f730009651ed5c4d6731a1ee54602195e508118c",
+              "scripts/game-math/rtp-stakes-sampler.mjs": "d0c297ee40636be7c1312d5de8be1f4023e858efbe61e6aba26486f011fc4d7d"
+            }
+          }
+        ],
+        "statistics": {
+          "paidRounds": 2000000,
+          "reward": 1922219.6300013114,
+          "rewardSquared": 17913533.87070004,
+          "rtp": 0.9611098150006557,
+          "interval95": [
+            0.9566177624047827,
+            0.9656018675965288
+          ],
+          "halfWidth": 0.004492052595873042
+        },
+        "passed": true
+      }
+    ],
+    "samplerServerChecks": 128
+  },
+  "replay": {
+    "coverage": [
+      {
+        "choice": "normal",
+        "stakeUnits": 10,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 3,
+        "sha256": "a4005d5411d5e9cfc8165e88e6444e9093e42d74023b88c00414ec84c7395a44"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 20,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 3,
+        "sha256": "a1b2f3a92675738cff23e979088e8868edae7884b9e0023c17b261b2d87633c9"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 50,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 3,
+        "sha256": "1e659585b5aa7117c3e68c65e8ba640ffe50d83c2d1faa9d947759f9d0ae8ce6"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 100,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "fbff88fab0495be1afc13815e6ca481ba466ab5fad4cea94799d154e540166c8"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 200,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "3da532446ef74889ae8ea0e4c4e3d731012cfcd64e935fe4db2e47707af14628"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 500,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "f91021ffac82c2c1a8a2593ff56dd4ea74ed17cf6ff9b66d0f642e2233ad8448"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "37735bdd381fd32c2333a09e04933885464f3ba1cf94490b30f6db9862671b03"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "3889937847a8dcd610efbc88e8a172276a0bccd0b09972f8745a6dfebc6bf166"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "48e246f235b161be6ab395bb18c6e9f698ebd196b69501e8564c1d8a6a6846b8"
+      }
+    ]
+  },
+  "serverReplayChecks": 1152,
+  "walletEvidence": {
+    "passed": true,
+    "native": {
+      "passed": true,
+      "minimumStakeUnits": "10",
+      "replayPreserved": true,
+      "reservationReleased": true,
+      "journalBalanced": true
+    },
+    "gameId": "studio-meme-overload",
+    "cases": 9,
+    "freeContinuationChecks": 0,
+    "replayAndRestartCases": 9,
+    "oneDebitAndCredit": true,
+    "clientVerified": true,
+    "sha256": "006dd8e99103974fa4e3c2d185dada1081c6a995699100b1bb27527659ee2527"
+  }
+}

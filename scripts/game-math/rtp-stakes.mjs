@@ -108,6 +108,7 @@ export function validateStakeProof(game,inputs,proof){
  const p=inputs.policy;assert.equal(p.method,STAKE_PRECISION_METHOD);assert.equal(p.stakePolicyVersion,1);assert.deepEqual(p.stakes,stakes);assert.equal(new Set([...p.seeds,...p.calibrationSeeds]).size,4);
  assert.equal(proof.schemaVersion,1);assert.equal(proof.gameId,game);assert.equal(proof.rulesVersion,p.rulesVersion);assert.equal(proof.progressVersion,p.progressVersion);assert.equal(proof.method,STAKE_PRECISION_METHOD);
  assert.equal(proof.policySha256,inputs.policySha256);assert.deepEqual(proof.sourceHashes,inputs.sourceHashes);assert.deepEqual(proof.precisionLaw,precisionLaw());assert.deepEqual(proof.results,models(game,p,proof.evidence));
+ if(p.kind==='sampled-slots')assert.equal(proof.evidence.samplerServerChecks,p.choices.length*128);
  assert.equal(proof.replay.coverage.length,p.choices.length*stakes.length);let checks=0;
  for(const choice of p.choices)for(const stake of stakes){const r=proof.replay.coverage.find(r=>r.choice===choice&&r.stakeUnits===stake);assert(r);assert.equal(r.paidRounds,p.seeds.length*p.serverReplayRoundsPerSeed);assert(r.spins>=r.paidRounds);assert.match(r.sha256,/^[a-f0-9]{64}$/);assert(r.minimumExtraUnits>=0);checks+=r.paidRounds;}
  assert.equal(proof.serverReplayChecks,checks);assert(proof.walletEvidence?.passed&&proof.walletEvidence.gameId===game,'Fresh common-wallet precision evidence is required');assert.match(proof.walletEvidence.sha256,/^[a-f0-9]{64}$/);assert.equal(proof.walletEvidence.cases,p.choices.length*stakes.length);assert.equal(proof.walletEvidence.replayAndRestartCases,proof.walletEvidence.cases);assert(proof.walletEvidence.oneDebitAndCredit&&proof.walletEvidence.clientVerified&&proof.walletEvidence.native?.passed&&proof.walletEvidence.native.journalBalanced);return true;
@@ -118,6 +119,17 @@ export async function qualifyStakes(game,inputs,options={},progress=()=>{}){
  if(p.kind==='sampled-slots'){const directory=resolve(root,options.sampleDirectory??'../formal-samples');evidence.samples=p.choices.map(choice=>JSON.parse(readFileSync(resolve(directory,p.samplerGame+'-'+choice+'.json'),'utf8')));}
  if(refs[game]){const ref=reference(game);evidence.reference={path:ref.path,sha256:ref.digest};}
  const results=models(game,p,evidence),{runtimeRound}=await import('./stake-runtime.mjs');
+ if(p.kind==='sampled-slots'){
+  const {sampleLegacyRound}=await import('./rtp-stakes-sampler.mjs'),{cascadeRandom}=await import('./rtp-temple-cascade-model.mjs');
+  let checks=0;
+  for(const choice of p.choices)for(let i=0;i<128;i++){
+   const seed=(5912731+i*7919)>>>0,full=sampleLegacyRound(game,choice,cascadeRandom(seed),true),compact=sampleLegacyRound(game,choice,cascadeRandom(seed)),runtime=runtimeRound(game,choice,'100',seed);
+   assert.deepEqual(runtime.view,full.view,'Sampler must reproduce the real complete server round');
+   assert.equal(compact.reward,full.reward);assert.equal(compact.spins,full.spins);
+   assert.equal(Number(runtime.exact.numerator)/Number(runtime.exact.denominator)/100/full.cost,full.reward);checks++;
+  }
+  evidence.samplerServerChecks=checks;
+ }
  const coverage=[];let checks=0;
  for(const choice of p.choices)for(const stakeUnits of stakes){const digest=createHash('sha256');let spins=0,minimumExtraUnits=Infinity,maximumExtraUnits=0;
   for(const seed of p.seeds)for(let i=0;i<p.serverReplayRoundsPerSeed;i++){

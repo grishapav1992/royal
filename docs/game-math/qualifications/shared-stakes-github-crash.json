@@ -1,0 +1,303 @@
+{
+  "schemaVersion": 1,
+  "gameId": "github-crash",
+  "rulesVersion": 1,
+  "progressVersion": 1,
+  "startedAt": "2026-10-31T21:07:51.977Z",
+  "completedAt": "2026-10-31T21:07:57.399Z",
+  "sourceHashes": {
+    "src/shared/gameStakes.ts": "9e207c51bc5cd9c342992f2f92258826a678cbf00d409b329447e7abca654637",
+    "src/shared/roundPrecision.ts": "8d9f64dd7ae146fa1a7288bf0d4bf8f947a8bc419d12c94fe8f765ec2a75b307",
+    "src/shared/casinoExpansion.ts": "c89133d0c011baa56241b09e56913e315534ac3e52871308238e234cb8c75f74",
+    "src/shared/forestHeartMath.ts": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
+    "src/shared/neopolisMath.ts": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
+    "src/shared/neopolisStakePayouts.ts": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
+    "server/demoExpansion.ts": "355b75eb024907c989e1b2a26031de1ada8e54de6c44289730fc6922702465ed",
+    "server/demoWallet.ts": "695130f9e8eec2b6854f6f620ea2aae33084f25c182ae4755f49347cedcebf63",
+    "server/demoWalletAmounts.ts": "1da7a73b63c79cba0ff674f59c75fe517d8445eafaf831be8afa7f9a4c6e6317",
+    "server/demoWalletRoutes.ts": "8d60c69f76d12f274c1a691786cfda57b48deabc354527202ed124a433feba82",
+    "server/finance/nile-game-runtime.ts": "b667f5865791852f0c79f5b85176548c5c012478c561c021bab5cde3e8dc8d96",
+    "server/afterglowProgress.ts": "cf38081a14f88c034f1a32af9e99ca7bbd7f56590decd419867469cb2f753a42",
+    "src/wallet/ExpansionClient.ts": "bc253f9200daec9539ade6a26f715e7a7734b80b02562989be2d5516019b81e1",
+    "src/wallet/WalletClient.ts": "0e8bb81228f8bd9566fd2308e089323027bc3f7f0422ccbeda858f998f6de6a9",
+    "scripts/game-math/rtp-stakes-sampler.mjs": "d0c297ee40636be7c1312d5de8be1f4023e858efbe61e6aba26486f011fc4d7d",
+    "scripts/game-math/rtp-stakes-worker.mjs": "f5db2c6be7cc4c68bb07c719eea5ba3db3f0d237d7bf8cd75736c891f91a218d",
+    "server-tests/game-stakes.test.ts": "810c0f42c5137ed0e49b94a796808c6753ab4e204408c773c12176eefc896031",
+    "server-tests/round-precision.test.ts": "d48a631f198636a97db8e70952c600a47b9cb1d04b20ebc6d08cbfa2cd452abb",
+    "server/games/rush/crash.ts": "18182aa65f5babc4bf693b234aeec8a239646c41d33d4c3126b3abefc7b15a94",
+    "scripts/game-math/stake-runtime.mjs": "24aadf4414fe0daf402931901d773143291bee2c099713355e3e345c1e5145ca",
+    "scripts/game-math/stakes-wallet.ts": "d9a4084a6ddb188ef52a6d2e05fb93e09f0ade96a95ae75a16ad065c80f2c695",
+    "scripts/game-math/rtp-stakes-samples.mjs": "d2cdeaf1311ba67c78a04b04d78c6353caaed0b490933c93d8b231b94e481b1c",
+    "scripts/game-math/rtp-stakes.mjs": "303243abd909c97683260439f51d7730b2550c2ffb660e434ae59db2730da6ad"
+  },
+  "policySha256": "47a87acd5164860ebb76c19e34a44fe1ce67cc7734d814297807328e649408f6",
+  "method": "full-round-unbiased-cent-policy-v1",
+  "precisionLaw": {
+    "method": "Independent uniform final ticket; exact BigInt rational accumulation and integer settlement",
+    "identity": "For exact reward n/d, let q=floor(n/d), r=n mod d and uniform U in {0,...,d-1}. Pay q+1 if U<r, otherwise q. The sum over all tickets is q*d+r=n.",
+    "stopping": "The ticket is drawn only after the final player choice and every free continuation. No future rounding ticket is exposed to adaptive choices.",
+    "preservation": "Every intermediate discarded fraction is restored before the final ticket. For a fixed consumed path the expected credit equals its capped exact reward, and the actual credit never falls below the original sum of floors.",
+    "caps": "Nonnegative rewards couple every denomination to the same latent capped paid round. Stopping a presentation after its floor reaches the cap does not change that round reward.",
+    "compatibility": "Only starts pinned to stakePolicyVersion=1 use this receipt. Accepted historical rounds and UUID replays retain their original rules and committed credit.",
+    "confidence": "Exact analytical bounds and statistical intervals are labelled separately. A statistical estimate is not an exact RTP. Conditional estimates are per case, not simultaneous confidence guarantees."
+  },
+  "results": [
+    {
+      "choice": "all-server-cashout-times",
+      "stakeUnits": 10,
+      "kind": "exact-outward-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.9801980198012696,
+        0.9900000000007105
+      ],
+      "entropyOutcomes": "281474976710656",
+      "cashoutHundredths": [
+        100,
+        9999
+      ],
+      "automaticCap": 100,
+      "reason": "The original 48-bit Crash law is preserved. Every server time is bounded by its displayed hundredth and the next one; final integer-cent settlement adds no stake-dependent loss."
+    },
+    {
+      "choice": "all-server-cashout-times",
+      "stakeUnits": 20,
+      "kind": "exact-outward-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.9801980198012696,
+        0.9900000000007105
+      ],
+      "entropyOutcomes": "281474976710656",
+      "cashoutHundredths": [
+        100,
+        9999
+      ],
+      "automaticCap": 100,
+      "reason": "The original 48-bit Crash law is preserved. Every server time is bounded by its displayed hundredth and the next one; final integer-cent settlement adds no stake-dependent loss."
+    },
+    {
+      "choice": "all-server-cashout-times",
+      "stakeUnits": 50,
+      "kind": "exact-outward-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.9801980198012696,
+        0.9900000000007105
+      ],
+      "entropyOutcomes": "281474976710656",
+      "cashoutHundredths": [
+        100,
+        9999
+      ],
+      "automaticCap": 100,
+      "reason": "The original 48-bit Crash law is preserved. Every server time is bounded by its displayed hundredth and the next one; final integer-cent settlement adds no stake-dependent loss."
+    },
+    {
+      "choice": "all-server-cashout-times",
+      "stakeUnits": 100,
+      "kind": "exact-outward-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.9801980198012696,
+        0.9900000000007105
+      ],
+      "entropyOutcomes": "281474976710656",
+      "cashoutHundredths": [
+        100,
+        9999
+      ],
+      "automaticCap": 100,
+      "reason": "The original 48-bit Crash law is preserved. Every server time is bounded by its displayed hundredth and the next one; final integer-cent settlement adds no stake-dependent loss."
+    },
+    {
+      "choice": "all-server-cashout-times",
+      "stakeUnits": 200,
+      "kind": "exact-outward-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.9801980198012696,
+        0.9900000000007105
+      ],
+      "entropyOutcomes": "281474976710656",
+      "cashoutHundredths": [
+        100,
+        9999
+      ],
+      "automaticCap": 100,
+      "reason": "The original 48-bit Crash law is preserved. Every server time is bounded by its displayed hundredth and the next one; final integer-cent settlement adds no stake-dependent loss."
+    },
+    {
+      "choice": "all-server-cashout-times",
+      "stakeUnits": 500,
+      "kind": "exact-outward-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.9801980198012696,
+        0.9900000000007105
+      ],
+      "entropyOutcomes": "281474976710656",
+      "cashoutHundredths": [
+        100,
+        9999
+      ],
+      "automaticCap": 100,
+      "reason": "The original 48-bit Crash law is preserved. Every server time is bounded by its displayed hundredth and the next one; final integer-cent settlement adds no stake-dependent loss."
+    },
+    {
+      "choice": "all-server-cashout-times",
+      "stakeUnits": 1000,
+      "kind": "exact-outward-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.9801980198012696,
+        0.9900000000007105
+      ],
+      "entropyOutcomes": "281474976710656",
+      "cashoutHundredths": [
+        100,
+        9999
+      ],
+      "automaticCap": 100,
+      "reason": "The original 48-bit Crash law is preserved. Every server time is bounded by its displayed hundredth and the next one; final integer-cent settlement adds no stake-dependent loss."
+    },
+    {
+      "choice": "all-server-cashout-times",
+      "stakeUnits": 2000,
+      "kind": "exact-outward-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.9801980198012696,
+        0.9900000000007105
+      ],
+      "entropyOutcomes": "281474976710656",
+      "cashoutHundredths": [
+        100,
+        9999
+      ],
+      "automaticCap": 100,
+      "reason": "The original 48-bit Crash law is preserved. Every server time is bounded by its displayed hundredth and the next one; final integer-cent settlement adds no stake-dependent loss."
+    },
+    {
+      "choice": "all-server-cashout-times",
+      "stakeUnits": 5000,
+      "kind": "exact-outward-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.9801980198012696,
+        0.9900000000007105
+      ],
+      "entropyOutcomes": "281474976710656",
+      "cashoutHundredths": [
+        100,
+        9999
+      ],
+      "automaticCap": 100,
+      "reason": "The original 48-bit Crash law is preserved. Every server time is bounded by its displayed hundredth and the next one; final integer-cent settlement adds no stake-dependent loss."
+    }
+  ],
+  "evidence": {},
+  "replay": {
+    "coverage": [
+      {
+        "choice": "all-server-cashout-times",
+        "stakeUnits": 10,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "db37164d592f72c7ee8e2cb3573fe664063859279f5e44464fc42c288a518574"
+      },
+      {
+        "choice": "all-server-cashout-times",
+        "stakeUnits": 20,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "a35e37491fbfa306e1f89400111284eaa689d42933c875d5bff5ac005eb74637"
+      },
+      {
+        "choice": "all-server-cashout-times",
+        "stakeUnits": 50,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "9fe2464c99f6dd28ded4b54745ce8e902e4fae642011923966089c41dfc122be"
+      },
+      {
+        "choice": "all-server-cashout-times",
+        "stakeUnits": 100,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "85afba277a2d088ce0d0e1bdc954cafe9fed8066cc033abadecb060af5c0eed6"
+      },
+      {
+        "choice": "all-server-cashout-times",
+        "stakeUnits": 200,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "0d392c4d04a9ccb2ca6eb0df55a38f13d0c0f5bd8feb20c0b9d4f64a3d8808ba"
+      },
+      {
+        "choice": "all-server-cashout-times",
+        "stakeUnits": 500,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "ab045b07efc3956c008eafe8b19cecc4ba934be6cc4fba3c0e4f5ef986a22171"
+      },
+      {
+        "choice": "all-server-cashout-times",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "5b7625545472bfc14fed2a3380983af6a4f5f8a73b4854ad28ccd873090d59d4"
+      },
+      {
+        "choice": "all-server-cashout-times",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "05709377345b1eff5e9b13ea182d031c92ad8f5ae90a4e62e4f7d689f8ad9bd1"
+      },
+      {
+        "choice": "all-server-cashout-times",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "2759ae4c273c507859084097bd1e10a384f667acdc857d6593458efda3b62431"
+      }
+    ]
+  },
+  "serverReplayChecks": 1152,
+  "walletEvidence": {
+    "passed": true,
+    "native": {
+      "passed": true,
+      "minimumStakeUnits": "10",
+      "replayPreserved": true,
+      "reservationReleased": true,
+      "journalBalanced": true
+    },
+    "gameId": "github-crash",
+    "cases": 9,
+    "freeContinuationChecks": 9,
+    "replayAndRestartCases": 9,
+    "oneDebitAndCredit": true,
+    "clientVerified": true,
+    "sha256": "29f5d6552a14f27fb6cc9be28e7fa874310026423c17758218feb5d011ebc5e5"
+  }
+}

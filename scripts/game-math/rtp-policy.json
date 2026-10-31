@@ -190,7 +190,8 @@
         "server/games/caribbeanTreasures.ts",
         "scripts/game-math/rtp-caribbean.mjs",
         "scripts/game-math/stake-runtime.mjs",
-        "scripts/game-math/stakes-wallet.ts"
+        "scripts/game-math/stakes-wallet.ts",
+        "scripts/game-math/rtp-stakes-samples.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
     },
@@ -1386,7 +1387,8 @@
         "src/shared/caramelCarnival.ts",
         "server/games/caramelCarnival.ts",
         "scripts/game-math/stake-runtime.mjs",
-        "scripts/game-math/stakes-wallet.ts"
+        "scripts/game-math/stakes-wallet.ts",
+        "scripts/game-math/rtp-stakes-samples.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "qualificationLooks": [
@@ -1454,7 +1456,8 @@
         "src/shared/lastConvoy.ts",
         "server/games/lastConvoy.ts",
         "scripts/game-math/stake-runtime.mjs",
-        "scripts/game-math/stakes-wallet.ts"
+        "scripts/game-math/stakes-wallet.ts",
+        "scripts/game-math/rtp-stakes-samples.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "qualificationLooks": [
@@ -1522,7 +1525,8 @@
         "src/shared/nitroRun.ts",
         "server/games/nitroRun.ts",
         "scripts/game-math/stake-runtime.mjs",
-        "scripts/game-math/stakes-wallet.ts"
+        "scripts/game-math/stakes-wallet.ts",
+        "scripts/game-math/rtp-stakes-samples.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "qualificationLooks": [
@@ -1591,7 +1595,8 @@
         "src/shared/memeOverload.ts",
         "server/games/nitroRun.ts",
         "scripts/game-math/stake-runtime.mjs",
-        "scripts/game-math/stakes-wallet.ts"
+        "scripts/game-math/stakes-wallet.ts",
+        "scripts/game-math/rtp-stakes-samples.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "qualificationLooks": [
@@ -1666,7 +1671,8 @@
         "server/games/velvetReign.ts",
         "server/games/velvetMath.ts",
         "scripts/game-math/stake-runtime.mjs",
-        "scripts/game-math/stakes-wallet.ts"
+        "scripts/game-math/stakes-wallet.ts",
+        "scripts/game-math/rtp-stakes-samples.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "qualificationLooks": [
@@ -1734,7 +1740,8 @@
         "src/shared/crLeo.ts",
         "server/games/crLeo.ts",
         "scripts/game-math/stake-runtime.mjs",
-        "scripts/game-math/stakes-wallet.ts"
+        "scripts/game-math/stakes-wallet.ts",
+        "scripts/game-math/rtp-stakes-samples.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
     },
@@ -1831,7 +1838,8 @@
         "src/shared/plinkoPresentation.ts",
         "src/ui/volcanicPlinkoModel.ts",
         "scripts/game-math/stake-runtime.mjs",
-        "scripts/game-math/stakes-wallet.ts"
+        "scripts/game-math/stakes-wallet.ts",
+        "scripts/game-math/rtp-stakes-samples.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "targetsByChoice": {
@@ -1965,7 +1973,8 @@
         "server-tests/round-precision.test.ts",
         "server/games/rush/crash.ts",
         "scripts/game-math/stake-runtime.mjs",
-        "scripts/game-math/stakes-wallet.ts"
+        "scripts/game-math/stakes-wallet.ts",
+        "scripts/game-math/rtp-stakes-samples.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
     }
@@ -1981,7 +1990,7 @@
         "progressVersion": 1,
         "target": 0.96,
         "minimumReturn": 0.9,
-        "tolerance": 0.000001,
+        "tolerance": 1e-06,
         "stakes": [
           1000,
           2000,
@@ -2177,7 +2186,8 @@
         "src/shared/caramelCarnival.ts",
         "server/games/caramelCarnival.ts",
         "scripts/game-math/stake-runtime.mjs",
-        "scripts/game-math/stakes-wallet.ts"
+        "scripts/game-math/stakes-wallet.ts",
+        "scripts/game-math/rtp-stakes-samples.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "qualificationLooks": [
@@ -2245,7 +2255,8 @@
         "src/shared/lastConvoy.ts",
         "server/games/lastConvoy.ts",
         "scripts/game-math/stake-runtime.mjs",
-        "scripts/game-math/stakes-wallet.ts"
+        "scripts/game-math/stakes-wallet.ts",
+        "scripts/game-math/rtp-stakes-samples.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "qualificationLooks": [
@@ -2313,7 +2324,8 @@
         "src/shared/nitroRun.ts",
         "server/games/nitroRun.ts",
         "scripts/game-math/stake-runtime.mjs",
-        "scripts/game-math/stakes-wallet.ts"
+        "scripts/game-math/stakes-wallet.ts",
+        "scripts/game-math/rtp-stakes-samples.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "qualificationLooks": [
@@ -2382,7 +2394,8 @@
         "src/shared/memeOverload.ts",
         "server/games/nitroRun.ts",
         "scripts/game-math/stake-runtime.mjs",
-        "scripts/game-math/stakes-wallet.ts"
+        "scripts/game-math/stakes-wallet.ts",
+        "scripts/game-math/rtp-stakes-samples.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "qualificationLooks": [
@@ -2457,7 +2470,8 @@
         "server/games/velvetReign.ts",
         "server/games/velvetMath.ts",
         "scripts/game-math/stake-runtime.mjs",
-        "scripts/game-math/stakes-wallet.ts"
+        "scripts/game-math/stakes-wallet.ts",
+        "scripts/game-math/rtp-stakes-samples.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "qualificationLooks": [
@@ -2525,7 +2539,8 @@
         "src/shared/crLeo.ts",
         "server/games/crLeo.ts",
         "scripts/game-math/stake-runtime.mjs",
-        "scripts/game-math/stakes-wallet.ts"
+        "scripts/game-math/stakes-wallet.ts",
+        "scripts/game-math/rtp-stakes-samples.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
     },
@@ -2586,7 +2601,8 @@
         "server/games/jackieChan.ts",
         "server/games/crLeo.ts",
         "scripts/game-math/stake-runtime.mjs",
-        "scripts/game-math/stakes-wallet.ts"
+        "scripts/game-math/stakes-wallet.ts",
+        "scripts/game-math/rtp-stakes-samples.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
     },
@@ -2683,7 +2699,8 @@
         "src/shared/plinkoPresentation.ts",
         "src/ui/volcanicPlinkoModel.ts",
         "scripts/game-math/stake-runtime.mjs",
-        "scripts/game-math/stakes-wallet.ts"
+        "scripts/game-math/stakes-wallet.ts",
+        "scripts/game-math/rtp-stakes-samples.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "targetsByChoice": {
@@ -2819,7 +2836,8 @@
         "server/games/core.ts",
         "src/shared/gameCore.ts",
         "scripts/game-math/stake-runtime.mjs",
-        "scripts/game-math/stakes-wallet.ts"
+        "scripts/game-math/stakes-wallet.ts",
+        "scripts/game-math/rtp-stakes-samples.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
     },
@@ -2877,7 +2895,8 @@
         "server-tests/round-precision.test.ts",
         "server/games/rush/crash.ts",
         "scripts/game-math/stake-runtime.mjs",
-        "scripts/game-math/stakes-wallet.ts"
+        "scripts/game-math/stakes-wallet.ts",
+        "scripts/game-math/rtp-stakes-samples.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
     },
@@ -2938,7 +2957,8 @@
         "src/shared/flagBattle.ts",
         "server/games/flagBattle.ts",
         "scripts/game-math/stake-runtime.mjs",
-        "scripts/game-math/stakes-wallet.ts"
+        "scripts/game-math/stakes-wallet.ts",
+        "scripts/game-math/rtp-stakes-samples.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
     },
@@ -3012,7 +3032,8 @@
         "scripts/game-math/forest-heart-model.mjs",
         "scripts/game-math/forest-heart-reference.mjs",
         "scripts/game-math/stake-runtime.mjs",
-        "scripts/game-math/stakes-wallet.ts"
+        "scripts/game-math/stakes-wallet.ts",
+        "scripts/game-math/rtp-stakes-samples.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "targetsByChoice": {
@@ -3105,7 +3126,8 @@
         "server/games/caribbeanTreasures.ts",
         "scripts/game-math/rtp-caribbean.mjs",
         "scripts/game-math/stake-runtime.mjs",
-        "scripts/game-math/stakes-wallet.ts"
+        "scripts/game-math/stakes-wallet.ts",
+        "scripts/game-math/rtp-stakes-samples.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
     },
@@ -3171,7 +3193,8 @@
         "scripts/game-math/rtp-cosmic.mjs",
         "scripts/game-math/stake-runtime.mjs",
         "src/shared/luelonSlotsLines.ts",
-        "scripts/game-math/stakes-wallet.ts"
+        "scripts/game-math/stakes-wallet.ts",
+        "scripts/game-math/rtp-stakes-samples.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
     },
@@ -3233,7 +3256,8 @@
         "server/games/floodedTempleCascade.ts",
         "scripts/game-math/rtp-temple-cascade-model.mjs",
         "scripts/game-math/stake-runtime.mjs",
-        "scripts/game-math/stakes-wallet.ts"
+        "scripts/game-math/stakes-wallet.ts",
+        "scripts/game-math/rtp-stakes-samples.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
     },
@@ -3293,7 +3317,8 @@
         "server/games/afterglow.ts",
         "scripts/game-math/rtp-afterglow.mjs",
         "scripts/game-math/stake-runtime.mjs",
-        "scripts/game-math/stakes-wallet.ts"
+        "scripts/game-math/stakes-wallet.ts",
+        "scripts/game-math/rtp-stakes-samples.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
     },
@@ -3354,7 +3379,8 @@
         "server/games/dracona.ts",
         "scripts/game-math/rtp-simulation.mjs",
         "scripts/game-math/stake-runtime.mjs",
-        "scripts/game-math/stakes-wallet.ts"
+        "scripts/game-math/stakes-wallet.ts",
+        "scripts/game-math/rtp-stakes-samples.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
     },
@@ -3416,7 +3442,8 @@
         "server/games/neopolis.ts",
         "scripts/game-math/rtp-neopolis-v4.mjs",
         "scripts/game-math/stake-runtime.mjs",
-        "scripts/game-math/stakes-wallet.ts"
+        "scripts/game-math/stakes-wallet.ts",
+        "scripts/game-math/rtp-stakes-samples.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
     }

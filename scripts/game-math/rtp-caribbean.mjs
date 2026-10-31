@@ -26,7 +26,7 @@ export const CARIBBEAN_REVIEWED_SOURCES = {
   "server/games/caribbeanTreasures.ts": "bdb0aa8eecef1093f876dd3c467ff1b43d8a7b1606a63a56aa46430964556e99",
   "src/shared/caribbeanTransport.ts": "8623c8e5f4f7eef28997a3b9630873e86c4c7fa7f1ff1b790490802d9fd9415a",
   "src/shared/casinoExpansion.ts": "c89133d0c011baa56241b09e56913e315534ac3e52871308238e234cb8c75f74",
-  "server/demoExpansion.ts": "355b75eb024907c989e1b2a26031de1ada8e54de6c44289730fc6922702465ed",
+  "server/demoExpansion.ts": "a94d6436cf35550c10f3e395eb06ae11f4895fc215345f2d069042f25f135118",
   "server/finance/nile-game-runtime.ts": "b667f5865791852f0c79f5b85176548c5c012478c561c021bab5cde3e8dc8d96"
 };
 const WEIGHTS = [30,24,18,13,9,6];

@@ -31,7 +31,7 @@ test('real wallet HTTP negotiates new rules, protects old clients and settles bo
       const current=neopolis?'4':'2', old=neopolis?'3':'1', random=seededRandom(neopolis?95:1);
       Reflect.set(accounts.wallet.expansion,'draw',(max:number)=>Math.floor(random()*max));
       const post=(body:unknown,version=current)=>fetch(url,{method:'POST',headers:{...base,[header]:version},body:JSON.stringify(body)});
-      const start=()=>({id:randomUUID(),action:'start',gameId:game,stakeUnits:'10000',settings:neopolis?{neopolis:{hero:'granite'}}:{dracona:{mode:'normal'}}});
+      const start=()=>({id:randomUUID(),action:'start',stakePolicyVersion:1,gameId:game,stakeUnits:'1000',settings:neopolis?{neopolis:{hero:'granite'}}:{dracona:{mode:'normal'}}});
       const before=await accounts.wallet.snapshot(login.account.id);
       assert.equal((await post(start(),old)).status,409);
       assert.deepEqual(await accounts.wallet.snapshot(login.account.id),before);
@@ -74,7 +74,7 @@ test('current USDT HTTP route negotiates both qualified slots through its financ
   const base={'Cookie':'royal_session='+login.token,'X-Royal-Account-Id':login.account.id,'Content-Type':'application/json','X-Royal-Card-Rules':'2'};
   const post=(body:unknown,version='2',neopolisRules='0')=>fetch(url,{method:'POST',headers:{...base,[DRACONA_CLIENT_HEADER]:version,[NEOPOLIS_HEADER]:neopolisRules},body:JSON.stringify(body)});
   try {
-    const action={id:randomUUID(),action:'start',gameId:DRACONA_GAME,stakeUnits:'1000',settings:{dracona:{mode:'normal'}}};
+    const action={id:randomUUID(),action:'start',stakePolicyVersion:1,gameId:DRACONA_GAME,stakeUnits:'1000',settings:{dracona:{mode:'normal'}}};
     assert.equal((await post(action,'1')).status,409);
     const response=await post(action);assert.equal(response.status,200);let reply=await response.json();
     assert.equal(reply.wallet.asset,'USDT_NILE_TEST');assert.equal(reply.session.rulesVersion,3);assert(validDraconaSession(reply.session));

@@ -21,7 +21,7 @@ test('the catalogue adds a loadable slot without adding physical seats or retiri
   assert.equal(cabinetsInHall('arcade').some(cabinet => cabinet.id === CARIBBEAN_GAME),false);
   assert(collectionGames('royal').includes(CARIBBEAN_GAME));
   assert(GAME_CABINETS.some(cabinet => cabinet.id === CARIBBEAN_GAME && cabinet.wallet));
-  assert.deepEqual(gameModuleContract(CARIBBEAN_GAME),{gameId:CARIBBEAN_GAME,slug:'caribbean-treasures',apiVersion:1,rulesVersion:1,progressVersion:1});
+  assert.deepEqual(gameModuleContract(CARIBBEAN_GAME),{gameId:CARIBBEAN_GAME,slug:'caribbean-treasures',apiVersion:1,rulesVersion:2,progressVersion:1});
   for (const id of ['studio-neopolis','studio-dracona','studio-cosmic-escape']) assert(collectionGames('royal').includes(id));
 });
 test('transport accepts every declared preset and rejects foreign moves, extra fields and missing revisions',() => {

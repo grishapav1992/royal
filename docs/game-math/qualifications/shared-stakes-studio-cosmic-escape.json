@@ -1,0 +1,799 @@
+{
+  "schemaVersion": 1,
+  "gameId": "studio-cosmic-escape",
+  "rulesVersion": 2,
+  "progressVersion": 1,
+  "startedAt": "2026-10-31T21:11:49.268Z",
+  "completedAt": "2026-10-31T21:12:12.424Z",
+  "sourceHashes": {
+    "src/shared/gameStakes.ts": "9e207c51bc5cd9c342992f2f92258826a678cbf00d409b329447e7abca654637",
+    "src/shared/roundPrecision.ts": "8d9f64dd7ae146fa1a7288bf0d4bf8f947a8bc419d12c94fe8f765ec2a75b307",
+    "src/shared/casinoExpansion.ts": "c89133d0c011baa56241b09e56913e315534ac3e52871308238e234cb8c75f74",
+    "src/shared/forestHeartMath.ts": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
+    "src/shared/neopolisMath.ts": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
+    "src/shared/neopolisStakePayouts.ts": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
+    "server/demoExpansion.ts": "355b75eb024907c989e1b2a26031de1ada8e54de6c44289730fc6922702465ed",
+    "server/demoWallet.ts": "695130f9e8eec2b6854f6f620ea2aae33084f25c182ae4755f49347cedcebf63",
+    "server/demoWalletAmounts.ts": "1da7a73b63c79cba0ff674f59c75fe517d8445eafaf831be8afa7f9a4c6e6317",
+    "server/demoWalletRoutes.ts": "8d60c69f76d12f274c1a691786cfda57b48deabc354527202ed124a433feba82",
+    "server/finance/nile-game-runtime.ts": "b667f5865791852f0c79f5b85176548c5c012478c561c021bab5cde3e8dc8d96",
+    "server/afterglowProgress.ts": "cf38081a14f88c034f1a32af9e99ca7bbd7f56590decd419867469cb2f753a42",
+    "src/wallet/ExpansionClient.ts": "bc253f9200daec9539ade6a26f715e7a7734b80b02562989be2d5516019b81e1",
+    "src/wallet/WalletClient.ts": "0e8bb81228f8bd9566fd2308e089323027bc3f7f0422ccbeda858f998f6de6a9",
+    "scripts/game-math/rtp-stakes-sampler.mjs": "d0c297ee40636be7c1312d5de8be1f4023e858efbe61e6aba26486f011fc4d7d",
+    "scripts/game-math/rtp-stakes-worker.mjs": "f5db2c6be7cc4c68bb07c719eea5ba3db3f0d237d7bf8cd75736c891f91a218d",
+    "server-tests/game-stakes.test.ts": "810c0f42c5137ed0e49b94a796808c6753ab4e204408c773c12176eefc896031",
+    "server-tests/round-precision.test.ts": "d48a631f198636a97db8e70952c600a47b9cb1d04b20ebc6d08cbfa2cd452abb",
+    "src/shared/cosmicEscapeBets.ts": "a810b0f394e290eae0ccbf2f1745ada20f280bb08bd176eb534d0390871f99c7",
+    "src/shared/luelonSlots.ts": "1867b3f6e7e3fbc1e00dd6fad2bb094c42e6038f8eba18e0ef7250381f95cdcb",
+    "src/shared/luelonSlotsModels.ts": "b8644fecff250437909ff88950c5ef129c1d534108344f9643b815614d844c74",
+    "server/games/luelonSlots.ts": "be78b2715aa850d3801445edf0f714b89dcb76ed98719e5589fcac71dc7fe3f2",
+    "scripts/game-math/rtp-cosmic.mjs": "8618269fa84facb04bfab04be75a55e7fde4df62357d9090f8b24359c5a32151",
+    "scripts/game-math/stake-runtime.mjs": "24aadf4414fe0daf402931901d773143291bee2c099713355e3e345c1e5145ca",
+    "src/shared/luelonSlotsLines.ts": "cc9e2528bae03e8965c154f82aa271b3c9976bb3d817130ba51dedf6e8eb67ee",
+    "scripts/game-math/stakes-wallet.ts": "d9a4084a6ddb188ef52a6d2e05fb93e09f0ade96a95ae75a16ad065c80f2c695",
+    "scripts/game-math/rtp-stakes-samples.mjs": "d2cdeaf1311ba67c78a04b04d78c6353caaed0b490933c93d8b231b94e481b1c",
+    "scripts/game-math/rtp-stakes.mjs": "303243abd909c97683260439f51d7730b2550c2ffb660e434ae59db2730da6ad"
+  },
+  "policySha256": "53c0fe15156de3e1976ac6f12c9fe6978df63e5f34911162e11bdb72c29fa9a7",
+  "method": "full-round-unbiased-cent-policy-v1",
+  "precisionLaw": {
+    "method": "Independent uniform final ticket; exact BigInt rational accumulation and integer settlement",
+    "identity": "For exact reward n/d, let q=floor(n/d), r=n mod d and uniform U in {0,...,d-1}. Pay q+1 if U<r, otherwise q. The sum over all tickets is q*d+r=n.",
+    "stopping": "The ticket is drawn only after the final player choice and every free continuation. No future rounding ticket is exposed to adaptive choices.",
+    "preservation": "Every intermediate discarded fraction is restored before the final ticket. For a fixed consumed path the expected credit equals its capped exact reward, and the actual credit never falls below the original sum of floors.",
+    "caps": "Nonnegative rewards couple every denomination to the same latent capped paid round. Stopping a presentation after its floor reaches the cap does not change that round reward.",
+    "compatibility": "Only starts pinned to stakePolicyVersion=1 use this receipt. Accepted historical rounds and UUID replays retain their original rules and committed credit.",
+    "confidence": "Exact analytical bounds and statistical intervals are labelled separately. A statistical estimate is not an exact RTP. Conditional estimates are per case, not simultaneous confidence guarantees."
+  },
+  "results": [
+    {
+      "choice": "normal",
+      "stakeUnits": 10,
+      "kind": "deterministic-model-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.959956946582889,
+        0.960017765453377
+      ],
+      "reason": "The reference exact beam/echo/energy model and cap bounds apply to the same nonnegative latent round at every stake."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 20,
+      "kind": "deterministic-model-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.959956946582889,
+        0.960017765453377
+      ],
+      "reason": "The reference exact beam/echo/energy model and cap bounds apply to the same nonnegative latent round at every stake."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 50,
+      "kind": "deterministic-model-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.959956946582889,
+        0.960017765453377
+      ],
+      "reason": "The reference exact beam/echo/energy model and cap bounds apply to the same nonnegative latent round at every stake."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 100,
+      "kind": "deterministic-model-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.959956946582889,
+        0.960017765453377
+      ],
+      "reason": "The reference exact beam/echo/energy model and cap bounds apply to the same nonnegative latent round at every stake."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 200,
+      "kind": "deterministic-model-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.959956946582889,
+        0.960017765453377
+      ],
+      "reason": "The reference exact beam/echo/energy model and cap bounds apply to the same nonnegative latent round at every stake."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 500,
+      "kind": "deterministic-model-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.959956946582889,
+        0.960017765453377
+      ],
+      "reason": "The reference exact beam/echo/energy model and cap bounds apply to the same nonnegative latent round at every stake."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 1000,
+      "kind": "deterministic-model-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.959956946582889,
+        0.960017765453377
+      ],
+      "reason": "The reference exact beam/echo/energy model and cap bounds apply to the same nonnegative latent round at every stake."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 2000,
+      "kind": "deterministic-model-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.959956946582889,
+        0.960017765453377
+      ],
+      "reason": "The reference exact beam/echo/energy model and cap bounds apply to the same nonnegative latent round at every stake."
+    },
+    {
+      "choice": "normal",
+      "stakeUnits": 5000,
+      "kind": "deterministic-model-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.959956946582889,
+        0.960017765453377
+      ],
+      "reason": "The reference exact beam/echo/energy model and cap bounds apply to the same nonnegative latent round at every stake."
+    },
+    {
+      "choice": "cosmic-chaos",
+      "stakeUnits": 10,
+      "kind": "deterministic-model-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.9597873344874032,
+        0.9598465213726478
+      ],
+      "reason": "The reference exact beam/echo/energy model and cap bounds apply to the same nonnegative latent round at every stake."
+    },
+    {
+      "choice": "cosmic-chaos",
+      "stakeUnits": 20,
+      "kind": "deterministic-model-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.9597873344874032,
+        0.9598465213726478
+      ],
+      "reason": "The reference exact beam/echo/energy model and cap bounds apply to the same nonnegative latent round at every stake."
+    },
+    {
+      "choice": "cosmic-chaos",
+      "stakeUnits": 50,
+      "kind": "deterministic-model-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.9597873344874032,
+        0.9598465213726478
+      ],
+      "reason": "The reference exact beam/echo/energy model and cap bounds apply to the same nonnegative latent round at every stake."
+    },
+    {
+      "choice": "cosmic-chaos",
+      "stakeUnits": 100,
+      "kind": "deterministic-model-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.9597873344874032,
+        0.9598465213726478
+      ],
+      "reason": "The reference exact beam/echo/energy model and cap bounds apply to the same nonnegative latent round at every stake."
+    },
+    {
+      "choice": "cosmic-chaos",
+      "stakeUnits": 200,
+      "kind": "deterministic-model-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.9597873344874032,
+        0.9598465213726478
+      ],
+      "reason": "The reference exact beam/echo/energy model and cap bounds apply to the same nonnegative latent round at every stake."
+    },
+    {
+      "choice": "cosmic-chaos",
+      "stakeUnits": 500,
+      "kind": "deterministic-model-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.9597873344874032,
+        0.9598465213726478
+      ],
+      "reason": "The reference exact beam/echo/energy model and cap bounds apply to the same nonnegative latent round at every stake."
+    },
+    {
+      "choice": "cosmic-chaos",
+      "stakeUnits": 1000,
+      "kind": "deterministic-model-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.9597873344874032,
+        0.9598465213726478
+      ],
+      "reason": "The reference exact beam/echo/energy model and cap bounds apply to the same nonnegative latent round at every stake."
+    },
+    {
+      "choice": "cosmic-chaos",
+      "stakeUnits": 2000,
+      "kind": "deterministic-model-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.9597873344874032,
+        0.9598465213726478
+      ],
+      "reason": "The reference exact beam/echo/energy model and cap bounds apply to the same nonnegative latent round at every stake."
+    },
+    {
+      "choice": "cosmic-chaos",
+      "stakeUnits": 5000,
+      "kind": "deterministic-model-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.9597873344874032,
+        0.9598465213726478
+      ],
+      "reason": "The reference exact beam/echo/energy model and cap bounds apply to the same nonnegative latent round at every stake."
+    },
+    {
+      "choice": "ufo-invasion",
+      "stakeUnits": 10,
+      "kind": "deterministic-model-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.9580529273037427,
+        0.9583317355848724
+      ],
+      "reason": "The reference exact beam/echo/energy model and cap bounds apply to the same nonnegative latent round at every stake."
+    },
+    {
+      "choice": "ufo-invasion",
+      "stakeUnits": 20,
+      "kind": "deterministic-model-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.9580529273037427,
+        0.9583317355848724
+      ],
+      "reason": "The reference exact beam/echo/energy model and cap bounds apply to the same nonnegative latent round at every stake."
+    },
+    {
+      "choice": "ufo-invasion",
+      "stakeUnits": 50,
+      "kind": "deterministic-model-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.9580529273037427,
+        0.9583317355848724
+      ],
+      "reason": "The reference exact beam/echo/energy model and cap bounds apply to the same nonnegative latent round at every stake."
+    },
+    {
+      "choice": "ufo-invasion",
+      "stakeUnits": 100,
+      "kind": "deterministic-model-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.9580529273037427,
+        0.9583317355848724
+      ],
+      "reason": "The reference exact beam/echo/energy model and cap bounds apply to the same nonnegative latent round at every stake."
+    },
+    {
+      "choice": "ufo-invasion",
+      "stakeUnits": 200,
+      "kind": "deterministic-model-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.9580529273037427,
+        0.9583317355848724
+      ],
+      "reason": "The reference exact beam/echo/energy model and cap bounds apply to the same nonnegative latent round at every stake."
+    },
+    {
+      "choice": "ufo-invasion",
+      "stakeUnits": 500,
+      "kind": "deterministic-model-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.9580529273037427,
+        0.9583317355848724
+      ],
+      "reason": "The reference exact beam/echo/energy model and cap bounds apply to the same nonnegative latent round at every stake."
+    },
+    {
+      "choice": "ufo-invasion",
+      "stakeUnits": 1000,
+      "kind": "deterministic-model-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.9580529273037427,
+        0.9583317355848724
+      ],
+      "reason": "The reference exact beam/echo/energy model and cap bounds apply to the same nonnegative latent round at every stake."
+    },
+    {
+      "choice": "ufo-invasion",
+      "stakeUnits": 2000,
+      "kind": "deterministic-model-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.9580529273037427,
+        0.9583317355848724
+      ],
+      "reason": "The reference exact beam/echo/energy model and cap bounds apply to the same nonnegative latent round at every stake."
+    },
+    {
+      "choice": "ufo-invasion",
+      "stakeUnits": 5000,
+      "kind": "deterministic-model-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.9580529273037427,
+        0.9583317355848724
+      ],
+      "reason": "The reference exact beam/echo/energy model and cap bounds apply to the same nonnegative latent round at every stake."
+    },
+    {
+      "choice": "deep-echo",
+      "stakeUnits": 10,
+      "kind": "deterministic-model-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.9590626539999318,
+        0.9591283814513147
+      ],
+      "reason": "The reference exact beam/echo/energy model and cap bounds apply to the same nonnegative latent round at every stake."
+    },
+    {
+      "choice": "deep-echo",
+      "stakeUnits": 20,
+      "kind": "deterministic-model-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.9590626539999318,
+        0.9591283814513147
+      ],
+      "reason": "The reference exact beam/echo/energy model and cap bounds apply to the same nonnegative latent round at every stake."
+    },
+    {
+      "choice": "deep-echo",
+      "stakeUnits": 50,
+      "kind": "deterministic-model-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.9590626539999318,
+        0.9591283814513147
+      ],
+      "reason": "The reference exact beam/echo/energy model and cap bounds apply to the same nonnegative latent round at every stake."
+    },
+    {
+      "choice": "deep-echo",
+      "stakeUnits": 100,
+      "kind": "deterministic-model-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.9590626539999318,
+        0.9591283814513147
+      ],
+      "reason": "The reference exact beam/echo/energy model and cap bounds apply to the same nonnegative latent round at every stake."
+    },
+    {
+      "choice": "deep-echo",
+      "stakeUnits": 200,
+      "kind": "deterministic-model-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.9590626539999318,
+        0.9591283814513147
+      ],
+      "reason": "The reference exact beam/echo/energy model and cap bounds apply to the same nonnegative latent round at every stake."
+    },
+    {
+      "choice": "deep-echo",
+      "stakeUnits": 500,
+      "kind": "deterministic-model-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.9590626539999318,
+        0.9591283814513147
+      ],
+      "reason": "The reference exact beam/echo/energy model and cap bounds apply to the same nonnegative latent round at every stake."
+    },
+    {
+      "choice": "deep-echo",
+      "stakeUnits": 1000,
+      "kind": "deterministic-model-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.9590626539999318,
+        0.9591283814513147
+      ],
+      "reason": "The reference exact beam/echo/energy model and cap bounds apply to the same nonnegative latent round at every stake."
+    },
+    {
+      "choice": "deep-echo",
+      "stakeUnits": 2000,
+      "kind": "deterministic-model-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.9590626539999318,
+        0.9591283814513147
+      ],
+      "reason": "The reference exact beam/echo/energy model and cap bounds apply to the same nonnegative latent round at every stake."
+    },
+    {
+      "choice": "deep-echo",
+      "stakeUnits": 5000,
+      "kind": "deterministic-model-bounds",
+      "rtp": null,
+      "rtpBounds": [
+        0.9590626539999318,
+        0.9591283814513147
+      ],
+      "reason": "The reference exact beam/echo/energy model and cap bounds apply to the same nonnegative latent round at every stake."
+    }
+  ],
+  "evidence": {
+    "reference": {
+      "path": "docs/game-math/qualifications/cosmic-v3.json",
+      "sha256": "b1fbe4033ef949699a67c71ff646333c69e005b4f3ff50d4fd8b2f65860d4baa"
+    }
+  },
+  "replay": {
+    "coverage": [
+      {
+        "choice": "normal",
+        "stakeUnits": 10,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 2,
+        "sha256": "54e08f866ae91d4b08e41a946e8b53ba6b138808e395e685f078fcf8b3d970ef"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 20,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "ead71f232b4d89bd443b17dc0c0f4e826d3d2cbb00f359c88b74acf535704526"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 50,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 2,
+        "sha256": "134343d563fb45b081c416a969eaf8110e84df1c7682ffd0d08eb70df6c8e1a4"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 100,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "d5f7d7a14f01d23223b3cfc0b2eb27f29fc129d99d1c35fb85d0bf4d051a0e1a"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 200,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "0cf3716dc8984d6fb5f987eb38cb88a059660aabbbcfa51b160e043aec7da404"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 500,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "305fd3cb87bc144baa3435f0505114c20027b04cdfb0cbbaddb4aaa5b4c2ec30"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "7923f80b67a7fb527695e156a9d0816445280c8bff5a9589bbe7427a6c6e1b99"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "206939ba86eab66260df846e3b6d601e7d7293a079652935165dc81027bbfb4a"
+      },
+      {
+        "choice": "normal",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "fc0045af70d8c6d9e47284925b3d864f77e8a8d0ff6e0a99b3450f83cbdb3548"
+      },
+      {
+        "choice": "cosmic-chaos",
+        "stakeUnits": 10,
+        "paidRounds": 128,
+        "spins": 1408,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 5,
+        "sha256": "135c0e715568866fa73816811580fecb0c5d09bc4dbdf7f1d2d885cabc5ce3de"
+      },
+      {
+        "choice": "cosmic-chaos",
+        "stakeUnits": 20,
+        "paidRounds": 128,
+        "spins": 1408,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "3de1ea17b34911722ddcc66a8f633b345b1d80452b46bad0ea00aeb3c2dc029e"
+      },
+      {
+        "choice": "cosmic-chaos",
+        "stakeUnits": 50,
+        "paidRounds": 128,
+        "spins": 1408,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 5,
+        "sha256": "7956b1062b3d0bbcd2df9b7b74d2cd061c86067f019bc04b4b8c04a0c775bc08"
+      },
+      {
+        "choice": "cosmic-chaos",
+        "stakeUnits": 100,
+        "paidRounds": 128,
+        "spins": 1408,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "42fb2376229271fa61a4d8dfcf74783b508444d8845d7b5c449fa0b4fa3f61ed"
+      },
+      {
+        "choice": "cosmic-chaos",
+        "stakeUnits": 200,
+        "paidRounds": 128,
+        "spins": 1408,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "282e029eb467d0807fc0630a4a8eda9e106fcc967ed36a8a0d4fea119c8dc068"
+      },
+      {
+        "choice": "cosmic-chaos",
+        "stakeUnits": 500,
+        "paidRounds": 128,
+        "spins": 1408,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "b2560928afcbf29cfdbc53800f7e64a250d05a30a22dbd47e14054cd7d5be8c0"
+      },
+      {
+        "choice": "cosmic-chaos",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 1408,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "6e248161d7d6289149d41d1391beeb712ff8a8d5785cd582dd70f2ab0c01efda"
+      },
+      {
+        "choice": "cosmic-chaos",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 1408,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "99c9ed17717966f885fe0985894ce90b5d5282b58f92f15cd3c03ad26beb8123"
+      },
+      {
+        "choice": "cosmic-chaos",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 1408,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "138d8ad05dd9a1d5df959e3c14a91fa4a1d78c9228e97db590c95cd1a73acb1f"
+      },
+      {
+        "choice": "ufo-invasion",
+        "stakeUnits": 10,
+        "paidRounds": 128,
+        "spins": 1664,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 9,
+        "sha256": "349f7841e305d20000a1b86865dce5bf4524fb61fe1ec1d4e7df04505161df9b"
+      },
+      {
+        "choice": "ufo-invasion",
+        "stakeUnits": 20,
+        "paidRounds": 128,
+        "spins": 1664,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "2735cf70d820f621739dd219bf66ac5fc9eaa3cb0de44132e7f5152caf8733bd"
+      },
+      {
+        "choice": "ufo-invasion",
+        "stakeUnits": 50,
+        "paidRounds": 128,
+        "spins": 1664,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 9,
+        "sha256": "8fc381c7a1bd8f1e27fb604840fc3f9112b5bb2fa14b877b7225bf7eabdbab91"
+      },
+      {
+        "choice": "ufo-invasion",
+        "stakeUnits": 100,
+        "paidRounds": 128,
+        "spins": 1664,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "3d3963ab86e2421bad9a63cf8a9739603d9e6d03ff80df92689a0ef39e393c93"
+      },
+      {
+        "choice": "ufo-invasion",
+        "stakeUnits": 200,
+        "paidRounds": 128,
+        "spins": 1664,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "0b19b9de7d2e77747d97c0ba71ee08b022720dde7c9357540fc3fb812830b7f4"
+      },
+      {
+        "choice": "ufo-invasion",
+        "stakeUnits": 500,
+        "paidRounds": 128,
+        "spins": 1664,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "1c3040975b67d6ffcf8fc86965d18b72c02c8d425b022e0b47dc42b438990588"
+      },
+      {
+        "choice": "ufo-invasion",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 1664,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "c69c970596e6a9a4bfdb8bc8ec1d6eeedce3f997fa5181e5754d6c8844be6971"
+      },
+      {
+        "choice": "ufo-invasion",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 1664,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "0760742a1b54764949737c4c6395139433e774c74a14c4da334beab0188df309"
+      },
+      {
+        "choice": "ufo-invasion",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 1664,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "d3d53fe1facd17ec6c4e4719d4a4481fb845de090c8e2a53fd12eefcc366b400"
+      },
+      {
+        "choice": "deep-echo",
+        "stakeUnits": 10,
+        "paidRounds": 128,
+        "spins": 2048,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 9,
+        "sha256": "c3159e5f734228bed5c04b8d6b672197753d6525bf5d56b3abae6ae192214415"
+      },
+      {
+        "choice": "deep-echo",
+        "stakeUnits": 20,
+        "paidRounds": 128,
+        "spins": 2048,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "5b984a6064becabf1a7c29260b2df220ff1a989cf02341fdc89019b765b29356"
+      },
+      {
+        "choice": "deep-echo",
+        "stakeUnits": 50,
+        "paidRounds": 128,
+        "spins": 2048,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 9,
+        "sha256": "3c2ac1ffa94f8f3e7317bdb11b1084963ade2da75a15cda4cf9fa48f5bf6be50"
+      },
+      {
+        "choice": "deep-echo",
+        "stakeUnits": 100,
+        "paidRounds": 128,
+        "spins": 2048,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "f5fb43409becf75f066e7f8044cbff49017e740d7d524e6d7c73999122c70adf"
+      },
+      {
+        "choice": "deep-echo",
+        "stakeUnits": 200,
+        "paidRounds": 128,
+        "spins": 2048,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "62ee67b205e6b6ce0b24a42255748489d04e2a5b956920483a40cb6c87d6e671"
+      },
+      {
+        "choice": "deep-echo",
+        "stakeUnits": 500,
+        "paidRounds": 128,
+        "spins": 2048,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "4703fe47f9c71704c7c54a90513a9f46950389d75c81f4e823ea49a4ee52467c"
+      },
+      {
+        "choice": "deep-echo",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 2048,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "f0ca21b4e381ec8204ab435d3f0b4dc1d327ee48d25f92f7ce15a87bfa826858"
+      },
+      {
+        "choice": "deep-echo",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 2048,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "88c910c4d328b396ef8c6e407d6ece4b0dae0475233bd4e7fb1dfb10c7f449bb"
+      },
+      {
+        "choice": "deep-echo",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 2048,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "229d4f7779f8b1e7c0c6d0da85a5abe636ec120362cb58dd5fe2278095f07cdf"
+      }
+    ]
+  },
+  "serverReplayChecks": 4608,
+  "walletEvidence": {
+    "passed": true,
+    "native": {
+      "passed": true,
+      "minimumStakeUnits": "10",
+      "replayPreserved": true,
+      "reservationReleased": true,
+      "journalBalanced": true
+    },
+    "gameId": "studio-cosmic-escape",
+    "cases": 36,
+    "freeContinuationChecks": 333,
+    "replayAndRestartCases": 36,
+    "oneDebitAndCredit": true,
+    "clientVerified": true,
+    "sha256": "8bc87bb9d930c4a3ab929f54dad66f42f2478ef52a6e1b3492428707c60277e1"
+  }
+}

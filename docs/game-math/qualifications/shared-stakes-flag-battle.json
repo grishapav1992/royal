@@ -1,0 +1,637 @@
+{
+  "schemaVersion": 1,
+  "gameId": "flag-battle",
+  "rulesVersion": 2,
+  "progressVersion": 1,
+  "startedAt": "2026-10-31T21:07:57.815Z",
+  "completedAt": "2026-10-31T21:08:01.906Z",
+  "sourceHashes": {
+    "src/shared/gameStakes.ts": "9e207c51bc5cd9c342992f2f92258826a678cbf00d409b329447e7abca654637",
+    "src/shared/roundPrecision.ts": "8d9f64dd7ae146fa1a7288bf0d4bf8f947a8bc419d12c94fe8f765ec2a75b307",
+    "src/shared/casinoExpansion.ts": "c89133d0c011baa56241b09e56913e315534ac3e52871308238e234cb8c75f74",
+    "src/shared/forestHeartMath.ts": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
+    "src/shared/neopolisMath.ts": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
+    "src/shared/neopolisStakePayouts.ts": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
+    "server/demoExpansion.ts": "355b75eb024907c989e1b2a26031de1ada8e54de6c44289730fc6922702465ed",
+    "server/demoWallet.ts": "695130f9e8eec2b6854f6f620ea2aae33084f25c182ae4755f49347cedcebf63",
+    "server/demoWalletAmounts.ts": "1da7a73b63c79cba0ff674f59c75fe517d8445eafaf831be8afa7f9a4c6e6317",
+    "server/demoWalletRoutes.ts": "8d60c69f76d12f274c1a691786cfda57b48deabc354527202ed124a433feba82",
+    "server/finance/nile-game-runtime.ts": "b667f5865791852f0c79f5b85176548c5c012478c561c021bab5cde3e8dc8d96",
+    "server/afterglowProgress.ts": "cf38081a14f88c034f1a32af9e99ca7bbd7f56590decd419867469cb2f753a42",
+    "src/wallet/ExpansionClient.ts": "bc253f9200daec9539ade6a26f715e7a7734b80b02562989be2d5516019b81e1",
+    "src/wallet/WalletClient.ts": "0e8bb81228f8bd9566fd2308e089323027bc3f7f0422ccbeda858f998f6de6a9",
+    "scripts/game-math/rtp-stakes-sampler.mjs": "d0c297ee40636be7c1312d5de8be1f4023e858efbe61e6aba26486f011fc4d7d",
+    "scripts/game-math/rtp-stakes-worker.mjs": "f5db2c6be7cc4c68bb07c719eea5ba3db3f0d237d7bf8cd75736c891f91a218d",
+    "server-tests/game-stakes.test.ts": "810c0f42c5137ed0e49b94a796808c6753ab4e204408c773c12176eefc896031",
+    "server-tests/round-precision.test.ts": "d48a631f198636a97db8e70952c600a47b9cb1d04b20ebc6d08cbfa2cd452abb",
+    "src/shared/flagBattle.ts": "269b48f9367609b2343b732982631f88203fed9fa2b40e6bb08d9f6611b64aa4",
+    "server/games/flagBattle.ts": "48adde5247fa57348efecb91f05dec1eb9203e544c3f42407e5ebbcff52c9068",
+    "scripts/game-math/stake-runtime.mjs": "24aadf4414fe0daf402931901d773143291bee2c099713355e3e345c1e5145ca",
+    "scripts/game-math/stakes-wallet.ts": "d9a4084a6ddb188ef52a6d2e05fb93e09f0ade96a95ae75a16ad065c80f2c695",
+    "scripts/game-math/rtp-stakes-samples.mjs": "d2cdeaf1311ba67c78a04b04d78c6353caaed0b490933c93d8b231b94e481b1c",
+    "scripts/game-math/rtp-stakes.mjs": "303243abd909c97683260439f51d7730b2550c2ffb660e434ae59db2730da6ad"
+  },
+  "policySha256": "6aa96019a06a837d54c4070fda728458d3a58366238644c458bab18f18b60c92",
+  "method": "full-round-unbiased-cent-policy-v1",
+  "precisionLaw": {
+    "method": "Independent uniform final ticket; exact BigInt rational accumulation and integer settlement",
+    "identity": "For exact reward n/d, let q=floor(n/d), r=n mod d and uniform U in {0,...,d-1}. Pay q+1 if U<r, otherwise q. The sum over all tickets is q*d+r=n.",
+    "stopping": "The ticket is drawn only after the final player choice and every free continuation. No future rounding ticket is exposed to adaptive choices.",
+    "preservation": "Every intermediate discarded fraction is restored before the final ticket. For a fixed consumed path the expected credit equals its capped exact reward, and the actual credit never falls below the original sum of floors.",
+    "caps": "Nonnegative rewards couple every denomination to the same latent capped paid round. Stopping a presentation after its floor reaches the cap does not change that round reward.",
+    "compatibility": "Only starts pinned to stakePolicyVersion=1 use this receipt. Accepted historical rounds and UUID replays retain their original rules and committed credit.",
+    "confidence": "Exact analytical bounds and statistical intervals are labelled separately. A statistical estimate is not an exact RTP. Conditional estimates are per case, not simultaneous confidence guarantees."
+  },
+  "results": [
+    {
+      "choice": "classic",
+      "stakeUnits": 10,
+      "kind": "exact",
+      "countries": 12,
+      "rtp": 0.96,
+      "rtpBounds": [
+        0.96,
+        0.96
+      ],
+      "choices": "Every country in the mode has equal probability."
+    },
+    {
+      "choice": "classic",
+      "stakeUnits": 20,
+      "kind": "exact",
+      "countries": 12,
+      "rtp": 0.96,
+      "rtpBounds": [
+        0.96,
+        0.96
+      ],
+      "choices": "Every country in the mode has equal probability."
+    },
+    {
+      "choice": "classic",
+      "stakeUnits": 50,
+      "kind": "exact",
+      "countries": 12,
+      "rtp": 0.96,
+      "rtpBounds": [
+        0.96,
+        0.96
+      ],
+      "choices": "Every country in the mode has equal probability."
+    },
+    {
+      "choice": "classic",
+      "stakeUnits": 100,
+      "kind": "exact",
+      "countries": 12,
+      "rtp": 0.96,
+      "rtpBounds": [
+        0.96,
+        0.96
+      ],
+      "choices": "Every country in the mode has equal probability."
+    },
+    {
+      "choice": "classic",
+      "stakeUnits": 200,
+      "kind": "exact",
+      "countries": 12,
+      "rtp": 0.96,
+      "rtpBounds": [
+        0.96,
+        0.96
+      ],
+      "choices": "Every country in the mode has equal probability."
+    },
+    {
+      "choice": "classic",
+      "stakeUnits": 500,
+      "kind": "exact",
+      "countries": 12,
+      "rtp": 0.96,
+      "rtpBounds": [
+        0.96,
+        0.96
+      ],
+      "choices": "Every country in the mode has equal probability."
+    },
+    {
+      "choice": "classic",
+      "stakeUnits": 1000,
+      "kind": "exact",
+      "countries": 12,
+      "rtp": 0.96,
+      "rtpBounds": [
+        0.96,
+        0.96
+      ],
+      "choices": "Every country in the mode has equal probability."
+    },
+    {
+      "choice": "classic",
+      "stakeUnits": 2000,
+      "kind": "exact",
+      "countries": 12,
+      "rtp": 0.96,
+      "rtpBounds": [
+        0.96,
+        0.96
+      ],
+      "choices": "Every country in the mode has equal probability."
+    },
+    {
+      "choice": "classic",
+      "stakeUnits": 5000,
+      "kind": "exact",
+      "countries": 12,
+      "rtp": 0.96,
+      "rtpBounds": [
+        0.96,
+        0.96
+      ],
+      "choices": "Every country in the mode has equal probability."
+    },
+    {
+      "choice": "expanded",
+      "stakeUnits": 10,
+      "kind": "exact",
+      "countries": 24,
+      "rtp": 0.96,
+      "rtpBounds": [
+        0.96,
+        0.96
+      ],
+      "choices": "Every country in the mode has equal probability."
+    },
+    {
+      "choice": "expanded",
+      "stakeUnits": 20,
+      "kind": "exact",
+      "countries": 24,
+      "rtp": 0.96,
+      "rtpBounds": [
+        0.96,
+        0.96
+      ],
+      "choices": "Every country in the mode has equal probability."
+    },
+    {
+      "choice": "expanded",
+      "stakeUnits": 50,
+      "kind": "exact",
+      "countries": 24,
+      "rtp": 0.96,
+      "rtpBounds": [
+        0.96,
+        0.96
+      ],
+      "choices": "Every country in the mode has equal probability."
+    },
+    {
+      "choice": "expanded",
+      "stakeUnits": 100,
+      "kind": "exact",
+      "countries": 24,
+      "rtp": 0.96,
+      "rtpBounds": [
+        0.96,
+        0.96
+      ],
+      "choices": "Every country in the mode has equal probability."
+    },
+    {
+      "choice": "expanded",
+      "stakeUnits": 200,
+      "kind": "exact",
+      "countries": 24,
+      "rtp": 0.96,
+      "rtpBounds": [
+        0.96,
+        0.96
+      ],
+      "choices": "Every country in the mode has equal probability."
+    },
+    {
+      "choice": "expanded",
+      "stakeUnits": 500,
+      "kind": "exact",
+      "countries": 24,
+      "rtp": 0.96,
+      "rtpBounds": [
+        0.96,
+        0.96
+      ],
+      "choices": "Every country in the mode has equal probability."
+    },
+    {
+      "choice": "expanded",
+      "stakeUnits": 1000,
+      "kind": "exact",
+      "countries": 24,
+      "rtp": 0.96,
+      "rtpBounds": [
+        0.96,
+        0.96
+      ],
+      "choices": "Every country in the mode has equal probability."
+    },
+    {
+      "choice": "expanded",
+      "stakeUnits": 2000,
+      "kind": "exact",
+      "countries": 24,
+      "rtp": 0.96,
+      "rtpBounds": [
+        0.96,
+        0.96
+      ],
+      "choices": "Every country in the mode has equal probability."
+    },
+    {
+      "choice": "expanded",
+      "stakeUnits": 5000,
+      "kind": "exact",
+      "countries": 24,
+      "rtp": 0.96,
+      "rtpBounds": [
+        0.96,
+        0.96
+      ],
+      "choices": "Every country in the mode has equal probability."
+    },
+    {
+      "choice": "world",
+      "stakeUnits": 10,
+      "kind": "exact",
+      "countries": 48,
+      "rtp": 0.96,
+      "rtpBounds": [
+        0.96,
+        0.96
+      ],
+      "choices": "Every country in the mode has equal probability."
+    },
+    {
+      "choice": "world",
+      "stakeUnits": 20,
+      "kind": "exact",
+      "countries": 48,
+      "rtp": 0.96,
+      "rtpBounds": [
+        0.96,
+        0.96
+      ],
+      "choices": "Every country in the mode has equal probability."
+    },
+    {
+      "choice": "world",
+      "stakeUnits": 50,
+      "kind": "exact",
+      "countries": 48,
+      "rtp": 0.96,
+      "rtpBounds": [
+        0.96,
+        0.96
+      ],
+      "choices": "Every country in the mode has equal probability."
+    },
+    {
+      "choice": "world",
+      "stakeUnits": 100,
+      "kind": "exact",
+      "countries": 48,
+      "rtp": 0.96,
+      "rtpBounds": [
+        0.96,
+        0.96
+      ],
+      "choices": "Every country in the mode has equal probability."
+    },
+    {
+      "choice": "world",
+      "stakeUnits": 200,
+      "kind": "exact",
+      "countries": 48,
+      "rtp": 0.96,
+      "rtpBounds": [
+        0.96,
+        0.96
+      ],
+      "choices": "Every country in the mode has equal probability."
+    },
+    {
+      "choice": "world",
+      "stakeUnits": 500,
+      "kind": "exact",
+      "countries": 48,
+      "rtp": 0.96,
+      "rtpBounds": [
+        0.96,
+        0.96
+      ],
+      "choices": "Every country in the mode has equal probability."
+    },
+    {
+      "choice": "world",
+      "stakeUnits": 1000,
+      "kind": "exact",
+      "countries": 48,
+      "rtp": 0.96,
+      "rtpBounds": [
+        0.96,
+        0.96
+      ],
+      "choices": "Every country in the mode has equal probability."
+    },
+    {
+      "choice": "world",
+      "stakeUnits": 2000,
+      "kind": "exact",
+      "countries": 48,
+      "rtp": 0.96,
+      "rtpBounds": [
+        0.96,
+        0.96
+      ],
+      "choices": "Every country in the mode has equal probability."
+    },
+    {
+      "choice": "world",
+      "stakeUnits": 5000,
+      "kind": "exact",
+      "countries": 48,
+      "rtp": 0.96,
+      "rtpBounds": [
+        0.96,
+        0.96
+      ],
+      "choices": "Every country in the mode has equal probability."
+    }
+  ],
+  "evidence": {},
+  "replay": {
+    "coverage": [
+      {
+        "choice": "classic",
+        "stakeUnits": 10,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "558dd6050493b99b783c370311790aefe8e842a9dd836406c34c695720bc8c76"
+      },
+      {
+        "choice": "classic",
+        "stakeUnits": 20,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "b54f2b2b5dc570c6685dd7bafd6d30a774aa82776d129236783fef08f90646f0"
+      },
+      {
+        "choice": "classic",
+        "stakeUnits": 50,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "e9d8f3d10c6d3b42b3029ef040a5525d9895ae7dd59e8e40eefb134d17b5ca69"
+      },
+      {
+        "choice": "classic",
+        "stakeUnits": 100,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "562be2d589fca65d88471022c7bca40075eb49678c349c0ce75434c8befeabed"
+      },
+      {
+        "choice": "classic",
+        "stakeUnits": 200,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "7629de71b8986b6185f8172ab5e1e7d41f4da8f3dce40d4019e70a0e33853084"
+      },
+      {
+        "choice": "classic",
+        "stakeUnits": 500,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "85e9c25f16836bebee9dcb31eba58b0d109b46e247cfe0b8a347febf651de80f"
+      },
+      {
+        "choice": "classic",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "d82fde53508f3f31d3f8e692acf84ad4cee63eee89916121c68b0db8af4a3cbf"
+      },
+      {
+        "choice": "classic",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "55a1a59f05712aaa406197c039f24ece184b0181e43aeee03906955f6c1fd0e1"
+      },
+      {
+        "choice": "classic",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "859bcbf523ff996295c1adf917f85b42e13a041abff0077b1766c672af8b8850"
+      },
+      {
+        "choice": "expanded",
+        "stakeUnits": 10,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "0a85dcd47c25430bca520dfe1853af84aaac0c6c0df3d93424a758e8183194ca"
+      },
+      {
+        "choice": "expanded",
+        "stakeUnits": 20,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "c3475656b354ba434649b6c54c0d9c3dea8cc1bc229fcf6145e27ce616047bd9"
+      },
+      {
+        "choice": "expanded",
+        "stakeUnits": 50,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "e804a0ef4e9cf9479068fb4d3b1997d080ed9343f97c581d249fb8fbeecddaf8"
+      },
+      {
+        "choice": "expanded",
+        "stakeUnits": 100,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "6fcd74dcfcd94bdd61348e7c77871a0bc795d3a1cc481fcbaad823a60ea794c2"
+      },
+      {
+        "choice": "expanded",
+        "stakeUnits": 200,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "24805d08a86139fdffeadcbabb0f9e7d16489d5c5fd73a946057b96e45579efa"
+      },
+      {
+        "choice": "expanded",
+        "stakeUnits": 500,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "9afcf17b32d21d6d877206c1120f93ea36c4251ebde845f195081d11c6378688"
+      },
+      {
+        "choice": "expanded",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "9fa25e9117d2884397be69da6cd96b3254bd02b9b706d621f92373d9c29bcbfc"
+      },
+      {
+        "choice": "expanded",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "1eb0a2a0cac69480825148d6442539bd8e728cd8c02653f772ee18bc24185c2b"
+      },
+      {
+        "choice": "expanded",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "64790b231ebc7bab3b2c869f2865df5a6573f4c501d4ef032574fc0fdb28cd8c"
+      },
+      {
+        "choice": "world",
+        "stakeUnits": 10,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "1eb02084e2df16a6dea7a005386faebdf31388e6a8c9b58d65ec422511ffe3cc"
+      },
+      {
+        "choice": "world",
+        "stakeUnits": 20,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "ea0a34d7afe37c9b59c7f5b23e3a5167218be4179e35e69f1b4c65e347e87347"
+      },
+      {
+        "choice": "world",
+        "stakeUnits": 50,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "2cc830117d30bfe0547dea455944ce4ba8d9f8923b9ccfe373a69760c34e613f"
+      },
+      {
+        "choice": "world",
+        "stakeUnits": 100,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "dc19803110a9fc1907e38f7538e30f00997b15321f08bc8879059b3c03324324"
+      },
+      {
+        "choice": "world",
+        "stakeUnits": 200,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "e38f3d2414494e5bb44de4aa649dc4d41c1bc7bbf0a1cac50b0769b21107a96b"
+      },
+      {
+        "choice": "world",
+        "stakeUnits": 500,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "1d590f71681a608cd98cb0407055b117c1954957b10e2f447b9e7bff1fab6b75"
+      },
+      {
+        "choice": "world",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "7b04ead2e9832967cc9b5721a714677e79bc7f56380403ec23929a75c0b8cae5"
+      },
+      {
+        "choice": "world",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "ff04f85ac8f3ab8ae2ee7b476996287278035cb3271ffc8dcb6ba9978cca60ae"
+      },
+      {
+        "choice": "world",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 128,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "c848011cf08acd9806af4b2524fbaa92cc606f4b305cdf02670da3ed31278645"
+      }
+    ]
+  },
+  "serverReplayChecks": 3456,
+  "walletEvidence": {
+    "passed": true,
+    "native": {
+      "passed": true,
+      "minimumStakeUnits": "10",
+      "replayPreserved": true,
+      "reservationReleased": true,
+      "journalBalanced": true
+    },
+    "gameId": "flag-battle",
+    "cases": 27,
+    "freeContinuationChecks": 0,
+    "replayAndRestartCases": 27,
+    "oneDebitAndCredit": true,
+    "clientVerified": true,
+    "sha256": "1b6cf1a96d97fbe132d6b49f142d34fdfce640fa008737389a7dd450a9313f3b"
+  }
+}

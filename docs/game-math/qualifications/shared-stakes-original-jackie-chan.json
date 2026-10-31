@@ -1,0 +1,270 @@
+{
+  "schemaVersion": 1,
+  "gameId": "original-jackie-chan",
+  "rulesVersion": 1,
+  "progressVersion": 2,
+  "startedAt": "2026-10-31T21:07:42.964Z",
+  "completedAt": "2026-10-31T21:07:46.574Z",
+  "sourceHashes": {
+    "src/shared/gameStakes.ts": "9e207c51bc5cd9c342992f2f92258826a678cbf00d409b329447e7abca654637",
+    "src/shared/roundPrecision.ts": "8d9f64dd7ae146fa1a7288bf0d4bf8f947a8bc419d12c94fe8f765ec2a75b307",
+    "src/shared/casinoExpansion.ts": "c89133d0c011baa56241b09e56913e315534ac3e52871308238e234cb8c75f74",
+    "src/shared/forestHeartMath.ts": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
+    "src/shared/neopolisMath.ts": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
+    "src/shared/neopolisStakePayouts.ts": "12b3a07844ee4da60ac14b14190895ff1978b36fe1bd9c8059f94aa09fdfeaca",
+    "server/demoExpansion.ts": "355b75eb024907c989e1b2a26031de1ada8e54de6c44289730fc6922702465ed",
+    "server/demoWallet.ts": "695130f9e8eec2b6854f6f620ea2aae33084f25c182ae4755f49347cedcebf63",
+    "server/demoWalletAmounts.ts": "1da7a73b63c79cba0ff674f59c75fe517d8445eafaf831be8afa7f9a4c6e6317",
+    "server/demoWalletRoutes.ts": "8d60c69f76d12f274c1a691786cfda57b48deabc354527202ed124a433feba82",
+    "server/finance/nile-game-runtime.ts": "b667f5865791852f0c79f5b85176548c5c012478c561c021bab5cde3e8dc8d96",
+    "server/afterglowProgress.ts": "cf38081a14f88c034f1a32af9e99ca7bbd7f56590decd419867469cb2f753a42",
+    "src/wallet/ExpansionClient.ts": "bc253f9200daec9539ade6a26f715e7a7734b80b02562989be2d5516019b81e1",
+    "src/wallet/WalletClient.ts": "0e8bb81228f8bd9566fd2308e089323027bc3f7f0422ccbeda858f998f6de6a9",
+    "scripts/game-math/rtp-stakes-sampler.mjs": "d0c297ee40636be7c1312d5de8be1f4023e858efbe61e6aba26486f011fc4d7d",
+    "scripts/game-math/rtp-stakes-worker.mjs": "f5db2c6be7cc4c68bb07c719eea5ba3db3f0d237d7bf8cd75736c891f91a218d",
+    "server-tests/game-stakes.test.ts": "810c0f42c5137ed0e49b94a796808c6753ab4e204408c773c12176eefc896031",
+    "server-tests/round-precision.test.ts": "d48a631f198636a97db8e70952c600a47b9cb1d04b20ebc6d08cbfa2cd452abb",
+    "src/shared/jackieChan.ts": "a834b1229ee97b500b1e8801f27cb3bf569d6c4bab6ca73eeaf06745747934bf",
+    "src/shared/crLeo.ts": "a4ca6775d722c6c0c2968544086100422e9d77455225e53a108b02c0132f198c",
+    "server/games/jackieChan.ts": "12ad39116f68c9aec96ec49a88d46ff66d9bb75f751d981ebcc35c5eb9974297",
+    "server/games/crLeo.ts": "5bc956040fb008f21a3a5bcaa7b9296f3ef9f049ae32b44654bcef06e6b6e7c1",
+    "scripts/game-math/stake-runtime.mjs": "24aadf4414fe0daf402931901d773143291bee2c099713355e3e345c1e5145ca",
+    "scripts/game-math/stakes-wallet.ts": "d9a4084a6ddb188ef52a6d2e05fb93e09f0ade96a95ae75a16ad065c80f2c695",
+    "scripts/game-math/rtp-stakes-samples.mjs": "d2cdeaf1311ba67c78a04b04d78c6353caaed0b490933c93d8b231b94e481b1c",
+    "scripts/game-math/rtp-stakes.mjs": "303243abd909c97683260439f51d7730b2550c2ffb660e434ae59db2730da6ad"
+  },
+  "policySha256": "b3ab8fd723475d7c785f5935b1b914e0824864f29764d40729342eb175f86a99",
+  "method": "full-round-unbiased-cent-policy-v1",
+  "precisionLaw": {
+    "method": "Independent uniform final ticket; exact BigInt rational accumulation and integer settlement",
+    "identity": "For exact reward n/d, let q=floor(n/d), r=n mod d and uniform U in {0,...,d-1}. Pay q+1 if U<r, otherwise q. The sum over all tickets is q*d+r=n.",
+    "stopping": "The ticket is drawn only after the final player choice and every free continuation. No future rounding ticket is exposed to adaptive choices.",
+    "preservation": "Every intermediate discarded fraction is restored before the final ticket. For a fixed consumed path the expected credit equals its capped exact reward, and the actual credit never falls below the original sum of floors.",
+    "caps": "Nonnegative rewards couple every denomination to the same latent capped paid round. Stopping a presentation after its floor reaches the cap does not change that round reward.",
+    "compatibility": "Only starts pinned to stakePolicyVersion=1 use this receipt. Accepted historical rounds and UUID replays retain their original rules and committed credit.",
+    "confidence": "Exact analytical bounds and statistical intervals are labelled separately. A statistical estimate is not an exact RTP. Conditional estimates are per case, not simultaneous confidence guarantees."
+  },
+  "results": [
+    {
+      "choice": "all-adaptive-risk-paths",
+      "stakeUnits": 10,
+      "kind": "exact",
+      "rtp": 0.99,
+      "rtpBounds": [
+        0.99,
+        0.99
+      ],
+      "successfulRiskPaths": 363,
+      "maximumTicketDenominator": "237304687500",
+      "adaptiveStopping": "Backward induction over all five stopping points; every continuing risk has the same conditional exact return."
+    },
+    {
+      "choice": "all-adaptive-risk-paths",
+      "stakeUnits": 20,
+      "kind": "exact",
+      "rtp": 0.99,
+      "rtpBounds": [
+        0.99,
+        0.99
+      ],
+      "successfulRiskPaths": 363,
+      "maximumTicketDenominator": "237304687500",
+      "adaptiveStopping": "Backward induction over all five stopping points; every continuing risk has the same conditional exact return."
+    },
+    {
+      "choice": "all-adaptive-risk-paths",
+      "stakeUnits": 50,
+      "kind": "exact",
+      "rtp": 0.99,
+      "rtpBounds": [
+        0.99,
+        0.99
+      ],
+      "successfulRiskPaths": 363,
+      "maximumTicketDenominator": "237304687500",
+      "adaptiveStopping": "Backward induction over all five stopping points; every continuing risk has the same conditional exact return."
+    },
+    {
+      "choice": "all-adaptive-risk-paths",
+      "stakeUnits": 100,
+      "kind": "exact",
+      "rtp": 0.99,
+      "rtpBounds": [
+        0.99,
+        0.99
+      ],
+      "successfulRiskPaths": 363,
+      "maximumTicketDenominator": "237304687500",
+      "adaptiveStopping": "Backward induction over all five stopping points; every continuing risk has the same conditional exact return."
+    },
+    {
+      "choice": "all-adaptive-risk-paths",
+      "stakeUnits": 200,
+      "kind": "exact",
+      "rtp": 0.99,
+      "rtpBounds": [
+        0.99,
+        0.99
+      ],
+      "successfulRiskPaths": 363,
+      "maximumTicketDenominator": "237304687500",
+      "adaptiveStopping": "Backward induction over all five stopping points; every continuing risk has the same conditional exact return."
+    },
+    {
+      "choice": "all-adaptive-risk-paths",
+      "stakeUnits": 500,
+      "kind": "exact",
+      "rtp": 0.99,
+      "rtpBounds": [
+        0.99,
+        0.99
+      ],
+      "successfulRiskPaths": 363,
+      "maximumTicketDenominator": "237304687500",
+      "adaptiveStopping": "Backward induction over all five stopping points; every continuing risk has the same conditional exact return."
+    },
+    {
+      "choice": "all-adaptive-risk-paths",
+      "stakeUnits": 1000,
+      "kind": "exact",
+      "rtp": 0.99,
+      "rtpBounds": [
+        0.99,
+        0.99
+      ],
+      "successfulRiskPaths": 363,
+      "maximumTicketDenominator": "237304687500",
+      "adaptiveStopping": "Backward induction over all five stopping points; every continuing risk has the same conditional exact return."
+    },
+    {
+      "choice": "all-adaptive-risk-paths",
+      "stakeUnits": 2000,
+      "kind": "exact",
+      "rtp": 0.99,
+      "rtpBounds": [
+        0.99,
+        0.99
+      ],
+      "successfulRiskPaths": 363,
+      "maximumTicketDenominator": "237304687500",
+      "adaptiveStopping": "Backward induction over all five stopping points; every continuing risk has the same conditional exact return."
+    },
+    {
+      "choice": "all-adaptive-risk-paths",
+      "stakeUnits": 5000,
+      "kind": "exact",
+      "rtp": 0.99,
+      "rtpBounds": [
+        0.99,
+        0.99
+      ],
+      "successfulRiskPaths": 363,
+      "maximumTicketDenominator": "237304687500",
+      "adaptiveStopping": "Backward induction over all five stopping points; every continuing risk has the same conditional exact return."
+    }
+  ],
+  "evidence": {},
+  "replay": {
+    "coverage": [
+      {
+        "choice": "all-adaptive-risk-paths",
+        "stakeUnits": 10,
+        "paidRounds": 128,
+        "spins": 216,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "803d5d6b640d61fb5a4be23d5979a18a5d081bad3cfa4d96f79eecec3a6beb00"
+      },
+      {
+        "choice": "all-adaptive-risk-paths",
+        "stakeUnits": 20,
+        "paidRounds": 128,
+        "spins": 216,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 1,
+        "sha256": "fd90a2321e88b37f9576681c9e12a3cd3e8d220cc60f4a0a958c0df2bcb407b2"
+      },
+      {
+        "choice": "all-adaptive-risk-paths",
+        "stakeUnits": 50,
+        "paidRounds": 128,
+        "spins": 216,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "0796679af65e0c279fde51cd30b74f00738c17b164cd7dc1f23133d0097ac247"
+      },
+      {
+        "choice": "all-adaptive-risk-paths",
+        "stakeUnits": 100,
+        "paidRounds": 128,
+        "spins": 216,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "97043132fe5ca50d66be51aebcfa7071718a9404abac06dfec26eb8c2408cae5"
+      },
+      {
+        "choice": "all-adaptive-risk-paths",
+        "stakeUnits": 200,
+        "paidRounds": 128,
+        "spins": 216,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "22702f71a68bcdea11f0211280972524b1e2387c9d7352da80770a7b08f864df"
+      },
+      {
+        "choice": "all-adaptive-risk-paths",
+        "stakeUnits": 500,
+        "paidRounds": 128,
+        "spins": 216,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "7cf0be5159e45de496539d80becb8ff26b0e12c60a661d311ae72f3a694da770"
+      },
+      {
+        "choice": "all-adaptive-risk-paths",
+        "stakeUnits": 1000,
+        "paidRounds": 128,
+        "spins": 216,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "8fdd66c344df2def55c5cd870e1cd4f020ae87a1e7e9c9b944297084669b7c33"
+      },
+      {
+        "choice": "all-adaptive-risk-paths",
+        "stakeUnits": 2000,
+        "paidRounds": 128,
+        "spins": 216,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "93740768a08f2307aa921d09cfec7d18e97642cb1b1eddfe6885516dc75d4a5b"
+      },
+      {
+        "choice": "all-adaptive-risk-paths",
+        "stakeUnits": 5000,
+        "paidRounds": 128,
+        "spins": 216,
+        "minimumExtraUnits": 0,
+        "maximumExtraUnits": 0,
+        "sha256": "fab9acbdc5830e04205c26e30d4ff62994ef8e0ef2764af98943b010c1ad00e3"
+      }
+    ]
+  },
+  "serverReplayChecks": 1152,
+  "walletEvidence": {
+    "passed": true,
+    "native": {
+      "passed": true,
+      "minimumStakeUnits": "10",
+      "replayPreserved": true,
+      "reservationReleased": true,
+      "journalBalanced": true
+    },
+    "gameId": "original-jackie-chan",
+    "cases": 9,
+    "freeContinuationChecks": 7,
+    "replayAndRestartCases": 9,
+    "oneDebitAndCredit": true,
+    "clientVerified": true,
+    "sha256": "45acdb8733c1601fdcb625a66832424b57b2ce1bc3af020fedd489571082f1c2"
+  }
+}

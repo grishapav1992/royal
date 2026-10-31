@@ -284,6 +284,8 @@ export class DemoExpansionStore {
       if(Number(recent!.n)>=120)throw new WalletError(429,'Слишком много ходов. Подожди минуту.');
       let s:ExpansionState,debit=0,credit=0;
       if(op.action==='start'){
+        if(op.stakePolicyVersion===1&&op.gameId===CARIBBEAN_GAME&&(!validCaribbeanTransportSettings(op.settings)||op.settings.caribbean.stakeBasis!=='total'))throw new WalletError(400,'Общая ставка должна включать все выбранные линии.');
+        if(op.stakePolicyVersion===1&&op.gameId===TEMPLE_GAME&&!validCascadeSettings(op.settings))throw new WalletError(409,'Обнови игру для общей ставки за вращение. Ставка не списана.');
         if(op.gameId===DRACONA_GAME&&draconaClient!==2)throw new WalletError(409,'Dracona: refresh for calibrated rules');
         if(op.gameId===NEOPOLIS_GAME&&neopolisClient!==4)throw new WalletError(409,'Neopolis: refresh for variable stakes');
         if(op.gameId===CARAMEL_GAME&&(!caramelClient||!validCaramelSettings(op.settings)))throw new WalletError(409,'Обнови страницу: доступна новая версия Caramel Carnival. Ставка не списана.');
