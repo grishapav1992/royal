@@ -1,7 +1,8 @@
+import {recoverableStakes} from './gameStakes';
 export const PENALTY_CLIENT_HEADER = 'X-Royal-Cr-Leo';
 export const PENALTY_GAME = 'original-cr-vs-leo' as const;
 export const PENALTY_MAX = 54;
-export const PENALTY_BETS = ['1000', '5000', '10000', '50000'] as const;
+export const PENALTY_BETS = recoverableStakes(['1000', '5000', '10000', '50000']);
 export const PENALTY_RISKS = {
   safe: { name: 'Пенальти', chance: 75, description: 'С 11 метров' },
   sharp: { name: 'Штрафной', chance: 60, description: 'С 20 метров, стенка из пяти' },

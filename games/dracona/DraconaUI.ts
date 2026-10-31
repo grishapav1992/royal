@@ -1,3 +1,4 @@
+import {GAME_BETS as DRACONA_BETS} from '../../src/shared/gameStakes';
 import { COLS, CREST, PORTAL, SIZE, SYMBOLS, DRACONA_MATH, type Grid, type Movement, type Step } from '../../src/shared/draconaMath';
 import { CharacterDirector } from './character';
 import { MagicEffects } from './effects';
@@ -5,7 +6,7 @@ import { Autoplay } from './autoplay';
 import { DraconaAudio } from './audio';
 import { readGameHost } from '../../src/modules/GameHostContract';
 import { locale } from '../../src/i18n/index';
-import { DRACONA_GAME, DRACONA_BETS, DRACONA_RULES, type DraconaView } from '../../src/shared/dracona';
+import { DRACONA_GAME, DRACONA_RULES, type DraconaView } from '../../src/shared/dracona';
 
 const pause = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms));
 const amount = (value: number) => value.toLocaleString(locale);
@@ -52,7 +53,7 @@ export class Dracona {
   private grid = [...initial];
   private runes = Array(SIZE).fill(1) as number[];
   private reserveGrid: Grid = [0, 1, 2, 3];
-  private bet = 100;
+  private bet = 0.1;
   private busy = false;
   private bonusRemaining = 0;
   private bonusIssued = 0;

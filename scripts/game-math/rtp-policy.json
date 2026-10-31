@@ -3,7 +3,7 @@
   "profiles": {
     "studio-forest-heart": {
       "method": "exact-forest-heart-runtime",
-      "releaseStatus": "qualified",
+      "releaseStatus": "model-only",
       "rulesVersion": 1,
       "progressVersion": 1,
       "target": 0.96,
@@ -14,12 +14,15 @@
       ],
       "serverReplayRoundsPerSeed": 64,
       "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
         1000,
         2000,
-        5000,
-        10000,
-        20000,
-        50000
+        5000
       ],
       "choices": [
         "optimal",
@@ -69,9 +72,10 @@
         "deployment/releases/jackie-chan-20261029-v2/source/server/finance/nile-game-runtime.ts",
         "deployment/releases/jackie-chan-20261029-v2/source/src/shared/casinoExpansion.ts",
         "deployment/releases/jackie-chan-20261029-v2/finance-source/src/shared/arcadeCatalog.ts",
-        "deployment/releases/jackie-chan-20261029-v2/finance-source/src/i18n/en.ts"
+        "deployment/releases/jackie-chan-20261029-v2/finance-source/src/i18n/en.ts",
+        "src/shared/gameStakes.ts"
       ],
-      "note": "Exact full-round model with server entropy census, independent seeded start/move replay and real PostgreSQL common-wallet qualification. Presentation reads only the confirmed public view. Browser, module, layout and audio checks are recorded separately from mathematical qualification."
+      "note": "Exact full-round model with server entropy census, independent seeded start/move replay and real PostgreSQL common-wallet qualification. Presentation reads only the confirmed public view. Browser, module, layout and audio checks are recorded separately from mathematical qualification. Unified-stakes draft. Publication is blocked until each denomination and every allowed paid mode, continuation and player choice has fresh complete-round evidence. Existing accepted transcripts retain their historical denomination and settlement."
     },
     "studio-afterglow": {
       "rulesVersion": 2,
@@ -88,19 +92,15 @@
       ],
       "qualificationRoundsPerSeed": 5000000,
       "stakes": [
+        10,
+        20,
+        50,
         100,
         200,
-        300,
         500,
         1000,
         2000,
-        2500,
-        5000,
-        10000,
-        20000,
-        25000,
-        50000,
-        100000
+        5000
       ],
       "choices": [
         "normal"
@@ -114,20 +114,28 @@
         "server/games/afterglow.ts",
         "src/shared/afterglowWardrobe.ts",
         "server/afterglowWardrobe.ts",
-        "server/afterglowProgress.ts"
-      ]
+        "server/afterglowProgress.ts",
+        "src/shared/gameStakes.ts"
+      ],
+      "releaseStatus": "model-only",
+      "note": "Unified-stakes draft. Publication is blocked until each denomination and every allowed paid mode, continuation and player choice has fresh complete-round evidence. Existing accepted transcripts retain their historical denomination and settlement."
     },
     "studio-caribbean-treasures": {
-      "rulesVersion": 1,
+      "rulesVersion": 2,
       "progressVersion": 1,
-      "method": "exact-caribbean-giant-round-v1",
+      "method": "exact-caribbean-total-stake-v2",
       "target": 0.96,
       "tolerance": 0.0005,
       "stakes": [
+        10,
+        20,
+        50,
         100,
         200,
         500,
-        1000
+        1000,
+        2000,
+        5000
       ],
       "choices": [
         "lines-1-normal-raid",
@@ -152,7 +160,7 @@
         929827
       ],
       "serverReplayRoundsPerSeed": 32,
-      "proof": "docs/game-math/qualifications/caribbean-treasures-v1.json",
+      "proof": "docs/game-math/qualifications/caribbean-total-stake-v2.json",
       "qualificationSource": "scripts/game-math/rtp-caribbean.mjs",
       "sources": [
         "src/shared/caribbeanTreasuresMath.ts",
@@ -173,8 +181,11 @@
         "deployment/releases/jackie-chan-20261029-v2/source/server/finance/nile-game-runtime.ts",
         "deployment/releases/jackie-chan-20261029-v2/source/src/shared/casinoExpansion.ts",
         "deployment/releases/jackie-chan-20261029-v2/finance-source/src/shared/arcadeCatalog.ts",
-        "deployment/releases/jackie-chan-20261029-v2/finance-source/src/i18n/en.ts"
-      ]
+        "deployment/releases/jackie-chan-20261029-v2/finance-source/src/i18n/en.ts",
+        "src/shared/gameStakes.ts"
+      ],
+      "releaseStatus": "model-only",
+      "note": "Unified-stakes draft. Publication is blocked until each denomination and every allowed paid mode, continuation and player choice has fresh complete-round evidence. Existing accepted transcripts retain their historical denomination and settlement."
     },
     "studio-neopolis": {
       "rulesVersion": 4,
@@ -191,12 +202,15 @@
       ],
       "qualificationCyclesPerSeed": 30000,
       "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
         1000,
         2000,
-        5000,
-        10000,
-        20000,
-        50000
+        5000
       ],
       "choices": [
         "granite",
@@ -214,7 +228,8 @@
         "src/shared/neopolisStakePayouts.ts",
         "src/shared/draconaMath.ts",
         "scripts/game-math/calibrate-neopolis-stakes.mjs",
-        "docs/game-math/neopolis-v4-calibration.json"
+        "docs/game-math/neopolis-v4-calibration.json",
+        "src/shared/gameStakes.ts"
       ],
       "method": "neopolis-variable-stake-conditional-v4",
       "qualificationSource": "scripts/game-math/rtp-neopolis-v4.mjs",
@@ -241,7 +256,9 @@
       ],
       "confidenceZ": 2.241402727604947,
       "qualificationLooks": 2,
-      "samplingPlan": "Retain the complete first 10000 cycles per seed and extend each stream to exactly 30000 cycles once. Use a two-sided 97.5% normal interval for each of the at most two looks. Do not stop early or discard any seed or prefix. Keep the failed first-look evidence. No further sample extension is authorized by this plan."
+      "samplingPlan": "Retain the complete first 10000 cycles per seed and extend each stream to exactly 30000 cycles once. Use a two-sided 97.5% normal interval for each of the at most two looks. Do not stop early or discard any seed or prefix. Keep the failed first-look evidence. No further sample extension is authorized by this plan.",
+      "releaseStatus": "model-only",
+      "note": "Unified-stakes draft. Publication is blocked until each denomination and every allowed paid mode, continuation and player choice has fresh complete-round evidence. Existing accepted transcripts retain their historical denomination and settlement."
     },
     "studio-dracona": {
       "rulesVersion": 3,
@@ -258,12 +275,15 @@
       ],
       "qualificationRoundsPerSeed": 2500000,
       "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
         1000,
         2000,
-        5000,
-        10000,
-        20000,
-        50000
+        5000
       ],
       "choices": [
         "normal"
@@ -273,8 +293,11 @@
         "src/shared/draconaMath.ts",
         "src/shared/draconaMathV1.ts",
         "src/shared/dracona.ts",
-        "server/games/dracona.ts"
-      ]
+        "server/games/dracona.ts",
+        "src/shared/gameStakes.ts"
+      ],
+      "releaseStatus": "model-only",
+      "note": "Unified-stakes draft. Publication is blocked until each denomination and every allowed paid mode, continuation and player choice has fresh complete-round evidence. Existing accepted transcripts retain their historical denomination and settlement."
     },
     "mortal-kombat": {
       "method": "exhaustive-pvp-journal",
@@ -534,32 +557,15 @@
       ],
       "serverReplayRoundsPerSeed": 32,
       "stakes": [
+        10,
         20,
-        40,
-        60,
-        80,
+        50,
         100,
         200,
-        300,
-        400,
         500,
-        600,
-        800,
         1000,
-        1500,
         2000,
-        3000,
-        5000,
-        7500,
-        10000,
-        15000,
-        20000,
-        30000,
-        50000,
-        75000,
-        100000,
-        150000,
-        200000
+        5000
       ],
       "choices": [
         "normal",
@@ -574,8 +580,11 @@
         "src/shared/luelonSlots.ts",
         "src/shared/luelonSlotsLines.ts",
         "src/shared/cosmicEscapeBets.ts",
-        "server/games/luelonSlots.ts"
-      ]
+        "server/games/luelonSlots.ts",
+        "src/shared/gameStakes.ts"
+      ],
+      "releaseStatus": "model-only",
+      "note": "Unified-stakes draft. Publication is blocked until each denomination and every allowed paid mode, continuation and player choice has fresh complete-round evidence. Existing accepted transcripts retain their historical denomination and settlement."
     },
     "studio-flooded-temple": {
       "method": "temple-cascade-independent-monte-carlo-v2",
@@ -596,12 +605,15 @@
         19840117
       ],
       "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
         1000,
         2000,
-        5000,
-        10000,
-        20000,
-        50000
+        5000
       ],
       "choices": [
         "normal"
@@ -621,9 +633,12 @@
         "server/gameWalletRoutes.ts",
         "server/finance/nile-game-runtime.ts",
         "src/wallet/ExpansionClient.ts",
-        "scripts/game-math/rtp-temple-cascade-worker.mjs"
+        "scripts/game-math/rtp-temple-cascade-worker.mjs",
+        "src/shared/gameStakes.ts"
       ],
-      "availability": "server-opt-in"
+      "availability": "server-opt-in",
+      "releaseStatus": "model-only",
+      "note": "Unified-stakes draft. Publication is blocked until each denomination and every allowed paid mode, continuation and player choice has fresh complete-round evidence. Existing accepted transcripts retain their historical denomination and settlement."
     },
     "royal-roulette": {
       "rulesVersion": 1,
@@ -632,10 +647,15 @@
       "target": 0.972972972972973,
       "tolerance": 1e-12,
       "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
         1000,
-        5000,
-        10000,
-        50000
+        2000,
+        5000
       ],
       "choices": [
         "red",
@@ -694,8 +714,11 @@
         "src/shared/gameCore.ts",
         "src/shared/originalGames.ts",
         "src/shared/demoWallet.ts",
-        "server/demoWallet.ts"
-      ]
+        "server/demoWallet.ts",
+        "src/shared/gameStakes.ts"
+      ],
+      "releaseStatus": "model-only",
+      "note": "Unified-stakes draft. Publication is blocked until each denomination and every allowed paid mode, continuation and player choice has fresh complete-round evidence. Existing accepted transcripts retain their historical denomination and settlement."
     },
     "original-jackie-chan": {
       "method": "exact-jackie-series-v1",
@@ -704,10 +727,15 @@
       "target": 0.99,
       "tolerance": 0.0003,
       "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
         1000,
-        5000,
-        10000,
-        50000
+        2000,
+        5000
       ],
       "choices": [
         "safe",
@@ -736,8 +764,11 @@
         "deployment/releases/jackie-chan-20261029-v2/source/server/finance/nile-game-runtime.ts",
         "deployment/releases/jackie-chan-20261029-v2/source/src/shared/casinoExpansion.ts",
         "deployment/releases/jackie-chan-20261029-v2/finance-source/src/shared/arcadeCatalog.ts",
-        "deployment/releases/jackie-chan-20261029-v2/finance-source/src/i18n/en.ts"
-      ]
+        "deployment/releases/jackie-chan-20261029-v2/finance-source/src/i18n/en.ts",
+        "src/shared/gameStakes.ts"
+      ],
+      "releaseStatus": "model-only",
+      "note": "Unified-stakes draft. Publication is blocked until each denomination and every allowed paid mode, continuation and player choice has fresh complete-round evidence. Existing accepted transcripts retain their historical denomination and settlement."
     },
     "flag-battle": {
       "rulesVersion": 2,
@@ -755,6 +786,9 @@
       ],
       "qualificationRoundsPerSeed": 8000000,
       "stakes": [
+        10,
+        20,
+        50,
         100,
         200,
         500,
@@ -881,9 +915,12 @@
         "deployment/releases/jackie-chan-20261029-v2/source/server/finance/nile-game-runtime.ts",
         "deployment/releases/jackie-chan-20261029-v2/source/src/shared/casinoExpansion.ts",
         "deployment/releases/jackie-chan-20261029-v2/finance-source/src/shared/arcadeCatalog.ts",
-        "deployment/releases/jackie-chan-20261029-v2/finance-source/src/i18n/en.ts"
+        "deployment/releases/jackie-chan-20261029-v2/finance-source/src/i18n/en.ts",
+        "src/shared/gameStakes.ts"
       ],
-      "serverReplayRunsPerWinner": 16
+      "serverReplayRunsPerWinner": 16,
+      "releaseStatus": "model-only",
+      "note": "Unified-stakes draft. Publication is blocked until each denomination and every allowed paid mode, continuation and player choice has fresh complete-round evidence. Existing accepted transcripts retain their historical denomination and settlement."
     },
     "tsu-e-fa": {
       "method": "exhaustive-virtual-pvp-pot",
@@ -1311,6 +1348,315 @@
         "server-tests/flag-tote-http.test.ts"
       ],
       "note": "Exact aggregate bank conservation and conditional allocation with real PostgreSQL common-wallet qualification. Individual return varies with the pool. Client layout and sound are checked separately before publication."
+    },
+    "studio-caramel-carnival": {
+      "method": "unified-stakes-runtime-pending",
+      "releaseStatus": "model-only",
+      "rulesVersion": 2,
+      "progressVersion": 2,
+      "target": 0.96,
+      "tolerance": 0.01,
+      "seeds": [
+        830927,
+        961127
+      ],
+      "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "choices": [
+        "normal",
+        "festival"
+      ],
+      "proof": "docs/game-math/qualifications/studio-caramel-carnival-unified-stakes.json",
+      "sources": [
+        "src/shared/caramelCarnival.ts",
+        "server/games/caramelCarnival.ts",
+        "src/shared/gameStakes.ts",
+        "server/demoWallet.ts",
+        "server/demoWalletAmounts.ts",
+        "server/demoExpansion.ts"
+      ],
+      "note": "Draft policy, not qualification. Requires independent complete-round model, integer settlement, all choices and common-wallet replay before publication. No legacy freeze or existing qualification is waived."
+    },
+    "studio-last-convoy": {
+      "method": "unified-stakes-runtime-pending",
+      "releaseStatus": "model-only",
+      "rulesVersion": 2,
+      "progressVersion": 2,
+      "target": 0.96,
+      "tolerance": 0.01,
+      "seeds": [
+        830927,
+        961127
+      ],
+      "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "choices": [
+        "normal"
+      ],
+      "proof": "docs/game-math/qualifications/studio-last-convoy-unified-stakes.json",
+      "sources": [
+        "src/shared/lastConvoy.ts",
+        "server/games/lastConvoy.ts",
+        "src/shared/gameStakes.ts",
+        "server/demoWallet.ts",
+        "server/demoWalletAmounts.ts",
+        "server/demoExpansion.ts"
+      ],
+      "note": "Draft policy, not qualification. Requires independent complete-round model, integer settlement, all choices and common-wallet replay before publication. No legacy freeze or existing qualification is waived."
+    },
+    "studio-nitro-run": {
+      "method": "unified-stakes-runtime-pending",
+      "releaseStatus": "model-only",
+      "rulesVersion": 2,
+      "progressVersion": 2,
+      "target": 0.96,
+      "tolerance": 0.01,
+      "seeds": [
+        830927,
+        961127
+      ],
+      "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "choices": [
+        "normal"
+      ],
+      "proof": "docs/game-math/qualifications/studio-nitro-run-unified-stakes.json",
+      "sources": [
+        "src/shared/nitroRun.ts",
+        "server/games/nitroRun.ts",
+        "src/shared/gameStakes.ts",
+        "server/demoWallet.ts",
+        "server/demoWalletAmounts.ts",
+        "server/demoExpansion.ts"
+      ],
+      "note": "Draft policy, not qualification. Requires independent complete-round model, integer settlement, all choices and common-wallet replay before publication. No legacy freeze or existing qualification is waived."
+    },
+    "studio-meme-overload": {
+      "method": "unified-stakes-runtime-pending",
+      "releaseStatus": "model-only",
+      "rulesVersion": 2,
+      "progressVersion": 2,
+      "target": 0.96,
+      "tolerance": 0.01,
+      "seeds": [
+        830927,
+        961127
+      ],
+      "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "choices": [
+        "normal"
+      ],
+      "proof": "docs/game-math/qualifications/studio-meme-overload-unified-stakes.json",
+      "sources": [
+        "src/shared/nitroRun.ts",
+        "src/shared/memeOverload.ts",
+        "server/games/nitroRun.ts",
+        "src/shared/gameStakes.ts",
+        "server/demoWallet.ts",
+        "server/demoWalletAmounts.ts",
+        "server/demoExpansion.ts"
+      ],
+      "note": "Draft policy, not qualification. Requires independent complete-round model, integer settlement, all choices and common-wallet replay before publication. No legacy freeze or existing qualification is waived."
+    },
+    "studio-velvet-reign": {
+      "method": "unified-stakes-runtime-pending",
+      "releaseStatus": "model-only",
+      "rulesVersion": 2,
+      "progressVersion": 1,
+      "target": 0.96,
+      "tolerance": 0.01,
+      "seeds": [
+        830927,
+        961127
+      ],
+      "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "choices": [
+        "normal",
+        "booster",
+        "hyper",
+        "spotlight",
+        "super-encore"
+      ],
+      "proof": "docs/game-math/qualifications/studio-velvet-reign-unified-stakes.json",
+      "sources": [
+        "src/shared/velvetReign.ts",
+        "src/shared/velvetReignHistory.ts",
+        "src/shared/luelonSlots.ts",
+        "server/games/velvetReign.ts",
+        "server/games/velvetMath.ts",
+        "src/shared/gameStakes.ts",
+        "server/demoWallet.ts",
+        "server/demoWalletAmounts.ts",
+        "server/demoExpansion.ts"
+      ],
+      "note": "Draft policy, not qualification. Requires independent complete-round model, integer settlement, all choices and common-wallet replay before publication. No legacy freeze or existing qualification is waived."
+    },
+    "royal-plinko": {
+      "method": "unified-stakes-runtime-pending",
+      "releaseStatus": "model-only",
+      "rulesVersion": 1,
+      "progressVersion": 1,
+      "target": 0.98,
+      "tolerance": 0.01,
+      "seeds": [
+        830927,
+        961127
+      ],
+      "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "choices": [
+        "8-easy",
+        "8-medium",
+        "8-hard",
+        "8-expert",
+        "12-easy",
+        "12-medium",
+        "12-hard",
+        "12-expert",
+        "16-easy",
+        "16-medium",
+        "16-hard",
+        "16-expert"
+      ],
+      "proof": "docs/game-math/qualifications/royal-plinko-unified-stakes.json",
+      "sources": [
+        "src/shared/originalGames.ts",
+        "server/games/core.ts",
+        "server/games/originals.ts",
+        "src/shared/gameStakes.ts",
+        "server/demoWallet.ts",
+        "server/demoWalletAmounts.ts",
+        "server/demoExpansion.ts"
+      ],
+      "note": "Draft policy, not qualification. Requires independent complete-round model, integer settlement, all choices and common-wallet replay before publication. No legacy freeze or existing qualification is waived."
+    },
+    "github-crash": {
+      "method": "unified-stakes-runtime-pending",
+      "releaseStatus": "model-only",
+      "rulesVersion": 1,
+      "progressVersion": 1,
+      "target": 0.99,
+      "tolerance": 0.01,
+      "seeds": [
+        830927,
+        961127
+      ],
+      "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "choices": [
+        "all-server-cashout-times"
+      ],
+      "proof": "docs/game-math/qualifications/github-crash-unified-stakes.json",
+      "sources": [
+        "server/demoExpansion.ts",
+        "src/shared/casinoExpansion.ts",
+        "src/shared/gameStakes.ts",
+        "server/demoWallet.ts",
+        "server/demoWalletAmounts.ts",
+        "server/demoExpansion.ts"
+      ],
+      "note": "Draft policy, not qualification. Requires independent complete-round model, integer settlement, all choices and common-wallet replay before publication. No legacy freeze or existing qualification is waived."
+    },
+    "original-cr-vs-leo": {
+      "method": "unified-stakes-runtime-pending",
+      "releaseStatus": "model-only",
+      "rulesVersion": 1,
+      "progressVersion": 1,
+      "target": 0.99,
+      "tolerance": 0.01,
+      "seeds": [
+        830927,
+        961127
+      ],
+      "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "choices": [
+        "all-risk-paths-and-stopping-points"
+      ],
+      "proof": "docs/game-math/qualifications/original-cr-vs-leo-unified-stakes.json",
+      "sources": [
+        "src/shared/crLeo.ts",
+        "server/games/crLeo.ts",
+        "src/shared/gameStakes.ts",
+        "server/demoWallet.ts",
+        "server/demoWalletAmounts.ts",
+        "server/demoExpansion.ts"
+      ],
+      "note": "Draft policy, not qualification. Requires independent complete-round model, integer settlement, all choices and common-wallet replay before publication. No legacy freeze or existing qualification is waived."
     }
   },
   "nonWagered": {
@@ -1398,6 +1744,67 @@
           "server/pvp/room.ts",
           "scripts/game-math/rtp-virtual-pvp.mjs",
           "src/shared/pvpSeats.ts"
+        ]
+      }
+    },
+    "studio-caribbean-treasures": {
+      "1": {
+        "rulesVersion": 1,
+        "progressVersion": 1,
+        "method": "exact-caribbean-giant-round-v1",
+        "target": 0.96,
+        "tolerance": 0.0005,
+        "stakes": [
+          100,
+          200,
+          500,
+          1000
+        ],
+        "choices": [
+          "lines-1-normal-raid",
+          "lines-1-normal-flagship",
+          "lines-1-buy-raid",
+          "lines-1-buy-flagship",
+          "lines-5-normal-raid",
+          "lines-5-normal-flagship",
+          "lines-5-buy-raid",
+          "lines-5-buy-flagship",
+          "lines-10-normal-raid",
+          "lines-10-normal-flagship",
+          "lines-10-buy-raid",
+          "lines-10-buy-flagship",
+          "lines-20-normal-raid",
+          "lines-20-normal-flagship",
+          "lines-20-buy-raid",
+          "lines-20-buy-flagship"
+        ],
+        "seeds": [
+          700131,
+          929827
+        ],
+        "serverReplayRoundsPerSeed": 32,
+        "proof": "docs/game-math/qualifications/caribbean-treasures-v1.json",
+        "qualificationSource": "scripts/game-math/rtp-caribbean.mjs",
+        "sources": [
+          "src/shared/caribbeanTreasuresMath.ts",
+          "src/shared/caribbeanTreasures.ts",
+          "server/games/caribbeanTreasures.ts",
+          "src/shared/caribbeanTransport.ts",
+          "src/shared/casinoExpansion.ts",
+          "server/demoExpansion.ts",
+          "server/finance/nile-game-runtime.ts",
+          "scripts/game-math/rational.mjs",
+          "deployment/releases/caribbean-treasures-20261029-v2/financial-build.mjs",
+          "deployment/releases/caribbean-treasures-20261029-v2/financial-baseline.json",
+          "deployment/releases/caribbean-treasures-20261029-v2/financial-arcadeCatalog.ts",
+          "deployment/releases/jackie-chan-20261029-v2/projection.mjs",
+          "deployment/releases/jackie-chan-20261029-v2/projection-origins.json",
+          "deployment/releases/jackie-chan-20261029-v2/financial-origins.json",
+          "deployment/releases/jackie-chan-20261029-v2/source/server/demoExpansion.ts",
+          "deployment/releases/jackie-chan-20261029-v2/source/server/finance/nile-game-runtime.ts",
+          "deployment/releases/jackie-chan-20261029-v2/source/src/shared/casinoExpansion.ts",
+          "deployment/releases/jackie-chan-20261029-v2/finance-source/src/shared/arcadeCatalog.ts",
+          "deployment/releases/jackie-chan-20261029-v2/finance-source/src/i18n/en.ts"
         ]
       }
     }

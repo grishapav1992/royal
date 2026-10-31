@@ -1,6 +1,7 @@
+import {recoverableStakes} from './gameStakes.ts';
 /** Candidate rules v1. Pure model only; no wallet, transport or active game route. */
 export const FOREST_HEART_GAME = 'studio-forest-heart' as const;
-export const FOREST_HEART_STAKES = [1000, 2000, 5000, 10000, 20000, 50000] as const;
+export const FOREST_HEART_STAKES = recoverableStakes([1000, 2000, 5000, 10000, 20000, 50000].map(String)).map(Number);
 export const FOREST_HEART_RULES = {
   rulesVersion: 1, progressVersion: 1, size: 5,
   source: 10, receivers: [4, 14, 24],

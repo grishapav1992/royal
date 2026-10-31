@@ -1,4 +1,5 @@
-import { PENALTY_GAME, PENALTY_BETS, PENALTY_RISKS, penaltyPathQuote, type PenaltyHero, type PenaltyRisk, type PenaltyView } from '../shared/crLeo';
+import {GAME_STAKE_UNITS as PENALTY_BETS} from '../shared/gameStakes';
+import { PENALTY_GAME, PENALTY_RISKS, penaltyPathQuote, type PenaltyHero, type PenaltyRisk, type PenaltyView } from '../shared/crLeo';
 import { expansionClient as client } from '../wallet/ExpansionClient';
 import { demoWallet } from '../wallet/WalletClient';
 import { isWallHit } from './crLeoFreeKick';
@@ -14,7 +15,7 @@ export class CrLeoUI {
   private audio = new CrLeoAudio();
   private hero: PenaltyHero = 'cr';
   private risk: PenaltyRisk = 'safe';
-  private stake = '1000';
+  private stake = '10';
   private seen = '';
   private owner = client.accountId;
   private action = '';
@@ -67,7 +68,7 @@ export class CrLeoUI {
   private blocked() { return client.busy || !!client.pending || !!this.action || this.scene.state().busy; }
   private sync() {
     if (!this.alive) return;
-    if (this.owner !== client.accountId) { this.owner = client.accountId; this.epoch++; this.seen = ''; this.controlsKey = ''; this.pipsKey = ''; this.action = ''; this.error = ''; this.hero = 'cr'; this.risk = 'safe'; this.stake = '1000'; this.scene.select(this.hero, this.risk); }
+    if (this.owner !== client.accountId) { this.owner = client.accountId; this.epoch++; this.seen = ''; this.controlsKey = ''; this.pipsKey = ''; this.action = ''; this.error = ''; this.hero = 'cr'; this.risk = 'safe'; this.stake = '10'; this.scene.select(this.hero, this.risk); }
     const s = this.session(), v = s?.view.penalty, key = s && v ? s.id + ':' + v.revision : '';
     if (v && key !== this.seen) {
       const cashout = this.action === 'cashout';

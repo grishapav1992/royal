@@ -18,8 +18,8 @@ export function caribbeanCoreMove(value: string): CaribbeanMove {
 }
 export function caribbeanMaximumFactor(settings: unknown): number {
   if (!validCaribbeanTransportSettings(settings)) return 300000;
-  const {lines,mode} = settings.caribbean;
-  return lines * (mode === 'normal' ? 15000 : mode === 'buy-raid' ? 14000 : 6000);
+  const {lines,mode,stakeBasis} = settings.caribbean;
+  return (stakeBasis === 'total' ? 1 : lines) * (mode === 'normal' ? 15000 : mode === 'buy-raid' ? 14000 : 6000);
 }
 export function caribbeanExpansionView(view: CaribbeanView): ExpansionView {
   const ended = view.phase === 'complete';
@@ -36,7 +36,7 @@ export function validCaribbeanSession(value: unknown): value is ExpansionSession
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
   const session = value as ExpansionSession, view = session.view?.caribbean;
   return Object.keys(session).sort().join(',') === 'gameId,id,returnedUnits,rulesVersion,spentUnits,stakeUnits,state,view'
-    && session.gameId === CARIBBEAN_GAME && session.rulesVersion === 1
+    && session.gameId === CARIBBEAN_GAME && session.rulesVersion === view?.version
     && typeof session.id === 'string' && /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(session.id)
     && validCaribbeanStake(session.stakeUnits)
     && validCaribbeanSettlement(session.state,session.spentUnits,session.returnedUnits,view)

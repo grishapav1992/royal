@@ -1,9 +1,10 @@
+import {recoverableBetAmounts} from './gameStakes';
 import { playSpin, SIZE, MAX_BONUS_SPINS, type SpinResult } from './draconaMath';
 import { playSpin as playSpinV1 } from './draconaMathV1';
 
 export const DRACONA_GAME = 'studio-dracona' as const;
 export const DRACONA_CLIENT_HEADER = 'X-Royal-Dracona-Rules';
-export const DRACONA_BETS = [10, 20, 50, 100, 200, 500] as const;
+export const DRACONA_BETS = recoverableBetAmounts([10, 20, 50, 100, 200, 500]);
 export const DRACONA_MAX_WIN = 100000;
 export type DraconaSettings = { dracona: { mode: 'normal' } };
 export type DraconaSpin = { draws: number[]; result: SpinResult };

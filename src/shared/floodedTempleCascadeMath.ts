@@ -1,7 +1,8 @@
+import {recoverableStakes} from './gameStakes.ts';
 import data from './floodedTempleCascadeData.json';
 
 function freeze<T>(v:T):T{if(v&&typeof v==='object'){for(const x of Object.values(v))freeze(x);Object.freeze(v);}return v;}
-export const CASCADE_DATA=freeze(data);
+export const CASCADE_DATA=freeze({...data, stakes:recoverableStakes(data.stakes.map(String)).map(Number)});
 export const CASCADE_WILD=7,CASCADE_BONUS=8,CASCADE_CAP_POINTS=data.maxWin*data.paylines.length;
 export type CascadeDraw=(maximum:number)=>number;
 export type CascadeMode='base'|'free';

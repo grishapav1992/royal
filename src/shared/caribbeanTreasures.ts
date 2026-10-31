@@ -5,17 +5,17 @@ import {
 } from './caribbeanTreasuresMath.ts';
 
 export const CARIBBEAN_GAME = 'studio-caribbean-treasures' as const;
-export const CARIBBEAN_RULES_VERSION = 1;
+export const CARIBBEAN_RULES_VERSION = 2;
 export const CARIBBEAN_PROGRESS_VERSION = 1;
 export type CaribbeanTactic = 'raid' | 'flagship';
 export type CaribbeanStartMode = 'normal' | 'buy-raid' | 'buy-flagship';
 export type CaribbeanMove = 'choose-raid' | 'choose-flagship' | 'spin';
-export interface CaribbeanSettings { lines: CaribbeanLineCount; mode: CaribbeanStartMode }
+export interface CaribbeanSettings { lines: CaribbeanLineCount; mode: CaribbeanStartMode; stakeBasis?: 'total' }
 export interface CaribbeanOperation { move: 'start' | CaribbeanMove; draws: number[] }
 export interface CaribbeanSpin { frame: CaribbeanFrame; payoutUnits: string }
 export interface CaribbeanView {
   kind: 'caribbean-treasures';
-  version: 1;
+  version: 1 | 2;
   settings: CaribbeanSettings;
   lineStakeUnits: string;
   costUnits: string;
@@ -44,12 +44,12 @@ export function validCaribbeanStake(value: unknown): value is string {
   return typeof value === 'string' && (CARIBBEAN_LINE_STAKES as readonly string[]).includes(value);
 }
 export function validCaribbeanSettings(value: unknown): value is CaribbeanSettings {
-  return record(value) && keys(value, 'lines,mode') && validCaribbeanLineCount(value.lines)
+  return record(value) && (keys(value, 'lines,mode') || keys(value, 'lines,mode,stakeBasis') && value.stakeBasis === 'total') && validCaribbeanLineCount(value.lines)
     && typeof value.mode === 'string' && ['normal','buy-raid','buy-flagship'].includes(value.mode);
 }
 export function caribbeanInitialCost(settings: CaribbeanSettings, lineStakeUnits: string): string {
   if (!validCaribbeanSettings(settings) || !validCaribbeanStake(lineStakeUnits)) throw new CaribbeanMoveError('Invalid Caribbean settings or stake');
-  const base = BigInt(lineStakeUnits) * BigInt(settings.lines);
+  const base = BigInt(lineStakeUnits) * BigInt(settings.stakeBasis === 'total' ? 1 : settings.lines);
   return String(settings.mode === 'normal' ? base :
     (base * BigInt(CARIBBEAN_PROFILE[settings.lines].bonusCostPerMillion) + 999999n) / 1000000n);
 }
@@ -65,7 +65,7 @@ function traced(random: CaribbeanRandom) {
 }
 function appendSpin(view: CaribbeanView, mode: 'base' | CaribbeanTactic, draw: CaribbeanRandom) {
   const frame = playCaribbeanFrame(mode, view.settings.lines, draw);
-  const settlement = settleCaribbeanFrame(frame.grid, view.settings.lines, view.lineStakeUnits);
+  const settlement = settleCaribbeanFrame(frame.grid, view.settings.lines, view.lineStakeUnits, view.settings.stakeBasis === 'total' ? view.settings.lines : 1);
   view.spins.push({ frame, payoutUnits: settlement.payoutUnits });
   view.totalPayoutUnits = String(BigInt(view.totalPayoutUnits) + BigInt(settlement.payoutUnits));
 }
@@ -82,7 +82,7 @@ export function startCaribbeanRound(settings: CaribbeanSettings, lineStakeUnits:
   const bought = settings.mode !== 'normal', tactic: CaribbeanTactic | null =
     settings.mode === 'buy-raid' ? 'raid' : settings.mode === 'buy-flagship' ? 'flagship' : null;
   const view: CaribbeanView = {
-    kind: 'caribbean-treasures', version: 1, settings: { ...settings }, lineStakeUnits, costUnits,
+    kind: 'caribbean-treasures', version: settings.stakeBasis === 'total' ? 2 : 1, settings: { ...settings }, lineStakeUnits, costUnits,
     phase: bought ? 'bonus' : 'complete', tactic, remaining: tactic ? CARIBBEAN_BONUS_SPINS[tactic] : 0,
     bonusTicket: null, mapPieces: 0, spins: [], operations: [], revision: 1, totalPayoutUnits: '0',
   };
@@ -117,7 +117,7 @@ export function moveCaribbeanRound(current: CaribbeanView, revision: unknown, mo
 export function validCaribbeanView(value: unknown): value is CaribbeanView {
   try {
     if (!record(value) || !keys(value, 'kind,version,settings,lineStakeUnits,costUnits,phase,tactic,remaining,bonusTicket,mapPieces,spins,operations,revision,totalPayoutUnits')
-      || value.kind !== 'caribbean-treasures' || value.version !== 1 || !validCaribbeanSettings(value.settings)
+      || value.kind !== 'caribbean-treasures' || value.version !== (value.settings && (value.settings as CaribbeanSettings).stakeBasis === 'total' ? 2 : 1) || !validCaribbeanSettings(value.settings)
       || !validCaribbeanStake(value.lineStakeUnits) || !Array.isArray(value.operations)
       || value.operations.length < 1 || value.operations.length > 16 || value.operations.length !== value.revision) return false;
     let replay: CaribbeanView | undefined;

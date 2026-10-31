@@ -1,7 +1,8 @@
+import {recoverableStakes} from './gameStakes';
 import { t as translateText } from '../i18n/index';
 export const NITRO_GAME = 'studio-nitro-run' as const;
 export const NITRO_CLIENT_HEADER = 'X-Royal-Nitro-Rules';
-export const NITRO_BETS = ['100','200','300','500','1000','2000','2500','5000','10000','20000','25000','50000','100000'] as const;
+export const NITRO_BETS = recoverableStakes(['100','200','300','500','1000','2000','2500','5000','10000','20000','25000','50000','100000']);
 export const NITRO_MAX_WIN = 3000, NITRO_MAX_FREE = 20, NITRO_MAX_FRAMES = 12;
 export const NITRO_NAMES = [translateText('Гоночное колесо'),translateText('Шлем'),translateText('Спортивный руль'),translateText('Турбина'),translateText('Синий купе'),translateText('Оранжевый маслкар'),translateText('WILD: шестерня'),translateText('Финишные флаги'),translateText('Баллон нитро')] as const;
 // Payments are hundredths of the total stake, for 3, 4, 5 or 6 symbols from the left.

@@ -1,7 +1,8 @@
+import {GAME_BETS as DEMO_BETS} from '../shared/gameStakes';
 import { t as translateText, tr, locale } from '../i18n/index';
 import './volcanic-plinko.css';
 import { demoWallet, type WalletClient, type WalletSettlement } from '../wallet/WalletClient';
-import { DEMO_BETS } from '../shared/demoWallet';
+import { } from '../shared/demoWallet';
 import type { PlinkoRound } from '../shared/gameCore';
 import { gameAudio } from '../game/GameAudio';
 import { VolcanicPlinkoAudio } from '../game/VolcanicPlinkoAudio';
@@ -24,7 +25,7 @@ export class VolcanicPlinkoUI {
   private portrait: VesperaPortrait;
   private audio = new VolcanicPlinkoAudio();
   private risk: VolcanicRisk = 'easy';
-  private betIndex = 1;
+  private betIndex = 0;
   private fast = false;
   private entered: boolean;
   private submitting = false;

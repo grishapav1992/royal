@@ -1,5 +1,6 @@
+import {GAME_BETS as DEMO_BETS} from '../shared/gameStakes';
 import { t as translateText, tr, locale } from '../i18n/index';
-import { DEMO_BETS } from '../shared/demoWallet';
+import { } from '../shared/demoWallet';
 import type { ExpansionSession } from '../shared/casinoExpansion';
 import { expansionClient as client, type NewExpansionAction } from '../wallet/ExpansionClient';
 import { demoWallet } from '../wallet/WalletClient';
@@ -13,7 +14,7 @@ export class CrashMotionUI {
   private alive = true;
   private owner = client.accountId;
   private epoch = 0;
-  private stake = '1000';
+  private stake = '10';
   private error = '';
   private frame = 0;
   private poll: ReturnType<typeof setInterval>;
@@ -48,7 +49,7 @@ export class CrashMotionUI {
   private validTime(session: ExpansionSession) { return Number.isFinite(session.serverNow) && Number.isFinite(session.startedAt) && Number.isFinite(session.multiplier) && session.multiplier! >= 1 && session.multiplier! <= 100; }
   private sync() {
     if (!this.alive) return;
-    if (this.owner !== client.accountId) { this.clearEndCue(); this.epoch++; this.owner = client.accountId; this.stake = '1000'; this.error = ''; this.anchor = undefined; this.heldBalance = undefined; this.shownTime = 0; this.reactionFollow = false; resetGameOutcomes(this.root); cancelAnimationFrame(this.frame); this.frame = 0; }
+    if (this.owner !== client.accountId) { this.clearEndCue(); this.epoch++; this.owner = client.accountId; this.stake = '10'; this.error = ''; this.anchor = undefined; this.heldBalance = undefined; this.shownTime = 0; this.reactionFollow = false; resetGameOutcomes(this.root); cancelAnimationFrame(this.frame); this.frame = 0; }
     const session = this.session();
     const justEnded = session?.state === 'settled' && this.anchor?.id === session.id;
     if (session?.state === 'active' && this.validTime(session)) {

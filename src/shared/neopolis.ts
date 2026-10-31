@@ -1,3 +1,4 @@
+import {recoverableBetAmounts} from './gameStakes';
 import { HEROES, MAX_ROUND_SPINS, NEOPOLIS_MATH, PAYTABLE, initialTeam, playNeopolisSpin, type Hero, type Team, type Battle, type Spin } from './neopolisMath';
 import { playNeopolisSpin as playNeopolisSpinV3 } from './neopolisMathV3';
 import { NEOPOLIS_PAYOUT_SCALE, neopolisTeamPayout } from './neopolisStakePayouts';
@@ -6,7 +7,7 @@ import { playNeopolisSpin as playNeopolisSpinV2, PAYTABLE as PAYTABLE_V2 } from 
 
 export const NEOPOLIS_GAME = 'studio-neopolis' as const;
 export const NEOPOLIS_HEADER = 'X-Royal-Neopolis-Rules';
-export const NEOPOLIS_BETS = [10, 20, 50, 100, 200, 500] as const;
+export const NEOPOLIS_BETS = recoverableBetAmounts([10, 20, 50, 100, 200, 500]);
 export const NEOPOLIS_MAX_WIN = 3000;
 // Five resolution chains (initial, three heroes, finisher) fit even at their full bounds.
 const MAX_DRAWS = 4096;

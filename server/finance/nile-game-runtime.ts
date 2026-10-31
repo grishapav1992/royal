@@ -1,3 +1,4 @@
+import {validGameBet} from '../../src/shared/gameStakes';
 import {createHash} from 'node:crypto';
 import { SKIN_UUID } from '../../src/shared/skinStudio';
 import {DemoWalletStore,WalletError} from '../demoWallet';
@@ -61,7 +62,7 @@ export class NileGameRuntime{
   const op=command.body as any;if(command.method!=='POST'||!op)return 0n;
   if(command.path==='/operations'&&(op.kind==='play'||op.kind==='spin')){
    const game=op.kind==='spin'?prepareGame('royal-coins',1,{}):prepareGame(op.gameId,op.rulesVersion,op.input);
-   if(!Number.isSafeInteger(op.amount)||op.amount<1)return 0n;return BigInt(op.amount)*100n*BigInt(game.maxMultiplier);
+   if(!(Number.isSafeInteger(op.amount)&&op.amount>=1||validGameBet(op.amount)))return 0n;return BigInt(op.amount*100)*BigInt(game.maxMultiplier);
   }
   if(op.action!=='start')return 0n;
   if(command.path==='/expansion'&&isExpansionGame(op.gameId)&&typeof op.stakeUnits==='string'&&/^\d{1,12}$/.test(op.stakeUnits))return BigInt(op.stakeUnits)*BigInt(Math.max(expansionMax(op.gameId,1,op.settings),expansionMax(op.gameId,2,op.settings)));

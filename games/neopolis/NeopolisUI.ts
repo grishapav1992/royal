@@ -1,5 +1,6 @@
+import {GAME_BETS as NEOPOLIS_BETS} from '../../src/shared/gameStakes';
 import { readGameHost } from '../../src/modules/GameHostContract';
-import { NEOPOLIS_GAME, NEOPOLIS_BETS, neopolisPointUnits, neopolisPaytable } from '../../src/shared/neopolis';
+import { NEOPOLIS_GAME, neopolisPointUnits, neopolisPaytable } from '../../src/shared/neopolis';
 import { BOSSES, HEROES, initialTeam, readyTeam, type Hero, type Team, type Battle, type Frame } from '../../src/shared/neopolisMath';
 import { neopolisCopy } from './copy';
 import { SCENES, noticeArt, portrait, skyline, symbolArt } from './art';
@@ -44,7 +45,7 @@ export class NeopolisUI {
   private autoRemaining = 0;
   private autoTimer?: number;
   private autoEpoch = 0;
-  private bet = 100;
+  private bet = 0.1;
   private selected: Hero = 'granite';
   private changed = () => this.sync();
   private get session() { return this.client.sessions.find(session => session.gameId === NEOPOLIS_GAME); }
@@ -239,7 +240,7 @@ export class NeopolisUI {
       this.reels = undefined;
       this.effects.clear(); this.presentationTeam = undefined; this.presentationBattle = null;
       this.audio.cancelEffects(); this.feedback.clear(); this.feedback.setAmount(0);
-      this.busy = false; this.seen = ''; this.selected = 'granite'; this.bet = 100; delete this.root.dataset.power;
+      this.busy = false; this.seen = ''; this.selected = 'granite'; this.bet = 0.1; delete this.root.dataset.power;
       if (this.dialog.open) this.dialog.close();
       this.draw(initialGrid); this.find('win').textContent = '0';
       this.status(this.copy.collect);

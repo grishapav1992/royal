@@ -1,4 +1,5 @@
-import { FLAG_GAME, FLAG_BETS, FLAG_COUNTRIES, FLAG_MODES, flagCountries, flagModeInfo, flagViewMode, flagPayout, validFlagSettings, type FlagMode, type FlagCountry, type FlagView } from '../../src/shared/flagBattle';
+import {GAME_STAKE_UNITS as FLAG_BETS} from '../../src/shared/gameStakes';
+import { FLAG_GAME, FLAG_COUNTRIES, FLAG_MODES, flagCountries, flagModeInfo, flagViewMode, flagPayout, validFlagSettings, type FlagMode, type FlagCountry, type FlagView } from '../../src/shared/flagBattle';
 import { expansionClient as client } from '../../src/wallet/ExpansionClient';
 import { demoWallet } from '../../src/wallet/WalletClient';
 import { FlagAudio } from './FlagAudio';
@@ -19,7 +20,7 @@ export class FlagBattleUI {
   private owner = client.accountId;
   private mode: FlagMode = 'classic';
   private selected: FlagCountry = 'RU';
-  private stake = '100';
+  private stake = '10';
   private seen = '';
   private view?: FlagView;
   private returned = '0';
@@ -80,7 +81,7 @@ export class FlagBattleUI {
   private sync() {
     if (this.owner !== client.accountId) {
       this.audio.silence(); this.owner = client.accountId; this.running = false; this.fresh = false; this.seen = ''; this.view = undefined;
-      this.submitting = false; this.error = ''; this.mode = 'classic'; this.selected = 'RU'; this.stake = '100'; this.arena.reset();
+      this.submitting = false; this.error = ''; this.mode = 'classic'; this.selected = 'RU'; this.stake = '10'; this.arena.reset();
       this.find<HTMLInputElement>('[data-fb="search"]').value = '';
     }
     const pending = client.pending;

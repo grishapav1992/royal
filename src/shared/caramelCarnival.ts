@@ -1,7 +1,8 @@
+import {recoverableStakes} from './gameStakes';
 import { t as translateText } from '../i18n/index';
 export const CARAMEL_CLIENT_HEADER = 'X-Royal-Caramel-Rules';
 export const CARAMEL_GAME = 'studio-caramel-carnival' as const;
-export const CARAMEL_BETS = ['100','200','300','500','1000','2000','2500','5000','10000','20000','25000','50000','100000'] as const;
+export const CARAMEL_BETS = recoverableStakes(['100','200','300','500','1000','2000','2500','5000','10000','20000','25000','50000','100000']);
 export const CARAMEL_MAX_WIN = 5000;
 export const CARAMEL_MAX_CASCADES = 20;
 export const CARAMEL_MAX_FREE_SPINS = 30;

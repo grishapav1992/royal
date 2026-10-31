@@ -1,6 +1,7 @@
+import {GAME_STAKE_CENTS as FOREST_HEART_STAKES} from '../../src/shared/gameStakes';
 import { readGameHost } from '../../src/modules/GameHostContract';
 import { FOREST_HEART_GAME, validForestHeartSession, type ForestHeartView } from '../../src/shared/forestHeart';
-import { FOREST_HEART_ROTORS, FOREST_HEART_STAKES, forestHeartFlowerPayout } from '../../src/shared/forestHeartMath';
+import { FOREST_HEART_ROTORS, forestHeartFlowerPayout } from '../../src/shared/forestHeartMath';
 import type { ExpansionSession } from '../../src/shared/casinoExpansion';
 import type { NewExpansionAction } from '../../src/wallet/ExpansionClient';
 import { ForestAudio, type ForestCue } from './ForestAudio';
@@ -33,7 +34,7 @@ export class ForestHeartUI {
   private paused = false;
   private forceReduced = false;
   private fast = false;
-  private stake = 1000;
+  private stake: number = 10;
   private status = '';
   private stopPreferences: () => void;
   private media: MediaQueryList;
@@ -130,7 +131,7 @@ export class ForestHeartUI {
   private changeStake(delta: number) {
     if (this.blocked() || this.view?.stage === 'choice' || this.view?.stage === 'bonus') return;
     const index = FOREST_HEART_STAKES.indexOf(this.stake as typeof FOREST_HEART_STAKES[number]);
-    this.stake = FOREST_HEART_STAKES[Math.max(0, Math.min(5, index + delta))]; this.controls();
+    this.stake = FOREST_HEART_STAKES[Math.max(0, Math.min(FOREST_HEART_STAKES.length - 1, index + delta))]; this.controls();
   }
   private blocked() { return this.busy || this.paused || this.doc.hidden || this.client.busy || this.client.loading || !!this.client.pending || this.wallet.busy || !!this.wallet.pending || !this.owner; }
   private sync() {

@@ -1,3 +1,4 @@
+import {GAME_STAKE_UNITS as CONVOY_BETS} from '../shared/gameStakes';
 import { t as translateText, tr, locale } from '../i18n/index';
 import {SlotSettings} from './slotKit/SlotSettings';
 import {SlotDialog, slotOwnsKeyboard} from './slotKit/SlotDialog';
@@ -7,7 +8,7 @@ import {SlotPlayback, type SlotOperation} from './slotKit/SlotPlayback';
 import {SlotSessions, type NativeSlotSession} from './slotKit/SlotSessions';
 import {bindSlotLifecycle} from './slotKit/SlotLifecycle';
 import {convoySlot} from './slotKit/nativeSlots';
-import {CONVOY_GAME,CONVOY_BETS,CONVOY_PAYTABLE,CONVOY_NAMES,type ConvoyView,type ConvoySpin} from '../shared/lastConvoy';
+import {CONVOY_GAME,CONVOY_PAYTABLE,CONVOY_NAMES,type ConvoyView,type ConvoySpin} from '../shared/lastConvoy';
 import {expansionClient as client} from '../wallet/ExpansionClient';
 import {demoWallet} from '../wallet/WalletClient';
 import {observeExpansionOutcome,resetGameOutcomes} from './gameReactions';
@@ -30,7 +31,7 @@ export class LastConvoyUI {
  private heroine:ConvoyHeroine;
  private progress=new ConvoyProgressClient();private progressSession='';private progressChanged=()=>{if(!this.destroyed){this.heroine.setBusy(!!this.live);this.heroine.setProgress(client.accountId,this.progress.profile,this.progress.error);}};
  private root:HTMLElement;private dialogShell!:SlotDialog;private stakeControls!:SlotStakeControls;private soundControls!:SlotAudioControls;private board:ConvoyBoard;private audio=new LastConvoyAudio();private assets:LastConvoyAssets;
- private owner=client.accountId;private destroyed=false;private entered=false;private stake='100';private fast=false;private reduced=matchMedia('(prefers-reduced-motion: reduce)');private manualReduced=false;
+ private owner=client.accountId;private destroyed=false;private entered=false;private stake = '10';private fast=false;private reduced=matchMedia('(prefers-reduced-motion: reduce)');private manualReduced=false;
  private dialog:Dialog='intro';private shown='';private lastWin='0';private error='';private live?:Live;private playback=new SlotPlayback({account:()=>client.accountId,hidden:()=>document.hidden});private sessions=new SlotSessions(convoySlot);private autoRemaining=0;private bonusRunning=false;private unsubscribe=()=>{};
  private change=()=>this.sync();private visibility=()=>{if(document.hidden){this.cancel();this.audio.pause();}this.sync();};private motionChanged=()=>{this.cancel();this.sync();};
   private keyboard=(event:KeyboardEvent)=>{
@@ -114,7 +115,7 @@ this.find('[data-cc-status]').textContent=client.loading?translateText('Пров
  }
  private sync(){
   if(this.destroyed)return;
-  if(this.owner!==client.accountId){this.cancel();this.audio.pause();this.owner=client.accountId;this.progressSession=this.session()?.state==='settled'?this.session()!.id:'';this.progress.setAccount(client.accountId);this.entered=false;this.lastWin='0';this.stake='100';this.openDialog('intro');}
+  if(this.owner!==client.accountId){this.cancel();this.audio.pause();this.owner=client.accountId;this.progressSession=this.session()?.state==='settled'?this.session()!.id:'';this.progress.setAccount(client.accountId);this.entered=false;this.lastWin='0';this.stake = '10';this.openDialog('intro');}
   const s=this.session();if(!this.live&&(!s||this.shown!==this.key(s))){
    this.board.clearOverlay();this.board.highlight([]);this.board.show(s?.view.convoy.spin?.finalGrid??preview);this.root.dataset.phase='idle';this.root.dataset.charging='false';
    if(s){this.shown=this.key(s);this.root.dataset.sessionId=s.id;this.root.dataset.revision=String(s.view.convoy.revision);if(s.state==='settled')this.lastWin=s.returnedUnits;this.setTotal(s.view.convoy.totalPayoutUnits);this.features(s.view.convoy);this.find('[data-cc-message]').textContent=s.state==='active'?translateText('Эвакуация сохранена. Продолжение без ставки.'):translateText('Раунд завершён. Выплата уже в кошельке.');}

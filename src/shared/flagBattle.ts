@@ -1,6 +1,7 @@
+import {recoverableStakes} from './gameStakes';
 export const FLAG_GAME = 'flag-battle' as const;
 export const FLAG_HEADER = 'X-Royal-Flag-Battle';
-export const FLAG_BETS = ['100', '200', '500', '1000', '2000', '5000'] as const;
+export const FLAG_BETS = recoverableStakes(['100', '200', '500', '1000', '2000', '5000']);
 export const FLAG_COUNTRIES = [
   { id: 'RU', ru: 'Россия', en: 'Russia' },
   { id: 'BR', ru: 'Бразилия', en: 'Brazil' },

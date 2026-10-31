@@ -1,10 +1,11 @@
+import {GAME_STAKE_UNITS as CARIBBEAN_LINE_STAKES} from '../../src/shared/gameStakes';
 import { readGameHost } from '../../src/modules/GameHostContract';
 import {
   CARIBBEAN_GAME, caribbeanInitialCost, validCaribbeanStake,
   type CaribbeanSettings, type CaribbeanStartMode, type CaribbeanView,
 } from '../../src/shared/caribbeanTreasures';
 import {
-  CARIBBEAN_LINE_COUNTS, CARIBBEAN_LINE_STAKES, CARIBBEAN_LINES, CARIBBEAN_SYMBOLS,
+  CARIBBEAN_LINE_COUNTS, CARIBBEAN_LINES, CARIBBEAN_SYMBOLS,
   validCaribbeanLineCount, type CaribbeanLineCount,
 } from '../../src/shared/caribbeanTreasuresMath';
 import { SlotDialog, slotOwnsKeyboard, type SlotDialogKind } from '../../src/ui/slotKit/SlotDialog';
@@ -45,7 +46,7 @@ export class CaribbeanUI {
   private crewFeedback='';
   private disposed = false;
   private lines: CaribbeanLineCount = 20;
-  private lineStake = '100';
+  private lineStake = '10';
   private sessionKey = '';
   private account: string | null = null;
   private showLines = false;
@@ -83,7 +84,7 @@ export class CaribbeanUI {
   private get active() { return this.session?.state === 'active'; }
   private get wallet() { return this.services.demoWallet.accountId===this.client.accountId ? this.services.demoWallet.wallet ?? this.client.wallet : undefined; }
   private canAfford(mode:CaribbeanStartMode) {
-    return !!this.wallet && Math.round(this.wallet.balance*100)>=Number(caribbeanInitialCost({lines:this.lines,mode},this.lineStake));
+    return !!this.wallet && Math.round(this.wallet.balance*100)>=Number(caribbeanInitialCost({lines:this.lines,mode,stakeBasis:'total'},this.lineStake));
   }
   private get blocked() {
     return this.presenting || this.paused || !this.client.accountId || !this.client.wallet || this.client.busy || this.client.loading || !!this.client.pending
@@ -135,7 +136,7 @@ export class CaribbeanUI {
         this.actionError='';
         const direction=action.endsWith('up')?1:-1;
         if(action.startsWith('lines-'))this.lines=CARIBBEAN_LINE_COUNTS[Math.max(0,Math.min(3,CARIBBEAN_LINE_COUNTS.indexOf(this.lines)+direction))];
-        else this.lineStake=CARIBBEAN_LINE_STAKES[Math.max(0,Math.min(3,CARIBBEAN_LINE_STAKES.findIndex(stake=>stake===this.lineStake)+direction))];
+        else this.lineStake=CARIBBEAN_LINE_STAKES[Math.max(0,Math.min(CARIBBEAN_LINE_STAKES.length-1,CARIBBEAN_LINE_STAKES.findIndex(stake=>stake===this.lineStake)+direction))];
         this.audio.cue('click');this.render();
       }
       else if (action === 'buy') { if (!this.blocked && !this.active) this.openDialog('buy'); }
@@ -175,7 +176,7 @@ export class CaribbeanUI {
     if (this.disposed) return;
     if (this.account !== this.client.accountId) {
       this.stopAuto('account',false);
-      this.stopPresentation();this.captain.reset(true);this.account = this.client.accountId; this.sessionKey = ''; this.lines = 20; this.lineStake = '100';this.actionError='';this.lastBalance=undefined; this.closeDialog();
+      this.stopPresentation();this.captain.reset(true);this.account = this.client.accountId; this.sessionKey = ''; this.lines = 20; this.lineStake = '10';this.actionError='';this.lastBalance=undefined; this.closeDialog();
       this.crewAbort.abort();this.crewAbort=new AbortController();this.crewLoad++;this.crewProfile=undefined;this.crewMessage='';this.crewBusy=false;this.crewPendingCaptain=undefined;
       void this.captain.select(DEFAULT_CAPTAIN).then(()=>{if(!this.disposed)this.render();});
       void this.loadCrew();
@@ -183,7 +184,7 @@ export class CaribbeanUI {
     if(this.wallet?.balance!==this.lastBalance){this.actionError='';this.lastBalance=this.wallet?.balance;}
     const session = this.session, view = this.view, key = session && view ? session.id + ':' + view.revision : '';
     if (view && key !== this.sessionKey) {
-      this.lines = view.settings.lines; this.lineStake = view.lineStakeUnits; this.sessionKey = key;
+      this.lines = view.settings.lines; this.lineStake = view.version===1 && this.session?.state==='settled' ? String(BigInt(view.lineStakeUnits)*BigInt(view.settings.lines)) : view.lineStakeUnits; this.sessionKey = key;
     }
     if (this.dialogKind === 'buy' && this.blocked) this.closeDialog();
     this.render();
@@ -212,18 +213,18 @@ export class CaribbeanUI {
     for(const kind of ['lines','stake'])for(const direction of ['down','up']){
       const button=this.element<HTMLButtonElement>('[data-ct-action='+kind+'-'+direction+']');
       const index=kind==='lines'?CARIBBEAN_LINE_COUNTS.indexOf(this.lines):CARIBBEAN_LINE_STAKES.findIndex(stake=>stake===this.lineStake);
-      button.disabled=lines.disabled || (direction==='down'?index===0:index===3);
-      button.setAttribute('aria-label',this.text(direction==='down'?'Уменьшить ':'Увеличить ',direction==='down'?'Decrease ':'Increase ')+this.text(kind==='lines'?'число линий':'ставку на линию',kind==='lines'?'lines':'stake per line'));
+      button.disabled=lines.disabled || (direction==='down'?index===0:index===(kind==='lines'?CARIBBEAN_LINE_COUNTS.length-1:CARIBBEAN_LINE_STAKES.length-1));
+      button.setAttribute('aria-label',this.text(direction==='down'?'Уменьшить ':'Увеличить ',direction==='down'?'Decrease ':'Increase ')+this.text(kind==='lines'?'число линий':'ставку на линию',kind==='lines'?'lines':'total stake'));
     }
     for (const [key,label] of Object.entries({
       balance:this.text('Баланс · USDT','Balance · USDT'),
       cost:this.active ? this.text('Цена принятого раунда','Accepted round cost') : this.text('Ставка за вращение','Spin cost'),payout:this.active ? this.text('Накоплено в раунде','Round total') : this.text('Выплата раунда','Round payout'),
-      net:this.text('Чистый итог раунда','Net round result'),lines:this.text('Линии','Lines'),stake:this.text('На линию · USDT','Per line · USDT'),
+      net:this.text('Чистый итог раунда','Net round result'),lines:this.text('Линии','Lines'),stake:this.text('Общая ставка · USDT','Total stake · USDT'),
     })) this.element('[data-ct-label="' + key + '"]').textContent = label;
     this.element('[data-ct-balance]').textContent = this.wallet ? this.services.walletCoins(this.wallet.balance) : '...';
     const walletButton=this.element<HTMLButtonElement>('[data-ct-action=wallet]');walletButton.disabled=!this.client.accountId;
     walletButton.setAttribute('aria-label',this.text('Открыть тестовый кошелёк','Open test wallet'));
-    this.element('[data-ct-cost]').textContent = this.view && this.active ? this.money(this.view.costUnits) : this.money(caribbeanInitialCost({lines:this.lines,mode:'normal'},this.lineStake));
+    this.element('[data-ct-cost]').textContent = this.view && this.active ? this.money(this.view.costUnits) : this.money(caribbeanInitialCost({lines:this.lines,mode:'normal',stakeBasis:'total'},this.lineStake));
     this.element('[data-ct-payout]').textContent = this.money(this.tally ?? view?.totalPayoutUnits ?? '0');
     const net = view && !this.active ? BigInt(view.totalPayoutUnits) - BigInt(view.costUnits) : null;
     this.element('[data-ct-net]').textContent = net === null ? (this.active ? this.text('Серия идёт','Round in progress') : '...') : (net > 0n ? '+' : '') + this.money(String(net));
@@ -236,7 +237,7 @@ export class CaribbeanUI {
     buy.textContent = this.text('Купить бонус','Buy bonus'); buy.disabled = this.blocked || !!this.active || !!this.dialogKind || this.autoRunning || !this.canAfford('buy-raid');
     const play = this.element<HTMLButtonElement>('[data-ct-action=play]');
     play.querySelector('b')!.textContent = view?.phase === 'choice' ? this.text('Тактика','Tactic') : this.active ? this.text('Бесплатно','Free spin') : this.text('Вращать','Spin');
-    play.querySelector('small')!.textContent=view?.phase === 'choice' ? this.text('Выбери ниже','Choose below') : this.active ? this.text('Осталось ','Remaining ') + (view?.remaining ?? 0) : this.money(caribbeanInitialCost({lines:this.lines,mode:'normal'},this.lineStake))+' USDT';
+    play.querySelector('small')!.textContent=view?.phase === 'choice' ? this.text('Выбери ниже','Choose below') : this.active ? this.text('Осталось ','Remaining ') + (view?.remaining ?? 0) : this.money(caribbeanInitialCost({lines:this.lines,mode:'normal',stakeBasis:'total'},this.lineStake))+' USDT';
     play.disabled = this.blocked || !!this.dialogKind || this.autoRunning || view?.phase === 'choice' || !this.active&&!this.canAfford('normal');
     const auto=this.element<HTMLButtonElement>('[data-ct-action=auto]'),count=this.element<HTMLSelectElement>('[data-ct-auto-count]');
     auto.textContent=this.autoRunning?this.text('Стоп · ','Stop · ')+this.autoRemaining:this.text('Авто','Auto');
@@ -253,7 +254,7 @@ export class CaribbeanUI {
       : this.client.busy ? this.text('Подтверждаем ход...','Confirming...')
       : this.services.demoWallet.pending ? this.text('Проверь предыдущую операцию общего кошелька.','Check the previous shared wallet operation.')
       : this.presenting && this.visualPhase!=='outcome' ? this.text('Показываем подтверждённый результат...','Revealing the confirmed result...')
-      : !this.active && this.wallet && !this.canAfford('normal') ? this.text('Недостаточно средств: нужно ','Not enough funds: need ')+this.money(caribbeanInitialCost({lines:this.lines,mode:'normal'},this.lineStake))+' USDT. '+this.text('Уменьши ставку или открой кошелёк кнопкой + у баланса.','Lower your stake or open the wallet with + beside the balance.')
+      : !this.active && this.wallet && !this.canAfford('normal') ? this.text('Недостаточно средств: нужно ','Not enough funds: need ')+this.money(caribbeanInitialCost({lines:this.lines,mode:'normal',stakeBasis:'total'},this.lineStake))+' USDT. '+this.text('Уменьши ставку или открой кошелёк кнопкой + у баланса.','Lower your stake or open the wallet with + beside the balance.')
       : this.autoRunning ? (view?.phase==='choice'?this.text('Выбери тактику. Автокрутка ждёт.','Choose your tactic. Autoplay is waiting.'):this.text('Автокрутка: осталось раундов ','Autoplay: rounds remaining ')+this.autoRemaining)
       : this.autoNote ? this.autoLabel()
       : view?.phase==='complete' ? this.outcomeLabel(view)
@@ -297,10 +298,10 @@ export class CaribbeanUI {
   }
   private async start(mode: CaribbeanStartMode) {
     if (this.disposed || this.blocked || this.active || this.dialogKind) return;
-    if(!this.canAfford(mode)){this.actionError=this.text('Недостаточно средств: нужно ','Not enough funds: need ')+this.money(caribbeanInitialCost({lines:this.lines,mode},this.lineStake))+' USDT.';this.render();return;}
+    if(!this.canAfford(mode)){this.actionError=this.text('Недостаточно средств: нужно ','Not enough funds: need ')+this.money(caribbeanInitialCost({lines:this.lines,mode,stakeBasis:'total'},this.lineStake))+' USDT.';this.render();return;}
     this.actionError='';
     if(!this.autoRunning)this.autoNote='';
-    const settings: CaribbeanSettings = {lines:this.lines,mode};
+    const settings: CaribbeanSettings = {lines:this.lines,mode,stakeBasis:'total'};
     const before=this.session?.id;
     try { await this.perform(()=>this.client.act({gameId:CARIBBEAN_GAME,action:'start',stakeUnits:this.lineStake,settings:{caribbean:settings}})); }
     catch(error) {this.actionError=this.client.pending?'':error instanceof Error?error.message:this.client.error;}
@@ -463,15 +464,15 @@ export class CaribbeanUI {
         + '<p>' + this.text('Автокрутка запускает 10, 25, 50 или 100 обычных платных раундов по текущим линиям и ставке. Тактику бонуса выбираешь сам; бесплатные продолжения выполняются автоматически и не расходуют счётчик. Покупок бонуса в авто нет. «Стоп» отменяет следующие ходы, сохраняя уже принятый. Ошибка, неизвестный ответ, нехватка средств, пауза, смена аккаунта или закрытие останавливают авто. Самостоятельного возобновления нет.','Autoplay starts 10, 25, 50 or 100 normal paid rounds at the current lines and stake. Choose your bonus tactic yourself; free continuations run automatically without using the counter. Auto never buys a bonus. Stop cancels future moves and preserves accepted operations. An error, unknown response, insufficient funds, pause, account change or closing stops auto. It never resumes on its own.') + '</p>';
     } else if (kind === 'history') {
       body = '<h3>' + this.text('История текущего раунда','Current round history') + '</h3>' + (view ?
-        '<p>' + this.text('Линий: ','Lines: ') + view.settings.lines + ' · ' + this.text('На линию: ','Per line: ') + this.money(view.lineStakeUnits) + ' USDT</p>'
+        '<p>' + this.text('Линий: ','Lines: ') + view.settings.lines + ' · ' + (view.version===2?this.text('Общая ставка: ','Total stake: '):this.text('На линию: ','Per line: ')) + this.money(view.lineStakeUnits) + ' USDT</p>'
           + (view.tactic ? '<p>' + (view.tactic === 'raid' ? this.text('Рейд · 14 вращений','Raid · 14 spins') : this.text('Флагман · 6 вращений','Flagship · 6 spins')) + '</p>' : '')
           + '<p>' + this.text('Стоимость: ','Cost: ') + this.money(view.costUnits) + ' USDT</p><ol>' + view.spins.map((spin,index) => '<li>' + (index + 1) + '. '
           + (spin.frame.mode === 'base' ? this.text('Обычное вращение','Base spin') : this.text('Бесплатное вращение','Free spin'))
           + ' · ' + this.money(spin.payoutUnits) + ' USDT' + (spin.frame.cannon ? this.text(' · Залп',' · Cannon') : '') + '</li>').join('') + '</ol>'
           + '<p>' + this.text('Выплата раунда: ','Round payout: ') + this.money(view.totalPayoutUnits) + ' USDT</p>' : '<p>' + this.text('Вращений пока нет.','No spins yet.') + '</p>');
     } else {
-      const cost = this.money(caribbeanInitialCost({lines:this.lines,mode:'buy-raid'},this.lineStake));
-      body = '<h3>' + this.text('Купить бесплатную серию','Buy a free spin series') + '</h3><p>' + this.text('Линий: ','Lines: ') + this.lines + ' · ' + this.text('На линию: ','Per line: ') + this.money(this.lineStake) + ' USDT</p><p class="ct-buy-price">' + cost + ' USDT</p><p>' + this.text('Одна покупка. Продолжения бесплатны. Выбери серию:','One purchase. Continuations are free. Choose a series:') + '</p>'
+      const cost = this.money(caribbeanInitialCost({lines:this.lines,mode:'buy-raid',stakeBasis:'total'},this.lineStake));
+      body = '<h3>' + this.text('Купить бесплатную серию','Buy a free spin series') + '</h3><p>' + this.text('Линий: ','Lines: ') + this.lines + ' · ' + this.text('Общая ставка: ','Total stake: ') + this.money(this.lineStake) + ' USDT</p><p class="ct-buy-price">' + cost + ' USDT</p><p>' + this.text('Одна покупка. Продолжения бесплатны. Выбери серию:','One purchase. Continuations are free. Choose a series:') + '</p>'
         + '<button type="button" data-ct-modal="buy-raid">' + this.text('Рейд · 14 вращений','Raid · 14 spins') + '</button>'
         + '<button type="button" data-ct-modal="buy-flagship">' + this.text('Флагман · 6 вращений','Flagship · 6 spins') + '</button>';
     }

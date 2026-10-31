@@ -1,7 +1,8 @@
+import {GAME_STAKE_UNITS as JACKIE_BETS} from '../../src/shared/gameStakes';
 import { expansionClient as client } from '../../src/wallet/ExpansionClient';
 import { demoWallet } from '../../src/wallet/WalletClient';
 import { language } from '../../src/i18n/index';
-import { JACKIE_GAME, JACKIE_BETS, JACKIE_RISKS, JACKIE_COSTUMES, JACKIE_LOCATIONS, costumeUnlocked, type JackieCostume, type JackieLocation } from '../../src/shared/jackieChan';
+import { JACKIE_GAME, JACKIE_RISKS, JACKIE_COSTUMES, JACKIE_LOCATIONS, costumeUnlocked, type JackieCostume, type JackieLocation } from '../../src/shared/jackieChan';
 import { penaltyPathQuote, type PenaltyRisk } from '../../src/shared/crLeo';
 import { JackieScene, JACKIE_SCENE_ASSETS } from './JackieScene';
 import { JackieAudio } from './JackieAudio';
@@ -27,7 +28,7 @@ export class JackieUI {
   private risk:PenaltyRisk='safe';
   private costume:JackieCostume='master';
   private location:JackieLocation='restaurant';
-  private stake='1000';
+  private stake = '10';
   private seen='';
   private owner=client.accountId;
   private epoch=0;
@@ -85,7 +86,7 @@ export class JackieUI {
   private units(){return this.session()?.view.jackie?.collectionUnits??0;}
   private sync(){
     if(!this.alive)return;
-    if(this.owner!==client.accountId){this.owner=client.accountId;this.epoch++;this.seen='';this.action='';this.error='';this.costume='master';this.location='restaurant';this.risk='safe';this.stake='1000';this.preview=false;this.unlocks=[];this.audio.cancel();this.audio.music.reset();this.scene.select(this.costume,this.location,this.risk);this.find<HTMLDialogElement>('[data-dialog]').close();}
+    if(this.owner!==client.accountId){this.owner=client.accountId;this.epoch++;this.seen='';this.action='';this.error='';this.costume='master';this.location='restaurant';this.risk='safe';this.stake = '10';this.preview=false;this.unlocks=[];this.audio.cancel();this.audio.music.reset();this.scene.select(this.costume,this.location,this.risk);this.find<HTMLDialogElement>('[data-dialog]').close();}
     const s=this.session(),v=s?.view.jackie,key=v?s!.id+':'+v.combat.revision:'';
     if(v&&key!==this.seen){
       const oldUnits=Number(this.root.dataset.collection??0),animate=!!this.action&&!document.hidden;

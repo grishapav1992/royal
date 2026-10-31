@@ -1,3 +1,4 @@
+import {validGameBet, usesGameStakes} from '../src/shared/gameStakes';
 import { FlagToteStore } from './flagTote';
 import { randomInt } from 'node:crypto';
 import type { PostgresDatabase } from './database';
@@ -36,6 +37,7 @@ export class DemoWalletStore {
       operation_id TEXT NOT NULL, kind TEXT NOT NULL CHECK(kind IN ('deposit','bet','win')),
       amount INTEGER NOT NULL, balance INTEGER NOT NULL CHECK(balance >= 0), created_at INTEGER NOT NULL);`);
     await db.exec('ALTER TABLE demo_operations ADD COLUMN IF NOT EXISTS request_key TEXT');
+    await db.exec('ALTER TABLE demo_operations ADD COLUMN IF NOT EXISTS amount_units BIGINT');
     })).then(() => migrateDemoAmounts(db)).then(() => removedCasinoSchema(db));
     this.mines = new DemoMinesStore(db, accountId => this.rawSnapshot(accountId), draw,
       async accountId => await this.flight.reservedUnits(accountId)+await this.casino.reservedUnits(accountId), accountId => this.flight.settleDue(accountId), schemaReady);
@@ -72,9 +74,9 @@ export class DemoWalletStore {
     await this.ready;
     const op = value as WalletOperation | undefined;
     if (!op || typeof op !== 'object' || Array.isArray(op) || typeof op.id !== 'string' || !/^[a-f0-9-]{36}$/i.test(op.id)
-      || !['deposit','spin','play'].includes(op.kind) || !Number.isSafeInteger(op.amount)
+      || !['deposit','spin','play'].includes(op.kind) || !(Number.isSafeInteger(op.amount) || op.kind === 'play' && usesGameStakes(op.gameId) && validGameBet(op.amount))
       || Object.keys(op).sort().join(',') !== (op.kind === 'play' ? 'amount,gameId,id,input,kind,rulesVersion' : 'amount,id,kind')) throw new WalletError(400, 'Некорректная операция.');
-    if (op.kind === 'deposit' ? op.amount < 1 || op.amount > 100000 : !(DEMO_BETS as readonly number[]).includes(op.amount)) throw new WalletError(400, 'Недопустимая сумма.');
+    if (op.kind === 'deposit' ? op.amount < 1 || op.amount > 100000 : !((op.kind === 'play' && usesGameStakes(op.gameId) && validGameBet(op.amount)) || (DEMO_BETS as readonly number[]).includes(op.amount))) throw new WalletError(400, 'Недопустимая сумма.');
     let game: ReturnType<typeof prepareGame> | undefined;
     if (op.kind !== 'deposit') {
       try { game = op.kind === 'play' ? prepareGame(op.gameId,op.rulesVersion,op.input) : prepareGame('royal-coins',1,{}); }
@@ -86,9 +88,9 @@ export class DemoWalletStore {
       if (await this.db.prepare('SELECT 1 FROM demo_casino_requests WHERE account_id=? AND id=?').get(accountId,op.id)) throw new WalletError(409,'Этот номер операции уже использован в казино.');
       if ((await this.db.prepare('SELECT 1 FROM demo_mines_requests WHERE account_id=? AND id=?').get(accountId, op.id))) throw new WalletError(409, 'Этот идентификатор уже использован в Mines.');
       if ((await this.db.prepare('SELECT 1 FROM demo_flight_requests WHERE account_id=? AND id=?').get(accountId, op.id))) throw new WalletError(409, 'Этот идентификатор уже использован в Royal Orbit.');
-      const previous = (await this.db.prepare('SELECT kind,amount,result,request_key FROM demo_operations WHERE account_id=? AND operation_id=?').get(accountId, op.id));
+      const previous = (await this.db.prepare('SELECT kind,amount,amount_units,result,request_key FROM demo_operations WHERE account_id=? AND operation_id=?').get(accountId, op.id));
       if (previous) {
-        if (previous.kind !== op.kind || previous.amount !== op.amount || (previous.request_key !== null && previous.request_key !== requestKey)
+        if (previous.kind !== op.kind || (previous.amount_units === null ? previous.amount * 100 : Number(previous.amount_units)) !== op.amount * 100 || (previous.request_key !== null && previous.request_key !== requestKey)
           || (previous.request_key === null && op.kind === 'play')) throw new WalletError(409, 'Нельзя изменить уже отправленную операцию.');
         const saved = JSON.parse(String(previous.result));
         if (previous.request_key !== null && game && (!verifyGameRound(saved.gameRound) || saved.gameRound.gameId !== game.gameId
@@ -97,6 +99,7 @@ export class DemoWalletStore {
         const result = { ...saved, wallet: await this.rawSnapshot(accountId) };
         return result;
       }
+      if (op.kind === 'play' && usesGameStakes(op.gameId) && !validGameBet(op.amount)) throw new WalletError(400, 'Недопустимая ставка.');
       const recent = (await this.db.prepare('SELECT COUNT(*) AS n FROM (SELECT 1 FROM demo_ledger WHERE account_id=? AND created_at>? LIMIT 120) recent').get(accountId, Date.now() - 60000));
       if (Number(recent?.n) >= 120) throw new WalletError(429, 'Слишком много операций. Подожди минуту и повтори запрос.');
       (await this.db.prepare('INSERT INTO demo_wallets(account_id) VALUES (?) ON CONFLICT(account_id) DO NOTHING').run(accountId));
@@ -127,7 +130,7 @@ export class DemoWalletStore {
       }
       await saveDemoUnits(this.db,accountId,balance);
       const settled = { ...(round ? { round } : {}), ...(gameRound ? { gameRound } : {}) };
-      (await this.db.prepare('INSERT INTO demo_operations(account_id,operation_id,kind,amount,result,request_key) VALUES (?,?,?,?,?,?)').run(accountId,op.id,op.kind,op.amount,JSON.stringify(settled),requestKey));
+      (await this.db.prepare('INSERT INTO demo_operations(account_id,operation_id,kind,amount,result,request_key,amount_units) VALUES (?,?,?,?,?,?,?)').run(accountId,op.id,op.kind,Math.trunc(op.amount),JSON.stringify(settled),requestKey,op.amount * 100));
       const result = { wallet: await this.rawSnapshot(accountId), ...settled };
       return result;
     }, { lockKey: 'account:' + accountId });

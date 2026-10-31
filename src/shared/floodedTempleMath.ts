@@ -1,7 +1,8 @@
+import {recoverableStakes} from './gameStakes.ts';
 import table from './floodedTempleData.json';
 
 function freeze<T>(value:T):T { if(value&&typeof value==='object'){for(const child of Object.values(value))freeze(child);Object.freeze(value);}return value; }
-export const TEMPLE_DATA=freeze(table);
+export const TEMPLE_DATA=freeze({...table, stakes:recoverableStakes(table.stakes.map(String)).map(Number)});
 export const TEMPLE_GAME='studio-flooded-temple' as const;
 export const TEMPLE_MAX_WIN=table.maxWin;
 export type TempleEdge={a:number;b:number;kind:'open'|'gate'|'gap'};

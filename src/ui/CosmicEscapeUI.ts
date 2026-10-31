@@ -1,3 +1,4 @@
+import {GAME_STAKE_UNITS as COSMIC_ESCAPE_BET_UNITS} from '../shared/gameStakes';
 import { t as translateText, tr, locale } from '../i18n/index';
 import {SlotSettings} from './slotKit/SlotSettings';
 import {SlotDialog, slotOwnsKeyboard} from './slotKit/SlotDialog';
@@ -8,7 +9,7 @@ import {SlotSessions, type NativeSlotSession} from './slotKit/SlotSessions';
 import {bindSlotLifecycle} from './slotKit/SlotLifecycle';
 import {cosmicSlot} from './slotKit/nativeSlots';
 import {LUELON_SLOT_INFO,type LuelonSlotGameId,type LuelonSlotView,type LuelonSlotInfo,type LuelonSlotFeatures,type LuelonSlotFrame} from '../shared/luelonSlots';
-import {COSMIC_ESCAPE_BET_UNITS,COSMIC_ESCAPE_DEFAULT_STAKE} from '../shared/cosmicEscapeBets';
+import {COSMIC_ESCAPE_DEFAULT_STAKE} from '../shared/cosmicEscapeBets';
 import {expansionClient as client} from '../wallet/ExpansionClient';
 import {demoWallet} from '../wallet/WalletClient';
 import {observeExpansionOutcome,resetGameOutcomes} from './gameReactions';

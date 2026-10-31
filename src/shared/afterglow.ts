@@ -1,7 +1,8 @@
+import {recoverableStakes} from './gameStakes';
 import { t as translateText } from '../i18n/index';
 import {NITRO_LINES} from './nitroRun';
 export const AFTER_GAME='studio-afterglow' as const,AFTER_CLIENT_HEADER='X-Royal-Afterglow-Rules';
-export const AFTER_BETS=['100','200','300','500','1000','2000','2500','5000','10000','20000','25000','50000','100000'] as const;
+export const AFTER_BETS = recoverableStakes(['100','200','300','500','1000','2000','2500','5000','10000','20000','25000','50000','100000']);
 export const AFTER_MAX_WIN=5000,AFTER_MAX_FREE=20,AFTER_MAX_FRAMES=10,AFTER_MAX_PINS=3;
 export const AFTER_LINES=NITRO_LINES.slice(0,14);
 export const AFTER_NAMES=[translateText('Вишни'),translateText('Помада'),translateText('Парфюм'),translateText('Туфелька'),translateText('Сердце'),translateText('Зеркальце'),translateText('WILD: маска'),translateText('Камера'),translateText('Вспышка')] as const;

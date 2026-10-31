@@ -1,5 +1,6 @@
+import {GAME_BETS as DEMO_BETS} from '../../src/shared/gameStakes';
 import { readGameHost } from '../../src/modules/GameHostContract';
-import { DEMO_BETS, type WalletResult } from '../../src/shared/demoWallet';
+import { type WalletResult } from '../../src/shared/demoWallet';
 import { rouletteRedNumbers, type RouletteInput, type RouletteRound } from '../../src/shared/gameCore';
 import type { WalletSettlement } from '../../src/wallet/WalletClient';
 import { rouletteWheelSvg } from './WheelArtwork';
@@ -21,7 +22,7 @@ export class RoyalRoulette {
   private paused = false;
   private account = this.wallet.accountId;
   private input: RouletteInput = {bet:'red'};
-  private amount: number = 10;
+  private amount: number = 0.1;
   private motion: RouletteMotion;
   private sound: RouletteSound;
   private last?: RouletteRound;
