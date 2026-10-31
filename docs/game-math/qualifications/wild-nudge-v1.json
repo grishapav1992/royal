@@ -3,8 +3,8 @@
   "gameId": "studio-wild-nudge",
   "rulesVersion": 1,
   "progressVersion": 1,
-  "startedAt": "2026-10-31T12:35:06.382Z",
-  "completedAt": "2026-10-31T12:35:09.507Z",
+  "startedAt": "2026-10-31T18:01:04.639Z",
+  "completedAt": "2026-10-31T18:01:07.974Z",
   "sourceHashes": {
     "src/shared/wildNudgeData.json": "4cc0a4f71c052c276890d8446c1e21e4b3a8dce522f27ee42b7909c5263131d8",
     "src/shared/wildNudgeMath.ts": "5a4071c32c8da56b508695536aed7079a55b9b4730d00e96606c60545433fa74",
@@ -23,7 +23,7 @@
     "server/demoWalletAmounts.ts": "1da7a73b63c79cba0ff674f59c75fe517d8445eafaf831be8afa7f9a4c6e6317",
     "server/database.ts": "89c282f2e65158079bdafc07d815c5ca962aa82f89ba0d3c5f03a19aa7c81ca8",
     "src/wallet/ExpansionClient.ts": "fd9de526e8c5e0976c7de3368c3e4db9a846bc0e6a50edb4bc112eccbc1f3fa5",
-    "src/shared/arcadeCatalog.ts": "20c3ba0c2fd774d410bf22a5047d513770038873e010158f327fa4a780812ac3",
+    "src/shared/arcadeCatalog.ts": "362c3474bc175275bd8f576bf2eecebe3f3fc667869bfc5dfa4984cb8ff83e33",
     "scripts/game-math/rtp-wild-nudge.mjs": "a6a147ad2732d61d27631d05f34459ce15668ec723171dd55bf22ab5b423f9de"
   },
   "policySha256": "dad51321ed23931270d6699ef975a092bc8526cb7df9cb7bef3d99ac4d32150b",
