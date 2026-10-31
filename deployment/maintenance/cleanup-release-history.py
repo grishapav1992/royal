@@ -21,6 +21,7 @@ ROOTS = (RELEASES, BACKUPS)
 RETENTION = Path('/opt/royal-dev-app-retention')
 MODULES = Path('/opt/royal-game-modules')
 MODULE_STATE = Path('/opt/royal-game-modules-state')
+IMAGE_LEDGER = Path('/opt/royal-maintenance/known-release-images.json')
 PERIODIC = {'/royal-nile-account-views-once', '/royal-nile-reconcile-once'}
 
 
@@ -298,6 +299,11 @@ def image_candidates(protected):
     # Exact IDs from release evidence avoid the slow global image index and never
     # discover an unrelated image merely because it is old or untagged.
     ids = set()
+    if IMAGE_LEDGER.exists():
+        ledger = read(IMAGE_LEDGER)
+        require(ledger.get('format') == 1 and isinstance(ledger.get('images'),list)
+                and all(re.fullmatch(r'sha256:[a-f0-9]{64}',str(x)) for x in ledger['images']), 'Invalid image evidence ledger')
+        ids.update(ledger['images'])
     def collect(value):
         if isinstance(value, dict):
             for key, child in value.items():
@@ -309,13 +315,19 @@ def image_candidates(protected):
         if path.name in {'install-manifest.json', 'build-result.json', 'published.json', 'before.json'}:
             try: collect(read(path))
             except (OSError, ValueError): continue
+    # Persist evidence before retiring its source directory. A retry must still
+    # find images whose removal failed or that acquired a temporary reference.
+    write(IMAGE_LEDGER, {'format':1,'images':sorted(ids)})
     protected |= referenced_images()
     result = []
     candidates = sorted(ids - protected)
     rows = []
+    missing = set()
     for identity in candidates:
         value = native_retention().image_row(identity)
         if value is not None: rows.append({'Id': value['id'], 'RepoTags': value['tags'], 'Created': value['created']})
+        else: missing.add(identity)
+    if missing: write(IMAGE_LEDGER, {'format':1,'images':sorted(ids-missing)})
     for row in rows:
         identity = row['Id']
         tags = row.get('RepoTags') or []

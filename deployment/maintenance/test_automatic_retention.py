@@ -96,9 +96,12 @@ class AutomaticRetentionTest(unittest.TestCase):
             (release/'build-result.json').write_text(json.dumps({'image': game, 'before': {'image': other}}))
             helper = unittest.mock.Mock()
             helper.image_row.side_effect = lambda identity: {'id': identity, 'tags': ['royal-game:old' if identity==game else 'royal-payments:old'], 'created': '2026-10-01'}
-            with patch.object(cleanup, 'RELEASES', root), patch.object(cleanup, 'referenced_images', return_value=set()), patch.object(cleanup, 'native_retention', return_value=helper):
+            with patch.object(cleanup, 'RELEASES', root), patch.object(cleanup,'IMAGE_LEDGER',root/'known.json'), patch.object(cleanup, 'referenced_images', return_value=set()), patch.object(cleanup, 'native_retention', return_value=helper):
                 rows = cleanup.image_candidates(set())
+                (release/'build-result.json').unlink()
+                resumed = cleanup.image_candidates(set())
             self.assertEqual([r['id'] for r in rows], [game])
+            self.assertEqual([r['id'] for r in resumed], [game])
 
     def test_low_space_after_cleanup_is_reported_as_failure(self):
         with tempfile.TemporaryDirectory() as temp:
