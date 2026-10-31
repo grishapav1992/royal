@@ -396,7 +396,7 @@ test('catalogue pirate captain cover stays sharp on desktop and mobile and reope
 test('responsive framing keeps the title and full captain artwork inside the host',async({page,roomPath})=>{
  test.setTimeout(120000);await enter(page,roomPath);await topup(page);await open(page);
  const measurements:any[]=[];
- for(const [width,height] of [[1440,1000],[1280,720],[1094,803],[1024,768],[900,650],[800,600],[640,480],[500,760],[390,844],[342,700],[844,390],[342,245]]){
+ for(const [width,height] of [[1440,1000],[1280,720],[1094,803],[1024,768],[900,650],[800,600],[640,480],[500,760],[430,932],[390,844],[342,700],[844,390],[342,245]]){
   await page.setViewportSize({width,height});
   await expect.poll(async()=>page.evaluate(()=>{const d=document.querySelector<HTMLElement>('#mini-dialog')!,s=d.querySelector<HTMLElement>('.mini-stage')!;return d.dataset.gameViewportReady===d.dataset.game+'|'+s.clientWidth+'x'+s.clientHeight+'|off';})).toBe(true);
   const measured=await page.evaluate(()=>{
@@ -404,7 +404,7 @@ test('responsive framing keeps the title and full captain artwork inside the hos
    const box=(e:Element)=>{const b=e.getBoundingClientRect();return{x:b.x,y:b.y,width:b.width,height:b.height,right:b.right,bottom:b.bottom};};
    const text=document.createRange();text.selectNodeContents(heading);const b=text.getBoundingClientRect();
    const visible=getComputedStyle(captain).display!=='none',style=getComputedStyle(image),scale=style.objectFit==='contain'?Math.min(image.clientWidth/image.naturalWidth,image.clientHeight/image.naturalHeight):Math.max(image.clientWidth/image.naturalWidth,image.clientHeight/image.naturalHeight);
-   return{root:box(root),rootOverflowX:root.scrollWidth-root.clientWidth,pageOverflowX:document.documentElement.scrollWidth-innerWidth,title:box(title),titleText:{x:b.x,right:b.right,y:b.y,bottom:b.bottom},captain:visible?{box:box(captain),objectFit:style.objectFit,clippedX:Math.max(0,image.naturalWidth*scale-image.clientWidth),clippedY:Math.max(0,image.naturalHeight*scale-image.clientHeight)}:null,stage:box(root.querySelector('.ct-stage')!),play:box(root.querySelector('[data-ct-action=play]')!),chat:box(document.querySelector('#chat-input')!)};
+   return{root:box(root),rootOverflowX:root.scrollWidth-root.clientWidth,pageOverflowX:document.documentElement.scrollWidth-innerWidth,title:box(title),titleText:{x:b.x,right:b.right,y:b.y,bottom:b.bottom},captain:visible?{box:box(captain),objectFit:style.objectFit,clippedX:Math.max(0,image.naturalWidth*scale-image.clientWidth),clippedY:Math.max(0,image.naturalHeight*scale-image.clientHeight)}:null,stage:box(root.querySelector('.ct-stage')!),play:box(root.querySelector('[data-ct-action=play]')!),playback:box(root.querySelector('.ct-playback')!),chat:box(document.querySelector('#chat-input')!)};
   });
   const board=await page.locator('.ct-board').boundingBox();
   // A fitting image can still be unusably small when toolbars consume the pane.
@@ -413,6 +413,9 @@ test('responsive framing keeps the title and full captain artwork inside the hos
   }
   if(measured.root.width<=650&&height>540){
    expect(board!.width/measured.root.width,'Narrow panes keep readable symbols and scroll the controls when necessary').toBeGreaterThanOrEqual(.65);
+  }
+  if(width<=500&&height>=800&&measured.root.height>=520){
+   expect(measured.playback.bottom,'Normal portrait phones show the whole autoplay row above the host footer').toBeLessThanOrEqual(measured.root.bottom+1);
   }
   measurements.push({width,height,...measured,board});await page.screenshot({path:out+`/framing-${width}x${height}.png`});
   if(measured.play.bottom>measured.root.bottom||height<=540){
