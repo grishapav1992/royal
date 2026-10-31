@@ -53,6 +53,8 @@
 
 ## Production changes and GitHub
 
+- Server release history is maintained by `deployment/maintenance/automatic-retention.py`. Follow `deployment/maintenance/README.md`: retain the healthy current application and one complete verified rollback, preserve financial backups and persistent data, and remove only verified retired program history. After publication releases its locks, run the retention service and verify a completed result, enabled hourly timer, healthy host and at least 5 GiB free. A failed or skipped maintenance run is unresolved work, not successful cleanup. Do not disable its guards or leave a stale policy after a release.
+
 - Use `docs/release-process.md` for release preparation. Work from a clean committed checkout, specify the verified production source commit with `release:plan` and `release:prepare`, and reuse the resulting manifest and build outputs. Run `release:verify` before passing those bytes to a guarded installer. Do not reconstruct a mixed source tree or create another full staging copy when the committed checkout is sufficient. Preparation and CI artifacts do not replace production-baseline, compatibility, wallet, layout, backup or post-publication checks.
 
 - Every change published to the production server must also be committed and pushed to `main` in `https://github.com/grishapav1992/royal`. This applies to application releases, independent game modules, hotfixes, and rollbacks.

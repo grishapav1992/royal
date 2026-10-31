@@ -80,23 +80,30 @@ def tree_identity(path):
     return hashlib.sha256(json.dumps(rows, separators=(',', ':')).encode()).hexdigest()
 
 
-def deletion_candidates(keep, roots=ROOTS):
+def deletion_candidates(keep, roots=ROOTS, protected=()):
     keep = {Path(path) for path in keep}
+    protected = {Path(path) for path in protected}
     result = []
+    def visit(path):
+        if path in keep or path in protected or path.name.endswith('.lock'): return
+        if any(child.is_relative_to(path) for child in protected):
+            require(path.is_dir() and not path.is_symlink(), 'Protected backup parent changed')
+            for child in sorted(path.iterdir()): visit(child)
+            return
+        require(time.time() - path.lstat().st_mtime > 600, 'Recent history entry may be in use: ' + str(path))
+        result.append({'path': str(path), 'identity': tree_identity(path), 'allocatedBytes': allocated(path)})
     for root in roots:
         require(root.is_dir() and not root.is_symlink(), 'Unsafe history root')
         for path in sorted(root.iterdir()):
-            if path in keep or path.name.endswith('.lock'):
-                continue
             require(path.parent == root, 'Deletion escaped history root')
-            require(time.time() - path.lstat().st_mtime > 600, 'Recent history entry may be in use: ' + str(path))
-            result.append({'path': str(path), 'identity': tree_identity(path), 'allocatedBytes': allocated(path)})
+            visit(path)
     return result
 
 
 def remove_entry(row, keep, roots=ROOTS):
     path = Path(row['path'])
-    require(path.parent in roots and path not in {Path(p) for p in keep}, 'Deletion escaped approved scope')
+    require(any(path.is_relative_to(root) and path != root for root in roots)
+            and not any(path == Path(p) or path.is_relative_to(p) for p in keep), 'Deletion escaped approved scope')
     require(tree_identity(path) == row['identity'], 'History entry changed after review: ' + str(path))
     if path.is_symlink() or not path.is_dir():
         path.unlink()
@@ -108,7 +115,8 @@ def validate_selection(rows, keep, roots=ROOTS):
     require(len({row['path'] for row in rows}) == len(rows), 'Duplicate history entry')
     for row in rows:
         path = Path(row['path'])
-        require(path.parent in roots and path not in {Path(p) for p in keep}, 'Deletion escaped approved scope')
+        require(any(path.is_relative_to(root) and path != root for root in roots)
+                and not any(path == Path(p) or path.is_relative_to(p) for p in keep), 'Deletion escaped approved scope')
         require(tree_identity(path) == row['identity'], 'History entry changed since review: ' + str(path))
 
 
@@ -124,7 +132,8 @@ def modules():
 
 def service_identity(container):
     return {'id': container['Id'], 'image': container['Image'], 'started': container['State']['StartedAt'],
-            'mounts': sorted(container['Mounts'], key=lambda mount: mount['Destination'])}
+            'mounts': sorted(container['Mounts'], key=lambda mount: mount['Destination']),
+            **({'profileSha256': native_retention().runtime_fingerprint(container)} if 'Config' in container else {})}
 
 
 def persistent_services():
@@ -141,6 +150,16 @@ def validate_rollback_identity(current, image, before):
             and before['preparedProgram'] == before['program'], 'Rollback image is missing or ambiguous')
 
 
+def rollback_source_inventory(archive_path, before, changed):
+    with tarfile.open(archive_path) as archive:
+        members = archive.getmembers()
+        require(all(m.isfile() and not Path(m.name).is_absolute() and '..' not in Path(m.name).parts for m in members), 'Unexpected special source archive member')
+        recovered = {m.name: hashlib.sha256(archive.extractfile(m).read()).hexdigest() for m in members}
+    scoped = {name: digest for name, digest in before.items() if name in changed}
+    require(len(recovered) == len(members) and recovered in [before, scoped], 'Rollback archive is incomplete')
+    return recovered
+
+
 def healthy():
     container = docker_object('container', 'royal-game-1')
     require(container['State']['Status'] == 'running'
@@ -152,7 +171,7 @@ def healthy():
 
 
 def native_retention():
-    spec = importlib.util.spec_from_file_location('royal_retention', RETENTION / 'app-retention.py')
+    spec = importlib.util.spec_from_file_location('royal_retention', Path(__file__).with_name('retention-runtime.py'))
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
@@ -173,11 +192,7 @@ def recovery(release):
     require(sha(root / 'deploy.py') == manifest['helperSha256']
             and sha(root / 'snapshot.py') == manifest['snapshotSha256'], 'Recovery helpers changed')
     require(sha(backup / 'source.tgz') == built['sourceBackupSha256'], 'Rollback source archive checksum differs')
-    with tarfile.open(backup / 'source.tgz') as archive:
-        members = archive.getmembers()
-        require(all(m.isfile() for m in members), 'Unexpected special source archive member')
-        recovered = {m.name: hashlib.sha256(archive.extractfile(m).read()).hexdigest() for m in members}
-        require(len(recovered) == len(members) and recovered == before['source'], 'Rollback archive is incomplete')
+    recovered = rollback_source_inventory(backup / 'source.tgz', before['source'], manifest['changed'])
     require(sha(backup / 'index.html') == before['program']['dist/index.html'], 'Rollback client index differs')
     expected = {**before['source'], **manifest['changed']}
     require(all((LIVE / name).is_file() and sha(LIVE / name) == digest for name, digest in expected.items()),
@@ -186,23 +201,35 @@ def recovery(release):
     validate_rollback_identity(current, image, before)
     # Validate every rollback program byte in a transient container without network or mounts.
     node = "const f=require('fs'),p=require('path'),c=require('crypto'),o={};function walk(d){if(!f.existsSync(d))return;for(const n of f.readdirSync(d).sort()){const x=p.join(d,n),s=f.lstatSync(x);if(s.isSymbolicLink())throw Error('symlink');if(s.isDirectory())walk(x);else if(s.isFile())o[p.relative('/app',x)]=c.createHash('sha256').update(f.readFileSync(x)).digest('hex');}}walk('/app/dist');walk('/app/dist-server');walk('/app/module-dist');for(const n of ['package.json','package-lock.json'])o[n]=c.createHash('sha256').update(f.readFileSync('/app/'+n)).digest('hex');console.log(JSON.stringify(o))"
+    inventory = root / 'runtime-inventory.cjs'
+    if inventory.exists():
+        require(sha(inventory) == manifest.get('helpers', {}).get('runtime-inventory.cjs'), 'Runtime inventory helper differs')
+        node = inventory.read_text()
     program = json.loads(run(['docker', 'run', '--rm', '--network=none', '--read-only', '--entrypoint',
                               'node', image['Id'], '-e', node]))
     require(program == before['preparedProgram'] == before['program'], 'Rollback program bytes differ')
     current_program = json.loads(run(['docker', 'exec', 'royal-game-1', 'node', '-e', node]))
     require(current_program == built['program'], 'Running program differs from its verified release')
-    proofs = [{'path': str(path), 'sha256': sha(path)} for path in
-              [root / 'install-manifest.json', root / 'build-result.json', root / 'published.json',
-               root / 'deploy.py', root / 'snapshot.py', backup / 'source.tgz', backup / 'index.html']]
+    for name, digest in manifest.get('helpers', {}).items():
+        require(sha(root / name) == digest, 'Recovery helper changed: ' + name)
+    proof_paths = [root / name for name in ['install-manifest.json', 'build-result.json', 'published.json', 'deploy.py', 'snapshot.py']]
+    proof_paths += [backup / 'source.tgz', backup / 'index.html']
+    proof_paths += [p for p in root.rglob('*') if p.is_file() and not p.is_symlink() and p.suffix != '.log' and '__pycache__' not in p.parts]
+    proofs = [{'path': str(path), 'sha256': sha(path)} for path in sorted(set(proof_paths))]
     old_policy = read(RETENTION / 'policy.json')
-    policy = {**old_policy, 'authorization': 'User requested the current working application and one immediate rollback on 2026-10-22.',
+    containers = native_retention().container_rows()
+    periodic = {row['name']: {'image': row['image'], 'runtimeFingerprint': row['runtimeFingerprint']} for row in containers if row['name'] in PERIODIC}
+    policy = {**old_policy, 'environment': 'production', 'schema': 1,
+              'authorization': 'User requested automatic cleanup retaining the current application and one verified rollback on 2026-10-31.',
+              'periodicContainerFingerprints': periodic,
               'adoptedAt': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
               'managedDirectories': [str(root), str(backup)],
               'workingVersions': [
                   {'image': current['Image'], 'release': release, 'protectedDirectories': [str(root), str(backup)], 'requiredFiles': proofs},
                   {'image': image['Id'], 'release': 'rollback-before-' + release,
                    'protectedDirectories': [str(root), str(backup)], 'requiredFiles': proofs}]}
-    native_retention().runtime_guard(policy)
+    # Current periodic jobs may rotate while cleanup runs. Every image deletion
+    # still checks references from all containers immediately before removal.
     return {'release': release, 'sourceCommit': manifest['sourceCommit'], 'currentImage': current['Image'],
             'rollbackImage': image['Id'], 'keep': [str(root), str(backup)], 'proofs': proofs,
             'sourceFiles': len(recovered), 'rollbackProgramFiles': len(program),
@@ -213,11 +240,27 @@ def recovery(release):
 
 
 def image_candidates(protected):
-    ids = set(run(['docker', 'image', 'ls', '--filter', 'reference=royal-game:*', '-aq', '--no-trunc']).split())
+    # Exact IDs from release evidence avoid the slow global image index and never
+    # discover an unrelated image merely because it is old or untagged.
+    ids = set()
+    def collect(value):
+        if isinstance(value, dict):
+            for key, child in value.items():
+                if key in {'image', 'runningImage', 'preparedImage', 'gameImage'} and isinstance(child, str) and re.fullmatch(r'sha256:[a-f0-9]{64}', child): ids.add(child)
+                elif isinstance(child, (dict, list)): collect(child)
+        elif isinstance(value, list):
+            for child in value: collect(child)
+    for path in RELEASES.glob('*/*.json'):
+        if path.name in {'install-manifest.json', 'build-result.json', 'published.json', 'before.json'}:
+            try: collect(read(path))
+            except (OSError, ValueError): continue
     protected |= referenced_images()
     result = []
     candidates = sorted(ids - protected)
-    rows = json.loads(run(['docker', 'image', 'inspect', *candidates])) if candidates else []
+    rows = []
+    for identity in candidates:
+        value = native_retention().image_row(identity)
+        if value is not None: rows.append({'Id': value['id'], 'RepoTags': value['tags'], 'Created': value['created']})
     for row in rows:
         identity = row['Id']
         tags = row.get('RepoTags') or []
@@ -251,7 +294,7 @@ def apply(plan, state):
         require(all(current_images.get(row['id']) == row for row in plan['images']), 'Reviewed image changed since review')
     write(state / 'policy-before.json', read(RETENTION / 'policy.json'))
     # Rebind the existing timer before deleting the stale versions it used to protect.
-    native_retention().runtime_guard(plan['policy'])
+    verify(plan)
     write(RETENTION / 'policy.json', plan['policy'])
     removed = []
     for row in plan['entries']:
@@ -275,7 +318,7 @@ def apply(plan, state):
                 retained_images.append(row['id'])
         write(state / 'image-progress.json', {'removedTags': removed_tags, 'dockerRetainedImages': sorted(set(retained_images))})
     verify(plan)
-    native_retention().runtime_guard(read(RETENTION / 'policy.json'))
+    require(read(RETENTION / 'policy.json') == plan['policy'], 'Adopted policy changed')
     require(all(not Path(row['path']).exists() and not Path(row['path']).is_symlink()
                 for row in plan['entries']), 'Reviewed history entries remain')
     after = shutil.disk_usage(LIVE)
@@ -293,6 +336,53 @@ def apply(plan, state):
     return result
 
 
+def safe_history_candidates(keep):
+    """Preserve financial material, fresh work, and source without GitHub evidence."""
+    allow = Path('/opt/royal-maintenance/preserved-commits.json')
+    commits = set(read(allow)['commits']) if allow.exists() else set()
+    retained, protected = set(keep), set()
+    reasons = {}
+    for root in ROOTS:
+        for path in root.iterdir():
+            if str(path) in retained or path.name.endswith('.lock'): continue
+            release = RELEASES / path.name
+            metadata = []
+            for name in ['install-manifest.json', 'published.json', 'operator.json', 'release-github.json']:
+                file = release / name
+                if file.is_file() and not file.is_symlink():
+                    try: metadata.append(read(file))
+                    except (OSError, ValueError): pass
+            source = next((m.get('sourceCommit') for m in metadata if m.get('sourceCommit')), None)
+            receipt = next((m for m in metadata if m.get('format') == 1 and m.get('sourceCommit') == source and re.fullmatch('[a-f0-9]{40}', str(m.get('remoteMain', '')))), None)
+            pending = (release / 'build-result.json').exists() and not any((release / n).exists() for n in ['published.json', 'recovered.json'])
+            if (time.time() - path.lstat().st_mtime < 3600 or pending
+                    or not source or source not in commits and receipt is None):
+                retained.add(str(path)); reasons[str(path)] = 'fresh, pending, or source not verified in GitHub'; continue
+            if path.is_symlink(): continue
+            if not path.is_dir():
+                retained.add(str(path)); reasons[str(path)] = 'unclassified history entry'; continue
+            for item in path.rglob('*'):
+                if item.is_symlink(): continue
+                lower = item.name.lower()
+                sensitive = (lower.endswith(('.dump', '.sql', '.db', '.sqlite', '.sqlite3', '.key', '.pem', '.age'))
+                             or lower.startswith('.env') or any(n in lower for n in ['financial', 'database-backup', 'private-config', 'credential', 'secret']))
+                if sensitive: protected.add(item)
+                elif item.is_file() and lower.endswith(('.tgz', '.tar.gz', '.tar', '.zip')):
+                    if not native_retention().safe_archive(item): protected.add(item)
+    rows = deletion_candidates(retained, protected=protected)
+    return rows, sorted(retained), sorted(str(p) for p in protected), reasons
+
+
+def prepare_plan(release, skip_images=False):
+    value = recovery(release)
+    rows, retained, financial, reasons = safe_history_candidates(value['keep'])
+    value.update({'entries': rows, 'keep': sorted(set(value['keep']) | set(retained) | set(financial)),
+                  'preservedFinancialFiles': financial, 'retainedHistoryReasons': reasons,
+                  'images': [] if skip_images else image_candidates({value['currentImage'], value['rollbackImage']}),
+                  'skipImageCleanup': skip_images, 'freeBefore': shutil.disk_usage(LIVE).free})
+    return value
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('operation', choices=['plan', 'apply'])
@@ -300,26 +390,30 @@ def main():
     parser.add_argument('--state', required=True)
     parser.add_argument('--plan-sha256')
     parser.add_argument('--skip-image-cleanup', action='store_true')
+    parser.add_argument('--wait-seconds', type=int, default=0)
     args = parser.parse_args()
     require(os.geteuid() == 0, 'Run as the deployment operator')
     require(re.fullmatch('[a-z0-9][a-zA-Z0-9_.-]{0,79}', args.release), 'Invalid release identity')
     state = Path(args.state)
     require(state.parent == Path('/opt/royal-maintenance') and not state.is_symlink(), 'Invalid audit directory')
     state.mkdir(mode=0o700, parents=True, exist_ok=True)
-    locks = []
-    for path in [LIVE / '.client-presentation-deploy.lock', MODULE_STATE / 'module.lock']:
-        require(not path.is_symlink(), 'Deployment lock symlink')
-        lock = path.open('a')
-        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        locks.append(lock)
+    deadline = time.monotonic() + max(0, args.wait_seconds)
+    while True:
+        locks = []
+        try:
+            for path in [RELEASES / 'themed-publish.lock', LIVE / '.client-presentation-deploy.lock', MODULE_STATE / 'module.lock']:
+                require(not path.is_symlink(), 'Deployment lock symlink')
+                lock = path.open('a'); locks.append(lock)
+                fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            break
+        except BlockingIOError:
+            for lock in reversed(locks): lock.close()
+            if time.monotonic() >= deadline: raise
+            time.sleep(min(5, max(0, deadline-time.monotonic())))
     plan_path = state / 'plan.json'
     if args.operation == 'plan':
         require(not plan_path.exists(), 'Review plan already exists')
-        value = recovery(args.release)
-        value.update({'entries': deletion_candidates(value['keep']),
-                      'images': [] if args.skip_image_cleanup else image_candidates({value['currentImage'], value['rollbackImage']}),
-                      'skipImageCleanup': args.skip_image_cleanup,
-                      'freeBefore': shutil.disk_usage(LIVE).free})
+        value = prepare_plan(args.release, args.skip_image_cleanup)
         write(plan_path, value)
         print(json.dumps({'readOnly': True, 'release': args.release, 'keep': value['keep'],
                           'oldHistoryEntries': len(value['entries']), 'oldImages': len(value['images']),

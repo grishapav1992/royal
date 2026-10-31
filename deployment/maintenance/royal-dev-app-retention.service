@@ -1,0 +1,15 @@
+[Unit]
+Description=Retain the verified Royal application and one rollback
+After=docker.service
+Requires=docker.service
+StartLimitIntervalSec=0
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/royal-maintenance/bin/automatic-retention.py
+Restart=on-failure
+RestartSec=5min
+TimeoutStartSec=45min
+Nice=15
+IOSchedulingClass=idle
+UMask=0077
