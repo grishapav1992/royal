@@ -110,5 +110,36 @@ class AutomaticRetentionTest(unittest.TestCase):
             self.assertEqual(code,1);self.assertEqual(result['status'],'error')
             self.assertIn('five GiB',result['reason'])
 
+    def test_oci_metadata_is_hash_verified_without_size_inspection(self):
+        runtime=cleanup.native_retention()
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp)
+            def blob(value):
+                raw=json.dumps(value).encode();digest=hashlib.sha256(raw).hexdigest();(root/digest).write_bytes(raw);return 'sha256:'+digest
+            config=blob({'created':'2026-10-31','config':{'Labels':{'source':'verified'}}})
+            image=blob({'schemaVersion':2,'config':{'digest':config},'layers':[]})
+            with patch.object(runtime,'CONTENT',root),patch.object(runtime,'run',return_value='docker.io/library/royal-game:latest\n') as run:
+                metadata=runtime.image_metadata(image)
+                self.assertEqual(metadata['Id'],image);self.assertEqual(metadata['RepoTags'],['royal-game:latest'])
+                self.assertNotIn('docker',run.call_args.args[0])
+                (root/config.split(':')[1]).write_text('tampered')
+                with self.assertRaisesRegex(RuntimeError,'checksum'):runtime.image_metadata(image)
+
+    def test_hash_verification_container_has_no_network_or_volume_and_is_removed(self):
+        runtime=cleanup.native_retention();calls=[];owner=[];identity='a'*64
+        def engine(method,path,body=None,timeout=180):
+            calls.append((method,path,body))
+            if path.startswith('/containers/create'):
+                owner.append(body['Labels']['royal.retention.verify']);return json.dumps({'Id':identity}).encode()
+            if '/wait?' in path:return b'{"StatusCode":0}'
+            if '/logs?' in path:
+                raw=b'{"file":"hash"}';return b'\x01\0\0\0'+len(raw).to_bytes(4,'big')+raw
+            if path.endswith('/json'):return json.dumps({'Config':{'Labels':{'royal.retention.verify':owner[0]}},'State':{'Running':False}}).encode()
+            return b''
+        with patch.object(runtime,'image_metadata',return_value={'verified':True}),patch.object(runtime,'engine',side_effect=engine):
+            self.assertEqual(runtime.verify_program('sha256:'+'b'*64,'hash-only'),{'file':'hash'})
+        host=calls[0][2]['HostConfig'];self.assertTrue(host['ReadonlyRootfs']);self.assertEqual(host['NetworkMode'],'none')
+        self.assertNotIn('Binds',host);self.assertEqual(calls[-1][:2],('DELETE','/containers/'+identity))
+
 
 if __name__ == '__main__': unittest.main()

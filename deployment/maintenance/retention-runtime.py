@@ -10,6 +10,9 @@ import re
 import stat
 import subprocess
 import tarfile
+import http.client
+import socket
+import uuid
 from pathlib import Path, PurePosixPath
 
 LIVE = Path('/opt/royal')
@@ -21,6 +24,7 @@ BLOCKED_SUFFIXES = ('.db', '.sqlite', '.sqlite3', '.dump', '.sql', '.wal', '.shm
 ARCHIVES = ('.tar', '.tgz', '.tar.gz', '.tar.xz', '.tar.bz2')
 CODE_SUFFIXES = ('.ts', '.tsx', '.js', '.mjs', '.cjs', '.go', '.rs', '.py', '.md')
 PERIODIC_NAMES = {'/royal-nile-account-views-once', '/royal-nile-reconcile-once'}
+CONTENT = Path('/var/lib/containerd/io.containerd.content.v1.content/blobs/sha256')
 
 
 def require(condition, message):
@@ -34,6 +38,72 @@ def now():
 
 def run(args):
     return subprocess.check_output(args, text=True, stderr=subprocess.PIPE, timeout=90).strip()
+
+
+def image_metadata(identity):
+    """Read immutable OCI metadata without asking Docker to calculate layer sizes."""
+    require(IMAGE_RE.fullmatch(identity or ''), 'Exact image ID required')
+    refs = run(['ctr', '--timeout', '20s', '--namespace', 'moby', 'images', 'ls', '--quiet', 'target.digest==' + identity]).splitlines()
+    if not refs: return None
+    def blob(digest):
+        require(IMAGE_RE.fullmatch(digest), 'Unsafe content digest')
+        path = CONTENT / digest.split(':')[1]
+        require(path.is_file() and not path.is_symlink() and path.stat().st_size <= 4*1024**2, 'Invalid image metadata blob')
+        data = path.read_bytes()
+        require('sha256:' + hashlib.sha256(data).hexdigest() == digest, 'Image metadata checksum differs')
+        return json.loads(data)
+    manifest = blob(identity)
+    if 'manifests' in manifest:
+        architecture = {'x86_64': 'amd64', 'aarch64': 'arm64'}.get(os.uname().machine, os.uname().machine)
+        choices = [x for x in manifest['manifests'] if x.get('platform', {}).get('os') == 'linux' and x.get('platform', {}).get('architecture') == architecture]
+        require(len(choices) == 1, 'Ambiguous image platform')
+        manifest = blob(choices[0]['digest'])
+    require(manifest.get('schemaVersion') == 2 and manifest.get('config'), 'Unsupported image manifest')
+    config = blob(manifest['config']['digest'])
+    tags = sorted(ref.removeprefix('docker.io/library/') for ref in refs if '@' not in ref)
+    return {'Id': identity, 'RepoTags': tags, 'Created': config['created'], 'Config': config['config']}
+
+
+def engine(method, path, body=None, timeout=180):
+    class UnixConnection(http.client.HTTPConnection):
+        def connect(self):
+            self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            self.sock.settimeout(self.timeout); self.sock.connect('/var/run/docker.sock')
+    connection = UnixConnection('localhost', timeout=timeout)
+    try:
+        connection.request(method, path, json.dumps(body).encode() if body is not None else None, {'Content-Type':'application/json'})
+        response = connection.getresponse(); data = response.read()
+        require(response.status in {200,201,204,304}, 'Docker engine request failed: ' + method + ' ' + path + ': ' + str(response.status))
+        return data
+    finally: connection.close()
+
+
+def verify_program(image, program):
+    """Run only the hash reader, with no network, volumes, or writable root."""
+    require(image_metadata(image) is not None, 'Verification image is missing')
+    owner = uuid.uuid4().hex
+    config = {'Image':image, 'Entrypoint':['node'], 'Cmd':['-e',program], 'Labels':{'royal.retention.verify':owner},
+              'HostConfig':{'NetworkMode':'none','ReadonlyRootfs':True,'Memory':512*1024**2,'NanoCpus':500000000,
+                            'PidsLimit':64,'CapDrop':['ALL'],'SecurityOpt':['no-new-privileges=true']}}
+    created = json.loads(engine('POST','/containers/create?name=royal-retention-check-'+owner,config)); identity = created['Id']
+    require(re.fullmatch('[a-f0-9]{64}',identity), 'Unexpected verification container ID')
+    path = '/containers/' + identity
+    try:
+        engine('POST',path+'/start')
+        waited = json.loads(engine('POST',path+'/wait?condition=not-running',timeout=240))
+        require(waited['StatusCode'] == 0, 'Read-only program verification failed')
+        raw = engine('GET',path+'/logs?stdout=1&stderr=1')
+        output = bytearray()
+        while raw:
+            require(len(raw)>=8 and raw[0] in {1,2} and raw[1:4]==b'\0\0\0', 'Malformed verification output')
+            length = int.from_bytes(raw[4:8],'big'); require(len(raw)>=8+length,'Truncated verification output')
+            output.extend(raw[8:8+length]); raw=raw[8+length:]
+        return json.loads(output)
+    finally:
+        state = json.loads(engine('GET',path+'/json'))
+        require(state['Config'].get('Labels',{}).get('royal.retention.verify')==owner, 'Verification container ownership changed')
+        if state['State']['Running']: engine('POST',path+'/stop?t=5')
+        engine('DELETE',path)
 
 
 def sha(path):
@@ -126,14 +196,8 @@ def image_rows():
 
 def image_row(image_id):
     require(IMAGE_RE.fullmatch(image_id or ''), 'Exact image ID is required')
-    try:
-        raw = json.loads(run(['docker', 'image', 'inspect', image_id]))
-    except subprocess.CalledProcessError as error:
-        missing = re.fullmatch(r'(?i:Error:|Error response from daemon:) (?i:No such image:) ' + re.escape(image_id), str(error.stderr or '').strip())
-        require(error.returncode == 1 and missing is not None, 'Unexpected exact image inspect failure')
-        return None
-    require(isinstance(raw, list) and len(raw) == 1 and raw[0].get('Id') == image_id, 'Inspected exact image identity mismatch')
-    value = raw[0]
+    value = image_metadata(image_id)
+    if value is None: return None
     tags = value.get('RepoTags') or []
     require(isinstance(tags, list) and all(isinstance(tag, str) for tag in tags)
             and isinstance(value.get('Created'), str), 'Malformed exact image metadata')

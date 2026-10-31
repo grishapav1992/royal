@@ -58,6 +58,10 @@ def write(path, value):
 
 
 def docker_object(kind, identity):
+    if kind == 'image':
+        value = native_retention().image_metadata(identity)
+        require(value is not None, 'Exact image is missing: ' + identity)
+        return value
     return json.loads(run(['docker', kind, 'inspect', identity]))[0]
 
 
@@ -186,7 +190,7 @@ def recovery(release):
     current = healthy()
     require(manifest['release'] == release and published.get('published') is True, 'Release is not published')
     require(current['Image'] == built['image'] == published['runningImage'], 'A different release is running')
-    require(docker_object('image', 'royal-game:latest')['Id'] == current['Image'], 'Prepared image differs')
+    require('royal-game:latest' in docker_object('image', current['Image'])['RepoTags'], 'Prepared image differs')
     require(docker_object('image', current['Image'])['Config']['Labels']['org.opencontainers.image.revision']
             == manifest['sourceCommit'], 'Running source revision differs')
     require(sha(root / 'deploy.py') == manifest['helperSha256']
@@ -205,8 +209,7 @@ def recovery(release):
     if inventory.exists():
         require(sha(inventory) == manifest.get('helpers', {}).get('runtime-inventory.cjs'), 'Runtime inventory helper differs')
         node = inventory.read_text()
-    program = json.loads(run(['docker', 'run', '--rm', '--network=none', '--read-only', '--entrypoint',
-                              'node', image['Id'], '-e', node]))
+    program = native_retention().verify_program(image['Id'], node)
     require(program == before['preparedProgram'] == before['program'], 'Rollback program bytes differ')
     current_program = json.loads(run(['docker', 'exec', 'royal-game-1', 'node', '-e', node]))
     require(current_program == built['program'], 'Running program differs from its verified release')
