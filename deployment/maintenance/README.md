@@ -21,6 +21,13 @@ Image candidates come from exact IDs recorded in release evidence, and every tag
 is rechecked against all container references before removal. The slow global image
 index is not required. No image is forced and no data volume is deleted.
 
+Compact source evidence and exact image IDs survive partial cleanup in separate
+ledgers. Historical source archive hashes can be reconciled from committed public
+verification records. Shared source files are checked by content, so removing one
+hardlink cannot invalidate its unchanged siblings. A ten-minute staging grace,
+all publication locks, active-process detection and a 24-hour pending-build grace
+protect ongoing work. Financial backups retain their own policy.
+
 OCI manifests and configuration blobs are read with digest verification. Quiet
 containerd reference queries avoid size traversal, as implemented in its
 [image listing](https://github.com/containerd/containerd/blob/main/cmd/ctr/commands/images/images.go).

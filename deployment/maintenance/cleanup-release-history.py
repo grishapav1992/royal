@@ -22,6 +22,8 @@ RETENTION = Path('/opt/royal-dev-app-retention')
 MODULES = Path('/opt/royal-game-modules')
 MODULE_STATE = Path('/opt/royal-game-modules-state')
 IMAGE_LEDGER = Path('/opt/royal-maintenance/known-release-images.json')
+HISTORY_LEDGER = Path('/opt/royal-maintenance/known-release-history.json')
+PRESERVED_COMMITS = Path('/opt/royal-maintenance/preserved-commits.json')
 PERIODIC = {'/royal-nile-account-views-once', '/royal-nile-reconcile-once'}
 
 
@@ -453,7 +455,7 @@ def apply(plan, state):
 
 def verified_program_archive(path, metadata):
     """Published source-archive digests attest the installer's complete source check."""
-    if path.name not in {'source.tgz', 'source.tar.gz', 'source.tar'}: return False
+    if path.name not in {'source.tgz', 'source.tar.gz', 'source.tar', 'source-delta.tgz', 'game-source.tgz', 'game-source.tar.gz'}: return False
     expected = set()
     for row in metadata:
         value = row.get('sourceBackupSha256')
@@ -484,8 +486,13 @@ def pending_is_active(release, metadata, active, references, age):
 
 def safe_history_candidates(keep, extra_protected=()):
     """Preserve financial material, fresh work, and source without GitHub evidence."""
-    allow = Path('/opt/royal-maintenance/preserved-commits.json')
+    allow = PRESERVED_COMMITS
     commits = set(read(allow)['commits']) if allow.exists() else set()
+    require(not HISTORY_LEDGER.is_symlink(), 'Unsafe history evidence ledger')
+    ledger = read(HISTORY_LEDGER) if HISTORY_LEDGER.exists() else {'format':1,'releases':{}}
+    require(ledger.get('format') == 1 and isinstance(ledger.get('releases'),dict)
+            and all(re.fullmatch('[a-zA-Z0-9_.-]+',name) and isinstance(rows,list)
+                    and all(isinstance(row,dict) for row in rows) for name,rows in ledger['releases'].items()), 'Invalid history evidence ledger')
     retained, protected = set(keep), {Path(p) for p in extra_protected}
     reasons = {}
     active = active_release_paths()
@@ -500,11 +507,20 @@ def safe_history_candidates(keep, extra_protected=()):
                 if file.is_file() and not file.is_symlink():
                     try: metadata.append(read(file))
                     except (OSError, ValueError): pass
+            metadata += ledger['releases'].get(path.name,[])
             source = next((m.get('sourceCommit') for m in metadata if m.get('sourceCommit')), None)
             receipt = next((m for m in metadata if m.get('format') == 1 and m.get('sourceCommit') == source and re.fullmatch('[a-f0-9]{40}', str(m.get('remoteMain', '')))), None)
+            if source and (source in commits or receipt is not None):
+                compact = []
+                for item in metadata:
+                    row = {k:item[k] for k in ['sourceCommit','sourceBackupSha256','image','format','remoteMain'] if k in item}
+                    if isinstance(item.get('backup'),dict):
+                        row['backup'] = {k:v for k,v in item['backup'].items() if k in ['sha256','sourceSha256','sourceArchiveSha256']}
+                    if row and row not in compact: compact.append(row)
+                ledger['releases'][path.name] = compact
             age = time.time() - path.lstat().st_mtime
             pending = pending_is_active(release,metadata,active,references,age)
-            if (age < 3600 or str(release) in active or pending
+            if (age < 600 or str(release) in active or pending
                     or not source or source not in commits and receipt is None):
                 retained.add(str(path)); reasons[str(path)] = 'fresh, pending, or source not verified in GitHub'; continue
             if path.is_symlink(): continue
@@ -518,6 +534,9 @@ def safe_history_candidates(keep, extra_protected=()):
                 if sensitive: protected.add(item)
                 elif item.is_file() and lower.endswith(('.tgz', '.tar.gz', '.tar', '.zip')):
                     if not verified_program_archive(item,metadata): protected.add(item)
+    # Release descriptions may be removed before their backup files. Preserve
+    # compact source evidence so an interrupted run can finish on its next pass.
+    write(HISTORY_LEDGER, ledger)
     rows = deletion_candidates(retained, protected=protected)
     return rows, sorted(retained), sorted(str(p) for p in protected), reasons
 
