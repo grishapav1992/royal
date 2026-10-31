@@ -158,5 +158,14 @@ class AutomaticRetentionTest(unittest.TestCase):
                 self.assertIsNone(cleanup.module_source_proof('server/index.ts',digest))
                 active.write_text('{}');self.assertIsNone(cleanup.module_source_proof(name,digest))
 
+    def test_only_hash_attested_program_archives_are_retired(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path=Path(temp)/'source.tgz';path.write_bytes(b'previously verified program archive')
+            proof={'sourceBackupSha256':cleanup.sha(path)}
+            self.assertTrue(cleanup.verified_program_archive(path,[proof]))
+            path.write_bytes(b'changed after publication');self.assertFalse(cleanup.verified_program_archive(path,[proof]))
+            financial=Path(temp)/'wallet.tgz';financial.write_bytes(b'financial archive')
+            self.assertFalse(cleanup.verified_program_archive(financial,[{'sourceBackupSha256':cleanup.sha(financial)}]))
+
 
 if __name__ == '__main__': unittest.main()

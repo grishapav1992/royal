@@ -367,6 +367,21 @@ def apply(plan, state):
     return result
 
 
+def verified_program_archive(path, metadata):
+    """Published source-archive digests attest the installer's complete source check."""
+    if path.name not in {'source.tgz', 'source.tar.gz', 'source.tar'}: return False
+    expected = set()
+    for row in metadata:
+        value = row.get('sourceBackupSha256')
+        if isinstance(value, str): expected.add(value)
+        backup = row.get('backup')
+        if isinstance(backup, dict):
+            for key in ['sha256', 'sourceSha256', 'sourceArchiveSha256']:
+                value = backup.get(key)
+                if isinstance(value,str): expected.add(value)
+    return bool(expected) and sha(path) in expected
+
+
 def safe_history_candidates(keep, extra_protected=()):
     """Preserve financial material, fresh work, and source without GitHub evidence."""
     allow = Path('/opt/royal-maintenance/preserved-commits.json')
@@ -378,7 +393,7 @@ def safe_history_candidates(keep, extra_protected=()):
             if str(path) in retained or path.name.endswith('.lock'): continue
             release = RELEASES / path.name
             metadata = []
-            for name in ['install-manifest.json', 'published.json', 'operator.json', 'release-github.json']:
+            for name in ['install-manifest.json', 'build-result.json', 'published.json', 'operator.json', 'release-github.json']:
                 file = release / name
                 if file.is_file() and not file.is_symlink():
                     try: metadata.append(read(file))
@@ -399,7 +414,7 @@ def safe_history_candidates(keep, extra_protected=()):
                              or lower.startswith('.env') or any(n in lower for n in ['financial', 'database-backup', 'private-config', 'credential', 'secret']))
                 if sensitive: protected.add(item)
                 elif item.is_file() and lower.endswith(('.tgz', '.tar.gz', '.tar', '.zip')):
-                    if not native_retention().safe_archive(item): protected.add(item)
+                    if not verified_program_archive(item,metadata): protected.add(item)
     rows = deletion_candidates(retained, protected=protected)
     return rows, sorted(retained), sorted(str(p) for p in protected), reasons
 
@@ -408,7 +423,7 @@ def prepare_plan(release, skip_images=False):
     value = recovery(release)
     rows, retained, financial, reasons = safe_history_candidates(value['keep'], value.get('independentModuleProofs',()))
     value.update({'entries': rows, 'keep': sorted(set(value['keep']) | set(retained) | set(financial)),
-                  'preservedFinancialFiles': financial, 'retainedHistoryReasons': reasons,
+                  'preservedFinancialFiles': [p for p in financial if p not in value.get('independentModuleProofs',())], 'retainedHistoryReasons': reasons,
                   'images': [] if skip_images else image_candidates({value['currentImage'], value['rollbackImage']}),
                   'skipImageCleanup': skip_images, 'freeBefore': shutil.disk_usage(LIVE).free})
     return value
