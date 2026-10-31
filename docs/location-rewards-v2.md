@@ -1,5 +1,7 @@
 # Level rewards v2
 
+Published on 31 October 2026 from application source `591461b5350f5c164e69fe14476c5b912b3bd2da`. The running and prepared image is `sha256:242c1853dd957dee894badcb66ca33be8b3c7e87faa93be43a597b38be7f842e`. Current production evidence is recorded in deployment/SERVER.md.
+
 User choice: one free atelier generation at every fifth level, starting at level 5. A generation creates two candidates and grants permanent ownership of one selected skin. The live wallet remains VIRTUAL_USD. XP sources, coefficients and all 100 thresholds are unchanged.
 
 | Level | Spins | Nominal | Skin generations |
@@ -25,4 +27,4 @@ Full redemption awards 260 spins, nominal total 4832.50, exact expected slot pay
 
 Coins/Fruits qualification includes all old issued denominations as well as the expanded v2 denominations. Paid stakes, distributions and multipliers do not change. Qualification is regenerated with the normal command, not by editing proofs.
 
-Implementation checks: 77 PostgreSQL/server/client/math/atelier tests and four real-host browser scenarios passed. Browser verification uses disposable local accounts and a fixture image provider; it makes no paid external image requests. The new scenario recovers an accepted free generation after a lost reply and reload, verifies unchanged cash and XP, selects one skin, and checks the mobile layout. Production publication and exact built artifact binding remain separate release requirements.
+Implementation checks: 77 PostgreSQL/server/client/math/atelier tests, 23 additional wallet/PvP/auth/appearance compatibility tests and four real-host browser scenarios passed. Browser verification uses disposable local accounts and a fixture image provider; it makes no paid external image requests. The new scenario recovers an accepted free generation after a lost reply and reload, verifies unchanged cash and XP, selects one skin, and checks the mobile layout. The final official artifact matches the tested host/backend bytes exactly. Public verification passed for three client files, ten guest API boundaries and desktop/mobile guest layouts. A read-only production audit confirmed all eleven feature tables, both immutable policy hashes, retained activation and valid XP/reward/use accounting. No production accounts, stakes, messages or image requests were created during these checks.
