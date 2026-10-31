@@ -153,7 +153,8 @@
     "financeTypescript": true,
     "rtpProfiles": 25,
     "legacyUnchangedNotQualified": 114,
-    "exactProjectedModuleBrowser": 6
+    "exactProjectedModuleBrowser": 6,
+    "snapshotInventory": 5
   },
   "knownPreExistingFailure": {
     "test": "server-tests/appearance.test.ts",
@@ -175,7 +176,15 @@
   "publication": {
     "complete": false,
     "hostInstalled": false,
-    "modulesInstalled": false
+    "modulesInstalled": false,
+    "firstBuildAttempt": {
+      "sourceCommit": "9a0987324b26c31bb42e84ab73e959b3dfcb07b0",
+      "pid": 3233020,
+      "state": "failed",
+      "reason": "Docker inspect lost an unprotected short-lived container; stopped before source, runtime or backup changes",
+      "buildResultCreated": false,
+      "backupCreated": false
+    }
   },
   "storageCleanup": {
     "serverFirstImage": {

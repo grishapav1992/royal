@@ -127,15 +127,40 @@ def protected_programs(before):
     return result
 
 
+def stable_docker_rows(before):
+    """Inspect retained services together; disappearing unknown jobs cannot hide a protected service."""
+    identifiers = run(['docker', 'ps', '--no-trunc', '-q']).splitlines()
+    require(identifiers, 'Cannot establish persistent service inventory')
+    protected = {row['id'] for row in before['services'].values()}
+    retained = [name for name in identifiers if name in protected]
+    try:
+        rows = json.loads(run(['docker', 'inspect', *retained])) if retained else []
+        require(isinstance(rows, list) and {row['Id'] for row in rows} == set(retained), 'Retained service inventory is incomplete')
+    except subprocess.CalledProcessError as error:
+        raise RuntimeError('A retained service changed or its inspection is uncertain') from error
+    for identifier in identifiers:
+        if identifier in protected:
+            continue
+        try:
+            extra = json.loads(run(['docker', 'inspect', identifier]))
+            require(isinstance(extra, list) and len(extra) == 1 and extra[0]['Id'] == identifier, 'Additional service inventory is incomplete')
+            rows.extend(extra)
+        except subprocess.CalledProcessError as error:
+            messages = (error.stderr or '').strip().lower().splitlines()
+            missing = error.returncode == 1 and messages and all(message in [
+                'error: no such object: ' + identifier,
+                'error response from daemon: no such container: ' + identifier,
+            ] for message in messages)
+            require(missing and identifier not in run(['docker', 'ps', '--no-trunc', '-q']).splitlines(),
+                    'Additional Docker service inspection is uncertain')
+    return rows
+
+
 def snapshot(recovery=False):
     manifest = json.loads((ROOT / 'install-manifest.json').read_text())
     before = manifest['before']
     game = inspect_game(recovery)
-    identifiers = run(['docker', 'ps', '--no-trunc', '-q']).splitlines()
-    require(identifiers, 'Cannot establish persistent service inventory')
-    try: rows = json.loads(run(['docker', 'inspect', *identifiers]))
-    except subprocess.CalledProcessError as error:
-        raise RuntimeError('Docker inventory changed or is uncertain; obtain a new snapshot') from error
+    rows = stable_docker_rows(before)
     consistent_game_inspection(game, rows, recovery)
     services, profiles = {}, {}
     for row in rows:
