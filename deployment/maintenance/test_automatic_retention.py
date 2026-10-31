@@ -167,6 +167,8 @@ class AutomaticRetentionTest(unittest.TestCase):
             path=Path(temp)/'source.tgz';path.write_bytes(b'previously verified program archive')
             proof={'sourceBackupSha256':cleanup.sha(path)}
             self.assertTrue(cleanup.verified_program_archive(path,[proof]))
+            delta=Path(temp)/'source-delta.tgz';delta.write_bytes(path.read_bytes())
+            self.assertTrue(cleanup.verified_program_archive(delta,[proof]))
             path.write_bytes(b'changed after publication');self.assertFalse(cleanup.verified_program_archive(path,[proof]))
             financial=Path(temp)/'wallet.tgz';financial.write_bytes(b'financial archive')
             self.assertFalse(cleanup.verified_program_archive(financial,[{'sourceBackupSha256':cleanup.sha(financial)}]))
@@ -203,6 +205,30 @@ class AutomaticRetentionTest(unittest.TestCase):
             {'Name':'/old-stopped','State':{'Status':'exited'}}]
         with patch.object(cleanup,'native_retention',return_value=helper),patch.object(cleanup,'service_identity',return_value={'stable':True}):
             self.assertEqual(cleanup.persistent_services(),{'/royal-game-1':{'stable':True}})
+
+    def test_history_evidence_survives_release_directory_removal(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp); releases=root/'releases'; backups=root/'backups'; releases.mkdir();backups.mkdir()
+            release=releases/'old'; backup=backups/'old';release.mkdir();backup.mkdir()
+            archive=backup/'source.tgz';archive.write_bytes(b'verified program archive')
+            financial=backup/'game-wallet.dump';financial.write_bytes(b'player data')
+            source='a'*40
+            (release/'build-result.json').write_text(json.dumps({'sourceCommit':source,'sourceBackupSha256':cleanup.sha(archive),'program':{'private-irrelevant-map':'not copied'}}))
+            (release/'published.json').write_text(json.dumps({'published':True,'sourceCommit':source}))
+            allow=root/'commits.json';allow.write_text(json.dumps({'commits':[source]}))
+            for p in [release,backup,archive,financial]:os.utime(p,(time.time()-7200,)*2)
+            original_candidates=cleanup.deletion_candidates
+            with patch.object(cleanup,'RELEASES',releases),patch.object(cleanup,'BACKUPS',backups),patch.object(cleanup,'ROOTS',(releases,backups)),patch.object(cleanup,'PRESERVED_COMMITS',allow),patch.object(cleanup,'HISTORY_LEDGER',root/'history.json'),patch.object(cleanup,'active_release_paths',return_value=set()),patch.object(cleanup,'referenced_images',return_value=set()),patch.object(cleanup,'deletion_candidates',wraps=lambda keep,protected:original_candidates(keep,(releases,backups),protected)):
+                first,_,_,_=cleanup.safe_history_candidates([])
+                release_row=next(r for r in first if r['path']==str(release))
+                cleanup.remove_entry(release_row,[],(releases,backups))
+                os.utime(backup,(time.time()-300,)*2)
+                fresh,_,_,_=cleanup.safe_history_candidates([])
+                self.assertNotIn(str(archive),[r['path'] for r in fresh])
+                os.utime(backup,(time.time()-7200,)*2)
+                resumed,_,_,_=cleanup.safe_history_candidates([])
+            self.assertIn(str(archive),[r['path'] for r in resumed]);self.assertTrue(financial.exists())
+            self.assertNotIn('private-irrelevant-map',(root/'history.json').read_text())
 
 
 if __name__ == '__main__': unittest.main()
