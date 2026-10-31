@@ -1,6 +1,6 @@
 {
   "release": "cascade-size-20261031-v1",
-  "state": "published-publicly-verified-maintenance-running",
+  "state": "published-and-verified",
   "sourceCommit": "6399b54b0e4975e7741bb7a50e87d4f10cf5aa90",
   "productionBase": "fb599494fbee9accff92c8a30126a071ebcceb5c",
   "published": {
@@ -645,13 +645,151 @@
     "directLaunchAndNewRoundHandlersUnchanged": true
   },
   "maintenance": {
-    "state": "running",
+    "status": "completed",
+    "reason": null,
+    "startedAt": 1793477778.8253987,
+    "finishedAt": 1793478573.7435849,
+    "durationSeconds": 794.92,
+    "freeBefore": 12524154880,
+    "freeAfter": 12524863488,
+    "healthOk": true,
+    "containersUnchanged": true,
+    "release": "remove-reward-games-catalog-20261031-v1",
+    "sourceCommit": "fb599494fbee9accff92c8a30126a071ebcceb5c",
+    "currentImage": "sha256:06da11bea5d5b8c1c167339ff12a32952c67dcad85eb1293f56aa4b939e47bb8",
+    "rollbackImage": "sha256:0f78302cdea4a5ba2da5c291655dea3d4144f4402da5004bc974c0a64d78604b",
+    "removedEntries": 0,
+    "removedImageTags": 0,
     "installedSource": "6399b54b0e4975e7741bb7a50e87d4f10cf5aa90",
-    "timer": "enabled"
+    "timer": "enabled",
+    "sequenceCompleted": true
   },
   "notes": [
     "Production guest checks created no accounts, rounds or messages.",
     "Desktop and mobile browser sizes were verified; physical devices were not used.",
     "No production database or persistent volume was changed."
-  ]
+  ],
+  "finalHealth": "healthy",
+  "cleanup": {
+    "server": {
+      "removed": [
+        {
+          "path": "/opt/royal-releases/cascade-size-20261031-v1/packages",
+          "bytes": 18712112
+        },
+        {
+          "path": "/opt/royal-releases/cascade-size-20261031-v1/source",
+          "bytes": 10451
+        },
+        {
+          "path": "/opt/royal-releases/cascade-size-20261031-v1/__pycache__",
+          "bytes": 20342
+        },
+        {
+          "path": "/opt/royal-releases/cascade-size-20261031-v1/before.json",
+          "bytes": 3286798
+        },
+        {
+          "path": "/opt/royal-releases/cascade-size-20261031-v1/after.json",
+          "bytes": 3404882
+        },
+        {
+          "path": "/opt/royal-releases/cascade-size-20261031-v1/publisher.py",
+          "bytes": 10767
+        },
+        {
+          "path": "/opt/royal-releases/cascade-size-20261031-v1/publish.py",
+          "bytes": 9161
+        },
+        {
+          "path": "/opt/royal-releases/cascade-size-20261031-v1/backup.json",
+          "bytes": 622
+        },
+        {
+          "path": "/opt/royal-releases/cascade-size-20261031-v1/run.log",
+          "bytes": 595
+        },
+        {
+          "path": "/opt/royal-releases/cascade-size-20261031-v1/run.pid",
+          "bytes": 6
+        },
+        {
+          "path": "/opt/royal-releases/cascade-size-20261031-v1/run-2.log",
+          "bytes": 3574
+        },
+        {
+          "path": "/opt/royal-releases/cascade-size-20261031-v1/run-2.pid",
+          "bytes": 7
+        },
+        {
+          "path": "/opt/royal-releases/cascade-size-20261031-v1.tgz",
+          "bytes": 19038421
+        },
+        {
+          "path": "/opt/royal-maintenance/cascade-size-20261031-v1/files",
+          "bytes": 62138
+        },
+        {
+          "path": "/opt/royal-maintenance/cascade-size-20261031-v1.tgz",
+          "bytes": 19157
+        },
+        {
+          "path": "/opt/royal-maintenance/cascade-size-20261031-v1/sequence.log",
+          "bytes": 745
+        },
+        {
+          "path": "/opt/royal-maintenance/cascade-size-20261031-v1/sequence.pid",
+          "bytes": 7
+        }
+      ],
+      "logicalBytes": 44579785,
+      "freeBeforeBytes": 12525346816,
+      "freeAfterBytes": 12570320896,
+      "preserved": [
+        "published module versions",
+        "five previous module packages and source archive",
+        "current host and verified rollback",
+        "financial backups and persistent volumes",
+        "compact publication receipts",
+        "previous maintenance files"
+      ],
+      "sourceCommit": "6399b54b0e4975e7741bb7a50e87d4f10cf5aa90"
+    },
+    "local": {
+      "condition": "Remove the temporary checkout and remaining task outputs after this deployment record is pushed and its remote commit is verified",
+      "temporaryRoot": "artifacts/work/cascade-size-release-20261031",
+      "inventory": {
+        "checkoutBytes": 503430064,
+        "otherTaskBytes": 27371439,
+        "freeBytes": 52306366464,
+        "dependencyCopiesCreated": 0
+      },
+      "obsoleteBuilds": {
+        "removed": [
+          {
+            "path": "module-dist/studio-nitro-run/versions/1.0.0-67acd1d82ad6",
+            "bytes": 2540570
+          },
+          {
+            "path": "module-dist/studio-meme-overload/versions/1.0.0-8c2bd00fd5b5",
+            "bytes": 3499867
+          },
+          {
+            "path": "module-dist/studio-caramel-carnival/versions/1.0.0-b022bb522974",
+            "bytes": 3148325
+          },
+          {
+            "path": "module-dist/studio-last-convoy/versions/1.0.0-a2e4639b052b",
+            "bytes": 6306121
+          },
+          {
+            "path": "module-dist/studio-afterglow/versions/1.2.0-83388aef10c4",
+            "bytes": 3220821
+          }
+        ],
+        "totalBytes": 18715704
+      },
+      "completionReport": "artifacts/work/cascade-size-release-20261031/completion.json"
+    }
+  }
 }
