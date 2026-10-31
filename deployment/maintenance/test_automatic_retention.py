@@ -167,5 +167,19 @@ class AutomaticRetentionTest(unittest.TestCase):
             financial=Path(temp)/'wallet.tgz';financial.write_bytes(b'financial archive')
             self.assertFalse(cleanup.verified_program_archive(financial,[{'sourceBackupSha256':cleanup.sha(financial)}]))
 
+    def test_old_failed_build_expires_only_without_process_or_image_reference(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path=Path(temp);(path/'build-result.json').write_text('{}');metadata=[{'image':'candidate'}]
+            self.assertTrue(cleanup.pending_is_active(path,metadata,set(),set(),100))
+            self.assertTrue(cleanup.pending_is_active(path,metadata,{str(path)},set(),90000))
+            self.assertTrue(cleanup.pending_is_active(path,metadata,set(),{'candidate'},90000))
+            self.assertFalse(cleanup.pending_is_active(path,metadata,set(),set(),90000))
+
+    def test_host_release_proof_can_omit_redundant_build_commit(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp);path=self.release(root,'scoped')
+            built=json.loads((path/'build-result.json').read_text());built.pop('sourceCommit');(path/'build-result.json').write_text(json.dumps(built))
+            self.assertEqual(automatic.select_release('active','source',root),'scoped')
+
 
 if __name__ == '__main__': unittest.main()

@@ -181,6 +181,22 @@ def native_retention():
     return module
 
 
+def select_current_release(image, source_commit, root=None):
+    matches = []
+    for path in (root or RELEASES).glob('*/install-manifest.json'):
+        try:
+            manifest = read(path); built = read(path.parent/'build-result.json'); published = read(path.parent/'published.json')
+        except (OSError, ValueError): continue
+        if (manifest.get('release') == path.parent.name and manifest.get('sourceCommit') == source_commit
+                and built.get('sourceCommit',manifest['sourceCommit']) == source_commit and built.get('image') == image
+                and published.get('sourceCommit',manifest['sourceCommit']) == source_commit and published.get('published') is True
+                and published.get('runningImage',published.get('image')) == image
+                and isinstance(manifest.get('before',{}).get('source'),dict) and built.get('program')):
+            matches.append(path.parent.name)
+    require(len(matches)==1,'Running image needs one complete host release proof; found '+str(len(matches)))
+    return matches[0]
+
+
 def module_source_proof(name, digest):
     if not name.startswith('games/'): return None
     for path in RELEASES.glob('*/operator.json'):
@@ -210,9 +226,12 @@ def recovery(release):
     current = healthy()
     require(manifest['release'] == release and published.get('published') is True, 'Release is not published')
     require(current['Image'] == built['image'] == published['runningImage'], 'A different release is running')
-    require('royal-game:latest' in docker_object('image', current['Image'])['RepoTags'], 'Prepared image differs')
-    require(docker_object('image', current['Image'])['Config']['Labels']['org.opencontainers.image.revision']
-            == manifest['sourceCommit'], 'Running source revision differs')
+    current_metadata = docker_object('image', current['Image'])
+    require('royal-game:latest' in current_metadata['RepoTags'], 'Prepared image differs')
+    require(current_metadata['Config']['Labels']['org.opencontainers.image.revision'] == manifest['sourceCommit'], 'Running source revision differs')
+    receipt = read(root/'release-github.json')
+    require(receipt.get('sourceCommit') == manifest['sourceCommit'] and re.fullmatch('[a-f0-9]{40}',str(receipt.get('remoteMain',''))), 'GitHub source receipt is missing')
+    if manifest.get('receiptSha256'): require(sha(root/'release-github.json') == manifest['receiptSha256'],'GitHub receipt changed')
     require(sha(root / 'deploy.py') == manifest['helperSha256']
             and sha(root / 'snapshot.py') == manifest['snapshotSha256'], 'Recovery helpers changed')
     require(sha(backup / 'source.tgz') == built['sourceBackupSha256'], 'Rollback source archive checksum differs')
@@ -231,15 +250,20 @@ def recovery(release):
     validate_rollback_identity(current, image, before)
     # Validate every rollback program byte in a transient container without network or mounts.
     node = "const f=require('fs'),p=require('path'),c=require('crypto'),o={};function walk(d){if(!f.existsSync(d))return;for(const n of f.readdirSync(d).sort()){const x=p.join(d,n),s=f.lstatSync(x);if(s.isSymbolicLink())throw Error('symlink');if(s.isDirectory())walk(x);else if(s.isFile())o[p.relative('/app',x)]=c.createHash('sha256').update(f.readFileSync(x)).digest('hex');}}walk('/app/dist');walk('/app/dist-server');walk('/app/module-dist');for(const n of ['package.json','package-lock.json'])o[n]=c.createHash('sha256').update(f.readFileSync('/app/'+n)).digest('hex');console.log(JSON.stringify(o))"
+    support = {}
+    for field in ['helpers','support']:
+        for name,digest in manifest.get(field,{}).items():
+            require(name not in support or support[name]==digest,'Ambiguous recovery helper')
+            support[name]=digest
     inventory = root / 'runtime-inventory.cjs'
     if inventory.exists():
-        require(sha(inventory) == manifest.get('helpers', {}).get('runtime-inventory.cjs'), 'Runtime inventory helper differs')
+        require(sha(inventory) == support.get('runtime-inventory.cjs'), 'Runtime inventory helper differs')
         node = inventory.read_text()
     program = native_retention().verify_program(image['Id'], node)
     require(program == before['preparedProgram'] == before['program'], 'Rollback program bytes differ')
     current_program = json.loads(run(['docker', 'exec', 'royal-game-1', 'node', '-e', node]))
     require(current_program == built['program'], 'Running program differs from its verified release')
-    for name, digest in manifest.get('helpers', {}).items():
+    for name, digest in support.items():
         require(sha(root / name) == digest, 'Recovery helper changed: ' + name)
     proof_paths = [root / name for name in ['install-manifest.json', 'build-result.json', 'published.json', 'deploy.py', 'snapshot.py']]
     proof_paths += [backup / 'source.tgz', backup / 'index.html']
@@ -382,12 +406,30 @@ def verified_program_archive(path, metadata):
     return bool(expected) and sha(path) in expected
 
 
+def active_release_paths():
+    active = set()
+    for path in Path('/proc').glob('[0-9]*/cmdline'):
+        try: command = path.read_bytes().replace(b'\0',b' ').decode(errors='replace')
+        except OSError: continue
+        for match in re.finditer(re.escape(str(RELEASES)) + r'/([a-zA-Z0-9_.-]+)(?:/|\s|$)', command):
+            active.add(str(RELEASES/match.group(1)))
+    return active
+
+
+def pending_is_active(release, metadata, active, references, age):
+    if not (release/'build-result.json').exists() or any((release/n).exists() for n in ['published.json','recovered.json']): return False
+    images = {m.get('image') for m in metadata if isinstance(m.get('image'),str)}
+    return age < 86400 or str(release) in active or bool(images & references)
+
+
 def safe_history_candidates(keep, extra_protected=()):
     """Preserve financial material, fresh work, and source without GitHub evidence."""
     allow = Path('/opt/royal-maintenance/preserved-commits.json')
     commits = set(read(allow)['commits']) if allow.exists() else set()
     retained, protected = set(keep), {Path(p) for p in extra_protected}
     reasons = {}
+    active = active_release_paths()
+    references = referenced_images()
     for root in ROOTS:
         for path in root.iterdir():
             if str(path) in retained or path.name.endswith('.lock'): continue
@@ -400,8 +442,9 @@ def safe_history_candidates(keep, extra_protected=()):
                     except (OSError, ValueError): pass
             source = next((m.get('sourceCommit') for m in metadata if m.get('sourceCommit')), None)
             receipt = next((m for m in metadata if m.get('format') == 1 and m.get('sourceCommit') == source and re.fullmatch('[a-f0-9]{40}', str(m.get('remoteMain', '')))), None)
-            pending = (release / 'build-result.json').exists() and not any((release / n).exists() for n in ['published.json', 'recovered.json'])
-            if (time.time() - path.lstat().st_mtime < 3600 or pending
+            age = time.time() - path.lstat().st_mtime
+            pending = pending_is_active(release,metadata,active,references,age)
+            if (age < 3600 or str(release) in active or pending
                     or not source or source not in commits and receipt is None):
                 retained.add(str(path)); reasons[str(path)] = 'fresh, pending, or source not verified in GitHub'; continue
             if path.is_symlink(): continue
@@ -432,7 +475,7 @@ def prepare_plan(release, skip_images=False):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('operation', choices=['plan', 'apply'])
-    parser.add_argument('--release', required=True)
+    parser.add_argument('--release', default='auto')
     parser.add_argument('--state', required=True)
     parser.add_argument('--plan-sha256')
     parser.add_argument('--skip-image-cleanup', action='store_true')
@@ -457,6 +500,9 @@ def main():
             if time.monotonic() >= deadline: raise
             time.sleep(min(5, max(0, deadline-time.monotonic())))
     plan_path = state / 'plan.json'
+    if args.release == 'auto':
+        current = healthy()
+        args.release = select_current_release(current['Image'],current['Config'].get('Labels',{}).get('org.opencontainers.image.revision'))
     if args.operation == 'plan':
         require(not plan_path.exists(), 'Review plan already exists')
         value = prepare_plan(args.release, args.skip_image_cleanup)
