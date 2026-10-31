@@ -1,7 +1,8 @@
-import {recoverableStakes} from './gameStakes';
+import {validGameStake} from './gameStakes.ts';
+import {precisionBaseSession} from './roundPrecision.ts';
 export const FLAG_GAME = 'flag-battle' as const;
 export const FLAG_HEADER = 'X-Royal-Flag-Battle';
-export const FLAG_BETS = recoverableStakes(['100', '200', '500', '1000', '2000', '5000']);
+export const FLAG_BETS = ['100', '200', '500', '1000', '2000', '5000'] as const;
 export const FLAG_COUNTRIES = [
   { id: 'RU', ru: 'Россия', en: 'Russia' },
   { id: 'BR', ru: 'Бразилия', en: 'Brazil' },
@@ -70,7 +71,7 @@ export const supportsFlagRules = (capability: boolean | 2, rules: number) => cap
 const object = (v: unknown): v is Record<string, any> => !!v && typeof v === 'object' && !Array.isArray(v);
 const keys = (v: object, expected: string) => Object.keys(v).sort().join(',') === expected.split(',').sort().join(',');
 export const validFlagCountry = (v: unknown): v is FlagCountry => FLAG_COUNTRIES.some(c => c.id === v);
-export const validFlagStake = (v: unknown): v is string => FLAG_BETS.some(s => s === v);
+export const validFlagStake = (v: unknown): v is string => validGameStake(v) || FLAG_BETS.some(s => s === v);
 export const validFlagMode = (v: unknown): v is FlagMode => FLAG_MODES.some(m => m.id === v);
 export function validFlagSettings(v: unknown): v is FlagSettings {
   if (!object(v) || !keys(v, 'flags') || !object(v.flags)) return false;
@@ -93,6 +94,7 @@ export function validFlagView(v: unknown): v is FlagView {
     && Number.isSafeInteger(v.seed) && v.seed >= 0 && v.seed < 2147483648;
 }
 export function validFlagSession(s: unknown): boolean {
+  s=precisionBaseSession(s);
   if (!object(s) || !keys(s, 'id,gameId,rulesVersion,state,stakeUnits,spentUnits,returnedUnits,view')
     || s.gameId !== FLAG_GAME || ![1, 2].includes(s.rulesVersion) || s.state !== 'settled'
     || typeof s.id !== 'string' || !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(s.id)

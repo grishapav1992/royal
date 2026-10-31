@@ -42,6 +42,16 @@ export class SlotStakeControls {
   update() {
     if (this.disposed) return;
     const {select, steps, values, current, direction, locked} = this.options;
+    select.querySelector('[data-historical-stake]')?.remove();
+    if (!values.includes(current()) && !locked()) {
+      this.options.changed(values[0]);
+      return;
+    }
+    if (!values.includes(current())) {
+      const option = select.ownerDocument.createElement('option');
+      option.value = current(); option.textContent = (Number(current()) / 100).toFixed(2) + ' USDT';
+      option.disabled = true; option.dataset.historicalStake = 'true'; select.append(option);
+    }
     select.value = current();
     select.disabled = locked();
     const at = values.indexOf(current());

@@ -1,3 +1,4 @@
+import {precisionBaseSession} from './roundPrecision.ts';
 import {CASCADE_DATA,CASCADE_CAP_POINTS,initialCascadeState,advanceCascade,type CascadeState,type CascadeFrame,type CascadeDraw} from './floodedTempleCascadeMath';
 
 export const TEMPLE_CASCADE_VERSION=2;
@@ -35,6 +36,7 @@ export function validCascadeSettlement(state:unknown,stake:unknown,spent:unknown
   return validCascadeView(stake,v)&&spent===stake&&Number(v.totalPayoutUnits)<=Number(stake)*CASCADE_DATA.maxWin&&(state==='active'?v.phase!=='complete'&&returned==='0':state==='settled'&&v.phase==='complete'&&returned===v.totalPayoutUnits);
 }
 export function validCascadeSession(v:unknown):boolean{
+  v=precisionBaseSession(v);
   return record(v)&&v.gameId==='studio-flooded-temple'&&v.rulesVersion===2&&record(v.view)&&validCascadeSettlement(v.state,v.stakeUnits,v.spentUnits,v.returnedUnits,v.view.templeCascade);
 }
 /** One bounded transport operation may contain several falls; it never truncates the round. */

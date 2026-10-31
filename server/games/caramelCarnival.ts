@@ -14,7 +14,7 @@ function finish(view:CaramelView,stake:string):CaramelResult{
  if(!validCaramelSettlement(ended?'settled':'active',stake,String(BigInt(stake)*BigInt(view.mode==='festival'?35:1)),ended?String(credit):'0',view))throw Error('Invalid generated Caramel settlement');
  return {view,ended,credit,message:ended?'Раунд завершён, выплата зачислена':'Фестиваль сохранён. Продолжение бесплатно.',actions:ended?[]:[{move:'caramel-spin',label:'Продолжить фестиваль',cost:0}]};
 }
-function spin(value:CaramelView,stake:string,draw:Draw):CaramelView{
+export function advanceCaramelSpin(value:CaramelView,stake:string,draw:Draw):CaramelView{
  const view=structuredClone(value),free=!!view.bonus,initial=Array.from({length:30},()=>caramelSymbol(free,draw)),frames:CaramelFrame[]=[],cap=BigInt(stake)*BigInt(CARAMEL_MAX_WIN);let multiplier=view.bonus?.multiplier??1,grid=initial,paid=0n,raw=0n;
  const multiplierBefore=multiplier;
  for(let step=0;step<20;step++){
@@ -32,9 +32,9 @@ function spin(value:CaramelView,stake:string,draw:Draw):CaramelView{
 export function startCaramel(settings:CaramelSettings,stake:string,draw:Draw=randomInt):CaramelResult{
  if(!validCaramelSettings(settings)||!validCaramelStake(stake))throw new CaramelMoveError('Недопустимая ставка или режим фестиваля.');
  const purchased=caramelCost(settings)>1,view:CaramelView={kind:'caramel-carnival',version:1,mode:settings.caramel.mode,revision:0,history:[],spin:null,bonus:purchased?{awarded:10,played:0,remaining:10,multiplier:1}:null,totalPayoutUnits:'0',capped:false};
- return finish(purchased?view:spin(view,stake,draw),stake);
+ return finish(purchased?view:advanceCaramelSpin(view,stake,draw),stake);
 }
 export function moveCaramel(value:CaramelView,stake:string,revision:unknown,draw:Draw=randomInt):CaramelResult{
  if(!value||revision!==value.revision||!value.bonus?.remaining||value.capped||!validCaramelSettlement('active',stake,String(BigInt(stake)*BigInt(value.mode==='festival'?35:1)),'0',value))throw new CaramelMoveError('Фестиваль уже изменился. Покажи сохранённый ход.');
- return finish(spin(value,stake,draw),stake);
+ return finish(advanceCaramelSpin(value,stake,draw),stake);
 }

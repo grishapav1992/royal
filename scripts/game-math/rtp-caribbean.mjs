@@ -18,14 +18,16 @@ export const CARIBBEAN_QUALIFICATION_METHOD = 'exact-caribbean-giant-round-v1';
 // Requalify the complete Caribbean replay after reviewing these shared-file additions.
 // Reviewed 2026-10-30: Wild Nudge adds a game-scoped branch and a final capability;
 // Caribbean inputs, pricing, entropy, flag position and settlement are unchanged.
+// Reviewed 2026-10-31: historical engines, entropy and accepted-round settlement remain unchanged.
+// New stake-policy receipts are qualified separately over exact complete-round rewards.
 export const CARIBBEAN_REVIEWED_SOURCES = {
-  'src/shared/caribbeanTreasuresMath.ts': 'b86e71675dfd0179da8d8c43c7a62f8da41303d5e6bc59f07b81d4497b64647b',
-  'src/shared/caribbeanTreasures.ts': '5590af9897cfb32dbf8fd7d9c0608ad52184051ddee7ca70cd309267a4311aee',
-  'server/games/caribbeanTreasures.ts': 'bdb0aa8eecef1093f876dd3c467ff1b43d8a7b1606a63a56aa46430964556e99',
-  'src/shared/caribbeanTransport.ts': 'c4a590c6778048f9ecd37852549762adde064f90dca072316ee215ba8ac89c78',
-  'src/shared/casinoExpansion.ts': '135130a205c053812ffc36f532d7661c2ab39a16c9965e5bcc6a67de1a140a95',
-  'server/demoExpansion.ts': 'b69c45549c3d4db541dbe1cb1a3fa5413cd37946038a27186153c1616d72a575',
-  'server/finance/nile-game-runtime.ts': 'f5a2523138ddd7c525af475d0ebdf53154665e0fa912463c4caa9454ac480e5c',
+  "src/shared/caribbeanTreasuresMath.ts": "27db36604d110fda6e4d2c85715305a4910b840e8933fc2f10227aba53fd9ad9",
+  "src/shared/caribbeanTreasures.ts": "8e987b2de8799b444dd01fe2fcb3a567dd7921a8c1dee4b139e00e13ee3e03bb",
+  "server/games/caribbeanTreasures.ts": "bdb0aa8eecef1093f876dd3c467ff1b43d8a7b1606a63a56aa46430964556e99",
+  "src/shared/caribbeanTransport.ts": "8623c8e5f4f7eef28997a3b9630873e86c4c7fa7f1ff1b790490802d9fd9415a",
+  "src/shared/casinoExpansion.ts": "c89133d0c011baa56241b09e56913e315534ac3e52871308238e234cb8c75f74",
+  "server/demoExpansion.ts": "355b75eb024907c989e1b2a26031de1ada8e54de6c44289730fc6922702465ed",
+  "server/finance/nile-game-runtime.ts": "b667f5865791852f0c79f5b85176548c5c012478c561c021bab5cde3e8dc8d96"
 };
 const WEIGHTS = [30,24,18,13,9,6];
 const PAYS = [[2,6,20,60],[4,10,30,100],[6,16,40,150],[8,24,60,200],[10,30,100,400],[16,50,200,1000]];

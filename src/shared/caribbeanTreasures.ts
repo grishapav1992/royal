@@ -1,3 +1,4 @@
+import {validGameStake} from './gameStakes.ts';
 import {
   CARIBBEAN_BONUS_SPINS, CARIBBEAN_LINE_STAKES, CARIBBEAN_PROFILE,
   playCaribbeanFrame, settleCaribbeanFrame, validCaribbeanLineCount,
@@ -41,7 +42,7 @@ const record = (value: unknown): value is Record<string, unknown> => !!value && 
   && !Array.isArray(value) && Object.getPrototypeOf(value) === Object.prototype;
 const keys = (value: object, expected: string) => Object.keys(value).sort().join(',') === expected.split(',').sort().join(',');
 export function validCaribbeanStake(value: unknown): value is string {
-  return typeof value === 'string' && (CARIBBEAN_LINE_STAKES as readonly string[]).includes(value);
+  return validGameStake(value) || typeof value === 'string' && (CARIBBEAN_LINE_STAKES as readonly string[]).includes(value);
 }
 export function validCaribbeanSettings(value: unknown): value is CaribbeanSettings {
   return record(value) && (keys(value, 'lines,mode') || keys(value, 'lines,mode,stakeBasis') && value.stakeBasis === 'total') && validCaribbeanLineCount(value.lines)

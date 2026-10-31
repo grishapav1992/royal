@@ -1,7 +1,7 @@
-import {recoverableStakes} from './gameStakes.ts';
+import {validGameStake} from './gameStakes.ts';
 /** Candidate rules v1. Pure model only; no wallet, transport or active game route. */
 export const FOREST_HEART_GAME = 'studio-forest-heart' as const;
-export const FOREST_HEART_STAKES = recoverableStakes([1000, 2000, 5000, 10000, 20000, 50000].map(String)).map(Number);
+export const FOREST_HEART_STAKES = [1000, 2000, 5000, 10000, 20000, 50000] as const;
 export const FOREST_HEART_RULES = {
   rulesVersion: 1, progressVersion: 1, size: 5,
   source: 10, receivers: [4, 14, 24],
@@ -123,11 +123,11 @@ export function forestHeartBonus(state:number,bits:number) {
     nextState:forestHeartHeldState({mask,values})};
 }
 export function forestHeartFlowerPayout(stakeUnits:number,energy:number):bigint {
-  if(!(FOREST_HEART_STAKES as readonly number[]).includes(stakeUnits)) throw new Error('Invalid Forest Heart stake');
+  if(!validGameStake(String(stakeUnits))&&!(FOREST_HEART_STAKES as readonly number[]).includes(stakeUnits)) throw new Error('Invalid Forest Heart stake');
   if(!FOREST_HEART_RULES.energy.some(row=>row.value===energy)) throw new Error('Invalid Forest Heart energy');
   const numerator=BigInt(stakeUnits)*BigInt(FOREST_HEART_RULES.payoutNumerator)*BigInt(energy);
   const denominator=BigInt(FOREST_HEART_RULES.payoutDenominator);
-  if(numerator%denominator) throw new Error('Forest Heart payout would require rounding');
+  // The complete paid round retains the exact remainder in its precision receipt.
   return numerator/denominator;
 }
 export type ForestHeartRoundInput = {

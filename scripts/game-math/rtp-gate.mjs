@@ -1,3 +1,4 @@
+import {STAKE_PRECISION_METHOD,validateStakeProof} from './rtp-stakes.mjs';
 import {TOTE_METHOD,validateToteProof} from './rtp-flag-tote.mjs';
 import {KEYS_METHOD,validateKeysProof} from './rtp-keys.mjs';
 import {HILO_METHOD,validateHiloProof} from './rtp-hilo.mjs';
@@ -36,6 +37,11 @@ export async function rtpInputs(root, gameId, rulesVersion) {
     [file, sourceDigest(await readFile(resolve(root, file)))])));
   return { policy, sourceHashes, policySha256: digest(JSON.stringify(policy)) };
 }
+export async function stakeInputs(root,gameId){
+ const registry=JSON.parse(await readFile(resolve(root,'scripts/game-math/rtp-policy.json'),'utf8')),policy=registry.stakePolicies?.[gameId];assert(policy,'Missing shared stake policy: '+gameId);
+ const sourceHashes=Object.fromEntries(await Promise.all([...policy.sources,policy.qualificationSource].map(async file=>[file,sourceDigest(await readFile(resolve(root,file)))])));
+ return {policy,sourceHashes,policySha256:digest(JSON.stringify(policy))};
+}
 export function validateRtpProof(gameId, inputs, proof) {
   const { policy: p } = inputs;
   assert.notEqual(p.releaseStatus,'model-only','Mathematical model only: runtime and wallet qualification is still required for '+gameId);
@@ -44,6 +50,7 @@ export function validateRtpProof(gameId, inputs, proof) {
   if (gameId==='studio-neopolis' && p.rulesVersion>=4) assert.equal(p.method,'neopolis-variable-stake-conditional-v4','Variable stakes require conditional qualification');
   assert.equal(proof.policySha256, inputs.policySha256, 'RTP policy changed: rerun qualification');
   assert.deepEqual(proof.sourceHashes, inputs.sourceHashes, 'RTP source changed: rerun qualification');
+  if(p.method===STAKE_PRECISION_METHOD)return validateStakeProof(gameId,inputs,proof);
   if(p.method===TOTE_METHOD)return validateToteProof(gameId,inputs,proof);
   if(p.method===KEYS_METHOD){assert.equal(gameId,'variant-keys');return validateKeysProof(p,proof);}
   if(p.method===HILO_METHOD){assert.equal(gameId,'github-hilo');return validateHiloProof(p,proof);}
@@ -292,5 +299,10 @@ export async function checkGameRtp(root, catalog, selected = catalog.map(game =>
     const proof=JSON.parse(await readFile(resolve(root,inputs.policy.proof),'utf8').catch(()=>{throw Error('Missing versioned RTP qualification for '+gameId+' rules '+version);}));
     validateRtpProof(gameId,inputs,proof);verified++;
   }
-  return { verified, legacyNotQualified: baseline.games.length,...(serverOnly.length?{serverQualifiedClientPending:serverOnly}:{}) };
+  let stakePoliciesVerified=0;
+  for(const gameId of new Set([...selected,...changedProfiles]))if(registry.stakePolicies?.[gameId]){
+   const inputs=await stakeInputs(root,gameId),proof=JSON.parse(await readFile(resolve(root,inputs.policy.proof),'utf8').catch(()=>{throw Error('Missing shared-stake qualification: '+gameId);}));
+   validateStakeProof(gameId,inputs,proof);stakePoliciesVerified++;
+  }
+  return { verified, stakePoliciesVerified, legacyNotQualified: baseline.games.length,...(serverOnly.length?{serverQualifiedClientPending:serverOnly}:{}) };
 }

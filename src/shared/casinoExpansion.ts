@@ -1,3 +1,5 @@
+import {usesGameStakes} from './gameStakes';
+import type {RoundPrecision} from './roundPrecision';
 import {WILD_NUDGE_GAME,validWildNudgeSettings,type WildNudgeSettings,type WildNudgeView} from './wildNudge';
 import { FLAG_GAME, validFlagSettings, type FlagSettings, type FlagView } from './flagBattle';
 import { NEOPOLIS_GAME, validNeopolisSettings, type NeopolisSettings, type NeopolisView } from './neopolis';
@@ -102,14 +104,15 @@ export const LEGACY_CARD_RULES:Partial<Record<ExpansionGameId,string>> = {
   'github-rummy':translateText('Три карты. Три одинаковые карты или три последовательные одной масти дают 0 очков; остальные суммируются (туз 1, картинки 10). Пары не уменьшают сумму. Дилеру нужен счёт не выше 20. Play стоит одну Ante. Прежний Ante bonus: 0 очков +9 Ante, 1-5 +3, 6-10 +1. Low Bonus выключен.'),
 };
 export type ExpansionAction =
-  | {id:string;gameId:ExpansionGameId;action:'start';stakeUnits:string;appearance?:AfterLookChoice;settings:({side?:boolean;bet?:'dragon'|'tiger'|'small'|'big'} | WildNudgeSettings | CaribbeanTransportSettings | ForestHeartSettings | FlagSettings | JackieSettings | TempleSettings | TempleCascadeSettings | VariantSettings | StudioSettings | LuelonSlotSettings | CaramelSettings | ConvoySettings | NeopolisSettings | DraconaSettings | AfterSettings | NitroSettings | PenaltySettings)}
+  | {id:string;gameId:ExpansionGameId;action:'start';stakeUnits:string;stakePolicyVersion?:1;appearance?:AfterLookChoice;settings:({side?:boolean;bet?:'dragon'|'tiger'|'small'|'big'} | WildNudgeSettings | CaribbeanTransportSettings | ForestHeartSettings | FlagSettings | JackieSettings | TempleSettings | TempleCascadeSettings | VariantSettings | StudioSettings | LuelonSlotSettings | CaramelSettings | ConvoySettings | NeopolisSettings | DraconaSettings | AfterSettings | NitroSettings | PenaltySettings)}
   | {id:string;gameId:ExpansionGameId;action:'move';sessionId:string;move:string;picks?:number[];revision?:number;penaltyRisk?:PenaltyRisk};
 export type ExpansionView = {wildNudge?:WildNudgeView;jackie?:JackieView;flags?:FlagView;forestHeart?:ForestHeartView;templeCascade?:TempleCascadeView;temple?:TempleView;caribbean?:CaribbeanView;neopolis?:NeopolisView;dracona?:DraconaView;penalty?:PenaltyView;afterglow?:AfterView;nitro?:NitroView;convoy?:ConvoyView;caramel?:CaramelView;luelon?:LuelonSlotView;studio?:StudioView;variant?:VariantView;player:string[];dealer:string[];community:string[];actions:{move:string;label:string;cost:number;perPick?:number;minPicks?:number;maxPicks?:number}[];hands?:{cards:string[];score:number;label:string;active:boolean}[];phase:number;ended:boolean;message:string;hint?:number[]};
-export type ExpansionSession = {id:string;gameId:ExpansionGameId;rulesVersion:1|2|3|4;state:'active'|'settled';stakeUnits:string;spentUnits:string;returnedUnits:string;view:ExpansionView;startedAt?:number;serverNow?:number;multiplier?:number;crashAt?:number;dice?:number[];gems?:string[]};
+export type ExpansionSession = {id:string;gameId:ExpansionGameId;rulesVersion:1|2|3|4;state:'active'|'settled';stakeUnits:string;spentUnits:string;returnedUnits:string;view:ExpansionView;precision?:RoundPrecision;startedAt?:number;serverNow?:number;multiplier?:number;crashAt?:number;dice?:number[];gems?:string[]};
 const uuid=(s:unknown)=>typeof s==='string'&&/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(s);
 export function validExpansionAction(value:unknown):value is ExpansionAction {
   if(!value||typeof value!=='object'||Array.isArray(value))return false;
-  const r=value as ExpansionAction;if(!uuid(r.id)||!isExpansionGame(r.gameId))return false;
+  const r=value as ExpansionAction;if(r.action==='start'&&r.stakePolicyVersion!==undefined){if(r.stakePolicyVersion!==1||!usesGameStakes(r.gameId))return false;const {stakePolicyVersion,...legacy}=r;return validExpansionAction(legacy);}
+  if(!uuid(r.id)||!isExpansionGame(r.gameId))return false;
   if(r.action==='start'){
     if(Object.keys(r).sort().join(',')!==(r.gameId===AFTER_GAME&&r.appearance!==undefined?'action,appearance,gameId,id,settings,stakeUnits':'action,gameId,id,settings,stakeUnits')||typeof r.stakeUnits!=='string'||!/^[1-9][0-9]{0,10}$/.test(r.stakeUnits)||!r.settings||typeof r.settings!=='object'||Array.isArray(r.settings))return false;
     if(r.gameId===WILD_NUDGE_GAME)return validWildNudgeSettings(r.settings);

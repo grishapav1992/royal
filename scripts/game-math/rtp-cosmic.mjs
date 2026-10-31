@@ -4,13 +4,15 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 export const COSMIC_QUALIFICATION_METHOD = 'bounded-analytical-cosmic';
+// Reviewed 2026-10-31: the original 26-stake model, probabilities and consumed-draw paths are unchanged.
+// The opt-in final-cent policy restores fractions after the historical transcript is validated.
 export const COSMIC_QUALIFICATION_MODEL = {
   "reviewedSourceSha256": {
     "server/games/luelonSlots.ts": "be78b2715aa850d3801445edf0f714b89dcb76ed98719e5589fcac71dc7fe3f2",
     "src/shared/luelonSlots.ts": "1867b3f6e7e3fbc1e00dd6fad2bb094c42e6038f8eba18e0ef7250381f95cdcb",
     "src/shared/luelonSlotsLines.ts": "cc9e2528bae03e8965c154f82aa271b3c9976bb3d817130ba51dedf6e8eb67ee",
     "src/shared/luelonSlotsModels.ts": "b8644fecff250437909ff88950c5ef129c1d534108344f9643b815614d844c74",
-    "src/shared/cosmicEscapeBets.ts": "5e079e858e39cd73070f95f77688c774aee887e025a2f84fbc365c1e9cddd625"
+    "src/shared/cosmicEscapeBets.ts": "a810b0f394e290eae0ccbf2f1745ada20f280bb08bd176eb534d0390871f99c7"
   },
   "gameId": "studio-cosmic-escape",
   "rulesVersion": 2,

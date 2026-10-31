@@ -1,3 +1,4 @@
+import {confirmedPayout} from '../shared/roundPrecision';
 import {GAME_STAKE_UNITS as NITRO_BETS} from '../shared/gameStakes';
 import { t as translateText, tr, locale } from '../i18n/index';
 import {SlotSettings} from './slotKit/SlotSettings';
@@ -119,7 +120,7 @@ this.find('[data-cc-status]').textContent=client.loading?translateText('Пров
   if(this.owner!==client.accountId){this.cancel();this.audio.pause();this.owner=client.accountId;this.entered=false;this.lastWin='0';this.stake = '10';this.openDialog('intro');}
   const s=this.session();if(!this.live&&(!s||this.shown!==this.key(s))){
    this.board.clearOverlay();this.board.highlight([]);this.board.show(s?.view.nitro.spin?.finalGrid??preview);this.root.dataset.phase='idle';this.root.dataset.charging='false';
-   if(s){this.shown=this.key(s);this.root.dataset.sessionId=s.id;this.root.dataset.revision=String(s.view.nitro.revision);if(s.state==='settled')this.lastWin=s.returnedUnits;this.setTotal(s.view.nitro.totalPayoutUnits);this.features(s.view.nitro);this.find('[data-cc-message]').textContent=s.state==='active'?translateText('Игра сохранена. Продолжение без ставки.'):translateText('Раунд завершён. Выплата уже в кошельке.');}
+   if(s){this.shown=this.key(s);this.root.dataset.sessionId=s.id;this.root.dataset.revision=String(s.view.nitro.revision);if(s.state==='settled')this.lastWin=s.returnedUnits;this.setTotal(confirmedPayout(s,s.view.nitro.totalPayoutUnits));this.features(s.view.nitro);this.find('[data-cc-message]').textContent=s.state==='active'?translateText('Игра сохранена. Продолжение без ставки.'):translateText('Раунд завершён. Выплата уже в кошельке.');}
    else{this.shown='';this.setTotal('0');this.features();this.find('[data-cc-message]').textContent=translateText('Система готова. Нажми «Крутить», чтобы загрузить мемы.');}
   }
   this.controls();observeExpansionOutcome(this.root,MEME_GAME,s,client.accountId,!!this.live||client.busy,!!client.pending);
@@ -142,7 +143,7 @@ this.find('[data-cc-status]').textContent=client.loading?translateText('Пров
    const promise=client.act(action);live.operationId=client.pending?.id??'';await promise;if(!this.valid(live))return;
    const s=this.session();if(!this.sessions.confirmed(s,previous,live.operationId))throw Error(translateText('Ход не подтверждён. Проверь прежнюю операцию.'));
    await this.present(s,live);if(!this.valid(live))return;
-   this.live=undefined;this.root.dataset.phase='idle';this.root.dataset.animationToken='';this.shown=this.key(s);if(s.state==='settled')this.lastWin=s.returnedUnits;this.features(s.view.nitro);this.setTotal(s.view.nitro.totalPayoutUnits);this.controls();observeExpansionOutcome(this.root,MEME_GAME,s,client.accountId,false,false);if(s.state==='settled')this.audio.confirmedResult(s);
+   this.live=undefined;this.root.dataset.phase='idle';this.root.dataset.animationToken='';this.shown=this.key(s);if(s.state==='settled')this.lastWin=s.returnedUnits;this.features(s.view.nitro);this.setTotal(confirmedPayout(s,s.view.nitro.totalPayoutUnits));this.controls();observeExpansionOutcome(this.root,MEME_GAME,s,client.accountId,false,false);if(s.state==='settled')this.audio.confirmedResult(s);
    const v=s.view.nitro;if(s.state==='active'&&(!v.spin||v.spin.kind==='base')){this.stopAuto();this.openDialog('bonus');return;}
    if(s.state==='settled'&&v.history.some(spin=>spin.kind==='free')){this.bonusRunning=false;this.openDialog(BigInt(s.returnedUnits)>=BigInt(s.stakeUnits)*20n?'bigwin':'complete');return;}
    if(s.state==='settled'&&BigInt(s.returnedUnits)>=BigInt(s.stakeUnits)*20n){this.stopAuto();this.openDialog('bigwin');return;}
@@ -172,7 +173,7 @@ this.find('[data-cc-status]').textContent=client.loading?translateText('Пров
     this.board.clearOverlay();this.board.show(frame.after);this.board.highlight([]);this.root.dataset.charging='false';this.tickets(frame.after.filter(n=>n===7).length,spin.kind==='free');
    }
   }
-  if(!this.valid(live))return;this.board.clearOverlay();this.board.show(spin.finalGrid);this.board.highlight([]);this.features(v);this.setTotal(v.totalPayoutUnits);
+  if(!this.valid(live))return;this.board.clearOverlay();this.board.show(spin.finalGrid);this.board.highlight([]);this.features(v);this.setTotal(confirmedPayout(s,v.totalPayoutUnits));
   if(spin.freeAward){this.root.dataset.phase='tickets';this.find('[data-cc-message]').textContent=spin.kind==='free'?tr`ЕЩЁ ${spin.freeAward} БЕСПЛАТНЫХ ВРАЩЕНИЯ`:tr`${spin.flags} ПАПКИ · ВИРУСНЫЙ РЕЖИМ ОТКРЫТ`;this.audio.tickets(spin.kind==='free');if(live.motion&&!await this.delay(live.fast?250:850,live))return;}
   else this.find('[data-cc-message]').textContent=v.capped?translateText('ДОСТИГНУТ ПРЕДЕЛ ВЫИГРЫША'):spin.frames.at(-1)?.stop==='cascade-limit'?translateText('12 ПОКАЗОВ ПОЛЯ · ЗАГРУЗКА ЗАВЕРШЕНА'):Number(spin.payoutUnits)>0?translateText('ВЫИГРЫШ ПОДТВЕРЖДЁН'):s.state==='active'?translateText('ВИРУСНЫЙ РЕЖИМ ПРОДОЛЖАЕТСЯ'):translateText('СИСТЕМА ГОТОВА К СЛЕДУЮЩЕМУ ВРАЩЕНИЮ');
   this.audio.outcome(Number(spin.payoutUnits)>0);if(live.motion)await this.delay(live.fast?100:300,live);

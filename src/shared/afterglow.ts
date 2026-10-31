@@ -1,8 +1,9 @@
-import {recoverableStakes} from './gameStakes';
+import {validGameStake} from './gameStakes.ts';
+import {precisionBaseSession} from './roundPrecision.ts';
 import { t as translateText } from '../i18n/index';
 import {NITRO_LINES} from './nitroRun';
 export const AFTER_GAME='studio-afterglow' as const,AFTER_CLIENT_HEADER='X-Royal-Afterglow-Rules';
-export const AFTER_BETS = recoverableStakes(['100','200','300','500','1000','2000','2500','5000','10000','20000','25000','50000','100000']);
+export const AFTER_BETS=['100','200','300','500','1000','2000','2500','5000','10000','20000','25000','50000','100000'] as const;
 export const AFTER_MAX_WIN=5000,AFTER_MAX_FREE=20,AFTER_MAX_FRAMES=10,AFTER_MAX_PINS=3;
 export const AFTER_LINES=NITRO_LINES.slice(0,14);
 export const AFTER_NAMES=[translateText('Вишни'),translateText('Помада'),translateText('Парфюм'),translateText('Туфелька'),translateText('Сердце'),translateText('Зеркальце'),translateText('WILD: маска'),translateText('Камера'),translateText('Вспышка')] as const;
@@ -25,7 +26,7 @@ const int=(v:unknown,min:number,max:number):v is number=>typeof v==='number'&&Nu
 const units=(v:unknown):v is string=>typeof v==='string'&&/^(0|[1-9][0-9]{0,14})$/.test(v);
 export const afterSame=(a:unknown,b:unknown)=>JSON.stringify(a)===JSON.stringify(b);
 export const afterGrid=(v:unknown):v is number[]=>Array.isArray(v)&&v.length===30&&Array.from(v).every(n=>int(n,0,8));
-export const validAfterStake=(v:unknown):v is string=>typeof v==='string'&&(AFTER_BETS as readonly string[]).includes(v);
+export const validAfterStake=(v:unknown):v is string=>validGameStake(v)||typeof v==='string'&&(AFTER_BETS as readonly string[]).includes(v);
 export function validAfterSettings(v:unknown):v is AfterSettings{return obj(v)&&keys(v,'afterglow')&&obj(v.afterglow)&&keys(v.afterglow,'mode')&&v.afterglow.mode==='normal';}
 export const afterCells=()=>Array<number>(30).fill(1);
 /** Select the highest paid combination, including the actual cells touched by that combination. */
@@ -88,6 +89,7 @@ export function validAfterSettlement(state:'active'|'settled',stake:string,spent
  }catch{return false;}
 }
 export function validAfterSession(v:unknown):boolean{
+  v=precisionBaseSession(v);
  if(!obj(v)||!keys(v,'gameId,id,returnedUnits,rulesVersion,spentUnits,stakeUnits,state,view')||v.gameId!==AFTER_GAME||v.rulesVersion!==2||typeof v.id!=='string'||!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(v.id)||(v.state!=='active'&&v.state!=='settled')||typeof v.stakeUnits!=='string'||typeof v.spentUnits!=='string'||typeof v.returnedUnits!=='string'||!obj(v.view)||!keys(v.view,'afterglow,player,dealer,community,actions,phase,ended,message')||!validAfterSettlement(v.state,v.stakeUnits,v.spentUnits,v.returnedUnits,v.view.afterglow))return false;
  const w=v.view,view=w.afterglow as AfterView;if(![w.player,w.dealer,w.community].every(a=>Array.isArray(a)&&a.length===0)||w.phase!==view.revision+1||w.ended!==(v.state==='settled')||typeof w.message!=='string'||!Array.isArray(w.actions))return false;
  if(v.state==='settled')return w.actions.length===0;const a=w.actions[0];return w.actions.length===1&&obj(a)&&keys(a,'move,label,cost')&&a.move==='afterglow-spin'&&a.cost===0&&typeof a.label==='string';

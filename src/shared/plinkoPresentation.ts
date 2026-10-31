@@ -1,3 +1,5 @@
+import {precisionBaseRound} from './roundPrecision';
+import {validGameBet} from './gameStakes';
 import { getPlinkoMultipliers, multiplierRatio, type PlinkoRisk } from './originalGames';
 
 export type PlinkoPresentationGame = 'royal-plinko' | 'variant-plinko';
@@ -56,9 +58,11 @@ function presentation(gameId: PlinkoPresentationGame, outcomeId: string, rows: n
 
 /** The operation is the captured request, never an identity or path inferred from a ledger or payout. */
 export function royalPlinkoPresentation(operation: unknown, round: unknown): PlinkoPresentation | null {
+  const actualRound=round;round=precisionBaseRound(round);
+  if(record(operation)&&operation.stakePolicyVersion===1){const {stakePolicyVersion,...base}=operation;operation=base;}
   if (!record(operation) || !fields(operation, 'id,kind,amount,gameId,rulesVersion,input') || !uuid(operation.id)
     || operation.kind !== 'play' || operation.gameId !== 'royal-plinko' || operation.rulesVersion !== 1 || !input(operation.input)
-    || typeof operation.amount !== 'number' || ![10, 50, 100, 500].includes(operation.amount)) return null;
+    || typeof operation.amount !== 'number' || !(validGameBet(operation.amount)||[10, 50, 100, 500].includes(operation.amount))) return null;
   if (!record(round) || !fields(round, 'gameId,rulesVersion,input,outcome,stakeUnits,payoutUnits,multiplier')
     || round.gameId !== 'royal-plinko' || round.rulesVersion !== 1 || !input(round.input) || !record(round.outcome)
     || !fields(round.outcome, 'path,bucket') || !units(round.stakeUnits) || !units(round.payoutUnits)
@@ -67,7 +71,7 @@ export function royalPlinkoPresentation(operation: unknown, round: unknown): Pli
   if (round.stakeUnits !== stakeUnits) return null;
   const result = ball(0, round.outcome.path, round.outcome.bucket, round.multiplier, rows, table, BigInt(stakeUnits));
   return result && result.returnedUnits === round.payoutUnits
-    ? presentation('royal-plinko', operation.id, rows, risk, table, stakeUnits, round.payoutUnits, '0', [result]) : null;
+    ? presentation('royal-plinko', operation.id, rows, risk, table, stakeUnits, record(actualRound)&&typeof actualRound.payoutUnits==='string'?actualRound.payoutUnits:round.payoutUnits, '0', [Object.freeze({...result,returnedUnits:record(actualRound)&&typeof actualRound.payoutUnits==='string'?actualRound.payoutUnits:result.returnedUnits})]) : null;
 }
 
 /** Omit capturedStart only for static restoration of an already confirmed canonical session. */

@@ -1,3 +1,5 @@
+import {validGameStake} from './gameStakes.ts';
+import {precisionBaseSession} from './roundPrecision.ts';
 import {
   FOREST_HEART_GAME,FOREST_HEART_RULES,FOREST_HEART_ROTORS,FOREST_HEART_STAKES,
   forestHeartBase,forestHeartBonus,forestHeartHeld,forestHeartFlowerPayout,
@@ -17,7 +19,7 @@ const object=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&
 const keys=(v:Record<string,unknown>,expected:string)=>Object.keys(v).sort().join(',')===expected;
 const integer=(v:unknown,min:number,max:number):v is number=>Number.isSafeInteger(v)&&Number(v)>=min&&Number(v)<=max;
 const units=(v:unknown):v is string=>typeof v==='string'&&/^(0|[1-9][0-9]*)$/.test(v);
-export const validForestHeartStake=(stake:unknown):stake is string=>typeof stake==='string'&&FOREST_HEART_STAKES.some(n=>String(n)===stake);
+export const validForestHeartStake=(stake:unknown):stake is string=>validGameStake(stake)||typeof stake==='string'&&FOREST_HEART_STAKES.some(n=>String(n)===stake);
 export function validForestHeartSettings(value:unknown):value is ForestHeartSettings{
   return object(value)&&keys(value,'forestHeart')&&object(value.forestHeart)&&keys(value.forestHeart,'mode')&&value.forestHeart.mode==='normal';
 }
@@ -63,6 +65,7 @@ export function validForestHeartSettlement(state:unknown,stake:unknown,spent:unk
     returned===(state==='settled'?view.totalPayoutUnits:'0');
 }
 export function validForestHeartSession(value:unknown):boolean{
+  value=precisionBaseSession(value);
   if(!object(value)||value.gameId!==FOREST_HEART_GAME||value.rulesVersion!==1||!object(value.view))return false;
   const view=value.view.forestHeart;
   if(!validForestHeartSettlement(value.state,value.stakeUnits,value.spentUnits,value.returnedUnits,view))return false;

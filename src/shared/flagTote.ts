@@ -1,10 +1,10 @@
-import { FLAG_COUNTRIES, type FlagCountry } from './flagBattle';
+import { FLAG_BETS, FLAG_COUNTRIES, type FlagCountry } from './flagBattle';
 import type { DemoWallet } from './demoWallet';
 
 export const TOTE_GAME = 'flag-tote' as const;
 export const TOTE_HEADER = 'X-Royal-Flag-Tote';
 export const TOTE_RULES = 1;
-export const TOTE_STAKES = ['100', '200', '500', '1000', '2000', '5000'] as const;
+export const TOTE_STAKES = FLAG_BETS;
 export const TOTE_LIMITS = { maxBank: 1_000_000, maxAccount: 50_000, maxTickets: 256, minCountries: 3, minAccounts: 2 } as const;
 export const TOTE_TIMING = { period: 300_000, betting: 240_000, race: 30_700 } as const;
 export type ToteBet = { id: string; roundId: string; rulesVersion: 1; country: FlagCountry; stakeUnits: string };

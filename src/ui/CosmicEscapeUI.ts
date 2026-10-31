@@ -1,3 +1,4 @@
+import {confirmedPayout} from '../shared/roundPrecision';
 import {GAME_STAKE_UNITS as COSMIC_ESCAPE_BET_UNITS} from '../shared/gameStakes';
 import { t as translateText, tr, locale } from '../i18n/index';
 import {SlotSettings} from './slotKit/SlotSettings';
@@ -88,7 +89,7 @@ this.find<HTMLButtonElement>('[data-cosmic-load-retry]').onclick=()=>void this.a
   private async present(session:Session,live:Live){
     const view=session.view.luelon,spin=view.spin;
     this.root.dataset.sessionId=session.id;this.root.dataset.revision=String(view.revision);
-    if(!spin||live.before?.id===session.id&&live.before.view.luelon.spin?.index===spin.index){this.audio.stopSpin();this.setTotal(view.totalPayoutUnits);this.features(view,view.bonus?.features);return;}
+    if(!spin||live.before?.id===session.id&&live.before.view.luelon.spin?.index===spin.index){this.audio.stopSpin();this.setTotal(confirmedPayout(session,view.totalPayoutUnits));this.features(view,view.bonus?.features);return;}
     let total=Number(view.totalPayoutUnits)-Number(spin.payoutUnits);this.setTotal(total);
     if(spin.kind==='free-spin'){
       this.features(view,spin.featuresBefore);
@@ -124,7 +125,7 @@ this.find<HTMLButtonElement>('[data-cosmic-load-retry]').onclick=()=>void this.a
     }
     for(const event of spin.events){this.root.dataset.phase='feature';this.find('[data-lg-message]').textContent=event.label;this.audio.feature(event.kind);if(!await this.board.effect(event,spin.finalGrid,live.fast,live.motion,()=>this.valid(live)))return;}
     if(!this.valid(live))return;
-    this.root.dataset.echo='false';this.root.dataset.shipActive='false';this.board.show(spin.finalGrid,spin.rows,spin.featuresAfter);this.paintPortals(spin.finalGrid);this.features(view,spin.featuresAfter);this.setTotal(view.totalPayoutUnits);
+    this.root.dataset.echo='false';this.root.dataset.shipActive='false';this.board.show(spin.finalGrid,spin.rows,spin.featuresAfter);this.paintPortals(spin.finalGrid);this.features(view,spin.featuresAfter);this.setTotal(confirmedPayout(session,view.totalPayoutUnits));
     this.find('[data-lg-message]').textContent=view.capped?translateText('ДОСТИГНУТ ПРЕДЕЛ ВЫИГРЫША'):spin.triggerAwards?tr`ПОРТАЛ ОТКРЫТ · ${spin.triggerAwards} БЕСПЛАТНЫХ ВРАЩЕНИЙ`:Number(spin.payoutUnits)>0?translateText('ВЫИГРЫШ ПРИНЯТ'):view.phase==='bonus'?translateText('МИССИЯ ПРОДОЛЖАЕТСЯ'):translateText('ГОТОВ К НОВОМУ ПУТЕШЕСТВИЮ');
     this.audio.outcome(Number(spin.payoutUnits)>0);if(live.motion)await this.delay(live.fast?150:400,live);
   }

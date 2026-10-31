@@ -1,3 +1,4 @@
+import {expansionExactAward,makeRoundPrecision} from '../src/shared/roundPrecision';
 import {validGameStake, usesGameStakes} from '../src/shared/gameStakes';
 import {WILD_NUDGE_GAME,WILD_NUDGE_RESERVE_MULTIPLIER,validWildNudgeStake,validWildNudgeSession,wildNudgeExpansionView,WildNudgeMoveError,type WildNudgeResult} from '../src/shared/wildNudge';
 import {startWildNudge,moveWildNudge} from './games/wildNudge';
@@ -54,7 +55,7 @@ import { multiplierAtElapsed, rollCrashPoint, secondsToReachMultiplier } from '.
 import { STUDIO_MAX, isStudioGame, isStudioPresentationGame, isStudioJourneyPresentationGame, studioJourneyPresentationDetails, isStudioWaysPresentationGame, studioWaysPresentationDetails, isStudioCollectPresentationGame,isStudioHoldPresentationGame,isStudioWheelTrailPresentationGame,studioWheelTrailPresentationDetails,studioHoldPresentationDetails, studioCollectPresentationDetails, validStudioSettlement, validStudioSlotPresentation, type StudioSettings, type StudioSlotPresentation } from '../src/shared/studioGames';
 import { startStudioGame, moveStudioGame, currentStudioSlotPresentation, StudioMoveError, type StudioResult } from './games/studioGames';
 
-export type ExpansionState = ExpansionSession & {createdAt:number;engine?:unknown;settings:Extract<ExpansionAction,{action:'start'}>['settings'];crashPoint?:number;mathProfileVersion?:CosmicMathProfileVersion};
+export type ExpansionState = ExpansionSession & {createdAt:number;stakePolicyVersion?:1;engine?:unknown;settings:Extract<ExpansionAction,{action:'start'}>['settings'];crashPoint?:number;mathProfileVersion?:CosmicMathProfileVersion};
 const supportsNeopolis=(client:boolean|2|3|4,rules:number)=>rules<=(typeof client==='number'?client:client?1:0);
 const supportsDracona=(client:boolean|2,rules:number)=>client===2||client===true&&rules===2;
 const cardRulesVersion=(version:1|2|3|4):1|2=>{if(version!==1&&version!==2)throw Error('Not a card rules version');return version;};
@@ -81,7 +82,7 @@ export class DemoExpansionStore {
   }
   private units(s:ExpansionState,chips:number,scale=1000){const units=Number(BigInt(s.stakeUnits)*BigInt(chips)/BigInt(scale));if(!Number.isSafeInteger(units)||units<0)throw Error('Invalid expansion amount');return units;}
   private public(s:ExpansionState):ExpansionSession {
-    const {engine:_,settings:__,createdAt:___,crashPoint:____,mathProfileVersion:_____,...result}=structuredClone(s);
+    const {engine:_,settings:__,createdAt:___,crashPoint:____,mathProfileVersion:_____,stakePolicyVersion:______,...result}=structuredClone(s);
     if(s.gameId==='github-crash'){
       result.serverNow=this.now();result.multiplier=s.state==='active'?Math.min(100,multiplierAtElapsed(Math.max(0,(this.now()-s.startedAt!)/1000))):s.multiplier;
       if(s.state==='settled')result.crashAt=s.crashPoint;
@@ -97,7 +98,7 @@ export class DemoExpansionStore {
     let balance=await demoBalanceUnits(this.db,account);if(balance<debit)throw new WalletError(409,'Недостаточно демомонет для этого хода.');
     if(credit>Number(s.stakeUnits)*expansionMax(s.gameId,s.rulesVersion,s.settings))throw Error('Expansion payout exceeds reserve');
     if(debit){balance-=debit;s.spentUnits=(BigInt(s.spentUnits)+BigInt(debit)).toString();await recordDemoUnits(this.db,account,id,'bet',-debit,balance,s.gameId,EXPANSION_NAMES[s.gameId]);}
-    if(credit||s.state==='settled'){balance+=credit;s.returnedUnits=(BigInt(s.returnedUnits)+BigInt(credit)).toString();await recordDemoUnits(this.db,account,id,kind,credit,balance,s.gameId,EXPANSION_NAMES[s.gameId]);}
+    if(credit||s.state==='settled'){balance+=credit;s.returnedUnits=(BigInt(s.returnedUnits)+BigInt(credit)).toString();}
     if(s.gameId===WILD_NUDGE_GAME&&!validWildNudgeSession(this.public(s)))throw Error('Invalid Galactic Reactor settlement');
     if(s.gameId===PENALTY_GAME&&!validPenaltySettlement(s.state,s.stakeUnits,s.spentUnits,s.returnedUnits,s.view.penalty))throw Error('Invalid penalty settlement');
     if(s.gameId===FLAG_GAME&&!validFlagSession(this.public(s)))throw Error('Invalid Flag Battle settlement');
@@ -121,6 +122,14 @@ export class DemoExpansionStore {
       if(s.state==='settled'){const units=await this.jackieCollection.complete(account,s,s.view.jackie!.version);s.view.jackie!.collectionUnits=s.view.jackie!.version===1?Math.min(JACKIE_LEGACY_COLLECTION_MAX,units):units;}
       if(!validJackieSession(this.public(s)))throw Error('Invalid Jackie settlement');
     }
+    if(s.state==='settled'&&s.stakePolicyVersion===1&&!s.precision){
+      const receipt=makeRoundPrecision(expansionExactAward(s),s.returnedUnits,this.draw);
+      const extra=Number(BigInt(receipt.creditedUnits)-BigInt(s.returnedUnits));
+      if(extra){balance+=extra;credit+=extra;}
+      s.returnedUnits=receipt.creditedUnits;s.precision=receipt;
+    }
+    if(credit>Number(s.stakeUnits)*expansionMax(s.gameId,s.rulesVersion,s.settings))throw Error('Precise payout exceeds reserve');
+    if(credit||s.state==='settled')await recordDemoUnits(this.db,account,id,kind,credit,balance,s.gameId,EXPANSION_NAMES[s.gameId]);
     await this.save(account,s);await saveDemoUnits(this.db,account,balance);
   }
   private async crashDue(account:string,now:number){
@@ -131,6 +140,7 @@ export class DemoExpansionStore {
     s.state='settled';s.multiplier=s.crashPoint===100?100:0;s.view.ended=true;s.view.actions=[];s.view.message=s.crashPoint===100?'Достигнуто 100×':'Полёт остановился';
     await this.money(account,s,s.id,0,s.crashPoint===100?Number(s.stakeUnits)*100:0);
   }
+  async hasAcceptedOperation(account:string,id:unknown){await this.ready;return typeof id==='string'&&!!await this.db.prepare('SELECT 1 FROM demo_casino_requests WHERE account_id=? AND id=?').get(account,id);}
   async settleDue(account:string){await this.ready;await this.db.transaction(()=>this.crashDue(account,this.now()),{lockKey:'account:'+account});}
   private async sessions(account:string,caramelClient=true,velvetClient=true,convoyClient=true,nitroClient=true,afterClient=true,memeClient=true,penaltyClient=true,draconaClient:boolean|2=2,neopolisClient:boolean|2|3|4=4,caribbeanClient=true,forestHeartClient=false,flagClient:boolean|2=true,jackieClient:boolean|2=false,templeClient:boolean|2=false,wildNudgeClient=false){
     const rows=await this.db.prepare(`SELECT DISTINCT ON(game_id) payload FROM demo_casino_sessions WHERE account_id=? AND game_id IN (${placeholders}) ORDER BY game_id,(payload::jsonb->>'createdAt')::bigint DESC,id DESC`).all(account,...EXPANSION_GAMES);
@@ -281,7 +291,7 @@ export class DemoExpansionStore {
         if(expansionRulesVersion(op.gameId)>=2&&clientRules!==2)throw new WalletError(409,'Обнови страницу: правила этой игры исправлены. Ставка не списана.');
         if(await this.db.prepare("SELECT 1 FROM demo_casino_sessions WHERE account_id=? AND game_id=? AND state='active'").get(account,op.gameId))throw new WalletError(409,'Сначала заверши текущую партию.');
         if(op.gameId===AFTER_GAME)await this.wardrobe.assertSelection(account,op.appearance);
-        if (usesGameStakes(op.gameId) && !validGameStake(op.stakeUnits)) throw new WalletError(400,'Недопустимая ставка.');
+        if (op.stakePolicyVersion===1 && usesGameStakes(op.gameId) && !validGameStake(op.stakeUnits)) throw new WalletError(400,'Недопустимая ставка.');
         const stake=Number(op.stakeUnits),balance=await demoBalanceUnits(this.db,account),cost=op.gameId===CARIBBEAN_GAME&&validCaribbeanTransportSettings(op.settings)?Number(caribbeanInitialCost(op.settings.caribbean,op.stakeUnits)):stake*(op.gameId===CARAMEL_GAME&&validCaramelSettings(op.settings)?caramelCost(op.settings):isLuelonSlotGame(op.gameId)&&validLuelonSlotSettings(op.gameId,op.settings)?luelonSlotInitialCost(op.gameId,op.settings):expansionInitialCost(op.gameId,('side' in op.settings?op.settings.side:false)));
         if(balance<cost)throw new WalletError(409,'Недостаточно демомонет для начальных ставок.');
         if(balance-cost+stake*expansionMax(op.gameId,expansionRulesVersion(op.gameId),op.settings)+await demoReservedUnits(this.db,account)>MAX_DEMO_UNITS)throw new WalletError(409,'Уменьши ставку: возможный выигрыш превышает лимит баланса.');
@@ -289,7 +299,7 @@ export class DemoExpansionStore {
         const last=await this.db.prepare("SELECT MAX((payload::jsonb->>'createdAt')::bigint) AS created_at FROM demo_casino_sessions WHERE account_id=? AND game_id=?").get(account,op.gameId);
         const createdAt=Math.max(this.now(),Number(last!.created_at??-1)+1);
         if(!Number.isSafeInteger(createdAt)||createdAt<0)throw Error('Invalid casino session order');
-        s={id:op.id,gameId:op.gameId,rulesVersion:op.gameId===CARIBBEAN_GAME&&validCaribbeanTransportSettings(op.settings)?(op.settings.caribbean.stakeBasis==='total'?2:1):op.gameId===TEMPLE_GAME&&validCascadeSettings(op.settings)?2:expansionRulesVersion(op.gameId),state:'active',stakeUnits:op.stakeUnits,spentUnits:'0',returnedUnits:'0',createdAt,settings:op.settings,view:emptyView(),...(op.gameId==='studio-cosmic-escape'?{mathProfileVersion:COSMIC_MATH_PROFILE_VERSION}:{})};debit=cost;
+        s={id:op.id,gameId:op.gameId,rulesVersion:op.gameId===CARIBBEAN_GAME&&validCaribbeanTransportSettings(op.settings)?(op.settings.caribbean.stakeBasis==='total'?2:1):op.gameId===TEMPLE_GAME&&validCascadeSettings(op.settings)?2:expansionRulesVersion(op.gameId),state:'active',stakeUnits:op.stakeUnits,spentUnits:'0',returnedUnits:'0',createdAt,stakePolicyVersion:op.stakePolicyVersion,settings:op.settings,view:emptyView(),...(op.gameId==='studio-cosmic-escape'?{mathProfileVersion:COSMIC_MATH_PROFILE_VERSION}:{})};debit=cost;
         if(op.gameId===WILD_NUDGE_GAME){credit=this.applyWildNudge(s,startWildNudge(op.settings,op.stakeUnits,this.draw)).credit;}
         else if(op.gameId===TEMPLE_GAME){credit=validCascadeSettings(op.settings)?this.applyTempleCascade(s,startTempleCascade(op.settings,op.stakeUnits,this.draw)).credit:this.applyTemple(s,startTemple(op.settings,op.stakeUnits,this.draw)).credit;}
         else if(op.gameId===FLAG_GAME){

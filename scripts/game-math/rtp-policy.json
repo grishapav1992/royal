@@ -3,7 +3,7 @@
   "profiles": {
     "studio-forest-heart": {
       "method": "exact-forest-heart-runtime",
-      "releaseStatus": "model-only",
+      "releaseStatus": "qualified",
       "rulesVersion": 1,
       "progressVersion": 1,
       "target": 0.96,
@@ -14,15 +14,12 @@
       ],
       "serverReplayRoundsPerSeed": 64,
       "stakes": [
-        10,
-        20,
-        50,
-        100,
-        200,
-        500,
         1000,
         2000,
-        5000
+        5000,
+        10000,
+        20000,
+        50000
       ],
       "choices": [
         "optimal",
@@ -72,10 +69,9 @@
         "deployment/releases/jackie-chan-20261029-v2/source/server/finance/nile-game-runtime.ts",
         "deployment/releases/jackie-chan-20261029-v2/source/src/shared/casinoExpansion.ts",
         "deployment/releases/jackie-chan-20261029-v2/finance-source/src/shared/arcadeCatalog.ts",
-        "deployment/releases/jackie-chan-20261029-v2/finance-source/src/i18n/en.ts",
-        "src/shared/gameStakes.ts"
+        "deployment/releases/jackie-chan-20261029-v2/finance-source/src/i18n/en.ts"
       ],
-      "note": "Exact full-round model with server entropy census, independent seeded start/move replay and real PostgreSQL common-wallet qualification. Presentation reads only the confirmed public view. Browser, module, layout and audio checks are recorded separately from mathematical qualification. Unified-stakes draft. Publication is blocked until each denomination and every allowed paid mode, continuation and player choice has fresh complete-round evidence. Existing accepted transcripts retain their historical denomination and settlement."
+      "note": "Exact full-round model with server entropy census, independent seeded start/move replay and real PostgreSQL common-wallet qualification. Presentation reads only the confirmed public view. Browser, module, layout and audio checks are recorded separately from mathematical qualification."
     },
     "studio-afterglow": {
       "rulesVersion": 2,
@@ -92,15 +88,19 @@
       ],
       "qualificationRoundsPerSeed": 5000000,
       "stakes": [
-        10,
-        20,
-        50,
         100,
         200,
+        300,
         500,
         1000,
         2000,
-        5000
+        2500,
+        5000,
+        10000,
+        20000,
+        25000,
+        50000,
+        100000
       ],
       "choices": [
         "normal"
@@ -114,18 +114,24 @@
         "server/games/afterglow.ts",
         "src/shared/afterglowWardrobe.ts",
         "server/afterglowWardrobe.ts",
-        "server/afterglowProgress.ts",
-        "src/shared/gameStakes.ts"
-      ],
-      "releaseStatus": "model-only",
-      "note": "Unified-stakes draft. Publication is blocked until each denomination and every allowed paid mode, continuation and player choice has fresh complete-round evidence. Existing accepted transcripts retain their historical denomination and settlement."
+        "server/afterglowProgress.ts"
+      ]
     },
     "studio-caribbean-treasures": {
+      "method": "full-round-unbiased-cent-policy-v1",
+      "stakePolicyVersion": 1,
       "rulesVersion": 2,
       "progressVersion": 1,
-      "method": "exact-caribbean-total-stake-v2",
       "target": 0.96,
       "tolerance": 0.0005,
+      "seeds": [
+        4139817,
+        6371291
+      ],
+      "calibrationSeeds": [
+        830927,
+        961127
+      ],
       "stakes": [
         10,
         20,
@@ -155,37 +161,38 @@
         "lines-20-buy-raid",
         "lines-20-buy-flagship"
       ],
-      "seeds": [
-        700131,
-        929827
-      ],
-      "serverReplayRoundsPerSeed": 32,
-      "proof": "docs/game-math/qualifications/caribbean-total-stake-v2.json",
-      "qualificationSource": "scripts/game-math/rtp-caribbean.mjs",
+      "kind": "caribbean",
+      "serverReplayRoundsPerSeed": 64,
+      "proof": "docs/game-math/qualifications/shared-stakes-studio-caribbean-treasures.json",
+      "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
       "sources": [
-        "src/shared/caribbeanTreasuresMath.ts",
-        "src/shared/caribbeanTreasures.ts",
-        "server/games/caribbeanTreasures.ts",
-        "src/shared/caribbeanTransport.ts",
+        "src/shared/gameStakes.ts",
+        "src/shared/roundPrecision.ts",
         "src/shared/casinoExpansion.ts",
+        "src/shared/forestHeartMath.ts",
+        "src/shared/neopolisMath.ts",
+        "src/shared/neopolisStakePayouts.ts",
         "server/demoExpansion.ts",
+        "server/demoWallet.ts",
+        "server/demoWalletAmounts.ts",
+        "server/demoWalletRoutes.ts",
         "server/finance/nile-game-runtime.ts",
-        "scripts/game-math/rational.mjs",
-        "deployment/releases/caribbean-treasures-20261029-v2/financial-build.mjs",
-        "deployment/releases/caribbean-treasures-20261029-v2/financial-baseline.json",
-        "deployment/releases/caribbean-treasures-20261029-v2/financial-arcadeCatalog.ts",
-        "deployment/releases/jackie-chan-20261029-v2/projection.mjs",
-        "deployment/releases/jackie-chan-20261029-v2/projection-origins.json",
-        "deployment/releases/jackie-chan-20261029-v2/financial-origins.json",
-        "deployment/releases/jackie-chan-20261029-v2/source/server/demoExpansion.ts",
-        "deployment/releases/jackie-chan-20261029-v2/source/server/finance/nile-game-runtime.ts",
-        "deployment/releases/jackie-chan-20261029-v2/source/src/shared/casinoExpansion.ts",
-        "deployment/releases/jackie-chan-20261029-v2/finance-source/src/shared/arcadeCatalog.ts",
-        "deployment/releases/jackie-chan-20261029-v2/finance-source/src/i18n/en.ts",
-        "src/shared/gameStakes.ts"
+        "server/afterglowProgress.ts",
+        "src/wallet/ExpansionClient.ts",
+        "src/wallet/WalletClient.ts",
+        "scripts/game-math/rtp-stakes-sampler.mjs",
+        "scripts/game-math/rtp-stakes-worker.mjs",
+        "server-tests/game-stakes.test.ts",
+        "server-tests/round-precision.test.ts",
+        "src/shared/caribbeanTreasures.ts",
+        "src/shared/caribbeanTreasuresMath.ts",
+        "src/shared/caribbeanTransport.ts",
+        "server/games/caribbeanTreasures.ts",
+        "scripts/game-math/rtp-caribbean.mjs",
+        "scripts/game-math/stake-runtime.mjs",
+        "scripts/game-math/stakes-wallet.ts"
       ],
-      "releaseStatus": "model-only",
-      "note": "Unified-stakes draft. Publication is blocked until each denomination and every allowed paid mode, continuation and player choice has fresh complete-round evidence. Existing accepted transcripts retain their historical denomination and settlement."
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
     },
     "studio-neopolis": {
       "rulesVersion": 4,
@@ -202,15 +209,12 @@
       ],
       "qualificationCyclesPerSeed": 30000,
       "stakes": [
-        10,
-        20,
-        50,
-        100,
-        200,
-        500,
         1000,
         2000,
-        5000
+        5000,
+        10000,
+        20000,
+        50000
       ],
       "choices": [
         "granite",
@@ -228,8 +232,7 @@
         "src/shared/neopolisStakePayouts.ts",
         "src/shared/draconaMath.ts",
         "scripts/game-math/calibrate-neopolis-stakes.mjs",
-        "docs/game-math/neopolis-v4-calibration.json",
-        "src/shared/gameStakes.ts"
+        "docs/game-math/neopolis-v4-calibration.json"
       ],
       "method": "neopolis-variable-stake-conditional-v4",
       "qualificationSource": "scripts/game-math/rtp-neopolis-v4.mjs",
@@ -256,9 +259,7 @@
       ],
       "confidenceZ": 2.241402727604947,
       "qualificationLooks": 2,
-      "samplingPlan": "Retain the complete first 10000 cycles per seed and extend each stream to exactly 30000 cycles once. Use a two-sided 97.5% normal interval for each of the at most two looks. Do not stop early or discard any seed or prefix. Keep the failed first-look evidence. No further sample extension is authorized by this plan.",
-      "releaseStatus": "model-only",
-      "note": "Unified-stakes draft. Publication is blocked until each denomination and every allowed paid mode, continuation and player choice has fresh complete-round evidence. Existing accepted transcripts retain their historical denomination and settlement."
+      "samplingPlan": "Retain the complete first 10000 cycles per seed and extend each stream to exactly 30000 cycles once. Use a two-sided 97.5% normal interval for each of the at most two looks. Do not stop early or discard any seed or prefix. Keep the failed first-look evidence. No further sample extension is authorized by this plan."
     },
     "studio-dracona": {
       "rulesVersion": 3,
@@ -275,15 +276,12 @@
       ],
       "qualificationRoundsPerSeed": 2500000,
       "stakes": [
-        10,
-        20,
-        50,
-        100,
-        200,
-        500,
         1000,
         2000,
-        5000
+        5000,
+        10000,
+        20000,
+        50000
       ],
       "choices": [
         "normal"
@@ -293,11 +291,8 @@
         "src/shared/draconaMath.ts",
         "src/shared/draconaMathV1.ts",
         "src/shared/dracona.ts",
-        "server/games/dracona.ts",
-        "src/shared/gameStakes.ts"
-      ],
-      "releaseStatus": "model-only",
-      "note": "Unified-stakes draft. Publication is blocked until each denomination and every allowed paid mode, continuation and player choice has fresh complete-round evidence. Existing accepted transcripts retain their historical denomination and settlement."
+        "server/games/dracona.ts"
+      ]
     },
     "mortal-kombat": {
       "method": "exhaustive-pvp-journal",
@@ -557,15 +552,32 @@
       ],
       "serverReplayRoundsPerSeed": 32,
       "stakes": [
-        10,
         20,
-        50,
+        40,
+        60,
+        80,
         100,
         200,
+        300,
+        400,
         500,
+        600,
+        800,
         1000,
+        1500,
         2000,
-        5000
+        3000,
+        5000,
+        7500,
+        10000,
+        15000,
+        20000,
+        30000,
+        50000,
+        75000,
+        100000,
+        150000,
+        200000
       ],
       "choices": [
         "normal",
@@ -580,11 +592,8 @@
         "src/shared/luelonSlots.ts",
         "src/shared/luelonSlotsLines.ts",
         "src/shared/cosmicEscapeBets.ts",
-        "server/games/luelonSlots.ts",
-        "src/shared/gameStakes.ts"
-      ],
-      "releaseStatus": "model-only",
-      "note": "Unified-stakes draft. Publication is blocked until each denomination and every allowed paid mode, continuation and player choice has fresh complete-round evidence. Existing accepted transcripts retain their historical denomination and settlement."
+        "server/games/luelonSlots.ts"
+      ]
     },
     "studio-flooded-temple": {
       "method": "temple-cascade-independent-monte-carlo-v2",
@@ -605,15 +614,12 @@
         19840117
       ],
       "stakes": [
-        10,
-        20,
-        50,
-        100,
-        200,
-        500,
         1000,
         2000,
-        5000
+        5000,
+        10000,
+        20000,
+        50000
       ],
       "choices": [
         "normal"
@@ -633,12 +639,9 @@
         "server/gameWalletRoutes.ts",
         "server/finance/nile-game-runtime.ts",
         "src/wallet/ExpansionClient.ts",
-        "scripts/game-math/rtp-temple-cascade-worker.mjs",
-        "src/shared/gameStakes.ts"
+        "scripts/game-math/rtp-temple-cascade-worker.mjs"
       ],
-      "availability": "server-opt-in",
-      "releaseStatus": "model-only",
-      "note": "Unified-stakes draft. Publication is blocked until each denomination and every allowed paid mode, continuation and player choice has fresh complete-round evidence. Existing accepted transcripts retain their historical denomination and settlement."
+      "availability": "server-opt-in"
     },
     "royal-roulette": {
       "rulesVersion": 1,
@@ -647,15 +650,10 @@
       "target": 0.972972972972973,
       "tolerance": 1e-12,
       "stakes": [
-        10,
-        20,
-        50,
-        100,
-        200,
-        500,
         1000,
-        2000,
-        5000
+        5000,
+        10000,
+        50000
       ],
       "choices": [
         "red",
@@ -714,11 +712,8 @@
         "src/shared/gameCore.ts",
         "src/shared/originalGames.ts",
         "src/shared/demoWallet.ts",
-        "server/demoWallet.ts",
-        "src/shared/gameStakes.ts"
-      ],
-      "releaseStatus": "model-only",
-      "note": "Unified-stakes draft. Publication is blocked until each denomination and every allowed paid mode, continuation and player choice has fresh complete-round evidence. Existing accepted transcripts retain their historical denomination and settlement."
+        "server/demoWallet.ts"
+      ]
     },
     "original-jackie-chan": {
       "method": "exact-jackie-series-v1",
@@ -727,15 +722,10 @@
       "target": 0.99,
       "tolerance": 0.0003,
       "stakes": [
-        10,
-        20,
-        50,
-        100,
-        200,
-        500,
         1000,
-        2000,
-        5000
+        5000,
+        10000,
+        50000
       ],
       "choices": [
         "safe",
@@ -764,11 +754,8 @@
         "deployment/releases/jackie-chan-20261029-v2/source/server/finance/nile-game-runtime.ts",
         "deployment/releases/jackie-chan-20261029-v2/source/src/shared/casinoExpansion.ts",
         "deployment/releases/jackie-chan-20261029-v2/finance-source/src/shared/arcadeCatalog.ts",
-        "deployment/releases/jackie-chan-20261029-v2/finance-source/src/i18n/en.ts",
-        "src/shared/gameStakes.ts"
-      ],
-      "releaseStatus": "model-only",
-      "note": "Unified-stakes draft. Publication is blocked until each denomination and every allowed paid mode, continuation and player choice has fresh complete-round evidence. Existing accepted transcripts retain their historical denomination and settlement."
+        "deployment/releases/jackie-chan-20261029-v2/finance-source/src/i18n/en.ts"
+      ]
     },
     "flag-battle": {
       "rulesVersion": 2,
@@ -786,9 +773,6 @@
       ],
       "qualificationRoundsPerSeed": 8000000,
       "stakes": [
-        10,
-        20,
-        50,
         100,
         200,
         500,
@@ -915,12 +899,9 @@
         "deployment/releases/jackie-chan-20261029-v2/source/server/finance/nile-game-runtime.ts",
         "deployment/releases/jackie-chan-20261029-v2/source/src/shared/casinoExpansion.ts",
         "deployment/releases/jackie-chan-20261029-v2/finance-source/src/shared/arcadeCatalog.ts",
-        "deployment/releases/jackie-chan-20261029-v2/finance-source/src/i18n/en.ts",
-        "src/shared/gameStakes.ts"
+        "deployment/releases/jackie-chan-20261029-v2/finance-source/src/i18n/en.ts"
       ],
-      "serverReplayRunsPerWinner": 16,
-      "releaseStatus": "model-only",
-      "note": "Unified-stakes draft. Publication is blocked until each denomination and every allowed paid mode, continuation and player choice has fresh complete-round evidence. Existing accepted transcripts retain their historical denomination and settlement."
+      "serverReplayRunsPerWinner": 16
     },
     "tsu-e-fa": {
       "method": "exhaustive-virtual-pvp-pot",
@@ -1350,13 +1331,17 @@
       "note": "Exact aggregate bank conservation and conditional allocation with real PostgreSQL common-wallet qualification. Individual return varies with the pool. Client layout and sound are checked separately before publication."
     },
     "studio-caramel-carnival": {
-      "method": "unified-stakes-runtime-pending",
-      "releaseStatus": "model-only",
+      "method": "full-round-unbiased-cent-policy-v1",
+      "stakePolicyVersion": 1,
       "rulesVersion": 2,
-      "progressVersion": 2,
+      "progressVersion": 1,
       "target": 0.96,
       "tolerance": 0.01,
       "seeds": [
+        4139817,
+        6371291
+      ],
+      "calibrationSeeds": [
         830927,
         961127
       ],
@@ -1375,134 +1360,262 @@
         "normal",
         "festival"
       ],
-      "proof": "docs/game-math/qualifications/studio-caramel-carnival-unified-stakes.json",
+      "kind": "sampled-slots",
+      "serverReplayRoundsPerSeed": 64,
+      "proof": "docs/game-math/qualifications/shared-stakes-studio-caramel-carnival.json",
+      "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
       "sources": [
+        "src/shared/gameStakes.ts",
+        "src/shared/roundPrecision.ts",
+        "src/shared/casinoExpansion.ts",
+        "src/shared/forestHeartMath.ts",
+        "src/shared/neopolisMath.ts",
+        "src/shared/neopolisStakePayouts.ts",
+        "server/demoExpansion.ts",
+        "server/demoWallet.ts",
+        "server/demoWalletAmounts.ts",
+        "server/demoWalletRoutes.ts",
+        "server/finance/nile-game-runtime.ts",
+        "server/afterglowProgress.ts",
+        "src/wallet/ExpansionClient.ts",
+        "src/wallet/WalletClient.ts",
+        "scripts/game-math/rtp-stakes-sampler.mjs",
+        "scripts/game-math/rtp-stakes-worker.mjs",
+        "server-tests/game-stakes.test.ts",
+        "server-tests/round-precision.test.ts",
         "src/shared/caramelCarnival.ts",
         "server/games/caramelCarnival.ts",
-        "src/shared/gameStakes.ts",
-        "server/demoWallet.ts",
-        "server/demoWalletAmounts.ts",
-        "server/demoExpansion.ts"
+        "scripts/game-math/stake-runtime.mjs",
+        "scripts/game-math/stakes-wallet.ts"
       ],
-      "note": "Draft policy, not qualification. Requires independent complete-round model, integer settlement, all choices and common-wallet replay before publication. No legacy freeze or existing qualification is waived."
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
+      "qualificationLooks": [
+        1000000,
+        25000000
+      ],
+      "confidenceZ": 2.241402727604947,
+      "maxHalfWidth95": 0.01,
+      "maxUpper95": 0.98,
+      "minPaidRounds": 2000000,
+      "samplerGame": "studio-caramel-carnival"
     },
     "studio-last-convoy": {
-      "method": "unified-stakes-runtime-pending",
-      "releaseStatus": "model-only",
-      "rulesVersion": 2,
-      "progressVersion": 2,
-      "target": 0.96,
-      "tolerance": 0.01,
-      "seeds": [
-        830927,
-        961127
-      ],
-      "stakes": [
-        10,
-        20,
-        50,
-        100,
-        200,
-        500,
-        1000,
-        2000,
-        5000
-      ],
-      "choices": [
-        "normal"
-      ],
-      "proof": "docs/game-math/qualifications/studio-last-convoy-unified-stakes.json",
-      "sources": [
-        "src/shared/lastConvoy.ts",
-        "server/games/lastConvoy.ts",
-        "src/shared/gameStakes.ts",
-        "server/demoWallet.ts",
-        "server/demoWalletAmounts.ts",
-        "server/demoExpansion.ts"
-      ],
-      "note": "Draft policy, not qualification. Requires independent complete-round model, integer settlement, all choices and common-wallet replay before publication. No legacy freeze or existing qualification is waived."
-    },
-    "studio-nitro-run": {
-      "method": "unified-stakes-runtime-pending",
-      "releaseStatus": "model-only",
-      "rulesVersion": 2,
-      "progressVersion": 2,
-      "target": 0.96,
-      "tolerance": 0.01,
-      "seeds": [
-        830927,
-        961127
-      ],
-      "stakes": [
-        10,
-        20,
-        50,
-        100,
-        200,
-        500,
-        1000,
-        2000,
-        5000
-      ],
-      "choices": [
-        "normal"
-      ],
-      "proof": "docs/game-math/qualifications/studio-nitro-run-unified-stakes.json",
-      "sources": [
-        "src/shared/nitroRun.ts",
-        "server/games/nitroRun.ts",
-        "src/shared/gameStakes.ts",
-        "server/demoWallet.ts",
-        "server/demoWalletAmounts.ts",
-        "server/demoExpansion.ts"
-      ],
-      "note": "Draft policy, not qualification. Requires independent complete-round model, integer settlement, all choices and common-wallet replay before publication. No legacy freeze or existing qualification is waived."
-    },
-    "studio-meme-overload": {
-      "method": "unified-stakes-runtime-pending",
-      "releaseStatus": "model-only",
-      "rulesVersion": 2,
-      "progressVersion": 2,
-      "target": 0.96,
-      "tolerance": 0.01,
-      "seeds": [
-        830927,
-        961127
-      ],
-      "stakes": [
-        10,
-        20,
-        50,
-        100,
-        200,
-        500,
-        1000,
-        2000,
-        5000
-      ],
-      "choices": [
-        "normal"
-      ],
-      "proof": "docs/game-math/qualifications/studio-meme-overload-unified-stakes.json",
-      "sources": [
-        "src/shared/nitroRun.ts",
-        "src/shared/memeOverload.ts",
-        "server/games/nitroRun.ts",
-        "src/shared/gameStakes.ts",
-        "server/demoWallet.ts",
-        "server/demoWalletAmounts.ts",
-        "server/demoExpansion.ts"
-      ],
-      "note": "Draft policy, not qualification. Requires independent complete-round model, integer settlement, all choices and common-wallet replay before publication. No legacy freeze or existing qualification is waived."
-    },
-    "studio-velvet-reign": {
-      "method": "unified-stakes-runtime-pending",
-      "releaseStatus": "model-only",
+      "method": "full-round-unbiased-cent-policy-v1",
+      "stakePolicyVersion": 1,
       "rulesVersion": 2,
       "progressVersion": 1,
       "target": 0.96,
       "tolerance": 0.01,
       "seeds": [
+        4139817,
+        6371291
+      ],
+      "calibrationSeeds": [
+        830927,
+        961127
+      ],
+      "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "choices": [
+        "normal"
+      ],
+      "kind": "sampled-slots",
+      "serverReplayRoundsPerSeed": 64,
+      "proof": "docs/game-math/qualifications/shared-stakes-studio-last-convoy.json",
+      "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
+      "sources": [
+        "src/shared/gameStakes.ts",
+        "src/shared/roundPrecision.ts",
+        "src/shared/casinoExpansion.ts",
+        "src/shared/forestHeartMath.ts",
+        "src/shared/neopolisMath.ts",
+        "src/shared/neopolisStakePayouts.ts",
+        "server/demoExpansion.ts",
+        "server/demoWallet.ts",
+        "server/demoWalletAmounts.ts",
+        "server/demoWalletRoutes.ts",
+        "server/finance/nile-game-runtime.ts",
+        "server/afterglowProgress.ts",
+        "src/wallet/ExpansionClient.ts",
+        "src/wallet/WalletClient.ts",
+        "scripts/game-math/rtp-stakes-sampler.mjs",
+        "scripts/game-math/rtp-stakes-worker.mjs",
+        "server-tests/game-stakes.test.ts",
+        "server-tests/round-precision.test.ts",
+        "src/shared/lastConvoy.ts",
+        "server/games/lastConvoy.ts",
+        "scripts/game-math/stake-runtime.mjs",
+        "scripts/game-math/stakes-wallet.ts"
+      ],
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
+      "qualificationLooks": [
+        1000000,
+        25000000
+      ],
+      "confidenceZ": 2.241402727604947,
+      "maxHalfWidth95": 0.01,
+      "maxUpper95": 0.98,
+      "minPaidRounds": 2000000,
+      "samplerGame": "studio-last-convoy"
+    },
+    "studio-nitro-run": {
+      "method": "full-round-unbiased-cent-policy-v1",
+      "stakePolicyVersion": 1,
+      "rulesVersion": 2,
+      "progressVersion": 1,
+      "target": 0.96,
+      "tolerance": 0.01,
+      "seeds": [
+        4139817,
+        6371291
+      ],
+      "calibrationSeeds": [
+        830927,
+        961127
+      ],
+      "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "choices": [
+        "normal"
+      ],
+      "kind": "sampled-slots",
+      "serverReplayRoundsPerSeed": 64,
+      "proof": "docs/game-math/qualifications/shared-stakes-studio-nitro-run.json",
+      "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
+      "sources": [
+        "src/shared/gameStakes.ts",
+        "src/shared/roundPrecision.ts",
+        "src/shared/casinoExpansion.ts",
+        "src/shared/forestHeartMath.ts",
+        "src/shared/neopolisMath.ts",
+        "src/shared/neopolisStakePayouts.ts",
+        "server/demoExpansion.ts",
+        "server/demoWallet.ts",
+        "server/demoWalletAmounts.ts",
+        "server/demoWalletRoutes.ts",
+        "server/finance/nile-game-runtime.ts",
+        "server/afterglowProgress.ts",
+        "src/wallet/ExpansionClient.ts",
+        "src/wallet/WalletClient.ts",
+        "scripts/game-math/rtp-stakes-sampler.mjs",
+        "scripts/game-math/rtp-stakes-worker.mjs",
+        "server-tests/game-stakes.test.ts",
+        "server-tests/round-precision.test.ts",
+        "src/shared/nitroRun.ts",
+        "server/games/nitroRun.ts",
+        "scripts/game-math/stake-runtime.mjs",
+        "scripts/game-math/stakes-wallet.ts"
+      ],
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
+      "qualificationLooks": [
+        1000000,
+        25000000
+      ],
+      "confidenceZ": 2.241402727604947,
+      "maxHalfWidth95": 0.01,
+      "maxUpper95": 0.98,
+      "minPaidRounds": 2000000,
+      "samplerGame": "studio-nitro-run"
+    },
+    "studio-meme-overload": {
+      "method": "full-round-unbiased-cent-policy-v1",
+      "stakePolicyVersion": 1,
+      "rulesVersion": 2,
+      "progressVersion": 1,
+      "target": 0.96,
+      "tolerance": 0.01,
+      "seeds": [
+        4139817,
+        6371291
+      ],
+      "calibrationSeeds": [
+        830927,
+        961127
+      ],
+      "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "choices": [
+        "normal"
+      ],
+      "kind": "sampled-slots",
+      "serverReplayRoundsPerSeed": 64,
+      "proof": "docs/game-math/qualifications/shared-stakes-studio-meme-overload.json",
+      "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
+      "sources": [
+        "src/shared/gameStakes.ts",
+        "src/shared/roundPrecision.ts",
+        "src/shared/casinoExpansion.ts",
+        "src/shared/forestHeartMath.ts",
+        "src/shared/neopolisMath.ts",
+        "src/shared/neopolisStakePayouts.ts",
+        "server/demoExpansion.ts",
+        "server/demoWallet.ts",
+        "server/demoWalletAmounts.ts",
+        "server/demoWalletRoutes.ts",
+        "server/finance/nile-game-runtime.ts",
+        "server/afterglowProgress.ts",
+        "src/wallet/ExpansionClient.ts",
+        "src/wallet/WalletClient.ts",
+        "scripts/game-math/rtp-stakes-sampler.mjs",
+        "scripts/game-math/rtp-stakes-worker.mjs",
+        "server-tests/game-stakes.test.ts",
+        "server-tests/round-precision.test.ts",
+        "src/shared/nitroRun.ts",
+        "src/shared/memeOverload.ts",
+        "server/games/nitroRun.ts",
+        "scripts/game-math/stake-runtime.mjs",
+        "scripts/game-math/stakes-wallet.ts"
+      ],
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
+      "qualificationLooks": [
+        1000000,
+        25000000
+      ],
+      "confidenceZ": 2.241402727604947,
+      "maxHalfWidth95": 0.01,
+      "maxUpper95": 0.98,
+      "minPaidRounds": 2000000,
+      "samplerGame": "studio-nitro-run"
+    },
+    "studio-velvet-reign": {
+      "method": "full-round-unbiased-cent-policy-v1",
+      "stakePolicyVersion": 1,
+      "rulesVersion": 2,
+      "progressVersion": 1,
+      "target": 0.96,
+      "tolerance": 0.01,
+      "seeds": [
+        4139817,
+        6371291
+      ],
+      "calibrationSeeds": [
         830927,
         961127
       ],
@@ -1524,28 +1637,60 @@
         "spotlight",
         "super-encore"
       ],
-      "proof": "docs/game-math/qualifications/studio-velvet-reign-unified-stakes.json",
+      "kind": "sampled-slots",
+      "serverReplayRoundsPerSeed": 64,
+      "proof": "docs/game-math/qualifications/shared-stakes-studio-velvet-reign.json",
+      "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
       "sources": [
-        "src/shared/velvetReign.ts",
-        "src/shared/velvetReignHistory.ts",
-        "src/shared/luelonSlots.ts",
-        "server/games/velvetReign.ts",
-        "server/games/velvetMath.ts",
         "src/shared/gameStakes.ts",
+        "src/shared/roundPrecision.ts",
+        "src/shared/casinoExpansion.ts",
+        "src/shared/forestHeartMath.ts",
+        "src/shared/neopolisMath.ts",
+        "src/shared/neopolisStakePayouts.ts",
+        "server/demoExpansion.ts",
         "server/demoWallet.ts",
         "server/demoWalletAmounts.ts",
-        "server/demoExpansion.ts"
+        "server/demoWalletRoutes.ts",
+        "server/finance/nile-game-runtime.ts",
+        "server/afterglowProgress.ts",
+        "src/wallet/ExpansionClient.ts",
+        "src/wallet/WalletClient.ts",
+        "scripts/game-math/rtp-stakes-sampler.mjs",
+        "scripts/game-math/rtp-stakes-worker.mjs",
+        "server-tests/game-stakes.test.ts",
+        "server-tests/round-precision.test.ts",
+        "src/shared/luelonSlots.ts",
+        "src/shared/velvetReign.ts",
+        "src/shared/velvetReignHistory.ts",
+        "server/games/velvetReign.ts",
+        "server/games/velvetMath.ts",
+        "scripts/game-math/stake-runtime.mjs",
+        "scripts/game-math/stakes-wallet.ts"
       ],
-      "note": "Draft policy, not qualification. Requires independent complete-round model, integer settlement, all choices and common-wallet replay before publication. No legacy freeze or existing qualification is waived."
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
+      "qualificationLooks": [
+        1000000,
+        25000000
+      ],
+      "confidenceZ": 2.241402727604947,
+      "maxHalfWidth95": 0.01,
+      "maxUpper95": 0.98,
+      "minPaidRounds": 2000000,
+      "samplerGame": "studio-velvet-reign"
     },
-    "royal-plinko": {
-      "method": "unified-stakes-runtime-pending",
-      "releaseStatus": "model-only",
+    "original-cr-vs-leo": {
+      "method": "full-round-unbiased-cent-policy-v1",
+      "stakePolicyVersion": 1,
       "rulesVersion": 1,
       "progressVersion": 1,
-      "target": 0.98,
-      "tolerance": 0.01,
+      "target": 0.99,
+      "tolerance": 1e-12,
       "seeds": [
+        4139817,
+        6371291
+      ],
+      "calibrationSeeds": [
         830927,
         961127
       ],
@@ -1561,39 +1706,223 @@
         5000
       ],
       "choices": [
-        "8-easy",
-        "8-medium",
-        "8-hard",
-        "8-expert",
-        "12-easy",
-        "12-medium",
-        "12-hard",
-        "12-expert",
-        "16-easy",
-        "16-medium",
-        "16-hard",
-        "16-expert"
+        "all-adaptive-risk-paths"
       ],
-      "proof": "docs/game-math/qualifications/royal-plinko-unified-stakes.json",
+      "kind": "series",
+      "serverReplayRoundsPerSeed": 64,
+      "proof": "docs/game-math/qualifications/shared-stakes-original-cr-vs-leo.json",
+      "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
       "sources": [
-        "src/shared/originalGames.ts",
-        "server/games/core.ts",
-        "server/games/originals.ts",
         "src/shared/gameStakes.ts",
+        "src/shared/roundPrecision.ts",
+        "src/shared/casinoExpansion.ts",
+        "src/shared/forestHeartMath.ts",
+        "src/shared/neopolisMath.ts",
+        "src/shared/neopolisStakePayouts.ts",
+        "server/demoExpansion.ts",
         "server/demoWallet.ts",
         "server/demoWalletAmounts.ts",
-        "server/demoExpansion.ts"
+        "server/demoWalletRoutes.ts",
+        "server/finance/nile-game-runtime.ts",
+        "server/afterglowProgress.ts",
+        "src/wallet/ExpansionClient.ts",
+        "src/wallet/WalletClient.ts",
+        "scripts/game-math/rtp-stakes-sampler.mjs",
+        "scripts/game-math/rtp-stakes-worker.mjs",
+        "server-tests/game-stakes.test.ts",
+        "server-tests/round-precision.test.ts",
+        "src/shared/crLeo.ts",
+        "server/games/crLeo.ts",
+        "scripts/game-math/stake-runtime.mjs",
+        "scripts/game-math/stakes-wallet.ts"
       ],
-      "note": "Draft policy, not qualification. Requires independent complete-round model, integer settlement, all choices and common-wallet replay before publication. No legacy freeze or existing qualification is waived."
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
+    },
+    "royal-plinko": {
+      "method": "full-round-unbiased-cent-policy-v1",
+      "stakePolicyVersion": 1,
+      "rulesVersion": 1,
+      "progressVersion": 1,
+      "target": 0.99,
+      "tolerance": 1e-12,
+      "seeds": [
+        4139817,
+        6371291
+      ],
+      "calibrationSeeds": [
+        830927,
+        961127
+      ],
+      "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "choices": [
+        "8:easy",
+        "8:medium",
+        "8:hard",
+        "8:expert",
+        "9:easy",
+        "9:medium",
+        "9:hard",
+        "9:expert",
+        "10:easy",
+        "10:medium",
+        "10:hard",
+        "10:expert",
+        "11:easy",
+        "11:medium",
+        "11:hard",
+        "11:expert",
+        "12:easy",
+        "12:medium",
+        "12:hard",
+        "12:expert",
+        "13:easy",
+        "13:medium",
+        "13:hard",
+        "13:expert",
+        "14:easy",
+        "14:medium",
+        "14:hard",
+        "14:expert",
+        "15:easy",
+        "15:medium",
+        "15:hard",
+        "15:expert",
+        "16:easy",
+        "16:medium",
+        "16:hard",
+        "16:expert"
+      ],
+      "kind": "plinko",
+      "serverReplayRoundsPerSeed": 64,
+      "proof": "docs/game-math/qualifications/shared-stakes-royal-plinko.json",
+      "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
+      "sources": [
+        "src/shared/gameStakes.ts",
+        "src/shared/roundPrecision.ts",
+        "src/shared/casinoExpansion.ts",
+        "src/shared/forestHeartMath.ts",
+        "src/shared/neopolisMath.ts",
+        "src/shared/neopolisStakePayouts.ts",
+        "server/demoExpansion.ts",
+        "server/demoWallet.ts",
+        "server/demoWalletAmounts.ts",
+        "server/demoWalletRoutes.ts",
+        "server/finance/nile-game-runtime.ts",
+        "server/afterglowProgress.ts",
+        "src/wallet/ExpansionClient.ts",
+        "src/wallet/WalletClient.ts",
+        "scripts/game-math/rtp-stakes-sampler.mjs",
+        "scripts/game-math/rtp-stakes-worker.mjs",
+        "server-tests/game-stakes.test.ts",
+        "server-tests/round-precision.test.ts",
+        "src/shared/originalGames.ts",
+        "server/games/originals.ts",
+        "server/games/core.ts",
+        "src/shared/plinkoPresentation.ts",
+        "src/ui/volcanicPlinkoModel.ts",
+        "scripts/game-math/stake-runtime.mjs",
+        "scripts/game-math/stakes-wallet.ts"
+      ],
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
+      "targetsByChoice": {
+        "8:easy": 0.98984375,
+        "8:medium": 0.9890625,
+        "8:hard": 0.9906250000000001,
+        "8:expert": 0.9898437499999999,
+        "9:easy": 0.98984375,
+        "9:medium": 0.99140625,
+        "9:hard": 0.990625,
+        "9:expert": 0.990625,
+        "10:easy": 0.9900390625,
+        "10:medium": 0.9890625,
+        "10:hard": 0.990625,
+        "10:expert": 0.989453125,
+        "11:easy": 0.9900390625,
+        "11:medium": 0.990234375,
+        "11:hard": 0.9916015625,
+        "11:expert": 0.98994140625,
+        "12:easy": 0.989794921875,
+        "12:medium": 0.989892578125,
+        "12:hard": 0.991162109375,
+        "12:expert": 0.9904296874999999,
+        "13:easy": 0.989990234375,
+        "13:medium": 0.98994140625,
+        "13:hard": 0.990869140625,
+        "13:expert": 0.9871337890624999,
+        "14:easy": 0.99000244140625,
+        "14:medium": 0.9899414062499999,
+        "14:hard": 0.98978271484375,
+        "14:expert": 0.98162841796875,
+        "15:easy": 0.990008544921875,
+        "15:medium": 0.9899841308593751,
+        "15:hard": 0.990264892578125,
+        "15:expert": 0.9900878906249999,
+        "16:easy": 0.9899871826171875,
+        "16:medium": 0.9898834228515625,
+        "16:hard": 0.989764404296875,
+        "16:expert": 0.9899627685546876
+      },
+      "tableHashes": {
+        "8:easy": "f46287e3469e2ab85569c89a132741f7338ebde8d564deb4121ba062cfd57eeb",
+        "8:medium": "24e60573c3d46984ca877b9f65703ff95ec41b2474f37a03343214302a6078b5",
+        "8:hard": "10f059a3fdfc559e7a39c453f662342b9e69c161c13d969412837172a31a1ea8",
+        "8:expert": "460fe03dee29b50f32ec63e295bed2ea7a24a06c6d0082115ca8ff9abe30c348",
+        "9:easy": "6b695e12c413908a831f0cdd8b2d65afbf2729f23c334bb91eb7fbeb8a424db7",
+        "9:medium": "cdf33012cdcb5849eb11832d5bde33f4351523ebb177abade25f3a7256650db5",
+        "9:hard": "37c1d71167669ba4cd5db82f447c28c30f90898786a1991247f616913ad37291",
+        "9:expert": "f72be252aebd4c2d2c70e4880432541e7b5bd2704246fb20acafa7c9fb80eaa7",
+        "10:easy": "df9991d5f974d2e97cfe168d1462c2d6a252bd1059200125673b546003be422a",
+        "10:medium": "936da142f427da9e4eab85d5b6bb7dd5d85c45d50eddcbd9c2cb469b40181afa",
+        "10:hard": "b86804a0ff98c623393b51ac36d69cef7f78bbd78a774c995e066dff218968a4",
+        "10:expert": "f37b591b7623e66a9d0953f5b2b26999d4e910a63d7a0d1fa411cc7b886f256f",
+        "11:easy": "1fa6c5a441ccafb9a6e12549a4b46c858f895f6fb3b319a3872b4bd0cff50034",
+        "11:medium": "377bd36efadbb898204d2d6d5cd9df010a7906c459a4c7c21509dfad07f697c2",
+        "11:hard": "6ab205757f0e7e65da74890fe241ac120677c4f7db14f3ae0987a481362ef2cf",
+        "11:expert": "8d6cae43e499c89d3ba33d16a79167d837d8bbf9367b4f5ac2d7eb57b3afdd42",
+        "12:easy": "dead4fa6cdbcd640941813192ed0d892a18bbea3d4dcc0ae8e84178b8d3670e1",
+        "12:medium": "b8e8d8ca869de0e0bba87ff3165894880c04ef00566464da58781105cf34bd75",
+        "12:hard": "4a8035c0dc8c886f977e9fd7ed55a16dab1a7ac25e894686704849c88dc021a6",
+        "12:expert": "a02519af9fa3e8a43a1ca37447107e787acd45828c2f286f6b85e69e7b53a26a",
+        "13:easy": "e10d35772353556eedf6de17e354eb363324cbf970e8224399f6200353c7f1f9",
+        "13:medium": "64444de1d290c54e4b079ebd2d26a73b6631bd22948a5e672401d6689614d053",
+        "13:hard": "422e19793be35fd4e0d3b17057366e2a59cc7dad5983e157c2a28b8896d18ef7",
+        "13:expert": "79eda9d3b059fc36eba46f613250613b2173d04f38a0ba82ce3354ced25db6f8",
+        "14:easy": "9e7e8bc5b322027e66e2c979cd9b3014e8fa42a1316bd18c39c02e88badcbcb8",
+        "14:medium": "624e7dbb8da9bd4ac057a610c20293cada5f448f8af36626ac3a15e1952f2bf9",
+        "14:hard": "bc5ca4358ab01cdb608bc5c88624d32efd97dc5fa0dc4d4cf7679cd3e3efb4fb",
+        "14:expert": "e56807bf83a7edb7d444f5dbc27b345362865ee7fe7611faf9c4c7a21105c291",
+        "15:easy": "b151b66f5d6f253aa0750e2922f58b1360fde2119c33e61493b48b297ac26b5c",
+        "15:medium": "d3f551e08882558d83a4528039f193d41339af944dd8d46abb09223bcc1037b0",
+        "15:hard": "fa981f1f816ee975ae4ba1cf21021ab50552039b06a1fcc7b70bc0723f81e74d",
+        "15:expert": "e7731d78497208c6f0395b07588d5c5f1c98a5bfb54a635648dee6c74bf29be7",
+        "16:easy": "eae03034d4a899fdfc25458dd365a6bbff047688c401c13674f2e0e881a66cfc",
+        "16:medium": "48b03711fb7c274783b6fd2bb88d955b504d497388aa3b69fa6e01dc84237549",
+        "16:hard": "bdc47a043aafa600b4437a90ee1ad7f025e6cbe24102ee5dba876e67aa074e1c",
+        "16:expert": "cbcc2a7ca1727445c0a22951208770610ee337f4d5e6863d769b3a4f78e0d44d"
+      }
     },
     "github-crash": {
-      "method": "unified-stakes-runtime-pending",
-      "releaseStatus": "model-only",
+      "method": "full-round-unbiased-cent-policy-v1",
+      "stakePolicyVersion": 1,
       "rulesVersion": 1,
       "progressVersion": 1,
       "target": 0.99,
       "tolerance": 0.01,
       "seeds": [
+        4139817,
+        6371291
+      ],
+      "calibrationSeeds": [
         830927,
         961127
       ],
@@ -1611,52 +1940,34 @@
       "choices": [
         "all-server-cashout-times"
       ],
-      "proof": "docs/game-math/qualifications/github-crash-unified-stakes.json",
+      "kind": "crash",
+      "serverReplayRoundsPerSeed": 64,
+      "proof": "docs/game-math/qualifications/shared-stakes-github-crash.json",
+      "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
       "sources": [
-        "server/demoExpansion.ts",
+        "src/shared/gameStakes.ts",
+        "src/shared/roundPrecision.ts",
         "src/shared/casinoExpansion.ts",
-        "src/shared/gameStakes.ts",
+        "src/shared/forestHeartMath.ts",
+        "src/shared/neopolisMath.ts",
+        "src/shared/neopolisStakePayouts.ts",
+        "server/demoExpansion.ts",
         "server/demoWallet.ts",
         "server/demoWalletAmounts.ts",
-        "server/demoExpansion.ts"
+        "server/demoWalletRoutes.ts",
+        "server/finance/nile-game-runtime.ts",
+        "server/afterglowProgress.ts",
+        "src/wallet/ExpansionClient.ts",
+        "src/wallet/WalletClient.ts",
+        "scripts/game-math/rtp-stakes-sampler.mjs",
+        "scripts/game-math/rtp-stakes-worker.mjs",
+        "server-tests/game-stakes.test.ts",
+        "server-tests/round-precision.test.ts",
+        "server/games/rush/crash.ts",
+        "scripts/game-math/stake-runtime.mjs",
+        "scripts/game-math/stakes-wallet.ts"
       ],
-      "note": "Draft policy, not qualification. Requires independent complete-round model, integer settlement, all choices and common-wallet replay before publication. No legacy freeze or existing qualification is waived."
-    },
-    "original-cr-vs-leo": {
-      "method": "unified-stakes-runtime-pending",
-      "releaseStatus": "model-only",
-      "rulesVersion": 1,
-      "progressVersion": 1,
-      "target": 0.99,
-      "tolerance": 0.01,
-      "seeds": [
-        830927,
-        961127
-      ],
-      "stakes": [
-        10,
-        20,
-        50,
-        100,
-        200,
-        500,
-        1000,
-        2000,
-        5000
-      ],
-      "choices": [
-        "all-risk-paths-and-stopping-points"
-      ],
-      "proof": "docs/game-math/qualifications/original-cr-vs-leo-unified-stakes.json",
-      "sources": [
-        "src/shared/crLeo.ts",
-        "server/games/crLeo.ts",
-        "src/shared/gameStakes.ts",
-        "server/demoWallet.ts",
-        "server/demoWalletAmounts.ts",
-        "server/demoExpansion.ts"
-      ],
-      "note": "Draft policy, not qualification. Requires independent complete-round model, integer settlement, all choices and common-wallet replay before publication. No legacy freeze or existing qualification is waived."
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
     }
   },
   "nonWagered": {
@@ -1807,6 +2118,1307 @@
           "deployment/releases/jackie-chan-20261029-v2/finance-source/src/i18n/en.ts"
         ]
       }
+    }
+  },
+  "stakePolicies": {
+    "studio-caramel-carnival": {
+      "method": "full-round-unbiased-cent-policy-v1",
+      "stakePolicyVersion": 1,
+      "rulesVersion": 2,
+      "progressVersion": 1,
+      "target": 0.96,
+      "tolerance": 0.01,
+      "seeds": [
+        4139817,
+        6371291
+      ],
+      "calibrationSeeds": [
+        830927,
+        961127
+      ],
+      "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "choices": [
+        "normal",
+        "festival"
+      ],
+      "kind": "sampled-slots",
+      "serverReplayRoundsPerSeed": 64,
+      "proof": "docs/game-math/qualifications/shared-stakes-studio-caramel-carnival.json",
+      "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
+      "sources": [
+        "src/shared/gameStakes.ts",
+        "src/shared/roundPrecision.ts",
+        "src/shared/casinoExpansion.ts",
+        "src/shared/forestHeartMath.ts",
+        "src/shared/neopolisMath.ts",
+        "src/shared/neopolisStakePayouts.ts",
+        "server/demoExpansion.ts",
+        "server/demoWallet.ts",
+        "server/demoWalletAmounts.ts",
+        "server/demoWalletRoutes.ts",
+        "server/finance/nile-game-runtime.ts",
+        "server/afterglowProgress.ts",
+        "src/wallet/ExpansionClient.ts",
+        "src/wallet/WalletClient.ts",
+        "scripts/game-math/rtp-stakes-sampler.mjs",
+        "scripts/game-math/rtp-stakes-worker.mjs",
+        "server-tests/game-stakes.test.ts",
+        "server-tests/round-precision.test.ts",
+        "src/shared/caramelCarnival.ts",
+        "server/games/caramelCarnival.ts",
+        "scripts/game-math/stake-runtime.mjs",
+        "scripts/game-math/stakes-wallet.ts"
+      ],
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
+      "qualificationLooks": [
+        1000000,
+        25000000
+      ],
+      "confidenceZ": 2.241402727604947,
+      "maxHalfWidth95": 0.01,
+      "maxUpper95": 0.98,
+      "minPaidRounds": 2000000,
+      "samplerGame": "studio-caramel-carnival"
+    },
+    "studio-last-convoy": {
+      "method": "full-round-unbiased-cent-policy-v1",
+      "stakePolicyVersion": 1,
+      "rulesVersion": 2,
+      "progressVersion": 1,
+      "target": 0.96,
+      "tolerance": 0.01,
+      "seeds": [
+        4139817,
+        6371291
+      ],
+      "calibrationSeeds": [
+        830927,
+        961127
+      ],
+      "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "choices": [
+        "normal"
+      ],
+      "kind": "sampled-slots",
+      "serverReplayRoundsPerSeed": 64,
+      "proof": "docs/game-math/qualifications/shared-stakes-studio-last-convoy.json",
+      "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
+      "sources": [
+        "src/shared/gameStakes.ts",
+        "src/shared/roundPrecision.ts",
+        "src/shared/casinoExpansion.ts",
+        "src/shared/forestHeartMath.ts",
+        "src/shared/neopolisMath.ts",
+        "src/shared/neopolisStakePayouts.ts",
+        "server/demoExpansion.ts",
+        "server/demoWallet.ts",
+        "server/demoWalletAmounts.ts",
+        "server/demoWalletRoutes.ts",
+        "server/finance/nile-game-runtime.ts",
+        "server/afterglowProgress.ts",
+        "src/wallet/ExpansionClient.ts",
+        "src/wallet/WalletClient.ts",
+        "scripts/game-math/rtp-stakes-sampler.mjs",
+        "scripts/game-math/rtp-stakes-worker.mjs",
+        "server-tests/game-stakes.test.ts",
+        "server-tests/round-precision.test.ts",
+        "src/shared/lastConvoy.ts",
+        "server/games/lastConvoy.ts",
+        "scripts/game-math/stake-runtime.mjs",
+        "scripts/game-math/stakes-wallet.ts"
+      ],
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
+      "qualificationLooks": [
+        1000000,
+        25000000
+      ],
+      "confidenceZ": 2.241402727604947,
+      "maxHalfWidth95": 0.01,
+      "maxUpper95": 0.98,
+      "minPaidRounds": 2000000,
+      "samplerGame": "studio-last-convoy"
+    },
+    "studio-nitro-run": {
+      "method": "full-round-unbiased-cent-policy-v1",
+      "stakePolicyVersion": 1,
+      "rulesVersion": 2,
+      "progressVersion": 1,
+      "target": 0.96,
+      "tolerance": 0.01,
+      "seeds": [
+        4139817,
+        6371291
+      ],
+      "calibrationSeeds": [
+        830927,
+        961127
+      ],
+      "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "choices": [
+        "normal"
+      ],
+      "kind": "sampled-slots",
+      "serverReplayRoundsPerSeed": 64,
+      "proof": "docs/game-math/qualifications/shared-stakes-studio-nitro-run.json",
+      "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
+      "sources": [
+        "src/shared/gameStakes.ts",
+        "src/shared/roundPrecision.ts",
+        "src/shared/casinoExpansion.ts",
+        "src/shared/forestHeartMath.ts",
+        "src/shared/neopolisMath.ts",
+        "src/shared/neopolisStakePayouts.ts",
+        "server/demoExpansion.ts",
+        "server/demoWallet.ts",
+        "server/demoWalletAmounts.ts",
+        "server/demoWalletRoutes.ts",
+        "server/finance/nile-game-runtime.ts",
+        "server/afterglowProgress.ts",
+        "src/wallet/ExpansionClient.ts",
+        "src/wallet/WalletClient.ts",
+        "scripts/game-math/rtp-stakes-sampler.mjs",
+        "scripts/game-math/rtp-stakes-worker.mjs",
+        "server-tests/game-stakes.test.ts",
+        "server-tests/round-precision.test.ts",
+        "src/shared/nitroRun.ts",
+        "server/games/nitroRun.ts",
+        "scripts/game-math/stake-runtime.mjs",
+        "scripts/game-math/stakes-wallet.ts"
+      ],
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
+      "qualificationLooks": [
+        1000000,
+        25000000
+      ],
+      "confidenceZ": 2.241402727604947,
+      "maxHalfWidth95": 0.01,
+      "maxUpper95": 0.98,
+      "minPaidRounds": 2000000,
+      "samplerGame": "studio-nitro-run"
+    },
+    "studio-meme-overload": {
+      "method": "full-round-unbiased-cent-policy-v1",
+      "stakePolicyVersion": 1,
+      "rulesVersion": 2,
+      "progressVersion": 1,
+      "target": 0.96,
+      "tolerance": 0.01,
+      "seeds": [
+        4139817,
+        6371291
+      ],
+      "calibrationSeeds": [
+        830927,
+        961127
+      ],
+      "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "choices": [
+        "normal"
+      ],
+      "kind": "sampled-slots",
+      "serverReplayRoundsPerSeed": 64,
+      "proof": "docs/game-math/qualifications/shared-stakes-studio-meme-overload.json",
+      "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
+      "sources": [
+        "src/shared/gameStakes.ts",
+        "src/shared/roundPrecision.ts",
+        "src/shared/casinoExpansion.ts",
+        "src/shared/forestHeartMath.ts",
+        "src/shared/neopolisMath.ts",
+        "src/shared/neopolisStakePayouts.ts",
+        "server/demoExpansion.ts",
+        "server/demoWallet.ts",
+        "server/demoWalletAmounts.ts",
+        "server/demoWalletRoutes.ts",
+        "server/finance/nile-game-runtime.ts",
+        "server/afterglowProgress.ts",
+        "src/wallet/ExpansionClient.ts",
+        "src/wallet/WalletClient.ts",
+        "scripts/game-math/rtp-stakes-sampler.mjs",
+        "scripts/game-math/rtp-stakes-worker.mjs",
+        "server-tests/game-stakes.test.ts",
+        "server-tests/round-precision.test.ts",
+        "src/shared/nitroRun.ts",
+        "src/shared/memeOverload.ts",
+        "server/games/nitroRun.ts",
+        "scripts/game-math/stake-runtime.mjs",
+        "scripts/game-math/stakes-wallet.ts"
+      ],
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
+      "qualificationLooks": [
+        1000000,
+        25000000
+      ],
+      "confidenceZ": 2.241402727604947,
+      "maxHalfWidth95": 0.01,
+      "maxUpper95": 0.98,
+      "minPaidRounds": 2000000,
+      "samplerGame": "studio-nitro-run"
+    },
+    "studio-velvet-reign": {
+      "method": "full-round-unbiased-cent-policy-v1",
+      "stakePolicyVersion": 1,
+      "rulesVersion": 2,
+      "progressVersion": 1,
+      "target": 0.96,
+      "tolerance": 0.01,
+      "seeds": [
+        4139817,
+        6371291
+      ],
+      "calibrationSeeds": [
+        830927,
+        961127
+      ],
+      "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "choices": [
+        "normal",
+        "booster",
+        "hyper",
+        "spotlight",
+        "super-encore"
+      ],
+      "kind": "sampled-slots",
+      "serverReplayRoundsPerSeed": 64,
+      "proof": "docs/game-math/qualifications/shared-stakes-studio-velvet-reign.json",
+      "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
+      "sources": [
+        "src/shared/gameStakes.ts",
+        "src/shared/roundPrecision.ts",
+        "src/shared/casinoExpansion.ts",
+        "src/shared/forestHeartMath.ts",
+        "src/shared/neopolisMath.ts",
+        "src/shared/neopolisStakePayouts.ts",
+        "server/demoExpansion.ts",
+        "server/demoWallet.ts",
+        "server/demoWalletAmounts.ts",
+        "server/demoWalletRoutes.ts",
+        "server/finance/nile-game-runtime.ts",
+        "server/afterglowProgress.ts",
+        "src/wallet/ExpansionClient.ts",
+        "src/wallet/WalletClient.ts",
+        "scripts/game-math/rtp-stakes-sampler.mjs",
+        "scripts/game-math/rtp-stakes-worker.mjs",
+        "server-tests/game-stakes.test.ts",
+        "server-tests/round-precision.test.ts",
+        "src/shared/luelonSlots.ts",
+        "src/shared/velvetReign.ts",
+        "src/shared/velvetReignHistory.ts",
+        "server/games/velvetReign.ts",
+        "server/games/velvetMath.ts",
+        "scripts/game-math/stake-runtime.mjs",
+        "scripts/game-math/stakes-wallet.ts"
+      ],
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
+      "qualificationLooks": [
+        1000000,
+        25000000
+      ],
+      "confidenceZ": 2.241402727604947,
+      "maxHalfWidth95": 0.01,
+      "maxUpper95": 0.98,
+      "minPaidRounds": 2000000,
+      "samplerGame": "studio-velvet-reign"
+    },
+    "original-cr-vs-leo": {
+      "method": "full-round-unbiased-cent-policy-v1",
+      "stakePolicyVersion": 1,
+      "rulesVersion": 1,
+      "progressVersion": 1,
+      "target": 0.99,
+      "tolerance": 1e-12,
+      "seeds": [
+        4139817,
+        6371291
+      ],
+      "calibrationSeeds": [
+        830927,
+        961127
+      ],
+      "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "choices": [
+        "all-adaptive-risk-paths"
+      ],
+      "kind": "series",
+      "serverReplayRoundsPerSeed": 64,
+      "proof": "docs/game-math/qualifications/shared-stakes-original-cr-vs-leo.json",
+      "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
+      "sources": [
+        "src/shared/gameStakes.ts",
+        "src/shared/roundPrecision.ts",
+        "src/shared/casinoExpansion.ts",
+        "src/shared/forestHeartMath.ts",
+        "src/shared/neopolisMath.ts",
+        "src/shared/neopolisStakePayouts.ts",
+        "server/demoExpansion.ts",
+        "server/demoWallet.ts",
+        "server/demoWalletAmounts.ts",
+        "server/demoWalletRoutes.ts",
+        "server/finance/nile-game-runtime.ts",
+        "server/afterglowProgress.ts",
+        "src/wallet/ExpansionClient.ts",
+        "src/wallet/WalletClient.ts",
+        "scripts/game-math/rtp-stakes-sampler.mjs",
+        "scripts/game-math/rtp-stakes-worker.mjs",
+        "server-tests/game-stakes.test.ts",
+        "server-tests/round-precision.test.ts",
+        "src/shared/crLeo.ts",
+        "server/games/crLeo.ts",
+        "scripts/game-math/stake-runtime.mjs",
+        "scripts/game-math/stakes-wallet.ts"
+      ],
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
+    },
+    "original-jackie-chan": {
+      "method": "full-round-unbiased-cent-policy-v1",
+      "stakePolicyVersion": 1,
+      "rulesVersion": 1,
+      "progressVersion": 2,
+      "target": 0.99,
+      "tolerance": 1e-12,
+      "seeds": [
+        4139817,
+        6371291
+      ],
+      "calibrationSeeds": [
+        830927,
+        961127
+      ],
+      "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "choices": [
+        "all-adaptive-risk-paths"
+      ],
+      "kind": "series",
+      "serverReplayRoundsPerSeed": 64,
+      "proof": "docs/game-math/qualifications/shared-stakes-original-jackie-chan.json",
+      "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
+      "sources": [
+        "src/shared/gameStakes.ts",
+        "src/shared/roundPrecision.ts",
+        "src/shared/casinoExpansion.ts",
+        "src/shared/forestHeartMath.ts",
+        "src/shared/neopolisMath.ts",
+        "src/shared/neopolisStakePayouts.ts",
+        "server/demoExpansion.ts",
+        "server/demoWallet.ts",
+        "server/demoWalletAmounts.ts",
+        "server/demoWalletRoutes.ts",
+        "server/finance/nile-game-runtime.ts",
+        "server/afterglowProgress.ts",
+        "src/wallet/ExpansionClient.ts",
+        "src/wallet/WalletClient.ts",
+        "scripts/game-math/rtp-stakes-sampler.mjs",
+        "scripts/game-math/rtp-stakes-worker.mjs",
+        "server-tests/game-stakes.test.ts",
+        "server-tests/round-precision.test.ts",
+        "src/shared/jackieChan.ts",
+        "src/shared/crLeo.ts",
+        "server/games/jackieChan.ts",
+        "server/games/crLeo.ts",
+        "scripts/game-math/stake-runtime.mjs",
+        "scripts/game-math/stakes-wallet.ts"
+      ],
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
+    },
+    "royal-plinko": {
+      "method": "full-round-unbiased-cent-policy-v1",
+      "stakePolicyVersion": 1,
+      "rulesVersion": 1,
+      "progressVersion": 1,
+      "target": 0.99,
+      "tolerance": 1e-12,
+      "seeds": [
+        4139817,
+        6371291
+      ],
+      "calibrationSeeds": [
+        830927,
+        961127
+      ],
+      "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "choices": [
+        "8:easy",
+        "8:medium",
+        "8:hard",
+        "8:expert",
+        "9:easy",
+        "9:medium",
+        "9:hard",
+        "9:expert",
+        "10:easy",
+        "10:medium",
+        "10:hard",
+        "10:expert",
+        "11:easy",
+        "11:medium",
+        "11:hard",
+        "11:expert",
+        "12:easy",
+        "12:medium",
+        "12:hard",
+        "12:expert",
+        "13:easy",
+        "13:medium",
+        "13:hard",
+        "13:expert",
+        "14:easy",
+        "14:medium",
+        "14:hard",
+        "14:expert",
+        "15:easy",
+        "15:medium",
+        "15:hard",
+        "15:expert",
+        "16:easy",
+        "16:medium",
+        "16:hard",
+        "16:expert"
+      ],
+      "kind": "plinko",
+      "serverReplayRoundsPerSeed": 64,
+      "proof": "docs/game-math/qualifications/shared-stakes-royal-plinko.json",
+      "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
+      "sources": [
+        "src/shared/gameStakes.ts",
+        "src/shared/roundPrecision.ts",
+        "src/shared/casinoExpansion.ts",
+        "src/shared/forestHeartMath.ts",
+        "src/shared/neopolisMath.ts",
+        "src/shared/neopolisStakePayouts.ts",
+        "server/demoExpansion.ts",
+        "server/demoWallet.ts",
+        "server/demoWalletAmounts.ts",
+        "server/demoWalletRoutes.ts",
+        "server/finance/nile-game-runtime.ts",
+        "server/afterglowProgress.ts",
+        "src/wallet/ExpansionClient.ts",
+        "src/wallet/WalletClient.ts",
+        "scripts/game-math/rtp-stakes-sampler.mjs",
+        "scripts/game-math/rtp-stakes-worker.mjs",
+        "server-tests/game-stakes.test.ts",
+        "server-tests/round-precision.test.ts",
+        "src/shared/originalGames.ts",
+        "server/games/originals.ts",
+        "server/games/core.ts",
+        "src/shared/plinkoPresentation.ts",
+        "src/ui/volcanicPlinkoModel.ts",
+        "scripts/game-math/stake-runtime.mjs",
+        "scripts/game-math/stakes-wallet.ts"
+      ],
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
+      "targetsByChoice": {
+        "8:easy": 0.98984375,
+        "8:medium": 0.9890625,
+        "8:hard": 0.9906250000000001,
+        "8:expert": 0.9898437499999999,
+        "9:easy": 0.98984375,
+        "9:medium": 0.99140625,
+        "9:hard": 0.990625,
+        "9:expert": 0.990625,
+        "10:easy": 0.9900390625,
+        "10:medium": 0.9890625,
+        "10:hard": 0.990625,
+        "10:expert": 0.989453125,
+        "11:easy": 0.9900390625,
+        "11:medium": 0.990234375,
+        "11:hard": 0.9916015625,
+        "11:expert": 0.98994140625,
+        "12:easy": 0.989794921875,
+        "12:medium": 0.989892578125,
+        "12:hard": 0.991162109375,
+        "12:expert": 0.9904296874999999,
+        "13:easy": 0.989990234375,
+        "13:medium": 0.98994140625,
+        "13:hard": 0.990869140625,
+        "13:expert": 0.9871337890624999,
+        "14:easy": 0.99000244140625,
+        "14:medium": 0.9899414062499999,
+        "14:hard": 0.98978271484375,
+        "14:expert": 0.98162841796875,
+        "15:easy": 0.990008544921875,
+        "15:medium": 0.9899841308593751,
+        "15:hard": 0.990264892578125,
+        "15:expert": 0.9900878906249999,
+        "16:easy": 0.9899871826171875,
+        "16:medium": 0.9898834228515625,
+        "16:hard": 0.989764404296875,
+        "16:expert": 0.9899627685546876
+      },
+      "tableHashes": {
+        "8:easy": "f46287e3469e2ab85569c89a132741f7338ebde8d564deb4121ba062cfd57eeb",
+        "8:medium": "24e60573c3d46984ca877b9f65703ff95ec41b2474f37a03343214302a6078b5",
+        "8:hard": "10f059a3fdfc559e7a39c453f662342b9e69c161c13d969412837172a31a1ea8",
+        "8:expert": "460fe03dee29b50f32ec63e295bed2ea7a24a06c6d0082115ca8ff9abe30c348",
+        "9:easy": "6b695e12c413908a831f0cdd8b2d65afbf2729f23c334bb91eb7fbeb8a424db7",
+        "9:medium": "cdf33012cdcb5849eb11832d5bde33f4351523ebb177abade25f3a7256650db5",
+        "9:hard": "37c1d71167669ba4cd5db82f447c28c30f90898786a1991247f616913ad37291",
+        "9:expert": "f72be252aebd4c2d2c70e4880432541e7b5bd2704246fb20acafa7c9fb80eaa7",
+        "10:easy": "df9991d5f974d2e97cfe168d1462c2d6a252bd1059200125673b546003be422a",
+        "10:medium": "936da142f427da9e4eab85d5b6bb7dd5d85c45d50eddcbd9c2cb469b40181afa",
+        "10:hard": "b86804a0ff98c623393b51ac36d69cef7f78bbd78a774c995e066dff218968a4",
+        "10:expert": "f37b591b7623e66a9d0953f5b2b26999d4e910a63d7a0d1fa411cc7b886f256f",
+        "11:easy": "1fa6c5a441ccafb9a6e12549a4b46c858f895f6fb3b319a3872b4bd0cff50034",
+        "11:medium": "377bd36efadbb898204d2d6d5cd9df010a7906c459a4c7c21509dfad07f697c2",
+        "11:hard": "6ab205757f0e7e65da74890fe241ac120677c4f7db14f3ae0987a481362ef2cf",
+        "11:expert": "8d6cae43e499c89d3ba33d16a79167d837d8bbf9367b4f5ac2d7eb57b3afdd42",
+        "12:easy": "dead4fa6cdbcd640941813192ed0d892a18bbea3d4dcc0ae8e84178b8d3670e1",
+        "12:medium": "b8e8d8ca869de0e0bba87ff3165894880c04ef00566464da58781105cf34bd75",
+        "12:hard": "4a8035c0dc8c886f977e9fd7ed55a16dab1a7ac25e894686704849c88dc021a6",
+        "12:expert": "a02519af9fa3e8a43a1ca37447107e787acd45828c2f286f6b85e69e7b53a26a",
+        "13:easy": "e10d35772353556eedf6de17e354eb363324cbf970e8224399f6200353c7f1f9",
+        "13:medium": "64444de1d290c54e4b079ebd2d26a73b6631bd22948a5e672401d6689614d053",
+        "13:hard": "422e19793be35fd4e0d3b17057366e2a59cc7dad5983e157c2a28b8896d18ef7",
+        "13:expert": "79eda9d3b059fc36eba46f613250613b2173d04f38a0ba82ce3354ced25db6f8",
+        "14:easy": "9e7e8bc5b322027e66e2c979cd9b3014e8fa42a1316bd18c39c02e88badcbcb8",
+        "14:medium": "624e7dbb8da9bd4ac057a610c20293cada5f448f8af36626ac3a15e1952f2bf9",
+        "14:hard": "bc5ca4358ab01cdb608bc5c88624d32efd97dc5fa0dc4d4cf7679cd3e3efb4fb",
+        "14:expert": "e56807bf83a7edb7d444f5dbc27b345362865ee7fe7611faf9c4c7a21105c291",
+        "15:easy": "b151b66f5d6f253aa0750e2922f58b1360fde2119c33e61493b48b297ac26b5c",
+        "15:medium": "d3f551e08882558d83a4528039f193d41339af944dd8d46abb09223bcc1037b0",
+        "15:hard": "fa981f1f816ee975ae4ba1cf21021ab50552039b06a1fcc7b70bc0723f81e74d",
+        "15:expert": "e7731d78497208c6f0395b07588d5c5f1c98a5bfb54a635648dee6c74bf29be7",
+        "16:easy": "eae03034d4a899fdfc25458dd365a6bbff047688c401c13674f2e0e881a66cfc",
+        "16:medium": "48b03711fb7c274783b6fd2bb88d955b504d497388aa3b69fa6e01dc84237549",
+        "16:hard": "bdc47a043aafa600b4437a90ee1ad7f025e6cbe24102ee5dba876e67aa074e1c",
+        "16:expert": "cbcc2a7ca1727445c0a22951208770610ee337f4d5e6863d769b3a4f78e0d44d"
+      }
+    },
+    "royal-roulette": {
+      "method": "full-round-unbiased-cent-policy-v1",
+      "stakePolicyVersion": 1,
+      "rulesVersion": 1,
+      "progressVersion": 1,
+      "target": 0.972972972972973,
+      "tolerance": 1e-12,
+      "seeds": [
+        4139817,
+        6371291
+      ],
+      "calibrationSeeds": [
+        830927,
+        961127
+      ],
+      "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "choices": [
+        "all-colour-parity-and-number-bets"
+      ],
+      "kind": "roulette",
+      "serverReplayRoundsPerSeed": 64,
+      "proof": "docs/game-math/qualifications/shared-stakes-royal-roulette.json",
+      "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
+      "sources": [
+        "src/shared/gameStakes.ts",
+        "src/shared/roundPrecision.ts",
+        "src/shared/casinoExpansion.ts",
+        "src/shared/forestHeartMath.ts",
+        "src/shared/neopolisMath.ts",
+        "src/shared/neopolisStakePayouts.ts",
+        "server/demoExpansion.ts",
+        "server/demoWallet.ts",
+        "server/demoWalletAmounts.ts",
+        "server/demoWalletRoutes.ts",
+        "server/finance/nile-game-runtime.ts",
+        "server/afterglowProgress.ts",
+        "src/wallet/ExpansionClient.ts",
+        "src/wallet/WalletClient.ts",
+        "scripts/game-math/rtp-stakes-sampler.mjs",
+        "scripts/game-math/rtp-stakes-worker.mjs",
+        "server-tests/game-stakes.test.ts",
+        "server-tests/round-precision.test.ts",
+        "server/games/roulette.ts",
+        "server/games/core.ts",
+        "src/shared/gameCore.ts",
+        "scripts/game-math/stake-runtime.mjs",
+        "scripts/game-math/stakes-wallet.ts"
+      ],
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
+    },
+    "github-crash": {
+      "method": "full-round-unbiased-cent-policy-v1",
+      "stakePolicyVersion": 1,
+      "rulesVersion": 1,
+      "progressVersion": 1,
+      "target": 0.99,
+      "tolerance": 0.01,
+      "seeds": [
+        4139817,
+        6371291
+      ],
+      "calibrationSeeds": [
+        830927,
+        961127
+      ],
+      "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "choices": [
+        "all-server-cashout-times"
+      ],
+      "kind": "crash",
+      "serverReplayRoundsPerSeed": 64,
+      "proof": "docs/game-math/qualifications/shared-stakes-github-crash.json",
+      "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
+      "sources": [
+        "src/shared/gameStakes.ts",
+        "src/shared/roundPrecision.ts",
+        "src/shared/casinoExpansion.ts",
+        "src/shared/forestHeartMath.ts",
+        "src/shared/neopolisMath.ts",
+        "src/shared/neopolisStakePayouts.ts",
+        "server/demoExpansion.ts",
+        "server/demoWallet.ts",
+        "server/demoWalletAmounts.ts",
+        "server/demoWalletRoutes.ts",
+        "server/finance/nile-game-runtime.ts",
+        "server/afterglowProgress.ts",
+        "src/wallet/ExpansionClient.ts",
+        "src/wallet/WalletClient.ts",
+        "scripts/game-math/rtp-stakes-sampler.mjs",
+        "scripts/game-math/rtp-stakes-worker.mjs",
+        "server-tests/game-stakes.test.ts",
+        "server-tests/round-precision.test.ts",
+        "server/games/rush/crash.ts",
+        "scripts/game-math/stake-runtime.mjs",
+        "scripts/game-math/stakes-wallet.ts"
+      ],
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
+    },
+    "flag-battle": {
+      "method": "full-round-unbiased-cent-policy-v1",
+      "stakePolicyVersion": 1,
+      "rulesVersion": 2,
+      "progressVersion": 1,
+      "target": 0.96,
+      "tolerance": 1e-12,
+      "seeds": [
+        4139817,
+        6371291
+      ],
+      "calibrationSeeds": [
+        830927,
+        961127
+      ],
+      "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "choices": [
+        "classic",
+        "expanded",
+        "world"
+      ],
+      "kind": "flags",
+      "serverReplayRoundsPerSeed": 64,
+      "proof": "docs/game-math/qualifications/shared-stakes-flag-battle.json",
+      "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
+      "sources": [
+        "src/shared/gameStakes.ts",
+        "src/shared/roundPrecision.ts",
+        "src/shared/casinoExpansion.ts",
+        "src/shared/forestHeartMath.ts",
+        "src/shared/neopolisMath.ts",
+        "src/shared/neopolisStakePayouts.ts",
+        "server/demoExpansion.ts",
+        "server/demoWallet.ts",
+        "server/demoWalletAmounts.ts",
+        "server/demoWalletRoutes.ts",
+        "server/finance/nile-game-runtime.ts",
+        "server/afterglowProgress.ts",
+        "src/wallet/ExpansionClient.ts",
+        "src/wallet/WalletClient.ts",
+        "scripts/game-math/rtp-stakes-sampler.mjs",
+        "scripts/game-math/rtp-stakes-worker.mjs",
+        "server-tests/game-stakes.test.ts",
+        "server-tests/round-precision.test.ts",
+        "src/shared/flagBattle.ts",
+        "server/games/flagBattle.ts",
+        "scripts/game-math/stake-runtime.mjs",
+        "scripts/game-math/stakes-wallet.ts"
+      ],
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
+    },
+    "studio-forest-heart": {
+      "method": "full-round-unbiased-cent-policy-v1",
+      "stakePolicyVersion": 1,
+      "rulesVersion": 1,
+      "progressVersion": 1,
+      "target": 0.96,
+      "tolerance": 0.002,
+      "seeds": [
+        4139817,
+        6371291
+      ],
+      "calibrationSeeds": [
+        830927,
+        961127
+      ],
+      "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "choices": [
+        "optimal",
+        "pass",
+        "rotate-0",
+        "rotate-1",
+        "rotate-2",
+        "rotate-3",
+        "rotate-4",
+        "rotate-5",
+        "rotate-6",
+        "rotate-7",
+        "rotate-8",
+        "rotate-9",
+        "rotate-10",
+        "rotate-11"
+      ],
+      "kind": "forest",
+      "serverReplayRoundsPerSeed": 64,
+      "proof": "docs/game-math/qualifications/shared-stakes-studio-forest-heart.json",
+      "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
+      "sources": [
+        "src/shared/gameStakes.ts",
+        "src/shared/roundPrecision.ts",
+        "src/shared/casinoExpansion.ts",
+        "src/shared/forestHeartMath.ts",
+        "src/shared/neopolisMath.ts",
+        "src/shared/neopolisStakePayouts.ts",
+        "server/demoExpansion.ts",
+        "server/demoWallet.ts",
+        "server/demoWalletAmounts.ts",
+        "server/demoWalletRoutes.ts",
+        "server/finance/nile-game-runtime.ts",
+        "server/afterglowProgress.ts",
+        "src/wallet/ExpansionClient.ts",
+        "src/wallet/WalletClient.ts",
+        "scripts/game-math/rtp-stakes-sampler.mjs",
+        "scripts/game-math/rtp-stakes-worker.mjs",
+        "server-tests/game-stakes.test.ts",
+        "server-tests/round-precision.test.ts",
+        "src/shared/forestHeart.ts",
+        "server/games/forestHeart.ts",
+        "scripts/game-math/forest-heart-model.mjs",
+        "scripts/game-math/forest-heart-reference.mjs",
+        "scripts/game-math/stake-runtime.mjs",
+        "scripts/game-math/stakes-wallet.ts"
+      ],
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
+      "targetsByChoice": {
+        "optimal": 0.95994233480111,
+        "pass": 0.9307768496784293,
+        "rotate-0": 0.9349178064350211,
+        "rotate-1": 0.9367172193988883,
+        "rotate-2": 0.9349178064350211,
+        "rotate-3": 0.9343756756061636,
+        "rotate-4": 0.9356444924396597,
+        "rotate-5": 0.9430959076618277,
+        "rotate-6": 0.9399815390705191,
+        "rotate-7": 0.9349178064350211,
+        "rotate-8": 0.9343756756061636,
+        "rotate-9": 0.9356444924396597,
+        "rotate-10": 0.9349178064350211,
+        "rotate-11": 0.9367172193988883
+      }
+    },
+    "studio-caribbean-treasures": {
+      "method": "full-round-unbiased-cent-policy-v1",
+      "stakePolicyVersion": 1,
+      "rulesVersion": 2,
+      "progressVersion": 1,
+      "target": 0.96,
+      "tolerance": 0.0005,
+      "seeds": [
+        4139817,
+        6371291
+      ],
+      "calibrationSeeds": [
+        830927,
+        961127
+      ],
+      "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "choices": [
+        "lines-1-normal-raid",
+        "lines-1-normal-flagship",
+        "lines-1-buy-raid",
+        "lines-1-buy-flagship",
+        "lines-5-normal-raid",
+        "lines-5-normal-flagship",
+        "lines-5-buy-raid",
+        "lines-5-buy-flagship",
+        "lines-10-normal-raid",
+        "lines-10-normal-flagship",
+        "lines-10-buy-raid",
+        "lines-10-buy-flagship",
+        "lines-20-normal-raid",
+        "lines-20-normal-flagship",
+        "lines-20-buy-raid",
+        "lines-20-buy-flagship"
+      ],
+      "kind": "caribbean",
+      "serverReplayRoundsPerSeed": 64,
+      "proof": "docs/game-math/qualifications/shared-stakes-studio-caribbean-treasures.json",
+      "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
+      "sources": [
+        "src/shared/gameStakes.ts",
+        "src/shared/roundPrecision.ts",
+        "src/shared/casinoExpansion.ts",
+        "src/shared/forestHeartMath.ts",
+        "src/shared/neopolisMath.ts",
+        "src/shared/neopolisStakePayouts.ts",
+        "server/demoExpansion.ts",
+        "server/demoWallet.ts",
+        "server/demoWalletAmounts.ts",
+        "server/demoWalletRoutes.ts",
+        "server/finance/nile-game-runtime.ts",
+        "server/afterglowProgress.ts",
+        "src/wallet/ExpansionClient.ts",
+        "src/wallet/WalletClient.ts",
+        "scripts/game-math/rtp-stakes-sampler.mjs",
+        "scripts/game-math/rtp-stakes-worker.mjs",
+        "server-tests/game-stakes.test.ts",
+        "server-tests/round-precision.test.ts",
+        "src/shared/caribbeanTreasures.ts",
+        "src/shared/caribbeanTreasuresMath.ts",
+        "src/shared/caribbeanTransport.ts",
+        "server/games/caribbeanTreasures.ts",
+        "scripts/game-math/rtp-caribbean.mjs",
+        "scripts/game-math/stake-runtime.mjs",
+        "scripts/game-math/stakes-wallet.ts"
+      ],
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
+    },
+    "studio-cosmic-escape": {
+      "method": "full-round-unbiased-cent-policy-v1",
+      "stakePolicyVersion": 1,
+      "rulesVersion": 2,
+      "progressVersion": 1,
+      "target": 0.96,
+      "tolerance": 0.002,
+      "seeds": [
+        4139817,
+        6371291
+      ],
+      "calibrationSeeds": [
+        830927,
+        961127
+      ],
+      "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "choices": [
+        "normal",
+        "cosmic-chaos",
+        "ufo-invasion",
+        "deep-echo"
+      ],
+      "kind": "cosmic",
+      "serverReplayRoundsPerSeed": 64,
+      "proof": "docs/game-math/qualifications/shared-stakes-studio-cosmic-escape.json",
+      "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
+      "sources": [
+        "src/shared/gameStakes.ts",
+        "src/shared/roundPrecision.ts",
+        "src/shared/casinoExpansion.ts",
+        "src/shared/forestHeartMath.ts",
+        "src/shared/neopolisMath.ts",
+        "src/shared/neopolisStakePayouts.ts",
+        "server/demoExpansion.ts",
+        "server/demoWallet.ts",
+        "server/demoWalletAmounts.ts",
+        "server/demoWalletRoutes.ts",
+        "server/finance/nile-game-runtime.ts",
+        "server/afterglowProgress.ts",
+        "src/wallet/ExpansionClient.ts",
+        "src/wallet/WalletClient.ts",
+        "scripts/game-math/rtp-stakes-sampler.mjs",
+        "scripts/game-math/rtp-stakes-worker.mjs",
+        "server-tests/game-stakes.test.ts",
+        "server-tests/round-precision.test.ts",
+        "src/shared/cosmicEscapeBets.ts",
+        "src/shared/luelonSlots.ts",
+        "src/shared/luelonSlotsModels.ts",
+        "server/games/luelonSlots.ts",
+        "scripts/game-math/rtp-cosmic.mjs",
+        "scripts/game-math/stake-runtime.mjs",
+        "src/shared/luelonSlotsLines.ts",
+        "scripts/game-math/stakes-wallet.ts"
+      ],
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
+    },
+    "studio-flooded-temple": {
+      "method": "full-round-unbiased-cent-policy-v1",
+      "stakePolicyVersion": 1,
+      "rulesVersion": 2,
+      "progressVersion": 2,
+      "target": 0.96,
+      "tolerance": 0.0025,
+      "seeds": [
+        4139817,
+        6371291
+      ],
+      "calibrationSeeds": [
+        830927,
+        961127
+      ],
+      "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "choices": [
+        "normal"
+      ],
+      "kind": "temple",
+      "serverReplayRoundsPerSeed": 64,
+      "proof": "docs/game-math/qualifications/shared-stakes-studio-flooded-temple.json",
+      "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
+      "sources": [
+        "src/shared/gameStakes.ts",
+        "src/shared/roundPrecision.ts",
+        "src/shared/casinoExpansion.ts",
+        "src/shared/forestHeartMath.ts",
+        "src/shared/neopolisMath.ts",
+        "src/shared/neopolisStakePayouts.ts",
+        "server/demoExpansion.ts",
+        "server/demoWallet.ts",
+        "server/demoWalletAmounts.ts",
+        "server/demoWalletRoutes.ts",
+        "server/finance/nile-game-runtime.ts",
+        "server/afterglowProgress.ts",
+        "src/wallet/ExpansionClient.ts",
+        "src/wallet/WalletClient.ts",
+        "scripts/game-math/rtp-stakes-sampler.mjs",
+        "scripts/game-math/rtp-stakes-worker.mjs",
+        "server-tests/game-stakes.test.ts",
+        "server-tests/round-precision.test.ts",
+        "src/shared/floodedTempleCascade.ts",
+        "src/shared/floodedTempleCascadeMath.ts",
+        "src/shared/floodedTempleCascadeData.json",
+        "server/games/floodedTempleCascade.ts",
+        "scripts/game-math/rtp-temple-cascade-model.mjs",
+        "scripts/game-math/stake-runtime.mjs",
+        "scripts/game-math/stakes-wallet.ts"
+      ],
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
+    },
+    "studio-afterglow": {
+      "method": "full-round-unbiased-cent-policy-v1",
+      "stakePolicyVersion": 1,
+      "rulesVersion": 2,
+      "progressVersion": 4,
+      "target": 0.96,
+      "tolerance": 0.01,
+      "seeds": [
+        4139817,
+        6371291
+      ],
+      "calibrationSeeds": [
+        830927,
+        961127
+      ],
+      "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "choices": [
+        "normal"
+      ],
+      "kind": "afterglow",
+      "serverReplayRoundsPerSeed": 64,
+      "proof": "docs/game-math/qualifications/shared-stakes-studio-afterglow.json",
+      "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
+      "sources": [
+        "src/shared/gameStakes.ts",
+        "src/shared/roundPrecision.ts",
+        "src/shared/casinoExpansion.ts",
+        "src/shared/forestHeartMath.ts",
+        "src/shared/neopolisMath.ts",
+        "src/shared/neopolisStakePayouts.ts",
+        "server/demoExpansion.ts",
+        "server/demoWallet.ts",
+        "server/demoWalletAmounts.ts",
+        "server/demoWalletRoutes.ts",
+        "server/finance/nile-game-runtime.ts",
+        "server/afterglowProgress.ts",
+        "src/wallet/ExpansionClient.ts",
+        "src/wallet/WalletClient.ts",
+        "scripts/game-math/rtp-stakes-sampler.mjs",
+        "scripts/game-math/rtp-stakes-worker.mjs",
+        "server-tests/game-stakes.test.ts",
+        "server-tests/round-precision.test.ts",
+        "src/shared/afterglow.ts",
+        "server/games/afterglow.ts",
+        "scripts/game-math/rtp-afterglow.mjs",
+        "scripts/game-math/stake-runtime.mjs",
+        "scripts/game-math/stakes-wallet.ts"
+      ],
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
+    },
+    "studio-dracona": {
+      "method": "full-round-unbiased-cent-policy-v1",
+      "stakePolicyVersion": 1,
+      "rulesVersion": 3,
+      "progressVersion": 2,
+      "target": 0.96,
+      "tolerance": 0.01,
+      "seeds": [
+        4139817,
+        6371291
+      ],
+      "calibrationSeeds": [
+        830927,
+        961127
+      ],
+      "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "choices": [
+        "normal"
+      ],
+      "kind": "dracona",
+      "serverReplayRoundsPerSeed": 64,
+      "proof": "docs/game-math/qualifications/shared-stakes-studio-dracona.json",
+      "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
+      "sources": [
+        "src/shared/gameStakes.ts",
+        "src/shared/roundPrecision.ts",
+        "src/shared/casinoExpansion.ts",
+        "src/shared/forestHeartMath.ts",
+        "src/shared/neopolisMath.ts",
+        "src/shared/neopolisStakePayouts.ts",
+        "server/demoExpansion.ts",
+        "server/demoWallet.ts",
+        "server/demoWalletAmounts.ts",
+        "server/demoWalletRoutes.ts",
+        "server/finance/nile-game-runtime.ts",
+        "server/afterglowProgress.ts",
+        "src/wallet/ExpansionClient.ts",
+        "src/wallet/WalletClient.ts",
+        "scripts/game-math/rtp-stakes-sampler.mjs",
+        "scripts/game-math/rtp-stakes-worker.mjs",
+        "server-tests/game-stakes.test.ts",
+        "server-tests/round-precision.test.ts",
+        "src/shared/dracona.ts",
+        "src/shared/draconaMath.ts",
+        "server/games/dracona.ts",
+        "scripts/game-math/rtp-simulation.mjs",
+        "scripts/game-math/stake-runtime.mjs",
+        "scripts/game-math/stakes-wallet.ts"
+      ],
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
+    },
+    "studio-neopolis": {
+      "method": "full-round-unbiased-cent-policy-v1",
+      "stakePolicyVersion": 1,
+      "rulesVersion": 4,
+      "progressVersion": 4,
+      "target": 0.96,
+      "tolerance": 0.01,
+      "seeds": [
+        4139817,
+        6371291
+      ],
+      "calibrationSeeds": [
+        830927,
+        961127
+      ],
+      "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "choices": [
+        "granite",
+        "impulse",
+        "prism"
+      ],
+      "kind": "neopolis",
+      "serverReplayRoundsPerSeed": 64,
+      "proof": "docs/game-math/qualifications/shared-stakes-studio-neopolis.json",
+      "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
+      "sources": [
+        "src/shared/gameStakes.ts",
+        "src/shared/roundPrecision.ts",
+        "src/shared/casinoExpansion.ts",
+        "src/shared/forestHeartMath.ts",
+        "src/shared/neopolisMath.ts",
+        "src/shared/neopolisStakePayouts.ts",
+        "server/demoExpansion.ts",
+        "server/demoWallet.ts",
+        "server/demoWalletAmounts.ts",
+        "server/demoWalletRoutes.ts",
+        "server/finance/nile-game-runtime.ts",
+        "server/afterglowProgress.ts",
+        "src/wallet/ExpansionClient.ts",
+        "src/wallet/WalletClient.ts",
+        "scripts/game-math/rtp-stakes-sampler.mjs",
+        "scripts/game-math/rtp-stakes-worker.mjs",
+        "server-tests/game-stakes.test.ts",
+        "server-tests/round-precision.test.ts",
+        "src/shared/neopolis.ts",
+        "server/games/neopolis.ts",
+        "scripts/game-math/rtp-neopolis-v4.mjs",
+        "scripts/game-math/stake-runtime.mjs",
+        "scripts/game-math/stakes-wallet.ts"
+      ],
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
     }
   }
 }

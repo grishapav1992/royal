@@ -1,4 +1,5 @@
-import {recoverableBetAmounts} from './gameStakes';
+import {validGameStake} from './gameStakes.ts';
+import {precisionBaseSession} from './roundPrecision.ts';
 import { HEROES, MAX_ROUND_SPINS, NEOPOLIS_MATH, PAYTABLE, initialTeam, playNeopolisSpin, type Hero, type Team, type Battle, type Spin } from './neopolisMath';
 import { playNeopolisSpin as playNeopolisSpinV3 } from './neopolisMathV3';
 import { NEOPOLIS_PAYOUT_SCALE, neopolisTeamPayout } from './neopolisStakePayouts';
@@ -7,7 +8,7 @@ import { playNeopolisSpin as playNeopolisSpinV2, PAYTABLE as PAYTABLE_V2 } from 
 
 export const NEOPOLIS_GAME = 'studio-neopolis' as const;
 export const NEOPOLIS_HEADER = 'X-Royal-Neopolis-Rules';
-export const NEOPOLIS_BETS = recoverableBetAmounts([10, 20, 50, 100, 200, 500]);
+export const NEOPOLIS_BETS = [10, 20, 50, 100, 200, 500] as const;
 export const NEOPOLIS_MAX_WIN = 3000;
 // Five resolution chains (initial, three heroes, finisher) fit even at their full bounds.
 const MAX_DRAWS = 4096;
@@ -20,7 +21,7 @@ const record = (value: unknown): value is Record<string, any> => !!value && type
 const keys = (value: object, expected: string) => Object.keys(value).sort().join(',') === expected.split(',').sort().join(',');
 const integer = (value: unknown, low: number, high: number): value is number => Number.isSafeInteger(value) && Number(value) >= low && Number(value) <= high;
 const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
-export const validNeopolisStake = (value: unknown): value is string => typeof value === 'string' && NEOPOLIS_BETS.some(bet => String(bet * 100) === value);
+export const validNeopolisStake = (value: unknown): value is string => validGameStake(value) || typeof value === 'string' && NEOPOLIS_BETS.some(bet => String(bet * 100) === value);
 export function validTeam(value: unknown): value is Team {
   return record(value) && keys(value, 'starter,charges,complete') && HEROES.includes(value.starter) && typeof value.complete === 'boolean'
     && Array.isArray(value.charges) && value.charges.length === 3 && Array.from(value.charges).every((n: unknown) => integer(n, 0, 3)) && value.charges[HEROES.indexOf(value.starter)] === 3;
@@ -87,6 +88,7 @@ export function validNeopolisSettlement(state: string, stake: string, spent: str
   return ended ? state === 'settled' && returned === view.totalPayoutUnits : state === 'active' && returned === '0';
 }
 export function validNeopolisSession(value: unknown): boolean {
+  value=precisionBaseSession(value);
   if (!record(value) || !keys(value, 'id,gameId,rulesVersion,state,stakeUnits,spentUnits,returnedUnits,view') || value.gameId !== NEOPOLIS_GAME || ![1,2,3,4].includes(value.rulesVersion)
     || typeof value.id !== 'string' || !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(value.id) || !record(value.view)) return false;
   const envelope = value.view;

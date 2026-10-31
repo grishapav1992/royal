@@ -1,3 +1,4 @@
+import {coreExactAward,makeRoundPrecision} from '../src/shared/roundPrecision';
 import {validGameBet, usesGameStakes} from '../src/shared/gameStakes';
 import { FlagToteStore } from './flagTote';
 import { randomInt } from 'node:crypto';
@@ -75,14 +76,15 @@ export class DemoWalletStore {
     const op = value as WalletOperation | undefined;
     if (!op || typeof op !== 'object' || Array.isArray(op) || typeof op.id !== 'string' || !/^[a-f0-9-]{36}$/i.test(op.id)
       || !['deposit','spin','play'].includes(op.kind) || !(Number.isSafeInteger(op.amount) || op.kind === 'play' && usesGameStakes(op.gameId) && validGameBet(op.amount))
-      || Object.keys(op).sort().join(',') !== (op.kind === 'play' ? 'amount,gameId,id,input,kind,rulesVersion' : 'amount,id,kind')) throw new WalletError(400, 'Некорректная операция.');
+      || Object.keys(op).filter(key=>key!=='stakePolicyVersion').sort().join(',') !== (op.kind === 'play' ? 'amount,gameId,id,input,kind,rulesVersion' : 'amount,id,kind')) throw new WalletError(400, 'Некорректная операция.');
     if (op.kind === 'deposit' ? op.amount < 1 || op.amount > 100000 : !((op.kind === 'play' && usesGameStakes(op.gameId) && validGameBet(op.amount)) || (DEMO_BETS as readonly number[]).includes(op.amount))) throw new WalletError(400, 'Недопустимая сумма.');
+    if ('stakePolicyVersion' in op && (op.kind!=='play'||op.stakePolicyVersion!==1||!usesGameStakes(op.gameId))) throw new WalletError(400,'Некорректная политика ставки.');
     let game: ReturnType<typeof prepareGame> | undefined;
     if (op.kind !== 'deposit') {
       try { game = op.kind === 'play' ? prepareGame(op.gameId,op.rulesVersion,op.input) : prepareGame('royal-coins',1,{}); }
       catch { throw new WalletError(400, 'Неизвестная игра, версия правил или недопустимая ставка.'); }
     }
-    const requestKey = JSON.stringify([op.kind,op.amount,game?.gameId ?? null,game?.rulesVersion ?? null,game?.input ?? null]);
+    const requestKey = JSON.stringify([op.kind,op.amount,game?.gameId ?? null,game?.rulesVersion ?? null,game?.input ?? null,...(op.kind==='play'&&op.stakePolicyVersion===1?[1]:[])]);
     await this.flight.settleDue(accountId);
     return this.db.transaction(async () => {
       if (await this.db.prepare('SELECT 1 FROM demo_casino_requests WHERE account_id=? AND id=?').get(accountId,op.id)) throw new WalletError(409,'Этот номер операции уже использован в казино.');
@@ -99,7 +101,7 @@ export class DemoWalletStore {
         const result = { ...saved, wallet: await this.rawSnapshot(accountId) };
         return result;
       }
-      if (op.kind === 'play' && usesGameStakes(op.gameId) && !validGameBet(op.amount)) throw new WalletError(400, 'Недопустимая ставка.');
+      if (op.kind === 'play' && usesGameStakes(op.gameId) && op.stakePolicyVersion===1 && !validGameBet(op.amount)) throw new WalletError(400, 'Недопустимая ставка.');
       const recent = (await this.db.prepare('SELECT COUNT(*) AS n FROM (SELECT 1 FROM demo_ledger WHERE account_id=? AND created_at>? LIMIT 120) recent').get(accountId, Date.now() - 60000));
       if (Number(recent?.n) >= 120) throw new WalletError(429, 'Слишком много операций. Подожди минуту и повтори запрос.');
       (await this.db.prepare('INSERT INTO demo_wallets(account_id) VALUES (?) ON CONFLICT(account_id) DO NOTHING').run(accountId));
@@ -121,6 +123,7 @@ export class DemoWalletStore {
         // Both the debit and the outcome commit together; the browser never supplies the result.
         gameRound = game!.play(BigInt(stakeUnits),this.draw);
         if (!verifyGameRound(gameRound)) throw new Error('Invalid game round');
+        if(op.kind==='play'&&op.stakePolicyVersion===1){const receipt=makeRoundPrecision(coreExactAward(gameRound),gameRound.payoutUnits,this.draw);gameRound={...gameRound,payoutUnits:receipt.creditedUnits,precision:receipt};}
         const payoutUnits = Number(gameRound.payoutUnits);
         if (!Number.isSafeInteger(payoutUnits) || payoutUnits < 0 || payoutUnits > stakeUnits * game!.maxMultiplier) throw new Error('Invalid game payout');
         await record('bet', -stakeUnits); await record('win', payoutUnits);

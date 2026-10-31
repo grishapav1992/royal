@@ -1,3 +1,4 @@
+import {confirmedPayout} from '../../src/shared/roundPrecision';
 import {GAME_STAKE_UNITS as CARIBBEAN_LINE_STAKES} from '../../src/shared/gameStakes';
 import { readGameHost } from '../../src/modules/GameHostContract';
 import {
@@ -184,17 +185,22 @@ export class CaribbeanUI {
     if(this.wallet?.balance!==this.lastBalance){this.actionError='';this.lastBalance=this.wallet?.balance;}
     const session = this.session, view = this.view, key = session && view ? session.id + ':' + view.revision : '';
     if (view && key !== this.sessionKey) {
-      this.lines = view.settings.lines; this.lineStake = view.version===1 && this.session?.state==='settled' ? String(BigInt(view.lineStakeUnits)*BigInt(view.settings.lines)) : view.lineStakeUnits; this.sessionKey = key;
+      this.lines = view.settings.lines;
+      const recovered = view.version===1 && session?.state==='settled' ? String(BigInt(view.lineStakeUnits)*BigInt(view.settings.lines)) : view.lineStakeUnits;
+      this.lineStake = session?.state==='active' || CARIBBEAN_LINE_STAKES.includes(recovered) ? recovered : '10'; this.sessionKey = key;
     }
     if (this.dialogKind === 'buy' && this.blocked) this.closeDialog();
     this.render();
     this.pumpAuto();
   };
+  private outcome(view: CaribbeanView) {
+    return caribbeanOutcome({...view,totalPayoutUnits:confirmedPayout(this.session,view.totalPayoutUnits)});
+  }
   private render() {
     if (this.disposed) return;
     const view = this.presenting ? this.displayed : this.view, frame = view?.spins.at(-1)?.frame;
     this.root.dataset.ctPhase=this.visualPhase;this.root.dataset.motion=this.reduced?'reduced':'full';
-    this.root.dataset.outcome=view?.phase==='complete'?caribbeanOutcome(view):'';
+    this.root.dataset.outcome=view?.phase==='complete'?this.outcome(view):'';
     this.captain?.context(!this.paused&&!document.hidden&&!this.dialogKind,this.reduced,this.english);
     this.restoreCrewCaptain();
     const crewButton=this.element<HTMLButtonElement>('[data-ct-action=crew]'),member=crewMember(this.captain.state().character)!;
@@ -225,8 +231,8 @@ export class CaribbeanUI {
     const walletButton=this.element<HTMLButtonElement>('[data-ct-action=wallet]');walletButton.disabled=!this.client.accountId;
     walletButton.setAttribute('aria-label',this.text('Открыть тестовый кошелёк','Open test wallet'));
     this.element('[data-ct-cost]').textContent = this.view && this.active ? this.money(this.view.costUnits) : this.money(caribbeanInitialCost({lines:this.lines,mode:'normal',stakeBasis:'total'},this.lineStake));
-    this.element('[data-ct-payout]').textContent = this.money(this.tally ?? view?.totalPayoutUnits ?? '0');
-    const net = view && !this.active ? BigInt(view.totalPayoutUnits) - BigInt(view.costUnits) : null;
+    this.element('[data-ct-payout]').textContent = this.money(this.tally ?? (view?confirmedPayout(this.session,view.totalPayoutUnits):'0'));
+    const net = view && !this.active ? BigInt(confirmedPayout(this.session,view.totalPayoutUnits)) - BigInt(view.costUnits) : null;
     this.element('[data-ct-net]').textContent = net === null ? (this.active ? this.text('Серия идёт','Round in progress') : '...') : (net > 0n ? '+' : '') + this.money(String(net));
     this.element('[data-ct-net]').dataset.positive = String(net !== null && net > 0n);
     this.element<HTMLButtonElement>('[data-ct-action=info]').setAttribute('aria-label',this.text('Правила и выплаты','Rules and payouts'));
@@ -371,7 +377,7 @@ export class CaribbeanUI {
     finally {if(manualAutoChoice&&epoch===this.autoEpoch)this.autoInFlight=false;this.update();}
   }
   private outcomeLabel(view:CaribbeanView){
-    const kind=caribbeanOutcome(view);
+    const kind=this.outcome(view);
     return this.text({loss:'Раунд завершён без выплаты.',partial:'Частичный возврат. Выплата меньше стоимости раунда.',return:'Стоимость раунда возвращена.',win:'Положительный итог раунда.',bigwin:'Крупный положительный итог раунда.'}[kind],
       {loss:'Round complete without a payout.',partial:'Partial return. The payout is below the round cost.',return:'The round cost has been returned.',win:'Positive round result.',bigwin:'Large positive round result.'}[kind]);
   }
@@ -406,7 +412,7 @@ export class CaribbeanUI {
       const confirmed=this.view;if(!confirmed||this.sessionKey===priorKey)return;
       const previousInRound=this.session?.id===priorKey.split(':')[0]?previous:undefined;
       const hasSpin=confirmed.spins.length>(previousInRound?.spins.length??0);
-      if(this.reduced){this.displayed=confirmed;this.visualPhase='outcome';this.render();const cue=confirmed.phase==='complete'?caribbeanOutcome(confirmed):confirmed.phase==='choice'||!hasSpin?'bonus':'click';this.audio.cue(cue);this.captain.react(cue,this.sessionKey+':'+cue+':0');return;}
+      if(this.reduced){this.displayed=confirmed;this.visualPhase='outcome';this.render();const cue=confirmed.phase==='complete'?this.outcome(confirmed):confirmed.phase==='choice'||!hasSpin?'bonus':'click';this.audio.cue(cue);this.captain.react(cue,this.sessionKey+':'+cue+':0');return;}
       if(hasSpin){
         this.displayed=caribbeanBeforeReveal(confirmed,previousInRound);this.stopped=0;this.visualPhase='reels';
         // The continuous giant is revealed only after every underlying column lands.
@@ -428,15 +434,15 @@ export class CaribbeanUI {
         this.displayed=confirmed;this.visualPhase='wins';
         this.tally=previousInRound?.totalPayoutUnits??'0';
         if(confirmed.spins.at(-1)?.frame.wins.length)await this.accent('line',signal,()=>this.render());else this.render();
-        await this.visuals.tally(this.tally,confirmed.totalPayoutUnits,420,signal,units=>{this.tally=units;this.element('[data-ct-payout]').textContent=this.money(units);});
+        await this.visuals.tally(this.tally,confirmedPayout(this.session,confirmed.totalPayoutUnits),420,signal,units=>{this.tally=units;this.element('[data-ct-payout]').textContent=this.money(units);});
         this.tally=undefined;
       }
       if(signal.aborted)return;
       this.displayed=confirmed;this.visualPhase='outcome';
-      if(confirmed.phase==='complete')await this.accent(caribbeanOutcome(confirmed),signal,()=>this.render());
+      if(confirmed.phase==='complete')await this.accent(this.outcome(confirmed),signal,()=>this.render());
       else if(confirmed.phase==='choice'||!hasSpin)await this.accent('bonus',signal,()=>this.render());
       else this.render();
-      await this.wait(confirmed.phase==='complete'&&caribbeanOutcome(confirmed)==='bigwin'?700:180,signal);
+      await this.wait(confirmed.phase==='complete'&&this.outcome(confirmed)==='bigwin'?700:180,signal);
     }finally{
       if(this.motion===motion&&!this.disposed){this.tally=undefined;this.presenting=false;this.displayed=undefined;this.visualPhase='idle';this.stopped=6;this.captain.finish();this.render();}
     }
@@ -457,7 +463,7 @@ export class CaribbeanUI {
     }else if (kind === 'info') {
       body = '<h3>' + this.text('Правила и выплаты','Rules and payouts') + '</h3><p>' + this.text('6 барабанов, 4 ряда. От 3 одинаковых подряд слева направо. На одной линии оплачивается самая длинная цепочка.','6 reels, 4 rows. Match 3 or more identical symbols from the left. Only the longest run pays on each line.') + '</p>'
         + '<table><thead><tr><th>' + this.text('Символ','Symbol') + '</th><th>3</th><th>4</th><th>5</th><th>6</th></tr></thead><tbody>' + CARIBBEAN_SYMBOLS.map(symbol => '<tr><th>' + this.symbolName(symbol.id) + '</th>' + symbol.pays.map(pay => '<td>×' + pay + '</td>').join('') + '</tr>').join('') + '</tbody></table>'
-        + '<p>' + this.text('Коэффициенты относятся к ставке одной линии. Блок 2×2 может увеличиться залпом до 3×3. Расчёт выполняется по итоговому полю.','Multipliers use the stake per line. A cannon can grow a 2×2 block into 3×3. The final field determines payouts.') + '</p>'
+        + '<p>' + this.text('Общая ставка делится поровну между выбранными линиями. Коэффициенты относятся к этой доле ставки. Блок 2×2 может увеличиться залпом до 3×3. Расчёт выполняется по итоговому полю.','The total stake is split equally across the selected lines. Multipliers use that share of the stake. A cannon can grow a 2×2 block into 3×3. The final field determines payouts.') + '</p>'
         + '<p>' + this.text('Рейд: 14 вращений с блоком 2×2 и возможным залпом. Флагман: 6 вращений с блоком 3×3. Продления нет. Выплата всей серии начисляется в конце.','Raid: 14 spins with a 2×2 block and possible cannon. Flagship: 6 spins with a 3×3 block. No retriggers. The entire round is credited at the end.') + '</p>'
         + '<p>' + this.text('Бонусная карта открывается отдельным случайным событием после обычного вращения. Картинки карты в поле являются обычными оплачиваемыми символами. Выбирается первый набор из 1, 5, 10 или 20 фиксированных линий; отдельные маршруты не переключаются.','A separate random event after a base spin unlocks the bonus map. Map icons on the field are ordinary paying symbols. Select the first 1, 5, 10 or 20 fixed lines; individual routes cannot be switched.') + '</p>'
         + '<p>' + this.text('Теоретический RTP около 96%. Частота блоков и входа в бонус зависит от набора линий. RTP относится к полной игре на длинной дистанции.','Theoretical RTP is approximately 96%. Block and bonus entry probabilities depend on the line preset. RTP describes complete rounds over the long term.') + '</p>'
@@ -469,7 +475,7 @@ export class CaribbeanUI {
           + '<p>' + this.text('Стоимость: ','Cost: ') + this.money(view.costUnits) + ' USDT</p><ol>' + view.spins.map((spin,index) => '<li>' + (index + 1) + '. '
           + (spin.frame.mode === 'base' ? this.text('Обычное вращение','Base spin') : this.text('Бесплатное вращение','Free spin'))
           + ' · ' + this.money(spin.payoutUnits) + ' USDT' + (spin.frame.cannon ? this.text(' · Залп',' · Cannon') : '') + '</li>').join('') + '</ol>'
-          + '<p>' + this.text('Выплата раунда: ','Round payout: ') + this.money(view.totalPayoutUnits) + ' USDT</p>' : '<p>' + this.text('Вращений пока нет.','No spins yet.') + '</p>');
+          + '<p>' + this.text('Выплата раунда: ','Round payout: ') + this.money(confirmedPayout(this.session,view.totalPayoutUnits)) + ' USDT</p>' : '<p>' + this.text('Вращений пока нет.','No spins yet.') + '</p>');
     } else {
       const cost = this.money(caribbeanInitialCost({lines:this.lines,mode:'buy-raid',stakeBasis:'total'},this.lineStake));
       body = '<h3>' + this.text('Купить бесплатную серию','Buy a free spin series') + '</h3><p>' + this.text('Линий: ','Lines: ') + this.lines + ' · ' + this.text('Общая ставка: ','Total stake: ') + this.money(this.lineStake) + ' USDT</p><p class="ct-buy-price">' + cost + ' USDT</p><p>' + this.text('Одна покупка. Продолжения бесплатны. Выбери серию:','One purchase. Continuations are free. Choose a series:') + '</p>'

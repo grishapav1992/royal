@@ -26,10 +26,10 @@ export function qualificationTeam(hero, state) {
 /** Sampler skips presentation frames only. Preflight replays actual server start/move. */
 export function sampleNeopolisRound(origin, stakes, random) {
   const factor = neopolisTeamPayout(origin), payouts = stakes.map(() => 0);
-  let team = origin, battle = null, freeSpins = 0, spins = 0;
+  let team = origin, battle = null, freeSpins = 0, spins = 0, precisePoints=0;
   do {
     const result = playNeopolisSpin(team, battle, random, false);
-    team = result.team; battle = result.battle; spins++; if (result.free) freeSpins++;
+    team = result.team; battle = result.battle; spins++; precisePoints+=result.points; if (result.free) freeSpins++;
     assert(spins <= MAX_ROUND_SPINS);
     const scaled = BigInt(result.points) * factor;
     for (let i = 0; i < stakes.length; i++) payouts[i] = Math.min(stakes[i] * NEOPOLIS_MAX_WIN,
@@ -40,7 +40,7 @@ export function sampleNeopolisRound(origin, stakes, random) {
       team = { ...team, complete: true }; break;
     }
   } while (battle?.remaining);
-  return { team, payouts, freeSpins, spins };
+  return { team, payouts, freeSpins, spins, precisionValue:Math.min(NEOPOLIS_MAX_WIN,precisePoints*Number(factor)/Number(denominator)) };
 }
 function previousFixtures(hero) {
   const fixtures = new Map([[0, undefined]]), draw = drawFor(810911 + HEROES.indexOf(hero));
@@ -75,19 +75,20 @@ export function qualifyNeopolisV4(policy, progress = () => {}) {
   const summarize = sum => summary(sum, policy.confidenceZ);
   const serverReplayChecks = preflight(policy);
   progress({ game: 'studio-neopolis', phase: 'conditional-server-replay', serverReplayChecks });
-  const stateResults = [], conditionalStreams = [], stakes = policy.stakes;
+  const stateResults = [], precisionStateResults=[], conditionalStreams = [], stakes = policy.stakes;
   for (const [heroIndex, hero] of HEROES.entries()) for (let state = 0; state < 16; state++) {
-    const origin = qualificationTeam(hero, state), sums = stakes.map(moment);
+    const origin = qualificationTeam(hero, state), sums = stakes.map(moment), preciseSum=moment();
     const rounds = state === 15 ? policy.conditionalReadyRoundsPerSeed : policy.conditionalRoundsPerSeed;
     let freeSpins = 0;
     for (const seed of policy.conditionalSeeds) {
       const actualSeed = seed + heroIndex * 1000003 + state * 7919, random = seededRandom(actualSeed);
       for (let n = 0; n < rounds; n++) {
-        const result = sampleNeopolisRound(origin, stakes, random); freeSpins += result.freeSpins;
+        const result = sampleNeopolisRound(origin, stakes, random); freeSpins += result.freeSpins; add(preciseSum,result.precisionValue,1);
         for (let i = 0; i < stakes.length; i++) add(sums[i], result.payouts[i] / stakes[i], 1);
       }
       conditionalStreams.push({ hero, state, seed: actualSeed, paidRounds: rounds });
     }
+    precisionStateResults.push({choice:hero,state,charges:origin.charges,...summarize(preciseSum)});
     stateResults.push(...stakes.map((stakeUnits, i) => ({ choice: hero, state, charges: origin.charges, stakeUnits, freeSpins, ...summarize(sums[i]) })));
     progress({ game: 'studio-neopolis', phase: 'public-state', hero, state, samples: sums[0].samples, rtp: summarize(sums[0]).rtp });
   }
@@ -130,6 +131,6 @@ export function qualifyNeopolisV4(policy, progress = () => {}) {
     results.push(...stakes.map((stakeUnits, i) => ({ choice: hero, stakeUnits, cycles, freeSpins, ...summarize(sums[i]) })));
     for (const row of policySums) stakePolicyResults.push(...stakes.map((stakeUnits, i) => ({ choice: hero, stakePolicy: row.name, stakeUnits, cycles, ...summarize(row.sums[i]) })));
   }
-  return { method: policy.method, serverReplayChecks, streams, results, conditionalStreams, stateResults, stakePolicyResults,
+  return { method: policy.method, serverReplayChecks, streams, results, conditionalStreams, stateResults, precisionStateResults, stakePolicyResults,
     analysis: 'Independent conditional rounds cover every public team state and every allowed stake. Complete regenerative cycles separately check fixed and adaptive stakes, all bonus continuations, exact integer settlement and the round cap. Different stakes and policies share entropy; their evidence must not be pooled. The interval95 fields use two-sided 97.5% normal intervals for a conservative two-look plan. Intervals are per case, not a simultaneous proof or exact analytical RTP.' };
 }

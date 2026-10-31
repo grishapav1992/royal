@@ -1,3 +1,4 @@
+import {isUnpublishedArcadeGame} from '../shared/arcadeCatalog';
 import { t } from '../i18n/index';
 import { installGameHost } from './GameHostRuntime';
 import { GIRLHUB_MODULE } from './GameModuleManifest';
@@ -20,7 +21,7 @@ export class IndependentGameUI {
  private latestPlayers?: { players: PlayerView[]; self: string };
  private paused = false;
  constructor(private host: HTMLElement, private gameId: IndependentGameId = GIRLHUB_MODULE, private context: GameModuleContextV1 = {}) {
-  if (!gameModuleContract(gameId)) throw Error('Unsupported independent game');
+  if (!gameModuleContract(gameId) || isUnpublishedArcadeGame(gameId)) throw Error('Unsupported independent game');
   owners.get(host)?.destroy();
   owners.set(host, this);
   void this.loadPackage();

@@ -38,7 +38,7 @@ test('ten-cent operations survive retries and restart without a second debit',as
   await db.exec("CREATE TABLE IF NOT EXISTS accounts(id TEXT PRIMARY KEY); INSERT INTO accounts VALUES ('stake-user') ON CONFLICT DO NOTHING");
   let wallet=new DemoWalletStore(db,()=>{draws++;return 7;});
   await wallet.operate('stake-user',{id:randomUUID(),kind:'deposit',amount:10});
-  const request={id:randomUUID(),kind:'play',gameId:'royal-roulette',rulesVersion:1,amount:0.1,input:{bet:'number',number:7}};
+  const request={id:randomUUID(),kind:'play',gameId:'royal-roulette',rulesVersion:1,amount:0.1,stakePolicyVersion:1,input:{bet:'number',number:7}};
   const first=await wallet.operate('stake-user',request);assert.equal(first.wallet.balance,13.5);
   assert.equal(first.gameRound!.stakeUnits,'10');assert.equal(first.gameRound!.payoutUnits,'360');
   const row=await db.prepare('SELECT amount,amount_units FROM demo_operations WHERE operation_id=?').get(request.id);
@@ -91,6 +91,7 @@ test('cascade payouts settle once in whole cents, including a fractional line st
 
 test('every production game accepts ten cents through the common wallet and completes without another wager',async t=>{
  const {DemoExpansionStore}=await import('../server/demoExpansion');
+ const {ExpansionClient}=await import('../src/wallet/ExpansionClient');const verifier=new ExpansionClient(2);
  const {seededRandom}=await import('../src/shared/draconaMath');
  const {demoBalanceUnits,demoReservedUnits}=await import('../server/demoWalletAmounts');
  const configurations:[string,unknown][]=[
@@ -115,7 +116,7 @@ test('every production game accepts ten cents through the common wallet and comp
   for(const [gameId,settings] of configurations)await t.test(gameId,async()=>{
    await db.prepare('INSERT INTO accounts(id) VALUES (?)').run(gameId);
    await wallet.operate(gameId,{id:randomUUID(),kind:'deposit',amount:1000});
-   const op={id:randomUUID(),gameId,action:'start',stakeUnits:'10',settings};
+   const op={id:randomUUID(),gameId,action:'start',stakeUnits:'10',stakePolicyVersion:1,settings};
    let reply=await operate(gameId,op);const id=reply.session.id;
    assert.equal(reply.session.stakeUnits,'10',gameId);assert.equal(reply.session.spentUnits,'10',gameId);
    const retry=await operate(gameId,op);assert(retry.replayed,gameId);
@@ -130,7 +131,7 @@ test('every production game accepts ten cents through the common wallet and comp
     const revision=v.templeCascade?.revision??v.caribbean?.revision??v.forestHeart?.revision??v.neopolis?.revision??v.dracona?.revision??v.afterglow?.revision??v.nitro?.revision??v.convoy?.revision??v.caramel?.revision??v.luelon?.revision??v.penalty?.revision??v.jackie?.combat.revision;
     reply=await operate(gameId,{id:randomUUID(),gameId,action:'move',sessionId:id,move:action.move,...(revision===undefined?{}:{revision})});
    }
-   assert.equal(reply.session.spentUnits,'10',gameId);
+   assert.equal(reply.session.spentUnits,'10',gameId);assert(Reflect.get(verifier,'checkedSession').call(verifier,reply.session),gameId+' reply must pass the real client verifier');
    assert.equal(await demoBalanceUnits(db,gameId),100000-10+Number(reply.session.returnedUnits),gameId);
    assert.equal(await demoReservedUnits(db,gameId),0,gameId);
    assert(Number.isSafeInteger(Number(reply.session.returnedUnits)),gameId);

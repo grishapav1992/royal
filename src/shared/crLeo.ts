@@ -1,8 +1,9 @@
-import {recoverableStakes} from './gameStakes';
+import {validGameStake} from './gameStakes.ts';
+import {precisionBaseSession} from './roundPrecision.ts';
 export const PENALTY_CLIENT_HEADER = 'X-Royal-Cr-Leo';
 export const PENALTY_GAME = 'original-cr-vs-leo' as const;
 export const PENALTY_MAX = 54;
-export const PENALTY_BETS = recoverableStakes(['1000', '5000', '10000', '50000']);
+export const PENALTY_BETS = ['1000', '5000', '10000', '50000'] as const;
 export const PENALTY_RISKS = {
   safe: { name: 'Пенальти', chance: 75, description: 'С 11 метров' },
   sharp: { name: 'Штрафной', chance: 60, description: 'С 20 метров, стенка из пяти' },
@@ -53,7 +54,7 @@ export function penaltyHundredths(risk: PenaltyRisk, goals: number): number {
 }
 export function validPenaltyView(v: unknown, stake: string): v is PenaltyView {
   try {
-    if (!PENALTY_BETS.includes(stake as any) || !object(v) || !keys(v, 'version,hero,risk,revision,shots,status,availableUnits') || ![1, 2].includes(v.version) || !validPenaltyHero(v.hero) || !validPenaltyRisk(v.risk) || !Array.isArray(v.shots) || v.shots.length < 1 || v.shots.length > 5 || !['playing', 'lost', 'banked', 'complete'].includes(v.status)) return false;
+    if (!(validGameStake(stake)||PENALTY_BETS.includes(stake as any)) || !object(v) || !keys(v, 'version,hero,risk,revision,shots,status,availableUnits') || ![1, 2].includes(v.version) || !validPenaltyHero(v.hero) || !validPenaltyRisk(v.risk) || !Array.isArray(v.shots) || v.shots.length < 1 || v.shots.length > 5 || !['playing', 'lost', 'banked', 'complete'].includes(v.status)) return false;
     for (let i = 0; i < v.shots.length; i++) {
       const shot = v.shots[i];
       if (!object(shot) || !keys(shot, v.version === 2 ? 'index,goal,finish,side,risk,zone' : 'index,goal,finish,side') || shot.index !== i || typeof shot.goal !== 'boolean' || !['goal', 'save', 'post', 'wide'].includes(shot.finish) || shot.goal !== (shot.finish === 'goal') || ![-1, 1].includes(shot.side) || i < v.shots.length - 1 && !shot.goal) return false;
@@ -68,6 +69,7 @@ export function validPenaltySettlement(state: string, stake: string, spent: stri
   return validPenaltyView(v, stake) && spent === stake && state === (v.status === 'playing' ? 'active' : 'settled') && returned === (v.status === 'banked' || v.status === 'complete' ? v.availableUnits : '0');
 }
 export function validPenaltySession(s: any): boolean {
+  s=precisionBaseSession(s);
   if (!object(s) || !keys(s, 'id,gameId,rulesVersion,state,stakeUnits,spentUnits,returnedUnits,view') || s.gameId !== PENALTY_GAME || s.rulesVersion !== 1 || typeof s.id !== 'string' || !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(s.id) || !validPenaltySettlement(s.state, s.stakeUnits, s.spentUnits, s.returnedUnits, s.view?.penalty)) return false;
   const v = s.view;
   if (!object(v) || !keys(v, 'penalty,player,dealer,community,actions,phase,ended,message') || ![v.player, v.dealer, v.community].every(a => Array.isArray(a) && a.length === 0) || !Array.isArray(v.actions) || v.phase !== v.penalty.revision + 1 || v.ended !== (s.state === 'settled') || typeof v.message !== 'string') return false;

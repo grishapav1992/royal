@@ -1,3 +1,4 @@
+import {stakeRulesHtml} from './stakeRules';
 import {GAME_BETS as DEMO_BETS} from '../shared/gameStakes';
 import { t as translateText, tr, locale } from '../i18n/index';
 import './volcanic-plinko.css';
@@ -65,7 +66,7 @@ export class VolcanicPlinkoUI {
     this.restorePending(); this.renderPockets(); this.update(); void this.wallet.refresh();
   }
   private el<T extends HTMLElement = HTMLElement>(selector: string) { return this.root.querySelector<T>(selector)!; }
-  private get stake() { return DEMO_BETS[this.betIndex]; }
+  private get stake() { return this.ownPending?.amount ?? DEMO_BETS[this.betIndex]; }
   private get locked() { return this.submitting || this.animating || this.wallet.busy || this.wallet.externalBusy || !!this.wallet.pending; }
   private get ownPending() { const p = this.wallet.pending; return p?.kind === 'play' && p.gameId === 'royal-plinko' ? p : undefined; }
   private restorePending() {
@@ -178,7 +179,8 @@ export class VolcanicPlinkoUI {
     const content = this.el('[data-vp="modal-content"]');
     if (kind === 'rules') {
       const tables = VOLCANIC_RISKS.map(volcanicTable);
-      content.innerHTML = tr`<small>VEIL OF NIGHT · ROYAL</small><h2>Правила и выплаты</h2><p>Один шар проходит 12 рядов. Каждый поворот влево или вправо имеет вероятность 50%. Лунка определяет полную выплату, включая возвращаемую часть ставки. Выплата меньше ставки означает убыток.</p><p>Профиль меняет таблицу выплат. Скорость, время нажатия и предыдущие броски не меняют шансы. Игра использует общий баланс USDT.</p><div class="vp-table-scroll"><table><caption>Полная выплата при ставке ${number(this.stake)}</caption><thead><tr><th>Лунка</th>${VOLCANIC_RISKS.map(r => `<th>${translateText(VOLCANIC_PROFILES[r].label)}<small>RTP ${(volcanicRtp(r) * 100).toFixed(4)}%</small></th>`).join('')}</tr></thead><tbody>${Array.from({ length: 13 }, (_, i) => `<tr><th>${i + 1}</th>${tables.map(t => `<td>${multi(t[i])}<small>${number(this.stake * t[i])}</small></td>`).join('')}</tr>`).join('')}</tbody></table></div><p>Математика vFair, Apache-2.0. RTP указан до денежного округления. Начисление округляется вниз до 0,01 USDT. Незавершённый запрос восстанавливается с прежним идентификатором.</p>`;
+      content.innerHTML = tr`<small>VEIL OF NIGHT · ROYAL</small><h2>Правила и выплаты</h2><p>Один шар проходит 12 рядов. Каждый поворот влево или вправо имеет вероятность 50%. Лунка определяет полную выплату, включая возвращаемую часть ставки. Выплата меньше ставки означает убыток.</p><p>Профиль меняет таблицу выплат. Скорость, время нажатия и предыдущие броски не меняют шансы. Игра использует общий баланс USDT.</p><div class="vp-table-scroll"><table><caption>Полная выплата при ставке ${number(this.stake)}</caption><thead><tr><th>Лунка</th>${VOLCANIC_RISKS.map(r => `<th>${translateText(VOLCANIC_PROFILES[r].label)}<small>RTP ${(volcanicRtp(r) * 100).toFixed(4)}%</small></th>`).join('')}</tr></thead><tbody>${Array.from({ length: 13 }, (_, i) => `<tr><th>${i + 1}</th>${tables.map(t => `<td>${multi(t[i])}<small>${number(this.stake * t[i])}</small></td>`).join('')}</tr>`).join('')}</tbody></table></div><p>Математика vFair, Apache-2.0. Итоговое округление сохраняет указанный RTP. Незавершённый запрос восстанавливается с прежним идентификатором.</p>`;
+      content.insertAdjacentHTML('beforeend',stakeRulesHtml());
     } else {
       const entries = this.wallet.wallet?.entries ?? [], bets = entries.filter(e => e.kind === 'bet' && e.source === 'royal-plinko').slice(0, 12);
       content.innerHTML = tr`<small>ОБЩИЙ ТЕСТОВЫЙ КОШЕЛЁК</small><h2>История заклинаний</h2><div class="vp-history">${bets.length ? bets.map(bet => { const won = entries.filter(e => e.operationId === bet.operationId && e.kind === 'win').reduce((a, e) => a + e.amount, 0); return tr`<div><span>${escape(new Date(bet.createdAt).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' }))}<small>Ставка ${number(-bet.amount)}</small></span><strong>${number(won)}<small>Выплата</small></strong></div>`; }).join('') : translateText('<p>Здесь появятся подтверждённые ставки этой игры.</p>')}</div><p>Показаны операции, загруженные общим кошельком.</p>`;

@@ -1,3 +1,4 @@
+import {stakeRulesHtml} from '../../src/ui/stakeRules';
 import {GAME_STAKE_CENTS as FOREST_HEART_STAKES} from '../../src/shared/gameStakes';
 import { readGameHost } from '../../src/modules/GameHostContract';
 import { FOREST_HEART_GAME, validForestHeartSession, type ForestHeartView } from '../../src/shared/forestHeart';
@@ -69,7 +70,7 @@ export class ForestHeartUI {
       <dialog class="fh-dialog" data-fh="dialog" aria-labelledby="fh-dialog-title"><header><h2 id="fh-dialog-title" data-fh="dialog-title">${c.how}</h2><button class="fh-dialog-close" data-fh="close" aria-label="${c.close}">×</button></header>
       <nav role="tablist" aria-label="${c.info}"><button type="button" role="tab" id="fh-rules-tab" data-fh-tab="rules" aria-controls="fh-rules-panel" aria-selected="true">${c.how}</button><button type="button" role="tab" id="fh-settings-tab" data-fh-tab="settings" aria-controls="fh-settings-panel" aria-selected="false">${c.settings}</button></nav>
       <section id="fh-rules-panel" data-panel="rules" role="tabpanel" aria-labelledby="fh-rules-tab"><ol class="fh-steps">${[1,2,3].map(n=>`<li><b aria-hidden="true">${n===1?'✧':n===2?'↻':'✿'}</b><div><h3>${[c.step1,c.step2,c.step3][n-1]}</h3><p>${[c.step1Text,c.step2Text,c.step3Text][n-1]}</p></div></li>`).join('')}</ol>
-      <details class="fh-full-rules"><summary>${c.fullRules}</summary><p>${c.rulesText}</p><p>${c.energyText}</p><p>${c.rtp}</p><p>${c.recovery}</p></details></section>
+      <details class="fh-full-rules"><summary>${c.fullRules}</summary><p>${c.rulesText}</p><p>${c.energyText}</p><p>${c.rtp}</p><p>${c.recovery}</p>${stakeRulesHtml(this.services.i18n.language === 'en')}</details></section>
       <section id="fh-settings-panel" data-panel="settings" role="tabpanel" aria-labelledby="fh-settings-tab" hidden><label><span>${c.music}</span><input data-fh="music" type="checkbox" checked></label><label><span>${c.motion}</span><input data-fh="motion" type="checkbox"></label></section></dialog>
     </main>`;
     this.root = host.querySelector('.fh')!; this.dialog = this.find<HTMLDialogElement>('dialog');
@@ -185,7 +186,7 @@ export class ForestHeartUI {
     this.find('energy').textContent = '×' + scene.energy;
     this.find('energy').setAttribute('aria-label', this.c.energy + ': ×' + scene.energy);
     this.find('flower-value-note').textContent = this.view && this.shown ? `${this.c.currentPulse}. ${this.c.flowerValue}: ${this.number(Number(forestHeartFlowerPayout(Number(this.shown.stakeUnits), scene.energy)))} USDT` : this.c.automatic;
-    this.find('total').textContent = this.number(scene.totalUnits);
+    this.find('total').textContent = this.number(this.shown?.state==='settled'?Number(this.shown.returnedUnits):scene.totalUnits);
     const bonus = this.root.querySelector<HTMLElement>('.fh-bonus')!;
     bonus.hidden = !this.view?.base.bonusAwarded;
     this.root.querySelectorAll<HTMLElement>('[data-bud]').forEach(bud => bud.classList.toggle('fh-bud-used', Number(bud.dataset.bud) < (this.view?.bonus.length ?? 0)));

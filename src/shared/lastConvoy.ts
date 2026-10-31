@@ -1,8 +1,8 @@
-import {recoverableStakes} from './gameStakes';
+import {validGameStake} from './gameStakes.ts';
 import { t as translateText } from '../i18n/index';
 export const CONVOY_GAME = 'studio-last-convoy' as const;
 export const CONVOY_CLIENT_HEADER = 'X-Royal-Convoy-Rules';
-export const CONVOY_BETS = recoverableStakes(['100','200','300','500','1000','2000','2500','5000','10000','20000','25000','50000','100000']);
+export const CONVOY_BETS = ['100','200','300','500','1000','2000','2500','5000','10000','20000','25000','50000','100000'] as const;
 export const CONVOY_MAX_WIN = 5000;
 export const CONVOY_MAX_FREE = 20;
 export const CONVOY_MAX_PINS = 6;
@@ -24,7 +24,7 @@ const units=(v:unknown):v is string=>typeof v==='string'&&/^(0|[1-9][0-9]{0,14})
 export const convoySame=(a:unknown,b:unknown)=>JSON.stringify(a)===JSON.stringify(b);
 export const convoyPins=(grid:readonly number[])=>grid.flatMap((v,i)=>v===8?[i]:[]);
 export const convoyGrid=(v:unknown):v is number[]=>Array.isArray(v)&&v.length===30&&v.every(n=>int(n,0,8))&&convoyPins(v).length<=6;
-export const validConvoyStake=(v:unknown):v is string=>typeof v==='string'&&(CONVOY_BETS as readonly string[]).includes(v);
+export const validConvoyStake=(v:unknown):v is string=>validGameStake(v)||typeof v==='string'&&(CONVOY_BETS as readonly string[]).includes(v);
 export function validConvoySettings(v:unknown):v is ConvoySettings {return obj(v)&&keys(v,'convoy')&&obj(v.convoy)&&keys(v.convoy,'mode')&&v.convoy.mode==='normal';}
 export function convoyGroups(grid:readonly number[]) {
  return CONVOY_PAYTABLE.flatMap((pay,symbol)=>{const positions=grid.flatMap((v,i)=>v===symbol?[i]:[]);return positions.length<8?[]:[{symbol,positions,payHundredths:pay[positions.length>=12?2:positions.length>=10?1:0]}];});

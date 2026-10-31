@@ -1,3 +1,4 @@
+import {precisionBaseSession} from './roundPrecision.ts';
 import {
   CARIBBEAN_GAME, validCaribbeanSettings, validCaribbeanStake, validCaribbeanSettlement,
   type CaribbeanSettings, type CaribbeanView, type CaribbeanMove,
@@ -19,7 +20,8 @@ export function caribbeanCoreMove(value: string): CaribbeanMove {
 export function caribbeanMaximumFactor(settings: unknown): number {
   if (!validCaribbeanTransportSettings(settings)) return 300000;
   const {lines,mode,stakeBasis} = settings.caribbean;
-  return (stakeBasis === 'total' ? 1 : lines) * (mode === 'normal' ? 15000 : mode === 'buy-raid' ? 14000 : 6000);
+  const base=(stakeBasis === 'total' ? 1 : lines) * (mode === 'normal' ? 15000 : mode === 'buy-raid' ? 14000 : 6000);
+  return stakeBasis==='total'&&mode!=='normal'?Math.ceil(base*1.01):base;
 }
 export function caribbeanExpansionView(view: CaribbeanView): ExpansionView {
   const ended = view.phase === 'complete';
@@ -33,6 +35,7 @@ export function caribbeanExpansionView(view: CaribbeanView): ExpansionView {
     caribbean:view };
 }
 export function validCaribbeanSession(value: unknown): value is ExpansionSession {
+  value=precisionBaseSession(value);
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
   const session = value as ExpansionSession, view = session.view?.caribbean;
   return Object.keys(session).sort().join(',') === 'gameId,id,returnedUnits,rulesVersion,spentUnits,stakeUnits,state,view'

@@ -1,8 +1,9 @@
-import {recoverableStakes} from './gameStakes';
+import {validGameStake} from './gameStakes.ts';
+import {precisionBaseSession} from './roundPrecision.ts';
 import { t as translateText } from '../i18n/index';
 export const NITRO_GAME = 'studio-nitro-run' as const;
 export const NITRO_CLIENT_HEADER = 'X-Royal-Nitro-Rules';
-export const NITRO_BETS = recoverableStakes(['100','200','300','500','1000','2000','2500','5000','10000','20000','25000','50000','100000']);
+export const NITRO_BETS = ['100','200','300','500','1000','2000','2500','5000','10000','20000','25000','50000','100000'] as const;
 export const NITRO_MAX_WIN = 3000, NITRO_MAX_FREE = 20, NITRO_MAX_FRAMES = 12;
 export const NITRO_NAMES = [translateText('Гоночное колесо'),translateText('Шлем'),translateText('Спортивный руль'),translateText('Турбина'),translateText('Синий купе'),translateText('Оранжевый маслкар'),translateText('WILD: шестерня'),translateText('Финишные флаги'),translateText('Баллон нитро')] as const;
 // Payments are hundredths of the total stake, for 3, 4, 5 or 6 symbols from the left.
@@ -30,7 +31,7 @@ const int=(v:unknown,min:number,max:number):v is number=>typeof v==='number'&&Nu
 const units=(v:unknown):v is string=>typeof v==='string'&&/^(0|[1-9][0-9]{0,14})$/.test(v);
 export const nitroSame=(a:unknown,b:unknown)=>JSON.stringify(a)===JSON.stringify(b);
 export const nitroGrid=(v:unknown):v is number[]=>Array.isArray(v)&&v.length===30&&Array.from(v).every(n=>int(n,0,8));
-export const validNitroStake=(v:unknown):v is string=>typeof v==='string'&&(NITRO_BETS as readonly string[]).includes(v);
+export const validNitroStake=(v:unknown):v is string=>validGameStake(v)||typeof v==='string'&&(NITRO_BETS as readonly string[]).includes(v);
 export function validNitroSettings(v:unknown):v is NitroSettings{return obj(v)&&keys(v,'nitro')&&obj(v.nitro)&&keys(v.nitro,'mode')&&v.nitro.mode==='normal';}
 export function nitroGroups(grid:readonly number[]) {
  return NITRO_LINES.flatMap((path,line)=>{
@@ -92,5 +93,6 @@ export function validNitroEnvelope(state:'active'|'settled',v:unknown):boolean{
  const a=v.actions[0];return v.actions.length===1&&obj(a)&&keys(a,'move,label,cost')&&a.move==='nitro-spin'&&a.cost===0&&typeof a.label==='string';
 }
 export function validNitroSession(v:unknown):boolean{
+  v=precisionBaseSession(v);
  return obj(v)&&keys(v,'gameId,id,returnedUnits,rulesVersion,spentUnits,stakeUnits,state,view')&&v.gameId===NITRO_GAME&&v.rulesVersion===2&&typeof v.id==='string'&&/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(v.id)&&(v.state==='active'||v.state==='settled')&&typeof v.stakeUnits==='string'&&typeof v.spentUnits==='string'&&typeof v.returnedUnits==='string'&&obj(v.view)&&validNitroSettlement(v.state,v.stakeUnits,v.spentUnits,v.returnedUnits,v.view.nitro)&&validNitroEnvelope(v.state,v.view);
 }

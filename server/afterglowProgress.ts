@@ -1,11 +1,12 @@
+import {GAME_STAKE_CENTS} from '../src/shared/gameStakes';
 import type {PostgresDatabase} from './database';
 import {applySchemaMigration} from './database-migrations';
 import {AFTER_BETS, validAfterStake} from '../src/shared/afterglow';
 import {AFTER_ALBUM_MAX_UNITS, AFTER_LOOK_TARGET_UNITS} from '../src/shared/afterglowWardrobe';
 
 /** Additive cosmetic migration. Existing slot sessions and payout rules stay intact. */
-export function migrateAfterglowProgress(db: PostgresDatabase) {
-  return applySchemaMigration(db, {id: 'afterglow-stake-progress-v3', statements: [
+export async function migrateAfterglowProgress(db: PostgresDatabase) {
+  await applySchemaMigration(db, {id: 'afterglow-stake-progress-v3', statements: [
     `CREATE TABLE demo_afterglow_stake_album (
       account_id TEXT PRIMARY KEY REFERENCES accounts(id) ON DELETE CASCADE,
       points_units BIGINT NOT NULL CHECK(points_units BETWEEN 0 AND ${AFTER_ALBUM_MAX_UNITS}))`,
@@ -35,6 +36,11 @@ export function migrateAfterglowProgress(db: PostgresDatabase) {
         SELECT account_id,girl,CASE WHEN unlocked THEN CASE girl WHEN 0 THEN 400000 WHEN 1 THEN 100000 WHEN 2 THEN 300000 WHEN 3 THEN 200000 END ELSE spins::bigint*2000 END AS points FROM demo_afterglow_girl_progress
         UNION ALL SELECT account_id,girl,SUM(credited_units) AS points FROM demo_afterglow_stake_rounds WHERE girl IS NOT NULL GROUP BY account_id,girl
       ) p GROUP BY account_id,girl`,
+  ]});
+  const allowed=[...new Set([...AFTER_BETS.map(Number),...GAME_STAKE_CENTS])].sort((a,b)=>a-b);
+  await applySchemaMigration(db,{id:'afterglow-shared-stakes-v4',statements:[
+    'ALTER TABLE demo_afterglow_stake_rounds DROP CONSTRAINT demo_afterglow_stake_rounds_credited_units_check',
+    `ALTER TABLE demo_afterglow_stake_rounds ADD CONSTRAINT demo_afterglow_stake_rounds_credited_units_check CHECK(credited_units IN (${allowed.join(',')}))`,
   ]});
 }
 

@@ -1,3 +1,4 @@
+import type {RoundPrecision} from './roundPrecision';
 import { t as translateText } from '../i18n/index';
 export const COINS_SYMBOL_COUNT = 5;
 export const COINS_REEL_COUNT = 3;
@@ -27,12 +28,14 @@ export type GamePlayRequest = {
   id: string;
   kind: 'play';
   amount: number;
+  stakePolicyVersion?:1;
   gameId: GameId;
   rulesVersion: 1;
   input: GameInput;
 };
 
 type RoundAmounts = {
+  precision?:RoundPrecision;
   rulesVersion: 1;
   stakeUnits: string;
   payoutUnits: string;

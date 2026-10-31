@@ -15,6 +15,7 @@ export function drawToteOrder(draw: (max: number) => number = randomInt) {
 export class FlagToteStore {
   readonly ready: Promise<void>;
   constructor(private db: PostgresDatabase, private wallet: (id: string) => Promise<DemoWallet>, prerequisite: Promise<void>, private now: () => number = Date.now, private draw: (max: number) => number = randomInt) { this.ready = prerequisite; }
+  async hasAcceptedOperation(account:string,id:unknown){await this.ready;return typeof id==='string'&&!!await this.db.prepare('SELECT 1 FROM flag_tote_tickets WHERE account_id=? AND id=?').get(account,id);}
   private async accountLocks(ids: string[]) {
     for (const id of [...new Set(ids)].sort()) await this.db.prepare('SELECT pg_advisory_xact_lock(hashtextextended(?,0))').get(this.db.schema + ':key:account:' + id);
   }

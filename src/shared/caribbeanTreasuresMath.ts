@@ -1,4 +1,3 @@
-import {recoverableStakes} from './gameStakes.ts';
 /**
  * Candidate rules for Caribbean Treasures. Runtime registration follows qualification.
  * Pure field/scoring code, with no wallet, sessions, audio or browser state.
@@ -8,7 +7,7 @@ export const CARIBBEAN_ROWS = 4;
 export const CARIBBEAN_MODEL_VERSION = 'candidate-1';
 export const CARIBBEAN_TARGET_RTP = 0.96;
 export const CARIBBEAN_LINE_COUNTS = [1, 5, 10, 20] as const;
-export const CARIBBEAN_LINE_STAKES = recoverableStakes(['100', '200', '500', '1000']);
+export const CARIBBEAN_LINE_STAKES = ['100', '200', '500', '1000'] as const;
 export const CARIBBEAN_BONUS_SPINS = { raid: 14, flagship: 6 } as const;
 export const CARIBBEAN_PROFILE = {
   1: { baseLargePerMillion: 23055, raidCannonPerMillion: 273067, bonusEntryPerMillion: 10589, bonusCostPerMillion: 25574653 },

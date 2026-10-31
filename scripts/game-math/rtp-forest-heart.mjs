@@ -8,9 +8,11 @@ import {validateForestWalletEvidence} from './forest-heart-evidence.mjs';
 
 export const FOREST_QUALIFICATION_METHOD='exact-forest-heart-runtime';
 export const FOREST_SERVER_STATUS='server-qualified-client-pending';
+// Reviewed 2026-10-31: historical engines, entropy and accepted-round settlement remain unchanged.
+// New stake-policy receipts are qualified separately over exact complete-round rewards.
 export const FOREST_REVIEWED_SOURCES={
-  "src/shared/forestHeartMath.ts": "c3e04efc098aa9d61f0faa70fc9159d8460dcf0816d96ef5b560efd45ab46658",
-  "src/shared/forestHeart.ts": "6f0ba79987ff2d24e5c242103ec6735bea1b9fcb3a0fba2abec773eff1dab52e",
+  "src/shared/forestHeartMath.ts": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
+  "src/shared/forestHeart.ts": "1ada448ed03adb04bfb510f489bed9703a07fab982e063a4e7068bbbbf71272b",
   "server/games/forestHeart.ts": "0c7412ea5438c72d63c7808759e79bb76fa95e12a32a23690dd7b36fcca9a1be"
 };
 const stakes=[1000,2000,5000,10000,20000,50000];

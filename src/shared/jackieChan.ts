@@ -1,3 +1,4 @@
+import {precisionBaseSession} from './roundPrecision.ts';
 import { PENALTY_BETS, PENALTY_RISKS, validPenaltyRisk, validPenaltyView, validPenaltySession, type PenaltyRisk, type PenaltyView } from './crLeo';
 
 export const JACKIE_GAME = 'original-jackie-chan' as const;
@@ -51,6 +52,7 @@ export function validJackieView(v: unknown, stake: string): v is JackieView {
 }
 /** Reuse the original series' strict money/envelope validator without sharing its identity. */
 export function validJackieSession(s: any): boolean {
+  s=precisionBaseSession(s);
   if (!object(s) || s.gameId !== JACKIE_GAME || !validJackieView(s.view?.jackie, s.stakeUnits)) return false;
   const { jackie, ...envelope } = s.view;
   if (Object.hasOwn(envelope, 'penalty')) return false;

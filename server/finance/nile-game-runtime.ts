@@ -1,4 +1,5 @@
-import {validGameBet} from '../../src/shared/gameStakes';
+import {isUnpublishedArcadeGame} from '../../src/shared/arcadeCatalog';
+import {validGameBet,usesGameStakes} from '../../src/shared/gameStakes';
 import {createHash} from 'node:crypto';
 import { SKIN_UUID } from '../../src/shared/skinStudio';
 import {DemoWalletStore,WalletError} from '../demoWallet';
@@ -22,12 +23,12 @@ export class NileGameRuntime{
  readonly ready:Promise<void>;
  private store:DemoWalletStore;
  private projection:PostgresDatabase;
- constructor(private ledger:NilePlayLedger,draw?: (max:number)=>number){
+ constructor(private ledger:NilePlayLedger,draw?: (max:number)=>number,now:()=>number=Date.now){
   const prerequisite=ledger.ready.then(()=>ledger.db.transaction(async()=>ledger.db.exec(`CREATE TABLE IF NOT EXISTS accounts(id TEXT PRIMARY KEY);
    CREATE TABLE IF NOT EXISTS native_legacy_progress(account_id TEXT PRIMARY KEY REFERENCES accounts(id),convoy_rounds BIGINT NOT NULL CHECK(convoy_rounds>=0),wardrobe_json TEXT NOT NULL,imported_at BIGINT NOT NULL)`)));
   // Every call runs under the one financial journal lock. Engine-local account locks are redundant here.
   const db=new Proxy(ledger.db,{get(target,key){if(key==='transaction')return<T>(action:()=>Promise<T>)=>target.transaction(action);const value=Reflect.get(target,key,target);return typeof value==='function'?value.bind(target):value;}})as PostgresDatabase;
-  this.projection=db;this.store=new DemoWalletStore(db,draw,undefined,prerequisite);this.ready=Promise.all([this.store.ready,this.store.expansion.ready]).then(()=>{});
+  this.projection=db;this.store=new DemoWalletStore(db,draw,now,prerequisite);this.ready=Promise.all([this.store.ready,this.store.expansion.ready]).then(()=>{});
  }
  async skinPurchase(account: string, value: unknown) {
   const op = value as { id: string; action: 'reserve'|'capture'|'refund' };
@@ -96,6 +97,8 @@ export class NileGameRuntime{
    if(beforeReserve!==context.reserved)throw Error('Native game reserve projection does not match the journal');
    await saveDemoUnits(this.projection,account,Number(cents));
    const op=c.body as any,replay=await this.replay(account,op?.id);
+   if(!replay&&c.method==='POST'&&op?.action==='start'&&isUnpublishedArcadeGame(op.gameId))throw new WalletError(410,'Эта игра недоступна. Новая ставка не принята.');
+   if(!replay&&c.method==='POST'&&(op?.action==='start'||op?.kind==='play')&&usesGameStakes(op.gameId)&&op.stakePolicyVersion!==1)throw new WalletError(409,'Обнови страницу для общей системы ставок. Ставка не списана.');
    if(!replay&&c.method==='POST'&&(op?.action==='start'||op?.kind==='play'||op?.kind==='spin')){
     if(!context.ready)return fail('Подтверждение тестового USDT временно недоступно.');
     let coverage:bigint;try{coverage=this.coverage(c)*10000n;}catch{throw new WalletError(400,'Некорректная игра или ставка.');}
