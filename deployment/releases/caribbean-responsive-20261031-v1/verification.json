@@ -20,11 +20,65 @@
     "walletTransportMediaTests": 13,
     "installerTests": 3,
     "browserScenarios": 9,
-    "viewportSizes": 12
+    "viewportSizes": 12,
+    "browserScenariosPassed": 9
   },
   "scope": [
     "games/caribbean-treasures/caribbean.css",
     "games/caribbean-treasures/package.json"
   ],
-  "cleanup": "Stop owned preview and remove temporary checkout, obsolete packages and captures after GitHub source preservation."
+  "cleanup": {
+    "freeBeforeBytes": 54606176256,
+    "removedFolders": [
+      {
+        "path": "artifacts/work/caribbean-responsive-20261031/checkout",
+        "logicalBytes": 506666846
+      },
+      {
+        "path": "artifacts/work/caribbean-responsive-20261031/evidence",
+        "logicalBytes": 16270769
+      }
+    ],
+    "archiveBytes": 0,
+    "testDatabaseRemoved": true,
+    "retainedCurrentPackage": "module-dist/studio-caribbean-treasures/versions/1.6.1-2b002a7972d6",
+    "retainedFinalImages": [
+      "artifacts/work/caribbean-responsive-20261031/desktop.png",
+      "artifacts/work/caribbean-responsive-20261031/mobile.png"
+    ],
+    "exceptions": "Original checkout untracked files, existing local packages and shared dependencies preserved; owned preview stopped.",
+    "freeAfterBytes": 54597181440
+  },
+  "sourceCommit": "4cd7a13f37254cf019ec703103e3b4994feb8abe",
+  "release": {
+    "prepared": true,
+    "verified": true,
+    "githubVerified": true,
+    "manifestSha256": "c474d14556f8e591e6c3827d7de5bbf6b0ed0c7efad2e1503f77b406af506728",
+    "files": 126,
+    "packageManifestSha256": "3b31070c1e9da835dee86d388f51900247298d462f0fdeb588e2c177639c91ae"
+  },
+  "measurements": [
+    {
+      "width": 1280,
+      "height": 720,
+      "gameWidth": 979.609375,
+      "boardWidth": 459.609375,
+      "stageHeight": 384.40625
+    },
+    {
+      "width": 500,
+      "height": 760,
+      "gameWidth": 494,
+      "boardWidth": 411.90625,
+      "stageHeight": 330
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "gameWidth": 384,
+      "boardWidth": 311.90625,
+      "stageHeight": 263.328125
+    }
+  ]
 }
