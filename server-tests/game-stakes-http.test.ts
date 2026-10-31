@@ -49,7 +49,7 @@ for(const native of [false,true])test(`${native?'USDT financial socket':'common 
    else{
     assert(verify(reply.session));assert.equal(reply.session.stakeUnits,'10');assert.equal(reply.session.spentUnits,'10',game+' total normal spin price');
     let moves=0;while(reply.session.state==='active'){
-     assert(moves++<10000);const saved=await balance();last=next(reply.session);const r=await post(path,last);
+     assert(moves++<10000);if(game==='github-crash'){const delay=Math.max(0,reply.session.startedAt-Date.now()+20);assert(delay<10000);if(delay)await new Promise(r=>setTimeout(r,delay));}const saved=await balance();last=next(reply.session);const r=await post(path,last);
      if(game==='github-crash'&&r.status===409){
       const recovered=await(await fetch(url+'/expansion',{headers})).json();const ended=recovered.sessions.find((s:any)=>s.id===op.id);assert.equal(ended?.state,'settled');reply={wallet:recovered.wallet,session:ended};last=op;
      }else{assert.equal(r.status,200,game);reply=await r.json();}
@@ -58,7 +58,7 @@ for(const native of [false,true])test(`${native?'USDT financial socket':'common 
     assert(reply.session.precision);
    }
    const paid=core?reply.gameRound.payoutUnits:reply.session.returnedUnits,expected=Math.round(before*100)-10+Number(paid);assert.equal(Math.round(reply.wallet.balance*100),expected);
-   const repeat=await post(path,last);assert.equal(repeat.status,200);const saved:any=await repeat.json();assert.deepEqual(core?saved.gameRound:saved.session,core?reply.gameRound:reply.session);assert.equal(Math.round(saved.wallet.balance*100),expected);
+   const repeat=await post(path,last);assert.equal(repeat.status,200);const saved:any=await repeat.json();const stable=(s:any)=>{const copy=structuredClone(s);delete copy.serverNow;return copy;};assert.deepEqual(stable(core?saved.gameRound:saved.session),stable(core?reply.gameRound:reply.session));assert.equal(Math.round(saved.wallet.balance*100),expected);
    assert.equal(saved.wallet.entries.filter((e:any)=>e.kind==='bet'&&e.source===game).length,1);assert.equal(saved.wallet.entries.filter((e:any)=>e.kind==='win'&&e.source===game).length,1);
    if(c)await c.ledger.audit();
   }finally{await new Promise<void>(r=>server.close(()=>r()));if(finance)await new Promise<void>(r=>finance!.close(()=>r()));await c?.close();}
