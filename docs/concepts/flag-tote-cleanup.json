@@ -1,0 +1,36 @@
+{
+  "task": "flag-tote",
+  "date": "2026-10-31",
+  "sourceCommit": "712e442f6545bd7e292bc124848a693f4d01cd7d",
+  "preservedRemoteBranches": [
+    "main",
+    "feature/flag-tote"
+  ],
+  "removedFolder": "artifacts/work/flag-tote/checkout",
+  "logicalBytes": 971180340,
+  "files": 6876,
+  "freeBytesBefore": 55267082240,
+  "archivesCreated": 0,
+  "sharedDependenciesCopied": false,
+  "activeExceptions": [
+    "Primary Flag Battle preview and its existing local data were preserved.",
+    "Unrelated untracked synchronization copies and other tasks were preserved."
+  ],
+  "condition": "Remove this task-owned worktree and generated outputs after remote commit verification; retain only the compact report.",
+  "freeBytesAfter": 55293988864,
+  "freeBytesIncrease": 26906624,
+  "removed": true,
+  "measurement": "Logical file lengths are reported separately from filesystem available space; the free-space delta includes concurrent filesystem activity.",
+  "verification": {
+    "mathReplayChecks": 14912,
+    "walletHttpTests": 9,
+    "proofIntegrityTests": 1,
+    "existingMoneyTests": 12,
+    "moduleTests": 7,
+    "physicsAudioTests": 16,
+    "existingRtpGateTests": 16,
+    "browserHostScenarios": 2,
+    "rtpProfiles": 26,
+    "fullBuildPassed": true
+  }
+}
