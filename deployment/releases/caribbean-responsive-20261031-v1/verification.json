@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-31",
+  "module": "studio-caribbean-treasures",
+  "version": "1.6.1-2b002a7972d6",
+  "status": "publication-blocked",
+  "production": {
+    "sourceCommit": "4028e369c4fb7d0588f6ddd3c155306505fdbfd9",
+    "moduleVersion": "1.6.0-cf05aa0c4b35",
+    "freeBytes": 5226688512,
+    "requiredFreeBytes": 5368709120,
+    "reason": "Server free space is below the mandatory five GiB reserve. Docker image inventory timed out after 15 seconds, so no unused image was proven safe to remove. No production source, package, services or player data changed."
+  },
+  "checks": {
+    "rtp": {
+      "qualified": 26,
+      "unchangedLegacy": 114
+    },
+    "moduleTypes": true,
+    "moduleBuild": true,
+    "walletTransportMediaTests": 13,
+    "installerTests": 3,
+    "browserScenarios": 9,
+    "viewportSizes": 12
+  },
+  "scope": [
+    "games/caribbean-treasures/caribbean.css",
+    "games/caribbean-treasures/package.json"
+  ],
+  "cleanup": "Stop owned preview and remove temporary checkout, obsolete packages and captures after GitHub source preservation."
+}

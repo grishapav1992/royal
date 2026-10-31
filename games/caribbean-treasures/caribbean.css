@@ -1,4 +1,4 @@
-.mini-dialog.originals-mode[data-game="studio-caribbean-treasures"] #mini-game{height:100%}
+.mini-dialog.originals-mode[data-game="studio-caribbean-treasures"] #mini-game{height:100%;container:ct-viewport / size}
 .ct-root{--ct-gold:#f3cf83;position:relative;isolation:isolate;box-sizing:border-box;width:100%;height:100%;min-height:300px;min-width:0;padding:12px 18px 8px;display:flex;flex-direction:column;gap:8px;overflow:auto;color:#fff0d2;background:#124056 url('/assets/caribbean-treasures/harbor.webp') center/cover no-repeat;font-family:Georgia,serif;text-shadow:0 2px 3px #00151d;container-name:caribbean;container-type:inline-size}
 .ct-root:before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(180deg,#021b2720 15%,#051d2944 50%,#031a29e8 100%)}
 .ct-root *{box-sizing:border-box}.ct-root [hidden]{display:none!important}
@@ -111,13 +111,29 @@
  .ct-board-wrap{margin-right:calc(min(32cqw,66.666cqh) + 8px)}
  .ct-map{margin-right:calc(min(32cqw,66.666cqh) + 8px)}
 }
-@media(min-width:850px) and (max-height:800px){
- .ct-root{padding:8px 12px 6px;gap:6px}
- .ct-title{padding:6px 22px 8px}.ct-title small{font-size:8px}.ct-heading h2{font-size:clamp(18px,2.6cqw,28px)}
- .ct-avatar{width:42px;height:50px}.ct-ledger{padding:6px 10px}.ct-ledger span{font-size:9px}.ct-ledger strong{font-size:18px}
- .ct-controls{grid-template-columns:minmax(0,1fr) 104px minmax(0,1fr);gap:6px 16px;padding-top:2px;padding-bottom:2px}
- .ct-controls .ct-play{width:100px;height:100px;border-width:4px}.ct-play .ct-spin-icon{font-size:40px;line-height:34px}
- .ct-status{font-size:10px;min-height:13px}
+/* Use the game pane, including space taken by chat, as the layout boundary. */
+@container ct-viewport (min-width:700px) and (min-aspect-ratio:4/3){
+ .ct-root{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);grid-template-rows:auto minmax(180px,1fr) auto 36px;grid-template-areas:"heading heading" "stage stage" "ledger controls" "playback status";padding:8px 12px;gap:8px 12px;min-height:0}
+ .ct-heading{grid-area:heading}.ct-stage{grid-area:stage;min-height:0}
+ .ct-title{padding:4px 20px 7px}.ct-title small{font-size:8px}.ct-heading h2{font-size:clamp(20px,2.6cqw,28px)}
+ .ct-avatar{width:42px;height:50px}
+ .ct-ledger{grid-area:ledger;grid-template-columns:repeat(2,minmax(0,1fr));padding:8px 10px;gap:6px 10px;align-self:stretch}
+ .ct-ledger span{font-size:10px;min-block-size:1.2em}.ct-ledger strong{font-size:18px;line-height:1.2}
+ .ct-controls{grid-area:controls;grid-template-columns:minmax(0,1fr) 94px minmax(0,1fr);gap:6px 10px;padding:4px 0}
+ .ct-controls .ct-play{width:90px;height:90px;border-width:4px}.ct-play .ct-spin-icon{font-size:36px;line-height:32px}
+ .ct-playback{grid-area:playback;width:100%;align-self:center}
+ .ct-status{grid-area:status;block-size:36px;font-size:11px;align-content:center}
+}
+/* Keep the board large on phones by sharing the final row and compacting labels. */
+@container ct-viewport (max-width:650px){
+ .ct-root{display:grid;grid-template-columns:146px minmax(0,1fr);grid-template-rows:auto minmax(min(330px,calc((100cqw - 70px)*2/3 + 54px)),1fr) auto auto 40px;grid-template-areas:"heading heading" "stage stage" "ledger ledger" "controls controls" "playback status";padding:7px;gap:6px;min-height:0}
+ .ct-heading{grid-area:heading}.ct-stage{grid-area:stage;min-height:0}
+ .ct-title{padding:7px 8px}.ct-title small{display:none}.ct-heading h2{font-size:clamp(15px,4.6cqw,20px);margin:0}
+ .ct-ledger{grid-area:ledger}.ct-ledger strong{min-block-size:1.2em}.ct-ledger span{min-block-size:2.4em}
+ .ct-controls{grid-area:controls}
+ .ct-playback{grid-area:playback;width:100%;grid-template-columns:52px minmax(0,1fr);height:auto;align-self:center}
+ .ct-playback .ct-skip,.ct-playback .ct-retry{grid-column:1/-1;grid-row:2}
+ .ct-status{grid-area:status;block-size:40px;font-size:9px;align-content:center}
 }
 /* A narrow landscape pane cannot share its width with a 250px chat column. */
 @media(max-width:640px){
@@ -130,7 +146,7 @@
  #mini-dialog.game-chat-layout[data-game="studio-caribbean-treasures"] .mini-stage{flex:none;overflow:visible}
  #mini-dialog.game-chat-layout[data-game="studio-caribbean-treasures"] #mini-game{height:auto}
  #mini-dialog.game-chat-layout[data-game="studio-caribbean-treasures"] .game-chat-dock{height:180px}
- .ct-root{height:auto;min-height:0;overflow:visible}
+ .ct-root{display:flex;height:auto;min-height:0;overflow:visible}
  .ct-stage{flex:none}
  .ct-board-wrap{flex:none;block-size:calc((100cqw - 34px)*2/3 + 34px)}
  .ct-backdrop{position:fixed}

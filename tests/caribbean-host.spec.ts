@@ -350,7 +350,15 @@ test('header controls paint above overlapping pirate art and every tool remains 
   pirate.style.transform=`translate(${panel.x+panel.width/2-faceX}px,${panel.y+panel.height/2-faceY}px)`;
  });
  await page.screenshot({path:out+'/header-overlap.png',animations:'disabled'});
- for(let i=0;i<4;i++){const region=await capture(i);await writeFile(out+'/toolbar-after-'+i+'.png',region);expect(region.equals(regions[i]),'Pirate pixels cannot replace the opaque interior of toolbar button '+i).toBe(true);}
+ const sharp=(await import('sharp')).default;
+ for(let i=0;i<4;i++){
+  const region=await capture(i);await writeFile(out+'/toolbar-after-'+i+'.png',region);
+  const before=await sharp(regions[i]).raw().toBuffer(),after=await sharp(region).raw().toBuffer();
+  expect(after.length).toBe(before.length);
+  // GPU compositing can round a colour channel by one without changing the layer.
+  const difference=before.reduce((maximum,value,index)=>Math.max(maximum,Math.abs(value-after[index])),0);
+  expect(difference,'Pirate pixels cannot replace the opaque interior of toolbar button '+i).toBeLessThanOrEqual(1);
+ }
  await page.locator('.ct-captain').evaluate((e:HTMLElement)=>{e.style.removeProperty('transform');});await page.locator('.ct-root').evaluate((e:HTMLElement)=>{e.style.removeProperty('overflow');});
  for(const [width,height] of [[1440,1000],[1280,720],[390,844]]){
   await page.setViewportSize({width,height});await expect(tools).toHaveCount(4);
@@ -388,7 +396,7 @@ test('catalogue pirate captain cover stays sharp on desktop and mobile and reope
 test('responsive framing keeps the title and full captain artwork inside the host',async({page,roomPath})=>{
  test.setTimeout(120000);await enter(page,roomPath);await topup(page);await open(page);
  const measurements:any[]=[];
- for(const [width,height] of [[1440,1000],[1280,720],[1024,768],[900,650],[800,600],[640,480],[500,760],[390,844],[342,700],[844,390],[342,245]]){
+ for(const [width,height] of [[1440,1000],[1280,720],[1094,803],[1024,768],[900,650],[800,600],[640,480],[500,760],[390,844],[342,700],[844,390],[342,245]]){
   await page.setViewportSize({width,height});
   await expect.poll(async()=>page.evaluate(()=>{const d=document.querySelector<HTMLElement>('#mini-dialog')!,s=d.querySelector<HTMLElement>('.mini-stage')!;return d.dataset.gameViewportReady===d.dataset.game+'|'+s.clientWidth+'x'+s.clientHeight+'|off';})).toBe(true);
   const measured=await page.evaluate(()=>{
@@ -398,9 +406,19 @@ test('responsive framing keeps the title and full captain artwork inside the hos
    const visible=getComputedStyle(captain).display!=='none',style=getComputedStyle(image),scale=style.objectFit==='contain'?Math.min(image.clientWidth/image.naturalWidth,image.clientHeight/image.naturalHeight):Math.max(image.clientWidth/image.naturalWidth,image.clientHeight/image.naturalHeight);
    return{root:box(root),rootOverflowX:root.scrollWidth-root.clientWidth,pageOverflowX:document.documentElement.scrollWidth-innerWidth,title:box(title),titleText:{x:b.x,right:b.right,y:b.y,bottom:b.bottom},captain:visible?{box:box(captain),objectFit:style.objectFit,clippedX:Math.max(0,image.naturalWidth*scale-image.clientWidth),clippedY:Math.max(0,image.naturalHeight*scale-image.clientHeight)}:null,stage:box(root.querySelector('.ct-stage')!),play:box(root.querySelector('[data-ct-action=play]')!),chat:box(document.querySelector('#chat-input')!)};
   });
-  measurements.push({width,height,...measured});await page.screenshot({path:out+`/framing-${width}x${height}.png`});
-  if(width<=640&&height<=540){
+  const board=await page.locator('.ct-board').boundingBox();
+  // A fitting image can still be unusably small when toolbars consume the pane.
+  if(measured.root.width>=700&&measured.root.width/measured.root.height>=4/3){
+   expect(board!.width/measured.root.width,'The short desktop board keeps at least 45% of the game pane width').toBeGreaterThanOrEqual(.45);
+  }
+  if(measured.root.width<=650&&height>540){
+   expect(board!.width/measured.root.width,'Narrow panes keep readable symbols and scroll the controls when necessary').toBeGreaterThanOrEqual(.65);
+  }
+  measurements.push({width,height,...measured,board});await page.screenshot({path:out+`/framing-${width}x${height}.png`});
+  if(measured.play.bottom>measured.root.bottom||height<=540){
    await page.locator('[data-ct-action=play]').scrollIntoViewIfNeeded();await expect(page.locator('[data-ct-action=play]')).toBeInViewport();
+   await page.locator('[data-ct-action=buy]').click();await expect(page.locator('.ct-modal')).toBeInViewport();
+   await page.locator('.ct-modal').press('Escape');await expect(page.locator('.ct-backdrop')).toBeHidden();
    await page.locator('#chat-input').scrollIntoViewIfNeeded();await expect(page.locator('#chat-input')).toBeInViewport();
    await page.locator('.ct-heading h2').scrollIntoViewIfNeeded();
   }
