@@ -1,0 +1,681 @@
+{
+  "format": 1,
+  "productionCommit": "fb599494fbee9accff92c8a30126a071ebcceb5c",
+  "moduleGames": [
+    "nitro-run",
+    "meme-overload",
+    "caramel-carnival",
+    "last-convoy",
+    "girlhub"
+  ],
+  "moduleContracts": {
+    "studio-nitro-run": {
+      "apiVersion": 1,
+      "rulesVersion": 2,
+      "progressVersion": 1
+    },
+    "studio-meme-overload": {
+      "apiVersion": 1,
+      "rulesVersion": 2,
+      "progressVersion": 1
+    },
+    "studio-caramel-carnival": {
+      "apiVersion": 1,
+      "rulesVersion": 2,
+      "progressVersion": 1
+    },
+    "studio-last-convoy": {
+      "apiVersion": 1,
+      "rulesVersion": 2,
+      "progressVersion": 1
+    },
+    "studio-afterglow": {
+      "apiVersion": 1,
+      "rulesVersion": 2,
+      "progressVersion": 3
+    }
+  },
+  "changedSources": [
+    "src/ui/slotKit/SlotCascadeBoard.ts"
+  ],
+  "files": {
+    "games/caramel-carnival/entry.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "games/caramel-carnival/entry.ts",
+      "baseSha256": "75fbb5569222e750de09e964e46148539a4949f0df859b4b004f38b180a66319",
+      "sha256": "75fbb5569222e750de09e964e46148539a4949f0df859b4b004f38b180a66319"
+    },
+    "games/caramel-carnival/package.json": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "games/caramel-carnival/package.json",
+      "baseSha256": "2d42afc11f62b5c375aa4e4926b3f477580e6bcc7c29927ce95c0e3dbaf6413b",
+      "sha256": "2d42afc11f62b5c375aa4e4926b3f477580e6bcc7c29927ce95c0e3dbaf6413b"
+    },
+    "games/girlhub/entry.ts": {
+      "commit": "8ee883b43f20fd4bb2eac51e878237df85d82403",
+      "path": "games/girlhub/entry.ts",
+      "baseSha256": "e2c0986f796a3dcec167019e5f7c674580785e0938dcadb9f35f3eddb724d6d0",
+      "sha256": "e2c0986f796a3dcec167019e5f7c674580785e0938dcadb9f35f3eddb724d6d0"
+    },
+    "games/girlhub/package.json": {
+      "commit": "8ee883b43f20fd4bb2eac51e878237df85d82403",
+      "path": "games/girlhub/package.json",
+      "baseSha256": "0dae33b437ba56a9a2c2ff327941be4f9571a6d2ae50aa93c38a67494cd4998d",
+      "sha256": "0dae33b437ba56a9a2c2ff327941be4f9571a6d2ae50aa93c38a67494cd4998d"
+    },
+    "games/last-convoy/entry.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "games/last-convoy/entry.ts",
+      "baseSha256": "6a26834a48d6638eb98d5e89765b6ca8f3c3cce22f8fc7abcec17bb3b69c7d61",
+      "sha256": "6a26834a48d6638eb98d5e89765b6ca8f3c3cce22f8fc7abcec17bb3b69c7d61"
+    },
+    "games/last-convoy/package.json": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "games/last-convoy/package.json",
+      "baseSha256": "53f721181e759314cee48621d90805cec979f690cfab170feefd4f3488e1301c",
+      "sha256": "53f721181e759314cee48621d90805cec979f690cfab170feefd4f3488e1301c"
+    },
+    "games/meme-overload/entry.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "games/meme-overload/entry.ts",
+      "baseSha256": "f68574c3b34406c6fffdf58c5aa6a9288455244f2fc901c328ca91e19b8fd881",
+      "sha256": "f68574c3b34406c6fffdf58c5aa6a9288455244f2fc901c328ca91e19b8fd881"
+    },
+    "games/meme-overload/package.json": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "games/meme-overload/package.json",
+      "baseSha256": "d3548a77bb2b4dfe410f81d21e0e15277958cdc60483c54ff22e3ee811c47176",
+      "sha256": "d3548a77bb2b4dfe410f81d21e0e15277958cdc60483c54ff22e3ee811c47176"
+    },
+    "games/nitro-run/entry.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "games/nitro-run/entry.ts",
+      "baseSha256": "0805a20f29bf1ffdbeee0635ea17c86562376474bf62b29f2573925d8ac587c0",
+      "sha256": "0805a20f29bf1ffdbeee0635ea17c86562376474bf62b29f2573925d8ac587c0"
+    },
+    "games/nitro-run/package.json": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "games/nitro-run/package.json",
+      "baseSha256": "fc92a78623ff9df4c0d12b1fbfd712176585a634071cb0d6508dbab135b687d3",
+      "sha256": "fc92a78623ff9df4c0d12b1fbfd712176585a634071cb0d6508dbab135b687d3"
+    },
+    "src/modules/GameHostContract.ts": {
+      "commit": "60b13bb8dde910919057835ed056a98257b78857",
+      "path": "src/modules/GameHostContract.ts",
+      "baseSha256": "6600ce1f6cb8ca3402a9760d8e83dab29e73cd1b0045a0bb1684967527e6f7a3",
+      "sha256": "8207926c234eeb52901591d5f1913c59aa296f6a880ee6a8985501756e8b0bf7",
+      "patches": [
+        {
+          "from": "import type { IndependentGameId } from './GameModuleCatalog';\nimport type { expansionClient } from '../wallet/ExpansionClient';\nimport type { demoWallet, coins } from '../wallet/WalletClient';\nimport type { gameAudio } from '../game/GameAudio';\nimport type * as i18n from '../i18n/index';\nimport type * as reactions from '../ui/gameReactions';\nimport type * as demoGames from '../game/demoGames';\nimport type { minesClient } from '../wallet/MinesClient';\nimport type { casinoClients } from '../wallet/CasinoClient';\nimport type { nilePlay } from '../wallet/NilePlayClient';\nimport type { usdtWallet } from '../wallet/UsdtClient';\nimport type { cryptoWallet } from '../wallet/CryptoClient';\nimport type { flightClient } from '../wallet/FlightClient';\nimport type Phaser from 'phaser';\nimport type { RoomScene } from '../game/RoomScene';\nimport type { BreakerStatus } from '../game/breaker';\nimport type { ActivitiesState, PianoNote } from '../shared/activities';\nimport type { PlayerView } from '../shared/world';\nimport type { ActivityHostContext } from './ActivityHostContract';\nimport type { PvpMove, PvpSnapshot } from '../shared/pvp';\nimport type { progression } from '../wallet/ProgressionClient';\n\nexport const GAME_HOST_KEY = Symbol.for('royal.game-host.v1');\nexport interface GameHostV1 {\n readonly apiVersion: 1;\n readonly expansionClient: typeof expansionClient;\n readonly demoWallet: typeof demoWallet;\n readonly progression: typeof progression;\n readonly walletCoins: typeof coins;\n readonly gameAudio: typeof gameAudio;\n readonly i18n: typeof i18n;\n readonly reactions: typeof reactions;\n readonly demoGames: typeof demoGames;\n readonly minesClient: typeof minesClient;\n readonly casinoClients: typeof casinoClients;\n readonly nilePlay: typeof nilePlay;\n readonly usdtWallet: typeof usdtWallet;\n readonly cryptoWallet: typeof cryptoWallet;\n readonly flightClient: typeof flightClient;\n readonly Phaser: typeof Phaser;\n}\nexport interface GameModuleInstance {\n destroy(): void;\n start?(): void;\n restart?(): void;\n load?(): void | Promise<void>;\n open?(atCabinet?: boolean): void;\n pause?(): void;\n resume?(): void;\n getState?(): unknown;\n update?(state: ActivitiesState): void;\n updatePlayers?(players: PlayerView[], self: string): void;\n receive?(note: PianoNote): void;\n hallChanged?(): void;\n connected?(): void;\n disconnected?(): void;\n}\nexport interface GameModuleContextV1 {\n readonly onStatus?: (state: BreakerStatus) => void;\n readonly setTitle?: (title: string) => void;\n readonly scene?: Pick<RoomScene, 'setLocked' | 'approach'>;\n readonly onPlaying?: (playing: boolean) => void;\n readonly onClosed?: () => void;\n readonly onMounted?: (instance: GameModuleInstance) => void;\n readonly provider?: { readonly embedded: boolean; readonly gameId?: string; readonly gameName?: string; readonly onCatalogue: () => void };\n readonly activity?: ActivityHostContext;\n readonly pvp?: {get():PvpSnapshot|undefined;busy():boolean;subscribe(callback:()=>void):()=>void;move(value:PvpMove):void};\n}\nexport interface GameModuleV1 {\n readonly gameId: IndependentGameId;\n readonly apiVersion: 1;\n readonly rulesVersion: number;\n readonly progressVersion: number;\n mount(host: HTMLElement, context?: GameModuleContextV1): { destroy(): void };\n}\n\nexport function readGameHost(): GameHostV1 {\n const value = (globalThis as unknown as Record<symbol, GameHostV1>)[GAME_HOST_KEY];\n if (!value || value.apiVersion !== 1) throw Error('Game host version is incompatible');\n return value;\n}\n",
+          "to": "import type { IndependentGameId } from './GameModuleCatalog';\nimport type { expansionClient } from '../wallet/ExpansionClient';\nimport type { demoWallet, coins } from '../wallet/WalletClient';\nimport type { gameAudio } from '../game/GameAudio';\nimport type * as i18n from '../i18n/index';\nimport type * as reactions from '../ui/gameReactions';\nimport type * as demoGames from '../game/demoGames';\nimport type { minesClient } from '../wallet/MinesClient';\nimport type { casinoClients } from '../wallet/CasinoClient';\nimport type { nilePlay } from '../wallet/NilePlayClient';\nimport type { usdtWallet } from '../wallet/UsdtClient';\nimport type { cryptoWallet } from '../wallet/CryptoClient';\nimport type { flightClient } from '../wallet/FlightClient';\nimport type Phaser from 'phaser';\nimport type { RoomScene } from '../game/RoomScene';\nimport type { BreakerStatus } from '../game/breaker';\nimport type { ActivitiesState, PianoNote } from '../shared/activities';\nimport type { PlayerView } from '../shared/world';\nimport type { ActivityHostContext } from './ActivityHostContract';\nimport type { PvpCardMove, PvpSnapshot } from '../shared/pvp';\nimport type { progression } from '../wallet/ProgressionClient';\n\nexport const GAME_HOST_KEY = Symbol.for('royal.game-host.v1');\nexport interface GameHostV1 {\n readonly apiVersion: 1;\n readonly expansionClient: typeof expansionClient;\n readonly demoWallet: typeof demoWallet;\n readonly progression: typeof progression;\n readonly walletCoins: typeof coins;\n readonly gameAudio: typeof gameAudio;\n readonly i18n: typeof i18n;\n readonly reactions: typeof reactions;\n readonly demoGames: typeof demoGames;\n readonly minesClient: typeof minesClient;\n readonly casinoClients: typeof casinoClients;\n readonly nilePlay: typeof nilePlay;\n readonly usdtWallet: typeof usdtWallet;\n readonly cryptoWallet: typeof cryptoWallet;\n readonly flightClient: typeof flightClient;\n readonly Phaser: typeof Phaser;\n}\nexport interface GameModuleInstance {\n destroy(): void;\n start?(): void;\n restart?(): void;\n load?(): void | Promise<void>;\n open?(atCabinet?: boolean): void;\n pause?(): void;\n resume?(): void;\n getState?(): unknown;\n update?(state: ActivitiesState): void;\n updatePlayers?(players: PlayerView[], self: string): void;\n receive?(note: PianoNote): void;\n hallChanged?(): void;\n connected?(): void;\n disconnected?(): void;\n}\nexport interface GameModuleContextV1 {\n readonly onStatus?: (state: BreakerStatus) => void;\n readonly setTitle?: (title: string) => void;\n readonly scene?: Pick<RoomScene, 'setLocked' | 'approach'>;\n readonly onPlaying?: (playing: boolean) => void;\n readonly onClosed?: () => void;\n readonly onMounted?: (instance: GameModuleInstance) => void;\n readonly provider?: { readonly embedded: boolean; readonly gameId?: string; readonly gameName?: string; readonly onCatalogue: () => void };\n readonly activity?: ActivityHostContext;\n readonly pvp?: {get():PvpSnapshot|undefined;busy():boolean;subscribe(callback:()=>void):()=>void;move(value:PvpCardMove):void};\n}\nexport interface GameModuleV1 {\n readonly gameId: IndependentGameId;\n readonly apiVersion: 1;\n readonly rulesVersion: number;\n readonly progressVersion: number;\n mount(host: HTMLElement, context?: GameModuleContextV1): { destroy(): void };\n}\n\nexport function readGameHost(): GameHostV1 {\n const value = (globalThis as unknown as Record<symbol, GameHostV1>)[GAME_HOST_KEY];\n if (!value || value.apiVersion !== 1) throw Error('Game host version is incompatible');\n return value;\n}\n"
+        }
+      ]
+    },
+    "src/modules/GameModuleCatalog.ts": {
+      "commit": "8ee883b43f20fd4bb2eac51e878237df85d82403",
+      "path": "src/modules/GameModuleCatalog.ts",
+      "baseSha256": "f773ac9831e19ad98e92ff5d9a1c7fe4e2c4908418fea160a24e8da9d6e2df82",
+      "sha256": "f773ac9831e19ad98e92ff5d9a1c7fe4e2c4908418fea160a24e8da9d6e2df82"
+    },
+    "src/shared/afterglow.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/shared/afterglow.ts",
+      "baseSha256": "3a20c05490f1fce9fb33244091230f5106c23d9686566e40f0051d124e941256",
+      "sha256": "3a20c05490f1fce9fb33244091230f5106c23d9686566e40f0051d124e941256"
+    },
+    "src/shared/afterglowWardrobe.ts": {
+      "commit": "8ee883b43f20fd4bb2eac51e878237df85d82403",
+      "path": "src/shared/afterglowWardrobe.ts",
+      "baseSha256": "6dace1ede72ee479115b5cbf2d1d512c9e8800fd315be407cea787377362dc1f",
+      "sha256": "6dace1ede72ee479115b5cbf2d1d512c9e8800fd315be407cea787377362dc1f"
+    },
+    "src/shared/caramelCarnival.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/shared/caramelCarnival.ts",
+      "baseSha256": "17f9e338297ac7fc37fa0f6ac6608e22cdc9ad145ad18f8c6764d72575f725aa",
+      "sha256": "17f9e338297ac7fc37fa0f6ac6608e22cdc9ad145ad18f8c6764d72575f725aa"
+    },
+    "src/shared/convoyWardrobe.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/shared/convoyWardrobe.ts",
+      "baseSha256": "e00ff55831b480cfc785354d0bddebef35bd58f754c8bb3dc26fdbd1fe8b60fa",
+      "sha256": "e00ff55831b480cfc785354d0bddebef35bd58f754c8bb3dc26fdbd1fe8b60fa"
+    },
+    "src/shared/cosmicEscapeBets.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/shared/cosmicEscapeBets.ts",
+      "baseSha256": "5e079e858e39cd73070f95f77688c774aee887e025a2f84fbc365c1e9cddd625",
+      "sha256": "5e079e858e39cd73070f95f77688c774aee887e025a2f84fbc365c1e9cddd625"
+    },
+    "src/shared/demoWallet.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/shared/demoWallet.ts",
+      "baseSha256": "2f3d21554eaa03930e306f8db103fe8299649387853574dff516cd01cd7e1cef",
+      "sha256": "2f3d21554eaa03930e306f8db103fe8299649387853574dff516cd01cd7e1cef"
+    },
+    "src/shared/gameCore.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/shared/gameCore.ts",
+      "baseSha256": "aa9520b435a5c969d257290e3b06060051db76de45955f99dd68c48f1b5addab",
+      "sha256": "aa9520b435a5c969d257290e3b06060051db76de45955f99dd68c48f1b5addab"
+    },
+    "src/shared/lastConvoy.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/shared/lastConvoy.ts",
+      "baseSha256": "f4d1b22f8a67dfda6fadbb4539b85211d8ad6c165657ba394bcd5c258e1f280a",
+      "sha256": "f4d1b22f8a67dfda6fadbb4539b85211d8ad6c165657ba394bcd5c258e1f280a"
+    },
+    "src/shared/luelonSlots.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/shared/luelonSlots.ts",
+      "baseSha256": "1867b3f6e7e3fbc1e00dd6fad2bb094c42e6038f8eba18e0ef7250381f95cdcb",
+      "sha256": "1867b3f6e7e3fbc1e00dd6fad2bb094c42e6038f8eba18e0ef7250381f95cdcb"
+    },
+    "src/shared/luelonSlotsLines.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/shared/luelonSlotsLines.ts",
+      "baseSha256": "cc9e2528bae03e8965c154f82aa271b3c9976bb3d817130ba51dedf6e8eb67ee",
+      "sha256": "cc9e2528bae03e8965c154f82aa271b3c9976bb3d817130ba51dedf6e8eb67ee"
+    },
+    "src/shared/luelonSlotsModels.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/shared/luelonSlotsModels.ts",
+      "baseSha256": "b8644fecff250437909ff88950c5ef129c1d534108344f9643b815614d844c74",
+      "sha256": "b8644fecff250437909ff88950c5ef129c1d534108344f9643b815614d844c74"
+    },
+    "src/shared/memeOverload.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/shared/memeOverload.ts",
+      "baseSha256": "3380fce5ee723cea9a07d8b098c933e0465300fcc19fa727ef30ccbf7303244b",
+      "sha256": "3380fce5ee723cea9a07d8b098c933e0465300fcc19fa727ef30ccbf7303244b"
+    },
+    "src/shared/neopolisMath.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/shared/neopolisMath.ts",
+      "baseSha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
+      "sha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5"
+    },
+    "src/shared/nitroRun.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/shared/nitroRun.ts",
+      "baseSha256": "621e54ab208ea598573dc79f22be813509a85523309af76d5f3b8da7d038cc08",
+      "sha256": "621e54ab208ea598573dc79f22be813509a85523309af76d5f3b8da7d038cc08"
+    },
+    "src/shared/studioGames.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/shared/studioGames.ts",
+      "baseSha256": "5be1d552e408e7a2fe1d1cff923b70bdda059a57847c46db09c96dc2ae63e29a",
+      "sha256": "5be1d552e408e7a2fe1d1cff923b70bdda059a57847c46db09c96dc2ae63e29a"
+    },
+    "src/shared/velvetReign.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/shared/velvetReign.ts",
+      "baseSha256": "8cd399677940ae5fddd67dea255fd83b54faf297cb00b8290ae918b53e26db2f",
+      "sha256": "8cd399677940ae5fddd67dea255fd83b54faf297cb00b8290ae918b53e26db2f"
+    },
+    "src/shared/velvetReignHistory.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/shared/velvetReignHistory.ts",
+      "baseSha256": "597f90f94bcbecd64fc37a27f730009651ed5c4d6731a1ee54602195e508118c",
+      "sha256": "597f90f94bcbecd64fc37a27f730009651ed5c4d6731a1ee54602195e508118c"
+    },
+    "src/shared/walletAccount.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/shared/walletAccount.ts",
+      "baseSha256": "f048e9d0e18ffe32619ee9e8b5f457d9d6af69329dbd2b26b994c2bcf6448560",
+      "sha256": "f048e9d0e18ffe32619ee9e8b5f457d9d6af69329dbd2b26b994c2bcf6448560"
+    },
+    "src/ui/AfterglowArtwork.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/AfterglowArtwork.ts",
+      "baseSha256": "fe2592598277af9d9b0d40ac3a135bb67602cee87c45c9b99615e0db9c3c3295",
+      "sha256": "fe2592598277af9d9b0d40ac3a135bb67602cee87c45c9b99615e0db9c3c3295"
+    },
+    "src/ui/AfterglowAssets.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/AfterglowAssets.ts",
+      "baseSha256": "b7ffc3ed03191f2ffd738a2bbabe1a3a5fc88357954bbbf822cea0c727e9d444",
+      "sha256": "b7ffc3ed03191f2ffd738a2bbabe1a3a5fc88357954bbbf822cea0c727e9d444"
+    },
+    "src/ui/AfterglowAudio.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/AfterglowAudio.ts",
+      "baseSha256": "31b555c4883fece6e12ffd8b08e1a6643796c604506893b1e447790684ac1e05",
+      "sha256": "31b555c4883fece6e12ffd8b08e1a6643796c604506893b1e447790684ac1e05"
+    },
+    "src/ui/AfterglowBoard.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/AfterglowBoard.ts",
+      "baseSha256": "b693ef127a2c76244f1d448846d84b8271c195e0510a1a89809ff727cefa0e3b",
+      "sha256": "b693ef127a2c76244f1d448846d84b8271c195e0510a1a89809ff727cefa0e3b"
+    },
+    "src/ui/AfterglowFeedback.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/AfterglowFeedback.ts",
+      "baseSha256": "5a8d1eec80ba7d59813f5d8021e323bbb592c3d049c7170bcbbb0622f48756c8",
+      "sha256": "5a8d1eec80ba7d59813f5d8021e323bbb592c3d049c7170bcbbb0622f48756c8"
+    },
+    "src/ui/AfterglowText.ts": {
+      "commit": "8ee883b43f20fd4bb2eac51e878237df85d82403",
+      "path": "src/ui/AfterglowText.ts",
+      "baseSha256": "ade23bcbb7dde7159e19dfe680b23a306eec78f3c661a7e17603c77f6bb12fd8",
+      "sha256": "ade23bcbb7dde7159e19dfe680b23a306eec78f3c661a7e17603c77f6bb12fd8"
+    },
+    "src/ui/AfterglowUI.ts": {
+      "commit": "8ee883b43f20fd4bb2eac51e878237df85d82403",
+      "path": "src/ui/AfterglowUI.ts",
+      "baseSha256": "bb83f9cc09c7e47d5cf5b8c125ebce417e34b171237cae9ab25bd347311bc3f9",
+      "sha256": "bb83f9cc09c7e47d5cf5b8c125ebce417e34b171237cae9ab25bd347311bc3f9"
+    },
+    "src/ui/AfterglowVoices.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/AfterglowVoices.ts",
+      "baseSha256": "2b7375d6dee3d2866e26f563ed4b7d091bbdd75879d6375946baa208f9e5c8ce",
+      "sha256": "2b7375d6dee3d2866e26f563ed4b7d091bbdd75879d6375946baa208f9e5c8ce"
+    },
+    "src/ui/CaramelArtwork.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/CaramelArtwork.ts",
+      "baseSha256": "cbc1ddaced3cfd215307e33e3b7aecc5cb00c9860b1a12536097166e5f971bcc",
+      "sha256": "cbc1ddaced3cfd215307e33e3b7aecc5cb00c9860b1a12536097166e5f971bcc"
+    },
+    "src/ui/CaramelBoard.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/CaramelBoard.ts",
+      "baseSha256": "9e3f0f5962ceda7ab7d9f3e04029c5538fc4b6a6b6884701c0fb502a772df2a0",
+      "sha256": "9e3f0f5962ceda7ab7d9f3e04029c5538fc4b6a6b6884701c0fb502a772df2a0"
+    },
+    "src/ui/CaramelCarnivalAssets.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/CaramelCarnivalAssets.ts",
+      "baseSha256": "f70864f02a1c8ffe68714d55f382320f9c56a03ad0505b6b1e18dafeaabd7cb1",
+      "sha256": "f70864f02a1c8ffe68714d55f382320f9c56a03ad0505b6b1e18dafeaabd7cb1"
+    },
+    "src/ui/CaramelCarnivalAudio.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/CaramelCarnivalAudio.ts",
+      "baseSha256": "1705c37de6702f2c3e5618863f68d1dc342d3c069aaa435a1be09cdf46e3044c",
+      "sha256": "1705c37de6702f2c3e5618863f68d1dc342d3c069aaa435a1be09cdf46e3044c"
+    },
+    "src/ui/CaramelCarnivalUI.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/CaramelCarnivalUI.ts",
+      "baseSha256": "fb3b13ec3995463b1098c82e1457c605747b7319a37d1d7a2d5009a577181e46",
+      "sha256": "fb3b13ec3995463b1098c82e1457c605747b7319a37d1d7a2d5009a577181e46"
+    },
+    "src/ui/CascadeArtwork.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/CascadeArtwork.ts",
+      "baseSha256": "7c7d104aa1145ab1537c57c1806e209efee0eee8a5f38614cfec5ad649f75391",
+      "sha256": "7c7d104aa1145ab1537c57c1806e209efee0eee8a5f38614cfec5ad649f75391"
+    },
+    "src/ui/CascadeBoard.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/CascadeBoard.ts",
+      "baseSha256": "06a62ad6af7786851c836148f9401936a6ca092cd08b05e4524510f848c5fb84",
+      "sha256": "06a62ad6af7786851c836148f9401936a6ca092cd08b05e4524510f848c5fb84"
+    },
+    "src/ui/CascadeSlotUI.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/CascadeSlotUI.ts",
+      "baseSha256": "771473524acef87faa4dff4fdb4329686afe0d5875069b45aeee841c8cc1b012",
+      "sha256": "771473524acef87faa4dff4fdb4329686afe0d5875069b45aeee841c8cc1b012"
+    },
+    "src/ui/ConvoyArtwork.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/ConvoyArtwork.ts",
+      "baseSha256": "2fe04a440fb3d6260506baddccf462c63785e5ba995a4b927f886a175967a3a8",
+      "sha256": "2fe04a440fb3d6260506baddccf462c63785e5ba995a4b927f886a175967a3a8"
+    },
+    "src/ui/ConvoyBoard.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/ConvoyBoard.ts",
+      "baseSha256": "34616fef7e1bc2d53418d371e009a5f767c2ee5ddbb648baff982938dfa5b1af",
+      "sha256": "34616fef7e1bc2d53418d371e009a5f767c2ee5ddbb648baff982938dfa5b1af"
+    },
+    "src/ui/ConvoyHeroine.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/ConvoyHeroine.ts",
+      "baseSha256": "808191d0a8926441c80d21eede20c066685506dc15a5b8f0f49eed67d9118dd6",
+      "sha256": "808191d0a8926441c80d21eede20c066685506dc15a5b8f0f49eed67d9118dd6"
+    },
+    "src/ui/ConvoyPortraitAnimation.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/ConvoyPortraitAnimation.ts",
+      "baseSha256": "66040221e403a88f4b81e1ff82d92e1a7c4d2b8381ab3cb65e3d8c63d674e14c",
+      "sha256": "66040221e403a88f4b81e1ff82d92e1a7c4d2b8381ab3cb65e3d8c63d674e14c"
+    },
+    "src/ui/LastConvoyAssets.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/LastConvoyAssets.ts",
+      "baseSha256": "5c768a0f88cfd16ff2f60ec0a898bfe3101bccf8e7ac65df0d08506afde39b78",
+      "sha256": "5c768a0f88cfd16ff2f60ec0a898bfe3101bccf8e7ac65df0d08506afde39b78"
+    },
+    "src/ui/LastConvoyAudio.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/LastConvoyAudio.ts",
+      "baseSha256": "f3bc53b3546e4e442b7ac6139de5e98fb4b673822f171c0a030cedc7d55803c0",
+      "sha256": "f3bc53b3546e4e442b7ac6139de5e98fb4b673822f171c0a030cedc7d55803c0"
+    },
+    "src/ui/LastConvoyUI.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/LastConvoyUI.ts",
+      "baseSha256": "ab92c4fccfc970619df2372d769e49bf1ea1dd84d0c77df9561ee50389625227",
+      "sha256": "ab92c4fccfc970619df2372d769e49bf1ea1dd84d0c77df9561ee50389625227"
+    },
+    "src/ui/LuelonGameRouter.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/LuelonGameRouter.ts",
+      "baseSha256": "5289f1211170916a80960eb039b8a0e762bd253c50638f9e0f570976c0e0ea9a",
+      "sha256": "5289f1211170916a80960eb039b8a0e762bd253c50638f9e0f570976c0e0ea9a"
+    },
+    "src/ui/MemeArtwork.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/MemeArtwork.ts",
+      "baseSha256": "43fbd6b4d08e985ced069d08862851a630216a83d976cc2863ef8e101f965039",
+      "sha256": "43fbd6b4d08e985ced069d08862851a630216a83d976cc2863ef8e101f965039"
+    },
+    "src/ui/MemeAssets.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/MemeAssets.ts",
+      "baseSha256": "778f43865b3c2e42ace103510580e1a63721bc2baab0fc31c8327b9252ecaca0",
+      "sha256": "778f43865b3c2e42ace103510580e1a63721bc2baab0fc31c8327b9252ecaca0"
+    },
+    "src/ui/MemeAudio.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/MemeAudio.ts",
+      "baseSha256": "e214c74b2b7d9ae4761a030aa8c6c9a747fcadac84de7686bcaa756240e2edbf",
+      "sha256": "e214c74b2b7d9ae4761a030aa8c6c9a747fcadac84de7686bcaa756240e2edbf"
+    },
+    "src/ui/MemeBoard.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/MemeBoard.ts",
+      "baseSha256": "d3d249b77fa4bc71da113d5a8249924f33ed8b5ffaddfabab8d70e4519fb3971",
+      "sha256": "d3d249b77fa4bc71da113d5a8249924f33ed8b5ffaddfabab8d70e4519fb3971"
+    },
+    "src/ui/MemeOverloadUI.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/MemeOverloadUI.ts",
+      "baseSha256": "31f0941bddd85ed7d1dc63d4b30343492643080d131ea0845a103b9be1927560",
+      "sha256": "31f0941bddd85ed7d1dc63d4b30343492643080d131ea0845a103b9be1927560"
+    },
+    "src/ui/MemeReactions.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/MemeReactions.ts",
+      "baseSha256": "eec95be7fe9da9441214e38cf1fae5047c85aee39ca4ec5feedc0f8e0cc6cb33",
+      "sha256": "eec95be7fe9da9441214e38cf1fae5047c85aee39ca4ec5feedc0f8e0cc6cb33"
+    },
+    "src/ui/NitroArtwork.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/NitroArtwork.ts",
+      "baseSha256": "a5e2acf4c2e02d327cd4bb1e0d1ef012eed0d1d0468c9913fd7688e7196392c8",
+      "sha256": "a5e2acf4c2e02d327cd4bb1e0d1ef012eed0d1d0468c9913fd7688e7196392c8"
+    },
+    "src/ui/NitroBoard.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/NitroBoard.ts",
+      "baseSha256": "b61d322fc4cb4cd400c4810a5951a150c9618a46047553bd74d2af92f03d5a3f",
+      "sha256": "b61d322fc4cb4cd400c4810a5951a150c9618a46047553bd74d2af92f03d5a3f"
+    },
+    "src/ui/NitroRunAssets.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/NitroRunAssets.ts",
+      "baseSha256": "7f0fdca72880c4c0a8d437d633ae9571244bd91eeb935ebb4b51b294ed3a45e8",
+      "sha256": "7f0fdca72880c4c0a8d437d633ae9571244bd91eeb935ebb4b51b294ed3a45e8"
+    },
+    "src/ui/NitroRunAudio.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/NitroRunAudio.ts",
+      "baseSha256": "67af60dffd0e66eeeb9901082fe6f402cc18d5cf681dce5a9deeb975491c6c38",
+      "sha256": "67af60dffd0e66eeeb9901082fe6f402cc18d5cf681dce5a9deeb975491c6c38"
+    },
+    "src/ui/NitroRunUI.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/NitroRunUI.ts",
+      "baseSha256": "62121c32098a06f676c5bfe7ff312b989e5f43bcc77d5b6fbcb2726fa0904f18",
+      "sha256": "62121c32098a06f676c5bfe7ff312b989e5f43bcc77d5b6fbcb2726fa0904f18"
+    },
+    "src/ui/StudioMotion.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/StudioMotion.ts",
+      "baseSha256": "519c0c560226b0dee1de035703320de520a1e3ff376738b8643a2527c495f6c7",
+      "sha256": "519c0c560226b0dee1de035703320de520a1e3ff376738b8643a2527c495f6c7"
+    },
+    "src/ui/afterglow.css": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/afterglow.css",
+      "baseSha256": "e0cd7c9ffed4d27be9896b6dd2dedd294bfa8d45d60258f8d025bc2863077407",
+      "sha256": "e0cd7c9ffed4d27be9896b6dd2dedd294bfa8d45d60258f8d025bc2863077407"
+    },
+    "src/ui/caramel-carnival.css": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/caramel-carnival.css",
+      "baseSha256": "2e0078654fb9754e15c09e837aaea32f08aa10e4947dffe6b7eb342a0b1a3bb6",
+      "sha256": "2e0078654fb9754e15c09e837aaea32f08aa10e4947dffe6b7eb342a0b1a3bb6"
+    },
+    "src/ui/cascade-slot.css": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/cascade-slot.css",
+      "baseSha256": "11077582105b04dc2e7b25fcde30d3b1199a2ae1de666b7626b7ec91036aa128",
+      "sha256": "11077582105b04dc2e7b25fcde30d3b1199a2ae1de666b7626b7ec91036aa128"
+    },
+    "src/ui/convoy-heroine.css": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/convoy-heroine.css",
+      "baseSha256": "8aed278e5870cfb12853d281c1dfb45722b992c8724fcb1b069a33c0fe1649dd",
+      "sha256": "8aed278e5870cfb12853d281c1dfb45722b992c8724fcb1b069a33c0fe1649dd"
+    },
+    "src/ui/last-convoy.css": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/last-convoy.css",
+      "baseSha256": "e2a23eb842c5a7c813a962f2b770fa9e2d46b751d80cde541a7bcaf3dd3d7da4",
+      "sha256": "e2a23eb842c5a7c813a962f2b770fa9e2d46b751d80cde541a7bcaf3dd3d7da4"
+    },
+    "src/ui/meme-overload.css": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/meme-overload.css",
+      "baseSha256": "3fd4d420c9274186db0584891915fa34b4fa09dca73cad8a35eb9c5622deedb9",
+      "sha256": "3fd4d420c9274186db0584891915fa34b4fa09dca73cad8a35eb9c5622deedb9"
+    },
+    "src/ui/nitro-run.css": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/nitro-run.css",
+      "baseSha256": "3ee01db3929e7de61a8c831de22e4d2d17ac5cfb3eda23ca1154a028527f0416",
+      "sha256": "3ee01db3929e7de61a8c831de22e4d2d17ac5cfb3eda23ca1154a028527f0416"
+    },
+    "src/ui/slotKit/SlotAssets.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/slotKit/SlotAssets.ts",
+      "baseSha256": "8bbd409578830ee7f3f025340003155335af03ce684bcae23bc913acb02052d2",
+      "sha256": "8bbd409578830ee7f3f025340003155335af03ce684bcae23bc913acb02052d2"
+    },
+    "src/ui/slotKit/SlotAudio.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/slotKit/SlotAudio.ts",
+      "baseSha256": "7f7c3536e0202ebd39dd79bcd36c886882332c6d5e84e4a73831d46e06aefbc0",
+      "sha256": "7f7c3536e0202ebd39dd79bcd36c886882332c6d5e84e4a73831d46e06aefbc0"
+    },
+    "src/ui/slotKit/SlotCascadeBoard.ts": {
+      "commit": "e3611f4bed4217cf346037c46e887c7c1325cb03",
+      "path": "src/ui/slotKit/SlotCascadeBoard.ts",
+      "baseSha256": "96d48c3a96c8bc40044d7748630024f9bbee1b8950544106c31dce2167049cf9",
+      "sha256": "96d48c3a96c8bc40044d7748630024f9bbee1b8950544106c31dce2167049cf9"
+    },
+    "src/ui/slotKit/SlotControls.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/slotKit/SlotControls.ts",
+      "baseSha256": "64d08da02ff7e5fa34add413acdd1ad804c91ccab14d6bf5504d2d4b4cef0be7",
+      "sha256": "64d08da02ff7e5fa34add413acdd1ad804c91ccab14d6bf5504d2d4b4cef0be7"
+    },
+    "src/ui/slotKit/SlotDialog.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/slotKit/SlotDialog.ts",
+      "baseSha256": "ab1afa6596855626571b00824b7b22b57a7b3f1045857fbe410b23af65d5e295",
+      "sha256": "ab1afa6596855626571b00824b7b22b57a7b3f1045857fbe410b23af65d5e295"
+    },
+    "src/ui/slotKit/SlotGeometry.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/slotKit/SlotGeometry.ts",
+      "baseSha256": "9050e51c87d77646845e206f2618a1ab6a3887e008f17abb0b1fbd29303ee90f",
+      "sha256": "9050e51c87d77646845e206f2618a1ab6a3887e008f17abb0b1fbd29303ee90f"
+    },
+    "src/ui/slotKit/SlotLifecycle.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/slotKit/SlotLifecycle.ts",
+      "baseSha256": "33c227f915cbff994e7218a7e98410f7ae4d1fee129dfd013f531092e9eee71f",
+      "sha256": "33c227f915cbff994e7218a7e98410f7ae4d1fee129dfd013f531092e9eee71f"
+    },
+    "src/ui/slotKit/SlotPhotoViewer.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/slotKit/SlotPhotoViewer.ts",
+      "baseSha256": "a81a111181059ee94cc2cc68bd142bd83ba2556a3dd184644753924638fd8235",
+      "sha256": "a81a111181059ee94cc2cc68bd142bd83ba2556a3dd184644753924638fd8235"
+    },
+    "src/ui/slotKit/SlotPlayback.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/slotKit/SlotPlayback.ts",
+      "baseSha256": "b16043b19396cabe7cf67d8864400ccb8f20c5a916565eb6c90ca148cc3d6954",
+      "sha256": "b16043b19396cabe7cf67d8864400ccb8f20c5a916565eb6c90ca148cc3d6954"
+    },
+    "src/ui/slotKit/SlotScreens.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/slotKit/SlotScreens.ts",
+      "baseSha256": "59140beebcb205fa8e52c3e35f0f2283a0746ebd42b08ef54122598fd986756a",
+      "sha256": "59140beebcb205fa8e52c3e35f0f2283a0746ebd42b08ef54122598fd986756a"
+    },
+    "src/ui/slotKit/SlotSessions.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/slotKit/SlotSessions.ts",
+      "baseSha256": "f51283d66ea4936932d496d9daee46db703bab1c2e8c55c4445c57955968a5d2",
+      "sha256": "f51283d66ea4936932d496d9daee46db703bab1c2e8c55c4445c57955968a5d2"
+    },
+    "src/ui/slotKit/SlotSettings.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/slotKit/SlotSettings.ts",
+      "baseSha256": "d71f7ef39e2b982d99fe8538387162d3b78ed19d940ff763bfa54c59627aae91",
+      "sha256": "d71f7ef39e2b982d99fe8538387162d3b78ed19d940ff763bfa54c59627aae91"
+    },
+    "src/ui/slotKit/nativeSlotImages.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/slotKit/nativeSlotImages.ts",
+      "baseSha256": "20e93c94b87b767d25d9f41a5d033275e76947eab02f0299032b583800e5da9f",
+      "sha256": "20e93c94b87b767d25d9f41a5d033275e76947eab02f0299032b583800e5da9f"
+    },
+    "src/ui/slotKit/nativeSlots.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/slotKit/nativeSlots.ts",
+      "baseSha256": "fc823e2892a7fcc49d32b8fa21bd938498ac1762d4444213f8c624bec21cf6f7",
+      "sha256": "fc823e2892a7fcc49d32b8fa21bd938498ac1762d4444213f8c624bec21cf6f7"
+    },
+    "src/ui/slotKit/slot-photo-viewer.css": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/slotKit/slot-photo-viewer.css",
+      "baseSha256": "bfe9a0202038e5e4beb26c2372aecd39a4dbe0a4dc3405d665b8d3ed73f760a8",
+      "sha256": "bfe9a0202038e5e4beb26c2372aecd39a4dbe0a4dc3405d665b8d3ed73f760a8"
+    },
+    "src/ui/slotKit/slot-settings.css": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/slotKit/slot-settings.css",
+      "baseSha256": "a9bc7aabfd5f8649a3220820199d709f57b8cd260205c3d18cfa5236ea854f5b",
+      "sha256": "a9bc7aabfd5f8649a3220820199d709f57b8cd260205c3d18cfa5236ea854f5b"
+    },
+    "src/ui/studio-games.css": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/studio-games.css",
+      "baseSha256": "0a3c6fc2d4655e9814b349952d5c9578d49c194d483cdaba0e9a76eb23b12259",
+      "sha256": "0a3c6fc2d4655e9814b349952d5c9578d49c194d483cdaba0e9a76eb23b12259"
+    },
+    "src/ui/studio-motion.css": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/ui/studio-motion.css",
+      "baseSha256": "6b0c392dc87cfde2f16e3ac932378d39a2062ccc700307c179d044553aba903c",
+      "sha256": "6b0c392dc87cfde2f16e3ac932378d39a2062ccc700307c179d044553aba903c"
+    },
+    "src/wallet/AfterglowWardrobeClient.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/wallet/AfterglowWardrobeClient.ts",
+      "baseSha256": "195fadd07996dd60a0c07a2ba59e0fcc9ca9d64e0da42260f6dffcb676d22aab",
+      "sha256": "195fadd07996dd60a0c07a2ba59e0fcc9ca9d64e0da42260f6dffcb676d22aab"
+    },
+    "src/wallet/ConvoyProgressClient.ts": {
+      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "path": "src/wallet/ConvoyProgressClient.ts",
+      "baseSha256": "292f57d2807fa8a522b8c51b52a11fef4c32f763ee1b0177981a71ed96decb1a",
+      "sha256": "292f57d2807fa8a522b8c51b52a11fef4c32f763ee1b0177981a71ed96decb1a"
+    },
+    "tsconfig.json": {
+      "commit": "7fdb80e201c868e54412ea5b266c0f098f628f34",
+      "path": "tsconfig.json",
+      "baseSha256": "72f038daeebea654f36d8cec9cfe8911d3189d0949aa4647215c927540c8ec5b",
+      "sha256": "72f038daeebea654f36d8cec9cfe8911d3189d0949aa4647215c927540c8ec5b"
+    }
+  },
+  "moduleAssets": {
+    "public/assets/afterglow/audio/v1/laugh-1.mp3": "fff6df47947edc00aa5a21c90e6888dfa991f21696e350b36cf425d4c2a57982",
+    "public/assets/afterglow/audio/v1/laugh-2.mp3": "99c3762857337f56dea6114b648ab1f2c10f306a88e3916903d8121634da810f",
+    "public/assets/afterglow/audio/v1/laugh-3.mp3": "e5309e1e51a63dc839dcd9e3f3ae4369fd37f1b8b63580e74cdafb68671675ad",
+    "public/assets/afterglow/audio/v1/laugh-4.mp3": "e959ee4a972d43d754a2e933e363d9865a77eb344abd3615f5828bc6f0beb7b7",
+    "public/assets/afterglow/audio/v1/unlock.mp3": "d4fc67cd79bbc5e19d87e2759720b4018c433a8510eb37aceba102dc6a57816a",
+    "public/assets/afterglow/audio/v2/win-1.mp3": "151c42720eb200187294e1ce25f4f03a06802b8a4b924b35d309a8d07d2e15ad",
+    "public/assets/afterglow/audio/v2/win-2.mp3": "1965cd8c4560edbff8d14662d1e302ab4ec0eac1e9c3adeeabc6842b55ac0085",
+    "public/assets/afterglow/audio/v2/win-3.mp3": "04cb450cffb0cc1ee5e39b6d49647cc725367eb3617725635d5eab436b817179",
+    "public/assets/afterglow/v1/background-studio-v3.webp": "72c66ad7c649a56cfb0ca1b49154e5bb66d6fda86a00407189141e029eb013aa",
+    "public/assets/afterglow/v1/background.webp": "9d22fc6f2341573406ae53a137b020fc6c25e8d196db261cac85f39da3515b66",
+    "public/assets/afterglow/v1/girls.webp": "f4ccc70250af78cb8aa9f8fc478e215857843836edf8f3636738da67aca6ee43",
+    "public/assets/afterglow/v1/symbols.webp": "eb98a828cd992874300de3f5d0e8b0ef70cbf4374e84b7c4c5510c32168c6e64",
+    "public/assets/afterglow/v2/girls.webp": "d6178768ee64fb8984aef999db71132b476b14b7ea7e2e673bdda4810958b9e0",
+    "public/assets/afterglow/v3/base-0.webp": "3b6a1e232f4b674bd2bf1c1cc369f6c7ff94b564a2398b0368924b39bd9b3246",
+    "public/assets/afterglow/v3/base-1.webp": "e4db61d6b633a4f38d3256dbd9e7f94711e40ee2e2709b3f7ecec57c91a3e542",
+    "public/assets/afterglow/v3/base-2.webp": "8d3d45d58fb1480c410921264700e8039973bc9e901523c4137528b46002c8d0",
+    "public/assets/afterglow/v3/base-3.webp": "673f95c71b608bf378a9fe66ca8e5f7f331decea9341690f96288edd6a55a70b",
+    "public/assets/afterglow/v3/look-0.webp": "f7284684a2050bbfd662beb7c3dd6cc8f277cea370ead1f7829bed8e7ba3ab34",
+    "public/assets/afterglow/v3/look-1-user.webp": "0f1960fef60f293fda3086c7609efdd883844f4e1a21422de72808788ce8eff0",
+    "public/assets/afterglow/v3/look-2-user.webp": "7e4effff686b458984e813a161925a8c57a62d33adf483d5878615a73c3ebaf1",
+    "public/assets/afterglow/v3/look-3-user.webp": "82e0c7197af5781ff2e0e116d974266806a2680a411392613a7c3fae8d8fe7e2",
+    "public/assets/afterglow/v4/look-0-legendary.webp": "c6aa7af2551b2781e5d3782481e18372f3596519a5c35a18c325c1be5ed5f57a",
+    "public/assets/caramel-rebuild/v1/background.webp": "4bdcfce4cd3decbe1e7850645de7e0ac8edd636a7ff5299269b457c4639e5998",
+    "public/assets/caramel-rebuild/v1/symbols.webp": "6dc3292aa4518e1f6bf08093391f6826eb74656c5d10fbc31914d5499f7f32f6",
+    "public/assets/last-convoy/v1/background.webp": "7ebf774898b39b08bbc55dad56a38b2bc43accaf7337d3d25576265a93cb0b64",
+    "public/assets/last-convoy/v1/heroine.webp": "ca0764d8faa9d3fe7ac55684d519863bd1738a0417a459bd53644c0f6db788c0",
+    "public/assets/last-convoy/v1/symbols.webp": "e299b4685392808f9a8a0ad730ba3750900d6068f619a56df8d7f3c21ddf7a37",
+    "public/assets/last-convoy/v2/commander.webp": "b92627ec6f890660b5e5989d95f7f5391a96b30e1d4fb8b7155853bce98f9eaa",
+    "public/assets/last-convoy/v2/medic.webp": "b6f3dd981aa6b0494fe3097371cba57e172c385b361fbb6b4e7d5ecf70b3464a",
+    "public/assets/last-convoy/v2/pilot.webp": "925c55d74191267861ecfef519b8629d9dbb3813a6af2a8a665f7a847a87fd4c",
+    "public/assets/last-convoy/v2/recon.webp": "7a028e4c6dc9b25499ba0a1fb898020b65611971b9c7d7daf7c87d95a11af1ad",
+    "public/assets/last-convoy/v2/urban.webp": "a70de414fff04d63e818ee1a323243229bb128d9a4d934526015140a098be7cb",
+    "public/assets/last-convoy/v3/commander-gesture.webp": "b587d8f94742c57c68336dd8f132b18d11b8e242e2687d53e1aceae0dea32096",
+    "public/assets/last-convoy/v3/medic-gesture.webp": "47d39d041f80cc8edc1fa0f484698ff3fb9ca31f923e825a36f97372d259e67c",
+    "public/assets/last-convoy/v3/pilot-gesture.webp": "911f1904e4509a5ea230b95a18d00b549995e5a5da777406b02bd019c52cbfc7",
+    "public/assets/last-convoy/v3/recon-gesture.webp": "7e6bcaaa49500fcb3f37a36b4fe745686de32c7f910d75820b94674a60ca4012",
+    "public/assets/last-convoy/v3/survivor-gesture.webp": "6f2f365da0981923e0bf30f05658751722a6680b90530a9463eae5ed4ed375b3",
+    "public/assets/last-convoy/v3/urban-gesture.webp": "9008153633ad50114d0f400c9812fc9a6c6b94de63e55b5bf05db5d928f9150b",
+    "public/assets/meme-overload/audio/v1/bonus.mp3": "3e95f23154ff6bcf04349a33891757fbf9fe5ddc20336d52175d26ca22311204",
+    "public/assets/meme-overload/audio/v1/boom.mp3": "b302941bc7e3d5ef99795356f47e9e1b8cc57d4a37b5b040627ebf250877b6ce",
+    "public/assets/meme-overload/audio/v1/bruh.mp3": "a0f3daa795b1f7f6709723364ef80e917b63693ffb7612ef3acb6a0587a8515a",
+    "public/assets/meme-overload/audio/v1/error.mp3": "2e300b4a0ab5f69a95cd987818252c10b5f33fa74644ac2593ec4f8ecf954c76",
+    "public/assets/meme-overload/audio/v1/nice.mp3": "2dda70369a29bcb1a68705d114cb5238a55e41f65a48f4abf3aedd4c5fbb5622",
+    "public/assets/meme-overload/audio/v1/wow.mp3": "04cbbfd7fc08bd170b1d1e3e009786090ebcb5c6368329c92a5664db0f7ba440",
+    "public/assets/meme-overload/v1/desktop.svg": "9a34a214b3c7e06dab69bd06bb896e24b153b3db04c41c2177fafdbad15f282d",
+    "public/assets/meme-overload/v1/doge.jpg": "17168539cd19221ef3c506b37eb615bbc47c05bf6ac437c589f1abfef8976b98",
+    "public/assets/meme-overload/v1/grumpy.jpg": "e7f54c07211d4f65acb249a1f64c1fb384f6e3bede8f8de8fb5b5f419e9f46a7",
+    "public/assets/meme-overload/v1/harold.jpg": "349045f2fc28d1450a122e2d797dd34c276a4dc06ef01e6388cd56b3d9b36da4",
+    "public/assets/meme-overload/v1/pepe.jpg": "1b1d9a3318cf05933613b299ece3ed9bf0e05ad43cf8b85c205a4a53efc4c07f",
+    "public/assets/meme-overload/v1/smudge.jpg": "f99d1e9414b2efe958aa5ddca01e88c87ce2fa5d3ed5614f4c4bc11dfd41d518",
+    "public/assets/meme-overload/v1/stonks.png": "4f1d14516f92614b0ff8d0c0624f3e5aa71630159d5c32f1244b20c3224a3528",
+    "public/assets/meme-overload/v2/stonks-66695dba5cfb.webp": "66695dba5cfb1389d1bac23bc2d718eadf02cee80e622a8fa00aed4b7702b842",
+    "public/assets/nitro-run/v1/background.webp": "929fd8f685a95ef471ad9c83de55fa0b0e469724abac58c9d8df38fe760c438f",
+    "public/assets/nitro-run/v1/symbols.webp": "305fc74526282421f9d98be3925841c57dd72c85e45782f50696b1aeee0486a8",
+    "public/assets/studio/candy-world.png": "1817391fce557d69a4e8385dd30f8e47a63e03d39c86e297a85d1852acbb8bf8",
+    "public/assets/studio/candy-world.webp": "5aebbe2ba16cb4d40260655c8f5889f49b91c2347a56773b9413de308cf8f5c0",
+    "public/assets/studio/forge-world.png": "64d9d272346f1eea0e8593cbbbeca324c3f8ec9f088ef0f527fc20bcdfecd748",
+    "public/assets/studio/forge-world.webp": "030262f15ff8bf2fed2e90a689a6ce6dc6bf9da648c1132755b4450d2e93ef77",
+    "public/assets/studio/garden-world.png": "e21699d0c068b34e7ed6edc6e37856b7df62cc3f239f0586b1336e1d1ebd328a",
+    "public/assets/studio/garden-world.webp": "75e84f9064b2ddace4db2d980bb184da00534504ddbba02d434fd82f5acc0f02",
+    "public/assets/studio/ocean-world.png": "6a2500e6e68b1269ecf0595d0a50422ca27d19eb84b07d911c3a06ca60a38d83",
+    "public/assets/studio/ocean-world.webp": "28e9c2c8597604006028a3307c35faf7e3b3c216a41c3007ce586993c5d0173e",
+    "public/assets/studio/space-world.png": "96c23ebfc8dda657139fbb48aed5dc8197be1ee135df0ceeaa1b7752a1531192",
+    "public/assets/studio/space-world.webp": "0a9a41dd898f368f43c562c58523bb622b96c778ad927ce9ed8f3aba17512f3d",
+    "public/assets/studio/symbols.png": "b4234bf5d1f28af50b4733a9d4ab0add7c872c65d0adc4072ffbd3847067705d",
+    "public/assets/studio/symbols.webp": "63d92524d8634e72a8a6c32cc973e6baf64498a2ce7a944534628b962de7b406"
+  }
+}

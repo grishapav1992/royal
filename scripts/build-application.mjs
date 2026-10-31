@@ -29,7 +29,8 @@ export async function buildServer(root, input, output) {
   if (result.metafile) await saveJson(resolve(root, 'dist-server/payments-meta.json'), result.metafile);
 }
 
-export async function buildApplication({ root = projectRoot, modules = null, hostProjection = null, backendProjection = null } = {}) {
+export async function buildApplication({ root = projectRoot, modules = null, hostProjection = null, backendProjection = null, moduleProjection = null } = {}) {
+  if (moduleProjection && (!modules || hostProjection || backendProjection)) throw Error('Module projection requires a modules-only release');
   if (modules && (hostProjection || backendProjection)) throw Error('A source projection requires an application release');
   const report = { format: 1, startedAt: new Date().toISOString(), scope: modules ? 'modules' : 'application', steps: [] };
   const started = performance.now();
@@ -44,7 +45,8 @@ export async function buildApplication({ root = projectRoot, modules = null, hos
     const node = args => () => run(process.execPath, args, root);
     await step('rtp', node(['scripts/check-game-rtp.mjs']));
     await step('typecheck', node(['node_modules/typescript/bin/tsc', '--noEmit']));
-    await step('modules', node(['scripts/build-game-module.mjs', ...(modules ? ['--games', ...modules] : ['--all'])]));
+    await step('modules', node(['scripts/build-game-module.mjs', ...(modules ? ['--games', ...modules] : ['--all']),...(moduleProjection?['--source-projection',moduleProjection]:[])]));
+    if(moduleProjection)report.moduleProjection=JSON.parse(await readFile(resolve(root,'module-build/source-projection-report.json'),'utf8'));
     if(hostProjection){const reader=await readHostProjection(root,hostProjection,{strictOrigins:true});const games=reader.metadata.moduleGames;
       if(games){if(!Array.isArray(games)||!games.length||!games.every(n=>/^[a-z0-9-]+$/.test(n)))throw Error('Invalid projected module selection');
         const initialModules=JSON.parse(await readFile(resolve(root,'module-build/build-report.json'),'utf8'));

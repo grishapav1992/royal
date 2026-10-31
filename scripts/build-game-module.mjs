@@ -7,6 +7,7 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { checkGameRtp } from './game-math/rtp-gate.mjs';
 import { moduleFingerprinter, cachedModule } from './module-build-cache.mjs';
 import { readHostProjection } from './build-host-projection.mjs';
+import {projectedModuleContract,moduleProjectionCatalog} from './module-source-projection.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const sha = value => createHash('sha256').update(value).digest('hex');
@@ -34,11 +35,9 @@ else if (!args.length) selection = dirname(process.cwd()) === resolve(root, 'gam
 const selected = all ? [...catalog.keys()] : Array.isArray(selection) ? selection : [selection];
 if(projection&&JSON.stringify([...selected].sort())!==JSON.stringify([...(projection.metadata.moduleGames??[])].sort()))throw Error('Projection must build exactly its reviewed module list');
 if(projection){
- const code=await build({stdin:{contents:projection.read('src/modules/GameModuleCatalog.ts').toString('utf8'),loader:'ts'},bundle:true,write:false,metafile:true,format:'esm',platform:'node',logLevel:'silent'});
- if(Object.keys(code.metafile.inputs).some(n=>n!=='<stdin>'))throw Error('Projected module catalogue imports unreviewed code');
- const projected=await import('data:text/javascript;base64,'+Buffer.from(code.outputFiles[0].contents).toString('base64'));
- for(const slug of selected){const wanted=catalog.get(slug),actual=projected.GAME_MODULES.find(g=>g.slug===slug);
-  if(!actual||!['gameId','apiVersion','rulesVersion','progressVersion'].every(k=>actual[k]===wanted[k]))throw Error('Projected module host contract differs: '+slug);}
+ const projected=await moduleProjectionCatalog(projection);
+ for(const slug of selected){const actual=projected.find(game=>game.slug===slug);
+  catalog.set(slug,projectedModuleContract(catalog.get(slug),actual,projection.metadata.moduleContracts));}
 }
 if (selected.some(slug => !catalog.has(slug))) throw Error('Choose registered packages with --game <slug>, --games <slug...>, or --all');
 await checkGameRtp(root, GAME_MODULES, selected.map(slug => catalog.get(slug).gameId));

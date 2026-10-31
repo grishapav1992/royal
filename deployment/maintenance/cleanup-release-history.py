@@ -22,6 +22,8 @@ RETENTION = Path('/opt/royal-dev-app-retention')
 MODULES = Path('/opt/royal-game-modules')
 MODULE_STATE = Path('/opt/royal-game-modules-state')
 IMAGE_LEDGER = Path('/opt/royal-maintenance/known-release-images.json')
+HISTORY_LEDGER = Path('/opt/royal-maintenance/known-release-history.json')
+PRESERVED_COMMITS = Path('/opt/royal-maintenance/preserved-commits.json')
 PERIODIC = {'/royal-nile-account-views-once', '/royal-nile-reconcile-once'}
 
 
@@ -70,13 +72,27 @@ def allocated(path):
     return int(run(['du', '-sk', str(path)]).split()[0]) * 1024
 
 
-def tree_identity(path):
+def tree_identity(path, shared_files=None, capture_shared=False, hash_cache=None):
     path = Path(path)
+    shared_files = {} if shared_files is None else shared_files
+    hash_cache = {} if hash_cache is None else hash_cache
     rows = []
     def visit(item):
         s = item.lstat()
-        rows.append([str(item.relative_to(path)), s.st_dev, s.st_ino, s.st_mode,
-                     s.st_size, s.st_mtime_ns, s.st_ctime_ns])
+        name = str(item.relative_to(path))
+        if name in shared_files or capture_shared and stat.S_ISREG(s.st_mode) and s.st_nlink > 1:
+            require(stat.S_ISREG(s.st_mode), 'Shared history file changed type')
+            key = (s.st_dev, s.st_ino, s.st_size, s.st_mtime_ns, s.st_ctime_ns)
+            if key not in hash_cache: hash_cache[key] = sha(item)
+            digest = hash_cache[key]
+            if capture_shared: shared_files[name] = digest
+            # Unlinking a reviewed sibling changes this inode's ctime even when
+            # its bytes are unchanged. Content hashes still detect real edits.
+            change_identity = ['shared-sha256', digest]
+        else:
+            change_identity = s.st_ctime_ns
+        rows.append([name, s.st_dev, s.st_ino, s.st_mode,
+                     s.st_size, s.st_mtime_ns, change_identity])
         if stat.S_ISDIR(s.st_mode):
             require(not os.path.ismount(item), 'Mounted directory in deletion scope: ' + str(item))
             for child in sorted(item.iterdir()):
@@ -89,6 +105,7 @@ def deletion_candidates(keep, roots=ROOTS, protected=()):
     keep = {Path(path) for path in keep}
     protected = {Path(path) for path in protected}
     result = []
+    hash_cache = {}
     def visit(path):
         if path in keep or path in protected or path.name.endswith('.lock'): return
         if any(child.is_relative_to(path) for child in protected):
@@ -96,7 +113,9 @@ def deletion_candidates(keep, roots=ROOTS, protected=()):
             for child in sorted(path.iterdir()): visit(child)
             return
         require(time.time() - path.lstat().st_mtime > 600, 'Recent history entry may be in use: ' + str(path))
-        result.append({'path': str(path), 'identity': tree_identity(path), 'allocatedBytes': allocated(path)})
+        shared_files = {}
+        identity = tree_identity(path, shared_files, capture_shared=True, hash_cache=hash_cache)
+        result.append({'path': str(path), 'identity': identity, 'sharedFiles': shared_files, 'allocatedBytes': allocated(path)})
     for root in roots:
         require(root.is_dir() and not root.is_symlink(), 'Unsafe history root')
         for path in sorted(root.iterdir()):
@@ -109,7 +128,7 @@ def remove_entry(row, keep, roots=ROOTS):
     path = Path(row['path'])
     require(any(path.is_relative_to(root) and path != root for root in roots)
             and not any(path == Path(p) or path.is_relative_to(p) for p in keep), 'Deletion escaped approved scope')
-    require(tree_identity(path) == row['identity'], 'History entry changed after review: ' + str(path))
+    require(tree_identity(path, row.get('sharedFiles')) == row['identity'], 'History entry changed after review: ' + str(path))
     if path.is_symlink() or not path.is_dir():
         path.unlink()
     else:
@@ -122,7 +141,7 @@ def validate_selection(rows, keep, roots=ROOTS):
         path = Path(row['path'])
         require(any(path.is_relative_to(root) and path != root for root in roots)
                 and not any(path == Path(p) or path.is_relative_to(p) for p in keep), 'Deletion escaped approved scope')
-        require(tree_identity(path) == row['identity'], 'History entry changed since review: ' + str(path))
+        require(tree_identity(path, row.get('sharedFiles')) == row['identity'], 'History entry changed since review: ' + str(path))
 
 
 def configuration():
@@ -404,7 +423,7 @@ def apply(plan, state):
 
 def verified_program_archive(path, metadata):
     """Published source-archive digests attest the installer's complete source check."""
-    if path.name not in {'source.tgz', 'source.tar.gz', 'source.tar'}: return False
+    if path.name not in {'source.tgz', 'source.tar.gz', 'source.tar', 'source-delta.tgz', 'game-source.tgz', 'game-source.tar.gz'}: return False
     expected = set()
     for row in metadata:
         value = row.get('sourceBackupSha256')
@@ -435,8 +454,13 @@ def pending_is_active(release, metadata, active, references, age):
 
 def safe_history_candidates(keep, extra_protected=()):
     """Preserve financial material, fresh work, and source without GitHub evidence."""
-    allow = Path('/opt/royal-maintenance/preserved-commits.json')
+    allow = PRESERVED_COMMITS
     commits = set(read(allow)['commits']) if allow.exists() else set()
+    require(not HISTORY_LEDGER.is_symlink(), 'Unsafe history evidence ledger')
+    ledger = read(HISTORY_LEDGER) if HISTORY_LEDGER.exists() else {'format':1,'releases':{}}
+    require(ledger.get('format') == 1 and isinstance(ledger.get('releases'),dict)
+            and all(re.fullmatch('[a-zA-Z0-9_.-]+',name) and isinstance(rows,list)
+                    and all(isinstance(row,dict) for row in rows) for name,rows in ledger['releases'].items()), 'Invalid history evidence ledger')
     retained, protected = set(keep), {Path(p) for p in extra_protected}
     reasons = {}
     active = active_release_paths()
@@ -451,11 +475,20 @@ def safe_history_candidates(keep, extra_protected=()):
                 if file.is_file() and not file.is_symlink():
                     try: metadata.append(read(file))
                     except (OSError, ValueError): pass
+            metadata += ledger['releases'].get(path.name,[])
             source = next((m.get('sourceCommit') for m in metadata if m.get('sourceCommit')), None)
             receipt = next((m for m in metadata if m.get('format') == 1 and m.get('sourceCommit') == source and re.fullmatch('[a-f0-9]{40}', str(m.get('remoteMain', '')))), None)
+            if source and (source in commits or receipt is not None):
+                compact = []
+                for item in metadata:
+                    row = {k:item[k] for k in ['sourceCommit','sourceBackupSha256','image','format','remoteMain'] if k in item}
+                    if isinstance(item.get('backup'),dict):
+                        row['backup'] = {k:v for k,v in item['backup'].items() if k in ['sha256','sourceSha256','sourceArchiveSha256']}
+                    if row and row not in compact: compact.append(row)
+                ledger['releases'][path.name] = compact
             age = time.time() - path.lstat().st_mtime
             pending = pending_is_active(release,metadata,active,references,age)
-            if (age < 3600 or str(release) in active or pending
+            if (age < 600 or str(release) in active or pending
                     or not source or source not in commits and receipt is None):
                 retained.add(str(path)); reasons[str(path)] = 'fresh, pending, or source not verified in GitHub'; continue
             if path.is_symlink(): continue
@@ -469,6 +502,9 @@ def safe_history_candidates(keep, extra_protected=()):
                 if sensitive: protected.add(item)
                 elif item.is_file() and lower.endswith(('.tgz', '.tar.gz', '.tar', '.zip')):
                     if not verified_program_archive(item,metadata): protected.add(item)
+    # Release descriptions may be removed before their backup files. Preserve
+    # compact source evidence so an interrupted run can finish on its next pass.
+    write(HISTORY_LEDGER, ledger)
     rows = deletion_candidates(retained, protected=protected)
     return rows, sorted(retained), sorted(str(p) for p in protected), reasons
 
