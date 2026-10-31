@@ -1,3 +1,4 @@
+import {syncStakeSelect} from '../../src/ui/stakeSelection';
 import {stakeRulesHtml} from '../../src/ui/stakeRules';
 import {GAME_STAKE_UNITS as FLAG_BETS} from '../../src/shared/gameStakes';
 import { FLAG_GAME, FLAG_COUNTRIES, FLAG_MODES, flagCountries, flagModeInfo, flagViewMode, flagPayout, validFlagSettings, type FlagMode, type FlagCountry, type FlagView } from '../../src/shared/flagBattle';
@@ -122,7 +123,7 @@ export class FlagBattleUI {
     this.root.querySelectorAll<HTMLButtonElement>('button[data-mode]').forEach(b => { b.disabled = blocked; b.setAttribute('aria-pressed', String(b.dataset.mode === this.mode)); });
     this.find<HTMLInputElement>('[data-fb="search"]').hidden = this.count === 12;
     this.find<HTMLInputElement>('[data-fb="search"]').disabled = blocked; this.filterCountries();
-    this.find<HTMLSelectElement>('select').disabled = blocked; this.find<HTMLSelectElement>('select').value = this.stake;
+    this.stake=syncStakeSelect(this.find<HTMLSelectElement>('select'),this.stake,FLAG_BETS,blocked);
     this.put('total', String(this.count)); this.put('count', String(this.count - this.eliminated));
     this.find('[data-fb="ticker"]').innerHTML = (this.view?.order.slice(0, this.eliminated) ?? []).map(id => `<span title="${name(id)}"><img src="${flagAsset(id)}" alt="${name(id)}"><i>×</i></span>`).join('');
     this.put('pick-odds', `1 / ${this.count}`);

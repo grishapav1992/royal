@@ -204,6 +204,7 @@ export class ForestHeartUI {
     this.root.setAttribute('aria-busy', String(this.busy || this.client.busy || this.client.loading));
     const blocked = this.blocked(), stage = this.view?.stage, active = stage === 'choice' || stage === 'bonus';
     if (active && this.shown) this.stake = Number(this.shown.stakeUnits);
+    else if (!FOREST_HEART_STAKES.includes(this.stake)) this.stake = FOREST_HEART_STAKES[0];
     const balance = this.wallet.accountId === this.owner ? this.wallet.wallet?.balance ?? this.client.wallet?.balance : undefined;
     this.find('balance').textContent = balance === undefined ? '…' : balance.toLocaleString(this.services.i18n.locale, { maximumFractionDigits: 2 });
     this.find('stake').textContent = this.number(this.stake);

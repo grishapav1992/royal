@@ -1,3 +1,4 @@
+import {syncStakeSelect} from './stakeSelection';
 import {stakeRulesHtml} from './stakeRules';
 import {GAME_BETS as DEMO_BETS} from '../shared/gameStakes';
 import { t as translateText, tr, locale } from '../i18n/index';
@@ -85,7 +86,7 @@ export class CrashMotionUI {
     const blocked = client.busy || !!client.pending || client.loading || document.hidden;
     this.root.dataset.sessionId = session?.id ?? ''; this.root.dataset.state = session?.state ?? 'idle'; this.root.dataset.reducedMotion = String(this.reduced.matches);
     this.find('[data-expansion-balance]').textContent = balance === undefined ? translateText('Баланс загружается') : tr`${(this.heldBalance ?? balance).toLocaleString(locale)} USDT`;
-    const stake = this.find<HTMLSelectElement>('[data-stake]'); if (active) this.stake = session.stakeUnits; stake.value = this.stake; stake.disabled = !!active || blocked;
+    const stake = this.find<HTMLSelectElement>('[data-stake]'); if (active) this.stake = session.stakeUnits; this.stake=syncStakeSelect(stake,this.stake,DEMO_BETS.map(n=>String(n*100)),!!active||blocked);
     const start = this.find<HTMLButtonElement>('[data-start]'); start.hidden = !!active; start.disabled = blocked || !ready || Number(this.stake) > (balance ?? 0) * 100; start.textContent = `${session ? translateText('Новая партия') : translateText('Начать игру')} · ${amount(this.stake)}`;
     const cashout = this.find<HTMLButtonElement>('[data-move]'); cashout.hidden = !active; cashout.disabled = blocked || !ready || !session || !this.validTime(session) || session.serverNow! < session.startedAt!;
     const retry = this.find<HTMLButtonElement>('[data-retry]'); retry.hidden = !client.pending || client.pending.gameId !== 'github-crash'; retry.disabled = client.busy || client.loading;

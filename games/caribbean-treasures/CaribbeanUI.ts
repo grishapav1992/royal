@@ -1,3 +1,4 @@
+import {syncStakeSelect} from '../../src/ui/stakeSelection';
 import {confirmedPayout} from '../../src/shared/roundPrecision';
 import {GAME_STAKE_UNITS as CARIBBEAN_LINE_STAKES} from '../../src/shared/gameStakes';
 import { readGameHost } from '../../src/modules/GameHostContract';
@@ -214,18 +215,18 @@ export class CaribbeanUI {
     const waiting=this.element('.ct-waiting');waiting.hidden=this.visualPhase!=='waiting';waiting.textContent=this.text('Подтверждаем ход...','Confirming operation...');
     const skip=this.element('[data-ct-action=skip]');skip.hidden=!this.presenting||this.visualPhase==='waiting';skip.textContent=this.text('Показать итог сразу','Show final result');
     const lines = this.element<HTMLSelectElement>('[data-ct-lines]'), stake = this.element<HTMLSelectElement>('[data-ct-stake]');
-    lines.value = String(this.lines); stake.value = this.lineStake;
+    lines.value = String(this.lines);this.lineStake=syncStakeSelect(stake,this.lineStake,CARIBBEAN_LINE_STAKES,this.blocked||!!this.active||!!this.dialogKind||this.autoRunning);
     lines.disabled = stake.disabled = this.blocked || !!this.active || !!this.dialogKind || this.autoRunning;
     for(const kind of ['lines','stake'])for(const direction of ['down','up']){
       const button=this.element<HTMLButtonElement>('[data-ct-action='+kind+'-'+direction+']');
       const index=kind==='lines'?CARIBBEAN_LINE_COUNTS.indexOf(this.lines):CARIBBEAN_LINE_STAKES.findIndex(stake=>stake===this.lineStake);
       button.disabled=lines.disabled || (direction==='down'?index===0:index===(kind==='lines'?CARIBBEAN_LINE_COUNTS.length-1:CARIBBEAN_LINE_STAKES.length-1));
-      button.setAttribute('aria-label',this.text(direction==='down'?'Уменьшить ':'Увеличить ',direction==='down'?'Decrease ':'Increase ')+this.text(kind==='lines'?'число линий':'ставку на линию',kind==='lines'?'lines':'total stake'));
+      button.setAttribute('aria-label',this.text(direction==='down'?'Уменьшить ':'Увеличить ',direction==='down'?'Decrease ':'Increase ')+this.text(kind==='lines'?'число линий':'общую ставку',kind==='lines'?'lines':'total stake'));
     }
     for (const [key,label] of Object.entries({
       balance:this.text('Баланс · USDT','Balance · USDT'),
       cost:this.active ? this.text('Цена принятого раунда','Accepted round cost') : this.text('Ставка за вращение','Spin cost'),payout:this.active ? this.text('Накоплено в раунде','Round total') : this.text('Выплата раунда','Round payout'),
-      net:this.text('Чистый итог раунда','Net round result'),lines:this.text('Линии','Lines'),stake:this.text('Общая ставка · USDT','Total stake · USDT'),
+      net:this.text('Чистый итог раунда','Net round result'),lines:this.text('Линии','Lines'),stake:this.active&&view?.version===1?this.text('Ставка на линию · USDT','Stake per line · USDT'):this.text('Общая ставка · USDT','Total stake · USDT'),
     })) this.element('[data-ct-label="' + key + '"]').textContent = label;
     this.element('[data-ct-balance]').textContent = this.wallet ? this.services.walletCoins(this.wallet.balance) : '...';
     const walletButton=this.element<HTMLButtonElement>('[data-ct-action=wallet]');walletButton.disabled=!this.client.accountId;

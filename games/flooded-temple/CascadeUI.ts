@@ -1,3 +1,4 @@
+import {syncStakeSelect} from '../../src/ui/stakeSelection';
 import {stakeRulesHtml} from '../../src/ui/stakeRules';
 import {confirmedPayout} from '../../src/shared/roundPrecision';
 import {GAME_STAKE_CENTS} from '../../src/shared/gameStakes';
@@ -211,6 +212,7 @@ export class CascadeUI{
   }
   private render(){
     if(this.disposed)return;
+    if(!this.playing&&!this.client.pending&&!GAME_STAKE_CENTS.includes(Number(this.stake)))this.stake='10';
     const signature=JSON.stringify([this.owner,this.session,this.client.pending,this.client.loading,this.client.busy,this.client.error,this.wallet.wallet?.balance,this.wallet.busy,this.wallet.pending,this.wallet.hasExternalBusy('expansion'),this.sending,this.localError,this.stake,this.visual,this.feedback?.id,this.presenting,this.completed,this.fast,this.autoRunning,this.autoRemaining,this.autoCount,this.autoNote,this.paused,this.hidden,this.dialog.open,this.media.matches,this.inspected,this.beat,this.services.gameAudio.getPreferences()]);if(signature===this.rendered)return;this.rendered=signature;
     const focused=this.doc.activeElement as HTMLElement|null,key=focused&&this.root.contains(focused)?focused.dataset.ft?`[data-ft="${focused.dataset.ft}"]`:focused.dataset.cell!==undefined?`[data-cell="${focused.dataset.cell}"]`:null:null;
     const f=this.feedback?.frame??this.visual,grid=this.feedback?.grid??f?.grid??readyGrid,total=this.feedback?cascadeUnits(this.feedback.fromPoints,this.roundStake):f?cascadeUnits(f.totalPoints,this.roundStake):'0',levels=f?.mode==='free'?CASCADE_DATA.freeMultipliers:CASCADE_DATA.baseMultipliers;
@@ -229,6 +231,7 @@ export class CascadeUI{
     <div class="ft-playback"><button type="button" data-ft="fast" aria-pressed="${this.fast}" aria-label="${this.text('Быстрая игра','Quick play')}">⚡ ${this.text('Быстро','Quick')}</button><label>${this.text('Автоспины','Autoplay')} <select data-ft="auto-count" aria-label="${this.text('Количество автоспинов','Autoplay count')}" ${this.autoRunning?'disabled':''}>${counts.map(n=>`<option ${n===this.autoCount?'selected':''}>${n}</option>`).join('')}</select></label><button type="button" data-ft="auto" aria-pressed="${this.autoRunning}" ${!this.autoRunning&&(disabled||this.playing||pending||!this.affordable)?'disabled':''}>${this.autoRunning?this.text(`Стоп · осталось ${this.autoRemaining}`,`Stop · ${this.autoRemaining} left`):this.text('Запустить серию','Start autoplay')}</button><span class="ft-auto-note">${escape(this.autoNote)}</span></div>
     <div class="ft-status" data-error="${!!this.localError||!!this.client.error||this.pending}" data-settled="${this.completed}" role="status" aria-live="polite"><p>${escape(this.status())}</p></div></section><footer class="ft-bottom"><span>5 × 3 · 20 ${this.text('ЛИНИЙ','LINES')}</span><span>${this.text('БЕСПЛАТНЫЕ ВРАЩЕНИЯ','FREE SPINS')} ×3 / ×6 / ×9 / ×15</span><span>${this.text('ПРЕДЕЛ','LIMIT')} 500×</span></footer>`);
     this.root.querySelector('[data-ft-character-slot]')?.replaceWith(this.character.element);
+    const stakeSelect=this.root.querySelector<HTMLSelectElement>('[data-ft=stake]');if(stakeSelect)this.stake=syncStakeSelect(stakeSelect,this.stake,GAME_STAKE_CENTS,this.locked||this.playing||this.autoRunning||!!this.client.pending);
     this.character.update({beat:this.beat,key:this.marker,offset:this.timeline.offset,waiting:this.sending,rope:false,selected:false,reduced:this.media.matches,paused:this.suspended,connected:this.connected});
     this.effects.attach(this.feedback,this.roundStake,this.timeline.offset,total);
     if(key&&!this.dialog.open)this.root.querySelector<HTMLElement>(key)?.focus({preventScroll:true});

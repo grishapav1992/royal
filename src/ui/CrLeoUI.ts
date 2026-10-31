@@ -1,3 +1,4 @@
+import {syncStakeSelect} from './stakeSelection';
 import {stakeRulesHtml} from './stakeRules';
 import {GAME_STAKE_UNITS as PENALTY_BETS} from '../shared/gameStakes';
 import { PENALTY_GAME, PENALTY_RISKS, penaltyPathQuote, type PenaltyHero, type PenaltyRisk, type PenaltyView } from '../shared/crLeo';
@@ -83,7 +84,7 @@ export class CrLeoUI {
     const key = JSON.stringify([s?.id,s?.view.penalty?.revision,active,this.scene.state().reveal,busy,ready,client.loading,client.pending?.id,client.busy,client.wallet?.balance,this.hero,this.risk,this.stake,this.error,client.error]); if (key === this.controlsKey) return; this.controlsKey = key;
     this.root.querySelectorAll<HTMLButtonElement>('[data-hero]').forEach(b => { b.setAttribute('aria-pressed', String(b.dataset.hero === this.hero)); b.disabled = !!active || busy; });
     this.root.querySelectorAll<HTMLButtonElement>('[data-risk]').forEach(b => { b.setAttribute('aria-pressed', String(b.dataset.risk === this.risk)); b.disabled = busy; });
-    const select = this.find<HTMLSelectElement>('[data-stake]'); select.value = this.stake; select.disabled = !!active || busy;
+    const select = this.find<HTMLSelectElement>('[data-stake]'); this.stake = syncStakeSelect(select,this.stake,PENALTY_BETS,!!active||busy);
     const shoot = this.find<HTMLButtonElement>('[data-shoot]'); shoot.disabled = busy || !ready || client.loading || !active && Number(this.stake) > (client.wallet?.balance ?? 0) * 100;
     shoot.innerHTML = (!this.scene.state().reveal ? 'МЯЧ В ИГРЕ' : active ? 'СЛЕДУЮЩИЙ УДАР' : s ? 'НОВАЯ СЕРИЯ' : this.risk !== 'safe' ? 'БИТЬ ШТРАФНОЙ' : 'БИТЬ ПЕНАЛЬТИ') + ' <span>↗</span>';
     const take = this.find<HTMLButtonElement>('[data-take]'); take.hidden = !active || !this.scene.state().reveal; take.disabled = busy || !ready;

@@ -1,3 +1,4 @@
+import {syncStakeSelect} from '../../src/ui/stakeSelection';
 import {stakeRulesHtml} from '../../src/ui/stakeRules';
 import {GAME_STAKE_UNITS as JACKIE_BETS} from '../../src/shared/gameStakes';
 import { expansionClient as client } from '../../src/wallet/ExpansionClient';
@@ -115,7 +116,7 @@ export class JackieUI {
     this.find('[data-lineup]').hidden=!state.reveal||state.busy||!!this.action||client.busy;
     this.root.querySelectorAll<HTMLButtonElement>('[data-risk]').forEach(b=>{b.disabled=busy;b.setAttribute('aria-pressed',String(b.dataset.risk===this.risk));});
     for(const selector of ['[data-stake]','[data-location]'])this.find<HTMLSelectElement>(selector).disabled=active||busy;
-    this.find<HTMLSelectElement>('[data-stake]').value=this.stake;this.find<HTMLSelectElement>('[data-location]').value=this.location;
+    this.stake=syncStakeSelect(this.find<HTMLSelectElement>('[data-stake]'),this.stake,JACKIE_BETS,active||busy);this.find<HTMLSelectElement>('[data-location]').value=this.location;
     const fight=this.find<HTMLButtonElement>('[data-fight]');fight.disabled=busy||!ready||!client.accountId||document.hidden||!active&&Number(this.stake)>(client.wallet?.balance??0)*100;
     fight.innerHTML=(state.busy?t('ИДЁТ СЪЁМКА','FILMING'):active?t('СЛЕДУЮЩИЙ БОЙ','NEXT FIGHT'):t('МОТОР!','ACTION!'))+' <span>↗</span>';
     const cashout=this.find<HTMLButtonElement>('[data-cashout]');cashout.hidden=!active||!state.reveal;cashout.disabled=busy||!ready||document.hidden;this.text('[data-cashout-money]',state.reveal&&combat?money(combat.availableUnits)+' USDT':'');

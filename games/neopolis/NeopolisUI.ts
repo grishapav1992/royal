@@ -1,3 +1,4 @@
+import {syncStakeSelect} from '../../src/ui/stakeSelection';
 import {stakeRulesHtml} from '../../src/ui/stakeRules';
 import {confirmedPayout} from '../../src/shared/roundPrecision';
 import {GAME_BETS as NEOPOLIS_BETS} from '../../src/shared/gameStakes';
@@ -156,7 +157,7 @@ export class NeopolisUI {
     auto.textContent = this.autoRunning ? this.copy.stopAuto + ' (' + this.autoRemaining + ')' : this.copy.autoplay;
     auto.setAttribute('aria-pressed', String(this.autoRunning));
     auto.setAttribute('aria-label', this.autoRunning ? this.copy.stopAuto + '. ' + this.copy.autoRemaining.replace('{n}', String(this.autoRemaining)) : this.copy.autoplay);
-    this.find<HTMLSelectElement>('bet').value = String(this.bet);
+    this.bet=Number(syncStakeSelect(this.find<HTMLSelectElement>('bet'),String(this.bet),NEOPOLIS_BETS,blocked||this.stakeLocked||this.autoRunning||!!pending,1));
     this.find('balance').textContent = this.number(this.balance);
     this.root.querySelector('.np-prototype')!.textContent = this.copy.prototype;
     this.find('balance').parentElement!.querySelector('small')!.textContent = this.copy.coins;
