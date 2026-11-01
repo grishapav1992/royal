@@ -7,6 +7,12 @@ import {digest,regularPath} from './module-build-cache.mjs';
 
 const keys=['apiVersion','rulesVersion','progressVersion'];
 const same=(a,b)=>assert.deepEqual(a,b);
+/** Match reviewed production text bytes across Windows checkouts; never relax the digest. */
+export function projectedMediaBytes(name,bytes,expected){
+ if(digest(bytes)!==expected&&/\.(svg|json)$/.test(name))bytes=Buffer.from(bytes.toString('utf8').replace(/\r\n/g,'\n'));
+ assert.equal(digest(bytes),expected,'Unreviewed projected module media: '+name);
+ return bytes;
+}
 export function projectedModuleContract(current,projected,contracts){
  assert(current&&projected&&current.slug===projected.slug&&current.gameId===projected.gameId,'Projected module identity differs');
  if(keys.every(key=>current[key]===projected[key]))return projected;
