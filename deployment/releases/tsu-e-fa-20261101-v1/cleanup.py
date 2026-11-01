@@ -12,6 +12,9 @@ def require(value,reason):
 def sha(path):return hashlib.sha256(path.read_bytes()).hexdigest()
 def read(path):return json.loads(path.read_text())
 def inventory(path):return {p.relative_to(path).as_posix():sha(p) for p in path.rglob('*') if p.is_file()}
+
+def valid_host_rollback(own,backup,current,expected):
+    return backup==expected or (not own and current==expected)
 def valid_successor(image,label,own_image,own_source,p,m,b,receipt):
     return (p.get('published') is True and p.get('runningImage')==b.get('image')==image
         and p.get('sourceCommit')==m.get('sourceCommit')==receipt.get('sourceCommit')==label
@@ -63,7 +66,11 @@ def main():
     protected_m,protected_b=[read(protected_root/n) for n in ['install-manifest.json','build-result.json']]
     backup=Path(protected_b['backup'])
     require(backup==Path('/opt/royal-backups')/protected_m['release'] and not backup.is_symlink(),'Unexpected backup')
-    require(sha(backup/'source.tgz')==protected_b['sourceBackupSha256'] and sha(backup/'host.json')==protected_m['before']['moduleHostContract'],'Current rollback backup differs')
+    require(sha(backup/'source.tgz')==protected_b['sourceBackupSha256'],'Current rollback source backup differs')
+    # A host-only successor preserves the external module contract in place.
+    host_backup=backup/'host.json'
+    host_current=Path('/opt/royal-game-modules-state/host.json')
+    require(valid_host_rollback(protected_release==ROOT.name,sha(host_backup) if host_backup.exists() else None,sha(host_current),protected_m['before']['moduleHostContract']),'Current rollback host contract differs')
     rows=[];context=ROOT/'runtime-context'
     if context.exists():
         require(context.resolve()==context and context.is_dir() and not any(p.is_symlink() for p in context.rglob('*')),'Unsafe build context')
