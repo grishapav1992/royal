@@ -1,6 +1,7 @@
 """Bind the retained Native alias and remove two verified transport archives."""
 from pathlib import Path
 import fcntl, importlib.util, json, shutil, sys
+from urllib.parse import quote
 
 ROOT = Path(__file__).resolve().parent
 spec = importlib.util.spec_from_file_location('stake_finalize_installer', ROOT / 'deploy.py')
@@ -40,6 +41,17 @@ def main():
     result = {'sourceCommit': m['sourceCommit'], 'nativeAliasBefore': prior, 'nativeAliasAfter': original,
               'runningProgramsUnchanged': True, 'databaseRestored': False,
               'operatorSha256': d.sha(__file__), 'freeBefore': shutil.disk_usage(d.LIVE).free, 'removedArchives': []}
+    engine = d.load('stake_finalize_engine', ROOT / 'engine_build.py')
+    candidate = unused['image']
+    candidate_config = engine.metadata(candidate)['configDigest']
+    containers = json.loads(engine.engine('GET', '/containers/json?all=1'))
+    d.require(all(row['ImageID'] not in [candidate, candidate_config] for row in containers), 'Unused candidate acquired a container reference')
+    image_path = '/images/' + quote(candidate, safe='')
+    info = json.loads(engine.engine('GET', image_path + '/json'))
+    d.require(not info.get('RepoTags'), 'Unused candidate still has image tags')
+    result['removedUnusedNativeImage'] = candidate
+    result['unusedNativeImageLogicalBytes'] = info.get('Size')
+    result['imageRemoval'] = json.loads(engine.engine('DELETE', image_path + '?noprune=1'))
     for name in archives:
         path = ROOT / name
         if path.exists():
