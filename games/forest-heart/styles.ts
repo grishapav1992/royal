@@ -25,11 +25,11 @@ export const styles=String.raw`
 
 .fh[data-layout=mobile][data-short=true]{--status-height:48px;grid-template-rows:44px minmax(0,1fr) calc(var(--status-height) + var(--bonus-extra)) 146px 0}.fh[data-layout=mobile][data-short=true][data-bonus=true]{--bonus-extra:14px}.fh[data-layout=mobile][data-short=true] .fh-world{padding-block:0}.fh[data-layout=mobile][data-short=true] .fh-status-band{padding-block:0}.fh[data-layout=mobile][data-short=true] .fh-character{height:48px}.fh[data-layout=mobile][data-short=true] .fh-bonus{min-height:14px}.fh[data-layout=mobile][data-short=true] .fh-bonus i{height:14px;width:14px;line-height:12px}.fh[data-layout=mobile][data-short=true] .fh-flower>span{display:none}.fh[data-layout=mobile][data-short=true] .fh-bloom:after{content:'✓';position:absolute;right:0;top:0;width:14px;height:14px;border-radius:50%;background:#d9d595;color:#123326;font:700 11px/14px Arial;text-align:center}
 /* Size the square field and the character together, with the same top and baseline. */
-.fh-world{max-width:1600px;grid-template-columns:var(--machine-width) var(--portrait-width);gap:24px;justify-content:center;align-content:center;align-items:start}
+.fh-world{max-width:2000px;grid-template-columns:var(--machine-width) var(--portrait-width);gap:16px;justify-content:center;align-content:center;align-items:start}
 .fh[data-layout=wide] .fh-machine{grid-column:1;grid-row:1}.fh[data-layout=wide] .fh-character{grid-column:2;grid-row:1}
 .fh-character{align-self:start;height:var(--scene-height)}
 .fh-elf,.fh-character-canvas,.fh-character-video{inset:0 auto auto 50%;transform:translateX(-50%);width:calc(var(--scene-height)*5/6);height:var(--scene-height);object-position:center top;mask-image:linear-gradient(#000 82%,transparent 100%)}
-.fh:not([data-layout=mobile]):not([data-layout=landscape]) :is(.fh-status-band,.fh-controls){width:calc(100% - 32px);max-width:1600px;justify-self:center;margin-inline:0}
+.fh:not([data-layout=mobile]):not([data-layout=landscape]) :is(.fh-status-band,.fh-controls){width:calc(100% - 32px);max-width:2000px;justify-self:center;margin-inline:0}
 .fh[data-layout=poster] .fh-world{grid-template-columns:minmax(0,1fr);grid-template-rows:var(--portrait-banner-height) var(--scene-height);gap:8px;align-content:center}
 .fh[data-layout=poster] .fh-character{height:var(--portrait-banner-height);align-self:start}
 .fh[data-layout=poster] :is(.fh-elf,.fh-character-canvas,.fh-character-video){inset:0 0 auto auto;transform:none;width:320px;height:384px;mask-image:linear-gradient(#000 calc(var(--portrait-banner-height)*.72),transparent var(--portrait-banner-height))}
@@ -70,15 +70,24 @@ export const styles=String.raw`
 .fh[data-layout=landscape] .fh-action .fh-pass,.fh[data-layout=landscape] .fh-action .fh-retry,.fh[data-layout=landscape] .fh-action .fh-refresh{font-size:12px;padding:5px}
 .fh[data-layout=landscape] .fh-skip{top:48px;right:calc(var(--landscape-controls-width) + 6px)}
 /* Keep the complete ornamental wordmark above a single, tightly packed scene. */
-.fh-top{background:none;border-bottom:0;max-width:1600px;justify-self:center;width:100%;grid-template-columns:148px minmax(0,1fr) 148px;padding:4px 12px}
+.fh-top{background:none;border-bottom:0;max-width:2000px;justify-self:center;width:100%;grid-template-columns:148px minmax(0,1fr) 148px;padding:4px 12px}
 .fh-brand{opacity:.72;justify-self:start}
 .fh-title{height:100%;min-height:0;justify-content:center}
 .fh-title-logo{height:100%;min-height:0;object-fit:contain;object-position:center}
 .fh-title>span{display:none}
-.fh:is([data-layout=wide],[data-layout=poster]){--masthead-height:clamp(80px,12dvh,140px);--console-height:96px;--note-height:18px;grid-template-rows:var(--masthead-height) var(--world-height,300px) calc(var(--status-height) + var(--bonus-extra)) var(--console-height) var(--note-height);align-content:start}
+.fh:is([data-layout=wide],[data-layout=poster]){--masthead-height:clamp(80px,12dvh,140px);--console-height:96px;--note-height:18px;grid-template-rows:var(--masthead-height) minmax(0,1fr) calc(var(--status-height) + var(--bonus-extra)) var(--console-height) var(--note-height)}
 .fh:is([data-layout=wide],[data-layout=poster])[data-compact=true]{--masthead-height:56px;--console-height:88px;--note-height:0px}
 .fh:is([data-layout=wide],[data-layout=poster]) .fh-title{height:calc(var(--masthead-height) - 8px)}
 .fh:is([data-layout=wide],[data-layout=poster]) .fh-title-logo{height:100%}
-.fh:is([data-layout=wide],[data-layout=poster]) .fh-world{align-content:start}
+.fh:is([data-layout=wide],[data-layout=poster]) .fh-world{align-content:center}
+/* Receiver flowers share the field's scale and keep their values beside the actual root exits. */
+.fh:is([data-layout=wide],[data-layout=poster]) .fh-flowers{--flower-art:clamp(64px,calc(var(--board)*.22),156px)}
+.fh:is([data-layout=wide],[data-layout=poster]) .fh-flower img{width:100%;filter:brightness(.82) saturate(.68);transform:scale(.96)}
+.fh:is([data-layout=wide],[data-layout=poster]) .fh-bloom img{filter:brightness(1.08) saturate(1.1) drop-shadow(0 0 14px #ffd77388);transform:scale(1)}
+.fh:is([data-layout=wide],[data-layout=poster]) .fh-flower small{top:-19px;font:clamp(12px,calc(var(--board)*.022),16px)/18px Arial;color:#f1e5bd;text-shadow:0 2px 4px #000}
+.fh:is([data-layout=wide],[data-layout=poster]) .fh-flower-value{top:calc(var(--flower-art)*.58);left:4%;right:4%;padding:4px 2px 3px;border:1px solid #a8a97966;border-radius:9px;background:linear-gradient(#123c2ef5,#081f1cf7);box-shadow:0 3px 10px #0006;font:600 clamp(16px,calc(var(--board)*.035),26px)/1.1 Arial;font-variant-numeric:tabular-nums;letter-spacing:-.4px;color:#f4edcf}
+.fh:is([data-layout=wide],[data-layout=poster]) .fh-flower-value:after{content:'USDT';display:block;margin-top:2px;font:10px/12px Arial;letter-spacing:1px;color:#b8cbb9}
+.fh:is([data-layout=wide],[data-layout=poster]) .fh-bloom .fh-flower-value{border-color:#dfcb7f;color:#fff0b8;background:linear-gradient(#304d30,#102b21);box-shadow:0 0 16px #e5c77522,0 3px 10px #0006}
+.fh:is([data-layout=wide],[data-layout=poster]) .fh-flower>span{top:calc(var(--flower-art)*.58 + clamp(16px,calc(var(--board)*.035),26px)*1.1 + 28px);font:11px/13px Arial;color:#ffe6a3;letter-spacing:.4px}
 .fh[data-paused=true] *{animation-play-state:paused!important}.fh[data-reduced=true] *{animation:none!important;transition:none!important}@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
 `;

@@ -1,0 +1,249 @@
+{
+  "version": "1.11.0-6f16cf2e1824",
+  "scope": "Local presentation review only",
+  "story": "A confirmed root field reaches the same three receiver flowers, whose accepted contributions are now readable beside the field while the host chat and paid controls remain visible.",
+  "changes": {
+    "receiverRail": "Scales with field width, from 104 to 196 pixels in wide and poster layouts",
+    "flowerArt": "Scales with field width, up to 156 pixels before idle transform, replacing the fixed 64-pixel cap",
+    "amountType": "16 to 26 pixels, separate USDT label",
+    "wideScene": "Up to 2000 pixels with a narrower elf column",
+    "bottomLayout": "Controls at bottom, field and elf centered together in the available world area",
+    "compactLayouts": "Existing phone and shallow landscape receiver sizes preserved"
+  },
+  "unchanged": [
+    "Probabilities and payout formula",
+    "Accepted per-flower amounts and total settlement",
+    "Original root exit positions and event timing",
+    "Existing three videos and their standing intervals",
+    "Host wallet, game catalogue and connected chat"
+  ],
+  "checks": {
+    "moduleBuild": "passed, TypeScript and immutable package",
+    "rtpGate": "26 qualified profiles and 114 unchanged legacy modules",
+    "math": "9 tests passed, including all 65536 networks and all stakes/actions",
+    "completeRound": "passed choice, bonus, exact settlement, mobile, close/reopen and reload",
+    "readability": "passed accepted values, negative partial result, next-stake independence, settings, 1280/390/320 widths",
+    "resizing": "passed all 13 distinct sizes, including desktop, portrait tablet and shallow landscape; free continuation and reopen passed"
+  },
+  "measurements": [
+    {
+      "viewport": {
+        "width": 2507,
+        "height": 1100
+      },
+      "game": {
+        "width": 2141,
+        "height": 1005
+      },
+      "layout": "wide",
+      "board": 639,
+      "flowerArtHeight": 134.9550018310547,
+      "amountFont": 22.365,
+      "bottomSpace": 18
+    },
+    {
+      "viewport": {
+        "width": 2560,
+        "height": 1440
+      },
+      "game": {
+        "width": 2194,
+        "height": 1345
+      },
+      "layout": "wide",
+      "board": 931,
+      "flowerArtHeight": 149.760009765625,
+      "amountFont": 26,
+      "bottomSpace": 18
+    },
+    {
+      "viewport": {
+        "width": 2006,
+        "height": 880
+      },
+      "game": {
+        "width": 1640,
+        "height": 785
+      },
+      "layout": "wide",
+      "board": 463,
+      "flowerArtHeight": 97.78498840332031,
+      "amountFont": 16.205,
+      "bottomSpace": 18
+    },
+    {
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "game": {
+        "width": 1554,
+        "height": 985
+      },
+      "layout": "wide",
+      "board": 623,
+      "flowerArtHeight": 131.56500244140625,
+      "amountFont": 21.805,
+      "bottomSpace": 18
+    },
+    {
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "game": {
+        "width": 1046,
+        "height": 673
+      },
+      "layout": "wide",
+      "board": 374,
+      "flowerArtHeight": 78.97500610351562,
+      "amountFont": 16,
+      "bottomSpace": 18
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "game": {
+        "width": 980,
+        "height": 625
+      },
+      "layout": "wide",
+      "board": 331,
+      "flowerArtHeight": 69.89999389648438,
+      "amountFont": 16,
+      "bottomSpace": 18
+    },
+    {
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "game": {
+        "width": 738,
+        "height": 673
+      },
+      "layout": "wide",
+      "board": 294,
+      "flowerArtHeight": 62.08500671386719,
+      "amountFont": 16,
+      "bottomSpace": 18
+    },
+    {
+      "viewport": {
+        "width": 1024,
+        "height": 1366
+      },
+      "game": {
+        "width": 738,
+        "height": 1271
+      },
+      "layout": "wide",
+      "board": 294,
+      "flowerArtHeight": 62.08502197265625,
+      "amountFont": 16,
+      "bottomSpace": 18
+    },
+    {
+      "viewport": {
+        "width": 768,
+        "height": 1024
+      },
+      "game": {
+        "width": 762,
+        "height": 654
+      },
+      "layout": "wide",
+      "board": 307,
+      "flowerArtHeight": 64.83000183105469,
+      "amountFont": 16,
+      "bottomSpace": 18
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "game": {
+        "width": 384,
+        "height": 525
+      },
+      "layout": "mobile",
+      "board": 248,
+      "flowerArtHeight": 40.16249465942383,
+      "amountFont": 11,
+      "bottomSpace": 0
+    },
+    {
+      "viewport": {
+        "width": 320,
+        "height": 780
+      },
+      "game": {
+        "width": 314,
+        "height": 454
+      },
+      "layout": "mobile",
+      "board": 180,
+      "flowerArtHeight": 36,
+      "amountFont": 11,
+      "bottomSpace": 0
+    },
+    {
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "game": {
+        "width": 658,
+        "height": 295
+      },
+      "layout": "landscape",
+      "board": 173,
+      "flowerArtHeight": 36,
+      "amountFont": 10,
+      "bottomSpace": 6
+    },
+    {
+      "viewport": {
+        "width": 667,
+        "height": 375
+      },
+      "game": {
+        "width": 481,
+        "height": 280
+      },
+      "layout": "landscape",
+      "board": 158,
+      "flowerArtHeight": 36,
+      "amountFont": 10,
+      "bottomSpace": 6
+    },
+    {
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "game": {
+        "width": 1554,
+        "height": 985
+      },
+      "layout": "wide",
+      "board": 623,
+      "flowerArtHeight": 131.56500244140625,
+      "amountFont": 21.805,
+      "bottomSpace": 18
+    }
+  ],
+  "limitations": [
+    "Sizes and spacing are design choices for review, not scientific thresholds.",
+    "Direct in-app browser control was disabled in Work settings; visual checks used screenshots from the real full-host automated browser.",
+    "One initial attempt failed before opening the game while walking to the cabinet; the repeated complete flow passed. An old top-alignment assertion was updated for the requested bottom-filled layout."
+  ],
+  "screenshots": [
+    "layout-v11-desktop.webp",
+    "layout-v11-mobile.webp"
+  ]
+}

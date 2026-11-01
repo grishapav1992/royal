@@ -542,7 +542,7 @@ test('the full host uses the available monitor and keeps the board, elf and paid
     const inner=await game(page).locator('.fh').evaluate(root=>{
       const box=(selector:string)=>root.querySelector(selector)!.getBoundingClientRect().toJSON();
       const logo=root.querySelector<HTMLImageElement>('.fh-title-logo')!;
-      return{width:root.clientWidth,height:root.clientHeight,layout:(root as HTMLElement).dataset.layout,header:box('.fh-top'),world:box('.fh-world'),logo:{...logo.getBoundingClientRect().toJSON(),fit:getComputedStyle(logo).objectFit},board:box('.fh-board'),machine:box('.fh-machine'),character:box('.fh-character'),portrait:box('.fh-character-canvas'),controls:box('.fh-controls'),status:box('.fh-status-band'),spin:box('[data-fh=spin]'),scrollWidth:root.ownerDocument.documentElement.scrollWidth,scrollHeight:root.ownerDocument.documentElement.scrollHeight};
+      return{width:root.clientWidth,height:root.clientHeight,layout:(root as HTMLElement).dataset.layout,header:box('.fh-top'),world:box('.fh-world'),logo:{...logo.getBoundingClientRect().toJSON(),fit:getComputedStyle(logo).objectFit},board:box('.fh-board'),machine:box('.fh-machine'),character:box('.fh-character'),portrait:box('.fh-character-canvas'),controls:box('.fh-controls'),status:box('.fh-status-band'),spin:box('[data-fh=spin]'),flowers:[...root.querySelectorAll('.fh-flower')].map(flower=>({image:flower.querySelector('img')!.getBoundingClientRect().toJSON(),value:flower.querySelector('.fh-flower-value')!.getBoundingClientRect().toJSON(),font:parseFloat(getComputedStyle(flower.querySelector('.fh-flower-value')!).fontSize),fits:flower.querySelector('.fh-flower-value')!.scrollWidth<=flower.querySelector('.fh-flower-value')!.clientWidth+1})),scrollWidth:root.ownerDocument.documentElement.scrollWidth,scrollHeight:root.ownerDocument.documentElement.scrollHeight};
     });
     await page.screenshot({path:out+`/responsive-${viewport.width}x${viewport.height}.png`});
     records.push({viewport,outer,inner});await writeFile(out+'/responsive-metrics.json',JSON.stringify(records,null,2));
@@ -556,7 +556,16 @@ test('the full host uses the available monitor and keeps the board, elf and paid
     expect(inner.logo.fit).toBe('contain');
     expect(inner.logo.top).toBeGreaterThanOrEqual(inner.header.top-1);expect(inner.logo.bottom).toBeLessThanOrEqual(inner.header.bottom+1);
     if(inner.layout==='wide'){
-      expect(inner.machine.top-inner.header.bottom).toBeLessThanOrEqual(12);
+      expect(inner.machine.top).toBeGreaterThanOrEqual(inner.header.bottom);
+      expect(inner.machine.bottom).toBeLessThanOrEqual(inner.status.top+1);
+      expect(inner.height-inner.controls.bottom).toBeLessThanOrEqual(19);
+      for(const flower of inner.flowers){
+        expect(flower.value.left).toBeGreaterThanOrEqual(inner.board.right);
+        expect(flower.value.right).toBeLessThanOrEqual(inner.width);
+        expect(flower.value.bottom).toBeLessThanOrEqual(inner.status.top);
+        expect(flower.font).toBeGreaterThanOrEqual(16);expect(flower.fits).toBe(true);
+        if(inner.board.width>=450)expect(flower.image.height).toBeGreaterThanOrEqual(96);
+      }
       expect(Math.abs(inner.character.top-inner.machine.top)).toBeLessThanOrEqual(2);
       expect(inner.portrait.height).toBeGreaterThanOrEqual(inner.board.height*.95);
       expect(inner.portrait.width/inner.portrait.height).toBeCloseTo(5/6,1);
@@ -565,6 +574,7 @@ test('the full host uses the available monitor and keeps the board, elf and paid
     await expect(page.locator('#chat-input')).toBeInViewport();
   }
   await act(page);await expect(game(page).locator('[data-cell]:enabled')).toHaveCount(12);
+  await page.screenshot({path:out+'/layout-v11-connected.png'});
   await page.setViewportSize({width:844,height:390});await expect(game(page).locator('[data-fh=pass]')).toBeInViewport();
   await act(page,'[data-cell="5"]');
   await expect(game(page).locator('[data-fh=spin]')).toBeInViewport();

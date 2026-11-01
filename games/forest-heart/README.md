@@ -1,4 +1,12 @@
-# Forest Heart client 1.10 (local experiment)
+# Forest Heart client 1.11 (local experiment)
+
+## Receiver flowers and window layout 1.11
+
+The three receiver flowers scale with the field instead of stopping at 64 pixels. Their amounts use larger type with a separate USDT label, and collected flowers keep the existing bloom and collection label. Each receiver still sits at its original root exit. The displayed amount remains the existing accepted per-flower contribution, not a new line rule or separate wallet credit.
+
+Wide windows use up to 2000 pixels for the scene, a narrower portrait column and a larger receiver rail. The field can grow beyond the old 780-pixel cap. The status and paid controls sit at the bottom of the available game window, with the field and elf centered together above them. Phone and shallow landscape layouts keep their existing compact receiver rail and connected chat.
+
+No generation request, sound event, payout formula, accepted-round state or video schedule changes in this revision. The existing field arrival, reached-flower bloom, collection label and reactions keep their original event timing, pause, restore and reduced-motion behavior.
 
 ## Three-second character episodes 1.10
 
