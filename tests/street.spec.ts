@@ -44,6 +44,11 @@ test('walk outside, circle the casino, reconnect and return through the same ent
   await overview(page, false);
   await expect(page.locator('h1')).toContainText('Улица казино');
   await expect(page.locator('#chat-input')).toBeEnabled();
+  const streetBefore=(await state(page)).street;
+  expect(streetBefore.pedestrians).toHaveLength(5);
+  await expect.poll(async () => (await state(page)).street.pedestrians[0].x).not.toBe(streetBefore.pedestrians[0].x);
+  await expect.poll(async () => (await state(page)).street.cars[0].x).not.toBe(streetBefore.cars[0].x);
+  await expect.poll(async () => (await state(page)).street.sign.sheen,{timeout:10000}).toBeGreaterThan(0);
   await page.screenshot({ path: `../street-${info.project.name}-entrance.png` });
   await overview(page, true);
   await page.screenshot({ path: `../street-${info.project.name}-overview.png` });
@@ -52,11 +57,21 @@ test('walk outside, circle the casino, reconnect and return through the same ent
   await overview(page, false);
   await page.screenshot({ path: `../street-${info.project.name}-rear.png` });
   // Reload while outdoors must recover the room and location, rather than spawning indoors.
+  await page.emulateMedia({reducedMotion:'reduce'});
   await page.reload();
   await expect(page.locator('#chat-input')).toBeEnabled();
   await expect.poll(async () => (await state(page)).hall, { timeout: 25000 }).toBe('street');
   const recovered = await page.evaluate(() => (window as any).royalDemo.getNetworkState());
   expect(recovered.roomId).toBe(network.roomId);
+  await expect.poll(async () => (await state(page)).street.motion).toBe(false);
+  const frozen=(await state(page)).street;
+  await page.waitForTimeout(400);
+  const still=(await state(page)).street;
+  expect(still.time).toBe(frozen.time);
+  expect(still.cars).toEqual(frozen.cars);
+  expect(still.pedestrians.every((p:any)=>!p.moving)).toBe(true);
+  expect(still.sign.sheen).toBe(0);
+  expect(still.sign.sparkle).toBe(0);
   await page.locator('[data-floor-target="arcade"]').click();
   await expect.poll(async () => (await state(page)).hall, { timeout: 25000 }).toBe('arcade');
   await expect(page.locator('#chat-input')).toBeEnabled();

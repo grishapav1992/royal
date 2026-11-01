@@ -1,9 +1,11 @@
 import type Phaser from 'phaser';
 import { STREET } from '../shared/street';
+import { STREET_CARS } from './StreetLife';
 
 type Paint = CanvasRenderingContext2D;
 const ink = '#29232a', wall = '#681a32', cream = '#f3dcb1', gold = '#f6cf58', snow = '#f8fbff';
-export const STREET_ART = { paving:'street-v2-paving', floor:'street-v2-floor', front:'street-v2-front', pine:'street-v2-pine', lamp:'street-v2-lamp', bench:'street-v2-bench', map:'street-v2-map' } as const;
+export const STREET_ART = { paving:'street-v2-paving', floor:'street-v2-floor', front:'street-v2-front', pine:'street-v2-pine', lamp:'street-v2-lamp', bench:'street-v2-bench', map:'street-v2-map', sign:'street-sign', sheen:'street-sign-sheen' } as const;
+export const STREET_SIGN={center:(442+772)/2,width:300,height:216,baseline:156,baselineOffset:-113} as const;
 
 function box(c:Paint,x:number,y:number,w:number,h:number,fill:string,stroke=ink,width=1.5,radius=0){
   c.beginPath();c.roundRect(x,y,w,h,radius);c.fillStyle=fill;c.fill();
@@ -32,9 +34,10 @@ export function paintStreetCrown(c:Paint,x:number,y:number,w:number,h:number){
 function royal(c:Paint,x:number,y:number,size:number){
   paintStreetCrown(c,x,y-size*2.45,size*3.25,size*1.55);
   c.font=`bold ${size}px Georgia, serif`;c.textAlign='center';c.textBaseline='alphabetic';
-  c.strokeStyle='#50222c';c.lineWidth=2;c.strokeText('ROYAL',x,y);c.fillStyle=gold;c.fillText('ROYAL',x,y);
-  c.beginPath();c.moveTo(x-size*1.75,y+10);c.quadraticCurveTo(x,y-2,x+size*1.75,y+10);c.strokeStyle=gold;c.lineWidth=4;c.stroke();
-  c.beginPath();c.moveTo(x-size*1.65,y+17);c.quadraticCurveTo(x,y+5,x+size*1.65,y+17);c.lineWidth=1.8;c.stroke();
+  const metrics=c.measureText('ROYAL'),anchor=x+(metrics.actualBoundingBoxLeft-metrics.actualBoundingBoxRight)/2;
+  c.strokeStyle='#50222c';c.lineWidth=2;c.strokeText('ROYAL',anchor,y);c.fillStyle=gold;c.fillText('ROYAL',anchor,y);
+  line(c,x-size*1.75,y+11,x+size*1.75,y+11,gold,3);
+  line(c,x-size*1.65,y+18,x+size*1.65,y+18,gold,1.5);
 }
 function pilaster(c:Paint,x:number,top:number,height:number,width=34){
   box(c,x-width/2,top,width,height,cream,'#594533',1.3);
@@ -125,7 +128,7 @@ function paintFront(c:Paint){
   for(const x of [20,442,772,1114,w-20])pilaster(c,x,0,base,38);
   box(c,0,0,w,15,cream,'#665039',1.5);line(c,0,3,w,3,'#ffefcc',3);box(c,0,base-14,w,14,cream,'#665039',1);
   for(const x of [930,1280]){window(c,x-85,base-179,170,133);canopy(c,x,base-184,210,55);planter(c,x,base-36,220);}
-  royal(c,540,base-113,44);planter(c,540,base-36,218);
+  planter(c,STREET_SIGN.center,base-36,218);
   box(c,door-79,base-197,158,197,'#392b28',ink,2.5);box(c,door-73,base-191,146,191,'#a47140','#79542f',1.5);
   for(const side of [-1,1]){
     const x=side<0?door-68:door+3;box(c,x,base-186,65,182,'#775036','#432e26',1.5);
@@ -164,6 +167,26 @@ export function paintStreetMap(c:Paint){
   for(const side of [-1,1])oval(c,STREET.entrance.x+side*126,front,22,22,'#2d6b50');
 }
 
+function paintCar(c:Paint,color:string,taxi:boolean,plan:boolean){
+  if(plan){
+    for(const x of [49,124])for(const y of [15,62])box(c,x,y,18,6,'#29282d',ink,1,2);
+    box(c,20,18,148,46,color,ink,2,13);
+    box(c,56,23,69,36,'#a7c9d0',ink,1.5,5);box(c,72,23,36,36,color,ink,1,3);
+    box(c,157,25,5,8,'#ffe6a1',ink,0);box(c,157,48,5,8,'#ffe6a1',ink,0);
+    if(taxi)box(c,85,33,13,16,'#ffe6a1',ink,1,2);
+    return;
+  }
+  c.save();c.globalAlpha=.12;oval(c,91,74,78,6,ink);c.restore();
+  for(const x of [52,132]){oval(c,x,67,12,12,'#29282d');oval(c,x,67,6,6,'#a5a8ac');oval(c,x,67,2,2,'#e2d7bc');}
+  shape(c,[[23,60],[27,44],[47,39],[63,18],[112,18],[135,39],[158,46],[162,63],[145,66],[141,56],[123,56],[119,66],[66,66],[62,56],[43,56],[38,66],[25,65]],color,ink,2);
+  shape(c,[[66,23],[108,23],[124,39],[54,39]],'#a8cbd4',ink,1.5);
+  line(c,89,23,89,40,ink,2);line(c,94,44,94,62,ink,1);line(c,30,52,153,52,'#e8e1c6',1);
+  box(c,98,45,8,2,'#d3d3c6',ink,0);box(c,155,46,6,8,'#ffe3a1',ink,1);box(c,24,47,4,7,'#c66865',ink,0);
+  box(c,151,61,13,3,'#c7c3b3',ink,0);box(c,20,61,12,3,'#c7c3b3',ink,0);
+  if(taxi){box(c,78,11,21,7,'#ffe4a0',ink,1,2);for(let n=0;n<6;n++)box(c,68+n*6,46,4,3,n%2?ink:'#e9dfc6',ink,0);}
+  c.save();c.globalAlpha=.12;shape(c,[[161,47],[188,39],[188,66],[161,54]],'#ffe8ac',ink,0);c.restore();
+}
+
 export function createStreetArt(scene:Phaser.Scene){
   const make=(key:string,w:number,h:number,density:number,paint:(c:Paint)=>void)=>{
     if(scene.textures.exists(key))return;
@@ -172,9 +195,18 @@ export function createStreetArt(scene:Phaser.Scene){
   };
   make(STREET_ART.paving,200,160,2,paving);make(STREET_ART.floor,246,250,2,paintUpperFloor);
   make(STREET_ART.front,STREET.building.w,350,2,paintFront);
+  make(STREET_ART.sign,STREET_SIGN.width,STREET_SIGN.height,2,c=>royal(c,STREET_SIGN.width/2,STREET_SIGN.baseline,44));
+  make(STREET_ART.sheen,STREET_SIGN.width,STREET_SIGN.height,2,c=>{
+    c.drawImage(scene.textures.get(STREET_ART.sign).getSourceImage() as HTMLCanvasElement,0,0,STREET_SIGN.width,STREET_SIGN.height);
+    c.globalCompositeOperation='source-in';c.fillStyle='#fff2c7';c.fillRect(0,0,STREET_SIGN.width,STREET_SIGN.height);c.globalCompositeOperation='source-over';
+  });
   make(STREET_ART.pine,128,184,2,c=>pine(c,64,164,1.17));
   make(STREET_ART.lamp,66,160,2,c=>lantern(c,33,151));
   make(STREET_ART.bench,144,84,2,c=>bench(c,72,70));
   make(STREET_ART.map,STREET.width,STREET.height,.75,paintStreetMap);
+  for(const car of STREET_CARS){
+    make('street-car-'+car.id,190,84,2,c=>paintCar(c,car.color,car.id==='street-gold-car',false));
+    make('street-car-plan-'+car.id,190,84,2,c=>paintCar(c,car.color,car.id==='street-gold-car',true));
+  }
   return scene.textures.get(STREET_ART.map).getSourceImage() as HTMLCanvasElement;
 }
