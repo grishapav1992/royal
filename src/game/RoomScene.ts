@@ -1,5 +1,5 @@
 import { t as translateText, tr } from '../i18n/index';
-import { STREET_RESIDENTS, streetViewOffset, type StreetResidentId } from './streetDetails';
+import { streetViewOffset, type StreetResidentId } from './streetDetails';
 import { cabinetSeat, type GameReaction } from '../shared/cabinetSeating';
 import { drawCabinetStool } from './cabinetStoolArt';
 import { drawClubFloor } from './clubArt';
@@ -112,6 +112,8 @@ export class RoomScene extends Phaser.Scene {
   private bar!: Bar;
   private atelier?: TailorRenderer;
   private pendingLounge: string | null = null;
+  private streetApproach?:{id:StreetResidentId;point:Point};
+  private streetApproachCompleting=false;
   private elevatorApproachAt = 0;
   private overview=false;
   onBar: () => void = () => {};
@@ -379,8 +381,9 @@ export class RoomScene extends Phaser.Scene {
   }
   approachStreetResident(id:StreetResidentId){
     if(this.hall!=='street'||this.locked||this.typing||this.switching||this.isHuggingCat()||this.player.cabinet||this.networkSelf?.playing)return;
-    const person=STREET_RESIDENTS.find(p=>p.id===id);if(!person)return;
-    this.pendingCabinet=null;this.pendingLounge='street:'+id;this.goTo(person.approach);
+    const point=this.street?.prepareApproach(id,this.player);if(!point)return;
+    this.streetApproach={id,point};this.streetApproachCompleting=false;
+    this.pendingCabinet=null;this.pendingLounge='street:'+id;this.goTo(point);
   }
   approachElevator() {
     if(this.hall==='street')return;
@@ -414,7 +417,7 @@ export class RoomScene extends Phaser.Scene {
   }
   interact() {
     if (this.locked || this.typing) return;
-    if(this.hall==='street'&&!this.isHuggingCat()&&this.street?.interact(this.player))return;
+    if(this.hall==='street'&&!this.isHuggingCat()&&this.street?.interact(this.player)){this.pendingLounge=null;this.finishMovement(()=>this.network?.stop());return;}
     if (!this.isHuggingCat() && atElevator(this.player)) { this.openElevator(); return; }
     const nearbyPlayer=[...this.remotePlayers.values()].map(p=>p.target).filter(p=>p.connected&&p.hall===this.hall&&!p.playing&&!p.activity)
       .sort((a,b)=>Math.hypot(a.x-this.player.x,a.y-this.player.y)-Math.hypot(b.x-this.player.x,b.y-this.player.y))[0];
@@ -777,7 +780,9 @@ export class RoomScene extends Phaser.Scene {
     }
     if(!this.network&&!this.locked&&!this.isHuggingCat()&&!this.typing&&inHallDoor(this.player))this.changeHall(hallLinkAt(this.player)!.target);
     this.details?.update(time);
-    if(this.hall==='street')this.street?.update(this.player,this.overview,delta,this.reducedMotion);
+    const streetTarget=this.hall==='street'&&this.pendingLounge?.startsWith('street:')?this.pendingLounge.slice(7) as StreetResidentId:undefined;
+    if(this.streetApproach?.id!==streetTarget){this.streetApproach=undefined;this.streetApproachCompleting=false;}
+    if(this.hall==='street')this.street?.update(this.player,this.overview,delta,this.reducedMotion,streetTarget);
     if(this.hall==='street'&&!this.overview)this.cameras.main.setFollowOffset(0,streetViewOffset(this.player.y,this.cameras.main.height/this.cameras.main.zoom));
     if (this.hall === 'github') this.cardTables?.update(time);
     if(this.hall==='arcade')this.bar.update(this.player.action==='drink'||[...this.remotePlayers.values()].some(p=>p.target.action==='drink'),this.reducedMotion,this.guard.barConversation(),delta/1000,Boolean(this.network),npcRenderAt);
@@ -839,9 +844,10 @@ export class RoomScene extends Phaser.Scene {
           }
         }
         else if(this.pendingLounge.startsWith('street:')){
-          const id=this.pendingLounge.slice(7) as StreetResidentId,person=STREET_RESIDENTS.find(p=>p.id===id);
-          if(person&&Math.hypot(this.player.x-person.approach.x,this.player.y-person.approach.y)<20){
-            this.pendingLounge=null;this.finishMovement(()=>{this.network?.stop();this.street?.interact(this.player,id);});
+          const target=this.streetApproach;
+          if(target&&!this.streetApproachCompleting&&Math.hypot(this.player.x-target.point.x,this.player.y-target.point.y)<7){
+            this.streetApproachCompleting=true;
+            this.finishMovement(()=>{this.pendingLounge=null;this.streetApproachCompleting=false;this.network?.stop();if(this.hall==='street')this.street?.interact(this.player,target.id);});
           }
         }
         else if(this.pendingLounge.startsWith('activity:')){

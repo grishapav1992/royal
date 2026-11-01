@@ -5,15 +5,21 @@ const ink=0x302a30;
 type Graphics=Phaser.GameObjects.Graphics;
 
 export function createStreetMascotTexture(scene:Phaser.Scene){
-  const key='street-golden-chip-mascot';
+  const key='street-golden-chip-mascot-walk';
   if(scene.textures.exists(key))return key;
-  const texture=scene.textures.createCanvas(key,200,220)!,c=texture.context;c.scale(2,2);
+  const texture=scene.textures.createCanvas(key,1400,220)!,c=texture.context;c.scale(2,2);
   const oval=(x:number,y:number,rx:number,ry:number,fill:string,edge=1.5)=>{
     c.beginPath();c.ellipse(x,y,rx,ry,0,0,Math.PI*2);c.fillStyle=fill;c.fill();
     if(edge){c.strokeStyle='#302a30';c.lineWidth=edge;c.stroke();}
   };
-  for(const x of [34,59]){c.fillStyle='#665332';c.fillRect(x,87,8,17);}
-  for(const x of [36,64])oval(x,104,11,4,'#37343b');
+  for(let frame=0;frame<7;frame++){
+  c.save();c.translate(frame*100,0);
+  const step=frame===6?0:[0,1,.55,0,-1,-.55][frame];
+  for(const [index,x] of [34,59].entries()){
+    const lift=Math.max(0,step*(index?-1:1))*3;
+    c.fillStyle='#665332';c.fillRect(x,87,8,17-lift);
+  }
+  for(const [index,x] of [36,64].entries())oval(x+step*(index?-2:2),104-Math.max(0,step*(index?-1:1))*3,11,4,'#37343b');
   oval(50,58,38,39,'#d8a63c',2);
   oval(50,58,32,33,'#f7d660',1.4);
   for(let n=0;n<12;n++){
@@ -27,6 +33,8 @@ export function createStreetMascotTexture(scene:Phaser.Scene){
   c.strokeStyle='#84632e';c.lineWidth=1.3;c.beginPath();c.moveTo(39,72);c.lineTo(61,72);c.stroke();
   c.font='bold 8px Georgia';c.textAlign='center';c.fillStyle='#69492a';c.fillText('ROYAL',50,82);
   c.beginPath();c.moveTo(42,69);c.lineTo(40,61);c.lineTo(46,65);c.lineTo(50,58);c.lineTo(54,65);c.lineTo(60,61);c.lineTo(58,69);c.closePath();c.fillStyle='#fff0b1';c.fill();c.strokeStyle='#8a642b';c.lineWidth=1;c.stroke();
+  c.restore();texture.add(String(frame),0,frame*200,0,200,220);
+  }
   texture.refresh();return key;
 }
 
@@ -87,8 +95,9 @@ export function drawTouristCamera(g:Graphics,pose:StreetResidentPose){
 export function drawMascotArms(g:Graphics,pose:StreetResidentPose){
   const wave=pose.action==='wave'||pose.action==='greet';
   const poseForPhoto=pose.action==='pose';
-  const left={x:-43,y:wave?-65+Math.sin(pose.progress*Math.PI*6)*7:poseForPhoto?-43:-24};
-  const right={x:43,y:poseForPhoto?-55:-27};
+  const swing=pose.action==='walk'?Math.sin(pose.progress*Math.PI*2)*6:0;
+  const left={x:-43,y:wave?-65+Math.sin(pose.progress*Math.PI*6)*7:poseForPhoto?-43:-24+swing};
+  const right={x:43,y:poseForPhoto?-55:-27-swing};
   for(const [side,hand] of [[-1,left],[1,right]] as const){
     g.lineStyle(8,ink).strokePoints([{x:side*31,y:-50},{x:side*40,y:-42},{x:hand.x,y:hand.y}]);
     g.lineStyle(5,0xc99736).strokePoints([{x:side*31,y:-50},{x:side*40,y:-42},{x:hand.x,y:hand.y}]);

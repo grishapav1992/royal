@@ -19,12 +19,13 @@ export const STREET_RESIDENTS=[
   {id:'tourist',name:'Турист Лёня',role:'Ищет удачный ракурс',x:1420,y:1006,facing:'up',approach:{x:1342,y:1048},
     appearance:serializeAppearance({...DEFAULT_APPEARANCE,top:2,topColor:1,bottomColor:5,hat:2,accessoryColor:4,hairColor:3,scarf:1,shoes:1,shoeColor:10}),
     lines:['Корону в кадр поймал. Теперь надо, чтобы фонарь не вырос у меня из головы.','Я снимаю архитектуру. Голубь почему-то уверен, что снимаю его.','Золотик уже позировал. Теперь спрашивает, с какой стороны фишка стройнее.']},
-  {id:'mascot',name:'Талисман Золотик',role:'Золотая фишка',x:1740,y:1006,facing:'down',approach:{x:1656,y:1055},
+  {id:'mascot',name:'Талисман Золотик',role:'Золотая фишка',x:1130,y:1000,facing:'down',approach:{x:1046,y:1049},
     appearance:serializeAppearance({...DEFAULT_APPEARANCE,top:1,topColor:2,bottomColor:9,shoeColor:9,mouth:1,hat:0}),
     lines:['Я Золотик. Фишка большая, карманы маленькие.','Для фото у меня три позы. Четвёртая называется «перерыв».','Под костюмом жарко. Снаружи зима. Почти идеальный климат.']},
 ] as const;
 export type StreetResidentId=typeof STREET_RESIDENTS[number]['id'];
 export type StreetVisitor={x:number;y:number};
+export type StreetResidentPosition=StreetVisitor&{id:StreetResidentId};
 
 // Frame the rear service area as the player walks around either corner.
 export function streetViewOffset(y:number,viewHeight:number){
@@ -40,21 +41,22 @@ export class StreetConversations {
   private visitor:StreetVisitor={x:0,y:0};
   private current:StreetResidentId|null=null;
   private line=0;
-  update(visitor:StreetVisitor,active:boolean){
-    this.visitor=visitor;this.active=active;
-    const person=STREET_RESIDENTS.find(p=>p.id===this.current);
+  private people:readonly StreetResidentPosition[]=STREET_RESIDENTS;
+  update(visitor:StreetVisitor,active:boolean,people:readonly StreetResidentPosition[]=STREET_RESIDENTS){
+    this.visitor=visitor;this.active=active;this.people=people;
+    const person=this.people.find(p=>p.id===this.current);
     if(!active||(person&&Math.hypot(person.x-visitor.x,person.y-visitor.y)>140))this.close();
     return this.snapshot();
   }
   talk(id:StreetResidentId){
-    const person=STREET_RESIDENTS.find(p=>p.id===id);
+    const person=this.people.find(p=>p.id===id);
     if(!this.active||!person||Math.hypot(person.x-this.visitor.x,person.y-this.visitor.y)>112)return false;
     this.current=id;this.line=0;return true;
   }
   next(){if(this.current){const person=STREET_RESIDENTS.find(p=>p.id===this.current)!;this.line=(this.line+1)%person.lines.length;}}
   close(){this.current=null;this.line=0;}
   snapshot(){
-    const nearby=this.active?[...STREET_RESIDENTS].sort((a,b)=>Math.hypot(a.x-this.visitor.x,a.y-this.visitor.y)-Math.hypot(b.x-this.visitor.x,b.y-this.visitor.y)).find(p=>Math.hypot(p.x-this.visitor.x,p.y-this.visitor.y)<=112)?.id??null:null;
+    const nearby=this.active?[...this.people].sort((a,b)=>Math.hypot(a.x-this.visitor.x,a.y-this.visitor.y)-Math.hypot(b.x-this.visitor.x,b.y-this.visitor.y)).find(p=>Math.hypot(p.x-this.visitor.x,p.y-this.visitor.y)<=112)?.id??null:null;
     return {active:this.active,nearby,conversation:this.current,line:this.line};
   }
 }

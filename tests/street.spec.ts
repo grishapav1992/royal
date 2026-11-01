@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { STREET } from '../src/shared/street';
-import { STREET_RESIDENTS } from '../src/game/streetDetails';
+import type { StreetResidentId } from '../src/game/streetDetails';
 
 const state = (page: Page) => page.evaluate(() => (window as any).royalDemo.getState());
 async function worldPoint(page: Page, x: number, y: number) {
@@ -21,6 +21,15 @@ async function walk(page: Page, x: number, y: number) {
   await page.mouse.click(point.x, point.y);
   await expect.poll(async () => { const p = await state(page); return Math.hypot(p.x - x, p.y - y); }, { timeout: 20000 }).toBeLessThan(tolerance);
   await expect.poll(async () => { const p = await state(page); return Math.hypot(p.serverX - p.x, p.serverY - p.y); }).toBeLessThan(3);
+}
+
+async function talkToResident(page:Page,id:StreetResidentId){
+  await overview(page,true);
+  const person=(await state(page)).street.residents.people.find((p:any)=>p.id===id);
+  const hit=await worldPoint(page,person.x,person.y-(id==='mascot'?53:35));
+  await page.mouse.click(hit.x,hit.y);
+  await expect.poll(async ()=>(await state(page)).street.residents.conversation,{timeout:25000}).toBe(id);
+  await expect.poll(async ()=>(await state(page)).street.residents.people.find((p:any)=>p.id===id).moving).toBe(false);
 }
 
 test('walk outside, circle the casino, reconnect and return through the same entrance with chat', async ({ page }, info) => {
@@ -56,50 +65,62 @@ test('walk outside, circle the casino, reconnect and return through the same ent
   await overview(page, true);
   const residents=(await state(page)).street.residents.people;
   expect(residents.map((p:any)=>p.id)).toEqual(['doorman','janitor','taxi-driver','tourist','mascot']);
-  const doorman=STREET_RESIDENTS[0],hit=await worldPoint(page,doorman.x,doorman.y-35);
-  await page.mouse.click(hit.x,hit.y);
+  await talkToResident(page,'doorman');
   const dialogue=page.locator('.street-conversation');
-  await expect(dialogue).toHaveAttribute('data-resident','doorman',{timeout:15000});
-  await expect(dialogue).toHaveAttribute('data-speaking','true');
   await expect(dialogue.locator('p')).toContainText('Добро пожаловать');
   await dialogue.getByRole('button',{name:'Ещё',exact:true}).click();
   await expect(dialogue.locator('p')).toContainText('Ковёр красный');
   await overview(page,false);
   await page.screenshot({path:`../street-${info.project.name}-doorman.png`});
   await dialogue.getByRole('button',{name:'Закрыть',exact:true}).click();
-  await expect(dialogue).toBeHidden();
   await overview(page,true);
-  for(const id of ['tourist','mascot'] as const){
-    const person=STREET_RESIDENTS.find(p=>p.id===id)!;
-    await walk(page,person.approach.x,person.approach.y);
-    await expect(dialogue).toHaveAttribute('data-resident',id);
-    await overview(page,false);
-    await expect.poll(async ()=>{
-      const person=(await state(page)).street.residents.people.find((p:any)=>p.id===id);
-      return person.activity===(id==='tourist'?'take-photo':'wave');
-    },{timeout:18000}).toBe(true);
-    await page.screenshot({path:`../street-${info.project.name}-${id}.png`});
-    await dialogue.getByRole('button',{name:'Поговорить',exact:true}).click();
-    await expect(dialogue).toHaveAttribute('data-speaking','true');
-    await expect(dialogue.locator('p')).toContainText(id==='tourist'?'Корону в кадр':'Я Золотик');
-    await expect.poll(async ()=>(await state(page)).street.residents.people.find((p:any)=>p.id===id).activity).toBe('idle');
-    await dialogue.getByRole('button',{name:'Ещё',exact:true}).click();
-    await expect(dialogue.locator('p')).toContainText(id==='tourist'?'Я снимаю архитектуру':'три позы');
-    await dialogue.getByRole('button',{name:'Закрыть',exact:true}).click();
-    await overview(page,true);
-  }
+  await expect.poll(async ()=>(await state(page)).street.residents.people.find((p:any)=>p.id==='tourist').moving,{timeout:16000}).toBe(true);
+  const roaming=(await state(page)).street.residents.people.find((p:any)=>p.id==='tourist');
+  const movingHit=await worldPoint(page,roaming.x,roaming.y-35);
+  await page.mouse.click(movingHit.x,movingHit.y);
+  await expect.poll(async ()=>(await state(page)).street.residents.approaching).toBe('tourist');
+  const pinned=(await state(page)).street.residents.people.find((p:any)=>p.id==='tourist');
+  await page.waitForTimeout(200);
+  const waiting=(await state(page)).street.residents.people.find((p:any)=>p.id==='tourist');
+  expect([waiting.x,waiting.y]).toEqual([pinned.x,pinned.y]);
+  const cancel=await worldPoint(page,840,1062);await page.mouse.click(cancel.x,cancel.y);
+  await expect.poll(async ()=>(await state(page)).street.residents.approaching).toBeNull();
+  await expect.poll(async ()=>(await state(page)).street.residents.people.find((p:any)=>p.id==='tourist').moving).toBe(true);
+  await talkToResident(page,'tourist');
+  await expect(dialogue.locator('p')).toContainText('Корону в кадр');
+  await dialogue.getByRole('button',{name:'Ещё',exact:true}).click();
+  await expect(dialogue.locator('p')).toContainText('Я снимаю архитектуру');
+  await dialogue.getByRole('button',{name:'Закрыть',exact:true}).click();
+  await walk(page,1760,1055);
+  await expect.poll(async ()=>{
+    const person=(await state(page)).street.residents.people.find((p:any)=>p.id==='tourist');
+    return person.stop===1&&person.activity==='take-photo';
+  },{timeout:25000}).toBe(true);
+  await overview(page,false);
+  await page.screenshot({path:`../street-${info.project.name}-tourist.png`});
+  await talkToResident(page,'mascot');
+  await expect(dialogue.locator('p')).toContainText('Я Золотик');
+  await dialogue.getByRole('button',{name:'Ещё',exact:true}).click();
+  await expect(dialogue.locator('p')).toContainText('три позы');
+  await overview(page,false);
+  await page.screenshot({path:`../street-${info.project.name}-mascot.png`});
+  const mascotBefore=(await state(page)).street.residents.people.find((p:any)=>p.id==='mascot');
+  expect(mascotBefore.greetings).toBeGreaterThan(0);
+  await dialogue.getByRole('button',{name:'Закрыть',exact:true}).click();
+  await expect.poll(async ()=>(await state(page)).street.residents.people.find((p:any)=>p.id==='mascot').moving,{timeout:18000}).toBe(true);
+  await overview(page,true);
   await page.screenshot({ path: `../street-${info.project.name}-overview.png` });
   for (const p of STREET.loop) await walk(page, p.x, p.y);
   await walk(page, 1370, 365);
-  await expect(dialogue).toHaveAttribute('data-resident','janitor');
-  await dialogue.getByRole('button',{name:'Поговорить',exact:true}).click();
-  await expect(dialogue).toHaveAttribute('data-speaking','true');
-  await overview(page, false);
+  const worker=(await state(page)).street.residents.people.find((p:any)=>p.id==='janitor');
+  expect(worker.stop).not.toBe(0);
+  await overview(page,false);
   await page.screenshot({ path: `../street-${info.project.name}-rear.png` });
+  await talkToResident(page,'janitor');
+  await expect(dialogue.locator('p')).toContainText('Осторожнее');
   await dialogue.getByRole('button',{name:'Закрыть',exact:true}).click();
   await overview(page,true);
-  const taxiApproach=STREET_RESIDENTS.find(p=>p.id==='taxi-driver')!.approach;
-  await walk(page,2320,360);await walk(page,2320,1050);await walk(page,taxiApproach.x,taxiApproach.y);
+  await walk(page,2320,360);await walk(page,2320,1050);await walk(page,2360,1150);
   await expect(dialogue).toHaveAttribute('data-resident','taxi-driver');
   await overview(page,false);
   await expect.poll(async ()=>{

@@ -1,7 +1,7 @@
 import type { StreetResidentId } from './streetDetails';
 import type { Facing } from '../shared/movement';
 
-type Action='idle'|'greet'|'clear-snow'|'tap-shovel'|'rest'|'look-around'|'coffee'|'smoke'|'check-watch'|'frame-photo'|'take-photo'|'review-photo'|'wave'|'pose';
+type Action='walk'|'idle'|'greet'|'clear-snow'|'tap-shovel'|'rest'|'look-around'|'coffee'|'smoke'|'check-watch'|'frame-photo'|'take-photo'|'review-photo'|'wave'|'pose';
 type Beat=readonly [Action,number];
 const routines:Record<StreetResidentId,readonly Beat[]>={
   doorman:[['greet',1300],['idle',8300]],

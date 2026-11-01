@@ -1,4 +1,5 @@
 export const streetEnglish:Record<string,string>={
+  'Добро пожаловать!':'Welcome!',
   'Швейцар Аркадий':'Arkady the doorman',
   'Дворник Семён':'Semyon the caretaker',
   'Таксист Гоша':'Gosha the taxi driver',

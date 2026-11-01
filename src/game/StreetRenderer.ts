@@ -81,7 +81,7 @@ export class StreetRenderer {
     this.residents=new StreetResidents(scene,approach);
     scene.add.zone(STREET.entrance.x,front-82,170,200).setDepth(front+1).setInteractive({useHandCursor:true}).on('pointerdown',enter);
   }
-  update(player: Point, overview: boolean,delta=0,reducedMotion=false) {
+  update(player: Point, overview: boolean,delta=0,reducedMotion=false,approaching?:StreetResidentId) {
     const alpha=streetFacadeAlpha(player);
     this.facade.setVisible(!overview&&player.y>=STREET.building.y).setAlpha(alpha);
     this.rear.setVisible(!overview&&player.y<STREET.building.y);
@@ -90,7 +90,7 @@ export class StreetRenderer {
     this.ground.setVisible(!overview);
     for(const prop of this.props)prop.setVisible(!overview);
     const sign=this.ambience.update(delta,overview,reducedMotion);
-    const state=this.ambience.getState();this.residents.update(player,state.time,state.motion,overview);
+    const state=this.ambience.getState();this.residents.update(player,state.time,state.motion,overview,[player,...state.pedestrians],approaching);
     this.sheen.forEach((image,index)=>{
       const width=[48,28,10][index],left=Math.max(0,sign.sweep-width/2),right=Math.min(STREET_SIGN.width,sign.sweep+width/2);
       image.setVisible(right>left&&sign.sheen>0&&!overview).setAlpha(sign.sheen*[.25,.45,.7][index]);
@@ -104,6 +104,7 @@ export class StreetRenderer {
   }
   setActive(active:boolean){this.residents.setActive(active);}
   interact(player:Point,id?:StreetResidentId){return this.residents.interact(player,id);}
+  prepareApproach(id:StreetResidentId,player:Point){return this.residents.prepareApproach(id,player);}
   get pedestrianCount(){return this.ambience.count+this.residents.count;}
   get characterTextureKeys(){return this.residents.textureKeys;}
   getState(){return {...this.ambience.getState(),residents:this.residents.getState()};}

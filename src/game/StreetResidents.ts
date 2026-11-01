@@ -5,10 +5,19 @@ import { STREET_RESIDENTS, StreetConversations, type StreetResidentId, type Stre
 import './street-residents.css';
 import { streetResidentPose, type StreetResidentPose } from './StreetResidentActions';
 import { createStreetMascotTexture, drawMascotArms, drawResidentShovel, drawTaxiHabit, drawTouristCamera } from './streetResidentArt';
+import { StreetResidentPatrols, STREET_WORK_PATCHES } from './StreetResidentPatrols';
+import { advanceCharacterMotion, createCharacterMotion } from './characterAnimation';
+import type { Point } from './navigation';
 
 export class StreetResidents {
   private conversations=new StreetConversations();
-  private actors:{sprite:Phaser.GameObjects.Sprite;tool:Phaser.GameObjects.Graphics;label:Phaser.GameObjects.Text}[]=[];
+  private patrols=new StreetResidentPatrols();
+  private locations=this.patrols.snapshot();
+  private actors:{sprite:Phaser.GameObjects.Sprite;shadow:Phaser.GameObjects.Ellipse;zone:Phaser.GameObjects.Zone;tool:Phaser.GameObjects.Graphics;label:Phaser.GameObjects.Text;greeting?:Phaser.GameObjects.Text;motion:ReturnType<typeof createCharacterMotion>;x:number;y:number}[]=[];
+  private lastTime=0;
+  private prepared:StreetResidentId|null=null;
+  private snow:Phaser.GameObjects.Graphics;
+  private cleared=new Map<number,number>();
   private root=document.createElement('aside');
   private name=document.createElement('strong');
   private role=document.createElement('span');
@@ -25,15 +34,18 @@ export class StreetResidents {
   };
   constructor(scene:Phaser.Scene,approach:(id:StreetResidentId)=>void){
     this.returnFocus=()=>scene.game.canvas.focus({preventScroll:true});
+    this.snow=scene.add.graphics().setDepth(.02);
     for(const person of STREET_RESIDENTS){
       const mascot=person.id==='mascot';
-      scene.add.ellipse(person.x,person.y-1,mascot?46:29,10,0x27202c,.15).setDepth(person.y-1);
-      const sprite=scene.add.sprite(person.x,person.y,mascot?createStreetMascotTexture(scene):characterTexture(scene,0,person.appearance),mascot?undefined:person.facing+'-6')
-        .setOrigin(.5,1).setScale(mascot ? 0.5 : CHARACTER_SCALE).setDepth(person.y);
-      const tool=scene.add.graphics().setPosition(person.x,person.y).setDepth(person.y+.1);
-      const label=scene.add.text(person.x,person.y-(mascot?113:91),t(person.name),{fontFamily:'Arial',fontSize:'10px',color:'#f5dfaa',backgroundColor:'#302832e8',padding:{x:6,y:4}}).setOrigin(.5,1).setDepth(3000);
-      scene.add.zone(person.x,person.y-(mascot?53:40),mascot?104:62,mascot?110:86).setDepth(person.y+3).setInteractive({useHandCursor:true}).on('pointerdown',()=>approach(person.id));
-      this.actors.push({sprite,tool,label});
+      const position=this.locations.find(p=>p.id===person.id)!;
+      const shadow=scene.add.ellipse(position.x,position.y-1,mascot?46:29,10,0x27202c,.15).setDepth(position.y-1);
+      const sprite=scene.add.sprite(position.x,position.y,mascot?createStreetMascotTexture(scene):characterTexture(scene,0,person.appearance),mascot?6:person.facing+'-6')
+        .setOrigin(.5,1).setScale(mascot ? 0.5 : CHARACTER_SCALE).setDepth(position.y);
+      const tool=scene.add.graphics().setPosition(position.x,position.y).setDepth(position.y+.1);
+      const label=scene.add.text(position.x,position.y-(mascot?113:91),t(person.name),{fontFamily:'Arial',fontSize:'10px',color:'#f5dfaa',backgroundColor:'#302832e8',padding:{x:6,y:4}}).setOrigin(.5,1).setDepth(3000);
+      const zone=scene.add.zone(position.x,position.y-(mascot?53:40),mascot?104:62,mascot?110:86).setDepth(position.y+3).setInteractive({useHandCursor:true}).on('pointerdown',()=>approach(person.id));
+      const greeting=mascot?scene.add.text(position.x,position.y-131,t('Добро пожаловать!'),{fontFamily:'Arial',fontSize:'11px',color:'#5c3b25',backgroundColor:'#fff0c9',padding:{x:6,y:4}}).setOrigin(.5,1).setDepth(3001).setVisible(false):undefined;
+      this.actors.push({sprite,shadow,zone,tool,label,greeting,motion:createCharacterMotion(),x:position.x,y:position.y});
     }
     this.root.className='street-conversation';this.root.hidden=true;
     this.root.setAttribute('aria-label',t('Персонажи улицы'));
@@ -50,15 +62,32 @@ export class StreetResidents {
     document.addEventListener('keydown',this.escape);
     scene.events.once('shutdown',()=>{document.removeEventListener('keydown',this.escape);this.root.remove();});
   }
-  setActive(active:boolean){this.conversations.update({x:0,y:0},active);this.render();}
-  update(player:StreetVisitor,time:number,motion:boolean,overview:boolean){
-    this.conversations.update(player,true);
+  setActive(active:boolean){if(!active)this.prepared=null;this.conversations.update({x:0,y:0},active,this.locations);this.render();}
+  update(player:StreetVisitor,time:number,motion:boolean,overview:boolean,passers:readonly Point[],approaching?:StreetResidentId){
+    this.prepared=approaching??null;
+    this.conversations.update(player,true,this.locations);
+    const talkingId=this.conversations.snapshot().conversation;
+    const frozen=[this.prepared,talkingId].filter((id):id is StreetResidentId=>Boolean(id));
+    this.locations=this.patrols.advance(time-this.lastTime,{motion,frozen,passers});this.lastTime=time;
+    this.conversations.update(player,true,this.locations);
     STREET_RESIDENTS.forEach((person,index)=>{
-      const actor=this.actors[index];
+      const actor=this.actors[index],position=this.locations[index],mascot=person.id==='mascot';
       const talking=this.conversations.snapshot().conversation===person.id;
-      const pose=streetResidentPose(person.id,time,motion,talking);this.poses.set(person.id,pose);
-      if(person.id!=='mascot')actor.sprite.setFrame((talking?'down':pose.facing??person.facing)+'-'+pose.frame);
-      actor.label.setVisible(!overview&&Math.hypot(player.x-person.x,player.y-person.y)<195);
+      const walking=advanceCharacterMotion(actor.motion,{mode:position.moving?'walk':'rest',distance:Math.hypot(position.x-actor.x,position.y-actor.y),time,normalSpeed:155});
+      const canAct=motion&&!talking&&this.prepared!==person.id;
+      let pose=streetResidentPose(person.id,position.workTime,canAct,talking);
+      if(position.moving)pose={action:'walk',progress:actor.motion.distance/77.5,frame:walking.frame,facing:position.facing};
+      if(position.greeting)pose={action:'greet',progress:position.greetingProgress,frame:6};
+      else if(mascot&&canAct&&!position.moving)pose={action:'pose',progress:pose.progress,frame:6};
+      if(person.id==='tourist'&&(pose.action==='frame-photo'||pose.action==='take-photo'))pose.facing=position.facing;
+      this.poses.set(person.id,pose);
+      actor.sprite.setPosition(position.x,position.y).setDepth(position.y).setFrame(mascot?position.moving?walking.frame:6:(talking?'down':pose.facing??position.facing)+'-'+pose.frame);
+      actor.shadow.setPosition(position.x,position.y-1).setDepth(position.y-1);
+      actor.tool.setPosition(position.x,position.y).setDepth(position.y+.1);
+      actor.zone.setPosition(position.x,position.y-(mascot?53:40)).setDepth(position.y+3);
+      actor.label.setPosition(position.x,position.y-(mascot?113:91)).setVisible(!overview&&Math.hypot(player.x-position.x,player.y-position.y)<195);
+      actor.greeting?.setPosition(position.x,position.y-131).setVisible(!overview&&position.greeting&&Math.hypot(player.x-position.x,player.y-position.y)<500);
+      actor.x=position.x;actor.y=position.y;
       actor.tool.clear();
       if(person.id==='doorman'){
         actor.tool.fillStyle(0xf6cf58).fillRect(-14,-71,28,2).fillCircle(8,-35,2);
@@ -71,10 +100,22 @@ export class StreetResidents {
       if(person.id==='tourist')drawTouristCamera(actor.tool,pose);
       if(person.id==='mascot')drawMascotArms(actor.tool,pose);
     });
+    const worker=this.locations.find(p=>p.id==='janitor')!;
+    if(motion&&!worker.moving)this.cleared.set(worker.stop,Math.max(this.cleared.get(worker.stop)??0,Math.min(1,worker.workTime/9000)));
+    this.snow.clear();
+    STREET_WORK_PATCHES.forEach((patch,index)=>{
+      const cleared=this.cleared.get(index)??0;
+      this.snow.fillStyle(0xf8fbff).fillEllipse(patch.x,patch.y,48-cleared*36,15-cleared*7).fillEllipse(patch.x-10,patch.y-4,22-cleared*16,10-cleared*5);
+    });
     this.render();
   }
+  prepareApproach(id:StreetResidentId,player:Point){
+    const point=this.patrols.approach(id,player);
+    if(point){this.conversations.close();this.prepared=id;this.render();}
+    return point;
+  }
   interact(player:StreetVisitor,id?:StreetResidentId){
-    this.conversations.update(player,true);
+    this.conversations.update(player,true,this.locations);
     const target=id??this.conversations.snapshot().nearby;
     const accepted=target?this.conversations.talk(target):false;
     if(accepted)this.dismissed=null;this.render();return accepted;
@@ -94,5 +135,5 @@ export class StreetResidents {
   }
   get count(){return STREET_RESIDENTS.length;}
   get textureKeys(){return this.actors.map(actor=>actor.sprite.texture.key);}
-  getState(){return {...this.conversations.snapshot(),people:STREET_RESIDENTS.map(({id,x,y})=>({id,x,y,activity:this.poses.get(id)?.action??'idle',progress:this.poses.get(id)?.progress??0}))};}
+  getState(){return {...this.conversations.snapshot(),approaching:this.prepared,people:this.locations.map(p=>({...p,activity:this.poses.get(p.id)?.action??'idle',progress:this.poses.get(p.id)?.progress??0}))};}
 }

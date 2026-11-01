@@ -8,6 +8,7 @@ import { STREET } from '../src/shared/street';
 import { STREET_RESIDENTS, StreetConversations, streetViewOffset } from '../src/game/streetDetails';
 import { parseAppearance } from '../src/shared/appearance';
 import { streetResidentPose } from '../src/game/StreetResidentActions';
+import { StreetResidentPatrols, STREET_PATROLS } from '../src/game/StreetResidentPatrols';
 
 test('street pedestrians stay on the pavement and traffic stays in separate road lanes', () => {
   const life=new StreetLife(),visibility=new Map<string,Set<boolean>>();
@@ -91,4 +92,56 @@ test('resident routines vary their actions and become static during conversation
   for(const action of ['coffee','smoke','check-watch','look-around'])assert(actions.get('taxi-driver')!.has(action));
   for(const action of ['frame-photo','take-photo','review-photo'])assert(actions.get('tourist')!.has(action));
   for(const action of ['wave','pose','rest'])assert(actions.get('mascot')!.has(action));
+});
+
+test('working residents visit several safe places while the entrance and perimeter remain clear',()=>{
+  const patrols=new StreetResidentPatrols(),visits=new Map(['tourist','janitor','mascot'].map(id=>[id,new Set<number>()]));
+  const photos=new Set<number>(),cleaned=new Set<number>();
+  let previous=patrols.snapshot();
+  for(let tick=0;tick<12000;tick++){
+    const people=patrols.advance(50);
+    for(const person of people){
+      assert(walkable(person.x,person.y,STREET_OBSTACLES,16),person.id+' stays on pavement');
+      const before=previous.find(p=>p.id===person.id)!;
+      assert(Math.hypot(person.x-before.x,person.y-before.y)<=(STREET_PATROLS[person.id]?.speed??0)*.05+.001,'no teleports between stops');
+      if(!person.moving)visits.get(person.id)?.add(person.stop);
+      const action=streetResidentPose(person.id,person.workTime,true).action;
+      if(!person.moving&&person.id==='tourist'&&action==='take-photo')photos.add(person.stop);
+      if(!person.moving&&person.id==='janitor'&&action==='clear-snow')cleaned.add(person.stop);
+      if(person.id==='mascot')assert(person.x-52>882+48,'costume never occupies the entrance corridor');
+    }
+    previous=people;
+  }
+  assert.equal(photos.size,5);assert.equal(cleaned.size,5);
+  assert.equal(visits.get('mascot')!.size,4);
+});
+
+test('a moving resident can be stopped at its actual position for an approach and conversation',()=>{
+  const patrols=new StreetResidentPatrols();
+  for(let n=0;n<310;n++)patrols.advance(50);
+  const person=patrols.snapshot().find(p=>p.id==='tourist')!;
+  assert(person.moving);assert(person.x>1500);
+  const point=patrols.approach('tourist',STREET.spawn)!;assert(point);assert(walkable(point.x,point.y,STREET_OBSTACLES,16));
+  const dialogue=new StreetConversations();
+  for(let n=0;n<100;n++)patrols.advance(50,{frozen:['tourist']});
+  const stopped=patrols.snapshot().find(p=>p.id==='tourist')!;
+  assert.equal(stopped.x,person.x);assert.equal(stopped.y,person.y);
+  dialogue.update(point,true,patrols.snapshot());assert(dialogue.talk('tourist'));
+  for(let n=0;n<100;n++)patrols.advance(50,{motion:false});
+  assert.equal(patrols.snapshot().find(p=>p.id==='tourist')!.x,stopped.x);
+  patrols.advance(50);assert(patrols.snapshot().find(p=>p.id==='tourist')!.x>stopped.x,'walking resumes from the same position');
+});
+
+test('the mascot greets a nearby passer with a pause and a bounded greeting rate',()=>{
+  const patrols=new StreetResidentPatrols(),first=patrols.snapshot().find(p=>p.id==='mascot')!;
+  assert(!patrols.advance(50).find(p=>p.id==='mascot')!.greeting);
+  const passers=[{x:first.x-100,y:first.y+40}];
+  const greeting=patrols.advance(50,{passers}).find(p=>p.id==='mascot')!;
+  assert(greeting.greeting);
+  for(let n=0;n<20;n++)patrols.advance(50,{passers});
+  const during=patrols.snapshot().find(p=>p.id==='mascot')!;
+  assert.equal(during.x,greeting.x);assert.equal(during.y,greeting.y);
+  let previous=true,starts=1;
+  for(let n=0;n<200;n++){const current=patrols.advance(50,{passers}).find(p=>p.id==='mascot')!.greeting;if(current&&!previous)starts++;previous=current;}
+  assert(starts<=2,'a nearby passer cannot queue greetings each frame');
 });
