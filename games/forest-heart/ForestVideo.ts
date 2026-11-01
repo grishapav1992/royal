@@ -1,12 +1,16 @@
-type Clip = 'look';
-const clips: Clip[] = ['look'];
+import { forestIdleMotion } from './ForestIdleMotion';
+
+type Clip = 'look' | 'focus' | 'magic';
+const clips: Clip[] = ['look', 'focus', 'magic'];
 const sources: Record<Clip, string> = {
-  look: '/assets/forest-heart/living-v13/look.mp4',
+  look: '/assets/forest-heart/living-v14/look.mp4',
+  focus: '/assets/forest-heart/living-v14/focus.mp4',
+  magic: '/assets/forest-heart/living-v14/magic.mp4',
 };
 const episodeMs = 3000, standingMs = 6000, fadeMs = 640;
 const smooth = (value: number) => { const t = Math.max(0, Math.min(1, value)); return t * t * (3 - 2 * t); };
 
-/** One neutral-to-neutral gesture shares a living idle and premultiplied compositor. */
+/** Three neutral-to-neutral gestures share one living idle and premultiplied compositor. */
 export class ForestVideo {
   private canvas: HTMLCanvasElement;
   private videos = new Map<Clip, HTMLVideoElement>();
@@ -79,7 +83,7 @@ export class ForestVideo {
       };
       const vs = shader(gl.VERTEX_SHADER, 'attribute vec2 p; varying vec2 uv; void main(){uv=vec2((p.x+1.)*.5,(1.-p.y)*.5);gl_Position=vec4(p,0.,1.);}');
       // Add premultiplied colors once, rather than fading two DOM layers over each other.
-      const fs = shader(gl.FRAGMENT_SHADER, 'precision mediump float; varying vec2 uv; uniform sampler2D portrait; uniform sampler2D held; uniform sampler2D moving; uniform vec3 weights; uniform float time; uniform float motion; vec2 movingUv(){float hair=smoothstep(.55,.77,uv.x)*smoothstep(.14,.34,uv.y)*(1.-smoothstep(.74,.99,uv.y));float cloth=smoothstep(.62,.96,uv.y)*smoothstep(.06,.26,abs(uv.x-.5));float breath=exp(-pow((uv.y-.41)/.16,2.))*exp(-pow((uv.x-.5)/.23,2.));return uv-vec2(motion*(hair*.004*sin(time*.83+uv.y*8.)+cloth*.003*sin(time*.67+uv.y*6.)+breath*(uv.x-.5)*.009*sin(time*1.25)),-motion*breath*.0018*sin(time*1.25));} vec4 unpackFrame(sampler2D image){vec2 p=movingUv();vec3 rgb=texture2D(image,vec2(p.x*.5,p.y)).rgb;float a=texture2D(image,vec2(.5+p.x*.5,p.y)).r;return vec4(rgb*a,a);} void main(){gl_FragColor=texture2D(portrait,uv)*weights.x+unpackFrame(held)*weights.y+unpackFrame(moving)*weights.z;}');
+      const fs = shader(gl.FRAGMENT_SHADER, `precision mediump float; varying vec2 uv; uniform sampler2D portrait; uniform sampler2D held; uniform sampler2D moving; uniform vec3 weights; uniform float time; uniform float motion; ${forestIdleMotion} vec4 unpackFrame(sampler2D image){vec2 p=uv-motion*forestIdleShift(uv,time);vec3 rgb=texture2D(image,vec2(p.x*.5,p.y)).rgb;float a=texture2D(image,vec2(.5+p.x*.5,p.y)).r;return vec4(rgb*a,a);} void main(){gl_FragColor=texture2D(portrait,uv)*weights.x+unpackFrame(held)*weights.y+unpackFrame(moving)*weights.z;}`);
       this.program = gl.createProgram()!;
       gl.attachShader(this.program, vs); gl.attachShader(this.program, fs); gl.linkProgram(this.program);
       gl.deleteShader(vs); gl.deleteShader(fs);

@@ -1,4 +1,15 @@
-# Forest Heart client 1.13 (local experiment)
+# Forest Heart client 1.14 (local experiment)
+
+## Intact face and varied living gestures 1.14
+
+The authored closed-eye image and its rectangular face crossfade are removed from the renderer and preload list. The native portrait always retains the approved face. Eyelid motion now comes only from the existing source videos, so a different generated eye image is never placed over a resting face. The legacy debug blink counters remain zero.
+
+Idle now includes a small rigid head tilt, shoulder drift, breathing, hair and cloth motion at 85% of the existing deformation scale. The shared ForestIdleMotion function drives both native vertices and video texture coordinates on the same active-time clock. It does not substitute or reshape eyelids. Reduced motion and pause still disable all movement.
+
+Three independently prepared gestures alternate: nod, glance toward the board and crystal lift. Each is three seconds; six seconds of living idle separate them. All are derived from the already paid video-v3 files, with no new generation. Their neutral boundaries use a correspondence mesh with positive triangle areas; one moving texture supplies the middle of the return rather than two independently warped outlines. Focus and magic return from 2.05 to 2.9 seconds; the nod returns by 2.8 seconds. The original source motion still determines the middle of each gesture.
+
+[Preparation and verification](../../docs/concepts/forest-heart/variation-v14-review.json) distinguish rendered checks from subjective quality. Fine hair and fingers can still inherit limitations of the generated videos or correspondence estimate. Existing field events, result poses, audio, accepted rules, wallet and catalogue are unchanged by this revision. Earlier sections below are historical.
+
 
 ## Living idle and one neutral gesture 1.13
 

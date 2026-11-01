@@ -1,0 +1,1319 @@
+{
+  "version": "1.14.0-b4c74a13770a",
+  "date": "2026-11-01",
+  "scope": "Local Forest Heart character review, no production publication",
+  "integrationBaseline": "67ad5ecac64c2187494946c5bb1cba648457b2e6",
+  "newGenerationRequests": 0,
+  "newGenerationChargeUsd": 0,
+  "generationServiceReadOnly": {
+    "modelsStatus": 200,
+    "pricingStatus": 200,
+    "usageStatus": 200,
+    "usedQuota": 2436000,
+    "quotaUnitsPerUsd": 500000,
+    "totalHistoricalUsageUsd": 4.872,
+    "decision": "No new generation was necessary for this candidate. Public model and pricing lists do not establish native short duration or first/last-frame capability. No request was submitted and no failed request was retried."
+  },
+  "changes": {
+    "face": "Removed the authored closed-eye asset, masked eye crossfade and native blink scheduler. Native face uses original pose textures; eyelids move only inside the existing generated gestures.",
+    "idle": "Shared head rotation about the neck, shoulder drift, breathing, hair and cloth. Native vertices and packed video share one active-time motion function, at 85% idle scale. No whole-image translation.",
+    "sequence": [
+      "look",
+      "focus",
+      "magic"
+    ],
+    "episodeMs": 3000,
+    "livingIdleGapMs": 6000,
+    "premultipliedHandoffMs": 640,
+    "neutralEntrySeconds": 0.5,
+    "neutralReturnStartSeconds": 2.05,
+    "neutralBySeconds": {
+      "look": 2.8,
+      "focus": 2.9,
+      "magic": 2.9
+    },
+    "handoff": "Prepared neutral endpoints replace different end poses. A single premultiplied compositor retains coverage; held endpoint is only the short bridge to continuously drawn idle."
+  },
+  "preparation": [
+    {
+      "source": "public/assets/forest-heart/video-v3/look.mp4",
+      "sourceSha256": "efc70fb92dfd71971b912765490fcbc848048465fb2356b254e49e7da47bf1ca",
+      "reference": "public/assets/forest-heart/v3/elf-idle.webp",
+      "referenceSha256": "180c90f9c6850bada1ce9a6a346dea4dcf4881f4325b394240f0d3defedb601b",
+      "output": "public/assets/forest-heart/living-v14/look.mp4",
+      "outputSha256": "b98f80452187b72059946a9314b6f101ee7d04b015def2eb8e0a9703e1a29fed",
+      "frames": 72,
+      "fps": 24,
+      "seconds": 3,
+      "opencv": "4.12.0",
+      "method": "Existing forward motion, neutral endpoints, fold-free correspondence mesh and a single moving texture outside the boundary blend",
+      "entrySeconds": 0.5,
+      "returnStartSeconds": 2.05,
+      "neutralBySeconds": 2.8,
+      "identicalNeutralEndpointsBeforeEncoding": true,
+      "newGenerationRequests": 0,
+      "curve": [
+        {
+          "frame": 0,
+          "seconds": 0,
+          "gestureAmount": 0
+        },
+        {
+          "frame": 1,
+          "seconds": 0.041667,
+          "gestureAmount": 0.005088
+        },
+        {
+          "frame": 2,
+          "seconds": 0.083333,
+          "gestureAmount": 0.035494
+        },
+        {
+          "frame": 3,
+          "seconds": 0.125,
+          "gestureAmount": 0.103516
+        },
+        {
+          "frame": 4,
+          "seconds": 0.166667,
+          "gestureAmount": 0.209877
+        },
+        {
+          "frame": 5,
+          "seconds": 0.208333,
+          "gestureAmount": 0.346619
+        },
+        {
+          "frame": 6,
+          "seconds": 0.25,
+          "gestureAmount": 0.5
+        },
+        {
+          "frame": 7,
+          "seconds": 0.291667,
+          "gestureAmount": 0.653381
+        },
+        {
+          "frame": 8,
+          "seconds": 0.333333,
+          "gestureAmount": 0.790123
+        },
+        {
+          "frame": 9,
+          "seconds": 0.375,
+          "gestureAmount": 0.896484
+        },
+        {
+          "frame": 10,
+          "seconds": 0.416667,
+          "gestureAmount": 0.964506
+        },
+        {
+          "frame": 11,
+          "seconds": 0.458333,
+          "gestureAmount": 0.994912
+        },
+        {
+          "frame": 12,
+          "seconds": 0.5,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 13,
+          "seconds": 0.541667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 14,
+          "seconds": 0.583333,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 15,
+          "seconds": 0.625,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 16,
+          "seconds": 0.666667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 17,
+          "seconds": 0.708333,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 18,
+          "seconds": 0.75,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 19,
+          "seconds": 0.791667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 20,
+          "seconds": 0.833333,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 21,
+          "seconds": 0.875,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 22,
+          "seconds": 0.916667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 23,
+          "seconds": 0.958333,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 24,
+          "seconds": 1,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 25,
+          "seconds": 1.041667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 26,
+          "seconds": 1.083333,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 27,
+          "seconds": 1.125,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 28,
+          "seconds": 1.166667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 29,
+          "seconds": 1.208333,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 30,
+          "seconds": 1.25,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 31,
+          "seconds": 1.291667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 32,
+          "seconds": 1.333333,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 33,
+          "seconds": 1.375,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 34,
+          "seconds": 1.416667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 35,
+          "seconds": 1.458333,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 36,
+          "seconds": 1.5,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 37,
+          "seconds": 1.541667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 38,
+          "seconds": 1.583333,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 39,
+          "seconds": 1.625,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 40,
+          "seconds": 1.666667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 41,
+          "seconds": 1.708333,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 42,
+          "seconds": 1.75,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 43,
+          "seconds": 1.791667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 44,
+          "seconds": 1.833333,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 45,
+          "seconds": 1.875,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 46,
+          "seconds": 1.916667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 47,
+          "seconds": 1.958333,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 48,
+          "seconds": 2,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 49,
+          "seconds": 2.041667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 50,
+          "seconds": 2.083333,
+          "gestureAmount": 0.99918
+        },
+        {
+          "frame": 51,
+          "seconds": 2.125,
+          "gestureAmount": 0.99144
+        },
+        {
+          "frame": 52,
+          "seconds": 2.166667,
+          "gestureAmount": 0.970596
+        },
+        {
+          "frame": 53,
+          "seconds": 2.208333,
+          "gestureAmount": 0.933191
+        },
+        {
+          "frame": 54,
+          "seconds": 2.25,
+          "gestureAmount": 0.878131
+        },
+        {
+          "frame": 55,
+          "seconds": 2.291667,
+          "gestureAmount": 0.806306
+        },
+        {
+          "frame": 56,
+          "seconds": 2.333333,
+          "gestureAmount": 0.720201
+        },
+        {
+          "frame": 57,
+          "seconds": 2.375,
+          "gestureAmount": 0.623526
+        },
+        {
+          "frame": 58,
+          "seconds": 2.416667,
+          "gestureAmount": 0.520826
+        },
+        {
+          "frame": 59,
+          "seconds": 2.458333,
+          "gestureAmount": 0.417105
+        },
+        {
+          "frame": 60,
+          "seconds": 2.5,
+          "gestureAmount": 0.31744
+        },
+        {
+          "frame": 61,
+          "seconds": 2.541667,
+          "gestureAmount": 0.226607
+        },
+        {
+          "frame": 62,
+          "seconds": 2.583333,
+          "gestureAmount": 0.148695
+        },
+        {
+          "frame": 63,
+          "seconds": 2.625,
+          "gestureAmount": 0.086724
+        },
+        {
+          "frame": 64,
+          "seconds": 2.666667,
+          "gestureAmount": 0.042269
+        },
+        {
+          "frame": 65,
+          "seconds": 2.708333,
+          "gestureAmount": 0.015074
+        },
+        {
+          "frame": 66,
+          "seconds": 2.75,
+          "gestureAmount": 0.002675
+        },
+        {
+          "frame": 67,
+          "seconds": 2.791667,
+          "gestureAmount": 0.000013
+        },
+        {
+          "frame": 68,
+          "seconds": 2.833333,
+          "gestureAmount": 0
+        },
+        {
+          "frame": 69,
+          "seconds": 2.875,
+          "gestureAmount": 0
+        },
+        {
+          "frame": 70,
+          "seconds": 2.916667,
+          "gestureAmount": 0
+        },
+        {
+          "frame": 71,
+          "seconds": 2.958333,
+          "gestureAmount": 0
+        }
+      ]
+    },
+    {
+      "source": "public/assets/forest-heart/video-v3/focus.mp4",
+      "sourceSha256": "d4c711a1b356833c5712d8ec2198cafd210cbebade661a387938dc8a2082615e",
+      "reference": "public/assets/forest-heart/v3/elf-idle.webp",
+      "referenceSha256": "180c90f9c6850bada1ce9a6a346dea4dcf4881f4325b394240f0d3defedb601b",
+      "output": "public/assets/forest-heart/living-v14/focus.mp4",
+      "outputSha256": "d36edc4530b9a32c0ffe3823aa25e9a94620e7d7e7e47a142bfdbedc9986def7",
+      "frames": 72,
+      "fps": 24,
+      "seconds": 3,
+      "opencv": "4.12.0",
+      "method": "Existing forward motion, neutral endpoints, fold-free correspondence mesh and a single moving texture outside the boundary blend",
+      "entrySeconds": 0.5,
+      "returnStartSeconds": 2.05,
+      "neutralBySeconds": 2.9,
+      "identicalNeutralEndpointsBeforeEncoding": true,
+      "newGenerationRequests": 0,
+      "curve": [
+        {
+          "frame": 0,
+          "seconds": 0,
+          "gestureAmount": 0
+        },
+        {
+          "frame": 1,
+          "seconds": 0.041667,
+          "gestureAmount": 0.005088
+        },
+        {
+          "frame": 2,
+          "seconds": 0.083333,
+          "gestureAmount": 0.035494
+        },
+        {
+          "frame": 3,
+          "seconds": 0.125,
+          "gestureAmount": 0.103516
+        },
+        {
+          "frame": 4,
+          "seconds": 0.166667,
+          "gestureAmount": 0.209877
+        },
+        {
+          "frame": 5,
+          "seconds": 0.208333,
+          "gestureAmount": 0.346619
+        },
+        {
+          "frame": 6,
+          "seconds": 0.25,
+          "gestureAmount": 0.5
+        },
+        {
+          "frame": 7,
+          "seconds": 0.291667,
+          "gestureAmount": 0.653381
+        },
+        {
+          "frame": 8,
+          "seconds": 0.333333,
+          "gestureAmount": 0.790123
+        },
+        {
+          "frame": 9,
+          "seconds": 0.375,
+          "gestureAmount": 0.896484
+        },
+        {
+          "frame": 10,
+          "seconds": 0.416667,
+          "gestureAmount": 0.964506
+        },
+        {
+          "frame": 11,
+          "seconds": 0.458333,
+          "gestureAmount": 0.994912
+        },
+        {
+          "frame": 12,
+          "seconds": 0.5,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 13,
+          "seconds": 0.541667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 14,
+          "seconds": 0.583333,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 15,
+          "seconds": 0.625,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 16,
+          "seconds": 0.666667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 17,
+          "seconds": 0.708333,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 18,
+          "seconds": 0.75,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 19,
+          "seconds": 0.791667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 20,
+          "seconds": 0.833333,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 21,
+          "seconds": 0.875,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 22,
+          "seconds": 0.916667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 23,
+          "seconds": 0.958333,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 24,
+          "seconds": 1,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 25,
+          "seconds": 1.041667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 26,
+          "seconds": 1.083333,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 27,
+          "seconds": 1.125,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 28,
+          "seconds": 1.166667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 29,
+          "seconds": 1.208333,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 30,
+          "seconds": 1.25,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 31,
+          "seconds": 1.291667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 32,
+          "seconds": 1.333333,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 33,
+          "seconds": 1.375,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 34,
+          "seconds": 1.416667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 35,
+          "seconds": 1.458333,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 36,
+          "seconds": 1.5,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 37,
+          "seconds": 1.541667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 38,
+          "seconds": 1.583333,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 39,
+          "seconds": 1.625,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 40,
+          "seconds": 1.666667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 41,
+          "seconds": 1.708333,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 42,
+          "seconds": 1.75,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 43,
+          "seconds": 1.791667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 44,
+          "seconds": 1.833333,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 45,
+          "seconds": 1.875,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 46,
+          "seconds": 1.916667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 47,
+          "seconds": 1.958333,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 48,
+          "seconds": 2,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 49,
+          "seconds": 2.041667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 50,
+          "seconds": 2.083333,
+          "gestureAmount": 0.999432
+        },
+        {
+          "frame": 51,
+          "seconds": 2.125,
+          "gestureAmount": 0.994008
+        },
+        {
+          "frame": 52,
+          "seconds": 2.166667,
+          "gestureAmount": 0.979174
+        },
+        {
+          "frame": 53,
+          "seconds": 2.208333,
+          "gestureAmount": 0.95208
+        },
+        {
+          "frame": 54,
+          "seconds": 2.25,
+          "gestureAmount": 0.911383
+        },
+        {
+          "frame": 55,
+          "seconds": 2.291667,
+          "gestureAmount": 0.857043
+        },
+        {
+          "frame": 56,
+          "seconds": 2.333333,
+          "gestureAmount": 0.790123
+        },
+        {
+          "frame": 57,
+          "seconds": 2.375,
+          "gestureAmount": 0.712582
+        },
+        {
+          "frame": 58,
+          "seconds": 2.416667,
+          "gestureAmount": 0.62707
+        },
+        {
+          "frame": 59,
+          "seconds": 2.458333,
+          "gestureAmount": 0.536727
+        },
+        {
+          "frame": 60,
+          "seconds": 2.5,
+          "gestureAmount": 0.44498
+        },
+        {
+          "frame": 61,
+          "seconds": 2.541667,
+          "gestureAmount": 0.355336
+        },
+        {
+          "frame": 62,
+          "seconds": 2.583333,
+          "gestureAmount": 0.271179
+        },
+        {
+          "frame": 63,
+          "seconds": 2.625,
+          "gestureAmount": 0.195569
+        },
+        {
+          "frame": 64,
+          "seconds": 2.666667,
+          "gestureAmount": 0.131034
+        },
+        {
+          "frame": 65,
+          "seconds": 2.708333,
+          "gestureAmount": 0.079371
+        },
+        {
+          "frame": 66,
+          "seconds": 2.75,
+          "gestureAmount": 0.041436
+        },
+        {
+          "frame": 67,
+          "seconds": 2.791667,
+          "gestureAmount": 0.016947
+        },
+        {
+          "frame": 68,
+          "seconds": 2.833333,
+          "gestureAmount": 0.004275
+        },
+        {
+          "frame": 69,
+          "seconds": 2.875,
+          "gestureAmount": 0.000243
+        },
+        {
+          "frame": 70,
+          "seconds": 2.916667,
+          "gestureAmount": 0
+        },
+        {
+          "frame": 71,
+          "seconds": 2.958333,
+          "gestureAmount": 0
+        }
+      ]
+    },
+    {
+      "source": "public/assets/forest-heart/video-v3/magic.mp4",
+      "sourceSha256": "7ed3b8b1e42b3ad4e8e4cff392e19712d5567fd8b8886c6067621f06ff593701",
+      "reference": "public/assets/forest-heart/v3/elf-idle.webp",
+      "referenceSha256": "180c90f9c6850bada1ce9a6a346dea4dcf4881f4325b394240f0d3defedb601b",
+      "output": "public/assets/forest-heart/living-v14/magic.mp4",
+      "outputSha256": "2d168659551f015fb0b0cbdeffdcb3e917ae1d488d6eff3c05a184ea13f0dddf",
+      "frames": 72,
+      "fps": 24,
+      "seconds": 3,
+      "opencv": "4.12.0",
+      "method": "Existing forward motion, neutral endpoints, fold-free correspondence mesh and a single moving texture outside the boundary blend",
+      "entrySeconds": 0.5,
+      "returnStartSeconds": 2.05,
+      "neutralBySeconds": 2.9,
+      "identicalNeutralEndpointsBeforeEncoding": true,
+      "newGenerationRequests": 0,
+      "curve": [
+        {
+          "frame": 0,
+          "seconds": 0,
+          "gestureAmount": 0
+        },
+        {
+          "frame": 1,
+          "seconds": 0.041667,
+          "gestureAmount": 0.005088
+        },
+        {
+          "frame": 2,
+          "seconds": 0.083333,
+          "gestureAmount": 0.035494
+        },
+        {
+          "frame": 3,
+          "seconds": 0.125,
+          "gestureAmount": 0.103516
+        },
+        {
+          "frame": 4,
+          "seconds": 0.166667,
+          "gestureAmount": 0.209877
+        },
+        {
+          "frame": 5,
+          "seconds": 0.208333,
+          "gestureAmount": 0.346619
+        },
+        {
+          "frame": 6,
+          "seconds": 0.25,
+          "gestureAmount": 0.5
+        },
+        {
+          "frame": 7,
+          "seconds": 0.291667,
+          "gestureAmount": 0.653381
+        },
+        {
+          "frame": 8,
+          "seconds": 0.333333,
+          "gestureAmount": 0.790123
+        },
+        {
+          "frame": 9,
+          "seconds": 0.375,
+          "gestureAmount": 0.896484
+        },
+        {
+          "frame": 10,
+          "seconds": 0.416667,
+          "gestureAmount": 0.964506
+        },
+        {
+          "frame": 11,
+          "seconds": 0.458333,
+          "gestureAmount": 0.994912
+        },
+        {
+          "frame": 12,
+          "seconds": 0.5,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 13,
+          "seconds": 0.541667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 14,
+          "seconds": 0.583333,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 15,
+          "seconds": 0.625,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 16,
+          "seconds": 0.666667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 17,
+          "seconds": 0.708333,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 18,
+          "seconds": 0.75,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 19,
+          "seconds": 0.791667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 20,
+          "seconds": 0.833333,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 21,
+          "seconds": 0.875,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 22,
+          "seconds": 0.916667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 23,
+          "seconds": 0.958333,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 24,
+          "seconds": 1,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 25,
+          "seconds": 1.041667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 26,
+          "seconds": 1.083333,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 27,
+          "seconds": 1.125,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 28,
+          "seconds": 1.166667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 29,
+          "seconds": 1.208333,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 30,
+          "seconds": 1.25,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 31,
+          "seconds": 1.291667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 32,
+          "seconds": 1.333333,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 33,
+          "seconds": 1.375,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 34,
+          "seconds": 1.416667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 35,
+          "seconds": 1.458333,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 36,
+          "seconds": 1.5,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 37,
+          "seconds": 1.541667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 38,
+          "seconds": 1.583333,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 39,
+          "seconds": 1.625,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 40,
+          "seconds": 1.666667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 41,
+          "seconds": 1.708333,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 42,
+          "seconds": 1.75,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 43,
+          "seconds": 1.791667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 44,
+          "seconds": 1.833333,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 45,
+          "seconds": 1.875,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 46,
+          "seconds": 1.916667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 47,
+          "seconds": 1.958333,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 48,
+          "seconds": 2,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 49,
+          "seconds": 2.041667,
+          "gestureAmount": 1
+        },
+        {
+          "frame": 50,
+          "seconds": 2.083333,
+          "gestureAmount": 0.999432
+        },
+        {
+          "frame": 51,
+          "seconds": 2.125,
+          "gestureAmount": 0.994008
+        },
+        {
+          "frame": 52,
+          "seconds": 2.166667,
+          "gestureAmount": 0.979174
+        },
+        {
+          "frame": 53,
+          "seconds": 2.208333,
+          "gestureAmount": 0.95208
+        },
+        {
+          "frame": 54,
+          "seconds": 2.25,
+          "gestureAmount": 0.911383
+        },
+        {
+          "frame": 55,
+          "seconds": 2.291667,
+          "gestureAmount": 0.857043
+        },
+        {
+          "frame": 56,
+          "seconds": 2.333333,
+          "gestureAmount": 0.790123
+        },
+        {
+          "frame": 57,
+          "seconds": 2.375,
+          "gestureAmount": 0.712582
+        },
+        {
+          "frame": 58,
+          "seconds": 2.416667,
+          "gestureAmount": 0.62707
+        },
+        {
+          "frame": 59,
+          "seconds": 2.458333,
+          "gestureAmount": 0.536727
+        },
+        {
+          "frame": 60,
+          "seconds": 2.5,
+          "gestureAmount": 0.44498
+        },
+        {
+          "frame": 61,
+          "seconds": 2.541667,
+          "gestureAmount": 0.355336
+        },
+        {
+          "frame": 62,
+          "seconds": 2.583333,
+          "gestureAmount": 0.271179
+        },
+        {
+          "frame": 63,
+          "seconds": 2.625,
+          "gestureAmount": 0.195569
+        },
+        {
+          "frame": 64,
+          "seconds": 2.666667,
+          "gestureAmount": 0.131034
+        },
+        {
+          "frame": 65,
+          "seconds": 2.708333,
+          "gestureAmount": 0.079371
+        },
+        {
+          "frame": 66,
+          "seconds": 2.75,
+          "gestureAmount": 0.041436
+        },
+        {
+          "frame": 67,
+          "seconds": 2.791667,
+          "gestureAmount": 0.016947
+        },
+        {
+          "frame": 68,
+          "seconds": 2.833333,
+          "gestureAmount": 0.004275
+        },
+        {
+          "frame": 69,
+          "seconds": 2.875,
+          "gestureAmount": 0.000243
+        },
+        {
+          "frame": 70,
+          "seconds": 2.916667,
+          "gestureAmount": 0
+        },
+        {
+          "frame": 71,
+          "seconds": 2.958333,
+          "gestureAmount": 0
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "moduleBuild": "Passed, immutable module manifest and active pointer agree",
+    "rtpGate": "Passed: 35 qualified profiles, 18 stake policies, 114 unchanged legacy entries",
+    "mathTests": {
+      "passed": 9
+    },
+    "serverWalletTests": {
+      "passed": 8
+    },
+    "finalBrowserTests": {
+      "passed": 5,
+      "failed": 0,
+      "runner": "Playwright Chrome, complete Royal host with connected chat, disposable local account/database",
+      "scenarios": [
+        "All three distinct video sources and scheduled gestures, pause for rules and reduced motion, mobile",
+        "Rendered living idle before and after the first gesture, all three gestures, opacity coverage",
+        "Native face shader has no eye donor, rules, context loss/restore, fresh field reactions, reopen and reduced motion",
+        "Choice, bonus, exact settlement, desktop/mobile, chat and reopen",
+        "Lost accepted response retries the same operation without repeated charge or award"
+      ]
+    },
+    "rendered": {
+      "nativeBeforeUniqueHashes": 12,
+      "nativeAfterUniqueHashes": 12,
+      "renderSize": [
+        447,
+        536
+      ],
+      "compositeFrames": 321,
+      "minDeepBodyAlpha": 251,
+      "alphaScale": 255,
+      "note": "Distinct framebuffer pixels at a constant canvas size confirm ongoing portrait movement. Deep-body alpha only checks for opacity dips at that sample; it is not a full perceptual or silhouette metric."
+    },
+    "timeline": {
+      "clip": null,
+      "heldClip": null,
+      "heldFrame": 3,
+      "phase": "standing",
+      "nextClip": "look",
+      "nextAtMs": 33475.4,
+      "episodeMs": 3000,
+      "standingMs": 6000,
+      "fadeMs": 640,
+      "history": [
+        {
+          "clip": "look",
+          "startMs": 6292.9,
+          "endMs": 9276.1
+        },
+        {
+          "clip": "focus",
+          "startMs": 15409.3,
+          "endMs": 18409.1
+        },
+        {
+          "clip": "magic",
+          "startMs": 24475.5,
+          "endMs": 27475.4
+        }
+      ],
+      "blend": 0,
+      "weights": {
+        "native": 1,
+        "held": 0,
+        "video": 0
+      },
+      "visible": false,
+      "frames": 311,
+      "draws": 384,
+      "suspended": false,
+      "failed": [],
+      "media": [
+        {
+          "clip": "look",
+          "paused": true,
+          "time": 3,
+          "ready": 4,
+          "muted": true,
+          "loop": false
+        },
+        {
+          "clip": "focus",
+          "paused": true,
+          "time": 3,
+          "ready": 4,
+          "muted": true,
+          "loop": false
+        },
+        {
+          "clip": "magic",
+          "paused": true,
+          "time": 3,
+          "ready": 4,
+          "muted": true,
+          "loop": false
+        }
+      ]
+    },
+    "visualReview": {
+      "method": "Inspected selected final RGBA preparation frames and a contact sheet from the actual full-host recording. Three gestures are visibly distinct; the new mesh avoids the previous duplicate outlines and torn correspondence candidate.",
+      "limitations": [
+        "Fine hair and finger shape remain inherited from generated sources and approximate correspondence.",
+        "End-frame constraints do not prove perfectly natural facial or anatomical motion. The original video eyelid movement still requires user review.",
+        "Head tilt and breathing are small illustrated deformations, not a skeletal character.",
+        "Physical mobile performance and subjective long-session comfort were not measured. In-app browser control was disabled, so the existing user tab was not refreshed automatically."
+      ]
+    }
+  },
+  "artifacts": {
+    "variation-v14-preview.mp4": {
+      "sha256": "3388e110e9812ef017bf319da1c469dd28da9fe41cfe252f4743ff442bf919c3",
+      "bytes": 4552807
+    },
+    "variation-v14-nod.webp": {
+      "sha256": "1d2456107acc804c816053e7d9de710aa34c6ecb2403ba7a845dc21efac9e723",
+      "bytes": 232442
+    },
+    "variation-v14-focus.webp": {
+      "sha256": "0f710a35b596bb37017f269b275d71bd98261bd269ee646e1f70c04991665de2",
+      "bytes": 231916
+    },
+    "variation-v14-magic.webp": {
+      "sha256": "40ac15440463f16404a9bf5358ddf62042310a6649949a01387f34052dc2360f",
+      "bytes": 230598
+    },
+    "variation-v14-mobile.webp": {
+      "sha256": "7bdca1ee8725319427bf4b19e089595fff0ecf45ecf0802bbc15078a7249ab7e",
+      "bytes": 68944
+    }
+  },
+  "unchanged": [
+    "probabilities",
+    "paytables",
+    "stakes",
+    "round protocol",
+    "wallet",
+    "audio score",
+    "catalogue availability"
+  ],
+  "research": "docs/game-feedback.md separates event correctness, artistic hypotheses and subjective quality. All timing and motion values here are local artistic choices, not universal perceptual thresholds."
+}

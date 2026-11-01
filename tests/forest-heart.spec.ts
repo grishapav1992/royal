@@ -79,7 +79,7 @@ async function wallet(page: Page) {
   });
 }
 
-test('one prepared gesture returns to a living idle and stops for rules and reduced motion', async ({page,roomPath}) => {
+test('three different gestures alternate with a living idle and stop for rules and reduced motion', async ({page,roomPath}) => {
   const errors: string[] = []; page.on('pageerror',error=>errors.push(error.message));
   await routeScenario(page,'win'); await enter(page,roomPath);
   const video = async () => (await state(page)).character.video;
@@ -87,8 +87,8 @@ test('one prepared gesture returns to a living idle and stops for rules and redu
   expect((await video()).clip).toBe('look');
   expect((await video()).media.every((media:any)=>media.muted&&!media.loop)).toBe(true);
   const source=await game(page).locator('video').evaluateAll(elements=>elements.map(element=>(element as HTMLVideoElement).currentSrc));
-  expect(source.some(url=>/\/game-modules\/studio-forest-heart\/versions\/[^/]+\/media\/forest-heart\/living-v13\/look\.mp4/.test(url))).toBe(true);
-  await page.screenshot({path:out+'/living-v13-first.png'});
+  expect(source.some(url=>/\/game-modules\/studio-forest-heart\/versions\/[^/]+\/media\/forest-heart\/living-v14\/look\.mp4/.test(url))).toBe(true);
+  await page.screenshot({path:out+'/living-v14-first.png'});
   await game(page).locator('[data-fh=spin]').click();
   await expect(game(page).locator('[data-fh=skip]')).toBeVisible();
   await expect.poll(async()=>(await video()).phase,{timeout:6000}).toBe('standing');
@@ -98,20 +98,27 @@ test('one prepared gesture returns to a living idle and stops for rules and redu
   expect(firstRest.blend).toBe(0);
   expect(firstRest.media.every((media:any)=>media.paused)).toBe(true);
   await expect(game(page).locator('.fh-character-canvas')).toHaveCSS('opacity','1');
-  await page.screenshot({path:out+'/living-v13-standing.png'});
+  await page.screenshot({path:out+'/living-v14-standing.png'});
   await page.waitForTimeout(1000);
   expect((await video()).history).toHaveLength(1);
-  await expect.poll(async()=>(await video()).clip,{timeout:10000}).toBe('look');
+  await expect.poll(async()=>(await video()).clip,{timeout:10000}).toBe('focus');
   await expect.poll(async()=>(await video()).phase).toBe('playing');
   await expect.poll(async()=>(await video()).blend).toBeGreaterThan(.95);
-  await page.screenshot({path:out+'/living-v13-second.png'});
+  await page.screenshot({path:out+'/living-v14-second.png'});
+  await expect.poll(async()=>(await video()).history.length,{timeout:15000}).toBe(3);
+  await expect.poll(async()=>(await video()).weights.video).toBeGreaterThan(.95);
+  await page.screenshot({path:out+'/living-v14-third.png'});
   await expect.poll(async()=>(await video()).phase,{timeout:6000}).toBe('standing');
   const cycle=await video();
-  expect(cycle.history.map((event:any)=>event.clip)).toEqual(['look','look']);
+  expect(cycle.history.map((event:any)=>event.clip)).toEqual(['look','focus','magic']);
   for(const event of cycle.history) { expect(event.endMs).toBeGreaterThan(event.startMs); expect(event.endMs-event.startMs).toBeLessThanOrEqual(3100); }
   for(let i=1;i<cycle.history.length;i++)expect(cycle.history[i].startMs-cycle.history[i-1].endMs).toBeGreaterThanOrEqual(6000);
   expect(cycle.media.every((media:any)=>media.paused)).toBe(true);
-  await writeFile(out+'/living-v13-timeline.json',JSON.stringify(cycle,null,2));
+  const urls=await game(page).locator('video').evaluateAll(elements=>elements.map(element=>(element as HTMLVideoElement).currentSrc));
+  expect(urls.every(url=>url.endsWith('.mp4'))).toBe(true);expect(new Set(urls).size).toBe(3);
+  expect((await state(page)).character.eyeAnimation).toBe('source-video-only');
+  await expect(game(page).locator('.fh-elf[data-pose=blink]')).toHaveCount(0);
+  await writeFile(out+'/living-v14-timeline.json',JSON.stringify(cycle,null,2));
   await game(page).locator('[data-fh=rules]').click();
   expect((await video()).blend).toBe(0);
   expect((await video()).media.every((media:any)=>media.paused)).toBe(true);
@@ -119,7 +126,7 @@ test('one prepared gesture returns to a living idle and stops for rules and redu
   expect((await video()).phase).toBe('standing');
   await page.setViewportSize({width:390,height:844}); await fit(game(page));
   await expect(page.locator('#chat-input')).toBeInViewport();
-  await page.screenshot({path:out+'/living-v13-mobile.png'});
+  await page.screenshot({path:out+'/living-v14-mobile.png'});
   await game(page).locator('[data-fh=settings]').click();
   await game(page).locator('[data-fh=motion]').check();
   await game(page).locator('[data-fh=close]').click();
@@ -174,6 +181,16 @@ test('living idle keeps moving before and after the neutral gesture without an o
   const after=rows.filter(r=>r.stage==='after');expect(after.length).toBeGreaterThanOrEqual(8);
   expect(new Set(after.map(r=>r.hash)).size).toBeGreaterThanOrEqual(3);
   expect(new Set(rows.map(r=>r.width+'x'+r.height)).size).toBe(1);
+  await expect.poll(async()=>(await video()).clip,{timeout:10000}).toBe('focus');
+  await expect.poll(async()=>(await video()).weights.video).toBeGreaterThan(.95);
+  await page.screenshot({path:out+'/living-v14-focus.png'});
+  await expect.poll(async()=>(await video()).history.length,{timeout:15000}).toBe(3);
+  await expect.poll(async()=>(await video()).weights.video).toBeGreaterThan(.95);
+  await page.screenshot({path:out+'/living-v14-magic.png'});
+  await expect.poll(async()=>(await video()).history[2].endMs,{timeout:6000}).toBeGreaterThan(0);
+  await expect.poll(async()=>(await video()).blend).toBe(0);
+  expect((await state(page)).character.blinks).toBe(0);
+  await expect(game(page).locator('.fh-elf[data-pose=blink]')).toHaveCount(0);
   const alpha=await game(page).locator('.fh-character-video').evaluate(c=>(c as any).__coverage as number[]);
   expect(alpha.length).toBeGreaterThan(20);expect(Math.min(...alpha)).toBeGreaterThanOrEqual(240);
   await page.screenshot({path:out+'/living-idle-after.png'});
@@ -182,7 +199,7 @@ test('living idle keeps moving before and after the neutral gesture without an o
 
 test('unavailable character videos preserve the existing elf and playable controls', async({page,roomPath})=>{
   const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
-  await page.route('**/living-v13/*.mp4',route=>route.abort());
+  await page.route('**/living-v*/*.mp4',route=>route.abort());
   await enter(page,roomPath);
   await expect.poll(async()=>(await state(page)).character.video.failed,{timeout:12000}).toContain('look');
   expect((await state(page)).character.video.blend).toBe(0);
@@ -418,16 +435,21 @@ test('a held root stays visible and fixed while the next bonus field is assemble
   await writeFile(out+'/held-field.json',JSON.stringify({held,frames},null,2));
 });
 
-test('the elf blinks and renders local movement, stops for rules, and reacts only to fresh positive results', async ({page,roomPath}) => {
-  await page.route('**/living-v13/*.mp4',route=>route.abort());
+test('the native face stays intact while idle motion, rules and fresh reactions work', async ({page,roomPath}) => {
+  await page.route('**/living-v*/*.mp4',route=>route.abort());
   await routeScenario(page,'win'); await enter(page,roomPath);
   const initial=(await state(page)).character;
   expect(initial.renderer).toBe('webgl');expect(initial.events).toEqual([]);
   const canvas=game(page).locator('.fh-character');
   const idle=await canvas.screenshot();
-  await expect.poll(async()=>(await state(page)).character.blink,{timeout:12000,intervals:[30]}).toBeGreaterThan(.4);
-  const blink=await canvas.screenshot();expect(blink.equals(idle)).toBe(false);
-  await writeFile(out+'/elf-blink.png',blink);
+  await page.waitForTimeout(600);
+  const moving=await canvas.screenshot();expect(moving.equals(idle)).toBe(false);
+  expect((await state(page)).character.eyeAnimation).toBe('source-video-only');
+  expect((await state(page)).character.blinks).toBe(0);
+  await expect(game(page).locator('.fh-elf[data-pose=blink]')).toHaveCount(0);
+  const shaders=await game(page).locator('.fh-character-canvas').evaluate(canvas=>{const gl=(canvas as HTMLCanvasElement).getContext('webgl')!,program=gl.getParameter(gl.CURRENT_PROGRAM);return(gl.getAttachedShaders(program)||[]).map(shader=>gl.getShaderSource(shader)||'').join('\n');});
+  expect(shaders).not.toContain('uEyes');expect(shaders).not.toContain('uBlink');
+  await writeFile(out+'/native-face.png',moving);
   await game(page).locator('[data-fh=rules]').click();
   const stopped=(await state(page)).character;expect(stopped.running).toBe(false);expect(stopped.blink).toBe(0);
   await page.waitForTimeout(300);
