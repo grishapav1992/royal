@@ -1,16 +1,14 @@
-import { forestIdleMotion } from './ForestIdleMotion';
-
 type Clip = 'look' | 'focus' | 'magic';
 const clips: Clip[] = ['look', 'focus', 'magic'];
 const sources: Record<Clip, string> = {
-  look: '/assets/forest-heart/living-v14/look.mp4',
-  focus: '/assets/forest-heart/living-v14/focus.mp4',
-  magic: '/assets/forest-heart/living-v14/magic.mp4',
+  look: '/assets/forest-heart/video-v3/look.mp4',
+  focus: '/assets/forest-heart/video-v3/focus.mp4',
+  magic: '/assets/forest-heart/video-v3/magic.mp4',
 };
 const episodeMs = 3000, standingMs = 6000, fadeMs = 640;
 const smooth = (value: number) => { const t = Math.max(0, Math.min(1, value)); return t * t * (3 - 2 * t); };
 
-/** Three neutral-to-neutral gestures share one living idle and premultiplied compositor. */
+/** Three source gestures use unmodified coordinates and a premultiplied compositor. */
 export class ForestVideo {
   private canvas: HTMLCanvasElement;
   private videos = new Map<Clip, HTMLVideoElement>();
@@ -23,8 +21,6 @@ export class ForestVideo {
   private heldTexture?: WebGLTexture;
   private portraitTexture?: WebGLTexture;
   private weightsLocation: WebGLUniformLocation | null = null;
-  private timeLocation: WebGLUniformLocation | null = null;
-  private motionLocation: WebGLUniformLocation | null = null;
   private current: Clip | null = null;
   private heldClip: Clip | null = null;
   private heldActive = false;
@@ -83,7 +79,7 @@ export class ForestVideo {
       };
       const vs = shader(gl.VERTEX_SHADER, 'attribute vec2 p; varying vec2 uv; void main(){uv=vec2((p.x+1.)*.5,(1.-p.y)*.5);gl_Position=vec4(p,0.,1.);}');
       // Add premultiplied colors once, rather than fading two DOM layers over each other.
-      const fs = shader(gl.FRAGMENT_SHADER, `precision mediump float; varying vec2 uv; uniform sampler2D portrait; uniform sampler2D held; uniform sampler2D moving; uniform vec3 weights; uniform float time; uniform float motion; ${forestIdleMotion} vec4 unpackFrame(sampler2D image){vec2 p=uv-motion*forestIdleShift(uv,time);vec3 rgb=texture2D(image,vec2(p.x*.5,p.y)).rgb;float a=texture2D(image,vec2(.5+p.x*.5,p.y)).r;return vec4(rgb*a,a);} void main(){gl_FragColor=texture2D(portrait,uv)*weights.x+unpackFrame(held)*weights.y+unpackFrame(moving)*weights.z;}`);
+      const fs = shader(gl.FRAGMENT_SHADER, 'precision mediump float; varying vec2 uv; uniform sampler2D portrait; uniform sampler2D held; uniform sampler2D moving; uniform vec3 weights; vec4 unpackFrame(sampler2D image){vec3 rgb=texture2D(image,vec2(uv.x*.5,uv.y)).rgb;float a=texture2D(image,vec2(.5+uv.x*.5,uv.y)).r;return vec4(rgb*a,a);} void main(){gl_FragColor=texture2D(portrait,uv)*weights.x+unpackFrame(held)*weights.y+unpackFrame(moving)*weights.z;}');
       this.program = gl.createProgram()!;
       gl.attachShader(this.program, vs); gl.attachShader(this.program, fs); gl.linkProgram(this.program);
       gl.deleteShader(vs); gl.deleteShader(fs);
@@ -105,7 +101,6 @@ export class ForestVideo {
       };
       this.portraitTexture = texture(0, 'portrait'); this.heldTexture = texture(1, 'held'); this.currentTexture = texture(2, 'moving');
       this.weightsLocation = gl.getUniformLocation(this.program, 'weights');
-      this.timeLocation = gl.getUniformLocation(this.program, 'time'); this.motionLocation = gl.getUniformLocation(this.program, 'motion');
       gl.viewport(0, 0, this.canvas.width, this.canvas.height);
       return true;
     } catch { this.release(); return false; }
@@ -146,7 +141,7 @@ export class ForestVideo {
     this.host.dataset.video = visible ? this.current ?? 'held-' + this.heldClip : 'standing';
   }
 
-  update(pose: string, elapsed: number, portrait: HTMLCanvasElement, motion: number) {
+  update(pose: string, elapsed: number, portrait: HTMLCanvasElement) {
     if (!this.alive || this.suspended || this.host.ownerDocument.hidden) return;
     this.last = elapsed;
     if (this.resumePending) { this.nextAt = elapsed + standingMs; this.resumePending = false; }
@@ -198,7 +193,6 @@ export class ForestVideo {
       gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, this.heldTexture!);
       gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D, this.currentTexture!);
       gl.uniform3f(this.weightsLocation, this.weights.native, held, moving);
-      gl.uniform1f(this.timeLocation, elapsed / 1000); gl.uniform1f(this.motionLocation, motion);
       // A held frame is redrawn too, so browser composition never exposes a cleared buffer.
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); this.draws++; this.presentation(true);
     } catch { if (this.current) this.failed.add(this.current); this.presentation(false); }

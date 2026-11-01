@@ -1,5 +1,7 @@
 """Prepare one existing packed-alpha gesture with a common neutral entry and exit.
 
+Rejected v14 experiment: geometric morphing introduced visible deformation.
+The active client uses the original video-v3 files. Retained for reproduction only.
 Development-only asset tool. Requires numpy, opencv-python-headless and ffmpeg.
 No generation API, credentials or game mathematics are used.
 """

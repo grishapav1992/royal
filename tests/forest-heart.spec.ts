@@ -87,8 +87,8 @@ test('three different gestures alternate with a living idle and stop for rules a
   expect((await video()).clip).toBe('look');
   expect((await video()).media.every((media:any)=>media.muted&&!media.loop)).toBe(true);
   const source=await game(page).locator('video').evaluateAll(elements=>elements.map(element=>(element as HTMLVideoElement).currentSrc));
-  expect(source.some(url=>/\/game-modules\/studio-forest-heart\/versions\/[^/]+\/media\/forest-heart\/living-v14\/look\.mp4/.test(url))).toBe(true);
-  await page.screenshot({path:out+'/living-v14-first.png'});
+  expect(source.some(url=>/\/game-modules\/studio-forest-heart\/versions\/[^/]+\/media\/forest-heart\/video-v3\/look\.mp4/.test(url))).toBe(true);
+  await page.screenshot({path:out+'/living-v15-first.png'});
   await game(page).locator('[data-fh=spin]').click();
   await expect(game(page).locator('[data-fh=skip]')).toBeVisible();
   await expect.poll(async()=>(await video()).phase,{timeout:6000}).toBe('standing');
@@ -98,16 +98,16 @@ test('three different gestures alternate with a living idle and stop for rules a
   expect(firstRest.blend).toBe(0);
   expect(firstRest.media.every((media:any)=>media.paused)).toBe(true);
   await expect(game(page).locator('.fh-character-canvas')).toHaveCSS('opacity','1');
-  await page.screenshot({path:out+'/living-v14-standing.png'});
+  await page.screenshot({path:out+'/living-v15-standing.png'});
   await page.waitForTimeout(1000);
   expect((await video()).history).toHaveLength(1);
   await expect.poll(async()=>(await video()).clip,{timeout:10000}).toBe('focus');
   await expect.poll(async()=>(await video()).phase).toBe('playing');
   await expect.poll(async()=>(await video()).blend).toBeGreaterThan(.95);
-  await page.screenshot({path:out+'/living-v14-second.png'});
+  await page.screenshot({path:out+'/living-v15-second.png'});
   await expect.poll(async()=>(await video()).history.length,{timeout:15000}).toBe(3);
   await expect.poll(async()=>(await video()).weights.video).toBeGreaterThan(.95);
-  await page.screenshot({path:out+'/living-v14-third.png'});
+  await page.screenshot({path:out+'/living-v15-third.png'});
   await expect.poll(async()=>(await video()).phase,{timeout:6000}).toBe('standing');
   const cycle=await video();
   expect(cycle.history.map((event:any)=>event.clip)).toEqual(['look','focus','magic']);
@@ -118,7 +118,7 @@ test('three different gestures alternate with a living idle and stop for rules a
   expect(urls.every(url=>url.endsWith('.mp4'))).toBe(true);expect(new Set(urls).size).toBe(3);
   expect((await state(page)).character.eyeAnimation).toBe('source-video-only');
   await expect(game(page).locator('.fh-elf[data-pose=blink]')).toHaveCount(0);
-  await writeFile(out+'/living-v14-timeline.json',JSON.stringify(cycle,null,2));
+  await writeFile(out+'/living-v15-timeline.json',JSON.stringify(cycle,null,2));
   await game(page).locator('[data-fh=rules]').click();
   expect((await video()).blend).toBe(0);
   expect((await video()).media.every((media:any)=>media.paused)).toBe(true);
@@ -126,7 +126,7 @@ test('three different gestures alternate with a living idle and stop for rules a
   expect((await video()).phase).toBe('standing');
   await page.setViewportSize({width:390,height:844}); await fit(game(page));
   await expect(page.locator('#chat-input')).toBeInViewport();
-  await page.screenshot({path:out+'/living-v14-mobile.png'});
+  await page.screenshot({path:out+'/living-v15-mobile.png'});
   await game(page).locator('[data-fh=settings]').click();
   await game(page).locator('[data-fh=motion]').check();
   await game(page).locator('[data-fh=close]').click();
@@ -141,7 +141,7 @@ test('three different gestures alternate with a living idle and stop for rules a
   expect(errors).toEqual([]);
 });
 
-test('living idle keeps moving before and after the neutral gesture without an opacity dip',async({page,roomPath})=>{
+test('living idle moves around source video without an opacity dip or extra video motion',async({page,roomPath})=>{
   await enter(page,roomPath);
   const video=async()=>(await state(page)).character.video;
   await game(page).locator('.fh-character-canvas').evaluate(canvas=>{
@@ -170,6 +170,27 @@ test('living idle keeps moving before and after the neutral gesture without an o
   });
   await expect.poll(async()=>(await video()).weights.video).toBeGreaterThan(.95);
   await page.screenshot({path:out+'/living-idle-gesture.png'});
+  await expect.poll(async()=>(await video()).weights.video).toBe(1);
+  await game(page).locator('video').evaluateAll(elements=>{
+    const media=elements.find(element=>!(element as HTMLVideoElement).paused) as HTMLVideoElement;
+    (media as any).__originalPlay=media.play;media.play=async()=>{};media.pause();
+  });
+  await page.waitForTimeout(100);
+  await game(page).locator('.fh-character-video').evaluate(canvas=>{
+    const gl=(canvas as HTMLCanvasElement).getContext('webgl')!,draw=gl.drawArrays.bind(gl);
+    (canvas as any).__stationaryFrames=[];
+    gl.drawArrays=(...args:Parameters<WebGLRenderingContext['drawArrays']>)=>{
+      draw(...args);const frames=(canvas as any).__stationaryFrames;if(frames.length>=6)return;
+      const c=canvas as HTMLCanvasElement,pixels=new Uint8Array(c.width*c.height*4);gl.readPixels(0,0,c.width,c.height,gl.RGBA,gl.UNSIGNED_BYTE,pixels);
+      let hash=2166136261;for(let i=0;i<pixels.length;i++)hash=Math.imul(hash^pixels[i],16777619)>>>0;
+      frames.push({hash,at:performance.now()});
+    };
+  });
+  await expect.poll(async()=>game(page).locator('.fh-character-video').evaluate(c=>(c as any).__stationaryFrames.length)).toBe(6);
+  const stationary=await game(page).locator('.fh-character-video').evaluate(c=>(c as any).__stationaryFrames as {hash:number;at:number}[]);
+  expect(new Set(stationary.map(frame=>frame.hash)).size).toBe(1);
+  expect(stationary.at(-1)!.at-stationary[0].at).toBeGreaterThan(100);
+  await game(page).locator('video').evaluateAll(elements=>{for(const media of elements as HTMLVideoElement[])if((media as any).__originalPlay){media.play=(media as any).__originalPlay;delete(media as any).__originalPlay;}});
   await expect.poll(async()=>(await video()).history[0]?.endMs,{timeout:6000}).toBeGreaterThan(0);
   await expect.poll(async()=>(await video()).blend).toBe(0);
   expect((await video()).heldClip).toBe(null);
@@ -183,10 +204,10 @@ test('living idle keeps moving before and after the neutral gesture without an o
   expect(new Set(rows.map(r=>r.width+'x'+r.height)).size).toBe(1);
   await expect.poll(async()=>(await video()).clip,{timeout:10000}).toBe('focus');
   await expect.poll(async()=>(await video()).weights.video).toBeGreaterThan(.95);
-  await page.screenshot({path:out+'/living-v14-focus.png'});
+  await page.screenshot({path:out+'/living-v15-focus.png'});
   await expect.poll(async()=>(await video()).history.length,{timeout:15000}).toBe(3);
   await expect.poll(async()=>(await video()).weights.video).toBeGreaterThan(.95);
-  await page.screenshot({path:out+'/living-v14-magic.png'});
+  await page.screenshot({path:out+'/living-v15-magic.png'});
   await expect.poll(async()=>(await video()).history[2].endMs,{timeout:6000}).toBeGreaterThan(0);
   await expect.poll(async()=>(await video()).blend).toBe(0);
   expect((await state(page)).character.blinks).toBe(0);
@@ -194,12 +215,12 @@ test('living idle keeps moving before and after the neutral gesture without an o
   const alpha=await game(page).locator('.fh-character-video').evaluate(c=>(c as any).__coverage as number[]);
   expect(alpha.length).toBeGreaterThan(20);expect(Math.min(...alpha)).toBeGreaterThanOrEqual(240);
   await page.screenshot({path:out+'/living-idle-after.png'});
-  await writeFile(out+'/living-idle-rendered.json',JSON.stringify({nativeFrames:rows,minOpaqueAlpha:Math.min(...alpha),compositeFrames:alpha.length,video:await video()},null,2));
+  await writeFile(out+'/living-idle-rendered.json',JSON.stringify({nativeFrames:rows,stationaryVideoFrames:stationary,minOpaqueAlpha:Math.min(...alpha),compositeFrames:alpha.length,video:await video()},null,2));
 });
 
 test('unavailable character videos preserve the existing elf and playable controls', async({page,roomPath})=>{
   const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
-  await page.route('**/living-v*/*.mp4',route=>route.abort());
+  await page.route('**/video-v3/*.mp4',route=>route.abort());
   await enter(page,roomPath);
   await expect.poll(async()=>(await state(page)).character.video.failed,{timeout:12000}).toContain('look');
   expect((await state(page)).character.video.blend).toBe(0);
@@ -436,7 +457,7 @@ test('a held root stays visible and fixed while the next bonus field is assemble
 });
 
 test('the native face stays intact while idle motion, rules and fresh reactions work', async ({page,roomPath}) => {
-  await page.route('**/living-v*/*.mp4',route=>route.abort());
+  await page.route('**/video-v3/*.mp4',route=>route.abort());
   await routeScenario(page,'win'); await enter(page,roomPath);
   const initial=(await state(page)).character;
   expect(initial.renderer).toBe('webgl');expect(initial.events).toEqual([]);

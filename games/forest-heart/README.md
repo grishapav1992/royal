@@ -1,4 +1,16 @@
-# Forest Heart client 1.14 (local experiment)
+# Forest Heart client 1.15 (local experiment)
+
+## Remove the rejected geometric processing 1.15
+
+The user rejected revision 1.14: its motion looked unstable. That version combined an optical-flow mesh near the endpoints with another animated deformation over decoded video. Automated schedule and opacity checks did not establish natural movement, and the earlier visual review was insufficient.
+
+The active client now plays the existing video-v3 files with unmodified texture coordinates. It does not load the living-v14 files, morph their silhouettes, or animate video UVs. The native portrait retains only gentle breathing, hair and cloth at 25% idle intensity, with no added head rotation or shoulder drift. The artificial eye overlay remains removed. Three distinct source gestures and six-second quiet intervals remain.
+
+This correction removes our added wobble. It does not turn the generated sources into seamless loops: their final faces, hands and poses differ from the approved starting image. The existing premultiplied fade still joins different images and can reveal that mismatch. No claim of a natural or exact pose match is made. The three-second files also retain the previously documented 5/3 time compression of the paid five-second sources. No new generation request is part of this correction.
+
+The rendered regression check pauses a decoded video frame while the application clock keeps advancing. Six subsequent composite frames must have identical full-pixel hashes, proving that the renderer does not add time-varying motion to those video pixels. Separate checks retain native idle movement, three-gesture scheduling, failed-media fallback and the complete host with chat. These are technical checks; user assessment of the source motion remains necessary.
+
+The following sections describe historical experiments. Revision 1.14 was rejected and is outside active playback.
 
 ## Intact face and varied living gestures 1.14
 
