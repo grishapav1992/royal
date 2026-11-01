@@ -1,6 +1,6 @@
 {
   "release": "layout-priorities-20261101-v1",
-  "productionCommit": "455e48100e833bee9f8d79f38f1ee7214dad8e32",
+  "productionCommit": "4eb47d5d7b29622453616888d24f62db9e26245b",
   "featureCommit": "831ede0765e7bb0fe323bd52290657497da370a2",
   "changedSources": [
     "games/caramel-carnival/package.json",
@@ -72,7 +72,8 @@
     "src/ui/slotKit/SlotPriorityLayout.ts",
     "src/ui/slotKit/SlotSettings.ts",
     "src/ui/slotKit/slot-priorities.css",
-    "src/ui/volcanic-plinko-priorities.css"
+    "src/ui/volcanic-plinko-priorities.css",
+    "games/girlhub/entry.ts"
   ],
   "expectedSources": {
     "games/caramel-carnival/package.json": "d261e5e60713454f13e59653dcc009c6e564750fa2de15521408e889cd719c54",
@@ -144,7 +145,8 @@
     "src/ui/slotKit/SlotPriorityLayout.ts": "947932d761ede2150900d9fd0278a2560b032aec8c9372f0085b717f1af796f2",
     "src/ui/slotKit/SlotSettings.ts": "6b8ba3cb19aead9fa589ad65d4cd563fa3f3d6600384bdbec8f7e24072dd149b",
     "src/ui/slotKit/slot-priorities.css": "05266abd09f5f3cbfbe91dde79ac8188f74b6d333bc2acb9e3884530f4aaee5f",
-    "src/ui/volcanic-plinko-priorities.css": "04e76e4ef4afe06b5950b83179abdecd8691ac9ab5660fe9ad916b5fb8801c6b"
+    "src/ui/volcanic-plinko-priorities.css": "04e76e4ef4afe06b5950b83179abdecd8691ac9ab5660fe9ad916b5fb8801c6b",
+    "games/girlhub/entry.ts": "e2c0986f796a3dcec167019e5f7c674580785e0938dcadb9f35f3eddb724d6d0"
   },
   "moduleGames": [
     "caramel-carnival",
@@ -188,5 +190,8 @@
   ],
   "addedGames": [],
   "restoredGames": [],
-  "backendChanges": []
+  "backendChanges": [],
+  "compatibilitySources": [
+    "games/girlhub/entry.ts"
+  ]
 }

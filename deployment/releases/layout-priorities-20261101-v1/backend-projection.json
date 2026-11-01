@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "productionCommit": "455e48100e833bee9f8d79f38f1ee7214dad8e32",
+  "productionCommit": "4eb47d5d7b29622453616888d24f62db9e26245b",
   "changedSources": [
     "src/i18n/en.ts",
     "server/guards.ts"
