@@ -31,6 +31,16 @@ patchLines('src/ui/LastExitUI.ts',line=>line
  .replace("if(active)this.stake=s.stakeUnits;stake.value=this.stake;stake.disabled=!!active||blocked;","if(active)this.stake=s.stakeUnits;this.stake=syncStakeSelect(stake,this.stake,GAME_STAKE_UNITS,!!active||blocked);")
  .replace('сумма выплаты до 0,01 USDT.','доли цента учитываются при завершении заезда.').replace('and payouts to 0.01 USDT.','and fractional cents are included when the run ends.')
  .replace('<label><input type="checkbox" data-reduced','$'+'{stakeRulesHtml()}<label><input type="checkbox" data-reduced'));
+const jackie=JSON.parse(read(feature,'deployment/releases/jackie-music-20261030-v1/verification.json'));
+assert.equal(before.moduleFiles['/opt/royal-game-modules/original-jackie-chan/active.json'],jackie.activeSha256);
+for(const n of git(['ls-tree','-r','--name-only',jackie.sourceCommit,'--','games/jackie-chan']).toString().trim().split('\n'))if(/\.(?:ts|css|json)$/.test(n))add(n,jackie.sourceCommit);
+patchLines('games/jackie-chan/JackieUI.ts',line=>line
+ .replace("import { expansionClient as client }", "import {GAME_STAKE_UNITS as JACKIE_BETS} from '../../src/shared/gameStakes';\nimport {syncStakeSelect} from '../../src/ui/stakeSelection';\nimport {stakeRulesHtml} from '../../src/ui/stakeRules';\nimport { expansionClient as client }")
+ .replace('JACKIE_GAME, JACKIE_BETS,','JACKIE_GAME,').replaceAll("stake='1000'","stake='10'")
+ .replace("this.find<HTMLSelectElement>('[data-stake]').value=this.stake;","this.stake=syncStakeSelect(this.find<HTMLSelectElement>('[data-stake]'),this.stake,JACKIE_BETS,active||busy);")
+ .replace('выплаты округляются вниз до 0,01 USDT','доли цента учитываются при завершении серии')
+ .replace('returns round down to 0.01 USDT','fractional cents are included when the series ends')
+ .replace('<h3>'+ '$' + "{t('Музыка локаций','Location music')}", '$'+'{stakeRulesHtml()}<h3>'+'$'+"{t('Музыка локаций','Location music')}"));
 patchLines('src/modules/GameModuleCatalog.ts',line=>line.includes("gameId: 'studio-caribbean-treasures'")?line.replace('rulesVersion: 1','rulesVersion: 2'):line);
 const moduleAssetSources=['public/assets/cat/walk-v3-frames.json','public/assets/caribbean-treasures/audio/credits.json','public/assets/caribbean-treasures/audio/manifest.json','public/assets/caribbean-treasures/crew/manifest.json'];
 for(const n of moduleAssetSources){let found=false;for(const c of git(['log','--all','--format=%H','--',n]).toString().trim().split('\n')){if(!c)continue;let bytes;try{bytes=read(c,n);}catch{continue;}if(hash(bytes)===before.sourceLF[n]){add(n,c);found=true;break;}}assert(found,'Unpreserved production media: '+n);}
