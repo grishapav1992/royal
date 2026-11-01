@@ -117,7 +117,7 @@ export class SocialUI {
         this.messages.clear(); this.gameChat.reset(); this.list.replaceChildren(this.outbox); this.media.prune(); this.media.close(false);
         this.showLatest();
         const url = new URL(location.href); url.searchParams.set('room', roomId); history.replaceState({ royalJoinedRoom: roomId }, '', url);
-        this.scene.enableOnline({ inputs: inputs => this.client.send('inputs',inputs), move: (x,y) => this.client.send('move',{x,y}), target: (x,y) => this.client.send('target',{x,y}), stop: () => this.client.send('stop'), sit: seat => this.client.send('sit',seat), stand: () => this.client.send('stand'), drink: drink => this.client.send('drink',drink), cat: action => this.client.send('cat',action), cabinetPlay: id => this.client.claimCabinet(id), cabinetLeave: () => this.client.releaseCabinet(), cabinetReaction: (id,reaction) => this.client.send('cabinet-reaction',{id,reaction}) });
+        this.scene.enableOnline({ elevator: target => this.client.travelByElevator(target), inputs: inputs => this.client.send('inputs',inputs), move: (x,y) => this.client.send('move',{x,y}), target: (x,y) => this.client.send('target',{x,y}), stop: () => this.client.send('stop'), sit: seat => this.client.send('sit',seat), stand: () => this.client.send('stand'), drink: drink => this.client.send('drink',drink), cat: action => this.client.send('cat',action), cabinetPlay: id => this.client.claimCabinet(id), cabinetLeave: () => this.client.releaseCabinet(), cabinetReaction: (id,reaction) => this.client.send('cabinet-reaction',{id,reaction}) });
         this.dialog.close(); this.scene.setLocked(false); prefetchDemoGames();
         document.querySelector('.profile-name')!.firstChild!.textContent = this.auth.account?.name || translateText('Игрок');
       },
@@ -174,7 +174,7 @@ export class SocialUI {
     this.statusLabel.dataset.status = status;
     this.chatAvailability();
     this.invite.disabled = status !== 'connected';
-    if (status === 'reconnecting' || status === 'disconnected') { this.scene.cancelMovement(); this.scene.setLocked(true); }
+    if (status === 'reconnecting' || status === 'disconnected') { this.scene.onElevatorCancel(); this.scene.cancelMovement(); this.scene.setLocked(true); }
     if (status === 'connected' && !document.querySelector('dialog[open]')) this.scene.setLocked(false);
     if (status === 'disconnected' && this.roomId && !this.dialog.open && !this.security.active) {
       document.querySelector<HTMLDialogElement>('#mini-dialog')?.close();

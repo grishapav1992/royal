@@ -4,6 +4,7 @@ import { CLUB_ZONES, ARCADE_OVERVIEW_SIZE, LOUNGES } from '../shared/clubLayout'
 import { BAR_SOLID } from '../shared/furniture';
 import { ACTIVITIES } from '../shared/activities';
 import { HALLS, hallLinks } from '../shared/world';
+import { elevatorDock } from '../shared/elevator';
 import { cabinetsInHall } from '../shared/cabinets';
 import { isCardGame } from '../shared/cardTables';
 import { WORLD, FLOOR } from '../shared/clubGeometry';
@@ -61,6 +62,7 @@ export class ClubMap {
       }
     }
     for(const link of hallLinks(state.hall)){ctx.fillStyle='#73d4ca';ctx.fillRect(link.door.entry.x-35,link.door.entry.y-12,70,24);}
+    const lift=elevatorDock(state.hall);ctx.fillStyle='#e2c17c';ctx.fillRect(lift.entry.x-40,lift.entry.y-20,80,40);
     for(const guest of state.guests){ctx.fillStyle='#8da49b';ctx.beginPath();ctx.arc(guest.x,guest.y,10,0,Math.PI*2);ctx.fill();}
     const view=state.view;ctx.strokeStyle='#ece2c280';ctx.lineWidth=6;ctx.strokeRect(view.x,view.y,view.width/view.zoom,view.height/view.zoom);
     ctx.fillStyle='#f7d26a';ctx.beginPath();ctx.arc(state.x,state.y,18,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#332936';ctx.lineWidth=5;ctx.stroke();ctx.restore();

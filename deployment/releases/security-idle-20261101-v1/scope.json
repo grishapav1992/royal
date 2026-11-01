@@ -1,0 +1,11 @@
+{
+  "release": "security-idle-20261101-v1",
+  "productionCommit": "455e48100e833bee9f8d79f38f1ee7214dad8e32",
+  "changedSources": [
+    "src/network/LobbyClient.ts"
+  ],
+  "addedGames": [],
+  "restoredGames": [],
+  "backendChanges": [],
+  "moduleChanges": []
+}
