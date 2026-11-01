@@ -161,6 +161,9 @@ test('priority layout keeps the field and actions visible across phone orientati
    if(width===393||width===852||width===1440)await page.screenshot({path:out+`/priority-${width}x${height}.png`});
   });
  }
+ await page.setViewportSize({width:320,height:568});await page.locator('[data-ct-action=settings]').click();
+ expect((await page.locator('[data-ct-stake]').boundingBox())!.width).toBeGreaterThanOrEqual(64);
+ await page.keyboard.press('Escape');
  await page.setViewportSize({width:393,height:852});await page.locator('[data-ct-action=settings]').click();
  await expect(page.locator('.ct-settings-modal')).toBeVisible();
  await page.locator('[data-ct-lines]').selectOption('5');await page.locator('[data-ct-stake]').selectOption('200');

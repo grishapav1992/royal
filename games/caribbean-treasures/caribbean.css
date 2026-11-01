@@ -139,6 +139,9 @@
 .ct-modal .ct-tuning>button{min-height:44px;margin:0}
 .ct-auto-label{margin-top:16px}.ct-auto-label select{display:block;width:100%;margin-top:6px}
 .ct-settings-modal .ct-modal-close{position:sticky;bottom:0;min-height:44px}
+@container caribbean (max-width:450px){
+ .ct-settings-modal .ct-tuning{grid-template-columns:minmax(0,1fr)}
+}
 .ct-console>.ct-choice{grid-column:1/-1}
 
 /* Compact scenes spend their space on the field. Real controls move into the options sheet. */
