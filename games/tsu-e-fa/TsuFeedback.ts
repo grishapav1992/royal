@@ -10,6 +10,7 @@ export class TsuFeedback {
   private beat = -1;
   private beatRound = 0;
   private blocked = false;
+  private serverPaused = false;
   private revealAt = 0;
   private oldScore: [number, number] = [0, 0];
   constructor(private output: Output) {}
@@ -23,10 +24,14 @@ export class TsuFeedback {
     }
     const previous = this.previous;
     if (s.duel?.stage === 'countdown' && this.beatRound !== round) { this.beat = -1; this.beatRound = round; }
-    const blocked = !active || !!c.disconnected.length || !!s.duel?.paused || !this.output.available();
+    const serverPaused = !!c.disconnected.length || !!s.duel?.paused;
+    const blocked = !active || serverPaused || !this.output.available();
+    if (this.serverPaused && !serverPaused) this.beat = Math.min(this.beat, elapsedBeat);
     if (blocked) {
       if (!this.blocked) this.output.cancel();
-      this.beat = elapsedBeat; this.revealAt = 0;
+      if (!serverPaused) this.beat = elapsedBeat;
+      else if (!this.serverPaused) this.beat = Math.min(this.beat, elapsedBeat);
+      this.revealAt = 0;
     } else {
       if (c.status === 'arriving' && ready && !previous.ready || c.status === 'playing' && next.locked && (!previous.locked || previous.round !== round)) this.output.play('lock', now);
       if (c.status === 'playing' && previous.status === 'arriving') this.output.play('ready', now);
@@ -46,7 +51,7 @@ export class TsuFeedback {
         }
       }
     }
-    this.blocked = blocked; this.previous = next;
+    this.serverPaused = serverPaused; this.blocked = blocked; this.previous = next;
     return now < this.revealAt;
   }
   score(current: [number, number], now: number) { return now < this.revealAt ? this.oldScore : current; }

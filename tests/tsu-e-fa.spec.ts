@@ -94,6 +94,20 @@ test('real lost connection freezes selection and countdown; reconnect resumes th
   }finally{await c.close();}
 });
 
+test('final settlement closes an unconfirmed surrender dialog',async({browser})=>{
+  const c=await players(browser),{a,b}=c;try{
+    await accept(a,b);await ready(a,b);await winRound(a,b,1);
+    await expect(sign(a)).toBeEnabled();await sign(a).click();await sign(b,'rock').click();
+    await expect(a.locator('.td-stage')).toHaveAttribute('data-stage','countdown');
+    await a.locator('[data-exit]').click();await expect(a.locator('.td-confirm')).toBeVisible();
+    await expect(a.locator('.td-score')).toHaveText('2 : 0',{timeout:10000});
+    await expect(a.locator('.td-status')).toContainText('Начислено 0,19 USDT');
+    await expect(a.locator('.td-confirm')).toHaveCount(0);
+    await expect(a.locator('[data-confirm-exit]')).toHaveCount(0);
+    expect(c.errors).toEqual([]);
+  }finally{await c.close();}
+});
+
 test('hand-duel sounds reach Royal output, follow the reveal and stay quiet after mute and reopening',async({browser})=>{
   const c=await players(browser,true),{a,b}=c;try{
     await accept(a,b);
