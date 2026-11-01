@@ -9,7 +9,38 @@ concurrency:
   group: release-build-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
+  scope:
+    runs-on: ubuntu-latest
+    outputs:
+      profile: ${{ steps.scope.outputs.profile }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - id: scope
+        run: node scripts/release-ci-scope.mjs >> "$GITHUB_OUTPUT"
+        env:
+          RELEASE_PR_BASE: ${{ github.event.pull_request.base.sha }}
+          RELEASE_PUSH_BEFORE: ${{ github.event.before }}
+  release-records:
+    needs: scope
+    if: needs.scope.outputs.profile == 'records'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run test:release
+      - run: python3 -m unittest discover -s deployment/maintenance -p 'test_*.py'
   rtp-gate:
+    needs: scope
+    if: needs.scope.outputs.profile == 'full'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -39,8 +70,10 @@ jobs:
       - run: npm run test:forest-heart-server
       - run: npm run test:caribbean
       - run: npm run test:release
+      - run: python3 -m unittest discover -s deployment/maintenance -p 'test_*.py'
       - run: npm run test:work-sync
       - run: npm run release:prepare -- --local --base HEAD^
+      - run: node --import tsx scripts/database-test.ts --import tsx --test server-tests/game-wallet.test.ts server-tests/wallet-account.test.ts server-tests/round-precision.test.ts
       - run: node --import tsx --test server-tests/independent-modules.test.ts server-tests/game-module-assets.test.ts
       - run: npx playwright install --with-deps chromium
       - run: npm run test:forest-heart-ui
