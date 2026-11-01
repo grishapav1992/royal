@@ -67,15 +67,16 @@ export function drawTaxiHabit(g:Graphics,pose:StreetResidentPose){
 }
 
 export function drawTouristCamera(g:Graphics,pose:StreetResidentPose){
-  const review=pose.action==='review-photo'||pose.action==='idle'||pose.action==='look-around';
-  const lift=pose.action==='frame-photo'?Math.min(1,pose.progress/.5):1;
-  const x=0,y=review?-27:-29-lift*29;
+  const held=['frame-photo','take-photo','review-photo'].includes(pose.action);
+  // Align with the shared raised-hand pose; the camera covers its ordinary held prop.
+  const x=held?14:0,y=held?-36:-27;
   g.lineStyle(1.5,0x38333d).strokePoints([{x:-14,y:-37},{x:x-10,y:y+5},{x:x+10,y:y+5},{x:14,y:-37}]);
   g.fillStyle(0x3d424d).fillRoundedRect(x-13,y-8,26,17,3);g.lineStyle(1.5,ink).strokeRoundedRect(x-13,y-8,26,17,3);
   g.fillStyle(0x697580).fillRect(x-10,y-11,8,4);
-  if(review){
+  if(held){
     g.fillStyle(0x8bb7c3).fillRect(x-8,y-4,15,9);g.lineStyle(1,0x405663).strokeRect(x-8,y-4,15,9);
-    g.fillStyle(0xefe0a6).fillCircle(x+10,y-2,1);
+    g.fillStyle(pose.action==='take-photo'&&pose.progress>.42&&pose.progress<.57?0xf2d273:0x819b87).fillCircle(x+10,y-2,1.3);
+    if(pose.action!=='review-photo')g.lineStyle(1,0xe7d39a).strokeRect(x-4,y-2,7,5);
   }else{
     g.fillStyle(0x222936).fillCircle(x+2,y,7);g.lineStyle(1.5,0x9baeb7).strokeCircle(x+2,y,5);
     g.fillStyle(0x7cabb7).fillCircle(x+2,y,2.5);

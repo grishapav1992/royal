@@ -98,7 +98,8 @@ test('walk outside, circle the casino, reconnect and return through the same ent
   await page.screenshot({ path: `../street-${info.project.name}-rear.png` });
   await dialogue.getByRole('button',{name:'Закрыть',exact:true}).click();
   await overview(page,true);
-  await walk(page,2320,360);await walk(page,2320,1050);await walk(page,2395,1138);
+  const taxiApproach=STREET_RESIDENTS.find(p=>p.id==='taxi-driver')!.approach;
+  await walk(page,2320,360);await walk(page,2320,1050);await walk(page,taxiApproach.x,taxiApproach.y);
   await expect(dialogue).toHaveAttribute('data-resident','taxi-driver');
   await overview(page,false);
   await expect.poll(async ()=>{

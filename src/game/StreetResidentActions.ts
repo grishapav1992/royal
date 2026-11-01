@@ -20,7 +20,8 @@ export function streetResidentPose(id:StreetResidentId,time:number,motion:boolea
   for(const [action,length] of beats){
     if(phase>=length){phase-=length;continue;}
     const progress=phase/length;
-    const frame=action==='coffee'?11+Math.min(5,Math.floor(progress*6)):action==='look-around'||action==='greet'?7:action==='rest'?9:6;
+    const holdsCamera=id==='tourist'&&['frame-photo','take-photo','review-photo'].includes(action);
+    const frame=holdsCamera?14:action==='coffee'?11+Math.min(5,Math.floor(progress*6)):action==='look-around'||action==='greet'?7:action==='rest'?9:6;
     const facing:Facing|undefined=id==='tourist'?(action==='review-photo'?'down':action==='look-around'?'right':'up'):undefined;
     return {action,progress,frame,facing};
   }
