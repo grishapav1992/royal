@@ -1,0 +1,31 @@
+{
+  "release": "lobby-connection-20261101-v1",
+  "productionCommit": "7beace3ee7c3450e37b8609dad241308e33640a8",
+  "featureCommit": "ee5ca86fb0545fe4ba6d410872c48c5d80288621",
+  "changedSources": [
+    "server/LobbyRoom.ts",
+    "server/index.ts",
+    "src/i18n/en.ts",
+    "src/network/LobbyClient.ts",
+    "src/network/reconnection.ts",
+    "src/network/sessionRecovery.ts",
+    "src/shared/lobbyConnection.ts",
+    "src/ui/SocialUI.ts"
+  ],
+  "expectedSources": {
+    "src/i18n/en.ts": "61d32cf68fa96ebb8938f58fbf4e49f164527456d0af4ad01ceacb28620fcab9",
+    "src/network/LobbyClient.ts": "1a2115cdf842acc39498aa557724dfb7ceefe1b390032a469d8c508e67ece240",
+    "src/network/reconnection.ts": "6fa25ffea3e60b9d4e76441c995cdda5dde9e066f9ec23af1fbca020ea15aacb",
+    "src/network/sessionRecovery.ts": "e8fe3d0b1b2e6f119969bbf63718a09cc9f2c8f8885ff09ab0a6aa0e9b8accb2",
+    "src/shared/lobbyConnection.ts": "4cd112040e2d4dbefefab9c882b176c9ee0944d4b167c4c9280a594e5eb2dbac",
+    "src/ui/SocialUI.ts": "475295a66cb079c9b49e83a8edd2339318e73414cfcc31b78ec025e81f1a0d0b",
+    "server/LobbyRoom.ts": "5255a66f322f5b2a25df1d39bcf16b421b703fa73c1f03f54f0919eb2b4f3a9d",
+    "server/index.ts": "e4a8a578cddcef0380bf25baa195f3aec2a6622b1c415f0cd10dbea9000de8a7"
+  },
+  "backendChanges": [
+    "dist-server/index.js"
+  ],
+  "moduleChanges": [],
+  "addedGames": [],
+  "restoredGames": []
+}
