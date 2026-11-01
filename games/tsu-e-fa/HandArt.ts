@@ -1,0 +1,9 @@
+import type {TsuEFaChoice} from '../../src/shared/tsuEFa';
+const gesture=(choice:TsuEFaChoice)=>choice==='rock'
+  ? '<path d="M132 32Q151 2 193 10L224 13Q246 16 247 38Q248 53 235 58Q252 64 248 81Q247 93 235 97Q247 106 240 121Q235 132 220 131Q227 151 206 158L163 156Q145 151 130 132Z"/><path d="M181 43Q192 63 216 60M188 86l44 10M185 118l35 13"/>'
+  : choice==='scissors'
+    ? '<path d="M132 44Q149 23 177 31L264 8Q284 5 288 18Q293 35 274 40L208 61L277 82Q296 89 288 106Q281 119 262 111L206 94Q216 117 203 127Q194 134 182 126Q185 148 163 147L135 132Z"/><path d="M177 80q-10 22 5 46"/>'
+    : '<path d="M132 53L163 30L243 2Q263-3 266 13Q270 26 251 33L203 51L277 34Q297 31 299 47Q300 60 281 65L211 82L281 74Q300 73 300 88Q300 102 280 104L211 114L267 113Q286 114 284 129Q282 141 266 142L181 153Q148 150 132 132Z"/>';
+const support='<path d="M130 17Q159 4 184 13L216 3Q233-1 235 13Q258 2 267 16Q275 28 261 38Q283 29 290 44Q296 60 277 72L231 100Q202 118 169 105L130 87Z"/><path d="M166 42Q185 24 206 39L227 51Q242 62 230 72Q222 78 205 69L181 60M234 13l-22 17M261 38l-27 17"/>';
+function pair(choice:TsuEFaChoice,color:string,skin:string,mirror=false){return `<g ${mirror?'transform="translate(640 0) scale(-1 1)"':''} fill="${skin}" stroke="#141719" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><g class="td-active-hand"><path fill="${color}" d="M-8 33L133 39L139 142L-8 155Z"/>${gesture(choice)}</g><g transform="translate(0 201)"><path fill="${color}" d="M-8 10L135 20L140 98L-8 123Z"/>${support}</g></g>`;}
+export function handScene(left:TsuEFaChoice,right:TsuEFaChoice){return `<svg viewBox="0 0 640 340" role="img" aria-label="Руки двух игроков, вид сбоку" class="td-hands"><rect width="640" height="340" fill="#303133"/>${pair(left,'#962e42','#edb16b')}${pair(right,'#30629c','#ffd0a3',true)}</svg>`;}

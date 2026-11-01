@@ -83,3 +83,7 @@ jobs:
       - run: npm ci
       - run: npm run check:rtp
       - run: npm run qualify:rtp -- --game ${{ matrix.game }}
+      - if: matrix.game == 'tsu-e-fa'
+        run: |
+          npm run qualify:rtp -- --game tsu-e-fa --rules 1
+          npm run qualify:rtp -- --game tsu-e-fa --rules 2

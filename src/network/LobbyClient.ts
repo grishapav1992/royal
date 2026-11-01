@@ -7,7 +7,7 @@ import { Client, ErrorCode, type Room } from '@colyseus/sdk';
 import type { LobbyState } from '../../server/state';
 import type { PlayerView, ChatMessage } from '../shared/world';
 import { mergeActivities, mergePianoNote, type ActivitiesMessage, type ActivitiesState, type PianoNote } from '../shared/activities';
-import { savedSession, rememberSession, forgetSession } from './sessionRecovery';
+import { savedSession, savedRoom, rememberSession, forgetSession } from './sessionRecovery';
 import type { CabinetPlayResult } from '../shared/cabinetSeating';
 import type { ChatRequest, ChatResult } from '../shared/chat';
 import type { PvpSnapshot } from '../shared/pvp';
@@ -59,16 +59,25 @@ export class LobbyClient {
     this.activities=undefined;
     this.setStatus('connecting');
     try {
+      const explicitRoom=!!roomId;roomId??=savedRoom(accountId);
       let room: Room<LobbyState> | undefined;
-      const token = returningToRoom ? savedSession(accountId, roomId) : undefined;
+      // A network-error page or direct navigation can discard history.state while the account-bound reservation is still valid.
+      const token = savedSession(accountId, roomId);
       if (token) {
-        try { room = await this.client.reconnect<LobbyState>(token); }
+        for(let attempt=0;attempt<5;attempt++){
+        const attemptToken=savedSession(accountId,roomId)??token;
+        try { room = await this.client.reconnect<LobbyState>(attemptToken);break; }
         catch (error) {
           if (generation !== this.generation) return;
           const code = (error as { code?: number }).code;
           // Only an expired reservation permits a fresh entry.
           if (code !== ErrorCode.MATCHMAKE_INVALID_ROOM_ID && code !== ErrorCode.MATCHMAKE_EXPIRED) throw error;
-          forgetSession();
+          // A prior socket can finish dropping or rotate its token while a replacement tab starts.
+          if(code===ErrorCode.MATCHMAKE_EXPIRED&&attempt<4){await new Promise(resolve=>setTimeout(resolve,150*(attempt+1)));continue;}
+          forgetSession(accountId,roomId,code===ErrorCode.MATCHMAKE_INVALID_ROOM_ID?undefined:attemptToken);
+          if(!explicitRoom&&code===ErrorCode.MATCHMAKE_INVALID_ROOM_ID)roomId=undefined;
+          break;
+        }
         }
       }
       if (generation !== this.generation) { void room?.leave(); return; }
@@ -145,7 +154,7 @@ export class LobbyClient {
       });
       room.onDrop(() => { if (current()) this.setStatus('reconnecting'); });
       room.onReconnect(() => { if (!current()) return; queueMicrotask(() => { if (current()) rememberSession(room, accountId); }); this.events.checking(false); this.events.npcTime(0,0);this.activities=undefined; this.setStatus('connected'); room.send('stop'); room.send('history'); room.send('activities'); });
-      room.onLeave(code => { if (!current()) return; forgetSession(); if(code===4003) this.events.ejected(banUntil || Date.now()+600000); if (this.room === room) { this.room = undefined; this.setStatus('disconnected'); } });
+      room.onLeave(code => { if (!current()) return; if(code===4000||code===4003)forgetSession(accountId,room.roomId,room.reconnectionToken); if(code===4003) this.events.ejected(banUntil || Date.now()+600000); if (this.room === room) { this.room = undefined; this.setStatus('disconnected'); } });
       room.onError((_code, message) => { if (current()) this.events.notice(translateText(message || translateText('Ошибка подключения к залу.'))); });
       if (recovered) { room.send('stop'); room.send('playing', false); }
       this.events.joined(room.roomId, room.sessionId);

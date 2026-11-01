@@ -3,10 +3,10 @@
   "gameId": "github-crash",
   "rulesVersion": 1,
   "progressVersion": 1,
-  "startedAt": "2026-10-31T22:13:03.290Z",
-  "completedAt": "2026-10-31T22:13:07.890Z",
+  "startedAt": "2026-11-01T10:38:40.327Z",
+  "completedAt": "2026-11-01T10:38:55.481Z",
   "sourceHashes": {
-    "src/shared/gameStakes.ts": "9e207c51bc5cd9c342992f2f92258826a678cbf00d409b329447e7abca654637",
+    "src/shared/gameStakes.ts": "111e989e050588da872771dbfc11736566737141ea612f67504146e035b6a78d",
     "src/shared/roundPrecision.ts": "8d9f64dd7ae146fa1a7288bf0d4bf8f947a8bc419d12c94fe8f765ec2a75b307",
     "src/shared/casinoExpansion.ts": "c89133d0c011baa56241b09e56913e315534ac3e52871308238e234cb8c75f74",
     "src/shared/forestHeartMath.ts": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
@@ -28,7 +28,7 @@
     "scripts/game-math/stake-runtime.mjs": "24aadf4414fe0daf402931901d773143291bee2c099713355e3e345c1e5145ca",
     "scripts/game-math/stakes-wallet.ts": "d9a4084a6ddb188ef52a6d2e05fb93e09f0ade96a95ae75a16ad065c80f2c695",
     "scripts/game-math/rtp-stakes-samples.mjs": "d2cdeaf1311ba67c78a04b04d78c6353caaed0b490933c93d8b231b94e481b1c",
-    "scripts/game-math/rtp-stakes.mjs": "b38e69d823b1dab9607523753d0e20c08a7322a83eba2fdbcf706c2b02e2f188"
+    "scripts/game-math/rtp-stakes.mjs": "11a1c369b33fd4bb59da6d2c43b1743e0a9e8dc4813ad4e8ec3e50b7278eec84"
   },
   "policySha256": "47a87acd5164860ebb76c19e34a44fe1ce67cc7734d814297807328e649408f6",
   "method": "full-round-unbiased-cent-policy-v1",

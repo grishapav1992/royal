@@ -19,7 +19,7 @@ test('actual production rounds resume and replay unchanged through the projected
  const realNow=Date.now;let clock=realNow(),index=0,continuations=0,legacyBonuses=0;const digest=createHash('sha256'),rows:any[]=[],client=new ExpansionClient(2),verify=(s:any)=>Reflect.get(client,'checkedSession').call(client,s);
  const cases=Object.entries(policies).filter(([game])=>game!=='tsu-e-fa').map(([game,p]:any)=>({game,choice:p.choices[0]}));cases.push({game:'studio-caramel-carnival',choice:'festival'},{game:'studio-velvet-reign',choice:'super-encore'},{game:'studio-cosmic-escape',choice:'cosmic-chaos'},{game:'studio-caribbean-treasures',choice:'lines-20-buy-raid'},{game:'studio-flooded-temple',choice:'legacy-map'});
  Date.now=()=>clock;
- try{for(const{game,choice}of cases){console.log('legacy round',game,choice);
+ try{for(const{game,choice}of cases){clock=Math.max(clock,realNow());console.log('legacy round',game,choice);
   const a=await pvpFixture(),b=await pvpFixture(),seed=513731+index++*7919,r1=seededRandom(seed),r2=seededRandom(seed),drawA=(n:number)=>Math.floor(r1()*n),drawB=(n:number)=>Math.floor(r2()*n);
   try{
    for(const c of[a,b]){await c.source.ingest(block(102,'100000000000000',c.config.source.addresses.find(x=>x.userId==='reserve')!.address));await c.source.ingest(block(103,'1000000000000',c.config.source.addresses.find(x=>x.userId==='player')!.address));await c.ledger.sync(c.source,await c.reconciliation());}

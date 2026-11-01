@@ -3,10 +3,10 @@
   "gameId": "studio-afterglow",
   "rulesVersion": 2,
   "progressVersion": 4,
-  "startedAt": "2026-10-31T22:30:19.107Z",
-  "completedAt": "2026-10-31T22:30:21.037Z",
+  "startedAt": "2026-11-01T10:39:23.301Z",
+  "completedAt": "2026-11-01T10:39:35.117Z",
   "sourceHashes": {
-    "src/shared/gameStakes.ts": "9e207c51bc5cd9c342992f2f92258826a678cbf00d409b329447e7abca654637",
+    "src/shared/gameStakes.ts": "111e989e050588da872771dbfc11736566737141ea612f67504146e035b6a78d",
     "src/shared/roundPrecision.ts": "8d9f64dd7ae146fa1a7288bf0d4bf8f947a8bc419d12c94fe8f765ec2a75b307",
     "src/shared/casinoExpansion.ts": "c89133d0c011baa56241b09e56913e315534ac3e52871308238e234cb8c75f74",
     "src/shared/forestHeartMath.ts": "92d1b3e25ef1783930b211c04673ab8e65c815993d65a78c94f3c81b3dc26ac5",
@@ -32,9 +32,12 @@
     "scripts/game-math/rtp-stakes-samples.mjs": "d2cdeaf1311ba67c78a04b04d78c6353caaed0b490933c93d8b231b94e481b1c",
     "deployment/releases/shared-stakes-20261101-v1/production-round-compatibility.json": "9c88dcdf2554a2a3e2c7e799ca65c604c4bfe719dcdb01ffdc07b305a89cf555",
     "deployment/releases/shared-stakes-20261101-v1/accepted-rounds.test.ts": "113e32924ffb46d10c6cddcb0c8965a3e197160a6ed965d6ae4e1d7e25c4334d",
-    "scripts/game-math/rtp-stakes.mjs": "b38e69d823b1dab9607523753d0e20c08a7322a83eba2fdbcf706c2b02e2f188"
+    "deployment/qualifications/tsu-duel-v3/afterglow-compatibility.json": "0588c23e665d164ea7811190f6cac88d471577a655a1cc792975d733fd92f974",
+    "deployment/qualifications/tsu-duel-v3/accepted-rounds.test.ts": "79b0ef01c3cd1896fe7a72a521b54875244913c01ba834d14bd1a323358005c2",
+    "deployment/qualifications/tsu-duel-v3/afterglow-compat-projection.json": "8899773c927bbff3625ccdfa9939f9bd927e15080cd04df78f53d882986a9b4c",
+    "scripts/game-math/rtp-stakes.mjs": "11a1c369b33fd4bb59da6d2c43b1743e0a9e8dc4813ad4e8ec3e50b7278eec84"
   },
-  "policySha256": "58b23f3d2c2cd2fc9749111698826d13a9c50e396d555711fdaad39cc40c2722",
+  "policySha256": "72609d2e80242dcecf3f3b228f5b552781744b669c42c1a9c52bd187d473a699",
   "method": "full-round-unbiased-cent-policy-v1",
   "precisionLaw": {
     "method": "Independent uniform final ticket; exact BigInt rational accumulation and integer settlement",

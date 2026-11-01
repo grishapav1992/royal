@@ -8,6 +8,7 @@ import { DemoWalletStore } from '../server/demoWallet';
 import { VirtualPvpLedger } from '../server/pvp/virtual-wallet';
 import { PvpStore } from '../server/pvp/store';
 import type { PvpRequest } from '../src/shared/pvp';
+import {acceptedLegacyTsu} from './helpers/legacy-tsu';
 
 test('all sign pairs resolve identically in either submission order and reveal no pending opponent sign', () => {
   const expected = [[null, 0, 1], [1, null, 0], [0, 1, null]];
@@ -45,8 +46,8 @@ async function fixture(options:{mode?:'free'|'stake';targetWins?:3|5|7;amount?:n
   const actors = [a, b].map((accountId, side) => ({ accountId, name: ['Анна', 'Борис'][side], roomId: 'tsu-test' }));
   const people = actors.map(actor => ({ ...actor, connected: true, available: true }));
   await store.syncRoom('tsu-test', people, now);
-  const created = await store.command(actors[0], { id: randomUUID(), action: 'create', gameId: 'tsu-e-fa', mode:options.mode??'stake',targetWins:options.targetWins??3,stakeUnits: options.mode==='free'?'0':'1100000', targetId: b }, now);
-  const challengeId = created.active!.id;
+  const created = await acceptedLegacyTsu(ledger,actors,options,now);
+  const challengeId = created.id;
   if(options.legacy){
     const row=await db.prepare('SELECT payload FROM pvp_matches WHERE id=?').get(challengeId),saved=JSON.parse(String(row!.payload));
     delete saved.challenge.rulesVersion;delete saved.challenge.mode;delete saved.challenge.targetWins;

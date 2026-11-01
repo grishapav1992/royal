@@ -66,7 +66,8 @@ export interface GameModuleContextV1 {
  readonly onMounted?: (instance: GameModuleInstance) => void;
  readonly provider?: { readonly embedded: boolean; readonly gameId?: string; readonly gameName?: string; readonly onCatalogue: () => void };
  readonly activity?: ActivityHostContext;
- readonly pvp?: {get():PvpSnapshot|undefined;busy():boolean;subscribe(callback:()=>void):()=>void;move(value:PvpMove):void};
+ readonly pvp?: {get():PvpSnapshot|undefined;busy():boolean;subscribe(callback:()=>void):()=>void;move(value:PvpMove):void;
+   now?():number;terms?(stakeUnits:string,revision:number):void;ready?(revision:number,ready:boolean):void;cancel?():void};
 }
 export interface GameModuleV1 {
  readonly gameId: IndependentGameId;

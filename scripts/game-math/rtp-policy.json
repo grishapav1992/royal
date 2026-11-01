@@ -905,17 +905,26 @@
       "serverReplayRunsPerWinner": 16
     },
     "tsu-e-fa": {
-      "method": "exhaustive-virtual-pvp-pot",
-      "rulesVersion": 2,
+      "method": "full-round-unbiased-cent-policy-v1",
+      "kind": "pvp",
+      "rulesVersion": 3,
       "progressVersion": 1,
+      "stakePolicyVersion": 1,
+      "ordinaryStakeBasis": "total-round",
       "target": 0.95,
       "refundReturn": 1,
       "commissionBasisPoints": 500,
-      "stakeRange": {
-        "min": 1000000,
-        "max": 500000000,
-        "step": 100000
-      },
+      "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
       "choices": [
         "left-win",
         "right-win",
@@ -924,28 +933,31 @@
         "disconnect-left",
         "disconnect-right",
         "expired",
-        "server"
+        "server",
+        "resign-left",
+        "resign-right",
+        "timeout-left",
+        "timeout-right"
       ],
-      "proof": "docs/game-math/qualifications/tsu-e-fa-v2.json",
-      "qualificationSource": "scripts/game-math/rtp-tsu-e-fa.mjs",
+      "proof": "docs/game-math/qualifications/tsu-e-fa-v3.json",
+      "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
       "sources": [
         "src/shared/pvp.ts",
-        "server/pvp/store.ts",
-        "server/pvp/cards.ts",
-        "server/finance/pvp-money.ts",
-        "server/pvp/virtual-wallet.ts",
-        "server/finance/nile-play-error.ts",
         "src/shared/tsuEFa.ts",
+        "src/shared/tsuDuel.ts",
+        "src/shared/gameStakes.ts",
+        "src/shared/roundPrecision.ts",
         "server/pvp/tsu-e-fa.ts",
+        "server/pvp/tsu-duel.ts",
+        "server/pvp/store.ts",
         "server/pvp/room.ts",
-        "scripts/game-math/rtp-virtual-pvp.mjs",
-        "src/shared/pvpSeats.ts",
-        "server/activities.ts"
-      ],
-      "targetWins": [
-        3,
-        5,
-        7
+        "server/pvp/virtual-wallet.ts",
+        "server/finance/pvp-money.ts",
+        "scripts/game-math/rtp-tsu-duel-stakes.mjs",
+        "scripts/game-math/tsu-duel-wallet.ts",
+        "server/demoWallet.ts",
+        "server/demoWalletAmounts.ts",
+        "server/database.ts"
       ]
     },
     "studio-wild-nudge": {
@@ -1990,7 +2002,7 @@
         "progressVersion": 1,
         "target": 0.96,
         "minimumReturn": 0.9,
-        "tolerance": 1e-06,
+        "tolerance": 0.000001,
         "stakes": [
           1000,
           2000,
@@ -2064,6 +2076,50 @@
           "server/pvp/room.ts",
           "scripts/game-math/rtp-virtual-pvp.mjs",
           "src/shared/pvpSeats.ts"
+        ]
+      },
+      "2": {
+        "method": "exhaustive-virtual-pvp-pot",
+        "rulesVersion": 2,
+        "progressVersion": 1,
+        "target": 0.95,
+        "refundReturn": 1,
+        "commissionBasisPoints": 500,
+        "stakeRange": {
+          "min": 1000000,
+          "max": 500000000,
+          "step": 100000
+        },
+        "choices": [
+          "left-win",
+          "right-win",
+          "draw",
+          "cancel",
+          "disconnect-left",
+          "disconnect-right",
+          "expired",
+          "server"
+        ],
+        "proof": "docs/game-math/qualifications/tsu-e-fa-v2.json",
+        "qualificationSource": "scripts/game-math/rtp-tsu-e-fa.mjs",
+        "sources": [
+          "src/shared/pvp.ts",
+          "server/pvp/store.ts",
+          "server/pvp/cards.ts",
+          "server/finance/pvp-money.ts",
+          "server/pvp/virtual-wallet.ts",
+          "server/finance/nile-play-error.ts",
+          "src/shared/tsuEFa.ts",
+          "server/pvp/tsu-e-fa.ts",
+          "server/pvp/room.ts",
+          "scripts/game-math/rtp-virtual-pvp.mjs",
+          "src/shared/pvpSeats.ts",
+          "server/activities.ts"
+        ],
+        "targetWins": [
+          3,
+          5,
+          7
         ]
       }
     },
@@ -3320,15 +3376,18 @@
         "scripts/game-math/stakes-wallet.ts",
         "scripts/game-math/rtp-stakes-samples.mjs",
         "deployment/releases/shared-stakes-20261101-v1/production-round-compatibility.json",
-        "deployment/releases/shared-stakes-20261101-v1/accepted-rounds.test.ts"
+        "deployment/releases/shared-stakes-20261101-v1/accepted-rounds.test.ts",
+        "deployment/qualifications/tsu-duel-v3/afterglow-compatibility.json",
+        "deployment/qualifications/tsu-duel-v3/accepted-rounds.test.ts",
+        "deployment/qualifications/tsu-duel-v3/afterglow-compat-projection.json"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
       "compatibleProgressVersions": [
         3,
         4
       ],
-      "compatibilityEvidence": "deployment/releases/shared-stakes-20261101-v1/production-round-compatibility.json",
-      "compatibilityQualificationSource": "deployment/releases/shared-stakes-20261101-v1/accepted-rounds.test.ts"
+      "compatibilityEvidence": "deployment/qualifications/tsu-duel-v3/afterglow-compatibility.json",
+      "compatibilityQualificationSource": "deployment/qualifications/tsu-duel-v3/accepted-rounds.test.ts"
     },
     "studio-dracona": {
       "method": "full-round-unbiased-cent-policy-v1",
@@ -3454,6 +3513,62 @@
         "scripts/game-math/rtp-stakes-samples.mjs"
       ],
       "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
+    },
+    "tsu-e-fa": {
+      "method": "full-round-unbiased-cent-policy-v1",
+      "kind": "pvp",
+      "rulesVersion": 3,
+      "progressVersion": 1,
+      "stakePolicyVersion": 1,
+      "ordinaryStakeBasis": "total-round",
+      "target": 0.95,
+      "refundReturn": 1,
+      "commissionBasisPoints": 500,
+      "stakes": [
+        10,
+        20,
+        50,
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000
+      ],
+      "choices": [
+        "left-win",
+        "right-win",
+        "draw",
+        "cancel",
+        "disconnect-left",
+        "disconnect-right",
+        "expired",
+        "server",
+        "resign-left",
+        "resign-right",
+        "timeout-left",
+        "timeout-right"
+      ],
+      "proof": "docs/game-math/qualifications/tsu-e-fa-v3.json",
+      "qualificationSource": "scripts/game-math/rtp-stakes.mjs",
+      "sources": [
+        "src/shared/pvp.ts",
+        "src/shared/tsuEFa.ts",
+        "src/shared/tsuDuel.ts",
+        "src/shared/gameStakes.ts",
+        "src/shared/roundPrecision.ts",
+        "server/pvp/tsu-e-fa.ts",
+        "server/pvp/tsu-duel.ts",
+        "server/pvp/store.ts",
+        "server/pvp/room.ts",
+        "server/pvp/virtual-wallet.ts",
+        "server/finance/pvp-money.ts",
+        "scripts/game-math/rtp-tsu-duel-stakes.mjs",
+        "scripts/game-math/tsu-duel-wallet.ts",
+        "server/demoWallet.ts",
+        "server/demoWalletAmounts.ts",
+        "server/database.ts"
+      ]
     }
   }
 }
