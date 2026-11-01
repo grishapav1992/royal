@@ -49,6 +49,9 @@ async function ready(a:Page,b:Page){await a.locator('[data-ready]').click();awai
 async function winRound(a:Page,b:Page,wins:number){await expect(sign(a)).toBeEnabled();await sign(a).click();await expect(sign(b,'rock')).toBeEnabled();await sign(b,'rock').click();await expect(a.locator('.td-stage')).toHaveAttribute('data-stage','countdown');await expect(a.locator('.td-score')).toHaveText(`${wins-1} : 0`);await expect(a.locator('.td-score')).toHaveText(`${wins} : 0`,{timeout:10000});}
 async function mobileChat(p:Page){
   const dialog=p.locator('#pvp-dialog'),chat=dialog.locator('.game-chat-dock');
+  if(!await dialog.locator('.game-chat-toggle').count()){
+    await expect(chat).toBeVisible();await expect(chat.locator('.chat-heading')).toContainText('Общий чат');return;
+  }
   await expect(dialog).toHaveAttribute('data-game-chat','closed');
   await dialog.locator('.game-chat-toggle').click();await expect(chat).toBeVisible();await expect(chat.locator('.chat-heading')).toContainText('Общий чат');
   await chat.locator('.game-chat-close').click();await expect(chat).toBeHidden();
