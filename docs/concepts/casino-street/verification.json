@@ -254,6 +254,6 @@
     "featureCommit": "4e6d5f3f343a22fb0478c82562c4d416dee14fed",
     "testedRuntimeSourcesUnchanged": true,
     "checkedAt": "2026-11-01T20:39:43.496163+00:00",
-    "changesSinceTesting": "Verification screenshots, report and deployment records only."
+    "changesSinceTesting": "Verification screenshots/report and deployment maintenance tooling; game and application runtime sources unchanged."
   }
 }
