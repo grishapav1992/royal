@@ -115,7 +115,8 @@ def program_proof_identity(image, program, expected):
     require(all(isinstance(name, str) and name and not PurePosixPath(name).is_absolute()
                 and '..' not in PurePosixPath(name).parts and isinstance(value, str)
                 and re.fullmatch('[a-f0-9]{64}', value) for name, value in expected.items()), 'Invalid image program inventory')
-    return {'format': 1, 'image': image, 'readerSha256': hashlib.sha256(program.encode()).hexdigest(),
+    return {'format': 1, 'image': image, 'platform': os.uname().sysname + '/' + os.uname().machine,
+            'readerSha256': hashlib.sha256(program.encode()).hexdigest(),
             'inventorySha256': hashlib.sha256(json.dumps(expected, sort_keys=True, separators=(',', ':')).encode()).hexdigest(),
             'files': len(expected)}
 

@@ -27,6 +27,10 @@ class ImageProgramProofTest(unittest.TestCase):
                 changed={'dist/index.js':'d'*64};verify.return_value=changed
                 self.assertFalse(runtime.verify_image_program(self.image,'reader',changed,root)['reused'])
                 self.assertEqual(verify.call_count,4)
+                from types import SimpleNamespace
+                with patch.object(runtime.os,'uname',return_value=SimpleNamespace(sysname='Linux',machine='another-platform')):
+                    self.assertFalse(runtime.verify_image_program(self.image,'reader',changed,root)['reused'])
+                self.assertEqual(verify.call_count,5)
 
     def test_corruption_forces_full_read_and_failed_read_cannot_become_success(self):
         with tempfile.TemporaryDirectory() as temp:
