@@ -46,7 +46,7 @@ export class GalacticReactorUI {
     host.replaceChildren(this.root);this.modal=this.el<HTMLDialogElement>('modal');
     this.collection=new StarSpinCollection(this.root,()=>this.services.i18n.language,()=>!this.busy&&!this.presenting&&!this.active&&!this.auto&&!this.client.busy&&!this.client.pending&&!this.modal.open,()=>this.render(),()=>{this.stopAuto();this.cancelPresentation();});
     this.character=new StarSpinCharacter(this.root);
-    this.root.addEventListener('star-spin-selected',()=>this.character.react('select'),{signal:this.lifetime.signal});
+    this.root.addEventListener('star-spin-selected',()=>this.character.selected(),{signal:this.lifetime.signal});
     this.root.addEventListener('pointerdown',()=>void this.audio.unlock(),{signal:this.lifetime.signal});
     this.root.addEventListener('click',event=>{const button=(event.target as Element).closest<HTMLButtonElement>('button[data-gn]');if(button&&!button.disabled)this.click(button.dataset.gn!);},{signal:this.lifetime.signal});
     this.el('stake').addEventListener('change',()=>{if(this.blocked||this.auto||this.active){this.render();return;}this.stake=this.el<HTMLSelectElement>('stake').value;this.error='';this.note='';this.render();},{signal:this.lifetime.signal});
