@@ -114,7 +114,7 @@ export class SocialUI {
         });
         this.sanctioned = false; this.scene.setSecurity(false); this.checking = false;
         this.roomId = roomId; this.selfId = selfId;
-        this.messages.clear(); this.gameChat.reset(); this.list.replaceChildren(this.outbox); this.media.prune(); this.media.close(false);
+        this.messages.clear(); if (!recovering) this.gameChat.reset(); this.list.replaceChildren(this.outbox); this.media.prune(); this.media.close(false);
         this.showLatest();
         const url = new URL(location.href); url.searchParams.set('room', roomId); history.replaceState({ royalJoinedRoom: roomId }, '', url);
         this.scene.enableOnline({ elevator: target => this.client.travelByElevator(target), inputs: inputs => this.client.send('inputs',inputs), move: (x,y) => this.client.send('move',{x,y}), target: (x,y) => this.client.send('target',{x,y}), stop: () => this.client.send('stop'), sit: seat => this.client.send('sit',seat), stand: () => this.client.send('stand'), drink: drink => this.client.send('drink',drink), cat: action => this.client.send('cat',action), cabinetPlay: id => this.client.claimCabinet(id), cabinetLeave: () => this.client.releaseCabinet(), cabinetReaction: (id,reaction) => this.client.send('cabinet-reaction',{id,reaction}) });
