@@ -1,6 +1,6 @@
 import { ACTIVITIES, type ActivityId } from '../../src/shared/activities';
 import { activityHall } from '../../src/shared/world';
-import { isPvpSnapshotGame, isDirectPvp, isFreePvp, validPvpRequest, type PvpChallenge, type PvpSnapshot } from '../../src/shared/pvp';
+import { isPvpSnapshotGame, isDirectPvp, isFreePvp, isNegotiatedPvp, validPvpRequest, type PvpChallenge, type PvpSnapshot } from '../../src/shared/pvp';
 import { PVP_PLAYER_DISTANCE } from '../../src/shared/tsuEFa';
 import { playCommand } from '../nilePlayRoutes';
 import {pvpSeat} from '../../src/shared/pvpSeats';
@@ -18,6 +18,7 @@ export class PvpRoom {
   private busy=false;
   private queue:Promise<unknown>=Promise.resolve();
   private stopped=false;
+  private deadline?:ReturnType<typeof setTimeout>;
   private outstanding=new Map<string,string>();
   private attempts=new Map<string,{at:number;n:number}>();
   constructor(private host:Host,private socket:string|((account:string,action:string,value:unknown)=>Promise<{status:number;value:any}>)|undefined=process.env.NILE_PLAY_SOCKET_FILE){
@@ -48,8 +49,9 @@ export class PvpRoom {
       if(!person||!validPvpRequest(value))return;
       try{
         const match='challengeId'in value?this.matches.find(c=>c.id===value.challengeId):undefined;
-        if(value.action==='create'&&!isFreePvp(value)||value.action==='accept'&&(!match||!isFreePvp(match)))await this.host.allowMoney?.(person.accountId);
-        const targetId=value.action==='create'&&value.gameId==='tsu-e-fa'?value.targetId:value.action==='accept'&&match&&isDirectPvp(match)&&match.targetId?match.creatorId:null;
+        if(value.action==='create'&&!isFreePvp(value)||value.action==='accept'&&(!match||!isFreePvp(match)&&!isNegotiatedPvp(match)))await this.host.allowMoney?.(person.accountId);
+        if(value.action==='duel-ready'&&match)for(const id of [match.creatorId,match.opponentId].filter((id):id is string=>!!id))await this.host.allowMoney?.(id);
+        const targetId=value.action==='invite'||value.action==='create'&&value.gameId==='tsu-e-fa'?value.targetId:value.action==='accept'&&match&&isDirectPvp(match)&&match.targetId?match.creatorId:null;
         if(targetId){
           const target=this.host.people().find(p=>p.accountId===targetId&&p.connected);
           if(!target||target.hall!==person.hall||Math.hypot(target.x-person.x,target.y-person.y)>PVP_PLAYER_DISTANCE)throw Error('Сначала подойди ближе к игроку.');
@@ -111,6 +113,9 @@ export class PvpRoom {
       }
     }
     for(const row of result.value.snapshots){const person=people.find(p=>p.accountId===row.accountId&&p.connected);if(person)this.host.send(person.sessionId,'pvp',this.publicSnapshot(row.snapshot));}
+    clearTimeout(this.deadline);
+    const deadline=Math.min(...this.matches.filter(c=>isNegotiatedPvp(c)&&c.status==='playing'&&!c.disconnected.length).map(c=>c.expiresAt));
+    if(Number.isFinite(deadline))this.deadline=setTimeout(()=>{this.deadline=undefined;this.tick();},Math.max(20,deadline-Date.now()));
   }
-  stop(){this.stopped=true;}
+  stop(){this.stopped=true;clearTimeout(this.deadline);}
 }

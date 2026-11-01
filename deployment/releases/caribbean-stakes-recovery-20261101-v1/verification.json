@@ -313,8 +313,133 @@
     {
       "stage": "concurrent history cleanup",
       "reason": "Rebasing owned staged metadata invalidated an existing cleanup review. That run stopped with a history-entry identity mismatch.",
-      "resolution": "The activated module now has its committed publication receipt and active pointer. A subsequent completed cleanup is required before task completion."
+      "resolution": "The subsequent completed audit started after the module publication, verified the active module and complete host rollback, preserved persistent data and left the timer enabled."
     }
   ],
-  "localTestDatabaseRemoved": true
+  "localTestDatabaseRemoved": true,
+  "serverFinal": {
+    "maintenance": {
+      "startedAt": 1793529528.1881895,
+      "status": "completed",
+      "freeBefore": 12214571008,
+      "release": "compact-header-20261101-v3",
+      "sourceCommit": "482669357da32c69b1a96803e45f671b9aaa19a6",
+      "currentImage": "sha256:ff3b316cc3163cc1c6b8a09531061b78b5e0d0127203550603b9c8d989cbc250",
+      "rollbackImage": "sha256:774c1423bc48a4743517714769856b1a2dd1906d69ff336e3790150f78cf2ccf",
+      "plannedEntries": 76,
+      "plannedImages": 1,
+      "preservedFinancialFiles": 97,
+      "retainedHistoryReasons": {
+        "/opt/royal-releases/caribbean-stakes-recovery-20261101-v1": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/atelier-fresh-20261024-v1": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/forest-heart-20261029-v1": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/pvp-usdt-20261023-v2-compact.tgz": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/neopolis-source-refresh.tgz": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/royal-roulette-20261029-v1": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/neopolis-production-before.json": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/universal-spins-20261031-v1": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/neopolis-dracona-20261023-v1": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/neopolis-variable-stake-20261028-v1": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/pvp-usdt-20261023-v2-delta.tgz": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/caribbean-stakes-recovery-20261101-v1.tgz": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/pvp-usdt-20261023-v2": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/location-rewards-20261031-v2": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/neopolis-snapshot.py": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/neopolis-dracona-20261023-v1.tgz": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/neopolis-source-refresh-v3.tgz": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/atelier-flare-20261024-v1": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/caribbean-stakes-recovery-20261101-v1-current.tgz": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/character-motion-20261027-v1.failed.json": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/restore-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/neopolis-ui-20261028-v1": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/location-levels-20261030-v1": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/girlhub-feedback-20261023-v1.tgz": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/neopolis-source-refresh-v2.tgz": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-releases/neopolis-production-before-final.json": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-backups/caribbean-stakes-recovery-20261101-v1": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-backups/atelier-fresh-20261024-v1": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-backups/universal-spins-20261031-v1": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-backups/neopolis-dracona-20261023-v1": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-backups/pvp-card-scale-20261023": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-backups/neopolis-variable-stake-20261028-v1": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-backups/atelier-20261023-v1": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-backups/pvp-usdt-20261023-v2": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-backups/location-rewards-20261031-v2": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-backups/pvp-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-backups/atelier-flare-20261024-v1": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-backups/restore-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+        "/opt/royal-backups/location-levels-20261030-v1": "fresh, pending, or source not verified in GitHub"
+      },
+      "removedEntries": 76,
+      "removedImageTags": 6,
+      "dockerRetainedImages": [],
+      "freeAfter": 12240404480,
+      "containersUnchanged": true,
+      "healthOk": true,
+      "finishedAt": 1793530428.0032008,
+      "durationSeconds": 899.82
+    },
+    "services": {
+      "royal-game-1": {
+        "image": "sha256:ff3b316cc3163cc1c6b8a09531061b78b5e0d0127203550603b9c8d989cbc250",
+        "healthy": true
+      },
+      "royal-nile-play": {
+        "image": "sha256:f5fedb95bb0d295e839110ce263d48e2b6a4cc58295130268f731bcae6805ea2",
+        "healthy": true
+      }
+    },
+    "timer": "enabled",
+    "freeBefore": 12239867904,
+    "removedArchives": [
+      {
+        "path": "/opt/royal-releases/caribbean-stakes-recovery-20261101-v1.tgz",
+        "bytes": 1119802
+      },
+      {
+        "path": "/opt/royal-releases/caribbean-stakes-recovery-20261101-v1-current.tgz",
+        "bytes": 1120638
+      }
+    ],
+    "alreadyAbsent": [],
+    "freeAfter": 12242112512
+  },
+  "localCleanup": {
+    "status": "completed",
+    "owner": "caribbean-stakes-followup-20261101",
+    "preservedRemoteCommit": "678f6062a04b1aaa01bba77d1212a204084dc2bd",
+    "removedRoot": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/caribbean-stakes-followup-20261101",
+    "logicalBytes": 514559285,
+    "freeBefore": 52820918272,
+    "removedArchives": [
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/caribbean-stakes-followup-20261101/delivery.tgz",
+        "bytes": 1119802
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/caribbean-stakes-followup-20261101/delivery-current.tgz",
+        "bytes": 1120638
+      }
+    ],
+    "removedFolders": [
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/caribbean-stakes-followup-20261101/checkout",
+        "logicalBytes": 494172955
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/caribbean-stakes-followup-20261101/stand",
+        "logicalBytes": 485
+      }
+    ],
+    "temporaryDatabaseRemoved": true,
+    "sharedDependenciesPreserved": true,
+    "unrelatedUntrackedFilesPreserved": true,
+    "freeAfter": 52827189248,
+    "otherWorktreesPreserved": [
+      "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/a6api-server-access-20261101/checkout",
+      "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/forest-heart-kling-20261031/checkout"
+    ],
+    "otherWorkCleanupCondition": "Their owners finish their active tasks, preserve unique source in GitHub and remove their temporary outputs.",
+    "spaceNote": "Logical sizes do not establish physical reclamation. Free space was measured directly before and after."
+  }
 }
