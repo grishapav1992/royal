@@ -12,6 +12,6 @@ export async function securityRoom(request: APIRequestContext, cookie?: string) 
   return new Response(await response.body(),{status:response.status(),headers:response.headers()});
  }});
  const room=await client.create<any>('lobby');
- for(const name of ['chat','activities','piano-note','notice','chat-check','security','ejected'])room.onMessage(name,()=>{});
+ for(const name of ['chat','chat-result','pvp','activities','piano-note','notice','chat-check','security','ejected'])room.onMessage(name,()=>{});
  return {room,cookie};
 }

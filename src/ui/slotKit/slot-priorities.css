@@ -1,0 +1,186 @@
+/* These seven modules own the field budget, after the host has allocated chat. */
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] {
+ --slot-board-ratio:1.2; position:relative; box-sizing:border-box; display:grid;
+ grid-template-columns:minmax(0,1fr); grid-template-rows:36px minmax(0,1fr) auto 48px 104px auto auto;
+ grid-template-areas:"heading" "scene" "features" "results" "controls" "funds" "status";
+ width:100%; max-width:none; height:100%; min-height:0; min-width:0; padding:6px; gap:0;
+ margin:0; border:0; border-radius:0; overflow:hidden; container:slot-priority/size;
+}
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game.ce-game[data-slot-priority] { --slot-board-ratio:1.666667 }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game.vr-game[data-slot-priority] { --slot-board-ratio:1.25 }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] [hidden] { display:none!important }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .ce-composition { display:contents }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-heading,.ce-header) { grid-area:heading; display:flex; align-items:center; justify-content:center; padding:2px 6px; height:36px; min-height:0 }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .cc-heading>div { padding:0; background:none; border:0; box-shadow:none }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .cc-heading h2 { font-size:24px; line-height:28px; margin:0 }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-heading small,.cc-heading>div>span,.cc-heading>p,.ce-version,.ce-wordmark small,.mo-titlebar,.mo-menubar) { display:none }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .ce-wordmark { display:flex; flex-direction:row; align-items:center; gap:6px; transform:none; margin:0 }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .ce-wordmark :is(span,strong) { font-size:24px; line-height:28px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-scene,.ce-stage) {
+ grid-area:scene; position:relative; display:grid; grid-template-columns:minmax(130px,1fr) minmax(0,3.6fr) minmax(140px,1fr);
+ grid-template-rows:minmax(0,1fr); width:100%; max-width:none; height:100%; min-height:0; min-width:0;
+ padding:4px; gap:12px; align-items:stretch; justify-self:stretch; overflow:hidden; container:slot-scene/size;
+}
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-stage,.ce-reels-wrap) { grid-column:2; grid-row:1; min-width:0; min-height:0; margin:0; justify-self:center; align-self:center; width:min(100%,calc((100cqh - 64px)*var(--slot-board-ratio))); max-width:100% }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .ce-reels-wrap { width:min(100%,calc((100cqh - 88px)*var(--slot-board-ratio))) }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .cc-stage-heading { min-height:0; height:22px; padding:2px; margin:0; font-size:10px; letter-spacing:0 }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .cc-stage-heading b { font-size:10px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .cc-awning { height:12px; margin:0 }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .cc-board-frame { padding:4px; border-width:3px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .cc-board-foot { height:4px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .cc-board { width:100%; height:auto; min-height:0; aspect-ratio:6/5 }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .ce-metal-frame { padding:7px; width:100%; max-width:none; margin:0 }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .ce-cabinet-heading { min-height:0; height:24px; padding:2px 4px; font-size:10px; letter-spacing:0 }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .ce-cabinet-heading :is(strong,small,span) { font-size:10px; letter-spacing:0 }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .lg-board { width:100%; max-width:none; max-height:none }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-tickets,.cc-energy,.ce-sidebar) { min-height:0; min-width:0; width:100%; max-width:none; height:100%; margin:0; padding:8px; overflow:hidden; align-self:stretch; grid-area:auto }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .cc-tickets { grid-column:1; grid-row:1 }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-energy,.ce-sidebar) { grid-column:3; grid-row:1; justify-content:center }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .ag-model { display:flex; flex-direction:column; gap:4px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .ag-portrait { flex:1; min-height:0; height:auto; width:100%; max-height:none; grid-area:auto }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.ce-alien,.vr-host) { position:relative; inset:auto; grid-column:1; grid-row:1; width:100%; height:100%; max-height:100%; min-height:0; pointer-events:none }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .ce-mothership { display:none }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-feature-strip { grid-area:features; display:none }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-results,.ce-results) { grid-area:results; display:grid; grid-template-rows:18px 26px; gap:0; min-height:0; height:48px; max-width:none; width:100%; padding:2px 6px; margin:0; align-content:center; overflow:hidden }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-results>p,.ce-results .lg-message) { height:auto; min-height:0; margin:0; padding:0; font-size:11px; line-height:16px; text-align:center; overflow:hidden }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-results>div,.ce-results .lg-win-bar) { display:flex; gap:8px; align-items:center; justify-content:center; height:26px; min-height:0; padding:0; margin:0 }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-results>div>span,.ce-results .lg-win-bar>div:first-child) { display:flex; align-items:center; gap:6px; font-size:10px; white-space:nowrap }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-results strong,.ce-results .lg-win-bar strong) { display:inline; margin:0; font-size:21px; line-height:24px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-groups,.lg-win-groups) { display:flex; gap:4px; height:24px; max-height:24px; overflow:auto }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-groups>span,.lg-win-groups>span) { height:24px; font-size:10px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .cc-groups .cc-symbol { width:22px; height:22px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .lg-win-bar>small { display:none }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-controls,.ce-console) {
+ grid-area:controls; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(190px,1.5fr) 88px 180px;
+ grid-template-rows:44px 44px; grid-template-areas:"balance last stake spin auto" "tools tools stake spin auto";
+ height:104px; min-height:0; width:100%; max-width:none; align-self:stretch; margin:0; padding:6px; gap:4px 8px; border-radius:8px;
+}
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-balance,.ce-money) { grid-area:balance; min-width:0 }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-last,.ce-lastwin) { grid-area:last; min-width:0 }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-balance>strong,.cc-last>strong,.ce-money>strong,.ce-lastwin>strong) { display:block; margin:0; font-size:21px; line-height:24px; letter-spacing:0; white-space:nowrap }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-balance small,.cc-last small,.ce-money>span,.ce-lastwin>span) { display:block; font-size:9px; line-height:12px; letter-spacing:.5px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-balance>span,.ce-money>small) { display:none }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-stake,.ce-stake) { grid-area:stake; min-width:0; display:grid; grid-template-columns:minmax(0,1fr); grid-template-rows:18px 44px 16px; align-content:center; gap:2px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-stake>label,.ce-stake>label) { grid-column:1; grid-row:1; padding:0; margin:0; font-size:9px; letter-spacing:0; line-height:16px; text-align:left }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-stake>div,.ce-stake>div) { grid-column:1; grid-row:2; display:grid; grid-template-columns:44px minmax(0,1fr) 44px; gap:4px; width:100%; margin:0 }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-stake button,.ce-stake button,.cc-stake select,.ce-stake select) { width:100%; min-width:0; min-height:44px; height:44px; margin:0; padding:3px; font-size:16px; border-radius:5px; grid-row:1 }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-stake select,.ce-stake select) { grid-column:2 }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-stake>small,.ce-stake>small) { grid-column:1; grid-row:3; display:block; min-height:0; font-size:10px; line-height:14px; text-align:left; letter-spacing:0 }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .ce-stake>[data-lg-line-stake] { display:none }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-spin,.ce-spin) { grid-area:spin; width:88px; min-width:0; height:88px; min-height:44px; max-height:100%; margin:0; padding:4px; transform:none; align-self:center; justify-self:center }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .cc-spin>b { font-size:42px; line-height:46px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .ce-spin>svg { width:44px; height:44px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-spin>span,.ce-spin>span) { font-size:10px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-auto-controls,.ce-right-controls) { grid-area:auto; display:flex; flex-direction:column; gap:4px; min-width:0; width:100%; max-width:none; height:auto; justify-content:center }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-auto-controls>div,.ce-right-controls>div) { display:flex; gap:4px; min-width:0; width:100% }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-auto-controls button,.ce-right-controls button,.cc-auto-controls select,.ce-right-controls select) { min-height:44px; height:44px; min-width:0; padding:4px; font-size:12px; flex:1 }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-tools,.ce-tools) { grid-area:tools; display:flex; align-items:center; justify-content:space-evenly; min-width:0; gap:4px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-tools button,.ce-tools button) { min-height:44px; min-width:44px; width:44px; height:44px; padding:2px; margin:0; font-size:20px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-wallet-help,.ce-wallet-help) { grid-area:funds; margin:0; padding:4px; font-size:10px; gap:4px; line-height:14px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-feedback,.ce-feedback) { grid-area:status; display:grid; grid-template-columns:minmax(0,1fr) auto; grid-template-rows:auto auto; margin:0; padding:0 4px; min-height:0; height:auto; max-height:none; gap:0 6px; overflow:hidden }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-feedback p,.ce-feedback p) { grid-column:1; font-size:10px; line-height:13px; margin:0; padding:0; min-height:0 }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-feedback p,.ce-feedback p):empty { display:none }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-feedback,.ce-feedback):not(:has(p:not(:empty),button:not([hidden]))) { display:none }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .lg-recovery { grid-column:2; grid-row:1/3; display:flex; align-items:center }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is([data-cc-retry],[data-lg-retry]) { grid-column:2; grid-row:1/3; min-height:44px; padding:4px 8px; font-size:11px; width:auto; margin:0 }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-dialog-backdrop,.ce-dialog-backdrop) { position:absolute; inset:0; padding:8px; overflow:auto; align-items:safe center }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is(.cc-dialog,.ce-dialog) { box-sizing:border-box; min-height:0; width:min(720px,100%); max-height:calc(100cqh - 16px); overflow:auto; margin:0 }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] :is([data-lg-dialog-action=bonus],[data-cc-action=bonus],[data-lg-dialog-action=complete],[data-cc-action=complete]) { position:sticky; bottom:0; z-index:12; min-height:44px; height:auto; margin-block:6px 0; padding:10px }
+
+/* Small panes have one field and a short live feature strip. */
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority]:where(:not([data-slot-priority=full])) {
+ grid-template-rows:minmax(0,1fr) auto 40px 104px auto auto;
+ grid-template-areas:"scene" "features" "results" "controls" "funds" "status"; padding:4px;
+}
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority]:where(:not([data-slot-priority=full])) :is(.cc-heading,.ce-header) { display:none }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority]:where(:not([data-slot-priority=full])) :is(.cc-scene,.ce-stage) { grid-template-columns:minmax(0,1fr); padding:4px; gap:0 }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority]:where(:not([data-slot-priority=full])) :is(.cc-stage,.ce-reels-wrap) { grid-column:1; width:min(100%,calc((100cqh - 16px)*var(--slot-board-ratio))); max-width:100% }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority]:where(:not([data-slot-priority=full])) :is(.cc-stage-heading,.cc-awning,.cc-board-foot,.ce-cabinet-heading,.ce-alien,.vr-host) { display:none }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority]:where(:not([data-slot-priority=full])) :is(.cc-board-frame,.ce-metal-frame) { padding:3px; border-width:2px; border-radius:6px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority]:where(:not([data-slot-priority=full])) .slot-feature-strip { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; min-width:0; gap:2px 10px; padding:2px 4px; font-size:11px; line-height:16px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-feature-strip :is(.cc-series,.cc-factor-card,.nr-nitro-card,.ag-album-progress,.ag-pin-card,.ce-energy,.ce-free-spins,.lg-feature-counters) { display:flex; flex-direction:row; flex-wrap:wrap; align-items:center; justify-content:center; flex:none; contain:none; gap:3px; position:static; inset:auto; width:auto; min-width:0; max-width:100%; height:auto; min-height:0; padding:0; margin:0; border:0; border-radius:0; box-shadow:none; background:none; grid-area:auto }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-feature-strip :is(h3,h4,small,span) { font-size:9px; line-height:13px; margin:0; letter-spacing:0 }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-feature-strip strong { position:static; font-size:13px; line-height:18px; margin:0; text-shadow:none }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-feature-strip .cc-series>strong { max-width:none; min-height:0; white-space:nowrap }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game.ag-game[data-slot-priority][data-remaining="0"] .slot-feature-strip .cc-series { display:none }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-feature-strip .ag-album-progress>span { display:none }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-feature-strip :is(.cc-factor-card>small,.cc-energy-meter,.ce-energy-track,.nr-nitro-card>small,.ce-energy>small,.ag-pin-card>small,.ce-free-spins>small) { display:none }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-feature-strip button { min-height:44px; height:44px; padding:4px 6px; width:auto; font-size:10px; margin:0 }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-feature-strip button:disabled { display:none }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-feature-strip .cc-series>div { display:contents; min-height:0; height:auto; padding:0; margin:0 }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-feature-strip :is(.nr-nitro-card>p,.ag-pin-card>p) { display:none }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-feature-strip :is(svg,img,.cc-symbol,.ce-symbol) { width:16px; max-width:16px; height:16px; max-height:16px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-feature-strip progress { width:60px; min-width:0; height:6px; margin:0; flex:none }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-feature-strip :is(.nr-nitro-card>span,.ag-pin-card>span) { display:inline-flex; width:16px; height:16px; min-width:0; min-height:0; margin:0; padding:0 }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-feature-strip .vr-star-roster { display:flex; gap:3px; margin:0; width:auto }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-feature-strip .vr-star-roster>span { display:flex; align-items:center; gap:2px; min-width:0; padding:0; font-size:9px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-feature-strip .vr-star-roster :is(img,.vr-art) { display:none }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-feature-strip .ag-album-progress>div { width:42px; height:4px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority]:where(:not([data-slot-priority=full])) :is(.cc-results,.ce-results) { height:40px; grid-template-rows:16px 22px; padding:1px 4px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority]:where(:not([data-slot-priority=full])) :is(.cc-results>div,.ce-results .lg-win-bar) { height:22px; gap:4px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority]:where(:not([data-slot-priority=full])) :is(.cc-results strong,.ce-results .lg-win-bar strong) { font-size:18px; line-height:20px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority]:where(:not([data-slot-priority=full])) :is(.cc-groups,.lg-win-groups) { display:none }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority]:where(:not([data-slot-priority=full])) :is(.cc-controls,.ce-console) {
+ grid-template-columns:minmax(0,1fr) minmax(0,1fr) 84px; grid-template-rows:44px 44px;
+ grid-template-areas:"balance stake spin" "auto tools spin"; height:104px; padding:6px; gap:4px 8px;
+}
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority]:where(:not([data-slot-priority=full])) :is(.cc-last,.ce-lastwin) { display:none }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority]:where(:not([data-slot-priority=full])) :is(.cc-balance>strong,.ce-money>strong) { font-size:18px; line-height:22px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority]:where(:not([data-slot-priority=full])) :is(.cc-stake,.ce-stake) { grid-template-rows:44px; position:relative; align-self:center; gap:0 }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority]:where(:not([data-slot-priority=full])) :is(.cc-stake>label,.ce-stake>label) { display:none }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority]:where(:not([data-slot-priority=full])) :is(.cc-stake>div,.ce-stake>div) { grid-row:1; grid-column:1; display:block; margin:0 }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority]:where(:not([data-slot-priority=full])) :is(.cc-stake button,.ce-stake button) { display:none }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority]:where(:not([data-slot-priority=full])) :is(.cc-stake select,.ce-stake select) { display:block; width:100%; height:44px; padding:0 3px 12px; font-size:16px; text-align:center }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority]:where(:not([data-slot-priority=full])) :is([data-cc-cost],[data-lg-cost]) { grid-area:auto; position:absolute; bottom:2px; left:2px; right:2px; font-size:8px; line-height:10px; text-align:center; pointer-events:none; margin:0 }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority]:where(:not([data-slot-priority=full])) :is(.cc-spin,.ce-spin) { width:84px; height:88px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority]:where(:not([data-slot-priority=full])) :is(.cc-auto-controls,.ce-right-controls,.cc-auto-controls>div,.ce-right-controls>div) { display:contents }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority]:where(:not([data-slot-priority=full])) :is([data-cc-auto],[data-lg-auto]) { grid-area:auto; width:100%; min-width:0; height:44px; min-height:44px; padding:3px; font-size:12px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority]:where(:not([data-slot-priority=full])) :is(.cc-tools,.ce-tools) { justify-content:stretch }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority]:where(:not([data-slot-priority=full])) .slot-settings-button { width:100%; font-size:23px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority]:where(:not([data-slot-priority=full])) :is(.cc-controls,.ce-console)>:is([data-cc-pause],[data-lg-pause]) { display:none; grid-area:auto; width:100%; min-width:0; height:44px; min-height:44px; padding:3px; font-size:11px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority][data-remaining]:not([data-remaining="0"]):where(:not([data-slot-priority=full])) :is(.cc-controls,.ce-console)>:is([data-cc-pause],[data-lg-pause]):not(:disabled):not([hidden]) { display:block }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority][data-remaining]:not([data-remaining="0"]):where(:not([data-slot-priority=full])) :is(.cc-controls,.ce-console):has(>:is([data-cc-pause],[data-lg-pause]):not(:disabled):not([hidden])) :is([data-cc-auto],[data-lg-auto]) { display:none }
+
+/* A short pane puts controls beside the field, without reserving a second footer. */
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority=landscape] {
+ grid-template-columns:minmax(0,1fr) 206px; grid-template-rows:minmax(0,1fr) auto 40px auto auto;
+ grid-template-areas:"scene controls" "features controls" "results controls" "funds funds" "status status"; gap:0 6px;
+}
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority=landscape] :is(.cc-controls,.ce-console) { height:100%; grid-template-columns:minmax(0,1fr) minmax(0,1fr); grid-template-rows:28px 44px 44px 44px; grid-template-areas:"balance balance" "stake stake" "spin spin" "auto tools"; align-content:center; padding:4px; gap:4px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority=landscape] :is(.cc-balance,.ce-money) { display:flex; align-items:center; justify-content:space-between; gap:4px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority=landscape] :is(.cc-spin,.ce-spin) { width:100%; height:44px; min-height:44px; border-radius:8px; display:flex; flex-direction:row; align-items:center; justify-content:center; gap:8px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority=landscape] .cc-spin>b { font-size:30px; line-height:32px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority=landscape] .ce-spin>svg { flex:none; width:30px; height:30px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority=landscape] :is(.cc-dialog,.ce-dialog):is([data-dialog=bonus],[data-dialog=complete]) { padding:10px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority=landscape] :is([data-dialog=bonus],[data-dialog=complete]) h2 { font-size:23px; line-height:27px; margin:4px 0 }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority=landscape] :is([data-dialog=bonus],[data-dialog=complete]) p { font-size:11px; line-height:15px; margin:4px 0 }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority=landscape] .ce-bonus-orbit { width:64px; height:64px; margin:5px auto }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority=landscape] .ce-bonus-orbit strong { line-height:64px; font-size:34px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority=landscape] .cc-bonus-art { height:64px; min-height:0; margin:4px auto; gap:8px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority=landscape] .cc-bonus-art :is(svg,img,.cc-symbol) { max-height:58px; max-width:58px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority=landscape] .cc-bonus-art>strong { font-size:30px; line-height:32px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority=landscape] .cc-bonus-art small { font-size:8px; line-height:12px }
+
+/* The one settings panel holds optional controls and the original themed artwork. */
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-settings-dialog .slot-secondary-controls { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); align-items:start; gap:10px; margin-bottom:16px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-settings-dialog .slot-secondary-controls:empty { display:none }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-settings-dialog .slot-secondary-controls>select { min-height:44px; min-width:0; max-width:100%; font-size:16px; color:#f5efd9; background:#27434b; border:1px solid #91afa6; border-radius:6px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-settings-dialog .slot-secondary-controls>:is(.cc-tickets,.cc-energy,.ce-sidebar) { position:relative; inset:auto; display:flex; flex-direction:column; flex-wrap:nowrap; align-items:stretch; justify-content:flex-start; contain:none; grid-area:auto; width:100%; max-width:none; min-height:0; height:auto; overflow:visible; padding:8px; gap:10px; margin:0; border:1px solid #91afa644; border-radius:8px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-settings-dialog .slot-secondary-controls :is(.cc-tickets>h3,.cc-energy>h3) { font-size:12px; margin:0 }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-settings-dialog .slot-secondary-controls .cc-ticket-slots { position:static; height:40px; width:100%; margin:0; display:flex; justify-content:center; gap:3px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-settings-dialog .slot-secondary-controls .cc-ticket-slots>span { width:30px; height:36px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-settings-dialog .slot-secondary-controls :is(.cc-tickets>p,.cc-energy>p) { position:static; margin:0; font-size:11px; line-height:15px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-settings-dialog .slot-secondary-controls .cv-portrait { position:relative; inset:auto; height:160px; min-height:160px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-settings-dialog .slot-secondary-controls .ag-portrait { position:relative; inset:auto; height:180px; min-height:180px; max-height:none; width:100%; padding:0; background:none }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-settings-dialog .slot-secondary-controls .ag-model-caption { position:static; margin:0; padding:0; font-size:11px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-settings-dialog .slot-secondary-controls :is(.cc-buy,.ce-missions) { position:static; inset:auto; grid-area:auto; min-height:44px; min-width:0; height:auto; padding:8px 4px; width:100%; max-width:100%; flex:none; font-size:12px!important }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-settings-dialog .slot-secondary-controls :is(.cc-buy strong,.cc-buy b,.ce-missions strong) { font-size:12px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-settings-dialog .slot-secondary-controls :is(.cc-buy small,.ce-missions small) { font-size:10px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-settings-dialog .slot-secondary-controls .cc-top { display:none }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-settings-dialog .slot-secondary-controls>button { width:100%; height:44px; min-width:0 }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-settings-dialog .slot-secondary-controls>label { flex-direction:column; align-items:stretch; min-width:0; gap:4px; font-size:12px }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-settings-dialog .slot-secondary-controls>label>select { width:100%; min-width:0; min-height:44px; font-size:16px; background:#27434b; color:#f5efd9 }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-settings-dialog>header { position:sticky; top:-22px; z-index:30; padding:8px 0; background:#152b32 }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-settings-dialog .ce-portals { display:flex; flex-direction:column; flex-wrap:nowrap; position:static; grid-area:auto; width:100%; max-width:100%; min-width:0; height:auto; min-height:0; padding:8px; gap:6px; box-sizing:border-box }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-settings-dialog .ce-portals :is(h4,small,span) { font-size:10px; line-height:14px; margin:0 }
+#mini-dialog.originals-mode[data-game-viewport] .slot-priority-game[data-slot-priority] .slot-settings-dialog .vr-gem-row .vr-symbol { width:28px; height:28px }

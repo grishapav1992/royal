@@ -1,6 +1,7 @@
 /** Local host verification only. Own temporary PostgreSQL, real shared wallet store, no .env. */
 import { spawn } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
+import { createServer as createSocket } from 'node:net';
 import { mkdir,writeFile,readFile } from 'node:fs/promises';
 import { createServer,type Plugin } from 'vite';
 import { temporaryDatabase } from './database-test';
@@ -10,8 +11,13 @@ import { DemoExpansionStore } from '../server/demoExpansion';
 import { CARIBBEAN_GAME } from '../src/shared/caribbeanTreasures';
 import {CARIBBEAN_CLIENT_HEADER} from '../src/shared/caribbeanTransport';
 
-const database = await temporaryDatabase();
 const apiPort = Number(process.env.CARIBBEAN_API_PORT || 2634), webPort = Number(process.env.CARIBBEAN_WEB_PORT || 5234);
+// Never mistake another chat's healthy server for this disposable backend.
+await Promise.all([apiPort,webPort].map(port=>new Promise<void>((resolve,reject)=>{
+  const socket=createSocket();socket.once('error',reject);
+  socket.listen(port,'127.0.0.1',()=>socket.close(error=>error?reject(error):resolve()));
+})));
+const database = await temporaryDatabase();
 const api = 'http://127.0.0.1:' + apiPort;
 const environment = {...process.env,...database.env,PORT:String(apiPort),AUTH_DB_PATH:'caribbean_stage3',PUBLIC_ORIGIN:''};
 const backend = spawn(process.execPath,['--import','tsx','server/index.ts'],{

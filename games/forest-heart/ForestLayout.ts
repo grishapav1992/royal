@@ -1,53 +1,49 @@
-/** Fits only the presentation inside the real Royal host and its connected chat. */
+import { gameContentLayout } from '../../src/ui/GameLayoutPolicy';
+
+/** Fits the existing network and live artwork to the space supplied by the host. */
 export class ForestLayout {
   private observer: ResizeObserver;
   private raf = 0;
+  private compact = false;
   private world: HTMLElement;
   private machine: HTMLElement;
-  private portrait: HTMLElement;
-  private status: HTMLElement;
-  private header: HTMLElement;
+  private panel: HTMLElement;
   private controls: HTMLElement;
-  private footnote: HTMLElement;
+  private tools: HTMLElement;
+  private homes: {node:HTMLElement;marker:Comment}[];
   constructor(private root: HTMLElement) {
     this.world=root.querySelector('.fh-world')!;this.machine=root.querySelector('.fh-machine')!;
-    this.portrait=root.querySelector('.fh-character')!;this.status=root.querySelector('.fh-status-band')!;
-    this.header=root.querySelector('.fh-top')!;this.controls=root.querySelector('.fh-controls')!;this.footnote=root.querySelector('.fh-footnote')!;
+    this.panel=root.querySelector('[data-panel=settings]')!;this.controls=root.querySelector('.fh-controls')!;this.tools=root.querySelector('.fh-tools')!;
+    this.homes=['.fh-character','.fh-tools','.fh-fast','[data-fh=sound]','[data-fh=rules]'].map(selector=>{
+      const node=root.querySelector<HTMLElement>(selector)!,marker=root.ownerDocument.createComment('forest layout');node.before(marker);return{node,marker};
+    });
     this.observer=new ResizeObserver(()=>this.schedule());
-    for(const element of [root,this.world,this.header,this.status,this.controls])this.observer.observe(element);
+    for(const element of [root,this.world,this.controls,root.querySelector('.fh-status-band')!])this.observer.observe(element);
     this.fit();
   }
   private schedule(){if(!this.raf)this.raf=this.root.ownerDocument.defaultView!.requestAnimationFrame(()=>{this.raf=0;this.fit();});}
   private fit(){
-    const width=this.root.clientWidth,height=this.root.clientHeight;
-    const mode=height<440&&width>=360?'landscape':width<=620?'mobile':height>width*1.08?'poster':'wide';
-    const mobile=mode==='mobile',landscape=mode==='landscape',small=mobile||landscape;
-    this.root.dataset.layout=mode;this.root.dataset.compact=String(height<560);this.root.dataset.short=String(height<490);
-    const parent=small?this.status:this.world;
-    if(this.portrait.parentElement!==parent){if(small)parent.prepend(this.portrait);else parent.append(this.portrait);}
+    const profile=gameContentLayout(this.root.clientWidth,this.root.clientHeight),compact=profile!=='full';
+    this.root.dataset.frameLayout=profile;this.root.dataset.layout=profile==='full'?'wide':profile==='portrait'?'mobile':'landscape';
+    this.root.dataset.compact=String(compact);this.root.dataset.short=String(this.root.clientHeight<490);
+    if(compact!==this.compact){
+      this.compact=compact;
+      if(compact)for(const{node}of this.homes)(node===this.tools?this.controls:this.panel).append(node);
+      else for(const{node,marker}of [...this.homes].reverse())marker.after(node);
+    }
     const css=this.root.ownerDocument.defaultView!.getComputedStyle(this.world);
-    const padding=parseFloat(css.paddingLeft)+parseFloat(css.paddingRight);
-    const sidebar=landscape?(width<540?172:208):0;
-    this.root.style.setProperty('--landscape-controls-width',sidebar+'px');
-    const availableWidth=(landscape?width-sidebar:Math.min(width,2000))-padding;
-    const paddingY=parseFloat(css.paddingTop)+parseFloat(css.paddingBottom);
-    const availableHeight=(small?this.world.clientHeight:height-this.header.offsetHeight-this.status.offsetHeight-this.controls.offsetHeight-this.footnote.offsetHeight)-paddingY;
-    const gap=small?4:8,source=mobile?44:landscape?36:56;
-    const flowerFor=(size:number)=>mobile?58:landscape?48:Math.min(196,Math.max(104,Math.round(size*.25)));
-    const banner=mode==='poster'?Math.min(240,Math.max(104,Math.floor(availableHeight*.26))):0;
-    const columnsGap=mode==='wide'?16:0,portraitRatio=mode==='wide'?.62:0;
-    const frameFor=(size:number)=>Math.max(8,Math.floor(size*(small?.04:.05)));
-    const fits=(size:number)=>{
-      const scene=size+frameFor(size)*2;
-      return scene*(1+portraitRatio)+source+flowerFor(size)+gap*2+columnsGap<=availableWidth&&scene+banner+(banner?8:0)<=availableHeight;
-    };
-    let board=128;
-    while(board<1040&&fits(board+1))board++;
-    const frame=frameFor(board),scene=board+frame*2,portrait=Math.floor(scene*portraitRatio),flower=flowerFor(board);
-    const values:Record<string,number>={board,frame,'source-width':source,'flower-width':flower,'network-gap':gap,'portrait-width':portrait,'portrait-banner-height':banner,'scene-height':scene,'machine-width':scene+source+flower+gap*2,'world-height':scene+banner+(banner?8:0)+paddingY};
-    for(const [name,value] of Object.entries(values))this.root.style.setProperty('--'+name,value+'px');
-    this.world.style.removeProperty('width');
+    const availableWidth=this.world.clientWidth-parseFloat(css.paddingLeft)-parseFloat(css.paddingRight);
+    const availableHeight=this.world.clientHeight-parseFloat(css.paddingTop)-parseFloat(css.paddingBottom);
+    const source=compact?44:56,gap=compact?2:8;
+    const frameFor=(size:number)=>compact?6:Math.max(8,Math.floor(size*.04));
+    const flowerFor=(size:number)=>compact?32:Math.min(128,Math.max(80,Math.round(size*.22)));
+    const portraitFor=(size:number)=>compact?0:Math.floor((size+frameFor(size)*2)*.5);
+    const fits=(size:number)=>size+frameFor(size)*2+source+flowerFor(size)+gap*2+portraitFor(size)+(compact?0:16)<=availableWidth&&size+frameFor(size)*2<=availableHeight;
+    let board=32;while(board<1040&&fits(board+1))board++;
+    const frame=frameFor(board),flower=flowerFor(board),scene=board+frame*2;
+    const values:Record<string,number>={board,frame,'source-width':source,'flower-width':flower,'network-gap':gap,'portrait-width':portraitFor(board),'portrait-banner-height':0,'scene-height':scene,'machine-width':scene+source+flower+gap*2};
+    for(const[name,value]of Object.entries(values))this.root.style.setProperty('--'+name,value+'px');
     this.machine.style.maxWidth='100%';
   }
-  destroy(){this.observer.disconnect();if(this.raf)this.root.ownerDocument.defaultView!.cancelAnimationFrame(this.raf);}
+  destroy(){this.observer.disconnect();if(this.raf)this.root.ownerDocument.defaultView!.cancelAnimationFrame(this.raf);for(const{node,marker}of [...this.homes].reverse())marker.replaceWith(node);}
 }

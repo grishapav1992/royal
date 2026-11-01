@@ -1,13 +1,14 @@
 import {test as base,expect,type Page} from '@playwright/test';
 import {Client} from '@colyseus/sdk';
+import {walletSnapshot as wallet,walletHeaders} from './wallet-snapshot';
 const test=base.extend<{roomPath:string}>({roomPath:async({request},use)=>{
  const response=await request.post('/api/auth/login',{data:{email:`flags-room-${crypto.randomUUID()}@example.test`,password:'Royal-test-123!'}});expect(response.ok()).toBe(true);
  const cookie=response.headers()['set-cookie'].split(';')[0];await request.post('/api/auth/character',{data:{skin:0}});
- const client=new Client('http://127.0.0.1:2635',{headers:{Cookie:cookie},fetchFn:async(url,options)=>{const reply=await request.fetch(String(url),{method:options?.method,headers:Object.fromEntries(new Headers(options?.headers)),data:options?.body as string});return new Response(await reply.body(),{status:reply.status(),headers:reply.headers()});}});
+ const client=new Client('http://127.0.0.1:'+(process.env.FLAG_API_PORT||2635),{headers:{Cookie:cookie},fetchFn:async(url,options)=>{const reply=await request.fetch(String(url),{method:options?.method,headers:Object.fromEntries(new Headers(options?.headers)),data:options?.body as string});return new Response(await reply.body(),{status:reply.status(),headers:reply.headers()});}});
  const room=await client.create<any>('lobby');for(const name of ['chat','activities','piano-note','notice','chat-check','security','ejected','pvp'])room.onMessage(name,()=>{});
  try{await use('/?room='+room.roomId);}finally{await Promise.race([room.leave(),new Promise(resolve=>setTimeout(resolve,1500))]);}
 }});
-const out='artifacts/work/flag-battle';
+const out=process.env.LAYOUT_ARTIFACTS_DIR ? process.env.LAYOUT_ARTIFACTS_DIR+'/flag-host' : 'artifacts/work/flag-battle';
 async function enter(page:Page,path:string){
   await page.route('https://luelonplay.com/demo-api/**',r=>r.fulfill({json:{games:[]}}));
   await page.goto(path);
@@ -18,7 +19,7 @@ async function enter(page:Page,path:string){
   if(await page.locator('#character-step').isVisible())await page.getByRole('button',{name:'Войти в зал',exact:true}).click();
   await expect(page.locator('#join-dialog')).toBeHidden({timeout:20000});
   await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getState().online)).toBe(true);
-  const r=await page.request.post('/__test/flag-battle/topup');expect(r.ok()).toBe(true);
+  const r=await page.request.post(process.env.FLAG_TOPUP_PATH||'/__test/flag-battle/topup');expect(r.ok()).toBe(true);
   await page.evaluate(async()=>{const path='/src/wallet/WalletClient.ts';await(await import(/* @vite-ignore */path)).demoWallet.refresh();});
 }
 async function open(page:Page){
@@ -36,7 +37,6 @@ async function open(page:Page){
 }
 async function close(page:Page){await page.locator('#mini-dialog .mini-top [data-close]').click();await expect(page.locator('#mini-dialog')).toBeHidden();}
 const mini=(page:Page)=>page.evaluate(()=>(window as any).royalDemo.getMiniState());
-const wallet=async(page:Page)=>(await(await page.request.get('/api/demo-wallet')).json());
 
 test('real host: countries, paid round, skips, reopen, mobile chat and reduced motion',async({page,roomPath})=>{
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
@@ -58,8 +58,8 @@ test('real host: countries, paid round, skips, reopen, mobile chat and reduced m
   expect((await mini(page)).presenting).toBe(false);expect((await wallet(page)).entries).toEqual(before.entries);
   expect((await mini(page)).audio.scheduled).toEqual({});
   await page.setViewportSize({width:390,height:844});
-  await expect(page.locator('#chat-input')).toBeInViewport();
-  await page.locator('[data-fb="play"]').scrollIntoViewIfNeeded();await expect(page.locator('[data-fb="play"]')).toBeInViewport();
+  await expect(page.locator('#chat-input')).toBeHidden();await expect(page.locator('#mini-dialog .game-chat-toggle')).toBeVisible();
+  await expect(page.locator('[data-fb="play"]')).toBeInViewport({ratio:1});
   expect(await page.locator('.fb-root').evaluate(e=>e.scrollWidth<=e.clientWidth+1)).toBe(true);
   await page.screenshot({path:out+'/physics-mobile.png'});
   await page.emulateMedia({reducedMotion:'reduce'});
@@ -73,7 +73,7 @@ test('real host: countries, paid round, skips, reopen, mobile chat and reduced m
   await expect.poll(async()=>(await mini(page))?.presenting,{timeout:30000}).toBe(false);
   await expect.poll(async()=>(await mini(page))?.eliminated).toBe(11);
   await expect(page.locator('[data-fb="count"]')).toHaveText('1');
-  const saved=await page.request.get('/api/demo-wallet/expansion',{headers:{'X-Royal-Flag-Battle':'2'}});
+  const saved=await page.request.get('/api/demo-wallet/expansion',{headers:{...await walletHeaders(page),'X-Royal-Flag-Battle':'2'}});expect(saved.ok()).toBe(true);
   const settled=(await saved.json()).sessions.find((s:any)=>s.gameId==='flag-battle');
   const state=await mini(page);
   expect(state.returnedUnits).toBe(settled.returnedUnits);
@@ -116,6 +116,7 @@ async function openRetry(page:Page){
 
 test('24 and 48 flags: quotes, search, saved mode, natural world round and mobile chat',async({page,roomPath})=>{
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await enter(page,roomPath);await open(page);
+  await page.locator('#fb-stake').selectOption('100');
   await page.locator('button[data-mode=expanded]').click();await expect(page.locator('[data-country]')).toHaveCount(24);
   await expect(page.locator('[data-fb=odds]')).toContainText('1 из 24');await expect(page.locator('[data-fb=quote]')).toContainText('23,04');
   await page.getByRole('searchbox',{name:'Найти страну'}).fill('Украина');await expect(page.locator('[data-country]:visible')).toHaveCount(1);
@@ -140,20 +141,21 @@ test('24 and 48 flags: quotes, search, saved mode, natural world round and mobil
   expect(state.physics.bodies.filter((b:any)=>!b.escaped)).toHaveLength(1);expect(state.audio.scheduled.eliminate).toBe(47);
   expect(state.audio.scheduled['final-two']).toBe(1);expect((state.audio.scheduled.win??0)+(state.audio.scheduled.lose??0)).toBe(1);
   await expect.poll(async()=>(await mini(page)).audio.voices).toBe(0);
-  const response=await page.request.get('/api/demo-wallet/expansion',{headers:{'X-Royal-Flag-Battle':'2'}});
+  const response=await page.request.get('/api/demo-wallet/expansion',{headers:{...await walletHeaders(page),'X-Royal-Flag-Battle':'2'}});expect(response.ok()).toBe(true);
   const saved=(await response.json()).sessions.find((s:any)=>s.gameId==='flag-battle');
   expect(saved.view.flags.mode).toBe('world');expect(state.physics.order).toEqual(saved.view.flags.order.slice(0,47));
   expect(state.physics.winner).toBe(saved.view.flags.order[47]);expect(state.returnedUnits).toBe(saved.returnedUnits);
   await close(page);await open(page);expect((await mini(page)).mode).toBe('world');expect((await mini(page)).audio.scheduled).toEqual({});
   await page.setViewportSize({width:669,height:804});
-  await expect(page.locator('#chat-input')).toBeInViewport();
+  await expect(page.locator('#chat-input')).toBeHidden();
   expect(await page.locator('.fb-stage').evaluate(e=>e.getBoundingClientRect().width)).toBeGreaterThan(300);
-  expect(await page.locator('.fb-layout').evaluate(e=>getComputedStyle(e).flexDirection)).toBe('column');
-  await page.setViewportSize({width:390,height:844});await expect(page.locator('#chat-input')).toBeInViewport();
+  await expect(page.locator('.fb-stage')).toBeInViewport({ratio:1});
+  await page.setViewportSize({width:390,height:844});await expect(page.locator('#chat-input')).toBeHidden();
+  await page.locator('.fb-selection-summary').click();
   await page.locator('button[data-mode=classic]').click();await page.locator('button[data-mode=world]').click();
   await expect(page.locator('[data-country]')).toHaveCount(48);
-  await page.locator('[data-fb=play]').scrollIntoViewIfNeeded();await expect(page.locator('[data-fb=play]')).toBeInViewport();
+  await page.locator('.game-options-panel>header button').click();await expect(page.locator('[data-fb=play]')).toBeInViewport({ratio:1});
   expect(await page.locator('.fb-root').evaluate(e=>e.scrollWidth<=e.clientWidth+1)).toBe(true);
-  await page.locator('button[data-mode=world]').scrollIntoViewIfNeeded();await page.screenshot({path:out+'/modes-mobile.png'});
+  await page.screenshot({path:out+'/modes-mobile.png'});
   expect((await wallet(page)).entries.filter((e:any)=>e.kind==='bet')).toHaveLength(2);expect(errors).toEqual([]);
 });

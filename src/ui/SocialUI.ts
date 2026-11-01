@@ -44,6 +44,7 @@ export class SocialUI {
   private scrollAnchor?: { id: string; offset: number };
   private newMessages: HTMLButtonElement;
   private media: ChatMedia;
+  private gameChat: ReturnType<typeof installGameChat>;
   private outgoing = new Map<string, OutgoingMessage>();
   private outbox = document.createElement('div');
   private deliveryStatus = document.createElement('p');
@@ -63,7 +64,7 @@ export class SocialUI {
     chat.innerHTML = translateText('<div class="chat-heading"><strong>Общий чат</strong><span id="room-count">0 / 30</span></div><div class="people-list" id="people-list" aria-label="Игроки в клубе"></div><div class="chat-log" id="chat-log" role="log" aria-live="polite" aria-label="Сообщения зала"></div><form id="chat-form" class="chat-form"><label for="chat-input" class="sr-only">Сообщение в общий чат</label><input id="chat-input" maxlength="300" autocomplete="off" placeholder="Напиши что-нибудь…" disabled/><button id="send-chat" type="submit" aria-label="Отправить сообщение" disabled>↵</button></form>');
     const dock=document.createElement('aside');dock.className='chat-dock';dock.setAttribute('aria-label',translateText('Общий чат клуба'));dock.append(chat);
     document.querySelector('.workspace')!.append(dock);document.querySelector('.workspace')!.classList.add('with-chat');
-    installGameChat(dock, document.querySelector<HTMLDialogElement>('#mini-dialog')!);
+    this.gameChat = installGameChat(dock, document.querySelector<HTMLDialogElement>('#mini-dialog')!);
     catalog.hidden = false;
     this.people = chat.querySelector<HTMLDivElement>('#people-list')!;
     this.list = chat.querySelector<HTMLDivElement>('#chat-log')!;
@@ -113,7 +114,7 @@ export class SocialUI {
         });
         this.sanctioned = false; this.scene.setSecurity(false); this.checking = false;
         this.roomId = roomId; this.selfId = selfId;
-        this.messages.clear(); this.list.replaceChildren(this.outbox); this.media.prune(); this.media.close(false);
+        this.messages.clear(); this.gameChat.reset(); this.list.replaceChildren(this.outbox); this.media.prune(); this.media.close(false);
         this.showLatest();
         const url = new URL(location.href); url.searchParams.set('room', roomId); history.replaceState({ royalJoinedRoom: roomId }, '', url);
         this.scene.enableOnline({ elevator: target => this.client.travelByElevator(target), inputs: inputs => this.client.send('inputs',inputs), move: (x,y) => this.client.send('move',{x,y}), target: (x,y) => this.client.send('target',{x,y}), stop: () => this.client.send('stop'), sit: seat => this.client.send('sit',seat), stand: () => this.client.send('stand'), drink: drink => this.client.send('drink',drink), cat: action => this.client.send('cat',action), cabinetPlay: id => this.client.claimCabinet(id), cabinetLeave: () => this.client.releaseCabinet(), cabinetReaction: (id,reaction) => this.client.send('cabinet-reaction',{id,reaction}) });
@@ -121,7 +122,11 @@ export class SocialUI {
         document.querySelector('.profile-name')!.firstChild!.textContent = this.auth.account?.name || translateText('Игрок');
       },
       players: (players, selfId) => this.updatePlayers(players, selfId),
-      chat: message => this.addMessage(message),
+      chat: message => {
+        const fresh = !this.messages.has(message.id);
+        this.addMessage(message);
+        if (fresh && !message.system && message.senderId !== this.selfId) this.gameChat.messageReceived();
+      },
       delivery: result => this.chatResult(result),
       history: messages => { messages.forEach(message => this.addMessage(message)); },
       notice: message => this.toast(message),

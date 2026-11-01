@@ -1,7 +1,7 @@
 :is(#mini-dialog.mini-dialog, #casinoapipro-dialog.capro-dialog, #pvp-dialog.pvp-dialog, #shared-dialog.shared-dialog).game-chat-layout {
   position: fixed;
   box-sizing: border-box;
-  padding: 0;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   overflow: hidden;
   width: 100vw;
   height: var(--app-height, 100dvh);
@@ -56,31 +56,42 @@
   overscroll-behavior: contain;
 }
 :is(#mini-dialog.mini-dialog, #casinoapipro-dialog.capro-dialog, #pvp-dialog.pvp-dialog, #shared-dialog.shared-dialog) .game-chat-dock .chat-heading { display: flex; }
-@media (max-width: 640px) and (orientation: portrait) {
-  :is(#mini-dialog.mini-dialog, #casinoapipro-dialog.capro-dialog, #pvp-dialog.pvp-dialog, #shared-dialog.shared-dialog).game-chat-layout[open] {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: minmax(0, 1fr) minmax(150px, 27%);
-  }
-  :is(#mini-dialog.mini-dialog, #casinoapipro-dialog.capro-dialog, #pvp-dialog.pvp-dialog, #shared-dialog.shared-dialog) .game-chat-dock {
-    padding: 8px;
-    border-left: 0;
-    border-top: 2px solid #ad8c51;
-  }
+.game-chat-layout .game-chat-dock[hidden], .game-chat-layout .game-chat-scrim[hidden], .game-chat-close[hidden] { display: none !important; }
+:is(#mini-dialog, #casinoapipro-dialog, #pvp-dialog, #shared-dialog).game-chat-layout[data-game-chat]:not([data-game-chat="column"])[open] { grid-template-columns: minmax(0, 1fr); }
+.game-chat-toolbar { display: flex; justify-content: flex-end; flex: 0 0 auto; padding: 2px 6px; }
+.game-chat-toggle, .game-chat-close { min-width: 44px; min-height: 44px; padding: 6px 10px; border: 1px solid #ad8c51; border-radius: 7px; background: #efe1b3; color: #302b25; font: 600 13px system-ui, sans-serif; cursor: pointer; touch-action: manipulation; }
+.game-chat-close { padding: 0; font-size: 26px; margin-left: 8px; }
+.game-chat-toggle:focus-visible, .game-chat-close:focus-visible { outline: 3px solid #8b5b27; outline-offset: -3px; }
+.game-chat-scrim { position: absolute; inset: 0; z-index: 20; background: #06192388; }
+:is(#mini-dialog, #casinoapipro-dialog, #pvp-dialog, #shared-dialog).game-chat-layout[data-game-chat="overlay"] .game-chat-dock {
+  position: absolute; z-index: 21; top: env(safe-area-inset-top); right: env(safe-area-inset-right); bottom: env(safe-area-inset-bottom); left: auto;
+  width: min(420px, 100%); height: auto; padding: 10px; border-left: 1px solid #ad8c51; background: #30263b; box-shadow: -8px 0 40px #0006;
 }
-@media (max-height: 500px) and (orientation: landscape) {
-  :is(#mini-dialog.mini-dialog, #casinoapipro-dialog.capro-dialog, #pvp-dialog.pvp-dialog, #shared-dialog.shared-dialog).game-chat-layout[open] { grid-template-columns: minmax(0, 1fr) 250px; }
-  :is(#mini-dialog.mini-dialog, #casinoapipro-dialog.capro-dialog, #pvp-dialog.pvp-dialog, #shared-dialog.shared-dialog) .game-chat-dock { padding: 8px; }
-  :is(#mini-dialog.mini-dialog, #casinoapipro-dialog.capro-dialog, #pvp-dialog.pvp-dialog, #shared-dialog.shared-dialog) .game-chat-dock .people-list { display: none; }
-}
+.game-chat-layout[data-game-chat="overlay"] .game-chat-dock .people-list { display: none; }
+.game-chat-layout .chat-heading strong { flex: 1; }
+.game-chat-layout .chat-heading { flex: 0 0 auto; margin-bottom: 6px; }
 
 #mini-dialog.game-chat-layout .mini-top {
   flex: 0 0 auto;
-  padding: 8px 14px;
-  gap: 8px;
+  padding: 2px 6px;
+  gap: 4px;
   align-items: center;
 }
 #mini-dialog.game-chat-layout .mini-top .eyebrow { display: none; }
 #mini-dialog.game-chat-layout .mini-top h2 { margin: 0; font-size: 18px; }
+#mini-dialog.game-chat-layout .mini-top > div { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; }
+.game-mode-badge { display: none; }
+.wallet-game-mode .game-mode-badge { display: inline; flex: 0 0 auto; font: 10px system-ui,sans-serif; color: #625637; }
+#mini-dialog.game-chat-layout .mini-top h2 { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#mini-dialog.game-chat-layout .mini-top > button { flex-shrink: 0; min-width: 44px; min-height: 44px; }
+#mini-dialog.game-chat-layout .mini-top .settings-shortcut { min-width: 44px; width: 44px; padding: 0; font-size: 0; }
+#mini-dialog.game-chat-layout .mini-top .settings-shortcut::after { content: '⚙'; font: 22px system-ui, sans-serif; }
+#mini-dialog.game-chat-layout.originals-mode .mini-bottom { display: none; }
+#mini-dialog.game-chat-layout .mini-bottom [data-close] { display: none; }
+@media (max-width: 700px), (max-height: 600px) {
+  #mini-dialog.game-chat-layout .mini-top h2 { font-size: 13px; }
+  #mini-dialog.game-chat-layout .mini-top #studio-game-list { font-size: 11px; padding: 4px 7px; }
+}
 #mini-dialog.game-chat-layout .mini-stage {
   flex: 1 1 0;
   min-height: 0;
@@ -93,7 +104,7 @@
 #mini-dialog.game-chat-layout .mini-stats { flex: 0 0 auto; }
 #mini-dialog.game-chat-layout.demo-mode .mini-stage { overflow: hidden; }
 #mini-dialog.game-chat-layout:not(.originals-mode) #mini-game { height: 100%; }
-@media (max-width: 640px) and (orientation: portrait) {
+@media (max-width: 1079px), (max-height: 599px) {
   #mini-dialog.game-chat-layout .chat-media-panel,
   #casinoapipro-dialog.game-chat-layout .chat-media-panel {
     position: fixed;

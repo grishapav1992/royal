@@ -112,8 +112,8 @@
  .ct-map{margin-right:calc(min(32cqw,66.666cqh) + 8px)}
 }
 /* Use the game pane, including space taken by chat, as the layout boundary. */
-@container ct-viewport (min-width:700px) and (min-aspect-ratio:4/3){
- .ct-root{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);grid-template-rows:auto minmax(180px,1fr) auto 36px;grid-template-areas:"heading heading" "stage stage" "ledger controls" "playback status";padding:8px 12px;gap:8px 12px;min-height:0}
+@container ct-viewport (min-width:700px) and (min-height:600px) and (min-aspect-ratio:4/3){
+ .ct-root{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);grid-template-rows:auto minmax(180px,1fr) auto 44px;grid-template-areas:"heading heading" "stage stage" "ledger controls" "playback status";padding:8px 12px;gap:8px 12px;min-height:0}
  .ct-heading{grid-area:heading}.ct-stage{grid-area:stage;min-height:0}
  .ct-title{padding:4px 20px 7px}.ct-title small{font-size:8px}.ct-heading h2{font-size:clamp(20px,2.6cqw,28px)}
  .ct-avatar{width:42px;height:50px}
@@ -124,30 +124,73 @@
  .ct-playback{grid-area:playback;width:100%;align-self:center}
  .ct-status{grid-area:status;block-size:36px;font-size:11px;align-content:center}
 }
-/* Keep the board large on phones by sharing the final row and compacting labels. */
-@container ct-viewport (max-width:650px){
- .ct-root{display:grid;grid-template-columns:146px minmax(0,1fr);grid-template-rows:auto minmax(min(330px,calc((100cqw - 70px)*2/3 + 26px)),1fr) auto auto 40px;grid-template-areas:"heading heading" "stage stage" "ledger ledger" "controls controls" "playback status";padding:7px;gap:6px;min-height:0}
- .ct-heading{grid-area:heading}.ct-stage{grid-area:stage;min-height:0}
- .ct-title{padding:7px 8px}.ct-title small{display:none}.ct-heading h2{font-size:clamp(15px,4.6cqw,20px);margin:0}
- .ct-ledger{grid-area:ledger}.ct-ledger strong{min-block-size:1.2em}.ct-ledger span{min-block-size:2.4em}
- .ct-controls{grid-area:controls}
- .ct-playback{grid-area:playback;width:100%;grid-template-columns:52px minmax(0,1fr);height:auto;align-self:center}
- .ct-playback .ct-skip,.ct-playback .ct-retry{grid-column:1/-1;grid-row:2}
- .ct-status{grid-area:status;block-size:40px;font-size:9px;align-content:center}
+.ct-console,.ct-tuning{display:contents}
+.ct-playback{height:44px;flex-basis:44px}
+.ct-playback button,.ct-playback select{min-height:44px;height:44px}
+.ct-settings-open{display:none}
+.ct-tuning>[data-ct-action=lines]{grid-column:1;grid-row:2}
+.ct-tuning>[data-ct-action=buy]{grid-column:3;grid-row:2;background:linear-gradient(#8b6031,#442919);color:#ffe3a1}
+.ct-tuning>button{font:12px system-ui,sans-serif}
+.ct-modal .ct-tuning{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:end}
+.ct-modal .ct-tuning>div,.ct-modal .ct-tuning>button{grid-column:auto;grid-row:auto;min-width:0;text-align:center}
+.ct-modal .ct-tuning label,.ct-auto-label{display:block;font:13px system-ui,sans-serif;margin-bottom:8px}
+.ct-modal .ct-stepper button{min-width:44px;min-height:44px;flex-basis:44px;margin:0}
+.ct-modal .ct-stepper select,.ct-auto-label select{min-height:44px;font:16px system-ui,sans-serif}
+.ct-modal .ct-tuning>button{min-height:44px;margin:0}
+.ct-auto-label{margin-top:16px}.ct-auto-label select{display:block;width:100%;margin-top:6px}
+.ct-settings-modal .ct-modal-close{position:sticky;bottom:0;min-height:44px}
+@container caribbean (max-width:450px){
+ .ct-settings-modal .ct-tuning{grid-template-columns:minmax(0,1fr)}
 }
-/* A narrow landscape pane cannot share its width with a 250px chat column. */
-@media(max-width:640px){
- #mini-dialog.game-chat-layout[data-game="studio-caribbean-treasures"][open]{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) minmax(150px,27%)}
- #mini-dialog.game-chat-layout[data-game="studio-caribbean-treasures"] .game-chat-dock{padding:8px;border-left:0;border-top:2px solid #ad8c51}
+.ct-console>.ct-choice{grid-column:1/-1}
+
+/* Compact scenes spend their space on the field. Real controls move into the options sheet. */
+@container ct-viewport (max-width:699px) or (max-height:599px){
+ .ct-root{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:44px minmax(0,1fr) auto 36px;grid-template-areas:"heading" "stage" "console" "status";padding:6px;gap:6px;min-height:0;overflow:hidden}
+ .ct-heading{grid-area:heading;grid-template-columns:44px minmax(0,1fr);gap:8px;min-height:0}
+ .ct-title{display:none}
+ .ct-root button.ct-avatar{width:44px;height:44px;min-height:44px}
+ .ct-header-tools{display:flex;justify-content:flex-end;gap:4px}
+ .ct-header-tools button{width:44px;min-width:44px;min-height:44px;padding:4px;font-size:20px}
+ .ct-stage{grid-area:stage;min-height:0;container-type:normal}
+ .ct-stage .ct-board-wrap{min-height:0;margin:0}
+ .ct-board{width:min(calc(100cqw - 36px),calc(150cqh - 54px))}
+ .ct-board:after{inset:-18px;border-width:21px}
+ .ct-map,.ct-captain{display:none!important}
+ .ct-console{grid-area:console;display:grid;grid-template-columns:minmax(0,1fr) 100px;grid-template-rows:auto 44px 44px auto;grid-template-areas:"ledger ledger" "settings spin" "playback spin" "choice choice";gap:4px 8px;align-items:stretch;min-width:0;min-height:0}
+ .ct-console .ct-ledger{grid-area:ledger;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;padding:5px 7px;min-height:52px}
+ .ct-console .ct-ledger span{font-size:10px;line-height:1.15;min-block-size:2.3em;margin-bottom:2px;letter-spacing:0}
+ .ct-console .ct-ledger strong{font-size:14px;line-height:1.2;min-block-size:1.2em}
+ .ct-console .ct-wallet{width:28px;min-width:28px;min-height:28px;padding:0}
+ .ct-controls{display:contents}
+ .ct-console .ct-tuning{display:none}
+ .ct-controls .ct-settings-open{display:block;grid-area:settings;min-height:44px;padding:5px;font:600 13px system-ui,sans-serif}
+ .ct-controls .ct-play{grid-area:spin;width:92px;height:92px;min-height:92px;align-self:center;justify-self:center;border-width:4px}
+ .ct-play .ct-spin-icon{font-size:32px;line-height:28px}.ct-play b{font-size:13px;line-height:18px}.ct-play small{font-size:11px;line-height:16px}
+ .ct-console .ct-playback{grid-area:playback;display:flex;gap:4px;width:100%;height:auto;min-height:44px;align-self:stretch}
+ .ct-playback>select{display:none}
+ .ct-console .ct-playback>button{flex:1;min-width:0;min-height:44px;height:auto;font:12px/1.2 system-ui,sans-serif;padding:4px}
+ .ct-status{grid-area:status;block-size:36px;font-size:11px;line-height:1.1;align-content:center;padding:0 2px}
+ .ct-console>.ct-choice{grid-area:choice;position:static;padding:6px;gap:5px}
+ .ct-choice strong{font-size:11px}.ct-choice button{min-height:44px;font-size:12px}
+ .ct-root[data-round-phase=choice] .ct-console{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto;grid-template-areas:"ledger" "choice" "playback"}
+ .ct-root[data-round-phase=choice] .ct-play,.ct-root[data-round-phase=choice] .ct-settings-open{display:none}
+ .ct-root[data-round-phase=choice] .ct-playback:not(:has([data-ct-action=auto][aria-pressed=true])){display:none}
+ .ct-waiting{max-width:95%;white-space:normal;text-align:center;font-size:12px;bottom:20px}
+ .ct-backdrop{padding:6px}.ct-modal{padding:12px}
 }
-@media(max-width:640px) and (max-height:540px){
- #mini-dialog.game-chat-layout[data-game="studio-caribbean-treasures"][open]{display:block;overflow-y:auto;overflow-x:hidden}
- #mini-dialog.game-chat-layout[data-game="studio-caribbean-treasures"] .game-chat-game{overflow:visible}
- #mini-dialog.game-chat-layout[data-game="studio-caribbean-treasures"] .mini-stage{flex:none;overflow:visible}
- #mini-dialog.game-chat-layout[data-game="studio-caribbean-treasures"] #mini-game{height:auto}
- #mini-dialog.game-chat-layout[data-game="studio-caribbean-treasures"] .game-chat-dock{height:180px}
- .ct-root{display:flex;height:auto;min-height:0;overflow:visible}
- .ct-stage{flex:none}
- .ct-board-wrap{flex:none;block-size:calc((100cqw - 34px)*2/3 + 34px)}
- .ct-backdrop{position:fixed}
+/* A short wide pane has a dedicated console beside the complete field. */
+@container ct-viewport (min-width:500px) and (max-height:599px) and (min-aspect-ratio:6/5){
+ .ct-root{grid-template-columns:minmax(0,1fr) 240px;grid-template-rows:44px minmax(0,1fr) 36px;grid-template-areas:"stage heading" "stage console" "status console";padding:4px;gap:4px 8px}
+ .ct-heading{gap:4px}
+ .ct-console{grid-template-columns:minmax(0,1fr) 96px;align-self:center}
+ .ct-console .ct-ledger{grid-template-columns:repeat(2,minmax(0,1fr));padding:4px 7px;gap:4px}
+ .ct-console .ct-ledger span{min-block-size:1.15em;font-size:10px}
+ .ct-console .ct-ledger strong{font-size:14px}
+ .ct-console .ct-balance-value{gap:3px}
+}
+@container ct-viewport (max-width:350px){
+ .ct-console .ct-ledger{grid-template-columns:repeat(2,minmax(0,1fr));min-height:0;padding:3px 6px;gap:3px}
+ .ct-console .ct-ledger span{min-block-size:1.15em;font-size:10px}
+ .ct-console .ct-ledger strong{font-size:13px}
 }

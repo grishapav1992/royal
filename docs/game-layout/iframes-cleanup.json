@@ -1,0 +1,131 @@
+{
+  "date": "2026-11-01",
+  "owner": "game-layout-iframes",
+  "status": "blocked",
+  "initialFreeBytes": 327885705216,
+  "freeBeforeCleanupBytes": 328499093504,
+  "preservationCommit": "95ba92e551687effa94749469a944171f0c76dbc",
+  "standStopped": true,
+  "portsClosed": [
+    5468,
+    2968
+  ],
+  "temporaryDatabasesRemoved": true,
+  "activePackagesPreserved": [
+    {
+      "version": "1.2.0-93c15ef1c5f9",
+      "gameId": "studio-dracona"
+    },
+    {
+      "version": "1.16.0-13a20149b317",
+      "gameId": "studio-forest-heart"
+    },
+    {
+      "version": "0.10.0-bf391051940e",
+      "gameId": "studio-flooded-temple"
+    }
+  ],
+  "targets": [
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-dracona\\versions\\1.2.0-239e015c9d45",
+      "purpose": "Inactive package created by this iframe task",
+      "bytes": 5064707,
+      "fileCount": 30,
+      "metadataSha256": "4cf8b2b8a9ffd233b3b58d790fa61301476d94ec07cd30d7d489790bfebc51ad"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-dracona\\versions\\1.2.0-4c16b55e26f3",
+      "purpose": "Inactive package created by this iframe task",
+      "bytes": 5064346,
+      "fileCount": 30,
+      "metadataSha256": "95224451988788d29a1d1651f962a41cc51e902d1aa15dea475028a35c0f4aa6"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-dracona\\versions\\1.2.0-afea6c4ee4bc",
+      "purpose": "Inactive package created by this iframe task",
+      "bytes": 5064610,
+      "fileCount": 30,
+      "metadataSha256": "981f155badb23298e13c5ee3f107b64916d6ee8cb1b38bd8d9082437843509b5"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-forest-heart\\versions\\1.16.0-4a8c261fc249",
+      "purpose": "Inactive package created by this iframe task",
+      "bytes": 6382266,
+      "fileCount": 21,
+      "metadataSha256": "697726efb528cfb7da1f2c108af4840135cc5b2e68cd7d13e6230dde7d0d4495"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-forest-heart\\versions\\1.16.0-80c2935213db",
+      "purpose": "Inactive package created by this iframe task",
+      "bytes": 6382246,
+      "fileCount": 21,
+      "metadataSha256": "98b548496514347ea0e0d8c1749b299140e655ecc63fc18c41af5c5e8601a8f3"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-forest-heart\\versions\\1.16.0-e6ef3c650eb9",
+      "purpose": "Inactive package created by this iframe task",
+      "bytes": 6382038,
+      "fileCount": 21,
+      "metadataSha256": "322e571274dcd7ae9aed73e05e1d4a0f9cfcf83773c03bea2d6a721c7a574bb2"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-flooded-temple\\versions\\0.10.0-0cc26c390b0d",
+      "purpose": "Inactive package created by this iframe task",
+      "bytes": 20903837,
+      "fileCount": 42,
+      "metadataSha256": "1fa438710211194aedfefc158edb3eb5c1ef26f743b5275cfd73075933562378"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-flooded-temple\\versions\\0.10.0-106b096b6376",
+      "purpose": "Inactive package created by this iframe task",
+      "bytes": 20903126,
+      "fileCount": 42,
+      "metadataSha256": "764254cd64a020f668d33c9b97a3d0b2abc59e7b18a54dea53e6511fda95d178"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-flooded-temple\\versions\\0.10.0-6fddfee5db0e",
+      "purpose": "Inactive package created by this iframe task",
+      "bytes": 20893927,
+      "fileCount": 42,
+      "metadataSha256": "f554ec022759ec50a95c405d7aef0d34baa78d567174f03a0ff4b160fe046c00"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-flooded-temple\\versions\\0.10.0-71b66db72a07",
+      "purpose": "Inactive package created by this iframe task",
+      "bytes": 20902846,
+      "fileCount": 42,
+      "metadataSha256": "48ce665ea2b43b5e257918131c8a97381856ecbdbaa427e1ccfb9dfecd4627ef"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-flooded-temple\\versions\\0.10.0-8f21214de8d4",
+      "purpose": "Inactive package created by this iframe task",
+      "bytes": 20903737,
+      "fileCount": 42,
+      "metadataSha256": "9a3da5426e04c2e01febcd99474d77a235b7b85cb9f45e128d68dfdbcfb3551d"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-flooded-temple\\versions\\0.10.0-a3cea7b54b12",
+      "purpose": "Inactive package created by this iframe task",
+      "bytes": 20894063,
+      "fileCount": 42,
+      "metadataSha256": "4913bf064a42280ba5b22a3926cd877d8d7f02a2bdbb92293c36f6faad51c61a"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\artifacts\\work\\game-layout-iframes",
+      "purpose": "Task-owned intermediate screenshots and test logs; final report and 16 screenshots retained under docs",
+      "bytes": 93176959,
+      "fileCount": 157,
+      "metadataSha256": "c383ed0cce095ac1a1467d0132830483a96155de18e770ca75e119d01bb7e546"
+    }
+  ],
+  "plannedBytes": 252918708,
+  "removedFolders": 0,
+  "removedArchives": 0,
+  "removedBytes": 0,
+  "priorRejectedCleanupNotRetried": true,
+  "cleanupCondition": "Automatic approval review must permit cleanup of these exact task-owned unchanged paths. Revalidate inventory and active pointers before any later authorized cleanup. Current checkout and active packages stay for review.",
+  "reason": "Automatic approval review rejected the guarded Remove-Item cleanup command: blocked by policy. The command did not execute; no retry or alternative deletion method was used.",
+  "freeAfterCleanupBytes": 328651681792,
+  "inactivePackageBytes": 159741749,
+  "intermediateEvidenceBytes": 93176959
+}

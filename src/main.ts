@@ -101,7 +101,7 @@ compactHeader.addEventListener('change', () => {
 profileMenu.addEventListener('click', event => {
   if ((event.target as Element).closest('button') && profileMenu.matches(':popover-open')) profileMenu.hidePopover();
 });
-gameAudio.install();gameAudio.addSettingsButton(document.querySelector<HTMLElement>('.mini-bottom')!);
+gameAudio.install();gameAudio.addSettingsButton(document.querySelector<HTMLElement>('.mini-top')!);
 const layout=new RoomLayout();
 const $ = <T extends HTMLElement = HTMLElement>(selector: string) => document.querySelector<T>(selector)!;
 const miniDialog = $<HTMLDialogElement>('#mini-dialog');
@@ -145,7 +145,7 @@ function showPlatformCatalog() {
   $('.mini-stats').hidden = true; $('.demo-footer').hidden = true;
   $('#mini-message').hidden = true; $('#card-dealer-stage').hidden = true;
   $('.mini-bottom>span').textContent = translateText('Общий тестовый кошелёк клуба');
-  $('.mini-bottom .settings-shortcut').hidden = false; $('.mini-bottom kbd').hidden = false;
+  $('.mini-top .settings-shortcut').hidden = false; $('.mini-bottom kbd').hidden = false;
   room.setLocked(true);
   if (!miniDialog.open) miniDialog.showModal();
   platformSelection = new RoyalPlatformCatalog($('#mini-game'), choice => { void selectPlatformGame(choice); }, platformCabinet.collection, selected);
@@ -200,7 +200,7 @@ async function openCabinetGame(cabinet: Cabinet, recovery?: RetiredArcadeRound, 
   $('.mini-stats').hidden = !!(platformCabinet || cabinet.demo || cabinet.wallet || cabinet.github);
   $('.demo-footer').hidden = !cabinet.demo;
   $('.mini-top .eyebrow').textContent = cabinet.demo ? translateText('LUELON PLAY / ДЕМО') : 'ROYAL ORIGINALS / 01';
-  $('.mini-bottom .settings-shortcut').hidden = !!cabinet.demo;
+  $('.mini-top .settings-shortcut').hidden = !!cabinet.demo;
   $('.mini-bottom kbd').hidden = !!cabinet.demo;
   try { best = Number(localStorage.getItem('royal-'+activeGameId+'-best')) || 0; } catch { best=0; }
   $('#mini-title').textContent = cabinet.name;

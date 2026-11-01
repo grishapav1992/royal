@@ -1,4 +1,5 @@
-export const styles=String.raw`
+import { priorityStyles } from './priorityStyles';
+const baseStyles=String.raw`
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#071511}body{font-family:Arial,sans-serif;color:#f6eac9}body>div{height:100%}button,input{font:inherit}button{color:inherit;cursor:pointer}button:disabled{cursor:default}button:focus-visible,input:focus-visible{outline:2px solid #b5ffe1;outline-offset:3px}[hidden]{display:none!important}
 .fh{--board:260px;--frame:13px;--source-width:56px;--flower-width:76px;--network-gap:8px;--status-height:56px;--bonus-extra:0px;height:100dvh;width:100%;position:relative;isolation:isolate;display:grid;grid-template-rows:52px minmax(0,1fr) calc(var(--status-height) + var(--bonus-extra)) 96px 18px;overflow:hidden;background:#081713}.fh[data-bonus=true]{--bonus-extra:18px}
 .fh-forest,.fh-mist,.fh-fireflies{position:absolute;inset:0;z-index:-2;pointer-events:none}.fh-forest{background:linear-gradient(0deg,#04100dd9,transparent 54%,#08142355),url('/assets/forest-heart/v1/background.webp') center/cover}.fh-mist{z-index:-1;background:radial-gradient(ellipse at 35% 40%,#0d1b194d,transparent 60%)}
@@ -91,3 +92,5 @@ export const styles=String.raw`
 .fh:is([data-layout=wide],[data-layout=poster]) .fh-flower>span{top:calc(var(--flower-art)*.58 + clamp(16px,calc(var(--board)*.035),26px)*1.1 + 28px);font:11px/13px Arial;color:#ffe6a3;letter-spacing:.4px}
 .fh[data-paused=true] *{animation-play-state:paused!important}.fh[data-reduced=true] *{animation:none!important;transition:none!important}@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
 `;
+
+export const styles=baseStyles+priorityStyles;

@@ -17,10 +17,10 @@ export const mount: GameModuleV1['mount'] = host => {
   let game: Dracona | undefined;
   const stage = host.closest<HTMLElement>('.mini-stage') ?? host;
   const resize = new ResizeObserver(() => {
-    if (!disposed) frame.style.height = Math.max(180, stage.clientHeight) + 'px';
+    if (!disposed) frame.style.height = Math.max(1, stage.clientHeight) + 'px';
   });
   resize.observe(stage);
-  frame.style.height = Math.max(180, stage.clientHeight) + 'px';
+  frame.style.height = Math.max(1, stage.clientHeight) + 'px';
   frame.addEventListener('load', () => {
     if (disposed || !frame.contentDocument) return;
     game?.destroy();

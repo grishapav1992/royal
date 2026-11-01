@@ -1,0 +1,519 @@
+{
+  "status": "blocked-by-automatic-review",
+  "preservationCommit": "a1d8625e05dfc181483426ef7c0b33da20f77d8b",
+  "remoteCommitVerified": true,
+  "freeTaskStartBytes": 331920281600,
+  "freeBeforeStopBytes": 326408957952,
+  "freeBeforeRemovalBytes": 327730171904,
+  "standStopped": true,
+  "temporaryDatabaseRemoved": true,
+  "removedFolders": [],
+  "removedBytes": 0,
+  "removedArchives": 0,
+  "pendingModuleFolders": [
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-cosmic-escape\\versions\\1.1.0-01b47576114c",
+      "gameId": "studio-cosmic-escape",
+      "bytes": 3864687,
+      "files": 9,
+      "latestMtimeNs": 1793537876805312700
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-cosmic-escape\\versions\\1.1.0-0855681e15af",
+      "gameId": "studio-cosmic-escape",
+      "bytes": 3867158,
+      "files": 9,
+      "latestMtimeNs": 1793538955144058200
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-cosmic-escape\\versions\\1.1.0-0c1a6d8aa0b5",
+      "gameId": "studio-cosmic-escape",
+      "bytes": 3871188,
+      "files": 9,
+      "latestMtimeNs": 1793540396242477500
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-cosmic-escape\\versions\\1.1.0-6451f4880c67",
+      "gameId": "studio-cosmic-escape",
+      "bytes": 3869796,
+      "files": 9,
+      "latestMtimeNs": 1793539297345424500
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-cosmic-escape\\versions\\1.1.0-7837cfcf8501",
+      "gameId": "studio-cosmic-escape",
+      "bytes": 3871140,
+      "files": 9,
+      "latestMtimeNs": 1793539962544439100
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-cosmic-escape\\versions\\1.1.0-784cfd2b1c40",
+      "gameId": "studio-cosmic-escape",
+      "bytes": 3870646,
+      "files": 9,
+      "latestMtimeNs": 1793539543587140400
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-cosmic-escape\\versions\\1.1.0-8f88ceb90f4a",
+      "gameId": "studio-cosmic-escape",
+      "bytes": 3868965,
+      "files": 9,
+      "latestMtimeNs": 1793539112214384400
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-cosmic-escape\\versions\\1.1.0-d0e7c0525098",
+      "gameId": "studio-cosmic-escape",
+      "bytes": 3866023,
+      "files": 9,
+      "latestMtimeNs": 1793538540612351500
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-cosmic-escape\\versions\\1.1.0-d543df620104",
+      "gameId": "studio-cosmic-escape",
+      "bytes": 3867148,
+      "files": 9,
+      "latestMtimeNs": 1793538859465470900
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-cosmic-escape\\versions\\1.1.0-ff3bbab43e05",
+      "gameId": "studio-cosmic-escape",
+      "bytes": 3865589,
+      "files": 9,
+      "latestMtimeNs": 1793538032749474600
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-velvet-reign\\versions\\1.1.0-257ab931c271",
+      "gameId": "studio-velvet-reign",
+      "bytes": 4303999,
+      "files": 13,
+      "latestMtimeNs": 1793538955572799800
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-velvet-reign\\versions\\1.1.0-29aa3312a252",
+      "gameId": "studio-velvet-reign",
+      "bytes": 4302430,
+      "files": 13,
+      "latestMtimeNs": 1793538032859154300
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-velvet-reign\\versions\\1.1.0-68524d478992",
+      "gameId": "studio-velvet-reign",
+      "bytes": 4303989,
+      "files": 13,
+      "latestMtimeNs": 1793538859585392000
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-velvet-reign\\versions\\1.1.0-769ca887cd68",
+      "gameId": "studio-velvet-reign",
+      "bytes": 4306637,
+      "files": 13,
+      "latestMtimeNs": 1793539297445005000
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-velvet-reign\\versions\\1.1.0-85328973ce16",
+      "gameId": "studio-velvet-reign",
+      "bytes": 4305806,
+      "files": 13,
+      "latestMtimeNs": 1793539112324618600
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-velvet-reign\\versions\\1.1.0-8994eab1f01e",
+      "gameId": "studio-velvet-reign",
+      "bytes": 4307981,
+      "files": 13,
+      "latestMtimeNs": 1793539962669909200
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-velvet-reign\\versions\\1.1.0-a06c6f5a9834",
+      "gameId": "studio-velvet-reign",
+      "bytes": 4307487,
+      "files": 13,
+      "latestMtimeNs": 1793539543705446300
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-velvet-reign\\versions\\1.1.0-a498bb5fd779",
+      "gameId": "studio-velvet-reign",
+      "bytes": 4301528,
+      "files": 13,
+      "latestMtimeNs": 1793537876937402700
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-velvet-reign\\versions\\1.1.0-a5e203d71d51",
+      "gameId": "studio-velvet-reign",
+      "bytes": 4308029,
+      "files": 13,
+      "latestMtimeNs": 1793540396341075800
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-velvet-reign\\versions\\1.1.0-d967bc173fd1",
+      "gameId": "studio-velvet-reign",
+      "bytes": 4302864,
+      "files": 13,
+      "latestMtimeNs": 1793538540752062000
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-caramel-carnival\\versions\\1.1.0-0141332045b6",
+      "gameId": "studio-caramel-carnival",
+      "bytes": 3188251,
+      "files": 8,
+      "latestMtimeNs": 1793539543788421700
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-caramel-carnival\\versions\\1.1.0-11d2fc418b83",
+      "gameId": "studio-caramel-carnival",
+      "bytes": 3184753,
+      "files": 8,
+      "latestMtimeNs": 1793538859660333800
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-caramel-carnival\\versions\\1.1.0-11ffdc3804dc",
+      "gameId": "studio-caramel-carnival",
+      "bytes": 3188745,
+      "files": 8,
+      "latestMtimeNs": 1793539962754003700
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-caramel-carnival\\versions\\1.1.0-542adf65f0d2",
+      "gameId": "studio-caramel-carnival",
+      "bytes": 3182292,
+      "files": 8,
+      "latestMtimeNs": 1793537877056628800
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-caramel-carnival\\versions\\1.1.0-5827e3589951",
+      "gameId": "studio-caramel-carnival",
+      "bytes": 3183628,
+      "files": 8,
+      "latestMtimeNs": 1793538540831576700
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-caramel-carnival\\versions\\1.1.0-83da1d7c146a",
+      "gameId": "studio-caramel-carnival",
+      "bytes": 3188793,
+      "files": 8,
+      "latestMtimeNs": 1793540396416979400
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-caramel-carnival\\versions\\1.1.0-8a2d6153b190",
+      "gameId": "studio-caramel-carnival",
+      "bytes": 3186570,
+      "files": 8,
+      "latestMtimeNs": 1793539112400492400
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-caramel-carnival\\versions\\1.1.0-96586a282346",
+      "gameId": "studio-caramel-carnival",
+      "bytes": 3187401,
+      "files": 8,
+      "latestMtimeNs": 1793539297519899700
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-caramel-carnival\\versions\\1.1.0-baa02c110b0d",
+      "gameId": "studio-caramel-carnival",
+      "bytes": 3183194,
+      "files": 8,
+      "latestMtimeNs": 1793538032931948400
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-caramel-carnival\\versions\\1.1.0-e66886cb5af9",
+      "gameId": "studio-caramel-carnival",
+      "bytes": 3184763,
+      "files": 8,
+      "latestMtimeNs": 1793538955225857900
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-last-convoy\\versions\\1.1.0-31ca7e5fac00",
+      "gameId": "studio-last-convoy",
+      "bytes": 6345994,
+      "files": 18,
+      "latestMtimeNs": 1793539297631028900
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-last-convoy\\versions\\1.1.0-67ee3a43db5a",
+      "gameId": "studio-last-convoy",
+      "bytes": 6345163,
+      "files": 18,
+      "latestMtimeNs": 1793539112505531500
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-last-convoy\\versions\\1.1.0-688d67f76be3",
+      "gameId": "studio-last-convoy",
+      "bytes": 6347338,
+      "files": 18,
+      "latestMtimeNs": 1793539962877359100
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-last-convoy\\versions\\1.1.0-821173c9e03d",
+      "gameId": "studio-last-convoy",
+      "bytes": 6342221,
+      "files": 18,
+      "latestMtimeNs": 1793538540959038700
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-last-convoy\\versions\\1.1.0-a3452bf4a39c",
+      "gameId": "studio-last-convoy",
+      "bytes": 6347386,
+      "files": 18,
+      "latestMtimeNs": 1793540396527499400
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-last-convoy\\versions\\1.1.0-acc6a4d99b82",
+      "gameId": "studio-last-convoy",
+      "bytes": 6346844,
+      "files": 18,
+      "latestMtimeNs": 1793539543905495100
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-last-convoy\\versions\\1.1.0-bb991816c128",
+      "gameId": "studio-last-convoy",
+      "bytes": 6343346,
+      "files": 18,
+      "latestMtimeNs": 1793538859771172800
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-last-convoy\\versions\\1.1.0-c2d83dce561b",
+      "gameId": "studio-last-convoy",
+      "bytes": 6341787,
+      "files": 18,
+      "latestMtimeNs": 1793538033039428400
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-last-convoy\\versions\\1.1.0-dfaffab3ee85",
+      "gameId": "studio-last-convoy",
+      "bytes": 6343356,
+      "files": 18,
+      "latestMtimeNs": 1793538961741298300
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-last-convoy\\versions\\1.1.0-ec0fff7b2ef2",
+      "gameId": "studio-last-convoy",
+      "bytes": 6340885,
+      "files": 18,
+      "latestMtimeNs": 1793537877214753400
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-nitro-run\\versions\\1.1.0-37a013aa76c5",
+      "gameId": "studio-nitro-run",
+      "bytes": 2581291,
+      "files": 6,
+      "latestMtimeNs": 1793539543969118200
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-nitro-run\\versions\\1.1.0-59165601cd50",
+      "gameId": "studio-nitro-run",
+      "bytes": 2577793,
+      "files": 6,
+      "latestMtimeNs": 1793538859854456700
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-nitro-run\\versions\\1.1.0-5a123ccf088c",
+      "gameId": "studio-nitro-run",
+      "bytes": 2581833,
+      "files": 6,
+      "latestMtimeNs": 1793540396588165700
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-nitro-run\\versions\\1.1.0-5efc786548e6",
+      "gameId": "studio-nitro-run",
+      "bytes": 2575332,
+      "files": 6,
+      "latestMtimeNs": 1793537877320404700
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-nitro-run\\versions\\1.1.0-a5a1e625b088",
+      "gameId": "studio-nitro-run",
+      "bytes": 2576234,
+      "files": 6,
+      "latestMtimeNs": 1793538033099350400
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-nitro-run\\versions\\1.1.0-a660b980ba4c",
+      "gameId": "studio-nitro-run",
+      "bytes": 2580441,
+      "files": 6,
+      "latestMtimeNs": 1793539297686112500
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-nitro-run\\versions\\1.1.0-bfcb4168f47d",
+      "gameId": "studio-nitro-run",
+      "bytes": 2576668,
+      "files": 6,
+      "latestMtimeNs": 1793538541029575100
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-nitro-run\\versions\\1.1.0-de3712c9eaab",
+      "gameId": "studio-nitro-run",
+      "bytes": 2581785,
+      "files": 6,
+      "latestMtimeNs": 1793539962940147100
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-nitro-run\\versions\\1.1.0-df146924d903",
+      "gameId": "studio-nitro-run",
+      "bytes": 2577803,
+      "files": 6,
+      "latestMtimeNs": 1793538961834029300
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-nitro-run\\versions\\1.1.0-efbce8f8ccd6",
+      "gameId": "studio-nitro-run",
+      "bytes": 2579610,
+      "files": 6,
+      "latestMtimeNs": 1793539112567875000
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-afterglow\\versions\\1.3.0-3757bde48f60",
+      "gameId": "studio-afterglow",
+      "bytes": 3255601,
+      "files": 22,
+      "latestMtimeNs": 1793537877460303600
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-afterglow\\versions\\1.3.0-4c5dafd521fd",
+      "gameId": "studio-afterglow",
+      "bytes": 3261560,
+      "files": 22,
+      "latestMtimeNs": 1793539544079949400
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-afterglow\\versions\\1.3.0-625ab62d06e3",
+      "gameId": "studio-afterglow",
+      "bytes": 3262102,
+      "files": 22,
+      "latestMtimeNs": 1793540396700302800
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-afterglow\\versions\\1.3.0-6c2ca0241325",
+      "gameId": "studio-afterglow",
+      "bytes": 3256937,
+      "files": 22,
+      "latestMtimeNs": 1793538541147795600
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-afterglow\\versions\\1.3.0-843d38cb46a9",
+      "gameId": "studio-afterglow",
+      "bytes": 3262054,
+      "files": 22,
+      "latestMtimeNs": 1793539963044378300
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-afterglow\\versions\\1.3.0-a7cd555111ed",
+      "gameId": "studio-afterglow",
+      "bytes": 3259879,
+      "files": 22,
+      "latestMtimeNs": 1793539112674597900
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-afterglow\\versions\\1.3.0-c3282786b42c",
+      "gameId": "studio-afterglow",
+      "bytes": 3260710,
+      "files": 22,
+      "latestMtimeNs": 1793539297806509800
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-afterglow\\versions\\1.3.0-ce83cbe2781c",
+      "gameId": "studio-afterglow",
+      "bytes": 3258072,
+      "files": 22,
+      "latestMtimeNs": 1793538961934140100
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-afterglow\\versions\\1.3.0-e03071169821",
+      "gameId": "studio-afterglow",
+      "bytes": 3256503,
+      "files": 22,
+      "latestMtimeNs": 1793538033202165600
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-afterglow\\versions\\1.3.0-e78c91e0df35",
+      "gameId": "studio-afterglow",
+      "bytes": 3258062,
+      "files": 22,
+      "latestMtimeNs": 1793538859993523700
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-meme-overload\\versions\\1.1.0-0a2c7f8c4762",
+      "gameId": "studio-meme-overload",
+      "bytes": 3540594,
+      "files": 17,
+      "latestMtimeNs": 1793539544177637400
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-meme-overload\\versions\\1.1.0-17cb9ff8fe17",
+      "gameId": "studio-meme-overload",
+      "bytes": 3535971,
+      "files": 17,
+      "latestMtimeNs": 1793538541238175500
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-meme-overload\\versions\\1.1.0-30518f8110c4",
+      "gameId": "studio-meme-overload",
+      "bytes": 3535537,
+      "files": 17,
+      "latestMtimeNs": 1793538033299389700
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-meme-overload\\versions\\1.1.0-40ec267961bb",
+      "gameId": "studio-meme-overload",
+      "bytes": 3541088,
+      "files": 17,
+      "latestMtimeNs": 1793539963134647900
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-meme-overload\\versions\\1.1.0-8a4953dde78a",
+      "gameId": "studio-meme-overload",
+      "bytes": 3537096,
+      "files": 17,
+      "latestMtimeNs": 1793538860090162800
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-meme-overload\\versions\\1.1.0-99c343b291c8",
+      "gameId": "studio-meme-overload",
+      "bytes": 3538913,
+      "files": 17,
+      "latestMtimeNs": 1793539112764383700
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-meme-overload\\versions\\1.1.0-9ff4c4bff37b",
+      "gameId": "studio-meme-overload",
+      "bytes": 3541136,
+      "files": 17,
+      "latestMtimeNs": 1793540396790827500
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-meme-overload\\versions\\1.1.0-c3e226a41469",
+      "gameId": "studio-meme-overload",
+      "bytes": 3539744,
+      "files": 17,
+      "latestMtimeNs": 1793539297894710900
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-meme-overload\\versions\\1.1.0-def8781a5861",
+      "gameId": "studio-meme-overload",
+      "bytes": 3537106,
+      "files": 17,
+      "latestMtimeNs": 1793538962045169600
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\studio-meme-overload\\versions\\1.1.0-f032fa9182d4",
+      "gameId": "studio-meme-overload",
+      "bytes": 3534635,
+      "files": 17,
+      "latestMtimeNs": 1793537877598220400
+    }
+  ],
+  "taskArtifacts": {
+    "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\artifacts\\work\\game-layout-slots",
+    "bytes": 144396814.0
+  },
+  "previouslyRejectedPathOverlap": 0,
+  "exceptions": [
+    "Previously rejected stage2 and Caribbean cleanup targets are not retried.",
+    "Current checkout, dependencies and normal active build outputs remain for feature review."
+  ],
+  "cleanupCondition": "Automatic approval review must allow the task-owned cleanup. Do not repeat the rejected deletion through another shell, runtime or obfuscated command.",
+  "reason": "blocked by policy",
+  "attemptedAction": "Remove 70 newly generated obsolete slot packages and the task-owned artifacts/work/game-layout-slots directory after the stand stopped and source plus final reports were verified on GitHub.",
+  "freeAfterAttemptBytes": 327728877568,
+  "removedPhysicalSpaceClaim": false
+}

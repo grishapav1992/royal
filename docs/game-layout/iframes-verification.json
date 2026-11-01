@@ -1,0 +1,533 @@
+{
+  "date": "2026-11-01",
+  "verifiedSourceCommit": "381f0b4fab0067ae68f350b85d531a328c72c9ce",
+  "applicationBuildCommit": "b4fe6b85868c431a80acdc4652297deeacba1756",
+  "buildSourceIdentical": true,
+  "integrationBaseline": "0f2d09c003a243d51e118ca3c7b9ea5b7eb20731",
+  "branch": "feature/game-layout-priorities-plan",
+  "productionPublished": false,
+  "activeCatalogueChanged": false,
+  "mathChanged": false,
+  "realConnectedHost": true,
+  "viewportSizes": [
+    [
+      1440,
+      900
+    ],
+    [
+      1280,
+      720
+    ],
+    [
+      768,
+      1024
+    ],
+    [
+      1024,
+      768
+    ],
+    [
+      393,
+      852
+    ],
+    [
+      852,
+      393
+    ],
+    [
+      320,
+      568
+    ],
+    [
+      568,
+      320
+    ]
+  ],
+  "chromium": {
+    "stats": {
+      "startTime": "2026-11-01T15:32:34.206Z",
+      "duration": 163634.148,
+      "expected": 9,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "cases": [
+      {
+        "title": "iframe field and essential actions fit: studio-dracona",
+        "status": "expected",
+        "attempts": [
+          "passed"
+        ]
+      },
+      {
+        "title": "iframe field and essential actions fit: studio-forest-heart",
+        "status": "expected",
+        "attempts": [
+          "passed"
+        ]
+      },
+      {
+        "title": "iframe field and essential actions fit: studio-flooded-temple",
+        "status": "expected",
+        "attempts": [
+          "passed"
+        ]
+      },
+      {
+        "title": "iframe settings, accepted round and recovery: studio-dracona",
+        "status": "expected",
+        "attempts": [
+          "passed"
+        ]
+      },
+      {
+        "title": "iframe settings, accepted round and recovery: studio-forest-heart",
+        "status": "expected",
+        "attempts": [
+          "passed"
+        ]
+      },
+      {
+        "title": "iframe settings, accepted round and recovery: studio-flooded-temple",
+        "status": "expected",
+        "attempts": [
+          "passed"
+        ]
+      },
+      {
+        "title": "natural bonuses and Forest Heart choices retain their controls through rotation",
+        "status": "expected",
+        "attempts": [
+          "passed"
+        ]
+      },
+      {
+        "title": "accepted Temple v1 route and rope remain usable before returning to cascades",
+        "status": "expected",
+        "attempts": [
+          "passed"
+        ]
+      },
+      {
+        "title": "iframe animations keep their field and actions through both orientations",
+        "status": "expected",
+        "attempts": [
+          "passed"
+        ]
+      }
+    ]
+  },
+  "webkitInitial": {
+    "stats": {
+      "startTime": "2026-11-01T15:16:25.311Z",
+      "duration": 715039.109,
+      "expected": 8,
+      "skipped": 0,
+      "unexpected": 1,
+      "flaky": 0
+    },
+    "cases": [
+      {
+        "title": "iframe field and essential actions fit: studio-dracona",
+        "status": "expected",
+        "attempts": [
+          "passed"
+        ]
+      },
+      {
+        "title": "iframe field and essential actions fit: studio-forest-heart",
+        "status": "expected",
+        "attempts": [
+          "passed"
+        ]
+      },
+      {
+        "title": "iframe field and essential actions fit: studio-flooded-temple",
+        "status": "expected",
+        "attempts": [
+          "passed"
+        ]
+      },
+      {
+        "title": "iframe settings, accepted round and recovery: studio-dracona",
+        "status": "expected",
+        "attempts": [
+          "passed"
+        ]
+      },
+      {
+        "title": "iframe settings, accepted round and recovery: studio-forest-heart",
+        "status": "expected",
+        "attempts": [
+          "passed"
+        ]
+      },
+      {
+        "title": "iframe settings, accepted round and recovery: studio-flooded-temple",
+        "status": "expected",
+        "attempts": [
+          "passed"
+        ]
+      },
+      {
+        "title": "natural bonuses and Forest Heart choices retain their controls through rotation",
+        "status": "unexpected",
+        "attempts": [
+          "failed"
+        ]
+      },
+      {
+        "title": "accepted Temple v1 route and rope remain usable before returning to cascades",
+        "status": "expected",
+        "attempts": [
+          "passed"
+        ]
+      },
+      {
+        "title": "iframe animations keep their field and actions through both orientations",
+        "status": "expected",
+        "attempts": [
+          "passed"
+        ]
+      }
+    ]
+  },
+  "webkitBonusRepeat": {
+    "stats": {
+      "startTime": "2026-11-01T15:32:34.200Z",
+      "duration": 146541.57499999998,
+      "expected": 1,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "cases": [
+      {
+        "title": "natural bonuses and Forest Heart choices retain their controls through rotation",
+        "status": "expected",
+        "attempts": [
+          "passed"
+        ]
+      }
+    ]
+  },
+  "webkitSuccessfulDistinctScenarios": 9,
+  "webkitSingleCleanFullRun": false,
+  "webkitDriverFailure": "A test-driver start click raced with automatic Temple continuation completion. The driver now waits for Temple to settle instead of issuing another primary action. The bonus repeat passed.",
+  "walletAndCompatibility": {
+    "passed": 15,
+    "failed": 0
+  },
+  "independentModules": {
+    "passed": 7,
+    "failed": 0,
+    "activeManifests": 124
+  },
+  "rtp": {
+    "verified": 37,
+    "stakePoliciesVerified": 19,
+    "stakeAdmissionVerified": 19,
+    "legacyNotQualified": 114
+  },
+  "fullBuildPassed": true,
+  "packages": {
+    "studio-dracona": {
+      "format": 1,
+      "gameId": "studio-dracona",
+      "manifest": "/game-modules/studio-dracona/versions/1.2.0-93c15ef1c5f9/manifest.json",
+      "sha256": "66fdfb38a7a80fbe341fbe5280cb9a56bbe5f4609e4a9281038dfe1bbae5ea92"
+    },
+    "studio-forest-heart": {
+      "format": 1,
+      "gameId": "studio-forest-heart",
+      "manifest": "/game-modules/studio-forest-heart/versions/1.16.0-13a20149b317/manifest.json",
+      "sha256": "3467a18fd365d47e0ec808de04b0aaa920a8c8b39382ec64f1cc68af8a4a06ca"
+    },
+    "studio-flooded-temple": {
+      "format": 1,
+      "gameId": "studio-flooded-temple",
+      "manifest": "/game-modules/studio-flooded-temple/versions/0.10.0-bf391051940e/manifest.json",
+      "sha256": "e2ee7372afc004af4f1b93fccd19d60e8cc783a23c2a1a3fee365726ee99f3e7"
+    }
+  },
+  "geometry": {
+    "studio-dracona": [
+      {
+        "width": 1440,
+        "height": 900,
+        "field": {
+          "x": 358.203125,
+          "y": 247.6875,
+          "width": 509.515625,
+          "height": 407.609375
+        }
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "field": {
+          "x": 322.25,
+          "y": 195,
+          "width": 435.5,
+          "height": 348.390625
+        }
+      },
+      {
+        "width": 768,
+        "height": 1024,
+        "field": {
+          "x": 23,
+          "y": 126.203125,
+          "width": 722,
+          "height": 577.59375
+        }
+      },
+      {
+        "width": 1024,
+        "height": 768,
+        "field": {
+          "x": 317.609375,
+          "y": 195,
+          "width": 486.59375,
+          "height": 389.265625
+        }
+      },
+      {
+        "width": 393,
+        "height": 852,
+        "field": {
+          "x": 23,
+          "y": 190.203125,
+          "width": 347,
+          "height": 277.59375
+        }
+      },
+      {
+        "width": 852,
+        "height": 393,
+        "field": {
+          "x": 123.125,
+          "y": 72.40625,
+          "width": 327.75,
+          "height": 262.1875
+        }
+      },
+      {
+        "width": 320,
+        "height": 568,
+        "field": {
+          "x": 23,
+          "y": 77.40625,
+          "width": 274,
+          "height": 219.1875
+        }
+      },
+      {
+        "width": 568,
+        "height": 320,
+        "field": {
+          "x": 26.75,
+          "y": 72.40625,
+          "width": 236.5,
+          "height": 189.1875
+        }
+      }
+    ],
+    "studio-forest-heart": [
+      {
+        "width": 1440,
+        "height": 900,
+        "field": {
+          "x": 96,
+          "y": 148,
+          "width": 544,
+          "height": 544
+        }
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "field": {
+          "x": 149,
+          "y": 123,
+          "width": 414,
+          "height": 414
+        }
+      },
+      {
+        "width": 768,
+        "height": 1024,
+        "field": {
+          "x": 55,
+          "y": 124,
+          "width": 670,
+          "height": 670
+        }
+      },
+      {
+        "width": 1024,
+        "height": 768,
+        "field": {
+          "x": 129,
+          "y": 125,
+          "width": 458,
+          "height": 458
+        }
+      },
+      {
+        "width": 393,
+        "height": 852,
+        "field": {
+          "x": 55,
+          "y": 225.5,
+          "width": 295,
+          "height": 295
+        }
+      },
+      {
+        "width": 852,
+        "height": 393,
+        "field": {
+          "x": 171.5,
+          "y": 57,
+          "width": 327,
+          "height": 327
+        }
+      },
+      {
+        "width": 320,
+        "height": 568,
+        "field": {
+          "x": 55,
+          "y": 120,
+          "width": 222,
+          "height": 222
+        }
+      },
+      {
+        "width": 568,
+        "height": 320,
+        "field": {
+          "x": 66,
+          "y": 57,
+          "width": 254,
+          "height": 254
+        }
+      }
+    ],
+    "studio-flooded-temple": [
+      {
+        "width": 1440,
+        "height": 900,
+        "field": {
+          "x": 301.75,
+          "y": 198.125,
+          "width": 786.25,
+          "height": 471.75
+        }
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "field": {
+          "x": 341.328125,
+          "y": 178,
+          "width": 553.34375,
+          "height": 332
+        }
+      },
+      {
+        "width": 768,
+        "height": 1024,
+        "field": {
+          "x": 21,
+          "y": 243.203125,
+          "width": 726,
+          "height": 435.59375
+        }
+      },
+      {
+        "width": 1024,
+        "height": 768,
+        "field": {
+          "x": 325.078125,
+          "y": 178,
+          "width": 633.34375,
+          "height": 380
+        }
+      },
+      {
+        "width": 393,
+        "height": 852,
+        "field": {
+          "x": 21,
+          "y": 269.703125,
+          "width": 351,
+          "height": 210.59375
+        }
+      },
+      {
+        "width": 852,
+        "height": 393,
+        "field": {
+          "x": 154.5,
+          "y": 125,
+          "width": 335,
+          "height": 201
+        }
+      },
+      {
+        "width": 320,
+        "height": 568,
+        "field": {
+          "x": 21,
+          "y": 149.59375,
+          "width": 278,
+          "height": 166.796875
+        }
+      },
+      {
+        "width": 568,
+        "height": 320,
+        "field": {
+          "x": 73.328125,
+          "y": 125,
+          "width": 213.328125,
+          "height": 127.984375
+        }
+      }
+    ]
+  },
+  "beforeLandscape852x393": {
+    "studio-dracona": {
+      "width": 209,
+      "height": 167
+    },
+    "studio-forest-heart": {
+      "width": 217,
+      "height": 217
+    },
+    "studio-flooded-temple": {
+      "width": 230,
+      "height": 138,
+      "primaryVisible": false
+    }
+  },
+  "naturalScenarioSeeds": {
+    "studio-dracona": 1,
+    "studio-forest-heart": 2643,
+    "studio-flooded-temple": 36,
+    "templeLegacy": 1
+  },
+  "physicalDevicesTested": false,
+  "listeningPerformed": false,
+  "standStopped": true,
+  "portsClosed": [
+    5468,
+    2968
+  ],
+  "temporaryDatabasesRemoved": true,
+  "retainedScreenshots": 16,
+  "screenshotBytes": 7887153
+}

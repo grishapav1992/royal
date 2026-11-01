@@ -5,6 +5,7 @@ import {cascadeStyles} from './cascadeStyles';
 import {cascadeFeedbackStyles} from './cascadeFeedbackStyles';
 import {cascadeResultStyles} from './cascadeResultStyles';
 import {cascadeLayoutStyles} from './cascadeLayoutStyles';
+import {priorityStyles} from './priorityStyles';
 import {styles} from './styles';
 import {feedbackStyles} from './feedbackStyles';
 import {referenceStyles} from './referenceStyles';
@@ -37,13 +38,13 @@ export const mount:GameModuleV1['mount']=(host,context)=>{
   };
   const changed=()=>queueMicrotask(sync);
   services.expansionClient.addEventListener('change',changed);services.demoWallet.addEventListener('change',changed);
-  const fit=()=>{if(!disposed)frame.style.height=Math.max(180,stage.clientHeight)+'px';};
+  const fit=()=>{if(!disposed)frame.style.height=Math.max(1,stage.clientHeight)+'px';};
   const observer=new ResizeObserver(fit);observer.observe(stage);fit();
   frame.addEventListener('load',()=>{
     if(disposed||!frame.contentDocument)return;
     game?.destroy();
     const doc=frame.contentDocument;doc.documentElement.lang=services.i18n.language;doc.title=title;
-    const style=doc.createElement('style');style.textContent=styles+feedbackStyles+referenceStyles+characterStyles+playbackStyles+navigationStyles+cascadeStyles+cascadeFeedbackStyles+cascadeResultStyles+cascadeLayoutStyles;doc.head.replaceChildren(style);
+    const style=doc.createElement('style');style.textContent=styles+feedbackStyles+referenceStyles+characterStyles+playbackStyles+navigationStyles+cascadeStyles+cascadeFeedbackStyles+cascadeResultStyles+cascadeLayoutStyles+priorityStyles;doc.head.replaceChildren(style);
     app=doc.createElement('main');doc.body.replaceChildren(app);game=undefined;sync();
   });
   frame.src='about:blank';host.replaceChildren(frame);
