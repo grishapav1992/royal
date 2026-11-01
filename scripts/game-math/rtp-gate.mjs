@@ -15,6 +15,7 @@ import {TEMPLE_METHOD,templeEvidence,expectedTempleReplay,expectedTempleStreams}
 import {FOREST_QUALIFICATION_METHOD,FOREST_SERVER_STATUS,validateForestRuntimeProof} from './rtp-forest-heart.mjs';
 import { caribbeanQualificationEvidence, CARIBBEAN_QUALIFICATION_METHOD, CARIBBEAN_REVIEWED_SOURCES } from './rtp-caribbean.mjs';
 import { JACKIE_METHOD, jackieEvidence } from './rtp-jackie.mjs';
+import {stakeAdmissionRuntime, validateStakeAdmission} from './game-stakes-admission.mjs';
 
 const digest = value => createHash('sha256').update(value).digest('hex');
 // Git checkouts use CRLF on Windows and LF in Linux CI. Hash canonical text.
@@ -281,6 +282,7 @@ export async function checkGameRtp(root, catalog, selected = catalog.map(game =>
     assert(registry.profiles[game.gameId] || baseline.games.includes(game.gameId) || typeof exemption === 'string' && exemption.trim().length >= 20,
       'New module has no RTP qualification or documented non-wagered classification: ' + game.gameId);
   }
+  const stakeAdmissionVerified = validateStakeAdmission(catalog, baseline.games, registry, await stakeAdmissionRuntime(root));
   if(registry.profiles['studio-flooded-temple'])assert(registry.versionProfiles?.['studio-flooded-temple']?.['2']?.method===CASCADE_METHOD||registry.profiles['studio-flooded-temple'].rulesVersion===2,'Temple cascade rules require their own qualification profile');
   let verified = 0;
   const serverOnly=Object.entries(registry.profiles).filter(([,p])=>p.releaseStatus===FOREST_SERVER_STATUS).map(([id])=>id);
@@ -304,5 +306,5 @@ export async function checkGameRtp(root, catalog, selected = catalog.map(game =>
    const inputs=await stakeInputs(root,gameId),proof=JSON.parse(await readFile(resolve(root,inputs.policy.proof),'utf8').catch(()=>{throw Error('Missing shared-stake qualification: '+gameId);}));
    validateStakeProof(gameId,inputs,proof);stakePoliciesVerified++;
   }
-  return { verified, stakePoliciesVerified, legacyNotQualified: baseline.games.length,...(serverOnly.length?{serverQualifiedClientPending:serverOnly}:{}) };
+  return { verified, stakePoliciesVerified, stakeAdmissionVerified, legacyNotQualified: baseline.games.length,...(serverOnly.length?{serverQualifiedClientPending:serverOnly}:{}) };
 }
