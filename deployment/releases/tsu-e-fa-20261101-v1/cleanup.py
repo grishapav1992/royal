@@ -12,6 +12,27 @@ def require(value,reason):
 def sha(path):return hashlib.sha256(path.read_bytes()).hexdigest()
 def read(path):return json.loads(path.read_text())
 def inventory(path):return {p.relative_to(path).as_posix():sha(p) for p in path.rglob('*') if p.is_file()}
+def valid_successor(image,label,own_image,own_source,p,m,b,receipt):
+    return (p.get('published') is True and p.get('runningImage')==b.get('image')==image
+        and p.get('sourceCommit')==m.get('sourceCommit')==receipt.get('sourceCommit')==label
+        and bool(re.fullmatch('[a-f0-9]{40}',str(receipt.get('remoteMain',''))))
+        and m.get('before',{}).get('preparedImage')==own_image
+        and m.get('before',{}).get('sourceCommit')==own_source)
+def current_release(game,own):
+    image=game['Image'];label=game['Config']['Labels'].get('org.opencontainers.image.revision')
+    if image==own['image']:
+        require(label==own['sourceCommit'],'Current source label differs');return ROOT.name
+    for path in ROOT.parent.glob('*/published.json'):
+        if path.parent.resolve()!=path.parent:continue
+        try:
+            p=read(path)
+            if p.get('runningImage')!=image:continue
+            m,b,receipt=[read(path.parent/n) for n in ['install-manifest.json','build-result.json','release-github.json']]
+            if valid_successor(image,label,own['image'],own['sourceCommit'],p,m,b,receipt):
+                require(sha(path.parent/'release-github.json')==m['receiptSha256'],'Successor receipt changed')
+                return path.parent.name
+        except (OSError,ValueError,KeyError):continue
+    raise RuntimeError('Current image is not this release or its verified immediate successor')
 def context_expected(m):
     name=m['release']
     text='FROM royal-game:before-'+name+'-prepared\nCOPY --chown=node:node dist-delta/ /app/dist/\nLABEL org.opencontainers.image.revision="'+m['sourceCommit']+'"\n'
@@ -28,13 +49,13 @@ def main():
     locks=[]
     for path in [ROOT.parent/'themed-publish.lock',Path('/opt/royal/.client-presentation-deploy.lock'),Path('/opt/royal-game-modules-state/module.lock')]:
         require(not path.is_symlink(),'Unsafe cleanup lock')
-        handle=path.open('a');fcntl.flock(handle,fcntl.LOCK_EX|fcntl.LOCK_NB);locks.append(handle)
+        handle=path.open('a');fcntl.flock(handle,fcntl.LOCK_EX);locks.append(handle)
     m,b,p=[read(ROOT/n) for n in ['install-manifest.json','build-result.json','published.json']]
     require(p['published'] and p['sourceCommit']==m['sourceCommit']==b['sourceCommit'],'Incomplete publication')
     require(p['runningImage']==b['image'],'Image evidence differs')
     game=json.loads(subprocess.check_output(['docker','inspect','royal-game-1']))[0]
-    require(game['Image']==b['image'] and game['State'].get('Health',{}).get('Status')=='healthy','Current image differs')
-    require(game['Config']['Labels'].get('org.opencontainers.image.revision')==m['sourceCommit'],'Current source label differs')
+    require(game['State'].get('Health',{}).get('Status')=='healthy','Current image is not healthy')
+    protected_release=current_release(game,b)
     backup=Path(b['backup'])
     require(backup==Path('/opt/royal-backups')/m['release'] and not backup.is_symlink(),'Unexpected backup')
     require(sha(backup/'source.tgz')==b['sourceBackupSha256'] and sha(backup/'host.json')==m['before']['moduleHostContract'],'Rollback backup differs')
@@ -53,7 +74,7 @@ def main():
         path=Path(row['path']);require(path.parent==ROOT and path.resolve()==path,'Cleanup escaped release directory')
         if row['directory']:shutil.rmtree(path)
         else:path.unlink()
-    result={'removed':rows,'removedLogicalBytes':sum(r['logicalBytes'] for r in rows),'freeBefore':free,'freeAfter':shutil.disk_usage('/opt/royal').free,'preservedInGitHub':sys.argv[1],'sourceCommit':m['sourceCommit'],'image':b['image'],'backupPreserved':True,'databaseRestored':False}
+    result={'removed':rows,'removedLogicalBytes':sum(r['logicalBytes'] for r in rows),'freeBefore':free,'freeAfter':shutil.disk_usage('/opt/royal').free,'preservedInGitHub':sys.argv[1],'sourceCommit':m['sourceCommit'],'image':b['image'],'protectedCurrentRelease':protected_release,'healthyCurrentImage':game['Image'],'backupPreserved':True,'databaseRestored':False}
     (ROOT/'cleanup.json').write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps(result))
 if __name__=='__main__':main()
