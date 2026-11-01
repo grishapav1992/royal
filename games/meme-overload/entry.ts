@@ -9,3 +9,5 @@ export const mount: GameModuleV1['mount'] = host => {
  readGameHost();
  return new MemeOverloadUI(host);
 };
+
+import '../../src/ui/active-game-viewport.css';

@@ -26,3 +26,11 @@
 .jc-fit[data-layout=side]>.jc-console{border-top:0;border-left:1px solid #a7733f40}
 .jc-fit[data-compact=true] .jc-brand>span,.jc-fit[data-compact=true] .jc-brand>small{display:none}.jc-fit[data-compact=true]>.jc-header{padding:6px 10px}.jc-fit[data-compact=true]>.jc-path{padding:5px 8px}.jc-fit[data-compact=true]>.jc-result[data-kind]>small:first-child{display:none}.jc-fit[data-compact=true]>.jc-result[data-kind]>strong{font-size:18px}.jc-fit[data-compact=true]>.jc-result[data-kind]{padding:5px 8px}
 @container(max-width:600px){.jc-fit .jc-header-actions [data-wardrobe]>span{display:none}.jc-fit .jc-stage-bottom{bottom:9px;left:10px;right:10px}.jc-fit .jc-takes{gap:3px}.jc-fit .jc-takes i{width:19px;height:22px}.jc-fit .jc-stage-bottom>span{font-size:11px}.jc-fit .jc-stage-bottom small{font-size:9px}.jc-fit .jc-scene-tag{left:10px;top:10px;gap:3px}.jc-fit .jc-scene-tag strong{font-size:14px}.jc-fit .jc-risk-tag{right:10px;top:10px;font-size:9px;padding:5px}.jc-fit .jc-scene-tag>span{font-size:7px;letter-spacing:1px}}
+
+/* The phone console keeps a complete difficulty choice in its scrollable area. */
+.jc-fit[data-compact=true] .jc-risk-options { margin-top:4px; }
+.jc-fit[data-compact=true] .jc-risk-options button { min-height:44px; padding:4px 2px; gap:3px; }
+.jc-fit[data-compact=true] .jc-risk-options b { font-size:10px; }
+.jc-fit[data-compact=true] .jc-controls { padding:6px 10px; gap:6px; }
+
+.jc-fit[data-layout=stack][data-compact=true] { grid-template-rows:auto auto minmax(60px,1fr) auto minmax(174px,1fr); }

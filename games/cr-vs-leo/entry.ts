@@ -8,3 +8,5 @@ export const mount: GameModuleV1['mount'] = host => {
  readGameHost();
  return new CrLeoUI(host);
 };
+
+import '../../src/ui/active-game-viewport.css';
