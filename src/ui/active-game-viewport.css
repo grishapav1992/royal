@@ -164,7 +164,7 @@
  #mini-dialog.originals-mode[data-game-viewport="layout"] .fb-root .fb-header { flex:none; }
  #mini-dialog.originals-mode[data-game-viewport="layout"] .fb-root .fb-header h2 { font-size:21px; margin:3px 0; }
  #mini-dialog.originals-mode[data-game-viewport="layout"] .fb-root .fb-header h2 span { margin-top:3px; }
- #mini-dialog.originals-mode[data-game-viewport="layout"] .fb-root .fb-layout { flex:1; min-height:0; display:grid; grid-template-columns:minmax(0,1fr); grid-template-rows:minmax(110px,1fr) 256px; gap:6px; }
+ #mini-dialog.originals-mode[data-game-viewport="layout"] .fb-root .fb-layout { flex:1; min-height:0; display:grid; grid-template-columns:minmax(0,1fr); grid-template-rows:minmax(60px,1fr) minmax(0,256px); gap:6px; }
  #mini-dialog.originals-mode[data-game-viewport="layout"] .fb-root .fb-stage { height:100%; min-height:0; flex:none; }
  #mini-dialog.originals-mode[data-game-viewport="layout"] .fb-root .fb-stage-top { padding:5px 8px; }
  #mini-dialog.originals-mode[data-game-viewport="layout"] .fb-root .fb-stage canvas { min-height:40px; }

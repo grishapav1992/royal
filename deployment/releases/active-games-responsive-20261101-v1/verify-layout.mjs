@@ -50,6 +50,15 @@ async function fullyVisible(frame,selector){
   return{label:e.getAttribute('aria-label')||e.innerText||e.id,width:b.width,height:b.height,hidden:getComputedStyle(e).visibility==='hidden',clipped:Math.max(0,left-b.left,top-b.top,b.right-right,b.bottom-bottom)};
  }));
 }
+async function revealScrollable(frame,selector){
+ await frame.locator(selector).first().evaluate(e=>{
+  for(let p=e.parentElement;p;p=p.parentElement){const c=getComputedStyle(p),r=p.getBoundingClientRect();let b=e.getBoundingClientRect();
+   if(/auto|scroll/.test(c.overflowY)){if(b.bottom>r.top+p.clientTop+p.clientHeight)p.scrollTop+=b.bottom-(r.top+p.clientTop+p.clientHeight);b=e.getBoundingClientRect();if(b.top<r.top+p.clientTop)p.scrollTop-=r.top+p.clientTop-b.top;}
+   b=e.getBoundingClientRect();if(/auto|scroll/.test(c.overflowX)){if(b.right>r.left+p.clientLeft+p.clientWidth)p.scrollLeft+=b.right-(r.left+p.clientLeft+p.clientWidth);b=e.getBoundingClientRect();if(b.left<r.left+p.clientLeft)p.scrollLeft-=r.left+p.clientLeft-b.left;}
+  }
+  if(document.scrollingElement.scrollHeight>innerHeight&&!/hidden|clip/.test(getComputedStyle(document.documentElement).overflowY)){const b=e.getBoundingClientRect();window.scrollBy(0,b.bottom>innerHeight?b.bottom-innerHeight:b.top<0?b.top:0);}
+ });
+}
 async function geometry(frame){return frame.evaluate(()=>{
  const root=document.querySelector('#mini-game')||document.body;
  const rect=e=>{const b=e.getBoundingClientRect();return{x:b.x,y:b.y,width:b.width,height:b.height,right:b.right,bottom:b.bottom};};
@@ -108,11 +117,11 @@ try{
     await page.locator('.mini-stage').evaluate(e=>e.scrollTop=0);
     const frames=[];for(const f of page.frames())frames.push(await geometry(f));
     const checks=[];
-    for(const selector of mainControls[id]||[]){let boxes=await fullyVisible(page.mainFrame(),selector);const scrolled=boxes.some(b=>b.clipped>2);if(scrolled){await page.locator(selector).first().evaluate(e=>e.scrollIntoView({block:'nearest',inline:'nearest'}));boxes=await fullyVisible(page.mainFrame(),selector);}expect(boxes.length,id+' '+selector).toBeGreaterThan(0);for(const b of boxes){expect(b.hidden,id+' '+selector).toBe(false);expect(b.clipped,id+' '+selector+' '+width+'x'+height).toBeLessThanOrEqual(2);expect(b.width).toBeGreaterThan(15);expect(b.height).toBeGreaterThan(15);}checks.push({selector,boxes,scrolled});}
+    for(const selector of mainControls[id]||[]){let boxes=await fullyVisible(page.mainFrame(),selector);const scrolled=boxes.some(b=>b.clipped>2);if(scrolled){await revealScrollable(page.mainFrame(),selector);boxes=await fullyVisible(page.mainFrame(),selector);}expect(boxes.length,id+' '+selector).toBeGreaterThan(0);for(const b of boxes){expect(b.hidden,id+' '+selector).toBe(false);expect(b.clipped,id+' '+selector+' '+width+'x'+height).toBeLessThanOrEqual(2);expect(b.width).toBeGreaterThan(15);expect(b.height).toBeGreaterThan(15);}checks.push({selector,boxes,scrolled});}
     if(id==='studio-dracona'||id==='studio-forest-heart'||id==='studio-flooded-temple'){
      const child=page.frames().find(f=>f!==page.mainFrame());expect(child).toBeTruthy();
      const selector=id==='studio-dracona'?'#spin':id==='studio-forest-heart'?'[data-fh="spin"]':'[data-ft="primary"]';
-     let boxes=await fullyVisible(child,selector);const scrolled=boxes.some(b=>b.clipped>2);if(scrolled){await child.locator(selector).evaluate(e=>e.scrollIntoView({block:'nearest',inline:'nearest'}));boxes=await fullyVisible(child,selector);}expect(boxes.length,id+' primary action').toBeGreaterThan(0);for(const b of boxes)expect(b.clipped,id+' '+width+'x'+height).toBeLessThanOrEqual(2);checks.push({selector,boxes,scrolled});
+     let boxes=await fullyVisible(child,selector);const scrolled=boxes.some(b=>b.clipped>2);if(scrolled){await revealScrollable(child,selector);boxes=await fullyVisible(child,selector);}expect(boxes.length,id+' primary action').toBeGreaterThan(0);for(const b of boxes)expect(b.clipped,id+' '+width+'x'+height).toBeLessThanOrEqual(2);checks.push({selector,boxes,scrolled});
     }
     expect(frames.every(f=>f.pageOverflowX<=1),id+' horizontal overflow').toBe(true);
     await expect(page.locator('#mini-dialog #chat-input')).toBeInViewport();
