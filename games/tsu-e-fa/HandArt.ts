@@ -9,7 +9,7 @@ function hand(row: number, side: 0 | 1, y: number, active = false) {
 }
 
 export function handScene(left: TsuEFaChoice, right: TsuEFaChoice) {
-  return `<svg viewBox="0 0 800 350" role="img" aria-label="Руки двух игроков, вид сбоку" class="td-hands">${hand(3, 0, 172)}${hand(3, 1, 172)}${hand(rows[left], 0, 0, true)}${hand(rows[right], 1, 0, true)}</svg>`;
+  return `<svg viewBox="0 12 800 326" role="img" aria-label="Руки двух игроков, вид сбоку" class="td-hands">${hand(3, 0, 172)}${hand(3, 1, 172)}${hand(rows[left], 0, 0, true)}${hand(rows[right], 1, 0, true)}</svg>`;
 }
 
 export function handIcon(choice: TsuEFaChoice) {

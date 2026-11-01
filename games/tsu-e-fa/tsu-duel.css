@@ -170,6 +170,30 @@
 .pvp-dialog[data-negotiated=true] .pvp-balance { font-size: 12px; }
 @keyframes td-bump { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
 @keyframes td-result { from { filter: brightness(1.1); } to { filter: none; } }
+@media (min-width: 700px) and (max-height: 800px) {
+  .pvp-dialog[data-negotiated=true] .pvp-heading { min-height: 28px; }
+  .pvp-dialog[data-negotiated=true] .pvp-heading h2 { margin: 0; font-size: 17px; }
+  .pvp-dialog[data-negotiated=true] .pvp-heading > button { min-height: 28px; font-size: 24px; }
+  .pvp-dialog[data-negotiated=true] .pvp-balance { padding: 4px 8px; }
+  .td-game { padding: 7px; }
+  .td-heading { gap: 7px; margin-bottom: 5px; }
+  .td-heading h2 { font-size: 31px; }
+  .td-heading > span { padding: 7px 4px; font-size: 20px; }
+  .td-heading small { font-size: 10px; }
+  .td-score { padding: 6px 12px; font-size: 35px; }
+  .td-status { margin: 5px auto; padding: 4px 10px; font-size: 12px; }
+  .td-terms { grid-template-columns: 1fr 1.1fr 1fr; gap: 5px 10px; padding: 7px; }
+  .td-terms label { font-size: 11px; }
+  .td-terms select { min-height: 40px; }
+  .td-pot { align-self: center; font-size: 11px; }
+  .td-pot small { font-size: 9px; }
+  .td-readiness { grid-column: 3; grid-row: 1; flex-direction: column; gap: 4px; }
+  .td-readiness button { flex: auto; width: 100%; }
+  .td-readiness span { flex: auto; font-size: 10px; text-align: center; }
+  .td-consent { font-size: 9px; }
+  .td-footer { margin-top: 5px; }
+  .td-footer button { min-height: 30px !important; padding: 4px 8px !important; }
+}
 @media (max-width: 600px) {
   .td-game { padding: 6px; border-width: 2px; }
   .td-heading { grid-template-columns: .8fr 1.3fr auto 1fr; gap: 4px; }
