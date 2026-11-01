@@ -29,6 +29,8 @@ export const STREET_PATROLS:Partial<Record<StreetResidentId,Patrol>>={
 };
 export const STREET_WORK_PATCHES=STREET_PATROLS.janitor!.stops.map(({x,y})=>({x:x+35,y:y+7}));
 const obstacles=STREET_OBSTACLES.map(o=>({x:o.x-4,y:o.y-4,w:o.w+8,h:o.h+8}));
+// Only resident routing avoids this area; it never becomes a player obstacle.
+const patrolObstacles=[...obstacles,{x:756,y:911,w:178,h:108}];
 type Actor={id:StreetResidentId;x:number;y:number;facing:Facing;index:number;stay:number;workTime:number;moving:boolean;path:Point[];cursor:number;greet:number;cooldown:number;greetings:number};
 export type ResidentLocation=Point&{id:StreetResidentId;facing:Facing;moving:boolean;stop:number;workTime:number;greeting:boolean;greetingProgress:number;greetings:number};
 
@@ -42,7 +44,7 @@ export class StreetResidentPatrols {
     this.actors=STREET_RESIDENTS.map(person=>{
       const patrol=STREET_PATROLS[person.id],start=patrol?.stops[0]??person;
       if(patrol)this.paths.set(person.id,patrol.stops.map((stop,i)=>{
-        const path=findPath(stop,patrol.stops[(i+1)%patrol.stops.length],obstacles);
+        const path=findPath(stop,patrol.stops[(i+1)%patrol.stops.length],patrolObstacles);
         if(!path.length)throw Error('Unreachable street patrol: '+person.id);
         return path;
       }));

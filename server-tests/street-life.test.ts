@@ -102,6 +102,7 @@ test('working residents visit several safe places while the entrance and perimet
     const people=patrols.advance(50);
     for(const person of people){
       assert(walkable(person.x,person.y,STREET_OBSTACLES,16),person.id+' stays on pavement');
+      assert(!(person.x>744&&person.x<946&&person.y>899&&person.y<1031),'residents keep the doorway approach clear');
       const before=previous.find(p=>p.id===person.id)!;
       assert(Math.hypot(person.x-before.x,person.y-before.y)<=(STREET_PATROLS[person.id]?.speed??0)*.05+.001,'no teleports between stops');
       if(!person.moving)visits.get(person.id)?.add(person.stop);
