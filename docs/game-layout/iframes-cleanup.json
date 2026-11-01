@@ -1,10 +1,10 @@
 {
   "date": "2026-11-01",
   "owner": "game-layout-iframes",
-  "status": "planned",
+  "status": "blocked",
   "initialFreeBytes": 327885705216,
   "freeBeforeCleanupBytes": 328499093504,
-  "preservationCommit": null,
+  "preservationCommit": "95ba92e551687effa94749469a944171f0c76dbc",
   "standStopped": true,
   "portsClosed": [
     5468,
@@ -123,5 +123,9 @@
   "removedArchives": 0,
   "removedBytes": 0,
   "priorRejectedCleanupNotRetried": true,
-  "cleanupCondition": "After source and final evidence are pushed and remote commit verified, remove only these unchanged task-owned inactive paths. Keep active packages and current checkout."
+  "cleanupCondition": "Automatic approval review must permit cleanup of these exact task-owned unchanged paths. Revalidate inventory and active pointers before any later authorized cleanup. Current checkout and active packages stay for review.",
+  "reason": "Automatic approval review rejected the guarded Remove-Item cleanup command: blocked by policy. The command did not execute; no retry or alternative deletion method was used.",
+  "freeAfterCleanupBytes": 328651681792,
+  "inactivePackageBytes": 159741749,
+  "intermediateEvidenceBytes": 93176959
 }
