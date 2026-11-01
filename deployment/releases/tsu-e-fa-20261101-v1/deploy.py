@@ -60,7 +60,7 @@ def configure():
     for name,digest in m['support'].items():require(sha(ROOT/name)==digest,'Guarded helper changed: '+name)
     guard=load('tsu_application_overlay',ROOT/'application-overlay.py')
     guard.NAME,guard.ROOT=NAME,ROOT;guard.payload=payload
-    b=guard.configure(ROOT);b.tsu_staged=False;b.tsu_rolling_back=False
+    b=guard.configure(ROOT);b.tsu_staged=sha(b.HOST)==m['hostContractSha256'];b.tsu_rolling_back=False
     original_settings=b.settings
     def settings(state,recovery=False):
         expected=expected_modules(m) if b.tsu_staged else m['before']['moduleFiles']
@@ -96,13 +96,14 @@ def configure():
     b.rollback=rollback
     return b
 def main():
-    require(sys.argv[1:] in [['check'],['release']],'Unexpected operation')
+    require(sys.argv[1:] in [['check'],['release'],['rollback']],'Unexpected operation')
     b=configure();b.payload();locks=[]
     for name in ['/opt/royal-releases/themed-publish.lock','/opt/royal/.client-presentation-deploy.lock','/opt/royal-game-modules-state/module.lock']:
         require(not Path(name).is_symlink(),'Lock symlink rejected')
         handle=open(name,'a');fcntl.flock(handle,fcntl.LOCK_EX);locks.append(handle)
     for number in [signal.SIGHUP,signal.SIGTERM,signal.SIGINT]:signal.signal(number,lambda n,f:(_ for _ in ()).throw(InterruptedError(str(n))))
     if sys.argv[1]=='check':b.baseline();result={'ready':True}
+    elif sys.argv[1]=='rollback':result=b.rollback()
     else:
         built=b.build();print(json.dumps(built),flush=True)
         result=b.publish();result.update(addedGames=['tsu-e-fa'],restoredGames=[],activeGames=b.M['activeGames'],package=b.M['package']['version'])
