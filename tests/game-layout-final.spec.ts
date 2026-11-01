@@ -60,7 +60,11 @@ for(const id of ids)test('settings, paid round, reopen and lost response: '+id,a
  let location='';
  if(id==='original-jackie-chan'){await panel.locator('[data-location]').selectOption({index:1});location=await panel.locator('[data-location]').inputValue();await panel.locator('[data-speed]').click();}
  if(id==='royal-roulette'){
-  for(const button of await panel.locator('[data-rr-bet]').all()){const box=await button.boundingBox();expect(box!.width).toBeGreaterThanOrEqual(44);expect(box!.height).toBeGreaterThanOrEqual(44);}
+  for(const [width,height]of [[320,568],[568,320],[852,393],[393,852]]){
+   await page.setViewportSize({width,height});
+   for(const button of await panel.locator('[data-rr-bet]').all()){const box=await button.boundingBox();expect(box!.width).toBeGreaterThanOrEqual(44);expect(box!.height).toBeGreaterThanOrEqual(44);}
+   expect(await panel.evaluate(e=>e.scrollWidth-e.clientWidth)).toBeLessThanOrEqual(1);
+  }
   await page.screenshot({path:out+'/'+id+'-options.png'});await panel.locator('.rr-rules summary').click();await expect(panel.locator('.rr-rules')).toHaveAttribute('open','');
  }
  else{

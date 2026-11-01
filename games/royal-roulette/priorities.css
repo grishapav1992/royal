@@ -49,6 +49,7 @@
 .rr-root[data-priority-layout=landscape][data-priority-layout] .rr-return { grid-column:1; grid-row:5 }
 .rr-root[data-priority-layout=landscape][data-priority-layout] .rr-status { grid-column:1; grid-row:6 }
 .rr-root .game-options-content .rr-table-area { display:block; width:100%; min-width:0; max-height:none; overflow:visible }
+.rr-root .game-options-content .rr-table-heading { display:flex; flex-wrap:wrap; gap:4px; margin-bottom:8px }
 .rr-root .game-options-content .rr-outside { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px; margin:6px 0 12px }
 .rr-root .game-options-content .rr-outside button { min-height:64px; padding:6px; gap:4px; font-size:12px }
 .rr-root .game-options-content :is(.rr-outside-heading,.rr-number-heading) { margin:12px 0 6px }
