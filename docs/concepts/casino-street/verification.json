@@ -1,53 +1,53 @@
 {
   "feature": "casino-street",
-  "date": "2026-11-01",
-  "baselineCommit": "26369e04ab23b424af3ddb4841bde43ce715d942",
+  "date": "2026-11-02",
+  "baselineCommit": "87207b77c256a924f9a504bfda4173ef3105a6ff",
   "deployed": false,
   "addedOrRestoredGames": [],
   "checks": {
     "applicationBuild": {
       "format": 1,
-      "startedAt": "2026-11-01T20:34:13.048Z",
+      "startedAt": "2026-11-01T21:12:23.654Z",
       "scope": "application",
       "steps": [
         {
           "name": "rtp",
           "passed": true,
-          "durationMs": 6581
+          "durationMs": 3737
         },
         {
           "name": "typecheck",
           "passed": true,
-          "durationMs": 9839
+          "durationMs": 5873
         },
         {
           "name": "modules",
           "passed": true,
-          "durationMs": 20473
+          "durationMs": 5076
         },
         {
           "name": "host",
           "passed": true,
-          "durationMs": 5667
+          "durationMs": 5012
         },
         {
           "name": "backend",
           "passed": true,
-          "durationMs": 66
+          "durationMs": 67
         },
         {
           "name": "reconciliation",
           "passed": true,
-          "durationMs": 44
+          "durationMs": 22
         },
         {
           "name": "payments",
           "passed": true,
-          "durationMs": 31
+          "durationMs": 22
         }
       ],
       "passed": true,
-      "durationMs": 42701
+      "durationMs": 19810
     },
     "rtp": {
       "verified": 37,
@@ -56,16 +56,18 @@
       "legacyNotQualified": 114
     },
     "targetedNodeTests": {
-      "passed": 34,
+      "passed": 37,
       "failed": 0,
       "includes": [
-        "perimeter and server transitions",
-        "all five resident approaches and supported outfits",
-        "varied character routines with static conversation and reduced-motion poses",
-        "local conversation progression and cleanup",
-        "camera continuity",
-        "pedestrian and car routes",
-        "movement, elevator, guard and demo-wallet compatibility"
+        "complete perimeter and server transitions",
+        "ten minutes of complete resident patrol simulation",
+        "five tourist photo sites and five janitor work sites",
+        "four mascot stops and proximity-triggered greetings",
+        "doorway approach kept clear for resident paths",
+        "approaching a moving resident at its real position",
+        "conversation and reduced-motion pauses",
+        "continuous camera framing",
+        "movement, prediction, elevator, guard and demo-wallet compatibility"
       ]
     },
     "browser": {
@@ -97,7 +99,7 @@
       "signSheenRuns": true,
       "reducedMotionFreezesAmbience": true,
       "elevatorExcludesStreet": true,
-      "runtimeSourceCommit": "340005fb5f87da51d2ec8189b174e945a0ec721d",
+      "runtimeSourceCommit": "53e18fb2f5b42e626222df4c3ed62937a6e381c2",
       "observations": [],
       "residentConversations": [
         "doorman",
@@ -112,16 +114,27 @@
       "noDialogueInsideCasino": true,
       "courtyardAndTaxiScreenshots": true,
       "touristPhotoActionObserved": true,
-      "mascotWaveObserved": true,
       "taxiSmokingObserved": true,
       "conversationPausesActions": true,
-      "reducedMotionMakesAllResidentsStatic": true
+      "reducedMotionMakesAllResidentsStatic": true,
+      "language": "ru",
+      "movingTouristCanBeStopped": true,
+      "cancelApproachResumesPatrol": true,
+      "touristPhotographsAtNextStop": true,
+      "janitorChangesWorkSite": true,
+      "mascotPatrolMoves": true,
+      "mascotGreetsPassers": true
     },
     "movementGeometryUnchanged": true,
-    "connectionRecoveryTests": {
-      "passed": 33,
-      "failed": 0,
-      "reason": "Current main introduced connection recovery changes; existing transport and recovery tests were run after merging it."
+    "patrolCoverage": {
+      "simulatedMs": 600000,
+      "photoSites": 5,
+      "cleaningSites": 5,
+      "mascotStops": 4,
+      "allPositionsWalkable": true,
+      "noTeleports": true,
+      "playerGeometryUnchanged": true,
+      "npcDoorwayExclusion": true
     }
   },
   "existingFailures": {
@@ -150,7 +163,7 @@
       }
     },
     "note": "Failing test names were compared against unchanged origin/main. No retired games were restored to satisfy historical expectations.",
-    "context": "Historical comparison from the initial implementation at 78c3f207 against 0f2d09c0, not a current failure count. Street-characters-v5 passed 34 targeted tests, 33 connection and recovery tests and both connected-host browser scenarios."
+    "context": "Historical comparison from the initial implementation at 78c3f207 against 0f2d09c0, not a current failure count. Street-patrols-v6 passed 37 targeted tests and both connected-host browser scenarios."
   },
   "productionCatalogueReadOnly": {
     "arcadeCatalogSha256": "f6a46d3ee4d427068c87af6a4289fed6e1ac7e00ca3a60da9849cb319e475dc6",
@@ -158,7 +171,7 @@
     "cabinetsSourceMatchesMain": false,
     "cabinetsChangedByTask": false,
     "productionMutations": false,
-    "reverifiedAt": "2026-11-01T20:38:24.471605+00:00"
+    "reverifiedAt": "2026-11-01T21:17:52.242385+00:00"
   },
   "limitations": [
     "Browser viewports emulate desktop and mobile; no physical phone was tested.",
@@ -186,8 +199,8 @@
     "src/shared/street.ts": "15112fd6f1fd4abc5483f042f6a11d1fd555040b17f92966d56bf49c764cea51",
     "src/shared/world.ts": "74b80495ef53ee6d9c33892a02bc50e5503d8fdb890d21f36e8cf1ed5061440a",
     "src/game/streetArt.ts": "1d7a8b4896b3d2a3f6ae7e44d7cbe3c3bc55d2204967665833a7e906df5cff88",
-    "src/game/StreetRenderer.ts": "7ba5c362d0d84a1d60d7618339628b4b4177cb5583cedb5692cea9fc9e9f431c",
-    "src/game/RoomScene.ts": "48cace08e773d279f49ff7d209aa69b180bce42878ab678f51451e4ff2212ac2",
+    "src/game/StreetRenderer.ts": "e83b6efdbe666d61b8d809d8ac334ae038e25b67d5f8603523af5254bc1ad94e",
+    "src/game/RoomScene.ts": "b6fb35130a6444d858de9b42b3eb759d704c16423801dfa0df1508d0d3207c80",
     "src/ui/ClubMap.ts": "53a63ceaa6cfae6285b79181df32fa03ed17c8008d54c740761ea5a85bb74a07",
     "server/guards.ts": "f4e1d25875bdc007929b4649a3ff13634ab204d7867240bac000297a4fb91b4a",
     "src/main.ts": "043412f51c8e31eb33b8f07038c00ff544158bcc935814c5562209b87ea46739",
@@ -196,18 +209,19 @@
     "src/shared/elevator.ts": "4cb3d3512ef999775c1542230786634988e4fa8d04d3f9aa674c38301e69d8cf",
     "src/ui/ElevatorUI.ts": "7371925efbb8c31aaf0b3527f35a2361250bcaa8785bbf9e5aa67eb2f051a86d",
     "src/network/LobbyClient.ts": "1a2115cdf842acc39498aa557724dfb7ceefe1b390032a469d8c508e67ece240",
-    "src/game/StreetResidents.ts": "bea74f92e26f1b6af80e5cc68a4a359cc50815d1ff1c7c49c04cc70e43d2e885",
-    "src/game/streetDetails.ts": "817b876a7ff07aec57475ec2161f1d8b9a04dd9024c75b9c76b3e23dc7829c19",
+    "src/game/StreetResidents.ts": "f4c12c26af62776b33b3f2539071c041fdf03c9fa93a5983de89d6b59e4b4f43",
+    "src/game/streetDetails.ts": "926bdb94fcf9cf1e4240e0565d2dcbc8686c9257fdf692f57a8567173a851858",
     "src/game/street-residents.css": "212cf968dc850c6a981e9283b47e7e7ecc27d50de755003ca83bb3c99a84c043",
-    "src/i18n/streetEn.ts": "59c1f43bc449c9d3831de33ca75894a912c0358fb4dbbab1751e06fefd5e9afa",
+    "src/i18n/streetEn.ts": "9bd6f583587793bac4d56663e86e4f983e1eb13a2f42c1cddc4cb3d0ae856be4",
     "src/i18n/en.ts": "0d0fe87c1cdc5d745abe84406b196d4420cc6e75d5cdcd0b38569267f16fbe8a",
-    "src/game/StreetResidentActions.ts": "e16de31cd0d89abeefd4308df716e86795b431e1c153bf41d6d8058b47dc34c9",
-    "src/game/streetResidentArt.ts": "db31d05edb2dc4c0ef0acff4a3ea268bd6ff29920e496edb48be97f4ba0ff441",
+    "src/game/StreetResidentActions.ts": "f599e50ecd9d151f1a0479ab3dc2cc9b5fafa2e72afdedb74d85fadf9a669391",
+    "src/game/streetResidentArt.ts": "8ccdbeb0c854cecebeaf5cb050ba0c11965780aea3b0f0aa360290e9999605c7",
     "src/network/reconnection.ts": "6fa25ffea3e60b9d4e76441c995cdda5dde9e066f9ec23af1fbca020ea15aacb",
-    "src/shared/lobbyConnection.ts": "4cd112040e2d4dbefefab9c882b176c9ee0944d4b167c4c9280a594e5eb2dbac"
+    "src/shared/lobbyConnection.ts": "4cd112040e2d4dbefefab9c882b176c9ee0944d4b167c4c9280a594e5eb2dbac",
+    "src/game/StreetResidentPatrols.ts": "a1e31f7052d2abf6ad20b3df9d6861f6a17de5b74bcf6d83162ee10ed85e4bec"
   },
   "previousBaselineCommit": "0f2d09c003a243d51e118ca3c7b9ea5b7eb20731",
-  "visualVersion": "street-characters-v5",
+  "visualVersion": "street-patrols-v6",
   "visualChanges": [
     "Paneled double doors and arched canopies",
     "Cream pilasters with diamond details",
@@ -231,29 +245,30 @@
     "Caretaker clears snow, taps snow off the shovel, rests and looks around",
     "Taxi driver alternates coffee, smoking with bounded wisps, checking his watch and looking around",
     "All five characters have local dialogue; conversation and reduced motion stop their routines",
-    "Approach points leave names, props and costume faces visible"
+    "Approach points leave names, props and costume faces visible",
+    "Tourist walks between five photography sites around the building",
+    "Caretaker visits five work patches and visibly reduces local snow piles",
+    "Mascot patrols four points beside the entrance and pauses to greet real passers",
+    "Distance-driven walking frames, including a seven-frame chip costume atlas",
+    "Moving residents wait when clicked, resume on cancellation and remain still throughout a conversation",
+    "All labels, shadows, props, hit areas and minimap markers follow actual resident positions",
+    "Resident-only routing avoids the doorway; player collision geometry is unchanged"
   ],
-  "testedSourceCommit": "340005fb5f87da51d2ec8189b174e945a0ec721d",
+  "testedSourceCommit": "53e18fb2f5b42e626222df4c3ed62937a6e381c2",
   "localPreview": {
     "page": 200,
     "mainScript": 200,
     "backendHealth": 200,
-    "asset": "/assets/main-Cp-hY_QO.js",
-    "sha256": "a6ff8748175119a0caeb2f15ee4b1f88fe22c2374ded58246fbca58115a0fbec",
+    "asset": "/assets/main-DxnT7vjC.js",
+    "sha256": "4aee4f6fd907a2b0ed269d234faca946a5218f5c26dd697201c95258df5b05c3",
     "matchesBuild": true,
     "url": "http://127.0.0.1:5191",
-    "frontendSourceCommit": "340005fb5f87da51d2ec8189b174e945a0ec721d",
+    "frontendSourceCommit": "53e18fb2f5b42e626222df4c3ed62937a6e381c2",
     "backendSourceCommit": "78c3f207a60cacfc0d7f8b1ab1fc3c15cae8ea23",
     "backendPreservedForActiveSession": true,
     "completeCurrentBackendTestedSeparately": true
   },
-  "previousVisualVersion": "street-details-v4",
-  "previousTestedSourceCommit": "177868031850c76c49375043f438956bbcaa8a03",
-  "synchronization": {
-    "mainCommit": "26369e04ab23b424af3ddb4841bde43ce715d942",
-    "featureCommit": "4e6d5f3f343a22fb0478c82562c4d416dee14fed",
-    "testedRuntimeSourcesUnchanged": true,
-    "checkedAt": "2026-11-01T20:39:43.496163+00:00",
-    "changesSinceTesting": "Verification screenshots/report and deployment maintenance tooling; game and application runtime sources unchanged."
-  }
+  "previousVisualVersion": "street-characters-v5",
+  "previousTestedSourceCommit": "340005fb5f87da51d2ec8189b174e945a0ec721d",
+  "verifiedAt": "2026-11-01T21:17:52.242385+00:00"
 }
