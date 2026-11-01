@@ -170,6 +170,13 @@
 .pvp-dialog[data-negotiated=true] .pvp-heading small { display: none; }
 .pvp-dialog[data-negotiated=true] .pvp-content { gap: 5px; }
 .pvp-dialog[data-negotiated=true] .pvp-balance { font-size: 12px; }
+#pvp-dialog[data-negotiated=true] .game-chat-toolbar {
+  position: absolute;
+  top: 8px;
+  right: 64px;
+  z-index: 2;
+  padding: 0;
+}
 @keyframes td-bump { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
 @keyframes td-result { from { filter: brightness(1.1); } to { filter: none; } }
 @media (min-width: 700px) and (max-height: 800px) {
