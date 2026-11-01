@@ -56,9 +56,14 @@ def main():
     game=json.loads(subprocess.check_output(['docker','inspect','royal-game-1']))[0]
     require(game['State'].get('Health',{}).get('Status')=='healthy','Current image is not healthy')
     protected_release=current_release(game,b)
-    backup=Path(b['backup'])
-    require(backup==Path('/opt/royal-backups')/m['release'] and not backup.is_symlink(),'Unexpected backup')
-    require(sha(backup/'source.tgz')==b['sourceBackupSha256'] and sha(backup/'host.json')==m['before']['moduleHostContract'],'Rollback backup differs')
+    # Retention keeps the current release and its rollback. Once a verified
+    # successor is current, its backup preserves our image; our older rollback
+    # may already have been retired by the completed automatic maintenance.
+    protected_root=ROOT.parent/protected_release
+    protected_m,protected_b=[read(protected_root/n) for n in ['install-manifest.json','build-result.json']]
+    backup=Path(protected_b['backup'])
+    require(backup==Path('/opt/royal-backups')/protected_m['release'] and not backup.is_symlink(),'Unexpected backup')
+    require(sha(backup/'source.tgz')==protected_b['sourceBackupSha256'] and sha(backup/'host.json')==protected_m['before']['moduleHostContract'],'Current rollback backup differs')
     rows=[];context=ROOT/'runtime-context'
     if context.exists():
         require(context.resolve()==context and context.is_dir() and not any(p.is_symlink() for p in context.rglob('*')),'Unsafe build context')
@@ -74,7 +79,7 @@ def main():
         path=Path(row['path']);require(path.parent==ROOT and path.resolve()==path,'Cleanup escaped release directory')
         if row['directory']:shutil.rmtree(path)
         else:path.unlink()
-    result={'removed':rows,'removedLogicalBytes':sum(r['logicalBytes'] for r in rows),'freeBefore':free,'freeAfter':shutil.disk_usage('/opt/royal').free,'preservedInGitHub':sys.argv[1],'sourceCommit':m['sourceCommit'],'image':b['image'],'protectedCurrentRelease':protected_release,'healthyCurrentImage':game['Image'],'backupPreserved':True,'databaseRestored':False}
+    result={'removed':rows,'removedLogicalBytes':sum(r['logicalBytes'] for r in rows),'freeBefore':free,'freeAfter':shutil.disk_usage('/opt/royal').free,'preservedInGitHub':sys.argv[1],'sourceCommit':m['sourceCommit'],'image':b['image'],'protectedCurrentRelease':protected_release,'healthyCurrentImage':game['Image'],'protectedRollbackBackup':str(backup),'backupPreserved':True,'databaseRestored':False}
     (ROOT/'cleanup.json').write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps(result))
 if __name__=='__main__':main()
