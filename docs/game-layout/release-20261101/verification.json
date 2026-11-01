@@ -7064,9 +7064,40 @@
     "timer": "enabled"
   },
   "cleanup": {
-    "local": "awaiting-new-owned-path-cleanup",
+    "server": {
+      "preservationCommit": "6f6a1067a8100a58e1711b014ea4f27029f07e06",
+      "maintenanceProof": "/opt/royal-maintenance/code-updates/layout-preparations-20261101.json",
+      "removed": [
+        {
+          "path": "/opt/royal-releases/layout-priorities-20261101-v1/transport.tgz",
+          "logicalBytes": 132656042,
+          "archive": true
+        },
+        {
+          "path": "/opt/royal-releases/layout-priorities-20261101-v1/helper-checks.tgz",
+          "logicalBytes": 15143,
+          "archive": true
+        },
+        {
+          "path": "/opt/royal-releases/layout-priorities-20261101-v1/maintenance-tests.tgz",
+          "logicalBytes": 25596,
+          "archive": true
+        }
+      ],
+      "logicalBytes": 132696781,
+      "freeBefore": 11807789056,
+      "freeAfter": 11940495360,
+      "applicationAndDataChanged": false
+    },
+    "localModuleCleanup": "cleanup-modules.json",
+    "localArtifactCleanup": "cleanup-artifacts.json",
+    "removedLocalFiles": 0,
+    "newPendingModuleBytes": 149942246,
+    "newPendingArtifactsBytes": 865266534,
+    "freeAfterAttempt": 323167158272,
+    "reason": "blocked by policy",
     "previousRejectedPathsNotRetried": true,
-    "worktreeException": "Earlier rejected package and artifact paths prevent removing this checkout without retrying a rejected deletion; preserve until cleanup is permitted."
+    "worktreeException": "Deleting this checkout would retry previously denied child-path cleanup; retain until policy permits cleanup and a fresh inventory has been checked."
   },
   "initialBrowserDiagnostics": {
     "desktopStrict": [
@@ -10097,5 +10128,6 @@
       "src/i18n/en.ts",
       "src/ui/SocialUI.ts"
     ]
-  }
+  },
+  "verifiedAtUtc": "2026-11-01T21:37:43.646323+00:00"
 }
