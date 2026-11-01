@@ -358,5 +358,82 @@
     "productionWagersCreated": false,
     "physicalPhoneTested": false,
     "connectedProductionChatTested": false
+  },
+  "cleanup": {
+    "release": "guard-counter-20261101-v1",
+    "preservedSourceCommit": "455e48100e833bee9f8d79f38f1ee7214dad8e32",
+    "verifiedRemoteRecordCommit": "fc2436a0a31cda9cab28b3ade0d8d911f9e0066e",
+    "server": {
+      "at": 1793551324.9500253,
+      "removed": [
+        {
+          "path": "/opt/royal-releases/guard-counter-20261101-v1/runtime-context",
+          "logicalBytes": 5094464,
+          "files": 5
+        },
+        {
+          "path": "/opt/royal-releases/guard-counter-20261101-v1/transport.tgz",
+          "logicalBytes": 2646982,
+          "files": 1
+        },
+        {
+          "path": "/opt/royal-releases/guard-counter-20261101-v1/transport-final.tgz",
+          "logicalBytes": 3107945,
+          "files": 1
+        }
+      ],
+      "freeBefore": 12189483008,
+      "freeAfter": 12195266560,
+      "health": "healthy",
+      "rollbackSourcePreserved": true,
+      "applicationSourceAndSettingsUntouched": true
+    },
+    "local": {
+      "status": "blocked-before-execution",
+      "reason": "Automatic approval review rejected local temporary build and archive cleanup: blocked by policy",
+      "removedFiles": 0,
+      "preservedFolders": [
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\guard-counter-release\\royal\\dist",
+          "logicalBytes": 2897967
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\guard-counter-release\\royal\\dist-server",
+          "logicalBytes": 4660707
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\guard-counter-release\\royal\\module-dist",
+          "logicalBytes": 272898912
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\guard-counter-release\\royal\\module-build",
+          "logicalBytes": 2051337
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\guard-counter-release\\royal\\artifacts\\work\\guard-counter-release",
+          "logicalBytes": 39182485
+        }
+      ],
+      "preservedArchives": [
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\guard-counter-release\\royal\\artifacts\\work\\guard-counter-release\\transport-final.tgz",
+          "bytes": 3107945
+        },
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\guard-counter-release\\royal\\artifacts\\work\\guard-counter-release\\transport.tgz",
+          "bytes": 2646982
+        }
+      ],
+      "freeBefore": 326755753984,
+      "freeAfter": 326755196928,
+      "activeWorkExceptions": [
+        {
+          "path": "C:\\Users\\Aorus\\.codex\\worktrees\\guard-counter-release\\royal",
+          "reason": "Primary checkout attached to this chat; original checkout contains unrelated active changes",
+          "cleanupCondition": "Archive when the desktop attachment is no longer needed and cleanup restrictions are resolved"
+        }
+      ],
+      "spaceNote": "No local deletion ran and no local reclaimed space is claimed."
+    }
   }
 }
