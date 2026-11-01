@@ -11,8 +11,8 @@ const before=JSON.parse(fs.readFileSync(process.argv[2])),out=path.resolve(proce
 await assertClean(root);const release=await verifyRelease(root),receipt=JSON.parse(fs.readFileSync('module-build/release-github.json'));
 assert.equal(release.sourceCommit,receipt.sourceCommit);assert.equal(receipt.remoteMain,git(root,['rev-parse','origin/main']));
 assert.equal(release.baseCommit,before.sourceCommit);assert.deepEqual(before.program,before.preparedProgram);assert.equal(before.container.image,before.preparedImage);
-const reader=await readHostProjection(root,path.relative(root,path.join(folder,'host-projection.json')),{strictOrigins:true});
-const backend=await readHostProjection(root,path.relative(root,path.join(folder,'backend-projection.json')),{strictOrigins:true});
+const reader=await readHostProjection(root,path.relative(root,path.join(folder,'host-projection.json')).replaceAll('\\','/'),{strictOrigins:true});
+const backend=await readHostProjection(root,path.relative(root,path.join(folder,'backend-projection.json')).replaceAll('\\','/'),{strictOrigins:true});
 for(const projection of [release.hostProjection,release.backendProjection])for(const [file,hash]of Object.entries(projection.inputs))assert(sources.includes(file)||[before.source[file],before.sourceLF[file]].includes(hash),'Unrelated build input: '+file);
 assert(!fs.existsSync(out),'Payload already exists');fs.mkdirSync(out,{recursive:true});
 function write(name,bytes){const p=path.join(out,name);fs.mkdirSync(path.dirname(p),{recursive:true});fs.writeFileSync(p,bytes,{flag:'wx'});return digest(bytes);}
