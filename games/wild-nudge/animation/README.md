@@ -2,6 +2,8 @@
 
 Первая версия анимации четырёх героинь, 1 ноября 2026. Пользователь выбрал работу через Rive. Локальная сборка не загружает проект в Rive Cloud и не требует покупки подписки.
 
+Записи из настоящего окна коллекции: [Лира](../../../docs/concepts/wild-nudge/rive-lyra.webm), [Аэлири](../../../docs/concepts/wild-nudge/rive-aeliri.webm), [Веспера](../../../docs/concepts/wild-nudge/rive-vespera.webm), [Никсара](../../../docs/concepts/wild-nudge/rive-nyxara.webm).
+
 ## Исходники и сборка
 
 - `rigs.json`: области деформации, устойчивые части позы, индивидуальные циклы и амплитуды.
@@ -52,6 +54,6 @@ ViewModel `Character`, числовое свойство `mode`, StateMachine `C
 
 Экспорты и WASM передаются локальными JSON-ресурсами существующего независимого модуля. SHA-256 и размер проверяются до загрузки. CDN, blob URL, сетевые Rive-скрипты и отдельный кошелёк не используются. Совместимость host API, rules и progress остаётся 1/1/1; версия пакета 1.3.0.
 
-Runtime: `@rive-app/webgl2` **2.49.0**, лицензия MIT. Уведомление поставляется в `rive-runtime.json` вместе с WASM. Официальный исходник лицензии: https://github.com/rive-app/rive-wasm/blob/master/LICENSE.
+Runtime: `@rive-app/webgl2` **2.49.0**, лицензия MIT. Уведомление поставляется в `rive-runtime.json` вместе с WASM. [Официальный исходник лицензии](https://github.com/rive-app/rive-wasm/blob/master/LICENSE).
 
 Star Spin остаётся неопубликованным прототипом. Этот этап не включает его в production-каталог и не решает отдельную миграцию на общие ставки 0,10 USDT.
