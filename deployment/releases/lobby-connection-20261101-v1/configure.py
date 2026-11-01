@@ -32,6 +32,7 @@ def main():
         'backend': json.loads((HERE.parent / 'hall-elevator-20261101-v1/backend-projection.json').read_text()),
     }
     expected = {}
+    production_inputs = json.loads((HERE / 'production-inputs.json').read_text())
     for kind, config in configs.items():
         for name in ['moduleGames', 'moduleContracts', 'moduleAssets']: config.pop(name, None)
         config['productionCommit'] = before['sourceCommit']
@@ -52,6 +53,9 @@ def main():
             config['files'][name] = row
             assert name not in expected or expected[name] == row['sha256'], 'Client and server source differ'
             expected[name] = row['sha256']
+        needed = set(production_inputs[kind]) | (set(sources) - {'server/LobbyRoom.ts', 'server/index.ts'} if kind == 'host' else {'server/LobbyRoom.ts', 'server/index.ts', 'src/shared/lobbyConnection.ts'})
+        config['files'] = {name: row for name, row in config['files'].items() if name in needed}
+        assert set(config['files']) == needed, 'Incomplete production input graph'
         (HERE / (kind + '-projection.json')).write_text(json.dumps(config, ensure_ascii=False, indent=2)+'\n')
     (HERE / 'scope.json').write_text(json.dumps(dict(release='lobby-connection-20261101-v1',productionCommit=before['sourceCommit'],featureCommit=feature,
         changedSources=sources,expectedSources=expected,backendChanges=['dist-server/index.js'],moduleChanges=[],addedGames=[],restoredGames=[]),indent=2)+'\n')
