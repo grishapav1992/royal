@@ -6,6 +6,7 @@ import {resolve} from 'node:path';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url),folder=resolve('deployment/releases/shared-stakes-20261101-v1');
 process.env.ROYAL_STAKE_GATE_SCHEMA='royal_game';
+process.env.ROYAL_STAKE_GATE_BASE=resolve('deployment/releases/cat-purr-hall-only-20261030-v1/quiesce.cjs');
 const {TABLES}=require('./quiesce.cjs');
 test('two financial gates fence host writes and Native ledger transactions until explicit release',async()=>{
  const db=new Client();await db.connect();

@@ -24,7 +24,7 @@ patchLines('src/ui/AfterglowUI.ts',line=>line
  .replaceAll('this.setTotal(s.view.afterglow.totalPayoutUnits)','this.setTotal(confirmedPayout(s,s.view.afterglow.totalPayoutUnits))')
  .replaceAll('this.setTotal(v.totalPayoutUnits)','this.setTotal(confirmedPayout(s,v.totalPayoutUnits))').replaceAll('this.dialogShell.focus()',"this.dialogShell.focus(kind==='info')"));
 patchLines('src/modules/GameModuleCatalog.ts',line=>line.includes("gameId: 'studio-caribbean-treasures'")?line.replace('rulesVersion: 1','rulesVersion: 2'):line);
-const moduleAssetSources=['public/assets/caribbean-treasures/audio/credits.json','public/assets/caribbean-treasures/audio/manifest.json','public/assets/caribbean-treasures/crew/manifest.json'];
+const moduleAssetSources=['public/assets/cat/walk-v3-frames.json','public/assets/caribbean-treasures/audio/credits.json','public/assets/caribbean-treasures/audio/manifest.json','public/assets/caribbean-treasures/crew/manifest.json'];
 for(const n of moduleAssetSources){let found=false;for(const c of git(['log','--all','--format=%H','--',n]).toString().trim().split('\n')){if(!c)continue;const bytes=read(c,n);if(hash(bytes)===before.sourceLF[n]){add(n,c);found=true;break;}}assert(found,'Unpreserved production media: '+n);}
 const activeModules=JSON.parse(fs.readFileSync(path.resolve(path.dirname(beforeFile),'active-module-baseline.json'))),approvedAssets={};
 for(const[game,row]of Object.entries(activeModules)){
