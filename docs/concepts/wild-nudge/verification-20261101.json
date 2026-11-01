@@ -208,6 +208,42 @@
       5234,
       5236
     ],
-    "priorBlockedV1CleanupUnchanged": "docs/concepts/wild-nudge/local-storage-v1.json"
+    "priorBlockedV1CleanupUnchanged": "docs/concepts/wild-nudge/local-storage-v1.json",
+    "cleanupRejectedBeforeExecution": true,
+    "rejectionReason": "exec_command rejected: blocked by policy. No more detailed reason was provided.",
+    "removedPaths": [],
+    "removedBytes": 0,
+    "currentPreviewStopped": true,
+    "currentDisposableDatabaseRemoved": true,
+    "retainedCurrentModule": "1.2.0-f56125793f41",
+    "retainedTaskData": [
+      {
+        "path": "artifacts/work/star-spin-20261101",
+        "bytesAtInventory": 5522838
+      },
+      {
+        "path": "artifacts/work/wild-nudge-relics-20261031",
+        "bytesAtInventory": 294818188
+      },
+      {
+        "path": "module-dist/studio-wild-nudge/versions/1.1.0-13f0c7e186bd",
+        "bytesAtInventory": 6613985
+      },
+      {
+        "path": "module-dist/studio-wild-nudge/versions/1.1.0-aeb6cef2b02a",
+        "bytesAtInventory": 6612406
+      },
+      {
+        "path": "module-dist/studio-wild-nudge/versions/1.1.0-ec71eea2a83e",
+        "bytesAtInventory": 6608553
+      },
+      {
+        "path": "C:/Users/Aorus/AppData/Local/Temp/royal-pg-n1m7nw",
+        "state": "Owned old disposable PostgreSQL, no matching running process at inventory"
+      }
+    ],
+    "cleanupCondition": "Remove only the listed task-owned files when automatic review permits. Do not bypass the rejection. Source and compact verification artifacts are preserved in remote commit 97092988c6fb2214d6f8eb279659b302230a0806.",
+    "freeBytesAtInventory": 334043529216,
+    "physicalSpaceReclaimedClaimed": false
   }
 }
