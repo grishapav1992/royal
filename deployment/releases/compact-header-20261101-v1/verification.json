@@ -1083,25 +1083,216 @@
     "publishedRecordCommit": "715151c600a5ca6aa1babd7ee8b1d020e257d695",
     "removed": [
       {
-        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/compact-header-release-20261101/checkout/module-dist",
+        "path": "artifacts/work/compact-header-release-20261101/checkout/module-dist",
         "allocatedBytes": 271470592
       },
       {
-        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/compact-header-release-20261101/checkout/module-build",
+        "path": "artifacts/work/compact-header-release-20261101/checkout/module-build",
         "allocatedBytes": 1859584
       },
       {
-        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/compact-header-release-20261101/checkout/dist",
+        "path": "artifacts/work/compact-header-release-20261101/checkout/dist",
         "allocatedBytes": 2908160
       },
       {
-        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/compact-header-release-20261101/checkout/dist-server",
+        "path": "artifacts/work/compact-header-release-20261101/checkout/dist-server",
         "allocatedBytes": 4677632
       }
     ],
     "freeAfterBuildCleanup": 52570152960,
-    "checkoutRemoval": "After this record is pushed and verified on GitHub",
+    "preservedRecordCommit": "fa3c2761a8c781e14a3fdbc33a93a593b062d1fb",
+    "githubPreservationVerified": true,
+    "unrelatedUntrackedFilesPreserved": 335,
+    "activeWorkCleanupCondition": "Other chats retain their own checkouts and files until their work is saved in GitHub and complete.",
+    "remainingRemovalInventory": [
+      {
+        "path": "artifacts/work/compact-header-release-20261101/before.json",
+        "allocatedBytes": 3633152
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/server-cleanup.py",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/local-cleanup-progress.json",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/retention-start.log",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/server-result.json",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/verify-release.log",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/server-release.log",
+        "allocatedBytes": 0
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/retention-result.json",
+        "allocatedBytes": 8192
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/configure.log",
+        "allocatedBytes": 8192
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/payload-v3",
+        "allocatedBytes": 7774208
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/installer-tests.log",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/OWNER.txt",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/verify-release-v3.log",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/payload-v2",
+        "allocatedBytes": 7766016
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/verify-release-v2.log",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/payload-v2.tgz",
+        "allocatedBytes": 2187264
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/payload",
+        "allocatedBytes": 7766016
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/final-server.json",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/verify-built.ts",
+        "allocatedBytes": 8192
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/payload-v3.tgz",
+        "allocatedBytes": 2191360
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/public-after.json",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/root-inventory.json",
+        "allocatedBytes": 20480
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/checkout",
+        "allocatedBytes": 474705920
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/retention-inventory.json",
+        "allocatedBytes": 24576
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/public-before.json",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/prior-after.json",
+        "allocatedBytes": 4231168
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/server-release-v3.log",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/server-build.log",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/prior-host.json",
+        "allocatedBytes": 163840
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/prepare-v3.log",
+        "allocatedBytes": 40960
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/prepare-v2.log",
+        "allocatedBytes": 40960
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/retention-context.json",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/built-vite-cache",
+        "allocatedBytes": 19582976
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/prepare.log",
+        "allocatedBytes": 40960
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/payload-clean.tgz",
+        "allocatedBytes": 2183168
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/local-backend.log",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/release-plan.log",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/verify-release-final.log",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/payload.tgz",
+        "allocatedBytes": 2191360
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/verification-draft.json",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/release-plan-v2.log",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/public.mjs",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/built-verification.json",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "artifacts/work/compact-header-release-20261101/release-plan-v3.log",
+        "allocatedBytes": 4096
+      }
+    ],
+    "freeBeforeFinalCleanup": 52619542528,
+    "freeAfterFinalCleanup": 52839329792,
+    "removedAllocatedBytes": 815579136,
+    "observedFreeBytesChange": 267862016,
     "physicalReclamationClaimed": false,
-    "note": "Free-space observations also include other local activity."
+    "checkoutRemoval": "completed",
+    "otherWorktrees": [
+      "/private/tmp/royal-nowpayments-site-20261027/checkout",
+      "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/a6api-server-access-20261101/checkout",
+      "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/caribbean-stakes-followup-20261101/checkout",
+      "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/forest-heart-kling-20261031/checkout"
+    ]
   }
 }
