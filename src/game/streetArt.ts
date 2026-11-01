@@ -1,10 +1,12 @@
 import type Phaser from 'phaser';
 import { STREET } from '../shared/street';
 import { STREET_CARS } from './StreetLife';
+import { STREET_SERVICE_PROPS } from './streetDetails';
+import { t } from '../i18n';
 
 type Paint = CanvasRenderingContext2D;
 const ink = '#29232a', wall = '#681a32', cream = '#f3dcb1', gold = '#f6cf58', snow = '#f8fbff';
-export const STREET_ART = { paving:'street-v2-paving', floor:'street-v2-floor', front:'street-v2-front', pine:'street-v2-pine', lamp:'street-v2-lamp', bench:'street-v2-bench', map:'street-v2-map', sign:'street-sign', sheen:'street-sign-sheen' } as const;
+export const STREET_ART = { paving:'street-v2-paving', floor:'street-v2-floor', front:'street-v4-front', pine:'street-v2-pine', lamp:'street-v2-lamp', bench:'street-v2-bench', map:'street-v4-map', sign:'street-sign', sheen:'street-sign-sheen',carpet:'street-carpet',rear:'street-service-wall',taxiSign:'street-taxi-sign' } as const;
 export const STREET_SIGN={center:(442+772)/2,width:300,height:216,baseline:156,baselineOffset:-113} as const;
 
 function box(c:Paint,x:number,y:number,w:number,h:number,fill:string,stroke=ink,width=1.5,radius=0){
@@ -117,6 +119,8 @@ function paving(c:Paint){
   for(let row=0;row<2;row++)for(let col=-1;col<3;col++){
     const x=col*100+(row?50:0);box(c,x,row*80,100,80,colors[(col+row+4)%4],'#969daa',1);line(c,x+1,row*80+1,x+99,row*80+1,'#d0d4db',.8);
   }
+  line(c,44,3,47,12,'#adb3bd',.7);line(c,47,12,42,17,'#adb3bd',.7);
+  line(c,149,119,162,116,'#b0b6c0',.7);line(c,80,62,91,61,'#d1d5db',1);
 }
 function paintUpperFloor(c:Paint){
   box(c,0,0,246,250,wall,ink,0);window(c,85,48,78,130);pilaster(c,16,0,236,28);
@@ -141,6 +145,17 @@ function paintFront(c:Paint){
   for(const side of [-1,1]){
     const x=door+side*126;potPine(c,x,base+8);wallLantern(c,x,base-145);
   }
+  // Wall-mounted signs sit within the existing solid facade.
+  for(const x of [57,362]){
+    box(c,x-25,base-152,50,89,'#b78b4d',ink,2,2);box(c,x-21,base-148,42,81,'#302535',ink,1);
+    c.font='bold 8px Georgia';c.textAlign='center';c.fillStyle=gold;c.fillText('ROYAL',x,base-135);
+    shape(c,[[x,base-122],[x+9,base-108],[x,base-94],[x-9,base-108]],'#d7bd77','#f4dfa8',1);
+    for(const y of [base-83,base-77])line(c,x-13,y,x+13,y,'#bd9e63',1);
+  }
+  box(c,door+84,base-179,35,24,'#bb9458',ink,1.5,3);
+  c.font='bold 13px Georgia';c.fillStyle='#3c2931';c.textAlign='center';c.fillText('01',door+101.5,base-162);
+  box(c,door-52,base-171,104,20,'#d4b279',ink,1.2,2);
+  c.font='bold 9px Arial';c.fillStyle='#4c3037';c.fillText(t('ДОБРО ПОЖАЛОВАТЬ'),door,base-157);
   shape(c,[[door-71,base+1],[door+71,base+1],[door+80,base+26],[door-80,base+26]],'#ac3549','#7c2b40',1);
   line(c,door-70,base+22,door+70,base+22,'#c95c64',1.5);
 }
@@ -152,19 +167,82 @@ export function paintStreetMap(c:Paint){
   for(let x=320;x<=2500;x+=100)line(c,x,240,x,1200,'#b1b8c2',1.8);
   box(c,0,1210,STREET.width,170,'#303d50',ink,0);box(c,0,1198,STREET.width,12,snow,ink,0);
   for(let x=25;x<STREET.width;x+=140)box(c,x,1295,68,6,gold,ink,0);
-  for(const {x,y} of STREET.trees){
+  for(const {x,y} of STREET.trees.filter(p=>!(p.x===2580&&p.y===1100))){
     for(const [dx,dy,r] of [[0,0,40],[-24,-9,26],[21,-17,26],[0,-31,25]])oval(c,x+dx,y+dy,r,r,'#285d48');
     oval(c,x-10,y-28,25,12,snow);
   }
   for(const p of STREET.lamps)box(c,p.x-12,p.y-10,24,20,'#ffe17d',ink,4,2);
-  for(const p of STREET.benches)bench(c,p.x,p.y);
+  for(const p of STREET.benches.filter(p=>p.y>500))bench(c,p.x,p.y);
+  paintParking(c);
+  for(const prop of STREET_SERVICE_PROPS){c.save();c.translate(prop.x-prop.width/2,prop.y-prop.height);paintServiceProp(c,prop.id,true);c.restore();}
   c.save();c.setLineDash([20,18]);c.strokeStyle='#5faaa4';c.lineWidth=4;c.beginPath();
   STREET.loop.forEach((p,i)=>i?c.lineTo(p.x,p.y):c.moveTo(p.x,p.y));c.closePath();c.stroke();c.restore();
   box(c,b.x,b.y,b.w,b.h,wall,ink,7,2);box(c,b.x+14,b.y+14,b.w-28,b.h-28,wall,cream,5);
+  box(c,b.x+640,b.y-3,120,16,'#6b7c7c',cream,2);
   royal(c,b.x+b.w/2,b.y+b.h/2+53,73);
   const front=b.y+b.h;box(c,STREET.entrance.x-45,front-5,90,13,gold,ink,1);
   shape(c,[[STREET.entrance.x-48,front+8],[STREET.entrance.x+48,front+8],[STREET.entrance.x+60,front+43],[STREET.entrance.x-60,front+43]],'#ac3549',ink,1);
   for(const side of [-1,1])oval(c,STREET.entrance.x+side*126,front,22,22,'#2d6b50');
+}
+
+function carpet(c:Paint){
+  box(c,43,0,154,92,'#882c43',ink,1,2);box(c,49,0,142,87,'#a63e50','#d9b465',1);
+  for(const x of [30,210]){
+    line(c,x,5,x,77,'#c99b4e',3);
+    for(const y of [30,66,102]){oval(c,x,y,10,3,'#8f733f');box(c,x-2,y-24,4,24,'#d4ac55',ink,1);oval(c,x,y-25,5,5,gold);}
+  }
+  paintStreetCrown(c,120,29,30,18);
+  for(const y of [88,92])line(c,42,y,198,y,'#d1a467',1);
+}
+function paintParking(c:Paint){
+  box(c,2498,988,169,198,'#acb5bf',ink,0);
+  for(const x of [2503,2662])line(c,x,997,x,1182,'#e9cf78',3);
+  line(c,2503,1182,2662,1182,'#e9cf78',3);
+  c.font='bold 26px Arial';c.textAlign='center';c.fillStyle='#e8d18a';c.fillText('P',2582,1167);
+}
+function paintServiceProp(c:Paint,id:typeof STREET_SERVICE_PROPS[number]['id'],plan=false){
+  if(id==='parked-taxi'){paintCar(c,'#d8ad4f',true,plan);return;}
+  if(id==='delivery-cart'){
+    for(const x of [25,119]){oval(c,x,96,7,7,'#30373b');oval(c,x,96,3,3,'#adb8bc');}
+    box(c,12,79,121,12,'#6d7b7c',ink,2,2);line(c,127,82,127,22,'#37454a',5);line(c,127,22,114,22,'#37454a',5);
+    for(const [x,y,w,h] of [[17,43,51,35],[72,38,48,40],[39,10,48,32]]){
+      box(c,x,y,w,h,'#bc9263',ink,1.6,1);box(c,x+w*.43,y,w*.14,h,'#dec49b',ink,0);
+      box(c,x+5,y+h-13,15,8,'#ebe0c8',ink,0);line(c,x+8,y+h-9,x+16,y+h-9,'#89775d',1);
+    }
+    oval(c,54,9,24,4,snow);
+  }else{
+    for(const [x,color] of [[9,'#526f66'],[77,'#59657b']] as const){
+      box(c,x+4,25,55,63,color,ink,2,4);box(c,x,20,63,13,'#39484b',ink,2,3);
+      for(const dx of [16,30,44])line(c,x+dx,39,x+dx,77,'#303f43',1);
+      box(c,x+18,42,25,19,'#ddd6bc',ink,1,2);c.font='bold 13px Arial';c.fillStyle='#425b53';c.textAlign='center';c.fillText('↻',x+31,57);
+      for(const dx of [13,47])oval(c,x+dx,91,5,6,'#30343a');
+      oval(c,x+20,19,20,5,snow);oval(c,x+43,19,15,4,snow);
+    }
+  }
+}
+function paintServiceWall(c:Paint){
+  const w=STREET.building.w;box(c,0,0,w,150,'#5d3640',ink,2);
+  box(c,0,0,w,13,'#b9afa2',ink,1);line(c,3,3,w-3,3,snow,3);
+  for(let x=20;x<w;x+=160)line(c,x,17,x,149,'#4b3037',1);
+  box(c,640,18,122,126,'#39484c',ink,3,2);box(c,647,24,108,114,'#768384','#293b40',2);
+  for(const x of [656,710]){box(c,x,32,37,55,'#657373',ink,1);for(let y=40;y<80;y+=7)line(c,x+4,y,x+32,y,'#3e5256',2);}
+  line(c,700,26,700,138,'#3c4c4f',3);box(c,718,99,21,5,'#c1b994',ink,1);
+  box(c,615,15,171,19,'#d9c79f',ink,1);
+  c.font='bold 10px Arial';c.textAlign='center';c.fillStyle='#3e3939';c.fillText(t('СЛУЖЕБНЫЙ ВХОД'),700,28);
+  for(const x of [80,1120]){
+    box(c,x,47,138,65,'#8d9794',ink,2,3);for(let y=55;y<107;y+=8)line(c,x+9,y,x+129,y,'#44595c',3);
+    line(c,x+145,15,x+145,130,'#283d42',8);line(c,x+145,15,x+145,130,'#8a9795',4);
+  }
+  box(c,353,68,94,63,'#848e85',ink,2,3);line(c,400,69,400,130,ink,1);
+  shape(c,[[380,82],[389,99],[371,99]],'#e4c96c',ink,1);
+  c.font='bold 8px Arial';c.fillStyle='#39413c';c.fillText('!',380,96);
+  for(const x of [500,875,1370]){box(c,x,30,35,22,'#f2d98e',ink,2,2);line(c,x+3,56,x+32,56,'#dbc28b',3);}
+}
+function paintTaxiSign(c:Paint){
+  box(c,39,36,6,108,'#566169',ink,2);box(c,12,5,60,55,'#315363',ink,2,4);box(c,17,10,50,45,'#eed57e',ink,1,2);
+  c.font='bold 13px Arial';c.textAlign='center';c.fillStyle='#34323a';c.fillText(t('ТАКСИ'),42,29);
+  c.font='bold 16px Arial';c.fillText('P',42,48);box(c,28,139,28,6,'#49565d',ink,1);
+  oval(c,36,4,23,4,snow);
 }
 
 function paintCar(c:Paint,color:string,taxi:boolean,plan:boolean){
@@ -195,6 +273,10 @@ export function createStreetArt(scene:Phaser.Scene){
   };
   make(STREET_ART.paving,200,160,2,paving);make(STREET_ART.floor,246,250,2,paintUpperFloor);
   make(STREET_ART.front,STREET.building.w,350,2,paintFront);
+  make(STREET_ART.carpet,240,120,2,carpet);
+  make(STREET_ART.rear,STREET.building.w,150,2,paintServiceWall);
+  make(STREET_ART.taxiSign,84,148,2,paintTaxiSign);
+  for(const prop of STREET_SERVICE_PROPS)make('street-detail-'+prop.id,prop.width,prop.height,2,c=>paintServiceProp(c,prop.id));
   make(STREET_ART.sign,STREET_SIGN.width,STREET_SIGN.height,2,c=>royal(c,STREET_SIGN.width/2,STREET_SIGN.baseline,44));
   make(STREET_ART.sheen,STREET_SIGN.width,STREET_SIGN.height,2,c=>{
     c.drawImage(scene.textures.get(STREET_ART.sign).getSourceImage() as HTMLCanvasElement,0,0,STREET_SIGN.width,STREET_SIGN.height);

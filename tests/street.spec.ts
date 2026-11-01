@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { STREET } from '../src/shared/street';
+import { STREET_RESIDENTS } from '../src/game/streetDetails';
 
 const state = (page: Page) => page.evaluate(() => (window as any).royalDemo.getState());
 async function worldPoint(page: Page, x: number, y: number) {
@@ -53,11 +54,39 @@ test('walk outside, circle the casino, reconnect and return through the same ent
   await expect.poll(async () => (await state(page)).street.sign.sheen,{timeout:10000}).toBeGreaterThan(0);
   await page.screenshot({ path: `../street-${info.project.name}-entrance.png` });
   await overview(page, true);
+  const residents=(await state(page)).street.residents.people;
+  expect(residents.map((p:any)=>p.id)).toEqual(['doorman','janitor','taxi-driver']);
+  const doorman=STREET_RESIDENTS[0],hit=await worldPoint(page,doorman.x,doorman.y-35);
+  await page.mouse.click(hit.x,hit.y);
+  const dialogue=page.locator('.street-conversation');
+  await expect(dialogue).toHaveAttribute('data-resident','doorman',{timeout:15000});
+  await expect(dialogue).toHaveAttribute('data-speaking','true');
+  await expect(dialogue.locator('p')).toContainText('Добро пожаловать');
+  await dialogue.getByRole('button',{name:'Ещё',exact:true}).click();
+  await expect(dialogue.locator('p')).toContainText('Ковёр красный');
+  await overview(page,false);
+  await page.screenshot({path:`../street-${info.project.name}-doorman.png`});
+  await dialogue.getByRole('button',{name:'Закрыть',exact:true}).click();
+  await expect(dialogue).toBeHidden();
+  await overview(page,true);
   await page.screenshot({ path: `../street-${info.project.name}-overview.png` });
   for (const p of STREET.loop) await walk(page, p.x, p.y);
-  await walk(page, 1300, 360);
+  await walk(page, 1370, 365);
+  await expect(dialogue).toHaveAttribute('data-resident','janitor');
+  await dialogue.getByRole('button',{name:'Поговорить',exact:true}).click();
+  await expect(dialogue).toHaveAttribute('data-speaking','true');
   await overview(page, false);
   await page.screenshot({ path: `../street-${info.project.name}-rear.png` });
+  await dialogue.getByRole('button',{name:'Закрыть',exact:true}).click();
+  await overview(page,true);
+  await walk(page,2320,360);await walk(page,2320,1050);await walk(page,2395,1138);
+  await expect(dialogue).toHaveAttribute('data-resident','taxi-driver');
+  await dialogue.getByRole('button',{name:'Поговорить',exact:true}).click();
+  await expect(dialogue).toHaveAttribute('data-speaking','true');
+  await expect(dialogue.locator('p')).toContainText('Я жду пассажира');
+  await overview(page,false);
+  await page.screenshot({path:`../street-${info.project.name}-taxi.png`});
+  await dialogue.getByRole('button',{name:'Закрыть',exact:true}).click();
   // Reload while outdoors must recover the room and location, rather than spawning indoors.
   await page.emulateMedia({reducedMotion:'reduce'});
   await page.reload();
@@ -76,6 +105,7 @@ test('walk outside, circle the casino, reconnect and return through the same ent
   expect(still.sign.sparkle).toBe(0);
   await page.locator('[data-floor-target="arcade"]').click();
   await expect.poll(async () => (await state(page)).hall, { timeout: 25000 }).toBe('arcade');
+  await expect(dialogue).toBeHidden();
   await expect(page.locator('#chat-input')).toBeEnabled();
   expect(await page.locator('#wallet-balance').textContent()).toBe(balance);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);

@@ -3,6 +3,10 @@ import assert from 'node:assert/strict';
 import { StreetLife } from '../src/game/StreetLife';
 import { STREET_OBSTACLES } from '../src/shared/street';
 import { walkable } from '../src/game/navigation';
+import { findPath } from '../src/game/navigation';
+import { STREET } from '../src/shared/street';
+import { STREET_RESIDENTS, StreetConversations } from '../src/game/streetDetails';
+import { parseAppearance } from '../src/shared/appearance';
 
 test('street pedestrians stay on the pavement and traffic stays in separate road lanes', () => {
   const life=new StreetLife(),visibility=new Map<string,Set<boolean>>();
@@ -36,4 +40,27 @@ test('hidden and reduced-motion street ambience freezes without queued travel or
   const time=life.snapshot().time;
   for(const delta of [NaN,Infinity,-1])life.advance(delta);
   assert.equal(life.snapshot().time,time);
+});
+
+test('each street resident has a valid outfit and a clear approach outside the perimeter lane',()=>{
+  for(const person of STREET_RESIDENTS){
+    assert(parseAppearance(person.appearance),person.id+' has a supported outfit');
+    assert(walkable(person.x,person.y,STREET_OBSTACLES,16));
+    const path=findPath(STREET.spawn,person.approach,STREET_OBSTACLES);
+    assert(path.length,person.id+' can be reached without crossing the building or road');
+    assert.deepEqual(path.at(-1),person.approach);
+    assert(Math.hypot(person.approach.x-person.x,person.approach.y-person.y)<112);
+  }
+});
+
+test('resident conversations require proximity and close on walking away or entering the casino',()=>{
+  const dialogue=new StreetConversations(),person=STREET_RESIDENTS[0];
+  assert(!dialogue.talk(person.id),'a hidden street cannot start a conversation');
+  dialogue.update(STREET.spawn,true);assert(!dialogue.talk(person.id),'distant clicks must approach first');
+  dialogue.update(person.approach,true);assert(dialogue.talk(person.id));
+  assert.equal(dialogue.snapshot().line,0);dialogue.next();assert.equal(dialogue.snapshot().line,1);
+  dialogue.next();dialogue.next();assert.equal(dialogue.snapshot().line,0,'short conversation wraps without new actions');
+  dialogue.update({x:person.x+141,y:person.y},true);assert.equal(dialogue.snapshot().conversation,null);
+  dialogue.update(person.approach,true);dialogue.talk(person.id);
+  dialogue.update(person.approach,false);assert.equal(dialogue.snapshot().conversation,null);assert.equal(dialogue.snapshot().nearby,null);
 });

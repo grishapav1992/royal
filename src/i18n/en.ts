@@ -1,7 +1,9 @@
 import {  volcanicPlinkoEnglish } from './volcanicPlinkoEn';
 import { progressionEnglish } from './progressionEn';
+import { streetEnglish } from './streetEn';
 
 export const english: Record<string, string> = {
+  ...streetEnglish,
   'Улица казино':'Casino street',
   'ВХОД':'ENTRANCE',
   'НА УЛИЦУ':'TO THE STREET',

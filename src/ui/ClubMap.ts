@@ -75,6 +75,7 @@ export class ClubMap {
     if(state.hall!=='street'){const lift=elevatorDock(state.hall);ctx.fillStyle='#e2c17c';ctx.fillRect(lift.entry.x-40,lift.entry.y-20,80,40);}
     for(const guest of state.guests){ctx.fillStyle='#8da49b';ctx.beginPath();ctx.arc(guest.x,guest.y,10,0,Math.PI*2);ctx.fill();}
     for(const person of state.street?.pedestrians??[]){ctx.fillStyle='#8da49b';ctx.beginPath();ctx.arc(person.x,person.y,10,0,Math.PI*2);ctx.fill();}
+    for(const person of state.street?.residents.people??[]){ctx.fillStyle='#f0ca78';ctx.beginPath();ctx.arc(person.x,person.y,13,0,Math.PI*2);ctx.fill();}
     for(const car of state.street?.cars??[]){if(car.visible){ctx.fillStyle=car.color;ctx.fillRect(car.x-75,car.y-45,150,45);}}
     const view=state.view;ctx.strokeStyle='#ece2c280';ctx.lineWidth=6;ctx.strokeRect(view.x,view.y,view.width/view.zoom,view.height/view.zoom);
     ctx.fillStyle='#f7d26a';ctx.beginPath();ctx.arc(state.x,state.y,18,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#332936';ctx.lineWidth=5;ctx.stroke();ctx.restore();

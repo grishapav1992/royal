@@ -1,4 +1,5 @@
 import { t as translateText, tr } from '../i18n/index';
+import { STREET_RESIDENTS, type StreetResidentId } from './streetDetails';
 import { cabinetSeat, type GameReaction } from '../shared/cabinetSeating';
 import { drawCabinetStool } from './cabinetStoolArt';
 import { drawClubFloor } from './clubArt';
@@ -149,7 +150,7 @@ export class RoomScene extends Phaser.Scene {
     for(const hall of [...elevatorFloors(),'street' as const]){
       const before=new Set(this.children.list);this.hall=hall;
       if(hall==='street'){
-        this.street=new StreetRenderer(this,()=>this.approachFloor('arcade'));
+        this.street=new StreetRenderer(this,()=>this.approachFloor('arcade'),id=>this.approachStreetResident(id));
         this.hallObjects.set(hall,this.children.list.filter(object=>!before.has(object)));
         continue;
       }
@@ -245,6 +246,7 @@ export class RoomScene extends Phaser.Scene {
       (object as Phaser.GameObjects.Image).setVisible(id===hall);object.setActive(id===hall);
       if(object.input)object.input.enabled=id===hall;
     }
+    this.street?.setActive(hall==='street');
     this.near=null;this.lastNear='';this.onNear(null);gameAudio.setHall(hall);this.onHall(hall);
     if(this.player)this.resizeView();
   }
@@ -375,6 +377,11 @@ export class RoomScene extends Phaser.Scene {
     const link = hallLinks(this.hall).find(candidate => candidate.target === target); if (!link) return;
     this.pendingCabinet = null; this.pendingLounge = null; this.goTo(link.door.entry);
   }
+  approachStreetResident(id:StreetResidentId){
+    if(this.hall!=='street'||this.locked||this.typing||this.switching||this.isHuggingCat()||this.player.cabinet||this.networkSelf?.playing)return;
+    const person=STREET_RESIDENTS.find(p=>p.id===id);if(!person)return;
+    this.pendingCabinet=null;this.pendingLounge='street:'+id;this.goTo(person.approach);
+  }
   approachElevator() {
     if(this.hall==='street')return;
     if (this.locked || this.isHuggingCat() || this.typing || this.switching || this.player.cabinet || this.networkSelf?.playing || this.player.action === 'drink') return;
@@ -407,6 +414,7 @@ export class RoomScene extends Phaser.Scene {
   }
   interact() {
     if (this.locked || this.typing) return;
+    if(this.hall==='street'&&!this.isHuggingCat()&&this.street?.interact(this.player))return;
     if (!this.isHuggingCat() && atElevator(this.player)) { this.openElevator(); return; }
     const nearbyPlayer=[...this.remotePlayers.values()].map(p=>p.target).filter(p=>p.connected&&p.hall===this.hall&&!p.playing&&!p.activity)
       .sort((a,b)=>Math.hypot(a.x-this.player.x,a.y-this.player.y)-Math.hypot(b.x-this.player.x,b.y-this.player.y))[0];
@@ -829,6 +837,12 @@ export class RoomScene extends Phaser.Scene {
             if(!nearPatrol)this.goTo(entry);
           }
         }
+        else if(this.pendingLounge.startsWith('street:')){
+          const id=this.pendingLounge.slice(7) as StreetResidentId,person=STREET_RESIDENTS.find(p=>p.id===id);
+          if(person&&Math.hypot(this.player.x-person.approach.x,this.player.y-person.approach.y)<20){
+            this.pendingLounge=null;this.finishMovement(()=>{this.network?.stop();this.street?.interact(this.player,id);});
+          }
+        }
         else if(this.pendingLounge.startsWith('activity:')){
           const id=this.pendingLounge.slice(9) as ActivityId,entry=ACTIVITIES[id].entry;
           if(Math.hypot(this.player.x-entry.x,this.player.y-entry.y)<20){this.pendingLounge=null;this.player.path=[];this.network?.stop();this.onActivity(id);}
@@ -861,7 +875,7 @@ export class RoomScene extends Phaser.Scene {
     for (const { actor, target } of this.remotePlayers.values()) this.interpolate(actor, target, dt, time);
     if (time >= this.nextTextureCleanup) {
       this.nextTextureCleanup = time + 1000;
-      pruneCharacterTextures(this, new Set([this.player.sprite.texture.key, ...[...this.remotePlayers.values()].map(remote => remote.actor.sprite.texture.key)]));
+      pruneCharacterTextures(this, new Set([this.player.sprite.texture.key, ...[...this.remotePlayers.values()].map(remote => remote.actor.sprite.texture.key),...(this.street?.characterTextureKeys??[])]));
     }
     this.halo.setPosition(this.player.x, this.player.y).setDepth(this.player.y - 2);
     this.guard.update(this.hall, time, dt, id => id===this.selfId ? this.player : this.remotePlayers.get(id)?.actor,npcRenderAt);
