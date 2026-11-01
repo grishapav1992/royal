@@ -171,7 +171,13 @@ export class LobbyClient {
       });
       room.onDrop(() => { if (current()) this.setStatus('reconnecting'); });
       room.onReconnect(() => { if (!current()) return; queueMicrotask(() => { if (current()) rememberSession(room, accountId); }); this.events.checking(false); this.events.npcTime(0,0);this.activities=undefined; this.setStatus('connected'); room.send('stop'); room.send('history'); room.send('activities'); });
-      room.onLeave(code => { if (!current()) return; if(code===4000||code===4003)forgetSession(accountId,room.roomId,room.reconnectionToken); if(code===4003) this.events.ejected(banUntil || Date.now()+600000); if (this.room === room) { this.room = undefined; this.setStatus('disconnected'); } });
+      room.onLeave(code => {
+        if (!current()) return;
+        if (code === 4000 || code === 4003) forgetSession(accountId, room.roomId, room.reconnectionToken);
+        // The SDK also uses 4003 when reconnection fails. Only a server sanction supplies a ban deadline.
+        if (code === 4003 && banUntil > Date.now()) this.events.ejected(banUntil);
+        if (this.room === room) { this.room = undefined; this.setStatus('disconnected'); }
+      });
       room.onError((_code, message) => { if (current()) this.events.notice(translateText(message || translateText('Ошибка подключения к залу.'))); });
       if (recovered) { room.send('stop'); room.send('playing', false); }
       this.events.joined(room.roomId, room.sessionId);

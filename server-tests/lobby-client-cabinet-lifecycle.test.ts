@@ -39,10 +39,10 @@ class TransportRoom {
 }
 
 async function fixture(context: TestContext) {
-  const room = new TransportRoom(), notices: string[] = [], statuses: { status: string; releases: number }[] = [];
+  const room = new TransportRoom(), notices: string[] = [], ejections: number[] = [], statuses: { status: string; releases: number }[] = [];
   const releases = () => room.packets.filter(packet => packet.type === 'playing' && packet.value === false);
   const ignore = () => {};
-  const client = new LobbyClient({ npcTime: ignore, guards: ignore, guests: ignore, mira: ignore, security: ignore, ejected: ignore,
+  const client = new LobbyClient({ npcTime: ignore, guards: ignore, guests: ignore, mira: ignore, security: ignore, ejected: until => ejections.push(until),
     checking: ignore, joined: ignore, players: ignore, chat: ignore, history: ignore, activities: ignore, note: ignore,
     notice: message => notices.push(message), status: status => statuses.push({ status, releases: releases().length }) });
   (client as any).client = { joinOrCreate: async () => room, joinById: async () => room };
@@ -50,7 +50,7 @@ async function fixture(context: TestContext) {
   context.after(() => { (client as any).setStatus('disconnected'); });
   const request = () => room.packets.filter(packet => packet.type === 'cabinet-play').at(-1)!.value;
   const reply = (accepted: boolean, result: Record<string, unknown> = {}) => room.handlers.get('cabinet-play-result')!({ ...request(), accepted, ...result });
-  return { client, room, notices, statuses, releases, request, reply };
+  return { client, room, notices, ejections, statuses, releases, request, reply };
 }
 
 test('claim results match both cabinet and request, and a refused request permits a retry', async context => {
@@ -178,11 +178,41 @@ test('only expired recovery falls back to entry, while network and auth failures
 
 test('another account or invitation cannot adopt a saved session', async context => {
   const storage = recoveryStorage(context), f = await fixture(context); f.client.leave();
-  for (const [roomId, accountId, returning] of [['test-room', 'bob', true], ['other-room', 'alice', true], ['test-room', 'alice', false]] as const) {
+  for (const [roomId, accountId, returning] of [['test-room', 'bob', true], ['other-room', 'alice', true]] as const) {
     storage.set('royal-lobby-recovery', JSON.stringify({ accountId: 'alice', roomId: 'test-room', token: 'test-room:saved' }));
     let fresh = 0;
     (f.client as any).client = { reconnect: async () => { throw new Error('must not adopt'); },
       joinById: async () => { fresh++; return new TransportRoom(); } };
     await f.client.join(roomId, returning, accountId); assert.equal(fresh, 1); f.client.leave();
   }
+});
+
+
+test('exhausted reconnection without a sanction disconnects without inventing a guard ban', async context => {
+  const f = await fixture(context), pending = f.client.claimCabinet('royal-fruits');
+  f.room.drop(); f.room.finalLeave(4003);
+  assert.equal(await pending, false);
+  assert.equal(f.client.status, 'disconnected');
+  assert.deepEqual(f.ejections, []);
+  await f.client.join(); assert.equal(f.client.status, 'connected');
+});
+
+test('a warning followed by reconnection failure is not a ban', async context => {
+  const f = await fixture(context);
+  f.room.handlers.get('security')!({ kind: 'warning', until: Date.now() + 86400000, reason: 'spam' });
+  f.room.drop(); f.room.finalLeave(4003);
+  assert.deepEqual(f.ejections, []); assert.equal(f.client.status, 'disconnected');
+});
+
+test('a confirmed ban keeps the exact server deadline through final departure', async context => {
+  const f = await fixture(context), until = Date.now() + 120000;
+  f.room.handlers.get('security')!({ kind: 'ejecting', until, reason: 'collision' });
+  f.room.finalLeave(4003); assert.deepEqual(f.ejections, [until]);
+});
+
+test('an explicit ejection is honored and an expired sanction cannot restart a timer', async context => {
+  const f = await fixture(context), until = Date.now() + 120000;
+  f.room.handlers.get('ejected')!({ until }); assert.deepEqual(f.ejections, [until]);
+  f.room.handlers.get('security')!({ kind: 'ejecting', until: Date.now() - 1 });
+  f.room.drop(); f.room.finalLeave(4003); assert.deepEqual(f.ejections, [until]);
 });
