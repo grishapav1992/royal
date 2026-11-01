@@ -1,6 +1,6 @@
 import assert from'node:assert/strict';import fs from'node:fs';import path from'node:path';import{fileURLToPath}from'node:url';import{execFileSync}from'node:child_process';
 import{verifyRelease,assertClean,git}from'../../../scripts/release.mjs';import{readHostProjection}from'../../../scripts/build-host-projection.mjs';import{verifyNativeBuild}from'./native-build.mjs';import{digest,inventory}from'../../../scripts/module-build-cache.mjs';import{stakeInputs}from'../../../scripts/game-math/rtp-gate.mjs';import{validateStakeProof}from'../../../scripts/game-math/rtp-stakes.mjs';
-const root=process.cwd(),folder=path.dirname(fileURLToPath(import.meta.url)),name='shared-stakes-20261101-v1';
+const root=process.cwd(),folder=path.dirname(fileURLToPath(import.meta.url)),name='shared-stakes-20261101-v2';
 const[beforeFile,nativeDirectory,outPath]=process.argv.slice(2),out=path.resolve(outPath);assert(beforeFile&&nativeDirectory&&outPath);
 await assertClean(root);const release=await verifyRelease(root),receipt=JSON.parse(fs.readFileSync('module-build/release-github.json')),before=JSON.parse(fs.readFileSync(beforeFile));
 assert.equal(release.scope,'application');assert.equal(release.baseCommit,before.sourceCommit);assert.equal(receipt.sourceCommit,release.sourceCommit);assert.equal(receipt.remoteMain,git(root,['rev-parse','origin/main']));assert(!fs.existsSync(out),'Publication payload already exists');

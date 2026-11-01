@@ -24,6 +24,23 @@ patchLines('src/ui/AfterglowUI.ts',line=>line
  .replace('AFTER_GAME,AFTER_BETS,','AFTER_GAME,').replace("stake='100'","stake='10'").replace("this.stake='100'","this.stake='10'")
  .replaceAll('this.setTotal(s.view.afterglow.totalPayoutUnits)','this.setTotal(confirmedPayout(s,s.view.afterglow.totalPayoutUnits))')
  .replaceAll('this.setTotal(v.totalPayoutUnits)','this.setTotal(confirmedPayout(s,v.totalPayoutUnits))').replaceAll('this.dialogShell.focus()',"this.dialogShell.focus(kind==='info')"));
+files['src/ui/LastExitUI.ts']=JSON.parse(fs.readFileSync(originsFile))['src/ui/LastExitUI.ts'];
+patchLines('src/ui/LastExitUI.ts',line=>line
+ .replace("import {DEMO_BETS} from '../shared/demoWallet';","import {GAME_BETS as DEMO_BETS,GAME_STAKE_UNITS} from '../shared/gameStakes';\nimport {syncStakeSelect} from './stakeSelection';\nimport {stakeRulesHtml} from './stakeRules';")
+ .replaceAll("stake='1000'","stake='10'")
+ .replace("if(active)this.stake=s.stakeUnits;stake.value=this.stake;stake.disabled=!!active||blocked;","if(active)this.stake=s.stakeUnits;this.stake=syncStakeSelect(stake,this.stake,GAME_STAKE_UNITS,!!active||blocked);")
+ .replace('сумма выплаты до 0,01 USDT.','доли цента учитываются при завершении заезда.').replace('and payouts to 0.01 USDT.','and fractional cents are included when the run ends.')
+ .replace('<label><input type="checkbox" data-reduced','$'+'{stakeRulesHtml()}<label><input type="checkbox" data-reduced'));
+const jackie=JSON.parse(read(feature,'deployment/releases/jackie-music-20261030-v1/verification.json'));
+assert.equal(before.moduleFiles['/opt/royal-game-modules/original-jackie-chan/active.json'],jackie.activeSha256);
+for(const n of git(['ls-tree','-r','--name-only',jackie.sourceCommit,'--','games/jackie-chan']).toString().trim().split('\n'))if(/\.(?:ts|css|json)$/.test(n))add(n,jackie.sourceCommit);
+patchLines('games/jackie-chan/JackieUI.ts',line=>line
+ .replace("import { expansionClient as client }", "import {GAME_STAKE_UNITS as JACKIE_BETS} from '../../src/shared/gameStakes';\nimport {syncStakeSelect} from '../../src/ui/stakeSelection';\nimport {stakeRulesHtml} from '../../src/ui/stakeRules';\nimport { expansionClient as client }")
+ .replace('JACKIE_GAME, JACKIE_BETS,','JACKIE_GAME,').replaceAll("stake='1000'","stake='10'")
+ .replace("this.find<HTMLSelectElement>('[data-stake]').value=this.stake;","this.stake=syncStakeSelect(this.find<HTMLSelectElement>('[data-stake]'),this.stake,JACKIE_BETS,active||busy);")
+ .replace('выплаты округляются вниз до 0,01 USDT','доли цента учитываются при завершении серии')
+ .replace('returns round down to 0.01 USDT','fractional cents are included when the series ends')
+ .replace('<h3>'+ '$' + "{t('Музыка локаций','Location music')}", '$'+'{stakeRulesHtml()}<h3>'+'$'+"{t('Музыка локаций','Location music')}"));
 patchLines('src/modules/GameModuleCatalog.ts',line=>line.includes("gameId: 'studio-caribbean-treasures'")?line.replace('rulesVersion: 1','rulesVersion: 2'):line);
 const moduleAssetSources=['public/assets/cat/walk-v3-frames.json','public/assets/caribbean-treasures/audio/credits.json','public/assets/caribbean-treasures/audio/manifest.json','public/assets/caribbean-treasures/crew/manifest.json'];
 for(const n of moduleAssetSources){let found=false;for(const c of git(['log','--all','--format=%H','--',n]).toString().trim().split('\n')){if(!c)continue;let bytes;try{bytes=read(c,n);}catch{continue;}if(hash(bytes)===before.sourceLF[n]){add(n,c);found=true;break;}}assert(found,'Unpreserved production media: '+n);}
@@ -39,5 +56,5 @@ const active=Object.keys(registry.stakePolicies),catalog=read(files['src/modules
 for(const id of active){const m=[...catalog.matchAll(/gameId: '([^']+)', slug: '([^']+)'/g)].find(m=>m[1]===id);assert(m,id);moduleGames.push(m[2]);}
 const common={format:1,productionCommit:before.sourceCommit,changedSources:changed,files:Object.fromEntries(Object.entries(files).sort()),moduleGames,moduleContracts:{'studio-afterglow':before.moduleHost.games['studio-afterglow']},moduleAssets:{...Object.fromEntries(Object.entries(before.source).filter(([n])=>/\.(?:avif|gif|jpe?g|json|mp3|mp4|m4a|ogg|png|svg|wav|webm|webp|woff2?)$/.test(n))),...approvedAssets}};
 for(const[kind,entries]of [['host',['index.html']],['backend',['server/index.ts']],['native',['scripts/finance-nile-play.ts','scripts/finance-nile-play-proof.ts']]])fs.writeFileSync(path.join(folder,kind+'-projection.json'),JSON.stringify({...common,entries},null,2)+'\n');
-fs.writeFileSync(path.join(folder,'scope.json'),JSON.stringify({release:'shared-stakes-20261101-v1',productionCommit:before.sourceCommit,featureCommit:feature,activeGames:active,addedGames:[],restoredGames:[],qualifiedSources:qualified,changedSources:changed,preservedWardrobeProgressVersion:3,nativeService:'royal-nile-play'},null,2)+'\n');
+fs.writeFileSync(path.join(folder,'scope.json'),JSON.stringify({release:'shared-stakes-20261101-v2',productionCommit:before.sourceCommit,featureCommit:feature,activeGames:active,addedGames:[],restoredGames:[],qualifiedSources:qualified,changedSources:changed,preservedWardrobeProgressVersion:3,nativeService:'royal-nile-play'},null,2)+'\n');
 console.log({feature,sourceCandidates:Object.keys(files).length,moduleGames,moduleAssetSources});
