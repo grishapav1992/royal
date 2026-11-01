@@ -40,9 +40,22 @@ def overlay(old, new, live):
                 live = live.replace(source, target, 1)
                 patches.append({'from': source, 'to': target})
                 break
-        else: raise RuntimeError('Layout patch does not match published source')
+        else:
+            for context in [16,24,48,96,160,320]:
+                lo,hi=max(0,start-context),min(len(old),end+context)
+                target=old[lo:start]+replacement+old[end:hi]
+                if target and live.count(target)==1: break
+            else: raise RuntimeError('Layout patch does not match published source')
     return live, patches
 def layout_overlay(name, old, new, live):
+    if name=='src/i18n/en.ts':
+        extra=[line for line in new.splitlines(keepends=True) if line not in old.splitlines(keepends=True) and line.strip()]
+        missing=[line for line in extra if line not in live]
+        if not missing:return live,[]
+        anchor='export const english: Record<string, string> = {\n'
+        assert live.count(anchor)==1
+        target=anchor+''.join(missing)
+        return live.replace(anchor,target,1),[{'from':anchor,'to':target}]
     if name.endswith('/package.json'):
         prior, current, published = map(json.loads, [old,new,live])
         assert {k:v for k,v in prior.items() if k!='version'} == {k:v for k,v in current.items() if k!='version'}, name
@@ -61,6 +74,13 @@ def main():
     base['files'].update(guard['files'])
     base['files'].update(forest['files'])
     base['moduleAssets'].update(forest['moduleAssets'])
+    providers=[]
+    for release in ['security-idle-20261101-v1','hall-elevator-20261101-v1']:
+        path=HERE.parent/release/'host-projection.json'
+        if not path.exists():continue
+        candidate=json.loads(path.read_text(encoding='utf-8'));providers.append(release)
+        for name,row in candidate['files'].items():
+            if row['sha256'] in [before['source'].get(name),before['sourceLF'].get(name)]:base['files'][name]=row
     base['productionCommit'] = before['sourceCommit']
     base['entries'] = guard['entries']
     for name, row in list(base['files'].items()):
@@ -99,12 +119,25 @@ def main():
     for slug in base['moduleGames']:
         package=json.loads(projected(base['files']['games/'+slug+'/package.json']))
         assert {k:package[k] for k in ['apiVersion','rulesVersion','progressVersion']} == before['moduleHost']['games'][package['gameId']], slug
+    compatibility=['games/girlhub/entry.ts']
+    for name in compatibility:
+        row=base['files'][name]
+        # The source tree has the future entry, while the published module stays on progress 3.
+        row=read('shared-stakes-20261101-v1/host-projection.json')['files'][name]
+        base['files'][name]=row
+        if row['sha256'] not in [before['source'].get(name),before['sourceLF'].get(name)]:
+            selected[name]=row['sha256'];changes.append(name)
     base['changedSources'] = changes
     scope = {'release': HERE.name, 'productionCommit': before['sourceCommit'], 'featureCommit': FEATURE,
              'changedSources': changes, 'expectedSources': selected, 'moduleGames': base['moduleGames'],
-             'activeGames': sorted(base['moduleContracts']), 'addedGames': [], 'restoredGames': [], 'backendChanges': []}
+             'activeGames': sorted(base['moduleContracts']), 'addedGames': [], 'restoredGames': [], 'backendChanges': [], 'compatibilitySources':compatibility}
     assert len(scope['activeGames']) == 18
     backend = read('guard-counter-20261101-v1/backend-projection.json')
+    for release in providers:
+        path=HERE.parent/release/'backend-projection.json'
+        if not path.exists():continue
+        candidate=json.loads(path.read_text(encoding='utf-8'))
+        if all(candidate['files'][n]['sha256']==before['sourceLF'].get(n) for n in ['server/LobbyRoom.ts','server/guards.ts']):backend=candidate
     backend['productionCommit'] = before['sourceCommit']
     for name, value in [('host-projection.json', base), ('backend-projection.json', backend), ('scope.json', scope)]:
         (HERE / name).write_text(json.dumps(value, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')
