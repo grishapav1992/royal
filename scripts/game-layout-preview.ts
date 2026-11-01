@@ -2,7 +2,8 @@
 import { spawn } from 'node:child_process';
 import { createServer as createSocket } from 'node:net';
 import { randomUUID } from 'node:crypto';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, writeFile, readFile } from 'node:fs/promises';
+import {resolve,sep,extname} from 'node:path';
 import { createServer } from 'vite';
 import { temporaryDatabase } from './database-test';
 import { PostgresDatabase, databaseConfig } from '../server/database';
@@ -22,13 +23,20 @@ await mkdir(artifacts,{recursive:true});
 await writeFile(artifacts+'/owner.json',JSON.stringify({owner:process.env.LAYOUT_TASK_ID||'game-layout-stage2',purpose:'Audit and verify approved active games in the real host, both phone orientations and desktop',cleanupCondition:'Stop the stand and temporary database; retain compact results and final screenshots only'},null,2));
 const database=await temporaryDatabase(),api='http://127.0.0.1:'+apiPort,schema='layout_stage2';
 const environment={...process.env,...database.env,PORT:String(apiPort),AUTH_DB_PATH:schema,PUBLIC_ORIGIN:''};
-const backend=spawn(process.execPath,['--import','tsx','server/index.ts'],{cwd:process.cwd(),env:environment,stdio:['ignore','pipe','pipe'],windowsHide:true});
+const backend=spawn(process.execPath,process.env.LAYOUT_BUILT_BACKEND==='1'?['dist-server/index.js']:['--import','tsx','server/index.ts'],{cwd:process.cwd(),env:environment,stdio:['ignore','pipe','pipe'],windowsHide:true});
 let log='',stopping=false,db:PostgresDatabase|undefined,wallet:DemoWalletStore;
 const scenarios=new Map<string,DemoExpansionStore>();
 backend.stdout.on('data',bytes=>{log=(log+bytes).slice(-4000);});backend.stderr.on('data',bytes=>{log=(log+bytes).slice(-4000);});
 const vite=await createServer({configFile:false,root:process.cwd(),optimizeDeps:{entries:['index.html']},
  plugins:[{name:'layout-local-fixtures',configureServer(server){server.middlewares.use(async(req,res,next)=>{
   const path=new URL(req.url||'/',api).pathname;
+  if(process.env.LAYOUT_BUILT==='1'&&(req.method==='GET'||req.method==='HEAD')){
+   const base=resolve('dist'),file=resolve(base,path==='/'?'index.html':decodeURIComponent(path).slice(1));
+   if(file.startsWith(base+sep))try{
+    const bytes=await readFile(file),mime:Record<string,string>={'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.json':'application/json'};
+    res.setHeader('Content-Type',mime[extname(file)]||'application/octet-stream');res.end(req.method==='HEAD'?undefined:bytes);return;
+   }catch(error){if((error as NodeJS.ErrnoException).code!=='ENOENT')throw error;}
+  }
   if(process.env.LAYOUT_SCENARIOS==='1'&&req.method==='POST'&&(path==='/__test/layout/bonus'||path==='/api/demo-wallet/expansion')){
    try{
     const identity=await fetch(api+'/api/auth/me',{headers:{Cookie:req.headers.cookie||''}}).then(reply=>reply.json());
