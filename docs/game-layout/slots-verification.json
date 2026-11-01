@@ -775,5 +775,8 @@
     "cause": "The bonus pause button moved with the feature strip; Playwright could not obtain a stable click before the series ended.",
     "resolutionCommit": "b44c389",
     "resolution": "Move the existing pause button into the fixed primary controls in compact layouts; the full seven-game WebKit bonus scenario passed afterward."
-  }
+  },
+  "finalIntegrationBaseline": "0f2d09c003a243d51e118ca3c7b9ea5b7eb20731",
+  "postVerificationMerge": "d6585c36f95d01b5c60b7ace93641b9a993b7165",
+  "postVerificationMergeScope": "Forest Heart deployment record and verification images only; application sources did not change."
 }
