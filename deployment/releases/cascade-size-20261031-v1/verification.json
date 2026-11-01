@@ -1,0 +1,795 @@
+{
+  "release": "cascade-size-20261031-v1",
+  "state": "published-and-verified",
+  "sourceCommit": "6399b54b0e4975e7741bb7a50e87d4f10cf5aa90",
+  "productionBase": "fb599494fbee9accff92c8a30126a071ebcceb5c",
+  "published": {
+    "published": true,
+    "release": "cascade-size-20261031-v1",
+    "sourceCommit": "6399b54b0e4975e7741bb7a50e87d4f10cf5aa90",
+    "baseCommit": "fb599494fbee9accff92c8a30126a071ebcceb5c",
+    "modules": [
+      {
+        "verified": true,
+        "gameId": "studio-nitro-run",
+        "version": "1.0.0-5acf6e044837",
+        "bytes": 2539605,
+        "files": 5,
+        "beforeSha256": "924a533a4335d5df47017b853a4563cea24432858f67a70579a3a900453195d2",
+        "hostProgramTouched": false,
+        "databaseTouched": false,
+        "restartRequired": false,
+        "published": true,
+        "operation": "install",
+        "activeSha256": "3b74ef99615c0d9a06ce93993cb61cefe2a8e452576a50e232d1239a92bb1bd8",
+        "history": "/opt/royal-game-modules-state/history/20261031T201335-56e45baf251746079d33b799c03cff32.json"
+      },
+      {
+        "verified": true,
+        "gameId": "studio-meme-overload",
+        "version": "1.0.0-9ed734ef80aa",
+        "bytes": 3497445,
+        "files": 16,
+        "beforeSha256": "90e14ecde93b13514faf2bf5b0cb50ab6a1bb31d0803d6f93c90887892a53a36",
+        "hostProgramTouched": false,
+        "databaseTouched": false,
+        "restartRequired": false,
+        "published": true,
+        "operation": "install",
+        "activeSha256": "5819d562676cb0521ea9b9bf75f9984075eafd0529ee01ec8c35b6feacad65fd",
+        "history": "/opt/royal-game-modules-state/history/20261031T201335-a0b90de73a24432baca0e4e9d83083cc.json"
+      },
+      {
+        "verified": true,
+        "gameId": "studio-caramel-carnival",
+        "version": "1.0.0-41589231886f",
+        "bytes": 3147119,
+        "files": 7,
+        "beforeSha256": "526da8b23405608f8e9872b4970ce84996101e2848717fd075f4d6e54d2e6769",
+        "hostProgramTouched": false,
+        "databaseTouched": false,
+        "restartRequired": false,
+        "published": true,
+        "operation": "install",
+        "activeSha256": "effe5526e52c7af97e9029c750daf762dcccb267c590ce54b7b2b307a9cf2a4d",
+        "history": "/opt/royal-game-modules-state/history/20261031T201336-b16bb722e52b4294af3273287f87cacf.json"
+      },
+      {
+        "verified": true,
+        "gameId": "studio-last-convoy",
+        "version": "1.0.0-ae91e69659fd",
+        "bytes": 6303760,
+        "files": 17,
+        "beforeSha256": "094559f5dc14da7298cb9ca03adbd739bc506d05744c209c5a73b67cd5b6b972",
+        "hostProgramTouched": false,
+        "databaseTouched": false,
+        "restartRequired": false,
+        "published": true,
+        "operation": "install",
+        "activeSha256": "14ce38d903feda3de88ea00cb702c788f0eea5bfecf0f2f6c8c44b7948a38f4f",
+        "history": "/opt/royal-game-modules-state/history/20261031T201337-bc7e09fda2414422b2b181739c67a8ad.json"
+      },
+      {
+        "verified": true,
+        "gameId": "studio-afterglow",
+        "version": "1.1.0-9382c15184f1",
+        "bytes": 3214482,
+        "files": 21,
+        "beforeSha256": "e45be7351d002f160bac26917a432add3480b966dadffcb3e5418a9174dd1c2c",
+        "hostProgramTouched": false,
+        "databaseTouched": false,
+        "restartRequired": false,
+        "published": true,
+        "operation": "install",
+        "activeSha256": "a6b9e89c3495e2f9df056e64aa592cb26b3103bc0058cf21537964df04703226",
+        "history": "/opt/royal-game-modules-state/history/20261031T201338-1894badec71a4afda96c27a651247807.json"
+      }
+    ],
+    "backup": {
+      "sourceArchive": "/opt/royal-backups/cascade-size-20261031-v1/source.tgz",
+      "bytes": 5102,
+      "sha256": "2632318dd59d53433db09d7b90dbd222d5f9c36936b73632178c0767ed4e9ae0",
+      "oldVersions": {
+        "studio-nitro-run": "1.0.0-90e59d19f9b0",
+        "studio-meme-overload": "1.0.0-819805608ef0",
+        "studio-caramel-carnival": "1.0.0-40659a4ed581",
+        "studio-last-convoy": "1.0.0-dd0efb8fd9ff",
+        "studio-afterglow": "1.1.0-1e22447807e2"
+      },
+      "oldPackagesHardlinked": true,
+      "imageTag": "royal-game:before-cascade-size-20261031-v1",
+      "image": "sha256:06da11bea5d5b8c1c167339ff12a32952c67dcad85eb1293f56aa4b939e47bb8"
+    },
+    "freeBefore": 12547117056,
+    "freeAfter": 12527575040,
+    "hostRestarted": false,
+    "databaseTouched": false,
+    "otherModulesPreserved": true,
+    "sourceFilesPreserved": 2485,
+    "runtimeFilesPreserved": 8577,
+    "servicesPreserved": 14
+  },
+  "hostImage": "sha256:06da11bea5d5b8c1c167339ff12a32952c67dcad85eb1293f56aa4b939e47bb8",
+  "contracts": {
+    "studio-nitro-run": {
+      "apiVersion": 1,
+      "rulesVersion": 2,
+      "progressVersion": 1
+    },
+    "studio-meme-overload": {
+      "apiVersion": 1,
+      "rulesVersion": 2,
+      "progressVersion": 1
+    },
+    "studio-caramel-carnival": {
+      "apiVersion": 1,
+      "rulesVersion": 2,
+      "progressVersion": 1
+    },
+    "studio-last-convoy": {
+      "apiVersion": 1,
+      "rulesVersion": 2,
+      "progressVersion": 1
+    },
+    "studio-afterglow": {
+      "apiVersion": 1,
+      "rulesVersion": 2,
+      "progressVersion": 3
+    }
+  },
+  "sourceScope": {
+    "changed": [
+      "src/ui/slotKit/SlotCascadeBoard.ts"
+    ],
+    "otherInputsPreserved": 93,
+    "mediaPreserved": true
+  },
+  "checks": {
+    "rtp": {
+      "verified": 26,
+      "legacyUnchanged": 114
+    },
+    "typecheck": true,
+    "releasePreparedAndGithubVerified": true,
+    "moduleProjectionTamperingRejected": 6,
+    "releaseToolingTests": 25,
+    "publisherTests": 11,
+    "publicationGuardTests": 3,
+    "maintenanceTests": 30,
+    "walletAndAssetsTests": 10,
+    "geometryBrowserTests": 10,
+    "host": {
+      "passed": true,
+      "catalogue": [
+        "studio-cosmic-escape",
+        "studio-caramel-carnival",
+        "studio-velvet-reign",
+        "studio-last-convoy",
+        "studio-nitro-run",
+        "studio-afterglow",
+        "studio-meme-overload",
+        "studio-dracona",
+        "studio-neopolis",
+        "studio-forest-heart",
+        "github-crash",
+        "royal-plinko",
+        "original-cr-vs-leo",
+        "original-jackie-chan",
+        "studio-caribbean-treasures",
+        "studio-flooded-temple",
+        "royal-roulette",
+        "flag-battle"
+      ],
+      "report": [
+        {
+          "id": "studio-nitro-run",
+          "version": "1.0.0-5acf6e044837",
+          "cascade": {
+            "frames": 540,
+            "maxSizeError": 0.01587499999999409
+          },
+          "layouts": [
+            {
+              "viewport": {
+                "width": 1440,
+                "height": 1000
+              },
+              "boardWidth": 672.390625,
+              "boardHeight": 560.3125,
+              "overflow": false,
+              "chatVisible": true,
+              "spinVisible": true
+            },
+            {
+              "viewport": {
+                "width": 1280,
+                "height": 720
+              },
+              "boardWidth": 336.390625,
+              "boardHeight": 280.3125,
+              "overflow": false,
+              "chatVisible": true,
+              "spinVisible": true
+            },
+            {
+              "viewport": {
+                "width": 390,
+                "height": 844
+              },
+              "boardWidth": 342,
+              "boardHeight": 285,
+              "overflow": false,
+              "chatVisible": true,
+              "spinVisible": true
+            }
+          ],
+          "rounds": 3,
+          "closeReopenPreservedSessionAndBalance": true
+        },
+        {
+          "id": "studio-meme-overload",
+          "version": "1.0.0-9ed734ef80aa",
+          "cascade": {
+            "frames": 1050,
+            "maxSizeError": 0.015625
+          },
+          "layouts": [
+            {
+              "viewport": {
+                "width": 1440,
+                "height": 1000
+              },
+              "boardWidth": 716.8125,
+              "boardHeight": 597.34375,
+              "overflow": false,
+              "chatVisible": true,
+              "spinVisible": true
+            },
+            {
+              "viewport": {
+                "width": 1280,
+                "height": 720
+              },
+              "boardWidth": 490.796875,
+              "boardHeight": 408.984375,
+              "overflow": false,
+              "chatVisible": true,
+              "spinVisible": true
+            },
+            {
+              "viewport": {
+                "width": 390,
+                "height": 844
+              },
+              "boardWidth": 342,
+              "boardHeight": 285,
+              "overflow": false,
+              "chatVisible": true,
+              "spinVisible": true
+            }
+          ],
+          "rounds": 2,
+          "closeReopenPreservedSessionAndBalance": true
+        },
+        {
+          "id": "studio-caramel-carnival",
+          "version": "1.0.0-41589231886f",
+          "cascade": {
+            "frames": 480,
+            "maxSizeError": 0.01590551757811909
+          },
+          "layouts": [
+            {
+              "viewport": {
+                "width": 1440,
+                "height": 1000
+              },
+              "boardWidth": 672.390625,
+              "boardHeight": 560.3125,
+              "overflow": false,
+              "chatVisible": true,
+              "spinVisible": true
+            },
+            {
+              "viewport": {
+                "width": 1280,
+                "height": 720
+              },
+              "boardWidth": 336.390625,
+              "boardHeight": 280.3125,
+              "overflow": false,
+              "chatVisible": true,
+              "spinVisible": true
+            },
+            {
+              "viewport": {
+                "width": 390,
+                "height": 844
+              },
+              "boardWidth": 346,
+              "boardHeight": 288.328125,
+              "overflow": false,
+              "chatVisible": true,
+              "spinVisible": true
+            }
+          ],
+          "rounds": 4,
+          "closeReopenPreservedSessionAndBalance": true
+        },
+        {
+          "id": "studio-last-convoy",
+          "version": "1.0.0-ae91e69659fd",
+          "cascade": {
+            "frames": 510,
+            "maxSizeError": 0.01590551757811909
+          },
+          "layouts": [
+            {
+              "viewport": {
+                "width": 1440,
+                "height": 1000
+              },
+              "boardWidth": 672.390625,
+              "boardHeight": 560.3125,
+              "overflow": false,
+              "chatVisible": true,
+              "spinVisible": true
+            },
+            {
+              "viewport": {
+                "width": 1280,
+                "height": 720
+              },
+              "boardWidth": 336.390625,
+              "boardHeight": 280.3125,
+              "overflow": false,
+              "chatVisible": true,
+              "spinVisible": true
+            },
+            {
+              "viewport": {
+                "width": 390,
+                "height": 844
+              },
+              "boardWidth": 336,
+              "boardHeight": 280,
+              "overflow": false,
+              "chatVisible": true,
+              "spinVisible": true
+            }
+          ],
+          "rounds": 8,
+          "closeReopenPreservedSessionAndBalance": true
+        },
+        {
+          "id": "studio-afterglow",
+          "version": "1.1.0-9382c15184f1",
+          "cascade": {
+            "frames": 540,
+            "maxSizeError": 0.015749999999997044
+          },
+          "layouts": [
+            {
+              "viewport": {
+                "width": 1440,
+                "height": 1000
+              },
+              "boardWidth": 624.546875,
+              "boardHeight": 520.453125,
+              "overflow": false,
+              "chatVisible": true,
+              "spinVisible": true
+            },
+            {
+              "viewport": {
+                "width": 1280,
+                "height": 720
+              },
+              "boardWidth": 493.1875,
+              "boardHeight": 410.984375,
+              "overflow": false,
+              "chatVisible": true,
+              "spinVisible": true
+            },
+            {
+              "viewport": {
+                "width": 390,
+                "height": 844
+              },
+              "boardWidth": 350,
+              "boardHeight": 291.65625,
+              "overflow": false,
+              "chatVisible": true,
+              "spinVisible": true
+            }
+          ],
+          "rounds": 1,
+          "closeReopenPreservedSessionAndBalance": true
+        }
+      ],
+      "errors": []
+    },
+    "public": {
+      "passed": true,
+      "resourcesVerified": 193,
+      "health": {
+        "ok": true,
+        "service": "royal-arcade"
+      },
+      "walletStatuses": {
+        "/api/demo-wallet": 401,
+        "/api/demo-wallet/expansion": 401
+      },
+      "catalogue": [
+        "studio-cosmic-escape",
+        "studio-caramel-carnival",
+        "studio-velvet-reign",
+        "studio-last-convoy",
+        "studio-nitro-run",
+        "studio-afterglow",
+        "studio-meme-overload",
+        "studio-dracona",
+        "studio-neopolis",
+        "studio-forest-heart",
+        "github-crash",
+        "royal-plinko",
+        "original-cr-vs-leo",
+        "original-jackie-chan",
+        "studio-caribbean-treasures",
+        "studio-flooded-temple",
+        "royal-roulette",
+        "flag-battle"
+      ],
+      "renders": [
+        {
+          "game": "studio-nitro-run",
+          "version": "1.0.0-5acf6e044837",
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "width": 1214,
+          "scrollWidth": 1214
+        },
+        {
+          "game": "studio-nitro-run",
+          "version": "1.0.0-5acf6e044837",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "width": 1214,
+          "scrollWidth": 1214
+        },
+        {
+          "game": "studio-nitro-run",
+          "version": "1.0.0-5acf6e044837",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "width": 368,
+          "scrollWidth": 368
+        },
+        {
+          "game": "studio-meme-overload",
+          "version": "1.0.0-9ed734ef80aa",
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "width": 1208,
+          "scrollWidth": 1208
+        },
+        {
+          "game": "studio-meme-overload",
+          "version": "1.0.0-9ed734ef80aa",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "width": 1208,
+          "scrollWidth": 1208
+        },
+        {
+          "game": "studio-meme-overload",
+          "version": "1.0.0-9ed734ef80aa",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "width": 362,
+          "scrollWidth": 362
+        },
+        {
+          "game": "studio-caramel-carnival",
+          "version": "1.0.0-41589231886f",
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "width": 1214,
+          "scrollWidth": 1214
+        },
+        {
+          "game": "studio-caramel-carnival",
+          "version": "1.0.0-41589231886f",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "width": 1214,
+          "scrollWidth": 1214
+        },
+        {
+          "game": "studio-caramel-carnival",
+          "version": "1.0.0-41589231886f",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "width": 368,
+          "scrollWidth": 368
+        },
+        {
+          "game": "studio-last-convoy",
+          "version": "1.0.0-ae91e69659fd",
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "width": 1212,
+          "scrollWidth": 1212
+        },
+        {
+          "game": "studio-last-convoy",
+          "version": "1.0.0-ae91e69659fd",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "width": 1212,
+          "scrollWidth": 1212
+        },
+        {
+          "game": "studio-last-convoy",
+          "version": "1.0.0-ae91e69659fd",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "width": 366,
+          "scrollWidth": 366
+        },
+        {
+          "game": "studio-afterglow",
+          "version": "1.1.0-9382c15184f1",
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "width": 1414,
+          "scrollWidth": 1414
+        },
+        {
+          "game": "studio-afterglow",
+          "version": "1.1.0-9382c15184f1",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "width": 1254,
+          "scrollWidth": 1254
+        },
+        {
+          "game": "studio-afterglow",
+          "version": "1.1.0-9382c15184f1",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "width": 364,
+          "scrollWidth": 364
+        }
+      ],
+      "errors": [],
+      "productionAccountsCreated": false,
+      "productionRoundsCreated": false,
+      "messagesSent": false
+    }
+  },
+  "availability": {
+    "before": [
+      "studio-cosmic-escape",
+      "studio-caramel-carnival",
+      "studio-velvet-reign",
+      "studio-last-convoy",
+      "studio-nitro-run",
+      "studio-afterglow",
+      "studio-meme-overload",
+      "studio-dracona",
+      "studio-neopolis",
+      "studio-forest-heart",
+      "github-crash",
+      "royal-plinko",
+      "original-cr-vs-leo",
+      "original-jackie-chan",
+      "studio-caribbean-treasures",
+      "studio-flooded-temple",
+      "royal-roulette",
+      "flag-battle"
+    ],
+    "after": [
+      "studio-cosmic-escape",
+      "studio-caramel-carnival",
+      "studio-velvet-reign",
+      "studio-last-convoy",
+      "studio-nitro-run",
+      "studio-afterglow",
+      "studio-meme-overload",
+      "studio-dracona",
+      "studio-neopolis",
+      "studio-forest-heart",
+      "github-crash",
+      "royal-plinko",
+      "original-cr-vs-leo",
+      "original-jackie-chan",
+      "studio-caribbean-treasures",
+      "studio-flooded-temple",
+      "royal-roulette",
+      "flag-battle"
+    ],
+    "added": [],
+    "restored": [],
+    "backendBytesPreserved": true,
+    "directLaunchAndNewRoundHandlersUnchanged": true
+  },
+  "maintenance": {
+    "status": "completed",
+    "reason": null,
+    "startedAt": 1793477778.8253987,
+    "finishedAt": 1793478573.7435849,
+    "durationSeconds": 794.92,
+    "freeBefore": 12524154880,
+    "freeAfter": 12524863488,
+    "healthOk": true,
+    "containersUnchanged": true,
+    "release": "remove-reward-games-catalog-20261031-v1",
+    "sourceCommit": "fb599494fbee9accff92c8a30126a071ebcceb5c",
+    "currentImage": "sha256:06da11bea5d5b8c1c167339ff12a32952c67dcad85eb1293f56aa4b939e47bb8",
+    "rollbackImage": "sha256:0f78302cdea4a5ba2da5c291655dea3d4144f4402da5004bc974c0a64d78604b",
+    "removedEntries": 0,
+    "removedImageTags": 0,
+    "installedSource": "6399b54b0e4975e7741bb7a50e87d4f10cf5aa90",
+    "timer": "enabled",
+    "sequenceCompleted": true
+  },
+  "notes": [
+    "Production guest checks created no accounts, rounds or messages.",
+    "Desktop and mobile browser sizes were verified; physical devices were not used.",
+    "No production database or persistent volume was changed."
+  ],
+  "finalHealth": "healthy",
+  "cleanup": {
+    "server": {
+      "removed": [
+        {
+          "path": "/opt/royal-releases/cascade-size-20261031-v1/packages",
+          "bytes": 18712112
+        },
+        {
+          "path": "/opt/royal-releases/cascade-size-20261031-v1/source",
+          "bytes": 10451
+        },
+        {
+          "path": "/opt/royal-releases/cascade-size-20261031-v1/__pycache__",
+          "bytes": 20342
+        },
+        {
+          "path": "/opt/royal-releases/cascade-size-20261031-v1/before.json",
+          "bytes": 3286798
+        },
+        {
+          "path": "/opt/royal-releases/cascade-size-20261031-v1/after.json",
+          "bytes": 3404882
+        },
+        {
+          "path": "/opt/royal-releases/cascade-size-20261031-v1/publisher.py",
+          "bytes": 10767
+        },
+        {
+          "path": "/opt/royal-releases/cascade-size-20261031-v1/publish.py",
+          "bytes": 9161
+        },
+        {
+          "path": "/opt/royal-releases/cascade-size-20261031-v1/backup.json",
+          "bytes": 622
+        },
+        {
+          "path": "/opt/royal-releases/cascade-size-20261031-v1/run.log",
+          "bytes": 595
+        },
+        {
+          "path": "/opt/royal-releases/cascade-size-20261031-v1/run.pid",
+          "bytes": 6
+        },
+        {
+          "path": "/opt/royal-releases/cascade-size-20261031-v1/run-2.log",
+          "bytes": 3574
+        },
+        {
+          "path": "/opt/royal-releases/cascade-size-20261031-v1/run-2.pid",
+          "bytes": 7
+        },
+        {
+          "path": "/opt/royal-releases/cascade-size-20261031-v1.tgz",
+          "bytes": 19038421
+        },
+        {
+          "path": "/opt/royal-maintenance/cascade-size-20261031-v1/files",
+          "bytes": 62138
+        },
+        {
+          "path": "/opt/royal-maintenance/cascade-size-20261031-v1.tgz",
+          "bytes": 19157
+        },
+        {
+          "path": "/opt/royal-maintenance/cascade-size-20261031-v1/sequence.log",
+          "bytes": 745
+        },
+        {
+          "path": "/opt/royal-maintenance/cascade-size-20261031-v1/sequence.pid",
+          "bytes": 7
+        }
+      ],
+      "logicalBytes": 44579785,
+      "freeBeforeBytes": 12525346816,
+      "freeAfterBytes": 12570320896,
+      "preserved": [
+        "published module versions",
+        "five previous module packages and source archive",
+        "current host and verified rollback",
+        "financial backups and persistent volumes",
+        "compact publication receipts",
+        "previous maintenance files"
+      ],
+      "sourceCommit": "6399b54b0e4975e7741bb7a50e87d4f10cf5aa90"
+    },
+    "local": {
+      "condition": "Remove the temporary checkout and remaining task outputs after this deployment record is pushed and its remote commit is verified",
+      "temporaryRoot": "artifacts/work/cascade-size-release-20261031",
+      "inventory": {
+        "checkoutBytes": 503430064,
+        "otherTaskBytes": 27371439,
+        "freeBytes": 52306366464,
+        "dependencyCopiesCreated": 0
+      },
+      "obsoleteBuilds": {
+        "removed": [
+          {
+            "path": "module-dist/studio-nitro-run/versions/1.0.0-67acd1d82ad6",
+            "bytes": 2540570
+          },
+          {
+            "path": "module-dist/studio-meme-overload/versions/1.0.0-8c2bd00fd5b5",
+            "bytes": 3499867
+          },
+          {
+            "path": "module-dist/studio-caramel-carnival/versions/1.0.0-b022bb522974",
+            "bytes": 3148325
+          },
+          {
+            "path": "module-dist/studio-last-convoy/versions/1.0.0-a2e4639b052b",
+            "bytes": 6306121
+          },
+          {
+            "path": "module-dist/studio-afterglow/versions/1.2.0-83388aef10c4",
+            "bytes": 3220821
+          }
+        ],
+        "totalBytes": 18715704
+      },
+      "completionReport": "artifacts/work/cascade-size-release-20261031/completion.json"
+    }
+  }
+}

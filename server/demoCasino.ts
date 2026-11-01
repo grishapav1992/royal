@@ -26,7 +26,7 @@ export class DemoCasinoStore {
   }
   async reservedUnits(id:string) {await this.ready;return Number((await this.db.prepare("SELECT COALESCE(SUM(reserved_units),0) AS units FROM demo_casino_sessions WHERE account_id=? AND state='active'").get(id))!.units);}
   async sessions(id:string) {
-    return (await this.db.prepare("SELECT payload FROM demo_casino_sessions WHERE account_id=? AND state='active' AND game_id IN ('github-hilo','github-tower') ORDER BY game_id").all(id)).map(row=>publicSession(JSON.parse(row.payload)));
+    return (await this.db.prepare("SELECT payload FROM demo_casino_sessions WHERE account_id=? AND state='active' AND game_id='github-hilo' ORDER BY game_id").all(id)).map(row=>publicSession(JSON.parse(row.payload)));
   }
   async active(id:string) {
     await this.ready;return this.db.transaction(async()=>{await this.settleOther(id);return {wallet:await this.snapshot(id),sessions:await this.sessions(id)};},{lockKey:'account:'+id});
@@ -71,4 +71,4 @@ export class DemoCasinoStore {
     },{lockKey:'account:'+account});
   }
 }
-export function gameName(id:SessionGameId) {if(!isSessionGame(id))throw Error('Invalid casino game');return id==='github-hilo'?'Hi-Lo':'Dragon Tower';}
+export function gameName(id:SessionGameId) {if(!isSessionGame(id))throw Error('Invalid casino game');return 'Hi-Lo';}

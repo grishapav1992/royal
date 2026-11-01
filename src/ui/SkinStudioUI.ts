@@ -7,13 +7,14 @@ import { demoWallet } from '../wallet/WalletClient';
 import { tailorPortrait } from '../game/atelierArt';
 import { SkinFittingRoom } from './SkinFittingRoom';
 import './skin-studio.css';
+import { t, tr } from '../i18n/index';
 
 const statuses = {
   reserving: 'Резервируем $10…', generating: 'Рисуем два образа…',
   capturing: 'Подтверждаем оплату…', ready: '',
   selected: '', refunding: 'Возвращаем $10…', failed: '',
 };
-type Pending = { id: string; prompt: string };
+type Pending = { id: string; prompt: string; rewardGrantId?:string };
 export class SkinStudioUI {
   readonly dialog = document.createElement('dialog');
   private button = document.createElement('button');
@@ -44,7 +45,7 @@ export class SkinStudioUI {
     this.scene.onAtelier = () => { void this.open(); };
     this.dialog.id = 'skin-studio-dialog'; this.dialog.className = 'skin-studio'; this.dialog.setAttribute('aria-labelledby', 'skin-studio-title');
     this.dialog.innerHTML = `<div class="skin-studio-heading"><div class="skin-studio-identity"><div class="skin-tailor-portrait"></div><div><h2 id="skin-studio-title">Ателье</h2><span class="eyebrow">Южный парк</span></div></div><button type="button" class="icon-button" aria-label="Закрыть ателье">×</button></div>
-      <form><label for="skin-prompt">Опиши новый образ</label><div class="skin-prompt-slot"></div><div class="skin-studio-price"><span class="skin-offer">2 варианта · 1 навсегда</span><p class="skin-balance" aria-live="polite"></p></div><div class="skin-generate-slot"></div></form>
+      <form><label for="skin-prompt">Опиши новый образ</label><div class="skin-prompt-slot"></div><div class="skin-studio-price"><span class="skin-offer">2 варианта · 1 навсегда</span><p class="skin-balance" aria-live="polite"></p><p class="skin-free-generations" aria-live="polite" hidden></p></div><div class="skin-generate-slot"></div></form>
       <div class="skin-status-slot"></div><button type="button" class="text-button skin-refresh" hidden>Проверить статус</button><section class="skin-results" hidden><h3>Примерь и выбери один образ</h3><div class="skin-variants-slot"></div></section>
       <div class="skin-fitting-slot"></div><div class="skin-choose-slot" hidden></div>
       <section class="skin-wardrobe" hidden><h3>Гардероб</h3><div class="skin-wardrobe-slot"></div></section>`;
@@ -76,7 +77,8 @@ export class SkinStudioUI {
         if (!this.pending) {
           await this.send('');
           if (epoch !== this.epoch) throw new Error('Аккаунт изменился.');
-          const operation = { id: crypto.randomUUID(), prompt: this.prompt.value.trim() };
+          const grant=this.data?.freeGenerations?.find(g=>g.remaining>0);
+          const operation:Pending = { id: crypto.randomUUID(), prompt: this.prompt.value.trim(),...(grant?{rewardGrantId:grant.id}:{}) };
           // Persist before sending so a lost HTTP response cannot charge another generation.
           sessionStorage.setItem(this.key(), JSON.stringify(operation)); this.pending = operation;
         }
@@ -159,6 +161,9 @@ export class SkinStudioUI {
   }
   private render() {
     const job = this.data?.job;
+    const freeCount=(this.data?.freeGenerations??[]).reduce((n,g)=>n+g.remaining,0);
+    const free=this.dialog.querySelector<HTMLElement>('.skin-free-generations')!;
+    free.hidden=freeCount===0;free.textContent=tr`Бесплатных генераций за уровни: ${freeCount}`;
     const active = job && ['reserving', 'generating', 'capturing', 'ready', 'refunding'].includes(job.state);
     const generating = job && ['reserving', 'generating', 'capturing'].includes(job.state);
     const count = active ? job.variantCount ?? (job.variants.length || SKIN_VARIANTS) : this.data?.variantCount ?? SKIN_VARIANTS;
@@ -168,9 +173,11 @@ export class SkinStudioUI {
     this.generate.disabled = this.busy || !!active || (!this.data?.enabled && !this.pending);
     // Background status requests must not change the label or width of an active generation button.
     this.generate.textContent = generating ? 'Создаём образы…' : job?.state === 'refunding' ? statuses.refunding
-      : this.pending ? 'Проверить отправленный запрос' : this.busy ? 'Проверяем…' : 'Создать за $10';
+      : this.pending ? 'Проверить отправленный запрос' : this.busy ? 'Проверяем…' : freeCount>0?t('Создать бесплатно'):'Создать за $10';
     this.status.textContent = this.message || (job?.error && ['failed', 'refunding'].includes(job.state) ? job.error
       : job?.state === 'generating' && count === 3 ? 'Рисуем три образа…' : job ? statuses[job.state] : this.data && !this.data.enabled ? 'Генерация временно недоступна.' : '');
+    if(!this.message && job?.funding==='reward' && ['reserving','capturing','refunding'].includes(job.state))
+      this.status.textContent=t(job.state==='refunding'?'Возвращаем бесплатную генерацию…':job.state==='reserving'?'Используем бесплатную генерацию…':'Подтверждаем бесплатную генерацию…');
     this.status.hidden = !this.status.textContent;
     const refresh = this.dialog.querySelector<HTMLButtonElement>('.skin-refresh')!;
     refresh.hidden = !this.failedRequest; refresh.disabled = this.busy;

@@ -1,7 +1,9 @@
 import test from 'node:test';
+import {TOTE_GAME} from '../src/shared/flagTote';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
+import { readHostProjection } from '../scripts/build-host-projection.mjs';
 import { resolve } from 'node:path';
 import { GAME_MODULES, type IndependentGameId } from '../src/modules/GameModuleCatalog';
 import { moduleRoot, validModuleManifest, validModulePointer } from '../src/modules/GameModuleManifest';
@@ -30,9 +32,9 @@ function manifest(gameId: IndependentGameId) {
 test('every defined game has a distinct module package and matching public contract', async () => {
  const required = [...new Set([
   ...EXPANSION_GAMES, ...SESSION_GAMES, ...GITHUB_GAME_IDS, ...GAME_CATALOG.map(game => game.id),
-  ...Object.keys(ACTIVITIES), 'casinoapipro', 'luelon', 'breaker', 'orbit', 'drift', 'pixel',
+  ...Object.keys(ACTIVITIES), TOTE_GAME, 'casinoapipro', 'luelon', 'breaker', 'orbit', 'drift', 'pixel',
  ])].sort();
- assert.equal(required.length, 124); // Includes Galactic Reactor and the independent Tsu-e-fa duel.
+ assert.equal(required.length, 124); // Shared Flag totalizator adds its own independent contract.
  assert(required.includes('studio-forest-heart')&&required.includes('studio-flooded-temple')&&required.includes('original-jackie-chan'));
  assert.deepEqual(GAME_MODULES.map(game => game.gameId).sort(), required);
  assert.ok(STUDIO_GAMES.every(id => required.includes(id)));
@@ -107,7 +109,9 @@ test('all built game packages pass runtime validation and every inventoried byte
   assert.equal(proof.hostSingletonsExternalized, true, game.gameId);
   assert.equal(proof.serverImplementationIncluded, false, game.gameId);
   assert.ok(proof.nativeImplementations.length <= 1, game.gameId);
-  for (const [name, expected] of Object.entries(proof.sourceFiles)) assert.equal(sha(await readFile(resolve(name))), expected, `${game.gameId} has stale source ${name}`);
+  const projected = proof.sourceProjection ? await readHostProjection(process.cwd(),proof.sourceProjection.config,{strictOrigins:true}) : undefined;
+  if(projected){assert.equal(proof.sourceProjection.sha256,projected.sha256);assert.equal(proof.sourceProjection.productionCommit,projected.metadata.productionCommit);}
+  for (const [name, expected] of Object.entries(proof.sourceFiles)) assert.equal(sha(projected?projected.read(name):await readFile(resolve(name))), expected, `${game.gameId} has stale source ${name}`);
  }
 });
 

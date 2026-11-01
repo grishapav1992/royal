@@ -34,7 +34,7 @@ async function choose(page: Page, id: string) {
 }
 const results=(page:Page)=>page.evaluate(()=>(window as any).importedResults);
 
-test('all nine GitHub modules animate owned confirmed outcomes in the real host with chat',async({page,roomPath})=>{
+test('all eight retained GitHub modules animate owned confirmed outcomes in the real host with chat',async({page,roomPath})=>{
   const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
   await page.emulateMedia({reducedMotion:'no-preference'});await enter(page,roomPath);
   for(const id of IMPORTED_MOTION_GAMES){
@@ -47,11 +47,6 @@ test('all nine GitHub modules animate owned confirmed outcomes in the real host 
       await page.locator('#original-play').click();await expect(page.locator('[data-mine-cell="0"]')).toBeEnabled();
       await page.locator('[data-mine-cell="0"]').click();await expect(page.locator('#original-play')).toBeEnabled();
       if(!await root.getAttribute('data-win-tier'))await page.locator('#original-play').click();
-    }else if(id==='github-tower'){
-      await page.locator('#mini-game [data-start]').click();await expect(page.locator('[data-cell="0:0"]')).toBeEnabled();
-      await page.locator('[data-cell="0:0"]').click();
-      await expect.poll(async()=>!!await root.getAttribute('data-win-tier')||await page.locator('[data-cashout]').isEnabled().catch(()=>false)).toBe(true);
-      if(!await root.getAttribute('data-win-tier'))await page.locator('[data-cashout]').click();
     }else if(id==='github-craps'){
       await page.locator('#github-choice').selectOption('field');await page.locator('[data-action=start]').click();
     }else await page.locator('#mini-game [data-start]').click();

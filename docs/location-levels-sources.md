@@ -7,7 +7,7 @@ The MVP instruments the live shared `DemoWalletStore` and `VirtualPvpLedger` in 
 | Paid path | Stable source ID | Acceptance | Completion and amount evidence |
 | --- | --- | --- | --- |
 | Instant Coins, Fruits, roulette, originals through `wallet.operate` | `native:instant:<operation UUID>` | New confirmed `demo_operations` row; retries are excluded before execution | Stored `gameRound` identifies the game. Exact `bet` and `refund` entries of the same operation determine qualified turnover. A zero net balance change still counts the paid stake. |
-| Tower and Hi-Lo through `wallet.casino.operate` | `native:casino:<session UUID>` | New start stored in `demo_casino_sessions` | All linked `demo_casino_requests` and the session ID bind the complete ledger history. Completion is any terminal state, including loss and cashout. |
+| Hi-Lo through `wallet.casino.operate` | `native:casino:<session UUID>` | New start stored in `demo_casino_sessions` | All linked `demo_casino_requests` and the session ID bind the complete ledger history. Completion is any terminal state, including loss and cashout. |
 | Expansion slots and other persistent casino games through `wallet.expansion.operate` | `native:casino:<session UUID>` | New start stored in `demo_casino_sessions` | Same session/request mapping. All paid start costs and subsequent paid actions are counted. Free continuations do not create another accepted source. |
 | Mines through `wallet.mines.operate` | `native:mines:<session UUID>` | New stored Mines start | Terminal `demo_mines_sessions` state plus exact start/refund ledger entries. Reveals alone do not grant experience. |
 | Orbit/Flight through `wallet.flight.operate` | `native:flight:<session UUID>` | New stored Flight start | Terminal `demo_flight_sessions` state. Manual cashout, timed automatic cashout and timed loss share one source. |
@@ -38,4 +38,4 @@ External provider callbacks are not a native game path. A provider enabled in th
 
 ## Verification
 
-`server-tests/progression-sources.test.ts` covers zero net balance paid rounds, duplicate requests, terminal Mines and Tower states, Flight and Crash completion during a GET, old-session exclusion, a complete Afterglow bonus continuation, rollback after a capture failure, both PvP participants, combat identity and refunded draws. These checks use an isolated PostgreSQL database and the actual shared wallet implementations.
+`server-tests/progression-sources.test.ts` covers zero net balance paid rounds, duplicate requests, terminal Mines states, Flight and Crash completion during a GET, old-session exclusion, a complete Afterglow bonus continuation, rollback after a capture failure, both PvP participants, combat identity and refunded draws. These checks use an isolated PostgreSQL database and the actual shared wallet implementations.

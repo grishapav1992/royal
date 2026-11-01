@@ -27,7 +27,6 @@ export const CABINETS: Cabinet[] = [
   { id: 'github-baccarat', name: translateText('Баккара'), subtitle: translateText('Игрок · Банкир · Ничья'), x: 1200, y: 810, color: 0xeb91af, playable: true, hall: 'arcade', github: true },
   { id: 'github-craps', name: 'Craps', subtitle: translateText('Две кости · Pass Line · Field'), x: 1430, y: 810, color: 0x75cbd9, playable: true, hall: 'arcade', github: true },
   { id: 'github-hilo', name: 'Hi-Lo', subtitle: translateText('Выше или ниже · USDT · Nile'), x: 1660, y: 810, color: 0xe2c484, playable: true, hall: 'arcade', github: true },
-  { id: 'github-tower', name: 'Dragon Tower', subtitle: translateText('Девять уровней · USDT · Nile'), x: 1890, y: 810, color: 0x8ecba2, playable: true, hall: 'arcade', github: true },
   ...BASE_EXPANSION_GAMES.map((id,i):Cabinet=>({id,name:id==='github-crash'?'LAST EXIT':EXPANSION_NAMES[id],subtitle:id==='github-crash'?(language==='en'?'Car chase · Take the exit':'Погоня · Успей уйти'):translateText('Общий тестовый кошелёк · Ставки и выплаты'),x:expansionPositions[i][0],y:expansionPositions[i][1],color:id==='github-crash'?0xd3b477:[0xe2c484,0x8ecba2,0xc6a0ed,0x75cbd9][i%4],playable:true,hall:'arcade',github:true})),
 ];
 
@@ -54,6 +53,7 @@ const studioRows = [300,470,640,980,1150];
 CABINETS.push(...studioOrder.map((id,index):Cabinet=>({id,name:id==='studio-velvet-reign'?'Velvet Reign':id==='studio-cosmic-escape'?'Cosmic Escape':id==='studio-caramel-carnival'?'Caramel Carnival':STUDIO_INFO[id].name,subtitle:id==='studio-caramel-carnival'?translateText('8+ в любом месте · Билеты и фестиваль'):STUDIO_INFO[id].subtitle,x:id==='studio-velvet-reign'?LUELON_NEW_ZONE.velvet.x:id==='studio-cosmic-escape'?LUELON_NEW_ZONE.cosmic.x:id==='studio-caramel-carnival'?LUELON_NEW_ZONE.caramel.x:3000+index%7*180,y:id==='studio-velvet-reign'?LUELON_NEW_ZONE.velvet.y:id==='studio-cosmic-escape'?LUELON_NEW_ZONE.cosmic.y:id==='studio-caramel-carnival'?LUELON_NEW_ZONE.caramel.y:studioRows[Math.floor(index/7)],color:STUDIO_INFO[id].color,playable:true,wallet:true,hall:'arcade'})));
 
 CABINETS.push({id:'studio-last-convoy',name:translateText('Последний конвой'),subtitle:translateText('Каскады · Баррикады · Эвакуация'),x:4520,y:410,color:0x9ec6a0,playable:true,wallet:true,hall:'arcade'});
+CABINETS.push({id:'flag-tote',name:translateText('Флаговый тотализатор'),subtitle:translateText('48 стран · Общий банк игроков'),x:1380,y:1050,color:0xe4c585,playable:true,wallet:true,hall:'arcade'});
 CABINETS.push({id:'flag-battle',name:translateText('Флажочки'),subtitle:translateText('12 / 24 / 48 стран · Один победитель'),x:1380,y:1050,color:0x78e5bc,playable:true,wallet:true,hall:'arcade'});
 CABINETS.push({id:'studio-forest-heart',name:language==='en'?'Forest Heart':'Сердце леса',subtitle:language==='en'?'Living roots · One free turn · Four bonus pulses':'Живые корни · Один поворот · Четыре бонусных импульса',x:0,y:0,color:0x87d7bc,playable:true,wallet:true,hall:'arcade'});
 
@@ -80,6 +80,7 @@ CABINETS.push({id:CARIBBEAN_GAME,name:'Карибские сокровища',su
 
 // Keep game descriptions available even when their game has no dedicated physical seat.
 CABINETS.push({id:'royal-roulette',name:translateText('Рулетка'),subtitle:translateText('Европейская рулетка · Одно зеро'),x:0,y:0,color:0xd7b472,playable:true,wallet:true,hall:'arcade'});
+CABINETS.push({id:'royal-coins',name:'Royal Coins',subtitle:translateText('Три барабана · Одна линия'),x:0,y:0,color:0xd7b472,playable:true,wallet:true,hall:'arcade'});
 export const GAME_CABINETS: readonly Cabinet[] = CABINETS.map(c=>({...c}));
 for (let index = CABINETS.length - 1; index >= 0; index--) {
   if ((CABINETS[index].hall ?? 'arcade') === 'arcade') CABINETS.splice(index, 1);

@@ -13,7 +13,8 @@ export async function demoReservedUnits(db: PostgresDatabase, accountId: string)
     + COALESCE((SELECT reserved_units FROM demo_flight_sessions WHERE account_id=? AND state='active'),0)
     + COALESCE((SELECT SUM(reserved_units) FROM demo_casino_sessions WHERE account_id=? AND state='active'),0)
     + COALESCE((SELECT count(*)*1000 FROM skin_purchases WHERE account_id=? AND state='reserved'),0)
-    + COALESCE((SELECT SUM(reserved_units) FROM virtual_pvp_holds WHERE account_id=? AND state='held'),0) AS units`).get(accountId, accountId, accountId, accountId, accountId);
+    + COALESCE((SELECT SUM(reserved_units) FROM virtual_pvp_holds WHERE account_id=? AND state='held'),0)
+    + COALESCE((SELECT SUM(reserved_units) FROM flag_tote_reservations WHERE account_id=?),0) AS units`).get(accountId, accountId, accountId, accountId, accountId, accountId);
   return Number(row!.units);
 }
 
@@ -34,6 +35,19 @@ export async function migrateDemoAmounts(db: PostgresDatabase) {
       stake_units BIGINT NOT NULL CHECK(stake_units>0),reserved_units BIGINT NOT NULL CHECK(reserved_units>0),
       state TEXT NOT NULL CHECK(state IN ('held','settled','refunded')),PRIMARY KEY(match_id,account_id))`,
     `CREATE INDEX virtual_pvp_player_holds ON virtual_pvp_holds(account_id) WHERE state='held'`,
+  ] });
+  await applySchemaMigration(db, { id: 'flag-tote-v1', statements: [
+    `CREATE TABLE flag_tote_rounds(id TEXT PRIMARY KEY,rules_version INTEGER NOT NULL CHECK(rules_version=1),
+      opened_at BIGINT NOT NULL,closes_at BIGINT NOT NULL,finishes_at BIGINT NOT NULL,
+      state TEXT NOT NULL CHECK(state IN ('open','racing','settled','refunded')),outcome TEXT,settlement TEXT)`,
+    `CREATE TABLE flag_tote_tickets(round_id TEXT NOT NULL REFERENCES flag_tote_rounds(id),sequence INTEGER NOT NULL CHECK(sequence BETWEEN 1 AND 256),
+      account_id TEXT NOT NULL REFERENCES accounts(id),id TEXT NOT NULL,country TEXT NOT NULL,
+      stake_units BIGINT NOT NULL CHECK(stake_units IN (100,200,500,1000,2000,5000)),payout_units BIGINT CHECK(payout_units>=0),
+      PRIMARY KEY(id),UNIQUE(round_id,sequence))`,
+    `CREATE INDEX flag_tote_ticket_round ON flag_tote_tickets(round_id)`,
+    `CREATE TABLE flag_tote_reservations(round_id TEXT NOT NULL REFERENCES flag_tote_rounds(id),account_id TEXT NOT NULL REFERENCES accounts(id),
+      reserved_units BIGINT NOT NULL CHECK(reserved_units=1000000),PRIMARY KEY(round_id,account_id))`,
+    `CREATE INDEX flag_tote_reserved_account ON flag_tote_reservations(account_id)`,
   ] });
 }
 

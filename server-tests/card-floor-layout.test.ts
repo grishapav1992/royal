@@ -15,7 +15,7 @@ import { LobbyState } from '../server/state';
 const retained = [
   ['casinoapipro',240,267],['royal-fruits',500,267],['royal-dice',1200,270],['royal-limbo',1380,270],
   ['royal-mines',1560,270],['royal-plinko',1740,270],['royal-keno',1920,270],['luelon',780,810],
-  ['github-craps',1920,410],['github-tower',1380,550],['github-diamonds',240,600],['github-crash',480,810],
+  ['github-craps',1920,410],['github-diamonds',240,600],['github-crash',480,810],
   ['github-sic-bo',480,1180],['variant-target-plinko',2250,410],['variant-dice-streak',2610,410],
   ['variant-gem-collection',2250,930],['variant-double-mines',2430,930],
   ['studio-cosmic-escape',3000,300],['studio-caramel-carnival',3180,300],['studio-velvet-reign',3360,300],
@@ -55,7 +55,7 @@ test('all 33 card games have separate third-floor tables and every other cabinet
   assert.deepEqual(cabinetsInHall('github').map(c=>c.id).sort(),[...CARD_GAME_IDS].sort());
   assert(CABINETS.every(c=>isCardGame(c.id)===(cabinetHall(c)==='github')));
   for(const [id,x,y] of retained){const c=CABINETS.find(c=>c.id===id)!;assert.deepEqual({x:c.x,y:c.y,hall:cabinetHall(c)},{x,y,hall:'arcade'},id);}
-  assert.equal(retained.length,52);
+  assert.equal(retained.length,51);
   for(const id of ['variant-color','variant-duel','variant-war']){const c=CABINETS.find(c=>c.id===id)!;assert(c.playable && c.wallet);}
 });
 

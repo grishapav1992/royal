@@ -21,6 +21,9 @@ ROOTS = (RELEASES, BACKUPS)
 RETENTION = Path('/opt/royal-dev-app-retention')
 MODULES = Path('/opt/royal-game-modules')
 MODULE_STATE = Path('/opt/royal-game-modules-state')
+IMAGE_LEDGER = Path('/opt/royal-maintenance/known-release-images.json')
+HISTORY_LEDGER = Path('/opt/royal-maintenance/known-release-history.json')
+PRESERVED_COMMITS = Path('/opt/royal-maintenance/preserved-commits.json')
 PERIODIC = {'/royal-nile-account-views-once', '/royal-nile-reconcile-once'}
 
 
@@ -58,6 +61,10 @@ def write(path, value):
 
 
 def docker_object(kind, identity):
+    if kind == 'image':
+        value = native_retention().image_metadata(identity)
+        require(value is not None, 'Exact image is missing: ' + identity)
+        return value
     return json.loads(run(['docker', kind, 'inspect', identity]))[0]
 
 
@@ -65,13 +72,27 @@ def allocated(path):
     return int(run(['du', '-sk', str(path)]).split()[0]) * 1024
 
 
-def tree_identity(path):
+def tree_identity(path, shared_files=None, capture_shared=False, hash_cache=None):
     path = Path(path)
+    shared_files = {} if shared_files is None else shared_files
+    hash_cache = {} if hash_cache is None else hash_cache
     rows = []
     def visit(item):
         s = item.lstat()
-        rows.append([str(item.relative_to(path)), s.st_dev, s.st_ino, s.st_mode,
-                     s.st_size, s.st_mtime_ns, s.st_ctime_ns])
+        name = str(item.relative_to(path))
+        if name in shared_files or capture_shared and stat.S_ISREG(s.st_mode) and s.st_nlink > 1:
+            require(stat.S_ISREG(s.st_mode), 'Shared history file changed type')
+            key = (s.st_dev, s.st_ino, s.st_size, s.st_mtime_ns, s.st_ctime_ns)
+            if key not in hash_cache: hash_cache[key] = sha(item)
+            digest = hash_cache[key]
+            if capture_shared: shared_files[name] = digest
+            # Unlinking a reviewed sibling changes this inode's ctime even when
+            # its bytes are unchanged. Content hashes still detect real edits.
+            change_identity = ['shared-sha256', digest]
+        else:
+            change_identity = s.st_ctime_ns
+        rows.append([name, s.st_dev, s.st_ino, s.st_mode,
+                     s.st_size, s.st_mtime_ns, change_identity])
         if stat.S_ISDIR(s.st_mode):
             require(not os.path.ismount(item), 'Mounted directory in deletion scope: ' + str(item))
             for child in sorted(item.iterdir()):
@@ -80,24 +101,34 @@ def tree_identity(path):
     return hashlib.sha256(json.dumps(rows, separators=(',', ':')).encode()).hexdigest()
 
 
-def deletion_candidates(keep, roots=ROOTS):
+def deletion_candidates(keep, roots=ROOTS, protected=()):
     keep = {Path(path) for path in keep}
+    protected = {Path(path) for path in protected}
     result = []
+    hash_cache = {}
+    def visit(path):
+        if path in keep or path in protected or path.name.endswith('.lock'): return
+        if any(child.is_relative_to(path) for child in protected):
+            require(path.is_dir() and not path.is_symlink(), 'Protected backup parent changed')
+            for child in sorted(path.iterdir()): visit(child)
+            return
+        require(time.time() - path.lstat().st_mtime > 600, 'Recent history entry may be in use: ' + str(path))
+        shared_files = {}
+        identity = tree_identity(path, shared_files, capture_shared=True, hash_cache=hash_cache)
+        result.append({'path': str(path), 'identity': identity, 'sharedFiles': shared_files, 'allocatedBytes': allocated(path)})
     for root in roots:
         require(root.is_dir() and not root.is_symlink(), 'Unsafe history root')
         for path in sorted(root.iterdir()):
-            if path in keep or path.name.endswith('.lock'):
-                continue
             require(path.parent == root, 'Deletion escaped history root')
-            require(time.time() - path.lstat().st_mtime > 600, 'Recent history entry may be in use: ' + str(path))
-            result.append({'path': str(path), 'identity': tree_identity(path), 'allocatedBytes': allocated(path)})
+            visit(path)
     return result
 
 
 def remove_entry(row, keep, roots=ROOTS):
     path = Path(row['path'])
-    require(path.parent in roots and path not in {Path(p) for p in keep}, 'Deletion escaped approved scope')
-    require(tree_identity(path) == row['identity'], 'History entry changed after review: ' + str(path))
+    require(any(path.is_relative_to(root) and path != root for root in roots)
+            and not any(path == Path(p) or path.is_relative_to(p) for p in keep), 'Deletion escaped approved scope')
+    require(tree_identity(path, row.get('sharedFiles')) == row['identity'], 'History entry changed after review: ' + str(path))
     if path.is_symlink() or not path.is_dir():
         path.unlink()
     else:
@@ -108,8 +139,9 @@ def validate_selection(rows, keep, roots=ROOTS):
     require(len({row['path'] for row in rows}) == len(rows), 'Duplicate history entry')
     for row in rows:
         path = Path(row['path'])
-        require(path.parent in roots and path not in {Path(p) for p in keep}, 'Deletion escaped approved scope')
-        require(tree_identity(path) == row['identity'], 'History entry changed since review: ' + str(path))
+        require(any(path.is_relative_to(root) and path != root for root in roots)
+                and not any(path == Path(p) or path.is_relative_to(p) for p in keep), 'Deletion escaped approved scope')
+        require(tree_identity(path, row.get('sharedFiles')) == row['identity'], 'History entry changed since review: ' + str(path))
 
 
 def configuration():
@@ -124,13 +156,13 @@ def modules():
 
 def service_identity(container):
     return {'id': container['Id'], 'image': container['Image'], 'started': container['State']['StartedAt'],
-            'mounts': sorted(container['Mounts'], key=lambda mount: mount['Destination'])}
+            'mounts': sorted(container['Mounts'], key=lambda mount: mount['Destination']),
+            **({'profileSha256': native_retention().runtime_fingerprint(container)} if 'Config' in container else {})}
 
 
 def persistent_services():
-    ids = run(['docker', 'ps', '-q']).split()
-    data = json.loads(run(['docker', 'inspect', *ids]))
-    return {c['Name']: service_identity(c) for c in data if c['Name'] not in PERIODIC
+    data = native_retention().container_inspections()
+    return {c['Name']: service_identity(c) for c in data if c['Name'] not in PERIODIC and c['State']['Status'] == 'running'
             and (c['HostConfig'].get('RestartPolicy', {}).get('Name', 'no') not in ['', 'no']
                  or ((c['Config'].get('Labels') or {}).get('com.docker.compose.project')
                      and (c['Config'].get('Labels') or {}).get('com.docker.compose.oneoff', '').lower() != 'true'))}
@@ -139,6 +171,16 @@ def persistent_services():
 def validate_rollback_identity(current, image, before):
     require(image['Id'] != current['Image'] and image['Id'] == before['preparedImage']
             and before['preparedProgram'] == before['program'], 'Rollback image is missing or ambiguous')
+
+
+def rollback_source_inventory(archive_path, before, changed):
+    with tarfile.open(archive_path) as archive:
+        members = archive.getmembers()
+        require(all(m.isfile() and not Path(m.name).is_absolute() and '..' not in Path(m.name).parts for m in members), 'Unexpected special source archive member')
+        recovered = {m.name: hashlib.sha256(archive.extractfile(m).read()).hexdigest() for m in members}
+    scoped = {name: digest for name, digest in before.items() if name in changed}
+    require(len(recovered) == len(members) and recovered in [before, scoped], 'Rollback archive is incomplete')
+    return recovered
 
 
 def healthy():
@@ -152,10 +194,130 @@ def healthy():
 
 
 def native_retention():
-    spec = importlib.util.spec_from_file_location('royal_retention', RETENTION / 'app-retention.py')
+    spec = importlib.util.spec_from_file_location('royal_retention', Path(__file__).with_name('retention-runtime.py'))
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+def select_current_release(image, source_commit, root=None):
+    matches = []
+    for path in (root or RELEASES).glob('*/install-manifest.json'):
+        try:
+            manifest = read(path); built = read(path.parent/'build-result.json'); published = read(path.parent/'published.json')
+        except (OSError, ValueError): continue
+        if (manifest.get('release') == path.parent.name and manifest.get('sourceCommit') == source_commit
+                and built.get('sourceCommit',manifest['sourceCommit']) == source_commit and built.get('image') == image
+                and published.get('sourceCommit',manifest['sourceCommit']) == source_commit and published.get('published') is True
+                and published.get('runningImage',published.get('image')) == image
+                and isinstance(manifest.get('before',{}).get('source'),dict) and built.get('program')):
+            matches.append(path.parent.name)
+    require(len(matches)==1,'Running image needs one complete host release proof; found '+str(len(matches)))
+    return matches[0]
+
+
+def shared_client_source_proof(name, digest):
+    if name != 'src/ui/slotKit/SlotCascadeBoard.ts': return None
+    for path in RELEASES.glob('*/operator.json'):
+        try:
+            operator=read(path); published=read(path.parent/'published.json'); receipt=read(path.parent/'release-github.json')
+            manifest=read(path.parent/'release-manifest.json'); modules=published.get('modules',[])
+            if not (published.get('published') is True and operator.get('source')=={name:digest}
+                    and operator.get('sourceCommit')==published.get('sourceCommit')==receipt.get('sourceCommit')==manifest.get('sourceCommit')
+                    and re.fullmatch('[a-f0-9]{40}',str(receipt.get('remoteMain','')))
+                    and sha(path.parent/'release-github.json')==operator.get('receiptSha256')
+                    and sha(path.parent/'release-manifest.json')==operator.get('releaseManifestSha256')
+                    and manifest.get('scope')=='modules' and manifest.get('build',{}).get('passed') is True
+                    and manifest.get('moduleProjection',{}).get('inputs',{}).get(name)==digest
+                    and isinstance(modules,list) and modules): continue
+            expected={row['gameId']:row['version'] for row in manifest['packages']}
+            if len(expected)!=len(modules) or set(expected)!=set(operator.get('packages',{})): continue
+            seen=set()
+            for module in modules:
+                game=module['gameId']; require(re.fullmatch('[a-z0-9-]+',game),'Unsafe module identity')
+                if game in seen or module.get('verified') is not True or expected.get(game)!=module.get('version'): break
+                seen.add(game); active=MODULES/game/'active.json'; pointer=read(active); row=operator['packages'][game]
+                prefix='module-dist/'+game+'/versions/'+module['version']+'/'
+                if (sha(active)!=row.get('pointerSha256') or pointer['manifest'].split('/')[4]!=module['version']
+                        or manifest['files'].get('module-dist/'+game+'/active.json')!=sha(active)
+                        or manifest['files'].get(prefix+'manifest.json')!=pointer.get('sha256')): break
+            else:
+                if seen==set(expected): return [path,path.parent/'published.json',path.parent/'release-github.json',path.parent/'release-manifest.json']
+        except (OSError,ValueError,KeyError,IndexError,TypeError): continue
+    return None
+
+
+
+def module_set_source_proof(name, digest):
+    """Bind a scoped multi-package source update to its exact current pointers."""
+    if not (name.startswith('games/') or name.startswith('src/ui/')): return None
+    for path in RELEASES.glob('*/operator.json'):
+        try:
+            operator=read(path); published=read(path.parent/'published.json')
+            receipt=read(path.parent/'release-github.json'); manifest=read(path.parent/'release-manifest.json')
+            modules=published.get('modules',[]); source=operator.get('source',{})
+            if not isinstance(source,dict): continue
+            inputs=manifest.get('moduleProjection',{}).get('inputs',{})
+            if not (published.get('published') is True and isinstance(modules,list) and 1 < len(modules) <= 64
+                    and source.get(name)==digest and 1 <= len(source) <= 64
+                    and all(not Path(n).is_absolute() and '..' not in Path(n).parts and (n.startswith('src/ui/') or n.startswith('games/') and n.split('/')[1] in manifest.get('modules',[]))
+                            and inputs.get(n)==h for n,h in source.items())
+                    and manifest.get('scope')=='modules' and manifest.get('build',{}).get('passed') is True
+                    and operator.get('sourceCommit')==published.get('sourceCommit')==receipt.get('sourceCommit')==manifest.get('sourceCommit')
+                    and re.fullmatch('[a-f0-9]{40}',str(receipt.get('remoteMain','')))
+                    and sha(path.parent/'release-github.json')==operator.get('receiptSha256')
+                    and sha(path.parent/'release-manifest.json')==operator.get('releaseManifestSha256')): continue
+            expected={row['gameId']:row['version'] for row in manifest['packages']}
+            if len(expected)!=len(modules) or set(expected)!=set(operator.get('packages',{})): continue
+            if any(not (LIVE/n).is_file() or (LIVE/n).is_symlink() or sha(LIVE/n)!=h for n,h in source.items()): continue
+            seen=set()
+            for module in modules:
+                game=module['gameId']; require(re.fullmatch('[a-z0-9-]+',game),'Unsafe module identity')
+                if game in seen or module.get('verified') is not True or expected.get(game)!=module.get('version'): break
+                seen.add(game); active=MODULES/game/'active.json'; pointer=read(active); row=operator['packages'][game]
+                prefix='module-dist/'+game+'/versions/'+module['version']+'/'
+                if (sha(active)!=row.get('pointerSha256') or pointer['manifest'].split('/')[4]!=module['version']
+                        or manifest['files'].get('module-dist/'+game+'/active.json')!=sha(active)
+                        or manifest['files'].get(prefix+'manifest.json')!=pointer.get('sha256')
+                        or sha(MODULES/game/'versions'/module['version']/'manifest.json')!=pointer.get('sha256')): break
+            else:
+                if seen!=set(expected): continue
+                backup=published.get('backup',{}); archive=BACKUPS/path.parent.name/'source.tgz'
+                if (not archive.is_file() or any(p.is_symlink() for p in [archive,*archive.parents])
+                        or backup.get('sourceArchive')!=str(archive) or sha(archive)!=backup.get('sha256')): continue
+                proof_path=path.parent/'program-proof.json'; proof=read(proof_path)
+                if (sha(proof_path)!=operator.get('programProofSha256') or proof.get('sourceCommit')!=manifest['sourceCommit']
+                        or set(proof.get('games',{}))!=set(expected)): continue
+                if any(row.get('passed') is not True
+                        or row.get('afterManifest')!=manifest['files']['module-dist/'+game+'/versions/'+expected[game]+'/manifest.json']
+                        or sha(archive.parent/game/'manifest.json')!=row.get('beforeManifest') for game,row in proof['games'].items()): continue
+                return [path,path.parent/'published.json',path.parent/'release-github.json',path.parent/'release-manifest.json',proof_path,
+                        *sorted(p for p in archive.parent.rglob('*') if p.is_file() and not p.is_symlink())]
+        except (OSError,ValueError,KeyError,IndexError,TypeError): continue
+    return None
+
+
+def module_source_proof(name, digest):
+    multiple = module_set_source_proof(name,digest)
+    if multiple: return multiple
+    if name == 'src/ui/slotKit/SlotCascadeBoard.ts': return shared_client_source_proof(name,digest)
+    if not name.startswith('games/'): return None
+    for path in RELEASES.glob('*/operator.json'):
+        try:
+            operator = read(path); published = read(path.parent/'published.json'); module = published.get('module', {})
+            receipt = read(path.parent/'release-github.json')
+            if not (published.get('published') is True and module.get('verified') is True
+                    and operator.get('source', {}).get(name) == digest
+                    and operator.get('sourceCommit') == published.get('sourceCommit') == receipt.get('sourceCommit')
+                    and re.fullmatch('[a-f0-9]{40}', str(receipt.get('remoteMain','')))): continue
+            game = module['gameId']; require(re.fullmatch('[a-z0-9-]+',game), 'Unsafe module identity')
+            active = MODULES/game/'active.json'; pointer = read(active)
+            package = read(LIVE/'games'/name.split('/')[1]/'package.json')
+            if (sha(active) == operator.get('pointerSha256') and pointer['manifest'].split('/')[4] == module['version']
+                    and package.get('gameId') == game):
+                return [path, path.parent/'published.json', path.parent/'release-github.json']
+        except (OSError, ValueError, KeyError, IndexError): continue
+    return None
 
 
 def recovery(release):
@@ -167,45 +329,68 @@ def recovery(release):
     current = healthy()
     require(manifest['release'] == release and published.get('published') is True, 'Release is not published')
     require(current['Image'] == built['image'] == published['runningImage'], 'A different release is running')
-    require(docker_object('image', 'royal-game:latest')['Id'] == current['Image'], 'Prepared image differs')
-    require(docker_object('image', current['Image'])['Config']['Labels']['org.opencontainers.image.revision']
-            == manifest['sourceCommit'], 'Running source revision differs')
+    current_metadata = docker_object('image', current['Image'])
+    require('royal-game:latest' in current_metadata['RepoTags'], 'Prepared image differs')
+    require(current_metadata['Config']['Labels']['org.opencontainers.image.revision'] == manifest['sourceCommit'], 'Running source revision differs')
+    receipt = read(root/'release-github.json')
+    require(receipt.get('sourceCommit') == manifest['sourceCommit'] and re.fullmatch('[a-f0-9]{40}',str(receipt.get('remoteMain',''))), 'GitHub source receipt is missing')
+    if manifest.get('receiptSha256'): require(sha(root/'release-github.json') == manifest['receiptSha256'],'GitHub receipt changed')
     require(sha(root / 'deploy.py') == manifest['helperSha256']
             and sha(root / 'snapshot.py') == manifest['snapshotSha256'], 'Recovery helpers changed')
     require(sha(backup / 'source.tgz') == built['sourceBackupSha256'], 'Rollback source archive checksum differs')
-    with tarfile.open(backup / 'source.tgz') as archive:
-        members = archive.getmembers()
-        require(all(m.isfile() for m in members), 'Unexpected special source archive member')
-        recovered = {m.name: hashlib.sha256(archive.extractfile(m).read()).hexdigest() for m in members}
-        require(len(recovered) == len(members) and recovered == before['source'], 'Rollback archive is incomplete')
+    recovered = rollback_source_inventory(backup / 'source.tgz', before['source'], manifest['changed'])
     require(sha(backup / 'index.html') == before['program']['dist/index.html'], 'Rollback client index differs')
     expected = {**before['source'], **manifest['changed']}
-    require(all((LIVE / name).is_file() and sha(LIVE / name) == digest for name, digest in expected.items()),
-            'Live source differs from the published release')
+    independent = set()
+    for name, digest in expected.items():
+        file = LIVE/name; require(file.is_file() and not file.is_symlink(), 'Live source missing: '+name)
+        actual = sha(file)
+        if actual != digest:
+            proof = module_source_proof(name,actual)
+            require(proof is not None, 'Live source differs without a verified current module publication: '+name)
+            independent.update(proof)
     image = docker_object('image', before['preparedImage'])
     validate_rollback_identity(current, image, before)
     # Validate every rollback program byte in a transient container without network or mounts.
     node = "const f=require('fs'),p=require('path'),c=require('crypto'),o={};function walk(d){if(!f.existsSync(d))return;for(const n of f.readdirSync(d).sort()){const x=p.join(d,n),s=f.lstatSync(x);if(s.isSymbolicLink())throw Error('symlink');if(s.isDirectory())walk(x);else if(s.isFile())o[p.relative('/app',x)]=c.createHash('sha256').update(f.readFileSync(x)).digest('hex');}}walk('/app/dist');walk('/app/dist-server');walk('/app/module-dist');for(const n of ['package.json','package-lock.json'])o[n]=c.createHash('sha256').update(f.readFileSync('/app/'+n)).digest('hex');console.log(JSON.stringify(o))"
-    program = json.loads(run(['docker', 'run', '--rm', '--network=none', '--read-only', '--entrypoint',
-                              'node', image['Id'], '-e', node]))
+    support = {}
+    for field in ['helpers','support']:
+        for name,digest in manifest.get(field,{}).items():
+            require(name not in support or support[name]==digest,'Ambiguous recovery helper')
+            support[name]=digest
+    inventory = root / 'runtime-inventory.cjs'
+    if inventory.exists():
+        require(sha(inventory) == support.get('runtime-inventory.cjs'), 'Runtime inventory helper differs')
+        node = inventory.read_text()
+    program = native_retention().verify_program(image['Id'], node)
     require(program == before['preparedProgram'] == before['program'], 'Rollback program bytes differ')
     current_program = json.loads(run(['docker', 'exec', 'royal-game-1', 'node', '-e', node]))
     require(current_program == built['program'], 'Running program differs from its verified release')
-    proofs = [{'path': str(path), 'sha256': sha(path)} for path in
-              [root / 'install-manifest.json', root / 'build-result.json', root / 'published.json',
-               root / 'deploy.py', root / 'snapshot.py', backup / 'source.tgz', backup / 'index.html']]
+    for name, digest in support.items():
+        require(sha(root / name) == digest, 'Recovery helper changed: ' + name)
+    proof_paths = [root / name for name in ['install-manifest.json', 'build-result.json', 'published.json', 'deploy.py', 'snapshot.py']]
+    proof_paths += [backup / 'source.tgz', backup / 'index.html']
+    proof_paths += list(independent)
+    proof_paths += [p for p in root.rglob('*') if p.is_file() and not p.is_symlink() and p.suffix != '.log' and '__pycache__' not in p.parts]
+    proofs = [{'path': str(path), 'sha256': sha(path)} for path in sorted(set(proof_paths))]
     old_policy = read(RETENTION / 'policy.json')
-    policy = {**old_policy, 'authorization': 'User requested the current working application and one immediate rollback on 2026-10-22.',
+    containers = native_retention().container_rows()
+    periodic = {row['name']: {'image': row['image'], 'runtimeFingerprint': row['runtimeFingerprint']} for row in containers if row['name'] in PERIODIC}
+    policy = {**old_policy, 'environment': 'production', 'schema': 1,
+              'authorization': 'User requested automatic cleanup retaining the current application and one verified rollback on 2026-10-31.',
+              'periodicContainerFingerprints': periodic,
               'adoptedAt': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
               'managedDirectories': [str(root), str(backup)],
               'workingVersions': [
                   {'image': current['Image'], 'release': release, 'protectedDirectories': [str(root), str(backup)], 'requiredFiles': proofs},
                   {'image': image['Id'], 'release': 'rollback-before-' + release,
                    'protectedDirectories': [str(root), str(backup)], 'requiredFiles': proofs}]}
-    native_retention().runtime_guard(policy)
+    # Current periodic jobs may rotate while cleanup runs. Every image deletion
+    # still checks references from all containers immediately before removal.
     return {'release': release, 'sourceCommit': manifest['sourceCommit'], 'currentImage': current['Image'],
             'rollbackImage': image['Id'], 'keep': [str(root), str(backup)], 'proofs': proofs,
             'sourceFiles': len(recovered), 'rollbackProgramFiles': len(program),
+            'independentModuleProofs': sorted(str(p) for p in independent),
             'programHashCommand': node,
             'configuration': configuration(), 'services': persistent_services(), 'modules': modules(),
             'moduleHostContract': sha(MODULE_STATE / 'host.json'), 'oldPolicySha256': sha(RETENTION / 'policy.json'),
@@ -213,11 +398,38 @@ def recovery(release):
 
 
 def image_candidates(protected):
-    ids = set(run(['docker', 'image', 'ls', '--filter', 'reference=royal-game:*', '-aq', '--no-trunc']).split())
+    # Exact IDs from release evidence avoid the slow global image index and never
+    # discover an unrelated image merely because it is old or untagged.
+    ids = set()
+    if IMAGE_LEDGER.exists():
+        ledger = read(IMAGE_LEDGER)
+        require(ledger.get('format') == 1 and isinstance(ledger.get('images'),list)
+                and all(re.fullmatch(r'sha256:[a-f0-9]{64}',str(x)) for x in ledger['images']), 'Invalid image evidence ledger')
+        ids.update(ledger['images'])
+    def collect(value):
+        if isinstance(value, dict):
+            for key, child in value.items():
+                if key in {'image', 'runningImage', 'preparedImage', 'gameImage'} and isinstance(child, str) and re.fullmatch(r'sha256:[a-f0-9]{64}', child): ids.add(child)
+                elif isinstance(child, (dict, list)): collect(child)
+        elif isinstance(value, list):
+            for child in value: collect(child)
+    for path in RELEASES.glob('*/*.json'):
+        if path.name in {'install-manifest.json', 'build-result.json', 'published.json', 'before.json'}:
+            try: collect(read(path))
+            except (OSError, ValueError): continue
+    # Persist evidence before retiring its source directory. A retry must still
+    # find images whose removal failed or that acquired a temporary reference.
+    write(IMAGE_LEDGER, {'format':1,'images':sorted(ids)})
     protected |= referenced_images()
     result = []
     candidates = sorted(ids - protected)
-    rows = json.loads(run(['docker', 'image', 'inspect', *candidates])) if candidates else []
+    rows = []
+    missing = set()
+    for identity in candidates:
+        value = native_retention().image_row(identity)
+        if value is not None: rows.append({'Id': value['id'], 'RepoTags': value['tags'], 'Created': value['created']})
+        else: missing.add(identity)
+    if missing: write(IMAGE_LEDGER, {'format':1,'images':sorted(ids-missing)})
     for row in rows:
         identity = row['Id']
         tags = row.get('RepoTags') or []
@@ -251,7 +463,7 @@ def apply(plan, state):
         require(all(current_images.get(row['id']) == row for row in plan['images']), 'Reviewed image changed since review')
     write(state / 'policy-before.json', read(RETENTION / 'policy.json'))
     # Rebind the existing timer before deleting the stale versions it used to protect.
-    native_retention().runtime_guard(plan['policy'])
+    verify(plan)
     write(RETENTION / 'policy.json', plan['policy'])
     removed = []
     for row in plan['entries']:
@@ -275,7 +487,7 @@ def apply(plan, state):
                 retained_images.append(row['id'])
         write(state / 'image-progress.json', {'removedTags': removed_tags, 'dockerRetainedImages': sorted(set(retained_images))})
     verify(plan)
-    native_retention().runtime_guard(read(RETENTION / 'policy.json'))
+    require(read(RETENTION / 'policy.json') == plan['policy'], 'Adopted policy changed')
     require(all(not Path(row['path']).exists() and not Path(row['path']).is_symlink()
                 for row in plan['entries']), 'Reviewed history entries remain')
     after = shutil.disk_usage(LIVE)
@@ -293,33 +505,138 @@ def apply(plan, state):
     return result
 
 
+def verified_program_archive(path, metadata):
+    """Published source-archive digests attest the installer's complete source check."""
+    if path.name not in {'source.tgz', 'source.tar.gz', 'source.tar', 'source-delta.tgz', 'game-source.tgz', 'game-source.tar.gz'}: return False
+    expected = set()
+    for row in metadata:
+        value = row.get('sourceBackupSha256')
+        if isinstance(value, str): expected.add(value)
+        backup = row.get('backup')
+        if isinstance(backup, dict):
+            for key in ['sha256', 'sourceSha256', 'sourceArchiveSha256']:
+                value = backup.get(key)
+                if isinstance(value,str): expected.add(value)
+    return bool(expected) and sha(path) in expected
+
+
+def active_release_paths():
+    active = set()
+    for path in Path('/proc').glob('[0-9]*/cmdline'):
+        try: command = path.read_bytes().replace(b'\0',b' ').decode(errors='replace')
+        except OSError: continue
+        for match in re.finditer(re.escape(str(RELEASES)) + r'/([a-zA-Z0-9_.-]+)(?:/|\s|$)', command):
+            active.add(str(RELEASES/match.group(1)))
+    return active
+
+
+def pending_is_active(release, metadata, active, references, age):
+    if not (release/'build-result.json').exists() or any((release/n).exists() for n in ['published.json','recovered.json']): return False
+    images = {m.get('image') for m in metadata if isinstance(m.get('image'),str)}
+    return age < 86400 or str(release) in active or bool(images & references)
+
+
+def safe_history_candidates(keep, extra_protected=()):
+    """Preserve financial material, fresh work, and source without GitHub evidence."""
+    allow = PRESERVED_COMMITS
+    commits = set(read(allow)['commits']) if allow.exists() else set()
+    require(not HISTORY_LEDGER.is_symlink(), 'Unsafe history evidence ledger')
+    ledger = read(HISTORY_LEDGER) if HISTORY_LEDGER.exists() else {'format':1,'releases':{}}
+    require(ledger.get('format') == 1 and isinstance(ledger.get('releases'),dict)
+            and all(re.fullmatch('[a-zA-Z0-9_.-]+',name) and isinstance(rows,list)
+                    and all(isinstance(row,dict) for row in rows) for name,rows in ledger['releases'].items()), 'Invalid history evidence ledger')
+    retained, protected = set(keep), {Path(p) for p in extra_protected}
+    reasons = {}
+    active = active_release_paths()
+    references = referenced_images()
+    for root in ROOTS:
+        for path in root.iterdir():
+            if str(path) in retained or path.name.endswith('.lock'): continue
+            release = RELEASES / path.name
+            metadata = []
+            for name in ['install-manifest.json', 'build-result.json', 'published.json', 'operator.json', 'release-github.json']:
+                file = release / name
+                if file.is_file() and not file.is_symlink():
+                    try: metadata.append(read(file))
+                    except (OSError, ValueError): pass
+            metadata += ledger['releases'].get(path.name,[])
+            source = next((m.get('sourceCommit') for m in metadata if m.get('sourceCommit')), None)
+            receipt = next((m for m in metadata if m.get('format') == 1 and m.get('sourceCommit') == source and re.fullmatch('[a-f0-9]{40}', str(m.get('remoteMain', '')))), None)
+            if source and (source in commits or receipt is not None):
+                compact = []
+                for item in metadata:
+                    row = {k:item[k] for k in ['sourceCommit','sourceBackupSha256','image','format','remoteMain'] if k in item}
+                    if isinstance(item.get('backup'),dict):
+                        row['backup'] = {k:v for k,v in item['backup'].items() if k in ['sha256','sourceSha256','sourceArchiveSha256']}
+                    if row and row not in compact: compact.append(row)
+                ledger['releases'][path.name] = compact
+            age = time.time() - path.lstat().st_mtime
+            pending = pending_is_active(release,metadata,active,references,age)
+            if (age < 600 or str(release) in active or pending
+                    or not source or source not in commits and receipt is None):
+                retained.add(str(path)); reasons[str(path)] = 'fresh, pending, or source not verified in GitHub'; continue
+            if path.is_symlink(): continue
+            if not path.is_dir():
+                retained.add(str(path)); reasons[str(path)] = 'unclassified history entry'; continue
+            for item in path.rglob('*'):
+                if item.is_symlink(): continue
+                lower = item.name.lower()
+                sensitive = (lower.endswith(('.dump', '.sql', '.db', '.sqlite', '.sqlite3', '.key', '.pem', '.age'))
+                             or lower.startswith('.env') or any(n in lower for n in ['financial', 'database-backup', 'private-config', 'credential', 'secret']))
+                if sensitive: protected.add(item)
+                elif item.is_file() and lower.endswith(('.tgz', '.tar.gz', '.tar', '.zip')):
+                    if not verified_program_archive(item,metadata): protected.add(item)
+    # Release descriptions may be removed before their backup files. Preserve
+    # compact source evidence so an interrupted run can finish on its next pass.
+    write(HISTORY_LEDGER, ledger)
+    rows = deletion_candidates(retained, protected=protected)
+    return rows, sorted(retained), sorted(str(p) for p in protected), reasons
+
+
+def prepare_plan(release, skip_images=False):
+    value = recovery(release)
+    rows, retained, financial, reasons = safe_history_candidates(value['keep'], value.get('independentModuleProofs',()))
+    value.update({'entries': rows, 'keep': sorted(set(value['keep']) | set(retained) | set(financial)),
+                  'preservedFinancialFiles': [p for p in financial if p not in value.get('independentModuleProofs',())], 'retainedHistoryReasons': reasons,
+                  'images': [] if skip_images else image_candidates({value['currentImage'], value['rollbackImage']}),
+                  'skipImageCleanup': skip_images, 'freeBefore': shutil.disk_usage(LIVE).free})
+    return value
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('operation', choices=['plan', 'apply'])
-    parser.add_argument('--release', required=True)
+    parser.add_argument('--release', default='auto')
     parser.add_argument('--state', required=True)
     parser.add_argument('--plan-sha256')
     parser.add_argument('--skip-image-cleanup', action='store_true')
+    parser.add_argument('--wait-seconds', type=int, default=0)
     args = parser.parse_args()
     require(os.geteuid() == 0, 'Run as the deployment operator')
     require(re.fullmatch('[a-z0-9][a-zA-Z0-9_.-]{0,79}', args.release), 'Invalid release identity')
     state = Path(args.state)
     require(state.parent == Path('/opt/royal-maintenance') and not state.is_symlink(), 'Invalid audit directory')
     state.mkdir(mode=0o700, parents=True, exist_ok=True)
-    locks = []
-    for path in [LIVE / '.client-presentation-deploy.lock', MODULE_STATE / 'module.lock']:
-        require(not path.is_symlink(), 'Deployment lock symlink')
-        lock = path.open('a')
-        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        locks.append(lock)
+    deadline = time.monotonic() + max(0, args.wait_seconds)
+    while True:
+        locks = []
+        try:
+            for path in [RELEASES / 'themed-publish.lock', LIVE / '.client-presentation-deploy.lock', MODULE_STATE / 'module.lock']:
+                require(not path.is_symlink(), 'Deployment lock symlink')
+                lock = path.open('a'); locks.append(lock)
+                fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            break
+        except BlockingIOError:
+            for lock in reversed(locks): lock.close()
+            if time.monotonic() >= deadline: raise
+            time.sleep(min(5, max(0, deadline-time.monotonic())))
     plan_path = state / 'plan.json'
+    if args.release == 'auto':
+        current = healthy()
+        args.release = select_current_release(current['Image'],current['Config'].get('Labels',{}).get('org.opencontainers.image.revision'))
     if args.operation == 'plan':
         require(not plan_path.exists(), 'Review plan already exists')
-        value = recovery(args.release)
-        value.update({'entries': deletion_candidates(value['keep']),
-                      'images': [] if args.skip_image_cleanup else image_candidates({value['currentImage'], value['rollbackImage']}),
-                      'skipImageCleanup': args.skip_image_cleanup,
-                      'freeBefore': shutil.disk_usage(LIVE).free})
+        value = prepare_plan(args.release, args.skip_image_cleanup)
         write(plan_path, value)
         print(json.dumps({'readOnly': True, 'release': args.release, 'keep': value['keep'],
                           'oldHistoryEntries': len(value['entries']), 'oldImages': len(value['images']),

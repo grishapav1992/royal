@@ -1,0 +1,315 @@
+{
+  "feature": "location-rewards-v2",
+  "state": "published-and-verified",
+  "release": "location-rewards-20261031-v2",
+  "featureSourceCommit": "5120fa89698356a3deb9ee5788f45cd570a18154",
+  "productionBaseline": "38ce8d04adbc70cf2a7e80cf017663463dd68b2a",
+  "checks": {
+    "serverAndAtelier": 77,
+    "walletPvpAuthAndAppearanceCompatibility": 23,
+    "browserDevelopment": 4,
+    "browserBuilt": 4,
+    "nativeRestart": 14,
+    "unchangedNativeSources": 128,
+    "unchangedBackendInputs": 228,
+    "installerPython": 19,
+    "preparationProtocolAndPublicVerifier": 22,
+    "postgresFence": 1,
+    "typecheck": true,
+    "rtpProfiles": 25,
+    "legacyUnqualifiedUnchanged": 114,
+    "applicationBuild": true,
+    "public": {
+      "release": "location-rewards-20261031-v2",
+      "sourceCommit": "591461b5350f5c164e69fe14476c5b912b3bd2da",
+      "baseCommit": "38ce8d04adbc70cf2a7e80cf017663463dd68b2a",
+      "manifestSha256": "053d6b289f7db90b31a2a6bc1d759ef1522939de9bb2435c84138d6c7056fdec",
+      "origin": "https://stealth-spark-gokmxooi.expresshost.cloud",
+      "at": "2026-10-31T00:36:10.577Z",
+      "passed": true,
+      "httpFiles": 3,
+      "endpoints": {
+        "GET /healthz": 200,
+        "GET /api/progression": 401,
+        "POST /api/progression/spins": 401,
+        "GET /api/demo-wallet": 401,
+        "GET /api/demo-wallet/expansion": 401,
+        "GET /api/game-wallet": 410,
+        "GET /api/nile-play/wallet": 410,
+        "GET /api/auth/me": 200
+      },
+      "errors": [],
+      "productionAccountsCreated": 0,
+      "productionStakes": 0,
+      "productionMessages": 0,
+      "deniedGuestPosts": 1,
+      "viewports": [
+        {
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "geometry": {
+            "documentWidth": 1440,
+            "viewportWidth": 1440,
+            "appWidth": 1440,
+            "appScrollWidth": 1440
+          },
+          "screenshot": "guest-1440x1000-7748897d-c37e-4130-9ec8-8ef92327aa37.png"
+        },
+        {
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "geometry": {
+            "documentWidth": 390,
+            "viewportWidth": 390,
+            "appWidth": 390,
+            "appScrollWidth": 390
+          },
+          "screenshot": "guest-390x844-5ee0b2e2-e7a2-4bbd-9194-8032b0a6f7ca.png"
+        }
+      ],
+      "browserScope": "Offline guest host only. API writes, WebSockets and external requests blocked. Authenticated levels and recovery are verified locally."
+    },
+    "productionDatabase": {
+      "passed": true,
+      "readOnly": true,
+      "featureTables": 11,
+      "activation": {
+        "scope": "VIRTUAL_USD:south-park",
+        "activated_at": "1793398378580",
+        "earn_enabled": true,
+        "spins_enabled": true,
+        "skins_enabled": true
+      },
+      "policyHashes": {
+        "location-levels-v1": "ba8eb998e66d4d1a77e2663413a1585cf0175102011d63905809338fafca85d2",
+        "location-levels-v2": "2b73bd91f0e9e24cda8ac88203f47bd6c64ebfd6be7982c0109698c9ae271d65"
+      },
+      "counts": {
+        "progression_players": "0",
+        "progression_rounds": "0",
+        "progression_outbox": "0",
+        "progression_rewards": "0",
+        "progression_skin_rewards": "0",
+        "progression_skin_uses": "0"
+      },
+      "invalidXp": "0",
+      "invalidAcknowledgments": "0",
+      "invalidSpinUses": "0",
+      "invalidSkinUses": "0",
+      "invalidSkinBindings": "0",
+      "playerDataIncluded": false
+    },
+    "atelierPublic": {
+      "passed": true,
+      "endpoints": {
+        "GET /api/skin-studio": 401,
+        "POST /api/skin-studio/generations": 401
+      },
+      "productionAccountsCreated": 0,
+      "productionImageRequests": 0
+    }
+  },
+  "testedBuild": {
+    "sourceCommit": "0a924bf4529f5034c3567b9fade5cb8e916f8299",
+    "files": {
+      "dist/assets/index-DSWJtOAy.css": "3aed8b12dfce27f47cd6644ee7191e2dc2b6efefb2fb8456834a9dbe66d78951",
+      "dist/assets/index-qjUnRy22.js": "141333fc50260cdcd9ac29b0b0972cc78440147ed53e1119b9017e50a1136d69",
+      "dist/index.html": "5afe2db5b97fb62a9d2837b23ee80e096b145a0e82301b399f5e0a91220212ed",
+      "dist-server/index.js": "a58fe8666efff1be0819fd3a9407580ec81ea51c7e3c0018700ba830153113ea"
+    },
+    "browserTests": 4,
+    "nativeTests": 14,
+    "passed": true
+  },
+  "mathematics": {
+    "policy": "location-levels-v2",
+    "totalSpins": 260,
+    "totalNominalUnits": "4832500000",
+    "expectedFullRedemptionSpinPayoutUnits": "4671800000",
+    "skinGenerations": 20,
+    "variantsPerGeneration": 2,
+    "maxCumulativeSpinCostBasisPoints": 400,
+    "skinRetailValueUnits": "200000000",
+    "skinProviderCostUnits": null,
+    "profitabilityClaim": false
+  },
+  "compatibility": {
+    "legacyPolicyImmutable": true,
+    "issuedRightsRetained": true,
+    "initialProductionProgressionPlayers": 0,
+    "rolloutRechecksNoLegacyPinnedPlayersUnderFence": true,
+    "legacyRollbackBlockedAfterV2Adoption": true,
+    "rollbackGuardBeforeSourceRestore": true
+  },
+  "nativeReportSha256": "f41046fbd4cc8204072ce6521b8dba55adf78cb286bb2f51efef18af5b0859db",
+  "limitations": [
+    "Authenticated browser checks use a disposable local database and a fixture image provider.",
+    "Physical mobile devices were not tested.",
+    "Existing shared VIRTUAL_USD wallet remains in use."
+  ],
+  "applicationSourceCommit": "591461b5350f5c164e69fe14476c5b912b3bd2da",
+  "publication": {
+    "published": {
+      "published": true,
+      "preparedImage": "sha256:242c1853dd957dee894badcb66ca33be8b3c7e87faa93be43a597b38be7f842e",
+      "runningImage": "sha256:242c1853dd957dee894badcb66ca33be8b3c7e87faa93be43a597b38be7f842e",
+      "containerRestarted": true,
+      "sourceCommit": "591461b5350f5c164e69fe14476c5b912b3bd2da",
+      "changedSources": 11,
+      "clientDeltaFiles": 2,
+      "configurationsAndMountsPreserved": true,
+      "gameDataPreserved": true,
+      "backendDeltaFiles": 1,
+      "otherBackendProgramsAndModulesPreserved": true,
+      "oldAssetsPreserved": true,
+      "otherPersistentServicesPreserved": 13
+    },
+    "sourceFiles": 2477,
+    "runtimeFiles": 8575,
+    "externalModuleFiles": 2593,
+    "services": 14,
+    "health": "healthy",
+    "officialManifestSha256": "053d6b289f7db90b31a2a6bc1d759ef1522939de9bb2435c84138d6c7056fdec",
+    "installManifestSha256": "a25d782f6c9777b95996c891e1ad9b3665b61e256f1addc7bc13016f99e21a28",
+    "backups": {
+      "source.tgz": {
+        "bytes": 30179,
+        "sha256": "d3a6e6d431fcf483ce9db59915bc6518ed91ef20f5785dfaf805411f27b675e2"
+      },
+      "game-wallet.dump": {
+        "bytes": 31915276,
+        "sha256": "4c3e9fa2f05678870cd478a85c9fce926f814ec8b16a32ca32a26152749f791e"
+      },
+      "index.html": {
+        "bytes": 708,
+        "sha256": "fa389ba9f4ea428bba2b1a63d6cbb09aa5bd19a2a702a91d7c2fd29a946f9b4a"
+      }
+    },
+    "databaseBackup": {
+      "schema": "royal_game",
+      "format": "custom",
+      "tocEntries": 300,
+      "bytes": 31915276,
+      "sha256": "4c3e9fa2f05678870cd478a85c9fce926f814ec8b16a32ca32a26152749f791e"
+    },
+    "availableBytes": 5470580736
+  },
+  "artifactBinding": {
+    "sourceCommit": "591461b5350f5c164e69fe14476c5b912b3bd2da",
+    "testedSource": "0a924bf4529f5034c3567b9fade5cb8e916f8299",
+    "files": {
+      "dist/assets/index-DSWJtOAy.css": "3aed8b12dfce27f47cd6644ee7191e2dc2b6efefb2fb8456834a9dbe66d78951",
+      "dist/assets/index-qjUnRy22.js": "141333fc50260cdcd9ac29b0b0972cc78440147ed53e1119b9017e50a1136d69",
+      "dist/index.html": "5afe2db5b97fb62a9d2837b23ee80e096b145a0e82301b399f5e0a91220212ed",
+      "dist-server/index.js": "a58fe8666efff1be0819fd3a9407580ec81ea51c7e3c0018700ba830153113ea"
+    },
+    "browserTests": 4,
+    "nativeTests": 14,
+    "passed": true
+  },
+  "qualificationProjectionBinding": {
+    "sourceCommit": "591461b5350f5c164e69fe14476c5b912b3bd2da",
+    "passed": true,
+    "games": {
+      "royal-coins": {
+        "proof": "docs/game-math/qualifications/royal-coins-rewards-v1.json",
+        "proofSha256": "2801e41a33a0b907f0b2f2a0350e056da1a01200f2d06d7f1f9ac2e0748eeb6f",
+        "runtimeSourceHashes": {
+          "src/shared/gameCore.ts": "aa9520b435a5c969d257290e3b06060051db76de45955f99dd68c48f1b5addab",
+          "src/shared/originalGames.ts": "9743f1465b625e64055c8c6c9f268ce8023d61adc7eed187507be7d4163d40c0",
+          "src/shared/demoWallet.ts": "2f3d21554eaa03930e306f8db103fe8299649387853574dff516cd01cd7e1cef",
+          "src/shared/progression.ts": "db2ef63a028ddad2c6a4f5d8d1285b4cfd5357f4983bf526e2dd06fb1c8b98fc",
+          "server/games/core.ts": "246ebe0febf3ad89a8997b1cdac83c28a0e6f175a14d2318403a39d3a27b1146",
+          "server/games/types.ts": "c866ed8a8a19a66f4210caae41e25becf8c6d169871da1934a7b152d0f2aedc0",
+          "server/games/coins.ts": "727e6a62b098f0591525a4dfd646c78568e3a04ff554364f2c157d41cbbba5da",
+          "server/games/fruits.ts": "3880e46cb2cacd41cf855eb69ef2edda956b39209caf7bb4b73fdca16a8aea05",
+          "server/progression/freeSpins.ts": "cd30bb7634e7d1f1083d9190a7fc42f1a4ea4edc7683a906b6fe0e25386de4fb",
+          "server/progression/store.ts": "3f12caa3e1e54319711ba17a5038c1a581479e8594f2aa6b31a18495f19460a4",
+          "server/progression/sources.ts": "6640ff15833378a077ca7ef19a502414fab6f99bf6ccb63db30f8ceb8cdd9674",
+          "server/accounts.ts": "f621ae52b8055c100f7d219a3030b417603927e0c8a0fb2185e1f2b25bfa8927",
+          "server/progression/handlers.ts": "ff41c0acaa0601c1008d6d38eda6a1309c673dd3d3b0ea4a5066626ce55e13ad",
+          "server/progression/skinGenerations.ts": "ae72341e7ea85c8eb8e787ea7f82799548ee146aac152cd09d8ddd847c280390",
+          "server/skinStudio.ts": "0abc4ee79b714793dc81bb315cf73c16357086330ce7ee60092473b3af15e9ad"
+        }
+      },
+      "royal-fruits": {
+        "proof": "docs/game-math/qualifications/royal-fruits-rewards-v1.json",
+        "proofSha256": "c20bc6ab61b44f7220290b6ae8384fe60f61ac2d5201838c3386685b72b9deb1",
+        "runtimeSourceHashes": {
+          "src/shared/gameCore.ts": "aa9520b435a5c969d257290e3b06060051db76de45955f99dd68c48f1b5addab",
+          "src/shared/originalGames.ts": "9743f1465b625e64055c8c6c9f268ce8023d61adc7eed187507be7d4163d40c0",
+          "src/shared/demoWallet.ts": "2f3d21554eaa03930e306f8db103fe8299649387853574dff516cd01cd7e1cef",
+          "src/shared/progression.ts": "db2ef63a028ddad2c6a4f5d8d1285b4cfd5357f4983bf526e2dd06fb1c8b98fc",
+          "server/games/core.ts": "246ebe0febf3ad89a8997b1cdac83c28a0e6f175a14d2318403a39d3a27b1146",
+          "server/games/types.ts": "c866ed8a8a19a66f4210caae41e25becf8c6d169871da1934a7b152d0f2aedc0",
+          "server/games/coins.ts": "727e6a62b098f0591525a4dfd646c78568e3a04ff554364f2c157d41cbbba5da",
+          "server/games/fruits.ts": "3880e46cb2cacd41cf855eb69ef2edda956b39209caf7bb4b73fdca16a8aea05",
+          "server/progression/freeSpins.ts": "cd30bb7634e7d1f1083d9190a7fc42f1a4ea4edc7683a906b6fe0e25386de4fb",
+          "server/progression/store.ts": "3f12caa3e1e54319711ba17a5038c1a581479e8594f2aa6b31a18495f19460a4",
+          "server/progression/sources.ts": "6640ff15833378a077ca7ef19a502414fab6f99bf6ccb63db30f8ceb8cdd9674",
+          "server/accounts.ts": "f621ae52b8055c100f7d219a3030b417603927e0c8a0fb2185e1f2b25bfa8927",
+          "server/progression/handlers.ts": "ff41c0acaa0601c1008d6d38eda6a1309c673dd3d3b0ea4a5066626ce55e13ad",
+          "server/progression/skinGenerations.ts": "ae72341e7ea85c8eb8e787ea7f82799548ee146aac152cd09d8ddd847c280390",
+          "server/skinStudio.ts": "0abc4ee79b714793dc81bb315cf73c16357086330ce7ee60092473b3af15e9ad"
+        }
+      }
+    }
+  },
+  "cleanup": {
+    "server": {
+      "removed": [
+        {
+          "path": "/opt/royal-releases/location-rewards-20261031-v2/runtime-context",
+          "logicalBytes": 5014620,
+          "payloadHardLinksRetained": true
+        },
+        {
+          "path": "/opt/royal-releases/location-rewards-20261031-v2/__pycache__",
+          "logicalBytes": 28349,
+          "payloadHardLinksRetained": false
+        }
+      ],
+      "freeBefore": 5403643904,
+      "freeAfter": 5403701248,
+      "backupsRetained": "/opt/royal-backups/location-rewards-20261031-v2",
+      "currentPayloadAndImagesRetained": true,
+      "noOtherTaskArtifactsRemoved": true,
+      "physicalSpaceAttribution": "Hard-linked payload files remain; concurrent activity may affect measured free-space changes."
+    },
+    "completedLocalTooling": {
+      "removed": [
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/location-rewards-v2/tooling",
+          "logicalBytes": 240004670
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/location-rewards-v2/go-cache",
+          "logicalBytes": 71544563
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/location-rewards-v2/go1.27.3.darwin-arm64.tar.gz",
+          "logicalBytes": 68196737
+        }
+      ],
+      "freeBefore": 59278929920,
+      "freeAfter": 59592482816,
+      "preservedSourceCommit": "591461b5350f5c164e69fe14476c5b912b3bd2da",
+      "reason": "Native restart verification and the final application build both completed successfully. Built fixture card binaries remain until final task cleanup.",
+      "physicalSpaceAttribution": "Logical bytes and measured free-space differences are reported separately; concurrent activity can affect free space."
+    },
+    "isolatedCheckoutRemovalCondition": "After the deployment record is pushed and its remote main commit is verified, remove the isolated checkout and task-owned outputs. Retain only OWNER.md and the compact completion.json.",
+    "physicalSpaceAttribution": "Logical sizes and measured free-space changes are recorded separately; concurrent activity and hardlinks can affect attribution."
+  },
+  "buildObservation": {
+    "sshExitCode": 255,
+    "originalRemoteProcess": 2086713,
+    "sameProcessCompleted": true,
+    "buildRetried": false,
+    "publishProcess": 2117565,
+    "publishedOnce": true
+  }
+}

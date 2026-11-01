@@ -1,0 +1,163 @@
+{
+  "release": "remove-reward-games-catalog-20261031-v1",
+  "state": "published-and-verified-maintenance-pending",
+  "sourceCommit": "fb599494fbee9accff92c8a30126a071ebcceb5c",
+  "productionBase": "4028e369c4fb7d0588f6ddd3c155306505fdbfd9",
+  "image": "sha256:06da11bea5d5b8c1c167339ff12a32952c67dcad85eb1293f56aa4b939e47bb8",
+  "userRequest": "Remove only Royal Coins and Royal Fruits from the production catalogue; leave all other games untouched.",
+  "catalogue": {
+    "passed": true,
+    "ids": [
+      "studio-cosmic-escape",
+      "studio-caramel-carnival",
+      "studio-velvet-reign",
+      "studio-last-convoy",
+      "studio-nitro-run",
+      "studio-afterglow",
+      "studio-meme-overload",
+      "studio-dracona",
+      "studio-neopolis",
+      "studio-forest-heart",
+      "github-crash",
+      "royal-plinko",
+      "original-cr-vs-leo",
+      "original-jackie-chan",
+      "studio-caribbean-treasures",
+      "studio-flooded-temple",
+      "royal-roulette",
+      "flag-battle"
+    ],
+    "desktop": true,
+    "mobile": true,
+    "connectedChat": true,
+    "rouletteOpenedAndReturned": true,
+    "pageErrors": []
+  },
+  "public": {
+    "passed": true,
+    "sourceCommit": "fb599494fbee9accff92c8a30126a071ebcceb5c",
+    "files": {
+      "assets/index-Cv7PZyZF.js": "51df4f5bbfac5e89ea3cd6c89401cbd7080d0204e2dbef522882dcdf579565b9",
+      "index.html": "ff66276ca00afd734517dc934d6e972bb895c477d459a45934dab44c5f10e970"
+    },
+    "health": {
+      "ok": true,
+      "service": "royal-arcade"
+    },
+    "observations": [
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "pageErrors": [],
+        "guestLoginVisible": true
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "pageErrors": [],
+        "guestLoginVisible": true
+      }
+    ],
+    "productionAccountsCreated": false,
+    "productionRoundsCreated": false
+  },
+  "inventory": {
+    "sourceFiles": 2485,
+    "sourceChanged": [
+      "src/shared/arcadeCatalog.ts"
+    ],
+    "runtimeFiles": 8577,
+    "runtimeChanged": [
+      "dist/assets/index-Cv7PZyZF.js",
+      "dist/index.html"
+    ],
+    "externalModuleFilesPreserved": 2604,
+    "serviceProfilesPreserved": 14,
+    "otherServicesPreserved": 13,
+    "rouletteVersionPreserved": "1.5.0-7a8c04b40048",
+    "backendBytesUnchanged": true,
+    "configurationAndMountsPreserved": true
+  },
+  "checks": {
+    "catalogueScope": true,
+    "scopedInstallerTests": 4,
+    "baseInstallerTests": 28,
+    "typecheck": true,
+    "rtpQualified": 26,
+    "legacyFrozen": 114,
+    "qualificationRegeneratedWithoutRuleChanges": {
+      "game": "studio-wild-nudge",
+      "serverReplayChecks": 3072,
+      "walletCases": 12
+    },
+    "officialReleaseVerifiedInGitHub": true,
+    "hostInputs": 230,
+    "retainedHostInputs": 229
+  },
+  "releaseManifestSha256": "0fd6985354cd499ed4a2472aa3bf0342d37f5e6a89a39532a22f8a9152d7a200",
+  "receiptSha256": "82d14a0a67ce6d6e5e3e8741f0689ec1d05e68cd9de87bacae7202abe4c06a26",
+  "published": {
+    "published": true,
+    "preparedImage": "sha256:06da11bea5d5b8c1c167339ff12a32952c67dcad85eb1293f56aa4b939e47bb8",
+    "runningImage": "sha256:06da11bea5d5b8c1c167339ff12a32952c67dcad85eb1293f56aa4b939e47bb8",
+    "containerRestarted": true,
+    "sourceCommit": "fb599494fbee9accff92c8a30126a071ebcceb5c",
+    "changedSources": 1,
+    "clientDeltaFiles": 2,
+    "configurationsAndMountsPreserved": true,
+    "gameDataPreserved": true,
+    "backendDeltaFiles": 0,
+    "otherBackendProgramsAndModulesPreserved": true,
+    "oldAssetsPreserved": true,
+    "otherPersistentServicesPreserved": 13
+  },
+  "backup": {
+    "/opt/royal-backups/remove-reward-games-catalog-20261031-v1/source.tgz": {
+      "bytes": 1604,
+      "sha256": "8041f7329b7c9446d4a4f58450b1430282ff68dabaa95c9da86bdc5fc194c414"
+    },
+    "/opt/royal-backups/remove-reward-games-catalog-20261031-v1/index.html": {
+      "bytes": 708,
+      "sha256": "53a5c27ca8af6fef47bbfec28a3fc130e93ac2f0a19ab1a8e06d572c4d1b08af"
+    }
+  },
+  "cleanup": {
+    "removed": [
+      {
+        "path": "/opt/royal-releases/remove-reward-games-catalog-20261031-v1/runtime-context",
+        "logicalBytes": 2721392
+      }
+    ],
+    "freeBefore": 5381124096,
+    "freeAfter": 5381148672,
+    "retainedPackage": "/opt/royal-releases/remove-reward-games-catalog-20261031-v1",
+    "cleanupCondition": "Retain compact active package and source/index backups for guarded rollback until a later verified compatible host release"
+  },
+  "limitations": [
+    "Authenticated catalogue and connected chat were checked locally on the exact published client bytes; public browser checks used guest mode.",
+    "No physical phone was used. Production accounts, rounds and messages were not created."
+  ],
+  "initialAttempts": {
+    "macOsMetadataRemovedBeforeMutation": true,
+    "sharedLockWaitedWithoutInterruptingOtherTasks": true,
+    "roulettePublicationReconciledBeforeInstall": true
+  },
+  "releaseMaintenance": {
+    "status": "unresolved-external-setup",
+    "checkedAt": "2026-10-31T19:00:45.258Z",
+    "serviceStartedAfterPublication": true,
+    "timerEnabled": true,
+    "currentHandler": "/opt/royal-dev-app-retention/app-retention.py",
+    "expectedHandler": "/opt/royal-maintenance/bin/automatic-retention.py",
+    "completedResultPresent": false,
+    "observedResult": "Legacy service skipped because the shared deployment lock was busy",
+    "ownerThread": "01a192ec-0c7f-7160-a4dc-97eab40aebbc",
+    "ownerThreadTitle": "Разобраться с разрешениями в игре",
+    "catalogueChangePublishedAndVerified": true,
+    "successfulMaintenanceNotClaimed": true
+  }
+}

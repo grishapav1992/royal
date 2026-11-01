@@ -11,3 +11,5 @@ export const mount: GameModuleV1['mount'] = host => {
  readGameHost();
  return new LuelonGameRouter(host, gameId, body => new CascadeSlotUI(body, gameId), body => new CaramelCarnivalUI(body));
 };
+
+import '../../src/ui/active-game-viewport.css';

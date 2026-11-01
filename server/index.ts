@@ -1,3 +1,4 @@
+import { installFlagToteRoutes } from './flagToteRoutes';
 import { installDemoWallet } from './demoWalletRoutes';
 import { installProgression } from './progressionRoutes';
 import {installCaribbeanCrew} from './caribbeanCrewRoutes';
@@ -19,6 +20,7 @@ import { accounts } from './accounts';
 import { installFinanceAdmin } from './admin/routes';
 
 const port = Number(process.env.PORT || 2567);
+let stopTote: (() => void) | undefined;
 let stopCrypto: (() => void) | undefined;
 let stopSandbox: (() => void) | undefined;
 let stopSkinStudio: (() => Promise<void>) | undefined;
@@ -40,6 +42,7 @@ const server = defineServer({
     installCaribbeanCrew(app);
     installFinanceAdmin(app);
     installDemoWallet(app);
+    stopTote = installFlagToteRoutes(app, accounts.wallet.tote);
     installProgression(app);
     stopSandbox = installSandboxPayments(app);
     installCasinoApiPro(app);
@@ -57,6 +60,6 @@ const server = defineServer({
   },
 });
 server.onBeforeShutdown(async () => { await stopSkinStudio?.(); });
-server.onShutdown(async () => { stopCrypto?.(); stopSandbox?.(); await accounts.close(); });
+server.onShutdown(async () => { stopTote?.(); stopCrypto?.(); stopSandbox?.(); await accounts.close(); });
 await server.listen(port, '0.0.0.0');
 console.log(`Royal server listening on port ${port}`);

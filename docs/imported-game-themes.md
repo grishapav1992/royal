@@ -1,6 +1,6 @@
 # First-floor GitHub game worlds
 
-The redesign is restricted to `ARCADE_GITHUB_GAMES`, the nine imported games currently displayed on the first floor. Copied Luelon/Studio games, provider screens, LAST EXIT, retired definitions, custom variants and card-floor games keep their existing presentation. The earlier broader decorative registration was removed.
+The artwork registry retains eight imported game worlds. Decoration is restricted to identities in `ARCHIVED_GITHUB_GAMES`. Copied Luelon/Studio games, provider screens, LAST EXIT, retired definitions, custom variants and card-floor games keep their existing presentation. The earlier broader decorative registration was removed.
 
 | Game | Dedicated world | Game surface |
 | --- | --- | --- |
@@ -10,7 +10,6 @@ The redesign is restricted to `ARCADE_GITHUB_GAMES`, the nine imported games cur
 | Royal Mines | Expedition to El Dorado | Mossy stone cells and a carved temple frame |
 | Royal Keno | The Constellation Atlas | An astronomical plate with round number markers |
 | Craps | Midnight Jazz | Brass dice and an oval velvet lounge table |
-| Dragon Tower | Dragon Citadel | Stone masonry and arched doors for the nine levels |
 | Diamonds | The Aurora Vault | Faceted gems in a polar crystal cavern |
 | Sic Bo | Tomb of the Scarab | Sandstone dice trays, lapis panels and a scarab seal |
 
@@ -18,7 +17,7 @@ Every world has its own original SVG scene and emblem, palette, title and captio
 
 ## Presentation boundaries
 
-`src/ui/FirstFloorGameArt.ts` owns the artwork registry; the decorator intersects it with the current first-floor GitHub catalogue. `src/ui/ImportedGameThemes.ts` decorates only registered identities. `src/ui/imported-game-themes.css` supplies the shared control foundation; `src/ui/first-floor-game-worlds.css` supplies individual surfaces and details. Styles are scoped to decorated roots. Shared renderers return without decoration for games outside the registry.
+`src/ui/FirstFloorGameArt.ts` owns the artwork registry; the decorator intersects it with the archived GitHub registry. `src/ui/ImportedGameThemes.ts` decorates only registered identities. `src/ui/imported-game-themes.css` supplies the shared control foundation; `src/ui/first-floor-game-worlds.css` supplies individual surfaces and details. Styles are scoped to decorated roots. Shared renderers return without decoration for games outside the registry.
 
 The decorator changes presentation attributes, headers and styles. It does not read wallet or round state, send operations or choose outcomes. Diamonds' faceted shapes derive only from the original symbols already rendered on screen; unknown gems stay unknown. Rank, payout, result, motion and recovery data remain owned by existing game views and server rules. No module identity or compatibility contract changes.
 

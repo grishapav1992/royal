@@ -26,6 +26,7 @@ import { FinanceAdminStore } from './admin/store';
 import { ProgressionStore } from './progression/store';
 import { instrumentProgressionWallet, instrumentProgressionPvpLedger } from './progression/sources';
 import { LiveFreeSpinService } from './progression/freeSpins';
+import { FreeSkinGenerations } from './progression/skinGenerations';
 
 export type Account = { id: string; email: string; name: string; skin: number | null; appearance?: CharacterAppearance | null };
 type StoredAccount = Account & { password: string };
@@ -58,6 +59,7 @@ export class AccountStore {
   readonly drinking: IntoxicationStore;
   readonly cryptoWallet: PaymentClient;
   readonly skinStudio: SkinStudioStore;
+  readonly skinRewards: FreeSkinGenerations;
   readonly paymentCredits: PaymentCredits;
   readonly sandboxPayments: SandboxPaymentStore;
   readonly financeAdmin: FinanceAdminStore;
@@ -93,11 +95,12 @@ export class AccountStore {
     this.cryptoWallet = new PaymentClient(payments, this.paymentCredits);
     this.financeAdmin = new FinanceAdminStore(this.db,schemaReady);
     const commonSkins=new CommonSkinPayments(this.db,this.wallet.ready),legacySkins=new NileSkinPayments();
+    this.skinRewards=new FreeSkinGenerations(this.db,this.progression.ready);
     this.skinStudio = new SkinStudioStore(this.db, {skinPurchase:async(account,id,action)=>{
-      const job=await this.db.prepare('SELECT payment_source FROM skin_jobs WHERE id=?').get(id);
-      return (job?.payment_source==='nile'?legacySkins:commonSkins).skinPurchase(account,id,action);
+      const job=await this.db.prepare('SELECT payment_source,reward_grant_id FROM skin_jobs WHERE id=?').get(id);
+      return (job?.reward_grant_id?this.skinRewards:job?.payment_source==='nile'?legacySkins:commonSkins).skinPurchase(account,id,action);
     }}, new CodexSkinImages(), () => true,
-      (id, appearance) => this.events.emit('appearance', id, appearance), this.wallet.ready, Date.now, new CodexSkinDescriptions());
+      (id, appearance) => this.events.emit('appearance', id, appearance), Promise.all([this.wallet.ready,this.skinRewards.ready]).then(()=>{}), Date.now, new CodexSkinDescriptions(),this.skinRewards);
     this.ready = Promise.all([schemaReady, this.wallet.ready, this.progression.ready, this.rewardSpins.ready, this.caribbeanCrew.ready, this.sandboxPayments.ready, this.pvp.ready, this.combat.ready, this.casinoApiProWallet.ready, this.moderation.ready, this.drinking.ready, this.paymentCredits.ready, this.skinStudio.ready, this.financeAdmin.ready]).then(() => {
       this.wagerSweep=setInterval(()=>{if(!this.sweeping)this.sweeping=Promise.allSettled([this.pvp.sweep(),this.combat.recoverExpired(),this.progression.processPending()]).finally(()=>{this.sweeping=undefined;});},1000);
       this.wagerSweep.unref();

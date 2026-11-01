@@ -1,6 +1,6 @@
 # GitHub game presentation
 
-Scope: the nine current first-floor GitHub games, verified against `ARCADE_GITHUB_GAMES`. RoyalGames and the provider catalogue do not use this layer. Existing gameplay, outcomes, balances, recovery and host API 1 are unchanged.
+Scope: the eight retained imported game worlds, registered in `IMPORTED_MOTION_GAMES` and restricted by the archived GitHub catalogue. RoyalGames and the provider catalogue do not use this layer. Existing gameplay, outcomes, balances, recovery and host API 1 are unchanged.
 
 Every selected package mounts its existing view through `mountImportedMotion`. The wrapper owns a shared sequence: button response, movement, confirmed landing, final result and a short celebration. A result hook runs beside each view's existing confirmed reaction. Saved results, refreshes and retries never manufacture another celebration. The wrapper contains no wallet, random outcome, transport or server rule. Host programs and all other game packages can remain byte-identical during independent publication.
 
@@ -12,7 +12,7 @@ Compare complete round return against the full round stake using integer units. 
 
 ## Theme variations
 
-Cherry Express uses warm flower sparks; Alchemist uses soft green chimes; Andromeda uses violet stars; Eldorado uses golden fragments; Star Atlas uses blue constellations; Midnight Jazz uses musical notes; Dragon Citadel uses amber embers; Aurora Vault uses crystal chimes; Scarab Tomb uses gold and turquoise accents. The timing, accounting and lifecycle are common. Color, particle shape and musical scale live in `Profiles.ts`.
+Cherry Express uses warm flower sparks; Alchemist uses soft green chimes; Andromeda uses violet stars; Eldorado uses golden fragments; Star Atlas uses blue constellations; Midnight Jazz uses musical notes; Aurora Vault uses crystal chimes; Scarab Tomb uses gold and turquoise accents. The timing, accounting and lifecycle are common. Color, particle shape and musical scale live in `Profiles.ts`.
 
 Procedural voices connect to the host's existing audio context, master volume and limiter. They stop on mute, volume zero, hidden tabs, account changes, close and disposal. Games that already have native spin audio keep it; the shared layer adds a short final accent after the native presentation. No additional music or audio network downloads are needed.
 

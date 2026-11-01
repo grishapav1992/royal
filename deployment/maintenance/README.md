@@ -1,5 +1,50 @@
 # Release history cleanup
 
+`automatic-retention.py` is the production entry point. The hourly systemd timer
+discovers the healthy running image and its exact committed host release evidence
+on every run. It supports complete and scoped source archives and the release's
+verified full runtime inventory, instead of adopting a stale historical format.
+The current host image and its complete immediate rollback bundle are retained.
+Rollback still uses the original installer and its current-data compatibility
+guards; cleanup never restores a database or downgrades a reward policy.
+
+All three publication locks are held during verification and cleanup. A busy lock
+exits 75 and retries after five minutes. Missing proofs, failed guards, and low
+free space exit nonzero and persist the reason in
+`/opt/royal-maintenance/last-result.json`; they cannot become successful skips.
+Full audit plans are limited to two runs, with 24 compact older summaries.
+
+Database dumps, financial recovery material, private settings, fresh or unfinished
+work, unclassified directories and sources without GitHub preservation evidence
+are retained. Program history is selected only from the two managed history roots.
+Image candidates come from exact IDs recorded in release evidence, and every tag
+is rechecked against all container references before removal. The slow global image
+index is not required. No image is forced and no data volume is deleted.
+
+Compact source evidence and exact image IDs survive partial cleanup in separate
+ledgers. Historical source archive hashes can be reconciled from committed public
+verification records. Shared source files are checked by content, so removing one
+hardlink cannot invalidate its unchanged siblings. A ten-minute staging grace,
+all publication locks, active-process detection and a 24-hour pending-build grace
+protect ongoing work. Financial backups retain their own policy.
+
+OCI manifests and configuration blobs are read with digest verification. Quiet
+containerd reference queries avoid size traversal, as implemented in its
+[image listing](https://github.com/containerd/containerd/blob/main/cmd/ctr/commands/images/images.go).
+The read-only rollback hash process is created through the
+[Docker Engine API](https://docs.docker.com/reference/api/engine/version/v1.52/),
+with explicit ownership and cleanup, rather than the CLI's image-inspect preflight.
+Independent game source updates require their committed publication receipt and
+the exact current active pointer. Their compact proofs survive history cleanup.
+
+After every publication, once its locks are released, start
+`royal-dev-app-retention.service` and verify that the last result is `completed`,
+the timer is enabled, the host remains healthy, and at least five GiB is free.
+Failure is unfinished release maintenance and must be resolved, rather than
+recorded as a successful cleanup. Persistent business data and financial-backup
+retention need their own policy; this program does not promise bounded total
+usage for those stores.
+
 `cleanup-release-history.py` keeps the currently healthy application and the complete immediate rollback bundle in the current release directory and its matching source backup. It verifies the rollback source archive and every rollback program byte before planning deletion. Existing application retention is rebound to these two images.
 
 Run `plan --release <current-release> --state /opt/royal-maintenance/<operation>` first. Review its retained paths, deletion inventory and SHA-256, then run `apply` with the same arguments and `--plan-sha256 <reviewed-sha>`. Both operations hold the application and module deployment locks.

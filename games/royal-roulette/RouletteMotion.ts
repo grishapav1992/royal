@@ -75,8 +75,9 @@ export class RouletteMotion {
     this.spindle.style.transform=`rotate(${p.wheel}deg)`;
     this.orbit.style.transform=`rotate(${p.ball}deg)`;
     this.carrier.style.transform=`translateY(${148-p.radius}px)`;
-    this.ball.style.transform=`scale(${1+.14*p.hop})`;
-    this.shadow.style.opacity=String(.46-.16*p.hop);
+    this.ball.style.transform=`translateY(${-3.2*p.hop}px) scale(${1+.06*p.hop})`;
+    this.shadow.style.opacity=String(.46-.23*p.hop);
+    this.shadow.style.transform=`translateY(${1.8*p.hop}px) scale(${1+.28*p.hop})`;
     const strength=this.active&&p.phase!=='pocket'?Math.min(1,Math.abs(p.ballVelocity)/1000):0;
     this.trails.forEach((circle,i)=>{
       const angle=(p.ball+(p.ballVelocity<0?1:-1)*(5+i*6)*strength)*Math.PI/180;

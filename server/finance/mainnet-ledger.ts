@@ -9,7 +9,8 @@ import { USDT_SCOPE, USDT_BETS, validUsdtRequest, type UsdtWallet, type UsdtRoun
 import { gameAccountId } from '../../src/shared/nileWallet';
 import { casinoActionKey, validCasinoAction, type CasinoAction } from '../../src/shared/casinoSessions';
 import { publicSession, sessionReservation, type SessionState } from '../games/casinoSessions';
-import { casinoStates, casinoReserved, makeCasinoEvent, verifyCasinoEvent, publicCasinoStates, type CasinoEvent } from './mainnet-casino';
+import { casinoStates, casinoReserved, makeCasinoEvent, makeCasinoRetirement, verifyCasinoEvent, publicCasinoStates, type CasinoEvent } from './mainnet-casino';
+import { isLegacyTowerState, legacyCasinoReservation, type LegacyCasinoState } from '../games/legacyCasinoSessions';
 import { adjustmentRequest, requireFinanceAdmin, sameAdjustment } from '../admin/validation';
 import { queryFinanceReport, mainnetReportSql } from '../admin/report';
 import type { FinanceAdjustment } from '../../src/shared/financeAdmin';
@@ -159,6 +160,7 @@ export class MainnetLedger {
     async isReady(now = Date.now()) { await this.ready; const state = await this.state(); return !state.halted && !state.error && Number(state.reconciled_at) > 0 && Number(state.reconciled_at) <= now && now - Number(state.reconciled_at) < 60000; }
     async wallet(accountId: string, now = Date.now()): Promise<UsdtWallet> {
         await this.ready;
+        await this.settleRemovedCasino(accountId,now);
         return this.db.transaction(async () => {
         if (!gameAccountId(accountId))
             usdtFail('invalid_usdt_account', 400);
@@ -173,8 +175,8 @@ export class MainnetLedger {
             const { accountId: _id, ...round } = JSON.parse(String(event.payload));
             rounds.push(round);
         }
-        const casino=await casinoStates(this.db,accountId),reserved=casino.reduce((n,s)=>n+sessionReservation(s),0n);
-        const casinoRounds=casino.filter(s=>s.state!=='active').slice(0,50).map(publicSession);
+        const casino=await casinoStates(this.db,accountId),reserved=casino.reduce((n,s)=>n+legacyCasinoReservation(s),0n);
+        const casinoRounds=casino.filter((s):s is SessionState=>s.gameId==='github-hilo'&&s.state!=='active').slice(0,50).map(publicSession);
         const max = (multiplier: bigint) => [...USDT_BETS].reverse().find(bet => balances.house-reserved >= BigInt(bet) * (multiplier - 1n)) ?? '0';
         return { ...USDT_SCOPE, state: 'assigned', address: this.config.serviceAddress, senderAddress: this.config.playerAddress,
             balanceUnits: balances.player.toString(), updatedAt: Number((await this.state()).reconciled_at), ready: await this.isReady(now),
@@ -215,6 +217,7 @@ export class MainnetLedger {
     }
     async casinoWallet(accountId:string,now=Date.now()) {
         await this.ready;
+        await this.settleRemovedCasino(accountId,now);
         return this.db.transaction(async()=>({wallet:await this.wallet(accountId,now),sessions:accountId===this.config.accountId?publicCasinoStates(await casinoStates(this.db,accountId)):[]}),{readOnly:true});
     }
     async casinoPlay(accountId:string,value:unknown,now=Date.now()) {
@@ -225,13 +228,13 @@ export class MainnetLedger {
         return this.transaction(async()=>{
             const key='casino:'+accountId+':'+op.id,previous=await this.db.prepare('SELECT payload FROM events WHERE id=?').get(key);
             const states=await casinoStates(this.db,accountId);
-            if(previous){const saved=JSON.parse(previous.payload) as CasinoEvent;if(casinoActionKey(saved.request)!==casinoActionKey(op))usdtFail('usdt_idempotency_conflict',409);
+            if(previous){const saved=JSON.parse(previous.payload) as CasinoEvent;if(!validCasinoAction(saved.request)||casinoActionKey(saved.request)!==casinoActionKey(op))usdtFail('usdt_idempotency_conflict',409);
                 const state=states.find(s=>s.id===saved.session.id)!;
-                return {...await this.casinoWallet(accountId,now),session:publicSession(state),replayed:true};}
+                return {...await this.casinoWallet(accountId,now),session:publicSession(state as SessionState),replayed:true};}
             if(await this.db.prepare('SELECT 1 FROM events WHERE id=?').get('round:'+accountId+':'+op.id))usdtFail('usdt_idempotency_conflict',409);
             if(!await this.isReady(now))usdtFail('usdt_not_ready',503);
             if(Number((await this.db.prepare("SELECT count(*) AS n FROM events WHERE kind IN ('casino','round') AND ((payload::jsonb->>'createdAt')::bigint)>?").get(now-60000))!.n)>=120)usdtFail('usdt_rate_limit',429);
-            const balances=await this.balances(),before=op.action==='start'?undefined:states.find(s=>s.id===op.sessionId&&s.gameId===op.gameId);
+            const balances=await this.balances(),before=op.action==='start'?undefined:states.find((s):s is SessionState=>s.id===op.sessionId&&s.gameId===op.gameId);
             if(op.action==='start'){
                 if(states.some(s=>s.gameId===op.gameId&&s.state==='active'))usdtFail('usdt_session_active',409);
                 const stake=BigInt(op.stakeUnits),probe={gameId:op.gameId,settings:op.settings,state:'active',stakeUnits:op.stakeUnits} as SessionState;
@@ -241,7 +244,19 @@ export class MainnetLedger {
             let event:CasinoEvent;try{event=makeCasinoEvent(accountId,op,before,now,this.draw);}catch{usdtFail('invalid_usdt_action',409);}
             const delta=BigInt(event!.deltaUnits);
             await this.append(key,'casino',event!,[{account:'player',units:delta.toString()},{account:'house',units:(-delta).toString()}]);
-            return {...await this.casinoWallet(accountId,now),session:publicSession(event!.session),replayed:false};
+            return {...await this.casinoWallet(accountId,now),session:publicSession(event!.session as SessionState),replayed:false};
+        });
+    }
+    private async settleRemovedCasino(accountId:string,now:number) {
+        if(accountId!==this.config.accountId)return;
+        await this.transaction(async()=>{
+            for(const state of await casinoStates(this.db,accountId)){
+                if(!isLegacyTowerState(state)||state.state!=='active')continue;
+                const event=makeCasinoRetirement(accountId,state,now),delta=BigInt(event.deltaUnits);
+                const balances=await this.balances();
+                if(balances.house<delta)usdtFail('usdt_reserve_insufficient',409);
+                await this.append('casino:'+accountId+':'+event.id,'casino',event,[{account:'player',units:delta.toString()},{account:'house',units:(-delta).toString()}]);
+            }
         });
     }
     async audit() {
@@ -308,7 +323,7 @@ export class MainnetLedger {
         }
         const balances = { player: 0n, house: BigInt(this.config.openingReserveUnits), unallocated: 0n, external: -BigInt(this.config.openingReserveUnits) };
         let previous = digest(JSON.stringify(this.config)), seq = 0, lines = 0, savedTransfers = 0;
-        const sessions=new Map<string,SessionState>();
+        const sessions=new Map<string,LegacyCasinoState>();
         while (true) {
             const page = seq === 0 ? await this.db.prepare('SELECT * FROM events ORDER BY seq LIMIT 128').all()
                 : await this.db.prepare('SELECT * FROM events WHERE seq>? ORDER BY seq LIMIT 128').all(seq);
@@ -340,14 +355,14 @@ export class MainnetLedger {
                     if(id!=='casino:'+this.config.accountId+':'+row.id||!verifyCasinoEvent(row,this.config.accountId,sessions))usdtFail('mainnet_ledger_corrupted',503);
                     const delta=BigInt(row.deltaUnits);
                     if(row.request.action==='start'&&(balances.player<BigInt(row.session.stakeUnits)
-                      ||balances.house+BigInt(row.session.stakeUnits)-[...sessions.values()].reduce((n,s)=>n+sessionReservation(s),0n)<BigInt(row.reserveUnits)))usdtFail('mainnet_ledger_corrupted',503);
+                      ||balances.house+BigInt(row.session.stakeUnits)-[...sessions.values()].reduce((n,s)=>n+legacyCasinoReservation(s),0n)<BigInt(row.reserveUnits)))usdtFail('mainnet_ledger_corrupted',503);
                     sessions.set(row.session.id,row.session);
                     entries=[{account:'player',units:delta.toString()},{account:'house',units:(-delta).toString()}];
                 }else {
                     const { id: roundId, createdAt, accountId, ...round } = row;
                     if (kind !== 'round' || accountId !== this.config.accountId || !validUsdtRequest({ id: roundId, gameId: round.gameId, input: round.input, stakeUnits: round.stakeUnits })
                         || !Number.isSafeInteger(createdAt) || createdAt < 1 || id !== 'round:' + accountId + ':' + roundId || !verifyGameRound(round)
-                        || balances.player < BigInt(row.stakeUnits) || balances.house-[...sessions.values()].reduce((n,s)=>n+sessionReservation(s),0n) < BigInt(row.stakeUnits) * BigInt(prepareGame(round.gameId, 1, round.input).maxMultiplier - 1))
+                        || balances.player < BigInt(row.stakeUnits) || balances.house-[...sessions.values()].reduce((n,s)=>n+legacyCasinoReservation(s),0n) < BigInt(row.stakeUnits) * BigInt(prepareGame(round.gameId, 1, round.input).maxMultiplier - 1))
                         usdtFail('mainnet_ledger_corrupted', 503);
                     entries = roundEntries(row);
                 }
@@ -356,7 +371,7 @@ export class MainnetLedger {
                     usdtFail('mainnet_ledger_corrupted', 503);
                 for (const entry of entries)
                     balances[entry.account] += BigInt(entry.units);
-                if (balances.player < 0n || balances.unallocated < 0n || (balances.house < [...sessions.values()].reduce((n,s)=>n+sessionReservation(s),0n) && !state.halted))
+                if (balances.player < 0n || balances.unallocated < 0n || (balances.house < [...sessions.values()].reduce((n,s)=>n+legacyCasinoReservation(s),0n) && !state.halted))
                     usdtFail('mainnet_ledger_corrupted', 503);
                 lines += entries.length;
             }

@@ -1,3 +1,5 @@
+import {precisionBaseSession} from '../shared/roundPrecision';
+import {usesGameStakes} from '../shared/gameStakes';
 import {WILD_NUDGE_GAME,WILD_NUDGE_CLIENT_HEADER,validWildNudgeSession,validWildNudgeReply} from '../shared/wildNudge';
 import { JACKIE_GAME, JACKIE_HEADER, validJackieSession, validJackieReply } from '../shared/jackieChan';
 import { FLAG_GAME, FLAG_HEADER, flagViewMode, validFlagSettings, validFlagSession } from '../shared/flagBattle';
@@ -28,7 +30,7 @@ import type { DemoWallet } from '../shared/demoWallet';
 import { demoWallet } from './WalletClient';
 export type NewExpansionAction = ExpansionAction extends infer T ? T extends ExpansionAction ? Omit<T,'id'> : never : never;
 type Reply={wallet:DemoWallet;sessions:ExpansionSession[];session?:ExpansionSession;replayed?:boolean};
-function validTempleEnvelope(s:ExpansionSession){
+function validTempleEnvelope(s:ExpansionSession){s=precisionBaseSession(s)!;if(!s)return false;
   if(s.rulesVersion===2){
     if(!validCascadeSession(s)||Object.keys(s).sort().join(',')!=='gameId,id,returnedUnits,rulesVersion,spentUnits,stakeUnits,state,view'||!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(s.id))return false;
     const result=cascadeResult(s.view.templeCascade!);
@@ -47,7 +49,7 @@ function validTempleReply(s:ExpansionSession,op:ExpansionAction,replayed:boolean
   const expected=op.move==='temple-finish'?{kind:'finish'}:{kind:op.move==='temple-rope'?'rope':'step',to:op.picks?.[0]};
   return studioSamePayload(view.history[op.revision-1],expected);
 }
-function validSession(s:ExpansionSession){if(s?.gameId===WILD_NUDGE_GAME)return validWildNudgeSession(s);if(s?.gameId===JACKIE_GAME)return validJackieSession(s);if(s?.gameId===FLAG_GAME)return validFlagSession(s);if(s?.gameId===CARIBBEAN_GAME)return validCaribbeanSession(s);if(s?.gameId===TEMPLE_GAME)return validTempleEnvelope(s);if(s?.gameId===FOREST_HEART_GAME)return validForestHeartSession(s)&&typeof s.id==='string'&&/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(s.id)&&Object.keys(s).sort().join(',')==='gameId,id,returnedUnits,rulesVersion,spentUnits,stakeUnits,state,view'&&Object.keys(s.view).sort().join(',')==='actions,community,dealer,ended,forestHeart,message,phase,player'&&[s.view.player,s.view.dealer,s.view.community].every(a=>Array.isArray(a)&&a.length===0)&&typeof s.view.message==='string';if(s?.gameId===NEOPOLIS_GAME)return validNeopolisSession(s);if(s?.gameId===DRACONA_GAME)return validDraconaSession(s);if(s?.gameId===PENALTY_GAME)return validPenaltySession(s);if(s?.gameId===AFTER_GAME)return validAfterSession(s);if(s?.gameId===MEME_GAME)return validMemeSession(s);if(s?.gameId===NITRO_GAME)return validNitroSession(s);return !!s&&isExpansionGame(s.gameId)&&validExpansionRulesVersion(s.gameId,s.rulesVersion)&&['active','settled'].includes(s.state)
+function validSession(s:ExpansionSession){s=precisionBaseSession(s)!;if(!s)return false;if(s?.gameId===WILD_NUDGE_GAME)return validWildNudgeSession(s);if(s?.gameId===JACKIE_GAME)return validJackieSession(s);if(s?.gameId===FLAG_GAME)return validFlagSession(s);if(s?.gameId===CARIBBEAN_GAME)return validCaribbeanSession(s);if(s?.gameId===TEMPLE_GAME)return validTempleEnvelope(s);if(s?.gameId===FOREST_HEART_GAME)return validForestHeartSession(s)&&typeof s.id==='string'&&/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(s.id)&&Object.keys(s).sort().join(',')==='gameId,id,returnedUnits,rulesVersion,spentUnits,stakeUnits,state,view'&&Object.keys(s.view).sort().join(',')==='actions,community,dealer,ended,forestHeart,message,phase,player'&&[s.view.player,s.view.dealer,s.view.community].every(a=>Array.isArray(a)&&a.length===0)&&typeof s.view.message==='string';if(s?.gameId===NEOPOLIS_GAME)return validNeopolisSession(s);if(s?.gameId===DRACONA_GAME)return validDraconaSession(s);if(s?.gameId===PENALTY_GAME)return validPenaltySession(s);if(s?.gameId===AFTER_GAME)return validAfterSession(s);if(s?.gameId===MEME_GAME)return validMemeSession(s);if(s?.gameId===NITRO_GAME)return validNitroSession(s);return !!s&&isExpansionGame(s.gameId)&&validExpansionRulesVersion(s.gameId,s.rulesVersion)&&['active','settled'].includes(s.state)
   &&typeof s.id==='string'&&/^[a-f0-9-]{36}$/i.test(s.id)&&[s.stakeUnits,s.spentUnits,s.returnedUnits].every(n=>typeof n==='string'&&/^[0-9]{1,15}$/.test(n))
   &&!!s.view&&[s.view.player,s.view.dealer,s.view.community].every(a=>Array.isArray(a)&&a.every(c=>typeof c==='string'))
   &&Array.isArray(s.view.actions)&&s.view.actions.every(a=>typeof a.move==='string'&&typeof a.label==='string'&&Number.isSafeInteger(a.cost)&&a.cost>=0&&[a.perPick,a.minPicks,a.maxPicks].every(n=>n===undefined||Number.isSafeInteger(n)&&n>=0))
@@ -174,7 +176,7 @@ export class ExpansionClient extends EventTarget {
     }catch(e){if(epoch===this.epoch&&version===this.version)this.error=this.message(e);}
     finally{if(epoch===this.epoch&&version===this.version){this.loading=false;this.notify();}}
   }
-  async act(action:NewExpansionAction){if(this.pending)throw Error(translateText('Сначала проверь предыдущий ход.'));return this.send({...action,id:crypto.randomUUID()} as ExpansionAction);}
+  async act(action:NewExpansionAction){if(this.pending)throw Error(translateText('Сначала проверь предыдущий ход.'));return this.send({...action,...(action.action==='start'&&usesGameStakes(action.gameId)?{stakePolicyVersion:1}:{}),id:crypto.randomUUID()} as ExpansionAction);}
   async retry(){if(this.pending)return this.send(this.pending);}
   private async send(op:ExpansionAction){
     if(!this.accountId||this.busy)throw Error(translateText('Войди в аккаунт и дождись завершения хода.'));

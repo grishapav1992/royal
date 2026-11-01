@@ -159,12 +159,13 @@ export function playCaribbeanFrame(mode: CaribbeanMode, lines: CaribbeanLineCoun
     factorSum: wins.reduce((total, win) => total + win.factor, 0),
   };
 }
-export function settleCaribbeanFrame(grid: readonly number[], lines: CaribbeanLineCount, lineStakeUnits: string): CaribbeanSettlement {
+export function settleCaribbeanFrame(grid: readonly number[], lines: CaribbeanLineCount, lineStakeUnits: string, stakeDivisor = 1): CaribbeanSettlement {
   if (!/^[1-9][0-9]{0,14}$/.test(lineStakeUnits)) throw new Error('Invalid Caribbean line stake');
-  const stake = BigInt(lineStakeUnits);
+  if (stakeDivisor !== 1 && stakeDivisor !== lines) throw new Error('Invalid Caribbean stake divisor');
+  const stake = BigInt(lineStakeUnits), divisor = BigInt(stakeDivisor);
   const wins = scoreCaribbeanLines(grid, lines);
-  const awards = wins.map(win => stake * BigInt(win.factor));
-  const payout = awards.reduce((total, award) => total + award, 0n), cost = stake * BigInt(lines);
+  const awards = wins.map(win => stake * BigInt(win.factor) / divisor);
+  const payout = awards.reduce((total, award) => total + award, 0n), cost = stake * BigInt(lines) / divisor;
   return {
     costUnits: String(cost), payoutUnits: String(payout), netUnits: String(payout - cost),
     linePayoutUnits: awards.map(String),

@@ -1,5 +1,7 @@
 # Location levels MVP
 
+The active reward policy is documented in [Level rewards v2](location-rewards-v2.md): increased spin denominations and one free two-candidate atelier generation at every fifth level. The v1 description below records the immutable original policy and its accepted rights. Publication status is recorded in deployment/SERVER.md.
+
 Implementation source: feature/location-levels-mvp. The live Royal host uses its existing shared virtual USD wallet and VirtualPvpLedger. This feature does not change the currency, enable real-money withdrawals, convert old demo money, or replace the production wallet. Nile reward funding is an isolated adapter with an explicit store, not a second player balance.
 
 ## Product policy v1
@@ -49,5 +51,5 @@ The independent v1 promotion reference also checks all 100 thresholds, both sour
 - [x] Shared-wallet gift funding and recovery.
 - [x] HTTP/client/real-host verification, including the projected built client and backend.
 - [x] Final mathematical qualification, economics report and complete build.
-- [ ] Independent review, GitHub synchronization and release preparation.
-- [ ] Production baseline reconciliation and post-publication verification if published.
+- [x] Independent review, GitHub synchronization and release preparation.
+- [x] Production baseline reconciliation and post-publication verification.

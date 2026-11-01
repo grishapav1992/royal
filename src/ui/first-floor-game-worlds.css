@@ -114,17 +114,6 @@
 [data-visual-theme="midnight-jazz"] .github-dice > span { background: linear-gradient(145deg, #ffe8bd, #d7ac78); color: #553347; border: 2px solid #f8deb4; box-shadow: 0 7px #a06c50, 0 14px 25px #0005; border-radius: 15px; }
 [data-visual-theme="midnight-jazz"] .github-controls { border-radius: 30px; border: 1px solid #d8b17a30; }
 
-/* Closed tower cells become doors in a masonry facade. */
-.imported-game[data-visual-theme="dragon-citadel"] { border-radius: 9px; border: 3px double #b8886b79; }
-[data-visual-theme="dragon-citadel"] .imported-intro { border-radius: 5px 5px 0 0; }
-[data-visual-theme="dragon-citadel"] .casino-board { border: 6px double #be927876; border-radius: 44px 44px 5px 5px; background: repeating-linear-gradient(0deg, transparent 0 45px, #0002 45px 47px), repeating-linear-gradient(90deg, #a5766505 0 63px, #0001 63px 65px), #332a33; }
-[data-visual-theme="dragon-citadel"] .casino-tower { max-width: 390px; gap: 6px; }
-[data-visual-theme="dragon-citadel"] .casino-row > button { position: relative; min-height: 44px; border: 2px solid #9c716b60; border-radius: 14px 14px 3px 3px; background: linear-gradient(90deg, #2b202b, #49333a, #2b202b); box-shadow: inset 0 0 0 3px #211b25, 0 2px #140f19; }
-[data-visual-theme="dragon-citadel"] .casino-row > button:not(.chosen):not(.dragon) { color: transparent; }
-[data-visual-theme="dragon-citadel"] .casino-row > button:not(.chosen):not(.dragon)::before { content: ""; position: absolute; width: 5px; height: 10px; top: 15px; left: calc(50% - 2px); border: 1px solid #d0a486; border-radius: 5px 5px 1px 1px; box-shadow: 0 0 5px #e9b48520; pointer-events: none; }
-[data-visual-theme="dragon-citadel"] .casino-row > button.chosen { background: #d8b277; color: #352631; border-color: #edd8a2; }
-[data-visual-theme="dragon-citadel"] .casino-row > button.dragon { background: #783a50; color: #ffcfcc; border-color: #ce8791; }
-
 /* Distinct, readable gem colours remain tied to the original symbols. */
 .imported-game[data-visual-theme="aurora-vault"] { border-radius: 18px 4px 18px 4px; border: 1px solid #b6ddec6b; background: linear-gradient(125deg, #abdff30b, transparent 30%), #182737; }
 [data-visual-theme="aurora-vault"] .imported-intro { border-radius: 17px 3px 0 0; }
@@ -162,7 +151,6 @@
   [data-visual-theme="pearl-reef"] .plinko-frame { border-width: 3px; }
   [data-visual-theme="star-atlas"] .original-keno-grid button { font-size: 15px; }
   [data-visual-theme="midnight-jazz"] .github-table { border-radius: 48px; min-height: 210px; }
-  [data-visual-theme="dragon-citadel"] .casino-board { border-width: 4px; padding-inline: 9px; }
   [data-visual-theme="aurora-vault"] .expansion-gems { gap: 5px; padding-block: 25px; }
   [data-visual-theme="aurora-vault"] .expansion-gems > span { width: 48px; height: 79px; border-radius: 12px 3px; }
   [data-visual-theme="aurora-vault"] .expansion-gems > span::before { width: 31px; height: 44px; top: 17px; left: calc(50% - 15px); }

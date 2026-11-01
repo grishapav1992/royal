@@ -1,4 +1,5 @@
 import { normalizeAppearance, type Appearance } from './appearance';
+import type { SkinGenerationGrant } from './progression';
 
 export const SKIN_PRICE_UNITS = '10000000';
 export const SKIN_VARIANTS = 2;
@@ -19,7 +20,7 @@ export const normalizeCharacterAppearance = (value: unknown): CharacterAppearanc
 export { skinAssetUrl } from './skinAssetUrl';
 export type SkinJobState = 'reserving' | 'generating' | 'capturing' | 'ready' | 'selected' | 'refunding' | 'failed';
 export type SkinCard = { id: string; jobId: string; prompt: string; createdAt: number };
-export type SkinJob = { id: string; prompt: string; state: SkinJobState; error: string; selectedId: string | null; createdAt: number; variantCount: number; variants: SkinCard[] };
-export type SkinStudioSnapshot = { theme: typeof SKIN_THEME; priceUnits: string; variantCount: number; enabled: boolean; job: SkinJob | null; wardrobe: SkinCard[]; equippedId: string | null;
+export type SkinJob = { id: string; prompt: string; state: SkinJobState; error: string; selectedId: string | null; createdAt: number; variantCount: number; variants: SkinCard[]; funding?: 'paid' | 'reward' };
+export type SkinStudioSnapshot = { theme: typeof SKIN_THEME; priceUnits: string; variantCount: number; enabled: boolean; job: SkinJob | null; wardrobe: SkinCard[]; equippedId: string | null; freeGenerations?: SkinGenerationGrant[];
   character: { skin: number; appearance: CharacterAppearance | null } };
 export type SkinPurchase = { id: string; state: 'reserved' | 'captured' | 'refunded'; amountUnits: string };

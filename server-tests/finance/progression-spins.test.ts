@@ -114,9 +114,9 @@ test('grant ownership, immutable request binding, currency and frozen nominal re
   try {
     const grantId = await grant(f.db, f.account);
     await assert.rejects(f.service.spin(f.other, { id: randomUUID(), grantId }), /reward_unavailable/);
-    for (const options of [{ currency: 'USDT_NILE_TEST' }, { nominal: '100001' }, { nominal: '10000' }, { nominal: '3000000' }, { game: 'royal-roulette' }]) {
+    for (const options of [{ currency: 'USDT_NILE_TEST' }, { nominal: '100001' }, { nominal: '10000' }, { nominal: '2500000' }, { nominal:'50010000' }, { game: 'royal-roulette' }]) {
       const bad = await grant(f.db, f.account, options);
-      await assert.rejects(f.service.spin(f.account, { id: randomUUID(), grantId: bad }), /reward_rules_unavailable/);
+      await assert.rejects(f.service.spin(f.account, { id: randomUUID(), grantId: bad }), /reward_rules_unavailable|reward_game_unavailable/);
       assert.equal(await remaining(f.db, bad), 1);
     }
     await assert.rejects(f.service.spin(f.account, { id: randomUUID(), grantId, nominalUnits: '2000000' }), /invalid_reward_spin_request/);

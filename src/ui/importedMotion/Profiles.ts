@@ -8,7 +8,6 @@ export const MOTION_PROFILES: Record<ImportedMotionGame, MotionProfile> = {
   'royal-mines': { color: '#f1c569', secondary: '#77c99e', glyph: '◆', notes: [261.63, 329.63, 392, 523.25], wave: 'triangle' },
   'royal-keno': { color: '#94b9f3', secondary: '#f0d698', glyph: '✦', notes: [349.23, 440, 523.25, 698.46], wave: 'sine' },
   'github-craps': { color: '#dfb16d', secondary: '#c6a4e9', glyph: '♪', notes: [233.08, 293.66, 349.23, 440], wave: 'triangle' },
-  'github-tower': { color: '#f0bd74', secondary: '#e28c72', glyph: '✧', notes: [196, 246.94, 293.66, 392], wave: 'triangle' },
   'github-diamonds': { color: '#91e5df', secondary: '#c3a8f4', glyph: '◆', notes: [523.25, 659.25, 783.99, 1046.5], wave: 'sine' },
   'github-sic-bo': { color: '#e7c36e', secondary: '#6ec7bf', glyph: '✧', notes: [220, 277.18, 329.63, 440], wave: 'triangle' },
 };

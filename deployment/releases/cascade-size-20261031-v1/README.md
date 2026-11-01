@@ -1,0 +1,5 @@
+# Cascade symbol size correction
+
+Publish only Nitro RUN, MEME OVERLOAD, Caramel Carnival, Last Convoy and GIRLHUB. The only production source replacement is `src/ui/slotKit/SlotCascadeBoard.ts`. All runtime module inputs and media are pinned to the verified production inventory and reachable Git origins. GIRLHUB retains progress contract 3; main's unpublished progress contract 4 is excluded.
+
+Run `release:plan`, then `release:prepare --base fb599494fbee9accff92c8a30126a071ebcceb5c --modules nitro-run,meme-overload,caramel-carnival,last-convoy,girlhub --module-projection deployment/releases/cascade-size-20261031-v1/module-projection.json` and `release:verify --github`. Transfer those exact bytes to the guarded `publish.py`, which preflights all five packages before replacing the source or any pointer. Preserve the host, accepted rounds, other packages and persistent data. Verify the complete before/after inventories and public resources, run mandatory retention, and push the deployment record.

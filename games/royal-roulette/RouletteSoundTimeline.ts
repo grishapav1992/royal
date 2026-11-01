@@ -1,9 +1,10 @@
-import {landingPose,SPIN_TIMING,type LandingPlan} from './SpinTimeline';
+import {landingPose,SPIN_CONTACTS,SPIN_TIMING,type LandingPlan} from './SpinTimeline';
 /** Contacts use the same zero-hop positions as the visual trajectory. */
 export function rouletteContacts(plan:LandingPlan){
-  const drop=.52*SPIN_TIMING.landing,join=SPIN_TIMING.join*SPIN_TIMING.landing,duration=SPIN_TIMING.landing;
-  const times=[...Array.from({length:6},(_,i)=>drop+(join-drop)*i/6),join,join+(duration-join)/3,join+2*(duration-join)/3,duration];
-  return times.map((ms,i)=>{const p=landingPose(plan,ms);return {ms,cue:i===times.length-1?'landing' as const:'tap' as const,gain:i===times.length-1?.43:.32*(1-i/(times.length+2)),pan:.28*Math.sin(p.ball*Math.PI/180)};});
+  return SPIN_CONTACTS.map((fraction,i)=>{
+    const ms=fraction*SPIN_TIMING.landing,p=landingPose(plan,ms),last=i===SPIN_CONTACTS.length-1;
+    return {ms,cue:last?'landing' as const:'tap' as const,gain:last?.055:.30*.68**i,pan:.28*Math.sin(p.ball*Math.PI/180)};
+  });
 }
 export type AudioClock={currentTime:number;outputLatency?:number;baseLatency?:number;getOutputTimestamp?:()=>{contextTime?:number;performanceTime?:number}};
 export function rouletteClock(clock:AudioClock,now:number){

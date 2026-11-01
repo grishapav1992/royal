@@ -25,7 +25,7 @@ test('real common-wallet HTTP binds the account, negotiates rules and restores a
     const other=await accounts.login('forest-other-'+randomUUID()+'@example.test','Forest-http-test-42!');
     await accounts.wallet.operate(login.account.id,{id:randomUUID(),kind:'deposit',amount:10000});
     const headers={'Cookie':'royal_session='+login.token,'X-Royal-Account-Id':login.account.id,'Content-Type':'application/json',[FOREST_HEART_CLIENT_HEADER]:'1'};
-    const action={id:randomUUID(),action:'start',gameId:FOREST_HEART_GAME,stakeUnits:'1000',settings:{forestHeart:{mode:'normal'}}};
+    const action={id:randomUUID(),action:'start',stakePolicyVersion:1,gameId:FOREST_HEART_GAME,stakeUnits:'1000',settings:{forestHeart:{mode:'normal'}}};
     const post=(body:unknown,extra:Record<string,string>={})=>fetch(url,{method:'POST',headers:{...headers,...extra},body:JSON.stringify(body)});
     let count=0;const values=[0,0,0,0,...Array.from({length:4},()=>[132,0]).flat()];
     Reflect.set(accounts.wallet.expansion,'draw',(max:number)=>{count++;const value=values.shift();assert(value!==undefined&&value>=0&&value<max);return value;});
@@ -72,7 +72,7 @@ test('financial-socket HTTP preserves old command compatibility and exact common
   const headers={'Cookie':'royal_session='+login.token,'X-Royal-Account-Id':login.account.id,'Content-Type':'application/json',[FOREST_HEART_CLIENT_HEADER]:'1'};
   const post=(body:unknown,version='1')=>fetch(url,{method:'POST',headers:{...headers,[FOREST_HEART_CLIENT_HEADER]:version},body:JSON.stringify(body)});
   try{
-    const action={id:randomUUID(),action:'start',gameId:FOREST_HEART_GAME,stakeUnits:'1000',settings:{forestHeart:{mode:'normal'}}};
+    const action={id:randomUUID(),action:'start',stakePolicyVersion:1,gameId:FOREST_HEART_GAME,stakeUnits:'1000',settings:{forestHeart:{mode:'normal'}}};
     assert.equal((await post(action,'0')).status,409);
     const response=await post(action);assert.equal(response.status,200);let reply=await response.json(),last:any=action;
     assert(validForestHeartSession(reply.session));assert.equal(reply.wallet.asset,'USDT_NILE_TEST');

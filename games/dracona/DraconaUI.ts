@@ -1,3 +1,5 @@
+import {stakeRulesHtml} from '../../src/ui/stakeRules';
+import {GAME_BETS as DRACONA_BETS} from '../../src/shared/gameStakes';
 import { COLS, CREST, PORTAL, SIZE, SYMBOLS, DRACONA_MATH, type Grid, type Movement, type Step } from '../../src/shared/draconaMath';
 import { CharacterDirector } from './character';
 import { MagicEffects } from './effects';
@@ -5,7 +7,7 @@ import { Autoplay } from './autoplay';
 import { DraconaAudio } from './audio';
 import { readGameHost } from '../../src/modules/GameHostContract';
 import { locale } from '../../src/i18n/index';
-import { DRACONA_GAME, DRACONA_BETS, DRACONA_RULES, type DraconaView } from '../../src/shared/dracona';
+import { DRACONA_GAME, DRACONA_RULES, type DraconaView } from '../../src/shared/dracona';
 
 const pause = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms));
 const amount = (value: number) => value.toLocaleString(locale);
@@ -52,7 +54,7 @@ export class Dracona {
   private grid = [...initial];
   private runes = Array(SIZE).fill(1) as number[];
   private reserveGrid: Grid = [0, 1, 2, 3];
-  private bet = 100;
+  private bet = 0.1;
   private busy = false;
   private bonusRemaining = 0;
   private bonusIssued = 0;
@@ -219,7 +221,7 @@ export class Dracona {
   private applyView(view: DraconaView) {
     this.bonusRemaining = view.remaining;
     this.bonusIssued = view.bonusAwarded;
-    this.bonusTotal = Number(view.totalPayoutUnits) / 100;
+    this.bonusTotal = Number(this.session?.state==='settled'?this.session.returnedUnits:view.totalPayoutUnits) / 100;
     this.lockedBet = Number(this.session!.stakeUnits) / 100;
     this.presented = this.session!.id + ':' + view.revision;
   }
@@ -388,7 +390,7 @@ export class Dracona {
     const legacy = this.session?.view.dracona?.version === 1;
     const prices = [2.5,5.5,12,30,80].map(value => (value * (legacy ? 1 : DRACONA_MATH.payNumerator / DRACONA_MATH.payDenominator)).toLocaleString(locale,{maximumFractionDigits:6}));
     const rounding = this.currency === 'USDT' ? (legacy ? 'целого USDT' : '0,01 USDT вниз для каждой группы') : legacy ? 'целой тестовой монеты' : '0,01 тестовой монеты вниз для каждой группы';
-    this.showDialog('Тайны шкафа', `<div class="rules-copy"><p><b>Автовращения.</b> Выбери серию из 10, 25 или 50 вращений и нажми «Старт». Скорость настраивается отдельно: обычная, быстрая или турбо. Изменение скорости применяется со следующего спина. «Стоп» завершает текущий спин и отменяет оставшиеся. При открытии бонуса, правил, нехватке монет или ошибке серия останавливается.</p><p><b>Каскады.</b> Пять одинаковых символов, соединенных по горизонтали или вертикали, дают выигрыш. Они исчезают, остальные падают, сверху приходят новые. До 8 каскадов за вращение.</p><p><b>Переносы.</b> Символ шкафа дает обмен участка 2 × 2 с четырьмя символами по ту сторону. После обмена поле снова проверяется. До 3 переносов за вращение.</p><p><b>Память поместья.</b> Три герба на одном показе поля открывают 8 бесплатных вращений. Во время бонуса три герба добавляют еще 2, максимум 20 за серию. Ставка фиксируется при входе в бонус. В 45% бонусных вращений резерв зачарован: все четыре его символа одинаковые.</p><p><b>Серебряные руны.</b> В бонусе каждый перенос повышает руны своих клеток на один, от ×2 до ×5. Для группы берется наибольшая руна, множители не перемножаются. После бонуса руны сбрасываются.</p><p><b>Выплаты за группу.</b> 5–6 символов: ${prices[0]} ставки; 7–8: ${prices[1]}; 9–11: ${prices[2]}; 12–15: ${prices[3]}; 16–20: ${prices[4]}. Затем применяется ценность символа: зелье ×1,3, кольцо ×1,2, книга ×1,1, ключ ×1, изумруд ×0,9, перо ×0,8, и руна. Итог округляется до ${rounding}.</p><p>${DRACONA_RULES}</p></div>`);
+    this.showDialog('Тайны шкафа', `<div class="rules-copy"><p><b>Автовращения.</b> Выбери серию из 10, 25 или 50 вращений и нажми «Старт». Скорость настраивается отдельно: обычная, быстрая или турбо. Изменение скорости применяется со следующего спина. «Стоп» завершает текущий спин и отменяет оставшиеся. При открытии бонуса, правил, нехватке монет или ошибке серия останавливается.</p><p><b>Каскады.</b> Пять одинаковых символов, соединенных по горизонтали или вертикали, дают выигрыш. Они исчезают, остальные падают, сверху приходят новые. До 8 каскадов за вращение.</p><p><b>Переносы.</b> Символ шкафа дает обмен участка 2 × 2 с четырьмя символами по ту сторону. После обмена поле снова проверяется. До 3 переносов за вращение.</p><p><b>Память поместья.</b> Три герба на одном показе поля открывают 8 бесплатных вращений. Во время бонуса три герба добавляют еще 2, максимум 20 за серию. Ставка фиксируется при входе в бонус. В 45% бонусных вращений резерв зачарован: все четыре его символа одинаковые.</p><p><b>Серебряные руны.</b> В бонусе каждый перенос повышает руны своих клеток на один, от ×2 до ×5. Для группы берется наибольшая руна, множители не перемножаются. После бонуса руны сбрасываются.</p><p><b>Выплаты за группу.</b> 5–6 символов: ${prices[0]} ставки; 7–8: ${prices[1]}; 9–11: ${prices[2]}; 12–15: ${prices[3]}; 16–20: ${prices[4]}. Затем применяется ценность символа: зелье ×1,3, кольцо ×1,2, книга ×1,1, ключ ×1, изумруд ×0,9, перо ×0,8, и руна. Итог округляется до ${rounding}.</p><p>${DRACONA_RULES}</p>${stakeRulesHtml()}</div>`);
   }
   getState() { return { gameId: DRACONA_GAME, ready: !!this.client.accountId, busy: this.busy, remaining: this.bonusRemaining, autoplay: this.autoplay.state, audio: this.audio.getState() }; }
   destroy() {

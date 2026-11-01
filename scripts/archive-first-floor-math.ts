@@ -8,7 +8,7 @@ const files:string[]=[];
 function collect(path:string){for(const row of readdirSync(path,{withFileTypes:true})){const name=path+'/'+row.name;if(row.isDirectory())collect(name);else if(/\.(ts|js)$/.test(name))files.push(name);}}
 collect('server/games');collect('src/vendor/github');
 files.push('src/shared/originalGames.ts','src/shared/gameCore.ts','src/shared/studioGames.ts','src/shared/casinoVariants.ts','src/shared/casinoNextVariants.ts','src/shared/casinoBatchVariants.ts','src/shared/casinoExpansion.ts','src/shared/casinoSessions.ts','server/demoExpansion.ts','server/demoCasino.ts','server/demoMines.ts');
-const names:Record<string,string>={'royal-fruits':'Royal Fruits','royal-dice':'Royal Dice','royal-limbo':'Royal Limbo','royal-mines':'Royal Mines','royal-keno':'Royal Keno','github-craps':'Craps','github-tower':'Dragon Tower','github-diamonds':'Diamonds','github-sic-bo':'Sic Bo'};
+const names:Record<string,string>={'royal-fruits':'Royal Fruits','royal-dice':'Royal Dice','royal-limbo':'Royal Limbo','royal-mines':'Royal Mines','royal-keno':'Royal Keno','github-craps':'Craps','github-diamonds':'Diamonds','github-sic-bo':'Sic Bo'};
 const manifest={format:1,label:'Игры с GitHub',archivedAt:'2026-10-24',status:'removed-from-first-floor',
  sourceCommit:process.argv.includes('--check')?JSON.parse(readFileSync('docs/game-math/github-games/manifest.json','utf8')).sourceCommit:execFileSync(process.env.ROYAL_GIT_BINARY||'git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),
  note:'This is a source-preservation index, not a production game catalogue. Original mathematical files remain at canonical paths so accepted rounds can finish. The archive label does not change authorship or licenses.',
