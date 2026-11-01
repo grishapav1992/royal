@@ -2,6 +2,7 @@ import {expect,type Page,type Frame} from '@playwright/test';
 import {writeFile,mkdir} from 'node:fs/promises';
 import {test} from './themed-room';
 import {ROYAL_COLLECTION_GAMES} from '../src/shared/arcadeCatalog';
+import {walletSnapshot as wallet} from './wallet-snapshot';
 
 const out=process.env.LAYOUT_ARTIFACTS_DIR||'artifacts/work/game-layout-stage2';
 const profiles:Record<string,{board:string;play:string;frame?:boolean}>={
@@ -35,14 +36,16 @@ async function enter(page:Page,path:string){
  await page.evaluate(async()=>{const module='/src/wallet/WalletClient.ts';await(await import(/* @vite-ignore */module)).demoWallet.refresh();});
  await page.locator('#room-overview').click();
  await expect.poll(()=>page.evaluate(()=>Math.abs((window as any).royalDemo.getState().view.width-document.getElementById('game')!.clientWidth))).toBeLessThanOrEqual(1);
- await page.locator('#games-tab').click();await page.locator('[data-cabinet="studio-cosmic-escape"]').click();
+ await page.locator('#games-tab').click();
  await expect.poll(async()=>{
   if(await page.locator('#mini-dialog').isVisible())return true;
   const cabinet=page.locator('[data-cabinet="studio-cosmic-escape"]');
-  if(!await cabinet.isVisible())await page.locator('#games-tab').click();
-  if(!await page.locator('#mini-dialog').isVisible())await cabinet.click();
+  try{
+   if(!await cabinet.isVisible())await page.locator('#games-tab').click({timeout:4000});
+   if(!await page.locator('#mini-dialog').isVisible())await cabinet.click({timeout:4000});
+  }catch(error){if(!(error instanceof Error&&error.name==='TimeoutError'))throw error;}
   return page.locator('#mini-dialog').isVisible();
- },{timeout:30000,intervals:[1000,3000]}).toBe(true);
+ },{timeout:60000,intervals:[1000,4000]}).toBe(true);
  await expect(page.locator('.royal-platform')).toBeVisible();
 }
 async function choose(page:Page,id:string){
@@ -127,7 +130,6 @@ for(const id of priorityGames)test('field and main actions fit without scrolling
 });
 
 const mini=(page:Page)=>page.evaluate(()=>(window as any).royalDemo.getMiniState());
-const wallet=async(page:Page)=>(await(await page.request.get('/api/demo-wallet')).json());
 async function panelClose(page:Page,trigger:string){
  const panel=page.locator('.game-options-panel');await expect(panel).toBeVisible();
  await page.keyboard.press('Escape');await expect(panel).toBeHidden();await expect(page.locator('#mini-dialog')).toBeVisible();

@@ -1,5 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import { Client } from '@colyseus/sdk';
+import {walletSnapshot,walletHeaders} from './wallet-snapshot';
+import {NEOPOLIS_HEADER} from '../src/shared/neopolis';
 
 const api = 'http://127.0.0.1:' + (process.env.NEOPOLIS_API_PORT || '2676');
 const out = process.env.LAYOUT_ARTIFACTS_DIR ? process.env.LAYOUT_ARTIFACTS_DIR + '/neopolis-host' : 'test-results/neopolis-host/review';
@@ -41,7 +43,8 @@ test('Neopolis fits the real host, prioritizes the field over chat, and restores
     await page.getByRole('button', { name: 'Войти в зал', exact: true }).click();
     await expect(page.locator('#join-dialog')).toBeHidden({timeout:30000});
     await expect.poll(() => page.evaluate(() => { try { return (window as any).royalDemo?.getState().online ?? false; } catch { return false; } }), {timeout:30000}).toBe(true);
-    const deposit = await page.request.post('/api/demo-wallet/operations', { data: { id: crypto.randomUUID(), kind: 'deposit', amount: 10000 } });
+    const deposit = process.env.LAYOUT_HOST_REGRESSION === '1' ? await page.request.post('/__test/layout/topup')
+      : await page.request.post('/api/demo-wallet/operations', { headers: await walletHeaders(page), data: { id: crypto.randomUUID(), kind: 'deposit', amount: 10000 } });
     expect(deposit.ok()).toBe(true);
     if (process.env.NEOPOLIS_REVIEW_DIST === '1') {
       await page.reload(); await expect(page.locator('#join-dialog')).toBeHidden({timeout:30000});
@@ -107,13 +110,14 @@ test('Neopolis fits the real host, prioritizes the field over chat, and restores
       await checkChat(page);
       await page.screenshot({path:out+'/stake-20-'+width+'.png'});
     }
-    const before = await (await page.request.get('/api/demo-wallet')).json();
+    const before = await walletSnapshot(page);
     await page.locator('#mini-dialog .mini-top [data-close]').click();
     await expect(page.locator('#mini-dialog')).toBeHidden();
     await open(page);
-    const restored = (await (await page.request.get('/api/demo-wallet/expansion')).json()).sessions.find((s: any) => s.gameId === 'studio-neopolis');
+    const snapshot = await page.request.get('/api/demo-wallet/expansion',{headers:{...await walletHeaders(page),[NEOPOLIS_HEADER]:'4'}}); expect(snapshot.ok()).toBe(true);
+    const restored = (await snapshot.json()).sessions.find((s: any) => s.gameId === 'studio-neopolis');
     expect(restored.id).toBe(changed.id); expect(restored.stakeUnits).toBe(changed.stakeUnits);
-    expect((await (await page.request.get('/api/demo-wallet')).json()).balance).toBe(before.balance);
+    expect((await walletSnapshot(page)).balance).toBe(before.balance);
     await expect(page.locator('[data-hero=prism]')).toHaveAttribute('aria-pressed', 'true');
     await checkChat(page);
     expect(errors).toEqual([]);

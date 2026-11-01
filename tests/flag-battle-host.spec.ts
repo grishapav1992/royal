@@ -1,5 +1,6 @@
 import {test as base,expect,type Page} from '@playwright/test';
 import {Client} from '@colyseus/sdk';
+import {walletSnapshot as wallet,walletHeaders} from './wallet-snapshot';
 const test=base.extend<{roomPath:string}>({roomPath:async({request},use)=>{
  const response=await request.post('/api/auth/login',{data:{email:`flags-room-${crypto.randomUUID()}@example.test`,password:'Royal-test-123!'}});expect(response.ok()).toBe(true);
  const cookie=response.headers()['set-cookie'].split(';')[0];await request.post('/api/auth/character',{data:{skin:0}});
@@ -36,7 +37,6 @@ async function open(page:Page){
 }
 async function close(page:Page){await page.locator('#mini-dialog .mini-top [data-close]').click();await expect(page.locator('#mini-dialog')).toBeHidden();}
 const mini=(page:Page)=>page.evaluate(()=>(window as any).royalDemo.getMiniState());
-const wallet=async(page:Page)=>(await(await page.request.get('/api/demo-wallet')).json());
 
 test('real host: countries, paid round, skips, reopen, mobile chat and reduced motion',async({page,roomPath})=>{
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
@@ -73,7 +73,7 @@ test('real host: countries, paid round, skips, reopen, mobile chat and reduced m
   await expect.poll(async()=>(await mini(page))?.presenting,{timeout:30000}).toBe(false);
   await expect.poll(async()=>(await mini(page))?.eliminated).toBe(11);
   await expect(page.locator('[data-fb="count"]')).toHaveText('1');
-  const saved=await page.request.get('/api/demo-wallet/expansion',{headers:{'X-Royal-Flag-Battle':'2'}});
+  const saved=await page.request.get('/api/demo-wallet/expansion',{headers:{...await walletHeaders(page),'X-Royal-Flag-Battle':'2'}});expect(saved.ok()).toBe(true);
   const settled=(await saved.json()).sessions.find((s:any)=>s.gameId==='flag-battle');
   const state=await mini(page);
   expect(state.returnedUnits).toBe(settled.returnedUnits);
@@ -116,6 +116,7 @@ async function openRetry(page:Page){
 
 test('24 and 48 flags: quotes, search, saved mode, natural world round and mobile chat',async({page,roomPath})=>{
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await enter(page,roomPath);await open(page);
+  await page.locator('#fb-stake').selectOption('100');
   await page.locator('button[data-mode=expanded]').click();await expect(page.locator('[data-country]')).toHaveCount(24);
   await expect(page.locator('[data-fb=odds]')).toContainText('1 из 24');await expect(page.locator('[data-fb=quote]')).toContainText('23,04');
   await page.getByRole('searchbox',{name:'Найти страну'}).fill('Украина');await expect(page.locator('[data-country]:visible')).toHaveCount(1);
@@ -140,7 +141,7 @@ test('24 and 48 flags: quotes, search, saved mode, natural world round and mobil
   expect(state.physics.bodies.filter((b:any)=>!b.escaped)).toHaveLength(1);expect(state.audio.scheduled.eliminate).toBe(47);
   expect(state.audio.scheduled['final-two']).toBe(1);expect((state.audio.scheduled.win??0)+(state.audio.scheduled.lose??0)).toBe(1);
   await expect.poll(async()=>(await mini(page)).audio.voices).toBe(0);
-  const response=await page.request.get('/api/demo-wallet/expansion',{headers:{'X-Royal-Flag-Battle':'2'}});
+  const response=await page.request.get('/api/demo-wallet/expansion',{headers:{...await walletHeaders(page),'X-Royal-Flag-Battle':'2'}});expect(response.ok()).toBe(true);
   const saved=(await response.json()).sessions.find((s:any)=>s.gameId==='flag-battle');
   expect(saved.view.flags.mode).toBe('world');expect(state.physics.order).toEqual(saved.view.flags.order.slice(0,47));
   expect(state.physics.winner).toBe(saved.view.flags.order[47]);expect(state.returnedUnits).toBe(saved.returnedUnits);

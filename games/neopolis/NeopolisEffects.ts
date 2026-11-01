@@ -36,6 +36,7 @@ export class NeopolisEffects {
   private point(element: Element | null, y = .5): Point {
     if (!element) return {x:this.width * .5,y:this.height * .5};
     const parent = this.stage.getBoundingClientRect(), box = element.getBoundingClientRect();
+    if (!box.width || !box.height) return {x:this.width * .5,y:this.height * .5};
     const scale = parent.width / this.width || 1;
     return {x:(box.left - parent.left + box.width / 2) / scale,y:(box.top - parent.top + box.height * y) / scale};
   }
