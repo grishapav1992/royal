@@ -1,0 +1,217 @@
+{
+  "nativeFrames": [
+    {
+      "stage": "before",
+      "hash": 2561683732,
+      "width": 447,
+      "height": 536,
+      "at": 1036.8999999985099
+    },
+    {
+      "stage": "before",
+      "hash": 1640778117,
+      "width": 447,
+      "height": 536,
+      "at": 1068.7999999970198
+    },
+    {
+      "stage": "before",
+      "hash": 1733317507,
+      "width": 447,
+      "height": 536,
+      "at": 1102.1999999955297
+    },
+    {
+      "stage": "before",
+      "hash": 1032050434,
+      "width": 447,
+      "height": 536,
+      "at": 1135.7999999970198
+    },
+    {
+      "stage": "before",
+      "hash": 742054847,
+      "width": 447,
+      "height": 536,
+      "at": 1168.7999999970198
+    },
+    {
+      "stage": "before",
+      "hash": 2317303325,
+      "width": 447,
+      "height": 536,
+      "at": 1203.3999999985099
+    },
+    {
+      "stage": "before",
+      "hash": 1489528489,
+      "width": 447,
+      "height": 536,
+      "at": 1235.7999999970198
+    },
+    {
+      "stage": "before",
+      "hash": 2116406968,
+      "width": 447,
+      "height": 536,
+      "at": 1269.5999999940395
+    },
+    {
+      "stage": "before",
+      "hash": 3223931248,
+      "width": 447,
+      "height": 536,
+      "at": 1303.2999999970198
+    },
+    {
+      "stage": "before",
+      "hash": 192637445,
+      "width": 447,
+      "height": 536,
+      "at": 1335.8999999985099
+    },
+    {
+      "stage": "before",
+      "hash": 3556759277,
+      "width": 447,
+      "height": 536,
+      "at": 1370
+    },
+    {
+      "stage": "before",
+      "hash": 669392415,
+      "width": 447,
+      "height": 536,
+      "at": 1405.1999999955297
+    },
+    {
+      "stage": "after",
+      "hash": 266889843,
+      "width": 447,
+      "height": 536,
+      "at": 12707.59999999404
+    },
+    {
+      "stage": "after",
+      "hash": 3695180264,
+      "width": 447,
+      "height": 536,
+      "at": 12738.29999999702
+    },
+    {
+      "stage": "after",
+      "hash": 2981725401,
+      "width": 447,
+      "height": 536,
+      "at": 12769.79999999702
+    },
+    {
+      "stage": "after",
+      "hash": 3805315626,
+      "width": 447,
+      "height": 536,
+      "at": 12804.69999999553
+    },
+    {
+      "stage": "after",
+      "hash": 3738276655,
+      "width": 447,
+      "height": 536,
+      "at": 12837.79999999702
+    },
+    {
+      "stage": "after",
+      "hash": 2533598519,
+      "width": 447,
+      "height": 536,
+      "at": 12871.79999999702
+    },
+    {
+      "stage": "after",
+      "hash": 3005023946,
+      "width": 447,
+      "height": 536,
+      "at": 12901.89999999851
+    },
+    {
+      "stage": "after",
+      "hash": 889353914,
+      "width": 447,
+      "height": 536,
+      "at": 12935.69999999553
+    },
+    {
+      "stage": "after",
+      "hash": 3166127018,
+      "width": 447,
+      "height": 536,
+      "at": 12969.09999999404
+    },
+    {
+      "stage": "after",
+      "hash": 3699148845,
+      "width": 447,
+      "height": 536,
+      "at": 13002.19999999553
+    },
+    {
+      "stage": "after",
+      "hash": 3487687763,
+      "width": 447,
+      "height": 536,
+      "at": 13036.39999999851
+    },
+    {
+      "stage": "after",
+      "hash": 1686467903,
+      "width": 447,
+      "height": 536,
+      "at": 13071.29999999702
+    }
+  ],
+  "minOpaqueAlpha": 251,
+  "compositeFrames": 77,
+  "video": {
+    "clip": "look",
+    "heldClip": null,
+    "heldFrame": 1,
+    "phase": "playing",
+    "nextClip": "look",
+    "nextAtMs": 21232.699999999997,
+    "episodeMs": 3000,
+    "standingMs": 6000,
+    "fadeMs": 640,
+    "history": [
+      {
+        "clip": "look",
+        "startMs": 6339.7,
+        "endMs": 9219.599999999999
+      },
+      {
+        "clip": "look",
+        "startMs": 15332.699999999999
+      }
+    ],
+    "blend": 1,
+    "weights": {
+      "native": 0,
+      "held": 0,
+      "video": 1
+    },
+    "visible": true,
+    "frames": 119,
+    "draws": 136,
+    "suspended": false,
+    "failed": [],
+    "media": [
+      {
+        "clip": "look",
+        "paused": false,
+        "time": 1.0943,
+        "ready": 4,
+        "muted": true,
+        "loop": false
+      }
+    ]
+  }
+}

@@ -1,14 +1,12 @@
-type Clip = 'look' | 'focus' | 'magic';
-const clips: Clip[] = ['look', 'focus', 'magic'];
+type Clip = 'look';
+const clips: Clip[] = ['look'];
 const sources: Record<Clip, string> = {
-  look: '/assets/forest-heart/video-v3/look.mp4',
-  focus: '/assets/forest-heart/video-v3/focus.mp4',
-  magic: '/assets/forest-heart/video-v3/magic.mp4',
+  look: '/assets/forest-heart/living-v13/look.mp4',
 };
 const episodeMs = 3000, standingMs = 6000, fadeMs = 640;
 const smooth = (value: number) => { const t = Math.max(0, Math.min(1, value)); return t * t * (3 - 2 * t); };
 
-/** Silent episodes and their held final pose share one premultiplied compositor. */
+/** One neutral-to-neutral gesture shares a living idle and premultiplied compositor. */
 export class ForestVideo {
   private canvas: HTMLCanvasElement;
   private videos = new Map<Clip, HTMLVideoElement>();
@@ -21,13 +19,15 @@ export class ForestVideo {
   private heldTexture?: WebGLTexture;
   private portraitTexture?: WebGLTexture;
   private weightsLocation: WebGLUniformLocation | null = null;
+  private timeLocation: WebGLUniformLocation | null = null;
+  private motionLocation: WebGLUniformLocation | null = null;
   private current: Clip | null = null;
   private heldClip: Clip | null = null;
   private heldActive = false;
   private returnAt: number | null = null;
   private phase: 'standing' | 'loading' | 'playing' | 'fading' = 'standing';
   private nextIndex = 0;
-  private nextAt = 0;
+  private nextAt = standingMs;
   private loadingAt = 0;
   private episodeAt = 0;
   private failureAt = 0;
@@ -79,7 +79,7 @@ export class ForestVideo {
       };
       const vs = shader(gl.VERTEX_SHADER, 'attribute vec2 p; varying vec2 uv; void main(){uv=vec2((p.x+1.)*.5,(1.-p.y)*.5);gl_Position=vec4(p,0.,1.);}');
       // Add premultiplied colors once, rather than fading two DOM layers over each other.
-      const fs = shader(gl.FRAGMENT_SHADER, 'precision mediump float; varying vec2 uv; uniform sampler2D portrait; uniform sampler2D held; uniform sampler2D moving; uniform vec3 weights; vec4 unpackFrame(sampler2D image){vec3 rgb=texture2D(image,vec2(uv.x*.5,uv.y)).rgb;float a=texture2D(image,vec2(.5+uv.x*.5,uv.y)).r;return vec4(rgb*a,a);} void main(){gl_FragColor=texture2D(portrait,uv)*weights.x+unpackFrame(held)*weights.y+unpackFrame(moving)*weights.z;}');
+      const fs = shader(gl.FRAGMENT_SHADER, 'precision mediump float; varying vec2 uv; uniform sampler2D portrait; uniform sampler2D held; uniform sampler2D moving; uniform vec3 weights; uniform float time; uniform float motion; vec2 movingUv(){float hair=smoothstep(.55,.77,uv.x)*smoothstep(.14,.34,uv.y)*(1.-smoothstep(.74,.99,uv.y));float cloth=smoothstep(.62,.96,uv.y)*smoothstep(.06,.26,abs(uv.x-.5));float breath=exp(-pow((uv.y-.41)/.16,2.))*exp(-pow((uv.x-.5)/.23,2.));return uv-vec2(motion*(hair*.004*sin(time*.83+uv.y*8.)+cloth*.003*sin(time*.67+uv.y*6.)+breath*(uv.x-.5)*.009*sin(time*1.25)),-motion*breath*.0018*sin(time*1.25));} vec4 unpackFrame(sampler2D image){vec2 p=movingUv();vec3 rgb=texture2D(image,vec2(p.x*.5,p.y)).rgb;float a=texture2D(image,vec2(.5+p.x*.5,p.y)).r;return vec4(rgb*a,a);} void main(){gl_FragColor=texture2D(portrait,uv)*weights.x+unpackFrame(held)*weights.y+unpackFrame(moving)*weights.z;}');
       this.program = gl.createProgram()!;
       gl.attachShader(this.program, vs); gl.attachShader(this.program, fs); gl.linkProgram(this.program);
       gl.deleteShader(vs); gl.deleteShader(fs);
@@ -101,6 +101,7 @@ export class ForestVideo {
       };
       this.portraitTexture = texture(0, 'portrait'); this.heldTexture = texture(1, 'held'); this.currentTexture = texture(2, 'moving');
       this.weightsLocation = gl.getUniformLocation(this.program, 'weights');
+      this.timeLocation = gl.getUniformLocation(this.program, 'time'); this.motionLocation = gl.getUniformLocation(this.program, 'motion');
       gl.viewport(0, 0, this.canvas.width, this.canvas.height);
       return true;
     } catch { this.release(); return false; }
@@ -130,7 +131,7 @@ export class ForestVideo {
       // Transfer the decoded final frame without a redraw, seek, or change of pose.
       [this.heldTexture, this.currentTexture] = [this.currentTexture, this.heldTexture];
       this.heldClip = this.current; this.heldActive = true; this.heldFrame++;
-      this.returnAt = null;
+      this.returnAt = elapsed;
     }
     this.current = null; this.phase = 'standing'; this.nextAt = elapsed + standingMs;
   }
@@ -141,11 +142,11 @@ export class ForestVideo {
     this.host.dataset.video = visible ? this.current ?? 'held-' + this.heldClip : 'standing';
   }
 
-  update(pose: string, elapsed: number, portrait: HTMLCanvasElement) {
+  update(pose: string, elapsed: number, portrait: HTMLCanvasElement, motion: number) {
     if (!this.alive || this.suspended || this.host.ownerDocument.hidden) return;
     this.last = elapsed;
     if (this.resumePending) { this.nextAt = elapsed + standingMs; this.resumePending = false; }
-    const eligible = pose === 'idle' || pose === 'channel';
+    const eligible = pose === 'idle';
     if (this.phase === 'standing' && eligible && elapsed >= this.nextAt) {
       const kind = clips[this.nextIndex]; this.nextIndex = (this.nextIndex + 1) % clips.length;
       this.nextAt = elapsed + standingMs;
@@ -193,6 +194,7 @@ export class ForestVideo {
       gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, this.heldTexture!);
       gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D, this.currentTexture!);
       gl.uniform3f(this.weightsLocation, this.weights.native, held, moving);
+      gl.uniform1f(this.timeLocation, elapsed / 1000); gl.uniform1f(this.motionLocation, motion);
       // A held frame is redrawn too, so browser composition never exposes a cleared buffer.
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); this.draws++; this.presentation(true);
     } catch { if (this.current) this.failed.add(this.current); this.presentation(false); }

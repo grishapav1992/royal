@@ -43,9 +43,11 @@ async function choose(page: Page) {
   await expect(game(page).locator('[data-fh=spin]:visible,[data-fh=pass]:visible,[data-fh=retry]:visible').first()).toBeEnabled();
   await expect.poll(() => game(page).locator('.fh-elf').evaluateAll(images => images.every(i => (i as HTMLImageElement).complete && (i as HTMLImageElement).naturalWidth > 0))).toBe(true);
   await expect.poll(async () => (await state(page)).character.ready).toBe(true);
-  // Keep the synthetic scenarios at their original 10 USDT stake after the shared default changed.
-  for(let step=0;step<20&&(await game(page).locator('[data-fh=stake]').textContent())!=='10';step++)await game(page).locator('[data-fh=higher]').click();
-  await expect(game(page).locator('[data-fh=stake]')).toHaveText('10');
+  // Fresh synthetic scenarios use 10 USDT; accepted or pending series keep their original stake.
+  if(await game(page).locator('[data-fh=higher]').isEnabled()){
+    for(let step=0;step<20&&(await game(page).locator('[data-fh=stake]').textContent())!=='10';step++)await game(page).locator('[data-fh=higher]').click();
+    await expect(game(page).locator('[data-fh=stake]')).toHaveText('10');
+  }
 }
 async function routeScenario(page: Page, scenario: string, loseFirst = false) {
   let lost = false;
@@ -77,7 +79,7 @@ async function wallet(page: Page) {
   });
 }
 
-test('three short character videos alternate with a quiet standing pose and stop for rules and reduced motion', async ({page,roomPath}) => {
+test('one prepared gesture returns to a living idle and stops for rules and reduced motion', async ({page,roomPath}) => {
   const errors: string[] = []; page.on('pageerror',error=>errors.push(error.message));
   await routeScenario(page,'win'); await enter(page,roomPath);
   const video = async () => (await state(page)).character.video;
@@ -85,8 +87,8 @@ test('three short character videos alternate with a quiet standing pose and stop
   expect((await video()).clip).toBe('look');
   expect((await video()).media.every((media:any)=>media.muted&&!media.loop)).toBe(true);
   const source=await game(page).locator('video').evaluateAll(elements=>elements.map(element=>(element as HTMLVideoElement).currentSrc));
-  expect(source.some(url=>/\/game-modules\/studio-forest-heart\/versions\/[^/]+\/media\/forest-heart\/video-v3\/look\.mp4/.test(url))).toBe(true);
-  await page.screenshot({path:out+'/video-v3-first.png'});
+  expect(source.some(url=>/\/game-modules\/studio-forest-heart\/versions\/[^/]+\/media\/forest-heart\/living-v13\/look\.mp4/.test(url))).toBe(true);
+  await page.screenshot({path:out+'/living-v13-first.png'});
   await game(page).locator('[data-fh=spin]').click();
   await expect(game(page).locator('[data-fh=skip]')).toBeVisible();
   await expect.poll(async()=>(await video()).phase,{timeout:6000}).toBe('standing');
@@ -96,21 +98,20 @@ test('three short character videos alternate with a quiet standing pose and stop
   expect(firstRest.blend).toBe(0);
   expect(firstRest.media.every((media:any)=>media.paused)).toBe(true);
   await expect(game(page).locator('.fh-character-canvas')).toHaveCSS('opacity','1');
-  await page.screenshot({path:out+'/video-v3-standing.png'});
+  await page.screenshot({path:out+'/living-v13-standing.png'});
   await page.waitForTimeout(1000);
   expect((await video()).history).toHaveLength(1);
-  await expect.poll(async()=>(await video()).clip,{timeout:10000}).toBe('focus');
+  await expect.poll(async()=>(await video()).clip,{timeout:10000}).toBe('look');
   await expect.poll(async()=>(await video()).phase).toBe('playing');
   await expect.poll(async()=>(await video()).blend).toBeGreaterThan(.95);
-  await page.screenshot({path:out+'/video-v3-second.png'});
-  await expect.poll(async()=>(await video()).history.length,{timeout:15000}).toBe(3);
+  await page.screenshot({path:out+'/living-v13-second.png'});
   await expect.poll(async()=>(await video()).phase,{timeout:6000}).toBe('standing');
   const cycle=await video();
-  expect(cycle.history.map((event:any)=>event.clip)).toEqual(['look','focus','magic']);
+  expect(cycle.history.map((event:any)=>event.clip)).toEqual(['look','look']);
   for(const event of cycle.history) { expect(event.endMs).toBeGreaterThan(event.startMs); expect(event.endMs-event.startMs).toBeLessThanOrEqual(3100); }
   for(let i=1;i<cycle.history.length;i++)expect(cycle.history[i].startMs-cycle.history[i-1].endMs).toBeGreaterThanOrEqual(6000);
   expect(cycle.media.every((media:any)=>media.paused)).toBe(true);
-  await writeFile(out+'/video-v3-timeline.json',JSON.stringify(cycle,null,2));
+  await writeFile(out+'/living-v13-timeline.json',JSON.stringify(cycle,null,2));
   await game(page).locator('[data-fh=rules]').click();
   expect((await video()).blend).toBe(0);
   expect((await video()).media.every((media:any)=>media.paused)).toBe(true);
@@ -118,7 +119,7 @@ test('three short character videos alternate with a quiet standing pose and stop
   expect((await video()).phase).toBe('standing');
   await page.setViewportSize({width:390,height:844}); await fit(game(page));
   await expect(page.locator('#chat-input')).toBeInViewport();
-  await page.screenshot({path:out+'/video-v3-mobile.png'});
+  await page.screenshot({path:out+'/living-v13-mobile.png'});
   await game(page).locator('[data-fh=settings]').click();
   await game(page).locator('[data-fh=motion]').check();
   await game(page).locator('[data-fh=close]').click();
@@ -133,53 +134,57 @@ test('three short character videos alternate with a quiet standing pose and stop
   expect(errors).toEqual([]);
 });
 
-test('the final video pose stays pixel-stable and transitions never dim the opaque body',async({page,roomPath})=>{
+test('living idle keeps moving before and after the neutral gesture without an opacity dip',async({page,roomPath})=>{
   await enter(page,roomPath);
   const video=async()=>(await state(page)).character.video;
-  await expect.poll(async()=>(await video()).draws,{timeout:20000}).toBeGreaterThan(0);
-  await game(page).locator('.fh-character-video').evaluate(canvas=>{
-    const gl=(canvas as HTMLCanvasElement).getContext('webgl')!;
-    const draw=gl.drawArrays.bind(gl),host=canvas.parentElement!,sample=new Uint8Array(4);
-    const pixels=new Uint8Array((canvas as HTMLCanvasElement).width*(canvas as HTMLCanvasElement).height*4);
-    const rows:any[]=[];(canvas as any).__transitionFrames=rows;
-    let heldReads=0;
-    gl.drawArrays=(...args:Parameters<WebGLRenderingContext['drawArrays']>)=>{
+  await game(page).locator('.fh-character-canvas').evaluate(canvas=>{
+    const gl=(canvas as HTMLCanvasElement).getContext('webgl')!,draw=gl.drawElements.bind(gl);
+    (canvas as any).__idleStage='before';(canvas as any).__idleFrames=[];
+    gl.drawElements=(...args:Parameters<WebGLRenderingContext['drawElements']>)=>{
       draw(...args);
-      gl.readPixels(390,348,1,1,gl.RGBA,gl.UNSIGNED_BYTE,sample);
-      const look=[...host.querySelectorAll('video')].find(v=>v.currentSrc.includes('/look.mp4'));
-      const kind=host.dataset.video||'',ended=!!look?.ended;
-      let hash:number|undefined;
-      if((ended&&!kind.startsWith('held-'))||(kind==='held-look'&&heldReads++<8)){
-        gl.readPixels(0,0,(canvas as HTMLCanvasElement).width,(canvas as HTMLCanvasElement).height,gl.RGBA,gl.UNSIGNED_BYTE,pixels);
-        hash=2166136261;for(let i=0;i<pixels.length;i++)hash=Math.imul(hash^pixels[i],16777619)>>>0;
-      }
-      rows.push({at:performance.now(),kind,alpha:sample[3],hash,time:look?.currentTime,ended});
+      const rows=(canvas as any).__idleFrames,stage=(canvas as any).__idleStage;
+      if(rows.filter((r:any)=>r.stage===stage).length>=12)return;
+      const c=canvas as HTMLCanvasElement,pixels=new Uint8Array(c.width*c.height*4);
+      gl.readPixels(0,0,c.width,c.height,gl.RGBA,gl.UNSIGNED_BYTE,pixels);
+      let hash=2166136261;for(let i=0;i<pixels.length;i+=16)hash=Math.imul(hash^pixels[i],16777619)>>>0;
+      rows.push({stage,hash,width:c.width,height:c.height,at:performance.now()});
     };
   });
-  await expect.poll(async()=>(await video()).heldClip,{timeout:6000}).toBe('look');
-  await page.waitForTimeout(500);
-  const held=await video();
-  expect(held.phase).toBe('standing');expect(held.weights).toEqual({native:0,held:1,video:0});
-  expect(held.media.every((m:any)=>m.paused)).toBe(true);
-  await page.screenshot({path:out+'/transition-held.png'});
-  await expect.poll(async()=>(await video()).clip,{timeout:10000}).toBe('focus');
-  await expect.poll(async()=>(await video()).weights.video).toBeGreaterThan(.999);
-  const frames=await game(page).locator('.fh-character-video').evaluate(canvas=>(canvas as any).__transitionFrames as {at:number;kind:string;alpha:number;hash?:number;time?:number;ended:boolean}[]);
-  const still=frames.filter(f=>f.kind==='held-look'&&f.hash!==undefined);
-  expect(still.length).toBeGreaterThanOrEqual(4);expect(new Set(still.map(f=>f.hash)).size).toBe(1);
-  const boundary=frames.find(f=>f.ended&&f.kind==='look'&&f.hash!==undefined);
-  expect(boundary).toBeDefined();expect(boundary!.hash).toBe(still[0].hash);
-  expect(Math.min(...frames.map(f=>f.alpha))).toBeGreaterThanOrEqual(240);
-  await expect(game(page).locator('.fh-character-video')).toHaveCSS('opacity','1');
-  await expect(game(page).locator('.fh-character-canvas')).toHaveCSS('opacity','0');
-  await writeFile(out+'/transition-rendered.json',JSON.stringify({heldHashes:still.map(f=>f.hash),boundaryHash:boundary!.hash,minOpaqueAlpha:Math.min(...frames.map(f=>f.alpha)),frames:frames.length,heldState:held},null,2));
+  await page.waitForTimeout(600);
+  const before=await game(page).locator('.fh-character-canvas').evaluate(c=>(c as any).__idleFrames);
+  expect(before.length).toBeGreaterThanOrEqual(8);expect(new Set(before.map((r:any)=>r.hash)).size).toBeGreaterThanOrEqual(3);
+  expect((await video()).phase).toBe('standing');
+  await page.screenshot({path:out+'/living-idle-before.png'});
+  await expect.poll(async()=>(await video()).draws,{timeout:15000}).toBeGreaterThan(0);
+  await game(page).locator('.fh-character-video').evaluate(canvas=>{
+    const gl=(canvas as HTMLCanvasElement).getContext('webgl')!,draw=gl.drawArrays.bind(gl),pixel=new Uint8Array(4);
+    (canvas as any).__coverage=[];
+    gl.drawArrays=(...args:Parameters<WebGLRenderingContext['drawArrays']>)=>{draw(...args);gl.readPixels(390,348,1,1,gl.RGBA,gl.UNSIGNED_BYTE,pixel);(canvas as any).__coverage.push(pixel[3]);};
+  });
+  await expect.poll(async()=>(await video()).weights.video).toBeGreaterThan(.95);
+  await page.screenshot({path:out+'/living-idle-gesture.png'});
+  await expect.poll(async()=>(await video()).history[0]?.endMs,{timeout:6000}).toBeGreaterThan(0);
+  await expect.poll(async()=>(await video()).blend).toBe(0);
+  expect((await video()).heldClip).toBe(null);
+  expect((await video()).media.every((m:any)=>m.paused)).toBe(true);
+  await expect(game(page).locator('.fh-character-canvas')).toHaveCSS('opacity','1');
+  await game(page).locator('.fh-character-canvas').evaluate(c=>{(c as any).__idleStage='after';});
+  await page.waitForTimeout(600);
+  const rows=await game(page).locator('.fh-character-canvas').evaluate(c=>(c as any).__idleFrames as {stage:string;hash:number;width:number;height:number;at:number}[]);
+  const after=rows.filter(r=>r.stage==='after');expect(after.length).toBeGreaterThanOrEqual(8);
+  expect(new Set(after.map(r=>r.hash)).size).toBeGreaterThanOrEqual(3);
+  expect(new Set(rows.map(r=>r.width+'x'+r.height)).size).toBe(1);
+  const alpha=await game(page).locator('.fh-character-video').evaluate(c=>(c as any).__coverage as number[]);
+  expect(alpha.length).toBeGreaterThan(20);expect(Math.min(...alpha)).toBeGreaterThanOrEqual(240);
+  await page.screenshot({path:out+'/living-idle-after.png'});
+  await writeFile(out+'/living-idle-rendered.json',JSON.stringify({nativeFrames:rows,minOpaqueAlpha:Math.min(...alpha),compositeFrames:alpha.length,video:await video()},null,2));
 });
 
 test('unavailable character videos preserve the existing elf and playable controls', async({page,roomPath})=>{
   const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
-  await page.route('**/video-v3/*.mp4',route=>route.abort());
+  await page.route('**/living-v13/*.mp4',route=>route.abort());
   await enter(page,roomPath);
-  await expect.poll(async()=>(await state(page)).character.video.failed).toContain('look');
+  await expect.poll(async()=>(await state(page)).character.video.failed,{timeout:12000}).toContain('look');
   expect((await state(page)).character.video.blend).toBe(0);
   await expect(game(page).locator('.fh-character-canvas')).toHaveCSS('opacity','1');
   await expect(game(page).locator('[data-fh=spin]')).toBeEnabled();
@@ -414,7 +419,7 @@ test('a held root stays visible and fixed while the next bonus field is assemble
 });
 
 test('the elf blinks and renders local movement, stops for rules, and reacts only to fresh positive results', async ({page,roomPath}) => {
-  await page.route('**/video-v3/*.mp4',route=>route.abort());
+  await page.route('**/living-v13/*.mp4',route=>route.abort());
   await routeScenario(page,'win'); await enter(page,roomPath);
   const initial=(await state(page)).character;
   expect(initial.renderer).toBe('webgl');expect(initial.events).toEqual([]);

@@ -1,4 +1,15 @@
-# Forest Heart client 1.12 (local experiment)
+# Forest Heart client 1.13 (local experiment)
+
+## Living idle and one neutral gesture 1.13
+
+This local prototype uses one previously paid nod clip while the other two gestures remain outside the playback sequence. Its entry and exit are constrained to the approved original idle image through premultiplied, bidirectional optical-flow interpolation. The complete prepared clip is still three seconds, 72 frames at 24 fps and silent. Motion grows over the first 0.5 seconds, returns toward the common pose from 2.05 seconds, and reaches it by 2.8 seconds. These are artistic trial timings.
+
+The character starts with six seconds of living idle, then performs the prepared gesture with six seconds of quiet idle before repeating it. Hair, fabric and breathing continue on the same active-time clock through the gesture and its return. Idle motion uses 65% of the existing local deformation; authored game reactions keep their own pose and gesture curves. The head and feet have no whole-image translation. The final video frame is only a 640 ms bridge back to live idle, rather than a six-second frozen standing pose. Native blinks remain outside transitions.
+
+One premultiplied compositor preserves coverage. The same small breathing field is applied to packed video pixels during blending, matching the existing idle mesh. Rules, pause, reduced motion, hidden pages, failed media and close keep their existing stop and fallback behavior. No generation service is called, and no paid cost, RTP rule, wallet or catalogue change is part of this prototype.
+
+The asset can be rebuilt with scripts/prepare-forest-heart-gesture.py using numpy, opencv-python-headless and ffmpeg. [Preparation and review](../../docs/concepts/forest-heart/living-v13-review.json) record exact inputs, output hash, constraints, rendered motion measurements and limitations. Earlier revisions below are historical.
+
 
 ## Continuous character handoff 1.12
 
