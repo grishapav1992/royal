@@ -79,7 +79,11 @@ for(const id of ids)test('settings, paid round, reopen and lost response: '+id,a
  else await root.locator(p.stake).selectOption('10');
  let release!:()=>void,seen=false;const gate=new Promise<void>(r=>release=r),endpoint=id==='royal-roulette'?'**/api/demo-wallet/operations':'**/api/demo-wallet/expansion';
  await page.route(endpoint,async route=>{if(route.request().method()==='POST'){seen=true;await gate;}await route.continue();});
- await root.locator(p.main).first().click();await expect.poll(()=>seen).toBe(true);await page.setViewportSize({width:852,height:393});await fit(page,id);release();await finish(page,id);await page.unroute(endpoint);
+ await fit(page,id);
+ await page.evaluate(()=>{(window as any).__layoutClicks=[];document.addEventListener('click',event=>(window as any).__layoutClicks.push((event.target as Element).tagName+':'+(event.target as Element).className),{capture:true});});
+ await root.locator(p.main).first().click();
+ try{await expect.poll(()=>seen).toBe(true);}catch(error){console.log(JSON.stringify(await page.evaluate(()=>({clicks:(window as any).__layoutClicks,state:(window as any).royalDemo.getMiniState(),focused:document.activeElement?.tagName}))));throw error;}
+ await page.setViewportSize({width:852,height:393});await fit(page,id);release();await finish(page,id);await page.unroute(endpoint);
  const first=await walletSnapshot(page);expect(first.entries.filter((e:any)=>e.kind==='bet').map((e:any)=>e.amount)).toEqual([-0.1]);
  await open(page,id);await finish(page,id);expect((await walletSnapshot(page)).entries).toEqual(first.entries);
  let lost=false;const operations:string[]=[];await page.route(endpoint,async route=>{if(route.request().method()==='POST'){operations.push(route.request().postDataJSON().id);if(!lost){lost=true;await route.fetch();await route.abort('failed');return;}}await route.continue();});

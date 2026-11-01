@@ -31,7 +31,7 @@
 .rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-selection small { font-size:9px; margin-bottom:3px }
 .rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-choose-bet { grid-column:2; grid-row:1; border:1px solid #c7ac73; border-radius:6px; background:#213c2c; color:#f7ebd3; font-size:12px; padding:4px }
 .rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-compact-stake { display:flex; grid-column:1; grid-row:2; align-items:center; gap:4px; font-size:9px }
-.rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-compact-stake select { min-width:0; width:100%; min-height:44px; font-size:16px; color:#f7ebd3; background:#193728; border:1px solid #c7ac73; border-radius:5px }
+.rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-compact-stake select { color-scheme:dark; min-width:0; width:100%; min-height:44px; font-size:16px; color:#f7ebd3; background:#193728; border:1px solid #c7ac73; border-radius:5px }
 .rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-spin { grid-column:2; grid-row:2; min-height:44px; padding:6px; gap:5px; font-size:12px!important }
 .rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-return { grid-column:1/-1; grid-row:3; justify-content:space-between; gap:5px }
 .rr-root[data-priority-layout]:not([data-priority-layout=full]) .rr-return>span { font-size:9px }
