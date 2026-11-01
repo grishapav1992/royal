@@ -2,6 +2,12 @@
 
 - Never use the em dash character (Unicode U+2014) in generated text.
 
+## Shared A6API access
+
+- Use `npm run a6api -- models` for a free catalogue check, `npm run a6api -- request /v1/<supported-endpoint> input.json` for a request, or `npm run a6api -- serve` for a local compatible API at `http://127.0.0.1:8766/v1`. Follow `docs/a6api.md`.
+- The provider key lives only on the server in `/etc/royal-a6api/key`. Do not retrieve it, put it into Git, or copy it to another PC. Each PC authenticates using its own authorized SSH access. Repository access alone does not authorize server access.
+- The client needs no local `A6API_KEY` and does not load `.env`. An application requiring an API-key field can use the local placeholder `royal-local`. Model generation uses the shared provider balance; requests are never retried automatically.
+
 ## GitHub synchronization before work
 
 - Follow `docs/development-workflow.md` on every device. Start each feature from freshly fetched origin/main and update actual working files before editing. Use `npm run work:start -- <feature-name>` in a clean main checkout, or the managed-worktree workflow when preserving concurrent work. Use `npm run work:sync` before continuing a shared feature or finishing it. Keep unfinished features in pushed feature branches so another device can resume them without publishing them to main. After integration, publish only reviewed artifacts from the exact source commit already pushed to main, then push the deployment record. Never use the production source directory as an independent development branch.
