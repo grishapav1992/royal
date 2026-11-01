@@ -4,6 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "a6api": "node scripts/a6api.mjs",
+    "test:a6api": "node --test server-tests/a6api.test.mjs",
     "work:sync": "node scripts/sync-work.mjs",
     "work:start": "node scripts/sync-work.mjs --new",
     "test:work-sync": "node --test server-tests/work-sync.test.mjs",
