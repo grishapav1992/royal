@@ -51,6 +51,7 @@
 .td-hands { display: block; width: 100%; height: auto; }
 .td-stage[data-stage=countdown]:not([data-paused=true]) .td-active-hand {
   animation: td-bump .8s steps(2, end) infinite;
+  animation-delay: var(--td-beat-delay, 0ms);
   transform-origin: center;
 }
 .td-chant {
@@ -142,6 +143,7 @@
   font-size: 11px;
 }
 .td-footer > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.td-footer-actions { display: flex; flex: 0 0 auto; gap: 6px; }
 .td-footer button { min-height: 34px !important; font-size: 11px; }
 .td-pause, .td-confirm {
   position: absolute;
@@ -168,6 +170,13 @@
 .pvp-dialog[data-negotiated=true] .pvp-heading small { display: none; }
 .pvp-dialog[data-negotiated=true] .pvp-content { gap: 5px; }
 .pvp-dialog[data-negotiated=true] .pvp-balance { font-size: 12px; }
+#pvp-dialog[data-negotiated=true] .game-chat-toolbar {
+  position: absolute;
+  top: 8px;
+  right: 64px;
+  z-index: 2;
+  padding: 0;
+}
 @keyframes td-bump { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
 @keyframes td-result { from { filter: brightness(1.1); } to { filter: none; } }
 @media (min-width: 700px) and (max-height: 800px) {
