@@ -27,5 +27,17 @@ class GuardScopeTest(unittest.TestCase):
         changes, projection, before, required = self.fixture()
         projection['inputs'].pop('server/guards.ts')
         with self.assertRaises(RuntimeError): deploy.validate_inputs(changes, projection, before, required)
+    def test_inherited_backend_dictionary_is_pinned(self):
+        changes, projection, before, required = self.fixture()
+        projection['inputs']['src/i18n/en.ts'] = deploy.PRESERVED_BACKEND_INPUTS['src/i18n/en.ts']
+        deploy.validate_inputs(changes, projection, before, {'server/guards.ts'}, deploy.PRESERVED_BACKEND_INPUTS)
+        projection['inputs']['src/i18n/en.ts'] = 'other'
+        with self.assertRaises(RuntimeError): deploy.validate_inputs(changes, projection, before, {'server/guards.ts'}, deploy.PRESERVED_BACKEND_INPUTS)
+    def test_only_approved_backend_line_can_change(self):
+        old = b'// royal-backend-projection old\n' + '    g.speech = count2 === 9 ? "Ещё один толчок, и на выход. 9/10." : `Не толкайся. ${count2}/10.`;\nunchanged();\n'.encode()
+        new = b'// royal-backend-projection new\n' + '    g.speech = count2 === 9 ? "Ещё один толчок, и на выход." : "Не толкайся.";\nunchanged();\n'.encode()
+        deploy.validate_backend_bytes(old, new)
+        for changed in [new.replace(b'unchanged()', b'other()'), new.replace(b'count2 === 9', b'count2 === 8'), new + b'added();\n']:
+            with self.assertRaises(RuntimeError): deploy.validate_backend_bytes(old, changed)
 
 if __name__ == '__main__': unittest.main()

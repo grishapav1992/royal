@@ -8,18 +8,32 @@ from image_metadata import image, inspect
 NAME = 'guard-counter-20261101-v1'
 ROOT = Path(__file__).resolve().parent
 SOURCES = {'server/guards.ts', 'src/i18n/en.ts'}
+PRESERVED_BACKEND_INPUTS = {'src/i18n/en.ts': '8853e5a8bd533ca85608eb11975f1f0d98a03fd0d1b749f48cca00e9db86cd68'}
 
 def require(value, reason):
     if not value: raise RuntimeError(reason)
 
 def sha(path): return hashlib.sha256(path.read_bytes()).hexdigest()
 
-def validate_inputs(changes, projection, before, required):
+def validate_inputs(changes, projection, before, required, preserved=None):
     require(set(changes) == SOURCES, 'Unreviewed guard source scope')
     for name, digest in projection['inputs'].items():
-        expected = [changes[name]] if name in changes else [before['source'].get(name), before['sourceLF'].get(name)]
+        expected = [preserved[name]] if preserved and name in preserved else [changes[name]] if name in changes else [before['source'].get(name), before['sourceLF'].get(name)]
         require(digest in expected, 'Unrelated host input changed: ' + name)
     require(all(projection['inputs'].get(name) == changes[name] for name in required), 'Guard source is not bound to the build')
+
+def validate_backend_bytes(baseline, candidate):
+    old_header, old = baseline.split(b'\n', 1)
+    new_header, new = candidate.split(b'\n', 1)
+    require(all(header.startswith(b'// royal-backend-projection ') for header in [old_header, new_header]), 'Backend provenance header missing')
+    prefix = b'    g.speech = count2 === 9 ? '
+    old_lines = [line for line in old.splitlines() if line.startswith(prefix)]
+    new_lines = [line for line in new.splitlines() if line.startswith(prefix)]
+    require(len(old_lines) == len(new_lines) == 1, 'Guard speech line is ambiguous')
+    decode = lambda value: re.sub(r'\\u([0-9a-fA-F]{4})', lambda match: chr(int(match[1], 16)), value.decode())
+    require(decode(old_lines[0]) == '    g.speech = count2 === 9 ? "Ещё один толчок, и на выход. 9/10." : `Не толкайся. ${count2}/10.`;', 'Unreviewed previous guard speech')
+    require(decode(new_lines[0]) == '    g.speech = count2 === 9 ? "Ещё один толчок, и на выход." : "Не толкайся.";', 'Unreviewed new guard speech')
+    require(old.count(old_lines[0]) == 1 and old.replace(old_lines[0], new_lines[0], 1) == new, 'Unrelated backend executable bytes changed')
 
 
 def configure(root=ROOT):
@@ -72,7 +86,7 @@ def payload(b):
     require(set(b.CHANGES) == SOURCES and set(b.SERVER_DELTA) == {'index.js'}, 'Unreviewed source or backend change')
     require(old['program'] == old['preparedProgram'] and old['container']['image'] == old['preparedImage'], 'Baseline runtime differs')
     require(sha(b.ROOT / 'deploy.py') == m['helperSha256'] and sha(b.ROOT / 'snapshot.py') == m['snapshotSha256'], 'Installer changed')
-    require(set(m['support']) == {'overlay-base.py','snapshot-base.py','image_metadata.py','runtime-inventory.cjs','quiesce.cjs','financial_gate.py','engine-build.py'}, 'Unexpected helper scope')
+    require(set(m['support']) == {'overlay-base.py','snapshot-base.py','image_metadata.py','runtime-inventory.cjs','quiesce.cjs','financial_gate.py','engine-build.py','baseline-backend.js'}, 'Unexpected helper scope')
     for name, digest in m['support'].items(): require(sha(b.ROOT / name) == digest, 'Support changed')
     require(b.inventory(b.ROOT / 'source') == b.CHANGES and b.inventory(b.ROOT / 'dist-delta') == b.DELTA and b.inventory(b.ROOT / 'server-delta') == b.SERVER_DELTA, 'Payload differs')
     require('index.html' in b.DELTA, 'Missing client index')
@@ -91,7 +105,9 @@ def payload(b):
     require(backend == release['build']['backendProjection'] and backend['productionCommit'] == m['baseCommit'], 'Backend evidence differs')
     require(backend['entries'] == ['server/index.ts'] and backend['output']['path'] == 'dist-server/index.js', 'Unexpected backend entry')
     require(backend['output']['sha256'] == b.SERVER_DELTA['index.js'] == release['files']['dist-server/index.js'], 'Backend differs from verified build')
-    validate_inputs(b.CHANGES, backend, old, {'server/guards.ts'})
+    require(sha(b.ROOT / 'baseline-backend.js') == old['program']['dist-server/index.js'], 'Baseline backend bytes differ')
+    validate_backend_bytes((b.ROOT / 'baseline-backend.js').read_bytes(), (b.ROOT / 'server-delta/index.js').read_bytes())
+    validate_inputs(b.CHANGES, backend, old, {'server/guards.ts'}, PRESERVED_BACKEND_INPUTS)
 
 def main():
     require(len(sys.argv) == 2 and sys.argv[1] in ['check','build','publish','release','rollback'], 'Unexpected operation')

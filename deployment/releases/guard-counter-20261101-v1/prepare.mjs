@@ -13,7 +13,8 @@ assert.equal(release.sourceCommit,receipt.sourceCommit);assert.equal(receipt.rem
 assert.equal(release.baseCommit,before.sourceCommit);assert.deepEqual(before.program,before.preparedProgram);assert.equal(before.container.image,before.preparedImage);
 const reader=await readHostProjection(root,path.relative(root,path.join(folder,'host-projection.json')).replaceAll('\\','/'),{strictOrigins:true});
 const backend=await readHostProjection(root,path.relative(root,path.join(folder,'backend-projection.json')).replaceAll('\\','/'),{strictOrigins:true});
-for(const projection of [release.hostProjection,release.backendProjection])for(const [file,hash]of Object.entries(projection.inputs))assert(sources.includes(file)||[before.source[file],before.sourceLF[file]].includes(hash),'Unrelated build input: '+file);
+const preservedBackendInputs={'src/i18n/en.ts':'8853e5a8bd533ca85608eb11975f1f0d98a03fd0d1b749f48cca00e9db86cd68'};
+for(const projection of [release.hostProjection,release.backendProjection])for(const [file,hash]of Object.entries(projection.inputs))assert(projection===release.backendProjection&&preservedBackendInputs[file]===hash||sources.includes(file)||[before.source[file],before.sourceLF[file]].includes(hash),'Unrelated build input: '+file);
 assert(!fs.existsSync(out),'Payload already exists');fs.mkdirSync(out,{recursive:true});
 function write(name,bytes){const p=path.join(out,name);fs.mkdirSync(path.dirname(p),{recursive:true});fs.writeFileSync(p,bytes,{flag:'wx'});return digest(bytes);}
 const changed={},delta={},serverDelta={};
@@ -35,6 +36,7 @@ const references={
  'image_metadata.py':'deployment/releases/remove-reward-games-catalog-20261031-v1/image_metadata.py',
 };
 const support={};for(const [name,file]of Object.entries(references))support[name]=write(name,fs.readFileSync(file));
+const baseline=fs.readFileSync(path.join(path.dirname(process.argv[2]),'baseline-backend.js'));assert.equal(digest(baseline),before.program['dist-server/index.js']);support['baseline-backend.js']=write('baseline-backend.js',baseline);
 for(const file of ['release-manifest.json','release-github.json'])write(file,fs.readFileSync('module-build/'+file));
 const helperSha256=write('deploy.py',fs.readFileSync(path.join(folder,'deploy.py'))),snapshotSha256=write('snapshot.py',fs.readFileSync(path.join(folder,'snapshot.py')));
 const manifest={release:name,sourceCommit:release.sourceCommit,baseCommit:before.sourceCommit,before,changed,delta,serverDelta,support,helperSha256,snapshotSha256,
