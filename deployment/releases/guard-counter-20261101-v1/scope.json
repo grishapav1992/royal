@@ -1,0 +1,15 @@
+{
+  "release": "guard-counter-20261101-v1",
+  "productionCommit": "482669357da32c69b1a96803e45f671b9aaa19a6",
+  "featureCommit": "44195a79e12be5754828abb5c1c58c65c0d90b35",
+  "changedSources": [
+    "src/i18n/en.ts",
+    "server/guards.ts"
+  ],
+  "backendChanges": [
+    "dist-server/index.js"
+  ],
+  "moduleChanges": [],
+  "addedGames": [],
+  "restoredGames": []
+}
