@@ -244,6 +244,9 @@
     ],
     "cleanupCondition": "Remove only the listed task-owned files when automatic review permits. Do not bypass the rejection. Source and compact verification artifacts are preserved in remote commit 97092988c6fb2214d6f8eb279659b302230a0806.",
     "freeBytesAtInventory": 334043529216,
-    "physicalSpaceReclaimedClaimed": false
+    "physicalSpaceReclaimedClaimed": false,
+    "freeBytesBeforeRejectedCleanup": 334043529216,
+    "freeBytesAfterRejectedCleanup": 335525396480,
+    "note": "Cleanup command was rejected before execution. Measured disk changes are not attributed to this task; no physical reclamation is claimed."
   }
 }
