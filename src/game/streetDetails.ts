@@ -7,10 +7,10 @@ export const STREET_SERVICE_PROPS=[
   {id:'parked-taxi',x:2580,y:1120,width:190,height:84},
 ] as const;
 export const STREET_RESIDENTS=[
-  {id:'doorman',name:'Швейцар Аркадий',role:'У входа',x:1008,y:978,facing:'down',approach:{x:978,y:1006},
+  {id:'doorman',name:'Швейцар Аркадий',role:'У входа',x:1008,y:978,facing:'down',approach:{x:948,y:1006},
     appearance:serializeAppearance({...DEFAULT_APPEARANCE,top:4,topColor:11,bottomColor:9,shoes:1,shoeColor:9,hat:3,accessoryColor:11,facialHair:1,necklace:2}),
     lines:['Добро пожаловать в «Рояль»! Вход рядом, под короной.','Ковёр красный, но снегу это никто не объяснил.','Вокруг здания можно пройти. А за чистоту двора у нас отвечает Семён.']},
-  {id:'janitor',name:'Дворник Семён',role:'Следит за двором',x:1370,y:320,facing:'down',approach:{x:1370,y:365},
+  {id:'janitor',name:'Дворник Семён',role:'Следит за двором',x:1370,y:320,facing:'down',approach:{x:1308,y:365},
     appearance:serializeAppearance({...DEFAULT_APPEARANCE,body:1,hairColor:5,top:2,topColor:3,bottomColor:10,shoes:1,shoeColor:9,hat:4,accessoryColor:10,facialHair:1,mouth:2,scarf:1}),
     lines:['Осторожнее, тут расчищено. Снег пока не в курсе.','Проход вокруг здания свободен. Я только что победил один сугроб.','Тележку поставил у стены. Посылки ждут, когда кто-нибудь перестанет быть занят.']},
   {id:'taxi-driver',name:'Таксист Гоша',role:'Ждёт у такси',x:2435,y:1142,facing:'left',approach:{x:2395,y:1138},
@@ -19,6 +19,14 @@ export const STREET_RESIDENTS=[
 ] as const;
 export type StreetResidentId=typeof STREET_RESIDENTS[number]['id'];
 export type StreetVisitor={x:number;y:number};
+
+// Frame the rear service area as the player walks around either corner.
+export function streetViewOffset(y:number,viewHeight:number){
+  const front=Math.min(140,Math.max(0,viewHeight/2-270));
+  const rear=-Math.min(95,Math.max(0,viewHeight/2-220));
+  const blend=Math.min(1,Math.max(0,(700-y)/240));
+  return front+(rear-front)*blend;
+}
 
 /** A local conversation never sends messages, takes money or changes a room. */
 export class StreetConversations {

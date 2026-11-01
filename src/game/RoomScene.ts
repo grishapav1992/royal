@@ -1,5 +1,5 @@
 import { t as translateText, tr } from '../i18n/index';
-import { STREET_RESIDENTS, type StreetResidentId } from './streetDetails';
+import { STREET_RESIDENTS, streetViewOffset, type StreetResidentId } from './streetDetails';
 import { cabinetSeat, type GameReaction } from '../shared/cabinetSeating';
 import { drawCabinetStool } from './cabinetStoolArt';
 import { drawClubFloor } from './clubArt';
@@ -264,7 +264,7 @@ export class RoomScene extends Phaser.Scene {
       Math.min(0,(frame.width-viewWidth)/2),Math.min(HALL_WALL.viewTop,(frame.height+HALL_WALL.viewTop-viewHeight)/2),
       Math.max(frame.width,viewWidth),Math.max(frame.height-HALL_WALL.viewTop,viewHeight));
     if(this.overview){camera.stopFollow();camera.centerOn(frame.width/2,(frame.height+HALL_WALL.viewTop)/2);}
-    else if(this.player)camera.startFollow(this.player.sprite,false,1,1,0,this.hall==='street'?Math.min(140,Math.max(0,viewHeight/2-270)):0);
+    else if(this.player)camera.startFollow(this.player.sprite,false,1,1,0,this.hall==='street'?streetViewOffset(this.player.y,viewHeight):0);
   }
   private drawRoom() {
     const g = this.add.graphics();
@@ -778,6 +778,7 @@ export class RoomScene extends Phaser.Scene {
     if(!this.network&&!this.locked&&!this.isHuggingCat()&&!this.typing&&inHallDoor(this.player))this.changeHall(hallLinkAt(this.player)!.target);
     this.details?.update(time);
     if(this.hall==='street')this.street?.update(this.player,this.overview,delta,this.reducedMotion);
+    if(this.hall==='street'&&!this.overview)this.cameras.main.setFollowOffset(0,streetViewOffset(this.player.y,this.cameras.main.height/this.cameras.main.zoom));
     if (this.hall === 'github') this.cardTables?.update(time);
     if(this.hall==='arcade')this.bar.update(this.player.action==='drink'||[...this.remotePlayers.values()].some(p=>p.target.action==='drink'),this.reducedMotion,this.guard.barConversation(),delta/1000,Boolean(this.network),npcRenderAt);
     if(!this.network && this.player.action==='drink' && Date.now()>=this.player.actionUntil){this.player.action=this.player.seat?'sit':'idle';this.player.drink='';}

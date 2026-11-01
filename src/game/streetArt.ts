@@ -142,9 +142,6 @@ function paintFront(c:Paint){
   line(c,door,base-190,door,base,ink,3);
   for(const side of [-1,1])box(c,door+side*11-2,base-109,4,36,gold,'#9e7938',1,1);
   canopy(c,door,base-194,212,77);paintStreetCrown(c,door,base-246,41,28);
-  for(const side of [-1,1]){
-    const x=door+side*126;potPine(c,x,base+8);wallLantern(c,x,base-145);
-  }
   // Wall-mounted signs sit within the existing solid facade.
   for(const x of [57,362]){
     box(c,x-25,base-152,50,89,'#b78b4d',ink,2,2);box(c,x-21,base-148,42,81,'#302535',ink,1);
@@ -156,6 +153,9 @@ function paintFront(c:Paint){
   c.font='bold 13px Georgia';c.fillStyle='#3c2931';c.textAlign='center';c.fillText('01',door+101.5,base-162);
   box(c,door-52,base-171,104,20,'#d4b279',ink,1.2,2);
   c.font='bold 9px Arial';c.fillStyle='#4c3037';c.fillText(t('ДОБРО ПОЖАЛОВАТЬ'),door,base-157);
+  for(const side of [-1,1]){
+    const x=door+side*126;potPine(c,x,base+8);wallLantern(c,x,base-145);
+  }
   shape(c,[[door-71,base+1],[door+71,base+1],[door+80,base+26],[door-80,base+26]],'#ac3549','#7c2b40',1);
   line(c,door-70,base+22,door+70,base+22,'#c95c64',1.5);
 }

@@ -5,7 +5,7 @@ import { STREET_OBSTACLES } from '../src/shared/street';
 import { walkable } from '../src/game/navigation';
 import { findPath } from '../src/game/navigation';
 import { STREET } from '../src/shared/street';
-import { STREET_RESIDENTS, StreetConversations } from '../src/game/streetDetails';
+import { STREET_RESIDENTS, StreetConversations, streetViewOffset } from '../src/game/streetDetails';
 import { parseAppearance } from '../src/shared/appearance';
 
 test('street pedestrians stay on the pavement and traffic stays in separate road lanes', () => {
@@ -63,4 +63,12 @@ test('resident conversations require proximity and close on walking away or ente
   dialogue.update({x:person.x+141,y:person.y},true);assert.equal(dialogue.snapshot().conversation,null);
   dialogue.update(person.approach,true);dialogue.talk(person.id);
   dialogue.update(person.approach,false);assert.equal(dialogue.snapshot().conversation,null);assert.equal(dialogue.snapshot().nearby,null);
+});
+
+test('the rear camera frames the service area without a jump at either corner',()=>{
+  for(const height of [500,806]){
+    assert(streetViewOffset(1030,height)>=0);
+    assert(streetViewOffset(360,height)<=0);
+    for(let y=350;y<1050;y++)assert(Math.abs(streetViewOffset(y+1,height)-streetViewOffset(y,height))<1);
+  }
 });
