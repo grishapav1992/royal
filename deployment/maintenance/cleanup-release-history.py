@@ -520,18 +520,28 @@ def verified_program_archive(path, metadata):
     return bool(expected) and sha(path) in expected
 
 
-def active_release_paths():
+def active_release_paths(proc_root=Path('/proc')):
     active = set()
-    for path in Path('/proc').glob('[0-9]*/cmdline'):
+    for path in proc_root.glob('[0-9]*/cmdline'):
         try: command = path.read_bytes().replace(b'\0',b' ').decode(errors='replace')
         except OSError: continue
         for match in re.finditer(re.escape(str(RELEASES)) + r'/([a-zA-Z0-9_.-]+)(?:/|\s|$)', command):
             active.add(str(RELEASES/match.group(1)))
+        try:
+            cwd = (path.parent/'cwd').resolve(strict=True)
+            relative = cwd.relative_to(RELEASES.resolve())
+            if relative.parts and re.fullmatch(r'[a-zA-Z0-9_.-]+',relative.parts[0]):
+                active.add(str(RELEASES/relative.parts[0]))
+        except (OSError,ValueError): pass
     return active
 
 
 def pending_is_active(release, metadata, active, references, age):
-    if not (release/'build-result.json').exists() or any((release/n).exists() for n in ['published.json','recovered.json']): return False
+    if not any((release/n).is_file() for n in ['install-manifest.json','build-result.json']): return False
+    stages = [release/n for n in ['install-manifest.json','build-result.json','release-github.json'] if (release/n).is_file()]
+    if not stages or any((release/n).exists() for n in ['published.json','recovered.json']): return False
+    # Uploading a resumed preparation can update metadata without touching the folder mtime.
+    age = min(age, time.time()-max(path.stat().st_mtime for path in stages))
     images = {m.get('image') for m in metadata if isinstance(m.get('image'),str)}
     return age < 86400 or str(release) in active or bool(images & references)
 

@@ -27,6 +27,9 @@ verification records. Shared source files are checked by content, so removing on
 hardlink cannot invalidate its unchanged siblings. A ten-minute staging grace,
 all publication locks, active-process detection and a 24-hour pending-build grace
 protect ongoing work. Financial backups retain their own policy.
+The preparation grace also covers uploaded manifests before an image is built.
+It uses the latest preparation metadata when an older folder is reused. Relative
+deployment commands are recognized through their process working directory.
 
 OCI manifests and configuration blobs are read with digest verification. Quiet
 containerd reference queries avoid size traversal, as implemented in its
