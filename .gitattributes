@@ -1,0 +1,2 @@
+# Qualification evidence includes hashes of exact reference JSON bytes.
+docs/game-math/qualifications/*.json text eol=lf

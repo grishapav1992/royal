@@ -33,6 +33,11 @@ export class CaribbeanUI {
   private dialog: SlotDialog;
   private dialogKind: SlotDialogKind = '';
   private crewDialog=false;
+  private settingsDialog=false;
+  private dialogTrigger?: HTMLElement;
+  private tuning: HTMLElement;
+  private tuningHome: Comment;
+  private autoCountHome: Comment;
   private choosingCaptain=false;
   private crewRequest=0;
   private crewProfile?:CrewCollection;
@@ -104,8 +109,18 @@ export class CaribbeanUI {
       + '<div class="ct-status" role="status" aria-live="polite"></div><div class="ct-choice" hidden></div><button type="button" class="ct-retry" data-ct-action="retry" hidden></button>'
       + '<div class="ct-backdrop" hidden><section class="ct-modal" role="dialog" aria-modal="true"></section></div>';
     host.replaceChildren(this.root);
-    this.element('.ct-board-wrap').append(this.element('.ct-choice'));
+    const console = document.createElement('div'); console.className = 'ct-console';
+    this.element('.ct-stage').after(console);
+    for (const selector of ['.ct-ledger', '.ct-controls', '.ct-playback', '.ct-choice']) console.append(this.element(selector));
+    this.tuning = document.createElement('div'); this.tuning.className = 'ct-tuning';
+    this.element('.ct-controls').prepend(this.tuning);
+    for (const selector of ['.ct-lines-control', '.ct-stake-control', '[data-ct-action=lines]', '[data-ct-action=buy]']) this.tuning.append(this.element(selector));
+    this.tuningHome = document.createComment('Stake controls'); this.tuning.before(this.tuningHome);
+    this.autoCountHome = document.createComment('Autoplay count'); this.element('[data-ct-auto-count]').before(this.autoCountHome);
+    const settings = document.createElement('button'); settings.type = 'button'; settings.className = 'ct-settings-open'; settings.dataset.ctAction = 'settings';
+    this.element('.ct-controls').append(settings);
     this.element('.ct-playback').append(this.element('[data-ct-action=retry]'));
+    this.element('.ct-modal').tabIndex = -1;
     this.captain=new CaribbeanCaptain(this.root);this.visuals=new CaribbeanMotion(this.root,()=>this.reduced);
     this.root.querySelector('h2')!.textContent = this.title;
     this.element<HTMLSelectElement>('[data-ct-lines]').innerHTML = CARIBBEAN_LINE_COUNTS.map(lines => '<option>' + lines + '</option>').join('');
@@ -126,22 +141,23 @@ export class CaribbeanUI {
       if (!button || button.disabled) return;
       const action = button.dataset.ctAction;
       if(action==='auto'){if(this.autoRunning)this.stopAuto('stopped');else this.startAuto();}
-      else if (action === 'info' || action === 'history') this.openDialog(action);
-      else if (action === 'crew') {if(!this.blocked){this.openDialog('crew');void this.loadCrew();}}
+      else if (action === 'settings') this.openDialog('settings',button);
+      else if (action === 'info' || action === 'history') this.openDialog(action,button);
+      else if (action === 'crew') {if(!this.blocked){this.openDialog('crew',button);void this.loadCrew();}}
       else if (action === 'wallet') window.dispatchEvent(new Event('royal-open-wallet'));
       else if (action === 'skip') this.stopPresentation();
       else if (action === 'sound') { const p=this.services.gameAudio.getPreferences();this.services.gameAudio.setMuted(!p.muted);void this.audio.enter(); }
       else if (action === 'music') {this.audio.setMusic(!this.audio.musicEnabled());void this.audio.enter();this.render();}
       else if (action === 'lines') { this.showLines = !this.showLines; this.render(); }
       else if (action?.startsWith('lines-') || action?.startsWith('stake-')) {
-        if(this.blocked || this.active || this.dialogKind || this.autoRunning)return;
+        if(this.blocked || this.active || this.dialogKind && !this.settingsDialog || this.autoRunning)return;
         this.actionError='';
         const direction=action.endsWith('up')?1:-1;
         if(action.startsWith('lines-'))this.lines=CARIBBEAN_LINE_COUNTS[Math.max(0,Math.min(3,CARIBBEAN_LINE_COUNTS.indexOf(this.lines)+direction))];
         else this.lineStake=CARIBBEAN_LINE_STAKES[Math.max(0,Math.min(CARIBBEAN_LINE_STAKES.length-1,CARIBBEAN_LINE_STAKES.findIndex(stake=>stake===this.lineStake)+direction))];
         this.audio.cue('click');this.render();
       }
-      else if (action === 'buy') { if (!this.blocked && !this.active) this.openDialog('buy'); }
+      else if (action === 'buy') { if (!this.blocked && !this.active) this.openDialog('buy',button); }
       else if (action === 'play') {
         if(this.autoRunning)return;
         if (this.active) void this.move('caribbean-spin');
@@ -150,7 +166,7 @@ export class CaribbeanUI {
       else if (action === 'retry') { if (!this.client.busy) void this.client.retry().catch(() => {}).finally(() => this.update()); }
     },{signal:this.lifetime.signal});
     this.root.addEventListener('change',event => {
-      if (this.blocked || this.active || this.dialogKind || this.autoRunning) { this.render(); return; }
+      if (this.blocked || this.active || this.dialogKind && !this.settingsDialog || this.autoRunning) { this.render(); return; }
       const target = event.target;
       this.actionError='';
       if(target instanceof HTMLSelectElement&&target.matches('[data-ct-auto-count]')){
@@ -163,6 +179,9 @@ export class CaribbeanUI {
     this.root.addEventListener('keydown',event => {
       if (slotOwnsKeyboard(this.root,event)) this.dialog.keyboard(event,this.dialogKind);
     },{signal:this.lifetime.signal,capture:true});
+    this.root.closest('dialog')?.addEventListener('cancel',event=>{
+      if(this.dialogKind){event.preventDefault();event.stopPropagation();this.closeDialog();}
+    },{signal:this.lifetime.signal});
     this.client.addEventListener('change',this.update,{signal:this.lifetime.signal});
     this.services.demoWallet.addEventListener('change',this.update,{signal:this.lifetime.signal});
     window.addEventListener('royal-account',this.update,{signal:this.lifetime.signal});
@@ -201,6 +220,7 @@ export class CaribbeanUI {
     if (this.disposed) return;
     const view = this.presenting ? this.displayed : this.view, frame = view?.spins.at(-1)?.frame;
     this.root.dataset.ctPhase=this.visualPhase;this.root.dataset.motion=this.reduced?'reduced':'full';
+    this.root.dataset.roundPhase=view?.phase ?? 'idle';
     this.root.dataset.outcome=view?.phase==='complete'?this.outcome(view):'';
     this.captain?.context(!this.paused&&!document.hidden&&!this.dialogKind,this.reduced,this.english);
     this.restoreCrewCaptain();
@@ -215,8 +235,12 @@ export class CaribbeanUI {
     const waiting=this.element('.ct-waiting');waiting.hidden=this.visualPhase!=='waiting';waiting.textContent=this.text('Подтверждаем ход...','Confirming operation...');
     const skip=this.element('[data-ct-action=skip]');skip.hidden=!this.presenting||this.visualPhase==='waiting';skip.textContent=this.text('Показать итог сразу','Show final result');
     const lines = this.element<HTMLSelectElement>('[data-ct-lines]'), stake = this.element<HTMLSelectElement>('[data-ct-stake]');
-    lines.value = String(this.lines);this.lineStake=syncStakeSelect(stake,this.lineStake,CARIBBEAN_LINE_STAKES,this.blocked||!!this.active||!!this.dialogKind||this.autoRunning);
-    lines.disabled = stake.disabled = this.blocked || !!this.active || !!this.dialogKind || this.autoRunning;
+    const controlsLocked = this.blocked || !!this.active || !!this.dialogKind && !this.settingsDialog || this.autoRunning;
+    lines.value = String(this.lines);this.lineStake=syncStakeSelect(stake,this.lineStake,CARIBBEAN_LINE_STAKES,controlsLocked);
+    lines.disabled = stake.disabled = controlsLocked;
+    const settings = this.element<HTMLButtonElement>('[data-ct-action=settings]');
+    settings.textContent = this.text('Ставка и опции','Stake and options'); settings.disabled = controlsLocked;
+    settings.setAttribute('aria-expanded',String(this.settingsDialog));
     for(const kind of ['lines','stake'])for(const direction of ['down','up']){
       const button=this.element<HTMLButtonElement>('[data-ct-action='+kind+'-'+direction+']');
       const index=kind==='lines'?CARIBBEAN_LINE_COUNTS.indexOf(this.lines):CARIBBEAN_LINE_STAKES.findIndex(stake=>stake===this.lineStake);
@@ -241,7 +265,7 @@ export class CaribbeanUI {
     this.element('[data-ct-action=lines]').textContent = this.text('Показать линии','Show lines');
     this.element('[data-ct-action=lines]').setAttribute('aria-pressed',String(this.showLines));
     const buy = this.element<HTMLButtonElement>('[data-ct-action=buy]');
-    buy.textContent = this.text('Купить бонус','Buy bonus'); buy.disabled = this.blocked || !!this.active || !!this.dialogKind || this.autoRunning || !this.canAfford('buy-raid');
+    buy.textContent = this.text('Купить бонус','Buy bonus'); buy.disabled = controlsLocked || !this.canAfford('buy-raid');
     const play = this.element<HTMLButtonElement>('[data-ct-action=play]');
     play.querySelector('b')!.textContent = view?.phase === 'choice' ? this.text('Тактика','Tactic') : this.active ? this.text('Бесплатно','Free spin') : this.text('Вращать','Spin');
     play.querySelector('small')!.textContent=view?.phase === 'choice' ? this.text('Выбери ниже','Choose below') : this.active ? this.text('Осталось ','Remaining ') + (view?.remaining ?? 0) : this.money(caribbeanInitialCost({lines:this.lines,mode:'normal',stakeBasis:'total'},this.lineStake))+' USDT';
@@ -251,7 +275,7 @@ export class CaribbeanUI {
     auto.setAttribute('aria-pressed',String(this.autoRunning));
     auto.setAttribute('aria-label',this.autoRunning?this.text('Остановить автокрутку','Stop autoplay'):this.text('Начать автокрутку','Start autoplay'));
     auto.disabled=!this.autoRunning&&(this.blocked||!!this.active||!!this.dialogKind||!!this.client.error||!!this.actionError||!this.canAfford('normal'));
-    count.value=String(this.autoCount);count.disabled=this.autoRunning||this.blocked||!!this.active||!!this.dialogKind;
+    count.value=String(this.autoCount);count.disabled=controlsLocked;
     count.setAttribute('aria-label',this.text('Количество автовращений','Autoplay spin count'));
     this.element('.ct-playback').setAttribute('aria-label',this.text('Автокрутка и показ результата','Autoplay and result playback'));
     const retry = this.element<HTMLButtonElement>('[data-ct-action=retry]');
@@ -450,15 +474,24 @@ export class CaribbeanUI {
   }
   pause(){this.paused=true;this.stopAuto('paused');this.stopPresentation();}
   resume(){this.paused=false;this.render();}
-  private openDialog(kind: 'info' | 'history' | 'buy' | 'crew') {
+  private restoreTuning() {
+    this.tuningHome.after(this.tuning);
+    this.autoCountHome.after(this.element('[data-ct-auto-count]'));
+  }
+  private openDialog(kind: 'info' | 'history' | 'buy' | 'crew' | 'settings', trigger?: HTMLElement) {
     if (this.disposed) return;
+    if(!this.dialogKind)this.dialogTrigger=trigger;
+    this.restoreTuning();
     this.stopAuto('stopped',false);
     if(this.presenting)this.stopPresentation();
-    this.crewDialog=kind==='crew';this.dialogKind = kind==='crew'?'info':kind;
+    this.crewDialog=kind==='crew';this.settingsDialog=kind==='settings';this.dialogKind = kind==='crew'||kind==='settings'?'info':kind;
     const panel = this.element('.ct-modal'), view = this.view;
     panel.classList.toggle('ct-crew-modal',this.crewDialog);
+    panel.classList.toggle('ct-settings-modal',this.settingsDialog);
     let body: string;
-    if(kind==='crew'){
+    if (kind === 'settings') {
+      body = '<h3>'+this.text('Ставка и опции','Stake and options')+'</h3><label class="ct-auto-label">'+this.text('Количество автовращений','Autoplay spin count')+'</label>';
+    }else if(kind==='crew'){
       this.crewMessage='';this.crewSuccess=false;
       body=this.crewBody();
     }else if (kind === 'info') {
@@ -485,7 +518,12 @@ export class CaribbeanUI {
     }
     if(kind==='info')body+='<p class="ct-audio-credits">'+this.text('Музыка: ','Music: ')+'<a href="https://opengameart.org/content/blackmoor-tides-epic-pirate-battle-theme" target="_blank" rel="noopener noreferrer">Blackmoor Tides</a> · <a href="https://www.matthewpablo.com" target="_blank" rel="noopener noreferrer">Matthew Pablo</a> · <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noopener noreferrer">CC BY 3.0</a>. '+this.text('Инструментальная петля, нормализация и короткие затухания. Звуковые эффекты: Kenney и Thimras, CC0.','Instrumental loop, normalization and short fades. Sound effects: Kenney and Thimras, CC0.')+'</p>';
     panel.innerHTML = body + '<button type="button" class="ct-modal-close" data-ct-modal="close">' + this.text('Закрыть','Close') + '</button>';
-    panel.setAttribute('aria-label',this.crewDialog?this.text('Выбор пиратки','Pirate selection'):this.text('Информация об игре','Game information'));
+    if (this.settingsDialog) {
+      panel.querySelector('.ct-auto-label')!.append(this.element('[data-ct-auto-count]'));
+      panel.querySelector('.ct-auto-label')!.before(this.tuning);
+    }
+    for (const child of Array.from(this.root.children)) if (child instanceof HTMLElement && !child.classList.contains('ct-backdrop')) child.inert = true;
+    panel.setAttribute('aria-label',this.settingsDialog?this.text('Ставка и опции','Stake and options'):this.crewDialog?this.text('Выбор пиратки','Pirate selection'):this.text('Информация об игре','Game information'));
     this.dialog.begin(this.dialogKind); this.render(); this.dialog.focus(kind==='info');
   }
   private crewError(error:unknown){
@@ -585,7 +623,11 @@ export class CaribbeanUI {
   }
   private closeDialog() {
     if(this.choosingCaptain){this.crewRequest++;this.choosingCaptain=false;this.captain.cancelSelection();}
-    this.crewDialog=false;this.dialogKind = ''; this.dialog?.hide(); if (!this.disposed && this.root) this.render();
+    this.restoreTuning();
+    for (const child of Array.from(this.root.children)) if (child instanceof HTMLElement) child.inert = false;
+    this.settingsDialog=false;this.crewDialog=false;this.dialogKind = ''; this.dialog?.hide(); if (!this.disposed && this.root) this.render();
+    const trigger=this.dialogTrigger;this.dialogTrigger=undefined;
+    if(trigger?.isConnected)(trigger.getClientRects().length?trigger:this.element('[data-ct-action=info]')).focus({preventScroll:true});
   }
   getState() {
     return {gameId:CARIBBEAN_GAME,phase:this.view?.phase ?? 'ready',sessionId:this.session?.id ?? null,

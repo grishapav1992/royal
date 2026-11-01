@@ -2,6 +2,11 @@ import {  volcanicPlinkoEnglish } from './volcanicPlinkoEn';
 import { progressionEnglish } from './progressionEn';
 
 export const english: Record<string, string> = {
+  'Чат': 'Chat',
+  'Демо': 'Demo',
+  'Открыть чат': 'Open chat',
+  'Закрыть чат': 'Close chat',
+  'Свернуть чат': 'Collapse chat',
   ...progressionEnglish,
   'Галактический реактор':'Galactic Reactor',
   'Гонконгский воин':'Hong Kong Warrior',
