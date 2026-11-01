@@ -140,7 +140,7 @@ test('iframe animations keep their field and actions through both orientations',
  for(const id of ids){
   await page.setViewportSize({width:393,height:852});const frame=await open(page,id);await page.emulateMedia({reducedMotion:'no-preference'});
   await frame.locator(profiles[id].primary).click();
-  await expect.poll(()=>page.evaluate(()=>{const state=(window as any).royalDemo.getMiniState();return !!(state?.busy||state?.presenting||state?.feedback?.active);})).toBe(true);
+  await expect.poll(()=>frame.evaluate(id=>id==='studio-dracona'?document.querySelector('.game')?.getAttribute('data-phase')!=='idle':id==='studio-forest-heart'?document.querySelector('.fh')?.classList.contains('fh-presenting'):document.querySelector('.ft')?.getAttribute('data-feedback')!=='idle',id)).toBe(true);
   await page.setViewportSize({width:852,height:393});await fit(page,frame,id);await page.setViewportSize({width:393,height:852});await fit(page,frame,id);
   await page.emulateMedia({reducedMotion:'reduce'});await finish(page,frame,id);
  }
