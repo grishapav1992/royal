@@ -8,9 +8,12 @@ export async function enterGameHall(page:Page,path:string){
  await expect(page.locator('#character-step')).toBeVisible();await page.getByRole('button',{name:'Войти в зал',exact:true}).click();
  await expect(page.locator('#join-dialog')).toBeHidden();
  await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo?.getState()?.online)).toBe(true);
- const credit=await page.request.post('/__test/layout/topup');expect(credit.ok(),await credit.text()).toBe(true);
- await page.evaluate(async()=>{const module='/src/wallet/WalletClient.ts';await(await import(/* @vite-ignore */module)).demoWallet.refresh();});
- await page.locator('#room-overview').click();
+ if(process.env.LAYOUT_PUBLIC!=='1'){
+  const credit=await page.request.post('/__test/layout/topup');expect(credit.ok(),await credit.text()).toBe(true);
+  if(process.env.LAYOUT_BUILT==='1'){await page.reload();await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo?.getState()?.online),{timeout:30000}).toBe(true);}
+  else await page.evaluate(async()=>{const module='/src/wallet/WalletClient.ts';await(await import(/* @vite-ignore */module)).demoWallet.refresh();});
+ }
+ if(await page.locator('#room-overview').getAttribute('aria-pressed')!=='true')await page.locator('#room-overview').click();
  await expect.poll(()=>page.evaluate(()=>Math.abs((window as any).royalDemo.getState().view.width-document.getElementById('game')!.clientWidth))).toBeLessThanOrEqual(1);
  await page.locator('#games-tab').click();
  await expect.poll(async()=>{
