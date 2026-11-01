@@ -51,7 +51,7 @@ The current chant is visual. No separate audio context, TTS, music or sound asse
 
 The hand shapes now use a single transparent imagegen atlas matching the approved side-view concept: rounded finger anatomy, black cutout contours, warm skin tones, paper grain and burgundy/blue sleeves. Its two columns represent the players; the four rows contain rock, scissors, paper and the stationary cupped supporting palm. The SVG clips one cell per hand without resampling or duplicating the source image. The upper hands change only after the server reveal. The same artwork supplies the three choice-button illustrations. See `artwork.json` for the exact generation prompt and reference roles.
 
-The stage reaches both side edges at its native aspect ratio; it no longer letterboxes the sleeves at larger window widths. Dark charcoal framing, cream panels and condensed headings follow the reference. The active-hand rhythm, reduced-motion setting and shared host chat remain in place. This presentation update does not change deadlines, stakes, private selections or settlement rules.
+The stage reaches both side edges at its native aspect ratio. In short desktop windows the host header and stake controls compact into fewer rows so the hand proportions stay unchanged. Phone layouts use the natural scene proportions. Dark charcoal framing, cream panels and condensed headings follow the reference. The active-hand rhythm, reduced-motion setting and shared host chat remain in place. This presentation update does not change deadlines, stakes, private selections or settlement rules.
 
 ## Compatibility and qualification
 
