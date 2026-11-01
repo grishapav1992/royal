@@ -3,8 +3,8 @@
   "gameId": "studio-afterglow",
   "rulesVersion": 2,
   "progressVersion": 4,
-  "startedAt": "2026-10-31T21:28:54.244Z",
-  "completedAt": "2026-10-31T21:28:57.419Z",
+  "startedAt": "2026-10-31T22:30:19.107Z",
+  "completedAt": "2026-10-31T22:30:21.037Z",
   "sourceHashes": {
     "src/shared/gameStakes.ts": "9e207c51bc5cd9c342992f2f92258826a678cbf00d409b329447e7abca654637",
     "src/shared/roundPrecision.ts": "8d9f64dd7ae146fa1a7288bf0d4bf8f947a8bc419d12c94fe8f765ec2a75b307",
@@ -30,9 +30,11 @@
     "scripts/game-math/stake-runtime.mjs": "24aadf4414fe0daf402931901d773143291bee2c099713355e3e345c1e5145ca",
     "scripts/game-math/stakes-wallet.ts": "d9a4084a6ddb188ef52a6d2e05fb93e09f0ade96a95ae75a16ad065c80f2c695",
     "scripts/game-math/rtp-stakes-samples.mjs": "d2cdeaf1311ba67c78a04b04d78c6353caaed0b490933c93d8b231b94e481b1c",
-    "scripts/game-math/rtp-stakes.mjs": "303243abd909c97683260439f51d7730b2550c2ffb660e434ae59db2730da6ad"
+    "deployment/releases/shared-stakes-20261101-v1/production-round-compatibility.json": "9c88dcdf2554a2a3e2c7e799ca65c604c4bfe719dcdb01ffdc07b305a89cf555",
+    "deployment/releases/shared-stakes-20261101-v1/accepted-rounds.test.ts": "113e32924ffb46d10c6cddcb0c8965a3e197160a6ed965d6ae4e1d7e25c4334d",
+    "scripts/game-math/rtp-stakes.mjs": "b38e69d823b1dab9607523753d0e20c08a7322a83eba2fdbcf706c2b02e2f188"
   },
-  "policySha256": "91ff34628f44063b131e859bb5c89899424df350c57d42c3bb1b09637f903d0b",
+  "policySha256": "58b23f3d2c2cd2fc9749111698826d13a9c50e396d555711fdaad39cc40c2722",
   "method": "full-round-unbiased-cent-policy-v1",
   "precisionLaw": {
     "method": "Independent uniform final ticket; exact BigInt rational accumulation and integer settlement",

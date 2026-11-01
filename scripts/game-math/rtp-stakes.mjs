@@ -109,6 +109,15 @@ export function validateStakeProof(game,inputs,proof){
  assert.equal(proof.schemaVersion,1);assert.equal(proof.gameId,game);assert.equal(proof.rulesVersion,p.rulesVersion);assert.equal(proof.progressVersion,p.progressVersion);assert.equal(proof.method,STAKE_PRECISION_METHOD);
  assert.equal(proof.policySha256,inputs.policySha256);assert.deepEqual(proof.sourceHashes,inputs.sourceHashes);assert.deepEqual(proof.precisionLaw,precisionLaw());assert.deepEqual(proof.results,models(game,p,proof.evidence));
  if(p.kind==='sampled-slots')assert.equal(proof.evidence.samplerServerChecks,p.choices.length*128);
+ if(p.compatibleProgressVersions){
+  assert.equal(game,'studio-afterglow');assert.deepEqual(p.compatibleProgressVersions,[3,4]);const c=readJson(p.compatibilityEvidence);
+  assert(c.passed&&c.productionBalancesChanged===false&&c.preservedWardrobeVersion===3&&c.legacyCases===23&&c.legacyBonuses>=4);
+  assert.deepEqual(c.progress3QualifiedStakes,stakes);assert.match(c.newRuntimeSha256,/^[a-f0-9]{64}$/);
+  assert.equal(textHash(readFileSync(resolve(root,p.compatibilityEvidence))),inputs.sourceHashes[p.compatibilityEvidence]);
+  assert.equal(c.qualificationScriptSha256,inputs.sourceHashes[p.compatibilityQualificationSource]);
+  for(const[file,digest]of Object.entries(c.monetarySourceHashes))if(inputs.sourceHashes[file])assert.equal(digest,inputs.sourceHashes[file],'Projected production money source differs: '+file);
+  for(const file of['src/shared/roundPrecision.ts','src/shared/gameStakes.ts','src/shared/afterglow.ts','server/demoExpansion.ts','server/afterglowProgress.ts'])assert(c.monetarySourceHashes[file]);
+ }
  assert.equal(proof.replay.coverage.length,p.choices.length*stakes.length);let checks=0;
  for(const choice of p.choices)for(const stake of stakes){const r=proof.replay.coverage.find(r=>r.choice===choice&&r.stakeUnits===stake);assert(r);assert.equal(r.paidRounds,p.seeds.length*p.serverReplayRoundsPerSeed);assert(r.spins>=r.paidRounds);assert.match(r.sha256,/^[a-f0-9]{64}$/);assert(r.minimumExtraUnits>=0);checks+=r.paidRounds;}
  assert.equal(proof.serverReplayChecks,checks);assert(proof.walletEvidence?.passed&&proof.walletEvidence.gameId===game,'Fresh common-wallet precision evidence is required');assert.match(proof.walletEvidence.sha256,/^[a-f0-9]{64}$/);assert.equal(proof.walletEvidence.cases,p.choices.length*stakes.length);assert.equal(proof.walletEvidence.replayAndRestartCases,proof.walletEvidence.cases);assert(proof.walletEvidence.oneDebitAndCredit&&proof.walletEvidence.clientVerified&&proof.walletEvidence.native?.passed&&proof.walletEvidence.native.journalBalanced);return true;

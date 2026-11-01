@@ -52,10 +52,19 @@ test('actual production rounds resume and replay unchanged through the projected
     current=await candidate.run(a.a,command(continuation(current.session)));
    }
    if(core){assert(current.gameRound.precision);assert(verifyGameRound(current.gameRound));}else{assert(current.session.precision);assert(verify(current.session));}
-   if(game==='studio-afterglow'){const wardrobe:any=await candidate.run(a.a,{...command(),path:'/afterglow-wardrobe'});assert.equal(wardrobe.version,3,'Published wardrobe must stay at version 3');}
+   if(game==='studio-afterglow'){
+    const beforeWardrobe:any=await candidate.run(a.a,{...command(),path:'/afterglow-wardrobe'});assert.equal(beforeWardrobe.version,3,'Published wardrobe must stay at version 3');
+    let added=0;
+    for(const stake of policies[game].stakes.slice(1)){
+     const prior:any=await a.ledger.wallet(a.a),op={...fresh,id:randomUUID(),stakeUnits:String(stake)};let r:any=await candidate.run(a.a,command(op)),steps=0;
+     while(r.session.state==='active'){assert(steps++<10000);r=await candidate.run(a.a,command(continuation(r.session)));}
+     assert(verify(r.session));assert(r.session.precision);assert.equal(r.session.spentUnits,String(stake));assert.equal(r.wallet.balanceUnits,String(BigInt(prior.balanceUnits)-BigInt(stake)*10000n+BigInt(r.session.returnedUnits)*10000n));added+=stake;
+    }
+    const afterWardrobe:any=await candidate.run(a.a,{...command(),path:'/afterglow-wardrobe'});assert.equal(afterWardrobe.version,3);assert.equal(afterWardrobe.selectedGirl,beforeWardrobe.selectedGirl);assert.equal(afterWardrobe.albumUnits,Math.min(90000,beforeWardrobe.albumUnits+added));
+   }
    await a.ledger.audit();await b.ledger.audit();const row={game,choice,legacyUnchanged:true,moves,freshMinimumUnits:'10',freshCreditedUnits:core?current.gameRound.payoutUnits:current.session.returnedUnits,journalBalanced:true};rows.push(row);digest.update(JSON.stringify(row)+'\n');
   }finally{await a.close();await b.close();}
  }
- const report={passed:true,productionSource:oldProof.productionCommit,oldRuntimeSha256:oldProof.outputs['runtime.mjs'].sha256,newRuntimeSha256:newProof.outputs['runtime.mjs'].sha256,legacyCases:rows.length,legacyBonuses,continuations,preservedWardrobeVersion:3,sha256:digest.digest('hex'),cases:rows};assert(rows.length===23&&legacyBonuses>=4);writeFileSync(process.env.ROYAL_STAKE_TEST_REPORT!,JSON.stringify(report,null,2)+'\n');
+ const report={passed:true,productionSource:oldProof.productionCommit,oldRuntimeSha256:oldProof.outputs['runtime.mjs'].sha256,newRuntimeSha256:newProof.outputs['runtime.mjs'].sha256,legacyCases:rows.length,legacyBonuses,continuations,preservedWardrobeVersion:3,progress3QualifiedStakes:policies['studio-afterglow'].stakes,monetarySourceHashes:newProof.inputs,qualificationScriptSha256:createHash('sha256').update(readFileSync(folder+'/accepted-rounds.test.ts')).digest('hex'),productionBalancesChanged:false,sha256:digest.digest('hex'),cases:rows};assert(rows.length===23&&legacyBonuses>=4);writeFileSync(process.env.ROYAL_STAKE_TEST_REPORT!,JSON.stringify(report,null,2)+'\n');
  }finally{Date.now=realNow;}
 });

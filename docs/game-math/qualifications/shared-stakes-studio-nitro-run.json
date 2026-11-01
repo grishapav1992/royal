@@ -3,8 +3,8 @@
   "gameId": "studio-nitro-run",
   "rulesVersion": 2,
   "progressVersion": 1,
-  "startedAt": "2026-10-31T21:27:38.926Z",
-  "completedAt": "2026-10-31T21:27:41.471Z",
+  "startedAt": "2026-10-31T22:12:38.722Z",
+  "completedAt": "2026-10-31T22:12:40.651Z",
   "sourceHashes": {
     "src/shared/gameStakes.ts": "9e207c51bc5cd9c342992f2f92258826a678cbf00d409b329447e7abca654637",
     "src/shared/roundPrecision.ts": "8d9f64dd7ae146fa1a7288bf0d4bf8f947a8bc419d12c94fe8f765ec2a75b307",
@@ -29,7 +29,7 @@
     "scripts/game-math/stake-runtime.mjs": "24aadf4414fe0daf402931901d773143291bee2c099713355e3e345c1e5145ca",
     "scripts/game-math/stakes-wallet.ts": "d9a4084a6ddb188ef52a6d2e05fb93e09f0ade96a95ae75a16ad065c80f2c695",
     "scripts/game-math/rtp-stakes-samples.mjs": "d2cdeaf1311ba67c78a04b04d78c6353caaed0b490933c93d8b231b94e481b1c",
-    "scripts/game-math/rtp-stakes.mjs": "303243abd909c97683260439f51d7730b2550c2ffb660e434ae59db2730da6ad"
+    "scripts/game-math/rtp-stakes.mjs": "b38e69d823b1dab9607523753d0e20c08a7322a83eba2fdbcf706c2b02e2f188"
   },
   "policySha256": "f76f7df6173238fd31c71fb3d136ca25dc90e018f0d0414623cd8fddf5d1a982",
   "method": "full-round-unbiased-cent-policy-v1",

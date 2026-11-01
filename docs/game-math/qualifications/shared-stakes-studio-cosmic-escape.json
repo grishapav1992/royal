@@ -3,8 +3,8 @@
   "gameId": "studio-cosmic-escape",
   "rulesVersion": 2,
   "progressVersion": 1,
-  "startedAt": "2026-10-31T21:28:25.014Z",
-  "completedAt": "2026-10-31T21:28:49.043Z",
+  "startedAt": "2026-10-31T22:13:19.033Z",
+  "completedAt": "2026-10-31T22:30:16.847Z",
   "sourceHashes": {
     "src/shared/gameStakes.ts": "9e207c51bc5cd9c342992f2f92258826a678cbf00d409b329447e7abca654637",
     "src/shared/roundPrecision.ts": "8d9f64dd7ae146fa1a7288bf0d4bf8f947a8bc419d12c94fe8f765ec2a75b307",
@@ -33,7 +33,7 @@
     "src/shared/luelonSlotsLines.ts": "cc9e2528bae03e8965c154f82aa271b3c9976bb3d817130ba51dedf6e8eb67ee",
     "scripts/game-math/stakes-wallet.ts": "d9a4084a6ddb188ef52a6d2e05fb93e09f0ade96a95ae75a16ad065c80f2c695",
     "scripts/game-math/rtp-stakes-samples.mjs": "d2cdeaf1311ba67c78a04b04d78c6353caaed0b490933c93d8b231b94e481b1c",
-    "scripts/game-math/rtp-stakes.mjs": "303243abd909c97683260439f51d7730b2550c2ffb660e434ae59db2730da6ad"
+    "scripts/game-math/rtp-stakes.mjs": "b38e69d823b1dab9607523753d0e20c08a7322a83eba2fdbcf706c2b02e2f188"
   },
   "policySha256": "53c0fe15156de3e1976ac6f12c9fe6978df63e5f34911162e11bdb72c29fa9a7",
   "method": "full-round-unbiased-cent-policy-v1",

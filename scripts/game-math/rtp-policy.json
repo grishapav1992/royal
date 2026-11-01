@@ -3318,9 +3318,17 @@
         "scripts/game-math/rtp-afterglow.mjs",
         "scripts/game-math/stake-runtime.mjs",
         "scripts/game-math/stakes-wallet.ts",
-        "scripts/game-math/rtp-stakes-samples.mjs"
+        "scripts/game-math/rtp-stakes-samples.mjs",
+        "deployment/releases/shared-stakes-20261101-v1/production-round-compatibility.json",
+        "deployment/releases/shared-stakes-20261101-v1/accepted-rounds.test.ts"
       ],
-      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived."
+      "note": "One stake funds the whole ordinary round. Exact nonnegative rewards and all free continuations are accumulated, capped at the existing maximum and settled once with an independent unbiased integer-cent ticket. Accepted historical rounds retain their original settlement. Qualification is mandatory; no frozen baseline or proof is waived.",
+      "compatibleProgressVersions": [
+        3,
+        4
+      ],
+      "compatibilityEvidence": "deployment/releases/shared-stakes-20261101-v1/production-round-compatibility.json",
+      "compatibilityQualificationSource": "deployment/releases/shared-stakes-20261101-v1/accepted-rounds.test.ts"
     },
     "studio-dracona": {
       "method": "full-round-unbiased-cent-policy-v1",
