@@ -1,0 +1,22 @@
+{
+  "tool": "Built-in image_gen",
+  "purpose": "Closed-eyelid reference frames; the game uses only localized eyelid texture crops. Body motion uses original approved textures and Rive mesh skinning.",
+  "prompts": [
+    {
+      "id": "lyra",
+      "prompt": "Use case: identity-preserve. Edit this exact existing clearly adult woman aged 30, Lyra Voss, for ONE closed-eye blink reference frame for a 2D game rig. Change ONLY her eyes: both eyelids gently closed in a natural blink, eyelashes visible, relaxed expression, no smile change. Keep the exact same adult face identity, head angle and location, skin texture, eyebrows, nose, mouth, hair, fully clothed ivory/gold costume, hands, pose, weapon, cape, colors, lighting, image dimensions and pixel registration. Do not move, scale, recenter, crop or redesign anything. Same portrait canvas 1024 by 1536 with same transparent background and subject placement. Everything except the two small eyelid regions must remain visually identical to the reference. No text, scenery or extra elements."
+    },
+    {
+      "id": "aeliri",
+      "prompt": "Use case: identity-preserve. Edit this exact existing game character image of Aeliri, the clearly adult turquoise alien woman in the seated meditation pose, age 30. Create one reference frame for a natural blink. Change ONLY the two small eye regions so both eyelids are fully and gently closed, with natural eyelashes. Preserve the exact face identity and its pixel position, head angle, eyebrows, mouth, skin details, hair or alien head features, fully clothed existing costume, hands, pose, weapon, lighting and colors. Preserve the portrait canvas dimensions 1024 by 1536 and exact subject registration. Keep genuine transparency. Do not move, resize, recenter, crop or redesign anything. Do not add text, scenery, extra figures or props. Everything except eyelids must stay visually identical."
+    },
+    {
+      "id": "vespera",
+      "prompt": "Use case: identity-preserve. Edit this exact existing game character image of Darth Vespera, the clearly adult dark-skinned silver-haired woman in the command pose, age 30. Create one reference frame for a natural blink. Change ONLY the two small eye regions so both eyelids are fully and gently closed, with natural eyelashes. Preserve the exact face identity and its pixel position, head angle, eyebrows, mouth, skin details, hair or alien head features, fully clothed existing costume, hands, pose, weapon, lighting and colors. Preserve the portrait canvas dimensions 1024 by 1536 and exact subject registration. Keep genuine transparency. Do not move, resize, recenter, crop or redesign anything. Do not add text, scenery, extra figures or props. Everything except eyelids must stay visually identical."
+    },
+    {
+      "id": "nyxara",
+      "prompt": "Use case: identity-preserve. Edit this exact existing game character image of Darth Nyxara, the clearly adult purple alien woman in the combat lunge, age 30. Create one reference frame for a natural blink. Change ONLY the two small eye regions so both eyelids are fully and gently closed, with natural eyelashes. Preserve the exact face identity and its pixel position, head angle, eyebrows, mouth, skin details, hair or alien head features, fully clothed existing costume, hands, pose, weapon, lighting and colors. Preserve the portrait canvas dimensions 1024 by 1536 and exact subject registration. Keep genuine transparency. Do not move, resize, recenter, crop or redesign anything. Do not add text, scenery, extra figures or props. Everything except eyelids must stay visually identical."
+    }
+  ]
+}

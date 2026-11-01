@@ -38,7 +38,7 @@ export class StarSpinCollection{
  }
  private async operate(body:StarRequest){
   if(this.dead||this.busy||!this.owner)return;const owner=this.owner,generation=this.generation;this.pending=body;this.busy=true;this.error='';this.message='';this.paint();this.changed();
-  try{const next=await request(owner,this.abort.signal,body);if(this.dead||generation!==this.generation||owner!==this.owner)return;this.profile=next;this.pending=undefined;
+  try{const next=await request(owner,this.abort.signal,body);if(this.dead||generation!==this.generation||owner!==this.owner)return;const prior=this.profile?.selected;this.profile=next;this.pending=undefined;if(prior!==next.selected&&(body.action==='side'||body.action==='select'))queueMicrotask(()=>{if(!this.dead&&generation===this.generation)this.root.dispatchEvent(new Event('star-spin-selected'));});
    if(next.receipt?.unlocked)this.message=this.text('Героиня открыта. Теперь её можно выбрать.','Companion unlocked. You can now select her.');else if(next.receipt?.reward)this.message=this.text('Получено жетонов: ','Tokens earned: ')+next.receipt.reward;else this.message=this.text('Выбор сохранён.','Choice saved.');
   }catch(e){if(this.dead||generation!==this.generation)return;this.error=e instanceof Error?e.message:'collection-unavailable';if(e instanceof ApiError)this.pending=undefined;}
   finally{if(!this.dead&&generation===this.generation){this.busy=false;this.paint();this.changed();}}

@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "cli": "1.7.0",
+  "runtime": "2.49.0",
+  "note": "Artist controls in a 640 by 960 reference plane. These are restrained first-version motion hypotheses, not perceptual thresholds.",
+  "characters": [
+    {"id":"lyra","artboard":"Lyra","duration":300,"face":[328,145,72,70],"anchorY":850,"body":[[295,330,115,150]],"hair":[[210,230,100,150]],"cloth":[[525,530,180,300]],"limb":[[500,218,95,85]],"pivot":[405,277],"hairAmplitude":1,"clothAmplitude":1,"limbAmplitude":1,"eyelids":{"left":489,"top":185,"width":104,"height":57}},
+    {"id":"aeliri","artboard":"Aeliri","duration":420,"face":[330,165,95,95],"anchorY":620,"body":[[322,370,125,180]],"hair":[[130,410,95,250],[500,420,80,250]],"cloth":[[365,500,170,120]],"limb":[[560,300,50,270]],"pivot":[560,400],"hairAmplitude":0.75,"clothAmplitude":0.45,"limbAmplitude":0.18,"eyelids":{"left":455,"top":206,"width":143,"height":55}},
+    {"id":"vespera","artboard":"Vespera","duration":360,"face":[335,145,78,85],"anchorY":850,"body":[[330,350,125,185]],"hair":[[210,210,105,190]],"cloth":[[535,545,130,330]],"limb":[[440,430,90,85]],"pivot":[380,440],"hairAmplitude":0.8,"clothAmplitude":0.65,"limbAmplitude":0.22,"eyelids":{"left":488,"top":174,"width":122,"height":45}},
+    {"id":"nyxara","artboard":"Nyxara","duration":270,"face":[390,220,70,85],"anchorY":850,"body":[[345,385,125,140]],"hair":[[190,280,180,150]],"cloth":[[270,630,190,210]],"limb":[[490,430,110,100],[575,185,65,250]],"pivot":[450,450],"hairAmplitude":1.2,"clothAmplitude":0.9,"limbAmplitude":0.38,"eyelids":{"left":550,"top":281,"width":129,"height":62}}
+  ]
+}

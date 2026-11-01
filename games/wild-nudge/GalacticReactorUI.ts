@@ -3,6 +3,7 @@ import {WILD_NUDGE_GAME,type WildNudgeView} from '../../src/shared/wildNudge';
 import {WILD_NUDGE_DATA as R,WILD_NUDGE_STAKES,wildNudgeSpin,type NudgeSpin} from '../../src/shared/wildNudgeMath';
 import {GalacticAudio,type GalacticCue} from './GalacticAudio';
 import {StarSpinCollection} from './StarSpinCollection';
+import {StarSpinCharacter} from './StarSpinCharacter';
 const image=(symbol:number)=>`/assets/wild-nudge/symbol-${symbol}.webp`;
 const escape=(value:string)=>value.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]!));
 const symbolNames=['Энергетический клинок','Куб знаний','Звёздный компас','Реликтовая маска','Космический кристалл','Медальон','Реактор WILD','Портал SCATTER'];
@@ -10,7 +11,7 @@ const symbolNamesEn=['Energy blade','Knowledge cube','Star compass','Relic mask'
 export class GalacticReactorUI {
   private services=readGameHost();private client=this.services.expansionClient;
   private root:HTMLElement;private modal:HTMLDialogElement;private priorFocus?:HTMLElement;
-  private collection:StarSpinCollection;
+  private collection:StarSpinCollection;private character:StarSpinCharacter;
   private lifetime=new AbortController();private motion=new AbortController();private resize:ResizeObserver;
   private audio=new GalacticAudio();private animations=new Set<Animation>();private timers=new Set<ReturnType<typeof setTimeout>>();
   private media=window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -44,6 +45,8 @@ export class GalacticReactorUI {
     <dialog class="gn-modal" data-gn="modal" aria-labelledby="gn-modal-title"><header><h3 id="gn-modal-title" data-gn="modal-title"></h3><button data-gn="close" aria-label="${this.text('Закрыть','Close')}">×</button></header><div data-gn="modal-body"></div></dialog>`;
     host.replaceChildren(this.root);this.modal=this.el<HTMLDialogElement>('modal');
     this.collection=new StarSpinCollection(this.root,()=>this.services.i18n.language,()=>!this.busy&&!this.presenting&&!this.active&&!this.auto&&!this.client.busy&&!this.client.pending&&!this.modal.open,()=>this.render(),()=>{this.stopAuto();this.cancelPresentation();});
+    this.character=new StarSpinCharacter(this.root);
+    this.root.addEventListener('star-spin-selected',()=>this.character.react('select'),{signal:this.lifetime.signal});
     this.root.addEventListener('pointerdown',()=>void this.audio.unlock(),{signal:this.lifetime.signal});
     this.root.addEventListener('click',event=>{const button=(event.target as Element).closest<HTMLButtonElement>('button[data-gn]');if(button&&!button.disabled)this.click(button.dataset.gn!);},{signal:this.lifetime.signal});
     this.el('stake').addEventListener('change',()=>{if(this.blocked||this.auto||this.active){this.render();return;}this.stake=this.el<HTMLSelectElement>('stake').value;this.error='';this.note='';this.render();},{signal:this.lifetime.signal});
@@ -98,6 +101,7 @@ export class GalacticReactorUI {
   private render(){
     if(this.dead)return;const shown=this.shown,active=this.active,blocked=this.blocked;
     this.collection?.sync(this.client.accountId??'');
+    this.character?.sync(this.client.accountId??'',this.root.dataset.character??'',this.collection.open?'idle':this.root.dataset.phase??'idle',this.shown?.stage==='bonus',this.paused||this.modal.open,this.reduced);
     this.el('balance').textContent=this.wallet?this.services.walletCoins(this.wallet.balance):'…';this.el('cost').textContent=this.money(active?this.view!.stakeUnits:this.stake);
     this.el('payout').textContent=this.money(shown?.totalPayoutUnits??'0');this.el('net').textContent=shown?.stage==='settled'?this.money(String(BigInt(shown.totalPayoutUnits)-BigInt(shown.stakeUnits))):'…';
     this.el<HTMLSelectElement>('stake').value=this.stake;this.el<HTMLSelectElement>('stake').disabled=blocked||this.auto||active;
@@ -113,7 +117,7 @@ export class GalacticReactorUI {
   private wait(ms:number,signal=this.motion.signal){return new Promise<void>(resolve=>{if(signal.aborted){resolve();return;}const done=()=>{clearTimeout(timer);this.timers.delete(timer);signal.removeEventListener('abort',done);resolve();};const timer=setTimeout(done,Math.max(0,ms));this.timers.add(timer);signal.addEventListener('abort',done,{once:true});});}
   private async accent(cue:GalacticCue,action:()=>void,signal:AbortSignal){if(signal.aborted||this.dead)return;const sync=this.audio.schedule(cue);await this.wait(sync.delayMs,signal);if(signal.aborted||this.dead)return;action();this.skew.push({cue,mode:sync.mode,skewMs:performance.now()-sync.target});if(this.skew.length>60)this.skew.shift();}
   private async animate(element:HTMLElement,frames:Keyframe[],duration:number,signal:AbortSignal){if(this.reduced||signal.aborted)return;const animation=element.animate(frames,{duration,easing:'cubic-bezier(.2,.75,.3,1)'});this.animations.add(animation);const cancel=()=>animation.cancel();signal.addEventListener('abort',cancel,{once:true});await animation.finished.catch(()=>{});signal.removeEventListener('abort',cancel);this.animations.delete(animation);}
-  private cancelPresentation(){this.motion.abort();for(const animation of this.animations)animation.cancel();this.animations.clear();this.audio.cancel();this.root.querySelectorAll('.gn-spinning,.gn-charging').forEach(el=>el.classList.remove('gn-spinning','gn-charging'));}
+  private cancelPresentation(){this.character?.cancelReaction();this.motion.abort();for(const animation of this.animations)animation.cancel();this.animations.clear();this.audio.cancel();this.root.querySelectorAll('.gn-spinning,.gn-charging').forEach(el=>el.classList.remove('gn-spinning','gn-charging'));}
   private async show(view:WildNudgeView){
     this.motion.abort();this.motion=new AbortController();const signal=this.motion.signal,frame=view.spins.at(-1)!,epoch=this.epoch,owner=this.owner;this.presenting=true;this.root.dataset.phase='reveal';this.el('payline').replaceChildren();this.render();
     for(let c=0;c<5&&!signal.aborted;c++){
@@ -126,7 +130,7 @@ export class GalacticReactorUI {
       for(let i=1;i<reel.path.length&&!signal.aborted;i++){
         this.root.dataset.phase='nudge';const track=column.querySelector<HTMLElement>('.gn-track')!,cell=this.el('board').clientWidth/5;
         const shifted=-cell-reel.direction*cell;
-        await this.accent('nudge',()=>column.classList.add('gn-charging'),signal);
+        await this.accent('nudge',()=>{column.classList.add('gn-charging');this.character.react('wild_align');},signal);
         await this.animate(track,[{transform:`translateY(${-cell}px)`},{transform:`translateY(${shifted}px)`}],this.fast?90:230,signal);
         if(signal.aborted)break;
         this.column(c,reel.path[i].stop,reel.path[i].multiplier);column.classList.remove('gn-charging');
@@ -134,9 +138,9 @@ export class GalacticReactorUI {
     }
     if(this.dead||epoch!==this.epoch||owner!==this.client.accountId)return;
     if(!this.dead){this.root.querySelectorAll('.gn-spinning').forEach(el=>el.classList.remove('gn-spinning'));this.drawFrame(frame);this.shown=structuredClone(view);this.shownKey=this.session!.id+':'+view.revision;this.note=view.stage==='bonus'?this.text('Режим перегрузки. Продолжение бесплатно.','Overdrive mode. Continue without another stake.'):this.resultText(view);this.root.dataset.phase=view.stage==='bonus'?'bonus':'result';
-      if(!signal.aborted&&!this.paused&&!this.modal.open){
-        if(frame.awardedSpins){await this.accent('bonus',()=>{this.el('bonus-overlay').hidden=false;},signal);await this.wait(this.reduced?0:this.fast?180:650,signal);}
-        else if(view.stage==='settled'){const total=BigInt(view.totalPayoutUnits),stake=BigInt(view.stakeUnits);this.audio.schedule(total>stake?'win':total===stake?'return':'partial');}
+      if(!signal.aborted&&!this.paused&&!this.modal.open&&!this.collection.open){
+        if(frame.awardedSpins){await this.accent('bonus',()=>{this.el('bonus-overlay').hidden=false;this.character.react('bonus_enter');},signal);await this.wait(this.reduced?0:this.fast?180:650,signal);}
+        else if(view.stage==='settled'){const total=BigInt(view.totalPayoutUnits),stake=BigInt(view.stakeUnits);if(total>stake)await this.accent('win',()=>this.character.react('round_win'),signal);else this.audio.schedule(total===stake?'return':'partial');}
       }
       this.el('bonus-overlay').hidden=true;
     }
@@ -154,7 +158,7 @@ export class GalacticReactorUI {
       if(retry)await this.client.retry();else if(this.active)await this.client.act({gameId:WILD_NUDGE_GAME,action:'move',sessionId:this.session!.id,move:'wild-nudge-spin',revision:this.view!.revision});else await this.client.act({gameId:WILD_NUDGE_GAME,action:'start',stakeUnits:this.stake,settings:{wildNudge:{mode:'normal'}}});
       if(this.dead||epoch!==this.epoch||owner!==this.client.accountId)return false;
       const view=this.view;if(!view||this.client.pending)throw Error(this.text('Раунд не подтверждён. Повтори запрос.','Round not confirmed. Retry the request.'));
-      if(this.paused||this.modal.open){this.shown=structuredClone(view);this.shownKey=this.session!.id+':'+view.revision;this.drawFrame(view.spins.at(-1)!);this.note=view.stage==='bonus'?this.text('Бонус сохранён. Продолжение бесплатно.','Bonus saved. Continue without another stake.'):this.resultText(view);}else await this.show(view);
+      if(this.paused||this.modal.open||this.collection.open){this.shown=structuredClone(view);this.shownKey=this.session!.id+':'+view.revision;this.drawFrame(view.spins.at(-1)!);this.note=view.stage==='bonus'?this.text('Бонус сохранён. Продолжение бесплатно.','Bonus saved. Continue without another stake.'):this.resultText(view);}else await this.show(view);
       return true;
     }catch(error){if(!this.dead&&epoch===this.epoch){this.error=error instanceof Error?error.message:String(error);this.stopAuto(false);this.cancelPresentation();}return false;}
     finally{if(!this.dead&&epoch===this.epoch){this.busy=false;this.root.querySelectorAll('.gn-spinning').forEach(el=>el.classList.remove('gn-spinning'));this.sync();}}
@@ -183,6 +187,6 @@ export class GalacticReactorUI {
   }
   pause(){if(this.dead)return;this.paused=true;this.stopAuto();this.cancelPresentation();this.audio.pause();this.render();}
   resume(){if(this.dead||document.hidden)return;this.paused=false;this.audio.resume();this.sync();}
-  getState(){return {collection:this.collection.state,gameId:WILD_NUDGE_GAME,title:this.title,phase:this.root.dataset.phase,revision:this.view?.revision,remaining:this.view?.remaining,busy:this.busy,presenting:this.presenting,autoplay:{running:this.auto,remaining:this.autoLeft,count:this.autoCount},ownedTimers:this.timers.size,animations:this.animations.size,audio:this.audio.getState(),synchronization:this.skew.slice(),shownRevision:this.shown?.revision};}
-  destroy(){if(this.dead)return;this.dead=true;this.stopAuto(false);this.epoch++;this.cancelPresentation();this.lifetime.abort();this.resize.disconnect();this.client.removeEventListener('change',this.changed);this.services.demoWallet.removeEventListener('change',this.changed);this.unsubscribe();this.collection.destroy();this.audio.destroy();if(this.modal.open)this.modal.close();this.root.remove();}
+  getState(){return {character:this.character.state,collection:this.collection.state,gameId:WILD_NUDGE_GAME,title:this.title,phase:this.root.dataset.phase,revision:this.view?.revision,remaining:this.view?.remaining,busy:this.busy,presenting:this.presenting,autoplay:{running:this.auto,remaining:this.autoLeft,count:this.autoCount},ownedTimers:this.timers.size,animations:this.animations.size,audio:this.audio.getState(),synchronization:this.skew.slice(),shownRevision:this.shown?.revision};}
+  destroy(){if(this.dead)return;this.dead=true;this.stopAuto(false);this.epoch++;this.cancelPresentation();this.lifetime.abort();this.resize.disconnect();this.client.removeEventListener('change',this.changed);this.services.demoWallet.removeEventListener('change',this.changed);this.unsubscribe();this.collection.destroy();this.character.destroy();this.audio.destroy();if(this.modal.open)this.modal.close();this.root.remove();}
 }
