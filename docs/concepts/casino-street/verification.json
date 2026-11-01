@@ -1,50 +1,53 @@
 {
   "feature": "casino-street",
   "date": "2026-11-01",
-  "baselineCommit": "44195a79e12be5754828abb5c1c58c65c0d90b35",
+  "baselineCommit": "6de1a46effb8d6769ea337191e3bb6078bbb3b60",
   "deployed": false,
   "addedOrRestoredGames": [],
   "checks": {
     "applicationBuild": {
-      "passed": true,
-      "startedAt": "2026-11-01T16:19:54.717Z",
+      "format": 1,
+      "startedAt": "2026-11-01T17:25:11.586Z",
+      "scope": "application",
       "steps": [
         {
           "name": "rtp",
           "passed": true,
-          "durationMs": 4062
+          "durationMs": 3990
         },
         {
           "name": "typecheck",
           "passed": true,
-          "durationMs": 6359
+          "durationMs": 6770
         },
         {
           "name": "modules",
           "passed": true,
-          "durationMs": 5300
+          "durationMs": 8299
         },
         {
           "name": "host",
           "passed": true,
-          "durationMs": 5626
+          "durationMs": 5418
         },
         {
           "name": "backend",
           "passed": true,
-          "durationMs": 63
+          "durationMs": 74
         },
         {
           "name": "reconciliation",
           "passed": true,
-          "durationMs": 19
+          "durationMs": 17
         },
         {
           "name": "payments",
           "passed": true,
-          "durationMs": 25
+          "durationMs": 23
         }
-      ]
+      ],
+      "passed": true,
+      "durationMs": 24592
     },
     "rtp": {
       "verified": 37,
@@ -53,8 +56,15 @@
       "legacyNotQualified": 114
     },
     "targetedNodeTests": {
-      "passed": 26,
-      "failed": 0
+      "passed": 30,
+      "failed": 0,
+      "includes": [
+        "street routes and transitions",
+        "street ambience lifecycle and traffic separation",
+        "indoor elevator compatibility",
+        "movement and prediction",
+        "passive guard and demo wallet"
+      ]
     },
     "browser": {
       "passed": 2,
@@ -79,7 +89,25 @@
         "web": 5193,
         "api": 2593
       },
-      "livePreviewPreserved": "http://127.0.0.1:5191"
+      "livePreviewPreserved": "http://127.0.0.1:5191",
+      "decorativePedestriansMove": true,
+      "carsMove": true,
+      "signSheenRuns": true,
+      "reducedMotionFreezesAmbience": true,
+      "elevatorExcludesStreet": true,
+      "runtimeSourceCommit": "63231d048afe301d7edce3f5331160e140ab41fe",
+      "runtimeUnchangedAfterBuildScriptSync": true,
+      "observations": [
+        "Vite logged ECONNRESET during socket closure; both scenarios passed, connected chat and room recovery were verified, and pageerror lists were empty."
+      ]
+    },
+    "connectionLifecycle": {
+      "passed": 15,
+      "failed": 0
+    },
+    "moduleProjection": {
+      "passed": 3,
+      "failed": 0
     }
   },
   "existingFailures": {
@@ -108,7 +136,7 @@
       }
     },
     "note": "Failing test names were compared against unchanged origin/main. No retired games were restored to satisfy historical expectations.",
-    "context": "Historical comparison from the initial street implementation at 78c3f207 against 0f2d09c0, not a new failure count for reference-v2. The current visual change passed the 26 targeted tests and both browser scenarios."
+    "context": "Historical comparison from the initial street implementation at 78c3f207 against 0f2d09c0, not a current failure count. Street-life-v3 passed 30 targeted tests, 15 connection lifecycle tests, 3 module projection tests and both browser scenarios."
   },
   "productionCatalogueReadOnly": {
     "arcadeCatalogSha256": "f6a46d3ee4d427068c87af6a4289fed6e1ac7e00ca3a60da9849cb319e475dc6",
@@ -116,7 +144,7 @@
     "cabinetsSourceMatchesMain": false,
     "cabinetsChangedByTask": false,
     "productionMutations": false,
-    "reverifiedAt": "2026-11-01T16:25:43.981Z"
+    "reverifiedAt": "2026-11-01T17:26:29.531903+00:00"
   },
   "limitations": [
     "Browser viewports emulate desktop and mobile; no physical phone was tested.",
@@ -134,22 +162,46 @@
   ],
   "sourceHashes": {
     "src/shared/street.ts": "15112fd6f1fd4abc5483f042f6a11d1fd555040b17f92966d56bf49c764cea51",
-    "src/shared/world.ts": "7d799089511a16611da32df0e08245091f438426e5a0e52e30fe5f2caf087c8f",
-    "src/game/streetArt.ts": "6319054eeea81fdd94123a1aa5cecd30394b2cb0748943f2e9dbdcc9b895b826",
-    "src/game/StreetRenderer.ts": "32fb3f25e0d83cbe4132ceaad7e9331838a4dbf3f9aab02c8cb03ac09c6cf1b5",
-    "src/game/RoomScene.ts": "9da2be15fa777649750764b36b3aec1f7cd5d75fa4797d0b8444a0d746a5caa6",
-    "src/ui/ClubMap.ts": "fbcf4b6e1010f267b22d062724c36e0cd3285f2488b6276d8b5a5e8745de66c5",
+    "src/shared/world.ts": "74b80495ef53ee6d9c33892a02bc50e5503d8fdb890d21f36e8cf1ed5061440a",
+    "src/game/streetArt.ts": "82557a6eceedff8a285acba9da873064e5eee784d69936e3f1c702cac83c4242",
+    "src/game/StreetRenderer.ts": "9365c183cc27ea30f27d368f8973e27c4b6a7f41711eca43dfb168a7d8b92fe6",
+    "src/game/RoomScene.ts": "b91917c9970db8e2f9b1ea64048060413771c0911000ed8e0401c66c8250bb27",
+    "src/ui/ClubMap.ts": "d653f55f06acc2cc7d5e3e427425389583288d5d7cdff0eb6a14d6ba07dcd190",
     "server/guards.ts": "f4e1d25875bdc007929b4649a3ff13634ab204d7867240bac000297a4fb91b4a",
-    "src/main.ts": "1e079a5b6b8e9753e71cf547af754e0eba3b17c56773eb5c131ec07ab3d8d7f1"
+    "src/main.ts": "043412f51c8e31eb33b8f07038c00ff544158bcc935814c5562209b87ea46739",
+    "src/game/StreetLife.ts": "ad377e5af09dbf78d16c99ee3f8b65a2aead40d9bbf699847ec79d8f9456c9bf",
+    "src/game/StreetAmbience.ts": "dca99a1a52dd20b13897fd10ad501f89683b808384d00fbed4d28570196d1b0e",
+    "src/shared/elevator.ts": "4cb3d3512ef999775c1542230786634988e4fa8d04d3f9aa674c38301e69d8cf",
+    "src/ui/ElevatorUI.ts": "7371925efbb8c31aaf0b3527f35a2361250bcaa8785bbf9e5aa67eb2f051a86d",
+    "src/network/LobbyClient.ts": "00fd8151a711c56a9840b1b3e27d83e6ee7a8a6c2256e987ad5871d9a0198a8d"
   },
   "previousBaselineCommit": "0f2d09c003a243d51e118ca3c7b9ea5b7eb20731",
-  "visualVersion": "reference-v2",
+  "visualVersion": "street-life-v3",
   "visualChanges": [
     "Paneled double doors and arched canopies",
     "Cream pilasters with diamond details",
     "Shared crown and ROYAL lettering",
     "Snow-covered planters, pines, lantern frames and bench armrests",
     "Flat perpendicular overview and shared minimap artwork",
-    "Camera framing adjusted toward the facade without a visible final floor"
-  ]
+    "Camera framing adjusted toward the facade without a visible final floor",
+    "Crown, optical lettering and planter centered between pilasters with straight underlines",
+    "Five decorative walkers on pavement and perimeter routes",
+    "Periodic two-way cars with separate lanes and a flat overview texture",
+    "Masked gold sheen and rare smooth star glints",
+    "Decorative clock pauses indoors, hidden and under reduced motion; no added audio"
+  ],
+  "testedSourceCommit": "8be6c669e8eefa0f85c559aff22100fd13ef7693",
+  "localPreview": {
+    "page": 200,
+    "mainScript": 200,
+    "backendHealth": 200,
+    "asset": "/assets/main-BlTWCwH3.js",
+    "sha256": "36140d8ec7271a0f0f84c5c278ec63704da1cb80ddc12a21f8c05b8716c841ba",
+    "matchesBuild": true,
+    "url": "http://127.0.0.1:5191",
+    "frontendSourceCommit": "8be6c669e8eefa0f85c559aff22100fd13ef7693",
+    "backendSourceCommit": "78c3f207a60cacfc0d7f8b1ab1fc3c15cae8ea23",
+    "backendPreservedForActiveSession": true,
+    "completeCurrentBackendTestedSeparately": true
+  }
 }
