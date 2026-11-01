@@ -38,7 +38,7 @@ jobs:
       - run: npm ci
       - run: npm run test:release
       - run: python3 -m unittest discover -s deployment/maintenance -p 'test_*.py'
-  rtp-gate:
+  application-checks:
     needs: scope
     if: needs.scope.outputs.profile == 'full'
     runs-on: ubuntu-latest
@@ -98,3 +98,19 @@ jobs:
             module-build/release-timings.json
             module-build/application-report.json
             module-build/build-report.json
+
+  rtp-gate:
+    if: always()
+    needs: [scope, application-checks, release-records]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - run: node scripts/release-ci-scope.mjs --result
+        env:
+          RELEASE_PROFILE: ${{ needs.scope.outputs.profile }}
+          RELEASE_SCOPE_RESULT: ${{ needs.scope.result }}
+          RELEASE_APP_RESULT: ${{ needs.application-checks.result }}
+          RELEASE_RECORDS_RESULT: ${{ needs.release-records.result }}

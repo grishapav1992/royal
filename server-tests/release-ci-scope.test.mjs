@@ -1,5 +1,12 @@
 import test from 'node:test';import assert from 'node:assert/strict';
-import {ciScope,ciScopeFromGit} from '../scripts/release-ci-scope.mjs';
+import {ciScope,ciScopeFromGit,ciResult} from '../scripts/release-ci-scope.mjs';
+
+test('the required result cannot pass a failed classifier, skipped required suite or unknown profile',()=>{
+ assert(ciResult('full','success','success','skipped'));assert(ciResult('records','success','skipped','success'));assert(ciResult('docs','success','skipped','skipped'));
+ for(const profile of ['full','records','docs','unknown'])for(const status of ['failure','cancelled','skipped',''])assert(!ciResult(profile,status,'success','success'));
+ for(const status of ['failure','cancelled','skipped','']){assert(!ciResult('full','success',status,'success'));assert(!ciResult('records','success','success',status));}
+ assert(!ciResult('unknown','success','success','success'));
+});
 
 test('ordinary notes and deployment records do not rebuild application or games',()=>{
  assert.equal(ciScope(['deployment/SERVER.md','docs/release-process.md','AGENTS.md']),'docs');

@@ -16,7 +16,17 @@ export function ciScopeFromGit(root,base){
  try{git(['merge-base','--is-ancestor',base,'HEAD']);return ciScope(git(['diff','--name-only','--no-renames','-z',base,'HEAD']).split('\0').filter(Boolean));}
  catch{return 'full';}
 }
+export function ciResult(profile,scopeResult,applicationResult,recordsResult){
+ if(scopeResult!=='success')return false;
+ if(profile==='full')return applicationResult==='success';
+ if(profile==='records')return recordsResult==='success';
+ return profile==='docs'&&applicationResult==='skipped'&&recordsResult==='skipped';
+}
 if(process.argv[1]&&pathToFileURL(resolve(process.argv[1])).href===import.meta.url){
+ if(process.argv[2]==='--result'){
+  process.exitCode=ciResult(process.env.RELEASE_PROFILE,process.env.RELEASE_SCOPE_RESULT,process.env.RELEASE_APP_RESULT,process.env.RELEASE_RECORDS_RESULT)?0:1;
+ }else{
  const base=process.env.RELEASE_PR_BASE||process.env.RELEASE_PUSH_BEFORE;
  console.log('profile='+ciScopeFromGit(process.cwd(),base));
+ }
 }
