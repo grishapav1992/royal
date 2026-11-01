@@ -1,0 +1,638 @@
+{
+  "release": "lobby-connection-20261101-v1",
+  "status": "verified",
+  "verifiedAt": "2026-11-01T21:07:14.423417+00:00",
+  "sourceCommit": "99aa9ac67c7a7f4a0825ced87440c0ee708764a5",
+  "baseCommit": "f2be9fd0c951c4fb5c380207bcf2308d0ba1dbe4",
+  "url": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "diagnosis": {
+    "historicalIncident": "No stored close-reason record existed for the earlier incident; its physical network cause cannot be reconstructed conclusively.",
+    "reproducedBefore": {
+      "outageMs": 31000,
+      "result": "Permanent disconnection without automatic reentry"
+    },
+    "reproducedAfter": {
+      "outageMs": [
+        31000,
+        75000
+      ],
+      "result": "Automatic recovery with the original room and player, including after SDK retry exhaustion"
+    },
+    "serverObserved": {
+      "vcpus": 2,
+      "cpuStealPercentSamples": [
+        70,
+        69,
+        70,
+        66,
+        64,
+        60,
+        64,
+        63,
+        64
+      ],
+      "gameCpuPercent": 1.11,
+      "sourceFullAuditDurationsMs": [
+        189229,
+        153486
+      ],
+      "interpretation": "The virtual machine repeatedly lacked CPU time from the hypervisor. This increases delay risk but does not by itself identify the earlier socket close. Financial audits and other services were preserved."
+    },
+    "verifiedSoftwareCauses": [
+      "A 20-second server reservation expired before the default client retry schedule finished.",
+      "SDK retry exhaustion discarded a potentially valid server reconnection token.",
+      "Planned server shutdown (4001) and failed reconnection (4003) ended the lobby session without automatic reentry."
+    ],
+    "fixedPolicies": {
+      "serverNonPvpReservationSeconds": 90,
+      "pvpReservationSecondsUnchanged": 60,
+      "automaticReentryWindowMs": 120000,
+      "matchmakingRequestDeadlineMs": 10000
+    },
+    "privacy": "New server logs contain connection phases, close codes, uptime and counts, without account names, emails or reconnection tokens."
+  },
+  "sourcePaths": [
+    "server/LobbyRoom.ts",
+    "server/index.ts",
+    "src/i18n/en.ts",
+    "src/network/LobbyClient.ts",
+    "src/network/reconnection.ts",
+    "src/shared/lobbyConnection.ts",
+    "src/ui/SocialUI.ts"
+  ],
+  "addedGames": [],
+  "restoredGames": [],
+  "moduleChanges": [],
+  "checks": {
+    "connectionTests": 33,
+    "pvpTests": 4,
+    "installerTests": 7,
+    "typecheck": true,
+    "releasePlan": true,
+    "releasePrepare": true,
+    "releaseVerifyWithGithub": true,
+    "rtpProfiles": 37,
+    "stakePolicies": 19,
+    "stakeAdmissionChecks": 19,
+    "beforeOutage": {
+      "mode": "before",
+      "outageMs": 31000,
+      "before": {
+        "status": "connected",
+        "roomId": "M2NVSmShu",
+        "selfId": "rp8L06Jcu"
+      },
+      "after": {
+        "status": "disconnected"
+      },
+      "banVisible": false,
+      "pageErrors": []
+    },
+    "sourceRecovery75Seconds": {
+      "mode": "after",
+      "outageMs": 75000,
+      "before": {
+        "status": "connected",
+        "roomId": "8rb5OozWH",
+        "selfId": "xcaV2V4ZM",
+        "recoveryAttempts": 0
+      },
+      "after": {
+        "status": "connected",
+        "roomId": "8rb5OozWH",
+        "selfId": "xcaV2V4ZM",
+        "lastCloseCode": 4003,
+        "recoveryAttempts": 19
+      },
+      "banVisible": false,
+      "pageErrors": []
+    },
+    "finalBuiltRecovery31Seconds": {
+      "mode": "built-final",
+      "outageMs": 31000,
+      "before": {
+        "status": "connected",
+        "roomId": "yBc34UoiQ",
+        "selfId": "sec6ZZ2-7",
+        "recoveryAttempts": 0
+      },
+      "after": {
+        "status": "connected",
+        "roomId": "yBc34UoiQ",
+        "selfId": "sec6ZZ2-7",
+        "recoveryAttempts": 0
+      },
+      "banVisible": false,
+      "pageErrors": []
+    },
+    "finalBuiltRestartAndWallet": [
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "stakeUnits": "10",
+        "betEntries": 1,
+        "posts": 1,
+        "openGamePreserved": true,
+        "closedAndReopenedWithoutDebit": true,
+        "pageErrors": []
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "stakeUnits": "10",
+        "betEntries": 1,
+        "posts": 1,
+        "openGamePreserved": true,
+        "closedAndReopenedWithoutDebit": true,
+        "pageErrors": []
+      }
+    ],
+    "publicIndexMatchesPreparedBytes": true
+  },
+  "preservation": {
+    "unchangedSourcePaths": 2610,
+    "moduleFiles": 4189,
+    "activeGames": 19,
+    "otherServices": 13,
+    "protectedServicesProgramsUnchanged": true,
+    "persistentDataPreserved": true,
+    "financialRuntimeChanges": false,
+    "gameMathematicsChanges": false
+  },
+  "publicBefore": {
+    "mode": "before",
+    "games": [
+      "studio-caramel-carnival",
+      "studio-last-convoy",
+      "studio-nitro-run",
+      "studio-meme-overload",
+      "studio-velvet-reign",
+      "original-cr-vs-leo",
+      "original-jackie-chan",
+      "royal-plinko",
+      "royal-roulette",
+      "github-crash",
+      "flag-battle",
+      "studio-forest-heart",
+      "studio-caribbean-treasures",
+      "studio-cosmic-escape",
+      "studio-flooded-temple",
+      "studio-afterglow",
+      "studio-dracona",
+      "studio-neopolis",
+      "tsu-e-fa"
+    ],
+    "checks": [
+      {
+        "path": "/healthz",
+        "status": 200,
+        "sha256": "7482326171995296103a4f794befc2c7831df741969bdbe936bdb637195e4dfc"
+      },
+      {
+        "path": "/api/demo-wallet",
+        "status": 401,
+        "sha256": "73b970e47d6bf990e9c3dfe858b8e2a83e72e904f4aeb01374be698bbc27b4ed"
+      },
+      {
+        "path": "/api/game-wallet",
+        "status": 410,
+        "sha256": "315631d67986c57670e9631e6aebb3c072e97b6e6f31a467c81dd6f0e83603ce"
+      },
+      {
+        "path": "/api/nile-play",
+        "status": 410,
+        "sha256": "315631d67986c57670e9631e6aebb3c072e97b6e6f31a467c81dd6f0e83603ce"
+      },
+      {
+        "path": "/?connection=before",
+        "status": 200,
+        "sha256": "4745f98043e1aed880610aef8c8eef002d2a615426757bdbacf14e2c64b382d8"
+      },
+      {
+        "path": "/game-modules/studio-caramel-carnival/active.json",
+        "status": 200,
+        "sha256": "cf13ee32fb3cf858c183c4517afc82936e52fc73e2b0f5222a6ff70e45a76874"
+      },
+      {
+        "path": "/game-modules/studio-last-convoy/active.json",
+        "status": 200,
+        "sha256": "f7cdf5a8a32ab6fd57ec54c28f91f359bbff6a6044ebd155629360e3ba63d6b5"
+      },
+      {
+        "path": "/game-modules/studio-nitro-run/active.json",
+        "status": 200,
+        "sha256": "b7291d4290685ad8cb33c1ebda9a0f9161d887b3a2923866821ce13fadb28765"
+      },
+      {
+        "path": "/game-modules/studio-meme-overload/active.json",
+        "status": 200,
+        "sha256": "7162e4438a4c3e73053714c0a8cdffa670009684ac7a662ecbe0cc792a100ed4"
+      },
+      {
+        "path": "/game-modules/studio-velvet-reign/active.json",
+        "status": 200,
+        "sha256": "bbf0ab7f37be8c2a6e71c640ddb60fc890b6d77084d377e031df5d8d76c7109d"
+      },
+      {
+        "path": "/game-modules/original-cr-vs-leo/active.json",
+        "status": 200,
+        "sha256": "ecf5dd8bf35137f4ca66982501e20a5c687d1abe6c63e5344cbc66131e36a05e"
+      },
+      {
+        "path": "/game-modules/original-jackie-chan/active.json",
+        "status": 200,
+        "sha256": "7ce6f3a09f27195a1ce3b637680030f3b417c713416261690edd070426b9ba7b"
+      },
+      {
+        "path": "/game-modules/royal-plinko/active.json",
+        "status": 200,
+        "sha256": "142d2ba7903ca72564c00625421de022521e2564e6477a1a7ec5d6461ae416a6"
+      },
+      {
+        "path": "/game-modules/royal-roulette/active.json",
+        "status": 200,
+        "sha256": "ca9865eb25e3278c7e2565a76c9cd138577d009962417ea7ae8e6d78e0c9eada"
+      },
+      {
+        "path": "/game-modules/github-crash/active.json",
+        "status": 200,
+        "sha256": "b07441c71edba6eb3f4cbd9b1d66d62e213d65876726e04f2cf8a71454c1bcda"
+      },
+      {
+        "path": "/game-modules/flag-battle/active.json",
+        "status": 200,
+        "sha256": "0ac4166814d3d04ecd24112fc62dd22740d1f80d8a83b7a0309b69950084ac26"
+      },
+      {
+        "path": "/game-modules/studio-forest-heart/active.json",
+        "status": 200,
+        "sha256": "4ca458eb41d0a1373feb0cfa230179a64c106a4adaff4bad42431498e2f05f70"
+      },
+      {
+        "path": "/game-modules/studio-caribbean-treasures/active.json",
+        "status": 200,
+        "sha256": "9a3e51ed9df04543af4c5e972f77afee53c1094cf35b7cc1a655299f768c37a2"
+      },
+      {
+        "path": "/game-modules/studio-cosmic-escape/active.json",
+        "status": 200,
+        "sha256": "2150a2e8c668bdc9a6aceba86f2529813230d0227fd58d837ae09cadbeb6db74"
+      },
+      {
+        "path": "/game-modules/studio-flooded-temple/active.json",
+        "status": 200,
+        "sha256": "31eda23dbb9ec8fb6c1fb42f6904a882490604f6bd6bbc79529671cac18e5021"
+      },
+      {
+        "path": "/game-modules/studio-afterglow/active.json",
+        "status": 200,
+        "sha256": "31b8b858b145ac91d0965a37007421b66d05582ea1f79d70970575f656c9aff6"
+      },
+      {
+        "path": "/game-modules/studio-dracona/active.json",
+        "status": 200,
+        "sha256": "d826bb5f133f60d813ef9ede625d2c94e012d485cbe9f9ffa375bba0c93bb223"
+      },
+      {
+        "path": "/game-modules/studio-neopolis/active.json",
+        "status": 200,
+        "sha256": "ec29e45b53236a77441a83f3590eb3686c1008d97da330b1ffffc975946cbbf9"
+      },
+      {
+        "path": "/game-modules/tsu-e-fa/active.json",
+        "status": 200,
+        "sha256": "03ff5ab3fb697596abe39718d826fecde226898abf2cd35a0280b499e50a5cd7"
+      }
+    ]
+  },
+  "publicAfter": {
+    "mode": "after",
+    "games": [
+      "studio-caramel-carnival",
+      "studio-last-convoy",
+      "studio-nitro-run",
+      "studio-meme-overload",
+      "studio-velvet-reign",
+      "original-cr-vs-leo",
+      "original-jackie-chan",
+      "royal-plinko",
+      "royal-roulette",
+      "github-crash",
+      "flag-battle",
+      "studio-forest-heart",
+      "studio-caribbean-treasures",
+      "studio-cosmic-escape",
+      "studio-flooded-temple",
+      "studio-afterglow",
+      "studio-dracona",
+      "studio-neopolis",
+      "tsu-e-fa"
+    ],
+    "checks": [
+      {
+        "path": "/healthz",
+        "status": 200,
+        "sha256": "7482326171995296103a4f794befc2c7831df741969bdbe936bdb637195e4dfc"
+      },
+      {
+        "path": "/api/demo-wallet",
+        "status": 401,
+        "sha256": "73b970e47d6bf990e9c3dfe858b8e2a83e72e904f4aeb01374be698bbc27b4ed"
+      },
+      {
+        "path": "/api/game-wallet",
+        "status": 410,
+        "sha256": "315631d67986c57670e9631e6aebb3c072e97b6e6f31a467c81dd6f0e83603ce"
+      },
+      {
+        "path": "/api/nile-play",
+        "status": 410,
+        "sha256": "315631d67986c57670e9631e6aebb3c072e97b6e6f31a467c81dd6f0e83603ce"
+      },
+      {
+        "path": "/?connection=after",
+        "status": 200,
+        "sha256": "2daae758bb98b4937950f03be6a5708863f6496cabd100b13908656624abc57f"
+      },
+      {
+        "path": "/game-modules/studio-caramel-carnival/active.json",
+        "status": 200,
+        "sha256": "cf13ee32fb3cf858c183c4517afc82936e52fc73e2b0f5222a6ff70e45a76874"
+      },
+      {
+        "path": "/game-modules/studio-last-convoy/active.json",
+        "status": 200,
+        "sha256": "f7cdf5a8a32ab6fd57ec54c28f91f359bbff6a6044ebd155629360e3ba63d6b5"
+      },
+      {
+        "path": "/game-modules/studio-nitro-run/active.json",
+        "status": 200,
+        "sha256": "b7291d4290685ad8cb33c1ebda9a0f9161d887b3a2923866821ce13fadb28765"
+      },
+      {
+        "path": "/game-modules/studio-meme-overload/active.json",
+        "status": 200,
+        "sha256": "7162e4438a4c3e73053714c0a8cdffa670009684ac7a662ecbe0cc792a100ed4"
+      },
+      {
+        "path": "/game-modules/studio-velvet-reign/active.json",
+        "status": 200,
+        "sha256": "bbf0ab7f37be8c2a6e71c640ddb60fc890b6d77084d377e031df5d8d76c7109d"
+      },
+      {
+        "path": "/game-modules/original-cr-vs-leo/active.json",
+        "status": 200,
+        "sha256": "ecf5dd8bf35137f4ca66982501e20a5c687d1abe6c63e5344cbc66131e36a05e"
+      },
+      {
+        "path": "/game-modules/original-jackie-chan/active.json",
+        "status": 200,
+        "sha256": "7ce6f3a09f27195a1ce3b637680030f3b417c713416261690edd070426b9ba7b"
+      },
+      {
+        "path": "/game-modules/royal-plinko/active.json",
+        "status": 200,
+        "sha256": "142d2ba7903ca72564c00625421de022521e2564e6477a1a7ec5d6461ae416a6"
+      },
+      {
+        "path": "/game-modules/royal-roulette/active.json",
+        "status": 200,
+        "sha256": "ca9865eb25e3278c7e2565a76c9cd138577d009962417ea7ae8e6d78e0c9eada"
+      },
+      {
+        "path": "/game-modules/github-crash/active.json",
+        "status": 200,
+        "sha256": "b07441c71edba6eb3f4cbd9b1d66d62e213d65876726e04f2cf8a71454c1bcda"
+      },
+      {
+        "path": "/game-modules/flag-battle/active.json",
+        "status": 200,
+        "sha256": "0ac4166814d3d04ecd24112fc62dd22740d1f80d8a83b7a0309b69950084ac26"
+      },
+      {
+        "path": "/game-modules/studio-forest-heart/active.json",
+        "status": 200,
+        "sha256": "4ca458eb41d0a1373feb0cfa230179a64c106a4adaff4bad42431498e2f05f70"
+      },
+      {
+        "path": "/game-modules/studio-caribbean-treasures/active.json",
+        "status": 200,
+        "sha256": "9a3e51ed9df04543af4c5e972f77afee53c1094cf35b7cc1a655299f768c37a2"
+      },
+      {
+        "path": "/game-modules/studio-cosmic-escape/active.json",
+        "status": 200,
+        "sha256": "2150a2e8c668bdc9a6aceba86f2529813230d0227fd58d837ae09cadbeb6db74"
+      },
+      {
+        "path": "/game-modules/studio-flooded-temple/active.json",
+        "status": 200,
+        "sha256": "31eda23dbb9ec8fb6c1fb42f6904a882490604f6bd6bbc79529671cac18e5021"
+      },
+      {
+        "path": "/game-modules/studio-afterglow/active.json",
+        "status": 200,
+        "sha256": "31b8b858b145ac91d0965a37007421b66d05582ea1f79d70970575f656c9aff6"
+      },
+      {
+        "path": "/game-modules/studio-dracona/active.json",
+        "status": 200,
+        "sha256": "d826bb5f133f60d813ef9ede625d2c94e012d485cbe9f9ffa375bba0c93bb223"
+      },
+      {
+        "path": "/game-modules/studio-neopolis/active.json",
+        "status": 200,
+        "sha256": "ec29e45b53236a77441a83f3590eb3686c1008d97da330b1ffffc975946cbbf9"
+      },
+      {
+        "path": "/game-modules/tsu-e-fa/active.json",
+        "status": 200,
+        "sha256": "03ff5ab3fb697596abe39718d826fecde226898abf2cd35a0280b499e50a5cd7"
+      },
+      {
+        "path": "/assets/index-BtYj4eFe.js",
+        "status": 200,
+        "sha256": "6596c36b86e605971c1421dd1d322eb40e8995364afef7175c3e290280f02642"
+      }
+    ]
+  },
+  "publicBrowser": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "guestAuthenticationVisible": true,
+      "geometry": {
+        "width": 1440,
+        "scroll": 1440
+      },
+      "pageErrors": []
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "guestAuthenticationVisible": true,
+      "geometry": {
+        "width": 390,
+        "scroll": 390
+      },
+      "pageErrors": []
+    }
+  ],
+  "publication": {
+    "published": true,
+    "preparedImage": "sha256:e53a4a3fe0152d8b8034800ccdf2c0c43f49d580ad37326c003e74e619e06e1d",
+    "runningImage": "sha256:e53a4a3fe0152d8b8034800ccdf2c0c43f49d580ad37326c003e74e619e06e1d",
+    "containerRestarted": true,
+    "sourceCommit": "99aa9ac67c7a7f4a0825ced87440c0ee708764a5",
+    "changedSources": 7,
+    "clientDeltaFiles": 2,
+    "configurationsAndMountsPreserved": true,
+    "gameDataPreserved": true,
+    "backendDeltaFiles": 1,
+    "otherBackendProgramsAndModulesPreserved": true,
+    "oldAssetsPreserved": true,
+    "otherPersistentServicesPreserved": 13
+  },
+  "rollback": {
+    "backup": "/opt/royal-backups/lobby-connection-20261101-v1",
+    "sourceBackupSha256": "4b454d11e3bcf24c6708528d7a9bfa906c2b4fbae9b4264dbe37457684b3a8a3"
+  },
+  "maintenance": {
+    "startedAt": 1793566622.791423,
+    "status": "completed",
+    "freeBefore": 11635355648,
+    "release": "lobby-connection-20261101-v1",
+    "sourceCommit": "99aa9ac67c7a7f4a0825ced87440c0ee708764a5",
+    "currentImage": "sha256:e53a4a3fe0152d8b8034800ccdf2c0c43f49d580ad37326c003e74e619e06e1d",
+    "rollbackImage": "sha256:9cc50121ed98cb289318e430d773a586e5dadd2856842da5e8389e298e15fa31",
+    "plannedEntries": 42,
+    "plannedImages": 1,
+    "preservedFinancialFiles": 110,
+    "retainedHistoryReasons": {
+      "/opt/royal-releases/hall-elevator-20261101-v1-final.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/atelier-fresh-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/forest-heart-20261029-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2-compact.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/royal-roulette-20261029-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-production-before.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/lobby-connection-20261101-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/universal-spins-20261031-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-dracona-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-variable-stake-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/hall-elevator-20261101-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2-delta.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/location-rewards-20261031-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-snapshot.py": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-dracona-20261023-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh-v3.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/atelier-flare-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/character-motion-20261027-v1.failed.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/restore-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-ui-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/tsu-e-fa-20261101-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/location-levels-20261030-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/girlhub-feedback-20261023-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh-v2.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-production-before-final.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/atelier-fresh-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/universal-spins-20261031-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/neopolis-dracona-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-card-scale-20261023": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/neopolis-variable-stake-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/atelier-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-usdt-20261023-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/location-rewards-20261031-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/atelier-flare-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/restore-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/location-levels-20261030-v1": "fresh, pending, or source not verified in GitHub"
+    },
+    "removedEntries": 42,
+    "removedImageTags": 3,
+    "dockerRetainedImages": [],
+    "freeAfter": 11789811712,
+    "containersUnchanged": true,
+    "healthOk": true,
+    "finishedAt": 1793567168.8426266,
+    "durationSeconds": 546.05,
+    "timerEnabled": true,
+    "healthAfter": "healthy",
+    "imageAfter": "sha256:e53a4a3fe0152d8b8034800ccdf2c0c43f49d580ad37326c003e74e619e06e1d",
+    "finalAvailableBytes": 11793461248
+  },
+  "serverCleanup": {
+    "status": "completed",
+    "preservationCommit": "99aa9ac67c7a7f4a0825ced87440c0ee708764a5",
+    "sourceCommit": "99aa9ac67c7a7f4a0825ced87440c0ee708764a5",
+    "removed": [
+      {
+        "path": "/opt/royal-releases/lobby-connection-20261101-v1/runtime-context",
+        "logicalBytes": 5148409,
+        "directory": true
+      },
+      {
+        "path": "/opt/royal-releases/lobby-connection-20261101-v1.tgz",
+        "logicalBytes": 2729721,
+        "directory": false
+      }
+    ],
+    "logicalBytesRemoved": 7878130,
+    "freeBytesBefore": 11790708736,
+    "freeBytesAfter": 11793465344,
+    "rollbackSourcePreserved": true,
+    "imageAndDataChanges": false,
+    "retained": [
+      "source",
+      "dist-delta",
+      "server-delta",
+      "install-manifest.json",
+      "build-result.json",
+      "published.json"
+    ],
+    "cleanupCondition": "Retain guarded rollback inputs until superseded by a verified compatible host release; financial and persistent data are outside this cleanup.",
+    "initialAttempt": "A busy publication lock stopped the first cleanup before deletion; the completed attempt ran after release."
+  },
+  "localCleanup": {
+    "early": {
+      "removed": [
+        {
+          "path": "artifacts/work/lobby-connection-20261101/pg-temp/royal-pg-8dIgkO",
+          "logicalBytes": 51379660
+        },
+        {
+          "path": "artifacts/work/lobby-connection-20261101/pg-temp/royal-pg-EmNx9f",
+          "logicalBytes": 50830088
+        },
+        {
+          "path": "artifacts/work/lobby-connection-20261101/pg-temp/royal-pg-fZE6jF",
+          "logicalBytes": 51094666
+        },
+        {
+          "path": "artifacts/work/lobby-connection-20261101/pg-temp/royal-pg-tG4HZZ",
+          "logicalBytes": 51098710
+        }
+      ],
+      "logicalBytesRemoved": 204403124,
+      "freeBytesBefore": 46746210304,
+      "freeBytesAfter": 47579996160
+    },
+    "final": "See completion.json in the task directory after GitHub preservation and worktree removal."
+  },
+  "limits": [
+    "The earlier physical close cannot be conclusively attributed without historical close-reason logs.",
+    "CPU steal measured at 60-70 percent is an external hosting capacity issue; this release does not change the hypervisor.",
+    "Mobile checks used browser viewport 390x844, not a physical phone.",
+    "Production accounts, stakes and chat messages were not created by verification."
+  ],
+  "publicationVerifiedAt": 1793566535.8844078
+}
