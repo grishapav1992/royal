@@ -27,7 +27,7 @@ export class StreetResidents {
       const sprite=scene.add.sprite(person.x,person.y,characterTexture(scene,0,person.appearance),person.facing+'-6')
         .setOrigin(.5,1).setScale(CHARACTER_SCALE).setDepth(person.y);
       const tool=scene.add.graphics().setPosition(person.x,person.y).setDepth(person.y+.1);
-      const label=scene.add.text(person.x,person.y-91,t(person.name),{fontFamily:'Arial',fontSize:'10px',color:'#f5dfaa',backgroundColor:'#302832e8',padding:{x:6,y:4}}).setOrigin(.5,1).setDepth(person.y+2);
+      const label=scene.add.text(person.x,person.y-91,t(person.name),{fontFamily:'Arial',fontSize:'10px',color:'#f5dfaa',backgroundColor:'#302832e8',padding:{x:6,y:4}}).setOrigin(.5,1).setDepth(3000);
       scene.add.zone(person.x,person.y-40,62,86).setDepth(person.y+3).setInteractive({useHandCursor:true}).on('pointerdown',()=>approach(person.id));
       this.actors.push({sprite,tool,label});
     }
