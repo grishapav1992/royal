@@ -5,7 +5,7 @@ from pathlib import Path
 import fcntl, hashlib, json, re, signal, types
 from image_metadata import image, inspect
 
-NAME = 'compact-header-20261101-v1'
+NAME = 'compact-header-20261101-v2'
 ROOT = Path(__file__).resolve().parent
 SOURCES = {'src/main.ts', 'src/ui/SocialUI.ts', 'src/i18n/en.ts', 'src/ui/compact-header.css'}
 

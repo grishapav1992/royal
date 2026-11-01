@@ -93,7 +93,7 @@ app.innerHTML = tr`
 `;
 installLanguageSwitcher(document.querySelector<HTMLElement>('.profile')!);
 const profileMenu = document.querySelector<HTMLElement>('#profile-menu')!;
-const compactHeader = window.matchMedia('(max-width:1200px)');
+const compactHeader = window.matchMedia('(max-width:1400px)');
 compactHeader.addEventListener('change', () => {
   if (!compactHeader.matches && profileMenu.matches(':popover-open')) profileMenu.hidePopover();
 });
