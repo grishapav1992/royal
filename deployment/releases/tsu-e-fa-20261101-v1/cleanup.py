@@ -12,6 +12,9 @@ def require(value,reason):
 def sha(path):return hashlib.sha256(path.read_bytes()).hexdigest()
 def read(path):return json.loads(path.read_text())
 def inventory(path):return {p.relative_to(path).as_posix():sha(p) for p in path.rglob('*') if p.is_file()}
+
+def valid_host_rollback(own,backup,current,expected):
+    return backup==expected or (not own and current==expected)
 def valid_successor(image,label,own_image,own_source,p,m,b,receipt):
     return (p.get('published') is True and p.get('runningImage')==b.get('image')==image
         and p.get('sourceCommit')==m.get('sourceCommit')==receipt.get('sourceCommit')==label
@@ -56,9 +59,18 @@ def main():
     game=json.loads(subprocess.check_output(['docker','inspect','royal-game-1']))[0]
     require(game['State'].get('Health',{}).get('Status')=='healthy','Current image is not healthy')
     protected_release=current_release(game,b)
-    backup=Path(b['backup'])
-    require(backup==Path('/opt/royal-backups')/m['release'] and not backup.is_symlink(),'Unexpected backup')
-    require(sha(backup/'source.tgz')==b['sourceBackupSha256'] and sha(backup/'host.json')==m['before']['moduleHostContract'],'Rollback backup differs')
+    # Retention keeps the current release and its rollback. Once a verified
+    # successor is current, its backup preserves our image; our older rollback
+    # may already have been retired by the completed automatic maintenance.
+    protected_root=ROOT.parent/protected_release
+    protected_m,protected_b=[read(protected_root/n) for n in ['install-manifest.json','build-result.json']]
+    backup=Path(protected_b['backup'])
+    require(backup==Path('/opt/royal-backups')/protected_m['release'] and not backup.is_symlink(),'Unexpected backup')
+    require(sha(backup/'source.tgz')==protected_b['sourceBackupSha256'],'Current rollback source backup differs')
+    # A host-only successor preserves the external module contract in place.
+    host_backup=backup/'host.json'
+    host_current=Path('/opt/royal-game-modules-state/host.json')
+    require(valid_host_rollback(protected_release==ROOT.name,sha(host_backup) if host_backup.exists() else None,sha(host_current),protected_m['before']['moduleHostContract']),'Current rollback host contract differs')
     rows=[];context=ROOT/'runtime-context'
     if context.exists():
         require(context.resolve()==context and context.is_dir() and not any(p.is_symlink() for p in context.rglob('*')),'Unsafe build context')
@@ -74,7 +86,7 @@ def main():
         path=Path(row['path']);require(path.parent==ROOT and path.resolve()==path,'Cleanup escaped release directory')
         if row['directory']:shutil.rmtree(path)
         else:path.unlink()
-    result={'removed':rows,'removedLogicalBytes':sum(r['logicalBytes'] for r in rows),'freeBefore':free,'freeAfter':shutil.disk_usage('/opt/royal').free,'preservedInGitHub':sys.argv[1],'sourceCommit':m['sourceCommit'],'image':b['image'],'protectedCurrentRelease':protected_release,'healthyCurrentImage':game['Image'],'backupPreserved':True,'databaseRestored':False}
+    result={'removed':rows,'removedLogicalBytes':sum(r['logicalBytes'] for r in rows),'freeBefore':free,'freeAfter':shutil.disk_usage('/opt/royal').free,'preservedInGitHub':sys.argv[1],'sourceCommit':m['sourceCommit'],'image':b['image'],'protectedCurrentRelease':protected_release,'healthyCurrentImage':game['Image'],'protectedRollbackBackup':str(backup),'backupPreserved':True,'databaseRestored':False}
     (ROOT/'cleanup.json').write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps(result))
 if __name__=='__main__':main()

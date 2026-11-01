@@ -4,6 +4,11 @@ if sys.platform=='win32':sys.modules.setdefault('fcntl',types.SimpleNamespace())
 spec=importlib.util.spec_from_file_location('tsu_cleanup',Path(__file__).with_name('cleanup.py'))
 cleanup=importlib.util.module_from_spec(spec);spec.loader.exec_module(cleanup)
 class CleanupBoundary(unittest.TestCase):
+    def test_unchanged_live_contract_is_valid_only_for_the_verified_successor(self):
+        self.assertTrue(cleanup.valid_host_rollback(False,None,'matching','matching'))
+        self.assertTrue(cleanup.valid_host_rollback(True,'matching','new-contract','matching'))
+        self.assertFalse(cleanup.valid_host_rollback(True,None,'matching','matching'))
+        self.assertFalse(cleanup.valid_host_rollback(False,None,'changed','matching'))
     def test_only_a_verified_immediate_successor_can_replace_the_current_image_guard(self):
         p={'published':True,'runningImage':'new','sourceCommit':'new-source'}
         m={'sourceCommit':'new-source','before':{'preparedImage':'old','sourceCommit':'old-source'}}
