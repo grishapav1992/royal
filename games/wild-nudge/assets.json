@@ -1,5 +1,14 @@
 {
   "gameId": "studio-wild-nudge",
+  "symbolSet": "galactic-relics",
+  "selectedByUser": "2026-10-31: variant 1, Galactic Relics",
+  "mode": "built-in image_gen",
+  "sources": {
+    "reference": "games/wild-nudge/assets/source/relics-reference.png",
+    "atlas": "games/wild-nudge/assets/source/relics-symbols.png",
+    "cover": "games/wild-nudge/assets/source/relics-cover.png",
+    "wild": "games/wild-nudge/assets/source/relics-wild.png"
+  },
   "prompts": [
     {
       "asset": "background",
@@ -9,19 +18,96 @@
       "intent": "generate"
     },
     {
-      "asset": "symbols",
-      "prompt": "Create one high-quality sprite sheet of eight ORIGINAL fictional science-fiction equipment icons for a space-station slot game. Exactly four equal columns and two equal rows, each icon completely within its own cell and centered with transparent padding. Genuinely transparent background. Polished cinematic 3D game-item illustrations, graphite titanium, vivid colored glass and gentle local energy glow, consistent perspective and studio lighting. Top row left to right: a violet faceted crystal in a metallic mount; an original small spherical blue-white maintenance robot; an orange-visored futuristic pilot helmet; an original compact silver starfighter with red accents. Bottom row left to right: a green luminous power capsule; a gold geometric fleet medal with red center; a tall narrow cylindrical blue reactor tower with three joined illuminated chambers; an amber circular space portal with mechanical rim. The reactor tower must be fully visible and vertical, with a narrow silhouette. No branded or recognizable characters, no letters, no words, no numbers, no logos, no UI, no frames, no labels, no background scenery, no extra objects between cells. Strong clean readable silhouettes, detailed tactile materials, suitable for crisp game symbols.",
-      "transparentBackground": true,
-      "mode": "built-in image_gen",
-      "intent": "generate"
+      "asset": "approved-concept",
+      "prompt": "Create ONE polished concept contact sheet of eight alternative symbols for an original premium space-opera slot game. Landscape composition, exactly FOUR equal columns by TWO equal rows, one complete symbol centered within each cell, generous safe margins, no object crossing cell boundaries. Dark neutral graphite studio background shared by the sheet, soft localized halos only, consistent cinematic 3D game-art rendering, detailed tactile materials and strong readable silhouettes, beautiful crisp item illustrations designed to remain legible at small slot-symbol sizes. Each symbol should fill its cell well without being cropped. No title, no written text, no labels, no letters, no numerals, no logos, no interface, no buttons, no paylines, no decorative tile frames, no watermarks. This is a symbol-design proposal, not a game screenshot. Theme: mysterious ancient galactic relics, richly crafted collectible artifacts with mineral glass, ancient bronze and titanium, refined adventurous space-fantasy mood. TOP ROW left to right: a crimson glowing energy blade with an ornate dark metallic hilt, shown diagonally as one compact complete object; a luminous violet geometric knowledge cube opening slightly around a floating crystal; an ancient golden star-map compass with a deep blue glass core; an ivory ceremonial space-knight mask with a narrow emerald eye slit. BOTTOM ROW left to right: a faceted luminous aqua cosmic crystal supported by a small claw-like bronze mount; a luxurious ancient violet-and-gold circular medallion with three dimensional layered geometric ornament; a tall narrow vertical relic reactor with exactly THREE joined luminous cyan chambers in one continuous structure, fully visible, acting as the WILD symbol; a grand amber-gold circular hyperspace portal with a dark mechanical rim and a radiant depth-filled center, acting as the SCATTER symbol. Make all six ordinary objects distinctly different in shape and identifying color. Sophisticated physical materials, elegant mysterious artifacts, restrained glow, visually stronger and more distinctive than generic equipment icons."
+    },
+    {
+      "asset": "atlas",
+      "prompt": "Use case: background-extraction and production game-sprite preparation. Edit target: the supplied approved Galactic Relics eight-symbol concept sheet. Preserve the EXACT EIGHT object identities, shapes, rendering style, bronze/gold ornament, colors and lighting. Convert it into ONE clean production sprite atlas with a genuinely TRANSPARENT ALPHA background, no opaque backdrop, no floor, no grid lines, no tile borders. FOUR exactly equal columns by TWO exactly equal rows. Each object is fully inside its cell with an 8 percent safe transparent margin, isolated with its gentle local luminous alpha glow only. Top row left to right: the red crystal energy blade with its dark ornate hilt; the opening violet knowledge cube with its suspended purple crystal; the gold-and-blue star-map compass; the ivory-and-gold green-eyed ceremonial space mask. Bottom row left to right: the aqua cosmic crystal in its bronze claw mount; the violet-and-gold circular medallion; the tall narrow bronze reactor with EXACTLY THREE joined bright blue spherical energy chambers in one continuous body; the circular amber hyperspace portal with its ornate mechanical rim. Do not swap the order and do not add or remove an object. The WILD reactor must stay tall and narrow, about one third as wide as it is high, with three equal-height chambers spaced consistently, and must be fully visible from its top cap to its base. Keep the chosen sophisticated artifact art, sharpen small readable silhouettes and preserve the existing design. No text, labels, numerals, logos, scenery or extra objects.",
+      "transparentBackground": true
+    },
+    {
+      "asset": "cover",
+      "prompt": "Use case: compositing. Create one finished premium landscape 16:9 catalogue cover for the existing space-opera slot Galactic Reactor, now using the chosen Galactic Relics symbol art. Input image 1 is the EXACT approved relic-object identity, bronze/gold material, shape and colored-glass reference; input image 2 is the existing orbital hangar background and cinematic environment reference. Preserve the recognizable selected relic designs. Compose the elegant tall three-chamber bronze-and-cyan energy reactor as the main hero in the right half, fully visible within comfortable margins. In front on its left float the approved luminous aqua crystal, the opening violet knowledge cube and the diagonal red energy blade, arranged as a deliberate small collectible group with clear silhouettes and no clutter. An amber portal is visible behind the reactor, integrated into the distant hangar. The spacecraft hangar, distant blue planet and star field remain a quiet atmospheric backdrop. Strong focus on the relics, deep graphite contrast, cyan and violet glass with warm bronze edges, polished cinematic 3D game illustration. A complete attractive cover readable at small thumbnail size, with central 85 percent safe margins. No text, title, logo, letters, numbers, people, UI, grid, border, watermark or additional unrelated props.",
+      "transparentBackground": false
+    },
+    {
+      "asset": "atlas-alpha-refinement",
+      "prompt": "Edit the supplied eight-symbol Galactic Relics production sheet. Keep all EIGHT exact objects and their designs, colors, order and realistic material rendering unchanged. The ONLY correction is the background/alpha: remove ALL broad colored background light, all brown/gray haze, floor shadows and rectangular color fields. Every pixel outside an object's actual silhouette must be FULLY TRANSPARENT, alpha zero. Permit only a very tight subtle colored light fringe immediately touching a glowing object's edge, maximum two percent of a cell width. No shared illumination between cells. Ensure fully transparent gutters at the boundaries of all eight cells. Keep the FOUR columns and TWO rows layout. Top row: red crystal blade, opening violet cube, golden blue star-map compass, ivory golden green-eyed mask. Bottom row: aqua crystal in bronze mount, violet gold medallion, tall narrow three-chamber bronze blue reactor, amber portal ring. The reactor must be fully visible and narrow with exactly three joined equal blue energy chambers, about 1:3 width to height. All objects must be complete and have at least eight percent transparent safety margins. Do not redesign them or add any content. No text, no grid, no opaque background, no scenery, no floor. This must be ready to slice directly into clean transparent game sprites.",
+      "transparentBackground": true
+    },
+    {
+      "asset": "wild-reactor",
+      "prompt": "Create ONE production transparent cutout of ONLY the tall bronze-and-blue three-chamber reactor from the bottom row, third column of the supplied approved Galactic Relics reference sheet. Preserve that exact reactor identity, intricate bronze/gold frame, blue fittings, pointed top and bottom caps and EXACTLY THREE joined luminous blue SPHERICAL energy chambers. No other object from the reference. A narrow vertical silhouette about ONE unit wide and THREE units tall. Each chamber has the same height and the three energy spheres are evenly spaced, naturally circular, not stretched. Front view, complete top-to-bottom object, crisp premium cinematic 3D game rendering. Keep all illumination INSIDE the reactor's glass and metal: no surrounding haze, no broad colored aura, no beams or floor shadow, no backdrop, no scenery. Genuinely transparent alpha everywhere outside the physical object. Fully visible with small clear transparent safety margins. No text, no letters, no grid, no extra props. This object will span exactly three stacked square slot cells and must keep its proportions when scaled uniformly.",
+      "transparentBackground": true
     }
   ],
-  "exports": "Background compressed to WebP; cover cropped to 640x360; transparent 4x2 atlas sliced at rounded fractional cell boundaries, each tile materialized before alpha trim, fit inside 512x512 and WebP quality 94 / alpha 100. Original generated images stay in the Codex image library.",
+  "exporter": "scripts/export-wild-nudge-relics.mjs",
+  "scope": "Visual symbols and catalogue artwork; symbol IDs, paytable, probabilities and round rules are unchanged.",
+  "symbolNames": [
+    "Энергетический клинок",
+    "Куб знаний",
+    "Звёздный компас",
+    "Реликтовая маска",
+    "Космический кристалл",
+    "Медальон",
+    "Реактор WILD",
+    "Портал SCATTER"
+  ],
   "audio": {
     "source": "scripts/render-galactic-score.mjs",
-    "kind": "Original deterministic 32-second stereo PCM ambient score, no third-party recording. Runtime effects use the common host AudioContext.",
-    "reviewLimit": "Browser playback and signal checks do not establish physical-device listening quality."
+    "kind": "Existing original score and common-host synthesized effects"
   },
+  "symbols": [
+    {
+      "id": 0,
+      "width": 344,
+      "height": 456,
+      "transparentFraction": 0.6103822419420645
+    },
+    {
+      "id": 1,
+      "width": 374,
+      "height": 429,
+      "transparentFraction": 0.23817359111476757
+    },
+    {
+      "id": 2,
+      "width": 384,
+      "height": 426,
+      "transparentFraction": 0.39485524256651017
+    },
+    {
+      "id": 3,
+      "width": 343,
+      "height": 469,
+      "transparentFraction": 0.346149303461866
+    },
+    {
+      "id": 4,
+      "width": 321,
+      "height": 489,
+      "transparentFraction": 0.33477947875058134
+    },
+    {
+      "id": 5,
+      "width": 355,
+      "height": 444,
+      "transparentFraction": 0.31326608298439285
+    },
+    {
+      "id": 6,
+      "width": 172,
+      "height": 512,
+      "transparentFraction": 0.23079805595930233
+    },
+    {
+      "id": 7,
+      "width": 383,
+      "height": 461,
+      "transparentFraction": 0.1806154177262507
+    }
+  ],
   "assets": [
     {
       "path": "public/assets/wild-nudge/background.webp",
@@ -30,53 +116,58 @@
     },
     {
       "path": "public/assets/wild-nudge/cover.webp",
-      "bytes": 40998,
-      "sha256": "2aaa60c7a1aaf299d4dc07482d466a24f3dc5ef3d72082d7e7039f0ccee288cc"
+      "bytes": 113166,
+      "sha256": "51c6b39a839fb3abbdebc3bba8bc105a2ba92ae764f4943454bed614405d9bc7"
+    },
+    {
+      "path": "public/assets/wild-nudge/symbol-0.webp",
+      "bytes": 47800,
+      "sha256": "4818486e2fcfa37fd7eec9804026fa4336e45821f95611d1fb4cd9152e143065"
+    },
+    {
+      "path": "public/assets/wild-nudge/symbol-1.webp",
+      "bytes": 85310,
+      "sha256": "9df6f55cdc45fe27152099d1e093bc103bb4c8d89472d53c7da0cfdbee08b275"
+    },
+    {
+      "path": "public/assets/wild-nudge/symbol-2.webp",
+      "bytes": 71212,
+      "sha256": "41043b4d4b7c82948db8557921e6681dd88ae656101b30a4dd567583be446cb9"
+    },
+    {
+      "path": "public/assets/wild-nudge/symbol-3.webp",
+      "bytes": 64154,
+      "sha256": "40e59f13410534a6cff7fe468e75e64e1f84f0a7b636c7def5cff7ec90d2b929"
+    },
+    {
+      "path": "public/assets/wild-nudge/symbol-4.webp",
+      "bytes": 70436,
+      "sha256": "47983bd14981cd900c542370c6c2ad3438a6ccdbbce0831c307078414103caf2"
+    },
+    {
+      "path": "public/assets/wild-nudge/symbol-5.webp",
+      "bytes": 77224,
+      "sha256": "012e71be56c422c1b3ccef61d1cb27de356ad3ecb84fcf98dd4dd0ec27467ff6"
+    },
+    {
+      "path": "public/assets/wild-nudge/symbol-6.webp",
+      "bytes": 63602,
+      "sha256": "733ee68cc2704841d1ec941d11de5d8d6e051661d203582279a403327fc406d1"
+    },
+    {
+      "path": "public/assets/wild-nudge/symbol-7.webp",
+      "bytes": 89176,
+      "sha256": "fe2d129f02f2b3cd7559b0a0f1eb074f13a17910637163632164b0ba9ebfc70b"
     },
     {
       "path": "public/assets/wild-nudge/score.wav",
       "bytes": 5644844,
       "sha256": "282b5a2b358905645e3741d7d6ec198f07e391262f57430ac8ebc4d27cd875d2"
-    },
-    {
-      "path": "public/assets/wild-nudge/symbol-0.webp",
-      "bytes": 73326,
-      "sha256": "c4eadd72c39d56fb32be17c447e6b38e50db00351da9789f02ddbb6ff90674a7"
-    },
-    {
-      "path": "public/assets/wild-nudge/symbol-1.webp",
-      "bytes": 85588,
-      "sha256": "93a97508d3ccf8b8f4b118e0418ee6fd35e2d8555100d85370df2e5c9b1c3074"
-    },
-    {
-      "path": "public/assets/wild-nudge/symbol-2.webp",
-      "bytes": 82424,
-      "sha256": "e03cf8297b6e810ce009874a9bfe3837166769c58963594a916950fc900de44b"
-    },
-    {
-      "path": "public/assets/wild-nudge/symbol-3.webp",
-      "bytes": 90456,
-      "sha256": "3841febd0915ab59c65d2d228d59f382e9433050e3528dc02fed05e95ee6ebed"
-    },
-    {
-      "path": "public/assets/wild-nudge/symbol-4.webp",
-      "bytes": 63450,
-      "sha256": "4f301a9e3d1b496953b6f962e38f3a00eacb2bf57ca43ab8dfa185f2d81a7004"
-    },
-    {
-      "path": "public/assets/wild-nudge/symbol-5.webp",
-      "bytes": 72266,
-      "sha256": "603bd0613ab533c7fb58dd6f4632266b5c526835763da6d2c55990400fb0dc2d"
-    },
-    {
-      "path": "public/assets/wild-nudge/symbol-6.webp",
-      "bytes": 54882,
-      "sha256": "860bbe00d3d70251d21c180cc5d2a2ded1a7fbdf5267929575e80be37591ace4"
-    },
-    {
-      "path": "public/assets/wild-nudge/symbol-7.webp",
-      "bytes": 105168,
-      "sha256": "7849af2e0f7a7a3394ee1fc3599edf2efc38dfe35befd81df73d205f87988999"
     }
-  ]
+  ],
+  "atlasLayout": {
+    "columns": 4,
+    "rowSplit": 480,
+    "note": "Measured separator in the approved 1536x1024 atlas; the lower row is taller. The WILD uses its separate 1:3 source."
+  }
 }

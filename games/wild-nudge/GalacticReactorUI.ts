@@ -4,8 +4,8 @@ import {WILD_NUDGE_DATA as R,WILD_NUDGE_STAKES,wildNudgeSpin,type NudgeSpin} fro
 import {GalacticAudio,type GalacticCue} from './GalacticAudio';
 const image=(symbol:number)=>`/assets/wild-nudge/symbol-${symbol}.webp`;
 const escape=(value:string)=>value.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]!));
-const symbolNames=['Кристалл','Дроид','Шлем','Истребитель','Энергокапсула','Знак флота','Реактор WILD','Портал SCATTER'];
-const symbolNamesEn=['Crystal','Droid','Helmet','Starfighter','Power capsule','Fleet insignia','WILD reactor','SCATTER portal'];
+const symbolNames=['Энергетический клинок','Куб знаний','Звёздный компас','Реликтовая маска','Космический кристалл','Медальон','Реактор WILD','Портал SCATTER'];
+const symbolNamesEn=['Energy blade','Knowledge cube','Star compass','Relic mask','Cosmic crystal','Medallion','WILD reactor','SCATTER portal'];
 export class GalacticReactorUI {
   private services=readGameHost();private client=this.services.expansionClient;
   private root:HTMLElement;private modal:HTMLDialogElement;private priorFocus?:HTMLElement;

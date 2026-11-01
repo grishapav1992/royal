@@ -1,7 +1,7 @@
 import {test as base,expect,type Page} from '@playwright/test';
 import {Client} from '@colyseus/sdk';
 import {writeFile} from 'node:fs/promises';
-const game='studio-wild-nudge',output='artifacts/work/wild-nudge-v1-20261030';
+const game='studio-wild-nudge',output=process.env.NUDGE_ARTIFACT_DIR||'artifacts/work/wild-nudge-v1-20261030';
 const test=base.extend<{roomPath:string}>({roomPath:async({request},use)=>{
  const login=await request.post('/api/auth/login',{data:{email:`gn-room-${crypto.randomUUID()}@example.test`,password:'Royal-test-123!'}});expect(login.ok()).toBe(true);const cookie=login.headers()['set-cookie'].split(';')[0];await request.post('/api/auth/character',{data:{skin:0}});
  const client=new Client('http://127.0.0.1:2637',{headers:{Cookie:cookie},fetchFn:async(url,options)=>{const r=await request.fetch(String(url),{method:options?.method,headers:Object.fromEntries(new Headers(options?.headers)),data:options?.body as string});return new Response(await r.body(),{status:r.status(),headers:r.headers()});}});
