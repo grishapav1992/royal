@@ -1310,8 +1310,76 @@
     "availableBytes": 12307804160
   },
   "localCleanup": {
-    "status": "pending",
+    "status": "completed",
     "owner": "unified-stakes-20261031",
-    "condition": "Remove only this task checkout and artifacts after this exact source and report are verified in GitHub. Preserve 335 unrelated untracked files and the worktrees owned by other chats."
+    "preservedRemoteCommit": "0504a7cff8de1c54b49f33188e0212558782bc9b",
+    "removedTaskRoot": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/unified-stakes-20261031",
+    "freeBefore": 47175106560,
+    "removedFolders": [
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/unified-stakes-20261031/native",
+        "logicalBytes": 4961810
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/unified-stakes-20261031/formal-samples",
+        "logicalBytes": 30877
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/unified-stakes-20261031/payload-engine",
+        "logicalBytes": 149344516
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/unified-stakes-20261031/payload-final",
+        "logicalBytes": 149337980
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/unified-stakes-20261031/legacy-native",
+        "logicalBytes": 1821266
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/unified-stakes-20261031/checkout",
+        "logicalBytes": 1345354364
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/unified-stakes-20261031/samples",
+        "logicalBytes": 18562
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/unified-stakes-20261031/native-fixed",
+        "logicalBytes": 4984238
+      }
+    ],
+    "removedArchives": [
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/unified-stakes-20261031/final.tgz",
+        "bytes": 4795845
+      },
+      {
+        "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/unified-stakes-20261031/engine-update.tgz",
+        "bytes": 1384585
+      }
+    ],
+    "ownCheckoutRemoved": true,
+    "activeWorkExceptions": [
+      {
+        "path": "artifacts/work/active-games-responsive-20261101/checkout",
+        "reason": "Owned by another chat",
+        "cleanupCondition": "Its owner verifies GitHub preservation and finishes that task"
+      },
+      {
+        "path": "artifacts/work/forest-heart-kling-20261031/checkout",
+        "reason": "Owned by another chat",
+        "cleanupCondition": "Its owner verifies GitHub preservation and finishes that task"
+      }
+    ],
+    "removedTaskLogicalBytes": 1676138701,
+    "freeAfter": 48152248320,
+    "unrelatedFilesAfter": {
+      "count": 335,
+      "logicalBytes": 86320672,
+      "aggregateSha256": "3852061d36ba97304e76505072fb9fb70c1e9d6468935ba0db49c87bce555b5e"
+    },
+    "unrelatedFilesUnchanged": true,
+    "spaceNote": "Logical sizes include shared data and do not establish physical reclamation; freeBefore/freeAfter are direct measurements."
   }
 }
