@@ -375,6 +375,7 @@ export class RoomScene extends Phaser.Scene {
     this.pendingCabinet = null; this.pendingLounge = null; this.goTo(link.door.entry);
   }
   approachElevator() {
+    if(this.hall==='street')return;
     if (this.locked || this.isHuggingCat() || this.typing || this.switching || this.player.cabinet || this.networkSelf?.playing || this.player.action === 'drink') return;
     this.pendingCabinet = null;
     this.pendingLounge = 'elevator';

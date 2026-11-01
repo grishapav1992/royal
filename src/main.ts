@@ -374,6 +374,7 @@ document.addEventListener(GAME_REACTION_EVENT, event => {
   if (reaction === 'win' || reaction === 'lose') room.reactToGame(reaction);
 });
 function updateHall(hall:HallId){
+  const elevatorShortcut=document.querySelector<HTMLButtonElement>('#elevator-shortcut');if(elevatorShortcut)elevatorShortcut.hidden=hall==='street';
   document.querySelector('h1')!.innerHTML=HALLS[hall].name+' <span>'+HALLS[hall].number+'</span>';
   document.querySelectorAll<HTMLElement>('[data-activity]').forEach(b=>b.hidden=b.dataset.activity==='piano'||activityHall(b.dataset.activity!)!==hall);
   const sharedCards=document.querySelector<HTMLElement>('.shared-cards');if(sharedCards)sharedCards.hidden=hall!=='tables'&&hall!=='github';
