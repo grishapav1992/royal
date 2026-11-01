@@ -4,7 +4,7 @@ from types import SimpleNamespace
 import fcntl,hashlib,importlib.util,json,os,re,shutil,subprocess,sys,tarfile
 NAME='caribbean-stakes-recovery-20261101-v1';GAME='studio-caribbean-treasures'
 ROOT=Path('/opt/royal-releases')/NAME;LIVE=Path('/opt/royal');MODULES=Path('/opt/royal-game-modules');STATE=Path('/opt/royal-game-modules-state');BACKUP=Path('/opt/royal-backups')/NAME
-BASE_HELPER=Path('/opt/royal-releases/shared-stakes-20261101-v2/snapshot-base.py')
+BASE_HELPER=Path('/opt/royal-releases/compact-header-20261101-v3/snapshot-base.py')
 SOURCES=['games/caribbean-treasures/'+n for n in ['CaribbeanUI.ts','package.json']]
 ADDED=set()
 IMAGE_HELPER=Path('/opt/royal-maintenance/bin/retention-runtime.py')

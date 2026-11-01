@@ -1,0 +1,283 @@
+{
+  "release": "compact-header-20261101-v3",
+  "sourceCommit": "482669357da32c69b1a96803e45f671b9aaa19a6",
+  "baseCommit": "db07429000d2116d257f0735f4916e661ce9efa8",
+  "url": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "changedSources": [
+    "src/main.ts",
+    "src/ui/SocialUI.ts",
+    "src/i18n/en.ts",
+    "src/ui/compact-header.css"
+  ],
+  "clientFiles": {
+    "assets/index-C6H9lmxT.js": "70afff961b3ea1127d0cf85b304d71689fdf0c251a0cfb89d6262cc5e4830878",
+    "assets/index-DTfVxVpW.css": "27c67e484ce838558f01e70a31c571e2920fef39866616ecfa4ee8fef78113c9",
+    "index.html": "94ad79e1a73d4c7d92ed5f1d2e2629f1c980eafec1e02d5fe7d0a724c12b6225"
+  },
+  "backendDeltaFiles": 0,
+  "moduleChanges": [],
+  "addedGames": [],
+  "restoredGames": [],
+  "localBrowser": {
+    "screens": [
+      {
+        "width": 1440,
+        "height": 1000,
+        "headerHeight": 48,
+        "overflow": false
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "headerHeight": 48,
+        "overflow": false
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "headerHeight": 48,
+        "overflow": false
+      },
+      {
+        "width": 320,
+        "height": 568,
+        "headerHeight": 48,
+        "overflow": false
+      },
+      {
+        "width": 844,
+        "height": 390,
+        "headerHeight": 41,
+        "overflow": false
+      }
+    ],
+    "errors": [],
+    "backend": "Local test backend built from GitHub source, production backend remains unchanged and is protected by full runtime inventory.",
+    "ok": true
+  },
+  "checks": {
+    "rtp": {
+      "qualified": 35,
+      "stakePolicies": 18,
+      "stakeAdmission": 18,
+      "legacyUnchangedNotQualified": 114
+    },
+    "typescript": "passed",
+    "releasePrepare": "passed",
+    "releaseVerifyGithub": "passed",
+    "hostProjectionGuards": 3,
+    "headerInstallerGuards": 4,
+    "inheritedInstallerChecks": 28,
+    "offlineImageBuilder": 6
+  },
+  "publication": {
+    "published": true,
+    "preparedImage": "sha256:ff3b316cc3163cc1c6b8a09531061b78b5e0d0127203550603b9c8d989cbc250",
+    "runningImage": "sha256:ff3b316cc3163cc1c6b8a09531061b78b5e0d0127203550603b9c8d989cbc250",
+    "containerRestarted": true,
+    "sourceCommit": "482669357da32c69b1a96803e45f671b9aaa19a6",
+    "changedSources": 4,
+    "clientDeltaFiles": 3,
+    "configurationsAndMountsPreserved": true,
+    "gameDataPreserved": true,
+    "backendDeltaFiles": 0,
+    "otherBackendProgramsAndModulesPreserved": true,
+    "oldAssetsPreserved": true,
+    "otherPersistentServicesPreserved": 13
+  },
+  "publicBefore": {
+    "mode": "before",
+    "checks": [
+      "/",
+      "/game-modules/studio-caramel-carnival/active.json",
+      "/game-modules/studio-last-convoy/active.json",
+      "/game-modules/studio-nitro-run/active.json",
+      "/game-modules/studio-meme-overload/active.json",
+      "/game-modules/studio-velvet-reign/active.json",
+      "/game-modules/original-cr-vs-leo/active.json",
+      "/game-modules/original-jackie-chan/active.json",
+      "/game-modules/royal-plinko/active.json",
+      "/game-modules/royal-roulette/active.json",
+      "/game-modules/github-crash/active.json",
+      "/game-modules/flag-battle/active.json",
+      "/game-modules/studio-forest-heart/active.json",
+      "/game-modules/studio-caribbean-treasures/active.json",
+      "/game-modules/studio-cosmic-escape/active.json",
+      "/game-modules/studio-flooded-temple/active.json",
+      "/game-modules/studio-afterglow/active.json",
+      "/game-modules/studio-dracona/active.json",
+      "/game-modules/studio-neopolis/active.json",
+      {
+        "path": "/healthz",
+        "status": 200
+      },
+      {
+        "path": "/api/demo-wallet",
+        "status": 401
+      },
+      {
+        "path": "/api/game-wallet",
+        "status": 410
+      },
+      {
+        "path": "/api/nile-play",
+        "status": 410
+      }
+    ],
+    "screens": [],
+    "errors": [],
+    "addedGames": [],
+    "restoredGames": [],
+    "ok": true
+  },
+  "clientIdenticalToTestedPackage": true,
+  "candidateImage": "sha256:ff3b316cc3163cc1c6b8a09531061b78b5e0d0127203550603b9c8d989cbc250",
+  "candidateRuntimeVerified": true,
+  "serverCleanup": {
+    "freeBefore": 12197007360,
+    "removed": [
+      {
+        "path": "/opt/royal-releases/compact-header-20261101-v1",
+        "logicalBytes": 10614095
+      },
+      {
+        "path": "/opt/royal-releases/compact-header-20261101-v2",
+        "logicalBytes": 7714802
+      },
+      {
+        "path": "/opt/royal-backups/compact-header-20261101-v1",
+        "logicalBytes": 145036
+      },
+      {
+        "path": "/opt/royal-releases/compact-header-20261101-v1.payload.tgz",
+        "logicalBytes": 2188845
+      },
+      {
+        "path": "/opt/royal-releases/compact-header-20261101-v1.payload-clean.tgz",
+        "logicalBytes": 2182914
+      },
+      {
+        "path": "/opt/royal-releases/compact-header-20261101-v2.payload.tgz",
+        "logicalBytes": 2186000
+      },
+      {
+        "path": "/opt/royal-releases/compact-header-20261101-v3.payload.tgz",
+        "logicalBytes": 2187995
+      },
+      {
+        "path": "/opt/royal-releases/compact-header-20261101-v3/runtime-context",
+        "logicalBytes": 2898261
+      }
+    ],
+    "removedTags": [
+      "royal-game:before-compact-header-20261101-v1",
+      "royal-game:before-compact-header-20261101-v1-prepared"
+    ],
+    "freeAfter": 12221534208,
+    "backup": {
+      "path": "/opt/royal-backups/compact-header-20261101-v3",
+      "sourceBytes": 144328,
+      "sourceSha256": "b0f738e1336718e9e95e607fffa681eabf9f1dfe20967cfa9a0fff17ec4fbd83",
+      "indexSha256": "4fb506436b9ef08d7c45fadbe125a39a9a8f51072fded4e5c8d03ed5737b0d7b"
+    },
+    "publication": {
+      "published": true,
+      "preparedImage": "sha256:ff3b316cc3163cc1c6b8a09531061b78b5e0d0127203550603b9c8d989cbc250",
+      "runningImage": "sha256:ff3b316cc3163cc1c6b8a09531061b78b5e0d0127203550603b9c8d989cbc250",
+      "containerRestarted": true,
+      "sourceCommit": "482669357da32c69b1a96803e45f671b9aaa19a6",
+      "changedSources": 4,
+      "clientDeltaFiles": 3,
+      "configurationsAndMountsPreserved": true,
+      "gameDataPreserved": true,
+      "backendDeltaFiles": 0,
+      "otherBackendProgramsAndModulesPreserved": true,
+      "oldAssetsPreserved": true,
+      "otherPersistentServicesPreserved": 13
+    },
+    "sourceFiles": 2569,
+    "runtimeFiles": 8580,
+    "moduleFiles": 3570
+  },
+  "publicAfter": {
+    "mode": "after",
+    "checks": [
+      "/assets/index-C6H9lmxT.js",
+      "/assets/index-DTfVxVpW.css",
+      "/",
+      "/game-modules/studio-caramel-carnival/active.json",
+      "/game-modules/studio-last-convoy/active.json",
+      "/game-modules/studio-nitro-run/active.json",
+      "/game-modules/studio-meme-overload/active.json",
+      "/game-modules/studio-velvet-reign/active.json",
+      "/game-modules/original-cr-vs-leo/active.json",
+      "/game-modules/original-jackie-chan/active.json",
+      "/game-modules/royal-plinko/active.json",
+      "/game-modules/royal-roulette/active.json",
+      "/game-modules/github-crash/active.json",
+      "/game-modules/flag-battle/active.json",
+      "/game-modules/studio-forest-heart/active.json",
+      "/game-modules/studio-caribbean-treasures/active.json",
+      "/game-modules/studio-cosmic-escape/active.json",
+      "/game-modules/studio-flooded-temple/active.json",
+      "/game-modules/studio-afterglow/active.json",
+      "/game-modules/studio-dracona/active.json",
+      "/game-modules/studio-neopolis/active.json",
+      {
+        "path": "/healthz",
+        "status": 200
+      },
+      {
+        "path": "/api/demo-wallet",
+        "status": 401
+      },
+      {
+        "path": "/api/game-wallet",
+        "status": 410
+      },
+      {
+        "path": "/api/nile-play",
+        "status": 410
+      }
+    ],
+    "screens": [
+      {
+        "width": 1440,
+        "height": 1000
+      },
+      {
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "width": 390,
+        "height": 844
+      },
+      {
+        "width": 320,
+        "height": 568
+      },
+      {
+        "width": 844,
+        "height": 390
+      }
+    ],
+    "errors": [],
+    "addedGames": [],
+    "restoredGames": [],
+    "ok": true
+  },
+  "retention": {
+    "status": "running",
+    "timerEnabled": true
+  },
+  "limitations": [
+    "Browser viewport emulation, no physical phones tested.",
+    "Connected chat was verified locally; public checks used guest offline mode without production accounts, messages or wagers."
+  ],
+  "prePublicationStops": [
+    "Mac packaging metadata rejected before application changes.",
+    "First uninstalled image builder was cancelled after stalling; the verified existing offline overlay builder was used.",
+    "Publication waited for the existing retention run to release all locks."
+  ]
+}
