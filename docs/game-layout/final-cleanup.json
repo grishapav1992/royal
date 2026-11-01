@@ -1,10 +1,10 @@
 {
   "date": "2026-11-01",
   "owner": "game-layout-final",
-  "status": "planned",
+  "status": "blocked",
   "initialFreeBytes": 328649969664,
   "freeBeforeCleanupBytes": 325576421376,
-  "preservationCommit": null,
+  "preservationCommit": "747629a54ca51643b3ef6419fd27e4938800f7a7",
   "standStopped": true,
   "portsClosed": [
     5468,
@@ -141,5 +141,9 @@
   "removedArchives": 0,
   "removedBytes": 0,
   "priorRejectedCleanupNotRetried": true,
-  "cleanupCondition": "After source and final evidence are pushed and the remote commit verified, remove only these unchanged task-owned paths. Preserve active packages, current checkout and other tasks."
+  "cleanupCondition": "Automatic approval review must permit cleanup of these exact task-owned paths. Revalidate file metadata, active pointers and running sessions before a later authorized cleanup. Keep the current checkout and active packages for review.",
+  "reason": "Automatic approval review rejected the guarded Remove-Item cleanup command: blocked by policy. The command did not execute. No retry or alternative deletion method was used.",
+  "freeAfterCleanupBytes": 325827837952,
+  "inactivePackageBytes": 168134347,
+  "intermediateEvidenceBytes": 97575226
 }
