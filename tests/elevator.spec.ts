@@ -25,7 +25,7 @@ async function travel(page: Page, target: HallId) {
   await expect(page.locator('#elevator-dialog')).toBeHidden();
   const s = await state(page), { dock } = await feedback(page);
   expect(Math.hypot(s.x - dock.arrival.x, s.y - dock.arrival.y)).toBeLessThan(3);
-  expect(s.locked).toBe(false);
+  await expect.poll(async () => (await state(page)).locked).toBe(false);
 }
 
 test('desktop cabin travels directly across all floors, returns control and leaves stairs usable', async ({ page }) => {

@@ -1,0 +1,436 @@
+{
+  "release": "hall-elevator-20261101-v1",
+  "status": "published-and-verified",
+  "date": "2026-11-01",
+  "sourceCommit": "2683c223a46450c456079b487fc36cdfb4e6eade",
+  "baseCommit": "4eb47d5d7b29622453616888d24f62db9e26245b",
+  "url": "https://stealth-spark-gokmxooi.expresshost.cloud",
+  "publication": {
+    "published": true,
+    "preparedImage": "sha256:3ded1726150cfa09b786fcdacaed4c5ee1c48bac34d3007b00f6a1bc225e0cfc",
+    "runningImage": "sha256:3ded1726150cfa09b786fcdacaed4c5ee1c48bac34d3007b00f6a1bc225e0cfc",
+    "containerRestarted": true,
+    "sourceCommit": "2683c223a46450c456079b487fc36cdfb4e6eade",
+    "changedSources": 13,
+    "clientDeltaFiles": 3,
+    "configurationsAndMountsPreserved": true,
+    "gameDataPreserved": true,
+    "backendDeltaFiles": 1,
+    "otherBackendProgramsAndModulesPreserved": true,
+    "oldAssetsPreserved": true,
+    "otherPersistentServicesPreserved": 13
+  },
+  "changedSources": [
+    "server/LobbyRoom.ts",
+    "src/game/ElevatorAudio.ts",
+    "src/game/RoomScene.ts",
+    "src/game/elevatorArt.ts",
+    "src/i18n/en.ts",
+    "src/main.ts",
+    "src/network/LobbyClient.ts",
+    "src/shared/elevator.ts",
+    "src/shared/world.ts",
+    "src/ui/ClubMap.ts",
+    "src/ui/ElevatorUI.ts",
+    "src/ui/SocialUI.ts",
+    "src/ui/elevator.css"
+  ],
+  "sourcePreservation": {
+    "beforeFiles": 2574,
+    "afterFiles": 2579,
+    "changedExisting": 8,
+    "addedSourceFiles": 5,
+    "unrelatedSourceFilesPreserved": 2566,
+    "runtimeFiles": 8584,
+    "moduleFilesPreserved": 3716,
+    "otherServicesPreserved": 13,
+    "environmentAndPersistentMountsPreserved": true,
+    "protectedProgramsPreserved": true
+  },
+  "checks": {
+    "releasePrepare": true,
+    "releaseVerifyGithub": true,
+    "rtpProfiles": 37,
+    "stakePolicies": 19,
+    "stakeAdmission": 19,
+    "unchangedUnqualifiedLegacy": 114,
+    "serverElevatorTests": 2,
+    "installerGuards": 7,
+    "builtHostBrowserScenarios": 5,
+    "connectedMobile": {
+      "passed": true,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "connectedChat": true,
+      "directTravel": "1 -> 3 -> 1",
+      "catalogueCount": 18,
+      "walletUnchanged": true,
+      "productionAccountsCreated": false,
+      "errors": []
+    },
+    "publicBefore": {
+      "mode": "before",
+      "at": "2026-11-01T17:52:11.334Z",
+      "passed": true,
+      "checks": [
+        {
+          "path": "/api/game-wallet",
+          "status": 410,
+          "sha256": "315631d67986c57670e9631e6aebb3c072e97b6e6f31a467c81dd6f0e83603ce"
+        },
+        {
+          "path": "/api/demo-wallet",
+          "status": 401,
+          "sha256": "73b970e47d6bf990e9c3dfe858b8e2a83e72e904f4aeb01374be698bbc27b4ed"
+        },
+        {
+          "path": "/api/nile-play",
+          "status": 410,
+          "sha256": "315631d67986c57670e9631e6aebb3c072e97b6e6f31a467c81dd6f0e83603ce"
+        },
+        {
+          "path": "/healthz",
+          "status": 200,
+          "sha256": "7482326171995296103a4f794befc2c7831df741969bdbe936bdb637195e4dfc"
+        },
+        {
+          "path": "/",
+          "status": 200,
+          "sha256": "ba08f2040c7ff0e0fe8afce17de5763fd5aa811268f5c4027bc1b26c0dd4ac91"
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/active.json",
+          "status": 200,
+          "sha256": "a1607db4c45305c99fa7a996e739a009d3d008be444f576d460be2d391116147"
+        },
+        {
+          "path": "/game-modules/original-cr-vs-leo/active.json",
+          "status": 200,
+          "sha256": "becdc763703591cf95d9212b819a601fb0f498426d5eede95f87ab624e9eba3a"
+        },
+        {
+          "path": "/game-modules/flag-battle/active.json",
+          "status": 200,
+          "sha256": "dd68787a386773d57241d8c0aa79d1d04cb143290e475899447d09b4ecab8d37"
+        },
+        {
+          "path": "/game-modules/github-crash/active.json",
+          "status": 200,
+          "sha256": "4f725d42b683d966c66fa4605c9a940e578221e0fea999bc1591cbd2d7972231"
+        },
+        {
+          "path": "/game-modules/studio-flooded-temple/active.json",
+          "status": 200,
+          "sha256": "8d4572ab1b1eae5f7f7ea6c1129fc4fb1498649c685cf12f16f4965fed59b827"
+        },
+        {
+          "path": "/game-modules/studio-caribbean-treasures/active.json",
+          "status": 200,
+          "sha256": "8b052615f0d797f6b84a83a153a06e89650ce50adb4d54ea482c01f79f1f5a92"
+        },
+        {
+          "path": "/game-modules/studio-meme-overload/active.json",
+          "status": 200,
+          "sha256": "815e361e74bfcf8a55329d2de5a6c9afc2c0dd91f489fba26fd5aa48ce295391"
+        },
+        {
+          "path": "/game-modules/studio-afterglow/active.json",
+          "status": 200,
+          "sha256": "ba4dbe2264b70a49a3b0efd2572ed746402a0a91d58615c8179b0bdfbb405d86"
+        },
+        {
+          "path": "/game-modules/royal-plinko/active.json",
+          "status": 200,
+          "sha256": "76e5dfb3670ffa03e15d7e097ec9d70be0f0b8299798b46ffb0e3ffa24d130a5"
+        },
+        {
+          "path": "/game-modules/studio-last-convoy/active.json",
+          "status": 200,
+          "sha256": "69946ea68712d64beac408eb61b47799601f526d86ccdc04f144e255e8faed8e"
+        },
+        {
+          "path": "/game-modules/studio-nitro-run/active.json",
+          "status": 200,
+          "sha256": "e5aef46681488697de310edd382eff0307977f49bc6a91893d6b990750dce980"
+        },
+        {
+          "path": "/game-modules/royal-roulette/active.json",
+          "status": 200,
+          "sha256": "620df5f0de51fffd36de900cd664bf127d878daa84fd288886d334ee342dc8ad"
+        },
+        {
+          "path": "/game-modules/studio-caramel-carnival/active.json",
+          "status": 200,
+          "sha256": "77263ed8401071863eb5a4feabf7a03e91feea6bbed18740c0bdb44b612cd7a4"
+        },
+        {
+          "path": "/game-modules/studio-velvet-reign/active.json",
+          "status": 200,
+          "sha256": "e5e7e8df568dfac25275ac0b158ef5522ebcc486989a4a3342d9050865fa7c69"
+        },
+        {
+          "path": "/game-modules/studio-cosmic-escape/active.json",
+          "status": 200,
+          "sha256": "90ade379b4dcb1dd2eac099db0e2546ae1c243f5cc83547d3468a4d6150b1e35"
+        },
+        {
+          "path": "/game-modules/studio-forest-heart/active.json",
+          "status": 200,
+          "sha256": "f5da0f68999a850a50ad7113a0685cfdc130f6355c46c0166b2456ac7f2a8a6d"
+        },
+        {
+          "path": "/game-modules/studio-neopolis/active.json",
+          "status": 200,
+          "sha256": "61fc159b3effb730d45036a55bffd52fc0c410c327adbe1b34b9c0c2e69897ca"
+        },
+        {
+          "path": "/game-modules/studio-dracona/active.json",
+          "status": 200,
+          "sha256": "79a1f25eac921f8ba20d870bcbd0db7bd4954f636d6964dbfc5a3429d376b55e"
+        }
+      ],
+      "activeGames": [
+        "flag-battle",
+        "github-crash",
+        "original-cr-vs-leo",
+        "original-jackie-chan",
+        "royal-plinko",
+        "royal-roulette",
+        "studio-afterglow",
+        "studio-caramel-carnival",
+        "studio-caribbean-treasures",
+        "studio-cosmic-escape",
+        "studio-dracona",
+        "studio-flooded-temple",
+        "studio-forest-heart",
+        "studio-last-convoy",
+        "studio-meme-overload",
+        "studio-neopolis",
+        "studio-nitro-run",
+        "studio-velvet-reign"
+      ],
+      "addedGames": [],
+      "restoredGames": [],
+      "productionAccountsCreated": false,
+      "productionWagersCreated": false
+    },
+    "publicAfter": {
+      "mode": "after",
+      "at": "2026-11-01T18:32:31.123Z",
+      "passed": true,
+      "checks": [
+        {
+          "path": "/api/nile-play",
+          "status": 410,
+          "sha256": "315631d67986c57670e9631e6aebb3c072e97b6e6f31a467c81dd6f0e83603ce"
+        },
+        {
+          "path": "/api/demo-wallet",
+          "status": 401,
+          "sha256": "73b970e47d6bf990e9c3dfe858b8e2a83e72e904f4aeb01374be698bbc27b4ed"
+        },
+        {
+          "path": "/api/game-wallet",
+          "status": 410,
+          "sha256": "315631d67986c57670e9631e6aebb3c072e97b6e6f31a467c81dd6f0e83603ce"
+        },
+        {
+          "path": "/healthz",
+          "status": 200,
+          "sha256": "7482326171995296103a4f794befc2c7831df741969bdbe936bdb637195e4dfc"
+        },
+        {
+          "path": "/",
+          "status": 200,
+          "sha256": "ed9042ffdca089312aed158b674efc72cb7aea68581af468b37dc0dbf0ed8134"
+        },
+        {
+          "path": "/game-modules/original-cr-vs-leo/active.json",
+          "status": 200,
+          "sha256": "becdc763703591cf95d9212b819a601fb0f498426d5eede95f87ab624e9eba3a"
+        },
+        {
+          "path": "/game-modules/original-jackie-chan/active.json",
+          "status": 200,
+          "sha256": "a1607db4c45305c99fa7a996e739a009d3d008be444f576d460be2d391116147"
+        },
+        {
+          "path": "/game-modules/github-crash/active.json",
+          "status": 200,
+          "sha256": "4f725d42b683d966c66fa4605c9a940e578221e0fea999bc1591cbd2d7972231"
+        },
+        {
+          "path": "/game-modules/flag-battle/active.json",
+          "status": 200,
+          "sha256": "dd68787a386773d57241d8c0aa79d1d04cb143290e475899447d09b4ecab8d37"
+        },
+        {
+          "path": "/game-modules/studio-forest-heart/active.json",
+          "status": 200,
+          "sha256": "f5da0f68999a850a50ad7113a0685cfdc130f6355c46c0166b2456ac7f2a8a6d"
+        },
+        {
+          "path": "/game-modules/royal-roulette/active.json",
+          "status": 200,
+          "sha256": "620df5f0de51fffd36de900cd664bf127d878daa84fd288886d334ee342dc8ad"
+        },
+        {
+          "path": "/game-modules/studio-caramel-carnival/active.json",
+          "status": 200,
+          "sha256": "77263ed8401071863eb5a4feabf7a03e91feea6bbed18740c0bdb44b612cd7a4"
+        },
+        {
+          "path": "/game-modules/studio-last-convoy/active.json",
+          "status": 200,
+          "sha256": "69946ea68712d64beac408eb61b47799601f526d86ccdc04f144e255e8faed8e"
+        },
+        {
+          "path": "/game-modules/studio-neopolis/active.json",
+          "status": 200,
+          "sha256": "61fc159b3effb730d45036a55bffd52fc0c410c327adbe1b34b9c0c2e69897ca"
+        },
+        {
+          "path": "/game-modules/studio-meme-overload/active.json",
+          "status": 200,
+          "sha256": "815e361e74bfcf8a55329d2de5a6c9afc2c0dd91f489fba26fd5aa48ce295391"
+        },
+        {
+          "path": "/game-modules/studio-nitro-run/active.json",
+          "status": 200,
+          "sha256": "e5aef46681488697de310edd382eff0307977f49bc6a91893d6b990750dce980"
+        },
+        {
+          "path": "/game-modules/studio-flooded-temple/active.json",
+          "status": 200,
+          "sha256": "8d4572ab1b1eae5f7f7ea6c1129fc4fb1498649c685cf12f16f4965fed59b827"
+        },
+        {
+          "path": "/game-modules/studio-dracona/active.json",
+          "status": 200,
+          "sha256": "79a1f25eac921f8ba20d870bcbd0db7bd4954f636d6964dbfc5a3429d376b55e"
+        },
+        {
+          "path": "/game-modules/studio-velvet-reign/active.json",
+          "status": 200,
+          "sha256": "e5e7e8df568dfac25275ac0b158ef5522ebcc486989a4a3342d9050865fa7c69"
+        },
+        {
+          "path": "/game-modules/studio-cosmic-escape/active.json",
+          "status": 200,
+          "sha256": "90ade379b4dcb1dd2eac099db0e2546ae1c243f5cc83547d3468a4d6150b1e35"
+        },
+        {
+          "path": "/game-modules/royal-plinko/active.json",
+          "status": 200,
+          "sha256": "76e5dfb3670ffa03e15d7e097ec9d70be0f0b8299798b46ffb0e3ffa24d130a5"
+        },
+        {
+          "path": "/game-modules/studio-afterglow/active.json",
+          "status": 200,
+          "sha256": "ba4dbe2264b70a49a3b0efd2572ed746402a0a91d58615c8179b0bdfbb405d86"
+        },
+        {
+          "path": "/game-modules/studio-caribbean-treasures/active.json",
+          "status": 200,
+          "sha256": "8b052615f0d797f6b84a83a153a06e89650ce50adb4d54ea482c01f79f1f5a92"
+        },
+        {
+          "path": "/assets/index-D4UCkDH5.js",
+          "status": 200,
+          "sha256": "dfe403197b6ce9c9964ca01059c358ba327c1b04b48627aca457611bfea6ff36"
+        },
+        {
+          "path": "/assets/index-DCIgQITy.css",
+          "status": 200,
+          "sha256": "f7967e2ec9729f9a640486f78a98a54820707ecc267900bfd3b95545092a7c7b"
+        }
+      ],
+      "activeGames": [
+        "flag-battle",
+        "github-crash",
+        "original-cr-vs-leo",
+        "original-jackie-chan",
+        "royal-plinko",
+        "royal-roulette",
+        "studio-afterglow",
+        "studio-caramel-carnival",
+        "studio-caribbean-treasures",
+        "studio-cosmic-escape",
+        "studio-dracona",
+        "studio-flooded-temple",
+        "studio-forest-heart",
+        "studio-last-convoy",
+        "studio-meme-overload",
+        "studio-neopolis",
+        "studio-nitro-run",
+        "studio-velvet-reign"
+      ],
+      "addedGames": [],
+      "restoredGames": [],
+      "productionAccountsCreated": false,
+      "productionWagersCreated": false
+    },
+    "publicBrowser": {
+      "passed": true,
+      "checks": [
+        {
+          "language": "ru",
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "directTravel": "1 -> 3 -> 1",
+          "floorPicker": true,
+          "overflow": false,
+          "errors": []
+        },
+        {
+          "language": "en",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "directTravel": "1 -> 3 -> 1",
+          "floorPicker": true,
+          "overflow": false,
+          "errors": []
+        }
+      ],
+      "productionAccountsCreated": false,
+      "productionWagersCreated": false,
+      "connectedChat": "Verified on the exact built host locally; public check uses guest mode",
+      "physicalDevices": false
+    }
+  },
+  "scope": {
+    "addedGames": [],
+    "restoredGames": [],
+    "gamePackagesChanged": [],
+    "backendChanged": [
+      "dist-server/index.js"
+    ],
+    "walletAndMathematicsChanged": false
+  },
+  "backup": {
+    "path": "/opt/royal-backups/hall-elevator-20261101-v1",
+    "sourceArchiveSha256": "0ed3dcd9238f1ed9696bd8817e5508b99898028637125c19cc96b27a22845119",
+    "sourceArchiveBytes": 180252,
+    "previousImage": "sha256:7268c76952c9ad690324d740ea0f1d64d055fde902a934a2695faf0ac82ff4af",
+    "currentImage": "sha256:3ded1726150cfa09b786fcdacaed4c5ee1c48bac34d3007b00f6a1bc225e0cfc",
+    "databaseRestored": false
+  },
+  "limits": {
+    "productionAccountsCreated": false,
+    "productionWagersCreated": false,
+    "physicalPhoneAndBluetoothListening": false,
+    "existingHallCollisionTest": "tables absent furniture is a pre-existing failure outside this change"
+  },
+  "maintenance": {
+    "status": "pending"
+  },
+  "localCleanup": {
+    "status": "pending"
+  }
+}

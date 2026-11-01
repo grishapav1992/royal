@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "productionCommit": "4eb47d5d7b29622453616888d24f62db9e26245b",
+  "productionCommit": "2683c223a46450c456079b487fc36cdfb4e6eade",
   "changedSources": [
     "games/caramel-carnival/package.json",
     "games/caribbean-treasures/CaribbeanUI.ts",
@@ -4971,7 +4971,25 @@
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "server/LobbyRoom.ts",
       "baseSha256": "339fa9f2bea088f4c92ea48a9babccc4d57da8da7a966465463d9bf78480c24a",
-      "sha256": "339fa9f2bea088f4c92ea48a9babccc4d57da8da7a966465463d9bf78480c24a"
+      "sha256": "514e2a7c2349f209a02d9e86505565d44f6212bae249e381adb24b22b3954483",
+      "patches": [
+        {
+          "from": "top(client.sessionId));\n    listen('playing', (c",
+          "to": "top(client.sessionId));\n    listen('elevator', (client, value: unknown) => {\n      if (!value || typeof value !== 'object') return;\n      const { target, requestId, revision } = value as { target?: unknown; requestId?: unknown; revision?: unknown };\n      if (!Number.isSafeInteger(requestId) || (requestId as number) < 0) return;\n      const p = this.state.players.get(client.sessionId), control = this.controls.get(client.sessionId);\n      if (!p || !control || revision !== p.hallRevision || !canTravelByElevator(p, target)) {\n        client.send('elevator-result', { requestId, target, accepted: false, reason: 'Подойди к лифту и заверши текущее занятие.' });\n        return;\n      }\n      this.activities.leave(client.sessionId); this.releaseCabinet(client.sessionId); this.stop(client.sessionId);\n      const dock = elevatorDock(target);\n      p.hall = target; p.hallRevision++; p.x = dock.arrival.x; p.y = dock.arrival.y; p.facing = dock.facing;\n      control.lastTarget = 0;\n      client.send('elevator-result', { requestId, target, accepted: true, revision: p.hallRevision });\n      client.send('activities', this.activities.snapshot(client.sessionId));\n    });\n    listen('playing', (c"
+        },
+        {
+          "from": " Кошку.'});\n          }\n          return;\n      ",
+          "to": " Кошку.'});\n          }\n          if(type==='elevator')client.send('elevator-result',{requestId:value?.requestId,target:value?.target,accepted:false,reason:'Сначала отпусти Кошку.'});\n          return;\n      "
+        },
+        {
+          "from": "', 'cat']);\n    ",
+          "to": "', 'cat', 'elevator']);\n    "
+        },
+        {
+          "from": "world';\nimport {",
+          "to": "world';\nimport { canTravelByElevator, elevatorDock } from '../src/shared/elevator';\nimport {"
+        }
+      ]
     },
     "server/accounts.ts": {
       "commit": "5120fa89698356a3deb9ee5788f45cd570a18154",
@@ -7053,7 +7071,57 @@
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "src/game/RoomScene.ts",
       "baseSha256": "d7e1b0f05eb6be5dcf594ef0ea96e0edf902515b493bafa4f9ac3113745730a2",
-      "sha256": "d7e1b0f05eb6be5dcf594ef0ea96e0edf902515b493bafa4f9ac3113745730a2"
+      "sha256": "416fd0747442a5d0187cb7ea667423ab6ce37ae4341a80984cda3f6776ae8419",
+      "patches": [
+        {
+          "from": "ngLounge.startsW",
+          "to": "ngLounge==='elevator') {\n          const {entry}=elevatorDock(this.hall);\n          if(Math.hypot(this.player.x-entry.x,this.player.y-entry.y)<18)this.openElevator();\n          else if(!this.player.path.length&&!this.prediction.active&&time>=this.elevatorApproachAt) {\n            this.elevatorApproachAt=time+800;\n            const nearPatrol=this.guard.getState().some(guard=>guard.hall===this.hall&&guard.phase!=='door'&&Math.hypot(guard.x-this.player.x,guard.y-this.player.y)<110);\n            if(!nearPatrol)this.goTo(entry);\n          }\n        }\n        else if(this.pendingLounge.startsW"
+        },
+        {
+          "from": ",\n      cat: com",
+          "to": ",\n      elevator: commands.elevator, cat: com"
+        },
+        {
+          "from": "ands) {\n    this",
+          "to": "ands) {\n    this.onElevatorCancel();\n    this"
+        },
+        {
+          "from": "locked; this.set",
+          "to": "locked; if(locked)this.onElevatorCancel(); this.set"
+        },
+        {
+          "from": ") {\n    if (this.locked || this.typing) return;\n",
+          "to": ") {\n    if (this.locked || this.typing) return;\n    if (!this.isHuggingCat() && atElevator(this.player)) { this.openElevator(); return; }\n"
+        },
+        {
+          "from": "y);\n  }\n  intera",
+          "to": "y);\n  }\n  approachElevator() {\n    if (this.locked || this.isHuggingCat() || this.typing || this.switching || this.player.cabinet || this.networkSelf?.playing || this.player.action === 'drink') return;\n    this.pendingCabinet = null;\n    this.pendingLounge = 'elevator';\n    this.elevatorApproachAt = this.time.now + 800;\n    this.goTo(elevatorDock(this.hall).entry);\n  }\n  private openElevator() {\n    const hall = this.hall;\n    this.pendingLounge = null; this.player.path = [];\n    this.finishMovement(() => {\n      if (this.hall !== hall || this.locked || this.isHuggingCat() || !atElevator(this.player)) return;\n      this.player.facing = elevatorDock(hall).facing === 'down' ? 'up' : 'down';\n      this.network?.stop();\n      this.onElevator();\n    });\n  }\n  async travelByElevator(target: HallId): Promise<boolean> {\n    const player = this.networkSelf ?? this.player;\n    if (this.securityLocked || this.isHuggingCat() || !canTravelByElevator(player, target)) return false;\n    if (this.network) return await this.network.elevator?.(target) ?? false;\n    this.cancelMovement();\n    const dock = elevatorDock(target);\n    this.showHall(target);\n    Object.assign(this.player, dock.arrival, { hall: target, facing: dock.facing, moving: false });\n    this.animateActor(this.player, this.time.now, false);\n    this.syncGuests(this.guestViews);\n    return true;\n  }\n  intera"
+        },
+        {
+          "from": "=>{this.clickTar",
+          "to": "=>{this.onElevatorCancel();this.clickTar"
+        },
+        {
+          "from": "(link);\n      th",
+          "to": "(link);\n      drawElevator(this, hall, () => this.approachElevator());\n      th"
+        },
+        {
+          "from": "['arcade','tables','github'] as const",
+          "to": "elevatorFloors()"
+        },
+        {
+          "from": ": string | null = null;\n  private overview=false",
+          "to": ": string | null = null;\n  private elevatorApproachAt = 0;\n  private overview=false"
+        },
+        {
+          "from": "Id) => void = () => {};\n  private guestRoutine=n",
+          "to": "Id) => void = () => {};\n  onElevator: () => void = () => {};\n  onElevatorCancel: () => void = () => {};\n  private guestRoutine=n"
+        },
+        {
+          "from": "Audio';\nimport P",
+          "to": "Audio';\nimport { atElevator, canTravelByElevator, elevatorDock, elevatorFloors } from '../shared/elevator';\nimport { drawElevator } from './elevatorArt';\nimport P"
+        }
+      ]
     },
     "src/game/SecurityGuard.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
@@ -7263,7 +7331,7 @@
       "commit": "f9a6a231e73da8618d745a654d1b684b18bcda5d",
       "path": "src/i18n/en.ts",
       "baseSha256": "8853e5a8bd533ca85608eb11975f1f0d98a03fd0d1b749f48cca00e9db86cd68",
-      "sha256": "eebb616fae1546056d356b4479265a4058a55294b5240f13277838a752d145f7",
+      "sha256": "59281b823affce1810d7a6db78e003605de75bf49671fe99102a1eec476d50ae",
       "patches": [
         {
           "from": "  \"Изменения звука сохраняются сразу.\": \"Sound settings are saved automatically.\",\n  \"Настройки\": \"Settings\",\n  \"Открыть настройки\": \"Open settings\",\n  \".profile [aria-label=\\\"Настройки игрока\\\"]\": \".profile [aria-label=\\\"Player settings\\\"]\",\n",
@@ -7272,6 +7340,14 @@
         {
           "from": "\"Ещё один толчок, и на выход. 9/10.\": \"One more bump and you are out. 9/10.\"",
           "to": "\"Ещё один толчок, и на выход.\": \"One more bump and you are out.\""
+        },
+        {
+          "from": "Кнопка «Игры» открывает список текущего этажа.\": \"Floor 1: slots and casino games. Floor 2: chess, pool and air hockey. Floor 3: card tables with dealers. Use the glowing stairs or the floor buttons at the top",
+          "to": "Лифт рядом с лестницей позволяет сразу выбрать любой этаж. Кнопка «Игры» открывает список текущего этажа.\": \"Floor 1: slots and casino games. Floor 2: chess, pool and air hockey. Floor 3: card tables with dealers. Use the glowing stairs or the floor buttons at the top. The elevator beside the stairs takes you directly to any floor"
+        },
+        {
+          "from": "ng> = {\n  ...pro",
+          "to": "ng> = {\n  'ЛИФТ': 'ELEVATOR',\n  'Лифт': 'Elevator',\n  'Выйти из лифта': 'Leave the elevator',\n  'Подойти к лифту': 'Walk to the elevator',\n  'Выбери этаж': 'Choose a floor',\n  'Этажи': 'Floors',\n  'Ты здесь': 'You are here',\n  'Можно сразу на любой этаж': 'Go directly to any floor',\n  'Поездка без ожидания других игроков': 'Travel without waiting for other players',\n  'Двери закрываются': 'Doors closing',\n  'Едем на этаж {0}': 'Going to floor {0}',\n  'Этаж {0}: {1}': 'Floor {0}: {1}',\n  'Поездка не подтверждена. Попробуй ещё раз.': 'Travel was not confirmed. Please try again.',\n  'Не удалось подтвердить поездку. Проверь подключение и попробуй ещё раз.': 'Travel could not be confirmed. Check your connection and try again.',\n  'Подойди к лифту и заверши текущее занятие.': 'Walk to the elevator and finish your current activity.',\n  ...pro"
         },
         {
           "from": "export const english: Record<string, string> = {\n",
@@ -7307,7 +7383,7 @@
       "commit": "f9a6a231e73da8618d745a654d1b684b18bcda5d",
       "path": "src/main.ts",
       "baseSha256": "bb582cbad07f6d1e03a990f36c312057619e60a2037faf616c46b62feeceb80b",
-      "sha256": "784d71168ebe8c74228c3be80f8f4b997bc1d543040abf371a600383a8640edd",
+      "sha256": "1c954dd3d23cbe253c4f2e8bbee86dcc332ae689d11774b581bd9286e176b234",
       "patches": [
         {
           "from": "import './own-cabinets.css';\nimport './mira-dialog.css';\nimport { DRINKS, HALLS, hallLinks, activityHall, type HallId } from './shared/world';\nimport type { BreakerStatus } from './game/breaker';\n",
@@ -7324,6 +7400,26 @@
         {
           "from": "max-width:1200px",
           "to": "max-width:1400px"
+        },
+        {
+          "from": "e(), getTailor: ",
+          "to": "e(), getElevator: () => elevator?.getState() ?? null, getTailor: "
+        },
+        {
+          "from": "(room);\n    if (",
+          "to": "(room);\n    elevator = new ElevatorUI(room, () => room.setLocked(Boolean(document.querySelector('dialog[open]')) || Boolean(social && social.client.status !== 'connected')));\n    if ("
+        },
+        {
+          "from": "  });\n}\nconst ro",
+          "to": "  });\n}\nlet elevator: ElevatorUI | undefined;\nconst ro"
+        },
+        {
+          "from": "аверху. Кнопка «",
+          "to": "аверху. Лифт рядом с лестницей позволяет сразу выбрать любой этаж. Кнопка «"
+        },
+        {
+          "from": "n.css';\nimport {",
+          "to": "n.css';\nimport { ElevatorUI } from './ui/ElevatorUI';\nimport {"
         },
         {
           "from": "01';\n  $('.mini-bottom .settings-short",
@@ -7421,11 +7517,39 @@
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "src/network/LobbyClient.ts",
       "baseSha256": "c9c323aab32731f835b99be35b83541c4d18c45e48c80feb0dc1008643e6db3a",
-      "sha256": "acd040e7a450cfc814152c5f2f372bc5057c2d0b93cf511ebb0b86b7732f3e15",
+      "sha256": "8ec364aab7c32b4fd02e793bb60c3bbc5391eb0bfbb60514dc83f8d7816fe16e",
       "patches": [
         {
           "from": "if(code===4003) this.events.ejected(banUntil || Date.now()+600000)",
           "to": "if(code===4003 && banUntil > Date.now()) this.events.ejected(banUntil)"
+        },
+        {
+          "from": "});\n  }\n  send(t",
+          "to": "});\n  }\n  private finishElevator(accepted: boolean) {\n    const pending = this.pendingElevator;\n    if (!pending) return;\n    this.pendingElevator = undefined;clearTimeout(pending.timer);pending.finish(accepted);\n  }\n  private confirmElevator() {\n    const pending = this.pendingElevator;\n    if (pending?.revision !== undefined && this.hall === pending.target && this.revision >= pending.revision) this.finishElevator(true);\n  }\n  travelByElevator(target: HallId): Promise<boolean> {\n    if (this.status !== 'connected' || !this.room || this.pendingElevator) return Promise.resolve(false);\n    return new Promise(resolve => {\n      const requestId = ++this.elevatorRequest;\n      const timer = setTimeout(() => {\n        this.events.notice(translateText('Не удалось подтвердить поездку. Проверь подключение и попробуй ещё раз.'));\n        this.finishElevator(false);\n      }, 8000);\n      this.pendingElevator = { target, requestId, finish: resolve, timer };\n      this.send('elevator', { target, requestId, revision: this.revision });\n    });\n  }\n  send(t"
+        },
+        {
+          "from": "false);\n    if (",
+          "to": "false);\n    if (status !== 'connected') this.finishElevator(false);\n    if ("
+        },
+        {
+          "from": "ionId);\n        ",
+          "to": "ionId);\n        this.confirmElevator();\n        "
+        },
+        {
+          "from": "this.revision=players.find(p=>p.id===room.sessionId)?.hallRevision??0",
+          "to": "const self=players.find(p=>p.id===room.sessionId);\n        this.revision=self?.hallRevision??0;this.hall=self?.hall"
+        },
+        {
+          "from": "lt.accepted);\n      });\n      onMessage('activit",
+          "to": "lt.accepted);\n      });\n      onMessage('elevator-result', (result: ElevatorResult) => {\n        const pending = this.pendingElevator;\n        if (!pending || result.requestId !== pending.requestId || result.target !== pending.target) return;\n        if (!result.accepted) {\n          if (result.reason) this.events.notice(translateText(result.reason));\n          this.finishElevator(false);\n        } else if (Number.isSafeInteger(result.revision)) {\n          pending.revision = result.revision;\n          this.confirmElevator();\n        }\n      });\n      onMessage('activit"
+        },
+        {
+          "from": "st = 0;\n  privat",
+          "to": "st = 0;\n  private elevatorRequest = 0;\n  private hall?: HallId;\n  private pendingElevator?: { target: HallId; requestId: number; revision?: number; finish: (accepted: boolean) => void; timer: ReturnType<typeof setTimeout> };\n  privat"
+        },
+        {
+          "from": " } from '../shared/world",
+          "to": ", HallId } from '../shared/world';\nimport type { ElevatorResult } from '../shared/elevator"
         }
       ]
     },
@@ -8159,7 +8283,13 @@
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "src/shared/world.ts",
       "baseSha256": "88c5b4473a23d396e12dc699174caa764ede9257dfea2df5361eaef14ea8e45d",
-      "sha256": "88c5b4473a23d396e12dc699174caa764ede9257dfea2df5361eaef14ea8e45d"
+      "sha256": "1e8fae4df029be9f570b19f26c244b148421999904b5e13436668cc52e17b801",
+      "patches": [
+        {
+          "from": "nds = { cat?: (a",
+          "to": "nds = { elevator?: (target: HallId) => Promise<boolean>; cat?: (a"
+        }
+      ]
     },
     "src/style.css": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
@@ -8453,7 +8583,17 @@
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "src/ui/ClubMap.ts",
       "baseSha256": "87c63ab6736a8a4ed45d50cb22015c291aae8cc8102c5595e56d29347a8b453e",
-      "sha256": "87c63ab6736a8a4ed45d50cb22015c291aae8cc8102c5595e56d29347a8b453e"
+      "sha256": "47687c40ea3745d04a541bb330bf6ae5b0162bd6a1c1a6efe68107f676aca160",
+      "patches": [
+        {
+          "from": "0,24);}\n    for(",
+          "to": "0,24);}\n    const lift=elevatorDock(state.hall);ctx.fillStyle='#e2c17c';ctx.fillRect(lift.entry.x-40,lift.entry.y-20,80,40);\n    for("
+        },
+        {
+          "from": "world';\nimport {",
+          "to": "world';\nimport { elevatorDock } from '../shared/elevator';\nimport {"
+        }
+      ]
     },
     "src/ui/ClusterArtwork.ts": {
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
@@ -9059,11 +9199,19 @@
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "src/ui/SocialUI.ts",
       "baseSha256": "80453ad682038acf65e9b2696a399430e5829e94eabaefd6c2f0a6479175d100",
-      "sha256": "2bab2587b32423225fc649203e6203c057478008c59b25a05ac93275e7b0d9b0",
+      "sha256": "c3d5d9f9401cb29787c60e072987a56c25e8fdd0014d26d9820f056930571562",
       "patches": [
         {
           "from": "      return this.sendChat(text);\n    }, value => this.scene.setTyping(value));\n    this.invite = document.createElement('button'); this.invite.className = 'invite-button'; this.invite.id='invite'; this.invite.textContent = translateText('Пригласить'); this.invite.disabled = true;\n    document.querySelector('.room-tools')!.prepend(this.invite);\n    this.invite.addEventListener('click', async () => {\n",
           "to": "      return this.sendChat(text);\n    }, value => this.scene.setTyping(value));\n    this.invite = document.createElement('button'); this.invite.className = 'invite-button'; this.invite.id='invite'; this.invite.textContent = translateText('Пригласить'); this.invite.title = this.invite.textContent; this.invite.disabled = true;\n    document.querySelector('.room-tools')!.prepend(this.invite);\n    this.invite.addEventListener('click', async () => {\n"
+        },
+        {
+          "from": "s.scene.cancelMo",
+          "to": "s.scene.onElevatorCancel(); this.scene.cancelMo"
+        },
+        {
+          "from": "nline({ inputs: ",
+          "to": "nline({ elevator: target => this.client.travelByElevator(target), inputs: "
         },
         {
           "from": "hat: message => this.addMessage(message),\n      delivery",
@@ -10774,6 +10922,36 @@
       "path": "docs/universal-free-spins.md",
       "baseSha256": "5fa2f86495eeb0aa17d44ed62cfde6ade0f6b0fd03892a392e1fe3e7d96a96f4",
       "sha256": "5fa2f86495eeb0aa17d44ed62cfde6ade0f6b0fd03892a392e1fe3e7d96a96f4"
+    },
+    "src/game/ElevatorAudio.ts": {
+      "commit": "047ac2505a3a693d8960d72ba8ed8f96e15f2bd2",
+      "path": "src/game/ElevatorAudio.ts",
+      "baseSha256": "68462baf51d1a0e77a4f854cfce1d7cdfdd68fd2a1f6177c306c70190d3d4a13",
+      "sha256": "68462baf51d1a0e77a4f854cfce1d7cdfdd68fd2a1f6177c306c70190d3d4a13"
+    },
+    "src/game/elevatorArt.ts": {
+      "commit": "6cfda58a288a5589b07b91e7e78357c753268009",
+      "path": "src/game/elevatorArt.ts",
+      "baseSha256": "db70c995c544355fb43bf493a816227eeb5b68a03f68042aa8406d3c2945e148",
+      "sha256": "db70c995c544355fb43bf493a816227eeb5b68a03f68042aa8406d3c2945e148"
+    },
+    "src/shared/elevator.ts": {
+      "commit": "6cfda58a288a5589b07b91e7e78357c753268009",
+      "path": "src/shared/elevator.ts",
+      "baseSha256": "d7f4f8da997be7e9f9c35e79e5398aec50d1e3f7af1afcc0efaa6f61f466e9ca",
+      "sha256": "d7f4f8da997be7e9f9c35e79e5398aec50d1e3f7af1afcc0efaa6f61f466e9ca"
+    },
+    "src/ui/ElevatorUI.ts": {
+      "commit": "6cfda58a288a5589b07b91e7e78357c753268009",
+      "path": "src/ui/ElevatorUI.ts",
+      "baseSha256": "0ebd6b03ea34d309c6a258557adaca781a1c95d9626f41ee34578a0a7bdfdba4",
+      "sha256": "0ebd6b03ea34d309c6a258557adaca781a1c95d9626f41ee34578a0a7bdfdba4"
+    },
+    "src/ui/elevator.css": {
+      "commit": "6cfda58a288a5589b07b91e7e78357c753268009",
+      "path": "src/ui/elevator.css",
+      "baseSha256": "c976e81ccc1ea9aa99fd63a46dd89effe078c39e4abff656ded484615e7a61e6",
+      "sha256": "c976e81ccc1ea9aa99fd63a46dd89effe078c39e4abff656ded484615e7a61e6"
     },
     "games/dracona/priorityStyles.ts": {
       "commit": "831ede0765e7bb0fe323bd52290657497da370a2",
