@@ -1,6 +1,6 @@
 {
   "release": "hall-elevator-20261101-v1",
-  "productionCommit": "455e48100e833bee9f8d79f38f1ee7214dad8e32",
+  "productionCommit": "4eb47d5d7b29622453616888d24f62db9e26245b",
   "featureCommit": "6cfda58a288a5589b07b91e7e78357c753268009",
   "audioFixCommit": "047ac2505a3a693d8960d72ba8ed8f96e15f2bd2",
   "changedSources": [
@@ -25,7 +25,7 @@
     "src/game/elevatorArt.ts": "db70c995c544355fb43bf493a816227eeb5b68a03f68042aa8406d3c2945e148",
     "src/i18n/en.ts": "c54e57fbd9cf17d1009f039dc6b1190c09121f932be1ba2ce1fe62e0dec31944",
     "src/main.ts": "5649893e410461246a4b3b9f60c29dd621fd9b5df495e34d615548cca4fa64ba",
-    "src/network/LobbyClient.ts": "ec55808be314aaf4bf8af6f5958d05dbecedd10aafa668945344af6152e4f712",
+    "src/network/LobbyClient.ts": "8ec364aab7c32b4fd02e793bb60c3bbc5391eb0bfbb60514dc83f8d7816fe16e",
     "src/shared/elevator.ts": "d7f4f8da997be7e9f9c35e79e5398aec50d1e3f7af1afcc0efaa6f61f466e9ca",
     "src/shared/world.ts": "1e8fae4df029be9f570b19f26c244b148421999904b5e13436668cc52e17b801",
     "src/ui/ClubMap.ts": "47687c40ea3745d04a541bb330bf6ae5b0162bd6a1c1a6efe68107f676aca160",
