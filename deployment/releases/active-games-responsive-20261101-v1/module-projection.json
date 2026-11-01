@@ -675,10 +675,10 @@
       "sha256": "3380fce5ee723cea9a07d8b098c933e0465300fcc19fa727ef30ccbf7303244b"
     },
     "src/shared/neopolisMath.ts": {
-      "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
+      "commit": "d3e4f9c0ef50a4d1ab63f0862696e288125fd740",
       "path": "src/shared/neopolisMath.ts",
-      "baseSha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
-      "sha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5"
+      "baseSha256": "e32db65f28cb4cac308d07154fb56f7816fc630c82a7548e1733ad34e0a91820",
+      "sha256": "e32db65f28cb4cac308d07154fb56f7816fc630c82a7548e1733ad34e0a91820"
     },
     "src/shared/nitroRun.ts": {
       "commit": "2380647e2ab6be6685acf6bea25d81628b2e0aa5",
@@ -891,22 +891,22 @@
       "sha256": "ab92c4fccfc970619df2372d769e49bf1ea1dd84d0c77df9561ee50389625227"
     },
     "src/ui/LastExitAudio.ts": {
-      "commit": "6ea6b2a20276d03561b16bc6290ce832c8ffc3cb",
+      "commit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
       "path": "src/ui/LastExitAudio.ts",
-      "baseSha256": "96249fef4a83523ce6cd8ec912e480ab3c56f4eda217611daec0b17539b2c867",
-      "sha256": "96249fef4a83523ce6cd8ec912e480ab3c56f4eda217611daec0b17539b2c867"
+      "baseSha256": "e6bb95297bc23bdcda10638dd01d1d4e653a2004ee62628a9ef1b9a6b3e41770",
+      "sha256": "e6bb95297bc23bdcda10638dd01d1d4e653a2004ee62628a9ef1b9a6b3e41770"
     },
     "src/ui/LastExitScene.ts": {
-      "commit": "6ea6b2a20276d03561b16bc6290ce832c8ffc3cb",
+      "commit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
       "path": "src/ui/LastExitScene.ts",
-      "baseSha256": "3c776c29151eb7c68f2cd40263a0b2d6e43558214990e3b5da2e3a79b012574f",
-      "sha256": "3c776c29151eb7c68f2cd40263a0b2d6e43558214990e3b5da2e3a79b012574f"
+      "baseSha256": "8b419db3c45716aab0aedb948182fe0e1f16d2bb216a929bbc996df1ab778a01",
+      "sha256": "8b419db3c45716aab0aedb948182fe0e1f16d2bb216a929bbc996df1ab778a01"
     },
     "src/ui/LastExitUI.ts": {
-      "commit": "463946ee557d1b5e883920961b8e11f986b8f183",
+      "commit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
       "path": "src/ui/LastExitUI.ts",
-      "baseSha256": "a970ad10abbc2a246ea8a513288d3dcf0a253fe25237ba755cde251fac227feb",
-      "sha256": "a970ad10abbc2a246ea8a513288d3dcf0a253fe25237ba755cde251fac227feb"
+      "baseSha256": "c646689fb8b33ac580b3680498cb6271f7a7eb594141c98ceed65a9425355f17",
+      "sha256": "c646689fb8b33ac580b3680498cb6271f7a7eb594141c98ceed65a9425355f17"
     },
     "src/ui/LuelonArtwork.ts": {
       "commit": "e063f7b507dfc2a8db4cae7841076ffbc7c42ed6",
@@ -1143,25 +1143,25 @@
       "sha256": "e2a23eb842c5a7c813a962f2b770fa9e2d46b751d80cde541a7bcaf3dd3d7da4"
     },
     "src/ui/last-exit.css": {
-      "commit": "6ea6b2a20276d03561b16bc6290ce832c8ffc3cb",
+      "commit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
       "path": "src/ui/last-exit.css",
-      "baseSha256": "db2116678fcfba3f6b27b6057b32949cfef1424ce119990513e1bde50f784ac9",
-      "sha256": "db2116678fcfba3f6b27b6057b32949cfef1424ce119990513e1bde50f784ac9"
+      "baseSha256": "bfe9a219ee0ef46f2731333fbbaaba42bf270eb182cad9c85500e523d05ed956",
+      "sha256": "bfe9a219ee0ef46f2731333fbbaaba42bf270eb182cad9c85500e523d05ed956"
     },
     "src/ui/lastExitModel.ts": {
-      "commit": "6ea6b2a20276d03561b16bc6290ce832c8ffc3cb",
+      "commit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
       "path": "src/ui/lastExitModel.ts",
-      "baseSha256": "7531a2f03313c982d22bccd1fd389c0c87d6538870ce677efc0b1a6c2004200a",
-      "sha256": "7531a2f03313c982d22bccd1fd389c0c87d6538870ce677efc0b1a6c2004200a"
+      "baseSha256": "6008a2217d160c7fb0342bbc2bd57282ecadd9c92e4ea3199def3267b1f56107",
+      "sha256": "6008a2217d160c7fb0342bbc2bd57282ecadd9c92e4ea3199def3267b1f56107"
     },
     "src/ui/lastExitRoute.ts": {
-      "commit": "e063f7b507dfc2a8db4cae7841076ffbc7c42ed6",
+      "commit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
       "path": "src/ui/lastExitRoute.ts",
       "baseSha256": "f6a84fc1d7a7ed931603171ac6ddb1fc871172d94e373ec66bca721812fe1a85",
       "sha256": "f6a84fc1d7a7ed931603171ac6ddb1fc871172d94e373ec66bca721812fe1a85"
     },
     "src/ui/lastExitStunts.ts": {
-      "commit": "e063f7b507dfc2a8db4cae7841076ffbc7c42ed6",
+      "commit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
       "path": "src/ui/lastExitStunts.ts",
       "baseSha256": "a37aa10aa33dc69b7b120ff6bbe8caa3cf1a00f11176ba9d6614fb862ea84b19",
       "sha256": "a37aa10aa33dc69b7b120ff6bbe8caa3cf1a00f11176ba9d6614fb862ea84b19"
@@ -1383,7 +1383,7 @@
       "sha256": "760b567c64aae4a5190641cad162fd9a6ff9e5764e8bd9d91d06dcb1d707ee21"
     },
     "src/shared/studioGames.ts": {
-      "commit": "e063f7b507dfc2a8db4cae7841076ffbc7c42ed6",
+      "commit": "d3e4f9c0ef50a4d1ab63f0862696e288125fd740",
       "path": "src/shared/studioGames.ts",
       "baseSha256": "5be1d552e408e7a2fe1d1cff923b70bdda059a57847c46db09c96dc2ae63e29a",
       "sha256": "5be1d552e408e7a2fe1d1cff923b70bdda059a57847c46db09c96dc2ae63e29a"
@@ -1405,6 +1405,12 @@
       "path": "games/dracona/compactStyles.ts",
       "baseSha256": "17ba011af62c01d4137f93f8fc40b98475dee702c2270069c201d461d3a522cd",
       "sha256": "17ba011af62c01d4137f93f8fc40b98475dee702c2270069c201d461d3a522cd"
+    },
+    "src/ui/LastExitAssets.ts": {
+      "commit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
+      "path": "src/ui/LastExitAssets.ts",
+      "baseSha256": "2326f09838eea56fdd6742eef110a2bd835f6676c236208ae0aa6819317da4c3",
+      "sha256": "2326f09838eea56fdd6742eef110a2bd835f6676c236208ae0aa6819317da4c3"
     }
   },
   "moduleAssets": {
@@ -1677,6 +1683,50 @@
     "studio-dracona": {
       "version": "1.1.0-d22db7a2eef5",
       "manifestSha256": "0c26f68bed9d0e9d9f715537156e33abb4498079debbe22e39df71308e743e54"
+    }
+  },
+  "publishedInputExceptions": {
+    "src/ui/LastExitAudio.ts": {
+      "sha256": "e6bb95297bc23bdcda10638dd01d1d4e653a2004ee62628a9ef1b9a6b3e41770",
+      "serverSourceSha256": "96249fef4a83523ce6cd8ec912e480ab3c56f4eda217611daec0b17539b2c867",
+      "publishedSourceCommit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
+      "gameId": "github-crash"
+    },
+    "src/ui/LastExitScene.ts": {
+      "sha256": "8b419db3c45716aab0aedb948182fe0e1f16d2bb216a929bbc996df1ab778a01",
+      "serverSourceSha256": "3c776c29151eb7c68f2cd40263a0b2d6e43558214990e3b5da2e3a79b012574f",
+      "publishedSourceCommit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
+      "gameId": "github-crash"
+    },
+    "src/ui/LastExitUI.ts": {
+      "sha256": "c646689fb8b33ac580b3680498cb6271f7a7eb594141c98ceed65a9425355f17",
+      "serverSourceSha256": "a970ad10abbc2a246ea8a513288d3dcf0a253fe25237ba755cde251fac227feb",
+      "publishedSourceCommit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
+      "gameId": "github-crash"
+    },
+    "src/ui/last-exit.css": {
+      "sha256": "bfe9a219ee0ef46f2731333fbbaaba42bf270eb182cad9c85500e523d05ed956",
+      "serverSourceSha256": "db2116678fcfba3f6b27b6057b32949cfef1424ce119990513e1bde50f784ac9",
+      "publishedSourceCommit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
+      "gameId": "github-crash"
+    },
+    "src/ui/lastExitModel.ts": {
+      "sha256": "6008a2217d160c7fb0342bbc2bd57282ecadd9c92e4ea3199def3267b1f56107",
+      "serverSourceSha256": "7531a2f03313c982d22bccd1fd389c0c87d6538870ce677efc0b1a6c2004200a",
+      "publishedSourceCommit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
+      "gameId": "github-crash"
+    },
+    "src/ui/LastExitAssets.ts": {
+      "sha256": "2326f09838eea56fdd6742eef110a2bd835f6676c236208ae0aa6819317da4c3",
+      "serverSourceSha256": null,
+      "publishedSourceCommit": "2cf391c368ee75b15959e8359e422ffc19bcab3d",
+      "gameId": "github-crash"
+    },
+    "src/shared/neopolisMath.ts": {
+      "sha256": "e32db65f28cb4cac308d07154fb56f7816fc630c82a7548e1733ad34e0a91820",
+      "serverSourceSha256": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
+      "publishedSourceCommit": "d3e4f9c0ef50a4d1ab63f0862696e288125fd740",
+      "gameId": "studio-cosmic-escape"
     }
   }
 }

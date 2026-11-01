@@ -9,6 +9,7 @@ BASE_HELPER=Path('/opt/royal-releases/remove-reward-games-catalog-20261031-v1/sn
 SOURCES=['games/cosmic-escape/entry.ts', 'games/caramel-carnival/entry.ts', 'games/velvet-reign/entry.ts', 'games/last-convoy/entry.ts', 'games/nitro-run/entry.ts', 'games/girlhub/entry.ts', 'games/meme-overload/entry.ts', 'games/last-exit/entry.ts', 'games/royal-plinko/entry.ts', 'games/cr-vs-leo/entry.ts', 'games/flag-battle/entry.ts', 'games/dracona/styles.ts', 'src/ui/active-game-viewport.css', 'games/dracona/compactStyles.ts'];MIN_FREE=5*1024**3
 ADDED={'src/ui/active-game-viewport.css', 'games/dracona/compactStyles.ts'}
 IMAGE_HELPER=Path('/opt/royal-maintenance/bin/retention-runtime.py')
+PUBLISHED_INPUTS={'src/ui/LastExitAudio.ts': {'sha256': 'e6bb95297bc23bdcda10638dd01d1d4e653a2004ee62628a9ef1b9a6b3e41770', 'serverSourceSha256': '96249fef4a83523ce6cd8ec912e480ab3c56f4eda217611daec0b17539b2c867', 'publishedSourceCommit': '2cf391c368ee75b15959e8359e422ffc19bcab3d', 'gameId': 'github-crash'}, 'src/ui/LastExitScene.ts': {'sha256': '8b419db3c45716aab0aedb948182fe0e1f16d2bb216a929bbc996df1ab778a01', 'serverSourceSha256': '3c776c29151eb7c68f2cd40263a0b2d6e43558214990e3b5da2e3a79b012574f', 'publishedSourceCommit': '2cf391c368ee75b15959e8359e422ffc19bcab3d', 'gameId': 'github-crash'}, 'src/ui/LastExitUI.ts': {'sha256': 'c646689fb8b33ac580b3680498cb6271f7a7eb594141c98ceed65a9425355f17', 'serverSourceSha256': 'a970ad10abbc2a246ea8a513288d3dcf0a253fe25237ba755cde251fac227feb', 'publishedSourceCommit': '2cf391c368ee75b15959e8359e422ffc19bcab3d', 'gameId': 'github-crash'}, 'src/ui/last-exit.css': {'sha256': 'bfe9a219ee0ef46f2731333fbbaaba42bf270eb182cad9c85500e523d05ed956', 'serverSourceSha256': 'db2116678fcfba3f6b27b6057b32949cfef1424ce119990513e1bde50f784ac9', 'publishedSourceCommit': '2cf391c368ee75b15959e8359e422ffc19bcab3d', 'gameId': 'github-crash'}, 'src/ui/lastExitModel.ts': {'sha256': '6008a2217d160c7fb0342bbc2bd57282ecadd9c92e4ea3199def3267b1f56107', 'serverSourceSha256': '7531a2f03313c982d22bccd1fd389c0c87d6538870ce677efc0b1a6c2004200a', 'publishedSourceCommit': '2cf391c368ee75b15959e8359e422ffc19bcab3d', 'gameId': 'github-crash'}, 'src/ui/LastExitAssets.ts': {'sha256': '2326f09838eea56fdd6742eef110a2bd835f6676c236208ae0aa6819317da4c3', 'serverSourceSha256': None, 'publishedSourceCommit': '2cf391c368ee75b15959e8359e422ffc19bcab3d', 'gameId': 'github-crash'}, 'src/shared/neopolisMath.ts': {'sha256': 'e32db65f28cb4cac308d07154fb56f7816fc630c82a7548e1733ad34e0a91820', 'serverSourceSha256': '21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5', 'publishedSourceCommit': 'd3e4f9c0ef50a4d1ab63f0862696e288125fd740', 'gameId': 'studio-cosmic-escape'}}
 IGNORED={'at','availableBytes'}
 def require(value,message):
  if not value:raise RuntimeError(message)
@@ -39,7 +40,11 @@ def validate_scope(release,before,operator):
  require(release['moduleProjection']['productionCommit']==before['sourceCommit'],'Wrong projection baseline')
  require(set(operator_inputs(release))>=set(SOURCES),'Changed source absent from verified build')
  for name,digest in operator_inputs(release).items():
-  require(operator['source'][name]==digest if name in SOURCES else before['sourceLF'].get(name)==digest,'Unreviewed production input: '+name)
+  if name in SOURCES:valid=operator['source'][name]==digest
+  elif name in PUBLISHED_INPUTS:
+   row=PUBLISHED_INPUTS[name];valid=digest==row['sha256'] and before['sourceLF'].get(name)==row['serverSourceSha256']
+  else:valid=before['sourceLF'].get(name)==digest
+  require(valid,'Unreviewed production input: '+name)
  for game in GAMES.values():require(before['moduleFiles'].get(str(MODULES/game/'active.json'))==operator['beforePointers'][game],'Active package changed since layout verification')
 def validate_after(before,after,source,packages):
  expected=dict(before);expected['source']={**before['source'],**source};expected['sourceLF']={**before['sourceLF'],**source};expected['moduleFiles']=dict(before['moduleFiles'])
