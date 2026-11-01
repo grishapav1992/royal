@@ -1,7 +1,7 @@
 {
   "release": "shared-stakes-20261101-v1",
   "productionCommit": "fb599494fbee9accff92c8a30126a071ebcceb5c",
-  "featureCommit": "0d7ba7601e09f4143075a7c03cecfa00849c24a0",
+  "featureCommit": "d9fccede2224709ea1a2aa740b037fdd3988522a",
   "activeGames": [
     "studio-caramel-carnival",
     "studio-last-convoy",
