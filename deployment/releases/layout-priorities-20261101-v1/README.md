@@ -16,6 +16,10 @@ first. Its backup includes the source archive and exact previous image.
 `deploy.py modules` then uses the existing compatible module publisher under all
 three publication locks. It supports resuming an interrupted module sequence by
 accepting only the exact previous or prepared pointers and immutable resources.
+`deploy.py release` waits for the existing publication locks, then retains all
+three throughout build, backup, host publication and all 18 client publications.
+The live baseline is checked after the wait. Individual operations remain
+nonblocking and preserve the same guards.
 
 Rollback restores the saved module pointers before invoking the existing host
 rollback guard. It never restores a database. Backend and financial programs are
