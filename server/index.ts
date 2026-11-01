@@ -2,6 +2,7 @@ import { installFlagToteRoutes } from './flagToteRoutes';
 import { installDemoWallet } from './demoWalletRoutes';
 import { installProgression } from './progressionRoutes';
 import {installCaribbeanCrew} from './caribbeanCrewRoutes';
+import {installStarSpinCollection} from './starSpinCollectionRoutes';
 import { installGameModuleAssets } from './gameModuleAssets';
 import { installCasinoApiPro } from './casinoApiProRoutes';
 import { installCryptoWallet } from './cryptoWalletRoutes';
@@ -40,6 +41,7 @@ const server = defineServer({
     installPaymentMethods(app);
     installAuth(app);
     installCaribbeanCrew(app);
+    installStarSpinCollection(app);
     installFinanceAdmin(app);
     installDemoWallet(app);
     stopTote = installFlagToteRoutes(app, accounts.wallet.tote);
