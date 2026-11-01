@@ -1,3 +1,4 @@
+import {validGameStake} from './gameStakes.ts';
 import { t as translateText } from '../i18n/index';
 export const CARAMEL_CLIENT_HEADER = 'X-Royal-Caramel-Rules';
 export const CARAMEL_GAME = 'studio-caramel-carnival' as const;
@@ -17,7 +18,7 @@ export type CaramelSpin = {index:number;kind:'base'|'free';initialGrid:number[];
 export type CaramelBonus = {awarded:number;played:number;remaining:number;multiplier:number};
 export type CaramelView = {kind:'caramel-carnival';version:1;mode:'normal'|'festival';revision:number;history:CaramelSpin[];spin:CaramelSpin|null;bonus:CaramelBonus|null;totalPayoutUnits:string;capped:boolean};
 export type CaramelResult = {view:CaramelView;ended:boolean;credit:number;message:string;actions:{move:'caramel-spin';label:string;cost:0}[]};
-export const validCaramelStake = (v:unknown):v is string => typeof v==='string'&&(CARAMEL_BETS as readonly string[]).includes(v);
+export const validCaramelStake = (v:unknown):v is string => validGameStake(v)||typeof v==='string'&&(CARAMEL_BETS as readonly string[]).includes(v);
 const obj=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v);
 const keys=(v:Record<string,unknown>,s:string)=>Object.keys(v).sort().join()===s.split(',').sort().join();
 const int=(v:unknown,min:number,max:number):v is number=>typeof v==='number'&&Number.isSafeInteger(v)&&v>=min&&v<=max;

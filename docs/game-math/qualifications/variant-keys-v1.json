@@ -3,12 +3,12 @@
   "gameId": "variant-keys",
   "rulesVersion": 1,
   "progressVersion": 1,
-  "startedAt": "2026-10-30T22:14:54.745Z",
-  "completedAt": "2026-10-30T22:15:10.304Z",
+  "startedAt": "2026-10-31T21:09:07.575Z",
+  "completedAt": "2026-10-31T21:09:26.430Z",
   "sourceHashes": {
     "server/games/casinoNextVariants.ts": "f989cee4147e107faf7c4e4df216729025fc2baf6e779dde1a64f9b825ce1e43",
     "src/shared/casinoNextVariants.ts": "56582bc829010e4ffb0c524d305169557d166091f5b290da45f78f5f726b6b9e",
-    "src/shared/gameCore.ts": "aa9520b435a5c969d257290e3b06060051db76de45955f99dd68c48f1b5addab",
+    "src/shared/gameCore.ts": "3e59b987bd47e61137af39aace7717bc7490e3dabf52193de8668fbcca5ca737",
     "src/shared/demoWallet.ts": "2f3d21554eaa03930e306f8db103fe8299649387853574dff516cd01cd7e1cef",
     "src/shared/usdtWallet.ts": "23b523bb24b84dcdbda636f1b6bd940e3072a5069b9ba8c44c71da29129c484a",
     "scripts/game-math/rtp-keys.mjs": "2fdd4e91ed2924a9ad84f9dbcee5d4628091623d04307152381ea78c75760be1"

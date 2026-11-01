@@ -97,7 +97,7 @@ export function clusterPayout(symbol: SymbolId, count: number, bet: number, fact
   if (count < 5 || symbol >= PORTAL) return 0;
   const scaleTenths = count <= 6 ? 25 : count <= 8 ? 55 : count <= 11 ? 120 : count <= 15 ? 300 : 800;
   const valueTenths = [13,12,11,10,9,8][symbol];
-  const units = BigInt(bet) * 100n * BigInt(scaleTenths) * BigInt(valueTenths) * BigInt(factor) * BigInt(DRACONA_MATH.payNumerator)
+  const units = BigInt(Math.round(bet * 100)) * BigInt(scaleTenths) * BigInt(valueTenths) * BigInt(factor) * BigInt(DRACONA_MATH.payNumerator)
     / (100n * BigInt(DRACONA_MATH.payDenominator));
   return Number(units) / 100;
 }
@@ -132,7 +132,7 @@ export function exchangeBlock(grid: Grid, reserve: Grid, topLeft: number): { gri
 
 export function playSpin(options: SpinOptions): SpinResult {
   const { bet, random, bonus = false, bonusIssued = 0 } = options;
-  if (!Number.isSafeInteger(bet) || bet <= 0) throw new Error('Ставка должна быть положительным целым числом');
+  if (!Number.isSafeInteger(Math.round(bet * 100)) || Math.abs(bet * 100 - Math.round(bet * 100)) > 1e-8 || bet <= 0) throw new Error('Ставка должна быть положительной суммой в центах');
   let grid: Grid = options.initialGrid ? [...options.initialGrid] : Array.from({ length: SIZE }, () => drawSymbol(random));
   const enchantedSymbol = bonus && !options.initialReserve && random() < 0.45 ? drawSymbol(random, true) : undefined;
   let reserve: Grid = options.initialReserve ? [...options.initialReserve] : enchantedSymbol !== undefined ? Array(4).fill(enchantedSymbol) as Grid : Array.from({ length: 4 }, () => drawSymbol(random, true));

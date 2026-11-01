@@ -99,22 +99,26 @@ export function simulateNeopolis(policy, progress = () => {}) {
 }
 
 export function simulateDracona(policy, progress = () => {}) {
+  const preciseMoment=moment();
   const moments = policy.stakes.map(moment), streams = [];
   let freeSpins = 0, bonuses = 0;
   for (const seed of policy.seeds) {
     const random = seededRandom(seed);
     for (let round = 0; round < policy.qualificationRoundsPerSeed; round++) {
-      let remaining = 0, issued = 0, runes = Array(SIZE).fill(1);
+      let remaining = 0, issued = 0, runes = Array(SIZE).fill(1), precisePoints=0;
       const units = policy.stakes.map(() => 0);
       do {
         const result = playSpin({ bet: 100, bonus: issued > 0, runes, bonusIssued: issued, random });
         if (issued) { remaining--; freeSpins++; } else if (result.bonusAward) bonuses++;
         for (const step of result.steps) if (step.type === 'win') for (const cluster of step.clusters) {
+          const count=cluster.cells.length,scale=count<=6?25:count<=8?55:count<=11?120:count<=15?300:800;
+          precisePoints+=scale*[13,12,11,10,9,8][cluster.symbol]*cluster.factor;
           for (let i = 0; i < policy.stakes.length; i++) units[i] += Math.round(clusterPayout(cluster.symbol, cluster.cells.length, policy.stakes[i] / 100, cluster.factor) * 100);
         }
         remaining += result.bonusAward; issued += result.bonusAward; runes = result.runes;
         assert(issued <= 20);
       } while (remaining);
+      add(preciseMoment,Math.min(100000,precisePoints*497300/100000000),1);
       for (let i = 0; i < moments.length; i++) {
         assert(Number.isSafeInteger(units[i]) && units[i] <= policy.stakes[i] * 100000);
         add(moments[i], units[i] / policy.stakes[i], 1);
@@ -123,6 +127,6 @@ export function simulateDracona(policy, progress = () => {}) {
     }
     streams.push({ choice: 'normal', seed, paidRounds: policy.qualificationRoundsPerSeed });
   }
-  return { method: 'independent complete paid rounds, with all rune state and free retriggers', streams,
+  return { method: 'independent complete paid rounds, with all rune state and free retriggers', streams, precisionResult:summary(preciseMoment),
     results: moments.map((s, i) => ({ choice: 'normal', stakeUnits: policy.stakes[i], cycles: 0, freeSpins, bonuses, ...summary(s) })) };
 }

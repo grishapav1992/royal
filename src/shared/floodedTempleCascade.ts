@@ -1,3 +1,4 @@
+import {precisionBaseSession} from './roundPrecision.ts';
 import {CASCADE_DATA,CASCADE_CAP_POINTS,initialCascadeState,advanceCascade,type CascadeState,type CascadeFrame,type CascadeDraw} from './floodedTempleCascadeMath';
 
 export const TEMPLE_CASCADE_VERSION=2;
@@ -7,7 +8,7 @@ export type TempleCascadeResult={view:TempleCascadeView;ended:boolean;credit:num
 const record=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v);
 export const validCascadeStake=(s:unknown):s is string=>typeof s==='string'&&CASCADE_DATA.stakes.some(n=>String(n)===s);
 export function validCascadeSettings(v:unknown):v is TempleCascadeSettings{return record(v)&&Object.keys(v).join(',')==='temple'&&record(v.temple)&&Object.keys(v.temple).join(',')==='mode'&&v.temple.mode==='cascades';}
-export const cascadeUnits=(points:number,stake:string)=>String(points*(Number(stake)/20));
+export const cascadeUnits=(points:number,stake:string)=>String(BigInt(points)*BigInt(stake)/20n);
 export const cascadeCanonical=(v:unknown):string=>JSON.stringify(v,(_k,item)=>record(item)?Object.fromEntries(Object.entries(item).sort(([a],[b])=>a.localeCompare(b))):item);
 export function replayCascadeOperations(stake:string,operations:number[][][]):TempleCascadeView{
   if(!validCascadeStake(stake)||!Array.isArray(operations)||!operations.length)throw Error('Invalid cascade round');
@@ -35,6 +36,7 @@ export function validCascadeSettlement(state:unknown,stake:unknown,spent:unknown
   return validCascadeView(stake,v)&&spent===stake&&Number(v.totalPayoutUnits)<=Number(stake)*CASCADE_DATA.maxWin&&(state==='active'?v.phase!=='complete'&&returned==='0':state==='settled'&&v.phase==='complete'&&returned===v.totalPayoutUnits);
 }
 export function validCascadeSession(v:unknown):boolean{
+  v=precisionBaseSession(v);
   return record(v)&&v.gameId==='studio-flooded-temple'&&v.rulesVersion===2&&record(v.view)&&validCascadeSettlement(v.state,v.stakeUnits,v.spentUnits,v.returnedUnits,v.view.templeCascade);
 }
 /** One bounded transport operation may contain several falls; it never truncates the round. */

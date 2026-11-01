@@ -1,4 +1,3 @@
-import {WILD_NUDGE_GAME} from './wildNudge';
 import {REWARD_SLOT_GAMES} from './rewardSpinCatalog';
 import {JACKIE_GAME} from './jackieChan';
 import {PENALTY_GAME} from './crLeo';
@@ -45,9 +44,12 @@ export const ACTIVE_ARCADE_GAMES: readonly string[] = ARCADE_CABINET_SPECS.map(c
 export const ROYAL_CABINET_IDS = ARCADE_CABINET_SPECS.filter(c=>c.collection==='royal').map(c=>c.id);
 export const ARCADE_CABINET_POSITIONS: Readonly<Record<string,{x:number;y:number}>> = Object.fromEntries(ARCADE_CABINET_SPECS.map(c=>[c.id,{x:c.x,y:c.y}]));
 export const STUDIO_CABINET_GAMES = ACTIVE_STUDIO_GAMES;
-export const ROYAL_PLATFORM_GAMES: readonly string[] = [...ARCADE_HOUSE_GAMES, WILD_NUDGE_GAME, CARIBBEAN_GAME, 'studio-flooded-temple', 'royal-roulette', 'flag-battle', 'flag-tote'];
+export const ROYAL_PLATFORM_GAMES: readonly string[] = [...ARCADE_HOUSE_GAMES, CARIBBEAN_GAME, 'studio-flooded-temple', 'royal-roulette', 'flag-battle'];
 export const ROYAL_COLLECTION_GAMES = ROYAL_PLATFORM_GAMES;
 export const PLATFORM_CABINET_DEFAULTS: Readonly<Record<string,string>> = Object.freeze(Object.fromEntries(ARCADE_CABINET_SPECS.filter(c=>c.defaultGameId).map(c=>[c.id,c.defaultGameId!])));
 export const isPlatformGame=(id:string):boolean=>ROYAL_PLATFORM_GAMES.includes(id);
 export const collectionGames=(collection:CabinetCollection):readonly string[] => collection==='royal'?ROYAL_COLLECTION_GAMES:collection==='github'?ARCADE_GITHUB_GAMES:[];
 export const isCollectionGame=(collection:CabinetCollection,id:string):boolean=>collectionGames(collection).includes(id);
+
+// These modules are present in source but have never been opened in production.
+export const isUnpublishedArcadeGame=(id:unknown):boolean=>id==='studio-wild-nudge'||id==='flag-tote';

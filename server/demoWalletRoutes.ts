@@ -1,3 +1,5 @@
+import {isUnpublishedArcadeGame} from '../src/shared/arcadeCatalog';
+import {usesGameStakes} from '../src/shared/gameStakes';
 import {WILD_NUDGE_CLIENT_HEADER} from '../src/shared/wildNudge';
 import {JACKIE_HEADER} from '../src/shared/jackieChan';
 import {FLAG_HEADER,flagCapability} from '../src/shared/flagBattle';
@@ -52,7 +54,7 @@ export function installDemoWallet(app: Application, requestLimitOptions?: DemoWa
     }catch(error){if(error instanceof WalletError)res.status(error.status).json({error:error.message});else{console.error('Demo studio presentation read failed');res.status(500).json({error:'Не удалось загрузить показ. Используй сохранённый результат.'});}}
   });
   app.post('/api/demo-wallet/expansion',async (req,res)=>{
-    try{res.json(await accounts.wallet.expansion.operate(res.locals.accountId,req.body,req.get('X-Royal-Card-Rules')==='2'?2:1,req.get(CARAMEL_CLIENT_HEADER)==='1',req.get(VELVET_CLIENT_HEADER)==='1',req.get(CONVOY_CLIENT_HEADER)==='1',req.get(NITRO_CLIENT_HEADER)==='1',req.get(AFTER_CLIENT_HEADER)==='1',req.get(AFTER_PROGRESS_HEADER)===AFTER_PROGRESS_VERSION,req.get(MEME_CLIENT_HEADER)==='1',req.get(PENALTY_CLIENT_HEADER)==='1',(req.get(DRACONA_CLIENT_HEADER)==='2'?2:req.get(DRACONA_CLIENT_HEADER)==='1'),(req.get(NEOPOLIS_HEADER)==='4'?4:req.get(NEOPOLIS_HEADER)==='3'?3:req.get(NEOPOLIS_HEADER)==='2'?2:req.get(NEOPOLIS_HEADER)==='1'),req.get(CARIBBEAN_CLIENT_HEADER)==='1',req.get(FOREST_HEART_CLIENT_HEADER)==='1',flagCapability(req.get(FLAG_HEADER)),(req.get(JACKIE_HEADER)==='2'?2:req.get(JACKIE_HEADER)==='1'),(req.get(TEMPLE_CLIENT_HEADER)==='2'?2:req.get(TEMPLE_CLIENT_HEADER)==='1'),req.get(WILD_NUDGE_CLIENT_HEADER)==='1'));}
+    try{if(req.body?.action==='start'&&isUnpublishedArcadeGame(req.body.gameId)&&!await accounts.wallet.expansion.hasAcceptedOperation(res.locals.accountId,req.body.id))throw new WalletError(410,'Эта игра недоступна. Новая ставка не принята.');if(req.body?.action==='start'&&usesGameStakes(req.body.gameId)&&req.body.stakePolicyVersion!==1&&!await accounts.wallet.expansion.hasAcceptedOperation(res.locals.accountId,req.body.id))throw new WalletError(409,'Обнови страницу для общей системы ставок. Ставка не списана.');res.json(await accounts.wallet.expansion.operate(res.locals.accountId,req.body,req.get('X-Royal-Card-Rules')==='2'?2:1,req.get(CARAMEL_CLIENT_HEADER)==='1',req.get(VELVET_CLIENT_HEADER)==='1',req.get(CONVOY_CLIENT_HEADER)==='1',req.get(NITRO_CLIENT_HEADER)==='1',req.get(AFTER_CLIENT_HEADER)==='1',req.get(AFTER_PROGRESS_HEADER)===AFTER_PROGRESS_VERSION,req.get(MEME_CLIENT_HEADER)==='1',req.get(PENALTY_CLIENT_HEADER)==='1',(req.get(DRACONA_CLIENT_HEADER)==='2'?2:req.get(DRACONA_CLIENT_HEADER)==='1'),(req.get(NEOPOLIS_HEADER)==='4'?4:req.get(NEOPOLIS_HEADER)==='3'?3:req.get(NEOPOLIS_HEADER)==='2'?2:req.get(NEOPOLIS_HEADER)==='1'),req.get(CARIBBEAN_CLIENT_HEADER)==='1',req.get(FOREST_HEART_CLIENT_HEADER)==='1',flagCapability(req.get(FLAG_HEADER)),(req.get(JACKIE_HEADER)==='2'?2:req.get(JACKIE_HEADER)==='1'),(req.get(TEMPLE_CLIENT_HEADER)==='2'?2:req.get(TEMPLE_CLIENT_HEADER)==='1'),req.get(WILD_NUDGE_CLIENT_HEADER)==='1'));}
     catch(error){if(error instanceof WalletError)res.status(error.status).json({error:error.message});else{console.error('Demo expansion operation failed');res.status(500).json({error:'Ответ не подтверждён. Повтори тот же ход.'});}}
   });
   app.get('/api/demo-wallet/convoy-progress',async (req,res)=>{
@@ -110,6 +112,7 @@ export function installDemoWallet(app: Application, requestLimitOptions?: DemoWa
         && !(typeof req.body.id === 'string' && await accounts.wallet.hasAcceptedOperation(res.locals.accountId, req.body.id))) {
         throw new WalletError(409, 'Эта игра убрана из зала. Новая ставка не принята.');
       }
+      if(req.body?.kind==='play'&&usesGameStakes(req.body.gameId)&&req.body.stakePolicyVersion!==1&&!await accounts.wallet.hasAcceptedOperation(res.locals.accountId,req.body.id))throw new WalletError(409,'Обнови страницу для общей системы ставок. Ставка не списана.');
       res.json(await accounts.wallet.operate(res.locals.accountId, req.body));
     }
     catch (error) {

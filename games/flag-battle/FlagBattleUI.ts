@@ -1,4 +1,7 @@
-import { FLAG_GAME, FLAG_BETS, FLAG_COUNTRIES, FLAG_MODES, flagCountries, flagModeInfo, flagViewMode, flagPayout, validFlagSettings, type FlagMode, type FlagCountry, type FlagView } from '../../src/shared/flagBattle';
+import {syncStakeSelect} from '../../src/ui/stakeSelection';
+import {stakeRulesHtml} from '../../src/ui/stakeRules';
+import {GAME_STAKE_UNITS as FLAG_BETS} from '../../src/shared/gameStakes';
+import { FLAG_GAME, FLAG_COUNTRIES, FLAG_MODES, flagCountries, flagModeInfo, flagViewMode, flagPayout, validFlagSettings, type FlagMode, type FlagCountry, type FlagView } from '../../src/shared/flagBattle';
 import { expansionClient as client } from '../../src/wallet/ExpansionClient';
 import { demoWallet } from '../../src/wallet/WalletClient';
 import { FlagAudio } from './FlagAudio';
@@ -19,7 +22,7 @@ export class FlagBattleUI {
   private owner = client.accountId;
   private mode: FlagMode = 'classic';
   private selected: FlagCountry = 'RU';
-  private stake = '100';
+  private stake = '10';
   private seen = '';
   private view?: FlagView;
   private returned = '0';
@@ -37,7 +40,7 @@ export class FlagBattleUI {
 <aside class="fb-controls"><div class="fb-mode-heading">${text('Масштаб битвы', 'Battle size')}</div><div class="fb-modes" role="group" aria-label="${text('Режим игры', 'Game mode')}">${FLAG_MODES.map(m => `<button type="button" data-mode="${m.id}" aria-pressed="${m.id === this.mode}"><b>${m.count}</b><span>${en ? m.en : m.ru}</span></button>`).join('')}</div><p class="fb-mode-odds" data-fb="odds"></p>
 <div class="fb-pick-heading"><span>01</span><h3>${text('Выбери свой флаг', 'Pick your flag')}</h3><small data-fb="pick-odds"></small></div><input type="search" class="fb-search" data-fb="search" placeholder="${text('Найти страну', 'Find a country')}" aria-label="${text('Найти страну', 'Find a country')}" hidden><div class="fb-countries"></div><p class="fb-empty" data-fb="empty" hidden>${text('Страна не найдена.', 'No matching country.')}</p>
 <div class="fb-bet"><label for="fb-stake">02 &nbsp; ${text('Твоя ставка', 'Your stake')}</label><select id="fb-stake">${FLAG_BETS.map(s => `<option value="${s}">${money(s)} USDT</option>`).join('')}</select></div><div class="fb-quote"><span>${text('Выплата за победу', 'Return on a win')}</span><b data-fb="quote"></b><small data-fb="multiplier"></small></div><button type="button" data-fb="play" class="fb-play"></button><button type="button" data-fb="skip" class="fb-skip" hidden>${text('Показать результат', 'Show result')}</button><button type="button" data-fb="retry" class="fb-retry" hidden>${text('Проверить ту же ставку', 'Check the same bet')}</button><p class="fb-status" data-fb="status" role="status" aria-live="polite"></p><p class="fb-fair">${text('Равные шансы для каждой страны', 'Equal odds for every country')}<span>RTP 96% · USDT ${text('Демо', 'Demo')}</span></p></aside></div>
-<dialog class="fb-rules"><h3>${text('Как играть', 'How to play')}</h3><p>${text('Выбери режим, страну и ставку. В битве участвуют 12, 24 или 48 разных стран. Флаги покидают арену один за другим. Если твоя страна остаётся последней, ты получаешь выплату, иначе выплата равна нулю.', 'Choose a mode, country and stake. The battle has 12, 24 or 48 different countries. Flags leave the arena one by one. If your country is last, you receive the return. Otherwise the return is zero.')}</p><table><thead><tr><th>${text('Страны', 'Countries')}</th><th>${text('Шанс', 'Chance')}</th><th>${text('Выплата', 'Return')}</th></tr></thead><tbody>${FLAG_MODES.map(m => `<tr><td>${m.count}</td><td>1 / ${m.count}</td><td>${(m.multiplier / 100).toLocaleString(en ? 'en-US' : 'ru-RU')}×</td></tr>`).join('')}</tbody></table><p>${text('Выплата включает ставку. RTP каждого режима: 96%. Ставки от 1 до 50 USDT на общем демобалансе. Ускорение показа не меняет исход. Принятый результат сохраняется при закрытии и потере связи. Дополнительных списаний нет.', 'The return includes the stake. Every mode has 96% RTP. Stakes from 1 to 50 USDT use the shared demo wallet. Skipping the animation does not change the outcome. Accepted results survive closing and lost connections. There are no additional charges.')}</p><button type="button" data-fb="close-rules">${text('Понятно', 'Got it')}</button></dialog>`;
+<dialog class="fb-rules"><h3>${text('Как играть', 'How to play')}</h3><p>${text('Выбери режим, страну и ставку. В битве участвуют 12, 24 или 48 разных стран. Флаги покидают арену один за другим. Если твоя страна остаётся последней, ты получаешь выплату, иначе выплата равна нулю.', 'Choose a mode, country and stake. The battle has 12, 24 or 48 different countries. Flags leave the arena one by one. If your country is last, you receive the return. Otherwise the return is zero.')}</p><table><thead><tr><th>${text('Страны', 'Countries')}</th><th>${text('Шанс', 'Chance')}</th><th>${text('Выплата', 'Return')}</th></tr></thead><tbody>${FLAG_MODES.map(m => `<tr><td>${m.count}</td><td>1 / ${m.count}</td><td>${(m.multiplier / 100).toLocaleString(en ? 'en-US' : 'ru-RU')}×</td></tr>`).join('')}</tbody></table><p>${text('Выплата включает ставку. RTP каждого режима: 96%. Ставки от 1 до 50 USDT на общем демобалансе. Ускорение показа не меняет исход. Принятый результат сохраняется при закрытии и потере связи. Дополнительных списаний нет.', 'The return includes the stake. Every mode has 96% RTP. Stakes from 1 to 50 USDT use the shared demo wallet. Skipping the animation does not change the outcome. Accepted results survive closing and lost connections. There are no additional charges.')}</p><button type="button" data-fb="close-rules">${text('Понятно', 'Got it')}</button>${stakeRulesHtml(en)}</dialog>`;
     host.replaceChildren(this.root);
     this.arena = new FlagArena(this.find('canvas'));
     const signal = this.lifetime.signal;
@@ -80,7 +83,7 @@ export class FlagBattleUI {
   private sync() {
     if (this.owner !== client.accountId) {
       this.audio.silence(); this.owner = client.accountId; this.running = false; this.fresh = false; this.seen = ''; this.view = undefined;
-      this.submitting = false; this.error = ''; this.mode = 'classic'; this.selected = 'RU'; this.stake = '100'; this.arena.reset();
+      this.submitting = false; this.error = ''; this.mode = 'classic'; this.selected = 'RU'; this.stake = '10'; this.arena.reset();
       this.find<HTMLInputElement>('[data-fb="search"]').value = '';
     }
     const pending = client.pending;
@@ -120,7 +123,7 @@ export class FlagBattleUI {
     this.root.querySelectorAll<HTMLButtonElement>('button[data-mode]').forEach(b => { b.disabled = blocked; b.setAttribute('aria-pressed', String(b.dataset.mode === this.mode)); });
     this.find<HTMLInputElement>('[data-fb="search"]').hidden = this.count === 12;
     this.find<HTMLInputElement>('[data-fb="search"]').disabled = blocked; this.filterCountries();
-    this.find<HTMLSelectElement>('select').disabled = blocked; this.find<HTMLSelectElement>('select').value = this.stake;
+    this.stake=syncStakeSelect(this.find<HTMLSelectElement>('select'),this.stake,FLAG_BETS,blocked);
     this.put('total', String(this.count)); this.put('count', String(this.count - this.eliminated));
     this.find('[data-fb="ticker"]').innerHTML = (this.view?.order.slice(0, this.eliminated) ?? []).map(id => `<span title="${name(id)}"><img src="${flagAsset(id)}" alt="${name(id)}"><i>×</i></span>`).join('');
     this.put('pick-odds', `1 / ${this.count}`);

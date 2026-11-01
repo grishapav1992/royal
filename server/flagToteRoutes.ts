@@ -1,3 +1,4 @@
+import {isUnpublishedArcadeGame} from '../src/shared/arcadeCatalog';
 import type { Application } from 'express';
 import type { FlagToteStore } from './flagTote';
 import { WalletError } from './demoWallet';
@@ -15,7 +16,7 @@ export function installFlagToteRoutes(app: Application, store: FlagToteStore) {
     catch { res.status(500).json({ error: 'Не удалось проверить общий раунд. Повтори запрос.' }); }
   });
   app.post('/api/demo-wallet/flag-tote', async (req, res) => {
-    try { res.json(await store.bet(res.locals.accountId, req.body)); }
+    try { if(isUnpublishedArcadeGame('flag-tote')&&!await store.hasAcceptedOperation(res.locals.accountId,req.body?.id))throw new WalletError(410,'Эта игра недоступна. Новая ставка не принята.');res.json(await store.bet(res.locals.accountId, req.body)); }
     catch (error) {
       if (error instanceof WalletError) res.status(error.status).json({ error: error.message });
       else { console.error('Flag tote operation failed'); res.status(500).json({ error: 'Ответ не подтверждён. Проверь ту же ставку.' }); }

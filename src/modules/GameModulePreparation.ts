@@ -1,3 +1,4 @@
+import {isUnpublishedArcadeGame} from '../shared/arcadeCatalog';
 import { gameModuleContract, type IndependentGameId } from './GameModuleCatalog';
 import { validModulePointer, validModuleManifest, moduleDigest, moduleRoot,
  type GameModuleManifest, type GameModulePointer } from './GameModuleManifest';
@@ -66,7 +67,7 @@ function immutablePackage(pointer: GameModulePointer): Promise<Package> {
 
 /** Each opening checks the active pointer; only verified immutable metadata is shared. */
 export async function loadGameModule(gameId: IndependentGameId, signal: AbortSignal): Promise<Package> {
- if (!gameModuleContract(gameId)) throw Error('Unsupported independent game');
+ if (!gameModuleContract(gameId) || isUnpublishedArcadeGame(gameId)) throw Error('Unsupported independent game');
  const pointer = (await json(`/game-modules/${gameId}/active.json`, signal, 'no-store')).data;
  if (!validModulePointer(pointer, gameId)) throw Error('Invalid game pointer');
  if (signal.aborted) throw new DOMException('Game closed', 'AbortError');
@@ -124,7 +125,7 @@ function start(job: Preparation) {
 
 /** Warm static files for one intended game without evaluating its code or creating a round. */
 export function prepareGameModule(gameId: IndependentGameId): Promise<boolean> {
- if (!gameModuleContract(gameId)) return Promise.resolve(false);
+ if (!gameModuleContract(gameId) || isUnpublishedArcadeGame(gameId)) return Promise.resolve(false);
  if (active?.gameId === gameId) return active.promise;
  if (queued?.gameId === gameId) return queued.promise;
  if (Date.now() - (preparedAt.get(gameId) ?? 0) < 30000) return Promise.resolve(true);
