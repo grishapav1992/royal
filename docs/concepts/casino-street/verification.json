@@ -1,48 +1,48 @@
 {
   "feature": "casino-street",
   "date": "2026-11-01",
-  "baselineCommit": "0f2d09c003a243d51e118ca3c7b9ea5b7eb20731",
+  "baselineCommit": "44195a79e12be5754828abb5c1c58c65c0d90b35",
   "deployed": false,
   "addedOrRestoredGames": [],
   "checks": {
     "applicationBuild": {
       "passed": true,
-      "startedAt": "2026-11-01T15:40:52.539Z",
+      "startedAt": "2026-11-01T16:19:54.717Z",
       "steps": [
         {
           "name": "rtp",
           "passed": true,
-          "durationMs": 4270
+          "durationMs": 4062
         },
         {
           "name": "typecheck",
           "passed": true,
-          "durationMs": 5940
+          "durationMs": 6359
         },
         {
           "name": "modules",
           "passed": true,
-          "durationMs": 7874
+          "durationMs": 5300
         },
         {
           "name": "host",
           "passed": true,
-          "durationMs": 24478
+          "durationMs": 5626
         },
         {
           "name": "backend",
           "passed": true,
-          "durationMs": 60
+          "durationMs": 63
         },
         {
           "name": "reconciliation",
           "passed": true,
-          "durationMs": 16
+          "durationMs": 19
         },
         {
           "name": "payments",
           "passed": true,
-          "durationMs": 18
+          "durationMs": 25
         }
       ]
     },
@@ -74,7 +74,12 @@
       "fullExteriorLoop": true,
       "reloadRecoversStreetAndRoom": true,
       "returnToFirstFloor": true,
-      "balancePreserved": true
+      "balancePreserved": true,
+      "ports": {
+        "web": 5193,
+        "api": 2593
+      },
+      "livePreviewPreserved": "http://127.0.0.1:5191"
     }
   },
   "existingFailures": {
@@ -102,14 +107,16 @@
         "failed": 3
       }
     },
-    "note": "Failing test names were compared against unchanged origin/main. No retired games were restored to satisfy historical expectations."
+    "note": "Failing test names were compared against unchanged origin/main. No retired games were restored to satisfy historical expectations.",
+    "context": "Historical comparison from the initial street implementation at 78c3f207 against 0f2d09c0, not a new failure count for reference-v2. The current visual change passed the 26 targeted tests and both browser scenarios."
   },
   "productionCatalogueReadOnly": {
     "arcadeCatalogSha256": "f6a46d3ee4d427068c87af6a4289fed6e1ac7e00ca3a60da9849cb319e475dc6",
     "matchesFeature": true,
     "cabinetsSourceMatchesMain": false,
     "cabinetsChangedByTask": false,
-    "productionMutations": false
+    "productionMutations": false,
+    "reverifiedAt": "2026-11-01T16:25:43.981Z"
   },
   "limitations": [
     "Browser viewports emulate desktop and mobile; no physical phone was tested.",
@@ -128,9 +135,21 @@
   "sourceHashes": {
     "src/shared/street.ts": "15112fd6f1fd4abc5483f042f6a11d1fd555040b17f92966d56bf49c764cea51",
     "src/shared/world.ts": "7d799089511a16611da32df0e08245091f438426e5a0e52e30fe5f2caf087c8f",
-    "src/game/StreetRenderer.ts": "c0365f13a034a54062b17c738bb1a154ac242620285522d69168ebc0d0b02306",
-    "src/game/RoomScene.ts": "69419e401d26ea039f06abdfefb0a7baefe2ef23ead366db9d59f04d4eaf74cd",
-    "server/guards.ts": "68eaf4626223cb54f2116341f321456c52b8dc1f416cbfb88f0e492c4b867107",
+    "src/game/streetArt.ts": "6319054eeea81fdd94123a1aa5cecd30394b2cb0748943f2e9dbdcc9b895b826",
+    "src/game/StreetRenderer.ts": "32fb3f25e0d83cbe4132ceaad7e9331838a4dbf3f9aab02c8cb03ac09c6cf1b5",
+    "src/game/RoomScene.ts": "9da2be15fa777649750764b36b3aec1f7cd5d75fa4797d0b8444a0d746a5caa6",
+    "src/ui/ClubMap.ts": "fbcf4b6e1010f267b22d062724c36e0cd3285f2488b6276d8b5a5e8745de66c5",
+    "server/guards.ts": "f4e1d25875bdc007929b4649a3ff13634ab204d7867240bac000297a4fb91b4a",
     "src/main.ts": "1e079a5b6b8e9753e71cf547af754e0eba3b17c56773eb5c131ec07ab3d8d7f1"
-  }
+  },
+  "previousBaselineCommit": "0f2d09c003a243d51e118ca3c7b9ea5b7eb20731",
+  "visualVersion": "reference-v2",
+  "visualChanges": [
+    "Paneled double doors and arched canopies",
+    "Cream pilasters with diamond details",
+    "Shared crown and ROYAL lettering",
+    "Snow-covered planters, pines, lantern frames and bench armrests",
+    "Flat perpendicular overview and shared minimap artwork",
+    "Camera framing adjusted toward the facade without a visible final floor"
+  ]
 }

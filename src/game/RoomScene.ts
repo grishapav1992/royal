@@ -243,6 +243,7 @@ export class RoomScene extends Phaser.Scene {
     if(this.player)this.resizeView();
   }
   getTailorState() { return this.atelier?.getState() ?? null; }
+  getStreetMapArt() { return this.street?.mapCanvas; }
   setOverview(value:boolean){this.overview=value;document.querySelector<HTMLElement>('.room-panel')!.dataset.overview=String(value);this.resizeView();}
   setDealerAction(gameId: string, action: DealerAction) { this.cardTables?.setAction(gameId, action); }
   private resizeView(){
@@ -255,7 +256,7 @@ export class RoomScene extends Phaser.Scene {
       Math.min(0,(frame.width-viewWidth)/2),Math.min(HALL_WALL.viewTop,(frame.height+HALL_WALL.viewTop-viewHeight)/2),
       Math.max(frame.width,viewWidth),Math.max(frame.height-HALL_WALL.viewTop,viewHeight));
     if(this.overview){camera.stopFollow();camera.centerOn(frame.width/2,(frame.height+HALL_WALL.viewTop)/2);}
-    else if(this.player)camera.startFollow(this.player.sprite,false,1,1);
+    else if(this.player)camera.startFollow(this.player.sprite,false,1,1,0,this.hall==='street'?140:0);
   }
   private drawRoom() {
     const g = this.add.graphics();

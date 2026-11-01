@@ -40,14 +40,8 @@ export class ClubMap {
     this.canvas.title=translateText(state.hall==='street'?'Нажми, чтобы посмотреть всю улицу':'Нажми, чтобы посмотреть весь этаж');
     ctx.clearRect(0,0,this.canvas.width,this.canvas.height);ctx.save();ctx.scale(sx,sy);
     if(state.hall==='street'){
-      const b=STREET.building;
-      ctx.fillStyle='#e5edf2';ctx.fillRect(0,0,STREET.width,STREET.height);
-      ctx.fillStyle='#b8bdc7';ctx.fillRect(320,240,2180,960);
-      ctx.fillStyle='#323d53';ctx.fillRect(0,1210,STREET.width,170);
-      ctx.fillStyle='#671d36';ctx.fillRect(b.x,b.y,b.w,b.h);
-      ctx.strokeStyle='#f3dbad';ctx.lineWidth=10;ctx.strokeRect(b.x,b.y,b.w,b.h);
-      ctx.fillStyle='#f1ca61';ctx.font='bold 90px Georgia';ctx.textAlign='center';ctx.fillText('ROYAL',b.x+b.w/2,b.y+b.h/2+30);
-      ctx.fillStyle='#925b3c';for(const p of STREET.benches)ctx.fillRect(p.x-57,p.y-32,114,40);
+      const art=this.scene.getStreetMapArt();
+      if(art)ctx.drawImage(art,0,0,STREET.width,STREET.height);
     }else{
     ctx.fillStyle='#202b33';ctx.fillRect(0,0,WORLD.width,WORLD.height);
     ctx.fillStyle='#5c5145';ctx.fillRect(FLOOR.x,FLOOR.y,FLOOR.width,FLOOR.height);
