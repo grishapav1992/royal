@@ -2,7 +2,7 @@
 from pathlib import Path
 import fcntl, hashlib, importlib.util, io, json, os, re, shutil, subprocess, sys, tarfile, time
 ROOT=Path(__file__).resolve().parent
-NAME='shared-stakes-20261101-v1'
+NAME='shared-stakes-20261101-v2'
 LIVE=Path('/opt/royal'); MODULES=Path('/opt/royal-game-modules'); STATE=Path('/opt/royal-game-modules-state')
 BACKUP=Path('/opt/royal-backups')/NAME
 MIN_FREE=5*1024**3
