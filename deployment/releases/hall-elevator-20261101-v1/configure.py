@@ -5,6 +5,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[3]
 HERE = Path(__file__).resolve().parent
 FIX = '047ac2505a3a693d8960d72ba8ed8f96e15f2bd2'
+APPROACH_FIX = '00cfc352dfe627cdafd88df07b7752ef0b100412'
 
 def git(*args): return subprocess.check_output(['git', *args], cwd=ROOT)
 def sha(value): return hashlib.sha256(value).hexdigest()
@@ -73,7 +74,7 @@ def main():
     assert len(changes) == 13
     selected = {}
     for name in changes:
-        origin = FIX if name == 'src/game/ElevatorAudio.ts' else feature
+        origin = FIX if name == 'src/game/ElevatorAudio.ts' else APPROACH_FIX if name == 'src/game/RoomScene.ts' else feature
         current = blob(origin, name)
         if name in before['source']:
             assert name in candidates, 'Missing production source origin: ' + name
@@ -98,7 +99,7 @@ def main():
         config['changedSources'] = changes
         (HERE / (kind + '-projection.json')).write_text(json.dumps(config, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     active = read('shared-stakes-20261101-v1/scope.json')['activeGames']
-    scope = {'release': HERE.name, 'productionCommit': before['sourceCommit'], 'featureCommit': feature, 'audioFixCommit': FIX,
+    scope = {'release': HERE.name, 'productionCommit': before['sourceCommit'], 'featureCommit': feature, 'audioFixCommit': FIX, 'approachFixCommit': APPROACH_FIX,
         'changedSources': changes, 'expectedSources': {name: row['sha256'] for name, row in selected.items()},
         'backendSources': ['server/LobbyRoom.ts', 'src/shared/world.ts', 'src/shared/elevator.ts'],
         'preservedBackendInputs': preserved, 'backendChanges': ['dist-server/index.js'], 'moduleChanges': [],

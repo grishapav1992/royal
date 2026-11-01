@@ -6995,11 +6995,11 @@
       "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
       "path": "src/game/RoomScene.ts",
       "baseSha256": "d7e1b0f05eb6be5dcf594ef0ea96e0edf902515b493bafa4f9ac3113745730a2",
-      "sha256": "d3dd4b2f226c33959483e96c2604c18f37bb54ecf31790e64bd04548611e9d51",
+      "sha256": "416fd0747442a5d0187cb7ea667423ab6ce37ae4341a80984cda3f6776ae8419",
       "patches": [
         {
           "from": "ngLounge.startsW",
-          "to": "ngLounge==='elevator') {\n          const {entry}=elevatorDock(this.hall);\n          if(Math.hypot(this.player.x-entry.x,this.player.y-entry.y)<18)this.openElevator();\n        }\n        else if(this.pendingLounge.startsW"
+          "to": "ngLounge==='elevator') {\n          const {entry}=elevatorDock(this.hall);\n          if(Math.hypot(this.player.x-entry.x,this.player.y-entry.y)<18)this.openElevator();\n          else if(!this.player.path.length&&!this.prediction.active&&time>=this.elevatorApproachAt) {\n            this.elevatorApproachAt=time+800;\n            const nearPatrol=this.guard.getState().some(guard=>guard.hall===this.hall&&guard.phase!=='door'&&Math.hypot(guard.x-this.player.x,guard.y-this.player.y)<110);\n            if(!nearPatrol)this.goTo(entry);\n          }\n        }\n        else if(this.pendingLounge.startsW"
         },
         {
           "from": ",\n      cat: com",
@@ -7019,7 +7019,7 @@
         },
         {
           "from": "y);\n  }\n  intera",
-          "to": "y);\n  }\n  approachElevator() {\n    if (this.locked || this.isHuggingCat() || this.typing || this.switching || this.player.cabinet || this.networkSelf?.playing || this.player.action === 'drink') return;\n    this.pendingCabinet = null;\n    this.pendingLounge = 'elevator';\n    this.goTo(elevatorDock(this.hall).entry);\n  }\n  private openElevator() {\n    const hall = this.hall;\n    this.pendingLounge = null; this.player.path = [];\n    this.finishMovement(() => {\n      if (this.hall !== hall || this.locked || this.isHuggingCat() || !atElevator(this.player)) return;\n      this.player.facing = elevatorDock(hall).facing === 'down' ? 'up' : 'down';\n      this.network?.stop();\n      this.onElevator();\n    });\n  }\n  async travelByElevator(target: HallId): Promise<boolean> {\n    const player = this.networkSelf ?? this.player;\n    if (this.securityLocked || this.isHuggingCat() || !canTravelByElevator(player, target)) return false;\n    if (this.network) return await this.network.elevator?.(target) ?? false;\n    this.cancelMovement();\n    const dock = elevatorDock(target);\n    this.showHall(target);\n    Object.assign(this.player, dock.arrival, { hall: target, facing: dock.facing, moving: false });\n    this.animateActor(this.player, this.time.now, false);\n    this.syncGuests(this.guestViews);\n    return true;\n  }\n  intera"
+          "to": "y);\n  }\n  approachElevator() {\n    if (this.locked || this.isHuggingCat() || this.typing || this.switching || this.player.cabinet || this.networkSelf?.playing || this.player.action === 'drink') return;\n    this.pendingCabinet = null;\n    this.pendingLounge = 'elevator';\n    this.elevatorApproachAt = this.time.now + 800;\n    this.goTo(elevatorDock(this.hall).entry);\n  }\n  private openElevator() {\n    const hall = this.hall;\n    this.pendingLounge = null; this.player.path = [];\n    this.finishMovement(() => {\n      if (this.hall !== hall || this.locked || this.isHuggingCat() || !atElevator(this.player)) return;\n      this.player.facing = elevatorDock(hall).facing === 'down' ? 'up' : 'down';\n      this.network?.stop();\n      this.onElevator();\n    });\n  }\n  async travelByElevator(target: HallId): Promise<boolean> {\n    const player = this.networkSelf ?? this.player;\n    if (this.securityLocked || this.isHuggingCat() || !canTravelByElevator(player, target)) return false;\n    if (this.network) return await this.network.elevator?.(target) ?? false;\n    this.cancelMovement();\n    const dock = elevatorDock(target);\n    this.showHall(target);\n    Object.assign(this.player, dock.arrival, { hall: target, facing: dock.facing, moving: false });\n    this.animateActor(this.player, this.time.now, false);\n    this.syncGuests(this.guestViews);\n    return true;\n  }\n  intera"
         },
         {
           "from": "=>{this.clickTar",
@@ -7032,6 +7032,10 @@
         {
           "from": "['arcade','tables','github'] as const",
           "to": "elevatorFloors()"
+        },
+        {
+          "from": ": string | null = null;\n  private overview=false",
+          "to": ": string | null = null;\n  private elevatorApproachAt = 0;\n  private overview=false"
         },
         {
           "from": "Id) => void = () => {};\n  private guestRoutine=n",

@@ -3,6 +3,7 @@
   "productionCommit": "4eb47d5d7b29622453616888d24f62db9e26245b",
   "featureCommit": "6cfda58a288a5589b07b91e7e78357c753268009",
   "audioFixCommit": "047ac2505a3a693d8960d72ba8ed8f96e15f2bd2",
+  "approachFixCommit": "00cfc352dfe627cdafd88df07b7752ef0b100412",
   "changedSources": [
     "server/LobbyRoom.ts",
     "src/game/ElevatorAudio.ts",
@@ -21,7 +22,7 @@
   "expectedSources": {
     "server/LobbyRoom.ts": "514e2a7c2349f209a02d9e86505565d44f6212bae249e381adb24b22b3954483",
     "src/game/ElevatorAudio.ts": "68462baf51d1a0e77a4f854cfce1d7cdfdd68fd2a1f6177c306c70190d3d4a13",
-    "src/game/RoomScene.ts": "d3dd4b2f226c33959483e96c2604c18f37bb54ecf31790e64bd04548611e9d51",
+    "src/game/RoomScene.ts": "416fd0747442a5d0187cb7ea667423ab6ce37ae4341a80984cda3f6776ae8419",
     "src/game/elevatorArt.ts": "db70c995c544355fb43bf493a816227eeb5b68a03f68042aa8406d3c2945e148",
     "src/i18n/en.ts": "c54e57fbd9cf17d1009f039dc6b1190c09121f932be1ba2ce1fe62e0dec31944",
     "src/main.ts": "5649893e410461246a4b3b9f60c29dd621fd9b5df495e34d615548cca4fa64ba",
