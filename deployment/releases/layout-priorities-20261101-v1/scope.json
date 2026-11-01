@@ -1,6 +1,6 @@
 {
   "release": "layout-priorities-20261101-v1",
-  "productionCommit": "4eb47d5d7b29622453616888d24f62db9e26245b",
+  "productionCommit": "2683c223a46450c456079b487fc36cdfb4e6eade",
   "featureCommit": "831ede0765e7bb0fe323bd52290657497da370a2",
   "changedSources": [
     "games/caramel-carnival/package.json",
@@ -122,8 +122,8 @@
     "games/royal-roulette/package.json": "062eb8beb1a252f260fe9768dfe7ec1266724e648bde4cbdee72270d44f180e7",
     "games/royal-roulette/priorities.css": "7de6841bd98a843195158624c1868e107512cc079fa8e9aeb355fd650e97596f",
     "games/velvet-reign/package.json": "773f521b3466a091afe3566e05726367717a7353b381bf8935fa27021da84b2a",
-    "src/i18n/en.ts": "eebb616fae1546056d356b4479265a4058a55294b5240f13277838a752d145f7",
-    "src/main.ts": "784d71168ebe8c74228c3be80f8f4b997bc1d543040abf371a600383a8640edd",
+    "src/i18n/en.ts": "59281b823affce1810d7a6db78e003605de75bf49671fe99102a1eec476d50ae",
+    "src/main.ts": "1c954dd3d23cbe253c4f2e8bbee86dcc332ae689d11774b581bd9286e176b234",
     "src/ui/ActionGameLayout.ts": "9b4697dee6b29e28cddf3a67d8d691b2eec0f3968daa8eb08c21b576d4fc12ea",
     "src/ui/CrLeoUI.ts": "586ae090ee7d5e255a2196994c2e14d4b268030a5944202872e0abb7d0a69238",
     "src/ui/GameChat.ts": "20a8ba4ffb9fb47b90f9006d47121338454a0ad78fe206c5ee29b4b759ca3176",
@@ -131,7 +131,7 @@
     "src/ui/GamePriorityPanel.ts": "e7962834ba950151c3de176899ec3b6e49e1c5175f35ac1e5087787d5e0abd34",
     "src/ui/GameViewport.ts": "392a5b044f0e79ef51bcce596699f30835289bb2ae9883a93d5959b72697f4a0",
     "src/ui/LastExitUI.ts": "57ac00213e58ebd12686294d8bd31eb4c7ae748c736a4f7cbaaa3f506c35413b",
-    "src/ui/SocialUI.ts": "2bab2587b32423225fc649203e6203c057478008c59b25a05ac93275e7b0d9b0",
+    "src/ui/SocialUI.ts": "c3d5d9f9401cb29787c60e072987a56c25e8fdd0014d26d9820f056930571562",
     "src/ui/VolcanicPlinkoUI.ts": "9dc1ab948ecdc127aa382d045964b5cd6196eb6df926016bef3e7b5770878ed9",
     "src/ui/action-game-priorities.css": "79f5ae4a93349b57a29b6387632923cdcf943b2df4fc35d55f9a997cac0c5f12",
     "src/ui/active-game-viewport.css": "493e85699b284319a6e0dcaf6aa178c308ef2640bb7dc180625c052a4b6d60c7",
