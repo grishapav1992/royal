@@ -54,7 +54,7 @@
 | --- | --- |
 | Неополис, Plinko, Флажочки | Реализованы в этой группе, проверки в настоящем host |
 | Карибские сокровища | Пилот первого этапа, повторно включен в обзор каталога |
-| Cosmic Escape, Caramel Carnival, Velvet Reign, Last Convoy, Nitro Run, GIRLHUB, Meme Overload | Следующая группа: компактный слот сохраняет слишком большую служебную область и прокрутку сцены |
+| Cosmic Escape, Caramel Carnival, Velvet Reign, Last Convoy, Nitro Run, GIRLHUB, Meme Overload | Реализованы следующей группой; отдельный [отчет о семи слотах](game-layout-slots-verification.md) |
 | Dracona, Forest Heart | Нужен перенос приоритетов во внутренние iframe |
 | Flooded Temple | Нужна отдельная проверка основных действий в горизонтальном iframe |
 | Royal Roulette | Нужна отдельная компоновка колеса, ставок и действий |
