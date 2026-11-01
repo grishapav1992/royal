@@ -378,13 +378,18 @@ function updateHall(hall:HallId){
   $('#card-tables-catalog').hidden=hall!=='github';
   $('#floor-links').innerHTML=hallLinks(hall).map(link=>{
     const target=HALLS[link.target];
+    if(link.target==='street')return tr`<button type="button" data-floor-target="street"><span aria-hidden="true">↗</span> На улицу</button>`;
+    if(hall==='street')return tr`<button type="button" data-floor-target="arcade"><span aria-hidden="true">↳</span> В казино</button>`;
     return tr`<button type="button" data-floor-target="${link.target}" aria-label="На ${target.floor} этаж: ${target.name}"><span aria-hidden="true">${target.floor>HALLS[hall].floor?'↑':'↓'}</span> Этаж ${target.floor}</button>`;
   }).join('');
+  const overview=$<HTMLButtonElement>('#room-overview');
+  overview.textContent=overview.getAttribute('aria-pressed')==='true'?translateText('Вернуться к игроку'):translateText(hall==='street'?'Вся улица':'Весь этаж');
   document.querySelectorAll<HTMLElement>('[data-cabinet]').forEach(card=>card.hidden=card.dataset.hall!==hall);
   $('.lounge-controls').hidden=hall!=='arcade';
   const gameCount=hallGameCount(hall);
   $('.sidebar-heading span').textContent=String(gameCount).padStart(2,'0');
-  const gamesTab=document.querySelector<HTMLButtonElement>('#games-tab');if(gamesTab)gamesTab.textContent=translateText('Игры · ')+String(gameCount);
+  const gamesTab=document.querySelector<HTMLButtonElement>('#games-tab');if(gamesTab){gamesTab.textContent=translateText('Игры · ')+String(gameCount);gamesTab.hidden=hall==='street';}
+  if(hall==='street')layout.closePanels();
   social?.activities.hallChanged();
 }
 room.onHall=updateHall;

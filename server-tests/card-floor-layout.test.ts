@@ -60,8 +60,8 @@ test('all 33 card games have separate third-floor tables and every other cabinet
 });
 
 test('existing hall identifiers and stairs connect three separate floors with clear arrivals',()=>{
-  assert.deepEqual(Object.keys(HALLS),['arcade','tables','github']);
-  assert.deepEqual(Object.values(HALLS).map(h=>h.floor),[1,2,3]);
+  assert.deepEqual(Object.keys(HALLS),['arcade','tables','github','street']);
+  assert.deepEqual(Object.values(HALLS).filter(h=>h.floor>0).map(h=>h.floor),[1,2,3]);
   assert.equal(HALLS.github.name,'Карточный салон');
   assert.deepEqual(hallLinks('github').map(link=>link.target),['tables']);
   assert(hallLinks('tables').some(link=>link.target==='github'));

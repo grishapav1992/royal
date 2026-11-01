@@ -7,6 +7,7 @@ import { HALLS, hallLinks } from '../shared/world';
 import { cabinetsInHall } from '../shared/cabinets';
 import { isCardGame } from '../shared/cardTables';
 import { WORLD, FLOOR } from '../shared/clubGeometry';
+import { STREET } from '../shared/street';
 import './club-map.css';
 
 export class ClubMap {
@@ -28,12 +29,26 @@ export class ClubMap {
     const timer=window.setInterval(update,200);scene.events.once('shutdown',()=>{clearInterval(timer);this.root.remove();});update();
   }
   private draw(){
-    const state=this.scene.getState(),size=state.hall==='arcade'?ARCADE_OVERVIEW_SIZE:WORLD;
+    const state=this.scene.getState(),size=state.hall==='street'?STREET:state.hall==='arcade'?ARCADE_OVERVIEW_SIZE:WORLD;
     const height=Math.round(this.canvas.width*size.height/size.width);
     if(this.canvas.height!==height)this.canvas.height=height;
     const ctx=this.canvas.getContext('2d')!,sx=this.canvas.width/size.width,sy=this.canvas.height/size.height;
-    const definition=HALLS[state.hall];this.title.textContent=translateText('Этаж ')+definition.floor+' · '+definition.number;
+    const definition=HALLS[state.hall];this.title.textContent=state.hall==='street'?definition.name:translateText('Этаж ')+definition.floor+' · '+definition.number;
+    this.root.setAttribute('aria-label',translateText(state.hall==='street'?'Карта улицы':'Карта этажа'));
+    this.root.querySelector('button')!.textContent=translateText(state.hall==='street'?'Карта улицы':'Карта зала');
+    this.canvas.setAttribute('aria-label',translateText(state.hall==='street'?'Открыть всю улицу':'Открыть весь этаж'));
+    this.canvas.title=translateText(state.hall==='street'?'Нажми, чтобы посмотреть всю улицу':'Нажми, чтобы посмотреть весь этаж');
     ctx.clearRect(0,0,this.canvas.width,this.canvas.height);ctx.save();ctx.scale(sx,sy);
+    if(state.hall==='street'){
+      const b=STREET.building;
+      ctx.fillStyle='#e5edf2';ctx.fillRect(0,0,STREET.width,STREET.height);
+      ctx.fillStyle='#b8bdc7';ctx.fillRect(320,240,2180,960);
+      ctx.fillStyle='#323d53';ctx.fillRect(0,1210,STREET.width,170);
+      ctx.fillStyle='#671d36';ctx.fillRect(b.x,b.y,b.w,b.h);
+      ctx.strokeStyle='#f3dbad';ctx.lineWidth=10;ctx.strokeRect(b.x,b.y,b.w,b.h);
+      ctx.fillStyle='#f1ca61';ctx.font='bold 90px Georgia';ctx.textAlign='center';ctx.fillText('ROYAL',b.x+b.w/2,b.y+b.h/2+30);
+      ctx.fillStyle='#925b3c';for(const p of STREET.benches)ctx.fillRect(p.x-57,p.y-32,114,40);
+    }else{
     ctx.fillStyle='#202b33';ctx.fillRect(0,0,WORLD.width,WORLD.height);
     ctx.fillStyle='#5c5145';ctx.fillRect(FLOOR.x,FLOOR.y,FLOOR.width,FLOOR.height);
     for(const zone of CLUB_ZONES[state.hall]){ctx.fillStyle='#'+zone.color.toString(16).padStart(6,'0');ctx.fillRect(zone.x,zone.y,zone.w,zone.h);}
@@ -59,6 +74,7 @@ export class ClubMap {
       for(const zone of CLUB_ZONES.arcade.filter(zone=>zone.x>=1100)){
         ctx.font='bold 34px Arial';ctx.fillText(zone.name,zone.x+zone.w/2,zone.y+zone.h-20);
       }
+    }
     }
     for(const link of hallLinks(state.hall)){ctx.fillStyle='#73d4ca';ctx.fillRect(link.door.entry.x-35,link.door.entry.y-12,70,24);}
     for(const guest of state.guests){ctx.fillStyle='#8da49b';ctx.beginPath();ctx.arc(guest.x,guest.y,10,0,Math.PI*2);ctx.fill();}

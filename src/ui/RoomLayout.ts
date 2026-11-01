@@ -29,7 +29,7 @@ export class RoomLayout {
     if(!this.tabs.children.length)this.tabs.innerHTML=translateText('<button id="games-tab" type="button" aria-expanded="false" aria-controls="room-sidebar">Игры</button>');
     this.tabs.querySelectorAll('button').forEach(b=>{b.setAttribute('aria-expanded','false');b.setAttribute('aria-controls','room-sidebar');});
     const overview=document.querySelector<HTMLButtonElement>('#room-overview')!;
-    overview.onclick=()=>{const on=overview.getAttribute('aria-pressed')!=='true';overview.setAttribute('aria-pressed',String(on));overview.textContent=on?translateText('Вернуться к игроку'):translateText('Весь этаж');scene.setOverview(on);};
+    overview.onclick=()=>{const on=overview.getAttribute('aria-pressed')!=='true';overview.setAttribute('aria-pressed',String(on));overview.textContent=on?translateText('Вернуться к игроку'):translateText(scene.hall==='street'?'Вся улица':'Весь этаж');scene.setOverview(on);};
     const viewport=window.visualViewport;
     const resize=()=>{
       // Keep the drawer and composer above a mobile software keyboard.

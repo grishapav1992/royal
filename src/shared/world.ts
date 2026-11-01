@@ -8,6 +8,7 @@ import { CABINETS, cabinetsInHall, cabinetBounds } from './cabinets';
 import type { GameReaction } from './cabinetSeating';
 import type { CatAction } from './cat';
 import { CAT_CARE } from './catCare';
+import { STREET, STREET_DOOR, CASINO_EXIT, STREET_OBSTACLES } from './street';
 export const PLAYER_SPEED = 155;
 export const PLAYER_SPRINT_SPEED = PLAYER_SPEED * 1.75;
 export const ROOM_CAPACITY = 30;
@@ -27,23 +28,29 @@ export const ROOM_OBSTACLES: Obstacle[] = [
   ACTIVITIES.hockey.bounds, ACTIVITIES.piano.bounds,
   ...SEATS.filter(s => s.kind === 'bar').map(s => ({x:s.x-18,y:s.y-15,w:36,h:30})),
 ];
-export type HallId = 'arcade' | 'tables' | 'github';
+export type HallId = 'arcade' | 'tables' | 'github' | 'street';
 export const HALLS = {
   arcade: { floor:1, name: translateText('Казино и бар'), number: '01', spawn: { x: 540, y: 590 } },
   tables: { floor:2, name: translateText('Игры на двоих'), number: '02', spawn: { x: 540, y: 590 } },
   github: { floor:3, name: translateText('Карточный салон'), number: '03', spawn: { x: 540, y: 590 } },
+  street: { floor:0, name: translateText('Улица казино'), number: '↗', spawn: STREET.spawn },
 } as const;
 export const HALL_DOORS = {
+  street: STREET_DOOR,
   arcade: { entry: { x: 900, y: 240 }, arrival: { x: 900, y: 290 }, facing: 'down', click: { x: 900, y: 107 }, left: 860, right: 940, top: 225, bottom: 247 },
   tables: { entry: { x: 900, y: 1300 }, arrival: { x: 900, y: 1250 }, facing: 'up', click: { x: 900, y: 1307 }, left: 860, right: 940, top: 1293, bottom: 1310 },
   github: { entry: { x: 900, y: 1300 }, arrival: { x: 900, y: 1250 }, facing: 'up', click: { x: 900, y: 1307 }, left: 860, right: 940, top: 1293, bottom: 1310 },
 } as const;
 export type HallDoor = typeof HALL_DOORS[HallId];
 export const GITHUB_ROOM_DOOR = { entry: { x: 800, y: 240 }, arrival: { x: 800, y: 290 }, facing: 'down', click: { x: 800, y: 107 }, left: 760, right: 840, top: 225, bottom: 247 } as const;
-export type ConnectedHallDoor = HallDoor | typeof GITHUB_ROOM_DOOR;
+export type ConnectedHallDoor = HallDoor | typeof GITHUB_ROOM_DOOR | typeof CASINO_EXIT;
 export type HallLink = { target: HallId; door: ConnectedHallDoor; arrival: ConnectedHallDoor };
 export function hallLinks(hall: HallId): HallLink[] {
-  if (hall === 'arcade') return [{ target: 'tables', door: HALL_DOORS.arcade, arrival: HALL_DOORS.tables }];
+  if (hall === 'street') return [{ target: 'arcade', door: STREET_DOOR, arrival: CASINO_EXIT }];
+  if (hall === 'arcade') return [
+    { target: 'tables', door: HALL_DOORS.arcade, arrival: HALL_DOORS.tables },
+    { target: 'street', door: CASINO_EXIT, arrival: STREET_DOOR },
+  ];
   if (hall === 'github') return [{ target: 'tables', door: HALL_DOORS.github, arrival: GITHUB_ROOM_DOOR }];
   return [
     { target: 'arcade', door: HALL_DOORS.tables, arrival: HALL_DOORS.arcade },
@@ -59,7 +66,7 @@ export const inHallDoor = (p: {x:number;y:number;hall:string}) => {
 };
 export const otherHall = (hall:string): HallId => hall==='arcade'||hall==='github'?'tables':'arcade';
 export const activityHall = (id: string): HallId => id === 'piano' ? 'arcade' : ['durak','transfer-durak','crazy-eights'].includes(id) ? 'github' : 'tables';
-export const hallObstacles = (hall?: string): Obstacle[] => hall === 'arcade' ? ARCADE_OBSTACLES : hall === 'tables' ? TABLE_OBSTACLES : hall === 'github' ? GITHUB_OBSTACLES : ROOM_OBSTACLES;
+export const hallObstacles = (hall?: string): Obstacle[] => hall === 'street' ? STREET_OBSTACLES : hall === 'arcade' ? ARCADE_OBSTACLES : hall === 'tables' ? TABLE_OBSTACLES : hall === 'github' ? GITHUB_OBSTACLES : ROOM_OBSTACLES;
 const GITHUB_OBSTACLES = [...clubObstacles('github'), ...cabinetsInHall('github').map(cabinetBounds), ACTIVITIES.durak.bounds, ACTIVITIES['transfer-durak'].bounds, ACTIVITIES['crazy-eights'].bounds];
 const ARCADE_OBSTACLES = [
   ...clubObstacles('arcade'),

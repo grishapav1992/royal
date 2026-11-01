@@ -2,6 +2,15 @@ import {  volcanicPlinkoEnglish } from './volcanicPlinkoEn';
 import { progressionEnglish } from './progressionEn';
 
 export const english: Record<string, string> = {
+  'Улица казино':'Casino street',
+  'ВХОД':'ENTRANCE',
+  'НА УЛИЦУ':'TO THE STREET',
+  'На улицу':'Go outside',
+  'В казино':'Enter casino',
+  'Вся улица':'Entire street',
+  'Карта улицы':'Street map',
+  'Открыть всю улицу':'Show the whole street',
+  'Нажми, чтобы посмотреть всю улицу':'Click to see the whole street',
   ...progressionEnglish,
   'Галактический реактор':'Galactic Reactor',
   'Гонконгский воин':'Hong Kong Warrior',

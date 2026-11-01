@@ -1,0 +1,136 @@
+{
+  "feature": "casino-street",
+  "date": "2026-11-01",
+  "baselineCommit": "0f2d09c003a243d51e118ca3c7b9ea5b7eb20731",
+  "deployed": false,
+  "addedOrRestoredGames": [],
+  "checks": {
+    "applicationBuild": {
+      "passed": true,
+      "startedAt": "2026-11-01T15:40:52.539Z",
+      "steps": [
+        {
+          "name": "rtp",
+          "passed": true,
+          "durationMs": 4270
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "durationMs": 5940
+        },
+        {
+          "name": "modules",
+          "passed": true,
+          "durationMs": 7874
+        },
+        {
+          "name": "host",
+          "passed": true,
+          "durationMs": 24478
+        },
+        {
+          "name": "backend",
+          "passed": true,
+          "durationMs": 60
+        },
+        {
+          "name": "reconciliation",
+          "passed": true,
+          "durationMs": 16
+        },
+        {
+          "name": "payments",
+          "passed": true,
+          "durationMs": 18
+        }
+      ]
+    },
+    "rtp": {
+      "verified": 37,
+      "stakePoliciesVerified": 19,
+      "stakeAdmissionVerified": 19,
+      "legacyNotQualified": 114
+    },
+    "targetedNodeTests": {
+      "passed": 26,
+      "failed": 0
+    },
+    "browser": {
+      "passed": 2,
+      "failed": 0,
+      "viewports": [
+        [
+          1440,
+          1000
+        ],
+        [
+          390,
+          844
+        ]
+      ],
+      "realHost": true,
+      "connectedChat": true,
+      "fullExteriorLoop": true,
+      "reloadRecoversStreetAndRoom": true,
+      "returnToFirstFloor": true,
+      "balancePreserved": true
+    }
+  },
+  "existingFailures": {
+    "layoutAndSecurity": {
+      "baseline": {
+        "total": 42,
+        "passed": 30,
+        "failed": 12
+      },
+      "featureBeforeAdditionalStreetTest": {
+        "total": 46,
+        "passed": 34,
+        "failed": 12
+      }
+    },
+    "movementAndWallet": {
+      "baseline": {
+        "total": 32,
+        "passed": 29,
+        "failed": 3
+      },
+      "featureBeforeAdditionalStreetTest": {
+        "total": 36,
+        "passed": 33,
+        "failed": 3
+      }
+    },
+    "note": "Failing test names were compared against unchanged origin/main. No retired games were restored to satisfy historical expectations."
+  },
+  "productionCatalogueReadOnly": {
+    "arcadeCatalogSha256": "f6a46d3ee4d427068c87af6a4289fed6e1ac7e00ca3a60da9849cb319e475dc6",
+    "matchesFeature": true,
+    "cabinetsSourceMatchesMain": false,
+    "cabinetsChangedByTask": false,
+    "productionMutations": false
+  },
+  "limitations": [
+    "Browser viewports emulate desktop and mobile; no physical phone was tested.",
+    "This feature is not a production release. Existing main and production have differences outside this task."
+  ],
+  "screenshots": [
+    "desktop-first-floor.png",
+    "desktop-entrance.png",
+    "desktop-overview.png",
+    "desktop-rear.png",
+    "mobile-first-floor.png",
+    "mobile-entrance.png",
+    "mobile-overview.png",
+    "mobile-rear.png"
+  ],
+  "sourceHashes": {
+    "src/shared/street.ts": "15112fd6f1fd4abc5483f042f6a11d1fd555040b17f92966d56bf49c764cea51",
+    "src/shared/world.ts": "7d799089511a16611da32df0e08245091f438426e5a0e52e30fe5f2caf087c8f",
+    "src/game/StreetRenderer.ts": "c0365f13a034a54062b17c738bb1a154ac242620285522d69168ebc0d0b02306",
+    "src/game/RoomScene.ts": "69419e401d26ea039f06abdfefb0a7baefe2ef23ead366db9d59f04d4eaf74cd",
+    "server/guards.ts": "68eaf4626223cb54f2116341f321456c52b8dc1f416cbfb88f0e492c4b867107",
+    "src/main.ts": "1e079a5b6b8e9753e71cf547af754e0eba3b17c56773eb5c131ec07ab3d8d7f1"
+  }
+}
