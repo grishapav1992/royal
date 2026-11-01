@@ -10609,6 +10609,114 @@
       "baseSha256": "c976e81ccc1ea9aa99fd63a46dd89effe078c39e4abff656ded484615e7a61e6",
       "sha256": "c976e81ccc1ea9aa99fd63a46dd89effe078c39e4abff656ded484615e7a61e6"
     },
+    "games/dracona/priorityStyles.ts": {
+      "commit": "831ede0765e7bb0fe323bd52290657497da370a2",
+      "path": "games/dracona/priorityStyles.ts",
+      "baseSha256": "f27841c8515170dfa029b1b0f71aafa500845622a2e230115a7958aa81571a33",
+      "sha256": "f27841c8515170dfa029b1b0f71aafa500845622a2e230115a7958aa81571a33"
+    },
+    "games/flag-battle/priorities.css": {
+      "commit": "831ede0765e7bb0fe323bd52290657497da370a2",
+      "path": "games/flag-battle/priorities.css",
+      "baseSha256": "ad6c2f7daa0bfccae242391a8ba48e27a32360377b91a28e4125fbd89822d919",
+      "sha256": "ad6c2f7daa0bfccae242391a8ba48e27a32360377b91a28e4125fbd89822d919"
+    },
+    "games/flooded-temple/priorityStyles.ts": {
+      "commit": "831ede0765e7bb0fe323bd52290657497da370a2",
+      "path": "games/flooded-temple/priorityStyles.ts",
+      "baseSha256": "dbbe7bc944ed6eac5f04b209dcdebc68f2b30ac1dcbd9af47ae8649af7c4896c",
+      "sha256": "dbbe7bc944ed6eac5f04b209dcdebc68f2b30ac1dcbd9af47ae8649af7c4896c"
+    },
+    "games/forest-heart/priorityStyles.ts": {
+      "commit": "831ede0765e7bb0fe323bd52290657497da370a2",
+      "path": "games/forest-heart/priorityStyles.ts",
+      "baseSha256": "d4e0efa3c2045fbf54cb595fbbabb18dd3f9e0fa1e5312885b1d0f00db3e93f9",
+      "sha256": "d4e0efa3c2045fbf54cb595fbbabb18dd3f9e0fa1e5312885b1d0f00db3e93f9"
+    },
+    "games/jackie-chan/priorities.css": {
+      "commit": "831ede0765e7bb0fe323bd52290657497da370a2",
+      "path": "games/jackie-chan/priorities.css",
+      "baseSha256": "225cf41da3b049c8fb7d7f248f54c87c183201b9cd3e37938117d9ac0cee35f8",
+      "sha256": "225cf41da3b049c8fb7d7f248f54c87c183201b9cd3e37938117d9ac0cee35f8"
+    },
+    "games/neopolis/neopolis-priorities.css": {
+      "commit": "831ede0765e7bb0fe323bd52290657497da370a2",
+      "path": "games/neopolis/neopolis-priorities.css",
+      "baseSha256": "cd9521a0b31ff51a62153cab78c9fcd100333c618392da7fa6e81fc3c72af1be",
+      "sha256": "cd9521a0b31ff51a62153cab78c9fcd100333c618392da7fa6e81fc3c72af1be"
+    },
+    "games/royal-roulette/priorities.css": {
+      "commit": "831ede0765e7bb0fe323bd52290657497da370a2",
+      "path": "games/royal-roulette/priorities.css",
+      "baseSha256": "7de6841bd98a843195158624c1868e107512cc079fa8e9aeb355fd650e97596f",
+      "sha256": "7de6841bd98a843195158624c1868e107512cc079fa8e9aeb355fd650e97596f"
+    },
+    "src/ui/ActionGameLayout.ts": {
+      "commit": "831ede0765e7bb0fe323bd52290657497da370a2",
+      "path": "src/ui/ActionGameLayout.ts",
+      "baseSha256": "9b4697dee6b29e28cddf3a67d8d691b2eec0f3968daa8eb08c21b576d4fc12ea",
+      "sha256": "9b4697dee6b29e28cddf3a67d8d691b2eec0f3968daa8eb08c21b576d4fc12ea"
+    },
+    "src/ui/GameLayoutPolicy.ts": {
+      "commit": "831ede0765e7bb0fe323bd52290657497da370a2",
+      "path": "src/ui/GameLayoutPolicy.ts",
+      "baseSha256": "12f41f5befa6fcfe505b9f96bfe0f9e378459373a53f11baa92c2aff31b04e9c",
+      "sha256": "12f41f5befa6fcfe505b9f96bfe0f9e378459373a53f11baa92c2aff31b04e9c"
+    },
+    "src/ui/GamePriorityPanel.ts": {
+      "commit": "831ede0765e7bb0fe323bd52290657497da370a2",
+      "path": "src/ui/GamePriorityPanel.ts",
+      "baseSha256": "e7962834ba950151c3de176899ec3b6e49e1c5175f35ac1e5087787d5e0abd34",
+      "sha256": "e7962834ba950151c3de176899ec3b6e49e1c5175f35ac1e5087787d5e0abd34"
+    },
+    "src/ui/action-game-priorities.css": {
+      "commit": "831ede0765e7bb0fe323bd52290657497da370a2",
+      "path": "src/ui/action-game-priorities.css",
+      "baseSha256": "79f5ae4a93349b57a29b6387632923cdcf943b2df4fc35d55f9a997cac0c5f12",
+      "sha256": "79f5ae4a93349b57a29b6387632923cdcf943b2df4fc35d55f9a997cac0c5f12"
+    },
+    "src/ui/cr-leo-priorities.css": {
+      "commit": "831ede0765e7bb0fe323bd52290657497da370a2",
+      "path": "src/ui/cr-leo-priorities.css",
+      "baseSha256": "e5059e542c17e3196eb006f606d25cdf53bbd6b07aeb218d9c129579cb2a0f93",
+      "sha256": "e5059e542c17e3196eb006f606d25cdf53bbd6b07aeb218d9c129579cb2a0f93"
+    },
+    "src/ui/game-priority-panel.css": {
+      "commit": "831ede0765e7bb0fe323bd52290657497da370a2",
+      "path": "src/ui/game-priority-panel.css",
+      "baseSha256": "0894bf423064c5e1de16f1a1c73831e517efadfb3e5757fd506b1f4d49abcfb1",
+      "sha256": "0894bf423064c5e1de16f1a1c73831e517efadfb3e5757fd506b1f4d49abcfb1"
+    },
+    "src/ui/iframeKit/FrameLayout.ts": {
+      "commit": "831ede0765e7bb0fe323bd52290657497da370a2",
+      "path": "src/ui/iframeKit/FrameLayout.ts",
+      "baseSha256": "a8f900a6c381f66659d93789940aca11ef95ae1517beb2e91f171f47fa08286b",
+      "sha256": "a8f900a6c381f66659d93789940aca11ef95ae1517beb2e91f171f47fa08286b"
+    },
+    "src/ui/last-exit-priorities.css": {
+      "commit": "831ede0765e7bb0fe323bd52290657497da370a2",
+      "path": "src/ui/last-exit-priorities.css",
+      "baseSha256": "acded7de9f6ba5997a9bd618f5218f9957ad086ae0cf1ad31d2bc68eed70f720",
+      "sha256": "acded7de9f6ba5997a9bd618f5218f9957ad086ae0cf1ad31d2bc68eed70f720"
+    },
+    "src/ui/slotKit/SlotPriorityLayout.ts": {
+      "commit": "831ede0765e7bb0fe323bd52290657497da370a2",
+      "path": "src/ui/slotKit/SlotPriorityLayout.ts",
+      "baseSha256": "947932d761ede2150900d9fd0278a2560b032aec8c9372f0085b717f1af796f2",
+      "sha256": "947932d761ede2150900d9fd0278a2560b032aec8c9372f0085b717f1af796f2"
+    },
+    "src/ui/slotKit/slot-priorities.css": {
+      "commit": "831ede0765e7bb0fe323bd52290657497da370a2",
+      "path": "src/ui/slotKit/slot-priorities.css",
+      "baseSha256": "05266abd09f5f3cbfbe91dde79ac8188f74b6d333bc2acb9e3884530f4aaee5f",
+      "sha256": "05266abd09f5f3cbfbe91dde79ac8188f74b6d333bc2acb9e3884530f4aaee5f"
+    },
+    "src/ui/volcanic-plinko-priorities.css": {
+      "commit": "831ede0765e7bb0fe323bd52290657497da370a2",
+      "path": "src/ui/volcanic-plinko-priorities.css",
+      "baseSha256": "04e76e4ef4afe06b5950b83179abdecd8691ac9ab5660fe9ad916b5fb8801c6b",
+      "sha256": "04e76e4ef4afe06b5950b83179abdecd8691ac9ab5660fe9ad916b5fb8801c6b"
+    },
     "games/tsu-e-fa/TsuEFaUI.ts": {
       "commit": "7d85f4a3419e1fff9e208213853a035cebeba267",
       "path": "games/tsu-e-fa/TsuEFaUI.ts",

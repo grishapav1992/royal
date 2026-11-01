@@ -80,6 +80,8 @@ def main():
             if name in source:
                 try:files[name]=origin(name)
                 except RuntimeError:pass
+        # Include verified published dependencies added after the foundation template.
+        files.update({name:copy.deepcopy(value) for name,value in candidates.items() if name in source})
         files.update(current)
         if kind=='backend':files['src/i18n/en.ts']=preserved_backend
         base={'format':1,'productionCommit':before['sourceCommit'],'entries':base['entries'],'files':files}
