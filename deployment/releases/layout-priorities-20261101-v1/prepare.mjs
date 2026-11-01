@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {execFileSync} from 'node:child_process';
 import {digest} from '../../../scripts/module-build-cache.mjs';
 import {readHostProjection} from '../../../scripts/build-host-projection.mjs';
 import {verifyRelease,assertClean,git} from '../../../scripts/release.mjs';
@@ -59,11 +60,13 @@ const references={
  'image_metadata.py':'deployment/releases/remove-reward-games-catalog-20261031-v1/image_metadata.py',
  'publisher.py':'scripts/game-module-release.py',
 };
-const support={};for(const [file,source]of Object.entries(references))support[file]=write(file,fs.readFileSync(source));
+const committed=file=>execFileSync('git',['show',release.sourceCommit+':'+file],{cwd:root,maxBuffer:64*1024**2});
+const support={};for(const [file,source]of Object.entries(references))support[file]=write(file,committed(source));
 assert.equal(support['publisher.py'],before.source['scripts/game-module-release.py']);
 for(const file of ['release-manifest.json','release-github.json'])write(file,fs.readFileSync('module-build/'+file));
-const helperSha256=write('deploy.py',fs.readFileSync(path.join(folder,'deploy.py'))),snapshotSha256=write('snapshot.py',fs.readFileSync(path.join(folder,'snapshot.py')));
-write('scope.json',fs.readFileSync(path.join(folder,'scope.json')));
+const releaseFolder=path.relative(root,folder).replaceAll('\\','/');
+const helperSha256=write('deploy.py',committed(releaseFolder+'/deploy.py')),snapshotSha256=write('snapshot.py',committed(releaseFolder+'/snapshot.py'));
+write('scope.json',committed(releaseFolder+'/scope.json'));
 const manifest={release:name,sourceCommit:release.sourceCommit,baseCommit:before.sourceCommit,before,changed,delta,serverDelta:{},packages,support,helperSha256,snapshotSha256,payload,
  releaseManifestSha256:payload['release-manifest.json'],receiptSha256:payload['release-github.json'],activeGames:scope.activeGames,addedGames:[],restoredGames:[]};
 write('install-manifest.json',Buffer.from(JSON.stringify(manifest,null,2)+'\n'));
