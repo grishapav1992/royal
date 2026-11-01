@@ -18,7 +18,7 @@
       "commit": "f9a6a231e73da8618d745a654d1b684b18bcda5d",
       "path": "src/main.ts",
       "baseSha256": "bb582cbad07f6d1e03a990f36c312057619e60a2037faf616c46b62feeceb80b",
-      "sha256": "02d10b0270b88c91c17da7f98cacfeca7c95c7103564ccc9b2bf2d5604c1c131",
+      "sha256": "c949cb0115520b973a0a1cd39a5051c78fb6c69bc479db33edc63f2d8f830b5e",
       "patches": [
         {
           "from": "import './own-cabinets.css';\nimport './mira-dialog.css';\nimport { DRINKS, HALLS, hallLinks, activityHall, type HallId } from './shared/world';\nimport type { BreakerStatus } from './game/breaker';\n",
@@ -31,6 +31,10 @@
         {
           "from": "`;\ninstallLanguageSwitcher(document.querySelector<HTMLElement>('.profile')!);\ngameAudio.install();gameAudio.addSettingsButton(document.querySelector<HTMLElement>('.mini-bottom')!);\nconst layout=new RoomLayout();\n",
           "to": "`;\ninstallLanguageSwitcher(document.querySelector<HTMLElement>('.profile')!);\nconst profileMenu = document.querySelector<HTMLElement>('#profile-menu')!;\nconst compactHeader = window.matchMedia('(max-width:1200px)');\ncompactHeader.addEventListener('change', () => {\n  if (!compactHeader.matches && profileMenu.matches(':popover-open')) profileMenu.hidePopover();\n});\nprofileMenu.addEventListener('click', event => {\n  if ((event.target as Element).closest('button') && profileMenu.matches(':popover-open')) profileMenu.hidePopover();\n});\ngameAudio.install();gameAudio.addSettingsButton(document.querySelector<HTMLElement>('.mini-bottom')!);\nconst layout=new RoomLayout();\n"
+        },
+        {
+          "from": "max-width:1200px",
+          "to": "max-width:1400px"
         }
       ]
     },
@@ -1469,10 +1473,10 @@
       "sha256": "caa92b92343afa04889b13ef484f6d1598aac196ffe1f7e2e789dbf77c4f25bc"
     },
     "src/ui/compact-header.css": {
-      "commit": "a8ef70c308b68daa75e516caf6ef52049073d832",
+      "commit": "9477386d29998f4413fd6ede98b598c9b56e5fbf",
       "path": "src/ui/compact-header.css",
-      "baseSha256": "efa52b9c37ce5be945948b6a8970e92c51da25073e60d8894f9f92e713a18c02",
-      "sha256": "efa52b9c37ce5be945948b6a8970e92c51da25073e60d8894f9f92e713a18c02"
+      "baseSha256": "87a9c8fcc2332068dd54d861744b0f881e0edfc9d5550ae57a519fd7c46e6c35",
+      "sha256": "87a9c8fcc2332068dd54d861744b0f881e0edfc9d5550ae57a519fd7c46e6c35"
     }
   },
   "entries": [
