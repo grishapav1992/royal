@@ -4,6 +4,7 @@ import {readFileSync} from 'node:fs';
 import {resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {analyzeForestHeart} from './forest-heart-model.mjs';
+import {qualifyTsuDuelStakes,validateTsuDuelStakes} from './rtp-tsu-duel-stakes.mjs';
 export const STAKE_PRECISION_METHOD='full-round-unbiased-cent-policy-v1';
 const root=fileURLToPath(new URL('../../',import.meta.url));
 const hash=value=>createHash('sha256').update(value).digest('hex');
@@ -22,7 +23,7 @@ const refs={
  'studio-neopolis':'docs/game-math/qualifications/neopolis-v4.json',
 };
 export const referencePath=id=>refs[id];
-function reference(id){const path=refs[id];assert(path,'Missing reference model');const bytes=readFileSync(resolve(root,path)),digest=hash(bytes);if(referenceCache.get(id)?.digest===digest)return referenceCache.get(id);const record={path,digest,proof:JSON.parse(bytes)};referenceCache.set(id,record);return record;}
+function reference(id){const path=refs[id];assert(path,'Missing reference model');const bytes=readFileSync(resolve(root,path)),digest=textHash(bytes);if(referenceCache.get(id)?.digest===digest)return referenceCache.get(id);const record={path,digest,proof:JSON.parse(bytes)};referenceCache.set(id,record);return record;}
 export function precisionLaw(){return {
  method:'Independent uniform final ticket; exact BigInt rational accumulation and integer settlement',
  identity:'For exact reward n/d, let q=floor(n/d), r=n mod d and uniform U in {0,...,d-1}. Pay q+1 if U<r, otherwise q. The sum over all tickets is q*d+r=n.',
@@ -105,6 +106,7 @@ function models(game,p,evidence){
  for(const choice of p.choices)push(choice,{kind:'statistical-estimate',rtp:row.rtp,interval95:row.interval95,paidRounds:row.paidRounds,estimator:p.kind==='temple'?'Independent complete cascade-round point model, scaled exactly and settled without cent loss.':'Complete paid-round exact-reward moments, including all bonus state and caps.'});return rows;
 }
 export function validateStakeProof(game,inputs,proof){
+ if(inputs.policy.kind==='pvp'){assert.equal(game,'tsu-e-fa');return validateTsuDuelStakes(inputs,proof,precisionLaw());}
  const p=inputs.policy;assert.equal(p.method,STAKE_PRECISION_METHOD);assert.equal(p.stakePolicyVersion,1);assert.deepEqual(p.stakes,stakes);assert.equal(new Set([...p.seeds,...p.calibrationSeeds]).size,4);
  assert.equal(proof.schemaVersion,1);assert.equal(proof.gameId,game);assert.equal(proof.rulesVersion,p.rulesVersion);assert.equal(proof.progressVersion,p.progressVersion);assert.equal(proof.method,STAKE_PRECISION_METHOD);
  assert.equal(proof.policySha256,inputs.policySha256);assert.deepEqual(proof.sourceHashes,inputs.sourceHashes);assert.deepEqual(proof.precisionLaw,precisionLaw());assert.deepEqual(proof.results,models(game,p,proof.evidence));
@@ -123,6 +125,7 @@ export function validateStakeProof(game,inputs,proof){
  assert.equal(proof.serverReplayChecks,checks);assert(proof.walletEvidence?.passed&&proof.walletEvidence.gameId===game,'Fresh common-wallet precision evidence is required');assert.match(proof.walletEvidence.sha256,/^[a-f0-9]{64}$/);assert.equal(proof.walletEvidence.cases,p.choices.length*stakes.length);assert.equal(proof.walletEvidence.replayAndRestartCases,proof.walletEvidence.cases);assert(proof.walletEvidence.oneDebitAndCredit&&proof.walletEvidence.clientVerified&&proof.walletEvidence.native?.passed&&proof.walletEvidence.native.journalBalanced);return true;
 }
 export async function qualifyStakes(game,inputs,options={},progress=()=>{}){
+ if(inputs.policy.kind==='pvp'){assert.equal(game,'tsu-e-fa');return qualifyTsuDuelStakes(inputs.policy,precisionLaw());}
  const p=inputs.policy,evidence={};
  if(p.kind==='plinko'){const {getPlinkoMultipliers}=await import('../../src/shared/originalGames.ts');evidence.tables=Object.fromEntries(p.choices.map(c=>{const [rows,risk]=c.split(':');return[c,getPlinkoMultipliers(Number(rows),risk)];}));}
  if(p.kind==='sampled-slots'){const directory=resolve(root,options.sampleDirectory??'../formal-samples');evidence.samples=p.choices.map(choice=>JSON.parse(readFileSync(resolve(directory,p.samplerGame+'-'+choice+'.json'),'utf8')));}

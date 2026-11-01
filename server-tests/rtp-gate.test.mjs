@@ -7,7 +7,7 @@ import { rtpInputs, validateRtpProof, checkGameRtp, sourceDigest, changedLegacyP
 const root = process.cwd();
 test('virtual PvP qualification covers the complete stake range and rejects missing cases and altered returns',async()=>{
  for(const id of ['hockey','pool','chess','durak','transfer-durak','crazy-eights','tsu-e-fa']){
-  const inputs=await rtpInputs(root,id),proof=JSON.parse(await readFile(resolve(root,inputs.policy.proof),'utf8'));
+  const inputs=await rtpInputs(root,id,id==='tsu-e-fa'?2:undefined),proof=JSON.parse(await readFile(resolve(root,inputs.policy.proof),'utf8'));
   assert(validateRtpProof(id,inputs,proof));assert.equal(proof.serverReplayChecks,4991*8*3);
   for(const mutate of [p=>p.results.pop(),p=>p.results[0].cases--,p=>p.results[0].feeUnits='0',p=>p.results[2].sha256=p.results[0].sha256,p=>p.serverReplayChecks--]){
    const changed=structuredClone(proof);mutate(changed);assert.throws(()=>validateRtpProof(id,inputs,changed));
@@ -31,6 +31,11 @@ test('Tsu-e-fa qualifies the agreed 3/5/7 targets and retains accepted rules 1',
     assert.equal(proof.rulesCoverage.cases,rules===1?72:1494);
     if(rules===2){const altered=structuredClone(proof);altered.rulesCoverage.targets=[2,5,7];assert.throws(()=>validateRtpProof('tsu-e-fa',inputs,altered));}
   }
+});
+test('Tsu-e-fa rules 3 qualifies common stakes, twelve settlement classes and delayed private reveal',async()=>{
+ const inputs=await rtpInputs(root,'tsu-e-fa',3),proof=JSON.parse(await readFile(resolve(root,inputs.policy.proof),'utf8'));
+ assert(validateRtpProof('tsu-e-fa',inputs,proof));assert.equal(proof.serverReplayChecks,108);assert.deepEqual(proof.rulesCoverage,{targets:[3],scores:9,pairsPerScore:9,orders:2,cases:162,privacyChecks:324});
+ for(const edit of [p=>p.results.pop(),p=>p.rulesCoverage.cases--,p=>p.walletEvidence.replayAndRestartCases--,p=>p.results[0].creditsCents=[20,0],p=>p.precisionLaw.stopping='']){const altered=structuredClone(proof);edit(altered);assert.throws(()=>validateRtpProof('tsu-e-fa',inputs,altered));}
 });
 function proofFor(id, inputs, mean = inputs.policy.target) {
   const p = inputs.policy, cycles = p.minCycles || p.minPaidRounds;

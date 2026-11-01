@@ -1,5 +1,6 @@
 import { gameAccountId } from '../../src/shared/nileWallet';
 import { isPvpGame, pvpPayout, validPvpStake, type PvpGameId } from '../../src/shared/pvp';
+import {validTsuDuelStake,tsuDuelPayout} from '../../src/shared/tsuDuel';
 export type PvpMoneyGameId = PvpGameId | 'mortal-kombat';
 export const isPvpMoneyGame = (id: unknown): id is PvpMoneyGameId => id === 'mortal-kombat' || isPvpGame(id);
 
@@ -15,7 +16,7 @@ const fail = (): never => { throw Error('Invalid PvP ledger event'); };
 export function validPvpMoneyEvent(value: unknown): value is PvpMoneyEvent {
   const row = value as PvpMoneyEvent;
   return !!row && Object.keys(row).sort().join(',') === 'action,createdAt,gameId,matchId,participants,reason,stakeUnits,version,winnerId'
-    && row.version === 1 && gameAccountId(row.matchId) && isPvpMoneyGame(row.gameId) && validPvpStake(row.stakeUnits)
+    && row.version === 1 && gameAccountId(row.matchId) && isPvpMoneyGame(row.gameId) && (validPvpStake(row.stakeUnits)||row.gameId==='tsu-e-fa'&&validTsuDuelStake(row.stakeUnits))
     && ['hold', 'refund', 'settle'].includes(row.action) && Number.isSafeInteger(row.createdAt) && row.createdAt > 0
     && ['hold', 'win', 'draw', 'cancel', 'expired', 'server', 'disconnect', 'resign', 'timeout'].includes(row.reason)
     && Array.isArray(row.participants) && row.participants.length >= 1 && row.participants.length <= 2
@@ -45,7 +46,7 @@ export function applyPvpMoneyEvent(row: PvpMoneyEvent, matches: Map<string, PvpM
   if (row.action === 'refund') for (const owner of row.participants) entries.push({ account: 'player:' + owner.userId, units: row.stakeUnits });
   else {
     const winner = row.participants.find(owner => owner.accountId === row.winnerId)!;
-    const result = pvpPayout(row.stakeUnits);
+    const result = row.gameId==='tsu-e-fa'&&validTsuDuelStake(row.stakeUnits)?tsuDuelPayout(row.stakeUnits):pvpPayout(row.stakeUnits);
     entries.push({ account: 'player:' + winner.userId, units: result.payoutUnits }, { account: 'house', units: result.feeUnits });
   }
   return entries;

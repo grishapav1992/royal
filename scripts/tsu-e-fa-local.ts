@@ -43,12 +43,12 @@ function act() {
   }
   const active = snapshot.active;
   if (active?.gameId === 'tsu-e-fa' && active.status === 'arriving') {
-    if (!active.ready.includes(botAccount.account.id)) send({ id: randomUUID(), action: 'ready', challengeId: active.id });
+    if (!active.ready.includes(botAccount.account.id)) send(active.rulesVersion===3?{id:randomUUID(),action:'duel-ready',challengeId:active.id,termsRevision:active.termsRevision??0}:{ id: randomUUID(), action: 'ready', challengeId: active.id });
     return;
   }
   if (active?.gameId === 'tsu-e-fa' && active.status === 'playing') {
     const view = snapshot.tsuEFa;
-    if (!view || view.phase !== 'playing' || view.locked[view.self]) return;
+    if (!view || view.phase !== 'playing' || view.locked[view.self]||active.disconnected.length||view.duel&&view.duel.stage!=='select') return;
     const key = active.id + ':' + view.round;
     if (thinking?.key === key) return;
     if (thinking) clearTimeout(thinking.timer);
@@ -70,8 +70,7 @@ function act() {
   const person = snapshot.people.find(p => p.accountId !== botAccount.account.id && p.available && !offered.has(p.accountId));
   if (person) {
     offered.add(person.accountId);
-    send({ id: randomUUID(), action: 'create', gameId: 'tsu-e-fa', targetId: person.accountId,
-      mode: 'free', stakeUnits: '0', targetWins: 3 });
+    send({ id: randomUUID(), action: 'invite', gameId: 'tsu-e-fa', targetId: person.accountId });
   }
 }
 
@@ -140,5 +139,5 @@ try {
   });
   await vite.listen();
   console.log(`Tsu-e-fa local: http://127.0.0.1:${webPort}/__local/tsu-e-fa/start`);
-  console.log('Random algorithm, free opening invitation, 200 synthetic USDT. Type stop to remove the temporary database.');
+  console.log('Random algorithm, negotiated first-to-three match from 0.10 synthetic USDT. Type stop to remove the temporary database.');
 } catch (error) { await stop(); throw error; }
