@@ -1,6 +1,6 @@
 # Цу-е-фа
 
-Independent module `tsu-e-fa`, package 1.2, host API/rules/progress 1/3/1. Requires the matching host/backend. Shared authentication, room transport, chat, operation recovery and current virtual USDT wallet remain in the host. The module creates no separate wallet or game service. This work does not publish or restore any other game.
+Independent module `tsu-e-fa`, package 1.2.1, host API/rules/progress 1/3/1. Requires the matching host/backend. Shared authentication, room transport, chat, operation recovery and current virtual USDT wallet remain in the host. The module creates no separate wallet or game service. This work does not publish or restore any other game.
 
 ## Rules 3: the agreed player flow
 
@@ -46,6 +46,12 @@ The server owns phases, deadlines, participants and settlement. Requests use sta
 | Match settlement | Actual winner and exact credited amount | Wallet is authoritative, one debit per side and one final credit. |
 
 The current chant is visual. No separate audio context, TTS, music or sound assets are introduced. Keyboard controls, visible focus, explicit readiness and surrender confirmation are available. Module timers and listeners are destroyed on close. Layout verification uses the actual Royal host with connected chat on desktop and phone, not only a fixture.
+
+### Side-view artwork 1.2.1
+
+The hand shapes now use a single transparent imagegen atlas matching the approved side-view concept: rounded finger anatomy, black cutout contours, warm skin tones, paper grain and burgundy/blue sleeves. Its two columns represent the players; the four rows contain rock, scissors, paper and the stationary cupped supporting palm. The SVG clips one cell per hand without resampling or duplicating the source image. The upper hands change only after the server reveal. The same artwork supplies the three choice-button illustrations. See `artwork.json` for the exact generation prompt and reference roles.
+
+The stage reaches both side edges at its native aspect ratio; it no longer letterboxes the sleeves at larger window widths. Dark charcoal framing, cream panels and condensed headings follow the reference. The active-hand rhythm, reduced-motion setting and shared host chat remain in place. This presentation update does not change deadlines, stakes, private selections or settlement rules.
 
 ## Compatibility and qualification
 
