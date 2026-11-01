@@ -12,6 +12,7 @@ import {templePlan,templeOutcome,type TempleBeat} from './presentation';
 import {templeMusic} from './audioCredits';
 import {TempleCharacter} from './TempleCharacter';
 import {templeRouteChoices,templeSelectedRoom,templeDirection} from './navigation';
+import {FrameLayout} from '../../src/ui/iframeKit/FrameLayout';
 const AUTO_COUNTS=[10,25,50,100] as const;
 type AutoNote=''|'complete'|'stopped'|'funds'|'error'|'paused'|'account';
 
@@ -19,6 +20,7 @@ type AutoNote=''|'complete'|'stopped'|'funds'|'error'|'paused'|'account';
 export class TempleUI {
   private readonly root:HTMLElement;
   private readonly dialog:HTMLDialogElement;
+  private readonly layout:FrameLayout;
   private readonly en:boolean;
   private owner:string|null=null;
   private marker='';
@@ -51,6 +53,10 @@ export class TempleUI {
   private feedbackMarker='';
   private returnFocus:HTMLElement|null=null;
   private readonly changed=()=>this.sync();
+  private readonly preferenceChange=(event:Event)=>{
+    const select=event.target as HTMLSelectElement;
+    if(select.matches('[data-ft=auto-count]')&&!this.autoRunning&&!this.sending&&!this.client.busy&&!this.client.pending&&AUTO_COUNTS.some(n=>String(n)===select.value)){this.autoCount=Number(select.value);this.savePlayback();this.render();}
+  };
   private readonly click=(event:Event)=>this.onClick(event);
   private readonly key=(event:KeyboardEvent)=>{
     const target=event.target as HTMLElement;
@@ -66,6 +72,7 @@ export class TempleUI {
     this.root.setAttribute('aria-label',this.text('Затопленный храм','Flooded Temple'));
     this.dialog=doc.createElement('dialog');this.dialog.className='ft-dialog';this.dialog.setAttribute('aria-labelledby','ft-dialog-title');
     host.replaceChildren(this.root,this.dialog);
+    this.layout=new FrameLayout(this.root,()=>queueMicrotask(()=>{if(!this.disposed){this.rendered='';this.render();}}));
     services.gameAudio.install();this.media=doc.defaultView!.matchMedia('(prefers-reduced-motion: reduce)');
     this.audio=new TempleAudio(services.gameAudio,doc);this.effects=new TempleEffects(this.root,units=>this.money(units));this.character=new TempleCharacter(doc,this.en);
     this.timeline=new TempleTimeline(this.audio,beat=>{this.beat=beat;if(!beat)this.effects.clear();this.rendered='';if(!this.disposed){this.render();this.pumpAuto();}},(beat,offset)=>{this.effects.tick(beat,offset);this.character.tick(beat,offset);});
@@ -75,10 +82,11 @@ export class TempleUI {
     this.root.addEventListener('click',this.click);this.root.addEventListener('keydown',this.key);
     this.root.addEventListener('change',this.changedStake);
     this.dialog.addEventListener('click',this.click);
+    this.dialog.addEventListener('change',this.preferenceChange);
     this.dialog.addEventListener('close',()=>{
       if(this.disposed)return;const key=this.returnFocus?.dataset.ft;
       this.timeline.resume('dialog');this.rendered='';this.render();
-      const target=this.returnFocus?.isConnected?this.returnFocus:key?this.root.querySelector<HTMLElement>(`[data-ft="${key}"]`):null;target?.focus();
+      const target=this.returnFocus?.isConnected?this.returnFocus:key?this.root.querySelector<HTMLElement>(`[data-ft="${key}"]`):null;(target?.getClientRects().length?target:this.root.querySelector<HTMLElement>('[data-ft=settings]'))?.focus({preventScroll:true});
       this.pumpAuto();
     });
     services.expansionClient.addEventListener('change',this.changed);services.demoWallet.addEventListener('change',this.changed);
@@ -139,11 +147,13 @@ export class TempleUI {
       ${v?.bonusState&&bonus?`<div class="ft-bonus-tools"><div class="ft-step-count"><strong>${v.bonusState.left}</strong><span>${this.text('ХОДОВ','MOVES')}</span><span class="ft-step-dots" aria-hidden="true">${Array.from({length:6},(_,i)=>`<i class="${i>=v.bonusState!.left?'spent':''}"></i>`).join('')}</span></div><button type="button" data-ft="rope" class="ft-rope" aria-pressed="${this.rope}" ${disabled||pending||!active||!v.bonusState.ropeAvailable?'disabled':''}>${prop('rope')}${v.bonusState.ropeAvailable?this.rope?this.text('Верёвка выбрана','Rope selected'):this.text('Использовать верёвку','Use rope'):this.text('Верёвка использована','Rope used')}</button></div>`:''}
       <div class="ft-cabinet">${boardMarkup(v,bonus,bonus?this.selected:this.inspected,this.rope,disabled||pending,this.en,this.beat)}</div><div class="ft-legend"><span>${art.gate}${this.text('Ворота','Gate')}</span><span>${art.lever}${this.text('Рычаг','Lever')}</span><span>${art.gap}${this.text('Провал','Gap')}</span><span>${art.check}${this.text('Собрано','Collected')}</span></div><p class="ft-room-detail">${escape(detail)}</p></div>
       <div data-ft-character-slot></div></div>
-      <section class="ft-console" aria-label="${this.text('Управление экспедицией','Expedition controls')}"><div class="ft-money"><div><span class="ft-label">${this.text('Общий баланс','Shared balance')}</span><strong data-ft-value="balance">${balance}</strong><small>${escape(this.asset)}</small></div><div><span class="ft-label">${this.text('Ставка раунда','Round stake')}</span><strong>${this.money(session?.stakeUnits??this.stake)}</strong><small>${escape(this.asset)}</small></div></div><div class="ft-bet-block"><label class="ft-stake"><span class="ft-label">${this.text('Ставка','Stake')}</span><select data-ft="stake" ${disabled||active||!!this.client.pending?'disabled':''}>${GAME_STAKE_CENTS.map(n=>`<option value="${n}" ${this.stake===String(n)?'selected':''}>${this.money(String(n))}</option>`).join('')}</select></label><div class="ft-collected-total"><span class="ft-label">${active?this.text('Собрано','Collected'):this.text('Выплата','Payout')}</span><strong data-ft-value="payout">${this.money(total)}</strong><small>${escape(this.asset)}</small></div></div><div class="ft-action"><button type="button" class="ft-primary" data-ft="primary" ${disabled||!active&&!pending&&!affordable||active&&bonus&&!canMove&&!pending?'disabled':''}>${pending?art.step:active?art.step:art.compass}<span>${label}</span></button>${active?`<button type="button" class="ft-finish" data-ft="finish" ${disabled||pending?'disabled':''}>${this.text('Закончить и забрать собранное','Finish and collect')}</button>`:''}</div><div class="ft-status" data-error="${status.error}" data-settled="${!!v&&!active}" role="status" aria-live="polite"><p>${escape(status.message)}</p></div></section><footer class="ft-bottom"><span>${this.text('5 × 4 КОМНАТЫ','5 × 4 ROOMS')}</span><span>${this.text('6 ХОДОВ · 1 ВЕРЁВКА','6 MOVES · 1 ROPE')}</span><span>${this.text('МАКСИМАЛЬНАЯ ВЫПЛАТА 230×','MAXIMUM PAYOUT 230×')}</span></footer>`;
+      <section class="ft-console" aria-label="${this.text('Управление экспедицией','Expedition controls')}"><div class="ft-money"><div><span class="ft-label">${this.text('Общий баланс','Shared balance')}</span><strong data-ft-value="balance">${balance}</strong><small>${escape(this.asset)}</small></div><div><span class="ft-label">${this.text('Ставка раунда','Round stake')}</span><strong>${this.money(session?.stakeUnits??this.stake)}</strong><small>${escape(this.asset)}</small></div></div><div class="ft-bet-block"><label class="ft-stake"><span class="ft-label">${this.text('Ставка','Stake')}</span><select data-ft="stake" ${disabled||active||!!this.client.pending?'disabled':''}>${GAME_STAKE_CENTS.map(n=>`<option value="${n}" ${this.stake===String(n)?'selected':''}>${this.money(String(n))}</option>`).join('')}</select></label><div class="ft-collected-total"><span class="ft-label">${active?this.text('Собрано','Collected'):this.text('Выплата','Payout')}</span><strong data-ft-value="payout">${this.money(total)}</strong><small>${escape(this.asset)}</small></div></div><div class="ft-action"><button type="button" class="ft-primary" data-ft="primary" ${disabled||!active&&!pending&&!affordable||active&&bonus&&!canMove&&!pending?'disabled':''}>${pending?art.step:active?art.step:art.compass}<span>${label}</span></button>${active?`<button type="button" class="ft-finish" data-ft="finish" ${disabled||pending?'disabled':''}>${this.text('Закончить и забрать собранное','Finish and collect')}</button>`:''}</div><button type="button" class="ft-options" data-ft="settings" aria-label="${this.text('Настройки игры','Game settings')}">⚙</button><div class="ft-status" data-error="${status.error}" data-settled="${!!v&&!active}" role="status" aria-live="polite"><p>${escape(status.message)}</p></div></section><footer class="ft-bottom"><span>${this.text('5 × 4 КОМНАТЫ','5 × 4 ROOMS')}</span><span>${this.text('6 ХОДОВ · 1 ВЕРЁВКА','6 MOVES · 1 ROPE')}</span><span>${this.text('МАКСИМАЛЬНАЯ ВЫПЛАТА 230×','MAXIMUM PAYOUT 230×')}</span></footer>`;
     this.root.querySelector('[data-ft-character-slot]')!.replaceWith(this.character.element);
     this.root.querySelector('.ft-status')!.insertAdjacentHTML('beforebegin',this.playbackMarkup());
     if(bonus&&(active||this.beat))this.root.querySelector('.ft-money')!.insertAdjacentHTML('beforebegin',this.routeMarkup(v,disabled||pending));
     if(this.autoRunning){this.root.querySelector<HTMLSelectElement>('[data-ft=stake]')!.disabled=true;if(!this.beat&&!active)this.root.querySelector<HTMLButtonElement>('[data-ft=primary]')!.disabled=true;}
+    if(this.root.dataset.frameLayout!=='full'){const bonusTools=this.root.querySelector('.ft-bonus-tools');if(bonusTools)this.root.querySelector('.ft-console')!.append(bonusTools);}
+    this.dialog.querySelector('[data-ft=fast]')?.setAttribute('aria-pressed',String(this.fast));
     this.feedbackUI();this.effects.decorate(this.beat,this.media.matches,this.timeline.offset);this.syncCharacter();
     if(focusKey&&!this.dialog.open)this.root.querySelector<HTMLElement>(focusKey)?.focus({preventScroll:true});
   }
@@ -168,6 +178,7 @@ export class TempleUI {
     if(target.dataset.room!==undefined){this.inspectRoom(Number(target.dataset.room));return;}
     switch(target.dataset.ft){
       case 'rules':this.showRules();break;
+      case 'settings':this.showSettings();break;
       case 'sound':void this.audio.gesture();this.services.gameAudio.setMuted(!this.services.gameAudio.getPreferences().muted);break;
       case 'log':this.showLog();break;
       case 'close':this.dialog.close();break;
@@ -176,7 +187,7 @@ export class TempleUI {
       case 'auto':if(this.autoRunning)this.stopAuto('stopped');else this.startAuto();break;
       case 'base':this.tab='base';this.inspected=null;this.render();break;
       case 'bonus':this.tab='bonus';this.inspected=null;this.render();break;
-      case 'route':this.inspectRoom(Number(target.dataset.to));break;
+      case 'route':this.inspectRoom(Number(target.dataset.to));if(this.dialog.open)this.dialog.close();break;
       case 'rope':if(!this.blocked&&!this.client.pending&&this.session?.state==='active'&&this.view?.bonusState?.ropeAvailable){this.rope=!this.rope;this.render();}break;
       case 'primary':void this.primary();break;
       case 'finish':this.showFinish();break;
@@ -280,7 +291,11 @@ export class TempleUI {
     this.syncCharacter();
     this.returnFocus=this.host.ownerDocument.activeElement as HTMLElement;
     this.dialog.innerHTML=`<button type="button" class="ft-dialog-close" data-ft="close" aria-label="${this.text('Закрыть','Close')}">×</button><h2 id="ft-dialog-title">${title}</h2>${body}`;
-    this.dialog.showModal();
+    if(!this.dialog.open)this.dialog.showModal();
+  }
+  private showSettings(){
+    this.stopAuto('stopped');
+    this.show(this.text('Настройки игры','Game settings'),`<div class="ft-preferences"><button type="button" data-ft="fast" aria-pressed="${this.fast}">${this.text('Быстрая игра','Quick play')}</button><label>${this.text('Количество автоспинов','Autoplay count')}<select data-ft="auto-count">${AUTO_COUNTS.map(n=>`<option ${n===this.autoCount?'selected':''}>${n}</option>`).join('')}</select></label><button type="button" data-ft="rules">${this.text('Правила игры','Game rules')}</button><button type="button" data-ft="log">${this.text('Журнал экспедиции','Expedition journal')}</button><button type="button" data-ft="sound">${this.text('Включить / выключить звук','Toggle sound')}</button>${this.view?.bonusMap?`<button type="button" data-ft="base">${this.text('Карта храма','Temple map')}</button><button type="button" data-ft="bonus">${this.text('Карта экспедиции','Expedition map')}</button>`:''}${this.session?.state==='active'?`<button type="button" data-ft="finish">${this.text('Закончить и забрать собранное','Finish and collect')}</button>`:''}</div>${this.routeMarkup(this.view,this.blocked||!!this.client.pending)}`);
   }
   private showFinish(){
     if(this.blocked||this.client.pending||this.session?.state!=='active')return;
@@ -349,5 +364,5 @@ export class TempleUI {
   }
   private syncCharacter(){this.character.update({beat:this.beat,key:this.owner+':'+this.marker,offset:this.timeline.offset,waiting:this.sending||this.client.pending?.gameId===TEMPLE_GAME,rope:this.rope,selected:this.selected!==null,reduced:this.media.matches,paused:this.timeline.paused,connected:this.connected});}
   getState(){const s=this.session,v=this.view;return {gameId:TEMPLE_GAME,stage:'feedback',playable:true,phase:v?.phase??'ready',sessionId:s?.id??null,revision:v?.revision??null,tab:this.tab,selected:this.selected,inspected:this.inspected,choices:templeRouteChoices(v),ropeSelected:this.rope,moves:v?.bonusState?.left??null,totalPayoutUnits:v?.totalPayoutUnits??'0',busy:this.blocked,pending:this.client.pending?.gameId===TEMPLE_GAME,disposed:this.disposed,fast:this.fast,autoplay:{running:this.autoRunning,remaining:this.autoRemaining,count:this.autoCount,waitingForRoute:this.autoRunning&&s?.state==='active'&&!this.timeline.active,timerPending:!!this.autoTimer,note:this.autoNote},feedback:{...this.timeline.getState(),shownUnits:this.beat?.frame.totalUnits??v?.totalPayoutUnits??'0',effects:this.effects.getState(),character:this.character.getState(),reducedMotion:this.media.matches}};}
-  destroy(){if(this.disposed)return;this.disposed=true;this.stopAuto('stopped',false);this.timeline.destroy();this.effects.clear();this.character.destroy();this.unsubscribePreferences();this.media.removeEventListener('change',this.motionChanged);this.host.ownerDocument.removeEventListener('visibilitychange',this.visibility);if(this.host.ownerDocument!==document)document.removeEventListener('visibilitychange',this.visibility);this.services.expansionClient.removeEventListener('change',this.changed);this.services.demoWallet.removeEventListener('change',this.changed);this.root.removeEventListener('click',this.click);this.root.removeEventListener('keydown',this.key);this.root.removeEventListener('change',this.changedStake);this.dialog.removeEventListener('click',this.click);this.dialog.close();this.host.replaceChildren();}
+  destroy(){if(this.disposed)return;this.disposed=true;this.stopAuto('stopped',false);this.timeline.destroy();this.effects.clear();this.character.destroy();this.unsubscribePreferences();this.media.removeEventListener('change',this.motionChanged);this.host.ownerDocument.removeEventListener('visibilitychange',this.visibility);if(this.host.ownerDocument!==document)document.removeEventListener('visibilitychange',this.visibility);this.services.expansionClient.removeEventListener('change',this.changed);this.services.demoWallet.removeEventListener('change',this.changed);this.root.removeEventListener('click',this.click);this.root.removeEventListener('keydown',this.key);this.root.removeEventListener('change',this.changedStake);this.layout.destroy();this.dialog.removeEventListener('change',this.preferenceChange);this.dialog.removeEventListener('click',this.click);this.dialog.close();this.host.replaceChildren();}
 }

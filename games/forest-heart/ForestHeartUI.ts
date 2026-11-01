@@ -61,7 +61,7 @@ export class ForestHeartUI {
       <div class="fh-status-band"><div class="fh-story"><p data-fh="status" role="status" aria-live="polite">${c.ready}</p><p data-fh="next">${c.nextIdle}</p></div>
         <div class="fh-bonus" hidden><span>${this.services.i18n.language === 'en'?'BONUS':'БОНУС'}</span><div>${[0, 1, 2, 3].map(i => `<i data-bud="${i}">${i+1}</i>`).join('')}</div><strong data-fh="remaining"></strong></div></div>
       <footer class="fh-controls"><div class="fh-money"><span>${c.balance} · USDT</span><strong data-fh="balance">…</strong><small>${this.services.i18n.language === 'en' ? 'Virtual' : 'Виртуальные'}</small></div>
-      <div class="fh-bet"><button data-fh="lower" aria-label="${c.lower}">−</button><div><span data-fh="stake-label">${c.stake}</span><strong data-fh="stake">10</strong></div><button data-fh="higher" aria-label="${c.higher}">+</button></div>
+      <div class="fh-bet"><button data-fh="lower" aria-label="${c.lower}">−</button><div><span data-fh="stake-label">${c.stake}</span><strong data-fh="stake">10</strong></div><button data-fh="higher" aria-label="${c.higher}">+</button><select data-fh="stake-select" aria-label="${c.stake}">${FOREST_HEART_STAKES.map(value=>`<option value="${value}">${this.number(value)}</option>`).join('')}</select></div>
       <div class="fh-total"><div><span data-fh="total-label">${c.total}</span><strong data-fh="total">0</strong></div><div><span data-fh="net-label">${c.net}</span><strong data-fh="net">…</strong></div></div>
       <div class="fh-action"><div class="fh-primary"><button class="fh-spin" data-fh="spin">${c.spin}</button><button class="fh-pass" data-fh="pass" hidden>${c.kept}</button><button class="fh-retry" data-fh="retry" hidden>${c.retry}</button><button class="fh-refresh" data-fh="refresh" hidden>${c.refresh}</button></div><label class="fh-fast"><input data-fh="fast" type="checkbox">${this.services.i18n.language === 'en' ? 'Fast' : 'Быстро'}</label></div></footer>
       <div class="fh-footnote"><span>5 × 5 · ${c.energy} · ${this.services.i18n.language === 'en' ? 'LIVING ROOTS' : 'ЖИВЫЕ КОРНИ'}</span><span data-fh="credit-note"></span></div>
@@ -81,6 +81,7 @@ export class ForestHeartUI {
     const bind = (name: string, callback: () => void) => this.find(name).addEventListener('click', callback, { signal: this.controller.signal });
     bind('spin', () => void this.act()); bind('pass', () => void this.act('forest-pass'));
     bind('retry', () => void this.act('retry')); bind('refresh', () => void this.client.refresh());
+    this.find('stake-select').addEventListener('change',()=>this.changeStake((FOREST_HEART_STAKES as readonly number[]).indexOf(Number(this.find<HTMLSelectElement>('stake-select').value))-(FOREST_HEART_STAKES as readonly number[]).indexOf(this.stake)),{signal:this.controller.signal});
     bind('skip', () => this.cancel()); bind('lower', () => this.changeStake(-1)); bind('higher', () => this.changeStake(1));
     bind('sound', () => { this.services.gameAudio.setMuted(!this.services.gameAudio.getPreferences().muted); void this.audio.unlock(); });
     bind('rules', () => this.openPanel('rules')); bind('settings', () => this.openPanel('settings')); bind('close', () => this.dialog.close());
@@ -90,7 +91,7 @@ export class ForestHeartUI {
       event.preventDefault(); const panel = event.key === 'Home' ? 'rules' : event.key === 'End' ? 'settings' : tab.dataset.fhTab === 'rules' ? 'settings' : 'rules';
       this.openPanel(panel); this.root.querySelector<HTMLElement>(`[data-fh-tab="${panel}"]`)!.focus();
     }, { signal: this.controller.signal }));
-    this.dialog.addEventListener('close', () => this.resume(), { signal: this.controller.signal });
+    this.dialog.addEventListener('close', () => {this.resume();this.find('settings').focus({preventScroll:true});}, { signal: this.controller.signal });
     this.find<HTMLInputElement>('motion').checked = this.reduced;
     this.find('motion').addEventListener('change', () => {
       this.forceReduced = this.find<HTMLInputElement>('motion').checked;
@@ -208,6 +209,7 @@ export class ForestHeartUI {
     const balance = this.wallet.accountId === this.owner ? this.wallet.wallet?.balance ?? this.client.wallet?.balance : undefined;
     this.find('balance').textContent = balance === undefined ? '…' : balance.toLocaleString(this.services.i18n.locale, { maximumFractionDigits: 2 });
     this.find('stake').textContent = this.number(this.stake);
+    const stakeSelect=this.find<HTMLSelectElement>('stake-select');stakeSelect.value=String(this.stake);stakeSelect.disabled=blocked||active;
     this.find('stake-label').textContent = stage === 'settled' ? this.c.nextStake : this.c.stake;
     this.find<HTMLButtonElement>('lower').disabled = blocked || active || this.stake === FOREST_HEART_STAKES[0];
     this.find<HTMLButtonElement>('higher').disabled = blocked || active || this.stake === FOREST_HEART_STAKES.at(-1);

@@ -10,6 +10,7 @@ import { DemoWalletStore } from '../server/demoWallet';
 import { DemoExpansionStore } from '../server/demoExpansion';
 import { WALLET_ACCOUNT_HEADER } from '../src/shared/walletAccount';
 import {layoutSlots,layoutBonusSeed,layoutDraw} from './game-layout-scenarios';
+import {layoutIframes,layoutIframeSeed} from './game-layout-iframe-scenarios';
 
 const apiPort=Number(process.env.LAYOUT_API_PORT||2968),webPort=Number(process.env.LAYOUT_WEB_PORT||5468);
 await Promise.all([apiPort,webPort].map(port=>new Promise<void>((resolve,reject)=>{
@@ -34,15 +35,15 @@ const vite=await createServer({configFile:false,root:process.cwd(),optimizeDeps:
     let raw='';for await(const chunk of req){raw+=chunk;if(raw.length>8192)throw Error('Oversized fixture request');}
     const body=JSON.parse(raw),account=identity.account.id,key=account+':'+body.gameId;
     if(path==='/__test/layout/bonus'){
-     if(!layoutSlots.includes(body.gameId))throw Error('Unsupported fixture game');
+     if(!layoutSlots.includes(body.gameId)&&!layoutIframes.includes(body.gameId))throw Error('Unsupported fixture game');
      if(!db){db=new PostgresDatabase(schema,{existingSchema:true,config:databaseConfig(environment)});wallet=new DemoWalletStore(db);}
-     const seed=layoutBonusSeed(body.gameId);scenarios.set(key,new DemoExpansionStore(db,id=>wallet.snapshot(id),wallet.ready,async()=>{},layoutDraw(seed)));
+     const seed=layoutIframes.includes(body.gameId)?layoutIframeSeed(body.gameId,body.scenario==='legacy'):layoutBonusSeed(body.gameId);scenarios.set(key,new DemoExpansionStore(db,id=>wallet.snapshot(id),wallet.ready,async()=>{},layoutDraw(seed)));
      res.setHeader('Content-Type','application/json');res.end(JSON.stringify({seed,gameId:body.gameId,naturalBonus:true}));return;
     }
     const store=scenarios.get(key);
     if(store){
      if(req.headers[WALLET_ACCOUNT_HEADER.toLowerCase()]!==account)throw Error('Fixture account mismatch');
-     const result=await store.operate(account,body);res.setHeader('Content-Type','application/json');res.end(JSON.stringify(result));return;
+     const result=await store.operate(account,body,2,true,true,true,true,true,true,true,true,2,4,true,true,2,2,2,false);res.setHeader('Content-Type','application/json');res.end(JSON.stringify(result));return;
     }
     // Preserve the real backend and its validation for all ordinary unseeded rounds.
     const reply=await fetch(api+path,{method:'POST',headers:{'Content-Type':'application/json',Cookie:req.headers.cookie||'',...Object.fromEntries(Object.entries(req.headers).filter(([name,value])=>name.startsWith('x-royal-')&&typeof value==='string'))},body:raw});
