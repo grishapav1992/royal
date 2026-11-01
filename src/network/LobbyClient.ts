@@ -5,7 +5,8 @@ import type { MiraView } from '../shared/miraRoutine';
 import type { AmbientGuestView } from '../shared/ambientGuests';
 import { Client, ErrorCode, type Room } from '@colyseus/sdk';
 import type { LobbyState } from '../../server/state';
-import type { PlayerView, ChatMessage } from '../shared/world';
+import type { PlayerView, ChatMessage, HallId } from '../shared/world';
+import type { ElevatorResult } from '../shared/elevator';
 import { mergeActivities, mergePianoNote, type ActivitiesMessage, type ActivitiesState, type PianoNote } from '../shared/activities';
 import { savedSession, savedRoom, rememberSession, forgetSession } from './sessionRecovery';
 import type { CabinetPlayResult } from '../shared/cabinetSeating';
@@ -20,6 +21,9 @@ export class LobbyClient {
   private generation = 0;
   private activities?:ActivitiesState;
   private cabinetRequest = 0;
+  private elevatorRequest = 0;
+  private hall?: HallId;
+  private pendingElevator?: { target: HallId; requestId: number; revision?: number; finish: (accepted: boolean) => void; timer: ReturnType<typeof setTimeout> };
   private releaseCabinetWhenConnected = false;
   private pendingCabinet?: { id: string; requestId: number; finish: (accepted: boolean) => void; timer: ReturnType<typeof setTimeout> };
   status: ConnectionStatus = 'disconnected';
@@ -122,6 +126,17 @@ export class LobbyClient {
         if (!result.accepted && result.reason) this.events.notice(translateText(result.reason));
         pending.finish(result.accepted);
       });
+      onMessage('elevator-result', (result: ElevatorResult) => {
+        const pending = this.pendingElevator;
+        if (!pending || result.requestId !== pending.requestId || result.target !== pending.target) return;
+        if (!result.accepted) {
+          if (result.reason) this.events.notice(translateText(result.reason));
+          this.finishElevator(false);
+        } else if (Number.isSafeInteger(result.revision)) {
+          pending.revision = result.revision;
+          this.confirmElevator();
+        }
+      });
       onMessage('activities', (message:ActivitiesMessage) => {
         // Patches received before the initial snapshot cannot establish a baseline.
         if('patch' in message&&!this.activities)return;
@@ -142,10 +157,12 @@ export class LobbyClient {
         const players: PlayerView[] = [];
         const serverNow = state.serverNow || Date.now(), localNow = Date.now();
         state.players?.forEach((p, id) => players.push({ id, security: p.security, hall: p.hall as PlayerView['hall'], hallRevision: p.hallRevision, name: p.name, x: p.x, y: p.y, skin: p.skin, appearance: p.appearance, facing: p.facing as PlayerView['facing'], moving: p.moving, connected: p.connected, playing: p.playing, cabinet: p.cabinet, gameReaction: p.gameReaction, gameReactionUntil: p.gameReactionUntil > serverNow ? localNow + p.gameReactionUntil - serverNow : 0, activity: p.activity, ears: p.ears, seat: p.seat, action: p.action as PlayerView['action'], drink: p.drink, actionUntil: p.actionUntil, soberAt: p.soberAt > serverNow ? localNow + p.soberAt - serverNow : 0, inputSeq: p.inputSeq }));
-        this.revision=players.find(p=>p.id===room.sessionId)?.hallRevision??0;
+        const self=players.find(p=>p.id===room.sessionId);
+        this.revision=self?.hallRevision??0;this.hall=self?.hall;
         const guards: GuardView[] = []; state.guards?.forEach(g => guards.push({hall:g.hall as GuardView['hall'],x:g.x,y:g.y,facing:g.facing,phase:g.phase,target:g.target,progress:g.progress,speech:g.speech,routine:g.routine,reply:g.reply}));
         this.events.guards(guards);
         this.events.players(players, room.sessionId);
+        this.confirmElevator();
         const guests:AmbientGuestView[]=[];
         state.guests?.forEach(guest=>guests.push({id:guest.id,name:guest.name,hall:guest.hall as AmbientGuestView['hall'],x:guest.x,y:guest.y,skin:guest.skin,facing:guest.facing as AmbientGuestView['facing'],moving:guest.moving,mood:guest.mood as AmbientGuestView['mood'],drink:guest.drink,seat:guest.seat,destination:guest.destination}));
         this.events.guests(guests);
@@ -176,6 +193,7 @@ export class LobbyClient {
   private setStatus(status: ConnectionStatus) {
     this.status = status;
     if (status !== 'connected') this.events.checking(false);
+    if (status !== 'connected') this.finishElevator(false);
     if (status !== 'connected' && this.pendingCabinet) {
       this.releaseCabinetWhenConnected = true;
       const pending = this.pendingCabinet; this.pendingCabinet = undefined;
@@ -200,6 +218,27 @@ export class LobbyClient {
       }, 8000);
       this.pendingCabinet = { id, requestId, finish: resolve, timer };
       this.send('cabinet-play', { id, requestId });
+    });
+  }
+  private finishElevator(accepted: boolean) {
+    const pending = this.pendingElevator;
+    if (!pending) return;
+    this.pendingElevator = undefined;clearTimeout(pending.timer);pending.finish(accepted);
+  }
+  private confirmElevator() {
+    const pending = this.pendingElevator;
+    if (pending?.revision !== undefined && this.hall === pending.target && this.revision >= pending.revision) this.finishElevator(true);
+  }
+  travelByElevator(target: HallId): Promise<boolean> {
+    if (this.status !== 'connected' || !this.room || this.pendingElevator) return Promise.resolve(false);
+    return new Promise(resolve => {
+      const requestId = ++this.elevatorRequest;
+      const timer = setTimeout(() => {
+        this.events.notice(translateText('Не удалось подтвердить поездку. Проверь подключение и попробуй ещё раз.'));
+        this.finishElevator(false);
+      }, 8000);
+      this.pendingElevator = { target, requestId, finish: resolve, timer };
+      this.send('elevator', { target, requestId, revision: this.revision });
     });
   }
   send(type: string, data?: unknown): boolean {
