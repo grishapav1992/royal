@@ -1,4 +1,13 @@
-# Forest Heart client 1.11 (local experiment)
+# Forest Heart client 1.12 (local experiment)
+
+## Continuous character handoff 1.12
+
+Video completion keeps the exact decoded final pose as the standing image for the six-second interval. It no longer switches immediately to a different illustrated pose. The next episode blends from that held frame; a fresh authored game reaction blends back to the live character renderer. These transitions use a 640 ms smooth curve, an artistic choice for review. Three-second media and six-second standing intervals remain unchanged.
+
+A single WebGL compositor mixes premultiplied native, held and moving pixels with weights summing to one. CSS only selects the completed composite or the native surface, with no simultaneous partial opacity. The composite redraws held textures every presentation frame and waits for a decoded frame after seeking, avoiding empty buffers and stale first frames. Native eye blinks do not begin under a video or reappear halfway through a handoff. Video playback and held poses stop for rules, pause, hidden pages, reduced motion and close; native artwork remains the failure fallback.
+
+The same three previously paid media files are reused without new generation. Existing field timing, audio, authored reactions, wallet rules and layout remain unchanged. The final standing frame can differ between episodes; it is intentionally a held video pose rather than the canonical illustrated idle pose.
+
 
 ## Receiver flowers and window layout 1.11
 

@@ -177,7 +177,6 @@ export class ForestCharacter {
     this.host.style.setProperty('--fh-character-light', String(this.reduced || this.paused ? 0 : gesture[3]));
     const gl = this.gl;
     this.video.suspend(this.paused || this.reduced || !gl || !this.program);
-    this.video.update(this.pose, this.elapsed);
     if (!gl || !this.program) { this.fallback(); return; }
     gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); gl.useProgram(this.program);
     const bind = (pose: typeof FOREST_POSES[number], unit: number, uniform: string) => {
@@ -193,6 +192,7 @@ export class ForestCharacter {
     gl.uniform1f(this.uniforms.uTime, this.elapsed / 1000); gl.uniform1f(this.uniforms.uMotion, this.reduced || this.paused || !moving ? 0 : 1);
     gl.uniform1f(this.uniforms.uBlink, !this.video.showing && this.pose === 'idle' && t >= 1 ? this.blinkValue : 0);
     gl.drawElements(gl.TRIANGLES, 24 * 32 * 6, gl.UNSIGNED_SHORT, 0); this.frameCount++;
+    this.video.update(this.pose, this.elapsed, this.canvas);
   }
   private setPose(pose: ForestPose, immediate = false) {
     if (pose === this.pose && !immediate) return;
@@ -255,7 +255,8 @@ export class ForestCharacter {
     if (this.last) this.elapsed += Math.min(80, stamp - this.last);
     this.last = stamp;
     if (this.holdUntil && this.elapsed >= this.holdUntil) { this.holdUntil = 0; this.finishGesture(); this.setPose(this.resting); }
-    if (this.pose === 'idle') {
+    if (this.video.showing) { this.blinkAt = -Infinity; this.nextBlink = Math.max(this.nextBlink, this.elapsed + 2600); }
+    if (this.pose === 'idle' && !this.video.showing) {
       if (this.elapsed >= this.nextBlink) { this.blinkAt = this.elapsed; this.blinkCount++; this.nextBlink = this.elapsed + [6800, 5400, 7900][(this.blinkCount - 1) % 3]; }
       const blink = this.elapsed - this.blinkAt;
       this.blinkValue = blink < 70 ? blink / 70 : blink < 115 ? 1 : blink < 235 ? 1 - (blink - 115) / 120 : 0;

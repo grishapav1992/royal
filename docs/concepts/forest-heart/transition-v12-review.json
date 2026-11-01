@@ -1,0 +1,43 @@
+{
+  "version": "1.12.0-ade0205d4cf0",
+  "scope": "Local character presentation only",
+  "issues": [
+    "Two opposing CSS opacities composite over each other and reduce coverage during the transition.",
+    "A completed video was replaced by a different authored pose after a short fade.",
+    "A video seek could expose a stale decoded frame; held buffers were not redrawn on every presentation frame."
+  ],
+  "changes": [
+    "One premultiplied WebGL pass blends the native portrait, previous held frame and moving frame with weights summing to one.",
+    "CSS selects one completed surface at full opacity.",
+    "The decoded last frame becomes the standing pose without a seek or pose reset.",
+    "The next video blends from that held pose; an authored game reaction can blend back to the live portrait over a 640 ms smooth curve.",
+    "Native blinks are kept out of a handoff and are rescheduled after the video surface leaves.",
+    "Seeks wait for a decoded non-seeking frame; held frames redraw every presentation frame."
+  ],
+  "eventContract": {
+    "episodeMs": 3000,
+    "standingMs": 6000,
+    "transitionMs": 640,
+    "result": "Existing accepted poses, event clocks, field animation and shared audio continue unchanged.",
+    "pause": "Stop playback and held video, show native artwork for rules, pause, reduced motion and hidden pages.",
+    "failure": "Native artwork remains visible, failed sources are not automatically retried.",
+    "close": "Stop decoders and release all owned textures, shader, buffer, canvas and listeners."
+  },
+  "newGenerationRequests": 0,
+  "media": "The same three video-v3 MP4 files, unchanged.",
+  "verification": {
+    "packageBuild": "passed with TypeScript",
+    "rtpGate": "26 qualified profiles, 114 unchanged legacy modules",
+    "rendered": "The last decoded look frame and eight subsequent standing frames have the same rendered pixel hash. Across 291 measured compositor frames, the sampled common opaque body pixel had alpha at least 253/255.",
+    "schedule": "Three clips in order, three-second episodes, six-second standing intervals, muted playback, rules, mobile layout, reduced motion, close and unavailable-media fallback passed.",
+    "recovery": "Complete choice/bonus settlement, reopen/reload and lost-response no-duplicate-charge scenarios passed.",
+    "reaction": "Native pose weights and gestures remained continuous during muted and fast wins.",
+    "lifecycle": "Native fallback blink, WebGL context loss/restoration, rules, fresh reactions, reopen and reduced motion passed. The stopped-frame check waits for pending layout redraws before measuring sustained inactivity."
+  },
+  "limitations": [
+    "Transition duration is an artistic choice; pixel measurements establish continuity at the sampled boundaries, not subjective animation quality.",
+    "Different generated poses are joined by a dissolve, not a skeletal or optical-flow morph.",
+    "Direct in-app browser control is disabled in Work settings; verification uses the real host and chat in an automated local browser."
+  ],
+  "preview": "transition-v12-preview.mp4"
+}
