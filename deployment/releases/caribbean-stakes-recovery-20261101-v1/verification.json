@@ -1,0 +1,320 @@
+{
+  "release": "caribbean-stakes-recovery-20261101-v1",
+  "sourceCommit": "61c9d39dcc589eba40c3b794af05fbc701b641f8",
+  "problem": "Completed historical per-line rounds restored their multiplied old total as the next ordinary stake. A new account already started at ten cents.",
+  "observedPublicFreshGuest": {
+    "name": "public",
+    "base": "https://stealth-spark-gokmxooi.expresshost.cloud",
+    "version": "1.6.1-76e92d8ab639",
+    "stakes": {
+      "value": "10",
+      "disabled": true,
+      "options": [
+        {
+          "value": "10",
+          "label": "0,1"
+        },
+        {
+          "value": "20",
+          "label": "0,2"
+        },
+        {
+          "value": "50",
+          "label": "0,5"
+        },
+        {
+          "value": "100",
+          "label": "1"
+        },
+        {
+          "value": "200",
+          "label": "2"
+        },
+        {
+          "value": "500",
+          "label": "5"
+        },
+        {
+          "value": "1000",
+          "label": "10"
+        },
+        {
+          "value": "2000",
+          "label": "20"
+        },
+        {
+          "value": "5000",
+          "label": "50"
+        }
+      ]
+    },
+    "lines": "20",
+    "cost": "0,1",
+    "label": "Общая ставка · USDT",
+    "errors": []
+  },
+  "observedPublicReturningSyntheticHistory": {
+    "name": "returning",
+    "base": "https://stealth-spark-gokmxooi.expresshost.cloud",
+    "version": "1.6.1-76e92d8ab639",
+    "stakes": {
+      "value": "2000",
+      "disabled": false,
+      "options": [
+        {
+          "value": "10",
+          "label": "0,1"
+        },
+        {
+          "value": "20",
+          "label": "0,2"
+        },
+        {
+          "value": "50",
+          "label": "0,5"
+        },
+        {
+          "value": "100",
+          "label": "1"
+        },
+        {
+          "value": "200",
+          "label": "2"
+        },
+        {
+          "value": "500",
+          "label": "5"
+        },
+        {
+          "value": "1000",
+          "label": "10"
+        },
+        {
+          "value": "2000",
+          "label": "20"
+        },
+        {
+          "value": "5000",
+          "label": "50"
+        }
+      ]
+    },
+    "lines": "20",
+    "cost": "20",
+    "label": "Общая ставка · USDT",
+    "errors": []
+  },
+  "productionPlayerDataRead": false,
+  "productionAccountsCreated": false,
+  "productionBetsPlaced": false,
+  "returningScope": "Synthetic valid historical round injected only into an isolated guest browser, without any backend write.",
+  "localRealHost": {
+    "cases": [
+      {
+        "legacyLines": 1,
+        "legacySpentUnits": "100",
+        "newSpentUnits": "10",
+        "replayOneDebit": true,
+        "chatLayouts": 2
+      },
+      {
+        "legacyLines": 5,
+        "legacySpentUnits": "500",
+        "newSpentUnits": "10",
+        "replayOneDebit": true,
+        "chatLayouts": 2
+      },
+      {
+        "legacyLines": 10,
+        "legacySpentUnits": "1000",
+        "newSpentUnits": "10",
+        "replayOneDebit": true,
+        "chatLayouts": 2
+      },
+      {
+        "legacyLines": 20,
+        "legacySpentUnits": "2000",
+        "newSpentUnits": "10",
+        "replayOneDebit": true,
+        "chatLayouts": 2
+      },
+      {
+        "acceptedLegacyOriginalCost": "35607",
+        "freeContinuations": 14,
+        "preservedOriginalSpentUnits": "35607",
+        "nextStakeUnits": "10",
+        "chatLayouts": 2
+      },
+      {
+        "confirmedCommonStakeUnits": "20",
+        "reopenPreservesCommonSelection": true,
+        "allNineWholeSpinPricesVerified": true
+      }
+    ],
+    "productionAccountsCreated": false,
+    "productionBetsPlaced": false,
+    "errors": [],
+    "passed": true
+  },
+  "qualification": {
+    "rtpProfiles": 35,
+    "sharedStakePolicies": 18,
+    "admissionPolicies": 18,
+    "unchangedLegacyNotQualified": 114,
+    "rtpGateTestsPassed": 41,
+    "scopedPublisherGuardTestsPassed": 3
+  },
+  "delivery": {
+    "sourceCommit": "61c9d39dcc589eba40c3b794af05fbc701b641f8",
+    "baseCommit": "482669357da32c69b1a96803e45f671b9aaa19a6",
+    "version": "1.6.2-654580fdff03",
+    "reuseFiles": 122,
+    "transportFiles": 12,
+    "archiveBytes": 1120638,
+    "archiveSha256": "6da68838b069d5a27155fe17115d03fd52f602a35815b0558f3c1eabc2375a89",
+    "packageFiles": 125,
+    "testedGameBytesUnchanged": true
+  },
+  "unchanged": [
+    "probabilities",
+    "paytables",
+    "paid-round settlement",
+    "backend",
+    "active catalogue",
+    "other game packages"
+  ],
+  "baseCommit": "482669357da32c69b1a96803e45f671b9aaa19a6",
+  "publication": {
+    "published": true,
+    "release": "caribbean-stakes-recovery-20261101-v1",
+    "sourceCommit": "61c9d39dcc589eba40c3b794af05fbc701b641f8",
+    "baseCommit": "482669357da32c69b1a96803e45f671b9aaa19a6",
+    "module": {
+      "verified": true,
+      "gameId": "studio-caribbean-treasures",
+      "version": "1.6.2-654580fdff03",
+      "bytes": 14858911,
+      "files": 124,
+      "beforeSha256": "03a4df8f5da9654e6c63e6b114a80634c234d02968a997af2889ae04bafa78b1",
+      "hostProgramTouched": false,
+      "databaseTouched": false,
+      "restartRequired": false,
+      "published": true,
+      "operation": "install",
+      "activeSha256": "8b052615f0d797f6b84a83a153a06e89650ce50adb4d54ea482c01f79f1f5a92",
+      "history": "/opt/royal-game-modules-state/history/20261101T103629-9652442dfb124bbcb4c90bcf428766c4.json"
+    },
+    "backup": {
+      "sourceArchive": "/opt/royal-backups/caribbean-stakes-recovery-20261101-v1/source.tgz",
+      "bytes": 19409,
+      "sha256": "9c0a41243831776a3d3b1ea580740281d02f1cfe95fcac2cdb3093f506ad0e9c",
+      "oldVersion": "1.6.1-76e92d8ab639",
+      "oldPackageHardlinked": true,
+      "imageTag": "royal-game:before-caribbean-stakes-recovery-20261101-v1",
+      "image": "sha256:ff3b316cc3163cc1c6b8a09531061b78b5e0d0127203550603b9c8d989cbc250"
+    },
+    "freeBefore": 12223664128,
+    "freeAfter": 12218179584,
+    "hostRestarted": false,
+    "databaseTouched": false,
+    "otherModulesPreserved": true,
+    "sourceFilesPreserved": 2567,
+    "runtimeFilesPreserved": 8580,
+    "servicesPreserved": 14
+  },
+  "publicUI": {
+    "productionAccountsCreated": false,
+    "productionBetsPlaced": false,
+    "cases": [
+      {
+        "name": "public-final",
+        "base": "https://stealth-spark-gokmxooi.expresshost.cloud",
+        "version": "1.6.2-654580fdff03",
+        "stakes": {
+          "value": "10",
+          "disabled": false,
+          "options": [
+            {
+              "value": "10",
+              "label": "0,10"
+            },
+            {
+              "value": "20",
+              "label": "0,20"
+            },
+            {
+              "value": "50",
+              "label": "0,50"
+            },
+            {
+              "value": "100",
+              "label": "1,00"
+            },
+            {
+              "value": "200",
+              "label": "2,00"
+            },
+            {
+              "value": "500",
+              "label": "5,00"
+            },
+            {
+              "value": "1000",
+              "label": "10,00"
+            },
+            {
+              "value": "2000",
+              "label": "20,00"
+            },
+            {
+              "value": "5000",
+              "label": "50,00"
+            }
+          ]
+        },
+        "lines": "20",
+        "cost": "0,10",
+        "linePrices": [
+          {
+            "lines": "1",
+            "cost": "0,10"
+          },
+          {
+            "lines": "5",
+            "cost": "0,10"
+          },
+          {
+            "lines": "10",
+            "cost": "0,10"
+          },
+          {
+            "lines": "20",
+            "cost": "0,10"
+          }
+        ],
+        "label": "Общая ставка · USDT",
+        "errors": []
+      }
+    ]
+  },
+  "publicResources": {
+    "resources": 143,
+    "exactFiles": 24,
+    "failures": [],
+    "sourceCommit": "61c9d39dcc589eba40c3b794af05fbc701b641f8",
+    "passed": true
+  },
+  "operationalIncidents": [
+    {
+      "stage": "initial publication",
+      "reason": "The compact-header release held the shared publication locks. The pirate publisher refused before any application mutation.",
+      "resolution": "Preserved the header, rebased the scope to its verified 48266935 production commit, retained identical tested game bytes, then used the current snapshot root."
+    },
+    {
+      "stage": "concurrent history cleanup",
+      "reason": "Rebasing owned staged metadata invalidated an existing cleanup review. That run stopped with a history-entry identity mismatch.",
+      "resolution": "The activated module now has its committed publication receipt and active pointer. A subsequent completed cleanup is required before task completion."
+    }
+  ],
+  "localTestDatabaseRemoved": true
+}
