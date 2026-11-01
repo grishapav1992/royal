@@ -1,0 +1,115 @@
+{
+  "sourceCommit": "91365aa7af95f08fbb36d0391353384c967fd614",
+  "games": {
+    "studio-cosmic-escape": {
+      "kind": "alpha-equal",
+      "passed": true,
+      "beforeManifest": "57fdf8e6ad6f14a3e2aee5b902f19fcd83049a47975cae7a706781ffa1cdec34",
+      "afterManifest": "0bb4c3cbb37b1c7c52119d0108229e411f81ef7ecc6d7ae6632c9be3d49060df",
+      "beforeEntry": "bb31e7cf3209a37e624b516f0ad6a404b949f704350fbc43bb9844a482023e76",
+      "afterEntry": "03a0959e8e94de4d308ed4bf79ee447b91be445452662931e3bd04e5a4dac7fa"
+    },
+    "studio-caramel-carnival": {
+      "kind": "alpha-equal",
+      "passed": true,
+      "beforeManifest": "58b9639b418ea8ce70dc0b04cba89f721b973e832af63a2ecc9c175ec54666ef",
+      "afterManifest": "ef41e6b304d1df8bffda1df95024e81f2e0cdd39c4151f588109ca5cffa544d2",
+      "beforeEntry": "b5aabd7691c2a15249c8cd0a3393e78d4e28e7ee50297d3b4fd01700853a8da2",
+      "afterEntry": "081b31ccc054d8d2bf7f862c9d8f74930b5d5a1ac243a1c521beefc87698678e"
+    },
+    "studio-velvet-reign": {
+      "kind": "alpha-equal",
+      "passed": true,
+      "beforeManifest": "a26a49404ba7fb21bb01c7500e52b21e8d981feaf23c35161529f04c7e3ca0d8",
+      "afterManifest": "9b6b9b689d85eef5468462204060818c4b3aff7b0620e819c7966f08ca580488",
+      "beforeEntry": "96cbc010796950f43213e8cb03b73f34aea7822debd1b02851a5660749401eb4",
+      "afterEntry": "0964c088ab97582d79e83bae9966cd45a6a88c5d1cd15f391082d9cfb3f40fc1"
+    },
+    "studio-last-convoy": {
+      "kind": "alpha-equal",
+      "passed": true,
+      "beforeManifest": "d4355224f4d82f6053a73ef8489072ed6d929e43abd7bcc0c2aba86803cd2225",
+      "afterManifest": "afefcfea2cc53265d2cf5007f883bed2d84915fbc04238dac76d09983fa43927",
+      "beforeEntry": "7017d03e50aaadec67e1f2c7524be1f8a744d2d9014a07f8e316adae8d314bcf",
+      "afterEntry": "0fca414cd54ffa9b344e99c85046d8caeeb16c4a76937750dfa3f551f1b2ff83"
+    },
+    "studio-nitro-run": {
+      "kind": "alpha-equal",
+      "passed": true,
+      "beforeManifest": "79732b101887807f9395f7d5c646bbaf734596344eb69aaf3b826befe8bd3037",
+      "afterManifest": "625b4c2ad65125217e6a2605e798859c882c7f30c7f0e83af345b4cbc102768f",
+      "beforeEntry": "99c3ecd7ae648b0d01c00072b267bd6539ac803d5590565b425e407821afa32f",
+      "afterEntry": "43a943790862bbfdcc600e45a78d8bfea7305452dada0ab96df2d32b958e631b"
+    },
+    "studio-afterglow": {
+      "kind": "alpha-equal",
+      "passed": true,
+      "beforeManifest": "d892268fb4ccf3e48747de4406236e7948eed5fed728f4b038dfe99c85f73ec8",
+      "afterManifest": "281b134a469d59c720e44ed08f2e4501a23ed85019550f698db6c969b3cf8154",
+      "beforeEntry": "4554854e2eae36d3e3b802ebeab16bcea101069f6edde979a96477fefa893e16",
+      "afterEntry": "996ee59262c7c0c98cc54d059758e37fbb63222414b8d840f0e589665d586351"
+    },
+    "studio-meme-overload": {
+      "kind": "alpha-equal",
+      "passed": true,
+      "beforeManifest": "7e2f7ccfe1ba54ac7d87783975813527b3a07698ef0466aaf820714f73ea5057",
+      "afterManifest": "d2bde73c184305a2ff6b6ac547dba85f9a4e647360306bac8817625a1b3d69b2",
+      "beforeEntry": "2e534a6fd73f3fa6791f2d11093e7a6065ed7b3a661ed7f36b5ff1b1db7bfb80",
+      "afterEntry": "9afd792c13c8b41e758405c44fb09e08ddae68bdd55388fcfab384af50357893"
+    },
+    "github-crash": {
+      "kind": "alpha-equal",
+      "passed": true,
+      "beforeManifest": "48e3456de1064bb4624876de39c08aa01ebd71c82f3092922af04c3fc6c5a1c6",
+      "afterManifest": "73217c155e4af3d70b501d2291841abe3ddd3b1c955102f58ccac930e52f343e",
+      "beforeEntry": "f71227112fc0afca38d04342c6ccb92086b90f8e86283eae8d1666972588c4a8",
+      "afterEntry": "2086b624241fe43c779e0278954e78fb524412ddf851f36a7df6c985899f9f0c"
+    },
+    "royal-plinko": {
+      "kind": "alpha-equal",
+      "passed": true,
+      "beforeManifest": "4c090b9eb6a6c153a6a75a71ea6fbd8de91db22e786e0fea7e6c47a141649efd",
+      "afterManifest": "6726c8af02f22c51545c8b70e7fb0b7972dc0956698812e653e70965cb4c712a",
+      "beforeEntry": "9e350e68628ffad16a405d0ed68c6339bf6d227b5488c131457db09214f0bfc3",
+      "afterEntry": "4100fe1ef270de504da2e1c34a4b7614c0821940ea268658eafa89a2ce2ebdd8"
+    },
+    "original-cr-vs-leo": {
+      "kind": "alpha-equal",
+      "passed": true,
+      "beforeManifest": "f81a694fa4f4e6269d854fc52efbf5a63da4b6edd90ed42814c86560d31b9443",
+      "afterManifest": "f47fcc54c2944a2ed511f3234b684a0fd248d689931efd37fbbb0f1a2f10c860",
+      "beforeEntry": "5c414c12ae614d39a306aba557c78491888735907cd347009258734089cdadb3",
+      "afterEntry": "18ba40e95da8fecff916303e03d82a8d6f7a42133409219ce83e1b196a032e5c"
+    },
+    "flag-battle": {
+      "kind": "alpha-equal",
+      "passed": true,
+      "beforeManifest": "92471574c0a772dc1ace84579ed22018236c82a0261f6e12f6609ef3fa010188",
+      "afterManifest": "a623e8221cebb5a69fdbbe99051ea868290e452c1bd891b0bd79b9bbf6aae895",
+      "beforeEntry": "196b1be470d58ee3b6ae0958beef9346e49fb81690b1dc7e87e35fced084612a",
+      "afterEntry": "266c939d6dbe99c50210c9c95c77d75f3f60f0d7aaf533cb8c771ddad44628ef"
+    },
+    "studio-dracona": {
+      "kind": "style-composition-only",
+      "passed": true,
+      "beforeManifest": "280b9ba05e3719cc2ddf993ea1922abf955853f8e2f4d056ed7273e315c13ca9",
+      "afterManifest": "2c0519e11d9cfe214b44bd41f1d5e6873ada4246ac72367d85cd1df55900df0e",
+      "beforeEntry": "5cea72736585286f3b19c8d633c834f1e5cb0893abb3c3767f93345972e41dd8",
+      "afterEntry": "ae3b3623efeca30316571803216d8f1db52961c30add8b9a056a3ebf60edbd22",
+      "styleProjection": {
+        "baseCssEqual": true,
+        "baseDifference": null,
+        "logicEqual": true,
+        "compactCssPresent": true
+      }
+    },
+    "original-jackie-chan": {
+      "kind": "alpha-equal",
+      "passed": true,
+      "beforeManifest": "e8dec0edbe17cc07b571ddd1574bb6ba1340bb87fa09569b24dd0e785bc53d8d",
+      "afterManifest": "abddc50bb6daada7971ad1376546fbe1b99f4e43a43aa0b7b2820aba74c5d28b",
+      "beforeEntry": "4025e48ac0cf73e38e39c840295c402073e1f1cc1e6b2fb04e99d94e10f641d5",
+      "afterEntry": "de1f51364e81c16b303653f064371e930cf9a59b0b8b3ddb274610c8945de3a6"
+    }
+  }
+}

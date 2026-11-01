@@ -24,10 +24,10 @@ for name, row in list(files.items()):
 changes = ['src/main.ts', 'src/ui/SocialUI.ts', 'src/i18n/en.ts', 'src/ui/compact-header.css']
 parent = git('rev-parse', FEATURE + '^').decode().strip()
 for name in changes:
-    desired = read(FEATURE, name)
+    desired = read(sys.argv[3], name) if name == 'src/ui/compact-header.css' else read(FEATURE, name)
     if name not in before['source']:
         h = digest(desired)
-        files[name] = dict(commit=FEATURE, path=name, baseSha256=h, sha256=h)
+        files[name] = dict(commit=sys.argv[3], path=name, baseSha256=h, sha256=h)
         continue
     row = files[name]
     original = read(row['commit'], row['path'])
@@ -40,11 +40,15 @@ for name in changes:
         assert old_text and value.count(old_text) == 1, 'Header patch must match production once: ' + name
         patches.append(dict(**{'from':old_text}, to=new_text))
         value = value.replace(old_text, new_text, 1)
+    if name == 'src/main.ts':
+        assert value.count('max-width:1200px') == 1
+        patches.append({'from':'max-width:1200px', 'to':'max-width:1400px'})
+        value = value.replace('max-width:1200px', 'max-width:1400px', 1)
     assert patches and value.encode() != original
     files[name] = {**row, 'patches':patches, 'sha256':digest(value.encode())}
 for field in ['moduleGames', 'moduleContracts', 'moduleAssets']: prior.pop(field, None)
 projection = {**prior, 'productionCommit':before['sourceCommit'], 'files':files, 'changedSources':changes}
 folder = ROOT / 'deployment/releases/compact-header-20261101-v1'
 (folder / 'host-projection.json').write_text(json.dumps(projection, ensure_ascii=False, indent=2) + '\n')
-(folder / 'scope.json').write_text(json.dumps(dict(release='compact-header-20261101-v1', productionCommit=before['sourceCommit'], featureCommit=FEATURE, changedSources=changes, addedGames=[], restoredGames=[], backendChanges=[], moduleChanges=[]), indent=2)+'\n')
+(folder / 'scope.json').write_text(json.dumps(dict(release='compact-header-20261101-v3', productionCommit=before['sourceCommit'], featureCommit=FEATURE, changedSources=changes, addedGames=[], restoredGames=[], backendChanges=[], moduleChanges=[]), indent=2)+'\n')
 print(json.dumps(dict(sourceCommit=before['sourceCommit'], sourceCount=len(before['source']), runtimeCount=len(before['program']), changedSources=changes)))

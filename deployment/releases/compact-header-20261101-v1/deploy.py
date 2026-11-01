@@ -2,10 +2,10 @@
 import sys
 sys.dont_write_bytecode = True
 from pathlib import Path
-import fcntl, hashlib, json, re, signal, types
+import fcntl, hashlib, json, re, signal, types, subprocess, importlib.util
 from image_metadata import image, inspect
 
-NAME = 'compact-header-20261101-v1'
+NAME = 'compact-header-20261101-v3'
 ROOT = Path(__file__).resolve().parent
 SOURCES = {'src/main.ts', 'src/ui/SocialUI.ts', 'src/i18n/en.ts', 'src/ui/compact-header.css'}
 
@@ -48,6 +48,19 @@ def configure(root=ROOT):
         for name, row in current.items():
             require(row['profileSha256'] == old[name]['profileSha256'], 'Service configuration changed')
             if name != 'royal-game-1': require(row == old[name], 'Retained service changed')
+    def stage_run(args, **kwargs):
+        require(args == ['docker','build','--pull=false','-t','royal-game:' + NAME,'.'], 'Unreviewed image build command')
+        require(kwargs.get('cwd') == root / 'runtime-context', 'Unreviewed staging context')
+        spec = importlib.util.spec_from_file_location('header_engine_build', root / 'engine-build.py')
+        engine = importlib.util.module_from_spec(spec); spec.loader.exec_module(engine)
+        files = {'dist-delta/' + name: 'dist/' + name for name in m['delta']}
+        candidate = engine.build(root, m['before']['preparedImage'], 'royal-game', NAME, m['sourceCommit'], files)
+        kwargs['stdout'].write(json.dumps({'candidate':candidate,'applicationExecuted':False}) + '\n')
+        return types.SimpleNamespace(returncode=0)
+    class StagingProcess:
+        run = staticmethod(stage_run)
+        def __getattr__(self, name): return getattr(subprocess, name)
+    base.subprocess = StagingProcess()
     base.run, base.image, base.settings = run, image, settings
     base.payload = lambda: payload(base)
     return base
@@ -58,7 +71,7 @@ def payload(b):
     require(set(b.CHANGES) == SOURCES and not b.SERVER_DELTA, 'Unreviewed source or backend change')
     require(old['program'] == old['preparedProgram'] and old['container']['image'] == old['preparedImage'], 'Baseline runtime differs')
     require(sha(b.ROOT / 'deploy.py') == m['helperSha256'] and sha(b.ROOT / 'snapshot.py') == m['snapshotSha256'], 'Installer changed')
-    require(set(m['support']) == {'overlay-base.py','snapshot-base.py','image_metadata.py','runtime-inventory.cjs','quiesce.cjs','financial_gate.py'}, 'Unexpected helper scope')
+    require(set(m['support']) == {'overlay-base.py','snapshot-base.py','image_metadata.py','runtime-inventory.cjs','quiesce.cjs','financial_gate.py','engine-build.py'}, 'Unexpected helper scope')
     for name, digest in m['support'].items(): require(sha(b.ROOT / name) == digest, 'Support changed')
     require(b.inventory(b.ROOT / 'source') == b.CHANGES and b.inventory(b.ROOT / 'dist-delta') == b.DELTA and b.inventory(b.ROOT / 'server-delta') == {}, 'Payload differs')
     require('index.html' in b.DELTA, 'Missing client index')
