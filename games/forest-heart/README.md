@@ -1,4 +1,73 @@
-# Forest Heart client 1.7
+# Forest Heart client 1.15 (local experiment)
+
+## Remove the rejected geometric processing 1.15
+
+The user rejected revision 1.14: its motion looked unstable. That version combined an optical-flow mesh near the endpoints with another animated deformation over decoded video. Automated schedule and opacity checks did not establish natural movement, and the earlier visual review was insufficient.
+
+The active client now plays the existing video-v3 files with unmodified texture coordinates. It does not load the living-v14 files, morph their silhouettes, or animate video UVs. The native portrait retains only gentle breathing, hair and cloth at 25% idle intensity, with no added head rotation or shoulder drift. The artificial eye overlay remains removed. Three distinct source gestures and six-second quiet intervals remain.
+
+This correction removes our added wobble. It does not turn the generated sources into seamless loops: their final faces, hands and poses differ from the approved starting image. The existing premultiplied fade still joins different images and can reveal that mismatch. No claim of a natural or exact pose match is made. The three-second files also retain the previously documented 5/3 time compression of the paid five-second sources. No new generation request is part of this correction.
+
+The rendered regression check pauses a decoded video frame while the application clock keeps advancing. Six subsequent composite frames must have identical full-pixel hashes, proving that the renderer does not add time-varying motion to those video pixels. Separate checks retain native idle movement, three-gesture scheduling, failed-media fallback and the complete host with chat. These are technical checks; user assessment of the source motion remains necessary.
+
+The following sections describe historical experiments. Revision 1.14 was rejected and is outside active playback.
+
+## Intact face and varied living gestures 1.14
+
+The authored closed-eye image and its rectangular face crossfade are removed from the renderer and preload list. The native portrait always retains the approved face. Eyelid motion now comes only from the existing source videos, so a different generated eye image is never placed over a resting face. The legacy debug blink counters remain zero.
+
+Idle now includes a small rigid head tilt, shoulder drift, breathing, hair and cloth motion at 85% of the existing deformation scale. The shared ForestIdleMotion function drives both native vertices and video texture coordinates on the same active-time clock. It does not substitute or reshape eyelids. Reduced motion and pause still disable all movement.
+
+Three independently prepared gestures alternate: nod, glance toward the board and crystal lift. Each is three seconds; six seconds of living idle separate them. All are derived from the already paid video-v3 files, with no new generation. Their neutral boundaries use a correspondence mesh with positive triangle areas; one moving texture supplies the middle of the return rather than two independently warped outlines. Focus and magic return from 2.05 to 2.9 seconds; the nod returns by 2.8 seconds. The original source motion still determines the middle of each gesture.
+
+[Preparation and verification](../../docs/concepts/forest-heart/variation-v14-review.json) distinguish rendered checks from subjective quality. Fine hair and fingers can still inherit limitations of the generated videos or correspondence estimate. Existing field events, result poses, audio, accepted rules, wallet and catalogue are unchanged by this revision. Earlier sections below are historical.
+
+
+## Living idle and one neutral gesture 1.13
+
+This local prototype uses one previously paid nod clip while the other two gestures remain outside the playback sequence. Its entry and exit are constrained to the approved original idle image through premultiplied, bidirectional optical-flow interpolation. The complete prepared clip is still three seconds, 72 frames at 24 fps and silent. Motion grows over the first 0.5 seconds, returns toward the common pose from 2.05 seconds, and reaches it by 2.8 seconds. These are artistic trial timings.
+
+The character starts with six seconds of living idle, then performs the prepared gesture with six seconds of quiet idle before repeating it. Hair, fabric and breathing continue on the same active-time clock through the gesture and its return. Idle motion uses 65% of the existing local deformation; authored game reactions keep their own pose and gesture curves. The head and feet have no whole-image translation. The final video frame is only a 640 ms bridge back to live idle, rather than a six-second frozen standing pose. Native blinks remain outside transitions.
+
+One premultiplied compositor preserves coverage. The same small breathing field is applied to packed video pixels during blending, matching the existing idle mesh. Rules, pause, reduced motion, hidden pages, failed media and close keep their existing stop and fallback behavior. No generation service is called, and no paid cost, RTP rule, wallet or catalogue change is part of this prototype.
+
+The asset can be rebuilt with scripts/prepare-forest-heart-gesture.py using numpy, opencv-python-headless and ffmpeg. [Preparation and review](../../docs/concepts/forest-heart/living-v13-review.json) record exact inputs, output hash, constraints, rendered motion measurements and limitations. Earlier revisions below are historical.
+
+
+## Continuous character handoff 1.12
+
+Video completion keeps the exact decoded final pose as the standing image for the six-second interval. It no longer switches immediately to a different illustrated pose. The next episode blends from that held frame; a fresh authored game reaction blends back to the live character renderer. These transitions use a 640 ms smooth curve, an artistic choice for review. Three-second media and six-second standing intervals remain unchanged.
+
+A single WebGL compositor mixes premultiplied native, held and moving pixels with weights summing to one. CSS only selects the completed composite or the native surface, with no simultaneous partial opacity. The composite redraws held textures every presentation frame and waits for a decoded frame after seeking, avoiding empty buffers and stale first frames. Native eye blinks do not begin under a video or reappear halfway through a handoff. Video playback and held poses stop for rules, pause, hidden pages, reduced motion and close; native artwork remains the failure fallback.
+
+The same three previously paid media files are reused without new generation. Existing field timing, audio, authored reactions, wallet rules and layout remain unchanged. The final standing frame can differ between episodes; it is intentionally a held video pose rather than the canonical illustrated idle pose.
+
+
+## Receiver flowers and window layout 1.11
+
+The three receiver flowers scale with the field instead of stopping at 64 pixels. Their amounts use larger type with a separate USDT label, and collected flowers keep the existing bloom and collection label. Each receiver still sits at its original root exit. The displayed amount remains the existing accepted per-flower contribution, not a new line rule or separate wallet credit.
+
+Wide windows use up to 2000 pixels for the scene, a narrower portrait column and a larger receiver rail. The field can grow beyond the old 780-pixel cap. The status and paid controls sit at the bottom of the available game window, with the field and elf centered together above them. Phone and shallow landscape layouts keep their existing compact receiver rail and connected chat.
+
+No generation request, sound event, payout formula, accepted-round state or video schedule changes in this revision. The existing field arrival, reached-flower bloom, collection label and reactions keep their original event timing, pause, restore and reduced-motion behavior.
+
+## Three-second character episodes 1.10
+
+The local revision replaces continuous idle video with three new independent reference generations: a quiet nod (`look`), a glance toward the board (`focus`), and a small crystal gesture (`magic`). Each final clip has exactly 72 frames at 24 fps, three seconds and no audio. The old palindrome and media looping are removed.
+
+Visible playback follows `look (3 s), standing (6 s), focus (3 s), standing (6 s), magic (3 s), standing (6 s)`. The standing interval begins after the 240 ms return to the existing portrait. These timings are local artistic choices for user review. Idle body deformation stops during the standing interval; the existing eye blink and background effects remain. An already playing decorative episode finishes once while the accepted board animation continues. It never restarts because another pose arrives. A new episode starts only from idle or confirmed channeling, so no result or choice reaction is queued for later.
+
+The actual game image is attached as multipart `input_reference`, with its original pixels over black and padding to the required 720 by 1280 frame. Native three-second Kling 3 requests were rejected and Kling 4 had no available merchant. Three five-second Kling 3.0 sources therefore provide the complete forward gestures, timed to three seconds at 5/3 speed. New token usage was USD 2.088; total token usage after this revision was USD 4.872. No further paid requests are needed for playback.
+
+Rules, pause, hidden pages and reduced motion stop video immediately. Resuming begins with a quiet standing interval, without replaying missed clips. The original result poses, shared audio, board clock and controls remain authoritative. The media and schedule inventory is [video-v3-assets.json](../../docs/concepts/forest-heart/video-v3-assets.json). Earlier provenance and the failed Seedance trial remain below and in the review.
+
+## Local character video experiment 1.9
+
+Two reviewed silent Kling 3.0 clips augment the existing illustrated character. Idle uses a forward/reverse loop of restrained breathing, hair and head movement. The accepted `awaken` and `channel` poses select the crystal gesture; choice, flower, bonus and final result reactions retain the existing mesh and artwork. Neither waiting for a request nor restoring a session starts a result reaction. The game never calls a generation service at runtime.
+
+Each MP4 packs RGB and its corresponding grayscale alpha side by side in the same decoded frame. A separate small WebGL surface composites that alpha over the existing forest. Chroma spill suppression is restricted to the silhouette boundary to preserve the purple costume. The original portrait remains available while loading, on failed media or rendering, and when motion is reduced. Pauses and hidden pages stop owned playback; closing clears decoder sources and graphics resources. Videos are always muted, leaving the shared host audio authoritative. The 180 ms transition is an artistic choice, not a measured perceptual threshold.
+
+This is a local experiment, not a production release or catalogue change. No paid costs, probabilities, payouts, rules, wallet or qualification evidence changed. Provenance, the discarded first two requests and the separate failed Seedance reference trial are recorded in [the review](../../docs/concepts/forest-heart/video-local-review.md) and [asset inventory](../../docs/concepts/forest-heart/kling-v1-assets.json).
 
 ## Interface presentation 1.7
 

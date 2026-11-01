@@ -1,0 +1,179 @@
+{
+  "date": "2026-11-01",
+  "version": "1.15.0-86350699f878",
+  "integrationBaseline": "a4297283c2d8eebe9f9e0b178df288b25896c2b5",
+  "userObservation": "Revision 1.14 looks unstable and significantly worse.",
+  "diagnosis": {
+    "addedProcessing": [
+      "Optical-flow correspondence mesh forces distinct video poses into the illustrated idle endpoint.",
+      "Time-dependent idle deformation was applied to decoded video texture coordinates.",
+      "Native head rotation and shoulder drift were added as well."
+    ],
+    "sourceLimitations": [
+      "The generated gesture endpoints do not match the original illustrated posture exactly.",
+      "The previously paid five-second source gestures were compressed into three-second files at 5/3 speed.",
+      "The available packed video-v3 files already include background matting, so this comparison is before/after endpoint deformation, not the untouched provider output."
+    ],
+    "earlierValidation": "Schedule, alpha coverage and pixel changes did not establish natural anatomical motion. The v14 visual assessment was insufficient."
+  },
+  "correction": {
+    "videoAssets": "Use the existing video-v3 files directly. Do not use living-v14 or the geometric preparation script.",
+    "videoCoordinates": "Fixed UV coordinates, no clock, breathing field, rotation or mesh transformation in the compositor.",
+    "nativeIdle": "Existing breathing, hair and cloth only, at 25% idle scale. No added head tilt, shoulder drift or separate eye donor.",
+    "sequence": [
+      "look",
+      "focus",
+      "magic"
+    ],
+    "episodeMs": 3000,
+    "livingIdleGapMs": 6000,
+    "transition": "Existing 640ms premultiplied blend. It retains source pose mismatch; this is not described as a seamless result."
+  },
+  "assets": [
+    {
+      "path": "public/assets/forest-heart/video-v3/look.mp4",
+      "sha256": "efc70fb92dfd71971b912765490fcbc848048465fb2356b254e49e7da47bf1ca"
+    },
+    {
+      "path": "public/assets/forest-heart/video-v3/focus.mp4",
+      "sha256": "d4c711a1b356833c5712d8ec2198cafd210cbebade661a387938dc8a2082615e"
+    },
+    {
+      "path": "public/assets/forest-heart/video-v3/magic.mp4",
+      "sha256": "7ed3b8b1e42b3ad4e8e4cff392e19712d5567fd8b8886c6067621f06ff593701"
+    }
+  ],
+  "newGenerationRequests": 0,
+  "newGenerationChargeUsd": 0,
+  "verification": {
+    "moduleBuild": "Passed, 20 resources, active 1.15.0-86350699f878",
+    "rtpGate": "Independent module build enforced current RTP gate",
+    "mathTests": {
+      "passed": 9
+    },
+    "serverWalletTests": {
+      "passed": 8,
+      "note": "First local port bind was denied by environment permissions; all eight passed with local network access."
+    },
+    "browserTests": {
+      "passed": 4,
+      "failed": 0,
+      "host": "Full Royal host with connected chat, desktop/mobile, disposable local account",
+      "scenarios": [
+        "Three distinct gestures, scheduling, rules, reduced motion, close",
+        "Native idle movement before/after a gesture, alpha coverage, pinned decoded video pixel stability",
+        "Unavailable video retains native renderer and playable controls",
+        "Choice, bonus, exact settlement, desktop/mobile and reopen"
+      ]
+    },
+    "rendered": {
+      "stationaryVideoFrames": [
+        {
+          "hash": 2385234753,
+          "at": 7318
+        },
+        {
+          "hash": 2385234753,
+          "at": 7349.899999991059
+        },
+        {
+          "hash": 2385234753,
+          "at": 7382.899999991059
+        },
+        {
+          "hash": 2385234753,
+          "at": 7416.5999999940395
+        },
+        {
+          "hash": 2385234753,
+          "at": 7450
+        },
+        {
+          "hash": 2385234753,
+          "at": 7483.5999999940395
+        }
+      ],
+      "stationaryFrameDistinctHashes": 1,
+      "nativeBeforeDistinctHashes": 12,
+      "nativeAfterDistinctHashes": 12,
+      "minDeepBodyAlpha": 253,
+      "compositeFrames": 320,
+      "note": "Fixed decoded frame and advancing application clock produce six identical full-pixel hashes. This verifies no added time-varying video motion, not subjective quality."
+    },
+    "timeline": {
+      "clip": null,
+      "heldClip": "magic",
+      "heldFrame": 3,
+      "phase": "standing",
+      "nextClip": "look",
+      "nextAtMs": 33342.2,
+      "episodeMs": 3000,
+      "standingMs": 6000,
+      "fadeMs": 640,
+      "history": [
+        {
+          "clip": "look",
+          "startMs": 6243.1,
+          "endMs": 9226.2
+        },
+        {
+          "clip": "focus",
+          "startMs": 15276,
+          "endMs": 18275.899999999998
+        },
+        {
+          "clip": "magic",
+          "startMs": 24342.3,
+          "endMs": 27342.199999999997
+        }
+      ],
+      "blend": 0.9921136635131829,
+      "weights": {
+        "native": 0.007886336486817136,
+        "held": 0.9921136635131829,
+        "video": 0
+      },
+      "visible": true,
+      "frames": 312,
+      "draws": 367,
+      "suspended": false,
+      "failed": [],
+      "media": [
+        {
+          "clip": "look",
+          "paused": true,
+          "time": 3,
+          "ready": 4,
+          "muted": true,
+          "loop": false
+        },
+        {
+          "clip": "focus",
+          "paused": true,
+          "time": 3,
+          "ready": 4,
+          "muted": true,
+          "loop": false
+        },
+        {
+          "clip": "magic",
+          "paused": true,
+          "time": 3,
+          "ready": 4,
+          "muted": true,
+          "loop": false
+        }
+      ]
+    }
+  },
+  "comparison": {
+    "path": "docs/concepts/forest-heart/stability-v15-comparison.mp4",
+    "sha256": "f771296be263dfb7e0ad4f4bdd8e0e2cac17a86673fb594daf4b9d1f40e84c6f",
+    "left": "video-v3/focus, prior to geometric endpoint processing",
+    "right": "living-v14/focus, rejected endpoint morph",
+    "runtimeShaderIncluded": false,
+    "method": "RGB halves cropped from the existing packed videos, side-by-side, no further geometry transformation."
+  },
+  "scope": "Local correction, feature branch only, no production publication, no rule, wallet or catalogue change",
+  "remainingLimitations": "Source pose mismatch is still visible at the handoff. A credible exact return needs suitable source motion with constrained start and end poses. This correction removes added deformation, it does not claim that remaining transitions or source motion are natural."
+}

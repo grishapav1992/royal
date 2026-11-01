@@ -29,20 +29,21 @@ export class ForestLayout {
     const padding=parseFloat(css.paddingLeft)+parseFloat(css.paddingRight);
     const sidebar=landscape?(width<540?172:208):0;
     this.root.style.setProperty('--landscape-controls-width',sidebar+'px');
-    const availableWidth=(landscape?width-sidebar:Math.min(width,1600))-padding;
+    const availableWidth=(landscape?width-sidebar:Math.min(width,2000))-padding;
     const paddingY=parseFloat(css.paddingTop)+parseFloat(css.paddingBottom);
     const availableHeight=(small?this.world.clientHeight:height-this.header.offsetHeight-this.status.offsetHeight-this.controls.offsetHeight-this.footnote.offsetHeight)-paddingY;
-    const gap=small?4:8,source=mobile?44:landscape?36:56,flower=mobile?58:landscape?48:76;
+    const gap=small?4:8,source=mobile?44:landscape?36:56;
+    const flowerFor=(size:number)=>mobile?58:landscape?48:Math.min(196,Math.max(104,Math.round(size*.25)));
     const banner=mode==='poster'?Math.min(240,Math.max(104,Math.floor(availableHeight*.26))):0;
-    const columnsGap=mode==='wide'?24:0,portraitRatio=mode==='wide'?.68:0;
+    const columnsGap=mode==='wide'?16:0,portraitRatio=mode==='wide'?.62:0;
     const frameFor=(size:number)=>Math.max(8,Math.floor(size*(small?.04:.05)));
     const fits=(size:number)=>{
       const scene=size+frameFor(size)*2;
-      return scene*(1+portraitRatio)+source+flower+gap*2+columnsGap<=availableWidth&&scene+banner+(banner?8:0)<=availableHeight;
+      return scene*(1+portraitRatio)+source+flowerFor(size)+gap*2+columnsGap<=availableWidth&&scene+banner+(banner?8:0)<=availableHeight;
     };
     let board=128;
-    while(board<780&&fits(board+1))board++;
-    const frame=frameFor(board),scene=board+frame*2,portrait=Math.floor(scene*portraitRatio);
+    while(board<1040&&fits(board+1))board++;
+    const frame=frameFor(board),scene=board+frame*2,portrait=Math.floor(scene*portraitRatio),flower=flowerFor(board);
     const values:Record<string,number>={board,frame,'source-width':source,'flower-width':flower,'network-gap':gap,'portrait-width':portrait,'portrait-banner-height':banner,'scene-height':scene,'machine-width':scene+source+flower+gap*2,'world-height':scene+banner+(banner?8:0)+paddingY};
     for(const [name,value] of Object.entries(values))this.root.style.setProperty('--'+name,value+'px');
     this.world.style.removeProperty('width');

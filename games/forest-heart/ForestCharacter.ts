@@ -1,7 +1,10 @@
-export const FOREST_POSES = ['idle', 'blink', 'choice', 'channel', 'flower', 'bonus', 'win', 'big'] as const;
-export type ForestPose = Exclude<typeof FOREST_POSES[number], 'blink'>;
+import { ForestVideo } from './ForestVideo';
+import { forestIdleMotion } from './ForestIdleMotion';
+
+export const FOREST_POSES = ['idle', 'choice', 'channel', 'flower', 'bonus', 'win', 'big'] as const;
+export type ForestPose = typeof FOREST_POSES[number];
 type ForestReaction = ForestPose | 'awaken';
-const poses: ForestPose[] = FOREST_POSES.filter((pose): pose is ForestPose => pose !== 'blink');
+const poses: ForestPose[] = [...FOREST_POSES];
 const smooth = (value: number) => { const t = Math.max(0, Math.min(1, value)); return t * t * t * (t * (t * 6 - 15) + 10); };
 type GestureKey = [number, number, number, number, number];
 // Reach, shoulder lift, head acknowledgement and light. These are local art curves, not game rules.
@@ -19,16 +22,13 @@ attribute vec2 aUv;
 uniform float uTime;
 uniform float uMotion;
 uniform vec4 uGesture;
+${forestIdleMotion}
 varying vec2 vUv;
 void main(){
   vUv=aUv;
   vec2 p=aUv;
-  // Local weights keep the eyes and central body anchored. Hair and fabric move independently.
-  float hair=smoothstep(.55,.77,p.x)*smoothstep(.14,.34,p.y)*(1.-smoothstep(.74,.99,p.y));
-  float cloth=smoothstep(.62,.96,p.y)*smoothstep(.06,.26,abs(p.x-.5));
-  float breath=exp(-pow((p.y-.41)/.16,2.))*exp(-pow((p.x-.5)/.23,2.));
-  p.x+=uMotion*(hair*.004*sin(uTime*.83+p.y*8.)+cloth*.003*sin(uTime*.67+p.y*6.)+breath*(p.x-.5)*.009*sin(uTime*1.25));
-  p.y-=uMotion*breath*.0018*sin(uTime*1.25);
+  p+=uMotion*forestIdleShift(aUv,uTime);
+  float hair=smoothstep(.55,.77,aUv.x)*smoothstep(.14,.34,aUv.y)*(1.-smoothstep(.74,.99,aUv.y));
   float upper=1.-smoothstep(.52,.96,p.y);
   float arm=exp(-pow((aUv.x-.24)/.19,2.))*exp(-pow((aUv.y-.38)/.24,2.));
   float head=exp(-pow((aUv.x-.5)/.15,2.))*exp(-pow((aUv.y-.15)/.13,2.));
@@ -41,22 +41,19 @@ void main(){
 const fragment = `
 precision mediump float;
 ${poses.map((_, i) => `uniform sampler2D uPose${i};`).join('\n')}
-uniform sampler2D uEyes;
 uniform vec4 uWeightsA;
 uniform vec4 uWeightsB;
-uniform float uBlink;
 varying vec2 vUv;
 void main(){
   vec4 color=vec4(0.);
   ${poses.map((_, i) => `if(uWeights${i < 4 ? 'A' : 'B'}[${i % 4}]>.00001)color+=texture2D(uPose${i},vUv)*uWeights${i < 4 ? 'A' : 'B'}[${i % 4}];`).join('\n')}
-  // The blink changes a feathered eye region only. Clothes and hands never dissolve to a blink frame.
-  float eyes=(1.-smoothstep(.052,.078,abs(vUv.x-.5)))*(1.-smoothstep(.018,.034,abs(vUv.y-.143)));
-  gl_FragColor=mix(color,texture2D(uEyes,vUv),uBlink*eyes);
+  gl_FragColor=color;
 }`;
 
 /** Owned presentation renderer. It has no transport, wallet, game entropy or outcome calculation. */
 export class ForestCharacter {
   private canvas: HTMLCanvasElement;
+  private video: ForestVideo;
   private images = new Map<typeof FOREST_POSES[number], HTMLImageElement>();
   private gl?: WebGLRenderingContext;
   private program?: WebGLProgram;
@@ -80,10 +77,6 @@ export class ForestCharacter {
   private fromWeights: number[] = poses.map(pose => pose === 'idle' ? 1 : 0);
   private pose: ForestPose = 'idle';
   private resting: ForestPose = 'idle';
-  private nextBlink = 4600;
-  private blinkAt = -Infinity;
-  private blinkValue = 0;
-  private blinkCount = 0;
   private frameCount = 0;
   private reaction?: ForestReaction;
   private gestureAt = 0;
@@ -104,6 +97,7 @@ export class ForestCharacter {
       this.images.set(pose, image); host.prepend(image);
       return image.decode().catch(() => {});
     });
+    this.video = new ForestVideo(host);
     this.host.dataset.pose = 'idle'; this.host.dataset.renderer = 'loading';
     this.canvas.addEventListener('webglcontextlost', event => {
       event.preventDefault(); this.stop(); this.gl = undefined; this.host.dataset.renderer = 'image'; this.fallback(); this.run();
@@ -144,7 +138,7 @@ export class ForestCharacter {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image); this.textures.set(pose, texture);
       }
-      for (const name of ['uTime', 'uMotion', 'uGesture', 'uEyes', 'uWeightsA', 'uWeightsB', 'uBlink', ...poses.map((_, i) => 'uPose' + i)]) this.uniforms[name] = gl.getUniformLocation(program, name);
+      for (const name of ['uTime', 'uMotion', 'uGesture', 'uWeightsA', 'uWeightsB', ...poses.map((_, i) => 'uPose' + i)]) this.uniforms[name] = gl.getUniformLocation(program, name);
       gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA); gl.viewport(0, 0, this.canvas.width, this.canvas.height);
       this.host.dataset.renderer = 'webgl';
       this.resize();
@@ -162,9 +156,7 @@ export class ForestCharacter {
   private fallback() {
     const weights = this.weights();
     for (const [pose, image] of this.images) {
-      image.style.opacity = String(pose === 'blink' ? 0 : weights[poses.indexOf(pose)]);
-      image.classList.toggle('fh-blink-eyes', pose === 'blink');
-      if (pose === 'blink') image.style.opacity = this.pose === 'idle' ? String(this.blinkValue) : '0';
+      image.style.opacity = String(weights[poses.indexOf(pose)]);
     }
   }
   private draw() {
@@ -172,26 +164,27 @@ export class ForestCharacter {
     const gesture = this.gesture();
     this.host.style.setProperty('--fh-character-light', String(this.reduced || this.paused ? 0 : gesture[3]));
     const gl = this.gl;
+    this.video.suspend(this.paused || this.reduced || !gl || !this.program);
     if (!gl || !this.program) { this.fallback(); return; }
     gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); gl.useProgram(this.program);
     const bind = (pose: typeof FOREST_POSES[number], unit: number, uniform: string) => {
       gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, this.textures.get(pose)!); gl.uniform1i(this.uniforms[uniform], unit);
     };
-    poses.forEach((pose, i) => bind(pose, i, 'uPose' + i)); bind('blink', 7, 'uEyes');
-    const t = this.transitionDuration ? Math.min(1, (this.elapsed - this.transitionAt) / this.transitionDuration) : 1;
+    poses.forEach((pose, i) => bind(pose, i, 'uPose' + i));
     const weights = this.weights();
     gl.uniform4f(this.uniforms.uWeightsA, weights[0], weights[1], weights[2], weights[3]);
     gl.uniform4f(this.uniforms.uWeightsB, weights[4], weights[5], weights[6], 0);
     gl.uniform4fv(this.uniforms.uGesture, gesture);
-    gl.uniform1f(this.uniforms.uTime, this.elapsed / 1000); gl.uniform1f(this.uniforms.uMotion, this.reduced || this.paused ? 0 : 1);
-    gl.uniform1f(this.uniforms.uBlink, this.pose === 'idle' && t >= 1 ? this.blinkValue : 0);
+    const motion = this.reduced || this.paused ? 0 : .25 + .75 * (1 - weights[0]);
+    gl.uniform1f(this.uniforms.uTime, this.elapsed / 1000); gl.uniform1f(this.uniforms.uMotion, motion);
     gl.drawElements(gl.TRIANGLES, 24 * 32 * 6, gl.UNSIGNED_SHORT, 0); this.frameCount++;
+    this.video.update(this.pose, this.elapsed, this.canvas);
   }
   private setPose(pose: ForestPose, immediate = false) {
     if (pose === this.pose && !immediate) return;
     // Preserve the complete visible blend when a new event interrupts an unfinished transition.
     this.fromWeights = this.weights();
-    this.pose = pose; this.host.dataset.pose = pose; this.blinkValue = 0; this.blinkAt = -Infinity;
+    this.pose = pose; this.host.dataset.pose = pose;
     this.transitionAt = this.elapsed; this.transitionDuration = immediate || this.reduced || this.paused ? 0 : pose === 'idle' ? 640 : 420;
     this.fallback(); this.draw(); this.run();
   }
@@ -237,8 +230,9 @@ export class ForestCharacter {
   }
   mode(paused: boolean, reduced: boolean) {
     this.paused = paused; this.reduced = reduced;
+    this.video.suspend(paused || reduced);
     if (paused || reduced) {
-      this.stop(); this.holdUntil = 0; this.transitionDuration = 0; this.finishGesture(true); this.blinkValue = 0; this.blinkAt = -Infinity; this.draw();
+      this.stop(); this.holdUntil = 0; this.transitionDuration = 0; this.finishGesture(true); this.draw();
     } else this.run();
   }
   private tick = (stamp: number) => {
@@ -247,11 +241,6 @@ export class ForestCharacter {
     if (this.last) this.elapsed += Math.min(80, stamp - this.last);
     this.last = stamp;
     if (this.holdUntil && this.elapsed >= this.holdUntil) { this.holdUntil = 0; this.finishGesture(); this.setPose(this.resting); }
-    if (this.pose === 'idle') {
-      if (this.elapsed >= this.nextBlink) { this.blinkAt = this.elapsed; this.blinkCount++; this.nextBlink = this.elapsed + [6800, 5400, 7900][(this.blinkCount - 1) % 3]; }
-      const blink = this.elapsed - this.blinkAt;
-      this.blinkValue = blink < 70 ? blink / 70 : blink < 115 ? 1 : blink < 235 ? 1 - (blink - 115) / 120 : 0;
-    } else this.blinkValue = 0;
     const active = this.holdUntil > this.elapsed || this.elapsed - this.transitionAt < this.transitionDuration;
     if (stamp - this.paintedAt >= 1000 / (active ? 60 : 30) - 1) { this.draw(); this.paintedAt = stamp; }
     this.run();
@@ -261,12 +250,12 @@ export class ForestCharacter {
       this.raf = this.host.ownerDocument.defaultView!.requestAnimationFrame(this.tick);
   }
   private stop() { this.host.ownerDocument.defaultView!.cancelAnimationFrame(this.raf); this.raf = 0; this.last = 0; }
-  state() { return { ready: this.ready, renderer: this.host.dataset.renderer, pose: this.pose, resting: this.resting, reaction: this.reaction ?? null, gesture:this.gesture(), weights:this.weights(), paused: this.paused, reduced: this.reduced, running: !!this.raf, elapsedMs: this.elapsed, frames: this.frameCount, renderSize:[this.canvas.width,this.canvas.height], blinks: this.blinkCount, blink: this.blinkValue, transition: this.transitionDuration ? Math.min(1, (this.elapsed - this.transitionAt) / this.transitionDuration) : 1, events: [...this.events] }; }
+  state() { return { ready: this.ready, renderer: this.host.dataset.renderer, pose: this.pose, resting: this.resting, reaction: this.reaction ?? null, gesture:this.gesture(), weights:this.weights(), paused: this.paused, reduced: this.reduced, running: !!this.raf, elapsedMs: this.elapsed, frames: this.frameCount, renderSize:[this.canvas.width,this.canvas.height], blinks:0, blink:0, eyeAnimation:'source-video-only', transition: this.transitionDuration ? Math.min(1, (this.elapsed - this.transitionAt) / this.transitionDuration) : 1, events: [...this.events], video: this.video.state() }; }
   private release() {
     const gl = this.gl; if (!gl) return;
     for (const texture of this.textures.values()) gl.deleteTexture(texture); this.textures.clear();
     if (this.vertices) gl.deleteBuffer(this.vertices); if (this.indices) gl.deleteBuffer(this.indices); if (this.program) gl.deleteProgram(this.program);
     this.gl = undefined; this.program = undefined;
   }
-  destroy() { this.alive = false; this.stop(); this.observer.disconnect(); this.controller.abort(); this.release(); this.images.clear(); }
+  destroy() { this.alive = false; this.stop(); this.video.destroy(); this.observer.disconnect(); this.controller.abort(); this.release(); this.images.clear(); }
 }
