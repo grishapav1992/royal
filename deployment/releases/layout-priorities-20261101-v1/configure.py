@@ -32,7 +32,7 @@ def overlay(old, new, live):
         while suffix < min(len(before), len(after)) - prefix and before[-suffix-1] == after[-suffix-1]: suffix += 1
         start, end = offsets[a] + prefix, offsets[b] - suffix
         replacement = after[prefix:len(after)-suffix if suffix else len(after)]
-        for context in [0, 1, 8, 24, 48, 96, 160]:
+        for context in [16, 24, 48, 96, 160, 320]:
             lo, hi = max(0, start-context), min(len(old), end+context)
             source = old[lo:hi]
             if source and live.count(source) == 1:
@@ -42,6 +42,15 @@ def overlay(old, new, live):
                 break
         else: raise RuntimeError('Layout patch does not match published source')
     return live, patches
+def layout_overlay(name, old, new, live):
+    if name.endswith('/package.json'):
+        prior, current, published = map(json.loads, [old,new,live])
+        assert {k:v for k,v in prior.items() if k!='version'} == {k:v for k,v in current.items() if k!='version'}, name
+        source='"version": '+json.dumps(published['version'])
+        target='"version": '+json.dumps(current['version'])
+        assert live.count(source)==1
+        return live.replace(source,target,1), [{'from':source,'to':target}]
+    return overlay(old,new,live)
 
 def main():
     before = json.loads(Path(sys.argv[1]).read_text(encoding='utf-8-sig'))
@@ -78,7 +87,7 @@ def main():
             if live == prior:
                 row = {'commit': FEATURE, 'path': name, 'baseSha256': sha(current.encode()), 'sha256': sha(current.encode())}
             else:
-                value, patches = overlay(prior, current, live)
+                value, patches = layout_overlay(name, prior, current, live)
                 row = {**row, 'patches': row.get('patches', []) + patches, 'sha256': sha(value.encode())}
         else:
             assert name not in before['source'], 'Missing published origin: '+name
@@ -87,6 +96,9 @@ def main():
         selected[name] = row['sha256']
     active = read('shared-stakes-20261101-v1/scope.json')['activeGames']
     base['moduleContracts'] = {game: before['moduleHost']['games'][game] for game in active}
+    for slug in base['moduleGames']:
+        package=json.loads(projected(base['files']['games/'+slug+'/package.json']))
+        assert {k:package[k] for k in ['apiVersion','rulesVersion','progressVersion']} == before['moduleHost']['games'][package['gameId']], slug
     base['changedSources'] = changes
     scope = {'release': HERE.name, 'productionCommit': before['sourceCommit'], 'featureCommit': FEATURE,
              'changedSources': changes, 'expectedSources': selected, 'moduleGames': base['moduleGames'],
