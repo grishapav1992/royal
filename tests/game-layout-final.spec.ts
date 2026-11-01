@@ -66,7 +66,7 @@ for(const id of ids)test('settings, paid round, reopen and lost response: '+id,a
  }
  await page.screenshot({path:out+'/'+id+'-options.png'});await page.setViewportSize({width:852,height:393});await panel.press('Escape');await expect(panel).toBeHidden();await expect(gear).toBeFocused();await fit(page,id);
  await page.setViewportSize({width:1440,height:900});await fit(page,id);await page.setViewportSize({width:393,height:852});
- if(id==='original-cr-vs-leo')await expect(root.locator('[data-hero=leo]')).toHaveAttribute('aria-pressed','true');
+ if(id==='original-cr-vs-leo')await expect(root.locator('button[data-hero=leo]')).toHaveAttribute('aria-pressed','true');
  if(id==='original-jackie-chan'){await expect(root.locator('[data-location]')).toHaveValue(location);await expect(root.locator('[data-speed]')).toHaveAttribute('aria-pressed','true');}
  if(id==='royal-roulette'){await expect(root.locator('[data-rr-selection]')).toContainText('17');await root.locator(p.stake).selectOption('0.1');}
  else await root.locator(p.stake).selectOption('10');
