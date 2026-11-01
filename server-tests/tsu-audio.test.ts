@@ -61,6 +61,18 @@ test('mute and pause cancel queued sound and consume missed beats without a catc
   assert.equal(f.events.length,hiddenCount);assert(!f.events.some(e=>e.cue==='reveal'));
 });
 
+test('repeated paused frames preserve the remaining countdown cues after shifted server time',()=>{
+  const f=timeline();f.update();f.c.status='playing';f.update();
+  let s=lockTsuDuel(f.state(),0,{kind:'choose',round:1,choice:'paper'},1001);
+  s=lockTsuDuel(s,1,{kind:'choose',round:1,choice:'rock'},1002);f.set(s);f.update(1002);
+  f.c.disconnected=[{accountId:'b',until:61202}];
+  for(const now of [1202,2602,4202,11202])f.update(now);
+  assert.equal(f.events.filter(e=>e.cue==='beat').length,1);
+  s={...s,startsAt:s.startsAt+10000,endsAt:s.endsAt+10000};f.set(s);f.c.disconnected=[];f.update(11202);
+  for(const now of [11802,12602,13402,14202])f.update(now);
+  assert.deepEqual(f.events.filter(e=>e.cue==='beat').map(e=>e.variant),[0,1,2,3,4]);
+});
+
 test('shared volume, mute, suspension and disposal stop every owned voice and release subscriptions',()=>{
   class Node {gain={value:0};buffer:any;onended:any;stopped=false;disconnected=false;connect(n:unknown){return n;}disconnect(){this.disconnected=true;}start(){}stop(at?:number){if(at===undefined)this.stopped=true;}}
   const sources:Node[]=[];let muted=false,volume=.35,listener=()=>{},unsubscribed=false;

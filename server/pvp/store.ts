@@ -15,7 +15,7 @@ export type PvpLedger = Pick<NilePlayLedger,'ready'|'db'> & {
   pvpFinish(accountId:string,value:unknown,now?:number):Promise<unknown>;
 };
 
-export type PvpPresence = { accountId: string; name: string; connected: boolean; available: boolean };
+export type PvpPresence = { accountId: string; name: string; connected: boolean; available: boolean; disconnectedAt?:number };
 type Actor = { accountId: string; name: string; roomId: string };
 type StoredMatch = { challenge: PvpChallenge; cards: CardState | null; tsuEFa?: TsuEFaState; duel?:TsuDuelState; funded?:boolean; pausedAt?:number; reconnectSpent?:Record<string,number>; roomId: string; lastMoveAt: number; roomSeenAt: number };
 const participant = (c: PvpChallenge, id: string) => c.creatorId === id || c.opponentId === id;
@@ -59,7 +59,7 @@ export class PvpStore {
     c.expiresAt = now; c.revision++; c.disconnected = [];
     await this.save(s, now);
   }
-  private async expire(s: StoredMatch, now: number) {
+  private async expire(s: StoredMatch, now: number, advanceDuel = true) {
     const c = s.challenge;
     if (!live(c)) return;
     if (c.status === 'open' && now >= c.expiresAt || c.status === 'arriving' && now >= c.expiresAt) return this.finish(s, null, 'expired', now);
@@ -72,6 +72,8 @@ export class PvpStore {
     }
     if(isNegotiatedPvp(c)){
       if(c.disconnected.length)return;
+      // Only room synchronization has fresh presence for deadline adjudication.
+      if(!advanceDuel)return;
       if(c.status==='playing'&&s.duel){
         if(s.duel.stage==='select'&&now>=s.duel.endsAt){
           const [a,b]=s.duel.choices;
@@ -97,12 +99,13 @@ export class PvpStore {
   async sweep(now = Date.now()) {
     await this.ready;
     await this.ledger.db.transaction(async () => {
-      for (const row of await this.ledger.db.prepare("SELECT payload FROM pvp_matches WHERE status IN ('open','arriving','playing')").all()) await this.expire(JSON.parse(String(row.payload)), now);
+      for (const row of await this.ledger.db.prepare("SELECT payload FROM pvp_matches WHERE status IN ('open','arriving','playing')").all()) await this.expire(JSON.parse(String(row.payload)), now, false);
     });
   }
   async syncRoom(roomId: string, people: PvpPresence[], now = Date.now()) {
     if (!roomValid(roomId) || !Array.isArray(people) || people.length > 100 || !people.every(p => gameAccountId(p.accountId)
-      && typeof p.name === 'string' && typeof p.connected === 'boolean' && typeof p.available === 'boolean')
+      && typeof p.name === 'string' && typeof p.connected === 'boolean' && typeof p.available === 'boolean'
+      && (p.disconnectedAt===undefined||Number.isSafeInteger(p.disconnectedAt)&&p.disconnectedAt>=0&&p.disconnectedAt<=now))
       || new Set(people.map(p => p.accountId)).size !== people.length) return fail('Некорректный состав комнаты.', 400);
     await this.ready;
     this.rooms.set(roomId, { people: people.map(p => ({ ...p, name: cleanName(p.name) })), at: now });
@@ -112,6 +115,7 @@ export class PvpStore {
         // Expire an old lease before refreshing it, so a server restart cannot restart a lost physics game.
         if(!isNegotiatedPvp(c)||c.disconnected.some(p=>now>=p.until)||now-s.roomSeenAt>15_000)await this.expire(s, now);
         if (!live(c)) continue;
+        const previousSeenAt=s.roomSeenAt;let pausedAt=now;
         s.roomSeenAt = now;
         const priorPresence=JSON.stringify([c.ready,c.disconnected]);
         for (const id of members(c)) {
@@ -120,11 +124,15 @@ export class PvpStore {
             if(isNegotiatedPvp(c)){s.reconnectSpent??={};s.reconnectSpent[id]=Math.max(0,PVP_RECONNECT_MS-(c.disconnected[index].until-now));}
             c.disconnected.splice(index, 1);
           }
-          if (!online && index < 0) c.disconnected.push({ accountId: id, until: now + Math.max(0,PVP_RECONNECT_MS-(isNegotiatedPvp(c)?s.reconnectSpent?.[id]??0:0)) });
+          if (!online && index < 0) {
+            const observedAt=isNegotiatedPvp(c)?Math.max(previousSeenAt,people.find(p=>p.accountId===id)?.disconnectedAt??now):now;
+            pausedAt=Math.min(pausedAt,observedAt);
+            c.disconnected.push({ accountId: id, until: observedAt + Math.max(0,PVP_RECONNECT_MS-(isNegotiatedPvp(c)?s.reconnectSpent?.[id]??0:0)) });
+          }
           if(!online&&c.status==='arriving')c.ready=c.ready.filter(ready=>ready!==id);
         }
         if(isNegotiatedPvp(c)){
-          if(c.disconnected.length&&s.pausedAt===undefined)s.pausedAt=now;
+          if(c.disconnected.length&&s.pausedAt===undefined)s.pausedAt=pausedAt;
           if(!c.disconnected.length&&s.pausedAt!==undefined){
             const paused=now-s.pausedAt;c.expiresAt+=paused;
             if(s.duel){s.duel.startsAt+=paused;s.duel.endsAt+=paused;}
@@ -168,7 +176,7 @@ export class PvpStore {
       } else {
         s = await this.saved(op.challengeId); const c = s.challenge;
         if (s.roomId !== actor.roomId || !participant(c, actor.accountId) && c.targetId !== actor.accountId && !(op.action === 'accept' && c.targetId === null)) return fail('Этот вызов недоступен.');
-        await this.expire(s, now); if (!live(c)) return { ...await this.snapshot(actor, now), requestId: op.id };
+        await this.expire(s, now, false); if (!live(c)) return { ...await this.snapshot(actor, now), requestId: op.id };
         if (op.action === 'accept') {
           if (c.status !== 'open' || c.creatorId === actor.accountId || c.targetId && c.targetId !== actor.accountId || await this.current(actor.accountId)) return fail('Этот вызов уже занят или недоступен.');
           const busy = await this.ledger.db.prepare("SELECT 1 FROM pvp_matches WHERE room_id=? AND status IN ('arriving','playing') AND (payload::jsonb->'challenge'->>'gameId')=? LIMIT 1").get(actor.roomId, c.gameId);

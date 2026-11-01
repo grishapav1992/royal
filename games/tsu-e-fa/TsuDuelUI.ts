@@ -28,6 +28,7 @@ export class TsuDuelUI{
   private feedbackFrame(){const snapshot=this.context.get(),c=snapshot?.active,s=snapshot?.tsuEFa;return c&&s?this.feedback.update(c,s,this.context.now?.()??Date.now(),performance.now(),!this.paused&&!document.hidden):false;}
   private render(){
     const snapshot=this.context.get(),c=snapshot?.active,s=snapshot?.tsuEFa;if(!c||!s)return;
+    if(c.status!=='playing')this.confirm=false;
     const waiting=this.feedbackFrame(),muted=this.sharedAudio.getPreferences().muted;
     const busy=this.context.busy(),key=JSON.stringify([c,s,busy,this.confirm,waiting,muted]);if(key===this.key)return;this.key=key;
     const wasWaiting=this.root.dataset.waiting==='true';this.root.dataset.waiting=String(waiting);
