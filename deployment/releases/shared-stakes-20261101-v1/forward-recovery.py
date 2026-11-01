@@ -23,7 +23,8 @@ class LeaseMonitor:
         def loop():
             while not self.stop.wait(.5):
                 try:
-                    for gate in self.gates:gate.check()
+                    for gate in self.gates:
+                        if gate._quiet and not gate._released and not gate._closed:gate.check()
                 except BaseException as error:
                     self.error=error
                     for gate in self.gates:gate._failure=error
