@@ -45,6 +45,23 @@ def game_identity():
     return {'id': game['Id'], 'image': game['Image'], 'startedAt': game['State']['StartedAt']}
 
 
+def install_credential(path, supplied_key):
+    if supplied_key is not None:
+        require(isinstance(supplied_key, str) and 0 < len(supplied_key) < 4096
+                and all(33 <= ord(c) <= 126 for c in supplied_key), 'Invalid credential')
+    if path.exists() or path.is_symlink():
+        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
+        with os.fdopen(fd) as stream:
+            info = os.fstat(stream.fileno())
+            require(stat.S_ISREG(info.st_mode) and not info.st_mode & 0o077, 'Unsafe credential permissions')
+            if supplied_key is not None:
+                require(hmac.compare_digest(stream.read(4096).strip(), supplied_key),
+                        'Existing server key differs; rotation requires explicit action')
+    else:
+        require(supplied_key is not None, 'Initial installation requires a credential')
+        write(path, (supplied_key + '\n').encode(), 0o600)
+
+
 def main():
     require(os.geteuid() == 0, 'Run as deployment operator')
     payload = json.loads(sys.stdin.buffer.read(1024 * 1024))
@@ -53,9 +70,7 @@ def main():
     source = base64.b64decode(payload['source'], validate=True)
     require(hashlib.sha256(source).hexdigest() == payload['sha256'], 'Source hash mismatch')
     compile(source, 'request.py', 'exec')
-    key = payload['key']
-    require(isinstance(key, str) and 0 < len(key) < 4096
-            and all(33 <= ord(c) <= 126 for c in key), 'Invalid credential')
+    key = payload.get('key')
     locks = []
     for name in LOCKS:
         require(not Path(name).is_symlink(), 'Unsafe publication lock')
@@ -69,14 +84,7 @@ def main():
     ROOT.mkdir(mode=0o755, exist_ok=True)
     KEY.parent.mkdir(mode=0o700, exist_ok=True)
     KEY.parent.chmod(0o700)
-    if KEY.exists() or KEY.is_symlink():
-        fd = os.open(KEY, os.O_RDONLY | os.O_NOFOLLOW)
-        with os.fdopen(fd) as stream:
-            info = os.fstat(stream.fileno())
-            require(stat.S_ISREG(info.st_mode) and not info.st_mode & 0o077, 'Unsafe credential permissions')
-            require(hmac.compare_digest(stream.read(4096).strip(), key), 'Existing server key differs; rotation requires explicit action')
-    else:
-        write(KEY, (key + '\n').encode(), 0o600)
+    install_credential(KEY, key)
     for name in ('request.py', 'manifest.json'):
         path = ROOT / name
         require(not path.is_symlink(), 'Unsafe installed file')
