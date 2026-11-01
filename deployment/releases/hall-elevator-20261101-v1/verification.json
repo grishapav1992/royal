@@ -1,6 +1,6 @@
 {
   "release": "hall-elevator-20261101-v1",
-  "status": "published-and-verified",
+  "status": "complete",
   "date": "2026-11-01",
   "sourceCommit": "2683c223a46450c456079b487fc36cdfb4e6eade",
   "baseCommit": "4eb47d5d7b29622453616888d24f62db9e26245b",
@@ -218,13 +218,18 @@
     },
     "publicAfter": {
       "mode": "after",
-      "at": "2026-11-01T18:32:31.123Z",
+      "at": "2026-11-01T18:57:18.130Z",
       "passed": true,
       "checks": [
         {
           "path": "/api/nile-play",
           "status": 410,
           "sha256": "315631d67986c57670e9631e6aebb3c072e97b6e6f31a467c81dd6f0e83603ce"
+        },
+        {
+          "path": "/healthz",
+          "status": 200,
+          "sha256": "7482326171995296103a4f794befc2c7831df741969bdbe936bdb637195e4dfc"
         },
         {
           "path": "/api/demo-wallet",
@@ -237,29 +242,9 @@
           "sha256": "315631d67986c57670e9631e6aebb3c072e97b6e6f31a467c81dd6f0e83603ce"
         },
         {
-          "path": "/healthz",
-          "status": 200,
-          "sha256": "7482326171995296103a4f794befc2c7831df741969bdbe936bdb637195e4dfc"
-        },
-        {
           "path": "/",
           "status": 200,
           "sha256": "ed9042ffdca089312aed158b674efc72cb7aea68581af468b37dc0dbf0ed8134"
-        },
-        {
-          "path": "/game-modules/original-cr-vs-leo/active.json",
-          "status": 200,
-          "sha256": "becdc763703591cf95d9212b819a601fb0f498426d5eede95f87ab624e9eba3a"
-        },
-        {
-          "path": "/game-modules/original-jackie-chan/active.json",
-          "status": 200,
-          "sha256": "a1607db4c45305c99fa7a996e739a009d3d008be444f576d460be2d391116147"
-        },
-        {
-          "path": "/game-modules/github-crash/active.json",
-          "status": 200,
-          "sha256": "4f725d42b683d966c66fa4605c9a940e578221e0fea999bc1591cbd2d7972231"
         },
         {
           "path": "/game-modules/flag-battle/active.json",
@@ -267,14 +252,19 @@
           "sha256": "dd68787a386773d57241d8c0aa79d1d04cb143290e475899447d09b4ecab8d37"
         },
         {
-          "path": "/game-modules/studio-forest-heart/active.json",
+          "path": "/game-modules/original-jackie-chan/active.json",
           "status": 200,
-          "sha256": "f5da0f68999a850a50ad7113a0685cfdc130f6355c46c0166b2456ac7f2a8a6d"
+          "sha256": "a1607db4c45305c99fa7a996e739a009d3d008be444f576d460be2d391116147"
         },
         {
-          "path": "/game-modules/royal-roulette/active.json",
+          "path": "/game-modules/original-cr-vs-leo/active.json",
           "status": 200,
-          "sha256": "620df5f0de51fffd36de900cd664bf127d878daa84fd288886d334ee342dc8ad"
+          "sha256": "becdc763703591cf95d9212b819a601fb0f498426d5eede95f87ab624e9eba3a"
+        },
+        {
+          "path": "/game-modules/github-crash/active.json",
+          "status": 200,
+          "sha256": "4f725d42b683d966c66fa4605c9a940e578221e0fea999bc1591cbd2d7972231"
         },
         {
           "path": "/game-modules/studio-caramel-carnival/active.json",
@@ -282,14 +272,9 @@
           "sha256": "77263ed8401071863eb5a4feabf7a03e91feea6bbed18740c0bdb44b612cd7a4"
         },
         {
-          "path": "/game-modules/studio-last-convoy/active.json",
+          "path": "/game-modules/studio-nitro-run/active.json",
           "status": 200,
-          "sha256": "69946ea68712d64beac408eb61b47799601f526d86ccdc04f144e255e8faed8e"
-        },
-        {
-          "path": "/game-modules/studio-neopolis/active.json",
-          "status": 200,
-          "sha256": "61fc159b3effb730d45036a55bffd52fc0c410c327adbe1b34b9c0c2e69897ca"
+          "sha256": "e5aef46681488697de310edd382eff0307977f49bc6a91893d6b990750dce980"
         },
         {
           "path": "/game-modules/studio-meme-overload/active.json",
@@ -297,14 +282,9 @@
           "sha256": "815e361e74bfcf8a55329d2de5a6c9afc2c0dd91f489fba26fd5aa48ce295391"
         },
         {
-          "path": "/game-modules/studio-nitro-run/active.json",
+          "path": "/game-modules/studio-afterglow/active.json",
           "status": 200,
-          "sha256": "e5aef46681488697de310edd382eff0307977f49bc6a91893d6b990750dce980"
-        },
-        {
-          "path": "/game-modules/studio-flooded-temple/active.json",
-          "status": 200,
-          "sha256": "8d4572ab1b1eae5f7f7ea6c1129fc4fb1498649c685cf12f16f4965fed59b827"
+          "sha256": "ba4dbe2264b70a49a3b0efd2572ed746402a0a91d58615c8179b0bdfbb405d86"
         },
         {
           "path": "/game-modules/studio-dracona/active.json",
@@ -312,14 +292,9 @@
           "sha256": "79a1f25eac921f8ba20d870bcbd0db7bd4954f636d6964dbfc5a3429d376b55e"
         },
         {
-          "path": "/game-modules/studio-velvet-reign/active.json",
+          "path": "/game-modules/studio-caribbean-treasures/active.json",
           "status": 200,
-          "sha256": "e5e7e8df568dfac25275ac0b158ef5522ebcc486989a4a3342d9050865fa7c69"
-        },
-        {
-          "path": "/game-modules/studio-cosmic-escape/active.json",
-          "status": 200,
-          "sha256": "90ade379b4dcb1dd2eac099db0e2546ae1c243f5cc83547d3468a4d6150b1e35"
+          "sha256": "8b052615f0d797f6b84a83a153a06e89650ce50adb4d54ea482c01f79f1f5a92"
         },
         {
           "path": "/game-modules/royal-plinko/active.json",
@@ -327,14 +302,39 @@
           "sha256": "76e5dfb3670ffa03e15d7e097ec9d70be0f0b8299798b46ffb0e3ffa24d130a5"
         },
         {
-          "path": "/game-modules/studio-afterglow/active.json",
+          "path": "/game-modules/studio-last-convoy/active.json",
           "status": 200,
-          "sha256": "ba4dbe2264b70a49a3b0efd2572ed746402a0a91d58615c8179b0bdfbb405d86"
+          "sha256": "69946ea68712d64beac408eb61b47799601f526d86ccdc04f144e255e8faed8e"
         },
         {
-          "path": "/game-modules/studio-caribbean-treasures/active.json",
+          "path": "/game-modules/studio-forest-heart/active.json",
           "status": 200,
-          "sha256": "8b052615f0d797f6b84a83a153a06e89650ce50adb4d54ea482c01f79f1f5a92"
+          "sha256": "f5da0f68999a850a50ad7113a0685cfdc130f6355c46c0166b2456ac7f2a8a6d"
+        },
+        {
+          "path": "/game-modules/studio-flooded-temple/active.json",
+          "status": 200,
+          "sha256": "8d4572ab1b1eae5f7f7ea6c1129fc4fb1498649c685cf12f16f4965fed59b827"
+        },
+        {
+          "path": "/game-modules/studio-cosmic-escape/active.json",
+          "status": 200,
+          "sha256": "90ade379b4dcb1dd2eac099db0e2546ae1c243f5cc83547d3468a4d6150b1e35"
+        },
+        {
+          "path": "/game-modules/royal-roulette/active.json",
+          "status": 200,
+          "sha256": "620df5f0de51fffd36de900cd664bf127d878daa84fd288886d334ee342dc8ad"
+        },
+        {
+          "path": "/game-modules/studio-velvet-reign/active.json",
+          "status": 200,
+          "sha256": "e5e7e8df568dfac25275ac0b158ef5522ebcc486989a4a3342d9050865fa7c69"
+        },
+        {
+          "path": "/game-modules/studio-neopolis/active.json",
+          "status": 200,
+          "sha256": "61fc159b3effb730d45036a55bffd52fc0c410c327adbe1b34b9c0c2e69897ca"
         },
         {
           "path": "/assets/index-D4UCkDH5.js",
@@ -428,9 +428,249 @@
     "existingHallCollisionTest": "tables absent furniture is a pre-existing failure outside this change"
   },
   "maintenance": {
-    "status": "pending"
+    "startedAt": 1793558288.510796,
+    "status": "completed",
+    "freeBefore": 12146184192,
+    "release": "hall-elevator-20261101-v1",
+    "sourceCommit": "2683c223a46450c456079b487fc36cdfb4e6eade",
+    "currentImage": "sha256:3ded1726150cfa09b786fcdacaed4c5ee1c48bac34d3007b00f6a1bc225e0cfc",
+    "rollbackImage": "sha256:7268c76952c9ad690324d740ea0f1d64d055fde902a934a2695faf0ac82ff4af",
+    "plannedEntries": 20,
+    "plannedImages": 1,
+    "preservedFinancialFiles": 103,
+    "removedEntries": 20,
+    "removedImageTags": 3,
+    "dockerRetainedImages": [],
+    "freeAfter": 11868545024,
+    "containersUnchanged": true,
+    "healthOk": true,
+    "finishedAt": 1793559235.7263877,
+    "durationSeconds": 947.22,
+    "timerEnabled": true,
+    "removedHistory": [
+      {
+        "path": "/opt/royal-releases/security-idle-20261101-v1/after.json",
+        "allocatedBytes": 3616768
+      },
+      {
+        "path": "/opt/royal-releases/security-idle-20261101-v1/build-result.json",
+        "allocatedBytes": 1171456
+      },
+      {
+        "path": "/opt/royal-releases/security-idle-20261101-v1/build.log",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/security-idle-20261101-v1/deploy.py",
+        "allocatedBytes": 8192
+      },
+      {
+        "path": "/opt/royal-releases/security-idle-20261101-v1/dist-delta",
+        "allocatedBytes": 2748416
+      },
+      {
+        "path": "/opt/royal-releases/security-idle-20261101-v1/engine-build.py",
+        "allocatedBytes": 8192
+      },
+      {
+        "path": "/opt/royal-releases/security-idle-20261101-v1/image_metadata.py",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/security-idle-20261101-v1/install-manifest.json",
+        "allocatedBytes": 3670016
+      },
+      {
+        "path": "/opt/royal-releases/security-idle-20261101-v1/overlay-base.py",
+        "allocatedBytes": 28672
+      },
+      {
+        "path": "/opt/royal-releases/security-idle-20261101-v1/publish-run.log",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/security-idle-20261101-v1/published.json",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/security-idle-20261101-v1/quiesce.cjs",
+        "allocatedBytes": 12288
+      },
+      {
+        "path": "/opt/royal-releases/security-idle-20261101-v1/release-github.json",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/security-idle-20261101-v1/release-manifest.json",
+        "allocatedBytes": 602112
+      },
+      {
+        "path": "/opt/royal-releases/security-idle-20261101-v1/runtime-inventory.cjs",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/security-idle-20261101-v1/server-delta",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/security-idle-20261101-v1/snapshot-base.py",
+        "allocatedBytes": 16384
+      },
+      {
+        "path": "/opt/royal-releases/security-idle-20261101-v1/snapshot.py",
+        "allocatedBytes": 4096
+      },
+      {
+        "path": "/opt/royal-releases/security-idle-20261101-v1/source",
+        "allocatedBytes": 28672
+      },
+      {
+        "path": "/opt/royal-backups/security-idle-20261101-v1",
+        "allocatedBytes": 16384
+      }
+    ],
+    "reviewedAllocatedBytes": 11960320,
+    "retainedFreshWork": {
+      "/opt/royal-releases/hall-elevator-20261101-v1-final.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/atelier-fresh-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/forest-heart-20261029-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2-compact.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/royal-roulette-20261029-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-production-before.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/universal-spins-20261031-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-dracona-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-variable-stake-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/hall-elevator-20261101-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2-delta.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/layout-priorities-20261101-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/location-rewards-20261031-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-snapshot.py": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-dracona-20261023-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh-v3.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/atelier-flare-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/character-motion-20261027-v1.failed.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/restore-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-ui-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/location-levels-20261030-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/girlhub-feedback-20261023-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh-v2.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-production-before-final.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/atelier-fresh-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/universal-spins-20261031-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/neopolis-dracona-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-card-scale-20261023": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/neopolis-variable-stake-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/atelier-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-usdt-20261023-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/location-rewards-20261031-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/atelier-flare-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/restore-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/location-levels-20261030-v1": "fresh, pending, or source not verified in GitHub"
+    }
   },
   "localCleanup": {
-    "status": "pending"
+    "status": "blocked-before-execution",
+    "owner": "hall-elevator",
+    "preservationCommit": "2d19e058da20b90959e7dacbe0d753b8aff00c6c",
+    "releaseSourceCommit": "2683c223a46450c456079b487fc36cdfb4e6eade",
+    "removed": [],
+    "removedBytes": 0,
+    "freeBytesBefore": 319426007040,
+    "remaining": [
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\hall-elevator\\royal\\artifacts\\work\\hall-elevator",
+        "logicalBytes": 53644165
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\hall-elevator\\royal\\dist",
+        "logicalBytes": 2916438
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\hall-elevator\\royal\\dist-server",
+        "logicalBytes": 4668843
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\hall-elevator\\royal\\module-dist",
+        "logicalBytes": 680799313
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\hall-elevator\\royal\\module-build",
+        "logicalBytes": 2098708
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\hall-elevator\\royal\\test-results",
+        "logicalBytes": 90
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\hall-elevator\\royal\\node_modules",
+        "logicalBytes": 384701051
+      }
+    ],
+    "archives": [
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\hall-elevator\\royal\\artifacts\\work\\hall-elevator\\release.tgz",
+        "logicalBytes": 2750130
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\hall-elevator\\royal\\artifacts\\work\\hall-elevator\\release-current.tgz",
+        "logicalBytes": 2749844
+      },
+      {
+        "path": "C:\\Users\\Aorus\\.codex\\worktrees\\hall-elevator\\royal\\artifacts\\work\\hall-elevator\\release-final.tgz",
+        "logicalBytes": 2750272
+      }
+    ],
+    "reason": "Earlier automatic approval review rejected both task directory and exact-file deletion with blocked by policy. The desktop archive tool also rejected removal of the current primary checkout.",
+    "cleanupCondition": "Remove task-generated archives, diagnostic files and temporary worktree once the chat workspace is detached and cleanup restrictions are resolved; preserve other chats and the original dirty checkout.",
+    "temporaryDatabaseRemoved": true,
+    "physicalReclaimedSpaceClaimed": false,
+    "freeBytesAfter": 317784031232,
+    "checkoutLogicalBytes": 1630752930,
+    "symlinksSkipped": [],
+    "activeWorkException": {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\hall-elevator\\royal",
+      "reason": "The desktop archive tool rejects removal of the current primary checkout",
+      "cleanupCondition": "Detach this chat from the temporary checkout after the final report is verified in GitHub, then use the managed archive workflow when allowed",
+      "otherWorkPreserved": true
+    }
+  },
+  "serverCleanup": {
+    "status": "deferred-active-publication",
+    "preservationCommit": "60e1cd8e0e95036123138d9374fc71aefe911877",
+    "sourceCommit": "2683c223a46450c456079b487fc36cdfb4e6eade",
+    "removed": [],
+    "logicalBytesRemoved": 0,
+    "remaining": [
+      {
+        "path": "/opt/royal-releases/hall-elevator-20261101-v1/runtime-context",
+        "logicalBytes": 5279985
+      },
+      {
+        "path": "/opt/royal-releases/hall-elevator-20261101-v1.tgz",
+        "logicalBytes": 2750130,
+        "sha256": "c760513d93ed1be923c3d887dc555be40da8bf2d8e04774a4ec253d100eb5dc4"
+      },
+      {
+        "path": "/opt/royal-releases/hall-elevator-20261101-v1-final.tgz",
+        "logicalBytes": 2750272,
+        "sha256": "d5606933fd0d71491f667fb02fba790eb5395e4a1ea12acb7086093bb2754f7e"
+      }
+    ],
+    "remainingLogicalBytes": 10780387,
+    "freeBytes": 11868540928,
+    "reason": "All three common locks are held by active layout-priorities-20261101-v1 publication PID 2675929; cleanup stopped before reading or deleting candidates",
+    "cleanupCondition": "After the active successor publication releases all three locks, remove remaining transport archives by their exact paths and SHA-256 with the current release and rollback verified; the retired build context is eligible for managed history retention after successor verification.",
+    "rollbackSourcePreserved": true,
+    "imageAndDataChanges": false
+  },
+  "finalServerState": {
+    "image": "sha256:3ded1726150cfa09b786fcdacaed4c5ee1c48bac34d3007b00f6a1bc225e0cfc",
+    "sourceCommit": "2683c223a46450c456079b487fc36cdfb4e6eade",
+    "health": "healthy",
+    "timerEnabled": true,
+    "freeBytes": 11868651520
   }
 }
