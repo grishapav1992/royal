@@ -1584,10 +1584,10 @@
       "sha256": "20cb5ca4740359865436db6cffb55f18cd47dc94985a22d238b47a71a2b3c174"
     },
     "games/jackie-chan/layout.css": {
-      "commit": "c3d8cf628eb002f344458f646fb30c473c2573a6",
+      "commit": "f4787433068e0c964a5f2f0e1ce320fa64dac38d",
       "path": "games/jackie-chan/layout.css",
-      "baseSha256": "702146930629f8507b382316e8d1a044b1c474902d3f0f57277ff6fd38f3ee0e",
-      "sha256": "702146930629f8507b382316e8d1a044b1c474902d3f0f57277ff6fd38f3ee0e"
+      "baseSha256": "d1009d0b6d0a59d0ddb5e167cb236fe5aa17c5d654179b1184876a6782c756d3",
+      "sha256": "d1009d0b6d0a59d0ddb5e167cb236fe5aa17c5d654179b1184876a6782c756d3"
     },
     "games/jackie-chan/music-sources.json": {
       "commit": "0d8de07f08677af717631629bb09b1ed8896a3af",
@@ -2420,7 +2420,7 @@
     "public/assets/jackie-chan/whoami.webp": "c5fbec5f80df4eaeca2f356937509add01937e9ab552f8e0f88de9e1b7ceffa5"
   },
   "verifiedProductionModules": {
-    "pendingRevalidationAfter": "shared-stakes-20261101-v2",
+    "baseline": "shared-stakes-20261101-v2",
     "catalogueExpanded": false
   }
 }
