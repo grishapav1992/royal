@@ -24,6 +24,13 @@ patchLines('src/ui/AfterglowUI.ts',line=>line
  .replace('AFTER_GAME,AFTER_BETS,','AFTER_GAME,').replace("stake='100'","stake='10'").replace("this.stake='100'","this.stake='10'")
  .replaceAll('this.setTotal(s.view.afterglow.totalPayoutUnits)','this.setTotal(confirmedPayout(s,s.view.afterglow.totalPayoutUnits))')
  .replaceAll('this.setTotal(v.totalPayoutUnits)','this.setTotal(confirmedPayout(s,v.totalPayoutUnits))').replaceAll('this.dialogShell.focus()',"this.dialogShell.focus(kind==='info')"));
+files['src/ui/LastExitUI.ts']=JSON.parse(fs.readFileSync(originsFile))['src/ui/LastExitUI.ts'];
+patchLines('src/ui/LastExitUI.ts',line=>line
+ .replace("import {DEMO_BETS} from '../shared/demoWallet';","import {GAME_BETS as DEMO_BETS,GAME_STAKE_UNITS} from '../shared/gameStakes';\nimport {syncStakeSelect} from './stakeSelection';\nimport {stakeRulesHtml} from './stakeRules';")
+ .replaceAll("stake='1000'","stake='10'")
+ .replace("if(active)this.stake=s.stakeUnits;stake.value=this.stake;stake.disabled=!!active||blocked;","if(active)this.stake=s.stakeUnits;this.stake=syncStakeSelect(stake,this.stake,GAME_STAKE_UNITS,!!active||blocked);")
+ .replace('сумма выплаты до 0,01 USDT.','доли цента учитываются при завершении заезда.').replace('and payouts to 0.01 USDT.','and fractional cents are included when the run ends.')
+ .replace('<label><input type="checkbox" data-reduced','$'+'{stakeRulesHtml()}<label><input type="checkbox" data-reduced'));
 patchLines('src/modules/GameModuleCatalog.ts',line=>line.includes("gameId: 'studio-caribbean-treasures'")?line.replace('rulesVersion: 1','rulesVersion: 2'):line);
 const moduleAssetSources=['public/assets/cat/walk-v3-frames.json','public/assets/caribbean-treasures/audio/credits.json','public/assets/caribbean-treasures/audio/manifest.json','public/assets/caribbean-treasures/crew/manifest.json'];
 for(const n of moduleAssetSources){let found=false;for(const c of git(['log','--all','--format=%H','--',n]).toString().trim().split('\n')){if(!c)continue;let bytes;try{bytes=read(c,n);}catch{continue;}if(hash(bytes)===before.sourceLF[n]){add(n,c);found=true;break;}}assert(found,'Unpreserved production media: '+n);}
