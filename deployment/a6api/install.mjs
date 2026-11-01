@@ -5,17 +5,20 @@ import { homedir } from 'node:os';
 import { join } from 'node:path';
 
 const [commit, envPath] = process.argv.slice(2);
-if (!/^[a-f0-9]{40}$/.test(commit || '') || !envPath) {
-  throw new Error('Usage: node deployment/a6api/install.mjs <full-source-commit> <local-env-path>');
+if (!/^[a-f0-9]{40}$/.test(commit || '')) {
+  throw new Error('Usage: node deployment/a6api/install.mjs <full-source-commit> [initial-local-env-path]');
 }
 const git = (args, options = {}) => execFileSync(process.env.ROYAL_GIT || 'git', args, options);
 git(['fetch', 'origin'], { stdio: 'inherit' });
 git(['merge-base', '--is-ancestor', commit, 'origin/main']);
 const source = git(['show', `${commit}:deployment/a6api/request.py`]);
 const installer = git(['show', `${commit}:deployment/a6api/install.py`], { encoding: 'utf8' });
-const match = readFileSync(envPath, 'utf8').match(/^\s*(?:export\s+)?A6API_KEY\s*=\s*(.*?)\s*$/m);
-if (!match) throw new Error('A6API_KEY missing from supplied local environment file');
-const key = match[1].replace(/^["']|["']$/g, '');
+let key = null;
+if (envPath) {
+  const match = readFileSync(envPath, 'utf8').match(/^\s*(?:export\s+)?A6API_KEY\s*=\s*(.*?)\s*$/m);
+  if (!match) throw new Error('A6API_KEY missing from supplied local environment file');
+  key = match[1].replace(/^["']|["']$/g, '');
+}
 const payload = { commit, sha256: createHash('sha256').update(source).digest('hex'), source: source.toString('base64'), key };
 const shellQuote = text => "'" + text.replaceAll("'", "'\\''") + "'";
 const child = spawn('ssh', ['-T', '-i', join(homedir(), '.ssh', 'royal_server_ed25519'),

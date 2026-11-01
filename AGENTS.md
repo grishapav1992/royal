@@ -2,11 +2,11 @@
 
 - Never use the em dash character (Unicode U+2014) in generated text.
 
-## Shared A6API access
+## A6API access
 
-- Use `npm run a6api -- models` for a free catalogue check, `npm run a6api -- request /v1/<supported-endpoint> input.json` for a request, or `npm run a6api -- serve` for a local compatible API at `http://127.0.0.1:8766/v1`. Follow `docs/a6api.md`.
-- The provider key lives only on the server in `/etc/royal-a6api/key`. Do not retrieve it, put it into Git, or copy it to another PC. Each PC authenticates using its own authorized SSH access. Repository access alone does not authorize server access.
-- The client needs no local `A6API_KEY` and does not load `.env`. An application requiring an API-key field can use the local placeholder `royal-local`. Model generation uses the shared provider balance; requests are never retried automatically.
+- The owner permits using the same A6API token locally on their two PCs. Direct tools can read `A6API_KEY` and `A6API_BASE_URL=https://api.a6api.com/v1` from the local `.env`. Keep actual tokens outside Git and logs; `.env.example` contains empty placeholders only.
+- The optional server gateway also remains available: `npm run a6api -- models`, `npm run a6api -- request /v1/<supported-endpoint> input.json`, or `npm run a6api -- serve` for a compatible API at `http://127.0.0.1:8766/v1`. This SSH client does not load `.env` and requires the PC's authorized SSH access. Follow `docs/a6api.md`.
+- The server copy of the provider key is `/etc/royal-a6api/key`. Use the local placeholder `royal-local` only with the local SSH gateway; direct provider requests require the actual local token. Generation uses the shared provider balance. Our SSH client and gateway do not retry automatically; disable the consuming application's own automatic retries for paid requests too.
 
 ## GitHub synchronization before work
 

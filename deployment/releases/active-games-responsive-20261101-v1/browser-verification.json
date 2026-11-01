@@ -1,0 +1,278 @@
+{
+  "reviewedSourceCommit": "336f81b544ca8bef869f65dceb05ecc0c62874d9",
+  "realConnectedHostAndChat": true,
+  "physicalDevicesTested": false,
+  "desktopSizes": [
+    [
+      1920,
+      1080
+    ],
+    [
+      1440,
+      1000
+    ],
+    [
+      1366,
+      768
+    ],
+    [
+      1280,
+      720
+    ],
+    [
+      1024,
+      768
+    ],
+    [
+      430,
+      932
+    ],
+    [
+      390,
+      844
+    ],
+    [
+      360,
+      740
+    ],
+    [
+      320,
+      700
+    ],
+    [
+      844,
+      390
+    ]
+  ],
+  "touchSizes": [
+    [
+      390,
+      844
+    ],
+    [
+      360,
+      740
+    ],
+    [
+      844,
+      390
+    ]
+  ],
+  "games": {
+    "studio-cosmic-escape": {
+      "version": "1.0.0-715bd9944bba",
+      "desktopViews": 10,
+      "desktopUserScrollCases": [],
+      "desktopMaxHorizontalOverflow": 0,
+      "touchViews": 3,
+      "touchUserScrollCases": [],
+      "touchMaxHorizontalOverflow": 0
+    },
+    "studio-caramel-carnival": {
+      "version": "1.0.0-fa524ebb81a0",
+      "desktopViews": 10,
+      "desktopUserScrollCases": [],
+      "desktopMaxHorizontalOverflow": 0,
+      "touchViews": 3,
+      "touchUserScrollCases": [],
+      "touchMaxHorizontalOverflow": 0
+    },
+    "studio-velvet-reign": {
+      "version": "1.0.0-a852878c2f61",
+      "desktopViews": 10,
+      "desktopUserScrollCases": [],
+      "desktopMaxHorizontalOverflow": 0,
+      "touchViews": 3,
+      "touchUserScrollCases": [],
+      "touchMaxHorizontalOverflow": 0
+    },
+    "studio-last-convoy": {
+      "version": "1.0.0-3bb027aefac6",
+      "desktopViews": 10,
+      "desktopUserScrollCases": [],
+      "desktopMaxHorizontalOverflow": 0,
+      "touchViews": 3,
+      "touchUserScrollCases": [],
+      "touchMaxHorizontalOverflow": 0
+    },
+    "studio-nitro-run": {
+      "version": "1.0.0-545f924e7bd6",
+      "desktopViews": 10,
+      "desktopUserScrollCases": [],
+      "desktopMaxHorizontalOverflow": 0,
+      "touchViews": 3,
+      "touchUserScrollCases": [],
+      "touchMaxHorizontalOverflow": 0
+    },
+    "studio-afterglow": {
+      "version": "1.1.0-21be7ae7e65f",
+      "desktopViews": 10,
+      "desktopUserScrollCases": [],
+      "desktopMaxHorizontalOverflow": 0,
+      "touchViews": 3,
+      "touchUserScrollCases": [],
+      "touchMaxHorizontalOverflow": 0
+    },
+    "studio-meme-overload": {
+      "version": "1.0.0-72fcde4470eb",
+      "desktopViews": 10,
+      "desktopUserScrollCases": [],
+      "desktopMaxHorizontalOverflow": 0,
+      "touchViews": 3,
+      "touchUserScrollCases": [],
+      "touchMaxHorizontalOverflow": 0
+    },
+    "studio-dracona": {
+      "version": "1.1.0-a8beb475606d",
+      "desktopViews": 10,
+      "desktopUserScrollCases": [],
+      "desktopMaxHorizontalOverflow": 0,
+      "touchViews": 3,
+      "touchUserScrollCases": [],
+      "touchMaxHorizontalOverflow": 0
+    },
+    "studio-neopolis": {
+      "version": "0.5.0-8663eca7e919",
+      "desktopViews": 10,
+      "desktopUserScrollCases": [],
+      "desktopMaxHorizontalOverflow": 0,
+      "touchViews": 3,
+      "touchUserScrollCases": [],
+      "touchMaxHorizontalOverflow": 0
+    },
+    "studio-forest-heart": {
+      "version": "1.8.1-864e17e94ac5",
+      "desktopViews": 10,
+      "desktopUserScrollCases": [],
+      "desktopMaxHorizontalOverflow": 0,
+      "touchViews": 3,
+      "touchUserScrollCases": [],
+      "touchMaxHorizontalOverflow": 0
+    },
+    "github-crash": {
+      "version": "1.0.0-1f60fee2585a",
+      "desktopViews": 10,
+      "desktopUserScrollCases": [],
+      "desktopMaxHorizontalOverflow": 0,
+      "touchViews": 3,
+      "touchUserScrollCases": [],
+      "touchMaxHorizontalOverflow": 0
+    },
+    "royal-plinko": {
+      "version": "1.0.0-9f61ad3403cf",
+      "desktopViews": 10,
+      "desktopUserScrollCases": [],
+      "desktopMaxHorizontalOverflow": 0,
+      "touchViews": 3,
+      "touchUserScrollCases": [],
+      "touchMaxHorizontalOverflow": 0
+    },
+    "original-cr-vs-leo": {
+      "version": "1.0.0-9a2057fd0a6b",
+      "desktopViews": 10,
+      "desktopUserScrollCases": [],
+      "desktopMaxHorizontalOverflow": 0,
+      "touchViews": 3,
+      "touchUserScrollCases": [],
+      "touchMaxHorizontalOverflow": 0
+    },
+    "original-jackie-chan": {
+      "version": "1.1.0-c9bd00562986",
+      "desktopViews": 10,
+      "desktopUserScrollCases": [],
+      "desktopMaxHorizontalOverflow": 0,
+      "touchViews": 3,
+      "touchUserScrollCases": [],
+      "touchMaxHorizontalOverflow": 0
+    },
+    "studio-caribbean-treasures": {
+      "version": "1.6.1-76e92d8ab639",
+      "desktopViews": 10,
+      "desktopUserScrollCases": [
+        {
+          "width": 360,
+          "height": 740,
+          "control": "[data-ct-action=\"play\"]"
+        },
+        {
+          "width": 844,
+          "height": 390,
+          "control": "[data-ct-action=\"play\"]"
+        }
+      ],
+      "desktopMaxHorizontalOverflow": 0,
+      "touchViews": 3,
+      "touchUserScrollCases": [
+        {
+          "width": 360,
+          "height": 740,
+          "control": "[data-ct-action=\"play\"]"
+        },
+        {
+          "width": 844,
+          "height": 390,
+          "control": "[data-ct-action=\"play\"]"
+        }
+      ],
+      "touchMaxHorizontalOverflow": 0
+    },
+    "studio-flooded-temple": {
+      "version": "0.9.7-1146ca1f78f3",
+      "desktopViews": 10,
+      "desktopUserScrollCases": [
+        {
+          "width": 844,
+          "height": 390,
+          "control": "[data-ft=\"primary\"]"
+        }
+      ],
+      "desktopMaxHorizontalOverflow": 0,
+      "touchViews": 3,
+      "touchUserScrollCases": [
+        {
+          "width": 844,
+          "height": 390,
+          "control": "[data-ft=\"primary\"]"
+        }
+      ],
+      "touchMaxHorizontalOverflow": 0
+    },
+    "royal-roulette": {
+      "version": "1.5.0-a216dd424e84",
+      "desktopViews": 10,
+      "desktopUserScrollCases": [],
+      "desktopMaxHorizontalOverflow": 0,
+      "touchViews": 3,
+      "touchUserScrollCases": [],
+      "touchMaxHorizontalOverflow": 0
+    },
+    "flag-battle": {
+      "version": "2.0.0-271a7ce2b25b",
+      "desktopViews": 10,
+      "desktopUserScrollCases": [],
+      "desktopMaxHorizontalOverflow": 0,
+      "touchViews": 3,
+      "touchUserScrollCases": [],
+      "touchMaxHorizontalOverflow": 0
+    }
+  },
+  "desktopViews": 180,
+  "touchViews": 54,
+  "cardTableDesktopViews": 40,
+  "cardTableTouchViews": 12,
+  "pvpSetupDialogs": 6,
+  "pvpSetupViews": 30,
+  "pvpGameplayVerified": false,
+  "walletRecovery": {
+    "localOnly": true,
+    "game": "studio-caramel-carnival",
+    "source": "9a1cc99cce6ebfb4d59b603b4e886dce553bb374",
+    "acceptedState": "settled",
+    "paidStarts": 1,
+    "balanceBefore": 1000,
+    "balanceAfter": 999.97,
+    "entriesPreserved": true,
+    "closeReopenPassed": true
+  },
+  "pageErrors": []
+}
