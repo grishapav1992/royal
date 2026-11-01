@@ -1,3 +1,4 @@
+import { flagToteClient } from '../wallet/FlagToteClient';
 import { expansionClient } from '../wallet/ExpansionClient';
 import { demoWallet, coins } from '../wallet/WalletClient';
 import { gameAudio } from '../game/GameAudio';
@@ -11,9 +12,10 @@ import { usdtWallet } from '../wallet/UsdtClient';
 import { cryptoWallet } from '../wallet/CryptoClient';
 import { flightClient } from '../wallet/FlightClient';
 import Phaser from 'phaser';
+import { progression } from '../wallet/ProgressionClient';
 import { GAME_HOST_KEY, type GameHostV1 } from './GameHostContract';
 
-const runtime: GameHostV1 = Object.freeze({ apiVersion: 1, expansionClient, demoWallet,
+const runtime: GameHostV1 = Object.freeze({ apiVersion: 1, flagToteClient, expansionClient, demoWallet, progression,
  walletCoins: coins, gameAudio, i18n, reactions, demoGames, minesClient, casinoClients,
  nilePlay, usdtWallet, cryptoWallet, flightClient, Phaser });
 

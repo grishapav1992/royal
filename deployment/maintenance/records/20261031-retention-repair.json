@@ -1,0 +1,698 @@
+{
+  "format": 1,
+  "date": "2026-10-31",
+  "maintenanceRepairSourceCommit": "7b6e289bf55af69ceb388844fe848c40aa4f5393",
+  "installedSourceCommit": "6399b54b0e4975e7741bb7a50e87d4f10cf5aa90",
+  "sourcePreservation": "All maintenance sources and the 52 public source-archive evidence records were verified in origin/main before installation.",
+  "rootCausesFixed": [
+    "Stale release pin and obsolete archive assumptions",
+    "Periodic container inspection races",
+    "Hardlink ctime changes during deletion",
+    "Lost image and source evidence after partial cleanup",
+    "Successful skips hiding busy locks and errors"
+  ],
+  "schedule": {
+    "enabled": true,
+    "hourly": true,
+    "randomDelayMinutes": 5,
+    "retryMinutes": 5,
+    "busyExitCode": 75,
+    "errorsExitNonzero": true,
+    "fullFinishedAuditRuns": 2,
+    "compactSummaries": 24,
+    "stagingGraceMinutes": 10,
+    "pendingBuildGraceHours": 24
+  },
+  "verification": {
+    "unitTestsPassed": 30,
+    "cleanupStatus": "completed",
+    "cleanupDurationSeconds": 968.66,
+    "cleanupFinishedAtUtc": "2026-10-31T20:11:17.302996+00:00",
+    "installedBytesMatchCommittedSource": true,
+    "publicHealth": {
+      "url": "https://stealth-spark-gokmxooi.expresshost.cloud/healthz",
+      "ok": true
+    },
+    "externalModuleFilesDuringCleanup": 2646,
+    "persistentServices": 14,
+    "recoveryProofFiles": 28,
+    "rollbackProgramFiles": 8576,
+    "scopedRollbackSourceFiles": 1,
+    "runningGame": {
+      "health": "healthy",
+      "image": "sha256:06da11bea5d5b8c1c167339ff12a32952c67dcad85eb1293f56aa4b939e47bb8",
+      "restarts": 0,
+      "startedAt": "2026-10-31T18:45:24.176774536Z"
+    },
+    "followupServiceSnapshot": "Result=success\nNRestarts=0\nActiveState=activating\nSubState=start",
+    "parallelPublicationNote": "A separate cascade-size publication added narrowly checked shared-client source support in commit 6399b54b0e4975e7741bb7a50e87d4f10cf5aa90 after this task finished its full successful cleanup. Its installed files match main, all 30 maintenance tests pass, and its following scheduled cleanup was running at the final snapshot.",
+    "initialMigrationPriorityOverrides": {
+      "readOnlyPlanWorker": {
+        "pid": 4148819,
+        "nice": 0
+      },
+      "finalCleanupWorker": {
+        "pid": 77759,
+        "ioClass": "best-effort",
+        "ioPriority": 7
+      },
+      "scheduledProfileUnchanged": {
+        "nice": 15,
+        "ioClass": "idle"
+      },
+      "applicationProcessesChanged": false
+    }
+  },
+  "retainedApplication": {
+    "release": "remove-reward-games-catalog-20261031-v1",
+    "sourceCommit": "fb599494fbee9accff92c8a30126a071ebcceb5c",
+    "currentImage": "sha256:06da11bea5d5b8c1c167339ff12a32952c67dcad85eb1293f56aa4b939e47bb8",
+    "immediateRollbackImage": "sha256:0f78302cdea4a5ba2da5c291655dea3d4144f4402da5004bc974c0a64d78604b",
+    "currentSourceAndRecoveryBundle": "/opt/royal-releases/remove-reward-games-catalog-20261031-v1 and /opt/royal-backups/remove-reward-games-catalog-20261031-v1"
+  },
+  "deletedHistory": {
+    "entries": 1127,
+    "oldImageIdsWithRemovedTags": 33,
+    "removedImageTags": 133,
+    "groups": {
+      "/opt/royal-backups/mk-security-only-20261026-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 28672
+      },
+      "/opt/royal-backups/mortal-kombat-virtual-20261024-v1": {
+        "removedEntries": 4,
+        "allocatedBytes": 192380928
+      },
+      "/opt/royal-backups/neopolis-dracona-20261023-v1": {
+        "removedEntries": 7,
+        "allocatedBytes": 204800
+      },
+      "/opt/royal-backups/neopolis-ui-20261028-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 192860160
+      },
+      "/opt/royal-backups/neopolis-variable-stake-20261028-v1": {
+        "removedEntries": 8,
+        "allocatedBytes": 57344
+      },
+      "/opt/royal-backups/nowpayments-sandbox-20261027-v1": {
+        "removedEntries": 2,
+        "allocatedBytes": 61440
+      },
+      "/opt/royal-backups/pvp-usdt-20261023-v1": {
+        "removedEntries": 4,
+        "allocatedBytes": 278528
+      },
+      "/opt/royal-backups/pvp-usdt-20261023-v2": {
+        "removedEntries": 5,
+        "allocatedBytes": 145252352
+      },
+      "/opt/royal-backups/pvp-virtual-usdt-20261024-v1": {
+        "removedEntries": 3,
+        "allocatedBytes": 192356352
+      },
+      "/opt/royal-backups/raise-windows-20261023-v2": {
+        "removedEntries": 1,
+        "allocatedBytes": 192348160
+      },
+      "/opt/royal-backups/restore-direct-topup-20261023-v1": {
+        "removedEntries": 4,
+        "allocatedBytes": 192356352
+      },
+      "/opt/royal-backups/roulette-feedback-20261031-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 102400
+      },
+      "/opt/royal-backups/royal-catalog-characters-20261022-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 538648576
+      },
+      "/opt/royal-backups/royal-floor-one-only-20261024-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 192352256
+      },
+      "/opt/royal-backups/royal-platform-20261022-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 139907072
+      },
+      "/opt/royal-backups/royal-roulette-20261029-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 192946176
+      },
+      "/opt/royal-backups/skin-npc-context-20261026-v1": {
+        "removedEntries": 2,
+        "allocatedBytes": 192724992
+      },
+      "/opt/royal-backups/skin-walk-alignment-20261030-v1": {
+        "removedEntries": 2,
+        "allocatedBytes": 12288
+      },
+      "/opt/royal-backups/skin-walk-seams-20261027-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 192839680
+      },
+      "/opt/royal-backups/telegram-stars-20261029-v1": {
+        "removedEntries": 3,
+        "allocatedBytes": 114688
+      },
+      "/opt/royal-backups/universal-spins-20261031-v1": {
+        "removedEntries": 2,
+        "allocatedBytes": 61440
+      },
+      "/opt/royal-releases/mk-security-only-20261026-v1": {
+        "removedEntries": 47,
+        "allocatedBytes": 12578816
+      },
+      "/opt/royal-releases/mortal-kombat-virtual-20261024-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 12554240
+      },
+      "/opt/royal-releases/neopolis-dracona-20261023-v1": {
+        "removedEntries": 26,
+        "allocatedBytes": 614567936
+      },
+      "/opt/royal-releases/neopolis-ui-20261028-v1": {
+        "removedEntries": 25,
+        "allocatedBytes": 10981376
+      },
+      "/opt/royal-releases/neopolis-variable-stake-20261028-v1": {
+        "removedEntries": 38,
+        "allocatedBytes": 16482304
+      },
+      "/opt/royal-releases/nowpayments-sandbox-20261027-v1": {
+        "removedEntries": 38,
+        "allocatedBytes": 13934592
+      },
+      "/opt/royal-releases/pvp-usdt-20261023-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 355201024
+      },
+      "/opt/royal-releases/pvp-usdt-20261023-v2": {
+        "removedEntries": 75,
+        "allocatedBytes": 616738816
+      },
+      "/opt/royal-releases/pvp-virtual-usdt-20261024-v1": {
+        "removedEntries": 26,
+        "allocatedBytes": 13045760
+      },
+      "/opt/royal-releases/raise-windows-20261023-v2": {
+        "removedEntries": 1,
+        "allocatedBytes": 8245248
+      },
+      "/opt/royal-releases/restore-direct-topup-20261023-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 10076160
+      },
+      "/opt/royal-releases/roulette-feedback-20261031-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 6860800
+      },
+      "/opt/royal-releases/royal-catalog-characters-20261022-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 12505088
+      },
+      "/opt/royal-releases/royal-floor-one-only-20261024-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 8577024
+      },
+      "/opt/royal-releases/royal-platform-20261022-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 18124800
+      },
+      "/opt/royal-releases/royal-roulette-20261029-v1": {
+        "removedEntries": 24,
+        "allocatedBytes": 14012416
+      },
+      "/opt/royal-releases/skin-npc-context-20261026-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 10387456
+      },
+      "/opt/royal-releases/skin-walk-alignment-20261030-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 10784768
+      },
+      "/opt/royal-releases/skin-walk-seams-20261027-v1": {
+        "removedEntries": 20,
+        "allocatedBytes": 10833920
+      },
+      "/opt/royal-releases/telegram-stars-20261029-v1": {
+        "removedEntries": 16,
+        "allocatedBytes": 4739072
+      },
+      "/opt/royal-releases/universal-spins-20261031-v1": {
+        "removedEntries": 48,
+        "allocatedBytes": 19705856
+      },
+      "/opt/royal-releases/atelier-20261023-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 13266944
+      },
+      "/opt/royal-releases/atelier-fresh-20261024-v1": {
+        "removedEntries": 13,
+        "allocatedBytes": 13467648
+      },
+      "/opt/royal-releases/atelier-live-preview-20261025-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 9515008
+      },
+      "/opt/royal-releases/caribbean-autoplay-20261030-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 233472
+      },
+      "/opt/royal-releases/caribbean-treasures-20261029-v2": {
+        "removedEntries": 36,
+        "allocatedBytes": 12771328
+      },
+      "/opt/royal-releases/cat-purr-hall-only-20261030-v1": {
+        "removedEntries": 26,
+        "allocatedBytes": 12054528
+      },
+      "/opt/royal-releases/character-motion-20261027-v2": {
+        "removedEntries": 23,
+        "allocatedBytes": 10956800
+      },
+      "/opt/royal-releases/chat-reliability-20261022-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 6746112
+      },
+      "/opt/royal-releases/cosmic-math-20261026-v1": {
+        "removedEntries": 40,
+        "allocatedBytes": 18214912
+      },
+      "/opt/royal-releases/cr-leo-audio-sync-20261022-v1": {
+        "removedEntries": 10,
+        "allocatedBytes": 9482240
+      },
+      "/opt/royal-releases/cr-leo-ball-20261022-v1": {
+        "removedEntries": 13,
+        "allocatedBytes": 10514432
+      },
+      "/opt/royal-releases/cr-leo-stadium-20261022-v1": {
+        "removedEntries": 11,
+        "allocatedBytes": 9854976
+      },
+      "/opt/royal-releases/flag-battle-20261029-v1": {
+        "removedEntries": 32,
+        "allocatedBytes": 9105408
+      },
+      "/opt/royal-releases/flooded-temple-20261030-v1": {
+        "removedEntries": 27,
+        "allocatedBytes": 7380992
+      },
+      "/opt/royal-releases/forest-heart-20261029-v1": {
+        "removedEntries": 23,
+        "allocatedBytes": 38043648
+      },
+      "/opt/royal-releases/forest-heart-20261029-v2": {
+        "removedEntries": 22,
+        "allocatedBytes": 7606272
+      },
+      "/opt/royal-releases/forest-heart-20261029-v3": {
+        "removedEntries": 26,
+        "allocatedBytes": 12218368
+      },
+      "/opt/royal-releases/forest-heart-responsive-20261030-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 11214848
+      },
+      "/opt/royal-releases/girlhub-feedback-20261023-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 7524352
+      },
+      "/opt/royal-releases/github-motion-20261022-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 12742656
+      },
+      "/opt/royal-releases/github-worlds-20261023-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 17666048
+      },
+      "/opt/royal-releases/jackie-chan-20261029-v1": {
+        "removedEntries": 26,
+        "allocatedBytes": 6123520
+      },
+      "/opt/royal-releases/jackie-chan-20261029-v2": {
+        "removedEntries": 42,
+        "allocatedBytes": 14049280
+      },
+      "/opt/royal-releases/jackie-layout-20261030-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 6709248
+      },
+      "/opt/royal-releases/jackie-music-20261030-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 3067904
+      },
+      "/opt/royal-releases/last-exit-continuous-20261028-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 139264
+      },
+      "/opt/royal-releases/last-exit-loading-20261028-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 143360
+      },
+      "/opt/royal-releases/last-exit-resume-20261028-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 98304
+      },
+      "/opt/royal-releases/left-lounge-20261023-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 7041024
+      },
+      "/opt/royal-releases/location-levels-20261030-v1": {
+        "removedEntries": 32,
+        "allocatedBytes": 16248832
+      },
+      "/opt/royal-releases/location-rewards-20261031-v2": {
+        "removedEntries": 26,
+        "allocatedBytes": 15228928
+      },
+      "/opt/royal-releases/mk-security-20261026-v1": {
+        "removedEntries": 137,
+        "allocatedBytes": 42242048
+      },
+      "/opt/royal-backups/atelier-live-preview-20261025-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 192724992
+      },
+      "/opt/royal-backups/caribbean-autoplay-20261030-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 15187968
+      },
+      "/opt/royal-backups/caribbean-treasures-20261029-v2": {
+        "removedEntries": 8,
+        "allocatedBytes": 206897152
+      },
+      "/opt/royal-backups/cat-purr-hall-only-20261030-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 32768
+      },
+      "/opt/royal-backups/character-motion-20261027-v2": {
+        "removedEntries": 1,
+        "allocatedBytes": 192856064
+      },
+      "/opt/royal-backups/chat-reliability-20261022-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 139907072
+      },
+      "/opt/royal-backups/cosmic-math-20261026-v1": {
+        "removedEntries": 5,
+        "allocatedBytes": 36864
+      },
+      "/opt/royal-backups/cr-leo-audio-sync-20261022-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 142618624
+      },
+      "/opt/royal-backups/cr-leo-ball-20261022-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 139931648
+      },
+      "/opt/royal-backups/cr-leo-stadium-20261022-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 142135296
+      },
+      "/opt/royal-backups/flag-battle-20261029-v1": {
+        "removedEntries": 8,
+        "allocatedBytes": 193073152
+      },
+      "/opt/royal-backups/flooded-temple-20261030-v1": {
+        "removedEntries": 8,
+        "allocatedBytes": 98304
+      },
+      "/opt/royal-backups/forest-heart-20261029-v2": {
+        "removedEntries": 8,
+        "allocatedBytes": 57344
+      },
+      "/opt/royal-backups/forest-heart-20261029-v3": {
+        "removedEntries": 9,
+        "allocatedBytes": 193208320
+      },
+      "/opt/royal-backups/forest-heart-responsive-20261030-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 24576
+      },
+      "/opt/royal-backups/girlhub-feedback-20261023-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 144982016
+      },
+      "/opt/royal-backups/github-motion-20261022-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 142598144
+      },
+      "/opt/royal-backups/github-worlds-20261023-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 142716928
+      },
+      "/opt/royal-backups/jackie-chan-20261029-v1": {
+        "removedEntries": 10,
+        "allocatedBytes": 238100480
+      },
+      "/opt/royal-backups/jackie-chan-20261029-v2": {
+        "removedEntries": 10,
+        "allocatedBytes": 238100480
+      },
+      "/opt/royal-backups/jackie-layout-20261030-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 32768
+      },
+      "/opt/royal-backups/jackie-music-20261030-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 32768
+      },
+      "/opt/royal-backups/last-exit-continuous-20261028-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 21102592
+      },
+      "/opt/royal-backups/last-exit-loading-20261028-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 21102592
+      },
+      "/opt/royal-backups/last-exit-resume-20261028-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 21102592
+      },
+      "/opt/royal-backups/left-lounge-20261023-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 144994304
+      },
+      "/opt/royal-backups/mk-security-20261026-v1": {
+        "removedEntries": 2,
+        "allocatedBytes": 192729088
+      },
+      "/opt/royal-backups/temple-layout-20261031-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 21008384
+      },
+      "/opt/royal-releases/__pycache__": {
+        "removedEntries": 1,
+        "allocatedBytes": 16384
+      },
+      "/opt/royal-releases/caribbean-treasures-20261029-v1": {
+        "removedEntries": 1,
+        "allocatedBytes": 106496
+      },
+      "/opt/royal-releases/temple-layout-20261031-v1": {
+        "removedEntries": 11,
+        "allocatedBytes": 6873088
+      }
+    },
+    "archives": [
+      {
+        "allocatedBytes": 192356352,
+        "path": "/opt/royal-backups/mortal-kombat-virtual-20261024-v1/source.tgz"
+      },
+      {
+        "allocatedBytes": 57344,
+        "path": "/opt/royal-backups/nowpayments-sandbox-20261027-v1/source.tgz"
+      },
+      {
+        "allocatedBytes": 144973824,
+        "path": "/opt/royal-backups/pvp-usdt-20261023-v2/source.tgz"
+      },
+      {
+        "allocatedBytes": 192348160,
+        "path": "/opt/royal-backups/pvp-virtual-usdt-20261024-v1/source.tgz"
+      },
+      {
+        "allocatedBytes": 192339968,
+        "path": "/opt/royal-backups/restore-direct-topup-20261023-v1/source.tgz"
+      },
+      {
+        "allocatedBytes": 192720896,
+        "path": "/opt/royal-backups/skin-npc-context-20261026-v1/source.tgz"
+      },
+      {
+        "allocatedBytes": 16384,
+        "path": "/opt/royal-backups/telegram-stars-20261029-v1/source.tgz"
+      },
+      {
+        "allocatedBytes": 57344,
+        "path": "/opt/royal-backups/universal-spins-20261031-v1/source.tgz"
+      },
+      {
+        "allocatedBytes": 206843904,
+        "path": "/opt/royal-backups/caribbean-treasures-20261029-v2/source.tgz"
+      },
+      {
+        "allocatedBytes": 8192,
+        "path": "/opt/royal-backups/cosmic-math-20261026-v1/source.tgz"
+      },
+      {
+        "allocatedBytes": 193019904,
+        "path": "/opt/royal-backups/flag-battle-20261029-v1/source.tgz"
+      },
+      {
+        "allocatedBytes": 45056,
+        "path": "/opt/royal-backups/flooded-temple-20261030-v1/source.tgz"
+      },
+      {
+        "allocatedBytes": 193150976,
+        "path": "/opt/royal-backups/forest-heart-20261029-v3/source.tgz"
+      },
+      {
+        "allocatedBytes": 30912512,
+        "path": "/opt/royal-backups/jackie-chan-20261029-v1/source-delta.tgz"
+      },
+      {
+        "allocatedBytes": 206843904,
+        "path": "/opt/royal-backups/jackie-chan-20261029-v1/source.tgz"
+      },
+      {
+        "allocatedBytes": 30912512,
+        "path": "/opt/royal-backups/jackie-chan-20261029-v2/source-delta.tgz"
+      },
+      {
+        "allocatedBytes": 206843904,
+        "path": "/opt/royal-backups/jackie-chan-20261029-v2/source.tgz"
+      },
+      {
+        "allocatedBytes": 192724992,
+        "path": "/opt/royal-backups/mk-security-20261026-v1/source.tgz"
+      }
+    ],
+    "sizeMeaning": "Allocated sizes before deletion can count shared hardlinks multiple times. Only the measured disk delta is physical observed free-space change.",
+    "auditRuns": {
+      "run-72e34a82f2df4c129f530d491729993b": {
+        "planSha256": "95896349f926b6e794305a845d4c7618eb1205feb027c9926ddc9e329cb4cb02",
+        "removedEntries": 0,
+        "removedImageTags": 0
+      },
+      "run-aa12a5f013084d7a87ff45d2ff6f05aa": {
+        "planSha256": "e0d7254339535a1ea0bd663706983da056a0ea3a870cd65baaa7d49dbc64ec64",
+        "removedEntries": 447,
+        "removedImageTags": 133
+      },
+      "run-c57745abdfb04276abc318ca500ed081": {
+        "planSha256": "2c0e8c2ef329950d41ec6e88a39af4cd11c58dc8f49530b5051003bce66e90e6",
+        "removedEntries": 564,
+        "removedImageTags": 0
+      },
+      "run-d89b9cf2d4d54c9eaf376e5b2d88db70": {
+        "planSha256": "68d625832e9ef7261c02fab77499d2d4c0e29a70caa4649866ad8e7a174175a6",
+        "removedEntries": 116,
+        "removedImageTags": 0
+      }
+    }
+  },
+  "disk": {
+    "totalBytes": 45683499008,
+    "freeBeforeDeletionBytes": 5481349120,
+    "freeAfterCleanupBytes": 12525260800,
+    "observedFreeIncreaseBytes": 7043911680,
+    "freeGiB": 11.665,
+    "observedIncreaseGiB": 6.56,
+    "concurrentActivity": true
+  },
+  "preservation": {
+    "persistentContainersUnchangedDuringCleanup": true,
+    "configurationUnchangedDuringCleanup": true,
+    "externalModulesUnchangedDuringCleanup": true,
+    "databaseRestored": false,
+    "volumesDeleted": false,
+    "forcedImageRemoval": false,
+    "financialAndPrivateBackupsPreserved": true,
+    "gameRestartedByCleanup": false
+  },
+  "deferredHistory": {
+    "paths": {
+      "/opt/royal-backups/atelier-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/atelier-flare-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/atelier-fresh-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/location-levels-20261030-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/location-rewards-20261031-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/neopolis-dracona-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/neopolis-variable-stake-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-card-scale-20261023": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/pvp-usdt-20261023-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/restore-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-backups/universal-spins-20261031-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/atelier-flare-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/atelier-fresh-20261024-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/cascade-size-20261031-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/cascade-size-20261031-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/character-motion-20261027-v1.failed.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/forest-heart-20261029-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/girlhub-feedback-20261023-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/location-levels-20261030-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/location-rewards-20261031-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-dracona-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-dracona-20261023-v1.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-production-before-final.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-production-before.json": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-snapshot.py": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh-v2.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh-v3.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-source-refresh.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-ui-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/neopolis-variable-stake-20261028-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2-compact.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/pvp-usdt-20261023-v2-delta.tgz": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/restore-usdt-20261023-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/royal-roulette-20261029-v1": "fresh, pending, or source not verified in GitHub",
+      "/opt/royal-releases/universal-spins-20261031-v1": "fresh, pending, or source not verified in GitHub"
+    },
+    "cleanupConditions": "Keep current and immediate rollback, financial/private recovery data, active or pending work. Retire unclassified archives only after source preservation and program-only contents are verified; recent publication staging is reconsidered after the ten-minute grace and release locks are free."
+  },
+  "taskTemporaryServerCleanup": {
+    "removed": [
+      {
+        "path": "/opt/royal-maintenance/retention-repair-20261031",
+        "allocatedBytesBefore": 270336
+      },
+      {
+        "path": "/opt/royal-maintenance/retention-hardlinks-20261031",
+        "allocatedBytesBefore": 176128
+      },
+      {
+        "path": "/opt/royal-maintenance/retention-history-20261031",
+        "allocatedBytesBefore": 311296
+      },
+      {
+        "path": "/opt/royal-maintenance/retention-repair-plan-20261031",
+        "allocatedBytesBefore": 651264
+      },
+      {
+        "path": "/opt/royal-maintenance/retention-repair-plan-final-20261031",
+        "allocatedBytesBefore": 4096
+      },
+      {
+        "path": "/opt/royal-maintenance/retention-plan-current-20261031",
+        "allocatedBytesBefore": 4096
+      },
+      {
+        "path": "/opt/royal-maintenance/retention-final-20261031",
+        "allocatedBytesBefore": 720896
+      },
+      {
+        "path": "/opt/royal-maintenance/automatic-runs/run-aa12a5f013084d7a87ff45d2ff6f05aa",
+        "allocatedBytesBefore": 626688
+      }
+    ],
+    "freeBefore": 12522500096,
+    "freeAfter": 12525260800,
+    "maintenanceRollbackPreserved": "/opt/royal-maintenance/cascade-size-20261031-v1/original"
+  },
+  "localTaskCleanup": "The temporary worktree is removed only after this report and all source commits are verified on GitHub. The final local measurements are retained in artifacts/work/server-retention-20261031/completion.json."
+}

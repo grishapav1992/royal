@@ -1,10 +1,10 @@
 import { spawn } from 'node:child_process';
-import { mkdir, writeFile, rename } from 'node:fs/promises';
+import { mkdir, writeFile, rename, readFile } from 'node:fs/promises';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { randomUUID } from 'node:crypto';
 import { build } from 'esbuild';
-import { buildProjectedHost, buildProjectedBackend } from './build-host-projection.mjs';
+import { readHostProjection, buildProjectedHost, buildProjectedBackend } from './build-host-projection.mjs';
 
 export const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 export async function saveJson(path, value) {
@@ -29,7 +29,8 @@ export async function buildServer(root, input, output) {
   if (result.metafile) await saveJson(resolve(root, 'dist-server/payments-meta.json'), result.metafile);
 }
 
-export async function buildApplication({ root = projectRoot, modules = null, hostProjection = null, backendProjection = null } = {}) {
+export async function buildApplication({ root = projectRoot, modules = null, hostProjection = null, backendProjection = null, moduleProjection = null } = {}) {
+  if (moduleProjection && (!modules || hostProjection || backendProjection)) throw Error('Module projection requires a modules-only release');
   if (modules && (hostProjection || backendProjection)) throw Error('A source projection requires an application release');
   const report = { format: 1, startedAt: new Date().toISOString(), scope: modules ? 'modules' : 'application', steps: [] };
   const started = performance.now();
@@ -44,7 +45,19 @@ export async function buildApplication({ root = projectRoot, modules = null, hos
     const node = args => () => run(process.execPath, args, root);
     await step('rtp', node(['scripts/check-game-rtp.mjs']));
     await step('typecheck', node(['node_modules/typescript/bin/tsc', '--noEmit']));
-    await step('modules', node(['scripts/build-game-module.mjs', ...(modules ? ['--games', ...modules] : ['--all'])]));
+    await step('modules', node(['scripts/build-game-module.mjs', ...(modules ? ['--games', ...modules] : ['--all']),...(moduleProjection?['--source-projection',moduleProjection]:[])]));
+    if(moduleProjection)report.moduleProjection=JSON.parse(await readFile(resolve(root,'module-build/source-projection-report.json'),'utf8'));
+    if(hostProjection){const reader=await readHostProjection(root,hostProjection,{strictOrigins:true});const games=reader.metadata.moduleGames;
+      if(games){if(!Array.isArray(games)||!games.length||!games.every(n=>/^[a-z0-9-]+$/.test(n)))throw Error('Invalid projected module selection');
+        const initialModules=JSON.parse(await readFile(resolve(root,'module-build/build-report.json'),'utf8'));
+        await step('projected-modules',node(['scripts/build-game-module.mjs','--games',...games,'--source-projection',hostProjection]));
+        report.moduleProjection=JSON.parse(await readFile(resolve(root,'module-build/source-projection-report.json'),'utf8'));
+        const projectedModules=JSON.parse(await readFile(resolve(root,'module-build/build-report.json'),'utf8'));
+        const replacements=new Map(projectedModules.games.map(game=>[game.gameId,game]));
+        const mergedGames=initialModules.games.map(game=>replacements.get(game.gameId)??game);
+        if(replacements.size!==games.length||mergedGames.length!==initialModules.games.length)throw Error('Projected module inventory changed');
+        await saveJson(resolve(root,'module-build/build-report.json'),{...initialModules,durationMs:initialModules.durationMs+projectedModules.durationMs,
+          games:mergedGames,built:mergedGames.filter(game=>!game.reused).length,reused:mergedGames.filter(game=>game.reused).length});}}
     if (!modules) {
       await step('host', hostProjection ? async () => { report.hostProjection = await buildProjectedHost(root, hostProjection); }
         : node(['node_modules/vite/bin/vite.js', 'build']));

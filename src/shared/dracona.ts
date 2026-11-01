@@ -1,3 +1,5 @@
+import {validGameStake} from './gameStakes.ts';
+import {precisionBaseSession} from './roundPrecision.ts';
 import { playSpin, SIZE, MAX_BONUS_SPINS, type SpinResult } from './draconaMath';
 import { playSpin as playSpinV1 } from './draconaMathV1';
 
@@ -20,7 +22,7 @@ const keys = (value: object, names: string) => Object.keys(value).sort().join(',
 const integer = (value: unknown, min: number, max: number): value is number => Number.isSafeInteger(value) && Number(value) >= min && Number(value) <= max;
 export const draconaSame = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
 export const draconaPayoutUnits = (result: SpinResult) => Math.round(result.payout * 100);
-export const validDraconaStake = (value: unknown): value is string => typeof value === 'string' && DRACONA_BETS.some(bet => String(bet * 100) === value);
+export const validDraconaStake = (value: unknown): value is string => validGameStake(value) || typeof value === 'string' && DRACONA_BETS.some(bet => String(bet * 100) === value);
 export function validDraconaSettings(value: unknown): value is DraconaSettings {
   return object(value) && keys(value, 'dracona') && object(value.dracona) && keys(value.dracona, 'mode') && value.dracona.mode === 'normal';
 }
@@ -62,6 +64,7 @@ export function validDraconaEnvelope(state: 'active' | 'settled', value: unknown
 }
 
 export function validDraconaSession(value: unknown): boolean {
+  value=precisionBaseSession(value);
   if (!object(value) || !keys(value, 'id,gameId,rulesVersion,state,stakeUnits,spentUnits,returnedUnits,view') || value.gameId !== DRACONA_GAME
     || ![2,3].includes(value.rulesVersion) || typeof value.id !== 'string' || !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(value.id)
     || !['active', 'settled'].includes(value.state) || !object(value.view)) return false;

@@ -21,7 +21,7 @@ export function decorateImportedGame(root: HTMLElement, gameId: string): void {
   const previous = root.querySelector<HTMLElement>(':scope > .imported-intro');
   if (previous?.dataset.introGame === gameId && previous.dataset.introLanguage === language) return;
   const theme = FIRST_FLOOR_ART[themeId], index = language === 'en' ? 1 : 0;
-  const name = root.getAttribute('aria-label') ?? root.querySelector<HTMLElement>('h3:not(.imported-title)')?.textContent ?? (gameId === 'github-tower' ? 'Dragon Tower' : gameId);
+  const name = root.getAttribute('aria-label') ?? root.querySelector<HTMLElement>('h3:not(.imported-title)')?.textContent ?? gameId;
   root.classList.add('imported-game');
   root.dataset.visualTheme = themeId;
   ['accent', 'secondary', 'ground', 'panel', 'muted'].forEach((key, i) => root.style.setProperty(`--ig-${key}`, theme.palette[i]));

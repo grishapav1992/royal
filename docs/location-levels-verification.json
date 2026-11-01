@@ -1,7 +1,7 @@
 {
   "feature": "location-levels-mvp",
   "integrationBase": "780b1dec3ca1a7b335a4c08987cccd1f52cf19ce",
-  "state": "implemented-and-locally-verified; production release in preparation",
+  "state": "published-and-verified",
   "checks": {
     "serverClientHttpMoneyAndCompatibility": {
       "passed": 73,
@@ -11,7 +11,7 @@
     "browser": {
       "passed": 3,
       "scope": "real host with connected chat, desktop/mobile, accepted reward response loss and reload, English",
-      "candidateProjectionRecheckRequired": true,
+      "candidateProjectionRecheckRequired": false,
       "projectedCandidate": {
         "passed": 3,
         "failed": 0,
@@ -24,7 +24,21 @@
       },
       "standCorrections": [
         "Production Colyseus root routes are forwarded by the built local stand"
-      ]
+      ],
+      "exactPublishedArtifactBinding": {
+        "sourceCommit": "38ce8d04adbc70cf2a7e80cf017663463dd68b2a",
+        "passed": true,
+        "browserTests": 3,
+        "exactClientFiles": {
+          "dist/assets/index-B7XqEtd0.js": "ba895fc8fcae28856c5a6b1b933391cfa2aec896fd1bf983a7ebc8a9073ff429",
+          "dist/assets/index-DSWJtOAy.css": "3aed8b12dfce27f47cd6644ee7191e2dc2b6efefb2fb8456834a9dbe66d78951",
+          "dist/index.html": "fa389ba9f4ea428bba2b1a63d6cbb09aa5bd19a2a702a91d7c2fd29a946f9b4a"
+        },
+        "backend": {
+          "path": "dist-server/index.js",
+          "sha256": "0f47be562308630a7c8e041d593e13bc85f72ff3ed202a822ce6538865d5289d"
+        }
+      }
     },
     "financeTypecheck": true,
     "applicationBuild": true,
@@ -68,7 +82,13 @@
       "report": "deployment/releases/location-levels-20261030-v1/native-round-compatibility.json",
       "reportSha256": "31d079dca9b000a2b956f11a87108e05ae5789266991e2558e4ea585bbff8f53",
       "scope": "Untimed casino and Mines continue; Flight, Crash, PvP, combat and skin reservations still drain"
-    }
+    },
+    "completionTool": {
+      "passed": 10,
+      "sourceCommit": "89fd0b1e13a8d6410934f3cda23d6d5e065cd584",
+      "sha256": "15d82a9f42d797d258a33f42c3cc6c84fce180b4410761944e02de001b3d1982"
+    },
+    "rtpApplicationSourceCommit": "38ce8d04adbc70cf2a7e80cf017663463dd68b2a"
   },
   "mathematics": {
     "coins": {
@@ -99,8 +119,8 @@
     }
   },
   "release": {
-    "published": false,
-    "sourceSynchronizedToMain": false,
+    "published": true,
+    "sourceSynchronizedToMain": true,
     "productionBaseline": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
     "requirements": [
       "reviewed frontend and backend projection",
@@ -117,6 +137,11 @@
         "nativeActiveCasinoSessions": 13,
         "reason": "Persistent untimed rounds require demonstrated compatible restoration"
       }
-    ]
+    ],
+    "sourceCommit": "38ce8d04adbc70cf2a7e80cf017663463dd68b2a",
+    "image": "sha256:951f794090a54b025382ee92b0c7fba2557defa35b80c0e352dd5872ceda45f6",
+    "completionToolCommit": "89fd0b1e13a8d6410934f3cda23d6d5e065cd584",
+    "manifestSha256": "f66a2f7e75c0be5114af5302b214688b3c5c04deb5c83e6bdcad022eb2186dbf",
+    "verification": "deployment/releases/location-levels-20261030-v1/verification.json"
   }
 }

@@ -132,28 +132,6 @@
     "alpha": false
   },
   {
-    "game": "github-tower",
-    "kind": "character",
-    "path": "public/assets/github-worlds/github-tower/character-v1.webp",
-    "width": 640,
-    "height": 585,
-    "bytes": 144394,
-    "sha256": "e3f175ab54859b05c7155f7419a714ccfef2939403d354bb8fec4622d421ba96",
-    "sourceSha256": "5d2cd4f03d6fb48517e5e53a2c12a11c5d7da0f1cd5b75d395b6c1e2ba39c247",
-    "alpha": true
-  },
-  {
-    "game": "github-tower",
-    "kind": "background",
-    "path": "public/assets/github-worlds/github-tower/background-v1.webp",
-    "width": 1200,
-    "height": 675,
-    "bytes": 78476,
-    "sha256": "33dea406adddda0360df2e330048baefd11f4602cd0cdfbefe330d3b53fe305b",
-    "sourceSha256": "802588ec9684aaadc2839ac9d6fef723f918acd3f8194c94e95288954f9eb50e",
-    "alpha": false
-  },
-  {
     "game": "github-diamonds",
     "kind": "character",
     "path": "public/assets/github-worlds/github-diamonds/character-v1.webp",

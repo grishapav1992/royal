@@ -1,0 +1,565 @@
+{
+  "format": 1,
+  "state": "published",
+  "productionBefore": "591461b5350f5c164e69fe14476c5b912b3bd2da",
+  "runtimeFeature": "60b13bb8dde910919057835ed056a98257b78857",
+  "verifiedBuild": {
+    "sourceCommit": "4028e369c4fb7d0588f6ddd3c155306505fdbfd9",
+    "hostProjection": "c312d487a90973cf600c0dff54126bf81d1441e90783a9f8f16f6990c9524e7e",
+    "backendProjection": "3d93e947bc0b4cfb96fd90c0314553c80c72d44c75a307e08ae26d7d15ddb551",
+    "backendSha256": "3ceb2df6a200de11c7e2e02de168a629c82ddb6ac74ef078fc042991e6df661c",
+    "client": {
+      "dist/assets/index-DfLkemkt.js": "9cb0faeb1994db038e44bae3d92ec01c8559345bc72dada4d41742d678333068",
+      "dist/assets/index-DSWJtOAy.css": "3aed8b12dfce27f47cd6644ee7191e2dc2b6efefb2fb8456834a9dbe66d78951",
+      "dist/index.html": "53a5c27ca8af6fef47bbfec28a3fc130e93ac2f0a19ab1a8e06d572c4d1b08af"
+    },
+    "modules": {
+      "royal-coins": {
+        "version": "1.0.0-c3b9f97595b9",
+        "sourceFiles": {
+          "games/royal-coins/entry.ts": "11684f5dbca57c081549c46a5f0ef87eb3cabb0eb20927301fd8996de5235fdd",
+          "src/modules/GameHostContract.ts": "8207926c234eeb52901591d5f1913c59aa296f6a880ee6a8985501756e8b0bf7",
+          "src/shared/casinoSessions.ts": "002e31c3198d885571e78b3fdc714aeed6179cd269f5927de3ad0c23dacbb2dd",
+          "src/shared/demoWallet.ts": "2f3d21554eaa03930e306f8db103fe8299649387853574dff516cd01cd7e1cef",
+          "src/shared/gameCore.ts": "aa9520b435a5c969d257290e3b06060051db76de45955f99dd68c48f1b5addab",
+          "src/shared/gameThemes.ts": "a24d1d8dcef7bae07f0764a78e96a7158942228815e8e2ba47a1f846e42abeab",
+          "src/shared/nilePlay.ts": "d760785a5eb68a5e6d321f499e6bbf2fd4fbe2b1b835e6cbe52d81798f27d8d6",
+          "src/shared/nileWallet.ts": "f46ab635e6b3b59a0c1bb60d39bbf13de046a2ec3b1cc1ee832d4d36ed669b29",
+          "src/shared/progression.ts": "5f79d619753062d77aa5a6c15c93a06b9435da241da861bd0308eb6a6982184e",
+          "src/shared/rewardSpinCatalog.ts": "df633494f99d6fcf81b5c8a0aa87ed69e8fd3d1cb907617007124bbf8ead6429",
+          "src/shared/usdtWallet.ts": "23b523bb24b84dcdbda636f1b6bd940e3072a5069b9ba8c44c71da29129c484a",
+          "src/ui/RewardSpinControls.ts": "ad856d5b29b8aa12d1ced65c7f82388205f1cffef067dc34a21fc098ad3ce410",
+          "src/ui/RoyalCoins.ts": "16423aad9770484624c02f3ae46539572748d03323030f8b39751f8a651ad111",
+          "src/ui/reward-spin-controls.css": "9a57fbfcf0f6e8de0f5c288f5f3d81fbf584f616b6feeb8e8891a225a73da78f",
+          "src/ui/royal-coins.css": "37ca1b6130f970d45a975feedfd3d2d1d126dad9d7a38d7fa18f8a3bd017b614"
+        },
+        "hostBridges": [
+          "royal-host:src/i18n/index",
+          "royal-host:src/ui/gameReactions",
+          "royal-host:src/wallet/CryptoClient",
+          "royal-host:src/wallet/NilePlayClient",
+          "royal-host:src/wallet/ProgressionClient",
+          "royal-host:src/wallet/UsdtClient",
+          "royal-host:src/wallet/WalletClient"
+        ],
+        "manifestPath": "module-dist/royal-coins/versions/1.0.0-c3b9f97595b9/manifest.json",
+        "manifestSha256": "8dbaf1c02b458d6b78727d9488a02d2b5f930a3da4e0cb3d0b21b5e5cbed5a63",
+        "files": {
+          "entry-308e6e6f0a3030cd.js": "308e6e6f0a3030cd6ad98a2f7f8a6738007787eac25d5e82ee6afb900d6adb46",
+          "style-17f45676c5354929.css": "17f45676c5354929ce18900c49fa21315ba8d0aa1c8b2bc537e909009864a460"
+        }
+      },
+      "royal-fruits": {
+        "version": "1.0.0-13dd4a939bf1",
+        "sourceFiles": {
+          "games/royal-fruits/entry.ts": "8d5704fc039850f7a0267b3042f1afcf7f14e4d31294a6e3c5da4bdcda16b831",
+          "server/games/vfair/decimal.ts": "235cf2ea332f2a635b06e86462809821f9e515e5a73de6c944811f2d3b0f60d7",
+          "server/games/vfair/dice/dice-constants.ts": "88219a7c455889904b6ed1c4804737736cf551fa0f83fe382d7835dcd25c44a3",
+          "server/games/vfair/dice/dice-math.ts": "a6e83f4cf71c63ab3cca9751012fe1dbc93a832ea553a4bfbe2c8eaa27d8867e",
+          "server/games/vfair/dice/dice-rtp-bounds.ts": "c4f310051ab1d73b634855897f9d1f14b13452a6bf8b0d2d64e72cbb4d508fc7",
+          "server/games/vfair/game-rtp.ts": "850598f0b5b9c2c8d9a13a4ff151be5d23467804bc457f35665e95b6008f87c7",
+          "server/games/vfair/keno/keno-constants.ts": "75476a6be66e77e6830e2bff964b9f4cacb7a89925c9e20a97ebcb7a4dc8946c",
+          "server/games/vfair/keno/keno-math.ts": "094054bab14de6b4c54b53070804448a39f4bb83f5d4b2eb80cc59bcc6c3fbfa",
+          "server/games/vfair/keno/keno-multipliers.ts": "c76e0a9698539ea0f09f3bfc863ed47351a7ac38270078a0fee8ec579fe240b4",
+          "server/games/vfair/keno/keno-probability.ts": "0f870c04fe76f39b72962ee86a41e63e9ebf7c35edbc82299ba004d98cb4df70",
+          "server/games/vfair/keno/keno-reference-paytables.ts": "caa92b92343afa04889b13ef484f6d1598aac196ffe1f7e2e789dbf77c4f25bc",
+          "server/games/vfair/limbo/limbo-constants.ts": "b5bc95ccd1943068b60bc621354e68a6e53c872d50a34414b52babbd02c3d527",
+          "server/games/vfair/limbo/limbo-math.ts": "71ca6f7b1aeedf1b05804d9ff2c8e72e05fc6242e3d5a5b51b924b08669bdb52",
+          "server/games/vfair/limbo/limbo-roll.ts": "d3a0eeffcebdf1c4103116acdebd58ac63e8f97f1a9760328b52f5db02baa347",
+          "server/games/vfair/limbo/limbo-rtp-bounds.ts": "67756ce5182e7fb4ecce1ce9ecc60aba34986929309b3c631f6ba43c58e534ee",
+          "server/games/vfair/mines/mines-constants.ts": "168798b8df86084da0848ef2d4589256a1ad5d8f4c0c30c13960fb0ba47d69db",
+          "server/games/vfair/mines/mines-math.ts": "ab647b2f14b6cb49b2ad4045dc84b453326cd74d7f5d182a9d6fca257f812f0b",
+          "server/games/vfair/plinko/plinko-constants.ts": "dca86dc20365d497f6fd6b220f2cc0157e00112b4b2206c03c82959547b67afc",
+          "server/games/vfair/plinko/plinko-math.ts": "9c83981207341b625aca8e5f976da24c2b50bbba3a7e66fd6c330a0584cd15dc",
+          "server/games/vfair/plinko/plinko-multipliers.ts": "4be4d4ccb0dca62ec216edf295d6459075817d5b115e5d28038df2ebaf96f072",
+          "src/modules/GameHostContract.ts": "8207926c234eeb52901591d5f1913c59aa296f6a880ee6a8985501756e8b0bf7",
+          "src/shared/afterglow.ts": "3a20c05490f1fce9fb33244091230f5106c23d9686566e40f0051d124e941256",
+          "src/shared/arcadeCatalog.ts": "c679f9e2f9cfeb5a8e7b83ef2033c3e391e144fd05959aafb0cfe9193b85528c",
+          "src/shared/cardTables.ts": "12197eabb008c9166bfedc0ddbb6bce5a1023090faf1c71bc56960418d00f6ab",
+          "src/shared/caribbeanTreasures.ts": "5590af9897cfb32dbf8fd7d9c0608ad52184051ddee7ca70cd309267a4311aee",
+          "src/shared/caribbeanTreasuresMath.ts": "b86e71675dfd0179da8d8c43c7a62f8da41303d5e6bc59f07b81d4497b64647b",
+          "src/shared/casinoBatchVariants.ts": "e09ea94fdb5929596f610ef7462dc80d50bcf4926335c398fca6c031a0496135",
+          "src/shared/casinoNextVariants.ts": "6f525322bc640eb29ad7bfc025205686f87214b174a08a92d0f800afe636eaa7",
+          "src/shared/casinoVariants.ts": "806e62338241a65561b7170957045ce2fd931a599302d50785c35f6f0f9f1ca5",
+          "src/shared/crLeo.ts": "f0c9eae07611011cd3675eec1ed8a46a00f2f84822d8430a4b4267e6bfe15b38",
+          "src/shared/demoWallet.ts": "2f3d21554eaa03930e306f8db103fe8299649387853574dff516cd01cd7e1cef",
+          "src/shared/forestHeart.ts": "6f0ba79987ff2d24e5c242103ec6735bea1b9fcb3a0fba2abec773eff1dab52e",
+          "src/shared/forestHeartMath.ts": "c3e04efc098aa9d61f0faa70fc9159d8460dcf0816d96ef5b560efd45ab46658",
+          "src/shared/fruitsPresentation.ts": "37665084b89a404ee44e6424171b3f3282dfbf14a7aca2d536df22be3f8ce382",
+          "src/shared/gameCore.ts": "aa9520b435a5c969d257290e3b06060051db76de45955f99dd68c48f1b5addab",
+          "src/shared/jackieChan.ts": "5f7cd0a034676f79cf94b01b7a5e725d8c27cc7af5e8734d36ce3e27dff47faf",
+          "src/shared/neopolisMath.ts": "21d0aa882d9a5c163238f515fb6aaa7e56f9bfadbe045087e8f9150aa40e4fb5",
+          "src/shared/nilePlay.ts": "d760785a5eb68a5e6d321f499e6bbf2fd4fbe2b1b835e6cbe52d81798f27d8d6",
+          "src/shared/nileWallet.ts": "f46ab635e6b3b59a0c1bb60d39bbf13de046a2ec3b1cc1ee832d4d36ed669b29",
+          "src/shared/nitroRun.ts": "621e54ab208ea598573dc79f22be813509a85523309af76d5f3b8da7d038cc08",
+          "src/shared/originalGames.ts": "9743f1465b625e64055c8c6c9f268ce8023d61adc7eed187507be7d4163d40c0",
+          "src/shared/progression.ts": "5f79d619753062d77aa5a6c15c93a06b9435da241da861bd0308eb6a6982184e",
+          "src/shared/rewardFruitsPresentation.ts": "4792cfca98e464feed67e263ab75e07880acba4dfe4f2b4746373ee8e33d1a51",
+          "src/shared/rewardSpinCatalog.ts": "df633494f99d6fcf81b5c8a0aa87ed69e8fd3d1cb907617007124bbf8ead6429",
+          "src/shared/studioGames.ts": "5be1d552e408e7a2fe1d1cff923b70bdda059a57847c46db09c96dc2ae63e29a",
+          "src/ui/FirstFloorGameArt.ts": "3b3a1ba969fafaa32517101eee7ae196e756af09030b09473798745b8ac9abc4",
+          "src/ui/FruitsArtwork.ts": "3d9460c556973454ab843f8f906c2468cc8f608d0aab58cf373d8771d7f332e1",
+          "src/ui/FruitsReels.ts": "45c3f7ff6150bfaeecd3d4b169227307898a9386ff7cfe1579f5a769d1584448",
+          "src/ui/FruitsSlotUI.ts": "4813b015f8637aca17c011a95b2a584fd71d2e700e8d44cb5749f99976cac793",
+          "src/ui/ImportedGameThemes.ts": "c88e553f54a51f4b218c3c210eaac4210371f652a9b19ee77609573aa2884e85",
+          "src/ui/RewardSpinControls.ts": "ad856d5b29b8aa12d1ced65c7f82388205f1cffef067dc34a21fc098ad3ce410",
+          "src/ui/first-floor-game-worlds.css": "c70e559fc92551137047c799ce7328e01b3360087f7f6604fbf25f5888483c65",
+          "src/ui/fruits-slot.css": "cd288e94477508d844d012aabcd4f8e4200683ebc5be030b09837383ac938725",
+          "src/ui/imported-game-themes.css": "e5a37156dc2d85ff5f360ea84342b73e9c027c1ebf331215e77f88d9dce941a1",
+          "src/ui/importedMotion/Audio.ts": "2cc55d92c5a1091dc9efac57db8944f0a2daef179dd8ecd7d9608f9fc6d2d922",
+          "src/ui/importedMotion/ImportedMotion.ts": "86970b006d8242edcbaf1d229f19d3fa919716aca5766d81ce1c53d30c5dba60",
+          "src/ui/importedMotion/Outcome.ts": "38eb12bff5e798447b2f98e3627206fd9ba2ee1af9777a9541f2568b9c1f284c",
+          "src/ui/importedMotion/Profiles.ts": "0ec8b8ba3744e93c48e6b23e9400c3fbc81b7958a62fd93181139b8fb80607e7",
+          "src/ui/importedMotion/WorldScene.ts": "3ea3846e59658c06817883f95f2d797850aec404530947cb8bbdf4ac0b059a65",
+          "src/ui/importedMotion/imported-motion.css": "d6d8fbd9f474c0b8c5496920c9c989afe7a1906f839e499625e74ef5bea137f6",
+          "src/ui/importedMotion/world-scene.css": "97e01926478635636bd79ec7ec7871622a4a32980991b6b5fbe3518cf741b49a",
+          "src/ui/reward-spin-controls.css": "9a57fbfcf0f6e8de0f5c288f5f3d81fbf584f616b6feeb8e8891a225a73da78f"
+        },
+        "hostBridges": [
+          "royal-host:src/game/GameAudio",
+          "royal-host:src/i18n/index",
+          "royal-host:src/ui/gameReactions",
+          "royal-host:src/wallet/ExpansionClient",
+          "royal-host:src/wallet/ProgressionClient",
+          "royal-host:src/wallet/WalletClient"
+        ],
+        "manifestPath": "module-dist/royal-fruits/versions/1.0.0-13dd4a939bf1/manifest.json",
+        "manifestSha256": "e489645417d0861cddb1861278e1c122018745fef547a73f97c95c3090244be0",
+        "files": {
+          "entry-f4f9ebbae7328fd5.js": "f4f9ebbae7328fd5845fc7591b6ad94f3456ad824812954b57f7b00f47e367e6",
+          "media/github-worlds/royal-fruits/background-v1.webp": "a04a36b64c8178ed12bffd8e8144942ea38282d5a7b95c3d935333ea9f035c43",
+          "media/github-worlds/royal-fruits/character-v1.webp": "059d9e17ae40e24b0b9c96d1d288caed815a495a03cc6527c5a1b52dd2e9e4c0",
+          "style-15923c26394afc52.css": "15923c26394afc52365c27b84eb0e24d6301527de36070bbd4e914ff1c08d6ae"
+        }
+      }
+    },
+    "moduleInputs": 72,
+    "allPackages": 123,
+    "manifestSha256": "3eff92e3eb56d798d9e4b3ce872d0aba84a9df3821893d6e07f828e1c175e523"
+  },
+  "checks": {
+    "serverClientHttpMathAndAtelier": 68,
+    "realHostSourceBrowser": 6,
+    "exactBuiltHostBrowser": 6,
+    "additionalMobileInteraction": 1,
+    "guardedInstaller": 19,
+    "preparationProtocolAndPublicVerifier": 23,
+    "projectedRewardMath": 2,
+    "postgresFinancialFence": 1,
+    "nativeRestart": 14,
+    "moduleContractsAndByteInventories": 7,
+    "walletPvpAndAccountIsolation": 19,
+    "authentication": 6,
+    "typescript": true,
+    "financeTypescript": true,
+    "rtpProfiles": 25,
+    "legacyUnchangedNotQualified": 114,
+    "exactProjectedModuleBrowser": 6,
+    "snapshotInventory": 5,
+    "candidateCompletion": 7
+  },
+  "knownPreExistingFailure": {
+    "test": "server-tests/appearance.test.ts",
+    "message": "store.events.connect is not a function",
+    "evidence": "AccountStore.events and this test are unchanged from origin/main before the feature; the current AccountStore uses EventEmitter. No runtime changes were made to that unrelated bridge."
+  },
+  "security": {
+    "serverChosenNominalAndRules": true,
+    "accountLockedAtomicConsumption": true,
+    "requestBindsAccountGrantAndGame": true,
+    "durableSharedNewRoundLimitPerMinute": 120,
+    "originalReceiptsReplayBeforeLimitsAndPause": true,
+    "milestoneIssuanceUnique": true,
+    "rewardsDoNotEarnXp": true,
+    "ordinaryWindowsStopAtZero": true,
+    "multipleAccountsIdentityDetectionIncluded": false
+  },
+  "productionTestsWritePlayerData": false,
+  "publication": {
+    "complete": true,
+    "hostInstalled": true,
+    "modulesInstalled": true,
+    "firstBuildAttempt": {
+      "sourceCommit": "9a0987324b26c31bb42e84ab73e959b3dfcb07b0",
+      "pid": 3233020,
+      "state": "failed",
+      "reason": "Docker inspect lost an unprotected short-lived container; stopped before source, runtime or backup changes",
+      "buildResultCreated": false,
+      "backupCreated": false
+    },
+    "secondBuildAttempt": {
+      "sourceCommit": "4028e369c4fb7d0588f6ddd3c155306505fdbfd9",
+      "pid": 3261410,
+      "state": "built-but-finalization-stopped",
+      "reason": "Post-build free space briefly crossed five GiB; no publication started",
+      "candidate": "sha256:0f78302cdea4a5ba2da5c291655dea3d4144f4402da5004bc974c0a64d78604b"
+    },
+    "candidateCompletion": {
+      "originalProcess": {
+        "sourceCommit": "4028e369c4fb7d0588f6ddd3c155306505fdbfd9",
+        "createdAt": 1793444193.647566,
+        "pid": 3261410,
+        "command": [
+          "python3",
+          "/opt/royal-releases/universal-spins-20261031-v1/deploy.py",
+          "build"
+        ],
+        "previousAttempt": {
+          "sourceCommit": "9a0987324b26c31bb42e84ab73e959b3dfcb07b0",
+          "supersededBy": "4028e369c4fb7d0588f6ddd3c155306505fdbfd9",
+          "state": "failed-before-mutation",
+          "removedPayloadLogicalBytes": 11534656,
+          "sourcePreservedInGitHub": true,
+          "freeBeforeBytes": 5707837440,
+          "freeAfterBytes": 5719568384
+        }
+      },
+      "originalFailure": "RuntimeError: Image build crossed the disk reserve",
+      "buildLogSha256": "73768791a4277ae9a6010f6b481afd8558c14f1e7ee926a1b80b908d2a5f4a0e",
+      "errorLogSha256": "4b2f5a2a617f55b00e1d2e5799df050dcf1fceb8238d9381be3ed252c1214622",
+      "helperSha256": "7f596f741a1fce9be9290ddc85079c5ddcedff1a1f2a36ece907298735f49897",
+      "rebuildPerformed": false,
+      "diskGuardPreserved": true,
+      "allOriginalFinalizationChecksPassed": true,
+      "toolSourceCommit": "ee33e699caec84a4ab29e6359efd1be6ce9e3c2d",
+      "checks": 7
+    },
+    "host": {
+      "published": true,
+      "preparedImage": "sha256:0f78302cdea4a5ba2da5c291655dea3d4144f4402da5004bc974c0a64d78604b",
+      "runningImage": "sha256:0f78302cdea4a5ba2da5c291655dea3d4144f4402da5004bc974c0a64d78604b",
+      "containerRestarted": true,
+      "sourceCommit": "4028e369c4fb7d0588f6ddd3c155306505fdbfd9",
+      "changedSources": 25,
+      "clientDeltaFiles": 2,
+      "configurationsAndMountsPreserved": true,
+      "gameDataPreserved": true,
+      "backendDeltaFiles": 1,
+      "otherBackendProgramsAndModulesPreserved": true,
+      "oldAssetsPreserved": true,
+      "otherPersistentServicesPreserved": 13,
+      "pid": 3321563
+    },
+    "modules": [
+      {
+        "game": "royal-coins",
+        "beforeSha256": "4d185006de924ddb6d4d68f5c9132f2f42fc6cce1220a5e95d0646d667fb78ce",
+        "verified": true,
+        "gameId": "royal-coins",
+        "version": "1.0.0-c3b9f97595b9",
+        "bytes": 38383,
+        "files": 2,
+        "hostProgramTouched": false,
+        "databaseTouched": false,
+        "restartRequired": false,
+        "published": true,
+        "operation": "install",
+        "activeSha256": "4a7d9b02002ff04353ab4793108d414d92306309803223b09a633c2bf339c85f",
+        "history": "/opt/royal-game-modules-state/history/20261031T113540-1a66979abec745b0aedba75a3d5740c4.json"
+      },
+      {
+        "game": "royal-fruits",
+        "beforeSha256": "fd4c31517b66284a19dc4a08409f5d7e5ec934381db6ade238042619f71384f1",
+        "verified": true,
+        "gameId": "royal-fruits",
+        "version": "1.0.0-13dd4a939bf1",
+        "bytes": 525240,
+        "files": 4,
+        "hostProgramTouched": false,
+        "databaseTouched": false,
+        "restartRequired": false,
+        "published": true,
+        "operation": "install",
+        "activeSha256": "6de2c605b527fe796d9926e471c5cb631454435e1a4b6ad8ca08848f3563511b",
+        "history": "/opt/royal-game-modules-state/history/20261031T113541-11a98490945242d0bf949046f9d18eb6.json"
+      }
+    ],
+    "finalInventory": {
+      "passed": true,
+      "sourceCommit": "4028e369c4fb7d0588f6ddd3c155306505fdbfd9",
+      "image": "sha256:0f78302cdea4a5ba2da5c291655dea3d4144f4402da5004bc974c0a64d78604b",
+      "sourceFiles": 2485,
+      "runtimeFiles": 8576,
+      "moduleFiles": 2601,
+      "unchangedExistingModuleFiles": 2591,
+      "newImmutableModuleFiles": 8,
+      "changedActivePointers": 2,
+      "services": 14,
+      "otherPersistentServicesPreserved": 13,
+      "freeBytes": 5643042816,
+      "finalSnapshotSha256": "3f7e3885107000205eef8334a159f10631dba0ac6d0a116bdde2324bc15b1e6f",
+      "fullContainerAndHealthPreserved": true
+    },
+    "installManifestSha256": "4d24734c33e96a9bf3560cf498f79829aa0b4b1a432999647bfc6a8b8ac7a525",
+    "backup": {
+      "path": "/opt/royal-backups/universal-spins-20261031-v1",
+      "sourceArchiveBytes": 53574,
+      "sourceArchiveSha256": "e2d62b05cddaaa1c507546b6b8b88e3f71c5131e63937d0b10d1fe5f52cb5cbc",
+      "database": {
+        "schema": "royal_game",
+        "format": "custom",
+        "tocEntries": 309,
+        "bytes": 31920119,
+        "sha256": "2c5b3c297d665a7b7bb83b014bf68787f84310e78e9601b86487a81fee82d639"
+      },
+      "indexBytes": 708
+    },
+    "public": {
+      "origin": "https://stealth-spark-gokmxooi.expresshost.cloud",
+      "clientFiles": 3,
+      "moduleFiles": 10,
+      "endpoints": {
+        "GET /healthz": 200,
+        "GET /api/progression": 401,
+        "POST /api/progression/spins": 401,
+        "GET /api/demo-wallet": 401,
+        "GET /api/demo-wallet/expansion": 401,
+        "GET /api/game-wallet": 410,
+        "GET /api/nile-play/wallet": 410,
+        "GET /api/auth/me": 200,
+        "GET /api/skin-studio": 401,
+        "POST /api/skin-studio/generations": 401
+      },
+      "viewports": [
+        {
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "geometry": {
+            "documentWidth": 1440,
+            "viewportWidth": 1440,
+            "appWidth": 1440,
+            "appScrollWidth": 1440
+          }
+        },
+        {
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "geometry": {
+            "documentWidth": 390,
+            "viewportWidth": 390,
+            "appWidth": 390,
+            "appScrollWidth": 390
+          }
+        }
+      ],
+      "javascriptErrors": 0,
+      "productionAccountsCreated": 0,
+      "productionStakes": 0,
+      "productionMessages": 0,
+      "productionGenerations": 0,
+      "authenticatedBrowserScope": "Six exact projected host/module scenarios with a disposable local PostgreSQL fixture and a stub atelier provider",
+      "physicalMobileDevicesTested": false
+    },
+    "readOnlyProductionAudit": {
+      "readOnly": true,
+      "counts": {
+        "progression_settings": 1,
+        "progression_policies": 3,
+        "progression_rounds": 0,
+        "progression_outbox": 0,
+        "progression_players": 0,
+        "progression_xp": 0,
+        "progression_rewards": 0,
+        "progression_milestones": 0,
+        "progression_skin_rewards": 0,
+        "progression_spin_uses": 0,
+        "progression_skin_uses": 0
+      },
+      "policies": [
+        {
+          "version": "location-levels-v1",
+          "sha256": "ba8eb998e66d4d1a77e2663413a1585cf0175102011d63905809338fafca85d2"
+        },
+        {
+          "version": "location-levels-v2",
+          "sha256": "2b73bd91f0e9e24cda8ac88203f47bd6c64ebfd6be7982c0109698c9ae271d65"
+        },
+        {
+          "version": "location-levels-v3",
+          "sha256": "3ea38a2cb85685e6e91b61d1ea41fd59d352b9df7be560dd5790579efb960d84"
+        }
+      ],
+      "settings": [
+        {
+          "scope": "VIRTUAL_USD:south-park",
+          "activated_at": 1793398378580,
+          "earn_enabled": true,
+          "spins_enabled": true,
+          "skins_enabled": true
+        }
+      ],
+      "poolColumnReady": true,
+      "rateIndexReady": true,
+      "invariants": {
+        "ok": true,
+        "xpMismatches": 0,
+        "outboxMismatches": 0,
+        "rewardMismatches": 0,
+        "skinRewardMismatches": 0,
+        "projectionMismatches": 0,
+        "milestoneMismatches": 0,
+        "receiptMismatches": 0
+      },
+      "helperSha256": "7829b1807074f02e0285927fca27b4cb4a0cc309df0f0d3238502a619f196a1a",
+      "sourceProjection": "3d93e947bc0b4cfb96fd90c0314553c80c72d44c75a307e08ae26d7d15ddb551",
+      "sourceInputs": {
+        "server/progression/store.ts": {
+          "commit": "60b13bb8dde910919057835ed056a98257b78857",
+          "path": "server/progression/store.ts",
+          "baseSha256": "31c2ad735adda4257d6c042330b7fb17a2cb8b5e445ab582bef35219fcc32658",
+          "sha256": "31c2ad735adda4257d6c042330b7fb17a2cb8b5e445ab582bef35219fcc32658"
+        },
+        "server/database.ts": {
+          "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+          "path": "server/database.ts",
+          "baseSha256": "89c282f2e65158079bdafc07d815c5ca962aa82f89ba0d3c5f03a19aa7c81ca8",
+          "sha256": "89c282f2e65158079bdafc07d815c5ca962aa82f89ba0d3c5f03a19aa7c81ca8"
+        },
+        "src/shared/progression.ts": {
+          "commit": "60b13bb8dde910919057835ed056a98257b78857",
+          "path": "src/shared/progression.ts",
+          "baseSha256": "5f79d619753062d77aa5a6c15c93a06b9435da241da861bd0308eb6a6982184e",
+          "sha256": "5f79d619753062d77aa5a6c15c93a06b9435da241da861bd0308eb6a6982184e"
+        },
+        "server/progression/handlers.ts": {
+          "commit": "60b13bb8dde910919057835ed056a98257b78857",
+          "path": "server/progression/handlers.ts",
+          "baseSha256": "afed32a614f614ea72e68ad2d87de8025462d42d21bb1d71241379c9d34c4edf",
+          "sha256": "afed32a614f614ea72e68ad2d87de8025462d42d21bb1d71241379c9d34c4edf"
+        },
+        "src/shared/gameCore.ts": {
+          "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+          "path": "src/shared/gameCore.ts",
+          "baseSha256": "aa9520b435a5c969d257290e3b06060051db76de45955f99dd68c48f1b5addab",
+          "sha256": "aa9520b435a5c969d257290e3b06060051db76de45955f99dd68c48f1b5addab"
+        },
+        "src/shared/rewardSpinCatalog.ts": {
+          "commit": "60b13bb8dde910919057835ed056a98257b78857",
+          "path": "src/shared/rewardSpinCatalog.ts",
+          "baseSha256": "df633494f99d6fcf81b5c8a0aa87ed69e8fd3d1cb907617007124bbf8ead6429",
+          "sha256": "df633494f99d6fcf81b5c8a0aa87ed69e8fd3d1cb907617007124bbf8ead6429"
+        },
+        "src/shared/nilePlay.ts": {
+          "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+          "path": "src/shared/nilePlay.ts",
+          "baseSha256": "d760785a5eb68a5e6d321f499e6bbf2fd4fbe2b1b835e6cbe52d81798f27d8d6",
+          "sha256": "d760785a5eb68a5e6d321f499e6bbf2fd4fbe2b1b835e6cbe52d81798f27d8d6"
+        },
+        "src/shared/nileWallet.ts": {
+          "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+          "path": "src/shared/nileWallet.ts",
+          "baseSha256": "f46ab635e6b3b59a0c1bb60d39bbf13de046a2ec3b1cc1ee832d4d36ed669b29",
+          "sha256": "f46ab635e6b3b59a0c1bb60d39bbf13de046a2ec3b1cc1ee832d4d36ed669b29"
+        },
+        "src/i18n/index.ts": {
+          "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+          "path": "src/i18n/index.ts",
+          "baseSha256": "2d164e663d6a3922184508c3a65f01615c7c9bd64ac7e6717a790e78959e00ea",
+          "sha256": "2d164e663d6a3922184508c3a65f01615c7c9bd64ac7e6717a790e78959e00ea"
+        },
+        "src/i18n/en.ts": {
+          "commit": "f9a6a231e73da8618d745a654d1b684b18bcda5d",
+          "path": "src/i18n/en.ts",
+          "baseSha256": "8853e5a8bd533ca85608eb11975f1f0d98a03fd0d1b749f48cca00e9db86cd68",
+          "sha256": "8853e5a8bd533ca85608eb11975f1f0d98a03fd0d1b749f48cca00e9db86cd68"
+        },
+        "src/i18n/progressionEn.ts": {
+          "commit": "60b13bb8dde910919057835ed056a98257b78857",
+          "path": "src/i18n/progressionEn.ts",
+          "baseSha256": "66c68ac05b3b362c4ef1dae60afaeb1c484d6ada0887adefd9954a4de12c1ba4",
+          "sha256": "66c68ac05b3b362c4ef1dae60afaeb1c484d6ada0887adefd9954a4de12c1ba4"
+        },
+        "src/i18n/volcanicPlinkoEn.ts": {
+          "commit": "b1eeea9ffe6154c6941ae568a8712bc6ebfb10d0",
+          "path": "src/i18n/volcanicPlinkoEn.ts",
+          "baseSha256": "5c029cf589bfccbcdc6c3ee1de27dba9fcc56850ec89201bf4ffa10bc4a027a8",
+          "sha256": "5c029cf589bfccbcdc6c3ee1de27dba9fcc56850ec89201bf4ffa10bc4a027a8"
+        }
+      }
+    }
+  },
+  "storageCleanup": {
+    "serverFirstImage": {
+      "image": "sha256:c49eb49e48f4d79f03338d20a03e63d97952e4b48bf31dfc6a6fa0ccc4c88ba3",
+      "observerDisconnected": true,
+      "resultConfirmedAbsent": true,
+      "freeBeforeBytes": 5382397952,
+      "freeAfterBytes": 5384548352
+    },
+    "serverSecondImage": {
+      "image": "sha256:35519c5cd0f24b9bc9143201c4c5319dc16ebeb1d5c81b74d6b56ae640ef6080",
+      "sourceCommitPreservedInGitHub": "9cbc4be2568ae0f46c653cb1ed611f35ab35cec4",
+      "pid": 3183128,
+      "startedAt": 1793441545.182667,
+      "state": "completed",
+      "logicalBytes": 1131992908,
+      "freeBeforeBytes": 5382893568,
+      "forceUsed": false,
+      "exitCode": 0,
+      "stdout": "Deleted: sha256:35519c5cd0f24b9bc9143201c4c5319dc16ebeb1d5c81b74d6b56ae640ef6080\n",
+      "stderr": "",
+      "freeAfterBytes": 5736476672
+    },
+    "localTooling": {
+      "removed": [
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/universal-spins/tooling",
+          "logicalBytes": 308201407
+        },
+        {
+          "path": "/Users/grigory_pavlenko/Documents/ChatGPT/Рояль/artifacts/work/universal-spins/go-cache",
+          "logicalBytes": 71536472
+        }
+      ],
+      "archiveBytes": 68196737,
+      "freeBeforeBytes": 57705189376,
+      "freeAfterBytes": 57953738752,
+      "reason": "Native restart and retained-engine checks completed; normal fixture card binaries are preserved until task cleanup",
+      "sourcePreservedInGitHub": "447d5ea44e735e2d83146287bde0658ebaf20ec6",
+      "physicalAttribution": "Concurrent activity can also change available space"
+    },
+    "serverFinal": {
+      "removed": [
+        {
+          "path": "/opt/royal-releases/universal-spins-20261031-v1/runtime-context",
+          "logicalBytes": 5026951
+        },
+        {
+          "path": "/opt/royal-releases/universal-spins-20261031-v1-modules",
+          "logicalBytes": 575864
+        },
+        {
+          "path": "/opt/royal-releases/universal-spins-20261031-v1/readonly-audit.cjs",
+          "logicalBytes": 1018227
+        },
+        {
+          "path": "/tmp/royal-universal-spins-cleanup-35519c5cd0f2.json",
+          "logicalBytes": 465
+        }
+      ],
+      "freeBeforeBytes": 5641510912,
+      "freeAfterBytes": 5643182080,
+      "sourcePreservedInGitHub": "4028e369c4fb7d0588f6ddd3c155306505fdbfd9",
+      "completionToolPreservedInGitHub": "ee33e699caec84a4ab29e6359efd1be6ce9e3c2d",
+      "backupsAndImagesPreserved": true,
+      "installedOldAndNewModuleVersionsPreserved": true,
+      "concurrentDiskActivity": true
+    },
+    "localFinal": {
+      "pendingUntilPushedRecord": true,
+      "owner": "01a1884c-e46b-77c2-bd34-35e741b6af18",
+      "path": "artifacts/work/universal-spins",
+      "cleanupCondition": "After this record is pushed and its remote commit verified, remove the isolated checkout and task-owned builds, logs and captures; preserve only OWNER.md and completion.json. Keep shared node_modules and the unrelated dirty original checkout unchanged.",
+      "originalCheckoutPreserved": {
+        "head": "6a8adc7b9836f50bc7da297fa3073054910fd75f",
+        "statusSha256": "b49fa820941f87161b689cc682b742488e74371aaae53fce0367fed8c7b48da1",
+        "statusRecords": 335
+      },
+      "report": "artifacts/work/universal-spins/completion.json"
+    }
+  }
+}

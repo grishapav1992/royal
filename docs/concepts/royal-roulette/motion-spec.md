@@ -12,3 +12,11 @@ Presentation design hypotheses for package 1.3, dated 2026-10-29 (Europe/Moscow)
 The wheel, ball orbit and radial movement have one cancellation owner. The owner also releases selection, history and reveal effects. A media-preference change during a spin cancels motion. Closing or changing accounts cannot cause delayed effects, another request or a second reaction.
 
 Verify all 37 pocket alignments, monotonic wheel deceleration, position/velocity continuity where the ball joins the pocket, finite bounded trajectories and final radius. In the actual host, verify both rotation directions, orbit-to-pocket progression, result timing, reduced motion, hide/pause, close during motion, uncertain responses and recovery. A short silent video demonstrates appearance only; it is not evidence of listening quality or enjoyment.
+
+## Revision 1.5, 2026-10-31
+
+The minimum launch remains 650 ms. Confirmed settling now lasts 4400 ms, with an exponential rolling-drag phase followed by a guided descent. The supported rim phase always counter-rotates and loses angular speed. The descent matches its entry position and velocity and captures the confirmed pocket at matching angular velocity. This is a presentation model with collision-inspired motion, not a simulation that selects a roulette outcome.
+
+Six contact accents share one schedule. Successive flight times shrink by 0.68, and their ballistic heights by 0.68 squared. Piecewise parabolic flights replace the equally spaced sine hops. Small alternating lateral deflections stay inside the captured pocket; reported angular velocity includes their derivative. Ball lift, shadow spread and shadow opacity follow the same height. The wheel retains monotonic deceleration and exact final alignment at every pocket. The final result remains withheld until settling finishes.
+
+All timings and restitution values are game-specific design hypotheses. Verification covers every pocket, long reply delays, coast/descent continuity, numerical angular derivatives, decaying flight durations/heights and the real host lifecycle. Reduced motion, hide, account change and close keep their existing cancellation behavior. No changed rules, probabilities, paid costs or stake choices are involved.

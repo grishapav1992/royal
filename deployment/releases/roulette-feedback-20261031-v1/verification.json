@@ -1,0 +1,321 @@
+{
+  "date": "2026-10-31",
+  "release": "roulette-feedback-20261031-v1",
+  "sourceCommit": "c50c5ef902133143e607a47ad508ea3382a5a2c4",
+  "baseCommit": "4028e369c4fb7d0588f6ddd3c155306505fdbfd9",
+  "moduleVersion": "1.5.0-7a8c04b40048",
+  "published": {
+    "published": true,
+    "release": "roulette-feedback-20261031-v1",
+    "sourceCommit": "c50c5ef902133143e607a47ad508ea3382a5a2c4",
+    "baseCommit": "4028e369c4fb7d0588f6ddd3c155306505fdbfd9",
+    "module": {
+      "verified": true,
+      "gameId": "royal-roulette",
+      "version": "1.5.0-7a8c04b40048",
+      "bytes": 65333,
+      "files": 2,
+      "beforeSha256": "89cda20da23d7faf770da982300920af19b8861035f43ce5baacdd7c5fc64fba",
+      "hostProgramTouched": false,
+      "databaseTouched": false,
+      "restartRequired": false,
+      "published": true,
+      "operation": "install",
+      "activeSha256": "91eda0e0120c644998824b194a0c5b0b84bd98599330b09b03ebcb417880f8bd",
+      "history": "/opt/royal-game-modules-state/history/20261031T181243-803f538f6480416ab77676516c6a74a1.json"
+    },
+    "backup": {
+      "sourceArchive": "/opt/royal-backups/roulette-feedback-20261031-v1/source.tgz",
+      "bytes": 19515,
+      "sha256": "811ac4dd1f2ea5d8580b11fe3a39969f1baa7df9ff97ce951bb1198243b5cf24",
+      "oldVersion": "1.4.0-2535bfde3cdd",
+      "oldPackageHardlinked": true,
+      "imageTag": "royal-game:before-roulette-feedback-20261031-v1",
+      "image": "sha256:0f78302cdea4a5ba2da5c291655dea3d4144f4402da5004bc974c0a64d78604b"
+    },
+    "freeBefore": 5400141824,
+    "freeAfter": 5399728128,
+    "hostRestarted": false,
+    "databaseTouched": false,
+    "otherModulesPreserved": true,
+    "sourceFilesPreserved": 2477,
+    "runtimeFilesPreserved": 8576,
+    "servicesPreserved": 14
+  },
+  "install": {
+    "exitCode": 0,
+    "attempt": 30,
+    "endedAt": 1793470550.2929525
+  },
+  "releaseManifestSha256": "d6864790b08048d7e93bb0ff1ada72b436ec50f18485b3dba17c88b86dc10cd1",
+  "rtp": {
+    "verified": 26,
+    "legacyUnchanged": 114,
+    "mathematicsChanged": false
+  },
+  "validation": {
+    "moduleTypes": true,
+    "guardTests": 3,
+    "motionAudioTests": 11,
+    "priorWalletAndRouletteTests": 36,
+    "priorConnectedHostTests": 8,
+    "preparedModuleMatchesPriorTestedBytes": true
+  },
+  "public": {
+    "passed": true,
+    "moduleManifestSha256": "36298b054cb81e3209dbb269d8462967be7368eb67471388097e59d72e42d6fa",
+    "activeSha256": "91eda0e0120c644998824b194a0c5b0b84bd98599330b09b03ebcb417880f8bd",
+    "resourceHashesChecked": 127,
+    "api": [
+      {
+        "path": "/api/demo-wallet",
+        "status": 401
+      },
+      {
+        "path": "/api/demo-wallet/expansion",
+        "status": 401
+      },
+      {
+        "path": "/api/game-wallet",
+        "status": 410
+      },
+      {
+        "path": "/api/nile-play/wallet",
+        "status": 410
+      }
+    ],
+    "health": true,
+    "version": "1.5.0-7a8c04b40048",
+    "viewports": [
+      {
+        "width": 1440,
+        "height": 1000,
+        "chatDock": false
+      },
+      {
+        "width": 1280,
+        "height": 720,
+        "chatDock": false
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "chatDock": false
+      }
+    ],
+    "errors": [],
+    "catalogCount": 20,
+    "catalogUnchanged": true,
+    "actualRoundHandlersUnchanged": true,
+    "newOrRestoredGames": [],
+    "soundUsesSharedContext": true,
+    "productionAccountsCreated": 0,
+    "productionStakes": 0,
+    "productionMessages": 0
+  },
+  "preservation": {
+    "sourcePathsReviewed": 2485,
+    "runtimeFiles": 8576,
+    "externalModuleFiles": 2601,
+    "services": 14,
+    "sourcePathsChanged": [
+      "games/royal-roulette/README.md",
+      "games/royal-roulette/RouletteAudioBank.ts",
+      "games/royal-roulette/RouletteMotion.ts",
+      "games/royal-roulette/RouletteSound.ts",
+      "games/royal-roulette/RouletteSoundTimeline.ts",
+      "games/royal-roulette/SpinTimeline.ts",
+      "games/royal-roulette/package.json",
+      "games/royal-roulette/roulette.css"
+    ],
+    "hostImage": "sha256:0f78302cdea4a5ba2da5c291655dea3d4144f4402da5004bc974c0a64d78604b",
+    "hostContract": {
+      "apiVersion": 1,
+      "rulesVersion": 1,
+      "progressVersion": 1
+    },
+    "databaseTouched": false,
+    "hostRestarted": false
+  },
+  "serverCacheCleanup": {
+    "purpose": "Restore mandatory publication reserve using regenerable package metadata only",
+    "removed": [
+      {
+        "path": "/var/cache/apt/pkgcache.bin",
+        "bytes": 58601763
+      },
+      {
+        "path": "/var/cache/apt/srcpkgcache.bin",
+        "bytes": 58559758
+      },
+      {
+        "path": "/var/lib/apt/lists/archive.ubuntu.com_ubuntu_dists_noble_universe_binary-amd64_Packages",
+        "bytes": 73379142
+      }
+    ],
+    "freeBefore": 5223231488,
+    "freeAfter": 5413789696,
+    "regeneration": "apt-get update restores repository indexes and binary package cache",
+    "sourceArchivesRemoved": 0,
+    "playerDataTouched": false,
+    "backupsTouched": false,
+    "installedPackagesTouched": false
+  },
+  "serverPayloadCleanup": {
+    "removed": [
+      {
+        "path": "/opt/royal-releases/roulette-feedback-20261031-v1/package",
+        "logicalBytes": 65878
+      },
+      {
+        "path": "/opt/royal-releases/roulette-feedback-20261031-v1/source",
+        "logicalBytes": 60067
+      },
+      {
+        "path": "/opt/royal-releases/roulette-feedback-20261031-v1/__pycache__",
+        "logicalBytes": 39285
+      },
+      {
+        "path": "/opt/royal-releases/roulette-feedback-20261031-v1/install-attempt-20.log",
+        "logicalBytes": 605
+      },
+      {
+        "path": "/opt/royal-releases/roulette-feedback-20261031-v1/install-attempt-28.log",
+        "logicalBytes": 605
+      },
+      {
+        "path": "/opt/royal-releases/roulette-feedback-20261031-v1/install-attempt-1.log",
+        "logicalBytes": 605
+      },
+      {
+        "path": "/opt/royal-releases/roulette-feedback-20261031-v1/install-attempt-4.log",
+        "logicalBytes": 605
+      },
+      {
+        "path": "/opt/royal-releases/roulette-feedback-20261031-v1/install-attempt-27.log",
+        "logicalBytes": 605
+      },
+      {
+        "path": "/opt/royal-releases/roulette-feedback-20261031-v1/install-attempt-15.log",
+        "logicalBytes": 605
+      },
+      {
+        "path": "/opt/royal-releases/roulette-feedback-20261031-v1/install-attempt-17.log",
+        "logicalBytes": 605
+      },
+      {
+        "path": "/opt/royal-releases/roulette-feedback-20261031-v1/install-attempt-8.log",
+        "logicalBytes": 605
+      },
+      {
+        "path": "/opt/royal-releases/roulette-feedback-20261031-v1/install-attempt-12.log",
+        "logicalBytes": 605
+      },
+      {
+        "path": "/opt/royal-releases/roulette-feedback-20261031-v1/install-attempt-18.log",
+        "logicalBytes": 605
+      },
+      {
+        "path": "/opt/royal-releases/roulette-feedback-20261031-v1/install-attempt-9.log",
+        "logicalBytes": 605
+      },
+      {
+        "path": "/opt/royal-releases/roulette-feedback-20261031-v1/install-attempt-30.log",
+        "logicalBytes": 1316
+      },
+      {
+        "path": "/opt/royal-releases/roulette-feedback-20261031-v1/install-attempt-21.log",
+        "logicalBytes": 605
+      },
+      {
+        "path": "/opt/royal-releases/roulette-feedback-20261031-v1/install-attempt-16.log",
+        "logicalBytes": 605
+      },
+      {
+        "path": "/opt/royal-releases/roulette-feedback-20261031-v1/runner.log",
+        "logicalBytes": 0
+      },
+      {
+        "path": "/opt/royal-releases/roulette-feedback-20261031-v1/install-attempt-29.log",
+        "logicalBytes": 605
+      },
+      {
+        "path": "/opt/royal-releases/roulette-feedback-20261031-v1/install-attempt-24.log",
+        "logicalBytes": 605
+      },
+      {
+        "path": "/opt/royal-releases/roulette-feedback-20261031-v1/install-attempt-22.log",
+        "logicalBytes": 605
+      },
+      {
+        "path": "/opt/royal-releases/roulette-feedback-20261031-v1/install-attempt-25.log",
+        "logicalBytes": 605
+      },
+      {
+        "path": "/opt/royal-releases/roulette-feedback-20261031-v1/install-attempt-5.log",
+        "logicalBytes": 605
+      },
+      {
+        "path": "/opt/royal-releases/roulette-feedback-20261031-v1/install-attempt-13.log",
+        "logicalBytes": 605
+      },
+      {
+        "path": "/opt/royal-releases/roulette-feedback-20261031-v1/install-attempt-26.log",
+        "logicalBytes": 605
+      },
+      {
+        "path": "/opt/royal-releases/roulette-feedback-20261031-v1/install-attempt-3.log",
+        "logicalBytes": 605
+      },
+      {
+        "path": "/opt/royal-releases/roulette-feedback-20261031-v1/install-attempt-10.log",
+        "logicalBytes": 605
+      },
+      {
+        "path": "/opt/royal-releases/roulette-feedback-20261031-v1/install-attempt-7.log",
+        "logicalBytes": 605
+      },
+      {
+        "path": "/opt/royal-releases/roulette-feedback-20261031-v1/install-attempt-23.log",
+        "logicalBytes": 605
+      },
+      {
+        "path": "/opt/royal-releases/roulette-feedback-20261031-v1/install-attempt-11.log",
+        "logicalBytes": 605
+      },
+      {
+        "path": "/opt/royal-releases/roulette-feedback-20261031-v1/install-attempt-6.log",
+        "logicalBytes": 605
+      },
+      {
+        "path": "/opt/royal-releases/roulette-feedback-20261031-v1/install-attempt-2.log",
+        "logicalBytes": 605
+      },
+      {
+        "path": "/opt/royal-releases/roulette-feedback-20261031-v1/install-attempt-19.log",
+        "logicalBytes": 605
+      },
+      {
+        "path": "/opt/royal-releases/roulette-feedback-20261031-v1/install.log",
+        "logicalBytes": 1316
+      },
+      {
+        "path": "/opt/royal-releases/roulette-feedback-20261031-v1/install-attempt-14.log",
+        "logicalBytes": 605
+      }
+    ],
+    "freeBefore": 5396144128,
+    "freeAfter": 5396484096,
+    "sourceArchivesRemoved": 0,
+    "retained": "Verified previous source archive, old immutable package, rollback image tag, installed package, release manifests and complete hash snapshots",
+    "activeWorkExceptions": []
+  },
+  "limits": [
+    "Public browser verification used the real guest offline host with API writes and WebSockets blocked; connected chat and settlement/recovery were tested locally with the identical module bytes.",
+    "Technical audio checks do not measure pleasantness or Bluetooth output latency."
+  ],
+  "publicationLock": {
+    "interruptedOtherMaintenance": false,
+    "priorAttempts": "Refused busy publication locks before any source or package change; only the successful attempt performed installation."
+  }
+}

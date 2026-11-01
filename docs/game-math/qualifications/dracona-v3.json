@@ -3,14 +3,14 @@
   "gameId": "studio-dracona",
   "rulesVersion": 3,
   "progressVersion": 2,
-  "startedAt": "2026-10-23T17:35:38.601Z",
-  "completedAt": "2026-10-23T17:36:56.564Z",
+  "startedAt": "2026-10-31T20:57:17.353Z",
+  "completedAt": "2026-10-31T20:58:39.973Z",
   "sourceHashes": {
-    "src/shared/draconaMath.ts": "5735d0173b801e80329ec93f9d0dc049da94068addd042f7de0fb6bf9ca248b4",
+    "src/shared/draconaMath.ts": "7b73a84f00df88ebce06e8eca1676b90ca457b36d3db4329b723cc66e9977583",
     "src/shared/draconaMathV1.ts": "760b567c64aae4a5190641cad162fd9a6ff9e5764e8bd9d91d06dcb1d707ee21",
-    "src/shared/dracona.ts": "fa6d089b90592693ac3da96fed174f53db6733c37f3ab16e9205cc606396d649",
+    "src/shared/dracona.ts": "ee182b2547a155c80978ebbbabcc28c9dd2fd88224a7015eb9d03973132e0137",
     "server/games/dracona.ts": "9d7b86aa2db9dd2ebe0d6a6dc09283a33b868b03a1e5c444f722d90822e9fa95",
-    "scripts/game-math/rtp-simulation.mjs": "b5c74c5d41dc3ec173a7ee7ec0f42ee8842c433e58ac6a12828ed07b68de57b8"
+    "scripts/game-math/rtp-simulation.mjs": "0fe613b19c2f9e16453953d1abdc149b65104910d77be65487a55529c16f02e5"
   },
   "policySha256": "85540f31dcf6e574e60de864c188a222d8c2b96b40a62b7551975fe4108ed781",
   "serverReplayChecks": 384,
@@ -27,6 +27,20 @@
       "paidRounds": 2500000
     }
   ],
+  "precisionResult": {
+    "samples": 5000000,
+    "paidRounds": 5000000,
+    "reward": 4789653.397056815,
+    "cost": 5000000,
+    "rewardSquared": 120464473.95597705,
+    "rewardCost": 4789653.397056815,
+    "costSquared": 5000000,
+    "rtp": 0.957930679411363,
+    "interval95": [
+      0.9537109611631953,
+      0.9621503976595307
+    ]
+  },
   "results": [
     {
       "choice": "normal",

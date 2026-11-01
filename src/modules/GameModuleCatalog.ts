@@ -3,7 +3,7 @@ export const STUDIO_GAME_MODULES = [
  { gameId: 'studio-wild-nudge', slug: 'wild-nudge', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
  { gameId: 'studio-flooded-temple', slug: 'flooded-temple', apiVersion: 1, rulesVersion: 2, progressVersion: 2 },
  { gameId: 'studio-forest-heart', slug: 'forest-heart', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
- { gameId: 'studio-caribbean-treasures', slug: 'caribbean-treasures', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
+ { gameId: 'studio-caribbean-treasures', slug: 'caribbean-treasures', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },
  { gameId: 'studio-neopolis', slug: 'neopolis', apiVersion: 1, rulesVersion: 4, progressVersion: 4 },
  { gameId: 'studio-dracona', slug: 'dracona', apiVersion: 1, rulesVersion: 3, progressVersion: 2 },
  { gameId: 'studio-cosmic-escape', slug: 'cosmic-escape', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },
@@ -48,6 +48,7 @@ export const STUDIO_GAME_MODULES = [
 ] as const;
 
 export const CASINO_GAME_MODULES = [
+ { gameId: 'flag-tote', slug: 'flag-tote', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
  { gameId: 'original-jackie-chan', slug: 'jackie-chan', apiVersion: 1, rulesVersion: 1, progressVersion: 2 },
  { gameId: 'flag-battle', slug: 'flag-battle', apiVersion: 1, rulesVersion: 2, progressVersion: 1 },
  { gameId: 'original-cr-vs-leo', slug: 'cr-vs-leo', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
@@ -68,7 +69,6 @@ export const CASINO_GAME_MODULES = [
  { gameId: 'github-baccarat', slug: 'github-baccarat', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
  { gameId: 'github-craps', slug: 'github-craps', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
  { gameId: 'github-hilo', slug: 'github-hilo', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
- { gameId: 'github-tower', slug: 'github-tower', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
  { gameId: 'github-diamonds', slug: 'github-diamonds', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
  { gameId: 'github-three-card', slug: 'github-three-card', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },
  { gameId: 'github-caribbean', slug: 'github-caribbean', apiVersion: 1, rulesVersion: 1, progressVersion: 1 },

@@ -17,6 +17,8 @@ const errors: Record<string, string> = {
   reward_spins_exhausted: 'В пакете не осталось бесплатных спинов.',
   reward_spins_paused: 'Бесплатные спины временно приостановлены. Пакет сохранён.',
   reward_rules_unavailable: 'Правила этого пакета временно недоступны. Пакет сохранён.',
+  reward_game_unavailable: 'Эта игра не поддерживается пакетом. Выбери Royal Coins или Royal Fruits.',
+  reward_spin_rate_limit: 'Слишком много бесплатных спинов. Подожди минуту и проверь ту же операцию.',
   reward_wallet_capacity: 'Для выплаты нужно освободить место в кошельке. Пакет сохранён.',
   play_rate_limit: 'Слишком много запросов. Подожди минуту.',
 };

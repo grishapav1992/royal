@@ -111,6 +111,29 @@ class HistoryScopeTest(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, 'Unsafe history root'):
                 cleanup.deletion_candidates([], (link,))
 
+    def test_removing_reviewed_hardlinks_does_not_invalidate_remaining_copies(self):
+        with tempfile.TemporaryDirectory() as base:
+            root=Path(base); first=root/'first'; second=root/'second'
+            first.mkdir(); second.mkdir(); (first/'source').write_text('shared source')
+            os.link(first/'source',second/'source')
+            for path in [first,second]: os.utime(path,(time.time()-3600,)*2)
+            rows=cleanup.deletion_candidates([],(root,))
+            self.assertTrue(all(row['sharedFiles'] for row in rows))
+            cleanup.validate_selection(rows,[],(root,))
+            for row in rows: cleanup.remove_entry(row,[],(root,))
+            self.assertEqual(list(root.iterdir()),[])
+
+    def test_shared_file_content_edits_are_rejected_even_with_restored_mtime(self):
+        with tempfile.TemporaryDirectory() as base:
+            root=Path(base); old=root/'old'; old.mkdir(); live=root/'live'; live.mkdir()
+            source=old/'source'; source.write_text('original'); os.link(source,live/'source')
+            os.utime(old,(time.time()-3600,)*2)
+            row=cleanup.deletion_candidates([live],(root,))[0]; before=source.stat()
+            source.write_text('modified'); os.utime(source,ns=(before.st_atime_ns,before.st_mtime_ns))
+            with self.assertRaisesRegex(RuntimeError,'changed after review'):
+                cleanup.remove_entry(row,[],(root,))
+            self.assertTrue(old.exists()); self.assertTrue(live.exists())
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -35,7 +35,7 @@ export const NEXT_VARIANT_DEFAULTS:Record<NextVariantGameId,NextVariantSettings>
   'variant-fruits':{variant:{lines:3}},'variant-duel':{variant:{band:'near'}},'variant-war':{variant:{mode:'shield'}},
 };
 export const NEXT_VARIANT_BASES:Record<NextVariantGameId,string> = {
-  'variant-keno':'royal-keno','variant-color':'github-hilo','variant-keys':'github-tower',
+  'variant-keno':'royal-keno','variant-color':'github-hilo','variant-keys':'variant-keys',
   'variant-fruits':'royal-fruits','variant-duel':'github-dragon-tiger','variant-war':'github-war',
 };
 export const NEXT_VARIANT_INFO:Record<NextVariantGameId,{name:string;base:string;tagline:string;theme:string}> = {

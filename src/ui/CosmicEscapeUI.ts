@@ -1,3 +1,5 @@
+import {confirmedPayout} from '../shared/roundPrecision';
+import {GAME_STAKE_UNITS as COSMIC_ESCAPE_BET_UNITS} from '../shared/gameStakes';
 import { t as translateText, tr, locale } from '../i18n/index';
 import {SlotSettings} from './slotKit/SlotSettings';
 import {SlotDialog, slotOwnsKeyboard} from './slotKit/SlotDialog';
@@ -8,7 +10,7 @@ import {SlotSessions, type NativeSlotSession} from './slotKit/SlotSessions';
 import {bindSlotLifecycle} from './slotKit/SlotLifecycle';
 import {cosmicSlot} from './slotKit/nativeSlots';
 import {LUELON_SLOT_INFO,type LuelonSlotGameId,type LuelonSlotView,type LuelonSlotInfo,type LuelonSlotFeatures,type LuelonSlotFrame} from '../shared/luelonSlots';
-import {COSMIC_ESCAPE_BET_UNITS,COSMIC_ESCAPE_DEFAULT_STAKE} from '../shared/cosmicEscapeBets';
+import {COSMIC_ESCAPE_DEFAULT_STAKE} from '../shared/cosmicEscapeBets';
 import {expansionClient as client} from '../wallet/ExpansionClient';
 import {demoWallet} from '../wallet/WalletClient';
 import {observeExpansionOutcome,resetGameOutcomes} from './gameReactions';
@@ -87,7 +89,7 @@ this.find<HTMLButtonElement>('[data-cosmic-load-retry]').onclick=()=>void this.a
   private async present(session:Session,live:Live){
     const view=session.view.luelon,spin=view.spin;
     this.root.dataset.sessionId=session.id;this.root.dataset.revision=String(view.revision);
-    if(!spin||live.before?.id===session.id&&live.before.view.luelon.spin?.index===spin.index){this.audio.stopSpin();this.setTotal(view.totalPayoutUnits);this.features(view,view.bonus?.features);return;}
+    if(!spin||live.before?.id===session.id&&live.before.view.luelon.spin?.index===spin.index){this.audio.stopSpin();this.setTotal(confirmedPayout(session,view.totalPayoutUnits));this.features(view,view.bonus?.features);return;}
     let total=Number(view.totalPayoutUnits)-Number(spin.payoutUnits);this.setTotal(total);
     if(spin.kind==='free-spin'){
       this.features(view,spin.featuresBefore);
@@ -123,7 +125,7 @@ this.find<HTMLButtonElement>('[data-cosmic-load-retry]').onclick=()=>void this.a
     }
     for(const event of spin.events){this.root.dataset.phase='feature';this.find('[data-lg-message]').textContent=event.label;this.audio.feature(event.kind);if(!await this.board.effect(event,spin.finalGrid,live.fast,live.motion,()=>this.valid(live)))return;}
     if(!this.valid(live))return;
-    this.root.dataset.echo='false';this.root.dataset.shipActive='false';this.board.show(spin.finalGrid,spin.rows,spin.featuresAfter);this.paintPortals(spin.finalGrid);this.features(view,spin.featuresAfter);this.setTotal(view.totalPayoutUnits);
+    this.root.dataset.echo='false';this.root.dataset.shipActive='false';this.board.show(spin.finalGrid,spin.rows,spin.featuresAfter);this.paintPortals(spin.finalGrid);this.features(view,spin.featuresAfter);this.setTotal(confirmedPayout(session,view.totalPayoutUnits));
     this.find('[data-lg-message]').textContent=view.capped?translateText('ДОСТИГНУТ ПРЕДЕЛ ВЫИГРЫША'):spin.triggerAwards?tr`ПОРТАЛ ОТКРЫТ · ${spin.triggerAwards} БЕСПЛАТНЫХ ВРАЩЕНИЙ`:Number(spin.payoutUnits)>0?translateText('ВЫИГРЫШ ПРИНЯТ'):view.phase==='bonus'?translateText('МИССИЯ ПРОДОЛЖАЕТСЯ'):translateText('ГОТОВ К НОВОМУ ПУТЕШЕСТВИЮ');
     this.audio.outcome(Number(spin.payoutUnits)>0);if(live.motion)await this.delay(live.fast?150:400,live);
   }
@@ -150,7 +152,7 @@ this.find<HTMLButtonElement>('[data-cosmic-load-retry]').onclick=()=>void this.a
     if(kind==='complete'&&session&&view)element.innerHTML=renderSlotResult({style:'lg',eyebrow:translateText('ВОЗВРАЩЕНИЕ ДОМОЙ'),title:translateText('МИССИЯ ЗАВЕРШЕНА'),returned:session.returnedUnits,ledger:this.ledger(session),note:translateText('Выигрыш уже зачислен в кошелёк.'),label:translateText('ПРОДОЛЖИТЬ')});
     if(kind==='history')element.innerHTML=renderSlotHistory({style:'lg',eyebrow:translateText('БОРТОВОЙ ЖУРНАЛ'),title:translateText('ИСТОРИЯ МИССИИ'),ledger:session&&view?this.ledger(session):undefined,status:session?.state==='active'?translateText('Серия сохранена. Выплата поступит после завершения.'):translateText('Раунд завершён. Выплата зачислена один раз.'),empty:translateText('Здесь появится история твоего раунда.'),rows:view?.history.map(spin=>({title:`${spin.kind==='base'?translateText('Основное вращение'):translateText('Бесплатное вращение')} ${slotSpinNumber(spin,view!.history)}`,detail:`${spin.kind==='base'?tr`Стоимость ${coins(session!.spentUnits)}`:translateText('Стоимость 0,00')} · ${spin.frames.length>1?translateText('ЭХО · '):''}×${spin.featuresAfter.multiplier}`,payoutUnits:spin.payoutUnits}))??[]});
     if(kind==='info')element.innerHTML=renderSlotInfo({style:'lg',eyebrow:translateText('КАРТА КОСМИЧЕСКОГО ПОБЕГА'),title:translateText('ПРАВИЛА И ВЫПЛАТЫ'),reduced:this.manualReduced,bodyHtml:tr`<p>Пять барабанов, три ряда, 20 фиксированных линий. Все линии всегда активны. На каждой оплачивается только наибольшая выплата за совпадение из трёх и более символов слева. Значения таблицы умножаются на общую ставку.</p><p>WILD заменяет обычные символы. Портал не участвует в линиях: 3, 4 и 5 порталов в основной игре открывают 10, 12 и 15 бесплатных вращений.</p><p>В миссии энергия усиливает все выигрышные линии. Перед бесплатным вращением она может увеличиться и сохраняется между вращениями до ×50. Луч материнского корабля создаёт целый WILD-барабан. Второй отголосок даёт второе поле с текущим множителем без новой ставки.</p>${renderSlotPaytable('lg',this.info.symbols.map(symbol=>({symbolHtml:this.symbol(symbol.id),name:cosmicSymbolName(symbol.id),values:[Object.entries(symbol.pays).map(([count,pay])=>`${count}: ${(pay/100).toLocaleString(locale)}×`).join(' · ')||(symbol.role==='scatter'?'3 / 4 / 5: 10 / 12 / 15 FS':translateText('Заменяет обычные символы'))]})))}<details open><summary>20 фиксированных линий</summary>${renderSlotPaylines(this.info.paylines,3)}</details><p>Миссии: Звёздный хаос (40 ставок, 10 вращений, ×1), Вторжение (75 ставок, 12 вращений, ×1, до двух лучей), Дальнее эхо (135 ставок, 15 вращений, ×3, эхо встречается чаще).</p><p>Максимум за раунд: ${this.info.maxWin.toLocaleString(locale)} базовых ставок. Выплаты округляются вниз до 0,01 USDT. Ставка списывается один раз, весь выигрыш серии зачисляется один раз по окончании.</p><p>Авто выполняет конечное число платных вращений: 10, 25 или 50. При входе в естественную миссию платное авто останавливается. Скрытие окна, выход, смена аккаунта или ошибка останавливают авто. Миссия сохраняется на сервере и продолжается без повторной ставки.</p><p>Расчётный возврат новых ставок: около 96% на длинной дистанции. Отдельный раунд может завершиться без выплаты.</p><p class="lg-math-note">Собственная версия Royal: свои изображения, звуки и частоты событий. Вероятности исходной игры не опубликованы.</p>`});
-    this.controls();this.dialogShell.focus();
+    this.controls();this.dialogShell.focus(kind==='info');
   }
   private ledger(session:Session){return renderSlotLedger('lg',session.spentUnits,session.state==='active'?session.view.luelon.totalPayoutUnits:session.returnedUnits,session.state==='active');}
   private closeDialog(){if(this.dialog==='buy'&&this.session()?.state!=='active')this.mode='normal';this.dialog='';this.controls();this.dialogShell.hide();}

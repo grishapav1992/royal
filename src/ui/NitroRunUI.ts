@@ -1,3 +1,5 @@
+import {confirmedPayout} from '../shared/roundPrecision';
+import {GAME_STAKE_UNITS as NITRO_BETS} from '../shared/gameStakes';
 import { t as translateText, tr, locale } from '../i18n/index';
 import {SlotSettings} from './slotKit/SlotSettings';
 import {SlotDialog, slotOwnsKeyboard} from './slotKit/SlotDialog';
@@ -7,7 +9,7 @@ import {SlotPlayback, type SlotOperation} from './slotKit/SlotPlayback';
 import {SlotSessions, type NativeSlotSession} from './slotKit/SlotSessions';
 import {bindSlotLifecycle} from './slotKit/SlotLifecycle';
 import {nitroSlot} from './slotKit/nativeSlots';
-import {NITRO_GAME,NITRO_BETS,NITRO_PAYTABLE,NITRO_NAMES,NITRO_RULES,NITRO_LINES,type NitroView} from '../shared/nitroRun';
+import {NITRO_GAME,NITRO_PAYTABLE,NITRO_NAMES,NITRO_RULES,NITRO_LINES,type NitroView} from '../shared/nitroRun';
 import {expansionClient as client} from '../wallet/ExpansionClient';
 import {demoWallet} from '../wallet/WalletClient';
 import {observeExpansionOutcome,resetGameOutcomes} from './gameReactions';
@@ -27,7 +29,7 @@ const preview=Array.from({length:30},(_,i)=>(i+2*Math.floor(i/6))%6);
 export class NitroRunUI {
  private settings?:SlotSettings;
  private root:HTMLElement;private dialogShell!:SlotDialog;private stakeControls!:SlotStakeControls;private soundControls!:SlotAudioControls;private board:NitroBoard;private audio=new NitroRunAudio();private assets:NitroRunAssets;
- private owner=client.accountId;private destroyed=false;private entered=false;private stake='100';private fast=false;private reduced=matchMedia('(prefers-reduced-motion: reduce)');private manualReduced=false;
+ private owner=client.accountId;private destroyed=false;private entered=false;private stake = '10';private fast=false;private reduced=matchMedia('(prefers-reduced-motion: reduce)');private manualReduced=false;
  private dialog:Dialog='intro';private shown='';private lastWin='0';private error='';private live?:Live;private playback=new SlotPlayback({account:()=>client.accountId,hidden:()=>document.hidden});private sessions=new SlotSessions(nitroSlot);private autoRemaining=0;private bonusRunning=false;private unsubscribe=()=>{};
  private change=()=>this.sync();private visibility=()=>{if(document.hidden){this.cancel();this.audio.pause();}this.sync();};private motionChanged=()=>{this.cancel();this.sync();};
   private keyboard=(event:KeyboardEvent)=>{
@@ -108,10 +110,10 @@ this.find('[data-cc-status]').textContent=client.loading?translateText('Пров
  }
  private sync(){
   if(this.destroyed)return;
-  if(this.owner!==client.accountId){this.cancel();this.audio.pause();this.owner=client.accountId;this.entered=false;this.lastWin='0';this.stake='100';this.openDialog('intro');}
+  if(this.owner!==client.accountId){this.cancel();this.audio.pause();this.owner=client.accountId;this.entered=false;this.lastWin='0';this.stake = '10';this.openDialog('intro');}
   const s=this.session();if(!this.live&&(!s||this.shown!==this.key(s))){
    this.board.clearOverlay();this.board.highlight([]);this.board.show(s?.view.nitro.spin?.finalGrid??preview);this.root.dataset.phase='idle';this.root.dataset.charging='false';
-   if(s){this.shown=this.key(s);this.root.dataset.sessionId=s.id;this.root.dataset.revision=String(s.view.nitro.revision);if(s.state==='settled')this.lastWin=s.returnedUnits;this.setTotal(s.view.nitro.totalPayoutUnits);this.features(s.view.nitro);this.find('[data-cc-message]').textContent=s.state==='active'?translateText('Гонка сохранена. Продолжение без ставки.'):translateText('Раунд завершён. Выплата уже в кошельке.');}
+   if(s){this.shown=this.key(s);this.root.dataset.sessionId=s.id;this.root.dataset.revision=String(s.view.nitro.revision);if(s.state==='settled')this.lastWin=s.returnedUnits;this.setTotal(confirmedPayout(s,s.view.nitro.totalPayoutUnits));this.features(s.view.nitro);this.find('[data-cc-message]').textContent=s.state==='active'?translateText('Гонка сохранена. Продолжение без ставки.'):translateText('Раунд завершён. Выплата уже в кошельке.');}
    else{this.shown='';this.setTotal('0');this.features();this.find('[data-cc-message]').textContent=translateText('Нажми «Старт», чтобы выйти на ночную трассу');}
   }
   this.controls();observeExpansionOutcome(this.root,NITRO_GAME,s,client.accountId,!!this.live||client.busy,!!client.pending);
@@ -134,7 +136,7 @@ this.find('[data-cc-status]').textContent=client.loading?translateText('Пров
    const promise=client.act(action);live.operationId=client.pending?.id??'';await promise;if(!this.valid(live))return;
    const s=this.session();if(!this.sessions.confirmed(s,previous,live.operationId))throw Error(translateText('Ход не подтверждён. Проверь прежнюю операцию.'));
    await this.present(s,live);if(!this.valid(live))return;
-   this.live=undefined;this.root.dataset.phase='idle';this.root.dataset.animationToken='';this.shown=this.key(s);if(s.state==='settled')this.lastWin=s.returnedUnits;this.features(s.view.nitro);this.setTotal(s.view.nitro.totalPayoutUnits);this.controls();observeExpansionOutcome(this.root,NITRO_GAME,s,client.accountId,false,false);
+   this.live=undefined;this.root.dataset.phase='idle';this.root.dataset.animationToken='';this.shown=this.key(s);if(s.state==='settled')this.lastWin=s.returnedUnits;this.features(s.view.nitro);this.setTotal(confirmedPayout(s,s.view.nitro.totalPayoutUnits));this.controls();observeExpansionOutcome(this.root,NITRO_GAME,s,client.accountId,false,false);
    const v=s.view.nitro;if(s.state==='active'&&(!v.spin||v.spin.kind==='base')){this.stopAuto();this.openDialog('bonus');return;}
    if(s.state==='settled'&&v.history.some(spin=>spin.kind==='free')){this.bonusRunning=false;this.openDialog('complete');return;}
    if(s.state==='active'&&this.bonusRunning||s.state==='settled'&&this.autoRemaining>0)this.schedule();
@@ -163,7 +165,7 @@ this.find('[data-cc-status]').textContent=client.loading?translateText('Пров
     this.board.clearOverlay();this.board.show(frame.after);this.board.highlight([]);this.root.dataset.charging='false';this.tickets(frame.after.filter(n=>n===7).length,spin.kind==='free');
    }
   }
-  if(!this.valid(live))return;this.board.clearOverlay();this.board.show(spin.finalGrid);this.board.highlight([]);this.features(v);this.setTotal(v.totalPayoutUnits);
+  if(!this.valid(live))return;this.board.clearOverlay();this.board.show(spin.finalGrid);this.board.highlight([]);this.features(v);this.setTotal(confirmedPayout(s,v.totalPayoutUnits));
   if(spin.freeAward){this.root.dataset.phase='tickets';this.find('[data-cc-message]').textContent=spin.kind==='free'?tr`ЕЩЁ ${spin.freeAward} БЕСПЛАТНЫХ ВРАЩЕНИЯ`:tr`${spin.flags} ФЛАГА · БОНУСНАЯ ГОНКА ОТКРЫТА`;this.audio.tickets();if(live.motion&&!await this.delay(live.fast?250:850,live))return;}
   else this.find('[data-cc-message]').textContent=v.capped?translateText('ДОСТИГНУТ ПРЕДЕЛ ВЫИГРЫША'):spin.frames.at(-1)?.stop==='cascade-limit'?translateText('12 ПОКАЗОВ ПОЛЯ · ЗАЕЗД ЗАВЕРШЁН'):Number(spin.payoutUnits)>0?translateText('ВЫИГРЫШ ЗАЕЗДА ПОДТВЕРЖДЁН'):s.state==='active'?translateText('БОНУСНАЯ ГОНКА ПРОДОЛЖАЕТСЯ'):translateText('СЛЕДУЮЩИЙ ЗАЕЗД ЖДЁТ НА СТАРТЕ');
   this.audio.outcome(Number(spin.payoutUnits)>0);if(live.motion)await this.delay(live.fast?100:300,live);
@@ -180,7 +182,7 @@ this.find('[data-cc-status]').textContent=client.loading?translateText('Пров
   if(kind==='complete'&&s)box.innerHTML=renderSlotResult({style:'cc',eyebrow:translateText('ФИНИШНАЯ ЧЕРТА'),title:translateText('ИТОГ БОНУСНОЙ ГОНКИ'),returned:s.returnedUnits,ledger:this.ledger(s),note:translateText('Выплата уже зачислена в кошелёк один раз.'),label:translateText('ПРОДОЛЖИТЬ')});
   if(kind==='history')box.innerHTML=renderSlotHistory({style:'cc',eyebrow:translateText('БОРТОВОЙ ЖУРНАЛ'),title:translateText('ИСТОРИЯ ЗАЕЗДА'),ledger:s?this.ledger(s):undefined,status:s?.state==='active'?translateText('Гонка сохранена. Выплата поступит после финиша.'):translateText('Раунд завершён. Выплата зачислена один раз.'),empty:translateText('Здесь появится подтверждённая история раунда.'),rows:v?.history.map(spin=>({title:tr`${spin.kind==='base'?translateText('Основное'):translateText('Бесплатное')} вращение ${slotSpinNumber(spin,v!.history)}`,detail:tr`${spin.frames.filter(f=>f.wins.length).length} каскадов · передача ×${spin.multiplierAfter} · ${spin.frames.some(f=>f.stop==='nitro')?translateText('нитро-рывок · '):''}${spin.flags} флагов${spin.freeAward?tr` · +${spin.freeAward} вращений`:''}`,payoutUnits:spin.payoutUnits}))??[]});
   if(kind==='info')box.innerHTML=renderSlotInfo({style:'cc',eyebrow:translateText('БРИФИНГ ПЕРЕД СТАРТОМ'),title:translateText('КАК ИГРАЕТ НИТРО-ЗАЕЗД'),reduced:this.manualReduced,motionSetting:false,bodyHtml:tr`<h3>20 линий, одна общая ставка</h3><p>${escape(NITRO_RULES)}</p><h3>Разгон со следующего каскада</h3><p>Обычное вращение начинает с ×1, бесплатное с ×2. Выигрыш оплачивается на текущей передаче, затем следующая повышается на один до ×5. Между вращениями передача не сохраняется.</p><h3>Нитро-рывок</h3><p>Баллоны собираются только при выигрыше на поле и исчезают вместе с выигрышными символами. Нужно два за одно вращение. При первом поле без выигрыша нитро сжигается и целиком перезапускает поле на текущей передаче. Только один рывок за вращение. Флаги учитываются только на конечном поле. На 12-м показе или при лимите выплаты поле больше не перезапускается.</p><h3>Таблица выплат от общей ставки, до передачи</h3>${renderSlotPaytable('cc',NITRO_PAYTABLE.map((pay,i)=>({symbolHtml:nitroSymbol(i),name:NITRO_NAMES[i],values:pay.map(n=>`${(n/100).toLocaleString(locale)}×`)})),[translateText('Символ'),'3','4','5','6'])}<p>WILD заменяет обычные символы, на линии платится только лучшая комбинация. Пересекающиеся линии оплачиваются отдельно. Баллон и флаг сами не оплачиваются. Максимум всего раунда: 3 000 ставок. При достижении лимита остаток бонуса завершается. При ограничении последняя линия может оплачиваться частично.</p><h3>Все 20 линий</h3><div class="nr-paylines">${NITRO_LINES.map((line,i)=>`<span><small>${i+1}</small><svg viewBox="0 0 120 100"><polyline points="${line.map((row,col)=>`${col*20+10},${row*20+10}`).join(' ')}"/></svg></span>`).join('')}</div><p>Одна ставка и одна итоговая выплата на раунд. При обрыве связи подтверждается прежний ход. Закрытие или скрытие окна останавливает авто. Бонусная гонка сохраняется. Авто делает выбранные 10, 25 или 50 платных вращений и останавливается при входе в бонус. Покупки бонуса нет.</p><p>Оценка долгосрочного возврата: около 96,2% от суммы ставок, включая бонусы. Это среднее на длинной серии, а не обещание результата отдельного заезда.</p><p class="cc-dialog-note">Собственная игра Royal: оригинальное оформление, звуки и серверная математика. Только тестовый виртуальные USDT клуба.</p>`});
-  this.controls();this.dialogShell.focus();
+  this.controls();this.dialogShell.focus(kind==='info');
  }
 
  private closeDialog(){this.dialog='';this.controls();this.dialogShell.hide();}

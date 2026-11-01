@@ -1,0 +1,5 @@
+.reward-spin-controls{display:grid;gap:8px;padding:12px;border:1px solid #c9ad7066;border-radius:12px;margin:12px 0;background:#161b26;color:#f4e7ce;min-width:0}
+.reward-spin-controls label{display:grid;gap:6px;font-size:13px}
+.reward-spin-controls select{width:100%;max-width:100%;min-width:0;padding:10px;border:1px solid #c9ad7077;border-radius:8px;background:#242b39;color:#fff;font:inherit}
+.reward-spin-controls p{margin:0;font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+.reward-spin-controls[data-mode=free]{border-color:#deb75c}

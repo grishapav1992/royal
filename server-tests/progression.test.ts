@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { PostgresDatabase } from '../server/database';
 import { ProgressionStore } from '../server/progression/store';
-import { DEFAULT_PROGRESSION_POLICY, validProgressionSnapshot } from '../src/shared/progression';
+import { LEGACY_PROGRESSION_POLICY as DEFAULT_PROGRESSION_POLICY, validProgressionSnapshot } from '../src/shared/progression';
 
 function testPolicy() { const p=structuredClone(DEFAULT_PROGRESSION_POLICY);p.version='test-policy-v1';p.levels.forEach((l,i)=>l.xp=String(i*100));return p; }
 async function fixture(policy=testPolicy()) {

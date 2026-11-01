@@ -1,4 +1,7 @@
-import { PENALTY_GAME, PENALTY_BETS, PENALTY_RISKS, penaltyPathQuote, type PenaltyHero, type PenaltyRisk, type PenaltyView } from '../shared/crLeo';
+import {syncStakeSelect} from './stakeSelection';
+import {stakeRulesHtml} from './stakeRules';
+import {GAME_STAKE_UNITS as PENALTY_BETS} from '../shared/gameStakes';
+import { PENALTY_GAME, PENALTY_RISKS, penaltyPathQuote, type PenaltyHero, type PenaltyRisk, type PenaltyView } from '../shared/crLeo';
 import { expansionClient as client } from '../wallet/ExpansionClient';
 import { demoWallet } from '../wallet/WalletClient';
 import { isWallHit } from './crLeoFreeKick';
@@ -14,7 +17,7 @@ export class CrLeoUI {
   private audio = new CrLeoAudio();
   private hero: PenaltyHero = 'cr';
   private risk: PenaltyRisk = 'safe';
-  private stake = '1000';
+  private stake = '10';
   private seen = '';
   private owner = client.accountId;
   private action = '';
@@ -39,7 +42,7 @@ export class CrLeoUI {
       <div class="cl-risk-panel"><span class="cl-label">ТИП УДАРА <small>ШАНС КАЖДОГО ГОЛА</small></span><div class="cl-risks">${Object.entries(PENALTY_RISKS).map(([id, v]) => `<button data-risk="${id}" aria-pressed="${id === 'safe'}"><b>${v.name}</b><span>${v.chance}%</span></button>`).join('')}</div><p data-hint>Игрок на всю серию. Риск выбирается перед каждым ударом.</p></div>
       <div class="cl-betting"><div class="cl-bank"><span class="cl-label">USDT · NILE</span><b data-balance>...</b><label>Ставка <select aria-label="Ставка" data-stake>${PENALTY_BETS.map(n => `<option value="${n}">${Number(n) / 100}</option>`).join('')}</select></label></div><div class="cl-actions"><button class="cl-primary" data-shoot>БИТЬ ПЕНАЛЬТИ <span>↗</span></button><button class="cl-take" data-take hidden>ЗАБРАТЬ <b data-take-value></b></button></div></div></div>
       <footer class="cl-footer"><span>Виртуальные USDT · Серия до 5 ударов</span><p role="status" data-status>Выбери своего игрока.</p><button data-sound aria-pressed="true">ЗВУК ON</button></footer><div class="cl-recovery" hidden data-recovery><span>Результат запроса ещё не подтверждён.</span><button data-retry>Проверить ту же операцию</button></div><p class="cl-error" role="alert"></p>
-      <dialog class="cl-dialog"><button data-close aria-label="Закрыть правила">×</button><span class="cl-label">CR vs. Leo</span><h2>Пять ударов. Одно решение.</h2><p>Выбери игрока, ставку и риск первого удара. Перед каждым следующим ударом риск можно изменить. Первая кнопка списывает одну ставку и выполняет первый удар. После гола можно забрать всю доступную выплату или рискнуть следующим ударом. Промах теряет ставку и всю незабранную выплату серии. Пятый гол оплачивается автоматически.</p><p>Пенальти: 75% гола. Ближний штрафной со стенкой из пяти игроков: 60%. Дальний штрафной со стенкой из трёх игроков: 45%. CR и Leo имеют одинаковую математику. Сектор ворот выбирается случайно и не меняет шанс гола или выплату. Сила нажатия, скорость реакции и движения игроков не меняют вероятность.</p><p>Коэффициенты на экране приблизительные. Точная сумма выплаты показана на кнопке и рассчитывается по вероятности всей успешной серии, с округлением вниз до 0,01 USDT. Расчётный возврат 99% до округления, одинаковый для любого сочетания рисков и любого выбранного момента остановки после гола.</p><p>Между ударами нет таймера. Закрытие окна сохраняет серию. При потере ответа проверяется тот же запрос, новая ставка не создаётся.</p></dialog>`;
+      <dialog class="cl-dialog"><button data-close aria-label="Закрыть правила">×</button><span class="cl-label">CR vs. Leo</span><h2>Пять ударов. Одно решение.</h2><p>Выбери игрока, ставку и риск первого удара. Перед каждым следующим ударом риск можно изменить. Первая кнопка списывает одну ставку и выполняет первый удар. После гола можно забрать всю доступную выплату или рискнуть следующим ударом. Промах теряет ставку и всю незабранную выплату серии. Пятый гол оплачивается автоматически.</p><p>Пенальти: 75% гола. Ближний штрафной со стенкой из пяти игроков: 60%. Дальний штрафной со стенкой из трёх игроков: 45%. CR и Leo имеют одинаковую математику. Сектор ворот выбирается случайно и не меняет шанс гола или выплату. Сила нажатия, скорость реакции и движения игроков не меняют вероятность.</p><p>Коэффициенты на экране приблизительные. Сумма на кнопке показана без долей цента, которые учитываются при завершении серии. Выплата рассчитывается по вероятности всей успешной серии. Расчётный возврат 99%, одинаковый для любого сочетания рисков и любого выбранного момента остановки после гола.</p><p>Между ударами нет таймера. Закрытие окна сохраняет серию. При потере ответа проверяется тот же запрос, новая ставка не создаётся.</p>${stakeRulesHtml()}</dialog>`;
     host.replaceChildren(this.root);
     this.scene = new CrLeoScene(this.find('canvas'), event => { if (!document.hidden) this.audio.event(event, this.hero); });
     this.scene.select(this.hero, this.risk);
@@ -67,7 +70,7 @@ export class CrLeoUI {
   private blocked() { return client.busy || !!client.pending || !!this.action || this.scene.state().busy; }
   private sync() {
     if (!this.alive) return;
-    if (this.owner !== client.accountId) { this.owner = client.accountId; this.epoch++; this.seen = ''; this.controlsKey = ''; this.pipsKey = ''; this.action = ''; this.error = ''; this.hero = 'cr'; this.risk = 'safe'; this.stake = '1000'; this.scene.select(this.hero, this.risk); }
+    if (this.owner !== client.accountId) { this.owner = client.accountId; this.epoch++; this.seen = ''; this.controlsKey = ''; this.pipsKey = ''; this.action = ''; this.error = ''; this.hero = 'cr'; this.risk = 'safe'; this.stake = '10'; this.scene.select(this.hero, this.risk); }
     const s = this.session(), v = s?.view.penalty, key = s && v ? s.id + ':' + v.revision : '';
     if (v && key !== this.seen) {
       const cashout = this.action === 'cashout';
@@ -81,7 +84,7 @@ export class CrLeoUI {
     const key = JSON.stringify([s?.id,s?.view.penalty?.revision,active,this.scene.state().reveal,busy,ready,client.loading,client.pending?.id,client.busy,client.wallet?.balance,this.hero,this.risk,this.stake,this.error,client.error]); if (key === this.controlsKey) return; this.controlsKey = key;
     this.root.querySelectorAll<HTMLButtonElement>('[data-hero]').forEach(b => { b.setAttribute('aria-pressed', String(b.dataset.hero === this.hero)); b.disabled = !!active || busy; });
     this.root.querySelectorAll<HTMLButtonElement>('[data-risk]').forEach(b => { b.setAttribute('aria-pressed', String(b.dataset.risk === this.risk)); b.disabled = busy; });
-    const select = this.find<HTMLSelectElement>('[data-stake]'); select.value = this.stake; select.disabled = !!active || busy;
+    const select = this.find<HTMLSelectElement>('[data-stake]'); this.stake = syncStakeSelect(select,this.stake,PENALTY_BETS,!!active||busy);
     const shoot = this.find<HTMLButtonElement>('[data-shoot]'); shoot.disabled = busy || !ready || client.loading || !active && Number(this.stake) > (client.wallet?.balance ?? 0) * 100;
     shoot.innerHTML = (!this.scene.state().reveal ? 'МЯЧ В ИГРЕ' : active ? 'СЛЕДУЮЩИЙ УДАР' : s ? 'НОВАЯ СЕРИЯ' : this.risk !== 'safe' ? 'БИТЬ ШТРАФНОЙ' : 'БИТЬ ПЕНАЛЬТИ') + ' <span>↗</span>';
     const take = this.find<HTMLButtonElement>('[data-take]'); take.hidden = !active || !this.scene.state().reveal; take.disabled = busy || !ready;

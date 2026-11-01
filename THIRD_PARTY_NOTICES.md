@@ -69,14 +69,15 @@ These five MIT-licensed projects are bundled locally. Each table uses separate, 
 
 The 52 cards, joker and card back are bundled from Lucky-Five-Video-Poker. Its included vector-playing-cards README attributes the original images to Byron Knoll and releases the images into the public domain, with an optional WTFPL license where public domain is not recognized. The original notice is retained at `public/assets/github-cards/README.md`.
 
-## Room 03: Rush casino wagering games
+## Rush Hi-Lo probability source
 
 - Repository: https://github.com/vafc21/Rush
 - Upstream commit: `bc55199db43cdae829b5c001de15afb2bbe13ff6`
-- License: MIT, preserved in `public/licenses/github/hilo/LICENSE.txt` and `public/licenses/github/dragontower/LICENSE.txt`.
-- Source snapshots (comment punctuation normalized to the project convention): `src/vendor/github/hilo/upstream/hilo.ts`, `src/vendor/github/dragontower/upstream/dragontower.ts`.
-- Adapted math: `server/games/rush/hilo.ts` and `server/games/rush/dragontower.ts`.
-- Adaptation: Royal UI, server-generated persistent hidden outcomes, exact integer payouts rounded down, idempotent operations, common demo wallet and existing mainnet USDT journal. Hi-Lo settles automatically after two correct guesses to bound the reserved liability. Dragon Tower retains nine rows and the original three difficulties. Future cards and dragons stay server-side until revealed. No Rush credentials, wallet code, deployment configuration, analytics or third-party backend are included.
+- License: MIT, preserved in `public/licenses/github/hilo/LICENSE.txt`.
+- Source snapshot (comment punctuation normalized to the project convention): `src/vendor/github/hilo/upstream/hilo.ts`.
+- Adapted Hi-Lo math: `server/games/rush/hilo.ts`.
+- Offline historical proof only: `server/games/rush/dragontower.ts` is retained byte-for-byte for the immutable mathematical baseline, with its MIT license in `public/licenses/github/dragontower/LICENSE.txt`. It is not imported by a game module, live game engine or wagering API.
+- Adaptation: Royal UI, server-generated persistent hidden outcomes, exact integer payouts rounded down, idempotent operations, common demo wallet and existing mainnet USDT journal. Hi-Lo settles automatically after two correct guesses to bound the reserved liability. Future cards stay server-side until revealed. No Rush credentials, wallet code, deployment configuration, analytics or third-party backend are included.
 
 ## First-floor casino expansion, demo wallet
 
@@ -94,7 +95,7 @@ The same pinned MIT go_trumpcards source supplies Mississippi Stud, Four Card Po
 
 Six Royal variants adapt the existing vFair Dice, Plinko, Limbo and Mines foundations and Rush Diamonds foundation. Exact-sum Sic Bo uses the already available three-dice game. Royal adds new betting choices, split-stake settlement, the 16-cell vault, probability-derived paytables and original SVG/CSS artwork. Existing upstream commits and licenses remain unchanged. See docs/casino-variants.md for the changed rules and settlement details.
 
-Six further Royal variants use the existing Keno, Fruits, Hi-Lo, Dragon Tower, Dragon Tiger and Casino War foundations. Royal supplies the 20-number ticket, color sequence, paired-key ladder, independent slot lines, rank-gap bets and two-front rules, with original SVG/CSS presentation and probability-derived payouts. Fruits retains its existing symbol weights and paytable; card variants use Royal's server-owned deck snapshots. The pinned vFair, EZSlotsJS, Rush and go_trumpcards notices and licenses remain unchanged. All six use the atomic demo wallet and expose only public round state. See docs/casino-variants.md.
+Six further Royal variants combine the existing Keno, Fruits, Hi-Lo, Dragon Tiger and Casino War foundations with Royal's own paired-key ladder. Royal supplies the 20-number ticket, color sequence, independent slot lines, rank-gap bets and two-front rules, with original SVG/CSS presentation and probability-derived payouts. Fruits retains its existing symbol weights and paytable; card variants use Royal's server-owned deck snapshots. The pinned vFair, EZSlotsJS, Rush and go_trumpcards notices and licenses remain unchanged. All six use the atomic demo wallet and expose only public round state. See docs/casino-variants.md.
 
 Six additional Royal variants provide Plinko target regions, three-card combination bets, a three-card 21 target, selected-gem collections, paired Mines reveals and an adaptive dice series. They reuse the existing licensed visual and game foundations, while their probability calculations, server snapshots, wager choices and SVG/CSS presentation are Royal additions. The previously pinned upstream licenses and original game rules remain unchanged. See docs/casino-batch-variants.md for the six new rules and independent mathematical checks.
 
