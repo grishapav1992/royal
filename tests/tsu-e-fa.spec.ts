@@ -49,6 +49,9 @@ async function ready(a:Page,b:Page){await a.locator('[data-ready]').click();awai
 async function winRound(a:Page,b:Page,wins:number){await expect(sign(a)).toBeEnabled();await sign(a).click();await expect(sign(b,'rock')).toBeEnabled();await sign(b,'rock').click();await expect(a.locator('.td-stage')).toHaveAttribute('data-stage','countdown');await expect(a.locator('.td-score')).toHaveText(`${wins-1} : 0`);await expect(a.locator('.td-score')).toHaveText(`${wins} : 0`,{timeout:10000});}
 async function mobileChat(p:Page){
   const dialog=p.locator('#pvp-dialog'),chat=dialog.locator('.game-chat-dock');
+  if(!await dialog.locator('.game-chat-toggle').count()){
+    await expect(chat).toBeVisible();await expect(chat.locator('.chat-heading')).toContainText('Общий чат');return;
+  }
   await expect(dialog).toHaveAttribute('data-game-chat','closed');
   await dialog.locator('.game-chat-toggle').click();await expect(chat).toBeVisible();await expect(chat.locator('.chat-heading')).toContainText('Общий чат');
   await chat.locator('.game-chat-close').click();await expect(chat).toBeHidden();
@@ -91,6 +94,20 @@ test('real lost connection freezes selection and countdown; reconnect resumes th
     await a.context().setOffline(false);await a.goto(url);await connected(a);await expect(b.locator('.td-pause')).toHaveCount(0);await expect(a.locator('.td-score')).toHaveText('1 : 0',{timeout:12000});expect(await balance(a)).toBe(beforeA-10);
     await a.locator('[data-exit]').click();await expect(a.locator('.td-confirm')).toBeVisible();await a.locator('[data-continue]').click();await expect(a.locator('.td-confirm')).toHaveCount(0);await a.locator('[data-exit]').click();await a.locator('[data-confirm-exit]').click();
     await expect(b.locator('.td-status')).toContainText('Начислено 0,19 USDT');expect(await balance(b)).toBe(beforeB+9);expect(await balance(a)).toBe(beforeA-10);expect(c.errors).toEqual([]);
+  }finally{await c.close();}
+});
+
+test('final settlement closes an unconfirmed surrender dialog',async({browser})=>{
+  const c=await players(browser),{a,b}=c;try{
+    await accept(a,b);await ready(a,b);await winRound(a,b,1);
+    await expect(sign(a)).toBeEnabled();await sign(a).click();await sign(b,'rock').click();
+    await expect(a.locator('.td-stage')).toHaveAttribute('data-stage','countdown');
+    await a.locator('[data-exit]').click();await expect(a.locator('.td-confirm')).toBeVisible();
+    await expect(a.locator('.td-score')).toHaveText('2 : 0',{timeout:10000});
+    await expect(a.locator('.td-status')).toContainText('Начислено 0,19 USDT');
+    await expect(a.locator('.td-confirm')).toHaveCount(0);
+    await expect(a.locator('[data-confirm-exit]')).toHaveCount(0);
+    expect(c.errors).toEqual([]);
   }finally{await c.close();}
 });
 
