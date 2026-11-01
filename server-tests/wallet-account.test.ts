@@ -156,7 +156,7 @@ test('wallet requests stay bound to the account that created them', { timeout: 2
       await initializeClient(client, alice.account.id);
       const beforeBob = (await accounts.wallet.snapshot(bob.account.id));
       loseNextSuccessfulOperation = true;
-      await assert.rejects(client.play('royal-roulette', { bet: 'red' }, 100));
+      await assert.rejects(client.play('royal-roulette', { bet: 'red' }, 0.1));
       const pending = client.pending;
       assert(pending);
       assert(lostResult?.gameRound);

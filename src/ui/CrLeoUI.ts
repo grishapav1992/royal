@@ -1,3 +1,4 @@
+import {ActionGameLayout} from './ActionGameLayout';
 import {syncStakeSelect} from './stakeSelection';
 import {stakeRulesHtml} from './stakeRules';
 import {GAME_STAKE_UNITS as PENALTY_BETS} from '../shared/gameStakes';
@@ -8,10 +9,12 @@ import { isWallHit } from './crLeoFreeKick';
 import { CrLeoScene } from './CrLeoScene';
 import { CrLeoAudio } from './CrLeoAudio';
 import './cr-leo.css';
+import './cr-leo-priorities.css';
 
 const money = (v: string) => (Number(v) / 100).toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const multiplier = (risks: PenaltyRisk[]) => risks.length ? '≈' + (Number(penaltyPathQuote('1000000', risks)) / 1000000).toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '×' : '1,00×';
 export class CrLeoUI {
+  private priorities: ActionGameLayout;
   private root = document.createElement('section');
   private scene: CrLeoScene;
   private audio = new CrLeoAudio();
@@ -44,6 +47,9 @@ export class CrLeoUI {
       <footer class="cl-footer"><span>Виртуальные USDT · Серия до 5 ударов</span><p role="status" data-status>Выбери своего игрока.</p><button data-sound aria-pressed="true">ЗВУК ON</button></footer><div class="cl-recovery" hidden data-recovery><span>Результат запроса ещё не подтверждён.</span><button data-retry>Проверить ту же операцию</button></div><p class="cl-error" role="alert"></p>
       <dialog class="cl-dialog"><button data-close aria-label="Закрыть правила">×</button><span class="cl-label">CR vs. Leo</span><h2>Пять ударов. Одно решение.</h2><p>Выбери игрока, ставку и риск первого удара. Перед каждым следующим ударом риск можно изменить. Первая кнопка списывает одну ставку и выполняет первый удар. После гола можно забрать всю доступную выплату или рискнуть следующим ударом. Промах теряет ставку и всю незабранную выплату серии. Пятый гол оплачивается автоматически.</p><p>Пенальти: 75% гола. Ближний штрафной со стенкой из пяти игроков: 60%. Дальний штрафной со стенкой из трёх игроков: 45%. CR и Leo имеют одинаковую математику. Сектор ворот выбирается случайно и не меняет шанс гола или выплату. Сила нажатия, скорость реакции и движения игроков не меняют вероятность.</p><p>Коэффициенты на экране приблизительные. Сумма на кнопке показана без долей цента, которые учитываются при завершении серии. Выплата рассчитывается по вероятности всей успешной серии. Расчётный возврат 99%, одинаковый для любого сочетания рисков и любого выбранного момента остановки после гола.</p><p>Между ударами нет таймера. Закрытие окна сохраняет серию. При потере ответа проверяется тот же запрос, новая ставка не создаётся.</p>${stakeRulesHtml()}</dialog>`;
     host.replaceChildren(this.root);
+    const priorityButton=document.createElement('button');priorityButton.type='button';priorityButton.dataset.options='';priorityButton.textContent='⚙';priorityButton.setAttribute('aria-label','Настройки игры');
+    this.find('.cl-betting').append(priorityButton);
+    this.priorities=new ActionGameLayout(host,this.root,priorityButton,['.cl-choose','[data-rules]','[data-sound]','.cl-risk-panel>p'].map(selector=>this.find(selector)),'Настройки серии','Закрыть');
     this.scene = new CrLeoScene(this.find('canvas'), event => { if (!document.hidden) this.audio.event(event, this.hero); });
     this.scene.select(this.hero, this.risk);
     this.root.addEventListener('pointerdown', () => void this.audio.unlock(), { capture: true });
@@ -147,6 +153,6 @@ export class CrLeoUI {
     } catch (e) { if (account === client.accountId && epoch === this.epoch) this.error = (e as Error).message; }
     finally { if (this.alive && account === client.accountId && epoch === this.epoch) { this.action = ''; this.sync(); } }
   }
-  destroy() { this.alive = false; document.removeEventListener('visibilitychange', this.onVisibility); cancelAnimationFrame(this.frame); client.removeEventListener('change', this.onChange); demoWallet.removeEventListener('change', this.onChange); this.find<HTMLDialogElement>('dialog').close(); this.audio.destroy(); this.scene.destroy(); this.root.remove(); }
+  destroy() { this.alive = false; document.removeEventListener('visibilitychange', this.onVisibility); cancelAnimationFrame(this.frame); client.removeEventListener('change', this.onChange); demoWallet.removeEventListener('change', this.onChange); this.find<HTMLDialogElement>('dialog').close(); this.audio.destroy(); this.scene.destroy(); this.priorities.destroy();this.root.remove(); }
 }
 function activeText(v?: PenaltyView) { return v?.status === 'playing' ? 'Продолжи серию или забери выплату. Время не ограничено.' : 'Выбери игрока и риск. Первая кнопка начинает серию.'; }

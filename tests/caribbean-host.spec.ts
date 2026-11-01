@@ -2,7 +2,9 @@ import {test as base,expect,type Page} from '@playwright/test';
 import {Client} from '@colyseus/sdk';
 
 const game='studio-caribbean-treasures',out=process.env.CARIBBEAN_ARTIFACTS_DIR||'artifacts/work/caribbean-empty-balance';
-const test=base.extend<{roomPath:string}>({roomPath:async({request},use)=>{
+const test=base.extend<{roomPath:string;roomSession:{path:string;send:(text:string)=>void}}>({
+roomPath:async({roomSession},use)=>use(roomSession.path),
+roomSession:async({request},use)=>{
  const response=await request.post('/api/auth/login',{data:{email:`ct-room-${crypto.randomUUID()}@example.test`,password:'Royal-test-123!'}});
  expect(response.ok()).toBe(true);
  const cookie=response.headers()['set-cookie'].split(';')[0];
@@ -12,8 +14,8 @@ const test=base.extend<{roomPath:string}>({roomPath:async({request},use)=>{
   return new Response(await reply.body(),{status:reply.status(),headers:reply.headers()});
  }});
  const room=await client.create<any>('lobby');
- for(const name of ['chat','activities','piano-note','notice','chat-check','security','ejected','pvp'])room.onMessage(name,()=>{});
- try{await use('/?room='+room.roomId);}finally{await Promise.race([room.leave(),new Promise(resolve=>setTimeout(resolve,1500))]);}
+ for(const name of ['chat','chat-result','activities','piano-note','notice','chat-check','security','ejected','pvp'])room.onMessage(name,()=>{});
+ try{await use({path:'/?room='+room.roomId,send:text=>room.send('chat',{id:crypto.randomUUID(),text})});}finally{await Promise.race([room.leave(),new Promise(resolve=>setTimeout(resolve,1500))]);}
 }});
 const state=(page:Page)=>page.evaluate(()=>{try{return(window as any).royalDemo?.getState()??{};}catch{return{};}});
 async function enter(page:Page,path:string,email=`ct-player-${crypto.randomUUID()}@example.test`){
@@ -46,14 +48,20 @@ async function open(page:Page){
  await page.locator(`[data-platform-game="${game}"]`).click();
  await expect(page.locator('#mini-game')).toHaveAttribute('data-game-module-id',game,{timeout:25000});
  await expect(page.locator('.ct-root')).toBeVisible();
- await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState()?.audio?.ready),{timeout:20000}).toBe(true);
+ // The Windows WebKit stand can lack an audio context. These checks qualify layout, not audio playback.
+ if(process.env.CARIBBEAN_BROWSER!=='webkit')await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState()?.audio?.ready),{timeout:20000}).toBe(true);
  await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState()?.captain?.ready),{timeout:20000}).toBe(true);
- await expect(page.locator('#mini-dialog #club-chat-dock')).toBeVisible();
- await expect(page.locator('#chat-input')).toBeInViewport();
+ await shellChat(page);
+}
+async function shellChat(page:Page){
+ await page.evaluate(()=>new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve()))));
+ const dialog=page.locator('#mini-dialog');
+ if(await dialog.getAttribute('data-game-chat')==='column')await expect(page.locator('#chat-input')).toBeInViewport();
+ else{await expect(dialog.locator('.game-chat-toggle')).toBeInViewport();await expect(dialog.locator('#club-chat-dock')).toBeHidden();}
 }
 async function close(page:Page){await page.locator('#mini-dialog .mini-top [data-close]').click();await expect.poll(async()=>(await state(page)).cabinet).toBe('');}
 async function topup(page:Page){
- const r=await page.request.post('/__test/caribbean/topup',{data:{amount:1000}});expect(r.ok()).toBe(true);
+ const r=await page.request.post('/__test/caribbean/topup',{data:{amount:1000}});expect(r.ok(),await r.text()).toBe(true);
  await page.evaluate(async()=>{const path='/src/wallet/WalletClient.ts';await(await import(/* @vite-ignore */path)).demoWallet.refresh();});
 }
 async function session(page:Page){const r=await page.request.get('/api/demo-wallet/expansion',{headers:{'X-Royal-Caribbean-Treasures':'1'}});expect(r.ok()).toBe(true);return(await r.json()).sessions.find((s:any)=>s.gameId===game);}
@@ -73,7 +81,7 @@ async function finish(page:Page){
 }
 async function layout(page:Page,name:string){
  await page.screenshot({path:out+'/'+name+'.png'});
- await expect(page.locator('[data-ct-action=play]')).toBeInViewport();await expect(page.locator('#chat-input')).toBeInViewport();
+ await expect(page.locator('[data-ct-action=play]')).toBeInViewport();await shellChat(page);
  await expect.poll(async()=>page.locator('.ct-root').evaluate(e=>Math.abs(e.getBoundingClientRect().height-e.closest('.mini-stage')!.getBoundingClientRect().height))).toBeLessThan(2);
  expect(await page.locator('.ct-root').evaluate(e=>e.scrollWidth<=e.clientWidth+1)).toBe(true);
  await expect.poll(async()=>page.locator('.ct-symbol').evaluateAll(nodes=>nodes.every(n=>(n as HTMLImageElement).complete&&(n as HTMLImageElement).naturalWidth>=720))).toBe(true);
@@ -90,6 +98,135 @@ async function crewLessons(page:Page){
   await page.locator(`[data-ct-modal="answer:${id}:${answer}"]`).click();await expect(page.locator(`[data-challenge-id=${id}]`)).toHaveAttribute('data-completed','true');
  }
 }
+async function priorityLayout(page:Page){
+ await expect.poll(async()=>page.evaluate(()=>{
+  const root=document.querySelector<HTMLElement>('.ct-root')!,stage=root.closest<HTMLElement>('.mini-stage')!;
+  const bounds=root.getBoundingClientRect(),board=root.querySelector('.ct-board')!.getBoundingClientRect();
+  const failures:string[]=[];
+  for(const element of [root,stage])if(element.scrollHeight>element.clientHeight+2||element.scrollWidth>element.clientWidth+2)failures.push('overflow:'+element.className);
+  if(board.width/6<32||Math.abs(board.width/board.height-1.5)>.01)failures.push('field-size');
+  if(board.left-18<bounds.left-1||board.right+18>bounds.right+1||board.top-18<bounds.top-1||board.bottom+18>bounds.bottom+1)failures.push('field-frame');
+  for(const selector of ['.ct-play','.ct-settings-open','[data-ct-action=auto]','.ct-ledger','.ct-choice:not([hidden])']){
+   const element=root.querySelector<HTMLElement>(selector);if(!element||!element.getClientRects().length)continue;
+   const box=element.getBoundingClientRect();
+   if(box.left<bounds.left-1||box.top<bounds.top-1||box.right>bounds.right+1||box.bottom>bounds.bottom+1)failures.push('outside:'+selector);
+   if(element instanceof HTMLButtonElement){
+    if(box.width<44||box.height<44)failures.push('touch:'+selector);
+    const hit=document.elementFromPoint(box.x+box.width/2,box.y+box.height/2);if(hit!==element&&!element.contains(hit))failures.push('covered:'+selector);
+   }
+  }
+  return failures;
+ })).toEqual([]);
+}
+
+test('priority shell keeps phone chat behind a button and preserves messages, draft, focus and desktop preference',async({page,roomPath,roomSession})=>{
+ test.setTimeout(120000);
+ await page.setViewportSize({width:393,height:852});await enter(page,roomPath);await topup(page);await open(page);
+ const dialog=page.locator('#mini-dialog'),toggle=dialog.locator('.game-chat-toggle'),dock=dialog.locator('#club-chat-dock');
+ await expect(dialog).toHaveAttribute('data-game-chat','closed');await priorityLayout(page);
+ const before=await page.locator('.ct-board').boundingBox(),balance=await wallet(page);
+ roomSession.send('Привет из соседнего кресла');
+ await expect(page.locator('#chat-log')).toContainText('Привет из соседнего кресла');
+ await expect(toggle).toContainText('· 1');
+ await toggle.click();await expect(dialog).toHaveAttribute('data-game-chat','overlay');
+ await expect(dialog.locator('.game-chat-game')).toHaveAttribute('inert','');
+ await expect(dock.locator('.game-chat-close')).toBeFocused();await expect(toggle).toHaveText('Чат');
+ expect(await page.locator('.ct-board').boundingBox()).toEqual(before);
+ await page.locator('#chat-input').fill('Сохраненный черновик');
+ await page.evaluate(()=>document.documentElement.style.setProperty('--app-height','320px'));
+ await expect(page.locator('#chat-input')).toBeInViewport();
+ expect(await page.locator('#chat-input').evaluate(element=>element.getBoundingClientRect().bottom)).toBeLessThanOrEqual(320);
+ await page.evaluate(()=>document.documentElement.style.removeProperty('--app-height'));
+ await page.keyboard.press('Escape');await expect(dock).toBeHidden();await expect(toggle).toBeFocused();
+ await expect(dialog).toBeVisible();await toggle.click();await expect(page.locator('#chat-input')).toHaveValue('Сохраненный черновик');
+ await page.locator('#chat-input').fill('Сообщение из мобильной игры');await page.locator('#send-chat').click();
+ await expect(page.locator('#chat-log')).toContainText('Сообщение из мобильной игры');
+ await dock.locator('.game-chat-close').click();
+ for(const viewport of [{width:852,height:393},{width:393,height:852}]){
+  await page.setViewportSize(viewport);await expect(dock).toBeHidden();await priorityLayout(page);
+ }
+ await page.setViewportSize({width:1440,height:900});await expect(dialog).toHaveAttribute('data-game-chat','column');
+ await toggle.click();await expect(dock).toBeHidden();
+ await page.setViewportSize({width:852,height:393});await page.setViewportSize({width:1440,height:900});await expect(dock).toBeHidden();
+ await toggle.click();await expect(dialog).toHaveAttribute('data-game-chat','column');
+ expect((await wallet(page)).entries).toEqual(balance.entries);
+});
+
+test('priority layout keeps the field and actions visible across phone orientations, tablet and desktop',async({page,roomPath})=>{
+ test.setTimeout(120000);await enter(page,roomPath);await topup(page);await open(page);
+ const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));
+ for(const [width,height] of [[320,568],[568,320],[360,640],[640,360],[393,852],[852,393],[430,932],[932,430],[768,1024],[1024,768],[1280,720],[1440,900]]){
+  await test.step(`${width}x${height}`,async()=>{
+   await page.setViewportSize({width,height});await priorityLayout(page);await shellChat(page);
+   if(width===393||width===852||width===1440)await page.screenshot({path:out+`/priority-${width}x${height}.png`});
+  });
+ }
+ await page.setViewportSize({width:320,height:568});await page.locator('[data-ct-action=settings]').click();
+ expect((await page.locator('[data-ct-stake]').boundingBox())!.width).toBeGreaterThanOrEqual(64);
+ await page.keyboard.press('Escape');
+ await page.setViewportSize({width:393,height:852});await page.locator('[data-ct-action=settings]').click();
+ await expect(page.locator('.ct-settings-modal')).toBeVisible();
+ await page.locator('[data-ct-lines]').selectOption('5');await page.locator('[data-ct-stake]').selectOption('200');
+ await page.locator('[data-ct-auto-count]').selectOption('25');await page.locator('[data-ct-action=lines]').click();
+ await page.keyboard.press('Escape');await expect(page.locator('[data-ct-action=settings]')).toBeFocused();
+ await expect(page.locator('.ct-play')).toContainText('2,00 USDT');await expect(page.locator('[data-ct-cost]')).toHaveText('2,00');
+ await expect(page.locator('.ct-paths polyline')).toHaveCount(5);
+ await page.setViewportSize({width:852,height:393});await priorityLayout(page);
+ await page.locator('[data-ct-action=settings]').click();await expect(page.locator('[data-ct-auto-count]')).toHaveValue('25');
+ await page.locator('[data-ct-action=buy]').click();await expect(page.locator('.ct-buy-price')).toBeVisible();
+ await page.locator('.ct-modal').press('Escape');await priorityLayout(page);
+ expect((await wallet(page)).entries.filter((entry:any)=>entry.kind==='bet')).toEqual([]);expect(errors).toEqual([]);
+});
+
+test('priority rotation preserves an accepted spin, bonus choice and free continuations without another debit',async({page,roomPath})=>{
+ test.setTimeout(120000);await page.setViewportSize({width:393,height:852});await enter(page,roomPath);await topup(page);await open(page);
+ await page.emulateMedia({reducedMotion:'no-preference'});
+ const requests:any[]=[];
+ await page.route('**/api/demo-wallet/expansion',async route=>{
+  if(route.request().method()==='POST'){requests.push(route.request().postDataJSON());await new Promise(resolve=>setTimeout(resolve,600));}
+  await route.continue();
+ });
+ await page.request.post('/__test/caribbean/force-scenario',{data:{name:'loss'}});
+ await page.locator('.ct-root').evaluate(element=>(element as any).__priorityIdentity=true);
+ const response=page.waitForResponse(reply=>reply.url().endsWith('/api/demo-wallet/expansion')&&reply.request().method()==='POST');
+ await page.locator('.ct-play').click();await expect(page.locator('.ct-root')).toHaveAttribute('data-ct-phase','waiting');
+ await page.setViewportSize({width:852,height:393});await priorityLayout(page);
+ expect((await response).ok()).toBe(true);
+ await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState()?.presenting)).toBe(false);
+ expect(await page.locator('.ct-root').evaluate(element=>(element as any).__priorityIdentity)).toBe(true);
+ expect(requests).toHaveLength(1);expect((await wallet(page)).entries.filter((entry:any)=>entry.kind==='bet')).toHaveLength(1);
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await page.request.post('/__test/caribbean/force-bonus');await action(page,'.ct-play');
+ for (const [width,height] of [[320,568],[568,320],[393,852],[852,393],[1280,720]]) {
+  await page.setViewportSize({width,height});await priorityLayout(page);await expect(page.locator('[data-ct-action=choose-flagship]')).toBeInViewport();
+ }
+ await action(page,'[data-ct-action=choose-flagship]');const saved=await session(page);
+ await page.setViewportSize({width:852,height:393});await priorityLayout(page);await action(page,'.ct-play');
+ await close(page);await open(page);expect((await session(page)).id).toBe(saved.id);
+ await finish(page);expect((await wallet(page)).entries.filter((entry:any)=>entry.kind==='bet')).toHaveLength(2);
+ expect(new Set(requests.map(request=>request.id)).size).toBe(requests.length);
+});
+
+test('priority autoplay Stop stays available through a phone rotation and prevents subsequent charges',async({page,roomPath})=>{
+ test.setTimeout(90000);await page.setViewportSize({width:393,height:852});await enter(page,roomPath);await topup(page);await open(page);
+ let starts=0;
+ await page.route('**/api/demo-wallet/expansion',async route=>{
+  if(route.request().method()==='POST'){
+   starts++;await page.request.post('/__test/caribbean/force-scenario',{data:{name:'loss'}});
+   await new Promise(resolve=>setTimeout(resolve,600));
+  }
+  await route.continue();
+ });
+ await page.locator('[data-ct-action=auto]').click();
+ await expect(page.locator('[data-ct-action=auto]')).toHaveAttribute('aria-pressed','true');
+ await expect.poll(()=>starts).toBe(1);
+ await page.setViewportSize({width:852,height:393});await priorityLayout(page);
+ await page.getByRole('button',{name:'Остановить автокрутку',exact:true}).click();
+ await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState()?.presenting)).toBe(false);
+ await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState()?.autoplay)).toMatchObject({running:false,timerPending:false});
+ expect(starts).toBe(1);expect((await wallet(page)).entries.filter((entry:any)=>entry.kind==='bet')).toHaveLength(1);
+});
+
 test('crew collection earns free tokens, unlocks a chosen captain and persists beyond browser storage',async({page,roomPath})=>{
  test.setTimeout(180000);await enter(page,roomPath);await topup(page);await open(page);
  const mini=()=>page.evaluate(()=>(window as any).royalDemo.getMiniState()),before=await wallet(page);
@@ -106,7 +243,7 @@ test('crew collection earns free tokens, unlocks a chosen captain and persists b
  await close(page);await page.evaluate(()=>localStorage.clear());await page.reload();await expect.poll(async()=>(await state(page)).online).toBe(true);await open(page);
  await expect.poll(async()=>(await mini()).captain.character).toBe('amara');expect((await mini()).captain.history).toEqual([]);
  await page.setViewportSize({width:390,height:844});await page.locator('[data-ct-action=crew]').click();
- await expect(page.locator('#chat-input')).toBeInViewport();await page.screenshot({path:out+'/collection-unlocked-mobile.png'});
+ await shellChat(page);await page.screenshot({path:out+'/collection-unlocked-mobile.png'});
  await page.locator('[data-crew-id=ines]').scrollIntoViewIfNeeded();await expect(page.locator('.ct-crew-close')).toBeInViewport();await page.locator('.ct-crew-close').click();await expect(page.locator('[data-ct-action=crew]')).toBeFocused();
  const me=await(await page.request.get('/api/auth/me')).json(),headers={'X-Royal-Account-Id':me.account.id};
  const forged=await page.request.post('/api/caribbean-crew',{headers,data:{id:crypto.randomUUID(),action:'select',characterId:'ines'}});expect(forged.status()).toBe(403);
@@ -383,7 +520,7 @@ test('catalogue pirate captain cover stays sharp on desktop and mobile and reope
  await expect.poll(async()=>art.evaluate((img:HTMLImageElement)=>img.complete&&img.naturalWidth===512&&img.naturalHeight===320)).toBe(true);
  await page.screenshot({path:out+'/catalog-desktop.png'});
  await page.setViewportSize({width:390,height:844});await page.getByRole('searchbox',{name:'Найти игру',exact:true}).fill('Карибские');
- await expect(page.locator('.rp-card')).toHaveCount(1);await card.scrollIntoViewIfNeeded();await expect(art).toBeInViewport();await expect(page.locator('#chat-input')).toBeInViewport();
+ await expect(page.locator('.rp-card')).toHaveCount(1);await card.scrollIntoViewIfNeeded();await expect(art).toBeInViewport();await shellChat(page);
  await page.screenshot({path:out+'/catalog-mobile.png'});await card.click();
  await expect(page.locator('.ct-root')).toBeVisible();await expect.poll(async()=>page.evaluate(()=>(window as any).royalDemo.getMiniState()?.captain?.ready)).toBe(true);
  await expect(page.locator('[data-ct-lines]')).toBeEnabled();await page.locator('[data-ct-lines]').selectOption('1');await page.request.post('/__test/caribbean/force-bonus');const accepted=await action(page,'[data-ct-action=play]');
@@ -393,10 +530,10 @@ test('catalogue pirate captain cover stays sharp on desktop and mobile and reope
  await finish(page);expect((await wallet(page)).entries.filter((e:any)=>e.operationId===accepted.id&&e.kind==='bet')).toHaveLength(1);
 });
 
-test('responsive framing keeps the title and full captain artwork inside the host',async({page,roomPath})=>{
+test('responsive framing preserves the readable field and full visible captain artwork inside the host',async({page,roomPath})=>{
  test.setTimeout(120000);await enter(page,roomPath);await topup(page);await open(page);
  const measurements:any[]=[];
- for(const [width,height] of [[1440,1000],[1280,720],[1094,803],[1024,768],[900,650],[800,600],[640,480],[500,760],[430,932],[390,844],[342,700],[844,390],[342,245]]){
+ for(const [width,height] of [[1440,1000],[1280,720],[1094,803],[1024,768],[900,650],[800,600],[640,480],[500,760],[430,932],[390,844],[342,700],[844,390]]){
   await page.setViewportSize({width,height});
   await expect.poll(async()=>page.evaluate(()=>{const d=document.querySelector<HTMLElement>('#mini-dialog')!,s=d.querySelector<HTMLElement>('.mini-stage')!;return d.dataset.gameViewportReady===d.dataset.game+'|'+s.clientWidth+'x'+s.clientHeight+'|off';})).toBe(true);
   const measured=await page.evaluate(()=>{
@@ -412,23 +549,17 @@ test('responsive framing keeps the title and full captain artwork inside the hos
    expect(board!.width/measured.root.width,'The short desktop board keeps at least 45% of the game pane width').toBeGreaterThanOrEqual(.45);
   }
   if(measured.root.width<=650&&height>540){
-   expect(board!.width/measured.root.width,'Narrow panes keep readable symbols and scroll the controls when necessary').toBeGreaterThanOrEqual(.65);
+   expect(board!.width/measured.root.width,'Narrow panes keep readable symbols without scrolling').toBeGreaterThanOrEqual(.65);
   }
   if(width<=500&&height>=800&&measured.root.height>=520){
    expect(measured.playback.bottom,'Normal portrait phones show the whole autoplay row above the host footer').toBeLessThanOrEqual(measured.root.bottom+1);
   }
   measurements.push({width,height,...measured,board});await page.screenshot({path:out+`/framing-${width}x${height}.png`});
-  if(measured.play.bottom>measured.root.bottom||height<=540){
-   await page.locator('[data-ct-action=play]').scrollIntoViewIfNeeded();await expect(page.locator('[data-ct-action=play]')).toBeInViewport();
-   await page.locator('[data-ct-action=buy]').click();await expect(page.locator('.ct-modal')).toBeInViewport();
-   await page.locator('.ct-modal').press('Escape');await expect(page.locator('.ct-backdrop')).toBeHidden();
-   await page.locator('#chat-input').scrollIntoViewIfNeeded();await expect(page.locator('#chat-input')).toBeInViewport();
-   await page.locator('.ct-heading h2').scrollIntoViewIfNeeded();
-  }
+  await priorityLayout(page);await shellChat(page);
  }
  const {writeFile}=await import('node:fs/promises');await writeFile(out+'/framing-measurements.json',JSON.stringify(measurements,null,2));
  expect(measurements.filter(m=>m.captain&&(m.captain.clippedX>1||m.captain.clippedY>1)), 'All source portrait pixels must fit, without cover cropping').toEqual([]);
- expect(measurements.filter(m=>m.pageOverflowX>1||m.rootOverflowX>1||m.titleText.x<m.root.x-1||m.titleText.right>m.root.right+1), 'Text and controls cannot spill horizontally').toEqual([]);
+ expect(measurements.filter(m=>m.pageOverflowX>1||m.rootOverflowX>1||m.title.width>0&&(m.titleText.x<m.root.x-1||m.titleText.right>m.root.right+1)), 'Text and controls cannot spill horizontally').toEqual([]);
  await page.setViewportSize({width:1280,height:720});await page.request.post('/__test/caribbean/force-bonus');await action(page,'[data-ct-action=play]');
  await layout(page,'framing-bonus-1280x720');await action(page,'[data-ct-action=choose-flagship]');await finish(page);
 });

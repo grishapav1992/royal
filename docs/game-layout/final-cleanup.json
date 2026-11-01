@@ -1,0 +1,149 @@
+{
+  "date": "2026-11-01",
+  "owner": "game-layout-final",
+  "status": "blocked",
+  "initialFreeBytes": 328649969664,
+  "freeBeforeCleanupBytes": 325576421376,
+  "preservationCommit": "747629a54ca51643b3ef6419fd27e4938800f7a7",
+  "standStopped": true,
+  "portsClosed": [
+    5468,
+    2968
+  ],
+  "temporaryDatabasesRemoved": 5,
+  "activePackagesPreserved": [
+    {
+      "gameId": "github-crash",
+      "version": "1.1.0-41704804ea76"
+    },
+    {
+      "gameId": "original-jackie-chan",
+      "version": "1.2.0-1a9922bc1fa1"
+    },
+    {
+      "gameId": "royal-roulette",
+      "version": "1.6.0-5afa1194db90"
+    },
+    {
+      "gameId": "original-cr-vs-leo",
+      "version": "1.1.0-79a6657c2019"
+    }
+  ],
+  "targets": [
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\github-crash\\versions\\1.1.0-2eb6d2925811",
+      "purpose": "Inactive package recorded in this task build logs",
+      "bytes": 21957129,
+      "fileCount": 19,
+      "metadataSha256": "716640bf9991c8c899def52e184bd08150410d0c699c7b1761fce1a4a4c6c86f"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\github-crash\\versions\\1.1.0-fc1876c680ff",
+      "purpose": "Inactive package recorded in this task build logs",
+      "bytes": 21956931,
+      "fileCount": 19,
+      "metadataSha256": "955d354acb5f804ec4810dfb3c6042a052c3785dc29ad3a73e9ffeba158f595c"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\original-jackie-chan\\versions\\1.2.0-dc08dae743a0",
+      "purpose": "Inactive package recorded in this task build logs",
+      "bytes": 21598131,
+      "fileCount": 40,
+      "metadataSha256": "d04d4808a431e5d522385b40dd0085e3de458b46820d0f9b3225f6550a2a46b2"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\original-jackie-chan\\versions\\1.2.0-92312ae0a1b6",
+      "purpose": "Inactive package recorded in this task build logs",
+      "bytes": 21599303,
+      "fileCount": 40,
+      "metadataSha256": "2d0f7b49da2be6f8b9a3e8886af43f35d4b27df3c9181417e01765a9b849f38a"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\original-jackie-chan\\versions\\1.2.0-ac88c7ac030c",
+      "purpose": "Inactive package recorded in this task build logs",
+      "bytes": 21599259,
+      "fileCount": 40,
+      "metadataSha256": "39cf891222c058d1b1697987759171b32d5f40c49d546e1490791a461912a02c"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\original-jackie-chan\\versions\\1.2.0-c04acbb92506",
+      "purpose": "Inactive package recorded in this task build logs",
+      "bytes": 21599321,
+      "fileCount": 40,
+      "metadataSha256": "3554413f54a9b3def015fbd3166858258709918ceda5f82b2110bdca053830de"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\original-jackie-chan\\versions\\1.2.0-a28a6230aa62",
+      "purpose": "Inactive package recorded in this task build logs",
+      "bytes": 21597955,
+      "fileCount": 40,
+      "metadataSha256": "246e24f2939f7eb9b7766a8ed4c5278db937f2fe5d9e67f2a7e70fba82a2be22"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\royal-roulette\\versions\\1.6.0-525ceb223311",
+      "purpose": "Inactive package recorded in this task build logs",
+      "bytes": 81371,
+      "fileCount": 3,
+      "metadataSha256": "8ca90864f7cb8a833ce918848a68b4c65ae18510b56d30aabdcd8d3b743d4420"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\royal-roulette\\versions\\1.6.0-59e59fb8d017",
+      "purpose": "Inactive package recorded in this task build logs",
+      "bytes": 82090,
+      "fileCount": 3,
+      "metadataSha256": "345042a6807893c743e228c2a4440715ce29cf634f3bc8dd27cbc72026909b80"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\royal-roulette\\versions\\1.6.0-ca14012d6ae9",
+      "purpose": "Inactive package recorded in this task build logs",
+      "bytes": 81429,
+      "fileCount": 3,
+      "metadataSha256": "497318b5b6a4cdd6b3038b21021b8ef19337a5a003b76845fa2e0588474a58a8"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\royal-roulette\\versions\\1.6.0-227361cc8d75",
+      "purpose": "Inactive package recorded in this task build logs",
+      "bytes": 81129,
+      "fileCount": 3,
+      "metadataSha256": "04b3459e7a348a086c722c3679f83a83299fdde76740dff8c0868a9fae710157"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\royal-roulette\\versions\\1.6.0-e7a996191aa4",
+      "purpose": "Inactive package recorded in this task build logs",
+      "bytes": 81987,
+      "fileCount": 3,
+      "metadataSha256": "3385e8b4e0f7324dd6a3f4037385dcb1791ea79bdb34d704de761a9e2c91cd03"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\original-cr-vs-leo\\versions\\1.1.0-e70d941a2a2c",
+      "purpose": "Inactive package recorded in this task build logs",
+      "bytes": 7909343,
+      "fileCount": 21,
+      "metadataSha256": "57124f3c30caae7dd8575d27dea465d5b42b02af8aeb445852d08ac2dd9c18cf"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\module-dist\\original-cr-vs-leo\\versions\\1.1.0-eef6df322096",
+      "purpose": "Inactive package recorded in this task build logs",
+      "bytes": 7908969,
+      "fileCount": 21,
+      "metadataSha256": "0474f076322c03dac2b01dae73afd48a590bca94519129f216bc4e02f63533a1"
+    },
+    {
+      "path": "C:\\Users\\Aorus\\.codex\\worktrees\\game-layout-priorities-plan\\royal\\artifacts\\work\\game-layout-final",
+      "purpose": "Task-owned intermediate screenshots and logs; final evidence retained in docs",
+      "bytes": 97575226,
+      "fileCount": 211,
+      "metadataSha256": "6508e0ba6a26ab8f98980d9711b4b2add7b44b5617dff24616bb8105d33d8a27"
+    }
+  ],
+  "plannedBytes": 265709573,
+  "removedFolders": 0,
+  "removedArchives": 0,
+  "removedBytes": 0,
+  "priorRejectedCleanupNotRetried": true,
+  "cleanupCondition": "Automatic approval review must permit cleanup of these exact task-owned paths. Revalidate file metadata, active pointers and running sessions before a later authorized cleanup. Keep the current checkout and active packages for review.",
+  "reason": "Automatic approval review rejected the guarded Remove-Item cleanup command: blocked by policy. The command did not execute. No retry or alternative deletion method was used.",
+  "freeAfterCleanupBytes": 325827837952,
+  "inactivePackageBytes": 168134347,
+  "intermediateEvidenceBytes": 97575226
+}

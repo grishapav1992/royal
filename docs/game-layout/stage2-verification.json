@@ -1,0 +1,362 @@
+{
+  "format": 1,
+  "verifiedAt": "2026-11-01",
+  "implementationCommit": "63ad9c89c1bb9e4416a69ae40960c65957cd0640",
+  "integrationBaseline": "3a1e4a26a888a28bc34920eebe38bf6e609af4cb",
+  "scope": [
+    "studio-neopolis",
+    "royal-plinko",
+    "flag-battle"
+  ],
+  "productionPublished": false,
+  "catalogGames": [
+    "studio-cosmic-escape",
+    "studio-caramel-carnival",
+    "studio-velvet-reign",
+    "studio-last-convoy",
+    "studio-nitro-run",
+    "studio-afterglow",
+    "studio-meme-overload",
+    "studio-dracona",
+    "studio-neopolis",
+    "studio-forest-heart",
+    "github-crash",
+    "royal-plinko",
+    "original-cr-vs-leo",
+    "original-jackie-chan",
+    "studio-caribbean-treasures",
+    "studio-flooded-temple",
+    "royal-roulette",
+    "flag-battle"
+  ],
+  "catalogAudit": {
+    "chromiumViews": 72,
+    "webkitViews": 12,
+    "diagnosticOnlyOutsideScope": true
+  },
+  "geometry": {
+    "sizes": [
+      [
+        1440,
+        900
+      ],
+      [
+        1280,
+        720
+      ],
+      [
+        768,
+        1024
+      ],
+      [
+        1024,
+        768
+      ],
+      [
+        393,
+        852
+      ],
+      [
+        852,
+        393
+      ],
+      [
+        320,
+        568
+      ],
+      [
+        568,
+        320
+      ]
+    ],
+    "casesPerEngine": 24,
+    "noClippedFieldOrMainAction": true,
+    "connectedChat": true
+  },
+  "chromium": {
+    "passedScenarios": 6,
+    "scenarios": [
+      {
+        "title": "audit active game priorities in the connected host",
+        "status": "passed",
+        "durationMs": 35302
+      },
+      {
+        "title": "field and main actions fit without scrolling: studio-neopolis",
+        "status": "passed",
+        "durationMs": 9800
+      },
+      {
+        "title": "field and main actions fit without scrolling: royal-plinko",
+        "status": "passed",
+        "durationMs": 10601
+      },
+      {
+        "title": "field and main actions fit without scrolling: flag-battle",
+        "status": "passed",
+        "durationMs": 10699
+      },
+      {
+        "title": "live options survive orientation changes and accepted rounds are recovered once",
+        "status": "passed",
+        "durationMs": 14564
+      },
+      {
+        "title": "live animations keep the field visible through both phone orientations",
+        "status": "passed",
+        "durationMs": 27004
+      }
+    ],
+    "runs": [
+      {
+        "file": "verification-chromium.json",
+        "stats": {
+          "startTime": "2026-11-01T11:46:13.139Z",
+          "duration": 111663.48,
+          "expected": 6,
+          "skipped": 0,
+          "unexpected": 0,
+          "flaky": 0
+        }
+      },
+      {
+        "file": "pending/verification-chromium.json",
+        "stats": {
+          "startTime": "2026-11-01T11:53:45.451Z",
+          "duration": 16499.066000000003,
+          "expected": 1,
+          "skipped": 0,
+          "unexpected": 0,
+          "flaky": 0
+        }
+      }
+    ]
+  },
+  "webkit": {
+    "passedScenarios": 6,
+    "scenarios": [
+      {
+        "title": "audit active game priorities in the connected host",
+        "status": "passed",
+        "durationMs": 66129
+      },
+      {
+        "title": "field and main actions fit without scrolling: studio-neopolis",
+        "status": "passed",
+        "durationMs": 29771
+      },
+      {
+        "title": "field and main actions fit without scrolling: royal-plinko",
+        "status": "passed",
+        "durationMs": 23941
+      },
+      {
+        "title": "field and main actions fit without scrolling: flag-battle",
+        "status": "passed",
+        "durationMs": 20144
+      },
+      {
+        "title": "live options survive orientation changes and accepted rounds are recovered once",
+        "status": "passed",
+        "durationMs": 60194,
+        "entryDiagnostics": [
+          {
+            "phase": "entry",
+            "message": "Wrong protocol for WebSocket '[object Object]'"
+          }
+        ]
+      },
+      {
+        "title": "live animations keep the field visible through both phone orientations",
+        "status": "passed",
+        "durationMs": 41308
+      }
+    ],
+    "runs": [
+      {
+        "file": "webkit/verification-webkit.json",
+        "stats": {
+          "startTime": "2026-11-01T11:46:23.303Z",
+          "duration": 250623.761,
+          "expected": 4,
+          "skipped": 0,
+          "unexpected": 2,
+          "flaky": 0
+        }
+      },
+      {
+        "file": "webkit-rerun/verification-webkit.json",
+        "stats": {
+          "startTime": "2026-11-01T11:51:55.829Z",
+          "duration": 85227.962,
+          "expected": 2,
+          "skipped": 0,
+          "unexpected": 0,
+          "flaky": 0
+        }
+      },
+      {
+        "file": "pending-webkit/verification-webkit.json",
+        "stats": {
+          "startTime": "2026-11-01T11:55:11.300Z",
+          "duration": 61490.295999999995,
+          "expected": 1,
+          "skipped": 0,
+          "unexpected": 0,
+          "flaky": 0
+        }
+      }
+    ]
+  },
+  "existingHostRegressions": {
+    "passedScenarios": 4,
+    "scenarios": [
+      {
+        "title": "real host: countries, paid round, skips, reopen, mobile chat and reduced motion",
+        "status": "passed",
+        "durationMs": 32051
+      },
+      {
+        "title": "lost response retries the same paid request after close and reopen",
+        "status": "passed",
+        "durationMs": 12596
+      },
+      {
+        "title": "24 and 48 flags: quotes, search, saved mode, natural world round and mobile chat",
+        "status": "passed",
+        "durationMs": 49986
+      },
+      {
+        "title": "Neopolis fits the real host, prioritizes the field over chat, and restores the paid round",
+        "status": "passed",
+        "durationMs": 16109
+      }
+    ],
+    "runs": [
+      {
+        "file": "legacy-final/verification-host.json",
+        "stats": {
+          "startTime": "2026-11-01T11:52:05.540Z",
+          "duration": 112197.551,
+          "expected": 4,
+          "skipped": 0,
+          "unexpected": 0,
+          "flaky": 0
+        }
+      }
+    ]
+  },
+  "walletMathAndCompatibility": {
+    "passed": 19,
+    "command": "node --import tsx scripts/database-test.ts --import tsx --test --test-concurrency=1 server-tests/independent-modules.test.ts server-tests/neopolis-wallet.test.ts server-tests/flag-battle.test.ts server-tests/volcanic-plinko.test.ts"
+  },
+  "build": {
+    "format": 1,
+    "startedAt": "2026-11-01T11:41:37.515Z",
+    "scope": "application",
+    "steps": [
+      {
+        "name": "rtp",
+        "passed": true,
+        "durationMs": 6224
+      },
+      {
+        "name": "typecheck",
+        "passed": true,
+        "durationMs": 10059
+      },
+      {
+        "name": "modules",
+        "passed": true,
+        "durationMs": 9238
+      },
+      {
+        "name": "host",
+        "passed": true,
+        "durationMs": 10860
+      },
+      {
+        "name": "backend",
+        "passed": true,
+        "durationMs": 97
+      },
+      {
+        "name": "reconciliation",
+        "passed": true,
+        "durationMs": 26
+      },
+      {
+        "name": "payments",
+        "passed": true,
+        "durationMs": 33
+      }
+    ],
+    "passed": true,
+    "durationMs": 36537
+  },
+  "rtp": {
+    "verified": 36,
+    "stakePoliciesVerified": 19,
+    "stakeAdmissionVerified": 19,
+    "legacyNotQualified": 114,
+    "mathematicsChanged": false
+  },
+  "modules": {
+    "studio-neopolis": {
+      "format": 1,
+      "gameId": "studio-neopolis",
+      "manifest": "/game-modules/studio-neopolis/versions/0.6.0-581e98a087f6/manifest.json",
+      "sha256": "a253e314f2e840298fbe04733456744f8c6c1fadb5f286aa2b7489195cdd3341"
+    },
+    "royal-plinko": {
+      "format": 1,
+      "gameId": "royal-plinko",
+      "manifest": "/game-modules/royal-plinko/versions/1.1.0-6140f79d88a1/manifest.json",
+      "sha256": "9a91d17846a96ac5a70246e5ae618f9cde9e1f8cbb13c17b9a3c2b735d5a0f43"
+    },
+    "flag-battle": {
+      "format": 1,
+      "gameId": "flag-battle",
+      "manifest": "/game-modules/flag-battle/versions/2.1.0-d4ff4dcdd553/manifest.json",
+      "sha256": "cb24a1f041ab5e07efa5cf886e9e4f41495705689b921d5b4c13c7fd074a250e"
+    }
+  },
+  "screenshots": [
+    {
+      "gameId": "studio-neopolis",
+      "viewport": "393x852",
+      "path": "stage2/studio-neopolis-393x852.png"
+    },
+    {
+      "gameId": "studio-neopolis",
+      "viewport": "852x393",
+      "path": "stage2/studio-neopolis-852x393.png"
+    },
+    {
+      "gameId": "royal-plinko",
+      "viewport": "393x852",
+      "path": "stage2/royal-plinko-393x852.png"
+    },
+    {
+      "gameId": "royal-plinko",
+      "viewport": "852x393",
+      "path": "stage2/royal-plinko-852x393.png"
+    },
+    {
+      "gameId": "flag-battle",
+      "viewport": "393x852",
+      "path": "stage2/flag-battle-393x852.png"
+    },
+    {
+      "gameId": "flag-battle",
+      "viewport": "852x393",
+      "path": "stage2/flag-battle-852x393.png"
+    }
+  ],
+  "limitations": [
+    "Physical Safari/iPhone, Android and tablet were not connected.",
+    "WebKit needed two targeted reruns: pre-game form loading and an SDK WebSocket entry diagnostic. Entry diagnostics are retained separately from game-scene errors.",
+    "Other active games were measured; this group does not qualify every game.",
+    "Audio was not qualified by listening."
+  ]
+}

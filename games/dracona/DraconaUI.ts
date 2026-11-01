@@ -8,6 +8,8 @@ import { DraconaAudio } from './audio';
 import { readGameHost } from '../../src/modules/GameHostContract';
 import { locale } from '../../src/i18n/index';
 import { DRACONA_GAME, DRACONA_RULES, type DraconaView } from '../../src/shared/dracona';
+import { FrameOptions } from '../../src/ui/iframeKit/FrameLayout';
+import { syncStakeSelect } from '../../src/ui/stakeSelection';
 
 const pause = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms));
 const amount = (value: number) => value.toLocaleString(locale);
@@ -70,6 +72,7 @@ export class Dracona {
   private bets: number[] = [...DRACONA_BETS];
   private review = false;
   private dialog: HTMLDialogElement;
+  private options: FrameOptions;
 
   constructor(private host: HTMLElement) {
     this.document = host.ownerDocument;
@@ -95,6 +98,7 @@ export class Dracona {
       return this.spin(undefined, true);
     }, () => this.controls());
     this.bind();
+    this.options = new FrameOptions(this.root,this.find('.controls'),['.speed-control','#autoplay-count','#rules','#sound'].map(selector=>this.find(selector)),this.hostServices.i18n.t('Настройки игры'),this.hostServices.i18n.t('Закрыть'),()=>{this.autoplay.stop();this.controls();});
     this.client.addEventListener('change', this.changed);
     this.wallet.addEventListener('change', this.changed);
     this.stopAudio = this.hostServices.gameAudio.onPreferences(preferences => {
@@ -126,7 +130,7 @@ export class Dracona {
         </div><div class="status-strip"><span class="status-dot"></span><p id="status" role="status" aria-live="polite">Собери 5 одинаковых символов рядом</p><span class="round-marker" id="round-marker">01</span></div></section>
         <aside class="portal-area"><div class="portal-card"><span class="eyebrow">ПО ТУ СТОРОНУ</span><div class="reserve-frame"><div class="reserve" id="reserve-grid" aria-label="Символы для обмена через шкаф"></div></div><h2>Исчезающий<br>шкаф</h2><p>Четыре символа.<br>Один магический обмен.</p><div class="transfer-dots" id="transfer-dots" aria-label="Переносы"><i></i><i></i><i></i></div></div><div class="bonus-card" id="bonus-card"><img src="/assets/dracona/crest.webp" alt="Фамильный герб"><div><strong id="bonus-label">Память поместья</strong><p id="bonus-description">3 герба открывают бонус</p></div></div></aside>
       </div>
-      <section class="controls" aria-label="Управление игрой"><div class="balance-value"><span class="control-label">БАЛАНС</span><strong id="balance">10 000</strong><small>тестовых монет</small></div><div class="bet-control"><span class="control-label">СТАВКА</span><div><button id="bet-down" class="bet-step" aria-label="Уменьшить ставку">−</button><strong id="bet-value">100</strong><button id="bet-up" class="bet-step" aria-label="Увеличить ставку">+</button></div></div><div class="win-value"><span class="control-label">ВЫИГРЫШ</span><strong id="win-value">0</strong><small id="win-note">за вращение</small></div><button id="spin" class="spin-button"><span class="spin-label">ВРАЩАТЬ</span>${icon('arrow')}</button>
+      <section class="controls" aria-label="Управление игрой"><div class="balance-value"><span class="control-label">БАЛАНС</span><strong id="balance">10 000</strong><small>тестовых монет</small></div><div class="bet-control"><span class="control-label">СТАВКА</span><div><button id="bet-down" class="bet-step" aria-label="Уменьшить ставку">−</button><strong id="bet-value">100</strong><select id="bet-select" aria-label="Ставка за вращение">${this.bets.map(value=>`<option value="${value}">${amount(value)}</option>`).join('')}</select><button id="bet-up" class="bet-step" aria-label="Увеличить ставку">+</button></div></div><div class="win-value"><span class="control-label">ВЫИГРЫШ</span><strong id="win-value">0</strong><small id="win-note">за вращение</small></div><button id="spin" class="spin-button"><span class="spin-label">ВРАЩАТЬ</span>${icon('arrow')}</button>
         <div class="playback-controls"><label class="speed-control"><span class="control-label">СКОРОСТЬ</span><select id="speed" aria-label="Скорость вращений"><option value="normal">Обычная</option><option value="fast">Быстрая</option><option value="turbo">Турбо</option></select></label><div class="auto-control"><label class="control-label" for="autoplay-count">АВТО</label><select id="autoplay-count" aria-label="Количество автовращений"><option value="10">10</option><option value="25">25</option><option value="50">50</option></select><button id="autoplay" class="autoplay-button" aria-label="Запустить автовращения">СТАРТ</button></div><span id="autoplay-progress" class="autoplay-progress" role="status" aria-live="polite">10 подряд</span></div>
       </section>
       <footer class="bottom-line"><span>5 × 4 · Каскады · Магические переносы</span><span id="bottom-hint">Шкаф меняет блоки 2 × 2</span><span class="demo-badge">ДЕМО</span></footer>
@@ -139,6 +143,7 @@ export class Dracona {
   private bind() {
     this.find('#spin').addEventListener('click', () => void this.spin());
     this.find('#bet-down').addEventListener('click', () => this.changeBet(-1));
+    this.find('#bet-select').addEventListener('change', () => this.changeBet(this.bets.indexOf(Number(this.find<HTMLSelectElement>('#bet-select').value))-this.bets.indexOf(this.bet)));
     this.find('#bet-up').addEventListener('click', () => this.changeBet(1));
     this.find('#rules').addEventListener('click', () => this.showRules());
     this.find('#sound').addEventListener('click', () => {
@@ -176,6 +181,7 @@ export class Dracona {
     const locked = this.busy || auto.active || blocked || !!pending;
     this.find('#balance').textContent = amount(this.balance);
     this.find('#bet-value').textContent = amount(free ? this.lockedBet : this.bet);
+    syncStakeSelect(this.find<HTMLSelectElement>('#bet-select'),String(free?this.lockedBet:this.bet),this.bets,locked||free,1);
     const spin = this.find<HTMLButtonElement>('#spin'); spin.disabled = !ready || this.busy || auto.active || blocked || (pending ? !retry : !free && this.balance < this.bet);
     spin.querySelector('.spin-label')!.textContent = this.busy || this.client.busy ? 'МАГИЯ…' : retry ? 'ПРОВЕРИТЬ' : free ? 'БЕСПЛАТНО' : 'ВРАЩАТЬ';
     this.find<HTMLButtonElement>('#bet-down').disabled = locked || free || this.bet === this.bets[0];
@@ -183,7 +189,7 @@ export class Dracona {
     this.find<HTMLSelectElement>('#autoplay-count').disabled = locked;
     const autoButton = this.find<HTMLButtonElement>('#autoplay');
     autoButton.disabled = auto.active ? auto.stopping : !ready || locked || (!free && this.balance < this.bet);
-    autoButton.textContent = auto.active ? auto.stopping ? 'СТОП…' : 'СТОП' : 'СТАРТ';
+    autoButton.textContent = auto.active ? auto.stopping ? 'СТОП…' : 'СТОП' : 'АВТО';
     autoButton.setAttribute('aria-label', auto.active ? 'Остановить автовращения' : 'Запустить автовращения');
     autoButton.dataset.active = String(auto.active);
     this.find('#autoplay-progress').textContent = auto.active
@@ -397,7 +403,7 @@ export class Dracona {
     if (!this.alive) return;
     this.alive = false; this.autoplay.stop(); this.controller.abort();
     this.client.removeEventListener('change', this.changed); this.wallet.removeEventListener('change', this.changed);
-    this.stopAudio?.(); this.audio.destroy(); this.hero.destroy(); this.effects.destroy();
+    this.options.destroy(); this.stopAudio?.(); this.audio.destroy(); this.hero.destroy(); this.effects.destroy();
     if (this.dialog.open) this.dialog.close();
     this.host.replaceChildren();
   }

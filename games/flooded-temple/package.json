@@ -1,12 +1,16 @@
 {
   "name": "@royal/flooded-temple",
-  "version": "0.9.7",
+  "version": "0.10.0",
   "private": true,
   "gameId": "studio-flooded-temple",
   "apiVersion": 1,
   "rulesVersion": 2,
   "progressVersion": 2,
   "entry": "entry.ts",
-  "assetRoots": ["flooded-temple"],
-  "scripts": {"build":"node ../../node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && node ../../scripts/build-game-module.mjs"}
+  "assetRoots": [
+    "flooded-temple"
+  ],
+  "scripts": {
+    "build": "node ../../node_modules/typescript/bin/tsc --noEmit -p tsconfig.json && node ../../scripts/build-game-module.mjs"
+  }
 }

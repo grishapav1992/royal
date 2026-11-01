@@ -1,0 +1,33 @@
+.last-exit[data-priority-layout] { display:grid; grid-template-rows:minmax(0,1fr) auto auto auto auto; min-height:0; height:100%; overflow:hidden }
+.last-exit[data-priority-layout]>.le-stage { min-height:0; height:100%; max-height:none; aspect-ratio:auto }
+.last-exit[data-priority-layout] .le-primary { min-height:44px }
+.last-exit[data-priority-layout]>.le-error:empty { display:none }
+.last-exit[data-priority-layout]:not([data-priority-layout=full])>.le-console { grid-template-columns:minmax(0,1fr) minmax(0,1fr) 44px; padding:6px; gap:5px }
+.last-exit[data-priority-layout]:not([data-priority-layout=full]) .le-console>.le-tools,
+.last-exit[data-priority-layout]:not([data-priority-layout=full])>.le-footer { display:none }
+.last-exit[data-priority-layout]:not([data-priority-layout=full]) .le-wallet>span,
+.last-exit[data-priority-layout]:not([data-priority-layout=full]) .le-stake>span { font-size:9px; margin-bottom:2px }
+.last-exit[data-priority-layout]:not([data-priority-layout=full]) .le-wallet>strong { font-size:18px }
+.last-exit[data-priority-layout]:not([data-priority-layout=full]) .le-stake select { min-height:44px; height:44px; padding:4px; font-size:16px }
+.last-exit[data-priority-layout]:not([data-priority-layout=full]) .le-primary { grid-column:1/-1; grid-row:2; position:relative; min-height:48px; padding:6px; font-size:12px }
+.last-exit[data-priority-layout]:not([data-priority-layout=full]) [data-options] { grid-column:3; grid-row:1; background:#303728; color:#f3d59e; border:1px solid #b8a573; border-radius:5px; font-size:22px }
+.last-exit[data-priority-layout]:not([data-priority-layout=full]) .le-title { top:12px; left:12px }
+.last-exit[data-priority-layout]:not([data-priority-layout=full]) .le-title h2 { font-size:28px; margin:0 }
+.last-exit[data-priority-layout]:not([data-priority-layout=full]) :is(.le-title>span,.le-title>p,.le-live,.le-speed,.le-route small) { display:none }
+.last-exit[data-priority-layout]:not([data-priority-layout=full]) .le-mult { right:10px; top:15%; width:130px }
+.last-exit[data-priority-layout]:not([data-priority-layout=full]) .le-mult>strong { font-size:48px }
+.last-exit[data-priority-layout]:not([data-priority-layout=full]) .le-mult>p { font-size:10px }
+.last-exit[data-priority-layout]:not([data-priority-layout=full]) .le-route { left:10px; bottom:10px }
+.last-exit[data-priority-layout]>.le-recovery { padding:5px; gap:5px; font-size:10px }
+.last-exit[data-priority-layout]>.le-recovery button { min-height:44px }
+.last-exit[data-priority-layout=landscape][data-priority-layout] { grid-template-columns:minmax(0,1fr) 202px; grid-template-rows:minmax(0,1fr) auto auto }
+.last-exit[data-priority-layout=landscape][data-priority-layout]>.le-stage { grid-column:1; grid-row:1 }
+.last-exit[data-priority-layout=landscape][data-priority-layout]>.le-console { grid-column:2; grid-row:1; grid-template-columns:minmax(0,1fr) 44px; align-content:center; border-left:1px solid #b8a57355 }
+.last-exit[data-priority-layout=landscape][data-priority-layout] .le-wallet { grid-column:1/-1 }
+.last-exit[data-priority-layout=landscape][data-priority-layout] .le-stake { grid-column:1; grid-row:2 }
+.last-exit[data-priority-layout=landscape][data-priority-layout] [data-options] { grid-column:2; grid-row:2 }
+.last-exit[data-priority-layout=landscape][data-priority-layout] .le-primary { grid-row:3 }
+.last-exit[data-priority-layout=landscape][data-priority-layout]>.le-recovery { grid-column:1/-1; grid-row:2 }
+.last-exit[data-priority-layout=landscape][data-priority-layout]>.le-error { grid-column:1/-1; grid-row:3 }
+.last-exit .game-options-content .le-tools { display:flex; flex-direction:row; gap:12px }
+.last-exit .game-options-content .le-footer { padding:8px 0 }

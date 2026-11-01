@@ -1,4 +1,6 @@
 import {stakeRulesHtml} from './stakeRules';
+import { GamePriorityPanel } from './GamePriorityPanel';
+import './volcanic-plinko-priorities.css';
 import {GAME_BETS as DEMO_BETS} from '../shared/gameStakes';
 import { t as translateText, tr, locale } from '../i18n/index';
 import './volcanic-plinko.css';
@@ -20,6 +22,7 @@ const escape = (value: string) => value.replace(/[&<>"']/g, c => ({ '&': '&amp;'
 
 /** Visual replacement for royal-plinko. The existing wallet and vFair engine retain ownership of every round. */
 export class VolcanicPlinkoUI {
+  private priorityPanel: GamePriorityPanel;
   private root = document.createElement('section');
   private wallet: WalletClient;
   private board: VolcanicPlinkoBoard;
@@ -53,6 +56,12 @@ export class VolcanicPlinkoUI {
       <section class="vp-intro" ${this.entered ? 'hidden' : ''} aria-label="Вход в святилище"><div class="vp-intro-art"><div class="vp-intro-moon" aria-hidden="true">☾</div><button type="button" class="vp-character" data-vp="portrait" aria-label="Позвать Весперу"><img src="${VESPERA_POSTER}" decoding="async" fetchpriority="high" alt="Веспера, хранительница ночной магии" draggable="false"></button></div><div class="vp-intro-copy"><small>ROYAL · ARCANE PLINKO</small><h1>За завесой ночи<br>правит магия.</h1><p>12 рун. 13 печатей.<br>Три силы одного заклинания.</p><button type="button" class="vp-enter" data-vp="enter">ПРИОТКРЫТЬ ЗАВЕСУ <span>↗</span></button><span>Общий баланс USDT клуба</span></div></section>
       <dialog class="vp-modal" aria-label="Правила и выплаты"><button type="button" class="vp-modal-close" data-vp="close" aria-label="Закрыть панель">×</button><div data-vp="modal-content"></div></dialog>`;
     host.replaceChildren(this.root);
+    const optionsButton = document.createElement('button'); optionsButton.type = 'button'; optionsButton.className = 'vp-icon';
+    optionsButton.textContent = '⚙'; optionsButton.setAttribute('aria-label', locale.startsWith('en') ? 'Game settings' : 'Настройки игры');
+    this.el('.vp-header nav').prepend(optionsButton);
+    this.priorityPanel = new GamePriorityPanel(this.root, optionsButton,
+      locale.startsWith('en') ? 'Vespera and settings' : 'Веспера и настройки', locale.startsWith('en') ? 'Close panel' : 'Закрыть панель',
+      [this.el('.vp-speed'), this.el('.vp-mage-panel')]);
     // This new label also works with a host whose shared dictionary predates it.
     this.root.querySelectorAll('[data-vp="portrait"]').forEach(portrait => portrait.setAttribute('aria-label', locale.startsWith('en') ? 'Call Vespera' : 'Позвать Весперу'));
     this.portrait = new VesperaPortrait(this.el('.vp-intro .vp-character'), this.el('.vp-sorceress .vp-character'), !this.entered);
@@ -192,5 +201,5 @@ export class VolcanicPlinkoUI {
   previewPortrait(seconds?: number) { this.portrait.preview(seconds); }
   previewPortraitWin(multiplier: number) { return this.portrait.react('win', multiplier); }
   getState() { return { state: this.dead ? 'closed' : this.root.dataset.state, account: this.account, risk: this.risk, activeSources: this.audio.activeSources, sounds: { ...this.audio.counts }, portrait: this.portrait.getState(), round: this.last }; }
-  destroy() { if (this.dead) return; this.dead = true; this.revision++; this.abort.abort(); this.preferenceStop(); this.portrait.destroy(); this.board.destroy(); this.audio.destroy(); this.el<HTMLDialogElement>('.vp-modal').close(); this.root.remove(); }
+  destroy() { if (this.dead) return; this.dead = true; this.revision++; this.abort.abort(); this.preferenceStop(); this.priorityPanel.destroy(); this.portrait.destroy(); this.board.destroy(); this.audio.destroy(); this.el<HTMLDialogElement>('.vp-modal').close(); this.root.remove(); }
 }

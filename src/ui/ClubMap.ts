@@ -4,6 +4,7 @@ import { CLUB_ZONES, ARCADE_OVERVIEW_SIZE, LOUNGES } from '../shared/clubLayout'
 import { BAR_SOLID } from '../shared/furniture';
 import { ACTIVITIES } from '../shared/activities';
 import { HALLS, hallLinks } from '../shared/world';
+import { elevatorDock } from '../shared/elevator';
 import { cabinetsInHall } from '../shared/cabinets';
 import { isCardGame } from '../shared/cardTables';
 import { WORLD, FLOOR } from '../shared/clubGeometry';
@@ -71,6 +72,7 @@ export class ClubMap {
     }
     }
     for(const link of hallLinks(state.hall)){ctx.fillStyle='#73d4ca';ctx.fillRect(link.door.entry.x-35,link.door.entry.y-12,70,24);}
+    if(state.hall!=='street'){const lift=elevatorDock(state.hall);ctx.fillStyle='#e2c17c';ctx.fillRect(lift.entry.x-40,lift.entry.y-20,80,40);}
     for(const guest of state.guests){ctx.fillStyle='#8da49b';ctx.beginPath();ctx.arc(guest.x,guest.y,10,0,Math.PI*2);ctx.fill();}
     for(const person of state.street?.pedestrians??[]){ctx.fillStyle='#8da49b';ctx.beginPath();ctx.arc(person.x,person.y,10,0,Math.PI*2);ctx.fill();}
     for(const car of state.street?.cars??[]){if(car.visible){ctx.fillStyle=car.color;ctx.fillRect(car.x-75,car.y-45,150,45);}}

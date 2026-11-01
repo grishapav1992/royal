@@ -26,6 +26,7 @@ import { cabinetHall, cabinetsInHall, type Cabinet } from '../src/shared/cabinet
 import { cabinetSeat } from '../src/shared/cabinetSeating';
 import { findPath, walkable, type Point } from '../src/game/navigation';
 import { PLAYER_SPEED, PLAYER_SPRINT_SPEED, ROOM_CAPACITY, hallObstacles, hallLinkAt, inHallDoor, SEATS, DRINKS, atBar, type ChatMessage, type HallId } from '../src/shared/world';
+import { canTravelByElevator, elevatorDock } from '../src/shared/elevator';
 import { intoxicatedMovement } from '../src/shared/intoxication';
 import type { DrinkingState } from './intoxicationStore';
 
@@ -141,7 +142,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       this.activities.tick(dt);this.guards.tick(dt);this.bartender.tick(dt);this.guests.tick(dt);this.cat.tick(dt);hallElapsed+=dt;
       while(hallElapsed>=.05){this.tick(.05);hallElapsed-=.05;}
     }, 1000/60);
-    const movementActions = new Set(['move', 'target', 'stop', 'playing', 'cabinet-play', 'stand', 'sit', 'drink', 'activity', 'cat']);
+    const movementActions = new Set(['move', 'target', 'stop', 'playing', 'cabinet-play', 'stand', 'sit', 'drink', 'activity', 'cat', 'elevator']);
     const hugBlockedActions = new Set([...movementActions,'inputs','cabinet-reaction']);
     const listen = (type: string, handler: (client: Client, value: any) => void | Promise<void>) => this.onMessage(type, (client, value) => {
       const apply = () => {
@@ -153,6 +154,7 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
             if(typeof request?.id==='string'&&request.id.length<=100&&Number.isSafeInteger(request.requestId)&&(request.requestId as number)>=0)
               client.send('cabinet-play-result',{id:request.id,requestId:request.requestId,accepted:false,reason:'Сначала отпусти Кошку.'});
           }
+          if(type==='elevator')client.send('elevator-result',{requestId:value?.requestId,target:value?.target,accepted:false,reason:'Сначала отпусти Кошку.'});
           return;
         }
         const result = handler(client, value);
@@ -210,6 +212,22 @@ export class LobbyRoom extends Room<{ state: LobbyState }> {
       control.path = findPath(p, { x, y }, hallObstacles(p.hall));
     });
     listen('stop', client => this.stop(client.sessionId));
+    listen('elevator', (client, value: unknown) => {
+      if (!value || typeof value !== 'object') return;
+      const { target, requestId, revision } = value as { target?: unknown; requestId?: unknown; revision?: unknown };
+      if (!Number.isSafeInteger(requestId) || (requestId as number) < 0) return;
+      const p = this.state.players.get(client.sessionId), control = this.controls.get(client.sessionId);
+      if (!p || !control || revision !== p.hallRevision || !canTravelByElevator(p, target)) {
+        client.send('elevator-result', { requestId, target, accepted: false, reason: 'Подойди к лифту и заверши текущее занятие.' });
+        return;
+      }
+      this.activities.leave(client.sessionId); this.releaseCabinet(client.sessionId); this.stop(client.sessionId);
+      const dock = elevatorDock(target);
+      p.hall = target; p.hallRevision++; p.x = dock.arrival.x; p.y = dock.arrival.y; p.facing = dock.facing;
+      control.lastTarget = 0;
+      client.send('elevator-result', { requestId, target, accepted: true, revision: p.hallRevision });
+      client.send('activities', this.activities.snapshot(client.sessionId));
+    });
     listen('playing', (client, value: unknown) => {
       const p = this.state.players.get(client.sessionId);
       if (!p || p.activity || typeof value !== 'boolean') return;

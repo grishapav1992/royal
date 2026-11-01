@@ -1,3 +1,5 @@
+import {ActionGameLayout} from '../../src/ui/ActionGameLayout';
+import {syncStakeSelect} from '../../src/ui/stakeSelection';
 import {stakeRulesHtml} from '../../src/ui/stakeRules';
 import {GAME_BETS as DEMO_BETS} from '../../src/shared/gameStakes';
 import { readGameHost } from '../../src/modules/GameHostContract';
@@ -8,6 +10,7 @@ import { rouletteWheelSvg } from './WheelArtwork';
 import { RouletteSound } from './RouletteSound';
 import { RouletteMotion } from './RouletteMotion';
 import './roulette.css';
+import './priorities.css';
 
 const wheel = [0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
 const reds = new Set<number>(rouletteRedNumbers);
@@ -24,6 +27,8 @@ export class RoyalRoulette {
   private account = this.wallet.accountId;
   private input: RouletteInput = {bet:'red'};
   private amount: number = 0.1;
+  private priorities: ActionGameLayout;
+  private stakeSelect: HTMLSelectElement;
   private motion: RouletteMotion;
   private sound: RouletteSound;
   private last?: RouletteRound;
@@ -49,6 +54,15 @@ export class RoyalRoulette {
       <footer class="rr-footer"><div class="rr-selection"><span class="rr-selection-mark" aria-hidden="true">◆</span><div><small>${this.text('Ваша ставка','Your bet')}</small><strong data-rr-selection></strong></div></div><div class="rr-stake-picker"><span>${this.text('Сумма ставки, USDT','Stake, USDT')}</span><div class="rr-chips" role="group" aria-label="${this.text('Сумма ставки','Stake amount')}">${DEMO_BETS.map(amount=>`<button type="button" data-rr-amount="${amount}" aria-label="${amount} USDT"><span>${amount}</span></button>`).join('')}</div></div><button type="button" class="rr-spin" data-rr-spin><span class="rr-spin-glyph" aria-hidden="true">↻</span><span data-rr-spin-copy></span><span class="rr-spin-arrow" aria-hidden="true">›</span></button><div class="rr-status" role="status" aria-live="polite"></div><div class="rr-return"><span>${this.text('Выплата','Return')} <strong data-rr-payout>0</strong><small>USDT</small></span><span>${this.text('Итог раунда','Round net')} <strong data-rr-net>0</strong><small>USDT</small></span></div></footer>`;
 
     container.replaceChildren(this.root);
+    const trigger=document.createElement('button');trigger.type='button';trigger.dataset.options='';trigger.className='rr-choose-bet';trigger.textContent=this.text('Выбрать ставку','Choose bet');
+    this.el('.rr-footer').prepend(trigger);
+    const label=document.createElement('label');label.className='rr-compact-stake';label.textContent=this.text('Ставка, USDT','Stake, USDT');
+    this.stakeSelect=document.createElement('select');this.stakeSelect.setAttribute('aria-label',this.text('Сумма ставки','Stake amount'));
+    this.stakeSelect.innerHTML=DEMO_BETS.map(amount=>`<option value="${amount}">${amount}</option>`).join('');
+    label.append(this.stakeSelect);this.el('.rr-footer').append(label);
+    this.stakeSelect.onchange=()=>{if(!this.locked()){this.amount=Number(this.stakeSelect.value);this.render();}};
+    this.priorities=new ActionGameLayout(container,this.root,trigger,['.rr-table-area','.rr-history'].map(selector=>this.el(selector)),this.text('Выбор ставки и правила','Bet selection and rules'),this.text('Закрыть','Close'));
+
     this.sound = new RouletteSound(this.host.gameAudio);
     this.motion = new RouletteMotion(this.root,this.sound);
     for (const button of Array.from(this.root.querySelectorAll<HTMLButtonElement>('[data-rr-bet]'))) {
@@ -96,6 +110,7 @@ export class RoyalRoulette {
     for(const b of Array.from(this.root.querySelectorAll<HTMLButtonElement>('[data-rr-bet]'))){
       b.disabled=this.locked();b.setAttribute('aria-pressed',String(b.dataset.rrBet===this.input.bet&&(this.input.bet!=='number'||Number(b.dataset.rrValue)===this.input.number)));
     }
+    this.amount=Number(syncStakeSelect(this.stakeSelect,String(this.amount),DEMO_BETS,this.locked(),1));
     this.el('[data-rr-selection]').textContent=`${this.label()} · ×${this.input.bet==='number'?36:2}`;
     const button=this.el<HTMLButtonElement>('[data-rr-spin]');
     const action=this.busy?this.text('Вращение…','Spinning…'):pending?this.text('Проверить результат','Check result'):this.text('Крутить колесо','Spin wheel');
@@ -163,5 +178,5 @@ export class RoyalRoulette {
   pause(){this.paused=true;this.motion.pause();}
   resume(){this.paused=false;this.motion.resume();}
   getState(){return{gameId:'royal-roulette',busy:this.busy,input:this.input,amount:this.amount,result:this.last??null,history:[...this.history],motion:this.motion.state(),sound:this.sound.state()};}
-  destroy(){if(!this.alive)return;this.alive=false;this.motion.destroy();this.sound.destroy();this.lifetime.abort();this.root.remove();}
+  destroy(){if(!this.alive)return;this.alive=false;this.motion.destroy();this.sound.destroy();this.lifetime.abort();this.priorities.destroy();this.root.remove();}
 }
