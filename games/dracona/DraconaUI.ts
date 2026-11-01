@@ -9,6 +9,7 @@ import { readGameHost } from '../../src/modules/GameHostContract';
 import { locale } from '../../src/i18n/index';
 import { DRACONA_GAME, DRACONA_RULES, type DraconaView } from '../../src/shared/dracona';
 import { FrameOptions } from '../../src/ui/iframeKit/FrameLayout';
+import { syncStakeSelect } from '../../src/ui/stakeSelection';
 
 const pause = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms));
 const amount = (value: number) => value.toLocaleString(locale);
@@ -180,7 +181,7 @@ export class Dracona {
     const locked = this.busy || auto.active || blocked || !!pending;
     this.find('#balance').textContent = amount(this.balance);
     this.find('#bet-value').textContent = amount(free ? this.lockedBet : this.bet);
-    const stakeSelect=this.find<HTMLSelectElement>('#bet-select');stakeSelect.value=String(free?this.lockedBet:this.bet);stakeSelect.disabled=locked||free;
+    syncStakeSelect(this.find<HTMLSelectElement>('#bet-select'),String(free?this.lockedBet:this.bet),this.bets,locked||free,1);
     const spin = this.find<HTMLButtonElement>('#spin'); spin.disabled = !ready || this.busy || auto.active || blocked || (pending ? !retry : !free && this.balance < this.bet);
     spin.querySelector('.spin-label')!.textContent = this.busy || this.client.busy ? 'МАГИЯ…' : retry ? 'ПРОВЕРИТЬ' : free ? 'БЕСПЛАТНО' : 'ВРАЩАТЬ';
     this.find<HTMLButtonElement>('#bet-down').disabled = locked || free || this.bet === this.bets[0];

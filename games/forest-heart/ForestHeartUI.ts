@@ -1,4 +1,5 @@
 import {stakeRulesHtml} from '../../src/ui/stakeRules';
+import {syncStakeSelect} from '../../src/ui/stakeSelection';
 import {GAME_STAKE_CENTS as FOREST_HEART_STAKES} from '../../src/shared/gameStakes';
 import { readGameHost } from '../../src/modules/GameHostContract';
 import { FOREST_HEART_GAME, validForestHeartSession, type ForestHeartView } from '../../src/shared/forestHeart';
@@ -209,7 +210,7 @@ export class ForestHeartUI {
     const balance = this.wallet.accountId === this.owner ? this.wallet.wallet?.balance ?? this.client.wallet?.balance : undefined;
     this.find('balance').textContent = balance === undefined ? '…' : balance.toLocaleString(this.services.i18n.locale, { maximumFractionDigits: 2 });
     this.find('stake').textContent = this.number(this.stake);
-    const stakeSelect=this.find<HTMLSelectElement>('stake-select');stakeSelect.value=String(this.stake);stakeSelect.disabled=blocked||active;
+    syncStakeSelect(this.find<HTMLSelectElement>('stake-select'),String(this.stake),FOREST_HEART_STAKES,blocked||active);
     this.find('stake-label').textContent = stage === 'settled' ? this.c.nextStake : this.c.stake;
     this.find<HTMLButtonElement>('lower').disabled = blocked || active || this.stake === FOREST_HEART_STAKES[0];
     this.find<HTMLButtonElement>('higher').disabled = blocked || active || this.stake === FOREST_HEART_STAKES.at(-1);

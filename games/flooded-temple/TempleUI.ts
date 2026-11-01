@@ -295,10 +295,13 @@ export class TempleUI {
   }
   private showSettings(){
     this.stopAuto('stopped');
+    this.timeline.complete();
     this.show(this.text('Настройки игры','Game settings'),`<div class="ft-preferences"><button type="button" data-ft="fast" aria-pressed="${this.fast}">${this.text('Быстрая игра','Quick play')}</button><label>${this.text('Количество автоспинов','Autoplay count')}<select data-ft="auto-count">${AUTO_COUNTS.map(n=>`<option ${n===this.autoCount?'selected':''}>${n}</option>`).join('')}</select></label><button type="button" data-ft="rules">${this.text('Правила игры','Game rules')}</button><button type="button" data-ft="log">${this.text('Журнал экспедиции','Expedition journal')}</button><button type="button" data-ft="sound">${this.text('Включить / выключить звук','Toggle sound')}</button>${this.view?.bonusMap?`<button type="button" data-ft="base">${this.text('Карта храма','Temple map')}</button><button type="button" data-ft="bonus">${this.text('Карта экспедиции','Expedition map')}</button>`:''}${this.session?.state==='active'?`<button type="button" data-ft="finish">${this.text('Закончить и забрать собранное','Finish and collect')}</button>`:''}</div>${this.routeMarkup(this.view,this.blocked||!!this.client.pending)}`);
   }
   private showFinish(){
-    if(this.blocked||this.client.pending||this.session?.state!=='active')return;
+    const panelOpen=this.dialog.open;
+    if(panelOpen)this.timeline.resume('dialog');
+    if(this.blocked||this.client.pending||this.session?.state!=='active'){if(panelOpen)this.timeline.pause('dialog');return;}
     this.show(this.text('Закончить экспедицию?','Finish the expedition?'),`<p>${this.text('В общий кошелёк поступит всё собранное:','Everything collected will be credited to the shared wallet:')} <strong>${this.money(this.view!.totalPayoutUnits)} ${escape(this.asset)}</strong>.</p><p>${this.text('Оставшиеся ходы этой экспедиции завершатся. Закрытие окна сохраняет их для продолжения.','The remaining moves in this expedition will end. Closing the game window saves them for later.')}</p><button type="button" class="ft-primary" data-ft="confirm-finish">${this.text('Забрать и закончить','Collect and finish')}</button>`);
   }
   private showRules(){

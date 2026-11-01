@@ -45,6 +45,8 @@ async function finish(page:Page,frame:Frame,id:Id){
   if(id==='studio-dracona'&&await frame.locator('#dialog').isVisible()){await frame.locator('#dialog .dialog-primary').click();return false;}
   const main=frame.locator(profiles[id].primary).first();
   if(s?.state==='settled'&&await main.isEnabled())return true;
+  // Temple advances its free continuations itself. A later click could start a new paid round.
+  if(id==='studio-flooded-temple')return false;
   if(s?.state==='active'&&await main.isEnabled())try{await main.click({timeout:process.env.LAYOUT_BROWSER==='webkit'?5000:1500});}catch(e){if(!(e instanceof Error)||e.name!=='TimeoutError')throw e;}
   return false;
  },{timeout:process.env.LAYOUT_BROWSER==='webkit'?180000:90000,intervals:[100,250,500]}).toBe(true);
@@ -138,7 +140,7 @@ test('iframe animations keep their field and actions through both orientations',
  for(const id of ids){
   await page.setViewportSize({width:393,height:852});const frame=await open(page,id);await page.emulateMedia({reducedMotion:'no-preference'});
   await frame.locator(profiles[id].primary).click();
-  await expect.poll(()=>page.evaluate(()=>(window as any).royalDemo.getMiniState()?.busy??(window as any).royalDemo.getMiniState()?.presenting)).toBe(true);
+  await expect.poll(()=>page.evaluate(()=>{const state=(window as any).royalDemo.getMiniState();return !!(state?.busy||state?.presenting||state?.feedback?.active);})).toBe(true);
   await page.setViewportSize({width:852,height:393});await fit(page,frame,id);await page.setViewportSize({width:393,height:852});await fit(page,frame,id);
   await page.emulateMedia({reducedMotion:'reduce'});await finish(page,frame,id);
  }
