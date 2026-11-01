@@ -1,4 +1,5 @@
 import './game-priority-panel.css';
+import { gameContentLayout } from './GameLayoutPolicy';
 
 /** Adapt to the space supplied by the real host, including its chat column.
  * Existing controls move into the panel temporarily, keeping their state and listeners. */
@@ -37,7 +38,7 @@ export class GamePriorityPanel {
   }
   private resize() {
     const { width, height } = this.root.getBoundingClientRect();
-    this.root.dataset.priorityLayout = width >= 900 && height >= 600 ? 'full' : width > height && height < 600 ? 'landscape' : 'portrait';
+    this.root.dataset.priorityLayout = gameContentLayout(width, height);
     if (this.root.dataset.priorityLayout === 'full') this.close();
   }
   private open() {

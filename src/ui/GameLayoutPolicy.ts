@@ -6,3 +6,9 @@ export function gameLayoutPolicy(width: number, height: number) {
       : width < 700 ? 'portrait' as const : 'wide' as const,
   };
 }
+
+/** The module measures the space left by the host and its connected chat. */
+export function gameContentLayout(width: number, height: number) {
+  return width >= 900 && height >= 600 ? 'full' as const
+    : width > height && height < 600 ? 'landscape' as const : 'portrait' as const;
+}
