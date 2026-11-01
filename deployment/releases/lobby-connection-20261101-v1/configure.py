@@ -25,12 +25,16 @@ def main():
     parent = git('rev-parse', '5e987153^').decode().strip()
     before = json.loads(Path(sys.argv[1]).read_text())
     sources = ['server/LobbyRoom.ts', 'server/index.ts', 'src/i18n/en.ts', 'src/network/LobbyClient.ts',
-               'src/network/reconnection.ts', 'src/network/sessionRecovery.ts', 'src/shared/lobbyConnection.ts', 'src/ui/SocialUI.ts']
-    whole = {'src/network/LobbyClient.ts', 'src/network/reconnection.ts', 'src/network/sessionRecovery.ts', 'src/shared/lobbyConnection.ts'}
+               'src/network/reconnection.ts', 'src/shared/lobbyConnection.ts', 'src/ui/SocialUI.ts']
+    whole = {'src/network/LobbyClient.ts', 'src/network/reconnection.ts', 'src/shared/lobbyConnection.ts'}
     configs = {
         'host': json.loads((HERE.parent / 'layout-priorities-20261101-v1/host-projection.json').read_text()),
         'backend': json.loads((HERE.parent / 'hall-elevator-20261101-v1/backend-projection.json').read_text()),
     }
+    if len(sys.argv) > 2:
+        prior = HERE.parent / sys.argv[2]
+        for kind in configs:
+            configs[kind] = json.loads((prior / (kind + '-projection.json')).read_text())
     expected = {}
     production_inputs = json.loads((HERE / 'production-inputs.json').read_text())
     for kind, config in configs.items():
